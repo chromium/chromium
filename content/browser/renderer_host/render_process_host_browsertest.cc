@@ -729,7 +729,7 @@ class ShellCloser : public RenderProcessHostObserver {
     logging_string_->append("ShellCloser::RenderProcessHostDestroyed ");
   }
 
-  raw_ptr<Shell, DanglingUntriaged> shell_;
+  raw_ptr<Shell, AcrossTasksDanglingUntriaged> shell_;
   raw_ptr<std::string> logging_string_;
 };
 

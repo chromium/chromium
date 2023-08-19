@@ -9,6 +9,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
+#include "components/content_settings/core/browser/content_settings_uma_util.h"
 #include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -141,7 +142,7 @@ TEST_F(ContentSettingsRegistryTest, Inheritance) {
       ContentSettingsType::ADS,
       ContentSettingsType::DURABLE_STORAGE,
       ContentSettingsType::LEGACY_COOKIE_ACCESS,
-      ContentSettingsType::INSECURE_LOCAL_NETWORK,
+      ContentSettingsType::INSECURE_PRIVATE_NETWORK,
       ContentSettingsType::REQUEST_DESKTOP_SITE,
   };
 
@@ -171,13 +172,11 @@ TEST_F(ContentSettingsRegistryTest, IsDefaultSettingValid) {
       registry()->Get(ContentSettingsType::COOKIES);
   EXPECT_TRUE(info->IsDefaultSettingValid(CONTENT_SETTING_ALLOW));
 
-#if !BUILDFLAG(IS_IOS)
   info = registry()->Get(ContentSettingsType::MEDIASTREAM_MIC);
   EXPECT_FALSE(info->IsDefaultSettingValid(CONTENT_SETTING_ALLOW));
 
   info = registry()->Get(ContentSettingsType::MEDIASTREAM_CAMERA);
   EXPECT_FALSE(info->IsDefaultSettingValid(CONTENT_SETTING_ALLOW));
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
   info = registry()->Get(ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER);
@@ -212,10 +211,10 @@ TEST_F(ContentSettingsRegistryTest, GetInitialDefaultSetting) {
       registry()->Get(ContentSettingsType::POPUPS);
   EXPECT_EQ(CONTENT_SETTING_BLOCK, popups->GetInitialDefaultSetting());
 
-  const ContentSettingsInfo* insecure_local_network =
-      registry()->Get(ContentSettingsType::INSECURE_LOCAL_NETWORK);
+  const ContentSettingsInfo* insecure_private_network =
+      registry()->Get(ContentSettingsType::INSECURE_PRIVATE_NETWORK);
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            insecure_local_network->GetInitialDefaultSetting());
+            insecure_private_network->GetInitialDefaultSetting());
 
   const ContentSettingsInfo* federated_identity =
       registry()->Get(ContentSettingsType::FEDERATED_IDENTITY_API);
@@ -232,7 +231,8 @@ TEST_F(ContentSettingsRegistryTest, SettingsHaveAHistogramMapping) {
   size_t count = 0;
   std::set<int> values;
   for (const WebsiteSettingsInfo* info : *website_settings_registry()) {
-    int value = ContentSettingTypeToHistogramValue(info->type());
+    int value = content_settings_uma_util::ContentSettingTypeToHistogramValue(
+        info->type());
     EXPECT_GT(value, 0);
     count++;
     values.insert(value);

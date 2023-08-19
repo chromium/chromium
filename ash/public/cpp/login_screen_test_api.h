@@ -48,6 +48,7 @@ class ASH_PUBLIC_EXPORT LoginScreenTestApi {
   static bool IsPasswordFieldShown(const AccountId& account_id);
   static bool IsDisplayPasswordButtonShown(const AccountId& account_id);
   static bool IsManagedIconShown(const AccountId& account_id);
+  static bool ShowRemoveAccountDialog(const AccountId& account_id);
   static bool IsManagedMessageInDialogShown(const AccountId& account_id);
   static bool IsForcedOnlineSignin(const AccountId& account_id);
   static void SubmitPassword(const AccountId& account_id,

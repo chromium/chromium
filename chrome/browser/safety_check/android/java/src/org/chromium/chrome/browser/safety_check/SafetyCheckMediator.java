@@ -12,6 +12,7 @@ import android.text.format.DateUtils;
 import android.view.View;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 
@@ -39,11 +40,11 @@ import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFr
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.PasswordsState;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.SafeBrowsingState;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.UpdatesState;
-import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.sync.SyncService;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -136,6 +137,7 @@ class SafetyCheckMediator
     }
 
     private final SharedPreferencesManager mPreferenceManager;
+    private final @Nullable SyncService mSyncService;
 
     /**
      * Callback that gets invoked once the result of the updates check is available. Not inlined
@@ -165,8 +167,9 @@ class SafetyCheckMediator
      */
     public SafetyCheckMediator(PropertyModel model, SafetyCheckUpdatesDelegate client,
             SettingsLauncher settingsLauncher, SyncConsentActivityLauncher signinLauncher,
+            SyncService syncService,
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
-        this(model, client, settingsLauncher, signinLauncher, new Handler());
+        this(model, client, settingsLauncher, signinLauncher, syncService, new Handler());
         mPasswordStoreBridge = new PasswordStoreBridge();
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
     }
@@ -174,18 +177,19 @@ class SafetyCheckMediator
     @VisibleForTesting
     SafetyCheckMediator(PropertyModel model, SafetyCheckUpdatesDelegate client,
             SettingsLauncher settingsLauncher, SyncConsentActivityLauncher signinLauncher,
-            PasswordStoreBridge bridge, Handler handler) {
-        this(model, client, settingsLauncher, signinLauncher, handler);
+            SyncService syncService, PasswordStoreBridge bridge, Handler handler) {
+        this(model, client, settingsLauncher, signinLauncher, syncService, handler);
         mPasswordStoreBridge = bridge;
     }
 
     SafetyCheckMediator(PropertyModel model, SafetyCheckUpdatesDelegate client,
             SettingsLauncher settingsLauncher, SyncConsentActivityLauncher signinLauncher,
-            Handler handler) {
+            @Nullable SyncService syncService, Handler handler) {
         mModel = model;
         mUpdatesClient = client;
         mSettingsLauncher = settingsLauncher;
         mSigninLauncher = signinLauncher;
+        mSyncService = syncService;
         mHandler = handler;
         mPreferenceManager = SharedPreferencesManager.getInstance();
         // Set the listener for clicking the updates element.
@@ -552,7 +556,7 @@ class SafetyCheckMediator
                             .showUi(p.getContext(), PasswordCheckReferrer.SAFETY_CHECK);
                 } else {
                     PasswordManagerHelper.showPasswordCheckup(p.getContext(),
-                            PasswordCheckReferrer.SAFETY_CHECK, SyncService.get(),
+                            PasswordCheckReferrer.SAFETY_CHECK, mSyncService,
                             mModalDialogManagerSupplier);
                 }
                 return true;
@@ -565,8 +569,9 @@ class SafetyCheckMediator
         } else {
             listener = (p) -> {
                 PasswordManagerHelper.showPasswordSettings(p.getContext(),
-                        ManagePasswordsReferrer.SAFETY_CHECK, mSettingsLauncher, SyncService.get(),
-                        mModalDialogManagerSupplier, /*managePasskeys=*/false);
+                        ManagePasswordsReferrer.SAFETY_CHECK, mSettingsLauncher, mSyncService,
+                        mModalDialogManagerSupplier,
+                        /*managePasskeys=*/false);
                 return true;
             };
         }
@@ -622,6 +627,7 @@ class SafetyCheckMediator
             return;
         }
 
+        mPasswordStoreBridge.addObserver(this, true);
         WeakReference<SafetyCheckMediator> weakRef = new WeakReference(this);
         PasswordManagerHelper.runPasswordCheckupInBackground(PasswordCheckReferrer.SAFETY_CHECK,
                 getSyncingAccount(),
@@ -706,8 +712,8 @@ class SafetyCheckMediator
     }
 
     private Optional<String> getSyncingAccount() {
-        return PasswordManagerHelper.hasChosenToSyncPasswords(SyncService.get())
-                ? Optional.of(CoreAccountInfo.getEmailFrom(SyncService.get().getAccountInfo()))
+        return PasswordManagerHelper.hasChosenToSyncPasswords(mSyncService)
+                ? Optional.of(CoreAccountInfo.getEmailFrom(mSyncService.getAccountInfo()))
                 : Optional.empty();
     }
 }

@@ -4,7 +4,6 @@
 
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
-#include <cctype>
 #include <memory>
 #include <ostream>
 #include <string>
@@ -17,6 +16,7 @@
 #include "base/types/optional_util.h"
 #include "net/base/features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "url/gurl.h"
 
 namespace {
@@ -763,7 +763,10 @@ std::string StorageKey::GetMemoryDumpString(size_t max_length) const {
 
   base::ranges::replace_if(
       memory_dump_str.begin(), memory_dump_str.end(),
-      [](char c) { return !std::isalnum(static_cast<unsigned char>(c)); }, '_');
+      [](char c) {
+        return !absl::ascii_isalnum(static_cast<unsigned char>(c));
+      },
+      '_');
   return memory_dump_str;
 }
 

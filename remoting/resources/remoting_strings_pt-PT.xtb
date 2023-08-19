@@ -32,7 +32,7 @@ Se "<ph name="SERVICE_SCRIPT_NAME" />" já estiver selecionado, desselecione-o e
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Última atividade online <ph name="RELATIVE_TIMESTAMP" />.</translation>
 <translation id="2504109125669302160">Conceda a autorização "Acessibilidade" ao <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Ligado a <ph name="HOSTNAME" /></translation>
-<translation id="2540992418118313681">Pretende partilhar este computador e permitir que outro utilizador o veja e controle?</translation>
+<translation id="2540992418118313681">Quer partilhar este computador e permitir que outro utilizador o veja e controle?</translation>
 <translation id="2579271889603567289">Falha do anfitrião ou falha ao iniciar o anfitrião.</translation>
 <translation id="2599300881200251572">Este serviço permite receber ligações de clientes do Ambiente de Trabalho Remoto do Chrome.</translation>
 <translation id="2647232381348739934">Serviço Chromoting</translation>
@@ -40,7 +40,7 @@ Se "<ph name="SERVICE_SCRIPT_NAME" />" já estiver selecionado, desselecione-o e
 <translation id="2699970397166997657">Chromoting</translation>
 <translation id="2758123043070977469">Ocorreu um problema na autenticação. Inicie sessão novamente.</translation>
 <translation id="2803375539583399270">Introduzir PIN</translation>
-<translation id="2919669478609886916">Está atualmente a partilhar este computador com outro utilizador. Pretende continuar a partilhar?</translation>
+<translation id="2919669478609886916">Está atualmente a partilhar este computador com outro utilizador. Quer continuar a partilhar?</translation>
 <translation id="2939145106548231838">Autenticar para anfitrião</translation>
 <translation id="3027681561976217984">Modo tátil</translation>
 <translation id="3106379468611574572">O computador remoto não está a responder aos pedidos de ligação. Verifique se está online e tente novamente.</translation>
@@ -48,7 +48,7 @@ Se "<ph name="SERVICE_SCRIPT_NAME" />" já estiver selecionado, desselecione-o e
 <translation id="3171922709365450819">Este dispositivo não é compatível com este cliente, uma vez que requer autenticação de terceiros.</translation>
 <translation id="3197730452537982411">Ambiente de Trabalho Remoto</translation>
 <translation id="324272851072175193">Enviar estas instruções por email</translation>
-<translation id="3305934114213025800">O <ph name="PRODUCT_NAME" /> pretende efetuar alterações.</translation>
+<translation id="3305934114213025800">O <ph name="PRODUCT_NAME" /> quer efetuar alterações.</translation>
 <translation id="3339299787263251426">Aceder ao seu computador de forma segura através da Internet</translation>
 <translation id="3385242214819933234">Proprietário do anfitrião inválido.</translation>
 <translation id="3423542133075182604">Processo de comunicação remota da chave de segurança</translation>
@@ -94,7 +94,7 @@ Se "<ph name="SERVICE_SCRIPT_NAME" />" já estiver selecionado, desselecione-o e
 <translation id="4985296110227979402">Primeiro, tem de configurar o computador para acesso remoto</translation>
 <translation id="4987330545941822761">O Ambiente de Trabalho Remoto do Chrome não consegue determinar o navegador para abrir URLs localmente. Escolha-o na lista abaixo.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (offline)</translation>
-<translation id="507204348399810022">Tem a certeza de que pretende desativar as ligações remotas a <ph name="HOSTNAME" />?</translation>
+<translation id="507204348399810022">Tem a certeza de que quer desativar as ligações remotas a <ph name="HOSTNAME" />?</translation>
 <translation id="5170982930780719864">ID de anfitrião inválido.</translation>
 <translation id="5204575267916639804">Perguntas frequentes</translation>
 <translation id="5222676887888702881">Terminar sessão</translation>
@@ -111,7 +111,7 @@ Se "<ph name="SERVICE_SCRIPT_NAME" />" já estiver selecionado, desselecione-o e
 <translation id="579702532610384533">Restabelecer ligação</translation>
 <translation id="5810269635982033450">O ecrã funciona como um trackpad</translation>
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> pediu acesso para ver o seu ecrã e controlar o teclado e o rato. Prima "<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />" se não estiver a contar com este pedido. Caso contrário, selecione ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' para permitir a ligação quando tiver tudo pronto.</translation>
-<translation id="5823658491130719298">No computador ao qual pretende aceder remotamente, abra o Chrome e aceda a <ph name="INSTALLATION_LINK" />.</translation>
+<translation id="5823658491130719298">No computador ao qual quer aceder remotamente, abra o Chrome e aceda a <ph name="INSTALLATION_LINK" />.</translation>
 <translation id="5841343754884244200">Opções de visualização</translation>
 <translation id="6033507038939587647">Opções do teclado</translation>
 <translation id="6040143037577758943">Fechar</translation>
@@ -131,7 +131,7 @@ Se "<ph name="SERVICE_SCRIPT_NAME" />" já estiver selecionado, desselecione-o e
 <translation id="6939719207673461467">Mostrar/ocultar teclado.</translation>
 <translation id="6963936880795878952">As ligações ao computador remoto estão temporariamente bloqueadas porque alguém tentou estabelecer ligação com um PIN inválido. Tente mais tarde.</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6985691951107243942">Tem a certeza de que pretende desativar as ligações remotas a <ph name="HOSTNAME" />? Se mudar de ideias, será necessário aceder a esse computador e voltar a ativar as ligações.</translation>
+<translation id="6985691951107243942">Tem a certeza de que quer desativar as ligações remotas a <ph name="HOSTNAME" />? Se mudar de ideias, será necessário aceder a esse computador e voltar a ativar as ligações.</translation>
 <translation id="7019153418965365059">Erro de anfitrião não reconhecido: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">Assistência Remota</translation>
 <translation id="7026930240735156896">Siga as instruções para configurar o computador para acesso remoto.</translation>

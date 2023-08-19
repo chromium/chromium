@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("layout_guide_scene_agent") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "layout_guide_scene_agent.h",
     "layout_guide_scene_agent.mm",
@@ -17,7 +16,6 @@ source_set("layout_guide_scene_agent") {
 }
 
 source_set("layout_guide") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "layout_guide_util.h",
     "layout_guide_util.mm",
@@ -31,7 +29,6 @@ source_set("layout_guide") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "layout_guide_scene_agent_unittest.mm" ]
   deps = [

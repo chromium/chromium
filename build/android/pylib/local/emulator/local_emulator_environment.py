@@ -5,7 +5,6 @@
 
 import logging
 
-from six.moves import range  # pylint: disable=redefined-builtin
 from devil import base_error
 from devil.android import device_errors
 from devil.utils import parallelizer

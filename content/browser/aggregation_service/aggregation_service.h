@@ -5,12 +5,14 @@
 #ifndef CONTENT_BROWSER_AGGREGATION_SERVICE_AGGREGATION_SERVICE_H_
 #define CONTENT_BROWSER_AGGREGATION_SERVICE_AGGREGATION_SERVICE_H_
 
+#include <set>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "content/browser/aggregation_service/aggregatable_report_assembler.h"
 #include "content/browser/aggregation_service/aggregatable_report_sender.h"
 #include "content/browser/aggregation_service/aggregation_service_storage.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/storage_partition.h"
 
 class GURL;
@@ -20,6 +22,10 @@ class Time;
 class Value;
 }  // namespace base
 
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace content {
 
 class AggregationServiceObserver;
@@ -28,7 +34,7 @@ class AggregatableReportRequest;
 class BrowserContext;
 
 // External interface for the aggregation service.
-class AggregationService {
+class CONTENT_EXPORT AggregationService {
  public:
   using AssemblyStatus = AggregatableReportAssembler::AssemblyStatus;
   using AssemblyCallback = AggregatableReportAssembler::AssemblyCallback;
@@ -100,6 +106,11 @@ class AggregationService {
   virtual void SendReportsForWebUI(
       const std::vector<AggregationServiceStorage::RequestId>& ids,
       base::OnceClosure reports_sent_callback) = 0;
+
+  // Runs `callback` with a set containing all the distinct reporting origins
+  // stored in the report request table.
+  virtual void GetPendingReportReportingOrigins(
+      base::OnceCallback<void(std::set<url::Origin>)> callback) = 0;
 
   virtual void AddObserver(AggregationServiceObserver* observer) = 0;
 

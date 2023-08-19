@@ -7,9 +7,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-
 #include "base/component_export.h"
-#include "base/mac/scoped_nsobject.h"
 
 namespace ui {
 class ColorProvider;

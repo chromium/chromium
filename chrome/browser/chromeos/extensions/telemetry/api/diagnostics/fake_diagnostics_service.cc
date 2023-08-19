@@ -140,6 +140,44 @@ void FakeDiagnosticsService::RunBatteryHealthRoutine(
       base::BindOnce(std::move(callback), run_routine_response_->Clone()));
 }
 
+void FakeDiagnosticsService::RunBluetoothDiscoveryRoutine(
+    RunBluetoothDiscoveryRoutineCallback callback) {
+  actual_passed_parameters_.clear();
+  actual_called_routine_ = crosapi::DiagnosticsRoutineEnum::kBluetoothDiscovery;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), run_routine_response_->Clone()));
+}
+
+void FakeDiagnosticsService::RunBluetoothPairingRoutine(
+    const std::string& peripheral_id,
+    RunBluetoothPairingRoutineCallback callback) {
+  actual_passed_parameters_.clear();
+  actual_called_routine_ = crosapi::DiagnosticsRoutineEnum::kBluetoothPairing;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), run_routine_response_->Clone()));
+}
+
+void FakeDiagnosticsService::RunBluetoothPowerRoutine(
+    RunBluetoothPowerRoutineCallback callback) {
+  actual_passed_parameters_.clear();
+  actual_called_routine_ = crosapi::DiagnosticsRoutineEnum::kBluetoothPower;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), run_routine_response_->Clone()));
+}
+
+void FakeDiagnosticsService::RunBluetoothScanningRoutine(
+    uint32_t length_seconds,
+    RunBluetoothScanningRoutineCallback callback) {
+  actual_passed_parameters_.clear();
+  actual_called_routine_ = crosapi::DiagnosticsRoutineEnum::kBluetoothScanning;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), run_routine_response_->Clone()));
+}
+
 void FakeDiagnosticsService::RunCpuCacheRoutine(
     uint32_t length_seconds,
     RunCpuCacheRoutineCallback callback) {
@@ -344,6 +382,37 @@ void FakeDiagnosticsService::RunSmartctlCheckRoutine(
     actual_called_routine_ = crosapi::DiagnosticsRoutineEnum::kSmartctlCheck;
   }
 
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), run_routine_response_->Clone()));
+}
+
+void FakeDiagnosticsService::RunUfsLifetimeRoutine(
+    RunUfsLifetimeRoutineCallback callback) {
+  actual_passed_parameters_.clear();
+  actual_called_routine_ = crosapi::DiagnosticsRoutineEnum::kUfsLifetime;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), run_routine_response_->Clone()));
+}
+
+void FakeDiagnosticsService::RunPowerButtonRoutine(
+    uint32_t timeout_seconds,
+    RunPowerButtonRoutineCallback callback) {
+  actual_passed_parameters_.clear();
+  actual_passed_parameters_.Set("timeout_seconds",
+                                static_cast<int32_t>(timeout_seconds));
+
+  actual_called_routine_ = crosapi::DiagnosticsRoutineEnum::kPowerButton;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), run_routine_response_->Clone()));
+}
+
+void FakeDiagnosticsService::RunAudioDriverRoutine(
+    RunAudioDriverRoutineCallback callback) {
+  actual_passed_parameters_.clear();
+  actual_called_routine_ = crosapi::DiagnosticsRoutineEnum::kAudioDriver;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), run_routine_response_->Clone()));

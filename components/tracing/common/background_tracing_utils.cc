@@ -27,8 +27,8 @@ namespace tracing {
 namespace {
 
 bool BlockingWriteTraceToFile(const base::FilePath& output_file,
-                              std::unique_ptr<std::string> file_contents) {
-  if (base::WriteFile(output_file, *file_contents)) {
+                              std::string file_contents) {
+  if (base::WriteFile(output_file, file_contents)) {
     LOG(ERROR) << "Background trace written to "
                << output_file.LossyDisplayName();
     return true;
@@ -40,7 +40,7 @@ bool BlockingWriteTraceToFile(const base::FilePath& output_file,
 
 void WriteTraceToFile(
     const base::FilePath& output_file,
-    std::unique_ptr<std::string> file_contents,
+    std::string file_contents,
     content::BackgroundTracingManager::FinishedProcessingCallback
         done_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -92,11 +92,11 @@ void RecordDisallowedMetric(TracingFinalizationDisallowedReason reason) {
                             reason);
 }
 
-void SetupBackgroundTracingWithOutputFile(
+bool SetupBackgroundTracingWithOutputFile(
     std::unique_ptr<content::BackgroundTracingConfig> config,
     const base::FilePath& output_file) {
   if (output_file.empty()) {
-    return;
+    return false;
   }
 
   auto receive_callback = base::BindRepeating(&WriteTraceToFile, output_file);
@@ -104,21 +104,48 @@ void SetupBackgroundTracingWithOutputFile(
   // NO_DATA_FILTERING is set because the trace is saved to a local output file
   // instead of being uploaded to a metrics server, so there are no PII
   // concerns.
-  content::BackgroundTracingManager::GetInstance()
+  return content::BackgroundTracingManager::GetInstance()
       .SetActiveScenarioWithReceiveCallback(
           std::move(config), std::move(receive_callback),
           content::BackgroundTracingManager::NO_DATA_FILTERING);
 }
 
-void SetupBackgroundTracingFromConfigFile(const base::FilePath& config_file,
-                                          const base::FilePath& output_file) {
+bool SetupBackgroundTracingFromJsonConfigFile(
+    const base::FilePath& config_file,
+    const base::FilePath& output_file) {
   std::unique_ptr<content::BackgroundTracingConfig> config =
       GetBackgroundTracingConfigFromFile(config_file);
   if (!config) {
-    return;
+    return false;
   }
 
-  SetupBackgroundTracingWithOutputFile(std::move(config), output_file);
+  return SetupBackgroundTracingWithOutputFile(std::move(config), output_file);
+}
+
+bool SetupBackgroundTracingFromProtoConfigFile(
+    const base::FilePath& config_file,
+    const base::FilePath& output_file) {
+  perfetto::protos::gen::ChromeFieldTracingConfig config;
+
+  std::string config_text;
+  if (!base::ReadFileToString(config_file, &config_text) ||
+      config_text.empty() || !config.ParseFromString(config_text)) {
+    LOG(ERROR) << "Failed to read field tracing config file "
+               << config_file.value() << "."
+               << "Make sure to provide a serialized proto, or use "
+               << "--enable-legacy-background-tracing to provide a "
+               << "JSON config.";
+    return false;
+  }
+
+  auto receive_callback = base::BindRepeating(&WriteTraceToFile, output_file);
+
+  // NO_DATA_FILTERING is set because the trace is saved to a local output file
+  // instead of being uploaded to a metrics server, so there are no PII
+  // concerns.
+  return content::BackgroundTracingManager::GetInstance().InitializeScenarios(
+      std::move(config), std::move(receive_callback),
+      content::BackgroundTracingManager::NO_DATA_FILTERING);
 }
 
 bool SetupBackgroundTracingFromCommandLine(
@@ -129,18 +156,22 @@ bool SetupBackgroundTracingFromCommandLine(
   switch (GetBackgroundTracingSetupMode()) {
     case BackgroundTracingSetupMode::kDisabledInvalidCommandLine:
       return false;
-    case BackgroundTracingSetupMode::kFromConfigFile:
-      SetupBackgroundTracingFromConfigFile(
+    case BackgroundTracingSetupMode::kFromJsonConfigFile:
+      return SetupBackgroundTracingFromJsonConfigFile(
+          command_line->GetSwitchValuePath(
+              switches::kEnableLegacyBackgroundTracing),
+          command_line->GetSwitchValuePath(
+              switches::kBackgroundTracingOutputFile));
+    case BackgroundTracingSetupMode::kFromProtoConfigFile:
+      return SetupBackgroundTracingFromProtoConfigFile(
           command_line->GetSwitchValuePath(switches::kEnableBackgroundTracing),
           command_line->GetSwitchValuePath(
               switches::kBackgroundTracingOutputFile));
-      return true;
     case BackgroundTracingSetupMode::kFromFieldTrialLocalOutput:
-      SetupBackgroundTracingWithOutputFile(
+      return SetupBackgroundTracingWithOutputFile(
           manager.GetBackgroundTracingConfig(field_trial_name),
           command_line->GetSwitchValuePath(
               switches::kBackgroundTracingOutputFile));
-      return true;
     case BackgroundTracingSetupMode::kFromFieldTrial:
       return false;
   }
@@ -148,7 +179,8 @@ bool SetupBackgroundTracingFromCommandLine(
 
 BackgroundTracingSetupMode GetBackgroundTracingSetupMode() {
   auto* command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(switches::kEnableBackgroundTracing)) {
+  if (!command_line->HasSwitch(switches::kEnableBackgroundTracing) &&
+      !command_line->HasSwitch(switches::kEnableLegacyBackgroundTracing)) {
     if (!command_line->HasSwitch(switches::kBackgroundTracingOutputFile)) {
       return BackgroundTracingSetupMode::kFromFieldTrial;
     }
@@ -163,9 +195,25 @@ BackgroundTracingSetupMode GetBackgroundTracingSetupMode() {
     return BackgroundTracingSetupMode::kFromFieldTrialLocalOutput;
   }
 
-  if (command_line->GetSwitchValueNative(switches::kEnableBackgroundTracing)
+  if (command_line->HasSwitch(switches::kEnableBackgroundTracing) &&
+      command_line->HasSwitch(switches::kEnableLegacyBackgroundTracing)) {
+    LOG(ERROR) << "Can't specify both --enable-background-tracing and "
+                  "--enable-legacy-background-tracing";
+    return BackgroundTracingSetupMode::kDisabledInvalidCommandLine;
+  }
+
+  if (command_line->HasSwitch(switches::kEnableBackgroundTracing) &&
+      command_line->GetSwitchValueNative(switches::kEnableBackgroundTracing)
           .empty()) {
     LOG(ERROR) << "--enable-background-tracing needs a config file path";
+    return BackgroundTracingSetupMode::kDisabledInvalidCommandLine;
+  }
+
+  if (command_line->HasSwitch(switches::kEnableLegacyBackgroundTracing) &&
+      command_line
+          ->GetSwitchValueNative(switches::kEnableLegacyBackgroundTracing)
+          .empty()) {
+    LOG(ERROR) << "--enable-legacy-background-tracing needs a config file path";
     return BackgroundTracingSetupMode::kDisabledInvalidCommandLine;
   }
 
@@ -176,7 +224,10 @@ BackgroundTracingSetupMode GetBackgroundTracingSetupMode() {
     return BackgroundTracingSetupMode::kDisabledInvalidCommandLine;
   }
 
-  return BackgroundTracingSetupMode::kFromConfigFile;
+  if (command_line->HasSwitch(switches::kEnableBackgroundTracing)) {
+    return BackgroundTracingSetupMode::kFromProtoConfigFile;
+  }
+  return BackgroundTracingSetupMode::kFromJsonConfigFile;
 }
 
 }  // namespace tracing

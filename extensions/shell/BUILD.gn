@@ -172,7 +172,6 @@ source_set("app_shell_lib") {
       "browser/shell_native_app_window_mac.h",
       "browser/shell_native_app_window_mac.mm",
     ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_chromeos_ash) {

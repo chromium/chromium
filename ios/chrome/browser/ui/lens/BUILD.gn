@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("coordinator") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "lens_coordinator.h",
     "lens_coordinator.mm",
@@ -40,7 +39,6 @@ source_set("coordinator") {
 }
 
 source_set("lens_availability") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "lens_availability.h",
     "lens_availability.mm",
@@ -58,7 +56,6 @@ source_set("lens_availability") {
 }
 
 source_set("lens_entrypoint") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "lens_entrypoint.h",
     "lens_entrypoint.mm",

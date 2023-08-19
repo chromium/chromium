@@ -546,7 +546,8 @@ TEST(ProcessMetricsTest, DISABLED_GetNumberOfThreads) {
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    (BUILDFLAG(IS_APPLE) && BUILDFLAG(USE_BLINK))
 namespace {
 
 // Keep these in sync so the GetChildOpenFdCount test can refer to correct test
@@ -626,11 +627,11 @@ TEST(ProcessMetricsTest, GetChildOpenFdCount) {
   WaitForEvent(temp_path, kSignalReady);
 
   std::unique_ptr<ProcessMetrics> metrics =
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_MAC)
       ProcessMetrics::CreateProcessMetrics(child.Handle(), nullptr);
 #else
       ProcessMetrics::CreateProcessMetrics(child.Handle());
-#endif  // BUILDFLAG(IS_APPLE)
+#endif  // BUILDFLAG(IS_MAC)
 
   const int fd_count = metrics->GetOpenFdCount();
   EXPECT_GE(fd_count, 0);
@@ -651,11 +652,11 @@ TEST(ProcessMetricsTest, GetChildOpenFdCount) {
 TEST(ProcessMetricsTest, GetOpenFdCount) {
   base::ProcessHandle process = base::GetCurrentProcessHandle();
   std::unique_ptr<base::ProcessMetrics> metrics =
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_MAC)
       ProcessMetrics::CreateProcessMetrics(process, nullptr);
 #else
       ProcessMetrics::CreateProcessMetrics(process);
-#endif  // BUILDFLAG(IS_APPLE)
+#endif  // BUILDFLAG(IS_MAC)
 
   ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -669,7 +670,7 @@ TEST(ProcessMetricsTest, GetOpenFdCount) {
   EXPECT_EQ(new_fd_count, fd_count + 1);
 }
 
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 

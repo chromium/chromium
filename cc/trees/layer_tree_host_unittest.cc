@@ -83,12 +83,8 @@
 #include "components/viz/service/display/skia_output_surface.h"
 #include "components/viz/test/begin_frame_args_test.h"
 #include "components/viz/test/fake_output_surface.h"
-#include "components/viz/test/test_gles2_interface.h"
 #include "components/viz/test/test_raster_interface.h"
-#include "gpu/GLES2/gl2extchromium.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/khronos/GLES2/gl2.h"
-#include "third_party/khronos/GLES2/gl2ext.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
@@ -589,16 +585,16 @@ class LayerTreeHostContextCacheTest : public LayerTreeHostTest {
   std::unique_ptr<TestLayerTreeFrameSink> CreateLayerTreeFrameSink(
       const viz::RendererSettings& renderer_settings,
       double refresh_rate,
-      scoped_refptr<viz::ContextProvider> compositor_context_provider,
+      scoped_refptr<viz::RasterContextProvider> compositor_context_provider,
       scoped_refptr<viz::RasterContextProvider> worker_context_provider)
       override {
-    // Create the main viz::ContextProvider with a MockContextSupport.
+    // Create the main viz::RasterContextProvider with a MockContextSupport.
     auto main_support = std::make_unique<MockContextSupport>();
     mock_main_context_support_ = main_support.get();
     auto test_main_context_provider =
-        viz::TestContextProvider::Create(std::move(main_support));
+        viz::TestContextProvider::CreateRaster(std::move(main_support));
 
-    // Create the main viz::ContextProvider with a MockContextSupport.
+    // Create the main viz::RasterContextProvider with a MockContextSupport.
     auto worker_support = std::make_unique<MockContextSupport>();
     mock_worker_context_support_ = worker_support.get();
     auto test_worker_context_provider =
@@ -626,8 +622,10 @@ class LayerTreeHostContextCacheTest : public LayerTreeHostTest {
                  void(bool aggressively_free_resources));
   };
 
-  raw_ptr<MockContextSupport, DanglingUntriaged> mock_main_context_support_;
-  raw_ptr<MockContextSupport, DanglingUntriaged> mock_worker_context_support_;
+  raw_ptr<MockContextSupport, AcrossTasksDanglingUntriaged>
+      mock_main_context_support_;
+  raw_ptr<MockContextSupport, AcrossTasksDanglingUntriaged>
+      mock_worker_context_support_;
 };
 
 // Test if the LTH successfully frees resources on the main/worker
@@ -2575,7 +2573,7 @@ class LayerTreeHostTestGpuRasterDeviceSizeChanged : public LayerTreeHostTest {
   void SetUpUnboundContextProviders(
       viz::TestContextProvider* context_provider,
       viz::TestContextProvider* worker_provider) override {
-    context_provider->UnboundTestContextGL()->set_gpu_rasterization(true);
+    context_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
     worker_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
   }
 
@@ -2797,6 +2795,8 @@ class LayerTreeHostTestRasterColorSpaceChange : public LayerTreeHostTest {
   void SetupTree() override {
     space1_ = gfx::DisplayColorSpaces(gfx::ColorSpace::CreateXYZD50());
     space2_ = gfx::DisplayColorSpaces(gfx::ColorSpace::CreateSRGB());
+    space2_with_hdr_ = space2_;
+    space2_with_hdr_.SetHDRMaxLuminanceRelative(2.f);
 
     root_layer_ = Layer::Create();
     root_layer_->SetBounds(gfx::Size(10, 20));
@@ -2819,6 +2819,7 @@ class LayerTreeHostTestRasterColorSpaceChange : public LayerTreeHostTest {
     EXPECT_EQ(DRAW_SUCCESS, draw_result);
 
     int source_frame = host_impl->active_tree()->source_frame_number();
+    gfx::Rect expected_root_damage_rect;
     switch (source_frame) {
       case 0:
         // The first frame will have full damage, and should be in the initial
@@ -2826,6 +2827,8 @@ class LayerTreeHostTestRasterColorSpaceChange : public LayerTreeHostTest {
         EXPECT_FALSE(frame_data->has_no_damage);
         EXPECT_TRUE(space1_ ==
                     host_impl->active_tree()->display_color_spaces());
+        expected_root_damage_rect =
+            gfx::Rect(host_impl->active_tree()->root_layer()->bounds());
         break;
       case 1:
         // Empty commit.
@@ -2838,6 +2841,8 @@ class LayerTreeHostTestRasterColorSpaceChange : public LayerTreeHostTest {
         EXPECT_FALSE(frame_data->has_no_damage);
         EXPECT_TRUE(space2_ ==
                     host_impl->active_tree()->display_color_spaces());
+        expected_root_damage_rect =
+            gfx::Rect(host_impl->active_tree()->root_layer()->bounds());
         break;
       case 3:
         // Empty commit with the color space set to space2 redundantly.
@@ -2846,15 +2851,16 @@ class LayerTreeHostTestRasterColorSpaceChange : public LayerTreeHostTest {
                     host_impl->active_tree()->display_color_spaces());
         break;
       case 4:
-        // The change from space2 to space1 should cause full damage.
+        // The change from space2 to space2_with_hdr should cause full damage.
         EXPECT_FALSE(frame_data->has_no_damage);
-        EXPECT_TRUE(space1_ ==
+        EXPECT_TRUE(space2_with_hdr_ ==
                     host_impl->active_tree()->display_color_spaces());
+        expected_root_damage_rect = gfx::Rect(0, 0, 10, 10);
         break;
       case 5:
         // Empty commit.
         EXPECT_TRUE(frame_data->has_no_damage);
-        EXPECT_TRUE(space1_ ==
+        EXPECT_TRUE(space2_with_hdr_ ==
                     host_impl->active_tree()->display_color_spaces());
         EndTest();
         break;
@@ -2866,8 +2872,7 @@ class LayerTreeHostTestRasterColorSpaceChange : public LayerTreeHostTest {
     if (!frame_data->has_no_damage) {
       gfx::Rect root_damage_rect =
           frame_data->render_passes.back()->damage_rect;
-      EXPECT_EQ(gfx::Rect(host_impl->active_tree()->root_layer()->bounds()),
-                root_damage_rect);
+      EXPECT_EQ(expected_root_damage_rect, root_damage_rect);
     }
 
     return draw_result;
@@ -2892,7 +2897,17 @@ class LayerTreeHostTestRasterColorSpaceChange : public LayerTreeHostTest {
         break;
       case 4:
         EXPECT_TRUE(child_layer_->update_rect().IsEmpty());
-        layer_tree_host()->SetDisplayColorSpaces(space1_);
+        // Setting to space2_with_hdr_ should be a no-op, because there is
+        // no HDR content.
+        layer_tree_host()->SetDisplayColorSpaces(space2_with_hdr_);
+        EXPECT_TRUE(child_layer_->update_rect().IsEmpty());
+        // Same with setting back to space2_.
+        layer_tree_host()->SetDisplayColorSpaces(space2_);
+        EXPECT_TRUE(child_layer_->update_rect().IsEmpty());
+        // Now set the content to be HDR, and set to space2_with_hdr. This
+        // should trigger a commit.
+        child_layer_->set_reraster_on_hdr_change(true);
+        layer_tree_host()->SetDisplayColorSpaces(space2_with_hdr_);
         EXPECT_FALSE(child_layer_->update_rect().IsEmpty());
         break;
       case 5:
@@ -2910,9 +2925,10 @@ class LayerTreeHostTestRasterColorSpaceChange : public LayerTreeHostTest {
  private:
   gfx::DisplayColorSpaces space1_;
   gfx::DisplayColorSpaces space2_;
+  gfx::DisplayColorSpaces space2_with_hdr_;
   FakeContentLayerClient client_;
   scoped_refptr<Layer> root_layer_;
-  scoped_refptr<Layer> child_layer_;
+  scoped_refptr<FakePictureLayer> child_layer_;
 };
 
 SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestRasterColorSpaceChange);
@@ -4172,7 +4188,7 @@ class LayerTreeHostTestAbortedCommitDoesntStall : public LayerTreeHostTest {
 class OnDrawLayerTreeFrameSink : public TestLayerTreeFrameSink {
  public:
   OnDrawLayerTreeFrameSink(
-      scoped_refptr<viz::ContextProvider> compositor_context_provider,
+      scoped_refptr<viz::RasterContextProvider> compositor_context_provider,
       scoped_refptr<viz::RasterContextProvider> worker_context_provider,
       gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
       const viz::RendererSettings& renderer_settings,
@@ -4216,7 +4232,7 @@ class LayerTreeHostTestAbortedCommitDoesntStallSynchronousCompositor
   std::unique_ptr<TestLayerTreeFrameSink> CreateLayerTreeFrameSink(
       const viz::RendererSettings& renderer_settings,
       double refresh_rate,
-      scoped_refptr<viz::ContextProvider> compositor_context_provider,
+      scoped_refptr<viz::RasterContextProvider> compositor_context_provider,
       scoped_refptr<viz::RasterContextProvider> worker_context_provider)
       override {
     auto on_draw_callback = base::BindRepeating(
@@ -4261,7 +4277,7 @@ class LayerTreeHostTestSynchronousCompositorActivateWithoutDraw
   std::unique_ptr<TestLayerTreeFrameSink> CreateLayerTreeFrameSink(
       const viz::RendererSettings& renderer_settings,
       double refresh_rate,
-      scoped_refptr<viz::ContextProvider> compositor_context_provider,
+      scoped_refptr<viz::RasterContextProvider> compositor_context_provider,
       scoped_refptr<viz::RasterContextProvider> worker_context_provider)
       override {
     // Make |invalidate_callback| do nothing so there is no draw.
@@ -5996,7 +6012,8 @@ class LayerTreeHostTestElasticOverscroll : public LayerTreeHostTest {
  private:
   FakeContentLayerClient client_;
   raw_ptr<Layer, DanglingUntriaged> root_layer_;
-  raw_ptr<ScrollElasticityHelper, DanglingUntriaged> scroll_elasticity_helper_;
+  raw_ptr<ScrollElasticityHelper, AcrossTasksDanglingUntriaged>
+      scroll_elasticity_helper_;
   int content_layer_id_;
   int num_draws_;
 };
@@ -6632,7 +6649,7 @@ class LayerTreeHostTestGpuRasterizationDisabled : public LayerTreeHostTest {
       viz::TestContextProvider* worker_provider) override {
     // The test contexts have gpu raster disabled by default.
     gpu::Capabilities caps =
-        context_provider->UnboundTestContextGL()->test_capabilities();
+        context_provider->UnboundTestRasterInterface()->capabilities();
     EXPECT_FALSE(caps.gpu_rasterization);
     gpu::Capabilities worker_caps =
         worker_provider->UnboundTestRasterInterface()->capabilities();
@@ -6684,7 +6701,7 @@ class LayerTreeHostTestGpuRasterizationSupportedButDisabled
   void SetUpUnboundContextProviders(
       viz::TestContextProvider* context_provider,
       viz::TestContextProvider* worker_provider) override {
-    context_provider->UnboundTestContextGL()->set_gpu_rasterization(true);
+    context_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
     worker_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
   }
 
@@ -6735,7 +6752,7 @@ class LayerTreeHostTestGpuRasterizationEnabled : public LayerTreeHostTest {
   void SetUpUnboundContextProviders(
       viz::TestContextProvider* context_provider,
       viz::TestContextProvider* worker_provider) override {
-    context_provider->UnboundTestContextGL()->set_gpu_rasterization(true);
+    context_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
     worker_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
   }
 
@@ -6784,12 +6801,10 @@ class LayerTreeHostTestGpuRasterizationEnabledWithMSAA : public LayerTreeTest {
   void SetUpUnboundContextProviders(
       viz::TestContextProvider* context_provider,
       viz::TestContextProvider* worker_provider) override {
-    viz::TestGLES2Interface* gl = context_provider->UnboundTestContextGL();
-    gl->set_gpu_rasterization(true);
-    gl->set_support_multisample_compatibility(false);
+    auto* compositor = context_provider->UnboundTestRasterInterface();
+    compositor->set_gpu_rasterization(true);
     auto* worker = worker_provider->UnboundTestRasterInterface();
     worker->set_gpu_rasterization(true);
-    worker->set_multisample_compatibility(false);
   }
 
   void InitializeSettings(LayerTreeSettings* settings) override {
@@ -7105,7 +7120,7 @@ class LayerTreeHostTestSynchronousCompositeSwapPromise
   std::unique_ptr<TestLayerTreeFrameSink> CreateLayerTreeFrameSink(
       const viz::RendererSettings& renderer_settings,
       double refresh_rate,
-      scoped_refptr<viz::ContextProvider> compositor_context_provider,
+      scoped_refptr<viz::RasterContextProvider> compositor_context_provider,
       scoped_refptr<viz::RasterContextProvider> worker_context_provider)
       override {
     constexpr bool disable_display_vsync = false;
@@ -7449,7 +7464,7 @@ class RasterizeWithGpuRasterizationCreatesResources : public LayerTreeHostTest {
   void SetUpUnboundContextProviders(
       viz::TestContextProvider* context_provider,
       viz::TestContextProvider* worker_provider) override {
-    context_provider->UnboundTestContextGL()->set_gpu_rasterization(true);
+    context_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
     worker_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
   }
 
@@ -7495,7 +7510,7 @@ class GpuRasterizationRasterizesBorderTiles : public LayerTreeHostTest {
   void SetUpUnboundContextProviders(
       viz::TestContextProvider* context_provider,
       viz::TestContextProvider* worker_provider) override {
-    context_provider->UnboundTestContextGL()->set_gpu_rasterization(true);
+    context_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
     worker_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
   }
 
@@ -8146,7 +8161,7 @@ class GpuRasterizationSucceedsWithLargeImage : public LayerTreeHostTest {
   void SetUpUnboundContextProviders(
       viz::TestContextProvider* context_provider,
       viz::TestContextProvider* worker_provider) override {
-    context_provider->UnboundTestContextGL()->set_gpu_rasterization(true);
+    context_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
     worker_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
   }
 
@@ -8186,13 +8201,12 @@ class GpuRasterizationSucceedsWithLargeImage : public LayerTreeHostTest {
     // this here to ensure that our otuput surface exists.
 
     // Retrieve max texture size from Skia.
-    viz::ContextProvider* context_provider =
+    viz::RasterContextProvider* context_provider =
         host_impl->layer_tree_frame_sink()->context_provider();
     ASSERT_TRUE(context_provider);
 
-    auto* gr_context = context_provider->GrContext();
-    ASSERT_TRUE(gr_context);
-    const uint32_t max_texture_size = gr_context->maxTextureSize();
+    const uint32_t max_texture_size =
+        context_provider->ContextCapabilities().max_texture_size;
     ASSERT_GT(static_cast<uint32_t>(large_image_size_.width()),
               max_texture_size);
   }
@@ -8248,14 +8262,11 @@ class LayerTreeHostTestSubmitFrameResources : public LayerTreeHostTest {
   std::unique_ptr<TestLayerTreeFrameSink> CreateLayerTreeFrameSink(
       const viz::RendererSettings& renderer_settings,
       double refresh_rate,
-      scoped_refptr<viz::ContextProvider> compositor_context_provider,
+      scoped_refptr<viz::RasterContextProvider> compositor_context_provider,
       scoped_refptr<viz::RasterContextProvider> worker_context_provider)
       override {
-    auto gl = std::make_unique<viz::TestGLES2Interface>();
-    gl->set_have_extension_egl_image(true);
-    auto provider = viz::TestContextProvider::Create(std::move(gl));
     return LayerTreeTest::CreateLayerTreeFrameSink(
-        renderer_settings, refresh_rate, std::move(provider),
+        renderer_settings, refresh_rate, std::move(compositor_context_provider),
         std::move(worker_context_provider));
   }
 
@@ -9431,8 +9442,11 @@ class LayerTreeHostTestDelegatedInkMetadataCompositorOnlyFrame
   FakeContentLayerClient client_;
 };
 
+// TODO(crbug.com/1435551): flaky on win-asan.
+#if !(BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
 SINGLE_AND_MULTI_THREAD_TEST_F(
     LayerTreeHostTestDelegatedInkMetadataCompositorOnlyFrame);
+#endif
 
 // Base class for EventMetrics-related tests.
 class LayerTreeHostTestEventsMetrics : public LayerTreeHostTest {
@@ -10658,7 +10672,7 @@ class LayerTreeHostTestBeginFramePausedChanged : public LayerTreeHostTest {
   std::unique_ptr<TestLayerTreeFrameSink> CreateLayerTreeFrameSink(
       const viz::RendererSettings& renderer_settings,
       double refresh_rate,
-      scoped_refptr<viz::ContextProvider> compositor_context_provider,
+      scoped_refptr<viz::RasterContextProvider> compositor_context_provider,
       scoped_refptr<viz::RasterContextProvider> worker_context_provider)
       override {
     std::unique_ptr<TestLayerTreeFrameSink> frame_sink =

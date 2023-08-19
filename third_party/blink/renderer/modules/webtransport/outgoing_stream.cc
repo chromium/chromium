@@ -474,6 +474,11 @@ void OutgoingStream::ErrorStreamAbortAndReset(ScriptValue reason) {
     controller_->error(script_state_, reason);
     controller_ = nullptr;
   }
+  if (close_promise_resolver_) {
+    pending_operation_ = nullptr;
+    close_promise_resolver_->Reject(reason);
+    close_promise_resolver_ = nullptr;
+  }
 
   AbortAndReset();
 }

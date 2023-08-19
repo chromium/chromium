@@ -27,8 +27,8 @@ namespace content {
 namespace {
 using ::testing::Unused;
 using OverrideStatus = PermissionControllerImpl::OverrideStatus;
-using RequestsCallback = base::OnceCallback<void(
-    const std::vector<blink::mojom::PermissionStatus>&)>;
+using RequestsCallback =
+    base::OnceCallback<void(const std::vector<PermissionStatus>&)>;
 
 constexpr char kTestUrl[] = "https://google.com";
 
@@ -46,8 +46,8 @@ class MockManagerWithRequests : public MockPermissionManager {
       (const std::vector<PermissionType>& permission,
        RenderFrameHost* render_frame_host,
        bool user_gesture,
-       const base::OnceCallback<
-           void(const std::vector<blink::mojom::PermissionStatus>&)> callback),
+       const base::OnceCallback<void(const std::vector<PermissionStatus>&)>
+           callback),
       (override));
   MOCK_METHOD(
       void,
@@ -56,8 +56,8 @@ class MockManagerWithRequests : public MockPermissionManager {
        RenderFrameHost* render_frame_host,
        const GURL& requesting_origin,
        bool user_gesture,
-       const base::OnceCallback<
-           void(const std::vector<blink::mojom::PermissionStatus>&)> callback),
+       const base::OnceCallback<void(const std::vector<PermissionStatus>&)>
+           callback),
       (override));
   MOCK_METHOD(bool,
               IsPermissionOverridable,
@@ -68,66 +68,56 @@ class MockManagerWithRequests : public MockPermissionManager {
 // Results are defined based on assumption that same types are queried for
 // each test case.
 const struct {
-  std::map<PermissionType, blink::mojom::PermissionStatus> overrides;
+  std::map<PermissionType, PermissionStatus> overrides;
 
   std::vector<PermissionType> delegated_permissions;
-  std::vector<blink::mojom::PermissionStatus> delegated_statuses;
+  std::vector<PermissionStatus> delegated_statuses;
 
-  std::vector<blink::mojom::PermissionStatus> expected_results;
+  std::vector<PermissionStatus> expected_results;
   bool expect_death;
 } kTestPermissionRequestCases[] = {
     // No overrides present - all delegated.
     {{},
      {PermissionType::GEOLOCATION, PermissionType::BACKGROUND_SYNC,
       PermissionType::MIDI_SYSEX},
-     {blink::mojom::PermissionStatus::DENIED,
-      blink::mojom::PermissionStatus::GRANTED,
-      blink::mojom::PermissionStatus::GRANTED},
-     {blink::mojom::PermissionStatus::DENIED,
-      blink::mojom::PermissionStatus::GRANTED,
-      blink::mojom::PermissionStatus::GRANTED},
+     {PermissionStatus::DENIED, PermissionStatus::GRANTED,
+      PermissionStatus::GRANTED},
+     {PermissionStatus::DENIED, PermissionStatus::GRANTED,
+      PermissionStatus::GRANTED},
      /*expect_death=*/false},
 
     // No delegates needed - all overridden.
-    {{{PermissionType::GEOLOCATION, blink::mojom::PermissionStatus::GRANTED},
-      {PermissionType::BACKGROUND_SYNC,
-       blink::mojom::PermissionStatus::GRANTED},
-      {PermissionType::MIDI_SYSEX, blink::mojom::PermissionStatus::ASK}},
+    {{{PermissionType::GEOLOCATION, PermissionStatus::GRANTED},
+      {PermissionType::BACKGROUND_SYNC, PermissionStatus::GRANTED},
+      {PermissionType::MIDI_SYSEX, PermissionStatus::ASK}},
      {},
      {},
-     {blink::mojom::PermissionStatus::GRANTED,
-      blink::mojom::PermissionStatus::GRANTED,
-      blink::mojom::PermissionStatus::ASK},
+     {PermissionStatus::GRANTED, PermissionStatus::GRANTED,
+      PermissionStatus::ASK},
      /*expect_death=*/false},
 
     // Some overridden, some delegated.
-    {{{PermissionType::BACKGROUND_SYNC,
-       blink::mojom::PermissionStatus::DENIED}},
+    {{{PermissionType::BACKGROUND_SYNC, PermissionStatus::DENIED}},
      {PermissionType::GEOLOCATION, PermissionType::MIDI_SYSEX},
-     {blink::mojom::PermissionStatus::GRANTED,
-      blink::mojom::PermissionStatus::ASK},
-     {blink::mojom::PermissionStatus::GRANTED,
-      blink::mojom::PermissionStatus::DENIED,
-      blink::mojom::PermissionStatus::ASK},
+     {PermissionStatus::GRANTED, PermissionStatus::ASK},
+     {PermissionStatus::GRANTED, PermissionStatus::DENIED,
+      PermissionStatus::ASK},
      /*expect_death=*/false},
 
     // Some overridden, some delegated.
-    {{{PermissionType::GEOLOCATION, blink::mojom::PermissionStatus::GRANTED},
-      {PermissionType::BACKGROUND_SYNC,
-       blink::mojom::PermissionStatus::DENIED}},
+    {{{PermissionType::GEOLOCATION, PermissionStatus::GRANTED},
+      {PermissionType::BACKGROUND_SYNC, PermissionStatus::DENIED}},
      {PermissionType::MIDI_SYSEX},
-     {blink::mojom::PermissionStatus::ASK},
-     {blink::mojom::PermissionStatus::GRANTED,
-      blink::mojom::PermissionStatus::DENIED,
-      blink::mojom::PermissionStatus::ASK},
+     {PermissionStatus::ASK},
+     {PermissionStatus::GRANTED, PermissionStatus::DENIED,
+      PermissionStatus::ASK},
      /*expect_death=*/false},
 
     // Too many delegates (causes death).
-    {{{PermissionType::GEOLOCATION, blink::mojom::PermissionStatus::GRANTED},
-      {PermissionType::MIDI_SYSEX, blink::mojom::PermissionStatus::ASK}},
+    {{{PermissionType::GEOLOCATION, PermissionStatus::GRANTED},
+      {PermissionType::MIDI_SYSEX, PermissionStatus::ASK}},
      {PermissionType::BACKGROUND_SYNC},
-     {blink::mojom::PermissionStatus::DENIED,
-      blink::mojom::PermissionStatus::GRANTED},
+     {PermissionStatus::DENIED, PermissionStatus::GRANTED},
      // Results don't matter because will die.
      {},
      /*expect_death=*/true},
@@ -136,8 +126,7 @@ const struct {
     {{},
      {PermissionType::GEOLOCATION, PermissionType::BACKGROUND_SYNC,
       PermissionType::MIDI_SYSEX},
-     {blink::mojom::PermissionStatus::GRANTED,
-      blink::mojom::PermissionStatus::GRANTED},
+     {PermissionStatus::GRANTED, PermissionStatus::GRANTED},
      // Results don't matter because will die.
      {},
      /*expect_death=*/true}};
@@ -172,8 +161,7 @@ class PermissionControllerImplTest : public ::testing::Test {
       const std::vector<PermissionType>& permission,
       RenderFrameHost* render_frame_host,
       bool user_gesture,
-      base::OnceCallback<
-          void(const std::vector<blink::mojom::PermissionStatus>&)> callback) {
+      base::OnceCallback<void(const std::vector<PermissionStatus>&)> callback) {
     permission_controller()->RequestPermissionsFromCurrentDocument(
         permission, render_frame_host, user_gesture, std::move(callback));
   }
@@ -183,14 +171,13 @@ class PermissionControllerImplTest : public ::testing::Test {
       RenderFrameHost* render_frame_host,
       const url::Origin& requested_origin,
       bool user_gesture,
-      base::OnceCallback<
-          void(const std::vector<blink::mojom::PermissionStatus>&)> callback) {
+      base::OnceCallback<void(const std::vector<PermissionStatus>&)> callback) {
     permission_controller()->RequestPermissions(permission, render_frame_host,
                                                 requested_origin, user_gesture,
                                                 std::move(callback));
   }
 
-  blink::mojom::PermissionStatus GetPermissionStatusForWorker(
+  PermissionStatus GetPermissionStatusForWorker(
       PermissionType permission,
       RenderProcessHost* render_process_host,
       const url::Origin& worker_origin) {
@@ -243,9 +230,9 @@ TEST_F(PermissionControllerImplTest,
     // missing.
     if (!test_case.delegated_permissions.empty()) {
       auto forward_callbacks = testing::WithArg<3>(
-          [&test_case](base::OnceCallback<void(
-                           const std::vector<blink::mojom::PermissionStatus>&)>
-                           callback) {
+          [&test_case](
+              base::OnceCallback<void(const std::vector<PermissionStatus>&)>
+                  callback) {
             std::move(callback).Run(test_case.delegated_statuses);
             return 0;
           });
@@ -323,9 +310,9 @@ TEST_F(PermissionControllerImplTest,
     // Expect request permission call if override are missing.
     if (!test_case.delegated_permissions.empty()) {
       auto forward_callbacks = testing::WithArg<4>(
-          [&test_case](base::OnceCallback<void(
-                           const std::vector<blink::mojom::PermissionStatus>&)>
-                           callback) {
+          [&test_case](
+              base::OnceCallback<void(const std::vector<PermissionStatus>&)>
+                  callback) {
             std::move(callback).Run(test_case.delegated_statuses);
             return 0;
           });
@@ -372,17 +359,16 @@ TEST_F(PermissionControllerImplTest,
 TEST_F(PermissionControllerImplTest,
        NotifyChangedSubscriptionsCallsOnChangeOnly) {
   using PermissionStatusCallback =
-      base::RepeatingCallback<void(blink::mojom::PermissionStatus)>;
+      base::RepeatingCallback<void(PermissionStatus)>;
   GURL kUrl = GURL(kTestUrl);
   url::Origin kTestOrigin = url::Origin::Create(kUrl);
 
   // Setup.
-  blink::mojom::PermissionStatus sync_status = GetPermissionStatusForWorker(
+  PermissionStatus sync_status = GetPermissionStatusForWorker(
       PermissionType::BACKGROUND_SYNC,
       /*render_process_host=*/nullptr, kTestOrigin);
   permission_controller()->SetOverrideForDevTools(
-      kTestOrigin, PermissionType::GEOLOCATION,
-      blink::mojom::PermissionStatus::DENIED);
+      kTestOrigin, PermissionType::GEOLOCATION, PermissionStatus::DENIED);
 
   base::MockCallback<PermissionStatusCallback> geo_callback;
   permission_controller()->SubscribePermissionStatusChange(
@@ -394,42 +380,40 @@ TEST_F(PermissionControllerImplTest,
       sync_callback.Get());
 
   // Geolocation should change status, so subscriber is updated.
-  EXPECT_CALL(geo_callback, Run(blink::mojom::PermissionStatus::ASK));
+  EXPECT_CALL(geo_callback, Run(PermissionStatus::ASK));
   EXPECT_CALL(sync_callback, Run).Times(0);
   permission_controller()->SetOverrideForDevTools(
-      kTestOrigin, PermissionType::GEOLOCATION,
-      blink::mojom::PermissionStatus::ASK);
+      kTestOrigin, PermissionType::GEOLOCATION, PermissionStatus::ASK);
 
   // Callbacks should not be called again because permission status has not
   // changed.
   permission_controller()->SetOverrideForDevTools(
       kTestOrigin, PermissionType::BACKGROUND_SYNC, sync_status);
   permission_controller()->SetOverrideForDevTools(
-      kTestOrigin, PermissionType::GEOLOCATION,
-      blink::mojom::PermissionStatus::ASK);
+      kTestOrigin, PermissionType::GEOLOCATION, PermissionStatus::ASK);
 }
 
 TEST_F(PermissionControllerImplTest,
        PermissionsCannotBeOverriddenIfNotOverridable) {
   url::Origin kTestOrigin = url::Origin::Create(GURL(kTestUrl));
-  EXPECT_EQ(OverrideStatus::kOverrideSet,
-            permission_controller()->SetOverrideForDevTools(
-                kTestOrigin, PermissionType::GEOLOCATION,
-                blink::mojom::PermissionStatus::DENIED));
+  EXPECT_EQ(
+      OverrideStatus::kOverrideSet,
+      permission_controller()->SetOverrideForDevTools(
+          kTestOrigin, PermissionType::GEOLOCATION, PermissionStatus::DENIED));
 
   // Delegate will be called, but prevents override from being set.
   EXPECT_CALL(*mock_manager(),
               IsPermissionOverridable(PermissionType::GEOLOCATION, testing::_))
       .WillOnce(testing::Return(false));
-  EXPECT_EQ(OverrideStatus::kOverrideNotSet,
-            permission_controller()->SetOverrideForDevTools(
-                kTestOrigin, PermissionType::GEOLOCATION,
-                blink::mojom::PermissionStatus::ASK));
+  EXPECT_EQ(
+      OverrideStatus::kOverrideNotSet,
+      permission_controller()->SetOverrideForDevTools(
+          kTestOrigin, PermissionType::GEOLOCATION, PermissionStatus::ASK));
 
-  blink::mojom::PermissionStatus status = GetPermissionStatusForWorker(
+  PermissionStatus status = GetPermissionStatusForWorker(
       PermissionType::GEOLOCATION, /*render_process_host=*/nullptr,
       kTestOrigin);
-  EXPECT_EQ(blink::mojom::PermissionStatus::DENIED, status);
+  EXPECT_EQ(PermissionStatus::DENIED, status);
 }
 
 TEST_F(PermissionControllerImplTest,
@@ -437,13 +421,11 @@ TEST_F(PermissionControllerImplTest,
   GURL kUrl(kTestUrl);
   url::Origin kTestOrigin = url::Origin::Create(kUrl);
   permission_controller()->SetOverrideForDevTools(
-      kTestOrigin, PermissionType::GEOLOCATION,
-      blink::mojom::PermissionStatus::DENIED);
+      kTestOrigin, PermissionType::GEOLOCATION, PermissionStatus::DENIED);
   permission_controller()->SetOverrideForDevTools(
-      kTestOrigin, PermissionType::MIDI, blink::mojom::PermissionStatus::ASK);
+      kTestOrigin, PermissionType::MIDI, PermissionStatus::ASK);
   permission_controller()->SetOverrideForDevTools(
-      kTestOrigin, PermissionType::BACKGROUND_SYNC,
-      blink::mojom::PermissionStatus::ASK);
+      kTestOrigin, PermissionType::BACKGROUND_SYNC, PermissionStatus::ASK);
   // Delegate will be called, but prevents override from being set.
   EXPECT_CALL(*mock_manager(),
               IsPermissionOverridable(PermissionType::GEOLOCATION, testing::_))
@@ -459,15 +441,15 @@ TEST_F(PermissionControllerImplTest,
   EXPECT_EQ(OverrideStatus::kOverrideNotSet, result);
 
   // Keep original settings as before.
-  EXPECT_EQ(blink::mojom::PermissionStatus::DENIED,
+  EXPECT_EQ(PermissionStatus::DENIED,
             GetPermissionStatusForWorker(PermissionType::GEOLOCATION,
                                          /*render_process_host=*/nullptr,
                                          kTestOrigin));
   EXPECT_EQ(
-      blink::mojom::PermissionStatus::ASK,
+      PermissionStatus::ASK,
       GetPermissionStatusForWorker(
           PermissionType::MIDI, /*render_process_host=*/nullptr, kTestOrigin));
-  EXPECT_EQ(blink::mojom::PermissionStatus::ASK,
+  EXPECT_EQ(PermissionStatus::ASK,
             GetPermissionStatusForWorker(PermissionType::BACKGROUND_SYNC,
                                          /*render_process_host=*/nullptr,
                                          kTestOrigin));
@@ -486,15 +468,15 @@ TEST_F(PermissionControllerImplTest,
       kTestOrigin, {PermissionType::MIDI, PermissionType::GEOLOCATION,
                     PermissionType::BACKGROUND_SYNC});
   EXPECT_EQ(OverrideStatus::kOverrideSet, result);
-  EXPECT_EQ(blink::mojom::PermissionStatus::GRANTED,
+  EXPECT_EQ(PermissionStatus::GRANTED,
             GetPermissionStatusForWorker(PermissionType::GEOLOCATION,
                                          /*render_process_host=*/nullptr,
                                          kTestOrigin));
   EXPECT_EQ(
-      blink::mojom::PermissionStatus::GRANTED,
+      PermissionStatus::GRANTED,
       GetPermissionStatusForWorker(
           PermissionType::MIDI, /*render_process_host=*/nullptr, kTestOrigin));
-  EXPECT_EQ(blink::mojom::PermissionStatus::GRANTED,
+  EXPECT_EQ(PermissionStatus::GRANTED,
             GetPermissionStatusForWorker(PermissionType::BACKGROUND_SYNC,
                                          /*render_process_host=*/nullptr,
                                          kTestOrigin));

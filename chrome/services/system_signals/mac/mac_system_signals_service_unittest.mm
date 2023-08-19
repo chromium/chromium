@@ -17,10 +17,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using device_signals::MockFileSystemService;
 using testing::Return;
 
@@ -44,7 +40,7 @@ class MacSystemSignalsServiceTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-  raw_ptr<MockFileSystemService> file_system_service_;
+  raw_ptr<MockFileSystemService, DanglingUntriaged> file_system_service_;
   std::unique_ptr<MacSystemSignalsService> mac_system_signals_service_;
 };
 

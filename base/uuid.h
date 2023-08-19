@@ -23,17 +23,6 @@ class FileSystemAccessManagerImpl;
 
 namespace base {
 
-// DEPRECATED(crbug.com/1195446): Use Uuid::GenerateRandomV4() instead.
-BASE_EXPORT std::string GenerateUuid();
-
-// DEPRECATED(crbug.com/1195446): Use Uuid::ParseCaseInsensitive() and
-// Uuid::is_valid() instead.
-BASE_EXPORT bool IsValidUuid(StringPiece input);
-
-// DEPRECATED(crbug.com/1195446): Use Uuid::ParseLowercase() and
-// Uuid::is_valid() instead.
-BASE_EXPORT bool IsValidUuidOutputString(StringPiece input);
-
 class BASE_EXPORT Uuid {
  public:
   // Length in bytes of the input required to format the input as a Uuid in the
@@ -127,15 +116,6 @@ struct BASE_EXPORT UuidHash {
 
 // Stream operator so Uuid objects can be used in logging statements.
 BASE_EXPORT std::ostream& operator<<(std::ostream& out, const Uuid& uuid);
-
-// DEPREACATED(crbug.com/1428566): Please, use the Uuid variants of the
-// functions/types above. These are merely aliases to allow a gradual
-// transition away from `base/guid.h`.
-using GUID = Uuid;
-using GUIDHash = UuidHash;
-BASE_EXPORT std::string GenerateGUID();
-BASE_EXPORT bool IsValidGUID(StringPiece input);
-BASE_EXPORT bool IsValidGUIDOutputString(StringPiece input);
 
 }  // namespace base
 

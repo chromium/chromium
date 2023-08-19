@@ -7,11 +7,11 @@
 
 #include "base/containers/flat_set.h"
 #include "base/functional/function_ref.h"
-#include "components/performance_manager/graph/frame_node_impl.h"
-#include "components/performance_manager/graph/page_node_impl.h"
 
 namespace performance_manager {
 
+class FrameNodeImpl;
+class PageNodeImpl;
 class ProcessNodeImpl;
 
 // A collection of utilities for performing common queries and traversals on a
@@ -35,6 +35,17 @@ struct GraphImplOperations {
   // returned in level order, with main frames first (level 0), main frame
   // children next (level 1), all the way down to the deepest leaf frames.
   static std::vector<FrameNodeImpl*> GetFrameNodes(const PageNodeImpl* page);
+
+  // Traverse the frame and its children in the given order, invoking the
+  // provided `visitor` for each frame node in the tree. If the visitor returns
+  // false then the iteration is halted. Returns true if all calls to the
+  // visitor returned true, false otherwise.
+  static bool VisitFrameAndChildrenPreOrder(
+      FrameNodeImpl* frame,
+      GraphImplOperations::FrameNodeImplVisitor visitor);
+  static bool VisitFrameAndChildrenPostOrder(
+      FrameNodeImpl* frame,
+      GraphImplOperations::FrameNodeImplVisitor visitor);
 
   // Traverse the frame tree of a `page` in the given order, invoking the
   // provided `visitor` for each frame node in the tree. If the visitor returns

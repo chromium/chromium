@@ -42,6 +42,7 @@ class ASH_EXPORT NotificationCounterView : public TrayItemView {
   // TrayItemView:
   void HandleLocaleChange() override;
   void OnThemeChanged() override;
+  void UpdateLabelOrImageViewColor(bool active) override;
 
   // views::TrayItemView:
   const char* GetClassName() const override;
@@ -73,6 +74,7 @@ class QuietModeView : public TrayItemView {
   // TrayItemView:
   void HandleLocaleChange() override;
   void OnThemeChanged() override;
+  void UpdateLabelOrImageViewColor(bool active) override;
 
   // views::TrayItemView:
   const char* GetClassName() const override;

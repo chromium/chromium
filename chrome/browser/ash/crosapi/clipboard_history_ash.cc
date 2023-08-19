@@ -52,7 +52,7 @@ class ClipboardHistoryAsh::ClientUpdater
 
  private:
   // The associated client.
-  const base::raw_ptr<mojom::ClipboardHistoryClient> client_;
+  const raw_ptr<mojom::ClipboardHistoryClient> client_;
 
   // The observation on the clipboard history controller.
   base::ScopedObservation<ash::ClipboardHistoryController,
@@ -97,9 +97,13 @@ void ClipboardHistoryAsh::RegisterClient(
     mojo::PendingRemote<mojom::ClipboardHistoryClient> client) {
   CHECK(chromeos::features::IsClipboardHistoryRefreshEnabled());
 
-  // `remote_client_` should be unbounded. Because `remote_client_` is reset in
-  // the cleaning function when disconnected.
-  CHECK(!remote_client_.is_bound());
+  // In testing, `remote_client_` can be already bound when multiple Lacros
+  // tests run in parallel. This does not happen on real devices.
+  // TODO(http://b/294617428): Make `ClipboardHistoryAsh` support multiple
+  // clients then remove this code.
+  if (remote_client_.is_bound()) {
+    return;
+  }
 
   remote_client_.Bind(std::move(client));
 

@@ -430,10 +430,8 @@ GURL GetChromeSettingsUrl(const absl::optional<std::string>& page) {
   // Browser Settings at some point in the future at which point we will define
   // an analogous collection of |kAllowedBrowserPages|.
   // These values are copied from
-  // chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.
-  // We can not reuse the generated defines as we can not depend on //chrome.
-  // TODO(b/168138594): use generated defines once that header has been moved to
-  // chromeos.
+  // ash/webui/settings/public/constants/routes.mojom.
+  // TODO(b/168138594): use generated defines, now it's ready to use.
   static const std::map<std::string, std::string> kAllowedOsPages = {
       {/*page=*/"googleAssistant", /*os_page=*/"googleAssistant"},
       {/*page=*/"languages", /*os_page=*/"osLanguages/languages"}};

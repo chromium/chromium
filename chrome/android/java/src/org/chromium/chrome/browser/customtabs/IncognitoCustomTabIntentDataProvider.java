@@ -47,7 +47,7 @@ import java.util.List;
  * to activity re-creation.
  */
 public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentDataProvider {
-    private static final int MAX_CUSTOM_MENU_ITEMS = 5;
+    private static final int MAX_CUSTOM_MENU_ITEMS = 7;
 
     private final Intent mIntent;
     private final CustomTabsSessionToken mSession;
@@ -247,14 +247,12 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
     }
 
     @Override
-    @Nullable
-    public Intent getIntent() {
+    public @Nullable Intent getIntent() {
         return mIntent;
     }
 
     @Override
-    @Nullable
-    public CustomTabsSessionToken getSession() {
+    public @Nullable CustomTabsSessionToken getSession() {
         return mSession;
     }
 
@@ -288,8 +286,7 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
     }
 
     @Override
-    @Nullable
-    public String getUrlToLoad() {
+    public @Nullable String getUrlToLoad() {
         return mUrlToLoad;
     }
 
@@ -304,8 +301,7 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
     }
 
     @Override
-    @Nullable
-    public Drawable getCloseButtonDrawable() {
+    public @Nullable Drawable getCloseButtonDrawable() {
         return mCloseButtonIcon;
     }
 
@@ -340,8 +336,7 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
     }
 
     @Override
-    @CustomTabsUiType
-    public int getUiType() {
+    public @CustomTabsUiType int getUiType() {
         return mUiType;
     }
 

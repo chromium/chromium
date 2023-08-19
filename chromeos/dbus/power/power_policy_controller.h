@@ -119,8 +119,17 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerPolicyController
     absl::optional<bool> send_feedback_if_undimmed;
     // Only set adaptive_charging_enabled in policy proto if this field is set.
     absl::optional<bool> adaptive_charging_enabled;
+
+    // Adaptive charging configs, only set when adaptive_charging_enabled.
+    // Configurable via base::FeatureParam.
     double adaptive_charging_min_probability = -1.0;
     int adaptive_charging_hold_percent = -1;
+    double adaptive_charging_max_delay_percentile = -1.0;
+    int adaptive_charging_min_days_history = -1;
+    double adaptive_charging_min_full_on_ac_ratio = -1.0;
+
+    // Only set hibernate_delay_sec in policy proto if this field is set.
+    absl::optional<uint32_t> hibernate_delay_sec;
   };
 
   // Converts |base::Value::Dict| to |std::vector<PeakShiftDayConfig>| and

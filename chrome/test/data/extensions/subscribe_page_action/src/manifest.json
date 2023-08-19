@@ -25,6 +25,6 @@
     "default_title": "__MSG_rss_subscription_default_title__"
   },
   "permissions": [ "tabs", "http://*/*", "https://*/*", "storage" ],
-  "version": "2.2.6",
+  "version": "2.2.7",
   "web_accessible_resources": [ "iframe.js", "style.css" ]
 }

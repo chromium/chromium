@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "net/base/address_list.h"
-#include "services/network/public/cpp/address_family_mojom_traits.h"
 
 namespace mojo {
 

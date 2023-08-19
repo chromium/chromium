@@ -6,7 +6,6 @@ import("//build/buildflag_header.gni")
 import("//build/config/ios/ios_sdk.gni")
 
 source_set("promo_style") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "promo_style_view_controller.h",
     "promo_style_view_controller.mm",
@@ -31,7 +30,6 @@ source_set("promo_style") {
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "constants.h",
     "constants.mm",

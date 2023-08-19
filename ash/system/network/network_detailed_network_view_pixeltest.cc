@@ -129,11 +129,12 @@ TEST_F(NetworkDetailedNetworkViewPixelTest, Basics) {
   ASSERT_TRUE(scroll_contents);
   ASSERT_TRUE(scroll_contents->children().empty());
   ChildAddedWaiter(scroll_contents).Wait();
+  ASSERT_FALSE(scroll_contents->children().empty());
 
   // Compare pixels.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_view",
-      /*revision_number=*/0, detailed_view));
+      /*revision_number=*/4, detailed_view));
 }
 
 }  // namespace

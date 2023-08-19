@@ -40,6 +40,10 @@
     }
   }
 
+  :host-context([chrome-refresh-2023]) iron-icon {
+    --iron-icon-fill-color: currentColor;
+  }
+
   :host-context([chrome-refresh-2023]) .sp-labelless-input:hover {
     --cr-input-hover-background-color: transparent;
   }
@@ -53,13 +57,16 @@
     count="[[bookmark.children.length]]"
     title="[[bookmark.title]]"
     description="[[description]]"
+    description-meta="[[descriptionMeta]]"
     button-aria-label="[[rowAriaLabel]]"
     button-aria-description="[[rowAriaDescription]]"
     on-click="onRowClicked_"
+    on-auxclick="onRowClicked_"
     on-contextmenu="onContextMenu_"
     force-hover="[[forceHover]]">
   <template is="dom-if" if="[[hasCheckbox]]" restamp>
     <cr-checkbox id="checkbox" slot="prefix" hidden="[[!hasCheckbox]]"
+        checked="[[checkboxChecked]]"
         on-checked-changed="onCheckboxChange_"
         disabled="[[checkboxDisabled]]">
       $i18n{checkboxA11yLabel}
@@ -70,7 +77,7 @@
       restamp>
     <cr-input slot="content" id="input" value="[[bookmark.title]]"
         class="sp-labelless-input"
-        on-change="onInputChange_" on-blur="onInputChange_"
+        on-change="onInputChange_" on-blur="onInputBlur_"
         on-keydown="onInputKeyDown_"
         aria-label="[[rowAriaLabel]]"
         aria-description="[[rowAriaDescription]]">

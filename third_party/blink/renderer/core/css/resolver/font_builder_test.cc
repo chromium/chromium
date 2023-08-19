@@ -77,8 +77,9 @@ TEST_P(FontBuilderAdditiveTest, OnlySetValueIsModified) {
   builder.SetFontDescription(parent_description);
   scoped_refptr<const ComputedStyle> parent_style = builder.TakeStyle();
 
-  builder = GetDocument().GetStyleResolver().CreateComputedStyleBuilder();
-  builder.InheritFrom(*parent_style);
+  builder =
+      GetDocument().GetStyleResolver().CreateComputedStyleBuilderInheritingFrom(
+          *parent_style);
 
   FontBuilder font_builder(&GetDocument());
   funcs.set_value(font_builder);
@@ -221,10 +222,10 @@ static void FontSizeValue(FontBuilder& b) {
 }
 
 static void FontScriptBase(FontDescription& d) {
-  d.SetLocale(LayoutLocale::Get("no"));
+  d.SetLocale(LayoutLocale::Get(AtomicString("no")));
 }
 static void FontScriptValue(FontBuilder& b) {
-  b.SetLocale(LayoutLocale::Get("se"));
+  b.SetLocale(LayoutLocale::Get(AtomicString("se")));
 }
 
 INSTANTIATE_TEST_SUITE_P(

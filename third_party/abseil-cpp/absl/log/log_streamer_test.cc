@@ -151,6 +151,57 @@ TEST(LogStreamerDeathTest, LogFatalStreamer) {
 }
 #endif
 
+#ifdef NDEBUG
+TEST(LogStreamerTest, LogDebugFatalStreamer) {
+  absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+
+  EXPECT_CALL(
+      test_sink,
+      Send(AllOf(SourceFilename(Eq("path/file.cc")), SourceLine(Eq(1234)),
+                 Prefix(IsTrue()), LogSeverity(Eq(absl::LogSeverity::kError)),
+                 TimestampInMatchWindow(),
+                 ThreadID(Eq(absl::base_internal::GetTID())),
+                 TextMessage(Eq("WriteToStream: foo")),
+                 ENCODED_MESSAGE(EqualsProto(R"pb(value {
+                                                    str: "WriteToStream: foo"
+                                                  })pb")),
+                 Stacktrace(IsEmpty()))));
+
+  test_sink.StartCapturingLogs();
+  WriteToStream("foo",
+                &absl::LogDebugFatalStreamer("path/file.cc", 1234).stream());
+}
+#elif GTEST_HAS_DEATH_TEST
+TEST(LogStreamerDeathTest, LogDebugFatalStreamer) {
+  EXPECT_EXIT(
+      {
+        absl::ScopedMockLog test_sink;
+
+        EXPECT_CALL(test_sink, Send)
+            .Times(AnyNumber())
+            .WillRepeatedly(DeathTestUnexpectedLogging());
+
+        EXPECT_CALL(
+            test_sink,
+            Send(AllOf(
+                SourceFilename(Eq("path/file.cc")), SourceLine(Eq(1234)),
+                Prefix(IsTrue()), LogSeverity(Eq(absl::LogSeverity::kFatal)),
+                TimestampInMatchWindow(),
+                ThreadID(Eq(absl::base_internal::GetTID())),
+                TextMessage(Eq("WriteToStream: foo")),
+                ENCODED_MESSAGE(EqualsProto(R"pb(value {
+                                                   str: "WriteToStream: foo"
+                                                 })pb")))))
+            .WillOnce(DeathTestExpectedLogging());
+
+        test_sink.StartCapturingLogs();
+        WriteToStream(
+            "foo", &absl::LogDebugFatalStreamer("path/file.cc", 1234).stream());
+      },
+      DiedOfFatal, DeathTestValidateExpectations());
+}
+#endif
+
 TEST(LogStreamerTest, LogStreamer) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
 

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("sync_internals") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "sync_internals_message_handler.h",
     "sync_internals_message_handler.mm",

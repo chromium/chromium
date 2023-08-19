@@ -494,7 +494,7 @@ BASE_EXPORT bool CreateWinHardLink(const FilePath& to_file,
 // This function will return if the given file is a symlink or not.
 BASE_EXPORT bool IsLink(const FilePath& file_path);
 
-// Returns information about the given file path.
+// Returns information about the given file path. Also see |File::GetInfo|.
 BASE_EXPORT bool GetFileInfo(const FilePath& file_path, File::Info* info);
 
 // Sets the time of the last access and the time of the last modification.

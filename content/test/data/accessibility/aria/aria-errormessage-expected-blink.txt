@@ -2,7 +2,9 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
 ++++++genericContainer
-++++++++textField name='Invalid is true' errormessageId=paragraph invalidState=true
+++++++++textField name='Invalid is true' invalidState=true errorMessageIds=paragraph
+++++++++++genericContainer
+++++++++textField name='Invalid is true with multiple errors' invalidState=true errorMessageIds=paragraph,paragraph
 ++++++++++genericContainer
 ++++++++textField name='Invalid is false'
 ++++++++++genericContainer
@@ -11,6 +13,9 @@ rootWebArea
 ++++++paragraph
 ++++++++staticText name='Error for invalid input'
 ++++++++++inlineTextBox name='Error for invalid input'
+++++++paragraph
+++++++++staticText name='Another error for invalid input'
+++++++++++inlineTextBox name='Another error for invalid input'
 ++++++paragraph
 ++++++++staticText name='Error for input which is not invalid'
 ++++++++++inlineTextBox name='Error for input which is not invalid'

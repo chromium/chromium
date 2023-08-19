@@ -35,9 +35,11 @@
     <string name="warmup_button_text">Warmup Chrome</string>
     <string name="may_launch_button_text">May Launch URL</string>
     <string name="launch_button_text">Launch in CCT</string>
+    <string name="result_launch_button_text">(Launch) startActivityForResult</string>
     <string name="test_asm_text">Test ASM</string>
     <string name="connect_button_text">Connect to service</string>
     <string name="disconnect_button_text">Disconnect</string>
+    <string name="engagement_signals_button_text">Start Engagement Signals</string>
     <string name="default_url">https://www.google.com</string>
     <string name="package_label">Package:</string>
     <string name="amazing_grace">Amazing Grace 2011</string>

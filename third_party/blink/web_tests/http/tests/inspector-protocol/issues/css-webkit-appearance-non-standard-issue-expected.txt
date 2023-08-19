@@ -1,0 +1,15 @@
+Tests that non-standard -webkit-appearance values trigger a deprecation issue.
+-webkit-appearance value "inner-spin-button" did not generate issue.
+-webkit-appearance value "media-slider" did not generate issue.
+-webkit-appearance value "media-sliderthumb" did not generate issue.
+-webkit-appearance value "media-volume-slider" did not generate issue.
+-webkit-appearance value "media-volume-sliderthumb" did not generate issue.
+-webkit-appearance value "push-button" did not generate issue.
+-webkit-appearance value "searchfield-cancel-button" did not generate issue.
+-webkit-appearance value "slider-horizontal" did not generate issue.
+-webkit-appearance value "sliderthumb-horizontal" did not generate issue.
+-webkit-appearance value "sliderthumb-vertical" did not generate issue.
+-webkit-appearance value "square-button" did not generate issue.
+-webkit-appearance value "auto" did not generate issue.
+-webkit-appearance value "none" did not generate issue.
+

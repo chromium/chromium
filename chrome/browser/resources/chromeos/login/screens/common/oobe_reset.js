@@ -6,6 +6,7 @@
  * @fileoverview Polymer element for displaying material design reset screen.
  */
 
+import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
 import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import '//resources/js/action_link.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';

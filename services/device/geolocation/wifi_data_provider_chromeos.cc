@@ -17,6 +17,7 @@
 #include "chromeos/ash/components/network/network_handler.h"
 #include "services/device/geolocation/wifi_data_provider_handle.h"
 #include "services/device/public/cpp/device_features.h"
+#include "services/device/public/mojom/geolocation_internals.mojom.h"
 
 using ::ash::NetworkHandler;
 
@@ -75,11 +76,12 @@ absl::optional<WifiData> GetWifiData() {
 
   WifiData wifi_data;
   for (const auto& access_point : access_points) {
-    AccessPointData ap_data;
+    mojom::AccessPointData ap_data;
     ap_data.mac_address = access_point.mac_address;
     ap_data.radio_signal_strength = access_point.signal_strength;
     ap_data.channel = access_point.channel;
     ap_data.signal_to_noise = access_point.signal_to_noise;
+    ap_data.timestamp = access_point.timestamp;
     wifi_data.access_point_data.insert(ap_data);
   }
   return wifi_data;

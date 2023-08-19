@@ -38,7 +38,7 @@ TEST_F(FontCacheAndroidTest, FallbackFontForCharacter) {
     const UChar32 kTestChar = 228;
 
     FontDescription font_description;
-    font_description.SetLocale(LayoutLocale::Get("zh"));
+    font_description.SetLocale(LayoutLocale::Get(AtomicString("zh")));
     ASSERT_EQ(USCRIPT_SIMPLIFIED_HAN, font_description.GetScript());
     font_description.SetGenericFamily(family_type);
 
@@ -51,7 +51,7 @@ TEST_F(FontCacheAndroidTest, FallbackFontForCharacter) {
 
 TEST_F(FontCacheAndroidTest, FallbackFontForCharacterSerif) {
   // Test is valid only if the system has a locale-specific `serif`.
-  const LayoutLocale* ja = LayoutLocale::Get("ja");
+  const LayoutLocale* ja = LayoutLocale::Get(AtomicString("ja"));
   sk_sp<SkTypeface> serif_ja_typeface = CreateSerifTypeface(ja);
   if (!serif_ja_typeface)
     return;
@@ -78,7 +78,7 @@ TEST_F(FontCacheAndroidTest, LocaleSpecificTypeface) {
   for (FontDescription::GenericFamilyType family_type :
        {FontDescription::kStandardFamily, FontDescription::kWebkitBodyFamily}) {
     // Test is valid only if the system has a locale-specific `serif`.
-    const LayoutLocale* ja = LayoutLocale::Get("ja");
+    const LayoutLocale* ja = LayoutLocale::Get(AtomicString("ja"));
     sk_sp<SkTypeface> serif_ja_typeface = CreateSerifTypeface(ja);
     if (!serif_ja_typeface)
       return;
@@ -99,18 +99,19 @@ TEST_F(FontCacheAndroidTest, LocaleSpecificTypeface) {
 // TODO(crbug.com/1233315 crbug.com/1237860): Locale-specific serif is supported
 // only for CJK until these issues were fixed.
 TEST_F(FontCacheAndroidTest, LocaleSpecificTypefaceOnlyForCJK) {
-  EXPECT_EQ(CreateSerifTypeface(LayoutLocale::Get("en")), nullptr);
+  EXPECT_EQ(CreateSerifTypeface(LayoutLocale::Get(AtomicString("en"))),
+            nullptr);
   // We can't test CJK locales return non-nullptr because not all devices on all
   // versions of Android have CJK serif fonts.
 }
 
 TEST(FontCacheAndroid, GenericFamilyNameForScript) {
   FontDescription english;
-  english.SetLocale(LayoutLocale::Get("en"));
+  english.SetLocale(LayoutLocale::Get(AtomicString("en")));
   FontDescription chinese;
-  chinese.SetLocale(LayoutLocale::Get("zh"));
+  chinese.SetLocale(LayoutLocale::Get(AtomicString("zh")));
 
-  AtomicString fallback = "MyGenericFamilyNameFallback";
+  AtomicString fallback("MyGenericFamilyNameFallback");
 
   font_family_names::Init();
   // For non-CJK, getGenericFamilyNameForScript should return the given

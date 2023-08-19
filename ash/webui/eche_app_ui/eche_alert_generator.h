@@ -50,7 +50,8 @@ class EcheAlertGenerator : public mojom::NotificationGenerator {
   void OnEnableScreenLockChanged();
 
   mojo::Receiver<mojom::NotificationGenerator> notification_receiver_{this};
-  raw_ptr<LaunchAppHelper, ExperimentalAsh> launch_app_helper_;
+  raw_ptr<LaunchAppHelper, DanglingUntriaged | ExperimentalAsh>
+      launch_app_helper_;
   raw_ptr<PrefService, ExperimentalAsh> pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
 };

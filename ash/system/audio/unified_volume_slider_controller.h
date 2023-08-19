@@ -63,7 +63,7 @@ class ASH_EXPORT UnifiedVolumeSliderController : public UnifiedSliderListener {
   void SliderButtonPressed();
 
  private:
-  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  const raw_ptr<Delegate, DanglingUntriaged | ExperimentalAsh> delegate_;
 
   // Records when the user changes the output volume via slider to metrics.
   void RecordVolumeSourceMetric();

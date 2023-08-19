@@ -48,10 +48,12 @@ void FrameContentAsText(wtf_size_t max_chars,
     // Ignore the text of non-visible frames.
     LayoutView* layout_view = cur_local_child->ContentLayoutObject();
     LayoutObject* owner_layout_object = cur_local_child->OwnerLayoutObject();
-    if (!layout_view || !layout_view->Size().Width() ||
-        !layout_view->Size().Height() ||
-        (layout_view->Location().X() + layout_view->Size().Width() <= 0) ||
-        (layout_view->Location().Y() + layout_view->Size().Height() <= 0) ||
+    if (!layout_view || !layout_view->Size().width ||
+        !layout_view->Size().height ||
+        (layout_view->PhysicalLocation().left + layout_view->Size().width <=
+         0) ||
+        (layout_view->PhysicalLocation().top + layout_view->Size().height <=
+         0) ||
         (owner_layout_object && owner_layout_object->Style() &&
          owner_layout_object->Style()->Visibility() != EVisibility::kVisible)) {
       continue;

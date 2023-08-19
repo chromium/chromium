@@ -221,9 +221,8 @@ export class FilteredVolumeManager extends EventTarget {
    *
    * @param {!VolumeInfo} volumeInfo
    * @return {boolean}
-   * @private
    */
-  isAllowedVolume_(volumeInfo) {
+  isAllowedVolume(volumeInfo) {
     if (!volumeInfo.volumeType) {
       return false;
     }
@@ -288,7 +287,7 @@ export class FilteredVolumeManager extends EventTarget {
     for (let i = 0; i < this.volumeManager_.volumeInfoList.length; i++) {
       const volumeInfo = this.volumeManager_.volumeInfoList.item(i);
       // TODO(hidehiko): Filter mounted volumes located on Drive File System.
-      if (!this.isAllowedVolume_(volumeInfo)) {
+      if (!this.isAllowedVolume(volumeInfo)) {
         continue;
       }
       volumeInfoList.push(volumeInfo);
@@ -338,7 +337,7 @@ export class FilteredVolumeManager extends EventTarget {
         break;
       case 'externally-unmounted':
         event = /** @type {!ExternallyUnmountedEvent} */ (event);
-        if (this.isAllowedVolume_(event.detail)) {
+        if (this.isAllowedVolume(event.detail)) {
           this.dispatchEvent(
               new CustomEvent('externally-unmount', {detail: event.detail}));
         }
@@ -362,7 +361,7 @@ export class FilteredVolumeManager extends EventTarget {
     let index = event.index;
     for (let i = 0; i < event.index; i++) {
       const volumeInfo = this.volumeManager_.volumeInfoList.item(i);
-      if (!this.isAllowedVolume_(volumeInfo)) {
+      if (!this.isAllowedVolume(volumeInfo)) {
         index--;
       }
     }
@@ -370,7 +369,7 @@ export class FilteredVolumeManager extends EventTarget {
     let numRemovedVolumes = 0;
     for (let i = 0; i < event.removed.length; i++) {
       const volumeInfo = event.removed[i];
-      if (this.isAllowedVolume_(volumeInfo)) {
+      if (this.isAllowedVolume(volumeInfo)) {
         numRemovedVolumes++;
       }
     }
@@ -378,7 +377,7 @@ export class FilteredVolumeManager extends EventTarget {
     const addedVolumes = [];
     for (let i = 0; i < event.added.length; i++) {
       const volumeInfo = event.added[i];
-      if (this.isAllowedVolume_(volumeInfo)) {
+      if (this.isAllowedVolume(volumeInfo)) {
         addedVolumes.push(volumeInfo);
       }
     }
@@ -540,7 +539,7 @@ export class FilteredVolumeManager extends EventTarget {
    * @private
    */
   filterDisallowedVolume_(volumeInfo) {
-    if (volumeInfo && this.isAllowedVolume_(volumeInfo)) {
+    if (volumeInfo && this.isAllowedVolume(volumeInfo)) {
       return volumeInfo;
     } else {
       return null;

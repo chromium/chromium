@@ -14,6 +14,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -23,6 +24,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import android.content.Context;
+import android.content.SharedPreferences;
 
 import androidx.annotation.Nullable;
 
@@ -34,10 +38,11 @@ import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.UserDataHost;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -48,14 +53,13 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 /**
  * Tests for {@link TabGroupModelFilter}.
  */
 @SuppressWarnings("ResultOfMethodCallIgnored")
-@RunWith(ParameterizedRobolectricTestRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabGroupModelFilterUnitTest {
     private static final int TAB1_ID = 456;
@@ -87,11 +91,20 @@ public class TabGroupModelFilterUnitTest {
     private static final int NEW_TAB_ID_1 = 160;
     private static final int NEW_TAB_ID_2 = 162;
 
+    private static final String TAB_GROUP_TITLES_FILE_NAME = "tab_group_titles";
+    private static final String TAB_TITLE = "Tab";
+
     @Mock
     TabModel mTabModel;
 
     @Mock
     TabGroupModelFilter.Observer mTabGroupModelFilterObserver;
+
+    @Mock
+    Context mContext;
+
+    @Mock
+    SharedPreferences mSharedPreferences;
 
     @Captor
     ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
@@ -106,17 +119,6 @@ public class TabGroupModelFilterUnitTest {
 
     private TabGroupModelFilter mTabGroupModelFilter;
     private InOrder mTabModelInOrder;
-
-    private final boolean mSupportAutoGroupCreation;
-
-    @ParameterizedRobolectricTestRunner.Parameters(name = "SupportAutoGroupCreation_{0}")
-    public static Collection autoGroupCreationParams() {
-        return Arrays.asList(new Object[][] {{true}, {false}});
-    }
-
-    public TabGroupModelFilterUnitTest(boolean supportAutoGroupCreation) {
-        mSupportAutoGroupCreation = supportAutoGroupCreation;
-    }
 
     private Tab prepareTab(int tabId, int rootId, int parentTabId) {
         Tab tab = mock(Tab.class);
@@ -207,7 +209,7 @@ public class TabGroupModelFilterUnitTest {
     private void setupTabGroupModelFilter(boolean isTabRestoreCompleted, boolean isIncognito) {
         mTabs.clear();
         doReturn(isIncognito).when(mTabModel).isIncognito();
-        mTabGroupModelFilter = new TabGroupModelFilter(mTabModel, mSupportAutoGroupCreation);
+        mTabGroupModelFilter = new TabGroupModelFilter(mTabModel);
         mTabGroupModelFilter.addTabGroupObserver(mTabGroupModelFilterObserver);
 
         doReturn(isIncognito).when(mTab1).isIncognito();
@@ -250,6 +252,12 @@ public class TabGroupModelFilterUnitTest {
             mTabGroupModelFilter.restoreCompleted();
             assertTrue(mTabGroupModelFilter.isTabModelRestored());
         }
+
+        doReturn(mSharedPreferences)
+                .when(mContext)
+                .getSharedPreferences(TAB_GROUP_TITLES_FILE_NAME, Context.MODE_PRIVATE);
+        ContextUtils.initApplicationContextForTests(mContext);
+        when(mSharedPreferences.getString(anyString(), any())).thenReturn(TAB_TITLE);
     }
 
     @Before
@@ -329,11 +337,7 @@ public class TabGroupModelFilterUnitTest {
     public void addTab_SetRootId() {
         Tab newTab = prepareTab(NEW_TAB_ID_0, NEW_TAB_ID_0, TAB1_ID);
 
-        if (mSupportAutoGroupCreation) {
-            doReturn(TabLaunchType.FROM_CHROME_UI).when(newTab).getLaunchType();
-        } else {
-            doReturn(TabLaunchType.FROM_TAB_GROUP_UI).when(newTab).getLaunchType();
-        }
+        doReturn(TabLaunchType.FROM_TAB_GROUP_UI).when(newTab).getLaunchType();
 
         addTabToTabModel(POSITION1 + 1, newTab);
         assertThat(CriticalPersistedTabData.from(newTab).getRootId(), equalTo(TAB1_ROOT_ID));
@@ -364,11 +368,7 @@ public class TabGroupModelFilterUnitTest {
         doReturn(TabLaunchType.FROM_CHROME_UI).when(newTab).getLaunchType();
         addTabToTabModel(POSITION1 + 1, newTab);
 
-        if (mSupportAutoGroupCreation) {
-            assertThat(CriticalPersistedTabData.from(newTab).getRootId(), equalTo(TAB1_ROOT_ID));
-        } else {
-            assertThat(CriticalPersistedTabData.from(newTab).getRootId(), equalTo(NEW_TAB_ID_0));
-        }
+        assertThat(CriticalPersistedTabData.from(newTab).getRootId(), equalTo(NEW_TAB_ID_0));
     }
 
     @Test
@@ -1213,7 +1213,7 @@ public class TabGroupModelFilterUnitTest {
 
         mTabGroupModelFilter.mergeTabsToGroup(mTab2.getId(), mTab5.getId(), false);
         verify(mTabGroupModelFilterObserver)
-                .didCreateGroup(expectedSourceTabs, originalIndexes, originalRootIds);
+                .didCreateGroup(expectedSourceTabs, originalIndexes, originalRootIds, TAB_TITLE);
         assertArrayEquals(mTabGroupModelFilter.getRelatedTabList(mTab2.getId()).toArray(),
                 expectedGroup.toArray());
     }
@@ -1233,7 +1233,7 @@ public class TabGroupModelFilterUnitTest {
 
         mTabGroupModelFilter.mergeTabsToGroup(mTab3.getId(), mTab4.getId(), false);
         verify(mTabGroupModelFilterObserver)
-                .didCreateGroup(expectedSourceTabs, originalIndexes, originalRootIds);
+                .didCreateGroup(expectedSourceTabs, originalIndexes, originalRootIds, TAB_TITLE);
         assertArrayEquals(mTabGroupModelFilter.getRelatedTabList(mTab2.getId()).toArray(),
                 expectedGroup.toArray());
     }
@@ -1253,7 +1253,7 @@ public class TabGroupModelFilterUnitTest {
 
         mTabGroupModelFilter.mergeTabsToGroup(mTab1.getId(), mTab4.getId(), false);
         verify(mTabGroupModelFilterObserver)
-                .didCreateGroup(expectedSourceTabs, originalIndexes, originalRootIds);
+                .didCreateGroup(expectedSourceTabs, originalIndexes, originalRootIds, TAB_TITLE);
         assertArrayEquals(mTabGroupModelFilter.getRelatedTabList(mTab1.getId()).toArray(),
                 expectedGroup.toArray());
     }
@@ -1272,6 +1272,6 @@ public class TabGroupModelFilterUnitTest {
 
         mTabGroupModelFilter.mergeTabsToGroup(mTab1.getId(), mTab4.getId(), true);
         verify(mTabGroupModelFilterObserver, never())
-                .didCreateGroup(expectedSourceTabs, originalIndexes, originalRootIds);
+                .didCreateGroup(expectedSourceTabs, originalIndexes, originalRootIds, TAB_TITLE);
     }
 }

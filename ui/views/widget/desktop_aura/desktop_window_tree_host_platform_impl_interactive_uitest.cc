@@ -314,8 +314,9 @@ class DesktopWindowTreeHostPlatformImplTest
                                 base::TimeTicks::Now(), gesture_details);
   }
 
-  raw_ptr<HitTestWidgetDelegate> delegate_ = nullptr;
-  raw_ptr<TestDesktopWindowTreeHostPlatformImpl> host_ = nullptr;
+  raw_ptr<HitTestWidgetDelegate, DanglingUntriaged> delegate_ = nullptr;
+  raw_ptr<TestDesktopWindowTreeHostPlatformImpl, DanglingUntriaged> host_ =
+      nullptr;
 };
 
 // These tests are run using either click or touch events.

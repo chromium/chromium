@@ -107,6 +107,10 @@ H264Decoder::H264Accelerator::Status H264Decoder::H264Accelerator::SetStream(
   return H264Decoder::H264Accelerator::Status::kNotSupported;
 }
 
+bool H264Decoder::H264Accelerator::RequiresRefLists() {
+  return false;
+}
+
 H264Decoder::H264Decoder(std::unique_ptr<H264Accelerator> accelerator,
                          VideoCodecProfile profile,
                          const VideoColorSpace& container_color_space)
@@ -118,7 +122,8 @@ H264Decoder::H264Decoder(std::unique_ptr<H264Accelerator> accelerator,
       max_num_reorder_frames_(0),
       // TODO(hiroh): Set profile to UNKNOWN.
       profile_(profile),
-      accelerator_(std::move(accelerator)) {
+      accelerator_(std::move(accelerator)),
+      requires_ref_lists_(accelerator_->RequiresRefLists()) {
   DCHECK(accelerator_);
   Reset();
 }
@@ -776,7 +781,10 @@ H264Decoder::H264Accelerator::Status H264Decoder::StartNewFrame(
     return H264Accelerator::Status::kFail;
 
   UpdatePicNums(frame_num);
-  PrepareRefPicLists();
+
+  if (requires_ref_lists_) {
+    PrepareRefPicLists();
+  }
 
   return accelerator_->SubmitFrameMetadata(sps, pps, dpb_, ref_pic_list_p0_,
                                            ref_pic_list_b0_, ref_pic_list_b1_,
@@ -1186,9 +1194,13 @@ bool H264Decoder::ProcessSPS(int sps_id,
 
   VideoCodecProfile new_profile =
       H264Parser::ProfileIDCToVideoCodecProfile(sps->profile_idc);
-  uint8_t new_bit_depth = 0;
-  if (!ParseBitDepth(*sps, new_bit_depth))
+  if (new_profile == VIDEO_CODEC_PROFILE_UNKNOWN) {
     return false;
+  }
+  uint8_t new_bit_depth = 0;
+  if (!ParseBitDepth(*sps, new_bit_depth)) {
+    return false;
+  }
   if (!IsValidBitDepth(new_bit_depth, new_profile)) {
     DVLOG(1) << "Invalid bit depth=" << base::strict_cast<int>(new_bit_depth)
              << ", profile=" << GetProfileName(new_profile);
@@ -1224,6 +1236,9 @@ bool H264Decoder::ProcessSPS(int sps_id,
   // then trigger color space change.
   if (new_color_space.IsSpecified() &&
       new_color_space != picture_color_space_) {
+    if (!Flush()) {
+      return false;
+    }
     DVLOG(1) << "New color space: " << new_color_space.ToString();
     picture_color_space_ = new_color_space;
     *color_space_changed = true;
@@ -1374,7 +1389,7 @@ H264Decoder::H264Accelerator::Status H264Decoder::ProcessCurrentSlice() {
   // If we are using full sample encryption then we do not have the information
   // we need to update the ref pic lists here, but that's OK because the
   // accelerator doesn't actually need to submit them in this case.
-  if (!slice_hdr->full_sample_encryption &&
+  if (!slice_hdr->full_sample_encryption && requires_ref_lists_ &&
       !ModifyReferencePicLists(slice_hdr, &ref_pic_list0, &ref_pic_list1)) {
     return H264Accelerator::Status::kFail;
   }
@@ -1682,16 +1697,18 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
               // 3. Both container and bitstream.
               // Thus we should also extract HDR metadata here in case we
               // miss the information.
-              if (!hdr_metadata_)
-                hdr_metadata_ = gfx::HDRMetadata();
-              sei_msg.content_light_level_info.PopulateHDRMetadata(
-                  hdr_metadata_.value());
+              if (!hdr_metadata_.has_value()) {
+                hdr_metadata_.emplace();
+              }
+              hdr_metadata_->cta_861_3 =
+                  sei_msg.content_light_level_info.ToGfx();
               break;
             case H264SEIMessage::kSEIMasteringDisplayInfo:
-              if (!hdr_metadata_)
-                hdr_metadata_ = gfx::HDRMetadata();
-              sei_msg.mastering_display_info.PopulateColorVolumeMetadata(
-                  hdr_metadata_->smpte_st_2086);
+              if (!hdr_metadata_.has_value()) {
+                hdr_metadata_.emplace();
+              }
+              hdr_metadata_->smpte_st_2086 =
+                  sei_msg.mastering_display_info.ToGfx();
               break;
             default:
               break;

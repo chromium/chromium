@@ -193,7 +193,11 @@ class ProxyingURLLoaderFactory::InProgressRequest
   // Information about the current request.
   GURL request_url_;
   GURL response_url_;
+  // Refers to the "last" referrer in the redirect chain.
   GURL referrer_;
+  // The origin that initiated the request. May be empty for browser-initiated
+  // requests. See network::ResourceRequest::request_initiator for details.
+  absl::optional<url::Origin> request_initiator_;
   net::HttpRequestHeaders headers_;
   net::HttpRequestHeaders cors_exempt_headers_;
   net::RedirectInfo redirect_info_;
@@ -287,6 +291,10 @@ class ProxyingURLLoaderFactory::InProgressRequest::ProxyResponseAdapter
 
   GURL GetUrl() const override { return in_progress_request_->response_url_; }
 
+  absl::optional<url::Origin> GetRequestInitiator() const override {
+    return in_progress_request_->request_initiator_;
+  }
+
   const net::HttpResponseHeaders* GetHeaders() const override {
     return headers_;
   }
@@ -322,6 +330,7 @@ ProxyingURLLoaderFactory::InProgressRequest::InProgressRequest(
       request_url_(request.url),
       response_url_(request.url),
       referrer_(request.referrer),
+      request_initiator_(request.request_initiator),
       request_destination_(request.destination),
       is_outermost_main_frame_(request.is_outermost_main_frame),
       is_fetch_like_api_(request.is_fetch_like_api),

@@ -12,12 +12,14 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/callback_command.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
@@ -26,10 +28,8 @@
 #include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
-#include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -67,6 +67,16 @@ class MockCommand : public WebAppCommandTemplate<LockType> {
     return base::Value("FakeCommand");
   }
 
+  void PostSignalCompletionAndSelfDestruct(
+      CommandResult result,
+      base::OnceClosure completion_callback) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&MockCommand::CallSignalCompletionAndSelfDestruct,
+                       weak_factory_.GetWeakPtr(), result,
+                       std::move(completion_callback)));
+  }
+
   void CallSignalCompletionAndSelfDestruct(
       CommandResult result,
       base::OnceClosure completion_callback) {
@@ -95,10 +105,6 @@ class WebAppCommandManagerTest : public WebAppTest {
   void SetUp() override {
     WebAppTest::SetUp();
     FakeWebAppProvider* provider = FakeWebAppProvider::Get(profile());
-    auto command_url_loader = std::make_unique<TestWebAppUrlLoader>();
-    url_loader_ = command_url_loader.get();
-    provider->GetCommandManager().SetUrlLoaderForTesting(
-        std::move(command_url_loader));
     provider->StartWithSubsystems();
   }
 
@@ -119,21 +125,27 @@ class WebAppCommandManagerTest : public WebAppTest {
 
     testing::StrictMock<base::MockCallback<base::OnceClosure>> mock_closure;
     {
-      base::RunLoop loop;
+      base::test::TestFuture<void> first_command_done;
       testing::InSequence in_sequence;
       EXPECT_CALL(*command1_ptr, StartWithLock(testing::_))
           .Times(1)
           .WillOnce([&]() {
             base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE, base::BindLambdaForTesting([&]() {
-                  command1_ptr->CallSignalCompletionAndSelfDestruct(
-                      CommandResult::kSuccess, mock_closure.Get());
+                  // Post this to catch if the second command runs before this
+                  // one completes.
+                  command1_ptr->PostSignalCompletionAndSelfDestruct(
+                      CommandResult::kSuccess,
+                      first_command_done.GetCallback());
                 }));
           });
 
       EXPECT_CALL(*command1_ptr, OnDestruction()).Times(1);
-      EXPECT_CALL(mock_closure, Run()).Times(1);
+      // Wait until the first command is done to verify that the second command
+      // isn't run before this one completes.
+      ASSERT_TRUE(first_command_done.Wait());
 
+      base::RunLoop loop;
       EXPECT_CALL(*command2_ptr, StartWithLock(testing::_))
           .Times(1)
           .WillOnce([&]() {
@@ -183,11 +195,6 @@ class WebAppCommandManagerTest : public WebAppTest {
       loop.Run();
     }
   }
-
-  TestWebAppUrlLoader* url_loader() const { return url_loader_.get(); }
-
- private:
-  raw_ptr<TestWebAppUrlLoader, DanglingUntriaged> url_loader_;
 };
 
 TEST_F(WebAppCommandManagerTest, SimpleCommand) {
@@ -279,13 +286,11 @@ TEST_F(WebAppCommandManagerTest, MixedQueueTypes) {
       command4->AsWeakPtr();
 
   // One about:blank load per web contents lock.
-  url_loader()->AddPrepareForLoadResults({WebAppUrlLoader::Result::kUrlLoaded});
   manager().ScheduleCommand(std::move(command3));
   manager().ScheduleCommand(std::move(command4));
-  // Global command blocks web contents command.
-  CheckCommandsRunInOrder(command3_ptr, command4_ptr);
+  // All app lock does not block web contents command.
+  CheckCommandsRunInParallel(command3_ptr, command4_ptr);
 
-  url_loader()->AddPrepareForLoadResults({WebAppUrlLoader::Result::kUrlLoaded});
   auto command5 = std::make_unique<StrictMock<MockCommand<AppLock>>>(
       std::make_unique<AppLockDescription>(kTestAppId));
   auto command6 =
@@ -342,8 +347,6 @@ TEST_F(WebAppCommandManagerTest, BackgroundWebContentsQueue) {
   base::WeakPtr<MockCommand<SharedWebContentsLock>> command2_ptr =
       command2->AsWeakPtr();
 
-  url_loader()->AddPrepareForLoadResults({WebAppUrlLoader::Result::kUrlLoaded,
-                                          WebAppUrlLoader::Result::kUrlLoaded});
   manager().ScheduleCommand(std::move(command1));
   manager().ScheduleCommand(std::move(command2));
   CheckCommandsRunInOrder(command1_ptr, command2_ptr);
@@ -469,8 +472,6 @@ TEST_F(WebAppCommandManagerTest, AppWithSharedWebContents) {
   testing::StrictMock<base::MockCallback<base::OnceClosure>> mock_closure;
 
   // One about:blank load per web contents lock.
-  url_loader()->AddPrepareForLoadResults({WebAppUrlLoader::Result::kUrlLoaded,
-                                          WebAppUrlLoader::Result::kUrlLoaded});
   manager().ScheduleCommand(std::move(command1));
   manager().ScheduleCommand(std::move(command2));
   manager().ScheduleCommand(std::move(command3));

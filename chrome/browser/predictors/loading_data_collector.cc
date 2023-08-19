@@ -94,13 +94,11 @@ OriginRequestSummary::~OriginRequestSummary() = default;
 
 PageRequestSummary::PageRequestSummary(ukm::SourceId ukm_source_id,
                                        const GURL& main_frame_url,
-                                       base::TimeTicks creation_time)
+                                       base::TimeTicks navigation_started)
     : ukm_source_id(ukm_source_id),
       main_frame_url(main_frame_url),
       initial_url(main_frame_url),
-      navigation_started(creation_time),
-      navigation_committed(base::TimeTicks::Max()),
-      first_contentful_paint(base::TimeTicks::Max()) {}
+      navigation_started(navigation_started) {}
 
 PageRequestSummary::PageRequestSummary(const PageRequestSummary& other) =
     default;

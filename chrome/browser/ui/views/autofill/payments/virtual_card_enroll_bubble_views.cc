@@ -98,16 +98,8 @@ void VirtualCardEnrollBubbleViews::AddedToWidget() {
   header_view->AddChildView(std::move(image_view));
 
   GetBubbleFrameView()->SetHeaderView(std::move(header_view));
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillMoveLegalTermsAndIconForNewCardEnrollment)) {
-    GetBubbleFrameView()->SetTitleView(
-        std::make_unique<TitleWithIconAfterLabelView>(
-            GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY));
-  } else {
-    GetBubbleFrameView()->SetTitleView(
-        std::make_unique<TitleWithIconAndSeparatorView>(
-            GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY));
-  }
+  GetBubbleFrameView()->SetTitleView(CreateTitleView(
+      GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY));
 }
 
 std::u16string VirtualCardEnrollBubbleViews::GetWindowTitle() const {
@@ -129,7 +121,7 @@ void VirtualCardEnrollBubbleViews::Init() {
   if (base::FeatureList::IsEnabled(
           features::kAutofillMoveLegalTermsAndIconForNewCardEnrollment)) {
     set_margins(provider->GetDialogInsetsForContentType(
-        views::DialogContentType::kText, views::DialogContentType::kControl));
+        views::DialogContentType::kText, views::DialogContentType::kText));
   }
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(

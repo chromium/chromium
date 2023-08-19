@@ -80,7 +80,7 @@ class WebBlobInfo {
   WebString uuid_;
   WebString type_;  // MIME type
   uint64_t size_;
-  WebPrivatePtr<BlobDataHandle> blob_handle_;
+  WebPrivatePtrForRefCounted<BlobDataHandle> blob_handle_;
   WebString file_name_;   // Only for File
   absl::optional<base::Time> last_modified_;  // Only for File
 };

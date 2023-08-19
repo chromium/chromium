@@ -59,23 +59,20 @@ export class CrosImageCapture {
 
   /**
    * Gets the photo capabilities with the available options/effects.
-   *
-   * @return Promise for the result.
    */
   async getPhotoCapabilities(): Promise<PhotoCapabilities> {
     return this.capture.getPhotoCapabilities();
   }
 
   /**
-   * Takes single or multiple photo(s) with the specified settings and effects.
-   * The amount of result photo(s) depends on the specified settings and
-   * effects, and the first promise in the returned array will always resolve
-   * with the unreprocessed photo. The returned array will be resolved once it
-   * received the shutter event.
+   * Takes single or multiple photo(s) with given |photoSettings| and
+   * |photoEffects|. The amount of result photo(s) depends on the given
+   * |photoSettings| and |photoEffects|, and the first promise of the returned
+   * array will always be resolved with the unreprocessed photo. The returned
+   * array will be resolved once it received the shutter event.
    *
    * @param photoSettings Photo settings for ImageCapture's takePhoto().
    * @param photoEffects Photo effects to be applied.
-   * @return A promise of the array containing promise of each photo result.
    */
   async takePhoto(photoSettings: PhotoSettings, photoEffects: Effect[] = []):
       Promise<TakePhotoResult[]> {
@@ -91,7 +88,7 @@ export class CrosImageCapture {
     }
 
     const getMetadata = (() => {
-      // The amount should be |number of effect| + |reference|.
+      // The amount should be the length of |photoEffects| plus |reference|.
       const numMetadata = photoEffects.length + 1;
 
       const arr = [];
@@ -109,10 +106,17 @@ export class CrosImageCapture {
 
     const doTakes = (async () => {
       const metadataArr = getMetadata();
-      const blobs =
-          await deviceOperator.setReprocessOptions(this.deviceId, photoEffects);
-      blobs.unshift(this.capture.takePhoto(photoSettings));
-
+      const blobs = [];
+      if (photoEffects.length === 0) {
+        blobs.push(this.capture.takePhoto(photoSettings));
+      } else {
+        assert(
+            photoEffects.length === 1 &&
+            photoEffects[0] === Effect.PORTRAIT_MODE);
+        const portraitBlobs =
+            await deviceOperator.takePortraitModePhoto(this.deviceId);
+        blobs.push(...portraitBlobs);
+      }
       // Assuming the metadata is returned according to the order:
       // [reference, effect_1, effect_2, ...]
       return blobs.map((blob, index) => {
@@ -144,8 +148,6 @@ export class CrosImageCapture {
 
   /**
    * Adds an observer to save image metadata.
-   *
-   * @return Promise for the operation.
    */
   async addMetadataObserver(): Promise<void> {
     if (this.metadataObserver !== null) {
@@ -188,9 +190,6 @@ export class CrosImageCapture {
         this.deviceId, callback, StreamType.JPEG_OUTPUT);
   }
 
-  /**
-   * Removes the observer that saves metadata.
-   */
   removeMetadataObserver(): void {
     if (this.metadataObserver === null) {
       return;

@@ -73,7 +73,7 @@ struct EVENTS_DEVICES_EXPORT InputDevice {
   uint16_t product_id;
   uint16_t version;
 
-  // Debugging method to describe internal state
+  // Describe internal state for system log.
   virtual std::ostream& DescribeForLog(std::ostream& os) const;
 };
 

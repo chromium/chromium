@@ -40,18 +40,45 @@ constexpr int kUserDemographicsMinAgeInYears = 20;
 // Max user age to provide demopgrahics for.
 constexpr int kUserDemographicsMaxAgeInYears = 85;
 
-// Preference names, exposed publicly for testing.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-extern const char kSyncOsDemographicsPrefName[];
+// Root dictionary pref to store the user's birth year and gender that are
+// provided by the sync server. This is a read-only syncable priority pref on
+// all platforms except ChromeOS Ash, where it is a syncable OS-level priority
+// pref.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+inline constexpr char kSyncDemographicsPrefName[] = "sync.demographics";
+#else
+inline constexpr char kSyncOsDemographicsPrefName[] = "sync.os_demographics";
+// TODO(crbug/1367338): Make this non-syncable (on Ash only) after full rollout
+// of the syncable os priority pref; then delete it locally from Ash devices.
+inline constexpr char kSyncDemographicsPrefName[] = "sync.demographics";
 #endif
-extern const char kSyncDemographicsPrefName[];
-extern const char kUserDemographicsBirthYearOffsetPrefName[];
-// Deprecated (2022/09)
-extern const char kDeprecatedDemographicsBirthYearOffsetPrefName[];
+
+// Stores a "secret" offset that is used to randomize the birth year for metrics
+// reporting. This value should not be logged to UMA directly; instead, it
+// should be summed with the kSyncDemographicsBirthYear. This value is generated
+// locally on the client the first time a user begins to merge birth year data
+// into their UMA reports.
+inline constexpr char kUserDemographicsBirthYearOffsetPrefName[] =
+    "demographics_birth_year_offset";
+// TODO(crbug/1367338): Delete after 2023/09
+inline constexpr char kDeprecatedDemographicsBirthYearOffsetPrefName[] =
+    "sync.demographics_birth_year_offset";
 
 // These are not prefs, they are paths inside of kSyncDemographics.
-extern const char kSyncDemographicsBirthYearPath[];
-extern const char kSyncDemographicsGenderPath[];
+
+// This pref value is subordinate to the kSyncDemographics dictionary pref and
+// is synced to the client. It stores the self-reported birth year of the
+// syncing user. as provided by the sync server. This value should not be logged
+// to UMA directly; instead, it should be summed with the
+// kSyncDemographicsBirthYearNoiseOffset.
+inline constexpr char kSyncDemographicsBirthYearPath[] = "birth_year";
+
+// This pref value is subordinate to the kSyncDemographics dictionary pref and
+// is synced to the client. It stores the self-reported gender of the syncing
+// user, as provided by the sync server. The gender is encoded using the Gender
+// enum defined in UserDemographicsProto
+// (see third_party/metrics_proto/user_demographics.proto).
+inline constexpr char kSyncDemographicsGenderPath[] = "gender";
 
 // Container of user demographics.
 struct UserDemographics {

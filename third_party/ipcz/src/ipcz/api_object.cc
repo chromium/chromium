@@ -71,7 +71,7 @@ APIObject::~APIObject() {
   UntrackObject(this);
 }
 
-bool APIObject::CanSendFrom(Portal& sender) {
+bool APIObject::CanSendFrom(Router& sender) {
   return false;
 }
 

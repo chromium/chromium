@@ -55,8 +55,6 @@ interface SharedWorkerFactory {
       bool is_constructor_secure_context,
 
       string user_agent,
-      string full_user_agent,
-      string reduced_user_agent,
       UserAgentMetadata ua_metadata,
       bool pause_on_start,
       mojo_base.mojom.UnguessableToken devtools_worker_token,

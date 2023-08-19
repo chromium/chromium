@@ -5,14 +5,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_STARTING_STYLE_RULE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_STARTING_STYLE_RULE_H_
 
-#include "third_party/blink/renderer/core/css/css_condition_rule.h"
+#include "third_party/blink/renderer/core/css/css_grouping_rule.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
 class StyleRuleStartingStyle;
 
-class CSSStartingStyleRule final : public CSSConditionRule {
+class CSSStartingStyleRule final : public CSSGroupingRule {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

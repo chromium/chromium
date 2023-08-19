@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("content_settings") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "block_popups_table_view_controller.h",
     "block_popups_table_view_controller.mm",
@@ -45,13 +44,13 @@ source_set("content_settings") {
     "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/browser/ui/settings/elements:enterprise_info_popover_view_controller",
     "//ios/chrome/browser/ui/settings/utils",
+    "//ios/chrome/browser/web/annotations",
     "//ios/web/common:features",
     "//ui/base",
   ]
 }
 
 source_set("content_settings_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "default_page_mode.h",
     "default_page_mode_consumer.h",
@@ -74,7 +73,6 @@ source_set("content_settings_ui") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "block_popups_table_view_controller_unittest.mm",
@@ -108,7 +106,6 @@ source_set("unit_tests") {
 }
 
 source_set("eg_app_support+eg2") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "block_popups_app_interface.h",
@@ -126,7 +123,6 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("eg_test_support+eg2") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "block_popups_app_interface.h",
@@ -140,10 +136,7 @@ source_set("eg_test_support+eg2") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "block_popups_egtest.mm" ]
   deps = [

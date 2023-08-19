@@ -7,10 +7,6 @@
 #import "ios/chrome/browser/ui/bubble/bubble_util.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface SCBubbleCoordinator ()
 @property(nonatomic, strong) UIViewController* containerViewController;
 @property(nonatomic, strong) BubbleViewController* bubbleViewController;
@@ -28,7 +24,7 @@
   self.containerViewController.title = @"Bubble";
 
   BubbleArrowDirection direction = BubbleArrowDirectionUp;
-  BubbleAlignment alignment = BubbleAlignmentTrailing;
+  BubbleAlignment alignment = BubbleAlignmentBottomOrTrailing;
   CGFloat bubbleAlignmentOffset = bubble_util::BubbleDefaultAlignmentOffset();
   self.bubbleViewController =
       [[BubbleViewController alloc] initWithText:@"Lorem ipsum dolor"
@@ -41,9 +37,13 @@
 
   // Mock UI element for the bubble to be anchored on. Set the x-coordinate of
   // the origin to be two-thirds of the container's width.
+  CGFloat topBarHeight =
+      self.baseViewController.view.window.windowScene.statusBarManager
+          .statusBarFrame.size.height +
+      self.baseViewController.navigationBar.frame.size.height;
   UIView* elementView = [[UIView alloc]
       initWithFrame:CGRectMake(containerView.frame.size.width * 2.0f / 3.0f,
-                               20.0f, 20.0f, 20.0f)];
+                               topBarHeight + 10, 20.0f, 20.0f)];
   elementView.backgroundColor = [UIColor grayColor];
   [containerView addSubview:elementView];
   CGPoint anchorPoint = bubble_util::AnchorPoint(elementView.frame, direction);

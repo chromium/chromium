@@ -337,4 +337,9 @@ public interface TabObserver {
      * @param scrolling {@code true} if scrolling started; {@code false} if stopped.
      */
     void onContentViewScrollingStateChanged(boolean scrolling);
+
+    /**
+     * Back press refactor related. Called when navigation state is invalidated.
+     */
+    void onNavigationStateChanged();
 }

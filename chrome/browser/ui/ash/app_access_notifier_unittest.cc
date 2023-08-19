@@ -178,13 +178,11 @@ class AppAccessNotifierBaseTest : public testing::Test {
   }
 
   std::vector<std::u16string> GetAppsAccessingCamera() {
-    return app_access_notifier_->GetAppsAccessingSensor(
-        ash::SensorDisabledNotificationDelegate::Sensor::kCamera);
+    return app_access_notifier_->GetAppsAccessingCamera();
   }
 
   std::vector<std::u16string> GetAppsAccessingMicrophone() {
-    return app_access_notifier_->GetAppsAccessingSensor(
-        ash::SensorDisabledNotificationDelegate::Sensor::kMicrophone);
+    return app_access_notifier_->GetAppsAccessingMicrophone();
   }
 
   static apps::AppPtr MakeApp(const std::string app_id,
@@ -251,8 +249,8 @@ class AppAccessNotifierBaseTest : public testing::Test {
   apps::AppRegistryCache registry_cache_secondary_user_;
   apps::AppCapabilityAccessCache capability_access_cache_secondary_user_;
 
-  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> fake_user_manager_ =
-      nullptr;
+  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      fake_user_manager_ = nullptr;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 
   // This instance is needed for setting up `ash_test_helper_`.
@@ -696,4 +694,27 @@ TEST_P(AppAccessNotifierPrivacyIndicatorTest, RecordLaunchSettings) {
   AppAccessNotifier::LaunchAppSettings("test_app_id2");
   histograms.ExpectBucketCount(kPrivacyIndicatorsLaunchSettingsHistogramName,
                                apps::AppType::kChromeApp, 1);
+}
+
+// Tests that the privacy indicators notification of a system web app should not
+// have a launch settings callback (thus it will not have a launch settings
+// button).
+TEST_P(AppAccessNotifierPrivacyIndicatorTest,
+       SystemWebAppWithoutSettingsCallback) {
+  const std::string app_id = "test_app_id";
+  LaunchAppUsingCameraOrMicrophone(app_id, "test_app_name",
+                                   /*use_camera=*/true,
+                                   /*use_microphone=*/false,
+                                   /*app_type=*/apps::AppType::kSystemWeb);
+  const std::string notification_id =
+      ash::GetPrivacyIndicatorsNotificationId(app_id);
+
+  auto* notification =
+      message_center::MessageCenter::Get()->FindNotificationById(
+          notification_id);
+  ASSERT_TRUE(notification);
+
+  auto* delegate = static_cast<ash::PrivacyIndicatorsNotificationDelegate*>(
+      notification->delegate());
+  EXPECT_FALSE(delegate->launch_settings_callback());
 }

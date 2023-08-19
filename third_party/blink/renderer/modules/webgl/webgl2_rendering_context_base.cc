@@ -933,6 +933,9 @@ void WebGL2RenderingContextBase::readPixels(GLint x,
 
   {
     ScopedDrawingBufferBinder binder(GetDrawingBuffer(), framebuffer);
+    if (!binder.Succeeded()) {
+      return;
+    }
     ContextGL()->ReadPixels(x, y, width, height, format, type,
                             reinterpret_cast<void*>(offset));
   }
@@ -1264,7 +1267,7 @@ void WebGL2RenderingContextBase::texImage2D(GLenum target,
   TexImageHelperImageData(params, pixels);
 }
 
-void WebGL2RenderingContextBase::texImage2D(ExecutionContext* execution_context,
+void WebGL2RenderingContextBase::texImage2D(ScriptState* script_state,
                                             GLenum target,
                                             GLint level,
                                             GLint internalformat,
@@ -1285,11 +1288,12 @@ void WebGL2RenderingContextBase::texImage2D(ExecutionContext* execution_context,
   TexImageParams params;
   POPULATE_TEX_IMAGE_2D_PARAMS(params);
   params.border = 0;  // See https://crbug.com/1313604
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
   TexImageHelperHTMLImageElement(execution_context->GetSecurityOrigin(), params,
                                  image, exception_state);
 }
 
-void WebGL2RenderingContextBase::texImage2D(ExecutionContext* execution_context,
+void WebGL2RenderingContextBase::texImage2D(ScriptState* script_state,
                                             GLenum target,
                                             GLint level,
                                             GLint internalformat,
@@ -1310,11 +1314,12 @@ void WebGL2RenderingContextBase::texImage2D(ExecutionContext* execution_context,
   TexImageParams params;
   POPULATE_TEX_IMAGE_2D_PARAMS(params);
   params.border = 0;  // See https://crbug.com/1313604
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
   TexImageHelperCanvasRenderingContextHost(
       execution_context->GetSecurityOrigin(), params, canvas, exception_state);
 }
 
-void WebGL2RenderingContextBase::texImage2D(ExecutionContext* execution_context,
+void WebGL2RenderingContextBase::texImage2D(ScriptState* script_state,
                                             GLenum target,
                                             GLint level,
                                             GLint internalformat,
@@ -1335,11 +1340,12 @@ void WebGL2RenderingContextBase::texImage2D(ExecutionContext* execution_context,
   TexImageParams params;
   POPULATE_TEX_IMAGE_2D_PARAMS(params);
   params.border = 0;  // See https://crbug.com/1313604
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
   TexImageHelperHTMLVideoElement(execution_context->GetSecurityOrigin(), params,
                                  video, exception_state);
 }
 
-void WebGL2RenderingContextBase::texImage2D(ExecutionContext* execution_context,
+void WebGL2RenderingContextBase::texImage2D(ScriptState* script_state,
                                             GLenum target,
                                             GLint level,
                                             GLint internalformat,
@@ -1360,6 +1366,7 @@ void WebGL2RenderingContextBase::texImage2D(ExecutionContext* execution_context,
   TexImageParams params;
   POPULATE_TEX_IMAGE_2D_PARAMS(params);
   params.border = 0;  // See https://crbug.com/1313604
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
   TexImageHelperVideoFrame(execution_context->GetSecurityOrigin(), params,
                            frame, exception_state);
 }
@@ -1405,7 +1412,7 @@ void WebGL2RenderingContextBase::texImage2D(GLenum target,
                                         type, image_data);
 }
 
-void WebGL2RenderingContextBase::texImage2D(ExecutionContext* execution_context,
+void WebGL2RenderingContextBase::texImage2D(ScriptState* script_state,
                                             GLenum target,
                                             GLint level,
                                             GLint internalformat,
@@ -1421,13 +1428,13 @@ void WebGL2RenderingContextBase::texImage2D(ExecutionContext* execution_context,
     return;
   }
 
-  WebGLRenderingContextBase::texImage2D(execution_context, target, level,
+  WebGLRenderingContextBase::texImage2D(script_state, target, level,
                                         internalformat, format, type, image,
                                         exception_state);
 }
 
 void WebGL2RenderingContextBase::texImage2D(
-    ExecutionContext* execution_context,
+    ScriptState* script_state,
     GLenum target,
     GLint level,
     GLint internalformat,
@@ -1443,12 +1450,12 @@ void WebGL2RenderingContextBase::texImage2D(
     return;
   }
 
-  WebGLRenderingContextBase::texImage2D(execution_context, target, level,
+  WebGLRenderingContextBase::texImage2D(script_state, target, level,
                                         internalformat, format, type,
                                         context_host, exception_state);
 }
 
-void WebGL2RenderingContextBase::texImage2D(ExecutionContext* execution_context,
+void WebGL2RenderingContextBase::texImage2D(ScriptState* script_state,
                                             GLenum target,
                                             GLint level,
                                             GLint internalformat,
@@ -1464,12 +1471,12 @@ void WebGL2RenderingContextBase::texImage2D(ExecutionContext* execution_context,
     return;
   }
 
-  WebGLRenderingContextBase::texImage2D(execution_context, target, level,
+  WebGLRenderingContextBase::texImage2D(script_state, target, level,
                                         internalformat, format, type, video,
                                         exception_state);
 }
 
-void WebGL2RenderingContextBase::texImage2D(ExecutionContext* execution_context,
+void WebGL2RenderingContextBase::texImage2D(ScriptState* script_state,
                                             GLenum target,
                                             GLint level,
                                             GLint internalformat,
@@ -1485,7 +1492,7 @@ void WebGL2RenderingContextBase::texImage2D(ExecutionContext* execution_context,
     return;
   }
 
-  WebGLRenderingContextBase::texImage2D(execution_context, target, level,
+  WebGLRenderingContextBase::texImage2D(script_state, target, level,
                                         internalformat, format, type, frame,
                                         exception_state);
 }
@@ -1576,7 +1583,7 @@ void WebGL2RenderingContextBase::texSubImage2D(GLenum target,
 }
 
 void WebGL2RenderingContextBase::texSubImage2D(
-    ExecutionContext* execution_context,
+    ScriptState* script_state,
     GLenum target,
     GLint level,
     GLint xoffset,
@@ -1596,12 +1603,13 @@ void WebGL2RenderingContextBase::texSubImage2D(
   }
   TexImageParams params;
   POPULATE_TEX_SUB_IMAGE_2D_PARAMS(params);
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
   TexImageHelperHTMLImageElement(execution_context->GetSecurityOrigin(), params,
                                  image, exception_state);
 }
 
 void WebGL2RenderingContextBase::texSubImage2D(
-    ExecutionContext* execution_context,
+    ScriptState* script_state,
     GLenum target,
     GLint level,
     GLint xoffset,
@@ -1621,12 +1629,13 @@ void WebGL2RenderingContextBase::texSubImage2D(
   }
   TexImageParams params;
   POPULATE_TEX_SUB_IMAGE_2D_PARAMS(params);
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
   TexImageHelperCanvasRenderingContextHost(
       execution_context->GetSecurityOrigin(), params, canvas, exception_state);
 }
 
 void WebGL2RenderingContextBase::texSubImage2D(
-    ExecutionContext* execution_context,
+    ScriptState* script_state,
     GLenum target,
     GLint level,
     GLint xoffset,
@@ -1646,12 +1655,13 @@ void WebGL2RenderingContextBase::texSubImage2D(
   }
   TexImageParams params;
   POPULATE_TEX_SUB_IMAGE_2D_PARAMS(params);
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
   TexImageHelperHTMLVideoElement(execution_context->GetSecurityOrigin(), params,
                                  video, exception_state);
 }
 
 void WebGL2RenderingContextBase::texSubImage2D(
-    ExecutionContext* execution_context,
+    ScriptState* script_state,
     GLenum target,
     GLint level,
     GLint xoffset,
@@ -1671,6 +1681,7 @@ void WebGL2RenderingContextBase::texSubImage2D(
   }
   TexImageParams params;
   POPULATE_TEX_SUB_IMAGE_2D_PARAMS(params);
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
   TexImageHelperVideoFrame(execution_context->GetSecurityOrigin(), params,
                            frame, exception_state);
 }
@@ -1718,7 +1729,7 @@ void WebGL2RenderingContextBase::texSubImage2D(GLenum target,
 }
 
 void WebGL2RenderingContextBase::texSubImage2D(
-    ExecutionContext* execution_context,
+    ScriptState* script_state,
     GLenum target,
     GLint level,
     GLint xoffset,
@@ -1734,14 +1745,13 @@ void WebGL2RenderingContextBase::texSubImage2D(
                       "a buffer is bound to PIXEL_UNPACK_BUFFER");
     return;
   }
-
-  WebGLRenderingContextBase::texSubImage2D(execution_context, target, level,
-                                           xoffset, yoffset, format, type,
-                                           image, exception_state);
+  WebGLRenderingContextBase::texSubImage2D(script_state, target, level, xoffset,
+                                           yoffset, format, type, image,
+                                           exception_state);
 }
 
 void WebGL2RenderingContextBase::texSubImage2D(
-    ExecutionContext* execution_context,
+    ScriptState* script_state,
     GLenum target,
     GLint level,
     GLint xoffset,
@@ -1757,14 +1767,13 @@ void WebGL2RenderingContextBase::texSubImage2D(
                       "a buffer is bound to PIXEL_UNPACK_BUFFER");
     return;
   }
-
-  WebGLRenderingContextBase::texSubImage2D(execution_context, target, level,
-                                           xoffset, yoffset, format, type,
-                                           context_host, exception_state);
+  WebGLRenderingContextBase::texSubImage2D(script_state, target, level, xoffset,
+                                           yoffset, format, type, context_host,
+                                           exception_state);
 }
 
 void WebGL2RenderingContextBase::texSubImage2D(
-    ExecutionContext* execution_context,
+    ScriptState* script_state,
     GLenum target,
     GLint level,
     GLint xoffset,
@@ -1773,13 +1782,13 @@ void WebGL2RenderingContextBase::texSubImage2D(
     GLenum type,
     HTMLVideoElement* video,
     ExceptionState& exception_state) {
-  WebGLRenderingContextBase::texSubImage2D(execution_context, target, level,
-                                           xoffset, yoffset, format, type,
-                                           video, exception_state);
+  WebGLRenderingContextBase::texSubImage2D(script_state, target, level, xoffset,
+                                           yoffset, format, type, video,
+                                           exception_state);
 }
 
 void WebGL2RenderingContextBase::texSubImage2D(
-    ExecutionContext* execution_context,
+    ScriptState* script_state,
     GLenum target,
     GLint level,
     GLint xoffset,
@@ -1788,9 +1797,9 @@ void WebGL2RenderingContextBase::texSubImage2D(
     GLenum type,
     VideoFrame* frame,
     ExceptionState& exception_state) {
-  WebGLRenderingContextBase::texSubImage2D(execution_context, target, level,
-                                           xoffset, yoffset, format, type,
-                                           frame, exception_state);
+  WebGLRenderingContextBase::texSubImage2D(script_state, target, level, xoffset,
+                                           yoffset, format, type, frame,
+                                           exception_state);
 }
 
 void WebGL2RenderingContextBase::texSubImage2D(
@@ -1981,7 +1990,7 @@ void WebGL2RenderingContextBase::texImage3D(GLenum target,
   TexImageHelperImageData(params, pixels);
 }
 
-void WebGL2RenderingContextBase::texImage3D(ExecutionContext* execution_context,
+void WebGL2RenderingContextBase::texImage3D(ScriptState* script_state,
                                             GLenum target,
                                             GLint level,
                                             GLint internalformat,
@@ -2003,11 +2012,12 @@ void WebGL2RenderingContextBase::texImage3D(ExecutionContext* execution_context,
   TexImageParams params;
   POPULATE_TEX_IMAGE_3D_PARAMS(params);
   params.border = 0;  // See https://crbug.com/1313604
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
   TexImageHelperHTMLImageElement(execution_context->GetSecurityOrigin(), params,
                                  image, exception_state);
 }
 
-void WebGL2RenderingContextBase::texImage3D(ExecutionContext* execution_context,
+void WebGL2RenderingContextBase::texImage3D(ScriptState* script_state,
                                             GLenum target,
                                             GLint level,
                                             GLint internalformat,
@@ -2029,11 +2039,12 @@ void WebGL2RenderingContextBase::texImage3D(ExecutionContext* execution_context,
   TexImageParams params;
   POPULATE_TEX_IMAGE_3D_PARAMS(params);
   params.border = 0;  // See https://crbug.com/1313604
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
   TexImageHelperCanvasRenderingContextHost(
       execution_context->GetSecurityOrigin(), params, canvas, exception_state);
 }
 
-void WebGL2RenderingContextBase::texImage3D(ExecutionContext* execution_context,
+void WebGL2RenderingContextBase::texImage3D(ScriptState* script_state,
                                             GLenum target,
                                             GLint level,
                                             GLint internalformat,
@@ -2055,11 +2066,12 @@ void WebGL2RenderingContextBase::texImage3D(ExecutionContext* execution_context,
   TexImageParams params;
   POPULATE_TEX_IMAGE_3D_PARAMS(params);
   params.border = 0;  // See https://crbug.com/1313604
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
   TexImageHelperHTMLVideoElement(execution_context->GetSecurityOrigin(), params,
                                  video, exception_state);
 }
 
-void WebGL2RenderingContextBase::texImage3D(ExecutionContext* execution_context,
+void WebGL2RenderingContextBase::texImage3D(ScriptState* script_state,
                                             GLenum target,
                                             GLint level,
                                             GLint internalformat,
@@ -2081,6 +2093,7 @@ void WebGL2RenderingContextBase::texImage3D(ExecutionContext* execution_context,
   TexImageParams params;
   POPULATE_TEX_IMAGE_3D_PARAMS(params);
   params.border = 0;  // See https://crbug.com/1313604
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
   TexImageHelperVideoFrame(execution_context->GetSecurityOrigin(), params,
                            frame, exception_state);
 }
@@ -2207,7 +2220,7 @@ void WebGL2RenderingContextBase::texSubImage3D(GLenum target,
 }
 
 void WebGL2RenderingContextBase::texSubImage3D(
-    ExecutionContext* execution_context,
+    ScriptState* script_state,
     GLenum target,
     GLint level,
     GLint xoffset,
@@ -2229,12 +2242,13 @@ void WebGL2RenderingContextBase::texSubImage3D(
   }
   TexImageParams params;
   POPULATE_TEX_SUB_IMAGE_3D_PARAMS(params);
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
   TexImageHelperHTMLImageElement(execution_context->GetSecurityOrigin(), params,
                                  image, exception_state);
 }
 
 void WebGL2RenderingContextBase::texSubImage3D(
-    ExecutionContext* execution_context,
+    ScriptState* script_state,
     GLenum target,
     GLint level,
     GLint xoffset,
@@ -2256,13 +2270,14 @@ void WebGL2RenderingContextBase::texSubImage3D(
   }
   TexImageParams params;
   POPULATE_TEX_SUB_IMAGE_3D_PARAMS(params);
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
   TexImageHelperCanvasRenderingContextHost(
       execution_context->GetSecurityOrigin(), params, context_host,
       exception_state);
 }
 
 void WebGL2RenderingContextBase::texSubImage3D(
-    ExecutionContext* execution_context,
+    ScriptState* script_state,
     GLenum target,
     GLint level,
     GLint xoffset,
@@ -2284,12 +2299,13 @@ void WebGL2RenderingContextBase::texSubImage3D(
   }
   TexImageParams params;
   POPULATE_TEX_SUB_IMAGE_3D_PARAMS(params);
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
   TexImageHelperHTMLVideoElement(execution_context->GetSecurityOrigin(), params,
                                  video, exception_state);
 }
 
 void WebGL2RenderingContextBase::texSubImage3D(
-    ExecutionContext* execution_context,
+    ScriptState* script_state,
     GLenum target,
     GLint level,
     GLint xoffset,
@@ -2311,6 +2327,7 @@ void WebGL2RenderingContextBase::texSubImage3D(
   }
   TexImageParams params;
   POPULATE_TEX_SUB_IMAGE_3D_PARAMS(params);
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
   TexImageHelperVideoFrame(execution_context->GetSecurityOrigin(), params,
                            frame, exception_state);
 }
@@ -2360,6 +2377,9 @@ void WebGL2RenderingContextBase::copyTexSubImage3D(GLenum target,
   ClearIfComposited(kClearCallerOther);
   ScopedDrawingBufferBinder binder(GetDrawingBuffer(),
                                    read_framebuffer_binding);
+  if (!binder.Succeeded()) {
+    return;
+  }
   ContextGL()->CopyTexSubImage3D(target, level, xoffset, yoffset, zoffset, x, y,
                                  width, height);
 }
@@ -4900,9 +4920,11 @@ ScriptValue WebGL2RenderingContextBase::getIndexedParameter(
   }
 }
 
-Vector<GLuint> WebGL2RenderingContextBase::getUniformIndices(
+absl::optional<Vector<GLuint>> WebGL2RenderingContextBase::getUniformIndices(
     WebGLProgram* program,
     const Vector<String>& uniform_names) {
+  // TODO(https://crbug.com/1465002): This should return absl::nullopt
+  // if there is an error.
   Vector<GLuint> result;
   if (!ValidateWebGLProgramOrShader("getUniformIndices", program))
     return result;
@@ -5420,6 +5442,17 @@ ScriptValue WebGL2RenderingContextBase::getParameter(ScriptState* script_state,
       SynthesizeGLError(GL_INVALID_ENUM, "getParameter",
                         "invalid parameter name, "
                         "WEBGL_clip_cull_distance not enabled");
+      return ScriptValue::CreateNull(script_state->GetIsolate());
+    case GL_MAX_PIXEL_LOCAL_STORAGE_PLANES_ANGLE:
+    case GL_MAX_COLOR_ATTACHMENTS_WITH_ACTIVE_PIXEL_LOCAL_STORAGE_ANGLE:
+    case GL_MAX_COMBINED_DRAW_BUFFERS_AND_PIXEL_LOCAL_STORAGE_PLANES_ANGLE:
+    case GL_PIXEL_LOCAL_STORAGE_ACTIVE_PLANES_ANGLE:
+      if (ExtensionEnabled(kWebGLShaderPixelLocalStorageName)) {
+        return GetUnsignedIntParameter(script_state, pname);
+      }
+      SynthesizeGLError(GL_INVALID_ENUM, "getParameter",
+                        "invalid parameter name, "
+                        "WEBGL_shader_pixel_local_storage not enabled");
       return ScriptValue::CreateNull(script_state->GetIsolate());
 
     default:

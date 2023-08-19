@@ -30,17 +30,9 @@ class UpgradeCenterBrowserAgent
   ~UpgradeCenterBrowserAgent() override;
 
   // WebStateListObserver methods
-  void WebStateInsertedAt(WebStateList* web_state_list,
-                          web::WebState* web_state,
-                          int index,
-                          bool activating) override;
-  void WebStateReplacedAt(WebStateList* web_state_list,
-                          web::WebState* old_web_state,
-                          web::WebState* new_web_state,
-                          int index) override;
-  void WillDetachWebStateAt(WebStateList* web_state_list,
-                            web::WebState* web_state,
-                            int index) override;
+  void WebStateListDidChange(WebStateList* web_state_list,
+                             const WebStateListChange& change,
+                             const WebStateListStatus& status) override;
   void WebStateListDestroyed(WebStateList* web_state_list) override;
 
   // web::WebStateObserver methods

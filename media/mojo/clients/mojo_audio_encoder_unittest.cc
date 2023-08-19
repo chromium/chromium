@@ -142,8 +142,8 @@ class MojoAudioEncoderTest : public ::testing::Test {
   // Mojo server-side
   std::unique_ptr<mojo::Receiver<mojom::AudioEncoder>> receiver_;
   std::unique_ptr<MojoAudioEncoderService> audio_encoder_service_;
-  raw_ptr<StrictMock<MockAudioEncoder>, DanglingUntriaged> mock_audio_encoder_ =
-      nullptr;
+  raw_ptr<StrictMock<MockAudioEncoder>, AcrossTasksDanglingUntriaged>
+      mock_audio_encoder_ = nullptr;
 };
 
 TEST_F(MojoAudioEncoderTest, Initialize_Success) {

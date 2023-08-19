@@ -17,6 +17,7 @@
 #include "content/public/browser/media_session_service.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/test_browser_context.h"
+#include "content/public/test/test_media_session_client.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/test/test_web_contents.h"
 #include "media/base/media_content_type.h"
@@ -25,6 +26,7 @@
 #include "services/media_session/public/cpp/test/mock_media_session.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
+#include "third_party/blink/public/common/features.h"
 
 using ::testing::_;
 
@@ -108,13 +110,14 @@ class MediaSessionImplTest : public RenderViewHostTestHarness {
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {media_session::features::kMediaSessionService,
-         media_session::features::kAudioFocusEnforcement},
+         media_session::features::kAudioFocusEnforcement,
+         blink::features::kMediaSessionEnterPictureInPicture},
         {});
 
     RenderViewHostTestHarness::SetUp();
 
     player_observer_ = std::make_unique<MockMediaSessionPlayerObserver>(
-        main_rfh(), media::MediaContentType::Persistent);
+        main_rfh(), media::MediaContentType::kPersistent);
     mock_media_session_service_ =
         std::make_unique<testing::NiceMock<MockMediaSessionServiceImpl>>(
             main_rfh());
@@ -300,11 +303,11 @@ TEST_F(MediaSessionImplTest, PepperForcesDuckAndRequestsFocus) {
   int player_id = player_observer_->StartNewPlayer();
 
   {
-    player_observer_->SetMediaContentType(media::MediaContentType::Pepper);
+    player_observer_->SetMediaContentType(media::MediaContentType::kPepper);
     MockMediaSessionMojoObserver observer(*GetMediaSession());
     GetMediaSession()->AddPlayer(player_observer_.get(), player_id);
     observer.WaitForState(MediaSessionInfo::SessionState::kActive);
-    player_observer_->SetMediaContentType(media::MediaContentType::Persistent);
+    player_observer_->SetMediaContentType(media::MediaContentType::kPersistent);
   }
 
   EXPECT_TRUE(GetForceDuck(GetMediaSession()));
@@ -785,6 +788,49 @@ TEST_F(MediaSessionImplTest, RaiseActivatesWebContents) {
   // When the WebContents does not have a delegate, |Raise()| should not crash.
   web_contents()->SetDelegate(nullptr);
   GetMediaSession()->Raise();
+}
+
+TEST_F(MediaSessionImplTest,
+       RegisteredEnterPictureInPictureExposesAutoPictureInPicture) {
+  // When the website has registered for 'enterpictureinpicture',
+  // MediaSessionImpl should expose both kEnterPictureInPicture and
+  // kEnterAutoPictureInPicture to the internal MediaSession service.
+  StartNewPlayer();
+  media_session::test::MockMediaSessionMojoObserver observer(
+      *GetMediaSession());
+  mock_media_session_service().EnableAction(
+      media_session::mojom::MediaSessionAction::kEnterPictureInPicture);
+  mock_media_session_service().FlushForTesting();
+
+  EXPECT_TRUE(base::Contains(
+      observer.actions(),
+      media_session::mojom::MediaSessionAction::kEnterPictureInPicture));
+  EXPECT_TRUE(base::Contains(
+      observer.actions(),
+      media_session::mojom::MediaSessionAction::kEnterAutoPictureInPicture));
+}
+
+TEST_F(MediaSessionImplTest, SessionInfoDontHideMetadataByDefault) {
+  EXPECT_FALSE(media_session::test::GetMediaSessionInfoSync(GetMediaSession())
+                   ->hide_metadata);
+}
+
+class MediaSessionImplWithMediaSessionClientTest : public MediaSessionImplTest {
+ protected:
+  TestMediaSessionClient client_;
+};
+
+TEST_F(MediaSessionImplWithMediaSessionClientTest,
+       SessionInfoDontHideMetadata) {
+  client_.SetShouldHideMetadata(false);
+  EXPECT_FALSE(media_session::test::GetMediaSessionInfoSync(GetMediaSession())
+                   ->hide_metadata);
+}
+
+TEST_F(MediaSessionImplWithMediaSessionClientTest, SessionInfoHideMetadata) {
+  client_.SetShouldHideMetadata(true);
+  EXPECT_TRUE(media_session::test::GetMediaSessionInfoSync(GetMediaSession())
+                  ->hide_metadata);
 }
 
 // Tests for throttling duration updates.

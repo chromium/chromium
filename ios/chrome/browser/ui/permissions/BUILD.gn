@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("permissions") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "permission_metrics_util.h",
     "permission_metrics_util.mm",
@@ -19,7 +18,6 @@ source_set("permissions") {
 }
 
 source_set("permission_info") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "permission_info.h",
     "permission_info.mm",
@@ -28,7 +26,6 @@ source_set("permission_info") {
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "permissions_constants.h",
     "permissions_constants.mm",
@@ -37,10 +34,7 @@ source_set("constants") {
 }
 
 source_set("eg_app_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "permissions_app_interface.h",
@@ -58,10 +52,7 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("eg_test_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "permissions_app_interface.h",
@@ -71,10 +62,7 @@ source_set("eg_test_support+eg2") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "permissions_egtest.mm" ]
   deps = [
@@ -82,13 +70,17 @@ source_set("eg2_tests") {
     ":eg_test_support+eg2",
     "//base",
     "//base/test:test_support",
+    "//components/supervised_user/core/common:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/overlays/public/web_content_area:constants",
+    "//ios/chrome/browser/signin:fake_system_identity",
+    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
     "//ios/chrome/browser/ui/badges:public",
     "//ios/chrome/browser/ui/infobars/banners:public",
     "//ios/chrome/browser/ui/infobars/modals:public",
     "//ios/chrome/browser/ui/permissions:constants",
     "//ios/chrome/browser/ui/permissions:permission_info",
+    "//ios/chrome/test:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/web/public/permissions",

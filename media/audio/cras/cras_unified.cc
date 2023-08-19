@@ -10,9 +10,12 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/trace_event/typed_macros.h"
 #include "media/audio/cras/audio_manager_cras_base.h"
+#include "media/base/audio_glitch_info.h"
 #include "media/base/audio_timestamp_helper.h"
 
 namespace media {
@@ -300,6 +303,7 @@ void CrasUnifiedStream::GetVolume(double* volume) {
 
 // Static callback asking for samples.
 int CrasUnifiedStream::UnifiedCallback(struct libcras_stream_cb_data* data) {
+  TRACE_EVENT_BEGIN("audio", "CrasUnifiedStream::UnifiedCallback");
   unsigned int frames;
   uint8_t* buf;
   struct timespec latency;
@@ -314,7 +318,14 @@ int CrasUnifiedStream::UnifiedCallback(struct libcras_stream_cb_data* data) {
   base::TimeDelta underrun_duration =
       base::TimeDelta::FromTimeSpec(underrun_duration_ts);
   me->CalculateAudioGlitches(underrun_duration);
-  return me->WriteAudio(frames, buf, &latency);
+  uint32_t filled_frames = me->WriteAudio(frames, buf, &latency);
+  TRACE_EVENT_END("audio", [&](perfetto::EventContext ctx) {
+    auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+    auto* data = event->set_chromeos_cras_unified();
+    data->set_requested_frames(frames);
+    data->set_filled_frames(filled_frames);
+  });
+  return filled_frames;
 }
 
 // Static callback for stream errors.
@@ -331,14 +342,26 @@ uint32_t CrasUnifiedStream::WriteAudio(size_t frames,
                                        uint8_t* buffer,
                                        const timespec* latency_ts) {
   DCHECK_EQ(frames, static_cast<size_t>(output_bus_->frames()));
+  const base::TimeDelta latency = base::TimeDelta::FromTimeSpec(*latency_ts);
+  TRACE_EVENT("audio", "CrasUnifiedStream::WriteAudio",
+              perfetto::Flow::ProcessScoped(stream_id_),
+              [&](perfetto::EventContext ctx) {
+                auto* event =
+                    ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+                auto* data = event->set_chromeos_cras_unified();
+                data->set_sample_rate(params_.sample_rate());
+                data->set_latency_us(latency.InMicroseconds());
+              });
 
   // Treat negative latency (if we are too slow to render) as 0.
-  const base::TimeDelta delay =
-      std::max(base::TimeDelta::FromTimeSpec(*latency_ts), base::TimeDelta());
+  const base::TimeDelta delay = std::max(latency, base::TimeDelta());
+  const AudioGlitchInfo glitch_info = glitch_info_accumulator_.GetAndReset();
 
-  int frames_filled = source_callback_->OnMoreData(
-      delay, base::TimeTicks::Now(), glitch_info_accumulator_.GetAndReset(),
-      output_bus_.get());
+  UMA_HISTOGRAM_COUNTS_1000("Media.Audio.Render.SystemDelay",
+                            delay.InMilliseconds());
+  int frames_filled =
+      source_callback_->OnMoreData(BoundedDelay(delay), base::TimeTicks::Now(),
+                                   glitch_info, output_bus_.get());
 
   peak_detector_->FindPeak(output_bus_.get());
 
@@ -382,6 +405,15 @@ void CrasUnifiedStream::ReportAndResetStats() {
 
 void CrasUnifiedStream::CalculateAudioGlitches(
     base::TimeDelta underrun_duration) {
+  TRACE_EVENT(
+      "audio", "CrasUnifiedStream::CalculateAudioGlitches",
+      [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_chromeos_cras_unified();
+        data->set_underrun_duration_us(underrun_duration.InMicroseconds());
+        data->set_last_underrun_duration_us(
+            last_underrun_duration_.InMicroseconds());
+      });
   // |underrun_duration| obtained from callback is the cumulative value
   // of the filled zero frames of the whole stream. Calculate
   // the filled zero frames duration this callback.
@@ -392,8 +424,14 @@ void CrasUnifiedStream::CalculateAudioGlitches(
   glitch_reporter_.UpdateStats(underrun_glitch_duration);
 
   if (underrun_glitch_duration.is_positive()) {
-    glitch_info_accumulator_.Add(
-        AudioGlitchInfo{.duration = underrun_glitch_duration, .count = 1});
+    glitch_info_accumulator_.Add(AudioGlitchInfo::SingleBoundedGlitch(
+        underrun_glitch_duration, AudioGlitchInfo::Direction::kRender));
+    TRACE_EVENT_INSTANT("audio", "glitch", [&](perfetto::EventContext ctx) {
+      auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+      auto* data = event->set_chromeos_cras_unified();
+      data->set_underrun_glitch_duration_us(
+          underrun_glitch_duration.InMicroseconds());
+    });
   }
   last_underrun_duration_ = underrun_duration;
 }

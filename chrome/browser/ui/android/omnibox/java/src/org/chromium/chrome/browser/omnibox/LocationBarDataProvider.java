@@ -41,6 +41,9 @@ public interface LocationBarDataProvider {
         /** Notifies about possible changes to values affecting the status icon. */
         default void onSecurityStateChanged(){};
 
+        /** Notifies when the page stopped loading. */
+        default void onPageLoadStopped() {}
+
         default void onTitleChanged(){};
         default void onUrlChanged(){};
 
@@ -52,10 +55,6 @@ public interface LocationBarDataProvider {
 
     /** Removes an observer of changes to LocationBarDataProvider's data. */
     void removeObserver(Observer observer);
-
-    /** Returns The url for the currently active page.*/
-    @NonNull
-    String getCurrentUrl();
 
     /**
      * Returns the url of the current tab, represented as a GURL. Returns an empty GURL when there

@@ -14,7 +14,6 @@
 #include "cc/raster/task_graph_runner.h"
 #include "cc/raster/tile_task.h"
 #include "cc/resources/resource_pool.h"
-#include "components/viz/common/resources/resource_format.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -61,12 +60,6 @@ class CC_EXPORT RasterBufferProvider {
       bool depends_on_hardware_accelerated_jpeg_candidates,
       bool depends_on_hardware_accelerated_webp_candidates) = 0;
 
-  // Flush pending work from writing the content of the RasterBuffer, so that
-  // queries to tell if the backing is ready to draw from will get the right
-  // answer. This should be done before calling IsResourceReadyToDraw() or
-  // SetReadyToDrawCallback().
-  virtual void Flush() = 0;
-
   // Returns the format to use for the tiles.
   virtual viz::SharedImageFormat GetFormat() const = 0;
 
@@ -79,7 +72,7 @@ class CC_EXPORT RasterBufferProvider {
 
   // Returns true if the indicated resource is ready to draw.
   virtual bool IsResourceReadyToDraw(
-      const ResourcePool::InUsePoolResource& resource) const = 0;
+      const ResourcePool::InUsePoolResource& resource) = 0;
 
   // Calls the provided |callback| when the provided |resources| are ready to
   // draw. Returns a callback ID which can be used to track this callback.
@@ -90,7 +83,7 @@ class CC_EXPORT RasterBufferProvider {
   virtual uint64_t SetReadyToDrawCallback(
       const std::vector<const ResourcePool::InUsePoolResource*>& resources,
       base::OnceClosure callback,
-      uint64_t pending_callback_id) const = 0;
+      uint64_t pending_callback_id) = 0;
 
   // Sets an event, guaranteed to live past this object's lifetime, that is
   // signalled when the TileManger is cancelling tasks. Subclasses can use
@@ -100,6 +93,23 @@ class CC_EXPORT RasterBufferProvider {
 
   // Shutdown for doing cleanup.
   virtual void Shutdown() = 0;
+
+  // Must be called when the contents of a buffer acquired for raster are
+  // updated. This should be done after all GPU commands for the raster work
+  // have been issued.
+  void NotifyWorkSubmitted() { needs_flush_ = true; }
+
+ protected:
+  void FlushIfNeeded();
+
+  // Flush pending work from writing the content of the RasterBuffer, so that
+  // queries to tell if the backing is ready to draw from will get the right
+  // answer. This should be done before calling IsResourceReadyToDraw() or
+  // SetReadyToDrawCallback().
+  virtual void Flush() = 0;
+
+ private:
+  bool needs_flush_ = false;
 };
 
 }  // namespace cc

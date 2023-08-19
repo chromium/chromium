@@ -33,7 +33,7 @@ found in the LICENSE file.
                  screen to password input and shows error that previously
                  entered password is incorrect.
 -->
-<style include="cr-shared-style oobe-dialog-host-styles">
+<style include="cr-shared-style oobe-dialog-host-styles cros-color-overrides">
   :host {
     --offline-login-dialog-width: 100%;
     --offline-login-animation-margin: 50%;
@@ -52,6 +52,10 @@ found in the LICENSE file.
 
   cr-input {
     --cr-input-padding-start: 0px;
+  }
+
+  :host-context(.jelly-enabled) cr-input#emailInput, cr-input#passwordInput {
+    --cr-input-background-color: var(--cros-sys-input_field_on_shaded);
   }
 
   /* icon, title, subtitle styles must approximate current Gaia style. */

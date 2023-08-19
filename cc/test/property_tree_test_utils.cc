@@ -461,7 +461,7 @@ void SetupViewport(LayerImpl* root,
   std::unique_ptr<LayerImpl> inner_viewport_scroll_layer =
       LayerImpl::Create(layer_tree_impl, 10000);
   inner_viewport_scroll_layer->SetBounds(outer_viewport_size);
-  inner_viewport_scroll_layer->SetHitTestable(true);
+  inner_viewport_scroll_layer->SetHitTestOpaqueness(HitTestOpaqueness::kOpaque);
   inner_viewport_scroll_layer->SetElementId(
       LayerIdToElementIdForTesting(inner_viewport_scroll_layer->id()));
 
@@ -469,7 +469,7 @@ void SetupViewport(LayerImpl* root,
       LayerImpl::Create(layer_tree_impl, 10001);
   outer_viewport_scroll_layer->SetBounds(content_size);
   outer_viewport_scroll_layer->SetDrawsContent(true);
-  outer_viewport_scroll_layer->SetHitTestable(true);
+  outer_viewport_scroll_layer->SetHitTestOpaqueness(HitTestOpaqueness::kOpaque);
   outer_viewport_scroll_layer->SetElementId(
       LayerIdToElementIdForTesting(outer_viewport_scroll_layer->id()));
 

@@ -54,10 +54,13 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter
   ~ClipboardHistoryMenuModelAdapter() override;
 
   // Shows the menu anchored at `anchor_rect`. `source_type` and `show_source`
-  // indicate how the menu was triggered.
+  // indicate how the menu was triggered. `menu_last_time_shown` and
+  // `nudge_last_time_shown` indicate when the menu or any nudge was last shown.
   void Run(const gfx::Rect& anchor_rect,
            ui::MenuSourceType source_type,
-           crosapi::mojom::ClipboardHistoryControllerShowSource show_source);
+           crosapi::mojom::ClipboardHistoryControllerShowSource show_source,
+           const absl::optional<base::Time>& menu_last_time_shown,
+           const absl::optional<base::Time>& nudge_last_time_shown);
 
   // Returns if the menu is currently running.
   bool IsRunning() const;
@@ -65,6 +68,11 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter
   // Hides and cancels the menu. `will_paste_item` indicates whether a clipboard
   // history item will be pasted after the menu is closed.
   void Cancel(bool will_paste_item);
+
+  // Returns the command of the menu's first clipboard history item. This
+  // differs from `clipboard_history_util::kFirstItemCommandId` when the menu's
+  // first item has been removed. If the menu is empty, the result is absent.
+  absl::optional<int> GetFirstMenuItemCommand();
 
   // Returns the command of the currently selected menu item. If no menu item is
   // currently selected, returns |absl::nullopt|.
@@ -129,15 +137,21 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter
 
   // The model which holds the contents of the menu.
   std::unique_ptr<MenuModelWithWillCloseCallback> const model_;
+
   // The root MenuItemView which contains all child MenuItemViews. Owned by
   // |menu_runner_|.
   raw_ptr<views::MenuItemView, DanglingUntriaged | ExperimentalAsh> root_view_ =
       nullptr;
+
   // Responsible for showing |root_view_|.
   std::unique_ptr<views::MenuRunner> menu_runner_;
 
   // The timestamp taken when the menu is opened. Used in metrics.
   base::TimeTicks menu_open_time_;
+
+  // The source which opened the menu, absent until the menu is `Run()`.
+  absl::optional<crosapi::mojom::ClipboardHistoryControllerShowSource>
+      menu_show_source_;
 
   // The mapping between the command ids and items that are copied from
   // `clipboard_history_` when the menu is created. It is used to solve the
@@ -156,6 +170,12 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter
   // Indicates the number of item deletion operations in progress. Note that
   // a `ClipboardHistoryItemView` instance is deleted asynchronously.
   int item_deletion_in_progress_count_ = 0;
+
+  // The index of the clipboard history menu header, if it exists.
+  absl::optional<size_t> header_index_;
+
+  // The index of the clipboard history menu footer, if it exists.
+  absl::optional<size_t> footer_index_;
 
   std::unique_ptr<ScopedA11yIgnore> scoped_ignore_;
 

@@ -69,16 +69,21 @@ void MergeForSubframesWithAdjustedTime(
   DCHECK(inout_timing);
   const ContentfulPaintTimingInfo& merged_candidate =
       MergeTimingsBySizeAndTime(new_candidate, *inout_timing);
-  // Image load start/end are not reported for subframe image LCP elements.
-  inout_timing->Reset(
-      merged_candidate.Time(), merged_candidate.Size(), merged_candidate.Type(),
-      merged_candidate.ImageBPP(), merged_candidate.ImageRequestPriority(),
-      /*image_load_start=*/absl::nullopt, /*image_load_end=*/absl::nullopt);
+  // Image discovery time, load start/end are not reported for subframe image
+  // LCP elements.
+  inout_timing->Reset(merged_candidate.Time(), merged_candidate.Size(),
+                      merged_candidate.Type(), merged_candidate.ImageBPP(),
+                      merged_candidate.ImageRequestPriority(),
+                      /*image_discovery_time=*/absl::nullopt,
+                      /*image_load_start=*/absl::nullopt,
+                      /*image_load_end=*/absl::nullopt);
 }
 
 void Reset(ContentfulPaintTimingInfo& timing) {
   timing.Reset(absl::nullopt, 0u, blink::LargestContentfulPaintType::kNone,
-               /*image_bpp=*/0.0, /*image_request_priority=*/absl::nullopt,
+               /*image_bpp=*/0.0,
+               /*image_request_priority=*/absl::nullopt,
+               /*image_discovery_time=*/absl::nullopt,
                /*image_load_start=*/absl::nullopt,
                /*image_load_end=*/absl::nullopt);
 }
@@ -177,6 +182,7 @@ void ContentfulPaintTimingInfo::Reset(
     blink::LargestContentfulPaintType type,
     double image_bpp,
     const absl::optional<net::RequestPriority>& image_request_priority,
+    const absl::optional<base::TimeDelta>& image_discovery_time,
     const absl::optional<base::TimeDelta>& image_load_start,
     const absl::optional<base::TimeDelta>& image_load_end) {
   size_ = size;
@@ -184,6 +190,7 @@ void ContentfulPaintTimingInfo::Reset(
   type_ = type;
   image_bpp_ = image_bpp;
   image_request_priority_ = image_request_priority;
+  image_discovery_time_ = image_discovery_time;
   image_load_start_ = image_load_start;
   image_load_end_ = image_load_end;
 }
@@ -243,6 +250,9 @@ LargestContentfulPaintHandler::LargestContentfulPaintHandler()
                                  blink::LargestContentfulPaintType::kNone),
       cross_site_subframe_contentful_paint_(
           false /*in_main_frame*/,
+          blink::LargestContentfulPaintType::kNone),
+      soft_navigation_contentful_paint_candidate_(
+          false,
           blink::LargestContentfulPaintType::kNone) {}
 
 LargestContentfulPaintHandler::~LargestContentfulPaintHandler() = default;
@@ -254,6 +264,36 @@ LargestContentfulPaintHandler::MergeMainFrameAndSubframes() const {
   const ContentfulPaintTimingInfo& subframe_timing =
       subframe_contentful_paint_.MergeTextAndImageTiming();
   return MergeTimingsBySizeAndTime(main_frame_timing, subframe_timing);
+}
+
+void LargestContentfulPaintHandler::UpdateSoftNavigationLargestContentfulPaint(
+    const page_load_metrics::mojom::LargestContentfulPaintTiming&
+        largest_contentful_paint) {
+  if (largest_contentful_paint.largest_text_paint.has_value()) {
+    // Image load start/end are not applicable to text LCP elements.
+    soft_navigation_contentful_paint_candidate_.Text().Reset(
+        largest_contentful_paint.largest_text_paint,
+        largest_contentful_paint.largest_text_paint_size,
+        static_cast<blink::LargestContentfulPaintType>(
+            largest_contentful_paint.type),
+        /*image_bpp=*/0.0,
+        /*image_request_priority=*/absl::nullopt,
+        /*image_discovery_time=*/absl::nullopt,
+        /*image_load_start=*/absl::nullopt,
+        /*image_load_end=*/absl::nullopt);
+  }
+  if (largest_contentful_paint.largest_image_paint.has_value()) {
+    soft_navigation_contentful_paint_candidate_.Image().Reset(
+        largest_contentful_paint.largest_image_paint,
+        largest_contentful_paint.largest_image_paint_size,
+        static_cast<blink::LargestContentfulPaintType>(
+            largest_contentful_paint.type),
+        largest_contentful_paint.image_bpp,
+        GetImageRequestPriority(largest_contentful_paint),
+        largest_contentful_paint.largest_image_discovery_time,
+        largest_contentful_paint.largest_image_load_start,
+        largest_contentful_paint.largest_image_load_end);
+  }
 }
 
 void LargestContentfulPaintHandler::RecordMainFrameTiming(
@@ -273,6 +313,7 @@ void LargestContentfulPaintHandler::RecordMainFrameTiming(
             largest_contentful_paint.type),
         /*image_bpp=*/0.0,
         /*image_request_priority=*/absl::nullopt,
+        /*image_discovery_time=*/absl::nullopt,
         /*image_load_start=*/absl::nullopt,
         /*image_load_end=*/absl::nullopt);
   }
@@ -284,6 +325,7 @@ void LargestContentfulPaintHandler::RecordMainFrameTiming(
             largest_contentful_paint.type),
         largest_contentful_paint.image_bpp,
         GetImageRequestPriority(largest_contentful_paint),
+        largest_contentful_paint.largest_image_discovery_time,
         largest_contentful_paint.largest_image_load_start,
         largest_contentful_paint.largest_image_load_end);
   }

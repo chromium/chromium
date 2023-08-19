@@ -6,21 +6,23 @@
 
 #include <cstdint>
 #include <string>
-#include "base/logging.h"
+#include <string_view>
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/test/task_environment.h"
 #include "base/token.h"
+#include "base/uuid.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/policy/messaging_layer/util/test_request_payload.h"
+#include "components/policy/core/common/management/management_service.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/reporting/resources/resource_manager.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::AllOf;
 using ::testing::Eq;
-using ::testing::Not;
+using ::testing::Lt;
 
 namespace reporting {
 namespace {
@@ -39,17 +41,20 @@ constexpr CompressionInformation::CompressionAlgorithm kCompressionAlgorithm =
 class RecordUploadRequestBuilderTest : public ::testing::TestWithParam<bool> {
  public:
   RecordUploadRequestBuilderTest() = default;
+  const std::string kGenerationGuid =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
 
  protected:
-  static EncryptedRecord GenerateEncryptedRecord(
-      const base::StringPiece encrypted_wrapped_record,
-      const bool set_compression = false) {
+  EncryptedRecord GenerateEncryptedRecord(
+      const std::string_view encrypted_wrapped_record,
+      const bool set_compression = false) const {
     EncryptedRecord record;
     record.set_encrypted_wrapped_record(std::string(encrypted_wrapped_record));
 
     auto* const sequence_information = record.mutable_sequence_information();
     sequence_information->set_sequencing_id(GetNextSequencingId());
     sequence_information->set_generation_id(kGenerationId);
+    sequence_information->set_generation_guid(kGenerationGuid);
     sequence_information->set_priority(kPriority);
 
     auto* const encryption_info = record.mutable_encryption_info();
@@ -68,7 +73,7 @@ class RecordUploadRequestBuilderTest : public ::testing::TestWithParam<bool> {
   std::pair<ScopedReservation, std::vector<EncryptedRecord>>
   GetRecordListWithCorruptionAtIndex(size_t num_records,
                                      size_t corrupted_record_index) {
-    DCHECK(corrupted_record_index < num_records)
+    EXPECT_THAT(corrupted_record_index, Lt(num_records))
         << "Corrupted record index greater than or equal to record count";
 
     std::vector<EncryptedRecord> records;
@@ -108,6 +113,14 @@ class RecordUploadRequestBuilderTest : public ::testing::TestWithParam<bool> {
 
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<ResourceManager> memory_resource_;
+
+  // Set up device as a managed device by default. To set the device as
+  // unmanaged, create a new `policy::ScopedManagementServiceOverrideForTesting`
+  // inside the test.
+  policy::ScopedManagementServiceOverrideForTesting scoped_management_service_ =
+      policy::ScopedManagementServiceOverrideForTesting(
+          policy::ManagementServiceFactory::GetForPlatform(),
+          policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
 };
 
 TEST_P(RecordUploadRequestBuilderTest, AcceptEncryptedRecordsList) {
@@ -215,8 +228,34 @@ TEST_P(RecordUploadRequestBuilderTest, DenyPoorlyFormedEncryptedRecords) {
   // Finish correctly setting encryption info - expect complete call.
   encryption_info->set_public_key_id(1234);
 
-  const auto record_dict =
+  auto record_dict =
       EncryptedRecordDictionaryBuilder(record, record_reservation).Build();
+  ASSERT_TRUE(record_dict.has_value());
+  EXPECT_THAT(record_dict.value(), IsRecordValid<>());
+  EXPECT_TRUE(record_reservation.reserved());
+
+  // Now, verify that generation guid is required when the device is in an
+  // unmanaged state. The generation guid is not set, so we just need to ensure
+  // the device is unmanaged.
+
+  //  Change device state from managed to unmanaged. (Device is set to a managed
+  //  state at the beginning of each tests via `scoped_management_service_` in
+  //  `RecordUploadRequestBuilderTest` class )
+  const auto scoped_management_service =
+      policy::ScopedManagementServiceOverrideForTesting(
+          policy::ManagementServiceFactory::GetForPlatform(),
+          policy::EnterpriseManagementAuthority::NONE);
+
+  // Generation guid is not set and the device is unmanaged, so expect failure.
+  EXPECT_FALSE(EncryptedRecordDictionaryBuilder(record, record_reservation)
+                   .Build()
+                   .has_value());
+
+  // Set the generation id - expect complete call.
+  sequence_information->set_generation_guid(kGenerationGuid);
+  record_dict =
+      EncryptedRecordDictionaryBuilder(record, record_reservation).Build();
+
   ASSERT_TRUE(record_dict.has_value());
   EXPECT_THAT(record_dict.value(), IsRecordValid<>());
   EXPECT_TRUE(record_reservation.reserved());

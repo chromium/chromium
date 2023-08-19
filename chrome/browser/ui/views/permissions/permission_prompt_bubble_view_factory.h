@@ -9,7 +9,7 @@
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
 
 // Constructs the appropriate prompt bubble view for the |delegate| request.
-base::raw_ptr<PermissionPromptBubbleBaseView> CreatePermissionPromptBubbleView(
+raw_ptr<PermissionPromptBubbleBaseView> CreatePermissionPromptBubbleView(
     Browser* browser,
     base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate,
     base::TimeTicks permission_requested_time,

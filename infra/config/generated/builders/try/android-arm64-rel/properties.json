@@ -22,7 +22,7 @@
               },
               "legacy_chromium_config": {
                 "apply_configs": [
-                  "download_vr_test_apks",
+                  "download_xr_test_apks",
                   "mb"
                 ],
                 "build_config": "Release",
@@ -53,7 +53,7 @@
               },
               "legacy_chromium_config": {
                 "apply_configs": [
-                  "download_vr_test_apks",
+                  "download_xr_test_apks",
                   "mb"
                 ],
                 "build_config": "Release",
@@ -96,7 +96,8 @@
     "use_clang_coverage": true
   },
   "$build/flakiness": {
-    "check_for_flakiness": true
+    "check_for_flakiness": true,
+    "check_for_flakiness_with_resultdb": true
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],

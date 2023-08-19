@@ -82,29 +82,6 @@ bool Validators::GpuRasterMsaaModeValidator::IsValid(
   return false;
 }
 
-static const viz::ResourceFormat valid_viz_resource_format_table[] = {
-    viz::ResourceFormat::RGBA_8888,
-    viz::ResourceFormat::RGBA_4444,
-    viz::ResourceFormat::BGRA_8888,
-    viz::ResourceFormat::ALPHA_8,
-    viz::ResourceFormat::LUMINANCE_8,
-    viz::ResourceFormat::RGB_565,
-    viz::ResourceFormat::BGR_565,
-    viz::ResourceFormat::RED_8,
-    viz::ResourceFormat::RG_88,
-    viz::ResourceFormat::LUMINANCE_F16,
-    viz::ResourceFormat::RGBA_F16,
-    viz::ResourceFormat::R16_EXT,
-    viz::ResourceFormat::RGBX_8888,
-    viz::ResourceFormat::BGRX_8888,
-    viz::ResourceFormat::RGBA_1010102,
-    viz::ResourceFormat::BGRA_1010102,
-    viz::ResourceFormat::YVU_420,
-    viz::ResourceFormat::YUV_420_BIPLANAR,
-    viz::ResourceFormat::YUVA_420_TRIPLANAR,
-    viz::ResourceFormat::P010,
-};
-
 Validators::Validators()
     : g_l_state(valid_g_l_state_table, std::size(valid_g_l_state_table)),
       texture_mag_filter_mode(valid_texture_mag_filter_mode_table,
@@ -116,8 +93,6 @@ Validators::Validators()
       texture_wrap_mode(valid_texture_wrap_mode_table,
                         std::size(valid_texture_wrap_mode_table)),
       gfx_buffer_usage(valid_gfx_buffer_usage_table,
-                       std::size(valid_gfx_buffer_usage_table)),
-      viz_resource_format(valid_viz_resource_format_table,
-                          std::size(valid_viz_resource_format_table)) {}
+                       std::size(valid_gfx_buffer_usage_table)) {}
 
 #endif  // GPU_COMMAND_BUFFER_SERVICE_RASTER_CMD_VALIDATION_IMPLEMENTATION_AUTOGEN_H_

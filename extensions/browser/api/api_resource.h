@@ -6,7 +6,7 @@
 #define EXTENSIONS_BROWSER_API_API_RESOURCE_H_
 
 #include "content/public/browser/browser_thread.h"
-#include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 
 namespace extensions {
 
@@ -20,7 +20,7 @@ class ApiResource {
 
   virtual ~ApiResource();
 
-  const std::string& owner_extension_id() const { return owner_extension_id_; }
+  const ExtensionId& owner_extension_id() const { return owner_extension_id_; }
 
   // If this method returns |true|, the resource remains open when the
   // owning extension is suspended due to inactivity.
@@ -34,7 +34,7 @@ class ApiResource {
 
  private:
   // The extension that owns this resource.
-  const std::string owner_extension_id_;
+  const ExtensionId owner_extension_id_;
 };
 
 }  // namespace extensions

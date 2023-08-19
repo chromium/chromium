@@ -1,0 +1,10 @@
+Typeahead does not select disabled selectlist option
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS selectlist.open is false
+PASS selectlist.value is "United States"
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

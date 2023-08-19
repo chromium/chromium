@@ -13,7 +13,7 @@
 
 namespace signin {
 
-bool VefiryJwtSingature(base::StringPiece jwt,
+bool VerifyJwtSignature(base::StringPiece jwt,
                         crypto::SignatureVerifier::SignatureAlgorithm algorithm,
                         base::span<const uint8_t> public_key) {
   std::vector<base::StringPiece> parts = base::SplitStringPiece(

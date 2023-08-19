@@ -115,16 +115,17 @@ void DesktopMediaListAsh::EnumerateSources(
       if (update_thumbnails)
         CaptureThumbnail(screen_source.id, root_windows[i]);
     } else {
-      // The list of desks containers depends on whether the Virtual Desks
-      // feature is enabled or not.
-      for (int desk_id : ash::desks_util::GetDesksContainersIds())
+      for (int desk_id : ash::desks_util::GetDesksContainersIds()) {
         EnumerateWindowsForRoot(sources, update_thumbnails, root_windows[i],
                                 desk_id);
+      }
 
       EnumerateWindowsForRoot(sources, update_thumbnails, root_windows[i],
                               ash::kShellWindowId_AlwaysOnTopContainer);
       EnumerateWindowsForRoot(sources, update_thumbnails, root_windows[i],
                               ash::kShellWindowId_PipContainer);
+      EnumerateWindowsForRoot(sources, update_thumbnails, root_windows[i],
+                              ash::kShellWindowId_FloatContainer);
     }
   }
 }

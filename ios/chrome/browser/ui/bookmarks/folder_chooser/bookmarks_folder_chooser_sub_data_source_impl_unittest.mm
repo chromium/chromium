@@ -13,6 +13,7 @@
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/bookmarks/test/bookmark_test_helpers.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/bookmarks/account_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -22,17 +23,13 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
 
 namespace {
 
 enum class TestParam {
-  kProfileModel,
+  kLocalOrSyncableModel,
   kAccountModel,
 };
 
@@ -97,7 +94,7 @@ class BookmarksFolderChooserSubDataSourceImplTest
     // `scoped_feature_list_` should be initialized before creating the
     // `model_`. Otherwise `AccountBookmarkModelFactory` will return `nullptr`.
     scoped_feature_list_.InitAndEnableFeature(
-        bookmarks::kEnableBookmarksAccountStorage);
+        syncer::kEnableBookmarksAccountStorage);
     model_ = GetParam() == TestParam::kAccountModel
                  ? ios::AccountBookmarkModelFactory::GetForBrowserState(
                        browser_state_.get())
@@ -301,4 +298,4 @@ TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestFolderMoved) {
 INSTANTIATE_TEST_SUITE_P(/* No InstantionName*/,
                          BookmarksFolderChooserSubDataSourceImplTest,
                          testing::Values(TestParam::kAccountModel,
-                                         TestParam::kProfileModel));
+                                         TestParam::kLocalOrSyncableModel));

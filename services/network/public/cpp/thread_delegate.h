@@ -12,7 +12,6 @@
 
 namespace base {
 namespace sequence_manager {
-class TaskQueue;
 class SequenceManager;
 }  // namespace sequence_manager
 }  // namespace base
@@ -38,12 +37,12 @@ class COMPONENT_EXPORT(NETWORK_CPP) ThreadDelegate
   static scoped_refptr<base::SequencedTaskRunner> GetHighPriorityTaskRunner();
 
   scoped_refptr<base::SingleThreadTaskRunner> GetDefaultTaskRunner() override;
-  void BindToCurrentThread(base::TimerSlack timer_slack) override;
+  void BindToCurrentThread() override;
 
  private:
   std::unique_ptr<base::sequence_manager::SequenceManager> sequence_manager_;
-  scoped_refptr<base::sequence_manager::TaskQueue> default_task_queue_;
-  scoped_refptr<base::sequence_manager::TaskQueue> high_priority_task_queue_;
+  base::sequence_manager::TaskQueue::Handle default_task_queue_;
+  base::sequence_manager::TaskQueue::Handle high_priority_task_queue_;
   base::MessagePumpType message_pump_type_;
 };
 

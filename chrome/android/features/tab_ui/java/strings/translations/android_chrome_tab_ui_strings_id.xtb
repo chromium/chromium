@@ -3,8 +3,6 @@
 <translationbundle lang="id">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> dari beberapa tab Anda belum digunakan akhir-akhir ini. Tutup?</translation>
 <translation id="125153950246128346">Ketuk untuk melihat tab lainnya</translation>
-<translation id="1403228085774130835">Anda dapat menemukan tab yang ditutup di Tab terbaru di bagian menu utama Chrome</translation>
-<translation id="1455506303394048917">Aktivitas Anda di tab Samaran ini akan dihapus dari perangkat ini</translation>
 <translation id="1499635324672558517">Tutup semua tab Samaran?</translation>
 <translation id="1657719826150349398">Pindahkan tab ke bawah</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
@@ -47,6 +45,7 @@
 <translation id="5073204694187207510">Sembunyikan petak layar penuh</translation>
 <translation id="5076161749301278626">Lihat ulasan toko?</translation>
 <translation id="5082793167783849073">Bandingkan halaman secara cepat dengan membuat grup. Untuk memulai, sentuh lama link.</translation>
+<translation id="5339733443032484186">Tab terakhir Anda</translation>
 <translation id="5490235265819901748">Grup tab diperluas</translation>
 <translation id="5494920125229734069">Pilih semua</translation>
 <translation id="5556417849629758491">Lihat info toko, opsi tersedia di dekat bagian atas layar</translation>
@@ -62,10 +61,12 @@
 <translation id="6228793724645064692">(rating toko)</translation>
 <translation id="6333260925957816943">Informasi tentang toko ini</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Pisahkan <ph name="TABS_COUNT_ONE" /> tab yang dipilih}other{Pisahkan <ph name="TABS_COUNT_MANY" /> tab yang dipilih}}</translation>
+<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Anda dapat menemukan tab yang ditutup di Tab terbaru di bagian menu utama Chrome. Tab Samaran Anda tidak akan tersedia.}other{Anda dapat menemukan tab yang ditutup di Tab terbaru di bagian menu utama Chrome. # tab Samaran Anda tidak akan tersedia.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
 <translation id="6549021453810473782">Lihat info toko</translation>
 <translation id="6562820390860419811">Pindahkan tab ke kiri</translation>
 <translation id="6615455863669487791">Tunjukkan</translation>
+<translation id="661742612106409204">Anda dapat menemukan tab yang ditutup di Tab terbaru di bagian menu utama Chrome.</translation>
 <translation id="6840760312327750441">Untuk mengelompokkan tab, sentuh lama sebuah tab. Lalu, tarik ke tab lainnya.</translation>
 <translation id="6856809498882026482">Sembunyikan mode multi-pilihan</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Bagikan tab}other{Bagikan tab}}</translation>

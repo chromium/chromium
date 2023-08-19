@@ -53,7 +53,7 @@ class ExtensionInfoGenerator;
 // A key that indicates whether the safety check warning for this
 // extension has been acknowledged because the user has chosen to keep
 // it in a past review.
-constexpr PrefMap kPrefAcknowledgeSafetyCheckWarning = {
+inline constexpr PrefMap kPrefAcknowledgeSafetyCheckWarning = {
     "ack_safety_check_warning", PrefType::kBool, PrefScope::kExtensionSpecific};
 
 namespace api {
@@ -90,6 +90,10 @@ class DeveloperPrivateEventRouter : public ExtensionRegistryObserver,
   // Add or remove an ID to the list of extensions subscribed to events.
   void AddExtensionId(const std::string& extension_id);
   void RemoveExtensionId(const std::string& extension_id);
+
+  // Called when the configuration (such as user preferences) for an extension
+  // has changed in a way that may affect the chrome://extensions UI.
+  void OnExtensionConfigurationChanged(const std::string& extension_id);
 
  private:
   // ExtensionRegistryObserver:
@@ -938,6 +942,44 @@ class DeveloperPrivateUpdateSiteAccessFunction
   ResponseAction Run() override;
 
   void OnSiteSettingsUpdated();
+};
+
+class DeveloperPrivateRemoveMultipleExtensionsFunction
+    : public DeveloperPrivateAPIFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("developerPrivate.removeMultipleExtensions",
+                             DEVELOPERPRIVATE_REMOVEMULTIPLEEXTENSIONS)
+  DeveloperPrivateRemoveMultipleExtensionsFunction();
+
+  DeveloperPrivateRemoveMultipleExtensionsFunction(
+      const DeveloperPrivateRemoveMultipleExtensionsFunction&) = delete;
+  DeveloperPrivateRemoveMultipleExtensionsFunction& operator=(
+      const DeveloperPrivateRemoveMultipleExtensionsFunction&) = delete;
+
+  void accept_bubble_for_testing(bool accept_bubble) {
+    accept_bubble_for_testing_ = accept_bubble;
+  }
+
+ private:
+  ~DeveloperPrivateRemoveMultipleExtensionsFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+  // A callback function to run when the user accepts the action dialog.
+  void OnDialogAccepted();
+
+  // A callback function to run when the user cancels the action dialog.
+  void OnDialogCancelled();
+
+  // The IDs of the extensions to be uninstalled.
+  std::vector<ExtensionId> extension_ids_;
+
+  raw_ptr<Profile> profile_;
+
+  // If true, immediately accept the blocked action dialog by running the
+  // callback.
+  absl::optional<bool> accept_bubble_for_testing_;
 };
 
 }  // namespace api

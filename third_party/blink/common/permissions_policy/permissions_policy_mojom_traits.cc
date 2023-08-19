@@ -4,8 +4,6 @@
 
 #include "third_party/blink/common/permissions_policy/permissions_policy_mojom_traits.h"
 
-#include "base/feature_list.h"
-#include "third_party/blink/public/common/features.h"
 #include "url/mojom/origin_mojom_traits.h"
 #include "url/origin.h"
 
@@ -16,16 +14,10 @@ bool StructTraits<blink::mojom::OriginWithPossibleWildcardsDataView,
     Read(blink::mojom::OriginWithPossibleWildcardsDataView in,
          blink::OriginWithPossibleWildcards* out) {
   out->csp_source.is_host_wildcard = in.is_host_wildcard();
+  out->csp_source.is_port_wildcard = in.is_port_wildcard();
   out->csp_source.port = in.port();
   if (!in.ReadScheme(&out->csp_source.scheme) ||
       !in.ReadHost(&out->csp_source.host)) {
-    return false;
-  }
-  if (base::FeatureList::IsEnabled(
-          blink::features::kCSPWildcardsInPermissionsPolicies)) {
-    out->csp_source.is_port_wildcard = in.is_port_wildcard();
-  } else if (in.is_port_wildcard()) {
-    // If expanded matching is off we cannot have port wildcards.
     return false;
   }
   // For local files the host might be empty, but the scheme cannot be.

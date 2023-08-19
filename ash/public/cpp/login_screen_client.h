@@ -74,20 +74,8 @@ class ASH_PUBLIC_EXPORT LoginScreenClient {
   // Focus user pod of user with |account_id|.
   virtual void OnFocusPod(const AccountId& account_id) = 0;
 
-  // Notify that no user pod is focused.
-  virtual void OnNoPodFocused() = 0;
-
-  // Load wallpaper of user with |account_id|.
-  virtual void LoadWallpaper(const AccountId& account_id) = 0;
-
-  // Sign out current user.
-  virtual void SignOutUser() = 0;
-
   // Close add user screen.
   virtual void CancelAddUser() = 0;
-
-  // Launches guest mode.
-  virtual void LoginAsGuest() = 0;
 
   // Show guest terms of service screen.
   virtual void ShowGuestTosScreen() = 0;

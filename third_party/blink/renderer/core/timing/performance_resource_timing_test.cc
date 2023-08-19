@@ -62,8 +62,8 @@ TEST_F(PerformanceResourceTimingTest,
   V8TestingScope scope;
   Initialize(scope.GetScriptState());
 
-  AtomicString connection_info = "http/1.1";
-  AtomicString alpn_negotiated_protocol = "unknown";
+  AtomicString connection_info("http/1.1");
+  AtomicString alpn_negotiated_protocol("unknown");
   EXPECT_EQ(GetNextHopProtocol(alpn_negotiated_protocol, connection_info),
             connection_info);
 }
@@ -73,8 +73,8 @@ TEST_F(PerformanceResourceTimingTest,
   V8TestingScope scope;
   Initialize(scope.GetScriptState());
 
-  AtomicString connection_info = "unknown";
-  AtomicString alpn_negotiated_protocol = "unknown";
+  AtomicString connection_info("unknown");
+  AtomicString alpn_negotiated_protocol("unknown");
   EXPECT_EQ(GetNextHopProtocol(alpn_negotiated_protocol, connection_info), "");
 }
 
@@ -82,8 +82,8 @@ TEST_F(PerformanceResourceTimingTest, TestNoChangeWhenContainsQuic) {
   V8TestingScope scope;
   Initialize(scope.GetScriptState());
 
-  AtomicString connection_info = "http/1.1";
-  AtomicString alpn_negotiated_protocol = "http/2+quic/39";
+  AtomicString connection_info("http/1.1");
+  AtomicString alpn_negotiated_protocol("http/2+quic/39");
   EXPECT_EQ(GetNextHopProtocol(alpn_negotiated_protocol, connection_info),
             alpn_negotiated_protocol);
 }
@@ -92,8 +92,8 @@ TEST_F(PerformanceResourceTimingTest, TestNoChangeWhenOtherwise) {
   V8TestingScope scope;
   Initialize(scope.GetScriptState());
 
-  AtomicString connection_info = "http/1.1";
-  AtomicString alpn_negotiated_protocol = "RandomProtocol";
+  AtomicString connection_info("http/1.1");
+  AtomicString alpn_negotiated_protocol("RandomProtocol");
   EXPECT_EQ(GetNextHopProtocol(alpn_negotiated_protocol, connection_info),
             alpn_negotiated_protocol);
 }
@@ -102,8 +102,8 @@ TEST_F(PerformanceResourceTimingTest, TestNextHopProtocolIsGuardedByTao) {
   V8TestingScope scope;
   Initialize(scope.GetScriptState());
 
-  AtomicString connection_info = "http/1.1";
-  AtomicString alpn_negotiated_protocol = "RandomProtocol";
+  AtomicString connection_info("http/1.1");
+  AtomicString alpn_negotiated_protocol("RandomProtocol");
   EXPECT_EQ(
       GetNextHopProtocolWithoutTao(alpn_negotiated_protocol, connection_info),
       "");

@@ -11,7 +11,6 @@
 
 #include "build/build_config.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
-#include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/service/display/external_use_client.h"
 #include "components/viz/service/display/output_surface.h"
@@ -64,7 +63,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
   SkiaOutputSurface* AsSkiaOutputSurface() override;
 
   // Begin painting the current frame. This method will create a
-  // SkDeferredDisplayListRecorder and return a SkCanvas of it.
+  // GrDeferredDisplayListRecorder and return a SkCanvas of it.
   // The SkiaRenderer will use this SkCanvas to paint the current
   // frame.
   // And this SkCanvas may become invalid, when FinishPaintCurrentFrame is
@@ -101,7 +100,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
           output_surface_plane) = 0;
 
   // Begin painting a render pass. This method will create a
-  // SkDeferredDisplayListRecorder and return a SkCanvas of it. The SkiaRenderer
+  // GrDeferredDisplayListRecorder and return a SkCanvas of it. The SkiaRenderer
   // will use this SkCanvas to paint the render pass.
   // Note: BeginPaintRenderPass cannot be called without finishing the prior
   // paint render pass.
@@ -218,6 +217,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
 
   // Enqueue a GPU task to delete the specified shared image.
   virtual void DestroySharedImage(const gpu::Mailbox& mailbox) = 0;
+
+  virtual bool SupportsBGRA() const = 0;
 };
 
 }  // namespace viz

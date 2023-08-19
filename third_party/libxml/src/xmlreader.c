@@ -788,6 +788,8 @@ xmlTextReaderPushData(xmlTextReaderPtr reader) {
 			reader->state = oldstate;
 		    }
 		} else if (val < 0) {
+                    xmlGenericError(xmlGenericErrorContext,
+                                    "xmlParserInputBufferRead failed\n");
 		    reader->mode = XML_TEXTREADER_MODE_EOF;
 		    reader->state = oldstate;
 		    if ((oldstate != XML_TEXTREADER_START) ||

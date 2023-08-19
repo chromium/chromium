@@ -37,6 +37,12 @@ bool PathProvider(int key, base::FilePath* result) {
         return false;
       cur = cur.Append(FILE_PATH_LITERAL("SafeBrowsing"));
       break;
+    case DIR_LOCAL_TRACES:
+      if (!base::android::GetCacheDirectory(&cur)) {
+        return false;
+      }
+      cur = cur.Append(FILE_PATH_LITERAL("Local Traces"));
+      break;
     default:
       return false;
   }

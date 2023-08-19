@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_client.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "third_party/blink/renderer/platform/wtf/text/text_position.h"
 
 namespace blink {
 
@@ -61,6 +62,9 @@ class StyleRuleImport : public StyleRuleBase {
     media_queries_ = media_queries;
   }
 
+  void SetPositionHint(const TextPosition& position_hint) {
+    position_hint_ = position_hint;
+  }
   void RequestStyleSheet();
 
   bool IsLayered() const { return layer_.size(); }
@@ -112,6 +116,11 @@ class StyleRuleImport : public StyleRuleBase {
   // Whether the style sheet that has this import rule is origin-clean:
   // https://drafts.csswg.org/cssom-1/#concept-css-style-sheet-origin-clean-flag
   const OriginClean origin_clean_;
+
+  // If set, this holds the position of the import rule (start of the `@import`)
+  // in the stylesheet text. The position is used to encode accurate initiator
+  // info on the stylesheet request in order to report accurate failures.
+  absl::optional<TextPosition> position_hint_;
 };
 
 template <>

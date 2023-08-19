@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Action} from 'chrome://resources/ash/common/store/store.js';
+import {Action} from 'chrome://resources/js/store_ts.js';
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 
 import {ColorScheme, SampleColorScheme} from '../../personalization_app.mojom-webui.js';
@@ -23,30 +23,35 @@ export type ThemeActions =
     SetColorModeAutoScheduleAction|SetDarkModeEnabledAction|
     SetColorSchemeAction|SetSampleColorSchemesAction|SetStaticColorAction;
 
-export type SetDarkModeEnabledAction = Action&{
-  name: ThemeActionName.SET_DARK_MODE_ENABLED,
-  enabled: boolean,
-};
+export interface SetDarkModeEnabledAction extends Action {
+  name: ThemeActionName.SET_DARK_MODE_ENABLED;
+  enabled: boolean;
+}
 
-export type SetColorModeAutoScheduleAction = Action&{
-  name: ThemeActionName.SET_COLOR_MODE_AUTO_SCHEDULE_ENABLED,
-  enabled: boolean,
-};
 
-export type SetColorSchemeAction = Action&{
-  name: ThemeActionName.SET_COLOR_SCHEME,
-  colorScheme: ColorScheme,
-};
+export interface SetColorModeAutoScheduleAction extends Action {
+  name: ThemeActionName.SET_COLOR_MODE_AUTO_SCHEDULE_ENABLED;
+  enabled: boolean;
+}
 
-export type SetSampleColorSchemesAction = Action&{
-  name: ThemeActionName.SET_SAMPLE_COLOR_SCHEMES,
-  sampleColorSchemes: SampleColorScheme[],
-};
 
-export type SetStaticColorAction = Action&{
-  name: ThemeActionName.SET_STATIC_COLOR,
-  staticColor: SkColor | null,
-};
+export interface SetColorSchemeAction extends Action {
+  name: ThemeActionName.SET_COLOR_SCHEME;
+  colorScheme: ColorScheme;
+}
+
+
+export interface SetSampleColorSchemesAction extends Action {
+  name: ThemeActionName.SET_SAMPLE_COLOR_SCHEMES;
+  sampleColorSchemes: SampleColorScheme[];
+}
+
+
+export interface SetStaticColorAction extends Action {
+  name: ThemeActionName.SET_STATIC_COLOR;
+  staticColor: SkColor|null;
+}
+
 
 export function setDarkModeEnabledAction(enabled: boolean):
     SetDarkModeEnabledAction {

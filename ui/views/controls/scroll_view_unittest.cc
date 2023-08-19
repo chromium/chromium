@@ -974,8 +974,8 @@ TEST_F(ScrollViewTest, ScrollRectToVisibleWithHiddenHorizontalScrollbar) {
   EXPECT_EQ(315 - viewport_width, test_api.CurrentOffset().x());
 }
 
-// Verifies ScrollRectToVisible() scrolls the view horizontally even if the
-// horizontal scrollbar is hidden (but not disabled).
+// Verifies ScrollRectToVisible() scrolls the view vertically even if the
+// vertical scrollbar is hidden (but not disabled).
 TEST_F(ScrollViewTest, ScrollRectToVisibleWithHiddenVerticalScrollbar) {
   scroll_view_->SetVerticalScrollBarMode(
       ScrollView::ScrollBarMode::kHiddenButEnabled);
@@ -999,9 +999,31 @@ TEST_F(ScrollViewTest, ScrollRectToVisibleWithHiddenVerticalScrollbar) {
   gfx::PointF offset = test_api.CurrentOffset();
   EXPECT_EQ(315 - viewport_height, offset.y());
 
-  // Scroll to the current x-location and 10x10; should do nothing.
+  // Scroll to the current y-location and 10x10; should do nothing.
   contents_ptr->ScrollRectToVisible(gfx::Rect(0, offset.y(), 10, 10));
   EXPECT_EQ(315 - viewport_height, test_api.CurrentOffset().y());
+}
+
+// Verifies ScrollRectToVisible() does not scroll the view horizontally or
+// vertically if the scrollbars are disabled.
+TEST_F(ScrollViewTest, ScrollRectToVisibleWithDisabledScrollbars) {
+  scroll_view_->SetHorizontalScrollBarMode(
+      ScrollView::ScrollBarMode::kDisabled);
+  scroll_view_->SetVerticalScrollBarMode(ScrollView::ScrollBarMode::kDisabled);
+  ScrollViewTestApi test_api(scroll_view_.get());
+  auto contents = std::make_unique<CustomView>();
+  contents->SetPreferredSize(gfx::Size(500, 1000));
+  auto* contents_ptr = scroll_view_->SetContents(std::move(contents));
+
+  scroll_view_->SetBoundsRect(gfx::Rect(0, 0, 100, 100));
+  views::test::RunScheduledLayout(scroll_view_.get());
+  EXPECT_EQ(gfx::Vector2d(0, 0), test_api.IntegralViewOffset());
+
+  contents_ptr->ScrollRectToVisible(gfx::Rect(305, 0, 10, 10));
+  EXPECT_EQ(0, test_api.CurrentOffset().x());
+
+  contents_ptr->ScrollRectToVisible(gfx::Rect(0, 305, 10, 10));
+  EXPECT_EQ(0, test_api.CurrentOffset().y());
 }
 
 // Verifies that child scrolls into view when it's focused.

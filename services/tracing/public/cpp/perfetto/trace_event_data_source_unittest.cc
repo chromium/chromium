@@ -1002,7 +1002,11 @@ TEST_F(TraceEventDataSourceTest, MultipleMetadataGenerators) {
   MetadataHasNamedValue(metadata1, "before_int", 42);
 }
 
-#if BUILDFLAG(IS_ANDROID)
+// With Perfetto client library, it's not possible to filter package names
+// based on privacy settings, because privacy settings are per-session while
+// track descriptors are global. But this is not a problem because the filtering
+// is done at upload stage, so package names don't leak into Chrome traces.
+#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 TEST_F(TraceEventDataSourceTest,
        PackageNameNotRecordedPrivacyFilteringDisabledTraceLogNotSet) {
   StartTraceEventDataSource(/* privacy_filtering_enabled = false */);
@@ -1051,7 +1055,7 @@ TEST_F(TraceEventDataSourceTest,
       base::android::BuildInfo::GetInstance()->host_package_name(),
       e_packet->track_descriptor().chrome_process().host_app_package_name());
 }
-#endif
+#endif  // BUILDFLAG(IS_ANDROID) && !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 TEST_F(TraceEventDataSourceTest, BasicTraceEvent) {
   StartTraceEventDataSource();
@@ -2479,7 +2483,8 @@ TEST_F(TraceEventDataSourceTest, HistogramSampleTraceConfigEmpty) {
   EXPECT_EQ(e_packet->interned_data().histogram_names()[0].name(), "Foo.Bar");
 }
 
-TEST_F(TraceEventDataSourceTest, HistogramSampleTraceConfigNotEmpty) {
+// TODO(crbug.com/1464718): The test is flaky across platforms.
+TEST_F(TraceEventDataSourceTest, DISABLED_HistogramSampleTraceConfigNotEmpty) {
   std::vector<std::string> histograms;
   histograms.push_back("Foo1.Bar1");
   histograms.push_back("Foo3.Bar3");

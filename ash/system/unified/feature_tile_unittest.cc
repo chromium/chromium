@@ -17,6 +17,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_state.h"
@@ -367,6 +369,36 @@ TEST_F(FeatureTileTest, TogglingTileHidesInkDrop) {
   ASSERT_TRUE(tile->IsToggled());
   EXPECT_EQ(views::InkDrop::Get(tile)->GetInkDrop()->GetTargetInkDropState(),
             views::InkDropState::HIDDEN);
+}
+
+TEST_F(FeatureTileTest, AccessibilityRoles) {
+  // Togglable feature tiles (like Do Not Disturb) have role "toggle button".
+  FeatureTile togglable_tile(base::DoNothing(), /*is_togglable=*/true);
+  togglable_tile.SetToggled(true);
+  ui::AXNodeData node_data;
+  togglable_tile.GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.role, ax::mojom::Role::kToggleButton);
+  EXPECT_EQ(node_data.GetCheckedState(), ax::mojom::CheckedState::kTrue);
+
+  togglable_tile.SetToggled(false);
+  ui::AXNodeData node_data2;
+  togglable_tile.GetAccessibleNodeData(&node_data2);
+  EXPECT_EQ(node_data2.role, ax::mojom::Role::kToggleButton);
+  EXPECT_EQ(node_data2.GetCheckedState(), ax::mojom::CheckedState::kFalse);
+
+  // However, togglable feature tiles that have a clickable icon (like Network
+  // and Bluetooth) do not have role "toggle button", since clicking the main
+  // tile takes the user to a detail page.
+  togglable_tile.SetIconClickable(true);
+  ui::AXNodeData node_data3;
+  togglable_tile.GetAccessibleNodeData(&node_data3);
+  EXPECT_EQ(node_data3.role, ax::mojom::Role::kButton);
+
+  // Non-togglable feature tiles are just buttons.
+  FeatureTile non_togglable_tile(base::DoNothing(), /*is_togglable=*/false);
+  ui::AXNodeData node_data4;
+  non_togglable_tile.GetAccessibleNodeData(&node_data4);
+  EXPECT_EQ(node_data4.role, ax::mojom::Role::kButton);
 }
 
 }  // namespace ash

@@ -12,6 +12,8 @@
 
 #include "apps/app_lifetime_monitor_factory.h"
 #include "base/apple/bundle_locations.h"
+#include "base/apple/foundation_util.h"
+#include "base/apple/osstatus_logging.h"
 #include "base/barrier_closure.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
@@ -21,8 +23,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/hash/sha1.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
-#include "base/mac/mac_logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
@@ -45,20 +45,25 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/profile_picker.h"
+#include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/app_shim_registry_mac.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/notification_details.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_source.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/filename_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -110,7 +115,7 @@ CreateAppShimRequirement() {
   // validating. We are only interested in discovering if the framework bundle
   // is code-signed, and if so what the designated requirement is.
   base::ScopedCFTypeRef<CFURLRef> framework_url =
-      base::mac::FilePathToCFURL(base::apple::FrameworkBundlePath());
+      base::apple::FilePathToCFURL(base::apple::FrameworkBundlePath());
   base::ScopedCFTypeRef<SecStaticCodeRef> framework_code;
   OSStatus status = SecStaticCodeCreateWithPath(
       framework_url, kSecCSDefaultFlags, framework_code.InitializeInto());
@@ -145,8 +150,8 @@ CreateAppShimRequirement() {
   // unsigned. This decision is consistent with the StaticCode source:
   // https://github.com/apple-oss-distributions/Security/blob/Security-60157.40.30.0.1/OSX/libsecurity_codesigning/lib/StaticCode.cpp#L2270
   CFNumberRef framework_signing_info_flags =
-      base::mac::GetValueFromDictionary<CFNumberRef>(framework_signing_info,
-                                                     kSecCodeInfoFlags);
+      base::apple::GetValueFromDictionary<CFNumberRef>(framework_signing_info,
+                                                       kSecCodeInfoFlags);
   if (!framework_signing_info_flags) {
     return absl::nullopt;  // has_value() == false
   }
@@ -455,6 +460,44 @@ void AppShimManager::UpdateAppBadge(
 
   profile_state->badge = badge;
   UpdateApplicationBadge(profile_state);
+}
+
+mojo::Remote<mac_notifications::mojom::MacNotificationProvider>
+AppShimManager::LaunchNotificationProvider(const web_app::AppId& app_id) {
+  CHECK(
+      base::FeatureList::IsEnabled(features::kAppShimNotificationAttribution));
+
+  mojo::Remote<mac_notifications::mojom::MacNotificationProvider> remote;
+  AppShimHost* shim = nullptr;
+
+  auto found_app = apps_.find(app_id);
+  if (found_app != apps_.end()) {
+    AppState* app_state = found_app->second.get();
+    CHECK(app_state->IsMultiProfile());
+    shim = app_state->multi_profile_host.get();
+  }
+
+  if (shim) {
+    shim->GetAppShim()->BindNotificationProvider(
+        remote.BindNewPipeAndPassReceiver());
+  } else {
+    // TODO(mek): Support launching a new app shim.
+    dummy_notification_provider_receivers_.Add(
+        this, remote.BindNewPipeAndPassReceiver());
+  }
+
+  return remote;
+}
+
+void AppShimManager::BindNotificationService(
+    mojo::PendingReceiver<mac_notifications::mojom::MacNotificationService>
+        service,
+    mojo::PendingRemote<mac_notifications::mojom::MacNotificationActionHandler>
+        handler) {
+  // Dummy MacNotificationProvider implementation. The notifications code that
+  // ends up calling LaunchNotificationProvider expects to always get a
+  // bound/connected MacNotificationProvider remote, so if we don't have an
+  // app shim process to connect to, instead a remote bound to this is returned.
 }
 
 void AppShimManager::UpdateApplicationBadge(ProfileState* profile_state) {
@@ -837,17 +880,20 @@ void AppShimManager::OnShimProcessConnectedAndAllLaunchesDone(
   }
 
   // If we failed because the profile was locked, launch the profile manager.
-  if (result == chrome::mojom::AppShimLaunchResult::kProfileLocked)
+  if (result == chrome::mojom::AppShimLaunchResult::kProfileLocked) {
     LaunchProfilePicker();
-
-  // If the app specified a URL, but we tried and failed to launch it, then
-  // open that URL in a new browser window.
-  if (result != chrome::mojom::AppShimLaunchResult::kSuccess &&
-      result != chrome::mojom::AppShimLaunchResult::kSuccessAndDisconnect &&
-      bootstrap->GetLaunchType() == chrome::mojom::AppShimLaunchType::kNormal) {
-    const GURL& url = bootstrap->GetAppURL();
-    if (url.is_valid())
-      OpenAppURLInBrowserWindow(bootstrap->GetProfilePath(), url);
+  } else {
+    // If the app specified a URL, but we tried and failed to launch it, then
+    // open that URL in a new browser window.
+    if (result != chrome::mojom::AppShimLaunchResult::kSuccess &&
+        result != chrome::mojom::AppShimLaunchResult::kSuccessAndDisconnect &&
+        bootstrap->GetLaunchType() ==
+            chrome::mojom::AppShimLaunchType::kNormal) {
+      const GURL& url = bootstrap->GetAppURL();
+      if (url.is_valid()) {
+        OpenAppURLInBrowserWindow(bootstrap->GetProfilePath(), url);
+      }
+    }
   }
 
   // If we failed to find a AppShimHost (in a ProfileState) for |bootstrap|
@@ -1175,6 +1221,33 @@ void AppShimManager::OnShimSelectedProfile(AppShimHost* host,
   LoadAndLaunchAppParams params;
   params.app_id = host->GetAppId();
   LoadAndLaunchApp(profile_path, params, base::DoNothing());
+}
+
+void AppShimManager::OnShimOpenedAppSettings(AppShimHost* host) {
+  // Retrieve the list of last-active profiles. If there are no last-active
+  // profiles (which is rare -- e.g, when the last-active profiles were
+  // removed), then use all profiles for which the app is installed.
+  std::set<base::FilePath> last_active_profile_paths =
+      AppShimRegistry::Get()->GetLastActiveProfilesForApp(host->GetAppId());
+  if (last_active_profile_paths.empty()) {
+    last_active_profile_paths =
+        AppShimRegistry::Get()->GetInstalledProfilesForApp(host->GetAppId());
+  }
+  if (last_active_profile_paths.empty()) {
+    return;
+  }
+  // Open settings in the first of these profiles.
+  LoadProfileAsync(
+      *last_active_profile_paths.begin(),
+      base::BindOnce(
+          [](const web_app::AppId& app_id, Profile* profile) {
+            if (profile) {
+              chrome::ShowWebAppSettings(
+                  profile, app_id,
+                  web_app::AppSettingsPageEntryPoint::kBrowserCommand);
+            }
+          },
+          host->GetAppId()));
 }
 
 void AppShimManager::OnShimOpenedUrls(AppShimHost* host,

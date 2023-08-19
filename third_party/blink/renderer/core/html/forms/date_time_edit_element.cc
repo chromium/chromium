@@ -604,7 +604,11 @@ DateTimeEditElement::CustomStyleForLayoutObject(
     }
   }
   ComputedStyleBuilder builder(*original_style);
-  builder.SetWidth(Length::Fixed(ceilf(width)));
+  if (original_style->IsHorizontalWritingMode()) {
+    builder.SetWidth(Length::Fixed(ceilf(width)));
+  } else {
+    builder.SetHeight(Length::Fixed(ceilf(width)));
+  }
   builder.SetCustomStyleCallbackDependsOnFont();
   return builder.TakeStyle();
 }

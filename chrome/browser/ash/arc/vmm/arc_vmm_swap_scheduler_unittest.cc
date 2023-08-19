@@ -220,6 +220,7 @@ TEST_F(ArcVmmSwapSchedulerTest, ReceiveSignalAndSave) {
   EXPECT_EQ(GetSwapOutTime(), base::Time());
   vm_tools::concierge::VmSwappingSignal signal;
   signal.set_name("arcvm");
+  signal.set_state(vm_tools::concierge::SWAPPING_OUT);
   scheduler->OnVmSwapping(signal);
 
   EXPECT_NE(GetSwapOutTime(), base::Time());

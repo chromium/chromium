@@ -31,7 +31,6 @@ class WebViewSyncClient : public browser_sync::BrowserSyncClient {
       signin::IdentityManager* identity_manager,
       syncer::ModelTypeStoreService* model_type_store_service,
       syncer::DeviceInfoSyncService* device_info_sync_service,
-      invalidation::InvalidationService* invalidation_service,
       syncer::SyncInvalidationsService* sync_invalidations_service);
 
   WebViewSyncClient(const WebViewSyncClient&) = delete;
@@ -52,11 +51,13 @@ class WebViewSyncClient : public browser_sync::BrowserSyncClient {
       override;
   sync_preferences::PrefServiceSyncable* GetPrefServiceSyncable() override;
   sync_sessions::SessionSyncService* GetSessionSyncService() override;
+  password_manager::PasswordReceiverService* GetPasswordReceiverService()
+      override;
+  password_manager::PasswordSenderService* GetPasswordSenderService() override;
   syncer::DataTypeController::TypeVector CreateDataTypeControllers(
       syncer::SyncService* sync_service) override;
-  invalidation::InvalidationService* GetInvalidationService() override;
   syncer::SyncInvalidationsService* GetSyncInvalidationsService() override;
-  syncer::TrustedVaultClient* GetTrustedVaultClient() override;
+  trusted_vault::TrustedVaultClient* GetTrustedVaultClient() override;
   scoped_refptr<syncer::ExtensionsActivity> GetExtensionsActivity() override;
   base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetControllerDelegateForModelType(syncer::ModelType type) override;
@@ -73,11 +74,10 @@ class WebViewSyncClient : public browser_sync::BrowserSyncClient {
   signin::IdentityManager* identity_manager_;
   syncer::ModelTypeStoreService* model_type_store_service_;
   syncer::DeviceInfoSyncService* device_info_sync_service_;
-  invalidation::InvalidationService* invalidation_service_;
   syncer::SyncInvalidationsService* sync_invalidations_service_;
 
   std::unique_ptr<browser_sync::SyncApiComponentFactoryImpl> component_factory_;
-  std::unique_ptr<syncer::TrustedVaultClient> trusted_vault_client_;
+  std::unique_ptr<trusted_vault::TrustedVaultClient> trusted_vault_client_;
 };
 
 }  // namespace ios_web_view

@@ -222,7 +222,8 @@ class TopLevelHostScanCacheTest : public testing::Test {
 
   const std::unordered_map<std::string, HostScanCacheEntry> test_entries_;
 
-  raw_ptr<TestTimerFactory, ExperimentalAsh> test_timer_factory_;
+  raw_ptr<TestTimerFactory, DanglingUntriaged | ExperimentalAsh>
+      test_timer_factory_;
   std::unique_ptr<FakeActiveHost> fake_active_host_;
   std::unique_ptr<FakeHostScanCache> fake_network_host_scan_cache_;
   std::unique_ptr<FakePersistentHostScanCache> fake_persistent_host_scan_cache_;

@@ -51,9 +51,8 @@ D3D11H265Picture::~D3D11H265Picture() {
 }
 
 D3D11H265Accelerator::D3D11H265Accelerator(D3D11VideoDecoderClient* client,
-                                           MediaLog* media_log,
-                                           ComD3D11VideoDevice video_device)
-    : D3DAccelerator(client, media_log, std::move(video_device)) {}
+                                           MediaLog* media_log)
+    : D3DAccelerator(client, media_log) {}
 
 D3D11H265Accelerator::~D3D11H265Accelerator() {}
 
@@ -464,15 +463,21 @@ H265DecoderStatus D3D11H265Accelerator::SubmitSlice(
     pic_param.main.StatusReportFeedbackNumber =
         current_status_report_feedback_num_++;
 
+    size_t pic_params_size = is_rext_ ? sizeof(DXVA_PicParams_HEVC_Rext)
+                                      : sizeof(DXVA_PicParams_HEVC);
     auto params_buffer =
-        video_decoder_wrapper_->GetPictureParametersBuffer(sizeof(pic_param));
-    if (params_buffer.size() < sizeof(pic_param)) {
+        video_decoder_wrapper_->GetPictureParametersBuffer(pic_params_size);
+    // For 420 content the driver may only allow main part picture parameters.
+    if (is_rext_ && params_buffer.size() < sizeof(DXVA_PicParams_HEVC_Rext)) {
+      pic_params_size = sizeof(DXVA_PicParams_HEVC);
+    }
+    if (params_buffer.size() < pic_params_size) {
       RecordFailure("Insufficient picture parameter buffer size",
                     D3D11StatusCode::kGetPicParamBufferFailed);
       return H265DecoderStatus::kFail;
     }
 
-    memcpy(params_buffer.data(), &pic_param, sizeof(pic_param));
+    memcpy(params_buffer.data(), &pic_param, pic_params_size);
 
     if (!params_buffer.Commit()) {
       return H265DecoderStatus::kFail;

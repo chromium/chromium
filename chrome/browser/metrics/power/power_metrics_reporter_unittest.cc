@@ -203,7 +203,7 @@ class PowerMetricsReporterUnitTestBase : public testing::Test {
   raw_ptr<base::BatteryLevelProvider, DanglingUntriaged> battery_provider_;
 
 #if BUILDFLAG(IS_MAC)
-  raw_ptr<TestCoalitionResourceUsageProvider>
+  raw_ptr<TestCoalitionResourceUsageProvider, DanglingUntriaged>
       coalition_resource_usage_provider_;
 #endif  // BUILDFLAG(IS_MAC)
 

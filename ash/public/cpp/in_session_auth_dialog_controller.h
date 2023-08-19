@@ -8,7 +8,7 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/in_session_auth_dialog_client.h"
 #include "ash/public/cpp/in_session_auth_token_provider.h"
-#include "base/unguessable_token.h"
+#include "chromeos/ash/components/osauth/public/common_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
@@ -34,7 +34,7 @@ class ASH_PUBLIC_EXPORT InSessionAuthDialogController {
   // `timeout`: The length of time for which the token is valid.
   using OnAuthComplete =
       base::OnceCallback<void(bool success,
-                              const base::UnguessableToken& token,
+                              const ash::AuthProofToken& token,
                               base::TimeDelta timeout)>;
 
   // Summons a native UI dialog that authenticates the user, providing a

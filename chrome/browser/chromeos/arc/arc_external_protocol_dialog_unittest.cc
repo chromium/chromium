@@ -80,7 +80,7 @@ class ArcExternalProtocolDialogTestUtils : public BrowserWithTestWindowTest {
  private:
   base::test::ScopedFeatureList features_{kClickToCall};
   // Keep only one |WebContents| at a time.
-  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
   std::unique_ptr<ArcIconCacheDelegate> arc_icon_cache_;
   std::unique_ptr<ArcIconCacheDelegateProvider> delegate_provider_;
 };

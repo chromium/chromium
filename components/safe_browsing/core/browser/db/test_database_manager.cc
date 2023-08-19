@@ -18,7 +18,8 @@ TestSafeBrowsingDatabaseManager::TestSafeBrowsingDatabaseManager(
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
     scoped_refptr<base::SequencedTaskRunner> io_task_runner)
     : SafeBrowsingDatabaseManager(std::move(ui_task_runner),
-                                  std::move(io_task_runner)) {}
+                                  std::move(io_task_runner)),
+      enabled_(false) {}
 
 void TestSafeBrowsingDatabaseManager::CancelCheck(Client* client) {
   NOTIMPLEMENTED();
@@ -44,7 +45,8 @@ bool TestSafeBrowsingDatabaseManager::CheckBrowseUrl(
     const GURL& url,
     const SBThreatTypeSet& threat_types,
     Client* client,
-    MechanismExperimentHashDatabaseCache experiment_cache_selection) {
+    MechanismExperimentHashDatabaseCache experiment_cache_selection,
+    CheckBrowseUrlType check_type) {
   NOTIMPLEMENTED();
   return true;
 }
@@ -98,8 +100,15 @@ void TestSafeBrowsingDatabaseManager::MatchDownloadAllowlistUrl(
   std::move(callback).Run(true);
 }
 
-safe_browsing::ThreatSource TestSafeBrowsingDatabaseManager::GetThreatSource()
-    const {
+safe_browsing::ThreatSource
+TestSafeBrowsingDatabaseManager::GetBrowseUrlThreatSource(
+    CheckBrowseUrlType check_type) const {
+  NOTIMPLEMENTED();
+  return safe_browsing::ThreatSource::UNKNOWN;
+}
+
+safe_browsing::ThreatSource
+TestSafeBrowsingDatabaseManager::GetNonBrowseUrlThreatSource() const {
   NOTIMPLEMENTED();
   return safe_browsing::ThreatSource::UNKNOWN;
 }
@@ -119,6 +128,10 @@ void TestSafeBrowsingDatabaseManager::StartOnSBThread(
 void TestSafeBrowsingDatabaseManager::StopOnSBThread(bool shutdown) {
   enabled_ = false;
   SafeBrowsingDatabaseManager::StopOnSBThread(shutdown);
+}
+
+bool TestSafeBrowsingDatabaseManager::IsDatabaseReady() const {
+  return enabled_;
 }
 
 }  // namespace safe_browsing

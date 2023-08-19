@@ -49,7 +49,8 @@
     "metrics_project": "chromium-reclient-metrics",
     "rewrapper_env": {
       "RBE_cache_silo": "chromeos-amd64-generic-rel (reclient)"
-    }
+    },
+    "scandeps_server": true
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],

@@ -203,6 +203,7 @@ std::unique_ptr<views::Combobox> AddressEditorView::CreateCountryCombobox(
 }
 
 void AddressEditorView::UpdateEditorView() {
+  validation_error_ = nullptr;
   RemoveAllChildViews();
   CreateEditorView();
   PreferredSizeChanged();

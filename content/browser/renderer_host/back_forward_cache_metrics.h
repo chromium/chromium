@@ -122,7 +122,9 @@ class BackForwardCacheMetrics
     kErrorDocument = 58,
     kFencedFramesEmbedder = 59,
     kCookieDisabled = 60,
-    kMaxValue = kCookieDisabled,
+    kHTTPAuthRequired = 61,
+    kCookieFlushed = 62,
+    kMaxValue = kCookieFlushed,
   };
 
   using NotRestoredReasons =
@@ -143,24 +145,6 @@ class BackForwardCacheMetrics
     kRestored = 0,
     kByJavaScript = 1,
     kMaxValue = kByJavaScript,
-  };
-
-  // Please keep in sync with BackForwardCacheReloadsAndHistoryNavigations
-  // in tools/metrics/histograms/enums.xml. These values should not be
-  // renumbered.
-  enum class ReloadsAndHistoryNavigations {
-    kHistoryNavigation = 0,
-    kReloadAfterHistoryNavigation = 1,
-    kMaxValue = kReloadAfterHistoryNavigation,
-  };
-
-  // Please keep in sync with BackForwardCacheReloadsAfterHistoryNavigation
-  // in tools/metrics/histograms/enums.xml. These values should not be
-  // renumbered.
-  enum class ReloadsAfterHistoryNavigation {
-    kNotServedFromBackForwardCache = 0,
-    kServedFromBackForwardCache = 1,
-    kMaxValue = kServedFromBackForwardCache,
   };
 
   // Please keep in sync with BackForwardCachePageWithFormStorable
@@ -301,6 +285,16 @@ class BackForwardCacheMetrics
   FRIEND_TEST_ALL_PREFIXES(BackForwardCacheBrowserTest, WindowOpenThenClose);
   FRIEND_TEST_ALL_PREFIXES(BackForwardCacheBrowserTest,
                            WindowWithOpenerAndOpenee);
+  FRIEND_TEST_ALL_PREFIXES(
+      BackForwardCacheBrowserTestWithVaryingNavigationSite,
+      RelatedActiveContentsLoggingOnPageWithBlockingFeature);
+  FRIEND_TEST_ALL_PREFIXES(
+      BackForwardCacheBrowserTestWithVaryingNavigationSite,
+      RelatedActiveContentsLoggingOnPageWithBlockingFeatureAndRAC);
+  FRIEND_TEST_ALL_PREFIXES(BackForwardCacheBrowserTest,
+                           WindowOpen_SameSitePopupPendingDeletion);
+  FRIEND_TEST_ALL_PREFIXES(BackForwardCacheBrowserTest,
+                           WindowOpen_UnrelatedSameSiteAndProcessTab);
 
   ~BackForwardCacheMetrics();
 
@@ -347,10 +341,6 @@ class BackForwardCacheMetrics
   // Should not be confused with NavigationEntryId.
   int64_t last_committed_cross_document_main_frame_navigation_id_ = -1;
 
-  // These values are updated only for cross-document main frame navigations.
-  bool previous_navigation_is_history_ = false;
-  bool previous_navigation_is_served_from_bfcache_ = false;
-
   // Whether any document within the page that this BackForwardCacheMetrics
   // associated with has any form data. This state is not persisted and only
   // set in Android Custom tabs for now.
@@ -395,14 +385,16 @@ class BackForwardCacheMetrics
   // by another document in a different page, i.e. if there are any documents
   // using the same SiteInstance as any document in the page. See also
   // `SetRelatedActiveContentsInfo()`.
-  // Please keep in sync with BackForwardCacheReloadsAfterHistoryNavigation
+  // Please keep in sync with RelatedActiveContentsSyncAccessInfo
   // in tools/metrics/histograms/enums.xml. These values should not be
   // renumbered.
   enum class RelatedActiveContentsSyncAccessInfo {
     kNoSyncAccess = 0,
+    // Deprecated: We check using SiteInfo instead of just SiteInstance now,
+    // so this category is no longer used.
     kPotentiallySyncAccessibleDefaultSiteInstance = 1,
-    kPotentiallySyncAccessibleNormalSiteInstance = 2,
-    kMaxValue = kPotentiallySyncAccessibleNormalSiteInstance
+    kPotentiallySyncAccessible = 2,
+    kMaxValue = kPotentiallySyncAccessible
   };
   RelatedActiveContentsSyncAccessInfo
       related_active_contents_sync_access_info_ =

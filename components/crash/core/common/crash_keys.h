@@ -6,8 +6,8 @@
 #define COMPONENTS_CRASH_CORE_COMMON_CRASH_KEYS_H_
 
 #include <string>
+#include <vector>
 
-#include "base/strings/string_piece.h"
 #include "components/crash/core/common/crash_export.h"
 
 namespace base {
@@ -36,11 +36,11 @@ SetSwitchesFromCommandLine(const base::CommandLine& command_line,
 // Clears all the CommandLine-related crash keys.
 void ResetCommandLineForTesting();
 
-// Sets the printer info. Data should be separated by ';' up to 4 substrings.
-// Each substring will be truncated if necessary.
+// Sets the printer info. `data` should contain no more than 4 strings.
+// Each string might get truncated if necessary.
 class ScopedPrinterInfo {
  public:
-  explicit ScopedPrinterInfo(base::StringPiece data);
+  explicit ScopedPrinterInfo(std::vector<std::string> data);
 
   ScopedPrinterInfo(const ScopedPrinterInfo&) = delete;
   ScopedPrinterInfo& operator=(const ScopedPrinterInfo&) = delete;

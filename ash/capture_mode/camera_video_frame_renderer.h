@@ -26,7 +26,6 @@ class VideoResourceUpdater;
 }  // namespace media
 
 namespace viz {
-class ContextProvider;
 class RasterContextProvider;
 }  // namespace viz
 
@@ -114,8 +113,7 @@ class CameraVideoFrameRenderer
   gfx::Size last_compositor_frame_size_pixels_;
   float last_compositor_frame_dsf_ = 1.0f;
 
-  scoped_refptr<viz::ContextProvider> context_provider_;
-  scoped_refptr<viz::RasterContextProvider> raster_context_provider_;
+  scoped_refptr<viz::RasterContextProvider> context_provider_;
 
   // The layer tree frame sink created from `host_window_`, which is used to
   // submit compositor frames for the camera video frames.

@@ -13,8 +13,9 @@
 #include "third_party/cros_system_api/dbus/spaced/dbus-constants.h"
 
 namespace ash {
-
 namespace {
+
+using spaced::kSpacedInterface;
 
 SpacedClient* g_instance = nullptr;
 
@@ -31,50 +32,135 @@ class SpacedClientImpl : public SpacedClient {
 
   void GetFreeDiskSpace(const std::string& path,
                         GetSizeCallback callback) override {
-    dbus::MethodCall method_call(::spaced::kSpacedInterface,
-                                 ::spaced::kGetFreeDiskSpaceMethod);
+    dbus::MethodCall method_call(kSpacedInterface,
+                                 spaced::kGetFreeDiskSpaceMethod);
     dbus::MessageWriter writer(&method_call);
     writer.AppendString(path);
 
     proxy_->CallMethod(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&SpacedClientImpl::HandleResponse,
+        base::BindOnce(&SpacedClientImpl::HandleGetSizeResponse,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
   void GetTotalDiskSpace(const std::string& path,
                          GetSizeCallback callback) override {
-    dbus::MethodCall method_call(::spaced::kSpacedInterface,
-                                 ::spaced::kGetTotalDiskSpaceMethod);
+    dbus::MethodCall method_call(kSpacedInterface,
+                                 spaced::kGetTotalDiskSpaceMethod);
     dbus::MessageWriter writer(&method_call);
     writer.AppendString(path);
 
     proxy_->CallMethod(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&SpacedClientImpl::HandleResponse,
+        base::BindOnce(&SpacedClientImpl::HandleGetSizeResponse,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
   void GetRootDeviceSize(GetSizeCallback callback) override {
-    dbus::MethodCall method_call(::spaced::kSpacedInterface,
-                                 ::spaced::kGetRootDeviceSizeMethod);
+    dbus::MethodCall method_call(kSpacedInterface,
+                                 spaced::kGetRootDeviceSizeMethod);
     dbus::MessageWriter writer(&method_call);
 
     proxy_->CallMethod(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&SpacedClientImpl::HandleResponse,
+        base::BindOnce(&SpacedClientImpl::HandleGetSizeResponse,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  void IsQuotaSupported(const std::string& path,
+                        BoolCallback callback) override {
+    dbus::MethodCall method_call(kSpacedInterface,
+                                 spaced::kIsQuotaSupportedMethod);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendString(path);
+
+    proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&SpacedClientImpl::HandleBoolResponse,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  void GetQuotaCurrentSpaceForUid(const std::string& path,
+                                  uint32_t uid,
+                                  GetSizeCallback callback) override {
+    dbus::MethodCall method_call(kSpacedInterface,
+                                 spaced::kGetQuotaCurrentSpaceForUidMethod);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendString(path);
+    writer.AppendUint32(uid);
+
+    proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&SpacedClientImpl::HandleGetSizeResponse,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  void GetQuotaCurrentSpaceForGid(const std::string& path,
+                                  uint32_t gid,
+                                  GetSizeCallback callback) override {
+    dbus::MethodCall method_call(kSpacedInterface,
+                                 spaced::kGetQuotaCurrentSpaceForGidMethod);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendString(path);
+    writer.AppendUint32(gid);
+
+    proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&SpacedClientImpl::HandleGetSizeResponse,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  void GetQuotaCurrentSpaceForProjectId(const std::string& path,
+                                        uint32_t project_id,
+                                        GetSizeCallback callback) override {
+    dbus::MethodCall method_call(
+        kSpacedInterface, spaced::kGetQuotaCurrentSpaceForProjectIdMethod);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendString(path);
+    writer.AppendUint32(project_id);
+
+    proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&SpacedClientImpl::HandleGetSizeResponse,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
   void Init(dbus::Bus* bus) {
-    proxy_ =
-        bus->GetObjectProxy(::spaced::kSpacedServiceName,
-                            dbus::ObjectPath(::spaced::kSpacedServicePath));
+    proxy_ = bus->GetObjectProxy(spaced::kSpacedServiceName,
+                                 dbus::ObjectPath(spaced::kSpacedServicePath));
+
+    DCHECK(proxy_);
+    proxy_->ConnectToSignal(
+        kSpacedInterface, spaced::kStatefulDiskSpaceUpdate,
+        base::BindRepeating(&SpacedClientImpl::OnSpaceUpdate,
+                            weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(&SpacedClientImpl::OnSignalConnected,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 
  private:
-  // Handles the result of Mount and calls |callback|.
-  void HandleResponse(GetSizeCallback callback, dbus::Response* response) {
+  void HandleBoolResponse(BoolCallback callback, dbus::Response* response) {
+    if (!response) {
+      std::move(callback).Run(absl::nullopt);
+      return;
+    }
+
+    dbus::MessageReader reader(response);
+    bool result = 0;
+
+    if (!reader.PopBool(&result)) {
+      LOG(ERROR) << "Spaced D-Bus method " << response->GetMember()
+                 << ": Invalid response. " + response->ToString();
+      std::move(callback).Run(absl::nullopt);
+      return;
+    }
+
+    std::move(callback).Run(result);
+  }
+
+  // Handles the result of methods that get size and calls |callback|.
+  void HandleGetSizeResponse(GetSizeCallback callback,
+                             dbus::Response* response) {
     if (!response) {
       std::move(callback).Run(absl::nullopt);
       return;
@@ -91,6 +177,28 @@ class SpacedClientImpl : public SpacedClient {
     }
 
     std::move(callback).Run(size);
+  }
+
+  void OnSpaceUpdate(dbus::Signal* const signal) const {
+    Observer::SpaceEvent event;
+    if (!dbus::MessageReader(signal).PopArrayOfBytesAsProto(&event)) {
+      LOG(ERROR) << "Cannot parse StatefulDiskSpaceUpdate proto";
+      return;
+    }
+
+    for (Observer& observer : observers_) {
+      observer.OnSpaceUpdate(event);
+    }
+  }
+
+  void OnSignalConnected(const std::string& interface_name,
+                         const std::string& signal_name,
+                         const bool connected) {
+    connected_ = connected;
+    LOG_IF(ERROR, !connected)
+        << "Cannot connect to StatefulDiskSpaceUpdate signal";
+    DCHECK_EQ(interface_name, kSpacedInterface);
+    DCHECK_EQ(signal_name, spaced::kStatefulDiskSpaceUpdate);
   }
 
   raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_ = nullptr;

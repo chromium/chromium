@@ -9,7 +9,7 @@ import {assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://
 /** Name of the chrome.send() message to be used in tests. */
 const CHROME_SEND_NAME: string = 'echoMessage';
 
-suite('CrModuleSendWithPromiseTest', function() {
+suite('CrSendWithPromiseTest', function() {
   const originalChromeSend = chrome.send;
   let rejectPromises = false;
 
@@ -86,7 +86,7 @@ suite('CrModuleSendWithPromiseTest', function() {
   });
 });
 
-suite('CrModuleWebUiListenersTest', function() {
+suite('CrWebUiListenersTest', function() {
   let listener1: WebUiListener|null = null;
   let listener2: WebUiListener|null = null;
 

@@ -11,7 +11,7 @@
     [CEReactions, Reflect=aria_controls] attribute FrozenArray<Element>? ariaControlsElements;
     [CEReactions, Reflect=aria_describedby] attribute FrozenArray<Element>? ariaDescribedByElements;
     [CEReactions, Reflect=aria_details] attribute FrozenArray<Element>? ariaDetailsElements;
-    [CEReactions, Reflect=aria_errormessage] attribute Element? ariaErrorMessageElement;
+    [CEReactions, Reflect=aria_errormessage] attribute FrozenArray<Element>? ariaErrorMessageElements;
     [CEReactions, Reflect=aria_flowto] attribute FrozenArray<Element>? ariaFlowToElements;
     [CEReactions, Reflect=aria_labelledby] attribute FrozenArray<Element>? ariaLabelledByElements;
     [CEReactions, Reflect=aria_owns] attribute FrozenArray<Element>? ariaOwnsElements;

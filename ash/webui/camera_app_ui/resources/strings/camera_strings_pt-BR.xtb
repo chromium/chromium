@@ -45,7 +45,7 @@
 <translation id="28682968802727151">Visualização do espelhamento</translation>
 <translation id="2879583609344924966">A <ph name="CAMERA" /> foi conectada.</translation>
 <translation id="3067436040345934772">Movimentar para a direita</translation>
-<translation id="3081586908890909590">Alternar para gravar vídeo</translation>
+<translation id="3081586908890909590">Mudar para gravar vídeo</translation>
 <translation id="313467653172006084">30 QPS</translation>
 <translation id="3227137524299004712">Microfone</translation>
 <translation id="3240426699337459095">Link copiado</translation>
@@ -57,6 +57,7 @@
 <translation id="3566302376254083266">Movendo para o canto esquerdo de cima</translation>
 <translation id="3573890771273113519">Mudar para o modo de digitalização</translation>
 <translation id="3583444040776960729">Canto inferior esquerdo do documento</translation>
+<translation id="3642192109456033823">Processando vídeo…</translation>
 <translation id="3789724198583203151">Girar 90 graus no sentido anti-horário</translation>
 <translation id="3810838688059735925">Vídeo</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
@@ -87,6 +88,7 @@
 <translation id="5057360777601936059">Sua câmera está indisponível no momento.
         Verifique se ela está conectada corretamente.</translation>
 <translation id="5163387177077603948">Movendo para a direita</translation>
+<translation id="5219374179772385066">O modo Time Lapse já está disponível!</translation>
 <translation id="5235304959032763950">16 por 9</translation>
 <translation id="5266635337630551423">Canto superior esquerdo do documento</translation>
 <translation id="5317780077021120954">Salvar</translation>
@@ -101,7 +103,7 @@
 <translation id="5775960006311140197">Modo Especialista</translation>
 <translation id="5860033963881614850">Desativada</translation>
 <translation id="5869546221129391014">Grade</translation>
-<translation id="5916664084637901428">Ativado</translation>
+<translation id="5916664084637901428">Ativada</translation>
 <translation id="5975083100439434680">Diminuir zoom</translation>
 <translation id="5976160379964388480">Outros</translation>
 <translation id="6073451960410192870">Parar de gravar</translation>
@@ -130,7 +132,7 @@ Caso seu feedback seja sobre a qualidade da imagem ou do vídeo, adicione uma fo
 <translation id="7337660886763914220">Erros no sistema de arquivos.</translation>
 <translation id="7450541714075000668">Texto copiado</translation>
 <translation id="7488619942230388918">Gravar um GIF</translation>
-<translation id="7557677699350329807">Alternar para a próxima câmera</translation>
+<translation id="7557677699350329807">Mudar para a próxima câmera</translation>
 <translation id="7607002721634913082">Pausado</translation>
 <translation id="7608223098072244877">4 por 4</translation>
 <translation id="761421184377987513">Movendo para o canto esquerdo de baixo</translation>
@@ -147,7 +149,7 @@ Caso seu feedback seja sobre a qualidade da imagem ou do vídeo, adicione uma fo
 <translation id="8079255378695216066">Não é possível iniciar a gravação</translation>
 <translation id="8120146556401698679">Panorâmica, inclinação, zoom</translation>
 <translation id="8131740175452115882">Confirmar</translation>
-<translation id="8145038249676204903">Alternar para tirar foto</translation>
+<translation id="8145038249676204903">Mudar para tirar foto</translation>
 <translation id="8167081290930651932">Salvar como foto</translation>
 <translation id="8239780215768881278">Fazer um instantâneo de vídeo</translation>
 <translation id="8346544573713510785">Dimensionar frames pela HAL da câmera</translation>
@@ -157,7 +159,7 @@ Caso seu feedback seja sobre a qualidade da imagem ou do vídeo, adicione uma fo
 <translation id="8711011893539266636">Alterne o status do microfone. O microfone está desativado</translation>
 <translation id="8730621377337864115">Concluído</translation>
 <translation id="8732462232047530626">Visualizar metadados</translation>
-<translation id="8815966864175525708">Alternar para fotografar no modo retrato</translation>
+<translation id="8815966864175525708">Mudar para fotografar no modo retrato</translation>
 <translation id="8828441885228359828">Retomar gravação</translation>
 <translation id="8870695351537079478">Não foi possível começar a gravação</translation>
 <translation id="8880167521484863515">4 por 3</translation>

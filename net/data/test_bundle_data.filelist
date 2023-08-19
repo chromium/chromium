@@ -316,7 +316,11 @@ data/crl_unittest/revoked_no_nextupdate.pem
 data/embedded_test_server/mock-headers-without-crlf.html
 data/embedded_test_server/mock-headers-without-crlf.html.mock-http-headers
 data/filter_unittests/google.br
+data/filter_unittests/google.sbr
+data/filter_unittests/google.szst
 data/filter_unittests/google.txt
+data/filter_unittests/google.zst
+data/filter_unittests/test.dict
 data/name_constraints_unittest/directoryname-excludeall.pem
 data/name_constraints_unittest/directoryname-excluded.pem
 data/name_constraints_unittest/directoryname.pem
@@ -347,6 +351,7 @@ data/name_constraints_unittest/ipaddress-invalid_mask_not_contiguous_1.pem
 data/name_constraints_unittest/ipaddress-invalid_mask_not_contiguous_2.pem
 data/name_constraints_unittest/ipaddress-invalid_mask_not_contiguous_3.pem
 data/name_constraints_unittest/ipaddress-invalid_mask_not_contiguous_4.pem
+data/name_constraints_unittest/ipaddress-mapped_addrs.pem
 data/name_constraints_unittest/ipaddress-permit_all.pem
 data/name_constraints_unittest/ipaddress-permit_prefix1.pem
 data/name_constraints_unittest/ipaddress-permit_prefix31.pem

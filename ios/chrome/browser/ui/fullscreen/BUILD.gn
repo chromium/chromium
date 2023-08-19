@@ -9,12 +9,11 @@ source_set("fullscreen") {
     "fullscreen_controller.h",
     "fullscreen_controller.mm",
     "fullscreen_controller_observer.h",
+    "fullscreen_controller_observer.mm",
     "fullscreen_ui_updater.h",
     "scoped_fullscreen_disabler.h",
     "scoped_fullscreen_disabler.mm",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   allow_circular_includes_from = [ ":internal" ]
 
@@ -35,8 +34,6 @@ source_set("coordinators") {
     "chrome_coordinator+fullscreen_disabling.h",
     "chrome_coordinator+fullscreen_disabling.mm",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
     ":fullscreen",
@@ -72,22 +69,21 @@ source_set("internal") {
     "fullscreen_web_view_resizer.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     ":ui",
     "//base",
     "//components/keyed_service/ios",
+    "//ios/chrome/browser/find_in_page:util",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/broadcaster",
     "//ios/chrome/browser/ui/ntp:logo",
     "//ios/chrome/common:timing",
     "//ios/chrome/common/ui/util",
-    "//ios/public/provider/chrome/browser/find_in_page:find_in_page_api",
     "//ios/public/provider/chrome/browser/fullscreen:fullscreen_api",
     "//ios/web",
     "//ios/web/common",
@@ -102,8 +98,6 @@ source_set("ui") {
     "fullscreen_animator.mm",
     "fullscreen_ui_element.h",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
     "//base",
@@ -124,8 +118,6 @@ source_set("unit_tests") {
     "fullscreen_web_state_observer_unittest.mm",
     "fullscreen_web_view_resizer_unittest.mm",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
     ":fullscreen",
@@ -151,10 +143,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "fullscreen_egtest.mm" ]
   deps = [

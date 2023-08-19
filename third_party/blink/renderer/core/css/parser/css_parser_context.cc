@@ -230,6 +230,13 @@ KURL CSSParserContext::CompleteURL(const String& url) const {
   return KURL(BaseURL(), url, Charset());
 }
 
+KURL CSSParserContext::CompleteNonEmptyURL(const String& url) const {
+  if (url.empty()) {
+    return KURL();
+  }
+  return CompleteURL(url);
+}
+
 void CSSParserContext::Count(WebFeature feature) const {
   if (IsUseCounterRecordingEnabled()) {
     document_->CountUse(feature);

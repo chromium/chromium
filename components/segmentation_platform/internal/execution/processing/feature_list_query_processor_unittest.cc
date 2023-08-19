@@ -43,7 +43,7 @@ class FeatureListQueryProcessorTest : public testing::Test {
     auto moved_signal_db = std::make_unique<MockSignalDatabase>();
     signal_database_ = moved_signal_db.get();
     storage_service_ = std::make_unique<StorageService>(
-        nullptr, std::move(moved_signal_db), nullptr, nullptr, nullptr,
+        nullptr, std::move(moved_signal_db), nullptr, nullptr, nullptr, nullptr,
         &ukm_data_manager_);
     clock_.SetNow(base::Time::Now());
     segment_id_ = SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;

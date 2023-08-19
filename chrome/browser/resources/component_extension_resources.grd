@@ -40,11 +40,6 @@
         <include name="IDR_DESK_API_DESK_API_BUNDLE_JS" file="${root_gen_dir}/chrome/browser/resources/chromeos/desk_api/desk_api_bundle.js" use_base_dir="false" resource_path="chromeos/desk_api/desk_api_bundle.js" type="BINDATA" />
       </if>
 
-      <include name="IDR_IDENTITY_API_SCOPE_APPROVAL_BACKGROUND_JS" file="identity_scope_approval_dialog/background.js" type="BINDATA" />
-      <include name="IDR_IDENTITY_API_SCOPE_APPROVAL_DIALOG_CSS" file="identity_scope_approval_dialog/scope_approval_dialog.css" type="BINDATA" />
-      <include name="IDR_IDENTITY_API_SCOPE_APPROVAL_DIALOG" file="identity_scope_approval_dialog/scope_approval_dialog.html" type="BINDATA" />
-      <include name="IDR_IDENTITY_API_SCOPE_APPROVAL_DIALOG_JS" file="identity_scope_approval_dialog/scope_approval_dialog.js" type="BINDATA" />
-      <include name="IDR_IDENTITY_API_SCOPE_APPROVAL_INJECT_JS" file="identity_scope_approval_dialog/inject.js" type="BINDATA" />
       <if expr="chromeos_ash">
         <include name="IDR_ARC_SUPPORT_BACKGROUND_JS" file="chromeos/arc_support/background.js" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_BUBBLE_CSS" file="chromeos/arc_support/bubble.css" flattenhtml="true" type="BINDATA" />
@@ -83,6 +78,7 @@
     <structures>
       <structure type="lottie" name="IDS_ARC_INPUT_OVERLAY_ONBOARDING_ILLUSTRATION_DARK_JSON" file="chromeos/arc_input_overlay/onboarding_illustration_dark.json" compress="gzip" />
       <structure type="lottie" name="IDS_ARC_INPUT_OVERLAY_ONBOARDING_ILLUSTRATION_LIGHT_JSON" file="chromeos/arc_input_overlay/onboarding_illustration_light.json" compress="gzip" />
+      <structure type="lottie" name="IDS_ARC_INPUT_OVERLAY_ZERO_STATE_ILLUSTRATION_JSON" file="chromeos/arc_input_overlay/zero_state_illustration.json" compress="gzip" />
     </structures>
   </release>
 </grit>

@@ -26,6 +26,7 @@ using ::optimization_guide::proto::ScoringSignalSpec;
 using ::optimization_guide::proto::ScoringSignalTransformation;
 
 constexpr float kDefaultMissingValue = -1;
+constexpr float kSecondsInDay = 86400;
 
 namespace {
 
@@ -127,6 +128,14 @@ AutocompleteScoringModelHandler::ExtractInputFromScoringSignals(
         if (scoring_signals.has_elapsed_time_last_visit_secs()) {
           val = static_cast<float>(
               scoring_signals.elapsed_time_last_visit_secs());
+        }
+        break;
+      case optimization_guide::proto::
+          SCORING_SIGNAL_TYPE_ELAPSED_TIME_LAST_VISIT_DAYS:
+        if (scoring_signals.has_elapsed_time_last_visit_secs()) {
+          val = static_cast<float>(
+                    scoring_signals.elapsed_time_last_visit_secs()) /
+                kSecondsInDay;
         }
         break;
       case optimization_guide::proto::SCORING_SIGNAL_TYPE_IS_HOST_ONLY:
@@ -246,6 +255,14 @@ AutocompleteScoringModelHandler::ExtractInputFromScoringSignals(
               scoring_signals.elapsed_time_last_shortcut_visit_sec());
         }
         break;
+      case optimization_guide::proto::
+          SCORING_SIGNAL_TYPE_ELAPSED_TIME_LAST_SHORTCUT_VISIT_DAYS:
+        if (scoring_signals.has_elapsed_time_last_shortcut_visit_sec()) {
+          val = static_cast<float>(
+                    scoring_signals.elapsed_time_last_shortcut_visit_sec()) /
+                kSecondsInDay;
+        }
+        break;
       case optimization_guide::proto::SCORING_SIGNAL_TYPE_UNKNOWN:
       default:
         // Reached when the metadata is updated to have a new signal that
@@ -275,6 +292,13 @@ AutocompleteScoringModelHandler::ExtractInputFromScoringSignals(
       val = scoring_signal_spec.has_missing_value()
                 ? scoring_signal_spec.missing_value()
                 : kDefaultMissingValue;
+    }
+
+    // Normalize signal if configured.
+    if (scoring_signal_spec.has_norm_upper_boundary()) {
+      float upper_boundary = scoring_signal_spec.norm_upper_boundary();
+      DCHECK_GT(upper_boundary, 0);
+      val = std::clamp(*val, -upper_boundary, upper_boundary) / upper_boundary;
     }
 
     model_input.push_back(*val);

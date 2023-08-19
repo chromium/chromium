@@ -187,20 +187,77 @@ struct COMPONENT_EXPORT(PRINT_BACKEND) PrinterSemanticCapsAndDefaults {
   mojom::ColorModel color_model = mojom::ColorModel::kUnknownColorModel;
   mojom::ColorModel bw_model = mojom::ColorModel::kUnknownColorModel;
 
-  struct COMPONENT_EXPORT(PRINT_BACKEND) Paper {
-    std::string display_name;
-    std::string vendor_id;
-    gfx::Size size_um;
-
-    // Origin (x,y) is at the bottom-left.
-    gfx::Rect printable_area_um;
+  class COMPONENT_EXPORT(PRINT_BACKEND) Paper {
+   public:
+    Paper();
+    Paper(const std::string& display_name,
+          const std::string& vendor_id,
+          const gfx::Size& size_um);
+    Paper(const std::string& display_name,
+          const std::string& vendor_id,
+          const gfx::Size& size_um,
+          const gfx::Rect& printable_area_um);
+    Paper(const std::string& display_name,
+          const std::string& vendor_id,
+          const gfx::Size& size_um,
+          const gfx::Rect& printable_area_um,
+          int max_height_um);
 
     bool operator==(const Paper& other) const;
+
+    const std::string& display_name() const { return display_name_; }
+    const std::string& vendor_id() const { return vendor_id_; }
+    const gfx::Size& size_um() const { return size_um_; }
+    const gfx::Rect& printable_area_um() const { return printable_area_um_; }
+    int max_height_um() const { return max_height_um_; }
+
+    void set_display_name(const std::string& display_name) {
+      display_name_ = display_name;
+    }
+    void set_vendor_id(const std::string& vendor_id) { vendor_id_ = vendor_id; }
+
+    void set_printable_area_to_paper_size() {
+      printable_area_um_ = gfx::Rect(size_um_);
+    }
+
+    bool SupportsCustomSize() const;
+    // Return true if `other_um` is the same size as this object or if this
+    // object supports a custom size and `other_um` falls within the custom size
+    // of this object.  Else, return false.
+    bool IsSizeWithinBounds(const gfx::Size& other_um) const;
+
+   private:
+    std::string display_name_;
+    std::string vendor_id_;
+    gfx::Size size_um_;
+
+    // Origin (x,y) is at the bottom-left.
+    gfx::Rect printable_area_um_;
+
+    // This is used to represent a printer that supports a variable height.
+    // This will either be equal to 0 (which indicates the height is not
+    // variable) or this will be larger than the height in `size_um` (which
+    // indicates the height can be anywhere in that range).  Note that
+    // `printable_area_um` is always based on `size_um`.
+    int max_height_um_ = 0;
   };
   using Papers = std::vector<Paper>;
   Papers papers;
   Papers user_defined_papers;
   Paper default_paper;
+
+  // Describes a media type (plain paper, photo paper, etc.)
+  // TODO(crbug.com/1459344): Support media types on platforms other than
+  // ChromeOS
+  struct COMPONENT_EXPORT(PRINT_BACKEND) MediaType {
+    std::string display_name;
+    std::string vendor_id;
+
+    bool operator==(const MediaType& other) const;
+  };
+  using MediaTypes = std::vector<MediaType>;
+  MediaTypes media_types;
+  MediaType default_media_type;
 
   std::vector<gfx::Size> dpis;
   gfx::Size default_dpi;
@@ -293,8 +350,11 @@ class COMPONENT_EXPORT(PRINT_BACKEND) PrintBackend
       const gfx::Size& paper_size_um) = 0;
 #endif
 
-  // Gets the information about driver for a specific printer.
-  virtual std::string GetPrinterDriverInfo(const std::string& printer_name) = 0;
+  // Gets the information about driver for a specific printer.  A maximum of
+  // 4 elements can be in the returned result, due to limitations on how this
+  // is intended to be used for crash keys by `ScopedPrinterInfo`.
+  virtual std::vector<std::string> GetPrinterDriverInfo(
+      const std::string& printer_name) = 0;
 
   // Returns true if printer_name points to a valid printer.
   virtual bool IsValidPrinter(const std::string& printer_name) = 0;

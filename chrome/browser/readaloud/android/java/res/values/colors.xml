@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <color name="readaloud_button_primary_light">@color/baseline_primary_40_alpha_10</color>
+    <color name="readaloud_button_secondary_light">@color/baseline_primary_40_alpha_6</color>
+    <color name="readaloud_progress_bar_bg">@color/baseline_primary_40_alpha_6</color>
+</resources>

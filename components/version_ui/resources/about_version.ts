@@ -54,7 +54,7 @@ function handlePathInfo(
   getRequiredElement('profile_path').textContent = profilePath;
 }
 
-// <if expr="chromeos_ash or is_win">
+// <if expr="chromeos_lacros or is_win">
 /**
  * Callback from the backend with the OS version to display.
  * @param osVersion The OS version to display.
@@ -64,11 +64,19 @@ function returnOsVersion(osVersion: string) {
 }
 // </if>
 
-// <if expr="chromeos_ash">
+// <if expr="is_chromeos">
+/**
+ * Callback from the backend with the ChromeOS platform version to display.
+ * @param platformVersion The platform version to display.
+ */
+function returnPlatformVersion(platformVersion: string) {
+  getRequiredElement('platform_version').textContent = platformVersion;
+}
+
 /**
  * Callback from the backend with the firmware version to display.
  */
-function returnOsFirmwareVersion(firmwareVersion: string) {
+function returnFirmwareVersion(firmwareVersion: string) {
   getRequiredElement('firmware_version').textContent = firmwareVersion;
 }
 
@@ -94,15 +102,13 @@ function returnCustomizationId(response: {[customizationId: string]: any}) {
   getRequiredElement('customization_id').textContent =
       response['customizationId'];
 }
-// </if>
 
-// <if expr="is_chromeos">
 /**
- * Callback from the backend to inform if Lacros is primary or not.
- * @param isPrimary True if it is primary.
+ * Callback from the backend to inform if Lacros is enabled or not.
+ * @param enabled True if it is enabled.
  */
-function returnLacrosPrimary(isPrimary: string) {
-  getRequiredElement('os-link-container').hidden = !isPrimary;
+function returnLacrosEnabled(enabled: string) {
+  getRequiredElement('os-link-container').hidden = !enabled;
 
   const crosUrlRedirectButton = $('os-link-href');
   if (crosUrlRedirectButton) {
@@ -132,17 +138,19 @@ function copyOSContentToClipboard() {
 
 /* All the work we do onload. */
 function initialize() {
-  // <if expr="chromeos_ash or is_win">
+  // <if expr="chromeos_lacros or is_win">
   addWebUiListener('return-os-version', returnOsVersion);
   // </if>
-  // <if expr="chromeos_ash">
-  addWebUiListener('return-os-firmware-version', returnOsFirmwareVersion);
+  // <if expr="is_chromeos">
+  addWebUiListener('return-platform-version', returnPlatformVersion);
+  addWebUiListener('return-firmware-version', returnFirmwareVersion);
   addWebUiListener(
       'return-arc-and-arc-android-sdk-versions',
       returnArcAndArcAndroidSdkVersions);
-  // </if>
-  // <if expr="is_chromeos">
-  addWebUiListener('return-lacros-primary', returnLacrosPrimary);
+  addWebUiListener('return-lacros-enabled', returnLacrosEnabled);
+  getRequiredElement('arc_holder').hidden = true;
+  chrome.chromeosInfoPrivate.get(['customizationId'])
+      .then(returnCustomizationId);
   // </if>
 
   chrome.send('requestVersionInfo');
@@ -150,12 +158,6 @@ function initialize() {
   sendWithPromise('requestVariationInfo', includeVariationsCmd)
       .then(handleVariationInfo);
   sendWithPromise('requestPathInfo').then(handlePathInfo);
-
-  // <if expr="chromeos_ash">
-  getRequiredElement('arc_holder').hidden = true;
-  chrome.chromeosInfoPrivate.get(['customizationId'])
-      .then(returnCustomizationId);
-  // </if>
 
   if (getRequiredElement('variations-seed').textContent !== '') {
     getRequiredElement('variations-seed-section').hidden = false;

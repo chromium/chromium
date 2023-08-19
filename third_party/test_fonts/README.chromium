@@ -2,7 +2,9 @@ Name: test_fonts
 URL: https://pagure.io/lohit, http://www.nongnu.org/freebangfont/downloads.html#mukti, https://dejavu-fonts.github.io/Download.html
 Version: unknown
 License: SIL OPEN FONT LICENSE, GPL v2, Bitstream Vera Fonts Copyright
+License File: LICENSE
 Security Critical: no
+Shipped: no
 
 Description:
 A collection of fonts in the test_fonts directory distributed in a

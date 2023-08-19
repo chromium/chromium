@@ -56,7 +56,7 @@ class StoredPage : public SiteInstanceGroup::Observer {
   StoredPage(std::unique_ptr<RenderFrameHostImpl> rfh,
              RenderFrameProxyHostMap proxy_hosts,
              RenderViewHostImplSafeRefSet render_view_hosts);
-  virtual ~StoredPage();
+  ~StoredPage() override;
 
   void SetDelegate(Delegate* delegate);
 

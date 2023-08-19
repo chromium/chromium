@@ -208,6 +208,10 @@ bool Length::HasAnchorQueries() const {
   return IsCalculated() && GetCalculationValue().HasAnchorQueries();
 }
 
+bool Length::HasAutoAnchorPositioning() const {
+  return IsCalculated() && GetCalculationValue().HasAutoAnchorPositioning();
+}
+
 String Length::ToString() const {
   StringBuilder builder;
   builder.Append("Length(");

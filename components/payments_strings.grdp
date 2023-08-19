@@ -296,15 +296,6 @@
   <message name="IDS_PAYMENTS_REQUIRED_FIELD_MESSAGE" desc="The text that informs the user that '*' character indicates an input field that is required. The '*' character should not be changed." formatter_data="android_java">
      * Field is required
   </message>
-  <message name="IDS_PAYMENTS_VALIDATION_INVALID_NAME" desc="Message displayed to user when name validation fails.">
-    Enter a name
-  </message>
-  <message name="IDS_PAYMENTS_VALIDATION_INVALID_CREDIT_CARD_EXPIRATION_YEAR" desc="Message displayed to user when the credit card expiration year is in an invalid format.">
-    Enter a valid expiration year
-  </message>
-  <message name="IDS_PAYMENTS_VALIDATION_INVALID_CREDIT_CARD_EXPIRATION_MONTH" desc="Message displayed to user when the credit card expiration month is in an invalid format.">
-    Enter a valid expiration month
-  </message>
   <message name="IDS_PAYMENTS_VALIDATION_INVALID_CREDIT_CARD_EXPIRED" desc="Message displayed to user when the credit card is expired.">
     This card is expired
   </message>
@@ -319,9 +310,6 @@
   </message>
   <message name="IDS_PAYMENTS_CARD_NUMBER_INVALID_VALIDATION_MESSAGE" desc="The text that informs the user that the credit card number they have entered is not valid." formatter_data="android_java">
     Enter a valid card number
-  </message>
-  <message name="IDS_PAYMENTS_CARD_EXPIRATION_INVALID_VALIDATION_MESSAGE" desc="The text that informs the user that the credit card expiration date they have entered is not valid.">
-    Enter a valid expiration date
   </message>
   <message name="IDS_PAYMENTS_INVALID_ADDRESS" desc="The label to indicate the shipping address is invalid. For example, missing state or city name." formatter_data="android_java">
     Enter a valid address

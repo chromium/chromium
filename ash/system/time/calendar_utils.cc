@@ -7,6 +7,7 @@
 #include <map>
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -175,13 +176,17 @@ std::u16string FormatTwentyFourHourClockTimeInterval(
 }
 
 void SetUpWeekColumns(views::TableLayout* layout) {
-  layout->AddPaddingColumn(views::TableLayout::kFixedSize, kColumnSetPadding);
+  if (!features::IsCalendarJellyEnabled()) {
+    layout->AddPaddingColumn(views::TableLayout::kFixedSize, kColumnSetPadding);
+  }
   for (int i = 0; i < calendar_utils::kDateInOneWeek; ++i) {
-    layout
-        ->AddColumn(views::LayoutAlignment::kStretch,
-                    views::LayoutAlignment::kStretch, 1.0f,
-                    views::TableLayout::ColumnSize::kFixed, 0, 0)
-        .AddPaddingColumn(views::TableLayout::kFixedSize, kColumnSetPadding);
+    layout->AddColumn(views::LayoutAlignment::kStretch,
+                      views::LayoutAlignment::kStretch, 1.0f,
+                      views::TableLayout::ColumnSize::kFixed, 0, 0);
+    if (!features::IsCalendarJellyEnabled()) {
+      layout->AddPaddingColumn(views::TableLayout::kFixedSize,
+                               kColumnSetPadding);
+    }
   }
 }
 

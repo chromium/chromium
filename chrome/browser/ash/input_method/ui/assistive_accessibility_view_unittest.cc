@@ -33,7 +33,7 @@ class AssistiveAccessiblityViewTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::TearDown();
   }
 
-  raw_ptr<AssistiveAccessibilityView, ExperimentalAsh>
+  raw_ptr<AssistiveAccessibilityView, DanglingUntriaged | ExperimentalAsh>
       assistive_accessibility_view_;
 };
 

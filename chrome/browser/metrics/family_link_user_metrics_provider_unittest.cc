@@ -13,6 +13,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "components/supervised_user/core/common/supervised_user_utils.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -48,7 +50,7 @@ class FamilyLinkUserMetricsProviderTest : public testing::Test {
   void CreateTestingProfile(const std::string& test_email,
                             const std::string& test_profile,
                             bool is_subject_to_parental_controls,
-                            bool can_stop_parental_supervision) {
+                            bool is_opted_in_to_parental_supervision) {
     Profile* profile = test_profile_manager()->CreateTestingProfile(
         test_profile, IdentityTestEnvironmentProfileAdaptor::
                           GetIdentityTestEnvironmentFactories());
@@ -61,7 +63,8 @@ class FamilyLinkUserMetricsProviderTest : public testing::Test {
     AccountCapabilitiesTestMutator mutator(&account.capabilities);
     mutator.set_is_subject_to_parental_controls(
         is_subject_to_parental_controls);
-    mutator.set_can_stop_parental_supervision(can_stop_parental_supervision);
+    mutator.set_is_opted_in_to_parental_supervision(
+        is_opted_in_to_parental_supervision);
     signin::UpdateAccountInfoForAccount(
         IdentityManagerFactory::GetForProfile(profile), account);
   }
@@ -69,7 +72,6 @@ class FamilyLinkUserMetricsProviderTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   FamilyLinkUserMetricsProvider metrics_provider_;
-  base::test::ScopedFeatureList feature_list_;
   TestingProfileManager test_profile_manager_;
 };
 
@@ -88,7 +90,7 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
   base::HistogramTester histogram_tester;
   metrics_provider()->OnDidCreateMetricsLog();
   histogram_tester.ExpectTotalCount(
-      FamilyLinkUserMetricsProvider::GetHistogramNameForTesting(),
+      supervised_user::kFamilyLinkUserLogSegmentHistogramName,
       /*expected_count=*/0);
 }
 
@@ -97,14 +99,14 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
   // Profile with supervision set by policy
   CreateTestingProfile(kTestEmail2, kTestProfile2,
                        /*is_subject_to_parental_controls=*/true,
-                       /*can_stop_parental_supervision=*/false);
+                       /*is_opted_in_to_parental_supervision=*/false);
 
   base::HistogramTester histogram_tester;
   metrics_provider()->OnDidCreateMetricsLog();
 
   histogram_tester.ExpectUniqueSample(
-      FamilyLinkUserMetricsProvider::GetHistogramNameForTesting(),
-      FamilyLinkUserMetricsProvider::LogSegment::kSupervisionEnabledByPolicy,
+      supervised_user::kFamilyLinkUserLogSegmentHistogramName,
+      supervised_user::LogSegment::kSupervisionEnabledByPolicy,
       /*expected_bucket_count=*/1);
 }
 
@@ -113,14 +115,14 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
   // Profile with supervision set by user
   CreateTestingProfile(kTestEmail1, kTestProfile1,
                        /*is_subject_to_parental_controls=*/true,
-                       /*can_stop_parental_supervision=*/true);
+                       /*is_opted_in_to_parental_supervision=*/true);
 
   base::HistogramTester histogram_tester;
   metrics_provider()->OnDidCreateMetricsLog();
 
   histogram_tester.ExpectUniqueSample(
-      FamilyLinkUserMetricsProvider::GetHistogramNameForTesting(),
-      FamilyLinkUserMetricsProvider::LogSegment::kSupervisionEnabledByUser,
+      supervised_user::kFamilyLinkUserLogSegmentHistogramName,
+      supervised_user::LogSegment::kSupervisionEnabledByUser,
       /*expected_bucket_count=*/1);
 }
 
@@ -129,14 +131,14 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
   // Adult profile
   CreateTestingProfile(kTestEmail, kTestProfile,
                        /*is_subject_to_parental_controls=*/false,
-                       /*can_stop_parental_supervision=*/false);
+                       /*is_opted_in_to_parental_supervision=*/false);
 
   base::HistogramTester histogram_tester;
   metrics_provider()->OnDidCreateMetricsLog();
 
   histogram_tester.ExpectUniqueSample(
-      FamilyLinkUserMetricsProvider::GetHistogramNameForTesting(),
-      FamilyLinkUserMetricsProvider::LogSegment::kUnsupervised,
+      supervised_user::kFamilyLinkUserLogSegmentHistogramName,
+      supervised_user::LogSegment::kUnsupervised,
       /*expected_bucket_count=*/1);
 }
 
@@ -145,17 +147,17 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
   // Profile with supervision set by user
   CreateTestingProfile(kTestEmail1, kTestProfile1,
                        /*is_subject_to_parental_controls=*/true,
-                       /*can_stop_parental_supervision=*/false);
+                       /*is_opted_in_to_parental_supervision=*/false);
   // Profile with supervision set by policy
   CreateTestingProfile(kTestEmail2, kTestProfile2,
                        /*is_subject_to_parental_controls=*/true,
-                       /*can_stop_parental_supervision=*/true);
+                       /*is_opted_in_to_parental_supervision=*/true);
 
   base::HistogramTester histogram_tester;
   metrics_provider()->OnDidCreateMetricsLog();
   histogram_tester.ExpectBucketCount(
-      FamilyLinkUserMetricsProvider::GetHistogramNameForTesting(),
-      FamilyLinkUserMetricsProvider::LogSegment::kMixedProfile,
+      supervised_user::kFamilyLinkUserLogSegmentHistogramName,
+      supervised_user::LogSegment::kMixedProfile,
       /*expected_count=*/1);
 }
 
@@ -164,23 +166,23 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
   // Adult profile
   CreateTestingProfile(kTestEmail, kTestProfile,
                        /*is_subject_to_parental_controls=*/false,
-                       /*can_stop_parental_supervision=*/false);
+                       /*is_opted_in_to_parental_supervision=*/false);
 
   // Profile with supervision set by user
   CreateTestingProfile(kTestEmail1, kTestProfile1,
                        /*is_subject_to_parental_controls=*/true,
-                       /*can_stop_parental_supervision=*/false);
+                       /*is_opted_in_to_parental_supervision=*/false);
 
   // Profile with supervision set by policy
   CreateTestingProfile(kTestEmail2, kTestProfile2,
                        /*is_subject_to_parental_controls=*/true,
-                       /*can_stop_parental_supervision=*/true);
+                       /*is_opted_in_to_parental_supervision=*/true);
 
   base::HistogramTester histogram_tester;
   metrics_provider()->OnDidCreateMetricsLog();
   histogram_tester.ExpectBucketCount(
-      FamilyLinkUserMetricsProvider::GetHistogramNameForTesting(),
-      FamilyLinkUserMetricsProvider::LogSegment::kMixedProfile,
+      supervised_user::kFamilyLinkUserLogSegmentHistogramName,
+      supervised_user::LogSegment::kMixedProfile,
       /*expected_count=*/1);
 }
 
@@ -190,7 +192,7 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
   base::HistogramTester histogram_tester;
   metrics_provider()->OnDidCreateMetricsLog();
   histogram_tester.ExpectBucketCount(
-      FamilyLinkUserMetricsProvider::GetHistogramNameForTesting(),
-      FamilyLinkUserMetricsProvider::LogSegment::kMixedProfile,
+      supervised_user::kFamilyLinkUserLogSegmentHistogramName,
+      supervised_user::LogSegment::kMixedProfile,
       /*expected_count=*/0);
 }

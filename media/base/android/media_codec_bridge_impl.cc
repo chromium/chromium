@@ -381,21 +381,25 @@ MediaCodecStatus MediaCodecBridgeImpl::GetOutputColorSpace(
   int transfer = Java_MediaFormatWrapper_colorTransfer(env, result);
   gfx::ColorSpace::PrimaryID primary_id;
   gfx::ColorSpace::TransferID transfer_id;
-  gfx::ColorSpace::MatrixID matrix_id = gfx::ColorSpace::MatrixID::RGB;
+  gfx::ColorSpace::MatrixID matrix_id;
   gfx::ColorSpace::RangeID range_id;
 
   switch (standard) {
     case 1:  // MediaFormat.COLOR_STANDARD_BT709:
       primary_id = gfx::ColorSpace::PrimaryID::BT709;
+      matrix_id = gfx::ColorSpace::MatrixID::BT709;
       break;
     case 2:  // MediaFormat.COLOR_STANDARD_BT601_PAL:
       primary_id = gfx::ColorSpace::PrimaryID::BT470BG;
+      matrix_id = gfx::ColorSpace::MatrixID::SMPTE170M;
       break;
     case 4:  // MediaFormat.COLOR_STANDARD_BT601_NTSC:
       primary_id = gfx::ColorSpace::PrimaryID::SMPTE170M;
+      matrix_id = gfx::ColorSpace::MatrixID::SMPTE170M;
       break;
     case 6:  // MediaFormat.COLOR_STANDARD_BT2020
       primary_id = gfx::ColorSpace::PrimaryID::BT2020;
+      matrix_id = gfx::ColorSpace::MatrixID::BT2020_NCL;
       break;
     default:
       DVLOG(3) << __func__ << ": unsupported primary in p: " << standard

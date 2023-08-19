@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.keyboard_accessory;
 import android.util.SparseArray;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.data.CachedProviderAdapter;
@@ -236,7 +235,6 @@ class ManualFillingState {
         if (mWebContentsShowing) adapter.notifyAboutCachedItems();
     }
 
-    @VisibleForTesting
     WebContentsObserver getWebContentsObserverForTesting() {
         return mWebContentsObserver;
     }

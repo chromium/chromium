@@ -49,4 +49,7 @@ std::ostream& operator<<(std::ostream& out,
 
 std::ostream& operator<<(std::ostream& out, const WEBAUTHN_ASSERTION& in);
 
+std::ostream& operator<<(std::ostream& out,
+                         const WEBAUTHN_GET_CREDENTIALS_OPTIONS& in);
+
 #endif  // DEVICE_FIDO_WIN_LOGGING_H_

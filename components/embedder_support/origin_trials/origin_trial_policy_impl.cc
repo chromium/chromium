@@ -19,6 +19,7 @@
 #include "components/embedder_support/switches.h"
 #include "content/public/common/content_features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "third_party/blink/public/common/origin_trials/origin_trials.h"
 #include "third_party/blink/public/common/origin_trials/origin_trials_settings_provider.h"
 
 namespace embedder_support {
@@ -69,6 +70,11 @@ OriginTrialPolicyImpl::GetPublicKeys() const {
 }
 
 bool OriginTrialPolicyImpl::IsFeatureDisabled(base::StringPiece feature) const {
+  if (allow_only_deprecation_trials_) {
+    if (!blink::origin_trials::IsDeprecationTrial(feature)) {
+      return true;
+    }
+  }
   return disabled_features_.count(std::string(feature)) > 0;
 }
 
@@ -157,6 +163,15 @@ bool OriginTrialPolicyImpl::SetDisabledTokens(
   }
   disabled_tokens_.swap(new_disabled_tokens);
   return true;
+}
+
+void OriginTrialPolicyImpl::SetAllowOnlyDeprecationTrials(
+    bool allow_only_deprecation_trials) {
+  allow_only_deprecation_trials_ = allow_only_deprecation_trials;
+}
+
+bool OriginTrialPolicyImpl::GetAllowOnlyDeprecationTrials() const {
+  return allow_only_deprecation_trials_;
 }
 
 const std::set<std::string>*

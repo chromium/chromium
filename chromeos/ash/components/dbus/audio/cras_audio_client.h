@@ -81,6 +81,9 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
     // Called when NumberOfNonChromeOutputStreamsChanged is detected.
     virtual void NumberOfNonChromeOutputStreamsChanged();
 
+    // Called when num-stream-ignore-ui-gains is changed.
+    virtual void NumStreamIgnoreUiGains(int32_t num);
+
    protected:
     virtual ~Observer();
   };
@@ -271,6 +274,13 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
   // Runs the callback as soon as the service becomes available.
   virtual void WaitForServiceToBeAvailable(
       chromeos::WaitForServiceToBeAvailableCallback callback) = 0;
+
+  // Sets input force respect ui gains state to |force_repsect_ui_gains| value.
+  virtual void SetForceRespectUiGains(bool force_respect_ui_gains) = 0;
+
+  // Gets the number of streams ignoring UI Gains.
+  virtual void GetNumStreamIgnoreUiGains(
+      chromeos::DBusMethodCallback<int> callback) = 0;
 
  protected:
   friend class CrasAudioClientTest;

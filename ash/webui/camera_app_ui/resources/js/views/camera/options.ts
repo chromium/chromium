@@ -54,9 +54,6 @@ export class Options implements CameraUI {
    */
   private audioTrack: MediaStreamTrack|null = null;
 
-  /**
-   * @param cameraManager Camera manager instance.
-   */
   constructor(private readonly cameraManager: CameraManager) {
     this.cameraManager.registerCameraUI(this);
     this.switchDeviceButton.addEventListener('click', async () => {

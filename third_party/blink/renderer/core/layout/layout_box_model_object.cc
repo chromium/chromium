@@ -54,24 +54,8 @@
 namespace blink {
 
 namespace {
-inline bool IsOutOfFlowPositionedWithImplicitHeight(
-    const LayoutBoxModelObject* child) {
-  return child->IsOutOfFlowPositioned() &&
-         !child->StyleRef().LogicalTop().IsAuto() &&
-         !child->StyleRef().LogicalBottom().IsAuto();
-}
 
 void MarkBoxForRelayoutAfterSplit(LayoutBoxModelObject* box) {
-  // FIXME: The table code should handle that automatically. If not,
-  // we should fix it and remove the table part checks.
-  if (auto* section = DynamicTo<LayoutNGTableSection>(box)) {
-    // TODO(1229581): Is this necessary? It just does a SetNeedsLayout(). We
-    // might as well just do the
-    // SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation() thing
-    // below, I suppose?
-    section->SetNeedsCellRecalc();
-  }
-
   box->SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
       layout_invalidation_reason::kAnonymousBlockChange);
 }
@@ -86,18 +70,20 @@ void CollapseLoneAnonymousBlockChild(LayoutBox* parent, LayoutObject* child) {
   parent_block_flow->CollapseAnonymousBlockChild(child_block_flow);
 }
 
-bool NeedsAnchorScrollData(Element& element, const ComputedStyle& style) {
-  // `anchor-scroll` has no effect if the element is not absolutely positioned
-  // or when the property value is `none`.
-  if (!style.HasOutOfFlowPosition() || !style.AnchorScroll()) {
+bool NeedsAnchorPositionScrollData(Element& element,
+                                   const ComputedStyle& style) {
+  // `AnchorPositionScrollData` is for anchor positioned elements, which must be
+  // absolutely positioned.
+  if (!style.HasOutOfFlowPosition()) {
     return false;
   }
-  // There's an explicitly set `anchor-scroll` or `anchor-default` value.
-  if (!style.AnchorScroll()->IsDefault() || style.AnchorDefault()) {
+  // There's an explicitly set default anchor or additional fallback-bounds rect
+  // to track.
+  if (style.AnchorDefault() || style.PositionFallbackBounds()) {
     return true;
   }
-  // Now we have `anchor-scroll: default` and `anchor-default: implicit`. We
-  // need AnchorScrollData only if there's an implicit anchor element.
+  // Now we have `anchor-default: implicit`. We need `AnchorPositionScrollData`
+  // only if there's an implicit anchor element to track.
   return element.ImplicitAnchorElement();
 }
 
@@ -190,9 +176,13 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
 
   if (Layer() && old_style->HasStickyConstrainedPosition() &&
       !StyleRef().HasStickyConstrainedPosition()) {
-    if (const auto* scroll_container =
-            Layer()->ContainingScrollContainerLayer()) {
-      scroll_container->GetScrollableArea()->InvalidateAllStickyConstraints();
+    if (RuntimeEnabledFeatures::LayoutNewStickyLogicEnabled()) {
+      SetStickyConstraints(nullptr);
+    } else {
+      if (const auto* scroll_container =
+              Layer()->ContainingScrollContainerLayer()) {
+        scroll_container->GetScrollableArea()->InvalidateAllStickyConstraints();
+      }
     }
   }
 
@@ -213,6 +203,7 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
     Layer()->UpdateFilters(old_style, StyleRef());
     Layer()->UpdateBackdropFilters(old_style, StyleRef());
     Layer()->UpdateClipPath(old_style, StyleRef());
+    Layer()->UpdateOffsetPath(old_style, StyleRef());
     // Calls DestroyLayer() which clears the layer.
     Layer()->RemoveOnlyThisLayerAfterStyleChange(old_style);
     if (EverHadLayout())
@@ -253,21 +244,21 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
       // Clear our positioned objects list. Our absolute and fixed positioned
       // descendants will be inserted into our containing block's positioned
       // objects list during layout.
-      block->RemovePositionedObjects(nullptr, kNewContainingBlock);
+      block->RemovePositionedObjects(nullptr);
     }
     if (!could_contain_absolute && can_contain_absolute) {
       // Remove our absolute positioned descendants from their current
       // containing block.
       // They will be inserted into our positioned objects list during layout.
       if (LayoutBlock* cb = block->ContainingBlockForAbsolutePosition())
-        cb->RemovePositionedObjects(this, kNewContainingBlock);
+        cb->RemovePositionedObjects(this);
     }
     if (!could_contain_fixed && can_contain_fixed) {
       // Remove our fixed positioned descendants from their current containing
       // block.
       // They will be inserted into our positioned objects list during layout.
       if (LayoutBlock* cb = block->ContainingBlockForFixedPosition())
-        cb->RemovePositionedObjects(this, kNewContainingBlock);
+        cb->RemovePositionedObjects(this);
     }
   }
 
@@ -293,17 +284,16 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
   // on the document element because of change of BackgroundTransfersToView()
   // which depends on the document element style.
   if (IsDocumentElement()) {
-    if (HTMLBodyElement* body = GetDocument().FirstBodyElement()) {
-      if (auto* body_object = body->GetLayoutObject()) {
-        if (body_object->IsBoxModelObject()) {
-          auto* body_box_model = To<LayoutBoxModelObject>(body_object);
-          bool new_body_background_transfers =
-              body_box_model->BackgroundTransfersToView(Style());
-          bool old_body_background_transfers =
-              old_style && body_box_model->BackgroundTransfersToView(old_style);
-          if (new_body_background_transfers != old_body_background_transfers &&
-              body_object->Style() && body_object->StyleRef().HasBackground())
-            body_object->SetBackgroundNeedsFullPaintInvalidation();
+    if (const HTMLBodyElement* body = GetDocument().FirstBodyElement()) {
+      if (auto* body_object =
+              DynamicTo<LayoutBoxModelObject>(body->GetLayoutObject())) {
+        bool new_body_background_transfers =
+            body_object->BackgroundTransfersToView(Style());
+        bool old_body_background_transfers =
+            old_style && body_object->BackgroundTransfersToView(old_style);
+        if (new_body_background_transfers != old_body_background_transfers &&
+            body_object->Style() && body_object->StyleRef().HasBackground()) {
+          body_object->SetBackgroundNeedsFullPaintInvalidation();
         }
       }
     }
@@ -324,10 +314,10 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
   }
 
   if (Element* element = DynamicTo<Element>(GetNode())) {
-    if (NeedsAnchorScrollData(*element, StyleRef())) {
-      element->EnsureAnchorScrollData();
+    if (NeedsAnchorPositionScrollData(*element, StyleRef())) {
+      element->EnsureAnchorPositionScrollData();
     } else {
-      element->RemoveAnchorScrollData();
+      element->RemoveAnchorPositionScrollData();
     }
   }
 }
@@ -469,107 +459,22 @@ void LayoutBoxModelObject::UpdateFromStyle() {
 PhysicalRect LayoutBoxModelObject::PhysicalVisualOverflowRectIncludingFilters()
     const {
   NOT_DESTROYED();
-  PhysicalRect bounds_rect = PhysicalVisualOverflowRect();
-  if (!StyleRef().HasFilter())
-    return bounds_rect;
-  gfx::RectF float_rect(bounds_rect);
+  return ApplyFiltersToRect(PhysicalVisualOverflowRect());
+}
+
+PhysicalRect LayoutBoxModelObject::ApplyFiltersToRect(
+    const PhysicalRect& rect) const {
+  NOT_DESTROYED();
+  if (!StyleRef().HasFilter()) {
+    return rect;
+  }
+  gfx::RectF float_rect(rect);
   gfx::RectF filter_reference_box = Layer()->FilterReferenceBox();
-  if (!filter_reference_box.size().IsZero())
+  if (!filter_reference_box.size().IsZero()) {
     float_rect.UnionEvenIfEmpty(filter_reference_box);
+  }
   float_rect = Layer()->MapRectForFilter(float_rect);
   return PhysicalRect::EnclosingRect(float_rect);
-}
-
-LayoutBlock* LayoutBoxModelObject::ContainingBlockForAutoHeightDetection(
-    const Length& logical_height) const {
-  NOT_DESTROYED();
-  // For percentage heights: The percentage is calculated with respect to the
-  // height of the generated box's containing block. If the height of the
-  // containing block is not specified explicitly (i.e., it depends on content
-  // height), and this element is not absolutely positioned, the used height is
-  // calculated as if 'auto' was specified.
-  if (!logical_height.IsPercentOrCalc() || IsOutOfFlowPositioned())
-    return nullptr;
-
-  // Anonymous block boxes are ignored when resolving percentage values that
-  // would refer to it: the closest non-anonymous ancestor box is used instead.
-  LayoutBlock* cb = ContainingBlock();
-  while (cb->IsAnonymous())
-    cb = cb->ContainingBlock();
-
-  // Matching LayoutBox::percentageLogicalHeightIsResolvableFromBlock() by
-  // ignoring table cell's attribute value, where it says that table cells
-  // violate what the CSS spec says to do with heights. Basically we don't care
-  // if the cell specified a height or not.
-  if (cb->IsTableCell())
-    return nullptr;
-
-  // Match LayoutBox::availableLogicalHeightUsing by special casing the layout
-  // view. The available height is taken from the frame.
-  if (IsA<LayoutView>(cb))
-    return nullptr;
-
-  if (IsOutOfFlowPositionedWithImplicitHeight(cb))
-    return nullptr;
-
-  return cb;
-}
-
-bool LayoutBoxModelObject::HasAutoHeightOrContainingBlockWithAutoHeight()
-    const {
-  NOT_DESTROYED();
-  // TODO(rego): Check if we can somehow reuse LayoutBlock::
-  // availableLogicalHeightForPercentageComputation() (see crbug.com/635655).
-  const auto* this_box = DynamicTo<LayoutBox>(this);
-  const Length& logical_height_length = StyleRef().LogicalHeight();
-  LayoutBlock* cb =
-      ContainingBlockForAutoHeightDetection(logical_height_length);
-  if (this_box && this_box->IsFlexItemIncludingNG()) {
-    if (const NGLayoutResult* result =
-            this_box->GetSingleCachedLayoutResult()) {
-      // TODO(dgrogan): We won't get here when laying out the FlexNG item and
-      // its descendant(s) for the first time because the item (|this_box|)
-      // doesn't have anything in its cache. That seems bad because this method
-      // returns true even when the item has a fixed definite height. There
-      // doesn't seem to be an easy way to check the flex item's definiteness
-      // here because the flex item's LayoutObject doesn't have a
-      // BoxLayoutExtraInput that we could add a flag to.
-      const NGConstraintSpace& space = result->GetConstraintSpaceForCaching();
-      if (space.IsFixedBlockSize() && !space.IsInitialBlockSizeIndefinite())
-        return false;
-    }
-  }
-  if (this_box && this_box->IsCustomItem() &&
-      (this_box->HasOverrideContainingBlockContentLogicalHeight())) {
-    return false;
-  }
-
-  if ((logical_height_length.IsAutoOrContentOrIntrinsic() ||
-       logical_height_length.IsFillAvailable()) &&
-      !IsOutOfFlowPositionedWithImplicitHeight(this))
-    return true;
-
-  if (cb) {
-    // We need the containing block to have a definite block-size in order to
-    // resolve the block-size of the descendant, except when in quirks mode.
-    // Flexboxes follow strict behavior even in quirks mode, though.
-    if (!GetDocument().InQuirksMode() || cb->IsFlexibleBoxIncludingNG()) {
-      if (this_box &&
-          this_box->HasOverrideContainingBlockContentLogicalHeight()) {
-        return this_box->OverrideContainingBlockContentLogicalHeight() ==
-               LayoutUnit(-1);
-      } else if (this_box && this_box->GetSingleCachedLayoutResult() &&
-                 !this_box->GetBoxLayoutExtraInput()) {
-        return this_box->GetSingleCachedLayoutResult()
-                   ->GetConstraintSpaceForCaching()
-                   .AvailableSize()
-                   .block_size == LayoutUnit(-1);
-      }
-      return !cb->HasDefiniteLogicalHeight();
-    }
-  }
-
-  return false;
 }
 
 LayoutBlock* LayoutBoxModelObject::StickyContainer() const {
@@ -582,7 +487,6 @@ bool LayoutBoxModelObject::UpdateStickyPositionConstraints() {
   if (!StyleRef().HasStickyConstrainedPosition()) {
     if (StickyConstraints()) {
       SetStickyConstraints(nullptr);
-      SetNeedsPaintPropertyUpdate();
       return true;
     }
     return false;
@@ -606,7 +510,6 @@ bool LayoutBoxModelObject::UpdateStickyPositionConstraints() {
   constraints->containing_scroll_container_layer = scroll_container_layer;
   constraints->is_fixed_to_view = is_fixed_to_view;
 
-  PhysicalOffset skipped_containers_offset;
   LayoutBlock* sticky_container = StickyContainer();
   // The location container for boxes is not always the containing block.
   LayoutObject* location_container =
@@ -620,25 +523,18 @@ bool LayoutBoxModelObject::UpdateStickyPositionConstraints() {
     sticky_container = sticky_container->ContainingBlock();
   }
 
+  DCHECK(scroll_container_layer->GetLayoutBox());
+  auto& scroll_container = *scroll_container_layer->GetLayoutBox();
+  const PhysicalOffset scroll_container_border_offset(
+      scroll_container.BorderLeft(), scroll_container.BorderTop());
+
   // The sticky position constraint rects should be independent of the current
   // scroll position therefore we should ignore the scroll offset when
   // calculating the quad.
   // TODO(crbug.com/966131): Is kIgnoreTransforms correct here?
   MapCoordinatesFlags flags =
       kIgnoreTransforms | kIgnoreScrollOffset | kIgnoreStickyOffset;
-  skipped_containers_offset = location_container->LocalToAncestorPoint(
-      PhysicalOffset(), sticky_container, flags);
-  DCHECK(scroll_container_layer);
-  DCHECK(scroll_container_layer->GetLayoutBox());
-  auto& scroll_container = *scroll_container_layer->GetLayoutBox();
 
-  constraints->constraining_rect =
-      scroll_container.ComputeStickyConstrainingRect();
-
-  LayoutUnit max_container_width =
-      IsA<LayoutView>(sticky_container)
-          ? sticky_container->LogicalWidth()
-          : sticky_container->ContainingBlockLogicalWidthForContent();
   // Sticky positioned element ignore any override logical width on the
   // containing block, as they don't call containingBlockLogicalWidthForContent.
   // It's unclear whether this is totally fine.
@@ -648,67 +544,62 @@ bool LayoutBoxModelObject::UpdateStickyPositionConstraints() {
 
   // Map the containing block to the inner corner of the scroll ancestor without
   // transforms.
-  PhysicalRect scroll_container_relative_padding_box_rect(
-      sticky_container->LayoutOverflowRect());
-  if (sticky_container != &scroll_container) {
+  PhysicalRect scroll_container_relative_containing_block_rect;
+  if (sticky_container == &scroll_container) {
+    scroll_container_relative_containing_block_rect =
+        sticky_container->PhysicalLayoutOverflowRect();
+  } else {
     PhysicalRect local_rect = sticky_container->PhysicalPaddingBoxRect();
-    scroll_container_relative_padding_box_rect =
+    scroll_container_relative_containing_block_rect =
         sticky_container->LocalToAncestorRect(local_rect, &scroll_container,
                                               flags);
   }
 
-  // Remove top-left border offset from overflow scroller.
-  PhysicalOffset scroll_container_border_offset(scroll_container.BorderLeft(),
-                                                scroll_container.BorderTop());
-  scroll_container_relative_padding_box_rect.Move(
+  // Make relative to the padding-box instead of border-box.
+  scroll_container_relative_containing_block_rect.Move(
       -scroll_container_border_offset);
-
-  PhysicalRect scroll_container_relative_containing_block_rect(
-      scroll_container_relative_padding_box_rect);
 
   // This is removing the padding of the containing block's overflow rect to get
   // the flow box rectangle and removing the margin of the sticky element to
   // ensure that space between the sticky element and its containing flow box.
   // It is an open issue whether the margin should collapse.
   // See https://www.w3.org/TR/css-position-3/#sticky-pos
-  scroll_container_relative_containing_block_rect.ContractEdges(
-      MinimumValueForLength(sticky_container->StyleRef().PaddingTop(),
-                            max_container_width) +
-          MinimumValueForLength(StyleRef().MarginTop(), max_width),
-      MinimumValueForLength(sticky_container->StyleRef().PaddingRight(),
-                            max_container_width) +
-          MinimumValueForLength(StyleRef().MarginRight(), max_width),
-      MinimumValueForLength(sticky_container->StyleRef().PaddingBottom(),
-                            max_container_width) +
-          MinimumValueForLength(StyleRef().MarginBottom(), max_width),
-      MinimumValueForLength(sticky_container->StyleRef().PaddingLeft(),
-                            max_container_width) +
-          MinimumValueForLength(StyleRef().MarginLeft(), max_width));
+  scroll_container_relative_containing_block_rect.Contract(
+      sticky_container->PaddingOutsets());
+  if (!RuntimeEnabledFeatures::LayoutIgnoreMarginsForStickyEnabled()) {
+    scroll_container_relative_containing_block_rect.ContractEdges(
+        MinimumValueForLength(StyleRef().MarginTop(), max_width),
+        MinimumValueForLength(StyleRef().MarginRight(), max_width),
+        MinimumValueForLength(StyleRef().MarginBottom(), max_width),
+        MinimumValueForLength(StyleRef().MarginLeft(), max_width));
+  }
 
   constraints->scroll_container_relative_containing_block_rect =
       scroll_container_relative_containing_block_rect;
 
+  // Compute the sticky-box rect.
   PhysicalRect sticky_box_rect;
-  if (IsLayoutInline()) {
-    sticky_box_rect = To<LayoutInline>(this)->PhysicalLinesBoundingBox();
-  } else {
-    sticky_box_rect =
-        sticky_container->FlipForWritingMode(To<LayoutBox>(this)->FrameRect());
-  }
-  PhysicalOffset sticky_location =
-      sticky_box_rect.offset + skipped_containers_offset;
+  {
+    if (IsLayoutInline()) {
+      sticky_box_rect = To<LayoutInline>(this)->PhysicalLinesBoundingBox();
+    } else if (RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
+      const LayoutBox& box = To<LayoutBox>(*this);
+      sticky_box_rect = PhysicalRect(box.PhysicalLocation(), box.Size());
+    } else {
+      sticky_box_rect = sticky_container->FlipForWritingMode(
+          To<LayoutBox>(this)->FrameRect());
+    }
 
-  // The scroll_container_relative_sticky_box_rect position is the padding box
-  // so we need to remove the border when finding the position of the sticky box
-  // within the scroll ancestor if the container is not our scroll ancestor. If
-  // the container is our scroll ancestor, we also need to remove the border
-  // box because we want the position from within the scroller border.
-  PhysicalOffset container_border_offset(sticky_container->BorderLeft(),
-                                         sticky_container->BorderTop());
-  sticky_location -= container_border_offset;
-  constraints->scroll_container_relative_sticky_box_rect = PhysicalRect(
-      scroll_container_relative_padding_box_rect.offset + sticky_location,
-      sticky_box_rect.size);
+    PhysicalRect scroll_container_relative_sticky_box_rect =
+        location_container->LocalToAncestorRect(sticky_box_rect,
+                                                &scroll_container, flags);
+
+    // Make relative to the padding-box instead of border-box.
+    scroll_container_relative_sticky_box_rect.Move(
+        -scroll_container_border_offset);
+    constraints->scroll_container_relative_sticky_box_rect =
+        scroll_container_relative_sticky_box_rect;
+  }
 
   // To correctly compute the offsets, the constraints need to know about any
   // nested position:sticky elements between themselves and their
@@ -722,62 +613,58 @@ bool LayoutBoxModelObject::UpdateStickyPositionConstraints() {
   constraints->nearest_sticky_layer_shifting_containing_block =
       sticky_container->FindFirstStickyContainer(&scroll_container);
 
-  // We skip the right or top sticky offset if there is not enough space to
-  // honor both the left/right or top/bottom offsets.
-  LayoutUnit constraining_width = constraints->constraining_rect.Width();
-  LayoutUnit constraining_height = constraints->constraining_rect.Height();
-  LayoutUnit horizontal_offsets =
-      MinimumValueForLength(StyleRef().UsedRight(), constraining_width) +
-      MinimumValueForLength(StyleRef().UsedLeft(), constraining_width);
-  bool skip_right = false;
-  bool skip_left = false;
-  if (!StyleRef().UsedLeft().IsAuto() && !StyleRef().UsedRight().IsAuto()) {
-    if (horizontal_offsets + sticky_box_rect.Width() > constraining_width) {
-      skip_right = StyleRef().IsLeftToRightDirection();
-      skip_left = !skip_right;
+  constraints->constraining_rect =
+      scroll_container.ComputeStickyConstrainingRect();
+
+  // Compute the insets.
+  {
+    auto ResolveInset = [](const Length& length,
+                           LayoutUnit size) -> absl::optional<LayoutUnit> {
+      if (length.IsAuto()) {
+        return absl::nullopt;
+      }
+      return MinimumValueForLength(length, size);
+    };
+
+    const PhysicalSize available_size = constraints->constraining_rect.size;
+    const auto& style = StyleRef();
+    absl::optional<LayoutUnit> left =
+        ResolveInset(style.UsedLeft(), available_size.width);
+    absl::optional<LayoutUnit> right =
+        ResolveInset(style.UsedRight(), available_size.width);
+    absl::optional<LayoutUnit> top =
+        ResolveInset(style.UsedTop(), available_size.height);
+    absl::optional<LayoutUnit> bottom =
+        ResolveInset(style.UsedBottom(), available_size.height);
+
+    // Skip the end inset if there is not enough space to honor both insets.
+    if (left && right) {
+      if (*left + *right + sticky_box_rect.Width() > available_size.width) {
+        if (style.IsLeftToRightDirection()) {
+          right = absl::nullopt;
+        } else {
+          left = absl::nullopt;
+        }
+      }
     }
-  }
+    if (top && bottom) {
+      // TODO(flackr): Exclude top or bottom edge offset depending on the
+      // writing mode when related sections are fixed in spec. See
+      // http://lists.w3.org/Archives/Public/www-style/2014May/0286.html
+      if (*top + *bottom + sticky_box_rect.Height() > available_size.height) {
+        bottom = absl::nullopt;
+      }
+    }
 
-  if (!StyleRef().UsedLeft().IsAuto() && !skip_left) {
-    constraints->left_offset =
-        MinimumValueForLength(StyleRef().UsedLeft(), constraining_width);
-    constraints->is_anchored_left = true;
-  }
-
-  if (!StyleRef().UsedRight().IsAuto() && !skip_right) {
-    constraints->right_offset =
-        MinimumValueForLength(StyleRef().UsedRight(), constraining_width);
-    constraints->is_anchored_right = true;
-  }
-
-  bool skip_bottom = false;
-  // TODO(flackr): Exclude top or bottom edge offset depending on the writing
-  // mode when related sections are fixed in spec.
-  // See http://lists.w3.org/Archives/Public/www-style/2014May/0286.html
-  LayoutUnit vertical_offsets =
-      MinimumValueForLength(StyleRef().UsedTop(), constraining_height) +
-      MinimumValueForLength(StyleRef().UsedBottom(), constraining_height);
-  if (!StyleRef().UsedTop().IsAuto() && !StyleRef().UsedBottom().IsAuto() &&
-      vertical_offsets + sticky_box_rect.Height() > constraining_height) {
-    skip_bottom = true;
-  }
-
-  if (!StyleRef().UsedTop().IsAuto()) {
-    constraints->top_offset =
-        MinimumValueForLength(StyleRef().UsedTop(), constraining_height);
-    constraints->is_anchored_top = true;
-  }
-
-  if (!StyleRef().UsedBottom().IsAuto() && !skip_bottom) {
-    constraints->bottom_offset =
-        MinimumValueForLength(StyleRef().UsedBottom(), constraining_height);
-    constraints->is_anchored_bottom = true;
+    constraints->left_inset = left;
+    constraints->right_inset = right;
+    constraints->top_inset = top;
+    constraints->bottom_inset = bottom;
   }
 
   scrollable_area->AddStickyLayer(Layer());
   constraints->ComputeStickyOffset(scrollable_area->ScrollPosition());
   SetStickyConstraints(constraints);
-  SetNeedsPaintPropertyUpdate();
   return true;
 }
 
@@ -821,8 +708,7 @@ PhysicalOffset LayoutBoxModelObject::AdjustedPositionRelativeTo(
            current && current->GetNode() != offset_parent;
            current = current->Container()) {
         // FIXME: What are we supposed to do inside SVG content?
-        reference_point += PhysicalOffsetToBeNoop(
-            current->ColumnOffset(reference_point.ToLayoutPoint()));
+        reference_point += current->ColumnOffset(reference_point);
         if (current->IsBox()) {
           reference_point += To<LayoutBox>(current)->PhysicalLocation();
         }
@@ -833,9 +719,11 @@ PhysicalOffset LayoutBoxModelObject::AdjustedPositionRelativeTo(
         reference_point +=
             To<LayoutBox>(offset_parent_object)->PhysicalLocation();
       }
-    } else if (UNLIKELY(IsBox() &&
-                        To<LayoutBox>(this)->HasAnchorScrollTranslation())) {
-      reference_point += To<LayoutBox>(this)->AnchorScrollTranslationOffset();
+    } else if (UNLIKELY(
+                   IsBox() &&
+                   To<LayoutBox>(this)->HasAnchorPositionScrollTranslation())) {
+      reference_point +=
+          To<LayoutBox>(this)->AnchorPositionScrollTranslationOffset();
     }
 
     if (offset_parent_object->IsLayoutInline()) {
@@ -963,12 +851,6 @@ void LayoutBoxModelObject::MoveChildTo(
     LayoutObject* before_child,
     bool full_remove_insert) {
   NOT_DESTROYED();
-  // We assume that callers have cleared their positioned objects list for child
-  // moves (!fullRemoveInsert) so the positioned layoutObject maps don't become
-  // stale. It would be too slow to do the map lookup on each call.
-  DCHECK(!full_remove_insert || !IsLayoutBlock() ||
-         !To<LayoutBlock>(this)->HasPositionedObjects());
-
   DCHECK_EQ(this, child->Parent());
   DCHECK(!before_child || to_box_model_object == before_child->Parent());
 
@@ -993,13 +875,6 @@ void LayoutBoxModelObject::MoveChildrenTo(
     LayoutObject* before_child,
     bool full_remove_insert) {
   NOT_DESTROYED();
-  // This condition is rarely hit since this function is usually called on
-  // anonymous blocks which can no longer carry positioned objects (see r120761)
-  // or when fullRemoveInsert is false.
-  auto* block = DynamicTo<LayoutBlock>(this);
-  if (full_remove_insert && block) {
-    block->RemovePositionedObjects(nullptr);
-  }
 
   DCHECK(!before_child || to_box_model_object == before_child->Parent());
   for (LayoutObject* child = start_child; child && child != end_child;) {

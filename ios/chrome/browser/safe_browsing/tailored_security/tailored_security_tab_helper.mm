@@ -10,18 +10,13 @@
 #import "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service_observer_util.h"
 #import "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service_util.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/safe_browsing/tailored_security/tailored_security_service_infobar_delegate.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_tab_helper.h"
 #import "ios/web/public/navigation/navigation_context.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 #pragma mark - TailoredSecurityTabHelper
 
@@ -30,21 +25,6 @@ TailoredSecurityTabHelper::TailoredSecurityTabHelper(
     safe_browsing::TailoredSecurityService* service)
     : service_(service), web_state_(web_state) {
   bool focused = false;
-  application_backgrounding_observer_ = [[NSNotificationCenter defaultCenter]
-      addObserverForName:UIApplicationDidEnterBackgroundNotification
-                  object:nil
-                   queue:nil
-              usingBlock:^(NSNotification*) {
-                this->AppDidEnterBackground();
-              }];
-
-  application_foregrounding_observer_ = [[NSNotificationCenter defaultCenter]
-      addObserverForName:UIApplicationWillEnterForegroundNotification
-                  object:nil
-                   queue:nil
-              usingBlock:^(NSNotification*) {
-                this->AppWillEnterForeground();
-              }];
 
   if (service_) {
     service_->AddObserver(this);
@@ -65,20 +45,6 @@ TailoredSecurityTabHelper::~TailoredSecurityTabHelper() {
       has_query_request_ = false;
     }
   }
-
-  DCHECK(application_foregrounding_observer_);
-  DCHECK(application_backgrounding_observer_);
-  if (application_backgrounding_observer_) {
-    [[NSNotificationCenter defaultCenter]
-        removeObserver:application_backgrounding_observer_];
-    application_backgrounding_observer_ = nil;
-  }
-
-  if (application_foregrounding_observer_) {
-    [[NSNotificationCenter defaultCenter]
-        removeObserver:application_foregrounding_observer_];
-    application_foregrounding_observer_ = nil;
-  }
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(TailoredSecurityTabHelper)
@@ -93,10 +59,10 @@ void TailoredSecurityTabHelper::OnTailoredSecurityBitChanged(
   }
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForBrowserState(browser_state);
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForBrowserState(browser_state);
   if (!safe_browsing::CanShowUnconsentedTailoredSecurityDialog(
-          identity_manager, browser_state->GetPrefs())) {
+          sync_service, browser_state->GetPrefs())) {
     return;
   }
 
@@ -183,11 +149,10 @@ void TailoredSecurityTabHelper::UpdateFocusAndURL(bool focused,
   DCHECK(web_state_);
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForBrowserState(browser_state);
-
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForBrowserState(browser_state);
   if (!safe_browsing::CanShowUnconsentedTailoredSecurityDialog(
-          identity_manager, browser_state->GetPrefs())) {
+          sync_service, browser_state->GetPrefs())) {
     return;
   }
 
@@ -232,16 +197,4 @@ void TailoredSecurityTabHelper::ShowInfoBar(
       InfobarType::kInfobarTypeTailoredSecurityService, std::move(delegate));
   infobar_ = infobar_manager->AddInfoBar(std::move(infobar),
                                          /*replace_existing=*/true);
-}
-
-void TailoredSecurityTabHelper::AppDidEnterBackground() {
-  if (service_) {
-    service_->SetCanQuery(false);
-  }
-}
-
-void TailoredSecurityTabHelper::AppWillEnterForeground() {
-  if (service_) {
-    service_->SetCanQuery(true);
-  }
 }

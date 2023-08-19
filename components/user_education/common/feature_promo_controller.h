@@ -71,8 +71,8 @@ class FeaturePromoController {
   //
   // If the Feature Engagement backend is not initialized, returns false.
   //
-  // If the body text is parameterized, pass text replacements in
-  // |body_text_replacements|.
+  // If the body or title text is parameterized, pass text replacements in
+  // |body_params| and |title_params|.
   //
   // If a bubble was shown and |close_callback| was provided, it will be
   // called when the bubble closes. |close_callback| must be valid as
@@ -85,8 +85,11 @@ class FeaturePromoController {
   // this method when possible.
   virtual bool MaybeShowPromo(
       const base::Feature& iph_feature,
-      FeaturePromoSpecification::StringReplacements body_text_replacements = {},
-      BubbleCloseCallback close_callback = base::DoNothing()) = 0;
+      BubbleCloseCallback close_callback = base::DoNothing(),
+      FeaturePromoSpecification::FormatParameters body_params =
+          FeaturePromoSpecification::NoSubstitution(),
+      FeaturePromoSpecification::FormatParameters title_params =
+          FeaturePromoSpecification::NoSubstitution()) = 0;
 
   // Tries to start the promo at a time when the Feature Engagement backend may
   // not yet be initialized. Once it is initialized (which could be
@@ -110,9 +113,12 @@ class FeaturePromoController {
   // Otherwise, this is identical to MaybeShowPromo().
   virtual bool MaybeShowStartupPromo(
       const base::Feature& iph_feature,
-      FeaturePromoSpecification::StringReplacements body_text_replacements = {},
       StartupPromoCallback promo_callback = base::DoNothing(),
-      BubbleCloseCallback close_callback = base::DoNothing()) = 0;
+      BubbleCloseCallback close_callback = base::DoNothing(),
+      FeaturePromoSpecification::FormatParameters body_params =
+          FeaturePromoSpecification::NoSubstitution(),
+      FeaturePromoSpecification::FormatParameters title_params =
+          FeaturePromoSpecification::NoSubstitution()) = 0;
 
   // Gets the current status of the promo associated with `iph_feature`.
   virtual FeaturePromoStatus GetPromoStatus(
@@ -134,8 +140,11 @@ class FeaturePromoController {
   // provided by the implementation for MaybeShowPromo.
   virtual bool MaybeShowPromoForDemoPage(
       const base::Feature* iph_feature,
-      FeaturePromoSpecification::StringReplacements body_text_replacements = {},
-      BubbleCloseCallback close_callback = base::DoNothing()) = 0;
+      BubbleCloseCallback close_callback = base::DoNothing(),
+      FeaturePromoSpecification::FormatParameters body_params =
+          FeaturePromoSpecification::NoSubstitution(),
+      FeaturePromoSpecification::FormatParameters title_params =
+          FeaturePromoSpecification::NoSubstitution()) = 0;
 
   // Ends or cancels the current promo if it is queued. Returns true if a promo
   // was successfully canceled or a bubble closed.
@@ -186,8 +195,10 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   std::unique_ptr<HelpBubble> ShowCriticalPromo(
       const FeaturePromoSpecification& spec,
       ui::TrackedElement* anchor_element,
-      FeaturePromoSpecification::StringReplacements body_text_replacements =
-          {});
+      FeaturePromoSpecification::FormatParameters body_params =
+          FeaturePromoSpecification::NoSubstitution(),
+      FeaturePromoSpecification::FormatParameters title_params =
+          FeaturePromoSpecification::NoSubstitution());
 
   // For systems where there are rendering issues of e.g. displaying the
   // omnibox and a bubble in the same region on the screen, dismisses a non-
@@ -204,21 +215,29 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   }
 
   // FeaturePromoController:
-  bool MaybeShowPromo(
-      const base::Feature& iph_feature,
-      FeaturePromoSpecification::StringReplacements body_text_replacements = {},
-      BubbleCloseCallback close_callback = base::DoNothing()) override;
+  bool MaybeShowPromo(const base::Feature& iph_feature,
+                      BubbleCloseCallback close_callback = base::DoNothing(),
+                      FeaturePromoSpecification::FormatParameters body_params =
+                          FeaturePromoSpecification::NoSubstitution(),
+                      FeaturePromoSpecification::FormatParameters title_params =
+                          FeaturePromoSpecification::NoSubstitution()) override;
   bool MaybeShowStartupPromo(
       const base::Feature& iph_feature,
-      FeaturePromoSpecification::StringReplacements body_text_replacements = {},
       StartupPromoCallback promo_callback = base::DoNothing(),
-      BubbleCloseCallback close_callback = base::DoNothing()) override;
+      BubbleCloseCallback close_callback = base::DoNothing(),
+      FeaturePromoSpecification::FormatParameters body_params =
+          FeaturePromoSpecification::NoSubstitution(),
+      FeaturePromoSpecification::FormatParameters title_params =
+          FeaturePromoSpecification::NoSubstitution()) override;
   FeaturePromoStatus GetPromoStatus(
       const base::Feature& iph_feature) const override;
   bool MaybeShowPromoForDemoPage(
       const base::Feature* iph_feature,
-      FeaturePromoSpecification::StringReplacements body_text_replacements = {},
-      BubbleCloseCallback close_callback = base::DoNothing()) override;
+      BubbleCloseCallback close_callback = base::DoNothing(),
+      FeaturePromoSpecification::FormatParameters body_params =
+          FeaturePromoSpecification::NoSubstitution(),
+      FeaturePromoSpecification::FormatParameters title_params =
+          FeaturePromoSpecification::NoSubstitution()) override;
   bool EndPromo(const base::Feature& iph_feature) override;
   FeaturePromoHandle CloseBubbleAndContinuePromo(
       const base::Feature& iph_feature) override;
@@ -250,8 +269,9 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   bool MaybeShowPromoFromSpecification(
       const FeaturePromoSpecification& spec,
       ui::TrackedElement* anchor_element,
-      FeaturePromoSpecification::StringReplacements body_text_replacements,
-      BubbleCloseCallback close_callback);
+      BubbleCloseCallback close_callback,
+      FeaturePromoSpecification::FormatParameters body_params,
+      FeaturePromoSpecification::FormatParameters title_params);
 
   FeaturePromoSnoozeService* snooze_service() { return snooze_service_; }
   HelpBubble* promo_bubble() { return promo_bubble_.get(); }
@@ -323,8 +343,9 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   // Handles firing async promos.
   void OnFeatureEngagementTrackerInitialized(
       const base::Feature* iph_feature,
-      FeaturePromoSpecification::StringReplacements body_text_replacements,
       BubbleCloseCallback close_callback,
+      FeaturePromoSpecification::FormatParameters body_params,
+      FeaturePromoSpecification::FormatParameters title_params,
       bool tracker_initialized_successfully);
 
   // Method that creates the bubble for a feature promo. May return null if the
@@ -332,7 +353,8 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   std::unique_ptr<HelpBubble> ShowPromoBubbleImpl(
       const FeaturePromoSpecification& spec,
       ui::TrackedElement* anchor_element,
-      FeaturePromoSpecification::StringReplacements body_text_replacements,
+      FeaturePromoSpecification::FormatParameters body_params,
+      FeaturePromoSpecification::FormatParameters title_params,
       bool screen_reader_prompt_available,
       bool is_critical_promo);
 
@@ -368,7 +390,7 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   void OnCustomAction(const base::Feature* iph_feature,
                       FeaturePromoSpecification::CustomActionCallback callback);
 
-  // Create appropriate buttons for a snoozable promo on the current platform.
+  // Create appropriate buttons for a snoozeable promo on the current platform.
   std::vector<HelpBubbleButtonParams> CreateSnoozeButtons(
       const base::Feature& feature);
 

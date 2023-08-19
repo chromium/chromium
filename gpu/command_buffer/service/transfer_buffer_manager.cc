@@ -9,6 +9,7 @@
 #include <limits>
 #include <memory>
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/process/process_handle.h"
 #include "base/strings/stringprintf.h"
@@ -55,7 +56,7 @@ bool TransferBufferManager::RegisterTransferBuffer(
   }
 
   // Fail if the ID is in use.
-  if (registered_buffers_.find(id) != registered_buffers_.end()) {
+  if (base::Contains(registered_buffers_, id)) {
     DVLOG(0) << "Buffer ID already in use.";
     return false;
   }

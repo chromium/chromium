@@ -26,8 +26,8 @@
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "content/public/browser/context_menu_params.h"
-#include "ui/base/layout.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/resource/resource_scale_factor.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
@@ -168,6 +168,19 @@ void StartSmartSelectionActionMenu::ExecuteCommand(int command_id) {
                    std::move(actions_[index].activity)),
       apps::LaunchSource::kFromSmartTextContextMenu,
       std::make_unique<apps::WindowInfo>(display.id()), base::DoNothing());
+}
+
+void StartSmartSelectionActionMenu::OnContextMenuShown(
+    const content::ContextMenuParams& params,
+    const gfx::Rect& rect) {
+  // Since entries are kept as place holders, make them non editable and hidden.
+  for (size_t i = 0; i < kMaxMainMenuCommands; i++) {
+    proxy_->UpdateMenuItem(
+        IDC_CONTENT_CONTEXT_START_SMART_SELECTION_ACTION1 + i,
+        /*enabled=*/false,
+        /*hidden=*/true,
+        /*title=*/std::u16string());
+  }
 }
 
 void StartSmartSelectionActionMenu::HandleTextSelectionActions(

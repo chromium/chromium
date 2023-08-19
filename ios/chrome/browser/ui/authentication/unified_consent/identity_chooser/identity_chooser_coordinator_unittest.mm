@@ -6,7 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -21,10 +21,6 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 class IdentityChooserCoordinatorTest : public PlatformTest {
  public:
@@ -80,7 +76,7 @@ TEST_F(IdentityChooserCoordinatorTest, testValidIdentity) {
   EXPECT_TRUE([view_controller_.presentedViewController
       isKindOfClass:[IdentityChooserViewController class]]);
   IdentityChooserViewController* presented_view_controller =
-      base::mac::ObjCCastStrict<IdentityChooserViewController>(
+      base::apple::ObjCCastStrict<IdentityChooserViewController>(
           view_controller_.presentedViewController);
 
   // User selects a valid account.
@@ -96,7 +92,7 @@ TEST_F(IdentityChooserCoordinatorTest, testIdentityInvalidatedDuringSelection) {
   EXPECT_TRUE([view_controller_.presentedViewController
       isKindOfClass:[IdentityChooserViewController class]]);
   IdentityChooserViewController* presented_view_controller =
-      base::mac::ObjCCastStrict<IdentityChooserViewController>(
+      base::apple::ObjCCastStrict<IdentityChooserViewController>(
           view_controller_.presentedViewController);
 
   // User selects an account that has been invalidated.

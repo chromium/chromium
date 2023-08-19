@@ -36,4 +36,5 @@ ci.builder(
     ),
     notifies = "metadata-mapping",
     service_account = "component-mapping-updater@chops-service-accounts.iam.gserviceaccount.com",
+    shadow_service_account = "chromium-try-builder@chops-service-accounts.iam.gserviceaccount.com",
 )

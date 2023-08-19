@@ -7,16 +7,21 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
+#include "ash/display/privacy_screen_controller.h"
 #include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/notreached.h"
+#include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/ash/keyboard_layout_util.h"
+#include "ui/events/ash/mojom/six_pack_shortcut_modifier.mojom-shared.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/keyboard_device.h"
@@ -129,8 +134,8 @@ bool ShouldAlwaysShowWithExternalKeyboard(ui::TopRowActionKey action_key) {
     case ui::TopRowActionKey::kKeyboardBacklightUp:
     case ui::TopRowActionKey::kPrivacyScreenToggle:
     case ui::TopRowActionKey::kAllApplications:
-    case ui::TopRowActionKey::kDictation:
       return false;
+    case ui::TopRowActionKey::kDictation:
     case ui::TopRowActionKey::kFullscreen:
     case ui::TopRowActionKey::kOverview:
     case ui::TopRowActionKey::kScreenBrightnessDown:
@@ -162,6 +167,19 @@ bool MetaFKeyRewritesAreSuppressed(const ui::InputDevice& keyboard) {
   return settings->suppress_meta_fkey_rewrites;
 }
 
+bool AreTopRowFKeys(const ui::InputDevice& keyboard) {
+  if (!features::IsInputDeviceSettingsSplitEnabled()) {
+    PrefService* pref_service =
+        Shell::Get()->session_controller()->GetActivePrefService();
+    return pref_service && pref_service->GetBoolean(prefs::kSendFunctionKeys);
+  }
+
+  const auto* settings =
+      Shell::Get()->input_device_settings_controller()->GetKeyboardSettings(
+          keyboard.id);
+  return settings && settings->top_row_are_fkeys;
+}
+
 bool ShouldShowExternalTopRowActionKeyAlias(
     const ui::KeyboardDevice& keyboard,
     ui::TopRowActionKey action_key,
@@ -177,6 +195,36 @@ bool ShouldShowExternalTopRowActionKeyAlias(
   const bool alias_is_suppressed =
       accelerator.IsCmdDown() && MetaFKeyRewritesAreSuppressed(keyboard);
   return should_show_action_key && !alias_is_suppressed;
+}
+
+ui::mojom::SixPackShortcutModifier GetSixPackShortcutModifier(
+    ui::KeyboardCode key_code,
+    absl::optional<int> device_id) {
+  if (!features::IsAltClickAndSixPackCustomizationEnabled() ||
+      !device_id.has_value()) {
+    return ui::mojom::SixPackShortcutModifier::kSearch;
+  }
+  CHECK(ui::KeyboardCapability::IsSixPackKey(key_code));
+  const auto* settings =
+      Shell::Get()->input_device_settings_controller()->GetKeyboardSettings(
+          device_id.value());
+  CHECK(settings);
+  switch (key_code) {
+    case ui::VKEY_DELETE:
+      return settings->six_pack_key_remappings->del;
+    case ui::VKEY_INSERT:
+      return settings->six_pack_key_remappings->insert;
+    case ui::VKEY_HOME:
+      return settings->six_pack_key_remappings->home;
+    case ui::VKEY_END:
+      return settings->six_pack_key_remappings->end;
+    case ui::VKEY_PRIOR:
+      return settings->six_pack_key_remappings->page_up;
+    case ui::VKEY_NEXT:
+      return settings->six_pack_key_remappings->page_down;
+    default:
+      NOTREACHED_NORETURN();
+  }
 }
 
 }  // namespace
@@ -239,17 +287,18 @@ std::vector<ui::Accelerator> AcceleratorAliasConverter::CreateAcceleratorAlias(
     return FilterAliasBySupportedKeys(std::move(aliases_set).extract());
   }
 
-  // For |six_pack_key| and |reversed_six_pack_key|, show both the base
+  // For |six_pack_key|, show both the base
   // accelerator and the remapped accelerator if applicable. Otherwise, only
   // show base accelerator.
-  std::vector<ui::Accelerator> aliases = CreateSixPackAliases(accelerator);
-  std::vector<ui::Accelerator> reversed_aliases =
-      CreateReversedSixPackAliases(accelerator);
-  // An accelerator can never have both six pack alias and reversed six
-  // pack alias at the same time. Concatenating two vectors works here. Note
-  // that both vectors could be empty.
-  aliases.insert(aliases.end(), reversed_aliases.begin(),
-                 reversed_aliases.end());
+
+  absl::optional<int> device_id = absl::nullopt;
+  if (priority_external_keyboard.has_value()) {
+    device_id = priority_external_keyboard->id;
+  } else if (internal_keyboard.has_value()) {
+    device_id = internal_keyboard->id;
+  }
+  std::vector<ui::Accelerator> aliases =
+      CreateSixPackAliases(accelerator, device_id);
 
   // Add base accelerator.
   aliases.push_back(accelerator);
@@ -271,16 +320,6 @@ AcceleratorAliasConverter::CreateFunctionKeyAliases(
     return {};
   }
 
-  const bool top_row_are_fkeys = [&]() -> bool {
-    if (features::IsInputDeviceSettingsSplitEnabled()) {
-      const auto* settings =
-          Shell::Get()->input_device_settings_controller()->GetKeyboardSettings(
-              keyboard.id);
-      return settings && settings->top_row_are_fkeys;
-    }
-    return Shell::Get()->keyboard_capability()->TopRowKeysAreFKeys();
-  }();
-
   // Attempt to get the corresponding `ui::TopRowActionKey` for the given F-Key.
   absl::optional<ui::TopRowActionKey> action_key =
       Shell::Get()->keyboard_capability()->GetCorrespondingActionKeyForFKey(
@@ -296,6 +335,7 @@ AcceleratorAliasConverter::CreateFunctionKeyAliases(
     return {};
   }
 
+  const bool top_row_are_fkeys = AreTopRowFKeys(keyboard);
   if (IsChromeOSKeyboard(keyboard)) {
     // If `priority_keyboard` is a ChromeOS keyboard, the UI should show the
     // corresponding action key, the the F-Key glyph.
@@ -334,15 +374,6 @@ absl::optional<ui::Accelerator> AcceleratorAliasConverter::CreateTopRowAliases(
     return {};
   }
 
-  const bool top_row_are_fkeys = [&]() -> bool {
-    if (features::IsInputDeviceSettingsSplitEnabled()) {
-      const auto* settings =
-          Shell::Get()->input_device_settings_controller()->GetKeyboardSettings(
-              keyboard.id);
-      return settings && settings->top_row_are_fkeys;
-    }
-    return Shell::Get()->keyboard_capability()->TopRowKeysAreFKeys();
-  }();
   absl::optional<ui::KeyboardCode> function_key =
       Shell::Get()->keyboard_capability()->GetCorrespondingFunctionKey(
           keyboard, *action_key);
@@ -350,6 +381,7 @@ absl::optional<ui::Accelerator> AcceleratorAliasConverter::CreateTopRowAliases(
     return {};
   }
 
+  const bool top_row_are_fkeys = AreTopRowFKeys(keyboard);
   if (IsChromeOSKeyboard(keyboard)) {
     // If its a ChromeOS Keyboard, the UI should show the Action Key glyph. If
     // `top_row_are_fkeys` is true, Search must be added so convert the "F-Key"
@@ -379,12 +411,18 @@ absl::optional<ui::Accelerator> AcceleratorAliasConverter::CreateTopRowAliases(
 }
 
 std::vector<ui::Accelerator> AcceleratorAliasConverter::CreateSixPackAliases(
-    const ui::Accelerator& accelerator) const {
+    const ui::Accelerator& accelerator,
+    absl::optional<int> device_id) const {
   // For all |six_pack_keys|, avoid remapping if [Search] is part of the
   // original accelerator.
   if (accelerator.IsCmdDown() ||
       !::features::IsImprovedKeyboardShortcutsEnabled() ||
       !ui::KeyboardCapability::IsSixPackKey(accelerator.key_code())) {
+    return std::vector<ui::Accelerator>();
+  }
+
+  if (features::IsAltClickAndSixPackCustomizationEnabled() &&
+      !device_id.has_value()) {
     return std::vector<ui::Accelerator>();
   }
 
@@ -399,48 +437,37 @@ std::vector<ui::Accelerator> AcceleratorAliasConverter::CreateSixPackAliases(
     return std::vector<ui::Accelerator>();
   }
 
-  // For Insert: [modifiers] = [Search] + [Shift] + [original_modifiers].
-  // For other |six_pack_keys|: [modifiers] = [Search] + [original_modifiers].
-  int updated_modifiers =
-      accelerator.key_code() == ui::KeyboardCode::VKEY_INSERT
-          ? accelerator.modifiers() | ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN
-          : accelerator.modifiers() | ui::EF_COMMAND_DOWN;
-  return {
-      ui::Accelerator(ui::kSixPackKeyToSystemKeyMap.at(accelerator.key_code()),
-                      updated_modifiers, accelerator.key_state())};
-}
+  const ui::KeyboardCode accel_key_code = accelerator.key_code();
+  const ui::mojom::SixPackShortcutModifier six_pack_shortcut_modifier =
+      GetSixPackShortcutModifier(accel_key_code, device_id);
 
-std::vector<ui::Accelerator>
-AcceleratorAliasConverter::CreateReversedSixPackAliases(
-    const ui::Accelerator& accelerator) const {
-  // To find the reversed six pack alias, an accelerator must include [Search]
-  // key, and must be one of the reversed six pack keys. And the connected
-  // keyboards must have six pack keys.
-  if (!accelerator.IsCmdDown() ||
-      !::features::IsImprovedKeyboardShortcutsEnabled() ||
-      !ui::KeyboardCapability::IsReversedSixPackKey(accelerator.key_code()) ||
-      !ui::KeyboardCapability::HasSixPackOnAnyKeyboard()) {
+  if (six_pack_shortcut_modifier == ui::mojom::SixPackShortcutModifier::kNone) {
     return std::vector<ui::Accelerator>();
   }
 
-  int modifiers = accelerator.modifiers() & ~ui::EF_COMMAND_DOWN;
-  // [Back] maps back to [Insert] if modifier contains [Shift]. Otherwise,
-  // it maps back to [Delete].
-  if (accelerator.key_code() == ui::KeyboardCode::VKEY_BACK) {
-    if (!accelerator.IsShiftDown()) {
-      return {ui::Accelerator(ui::KeyboardCode::VKEY_DELETE, modifiers,
-                              accelerator.key_state())};
-    }
-
-    modifiers &= ~ui::EF_SHIFT_DOWN;
-    return {ui::Accelerator(ui::KeyboardCode::VKEY_INSERT, modifiers,
-                            accelerator.key_state())};
+  int modifiers;
+  ui::KeyboardCode key_code;
+  if (six_pack_shortcut_modifier ==
+      ui::mojom::SixPackShortcutModifier::kSearch) {
+    key_code = ui::kSixPackKeyToSearchSystemKeyMap.at(accel_key_code);
+    modifiers = ui::EF_COMMAND_DOWN;
+  } else {
+    key_code = ui::kSixPackKeyToAltSystemKeyMap.at(accel_key_code);
+    modifiers = (accel_key_code == ui::KeyboardCode::VKEY_END ||
+                 accel_key_code == ui::KeyboardCode::VKEY_HOME)
+                    ? (ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN)
+                    : ui::EF_ALT_DOWN;
   }
 
-  // Handle modifiers other than [Back].
-  return {ui::Accelerator(
-      ui::kReversedSixPackKeyToSystemKeyMap.at(accelerator.key_code()),
-      modifiers, accelerator.key_state())};
+  // For Insert: [modifiers] = [Search] + [Shift] + [original_modifiers].
+  // For other |six_pack_keys|:
+  // [modifiers] = [Search/Alt] + [original_modifiers].
+  int updated_modifiers =
+      accel_key_code == ui::KeyboardCode::VKEY_INSERT
+          ? accelerator.modifiers() | ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN
+          : accelerator.modifiers() | modifiers;
+  return {
+      ui::Accelerator(key_code, updated_modifiers, accelerator.key_state())};
 }
 
 std::vector<ui::Accelerator>
@@ -527,8 +554,15 @@ AcceleratorAliasConverter::FilterAliasBySupportedKeys(
     }
 
     if (accelerator.key_code() == ui::VKEY_PRIVACY_SCREEN_TOGGLE) {
-      if (keyboard_capability->HasPrivacyScreenKeyOnAnyKeyboard()) {
-        filtered_accelerators.push_back(accelerator);
+      if (Shell::Get()->privacy_screen_controller()->IsSupported()) {
+        for (const ui::KeyboardDevice& keyboard :
+             ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
+          if (keyboard_capability->GetDeviceType(keyboard) ==
+              ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard) {
+            filtered_accelerators.push_back(accelerator);
+            break;
+          }
+        }
       }
       continue;
     }
@@ -565,13 +599,6 @@ AcceleratorAliasConverter::FilterAliasBySupportedKeys(
     // Search should be shown in the shortcuts app.
     if (accelerator.key_code() == ui::VKEY_MENU &&
         accelerator.modifiers() == ui::EF_COMMAND_DOWN) {
-      continue;
-    }
-
-    // VKEY_PLAY/PAUSE should not be shown as they are conceptual duplicates of
-    // VKEY_MEDIA_PLAY/VKEY_MEDIA_PAUSE.
-    if (accelerator.key_code() == ui::VKEY_PLAY ||
-        accelerator.key_code() == ui::VKEY_PAUSE) {
       continue;
     }
 

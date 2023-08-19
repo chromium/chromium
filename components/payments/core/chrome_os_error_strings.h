@@ -24,6 +24,9 @@ extern const char kMoreThanOneActivity[];
 // payment method specific data.
 extern const char kMoreThanOneMethodData[];
 
+// Used if Lacros service is down and cannot connect to Ash.
+extern const char kUnableToConnectToAsh[];
+
 }  // namespace errors
 }  // namespace payments
 

@@ -19,7 +19,7 @@ import androidx.annotation.NonNull;
 import com.google.android.material.tabs.TabLayout;
 
 import org.chromium.base.StrictModeContext;
-import org.chromium.components.browser_ui.widget.animation.Interpolators;
+import org.chromium.ui.interpolators.Interpolators;
 
 /**
  * TabLayout shown in the TranslateCompactInfoBar.

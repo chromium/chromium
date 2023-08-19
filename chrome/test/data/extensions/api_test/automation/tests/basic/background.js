@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 chrome.tabs.query({active: true}, function(tabs) {
-  chrome.automation.getTree(function() {
+  chrome.automation.getDesktop(function() {
     chrome.test.sendMessage('got_tree');
   });
 });

@@ -47,7 +47,7 @@ class StorageOptions {
   virtual QueuesOptionsList ProduceQueuesOptions() const;
 
   StorageOptions& set_signature_verification_public_key(
-      base::StringPiece signature_verification_public_key) {
+      std::string_view signature_verification_public_key) {
     signature_verification_public_key_ =
         std::string(signature_verification_public_key);
     return *this;
@@ -67,7 +67,7 @@ class StorageOptions {
     return *this;
   }
   const base::FilePath& directory() const { return directory_; }
-  base::StringPiece signature_verification_public_key() const {
+  std::string_view signature_verification_public_key() const {
     return signature_verification_public_key_;
   }
   size_t max_record_size() const { return max_record_size_; }

@@ -36,8 +36,7 @@ public abstract class TabCreator {
      * @param parent the parent tab, if present.
      * @return The new tab or null if no tab was created.
      */
-    @Nullable
-    public abstract Tab createNewTab(
+    public abstract @Nullable Tab createNewTab(
             LoadUrlParams loadUrlParams, @TabLaunchType int type, Tab parent);
 
     /**
@@ -48,8 +47,7 @@ public abstract class TabCreator {
      * @param position the requested position (index in the tab model)
      * @return The new tab or null if no tab was created.
      */
-    @Nullable
-    public abstract Tab createNewTab(
+    public abstract @Nullable Tab createNewTab(
             LoadUrlParams loadUrlParams, @TabLaunchType int type, Tab parent, int position);
 
     /**
@@ -71,8 +69,8 @@ public abstract class TabCreator {
      * @params boolean initializeRenderer whether to initialize renderer during WebContents creation
      * or not.
      */
-    @Nullable
-    public abstract Tab buildDetachedSpareTab(@TabLaunchType int type, boolean initializeRenderer);
+    public abstract @Nullable Tab buildDetachedSpareTab(
+            @TabLaunchType int type, boolean initializeRenderer);
 
     /**
      * Creates a new tab and loads the specified URL in it. This is a convenience method for
@@ -83,8 +81,7 @@ public abstract class TabCreator {
      *             opened (for example, in the foreground or background).
      * @return The new tab or null if no tab was created.
      */
-    @Nullable
-    public abstract Tab launchUrl(String url, @TabLaunchType int type);
+    public abstract @Nullable Tab launchUrl(String url, @TabLaunchType int type);
 
     /**
      * Creates a Tab to host the given WebContents.

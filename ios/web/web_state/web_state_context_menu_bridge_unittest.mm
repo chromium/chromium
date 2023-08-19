@@ -12,10 +12,6 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // A fake of CRWWebStateDelegate to test if the methods in the delegate
 // bridge are called normally. Uses BOOLs below to record the calls.
 @interface FakeCRWWebStateDelegate : NSObject <CRWWebStateDelegate>

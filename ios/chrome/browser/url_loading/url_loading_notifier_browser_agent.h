@@ -71,7 +71,7 @@ class UrlLoadingNotifierBrowserAgent
 
   explicit UrlLoadingNotifierBrowserAgent(Browser* browser);
 
-  base::ObserverList<UrlLoadingObserverBridge>::Unchecked observers_;
+  base::ObserverList<UrlLoadingObserverBridge> observers_;
 };
 
 #endif  // IOS_CHROME_BROWSER_URL_LOADING_URL_LOADING_NOTIFIER_BROWSER_AGENT_H_

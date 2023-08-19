@@ -160,13 +160,15 @@ void LogMixedAutoupgradeMetrics(blink::MixedContentAutoupgradeStatus status,
 }
 
 bool CanHandleDataURLRequestLocally(const ResourceRequestHead& request) {
-  if (!request.Url().ProtocolIsData())
+  if (!request.Url().ProtocolIsData()) {
     return false;
+  }
 
   // The fast paths for data URL, Start() and HandleDataURL(), don't support
   // the DownloadToBlob option.
-  if (request.DownloadToBlob())
+  if (request.DownloadToBlob()) {
     return false;
+  }
 
   // Main resources are handled in the browser, so we can handle data url
   // subresources locally.
@@ -194,28 +196,6 @@ SchedulingPolicy::Feature GetFeatureFromRequestContextType(
       return SchedulingPolicy::Feature::kOutstandingNetworkRequestXHR;
     default:
       return SchedulingPolicy::Feature::kOutstandingNetworkRequestOthers;
-  }
-}
-
-void LogCnameAliasMetrics(const CnameAliasMetricInfo& info) {
-  UMA_HISTOGRAM_BOOLEAN("SubresourceFilter.CnameAlias.Renderer.HadAliases",
-                        info.has_aliases);
-
-  if (info.has_aliases) {
-    UMA_HISTOGRAM_BOOLEAN(
-        "SubresourceFilter.CnameAlias.Renderer.WasAdTaggedBasedOnAlias",
-        info.was_ad_tagged_based_on_alias);
-    UMA_HISTOGRAM_BOOLEAN(
-        "SubresourceFilter.CnameAlias.Renderer.WasBlockedBasedOnAlias",
-        info.was_blocked_based_on_alias);
-    UMA_HISTOGRAM_COUNTS_1000(
-        "SubresourceFilter.CnameAlias.Renderer.ListLength", info.list_length);
-    UMA_HISTOGRAM_COUNTS_1000(
-        "SubresourceFilter.CnameAlias.Renderer.InvalidCount",
-        info.invalid_count);
-    UMA_HISTOGRAM_COUNTS_1000(
-        "SubresourceFilter.CnameAlias.Renderer.RedundantCount",
-        info.redundant_count);
   }
 }
 
@@ -258,8 +238,7 @@ class ResourceLoader::CodeCacheRequest {
         freeze_mode_(freeze_mode),
         should_use_source_hash_(
             SchemeRegistry::SchemeSupportsCodeCacheWithHashing(
-                url.Protocol())) {
-  }
+                url.Protocol())) {}
 
   ~CodeCacheRequest() = default;
 
@@ -325,8 +304,9 @@ class ResourceLoader::CodeCacheRequest {
 bool ResourceLoader::CodeCacheRequest::FetchFromCodeCache(
     URLLoader* url_loader,
     ResourceLoader* resource_loader) {
-  if (!code_cache_loader_)
+  if (!code_cache_loader_) {
     return false;
+  }
   DCHECK_EQ(status_, kNoRequestSent);
   status_ = kPendingResponse;
 
@@ -422,8 +402,9 @@ void ResourceLoader::CodeCacheRequest::MaybeSendCachedCode(
       // and we should investigate why the code_cache_loader_ isn't valid here
       // if this fixes the crashes. It is OK to return early here since the
       // entry can be cleared on the next fetch.
-      if (!code_cache_loader_)
+      if (!code_cache_loader_) {
         return;
+      }
       code_cache_loader_->ClearCodeCacheEntry(cache_type, url_);
     }
   };
@@ -461,12 +442,14 @@ void ResourceLoader::CodeCacheRequest::MaybeSendCachedCode(
   }
 }
 
-ResourceLoader::ResourceLoader(ResourceFetcher* fetcher,
-                               ResourceLoadScheduler* scheduler,
-                               Resource* resource,
-                               ContextLifecycleNotifier* context,
-                               ResourceRequestBody request_body,
-                               uint32_t inflight_keepalive_bytes)
+ResourceLoader::ResourceLoader(
+    ResourceFetcher* fetcher,
+    ResourceLoadScheduler* scheduler,
+    Resource* resource,
+    ContextLifecycleNotifier* context,
+    ResourceRequestBody request_body,
+    uint32_t inflight_keepalive_bytes,
+    absl::optional<mojom::blink::WebFeature> count_orb_block_as)
     : scheduler_client_id_(ResourceLoadScheduler::kInvalidClientId),
       fetcher_(fetcher),
       scheduler_(scheduler),
@@ -477,7 +460,8 @@ ResourceLoader::ResourceLoader(ResourceFetcher* fetcher,
       progress_receiver_(this, context),
       cancel_timer_(fetcher_->GetTaskRunner(),
                     this,
-                    &ResourceLoader::CancelTimerFired) {
+                    &ResourceLoader::CancelTimerFired),
+      count_orb_block_as_(count_orb_block_as) {
   DCHECK(resource_);
   DCHECK(fetcher_);
 
@@ -527,8 +511,9 @@ bool ResourceLoader::ShouldFetchCodeCache() {
   // Since code cache requests use a per-frame interface, don't fetch cached
   // code for keep-alive requests. These are only used for beaconing and we
   // don't expect code cache to help there.
-  if (ShouldBeKeptAliveWhenDetached())
+  if (ShouldBeKeptAliveWhenDetached()) {
     return false;
+  }
 
   const ResourceRequestHead& request = resource_->GetResourceRequest();
   // Aside from http and https, the only other supported protocols are those
@@ -544,10 +529,12 @@ bool ResourceLoader::ShouldFetchCodeCache() {
   // the service worker's "installed script storage" and would be fetched along
   // with the resource from the cache storage.
   if (request.GetRequestContext() ==
-      mojom::blink::RequestContextType::SERVICE_WORKER)
+      mojom::blink::RequestContextType::SERVICE_WORKER) {
     return false;
-  if (request.DownloadToBlob())
+  }
+  if (request.DownloadToBlob()) {
     return false;
+  }
   // Javascript resources have type kScript. WebAssembly module resources
   // have type kRaw. Note that we always perform a code fetch for all of
   // these resources because:
@@ -653,8 +640,7 @@ void ResourceLoader::DidFinishLoadingBody() {
         deferred_finish_loading_info_->response_end_time,
         response.EncodedDataLength(), response.EncodedBodyLength(),
         response.DecodedBodyLength(),
-        deferred_finish_loading_info_->should_report_corb_blocking,
-        deferred_finish_loading_info_->pervasive_payload_requested);
+        deferred_finish_loading_info_->should_report_corb_blocking);
   }
 }
 
@@ -727,8 +713,9 @@ void ResourceLoader::SetDefersLoading(LoaderFreezeMode mode) {
   DCHECK(loader_);
   freeze_mode_ = mode;
   // If CodeCacheRequest handles this, then no need to handle here.
-  if (code_cache_request_ && code_cache_request_->SetDefersLoading(mode))
+  if (code_cache_request_ && code_cache_request_->SetDefersLoading(mode)) {
     return;
+  }
 
   if (response_body_loader_) {
     if (mode != LoaderFreezeMode::kNone &&
@@ -777,13 +764,15 @@ void ResourceLoader::DidChangePriority(ResourceLoadPriority load_priority,
 }
 
 void ResourceLoader::ScheduleCancel() {
-  if (!cancel_timer_.IsActive())
+  if (!cancel_timer_.IsActive()) {
     cancel_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
+  }
 }
 
 void ResourceLoader::CancelTimerFired(TimerBase*) {
-  if (loader_ && !resource_->HasClientsOrObservers())
+  if (loader_ && !resource_->HasClientsOrObservers()) {
     Cancel();
+  }
 }
 
 void ResourceLoader::Cancel() {
@@ -915,8 +904,9 @@ bool ResourceLoader::WillFollowRedirect(
 
     if (Context().CalculateIfAdSubresource(
             *new_request, absl::nullopt /* alias_url */, resource_type,
-            options.initiator_info))
+            options.initiator_info)) {
       new_request->SetIsAdResource();
+    }
 
     if (blocked_reason) {
       CancelForRedirectAccessCheckError(new_url, blocked_reason.value());
@@ -1042,6 +1032,24 @@ void ResourceLoader::DidReceiveResponseInternal(
                             response_arrival - request_start);
   }
 
+  AtomicString content_encoding =
+      response.HttpHeaderField(http_names::kContentEncoding);
+  if (content_encoding.LowerASCII() == "zstd") {
+    fetcher_->GetUseCounter().CountUse(WebFeature::kZstdContentEncoding);
+  }
+  if (response.DidUseSharedDictionary()) {
+    fetcher_->GetUseCounter().CountUse(WebFeature::kSharedDictionaryUsed);
+    fetcher_->GetUseCounter().CountUse(
+        WebFeature::kSharedDictionaryUsedForSubresource);
+    if (content_encoding.LowerASCII() == "sbr") {
+      fetcher_->GetUseCounter().CountUse(
+          WebFeature::kSharedDictionaryUsedWithSharedBrotli);
+    } else if (content_encoding.LowerASCII() == "zstd-d") {
+      fetcher_->GetUseCounter().CountUse(
+          WebFeature::kSharedDictionaryUsedWithSharedZstd);
+    }
+  }
+
   if (response.HasAuthorizationCoveredByWildcardOnPreflight()) {
     fetcher_->GetUseCounter().CountDeprecation(
         mojom::WebFeature::kAuthorizationCoveredByWildcard);
@@ -1149,14 +1157,13 @@ void ResourceLoader::DidReceiveResponseInternal(
 
   if (base::FeatureList::IsEnabled(
           features::kSendCnameAliasesToSubresourceFilterFromRenderer)) {
-    CnameAliasMetricInfo info;
     bool should_block = ShouldBlockRequestBasedOnSubresourceFilterDnsAliasCheck(
         response.DnsAliases(), request.Url(), original_url, resource_type,
-        initial_request, options, redirect_info, &info);
-    LogCnameAliasMetrics(info);
+        initial_request, options, redirect_info);
 
-    if (should_block)
+    if (should_block) {
       return;
+    }
   }
 
   scheduler_->SetConnectionInfo(scheduler_client_id_,
@@ -1212,8 +1219,9 @@ void ResourceLoader::DidReceiveResponseInternal(
     }
   }
 
-  if (!resource_->Loader())
+  if (!resource_->Loader()) {
     return;
+  }
 
   if (response.HttpStatusCode() >= 400 &&
       !resource_->ShouldIgnoreHTTPStatusCodeErrors()) {
@@ -1289,16 +1297,14 @@ void ResourceLoader::DidFinishLoadingFirstPartInMultipart() {
 
   fetcher_->HandleLoaderFinish(resource_.Get(), base::TimeTicks(),
                                ResourceFetcher::kDidFinishFirstPartInMultipart,
-                               0, false, false, 0);
+                               0);
 }
 
-void ResourceLoader::DidFinishLoading(
-    base::TimeTicks response_end_time,
-    int64_t encoded_data_length,
-    uint64_t encoded_body_length,
-    int64_t decoded_body_length,
-    bool should_report_corb_blocking,
-    absl::optional<bool> pervasive_payload_requested) {
+void ResourceLoader::DidFinishLoading(base::TimeTicks response_end_time,
+                                      int64_t encoded_data_length,
+                                      uint64_t encoded_body_length,
+                                      int64_t decoded_body_length,
+                                      bool should_report_corb_blocking) {
   if (resource_->response_.WasFetchedViaServiceWorker()) {
     encoded_body_length = received_body_length_from_service_worker_;
     decoded_body_length = received_body_length_from_service_worker_;
@@ -1316,11 +1322,11 @@ void ResourceLoader::DidFinishLoading(
     // If the body is still being loaded, we defer the completion until all the
     // body is received.
     deferred_finish_loading_info_ = DeferredFinishLoadingInfo{
-        response_end_time, should_report_corb_blocking,
-        pervasive_payload_requested};
+        response_end_time, should_report_corb_blocking};
 
-    if (data_pipe_completion_notifier_)
+    if (data_pipe_completion_notifier_) {
       data_pipe_completion_notifier_->SignalComplete();
+    }
     return;
   }
 
@@ -1339,10 +1345,13 @@ void ResourceLoader::DidFinishLoading(
                           TRACE_ID_LOCAL(resource_->InspectorId())),
       "outcome", RequestOutcomeToString(RequestOutcome::kSuccess));
 
-  fetcher_->HandleLoaderFinish(
-      resource_.Get(), response_end_time, ResourceFetcher::kDidFinishLoading,
-      inflight_keepalive_bytes_, should_report_corb_blocking,
-      pervasive_payload_requested.value_or(false), encoded_data_length);
+  fetcher_->HandleLoaderFinish(resource_.Get(), response_end_time,
+                               ResourceFetcher::kDidFinishLoading,
+                               inflight_keepalive_bytes_);
+
+  if (should_report_corb_blocking) {
+    CountOrbBlock();
+  }
 }
 
 void ResourceLoader::DidFail(const WebURLError& error,
@@ -1380,11 +1389,13 @@ void ResourceLoader::HandleError(const ResourceError& error) {
         mojom::WebFeature::kAuthorizationCoveredByWildcard);
   }
 
-  if (response_body_loader_)
+  if (response_body_loader_) {
     response_body_loader_->Abort();
+  }
 
-  if (data_pipe_completion_notifier_)
+  if (data_pipe_completion_notifier_) {
     data_pipe_completion_notifier_->SignalError(BytesConsumer::Error());
+  }
 
   if (is_cache_aware_loading_activated_ && error.IsCacheMiss() &&
       !fetcher_->GetProperties().ShouldBlockLoadingSubResource()) {
@@ -1439,8 +1450,9 @@ void ResourceLoader::RequestSynchronously(const ResourceRequestHead& request) {
   scoped_refptr<EncodedFormData> form_body = request_body_.FormBody();
   PopulateResourceRequest(request, std::move(request_body_),
                           network_resource_request.get());
-  if (form_body)
+  if (form_body) {
     request_body_ = ResourceRequestBody(std::move(form_body));
+  }
   WebURLResponse response_out;
   absl::optional<WebURLError> error_out;
   scoped_refptr<SharedBuffer> data_out;
@@ -1474,8 +1486,9 @@ void ResourceLoader::RequestSynchronously(const ResourceRequestHead& request) {
   }
   // A message dispatched while synchronously fetching the resource
   // can bring about the cancellation of this load.
-  if (!IsLoading())
+  if (!IsLoading()) {
     return;
+  }
   int64_t decoded_body_length = data_out ? data_out->size() : 0;
   if (error_out) {
     DidFail(*error_out, base::TimeTicks::Now(), encoded_data_length,
@@ -1483,8 +1496,9 @@ void ResourceLoader::RequestSynchronously(const ResourceRequestHead& request) {
     return;
   }
   DidReceiveResponse(response_out);
-  if (!IsLoading())
+  if (!IsLoading()) {
     return;
+  }
   DCHECK_GE(response_out.ToResourceResponse().EncodedBodyLength(), 0);
 
   // Follow the async case convention of not calling DidReceiveData or
@@ -1504,7 +1518,8 @@ void ResourceLoader::RequestSynchronously(const ResourceRequestHead& request) {
     FinishedCreatingBlob(std::move(downloaded_blob));
   }
   DidFinishLoading(base::TimeTicks::Now(), encoded_data_length,
-                   encoded_body_length, decoded_body_length, false);
+                   encoded_body_length, decoded_body_length,
+                   /* should_report_corb_blocking */ false);
 }
 
 void ResourceLoader::RequestAsynchronously(const ResourceRequestHead& request) {
@@ -1525,8 +1540,9 @@ void ResourceLoader::RequestAsynchronously(const ResourceRequestHead& request) {
   scoped_refptr<EncodedFormData> form_body = request_body_.FormBody();
   PopulateResourceRequest(request, std::move(request_body_),
                           network_resource_request.get());
-  if (form_body)
+  if (form_body) {
     request_body_ = ResourceRequestBody(std::move(form_body));
+  }
   loader_->LoadAsynchronously(
       std::move(network_resource_request), request.GetURLRequestExtraData(),
       no_mime_sniffing, Context().CreateResourceLoadInfoNotifierWrapper(),
@@ -1557,20 +1573,24 @@ void ResourceLoader::ActivateCacheAwareLoadingIfNeeded(
   DCHECK(!is_cache_aware_loading_activated_);
 
   if (resource_->Options().cache_aware_loading_enabled !=
-      kIsCacheAwareLoadingEnabled)
+      kIsCacheAwareLoadingEnabled) {
     return;
+  }
 
   // Synchronous requests are not supported.
-  if (resource_->Options().synchronous_policy == kRequestSynchronously)
+  if (resource_->Options().synchronous_policy == kRequestSynchronously) {
     return;
+  }
 
   // Don't activate on Resource revalidation.
-  if (resource_->IsCacheValidator())
+  if (resource_->IsCacheValidator()) {
     return;
+  }
 
   // Don't activate if cache policy is explicitly set.
-  if (request.GetCacheMode() != mojom::FetchCacheMode::kDefault)
+  if (request.GetCacheMode() != mojom::FetchCacheMode::kDefault) {
     return;
+  }
 
   // Don't activate if the page is controlled by service worker.
   if (fetcher_->IsControlledByServiceWorker() !=
@@ -1600,8 +1620,9 @@ ResourceLoader::GetLoadingTaskRunner() {
 void ResourceLoader::OnProgress(uint64_t delta) {
   DCHECK(!blob_finished_);
 
-  if (scheduler_client_id_ == ResourceLoadScheduler::kInvalidClientId)
+  if (scheduler_client_id_ == ResourceLoadScheduler::kInvalidClientId) {
     return;
+  }
 
   if (auto* observer = fetcher_->GetResourceLoadObserver()) {
     observer->DidReceiveData(resource_->InspectorId(),
@@ -1615,8 +1636,9 @@ void ResourceLoader::FinishedCreatingBlob(
     const scoped_refptr<BlobDataHandle>& blob) {
   DCHECK(!blob_finished_);
 
-  if (scheduler_client_id_ == ResourceLoadScheduler::kInvalidClientId)
+  if (scheduler_client_id_ == ResourceLoadScheduler::kInvalidClientId) {
     return;
+  }
 
   if (auto* observer = fetcher_->GetResourceLoadObserver()) {
     observer->DidDownloadToBlob(resource_->InspectorId(), blob.get());
@@ -1641,8 +1663,9 @@ ResourceLoader::CheckResponseNosniff(
   bool sniffing_allowed =
       ParseContentTypeOptionsHeader(response.HttpHeaderField(
           http_names::kXContentTypeOptions)) != kContentTypeOptionsNosniff;
-  if (sniffing_allowed)
+  if (sniffing_allowed) {
     return absl::nullopt;
+  }
 
   String mime_type = response.HttpContentType();
   if (request_context == mojom::blink::RequestContextType::STYLE &&
@@ -1664,8 +1687,9 @@ ResourceLoader::CheckResponseNosniff(
 }
 
 void ResourceLoader::HandleDataUrl() {
-  if (!IsLoading())
+  if (!IsLoading()) {
     return;
+  }
   if (freeze_mode_ != LoaderFreezeMode::kNone) {
     defers_handling_data_url_ = true;
     return;
@@ -1686,14 +1710,16 @@ void ResourceLoader::HandleDataUrl() {
   const size_t data_size = data->size();
 
   DidReceiveResponseInternal(response);
-  if (!IsLoading())
+  if (!IsLoading()) {
     return;
+  }
 
   auto* bytes_consumer =
       MakeGarbageCollected<SharedBufferBytesConsumer>(std::move(data));
   DidStartLoadingResponseBodyInternal(*bytes_consumer);
-  if (!IsLoading())
+  if (!IsLoading()) {
     return;
+  }
 
   // DidFinishLoading() may deferred until the response body loader reaches to
   // end.
@@ -1708,21 +1734,19 @@ bool ResourceLoader::ShouldBlockRequestBasedOnSubresourceFilterDnsAliasCheck(
     ResourceType resource_type,
     const ResourceRequestHead& initial_request,
     const ResourceLoaderOptions& options,
-    const ResourceRequest::RedirectInfo redirect_info,
-    CnameAliasMetricInfo* out_metric_info) {
-  DCHECK(out_metric_info);
-
+    const ResourceRequest::RedirectInfo redirect_info) {
   // Look for CNAME aliases, and if any are found, run SubresourceFilter
   // checks on them to perform resource-blocking and ad-tagging based on the
   // aliases: if any one of the aliases is on the denylist, then the
   // request will be deemed on the denylist and treated accordingly (blocked
   // and/or tagged).
-  out_metric_info->has_aliases = !dns_aliases.empty();
-  out_metric_info->list_length = dns_aliases.size();
+  cname_alias_info_for_testing_.has_aliases = !dns_aliases.empty();
+  cname_alias_info_for_testing_.list_length = dns_aliases.size();
 
   // If there are no aliases, we have no reason to block based on them.
-  if (!out_metric_info->has_aliases)
+  if (!cname_alias_info_for_testing_.has_aliases) {
     return false;
+  }
 
   // CNAME aliases were found, and so the SubresourceFilter must be
   // consulted for each one.
@@ -1735,7 +1759,7 @@ bool ResourceLoader::ShouldBlockRequestBasedOnSubresourceFilterDnsAliasCheck(
     // The SubresourceFilter only performs nontrivial matches for
     // valid URLs. Skip sending this alias if it's invalid.
     if (!alias_url.IsValid()) {
-      out_metric_info->invalid_count++;
+      cname_alias_info_for_testing_.invalid_count++;
       continue;
     }
 
@@ -1743,7 +1767,7 @@ bool ResourceLoader::ShouldBlockRequestBasedOnSubresourceFilterDnsAliasCheck(
     // the requested URL (or, inclusively, the original URL in the case of
     // redirects).
     if (alias_url == original_url || alias_url == request_url) {
-      out_metric_info->redundant_count++;
+      cname_alias_info_for_testing_.redundant_count++;
       continue;
     }
 
@@ -1754,7 +1778,7 @@ bool ResourceLoader::ShouldBlockRequestBasedOnSubresourceFilterDnsAliasCheck(
     if (blocked_reason) {
       HandleError(ResourceError::CancelledDueToAccessCheckError(
           alias_url, blocked_reason.value()));
-      out_metric_info->was_blocked_based_on_alias = true;
+      cname_alias_info_for_testing_.was_blocked_based_on_alias = true;
       return true;
     }
 
@@ -1763,7 +1787,7 @@ bool ResourceLoader::ShouldBlockRequestBasedOnSubresourceFilterDnsAliasCheck(
                                            alias_url, resource_type,
                                            options.initiator_info)) {
       resource_->SetIsAdResource();
-      out_metric_info->was_ad_tagged_based_on_alias = true;
+      cname_alias_info_for_testing_.was_ad_tagged_based_on_alias = true;
     }
   }
 
@@ -1795,4 +1819,18 @@ void ResourceLoader::CancelIfWebBundleTokenMatches(
   }
 }
 
+void ResourceLoader::CountOrbBlock() const {
+  if (!count_orb_block_as_) {
+    return;
+  }
+
+  DCHECK_LE(WebFeature::kORBBlockWithoutAnyEventHandler, *count_orb_block_as_);
+  DCHECK_LE(*count_orb_block_as_,
+            WebFeature::kORBBlockWithOnLoadAndOnErrorEventHandler);
+  fetcher_->GetUseCounter().CountUse(*count_orb_block_as_);
+  if (*count_orb_block_as_ != WebFeature::kORBBlockWithoutAnyEventHandler) {
+    fetcher_->GetUseCounter().CountUse(
+        WebFeature::kORBBlockWithAnyEventHandler);
+  }
+}
 }  // namespace blink

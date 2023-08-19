@@ -8,10 +8,10 @@
 
 #include <vector>
 
+#import "base/apple/foundation_util.h"
+#import "base/apple/scoped_objc_class_swizzler.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#import "base/mac/foundation_util.h"
-#import "base/mac/scoped_objc_class_swizzler.h"
 #include "base/task/current_thread.h"
 #import "base/task/single_thread_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -233,8 +233,8 @@ class MockNSEventClassMethods {
                                         [FakeNSEventTestingDonor class],
                                         @selector(pressedMouseButtons)) {}
 
-  base::mac::ScopedObjCClassSwizzler mouse_location_swizzler_;
-  base::mac::ScopedObjCClassSwizzler pressed_mouse_buttons_swizzler_;
+  base::apple::ScopedObjCClassSwizzler mouse_location_swizzler_;
+  base::apple::ScopedObjCClassSwizzler pressed_mouse_buttons_swizzler_;
 };
 
 }  // namespace

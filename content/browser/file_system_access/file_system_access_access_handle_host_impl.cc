@@ -14,7 +14,7 @@ namespace content {
 FileSystemAccessAccessHandleHostImpl::FileSystemAccessAccessHandleHostImpl(
     FileSystemAccessManagerImpl* manager,
     const storage::FileSystemURL& url,
-    scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
+    scoped_refptr<FileSystemAccessLockManager::Lock> lock,
     base::PassKey<FileSystemAccessManagerImpl> /*pass_key*/,
     mojo::PendingReceiver<blink::mojom::FileSystemAccessAccessHandleHost>
         receiver,
@@ -30,8 +30,6 @@ FileSystemAccessAccessHandleHostImpl::FileSystemAccessAccessHandleHostImpl(
       on_close_callback_(std::move(on_close_callback)),
       lock_(std::move(lock)) {
   DCHECK(manager_);
-  DCHECK_EQ(lock_->type(),
-            FileSystemAccessWriteLockManager::WriteLockType::kExclusive);
 
   DCHECK(manager_->context()->is_incognito() ==
          file_delegate_receiver.is_valid());

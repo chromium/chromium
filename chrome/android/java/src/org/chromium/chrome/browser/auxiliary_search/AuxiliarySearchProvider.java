@@ -4,13 +4,20 @@
 
 package org.chromium.chrome.browser.auxiliary_search;
 
-import android.util.Pair;
+import android.text.TextUtils;
 
+import androidx.annotation.Nullable;
+
+import org.chromium.base.Callback;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchBookmarkGroup;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchTabGroup;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,37 +37,72 @@ public class AuxiliarySearchProvider {
     }
 
     /**
-     * @return A list of titles and urls as pairs from tabs for the auxiliary search.
+     * @return AuxiliarySearchGroup for bookmarks.
      */
-    public List<Pair<String, String>> getTabsSearchableData() {
-        List<Pair<String, String>> tabsList = new ArrayList<>();
-
-        TabList tabList = mTabModelSelector.getModel(false).getComprehensiveModel();
-        int firstTabIndex = Math.max(tabList.getCount() - kNumTabsToSend, 0);
-        int end = tabList.getCount() - 1;
-        // Find the the bottom of tabs in the tab switcher view if the number of the tabs more than
-        // 'kNumTabsToSend'. In the multiwindow mode, the order of the 'tabList' is one window's
-        // tabs, and then another's.
-        for (int i = firstTabIndex; i <= end; i++) {
-            Tab tab = tabList.getTabAt(i);
-            tabsList.add(new Pair<>(tab.getTitle(), tab.getUrl().getSpec()));
-        }
-        return tabsList;
+    public AuxiliarySearchBookmarkGroup getBookmarksSearchableDataProto() {
+        return mAuxiliarySearchBridge.getBookmarksSearchableData();
     }
 
     /**
-     * @return A list of titles and urls as pairs from bookmarks for the auxiliary search.
+     * @return AuxiliarySearchGroup for {@link Tab}s.
      */
-    public List<Pair<String, String>> getBookmarksSearchableData() {
-        AuxiliarySearchBookmarkGroup group = mAuxiliarySearchBridge.getBookmarksSearchableData();
+    public AuxiliarySearchTabGroup getTabsSearchableDataProto() {
+        var tabGroupBuilder = AuxiliarySearchTabGroup.newBuilder();
+        TabList tabList = mTabModelSelector.getModel(false).getComprehensiveModel();
 
-        List<Pair<String, String>> bookmarksList = new ArrayList<>();
-        if (group != null) {
-            for (int i = 0; i < group.getBookmarkCount(); i++) {
-                AuxiliarySearchBookmarkGroup.Bookmark bookmark = group.getBookmark(i);
-                bookmarksList.add(new Pair<>(bookmark.getTitle(), bookmark.getUrl()));
+        // Find the the bottom of tabs in the tab switcher view if the number of the tabs more than
+        // 'kNumTabsToSend'. In the multiwindow mode, the order of the 'tabList' is one window's
+        // tabs, and then another's.
+        int firstTabIndex = Math.max(tabList.getCount() - kNumTabsToSend, 0);
+        int end = tabList.getCount() - 1;
+        for (int i = firstTabIndex; i <= end; i++) {
+            Tab tab = tabList.getTabAt(i);
+            AuxiliarySearchEntry entry = tabToAuxiliarySearchEntry(tab);
+            if (entry != null) {
+                tabGroupBuilder.addTab(entry);
             }
         }
-        return bookmarksList;
+        return tabGroupBuilder.build();
+    }
+
+    /**
+     * @param callback {@link Callback} to pass back the AuxiliarySearchGroup for {@link Tab}s.
+     */
+    public void getTabsSearchableDataProtoAsync(Callback<AuxiliarySearchTabGroup> callback) {
+        TabList tabList = mTabModelSelector.getModel(false).getComprehensiveModel();
+        List<Tab> listTab = new ArrayList<>();
+
+        for (int i = 0; i < tabList.getCount(); i++) {
+            listTab.add(tabList.getTabAt(i));
+        }
+        mAuxiliarySearchBridge.getNonSensitiveTabs(listTab, new Callback<List<Tab>>() {
+            @Override
+            public void onResult(List<Tab> tabs) {
+                var tabGroupBuilder = AuxiliarySearchTabGroup.newBuilder();
+
+                for (Tab tab : tabs) {
+                    AuxiliarySearchEntry entry = tabToAuxiliarySearchEntry(tab);
+                    if (entry != null) {
+                        tabGroupBuilder.addTab(entry);
+                    }
+                }
+
+                callback.onResult(tabGroupBuilder.build());
+            }
+        });
+    }
+
+    private static @Nullable AuxiliarySearchEntry tabToAuxiliarySearchEntry(Tab tab) {
+        String title = tab.getTitle();
+        GURL url = tab.getUrl();
+        if (TextUtils.isEmpty(title) || url == null || !url.isValid()) return null;
+
+        var tabBuilder = AuxiliarySearchEntry.newBuilder().setTitle(title).setUrl(url.getSpec());
+        final long lastAccessTime = CriticalPersistedTabData.from(tab).getTimestampMillis();
+        if (lastAccessTime != CriticalPersistedTabData.INVALID_TIMESTAMP) {
+            tabBuilder.setLastAccessTimestamp(lastAccessTime);
+        }
+
+        return tabBuilder.build();
     }
 }

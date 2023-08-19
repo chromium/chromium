@@ -10,9 +10,11 @@
 
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -848,6 +850,22 @@ TEST(PasswordReuseDetectorTest, OnLoginsRetained) {
 
   EXPECT_CALL(mockConsumer, OnReuseCheckDone(false, _, _, _, _, _, _));
   reuse_detector.CheckReuse(u"saved_password", "https://evil.com",
+                            &mockConsumer);
+}
+
+TEST(PasswordReuseDetectorTest, ShortPasswordReuseFound) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      safe_browsing::kEvaluateProtectedPasswordLengthMinimum);
+
+  PasswordReuseDetector reuse_detector;
+  reuse_detector.OnGetPasswordStoreResults(GetForms(GetTestDomainsPasswords()));
+  MockPasswordReuseDetectorConsumer mockConsumer;
+
+  EXPECT_CALL(mockConsumer,
+              OnReuseCheckDone(true, strlen("short"), _, _, _, _, _));
+
+  reuse_detector.CheckReuse(u"short", "https://phishing.example.com",
                             &mockConsumer);
 }
 

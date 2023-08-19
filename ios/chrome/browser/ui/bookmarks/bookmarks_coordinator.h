@@ -35,9 +35,6 @@ class GURL;
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 
-// Called before the instance is deallocated.
-- (void)shutdown;
-
 // Adds a bookmark for `URL` with the given `title`.
 - (void)createBookmarkURL:(const GURL&)URL title:(NSString*)title;
 

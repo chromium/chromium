@@ -7,12 +7,11 @@ package org.chromium.chrome.browser.tab;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.dragdrop.ChromeDragAndDropBrowserDelegate;
 import org.chromium.components.embedder_support.view.ContentView;
-import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 import org.chromium.ui.base.ViewAndroidDelegate;
@@ -45,7 +44,7 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
         mTab = (TabImpl) tab;
         containerView.addOnDragListener(getDragStateTracker());
 
-        if (ContentFeatureList.isEnabled(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU)
+        if (ContentFeatureMap.isEnabled(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU)
                 && DragAndDropDelegate.isDragAndDropSupportedForOs()) {
             mDragAndDropBrowserDelegate = new ChromeDragAndDropBrowserDelegate(tab.getContext());
             getDragAndDropDelegate().setDragAndDropBrowserDelegate(mDragAndDropBrowserDelegate);
@@ -165,7 +164,6 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
         }
     }
 
-    @VisibleForTesting
     DragAndDropBrowserDelegate getDragAndDropBrowserDelegateForTesting() {
         return mDragAndDropBrowserDelegate;
     }

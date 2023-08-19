@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -28,6 +29,11 @@ class TrustTokenKeyCommitmentGetter;
 //  token which is returned.
 class AttributionVerificationMediator {
  public:
+  using Message = std::string;
+  using BlindedMessage = std::string;
+  using BlindedToken = std::string;
+  using Token = std::string;
+
   // Represents the status/outcome of the execution of
   // `GetHeadersForVerification`. These values are persisted to logs.
   enum class GetHeadersStatus {
@@ -41,12 +47,14 @@ class AttributionVerificationMediator {
   };
 
   // Represents the status/outcome of the execution of
-  // `ProcessVerificationToGetToken`. These values are persisted to logs.
+  // `ProcessVerificationToGetTokens`. These values are persisted to logs.
   enum class ProcessVerificationStatus {
     kSuccess = 0,
     kNoSignatureReceivedFromIssuer = 1,
     kUnableToUnblindSignature = 2,
-    kMaxValue = kUnableToUnblindSignature,
+    kTooManySignaturesReceivedFromIssuer = 3,
+    kBadSignaturesHeaderReceivedFromIssuer = 4,
+    kMaxValue = kBadSignaturesHeaderReceivedFromIssuer,
   };
 
   // Describe the ordered steps associated to completing a verification
@@ -117,7 +125,7 @@ class AttributionVerificationMediator {
 
   AttributionVerificationMediator(
       const TrustTokenKeyCommitmentGetter* key_commitment_getter,
-      std::unique_ptr<Cryptographer> cryptographer,
+      std::vector<std::unique_ptr<Cryptographer>> cryptographers,
       std::unique_ptr<MetricsRecorder> metrics_recorder);
   ~AttributionVerificationMediator();
 
@@ -131,40 +139,61 @@ class AttributionVerificationMediator {
   //
   // 1. Get the issuer's key commitment; if unavailable or unsuccessful, returns
   //    no headers
-  // 2. Blind the message received; if unsuccessful, returns no headers
+  // 2. Blind the messages received; if unsuccessful, returns no headers
   // 3. Returns two headers;
-  //    * Sec-Attribution-Reporting-Private-State-Token: with the blinded
-  //      message.
+  //    * Sec-Attribution-Reporting-Private-State-Token: with blinded messages
+  //    serialized as a structured header list of string:
+  //    https://www.rfc-editor.org/rfc/rfc8941.html#name-lists
   //    * Sec-Private-State-Token-Crypto-Version: with the protocol version
   //      configured in the issuers' key commitments
   //
-  // `message` is a string representing the data that we want to attest to. The
-  // `message` will be blinded before being sent to the issuer for signature.
+  // `messages` is a vector of strings representing the data that we want to
+  // attest to. Each message in `messages` will be blinded before being sent to
+  // the issuer.
   //
   // Later, when receiving the data with a token, the issuer will need to
-  // re-generate this message to verify the token.
+  // re-generate the message based on the data received to verify the token.
   void GetHeadersForVerification(
       const GURL& url,
-      const std::string& message,
+      std::vector<Message>,
       base::OnceCallback<void(net::HttpRequestHeaders)> done);
 
-  // Process headers from an verification response; if present and valid,
-  // generates and returns a token that can be used for redemption.
+  // Process headers from a verification response; if present and valid,
+  // generates and returns tokens that can be used for redemption.
   // 1. Checks `response_headers` for a verification response header.
-  // 2. If the header is present, strips it from `response_headers` and passes
-  //    its value (blind token) to an underlying cryptographic library, which
-  //    parses, validates and unblind the header to return a token.
+  // 2. If the header is present, strips it from `response_headers`, parses it
+  //    as a structured header list of strings to obtain blind tokens. The
+  //    number of blind tokens received can be smaller than the number of blind
+  //    messages sent for signature. However, the order in which they are
+  //    received must match the order in which they were sent.
+  // 3. Each blind token is sent to an underlying cryptographic library which
+  //    parses, validates and unblind the token. If any blind-token fails
+  //    redemption, no tokens are returned.
   //
-  // If both of these steps are successful, returns a token that can be send to
-  // and verified by the issuer that signed the blind message.
-  void ProcessVerificationToGetToken(
+  // If all three steps are successful, returns tokens that can be sent to and
+  // verified by the issuer that signed the blind messages. Otherwise, returns
+  // an empty array.
+  void ProcessVerificationToGetTokens(
       net::HttpResponseHeaders& response_headers,
-      base::OnceCallback<
-          void(absl::optional<std::string> maybe_redemption_token)> done);
+      base::OnceCallback<void(std::vector<Token>)> done);
 
  private:
-  struct CryptographerAndToken;
-  struct CryptographerAndBlindMessage;
+  struct CryptographersAndTokens;
+  struct CryptographersAndBlindedMessages;
+
+  static CryptographersAndBlindedMessages BeginIssuances(
+      std::vector<std::unique_ptr<Cryptographer>>,
+      const std::vector<Message>&);
+
+  static CryptographersAndTokens ConfirmIssuancesAndBeginRedemptions(
+      std::vector<std::unique_ptr<Cryptographer>>,
+      std::vector<BlindedToken>);
+
+  static std::string SerializeBlindedMessages(
+      const std::vector<BlindedMessage>&);
+
+  static std::vector<BlindedMessage> DeserializeBlindedTokens(
+      const std::string& blind_tokens_header);
 
   // Continuation of `GetHeadersForVerification` after asynchronous key
   // commitment fetching concludes. `done` is `GetHeadersForVerification`'s
@@ -179,27 +208,27 @@ class AttributionVerificationMediator {
   // is the private state issuer configured protocol versions; `done` is
   // `GetHeadersForVerification`'s parameter, passed on to the continuation.
   // Receives ownership of the cryptographer back from the asynchronous callback
-  // and stores it back in `cryptographer_` to reuse during
-  // `ProcessVerificationToGetToken`.
+  // and stores it back in `cryptographers_` to reuse during
+  // `ProcessVerificationToGetTokens`.
   void OnDoneBeginIssuance(
       mojom::TrustTokenProtocolVersion protocol_version,
       base::OnceCallback<void(net::HttpRequestHeaders)> done,
-      CryptographerAndBlindMessage cryptographer_and_blinded_token);
+      CryptographersAndBlindedMessages);
 
-  // Continuation of `ProcessVerificationToGetToken` after an off-thread
+  // Continuation of `ProcessVerificationToGetTokens` after an off-thread
   // execution to complete the issuance
   // (`Cryptographer::ConfirmIssuanceAndBeginRedemption`). `done` is
-  // `ProcessVerificationToGetToken`'s parameter, passed on to the continuation.
-  // Receives ownership of the cryptographer back from the asynchronous
-  // callback.
+  // `ProcessVerificationToGetTokens`'s parameter, passed on to the
+  // continuation. Receives ownership of the cryptographer back from the
+  // asynchronous callback.
   void OnDoneProcessingIssuanceResponse(
-      base::OnceCallback<void(absl::optional<std::string>)> done,
-      CryptographerAndToken cryptographer_and_redemption_token);
+      base::OnceCallback<void(std::vector<Token>)> done,
+      CryptographersAndTokens);
 
-  // `message_` needs to be a nullable type because it is initialized in
-  // `GetHeadersForVerification`, but, once initialized, it will never be
-  // mutated over the course of the operation's execution.
-  absl::optional<std::string> message_;
+  // `messages_` will be empty until it gets initialized in
+  // `GetHeadersForVerification`. Once filled, it will never be mutated over the
+  // course of the operation's execution.
+  std::vector<Message> messages_;
 
   // The key_commitment_getter_ instance is a singleton owned by NetworkService,
   // it will always outlive this.
@@ -211,7 +240,14 @@ class AttributionVerificationMediator {
   // (Cryptographer::BeginIssuance,
   // Cryptographer::ConfirmIssuanceAndBeginRedemption); repopulated when
   // regaining ownership upon receiving each operation's results.
-  std::unique_ptr<Cryptographer> cryptographer_;
+  //
+  // A Cryptographer does not support concurrent issuance requests. When
+  // `GetHeadersForVerification` is called with multiple messages, we need to
+  // start an issuance per message. As a result, the number of cryptographers
+  // must match the number of messages received.
+  // TODO(https://crbug.com/1440838): use batch issuance instead of N
+  // cryptographers when BorringSSL adds support for it.
+  std::vector<std::unique_ptr<Cryptographer>> cryptographers_;
 
   // The metrics recorder will be defined for the full lifecycle of this.
   std::unique_ptr<MetricsRecorder> metrics_recorder_;

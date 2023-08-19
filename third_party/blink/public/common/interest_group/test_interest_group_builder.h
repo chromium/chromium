@@ -67,6 +67,8 @@ class TestInterestGroupBuilder {
   TestInterestGroupBuilder& SetSizeGroups(
       absl::optional<base::flat_map<std::string, std::vector<std::string>>>
           size_groups);
+  TestInterestGroupBuilder& SetAuctionServerRequestFlags(
+      AuctionServerRequestFlags flags);
 
  private:
   InterestGroup interest_group_;

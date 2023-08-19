@@ -28,6 +28,13 @@ class SymbolTreeUi extends TreeUi {
      */
     this.ZERO_WIDTH_SPACE = '$&\u200b';
 
+    /**
+     * Expansion cascade plan: If X -> Y, then on expanding X, also expand
+     * Y if Y -> Z exists, else set focus to Y.
+     * @private @const {!Map<number, number>}
+     */
+    this.expansionIdMap = new Map();
+
     // Event listeners need to be bound to this, but each fresh .bind creates a
     // function, which wastes memory and not usable for removeEventListener().
     // The |_bound*()| functions aim to solve the abolve.
@@ -47,7 +54,6 @@ class SymbolTreeUi extends TreeUi {
     /** @private @const {function(!MouseEvent): *} */
     this.boundHandleFocusOut = this.handleFocusOut.bind(this);
   }
-
 
   /**
    * Displays an error modal to indicate that the symbol tree is empty.
@@ -120,6 +126,48 @@ class SymbolTreeUi extends TreeUi {
     return data.children;
   }
 
+  /** @override */
+  autoExpandAttentionWorthyChild(link, childrenElements) {
+    let nodeId = this.uiNodeToData.get(link).id;
+    if (this.expansionIdMap.has(nodeId)) {
+      const nextChildId = this.expansionIdMap.get(nodeId);
+      // Consume expansion link |nodeId| -> |nextChildId| to avoid interfering
+      // with regular UI.
+      this.expansionIdMap.delete(nodeId);
+      if (nextChildId != null) {
+        for (const childElement of childrenElements) {
+          const childNode = childElement.querySelector('.node');
+          const childId = this.uiNodeToData.get(childNode).id;
+          if (childId === nextChildId) {
+            if (this.expansionIdMap.has(childId)) {
+              // Found the child to expand: Click to expand and propagate.
+              childNode.click();
+              return;
+            }
+            // |nextChildId|'s absence in |expansionIdMap| means it's the target
+            // node ID, so set focus. Use dom.onNodeAdded() since |childElement|
+            // (and hence |childNode|) might not be added to the DOM yet.
+            dom.onNodeAdded(childNode, () => childNode.focus());
+            // Continue to default behavior, which may cause more expansion.
+            break;
+          }
+        }
+      }
+    }
+    super.autoExpandAttentionWorthyChild(link, childrenElements);
+  }
+
+  /**
+   * Adds a path to |expansionIdMap| to cause expansion cascade.
+   * @param {!Array<number>} nodePathIds
+   * @public
+   */
+  planPathExpansion(nodePathIds) {
+    for (let i = 1; i < nodePathIds.length; ++i) {
+      this.expansionIdMap.set(nodePathIds[i - 1], nodePathIds[i]);
+    }
+  }
+
   /**
    * @param {!KeyboardEvent} event
    * @protected
@@ -189,8 +237,8 @@ class SymbolTreeUi extends TreeUi {
   handleRefocus(event) {
     // Prevent click that would cause another focus event.
     event.preventDefault();
-    // focusout handler will handle cleanup.
     /** @type {!HTMLElement} */ (event.currentTarget).blur();
+    // Let focusout handles the cleanup.
   }
 
   /**
@@ -202,9 +250,11 @@ class SymbolTreeUi extends TreeUi {
     const elt = /** @type {!HTMLElement} */ (event.target);
     if (this.isTerminalElement(elt))
       elt.addEventListener('mousedown', this.boundHandleRefocus);
-    displayInfocard(/** @type {!TreeNode} */ (this.uiNodeToData.get(elt)));
+    const data = /** @type {!TreeNode} */ (this.uiNodeToData.get(elt));
+    displayInfocard(data);
     /** @type {HTMLElement} */ (event.currentTarget)
         .parentElement.classList.add('focused');
+    state.stFocus.set(data.id.toString());
   }
 
   /**
@@ -218,6 +268,11 @@ class SymbolTreeUi extends TreeUi {
       elt.removeEventListener('mousedown', this.boundHandleRefocus);
     /** @type {HTMLElement} */ (event.currentTarget)
         .parentElement.classList.remove('focused');
+  }
+
+  /** @override @protected */
+  onTreeBlur() {
+    state.stFocus.set('');
   }
 
   /** @override @public */

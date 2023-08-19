@@ -408,6 +408,33 @@ class ReplaceNonASCII {
 static bool g_should_fail_context_creation_for_testing = false;
 }  // namespace
 
+// This class interrupts any active pixel local storage rendering pass, if the
+// extension has been used by the context.
+class ScopedPixelLocalStorageInterrupt {
+  STACK_ALLOCATED();
+
+ public:
+  explicit ScopedPixelLocalStorageInterrupt(WebGLRenderingContextBase* context)
+      : context_(context),
+        needs_interrupt_(context_->has_activated_pixel_local_storage_) {
+    if (needs_interrupt_) {
+      context_->ContextGL()->FramebufferPixelLocalStorageInterruptANGLE();
+    }
+  }
+
+  ~ScopedPixelLocalStorageInterrupt() {
+    // The context should never activate PLS during an interrupt.
+    DCHECK_EQ(context_->has_activated_pixel_local_storage_, needs_interrupt_);
+    if (needs_interrupt_) {
+      context_->ContextGL()->FramebufferPixelLocalStorageRestoreANGLE();
+    }
+  }
+
+ private:
+  WebGLRenderingContextBase* context_;
+  bool needs_interrupt_;
+};
+
 class ScopedTexture2DRestorer {
   STACK_ALLOCATED();
 
@@ -737,6 +764,7 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage(
   if (!GetDrawingBuffer())
     return nullptr;
 
+  ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(this);
   ScopedFramebufferRestorer fbo_restorer(this);
   // In rare situations on macOS the drawing buffer can be destroyed
   // during the resolve process, specifically during automatic
@@ -756,12 +784,13 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage(
   const auto image_info =
       SkImageInfo::Make(SkISize::Make(size.width(), size.height()),
                         CanvasRenderingContextSkColorInfo());
+  constexpr auto kShouldInitialize =
+      CanvasResourceProvider::ShouldInitialize::kNo;
   std::unique_ptr<CanvasResourceProvider> resource_provider =
       CanvasResourceProvider::CreateSharedImageProvider(
-          image_info, GetDrawingBuffer()->FilterQuality(),
-          CanvasResourceProvider::ShouldInitialize::kNo,
+          image_info, GetDrawingBuffer()->FilterQuality(), kShouldInitialize,
           SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
-          is_origin_top_left_, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
+          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
   if (!resource_provider || !resource_provider->IsValid()) {
     resource_provider = CanvasResourceProvider::CreateBitmapProvider(
         image_info, GetDrawingBuffer()->FilterQuality(),
@@ -1223,6 +1252,7 @@ scoped_refptr<DrawingBuffer> WebGLRenderingContextBase::CreateDrawingBuffer(
       context_provider->GetCapabilities().shared_image_swap_chain &&
       desynchronized;
 
+  ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(this);
   return DrawingBuffer::Create(
       std::move(context_provider), graphics_info, using_swap_chain, this,
       ClampedCanvasSize(), premultiplied_alpha, want_alpha_channel,
@@ -1452,6 +1482,12 @@ void WebGLRenderingContextBase::DestroyContext() {
   if (!GetDrawingBuffer())
     return;
 
+  // Ensure pixel local storage isn't active and blocking calls during our
+  // destruction process.
+  if (has_activated_pixel_local_storage_) {
+    ContextGL()->FramebufferPixelLocalStorageInterruptANGLE();
+  }
+
   clearProgramCompletionQueries();
 
   extensions_util_.reset();
@@ -1595,6 +1631,8 @@ WebGLRenderingContextBase::ClearIfComposited(
     // Unlikely, but context was lost.
     return kSkipped;
   }
+
+  ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(this);
 
   // Determine if it's possible to combine the clear the user asked for and this
   // clear.
@@ -1759,6 +1797,7 @@ bool WebGLRenderingContextBase::PaintRenderingResultsToCanvas(
     return true;
   }
 
+  ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(this);
   // TODO(sunnyps): Why is a texture restorer needed? See if it can be removed.
   ScopedTexture2DRestorer restorer(this);
   ScopedFramebufferRestorer fbo_restorer(this);
@@ -1788,6 +1827,7 @@ bool WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBuffer(
   if (!GetDrawingBuffer())
     return false;
 
+  ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(this);
   ScopedFramebufferRestorer fbo_restorer(this);
   // In rare situations on macOS the drawing buffer can be destroyed
   // during the resolve process, specifically during automatic
@@ -1853,6 +1893,7 @@ bool WebGLRenderingContextBase::CopyRenderingResultsToVideoFrame(
   if (!drawing_buffer)
     return false;
 
+  ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(this);
   ScopedFramebufferRestorer fbo_restorer(this);
   if (!drawing_buffer->ResolveAndBindForReadAndDraw())
     return false;
@@ -1872,6 +1913,7 @@ sk_sp<SkData> WebGLRenderingContextBase::PaintRenderingResultsToDataArray(
     SourceDrawingBuffer source_buffer) {
   if (isContextLost())
     return nullptr;
+  ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(this);
   ClearIfComposited(kClearCallerOther);
   // In rare situations on macOS the drawing buffer can be destroyed
   // during the resolve process, specifically during automatic
@@ -2117,23 +2159,13 @@ void WebGLRenderingContextBase::bindTexture(GLenum target,
     }
     texture_units_[active_texture_unit_].texture_video_image_binding_ = texture;
   } else if (target == GL_TEXTURE_EXTERNAL_OES) {
-    if (!ExtensionEnabled(kWebGLWebCodecsVideoFrameName)) {
-      SynthesizeGLError(
-          GL_INVALID_ENUM, "bindTexture",
-          "unhandled type, WEBGL_webcodecs_video_frame extension not enabled");
-      return;
-    }
-    texture_units_[active_texture_unit_].texture_external_oes_binding_ =
-        texture;
+    SynthesizeGLError(GL_INVALID_ENUM, "bindTexture",
+                      "GL_TEXTURE_EXTERNAL_OES textures not supported");
+    return;
   } else if (target == GL_TEXTURE_RECTANGLE_ARB) {
-    if (!ExtensionEnabled(kWebGLWebCodecsVideoFrameName)) {
-      SynthesizeGLError(
-          GL_INVALID_ENUM, "bindTexture",
-          "unhandled type, WEBGL_webcodecs_video_frame extension not enabled");
-      return;
-    }
-    texture_units_[active_texture_unit_].texture_rectangle_arb_binding_ =
-        texture;
+    SynthesizeGLError(GL_INVALID_ENUM, "bindTexture",
+                      "GL_TEXTURE_RECTANGLE_ARB textures not supported");
+    return;
   } else {
     SynthesizeGLError(GL_INVALID_ENUM, "bindTexture", "invalid target");
     return;
@@ -2598,6 +2630,9 @@ void WebGLRenderingContextBase::copyTexImage2D(GLenum target,
   ClearIfComposited(kClearCallerOther);
   ScopedDrawingBufferBinder binder(GetDrawingBuffer(),
                                    read_framebuffer_binding);
+  if (!binder.Succeeded()) {
+    return;
+  }
   ContextGL()->CopyTexImage2D(target, level, internalformat, x, y, width,
                               height, border);
 }
@@ -2621,6 +2656,9 @@ void WebGLRenderingContextBase::copyTexSubImage2D(GLenum target,
   ClearIfComposited(kClearCallerOther);
   ScopedDrawingBufferBinder binder(GetDrawingBuffer(),
                                    read_framebuffer_binding);
+  if (!binder.Succeeded()) {
+    return;
+  }
   ContextGL()->CopyTexSubImage2D(target, level, xoffset, yoffset, x, y, width,
                                  height);
 }
@@ -4910,6 +4948,9 @@ void WebGLRenderingContextBase::ReadPixelsHelper(GLint x,
 
   {
     ScopedDrawingBufferBinder binder(GetDrawingBuffer(), framebuffer);
+    if (!binder.Succeeded()) {
+      return;
+    }
     ContextGL()->ReadPixels(x, y, width, height, format, type, data);
   }
 }
@@ -5718,7 +5759,7 @@ void WebGLRenderingContextBase::TexImageHelperHTMLImageElement(
   TexImageSkImage(params, std::move(sk_image), /*image_has_flip_y=*/false);
 }
 
-void WebGLRenderingContextBase::texImage2D(ExecutionContext* execution_context,
+void WebGLRenderingContextBase::texImage2D(ScriptState* script_state,
                                            GLenum target,
                                            GLint level,
                                            GLint internalformat,
@@ -5729,6 +5770,7 @@ void WebGLRenderingContextBase::texImage2D(ExecutionContext* execution_context,
   TexImageParams params;
   POPULATE_TEX_IMAGE_2D_PARAMS(params);
   GetCurrentUnpackState(params);
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
   TexImageHelperHTMLImageElement(execution_context->GetSecurityOrigin(), params,
                                  image, exception_state);
 }
@@ -5814,6 +5856,7 @@ void WebGLRenderingContextBase::TexImageViaGPU(
   if (params.function_id == kTexImage2D)
     TexImageBase(params, nullptr);
 
+  ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(this);
   ScopedTexture2DRestorer restorer(this);
 
   GLuint target_texture = texture->Object();
@@ -5988,7 +6031,7 @@ void WebGLRenderingContextBase::TexImageHelperCanvasRenderingContextHost(
 }
 
 void WebGLRenderingContextBase::texImage2D(
-    ExecutionContext* execution_context,
+    ScriptState* script_state,
     GLenum target,
     GLint level,
     GLint internalformat,
@@ -5998,6 +6041,7 @@ void WebGLRenderingContextBase::texImage2D(
     ExceptionState& exception_state) {
   TexImageParams params;
   POPULATE_TEX_IMAGE_2D_PARAMS(params);
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
   TexImageHelperCanvasRenderingContextHost(
       execution_context->GetSecurityOrigin(), params, context_host,
       exception_state);
@@ -6039,7 +6083,7 @@ void WebGLRenderingContextBase::TexImageHelperHTMLVideoElement(
     return;
 
   // This is enforced by ValidateHTMLVideoElement(), but DCHECK to be sure.
-  DCHECK(!WouldTaintOrigin(video));
+  DCHECK(!WouldTaintCanvasOrigin(video));
   TexImageHelperMediaVideoFrame(params, texture, std::move(media_video_frame),
                                 video_renderer);
 }
@@ -6299,7 +6343,7 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
   texture->UpdateLastUploadedFrame(metadata);
 }
 
-void WebGLRenderingContextBase::texImage2D(ExecutionContext* execution_context,
+void WebGLRenderingContextBase::texImage2D(ScriptState* script_state,
                                            GLenum target,
                                            GLint level,
                                            GLint internalformat,
@@ -6309,11 +6353,12 @@ void WebGLRenderingContextBase::texImage2D(ExecutionContext* execution_context,
                                            ExceptionState& exception_state) {
   TexImageParams params;
   POPULATE_TEX_IMAGE_2D_PARAMS(params);
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
   TexImageHelperHTMLVideoElement(execution_context->GetSecurityOrigin(), params,
                                  video, exception_state);
 }
 
-void WebGLRenderingContextBase::texImage2D(ExecutionContext* execution_context,
+void WebGLRenderingContextBase::texImage2D(ScriptState* script_state,
                                            GLenum target,
                                            GLint level,
                                            GLint internalformat,
@@ -6323,6 +6368,7 @@ void WebGLRenderingContextBase::texImage2D(ExecutionContext* execution_context,
                                            ExceptionState& exception_state) {
   TexImageParams params;
   POPULATE_TEX_IMAGE_2D_PARAMS(params);
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
   TexImageHelperVideoFrame(execution_context->GetSecurityOrigin(), params,
                            frame, exception_state);
 }
@@ -6510,24 +6556,24 @@ void WebGLRenderingContextBase::texSubImage2D(GLenum target,
   TexImageHelperImageData(params, pixels);
 }
 
-void WebGLRenderingContextBase::texSubImage2D(
-    ExecutionContext* execution_context,
-    GLenum target,
-    GLint level,
-    GLint xoffset,
-    GLint yoffset,
-    GLenum format,
-    GLenum type,
-    HTMLImageElement* image,
-    ExceptionState& exception_state) {
+void WebGLRenderingContextBase::texSubImage2D(ScriptState* script_state,
+                                              GLenum target,
+                                              GLint level,
+                                              GLint xoffset,
+                                              GLint yoffset,
+                                              GLenum format,
+                                              GLenum type,
+                                              HTMLImageElement* image,
+                                              ExceptionState& exception_state) {
   TexImageParams params;
   POPULATE_TEX_SUB_IMAGE_2D_PARAMS(params);
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
   TexImageHelperHTMLImageElement(execution_context->GetSecurityOrigin(), params,
                                  image, exception_state);
 }
 
 void WebGLRenderingContextBase::texSubImage2D(
-    ExecutionContext* execution_context,
+    ScriptState* script_state,
     GLenum target,
     GLint level,
     GLint xoffset,
@@ -6538,39 +6584,40 @@ void WebGLRenderingContextBase::texSubImage2D(
     ExceptionState& exception_state) {
   TexImageParams params;
   POPULATE_TEX_SUB_IMAGE_2D_PARAMS(params);
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
   TexImageHelperCanvasRenderingContextHost(
       execution_context->GetSecurityOrigin(), params, context_host,
       exception_state);
 }
 
-void WebGLRenderingContextBase::texSubImage2D(
-    ExecutionContext* execution_context,
-    GLenum target,
-    GLint level,
-    GLint xoffset,
-    GLint yoffset,
-    GLenum format,
-    GLenum type,
-    HTMLVideoElement* video,
-    ExceptionState& exception_state) {
+void WebGLRenderingContextBase::texSubImage2D(ScriptState* script_state,
+                                              GLenum target,
+                                              GLint level,
+                                              GLint xoffset,
+                                              GLint yoffset,
+                                              GLenum format,
+                                              GLenum type,
+                                              HTMLVideoElement* video,
+                                              ExceptionState& exception_state) {
   TexImageParams params;
   POPULATE_TEX_SUB_IMAGE_2D_PARAMS(params);
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
   TexImageHelperHTMLVideoElement(execution_context->GetSecurityOrigin(), params,
                                  video, exception_state);
 }
 
-void WebGLRenderingContextBase::texSubImage2D(
-    ExecutionContext* execution_context,
-    GLenum target,
-    GLint level,
-    GLint xoffset,
-    GLint yoffset,
-    GLenum format,
-    GLenum type,
-    VideoFrame* frame,
-    ExceptionState& exception_state) {
+void WebGLRenderingContextBase::texSubImage2D(ScriptState* script_state,
+                                              GLenum target,
+                                              GLint level,
+                                              GLint xoffset,
+                                              GLint yoffset,
+                                              GLenum format,
+                                              GLenum type,
+                                              VideoFrame* frame,
+                                              ExceptionState& exception_state) {
   TexImageParams params;
   POPULATE_TEX_SUB_IMAGE_2D_PARAMS(params);
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
   TexImageHelperVideoFrame(execution_context->GetSecurityOrigin(), params,
                            frame, exception_state);
 }
@@ -7320,11 +7367,10 @@ cc::Layer* WebGLRenderingContextBase::CcLayer() const {
   return isContextLost() ? nullptr : GetDrawingBuffer()->CcLayer();
 }
 
-void WebGLRenderingContextBase::SetHDRConfiguration(
-    gfx::HDRMode hdr_mode,
-    absl::optional<gfx::HDRMetadata> hdr_metadata) {
+void WebGLRenderingContextBase::SetHdrMetadata(
+    const gfx::HDRMetadata& hdr_metadata) {
   if (!isContextLost() && GetDrawingBuffer()) {
-    GetDrawingBuffer()->SetHDRConfiguration(hdr_mode, hdr_metadata);
+    GetDrawingBuffer()->SetHdrMetadata(hdr_metadata);
   }
 }
 
@@ -7352,6 +7398,33 @@ void WebGLRenderingContextBase::Stop() {
     // Never attempt to restore the context because the page is being torn down.
     ForceLostContext(kSyntheticLostContext, kManual);
   }
+}
+
+void WebGLRenderingContextBase::
+    DrawingBufferClientInterruptPixelLocalStorage() {
+  if (destruction_in_progress_) {
+    return;
+  }
+  if (!ContextGL()) {
+    return;
+  }
+  if (!has_activated_pixel_local_storage_) {
+    return;
+  }
+  ContextGL()->FramebufferPixelLocalStorageInterruptANGLE();
+}
+
+void WebGLRenderingContextBase::DrawingBufferClientRestorePixelLocalStorage() {
+  if (destruction_in_progress_) {
+    return;
+  }
+  if (!ContextGL()) {
+    return;
+  }
+  if (!has_activated_pixel_local_storage_) {
+    return;
+  }
+  ContextGL()->FramebufferPixelLocalStorageRestoreANGLE();
 }
 
 bool WebGLRenderingContextBase::DrawingBufferClientIsBoundForDraw() {
@@ -7447,9 +7520,12 @@ bool WebGLRenderingContextBase::
 }
 
 void WebGLRenderingContextBase::
-    DrawingBufferClientForceLostContextWithAutoRecovery() {
+    DrawingBufferClientForceLostContextWithAutoRecovery(const char* reason) {
   ForceLostContext(WebGLRenderingContextBase::kSyntheticLostContext,
                    WebGLRenderingContextBase::kAuto);
+  if (reason) {
+    PrintWarningToConsole(reason);
+  }
 }
 
 ScriptValue WebGLRenderingContextBase::GetBooleanParameter(
@@ -7662,24 +7738,6 @@ WebGLTexture* WebGLRenderingContextBase::ValidateTextureBinding(
       }
       tex = texture_units_[active_texture_unit_]
                 .texture_video_image_binding_.Get();
-      break;
-    case GL_TEXTURE_EXTERNAL_OES:
-      if (!ExtensionEnabled(kWebGLWebCodecsVideoFrameName)) {
-        SynthesizeGLError(GL_INVALID_ENUM, function_name,
-                          "invalid texture target");
-        return nullptr;
-      }
-      tex = texture_units_[active_texture_unit_]
-                .texture_external_oes_binding_.Get();
-      break;
-    case GL_TEXTURE_RECTANGLE_ARB:
-      if (!ExtensionEnabled(kWebGLWebCodecsVideoFrameName)) {
-        SynthesizeGLError(GL_INVALID_ENUM, function_name,
-                          "invalid texture target");
-        return nullptr;
-      }
-      tex = texture_units_[active_texture_unit_]
-                .texture_rectangle_arb_binding_.Get();
       break;
     default:
       SynthesizeGLError(GL_INVALID_ENUM, function_name,
@@ -8424,7 +8482,7 @@ bool WebGLRenderingContextBase::ValidateHTMLImageElement(
     return false;
   }
 
-  if (WouldTaintOrigin(image)) {
+  if (WouldTaintCanvasOrigin(image)) {
     exception_state.ThrowSecurityError(
         "The image element contains cross-origin data, and may not be loaded.");
     return false;
@@ -8442,7 +8500,7 @@ bool WebGLRenderingContextBase::ValidateCanvasRenderingContextHost(
     return false;
   }
 
-  if (WouldTaintOrigin(context_host)) {
+  if (WouldTaintCanvasOrigin(context_host)) {
     exception_state.ThrowSecurityError("Tainted canvases may not be loaded.");
     return false;
   }
@@ -8459,7 +8517,7 @@ bool WebGLRenderingContextBase::ValidateHTMLVideoElement(
     return false;
   }
 
-  if (WouldTaintOrigin(video)) {
+  if (WouldTaintCanvasOrigin(video)) {
     exception_state.ThrowSecurityError(
         "The video element contains cross-origin data, and may not be loaded.");
     return false;

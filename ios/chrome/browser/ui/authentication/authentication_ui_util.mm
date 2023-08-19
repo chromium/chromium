@@ -20,17 +20,13 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 std::u16string HostedDomainForPrimaryAccount(Browser* browser) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForBrowserState(browser->GetBrowserState());
   return base::UTF8ToUTF16(
       identity_manager
           ->FindExtendedAccountInfo(identity_manager->GetPrimaryAccountInfo(
-              signin::ConsentLevel::kSync))
+              signin::ConsentLevel::kSignin))
           .hosted_domain);
 }
 
@@ -48,7 +44,7 @@ AlertCoordinator* ErrorCoordinator(NSError* error,
                               action:dismissAction
                                style:UIAlertActionStyleDefault];
 
-  [alertCoordinator setCancelAction:dismissAction];
+  alertCoordinator.noInteractionAction = dismissAction;
 
   return alertCoordinator;
 }

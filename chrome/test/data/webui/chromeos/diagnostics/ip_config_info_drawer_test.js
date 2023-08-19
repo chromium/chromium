@@ -30,7 +30,7 @@ suite('ipConfigInfoDrawerTestSuite', function() {
   });
 
   setup(() => {
-    document.body.innerHTML = '';
+    document.body.innerHTML = window.trustedTypes.emptyHTML;
   });
 
   teardown(() => {

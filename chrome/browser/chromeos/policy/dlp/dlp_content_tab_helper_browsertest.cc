@@ -7,7 +7,7 @@
 #include "base/path_service.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_observer.h"
-#include "chrome/browser/chromeos/policy/dlp/mock_dlp_content_observer.h"
+#include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_content_observer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"

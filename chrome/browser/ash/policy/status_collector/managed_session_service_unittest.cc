@@ -72,7 +72,6 @@ class ManagedSessionServiceTest : public ::testing::Test,
     TestingProfile::Builder profile_builder;
     profile_builder.SetProfileName(user->GetAccountId().GetUserEmail());
     auto profile = profile_builder.Build();
-    ash::ProfileHelper::Get()->SetProfileToUserMappingForTesting(user);
     ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
                                                                  profile.get());
     user_manager_->LoginUser(user->GetAccountId(), true);
@@ -139,8 +138,8 @@ class ManagedSessionServiceTest : public ::testing::Test,
   void OnKioskLoginFailure() override { ++observed_kiosk_login_failure_count_; }
 
   ash::AuthFailure auth_failure_ = ash::AuthFailure(ash::AuthFailure::NONE);
-  raw_ptr<Profile, ExperimentalAsh> logged_in_ = nullptr;
-  raw_ptr<Profile, ExperimentalAsh> logged_out_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> logged_in_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> logged_out_ = nullptr;
   bool locked_ = false;
   bool unlocked_ = false;
   session_manager::UnlockType unlock_type_ =
@@ -150,7 +149,8 @@ class ManagedSessionServiceTest : public ::testing::Test,
  private:
   content::BrowserTaskEnvironment task_environment_;
 
-  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_;
+  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 
   session_manager::SessionManager session_manager_;

@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chromeos/components/kiosk/kiosk_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -37,6 +36,10 @@
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/components/kiosk/kiosk_utils.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -549,17 +552,9 @@ SadTabView::SadTabView(content::WebContents* web_contents, SadTabKind kind)
   auto* actions_container =
       container->AddChildView(std::make_unique<views::FlexLayoutView>());
   actions_container->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
-  // Do not show the help link in the kiosk session to prevent escape from a
-  // kiosk app.
-  if (!chromeos::IsKioskSession()) {
-    auto* help_link =
-        actions_container->AddChildView(std::make_unique<views::Link>(
-            l10n_util::GetStringUTF16(GetHelpLinkTitle())));
-    help_link->SetCallback(base::BindRepeating(
-        &SadTab::PerformAction, base::Unretained(this), Action::HELP_LINK));
-    help_link->SetProperty(views::kTableVertAlignKey,
-                           views::LayoutAlignment::kCenter);
-  }
+
+  EnableHelpLink(actions_container);
+
   action_button_ =
       actions_container->AddChildView(std::make_unique<views::MdTextButton>(
           base::BindRepeating(&SadTabView::PerformAction,
@@ -630,6 +625,23 @@ void SadTabView::AttachToWebView() {
     owner_ = web_view;
     owner_->SetCrashedOverlayView(this);
   }
+}
+
+void SadTabView::EnableHelpLink(views::FlexLayoutView* actions_container) {
+#if BUILDFLAG(IS_CHROMEOS)
+  // Do not show the help link in the kiosk session to prevent escape from a
+  // kiosk app.
+  if (chromeos::IsKioskSession()) {
+    return;
+  }
+#endif
+  auto* help_link =
+      actions_container->AddChildView(std::make_unique<views::Link>(
+          l10n_util::GetStringUTF16(GetHelpLinkTitle())));
+  help_link->SetCallback(base::BindRepeating(
+      &SadTab::PerformAction, base::Unretained(this), Action::HELP_LINK));
+  help_link->SetProperty(views::kTableVertAlignKey,
+                         views::LayoutAlignment::kCenter);
 }
 
 void SadTabView::OnBoundsChanged(const gfx::Rect& previous_bounds) {

@@ -6,8 +6,6 @@
 #include "cc/base/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/core/dom/events/add_event_listener_options_resolved.h"
-#include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/paint/paint_controller_paint_test.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
@@ -22,24 +20,6 @@ namespace blink {
 using BlockPainterTest = PaintControllerPaintTest;
 
 INSTANTIATE_PAINT_TEST_SUITE_P(BlockPainterTest);
-
-namespace {
-class BlockPainterTestMockEventListener final : public NativeEventListener {
- public:
-  void Invoke(ExecutionContext*, Event*) override {}
-};
-
-void SetWheelEventListener(const Document& document, const char* element_id) {
-  auto* element = document.getElementById(element_id);
-  auto* listener = MakeGarbageCollected<BlockPainterTestMockEventListener>();
-  auto* resolved_options =
-      MakeGarbageCollected<AddEventListenerOptionsResolved>();
-  resolved_options->setPassive(false);
-  element->addEventListener(event_type_names::kWheel, listener,
-                            resolved_options);
-  document.View()->UpdateAllLifecyclePhasesForTest();
-}
-}  // namespace
 
 TEST_P(BlockPainterTest, BlockingWheelRectsWithoutPaint) {
   SetBodyInnerHTML(R"HTML(
@@ -66,7 +46,7 @@ TEST_P(BlockPainterTest, BlockingWheelRectsWithoutPaint) {
 
   // Add a blocking wheel event handler to parent and ensure that hit test data
   // are created for both the parent and the visible child.
-  SetWheelEventListener(GetDocument(), "parent");
+  SetWheelEventListener("parent");
 
   EXPECT_THAT(ContentDisplayItems(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM));
@@ -106,7 +86,7 @@ TEST_P(BlockPainterTest, BlockingWheelEventRectSubsequenceCaching) {
     </div>
   )HTML");
 
-  SetWheelEventListener(GetDocument(), "wheelhandler");
+  SetWheelEventListener("wheelhandler");
 
   const auto* wheelhandler = GetLayoutObjectByElementId("wheelhandler");
   EXPECT_THAT(ContentDisplayItems(),
@@ -168,7 +148,7 @@ TEST_P(BlockPainterTest, WheelEventRectPaintCaching) {
     <div id='sibling'></div>
   )HTML");
 
-  SetWheelEventListener(GetDocument(), "wheelhandler");
+  SetWheelEventListener("wheelhandler");
 
   auto* sibling_element = GetElementById("sibling");
   const auto* sibling = sibling_element->GetLayoutObject();
@@ -182,7 +162,8 @@ TEST_P(BlockPainterTest, WheelEventRectPaintCaching) {
   EXPECT_THAT(ContentPaintChunks(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK(2, &hit_test_data)));
 
-  sibling_element->setAttribute(html_names::kStyleAttr, "background: green;");
+  sibling_element->setAttribute(html_names::kStyleAttr,
+                                AtomicString("background: green;"));
   PaintController::CounterForTesting counter;
   UpdateAllLifecyclePhasesForTest();
   // Only the background display item of the sibling should be invalidated.
@@ -190,6 +171,42 @@ TEST_P(BlockPainterTest, WheelEventRectPaintCaching) {
 
   EXPECT_THAT(ContentPaintChunks(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK(2, &hit_test_data)));
+}
+
+TEST_P(BlockPainterTest, BlockingWheelRectOverflowingContents) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; }
+      #parent {
+        width: 100px;
+        height: 100px;
+        background-color: blue;
+        position: absolute;
+      }
+      #child {
+        width: 10px;
+        height: 400px;
+      }
+    </style>
+    <div id='parent'>
+      <div id='child'></div>
+    </div>
+  )HTML");
+
+  SetWheelEventListener("parent");
+
+  HitTestData hit_test_data;
+  hit_test_data.wheel_event_rects = {gfx::Rect(0, 0, 100, 100),
+                                     gfx::Rect(0, 0, 10, 400)};
+  auto* parent = GetLayoutBoxByElementId("parent");
+  EXPECT_THAT(
+      ContentPaintChunks(),
+      ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
+                  IsPaintChunk(1, 2,
+                               PaintChunk::Id(parent->Layer()->Id(),
+                                              DisplayItem::kLayerChunk),
+                               parent->FirstFragment().ContentsProperties(),
+                               &hit_test_data, gfx::Rect(0, 0, 100, 400))));
 }
 
 TEST_P(BlockPainterTest, BlockingWheelRectScrollingContents) {
@@ -220,11 +237,10 @@ TEST_P(BlockPainterTest, BlockingWheelRectScrollingContents) {
   const auto& scroller_scrolling_client =
       scroller->GetScrollableArea()->GetScrollingBackgroundDisplayItemClient();
 
-  SetWheelEventListener(GetDocument(), "scroller");
+  SetWheelEventListener("scroller");
 
   HitTestData hit_test_data;
-  hit_test_data.wheel_event_rects = {{gfx::Rect(0, 0, 100, 400)},
-                                     {gfx::Rect(0, 0, 10, 400)}};
+  hit_test_data.wheel_event_rects = {gfx::Rect(0, 0, 100, 400)};
   EXPECT_THAT(
       ContentDisplayItems(),
       ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
@@ -260,7 +276,7 @@ TEST_P(BlockPainterTest, WheelEventRectPaintChunkChanges) {
   EXPECT_THAT(ContentPaintChunks(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON));
 
-  SetWheelEventListener(GetDocument(), "wheelevent");
+  SetWheelEventListener("wheelevent");
 
   EXPECT_THAT(ContentDisplayItems(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM));
@@ -306,7 +322,8 @@ TEST_P(BlockPainterTest, TouchActionRectsWithoutPaint) {
   // Add a touch action to parent and ensure that hit test data are created
   // for both the parent and the visible child.
   auto* parent_element = GetElementById("parent");
-  parent_element->setAttribute(html_names::kClassAttr, "touchActionNone");
+  parent_element->setAttribute(html_names::kClassAttr,
+                               AtomicString("touchActionNone"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_THAT(ContentDisplayItems(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM));
@@ -417,7 +434,8 @@ TEST_P(BlockPainterTest, TouchActionRectPaintCaching) {
   EXPECT_THAT(ContentPaintChunks(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK(2, &hit_test_data)));
 
-  sibling_element->setAttribute(html_names::kStyleAttr, "background: green;");
+  sibling_element->setAttribute(html_names::kStyleAttr,
+                                AtomicString("background: green;"));
   PaintController::CounterForTesting counter;
   UpdateAllLifecyclePhasesForTest();
   // Only the background display item of the sibling should be invalidated.
@@ -436,17 +454,21 @@ TEST_P(BlockPainterTest, TouchActionRectScrollingContents) {
         width: 100px;
         height: 100px;
         overflow: scroll;
-        touch-action: none;
+        touch-action: pinch-zoom;
         will-change: transform;
         background-color: blue;
       }
-      #child {
+      #child1, #child2 {
         width: 10px;
-        height: 400px;
+        height: 200px;
+      }
+      #child2 {
+        touch-action: none;
       }
     </style>
     <div id='scroller'>
-      <div id='child'></div>
+      <div id="child1"></div>
+      <div id='child2'></div>
     </div>
   )HTML");
 
@@ -456,8 +478,9 @@ TEST_P(BlockPainterTest, TouchActionRectScrollingContents) {
   const auto& scroller_scrolling_client =
       scroller->GetScrollableArea()->GetScrollingBackgroundDisplayItemClient();
   HitTestData hit_test_data;
-  hit_test_data.touch_action_rects = {{gfx::Rect(0, 0, 100, 400)},
-                                      {gfx::Rect(0, 0, 10, 400)}};
+  hit_test_data.touch_action_rects = {
+      {gfx::Rect(0, 0, 100, 400), TouchAction::kPinchZoom},
+      {gfx::Rect(0, 200, 10, 200), TouchAction::kNone}};
   EXPECT_THAT(
       ContentDisplayItems(),
       ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
@@ -496,7 +519,7 @@ TEST_P(BlockPainterTest, TouchActionRectPaintChunkChanges) {
               ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON));
 
   touchaction_element->setAttribute(html_names::kStyleAttr,
-                                    "touch-action: none;");
+                                    AtomicString("touch-action: none;"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_THAT(ContentDisplayItems(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM));
@@ -590,7 +613,8 @@ TEST_P(BlockPainterTest, TouchActionRectsAcrossPaintChanges) {
                   1, &hit_test_data, gfx::Rect(0, 0, 800, 600))));
 
   auto* child_element = GetElementById("child");
-  child_element->setAttribute("style", "background: blue;");
+  child_element->setAttribute(html_names::kStyleAttr,
+                              AtomicString("background: blue;"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_THAT(ContentDisplayItems(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,

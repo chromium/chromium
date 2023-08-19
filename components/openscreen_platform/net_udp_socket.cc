@@ -15,7 +15,7 @@ namespace openscreen {
 
 // static
 ErrorOr<std::unique_ptr<UdpSocket>> UdpSocket::Create(
-    TaskRunner* task_runner,
+    TaskRunner& task_runner,
     Client* client,
     const IPEndpoint& local_endpoint) {
   return ErrorOr<std::unique_ptr<UdpSocket>>(
@@ -77,7 +77,6 @@ bool NetUdpSocket::HandleRecvFromResult(int result) {
 
   openscreen::UdpPacket packet(read_buffer_->data(),
                                read_buffer_->data() + result);
-  packet.set_socket(this);
   packet.set_source(openscreen_platform::ToOpenScreenEndPoint(from_address_));
   client_->OnRead(this, std::move(packet));
   return true;

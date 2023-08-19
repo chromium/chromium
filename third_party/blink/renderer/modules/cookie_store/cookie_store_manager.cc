@@ -197,7 +197,7 @@ void CookieStoreManager::OnSubscribeResult(ScriptPromiseResolver* resolver,
   if (!backend_success) {
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kUnknownError,
-        "An unknown error occured while subscribing to cookie changes."));
+        "An unknown error occurred while subscribing to cookie changes."));
     return;
   }
   resolver->Resolve();
@@ -215,7 +215,7 @@ void CookieStoreManager::OnGetSubscriptionsResult(
   if (!backend_success) {
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kUnknownError,
-        "An unknown error occured while subscribing to cookie changes."));
+        "An unknown error occurred while subscribing to cookie changes."));
     return;
   }
 

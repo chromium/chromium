@@ -8,7 +8,6 @@
 #include <map>
 
 #include "base/files/file_path.h"
-#import "base/mac/scoped_nsobject.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -165,13 +164,13 @@ class BookmarkMenuBridge : public bookmarks::BookmarkModelObserver {
   bool menuIsValid_;
 
   raw_ptr<Profile> profile_;  // weak
-  base::scoped_nsobject<BookmarkMenuCocoaController> controller_;
-  base::scoped_nsobject<NSMenu> menu_root_;
+  BookmarkMenuCocoaController* __strong controller_;
+  NSMenu* __strong menu_root_;
 
   base::FilePath profile_dir_;  // Remembered after OnProfileWillBeDestroyed().
 
   // The folder image so we can use one copy for all.
-  base::scoped_nsobject<NSImage> folder_image_;
+  NSImage* __strong folder_image_;
 
   // In order to appropriately update items in the bookmark menu, without
   // forcing a rebuild, map the model's nodes to menu items.

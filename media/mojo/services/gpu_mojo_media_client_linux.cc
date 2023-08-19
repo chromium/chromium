@@ -8,18 +8,18 @@
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/audio_decoder.h"
 #include "media/base/audio_encoder.h"
+#include "media/base/media_log.h"
 #include "media/base/media_switches.h"
 #include "media/gpu/chromeos/mailbox_video_frame_converter.h"
 #include "media/gpu/chromeos/platform_video_frame_pool.h"
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
-#include "media/gpu/ipc/service/vda_video_decoder.h"
 
 namespace media {
 
 namespace {
 
 VideoDecoderType GetPreferredLinuxDecoderImplementation() {
-  // VaapiVideoDecoder flag is required for both VDA and VaapiVideoDecoder.
+  // VaapiVideoDecoder flag is required for VaapiVideoDecoder.
   if (!base::FeatureList::IsEnabled(kVaapiVideoDecodeLinux)) {
     return VideoDecoderType::kUnknown;
   }
@@ -28,11 +28,6 @@ VideoDecoderType GetPreferredLinuxDecoderImplementation() {
     return VideoDecoderType::kOutOfProcess;
   }
 
-  // If direct video decoder is disabled, revert to using the VDA
-  // implementation.
-  if (!base::FeatureList::IsEnabled(kUseChromeOSDirectVideoDecoder)) {
-    return VideoDecoderType::kVda;
-  }
   return VideoDecoderType::kVaapi;
 }
 
@@ -55,17 +50,12 @@ std::vector<Fourcc> GetPreferredRenderableFourccs(
 VideoDecoderType GetActualPlatformDecoderImplementation(
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GPUInfo& gpu_info) {
-  // On linux, VDA and Vaapi have GL restrictions.
+  // On linux, Vaapi has GL restrictions.
   switch (GetPreferredLinuxDecoderImplementation()) {
     case VideoDecoderType::kUnknown:
       return VideoDecoderType::kUnknown;
     case VideoDecoderType::kOutOfProcess:
       return VideoDecoderType::kOutOfProcess;
-    case VideoDecoderType::kVda: {
-      return gpu_preferences.gr_context_type == gpu::GrContextType::kGL
-                 ? VideoDecoderType::kVda
-                 : VideoDecoderType::kUnknown;
-    }
     case VideoDecoderType::kVaapi: {
       // Allow VaapiVideoDecoder on GL.
       if (gpu_preferences.gr_context_type == gpu::GrContextType::kGL) {
@@ -138,8 +128,7 @@ std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
       auto frame_pool = std::make_unique<PlatformVideoFramePool>();
 
       auto frame_converter = MailboxVideoFrameConverter::Create(
-          traits.gpu_task_runner, traits.get_command_buffer_stub_cb,
-          traits.gpu_preferences.enable_unsafe_webgpu);
+          traits.gpu_task_runner, traits.get_command_buffer_stub_cb);
       return VideoDecoderPipeline::Create(
           *traits.gpu_workarounds, traits.task_runner, std::move(frame_pool),
           std::move(frame_converter),
@@ -150,20 +139,12 @@ std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
     case VideoDecoderType::kV4L2: {
       auto frame_pool = std::make_unique<PlatformVideoFramePool>();
       auto frame_converter = MailboxVideoFrameConverter::Create(
-          traits.gpu_task_runner, traits.get_command_buffer_stub_cb,
-          traits.gpu_preferences.enable_unsafe_webgpu);
+          traits.gpu_task_runner, traits.get_command_buffer_stub_cb);
       return VideoDecoderPipeline::Create(
           *traits.gpu_workarounds, traits.task_runner, std::move(frame_pool),
           std::move(frame_converter),
           GetPreferredRenderableFourccs(traits.gpu_preferences),
           traits.media_log->Clone(), /*oop_video_decoder=*/{});
-    }
-    case VideoDecoderType::kVda: {
-      return VdaVideoDecoder::Create(
-          traits.task_runner, traits.gpu_task_runner, traits.media_log->Clone(),
-          *traits.target_color_space, traits.gpu_preferences,
-          *traits.gpu_workarounds, traits.get_command_buffer_stub_cb,
-          VideoDecodeAccelerator::Config::OutputMode::ALLOCATE);
     }
     default:
       return nullptr;
@@ -190,6 +171,7 @@ void NotifyPlatformDecoderSupport(
 
 absl::optional<SupportedVideoDecoderConfigs>
 GetPlatformSupportedVideoDecoderConfigs(
+    base::WeakPtr<MediaGpuChannelManager> manager,
     gpu::GpuDriverBugWorkarounds gpu_workarounds,
     gpu::GpuPreferences gpu_preferences,
     const gpu::GPUInfo& gpu_info,
@@ -199,8 +181,6 @@ GetPlatformSupportedVideoDecoderConfigs(
   base::UmaHistogramEnumeration("Media.VaapiLinux.SupportedVideoDecoder",
                                 decoder_implementation);
   switch (decoder_implementation) {
-    case VideoDecoderType::kVda:
-      return std::move(get_vda_configs).Run();
     case VideoDecoderType::kOutOfProcess:
     case VideoDecoderType::kVaapi:
     case VideoDecoderType::kV4L2:

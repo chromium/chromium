@@ -5,6 +5,7 @@
 #ifndef ASH_QUICK_PAIR_KEYED_SERVICE_FAST_PAIR_BLUETOOTH_CONFIG_DELEGATE_H_
 #define ASH_QUICK_PAIR_KEYED_SERVICE_FAST_PAIR_BLUETOOTH_CONFIG_DELEGATE_H_
 
+#include "ash/quick_pair/common/device.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -25,11 +26,18 @@ namespace quick_pair {
 class FastPairBluetoothConfigDelegate
     : public bluetooth_config::FastPairDelegate {
  public:
-  class Observer : public base::CheckedObserver {
+  // The delegate_ is set in the constructor and implements the following
+  // virtual methods.
+  class Delegate {
    public:
+    virtual ~Delegate() = default;
+
+    // Called when the AdapterStateController is changed.
     virtual void OnAdapterStateControllerChanged(
         bluetooth_config::AdapterStateController* adapter_state_controller) = 0;
   };
+
+  explicit FastPairBluetoothConfigDelegate(Delegate* delegate);
 
   FastPairBluetoothConfigDelegate();
   FastPairBluetoothConfigDelegate(const FastPairBluetoothConfigDelegate&) =
@@ -37,9 +45,6 @@ class FastPairBluetoothConfigDelegate
   FastPairBluetoothConfigDelegate& operator=(
       const FastPairBluetoothConfigDelegate&) = delete;
   ~FastPairBluetoothConfigDelegate() override;
-
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
 
   // bluetooth_config::FastPairDelegate
   absl::optional<bluetooth_config::DeviceImageInfo> GetDeviceImageInfo(
@@ -56,8 +61,48 @@ class FastPairBluetoothConfigDelegate
     return adapter_state_controller_;
   }
 
+  // FastPairDelegate
+  std::vector<bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr>
+  GetFastPairableDeviceProperties() override;
+
+  // Adds |device| to the list of Fast Pairable devices, assumes caller has
+  // checked that |device| is eligible for Subsequent Pair. Notifies observers
+  // that the list of Fast Pairable devices has changed.
+  void AddFastPairDevice(scoped_refptr<Device> device);
+
+  // Removes |device| from the list of Fast Pairable devices and notifies
+  // observers that the list of Fast Pairable devices has changed.
+  void RemoveFastPairDevice(scoped_refptr<Device> device);
+
+  // Updates the pairing state of the corresponding device in the list of Fast
+  // Pairable devices.
+  void UpdateFastPairableDevicePairingState(
+      scoped_refptr<Device> device,
+      bluetooth_config::mojom::FastPairableDevicePairingState pairing_state);
+
+  // Removes all devices from the list of Fast Pairable devices and notifies
+  // observers that the list of Fast Pairable devices has changed.
+  void ClearFastPairableDevices();
+
  private:
-  base::ObserverList<Observer> observers_;
+  bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr
+  ConvertDeviceToProperties(
+      scoped_refptr<Device> device,
+      bluetooth_config::mojom::FastPairableDevicePairingState pairing_state);
+
+  // List of Fast Pairable devices detected for the Subsequent Pairing flow.
+  // These must be Device pointers, since this is what is expected to be
+  // passed to the Pairer Broker.
+  // TODO(b/293635165): Combine with |fast_pairable_device_properties_| into one
+  // list.
+  std::vector<scoped_refptr<Device>> fast_pairable_devices_;
+
+  // List of Fast Pairable device properties. Expected to stay synced with
+  // fast_pairable_device.
+  std::vector<bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr>
+      fast_pairable_device_properties_;
+
+  raw_ptr<Delegate, ExperimentalAsh> delegate_;
   raw_ptr<bluetooth_config::AdapterStateController, ExperimentalAsh>
       adapter_state_controller_ = nullptr;
   raw_ptr<bluetooth_config::DeviceNameManager, ExperimentalAsh>

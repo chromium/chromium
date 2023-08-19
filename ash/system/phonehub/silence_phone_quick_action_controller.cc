@@ -44,7 +44,7 @@ QuickActionItem* SilencePhoneQuickActionController::CreateItem() {
   DCHECK(!item_);
   item_ = new QuickActionItem(this, IDS_ASH_PHONE_HUB_SILENCE_PHONE_TITLE,
                               kPhoneHubSilencePhoneIcon);
-  item_->icon_button()->set_button_behavior(
+  item_->icon_button()->SetButtonBehavior(
       FeaturePodIconButton::DisabledButtonBehavior::
           kCanDisplayDisabledToggleValue);
   OnDndStateChanged();
@@ -71,22 +71,7 @@ void SilencePhoneQuickActionController::OnButtonPressed(bool is_now_enabled) {
 }
 
 void SilencePhoneQuickActionController::OnDndStateChanged() {
-  if (!dnd_controller_->CanRequestNewDndState()) {
-    state_ = ActionState::kDisabled;
-  } else if (dnd_controller_->IsDndEnabled()) {
-    state_ = ActionState::kOn;
-  } else {
-    state_ = ActionState::kOff;
-  }
-
-  SetItemState(state_);
-  // If |requested_state_| correctly resembles the current state, reset it and
-  // the timer. Reset also if the state is |kDisabled| since we are not
-  // requesting a state change.
-  if (state_ == requested_state_ || state_ == ActionState::kDisabled) {
-    check_requested_state_timer_.reset();
-    requested_state_.reset();
-  }
+  UpdateQuickActionItemUi();
 }
 
 void SilencePhoneQuickActionController::SetItemState(ActionState state) {
@@ -141,6 +126,25 @@ void SilencePhoneQuickActionController::CheckRequestedState() {
 SilencePhoneQuickActionController::ActionState
 SilencePhoneQuickActionController::GetItemState() {
   return state_;
+}
+
+void SilencePhoneQuickActionController::UpdateQuickActionItemUi() {
+  if (!dnd_controller_->CanRequestNewDndState()) {
+    state_ = ActionState::kDisabled;
+  } else if (dnd_controller_->IsDndEnabled()) {
+    state_ = ActionState::kOn;
+  } else {
+    state_ = ActionState::kOff;
+  }
+
+  SetItemState(state_);
+  // If |requested_state_| correctly resembles the current state, reset it and
+  // the timer. Reset also if the state is |kDisabled| since we are not
+  // requesting a state change.
+  if (state_ == requested_state_ || state_ == ActionState::kDisabled) {
+    check_requested_state_timer_.reset();
+    requested_state_.reset();
+  }
 }
 
 }  // namespace ash

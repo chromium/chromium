@@ -169,7 +169,7 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
                    HitTestPhase) final;
 
   void InvalidatePaintAndMarkForLayoutIfNeeded(CanDeferInvalidation);
-  void UpdateIntrinsicSizeIfNeeded(const LayoutSize&);
+  void UpdateIntrinsicSizeIfNeeded(const PhysicalSize&);
   bool NeedsLayoutOnIntrinsicSizeChange() const;
   // Override intrinsic sizing info to default if "unsized-media"
   // is disabled and the element has no sizing info.

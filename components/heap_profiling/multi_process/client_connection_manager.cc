@@ -4,7 +4,11 @@
 
 #include "components/heap_profiling/multi_process/client_connection_manager.h"
 
+#include <utility>
+
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "components/services/heap_profiling/public/cpp/controller.h"
@@ -79,17 +83,20 @@ void StartProfilingClientOnIOThread(
     base::WeakPtr<Controller> controller,
     mojo::PendingRemote<mojom::ProfilingClient> client,
     base::ProcessId pid,
-    mojom::ProcessType process_type) {
+    mojom::ProcessType process_type,
+    base::OnceClosure started_profiling_closure) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::IO));
 
   if (!controller)
     return;
 
-  controller->StartProfilingClient(std::move(client), pid, process_type);
+  controller->StartProfilingClient(std::move(client), pid, process_type,
+                                   std::move(started_profiling_closure));
 }
 
 void StartProfilingBrowserProcessOnIOThread(
-    base::WeakPtr<Controller> controller) {
+    base::WeakPtr<Controller> controller,
+    base::OnceClosure started_profiling_closure) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::IO));
 
   if (!controller)
@@ -99,7 +106,8 @@ void StartProfilingBrowserProcessOnIOThread(
   mojo::PendingRemote<mojom::ProfilingClient> remote;
   client->BindToInterface(remote.InitWithNewPipeAndPassReceiver());
   controller->StartProfilingClient(std::move(remote), base::GetCurrentProcId(),
-                                   mojom::ProcessType::BROWSER);
+                                   mojom::ProcessType::BROWSER,
+                                   std::move(started_profiling_closure));
 }
 
 }  // namespace
@@ -128,7 +136,9 @@ Mode ClientConnectionManager::GetMode() {
   return mode_;
 }
 
-void ClientConnectionManager::StartProfilingProcess(base::ProcessId pid) {
+void ClientConnectionManager::StartProfilingProcess(
+    base::ProcessId pid,
+    base::OnceClosure started_profiling_closure) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
   mode_ = Mode::kManual;
@@ -137,7 +147,8 @@ void ClientConnectionManager::StartProfilingProcess(base::ProcessId pid) {
   for (auto iter = content::RenderProcessHost::AllHostsIterator();
        !iter.IsAtEnd(); iter.Advance()) {
     if (pid == iter.GetCurrentValue()->GetProcess().Pid()) {
-      StartProfilingRenderer(iter.GetCurrentValue());
+      StartProfilingRenderer(iter.GetCurrentValue(),
+                             std::move(started_profiling_closure));
       return;
     }
   }
@@ -146,7 +157,8 @@ void ClientConnectionManager::StartProfilingProcess(base::ProcessId pid) {
   if (pid == base::GetCurrentProcId()) {
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
-        base::BindOnce(&StartProfilingBrowserProcessOnIOThread, controller_));
+        base::BindOnce(&StartProfilingBrowserProcessOnIOThread, controller_,
+                       std::move(started_profiling_closure)));
     return;
   }
 
@@ -155,7 +167,8 @@ void ClientConnectionManager::StartProfilingProcess(base::ProcessId pid) {
        !browser_child_iter.Done(); ++browser_child_iter) {
     const content::ChildProcessData& data = browser_child_iter.GetData();
     if (data.GetProcess().Pid() == pid) {
-      StartProfilingNonRendererChild(data);
+      StartProfilingNonRendererChild(data,
+                                     std::move(started_profiling_closure));
       return;
     }
   }
@@ -182,8 +195,8 @@ void ClientConnectionManager::StartProfilingExistingProcessesIfNecessary() {
   if (ShouldProfileNonRendererProcessType(
           mode_, content::ProcessType::PROCESS_TYPE_BROWSER)) {
     content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&StartProfilingBrowserProcessOnIOThread, controller_));
+        FROM_HERE, base::BindOnce(&StartProfilingBrowserProcessOnIOThread,
+                                  controller_, base::DoNothing()));
   }
 
   // Start profiling connected renderers.
@@ -221,7 +234,8 @@ void ClientConnectionManager::BrowserChildProcessLaunchedAndConnected(
 }
 
 void ClientConnectionManager::StartProfilingNonRendererChild(
-    const content::ChildProcessData& data) {
+    const content::ChildProcessData& data,
+    base::OnceClosure started_profiling_closure) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
   content::BrowserChildProcessHost* host =
@@ -241,7 +255,8 @@ void ClientConnectionManager::StartProfilingNonRendererChild(
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&StartProfilingClientOnIOThread, controller_,
-                     std::move(client), data.GetProcess().Pid(), process_type));
+                     std::move(client), data.GetProcess().Pid(), process_type,
+                     std::move(started_profiling_closure)));
 }
 
 void ClientConnectionManager::OnRenderProcessHostCreated(
@@ -290,7 +305,8 @@ bool ClientConnectionManager::ShouldProfileNewRenderer(
 }
 
 void ClientConnectionManager::StartProfilingRenderer(
-    content::RenderProcessHost* host) {
+    content::RenderProcessHost* host,
+    base::OnceClosure started_profiling_closure) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
   profiled_renderers_.insert(host);
@@ -300,7 +316,8 @@ void ClientConnectionManager::StartProfilingRenderer(
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&StartProfilingClientOnIOThread, controller_,
                                 std::move(client), host->GetProcess().Pid(),
-                                mojom::ProcessType::RENDERER));
+                                mojom::ProcessType::RENDERER,
+                                std::move(started_profiling_closure)));
 }
 
 }  // namespace heap_profiling

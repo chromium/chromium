@@ -12,7 +12,6 @@
 
 #include <memory>
 
-#include "base/mac/scoped_nsobject.h"
 #include "device/bluetooth/bluetooth_channel_mac.h"
 
 @class BluetoothRfcommChannelDelegate;
@@ -23,7 +22,6 @@ class BluetoothRfcommChannelMac : public BluetoothChannelMac {
  public:
   // Creates a new RFCOMM channel wrapper with the given |socket| and native
   // |channel|.
-  // NOTE: The |channel| is expected to already be retained.
   BluetoothRfcommChannelMac(BluetoothSocketMac* socket,
                             IOBluetoothRFCOMMChannel* channel);
 
@@ -61,10 +59,10 @@ class BluetoothRfcommChannelMac : public BluetoothChannelMac {
 
  private:
   // The wrapped native RFCOMM channel.
-  base::scoped_nsobject<IOBluetoothRFCOMMChannel> channel_;
+  IOBluetoothRFCOMMChannel* __strong channel_;
 
   // The delegate for the native channel.
-  base::scoped_nsobject<BluetoothRfcommChannelDelegate> delegate_;
+  BluetoothRfcommChannelDelegate* __strong delegate_;
 };
 
 }  // namespace device

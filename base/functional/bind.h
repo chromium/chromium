@@ -15,10 +15,6 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 
-#if BUILDFLAG(IS_APPLE) && !HAS_FEATURE(objc_arc)
-#include "base/mac/scoped_block.h"
-#endif
-
 // -----------------------------------------------------------------------------
 // Usage documentation
 // -----------------------------------------------------------------------------
@@ -426,6 +422,8 @@ internal::OwnedRefWrapper<std::decay_t<T>> OwnedRef(T&& t) {
 //
 // Both versions of Passed() prevent T from being an lvalue reference. The first
 // via use of enable_if, and the second takes a T* which will not bind to T&.
+//
+// DEPRECATED - Do not use in new code. See https://crbug.com/1326449
 template <typename T,
           std::enable_if_t<!std::is_lvalue_reference_v<T>>* = nullptr>
 inline internal::PassedWrapper<T> Passed(T&& scoper) {
@@ -455,26 +453,6 @@ template <typename T>
 inline internal::IgnoreResultHelper<T> IgnoreResult(T data) {
   return internal::IgnoreResultHelper<T>(std::move(data));
 }
-
-#if BUILDFLAG(IS_APPLE) && !HAS_FEATURE(objc_arc)
-
-// RetainBlock() is used to adapt an Objective-C block when Automated Reference
-// Counting (ARC) is disabled. This is unnecessary when ARC is enabled, as the
-// BindOnce and BindRepeating already support blocks then.
-//
-// EXAMPLE OF RetainBlock():
-//
-//   // Wrap the block and bind it to a callback.
-//   OnceCallback<void(int)> cb =
-//       BindOnce(RetainBlock(^(int n) { NSLog(@"%d", n); }));
-//   std::move(cb).Run(1);  // Logs "1".
-template <typename R, typename... Args>
-base::mac::ScopedBlock<R (^)(Args...)> RetainBlock(R (^block)(Args...)) {
-  return base::mac::ScopedBlock<R (^)(Args...)>(block,
-                                                base::scoped_policy::RETAIN);
-}
-
-#endif  // BUILDFLAG(IS_APPLE) && !HAS_FEATURE(objc_arc)
 
 }  // namespace base
 

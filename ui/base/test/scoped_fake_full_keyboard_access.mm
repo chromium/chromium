@@ -5,10 +5,11 @@
 #import "ui/base/test/scoped_fake_full_keyboard_access.h"
 
 #import <Cocoa/Cocoa.h>
+
 #include <ostream>
 
+#import "base/apple/scoped_objc_class_swizzler.h"
 #include "base/check_op.h"
-#import "base/mac/scoped_objc_class_swizzler.h"
 
 namespace {
 
@@ -29,12 +30,11 @@ ui::test::ScopedFakeFullKeyboardAccess* g_instance = nullptr;
 
 @end
 
-namespace ui {
-namespace test {
+namespace ui::test {
 
 ScopedFakeFullKeyboardAccess::ScopedFakeFullKeyboardAccess()
     : full_keyboard_access_state_(true),
-      swizzler_(new base::mac::ScopedObjCClassSwizzler(
+      swizzler_(new base::apple::ScopedObjCClassSwizzler(
           [NSApplication class],
           [FakeNSAppKeyboardAccessDonor class],
           @selector(isFullKeyboardAccessEnabled))) {
@@ -53,5 +53,4 @@ ScopedFakeFullKeyboardAccess* ScopedFakeFullKeyboardAccess::GetInstance() {
   return g_instance;
 }
 
-}  // namespace test
-}  // namespace ui
+}  // namespace ui::test

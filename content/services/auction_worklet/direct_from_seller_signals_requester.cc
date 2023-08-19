@@ -19,8 +19,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "content/services/auction_worklet/auction_downloader.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/public/cpp/auction_downloader.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -229,10 +229,12 @@ DirectFromSellerSignalsRequester::LoadSignals(
         signals_url,
         CoalescedDownload(std::make_unique<AuctionDownloader>(
             &url_loader_factory, signals_url,
+            AuctionDownloader::DownloadMode::kActualDownload,
             AuctionDownloader::MimeType::kJson,
             base::BindOnce(
                 &DirectFromSellerSignalsRequester::OnSignalsDownloaded,
-                base::Unretained(this), signals_url, base::TimeTicks::Now()))));
+                base::Unretained(this), signals_url, base::TimeTicks::Now()),
+            /*network_events_delegate=*/nullptr)));
     DCHECK(inserted);
     base::UmaHistogramEnumeration(
         "Ads.InterestGroup.Auction.DirectFromSellerSignals.RequestType",
@@ -307,8 +309,9 @@ void DirectFromSellerSignalsRequester::OnRequestDestroyed(Request& request) {
   DCHECK(request.requester_);
   // If signals were were retrieved from cache, or the request already
   // completed, no cleanup is necessary.
-  if (!request.maybe_coalesce_iterator_)
+  if (!request.maybe_coalesce_iterator_) {
     return;
+  }
 
   // Otherwise, remove the request pointer to `this` from
   // `coalesced_downloads_`.
@@ -323,8 +326,9 @@ void DirectFromSellerSignalsRequester::OnRequestDestroyed(Request& request) {
   // If there are now no more requests left for `request.signals_url_`, delete
   // its `coalesced_downloads_` pair. This will cancel the download for that
   // URL.
-  if (coalesced_download.requests.empty())
+  if (coalesced_download.requests.empty()) {
     coalesced_downloads_.erase(map_it);
+  }
 }
 
 }  // namespace auction_worklet

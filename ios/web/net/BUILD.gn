@@ -19,6 +19,4 @@ source_set("net") {
     "cookie_notification_bridge.h",
     "cookie_notification_bridge.mm",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

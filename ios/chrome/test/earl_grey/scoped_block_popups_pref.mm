@@ -6,10 +6,6 @@
 
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 ScopedBlockPopupsPref::ScopedBlockPopupsPref(ContentSetting setting)
     : original_setting_([ChromeEarlGrey popupPrefValue]) {
   [ChromeEarlGrey setPopupPrefValue:setting];

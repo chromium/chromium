@@ -10,12 +10,15 @@
 
 #include "base/feature_list.h"
 #include "base/lazy_instance.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/content/browser/client_report_util.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/content/browser/threat_details.h"
 #include "components/safe_browsing/content/browser/triggers/trigger_manager.h"
 #include "components/safe_browsing/content/browser/web_contents_key.h"
+#include "components/safe_browsing/core/browser/safe_browsing_hats_delegate.h"
 #include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -58,6 +61,8 @@ SafeBrowsingBlockingPage::SafeBrowsingBlockingPage(
     SafeBrowsingNavigationObserverManager* navigation_observer_manager,
     SafeBrowsingMetricsCollector* metrics_collector,
     TriggerManager* trigger_manager,
+    bool is_proceed_anyway_disabled,
+    bool is_safe_browsing_surveys_enabled,
     network::SharedURLLoaderFactory* url_loader_for_testing)
     : BaseBlockingPage(ui_manager,
                        web_contents,
@@ -67,10 +72,14 @@ SafeBrowsingBlockingPage::SafeBrowsingBlockingPage(
                        display_options),
       threat_details_in_progress_(false),
       threat_source_(unsafe_resources[0].threat_source),
+      threat_type_(unsafe_resources[0].threat_type),
+      is_subresource_(unsafe_resources[0].is_subresource),
       history_service_(history_service),
       navigation_observer_manager_(navigation_observer_manager),
       metrics_collector_(metrics_collector),
-      trigger_manager_(trigger_manager) {
+      trigger_manager_(trigger_manager),
+      is_proceed_anyway_disabled_(is_proceed_anyway_disabled),
+      is_safe_browsing_surveys_enabled_(is_safe_browsing_surveys_enabled) {
   if (unsafe_resources.size() == 1) {
     UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.BlockingPage.RequestDestination",
                               unsafe_resources[0].request_destination);
@@ -82,8 +91,9 @@ SafeBrowsingBlockingPage::SafeBrowsingBlockingPage(
             SECURITY_SENSITIVE_SAFE_BROWSING_INTERSTITIAL);
   }
 
-  if (!trigger_manager_)
+  if (!trigger_manager_) {
     return;
+  }
 
   // Start computing threat details. Trigger Manager will decide if it's safe to
   // begin collecting data at this time. The report will be sent only if the
@@ -116,11 +126,29 @@ SafeBrowsingBlockingPage::GetTypeForTesting() {
 }
 
 void SafeBrowsingBlockingPage::OnInterstitialClosing() {
+  if (base::FeatureList::IsEnabled(safe_browsing::kAntiPhishingTelemetry) ||
+      base::FeatureList::IsEnabled(safe_browsing::kRedWarningSurvey)) {
+    interstitial_interactions_ =
+        sb_error_ui()->get_interstitial_interaction_data();
+  }
+
   // If this is a phishing interstitial and the user did not make a decision
   // through the UI, record that interaction in UMA
   if (!sb_error_ui()->did_user_make_decision()) {
     controller()->metrics_helper()->RecordUserInteraction(
         security_interstitials::MetricsHelper::CLOSE_INTERSTITIAL_WITHOUT_UI);
+
+    // If kAntiPhishingTelemetry is enabled, add
+    // CMD_CLOSE_INTERSTITIAL_WITHOUT_UI interaction to interactions.
+    if (base::FeatureList::IsEnabled(safe_browsing::kAntiPhishingTelemetry) ||
+        base::FeatureList::IsEnabled(safe_browsing::kRedWarningSurvey)) {
+      interstitial_interactions_->insert_or_assign(
+          security_interstitials::SecurityInterstitialCommand::
+              CMD_CLOSE_INTERSTITIAL_WITHOUT_UI,
+          security_interstitials::InterstitialInteractionDetails(
+              1, base::Time::Now().ToJavaTime(),
+              base::Time::Now().ToJavaTime()));
+    }
   }
   // With committed interstitials OnProceed and OnDontProceed don't get
   // called, so call FinishThreatDetails from here.
@@ -138,24 +166,82 @@ void SafeBrowsingBlockingPage::OnInterstitialClosing() {
   BaseBlockingPage::OnInterstitialClosing();
 }
 
+void SafeBrowsingBlockingPage::SendFallbackReport(
+    const security_interstitials::UnsafeResource resource,
+    bool did_proceed,
+    int num_visits,
+    security_interstitials::InterstitialInteractionMap* interactions,
+    bool is_hats_candidate) {
+  auto report = std::make_unique<ClientSafeBrowsingReportRequest>();
+  client_report_utils::FillReportBasicResourceDetails(report.get(), resource);
+  report->set_did_proceed(did_proceed);
+  if (num_visits >= 0) {
+    report->set_repeat_visit(num_visits > 0);
+  }
+  if ((base::FeatureList::IsEnabled(safe_browsing::kAntiPhishingTelemetry) ||
+       base::FeatureList::IsEnabled(safe_browsing::kRedWarningSurvey)) &&
+      (report->type() == ClientSafeBrowsingReportRequest::URL_PHISHING ||
+       report->type() ==
+           ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_PHISHING)) {
+    client_report_utils::FillInterstitialInteractionsHelper(report.get(),
+                                                            interactions);
+  }
+  ui_manager()->SendThreatDetails(web_contents()->GetBrowserContext(),
+                                  std::move(report));
+}
+
 void SafeBrowsingBlockingPage::FinishThreatDetails(const base::TimeDelta& delay,
                                                    bool did_proceed,
                                                    int num_visits) {
+  base::UmaHistogramBoolean(
+      "SafeBrowsing.ClientSafeBrowsingReport.HasThreatDetailsAtFinish" +
+          std::string(is_subresource_ ? ".Subresource" : ".Mainframe"),
+      threat_details_in_progress_);
   // Not all interstitials collect threat details (eg., incognito mode).
-  if (!threat_details_in_progress_)
+  if (!threat_details_in_progress_) {
     return;
+  }
 
-  if (!trigger_manager_)
+  if (!trigger_manager_) {
     return;
+  }
+
+  // In case the report cannot get send through trigger manager, save the
+  // interstitial interactions locally before moving unique ptr to trigger
+  // manager.
+  security_interstitials::InterstitialInteractionMap local_interactions;
+  if (interstitial_interactions_) {
+    local_interactions = *interstitial_interactions_;
+  }
 
   // Finish computing threat details. TriggerManager will decide if its safe to
   // send the report.
-  bool report_sent = trigger_manager_->FinishCollectingThreatDetails(
+  if (base::FeatureList::IsEnabled(safe_browsing::kAntiPhishingTelemetry) ||
+      base::FeatureList::IsEnabled(safe_browsing::kRedWarningSurvey)) {
+    trigger_manager_->SetInterstitialInteractions(
+        std::move(interstitial_interactions_));
+  }
+  bool is_hats_candidate = false;
+  if (base::FeatureList::IsEnabled(kRedWarningSurvey)) {
+    is_hats_candidate =
+        SafeBrowsingHatsDelegate::IsSurveyCandidate(
+            threat_type_, kRedWarningSurveyReportTypeFilter.Get(), proceeded(),
+            kRedWarningSurveyDidProceedFilter.Get()) &&
+        !is_proceed_anyway_disabled_ && is_safe_browsing_surveys_enabled_;
+  }
+  auto report_sent_result = trigger_manager_->FinishCollectingThreatDetails(
       TriggerType::SECURITY_INTERSTITIAL, GetWebContentsKey(web_contents()),
       delay, did_proceed, num_visits,
-      sb_error_ui()->get_error_display_options());
+      sb_error_ui()->get_error_display_options(), is_hats_candidate);
+  if (!report_sent_result.are_threat_details_available &&
+      report_sent_result.should_send_report && unsafe_resources().size() == 1) {
+    // If reports are not sent because threat details are not available, send a
+    // fallback report without information from threat details instead.
+    SendFallbackReport(unsafe_resources()[0], did_proceed, num_visits,
+                       &local_interactions, is_hats_candidate);
+  }
 
-  if (report_sent) {
+  if (report_sent_result.should_send_report) {
     controller()->metrics_helper()->RecordUserInteraction(
         security_interstitials::MetricsHelper::EXTENDED_REPORTING_IS_ENABLED);
   }

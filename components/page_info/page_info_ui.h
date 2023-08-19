@@ -71,23 +71,6 @@ class PageInfoUI {
     SecurityDescriptionType type;
   };
 
-  // |CookieInfo| contains information about the cookies from a specific source.
-  // A source can for example be a specific origin or an entire wildcard domain.
-  // TODO(crbug.com/1346305): Remove after finishing cookies subpage
-  // implementation.
-  struct CookieInfo {
-    CookieInfo();
-
-    // The number of allowed cookies.
-    int allowed;
-    // The number of blocked cookies.
-    int blocked;
-
-    // Whether these cookies are from the current top-level origin as seen by
-    // the user, or from third-party origins.
-    bool is_first_party;
-  };
-
   // |CookiesFpsInfo| contains information about a specific First-Party Set.
   struct CookiesFpsInfo {
     explicit CookiesFpsInfo(const std::u16string& owner_name);
@@ -109,7 +92,10 @@ class PageInfoUI {
     ~CookiesNewInfo();
 
     // The number of third-party sites blocked.
-    int blocked_sites_count = -1;
+    int blocked_third_party_sites_count = -1;
+
+    // The number of third-party sites allowed.
+    int allowed_third_party_sites_count = -1;
 
     // The number of sites allowed to access cookies.
     int allowed_sites_count = -1;
@@ -121,6 +107,12 @@ class PageInfoUI {
     CookieControlsEnforcement enforcement;
 
     absl::optional<CookiesFpsInfo> fps_info;
+
+    // The expiration of the active third-party cookie exception.
+    base::Time expiration;
+
+    // The confidence level of site breakage related to third-party cookies.
+    CookieControlsBreakageConfidenceLevel confidence;
   };
 
   // |ChosenObjectInfo| contains information about a single |chooser_object| of
@@ -206,7 +198,6 @@ class PageInfoUI {
     std::vector<privacy_sandbox::CanonicalTopic> accessed_topics;
   };
 
-  using CookieInfoList = std::vector<CookieInfo>;
   using PermissionInfoList = std::vector<PageInfo::PermissionInfo>;
   using ChosenObjectInfoList = std::vector<std::unique_ptr<ChosenObjectInfo>>;
 
@@ -218,6 +209,11 @@ class PageInfoUI {
   // mid-sentence.
   static std::u16string PermissionTypeToUIStringMidSentence(
       ContentSettingsType type);
+  // Returns a tooltip for permission |type|.
+  static std::u16string PermissionTooltipUiString(
+      ContentSettingsType type,
+      const absl::optional<url::Origin>& requesting_origin);
+
   static base::span<const PermissionUIInfo>
   GetContentSettingsUIInfoForTesting();
 
@@ -280,9 +276,6 @@ class PageInfoUI {
   CreateSafetyTipSecurityDescription(const security_state::SafetyTipInfo& info);
 
   // Sets cookie information.
-  // TODO(crbug.com/1346305) remove unused function overload after finished
-  // project. Sets cookie information.
-  virtual void SetCookieInfo(const CookieInfoList& cookie_info_list) {}
   virtual void SetCookieInfo(const CookiesNewInfo& cookie_info) {}
 
   // Sets permission information.
@@ -306,7 +299,6 @@ class PageInfoUI {
       const IdentityInfo& identity_info) const;
 };
 
-typedef PageInfoUI::CookieInfoList CookieInfoList;
 typedef PageInfoUI::PermissionInfoList PermissionInfoList;
 typedef PageInfoUI::ChosenObjectInfoList ChosenObjectInfoList;
 

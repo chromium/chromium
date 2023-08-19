@@ -26,7 +26,7 @@
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/permissions/permission_revocation_request.h"
 #include "chrome/browser/permissions/prediction_based_permission_ui_selector.h"
-#include "chrome/browser/permissions/pref_notification_permission_ui_selector.h"
+#include "chrome/browser/permissions/pref_based_quiet_permission_ui_selector.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
@@ -336,7 +336,7 @@ ChromePermissionsClient::CreatePermissionUiSelectors(
   std::vector<std::unique_ptr<permissions::PermissionUiSelector>> selectors;
   selectors.emplace_back(
       std::make_unique<ContextualNotificationPermissionUiSelector>());
-  selectors.emplace_back(std::make_unique<PrefNotificationPermissionUiSelector>(
+  selectors.emplace_back(std::make_unique<PrefBasedQuietPermissionUiSelector>(
       Profile::FromBrowserContext(browser_context)));
   selectors.emplace_back(std::make_unique<PredictionBasedPermissionUiSelector>(
       Profile::FromBrowserContext(browser_context)));
@@ -361,7 +361,6 @@ void ChromePermissionsClient::OnPromptResolved(
   if (request_type == permissions::RequestType::kNotifications) {
     AdaptiveQuietNotificationPermissionUiEnabler::GetForProfile(profile)
         ->PermissionPromptResolved();
-
     if (action == permissions::PermissionAction::GRANTED &&
         quiet_ui_reason.has_value() &&
         (quiet_ui_reason.value() ==

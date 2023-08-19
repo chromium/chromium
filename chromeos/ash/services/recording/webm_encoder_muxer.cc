@@ -222,22 +222,12 @@ void WebmEncoderMuxer::EncodeVideo(scoped_refptr<media::VideoFrame> frame) {
   }
 }
 
-void WebmEncoderMuxer::EncodeAudio(std::unique_ptr<media::AudioBus> audio_bus,
-                                   base::TimeTicks capture_time) {
+EncodeAudioCallback WebmEncoderMuxer::GetEncodeAudioCallback() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(audio_encoder_);
 
-  AudioFrame frame(std::move(audio_bus), capture_time);
-  if (is_audio_encoder_initialized_) {
-    EncodeAudioImpl(std::move(frame));
-    return;
-  }
-
-  pending_audio_frames_.push_back(std::move(frame));
-  if (pending_audio_frames_.size() == kMaxPendingFrames) {
-    pending_audio_frames_.pop_front();
-    DCHECK_LT(pending_audio_frames_.size(), kMaxPendingFrames);
-  }
+  return base::BindRepeating(&WebmEncoderMuxer::EncodeAudio,
+                             weak_ptr_factory_.GetWeakPtr());
 }
 
 void WebmEncoderMuxer::FlushAndFinalize(base::OnceClosure on_done) {
@@ -308,6 +298,29 @@ void WebmEncoderMuxer::OnVideoEncoderInitialized(
   pending_video_frames_.clear();
 }
 
+void WebmEncoderMuxer::EncodeAudio(std::unique_ptr<media::AudioBus> audio_bus,
+                                   base::TimeTicks capture_time) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(audio_encoder_);
+
+  // We ignore any subsequent frames after a failure.
+  if (did_failure_occur()) {
+    return;
+  }
+
+  AudioFrame frame(std::move(audio_bus), capture_time);
+  if (is_audio_encoder_initialized_) {
+    EncodeAudioImpl(std::move(frame));
+    return;
+  }
+
+  pending_audio_frames_.push_back(std::move(frame));
+  if (pending_audio_frames_.size() == kMaxPendingFrames) {
+    pending_audio_frames_.pop_front();
+    DCHECK_LT(pending_audio_frames_.size(), kMaxPendingFrames);
+  }
+}
+
 void WebmEncoderMuxer::EncodeAudioImpl(AudioFrame frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(is_audio_encoder_initialized_);
@@ -357,7 +370,8 @@ void WebmEncoderMuxer::OnVideoEncoderOutput(
   std::string data{reinterpret_cast<const char*>(output.data.get()),
                    output.size};
   webm_muxer_.OnEncodedVideo(muxer_params, std::move(data), std::string(),
-                             timestamp, output.key_frame);
+                             std::move(codec_description), timestamp,
+                             output.key_frame);
 }
 
 void WebmEncoderMuxer::OnAudioEncoded(
@@ -372,6 +386,7 @@ void WebmEncoderMuxer::OnAudioEncoded(
       reinterpret_cast<const char*>(encoded_audio.encoded_data.get()),
       encoded_audio.encoded_data_size};
   webm_muxer_.OnEncodedAudio(encoded_audio.params, std::move(encoded_data),
+                             std::move(codec_description),
                              encoded_audio.timestamp);
 }
 

@@ -13,10 +13,6 @@
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "net/base/mac/url_conversions.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface ScreenTimeMediator () <WebStateListObserving, CRWWebStateObserver> {
   std::unique_ptr<WebStateListObserver> _webStateListObserver;
   std::unique_ptr<web::WebStateObserverBridge> _observer;
@@ -71,23 +67,16 @@
   [self updateConsumer];
 }
 
-#pragma mark - WebStateListObserver
+#pragma mark - WebStateListObserving
 
-- (void)webStateList:(WebStateList*)webStateList
-    didReplaceWebState:(web::WebState*)oldWebState
-          withWebState:(web::WebState*)newWebState
-               atIndex:(int)atIndex {
+- (void)didChangeWebStateList:(WebStateList*)webStateList
+                       change:(const WebStateListChange&)change
+                       status:(const WebStateListStatus&)status {
   DCHECK_EQ(self.webStateList, webStateList);
-  [self updateConsumer];
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-    didChangeActiveWebState:(web::WebState*)newWebState
-                oldWebState:(web::WebState*)oldWebState
-                    atIndex:(int)atIndex
-                     reason:(ActiveWebStateChangeReason)reason {
-  DCHECK_EQ(self.webStateList, webStateList);
-  [self updateConsumer];
+  if (change.type() == WebStateListChange::Type::kReplace ||
+      status.active_web_state_change()) {
+    [self updateConsumer];
+  }
 }
 
 #pragma mark - CRWWebStateObserver

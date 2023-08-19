@@ -20,9 +20,11 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_database_factory.h"
@@ -52,7 +54,12 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/web_applications/test/with_crosapi_param.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_names.h"
 
 using web_app::test::CrosapiParam;
 using web_app::test::WithCrosapiParam;
@@ -100,11 +107,8 @@ class WebAppRegistrarTest : public WebAppTest {
   void SetUp() override {
     WebAppTest::SetUp();
 
-    FakeWebAppProvider* provider = FakeWebAppProvider::Get(profile());
-    command_manager_ =
-        std::make_unique<WebAppCommandManager>(profile(), provider);
-    command_scheduler_ =
-        std::make_unique<WebAppCommandScheduler>(*profile(), provider);
+    command_manager_ = std::make_unique<WebAppCommandManager>(profile());
+    command_scheduler_ = std::make_unique<WebAppCommandScheduler>(*profile());
     registrar_mutable_ = std::make_unique<WebAppRegistrarMutable>(profile());
     sync_bridge_ = std::make_unique<WebAppSyncBridge>(
         registrar_mutable_.get(), mock_processor_.CreateForwardingProcessor());
@@ -153,7 +157,7 @@ class WebAppRegistrarTest : public WebAppTest {
   base::flat_set<AppId> RegisterAppsForTesting(Registry registry) {
     base::flat_set<AppId> ids;
 
-    ScopedRegistryUpdate update(&sync_bridge());
+    ScopedRegistryUpdate update = sync_bridge().BeginUpdate();
     for (auto& kv : registry) {
       ids.insert(kv.first);
       update->CreateApp(std::move(kv.second));
@@ -163,19 +167,20 @@ class WebAppRegistrarTest : public WebAppTest {
   }
 
   void RegisterApp(std::unique_ptr<WebApp> web_app) {
-    ScopedRegistryUpdate update(&sync_bridge());
+    ScopedRegistryUpdate update = sync_bridge().BeginUpdate();
     update->CreateApp(std::move(web_app));
   }
 
   void UnregisterApp(const AppId& app_id) {
-    ScopedRegistryUpdate update(&sync_bridge());
+    ScopedRegistryUpdate update = sync_bridge().BeginUpdate();
     update->DeleteApp(app_id);
   }
 
   void UnregisterAll() {
-    ScopedRegistryUpdate update(&sync_bridge());
-    for (const AppId& app_id : registrar().GetAppIds())
+    ScopedRegistryUpdate update = sync_bridge().BeginUpdate();
+    for (const AppId& app_id : registrar().GetAppIds()) {
       update->DeleteApp(app_id);
+    }
   }
 
   AppId InitRegistrarWithApp(std::unique_ptr<WebApp> app) {
@@ -200,24 +205,14 @@ class WebAppRegistrarTest : public WebAppTest {
 
   base::flat_set<AppId> InitRegistrarWithRegistry(const Registry& registry) {
     base::flat_set<AppId> app_ids;
-    for (auto& kv : registry)
+    for (auto& kv : registry) {
       app_ids.insert(kv.second->app_id());
+    }
 
     database_factory().WriteRegistry(registry);
     InitSyncBridge();
 
     return app_ids;
-  }
-
-  void SyncBridgeCommitUpdate(std::unique_ptr<WebAppRegistryUpdate> update) {
-    base::RunLoop run_loop;
-    sync_bridge().CommitUpdate(std::move(update),
-                               base::BindLambdaForTesting([&](bool success) {
-                                 EXPECT_TRUE(success);
-                                 run_loop.Quit();
-                               }));
-
-    run_loop.Run();
   }
 
   void InitSyncBridge() {
@@ -820,22 +815,25 @@ TEST_F(WebAppRegistrarTest, BeginAndCommitUpdate) {
   base::flat_set<AppId> ids =
       InitRegistrarWithApps("https://example.com/path", 10);
 
-  std::unique_ptr<WebAppRegistryUpdate> update = sync_bridge().BeginUpdate();
+  base::test::TestFuture<bool> future;
+  {
+    ScopedRegistryUpdate update =
+        sync_bridge().BeginUpdate(future.GetCallback());
 
-  for (auto& app_id : ids) {
-    WebApp* app = update->UpdateApp(app_id);
-    EXPECT_TRUE(app);
-    app->SetName("New Name");
+    for (auto& app_id : ids) {
+      WebApp* app = update->UpdateApp(app_id);
+      EXPECT_TRUE(app);
+      app->SetName("New Name");
+    }
+
+    // Acquire each app second time to make sure update requests get merged.
+    for (auto& app_id : ids) {
+      WebApp* app = update->UpdateApp(app_id);
+      EXPECT_TRUE(app);
+      app->SetDisplayMode(DisplayMode::kStandalone);
+    }
   }
-
-  // Acquire each app second time to make sure update requests get merged.
-  for (auto& app_id : ids) {
-    WebApp* app = update->UpdateApp(app_id);
-    EXPECT_TRUE(app);
-    app->SetDisplayMode(DisplayMode::kStandalone);
-  }
-
-  SyncBridgeCommitUpdate(std::move(update));
+  EXPECT_TRUE(future.Take());
 
   // Make sure that all app ids were written to the database.
   auto registry_written = database_factory().ReadRegistry();
@@ -855,29 +853,27 @@ TEST_F(WebAppRegistrarTest, CommitEmptyUpdate) {
   const auto initial_registry = database_factory().ReadRegistry();
 
   {
-    std::unique_ptr<WebAppRegistryUpdate> update = sync_bridge().BeginUpdate();
-    SyncBridgeCommitUpdate(std::move(update));
+    base::test::TestFuture<bool> future;
+    {
+      ScopedRegistryUpdate update =
+          sync_bridge().BeginUpdate(future.GetCallback());
+    }
+    EXPECT_TRUE(future.Take());
 
     auto registry = database_factory().ReadRegistry();
     EXPECT_TRUE(IsRegistryEqual(initial_registry, registry));
   }
 
   {
-    std::unique_ptr<WebAppRegistryUpdate> update = sync_bridge().BeginUpdate();
-    update.reset();
-    SyncBridgeCommitUpdate(std::move(update));
+    base::test::TestFuture<bool> future;
+    {
+      ScopedRegistryUpdate update =
+          sync_bridge().BeginUpdate(future.GetCallback());
 
-    auto registry = database_factory().ReadRegistry();
-    EXPECT_TRUE(IsRegistryEqual(initial_registry, registry));
-  }
-
-  {
-    std::unique_ptr<WebAppRegistryUpdate> update = sync_bridge().BeginUpdate();
-
-    WebApp* app = update->UpdateApp("unknown");
-    EXPECT_FALSE(app);
-
-    SyncBridgeCommitUpdate(std::move(update));
+      WebApp* app = update->UpdateApp("unknown");
+      EXPECT_FALSE(app);
+    }
+    EXPECT_TRUE(future.Take());
 
     auto registry = database_factory().ReadRegistry();
     EXPECT_TRUE(IsRegistryEqual(initial_registry, registry));
@@ -890,12 +886,12 @@ TEST_F(WebAppRegistrarTest, ScopedRegistryUpdate) {
   const auto initial_registry = database_factory().ReadRegistry();
 
   // Test empty update first.
-  { ScopedRegistryUpdate update(&sync_bridge()); }
+  { ScopedRegistryUpdate update = sync_bridge().BeginUpdate(); }
   EXPECT_TRUE(
       IsRegistryEqual(initial_registry, database_factory().ReadRegistry()));
 
   {
-    ScopedRegistryUpdate update(&sync_bridge());
+    ScopedRegistryUpdate update = sync_bridge().BeginUpdate();
 
     for (auto& app_id : ids) {
       WebApp* app = update->UpdateApp(app_id);
@@ -928,8 +924,10 @@ TEST_F(WebAppRegistrarTest, CopyOnWrite) {
     RegisterApp(std::move(new_app));
   }
 
+  base::test::TestFuture<bool> future;
   {
-    std::unique_ptr<WebAppRegistryUpdate> update = sync_bridge().BeginUpdate();
+    ScopedRegistryUpdate update =
+        sync_bridge().BeginUpdate(future.GetCallback());
 
     WebApp* app_copy = update->UpdateApp(app_id);
     EXPECT_TRUE(app_copy);
@@ -947,9 +945,8 @@ TEST_F(WebAppRegistrarTest, CopyOnWrite) {
 
     EXPECT_TRUE(app->IsSynced());
     EXPECT_TRUE(app->HasAnySources());
-
-    SyncBridgeCommitUpdate(std::move(update));
   }
+  EXPECT_TRUE(future.Take());
 
   // Pointer value stays the same.
   EXPECT_EQ(app, registrar().GetAppById(app_id));
@@ -964,11 +961,10 @@ TEST_F(WebAppRegistrarTest, CountUserInstalledApps) {
 
   const std::string base_url{"https://example.com/path"};
 
-  for (int i = WebAppManagement::kMinValue + 1;
-       i <= WebAppManagement::kMaxValue; ++i) {
-    auto source = static_cast<WebAppManagement::Type>(i);
+  for (WebAppManagement::Type type : WebAppManagementTypes::All()) {
+    int i = static_cast<int>(type);
     auto web_app =
-        test::CreateWebApp(GURL(base_url + base::NumberToString(i)), source);
+        test::CreateWebApp(GURL(base_url + base::NumberToString(i)), type);
     RegisterApp(std::move(web_app));
   }
 
@@ -1025,6 +1021,35 @@ TEST_F(
   EXPECT_TRUE(storage_partition_configs.empty());
 }
 
+TEST_F(WebAppRegistrarTest, SaveAndGetInMemoryControlledFramePartitionConfig) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kIsolatedWebApps);
+  InitSyncBridge();
+
+  constexpr char kIwaHostname[] =
+      "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
+  GURL start_url(base::StrCat({chrome::kIsolatedAppScheme,
+                               url::kStandardSchemeSeparator, kIwaHostname}));
+  auto isolated_web_app = test::CreateWebApp(start_url);
+  const AppId app_id = isolated_web_app->app_id();
+  auto url_info = IsolatedWebAppUrlInfo::Create(start_url);
+  ASSERT_TRUE(url_info.has_value());
+
+  isolated_web_app->SetScope(isolated_web_app->start_url());
+  isolated_web_app->SetIsolationData(WebApp::IsolationData(
+      InstalledBundle{.path = base::FilePath()}, base::Version("1.0.0")));
+  RegisterApp(std::move(isolated_web_app));
+
+  auto output_config =
+      registrar().SaveAndGetInMemoryControlledFramePartitionConfig(
+          url_info.value(), "partition_1");
+
+  auto expected_config_cf_1 = content::StoragePartitionConfig::Create(
+      profile(), /*partition_domain=*/base::StrCat({"iwa-", kIwaHostname}),
+      /*partition_name=*/"partition_1", /*in_memory=*/true);
+
+  EXPECT_EQ(expected_config_cf_1, output_config);
+}
+
 TEST_F(WebAppRegistrarTest,
        AppsFromSyncAndPendingInstallationExcludedFromGetAppIds) {
   InitRegistrarWithApps("https://example.com/path/", 100);
@@ -1041,17 +1066,19 @@ TEST_F(WebAppRegistrarTest,
   // Tests that GetAppIds() excludes web app in sync install:
   std::vector<AppId> ids = registrar().GetAppIds();
   EXPECT_EQ(100u, ids.size());
-  for (const AppId& app_id : ids)
+  for (const AppId& app_id : ids) {
     EXPECT_NE(app_id, web_app_in_sync_install_id);
+  }
 
   // Tests that GetAppsIncludingStubs() returns a web app which is either in
   // GetAppIds() set or it is the web app in sync install:
   bool web_app_in_sync_install_found = false;
   for (const WebApp& web_app : registrar().GetAppsIncludingStubs()) {
-    if (web_app.app_id() == web_app_in_sync_install_id)
+    if (web_app.app_id() == web_app_in_sync_install_id) {
       web_app_in_sync_install_found = true;
-    else
+    } else {
       EXPECT_TRUE(base::Contains(ids, web_app.app_id()));
+    }
   }
   EXPECT_TRUE(web_app_in_sync_install_found);
 }
@@ -1332,11 +1359,7 @@ TEST_F(WebAppRegistrarTest_TabStrip, TabbedAppAutoNewTabUrl) {
   auto web_app = test::CreateWebApp(GURL("https://example.com/path"));
   AppId app_id = web_app->app_id();
 
-  TabStrip tab_strip;
-  tab_strip.new_tab_button = TabStrip::Visibility::kAuto;
-
   web_app->SetDisplayMode(DisplayMode::kTabbed);
-  web_app->SetTabStrip(tab_strip);
   RegisterApp(std::move(web_app));
 
   EXPECT_EQ(registrar().GetAppNewTabUrl(app_id),
@@ -1384,11 +1407,31 @@ TEST_F(WebAppRegistrarTest, VerifyPlaceholderFinderBehavior) {
 
 class WebAppRegistrarAshTest : public WebAppTest, public WithCrosapiParam {
  public:
+  void SetUp() override {
+    // Set up user manager to so that Lacros mode can be enabled.
+    // TODO(crbug.com/1463865): Consider setting up a fake user in all Ash web
+    // app tests.
+    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
+    auto* fake_user_manager = user_manager.get();
+    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+        std::move(user_manager));
+    auto* user = fake_user_manager->AddUser(user_manager::StubAccountId());
+    fake_user_manager->UserLoggedIn(user_manager::StubAccountId(),
+                                    user->username_hash(),
+                                    /*browser_restart=*/false,
+                                    /*is_child=*/false);
+    // Need to run the WebAppTest::SetUp() after the fake user manager set up
+    // so that the scoped_user_manager can be destructed in the correct order.
+    WebAppTest::SetUp();
+
+    VerifyLacrosStatus();
+  }
   WebAppRegistrarAshTest() = default;
   ~WebAppRegistrarAshTest() override = default;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 };
 
 TEST_P(WebAppRegistrarAshTest, SourceSupported) {

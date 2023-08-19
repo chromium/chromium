@@ -17,8 +17,8 @@ import org.chromium.content_public.browser.ChildProcessCreationParams;
  * SplitChromeApplication} for more info.
  */
 public class SplitMonochromeApplication extends SplitChromeApplication {
-    @IdentifierNameString
-    private static String sImplClassName = "org.chromium.chrome.browser.MonochromeApplicationImpl";
+    private static @IdentifierNameString String sImplClassName =
+            "org.chromium.chrome.browser.MonochromeApplicationImpl";
 
     private static class NonBrowserMonochromeApplication extends Impl {
         @Override

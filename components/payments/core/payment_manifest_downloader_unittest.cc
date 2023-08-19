@@ -127,6 +127,20 @@ class PaymentMethodManifestDownloaderTest
         base::BindOnce(&PaymentMethodManifestDownloaderTest::OnManifestDownload,
                        base::Unretained(this)));
   }
+
+  // Simulates two responses for payment method manifest download:
+  // 1) Only HTTP header without the response body content.
+  // 2) Both HTTP header and the response body content.
+  void ServerHeaderAndFallbackResponse(int response_code,
+                                       Headers send_headers,
+                                       absl::optional<std::string> link_header,
+                                       const std::string& response_body,
+                                       int net_error) {
+    ServerResponse(response_code, send_headers, link_header, kNoResponseBody,
+                   net_error);
+    ServerResponse(response_code, send_headers, link_header, response_body,
+                   net_error);
+  }
 };
 
 TEST_F(PaymentMethodManifestDownloaderTest, FirstHttpResponse404IsFailure) {
@@ -146,14 +160,16 @@ TEST_F(PaymentMethodManifestDownloaderTest,
                   "No content and no \"Link: rel=payment-method-manifest\" "
                   "HTTP header found at \"https://bobpay.test/\"."));
 
-  ServerResponse(200, Headers::kOmit, kNoLinkHeader, kNoResponseBody, net::OK);
+  ServerHeaderAndFallbackResponse(200, Headers::kOmit, kNoLinkHeader,
+                                  kNoResponseBody, net::OK);
 }
 
 TEST_F(PaymentMethodManifestDownloaderTest,
        NoHttpHeadersButWithResponseBodyIsSuccess) {
   EXPECT_CALL(*this, OnManifestDownload(_, "response body", kNoError));
 
-  ServerResponse(200, Headers::kOmit, kNoLinkHeader, "response body", net::OK);
+  ServerHeaderAndFallbackResponse(200, Headers::kOmit, kNoLinkHeader,
+                                  "response body", net::OK);
 }
 
 TEST_F(PaymentMethodManifestDownloaderTest,
@@ -164,15 +180,16 @@ TEST_F(PaymentMethodManifestDownloaderTest,
                  "No content and no \"Link: rel=payment-method-manifest\" HTTP "
                  "header found at \"https://bobpay.test/\"."));
 
-  ServerResponse(200, Headers::kSend, kNoLinkHeader, kNoResponseBody, net::OK);
+  ServerHeaderAndFallbackResponse(200, Headers::kSend, kNoLinkHeader,
+                                  kNoResponseBody, net::OK);
 }
 
 TEST_F(PaymentMethodManifestDownloaderTest,
        EmptyHttpHeaderButWithResponseBodyIsSuccess) {
   EXPECT_CALL(*this, OnManifestDownload(_, "response content", kNoError));
 
-  ServerResponse(200, Headers::kSend, kNoLinkHeader, "response content",
-                 net::OK);
+  ServerHeaderAndFallbackResponse(200, Headers::kSend, kNoLinkHeader,
+                                  "response content", net::OK);
 }
 
 TEST_F(PaymentMethodManifestDownloaderTest,
@@ -183,16 +200,16 @@ TEST_F(PaymentMethodManifestDownloaderTest,
                   "No content and no \"Link: rel=payment-method-manifest\" "
                   "HTTP header found at \"https://bobpay.test/\"."));
 
-  ServerResponse(200, Headers::kSend, kEmptyLinkHeader, kNoResponseBody,
-                 net::OK);
+  ServerHeaderAndFallbackResponse(200, Headers::kSend, kEmptyLinkHeader,
+                                  kNoResponseBody, net::OK);
 }
 
 TEST_F(PaymentMethodManifestDownloaderTest,
        EmptyHttpLinkHeaderButWithResponseBodyIsSuccess) {
   EXPECT_CALL(*this, OnManifestDownload(_, "response body", kNoError));
 
-  ServerResponse(200, Headers::kSend, kEmptyLinkHeader, "response body",
-                 net::OK);
+  ServerHeaderAndFallbackResponse(200, Headers::kSend, kEmptyLinkHeader,
+                                  "response body", net::OK);
 }
 
 TEST_F(PaymentMethodManifestDownloaderTest,
@@ -203,16 +220,16 @@ TEST_F(PaymentMethodManifestDownloaderTest,
                   "No content and no \"Link: rel=payment-method-manifest\" "
                   "HTTP header found at \"https://bobpay.test/\"."));
 
-  ServerResponse(200, Headers::kSend, "<manifest.json>", kNoResponseBody,
-                 net::OK);
+  ServerHeaderAndFallbackResponse(200, Headers::kSend, "<manifest.json>",
+                                  kNoResponseBody, net::OK);
 }
 
 TEST_F(PaymentMethodManifestDownloaderTest,
        NoRelInHttpLinkHeaderButWithResponseBodyIsSuccess) {
   EXPECT_CALL(*this, OnManifestDownload(_, "response body", kNoError));
 
-  ServerResponse(200, Headers::kSend, "<manifest.json>", "response body",
-                 net::OK);
+  ServerHeaderAndFallbackResponse(200, Headers::kSend, "<manifest.json>",
+                                  "response body", net::OK);
 }
 
 TEST_F(PaymentMethodManifestDownloaderTest,
@@ -223,16 +240,18 @@ TEST_F(PaymentMethodManifestDownloaderTest,
                   "No content and no \"Link: rel=payment-method-manifest\" "
                   "HTTP header found at \"https://bobpay.test/\"."));
 
-  ServerResponse(200, Headers::kSend, "rel=payment-method-manifest",
-                 kNoResponseBody, net::OK);
+  ServerHeaderAndFallbackResponse(200, Headers::kSend,
+                                  "rel=payment-method-manifest",
+                                  kNoResponseBody, net::OK);
 }
 
 TEST_F(PaymentMethodManifestDownloaderTest,
        NoUrlInHttpLinkHeaderButWithResponseBodyIsSuccess) {
   EXPECT_CALL(*this, OnManifestDownload(_, "response body", kNoError));
 
-  ServerResponse(200, Headers::kSend, "rel=payment-method-manifest",
-                 "response body", net::OK);
+  ServerHeaderAndFallbackResponse(200, Headers::kSend,
+                                  "rel=payment-method-manifest",
+                                  "response body", net::OK);
 }
 
 TEST_F(PaymentMethodManifestDownloaderTest,
@@ -243,16 +262,18 @@ TEST_F(PaymentMethodManifestDownloaderTest,
                   "No content and no \"Link: rel=payment-method-manifest\" "
                   "HTTP header found at \"https://bobpay.test/\"."));
 
-  ServerResponse(200, Headers::kSend, "<manifest.json>; rel=web-app-manifest",
-                 kNoResponseBody, net::OK);
+  ServerHeaderAndFallbackResponse(200, Headers::kSend,
+                                  "<manifest.json>; rel=web-app-manifest",
+                                  kNoResponseBody, net::OK);
 }
 
 TEST_F(PaymentMethodManifestDownloaderTest,
        NoManifestRellInHttpLinkHeaderButWithResponseBodyIsSuccess) {
   EXPECT_CALL(*this, OnManifestDownload(_, "response body", kNoError));
 
-  ServerResponse(200, Headers::kSend, "<manifest.json>; rel=web-app-manifest",
-                 "response body", net::OK);
+  ServerHeaderAndFallbackResponse(200, Headers::kSend,
+                                  "<manifest.json>; rel=web-app-manifest",
+                                  "response body", net::OK);
 }
 
 TEST_F(PaymentMethodManifestDownloaderTest, SecondHttpResponse404IsFailure) {
@@ -283,14 +304,26 @@ TEST_F(PaymentMethodManifestDownloaderTest, EmptySecondResponseIsFailure) {
 }
 
 TEST_F(PaymentMethodManifestDownloaderTest,
-       SecondResponseWithoutHeadersIsFailure) {
+       SecondResponseWithoutHeadersButWithContentIsSuccess) {
+  ServerResponse(200, Headers::kSend,
+                 "<manifest.json>; rel=payment-method-manifest",
+                 kNoResponseBody, net::OK);
+
+  EXPECT_CALL(*this, OnManifestDownload(_, "response content", kNoError));
+
+  ServerResponse(200, Headers::kOmit, kNoLinkHeader, "response content",
+                 net::OK);
+}
+
+TEST_F(PaymentMethodManifestDownloaderTest,
+       SecondResponseWithoutContentIsFailure) {
   ServerResponse(200, Headers::kSend,
                  "<manifest.json>; rel=payment-method-manifest",
                  kNoResponseBody, net::OK);
 
   EXPECT_CALL(*this,
               OnManifestDownload(_, kNoContent,
-                                 "Unable to download payment manifest "
+                                 "No content found in payment manifest "
                                  "\"https://bobpay.test/manifest.json\"."));
 
   ServerResponse(200, Headers::kOmit, kNoLinkHeader, kNoResponseBody, net::OK);

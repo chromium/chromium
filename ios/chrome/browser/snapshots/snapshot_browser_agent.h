@@ -47,19 +47,15 @@ class SnapshotBrowserAgent : public BrowserObserver,
   void BrowserDestroyed(Browser* browser) override;
 
   // WebStateListObserver methods
-  void WebStateInsertedAt(WebStateList* web_state_list,
-                          web::WebState* web_state,
-                          int index,
-                          bool activating) override;
-  void WebStateReplacedAt(WebStateList* web_state_list,
-                          web::WebState* old_web_state,
-                          web::WebState* new_web_state,
-                          int index) override;
-  void WebStateDetachedAt(WebStateList* web_state_list,
-                          web::WebState* web_state,
-                          int index) override;
+  void WebStateListDidChange(WebStateList* web_state_list,
+                             const WebStateListChange& change,
+                             const WebStateListStatus& status) override;
   void WillBeginBatchOperation(WebStateList* web_state_list) override;
   void BatchOperationEnded(WebStateList* web_state_list) override;
+
+  // Helper methods to set a snapshot cache for `web_state`.
+  void InsertWebState(web::WebState* web_state);
+  void DetachWebState(web::WebState* web_state);
 
   // Migrates the snapshot storage if a folder exists in the old snapshots
   // storage location.
@@ -68,8 +64,8 @@ class SnapshotBrowserAgent : public BrowserObserver,
   // Purges the snapshots folder of unused snapshots.
   void PurgeUnusedSnapshots();
 
-  // Returns the Tab IDs of all the WebStates in the Browser.
-  NSSet<NSString*>* GetTabIDs();
+  // Returns the snapshot IDs of all the WebStates in the Browser.
+  NSSet<NSString*>* GetSnapshotIDs();
 
   __strong SnapshotCache* snapshot_cache_;
 

@@ -64,6 +64,8 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
 
     private @NonNull Promise<List<CoreAccountInfo>> mCoreAccountInfosPromise = new Promise<>();
 
+    private @Nullable AsyncTask<List<String>> mFetchGaiaIdsTask;
+
     /**
      * @param delegate the AccountManagerDelegate to use as a backend
      */
@@ -251,47 +253,57 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     @MainThread
     private void fetchGaiaIdsAndUpdateCoreAccountInfos() {
         ThreadUtils.assertOnUiThread();
-        getAccounts().then(accounts -> {
-            List<String> emails = AccountUtils.toAccountNames(accounts);
-            new AsyncTask<List<String>>() {
-                @Override
-                public @Nullable List<String> doInBackground() {
-                    final long seedingStartTime = SystemClock.elapsedRealtime();
-                    List<String> gaiaIds = new ArrayList<>();
-                    for (String email : emails) {
-                        final String gaiaId = getAccountGaiaId(email);
-                        if (gaiaId == null) {
-                            return null;
-                        }
-                        gaiaIds.add(gaiaId);
-                    }
-                    RecordHistogram.recordTimesHistogram("Signin.AndroidGetAccountIdsTime",
-                            SystemClock.elapsedRealtime() - seedingStartTime);
-                    return gaiaIds;
-                }
+        if (mFetchGaiaIdsTask != null) {
+            // Cancel previous fetch task as it is obsolete now.
+            mFetchGaiaIdsTask.cancel(true);
+            mFetchGaiaIdsTask = null;
+        }
 
-                @Override
-                public void onPostExecute(@Nullable List<String> gaiaIds) {
-                    if (gaiaIds == null) {
-                        fetchGaiaIdsAndUpdateCoreAccountInfos();
-                        return;
+        List<String> emails = AccountUtils.toAccountNames(getAccounts().getResult());
+        mFetchGaiaIdsTask = new AsyncTask<List<String>>() {
+            @Override
+            public @Nullable List<String> doInBackground() {
+                final long seedingStartTime = SystemClock.elapsedRealtime();
+                List<String> gaiaIds = new ArrayList<>();
+                for (String email : emails) {
+                    if (isCancelled()) {
+                        return null;
                     }
-                    List<CoreAccountInfo> coreAccountInfos = new ArrayList<>();
-                    for (int index = 0; index < emails.size(); index++) {
-                        coreAccountInfos.add(CoreAccountInfo.createFromEmailAndGaiaId(
-                                emails.get(index), gaiaIds.get(index)));
+                    final String gaiaId = getAccountGaiaId(email);
+                    if (gaiaId == null) {
+                        // TODO(crbug.com/1465339): Add metrics to check how often we get a null
+                        // gaiaId.
+                        return null;
                     }
-                    if (mCoreAccountInfosPromise.isFulfilled()) {
-                        mCoreAccountInfosPromise = Promise.fulfilled(coreAccountInfos);
-                    } else {
-                        mCoreAccountInfosPromise.fulfill(coreAccountInfos);
-                    }
-                    for (AccountsChangeObserver observer : mObservers) {
-                        observer.onCoreAccountInfosChanged();
-                    }
+                    gaiaIds.add(gaiaId);
                 }
-            }.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
-        });
+                RecordHistogram.recordTimesHistogram("Signin.AndroidGetAccountIdsTime",
+                        SystemClock.elapsedRealtime() - seedingStartTime);
+                return gaiaIds;
+            }
+
+            @Override
+            public void onPostExecute(@Nullable List<String> gaiaIds) {
+                mFetchGaiaIdsTask = null;
+                if (gaiaIds == null) {
+                    fetchGaiaIdsAndUpdateCoreAccountInfos();
+                    return;
+                }
+                List<CoreAccountInfo> coreAccountInfos = new ArrayList<>();
+                for (int index = 0; index < emails.size(); index++) {
+                    coreAccountInfos.add(CoreAccountInfo.createFromEmailAndGaiaId(
+                            emails.get(index), gaiaIds.get(index)));
+                }
+                if (mCoreAccountInfosPromise.isFulfilled()) {
+                    mCoreAccountInfosPromise = Promise.fulfilled(coreAccountInfos);
+                } else {
+                    mCoreAccountInfosPromise.fulfill(coreAccountInfos);
+                }
+                for (AccountsChangeObserver observer : mObservers) {
+                    observer.onCoreAccountInfosChanged();
+                }
+            }
+        }.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
     }
 
     private void onAccountsUpdated() {
@@ -326,10 +338,6 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         } else {
             mAccountsPromise.fulfill(newAccounts);
         }
-        for (AccountsChangeObserver observer : mObservers) {
-            observer.onAccountsChanged();
-        }
-
         fetchGaiaIdsAndUpdateCoreAccountInfos();
     }
 

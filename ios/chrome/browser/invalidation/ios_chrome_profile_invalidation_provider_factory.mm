@@ -25,10 +25,6 @@
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using invalidation::ProfileInvalidationProvider;
 
 // static
@@ -70,29 +66,8 @@ IOSChromeProfileInvalidationProviderFactory::BuildServiceInstanceFor(
       std::make_unique<invalidation::ProfileIdentityProvider>(
           IdentityManagerFactory::GetForBrowserState(browser_state));
 
-  std::unique_ptr<invalidation::FCMInvalidationService> service =
-      std::make_unique<invalidation::FCMInvalidationService>(
-          identity_provider.get(),
-          base::BindRepeating(
-              &invalidation::FCMNetworkHandler::Create,
-              IOSChromeGCMProfileServiceFactory::GetForBrowserState(
-                  browser_state)
-                  ->driver(),
-              IOSChromeInstanceIDProfileServiceFactory::GetForBrowserState(
-                  browser_state)
-                  ->driver()),
-          base::BindRepeating(
-              &invalidation::PerUserTopicSubscriptionManager::Create,
-              identity_provider.get(), browser_state->GetPrefs(),
-              browser_state->GetURLLoaderFactory()),
-          IOSChromeInstanceIDProfileServiceFactory::GetForBrowserState(
-              browser_state)
-              ->driver(),
-          browser_state->GetPrefs());
-  service->Init();
-
   return std::make_unique<ProfileInvalidationProvider>(
-      std::move(service), std::move(identity_provider));
+      std::move(identity_provider));
 }
 
 void IOSChromeProfileInvalidationProviderFactory::RegisterBrowserStatePrefs(

@@ -46,6 +46,7 @@ extern const char kSuppressNotifications[];
 extern const char kCurtainLocalUserSession[];
 extern const char kTerminateUponInput[];
 extern const char kAllowTroubleshootingTools[];
+extern const char kShowTroubleshootingTools[];
 extern const char kAllowReconnections[];
 extern const char kAllowFileTransfer[];
 extern const char kUseElevatedHost[];

@@ -19,6 +19,7 @@
 #include "components/zoom/page_zoom_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/webui/web_ui_util.h"
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -49,6 +50,8 @@ void AddCommonStrings(base::Value::Dict* dict) {
   for (const auto& resource : kPdfResources)
     dict->Set(resource.name, l10n_util::GetStringUTF16(resource.id));
 
+  dict->Set("chromeRefresh2023Attribute",
+            features::IsChromeWebuiRefresh2023() ? "chrome-refresh-2023" : "");
   dict->Set("presetZoomFactors", zoom::GetPresetZoomFactorsAsJSON());
 }
 
@@ -63,6 +66,7 @@ void AddPdfViewerStrings(base::Value::Dict* dict) {
     {"labelPageNumber", IDS_PDF_LABEL_PAGE_NUMBER},
     {"menu", IDS_MENU},
     {"moreActions", IDS_DOWNLOAD_MORE_ACTIONS},
+    {"oversizeAttachmentWarning", IDS_PDF_OVERSIZE_ATTACHMENT_WARNING},
     {"passwordDialogTitle", IDS_PDF_PASSWORD_DIALOG_TITLE},
     {"passwordInvalid", IDS_PDF_PASSWORD_INVALID},
     {"passwordPrompt", IDS_PDF_NEED_PASSWORD},
@@ -91,8 +95,10 @@ void AddPdfViewerStrings(base::Value::Dict* dict) {
     {"rotationStateLabel180", IDS_PDF_ROTATION_STATE_LABEL_180},
     {"rotationStateLabel270", IDS_PDF_ROTATION_STATE_LABEL_270},
     {"thumbnailPageAriaLabel", IDS_PDF_THUMBNAIL_PAGE_ARIA_LABEL},
+    {"tooltipAttachments", IDS_PDF_TOOLTIP_ATTACHMENTS},
     {"tooltipDocumentOutline", IDS_PDF_TOOLTIP_DOCUMENT_OUTLINE},
     {"tooltipDownload", IDS_PDF_TOOLTIP_DOWNLOAD},
+    {"tooltipDownloadAttachment", IDS_PDF_TOOLTIP_DOWNLOAD_ATTACHMENT},
     {"tooltipPrint", IDS_PDF_TOOLTIP_PRINT},
     {"tooltipRotateCCW", IDS_PDF_TOOLTIP_ROTATE_CCW},
     {"tooltipThumbnails", IDS_PDF_TOOLTIP_THUMBNAILS},

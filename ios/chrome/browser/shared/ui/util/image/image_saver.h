@@ -30,6 +30,9 @@ struct Referrer;
               webState:(web::WebState*)webState
     baseViewController:(UIViewController*)baseViewController;
 
+// Stops the image saver.
+- (void)stop;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_UTIL_IMAGE_IMAGE_SAVER_H_

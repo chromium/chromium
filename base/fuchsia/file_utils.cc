@@ -31,9 +31,7 @@ fidl::InterfaceHandle<::fuchsia::io::Directory> OpenDirectoryHandleInternal(
 
   zx::channel channel;
   zx_status_t status =
-      fdio_fd_transfer(fd.get(), channel.reset_and_get_address());
-  if (status != ZX_ERR_UNAVAILABLE)
-    std::ignore = fd.release();
+      fdio_fd_transfer(fd.release(), channel.reset_and_get_address());
   if (status != ZX_OK) {
     ZX_DLOG(ERROR, status) << "fdio_fd_transfer";
     return fidl::InterfaceHandle<::fuchsia::io::Directory>();

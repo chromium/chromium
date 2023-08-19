@@ -11,7 +11,6 @@
 
 #include "base/base_export.h"
 #include "base/check.h"
-#include "base/memory/weak_ptr.h"
 #include "base/task/common/checked_lock.h"
 #include "base/task/common/lazy_now.h"
 #include "base/task/sequence_manager/tasks.h"
@@ -42,12 +41,12 @@ class TaskQueueImpl;
 }  // namespace internal
 
 // TODO(crbug.com/1143007): Make TaskQueue to actually be an interface for
-// TaskQueueImpl and stop using ref-counting because we're no longer tied to
-// task runner lifecycle and there's no other need for ref-counting either.
-// NOTE: When TaskQueue gets automatically deleted on zero ref-count,
+// TaskQueueImpl.
+//
+// NOTE: TaskQueue is destroyed when its Handle is destroyed, at which point
 // TaskQueueImpl gets unregistered, meaning it stops posting new tasks and is
 // scheduled for deletion after the current task finishes.
-class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
+class BASE_EXPORT TaskQueue {
  public:
   // Interface that lets a task queue be throttled by changing the wake up time
   // and optionally, by inserting fences. A wake up in this context is a
@@ -90,6 +89,36 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
 
    protected:
     ~Throttler() = default;
+  };
+
+  // Wrapper around a `TaskQueue`, exposed by `SequenceManager` when creating a
+  // task queue. The handle owns the underlying queue and exposes it through a
+  // unique_ptr-like interface, and it's responsible for managing the queue's
+  // lifetime, ensuring the queue is properly unregistered with the queue's
+  // `SequenceManager` when the handle is destroyed.
+  //
+  // TODO(crbug.com/1143007): As part of making TaskQueue an interface that
+  // TaskQueueImpl implements, this handle will need to pass the queue to
+  // sequence manager so it's not destroyed until the current task finishes.
+  class BASE_EXPORT Handle {
+   public:
+    Handle();
+    explicit Handle(std::unique_ptr<TaskQueue> task_queue);
+
+    Handle(Handle&&);
+    Handle& operator=(Handle&&);
+
+    ~Handle();
+
+    void reset() { task_queue_.reset(); }
+
+    TaskQueue* get() const { return task_queue_.get(); }
+    TaskQueue* operator->() const { return task_queue_.get(); }
+
+    explicit operator bool() const { return !!task_queue_; }
+
+   private:
+    std::unique_ptr<TaskQueue> task_queue_;
   };
 
   // Shuts down the queue. All tasks currently queued will be discarded.
@@ -149,6 +178,7 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
             const TaskQueue::Spec& spec);
   TaskQueue(const TaskQueue&) = delete;
   TaskQueue& operator=(const TaskQueue&) = delete;
+  virtual ~TaskQueue();
 
   // Information about task execution.
   //
@@ -417,14 +447,10 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
   // execution.
   void SetTaskExecutionTraceLogger(TaskExecutionTraceLogger logger);
 
-  base::WeakPtr<TaskQueue> AsWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
+  // TODO(crbug.com/1143007): Remove this once TaskQueueImpl inherits TaskQueue.
+  internal::TaskQueueImpl* GetTaskQueueImplForTest() const {
+    return impl_.get();
   }
-
- protected:
-  virtual ~TaskQueue();
-
-  internal::TaskQueueImpl* GetTaskQueueImpl() const { return impl_.get(); }
 
  private:
   friend class RefCountedThreadSafe<TaskQueue>;
@@ -454,8 +480,6 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
   const scoped_refptr<SingleThreadTaskRunner> default_task_runner_;
 
   QueueName name_;
-
-  base::WeakPtrFactory<TaskQueue> weak_ptr_factory_{this};
 };
 
 }  // namespace sequence_manager

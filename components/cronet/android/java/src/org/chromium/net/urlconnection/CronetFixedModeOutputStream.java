@@ -200,7 +200,6 @@ final class CronetFixedModeOutputStream extends CronetOutputStream {
     /**
      * Sets the default buffer length for use in tests.
      */
-    @VisibleForTesting
     static void setDefaultBufferLengthForTesting(int length) {
         sDefaultBufferLength = length;
     }

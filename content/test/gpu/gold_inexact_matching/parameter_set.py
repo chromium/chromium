@@ -4,25 +4,22 @@
 
 import typing
 
+import dataclasses  # Built-in, but pylint gives an ordering false positive.
 
+
+@dataclasses.dataclass
 class ParameterSet():
   """Struct-like object for holding parameters for an iteration."""
 
+  # The maximum number of pixels that are allowed to differ.
+  max_diff: int
+  # The maximum per-channel delta sum that is allowed.
+  delta_threshold: int
+  # The threshold for what is considered an edge for a Sobel filter.
+  edge_threshold: int
   # This parameter is not varied, so it is set statically once instead of being
   # passed around everywhere.
-  ignored_border_thickness = 0
-
-  def __init__(self, max_diff: int, delta_threshold: int, edge_threshold: int):
-    """
-    Args:
-      max_diff: The maximum number of pixels that are allowed to differ.
-      delta_threshold: The maximum per-channel delta sum that is allowed.
-      edge_threshold: The threshold for what is considered an edge for a
-          Sobel filter.
-    """
-    self.max_diff = max_diff
-    self.delta_threshold = delta_threshold
-    self.edge_threshold = edge_threshold
+  ignored_border_thickness: int = 0
 
   def AsList(self) -> typing.List[str]:
     """Returns the object's data in list format.

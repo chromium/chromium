@@ -11,9 +11,6 @@ let appWindow = null;
 /** @type {TermsOfServicePage} */
 let termsPage = null;
 
-/** @type {ActiveDirectoryAuthPage} */
-let activeDirectoryAuthPage = null;
-
 /**
  * Used for bidirectional communication with native code.
  * @type {chrome.runtime.Port}
@@ -612,111 +609,6 @@ class TermsOfServicePage {
 }
 
 /**
- * Handles events for the Active Directory authentication page.
- */
-class ActiveDirectoryAuthPage {
-  /**
-   * @param {Element} container The container of the page.
-   */
-  constructor(container) {
-    const requestFilter = {urls: ['<all_urls>'], types: ['main_frame']};
-
-    this.authView_ = container.querySelector('#active-directory-auth-view');
-    this.authView_.request.onCompleted.addListener(
-        (details) => this.onAuthViewCompleted_(details), requestFilter);
-    this.authView_.request.onErrorOccurred.addListener(
-        (details) => this.onAuthViewErrorOccurred_(details), requestFilter);
-
-    this.deviceManagementUrlPrefix_ = null;
-
-    // https://crbug.com/756144: Disable event processing while the page is not
-    // shown. The bug seems to be caused by erroneous onErrorOccurred events
-    // that are fired even though authView_.src is never set. This might be
-    // related to a bug in webview, see also CL:638413.
-    this.process_events_ = false;
-
-    container.querySelector('#button-active-directory-auth-cancel')
-        .addEventListener('click', () => this.onCancel_());
-  }
-
-  /**
-   * Sets URLs used for Active Directory user SAML authentication.
-   * @param {string} federationUrl The Active Directory Federation Services URL.
-   * @param {string} deviceManagementUrlPrefix Device management server URL
-   *        prefix used to detect if the SAML flow finished. DM server is the
-   *        SAML service provider.
-   */
-  setUrls(federationUrl, deviceManagementUrlPrefix) {
-    this.authView_.src = federationUrl;
-    this.deviceManagementUrlPrefix_ = deviceManagementUrlPrefix;
-  }
-
-  /**
-   * Toggles onCompleted and onErrorOccurred event processing.
-   * @param {boolean} enabled Process (true) or ignore (false) events.
-   */
-  enableEventProcessing(enabled) {
-    this.process_events_ = enabled;
-  }
-
-  /**
-   * Auth view onCompleted event handler. Checks whether the SAML flow
-   * reached its endpoint, the device management server.
-   * @param {!Object} details Event parameters.
-   */
-  onAuthViewCompleted_(details) {
-    if (!this.process_events_) {
-      console.error(
-          'Unexpected onAuthViewCompleted_ event from URL ' + details.url);
-      return;
-    }
-    // See if we hit the device management server. This should happen at the
-    // end of the SAML flow. Before that, we're on the Active Directory
-    // Federation Services server.
-    if (this.deviceManagementUrlPrefix_ &&
-        details.url.startsWith(this.deviceManagementUrlPrefix_)) {
-      // Once we hit the final URL, stop processing further events.
-      this.process_events_ = false;
-      // Did it actually work?
-      if (details.statusCode == 200) {
-        // 'code' is unused, but it needs to be there.
-        sendNativeMessage('onAuthSucceeded');
-      } else {
-        sendNativeMessage('onAuthFailed', {
-          errorMessage: 'Status code ' + details.statusCode +
-              ' in SAML auth response from the AD FS server.',
-        });
-      }
-    }
-  }
-
-  /**
-   * Auth view onErrorOccurred event handler.
-   * @param {!Object} details Event parameters.
-   */
-  onAuthViewErrorOccurred_(details) {
-    if (!this.process_events_) {
-      console.error(
-          'Unexpected onAuthViewErrorOccurred_ event: ' + details.error);
-      return;
-    }
-    // Retry triggers net::ERR_ABORTED, so ignore it.
-    if (details.error == 'net::ERR_ABORTED') {
-      return;
-    }
-    // Stop processing further events on first error.
-    this.process_events_ = false;
-    sendNativeMessage(
-        'onAuthFailed', {errorMessage: 'Error occurred: ' + details.error});
-  }
-
-  /** Called when the "CANCEL" button is clicked. */
-  onCancel_() {
-    closeWindow();
-  }
-}
-
-/**
  * Applies localization for html content and sets terms webview.
  * @param {!Object} data Localized strings and relevant information.
  * @param {string} deviceId Current device id.
@@ -747,10 +639,6 @@ function initialize(data, deviceId) {
           data.controlledByPolicy),
       data.learnMorePaiService);
 
-  // Initialize the Active Directory SAML authentication page.
-  activeDirectoryAuthPage =
-      new ActiveDirectoryAuthPage(doc.getElementById('active-directory-auth'));
-
   doc.getElementById('close-button').title =
       loadTimeData.getString('overlayClose');
 
@@ -771,11 +659,6 @@ function adjustTopMargin() {
   const headers = doc.getElementsByClassName('header');
   for (let i = 0; i < headers.length; i++) {
     headers[i].style.marginTop = -decorationHeight + 'px';
-  }
-
-  const authPages = doc.getElementsByClassName('section-active-directory-auth');
-  for (let i = 0; i < authPages.length; i++) {
-    authPages[i].style.marginTop = -decorationHeight + 'px';
   }
 }
 
@@ -804,7 +687,7 @@ function onNativeMessage(message) {
     termsPage.onLocationServicePreferenceChanged(
         message.enabled, message.managed);
   } else if (message.action == 'showPage') {
-    showPage(message.page, message.options);
+    showPage(message.page);
   } else if (message.action == 'showErrorPage') {
     showErrorPage(
         message.errorMessage, message.shouldShowSendFeedback,
@@ -831,12 +714,8 @@ function connectPort() {
  * Shows requested page and hide others. Show appWindow if it was hidden before.
  * 'none' hides all views.
  * @param {string} pageDivId id of divider of the page to show.
- * @param {dictionary=} options Additional options depending on pageDivId. For
- *     'active-directory-auth', this has to contain keys 'federationUrl' and
- *     'deviceManagementUrlPrefix' with corresponding values. See
- *     ActiveDirectoryAuthPage::setUrls for a description of those parameters.
  */
-function showPage(pageDivId, options) {
+function showPage(pageDivId) {
   if (!appWindow) {
     return;
   }
@@ -848,14 +727,6 @@ function showPage(pageDivId, options) {
   const pages = doc.getElementsByClassName('section');
   for (let i = 0; i < pages.length; i++) {
     pages[i].hidden = pages[i].id != pageDivId;
-  }
-
-  if (pageDivId == 'active-directory-auth') {
-    activeDirectoryAuthPage.enableEventProcessing(true);
-    activeDirectoryAuthPage.setUrls(
-        options.federationUrl, options.deviceManagementUrlPrefix);
-  } else {
-    activeDirectoryAuthPage.enableEventProcessing(false);
   }
 
   appWindow.show();
@@ -1053,9 +924,6 @@ chrome.app.runtime.onLaunched.addListener(function() {
 
   const onWindowClosed = function() {
     appWindow = null;
-
-    // Turn off event processing.
-    activeDirectoryAuthPage.enableEventProcessing(false);
 
     // Notify to Chrome.
     sendNativeMessage('onWindowClosed');

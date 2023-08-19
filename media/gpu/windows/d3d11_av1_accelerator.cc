@@ -51,9 +51,8 @@ class D3D11AV1Picture : public AV1Picture {
 };
 
 D3D11AV1Accelerator::D3D11AV1Accelerator(D3D11VideoDecoderClient* client,
-                                         MediaLog* media_log,
-                                         ComD3D11VideoDevice video_device)
-    : D3DAccelerator(client, media_log, std::move(video_device)) {}
+                                         MediaLog* media_log)
+    : D3DAccelerator(client, media_log) {}
 
 D3D11AV1Accelerator::~D3D11AV1Accelerator() {}
 
@@ -115,9 +114,10 @@ bool D3D11AV1Accelerator::SubmitDecoderBuffer(
     tile_offset += tile.size;
   }
 
-  // Commit the buffers we prepared above.
+  // Commit the buffers we prepared above. Bitstream buffer will be committed
+  // by SubmitSlice() so we don't explicitly commit here.
   return params_buffer.Commit() && tile_buffer.Commit() &&
-         bitstream_buffer.Commit() && video_decoder_wrapper_->SubmitSlice();
+         video_decoder_wrapper_->SubmitSlice();
 }
 
 DecodeStatus D3D11AV1Accelerator::SubmitDecode(

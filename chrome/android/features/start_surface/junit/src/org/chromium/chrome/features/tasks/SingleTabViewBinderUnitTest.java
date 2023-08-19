@@ -149,7 +149,7 @@ public class SingleTabViewBinderUnitTest {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
         SingleTabSwitcherMediator mediator =
                 new SingleTabSwitcherMediator(ContextUtils.getApplicationContext(), mPropertyModel,
-                        mTabModelSelector, mTabListFaviconProvider);
+                        mTabModelSelector, mTabListFaviconProvider, null, false);
         mediator.setOnTabSelectingListener(mOnTabSelectingListener);
         mSingleTabView.performClick();
         assertEquals(HISTOGRAM_START_SURFACE_MODULE_CLICK

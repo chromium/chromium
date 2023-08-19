@@ -11,11 +11,11 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/supervised_user/child_accounts/child_account_service.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
 #include "components/google/core/common/google_util.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/supervised_user/core/browser/child_account_service.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 
@@ -122,12 +122,15 @@ void SupervisedUserGoogleAuthNavigationThrottle::OnGoogleAuthStateChanged() {
 
 content::NavigationThrottle::ThrottleCheckResult
 SupervisedUserGoogleAuthNavigationThrottle::ShouldProceed() {
-  ChildAccountService::AuthState authStatus =
+  supervised_user::ChildAccountService::AuthState authStatus =
       child_account_service_->GetGoogleAuthState();
-  if (authStatus == ChildAccountService::AuthState::AUTHENTICATED)
+  if (authStatus ==
+      supervised_user::ChildAccountService::AuthState::AUTHENTICATED) {
     return content::NavigationThrottle::PROCEED;
-  if (authStatus == ChildAccountService::AuthState::PENDING)
+  }
+  if (authStatus == supervised_user::ChildAccountService::AuthState::PENDING) {
     return content::NavigationThrottle::DEFER;
+  }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // A credentials re-mint is already underway when we reach here (Mirror

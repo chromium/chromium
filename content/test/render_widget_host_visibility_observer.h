@@ -42,7 +42,7 @@ class RenderWidgetHostVisibilityObserver : public RenderWidgetHostObserver {
       observation_{this};
   bool was_observed_;
   bool did_fail_;
-  raw_ptr<RenderWidgetHost, DanglingUntriaged> render_widget_;
+  raw_ptr<RenderWidgetHost, AcrossTasksDanglingUntriaged> render_widget_;
 };
 
 }  // namespace content

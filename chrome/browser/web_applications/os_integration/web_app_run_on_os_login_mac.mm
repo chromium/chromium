@@ -7,10 +7,6 @@
 #import "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace web_app::internals {
 
 bool RegisterRunOnOsLogin(const ShortcutInfo& shortcut_info) {

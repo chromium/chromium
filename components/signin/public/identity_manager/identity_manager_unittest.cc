@@ -352,6 +352,10 @@ class IdentityManagerTest : public testing::Test {
 
     ASSERT_TRUE(temp_profile_dir_.CreateUniqueTempDir());
 
+#if BUILDFLAG(IS_ANDROID)
+    // Required to create AccountTrackerService on Android.
+    SetUpMockAccountManagerFacade();
+#endif
     auto account_tracker_service = std::make_unique<AccountTrackerService>();
     account_tracker_service->Initialize(&pref_service_,
                                         temp_profile_dir_.GetPath());
@@ -437,9 +441,8 @@ class IdentityManagerTest : public testing::Test {
 
     init_params.primary_account_mutator =
         std::make_unique<PrimaryAccountMutatorImpl>(
-            account_tracker_service.get(), token_service.get(),
-            primary_account_manager.get(), &pref_service_, &signin_client_,
-            account_consistency);
+            account_tracker_service.get(), primary_account_manager.get(),
+            &pref_service_, &signin_client_);
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     init_params.device_accounts_synchronizer =
@@ -1655,8 +1658,12 @@ TEST_F(
   ClearPrimaryAccount(identity_manager());
 
   // Add an unconsented primary account, incl. proper cookies.
-  AccountInfo expected_account_info = MakeAccountAvailableWithCookies(
-      identity_manager(), test_url_loader_factory(), kTestEmail2, kTestGaiaId2);
+  AccountInfo expected_account_info = MakeAccountAvailable(
+      identity_manager(),
+      AccountAvailabilityOptionsBuilder(test_url_loader_factory())
+          .WithCookie(true)
+          .WithGaiaId(kTestGaiaId2)
+          .Build(kTestEmail2));
   EXPECT_EQ(kTestEmail2, expected_account_info.email);
 
   CoreAccountInfo account_info =
@@ -1672,8 +1679,12 @@ TEST_F(
   ClearPrimaryAccount(identity_manager());
 
   // Add an unconsented primary account, incl. proper cookies.
-  AccountInfo expected_account_info = MakeAccountAvailableWithCookies(
-      identity_manager(), test_url_loader_factory(), kTestEmail2, kTestGaiaId2);
+  AccountInfo expected_account_info = MakeAccountAvailable(
+      identity_manager(),
+      AccountAvailabilityOptionsBuilder(test_url_loader_factory())
+          .WithCookie(true)
+          .WithGaiaId(kTestGaiaId2)
+          .Build(kTestEmail2));
   EXPECT_EQ(kTestEmail2, expected_account_info.email);
 
   SetInvalidRefreshTokenForAccount(identity_manager(),
@@ -1691,8 +1702,12 @@ TEST_F(IdentityManagerTest,
   ClearPrimaryAccount(identity_manager());
 
   // Add an unconsented primary account, incl. proper cookies.
-  AccountInfo expected_account_info = MakeAccountAvailableWithCookies(
-      identity_manager(), test_url_loader_factory(), kTestEmail2, kTestGaiaId2);
+  AccountInfo expected_account_info = MakeAccountAvailable(
+      identity_manager(),
+      AccountAvailabilityOptionsBuilder(test_url_loader_factory())
+          .WithCookie(true)
+          .WithGaiaId(kTestGaiaId2)
+          .Build(kTestEmail2));
   EXPECT_EQ(kTestEmail2, expected_account_info.email);
 
   RemoveRefreshTokenForAccount(identity_manager(),
@@ -2411,13 +2426,6 @@ TEST_F(IdentityManagerTest, SetPrimaryAccountClearsExistingPrimaryAccount) {
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-TEST_F(IdentityManagerTest, AccountIdMigration_DoneOnInitialization) {
-  EXPECT_EQ(IdentityManager::AccountIdMigrationState::MIGRATION_DONE,
-            identity_manager()->GetAccountIdMigrationState());
-}
-#endif
-
 // Checks that IdentityManager::Observer gets OnAccountUpdated when account info
 // is updated.
 TEST_F(IdentityManagerTest, ObserveOnAccountUpdated) {
@@ -2461,20 +2469,9 @@ TEST_F(IdentityManagerTest, TestOnAccountRemovedWithInfoCallback) {
 }
 
 TEST_F(IdentityManagerTest, TestPickAccountIdForAccount) {
-  const CoreAccountId account_id =
-      identity_manager()->PickAccountIdForAccount(kTestGaiaId, kTestEmail);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  const bool account_id_migration_done =
-      identity_manager()->GetAccountIdMigrationState() ==
-      IdentityManager::AccountIdMigrationState::MIGRATION_DONE;
-  if (account_id_migration_done) {
-    EXPECT_EQ(kTestGaiaId, account_id.ToString());
-  } else {
-    EXPECT_TRUE(gaia::AreEmailsSame(kTestEmail, account_id.ToString()));
-  }
-#else
-  EXPECT_TRUE(gaia::AreEmailsSame(kTestGaiaId, account_id.ToString()));
-#endif
+  EXPECT_EQ(kTestGaiaId, identity_manager()
+                             ->PickAccountIdForAccount(kTestGaiaId, kTestEmail)
+                             .ToString());
 }
 
 #if BUILDFLAG(IS_ANDROID)

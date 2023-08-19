@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {OpenWindowProxyImpl, OsSettingsSearchBoxBrowserProxyImpl, personalizationSearchMojom, Router, routes, routesMojom, searchMojom, searchResultIconMojom, setPersonalizationSearchHandlerForTesting, setSettingsSearchHandlerForTesting, settingMojom, setUserActionRecorderForTesting, userActionRecorderMojom} from 'chrome://os-settings/os_settings.js';
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
@@ -770,104 +769,77 @@ suite('OSSettingsSearchBox', () => {
   });
 
   suite('SearchFeedback_OfficialBuild', () => {
-    suite('when feature flag is enabled', () => {
-      /** @type {?TestOsSettingsSearchBoxBrowserProxy} */
-      let browserProxy = null;
+    /** @type {?TestOsSettingsSearchBoxBrowserProxy} */
+    let browserProxy = null;
 
-      setup(() => {
-        loadTimeData.overrideValues({searchFeedbackEnabled: true});
+    setup(() => {
+      browserProxy = new TestOsSettingsSearchBoxBrowserProxy();
+      OsSettingsSearchBoxBrowserProxyImpl.setInstanceForTesting(browserProxy);
 
-        browserProxy = new TestOsSettingsSearchBoxBrowserProxy();
-        OsSettingsSearchBoxBrowserProxyImpl.setInstanceForTesting(browserProxy);
-
-        setupSearchBox();
-      });
-
-      teardown(() => {
-        PolymerTest.clearBody();
-      });
-
-      test(
-          'feedback button does not appear when search result exists',
-          async () => {
-            settingsSearchHandler.setFakeResults(['assistant']);
-            await simulateSearch('a');
-            assertTrue(dropDown.opened);
-            assertEquals(1, searchBox.searchResults_.length);
-            assertTrue(noResultsSection.hidden);
-            const feedbackReportResults =
-                searchBox.shadowRoot.querySelector('#reportSearchResultButton');
-            assertTrue(!!feedbackReportResults);
-            assertTrue(feedbackReportResults.hidden);
-          });
-
-      test(
-          'feedback button appears when search result does not exist',
-          async () => {
-            settingsSearchHandler.setFakeResults([]);
-            await simulateSearch('query 1');
-            assertTrue(dropDown.opened);
-            assertEquals(0, searchBox.searchResults_.length);
-            assertFalse(noResultsSection.hidden);
-            // feedback button appears when no search results have been found
-            const feedbackReportResults =
-                searchBox.shadowRoot.querySelector('#reportSearchResultButton');
-            assertTrue(!!feedbackReportResults);
-            assertFalse(feedbackReportResults.hidden);
-          });
-
-      test('clicking the button opens feedback dialog', async () => {
-        settingsSearchHandler.setFakeResults([]);
-        const searchQuery = 'query 1';
-        await simulateSearch(searchQuery);
-        const feedbackReportResults =
-            searchBox.shadowRoot.querySelector('#reportSearchResultButton');
-        feedbackReportResults.click();
-        const descriptionTemplate =
-            searchBox
-                .i18nAdvanced('searchFeedbackDescriptionTemplate', {
-                  substitutions: [searchQuery],
-                })
-                .toString();
-        return browserProxy.whenCalled(
-            'openSearchFeedbackDialog', descriptionTemplate);
-      });
-
-      test(
-          'feedback button does not appear when searching for only whitespace',
-          async () => {
-            settingsSearchHandler.setFakeResults(['']);
-            await simulateSearch('    ');
-            const noSearchResult =
-                searchBox.shadowRoot.querySelector('#noSearchResultsContainer');
-            assertTrue(!!noSearchResult);
-            const feedbackReportResults =
-                searchBox.shadowRoot.querySelector('#reportSearchResultButton');
-            assertTrue(feedbackReportResults.hidden);
-          });
+      setupSearchBox();
     });
 
-    suite('when feature flag is disabled', () => {
-      setup(() => {
-        loadTimeData.overrideValues({searchFeedbackEnabled: false});
-
-        setupSearchBox();
-      });
-
-      teardown(() => {
-        PolymerTest.clearBody();
-      });
-
-      test('feedback button does not render', async () => {
-        settingsSearchHandler.setFakeResults([]);
-        await simulateSearch('query 1');
-        assertTrue(dropDown.opened);
-        assertEquals(0, searchBox.searchResults_.length);
-        assertFalse(noResultsSection.hidden);
-        const feedbackReportResults =
-            searchBox.shadowRoot.querySelector('#reportSearchResultButton');
-        assertEquals(null, feedbackReportResults);
-      });
+    teardown(() => {
+      PolymerTest.clearBody();
     });
+
+    test(
+        'feedback button does not appear when search result exists',
+        async () => {
+          settingsSearchHandler.setFakeResults(['assistant']);
+          await simulateSearch('a');
+          assertTrue(dropDown.opened);
+          assertEquals(1, searchBox.searchResults_.length);
+          assertTrue(noResultsSection.hidden);
+          const feedbackReportResults =
+              searchBox.shadowRoot.querySelector('#reportSearchResultButton');
+          assertTrue(!!feedbackReportResults);
+          assertTrue(feedbackReportResults.hidden);
+        });
+
+    test(
+        'feedback button appears when search result does not exist',
+        async () => {
+          settingsSearchHandler.setFakeResults([]);
+          await simulateSearch('query 1');
+          assertTrue(dropDown.opened);
+          assertEquals(0, searchBox.searchResults_.length);
+          assertFalse(noResultsSection.hidden);
+          // feedback button appears when no search results have been found
+          const feedbackReportResults =
+              searchBox.shadowRoot.querySelector('#reportSearchResultButton');
+          assertTrue(!!feedbackReportResults);
+          assertFalse(feedbackReportResults.hidden);
+        });
+
+    test('clicking the button opens feedback dialog', async () => {
+      settingsSearchHandler.setFakeResults([]);
+      const searchQuery = 'query 1';
+      await simulateSearch(searchQuery);
+      const feedbackReportResults =
+          searchBox.shadowRoot.querySelector('#reportSearchResultButton');
+      feedbackReportResults.click();
+      const descriptionTemplate =
+          searchBox
+              .i18nAdvanced('searchFeedbackDescriptionTemplate', {
+                substitutions: [searchQuery],
+              })
+              .toString();
+      return browserProxy.whenCalled(
+          'openSearchFeedbackDialog', descriptionTemplate);
+    });
+
+    test(
+        'feedback button does not appear when searching for only whitespace',
+        async () => {
+          settingsSearchHandler.setFakeResults(['']);
+          await simulateSearch('    ');
+          const noSearchResult =
+              searchBox.shadowRoot.querySelector('#noSearchResultsContainer');
+          assertTrue(!!noSearchResult);
+          const feedbackReportResults =
+              searchBox.shadowRoot.querySelector('#reportSearchResultButton');
+          assertTrue(feedbackReportResults.hidden);
+        });
   });
 });

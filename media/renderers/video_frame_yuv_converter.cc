@@ -8,7 +8,6 @@
 
 #include "base/logging.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
-#include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -25,6 +24,7 @@
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 
 namespace media {
@@ -209,8 +209,9 @@ bool VideoFrameYUVConverter::ConvertFromVideoFrameYUVWithGrContext(
                           ? video_frame->visible_rect().height()
                           : video_frame->coded_size().height();
 
-  GrBackendTexture result_texture(result_width, result_height, GrMipMapped::kNo,
-                                  result_gl_texture_info);
+  auto result_texture =
+      GrBackendTextures::MakeGL(result_width, result_height,
+                                skgpu::Mipmapped::kNo, result_gl_texture_info);
 
   // Use the same SkColorSpace for the surface and image, so that no color space
   // conversion is performed.

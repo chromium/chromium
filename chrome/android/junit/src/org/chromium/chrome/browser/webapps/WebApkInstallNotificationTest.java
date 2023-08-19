@@ -37,6 +37,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.url_formatter.UrlFormatterJni;
@@ -136,7 +137,7 @@ public class WebApkInstallNotificationTest {
     }
 
     @Test
-    @Features.EnableFeatures({ChromeFeatureList.WEB_APK_INSTALL_FAILURE_NOTIFICATION,
+    @EnableFeatures({ChromeFeatureList.WEB_APK_INSTALL_FAILURE_NOTIFICATION,
             ChromeFeatureList.WEB_APK_INSTALL_RETRY})
     public void
     testFailureNotification() {
@@ -175,7 +176,7 @@ public class WebApkInstallNotificationTest {
     }
 
     @Test
-    @Features.EnableFeatures({ChromeFeatureList.WEB_APK_INSTALL_FAILURE_NOTIFICATION,
+    @EnableFeatures({ChromeFeatureList.WEB_APK_INSTALL_FAILURE_NOTIFICATION,
             ChromeFeatureList.WEB_APK_INSTALL_RETRY})
     public void
     testFailureNotificationWithRetryAction() {

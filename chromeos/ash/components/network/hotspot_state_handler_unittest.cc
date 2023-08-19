@@ -134,14 +134,13 @@ TEST_F(HotspotStateHandlerTest, GetHotspotActiveClientCount) {
   EXPECT_EQ(1u, observer_.hotspot_status_changed_count());
 
   // Update tethering status with one active client.
-  base::Value::List active_clients_list;
-  base::Value::Dict client;
-  client.Set(shill::kTetheringStatusClientIPv4Property, "IPV4:001");
-  client.Set(shill::kTetheringStatusClientHostnameProperty, "hostname1");
-  client.Set(shill::kTetheringStatusClientMACProperty, "persist");
-  active_clients_list.Append(std::move(client));
-  status_dict.Set(shill::kTetheringStatusClientsProperty,
-                  std::move(active_clients_list));
+  status_dict.Set(
+      shill::kTetheringStatusClientsProperty,
+      base::Value::List().Append(
+          base::Value::Dict()
+              .Set(shill::kTetheringStatusClientIPv4Property, "IPV4:001")
+              .Set(shill::kTetheringStatusClientHostnameProperty, "hostname1")
+              .Set(shill::kTetheringStatusClientMACProperty, "persist")));
   network_state_test_helper_.manager_test()->SetManagerProperty(
       shill::kTetheringStatusProperty, base::Value(status_dict.Clone()));
   base::RunLoop().RunUntilIdle();

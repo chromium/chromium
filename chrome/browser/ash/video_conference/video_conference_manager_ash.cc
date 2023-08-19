@@ -20,6 +20,7 @@
 #include "base/logging.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/video_conference/video_conference_client_wrapper.h"
+#include "chromeos/crosapi/mojom/video_conference.mojom-forward.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
@@ -107,6 +108,12 @@ void VideoConferenceManagerAsh::SetSystemMediaDeviceStatus(
   }
 }
 
+void VideoConferenceManagerAsh::StopAllScreenShare() {
+  for (auto& [_, client_wrapper] : client_id_to_wrapper_) {
+    client_wrapper.StopAllScreenShare();
+  }
+}
+
 void VideoConferenceManagerAsh::NotifyMediaUsageUpdate(
     crosapi::mojom::VideoConferenceMediaUsageStatusPtr status,
     NotifyMediaUsageUpdateCallback callback) {
@@ -152,6 +159,15 @@ void VideoConferenceManagerAsh::NotifyDeviceUsedWhileDisabled(
   std::move(callback).Run(true);
 }
 
+void VideoConferenceManagerAsh::NotifyClientUpdate(
+    crosapi::mojom::VideoConferenceClientUpdatePtr update) {
+  // TODO(crbug.com/1368284): Remove this conditional check once it becomes
+  // possible to enable ash features in lacros browsertests.
+  if (ash::features::IsVideoConferenceEnabled()) {
+    GetTrayController()->HandleClientUpdate(std::move(update));
+  }
+}
+
 void VideoConferenceManagerAsh::UnregisterClient(
     const base::UnguessableToken& client_id) {
   client_id_to_wrapper_.erase(client_id);
@@ -171,6 +187,14 @@ VideoConferenceMediaState VideoConferenceManagerAsh::GetAggregatedState() {
     state.is_capturing_microphone |= client_state.is_capturing_microphone;
     state.is_capturing_screen |= client_state.is_capturing_screen;
   }
+
+  // Theoretically, capturing should imply permission, but we have seen bugs
+  // in permission checker that returns inconsisitent result with capturing,
+  // which leads to a bad ui to the user. This workaround is not ideal but will
+  // prevent showing the bad ui.
+  // TODO(b/291147970): consider removing this.
+  state.has_camera_permission |= state.is_capturing_camera;
+  state.has_microphone_permission |= state.is_capturing_microphone;
 
   return state;
 }

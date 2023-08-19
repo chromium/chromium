@@ -8,12 +8,16 @@ android_library("public_java") {
   deps = [
     "//base:jni_java",
     "//components/browser_ui/bottomsheet/android:java",
+    "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_java",
     "//url:gurl_java",
   ]
 
-  srcjar_deps = [ ":java_enums_srcjar" ]
+  srcjar_deps = [
+    ":java_enums_srcjar",
+    ":jni_headers",
+  ]
 
   sources = [
     "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionComponent.java",
@@ -25,11 +29,11 @@ android_library("public_java") {
 
 generate_jni("jni_headers") {
   sources = [
-    "internal/java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionBridge.java",
     "java/src/org/chromium/chrome/browser/ui/android/webid/data/Account.java",
     "java/src/org/chromium/chrome/browser/ui/android/webid/data/ClientIdMetadata.java",
     "java/src/org/chromium/chrome/browser/ui/android/webid/data/IdentityProviderMetadata.java",
   ]
+  public_deps = [ "//chrome/browser/ui/android/webid/internal:jni" ]
 }
 
 java_cpp_enum("java_enums_srcjar") {

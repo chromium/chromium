@@ -184,7 +184,7 @@ void DesktopAttestationService::OnChallengeValidated(
 
   // Fill `key_info` out for Chrome Browser.
   KeyInfo key_info;
-  key_info.set_key_type(CBCM);
+  key_info.set_flow_type(CBCM);
   // dm_token contains all of the information required by the server to retrieve
   // the device. device_id is necessary to validate the dm_token.
   key_info.set_dm_token(dm_token.value());

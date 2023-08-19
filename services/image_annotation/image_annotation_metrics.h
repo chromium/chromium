@@ -16,41 +16,41 @@ namespace metrics_internal {
 // TODO(crbug.com/916420): separate out client / annotation types when we have
 //                         more use cases for the service.
 constexpr char kCacheHit[] = "ImageAnnotationService.AccessibilityV1.CacheHit";
-constexpr char kJsonParseSuccess[] =
-    "ImageAnnotationService.AccessibilityV1.JsonParseSuccess";
-constexpr char kPixelFetchSuccess[] =
-    "ImageAnnotationService.AccessibilityV1.PixelFetchSuccess";
-constexpr char kAnnotationConfidence[] =
-    "ImageAnnotationService.AccessibilityV1.%s.Confidence";
-constexpr char kAnnotationEmpty[] =
-    "ImageAnnotationService.AccessibilityV1.%s.Empty";
-constexpr char kAnnotationStatus[] =
-    "ImageAnnotationService.AccessibilityV1.%s.Status";
-constexpr char kDescType[] = "ImageAnnotationService.AccessibilityV1.DescType";
+constexpr char kClientResult[] =
+    "ImageAnnotationService.AccessibilityV1.ClientResult";
 constexpr char kDescFailure[] =
     "ImageAnnotationService.AccessibilityV1.DescFailure";
+constexpr char kDescType[] = "ImageAnnotationService.AccessibilityV1.DescType";
+constexpr char kEncodedJpegSize[] =
+    "ImageAnnotationService.AccessibilityV1.EncodedJpegSizeKB";
 constexpr char kEngineKnown[] =
     "ImageAnnotationService.AccessibilityV1.EngineKnown";
-constexpr char kServerNetError[] =
-    "ImageAnnotationService.AccessibilityV1.ServerNetError";
-constexpr char kServerHttpResponseCode[] =
-    "ImageAnnotationService.AccessibilityV1.ServerHttpResponseCode";
-constexpr char kServerLatency[] =
-    "ImageAnnotationService.AccessibilityV1.ServerLatencyMs";
 constexpr char kImageRequestIncludesDesc[] =
     "ImageAnnotationService.AccessibilityV1.ImageRequestIncludesDesc";
 constexpr char kImageRequestIncludesIcon[] =
     "ImageAnnotationService.AccessibilityV1.ImageRequestIncludesIcon";
+constexpr char kJsonParseSuccess[] =
+    "ImageAnnotationService.AccessibilityV1.JsonParseSuccess";
+constexpr char kPixelFetchSuccess[] =
+    "ImageAnnotationService.AccessibilityV1.PixelFetchSuccess";
+constexpr char kServerHttpResponseCode[] =
+    "ImageAnnotationService.AccessibilityV1.ServerHttpResponseCode";
+constexpr char kServerLatency[] =
+    "ImageAnnotationService.AccessibilityV1.ServerLatencyMs";
+constexpr char kServerNetError[] =
+    "ImageAnnotationService.AccessibilityV1.ServerNetError";
 constexpr char kServerRequestSize[] =
     "ImageAnnotationService.AccessibilityV1.ServerRequestSizeKB";
 constexpr char kServerResponseSize[] =
     "ImageAnnotationService.AccessibilityV1.ServerResponseSizeBytes";
 constexpr char kSourcePixelCount[] =
     "ImageAnnotationService.AccessibilityV1.SourcePixelCount";
-constexpr char kEncodedJpegSize[] =
-    "ImageAnnotationService.AccessibilityV1.EncodedJpegSizeKB";
-constexpr char kClientResult[] =
-    "ImageAnnotationService.AccessibilityV1.ClientResult";
+constexpr char kAnnotationConfidence[] =
+    "ImageAnnotationService.%sAccessibilityV1.Confidence";
+constexpr char kAnnotationEmpty[] =
+    "ImageAnnotationService.%sAccessibilityV1.Empty";
+constexpr char kAnnotationStatus[] =
+    "ImageAnnotationService.%sAccessibilityV1.Status";
 
 }  // namespace metrics_internal
 

@@ -1,0 +1,6 @@
+monorail {
+  component: "Test>WebDriver"
+}
+wpt {
+  notify: YES
+}

@@ -7,8 +7,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/component_export.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/process/process_handle.h"
 #include "ui/accessibility/platform/inspect/ax_event_recorder.h"
 #include "ui/accessibility/platform/inspect/ax_inspect.h"

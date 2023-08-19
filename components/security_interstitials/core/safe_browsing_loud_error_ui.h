@@ -56,6 +56,9 @@ class SafeBrowsingLoudErrorUI
   void PopulateBillingLoadTimeData(base::Value::Dict& load_time_data);
   void PopulateEnhancedProtectionMessage(base::Value::Dict& load_time_data);
 
+  // Handle update to interstitial_interaction_data_ when a command occurs.
+  void UpdateInterstitialInteractionData(SecurityInterstitialCommand command);
+
   const bool created_prior_to_navigation_;
 };
 

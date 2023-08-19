@@ -119,9 +119,12 @@ class ViewsTestBase : public PlatformTest {
     native_widget_type_ = native_widget_type;
   }
 
-  void set_views_delegate(std::unique_ptr<TestViewsDelegate> views_delegate) {
+  template <typename T>
+  T* set_views_delegate(std::unique_ptr<T> views_delegate) {
     DCHECK(!setup_called_);
-    views_delegate_for_setup_.swap(views_delegate);
+    T* const ret = views_delegate.get();
+    views_delegate_for_setup_ = std::move(views_delegate);
+    return ret;
   }
 
 #if defined(USE_AURA)

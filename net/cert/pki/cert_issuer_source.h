@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/supports_user_data.h"
 #include "net/base/net_export.h"
 #include "net/cert/pki/parsed_certificate.h"
 
@@ -39,7 +40,8 @@ class NET_EXPORT CertIssuerSource {
     // If no issuers are left then |issuers| will not be modified. This
     // indicates that the issuers have been exhausted and GetNext() should
     // not be called again.
-    virtual void GetNext(ParsedCertificateList* issuers) = 0;
+    virtual void GetNext(ParsedCertificateList* issuers,
+                         base::SupportsUserData* debug_data) = 0;
   };
 
   virtual ~CertIssuerSource() = default;

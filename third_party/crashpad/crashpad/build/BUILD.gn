@@ -31,9 +31,8 @@ config("crashpad_is_in_fuchsia") {
 }
 
 config("flock_always_supported_defines") {
-  defines = [
-    "CRASHPAD_FLOCK_ALWAYS_SUPPORTED=$crashpad_flock_always_supported",
-  ]
+  defines =
+      [ "CRASHPAD_FLOCK_ALWAYS_SUPPORTED=$crashpad_flock_always_supported" ]
 }
 
 group("default_exe_manifest_win") {
@@ -52,16 +51,18 @@ config("crashpad_fuzzer_flags") {
   ldflags = [ "-fsanitize=address" ]
 }
 
-if (crashpad_is_ios) {
-  group("ios_enable_arc") {
-    if (crashpad_is_in_chromium) {
-      public_configs = [ "//build/config/compiler:enable_arc" ]
-    } else if (crashpad_is_standalone) {
-      public_configs =
-          [ "//third_party/mini_chromium/mini_chromium/build/config:ios_enable_arc" ]
+if (crashpad_is_apple) {
+  group("apple_enable_arc") {
+    # If `crashpad_is_in_chromium`, then because Chromium enables ARC
+    # compilation by default, no special configuration is needed.
+
+    if (crashpad_is_standalone) {
+      public_configs = [ "//third_party/mini_chromium/mini_chromium/build/config:apple_enable_arc" ]
     }
   }
+}
 
+if (crashpad_is_ios) {
   group("ios_xctest") {
     if (crashpad_is_in_chromium) {
       public_configs = [ "//build/config/ios:xctest_config" ]

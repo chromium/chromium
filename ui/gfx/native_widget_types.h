@@ -52,6 +52,9 @@
 // TODO(https://crbug.com/1443009): Both gfx::NativeEvent and ui::PlatformEvent
 // are typedefs for native event types on different platforms, but they're
 // slightly different and used in different places. They should be merged.
+//
+// TODO(https://crbug.com/1149906): gfx::NativeCursor is ui::Cursor in Aura;
+// perhaps remove gfx::NativeCursor and use ui::Cursor everywhere?
 
 #if defined(USE_AURA)
 namespace aura {
@@ -71,31 +74,21 @@ enum class CursorType;
 struct IAccessible;
 #elif BUILDFLAG(IS_IOS)
 #ifdef __OBJC__
-struct objc_object;
 @class UIImage;
-@class UIView;
-@class UIWindow;
-@class UITextField;
 #else
+struct objc_object;
 class UIImage;
-class UIView;
-class UIWindow;
-class UITextField;
 #endif  // __OBJC__
 #elif BUILDFLAG(IS_MAC)
 #ifdef __OBJC__
-@class NSCursor;
 @class NSImage;
 @class NSView;
 @class NSWindow;
-@class NSTextField;
 #else
 struct objc_object;
-class NSCursor;
 class NSImage;
 class NSView;
 class NSWindow;
-class NSTextField;
 #endif  // __OBJC__
 #endif
 
@@ -124,17 +117,13 @@ using NativeCursor = ui::Cursor;
 using NativeView = aura::Window*;
 using NativeWindow = aura::Window*;
 using NativeEvent = ui::Event*;
-constexpr NativeView kNullNativeView = nullptr;
-constexpr NativeWindow kNullNativeWindow = nullptr;
 #elif BUILDFLAG(IS_IOS)
 using NativeCursor = void*;
-using NativeView = UIView*;
-using NativeWindow = UIWindow*;
+using NativeView = base::apple::WeakUIView;
+using NativeWindow = base::apple::WeakUIWindow;
 using NativeEvent = base::apple::OwnedUIEvent;
-constexpr NativeView kNullNativeView = nullptr;
-constexpr NativeWindow kNullNativeWindow = nullptr;
 #elif BUILDFLAG(IS_MAC)
-using NativeCursor = NSCursor*;
+using NativeCursor = base::apple::OwnedNSCursor;
 using NativeEvent = base::apple::OwnedNSEvent;
 // NativeViews and NativeWindows on macOS are not necessarily in the same
 // process as the NSViews and NSWindows that they represent. Require an explicit
@@ -170,6 +159,7 @@ class GFX_EXPORT NativeView {
 #else
   // This field is not a raw_ptr<> because it was filtered by the rewriter
   // for: #constexpr-ctor-field-initializer, #global-scope, #union
+  // This field also points to Objective-C object.
   RAW_PTR_EXCLUSION NSView* ns_view_ = nullptr;
 #endif
 };
@@ -202,18 +192,15 @@ class GFX_EXPORT NativeWindow {
 #else
   // This field is not a raw_ptr<> because it was filtered by the rewriter
   // for: #constexpr-ctor-field-initializer, #global-scope, #union
+  // This field also points to Objective-C object.
   RAW_PTR_EXCLUSION NSWindow* ns_window_ = nullptr;
 #endif
 };
-constexpr NativeView kNullNativeView = NativeView(nullptr);
-constexpr NativeWindow kNullNativeWindow = NativeWindow(nullptr);
 #elif BUILDFLAG(IS_ANDROID)
 using NativeCursor = void*;
 using NativeView = ui::ViewAndroid*;
 using NativeWindow = ui::WindowAndroid*;
 using NativeEvent = base::android::ScopedJavaGlobalRef<jobject>;
-constexpr NativeView kNullNativeView = nullptr;
-constexpr NativeWindow kNullNativeWindow = nullptr;
 #else
 #error Unknown build environment.
 #endif
@@ -244,17 +231,6 @@ using UnimplementedNativeViewAccessible =
 using NativeViewAccessible = UnimplementedNativeViewAccessible*;
 #endif
 
-// Returns if the event is valid.
-GFX_EXPORT bool IsNativeEventValid(const NativeEvent& event);
-
-// A constant value to indicate that gfx::NativeCursor refers to no cursor.
-#if defined(USE_AURA)
-const ui::mojom::CursorType kNullCursor =
-    static_cast<ui::mojom::CursorType>(-1);
-#else
-const NativeCursor kNullCursor = static_cast<NativeCursor>(nullptr);
-#endif
-
 // Note: for test_shell we're packing a pointer into the NativeViewId. So, if
 // you make it a type which is smaller than a pointer, you have to fix
 // test_shell.
@@ -267,14 +243,14 @@ using NativeViewId = intptr_t;
 using AcceleratedWidget = HWND;
 constexpr AcceleratedWidget kNullAcceleratedWidget = nullptr;
 #elif BUILDFLAG(IS_IOS)
-using AcceleratedWidget = UIView*;
+using AcceleratedWidget = uint64_t;  // A UIView*.
 constexpr AcceleratedWidget kNullAcceleratedWidget = 0;
 #elif BUILDFLAG(IS_MAC)
 using AcceleratedWidget = uint64_t;
 constexpr AcceleratedWidget kNullAcceleratedWidget = 0;
 #elif BUILDFLAG(IS_ANDROID)
 using AcceleratedWidget = ANativeWindow*;
-constexpr AcceleratedWidget kNullAcceleratedWidget = 0;
+constexpr AcceleratedWidget kNullAcceleratedWidget = nullptr;
 #elif BUILDFLAG(IS_OZONE)
 using AcceleratedWidget = uint32_t;
 constexpr AcceleratedWidget kNullAcceleratedWidget = 0;

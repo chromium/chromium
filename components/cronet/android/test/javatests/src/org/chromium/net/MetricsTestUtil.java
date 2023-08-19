@@ -7,8 +7,6 @@ package org.chromium.net;
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
 
-import static org.junit.Assert.assertTrue;
-
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
@@ -45,8 +43,9 @@ public class MetricsTestUtil {
     // Some implementation of java.util.Date broke the symmetric property, so
     // check both directions.
     public static void assertAfter(Date date1, Date date2) {
-        assertTrue("date1: " + date1.getTime() + ", date2: " + date2.getTime(),
-                date1.after(date2) || date1.equals(date2) || date2.equals(date1));
+        assertWithMessage("date1: " + date1.getTime() + ", date2: " + date2.getTime())
+                .that(date1.after(date2) || date1.equals(date2) || date2.equals(date1))
+                .isTrue();
     }
 
     /**

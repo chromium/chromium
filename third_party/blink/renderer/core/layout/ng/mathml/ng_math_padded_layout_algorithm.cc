@@ -43,25 +43,14 @@ absl::optional<LayoutUnit> NGMathPaddedLayoutAlgorithm::RequestedDescent(
                                                content_descent));
 }
 
-void NGMathPaddedLayoutAlgorithm::GatherChildren(
-    NGBlockNode* content,
-    NGBoxFragmentBuilder* container_builder) const {
-  for (NGLayoutInputNode child = Node().FirstChild(); child;
-       child = child.NextSibling()) {
-    NGBlockNode block_child = To<NGBlockNode>(child);
-    if (child.IsOutOfFlowPositioned()) {
-      if (container_builder) {
-        container_builder->AddOutOfFlowChildCandidate(
-            block_child, BorderScrollbarPadding().StartOffset());
-      }
-      continue;
-    }
-    if (!*content) {
-      *content = block_child;
-      continue;
-    }
-
-    NOTREACHED();
+void NGMathPaddedLayoutAlgorithm::GetContentAsAnonymousMrow(
+    NGBlockNode* content) const {
+  // Node() is a LayoutNGMathMLBlockWithAnonymousMrow node, which is either
+  // empty or contains a single anonymous mrow child.
+  if (NGLayoutInputNode child = Node().FirstChild()) {
+    DCHECK(!child.NextSibling());
+    DCHECK(!child.IsOutOfFlowPositioned());
+    *content = To<NGBlockNode>(child);
   }
 }
 
@@ -69,7 +58,7 @@ const NGLayoutResult* NGMathPaddedLayoutAlgorithm::Layout() {
   DCHECK(!BreakToken());
 
   NGBlockNode content = nullptr;
-  GatherChildren(&content, &container_builder_);
+  GetContentAsAnonymousMrow(&content);
   LayoutUnit content_ascent, content_descent;
   NGBoxStrut content_margins;
   const NGLayoutResult* content_layout_result = nullptr;
@@ -100,8 +89,8 @@ const NGLayoutResult* NGMathPaddedLayoutAlgorithm::Layout() {
     LogicalOffset content_offset = {
         BorderScrollbarPadding().inline_start + RequestedLSpace(),
         (ascent - content_ascent) - RequestedVOffset()};
-    container_builder_.AddResult(*content_layout_result, content_offset);
-    content.StoreMargins(ConstraintSpace(), content_margins);
+    container_builder_.AddResult(*content_layout_result, content_offset,
+                                 content_margins);
   }
 
   LayoutUnit intrinsic_block_size = ascent + descent;
@@ -125,7 +114,7 @@ MinMaxSizesResult NGMathPaddedLayoutAlgorithm::ComputeMinMaxSizes(
 
 
   NGBlockNode content = nullptr;
-  GatherChildren(&content);
+  GetContentAsAnonymousMrow(&content);
 
   const auto content_result = ComputeMinAndMaxContentContributionForMathChild(
       Style(), ConstraintSpace(), content, ChildAvailableSize().block_size);

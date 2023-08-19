@@ -38,13 +38,6 @@ inline int vsnprintfT(wchar_t* buffer,
                       va_list argptr) {
   return base::vswprintf(buffer, buf_size, format, argptr);
 }
-inline int vsnprintfT(char16_t* buffer,
-                      size_t buf_size,
-                      const char16_t* format,
-                      va_list argptr) {
-  return base::vswprintf(reinterpret_cast<wchar_t*>(buffer), buf_size,
-                         reinterpret_cast<const wchar_t*>(format), argptr);
-}
 #endif
 
 // Templatized backend for StringPrintF/StringAppendF. This does not finalize
@@ -135,15 +128,6 @@ std::wstring StringPrintf(const wchar_t* format, ...) {
   va_end(ap);
   return result;
 }
-
-std::u16string StringPrintf(const char16_t* format, ...) {
-  va_list ap;
-  va_start(ap, format);
-  std::u16string result;
-  StringAppendV(&result, format, ap);
-  va_end(ap);
-  return result;
-}
 #endif
 
 std::string StringPrintV(const char* format, va_list ap) {
@@ -151,38 +135,6 @@ std::string StringPrintV(const char* format, va_list ap) {
   StringAppendV(&result, format, ap);
   return result;
 }
-
-const std::string& SStringPrintf(std::string* dst, const char* format, ...) {
-  va_list ap;
-  va_start(ap, format);
-  dst->clear();
-  StringAppendV(dst, format, ap);
-  va_end(ap);
-  return *dst;
-}
-
-#if BUILDFLAG(IS_WIN)
-const std::wstring& SStringPrintf(std::wstring* dst,
-                                  const wchar_t* format, ...) {
-  va_list ap;
-  va_start(ap, format);
-  dst->clear();
-  StringAppendV(dst, format, ap);
-  va_end(ap);
-  return *dst;
-}
-
-const std::u16string& SStringPrintf(std::u16string* dst,
-                                    const char16_t* format,
-                                    ...) {
-  va_list ap;
-  va_start(ap, format);
-  dst->clear();
-  StringAppendV(dst, format, ap);
-  va_end(ap);
-  return *dst;
-}
-#endif
 
 void StringAppendF(std::string* dst, const char* format, ...) {
   va_list ap;
@@ -198,13 +150,6 @@ void StringAppendF(std::wstring* dst, const wchar_t* format, ...) {
   StringAppendV(dst, format, ap);
   va_end(ap);
 }
-
-void StringAppendF(std::u16string* dst, const char16_t* format, ...) {
-  va_list ap;
-  va_start(ap, format);
-  StringAppendV(dst, format, ap);
-  va_end(ap);
-}
 #endif
 
 void StringAppendV(std::string* dst, const char* format, va_list ap) {
@@ -213,10 +158,6 @@ void StringAppendV(std::string* dst, const char* format, va_list ap) {
 
 #if BUILDFLAG(IS_WIN)
 void StringAppendV(std::wstring* dst, const wchar_t* format, va_list ap) {
-  StringAppendVT(dst, format, ap);
-}
-
-void StringAppendV(std::u16string* dst, const char16_t* format, va_list ap) {
   StringAppendVT(dst, format, ap);
 }
 #endif

@@ -8,7 +8,6 @@ import android.view.View;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
@@ -19,6 +18,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Stat
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -49,6 +49,7 @@ public class AccountPickerBottomSheetCoordinator {
     private final AccountPickerBottomSheetMediator mAccountPickerBottomSheetMediator;
     private final AccountPickerCoordinator mAccountPickerCoordinator;
     private final BottomSheetController mBottomSheetController;
+    private final @SigninAccessPoint int mAccessPoint;
     private final BottomSheetObserver mBottomSheetObserver = new EmptyBottomSheetObserver() {
         @Override
         public void onSheetStateChanged(@SheetState int newState, @StateChangeReason int reason) {
@@ -82,7 +83,23 @@ public class AccountPickerBottomSheetCoordinator {
             AccountPickerDelegate accountPickerDelegate,
             AccountPickerBottomSheetStrings accountPickerBottomSheetStrings,
             DeviceLockActivityLauncher deviceLockActivityLauncher) {
-        SigninMetricsUtils.logAccountConsistencyPromoAction(AccountConsistencyPromoAction.SHOWN);
+        switch (accountPickerDelegate.getEntryPoint()) {
+            case EntryPoint.WEB_SIGNIN:
+                mAccessPoint = SigninAccessPoint.WEB_SIGNIN;
+                break;
+            case EntryPoint.SEND_TAB_TO_SELF:
+                mAccessPoint = SigninAccessPoint.SEND_TAB_TO_SELF_PROMO;
+                break;
+            case EntryPoint.FEED_ACTION:
+                mAccessPoint = SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO;
+                break;
+            default:
+                assert false;
+                mAccessPoint = SigninAccessPoint.MAX;
+                break;
+        }
+        SigninMetricsUtils.logAccountConsistencyPromoAction(
+                AccountConsistencyPromoAction.SHOWN, mAccessPoint);
 
         mAccountPickerBottomSheetMediator = new AccountPickerBottomSheetMediator(windowAndroid,
                 accountPickerDelegate, this::onDismissButtonClicked,
@@ -120,14 +137,13 @@ public class AccountPickerBottomSheetCoordinator {
     @MainThread
     private void logMetricAndIncrementActiveDismissalCountIfWebSignin(
             @AccountConsistencyPromoAction int promoAction) {
-        SigninMetricsUtils.logAccountConsistencyPromoAction(promoAction);
+        SigninMetricsUtils.logAccountConsistencyPromoAction(promoAction, mAccessPoint);
         if (mAccountPickerBottomSheetMediator.isEntryPointWebSignin()) {
             SigninPreferencesManager.getInstance()
                     .incrementWebSigninAccountPickerActiveDismissalCount();
         }
     }
 
-    @VisibleForTesting
     public View getBottomSheetViewForTesting() {
         return mView.getContentView();
     }

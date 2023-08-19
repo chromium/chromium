@@ -100,9 +100,9 @@ void ServiceProviderTestHelper::SetUpReturnSignal(
 
 std::unique_ptr<dbus::Response> ServiceProviderTestHelper::CallMethod(
     dbus::MethodCall* method_call) {
-  return mock_object_proxy_->CallMethodAndBlock(
-      method_call,
-      dbus::ObjectProxy::TIMEOUT_USE_DEFAULT);
+  return mock_object_proxy_
+      ->CallMethodAndBlock(method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT)
+      .value_or(nullptr);
 }
 
 void ServiceProviderTestHelper::MockExportMethod(

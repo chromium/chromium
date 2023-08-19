@@ -13,10 +13,6 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace segmentation_platform {
 
 class OTRWebStateObserver::WebStateObserver : public WebStateListObserver {
@@ -32,13 +28,9 @@ class OTRWebStateObserver::WebStateObserver : public WebStateListObserver {
   }
 
   // WebStateListObserver
-  void WebStateInsertedAt(WebStateList* web_state_list,
-                          web::WebState* web_state,
-                          int index,
-                          bool activating) override;
-  void WebStateDetachedAt(WebStateList* web_state_list,
-                          web::WebState* web_state,
-                          int index) override;
+  void WebStateListDidChange(WebStateList* web_state_list,
+                             const WebStateListChange& change,
+                             const WebStateListStatus& status) override;
   void BatchOperationEnded(WebStateList* web_state_list) override;
 
  private:
@@ -52,19 +44,27 @@ class OTRWebStateObserver::WebStateObserver : public WebStateListObserver {
   const raw_ptr<BrowserList> browser_list_;
 };
 
-void OTRWebStateObserver::WebStateObserver::WebStateInsertedAt(
-    WebStateList* web_state_list,
-    web::WebState* web_state,
-    int index,
-    bool activating) {
-  UpdateOtrWebStateCount();
-}
+#pragma mark - WebStateListObserver
 
-void OTRWebStateObserver::WebStateObserver::WebStateDetachedAt(
+void OTRWebStateObserver::WebStateObserver::WebStateListDidChange(
     WebStateList* web_state_list,
-    web::WebState* web_state,
-    int index) {
-  UpdateOtrWebStateCount();
+    const WebStateListChange& change,
+    const WebStateListStatus& status) {
+  switch (change.type()) {
+    case WebStateListChange::Type::kStatusOnly:
+      // Do nothing when a WebState is selected and its status is updated.
+      break;
+    case WebStateListChange::Type::kDetach:
+    case WebStateListChange::Type::kInsert:
+      UpdateOtrWebStateCount();
+      break;
+    case WebStateListChange::Type::kMove:
+      // Do nothing when a WebState is moved.
+      break;
+    case WebStateListChange::Type::kReplace:
+      // Do nothing when a WebState is replaced.
+      break;
+  }
 }
 
 void OTRWebStateObserver::WebStateObserver::BatchOperationEnded(
@@ -109,9 +109,8 @@ void OTRWebStateObserver::OnBrowserStateAdded(const base::FilePath& path) {
   if (browser_state_data_.count(path)) {
     return;
   }
-  auto* browser_state = browser_state_manager_->GetBrowserState(path);
-  BrowserList* browser_list =
-      BrowserListFactory::GetForBrowserState(browser_state);
+  BrowserList* browser_list = BrowserListFactory::GetForBrowserState(
+      browser_state_manager_->GetBrowserState(path));
   DCHECK(browser_list);
 
   auto it = browser_state_data_.emplace(
@@ -120,7 +119,7 @@ void OTRWebStateObserver::OnBrowserStateAdded(const base::FilePath& path) {
   BrowserStateData& data = *it.first->second;
   data.all_web_state_observation =
       std::make_unique<AllWebStateListObservationRegistrar>(
-          browser_state,
+          browser_list,
           std::make_unique<WebStateObserver>(path, this, browser_list),
           AllWebStateListObservationRegistrar::INCOGNITO);
 }

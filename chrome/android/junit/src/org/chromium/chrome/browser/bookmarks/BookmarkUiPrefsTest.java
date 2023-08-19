@@ -29,12 +29,14 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 
 /** Unit tests for {@link BookmarkUiPrefs}. */
 @Batch(Batch.UNIT_TESTS)
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@Features.EnableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
+@EnableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
 public class BookmarkUiPrefsTest {
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -42,10 +44,10 @@ public class BookmarkUiPrefsTest {
     public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
     @Mock
-    BookmarkUiPrefs.Observer mObserver;
+    private BookmarkUiPrefs.Observer mObserver;
 
-    SharedPreferencesManager mSharedPreferencesManager;
-    BookmarkUiPrefs mBookmarkUiPrefs;
+    private SharedPreferencesManager mSharedPreferencesManager;
+    private BookmarkUiPrefs mBookmarkUiPrefs;
 
     @Before
     public void setUp() {
@@ -59,8 +61,8 @@ public class BookmarkUiPrefsTest {
     }
 
     @Test
-    @Features.DisableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
-    @Features.EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH})
+    @DisableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
+    @EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH})
     public void legacyVisualFlags() {
         ShoppingFeatures.setShoppingListEligibleForTesting(true);
 
@@ -71,8 +73,8 @@ public class BookmarkUiPrefsTest {
     }
 
     @Test
-    @Features.DisableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
-    @Features.EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH})
+    @DisableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
+    @EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH})
     public void legacyVisualFlags_noShopping() {
         ShoppingFeatures.setShoppingListEligibleForTesting(false);
 
@@ -85,11 +87,11 @@ public class BookmarkUiPrefsTest {
     public void initialBookmarkRowDisplayPref() {
         // Nothing has been written to shared prefs manager.
         Assert.assertEquals(
-                BookmarkRowDisplayPref.COMPACT, mBookmarkUiPrefs.getBookmarkRowDisplayPref());
+                BookmarkRowDisplayPref.VISUAL, mBookmarkUiPrefs.getBookmarkRowDisplayPref());
     }
 
     @Test
-    @Features.EnableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
+    @EnableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
     public void returnsStoredPref() {
         mBookmarkUiPrefs.setBookmarkRowDisplayPref(BookmarkRowDisplayPref.VISUAL);
         Assert.assertEquals(
@@ -114,9 +116,8 @@ public class BookmarkUiPrefsTest {
 
     @Test
     public void testSortOrder() {
-        // Default should be REVERSE_CHRONOLOGICAL.
-        Assert.assertEquals(BookmarkRowSortOrder.REVERSE_CHRONOLOGICAL,
-                mBookmarkUiPrefs.getBookmarkRowSortOrder());
+        Assert.assertEquals(
+                BookmarkRowSortOrder.MANUAL, mBookmarkUiPrefs.getBookmarkRowSortOrder());
 
         mBookmarkUiPrefs.addObserver(mObserver);
         mBookmarkUiPrefs.setBookmarkRowSortOrder(BookmarkRowSortOrder.ALPHABETICAL);
@@ -130,5 +131,27 @@ public class BookmarkUiPrefsTest {
         verifyNoInteractions(mObserver);
         Assert.assertEquals(
                 BookmarkRowSortOrder.CHRONOLOGICAL, mBookmarkUiPrefs.getBookmarkRowSortOrder());
+    }
+
+    @Test
+    public void testRowDisplayPref_changesInBackground() {
+        Assert.assertEquals(
+                BookmarkRowDisplayPref.VISUAL, mBookmarkUiPrefs.getBookmarkRowDisplayPref());
+
+        mBookmarkUiPrefs.addObserver(mObserver);
+        mSharedPreferencesManager.writeInt(
+                ChromePreferenceKeys.BOOKMARKS_VISUALS_PREF, BookmarkRowDisplayPref.COMPACT);
+        verify(mObserver).onBookmarkRowDisplayPrefChanged(BookmarkRowDisplayPref.COMPACT);
+    }
+
+    @Test
+    public void testSortOrderPref_changesInBackground() {
+        Assert.assertEquals(
+                BookmarkRowSortOrder.MANUAL, mBookmarkUiPrefs.getBookmarkRowSortOrder());
+
+        mBookmarkUiPrefs.addObserver(mObserver);
+        mSharedPreferencesManager.writeInt(
+                ChromePreferenceKeys.BOOKMARKS_SORT_ORDER, BookmarkRowSortOrder.CHRONOLOGICAL);
+        verify(mObserver).onBookmarkRowSortOrderChanged(BookmarkRowSortOrder.CHRONOLOGICAL);
     }
 }

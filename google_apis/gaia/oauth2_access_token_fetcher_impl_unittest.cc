@@ -13,8 +13,10 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
 #include "google_apis/gaia/gaia_access_token_fetcher.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -53,6 +55,20 @@ constexpr char kTokenResponseNoAccessToken[] = R"(
 constexpr char kValidFailureTokenResponse[] = R"(
     {
       "error": "invalid_grant"
+    })";
+
+constexpr char kRaptRequiredErrorResponse[] = R"(
+    {
+      "error": "invalid_grant",
+      "error_subtype": "rapt_required",
+      "error_description": "reauth related error"
+    })";
+
+constexpr char kInvalidRaptErrorResponse[] = R"(
+    {
+      "error": "invalid_grant",
+      "error_subtype": "invalid_rapt",
+      "error_description": "reauth related error"
     })";
 
 class MockOAuth2AccessTokenConsumer : public OAuth2AccessTokenConsumer {
@@ -208,6 +224,38 @@ TEST_F(OAuth2AccessTokenFetcherImplTest, CancelOngoingRequest) {
   base::RunLoop().RunUntilIdle();
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(OAuth2AccessTokenFetcherImplTest, GetAccessTokenRaptRequiredFailure) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kIgnoreRaptErrors);
+  SetupGetAccessToken(net::OK, net::HTTP_BAD_REQUEST,
+                      kRaptRequiredErrorResponse);
+  EXPECT_CALL(consumer_,
+              OnGetTokenFailure(
+                  GoogleServiceAuthError::FromScopeLimitedUnrecoverableError(
+                      "reauth related error")))
+      .Times(1);
+  fetcher_->Start("client_id", "client_secret", ScopeList());
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(OAuth2AccessTokenFetcherImplTest,
+       GetAccessTokenRaptRequiredFailureIfIgnoreRaptErrorsIsDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kIgnoreRaptErrors);
+  SetupGetAccessToken(net::OK, net::HTTP_BAD_REQUEST,
+                      kRaptRequiredErrorResponse);
+  EXPECT_CALL(consumer_,
+              OnGetTokenFailure(
+                  GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+                      GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                          CREDENTIALS_REJECTED_BY_SERVER)))
+      .Times(1);
+  fetcher_->Start("client_id", "client_secret", ScopeList());
+  base::RunLoop().RunUntilIdle();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 TEST_F(OAuth2AccessTokenFetcherImplTest, MakeGetAccessTokenBodyNoScope) {
   std::string body =
       "client_id=cid1&"
@@ -282,17 +330,39 @@ TEST_F(OAuth2AccessTokenFetcherImplTest, ParseGetAccessTokenResponseSuccess) {
 
 TEST_F(OAuth2AccessTokenFetcherImplTest,
        ParseGetAccessTokenFailureInvalidError) {
-  std::string error;
+  std::string error, error_subtype, error_description;
   EXPECT_FALSE(OAuth2AccessTokenFetcherImpl::ParseGetAccessTokenFailureResponse(
-      kTokenResponseNoAccessToken, &error));
+      kTokenResponseNoAccessToken, &error, &error_subtype, &error_description));
   EXPECT_TRUE(error.empty());
 }
 
 TEST_F(OAuth2AccessTokenFetcherImplTest, ParseGetAccessTokenFailure) {
-  std::string error;
+  std::string error, error_subtype, error_description;
   EXPECT_TRUE(OAuth2AccessTokenFetcherImpl::ParseGetAccessTokenFailureResponse(
-      kValidFailureTokenResponse, &error));
+      kValidFailureTokenResponse, &error, &error_subtype, &error_description));
   EXPECT_EQ("invalid_grant", error);
+  EXPECT_TRUE(error_subtype.empty());
+  EXPECT_TRUE(error_description.empty());
+}
+
+TEST_F(OAuth2AccessTokenFetcherImplTest,
+       ParseGetAccessTokenFailureForMissingRaptError) {
+  std::string error, error_subtype, error_description;
+  EXPECT_TRUE(OAuth2AccessTokenFetcherImpl::ParseGetAccessTokenFailureResponse(
+      kRaptRequiredErrorResponse, &error, &error_subtype, &error_description));
+  EXPECT_EQ("invalid_grant", error);
+  EXPECT_EQ("rapt_required", error_subtype);
+  EXPECT_EQ("reauth related error", error_description);
+}
+
+TEST_F(OAuth2AccessTokenFetcherImplTest,
+       ParseGetAccessTokenFailureForInvalidRaptError) {
+  std::string error, error_subtype, error_description;
+  EXPECT_TRUE(OAuth2AccessTokenFetcherImpl::ParseGetAccessTokenFailureResponse(
+      kInvalidRaptErrorResponse, &error, &error_subtype, &error_description));
+  EXPECT_EQ("invalid_grant", error);
+  EXPECT_EQ("invalid_rapt", error_subtype);
+  EXPECT_EQ("reauth related error", error_description);
 }
 
 struct OAuth2ErrorCodesTestParam {
@@ -331,6 +401,7 @@ class OAuth2ErrorCodesTest
       case GoogleServiceAuthError::CONNECTION_FAILED:
       case GoogleServiceAuthError::UNEXPECTED_SERVICE_RESPONSE:
       case GoogleServiceAuthError::REQUEST_CANCELED:
+      case GoogleServiceAuthError::CHALLENGE_RESPONSE_REQUIRED:
       case GoogleServiceAuthError::NUM_STATES:
         NOTREACHED();
         return GoogleServiceAuthError::AuthErrorNone();

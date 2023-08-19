@@ -329,9 +329,7 @@ TEST_F(PhishingTermFeatureExtractorTest, Continuation) {
       // Time check after the next 5 words.
       .WillOnce(Return(now + base::Milliseconds(25)))
       // Time check after the next 5 words.
-      .WillOnce(Return(now + base::Milliseconds(28)))
-      // A final check for the histograms.
-      .WillOnce(Return(now + base::Milliseconds(30)));
+      .WillOnce(Return(now + base::Milliseconds(28)));
   extractor_->SetTickClockForTesting(&tick_clock);
 
   FeatureMap expected_features;
@@ -415,9 +413,7 @@ TEST_F(PhishingTermFeatureExtractorTest, Continuation) {
       // Time check at the start of the second chunk of work.
       .WillOnce(Return(now + base::Milliseconds(350)))
       // Time check after the next 5 words.  This is over the limit.
-      .WillOnce(Return(now + base::Milliseconds(600)))
-      // A final time check for the histograms.
-      .WillOnce(Return(now + base::Milliseconds(620)));
+      .WillOnce(Return(now + base::Milliseconds(600)));
 
   features.Clear();
   shingle_hashes.clear();

@@ -177,24 +177,21 @@ class MockVaapiWrapper : public VaapiWrapper {
   MOCK_METHOD0(DestroyContext, void());
   MOCK_METHOD1(DestroySurface, void(VASurfaceID));
 
-  MOCK_METHOD5(DoBlitSurface,
+  MOCK_METHOD4(DoBlitSurface,
                bool(const VASurface&,
                     const VASurface&,
                     absl::optional<gfx::Rect>,
-                    absl::optional<gfx::Rect>,
-                    VideoRotation));
+                    absl::optional<gfx::Rect>));
   bool BlitSurface(const VASurface& va_surface_src,
                    const VASurface& va_surface_dest,
                    absl::optional<gfx::Rect> src_rect = absl::nullopt,
-                   absl::optional<gfx::Rect> dest_rect = absl::nullopt,
-                   VideoRotation rotation = VIDEO_ROTATION_0
+                   absl::optional<gfx::Rect> dest_rect = absl::nullopt
 #if BUILDFLAG(IS_CHROMEOS_ASH)
                    ,
                    VAProtectedSessionID va_protected_session_id = VA_INVALID_ID
 #endif
                    ) override {
-    return DoBlitSurface(va_surface_src, va_surface_dest, src_rect, dest_rect,
-                         rotation);
+    return DoBlitSurface(va_surface_src, va_surface_dest, src_rect, dest_rect);
   }
 
  private:
@@ -261,7 +258,8 @@ class VaapiVideoEncodeAcceleratorTest
             [](VaapiVideoEncodeAccelerator* vaapi_encoder,
                scoped_refptr<VaapiWrapper> vaapi_wrapper,
                base::RepeatingClosure on_error_cb,
-               raw_ptr<MockVP9VaapiVideoEncoderDelegate>* mock_encoder,
+               raw_ptr<MockVP9VaapiVideoEncoderDelegate,
+                       AcrossTasksDanglingUntriaged>* mock_encoder,
                base::WaitableEvent* event) {
               DCHECK_CALLED_ON_VALID_SEQUENCE(
                   vaapi_encoder->encoder_sequence_checker_);
@@ -560,8 +558,7 @@ class VaapiVideoEncodeAcceleratorTest
     constexpr VASurfaceID kVppDestSurfaceIds[] = {456, 457};
 
     // Create Surfaces.
-    for (size_t i = num_spatial_layers - 1; i != std::variant_npos; --i) {
-      if (i < num_spatial_layers - 1) {
+    for (size_t i = 0; i < num_spatial_layers - 1; ++i) {
         if (va_vpp_dest_surface_ids_[i] == VA_INVALID_ID) {
           EXPECT_CALL(
               *mock_vpp_vaapi_wrapper_,
@@ -583,13 +580,11 @@ class VaapiVideoEncodeAcceleratorTest
                     return va_surfaces;
                   }));
         }
-        absl::optional<gfx::Rect> src_rect = gfx::Rect(svc_resolutions[i + 1]);
+        absl::optional<gfx::Rect> default_rect = gfx::Rect(kDefaultEncodeSize);
         absl::optional<gfx::Rect> layer_rect = gfx::Rect(svc_resolutions[i]);
         EXPECT_CALL(*mock_vpp_vaapi_wrapper_,
-                    DoBlitSurface(_, _, src_rect, layer_rect,
-                                  VideoRotation::VIDEO_ROTATION_0))
+                    DoBlitSurface(_, _, default_rect, layer_rect))
             .WillOnce(Return(true));
-      }
     }
 
     // Create CodedBuffers in creating EncodeJobs.
@@ -673,7 +668,8 @@ class VaapiVideoEncodeAcceleratorTest
   std::unique_ptr<VideoEncodeAccelerator> encoder_;
   scoped_refptr<MockVaapiWrapper> mock_vaapi_wrapper_;
   scoped_refptr<MockVaapiWrapper> mock_vpp_vaapi_wrapper_;
-  raw_ptr<MockVP9VaapiVideoEncoderDelegate> mock_encoder_ = nullptr;
+  raw_ptr<MockVP9VaapiVideoEncoderDelegate, AcrossTasksDanglingUntriaged>
+      mock_encoder_ = nullptr;
 };
 
 struct VaapiVideoEncodeAcceleratorTestParam {

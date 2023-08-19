@@ -2,6 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# @generated from third_party/rust/BUILD.gn.hbs by tools/crates/gnrt.
+# Do not edit!
+
 import("//build/rust/cargo_crate.gni")
 
 cargo_crate("lib") {
@@ -13,10 +16,47 @@ cargo_crate("lib") {
   # third_party.toml to use it from first-party code.
   visibility = [ "//third_party/rust/*" ]
   crate_root = "crate/src/lib.rs"
+  sources = [
+    "//third_party/rust/memchr/v2/crate/build.rs",
+    "//third_party/rust/memchr/v2/crate/src/cow.rs",
+    "//third_party/rust/memchr/v2/crate/src/lib.rs",
+    "//third_party/rust/memchr/v2/crate/src/memchr/c.rs",
+    "//third_party/rust/memchr/v2/crate/src/memchr/fallback.rs",
+    "//third_party/rust/memchr/v2/crate/src/memchr/iter.rs",
+    "//third_party/rust/memchr/v2/crate/src/memchr/mod.rs",
+    "//third_party/rust/memchr/v2/crate/src/memchr/naive.rs",
+    "//third_party/rust/memchr/v2/crate/src/memchr/x86/avx.rs",
+    "//third_party/rust/memchr/v2/crate/src/memchr/x86/mod.rs",
+    "//third_party/rust/memchr/v2/crate/src/memchr/x86/sse2.rs",
+    "//third_party/rust/memchr/v2/crate/src/memchr/x86/sse42.rs",
+    "//third_party/rust/memchr/v2/crate/src/memmem/byte_frequencies.rs",
+    "//third_party/rust/memchr/v2/crate/src/memmem/genericsimd.rs",
+    "//third_party/rust/memchr/v2/crate/src/memmem/mod.rs",
+    "//third_party/rust/memchr/v2/crate/src/memmem/prefilter/fallback.rs",
+    "//third_party/rust/memchr/v2/crate/src/memmem/prefilter/genericsimd.rs",
+    "//third_party/rust/memchr/v2/crate/src/memmem/prefilter/mod.rs",
+    "//third_party/rust/memchr/v2/crate/src/memmem/prefilter/x86/avx.rs",
+    "//third_party/rust/memchr/v2/crate/src/memmem/prefilter/x86/mod.rs",
+    "//third_party/rust/memchr/v2/crate/src/memmem/prefilter/x86/sse.rs",
+    "//third_party/rust/memchr/v2/crate/src/memmem/rabinkarp.rs",
+    "//third_party/rust/memchr/v2/crate/src/memmem/rarebytes.rs",
+    "//third_party/rust/memchr/v2/crate/src/memmem/twoway.rs",
+    "//third_party/rust/memchr/v2/crate/src/memmem/util.rs",
+    "//third_party/rust/memchr/v2/crate/src/memmem/vector.rs",
+    "//third_party/rust/memchr/v2/crate/src/memmem/x86/avx.rs",
+    "//third_party/rust/memchr/v2/crate/src/memmem/x86/mod.rs",
+    "//third_party/rust/memchr/v2/crate/src/memmem/x86/sse.rs",
+    "//third_party/rust/memchr/v2/crate/src/tests/memchr/iter.rs",
+    "//third_party/rust/memchr/v2/crate/src/tests/memchr/memchr.rs",
+    "//third_party/rust/memchr/v2/crate/src/tests/memchr/mod.rs",
+    "//third_party/rust/memchr/v2/crate/src/tests/memchr/simple.rs",
+    "//third_party/rust/memchr/v2/crate/src/tests/memchr/testdata.rs",
+    "//third_party/rust/memchr/v2/crate/src/tests/mod.rs",
+  ]
+  inputs = [ "//third_party/rust/memchr/v2/crate/README.md" ]
 
   # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
-  sources = [ "crate/src/lib.rs" ]
   edition = "2018"
   cargo_pkg_version = "2.4.1"
   cargo_pkg_authors = "Andrew Gallant <jamslam@gmail.com>, bluss"

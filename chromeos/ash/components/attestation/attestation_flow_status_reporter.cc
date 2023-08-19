@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/attestation/attestation_flow_status_reporter.h"
 
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 
 namespace ash {
@@ -41,15 +42,19 @@ void AttestationFlowStatusReporter::OnFallbackFlowStatus(bool success) {
 }
 
 void AttestationFlowStatusReporter::Report() {
-  // Perform rationality check and define all the missing flags.
-  DCHECK(has_proxy_.has_value());
-  DCHECK(is_system_proxy_available_.has_value());
-  DCHECK(does_default_flow_succeed_.has_value() ||
-         does_fallback_flow_succeed_.has_value());
+  if (!has_proxy_.has_value() || !is_system_proxy_available_.has_value()) {
+    LOG(WARNING)
+        << "Missing proxy info while reporting attestation flow status.";
+    return;
+  }
   const bool does_run_default_flow = does_default_flow_succeed_.has_value();
+  const bool does_run_fallback_flow = does_fallback_flow_succeed_.has_value();
+  if (!does_run_default_flow && !does_run_fallback_flow) {
+    // No need to return here since the reporting can still work.
+    LOG(WARNING) << "Neither default nor fallback attestation flow has run.";
+  }
   const bool does_default_flow_succeed =
       does_run_default_flow && *does_default_flow_succeed_;
-  const bool does_run_fallback_flow = does_fallback_flow_succeed_.has_value();
   const bool does_fallback_flow_succeed =
       does_run_fallback_flow && *does_fallback_flow_succeed_;
 

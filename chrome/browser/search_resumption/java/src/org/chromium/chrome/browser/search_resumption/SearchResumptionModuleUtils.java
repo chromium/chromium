@@ -19,7 +19,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_resumption.SearchResumptionUserData.SuggestionResult;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -142,7 +142,7 @@ public class SearchResumptionModuleUtils {
             return false;
         }
 
-        if (!SyncService.get().hasKeepEverythingSynced()) {
+        if (!SyncServiceFactory.getForProfile(profile).hasKeepEverythingSynced()) {
             recordModuleNotShownReason(ModuleNotShownReason.NOT_SYNC);
             return false;
         }

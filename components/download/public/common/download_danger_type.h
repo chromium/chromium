@@ -90,6 +90,10 @@ enum DownloadDangerType {
   // with account compromise through stealing cookies.
   DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE = 19,
 
+  // The user has chosen to deep scan this file, but the scan has failed. The
+  // safety of this download is unknown.
+  DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED = 20,
+
   // Memory space for histograms is determined by the max.
   // ALWAYS ADD NEW VALUES BEFORE THIS ONE.
   DOWNLOAD_DANGER_TYPE_MAX

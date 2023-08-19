@@ -192,8 +192,7 @@ class NewTabPageTest : public InProcessBrowserTest,
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kVerifyPixels)) {
-      views::ViewSkiaGoldPixelDiff pixel_diff;
-      pixel_diff.Init(screenshot_prefix);
+      views::ViewSkiaGoldPixelDiff pixel_diff(screenshot_prefix);
       return pixel_diff.CompareViewScreenshot(
           screenshot_name, browser_view_->contents_web_view());
     }

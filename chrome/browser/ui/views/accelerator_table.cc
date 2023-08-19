@@ -24,6 +24,10 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/events/event_constants.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/crosapi/browser_util.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace {
 
 // For ChromeOS only: If you plan on adding a new accelerator and want it
@@ -44,7 +48,6 @@ const AcceleratorMapping kAcceleratorMap[] = {
 #if !BUILDFLAG(IS_CHROMEOS)
     {ui::VKEY_F7, ui::EF_NONE, IDC_CARET_BROWSING_TOGGLE},
 #endif
-    {ui::VKEY_F12, ui::EF_NONE, IDC_DEV_TOOLS_TOGGLE},
     {ui::VKEY_ESCAPE, ui::EF_NONE, IDC_CLOSE_FIND_OR_STOP},
 
 #if !BUILDFLAG(IS_MAC)
@@ -119,7 +122,7 @@ const AcceleratorMapping kAcceleratorMap[] = {
     {ui::VKEY_8, ui::EF_ALT_DOWN, IDC_SELECT_TAB_7},
     {ui::VKEY_NUMPAD8, ui::EF_ALT_DOWN, IDC_SELECT_TAB_7},
     {ui::VKEY_BROWSER_FAVORITES, ui::EF_NONE, IDC_SHOW_BOOKMARK_BAR},
-#endif  // BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX)
     {ui::VKEY_B, ui::EF_SHIFT_DOWN | ui::EF_PLATFORM_ACCELERATOR,
      IDC_SHOW_BOOKMARK_BAR},
     {ui::VKEY_OEM_MINUS, ui::EF_PLATFORM_ACCELERATOR, IDC_ZOOM_MINUS},
@@ -194,9 +197,9 @@ const AcceleratorMapping kAcceleratorMap[] = {
     {ui::VKEY_BROWSER_SEARCH, ui::EF_NONE, IDC_FOCUS_SEARCH},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_MAC)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     {ui::VKEY_I, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, IDC_FEEDBACK},
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
     {ui::VKEY_N, ui::EF_SHIFT_DOWN | ui::EF_PLATFORM_ACCELERATOR,
      IDC_NEW_INCOGNITO_WINDOW},
     {ui::VKEY_T, ui::EF_PLATFORM_ACCELERATOR, IDC_NEW_TAB},
@@ -213,11 +216,6 @@ const AcceleratorMapping kAcceleratorMap[] = {
 #if BUILDFLAG(ENABLE_PRINTING)
     {ui::VKEY_P, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN, IDC_BASIC_PRINT},
 #endif  // ENABLE_PRINTING
-    {ui::VKEY_I, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN, IDC_DEV_TOOLS},
-    {ui::VKEY_J, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
-     IDC_DEV_TOOLS_CONSOLE},
-    {ui::VKEY_C, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
-     IDC_DEV_TOOLS_INSPECT},
     {ui::VKEY_B, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, IDC_FOCUS_BOOKMARKS},
     {ui::VKEY_A, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
      IDC_FOCUS_INACTIVE_POPUP_FOR_ACCESSIBILITY},
@@ -234,7 +232,6 @@ const AcceleratorMapping kAcceleratorMap[] = {
      IDC_SHOW_BOOKMARK_MANAGER},
     {ui::VKEY_J, ui::EF_CONTROL_DOWN, IDC_SHOW_DOWNLOADS},
     {ui::VKEY_H, ui::EF_CONTROL_DOWN, IDC_SHOW_HISTORY},
-    {ui::VKEY_U, ui::EF_CONTROL_DOWN, IDC_VIEW_SOURCE},
 #if !BUILDFLAG(IS_CHROMEOS)
     // On Chrome OS, these keys are assigned to change UI scale.
     {ui::VKEY_OEM_MINUS, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
@@ -249,8 +246,20 @@ const AcceleratorMapping kAcceleratorMap[] = {
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE) && \
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
     {ui::VKEY_S, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN,
-     IDC_RUN_SCREEN_AI_VISUAL_ANNOTATIONS},
+     IDC_CONTENT_CONTEXT_RUN_LAYOUT_EXTRACTION},
 #endif
+};
+
+const AcceleratorMapping kDevToolsAcceleratorMap[] = {
+    {ui::VKEY_F12, ui::EF_NONE, IDC_DEV_TOOLS_TOGGLE},
+#if !BUILDFLAG(IS_MAC)
+    {ui::VKEY_I, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN, IDC_DEV_TOOLS},
+    {ui::VKEY_J, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
+     IDC_DEV_TOOLS_CONSOLE},
+    {ui::VKEY_C, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
+     IDC_DEV_TOOLS_INSPECT},
+    {ui::VKEY_U, ui::EF_CONTROL_DOWN, IDC_VIEW_SOURCE},
+#endif  // !BUILDFLAG(IS_MAC)
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -295,14 +304,32 @@ const int kRepeatableCommandIds[] = {
     IDC_SELECT_NEXT_TAB,     IDC_SELECT_PREVIOUS_TAB,
 };
 
-} // namespace
+std::vector<AcceleratorMapping>* GetAcceleratorsPointer() {
+  static base::NoDestructor<std::vector<AcceleratorMapping>> accelerators;
+  return accelerators.get();
+}
+
+}  // namespace
 
 std::vector<AcceleratorMapping> GetAcceleratorList() {
-  static base::NoDestructor<std::vector<AcceleratorMapping>> accelerators;
+  std::vector<AcceleratorMapping>* accelerators = GetAcceleratorsPointer();
 
   if (accelerators->empty()) {
     accelerators->insert(accelerators->begin(), std::begin(kAcceleratorMap),
                          std::end(kAcceleratorMap));
+
+    bool enable_devtools = true;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // In Ash, DevTools is disabled by default if lacros is the only browser, in
+    // order not to confuse users by opening Ash browser windows.
+    enable_devtools = crosapi::browser_util::IsAshDevToolEnabled();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+    if (enable_devtools) {
+      accelerators->insert(accelerators->begin(),
+                           std::begin(kDevToolsAcceleratorMap),
+                           std::end(kDevToolsAcceleratorMap));
+    }
+
     // See https://devblogs.microsoft.com/oldnewthing/20040329-00/?p=40003
     // Doing this check here and not at the bottom since kUIDebugAcceleratorMap
     // contains Ctrl+Alt keys but we don't enable those for the public.
@@ -341,6 +368,11 @@ std::vector<AcceleratorMapping> GetAcceleratorList() {
   }
 
   return *accelerators;
+}
+
+void ClearAcceleratorListForTesting() {
+  std::vector<AcceleratorMapping>* accelerators = GetAcceleratorsPointer();
+  accelerators->clear();
 }
 
 bool GetStandardAcceleratorForCommandId(int command_id,

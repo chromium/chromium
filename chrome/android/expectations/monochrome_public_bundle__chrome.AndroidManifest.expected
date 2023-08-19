@@ -4,14 +4,14 @@
     xmlns:dist="http://schemas.android.com/apk/distribution"
     featureSplit="chrome"
     package="org.chromium.chrome.stable"
-    platformBuildVersionCode="33"
-    platformBuildVersionName="13"
+    platformBuildVersionCode="34"
+    platformBuildVersionName="14"
     android:versionCode="OFFSET=20"
     android:versionName="#.#.#.#">
   <dist:module dist:onDemand="false">  # DIFF-ANCHOR: 2805007f
     <dist:fusing dist:include="true"/>
   </dist:module>  # DIFF-ANCHOR: 2805007f
-  <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="33"/>
+  <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="34"/>
   <application>
     <activity  # DIFF-ANCHOR: 28dc9019
         android:name="com.google.ar.core.InstallActivity"
@@ -21,6 +21,12 @@
         android:launchMode="singleTop"
         android:theme="@android:style/Theme.Material.Light.Dialog.Alert">
     </activity>  # DIFF-ANCHOR: 28dc9019
+    <activity  # DIFF-ANCHOR: ce279235
+        android:name="com.google.cardboard.sdk.QrCodeCaptureActivity"
+        android:exported="false"
+        android:label="@string/title_activity_qr_code_capture"
+        android:theme="@style/Theme.AppCompat.NoActionBar">
+    </activity>  # DIFF-ANCHOR: ce279235
     <activity  # DIFF-ANCHOR: 93d41352
         android:name="org.chromium.chrome.browser.BrowserRestartActivity"
         android:excludeFromRecents="true"
@@ -105,6 +111,14 @@
         android:theme="@style/Theme.Chromium.DialogWhenLarge"
         android:windowSoftInputMode="stateHidden">
     </activity>  # DIFF-ANCHOR: 766e66bd
+    <activity  # DIFF-ANCHOR: 002f9e99
+        android:name="org.chromium.chrome.browser.app.bookmarks.BookmarkFolderPickerActivity"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:exported="false"
+        android:label="@string/bookmark_choose_folder"
+        android:theme="@style/Theme.Chromium.DialogWhenLarge"
+        android:windowSoftInputMode="stateAlwaysHidden">
+    </activity>  # DIFF-ANCHOR: 002f9e99
     <activity  # DIFF-ANCHOR: 8f8d0c81
         android:name="org.chromium.chrome.browser.app.bookmarks.BookmarkFolderSelectActivity"
         android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
@@ -484,6 +498,23 @@
         android:noHistory="true"
         android:theme="@style/Theme.Chromium.Activity">
     </activity>  # DIFF-ANCHOR: 1d9b4077
+    <activity  # DIFF-ANCHOR: 5d3091ca
+        android:name="org.chromium.components.webxr.XrHostActivity"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|navigation"
+        android:excludeFromRecents="true"
+        android:exported="false"
+        android:hardwareAccelerated="false"
+        android:label="WebXR"
+        android:launchMode="singleTask"
+        android:noHistory="true"
+        android:resizeableActivity="false"
+        android:screenOrientation="landscape"
+        android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
+        android:windowSoftInputMode="adjustResize">
+      <intent-filter>  # DIFF-ANCHOR: 48f4c2ef
+        <category android:name="android.intent.category.XR"/>
+      </intent-filter>  # DIFF-ANCHOR: 48f4c2ef
+    </activity>  # DIFF-ANCHOR: 5d3091ca
     <activity-alias  # DIFF-ANCHOR: 9da0e5b6
         android:name="com.google.android.apps.chrome.IntentDispatcher"
         android:exported="true"
@@ -641,16 +672,6 @@
       </intent-filter>  # DIFF-ANCHOR: dea53031
       <meta-data android:name="android.app.shortcuts" android:resource="@xml/launchershortcuts"/>
     </activity-alias>  # DIFF-ANCHOR: 5042984f
-    <activity-alias  # DIFF-ANCHOR: 03398466
-        android:name="com.google.android.apps.chrome.TranslateDispatcher"
-        android:exported="true"
-        android:permission="$PACKAGE.permission.TRANSLATE"
-        android:targetActivity="org.chromium.chrome.browser.document.ChromeLauncherActivity">
-      <intent-filter>  # DIFF-ANCHOR: 75e5f897
-        <action android:name="org.chromium.chrome.browser.translate.TRANSLATE_TAB"/>
-        <category android:name="android.intent.category.DEFAULT"/>
-      </intent-filter>  # DIFF-ANCHOR: 75e5f897
-    </activity-alias>  # DIFF-ANCHOR: 03398466
     <activity-alias  # DIFF-ANCHOR: dcfe2999
         android:name="com.google.android.apps.chrome.webapps.WebappActivity"
         android:label="@string/webapp_activity_title"

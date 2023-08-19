@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/omnibox/browser/on_device_tail_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
@@ -33,7 +34,8 @@ class OnDeviceTailModelService
   // optimization_guide::OptimizationTargetModelObserver implementation:
   void OnModelUpdated(
       optimization_guide::proto::OptimizationTarget optimization_target,
-      const optimization_guide::ModelInfo& model_info) override;
+      base::optional_ref<const optimization_guide::ModelInfo> model_info)
+      override;
 
   // Calls the model executor to generate predictions for the input.
   void GetPredictionsForInput(
@@ -49,6 +51,9 @@ class OnDeviceTailModelService
   // demand.
   OnDeviceTailModelService();
 
+  // Checks if model executor is idle and maybe unload it from memory.
+  void CheckIfModelExecutorIdle();
+
   // The task runner to run tail model executor.
   scoped_refptr<base::SequencedTaskRunner> model_executor_task_runner_ =
       nullptr;
@@ -62,6 +67,11 @@ class OnDeviceTailModelService
   // Optimization Guide Service that provides model files for this service.
   raw_ptr<optimization_guide::OptimizationGuideModelProvider> model_provider_ =
       nullptr;
+
+  // A periodic timer which checks the model executor.
+  base::RepeatingTimer timer_;
+
+  base::WeakPtrFactory<OnDeviceTailModelService> weak_ptr_factory_{this};
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_ON_DEVICE_TAIL_MODEL_SERVICE_H_

@@ -22,10 +22,6 @@
 #import "net/test/embedded_test_server/request_handler_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::OpenLinkInNewTabButton;
 using chrome_test_util::WebViewMatcher;
@@ -77,19 +73,6 @@ std::unique_ptr<net::test_server::HttpResponse> GetContentDispositionResponse(
       base::test::ios::kWaitForPageLoadTimeout, ^{
         NSError* error = nil;
         [[EarlGrey selectElementWithMatcher:DownloadButton()]
-            assertWithMatcher:grey_interactable()
-                        error:&error];
-        return (error == nil);
-      });
-}
-
-// Waits until Open in Downloads button is shown.
-[[nodiscard]] bool WaitForOpenInDownloadsButton() {
-  return base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForUIElementTimeout, ^{
-        NSError* error = nil;
-        [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
-                                                IDS_IOS_OPEN_IN_DOWNLOADS))]
             assertWithMatcher:grey_interactable()
                         error:&error];
         return (error == nil);
@@ -284,8 +267,9 @@ std::unique_ptr<net::test_server::HttpResponse> GetContentDispositionResponse(
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OpenInButton()]
       performAction:grey_tap()];
 
-  GREYAssert(WaitForOpenInDownloadsButton(),
-             @"Open in Downloads button did not show up");
+  [ChromeEarlGrey
+      verifyTextVisibleInActivitySheetWithID:l10n_util::GetNSString(
+                                                 IDS_IOS_OPEN_IN_DOWNLOADS)];
 
   // Tests filename label.
   [[EarlGrey

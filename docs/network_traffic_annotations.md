@@ -135,7 +135,8 @@ in the `NetworkTrafficAnnotation` message of
       should be placed inside internal field. This field should not be used in any
       external reports.
      * `contacts`: A person's or team's email address who are point-of-contact
-        for questions, issues, or bugs related to this network request.
+        for questions, issues, or bugs related to this network request. An
+        OWNERS file may also be specified using the `owners` field.
    * `last_reviewed`: Date when this annotation was last reviewed in YYYY-MM-DD format.
 * `policy`: These set of fields specify the controls that a user may have
   on disabling or limiting the network request and its trace.

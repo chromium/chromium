@@ -65,7 +65,8 @@ enum FileSystemType {
   // Indicates a local filesystem where we can access files using local path,
   // but with restricted access.
   // Restricted local file system is in read-only mode.
-  kFileSystemTypeRestrictedLocal = 102,
+  // Previously used for ChromeOS /usr/share/oem, now obsolete.
+  // kFileSystemTypeRestrictedLocal = 102,
 
   // Indicates a transient, isolated file system for dragged files (which could
   // contain multiple dragged paths in the virtual root).

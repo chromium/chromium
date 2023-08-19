@@ -210,6 +210,9 @@ enum MinidumpCPUArchitecture : uint16_t {
   //! \deprecated Use #kMinidumpCPUArchitectureARM64 instead.
   kMinidumpCPUArchitectureARM64Breakpad = 0x8003,
 
+  //! \brief Used by Breakpad for 64-bit RISC-V.
+  kMinidumpCPUArchitectureRISCV64Breakpad = 0x8006,
+
   //! \brief Unknown CPU architecture.
   kMinidumpCPUArchitectureUnknown = PROCESSOR_ARCHITECTURE_UNKNOWN,
 };

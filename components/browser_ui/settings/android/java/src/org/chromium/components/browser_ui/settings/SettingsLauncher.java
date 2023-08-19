@@ -20,22 +20,24 @@ import java.lang.annotation.RetentionPolicy;
  */
 public interface SettingsLauncher {
     @IntDef({SettingsFragment.MAIN, SettingsFragment.CLEAR_BROWSING_DATA,
-            SettingsFragment.PAYMENT_METHODS, SettingsFragment.SAFETY_CHECK, SettingsFragment.SITE,
-            SettingsFragment.ACCESSIBILITY})
+            SettingsFragment.CLEAR_BROWSING_DATA_ADVANCED_PAGE, SettingsFragment.PAYMENT_METHODS,
+            SettingsFragment.SAFETY_CHECK, SettingsFragment.SITE, SettingsFragment.ACCESSIBILITY})
     @Retention(RetentionPolicy.SOURCE)
     public @interface SettingsFragment {
         /// Main settings page.
         int MAIN = 0;
         /// Browsing Data management.
         int CLEAR_BROWSING_DATA = 1;
+        /// Advanced page of browsing data management.
+        int CLEAR_BROWSING_DATA_ADVANCED_PAGE = 2;
         /// Payment methods and autofill settings.
-        int PAYMENT_METHODS = 2;
+        int PAYMENT_METHODS = 3;
         /// Safety check, automatically running the action.
-        int SAFETY_CHECK = 3;
+        int SAFETY_CHECK = 4;
         /// Site settings and permissions.
-        int SITE = 4;
+        int SITE = 5;
         /// Accessibility settings.
-        int ACCESSIBILITY = 5;
+        int ACCESSIBILITY = 6;
     }
 
     /**

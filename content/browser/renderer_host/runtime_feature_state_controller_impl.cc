@@ -38,6 +38,16 @@ void RuntimeFeatureStateControllerImpl::Create(
 void RuntimeFeatureStateControllerImpl::ApplyFeatureDiffForOriginTrial(
     base::flat_map<::blink::mojom::RuntimeFeatureState,
                    ::blink::mojom::FeatureValuePtr> modified_features) {
+  // TODO(crbug.com/1377000): RuntimeFeatureState does not yet support
+  // HTTP header origin trial tokens, which currently cause this function to be
+  // called between RenderFrameHostImpl::CommitNavigation() and
+  // RenderFrameHostImpl::DidCommitNavigation(). As a result, we will reject all
+  // tokens that are sent before the navigation has committed, as we cannot
+  // validate them.
+  if (render_frame_host().GetLifecycleState() ==
+      content::RenderFrameHost::LifecycleState::kPendingCommit) {
+    return;
+  }
   // Perform security checks by ensuring the following:
   base::flat_map<::blink::mojom::RuntimeFeatureState, bool>
       validated_features{};
@@ -96,6 +106,7 @@ void RuntimeFeatureStateControllerImpl::ApplyFeatureDiffForOriginTrial(
   RuntimeFeatureStateDocumentData* document_data =
       RuntimeFeatureStateDocumentData::GetForCurrentDocument(
           &render_frame_host());
+  CHECK(document_data);
   document_data
       ->GetMutableRuntimeFeatureStateReadContext(
           base::PassKey<RuntimeFeatureStateControllerImpl>())

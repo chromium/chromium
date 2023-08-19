@@ -67,6 +67,11 @@ using content::WebContents;
 namespace {
 
 #if !BUILDFLAG(IS_ANDROID)
+// Unlocalizes the minimum font size setting. crbug.com/1469490.
+BASE_FEATURE(kUnlocalizeMinimumFontSize,
+             "UnlocalizeMinimumFontSize",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Registers a preference under the path |pref_name| for each script used for
 // per-script font prefs.
 // For example, for WEBKIT_WEBPREFS_FONTS_SERIF ("fonts.serif"):
@@ -422,8 +427,16 @@ void PrefsTabHelper::RegisterProfilePrefs(
 
   registry->RegisterIntegerPref(prefs::kWebKitDefaultFontSize, 16);
   registry->RegisterIntegerPref(prefs::kWebKitDefaultFixedFontSize, 13);
-  RegisterLocalizedFontPref(registry, prefs::kWebKitMinimumFontSize,
-                            IDS_MINIMUM_FONT_SIZE);
+  if (base::FeatureList::IsEnabled(kUnlocalizeMinimumFontSize)) {
+    registry->RegisterIntegerPref(prefs::kWebKitMinimumFontSize, 0);
+  } else {
+    // TODO(crbug.com/1432798): When the feature is stabilized and cleaning up,
+    // make sure to remove all `IDS_MINIMUM_FONT_SIZE`. `kWebKitMinimumFontSize`
+    // helping the readability is no longer needed, but it's still important for
+    // accessibility. See the design doc linked from crbug.com/1432798.
+    RegisterLocalizedFontPref(registry, prefs::kWebKitMinimumFontSize,
+                              IDS_MINIMUM_FONT_SIZE);
+  }
   RegisterLocalizedFontPref(registry, prefs::kWebKitMinimumLogicalFontSize,
                             IDS_MINIMUM_LOGICAL_FONT_SIZE);
 #endif

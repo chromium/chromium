@@ -238,6 +238,22 @@ TEST_F(OmniboxFieldTrialTest, GetProviderMaxMatches) {
                         AutocompleteProvider::Type::TYPE_HISTORY_QUICK));
   }
   {
+    OmniboxFieldTrial::ScopedMLConfigForTesting scoped_ml_config;
+    scoped_ml_config.GetMLConfig().ml_url_scoring = true;
+    scoped_ml_config.GetMLConfig().url_scoring_model = true;
+    scoped_ml_config.GetMLConfig().ml_url_scoring_max_matches_by_provider =
+        "1:10,4:10,8:10,64:10,65536:10";
+
+    ASSERT_EQ(10ul, OmniboxFieldTrial::GetProviderMaxMatches(
+                        AutocompleteProvider::Type::TYPE_BOOKMARK));
+    ASSERT_EQ(10ul, OmniboxFieldTrial::GetProviderMaxMatches(
+                        AutocompleteProvider::Type::TYPE_HISTORY_QUICK));
+    ASSERT_EQ(10ul, OmniboxFieldTrial::GetProviderMaxMatches(
+                        AutocompleteProvider::Type::TYPE_HISTORY_URL));
+    ASSERT_EQ(10ul, OmniboxFieldTrial::GetProviderMaxMatches(
+                        AutocompleteProvider::Type::TYPE_HISTORY_FUZZY));
+  }
+  {
     ResetFieldTrialList();
     ASSERT_EQ(3ul, OmniboxFieldTrial::GetProviderMaxMatches(
                        AutocompleteProvider::Type::TYPE_BOOKMARK));

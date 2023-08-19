@@ -97,8 +97,6 @@ void MultiLogCTVerifier::Verify(
   DCHECK(cert);
   DCHECK(output_scts);
 
-  base::TimeTicks start = base::TimeTicks::Now();
-
   output_scts->clear();
 
   std::string embedded_scts;
@@ -139,14 +137,6 @@ void MultiLogCTVerifier::Verify(
     VerifySCTs(hostname, sct_list_from_tls_extension, x509_entry,
                ct::SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION, cert,
                output_scts);
-  }
-
-  // Only log the verification time if SCTs were provided.
-  if (!output_scts->empty()) {
-    base::TimeDelta verify_time = base::TimeTicks::Now() - start;
-    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-        "Net.CertificateTransparency.SCT.VerificationTime", verify_time,
-        base::Microseconds(1), base::Milliseconds(100), 50);
   }
 
   net_log.AddEvent(NetLogEventType::SIGNED_CERTIFICATE_TIMESTAMPS_CHECKED, [&] {

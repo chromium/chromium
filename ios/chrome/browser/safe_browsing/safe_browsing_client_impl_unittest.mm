@@ -13,16 +13,13 @@
 #import "testing/platform_test.h"
 #import "ui/base/page_transition_types.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 class SafeBrowsingClientImplTest : public PlatformTest {
  protected:
   SafeBrowsingClientImplTest()
       : prerender_service_(base::WrapUnique(new FakePrerenderService())),
         client_(base::WrapUnique(
             new SafeBrowsingClientImpl(/*lookup_service=*/nullptr,
+                                       /*hash_real_time_service=*/nullptr,
                                        prerender_service_.get()))),
         web_state_(base::WrapUnique(new web::FakeWebState())) {}
 

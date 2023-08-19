@@ -154,8 +154,8 @@ std::unique_ptr<KeyedService> CreateTestTracker(content::BrowserContext*) {
 const char kPasswordManagerId[] = "chrome://password-manager/";
 const char kPasswordManagerPWAUrl[] = "chrome://password-manager/?source=pwa";
 
-std::unique_ptr<WebAppInstallInfo> CreatePasswordManagerWebAppInfo() {
-  auto web_app_info = std::make_unique<WebAppInstallInfo>();
+std::unique_ptr<web_app::WebAppInstallInfo> CreatePasswordManagerWebAppInfo() {
+  auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
   web_app_info->start_url = GURL(kPasswordManagerPWAUrl);
   web_app_info->title = u"Password Manager";
   web_app_info->manifest_id = GURL(kPasswordManagerId);
@@ -219,7 +219,7 @@ class ProfileMenuViewTestBase {
   }
 
  private:
-  raw_ptr<Browser, DanglingUntriaged> target_browser_ = nullptr;
+  raw_ptr<Browser, AcrossTasksDanglingUntriaged> target_browser_ = nullptr;
 };
 
 class ProfileMenuViewExtensionsTest : public ProfileMenuViewTestBase,
@@ -801,10 +801,6 @@ class ProfileMenuClickTest : public SyncTest,
   void SetUpInProcessBrowserTestFixture() override {
     test_signin_client_subscription_ =
         secondary_account_helper::SetUpSigninClient(&test_url_loader_factory_);
-
-    // Needed by ProfileMenuClickTest_PasswordManagerWebApp test.
-    feature_list_.InitAndEnableFeature(
-        password_manager::features::kPasswordManagerRedesign);
   }
 
   // SyncTest:
@@ -841,7 +837,7 @@ class ProfileMenuClickTest : public SyncTest,
   }
 
   void EnableSync() {
-    sync_harness()->SetupSync();
+    ASSERT_TRUE(sync_harness()->SetupSync());
     ASSERT_TRUE(
         identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
     ASSERT_TRUE(sync_service()->IsSyncFeatureEnabled());
@@ -889,7 +885,6 @@ class ProfileMenuClickTest : public SyncTest,
   base::HistogramTester histogram_tester_;
   std::unique_ptr<SyncServiceImplHarness> sync_harness_;
   raw_ptr<Profile, DanglingUntriaged> profile_ = nullptr;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 #define PROFILE_MENU_CLICK_TEST(actionable_item_list, test_case_name)     \
@@ -1290,19 +1285,13 @@ PROFILE_MENU_CLICK_TEST(kActionableItems_PasswordManagerWebApp,
 class ProfileMenuViewWebAppTest : public ProfileMenuViewTestBase,
                                   public web_app::WebAppControllerBrowserTest {
  protected:
-  void SetUp() override {
-    // Enable the installable PasswordManager WebUI.
-    feature_list_.InitAndEnableFeature(
-        password_manager::features::kPasswordManagerRedesign);
-    web_app::WebAppControllerBrowserTest::SetUp();
-  }
+  void SetUp() override { web_app::WebAppControllerBrowserTest::SetUp(); }
 
   WebAppFrameToolbarTestHelper* toolbar_helper() {
     return &web_app_frame_toolbar_helper_;
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   WebAppFrameToolbarTestHelper web_app_frame_toolbar_helper_;
 };
 

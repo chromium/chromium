@@ -8,14 +8,13 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "chrome/android/chrome_jni_headers/SendTabToSelfAndroidBridge_jni.h"
+#include "chrome/android/chrome_jni_headers/TargetDeviceInfo_jni.h"
 #include "chrome/browser/android/send_tab_to_self/android_notification_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/send_tab_to_self/receiving_ui_handler_registry.h"
-#include "chrome/browser/share/android/jni_headers/SendTabToSelfAndroidBridge_jni.h"
-#include "chrome/browser/share/android/jni_headers/TargetDeviceInfo_jni.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
-#include "chrome/browser/sync/sync_service_factory.h"
 #include "components/send_tab_to_self/entry_point_display_reason.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
@@ -133,13 +132,13 @@ JNI_SendTabToSelfAndroidBridge_GetEntryPointDisplayReason(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_profile,
     const JavaParamRef<jstring>& j_url_to_share) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
+  send_tab_to_self::SendTabToSelfSyncService* service =
+      SendTabToSelfSyncServiceFactory::GetForProfile(
+          ProfileAndroid::FromProfileAndroid(j_profile));
   absl::optional<send_tab_to_self::EntryPointDisplayReason> reason =
-      send_tab_to_self::GetEntryPointDisplayReason(
-          GURL(ConvertJavaStringToUTF8(env, j_url_to_share)),
-          SyncServiceFactory::GetForProfile(profile),
-          SendTabToSelfSyncServiceFactory::GetForProfile(profile),
-          profile->GetPrefs());
+      service ? service->GetEntryPointDisplayReason(
+                    GURL(ConvertJavaStringToUTF8(env, j_url_to_share)))
+              : absl::nullopt;
 
   if (!reason) {
     return nullptr;

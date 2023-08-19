@@ -95,6 +95,7 @@ class ASH_EXPORT SearchResultBaseView : public views::Button,
 
   // views::View:
   const char* GetClassName() const override;
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   SearchResultActionsView* actions_view() { return actions_view_; }
 
@@ -118,7 +119,8 @@ class ASH_EXPORT SearchResultBaseView : public views::Button,
   // Expected to be set by result view implementations that supports
   // extra result actions. It points to the view containing result actions
   // buttons. Owned by the views hierarchy.
-  raw_ptr<SearchResultActionsView, ExperimentalAsh> actions_view_ = nullptr;
+  raw_ptr<SearchResultActionsView, DanglingUntriaged | ExperimentalAsh>
+      actions_view_ = nullptr;
 
   // The index of this view within a |SearchResultContainerView| that holds it.
   absl::optional<int> index_in_container_;

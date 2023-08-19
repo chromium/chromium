@@ -98,8 +98,7 @@ std::unique_ptr<PasswordForm> FillPasswordFormWithData(
 std::unique_ptr<PasswordForm> CreateEntry(const std::string& username,
                                           const std::string& password,
                                           const GURL& origin_url,
-                                          bool is_psl_match,
-                                          bool is_affiliation_based_match);
+                                          PasswordForm::MatchType match_type);
 
 // Checks whether the PasswordForms pointed to in |actual_values| are in some
 // permutation pairwise equal to those in |expectations|. Returns true in case

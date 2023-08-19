@@ -9,5 +9,7 @@ PASS ORB shouldn't block opaque text/javascript
 PASS ORB shouldn't block opaque text/javascript (utf16 encoded with BOM)
 PASS ORB shouldn't block opaque text/javascript (utf16 encoded without BOM but charset is provided in content-type)
 PASS ORB shouldn't block opaque text/javascript (iso-8559-1 encoded)
+PASS ORB shouldn't block text/javascript with valid asm.js
+PASS ORB shouldn't block text/javascript with invalid asm.js
 Harness: the test ran to completion.
 

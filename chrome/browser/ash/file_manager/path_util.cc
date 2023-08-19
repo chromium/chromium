@@ -15,8 +15,10 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
+#include "base/pickle.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -34,6 +36,7 @@
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/fileapi/external_file_url_util.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
+#include "chrome/browser/ash/fusebox/fusebox_server.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
@@ -55,6 +58,9 @@
 #include "net/base/filename_util.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "ui/base/clipboard/custom_data_helper.h"
+#include "ui/base/clipboard/file_info.h"
+#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "url/gurl.h"
@@ -85,6 +91,9 @@ constexpr char kDriveFsDirSharedWithMe[] = ".files-by-id";
 constexpr char kDriveFsDirShortcutsSharedWithMe[] = ".shortcut-targets-by-id";
 constexpr char kDriveFsDirRoot[] = "root";
 constexpr char kDriveFsDirTeamDrives[] = "team_drives";
+
+constexpr char16_t kFilesAppMimeSources[] = u"fs/sources";
+constexpr char16_t kFilesAppSeparator16[] = u"\n";
 
 // Sync with the root name defined with the file provider in ARC++ side.
 constexpr base::FilePath::CharType kArcDownloadRoot[] =
@@ -472,6 +481,9 @@ std::string GetGuestOsMountPointName(Profile* profile,
                                      const guest_os::GuestId& id) {
   if (id.vm_type == guest_os::VmType::ARCVM) {
     return kAndroidFilesMountPointName;
+  }
+  if (id == crostini::DefaultContainerId()) {
+    return GetCrostiniMountPointName(profile);
   }
   return base::JoinString(
       {"guestos", ash::ProfileHelper::GetUserIdHashFromProfile(profile),
@@ -1190,6 +1202,49 @@ absl::optional<base::FilePath> GetDisplayablePath(
     Profile* profile,
     storage::FileSystemURL file_url) {
   return GetDisplayablePath(profile, file_url.path());
+}
+
+std::vector<ui::FileInfo> ParseFileSystemSources(
+    const ui::DataTransferEndpoint* source,
+    const base::Pickle& pickle) {
+  std::vector<ui::FileInfo> file_info;
+  // We only promote 'fs/sources' custom data pickle to be filenames if it came
+  // from the trusted FilesApp.
+  if (!source || !source->GetURL() || !IsFileManagerURL(*source->GetURL())) {
+    return file_info;
+  }
+
+  std::u16string file_system_url_list;
+  ui::ReadCustomDataForType(pickle.data(), pickle.size(), kFilesAppMimeSources,
+                            &file_system_url_list);
+  if (file_system_url_list.empty()) {
+    return file_info;
+  }
+
+  storage::ExternalMountPoints* mount_points =
+      storage::ExternalMountPoints::GetSystemInstance();
+
+  for (const base::StringPiece16& line : base::SplitStringPiece(
+           file_system_url_list, kFilesAppSeparator16, base::TRIM_WHITESPACE,
+           base::SPLIT_WANT_NONEMPTY)) {
+    if (line.empty() || line[0] == '#') {
+      continue;
+    }
+    const GURL gurl(line);
+    storage::FileSystemURL url = mount_points->CrackURL(
+        gurl, blink::StorageKey::CreateFirstParty(url::Origin::Create(gurl)));
+    if (!url.is_valid()) {
+      LOG(WARNING) << "Invalid clipboard FileSystemURL: " << line;
+      continue;
+    } else if (url.TypeImpliesPathIsReal()) {
+      file_info.emplace_back(std::move(url.path()), base::FilePath());
+    } else if (base::FilePath path =
+                   fusebox::Server::SubstituteFuseboxFilePath(url);
+               !path.empty()) {
+      file_info.emplace_back(std::move(path), base::FilePath());
+    }
+  }
+  return file_info;
 }
 
 }  // namespace util

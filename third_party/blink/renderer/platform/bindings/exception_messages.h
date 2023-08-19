@@ -133,8 +133,6 @@ class PLATFORM_EXPORT ExceptionMessages {
 
   static String ValueNotOfType(const char* expected_type);
 
-  static String InputArrayTooLong(unsigned expected_size, unsigned actual_size);
-
  private:
   template <typename NumType>
   static String FormatFiniteNumber(NumType number) {

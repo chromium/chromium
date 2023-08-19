@@ -62,39 +62,6 @@ bool ShouldCheckAppsForUrl(content::WebContents* web_contents) {
   return true;
 }
 
-std::vector<IntentPickerAppInfo> FindPwaForUrl(
-    content::WebContents* web_contents,
-    const GURL& url,
-    std::vector<IntentPickerAppInfo> apps) {
-  // Check if the current URL has an installed desktop PWA, and add that to
-  // the list of apps if it exists.
-  Profile* const profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-
-  absl::optional<web_app::AppId> app_id =
-      web_app::FindInstalledAppWithUrlInScope(profile, url,
-                                              /*window_only=*/true);
-  if (!app_id)
-    return apps;
-
-  auto* const provider = web_app::WebAppProvider::GetForWebApps(profile);
-  if (provider->registrar_unsafe().GetAppUserDisplayMode(*app_id) ==
-      web_app::mojom::UserDisplayMode::kBrowser) {
-    return apps;
-  }
-
-  ui::ImageModel icon_model =
-      ui::ImageModel::FromImage(gfx::Image::CreateFrom1xBitmap(
-          provider->icon_manager().GetFavicon(*app_id)));
-
-  // Prefer the web and place apps of type PWA before apps of type ARC.
-  // TODO(crbug.com/824598): deterministically sort this list.
-  apps.emplace(apps.begin(), PickerEntryType::kWeb, icon_model, *app_id,
-               provider->registrar_unsafe().GetAppShortName(*app_id));
-
-  return apps;
-}
-
 void ShowIntentPickerBubbleForApps(content::WebContents* web_contents,
                                    std::vector<IntentPickerAppInfo> apps,
                                    bool show_stay_in_chrome,

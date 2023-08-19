@@ -13,7 +13,7 @@ generate_jni("jni_headers") {
 }
 
 android_library("java") {
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/components/security_interstitials/CaptivePortalHelper.java",
     "java/src/org/chromium/components/security_interstitials/DateAndTimeSettingsHelper.java",

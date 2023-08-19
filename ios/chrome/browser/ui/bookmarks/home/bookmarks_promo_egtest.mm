@@ -8,8 +8,11 @@
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/common/bookmark_features.h"
+#import "components/bookmarks/common/storage_type.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
+#import "components/sync/base/features.h"
+#import "components/sync/base/user_selectable_type.h"
 #import "ios/chrome/browser/policy/policy_app_interface.h"
 #import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
@@ -17,6 +20,7 @@
 #import "ios/chrome/browser/ui/authentication/authentication_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
@@ -29,10 +33,6 @@
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using chrome_test_util::BookmarksHomeDoneButton;
 using chrome_test_util::BookmarksNavigationBarBackButton;
@@ -56,27 +56,51 @@ using chrome_test_util::SecondarySignInButton;
         "<dict><key>SyncTypesListDisabled</key><array><string>bookmarks</"
         "string></array></dict>");
   } else if ([self isRunningTest:@selector
-                   (testSnackbarAfterSignInPromoWithAccount)] ||
-             [self isRunningTest:@selector
-                   (testSnackbarAfterSignInPromoWithoutAccount)] ||
-             [self isRunningTest:@selector(testPromoViewBody)]) {
+                   (testSigninOnlyPromoWithoutAccount_NoSnackbar)]) {
+    config.features_enabled.push_back(syncer::kEnableBookmarksAccountStorage);
     config.features_enabled.push_back(
-        bookmarks::kEnableBookmarksAccountStorage);
+        syncer::kReplaceSyncPromosWithSignInPromos);
+  } else if ([self isRunningTest:@selector
+                   (testSigninOnlyPromoWithoutAccount_WithSnackbar)]) {
+    config.features_enabled.push_back(syncer::kEnableBookmarksAccountStorage);
+    config.features_disabled.push_back(
+        syncer::kReplaceSyncPromosWithSignInPromos);
+  } else if ([self isRunningTest:@selector(testSigninOnlyPromoWithAccount)] ||
+             [self isRunningTest:@selector(testPromoViewBody)]) {
+    config.features_enabled.push_back(syncer::kEnableBookmarksAccountStorage);
+  } else if ([self isRunningTest:@selector(testPromoViewBodyLegacy)] ||
+             [self isRunningTest:@selector
+                   (testSignInPromoWithIdentitiesUsingPrimaryButton)] ||
+             [self isRunningTest:@selector
+                   (testSignInPromoWithIdentitiesUsingSecondaryButton)] ||
+             [self isRunningTest:@selector
+                   (testSignInPromoWithNoIdentitiesUsingPrimaryButton)]) {
+    // TODO(crbug.com/1455018): Re-enable the flag for non-legacy tests.
+    config.features_disabled.push_back(syncer::kEnableBookmarksAccountStorage);
+  } else if ([self isRunningTest:@selector
+                   (testSyncPromoIfSyncToSigninDisabled)]) {
+    config.features_disabled.push_back(
+        syncer::kReplaceSyncPromosWithSignInPromos);
+  } else if ([self isRunningTest:@selector
+                   (testNoSyncPromoIfSyncToSigninEnabled)]) {
+    config.features_enabled.push_back(
+        syncer::kReplaceSyncPromosWithSignInPromos);
   }
+
   return config;
 }
 
 - (void)setUp {
   [super setUp];
 
-  [ChromeEarlGrey waitForBookmarksToFinishLoading];
-  [ChromeEarlGrey clearBookmarks];
+  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
+  [BookmarkEarlGrey clearBookmarks];
 }
 
 // Tear down called once per test.
 - (void)tearDown {
   [super tearDown];
-  [ChromeEarlGrey clearBookmarks];
+  [BookmarkEarlGrey clearBookmarks];
   [BookmarkEarlGrey clearBookmarksPositionCache];
   [PolicyAppInterface clearPolicies];
 }
@@ -86,7 +110,8 @@ using chrome_test_util::SecondarySignInButton;
 // Tests the promo view body message for sync with
 // kEnableBookmarksAccountStorage flag disabled.
 - (void)testPromoViewBodyLegacy {
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
 
   // Check that promo is visible.
@@ -102,7 +127,8 @@ using chrome_test_util::SecondarySignInButton;
 // Tests the promo view body message for signin with
 // kEnableBookmarksAccountStorage flag enabled.
 - (void)testPromoViewBody {
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
 
   // Check that promo is visible.
@@ -121,7 +147,8 @@ using chrome_test_util::SecondarySignInButton;
 // Tests that the promo view is only seen at root level and not in any of the
 // child nodes.
 - (void)testPromoViewIsSeenOnlyInRootNode {
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
 
   // We are going to set the PromoAlreadySeen preference. Set a teardown handler
@@ -154,7 +181,8 @@ using chrome_test_util::SecondarySignInButton;
 
 // Tests that tapping No thanks on the promo make it disappear.
 - (void)testPromoNoThanksMakeItDisappear {
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
 
   // We are going to set the PromoAlreadySeen preference. Set a teardown handler
@@ -212,7 +240,8 @@ using chrome_test_util::SecondarySignInButton;
 // on device makes the confirmaiton sheet appear, and the promo still appears
 // after dismissing the sheet.
 - (void)testSignInPromoWithIdentitiesUsingPrimaryButton {
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
 
   // Set up a fake identity.
@@ -245,7 +274,8 @@ using chrome_test_util::SecondarySignInButton;
 // identities on device makes the sign-in sheet appear, and the promo still
 // appears after dismissing the sheet.
 - (void)testSignInPromoWithIdentitiesUsingSecondaryButton {
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
 
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
@@ -278,11 +308,13 @@ using chrome_test_util::SecondarySignInButton;
       verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount];
 }
 
-// Tests that a confirmation snackbar is shown after sign-in with an existing
-// account. The snackbar contains an 'Undo' button that signs-out the user
-// when tapped.
-- (void)testSnackbarAfterSignInPromoWithAccount {
-  [BookmarkEarlGrey setupStandardBookmarks];
+// Tests that users with a device-level account see a promo whose primary
+// button a) signs in, b) hides the promo, c) shows a snackbar with an 'Undo'
+// button that signs-out the user when tapped.
+// kEnableBookmarksAccountStorage is enabled.
+- (void)testSigninOnlyPromoWithAccount {
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   // Set up a fake identity.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
@@ -314,11 +346,14 @@ using chrome_test_util::SecondarySignInButton;
   [SigninEarlGrey verifySignedOut];
 }
 
-// Tests that a confirmation snackbar is shown after sign-in with an account
-// added through the SSO Auth flow. The snackbar contains an 'Undo' button
-// that signs-out the user when tapped.
-- (void)testSnackbarAfterSignInPromoWithoutAccount {
-  [BookmarkEarlGrey setupStandardBookmarks];
+// Tests that users with no device-level account see a promo that leads to an
+// SSO Auth flow on tap. Concluding the auth successfully hides the promo and
+// shows a snackbar with an 'Undo' button that signs-out the user when tapped.
+// kEnableBookmarksAccountStorage is enabled, kReplaceSyncPromosWithSignInPromos
+// is disabled.
+- (void)testSigninOnlyPromoWithoutAccount_WithSnackbar {
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   // Check that promo is visible.
   [BookmarkEarlGrey verifyPromoAlreadySeen:NO];
@@ -356,6 +391,41 @@ using chrome_test_util::SecondarySignInButton;
                                    grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
   [SigninEarlGrey verifySignedOut];
+}
+
+// Tests that users with no device-level account see a promo that leads to an
+// SSO Auth flow on tap. Concluding the auth successfully hides the promo.
+// kEnableBookmarksAccountStorage and kReplaceSyncPromosWithSignInPromos are
+// enabled.
+- (void)testSigninOnlyPromoWithoutAccount_NoSnackbar {
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
+  [BookmarkEarlGreyUI openBookmarks];
+  // Check that promo is visible.
+  [BookmarkEarlGrey verifyPromoAlreadySeen:NO];
+  [SigninEarlGreyUI
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount];
+
+  // Tap the primary button to start add account flow.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  // Set up a fake identity to add and sign-in with.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentityForSSOAuthAddAccountFlow:fakeIdentity];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(
+                                       kFakeAuthAddAccountButtonIdentifier),
+                                   grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  // Make sure the fake SSO view controller is fully removed.
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Verify the user got signed in and the promo hidden.
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+  [SigninEarlGreyUI verifySigninPromoNotVisible];
 }
 
 // Tests that the sign-in promo should not be shown after been shown 19 times.
@@ -404,13 +474,54 @@ using chrome_test_util::SecondarySignInButton;
   [SigninEarlGreyUI verifySigninPromoNotVisible];
 }
 
-// Tests that the turn on sync promo is shown if the user is signed in only.
-- (void)testTurnOnSyncPromo {
+// Tests that the turn on sync promo is shown if the user is signed in only and
+// kReplaceSyncPromosWithSignInPromos is disabled.
+- (void)testSyncPromoIfSyncToSigninDisabled {
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1 enableSync:NO];
   [BookmarkEarlGreyUI openBookmarks];
   [SigninEarlGreyUI verifySigninPromoVisibleWithMode:
                         SigninPromoViewModeSyncWithPrimaryAccount];
+}
+
+// Tests that no sync promo is shown if the user is signed in only and
+// kReplaceSyncPromosWithSignInPromos is enabled.
+- (void)testNoSyncPromoIfSyncToSigninEnabled {
+  FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1 enableSync:NO];
+  // By default, `signinWithFakeIdentity` above enables bookmarks data type, so
+  // turn it off to ensure that the sync promo isn't ever shown.
+  [SigninEarlGreyAppInterface
+      setSelectedType:(syncer::UserSelectableType::kBookmarks)
+              enabled:NO];
+  [BookmarkEarlGreyUI openBookmarks];
+  [SigninEarlGreyUI verifySigninPromoNotVisible];
+}
+
+// Tests that there is no issue to sign-in only first with an identity using a
+// sync passphrase, and then turn on account storage in bookmarks view, using
+// the sign-in promo.
+// Related to http://crbug.com/1467116.
+- (void)testSigninWithSyncPassphraseAndTurnOnSync {
+  [ChromeEarlGrey addBookmarkWithSyncPassphrase:@"Hello"];
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  // Sign-in only.
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+  [BookmarkEarlGreyUI openBookmarks];
+  // Turn on sync using the sign-in promo.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kConfirmationAccessibilityIdentifier)]
+      performAction:grey_tap()];
+  [ChromeEarlGreyUI waitForAppToIdle];
+  // Verify the sign-in was done.
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+  [SigninEarlGreyUI verifySigninPromoNotVisible];
+  [BookmarkEarlGreyUI verifyEmptyBackgroundAppears];
 }
 
 @end

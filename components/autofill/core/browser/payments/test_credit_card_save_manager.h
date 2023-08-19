@@ -58,12 +58,18 @@ class TestCreditCardSaveManager : public CreditCardSaveManager {
   bool credit_card_was_uploaded_ = false;
 
   FRIEND_TEST_ALL_PREFIXES(CreditCardSaveManagerTest,
+                           OnDidUploadCard_DoNotAddServerCvcIfCvcIsEmpty);
+  FRIEND_TEST_ALL_PREFIXES(
+      CreditCardSaveManagerTest,
+      OnDidUploadCard_DoNotAddServerCvcIfInstrumentIdIsEmpty);
+  FRIEND_TEST_ALL_PREFIXES(CreditCardSaveManagerTest,
                            OnDidUploadCard_VirtualCardEnrollment);
   FRIEND_TEST_ALL_PREFIXES(
       CreditCardSaveManagerTest,
       OnDidUploadCard_VirtualCardEnrollment_GetDetailsForEnrollmentResponseDetailsReturned);
   FRIEND_TEST_ALL_PREFIXES(CreditCardSaveManagerTest,
                            UploadCreditCard_NumStrikesLoggedOnUploadNotSuccess);
+  FRIEND_TEST_ALL_PREFIXES(SaveCvcTest, OnDidUploadCard_SaveServerCvc);
 };
 
 }  // namespace autofill

@@ -19,7 +19,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
-#include "chrome/browser/sync/test/integration/fake_server_invalidation_sender.h"
 #include "chrome/browser/sync/test/integration/invalidations/fake_server_sync_invalidation_sender.h"
 #include "chrome/common/buildflags.h"
 #include "components/sync/base/model_type.h"
@@ -238,7 +237,7 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
 
   // Blocks until all sync clients have completed their mutual sync cycles.
   // Returns true if a quiescent state was successfully reached.
-  bool AwaitQuiescence();
+  [[nodiscard]] bool AwaitQuiescence();
 
   // Sets the mock gaia response for when an OAuth2 token is requested.
   // Each call to this method will overwrite responses that were previously set.
@@ -288,9 +287,6 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
   // used for UI Signin. Blocks until profile is created.
   static Profile* MakeProfileForUISignin(base::FilePath profile_path);
 
-  // Stops notificatinos being sent to a client.
-  void DisableNotificationsForClient(int index);
-
   // Sets up fake responses for kClientLoginUrl, kIssueAuthTokenUrl,
   // kGetUserInfoUrl and kSearchDomainCheckUrl in order to mock out calls to
   // GAIA servers.
@@ -310,11 +306,6 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
   // Handles Profile creation for given index. Profile's path and type is
   // determined at runtime based on server type.
   bool CreateProfile(int index);
-
-  static std::unique_ptr<KeyedService> CreateProfileInvalidationProvider(
-      std::map<const Profile*, invalidation::FCMNetworkHandler*>*
-          profile_to_fcm_network_handler_map,
-      content::BrowserContext* context);
 
   // Creates a fake GCMProfileService to simulate sync invalidations.
   std::unique_ptr<KeyedService> CreateGCMProfileService(
@@ -350,10 +341,6 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
 
   // Initializes any custom services needed for the |profile| at |index|.
   void InitializeProfile(int index, Profile* profile);
-
-  // Sets up the client-side invalidations infrastructure depending on the
-  // value of |server_type_|.
-  void SetUpInvalidations(int index);
 
   // Internal routine for setting up sync.
   void SetupSyncInternal(SetupSyncMode setup_mode);
@@ -398,7 +385,7 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
   // The default profile, created before our actual testing |profiles_|. This is
   // needed in a workaround for https://crbug.com/801569, see comments in the
   // .cc file.
-  raw_ptr<Profile, DanglingUntriaged> previous_profile_;
+  raw_ptr<Profile, AcrossTasksDanglingUntriaged> previous_profile_ = nullptr;
 
   // Number of sync clients that will be created by a test.
   int num_clients_;
@@ -408,7 +395,7 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
   // directory. Profiles are owned by the ProfileManager.
   // TODO(crbug.com/1349349): store |profiles_|, |browsers_| and |clients_| in
   // one structure.
-  std::vector<raw_ptr<Profile, DanglingUntriaged>> profiles_;
+  std::vector<raw_ptr<Profile, AcrossTasksDanglingUntriaged>> profiles_;
 
   // List of temporary directories that need to be deleted when the test is
   // completed, used for two-client tests with external server.
@@ -419,7 +406,7 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
   // instance is created for each sync profile. Browser object lifetime is
   // managed by BrowserList, so we don't use a std::vector<std::unique_ptr<>>
   // here.
-  std::vector<raw_ptr<Browser, DanglingUntriaged>> browsers_;
+  std::vector<raw_ptr<Browser, AcrossTasksDanglingUntriaged>> browsers_;
 
   class ClosedBrowserObserver;
   std::unique_ptr<ClosedBrowserObserver> browser_list_observer_;
@@ -430,20 +417,10 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
   // profile with the server.
   std::vector<std::unique_ptr<SyncServiceImplHarness>> clients_;
 
-  // Owns the FakeServerInvalidationSender for each profile.
-  std::vector<std::unique_ptr<fake_server::FakeServerInvalidationSender>>
-      fake_server_invalidation_observers_;
-
-  // Maps a profile to the corresponding FCMNetworkHandler. Contains one entry
-  // per profile. It is used to simulate an incoming FCM messages to different
-  // profiles within the FakeServerInvalidationSender.
-  std::map<const Profile*, invalidation::FCMNetworkHandler*>
-      profile_to_fcm_network_handler_map_;
-
   // Used to deliver invalidations to different profiles within
   // FakeSyncServerInvalidationSender.
-  std::map<raw_ptr<Profile, DanglingUntriaged>,
-           raw_ptr<FakeSyncGCMDriver, DanglingUntriaged>>
+  std::map<raw_ptr<Profile, AcrossTasksDanglingUntriaged>,
+           raw_ptr<FakeSyncGCMDriver, AcrossTasksDanglingUntriaged>>
       profile_to_fake_gcm_driver_;
 
   base::CallbackListSubscription create_services_subscription_;
@@ -452,7 +429,7 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
   // We don't need a corresponding verifier sync client because the contents
   // of the verifier profile are strictly local, and are not meant to be
   // synced.
-  raw_ptr<Profile, DanglingUntriaged> verifier_;
+  raw_ptr<Profile, AcrossTasksDanglingUntriaged> verifier_ = nullptr;
 
   // Indicates whether to use a new user data dir.
   // Only used for external server tests with two clients.
@@ -471,9 +448,7 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // A factory-like callback to create a model updater for testing, which will
   // take the place of the real updater in AppListSyncableService for testing.
-  std::unique_ptr<
-      app_list::AppListSyncableService::ScopedModelUpdaterFactoryForTest>
-      model_updater_factory_;
+  std::unique_ptr<base::ScopedClosureRunner> model_updater_factory_scope_;
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

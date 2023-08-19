@@ -10,7 +10,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
-#include "ui/color/color_provider_manager.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_utils.h"
 #include "ui/gfx/color_palette.h"
 
@@ -22,10 +22,10 @@ struct ColorsTestCase {
 };
 
 // Returns a key with reasonable values.
-ui::ColorProviderManager::Key MakeColorProviderKey(SkColor seed_color) {
-  ui::ColorProviderManager::Key key;
+ui::ColorProviderKey MakeColorProviderKey(SkColor seed_color) {
+  ui::ColorProviderKey key;
   key.user_color = seed_color;
-  key.color_mode = ui::ColorProviderManager::ColorMode::kLight;
+  key.color_mode = ui::ColorProviderKey::ColorMode::kLight;
   return key;
 }
 

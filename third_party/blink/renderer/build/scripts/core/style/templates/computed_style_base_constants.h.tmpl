@@ -12,7 +12,7 @@ namespace blink {
 // for consistency and to prevent name conflicts.
 
 {% for enum in enums %}
-enum class {{enum.type_name}} : unsigned {
+enum class {{enum.type_name}} : {{"unsigned" if enum.set_type or enum.values|length > 256 else "uint8_t"}} {
   {% for value in enum.values %}
   {% if enum.set_type == 'multi' %}
     {% set flag = " = " ~ (0 if loop.first else 2**(loop.index0 - 1)) %}
@@ -21,6 +21,9 @@ enum class {{enum.type_name}} : unsigned {
   {% endif %}
   {{value}}{{flag}},
   {% endfor %}
+  {% if not enum.set_type %}
+  kMaxEnumValue = {{enum.values|last}},
+  {% endif %}
 };
 
 {% if enum.set_type %}

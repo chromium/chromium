@@ -4,17 +4,13 @@
 
 #import "ios/chrome/browser/ui/settings/elements/info_popover_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/ui/settings/elements/elements_constants.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -75,7 +71,7 @@ NSAttributedString* PrimaryMessage(NSString* full_text) {
 - (void)popoverPresentationControllerDidDismissPopover:
     (UIPopoverPresentationController*)popoverPresentationController {
   if (_isPresentingFromButton) {
-    UIButton* buttonView = base::mac::ObjCCastStrict<UIButton>(
+    UIButton* buttonView = base::apple::ObjCCastStrict<UIButton>(
         popoverPresentationController.sourceView);
     buttonView.enabled = YES;
   }

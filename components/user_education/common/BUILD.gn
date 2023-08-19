@@ -37,6 +37,8 @@ source_set("common") {
     "tutorial_service.h",
     "user_education_class_properties.cc",
     "user_education_class_properties.h",
+    "user_education_features.cc",
+    "user_education_features.h",
   ]
 
   deps = [

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
 
 #include "base/logging.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
@@ -74,6 +75,7 @@ void ManagedSessionService::RemoveObserver(
 }
 
 void ManagedSessionService::OnSessionStateChanged() {
+  TRACE_EVENT0("ui", "ManagedSessionService::OnSessionStateChanged");
   bool is_session_locked = session_manager_->IsScreenLocked();
   if (is_session_locked_ == is_session_locked) {
     return;

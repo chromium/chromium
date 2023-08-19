@@ -30,20 +30,11 @@ inline bool NeedMinMaxSize(const ComputedStyle& style) {
          style.LogicalMaxWidth().IsContentOrIntrinsic();
 }
 
-LayoutUnit InlineSizeFromAspectRatio(const NGBoxStrut& border_padding,
-                                     double logical_aspect_ratio,
-                                     EBoxSizing box_sizing,
-                                     LayoutUnit block_size);
 CORE_EXPORT LayoutUnit
 InlineSizeFromAspectRatio(const NGBoxStrut& border_padding,
                           const LogicalSize& aspect_ratio,
                           EBoxSizing box_sizing,
                           LayoutUnit block_size);
-
-LayoutUnit BlockSizeFromAspectRatio(const NGBoxStrut& border_padding,
-                                    double logical_aspect_ratio,
-                                    EBoxSizing box_sizing,
-                                    LayoutUnit inline_size);
 LayoutUnit BlockSizeFromAspectRatio(const NGBoxStrut& border_padding,
                                     const LogicalSize& aspect_ratio,
                                     EBoxSizing box_sizing,
@@ -579,21 +570,9 @@ inline NGBoxStrut ComputeScrollbars(const NGConstraintSpace& space,
   return ComputeScrollbarsForNonAnonymous(node);
 }
 
-// Return true if we need to know the inline size of the fragment in order to
-// calculate its line-left offset. This is the case when we have auto margins,
-// or when block alignment isn't line-left (e.g. with align!=left, and always in
-// RTL mode).
-bool NeedsInlineSizeToResolveLineLeft(
-    const ComputedStyle& style,
-    const ComputedStyle& containing_block_style);
-
-// Convert inline margins from computed to used values. This will resolve 'auto'
-// values and over-constrainedness. This uses the available size from the
-// constraint space and inline size to compute the margins that are auto, if
-// any, and adjusts the given NGBoxStrut accordingly.
-// available_inline_size, inline_size, and margins are all in the
-// containing_block's writing mode.
-CORE_EXPORT void ResolveInlineMargins(
+// Resolves any 'auto' margins in the inline dimension. All arguments are in
+// the containing-block's writing-mode.
+CORE_EXPORT void ResolveInlineAutoMargins(
     const ComputedStyle& child_style,
     const ComputedStyle& containing_block_style,
     LayoutUnit available_inline_size,

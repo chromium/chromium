@@ -379,13 +379,19 @@ void PolicyUITest::VerifyReportButton(bool visible) {
   const std::string kJavaScript = "getReportButtonVisibility();";
   std::string ret =
       content::EvalJs(web_contents(), kJavaScript).ExtractString();
+
+#if !BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(visible, ret != "none");
+#else
+  EXPECT_FALSE(ret != "none");
+#endif
 }
 
 #if !BUILDFLAG(IS_ANDROID)
 void PolicyUITest::VerifyExportingPolicies(const base::Value::Dict& expected) {
   // Set SelectFileDialog to use our factory.
-  ui::SelectFileDialog::SetFactory(new TestSelectFileDialogFactory());
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<TestSelectFileDialogFactory>());
 
   // Navigate to the about:policy page.
   ASSERT_TRUE(
@@ -617,7 +623,7 @@ class PolicyUIStatusTest : public MixinBasedInProcessBrowserTest {
 bool PolicyUIStatusTest::ReadStatusFor(
     const std::string& policy_legend,
     base::flat_map<std::string, std::string>* policy_status) {
-  // Retrieve the text contents of the status table with specified legend.
+  // Retrieve the text contents of the status table with specified heading.
   const std::string javascript = R"JS(
     (function() {
       function readStatus() {
@@ -632,14 +638,16 @@ bool PolicyUIStatusTest::ReadStatusFor(
         const policies = getPolicyFieldsets();
         const statuses = {};
         for (let i = 0; i < policies.length; ++i) {
-          const legend = policies[i].querySelector('legend').textContent;
+          const statusHeading = policies[i]
+            .querySelector('.status-box-heading').textContent;
           const entries = {};
           const rows = policies[i]
             .querySelectorAll('.status-entry div:nth-child(2)');
           for (let j = 0; j < rows.length; ++j) {
-            entries[rows[j].className] = rows[j].textContent.trim();
+            entries[rows[j].className.split(' ')[0]] = rows[j].textContent
+              .trim();
           }
-          statuses[legend.trim()] = entries;
+          statuses[statusHeading.trim()] = entries;
         }
         return JSON.stringify(statuses);
       };
@@ -932,14 +940,33 @@ IN_PROC_BROWSER_TEST_F(PolicyUITest, ReportButton) {
                  policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
                  policy::POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
   provider_.UpdateChromePolicy(policy_map);
-#if !BUILDFLAG(IS_CHROMEOS)
   VerifyReportButton(/*visible=*/true);
-#else
-  // Always hide on Chrome OS.
-  VerifyReportButton(/*visible=*/false);
-#endif
+
   // Hide while policy is off.
   policy_map.Set(policy::key::kCloudReportingEnabled,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
+                 policy::POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
+  provider_.UpdateChromePolicy(policy_map);
+  VerifyReportButton(/*visible=*/false);
+}
+
+IN_PROC_BROWSER_TEST_F(PolicyUITest, ReportButtonWithProfileReporting) {
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GURL(chrome::kChromeUIPolicyURL)));
+
+  // Hide by default.
+  VerifyReportButton(/*visible=*/false);
+
+  // Turn on with the policy
+  policy::PolicyMap policy_map;
+  policy_map.Set(policy::key::kCloudProfileReportingEnabled,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
+                 policy::POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
+  provider_.UpdateChromePolicy(policy_map);
+  VerifyReportButton(/*visible=*/true);
+
+  // Hide while policy is off.
+  policy_map.Set(policy::key::kCloudProfileReportingEnabled,
                  policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
                  policy::POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
   provider_.UpdateChromePolicy(policy_map);

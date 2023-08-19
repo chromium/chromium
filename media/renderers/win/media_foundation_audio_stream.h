@@ -8,7 +8,7 @@
 #include <mfapi.h>
 #include <mfidl.h>
 
-#include "media/filters/win/media_foundation_utils.h"
+#include "media/base/win/mf_helpers.h"
 #include "media/renderers/win/media_foundation_stream_wrapper.h"
 
 #include "media/base/media_log.h"

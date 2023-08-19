@@ -10,6 +10,7 @@
 #include <unistd.h>
 
 #include "base/apple/bundle_locations.h"
+#include "base/apple/foundation_util.h"
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
@@ -17,7 +18,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
@@ -39,14 +39,10 @@
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
 #import "chrome/updater/util/mac_util.h"
-#import "chrome/updater/util/posix_util.h"
+#include "chrome/updater/util/posix_util.h"
 #include "chrome/updater/util/util.h"
 #include "components/crash/core/common/crash_key.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace updater {
 namespace {
@@ -59,14 +55,19 @@ bool CopyBundle(UpdaterScope scope) {
     LOG(ERROR) << "Failed to get install directory.";
     return false;
   }
-  if (!base::PathExists(*versioned_install_dir)) {
-    base::File::Error error;
-    if (!base::CreateDirectoryAndGetError(*versioned_install_dir, &error)) {
-      LOG(ERROR) << "Failed to create '"
-                 << versioned_install_dir->value().c_str()
-                 << "' directory: " << base::File::ErrorToString(error);
+
+  if (base::PathExists(*versioned_install_dir)) {
+    if (!DeleteExcept(versioned_install_dir->Append("Crashpad"))) {
+      LOG(ERROR) << "Could not remove existing copy of this updater.";
       return false;
     }
+  }
+
+  base::File::Error error;
+  if (!base::CreateDirectoryAndGetError(*versioned_install_dir, &error)) {
+    LOG(ERROR) << "Failed to create '" << versioned_install_dir->value().c_str()
+               << "' directory: " << base::File::ErrorToString(error);
+    return false;
   }
 
   // For system installs, set file permissions to be drwxr-xr-x
@@ -128,7 +129,7 @@ bool EnsureWakeLaunchItemPresence(UpdaterScope scope, NSDictionary* contents) {
     return false;
   }
   @autoreleasepool {
-    NSURL* const url = base::mac::FilePathToNSURL(*path);
+    NSURL* const url = base::apple::FilePathToNSURL(*path);
 
     // If the file is unchanged, avoid a spammy notification by not touching it.
     if (previousPlistExists &&
@@ -171,7 +172,7 @@ bool EnsureWakeLaunchItemPresence(UpdaterScope scope, NSDictionary* contents) {
         GetInstallDirectory(scope);
     if (install_path) {
       OSStatus ls_result = LSRegisterURL(
-          base::mac::FilePathToCFURL(
+          base::apple::FilePathToCFURL(
               install_path->Append("Current").Append(base::StrCat(
                   {PRODUCT_FULLNAME_STRING, kExecutableSuffix, ".app"}))),
           true);

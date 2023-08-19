@@ -7,16 +7,16 @@
 #include <functional>
 #include <memory>
 
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane.h"
-#include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/test/widget_test.h"
@@ -123,6 +123,17 @@ class InteractiveViewsTestTest : public InteractiveViewsTest {
     InteractiveViewsTest::TearDown();
   }
 
+  static void DoPost(base::OnceClosure closure) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(closure));
+  }
+
+  auto Post(base::OnceClosure closure) {
+    return Do(base::BindOnce(
+        [](base::OnceClosure closure) { DoPost(std::move(closure)); },
+        std::move(closure)));
+  }
+
  protected:
   using ButtonCallbackMock = testing::StrictMock<
       base::MockCallback<Button::PressedCallback::Callback>>;
@@ -190,6 +201,47 @@ TEST_F(InteractiveViewsTestTest, CheckViewPropertyFails) {
       aborted, Run,
       RunTestSequence(CheckViewProperty(
           kTabbedPaneId, &TabbedPane::GetSelectedTabIndex, testing::Eq(1U))));
+}
+
+TEST_F(InteractiveViewsTestTest, WaitForViewProperty_AlreadyTrue) {
+  RunTestSequence(WaitForViewProperty(kButton1Id, View, Enabled, true));
+}
+
+TEST_F(InteractiveViewsTestTest, WaitForViewProperty_BecomesTrue) {
+  button1_->SetEnabled(false);
+  DoPost(base::BindLambdaForTesting([this]() { button1_->SetEnabled(true); }));
+  RunTestSequence(WaitForViewProperty(kButton1Id, View, Enabled, true));
+}
+
+TEST_F(InteractiveViewsTestTest, WaitForViewPropertyFails) {
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+  private_test_impl().set_aborted_callback_for_testing(aborted.Get());
+  button1_->SetEnabled(false);
+  DoPost(base::BindLambdaForTesting([this]() { button1_->SetVisible(false); }));
+  EXPECT_CALL_IN_SCOPE(
+      aborted, Run,
+      RunTestSequence(WaitForViewProperty(kButton1Id, View, Enabled, true)));
+}
+
+TEST_F(InteractiveViewsTestTest, WaitForViewPropertyInParallel) {
+  button1_->SetEnabled(false);
+  tabs_->SetEnabled(false);
+  RunTestSequence(InParallel(
+      Steps(
+          // These have to be inside the subsequences because there's an
+          // implicit flush before a subsequence starts; if we queued them
+          // all up ahead of time we wouldn't accurately be testing the
+          // multiple state change reactions (they'd already be true).
+          Post(base::BindLambdaForTesting(
+              [this]() { tabs_->SetEnabled(true); })),
+          WaitForViewProperty(kButton1Id, View, Enabled, true),
+          Post(base::BindLambdaForTesting([this]() { button1_->SetID(998); })),
+          WaitForViewProperty(kButton1Id, View, ID, 998)),
+      Steps(Post(base::BindLambdaForTesting(
+                [this]() { button1_->SetEnabled(true); })),
+            WaitForViewProperty(kTabbedPaneId, View, Enabled, true),
+            Post(base::BindLambdaForTesting([this]() { tabs_->SetID(999); })),
+            WaitForViewProperty(kTabbedPaneId, View, ID, 999))));
 }
 
 TEST_F(InteractiveViewsTestTest, NameViewAbsoluteValue) {
@@ -426,3 +478,17 @@ TEST_F(InteractiveViewsTestTest, ScrollIntoView) {
 }
 
 }  // namespace views::test
+
+// Verifies that WaitForViewProperty() compiles outside of the views namespace
+// (this was a problem previously).
+class InteractiveViewsTestCompileTest
+    : public views::test::InteractiveViewsTestTest {
+ public:
+  InteractiveViewsTestCompileTest() = default;
+  ~InteractiveViewsTestCompileTest() override = default;
+
+  void WaitForViewPropertyCompileOutsideViews() {
+    (void)WaitForViewProperty(views::test::kButton1Id, views::View, Enabled,
+                              true);
+  }
+};

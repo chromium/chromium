@@ -30,10 +30,10 @@ bool MockProvider::SetWebsiteSetting(
     return false;
   base::AutoLock lock(value_map_.GetLock());
   if (!in_value.is_none()) {
+    RuleMetaData metadata;
+    metadata.SetFromConstraints(constraints);
     value_map_.SetValue(requesting_url_pattern, embedding_url_pattern,
-                        content_type, std::move(in_value),
-                        {.expiration = constraints.expiration,
-                         .session_model = constraints.session_model});
+                        content_type, std::move(in_value), metadata);
   } else {
     base::Value value(std::move(in_value));
     value_map_.DeleteValue(requesting_url_pattern, embedding_url_pattern,

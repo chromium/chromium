@@ -57,9 +57,7 @@ mojom::blink::DirectTCPServerSocketOptionsPtr CreateTCPServerSocketOptions(
           "equivalent.");
       return {};
     }
-    socket_options->ipv6_only =
-        options->ipv6Only() ? network::mojom::blink::OptionalBool::kTrue
-                            : network::mojom::blink::OptionalBool::kFalse;
+    socket_options->ipv6_only = options->ipv6Only();
   }
 
   socket_options->local_addr = std::move(local_addr);

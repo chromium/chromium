@@ -372,4 +372,26 @@ TEST_F(ExtensionTelemetryFileProcessorTest, EnforcesMaxFileSizeLimit) {
   EXPECT_EQ(extensions_data_, expected_dict);
 }
 
+TEST_F(ExtensionTelemetryFileProcessorTest,
+       ProcessesUpperCaseFileExtensionsCorrectly) {
+  WriteExtensionFile(extension_root_dir_, kManifestFile, kManifestFile);
+  WriteExtensionFile(extension_root_dir_, "file_1.Js", kJavaScriptFile1);
+  WriteExtensionFile(extension_root_dir_, "file_2.cSS", kCSSFile2);
+  auto callback =
+      base::BindOnce(&ExtensionTelemetryFileProcessorTest::CallbackHelper,
+                     weak_factory_.GetWeakPtr());
+
+  processor_.AsyncCall(&ExtensionTelemetryFileProcessor::ProcessExtension)
+      .WithArgs(extension_root_dir_)
+      .Then(std::move(callback));
+  task_environment_.RunUntilIdle();
+
+  base::Value::Dict expected_dict;
+  expected_dict.Set(kManifestFile, kManifestFile);
+  expected_dict.Set("file_1.Js", HashContent(kJavaScriptFile1));
+  expected_dict.Set("file_2.cSS", HashContent(kCSSFile2));
+
+  EXPECT_EQ(extensions_data_, expected_dict);
+}
+
 }  // namespace safe_browsing

@@ -23,7 +23,7 @@ enum class DOMExceptionCode;
 class ExceptionState;
 
 class MODULES_EXPORT MediaRecorder
-    : public EventTargetWithInlineData,
+    : public EventTarget,
       public ActiveScriptWrappable<MediaRecorder>,
       public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();

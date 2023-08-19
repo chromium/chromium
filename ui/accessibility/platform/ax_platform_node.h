@@ -106,10 +106,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNode {
   // Return true if this object is equal to or a descendant of |ancestor|.
   virtual bool IsDescendantOf(AXPlatformNode* ancestor) const = 0;
 
-  // Set |this| as the primary web contents for the window.
-  void SetIsPrimaryWebContentsForWindow(bool is_primary);
-  bool IsPrimaryWebContentsForWindow() const;
-
   // Return the unique ID.
   int32_t GetUniqueId() const;
 
@@ -152,8 +148,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNode {
   // exposed platform accessibility API, even though actual focus remains in
   // underlying content.
   static gfx::NativeViewAccessible popup_focus_override_;
-
-  bool is_primary_web_contents_for_window_ = false;
 };
 
 }  // namespace ui

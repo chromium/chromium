@@ -25,7 +25,7 @@ namespace {
 constexpr int kWebContentsUserDataKey = 0;
 
 struct UserData : public base::SupportsUserData::Data {
-  raw_ptr<MediaStreamManager, DanglingUntriaged> manager = nullptr;
+  raw_ptr<MediaStreamManager, AcrossTasksDanglingUntriaged> manager = nullptr;
 };
 
 }  // namespace

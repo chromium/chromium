@@ -4,14 +4,14 @@
 
 #import "ui/base/cocoa/touch_bar_util.h"
 
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 
 namespace ui {
 
 NSString* GetTouchBarId(NSString* touch_bar_id) {
   NSString* chrome_bundle_id =
-      base::SysUTF8ToNSString(base::mac::BaseBundleID());
+      base::SysUTF8ToNSString(base::apple::BaseBundleID());
   return [NSString stringWithFormat:@"%@.%@", chrome_bundle_id, touch_bar_id];
 }
 

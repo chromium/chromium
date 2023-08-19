@@ -133,6 +133,11 @@ class CONTENT_EXPORT MediaStreamManager
   // logging from webrtcLoggingPrivate API. Safe to call from any thread.
   static void SendMessageToNativeLog(const std::string& message);
 
+  // Returns the current MediaStreamManager instance. This is used to get access
+  // to the getters that return objects owned by MediaStreamManager.
+  // Must be called on the IO thread.
+  static MediaStreamManager* GetInstance();
+
   explicit MediaStreamManager(media::AudioSystem* audio_system);
 
   // |audio_system| is required but defaults will be used if either
@@ -273,20 +278,6 @@ class CONTENT_EXPORT MediaStreamManager
                   OpenDeviceCallback open_device_cb,
                   DeviceStoppedCallback device_stopped_cb);
 
-  // Finds and returns the device id and group id corresponding to the given
-  // |source_id|. Returns true if there was a raw device id that matched the
-  // given |source_id|, false if nothing matched it and leaves the |device_id|
-  // and |group_id| unchanged.
-  // TODO(guidou): Update to provide a callback-based interface.
-  // See http://crbug.com/648155.
-  bool TranslateSourceIdToDeviceIdAndGroupId(
-      blink::mojom::MediaStreamType stream_type,
-      const std::string& salt,
-      const url::Origin& security_origin,
-      const std::string& source_id,
-      std::string* device_id,
-      absl::optional<std::string>* group_id) const;
-
   // Find |device_id| in the list of |requests_|, and returns its session id,
   // or an empty base::UnguessableToken if not found. Must be called on the IO
   // thread.
@@ -336,42 +327,6 @@ class CONTENT_EXPORT MediaStreamManager
       int renderer_host_id,
       base::RepeatingCallback<void(const std::string&)> callback);
   static void UnregisterNativeLogCallback(int renderer_host_id);
-
-  // Generates a hash of a device's unique ID usable by one
-  // particular security origin.
-  static std::string GetHMACForMediaDeviceID(const std::string& salt,
-                                             const url::Origin& security_origin,
-                                             const std::string& raw_unique_id);
-
-  // Convenience method to check if |device_guid| is an HMAC of
-  // |raw_device_id| for |security_origin|.
-  static bool DoesMediaDeviceIDMatchHMAC(const std::string& salt,
-                                         const url::Origin& security_origin,
-                                         const std::string& device_guid,
-                                         const std::string& raw_unique_id);
-
-  // Convenience method to get the raw device ID from the HMAC |hmac_device_id|
-  // for the given |security_origin| and |salt|. |stream_type| must be
-  // blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE or
-  // blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE. The result will
-  // be returned via |callback| on the given |task_runner|.
-  static void GetMediaDeviceIDForHMAC(
-      blink::mojom::MediaStreamType stream_type,
-      std::string salt,
-      url::Origin security_origin,
-      std::string hmac_device_id,
-      scoped_refptr<base::SequencedTaskRunner> task_runner,
-      base::OnceCallback<void(const absl::optional<std::string>&)> callback);
-  // Overload that allows for a blink::mojom::MediaDeviceType to be specified
-  // instead of a blink::mojom::MediaStreamType. This allows for getting the raw
-  // device ID from the HMAC of an audio output device.
-  static void GetMediaDeviceIDForHMAC(
-      blink::mojom::MediaDeviceType device_type,
-      std::string salt,
-      url::Origin security_origin,
-      std::string hmac_device_id,
-      scoped_refptr<base::SequencedTaskRunner> task_runner,
-      base::OnceCallback<void(const absl::optional<std::string>&)> callback);
 
   // Returns true if the renderer process identified with |render_process_id|
   // is allowed to access |origin|.

@@ -136,6 +136,39 @@ if (toolchain_has_rust) {
         "ws2_32.lib",
       ]
     }
+
+    # From rust/library/std/src/sys/unix/mod.rs.
+    # TODO(danakj): We should generate this list somehow when building or rolling
+    # the Rust toolchain?
+    if (is_android) {
+      libs = [ "dl" ]
+    } else if (target_os == "freebsd") {
+      libs = [
+        "execinfo",
+        "pthread",
+      ]
+    } else if (target_os == "netbsd") {
+      libs = [
+        "rt",
+        "pthread",
+      ]
+    } else if (is_mac) {
+      libs = [ "System" ]
+    } else if (is_ios) {
+      libs = [
+        "System",
+        "objc",
+      ]
+      frameworks = [
+        "Security.framework",
+        "Foundation.framework",
+      ]
+    } else if (is_fuchsia) {
+      libs = [
+        "zircon",
+        "fdio",
+      ]
+    }
   }
 
   # Construct sysroots for rustc invocations to better control what libraries
@@ -198,8 +231,11 @@ if (toolchain_has_rust) {
       not_needed([ "invoker" ])
       static_library("sanitizer_rt_$rt_name") {
         sources = []
-        output_name = "librustc-nightly_rt.$rt_name"
+        output_name = "librustc-${rust_channel}_rt.$rt_name"
         output_dir = "$local_rustc_sysroot/$sysroot_lib_subdir"
+        if (is_win) {
+          arflags = [ "/llvmlibempty" ]
+        }
       }
     }
     rustc_sanitizer_runtimes = []

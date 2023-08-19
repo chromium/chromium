@@ -1,0 +1,46 @@
+{
+  "description": "Invalid source/trigger registrations are dropped",
+  "input": {
+    "sources": [
+      {
+        "timestamp": "0",
+        "registration_request": {
+          "source_origin": "https://source.test",
+          "attribution_src_url": "https://reporter.test/register-source",
+          "source_type": "navigation"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-source",
+          "response": {
+            // missing destination
+            "Attribution-Reporting-Register-Source": {}
+          }
+        }]
+      }
+    ],
+    "triggers": [
+      {
+        "timestamp": "1",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "destination_origin": "https://destination.test"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-trigger",
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              // dictionary instead of list
+              "event_trigger_data": {}
+            }
+          }
+        }]
+      }
+    ]
+  },
+  "output": {
+    "unparsable_registrations": [
+      {"time": "0", "type": "source"},
+      {"time": "1", "type": "trigger"}
+    ]
+  }
+}

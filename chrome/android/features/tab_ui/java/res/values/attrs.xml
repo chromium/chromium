@@ -6,7 +6,7 @@ found in the LICENSE file.
 -->
 
 <resources>
-    <declare-styleable name="TabThumbnailPlaceHolder">
+    <declare-styleable name="TabThumbnailPlaceholder">
         <attr name="colorTileBase" format="color" />
         <attr name="elevationTileBase" format="dimension" />
     </declare-styleable>

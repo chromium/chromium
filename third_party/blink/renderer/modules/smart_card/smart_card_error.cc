@@ -76,6 +76,10 @@ DOMException* SmartCardError::Create(
           "The action was cancelled by the system, presumably to log off or "
           "shut down.",
           V8SmartCardResponseCode::Enum::kSystemCancelled);
+    case device::mojom::blink::SmartCardError::kUnknownReader:
+      return MakeGarbageCollected<SmartCardError>(
+          "The specified reader name is not recognized.",
+          V8SmartCardResponseCode::Enum::kUnknownReader);
     case device::mojom::blink::SmartCardError::kUnpoweredCard:
       return MakeGarbageCollected<SmartCardError>(
           "Power has been removed from the smart card, so that further "
@@ -143,7 +147,6 @@ DOMException* SmartCardError::Create(
     // unexpectedly (eg, in unrelated requests).
     case device::mojom::blink::SmartCardError::kCancelled:
     case device::mojom::blink::SmartCardError::kTimeout:
-    case device::mojom::blink::SmartCardError::kUnknownReader:
     case device::mojom::blink::SmartCardError::kNoReadersAvailable:
     // Errors that indicate bad usage of the API (ie, a programming
     // error in browser code).

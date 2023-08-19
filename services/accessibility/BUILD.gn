@@ -27,6 +27,12 @@ source_set("lib") {
       "features/automation_internal_bindings.h",
       "features/bindings_isolate_holder.cc",
       "features/bindings_isolate_holder.h",
+      "features/devtools/debug_command_queue.cc",
+      "features/devtools/debug_command_queue.h",
+      "features/devtools/os_devtools_agent.cc",
+      "features/devtools/os_devtools_agent.h",
+      "features/devtools/os_devtools_session.cc",
+      "features/devtools/os_devtools_session.h",
       "features/interface_binder.h",
       "features/mojo/mojo.cc",
       "features/mojo/mojo.h",
@@ -44,6 +50,8 @@ source_set("lib") {
       "features/text_encoder.h",
       "features/tts_interface_binder.cc",
       "features/tts_interface_binder.h",
+      "features/user_interface_interface_binder.cc",
+      "features/user_interface_interface_binder.h",
       "features/v8_bindings_utils.cc",
       "features/v8_bindings_utils.h",
       "features/v8_manager.cc",
@@ -56,7 +64,10 @@ source_set("lib") {
       "//gin",
       "//ui/accessibility:accessibility",
     ]
-    deps = [ "public/mojom:os_service_mojom_js__generator" ]
+    deps = [
+      "public/mojom:os_service_mojom_js__generator",
+      "//third_party/inspector_protocol:crdtp",
+    ]
     configs += [ "//v8:external_startup_data" ]
   } else {
     sources = [
@@ -117,9 +128,14 @@ source_set("tests") {
       # TODO(b:262637320): Get this working on Fuchsia, which cannot
       # currently ReadFileToString and therefore can't run tests which
       # load JS files.
-      sources += [ "features/atp_js_api_test.cc" ]
-      deps +=
-          [ "//services/accessibility/features/javascript:js_api_copied_files" ]
+      sources += [
+        "features/atp_js_api_test.cc",
+        "features/devtools/os_devtools_unittest.cc",
+      ]
+      deps += [
+        "//services/accessibility/features/javascript:js_api_copied_files",
+        "//third_party/inspector_protocol:crdtp",
+      ]
       data_deps = [
         "//services/accessibility/features/javascript:js_api_files",
         "//services/accessibility/features/mojo/test:test_support_data",

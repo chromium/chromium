@@ -41,9 +41,8 @@ class SetPriorityBindings : public Bindings {
   // This is cleared if an exception is thrown.
   absl::optional<double> set_priority_;
 
-  // Once an exception has been thrown, `set_priority_` will be permanently
-  // cleared.
-  bool exception_thrown_ = false;
+  // setPriority() can only be called once.
+  bool already_called_ = false;
 };
 
 }  // namespace auction_worklet

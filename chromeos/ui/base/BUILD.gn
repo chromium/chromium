@@ -17,6 +17,8 @@ component("base") {
     "display_util.h",
     "file_icon_util.cc",
     "file_icon_util.h",
+    "nudge_util.cc",
+    "nudge_util.h",
     "tablet_state.cc",
     "tablet_state.h",
     "window_pin_type.cc",

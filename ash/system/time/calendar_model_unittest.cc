@@ -109,7 +109,7 @@ TEST_F(CalendarModelUtilsTest, SurroundingMonths) {
   // 0 months out.
   months = calendar_utils::GetSurroundingMonthsUTC(current_date, 0);
   EXPECT_EQ(1UL, months.size());
-  EXPECT_TRUE(months.find(start_of_month) != months.end());
+  EXPECT_TRUE(base::Contains(months, start_of_month));
 
   // 1 month out.
   base::Time start_of_previous_month =
@@ -118,9 +118,9 @@ TEST_F(CalendarModelUtilsTest, SurroundingMonths) {
       calendar_test_utils::GetTimeFromString("01 Nov 2009 00:00 GMT");
   months = calendar_utils::GetSurroundingMonthsUTC(current_date, 1);
   EXPECT_EQ(3UL, months.size());
-  EXPECT_TRUE(months.find(start_of_month) != months.end());
-  EXPECT_TRUE(months.find(start_of_previous_month) != months.end());
-  EXPECT_TRUE(months.find(start_of_next_month) != months.end());
+  EXPECT_TRUE(base::Contains(months, start_of_month));
+  EXPECT_TRUE(base::Contains(months, start_of_previous_month));
+  EXPECT_TRUE(base::Contains(months, start_of_next_month));
 
   // 2 months out.
   base::Time start_of_previous_month_2 =
@@ -129,11 +129,11 @@ TEST_F(CalendarModelUtilsTest, SurroundingMonths) {
       calendar_test_utils::GetTimeFromString("01 Dec 2009 00:00 GMT");
   months = calendar_utils::GetSurroundingMonthsUTC(current_date, 2);
   EXPECT_EQ(5UL, months.size());
-  EXPECT_TRUE(months.find(start_of_month) != months.end());
-  EXPECT_TRUE(months.find(start_of_previous_month) != months.end());
-  EXPECT_TRUE(months.find(start_of_next_month) != months.end());
-  EXPECT_TRUE(months.find(start_of_previous_month_2) != months.end());
-  EXPECT_TRUE(months.find(start_of_next_month_2) != months.end());
+  EXPECT_TRUE(base::Contains(months, start_of_month));
+  EXPECT_TRUE(base::Contains(months, start_of_previous_month));
+  EXPECT_TRUE(base::Contains(months, start_of_next_month));
+  EXPECT_TRUE(base::Contains(months, start_of_previous_month_2));
+  EXPECT_TRUE(base::Contains(months, start_of_next_month_2));
 
   // 3 months out, which takes us into the next year.
   base::Time start_of_previous_month_3 =
@@ -142,13 +142,13 @@ TEST_F(CalendarModelUtilsTest, SurroundingMonths) {
       calendar_test_utils::GetTimeFromString("01 Jan 2010 00:00 GMT");
   months = calendar_utils::GetSurroundingMonthsUTC(current_date, 3);
   EXPECT_EQ(7UL, months.size());
-  EXPECT_TRUE(months.find(start_of_month) != months.end());
-  EXPECT_TRUE(months.find(start_of_previous_month) != months.end());
-  EXPECT_TRUE(months.find(start_of_next_month) != months.end());
-  EXPECT_TRUE(months.find(start_of_previous_month_2) != months.end());
-  EXPECT_TRUE(months.find(start_of_next_month_2) != months.end());
-  EXPECT_TRUE(months.find(start_of_previous_month_3) != months.end());
-  EXPECT_TRUE(months.find(start_of_next_month_3) != months.end());
+  EXPECT_TRUE(base::Contains(months, start_of_month));
+  EXPECT_TRUE(base::Contains(months, start_of_previous_month));
+  EXPECT_TRUE(base::Contains(months, start_of_next_month));
+  EXPECT_TRUE(base::Contains(months, start_of_previous_month_2));
+  EXPECT_TRUE(base::Contains(months, start_of_next_month_2));
+  EXPECT_TRUE(base::Contains(months, start_of_previous_month_3));
+  EXPECT_TRUE(base::Contains(months, start_of_next_month_3));
 }
 
 class CalendarModelTest : public AshTestBase {

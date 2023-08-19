@@ -13,10 +13,10 @@ import './mojom/firmware_update.mojom-lite.js';
 import './strings.m.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {FirmwareUpdate, UpdatePriority} from './firmware_update_types.js';
-import {mojoString16ToString} from './mojo_utils.js';
 
 /**
  * @fileoverview

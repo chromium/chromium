@@ -10,19 +10,15 @@
 #include <string>
 
 #include "base/apple/bridging.h"
+#include "base/apple/foundation_util.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ui/accessibility/platform/ax_private_webkit_constants_mac.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_mac.h"
 #include "ui/accessibility/platform/inspect/ax_tree_formatter_mac.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace ui {
 
@@ -159,30 +155,32 @@ void AXEventRecorderMac::EventReceived(AXUIElementRef element,
 
 std::string AXEventRecorderMac::SerializeTextSelectionChangedProperties(
     CFDictionaryRef user_info) {
-  if (user_info == nil)
+  if (user_info == nil) {
     return {};
+  }
 
-  __block std::vector<std::string> serialized_info;
-  [base::apple::CFToNSPtrCast(user_info) enumerateKeysAndObjectsUsingBlock:^(
-                                             id key, id value, BOOL* stop) {
+  NSDictionary* ns_user_info = base::apple::CFToNSPtrCast(user_info);
+  std::vector<std::string> serialized_info;
+  for (NSString* key in ns_user_info) {
+    NSNumber* value = base::apple::ObjCCast<NSNumber>(ns_user_info[key]);
     std::string value_string;
     if ([key isEqual:NSAccessibilityTextStateChangeTypeKey]) {
       value_string =
-          ToString(static_cast<AXTextStateChangeType>([value intValue]));
+          ToString(static_cast<AXTextStateChangeType>(value.intValue));
     } else if ([key isEqual:NSAccessibilityTextSelectionDirection]) {
       value_string =
-          ToString(static_cast<AXTextSelectionDirection>([value intValue]));
+          ToString(static_cast<AXTextSelectionDirection>(value.intValue));
     } else if ([key isEqual:NSAccessibilityTextSelectionGranularity]) {
       value_string =
-          ToString(static_cast<AXTextSelectionGranularity>([value intValue]));
+          ToString(static_cast<AXTextSelectionGranularity>(value.intValue));
     } else if ([key isEqual:NSAccessibilityTextEditType]) {
-      value_string = ToString(static_cast<AXTextEditType>([value intValue]));
+      value_string = ToString(static_cast<AXTextEditType>(value.intValue));
     } else {
-      return;
+      continue;
     }
     serialized_info.push_back(base::SysNSStringToUTF8(key) + "=" +
                               value_string);
-  }];
+  }
 
   // Always sort the info so that we don't depend on CFDictionary for
   // consistent output ordering.

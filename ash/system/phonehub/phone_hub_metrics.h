@@ -107,6 +107,14 @@ enum class RecentAppsViewUiState {
   kMaxValue = kApps,
 };
 
+// Keep in sync with MultideviceSetupNudgeInteraction in
+// tools/metrics/histograms/enums.xml.
+enum class MultideviceSetupNudgeInteraction {
+  kNudgeClicked = 0,
+  kPhoneHubIconClicked = 1,
+  kMaxValue = kPhoneHubIconClicked,
+};
+
 enum class CameraRollMediaType { kPhoto = 0, kVideo = 1, kMaxValue = kVideo };
 
 // Logs an |event| occurring for the given |interstitial_screen|.
@@ -166,6 +174,10 @@ void LogRecentAppsTransitionToFailedLatency(const base::TimeDelta latency);
 // Logs the latency between showing the loading animation in the Recent Apps
 // view to showing the recent apps icons and more apps button.
 void LogRecentAppsTransitionToSuccessLatency(const base::TimeDelta latency);
+
+// Logs the interaction with Multidedevice setup notification when it is
+// visible.
+void LogMultiDeviceSetupNotificationInteraction();
 
 }  // namespace ash::phone_hub_metrics
 

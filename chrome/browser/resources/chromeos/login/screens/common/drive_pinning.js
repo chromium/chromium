@@ -5,6 +5,7 @@
  * @fileoverview Polymer element for drive pinning screen.
  */
 
+import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
 import '//resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import '../../components/buttons/oobe_next_button.js';
 import '../../components/oobe_icons.html.js';
@@ -46,8 +47,8 @@ const DrivePinningStep = {
  * @enum {string}
  */
 const UserAction = {
-  ACCEPT: 'driveAccept',
-  DECLINE: 'driveDecline',
+  ACCEPT: 'driveNext',
+  RETURN: 'return',
 };
 
 /**
@@ -65,15 +66,6 @@ class DrivePinningScreen extends DrivePinningScreenElementBase {
   static get properties() {
     return {
       /**
-       * Whether the drive pinning screen is being rendered in dark mode.
-       * @private {boolean}
-       */
-      isDarkModeActive_: {
-        type: Boolean,
-        value: false,
-      },
-
-      /**
        * Available free space in the disk.
        * @private {String}
        */
@@ -87,6 +79,20 @@ class DrivePinningScreen extends DrivePinningScreenElementBase {
        */
       requiredSpace_: {
         type: String,
+      },
+
+      enableDrivePinning_: {
+        type: Boolean,
+        value: true,
+      },
+
+      /**
+       * Whether the button to return to CHOOBE screen should be shown.
+       * @private
+       */
+      shouldShowReturn_: {
+        type: Boolean,
+        value: false,
       },
     };
   }
@@ -113,11 +119,15 @@ class DrivePinningScreen extends DrivePinningScreenElementBase {
     return OOBE_UI_STATE.ONBOARDING;
   }
 
+  onBeforeShow(data) {
+    this.shouldShowReturn_ = data['shouldShowReturn'];
+  }
+
 
   getSpaceDescription_(locale, requiredSpace, freeSpace) {
     if (requiredSpace && freeSpace) {
       return this.i18nDynamic(
-          locale, 'DevicePinningScreenSpaceDescription', requiredSpace,
+          locale, 'DevicePinningScreenToggleSubtitle', requiredSpace,
           freeSpace);
     }
     return '';
@@ -131,22 +141,12 @@ class DrivePinningScreen extends DrivePinningScreenElementBase {
     this.freeSpace_ = freeSpace;
   }
 
-
-  /**
-   * Returns the src of the illustration.
-   * @private
-   */
-  getImageSource_() {
-    return this.isDarkModeActive_ ? 'images/drive_sync_dark.svg' :
-                                    'images/drive_sync_light.svg';
+  onNextButtonClicked_() {
+    this.userActed([UserAction.ACCEPT, this.enableDrivePinning_]);
   }
 
-  onAcceptButtonClicked_() {
-    this.userActed(UserAction.ACCEPT);
-  }
-
-  onDeclineButtonClicked_() {
-    this.userActed(UserAction.DECLINE);
+  onReturnClicked_() {
+    this.userActed([UserAction.RETURN, this.enableDrivePinning_]);
   }
 }
 

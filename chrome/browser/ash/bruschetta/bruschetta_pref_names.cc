@@ -10,6 +10,12 @@ namespace bruschetta::prefs {
 
 const char kBruschettaInstalled[] = "bruschetta.installed";
 
+const char kBruschettaInstallerConfiguration[] =
+    "bruschetta.installer_configuration";
+
+const char kPolicyDisplayNameKey[] = "display_name";
+const char kPolicyLearnMoreUrlKey[] = "learn_more_url";
+
 const char kBruschettaVMConfiguration[] = "bruschetta.vm_configuration";
 
 const char kPolicyNameKey[] = "name";
@@ -26,6 +32,7 @@ const char kPolicyDisplayOrderKey[] = "display_order";
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kBruschettaInstalled, false);
+  registry->RegisterDictionaryPref(kBruschettaInstallerConfiguration);
   registry->RegisterDictionaryPref(kBruschettaVMConfiguration);
 }
 

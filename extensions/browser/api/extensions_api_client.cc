@@ -65,6 +65,10 @@ void ExtensionsAPIClient::UpdateActionCount(content::BrowserContext* context,
 void ExtensionsAPIClient::ClearActionCount(content::BrowserContext* context,
                                            const Extension& extension) {}
 
+void ExtensionsAPIClient::OpenFileUrl(
+    const GURL& file_url,
+    content::BrowserContext* browser_context) {}
+
 AppViewGuestDelegate* ExtensionsAPIClient::CreateAppViewGuestDelegate() const {
   return nullptr;
 }
@@ -76,9 +80,8 @@ ExtensionsAPIClient::CreateExtensionOptionsGuestDelegate(
 }
 
 std::unique_ptr<guest_view::GuestViewManagerDelegate>
-ExtensionsAPIClient::CreateGuestViewManagerDelegate(
-    content::BrowserContext* context) const {
-  return std::make_unique<ExtensionsGuestViewManagerDelegate>(context);
+ExtensionsAPIClient::CreateGuestViewManagerDelegate() const {
+  return std::make_unique<ExtensionsGuestViewManagerDelegate>();
 }
 
 std::unique_ptr<MimeHandlerViewGuestDelegate>

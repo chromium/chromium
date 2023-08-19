@@ -85,4 +85,10 @@ public interface LayoutStateProvider {
      * @param listener Unregisters {@code listener} for all layout status changes.
      */
     void removeObserver(LayoutStateObserver listener);
+
+    /**
+     * Returns the ID of the next layout to show or {@code LayoutType.NONE} if one isn't set.
+     */
+    @LayoutType
+    int getNextLayoutType();
 }

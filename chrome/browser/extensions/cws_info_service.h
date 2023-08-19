@@ -30,6 +30,7 @@ class ExtensionRegistry;
 class BatchGetStoreMetadatasResponse;
 
 BASE_DECLARE_FEATURE(kCWSInfoService);
+BASE_DECLARE_FEATURE(kCWSInfoFastCheck);
 
 // This is an interface class to allow for easy mocking.
 class CWSInfoServiceInterface {

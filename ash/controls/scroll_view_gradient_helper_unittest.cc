@@ -85,7 +85,8 @@ class ScrollViewGradientHelperTest : public views::ViewsTestBase {
   }
 
   views::UniqueWidgetPtr widget_;
-  raw_ptr<views::ScrollView, ExperimentalAsh> scroll_view_ = nullptr;
+  raw_ptr<views::ScrollView, DanglingUntriaged | ExperimentalAsh> scroll_view_ =
+      nullptr;
   std::unique_ptr<ScrollViewGradientHelper> gradient_helper_;
 };
 

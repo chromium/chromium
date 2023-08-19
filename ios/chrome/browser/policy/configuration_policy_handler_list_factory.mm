@@ -19,6 +19,7 @@
 #import "components/history/core/common/pref_names.h"
 #import "components/metrics/metrics_pref_names.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
+#import "components/policy/core/browser/boolean_disabling_policy_handler.h"
 #import "components/policy/core/browser/configuration_policy_handler.h"
 #import "components/policy/core/browser/configuration_policy_handler_list.h"
 #import "components/policy/core/browser/configuration_policy_handler_parameters.h"
@@ -39,10 +40,6 @@
 #import "ios/chrome/browser/policy/new_tab_page_location_policy_handler.h"
 #import "ios/chrome/browser/policy/restrict_accounts_policy_handler.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using policy::PolicyToPreferenceMapEntry;
 using policy::SimplePolicyHandler;
@@ -107,6 +104,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { policy::key::kSafeBrowsingEnabled,
     prefs::kSafeBrowsingEnabled,
     base::Value::Type::BOOLEAN },
+  { policy::key::kSafeBrowsingProxiedRealTimeChecksAllowed,
+    prefs::kHashPrefixRealTimeChecksAllowedByPolicy,
+    base::Value::Type::BOOLEAN },
   { policy::key::kSavingBrowserHistoryDisabled,
     prefs::kSavingBrowserHistoryDisabled,
     base::Value::Type::BOOLEAN },
@@ -119,9 +119,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { policy::key::kURLAllowlist,
     policy::policy_prefs::kUrlAllowlist,
     base::Value::Type::LIST},
-  { policy::key::kUrlKeyedAnonymizedDataCollectionEnabled,
-    unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
-    base::Value::Type::BOOLEAN },
   { policy::key::kShoppingListEnabled,
     commerce::kShoppingListEnabledPrefName,
     base::Value::Type::BOOLEAN},
@@ -179,5 +176,13 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
   handlers->AddHandler(std::make_unique<policy::URLBlocklistPolicyHandler>(
       policy::key::kURLBlocklist));
 
+  handlers->AddHandler(std::make_unique<policy::SimpleDeprecatingPolicyHandler>(
+      std::make_unique<policy::SimplePolicyHandler>(
+          policy::key::kUrlKeyedAnonymizedDataCollectionEnabled,
+          unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
+          base::Value::Type::BOOLEAN),
+      std::make_unique<policy::BooleanDisablingPolicyHandler>(
+          policy::key::kUrlKeyedMetricsAllowed,
+          unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled)));
   return handlers;
 }

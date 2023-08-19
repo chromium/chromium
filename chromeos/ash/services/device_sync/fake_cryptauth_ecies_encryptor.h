@@ -58,7 +58,8 @@ class FakeCryptAuthEciesEncryptorFactory
   // CryptAuthEciesEncryptorImpl::Factory:
   std::unique_ptr<CryptAuthEciesEncryptor> CreateInstance() override;
 
-  raw_ptr<FakeCryptAuthEciesEncryptor, ExperimentalAsh> instance_ = nullptr;
+  raw_ptr<FakeCryptAuthEciesEncryptor, DanglingUntriaged | ExperimentalAsh>
+      instance_ = nullptr;
 };
 
 }  // namespace device_sync

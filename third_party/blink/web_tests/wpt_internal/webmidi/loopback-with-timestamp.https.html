@@ -1,14 +1,15 @@
 <!doctype html>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 <p>Regression test to check if non-zero timestamp works well.</p>
 <script type="module">
 import {MockMIDIService} from './resources/mock-midiservice.js';
-import {setMidiPermission} from './resources/permissions-helper.js';
 
 const mock = new MockMIDIService();
 promise_test(async () => {
-  await setMidiPermission({sysex: true}, 'granted');
+  await test_driver.set_permission({name: 'midi', sysex: true}, 'granted');
   let access = await navigator.requestMIDIAccess({sysex: true});
   let input = access.inputs.values().next().value;
   let output = access.outputs.values().next().value;

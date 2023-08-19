@@ -11,10 +11,13 @@ automated way.
     they may not support all configurations built on CI.
 -   The commit queue (CQ) runs a subset of available trybots. See [here][1] for
     more information.
--   trybots can be manually invoked via `git cl try` or the "Choose Trybots" UI
+-   Trybots can be manually invoked via `git cl try` or the "Choose Tryjobs" UI
     in gerrit.
+-   Custom trybots can be added to the list of builders triggered and checked by
+    the CQ via the `Cq-Include-Trybots` commit message footer. See [here][2]
+    for more information.
 -   Any committer can use the trybots.
--   Non-committers with tryjob access can also use the trybots. See [here][2]
+-   Non-committers with tryjob access can also use the trybots. See [here][3]
     for more information.
 -   External contributors without tryjob access can ask committers to run
     tryjobs for them.
@@ -32,7 +35,8 @@ have per-user quotas yet (https://crbug.com/1091070 to implement that).
 
     *   Run the default set of trybots by starting a CQ dry run, either by
         setting CQ+1 on gerrit or by running `git cl try` with no arguments.
-    *   Run trybots of your choice by providing arguments to `git cl try`:
+    *   Manually run trybots of your choice by either the "Choose Tryjobs"
+        button in gerrit or providing arguments to `git cl try`:
 
         *   specify bucket name with `-B/--bucket`. For chromium tryjobs, this
             should always be `luci.chromium.try`
@@ -96,13 +100,9 @@ top of the same revision specified in the DEPS file to avoid this.
 
 ## Bugs? Feature requests? Questions?
 
-[File a trooper bug.][3]
-
-## Legacy documentation
-
--   [Design doc][4]
+[File a trooper bug.]
 
 [1]: /docs/infra/cq.md
-[2]: https://www.chromium.org/getting-involved/become-a-committer#TOC-Try-job-access
-[3]: https://g.co/bugatrooper
-[4]: https://www.chromium.org/developers/testing/try-server-usage/design
+[2]: /docs/contributing.md#cl-footer-reference
+[3]: https://www.chromium.org/getting-involved/become-a-committer#TOC-Try-job-access
+[File a trooper bug.]: https://g.co/bugatrooper

@@ -33,7 +33,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceMac : public BluetoothDevice {
   virtual bool IsLowEnergyDevice() = 0;
 
  protected:
-  BluetoothDeviceMac(BluetoothAdapter* adapter);
+  explicit BluetoothDeviceMac(BluetoothAdapter* adapter);
 };
 
 }  // namespace device

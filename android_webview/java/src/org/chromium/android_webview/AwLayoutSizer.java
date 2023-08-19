@@ -7,9 +7,12 @@ package org.chromium.android_webview;
 import android.view.View;
 import android.view.View.MeasureSpec;
 
+import org.chromium.android_webview.common.Lifetime;
+
 /**
  * Helper methods used to manage the layout of the View that contains AwContents.
  */
+@Lifetime.WebView
 public class AwLayoutSizer {
     // These are used to prevent a re-layout if the content size changes within a dimension that is
     // fixed by the view system.

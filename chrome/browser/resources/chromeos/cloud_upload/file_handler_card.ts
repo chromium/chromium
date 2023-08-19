@@ -53,7 +53,6 @@ export class AccordionTopCardElement extends BaseCardElement {
     this.$('#icon')!.style.display = 'none';
     this.$('#title')!.textContent = 'Other apps';
     this.$('#right-icon')!.classList.add('chevron');
-    this.$('#container')!.removeChild(this.$('paper-ripple'));
     this.ariaExpanded = 'false';
     this.role = 'button';
   }

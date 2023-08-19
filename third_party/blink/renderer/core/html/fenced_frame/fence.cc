@@ -80,6 +80,28 @@ void Fence::reportEvent(ScriptState* script_state,
         "fully active");
     return;
   }
+
+  if (event->hasDestinationURL() &&
+      base::FeatureList::IsEnabled(
+          blink::features::kAdAuctionReportingWithMacroApi)) {
+    reportEventToDestinationURL(script_state, event, exception_state);
+  } else {
+    reportEventToDestinationEnum(script_state, event, exception_state);
+  }
+}
+
+void Fence::reportEventToDestinationEnum(ScriptState* script_state,
+                                         const FenceEvent* event,
+                                         ExceptionState& exception_state) {
+  if (!event->hasDestination()) {
+    exception_state.ThrowTypeError("Missing required 'destination' property.");
+    return;
+  }
+  if (!event->hasEventType()) {
+    exception_state.ThrowTypeError("Missing required 'eventType' property.");
+    return;
+  }
+
   if (event->hasEventData() &&
       event->eventData().length() > blink::kFencedFrameMaxBeaconLength) {
     exception_state.ThrowSecurityError(
@@ -119,6 +141,71 @@ void Fence::reportEvent(ScriptState* script_state,
       attribution_reporting_runtime_features);
 }
 
+void Fence::reportEventToDestinationURL(ScriptState* script_state,
+                                        const FenceEvent* event,
+                                        ExceptionState& exception_state) {
+  if (event->hasEventType()) {
+    exception_state.ThrowTypeError(
+        "When reporting to a custom destination URL, 'eventType' is not "
+        "allowed.");
+    return;
+  }
+  if (event->hasEventData()) {
+    exception_state.ThrowTypeError(
+        "When reporting to a custom destination URL, 'eventData' is not "
+        "allowed.");
+    return;
+  }
+  if (event->hasDestination()) {
+    exception_state.ThrowTypeError(
+        "When reporting to a custom destination URL, 'destination' is not "
+        "allowed.");
+    return;
+  }
+  if (event->destinationURL().length() > blink::kFencedFrameMaxBeaconLength) {
+    exception_state.ThrowSecurityError(
+        "The destination URL provided to reportEvent() exceeds the maximum "
+        "length, which is 64KB.");
+    return;
+  }
+
+  KURL destinationURL(event->destinationURL());
+  if (!destinationURL.IsValid()) {
+    exception_state.ThrowTypeError(
+        "The destination URL provided to reportEvent() is not a valid URL.");
+    return;
+  }
+  if (!destinationURL.ProtocolIs(url::kHttpsScheme)) {
+    exception_state.ThrowTypeError(
+        "The destination URL provided to reportEvent() does not have the "
+        "required scheme (https).");
+    return;
+  }
+
+  LocalFrame* frame = DomWindow()->GetFrame();
+  DCHECK(frame->GetDocument());
+  bool has_fenced_frame_reporting =
+      frame->GetDocument()->Loader()->FencedFrameProperties().has_value() &&
+      frame->GetDocument()
+          ->Loader()
+          ->FencedFrameProperties()
+          ->has_fenced_frame_reporting();
+  if (!has_fenced_frame_reporting) {
+    AddConsoleMessage("This frame did not register reporting metadata.");
+    return;
+  }
+
+  network::AttributionReportingRuntimeFeatures
+      attribution_reporting_runtime_features;
+  if (AttributionSrcLoader* attribution_src_loader =
+          frame->GetAttributionSrcLoader()) {
+    attribution_reporting_runtime_features =
+        attribution_src_loader->GetRuntimeFeatures();
+  }
+  frame->GetLocalFrameHostRemote().SendFencedFrameReportingBeaconToCustomURL(
+      destinationURL, attribution_reporting_runtime_features);
+}
+
 void Fence::setReportEventDataForAutomaticBeacons(
     ScriptState* script_state,
     const FenceEvent* event,
@@ -127,6 +214,14 @@ void Fence::setReportEventDataForAutomaticBeacons(
     exception_state.ThrowSecurityError(
         "May not use a Fence object associated with a Document that is not "
         "fully active");
+    return;
+  }
+  if (!event->hasDestination()) {
+    exception_state.ThrowTypeError("Missing required 'destination' property.");
+    return;
+  }
+  if (!event->hasEventType()) {
+    exception_state.ThrowTypeError("Missing required 'eventType' property.");
     return;
   }
   if (event->eventType() != blink::kFencedFrameTopNavigationBeaconType) {
@@ -169,7 +264,7 @@ void Fence::setReportEventDataForAutomaticBeacons(
   }
   frame->GetLocalFrameHostRemote().SetFencedFrameAutomaticBeaconReportEventData(
       event->getEventDataOr(String{""}), destinations,
-      attribution_reporting_runtime_features);
+      attribution_reporting_runtime_features, event->once());
 }
 
 HeapVector<Member<FencedFrameConfig>> Fence::getNestedConfigs(
@@ -198,8 +293,10 @@ void Fence::reportPrivateAggregationEvent(ScriptState* script_state,
                                           const String& event,
                                           ExceptionState& exception_state) {
   if (!base::FeatureList::IsEnabled(blink::features::kPrivateAggregationApi) ||
-      !blink::features::kPrivateAggregationApiEnabledInFledge.Get() ||
-      !blink::features::kPrivateAggregationApiFledgeExtensionsEnabled.Get()) {
+      !blink::features::kPrivateAggregationApiEnabledInProtectedAudience
+           .Get() ||
+      !blink::features::kPrivateAggregationApiProtectedAudienceExtensionsEnabled
+           .Get()) {
     exception_state.ThrowSecurityError(
         "FLEDGE extensions must be enabled to use reportEvent() for private "
         "aggregation events.");

@@ -4,24 +4,21 @@
 
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
 
-#include <functional>
-
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "chrome/browser/chromeos/policy/dlp/dialogs/dlp_warn_notifier.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_content_manager_test_helper.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_event.pb.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager_test_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
-#include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/test/dlp_content_manager_test_helper.h"
+#include "chrome/browser/chromeos/policy/dlp/test/dlp_reporting_manager_test_helper.h"
+#include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_rules_manager.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/printing/print_test_utils.h"
 #include "chrome/browser/printing/print_view_manager.h"
@@ -39,7 +36,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using testing::_;
 
@@ -411,11 +407,10 @@ class DlpContentManagerReportingBrowserTest
   void StartPrint(
       printing::TestPrintViewManagerForRequestPreview* print_manager,
       content::WebContents* web_contents) {
-    base::RunLoop run_loop;
-    print_manager->set_quit_closure(run_loop.QuitClosure());
-
+    base::test::TestFuture<void> future;
+    print_manager->set_quit_closure(future.GetCallback());
     printing::test::StartPrint(web_contents);
-    run_loop.Run();
+    EXPECT_TRUE(future.Wait());
   }
 
  protected:

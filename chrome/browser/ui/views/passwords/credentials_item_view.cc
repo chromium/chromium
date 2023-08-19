@@ -134,8 +134,9 @@ CredentialsItemView::CredentialsItemView(
 
   // Add info icon with a tooltip providing the source of the credential if
   // this is not an exact match.
-  if (password_manager_util::GetMatchType(*form) !=
-      password_manager_util::GetLoginMatchType::kExact) {
+  if (form->match_type.has_value() &&
+      password_manager_util::GetMatchType(*form) !=
+          password_manager_util::GetLoginMatchType::kExact) {
     auto facet = password_manager::FacetURI::FromPotentiallyInvalidSpec(
         form->signon_realm);
     if (facet.IsValidAndroidFacetURI()) {

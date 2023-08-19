@@ -49,7 +49,7 @@ TEST_F(CSSFontPaletteInterpolationTypeTest,
   <div id="text">Filler text</div>
   )HTML");
   Document& document = GetDocument();
-  Element* element = document.getElementById("text");
+  Element* element = document.getElementById(AtomicString("text"));
   StyleResolverState state(document, *element, nullptr,
                            StyleRequest(element->GetComputedStyle()));
 
@@ -72,7 +72,8 @@ TEST_F(CSSFontPaletteInterpolationTypeTest, MaybeConvertValue) {
   std::unique_ptr<CSSFontPaletteInterpolationType>
       font_palette_interpolation_type = CreateFontPaletteInterpolationType();
   CSSFontPaletteInterpolationType::ConversionCheckers conversion_checkers;
-  CSSValue* value = MakeGarbageCollected<CSSCustomIdentValue>("--palette");
+  CSSValue* value =
+      MakeGarbageCollected<CSSCustomIdentValue>(AtomicString("--palette"));
 
   InterpolationValue result =
       font_palette_interpolation_type->MaybeConvertValue(*value, nullptr,

@@ -12,12 +12,11 @@
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_surface_stub.h"
 
-namespace gl {
-namespace init {
+namespace gl::init {
 
 std::vector<GLImplementationParts> GetAllowedGLImplementations() {
   std::vector<GLImplementationParts> impls;
-  impls.emplace_back(GLImplementationParts(kGLImplementationEGLANGLE));
+  impls.emplace_back(kGLImplementationEGLANGLE);
   return impls;
 }
 
@@ -54,8 +53,11 @@ scoped_refptr<GLSurface> CreateViewGLSurface(GLDisplay* display,
   switch (GetGLImplementation()) {
     case kGLImplementationEGLANGLE:
       if (window != gfx::kNullAcceleratedWidget) {
-        return InitializeGLSurface(new NativeViewGLSurfaceEGL(
-            display->GetAs<gl::GLDisplayEGL>(), window.layer, nullptr));
+        UIView* view = (__bridge id)(void*)window;
+        void* layer = (__bridge void*)view.layer;
+        return InitializeGLSurface(
+            new NativeViewGLSurfaceEGL(display->GetAs<gl::GLDisplayEGL>(),
+                                       layer, /*vsync_provider=*/nullptr));
       } else {
         return InitializeGLSurface(new GLSurfaceStub());
       }
@@ -107,5 +109,4 @@ bool InitializeExtensionSettingsOneOffPlatform(GLDisplay* display) {
   return true;
 }
 
-}  // namespace init
-}  // namespace gl
+}  // namespace gl::init

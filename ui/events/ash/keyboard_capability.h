@@ -141,8 +141,8 @@ inline constexpr auto kLayoutWilcoDrallionTopRowKeyToFKeyMap =
         {KeyboardCode::VKEY_VOLUME_UP, KeyboardCode::VKEY_F9},
     });
 
-// A map between six pack keys to system keys.
-inline constexpr auto kSixPackKeyToSystemKeyMap =
+// A map between six pack keys to search system keys.
+inline constexpr auto kSixPackKeyToSearchSystemKeyMap =
     base::MakeFixedFlatMap<KeyboardCode, KeyboardCode>({
         {KeyboardCode::VKEY_DELETE, KeyboardCode::VKEY_BACK},
         {KeyboardCode::VKEY_HOME, KeyboardCode::VKEY_LEFT},
@@ -152,14 +152,14 @@ inline constexpr auto kSixPackKeyToSystemKeyMap =
         {KeyboardCode::VKEY_INSERT, KeyboardCode::VKEY_BACK},
     });
 
-// A reversed map between six pack keys to system keys. The only exception is
-// the [Back], since it maps back to both [Delete] and [Insert].
-inline constexpr auto kReversedSixPackKeyToSystemKeyMap =
+// A map between six pack keys to alt system keys.
+inline constexpr auto kSixPackKeyToAltSystemKeyMap =
     base::MakeFixedFlatMap<KeyboardCode, KeyboardCode>({
-        {KeyboardCode::VKEY_LEFT, KeyboardCode::VKEY_HOME},
-        {KeyboardCode::VKEY_UP, KeyboardCode::VKEY_PRIOR},
-        {KeyboardCode::VKEY_RIGHT, KeyboardCode::VKEY_END},
-        {KeyboardCode::VKEY_DOWN, KeyboardCode::VKEY_NEXT},
+        {KeyboardCode::VKEY_DELETE, KeyboardCode::VKEY_BACK},
+        {KeyboardCode::VKEY_HOME, KeyboardCode::VKEY_UP},
+        {KeyboardCode::VKEY_PRIOR, KeyboardCode::VKEY_UP},
+        {KeyboardCode::VKEY_END, KeyboardCode::VKEY_DOWN},
+        {KeyboardCode::VKEY_NEXT, KeyboardCode::VKEY_DOWN},
     });
 
 // A keyboard util API to provide various keyboard capability information, such
@@ -201,34 +201,6 @@ class KeyboardCapability : public InputDeviceEventObserver {
     kKbdTopRowLayoutMax = kKbdTopRowLayoutCustom
   };
 
-  class Observer {
-   public:
-    virtual ~Observer() = default;
-
-    // Called when the top_row_keys_are_fKeys prefs has changed.
-    virtual void OnTopRowKeysAreFKeysChanged() = 0;
-  };
-
-  class Delegate {
-   public:
-    Delegate() = default;
-    Delegate(const Delegate&) = delete;
-    Delegate& operator=(const Delegate&) = delete;
-    virtual ~Delegate() = default;
-
-    virtual void AddObserver(Observer* observer) = 0;
-
-    virtual void RemoveObserver(Observer* observer) = 0;
-
-    virtual bool TopRowKeysAreFKeys() const = 0;
-
-    virtual void SetTopRowKeysAsFKeysEnabledForTesting(bool enabled) = 0;
-
-    virtual bool IsPrivacyScreenSupported() const = 0;
-
-    virtual void SetPrivacyScreenSupportedForTesting(bool is_supported) = 0;
-  };
-
   struct KeyboardInfo {
     KeyboardInfo();
     KeyboardInfo(KeyboardInfo&&);
@@ -243,13 +215,14 @@ class KeyboardCapability : public InputDeviceEventObserver {
     std::vector<TopRowActionKey> top_row_action_keys;
   };
 
-  explicit KeyboardCapability(std::unique_ptr<Delegate> delegate);
-  KeyboardCapability(ScanCodeToEvdevKeyConverter converter,
-                     std::unique_ptr<Delegate> delegate);
+  KeyboardCapability();
+  explicit KeyboardCapability(ScanCodeToEvdevKeyConverter converter);
   KeyboardCapability(const KeyboardCapability&) = delete;
   KeyboardCapability& operator=(const KeyboardCapability&) = delete;
   ~KeyboardCapability() override;
 
+  // TODO: get rid of this. Equivalent to
+  // std::make_unique<KeyboardCapability>(), and it is no longer stub.
   static std::unique_ptr<KeyboardCapability> CreateStubKeyboardCapability();
 
   // Generates an `EventDeviceInfo` from a given input device.
@@ -265,34 +238,11 @@ class KeyboardCapability : public InputDeviceEventObserver {
   static absl::optional<KeyboardCode> ConvertToKeyboardCode(
       TopRowActionKey action_key);
 
-  void AddObserver(Observer* observer);
-
-  void RemoveObserver(Observer* observer);
-
-  // Returns true if the target would prefer to receive raw
-  // function keys instead of having them rewritten into back, forward,
-  // brightness, volume, etc. or if the user has specified that they desire
-  // top-row keys to be treated as function keys globally.
-  // Only useful when InputDeviceSettingsSplit flag is disabled. Otherwise, it
-  // returns non-useful data.
-  bool TopRowKeysAreFKeys() const;
-
-  // Enable or disable top row keys as F-Keys.
-  void SetTopRowKeysAsFKeysEnabledForTesting(bool enabled) const;
-
-  // Set whether the privacy screen is supported or not for testing.
-  void SetPrivacyScreenSupportedForTesting(bool is_supported) const;
-
   // Check if a key code is one of the top row keys.
   static bool IsTopRowKey(const KeyboardCode& key_code);
 
   // Check if a key code is one of the six pack keys.
   static bool IsSixPackKey(const KeyboardCode& key_code);
-
-  // Check if a key code is one of the reversed six pack keys.
-  // A reversed six pack key is either [Back] or one of the keys in
-  // kReversedSixPackKeyToSystemKeyMap.
-  static bool IsReversedSixPackKey(const KeyboardCode& key_code);
 
   // Find the mapped function key if the given key code is a top row key for
   // the given keyboard.
@@ -313,9 +263,6 @@ class KeyboardCapability : public InputDeviceEventObserver {
 
   // Check if the keycode is a function key.
   static bool IsFunctionKey(ui::KeyboardCode code);
-
-  // Check if the keycode is a top-row action key.
-  static bool IsTopRowActionKey(ui::KeyboardCode code);
 
   // Returns the set of modifier keys present on the given keyboard.
   std::vector<mojom::ModifierKey> GetModifierKeys(
@@ -365,10 +312,6 @@ class KeyboardCapability : public InputDeviceEventObserver {
   // Check if the calculator key exists on the given keyboard.
   bool HasCalculatorKey(const KeyboardDevice& keyboard) const;
   bool HasCalculatorKeyOnAnyKeyboard() const;
-
-  // Check if the privacy screen key exists on the given keyboard.
-  bool HasPrivacyScreenKey(const KeyboardDevice& keyboard) const;
-  bool HasPrivacyScreenKeyOnAnyKeyboard() const;
 
   // Check if the browser search key exists on the given keyboard.
   bool HasBrowserSearchKey(const KeyboardDevice& keyboard) const;
@@ -430,7 +373,6 @@ class KeyboardCapability : public InputDeviceEventObserver {
   // multiple times. This is mutable to allow caching results from the APIs
   // which are effectively const.
   mutable base::flat_map<int, KeyboardInfo> keyboard_info_map_;
-  std::unique_ptr<Delegate> delegate_;
 
   // Whether or not to disable "trimming" which means the `keyboard_info_map_`
   // will not remove entries when they are disconnected.

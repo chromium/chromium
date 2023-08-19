@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://new-tab-page/new_tab_page.js';
 
 import {BrowserProxyImpl, MetricsReporterImpl, mojoString16, RealboxBrowserProxy, RealboxElement} from 'chrome://new-tab-page/new_tab_page.js';
@@ -81,11 +80,8 @@ suite('Lens search', () => {
     document.body.appendChild(realbox);
   });
 
-  test('Lens search button is visible when feature is flipped', async () => {
+  test('Lens search button is visible by default', async () => {
     // Arrange.
-    loadTimeData.overrideValues({
-      realboxLensSearch: true,
-    });
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     realbox = document.createElement('ntp-realbox');
     document.body.appendChild(realbox);

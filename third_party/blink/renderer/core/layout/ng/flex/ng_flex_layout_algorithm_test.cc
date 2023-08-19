@@ -244,7 +244,7 @@ TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsAutoScrollbar) {
   EXPECT_TRUE(devtools);
 
   // Make the inner child short enough to eliminate the need for a scrollbar.
-  Element* inner = GetDocument().getElementById("inner");
+  Element* inner = GetDocument().getElementById(AtomicString("inner"));
   inner->SetInlineStyleProperty(CSSPropertyID::kHeight, "50px");
 
   devtools = LayoutForDevtools();

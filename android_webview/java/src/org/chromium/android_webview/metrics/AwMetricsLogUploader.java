@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.android_webview.AwBrowserProcess;
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.common.services.IMetricsUploadService;
 import org.chromium.android_webview.common.services.ServiceHelper;
 import org.chromium.android_webview.common.services.ServiceNames;
@@ -35,6 +36,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * org.chromium.android_webview.services.MetricsUploadService} which then uploads them accordingly
  * depending on the platform implementation.
  */
+@Lifetime.Singleton
 public class AwMetricsLogUploader implements AndroidMetricsLogConsumer {
     private static final String TAG = "AwMetricsLogUploader";
     private static final long SERVICE_CONNECTION_TIMEOUT_MS = 10_000;

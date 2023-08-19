@@ -171,6 +171,20 @@ inline unsigned CSSSelector::SpecificityForOneSelector() const {
           }
         case kPseudoRelativeAnchor:
           return 0;
+        case kPseudoTrue:
+          // The :true pseudo-class should never be web-exposed, and should
+          // therefore not affect specificity either.
+          return 0;
+        case kPseudoScope:
+          if (is_implicitly_added_) {
+            // Implicit :scope pseudo-classes are added to selectors
+            // within @scope. Such pseudo-classes must not have any effect
+            // on the specificity of the scoped selector.
+            //
+            // https://drafts.csswg.org/css-cascade-6/#scope-effects
+            return 0;
+          }
+          break;
         // FIXME: PseudoAny should base the specificity on the sub-selectors.
         // See http://lists.w3.org/Archives/Public/www-style/2010Sep/0530.html
         case kPseudoAny:
@@ -305,6 +319,9 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoDecrement:
     case kPseudoDefault:
     case kPseudoDefined:
+    case kPseudoDetailsContent:
+    case kPseudoDetailsSummary:
+    case kPseudoDialogInTopLayer:
     case kPseudoDir:
     case kPseudoDisabled:
     case kPseudoDoubleButton:
@@ -364,6 +381,7 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoPlaceholder:
     case kPseudoPlaceholderShown:
     case kPseudoPlaying:
+    case kPseudoPopoverInTopLayer:
     case kPseudoPopoverOpen:
     case kPseudoReadOnly:
     case kPseudoReadWrite:
@@ -423,12 +441,14 @@ struct NameToPseudoStruct {
 const static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"-internal-autofill-previewed", CSSSelector::kPseudoAutofillPreviewed},
     {"-internal-autofill-selected", CSSSelector::kPseudoAutofillSelected},
+    {"-internal-dialog-in-top-layer", CSSSelector::kPseudoDialogInTopLayer},
     {"-internal-has-datalist", CSSSelector::kPseudoHasDatalist},
     {"-internal-is-html", CSSSelector::kPseudoIsHtml},
     {"-internal-list-box", CSSSelector::kPseudoListBox},
     {"-internal-media-controls-overlay-cast-button",
      CSSSelector::kPseudoWebKitCustomElement},
     {"-internal-multi-select-focus", CSSSelector::kPseudoMultiSelectFocus},
+    {"-internal-popover-in-top-layer", CSSSelector::kPseudoPopoverInTopLayer},
     {"-internal-relative-anchor", CSSSelector::kPseudoRelativeAnchor},
     {"-internal-selector-fragment-anchor",
      CSSSelector::kPseudoSelectorFragmentAnchor},
@@ -467,6 +487,8 @@ const static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"decrement", CSSSelector::kPseudoDecrement},
     {"default", CSSSelector::kPseudoDefault},
     {"defined", CSSSelector::kPseudoDefined},
+    {"details-content", CSSSelector::kPseudoDetailsContent},
+    {"details-summary", CSSSelector::kPseudoDetailsSummary},
     {"disabled", CSSSelector::kPseudoDisabled},
     {"double-button", CSSSelector::kPseudoDoubleButton},
     {"empty", CSSSelector::kPseudoEmpty},
@@ -614,19 +636,6 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
     return CSSSelector::kPseudoUnknown;
   }
 
-  // We enable parsing of the popover pseudo classes in the case that we *don't*
-  // have a document, since that mostly/always occurs when parsing UA
-  // stylesheets.
-  bool popover_attribute_enabled =
-      !document || RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
-                       document->GetExecutionContext());
-  if (!popover_attribute_enabled &&
-      (match->type == CSSSelector::kPseudoOpen ||
-       match->type == CSSSelector::kPseudoClosed ||
-       match->type == CSSSelector::kPseudoPopoverOpen)) {
-    return CSSSelector::kPseudoUnknown;
-  }
-
   if (match->type == CSSSelector::kPseudoHighlight &&
       !RuntimeEnabledFeatures::HighlightAPIEnabled()) {
     return CSSSelector::kPseudoUnknown;
@@ -640,6 +649,12 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
 
   if (match->type == CSSSelector::kPseudoToggle &&
       !RuntimeEnabledFeatures::CSSTogglesEnabled()) {
+    return CSSSelector::kPseudoUnknown;
+  }
+
+  if ((match->type == CSSSelector::kPseudoDetailsContent ||
+       match->type == CSSSelector::kPseudoDetailsSummary) &&
+      !RuntimeEnabledFeatures::DetailsStylingEnabled()) {
     return CSSSelector::kPseudoUnknown;
   }
 
@@ -748,6 +763,8 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoViewTransitionImagePair:
     case kPseudoViewTransitionOld:
     case kPseudoViewTransitionNew:
+    case kPseudoDetailsContent:
+    case kPseudoDetailsSummary:
       if (match_ != kPseudoElement) {
         pseudo_type_ = kPseudoUnknown;
       }
@@ -784,6 +801,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoDecrement:
     case kPseudoDefault:
     case kPseudoDefined:
+    case kPseudoDialogInTopLayer:
     case kPseudoDir:
     case kPseudoDisabled:
     case kPseudoDoubleButton:
@@ -833,6 +851,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoPictureInPicture:
     case kPseudoPlaceholderShown:
     case kPseudoPlaying:
+    case kPseudoPopoverInTopLayer:
     case kPseudoPopoverOpen:
     case kPseudoReadOnly:
     case kPseudoReadWrite:
@@ -1383,11 +1402,13 @@ bool CSSSelector::IsTreeAbidingPseudoElement() const {
          (GetPseudoType() == kPseudoBefore || GetPseudoType() == kPseudoAfter ||
           GetPseudoType() == kPseudoMarker ||
           GetPseudoType() == kPseudoPlaceholder ||
-          GetPseudoType() == kPseudoFileSelectorButton);
+          GetPseudoType() == kPseudoFileSelectorButton ||
+          GetPseudoType() == kPseudoBackdrop);
 }
 
 bool CSSSelector::IsAllowedAfterPart() const {
-  if (Match() != CSSSelector::kPseudoElement) {
+  if (Match() != CSSSelector::kPseudoElement &&
+      Match() != CSSSelector::kPseudoClass) {
     return false;
   }
   // Everything that makes sense should work following ::part. This list
@@ -1395,6 +1416,9 @@ bool CSSSelector::IsAllowedAfterPart() const {
   switch (GetPseudoType()) {
     case kPseudoBefore:
     case kPseudoAfter:
+    case kPseudoAutofill:
+    case kPseudoAutofillPreviewed:
+    case kPseudoAutofillSelected:
     case kPseudoPlaceholder:
     case kPseudoFileSelectorButton:
     case kPseudoFirstLine:
@@ -1404,6 +1428,7 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoHighlight:
     case kPseudoSpellingError:
     case kPseudoGrammarError:
+    case kPseudoWebKitAutofill:
       return true;
     default:
       return false;

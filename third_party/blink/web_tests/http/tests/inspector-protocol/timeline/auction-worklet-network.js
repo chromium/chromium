@@ -7,6 +7,7 @@
   const testStart = Date.now();
   const testLimit = 5 * 60 * 1000;  // Way longer than the test may take.
 
+  dp.Target.setAutoAttach({autoAttach: true, flatten: true, waitForDebuggerOnStart: false});
   const TracingHelper =
       await testRunner.loadScript('../resources/tracing-test.js');
   const tracingHelper = new TracingHelper(testRunner, session);

@@ -72,7 +72,7 @@ std::string GetUniqueNicknameForSlot(const std::string& nickname,
   while (SEC_CertNicknameConflict(temp_nickname.c_str(),
                                   const_cast<SECItem*>(subject),
                                   CERT_GetDefaultCertDB())) {
-    base::SStringPrintf(&new_name, "%s #%d", nickname.c_str(), index++);
+    new_name = base::StringPrintf("%s #%d", nickname.c_str(), index++);
     temp_nickname = token_name + new_name;
   }
 

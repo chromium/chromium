@@ -8,10 +8,6 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/price_notifications_commands.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation PriceNotificationsIPHCoordinator
 
 #pragma mark - PriceNotificationsIPHPresenter

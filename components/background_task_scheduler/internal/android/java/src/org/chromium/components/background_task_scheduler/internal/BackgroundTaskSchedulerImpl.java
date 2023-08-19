@@ -19,7 +19,6 @@ import org.chromium.components.background_task_scheduler.TaskInfo;
  * To get an instance of this class, use {@link BackgroundTaskSchedulerFactory#getScheduler()}.
  */
 class BackgroundTaskSchedulerImpl implements BackgroundTaskScheduler {
-    private static final String TAG = "BkgrdTaskScheduler";
     private static final String SWITCH_IGNORE_BACKGROUND_TASKS = "ignore-background-tasks";
 
     private final BackgroundTaskSchedulerDelegate mSchedulerDelegate;

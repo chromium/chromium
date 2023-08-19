@@ -75,6 +75,12 @@ void ShellContentClient::AddAdditionalSchemes(Schemes* schemes) {
 #if BUILDFLAG(IS_ANDROID)
   schemes->local_schemes.push_back(url::kContentScheme);
 #endif
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kTestRegisterStandardScheme)) {
+    std::string scheme = command_line->GetSwitchValueASCII(
+        switches::kTestRegisterStandardScheme);
+    schemes->standard_schemes.emplace_back(std::move(scheme));
+  }
 }
 
 }  // namespace content

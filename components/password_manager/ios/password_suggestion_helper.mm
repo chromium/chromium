@@ -16,10 +16,6 @@
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using autofill::FieldRendererId;
 using autofill::FormData;
 using autofill::FormRendererId;
@@ -40,7 +36,7 @@ typedef void (^PasswordSuggestionsAvailableCompletion)(
 
   // The value of the map is a C++ interface to cache and retrieve password
   // suggestions. The interfaces are grouped by the frame of the form.
-  base::flat_map<web::WebFrame*, std::unique_ptr<AccountSelectFillData>>
+  base::flat_map<std::string, std::unique_ptr<AccountSelectFillData>>
       _fillDataMap;
 
   // YES indicates that extracted password form has been sent to the password
@@ -72,9 +68,9 @@ typedef void (^PasswordSuggestionsAvailableCompletion)(
 - (NSArray<FormSuggestion*>*)
     retrieveSuggestionsWithFormID:(FormRendererId)formIdentifier
                   fieldIdentifier:(FieldRendererId)fieldIdentifier
-                          inFrame:(web::WebFrame*)frame
+                       forFrameId:(const std::string&)frameId
                         fieldType:(NSString*)fieldType {
-  AccountSelectFillData* fillData = [self getFillDataFromFrame:frame];
+  AccountSelectFillData* fillData = [self getFillDataFromFrame:frameId];
 
   BOOL isPasswordField = [fieldType isEqual:kPasswordFieldType];
 
@@ -121,9 +117,9 @@ typedef void (^PasswordSuggestionsAvailableCompletion)(
 
   password_manager::PasswordManagerJavaScriptFeature* feature =
       password_manager::PasswordManagerJavaScriptFeature::GetInstance();
+  const std::string frame_id = SysNSStringToUTF8(formQuery.frameID);
   web::WebFrame* frame =
-      feature->GetWebFramesManager(_webState.get())
-          ->GetFrameWithId(SysNSStringToUTF8(formQuery.frameID));
+      feature->GetWebFramesManager(_webState.get())->GetFrameWithId(frame_id);
   DCHECK(frame);
 
   BOOL isPasswordField = [formQuery isOnPasswordField];
@@ -144,7 +140,7 @@ typedef void (^PasswordSuggestionsAvailableCompletion)(
     return;
   }
 
-  AccountSelectFillData* fillData = [self getFillDataFromFrame:frame];
+  AccountSelectFillData* fillData = [self getFillDataFromFrame:frame_id];
 
   completion(fillData && fillData->IsSuggestionsAvailable(
                              formQuery.uniqueFormID, formQuery.uniqueFieldID,
@@ -153,8 +149,8 @@ typedef void (^PasswordSuggestionsAvailableCompletion)(
 
 - (std::unique_ptr<password_manager::FillData>)
     passwordFillDataForUsername:(NSString*)username
-                        inFrame:(web::WebFrame*)frame {
-  AccountSelectFillData* fillData = [self getFillDataFromFrame:frame];
+                     forFrameId:(const std::string&)frameId {
+  AccountSelectFillData* fillData = [self getFillDataFromFrame:frameId];
   return fillData ? fillData->GetFillData(SysNSStringToUTF16(username))
                   : nullptr;
 }
@@ -167,15 +163,13 @@ typedef void (^PasswordSuggestionsAvailableCompletion)(
 }
 
 - (void)processWithPasswordFormFillData:(const PasswordFormFillData&)formData
-                                inFrame:(web::WebFrame*)frame
+                             forFrameId:(const std::string&)frameId
                             isMainFrame:(BOOL)isMainFrame
                       forSecurityOrigin:(const GURL&)origin {
-  // TODO(crbug.com/1383214): Rewrite the code to eliminate the chance of using
-  // |frame| after its destruction.
-  AccountSelectFillData* fillData = [self getFillDataFromFrame:frame];
+  AccountSelectFillData* fillData = [self getFillDataFromFrame:frameId];
   if (!fillData) {
     auto it = _fillDataMap.insert(
-        std::make_pair(frame, std::make_unique<AccountSelectFillData>()));
+        std::make_pair(frameId, std::make_unique<AccountSelectFillData>()));
     fillData = it.first->second.get();
   }
 
@@ -191,7 +185,7 @@ typedef void (^PasswordSuggestionsAvailableCompletion)(
   std::vector<autofill::FieldRendererId> rendererIds(2);
   rendererIds[0] = formData.username_element_renderer_id;
   rendererIds[1] = formData.password_element_renderer_id;
-  [self.delegate attachListenersForBottomSheet:rendererIds inFrame:frame];
+  [self.delegate attachListenersForBottomSheet:rendererIds forFrameId:frameId];
 
   _processedPasswordSuggestions = YES;
 
@@ -200,13 +194,21 @@ typedef void (^PasswordSuggestionsAvailableCompletion)(
     _suggestionsAvailableCompletion = nil;
   }
 }
-- (void)processWithNoSavedCredentials {
+- (void)processWithNoSavedCredentialsWithFrameId:(const std::string&)frameId {
   // Only update |_processedPasswordSuggestions| if PasswordManager was
   // queried for some forms. This is needed to protect against a case when
   // there are no forms on the pageload and they are added dynamically.
   if (_sentPasswordFormToPasswordManager) {
     _processedPasswordSuggestions = YES;
   }
+
+  AccountSelectFillData* fillData = [self getFillDataFromFrame:frameId];
+  if (!fillData) {
+    auto it = _fillDataMap.insert(
+        std::make_pair(frameId, std::make_unique<AccountSelectFillData>()));
+    fillData = it.first->second.get();
+  }
+  fillData->ResetCache();
 
   if (_suggestionsAvailableCompletion) {
     _suggestionsAvailableCompletion(nullptr);
@@ -220,8 +222,8 @@ typedef void (^PasswordSuggestionsAvailableCompletion)(
 
 #pragma mark - Private methods
 
-- (AccountSelectFillData*)getFillDataFromFrame:(web::WebFrame*)frame {
-  auto it = _fillDataMap.find(frame);
+- (AccountSelectFillData*)getFillDataFromFrame:(const std::string&)frameId {
+  auto it = _fillDataMap.find(frameId);
   if (it == _fillDataMap.end()) {
     return nullptr;
   }

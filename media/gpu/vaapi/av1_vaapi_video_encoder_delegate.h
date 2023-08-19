@@ -10,13 +10,9 @@
 #include "media/base/video_bitrate_allocation.h"
 #include "media/gpu/av1_picture.h"
 #include "media/gpu/vaapi/vaapi_video_encoder_delegate.h"
-#include "media/gpu/video_rate_control.h"
 
 namespace aom {
-struct AV1RateControlRtcConfig;
-struct AV1FrameParamsRTC;
 class AV1RateControlRTC;
-struct AV1LoopfilterLevel;
 }  // namespace aom
 
 namespace media {
@@ -72,11 +68,6 @@ class AV1VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   std::vector<gfx::Size> GetSVCLayerResolutions() override;
 
  private:
-  using AV1RateControl = VideoRateControl<aom::AV1RateControlRtcConfig,
-                                          aom::AV1RateControlRTC,
-                                          aom::AV1FrameParamsRTC,
-                                          aom::AV1LoopfilterLevel>;
-
   BitstreamBufferMetadata GetMetadata(const EncodeJob& encode_job,
                                       size_t payload_size) override;
   bool PrepareEncodeJob(EncodeJob& encode_job) override;
@@ -110,7 +101,7 @@ class AV1VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   // reference frames, not just the most recent.
   scoped_refptr<AV1Picture> last_frame_ = nullptr;
   VAEncSequenceParameterBufferAV1 seq_param_;
-  std::unique_ptr<AV1RateControl> rate_ctrl_;
+  std::unique_ptr<aom::AV1RateControlRTC> rate_ctrl_;
 };
 
 }  // namespace media

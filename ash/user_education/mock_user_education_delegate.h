@@ -11,8 +11,10 @@
 #include "ash/ash_export.h"
 #include "ash/user_education/user_education_delegate.h"
 #include "components/account_id/account_id.h"
+#include "components/user_education/common/help_bubble.h"
 #include "components/user_education/common/tutorial_description.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -42,6 +44,10 @@ class ASH_EXPORT MockUserEducationDelegate : public UserEducationDelegate {
               GetElementIdentifierForAppId,
               (const std::string& app_id),
               (const, override));
+  MOCK_METHOD(const absl::optional<bool>&,
+              IsNewUser,
+              (const AccountId& account_id),
+              (const, override));
   MOCK_METHOD(void,
               RegisterTutorial,
               (const AccountId& account_id,
@@ -56,6 +62,22 @@ class ASH_EXPORT MockUserEducationDelegate : public UserEducationDelegate {
                base::OnceClosure completed_callback,
                base::OnceClosure aborted_callback),
               (override));
+  MOCK_METHOD(void,
+              AbortTutorial,
+              (const AccountId& account_id,
+               absl::optional<TutorialId> tutorial_id),
+              (override));
+  MOCK_METHOD(void,
+              LaunchSystemWebAppAsync,
+              (const AccountId& account_id,
+               SystemWebAppType system_web_app_type,
+               int64_t display_id),
+              (override));
+  MOCK_METHOD(bool,
+              IsRunningTutorial,
+              (const AccountId& account_id,
+               absl::optional<TutorialId> tutorial_id),
+              (const, override));
 };
 
 }  // namespace ash

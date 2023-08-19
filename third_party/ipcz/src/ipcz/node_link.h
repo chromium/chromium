@@ -210,6 +210,8 @@ class NodeLink : public msg::NodeMessageListener {
   void Transmit(Message& message);
 
  private:
+  friend class RefCounted<NodeLink>;
+
   enum ActivationState {
     kNeverActivated,
     kActive,
@@ -265,16 +267,19 @@ class NodeLink : public msg::NodeMessageListener {
   // not yet known to the local node. This schedules the parcel for acceptance
   // as soon as that buffer is available.
   void WaitForParcelFragmentToResolve(SublinkId for_sublink,
-                                      Parcel& parcel,
+                                      std::unique_ptr<Parcel> parcel,
                                       const FragmentDescriptor& descriptor,
                                       bool is_split_parcel);
 
-  bool AcceptParcelWithoutDriverObjects(SublinkId for_sublink, Parcel& parcel);
-  bool AcceptParcelDriverObjects(SublinkId for_sublink, Parcel& parcel);
+  bool AcceptParcelWithoutDriverObjects(SublinkId for_sublink,
+                                        std::unique_ptr<Parcel> parcel);
+  bool AcceptParcelDriverObjects(SublinkId for_sublink,
+                                 std::unique_ptr<Parcel> parcel);
   bool AcceptSplitParcel(SublinkId for_sublink,
-                         Parcel& parcel_without_driver_objects,
-                         Parcel& parcel_with_driver_objects);
-  bool AcceptCompleteParcel(SublinkId for_sublink, Parcel& parcel);
+                         std::unique_ptr<Parcel> parcel_without_driver_objects,
+                         std::unique_ptr<Parcel> parcel_with_driver_objects);
+  bool AcceptCompleteParcel(SublinkId for_sublink,
+                            std::unique_ptr<Parcel> parcel);
 
   const Ref<Node> node_;
   const LinkSide link_side_;
@@ -308,7 +313,8 @@ class NodeLink : public msg::NodeMessageListener {
   // Tracks partially received contents of split parcels so they can be
   // reconstructed for dispatch.
   using PartialParcelKey = std::tuple<SublinkId, SequenceNumber>;
-  using PartialParcelMap = absl::flat_hash_map<PartialParcelKey, Parcel>;
+  using PartialParcelMap =
+      absl::flat_hash_map<PartialParcelKey, std::unique_ptr<Parcel>>;
   PartialParcelMap partial_parcels_ ABSL_GUARDED_BY(mutex_);
 
   // Mapping from subparcel index to Parcel object.

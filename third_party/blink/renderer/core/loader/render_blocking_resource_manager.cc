@@ -134,6 +134,28 @@ void RenderBlockingResourceManager::FontPreloadingTimerFired(TimerBase*) {
   document_->RenderBlockingResourceUnblocked();
 }
 
+void RenderBlockingResourceManager::SetMainDocumentParsingIsRenderBlocking(
+    bool blocking) {
+  if (blocked_on_main_document_parsing_ == blocking) {
+    return;
+  }
+
+  if (!RuntimeEnabledFeatures::DocumentRenderBlockingEnabled()) {
+    return;
+  }
+
+  // render-blocking resources can only be added until the body element is
+  // parsed.
+  if (blocking && document_->body()) {
+    return;
+  }
+
+  blocked_on_main_document_parsing_ = blocking;
+  if (!blocked_on_main_document_parsing_) {
+    RenderBlockingResourceUnblocked();
+  }
+}
+
 void RenderBlockingResourceManager::SetFontPreloadTimeoutForTest(
     base::TimeDelta timeout) {
   if (font_preload_max_blocking_timer_.IsActive()) {

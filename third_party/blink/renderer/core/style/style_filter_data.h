@@ -29,6 +29,8 @@
 #include "third_party/blink/renderer/core/style/filter_operations.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
+#include <iosfwd>
+
 namespace blink {
 
 class StyleFilterData final : public GarbageCollected<StyleFilterData> {
@@ -47,6 +49,11 @@ class StyleFilterData final : public GarbageCollected<StyleFilterData> {
 
   FilterOperations operations_;
 };
+
+inline std::ostream& operator<<(std::ostream& stream,
+                                const StyleFilterData& style_filter_data) {
+  return stream << style_filter_data.operations_;
+}
 
 }  // namespace blink
 

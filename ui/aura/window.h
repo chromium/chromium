@@ -491,7 +491,7 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
 
   // Marks the current viz::LocalSurfaceId as invalid. AllocateLocalSurfaceId
   // must be called before submitting new CompositorFrames.
-  void InvalidateLocalSurfaceId();
+  void InvalidateLocalSurfaceId(bool also_invalidate_allocation_group = false);
 
   // Sets the current viz::LocalSurfaceId, in cases where the embedded client
   // has allocated one. Also sets child sequence number component of the
@@ -557,6 +557,11 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
 
   // Overrides from ui::PropertyHandler
   void AfterPropertyChange(const void* key, int64_t old_value) override;
+
+  // viz::HostFrameSinkClient:
+  void OnFirstSurfaceActivation(const viz::SurfaceInfo& surface_info) override;
+  void OnFrameTokenChanged(uint32_t frame_token,
+                           base::TimeTicks activation_time) override;
 
  private:
   friend class DefaultWindowOcclusionChangeBuilder;
@@ -671,11 +676,6 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
                             ui::LocatedEvent* event) const override;
   gfx::PointF GetScreenLocationF(const ui::LocatedEvent& event) const override;
 
-  // viz::HostFrameSinkClient:
-  void OnFirstSurfaceActivation(const viz::SurfaceInfo& surface_info) override;
-  void OnFrameTokenChanged(uint32_t frame_token,
-                           base::TimeTicks activation_time) override;
-
   // Updates the layer name based on the window's name and id.
   void UpdateLayerName();
 
@@ -733,7 +733,7 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
   // parent during its parents destruction.
   bool owned_by_parent_ = true;
 
-  raw_ptr<WindowDelegate, DanglingUntriaged> delegate_;
+  raw_ptr<WindowDelegate, AcrossTasksDanglingUntriaged> delegate_;
 
   // The Window's parent.
   raw_ptr<Window> parent_ = nullptr;

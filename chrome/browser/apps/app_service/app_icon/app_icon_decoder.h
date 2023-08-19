@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "chrome/browser/apps/app_service/app_icon/app_icon_util.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "ui/base/resource/resource_scale_factor.h"

@@ -61,6 +61,8 @@ constexpr char kArcPolicyKeyCaCerts[] = "caCerts";
 constexpr char kArcPolicyKeyRequiredKeyPairs[] = "requiredKeyPairs";
 constexpr char kArcPolicyKeyDpsInteractionsDisabled[] =
     "dpsInteractionsDisabled";
+constexpr char kArcPolicyKeyEnabledSystemAppPackageNames[] =
+    "enabledSystemAppPackageNames";
 
 // An app's install type specified by the policy.
 // See google3/wireless/android/enterprise/clouddps/proto/schema.proto.
@@ -114,7 +116,8 @@ enum class ArcPolicyKey {
   kCredentialsConfigDisabled = 26,
   kCaCerts = 27,
   kRequiredKeyPairs = 28,
-  kMaxValue = kRequiredKeyPairs,
+  kEnabledSystemAppPackageNames = 29,
+  kMaxValue = kEnabledSystemAppPackageNames,
 };
 
 // Returns true if the account is managed. Otherwise false.

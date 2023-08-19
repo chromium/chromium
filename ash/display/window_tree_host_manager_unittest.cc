@@ -971,7 +971,8 @@ class HostWindowObserver : aura::WindowObserver {
 
  private:
   bool removed_from_host_ = false;
-  const aura::Window* host_window_ = nullptr;
+  raw_ptr<const aura::Window, DanglingUntriaged | ExperimentalAsh>
+      host_window_ = nullptr;
 };
 
 // Tests that RoundedDisplayProvider and its host window are correctly deleted
@@ -1101,9 +1102,9 @@ TEST_F(WindowTreeHostManagerTest, SwapPrimaryById) {
           ->GetHost()
           ->compositor();
 
-  EXPECT_EQ(swapped_primary.color_spaces(),
+  EXPECT_EQ(swapped_primary.GetColorSpaces(),
             swapped_primary_compositor->display_color_spaces());
-  EXPECT_EQ(swapped_secondary.color_spaces(),
+  EXPECT_EQ(swapped_secondary.GetColorSpaces(),
             swapped_secondary_compositor->display_color_spaces());
 
   // Calling the same ID don't do anything.
@@ -1700,9 +1701,9 @@ TEST_F(WindowTreeHostManagerTest, DockToSingle) {
 // is swapped should not cause a crash. (crbug.com/426292)
 TEST_F(WindowTreeHostManagerTest, ReplaceSwappedPrimary) {
   const display::ManagedDisplayInfo first_display_info =
-      CreateDisplayInfo(10, 0, display::Display::ROTATE_0);
+      CreateDisplayInfo(111, 0, display::Display::ROTATE_0);
   const display::ManagedDisplayInfo second_display_info =
-      CreateDisplayInfo(11, 1, display::Display::ROTATE_0);
+      CreateDisplayInfo(222, 1, display::Display::ROTATE_0);
 
   std::vector<display::ManagedDisplayInfo> display_info_list;
   // Extended
@@ -1712,18 +1713,18 @@ TEST_F(WindowTreeHostManagerTest, ReplaceSwappedPrimary) {
 
   SwapPrimaryDisplay();
 
-  EXPECT_EQ(11, display::Screen::GetScreen()->GetPrimaryDisplay().id());
+  EXPECT_EQ(222, display::Screen::GetScreen()->GetPrimaryDisplay().id());
 
   display_info_list.clear();
   const display::ManagedDisplayInfo new_first_display_info =
-      CreateDisplayInfo(20, 0, display::Display::ROTATE_0);
+      CreateDisplayInfo(333, 0, display::Display::ROTATE_0);
   const display::ManagedDisplayInfo new_second_display_info =
-      CreateDisplayInfo(21, 1, display::Display::ROTATE_0);
+      CreateDisplayInfo(444, 1, display::Display::ROTATE_0);
   display_info_list.push_back(new_first_display_info);
   display_info_list.push_back(new_second_display_info);
   display_manager()->OnNativeDisplaysChanged(display_info_list);
 
-  EXPECT_EQ(20, display::Screen::GetScreen()->GetPrimaryDisplay().id());
+  EXPECT_EQ(333, display::Screen::GetScreen()->GetPrimaryDisplay().id());
 }
 
 namespace {

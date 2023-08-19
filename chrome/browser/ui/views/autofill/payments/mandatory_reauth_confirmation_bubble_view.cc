@@ -13,6 +13,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -75,6 +76,9 @@ MandatoryReauthConfirmationBubbleView::
     ~MandatoryReauthConfirmationBubbleView() = default;
 
 void MandatoryReauthConfirmationBubbleView::OnSettingsLinkClicked() {
+  autofill_metrics::LogMandatoryReauthOptInConfirmationBubbleMetric(
+      autofill_metrics::MandatoryReauthOptInConfirmationBubbleMetric::
+          kSettingsLinkClicked);
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
   chrome::ShowSettingsSubPage(browser, chrome::kPaymentsSubPage);
 }
@@ -95,6 +99,7 @@ void MandatoryReauthConfirmationBubbleView::Init() {
           &MandatoryReauthConfirmationBubbleView::OnSettingsLinkClicked,
           weak_ptr_factory_.GetWeakPtr()));
   AddChildView(views::Builder<views::StyledLabel>()
+                   .SetID(DialogViewId::SETTINGS_LABEL)
                    .SetText(explanation_text)
                    .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
                    .SetDefaultTextStyle(views::style::STYLE_SECONDARY)

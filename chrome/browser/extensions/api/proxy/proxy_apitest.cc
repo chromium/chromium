@@ -34,6 +34,15 @@ const char kNoServer[] = "";
 const char kNoBypass[] = "";
 const char kNoPac[] = "";
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+bool IsLacrosServiceSyncingProxyPref() {
+  static constexpr int kMinVersionProxyPolicy = 4;
+  const int version = chromeos::LacrosService::Get()
+                          ->GetInterfaceVersion<crosapi::mojom::Prefs>();
+  return version >= kMinVersionProxyPolicy;
+}
+#endif
+
 }  // namespace
 
 class ProxySettingsApiTest : public ExtensionApiTest {
@@ -50,10 +59,22 @@ class ProxySettingsApiTest : public ExtensionApiTest {
     // used for all tests in the target. Setting a proxy will prevent other
     // tests which require a direct connection to complete successfully.
     auto* lacros_service = chromeos::LacrosService::Get();
-    if (lacros_service &&
-        lacros_service->IsAvailable<crosapi::mojom::NetworkSettingsService>()) {
-      lacros_service->GetRemote<crosapi::mojom::NetworkSettingsService>()
-          ->ClearExtensionProxy();
+    if (!lacros_service) {
+      ExtensionApiTest::TearDownOnMainThread();
+      return;
+    }
+    if (IsLacrosServiceSyncingProxyPref()) {
+      if (lacros_service->IsAvailable<crosapi::mojom::Prefs>()) {
+        lacros_service->GetRemote<crosapi::mojom::Prefs>()
+            ->ClearExtensionControlledPref(crosapi::mojom::PrefPath::kProxy,
+                                           base::DoNothing());
+      }
+    } else {
+      if (lacros_service
+              ->IsAvailable<crosapi::mojom::NetworkSettingsService>()) {
+        lacros_service->GetRemote<crosapi::mojom::NetworkSettingsService>()
+            ->ClearExtensionProxy();
+      }
     }
     ExtensionApiTest::TearDownOnMainThread();
   }

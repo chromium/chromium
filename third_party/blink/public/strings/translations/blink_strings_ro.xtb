@@ -26,7 +26,6 @@
 <translation id="2060505056492490888">Semnul „<ph name="DOT" />” apare poziționat greșit în „<ph name="INVALIDDOMAIN" />”.</translation>
 <translation id="2148716181193084225">Astăzi</translation>
 <translation id="2226276347425096477">Micșorează acest text la cel mult <ph name="MAX_CHARACTERS" /> caractere (în prezent utilizezi <ph name="CURRENT_LENGTH" /> caractere).</translation>
-<translation id="2246498165605549352">Fișier local</translation>
 <translation id="2247351761944213033">Săptămâna <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Melodia <ph name="NUMBER" /></translation>
 <translation id="2393030564806080191">Valoarea hexazecimală a culorii</translation>
@@ -89,6 +88,7 @@
 <translation id="5425179576310518467">data actuală</translation>
 <translation id="5466621249238537318">Selectează unul sau mai multe fișiere.</translation>
 <translation id="5468998798572797635">ieșiți din ecranul complet</translation>
+<translation id="5514612371225420585">Fișier de pe dispozitiv</translation>
 <translation id="5516235301412634559">0,75</translation>
 <translation id="5537725057119320332">Proiectează</translation>
 <translation id="5546461542133609677">activați sunetul</translation>
@@ -113,6 +113,7 @@
 <translation id="6398862346408813489">Afișează panoul de selectare a lunii</translation>
 <translation id="6404546809543547843">glisor redare audio</translation>
 <translation id="6443871981718447451">afișează meniul de subtitrări</translation>
+<translation id="6484738902856791350">Aplică o formatare stilizată</translation>
 <translation id="6550675742724504774">Opțiuni</translation>
 <translation id="6572309429103589720">Gramatică nevalidă</translation>
 <translation id="658823671542763450">deschideți în ecran complet</translation>

@@ -27,10 +27,11 @@ TEST_F(CSSComputedStyleDeclarationTest, CleanAncestorsNoRecalc) {
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(GetDocument().NeedsLayoutTreeUpdate());
 
-  GetDocument().getElementById("dirty")->setAttribute("style", "color:pink");
+  GetElementById("dirty")->setAttribute(html_names::kStyleAttr,
+                                        AtomicString("color:pink"));
   EXPECT_TRUE(GetDocument().NeedsLayoutTreeUpdate());
 
-  Element* target = GetDocument().getElementById("target");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
   auto* computed = MakeGarbageCollected<CSSComputedStyleDeclaration>(target);
 
   EXPECT_EQ("rgb(0, 128, 0)",
@@ -46,7 +47,7 @@ TEST_F(CSSComputedStyleDeclarationTest, CleanShadowAncestorsNoRecalc) {
     <div id=host></div>
   )HTML");
 
-  Element* host = GetDocument().getElementById("host");
+  Element* host = GetDocument().getElementById(AtomicString("host"));
 
   ShadowRoot& shadow_root =
       host->AttachShadowRootInternal(ShadowRootType::kOpen);
@@ -57,10 +58,11 @@ TEST_F(CSSComputedStyleDeclarationTest, CleanShadowAncestorsNoRecalc) {
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(GetDocument().NeedsLayoutTreeUpdate());
 
-  GetDocument().getElementById("dirty")->setAttribute("style", "color:pink");
+  GetElementById("dirty")->setAttribute(html_names::kStyleAttr,
+                                        AtomicString("color:pink"));
   EXPECT_TRUE(GetDocument().NeedsLayoutTreeUpdate());
 
-  Element* target = shadow_root.getElementById("target");
+  Element* target = shadow_root.getElementById(AtomicString("target"));
   auto* computed = MakeGarbageCollected<CSSComputedStyleDeclaration>(target);
 
   EXPECT_EQ("rgb(0, 128, 0)",
@@ -85,9 +87,9 @@ TEST_F(CSSComputedStyleDeclarationTest, AdjacentInvalidation) {
 
   EXPECT_FALSE(GetDocument().NeedsLayoutTreeUpdate());
 
-  Element* a = GetDocument().getElementById("a");
-  Element* b = GetDocument().getElementById("b");
-  Element* c = GetDocument().getElementById("c");
+  Element* a = GetDocument().getElementById(AtomicString("a"));
+  Element* b = GetDocument().getElementById(AtomicString("b"));
+  Element* c = GetDocument().getElementById(AtomicString("c"));
 
   EXPECT_FALSE(GetDocument().NeedsLayoutTreeUpdate());
   EXPECT_FALSE(GetDocument().NeedsLayoutTreeUpdateForNode(*a));
@@ -99,7 +101,7 @@ TEST_F(CSSComputedStyleDeclarationTest, AdjacentInvalidation) {
   EXPECT_EQ("rgb(255, 0, 0)",
             computed->GetPropertyValue(CSSPropertyID::kColor));
 
-  a->classList().Add("test");
+  a->classList().Add(AtomicString("test"));
 
   EXPECT_TRUE(GetDocument().NeedsLayoutTreeUpdate());
   EXPECT_TRUE(GetDocument().NeedsLayoutTreeUpdateForNode(*a));
@@ -130,7 +132,7 @@ TEST_F(CSSComputedStyleDeclarationTest, SVGBlockSizeLayoutDependent) {
     </svg>
   )HTML");
 
-  Element* rect = GetDocument().QuerySelector("rect");
+  Element* rect = GetDocument().QuerySelector(AtomicString("rect"));
   auto* computed = MakeGarbageCollected<CSSComputedStyleDeclaration>(rect);
 
   EXPECT_EQ("400px", computed->GetPropertyValue(CSSPropertyID::kBlockSize));
@@ -149,7 +151,7 @@ TEST_F(CSSComputedStyleDeclarationTest, SVGInlineSizeLayoutDependent) {
     </svg>
   )HTML");
 
-  Element* rect = GetDocument().QuerySelector("rect");
+  Element* rect = GetDocument().QuerySelector(AtomicString("rect"));
   auto* computed = MakeGarbageCollected<CSSComputedStyleDeclaration>(rect);
 
   EXPECT_EQ("400px", computed->GetPropertyValue(CSSPropertyID::kInlineSize));
@@ -173,7 +175,7 @@ TEST_F(CSSComputedStyleDeclarationTest, UseCountDurationZero) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* div = GetDocument().getElementById("div");
+  Element* div = GetDocument().getElementById(AtomicString("div"));
   ASSERT_TRUE(div);
   auto* style = MakeGarbageCollected<CSSComputedStyleDeclaration>(div);
 
@@ -204,54 +206,6 @@ TEST_F(CSSComputedStyleDeclarationTest, UseCountDurationZero) {
   EXPECT_TRUE(style->GetPropertyCSSValue(CSSPropertyID::kWebkitFontSmoothing));
   EXPECT_TRUE(GetDocument().IsUseCounted(
       WebFeature::kCSSGetComputedWebkitFontSmoothingAnimationDurationZero));
-}
-
-TEST_F(CSSComputedStyleDeclarationTest, ScrollTimelineShorthandWithAttachment) {
-  {
-    ScopedScrollTimelineAttachmentForTest enabled(false);
-    GetDocument().body()->SetInlineStyleProperty(CSSPropertyID::kScrollTimeline,
-                                                 "--foo inline");
-    UpdateAllLifecyclePhasesForTest();
-    auto* style =
-        MakeGarbageCollected<CSSComputedStyleDeclaration>(GetDocument().body());
-    EXPECT_EQ("--foo inline",
-              style->GetPropertyValue(CSSPropertyID::kScrollTimeline));
-  }
-
-  {
-    ScopedScrollTimelineAttachmentForTest enabled(true);
-    GetDocument().body()->SetInlineStyleProperty(CSSPropertyID::kScrollTimeline,
-                                                 "--foo inline defer");
-    UpdateAllLifecyclePhasesForTest();
-    auto* style =
-        MakeGarbageCollected<CSSComputedStyleDeclaration>(GetDocument().body());
-    EXPECT_EQ("--foo inline defer",
-              style->GetPropertyValue(CSSPropertyID::kScrollTimeline));
-  }
-}
-
-TEST_F(CSSComputedStyleDeclarationTest, ViewTimelineShorthandWithAttachment) {
-  {
-    ScopedScrollTimelineAttachmentForTest enabled(false);
-    GetDocument().body()->SetInlineStyleProperty(CSSPropertyID::kViewTimeline,
-                                                 "--foo inline");
-    UpdateAllLifecyclePhasesForTest();
-    auto* style =
-        MakeGarbageCollected<CSSComputedStyleDeclaration>(GetDocument().body());
-    EXPECT_EQ("--foo inline",
-              style->GetPropertyValue(CSSPropertyID::kViewTimeline));
-  }
-
-  {
-    ScopedScrollTimelineAttachmentForTest enabled(true);
-    GetDocument().body()->SetInlineStyleProperty(CSSPropertyID::kViewTimeline,
-                                                 "--foo inline defer");
-    UpdateAllLifecyclePhasesForTest();
-    auto* style =
-        MakeGarbageCollected<CSSComputedStyleDeclaration>(GetDocument().body());
-    EXPECT_EQ("--foo inline defer",
-              style->GetPropertyValue(CSSPropertyID::kViewTimeline));
-  }
 }
 
 }  // namespace blink

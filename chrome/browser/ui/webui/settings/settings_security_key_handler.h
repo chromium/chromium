@@ -293,6 +293,8 @@ class PasskeysHandler : public SettingsPageUIHandler {
   void HandleHasPasskeys(const base::Value::List& args);
   void OnHasPasskeysComplete(std::string callback_id, bool has_passkeys);
 
+  void HandleManagePasskeys(const base::Value::List& args);
+
   void HandleEnumerate(const base::Value::List& args);
   void DoEnumerate(std::string callback_id);
   void OnEnumerateComplete(

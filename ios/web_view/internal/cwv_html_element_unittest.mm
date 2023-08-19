@@ -10,10 +10,6 @@
 #import "testing/gtest_mac.h"
 #include "testing/platform_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace ios_web_view {
 
 using CWVHTMLElementTest = PlatformTest;

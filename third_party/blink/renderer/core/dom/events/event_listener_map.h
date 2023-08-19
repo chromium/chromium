@@ -33,7 +33,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_EVENTS_EVENT_LISTENER_MAP_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_EVENTS_EVENT_LISTENER_MAP_H_
 
-#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/registered_event_listener.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -45,7 +44,7 @@ namespace blink {
 class EventListenerOptions;
 class EventTarget;
 
-using EventListenerVector = HeapVector<RegisteredEventListener, 1>;
+using EventListenerVector = HeapVector<Member<RegisteredEventListener>, 1>;
 
 class CORE_EXPORT EventListenerMap final {
   DISALLOW_NEW();
@@ -55,21 +54,26 @@ class CORE_EXPORT EventListenerMap final {
   EventListenerMap(const EventListenerMap&) = delete;
   EventListenerMap& operator=(const EventListenerMap&) = delete;
 
+  void Clear();
   bool IsEmpty() const { return entries_.empty(); }
   bool Contains(const AtomicString& event_type) const;
   bool ContainsCapturing(const AtomicString& event_type) const;
   bool ContainsJSBasedEventListeners(const AtomicString& event_type) const;
 
-  void Clear();
+  // Add an event listener. If the listener was indeed added (duplicates will
+  // return false) `registered_listener` will be updated to the
+  // `RegisteredEventListener` stored in the map.
   bool Add(const AtomicString& event_type,
            EventListener*,
            const AddEventListenerOptionsResolved*,
-           RegisteredEventListener* registered_listener);
+           RegisteredEventListener** registered_listener);
+  // Remove an event listener. If the listener is found the result will be
+  // true and `registered_listener` will be updated to the
+  // `RegisteredEventListener` that was removed from the map.
   bool Remove(const AtomicString& event_type,
               const EventListener*,
               const EventListenerOptions*,
-              wtf_size_t* index_of_removed_listener,
-              RegisteredEventListener* registered_listener);
+              RegisteredEventListener** registered_listener);
   EventListenerVector* Find(const AtomicString& event_type);
   Vector<AtomicString> EventTypes() const;
 
@@ -80,22 +84,12 @@ class CORE_EXPORT EventListenerMap final {
  private:
   friend class EventListenerIterator;
 
-  void CheckNoActiveIterators();
-
   // We use HeapVector instead of HeapHashMap because
   //  - HeapVector is much more space efficient than HeapHashMap.
   //  - An EventTarget rarely has event listeners for many event types, and
   //    HeapVector is faster in such cases.
   HeapVector<std::pair<AtomicString, Member<EventListenerVector>>, 2> entries_;
-
-#if DCHECK_IS_ON()
-  int active_iterator_count_ = 0;
-#endif
 };
-
-#if !DCHECK_IS_ON()
-inline void EventListenerMap::CheckNoActiveIterators() {}
-#endif
 
 }  // namespace blink
 

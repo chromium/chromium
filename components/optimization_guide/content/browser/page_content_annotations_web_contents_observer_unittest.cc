@@ -27,10 +27,8 @@
 #include "components/omnibox/browser/zero_suggest_cache_service.h"
 #include "components/omnibox/browser/zero_suggest_provider.h"
 #include "components/optimization_guide/content/browser/page_content_annotations_service.h"
-#include "components/optimization_guide/content/browser/test_optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
-#include "components/optimization_guide/proto/page_entities_metadata.pb.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -111,6 +109,7 @@ class FakePageContentAnnotationsService : public PageContentAnnotationsService {
             nullptr,
             base::FilePath(),
             nullptr,
+            nullptr,
             nullptr) {}
   ~FakePageContentAnnotationsService() override = default;
 
@@ -141,85 +140,10 @@ class FakePageContentAnnotationsService : public PageContentAnnotationsService {
     return last_related_searches_extraction_request_;
   }
 
-  void PersistRemotePageMetadata(
-      const HistoryVisit& visit,
-      const proto::PageEntitiesMetadata& page_metadata) override {
-    last_page_metadata_ = page_metadata;
-  }
-
-  absl::optional<proto::PageEntitiesMetadata> last_page_metadata_persisted()
-      const {
-    return last_page_metadata_;
-  }
-
-  void PersistSalientImageMetadata(
-      const HistoryVisit& visit,
-      const proto::SalientImageMetadata& salient_image_metadata) override {
-    last_salient_image_metadata_ = salient_image_metadata;
-  }
-
-  absl::optional<proto::SalientImageMetadata>
-  last_salient_image_metadata_persisted() const {
-    return last_salient_image_metadata_;
-  }
-
  private:
   absl::optional<HistoryVisit> last_annotation_request_;
   absl::optional<std::pair<HistoryVisit, content::WebContents*>>
       last_related_searches_extraction_request_;
-  absl::optional<proto::PageEntitiesMetadata> last_page_metadata_;
-  absl::optional<proto::SalientImageMetadata> last_salient_image_metadata_;
-};
-
-class FakeOptimizationGuideDecider : public TestOptimizationGuideDecider {
- public:
-  void RegisterOptimizationTypes(
-      const std::vector<proto::OptimizationType>& optimization_types) override {
-    registered_optimization_types_ = optimization_types;
-  }
-
-  std::vector<proto::OptimizationType> registered_optimization_types() {
-    return registered_optimization_types_;
-  }
-
-  void CanApplyOptimizationAsync(
-      content::NavigationHandle* navigation_handle,
-      proto::OptimizationType optimization_type,
-      OptimizationGuideDecisionCallback callback) override {
-    std::string url_spec = navigation_handle->GetURL().spec();
-    if (optimization_type == proto::PAGE_ENTITIES &&
-        navigation_handle->GetURL() == GURL("http://hasmetadata.com/")) {
-      proto::PageEntitiesMetadata page_entities_metadata;
-      page_entities_metadata.set_alternative_title("alternative title");
-
-      OptimizationMetadata metadata;
-      metadata.SetAnyMetadataForTesting(page_entities_metadata);
-      std::move(callback).Run(OptimizationGuideDecision::kTrue, metadata);
-      return;
-    }
-    if (optimization_type == proto::SALIENT_IMAGE &&
-        navigation_handle->GetURL() == GURL("http://hasimageurl.com")) {
-      proto::SalientImageMetadata salient_image_metadata;
-      salient_image_metadata.add_thumbnails()->set_image_url(
-          "http://gstatic.com/image");
-
-      OptimizationMetadata metadata;
-      metadata.SetAnyMetadataForTesting(salient_image_metadata);
-      std::move(callback).Run(OptimizationGuideDecision::kTrue, metadata);
-      return;
-    }
-    if (navigation_handle->GetURL() == GURL("http://wrongmetadata.com/")) {
-      OptimizationMetadata metadata;
-      proto::Entity entity;
-      metadata.SetAnyMetadataForTesting(entity);
-      std::move(callback).Run(OptimizationGuideDecision::kTrue, metadata);
-      return;
-    }
-    std::move(callback).Run(OptimizationGuideDecision::kFalse, {});
-  }
-
- private:
-  std::vector<proto::OptimizationType> registered_optimization_types_;
 };
 
 class PageContentAnnotationsWebContentsObserverTest
@@ -259,13 +183,9 @@ class PageContentAnnotationsWebContentsObserverTest
         kDefaultTemplateURLKeyword);
     template_url_service_->SetUserSelectedDefaultSearchProvider(template_url_);
 
-    optimization_guide_decider_ =
-        std::make_unique<FakeOptimizationGuideDecider>();
-
     PageContentAnnotationsWebContentsObserver::CreateForWebContents(
         web_contents(), page_content_annotations_service_.get(),
-        template_url_service_.get(), optimization_guide_decider_.get(),
-        /*no_state_prefetch_manager=*/nullptr);
+        template_url_service_.get(), /*no_state_prefetch_manager=*/nullptr);
 
     // Overwrite Google base URL.
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
@@ -279,7 +199,6 @@ class PageContentAnnotationsWebContentsObserverTest
     page_content_annotations_service_.reset();
     optimization_guide_model_provider_.reset();
     template_url_service_.reset();
-    optimization_guide_decider_.reset();
 
     content::RenderViewHostTestHarness::TearDown();
   }
@@ -299,10 +218,6 @@ class PageContentAnnotationsWebContentsObserverTest
         web_contents());
   }
 
-  FakeOptimizationGuideDecider* optimization_guide_decider() {
-    return optimization_guide_decider_.get();
-  }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestOptimizationGuideModelProvider>
@@ -315,120 +230,7 @@ class PageContentAnnotationsWebContentsObserverTest
       page_content_annotations_service_;
   std::unique_ptr<TemplateURLService> template_url_service_;
   raw_ptr<TemplateURL, DanglingUntriaged> template_url_;
-  std::unique_ptr<FakeOptimizationGuideDecider> optimization_guide_decider_;
 };
-
-TEST_F(PageContentAnnotationsWebContentsObserverTest, DoesNotRegisterType) {
-  EXPECT_TRUE(
-      optimization_guide_decider()->registered_optimization_types().empty());
-}
-
-TEST_F(PageContentAnnotationsWebContentsObserverTest,
-       MainFrameNavigationAnnotatesTitle) {
-  base::HistogramTester histogram_tester;
-
-  // Navigate.
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL("http://www.foo.com/someurl"));
-
-  // Set title.
-  std::u16string title(u"Title");
-  web_contents()->UpdateTitleForEntry(controller().GetLastCommittedEntry(),
-                                      title);
-
-  // The title should be what is requested to be annotated.
-  absl::optional<HistoryVisit> last_annotation_request =
-      service()->last_annotation_request();
-  EXPECT_TRUE(last_annotation_request.has_value());
-  EXPECT_EQ(last_annotation_request->url, GURL("http://www.foo.com/someurl"));
-  EXPECT_EQ(last_annotation_request->text_to_annotate, "Title");
-
-  service()->ClearLastAnnotationRequest();
-
-  // Update title again - make sure we don't reannotate for same page.
-  web_contents()->UpdateTitleForEntry(controller().GetLastCommittedEntry(),
-                                      u"newtitle");
-  EXPECT_FALSE(service()->last_annotation_request());
-
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.PageContentAnnotations.GoogleSearchMetadataExtracted",
-      0);
-}
-
-TEST_F(PageContentAnnotationsWebContentsObserverTest,
-       SameDocumentNavigationsAnnotateTitle) {
-  base::HistogramTester histogram_tester;
-
-  // Navigate.
-  content::NavigationSimulator::NavigateAndCommitFromDocument(
-      GURL("http://foo"), main_rfh());
-
-  // Set title and favicon.
-  std::u16string title(u"Title");
-  web_contents()->UpdateTitleForEntry(controller().GetLastCommittedEntry(),
-                                      title);
-
-  // history.pushState() is called for url2.
-  GURL url2("http://foo#foo");
-  std::unique_ptr<content::NavigationSimulator> navigation_simulator =
-      content::NavigationSimulator::CreateRendererInitiated(url2, main_rfh());
-  navigation_simulator->CommitSameDocument();
-
-  // The title should be what is requested to be annotated.
-  absl::optional<HistoryVisit> last_annotation_request =
-      service()->last_annotation_request();
-  EXPECT_TRUE(last_annotation_request.has_value());
-  EXPECT_EQ(last_annotation_request->url, url2);
-  EXPECT_EQ(last_annotation_request->text_to_annotate, "Title");
-
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.PageContentAnnotations.GoogleSearchMetadataExtracted",
-      0);
-}
-
-TEST_F(PageContentAnnotationsWebContentsObserverTest,
-       SRPURLsAnnotateSearchTerms) {
-  base::HistogramTester histogram_tester;
-
-  // Navigate and commit so there is an entry.
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL("http://default-engine.com/search?q=a"));
-
-  // The search query should be what is requested to be annotated.
-  absl::optional<HistoryVisit> last_annotation_request =
-      service()->last_annotation_request();
-  ASSERT_TRUE(last_annotation_request.has_value());
-  EXPECT_EQ(last_annotation_request->url,
-            GURL("http://default-engine.com/search?q=a"));
-  EXPECT_EQ(last_annotation_request->text_to_annotate, "a");
-
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PageContentAnnotations.GoogleSearchMetadataExtracted",
-      true, 1);
-}
-
-TEST_F(PageContentAnnotationsWebContentsObserverTest,
-       NonGoogleSRPURLsAnnotateSearchTerms) {
-  base::HistogramTester histogram_tester;
-
-  // Navigate and commit so there is an entry.
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL("http://non-default-engine.com/?q=a"));
-
-  // The search query should be what is requested to be annotated.
-  absl::optional<HistoryVisit> last_annotation_request =
-      service()->last_annotation_request();
-  ASSERT_TRUE(last_annotation_request.has_value());
-  EXPECT_EQ(last_annotation_request->url,
-            GURL("http://non-default-engine.com/?q=a"));
-  EXPECT_EQ(last_annotation_request->text_to_annotate, "a");
-
-  // Should not record even though search terms were extracted since it is not
-  // Google SRP.
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.PageContentAnnotations.GoogleSearchMetadataExtracted",
-      0);
-}
 
 TEST_F(PageContentAnnotationsWebContentsObserverTest,
        RequestsRelatedSearchesForMainFrameSRPUrl) {
@@ -757,104 +559,6 @@ TEST_F(PageContentAnnotationsWebContentsObserverRelatedSearchesFromZPSCacheTest,
     EXPECT_EQ(related_searches[1], "san diego");
     EXPECT_EQ(related_searches[2], "san francisco");
   }
-}
-
-class PageContentAnnotationsWebContentsObserverRemotePageMetadataTest
-    : public PageContentAnnotationsWebContentsObserverTest {
- public:
-  PageContentAnnotationsWebContentsObserverRemotePageMetadataTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kRemotePageMetadata);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(PageContentAnnotationsWebContentsObserverRemotePageMetadataTest,
-       RegistersTypeWhenFeatureEnabled) {
-  std::vector<proto::OptimizationType> registered_optimization_types =
-      optimization_guide_decider()->registered_optimization_types();
-  EXPECT_EQ(registered_optimization_types.size(), 1u);
-  EXPECT_EQ(registered_optimization_types[0], proto::PAGE_ENTITIES);
-}
-
-TEST_F(PageContentAnnotationsWebContentsObserverRemotePageMetadataTest,
-       DoesNotPersistIfServerHasNoData) {
-  // Navigate.
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL("http://www.nohints.com/"));
-
-  EXPECT_FALSE(service()->last_page_metadata_persisted());
-}
-
-TEST_F(PageContentAnnotationsWebContentsObserverRemotePageMetadataTest,
-       DoesNotPersistIfServerReturnsWrongMetadata) {
-  // Navigate.
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL("http://wrongmetadata.com/"));
-
-  EXPECT_FALSE(service()->last_page_metadata_persisted());
-}
-
-TEST_F(PageContentAnnotationsWebContentsObserverRemotePageMetadataTest,
-       RequestsToPersistIfHasPageMetadata) {
-  // Navigate.
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL("http://hasmetadata.com/"));
-
-  absl::optional<proto::PageEntitiesMetadata> metadata =
-      service()->last_page_metadata_persisted();
-  EXPECT_EQ(metadata->alternative_title(), "alternative title");
-}
-
-class PageContentAnnotationsWebContentsObserverSalientImageMetadataTest
-    : public PageContentAnnotationsWebContentsObserverTest {
- public:
-  PageContentAnnotationsWebContentsObserverSalientImageMetadataTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kPageContentAnnotationsPersistSalientImageMetadata);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(PageContentAnnotationsWebContentsObserverSalientImageMetadataTest,
-       RegistersTypeWhenFeatureEnabled) {
-  std::vector<proto::OptimizationType> registered_optimization_types =
-      optimization_guide_decider()->registered_optimization_types();
-  EXPECT_EQ(registered_optimization_types.size(), 1u);
-  EXPECT_EQ(registered_optimization_types[0], proto::SALIENT_IMAGE);
-}
-
-TEST_F(PageContentAnnotationsWebContentsObserverSalientImageMetadataTest,
-       DoesNotPersistIfServerHasNoData) {
-  // Navigate.
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL("http://www.nohints.com/"));
-
-  EXPECT_FALSE(service()->last_salient_image_metadata_persisted());
-}
-
-TEST_F(PageContentAnnotationsWebContentsObserverSalientImageMetadataTest,
-       DoesNotPersistIfServerReturnsWrongMetadata) {
-  // Navigate.
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL("http://wrongmetadata.com/"));
-
-  EXPECT_FALSE(service()->last_salient_image_metadata_persisted());
-}
-
-TEST_F(PageContentAnnotationsWebContentsObserverSalientImageMetadataTest,
-       RequestsToPersistIfHasSalientImageMetadata) {
-  // Navigate.
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL("http://hasimageurl.com/"));
-
-  absl::optional<proto::SalientImageMetadata> metadata =
-      service()->last_salient_image_metadata_persisted();
-  ASSERT_EQ(metadata->thumbnails_size(), 1);
-  EXPECT_EQ(metadata->thumbnails(0).image_url(), "http://gstatic.com/image");
 }
 
 }  // namespace optimization_guide

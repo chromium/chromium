@@ -15,8 +15,10 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -693,9 +695,9 @@ TEST(JSONReaderTest, ReadFromFile) {
   std::string input;
   ASSERT_TRUE(ReadFileToString(path.AppendASCII("bom_feff.json"), &input));
 
-  auto root = JSONReader::ReadAndReturnValueWithError(input);
-  ASSERT_TRUE(root.has_value()) << root.error().message;
-  EXPECT_TRUE(root->is_dict());
+  EXPECT_THAT(
+      JSONReader::ReadAndReturnValueWithError(input),
+      base::test::ValueIs(::testing::Property(&base::Value::is_dict, true)));
 }
 
 // Tests that the root of a JSON object can be deleted safely while its

@@ -23,7 +23,7 @@ class AutofillSaveUpdateAddressProfileDelegateIOS
   AutofillSaveUpdateAddressProfileDelegateIOS(
       const AutofillProfile& profile,
       const AutofillProfile* original_profile,
-      absl::optional<std::u16string> syncing_user_email,
+      absl::optional<std::u16string> user_email,
       const std::string& locale,
       AutofillClient::SaveAddressProfilePromptOptions options,
       AutofillClient::AddressProfileSavePromptCallback callback);
@@ -97,8 +97,8 @@ class AutofillSaveUpdateAddressProfileDelegateIOS
 
   bool IsMigrationToAccount() const { return is_migration_to_account_; }
 
-  absl::optional<std::u16string> SyncingUserEmail() const {
-    return syncing_user_email_;
+  absl::optional<std::u16string> UserAccountEmail() const {
+    return user_email_;
   }
 
   // Returns true if the profile's source is
@@ -144,7 +144,7 @@ class AutofillSaveUpdateAddressProfileDelegateIOS
   bool is_migration_to_account_;
 
   // Denotes the email address of the syncing account.
-  absl::optional<std::u16string> syncing_user_email_;
+  absl::optional<std::u16string> user_email_;
 
   // Records the last user decision based on the interactions with the
   // banner/modal to be sent with |address_profile_save_prompt_callback_|.

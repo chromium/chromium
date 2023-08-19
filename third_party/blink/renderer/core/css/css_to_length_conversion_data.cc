@@ -76,46 +76,6 @@ absl::optional<double> FindSizeForContainerAxis(PhysicalAxes requested_axis,
 
 }  // namespace
 
-CSSToLengthConversionData::FontSizes::FontSizes(float em,
-                                                float rem,
-                                                const Font* font,
-                                                float font_zoom)
-    : em_(em),
-      rem_(rem),
-      font_(font),
-      root_font_(font),
-      font_zoom_(font_zoom),
-      root_font_zoom_(font_zoom) {
-  DCHECK(font_);
-}
-
-CSSToLengthConversionData::FontSizes::FontSizes(float em,
-                                                float rem,
-                                                const Font* font,
-                                                const Font* root_font,
-                                                float font_zoom,
-                                                float root_font_zoom)
-    : em_(em),
-      rem_(rem),
-      font_(font),
-      root_font_(root_font),
-      font_zoom_(font_zoom),
-      root_font_zoom_(root_font_zoom) {
-  DCHECK(font_);
-  DCHECK(root_font_);
-}
-
-CSSToLengthConversionData::FontSizes::FontSizes(const FontSizeStyle& style,
-                                                const ComputedStyle* root_style)
-    : FontSizes(
-          style.SpecifiedFontSize(),
-          root_style ? root_style->SpecifiedFontSize()
-                     : style.SpecifiedFontSize(),
-          &style.GetFont(),
-          root_style ? &root_style->GetFont() : &style.GetFont(),
-          style.EffectiveZoom(),
-          root_style ? root_style->EffectiveZoom() : style.EffectiveZoom()) {}
-
 float CSSToLengthConversionData::FontSizes::Ex(float zoom) const {
   DCHECK(font_);
   const SimpleFontData* font_data = font_->PrimaryFont();
@@ -188,6 +148,28 @@ float CSSToLengthConversionData::FontSizes::Ric(float zoom) const {
   // Font-metrics-based units are pre-zoomed with a factor of `font_zoom_`,
   // we need to unzoom using that factor before applying the target zoom.
   return full_width.value() / root_font_zoom_ * zoom;
+}
+
+float CSSToLengthConversionData::FontSizes::Cap(float zoom) const {
+  CHECK(font_);
+  const SimpleFontData* font_data = font_->PrimaryFont();
+  if (!font_data) {
+    return 0.0f;
+  }
+  // Font-metrics-based units are pre-zoomed with a factor of `font_zoom_`,
+  // we need to unzoom using that factor before applying the target zoom.
+  return font_data->GetFontMetrics().CapHeight() / font_zoom_ * zoom;
+}
+
+float CSSToLengthConversionData::FontSizes::Rcap(float zoom) const {
+  CHECK(root_font_);
+  const SimpleFontData* font_data = root_font_->PrimaryFont();
+  if (!font_data) {
+    return 0.0f;
+  }
+  // Font-metrics-based units are pre-zoomed with a factor of `root_font_zoom_`,
+  // we need to unzoom using that factor before applying the target zoom.
+  return font_data->GetFontMetrics().CapHeight() / root_font_zoom_ * zoom;
 }
 
 CSSToLengthConversionData::LineHeightSize::LineHeightSize(
@@ -380,6 +362,29 @@ float CSSToLengthConversionData::RootLineHeight(float zoom) const {
   SetFlag(Flag::kRootFontRelative);
   SetFlag(Flag::kLineHeightRelative);
   return line_height_size_.Rlh(zoom);
+}
+
+float CSSToLengthConversionData::CapFontSize(float zoom) const {
+  // Need to mark the current element's ComputedStyle as having glyph relative
+  // styles, even if it is not relative to the current element's font because
+  // the invalidation that happens when a web font finishes loading for the root
+  // element does not necessarily cause a style difference for the root element,
+  // hence will not cause an invalidation of root font relative dependent
+  // styles. See also Node::MarkSubtreeNeedsStyleRecalcForFontUpdates().
+  SetFlag(Flag::kGlyphRelative);
+  return font_sizes_.Cap(zoom);
+}
+
+float CSSToLengthConversionData::RcapFontSize(float zoom) const {
+  // Need to mark the current element's ComputedStyle as having glyph relative
+  // styles, even if it is not relative to the current element's font because
+  // the invalidation that happens when a web font finishes loading for the root
+  // element does not necessarily cause a style difference for the root element,
+  // hence will not cause an invalidation of root font relative dependent
+  // styles. See also Node::MarkSubtreeNeedsStyleRecalcForFontUpdates().
+  SetFlag(Flag::kGlyphRelative);
+  SetFlag(Flag::kRootFontRelative);
+  return font_sizes_.Rcap(zoom);
 }
 
 double CSSToLengthConversionData::ViewportWidth() const {

@@ -12,10 +12,6 @@
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Checks that Handoff will report the specified `gurl`.

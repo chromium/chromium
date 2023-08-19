@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_KEYBOARD_SHORTCUT_PROVIDER_H_
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_KEYBOARD_SHORTCUT_PROVIDER_H_
 
+#include "ash/webui/shortcut_customization_ui/backend/search/search_handler.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -27,6 +28,10 @@ class KeyboardShortcutProvider : public SearchProvider {
   void Start(const std::u16string& query) override;
   void StopQuery() override;
   ash::AppListSearchResultType ResultType() const override;
+  // Allow a test class to inject a fake or mock search handler.
+  void SetSearchHandlerForTesting(ash::shortcut_ui::SearchHandler* handler) {
+    search_handler_ = handler;
+  }
 
  private:
   using ShortcutDataAndScores =
@@ -37,12 +42,17 @@ class KeyboardShortcutProvider : public SearchProvider {
   void ProcessShortcutList();
 
   void OnSearchComplete(ShortcutDataAndScores);
+  void OnShortcutsSearchComplete(
+      std::vector<ash::shortcut_customization::mojom::SearchResultPtr>);
 
   const raw_ptr<Profile, ExperimentalAsh> profile_;
 
   // A full collection of keyboard shortcuts, against which a query is compared
   // during a search.
   std::vector<KeyboardShortcutData> shortcut_data_;
+  // The |search_handler_| is managed by ShortcutsAppManager which is
+  // implemented as a KeyedService, active for the lifetime of a logged-in user.
+  raw_ptr<ash::shortcut_ui::SearchHandler, ExperimentalAsh> search_handler_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<KeyboardShortcutProvider> weak_factory_{this};

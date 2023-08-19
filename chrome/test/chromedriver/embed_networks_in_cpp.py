@@ -59,7 +59,7 @@ def main():
   networks = '['
   file_name = args[0]
   inside_list = False
-  with open(file_name, 'r') as f:
+  with open(file_name, 'r', encoding='utf-8') as f:
     for line in f:
       if not inside_list:
         if 'WebInspector.OverridesUI._networkConditionsPresets = [' in line:

@@ -12,8 +12,10 @@ android_library("test_support_java") {
 
   deps = [
     "//base:base_java",
+    "//chrome/browser/profiles/android:java",
     "//chrome/browser/sync/android:java",
     "//components/signin/public/android:java",
+    "//components/sync/android:sync_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]

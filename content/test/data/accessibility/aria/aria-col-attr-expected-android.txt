@@ -4,7 +4,7 @@ android.webkit.WebView focusable focused scrollable
 ++++++android.view.View role_description='column header' collection_item table_header name='cell 2' row_span=1 column_span=1
 ++++++android.view.View role_description='column header' collection_item table_header name='cell 4' row_span=1 column_index=1 column_span=1
 ++++++android.view.View role_description='column header' collection_item table_header name='cell 5' row_span=1 column_index=2 column_span=1
-++++android.view.View
+++++android.view.View row_index=1
 ++++++android.view.View collection_item name='cell 2' row_index=1 row_span=1 column_span=1
 ++++++android.view.View collection_item name='cell 3' row_index=1 row_span=1 column_index=1 column_span=1
 ++++++android.view.View collection_item name='cell 4' row_index=1 row_span=1 column_index=2 column_span=1

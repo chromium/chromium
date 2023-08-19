@@ -23,21 +23,6 @@ constexpr double OutputDeviceMixerImpl::kDefaultVolume;
 
 namespace {
 
-const char* LatencyToUmaSuffix(media::AudioLatency::LatencyType latency) {
-  switch (latency) {
-    case media::AudioLatency::LATENCY_EXACT_MS:
-      return "LatencyExactMs";
-    case media::AudioLatency::LATENCY_INTERACTIVE:
-      return "LatencyInteractive";
-    case media::AudioLatency::LATENCY_RTC:
-      return "LatencyRtc";
-    case media::AudioLatency::LATENCY_PLAYBACK:
-      return "LatencyPlayback";
-    default:
-      return "LatencyUnknown";
-  }
-}
-
 const char* DeviceIdToUmaSuffix(const std::string& device_id) {
   if (device_id == "")
     return ".Default";
@@ -227,7 +212,8 @@ class OutputDeviceMixerImpl::MixTrack final
         base::StrCat(
             {"Media.Audio.OutputDeviceMixer.StreamDuration.",
              ((playback_type == PlaybackType::kMixed) ? "Mixed." : "Unmixed."),
-             LatencyToUmaSuffix(graph_input_->GetParams().latency_tag())}),
+             media::AudioLatency::ToString(
+                 graph_input_->GetParams().latency_tag())}),
         base::TimeTicks::Now() - playback_activation_time_for_uma_);
     playback_activation_time_for_uma_ = base::TimeTicks();
   }

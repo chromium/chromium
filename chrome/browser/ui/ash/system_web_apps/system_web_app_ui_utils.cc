@@ -116,33 +116,16 @@ absl::optional<apps::AppLaunchParams> CreateSystemWebAppLaunchParams(
 }
 
 SystemAppLaunchParams::SystemAppLaunchParams() = default;
+SystemAppLaunchParams::SystemAppLaunchParams(
+    const SystemAppLaunchParams& params) = default;
 SystemAppLaunchParams::~SystemAppLaunchParams() = default;
 
-void LaunchSystemWebAppAsync(Profile* profile,
-                             const SystemWebAppType type,
-                             const SystemAppLaunchParams& params,
-                             apps::WindowInfoPtr window_info) {
-  DCHECK(profile);
-  // Terminal should be launched with crostini::LaunchTerminal*.
-  DCHECK(type != SystemWebAppType::TERMINAL);
-
-  // TODO(https://crbug.com/1135863): Implement a confirmation dialog when
-  // changing to a different profile.
-  Profile* profile_for_launch = GetProfileForSystemWebAppLaunch(profile);
-  if (profile_for_launch == nullptr) {
-    // We can't find a suitable profile to launch. Complain about this so we
-    // can identify the call site, and ask them to pick the right profile.
-    base::debug::DumpWithoutCrashing();
-
-    DVLOG(1)
-        << "LaunchSystemWebAppAsync is called on a profile that can't launch "
-           "system web apps. The launch request is ignored. Please check the "
-           "profile you are using is correct.";
-
-    // This will DCHECK in debug builds. But no-op in production builds.
-    NOTREACHED();
-
-    // Early return if we can't find a profile to launch.
+namespace {
+void LaunchSystemWebAppAsyncContinue(Profile* profile_for_launch,
+                                     const SystemWebAppType type,
+                                     const SystemAppLaunchParams& params,
+                                     apps::WindowInfoPtr window_info) {
+  if (profile_for_launch->ShutdownStarted()) {
     return;
   }
 
@@ -175,6 +158,47 @@ void LaunchSystemWebAppAsync(Profile* profile,
 
   app_service->Launch(*app_id, event_flags, params.launch_source,
                       std::move(window_info));
+}
+}  // namespace
+
+void LaunchSystemWebAppAsync(Profile* profile,
+                             const SystemWebAppType type,
+                             const SystemAppLaunchParams& params,
+                             apps::WindowInfoPtr window_info) {
+  DCHECK(profile);
+  // Terminal should be launched with crostini::LaunchTerminal*.
+  DCHECK(type != SystemWebAppType::TERMINAL);
+
+  // TODO(https://crbug.com/1135863): Implement a confirmation dialog when
+  // changing to a different profile.
+  Profile* profile_for_launch = GetProfileForSystemWebAppLaunch(profile);
+  if (profile_for_launch == nullptr) {
+    // We can't find a suitable profile to launch. Complain about this so we
+    // can identify the call site, and ask them to pick the right profile.
+    base::debug::DumpWithoutCrashing();
+
+    DVLOG(1)
+        << "LaunchSystemWebAppAsync is called on a profile that can't launch "
+           "system web apps. The launch request is ignored. Please check the "
+           "profile you are using is correct.";
+
+    // This will DCHECK in debug builds. But no-op in production builds.
+    NOTREACHED();
+
+    // Early return if we can't find a profile to launch.
+    return;
+  }
+
+  SystemWebAppManager* manager = SystemWebAppManager::Get(profile_for_launch);
+  if (!manager) {
+    return;
+  }
+
+  // Wait for all SWAs to be registered before continuing.
+  manager->on_apps_synchronized().Post(
+      FROM_HERE,
+      base::BindOnce(&LaunchSystemWebAppAsyncContinue, profile_for_launch, type,
+                     params, std::move(window_info)));
 }
 
 Browser* LaunchSystemWebAppImpl(Profile* profile,

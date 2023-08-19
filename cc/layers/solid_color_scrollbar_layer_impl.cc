@@ -54,7 +54,7 @@ SolidColorScrollbarLayerImpl::SolidColorScrollbarLayerImpl(
 
 void SolidColorScrollbarLayerImpl::PushPropertiesTo(LayerImpl* layer) {
   ScrollbarLayerImplBase::PushPropertiesTo(layer);
-  DCHECK(!layer->HitTestable());
+  CHECK(!layer->HitTestable());
 }
 
 int SolidColorScrollbarLayerImpl::ThumbThickness() const {

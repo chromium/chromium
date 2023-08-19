@@ -8,15 +8,15 @@
 #import <UIKit/UIKit.h>
 
 #include "base/apple/bundle_locations.h"
+#include "base/apple/foundation_util.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/mac/foundation_util.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "ui/base/resource/resource_handle.h"
+#include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/image/image.h"
 
 namespace ui {
@@ -25,7 +25,7 @@ namespace {
 
 base::FilePath GetResourcesPakFilePath(NSString* name, NSString* mac_locale) {
   NSString *resource_path;
-  if ([mac_locale length]) {
+  if (mac_locale.length) {
     resource_path = [base::apple::FrameworkBundle() pathForResource:name
                                                              ofType:@"pak"
                                                         inDirectory:@""
@@ -113,42 +113,42 @@ gfx::Image& ResourceBundle::GetNativeImageNamed(int resource_id) {
     }
 
     // Create a data object from the raw bytes.
-    base::scoped_nsobject<NSData> ns_data(
-        [[NSData alloc] initWithBytes:data->front() length:data->size()]);
+    NSData* ns_data = [[NSData alloc] initWithBytes:data->front()
+                                             length:data->size()];
 
     bool is_fallback = PNGContainsFallbackMarker(data->front(), data->size());
     // Create the image from the data.
     CGFloat target_scale = ui::GetScaleForResourceScaleFactor(scale_factor);
     CGFloat source_scale = is_fallback ? 1.0 : target_scale;
-    base::scoped_nsobject<UIImage> ui_image(
-        [[UIImage alloc] initWithData:ns_data scale:source_scale]);
+    UIImage* ui_image = [[UIImage alloc] initWithData:ns_data
+                                                scale:source_scale];
 
     // If the image is a 1x fallback, scale it up to a full-size representation.
     if (is_fallback) {
-      CGSize source_size = [ui_image size];
+      CGSize source_size = ui_image.size;
       CGSize target_size = CGSizeMake(source_size.width * target_scale,
                                       source_size.height * target_scale);
       base::ScopedCFTypeRef<CGColorSpaceRef> color_space(
           CGColorSpaceCreateDeviceRGB());
       base::ScopedCFTypeRef<CGContextRef> context(CGBitmapContextCreate(
-          NULL, target_size.width, target_size.height, 8, target_size.width * 4,
-          color_space,
+          /*data=*/nullptr, target_size.width, target_size.height, 8,
+          target_size.width * 4, color_space,
           kCGImageAlphaPremultipliedFirst |
               static_cast<CGImageAlphaInfo>(kCGBitmapByteOrder32Host)));
 
       CGRect target_rect = CGRectMake(0, 0,
                                       target_size.width, target_size.height);
       CGContextSetBlendMode(context, kCGBlendModeCopy);
-      CGContextDrawImage(context, target_rect, [ui_image CGImage]);
+      CGContextDrawImage(context, target_rect, ui_image.CGImage);
 
       base::ScopedCFTypeRef<CGImageRef> cg_image(
           CGBitmapContextCreateImage(context));
-      ui_image.reset([[UIImage alloc] initWithCGImage:cg_image
-                                                scale:target_scale
-                                          orientation:UIImageOrientationUp]);
+      ui_image = [[UIImage alloc] initWithCGImage:cg_image
+                                            scale:target_scale
+                                      orientation:UIImageOrientationUp];
     }
 
-    if (!ui_image.get()) {
+    if (!ui_image) {
       LOG(WARNING) << "Unable to load image with id " << resource_id;
       NOTREACHED();  // Want to assert in debug mode.
       return GetEmptyImage();

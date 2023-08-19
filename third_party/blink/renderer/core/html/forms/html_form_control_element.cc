@@ -336,9 +336,7 @@ HTMLFormControlElement::PopoverTargetElement
 HTMLFormControlElement::popoverTargetElement() {
   const PopoverTargetElement no_element{.popover = nullptr,
                                         .action = PopoverTriggerAction::kNone};
-  if (!RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
-          GetDocument().GetExecutionContext()) ||
-      !IsInTreeScope() ||
+  if (!IsInTreeScope() ||
       SupportsPopoverTriggering() == PopoverTriggerSupport::kNone ||
       IsDisabledFormControl() || (Form() && IsSuccessfulSubmitButton())) {
     return no_element;
@@ -394,8 +392,6 @@ void HTMLFormControlElement::DefaultEventHandler(Event& event) {
     auto popover = popoverTargetElement();
     if (popover.popover) {
       auto& document = GetDocument();
-      CHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
-          document.GetExecutionContext()));
       auto trigger_support = SupportsPopoverTriggering();
       CHECK_NE(popover.action, PopoverTriggerAction::kNone);
       CHECK_NE(trigger_support, PopoverTriggerSupport::kNone);
@@ -536,8 +532,8 @@ String HTMLFormControlElement::NameForAutofill() const {
 
 void HTMLFormControlElement::CloneNonAttributePropertiesFrom(
     const Element& source,
-    CloneChildrenFlag flag) {
-  HTMLElement::CloneNonAttributePropertiesFrom(source, flag);
+    NodeCloningData& data) {
+  HTMLElement::CloneNonAttributePropertiesFrom(source, data);
   SetNeedsValidityCheck();
 }
 

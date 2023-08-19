@@ -141,6 +141,9 @@ class UtilityProcessSandboxBrowserTest
 #if BUILDFLAG(ENABLE_PRINTING)
       case Sandbox::kPrintBackend:
 #endif
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+      case Sandbox::kScreenAI:
+#endif
       case Sandbox::kSpeechRecognition: {
         constexpr int kExpectedPartialSandboxFlags =
             SandboxLinux::kSeccompBPF | SandboxLinux::kYama |
@@ -148,11 +151,6 @@ class UtilityProcessSandboxBrowserTest
         EXPECT_EQ(sandbox_status, kExpectedPartialSandboxFlags);
         break;
       }
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-      case Sandbox::kScreenAI:
-        // TODO(https://crbug.com/1278249): Add test.
-        break;
-#endif
 
       case Sandbox::kGpu:
       case Sandbox::kRenderer:

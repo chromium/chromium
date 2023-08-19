@@ -3,8 +3,9 @@ URL: http://junit.org
 Version: 4.13.2
 CPEPrefix: cpe:/a:junit:junit4:4.13.2:-
 License: Common Public License 1.0
-License File: NOT_SHIPPED
+License File: LICENSE
 Security Critical: no
+Shipped: no
 License Android Compatible: yes
 Description: JUnit is a java unit testing library.
 Local Modifications:

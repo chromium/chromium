@@ -223,10 +223,5 @@ void RecordAvailabilityDbLoadEvent(bool success) {
   base::UmaHistogramBoolean(histogram_name, success);
 }
 
-void RecordConfigParsingEvent(ConfigParsingEvent event) {
-  UMA_HISTOGRAM_ENUMERATION("InProductHelp.Config.ParsingEvent", event,
-                            ConfigParsingEvent::COUNT);
-}
-
 }  // namespace stats
 }  // namespace feature_engagement

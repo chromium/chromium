@@ -73,6 +73,7 @@ void WorkerDevToolsAgentHost::SetRenderer(
   GetRendererChannel()->SetRenderer(std::move(agent_remote),
                                     std::move(host_receiver), process_id,
                                     std::move(connection_error));
+  ProcessHostChanged();
 }
 
 void WorkerDevToolsAgentHost::ChildWorkerCreated(

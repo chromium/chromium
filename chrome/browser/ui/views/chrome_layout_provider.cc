@@ -96,6 +96,9 @@ gfx::Insets ChromeLayoutProvider::GetInsetsMetric(int metric) const {
       // label button because it behaves like a menu control.
       return gfx::Insets::VH(insets.height(), horizontal_padding);
     }
+    case INSETS_INFOBAR_VIEW:
+      return features::IsChromeRefresh2023() ? gfx::Insets::VH(4, 0)
+                                             : gfx::Insets::VH(0, 0);
     default:
       return LayoutProvider::GetInsetsMetric(metric);
   }
@@ -120,6 +123,8 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
     case DISTANCE_DROPDOWN_BUTTON_RIGHT_MARGIN:
       return 12;
     case DISTANCE_EXTENSIONS_MENU_BUTTON_ICON_SIZE:
+      return features::IsChromeRefresh2023() ? 20 : 16;
+    case DISTANCE_EXTENSIONS_MENU_BUTTON_ICON_SMALL_SIZE:
       return 16;
     case DISTANCE_EXTENSIONS_MENU_EXTENSION_ICON_SIZE:
       return 28;
@@ -167,6 +172,16 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
       return 20;
     case DISTANCE_SIDE_PANEL_HEADER_INTERIOR_MARGIN_HORIZONTAL:
       return 4;
+    case DISTANCE_HORIZONTAL_SEPARATOR_PADDING_PAGE_INFO_VIEW:
+      return features::IsChromeRefresh2023() ? 20 : 0;
+    case DISTANCE_INFOBAR_HORIZONTAL_ICON_LABEL_PADDING:
+      return features::IsChromeRefresh2023() ? 16 : 12;
+    case DISTANCE_PERMISSION_PROMPT_HORIZONTAL_ICON_LABEL_PADDING:
+      return features::IsChromeRefresh2023()
+                 ? 8
+                 : GetDistanceMetric(views::DISTANCE_RELATED_LABEL_HORIZONTAL);
+    case DISTANCE_RICH_HOVER_BUTTON_ICON_HORIZONTAL:
+      return features::IsChromeRefresh2023() ? 8 : 12;
   }
   NOTREACHED_NORETURN();
 }

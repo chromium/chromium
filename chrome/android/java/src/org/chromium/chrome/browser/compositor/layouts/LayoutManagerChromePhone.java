@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.layouts.phone.SimpleAnimationLayout;
 import org.chromium.chrome.browser.device.DeviceClassManager;
@@ -40,15 +41,19 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
      * @param tabSwitcherSupplier Supplier for an interface to talk to the Grid Tab Switcher when
      *         Start surface refactor is enabled. Used to create overviewLayout if it has value,
      *         otherwise will use the accessibility overview layout.
+     * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} for top
+     *         controls.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
      * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
      */
     public LayoutManagerChromePhone(LayoutManagerHost host, ViewGroup contentContainer,
             Supplier<StartSurface> startSurfaceSupplier, Supplier<TabSwitcher> tabSwitcherSupplier,
+            BrowserControlsStateProvider browserControlsStateProvider,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
             Supplier<TopUiThemeColorProvider> topUiThemeColorProvider) {
         super(host, contentContainer, startSurfaceSupplier, tabSwitcherSupplier,
-                tabContentManagerSupplier, topUiThemeColorProvider, null, null);
+                browserControlsStateProvider, tabContentManagerSupplier, topUiThemeColorProvider,
+                null, null);
     }
 
     @Override
@@ -97,15 +102,10 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
             // overview mode when the animation is finished.
             if (getActiveLayoutType() == LayoutType.SIMPLE_ANIMATION) {
                 setNextLayout(getLayoutForType(LayoutType.TAB_SWITCHER), true);
+                getActiveLayout().onTabClosed(time(), id, nextId, incognito);
             } else {
-                showLayout(LayoutType.TAB_SWITCHER, true);
+                super.tabClosed(id, nextId, incognito, tabRemoved);
             }
-        }
-        getActiveLayout().onTabClosed(time(), id, nextId, incognito);
-        boolean animate = !tabRemoved && animationsEnabled();
-        if (getActiveLayoutType() != LayoutType.TAB_SWITCHER
-                && getActiveLayoutType() != LayoutType.START_SURFACE && showOverview && !animate) {
-            showLayout(LayoutType.TAB_SWITCHER, false);
         }
     }
 

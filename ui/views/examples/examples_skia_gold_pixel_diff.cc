@@ -19,9 +19,18 @@ namespace views::examples {
 ExamplesSkiaGoldPixelDiff::ExamplesSkiaGoldPixelDiff() = default;
 ExamplesSkiaGoldPixelDiff::~ExamplesSkiaGoldPixelDiff() = default;
 
+void ExamplesSkiaGoldPixelDiff::Init(const std::string& screenshot_prefix) {
+  screenshot_prefix_ = screenshot_prefix;
+  CHECK(!pixel_diff_);
+  pixel_diff_ = ui::test::SkiaGoldPixelDiff::GetSession();
+  CHECK(pixel_diff_);
+}
+
 ExamplesExitCode ExamplesSkiaGoldPixelDiff::CompareScreenshot(
     const std::string& screenshot_name,
     const views::Widget* widget) const {
+  CHECK(pixel_diff_) << "Initialize the class before using this method.";
+
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   gfx::Rect widget_bounds = widget->GetRootView()->bounds();
 #if defined(USE_AURA)
@@ -40,8 +49,11 @@ ExamplesExitCode ExamplesSkiaGoldPixelDiff::CompareScreenshot(
   run_loop.Run();
   if (screenshot_.IsEmpty())
     return ExamplesExitCode::kImageEmpty;
-  return ui::test::SkiaGoldPixelDiff::CompareScreenshot(
-             screenshot_name, *screenshot_.ToSkBitmap())
+  return pixel_diff_->CompareScreenshot(
+             ui::test::SkiaGoldPixelDiff::GetGoldenImageName(
+                 screenshot_prefix_, screenshot_name,
+                 ui::test::SkiaGoldPixelDiff::GetPlatform()),
+             *screenshot_.ToSkBitmap())
              ? ExamplesExitCode::kSucceeded
              : ExamplesExitCode::kFailed;
 }

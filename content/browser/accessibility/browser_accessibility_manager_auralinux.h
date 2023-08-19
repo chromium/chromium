@@ -10,6 +10,7 @@
 #include "base/gtest_prod_util.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/common/content_export.h"
+#include "ui/accessibility/ax_node_id_forward.h"
 
 namespace content {
 
@@ -32,6 +33,9 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAuraLinux
   ~BrowserAccessibilityManagerAuraLinux() override;
 
   static ui::AXTreeUpdate GetEmptyDocument();
+
+  void SetPrimaryWebContentsForWindow(ui::AXNodeID node_id);
+  ui::AXNodeID GetPrimaryWebContentsForWindow() const;
 
   // AXTreeManager overrides.
   void FireFocusEvent(ui::AXNode* node) override;
@@ -70,6 +74,7 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAuraLinux
   FRIEND_TEST_ALL_PREFIXES(BrowserAccessibilityManagerAuraLinuxTest,
                            TestEmitChildrenChanged);
   // AXTreeObserver methods.
+  void OnNodeDeleted(ui::AXTree* tree, int32_t node_id) override;
   void OnIgnoredWillChange(
       ui::AXTree* tree,
       ui::AXNode* node,
@@ -87,6 +92,8 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAuraLinux
 
   // Give BrowserAccessibilityManager::Create access to our constructor.
   friend class BrowserAccessibilityManager;
+
+  ui::AXNodeID primary_web_contents_for_window_id_ = ui::kInvalidAXNodeID;
 };
 
 }  // namespace content

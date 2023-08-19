@@ -18,6 +18,7 @@ import androidx.annotation.StringDef;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.Promise;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -457,9 +458,14 @@ public class SyncPromoController {
 
         view.getPrimaryButton().setText(SigninUtils.getContinueAsButtonText(context, mProfileData));
 
-        view.getSecondaryButton().setText(R.string.signin_promo_choose_another_account);
-        view.getSecondaryButton().setOnClickListener(v -> signinWithNotDefaultAccount(context));
-        view.getSecondaryButton().setVisibility(View.VISIBLE);
+        // Hide secondary button on automotive devices, as they only support one account per device
+        if (BuildInfo.getInstance().isAutomotive) {
+            view.getSecondaryButton().setVisibility(View.GONE);
+        } else {
+            view.getSecondaryButton().setText(R.string.signin_promo_choose_another_account);
+            view.getSecondaryButton().setOnClickListener(v -> signinWithNotDefaultAccount(context));
+            view.getSecondaryButton().setVisibility(View.VISIBLE);
+        }
     }
 
     private void signinWithNewAccount(Context context) {
@@ -517,13 +523,11 @@ public class SyncPromoController {
         RecordUserAction.record(mImpressionUserActionName);
     }
 
-    @VisibleForTesting
     public static void setPrefSigninPromoDeclinedBookmarksForTests(boolean isDeclined) {
         SharedPreferencesManager.getInstance().writeBoolean(
                 ChromePreferenceKeys.SIGNIN_PROMO_BOOKMARKS_DECLINED, isDeclined);
     }
 
-    @VisibleForTesting
     public static int getMaxImpressionsBookmarksForTests() {
         return MAX_IMPRESSIONS_BOOKMARKS;
     }

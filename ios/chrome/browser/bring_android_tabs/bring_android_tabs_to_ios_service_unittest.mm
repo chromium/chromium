@@ -35,10 +35,6 @@
 #import "testing/platform_test.h"
 #import "ui/base/device_form_factor.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace bring_android_tabs {
 
 // Fake DeviceSwitcherResultDispatcher that takes a `classification_label` as
@@ -276,7 +272,6 @@ TEST_F(BringAndroidTabsToIOSServiceTest, UserNotAndroidSwitcher) {
   EXPECT_EQ(NumberOfTabsLoaded(/*is_android_switcher=*/false,
                                /*tabs_recently_active=*/true),
             0);
-  ExpectHistogram(bring_android_tabs::PromptAttemptStatus::kNotAndroidSwitcher);
 }
 
 // Tests that no tabs are loaded when the user's open tabs were not recently

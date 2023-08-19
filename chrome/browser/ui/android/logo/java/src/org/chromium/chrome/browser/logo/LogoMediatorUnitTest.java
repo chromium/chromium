@@ -15,7 +15,6 @@ import android.content.Context;
 
 import androidx.test.core.app.ApplicationProvider;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -98,11 +97,6 @@ public class LogoMediatorUnitTest {
                 () -> HomepageManager.getInstance().setPrefHomepageEnabled(true));
 
         mLogoModel = new PropertyModel(LogoProperties.ALL_KEYS);
-    }
-
-    @After
-    public void tearDown() {
-        TemplateUrlServiceFactory.setInstanceForTesting(null);
     }
 
     @Test

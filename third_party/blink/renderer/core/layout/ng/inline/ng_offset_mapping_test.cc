@@ -193,7 +193,7 @@ class NGOffsetMappingTest : public RenderingTest {
   }
 
   const LayoutText* GetLayoutTextUnder(const char* parent_id) {
-    Element* parent = GetDocument().getElementById(parent_id);
+    Element* parent = GetElementById(parent_id);
     return To<LayoutText>(parent->firstChild()->GetLayoutObject());
   }
 
@@ -832,7 +832,7 @@ TEST_F(NGOffsetMappingTest, FirstLetter) {
   SetupHtml("t",
             "<style>div:first-letter{color:red}</style>"
             "<div id=t>foo</div>");
-  Element* div = GetDocument().getElementById("t");
+  Element* div = GetDocument().getElementById(AtomicString("t"));
   const Node* foo_node = div->firstChild();
   const NGOffsetMapping& result = GetOffsetMapping();
 
@@ -862,7 +862,7 @@ TEST_F(NGOffsetMappingTest, FirstLetterWithLeadingSpace) {
   SetupHtml("t",
             "<style>div:first-letter{color:red}</style>"
             "<div id=t>  foo</div>");
-  Element* div = GetDocument().getElementById("t");
+  Element* div = GetDocument().getElementById(AtomicString("t"));
   const Node* foo_node = div->firstChild();
   const NGOffsetMapping& result = GetOffsetMapping();
 
@@ -898,7 +898,7 @@ TEST_F(NGOffsetMappingTest, FirstLetterWithoutRemainingText) {
   SetupHtml("t",
             "<style>div:first-letter{color:red}</style>"
             "<div id=t>  f</div>");
-  Element* div = GetDocument().getElementById("t");
+  Element* div = GetDocument().getElementById(AtomicString("t"));
   const Node* text_node = div->firstChild();
   const NGOffsetMapping& result = GetOffsetMapping();
 
@@ -928,7 +928,7 @@ TEST_F(NGOffsetMappingTest, FirstLetterWithoutRemainingText) {
 TEST_F(NGOffsetMappingTest, FirstLetterInDifferentBlock) {
   SetupHtml("t",
             "<style>:first-letter{float:right}</style><div id=t>foo</div>");
-  Element* div = GetDocument().getElementById("t");
+  Element* div = GetDocument().getElementById(AtomicString("t"));
   const Node* text_node = div->firstChild();
 
   auto* mapping0 = NGOffsetMapping::GetFor(Position(text_node, 0));
@@ -991,7 +991,7 @@ TEST_F(NGOffsetMappingTest, FirstLetterInDifferentBlock) {
 
 TEST_F(NGOffsetMappingTest, WhiteSpaceTextNodeWithoutLayoutText) {
   SetupHtml("t", "<div id=t> <span>foo</span></div>");
-  Element* div = GetDocument().getElementById("t");
+  Element* div = GetDocument().getElementById(AtomicString("t"));
   const Node* text_node = div->firstChild();
 
   EXPECT_TRUE(EndOfLastNonCollapsedContent(Position(text_node, 1u)).IsNull());
@@ -1267,7 +1267,7 @@ TEST_F(NGOffsetMappingTest, SoftHyphen) {
 TEST_F(NGOffsetMappingTest, PreWrapAndReusing) {
   // Note: "white-space: break-space" yields same result.
   SetupHtml("t", "<p id='t' style='white-space: pre-wrap'>abc</p>");
-  Element& target = *GetDocument().getElementById("t");
+  Element& target = *GetDocument().getElementById(AtomicString("t"));
 
   // Change to <p id=t>abc xyz</p>
   Text& text = *Text::Create(GetDocument(), " xyz");

@@ -10,13 +10,17 @@
 
 namespace blink {
 
-class CSSPositionFallbackRule;
 class StyleRuleCSSStyleDeclaration;
 
 class StyleRuleTry final : public StyleRuleBase {
  public:
   explicit StyleRuleTry(CSSPropertyValueSet*);
+  StyleRuleTry(const StyleRuleTry&) = default;
   ~StyleRuleTry();
+
+  StyleRuleTry* Copy() const {
+    return MakeGarbageCollected<StyleRuleTry>(*this);
+  }
 
   const CSSPropertyValueSet& Properties() const { return *properties_; }
   MutableCSSPropertyValueSet& MutableProperties();
@@ -36,7 +40,7 @@ class CSSTryRule final : public CSSRule {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  CSSTryRule(StyleRuleTry*, CSSPositionFallbackRule* parent);
+  explicit CSSTryRule(StyleRuleTry*);
   ~CSSTryRule() final;
 
   CSSStyleDeclaration* style() const;

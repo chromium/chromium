@@ -52,9 +52,6 @@ void SetObjectAttribute(ax::mojom::blink::IntAttribute attribute,
                         AXObject* object,
                         ui::AXNodeData* node_data,
                         const AtomicString& value) {
-  if (object->IsProhibited(attribute))
-    return;
-
   Element* element = object->GetElement();
   if (!element)
     return;
@@ -80,28 +77,15 @@ void SetIntListAttribute(ax::mojom::blink::IntListAttribute attribute,
                          AXObject* object,
                          ui::AXNodeData* node_data,
                          const AtomicString& value) {
+  if (object->IsProhibited(attribute)) {
+    return;
+  }
   Element* element = object->GetElement();
   if (!element)
     return;
   HeapVector<Member<Element>>* attr_associated_elements =
       element->GetElementArrayAttribute(qualified_name);
-  if (!attr_associated_elements) {
-    return;
-  }
-
-  if (attr_associated_elements->empty()) {
-    // The target element was not yet available, so keep the source element
-    // dirty until the target element is in the DOM. For example, this can
-    // happen during a page load, if the source and target are loaded in
-    // separate batches.
-    // TODO(accessibility) Are there realistic cases where we need to do this
-    // outside of page loads? We currently only do this during page loads so
-    // so that bad markup, where the target id will never exist, doesn't stay
-    // dirty during the lifetime of the document.
-    DCHECK(object->GetDocument());
-    if (!object->GetDocument()->IsLoadCompleted()) {
-      object->AXObjectCache().MarkAXObjectDirty(object);
-    }
+  if (!attr_associated_elements || attr_associated_elements->empty()) {
     return;
   }
   std::vector<int32_t> ax_ids;
@@ -160,8 +144,8 @@ AXSparseAttributeSetterMap& GetAXSparseAttributeSetterMap() {
                            html_names::kAriaControlsAttr));
     ax_sparse_setter_map.Set(
         html_names::kAriaErrormessageAttr,
-        WTF::BindRepeating(&SetObjectAttribute,
-                           ax::mojom::blink::IntAttribute::kErrormessageId,
+        WTF::BindRepeating(&SetIntListAttribute,
+                           ax::mojom::blink::IntListAttribute::kErrormessageIds,
                            html_names::kAriaErrormessageAttr));
     ax_sparse_setter_map.Set(
         html_names::kAriaDetailsAttr,
@@ -259,9 +243,6 @@ void AXNodeDataAOMPropertyClient::AddRelationProperty(
     case AOMRelationProperty::kActiveDescendant:
       attribute = ax::mojom::blink::IntAttribute::kActivedescendantId;
       break;
-    case AOMRelationProperty::kErrorMessage:
-      attribute = ax::mojom::blink::IntAttribute::kErrormessageId;
-      break;
     default:
       return;
   }
@@ -284,6 +265,9 @@ void AXNodeDataAOMPropertyClient::AddRelationListProperty(
       break;
     case AOMRelationListProperty::kDetails:
       attribute = ax::mojom::blink::IntListAttribute::kDetailsIds;
+      break;
+    case AOMRelationListProperty::kErrorMessage:
+      attribute = ax::mojom::blink::IntListAttribute::kErrormessageIds;
       break;
     case AOMRelationListProperty::kFlowTo:
       attribute = ax::mojom::blink::IntListAttribute::kFlowtoIds;

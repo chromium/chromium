@@ -9,7 +9,7 @@
 
 namespace features {
 
-BASE_DECLARE_FEATURE(kPreloadingDesktopSettingsSubPage);
+BASE_DECLARE_FEATURE(kPerformanceSettingsPreloadingSubpage);
 
 }  // namespace features
 

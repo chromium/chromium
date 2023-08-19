@@ -23,6 +23,11 @@ extern const size_t kMaxSuggestedProfilesCount;
 extern const size_t kMaxUniqueSuggestionsCount;
 extern const size_t kMaxPrunedUniqueSuggestionsCount;
 
+// Normalizes text for comparison based on the type of the field `text` was
+// entered into.
+std::u16string NormalizeForComparisonForType(const std::u16string& text,
+                                             ServerFieldType type);
+
 // Matches based on prefix search, and limits number of profiles.
 // Returns the top matching suggestions based on prefix search, and adds the
 // corresponding profiles to |matched_profiles|. At most
@@ -31,7 +36,7 @@ std::vector<Suggestion> GetPrefixMatchedSuggestions(
     const AutofillType& type,
     const std::u16string& raw_field_contents,
     const std::u16string& field_contents_canon,
-    const AutofillProfileComparator& comparator,
+    const std::string& app_locale,
     bool field_is_autofilled,
     const std::vector<AutofillProfile*>& profiles,
     std::vector<AutofillProfile*>* matched_profiles);
@@ -42,7 +47,7 @@ std::vector<Suggestion> GetPrefixMatchedSuggestions(
 // |field_types| stores all of the form's ServerFieldTypes, including that of
 // the field on which the user is currently focused.
 std::vector<Suggestion> GetUniqueSuggestions(
-    const std::vector<ServerFieldType>& field_types,
+    const ServerFieldTypeSet& field_types,
     const AutofillProfileComparator& comparator,
     const std::string app_locale,
     const std::vector<AutofillProfile*> matched_profiles,

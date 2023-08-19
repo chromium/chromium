@@ -6,6 +6,8 @@
 import optparse
 from typing import Any, Generator, Tuple
 
+import dataclasses  # Built-in, but pylint gives an ordering false positive.
+
 from telemetry.internal.browser import tab
 from telemetry.internal.browser import browser
 
@@ -23,3 +25,10 @@ ParsedCmdArgs = optparse.Values
 Screenshot = Any
 Tab = tab.Tab
 Browser = browser.Browser
+
+# Struct-like classes defined using dataclasses can't use [] or other mutable
+# for default values. The use of lambdas is required since re-using the same
+# object is also problematic.
+EmptyDict = lambda: dataclasses.field(default_factory=dict)
+EmptyList = lambda: dataclasses.field(default_factory=list)
+EmptySet = lambda: dataclasses.field(default_factory=set)

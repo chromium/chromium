@@ -22,7 +22,7 @@ def run(exe, args, output, is_header):
   cmdargs.extend(args)
   if is_header:
     cmdargs.extend(["--header"])
-  job = subprocess.run(cmdargs, capture_output=True)
+  job = subprocess.run(cmdargs, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
   messages = job.stderr.decode('utf-8')
   if messages.rstrip():
     print(messages, file=sys.stderr)

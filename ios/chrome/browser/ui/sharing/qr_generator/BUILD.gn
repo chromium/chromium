@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "qr_generator_util.h",
     "qr_generator_util.mm",
@@ -31,7 +30,6 @@ source_set("ui") {
 }
 
 source_set("qr_generator") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "qr_generator_coordinator.h",
     "qr_generator_coordinator.mm",
@@ -53,7 +51,6 @@ source_set("qr_generator") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "qr_generator_coordinator_unittest.mm",

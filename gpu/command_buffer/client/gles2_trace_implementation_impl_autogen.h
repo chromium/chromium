@@ -2482,24 +2482,32 @@ void GLES2TraceImplementation::ReadbackARGBImagePixelsINTERNAL(
       plane_index, pixels);
 }
 
-void GLES2TraceImplementation::WritePixelsINTERNAL(const GLbyte* mailbox,
-                                                   const void* src_color_space,
-                                                   GLuint src_color_space_size,
-                                                   GLuint src_size,
-                                                   GLuint src_width,
-                                                   GLuint src_height,
-                                                   GLuint src_sk_color_type,
-                                                   GLuint src_sk_alpha_type,
-                                                   GLuint src_row_bytes,
-                                                   GLint x_offset,
-                                                   GLint y_offset,
-                                                   GLint plane_index,
-                                                   const void* src_pixels) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::WritePixelsINTERNAL");
-  gl_->WritePixelsINTERNAL(mailbox, src_color_space, src_color_space_size,
-                           src_size, src_width, src_height, src_sk_color_type,
-                           src_sk_alpha_type, src_row_bytes, x_offset, y_offset,
-                           plane_index, src_pixels);
+void GLES2TraceImplementation::WritePixelsYUVINTERNAL(
+    const GLbyte* mailbox,
+    GLuint src_size_plane1,
+    GLuint src_size_plane2,
+    GLuint src_size_plane3,
+    GLuint src_size_plane4,
+    GLuint src_width,
+    GLuint src_height,
+    GLuint src_plane_config,
+    GLuint src_subsampling,
+    GLuint src_datatype,
+    GLuint src_row_bytes_plane1,
+    GLuint src_row_bytes_plane2,
+    GLuint src_row_bytes_plane3,
+    GLuint src_row_bytes_plane4,
+    const void* src_pixels_plane1,
+    const void* src_pixels_plane2,
+    const void* src_pixels_plane3,
+    const void* src_pixels_plane4) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::WritePixelsYUVINTERNAL");
+  gl_->WritePixelsYUVINTERNAL(
+      mailbox, src_size_plane1, src_size_plane2, src_size_plane3,
+      src_size_plane4, src_width, src_height, src_plane_config, src_subsampling,
+      src_datatype, src_row_bytes_plane1, src_row_bytes_plane2,
+      src_row_bytes_plane3, src_row_bytes_plane4, src_pixels_plane1,
+      src_pixels_plane2, src_pixels_plane3, src_pixels_plane4);
 }
 
 void GLES2TraceImplementation::EnableiOES(GLenum target, GLuint index) {

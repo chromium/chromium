@@ -6,10 +6,6 @@
 
 #import "components/sync_sessions/open_tabs_ui_delegate.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace synced_sessions {
 
 DistantTab::DistantTab() : tab_id(SessionID::InvalidValue()) {}

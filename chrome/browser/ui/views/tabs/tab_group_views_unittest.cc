@@ -49,11 +49,16 @@ class TabGroupViewsTest : public ChromeViewsTestBase,
   }
 
   void TearDown() override {
+    drag_context_ = nullptr;
+    tab_container_ = nullptr;
+
     widget_->Close();
 
-    group_views_.release();
-    tab_slot_controller_.release();
-    widget_.release();
+    group_views_.reset();
+    widget_.reset();
+    tab_slot_controller_.reset();
+    tab_strip_controller_.reset();
+
     ChromeViewsTestBase::TearDown();
   }
 

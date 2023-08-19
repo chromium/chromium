@@ -95,7 +95,8 @@ class ArcPingRoutine : public NetworkDiagnosticsRoutine {
   std::string default_network_gateway_;
   int guids_remaining_ = 0;
   int gateways_remaining_ = 0;
-  raw_ptr<arc::mojom::NetInstance, ExperimentalAsh> net_instance_ = nullptr;
+  raw_ptr<arc::mojom::NetInstance, DanglingUntriaged | ExperimentalAsh>
+      net_instance_ = nullptr;
   base::WeakPtrFactory<ArcPingRoutine> weak_ptr_factory_{this};
 };
 

@@ -16,9 +16,8 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.suggestions.answer.AnswerSuggestionProcessor;
-import org.chromium.chrome.browser.omnibox.suggestions.base.HistoryClustersProcessor;
-import org.chromium.chrome.browser.omnibox.suggestions.base.HistoryClustersProcessor.OpenHistoryClustersDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
 import org.chromium.chrome.browser.omnibox.suggestions.clipboard.ClipboardSuggestionProcessor;
@@ -26,17 +25,13 @@ import org.chromium.chrome.browser.omnibox.suggestions.dividerline.DividerLinePr
 import org.chromium.chrome.browser.omnibox.suggestions.editurl.EditUrlSuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.entity.EntitySuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderProcessor;
+import org.chromium.chrome.browser.omnibox.suggestions.history_clusters.HistoryClustersProcessor;
+import org.chromium.chrome.browser.omnibox.suggestions.history_clusters.HistoryClustersProcessor.OpenHistoryClustersDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.MostVisitedTilesProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.tail.TailSuggestionProcessor;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.browser_ui.util.ConversionUtils;
-import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
-import org.chromium.components.favicon.LargeIconBridge;
-import org.chromium.components.image_fetcher.ImageFetcher;
-import org.chromium.components.image_fetcher.ImageFetcherConfig;
-import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -46,7 +41,6 @@ import java.util.List;
 
 /** Builds DropdownItemViewInfo list from AutocompleteResult for the Suggestions list. */
 class DropdownItemViewInfoListBuilder {
-    private static final int MAX_IMAGE_CACHE_SIZE = 500 * ConversionUtils.BYTES_PER_KILOBYTE;
     @Px
     private static final int DROPDOWN_HEIGHT_UNKNOWN = -1;
     private static final int DEFAULT_SIZE_OF_VISIBLE_GROUP = 5;
@@ -57,9 +51,7 @@ class DropdownItemViewInfoListBuilder {
     private @Nullable DividerLineProcessor mDividerLineProcessor;
     private @Nullable HeaderProcessor mHeaderProcessor;
     private @Nullable Supplier<ShareDelegate> mShareDelegateSupplier;
-    private @Nullable ImageFetcher mImageFetcher;
-    private @Nullable FaviconFetcher mFaviconFetcher;
-    private @Nullable LargeIconBridge mIconBridge;
+    private @Nullable OmniboxImageSupplier mImageSupplier;
     private @NonNull BookmarkState mBookmarkState;
     @Px
     private int mDropdownHeight;
@@ -86,12 +78,12 @@ class DropdownItemViewInfoListBuilder {
             UrlBarEditingTextStateProvider textProvider) {
         assert mPriorityOrderedSuggestionProcessors.size() == 0 : "Processors already initialized.";
 
-        final Supplier<ImageFetcher> imageFetcherSupplier = () -> mImageFetcher;
-        final Supplier<LargeIconBridge> iconBridgeSupplier = () -> mIconBridge;
         final Supplier<ShareDelegate> shareSupplier =
                 () -> mShareDelegateSupplier == null ? null : mShareDelegateSupplier.get();
 
-        mFaviconFetcher = new FaviconFetcher(context, iconBridgeSupplier);
+        if (!OmniboxFeatures.isLowMemoryDevice()) {
+            mImageSupplier = new OmniboxImageSupplier(context);
+        }
 
         if (OmniboxFeatures.shouldShowModernizeVisualUpdate(context)
                 && !OmniboxFeatures.shouldShowActiveColorOnOmnibox()) {
@@ -101,30 +93,25 @@ class DropdownItemViewInfoListBuilder {
         }
         mHeaderProcessor = new HeaderProcessor(context);
         registerSuggestionProcessor(new EditUrlSuggestionProcessor(
-                context, host, delegate, mFaviconFetcher, mActivityTabSupplier, shareSupplier));
+                context, host, delegate, mImageSupplier, mActivityTabSupplier, shareSupplier));
         registerSuggestionProcessor(
-                new AnswerSuggestionProcessor(context, host, textProvider, imageFetcherSupplier));
+                new AnswerSuggestionProcessor(context, host, textProvider, mImageSupplier));
         registerSuggestionProcessor(
-                new ClipboardSuggestionProcessor(context, host, mFaviconFetcher));
+                new ClipboardSuggestionProcessor(context, host, mImageSupplier));
         registerSuggestionProcessor(new HistoryClustersProcessor(mOpenHistoryClustersDelegate,
-                context, host, textProvider, mFaviconFetcher, mBookmarkState));
-        registerSuggestionProcessor(
-                new EntitySuggestionProcessor(context, host, imageFetcherSupplier));
+                context, host, textProvider, mImageSupplier, mBookmarkState));
+        registerSuggestionProcessor(new EntitySuggestionProcessor(
+                context, host, textProvider, mImageSupplier, mBookmarkState));
         registerSuggestionProcessor(new TailSuggestionProcessor(context, host));
-        registerSuggestionProcessor(new MostVisitedTilesProcessor(context, host, mFaviconFetcher));
+        registerSuggestionProcessor(new MostVisitedTilesProcessor(context, host, mImageSupplier));
         registerSuggestionProcessor(new BasicSuggestionProcessor(
-                context, host, textProvider, mFaviconFetcher, mBookmarkState));
+                context, host, textProvider, mImageSupplier, mBookmarkState));
     }
 
     void destroy() {
-        if (mImageFetcher != null) {
-            mImageFetcher.destroy();
-            mImageFetcher = null;
-        }
-
-        if (mIconBridge != null) {
-            mIconBridge.destroy();
-            mIconBridge = null;
+        if (mImageSupplier != null) {
+            mImageSupplier.destroy();
+            mImageSupplier = null;
         }
     }
 
@@ -163,24 +150,9 @@ class DropdownItemViewInfoListBuilder {
      * @param profile Current user profile.
      */
     void setProfile(Profile profile) {
-        if (mIconBridge != null) {
-            mIconBridge.destroy();
-            mIconBridge = null;
+        if (mImageSupplier != null) {
+            mImageSupplier.setProfile(profile);
         }
-
-        if (mImageFetcher != null) {
-            mImageFetcher.destroy();
-            mImageFetcher = null;
-        }
-
-        if (mFaviconFetcher != null) {
-            mFaviconFetcher.clearCache();
-        }
-
-        mIconBridge = new LargeIconBridge(profile);
-        mImageFetcher = ImageFetcherFactory.createImageFetcher(ImageFetcherConfig.IN_MEMORY_ONLY,
-                profile.getProfileKey(), GlobalDiscardableReferencePool.getReferencePool(),
-                MAX_IMAGE_CACHE_SIZE);
     }
 
     /**
@@ -219,10 +191,7 @@ class DropdownItemViewInfoListBuilder {
      * @param hasFocus Indicates whether URL bar is now focused.
      */
     void onUrlFocusChange(boolean hasFocus) {
-        if (!hasFocus) {
-            if (mImageFetcher != null) mImageFetcher.clear();
-            if (mFaviconFetcher != null) mFaviconFetcher.clearCache();
-        }
+        if (!hasFocus && mImageSupplier != null) mImageSupplier.resetCache();
 
         mHeaderProcessor.onUrlFocusChange(hasFocus);
         for (int index = 0; index < mPriorityOrderedSuggestionProcessors.size(); index++) {
@@ -343,15 +312,11 @@ class DropdownItemViewInfoListBuilder {
         }
 
         final List<AutocompleteMatch> suggestions = autocompleteResult.getSuggestionsList();
-        final boolean useOldEligibilityLogic =
-                !OmniboxFeatures.adaptiveSuggestionsVisibleGroupEligibilityUpdate();
 
         @Px
         int calculatedSuggestionsHeight = 0;
         int lastVisibleIndex;
         for (lastVisibleIndex = 0; lastVisibleIndex < suggestions.size(); lastVisibleIndex++) {
-            if (useOldEligibilityLogic && (calculatedSuggestionsHeight >= mDropdownHeight)) break;
-
             final AutocompleteMatch suggestion = suggestions.get(lastVisibleIndex);
             // We do not include suggestions with headers in partial grouping, so terminate early.
             if (suggestion.getGroupId() != AutocompleteMatch.INVALID_GROUP) {
@@ -362,11 +327,6 @@ class DropdownItemViewInfoListBuilder {
                     getProcessorForSuggestion(suggestion, lastVisibleIndex);
 
             int itemHeight = processor.getMinimumViewHeight();
-
-            if (useOldEligibilityLogic) {
-                calculatedSuggestionsHeight += itemHeight;
-                continue;
-            }
 
             // Evaluate suggestion and determine whether it should be considered visible or
             // concealed based on the degree to which it is exposed.

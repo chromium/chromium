@@ -135,6 +135,13 @@ public class FeedReliabilityLogger implements UrlFocusChangeListener {
         }
     }
 
+    /** Call this when the user scrolled away from the loading indicator for load-more. */
+    public void onPaginationUserScrolledAwayFromIndicator() {
+        if (mUserInteractionLogger != null) {
+            mUserInteractionLogger.onPaginationUserScrolledAwayFromIndicator();
+        }
+    }
+
     // UrlFocusChangeListener
 
     @Override

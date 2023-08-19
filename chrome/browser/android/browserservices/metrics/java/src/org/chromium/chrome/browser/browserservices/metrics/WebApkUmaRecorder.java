@@ -21,7 +21,6 @@ import org.chromium.components.webapps.WebApkDistributor;
 import java.io.File;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-
 /**
  * Centralizes UMA data collection for WebAPKs. NOTE: Histogram names and values are defined in
  * tools/metrics/histograms/histograms.xml. Please update that file if any change is made.
@@ -88,6 +87,14 @@ public class WebApkUmaRecorder {
         int NUM_ENTRIES = 16;
     }
 
+    // This enum is used to back UMA histograms, and should therefore be treated as append-only.
+    @IntDef({WebApkUserTheme.LIGHT_THEME, WebApkUserTheme.DARK_THEME, WebApkUserTheme.NUM_ENTRIES})
+    public @interface WebApkUserTheme {
+        int LIGHT_THEME = 0;
+        int DARK_THEME = 1;
+        int NUM_ENTRIES = 2;
+    }
+
     public static final String HISTOGRAM_UPDATE_REQUEST_SENT = "WebApk.Update.RequestSent";
 
     public static final String HISTOGRAM_UPDATE_REQUEST_QUEUED = "WebApk.Update.RequestQueued";
@@ -97,7 +104,6 @@ public class WebApkUmaRecorder {
     private static final String HISTOGRAM_NEW_STYLE_LAUNCH_TO_SPLASHSCREEN_VISIBLE =
             "WebApk.Startup.Cold.NewStyle.ShellLaunchToSplashscreenVisible";
 
-    private static final int WEBAPK_OPEN_MAX = 3;
     public static final int WEBAPK_OPEN_LAUNCH_SUCCESS = 0;
     // Obsolete: WEBAPK_OPEN_NO_LAUNCH_INTENT = 1;
     public static final int WEBAPK_OPEN_ACTIVITY_NOT_FOUND = 2;
@@ -221,6 +227,21 @@ public class WebApkUmaRecorder {
     /** Records number of unique origins for WebAPKs in WebappRegistry */
     public static void recordWebApksCount(int count) {
         RecordHistogram.recordCount100Histogram("WebApk.WebappRegistry.NumberOfOrigins", count);
+    }
+
+    /**
+     * Records whether the user was using a light or dark theme when installing a WebAPK
+     */
+    public static void recordUserThemeWhenInstall(@WebApkUserTheme int themeSetting) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "WebApk.Install.UserTheme", themeSetting, WebApkUserTheme.NUM_ENTRIES);
+    }
+    /**
+     * Records whether the user was using a light or dark theme when launching a WebAPK
+     */
+    public static void recordUserThemeWhenLaunch(@WebApkUserTheme int themeSetting) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "WebApk.Launch.UserTheme", themeSetting, WebApkUserTheme.NUM_ENTRIES);
     }
 
     /**

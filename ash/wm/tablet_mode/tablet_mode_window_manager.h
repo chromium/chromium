@@ -28,7 +28,7 @@ class Window;
 
 namespace ash {
 class TabletModeController;
-class TabletModeMultitaskMenuEventHandler;
+class TabletModeMultitaskMenuController;
 class TabletModeToggleFullscreenEventHandler;
 class TabletModeWindowState;
 
@@ -53,9 +53,8 @@ class ASH_EXPORT TabletModeWindowManager : public aura::WindowObserver,
 
   ~TabletModeWindowManager() override;
 
-  TabletModeMultitaskMenuEventHandler*
-  tablet_mode_multitask_menu_event_handler() {
-    return tablet_mode_multitask_menu_event_handler_.get();
+  TabletModeMultitaskMenuController* tablet_mode_multitask_menu_controller() {
+    return tablet_mode_multitask_menu_controller_.get();
   }
 
   void Init();
@@ -198,8 +197,8 @@ class ASH_EXPORT TabletModeWindowManager : public aura::WindowObserver,
   std::unique_ptr<TabletModeToggleFullscreenEventHandler> event_handler_;
 
   // Handles gestures that may show or hide the multitask menu.
-  std::unique_ptr<TabletModeMultitaskMenuEventHandler>
-      tablet_mode_multitask_menu_event_handler_;
+  std::unique_ptr<TabletModeMultitaskMenuController>
+      tablet_mode_multitask_menu_controller_;
 
   absl::optional<display::ScopedDisplayObserver> display_observer_;
 

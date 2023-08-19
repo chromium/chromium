@@ -98,7 +98,7 @@ ListInfos GetListInfos() {
                SB_THREAT_TYPE_URL_PHISHING),
       ListInfo(kSyncAlways, "UrlMalware.store", GetUrlMalwareId(),
                SB_THREAT_TYPE_URL_MALWARE),
-      ListInfo(kSyncOnDesktopBuilds, "UrlUws.store", GetUrlUwsId(),
+      ListInfo(kSyncAlways, "UrlUws.store", GetUrlUwsId(),
                SB_THREAT_TYPE_URL_UNWANTED),
       ListInfo(kSyncOnDesktopBuilds, "UrlMalBin.store", GetUrlMalBinId(),
                SB_THREAT_TYPE_URL_BINARY_MALWARE),
@@ -109,7 +109,7 @@ ListInfos GetListInfos() {
                SB_THREAT_TYPE_BLOCKLISTED_RESOURCE),
       ListInfo(kSyncAlways, "UrlBilling.store", GetUrlBillingId(),
                SB_THREAT_TYPE_BILLING),
-      ListInfo(kSyncOnChromeDesktopBuilds, "UrlCsdDownloadAllowlist.store",
+      ListInfo(kSyncOnDesktopBuilds, "UrlCsdDownloadAllowlist.store",
                GetUrlCsdDownloadAllowlistId(), SB_THREAT_TYPE_UNUSED),
       ListInfo(kSyncOnChromeDesktopBuilds || kSyncOnIos,
                "UrlCsdAllowlist.store", GetUrlCsdAllowlistId(),
@@ -205,26 +205,6 @@ StoresToCheck CreateStoresToCheckFromSBThreatTypeSet(
   return stores_to_check;
 }
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum StoreAvailabilityResult {
-  // Unknown availability. This is unexpected.
-  UNKNOWN = 0,
-
-  // The local database is not enabled.
-  NOT_ENABLED = 1,
-
-  // The database is still being loaded.
-  DATABASE_UNAVAILABLE = 2,
-
-  // The requested store is unavailable.
-  STORE_UNAVAILABLE = 3,
-
-  // The store is available.
-  AVAILABLE = 4,
-  COUNT,
-};
-
 void RecordTimeSinceLastUpdateHistograms(const base::Time& last_response_time) {
   if (last_response_time.is_null()) {
     return;
@@ -254,21 +234,27 @@ void MaybeDeleteStore(const base::FilePath& path) {
   base::UmaHistogramBoolean(
       "SafeBrowsing.V4UnusedStoreFileExists" + GetUmaSuffixForStore(path),
       path_exists);
-  if (!path_exists) {
-    return;
-  }
 
   // The MmapHashPrefixMap maintains several helper files stored in the same
   // directory as the main store file. These are usually found by looking at the
   // `hash_files` field in the `V4StoreFileFormat`, but we haven't read the
   // store at this point. Instead we use the fact that these helper files have a
   // simple structure to delete them all.
+  std::vector<base::FilePath> paths_to_delete;
   base::FileEnumerator enumerator(
       path.DirName(), false, base::FileEnumerator::FILES,
-      path.BaseName().value() + FILE_PATH_LITERAL("*"));
+      path.BaseName().value() + FILE_PATH_LITERAL("*"),
+      // Since the search is non-recursive and only on files, the folder search
+      // policy doesn't matter. We set it to the default value here.
+      base::FileEnumerator::FolderSearchPolicy::MATCH_ONLY,
+      base::FileEnumerator::ErrorPolicy::STOP_ENUMERATION);
   for (base::FilePath store_path = enumerator.Next(); !store_path.empty();
        store_path = enumerator.Next()) {
-    base::DeleteFile(store_path);
+    paths_to_delete.push_back(std::move(store_path));
+  }
+
+  for (const base::FilePath& delete_path : paths_to_delete) {
+    base::DeleteFile(delete_path);
   }
 }
 
@@ -338,9 +324,11 @@ scoped_refptr<V4LocalDatabaseManager> V4LocalDatabaseManager::Create(
     const base::FilePath& base_path,
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,
-    ExtendedReportingLevelCallback extended_reporting_level_callback) {
+    ExtendedReportingLevelCallback extended_reporting_level_callback,
+    RecordMigrationMetricsCallback record_migration_metrics_callback) {
   return base::WrapRefCounted(new V4LocalDatabaseManager(
-      base_path, extended_reporting_level_callback, std::move(ui_task_runner),
+      base_path, extended_reporting_level_callback,
+      std::move(record_migration_metrics_callback), std::move(ui_task_runner),
       std::move(io_task_runner), nullptr));
 }
 
@@ -364,6 +352,7 @@ void V4LocalDatabaseManager::CollectDatabaseManagerInfo(
 V4LocalDatabaseManager::V4LocalDatabaseManager(
     const base::FilePath& base_path,
     ExtendedReportingLevelCallback extended_reporting_level_callback,
+    RecordMigrationMetricsCallback record_migration_metrics_callback,
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,
     scoped_refptr<base::SequencedTaskRunner> task_runner_for_tests)
@@ -371,6 +360,8 @@ V4LocalDatabaseManager::V4LocalDatabaseManager(
                                   std::move(io_task_runner)),
       base_path_(base_path),
       extended_reporting_level_callback_(extended_reporting_level_callback),
+      record_migration_metrics_callback_(
+          std::move(record_migration_metrics_callback)),
       list_infos_(GetListInfos()),
       task_runner_(task_runner_for_tests
                        ? task_runner_for_tests
@@ -379,7 +370,9 @@ V4LocalDatabaseManager::V4LocalDatabaseManager(
                               base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
       v4_database_(std::unique_ptr<V4Database, base::OnTaskRunnerDeleter>(
           nullptr,
-          base::OnTaskRunnerDeleter(nullptr))) {
+          base::OnTaskRunnerDeleter(nullptr))),
+      enabled_(false),
+      is_shutdown_(false) {
   DCHECK(this->ui_task_runner()->RunsTasksInCurrentSequence());
   DCHECK(!base_path_.empty());
   DCHECK(!list_infos_.empty());
@@ -397,8 +390,12 @@ V4LocalDatabaseManager::~V4LocalDatabaseManager() {
 
 void V4LocalDatabaseManager::CancelCheck(Client* client) {
   DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
-  DCHECK(enabled_);
-
+  // If we've stopped responding due to browser shutdown, it's possible that a
+  // client will call CancelCheck even though we're disabled. Note that we can't
+  // use IsDatabaseReady() here because there's several expected cases where a
+  // client could cancel while the request is still queued (e.g. timeouts, tab
+  // being closed).
+  DCHECK(enabled_ || is_shutdown_);
   auto pending_it =
       base::ranges::find(pending_checks_, client, &PendingCheck::client);
   if (pending_it != pending_checks_.end()) {
@@ -431,11 +428,16 @@ bool V4LocalDatabaseManager::CheckBrowseUrl(
     const GURL& url,
     const SBThreatTypeSet& threat_types,
     Client* client,
-    MechanismExperimentHashDatabaseCache experiment_cache_selection) {
+    MechanismExperimentHashDatabaseCache experiment_cache_selection,
+    CheckBrowseUrlType check_type) {
   DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
   DCHECK(!threat_types.empty());
   DCHECK(SBThreatTypeSetIsValidForCheckBrowseUrl(threat_types));
+  DCHECK(check_type == CheckBrowseUrlType::kHashDatabase)
+      << "V4 Local database only support hash database check.";
 
+  // We use `enabled_` here because `HandleCheck` queues checks that come in
+  // before the database is ready.
   if (!enabled_ || !CanCheckUrl(url)) {
     return true;
   }
@@ -458,6 +460,8 @@ bool V4LocalDatabaseManager::CheckDownloadUrl(
     Client* client) {
   DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
 
+  // We use `enabled_` here because `HandleCheck` queues checks that come in
+  // before the database is ready.
   if (!enabled_ || url_chain.empty()) {
     return true;
   }
@@ -475,6 +479,8 @@ bool V4LocalDatabaseManager::CheckExtensionIDs(
     Client* client) {
   DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
 
+  // We use `enabled_` here because `HandleCheck` queues checks that come in
+  // before the database is ready.
   if (!enabled_) {
     return true;
   }
@@ -531,7 +537,8 @@ void V4LocalDatabaseManager::CheckUrlForHighConfidenceAllowlist(
                       kHighConfidenceAllowlistMinimumEntryCount);
   RecordCheckUrlForHighConfidenceAllowlistBoolean(
       "AllowlistSizeTooSmall", metric_variation, is_allowlist_too_small);
-  if (!enabled_ || (is_allowlist_too_small && is_artificial_prefix_empty) ||
+  if (!IsDatabaseReady() ||
+      (is_allowlist_too_small && is_artificial_prefix_empty) ||
       !CanCheckUrl(url) ||
       (!all_stores_available && is_artificial_prefix_empty)) {
     // NOTE(vakh): If Safe Browsing isn't enabled yet, or if the URL isn't a
@@ -619,7 +626,14 @@ void V4LocalDatabaseManager::MatchDownloadAllowlistUrl(
   HandleUrl(url, stores_to_check, std::move(callback));
 }
 
-ThreatSource V4LocalDatabaseManager::GetThreatSource() const {
+ThreatSource V4LocalDatabaseManager::GetBrowseUrlThreatSource(
+    CheckBrowseUrlType check_type) const {
+  DCHECK(check_type == CheckBrowseUrlType::kHashDatabase)
+      << "V4 Local database only support hash database check.";
+  return ThreatSource::LOCAL_PVER4;
+}
+
+ThreatSource V4LocalDatabaseManager::GetNonBrowseUrlThreatSource() const {
   return ThreatSource::LOCAL_PVER4;
 }
 
@@ -639,6 +653,7 @@ void V4LocalDatabaseManager::StartOnSBThread(
   SetupDatabase();
 
   enabled_ = true;
+  is_shutdown_ = false;
 
   current_local_database_manager_ = this;
 }
@@ -647,10 +662,16 @@ void V4LocalDatabaseManager::StopOnSBThread(bool shutdown) {
   DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
 
   enabled_ = false;
+  is_shutdown_ = shutdown;
 
   current_local_database_manager_ = nullptr;
 
-  RespondSafeToQueuedAndPendingChecks();
+  // On shutdown, it's acceptable to fail to respond.
+  if (shutdown) {
+    DropQueuedAndPendingChecks();
+  } else {
+    RespondSafeToQueuedAndPendingChecks();
+  }
 
   // Delete the V4Database. Any pending writes to disk are completed.
   // This operation happens on the task_runner on which v4_database_ operates
@@ -671,6 +692,10 @@ void V4LocalDatabaseManager::StopOnSBThread(bool shutdown) {
   SafeBrowsingDatabaseManager::StopOnSBThread(shutdown);
 }
 
+bool V4LocalDatabaseManager::IsDatabaseReady() const {
+  return enabled_ && !!v4_database_;
+}
+
 //
 // End: SafeBrowsingDatabaseManager implementation
 //
@@ -687,6 +712,12 @@ void V4LocalDatabaseManager::DatabaseReadyForChecks(
     v4_database_ = std::move(v4_database);
 
     v4_database_->RecordFileSizeHistograms();
+    if (record_migration_metrics_callback_) {
+      ui_task_runner()->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(record_migration_metrics_callback_),
+                         v4_database_->GetMigrateResult()));
+    }
 
     PopulateArtificialDatabase();
 
@@ -707,7 +738,7 @@ void V4LocalDatabaseManager::DatabaseReadyForChecks(
 
 void V4LocalDatabaseManager::DatabaseReadyForUpdates(
     const std::vector<ListIdentifier>& stores_to_reset) {
-  if (enabled_) {
+  if (IsDatabaseReady()) {
     v4_database_->ResetStores(stores_to_reset);
     UpdateListClientStates(GetStoreStateMap());
 
@@ -717,7 +748,7 @@ void V4LocalDatabaseManager::DatabaseReadyForUpdates(
 }
 
 void V4LocalDatabaseManager::DatabaseUpdated() {
-  if (enabled_) {
+  if (IsDatabaseReady()) {
     v4_update_protocol_manager_->ScheduleNextUpdate(GetStoreStateMap());
 
     v4_database_->RecordFileSizeHistograms();
@@ -755,7 +786,7 @@ void V4LocalDatabaseManager::GetPrefixMatches(
     PendingCheck* check,
     base::OnceCallback<void(FullHashToStoreAndHashPrefixesMap)> callback) {
   DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
-  DCHECK(enabled_);
+  DCHECK(IsDatabaseReady());
 
   v4_database_->GetStoresMatchingFullHash(
       check->full_hashes, check->stores_to_check, std::move(callback));
@@ -857,7 +888,7 @@ void V4LocalDatabaseManager::HandleAllowlistCheckContinuation(
 
   AsyncMatch local_match;
   if (GetPrefixMatchesIsAsync()) {
-    if (!enabled_) {
+    if (!IsDatabaseReady()) {
       DCHECK(pending_checks_.empty());
       return;
     }
@@ -952,7 +983,7 @@ void V4LocalDatabaseManager::HandleCheckContinuation(
     FullHashToStoreAndHashPrefixesMap results) {
   AsyncMatch local_match;
   if (GetPrefixMatchesIsAsync()) {
-    if (!enabled_) {
+    if (!IsDatabaseReady()) {
       DCHECK(pending_checks_.empty());
       return;
     }
@@ -1056,7 +1087,7 @@ void V4LocalDatabaseManager::OnFullHashResponse(
     const std::vector<FullHashInfo>& full_hash_infos) {
   DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
 
-  if (!enabled_) {
+  if (!IsDatabaseReady()) {
     DCHECK(pending_checks_.empty());
     return;
   }
@@ -1082,9 +1113,9 @@ void V4LocalDatabaseManager::PerformFullHashCheck(
 
   DCHECK(!check->full_hash_to_store_and_hash_prefixes.empty());
 
-  // If we're not enabled, we're in the middle of shutdown, so silently drop the
-  // check.
-  if (enabled_) {
+  // If the database isn't ready, the service has been turned off, so silently
+  // drop the check.
+  if (IsDatabaseReady()) {
     FullHashToStoreAndHashPrefixesMap full_hash_to_store_and_hash_prefixes =
         check->full_hash_to_store_and_hash_prefixes;
     MechanismExperimentHashDatabaseCache experiment_cache_selection =
@@ -1124,7 +1155,7 @@ void V4LocalDatabaseManager::ProcessQueuedChecksContinuation(
     std::unique_ptr<PendingCheck> check,
     FullHashToStoreAndHashPrefixesMap results) {
   if (GetPrefixMatchesIsAsync()) {
-    if (!enabled_) {
+    if (!IsDatabaseReady()) {
       DCHECK(pending_checks_.empty());
       return;
     }
@@ -1141,6 +1172,7 @@ void V4LocalDatabaseManager::ProcessQueuedChecksContinuation(
   if (results.empty()) {
     RespondToClient(std::move(check));
   } else {
+    check->full_hash_to_store_and_hash_prefixes = results;
     AddPendingCheck(check.get());
     PerformFullHashCheck(std::move(check));
   }
@@ -1171,6 +1203,15 @@ void V4LocalDatabaseManager::RespondSafeToQueuedAndPendingChecks() {
     RespondToClientWithoutPendingCheckCleanup(it);
   }
 }
+
+void V4LocalDatabaseManager::DropQueuedAndPendingChecks() {
+  DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
+
+  queued_checks_.clear();
+  // Intentionally ignore the checks this method returns
+  CopyAndRemoveAllPendingChecks();
+}
+
 void V4LocalDatabaseManager::RespondToClient(
     std::unique_ptr<PendingCheck> check) {
   RespondToClientWithoutPendingCheckCleanup(check.get());
@@ -1263,20 +1304,13 @@ void V4LocalDatabaseManager::UpdateRequestCompleted(
 
 bool V4LocalDatabaseManager::AreAllStoresAvailableNow(
     const StoresToCheck& stores_to_check) const {
-  StoreAvailabilityResult result = StoreAvailabilityResult::AVAILABLE;
-  if (!enabled_) {
-    result = StoreAvailabilityResult::NOT_ENABLED;
-  } else if (!v4_database_) {
-    result = StoreAvailabilityResult::DATABASE_UNAVAILABLE;
-  } else if (!v4_database_->AreAllStoresAvailable(stores_to_check)) {
-    result = StoreAvailabilityResult::STORE_UNAVAILABLE;
-  }
-  return (result == StoreAvailabilityResult::AVAILABLE);
+  return IsDatabaseReady() &&
+         v4_database_->AreAllStoresAvailable(stores_to_check);
 }
 
 int64_t V4LocalDatabaseManager::GetStoreEntryCount(const ListIdentifier& store,
                                                    int bytes_per_entry) const {
-  if (!enabled_ || !v4_database_) {
+  if (!IsDatabaseReady()) {
     return 0;
   }
   return v4_database_->GetStoreSizeInBytes(store) / bytes_per_entry;
@@ -1290,7 +1324,7 @@ bool V4LocalDatabaseManager::IsStoreTooSmall(const ListIdentifier& store,
 
 bool V4LocalDatabaseManager::AreAnyStoresAvailableNow(
     const StoresToCheck& stores_to_check) const {
-  return enabled_ && v4_database_ &&
+  return IsDatabaseReady() &&
          v4_database_->AreAnyStoresAvailable(stores_to_check);
 }
 

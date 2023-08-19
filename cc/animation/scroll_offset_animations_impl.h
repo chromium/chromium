@@ -82,6 +82,7 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationsImpl
       absl::optional<base::TimeDelta> local_time) override {}
 
   bool IsAnimating() const;
+  bool IsAutoScrolling() const;
   ElementId GetElementId() const;
 
  private:
@@ -98,6 +99,7 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationsImpl
   // I.e. only one element can have an impl-only scroll offset animation at
   // any given time.
   scoped_refptr<Animation> scroll_offset_animation_;
+  bool animation_is_autoscroll_ = false;
 };
 
 }  // namespace cc

@@ -32,7 +32,6 @@
 #include "base/values.h"
 #include "components/prefs/persistent_pref_store_unittest.h"
 #include "components/prefs/pref_filter.h"
-#include "components/prefs/prefs_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -176,27 +175,18 @@ void CommitPendingWrite(JsonPrefStore* pref_store,
 }
 
 class JsonPrefStoreTest
-    : public testing::TestWithParam<std::tuple<CommitPendingWriteMode, bool>> {
+    : public testing::TestWithParam<CommitPendingWriteMode> {
  public:
   JsonPrefStoreTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::DEFAULT,
-                          GetExecutionMode(std::get<0>(GetParam()))) {}
+                          GetExecutionMode(GetParam())) {}
 
   JsonPrefStoreTest(const JsonPrefStoreTest&) = delete;
   JsonPrefStoreTest& operator=(const JsonPrefStoreTest&) = delete;
 
  protected:
   void SetUp() override {
-    commit_pending_write_mode_ = std::get<0>(GetParam());
-    bool background_serialization_enabled = std::get<1>(GetParam());
-    base::test::ScopedFeatureList scoped_feature_list;
-    if (background_serialization_enabled) {
-      scoped_feature_list.InitWithFeatures({kPrefStoreBackgroundSerialization},
-                                           {});
-    } else {
-      scoped_feature_list.InitWithFeatures({},
-                                           {kPrefStoreBackgroundSerialization});
-    }
+    commit_pending_write_mode_ = GetParam();
 
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
   }
@@ -571,11 +561,9 @@ TEST_P(JsonPrefStoreTest, RemoveValuesByPrefix) {
 INSTANTIATE_TEST_SUITE_P(
     JsonPrefStoreTestVariations,
     JsonPrefStoreTest,
-    ::testing::Combine(
-        ::testing::Values(CommitPendingWriteMode::WITHOUT_CALLBACK,
-                          CommitPendingWriteMode::WITH_CALLBACK,
-                          CommitPendingWriteMode::WITH_SYNCHRONOUS_CALLBACK),
-        ::testing::Bool()));
+    ::testing::Values(CommitPendingWriteMode::WITHOUT_CALLBACK,
+                      CommitPendingWriteMode::WITH_CALLBACK,
+                      CommitPendingWriteMode::WITH_SYNCHRONOUS_CALLBACK));
 
 class JsonPrefStoreLossyWriteTest : public JsonPrefStoreTest {
  public:
@@ -725,11 +713,9 @@ TEST_P(JsonPrefStoreLossyWriteTest, ScheduleLossyWrite) {
 INSTANTIATE_TEST_SUITE_P(
     JsonPrefStoreLossyWriteTestVariations,
     JsonPrefStoreLossyWriteTest,
-    ::testing::Combine(
-        ::testing::Values(CommitPendingWriteMode::WITHOUT_CALLBACK,
-                          CommitPendingWriteMode::WITH_CALLBACK,
-                          CommitPendingWriteMode::WITH_SYNCHRONOUS_CALLBACK),
-        ::testing::Bool()));
+    ::testing::Values(CommitPendingWriteMode::WITHOUT_CALLBACK,
+                      CommitPendingWriteMode::WITH_CALLBACK,
+                      CommitPendingWriteMode::WITH_SYNCHRONOUS_CALLBACK));
 
 class SuccessfulWriteReplyObserver {
  public:

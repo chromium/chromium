@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_position_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_session_action_details.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_session_action_handler.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_session_picture_in_picture_action_details.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_session_seek_to_action_details.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -21,7 +22,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/modules/mediasession/media_metadata.h"
 #include "third_party/blink/renderer/modules/mediasession/media_metadata_sanitizer.h"
-#include "third_party/blink/renderer/modules/mediasession/type_converters.h"
+#include "third_party/blink/renderer/modules/mediasession/media_session_type_converters.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -55,6 +56,8 @@ const AtomicString& MojomActionToActionName(MediaSessionAction action) {
                       ("previousslide"));
   DEFINE_STATIC_LOCAL(const AtomicString, next_slide_action_name,
                       ("nextslide"));
+  DEFINE_STATIC_LOCAL(const AtomicString, enter_picture_in_picture_action_name,
+                      ("enterpictureinpicture"));
 
   switch (action) {
     case MediaSessionAction::kPlay:
@@ -85,6 +88,8 @@ const AtomicString& MojomActionToActionName(MediaSessionAction action) {
       return previous_slide_action_name;
     case MediaSessionAction::kNextSlide:
       return next_slide_action_name;
+    case MediaSessionAction::kEnterPictureInPicture:
+      return enter_picture_in_picture_action_name;
     default:
       NOTREACHED();
   }
@@ -121,6 +126,9 @@ absl::optional<MediaSessionAction> ActionNameToMojomAction(
     return MediaSessionAction::kPreviousSlide;
   if ("nextslide" == action_name)
     return MediaSessionAction::kNextSlide;
+  if ("enterpictureinpicture" == action_name) {
+    return MediaSessionAction::kEnterPictureInPicture;
+  }
 
   NOTREACHED();
   return absl::nullopt;
@@ -239,6 +247,16 @@ void MediaSession::setActionHandler(const String& action,
       exception_state.ThrowTypeError("The provided value '" + action +
                                      "' is not a valid enum "
                                      "value of type MediaSessionAction.");
+      return;
+    }
+  }
+
+  if (!RuntimeEnabledFeatures::MediaSessionEnterPictureInPictureEnabled()) {
+    if ("enterpictureinpicture" == action) {
+      exception_state.ThrowTypeError(
+          "The provided value 'enterpictureinpicture'"
+          " is not a valid enum "
+          "value of type MediaSessionAction.");
       return;
     }
   }

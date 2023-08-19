@@ -26,6 +26,8 @@
 #include "base/values.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 
+class PrefRegistrySimple;
+
 namespace aura {
 class Window;
 }  // namespace aura
@@ -40,8 +42,8 @@ class ClipboardHistoryItem;
 class ClipboardHistoryMenuModelAdapter;
 class ClipboardHistoryResourceManager;
 class ClipboardNudgeController;
-enum class LoginStatus;
 class ScopedClipboardHistoryPause;
+enum class LoginStatus;
 
 // Shows a menu with the last few things saved in the clipboard when the
 // keyboard shortcut is pressed.
@@ -65,7 +67,9 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
     kRichTextTouch = 7,             // Rich text paste triggered by gesture tap
     kPlainTextVirtualKeyboard = 8,  // Plain text paste triggered by VK request
     kRichTextVirtualKeyboard = 9,   // Rich text paste triggered by VK request
-    kMaxValue = 9
+    kPlainTextCtrlV = 10,           // Plain text paste triggered by Ctrl+V
+    kRichTextCtrlV = 11,            // Rich text paste triggered by Ctrl+V
+    kMaxValue = 11
   };
 
   ClipboardHistoryControllerImpl();
@@ -74,6 +78,9 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   ClipboardHistoryControllerImpl& operator=(
       const ClipboardHistoryControllerImpl&) = delete;
   ~ClipboardHistoryControllerImpl() override;
+
+  // Registers clipboard history profile prefs with the specified `registry`.
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // Clean up the child widgets prior to destruction.
   void Shutdown();

@@ -111,6 +111,54 @@ class CORE_EXPORT ViewTransitionUtils {
     return nullptr;
   }
 
+  template <typename Functor>
+  static void ForEachDirectTransitionPseudo(const Element* element,
+                                            Functor& func) {
+    if (element->IsDocumentElement()) {
+      if (auto* pseudo = element->GetPseudoElement(kPseudoIdViewTransition)) {
+        func(pseudo);
+      }
+      return;
+    }
+
+    if (!IsTransitionPseudoElement(element->GetPseudoId())) {
+      return;
+    }
+
+    switch (element->GetPseudoId()) {
+      case kPseudoIdViewTransition:
+        for (auto name :
+             element->GetDocument().GetStyleEngine().ViewTransitionTags()) {
+          if (auto* pseudo = element->GetPseudoElement(
+                  kPseudoIdViewTransitionGroup, name)) {
+            func(pseudo);
+          }
+        }
+        break;
+      case kPseudoIdViewTransitionGroup:
+        if (auto* pseudo =
+                element->GetPseudoElement(kPseudoIdViewTransitionImagePair)) {
+          func(pseudo);
+        }
+        break;
+      case kPseudoIdViewTransitionImagePair:
+        if (auto* pseudo =
+                element->GetPseudoElement(kPseudoIdViewTransitionOld)) {
+          func(pseudo);
+        }
+        if (auto* pseudo =
+                element->GetPseudoElement(kPseudoIdViewTransitionNew)) {
+          func(pseudo);
+        }
+        break;
+      case kPseudoIdViewTransitionOld:
+      case kPseudoIdViewTransitionNew:
+        break;
+      default:
+        NOTREACHED();
+    }
+  }
+
   // Returns the active transition from the document, if any.
   static ViewTransition* GetActiveTransition(const Document& document);
 
@@ -133,7 +181,8 @@ class CORE_EXPORT ViewTransitionUtils {
   // Returns true if this element is a view transition participant. This is a
   // slow check that walks all of the view transition elements in the
   // ViewTransitionStyleTracker.
-  static bool IsViewTransitionParticipantFromSupplement(const Element& element);
+  static bool IsViewTransitionElementExcludingRootFromSupplement(
+      const Element& element);
 
   // Returns true if this object represents an element that is a view transition
   // participant. This is a slow check that walks all of the view transition

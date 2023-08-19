@@ -1364,8 +1364,7 @@ void AdsPageLoadMetricsObserver::MaybeTriggerHeavyAdIntervention(
   GetDelegate().GetWebContents()->GetController().LoadPostCommitErrorPage(
       render_frame_host, render_frame_host->GetLastCommittedURL(),
       heavy_ad_intervention::PrepareHeavyAdPage(
-          application_locale_getter_.Run()),
-      net::ERR_BLOCKED_BY_CLIENT);
+          application_locale_getter_.Run()));
 }
 
 bool AdsPageLoadMetricsObserver::IsBlocklisted(bool report) {

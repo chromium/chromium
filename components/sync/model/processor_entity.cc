@@ -17,6 +17,7 @@
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/proto_memory_estimations.h"
+#include "components/version_info/version_info.h"
 
 namespace syncer {
 
@@ -171,10 +172,8 @@ void ProcessorEntity::RecordAcceptedRemoteUpdate(
   metadata_.set_modification_time(
       TimeToProtoTime(update.entity.modification_time));
   UpdateSpecificsHash(update.entity.specifics);
-  if (base::FeatureList::IsEnabled(kCacheBaseEntitySpecificsInMetadata)) {
-    *metadata_.mutable_possibly_trimmed_base_specifics() =
-        std::move(trimmed_specifics);
-  }
+  *metadata_.mutable_possibly_trimmed_base_specifics() =
+      std::move(trimmed_specifics);
 }
 
 void ProcessorEntity::RecordForcedRemoteUpdate(
@@ -202,12 +201,11 @@ void ProcessorEntity::RecordLocalUpdate(
   // it remembers specifics hash before the modifications.
   IncrementSequenceNumber(modification_time);
   UpdateSpecificsHash(data->specifics);
-  if (base::FeatureList::IsEnabled(kCacheBaseEntitySpecificsInMetadata)) {
-    *metadata_.mutable_possibly_trimmed_base_specifics() =
-        std::move(trimmed_specifics);
-  }
-  if (!data->creation_time.is_null())
+  *metadata_.mutable_possibly_trimmed_base_specifics() =
+      std::move(trimmed_specifics);
+  if (!data->creation_time.is_null()) {
     metadata_.set_creation_time(TimeToProtoTime(data->creation_time));
+  }
   metadata_.set_modification_time(TimeToProtoTime(modification_time));
   metadata_.set_is_deleted(false);
 
@@ -221,6 +219,13 @@ bool ProcessorEntity::RecordLocalDeletion() {
   metadata_.set_is_deleted(true);
   metadata_.clear_specifics_hash();
   metadata_.clear_possibly_trimmed_base_specifics();
+
+  if (base::FeatureList::IsEnabled(
+          syncer::kSyncEntityMetadataRecordDeletedByVersionOnLocalDeletion)) {
+    metadata_.set_deleted_by_version(
+        std::string(version_info::GetVersionNumber()));
+  }
+
   // Clear any cached pending commit data.
   commit_data_.reset();
   // Return true if server might know about this entity.

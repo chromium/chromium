@@ -9,6 +9,7 @@
 #include "android_webview/browser/gfx/root_frame_sink.h"
 #include "android_webview/browser/gfx/root_frame_sink_proxy.h"
 #include "android_webview/browser/gfx/scoped_app_gl_state_restore.h"
+#include "android_webview/browser/gfx/task_queue_webview.h"
 #include "android_webview/browser/gfx/viz_compositor_thread_runner_webview.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
@@ -74,9 +75,11 @@ class VizClient : public viz::mojom::CompositorFrameSinkClient {
  public:
   VizClient(viz::FrameSinkId frame_sink_id,
             int max_pending_frames,
-            int frame_rate)
+            int frame_rate,
+            bool use_begin_frames)
       : max_pending_frames_(max_pending_frames),
-        frame_interval_(base::Seconds(1) / frame_rate) {
+        frame_interval_(base::Seconds(1) / frame_rate),
+        use_begin_frames_(use_begin_frames) {
     support_ = std::make_unique<viz::CompositorFrameSinkSupport>(
         this,
         VizCompositorThreadRunnerWebView::GetInstance()->GetFrameSinkManager(),
@@ -87,8 +90,10 @@ class VizClient : public viz::mojom::CompositorFrameSinkClient {
         ->RegisterFrameSinkHierarchy(kRootClientSinkId, frame_sink_id);
 
     local_surface_id_allocator_.GenerateId();
-    // We always need begin frames.
-    support_->SetNeedsBeginFrame(true);
+
+    if (use_begin_frames_) {
+      support_->SetNeedsBeginFrame(true);
+    }
   }
 
   ~VizClient() override {
@@ -99,14 +104,30 @@ class VizClient : public viz::mojom::CompositorFrameSinkClient {
   }
 
   void SubmitFrameIfNeeded() {
-    if (last_begin_frame_args_.IsValid()) {
+    base::TimeTicks current_frame_time;
+
+    if (use_begin_frames_) {
+      if (last_begin_frame_args_.IsValid()) {
+        current_frame_time = last_begin_frame_args_.frame_time;
+      }
+    } else if (submitting_frames_) {
+      if (stop_submitting_frames_) {
+        submitting_frames_ = false;
+      }
+      // We don't care about this time
+      static base::TimeTicks start_time = base::TimeTicks::Now();
+      current_frame_time =
+          start_time + submit_counter_++ * (base::Seconds(1) / 60);
+    }
+
+    if (!current_frame_time.is_null()) {
       bool need_submit = false;
 
       if (pending_frames_ < max_pending_frames_) {
         if (last_submitted_time_.is_null()) {
-          last_submitted_time_ = last_begin_frame_args_.frame_time;
+          last_submitted_time_ = current_frame_time;
           need_submit = true;
-        } else if (last_begin_frame_args_.frame_time >=
+        } else if (current_frame_time >=
                    last_submitted_time_ + frame_interval_) {
           last_submitted_time_ += frame_interval_;
           need_submit = true;
@@ -115,16 +136,17 @@ class VizClient : public viz::mojom::CompositorFrameSinkClient {
 
       // If we unsubscribed from begin frames then submit frame now regardless
       // of our fps throttling.
-      if (!needs_begin_frames_) {
+      if (!submitting_frames_) {
         DCHECK(stop_submitting_frames_);
         DCHECK(pending_frames_ < max_pending_frames_);
         need_submit = true;
       }
 
-      if (need_submit)
-        SubmitFrame(viz::BeginFrameAck(last_begin_frame_args_, true));
-      else
+      if (need_submit) {
+        SubmitFrame();
+      } else if (use_begin_frames_) {
         DidNotProduceFrame(viz::BeginFrameAck(last_begin_frame_args_, false));
+      }
     }
     last_begin_frame_args_ = viz::BeginFrameArgs();
   }
@@ -172,7 +194,7 @@ class VizClient : public viz::mojom::CompositorFrameSinkClient {
 
     DCHECK_GE(frame_interval_, args.interval);
 
-    if (!needs_begin_frames_) {
+    if (!submitting_frames_) {
       DidNotProduceFrame(viz::BeginFrameAck(args, false));
       return;
     }
@@ -180,7 +202,7 @@ class VizClient : public viz::mojom::CompositorFrameSinkClient {
     last_begin_frame_args_ = args;
 
     if (stop_submitting_frames_) {
-      needs_begin_frames_ = false;
+      submitting_frames_ = false;
       support_->SetNeedsBeginFrame(false);
     }
   }
@@ -193,17 +215,21 @@ class VizClient : public viz::mojom::CompositorFrameSinkClient {
       uint32_t sequence_id) override {}
 
  private:
-  void SubmitFrame(const viz::BeginFrameAck& ack) {
+  void SubmitFrame() {
     pending_frames_++;
     frames_submitted_++;
+
+    auto ack = use_begin_frames_
+                   ? viz::BeginFrameAck(last_begin_frame_args_, true)
+                   : viz::BeginFrameAck::CreateManualAckWithDamage();
 
     auto frame =
         viz::CompositorFrameBuilder()
             .AddRenderPass(gfx::Rect(kFrameSize), gfx::Rect(kFrameSize))
-            .SetBeginFrameAck(viz::BeginFrameAck(last_begin_frame_args_, true))
+            .SetBeginFrameAck(ack)
             .Build();
     AppendSolidColorDrawQuad(*frame.render_pass_list.back());
-    frame.metadata.frame_token = ack.frame_id.sequence_number;
+    frame.metadata.frame_token = frames_submitted_;
     support_->SubmitCompositorFrame(
         local_surface_id_allocator_.GetCurrentLocalSurfaceId(),
         std::move(frame), absl::nullopt);
@@ -215,6 +241,8 @@ class VizClient : public viz::mojom::CompositorFrameSinkClient {
 
   const int max_pending_frames_;
   const base::TimeDelta frame_interval_;
+  const bool use_begin_frames_;
+
   viz::ParentLocalSurfaceIdAllocator local_surface_id_allocator_;
 
   std::unique_ptr<viz::CompositorFrameSinkSupport> support_;
@@ -222,7 +250,10 @@ class VizClient : public viz::mojom::CompositorFrameSinkClient {
   int pending_frames_ = 0;
   size_t frames_submitted_ = 0;
   bool stop_submitting_frames_ = false;
-  bool needs_begin_frames_ = true;
+  bool submitting_frames_ = true;
+
+  // Used if we simulate client that doesn't use BeginFrames to submit frames.
+  int submit_counter_ = 0;
 
   viz::BeginFrameArgs last_begin_frame_args_;
   base::TimeTicks last_submitted_time_;
@@ -266,14 +297,25 @@ enum class AlwaysDrawType {
   kAlwaysDraw
 };
 
+enum class BeginFrameAckType {
+  // Client uses BeginFrames to drive submission
+  kBeginFrames,
+  // Client uses CreateManualAckWithDamage() and submits frames without
+  // BeginFrame
+  kManual
+};
+
 class InvalidateTest
-    : public testing::TestWithParam<
-          testing::tuple<PerFrameFlag, PerFrameFlag, AlwaysDrawType>>,
+    : public testing::TestWithParam<testing::tuple<PerFrameFlag,
+                                                   PerFrameFlag,
+                                                   AlwaysDrawType,
+                                                   BeginFrameAckType>>,
       public viz::ExternalBeginFrameSourceClient,
       public RootFrameSinkProxyClient {
  public:
   InvalidateTest()
       : task_environment_(std::make_unique<base::test::TaskEnvironment>()) {
+    TaskQueueWebView::GetInstance()->ResetRenderThreadForTesting();
     begin_frame_source_ = std::make_unique<viz::ExternalBeginFrameSource>(this);
     root_frame_sink_proxy_ = std::make_unique<RootFrameSinkProxy>(
         base::SingleThreadTaskRunner::GetCurrentDefault(), this,
@@ -309,6 +351,7 @@ class InvalidateTest
                        },
                        std::move(client_)));
     render_thread_manager_->DestroyHardwareRendererOnRT(false, false);
+    TaskQueueWebView::GetInstance()->ResetRenderThreadForTesting();
   }
 
   // viz::ExternalBeginFrameSourceClient
@@ -434,13 +477,16 @@ class InvalidateTest
 
   void SetUpAndDrawFirstFrameOnViz(int max_pending_frames,
                                    int frame_rate,
+                                   bool use_begin_frames,
                                    viz::SurfaceId* surface_id) {
-    client_ = std::make_unique<VizClient>(kChildClientSinkId,
-                                          max_pending_frames, frame_rate);
+    client_ = std::make_unique<VizClient>(
+        kChildClientSinkId, max_pending_frames, frame_rate, use_begin_frames);
     *surface_id = client_->GetSurfaceId();
   }
 
   void SetUpAndDrawFirstFrame(int max_pending_frames, int frame_rate) {
+    bool use_begin_frames =
+        testing::get<3>(GetParam()) == BeginFrameAckType::kBeginFrames;
     // During initialization client will request for begin frames, we need to
     // wait until that message will reach UI thread.
     base::RunLoop run_loop;
@@ -448,12 +494,15 @@ class InvalidateTest
 
     viz::SurfaceId child_client_surface_id;
     VizCompositorThreadRunnerWebView::GetInstance()->PostTaskAndBlock(
-        FROM_HERE, base::BindOnce(&InvalidateTest::SetUpAndDrawFirstFrameOnViz,
-                                  base::Unretained(this), max_pending_frames,
-                                  frame_rate, &child_client_surface_id));
+        FROM_HERE,
+        base::BindOnce(&InvalidateTest::SetUpAndDrawFirstFrameOnViz,
+                       base::Unretained(this), max_pending_frames, frame_rate,
+                       use_begin_frames, &child_client_surface_id));
 
     // Wait for OnNeedsBeginFrames to be called.
-    run_loop.Run();
+    if (use_begin_frames) {
+      run_loop.Run();
+    }
 
     // Do first draw and to setup embedding.
     auto bf_args = NextBeginFrameArgs();
@@ -484,9 +533,9 @@ class InvalidateTest
     Sync();
     DrawOnRT(bf_args, /*invalidated=*/true);
 
-    // Note, that client is always one frame behind, so there is no client
-    // timings yet.
-    ASSERT_EQ(child_client_timings_.size(), 0u);
+    // Note, that client is always one frame behind if it uses BeginFrames, so
+    // there is no client timings yet.
+    ASSERT_EQ(child_client_timings_.size(), use_begin_frames ? 0u : 1u);
   }
 
   viz::BeginFrameArgs NextBeginFrameArgs() {
@@ -632,16 +681,29 @@ std::string AlwaysDrawTypeToString(AlwaysDrawType type) {
   };
 }
 
+std::string BeginFrameAckTypeToString(BeginFrameAckType type) {
+  switch (type) {
+    case BeginFrameAckType::kBeginFrames:
+      return "BeginFrames";
+    case BeginFrameAckType::kManual:
+      return "Manual";
+  }
+}
+
 std::string TestParamToString(
-    const testing::TestParamInfo<
-        testing::tuple<PerFrameFlag, PerFrameFlag, AlwaysDrawType>>&
+    const testing::TestParamInfo<testing::tuple<PerFrameFlag,
+                                                PerFrameFlag,
+                                                AlwaysDrawType,
+                                                BeginFrameAckType>>&
         param_info) {
   auto client_slow = testing::get<0>(param_info.param);
   auto hwui_slow = testing::get<1>(param_info.param);
   auto always_draw = testing::get<2>(param_info.param);
+  auto begin_frame_type = testing::get<3>(param_info.param);
 
-  return "ClientSlow" + client_slow.ToString() + "HwuiSlow" +
-         hwui_slow.ToString() + AlwaysDrawTypeToString(always_draw);
+  return BeginFrameAckTypeToString(begin_frame_type) + "ClientSlow" +
+         client_slow.ToString() + "HwuiSlow" + hwui_slow.ToString() +
+         AlwaysDrawTypeToString(always_draw);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -653,7 +715,9 @@ INSTANTIATE_TEST_SUITE_P(
                                          PerFrameFlag::AlwaysTrue()),
                        ::testing::Values(AlwaysDrawType::kNone,
                                          AlwaysDrawType::kAlwaysInvalidate,
-                                         AlwaysDrawType::kAlwaysDraw)),
+                                         AlwaysDrawType::kAlwaysDraw),
+                       ::testing::Values(BeginFrameAckType::kBeginFrames,
+                                         BeginFrameAckType::kManual)),
     TestParamToString);
 
 INSTANTIATE_TEST_SUITE_P(
@@ -663,7 +727,9 @@ INSTANTIATE_TEST_SUITE_P(
                        ::testing::Values(PerFrameFlag(0xAAAAAAAAAAAAAAAA)),
                        ::testing::Values(AlwaysDrawType::kNone,
                                          AlwaysDrawType::kAlwaysInvalidate,
-                                         AlwaysDrawType::kAlwaysDraw)),
+                                         AlwaysDrawType::kAlwaysDraw),
+                       ::testing::Values(BeginFrameAckType::kBeginFrames,
+                                         BeginFrameAckType::kManual)),
     TestParamToString);
 
 TEST_P(InvalidateTest, LowFpsWithMaxFrame1) {

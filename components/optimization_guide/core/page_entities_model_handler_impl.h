@@ -122,7 +122,7 @@ class PageEntitiesModelHandlerImpl : public OptimizationTargetModelObserver,
 
   // OptimizationTargetModelObserver:
   void OnModelUpdated(proto::OptimizationTarget optimization_target,
-                      const ModelInfo& model_info) override;
+                      base::optional_ref<const ModelInfo> model_info) override;
 
  private:
   // Invoked on the UI thread when entity annotator library has been
@@ -142,6 +142,11 @@ class PageEntitiesModelHandlerImpl : public OptimizationTargetModelObserver,
   // Populated with callbacks if |AddOnModelUpdatedCallback| is called before a
   // model file is available, then is notified when |OnModelUpdated| is called.
   base::OnceClosureList on_model_updated_callbacks_;
+
+  // The opt guide model provider that gives the model updates. Populated only
+  // when model observer was registered.
+  raw_ptr<optimization_guide::OptimizationGuideModelProvider>
+      optimization_guide_model_provider_;
 
   base::WeakPtrFactory<PageEntitiesModelHandlerImpl> weak_ptr_factory_{this};
 };

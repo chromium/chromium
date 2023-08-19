@@ -44,6 +44,13 @@ class CONTENT_EXPORT RenderProcessHostObserver : public base::CheckedObserver {
   virtual void RenderProcessExited(RenderProcessHost* host,
                                    const ChildProcessTerminationInfo& info) {}
 
+  // This is the equivalent to the `RenderProcessExited` notification above but
+  // for --single-process mode only. This is invoked just before calling
+  // `RenderProcessHostDestroyed`. Useful for observers that needs the two-step
+  // destruction mechanism of RenderProcessHost objects, even in
+  // --single--process mode, allowing the logic to be shared between both modes.
+  virtual void InProcessRendererExiting(RenderProcessHost* host) {}
+
   // This method is invoked when the observed RenderProcessHost itself is
   // destroyed. This is guaranteed to be the last call made to the observer, so
   // if the observer is tied to the observed RenderProcessHost, it is safe to

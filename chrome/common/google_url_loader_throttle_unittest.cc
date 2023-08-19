@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -128,6 +129,10 @@ class GoogleURLLoaderThrottleTest
 
     RunUntilIdle();
     testing::Mock::VerifyAndClearExpectations(delegate());
+    histogram_tester_->ExpectTotalCount(
+        "Signin.BoundSessionCredentials.DeferredRequestDelay",
+        /*expected_count=*/1);
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
  private:
@@ -151,13 +156,15 @@ class GoogleURLLoaderThrottleTest
   }
 
   base::test::ScopedFeatureList feature_list_{
-      switches::kEnableBoundSessionCrendentials};
+      switches::kEnableBoundSessionCredentials};
   base::test::TaskEnvironment task_environment_;
   raw_ptr<FakeBoundSessionRequestThrottledListener, DanglingUntriaged>
       bound_session_listener_ = nullptr;
   std::unique_ptr<GoogleURLLoaderThrottle> throttle_;
   std::unique_ptr<MockThrottleDelegate> delegate_;
   chrome::mojom::BoundSessionParamsPtr bound_session_params_;
+  std::unique_ptr<base::HistogramTester> histogram_tester_ =
+      std::make_unique<base::HistogramTester>();
 };
 
 TEST_P(GoogleURLLoaderThrottleTest, NullBoundSessionParams) {

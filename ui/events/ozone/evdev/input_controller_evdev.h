@@ -109,6 +109,7 @@ class COMPONENT_EXPORT(EVDEV) InputControllerEvdev : public InputController {
   void GetTouchDeviceStatus(GetTouchDeviceStatusReply reply) override;
   void GetTouchEventLog(const base::FilePath& out_dir,
                         GetTouchEventLogReply reply) override;
+  void DescribeForLog(DescribeForLogReply reply) const override;
   void GetStylusSwitchState(GetStylusSwitchStateReply reply) override;
   void SetInternalTouchpadEnabled(bool enabled) override;
   bool IsInternalTouchpadEnabled() const override;

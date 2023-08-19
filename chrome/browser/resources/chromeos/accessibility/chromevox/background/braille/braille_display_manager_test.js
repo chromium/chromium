@@ -5,6 +5,7 @@
 // Include test fixture.
 GEN_INCLUDE([
   '../../testing/chromevox_e2e_test_base.js',
+  '../../../common/testing/assert_additions.js',
   '../../testing/fake_objects.js',
 ]);
 
@@ -15,25 +16,27 @@ ChromeVoxBrailleDisplayManagerTest = class extends ChromeVoxE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
-    await importModule(
-        'BrailleCaptionsBackground',
-        '/chromevox/background/braille/braille_captions_background.js');
-    await importModule(
-        'BrailleDisplayManager',
-        '/chromevox/background/braille/braille_display_manager.js');
-    await importModule(
-        'BrailleTranslatorManager',
-        '/chromevox/background/braille/braille_translator_manager.js');
-    await importModule(
-        'CURSOR_DOTS', '/chromevox/background/braille/cursor_dots.js');
-    await importModule(
-        'ExpandingBrailleTranslator',
-        '/chromevox/background/braille/expanding_braille_translator.js');
-    await importModule(
-        'NavBraille', '/chromevox/common/braille/nav_braille.js');
-    await importModule('LocalStorage', '/common/local_storage.js');
-    await importModule(
-        'SettingsManager', '/chromevox/common/settings_manager.js');
+
+    await Promise.all([
+      // Alphabetized by file path.
+      importModule(
+          'BrailleCaptionsBackground',
+          '/chromevox/background/braille/braille_captions_background.js'),
+      importModule(
+          'BrailleDisplayManager',
+          '/chromevox/background/braille/braille_display_manager.js'),
+      importModule(
+          'BrailleTranslatorManager',
+          '/chromevox/background/braille/braille_translator_manager.js'),
+      importModule(
+          'CURSOR_DOTS', '/chromevox/background/braille/cursor_dots.js'),
+      importModule(
+          'ExpandingBrailleTranslator',
+          '/chromevox/background/braille/expanding_braille_translator.js'),
+      importModule('NavBraille', '/chromevox/common/braille/nav_braille.js'),
+      importModule('LocalStorage', '/common/local_storage.js'),
+      importModule('SettingsManager', '/chromevox/common/settings_manager.js'),
+    ]);
 
     /** @const */
     this.NAV_BRAILLE = new NavBraille({text: 'Hello, world!'});
@@ -179,6 +182,8 @@ FakeTranslatorManager.prototype = {
   getExpandingTranslator() {
     return this.translator;
   },
+
+  refresh() {},
 };
 
 AX_TEST_F('ChromeVoxBrailleDisplayManagerTest', 'NoApi', function() {
@@ -394,3 +399,71 @@ AX_TEST_F('ChromeVoxBrailleDisplayManagerTest', 'UpdatePrefs', function() {
   this.simulateOnDisplayStateChanged({available: false});
   assertEquals(false, SettingsManager.get('menuBrailleCommands'));
 });
+
+AX_TEST_F(
+    'ChromeVoxBrailleDisplayManagerTest', 'ConvertImageToBraille',
+    async function() {
+      // TODO(accessibility): images drawn on canvases (e.g. within
+      // BrailleDisplayManager.convertImageDataUrlToBraille) do not work within
+      // a test environment. Figure out why and test that method as well.
+
+      // A simple 1x1 display.
+      const state =
+          {rows: 1, columns: 1, cellWidth: 2, cellHeight: 3, maxCellHeight: 3};
+
+      // An image containing red pixels. Given the above display state, the
+      // image will contain
+      //
+      // cellWidth * columns * cellHeight * rows = 2 * 1 * 3 * 1 = 6.
+      // This happens to be 1-1 with braille.
+      //
+      // The array encoding for the image will contain 6 * 4 values (RGBA per
+      // pixel).
+
+      // For easier formatting, break the image into rows.
+      let rawData = [];
+      rawData = rawData.concat([255, 0, 0, 255], [255, 0, 0, 255]);
+      rawData = rawData.concat([0, 0, 0, 0], [0, 0, 0, 0]);
+      rawData = rawData.concat([255, 0, 0, 255], [255, 0, 0, 255]);
+
+      const imageData = new Uint8ClampedArray(24);
+      assertEquals(24, imageData.byteLength);
+      imageData.set(rawData);
+      const buf = await BrailleDisplayManager.convertImageDataToBraille(
+          imageData, state);
+      assertEquals(1, buf.byteLength);
+
+      // The following converts the braille byte-based encoding to a binary grid
+      // for easy visualization. The grid will have a slot per braille dot.
+      const {rows, columns, cellWidth, cellHeight} = state;
+      const binaryGrid = [];
+      for (let i = 0; i < (rows * cellHeight); i++) {
+        binaryGrid.push([]);
+        for (let j = 0; j < columns * cellWidth; j++) {
+          binaryGrid[i].push(0);
+        }
+      }
+
+      // Fill the binaryGrid from the buf.
+      const view = new Uint8Array(buf);
+      for (let i = 0; i < view.length; i++) {
+        // First, convert to the cell grid row, col.
+        const cellRow = Math.floor(i / columns);
+        const cellCol = i % columns;
+
+        let value = view[i];
+
+        // Now, offset into the cell itself and map to the overall grid. The
+        // bits are encoded from top left to bottom right, so ensure we're
+        // looping in that order.
+        for (let c = 0; c < cellWidth; c++) {
+          for (let r = 0; r < cellHeight; r++) {
+            binaryGrid[cellRow + r][cellCol + c] = value & 1;
+            value = value >> 1;
+          }
+        }
+      }
+
+      const expected = [[1, 1], [0, 0], [1, 1]];
+      assertArraysEquals(expected, binaryGrid);
+    });

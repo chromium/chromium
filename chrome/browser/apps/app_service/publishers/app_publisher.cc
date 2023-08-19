@@ -12,6 +12,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
+#include "extensions/grit/extensions_browser_resources.h"
 #endif
 
 namespace apps {
@@ -51,7 +52,20 @@ void AppPublisher::RegisterPublisher(AppType app_type) {
 }
 #endif
 
+void AppPublisher::LoadIcon(const std::string& app_id,
+                            const IconKey& icon_key,
+                            apps::IconType icon_type,
+                            int32_t size_hint_in_dip,
+                            bool allow_placeholder_icon,
+                            LoadIconCallback callback) {
+  std::move(callback).Run(std::make_unique<IconValue>());
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+int AppPublisher::DefaultIconResourceId() const {
+  return IDR_APP_DEFAULT_ICON;
+}
+
 void AppPublisher::GetCompressedIconData(const std::string& app_id,
                                          int32_t size_in_dip,
                                          ui::ResourceScaleFactor scale_factor,
@@ -180,6 +194,22 @@ void AppPublisher::ModifyCapabilityAccess(
   capability_access->microphone = accessing_microphone;
   capability_accesses.push_back(std::move(capability_access));
   proxy_->OnCapabilityAccesses(std::move(capability_accesses));
+}
+
+void AppPublisher::ResetCapabilityAccess(AppType app_type) {
+  std::set<std::string> apps =
+      proxy()->AppCapabilityAccessCache().GetAppsAccessingCapabilities();
+
+  std::vector<CapabilityAccessPtr> capability_accesses;
+  for (const std::string& app_id : apps) {
+    if (proxy()->AppRegistryCache().GetAppType(app_id) == app_type) {
+      auto capability_access = std::make_unique<CapabilityAccess>(app_id);
+      capability_access->camera = false;
+      capability_access->microphone = false;
+      capability_accesses.push_back(std::move(capability_access));
+    }
+  }
+  proxy()->OnCapabilityAccesses(std::move(capability_accesses));
 }
 #endif
 

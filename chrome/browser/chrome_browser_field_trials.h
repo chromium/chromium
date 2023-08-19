@@ -37,7 +37,7 @@ class ChromeBrowserFieldTrials : public variations::PlatformFieldTrials {
 
  private:
   // Weak pointer to the local state prefs store.
-  const raw_ptr<PrefService, DanglingUntriaged> local_state_;
+  const raw_ptr<PrefService, AcrossTasksDanglingUntriaged> local_state_;
 
 #if BUILDFLAG(IS_ANDROID)
   // VariationID to be used for FREMobileIdentityConsistencyFieldTrial.

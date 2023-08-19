@@ -137,7 +137,7 @@ class InMemoryURLIndex : public KeyedService,
     void DoneRunOnMainThread() override;
 
    private:
-    raw_ptr<InMemoryURLIndex, DanglingUntriaged>
+    raw_ptr<InMemoryURLIndex, AcrossTasksDanglingUntriaged>
         index_;                   // Call back to this index at completion.
     SchemeSet scheme_allowlist_;  // Schemes to be indexed.
     bool succeeded_ = false;      // Indicates if the rebuild was successful.

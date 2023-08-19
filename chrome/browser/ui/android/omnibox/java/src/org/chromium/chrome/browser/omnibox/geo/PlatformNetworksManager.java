@@ -283,8 +283,7 @@ class PlatformNetworksManager {
      * Returns a CellInfo object representing the currently registered base stations, containing
      * its identity fields and signal strength. Null if no base station is active.
      */
-    @Nullable
-    private static CellInfo getActiveCellInfo(TelephonyManager telephonyManager) {
+    private static @Nullable CellInfo getActiveCellInfo(TelephonyManager telephonyManager) {
         int numRegisteredCellInfo = 0;
         List<CellInfo> cellInfos = telephonyManager.getAllCellInfo();
 

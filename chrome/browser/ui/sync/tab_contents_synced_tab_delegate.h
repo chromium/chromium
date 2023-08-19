@@ -25,13 +25,13 @@ class TaskTabHelper;
 // (either initially or late) a WebContents.
 class TabContentsSyncedTabDelegate : public sync_sessions::SyncedTabDelegate {
  public:
-  TabContentsSyncedTabDelegate();
+  TabContentsSyncedTabDelegate() = default;
 
   TabContentsSyncedTabDelegate(const TabContentsSyncedTabDelegate&) = delete;
   TabContentsSyncedTabDelegate& operator=(const TabContentsSyncedTabDelegate&) =
       delete;
 
-  ~TabContentsSyncedTabDelegate() override;
+  ~TabContentsSyncedTabDelegate() override = default;
 
   // SyncedTabDelegate:
   bool IsBeingDestroyed() const override;
@@ -60,7 +60,7 @@ class TabContentsSyncedTabDelegate : public sync_sessions::SyncedTabDelegate {
  private:
   const tasks::TaskTabHelper* task_tab_helper() const;
 
-  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
+  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_SYNC_TAB_CONTENTS_SYNCED_TAB_DELEGATE_H_

@@ -689,7 +689,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
     // |resource_context_| may be used on the IO thread.  If these are null,
     // then the isolated origin applies globally to all profiles.
     raw_ptr<BrowserContext, DanglingUntriaged> browser_context_;
-    raw_ptr<ResourceContext, DanglingUntriaged> resource_context_;
+    raw_ptr<ResourceContext, AcrossTasksDanglingUntriaged> resource_context_;
 
     // True if origins at this or lower level should be treated as distinct
     // isolated origins, effectively isolating all domains below a given domain,

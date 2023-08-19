@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.collection.ArraySet;
 
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.process_launcher.ChildProcessConnection;
 
@@ -35,7 +36,7 @@ class BindingManager implements ComponentCallbacks2 {
     // Delays used when clearing moderate binding pool when onSentToBackground happens.
     private static final long BINDING_POOL_CLEARER_DELAY_MILLIS = 10 * 1000;
 
-    private static Boolean sUseNotPerceptibleBinding;
+    private static Boolean sUseNotPerceptibleBindingForTesting;
 
     private final Set<ChildProcessConnection> mConnections = new ArraySet<ChildProcessConnection>();
     // Can be -1 to mean no max size.
@@ -186,17 +187,17 @@ class BindingManager implements ComponentCallbacks2 {
      * Override the default behavior which is based on Android version. This can be removed once
      * Android P support ends.
      */
-    @VisibleForTesting
     static void setUseNotPerceptibleBindingForTesting(boolean useNotPerceptibleBinding) {
-        sUseNotPerceptibleBinding = useNotPerceptibleBinding;
+        sUseNotPerceptibleBindingForTesting = useNotPerceptibleBinding;
+        ResettersForTesting.register(() -> sUseNotPerceptibleBindingForTesting = null);
     }
 
     @VisibleForTesting
     static boolean useNotPerceptibleBinding() {
-        if (sUseNotPerceptibleBinding == null) {
-            sUseNotPerceptibleBinding = ChildProcessConnection.supportNotPerceptibleBinding();
+        if (sUseNotPerceptibleBindingForTesting != null) {
+            return sUseNotPerceptibleBindingForTesting;
         }
-        return sUseNotPerceptibleBinding;
+        return ChildProcessConnection.supportNotPerceptibleBinding();
     }
 
     private boolean isExclusiveNotPerceptibleBinding(ChildProcessConnection connection) {

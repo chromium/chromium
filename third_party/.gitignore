@@ -12,7 +12,6 @@
 /android_build_tools/aapt2/lib64/*.so
 /android_build_tools/apkanalyzer/apkanalyzer.jar
 /android_build_tools/bundletool/*.jar
-/android_ndk/
 /android_prebuilts/build_tools
 /android_protobuf/src
 /android_sdk/androidx_browser/src
@@ -20,6 +19,8 @@
 /android_sdk/sources/
 /android_support_test_runner/lib/
 /android_system_sdk/*.jar
+/android_toolchain/ndk/
+/android_toolchain_canary/ndk/
 /android_tools_internal/
 /android_webview_glue/src
 /androidx/BUILD.gn
@@ -72,6 +73,7 @@
 /chromeos_text_input
 /chromevox/third_party/sre/src
 /chromite
+/chromium-variations
 /crossbench
 /clang-format/script
 /cld_2/src
@@ -158,11 +160,15 @@
 /kotlinc/current
 /leveldatabase/src
 /leveldb
+/libc++/src
+/libc++abi/src
+/libunwind/src
 /libFuzzer/src
 /libaddressinput/src
 /libaom/source/libaom
 /libassistant
 /libavif/src
+/libavifinfo/src
 /libc++-static/libc++.a
 /libdrm/src
 /libei/bin
@@ -192,6 +198,7 @@
 /llvm-build
 /llvm-build-tools
 /lss
+/cronet_android_mainline_clang/linux-amd64
 /material_color_utilities/src
 /material_design_icons/src
 /mesa/src
@@ -248,9 +255,9 @@
 /requests/src
 /robolectric/lib/
 /robolectric/robolectric
+/rust-src
 /rust-toolchain
 /rust-toolchain-intermediate
-/rust_src/src
 /ruy/src
 /scan-build/src
 /scons-2.0.1
@@ -276,6 +283,8 @@
 /syzygy
 /syzygy/binaries
 /text-fragments-polyfill/src
+/tfhub_models/*.tar.gz
+/tfhub_models/models/
 /tflite/src
 /tint/src
 /tsan/
@@ -312,3 +321,4 @@
 /xdg-utils
 /xnnpack/src
 /xulrunner-sdk
+/zstd/src

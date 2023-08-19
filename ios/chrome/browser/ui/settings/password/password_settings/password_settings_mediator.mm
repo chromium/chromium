@@ -7,11 +7,12 @@
 #import "base/containers/cxx20_erase_vector.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
+#import "components/sync/base/features.h"
 #import "components/sync/base/passphrase_enums.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service_utils.h"
@@ -23,10 +24,6 @@
 #import "ios/chrome/browser/ui/settings/utils/password_auto_fill_status_manager.h"
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using password_manager::prefs::kCredentialsEnableService;
 
@@ -143,9 +140,7 @@ using password_manager::prefs::kCredentialsEnableService;
   // < and not <= below, because the next impression must be counted.
   const int impressionCount = _prefService->GetInteger(
       password_manager::prefs::kAccountStorageNewFeatureIconImpressions);
-  const int maxImpressionCount =
-      password_manager::features::kMaxAccountStorageNewFeatureIconImpressions
-          .Get();
+  constexpr int maxImpressionCount = 5;
   [self.consumer
       setShowAccountStorageNewFeatureIcon:impressionCount < maxImpressionCount];
 
@@ -313,12 +308,18 @@ using password_manager::prefs::kCredentialsEnableService;
 }
 
 - (PasswordSettingsAccountStorageState)computeAccountStorageState {
+  // TODO(crbug.com/1462858): Delete the usage of IsSyncFeatureEnabled() after
+  // Phase 2 on iOS is launched. See ConsentLevel::kSync documentation for
+  // details.
   if (_syncService->GetAccountInfo().IsEmpty() ||
       _syncService->IsSyncFeatureEnabled() ||
-      !base::FeatureList::IsEnabled(
-          password_manager::features::kEnablePasswordsAccountStorage)) {
+      base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
     return PasswordSettingsAccountStorageStateNotShown;
   }
+
+  CHECK(base::FeatureList::IsEnabled(
+      password_manager::features::kEnablePasswordsAccountStorage));
 
   if (_prefService->IsManagedPreference(kCredentialsEnableService) ||
       _syncService->GetUserSettings()->IsTypeManagedByPolicy(

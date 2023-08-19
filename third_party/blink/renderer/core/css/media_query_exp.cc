@@ -87,6 +87,11 @@ static inline bool FeatureWithValidIdent(const String& media_feature,
            ident == CSSValueID::kRec2020;
   }
 
+  if (RuntimeEnabledFeatures::InvertedColorsEnabled() &&
+      media_feature == media_feature_names::kInvertedColorsMediaFeature) {
+    return ident == CSSValueID::kInverted || ident == CSSValueID::kNone;
+  }
+
   if (media_feature == media_feature_names::kPrefersColorSchemeMediaFeature) {
     return ident == CSSValueID::kDark || ident == CSSValueID::kLight;
   }
@@ -112,6 +117,12 @@ static inline bool FeatureWithValidIdent(const String& media_feature,
 
   if (RuntimeEnabledFeatures::PrefersReducedDataEnabled() &&
       media_feature == media_feature_names::kPrefersReducedDataMediaFeature) {
+    return ident == CSSValueID::kNoPreference || ident == CSSValueID::kReduce;
+  }
+
+  if (RuntimeEnabledFeatures::PrefersReducedTransparencyEnabled() &&
+      media_feature ==
+          media_feature_names::kPrefersReducedTransparencyMediaFeature) {
     return ident == CSSValueID::kNoPreference || ident == CSSValueID::kReduce;
   }
 
@@ -204,7 +215,10 @@ static inline bool FeatureWithValidLength(const String& media_feature,
 
 static inline bool FeatureWithValidDensity(const String& media_feature,
                                            const CSSPrimitiveValue* value) {
-  if (!value->IsResolution()) {
+  // NOTE: The allowed range of <resolution> values always excludes negative
+  // values, in addition to any explicit ranges that might be specified.
+  // https://drafts.csswg.org/css-values/#resolution
+  if (!value->IsResolution() || value->GetDoubleValue() < 0) {
     return false;
   }
 
@@ -226,7 +240,7 @@ static inline bool FeatureExpectingInteger(const String& media_feature) {
     return true;
   }
 
-  if (RuntimeEnabledFeatures::CSSFoldablesEnabled()) {
+  if (RuntimeEnabledFeatures::ViewportSegmentsEnabled()) {
     if (media_feature ==
             media_feature_names::kHorizontalViewportSegmentsMediaFeature ||
         media_feature ==
@@ -646,6 +660,7 @@ unsigned MediaQueryExpValue::GetUnitFlags() const {
   if (length_type_flags.test(CSSPrimitiveValue::kUnitTypeFontSize) ||
       length_type_flags.test(CSSPrimitiveValue::kUnitTypeFontXSize) ||
       length_type_flags.test(CSSPrimitiveValue::kUnitTypeZeroCharacterWidth) ||
+      length_type_flags.test(CSSPrimitiveValue::kUnitTypeFontCapitalHeight) ||
       length_type_flags.test(
           CSSPrimitiveValue::kUnitTypeIdeographicFullWidth) ||
       length_type_flags.test(CSSPrimitiveValue::kUnitTypeLineHeight)) {
@@ -654,6 +669,8 @@ unsigned MediaQueryExpValue::GetUnitFlags() const {
 
   if (length_type_flags.test(CSSPrimitiveValue::kUnitTypeRootFontSize) ||
       length_type_flags.test(CSSPrimitiveValue::kUnitTypeRootFontXSize) ||
+      length_type_flags.test(
+          CSSPrimitiveValue::kUnitTypeRootFontCapitalHeight) ||
       length_type_flags.test(
           CSSPrimitiveValue::kUnitTypeRootFontZeroCharacterWidth) ||
       length_type_flags.test(

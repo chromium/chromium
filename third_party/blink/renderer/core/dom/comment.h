@@ -39,7 +39,7 @@ class CORE_EXPORT Comment final : public CharacterData {
 
  private:
   String nodeName() const override;
-  Node* Clone(Document&, CloneChildrenFlag) const override;
+  CharacterData* CloneWithData(Document&, const String&) const override;
   void DetachLayoutTree(bool performing_reattach) final {}
 };
 

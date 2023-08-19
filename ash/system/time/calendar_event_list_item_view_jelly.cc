@@ -44,7 +44,8 @@ constexpr auto kEventListItemInsets =
     gfx::Insets::VH(8, calendar_utils::kEventListItemViewStartEndMargin);
 constexpr auto kEventListItemHorizontalChildSpacing = 8;
 constexpr int kEventListItemCornerRadius = 16;
-constexpr int kEventListItemCornerDefaultRadius = 4;
+constexpr int kEventListItemCornerDefaultRadius = 5;
+constexpr int kUpNextViewEventListItemCornerRadius = 20;
 constexpr float kEventListItemFocusCornerRadius = 3.0f;
 
 // Radius of the event color dot.
@@ -131,7 +132,6 @@ views::Builder<views::Label> CreateSummaryLabel(
       .SizeToFit(fixed_width)
       .SetElideBehavior(gfx::ElideBehavior::ELIDE_TAIL)
       .SetSubpixelRenderingEnabled(false)
-      .SetTextContext(CONTEXT_CALENDAR_DATE)
       .SetTooltipText(tooltip_text);
 }
 
@@ -147,7 +147,6 @@ views::Builder<views::Label> CreateTimeLabel(
       .SetAutoColorReadabilityEnabled(false)
       .SetElideBehavior(gfx::ElideBehavior::NO_ELIDE)
       .SetSubpixelRenderingEnabled(false)
-      .SetTextContext(CONTEXT_CALENDAR_DATE)
       .SetTooltipText(tooltip_text);
 }
 
@@ -210,12 +209,15 @@ CalendarEventListItemViewJelly::CalendarEventListItemViewJelly(
   SetFocusBehavior(FocusBehavior::ALWAYS);
 
   // Conditionally round the items corners depending upon where it sits in the
-  // list.
+  // list and whether it is in the up next event list.
+  const int round_corner_radius = ui_params.is_up_next_event_list_item
+                                      ? kUpNextViewEventListItemCornerRadius
+                                      : kEventListItemCornerRadius;
   const int top_radius = ui_params.round_top_corners
-                             ? kEventListItemCornerRadius
+                             ? round_corner_radius
                              : kEventListItemCornerDefaultRadius;
   const int bottom_radius = ui_params.round_bottom_corners
-                                ? kEventListItemCornerRadius
+                                ? round_corner_radius
                                 : kEventListItemCornerDefaultRadius;
   const gfx::RoundedCornersF item_corner_radius = gfx::RoundedCornersF(
       top_radius, top_radius, bottom_radius, bottom_radius);
@@ -325,7 +327,7 @@ void CalendarEventListItemViewJelly::SetUpFocusHighlight(
                                    /*highlight_on_focus=*/false,
                                    /*background_color=*/
                                    gfx::kPlaceholderColor);
-  views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
+  views::FocusRing::Get(this)->SetColorId(cros_tokens::kCrosSysFocusRing);
   views::FocusRing::Get(this)->SetHaloThickness(
       kEventListItemFocusCornerRadius);
   views::HighlightPathGenerator::Install(

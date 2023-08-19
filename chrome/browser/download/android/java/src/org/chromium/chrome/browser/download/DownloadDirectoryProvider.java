@@ -22,6 +22,7 @@ import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PathUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
@@ -175,7 +176,9 @@ public class DownloadDirectoryProvider {
      * @param provider The directory provider used in tests.
      */
     public void setDirectoryProviderForTesting(DownloadDirectoryProvider provider) {
+        var oldValue = LazyHolder.sInstance;
         LazyHolder.sInstance = provider;
+        ResettersForTesting.register(() -> LazyHolder.sInstance = oldValue);
     }
 
     /**

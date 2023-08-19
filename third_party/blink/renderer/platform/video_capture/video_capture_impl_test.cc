@@ -1060,4 +1060,15 @@ TEST_F(VideoCaptureImplTest, FallbacksToPremappedGmbsWhenNotSupported) {
 }
 #endif
 
+TEST_F(VideoCaptureImplTest, WinCameraBusyErrorUpdatesCorrectState) {
+  EXPECT_CALL(*this,
+              OnStateUpdate(blink::VIDEO_CAPTURE_STATE_ERROR_CAMERA_BUSY));
+  video_capture_impl_->OnStateChanged(
+      media::mojom::blink::VideoCaptureResult::NewErrorCode(
+          media::VideoCaptureError::kWinMediaFoundationCameraBusy));
+
+  StartCapture(0, params_small_);
+  StopCapture(0);
+}
+
 }  // namespace blink

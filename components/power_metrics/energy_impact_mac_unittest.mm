@@ -9,10 +9,6 @@
 #include "components/power_metrics/resource_coalition_mac.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace power_metrics {
 
 namespace {

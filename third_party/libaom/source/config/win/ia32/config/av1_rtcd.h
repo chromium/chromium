@@ -86,18 +86,6 @@ void aom_comp_avg_upsampled_pred_sse2(MACROBLOCKD *xd, const struct AV1Common *c
                                                    int ref_stride, int subpel_search);
 #define aom_comp_avg_upsampled_pred aom_comp_avg_upsampled_pred_sse2
 
-void aom_comp_mask_upsampled_pred_c(MACROBLOCKD *xd, const struct AV1Common *const cm, int mi_row, int mi_col,
-                                                       const MV *const mv, uint8_t *comp_pred, const uint8_t *pred, int width,
-                                                       int height, int subpel_x_q3, int subpel_y_q3, const uint8_t *ref,
-                                                       int ref_stride, const uint8_t *mask, int mask_stride, int invert_mask,
-                                                       int subpel_search);
-void aom_comp_mask_upsampled_pred_sse2(MACROBLOCKD *xd, const struct AV1Common *const cm, int mi_row, int mi_col,
-                                                       const MV *const mv, uint8_t *comp_pred, const uint8_t *pred, int width,
-                                                       int height, int subpel_x_q3, int subpel_y_q3, const uint8_t *ref,
-                                                       int ref_stride, const uint8_t *mask, int mask_stride, int invert_mask,
-                                                       int subpel_search);
-#define aom_comp_mask_upsampled_pred aom_comp_mask_upsampled_pred_sse2
-
 void aom_dist_wtd_comp_avg_upsampled_pred_c(MACROBLOCKD *xd, const struct AV1Common *const cm, int mi_row, int mi_col,
                                                        const MV *const mv, uint8_t *comp_pred, const uint8_t *pred, int width,
                                                        int height, int subpel_x_q3, int subpel_y_q3, const uint8_t *ref,
@@ -146,11 +134,6 @@ void av1_build_compound_diffwtd_mask_d16_c(uint8_t *mask, DIFFWTD_MASK_TYPE mask
 void av1_build_compound_diffwtd_mask_d16_sse4_1(uint8_t *mask, DIFFWTD_MASK_TYPE mask_type, const CONV_BUF_TYPE *src0, int src0_stride, const CONV_BUF_TYPE *src1, int src1_stride, int h, int w, ConvolveParams *conv_params, int bd);
 void av1_build_compound_diffwtd_mask_d16_avx2(uint8_t *mask, DIFFWTD_MASK_TYPE mask_type, const CONV_BUF_TYPE *src0, int src0_stride, const CONV_BUF_TYPE *src1, int src1_stride, int h, int w, ConvolveParams *conv_params, int bd);
 RTCD_EXTERN void (*av1_build_compound_diffwtd_mask_d16)(uint8_t *mask, DIFFWTD_MASK_TYPE mask_type, const CONV_BUF_TYPE *src0, int src0_stride, const CONV_BUF_TYPE *src1, int src1_stride, int h, int w, ConvolveParams *conv_params, int bd);
-
-int64_t av1_calc_frame_error_c(const uint8_t *const ref, int stride, const uint8_t *const dst, int p_width, int p_height, int p_stride);
-int64_t av1_calc_frame_error_sse2(const uint8_t *const ref, int stride, const uint8_t *const dst, int p_width, int p_height, int p_stride);
-int64_t av1_calc_frame_error_avx2(const uint8_t *const ref, int stride, const uint8_t *const dst, int p_width, int p_height, int p_stride);
-RTCD_EXTERN int64_t (*av1_calc_frame_error)(const uint8_t *const ref, int stride, const uint8_t *const dst, int p_width, int p_height, int p_stride);
 
 void av1_calc_indices_dim1_c(const int16_t *data, const int16_t *centroids, uint8_t *indices, int64_t *total_dist, int n, int k);
 void av1_calc_indices_dim1_sse2(const int16_t *data, const int16_t *centroids, uint8_t *indices, int64_t *total_dist, int n, int k);
@@ -464,6 +447,10 @@ RTCD_EXTERN void (*av1_nn_fast_softmax_16)( const float *input_nodes, float *out
 
 void av1_nn_predict_c( const float *input_nodes, const NN_CONFIG *const nn_config, int reduce_prec, float *const output);
 void av1_nn_predict_sse3( const float *input_nodes, const NN_CONFIG *const nn_config, int reduce_prec, float *const output);
+void av1_nn_predict_avx2(const float* input_nodes,
+                         const NN_CONFIG* const nn_config,
+                         int reduce_prec,
+                         float* const output);
 RTCD_EXTERN void (*av1_nn_predict)( const float *input_nodes, const NN_CONFIG *const nn_config, int reduce_prec, float *const output);
 
 void av1_quantize_b_c(const tran_low_t *coeff_ptr, intptr_t n_coeffs, const int16_t *zbin_ptr, const int16_t *round_ptr, const int16_t *quant_ptr, const int16_t *quant_shift_ptr, tran_low_t *qcoeff_ptr, tran_low_t *dqcoeff_ptr, const int16_t *dequant_ptr, uint16_t *eob_ptr, const int16_t *scan, const int16_t *iscan, const qm_val_t * qm_ptr, const qm_val_t * iqm_ptr, int log_scale);
@@ -679,9 +666,10 @@ static void setup_rtcd_internal(void)
     if (flags & HAS_AVX2) av1_build_compound_diffwtd_mask = av1_build_compound_diffwtd_mask_avx2;
     av1_build_compound_diffwtd_mask_d16 = av1_build_compound_diffwtd_mask_d16_c;
     if (flags & HAS_SSE4_1) av1_build_compound_diffwtd_mask_d16 = av1_build_compound_diffwtd_mask_d16_sse4_1;
-    if (flags & HAS_AVX2) av1_build_compound_diffwtd_mask_d16 = av1_build_compound_diffwtd_mask_d16_avx2;
-    av1_calc_frame_error = av1_calc_frame_error_sse2;
-    if (flags & HAS_AVX2) av1_calc_frame_error = av1_calc_frame_error_avx2;
+    if (flags & HAS_AVX2) {
+      av1_build_compound_diffwtd_mask_d16 =
+          av1_build_compound_diffwtd_mask_d16_avx2;
+    }
     av1_calc_indices_dim1 = av1_calc_indices_dim1_sse2;
     if (flags & HAS_AVX2) av1_calc_indices_dim1 = av1_calc_indices_dim1_avx2;
     av1_calc_indices_dim2 = av1_calc_indices_dim2_sse2;
@@ -792,6 +780,9 @@ static void setup_rtcd_internal(void)
     if (flags & HAS_SSE3) av1_nn_fast_softmax_16 = av1_nn_fast_softmax_16_sse3;
     av1_nn_predict = av1_nn_predict_c;
     if (flags & HAS_SSE3) av1_nn_predict = av1_nn_predict_sse3;
+    if (flags & HAS_AVX2) {
+      av1_nn_predict = av1_nn_predict_avx2;
+    }
     av1_quantize_fp = av1_quantize_fp_sse2;
     if (flags & HAS_AVX2) av1_quantize_fp = av1_quantize_fp_avx2;
     av1_quantize_fp_32x32 = av1_quantize_fp_32x32_c;

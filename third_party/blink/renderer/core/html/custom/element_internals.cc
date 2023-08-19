@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_validity_state_flags.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/dom/node_lists_node_data.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/file.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
@@ -55,6 +56,7 @@ void AppendToFormControlState(const V8ControlValue& value,
 }
 
 const V8ControlValue* RestoreFromFormControlState(
+    ExecutionContext& execution_context,
     const FormControlState& state,
     const StringView& section_title,
     wtf_size_t& index) {
@@ -62,7 +64,6 @@ const V8ControlValue* RestoreFromFormControlState(
     return nullptr;
   }
   if (state[index] != section_title) {
-    NOTREACHED();
     return nullptr;
   }
   const V8ControlValue* restored_value = nullptr;
@@ -71,11 +72,13 @@ const V8ControlValue* RestoreFromFormControlState(
   if (entry_type == "USVString") {
     restored_value = MakeGarbageCollected<V8ControlValue>(state[index++]);
   } else if (entry_type == "File") {
-    if (auto* file = File::CreateFromControlState(state, index)) {
+    if (auto* file =
+            File::CreateFromControlState(&execution_context, state, index)) {
       restored_value = MakeGarbageCollected<V8ControlValue>(file);
     }
   } else if (entry_type == "FormData") {
-    if (auto* form_data = FormData::CreateFromControlState(state, index)) {
+    if (auto* form_data =
+            FormData::CreateFromControlState(execution_context, state, index)) {
       restored_value = MakeGarbageCollected<V8ControlValue>(form_data);
     }
   } else {
@@ -158,7 +161,7 @@ void ElementInternals::setValidity(ValidityStateFlags* flags,
 
 void ElementInternals::setValidity(ValidityStateFlags* flags,
                                    const String& message,
-                                   Element* anchor,
+                                   HTMLElement* anchor,
                                    ExceptionState& exception_state) {
   if (!IsTargetFormAssociated()) {
     exception_state.ThrowDOMException(
@@ -537,12 +540,13 @@ FormControlState ElementInternals::SaveFormControlState() const {
 }
 
 void ElementInternals::RestoreFormControlState(const FormControlState& state) {
+  ExecutionContext* execution_context = target_->GetExecutionContext();
   wtf_size_t index = 0;
 
   // Per spec, the submission value shouldn't be automatically restored by the
   // UA, but Blink has been doing that.
-  if (const V8ControlValue* restored_value =
-          RestoreFromFormControlState(state, "Value", index)) {
+  if (const V8ControlValue* restored_value = RestoreFromFormControlState(
+          *execution_context, state, "Value", index)) {
     value_ = restored_value;
   }
   if (!RuntimeEnabledFeatures::FormStateRestoreCallbackCallWithStateEnabled()) {
@@ -554,7 +558,7 @@ void ElementInternals::RestoreFormControlState(const FormControlState& state) {
   }
 
   const V8ControlValue* restored_state =
-      RestoreFromFormControlState(state, "State", index);
+      RestoreFromFormControlState(*execution_context, state, "State", index);
   if (restored_state) {
     CustomElement::EnqueueFormStateRestoreCallback(Target(), restored_state,
                                                    "restore");

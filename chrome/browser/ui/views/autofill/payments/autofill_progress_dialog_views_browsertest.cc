@@ -94,14 +94,17 @@ IN_PROC_BROWSER_TEST_F(AutofillProgressDialogViewsBrowserTest,
 }
 
 // Ensures clicking on the cancel button is correctly handled.
-// TODO(crbug.com/1257990): Flaky.
 IN_PROC_BROWSER_TEST_F(AutofillProgressDialogViewsBrowserTest,
-                       DISABLED_ClickCancelButton) {
+                       ClickCancelButton) {
   base::HistogramTester histogram_tester;
   ShowUi("VirtualCardUnmask");
   VerifyUi();
+  auto* dialog_views = GetDialogViews();
+  ASSERT_TRUE(dialog_views);
+  views::test::WidgetDestroyedWaiter destroyed_waiter(
+      dialog_views->GetWidget());
   GetDialogViews()->CancelDialog();
-  base::RunLoop().RunUntilIdle();
+  destroyed_waiter.Wait();
   EXPECT_FALSE(GetDialogViews());
   histogram_tester.ExpectUniqueSample(
       "Autofill.ProgressDialog.CardUnmask.Shown", true, 1);
@@ -116,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(AutofillProgressDialogViewsBrowserTest,
   ShowUi("VirtualCardUnmask");
   VerifyUi();
   auto* dialog_views = GetDialogViews();
-  EXPECT_TRUE(dialog_views);
+  ASSERT_TRUE(dialog_views);
   views::test::WidgetDestroyedWaiter destroyed_waiter(
       dialog_views->GetWidget());
   base::MockOnceClosure no_interactive_authentication_callback;

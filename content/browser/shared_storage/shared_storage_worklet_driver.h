@@ -10,6 +10,8 @@
 
 namespace content {
 
+class RenderProcessHost;
+
 // Interface to abstract away the starting of the worklet service.
 class SharedStorageWorkletDriver {
  public:
@@ -19,6 +21,10 @@ class SharedStorageWorkletDriver {
   virtual void StartWorkletService(
       mojo::PendingReceiver<blink::mojom::SharedStorageWorkletService>
           pending_receiver) = 0;
+
+  // Returns the process host associated with the worklet. Returns nullptr if
+  // the process has gone.
+  virtual RenderProcessHost* GetProcessHost() = 0;
 };
 
 }  // namespace content

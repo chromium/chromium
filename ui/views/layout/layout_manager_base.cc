@@ -9,6 +9,7 @@
 #include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/trace_event/trace_event.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -78,6 +79,8 @@ SizeBounds LayoutManagerBase::GetAvailableSize(const View* host,
 
 void LayoutManagerBase::Layout(View* host) {
   DCHECK_EQ(host_view_, host);
+  TRACE_EVENT1("ui", "LayoutManagerBase::Layout", "class",
+               host->GetClassName());
   // A handful of views will cause invalidations while they are being
   // positioned, which can result in loops or loss of layout data during layout
   // application. Therefore we protect the layout manager from spurious

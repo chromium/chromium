@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// chrome.sidePanel API
+// Use the `chrome.sidePanel` API to host content in the browser's side panel
+// alongside the main content of a webpage.
 namespace sidePanel {
   dictionary SidePanel {
     // Developer specified path for side panel display.
@@ -47,7 +48,7 @@ namespace sidePanel {
 
   // Options for opening the side panel.
   // At least one of `tabId` and `windowId` must be specified.
-  [nodoc] dictionary OpenOptions {
+  dictionary OpenOptions {
     // The window in which to open the side panel. This is only applicable if
     // the extension has a global (non-tab-specific) side panel or
     // <code>tabId</code> is also specified. This will override any
@@ -99,7 +100,7 @@ namespace sidePanel {
     // This may only be called in response to a user action.
     // |options|: Specifies the context in which to open the side panel.
     // |callback|: Called when the side panel has been opened.
-    [nodoc, supportsPromises] static void open(OpenOptions options,
-                                               VoidCallback callback);
+    [supportsPromises] static void open(OpenOptions options,
+                                        VoidCallback callback);
   };
 };

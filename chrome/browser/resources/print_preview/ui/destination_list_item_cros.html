@@ -4,8 +4,13 @@
     font-style: italic;
   }
 
-  :host([is-destination-cros-local_]) .connection-status {
-    color: var(--google-red-600);
+  :host([is-destination-cros-local_]) .connection-status,
+  :host([is-destination-cros-local_]) .connection-status.status-red {
+    color: var(--error-status-alert);
+  }
+
+  :host([is-destination-cros-local_]) .connection-status.status-orange {
+    color: var(--error-status-warning);
   }
 </style>
 <iron-media-query query="(prefers-color-scheme: dark)"
@@ -16,7 +21,8 @@
 <span class="search-hint searchable" hidden="[[!searchHint_]]">
   [[searchHint_]]
 </span>
-<span class="connection-status" hidden="[[!statusText_]]">
+<span class$="[[computeStatusClass_(destination.printerStatusReason)]]"
+    hidden="[[!statusText_]]">
   [[statusText_]]
 </span>
 <span class="extension-controlled-indicator"

@@ -242,6 +242,22 @@ base::Value::Dict PrefService::GetPreferenceValues(
   return out;
 }
 
+std::vector<PrefService::PreferenceValueAndStore>
+PrefService::GetPreferencesValueAndStore() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::vector<PreferenceValueAndStore> result;
+  for (const auto& it : *pref_registry_) {
+    auto* preference = FindPreference(it.first);
+    CHECK(preference);
+    PreferenceValueAndStore pref_data{
+        it.first, preference->GetValue()->Clone(),
+        pref_value_store_->ControllingPrefStoreForPref(it.first)};
+    result.emplace_back(std::move(pref_data));
+  }
+  return result;
+}
+
 const PrefService::Preference* PrefService::FindPreference(
     const std::string& pref_name) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -427,7 +443,7 @@ void PrefService::SetDouble(const std::string& path, double value) {
   SetUserPrefValue(path, base::Value(value));
 }
 
-void PrefService::SetString(const std::string& path, const std::string& value) {
+void PrefService::SetString(const std::string& path, base::StringPiece value) {
   SetUserPrefValue(path, base::Value(value));
 }
 

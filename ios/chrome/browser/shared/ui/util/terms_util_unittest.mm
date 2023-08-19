@@ -4,15 +4,11 @@
 
 #import "ios/chrome/browser/shared/ui/util/terms_util.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "url/gurl.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 extern std::string GetLocalizedFileName(const std::string& base_name,
                                         const std::string& locale,

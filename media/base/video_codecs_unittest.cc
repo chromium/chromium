@@ -664,6 +664,115 @@ TEST(ParseHEVCCodecIdTest, InvalidHEVCCodecIds) {
 }
 #endif
 
+#if BUILDFLAG(ENABLE_PLATFORM_VVC)
+TEST(ParseVVCCodecIdTest, InvalidVVCCodecIds) {
+  VideoCodecProfile profile = VIDEO_CODEC_PROFILE_UNKNOWN;
+  uint8_t level_idc = 0;
+
+  // Both vvc1 and vvi1 should be supported
+  EXPECT_TRUE(ParseVVCCodecId("vvc1.1.L51.CQA.O1+3", &profile, &level_idc));
+  EXPECT_EQ(profile, VVCPROFILE_MAIN10);
+  EXPECT_EQ(level_idc, 51);
+  EXPECT_TRUE(
+      ParseVVCCodecId("vvi1.2.L83.CQA.S25+YA.O2+3", &profile, &level_idc));
+  EXPECT_EQ(profile, VVCPROFILE_MAIN12);
+  EXPECT_EQ(level_idc, 83);
+
+  // Check that codec id string with insufficient number of dot-separated
+  // elements are rejected. There must be at least 4 elements: vvc1/vvi1 prefix,
+  // profile, level, constraints.
+  EXPECT_TRUE(ParseVVCCodecId("vvc1.1.L51.CQA", &profile, &level_idc));
+  EXPECT_EQ(profile, VVCPROFILE_MAIN10);
+  EXPECT_EQ(level_idc, 51);
+  EXPECT_FALSE(ParseVVCCodecId("vvc1", &profile, &level_idc));
+  EXPECT_FALSE(ParseVVCCodecId("vvi1", &profile, &level_idc));
+  EXPECT_FALSE(ParseVVCCodecId("vvc1.", &profile, &level_idc));
+  EXPECT_FALSE(ParseVVCCodecId("vvc1..", &profile, &level_idc));
+  EXPECT_FALSE(ParseVVCCodecId("vvc1...", &profile, &level_idc));
+  EXPECT_FALSE(ParseVVCCodecId("vvc1....", &profile, &level_idc));
+  EXPECT_FALSE(ParseVVCCodecId("vvc1.1", &profile, &level_idc));
+  EXPECT_FALSE(ParseVVCCodecId("vvc1.1.", &profile, &level_idc));
+  EXPECT_FALSE(ParseVVCCodecId("vvc1.1..", &profile, &level_idc));
+  EXPECT_FALSE(ParseVVCCodecId("vvc1.1...", &profile, &level_idc));
+
+  // Check that codec ids with invalid trailing bytes are rejected.
+  EXPECT_FALSE(ParseVVCCodecId("vvc1.1.L83.", &profile, &level_idc));
+  EXPECT_FALSE(ParseVVCCodecId("vvc1.1.L83..", &profile, &level_idc));
+  EXPECT_FALSE(ParseVVCCodecId("vvc1.1.L83...", &profile, &level_idc));
+  EXPECT_FALSE(ParseVVCCodecId("vvc1.1.L83....", &profile, &level_idc));
+  EXPECT_FALSE(ParseVVCCodecId("vvc1.1.L83.....", &profile, &level_idc));
+  EXPECT_FALSE(ParseVVCCodecId("vvc1.1.L83......", &profile, &level_idc));
+  EXPECT_FALSE(ParseVVCCodecId("vvc1.1.L83.......", &profile, &level_idc));
+  EXPECT_FALSE(ParseVVCCodecId("vvc1.1.L83.......0", &profile, &level_idc));
+  EXPECT_FALSE(ParseVVCCodecId("vvc1.1.L83.0.", &profile, &level_idc));
+  EXPECT_FALSE(ParseVVCCodecId("vvc1.1.L83.0..", &profile, &level_idc));
+  EXPECT_FALSE(ParseVVCCodecId("vvc1.1.L83.0..0", &profile, &level_idc));
+
+  // general_profile_idc (the number after the first dot) must be a 5-bit
+  // decimal-encoded number (between 1 and 99)
+  EXPECT_TRUE(ParseVVCCodecId("vvc1.1.L83.CQA", &profile, &level_idc));
+  EXPECT_TRUE(ParseVVCCodecId("vvc1.99.L83.CQA", &profile, &level_idc));
+  EXPECT_FALSE(ParseVVCCodecId("vvc1.100.L83.CQA", &profile, &level_idc));
+  EXPECT_FALSE(ParseVVCCodecId("vvc1.0.L83.CQA", &profile, &level_idc));
+
+  // general_tier_flag is encoded as either character 'L' (general_tier_flag==0)
+  // or character 'H' (general_tier_flag==1) in the 3rd element of the string
+  EXPECT_TRUE(ParseVVCCodecId("vvc1.1.L83.CQA", &profile, &level_idc));
+  EXPECT_TRUE(ParseVVCCodecId("vvc1.1.H83.CQA", &profile, &level_idc));
+  EXPECT_FALSE(ParseVVCCodecId("vvc1.1.83.CQA", &profile, &level_idc));
+  EXPECT_FALSE(ParseVVCCodecId("vvc1.1.A83.CQA", &profile, &level_idc));
+
+  // general_level_idc is 8-bit decimal-encoded number after general_tier_flag.
+  EXPECT_TRUE(ParseVVCCodecId("vvc1.1.L0.CQA", &profile, &level_idc));
+  EXPECT_EQ(level_idc, 0);
+  EXPECT_TRUE(ParseVVCCodecId("vvc1.1.L1.CQA", &profile, &level_idc));
+  EXPECT_EQ(level_idc, 1);
+  // Level 3.1 (51 == 3 * 16 + 1 * 3)
+  EXPECT_TRUE(ParseVVCCodecId("vvc1.1.L51.CQA", &profile, &level_idc));
+  EXPECT_EQ(level_idc, 51);
+  // Level 6.2 (102 == 6 * 16 + 2 * 3)
+  EXPECT_TRUE(ParseVVCCodecId("vvc1.1.L102.CYA", &profile, &level_idc));
+  EXPECT_EQ(level_idc, 102);
+  EXPECT_TRUE(ParseVVCCodecId("vvc1.1.L255.CYA", &profile, &level_idc));
+  EXPECT_EQ(level_idc, 255);
+  EXPECT_FALSE(ParseVVCCodecId("vvc1.1.L256.CYA", &profile, &level_idc));
+  EXPECT_FALSE(ParseVVCCodecId("vvc1.1.L999.CQA", &profile, &level_idc));
+  EXPECT_FALSE(ParseVVCCodecId("vvc1.1.L-1.CQA", &profile, &level_idc));
+
+  // constraints string
+  EXPECT_FALSE(ParseVVCCodecId("vvc1.100.L83.C.", &profile, &level_idc));
+  EXPECT_FALSE(ParseVVCCodecId("vvc1.100.L83.2C", &profile, &level_idc));
+
+  // general_sub_profile_idc placement.
+  EXPECT_TRUE(ParseVVCCodecId("vvc1.1.L0.CQA.SF1.O0+3", &profile, &level_idc));
+  EXPECT_TRUE(ParseVVCCodecId("vvc1.1.L0.CQA.SF1", &profile, &level_idc));
+  EXPECT_TRUE(ParseVVCCodecId("vvc1.1.L0.SF1", &profile, &level_idc));
+  EXPECT_FALSE(ParseVVCCodecId("vvc1.1.L0.CQA.SF1.", &profile, &level_idc));
+  EXPECT_TRUE(
+      ParseVVCCodecId("vvc1.1.L0.CQA.SF1+AB.O0+3", &profile, &level_idc));
+  EXPECT_TRUE(
+      ParseVVCCodecId("vvc1.1.L0.CQA.SF1+AB+2B.O0+3", &profile, &level_idc));
+  EXPECT_FALSE(ParseVVCCodecId("vvc1.1.L0.SF1.CQA.O0+3", &profile, &level_idc));
+  EXPECT_FALSE(ParseVVCCodecId("vvc1.1.L0.CQA.O0+3.SF1", &profile, &level_idc));
+  EXPECT_FALSE(ParseVVCCodecId("vvc1.1.L0.CQA.O0+3.S", &profile, &level_idc));
+  EXPECT_FALSE(ParseVVCCodecId("vvc1.1.L0.CQA.O0+3.S.", &profile, &level_idc));
+
+  // OlsIdx & MaxTid
+  EXPECT_TRUE(ParseVVCCodecId("vvc1.1.L0.CQA.O0+3", &profile, &level_idc));
+  EXPECT_TRUE(ParseVVCCodecId("vvc1.1.L0.CQA.O1", &profile, &level_idc));
+  // When MaxTid does not exist, "+" should not be present.
+  EXPECT_FALSE(ParseVVCCodecId("vvc1.1.L0.CQA.O1+", &profile, &level_idc));
+  EXPECT_FALSE(ParseVVCCodecId("vvc1.1.L0.CQA.O", &profile, &level_idc));
+  EXPECT_TRUE(ParseVVCCodecId("vvc1.1.L0.CQA.O+3", &profile, &level_idc));
+
+  EXPECT_FALSE(ParseVVCCodecId("vvc1.1.L83.100", &profile, &level_idc));
+  EXPECT_FALSE(ParseVVCCodecId("vvc1.1.L83.1FF", &profile, &level_idc));
+  EXPECT_FALSE(ParseVVCCodecId("vvc1.1.L83.-1", &profile, &level_idc));
+  EXPECT_FALSE(
+      ParseVVCCodecId("vvc1.1.L0.CQA.SF1.O0+3.100", &profile, &level_idc));
+}
+#endif
+
 #if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
 TEST(ParseDolbyVisionCodecIdTest, InvalidDolbyVisionCodecIds) {
   VideoCodecProfile profile = VIDEO_CODEC_PROFILE_UNKNOWN;

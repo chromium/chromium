@@ -310,10 +310,6 @@ int TestSyncedWindowDelegate::GetTabCount() const {
   return tab_delegates_.size();
 }
 
-int TestSyncedWindowDelegate::GetActiveIndex() const {
-  return 0;
-}
-
 bool TestSyncedWindowDelegate::IsTypeNormal() const {
   return window_type_ == sync_pb::SyncEnums_BrowserType_TYPE_TABBED;
 }

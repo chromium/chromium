@@ -29,6 +29,7 @@
 #include "net/base/transport_info.h"
 #include "net/cert/cert_verifier.h"
 #include "net/cert/ct_policy_enforcer.h"
+#include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_monster.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/disk_cache/disk_cache.h"
@@ -327,7 +328,8 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
       const URLRequest& request) const override;
   bool OnCanSetCookie(const URLRequest& request,
                       const net::CanonicalCookie& cookie,
-                      CookieOptions* options) override;
+                      CookieOptions* options,
+                      CookieInclusionStatus* inclusion_status) override;
   bool OnCancelURLRequestWithPolicyViolatingReferrerHeader(
       const URLRequest& request,
       const GURL& target_url,
@@ -399,7 +401,8 @@ class FilteringTestNetworkDelegate : public TestNetworkDelegate {
 
   bool OnCanSetCookie(const URLRequest& request,
                       const net::CanonicalCookie& cookie,
-                      CookieOptions* options) override;
+                      CookieOptions* options,
+                      CookieInclusionStatus* inclusion_status) override;
 
   void SetCookieFilter(std::string filter) {
     cookie_name_filter_ = std::move(filter);

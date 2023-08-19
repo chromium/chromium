@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 
 namespace blink {
@@ -23,8 +24,8 @@ TEST_F(LayoutNGSVGForeignObjectTest, DivInForeignObject) {
     </svg>
   )HTML");
 
-  const auto& svg = *GetDocument().getElementById("svg");
-  const auto& foreign = *GetDocument().getElementById("foreign");
+  const auto& svg = *GetDocument().getElementById(AtomicString("svg"));
+  const auto& foreign = *GetDocument().getElementById(AtomicString("foreign"));
   const auto& foreign_object = *GetLayoutObjectByElementId("foreign");
   const auto& div = *GetLayoutObjectByElementId("div");
 
@@ -87,11 +88,12 @@ TEST_F(LayoutNGSVGForeignObjectTest, IframeInForeignObject) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  const auto& svg = *GetDocument().getElementById("svg");
-  const auto& foreign = *GetDocument().getElementById("foreign");
+  const auto& svg = *GetDocument().getElementById(AtomicString("svg"));
+  const auto& foreign = *GetDocument().getElementById(AtomicString("foreign"));
   const auto& foreign_object = *GetLayoutObjectByElementId("foreign");
-  const auto& iframe = *GetDocument().getElementById("iframe");
-  const auto& div = *ChildDocument().getElementById("div")->GetLayoutObject();
+  const auto& iframe = *GetDocument().getElementById(AtomicString("iframe"));
+  const auto& div =
+      *ChildDocument().getElementById(AtomicString("div"))->GetLayoutObject();
 
   EXPECT_EQ(gfx::RectF(100, 100, 300, 250), foreign_object.ObjectBoundingBox());
   EXPECT_EQ(AffineTransform(), foreign_object.LocalSVGTransform());
@@ -149,10 +151,10 @@ TEST_F(LayoutNGSVGForeignObjectTest, HitTestZoomedForeignObject) {
     </svg>
   )HTML");
 
-  const auto& svg = *GetDocument().getElementById("svg");
-  const auto& foreign = *GetDocument().getElementById("foreign");
+  const auto& svg = *GetDocument().getElementById(AtomicString("svg"));
+  const auto& foreign = *GetDocument().getElementById(AtomicString("foreign"));
   const auto& foreign_object = *GetLayoutObjectByElementId("foreign");
-  const auto& div = *GetDocument().getElementById("div");
+  const auto& div = *GetDocument().getElementById(AtomicString("div"));
 
   EXPECT_EQ(gfx::RectF(10, 10, 100, 150), foreign_object.ObjectBoundingBox());
   EXPECT_EQ(AffineTransform(), foreign_object.LocalSVGTransform());
@@ -214,9 +216,9 @@ TEST_F(LayoutNGSVGForeignObjectTest, HitTestViewBoxForeignObject) {
     </svg>
   )HTML");
 
-  const auto& svg = *GetDocument().getElementById("svg");
-  const auto& foreign = *GetDocument().getElementById("foreign");
-  const auto& div = *GetDocument().getElementById("div");
+  const auto& svg = *GetDocument().getElementById(AtomicString("svg"));
+  const auto& foreign = *GetDocument().getElementById(AtomicString("foreign"));
+  const auto& div = *GetDocument().getElementById(AtomicString("div"));
 
   // LocalToAncestorPoint
   EXPECT_EQ(
@@ -260,8 +262,9 @@ TEST_F(LayoutNGSVGForeignObjectTest, HitTestUnderClipPath) {
     </svg>
   )HTML");
 
-  const auto& svg = *GetDocument().getElementById("svg");
-  const auto& foreignObject = *GetDocument().getElementById("foreignObject");
+  const auto& svg = *GetDocument().getElementById(AtomicString("svg"));
+  const auto& foreignObject =
+      *GetDocument().getElementById(AtomicString("foreignObject"));
 
   // The fist and the third return |svg| because the circle clip-path
   // clips out the foreignObject.
@@ -287,9 +290,10 @@ TEST_F(LayoutNGSVGForeignObjectTest,
     </svg>
   )HTML");
 
-  const auto& svg = *GetDocument().getElementById("svg");
-  const auto& target = *GetDocument().getElementById("target");
-  const auto& foreignObject = *GetDocument().getElementById("foreignObject");
+  const auto& svg = *GetDocument().getElementById(AtomicString("svg"));
+  const auto& target = *GetDocument().getElementById(AtomicString("target"));
+  const auto& foreignObject =
+      *GetDocument().getElementById(AtomicString("foreignObject"));
 
   EXPECT_EQ(svg, GetDocument().ElementFromPoint(1, 1));
   EXPECT_EQ(foreignObject, GetDocument().ElementFromPoint(201, 201));
@@ -321,9 +325,10 @@ TEST_F(LayoutNGSVGForeignObjectTest,
     </svg>
   )HTML");
 
-  const auto& svg = *GetDocument().getElementById("svg");
-  const auto& target = *GetDocument().getElementById("target");
-  const auto& foreign_object = *GetDocument().getElementById("foreignObject");
+  const auto& svg = *GetDocument().getElementById(AtomicString("svg"));
+  const auto& target = *GetDocument().getElementById(AtomicString("target"));
+  const auto& foreign_object =
+      *GetDocument().getElementById(AtomicString("foreignObject"));
 
   EXPECT_EQ(svg, GetDocument().ElementFromPoint(1, 1));
   EXPECT_EQ(foreign_object, GetDocument().ElementFromPoint(231, 201));
@@ -355,8 +360,8 @@ TEST_F(LayoutNGSVGForeignObjectTest, HitTestUnderScrollingAncestor) {
     </div>
   )HTML");
 
-  auto& scroller = *GetDocument().getElementById("scroller");
-  const auto& target = *GetDocument().getElementById("target");
+  auto& scroller = *GetDocument().getElementById(AtomicString("scroller"));
+  const auto& target = *GetDocument().getElementById(AtomicString("target"));
 
   EXPECT_EQ(target, GetDocument().ElementFromPoint(450, 450));
 
@@ -391,10 +396,10 @@ TEST_F(LayoutNGSVGForeignObjectTest, BBoxPropagationZoomed) {
   ASSERT_EQ(target.StyleRef().EffectiveZoom(), 2);
 
   EXPECT_EQ(target.ObjectBoundingBox(), gfx::RectF(6, 5, 100, 50));
-  EXPECT_EQ(target.StrokeBoundingBox(), gfx::RectF(12, 10, 200, 100));
+  EXPECT_EQ(target.DecoratedBoundingBox(), gfx::RectF(12, 10, 200, 100));
   const auto& parent_g = *target.Parent();
   EXPECT_EQ(parent_g.ObjectBoundingBox(), gfx::RectF(6, 5, 100, 50));
-  EXPECT_EQ(parent_g.StrokeBoundingBox(), gfx::RectF(6, 5, 100, 50));
+  EXPECT_EQ(parent_g.DecoratedBoundingBox(), gfx::RectF(6, 5, 100, 50));
 }
 
 // crbug.com/1335655
@@ -404,7 +409,8 @@ TEST_F(LayoutNGSVGForeignObjectTest, SetNeedsCollectInlines) {
   UpdateAllLifecyclePhasesForTest();
 
   auto* target = GetElementById("target");
-  target->setAttribute("unicode-bidi", "bidi-override");
+  target->setAttribute(svg_names::kUnicodeBidiAttr,
+                       AtomicString("bidi-override"));
   GetDocument().body()->innerText();
   // Pass if no crash.
 }
@@ -424,11 +430,15 @@ TEST_F(LayoutNGSVGForeignObjectTest, SubtreeLayoutCrash) {
 <svg><pattern id="pat"></pattern>
 </svg>)HTML");
   UpdateAllLifecyclePhasesForTest();
-  GetElementById("in-foreign")->setAttribute("style", "display: inline-block");
+  GetElementById("in-foreign")
+      ->setAttribute(svg_names::kStyleAttr,
+                     AtomicString("display: inline-block"));
   UpdateAllLifecyclePhasesForTest();
-  GetElementById("pat")->setAttribute("viewBox", "972 815 1088 675");
+  GetElementById("pat")->setAttribute(svg_names::kViewBoxAttr,
+                                      AtomicString("972 815 1088 675"));
   UpdateAllLifecyclePhasesForTest();
-  GetElementById("sibling-div")->setAttribute("style", "display: none");
+  GetElementById("sibling-div")
+      ->setAttribute(svg_names::kStyleAttr, AtomicString("display: none"));
   UpdateAllLifecyclePhasesForTest();
   // Pass if no crashes.
 }
@@ -455,7 +465,8 @@ TEST_F(LayoutNGSVGForeignObjectTest, ZoomChangesInvalidatePaintProperties) {
 
   // Update zoom and ensure the foreign object is marked as needing a paint
   // property update prior to updating paint properties.
-  GetDocument().documentElement()->setAttribute("style", "zoom: 2");
+  GetDocument().documentElement()->setAttribute(svg_names::kStyleAttr,
+                                                AtomicString("zoom: 2"));
   GetDocument().View()->UpdateLifecycleToLayoutClean(
       DocumentUpdateReason::kTest);
   EXPECT_TRUE(foreign->NeedsPaintPropertyUpdate());
@@ -486,6 +497,24 @@ foreignObject {
   GetLayoutBoxByElementId("foreign")->SetChildNeedsLayout();
   UpdateAllLifecyclePhasesForTest();
   // Pass if no DCHECK failures.
+}
+
+TEST_F(LayoutNGSVGForeignObjectTest, LocalToAncestorPoint) {
+  SetBodyInnerHTML(R"HTML(
+<style>body { margin:0; }</style>
+<div style="height:3px"></div>
+<svg width="200" height="100">
+<foreignObject id="foreign" width="200" height="100">
+<body xmlns="http://www.w3.org/1999/xhtml">
+<div style="height:17px"></div>
+<div id="target">b</div>
+</body>
+</foreignObject>
+</svg>)HTML");
+  LayoutObject* target = GetLayoutObjectByElementId("target");
+  LayoutBox* foreign = GetLayoutBoxByElementId("foreign");
+  EXPECT_NE(target->LocalToAbsolutePoint(PhysicalOffset()),
+            target->LocalToAncestorPoint(PhysicalOffset(), foreign));
 }
 
 }  // namespace blink

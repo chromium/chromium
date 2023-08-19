@@ -14,8 +14,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace ash {
-namespace eche_app {
+namespace ash::eche_app {
 
 extern const char kJsonDeviceNameKey[];
 extern const char kJsonBoardNameKey[];
@@ -24,6 +23,8 @@ extern const char kJsonWifiConnectionStateKey[];
 extern const char kJsonDebugModeKey[];
 extern const char kJsonGaiaIdKey[];
 extern const char kJsonDeviceTypeKey[];
+extern const char kJsonOsVersionKey[];
+extern const char kJsonChannelKey[];
 extern const char kJsonMeasureLatencyKey[];
 extern const char kJsonSendStartSignalingKey[];
 extern const char kJsonDisableStunServerKey[];
@@ -105,7 +106,6 @@ class SystemInfoProvider
   chromeos::network_config::mojom::ConnectionStateType wifi_connection_state_;
 };
 
-}  // namespace eche_app
-}  // namespace ash
+}  // namespace ash::eche_app
 
 #endif  // ASH_WEBUI_ECHE_APP_UI_SYSTEM_INFO_PROVIDER_H_

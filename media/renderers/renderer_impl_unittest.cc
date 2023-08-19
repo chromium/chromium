@@ -384,6 +384,12 @@ class RendererImplTest : public ::testing::Test {
   bool is_cdm_set_ = false;
 };
 
+TEST_F(RendererImplTest, NoStreams) {
+  // Ensure initialization without streams fails and doesn't crash.
+  EXPECT_CALL(*demuxer_, GetAllStreams()).WillRepeatedly(Return(streams_));
+  InitializeAndExpect(PIPELINE_ERROR_COULD_NOT_RENDER);
+}
+
 TEST_F(RendererImplTest, Destroy_BeforeInitialize) {
   Destroy();
 }

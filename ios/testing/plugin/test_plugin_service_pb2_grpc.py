@@ -29,6 +29,11 @@ class TestPluginServiceStub(object):
                 request_serializer=test__plugin__service__pb2.TestCaseDidFailRequest.SerializeToString,
                 response_deserializer=test__plugin__service__pb2.TestCaseDidFailResponse.FromString,
                 )
+        self.TestBundleWillFinish = channel.unary_unary(
+                '/ios_test_plugin.TestPluginService/TestBundleWillFinish',
+                request_serializer=test__plugin__service__pb2.TestBundleWillFinishRequest.SerializeToString,
+                response_deserializer=test__plugin__service__pb2.TestBundleWillFinishResponse.FromString,
+                )
         self.ListEnabledPlugins = channel.unary_unary(
                 '/ios_test_plugin.TestPluginService/ListEnabledPlugins',
                 request_serializer=test__plugin__service__pb2.ListEnabledPluginsRequest.SerializeToString,
@@ -60,6 +65,13 @@ class TestPluginServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def TestBundleWillFinish(self, request, context):
+        """API to signal the plugin service that the test bundle is about to finish
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def ListEnabledPlugins(self, request, context):
         """API to check on what plugins are enabled for the current test run
         """
@@ -84,6 +96,11 @@ def add_TestPluginServiceServicer_to_server(servicer, server):
                     servicer.TestCaseDidFail,
                     request_deserializer=test__plugin__service__pb2.TestCaseDidFailRequest.FromString,
                     response_serializer=test__plugin__service__pb2.TestCaseDidFailResponse.SerializeToString,
+            ),
+            'TestBundleWillFinish': grpc.unary_unary_rpc_method_handler(
+                    servicer.TestBundleWillFinish,
+                    request_deserializer=test__plugin__service__pb2.TestBundleWillFinishRequest.FromString,
+                    response_serializer=test__plugin__service__pb2.TestBundleWillFinishResponse.SerializeToString,
             ),
             'ListEnabledPlugins': grpc.unary_unary_rpc_method_handler(
                     servicer.ListEnabledPlugins,
@@ -148,6 +165,23 @@ class TestPluginService(object):
         return grpc.experimental.unary_unary(request, target, '/ios_test_plugin.TestPluginService/TestCaseDidFail',
             test__plugin__service__pb2.TestCaseDidFailRequest.SerializeToString,
             test__plugin__service__pb2.TestCaseDidFailResponse.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def TestBundleWillFinish(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/ios_test_plugin.TestPluginService/TestBundleWillFinish',
+            test__plugin__service__pb2.TestBundleWillFinishRequest.SerializeToString,
+            test__plugin__service__pb2.TestBundleWillFinishResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 

@@ -48,7 +48,6 @@ class BruschettaAppsTest : public testing::Test,
     registry_ =
         guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_.get());
     scoped_feature_list_.InitAndEnableFeature(ash::features::kBruschetta);
-    bruschetta::BruschettaServiceFactory::EnableForTesting(profile_.get());
     const guest_os::GuestId id(bruschetta::kBruschettaVmName, "test_container");
     guest_os::GuestOsSessionTracker::GetForProfile(profile_.get())
         ->AddGuestForTesting(id);
@@ -59,8 +58,9 @@ class BruschettaAppsTest : public testing::Test,
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<AppServiceProxy> app_service_proxy_ = nullptr;
-  raw_ptr<guest_os::GuestOsRegistryService> registry_ = nullptr;
+  raw_ptr<AppServiceProxy, DanglingUntriaged> app_service_proxy_ = nullptr;
+  raw_ptr<guest_os::GuestOsRegistryService, DanglingUntriaged> registry_ =
+      nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

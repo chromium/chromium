@@ -4,7 +4,9 @@ Version: Unknown
 Revision: 946a7d39d4ffe08676c755b21d901e71d9904a3b
 InfoURL: http://developers.google.com/closure/library
 License: Apache 2.0
+License File: LICENSE
 Security Critical: Yes
+Shipped: yes
 
 Description:
 Closure Library is a powerful, low level JavaScript library designed

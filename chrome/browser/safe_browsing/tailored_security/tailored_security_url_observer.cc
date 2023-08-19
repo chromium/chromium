@@ -8,13 +8,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/tailored_security/notification_handler_desktop.h"
 #include "chrome/browser/safe_browsing/tailored_security/tailored_security_service_factory.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service.h"
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service_observer_util.h"
 #include "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/render_widget_host_view.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -55,11 +54,12 @@ void TailoredSecurityUrlObserver::OnTailoredSecurityBitChanged(
     base::Time previous_update) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(profile);
   if (!enabled || !CanShowUnconsentedTailoredSecurityDialog(
-                      identity_manager, profile->GetPrefs()))
+                      sync_service, profile->GetPrefs())) {
     return;
+  }
 
   profile->GetPrefs()->SetBoolean(
       prefs::kAccountTailoredSecurityShownNotification, true);
@@ -117,10 +117,9 @@ void TailoredSecurityUrlObserver::UpdateFocusAndURL(bool focused,
                                                     const GURL& url) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-
-  if (!CanShowUnconsentedTailoredSecurityDialog(identity_manager,
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(profile);
+  if (!CanShowUnconsentedTailoredSecurityDialog(sync_service,
                                                 profile->GetPrefs())) {
     return;
   }

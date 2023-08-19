@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/sparse_histogram.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_number_conversions.h"
@@ -86,24 +87,29 @@ scoped_refptr<ExternalMetrics> ExternalMetrics::CreateForTesting(
   return external_metrics;
 }
 
-void ExternalMetrics::RecordActionUI(const std::string& action_string) {
-  base::RecordComputedAction(action_string);
+void ExternalMetrics::RecordActionUI(const std::string& action_string,
+                                     int num_samples) {
+  for (int i = 0; i < num_samples; ++i) {
+    base::RecordComputedAction(action_string);
+  }
 }
 
-void ExternalMetrics::RecordAction(const std::string& action) {
+void ExternalMetrics::RecordAction(const metrics::MetricSample& sample) {
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&ExternalMetrics::RecordActionUI, this,
+                                sample.name(), sample.num_samples()));
+}
+
+void ExternalMetrics::RecordCrashUI(const std::string& crash_kind,
+                                    int num_samples) {
+  ChromeOSMetricsProvider::LogCrash(crash_kind, num_samples);
+}
+
+void ExternalMetrics::RecordCrash(const metrics::MetricSample& crash_sample) {
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&ExternalMetrics::RecordActionUI, this, action));
-}
-
-void ExternalMetrics::RecordCrashUI(const std::string& crash_kind) {
-  ChromeOSMetricsProvider::LogCrash(crash_kind);
-}
-
-void ExternalMetrics::RecordCrash(const std::string& crash_kind) {
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ExternalMetrics::RecordCrashUI, this, crash_kind));
+      base::BindOnce(&ExternalMetrics::RecordCrashUI, this, crash_sample.name(),
+                     crash_sample.num_samples()));
 }
 
 void ExternalMetrics::RecordHistogram(const metrics::MetricSample& sample) {
@@ -114,8 +120,12 @@ void ExternalMetrics::RecordHistogram(const metrics::MetricSample& sample) {
     return;
   }
 
-  base::UmaHistogramCustomCounts(sample.name(), sample.sample(), sample.min(),
-                                 sample.max(), sample.bucket_count());
+  // We don't use base::UmaHistogramCustomCounts here because it doesn't support
+  // AddCount.
+  base::HistogramBase* histogram = base::Histogram::FactoryGet(
+      sample.name(), sample.min(), sample.max(), sample.bucket_count(),
+      base::HistogramBase::kUmaTargetedHistogramFlag);
+  histogram->AddCount(sample.sample(), sample.num_samples());
 }
 
 void ExternalMetrics::RecordLinearHistogram(
@@ -125,7 +135,12 @@ void ExternalMetrics::RecordLinearHistogram(
     DLOG(ERROR) << "Invalid linear histogram: " << sample.name();
     return;
   }
-  base::UmaHistogramExactLinear(sample.name(), sample.sample(), sample.max());
+  // We don't use base::UmaHistogramExactLinear because it doesn't support
+  // AddCount.
+  base::HistogramBase* histogram = base::LinearHistogram::FactoryGet(
+      sample.name(), 1, sample.max(), static_cast<size_t>(sample.max() + 1),
+      base::HistogramBase::kUmaTargetedHistogramFlag);
+  histogram->AddCount(sample.sample(), sample.num_samples());
 }
 
 void ExternalMetrics::RecordSparseHistogram(
@@ -133,13 +148,19 @@ void ExternalMetrics::RecordSparseHistogram(
   CHECK_EQ(metrics::MetricSample::SPARSE_HISTOGRAM, sample.type());
   // We suspect a chromeos process reports a metric as regular and then later as
   // a sparse enum histogram. See https://crbug.com/1173221
-  base::HistogramBase* histogram =
-      base::StatisticsRecorder::FindHistogram(sample.name());
-  if (histogram && histogram->GetHistogramType() != base::SPARSE_HISTOGRAM) {
-    LOG(FATAL) << "crbug.com/1173221 name " << sample.name() << " "
-               << sample.ToString();
+  {
+    base::HistogramBase* histogram =
+        base::StatisticsRecorder::FindHistogram(sample.name());
+    if (histogram && histogram->GetHistogramType() != base::SPARSE_HISTOGRAM) {
+      LOG(FATAL) << "crbug.com/1173221 name " << sample.name() << " "
+                 << sample.ToString();
+    }
   }
-  base::UmaHistogramSparse(sample.name(), sample.sample());
+
+  // We don't use base::UmaHistogramSparse because it doesn't support AddCount.
+  base::HistogramBase* histogram = base::SparseHistogram::FactoryGet(
+      sample.name(), base::HistogramBase::kUmaTargetedHistogramFlag);
+  histogram->AddCount(sample.sample(), sample.num_samples());
 }
 
 int ExternalMetrics::CollectEvents() {
@@ -147,17 +168,20 @@ int ExternalMetrics::CollectEvents() {
   metrics::SerializationUtils::ReadAndTruncateMetricsFromFile(uma_events_file_,
                                                               &samples);
 
+  int cumulative_num_samples = 0;
   for (auto it = samples.begin(); it != samples.end(); ++it) {
     const metrics::MetricSample& sample = **it;
+
+    cumulative_num_samples += sample.num_samples();
 
     // Do not use the UMA_HISTOGRAM_... macros here.  They cache the Histogram
     // instance and thus only work if |sample.name()| is constant.
     switch (sample.type()) {
       case metrics::MetricSample::CRASH:
-        RecordCrash(sample.name());
+        RecordCrash(sample);
         break;
       case metrics::MetricSample::USER_ACTION:
-        RecordAction(sample.name());
+        RecordAction(sample);
         break;
       case metrics::MetricSample::HISTOGRAM:
         RecordHistogram(sample);
@@ -171,7 +195,7 @@ int ExternalMetrics::CollectEvents() {
     }
   }
 
-  return samples.size();
+  return cumulative_num_samples;
 }
 
 void ExternalMetrics::CollectEventsAndReschedule() {

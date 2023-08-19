@@ -23,7 +23,6 @@ assertInterpolation({
   from: 'initial',
   to: '20dppx 200dppx',
 }, [
-  {at: -0.3, is: '46dppx 460dppx'},
   {at: 0, is: '40dppx 400dppx'},
   {at: 0.5, is: '30dppx 300dppx'},
   {at: 1, is: '20dppx 200dppx'},
@@ -35,7 +34,6 @@ assertInterpolation({
   from: 'inherit',
   to: '20dppx 200dppx',
 }, [
-  {at: -0.3, is: '33dppx 330dppx'},
   {at: 0, is: '30dppx 300dppx'},
   {at: 0.5, is: '25dppx 250dppx'},
   {at: 1, is: '20dppx 200dppx'},
@@ -47,7 +45,6 @@ assertInterpolation({
   from: 'unset',
   to: '20dppx 200dppx',
 }, [
-  {at: -0.3, is: '46dppx 460dppx'},
   {at: 0, is: '40dppx 400dppx'},
   {at: 0.5, is: '30dppx 300dppx'},
   {at: 1, is: '20dppx 200dppx'},
@@ -56,22 +53,9 @@ assertInterpolation({
 
 assertInterpolation({
   property: '--resolution-list',
-  from: '-10dppx -100dppx',
-  to: '10dppx 100dppx',
-}, [
-  {at: -0.3, is: '-16dppx -160dppx'},
-  {at: 0, is: '-10dppx -100dppx'},
-  {at: 0.5, is: '0dppx 0dppx'},
-  {at: 1, is: '10dppx 100dppx'},
-  {at: 1.5, is: '20dppx 200dppx'}
-]); 
-
-assertInterpolation({
-  property: '--resolution-list',
   from: '10dppx',
   to: '100dppx',
 }, [
-  {at: -0.3, is: '-17dppx'},
   {at: 0, is: '10dppx'},
   {at: 0.5, is: '55dppx'},
   {at: 1, is: '100dppx'},
@@ -83,7 +67,6 @@ assertInterpolation({
   from: '96dpi 192dpi',
   to: '2dppx 2dppx',
 }, [
-  {at: -0.3, is: '0.7dppx 2dppx'},
   {at: 0, is: '1dppx 2dppx'},
   {at: 0.5, is: '1.5dppx 2dppx'},
   {at: 1, is: '2dppx 2dppx'},
@@ -95,7 +78,6 @@ assertInterpolation({
   from: neutralKeyframe,
   to: '20dppx 200dppx',
 }, [
-  {at: -0.3, is: '7dppx 70dppx'},
   {at: 0, is: '10dppx 100dppx'},
   {at: 0.5, is: '15dppx 150dppx'},
   {at: 1, is: '20dppx 200dppx'},
@@ -108,7 +90,6 @@ assertComposition({
   addFrom: '10dppx 140dppx',
   addTo: '110dppx 40dppx',
 }, [
-  {at: -0.3, is: '30dppx 230dppx'},
   {at: 0, is: '60dppx 200dppx'},
   {at: 0.5, is: '110dppx 150dppx'},
   {at: 1, is: '160dppx 100dppx'},
@@ -121,11 +102,9 @@ assertComposition({
   addFrom: '10dppx 140dppx',
   replaceTo: '110dppx 40dppx',
 }, [
-  {at: -0.3, is: '45dppx 248dppx'},
   {at: 0, is: '60dppx 200dppx'},
   {at: 0.5, is: '85dppx 120dppx'},
   {at: 1, is: '110dppx 40dppx'},
-  {at: 1.5, is: '135dppx -40dppx'},
 ]);
 
 </script>

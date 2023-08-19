@@ -145,9 +145,9 @@ class TestAXNodeWrapper : public AXPlatformNodeDelegate {
   bool ShouldIgnoreHoveredStateForTesting() override;
   const ui::AXUniqueId& GetUniqueId() const override;
   bool HasVisibleCaretOrSelection() const override;
-  std::set<AXPlatformNode*> GetSourceNodesForReverseRelations(
+  std::vector<AXPlatformNode*> GetSourceNodesForReverseRelations(
       ax::mojom::IntAttribute attr) override;
-  std::set<AXPlatformNode*> GetSourceNodesForReverseRelations(
+  std::vector<AXPlatformNode*> GetSourceNodesForReverseRelations(
       ax::mojom::IntListAttribute attr) override;
   bool IsOrderedSetItem() const override;
   bool IsOrderedSet() const override;
@@ -196,7 +196,7 @@ class TestAXNodeWrapper : public AXPlatformNodeDelegate {
   AXOffscreenResult DetermineOffscreenResult(gfx::RectF bounds) const;
 
   raw_ptr<AXTree> tree_;
-  raw_ptr<AXNode> node_;
+  raw_ptr<AXNode, DanglingUntriaged> node_;
   ui::AXUniqueId unique_id_;
   raw_ptr<AXPlatformNode> platform_node_;
   gfx::AcceleratedWidget native_event_target_;

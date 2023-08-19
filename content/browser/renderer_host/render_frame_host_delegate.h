@@ -92,6 +92,10 @@ class ScreenOrientation;
 }
 }  // namespace device
 
+namespace network::mojom {
+class SharedDictionaryAccessDetails;
+}  // namespace network::mojom
+
 namespace ui {
 class ClipboardFormatType;
 }
@@ -214,6 +218,11 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   virtual void DidReceiveUserActivation(
       RenderFrameHostImpl* render_frame_host) {}
 
+  // Called when a RenderFrameHost gets a successful web authn assertion
+  // request.
+  virtual void WebAuthnAssertionRequestSucceeded(
+      RenderFrameHostImpl* render_frame_host) {}
+
   // Binds a DisplayCutoutHost object associated to |render_frame_host|.
   virtual void BindDisplayCutoutHost(
       RenderFrameHostImpl* render_frame_host,
@@ -323,6 +332,17 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
       RenderFrameHostImpl* rfh,
       bool is_fullscreen,
       blink::mojom::FullscreenOptionsPtr options);
+
+#if defined(USE_AURA)
+  // Request to maximize window.
+  virtual void Maximize() {}
+
+  // Request to minimize window.
+  virtual void Minimize() {}
+
+  // Request to restore window.
+  virtual void Restore() {}
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
   // Updates information to determine whether a user gesture should carryover to
@@ -592,6 +612,9 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
 
   virtual void OnTrustTokensAccessed(RenderFrameHostImpl* render_frame_host,
                                      const TrustTokenAccessDetails& details) {}
+  virtual void OnSharedDictionaryAccessed(
+      RenderFrameHostImpl* render_frame_host,
+      const network::mojom::SharedDictionaryAccessDetails& details) {}
 
   // Notified that the renderer responded after calling GetSavableResourceLinks.
   virtual void SavableResourceLinksResponse(

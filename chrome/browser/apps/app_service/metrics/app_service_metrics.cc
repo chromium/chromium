@@ -253,14 +253,6 @@ void RecordBuiltInAppSearchResult(const std::string& app_id) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-void RecordAppsPerNotification(int count) {
-  if (count <= 0) {
-    return;
-  }
-  base::UmaHistogramBoolean("ChromeOS.Apps.NumberOfAppsForNotification",
-                            (count > 1));
-}
-
 const absl::optional<apps::DefaultAppName> PreinstalledWebAppIdToName(
     const std::string& app_id) {
   if (app_id == web_app::kCalculatorAppId) {
@@ -329,7 +321,7 @@ const absl::optional<apps::DefaultAppName> SystemWebAppIdToName(
     return apps::DefaultAppName::kSettings;
   } else if (app_id == web_app::kPrintManagementAppId) {
     return apps::DefaultAppName::kPrintManagementApp;
-  } else if (app_id == ash::kChromeUITrustedProjectorSwaAppId) {
+  } else if (app_id == ash::kChromeUIUntrustedProjectorSwaAppId) {
     return apps::DefaultAppName::kProjector;
   } else if (app_id == web_app::kScanningAppId) {
     return apps::DefaultAppName::kScanningApp;

@@ -10,15 +10,15 @@
 import '//resources/cr_elements/cr_shared_style.css.js';
 import './bluetooth_icon.js';
 
+import {assertNotReached} from '//resources/ash/common/assert.js';
 import {FocusRowBehavior} from '//resources/ash/common/focus_row_behavior.js';
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
-import {assertNotReached} from '//resources/ash/common/assert.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {BluetoothDeviceProperties, DeviceType} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 
 import {getTemplate} from './bluetooth_pairing_device_item.html.js';
 import {DeviceItemState} from './bluetooth_types.js';
-import {mojoString16ToString} from './bluetooth_utils.js';
 
 /**
  * @constructor

@@ -20,6 +20,7 @@
 #include "chrome/browser/apps/app_service/app_icon/app_icon_writer.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_base.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
+#include "chrome/browser/apps/app_service/package_id.h"
 #include "chrome/browser/apps/app_service/paused_apps.h"
 #include "chrome/browser/apps/app_service/publisher_host.h"
 #include "chrome/browser/apps/app_service/subscriber_crosapi.h"
@@ -30,6 +31,7 @@
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/cpp/preferred_app.h"
+#include "components/services/app_service/public/cpp/shortcut/shortcut.h"
 #include "ui/gfx/native_widget_types.h"
 
 // Avoid including this header file directly or referring directly to
@@ -51,8 +53,11 @@ class AppPlatformMetricsService;
 class InstanceRegistryUpdater;
 class BrowserAppInstanceRegistry;
 class BrowserAppInstanceTracker;
+class PackageId;
 class PromiseAppRegistryCache;
 class PromiseAppService;
+class ShortcutPublisher;
+class ShortcutRegistryCache;
 class UninstallDialog;
 
 struct PromiseApp;
@@ -152,6 +157,28 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
 
   // Add or update a promise app in the Promise App Registry Cache.
   void OnPromiseApp(PromiseAppPtr delta);
+
+  // Retrieves the icon for a promise app and applies any specified effects.
+  void LoadPromiseIcon(const PackageId& package_id,
+                       int32_t size_hint_in_dip,
+                       IconEffects icon_effects,
+                       apps::LoadIconCallback callback);
+
+  // Registers `publisher` with the App Service as exclusively publishing
+  // shortcut to app type `app_type`. `publisher` must have a lifetime equal to
+  // or longer than this object.
+  void RegisterShortcutPublisher(AppType app_type,
+                                 ShortcutPublisher* publisher);
+
+  // Get pointer to the Shortcut Registry Cache which holds all shortcuts.
+  // May return a nullptr if this cache doesn't exist.
+  apps::ShortcutRegistryCache* ShortcutRegistryCache();
+
+  // Launches shortcut with `id` in it's parent app. `display_id` contains the
+  // id of the display from which the shortcut will be launched.
+  // display::kInvalidDisplayId means that the default display for new windows
+  // will be used. See `display::Screen` for details.
+  void LaunchShortcut(const ShortcutId& id, int64_t display_id);
 
  private:
   // For access to Initialize.
@@ -285,6 +312,7 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
                        int32_t size_in_dip,
                        IconEffects icon_effects,
                        IconType icon_type,
+                       int default_icon_resource_id,
                        LoadIconCallback callback,
                        bool install_success);
 
@@ -299,6 +327,8 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
       const apps::IntentPtr& intent,
       const apps::IntentFilterPtr& filter,
       const apps::AppUpdate& update) override;
+
+  ShortcutPublisher* GetShortcutPublisher(AppType app_type);
 
   raw_ptr<SubscriberCrosapi, ExperimentalAsh> crosapi_subscriber_ = nullptr;
 
@@ -348,11 +378,19 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
                           apps::InstanceRegistry::Observer>
       instance_registry_observer_{this};
 
+  base::ScopedObservation<apps::AppRegistryCache,
+                          apps::AppRegistryCache::Observer>
+      app_registry_cache_observer_{this};
+
   // A list to record outstanding launch callbacks. When the first member
   // returns true, the second member should be run and the pair can be removed
   // from the outstanding callback queue.
   std::list<std::pair<base::RepeatingCallback<bool(void)>, base::OnceClosure>>
       callback_list_;
+
+  base::flat_map<AppType, ShortcutPublisher*> shortcut_publishers_;
+
+  std::unique_ptr<apps::ShortcutRegistryCache> shortcut_registry_cache_;
 
   base::WeakPtrFactory<AppServiceProxyAsh> weak_ptr_factory_{this};
 };

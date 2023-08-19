@@ -23,7 +23,7 @@ TEST_F(ClipPathClipperTest, ClipPathBoundingBoxClamped) {
   absl::optional<gfx::RectF> bounding_box =
       ClipPathClipper::LocalClipPathBoundingBox(object);
   ASSERT_TRUE(bounding_box.has_value());
-  EXPECT_EQ(gfx::RectF(LayoutRect::InfiniteIntRect()), *bounding_box);
+  EXPECT_EQ(gfx::RectF(InfiniteIntRect()), *bounding_box);
 }
 
 }  // unnamed namespace

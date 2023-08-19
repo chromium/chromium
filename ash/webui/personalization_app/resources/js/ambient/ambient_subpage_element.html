@@ -1,7 +1,4 @@
 <style include="common">
-  :host {
-    flex-grow: 1;
-  }
   #container {
     display: grid;
     grid-template-areas:
@@ -13,11 +10,12 @@
   }
   :host-context(body.jelly-enabled) #container {
     grid-template-areas:
-      '. leftspacertop    preview rightspacertop    .'
-      '. leftspacerbottom content rightspacerbottom .';
-    grid-template-columns: 1fr 16px minmax(568px, 920px) 16px 1fr;
+      'leftspacertop    preview rightspacertop   '
+      'leftspacerbottom content rightspacerbottom';
+    grid-template-columns: minmax(16px, 1fr) minmax(568px, 920px) minmax(16px, 1fr);
     grid-template-rows: auto minmax(0, 1fr);
     margin-block-end: 0;
+    min-height: var(--personalization-app-subpage-container-min-height);
   }
   #mainSettings {
     display: flex;
@@ -27,6 +25,10 @@
   toggle-row,
   #toggleRowPlaceholder {
     margin: 0 8px;
+  }
+  ambient-duration,
+  #durationPlaceholder {
+    margin-bottom: 13px;
   }
   .ambient-toggle-label-placeholder {
     height: 20px;
@@ -124,6 +126,18 @@
               </div>
             </div>
           </div>
+          <template is="dom-if" if="[[isScreenSaverDurationEnabled_]]">
+            <div id="durationPlaceholder">
+              <div class="ambient-toggle-row">
+                <h3 class="ambient-subpage-element-title" aria-hidden="true">
+                  $i18n{ambientModeDurationTitle}
+                </h3>
+                <div class="ambient-secondary-text-placeholder placeholder"></div>
+              </div>
+              <div class="ambient-secondary-text-placeholder placeholder duration-description">
+              </div>
+            </div>
+          </template>
           <div id="animationThemePlaceholder">
             <h3 id="animationTitle" class="ambient-subpage-element-title" aria-hidden="true">
               $i18n{ambientModeAnimationTitle}
@@ -166,6 +180,10 @@
         <template is="dom-if" if="[[!loading_]]">
           <toggle-row id="ambientToggleRow"></toggle-row>
           <template is="dom-if" if="[[ambientModeEnabled_]]">
+            <template is="dom-if" if="[[isScreenSaverDurationEnabled_]]">
+              <ambient-duration duration="[[duration_]]">
+              </ambient-duration>
+            </template>
             <animation-theme-list
                 selected-animation-theme="[[animationTheme_]]">
             </animation-theme-list>
@@ -176,10 +194,6 @@
             <ambient-weather-unit
                 selected-temperature-unit="[[temperatureUnitToString_(temperatureUnit_)]]">
             </ambient-weather-unit>
-            <template is="dom-if" if="[[isScreenSaverDurationEnabled_]]">
-              <duration-list duration="[[duration_]]">
-              </duration-list>
-            </template>
           </template>
         </template>
       </div>

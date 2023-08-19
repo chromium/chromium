@@ -6,6 +6,7 @@ package org.chromium.android_webview;
 
 import android.content.SharedPreferences;
 
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.net.GURLUtils;
 
 import java.util.HashSet;
@@ -16,8 +17,8 @@ import java.util.Set;
  *
  * Callbacks are posted on the UI thread.
  */
+@Lifetime.Profile
 public final class AwGeolocationPermissions {
-
     private static final String PREF_PREFIX =
             "AwGeolocationPermissions%";
     private final SharedPreferences mSharedPreferences;

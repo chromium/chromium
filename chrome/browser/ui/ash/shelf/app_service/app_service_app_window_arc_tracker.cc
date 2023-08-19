@@ -487,7 +487,7 @@ void AppServiceAppWindowArcTracker::AttachControllerToWindow(
   if (task_id.has_value())
     AttachControllerToTask(*task_id);
   else if (session_id.has_value())
-    AttachControllerToSession(*session_id);
+    AttachControllerToSession(*session_id, *info);
 
   if (!info->task_hidden_from_shelf())
     app_service_controller_->AddWindowToShelf(window, shelf_id);
@@ -586,12 +586,15 @@ void AppServiceAppWindowArcTracker::AttachControllerToTask(int task_id) {
   app_shelf_group_to_controller_map_[app_shelf_id] = item_controller;
 }
 
-void AppServiceAppWindowArcTracker::AttachControllerToSession(int session_id) {
-  ArcAppWindowInfo* const app_window_info =
-      session_id_to_arc_app_window_info_[session_id].get();
-  CHECK(app_window_info);
-
-  const arc::ArcAppShelfId& app_shelf_id = app_window_info->app_shelf_id();
+void AppServiceAppWindowArcTracker::AttachControllerToSession(
+    int session_id,
+    const ArcAppWindowInfo& app_window_info) {
+  // Pass the ArcAppWindowInfo as the parameter, since in some case the window
+  // is the task window but still associated with session id due to async issue.
+  // In that case, we cannot use the info from the
+  // `session_id_to_arc_app_window_info_` directly.
+  // TODO(b/274950968): Add a test for this case.
+  const arc::ArcAppShelfId& app_shelf_id = app_window_info.app_shelf_id();
   if (base::Contains(app_shelf_group_to_controller_map_, app_shelf_id)) {
     app_shelf_group_to_controller_map_[app_shelf_id]->AddSessionId(session_id);
     return;

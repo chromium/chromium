@@ -4,7 +4,7 @@
 
 #include "headless/lib/renderer/headless_print_render_frame_helper_delegate.h"
 #include "base/command_line.h"
-#include "headless/public/switches.h"
+#include "components/headless/command_handler/headless_command_switches.h"
 #include "third_party/blink/public/web/web_element.h"
 
 namespace headless {
@@ -25,6 +25,10 @@ bool HeadlessPrintRenderFrameHelperDelegate::IsPrintPreviewEnabled() {
 }
 
 bool HeadlessPrintRenderFrameHelperDelegate::ShouldGenerateTaggedPDF() {
+  // This is not necessary for --print-to-pdf command handling, however
+  // preserved for backward compatibility with clients that use headless_shell
+  // PDF printing via CDP Page.printToPDF without relying on its
+  // 'generateTaggedPDF' option.
   return !base::CommandLine::ForCurrentProcess()->HasSwitch(
       headless::switches::kDisablePDFTagging);
 }

@@ -424,26 +424,28 @@ VpxVideoDecoder::AlphaDecodeStatus VpxVideoDecoder::DecodeAlphaPlane(
     const struct vpx_image** vpx_image_alpha,
     const DecoderBuffer* buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!vpx_codec_alpha_ || buffer->side_data_size() < 8) {
+  if (!vpx_codec_alpha_ || !buffer->has_side_data() ||
+      buffer->side_data()->alpha_data.size() < 8) {
     return kAlphaPlaneProcessed;
   }
 
   // First 8 bytes of side data is |side_data_id| in big endian.
-  const uint64_t side_data_id = base::NetToHost64(
-      *(reinterpret_cast<const uint64_t*>(buffer->side_data())));
+  const uint64_t side_data_id =
+      base::NetToHost64(*(reinterpret_cast<const uint64_t*>(
+          buffer->side_data()->alpha_data.data())));
   if (side_data_id != 1) {
     return kAlphaPlaneProcessed;
   }
 
-  // Try and decode buffer->side_data() minus the first 8 bytes as a full
+  // Try and decode buffer->raw_side_data() minus the first 8 bytes as a full
   // frame.
   {
     TRACE_EVENT1("media", "vpx_codec_decode_alpha", "buffer",
                  buffer->AsHumanReadableString());
-    vpx_codec_err_t status =
-        vpx_codec_decode(vpx_codec_alpha_.get(), buffer->side_data() + 8,
-                         buffer->side_data_size() - 8, nullptr /* user_priv */,
-                         0 /* deadline */);
+    vpx_codec_err_t status = vpx_codec_decode(
+        vpx_codec_alpha_.get(), buffer->side_data()->alpha_data.data() + 8,
+        buffer->side_data()->alpha_data.size() - 8, nullptr /* user_priv */,
+        0 /* deadline */);
     if (status != VPX_CODEC_OK) {
       DLOG(ERROR) << "vpx_codec_decode() failed for the alpha: "
                   << vpx_codec_error(vpx_codec_.get());

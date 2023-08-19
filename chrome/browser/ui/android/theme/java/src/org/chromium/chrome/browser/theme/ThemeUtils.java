@@ -29,7 +29,6 @@ import org.chromium.ui.util.ColorUtils;
  * Utility methods for theme colors.
  */
 public class ThemeUtils {
-    private static final String TAG = "ThemeUtils";
     private static final float LOCATION_BAR_TRANSPARENT_BACKGROUND_ALPHA = 0.2f;
 
     /**

@@ -15,6 +15,7 @@
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/notreached.h"
+#include "base/rand_util.h"
 #include "base/scoped_native_library.h"
 #include "base/win/access_token.h"
 #include "base/win/windows_version.h"
@@ -22,7 +23,6 @@
 #include "sandbox/win/src/interception.h"
 #include "sandbox/win/src/nt_internals.h"
 #include "sandbox/win/src/restricted_token_utils.h"
-#include "sandbox/win/src/sandbox_rand.h"
 #include "sandbox/win/src/win_utils.h"
 
 // These are missing in 10.0.19551.0 but are in 10.0.19041.0 and 10.0.20226.0.
@@ -547,12 +547,11 @@ bool ApplyProcessMitigationsToSuspendedProcess(HANDLE process,
 // This is a hack to fake a weak bottom-up ASLR on 32-bit Windows.
 #if !defined(_WIN64)
   if (flags & MITIGATION_BOTTOM_UP_ASLR) {
-    unsigned int limit;
-    GetRandom(&limit);
     char* ptr = 0;
     const size_t kMask64k = 0xFFFF;
     // Random range (512k-16.5mb) in 64k steps.
-    const char* end = ptr + ((((limit % 16384) + 512) * 1024) & ~kMask64k);
+    auto limit = static_cast<unsigned int>(base::RandInt(512, 512 + 16384 - 1));
+    const char* end = ptr + ((limit * 1024) & ~kMask64k);
     while (ptr < end) {
       MEMORY_BASIC_INFORMATION memory_info;
       if (!::VirtualQueryEx(process, ptr, &memory_info, sizeof(memory_info)))

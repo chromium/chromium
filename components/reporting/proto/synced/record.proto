@@ -42,6 +42,30 @@ message Record {
   // for uploader to be able to re-enqueue it.
   // Note that this field is cleared while enqueuing the event.
   optional bool needs_local_unencrypted_copy = 6;
+
+  // Additional metadata about the source enqueueing the record.
+  optional SourceInfo source_info = 7;
+}
+
+// Source metadata used to identify the source that enqueues a given record.
+// Especially useful when there are multiple sources that can enqueue similar
+// records.
+message SourceInfo {
+  enum Source {
+    SOURCE_UNSPECIFIED = 0;
+
+    // Ash browser.
+    ASH = 1;
+
+    // Lacros browser.
+    LACROS = 2;
+  }
+
+  // Source enqueueing the record (required).
+  optional Source source = 1;
+
+  // Version metadata about the source.
+  optional string source_version = 2;
 }
 
 // A Record with it's digest and the digest of the previous record.

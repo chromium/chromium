@@ -22,7 +22,7 @@
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_timing_details_map.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
-#include "components/viz/common/gpu/context_provider.h"
+#include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/hit_test/hit_test_region_list.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "gpu/command_buffer/common/mailbox.h"
@@ -43,7 +43,7 @@ class TestFrameSinkImpl;
 // Slim implementation of FrameSink.
 // * Owns mojo interfaces to viz and responsible for submitting frames and
 //   issuing BeginFrame to client.
-// * Owns ContextProvider.
+// * Owns context provider.
 // * Listen and respond to context loss or GPU process crashes.
 // * Manage uploading UIResource.
 class COMPONENT_EXPORT(CC_SLIM) FrameSinkImpl
@@ -54,7 +54,7 @@ class COMPONENT_EXPORT(CC_SLIM) FrameSinkImpl
  public:
   ~FrameSinkImpl() override;
 
-  viz::ContextProvider* context_provider() const {
+  viz::RasterContextProvider* context_provider() const {
     return context_provider_.get();
   }
   void SetLocalSurfaceId(const viz::LocalSurfaceId& local_surface_id);
@@ -115,7 +115,7 @@ class COMPONENT_EXPORT(CC_SLIM) FrameSinkImpl
                     compositor_frame_sink_associated_remote,
                 mojo::PendingReceiver<viz::mojom::CompositorFrameSinkClient>
                     client_receiver,
-                scoped_refptr<viz::ContextProvider> context_provider,
+                scoped_refptr<viz::RasterContextProvider> context_provider,
                 base::PlatformThreadId io_thread_id,
                 std::unique_ptr<Scheduler> scheduler);
 
@@ -138,7 +138,7 @@ class COMPONENT_EXPORT(CC_SLIM) FrameSinkImpl
   raw_ptr<viz::mojom::CompositorFrameSink, DanglingUntriaged> frame_sink_ =
       nullptr;
   mojo::Receiver<viz::mojom::CompositorFrameSinkClient> client_receiver_{this};
-  scoped_refptr<viz::ContextProvider> context_provider_;
+  scoped_refptr<viz::RasterContextProvider> context_provider_;
   raw_ptr<FrameSinkImplClient> client_ = nullptr;
   viz::LocalSurfaceId local_surface_id_;
 

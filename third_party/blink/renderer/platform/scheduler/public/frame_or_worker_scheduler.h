@@ -19,6 +19,15 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
+namespace {
+
+// Maximum number of back/forward cache blocking details to send to the browser.
+// As long as this is a small number, we don't have to worry about the cost of
+// linear searches of the vector.
+constexpr size_t kMaxNumberOfBackForwardCacheBlockingDetails = 10;
+
+}  // namespace
+
 namespace blink {
 class FrameScheduler;
 class WebSchedulingTaskQueue;
@@ -91,8 +100,33 @@ class PLATFORM_EXPORT FrameOrWorkerScheduler {
     base::WeakPtr<FrameOrWorkerScheduler> scheduler_;
   };
 
-  using BFCacheBlockingFeatureAndLocations =
-      WTF::Vector<FeatureAndJSLocationBlockingBFCache>;
+  // A struct to wrap a vector of `FeatureAndJSLocationBlockingBFCache`.
+  struct BFCacheBlockingFeatureAndLocations {
+    void MaybeAdd(FeatureAndJSLocationBlockingBFCache details) {
+      // Only add `details` when the same one does not exist already in the
+      // `details_list` and when the size of the `details_list` is less than
+      // `kMaxNumberOfBackForwardCacheBlockingDetails` to avoid sending a big
+      // mojo message.
+      if (details_list.Find(details) == kNotFound &&
+          details_list.size() < kMaxNumberOfBackForwardCacheBlockingDetails) {
+        details_list.push_back(details);
+      }
+    }
+    void Erase(FeatureAndJSLocationBlockingBFCache details) {
+      wtf_size_t index = details_list.Find(details);
+      // Because we avoid duplicates and set a limit, the details might not be
+      // found.
+      if (index != kNotFound) {
+        details_list.EraseAt(index);
+      }
+    }
+    void Clear() { details_list.clear(); }
+    bool operator==(BFCacheBlockingFeatureAndLocations& other) {
+      return details_list == other.details_list;
+    }
+
+    WTF::Vector<FeatureAndJSLocationBlockingBFCache> details_list;
+  };
 
   class PLATFORM_EXPORT Delegate {
    public:
@@ -100,17 +134,13 @@ class PLATFORM_EXPORT FrameOrWorkerScheduler {
         FrameOrWorkerScheduler::BFCacheBlockingFeatureAndLocations;
 
     struct BlockingDetails {
-      // TODO(crbug.com/1366675): Remove features_mask.
-      uint64_t feature_mask;
       const BFCacheBlockingFeatureAndLocations&
           non_sticky_features_and_js_locations;
       const BFCacheBlockingFeatureAndLocations&
           sticky_features_and_js_locations;
-      BlockingDetails(uint64_t mask,
-                      BFCacheBlockingFeatureAndLocations& non_sticky,
+      BlockingDetails(BFCacheBlockingFeatureAndLocations& non_sticky,
                       BFCacheBlockingFeatureAndLocations& sticky)
-          : feature_mask(mask),
-            non_sticky_features_and_js_locations(non_sticky),
+          : non_sticky_features_and_js_locations(non_sticky),
             sticky_features_and_js_locations(sticky) {}
     };
     virtual ~Delegate() = default;

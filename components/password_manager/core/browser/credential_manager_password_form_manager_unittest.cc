@@ -160,6 +160,7 @@ TEST_F(CredentialManagerPasswordFormManagerTest, UpdatePasswordCredentialAPI) {
   // different password from already saved one.
   PasswordForm saved_match = form_to_save_;
   saved_match.password_value += u"1";
+  saved_match.match_type = PasswordForm::MatchType::kExact;
 
   std::unique_ptr<CredentialManagerPasswordFormManager> form_manager =
       CreateFormManager(form_to_save_);

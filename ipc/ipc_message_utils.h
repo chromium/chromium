@@ -21,7 +21,6 @@
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
-#include "base/containers/stack_container.h"
 #include "base/files/file.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -34,6 +33,7 @@
 #include "build/build_config.h"
 #include "ipc/ipc_buildflags.h"
 #include "ipc/ipc_param_traits.h"
+#include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -858,34 +858,39 @@ struct ParamTraits<std::tuple<Args...>> {
 };
 
 template <class P, size_t stack_capacity>
-struct ParamTraits<base::StackVector<P, stack_capacity> > {
-  typedef base::StackVector<P, stack_capacity> param_type;
+struct ParamTraits<absl::InlinedVector<P, stack_capacity>> {
+  typedef absl::InlinedVector<P, stack_capacity> param_type;
   static void Write(base::Pickle* m, const param_type& p) {
-    WriteParam(m, base::checked_cast<int>(p->size()));
-    for (size_t i = 0; i < p->size(); i++)
+    WriteParam(m, base::checked_cast<int>(p.size()));
+    for (size_t i = 0; i < p.size(); i++) {
       WriteParam(m, p[i]);
+    }
   }
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r) {
     size_t size;
-    if (!iter->ReadLength(&size))
+    if (!iter->ReadLength(&size)) {
       return false;
+    }
     // Sanity check for the vector size.
-    if (size > INT_MAX / sizeof(P))
+    if (size > INT_MAX / sizeof(P)) {
       return false;
+    }
     P value;
     for (size_t i = 0; i < size; i++) {
-      if (!ReadParam(m, iter, &value))
+      if (!ReadParam(m, iter, &value)) {
         return false;
-      (*r)->push_back(value);
+      }
+      r->push_back(value);
     }
     return true;
   }
   static void Log(const param_type& p, std::string* l) {
-    for (size_t i = 0; i < p->size(); ++i) {
-      if (i != 0)
+    for (size_t i = 0; i < p.size(); ++i) {
+      if (i != 0) {
         l->append(" ");
+      }
       LogParam((p[i]), l);
     }
   }

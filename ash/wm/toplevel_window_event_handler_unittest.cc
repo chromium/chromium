@@ -1101,15 +1101,7 @@ TEST_F(ToplevelWindowEventHandlerTest, DragSnappedWindowToExternalDisplay) {
 
   // Drag the window to the secondary display.
   ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow(), w1.get());
-  // To determine the state, WindowWorkspaceResizer determines the display by
-  // checking the CursorManager for the correct display. EventGenerator does not
-  // update the display in the CursorManager, so we manually do it here.
-  // TODO(crbug.com/990589): Unit tests should be able to simulate mouse input
-  // without having to call |CursorManager::SetDisplay|.
-  const gfx::Point drag_location = gfx::Point(472, -462);
-  Shell::Get()->cursor_manager()->SetDisplay(
-      display::Screen::GetScreen()->GetDisplayNearestPoint(drag_location));
-  generator.DragMouseTo(drag_location);
+  generator.DragMouseTo(472, -462);
 
   // Expect the window is no longer snapped and its size was restored to the
   // initial size.

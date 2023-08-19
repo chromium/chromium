@@ -4,18 +4,14 @@
 
 #import "ios/chrome/browser/ui/settings/autofill/autofill_edit_table_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
-#import "base/mac/foundation_util.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/autofill/cells/autofill_edit_item.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_chromium_text_data.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_edit_table_view_controller+protected.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 @interface AutofillEditTableViewController () <FormInputAccessoryViewDelegate> {
   TableViewTextEditCell* _currentEditingCell;
@@ -141,7 +137,7 @@
   TableViewTextEditCell* settingsCell = nil;
   for (UIView* view = textField; view; view = [view superview]) {
     TableViewTextEditCell* cell =
-        base::mac::ObjCCast<TableViewTextEditCell>(view);
+        base::apple::ObjCCast<TableViewTextEditCell>(view);
     if (cell) {
       settingsCell = cell;
       break;
@@ -205,7 +201,7 @@
 
   if (nextCellPath) {
     TableViewTextEditCell* nextCell =
-        base::mac::ObjCCastStrict<TableViewTextEditCell>(
+        base::apple::ObjCCastStrict<TableViewTextEditCell>(
             [self.tableView cellForRowAtIndexPath:nextCellPath]);
     [nextCell.textField becomeFirstResponder];
   } else {

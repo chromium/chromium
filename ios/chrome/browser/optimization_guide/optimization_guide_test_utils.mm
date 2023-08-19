@@ -9,10 +9,6 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "testing/gtest/include/gtest/gtest.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 void RetryForHistogramUntilCountReached(
     const base::HistogramTester* histogram_tester,
     const std::string& histogram_name,

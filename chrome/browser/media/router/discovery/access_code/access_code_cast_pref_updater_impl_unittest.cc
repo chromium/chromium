@@ -23,7 +23,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/preferences/public/cpp/dictionary_value_update.h"
-#include "services/preferences/public/cpp/scoped_pref_update.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media_router {
@@ -223,55 +222,6 @@ TEST_F(AccessCodeCastPrefUpdaterImplTest, TestClearDeviceAddedTimeDict) {
         device_added_time_dict.GetCallback());
     EXPECT_TRUE(device_added_time_dict.Get().empty());
   }
-}
-
-TEST_F(AccessCodeCastPrefUpdaterImplTest, TestGetMatchingIPEndPoints) {
-  MediaSinkInternal cast_sink = CreateCastSink(1);
-  MediaSinkInternal cast_sink2 = CreateCastSink(2);
-  base::Value::Dict devices_dict;
-  devices_dict.Set(cast_sink.id(),
-                   CreateValueDictFromMediaSinkInternal(cast_sink));
-
-  EXPECT_FALSE(AccessCodeCastPrefUpdater::GetMatchingIPEndPoints(
-                   devices_dict, cast_sink2.cast_data().ip_endpoint)
-                   .size());
-  EXPECT_EQ(AccessCodeCastPrefUpdater::GetMatchingIPEndPoints(
-                devices_dict, cast_sink.cast_data().ip_endpoint)
-                .size(),
-            1u);
-  EXPECT_EQ(AccessCodeCastPrefUpdater::GetMatchingIPEndPoints(
-                devices_dict, cast_sink.cast_data().ip_endpoint)
-                .front(),
-            cast_sink.sink().id());
-}
-
-TEST_F(AccessCodeCastPrefUpdaterImplTest,
-       TestGetMatchingIPEndPointsIdenticalIPs) {
-  MediaSinkInternal cast_sink = CreateCastSink(1);
-  MediaSinkInternal cast_sink2 = CreateCastSink(2);
-  MediaSinkInternal cast_sink3 = CreateCastSink(3);
-
-  // Set the ip_endpoint of cast_sink2 to the ip_endpoint of cast_sink.
-  cast_sink2.set_cast_data(cast_sink.cast_data());
-
-  base::Value::Dict devices_dict;
-  devices_dict.Set(cast_sink.id(),
-                   CreateValueDictFromMediaSinkInternal(cast_sink));
-  devices_dict.Set(cast_sink2.id(),
-                   CreateValueDictFromMediaSinkInternal(cast_sink2));
-  devices_dict.Set(cast_sink3.id(),
-                   CreateValueDictFromMediaSinkInternal(cast_sink3));
-
-  std::vector<MediaSink::Id> expected_vector{cast_sink.sink().id(),
-                                             cast_sink2.sink().id()};
-
-  EXPECT_EQ(AccessCodeCastPrefUpdater::GetMatchingIPEndPoints(
-                devices_dict, cast_sink.cast_data().ip_endpoint)
-                .size(),
-            2u);
-  EXPECT_EQ(AccessCodeCastPrefUpdater::GetMatchingIPEndPoints(
-                devices_dict, cast_sink.cast_data().ip_endpoint),
-            expected_vector);
 }
 
 TEST_F(AccessCodeCastPrefUpdaterImplTest, TestUpdateDevicesDictIdenticalIPs) {

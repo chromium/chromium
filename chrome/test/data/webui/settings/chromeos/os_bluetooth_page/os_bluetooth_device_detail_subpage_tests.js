@@ -10,7 +10,7 @@ import {AudioOutputCapability, BluetoothSystemProperties, DeviceConnectionState,
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {createDefaultBluetoothDevice, FakeBluetoothConfig} from 'chrome://webui-test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
-import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {TestOsBluetoothDevicesSubpageBrowserProxy} from './test_os_bluetooth_subpage_browser_proxy.js';
@@ -308,7 +308,116 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     assertTrue(!!getTrueWirelessImages());
   });
 
+  test(
+      'Show change settings row, and navigate to subpages w/ no per-device settings',
+      async function() {
+        loadTimeData.overrideValues({
+          enableInputDeviceSettingsSplit: false,
+        });
+
+        init();
+        bluetoothConfig.setBluetoothEnabledState(/*enabled=*/ true);
+
+        const getChangeMouseSettings = () =>
+            bluetoothDeviceDetailPage.shadowRoot.querySelector(
+                '#changeMouseSettings');
+        const getChangeKeyboardSettings = () =>
+            bluetoothDeviceDetailPage.shadowRoot.querySelector(
+                '#changeKeyboardSettings');
+
+        const device1 = createDefaultBluetoothDevice(
+            /*id=*/ '12//345&6789',
+            /*publicName=*/ 'BeatsX',
+            /*connectionState=*/
+            DeviceConnectionState.kConnected,
+            /*opt_nickname=*/ 'device1',
+            /*opt_audioCapability=*/
+            AudioOutputCapability.kCapableOfAudioOutput,
+            /*opt_deviceType=*/ DeviceType.kMouse);
+
+        bluetoothConfig.appendToPairedDeviceList([device1]);
+        await flushAsync();
+
+        const params = new URLSearchParams();
+        params.append('id', '12//345&6789');
+        Router.getInstance().navigateTo(routes.BLUETOOTH_DEVICE_DETAIL, params);
+
+        device1.deviceProperties.connectionState =
+            DeviceConnectionState.kNotConnected;
+        bluetoothConfig.updatePairedDevice(device1);
+        await flushAsync();
+        assertFalse(!!getChangeMouseSettings());
+
+        device1.deviceProperties.connectionState =
+            DeviceConnectionState.kConnected;
+        bluetoothConfig.updatePairedDevice(device1);
+        await flushAsync();
+        assertTrue(!!getChangeMouseSettings());
+
+        getChangeMouseSettings().click();
+        await flushAsync();
+
+        assertEquals(Router.getInstance().currentRoute, routes.POINTERS);
+
+        // Navigate back to the detail page.
+        assertNotEquals(
+            getChangeMouseSettings(),
+            bluetoothDeviceDetailPage.shadowRoot.activeElement);
+        let windowPopstatePromise = eventToPromise('popstate', window);
+        Router.getInstance().navigateToPreviousRoute();
+        await windowPopstatePromise;
+        await waitAfterNextRender(bluetoothDeviceDetailPage);
+
+        assertTrue(bluetoothDeviceDetailPage.getIsDeviceConnectedForTest());
+        // Check that |#changeMouseSettings| has been focused.
+        assertEquals(
+            getChangeMouseSettings(),
+            bluetoothDeviceDetailPage.shadowRoot.activeElement);
+
+        device1.deviceProperties.deviceType = DeviceType.kKeyboard;
+        bluetoothConfig.updatePairedDevice(device1);
+
+        await flushAsync();
+        assertFalse(!!getChangeMouseSettings());
+        assertTrue(!!getChangeKeyboardSettings());
+
+        device1.deviceProperties.connectionState =
+            DeviceConnectionState.kNotConnected;
+        bluetoothConfig.updatePairedDevice(device1);
+        await flushAsync();
+        assertFalse(!!getChangeKeyboardSettings());
+
+        device1.deviceProperties.connectionState =
+            DeviceConnectionState.kConnected;
+        bluetoothConfig.updatePairedDevice(device1);
+        await flushAsync();
+        assertTrue(!!getChangeKeyboardSettings());
+
+        getChangeKeyboardSettings().click();
+        await flushAsync();
+
+        assertEquals(Router.getInstance().currentRoute, routes.KEYBOARD);
+
+        // Navigate back to the detail page.
+        assertNotEquals(
+            getChangeKeyboardSettings(),
+            bluetoothDeviceDetailPage.shadowRoot.activeElement);
+        windowPopstatePromise = eventToPromise('popstate', window);
+        Router.getInstance().navigateToPreviousRoute();
+        await windowPopstatePromise;
+        await waitAfterNextRender(bluetoothDeviceDetailPage);
+
+        // This is needed or other tests will fail.
+        // TODO(gordonseto): Figure out how to remove this.
+        getChangeKeyboardSettings().click();
+        await flushAsync();
+      });
+
   test('Show change settings row, and navigate to subpages', async function() {
+    loadTimeData.overrideValues({
+      enableInputDeviceSettingsSplit: true,
+    });
+
     init();
     bluetoothConfig.setBluetoothEnabledState(/*enabled=*/ true);
 
@@ -362,7 +471,7 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     getChangeMouseSettings().click();
     await flushAsync();
 
-    assertEquals(Router.getInstance().currentRoute, routes.POINTERS);
+    assertEquals(Router.getInstance().currentRoute, routes.PER_DEVICE_MOUSE);
 
     // Navigate back to the detail page.
     assertNotEquals(
@@ -371,7 +480,7 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     let windowPopstatePromise = eventToPromise('popstate', window);
     Router.getInstance().navigateToPreviousRoute();
     await windowPopstatePromise;
-    await waitBeforeNextRender(bluetoothDeviceDetailPage);
+    await waitAfterNextRender(bluetoothDeviceDetailPage);
 
     assertTrue(bluetoothDeviceDetailPage.getIsDeviceConnectedForTest());
     // Check that |#changeMouseSettings| has been focused.
@@ -400,7 +509,7 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     getChangeKeyboardSettings().click();
     await flushAsync();
 
-    assertEquals(Router.getInstance().currentRoute, routes.KEYBOARD);
+    assertEquals(Router.getInstance().currentRoute, routes.PER_DEVICE_KEYBOARD);
 
     // Navigate back to the detail page.
     assertNotEquals(
@@ -409,7 +518,7 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     windowPopstatePromise = eventToPromise('popstate', window);
     Router.getInstance().navigateToPreviousRoute();
     await windowPopstatePromise;
-    await waitBeforeNextRender(bluetoothDeviceDetailPage);
+    await waitAfterNextRender(bluetoothDeviceDetailPage);
 
     assertTrue(bluetoothDeviceDetailPage.getIsDeviceConnectedForTest());
     // Check that |#changeKeyboardSettings| has been focused.

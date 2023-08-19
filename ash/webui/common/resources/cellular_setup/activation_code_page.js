@@ -101,6 +101,14 @@ Polymer({
     },
 
     /**
+     * Indicates no profiles were found while scanning.
+     */
+    showNoProfilesFound: {
+      type: Boolean,
+      notify: true,
+    },
+
+    /**
      * Enum used as an ID for specific UI elements.
      * A UiElement is passed between html and JS for
      * certain UI elements to determine their state.
@@ -633,7 +641,13 @@ Polymer({
    */
   getDescription_() {
     if (!this.isScanningAvailable_()) {
-      return this.i18n('scanQRCodeEnterActivationCode');
+      if (this.showNoProfilesFound) {
+        return this.i18n('enterActivationCodeNoProfilesFound');
+      }
+      return this.i18n('enterActivationCode');
+    }
+    if (this.showNoProfilesFound) {
+      return this.i18n('scanQRCodeNoProfilesFound');
     }
     return this.i18n('scanQRCode');
   },

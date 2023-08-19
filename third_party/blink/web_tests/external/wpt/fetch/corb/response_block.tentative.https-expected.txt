@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+PASS ORB: Expect error response from <script> fetch.
+FAIL ORB: Expect error response from fetch(). assert_equals: expected "ORB-style network error" but got "Resource loaded (expected for CORB)"
+Harness: the test ran to completion.
+

@@ -12,6 +12,7 @@
 #include "base/containers/adapters.h"
 #include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
 #include "cc/base/region.h"
 #include "cc/slim/frame_data.h"
 #include "cc/slim/frame_sink_impl.h"
@@ -95,16 +96,15 @@ void LayerTreeImpl::SetViewportRectAndScale(
     const gfx::Rect& device_viewport_rect,
     float device_scale_factor,
     const viz::LocalSurfaceId& local_surface_id) {
+  bool id_updated =
+      local_surface_id_allocator_.UpdateFromParent(local_surface_id);
   if (device_viewport_rect_ == device_viewport_rect &&
-      device_scale_factor_ == device_scale_factor &&
-      local_surface_id_ == local_surface_id) {
+      device_scale_factor_ == device_scale_factor && !id_updated) {
     return;
   }
-  if (local_surface_id_ != local_surface_id) {
-    local_surface_id_ = local_surface_id;
-    if (frame_sink_) {
-      frame_sink_->SetLocalSurfaceId(local_surface_id);
-    }
+  if (frame_sink_) {
+    frame_sink_->SetLocalSurfaceId(
+        local_surface_id_allocator_.GetCurrentLocalSurfaceId());
   }
 
   device_viewport_rect_ = device_viewport_rect;
@@ -235,8 +235,10 @@ void LayerTreeImpl::SetFrameSink(std::unique_ptr<FrameSink> sink) {
     return;
   }
   frame_sink_request_pending_ = false;
-  if (local_surface_id_.is_valid()) {
-    frame_sink_->SetLocalSurfaceId(local_surface_id_);
+  if (local_surface_id_allocator_.GetCurrentLocalSurfaceId().is_valid()) {
+    local_surface_id_allocator_.GenerateId();
+    frame_sink_->SetLocalSurfaceId(
+        local_surface_id_allocator_.GetCurrentLocalSurfaceId());
   }
   client_->DidInitializeLayerTreeFrameSink();
   ui_resource_manager_.RecreateUIResources();
@@ -440,10 +442,14 @@ void LayerTreeImpl::GenerateCompositorFrame(
     viz::CompositorFrame& out_frame,
     base::flat_set<viz::ResourceId>& out_resource_ids,
     viz::HitTestRegionList& out_hit_test_region_list) {
-  TRACE_EVENT_WITH_FLOW1("viz,benchmark", "Graphics.Pipeline",
-                         TRACE_ID_GLOBAL(args.trace_id),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
-                         "step", "GenerateCompositorFrame");
+  TRACE_EVENT(
+      "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
+      perfetto::Flow::Global(args.trace_id), [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_chrome_graphics_pipeline();
+        data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
+                           StepName::STEP_GENERATE_COMPOSITOR_FRAME);
+      });
 
   for (auto& resource_request :
        ui_resource_manager_.TakeUIResourcesRequests()) {

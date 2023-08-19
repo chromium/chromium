@@ -2,4 +2,14 @@ In accessibility, the following should be a progress indicator:
 
 X
 
-This test PASSES in DumpRenderTree. The value is 5, the minValue is 0, and the max value is 10.
+X
+
+X
+
+X
+
+The slider1 test PASSES in DumpRenderTree. The value is 5, the minValue is 0, and the max value is 10.
+The slider2 test PASSES in DumpRenderTree. The value is 3, the minValue is 0, and the max value is 10.
+The slider3 test PASSES in DumpRenderTree. The value is 7, the minValue is 7, and the max value is 10.
+The slider4 test PASSES in DumpRenderTree. The value is 3, the minValue is 0, and the max value is 3.
+

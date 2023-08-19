@@ -7,9 +7,9 @@
 #import <AppKit/AppKit.h>
 #include <Carbon/Carbon.h>
 
+#include "base/apple/foundation_util.h"
 #include "base/check.h"
 #include "base/feature_list.h"
-#include "base/mac/foundation_util.h"
 #include "base/no_destructor.h"
 #include "build/buildflag.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -23,10 +23,6 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_code_conversion_mac.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 

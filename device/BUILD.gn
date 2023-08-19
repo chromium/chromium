@@ -18,34 +18,6 @@ if (is_mac) {
 
 is_linux_without_udev = (is_linux || is_chromeos) && !use_udev
 
-if (is_mac) {
-  # TODO(https://crbug.com/1280317): Merge back into device_unittests once all
-  # .mm files are ARCed.
-  source_set("device_unittests_arc") {
-    testonly = true
-    sources = [
-      "fido/mac/authenticator_unittest.mm",
-      "fido/mac/browsing_data_deletion_unittest.mm",
-      "fido/mac/credential_store_unittest.mm",
-      "fido/mac/get_assertion_operation_unittest_mac.mm",
-      "fido/mac/icloud_keychain_unittest.mm",
-      "fido/mac/make_credential_operation_unittest_mac.mm",
-    ]
-    configs += [ "//build/config/compiler:enable_arc" ]
-    deps = [
-      "//base/test:test_support",
-      "//device/base:base",
-      "//device/fido",
-      "//device/fido:icloud_keychain_test_support",
-      "//device/fido:mocks",
-      "//device/fido:test_support",
-      "//services/data_decoder/public/cpp:test_support",
-    ]
-
-    data_deps = [ "fido/strings:fido_test_strings" ]
-  }
-}
-
 test("device_unittests") {
   sources = [
     "base/synchronization/one_writer_seqlock_unittest.cc",
@@ -170,10 +142,6 @@ test("device_unittests") {
     "//url",
   ]
 
-  if (is_mac) {
-    deps += [ ":device_unittests_arc" ]
-  }
-
   data_deps = [
     "bluetooth/strings:bluetooth_test_strings",
     "//testing/buildbot/filters:device_unittests_filters",
@@ -232,6 +200,10 @@ test("device_unittests") {
       "//services/data_decoder/public/cpp:test_support",
     ]
 
+    if (is_chromeos_lacros) {
+      deps += [ "//chromeos/startup" ]
+    }
+
     if (is_mac) {
       data_deps += [ "fido/strings:fido_test_strings" ]
     }
@@ -239,11 +211,16 @@ test("device_unittests") {
 
   if (is_mac) {
     sources += [
-      # TODO(https://crbug.com/1280317): Put the fido/mac/*.mm files from
-      # device_unittests_arc back here.
+      "fido/mac/authenticator_unittest.mm",
+      "fido/mac/browsing_data_deletion_unittest.mm",
       "fido/mac/credential_metadata_unittest.cc",
+      "fido/mac/credential_store_unittest.mm",
+      "fido/mac/get_assertion_operation_unittest_mac.mm",
+      "fido/mac/icloud_keychain_unittest.mm",
+      "fido/mac/make_credential_operation_unittest_mac.mm",
       "fido/mac/util_unittest.cc",
     ]
+    deps += [ "//device/fido:icloud_keychain_test_support" ]
   }
 
   if (is_win) {
@@ -293,7 +270,11 @@ test("device_unittests") {
     ]
     deps += [ "//chromeos/constants" ]
     if (is_chromeos_ash) {
-      deps += [ "//ash/constants" ]
+      deps += [
+        "//ash/constants",
+        "//chromeos/ash/services/nearby/public/cpp/",
+        "//chromeos/ash/services/secure_channel/public/cpp/shared",
+      ]
     }
     if (is_chromeos_lacros) {
       deps += [ "//chromeos/lacros:test_support" ]
@@ -322,6 +303,7 @@ test("device_unittests") {
       "bluetooth/floss/floss_admin_client_unittest.cc",
       "bluetooth/floss/floss_advertiser_client_unittest.cc",
       "bluetooth/floss/floss_battery_manager_client_unittest.cc",
+      "bluetooth/floss/floss_bluetooth_telephony_client_unittest.cc",
       "bluetooth/floss/floss_dbus_client_unittest.cc",
       "bluetooth/floss/floss_gatt_manager_client_unittest.cc",
       "bluetooth/floss/floss_lescan_client_unittest.cc",
@@ -499,7 +481,7 @@ if (is_android) {
 
   android_library("bluetooth_test_java") {
     testonly = true
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
     sources = bluetooth_java_sources_needing_jni
     deps = [
       "//base:base_java",
@@ -510,7 +492,10 @@ if (is_android) {
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
 
-    srcjar_deps = [ ":bluetooth_test_javagen" ]
+    srcjar_deps = [
+      ":bluetooth_test_javagen",
+      ":bluetooth_test_jni_headers",
+    ]
   }
 
   robolectric_binary("device_junit_tests") {
@@ -534,5 +519,32 @@ if (is_android) {
 
   java_cpp_enum("bluetooth_test_javagen") {
     sources = [ "bluetooth/test/bluetooth_test.h" ]
+  }
+}
+
+if (is_win || is_linux || is_mac) {
+  test("passkey_enclave") {
+    testonly = true
+    sources = [ "fido/enclave/test/passkey_enclave.cc" ]
+
+    deps = [
+      "//base",
+      "//build/win:default_exe_manifest",
+      "//device/fido:enclave_service",
+      "//device/fido:fido",
+    ]
+  }
+
+  test("passkey_enclave_client") {
+    testonly = true
+    sources = [ "fido/enclave/test/passkey_enclave_client.cc" ]
+
+    deps = [
+      "//base",
+      "//build/win:default_exe_manifest",
+      "//components/sync/protocol:protocol",
+      "//device/fido",
+      "//net",
+    ]
   }
 }

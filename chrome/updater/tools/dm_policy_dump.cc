@@ -5,7 +5,6 @@
 #include <iostream>
 #include <memory>
 #include <string>
-#
 
 #include "base/base64.h"
 #include "base/files/file_enumerator.h"
@@ -206,15 +205,15 @@ void PrintPolicies() {
     }
   }
   std::cout << "-------------------------------------------------" << std::endl;
-  base::FileEnumerator e(storage->policy_cache_folder(), false,
-                         base::FileEnumerator::DIRECTORIES);
   std::cout << "Downloaded policy types:" << std::endl;
-  for (base::FilePath name = e.Next(); !name.empty(); name = e.Next()) {
-    std::string policy_type;
-    if (base::Base64Decode(name.BaseName().MaybeAsASCII(), &policy_type)) {
-      std::cout << "  " << policy_type << std::endl;
-    }
-  }
+  base::FileEnumerator(storage->policy_cache_folder(), false,
+                       base::FileEnumerator::DIRECTORIES)
+      .ForEach([](const base::FilePath& name) {
+        std::string policy_type;
+        if (base::Base64Decode(name.BaseName().MaybeAsASCII(), &policy_type)) {
+          std::cout << "  " << policy_type << std::endl;
+        }
+      });
   std::cout << std::endl;
 }
 

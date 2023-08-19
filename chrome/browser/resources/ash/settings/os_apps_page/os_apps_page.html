@@ -1,0 +1,157 @@
+<style include="settings-shared">
+  #appManagementRow,
+  #appNotificationsRow {
+    border-bottom: var(--cr-separator-line);
+  }
+</style>
+
+<os-settings-animated-pages id="pages" section="[[section_]]">
+  <div route-path="default">
+    <settings-card header-text="$i18n{appsPageTitle}">
+      <cr-link-row id="appManagementRow"
+          label="$i18n{appManagementTitle}"
+          on-click="onClickAppManagement_"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+      <template is="dom-if" if="[[showAppNotificationsRow_]]">
+        <cr-link-row id="appNotificationsRow"
+            label="$i18n{appNotificationsTitle}"
+            on-click="onClickAppNotifications_"
+            role-description="$i18n{subpageArrowRoleDescription}"
+            sub-label= "[[getAppListCountDescription_(
+                appsWithNotifications_.*, isDndEnabled_)]]">
+        </cr-link-row>
+      </template>
+      <template is="dom-if" if="[[showAndroidApps_]]">
+        <template is="dom-if" if="[[isPlayStoreAvailable_]]" restamp>
+          <div id="androidApps" class="settings-box first"
+              actionable$="[[androidAppsInfo.playStoreEnabled]]"
+              on-click="onAndroidAppsSubpageClick_">
+            <div class="start settings-box-text">
+              $i18n{androidAppsPageLabel}
+              <div class="secondary" id="secondaryText">
+                <localized-link
+                    localized-string="[[i18nAdvanced('androidAppsSubtext')]]">
+                </localized-link>
+              </div>
+            </div>
+            <cr-policy-pref-indicator pref="[[prefs.arc.enabled]]"
+                icon-aria-label="$i18n{androidAppsPageTitle}">
+            </cr-policy-pref-indicator>
+            <template is="dom-if" if="[[androidAppsInfo.playStoreEnabled]]">
+              <cr-icon-button class="subpage-arrow"
+                  aria-label="$i18n{androidAppsPageTitle}"
+                  aria-describedby="secondaryText"
+                  aria-roledescription="$i18n{subpageArrowRoleDescription}">
+              </cr-icon-button>
+            </template>
+            <template is="dom-if" if="[[!androidAppsInfo.playStoreEnabled]]">
+              <div class="separator"></div>
+              <cr-button id="enable"
+                  disabled="[[isEnforced_(prefs.arc.enabled)]]"
+                  on-click="onEnableAndroidAppsClick_"
+                  aria-label="$i18n{androidAppsPageTitle}"
+                  aria-roledescription="$i18n{androidAppsEnableButtonRole}"
+                  deep-link-focus-id$="[[Setting.kTurnOnPlayStore]]">
+                $i18n{androidAppsEnable}
+              </cr-button>
+            </template>
+          </div>
+        </template>
+        <template is="dom-if" if="[[!isPlayStoreAvailable_]]" restamp>
+          <cr-link-row id="manageApps" label="$i18n{androidAppsManageApps}"
+              on-click="onManageAndroidAppsClick_"
+              external
+              deep-link-focus-id$="[[Setting.kManageAndroidPreferences]]">
+          </cr-link-row>
+        </template>
+      </template>
+      <template is="dom-if" if="[[showStartup_]]">
+        <div class="settings-box">
+          <div class="start settings-box-text" aria-hidden="true">
+              $i18n{onStartupTitle}
+          </div>
+          <settings-dropdown-menu id="onStartupDropdown"
+              label="$i18n{onStartupTitle}"
+              pref="{{prefs.settings.restore_apps_and_pages}}"
+              menu-options="[[onStartupOptions_]]"
+              deep-link-focus-id$="[[Setting.kRestoreAppsAndPages]]">
+          </settings-dropdown-menu>
+        </div>
+      </template>
+    </settings-card>
+  </div>
+
+  <!-- APP NOTIFICATIONS -->
+  <template is="dom-if" route-path="/app-notifications">
+    <os-settings-subpage page-title="$i18n{appNotificationsTitle}">
+      <settings-app-notifications-subpage prefs="{{prefs}}">
+      </settings-app-notifications-subpage>
+    </os-settings-subpage>
+  </template>
+
+  <!-- APP MANAGEMENT -->
+  <template is="dom-if" route-path="/app-management">
+    <os-settings-subpage
+        page-title="$i18n{appManagementTitle}"
+        search-label="$i18n{appManagementSearchPrompt}"
+        search-term="{{searchTerm}}">
+      <settings-app-management-page search-term="[[searchTerm]]">
+      </settings-app-management-page>
+    </os-settings-subpage>
+  </template>
+
+  <template is="dom-if" route-path="/app-management/detail">
+    <os-settings-subpage
+        page-title="[[app_.title]]"
+        title-icon="[[iconUrlFromId_(app_)]]">
+      <app-management-uninstall-button slot="subpage-title-extra"
+          app="[[app_]]"
+          uninstall-label="$i18n{appManagementUninstallLabel}"
+          policy-label="$i18n{appManagementAppInstalledByPolicyLabel}">
+      </app-management-uninstall-button>
+      <app-management-app-detail-view>
+      </app-management-app-detail-view>
+    </os-settings-subpage>
+  </template>
+
+  <!-- ANDROID APPS -->
+  <template is="dom-if" if="[[showAndroidApps_]]" restamp>
+    <template is="dom-if" route-path="/androidAppsDetails">
+      <os-settings-subpage page-title="$i18n{androidAppsPageLabel}">
+        <settings-android-apps-subpage
+          prefs="{{prefs}}"
+          android-apps-info="[[androidAppsInfo]]"
+          is-arc-vm-manage-usb-available="[[isArcVmManageUsbAvailable_]]">
+        </settings-android-apps-subpage>
+      </os-settings-subpage>
+    </template>
+  </template>
+
+  <template is="dom-if" if="[[isArcVmManageUsbAvailable_]]" restamp>
+    <template is="dom-if" route-path="/androidAppsDetails/sharedUsbDevices">
+      <os-settings-subpage page-title="$i18n{guestOsSharedUsbDevicesLabel}">
+         <settings-guest-os-shared-usb-devices guest-os-type="arcvm">
+         </settings-guest-os-shared-usb-devices>
+      </os-settings-subpage>
+    </template>
+  </template>
+
+  <!-- Plugin VM -->
+  <template is="dom-if" if="[[isPluginVmAvailable_]]" restamp>
+    <template is="dom-if" route-path="/app-management/pluginVm/sharedPaths">
+      <os-settings-subpage page-title="$i18n{guestOsSharedPaths}">
+        <settings-guest-os-shared-paths
+            guest-os-type="pluginVm" prefs="{{prefs}}">
+        </settings-guest-os-shared-paths>
+      </os-settings-subpage>
+    </template>
+    <template is="dom-if"
+        route-path="/app-management/pluginVm/sharedUsbDevices">
+      <os-settings-subpage page-title="$i18n{guestOsSharedUsbDevicesLabel}">
+        <settings-guest-os-shared-usb-devices guest-os-type="pluginVm">
+        </settings-guest-os-shared-usb-devices>
+      </os-settings-subpage>
+    </template>
+  </template>
+</os-settings-animated-pages>

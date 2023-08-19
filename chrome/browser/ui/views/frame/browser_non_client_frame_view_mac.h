@@ -5,17 +5,15 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NON_CLIENT_FRAME_VIEW_MAC_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NON_CLIENT_FRAME_VIEW_MAC_H_
 
-#include "base/memory/raw_ptr.h"
-
 #import <CoreGraphics/CGBase.h>
 
 #include <memory>
 
 #include "base/gtest_prod_util.h"
-#include "base/mac/scoped_nsobject.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
-#include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registrar_observer.h"
 #include "components/prefs/pref_member.h"
 
 namespace base {
@@ -31,7 +29,7 @@ class Label;
 class CaptionButtonPlaceholderContainer;
 
 class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView,
-                                     public web_app::AppRegistrarObserver {
+                                     public web_app::WebAppRegistrarObserver {
  public:
   // Mac implementation of BrowserNonClientFrameView.
   BrowserNonClientFrameViewMac(BrowserFrame* frame, BrowserView* browser_view);
@@ -74,11 +72,16 @@ class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView,
   gfx::Size GetMinimumSize() const override;
   void PaintChildren(const views::PaintInfo& info) override;
 
-  // web_app::AppRegistrarObserver
+  // web_app::WebAppRegistrarObserver
   void OnAlwaysShowToolbarInFullscreenChanged(const web_app::AppId& app_id,
                                               bool show) override;
   void OnAppRegistrarDestroyed() override;
 
+  // Creates an inset from the caption button size which controls for which edge
+  // the captions buttons exists on. Used to position the tab strip region view
+  // and the caption button placeholder container. Returns the distance from the
+  // leading edge of the frame to the first tab in the tabstrip not including
+  // the corner radius.
   gfx::Insets GetCaptionButtonInsets() const;
 
   // Used by TabContainerOverlayView to paint the tab strip background.
@@ -128,7 +131,7 @@ class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView,
   // Used to keep track of the update of kShowFullscreenToolbar preference.
   BooleanPrefMember show_fullscreen_toolbar_;
   base::ScopedObservation<web_app::WebAppRegistrar,
-                          web_app::AppRegistrarObserver>
+                          web_app::WebAppRegistrarObserver>
       always_show_toolbar_in_fullscreen_observation_{this};
 
   // A placeholder container that lies on top of the traffic lights to indicate
@@ -136,8 +139,7 @@ class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView,
   raw_ptr<CaptionButtonPlaceholderContainer>
       caption_button_placeholder_container_ = nullptr;
 
-  base::scoped_nsobject<FullscreenToolbarController>
-      fullscreen_toolbar_controller_;
+  FullscreenToolbarController* __strong fullscreen_toolbar_controller_;
 
   // Mark the start of a fullscreen session. Applies to both immersive and
   // standard fullscreen.

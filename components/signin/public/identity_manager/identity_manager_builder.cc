@@ -106,28 +106,38 @@ IdentityManagerBuildParams::~IdentityManagerBuildParams() = default;
 IdentityManager::InitParameters BuildIdentityManagerInitParameters(
     IdentityManagerBuildParams* params) {
   std::unique_ptr<AccountTrackerService> account_tracker_service =
-      BuildAccountTrackerService(params->pref_service, params->profile_path);
+      std::move(params->account_tracker_service);
+  if (!account_tracker_service) {
+    account_tracker_service =
+        BuildAccountTrackerService(params->pref_service, params->profile_path);
+  }
 
   std::unique_ptr<ProfileOAuth2TokenService> token_service =
-      BuildProfileOAuth2TokenService(
-          params->pref_service, account_tracker_service.get(),
-          params->network_connection_tracker, params->account_consistency,
+      std::move(params->token_service);
+  if (!token_service) {
+    token_service = BuildProfileOAuth2TokenService(
+        params->pref_service, account_tracker_service.get(),
+        params->network_connection_tracker, params->account_consistency,
 #if BUILDFLAG(IS_CHROMEOS)
-          params->account_manager_facade, params->is_regular_profile,
+        params->account_manager_facade, params->is_regular_profile,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
-          params->delete_signin_cookies_on_exit,
+        params->delete_signin_cookies_on_exit,
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) ||  BUILDFLAG(IS_CHROMEOS_LACROS)
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-          params->token_web_data,
+        params->token_web_data,
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+        params->unexportable_key_service,
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 #if BUILDFLAG(IS_IOS)
-          std::move(params->device_accounts_provider),
+        std::move(params->device_accounts_provider),
 #endif
 #if BUILDFLAG(IS_WIN)
-          params->reauth_callback,
+        params->reauth_callback,
 #endif
-          params->signin_client);
+        params->signin_client);
+  }
 
   auto gaia_cookie_manager_service = std::make_unique<GaiaCookieManagerService>(
       account_tracker_service.get(), token_service.get(),
@@ -142,9 +152,8 @@ IdentityManager::InitParameters BuildIdentityManagerInitParameters(
 
   init_params.primary_account_mutator =
       std::make_unique<PrimaryAccountMutatorImpl>(
-          account_tracker_service.get(), token_service.get(),
-          primary_account_manager.get(), params->pref_service,
-          params->signin_client, params->account_consistency);
+          account_tracker_service.get(), primary_account_manager.get(),
+          params->pref_service, params->signin_client);
 
   init_params.accounts_mutator =
       BuildAccountsMutator(params->pref_service, account_tracker_service.get(),
@@ -198,6 +207,9 @@ IdentityManager::InitParameters BuildIdentityManagerInitParameters(
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
   init_params.account_manager_facade = params->account_manager_facade;
+#endif
+#if BUILDFLAG(IS_IOS)
+  init_params.should_verify_scope_access = params->should_verify_scope_access;
 #endif
 
   return init_params;

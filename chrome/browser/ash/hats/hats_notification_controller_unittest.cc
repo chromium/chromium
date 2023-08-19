@@ -7,17 +7,25 @@
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_timeouts.h"
+#include "base/threading/platform_thread.h"
 #include "chrome/browser/ash/hats/hats_config.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/notification_handler.h"
+#include "chrome/browser/prefs/browser_prefs.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "components/image_fetcher/core/request_metadata.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync_preferences/pref_service_mock_factory.h"
+#include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "net/base/url_util.h"
@@ -46,6 +54,7 @@ const char kPsdValue1[] = "psdValue1";
 const char kPsdValue2[] = "psdValue2 =%^*$#&";
 const char kLocaleValue1[] = "locale1";
 const char kBrowserValue1[] = "browser1";
+const char kTestTimePref[] = "survey_last_interaction_timestamp_pref_name";
 
 bool GetQueryParameter(const std::string& query,
                        const std::string& key,
@@ -81,6 +90,19 @@ class HatsNotificationControllerTest : public BrowserWithTestWindowTest {
     scoped_feature_list_.InitAndEnableFeature(kHatsGeneralSurvey.feature);
   }
 
+  TestingProfile* CreateProfile() override {
+    sync_preferences::PrefServiceMockFactory factory;
+    auto registry = base::MakeRefCounted<user_prefs::PrefRegistrySyncable>();
+    int64_t now_timestamp = base::Time::Now().ToInternalValue();
+    registry.get()->RegisterInt64Pref(kTestTimePref, now_timestamp);
+    std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs(
+        factory.CreateSyncable(registry.get()));
+    RegisterUserProfilePrefs(registry.get());
+    return profile_manager()->CreateTestingProfile(
+        "test_profile", std::move(prefs), std::u16string(), 0,
+        TestingProfile::TestingFactories());
+  }
+
   void TearDown() override {
     helper_.reset();
     display_service_.reset();
@@ -96,6 +118,19 @@ class HatsNotificationControllerTest : public BrowserWithTestWindowTest {
     auto hats_notification_controller =
         base::MakeRefCounted<HatsNotificationController>(profile(),
                                                          kHatsGeneralSurvey);
+
+    // HatsController::IsNewDevice() is run on a blocking thread.
+    content::RunAllTasksUntilIdle();
+
+    return hats_notification_controller;
+  }
+
+  scoped_refptr<HatsNotificationController> InstantiateHatsControllerWithConfig(
+      const HatsConfig* config) {
+    // The initialization will fail since the function IsNewDevice() will return
+    // true.
+    auto hats_notification_controller =
+        base::MakeRefCounted<HatsNotificationController>(profile(), *config);
 
     // HatsController::IsNewDevice() is run on a blocking thread.
     content::RunAllTasksUntilIdle();
@@ -215,6 +250,41 @@ TEST_F(HatsNotificationControllerTest, DismissNotification_ShouldUpdatePref) {
   // The flag should be updated to a new timestamp.
   EXPECT_TRUE(base::Time::FromInternalValue(new_timestamp) >
               base::Time::FromInternalValue(now_timestamp));
+}
+
+TEST_F(HatsNotificationControllerTest,
+       DismissNotification_OptOutShouldUpdatePref) {
+  base::Time now_timestamp = base::Time::Now();
+  PrefService* pref_service = profile()->GetPrefs();
+  pref_service->SetInt64(prefs::kHatsLastInteractionTimestamp,
+                         now_timestamp.ToInternalValue());
+
+  // Make sure time has actually advanced
+  base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
+
+  const HatsConfig kTestSurvey = {
+      ::features::kHappinessTrackingSystem,
+      base::Days(7),
+      prefs::kHatsDeviceIsSelected,
+      prefs::kHatsSurveyCycleEndTimestamp,
+      kTestTimePref,
+      base::Days(7),
+  };
+
+  auto hats_notification_controller =
+      InstantiateHatsControllerWithConfig(&kTestSurvey);
+
+  // Simulate closing notification via user interaction.
+  hats_notification_controller->Close(true);
+
+  base::Time new_timestamp = pref_service->GetTime(kTestTimePref);
+  // The flag should be updated to a new timestamp.
+  EXPECT_GT(new_timestamp, now_timestamp);
+
+  // The general HaTS timestamp should not be changed.
+  int64_t hats_timestamp =
+      pref_service->GetInt64(prefs::kHatsLastInteractionTimestamp);
+  EXPECT_EQ(base::Time::FromInternalValue(hats_timestamp), now_timestamp);
 }
 
 TEST_F(HatsNotificationControllerTest,

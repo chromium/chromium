@@ -44,6 +44,7 @@ class AccountCapabilities {
 
 #if BUILDFLAG(IS_IOS)
   AccountCapabilities(base::flat_map<std::string, bool> capabilities);
+  const base::flat_map<std::string, bool>& ConvertToAccountCapabilitiesIOS();
 #endif
   // Keep sorted alphabetically.
 
@@ -57,12 +58,15 @@ class AccountCapabilities {
   // Chrome can run privacy sandbox trials for accounts with this capability.
   signin::Tribool can_run_chrome_privacy_sandbox_trials() const;
 
-  // Chrome can stop parental supervision if the user chooses to do so with
-  // this capability.
-  signin::Tribool can_stop_parental_supervision() const;
+  // The user account has opted in to parental supervision (Geller account).
+  // Chrome applies parental controls to accounts with this capability.
+  signin::Tribool is_opted_in_to_parental_supervision() const;
 
   // Chrome can toggle auto updates with this capability.
   signin::Tribool can_toggle_auto_updates() const;
+
+  // The user account is able to use IP Protection.
+  signin::Tribool can_use_chrome_ip_protection() const;
 
   // Chrome can send user data to Google servers for machine learning purposes
   // with this capability.

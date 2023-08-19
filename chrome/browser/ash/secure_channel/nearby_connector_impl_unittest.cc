@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -78,7 +79,9 @@ class FakeConnectionBrokerFactory : public NearbyConnectionBrokerImpl::Factory {
     return instance;
   }
 
-  FakeNearbyConnectionBroker* last_created_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION FakeNearbyConnectionBroker* last_created_ = nullptr;
 };
 
 class FakeMessageReceiver : public mojom::NearbyMessageReceiver {

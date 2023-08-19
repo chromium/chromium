@@ -6,6 +6,10 @@
     min-height: 64px;
   }
 
+  :host-context([chrome-refresh-2023]):host([in-side-panel_]) {
+    min-height: 48px;
+  }
+
   :host(:hover) {
     background-color: var(--cr-hover-background-color);
   }
@@ -72,8 +76,15 @@
     margin-inline-end: 0;
   }
 
+  :host-context([chrome-refresh-2023]):host([in-side-panel_]) #icon {
+    background-color: var(--color-list-item-url-favicon-background,
+      var(--cr-fallback-color-neutral-container));
+    height: 40px;
+    width: 40px;
+  }
+
   :host-context(.focus-outline-visible) #link-container:focus {
-    box-shadow: inset 0 0 0 2px var(--cr-focus-outline-color);
+    box-shadow: 0 0 0 2px var(--cr-focus-outline-color);
   }
 
   #page-info {
@@ -114,6 +125,11 @@
     line-height: calc(20/13);  /* 20px */
   }
 
+  :host-context([chrome-refresh-2023]):host([in-side-panel_]) #title {
+    font-size: .75rem; /* 12px */
+    font-weight: 500;
+  }
+
   #url {
     color: var(--url-color);
     line-height: 1.5;  /* 24px */
@@ -123,6 +139,11 @@
     color: var(--side-panel-url-color);
     font-size: .75rem;  /* 12px */
     line-height: calc(5/3);  /* 20px */
+  }
+
+  :host-context([chrome-refresh-2023]):host([in-side-panel_]) #url {
+    color: var(--color-history-clusters-side-panel-card-secondary-foreground);
+    font-size: .6875rem; /* 11px */
   }
 
   #debug-info {

@@ -9,7 +9,10 @@
 
 namespace ui {
 
-MockTSFBridge::MockTSFBridge() = default;
+MockTSFBridge::MockTSFBridge()
+    : text_input_client_(nullptr),
+      ime_key_event_dispatcher_(nullptr),
+      tsf_text_store_(nullptr) {}
 
 MockTSFBridge::~MockTSFBridge() = default;
 
@@ -64,6 +67,8 @@ TextInputClient* MockTSFBridge::GetFocusedTextInputClient() const {
 bool MockTSFBridge::IsInputLanguageCJK() {
   return false;
 }
+
+void MockTSFBridge::OnUrlChanged() {}
 
 void MockTSFBridge::Reset() {
   enable_ime_call_count_ = 0;

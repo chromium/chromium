@@ -12,7 +12,7 @@
 #include "chrome/updater/device_management/dm_message.h"
 #include "chrome/updater/device_management/dm_policy_builder_for_testing.h"
 #include "chrome/updater/protos/omaha_settings.pb.h"
-#include "chrome/updater/util/unittest_util.h"
+#include "chrome/updater/util/unit_test_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -50,7 +50,9 @@ DMResponseValidatorTests::GetDMResponseWithOmahaPolicy(
     const edm::OmahaSettingsClientProto& omaha_settings) const {
   std::unique_ptr<DMPolicyBuilderForTesting> policy_builder =
       DMPolicyBuilderForTesting::CreateInstanceWithOptions(
-          true, true, DMPolicyBuilderForTesting::SigningOption::kSignNormally);
+          /*first_request=*/true, /*rotate_to_new_key=*/true,
+          DMPolicyBuilderForTesting::SigningOption::kSignNormally,
+          "test-dm-token", "test-device-id");
   DMPolicyMap policy_map;
   policy_map.emplace(kGoogleUpdatePolicyType,
                      omaha_settings.SerializeAsString());

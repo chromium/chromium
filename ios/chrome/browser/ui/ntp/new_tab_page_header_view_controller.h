@@ -107,11 +107,8 @@
 // Returns the height of the entire header.
 - (CGFloat)headerHeight;
 
-// Update any dynamic constraints.
+// Update the constraints for the current header's content height.
 - (void)updateConstraints;
-
-// The positive offset value to begin the fake omniobx expansion animation.
-- (CGFloat)offsetToBeginFakeOmniboxExpansionForSplitMode;
 
 @end
 

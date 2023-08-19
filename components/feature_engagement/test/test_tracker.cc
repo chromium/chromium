@@ -23,8 +23,9 @@ namespace feature_engagement {
 
 // static
 std::unique_ptr<Tracker> CreateTestTracker() {
-  auto configuration = std::make_unique<ChromeVariationsConfiguration>();
-  configuration->ParseConfigs(GetAllFeatures(), GetAllGroups());
+  auto configuration = std::make_unique<ChromeVariationsConfiguration>(
+      Tracker::GetDefaultConfigurationProviders());
+  configuration->LoadConfigs(GetAllFeatures(), GetAllGroups());
 
   auto storage_validator =
       std::make_unique<FeatureConfigEventStorageValidator>();

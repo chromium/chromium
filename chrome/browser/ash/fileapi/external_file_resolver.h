@@ -75,7 +75,7 @@ class ExternalFileResolver {
   void OnFileInfoObtained(base::File::Error error,
                           const base::File::Info& file_info);
 
-  raw_ptr<void, ExperimentalAsh> profile_id_;
+  raw_ptr<void, DanglingUntriaged | ExperimentalAsh> profile_id_;
   net::Error range_parse_result_;
   net::HttpByteRange byte_range_;
 

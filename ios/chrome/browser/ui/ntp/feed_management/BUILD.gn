@@ -7,7 +7,6 @@ source_set("feed_management") {
     "feed_management_coordinator.h",
     "feed_management_coordinator.mm",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     ":feed_management_ui",
     ":follow_management",
@@ -30,7 +29,6 @@ source_set("feed_management_ui") {
     "feed_management_view_controller.h",
     "feed_management_view_controller.mm",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     ":navigation_delegate",
     "//ios/chrome/app/strings",
@@ -49,7 +47,6 @@ source_set("follow_management") {
     "follow_management_mediator.h",
     "follow_management_mediator.mm",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     ":follow_management_ui",
     "//ios/chrome/browser/favicon",
@@ -73,7 +70,6 @@ source_set("follow_management_ui") {
     "followed_web_channel_item.mm",
     "followed_web_channels_data_source.h",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     ":feed_management_ui",
     "resources:following_empty",
@@ -92,10 +88,7 @@ source_set("follow_management_ui") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "feed_management_egtest.mm" ]
   deps = [

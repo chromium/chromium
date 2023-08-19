@@ -10,10 +10,6 @@
 #import "components/reading_list/core/reading_list_model_observer.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_menu_notification_delegate.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 class ReadingListObserverBridge;
 
 @interface ReadingListMenuNotifier () {

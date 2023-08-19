@@ -1,0 +1,6 @@
+include_rules = [
+  "+components/viz/common/resources/shared_image_format.h",
+  "+gpu/command_buffer/common",
+  "+gpu/command_buffer/service",
+  "+gpu/ipc/common",
+]

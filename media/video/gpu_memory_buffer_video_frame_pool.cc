@@ -17,7 +17,6 @@
 #include "base/bits.h"
 #include "base/command_line.h"
 #include "base/containers/circular_deque.h"
-#include "base/containers/stack_container.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -1174,6 +1173,21 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
     gfx::GpuMemoryBuffer* gpu_memory_buffer =
         frame_resources->plane_resources[gpu_memory_buffer_plane]
             .gpu_memory_buffer.get();
+
+    if (gpu_memory_buffer) {
+      // Log software/hardware backed GpuMemoryBuffer's `output_format_` used to
+      // create the shared image.
+      gfx::GpuMemoryBufferType buffer_type = gpu_memory_buffer->GetType();
+      if (buffer_type == gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER) {
+        UMA_HISTOGRAM_ENUMERATION("Media.GPU.OutputFormatSoftwareGmb",
+                                  output_format_);
+      }
+      if (buffer_type != gfx::GpuMemoryBufferType::EMPTY_BUFFER &&
+          buffer_type != gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER) {
+        UMA_HISTOGRAM_ENUMERATION("Media.GPU.OutputFormatHardwareGmb",
+                                  output_format_);
+      }
+    }
 
 #if BUILDFLAG(IS_MAC)
     // Shared image uses iosurface as native resource which is compatible to

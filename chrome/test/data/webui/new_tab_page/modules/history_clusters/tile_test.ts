@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://webui-test/mojo_webui_test_support.js';
-
 import {Annotation, URLVisit} from 'chrome://new-tab-page/history_cluster_types.mojom-webui.js';
 import {PageImageServiceBrowserProxy, TileModuleElement} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
@@ -129,5 +127,26 @@ suite('NewTabPageModulesHistoryClustersModuleTileTest', () => {
     assertEquals(1, imageServiceHandler.getCallCount('getPageImageUrl'));
     assertTrue(!$$(tileElement, '#image img'));
     assertTrue(!!$$(tileElement, '#image page-favicon'));
+  });
+
+  test('Tile shows and hides discount chip', async () => {
+    // Arrange.
+    const tileElement = initializeModule(createVisit({
+      relativeDate: '1 min ago',
+      annotations: [Annotation.kBookmarked],
+    }));
+
+    // Assert.
+    await waitAfterNextRender(tileElement);
+    assertTrue(!!tileElement);
+    assertTrue(!$$(tileElement, '#discountChip'));
+
+    // Act.
+    tileElement.hasDiscount = true;
+
+    // Assert.
+    await waitAfterNextRender(tileElement);
+    assertTrue(!!tileElement);
+    assertTrue(!!$$(tileElement, '#discountChip'));
   });
 });

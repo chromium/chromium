@@ -4,7 +4,7 @@
 <translation id="1569387923882100876">Dispositivo ligado</translation>
 <translation id="1612196535745283361">O Chrome precisa de acesso à localização para procurar dispositivos. O acesso à localização está <ph name="BEGIN_LINK" />desativado para este dispositivo<ph name="END_LINK" />.</translation>
 <translation id="1769234867324334094">A app <ph name="APP_NAME" /> precisa de autorização de acesso à câmara para este site.</translation>
-<translation id="1993768208584545658"><ph name="SITE" /> pretende sincronizar</translation>
+<translation id="1993768208584545658"><ph name="SITE" /> quer sincronizar</translation>
 <translation id="2077832278056815832">Feche todos os balões ou sobreposições de outras apps. Em seguida, tente novamente.</translation>
 <translation id="230115972905494466">Não foram encontrados dispositivos compatíveis.</translation>
 <translation id="2359808026110333948">Continuar</translation>
@@ -13,7 +13,7 @@
 <translation id="3773755127849930740"><ph name="BEGIN_LINK" />Ative o Bluetooth<ph name="END_LINK" /> para permitir a sincronização</translation>
 <translation id="4915549754973153784"><ph name="BEGIN_LINK" />Obter ajuda<ph name="END_LINK" /> enquanto procura dispositivos…</translation>
 <translation id="4925793601605263825">A app <ph name="APP_NAME" /> precisa de autorização de acesso ao microfone para este site.</translation>
-<translation id="5230560987958996918"><ph name="SITE" /> pretende procurar dispositivos Bluetooth próximos. Foram encontrados os seguintes dispositivos:</translation>
+<translation id="5230560987958996918"><ph name="SITE" /> quer procurar dispositivos Bluetooth próximos. Foram encontrados os seguintes dispositivos:</translation>
 <translation id="5527082711130173040">O Chrome precisa de acesso à localização para procurar dispositivos. <ph name="BEGIN_LINK1" />Atualize as autorizações<ph name="END_LINK1" />. O acesso à localização também está <ph name="BEGIN_LINK2" />desativado para este dispositivo<ph name="END_LINK2" />.</translation>
 <translation id="5817918615728894473">Sincronizar</translation>
 <translation id="5858741533101922242">O Chrome não consegue ativar o adaptador Bluetooth</translation>

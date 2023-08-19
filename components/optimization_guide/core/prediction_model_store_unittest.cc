@@ -351,6 +351,9 @@ TEST_F(PredictionModelStoreTest, ExpiredModelRemoved) {
       kTestOptimizationTargetFoo, model_cache_key, model_detail.model_info,
       model_detail.base_model_dir, base::DoNothing());
   RunUntilIdle();
+  EXPECT_TRUE(base::DirectoryExists(model_detail.base_model_dir));
+  EXPECT_TRUE(base::PathExists(
+      model_detail.base_model_dir.Append(GetBaseFileNameForModels())));
 
   // Fast forward so that the model has expired.
   task_environment_.FastForwardBy(features::StoredModelsValidDuration() +
@@ -366,6 +369,12 @@ TEST_F(PredictionModelStoreTest, ExpiredModelRemoved) {
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PredictionModelStore.ModelRemovalReason",
       PredictionModelStoreModelRemovalReason::kModelExpired, 1);
+  EXPECT_FALSE(base::DirectoryExists(model_detail.base_model_dir));
+  EXPECT_FALSE(base::PathExists(
+      model_detail.base_model_dir.Append(GetBaseFileNameForModels())));
+  EXPECT_TRUE(
+      local_state_prefs_->GetDict(prefs::localstate::kStoreFilePathsToDelete)
+          .empty());
 }
 
 TEST_F(PredictionModelStoreTest, ExpiredModelRemovedOnLoadModel) {
@@ -390,6 +399,31 @@ TEST_F(PredictionModelStoreTest, ExpiredModelRemovedOnLoadModel) {
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PredictionModelStore.ModelRemovalReason",
       PredictionModelStoreModelRemovalReason::kModelExpiredOnLoadModel, 1);
+  // The model dirs will still not be removed, but will be queued to be detected
+  // at next startup.
+  EXPECT_TRUE(base::DirectoryExists(model_detail.base_model_dir));
+  EXPECT_TRUE(base::PathExists(
+      model_detail.base_model_dir.Append(GetBaseFileNameForModels())));
+  EXPECT_EQ(1U, local_state_prefs_
+                    ->GetDict(prefs::localstate::kStoreFilePathsToDelete)
+                    .size());
+  EXPECT_TRUE(
+      local_state_prefs_->GetDict(prefs::localstate::kStoreFilePathsToDelete)
+          .FindBool(FilePathToString(ConvertToRelativePath(
+              temp_models_dir_.GetPath(), model_detail.base_model_dir))));
+
+  // Recreate the store and it will remove the model slated for deletion
+  // earlier.
+  prediction_model_store_ =
+      PredictionModelStore::CreatePredictionModelStoreForTesting(
+          local_state_prefs_.get(), temp_models_dir_.GetPath());
+  RunUntilIdle();
+  EXPECT_FALSE(base::DirectoryExists(model_detail.base_model_dir));
+  EXPECT_FALSE(base::PathExists(
+      model_detail.base_model_dir.Append(GetBaseFileNameForModels())));
+  EXPECT_TRUE(
+      local_state_prefs_->GetDict(prefs::localstate::kStoreFilePathsToDelete)
+          .empty());
 }
 
 TEST_F(PredictionModelStoreTest, InvalidModelDirModelRemoved) {

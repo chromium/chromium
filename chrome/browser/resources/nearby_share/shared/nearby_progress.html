@@ -1,14 +1,23 @@
 <style>
   #device-name {
     -webkit-box-orient: vertical;
-    color: var(--cros-text-color-primary);
     display: -webkit-box;
-    letter-spacing: 0.25px;
-    line-height: 154%;
     overflow: hidden;
     overflow-wrap: break-word;
     text-align: center;
     width: 116px;
+  }
+
+  /* TODO(b/279623883): Remove once Jelly is launched. */
+  :host-context(body:not(.jelly-enabled)) #device-name {
+    color: var(--cros-text-color-primary);
+    line-height: 154%;
+    letter-spacing: 0.25px;
+  }
+
+  :host-context(body.jelly-enabled) #device-name {
+    font: var(--cros-body-2-font);
+    color: var(--cros-sys-on_surface_variant);
   }
 
   #icon {
@@ -46,7 +55,7 @@
    /* TODO(b/279623883): Remove old colors when Jelly is launched. */
   #wheel {
     fill: none;
-    stroke: var(--cros-sys-progress, var(--cros-icon-color-prominent));
+    stroke: var(--cros-sys-primary, var(--cros-icon-color-prominent));
     stroke-dasharray: 100;
     stroke-linecap: round;
     stroke-width: 2px;

@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL A single track should not show overflow on caption button-press, instead just toggle. assert_equals: expected null but got Element node <div pseudo="-webkit-media-text-track-display" style="pos...
+Harness: the test ran to completion.
+

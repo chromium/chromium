@@ -17,27 +17,30 @@
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
-namespace base {
-class SequencedTaskRunner;
-}
-
 namespace content {
 class IndexedDBContextImpl;
-class IndexedDBDispatcherHost;
 class IndexedDBTransaction;
 
 class TransactionImpl : public blink::mojom::IDBTransaction {
  public:
+  // Creates a self-owned `TransactionImpl` that deletes itself when its
+  // mojo connection is closed.
+  static void CreateAndBind(
+      const storage::BucketLocator& bucket_locator,
+      scoped_refptr<IndexedDBContextImpl> indexed_db_context,
+      mojo::PendingAssociatedReceiver<blink::mojom::IDBTransaction> pending,
+      base::WeakPtr<IndexedDBTransaction> transaction);
+
+  ~TransactionImpl() override;
+
+ private:
   explicit TransactionImpl(
       base::WeakPtr<IndexedDBTransaction> transaction,
       const storage::BucketLocator& bucket_locator,
-      base::WeakPtr<IndexedDBDispatcherHost> dispatcher_host,
-      scoped_refptr<base::SequencedTaskRunner> idb_runner);
+      scoped_refptr<IndexedDBContextImpl> indexed_db_context);
 
   TransactionImpl(const TransactionImpl&) = delete;
   TransactionImpl& operator=(const TransactionImpl&) = delete;
-
-  ~TransactionImpl() override;
 
   // blink::mojom::IDBTransaction implementation
   void CreateObjectStore(int64_t object_store_id,
@@ -55,18 +58,15 @@ class TransactionImpl : public blink::mojom::IDBTransaction {
 
   void OnQuotaCheckDone(storage::QuotaErrorOr<int64_t> space_remaining);
 
- private:
   // Turns an IDBValue into a set of IndexedDBExternalObjects in
   // |external_objects|.
   uint64_t CreateExternalObjects(
       blink::mojom::IDBValuePtr& value,
       std::vector<IndexedDBExternalObject>* external_objects);
 
-  base::WeakPtr<IndexedDBDispatcherHost> dispatcher_host_;
   scoped_refptr<IndexedDBContextImpl> indexed_db_context_;
   base::WeakPtr<IndexedDBTransaction> transaction_;
   const storage::BucketLocator bucket_locator_;
-  scoped_refptr<base::SequencedTaskRunner> idb_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

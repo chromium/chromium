@@ -32,7 +32,7 @@ std::u16string CreateChooserTitle(content::RenderFrameHost* render_frame_host,
   // Ensure the permission request is attributed to the main frame.
   render_frame_host = render_frame_host->GetMainFrame();
 
-  const GURL& url = render_frame_host->GetLastCommittedURL();
+  const GURL& url = render_frame_host->GetLastCommittedOrigin().GetURL();
   Profile* profile =
       Profile::FromBrowserContext(render_frame_host->GetBrowserContext());
 

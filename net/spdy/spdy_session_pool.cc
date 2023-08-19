@@ -537,7 +537,8 @@ void SpdySessionPool::OnSSLConfigChanged(
   };
 }
 
-void SpdySessionPool::OnSSLConfigForServerChanged(const HostPortPair& server) {
+void SpdySessionPool::OnSSLConfigForServersChanged(
+    const base::flat_set<HostPortPair>& servers) {
   WeakSessionList current_sessions = GetCurrentSessions();
   for (base::WeakPtr<SpdySession>& session : current_sessions) {
     if (!session)
@@ -545,9 +546,9 @@ void SpdySessionPool::OnSSLConfigForServerChanged(const HostPortPair& server) {
 
     const ProxyServer& proxy_server =
         session->spdy_session_key().proxy_server();
-    if (session->host_port_pair() == server ||
+    if (servers.contains(session->host_port_pair()) ||
         (proxy_server.is_http_like() && !proxy_server.is_http() &&
-         proxy_server.host_port_pair() == server)) {
+         servers.contains(proxy_server.host_port_pair()))) {
       session->MakeUnavailable();
       // Note this call preserves active streams but fails any streams that are
       // waiting on a stream ID.
@@ -698,7 +699,7 @@ std::unique_ptr<SpdySession> SpdySessionPool::CreateSession(
       session_max_queued_capped_frames_, initial_settings_,
       enable_http2_settings_grease_, greased_http2_frame_,
       http2_end_stream_with_data_frame_, enable_priority_update_, time_func_,
-      push_delegate_, network_quality_estimator_, net_log);
+      network_quality_estimator_, net_log);
 }
 
 base::WeakPtr<SpdySession> SpdySessionPool::InsertSession(

@@ -3,16 +3,15 @@
 # found in the LICENSE file.
 
 source_set("sync") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "device_info_sync_service_factory.h",
     "device_info_sync_service_factory.mm",
+    "enterprise_utils.cc",
+    "enterprise_utils.h",
     "ios_chrome_sync_client.h",
     "ios_chrome_sync_client.mm",
     "ios_chrome_synced_tab_delegate.h",
     "ios_chrome_synced_tab_delegate.mm",
-    "ios_trusted_vault_client.h",
-    "ios_trusted_vault_client.mm",
     "ios_user_event_service_factory.cc",
     "ios_user_event_service_factory.h",
     "send_tab_to_self_sync_service_factory.h",
@@ -51,12 +50,15 @@ source_set("sync") {
     "//components/send_tab_to_self",
     "//components/sessions",
     "//components/signin/public/identity_manager",
+    "//components/supervised_user/core/browser",
+    "//components/supervised_user/core/common:buildflags",
     "//components/sync",
     "//components/sync_device_info",
     "//components/sync_preferences",
     "//components/sync_sessions",
     "//components/sync_user_events",
     "//components/trusted_vault",
+    "//components/variations/service",
     "//components/version_info",
     "//google_apis",
     "//ios/chrome/browser/bookmarks",
@@ -68,22 +70,23 @@ source_set("sync") {
     "//ios/chrome/browser/gcm/instance_id",
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/invalidation",
+    "//ios/chrome/browser/metrics:google_groups_updater",
     "//ios/chrome/browser/passwords:store_factory",
     "//ios/chrome/browser/power_bookmarks",
     "//ios/chrome/browser/reading_list",
     "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/sessions",
     "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/signin",
-    "//ios/chrome/browser/signin:trusted_vault",
-    "//ios/chrome/browser/signin:trusted_vault_factory",
+    "//ios/chrome/browser/supervised_user:sync_settings_factory",
     "//ios/chrome/browser/sync/glue",
     "//ios/chrome/browser/sync/sessions",
     "//ios/chrome/browser/tabs",
-    "//ios/chrome/browser/undo",
+    "//ios/chrome/browser/trusted_vault",
     "//ios/chrome/browser/webdata_services",
     "//ios/chrome/common",
     "//ios/components/webui:url_constants",
@@ -105,7 +108,6 @@ source_set("sync") {
 }
 
 source_set("model_type_store_service_factory") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "model_type_store_service_factory.cc",
     "model_type_store_service_factory.h",
@@ -119,19 +121,18 @@ source_set("model_type_store_service_factory") {
 }
 
 source_set("sync_error_browser_agent") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "sync_error_browser_agent.h",
     "sync_error_browser_agent.mm",
   ]
   deps = [
+    "//ios/chrome/browser/settings/sync/utils",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/authentication:signin_presenter",
-    "//ios/chrome/browser/ui/settings/sync/utils",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
@@ -163,7 +164,6 @@ source_set("test_support") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "ios_chrome_synced_tab_delegate_unittest.mm",
@@ -173,7 +173,9 @@ source_set("unit_tests") {
   deps = [
     ":sync",
     "//base",
+    "//components/autofill/core/common/",
     "//components/browser_sync",
+    "//components/supervised_user/core/common:buildflags",
     "//components/sync",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/history",

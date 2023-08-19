@@ -56,7 +56,7 @@ class LiveCaptionUnavailabilityNotifierTest
 
  private:
   mojo::Remote<media::mojom::MediaFoundationRendererNotifier> remote_;
-  raw_ptr<LiveCaptionUnavailabilityNotifier> notifier_;
+  raw_ptr<LiveCaptionUnavailabilityNotifier, DanglingUntriaged> notifier_;
 };
 
 TEST_F(LiveCaptionUnavailabilityNotifierTest, MediaFoundationRendererCreated) {

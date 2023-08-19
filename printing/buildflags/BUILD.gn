@@ -16,10 +16,11 @@ buildflag_header("buildflags") {
     "ENABLE_PRINTING=$enable_printing",
     "ENABLE_PRINT_PREVIEW=$enable_print_preview",
     "ENABLE_BASIC_PRINT_DIALOG=$enable_basic_print_dialog",
+    "ENABLE_CONCURRENT_BASIC_PRINT_DIALOGS=$enable_concurrent_basic_print_dialogs",
     "ENABLE_OOP_BASIC_PRINT_DIALOG=$enable_oop_basic_print_dialog",
-    "ENABLE_TAGGED_PDF=$enable_tagged_pdf",
     "ENABLE_OOP_PRINTING=$enable_oop_printing",
     "ENABLE_PRINT_CONTENT_ANALYSIS=$enable_print_content_analysis",
     "USE_CUPS=$use_cups",
+    "USE_CUPS_IPP=$use_cups_ipp",
   ]
 }

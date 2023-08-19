@@ -279,7 +279,7 @@ bool DownloadQuery::DownloadComparator::operator()(const DownloadItem* left,
         break;  // break the switch but not the loop
     }
   }
-  CHECK_NE(left->GetId(), right->GetId());
+  CHECK(left == right || left->GetId() != right->GetId());
   return left->GetId() < right->GetId();
 }
 

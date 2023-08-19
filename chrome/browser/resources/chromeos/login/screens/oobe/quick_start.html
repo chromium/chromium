@@ -35,16 +35,17 @@ found in the LICENSE file.
 
   #spinnerWifi,
   #spinnerGaia {
-    height: 95%;
+    max-height: 286px;
+    max-width: 286px;
   }
 </style>
 <!-- WAITING FOR INITIAL CONNECTION | ADVERTISING -->
 <oobe-loading-dialog id="loadingDialog" for-step="loading" title-key="quickStartStartAfterResumeTitle"
-  subtitle-key="quickStartStartAfterResumeSubtitle">
+  subtitle-key="quickStartStartAfterResumeSubtitle" can-cancel on-cancel-loading="onCancelClicked_">
   <iron-icon slot="icon" icon="oobe-20:quick-start-android-device"></iron-icon>
 </oobe-loading-dialog>
 <!-- QR & PIN VERIFICATION | UNAUTHENTICATED CONNECTION -->
-<oobe-adaptive-dialog for-step="verification">
+<oobe-adaptive-dialog for-step="verification" id="verificationDialog">
   <iron-icon slot="icon" icon="oobe-20:quick-start-android-device">
   </iron-icon>
   <h1 slot="title">
@@ -55,9 +56,10 @@ found in the LICENSE file.
     </div>
   </div>
   <div id="code" class="flex layout vertical center-justified center" slot="content">
-    <div id="qrCodeWrapper">
+    <div id="qrCodeWrapper" hidden="[[usePinInsteadOfQrForVerification_]]">
       <canvas id="qrCodeCanvas" width="[[canvasSize_]]" height="[[canvasSize_]]">
     </div>
+    <quick-start-pin id="pinWrapper" pin="[[pin_]]" hidden="[[!usePinInsteadOfQrForVerification_]]"></quick-start-pin>
   </div>
   <div slot="bottom-buttons">
     <oobe-text-button id="cancelButton" on-click="onCancelClicked_" text-key="cancelButton">
@@ -102,7 +104,7 @@ found in the LICENSE file.
     </div>
     </div>
     <div slot="bottom-buttons">
-      <oobe-next-button on-click="onWifiConnectedNextClicked_">
+      <oobe-next-button id="wifiConnected" on-click="onWifiConnectedNextClicked_">
       </oobe-next-button>
     </div>
     </oobe-adaptive-dialog>
@@ -146,67 +148,5 @@ found in the LICENSE file.
       <div slot="bottom-buttons">
         <oobe-text-button id="cancelButton" on-click="onCancelClicked_" text-key="cancelButton">
         </oobe-text-button>
-  </div>
-</oobe-adaptive-dialog>
-<!---->
-<!-- LEGACY - SHAPE VERIFICATION -->
-<oobe-adaptive-dialog for-step="figures">
-  <h1 slot="title">
-    <!--TODO(https://crbug.com/1278686) Update with finalize strings -->
-    Verify the shapes
-  </h1>
-  <div id="figures" class="layout horizontal" slot="content">
-    <!-- We inline SVGs here to be able to control the color of them. -->
-    <template is="dom-repeat" items="[[figures_]]">
-      <div class="layout vertical center">
-        <div clr$="[[item.color]]">
-          <template is="dom-if" if="[[isEq_(item.shape, shapes_.CIRCLE)]]">
-            <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="50" cy="50" r="46" fill="currentColor">
-              </circle>
-            </svg>
-          </template>
-
-          <template is="dom-if" if="[[isEq_(item.shape, shapes_.DIAMOND)]]">
-            <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M45.793 5.746L5.749 45.789a5.96 5.96 0 0 0 0 8.429L45.793 94.26a5.96 5.96 0 0 0 8.428 0l40.044-40.043a5.96 5.96 0 0 0 0-8.429L54.22 5.746a5.96 5.96 0 0 0-8.428 0z"
-                fill="currentColor">
-              </path>
-            </svg>
-          </template>
-
-          <template is="dom-if" if="[[isEq_(item.shape, shapes_.TRIANGLE)]]">
-            <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <g clip-path="url(#clip0_123_9159)">
-                <path
-                  d="M50 95.97H11.773a7.778 7.778 0 0 1-6.7-3.879 7.763 7.763 0 0 1-.023-7.737L43.267 7.879a7.76 7.76 0 0 1 6.728-3.887 7.768 7.768 0 0 1 6.728 3.887L94.95 84.354a7.763 7.763 0 0 1-2.862 10.573 7.778 7.778 0 0 1-3.871 1.043H50z"
-                  fill="currentColor">
-                </path>
-              </g>
-              <defs>
-                <clipPath id="clip0_123_9159">
-                  <path fill="#fff" transform="translate(4 4)" d="M0 0h92v92H0z">
-                  </path>
-                </clipPath>
-              </defs>
-            </svg>
-          </template>
-
-          <template is="dom-if" if="[[isEq_(item.shape, shapes_.SQUARE)]]">
-            <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path fill="#fff" d="M0 0h100v100H0z">
-              </path>
-              <rect x="4" y="4" width="92" height="92" rx="8" fill="currentColor">
-              </rect>
-            </svg>
-          </template>
-        </div>
-        <span>[[item.digit]]</span>
-      </div>
-    </template>
-  </div>
-  <div slot="bottom-buttons">
-    <oobe-next-button on-click="onNextClicked_"></oobe-next-button>
   </div>
 </oobe-adaptive-dialog>

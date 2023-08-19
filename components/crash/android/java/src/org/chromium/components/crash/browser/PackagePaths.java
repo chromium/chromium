@@ -20,8 +20,6 @@ import java.util.List;
  * This class builds paths for the Chrome package.
  */
 public abstract class PackagePaths {
-    private static final String TAG = "PackagePaths";
-
     // Prevent instantiation.
     private PackagePaths() {}
 

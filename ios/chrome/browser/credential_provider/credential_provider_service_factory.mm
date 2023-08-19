@@ -20,10 +20,6 @@
 #import "ios/chrome/common/credential_provider/archivable_credential_store.h"
 #import "ios/chrome/common/credential_provider/constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // static
 CredentialProviderService* CredentialProviderServiceFactory::GetForBrowserState(
     ChromeBrowserState* browser_state) {

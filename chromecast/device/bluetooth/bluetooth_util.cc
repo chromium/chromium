@@ -5,6 +5,7 @@
 #include "chromecast/device/bluetooth/bluetooth_util.h"
 
 #include "base/strings/stringprintf.h"
+#include "third_party/abseil-cpp/absl/strings/ascii.h"
 
 namespace chromecast {
 namespace bluetooth {
@@ -46,7 +47,8 @@ std::string AddrLastByteString(const bluetooth_v2_shlib::Addr& addr) {
 bool ParseAddr(const std::string& str, bluetooth_v2_shlib::Addr* addr) {
   // sscanf will incorrectly succeed if all characters except the last one are
   // correct.
-  if (str.size() != kMacAddrStrLen || !std::isxdigit(str[str.size() - 1])) {
+  if (str.size() != kMacAddrStrLen ||
+      !absl::ascii_isxdigit(static_cast<unsigned char>(str.back()))) {
     return false;
   }
 
@@ -68,8 +70,8 @@ bool ParseUuid(const std::string& str, bluetooth_v2_shlib::Uuid* uuid) {
     return false;
   }
 
-  for (const auto& c : str) {
-    if (c != '-' && !std::isxdigit(c)) {
+  for (char c : str) {
+    if (c != '-' && !absl::ascii_isxdigit(static_cast<unsigned char>(c))) {
       return false;
     }
   }

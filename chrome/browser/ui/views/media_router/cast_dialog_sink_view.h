@@ -68,6 +68,11 @@ class CastDialogSinkView : public views::View {
       views::Button::PressedCallback freeze_pressed_callback);
   std::unique_ptr<views::View> CreateLabelView(const UIMediaSink& sink);
 
+  // Gets accessible names for buttons based on if the current route is tab
+  // mirroring, screen mirroring, or something else.
+  std::u16string GetFreezeButtonAccessibleName() const;
+  std::u16string GetStopButtonAccessibleName() const;
+
   const raw_ptr<Profile> profile_;
   UIMediaSink sink_;
 

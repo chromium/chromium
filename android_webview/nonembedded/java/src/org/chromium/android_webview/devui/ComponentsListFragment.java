@@ -22,7 +22,6 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import org.chromium.android_webview.common.services.ServiceNames;
@@ -169,13 +168,11 @@ public class ComponentsListFragment extends DevUiBaseFragment {
     /**
      * Notifies the caller when all ComponentInfo is reloaded in the ListView.
      */
-    @VisibleForTesting
     public static void setComponentInfoLoadedListenerForTesting(@Nullable Runnable listener) {
         ThreadUtils.assertOnUiThread();
         sComponentInfoLoadedListener = listener;
     }
 
-    @VisibleForTesting
     public static void setComponentUpdateServiceNameForTesting(String name) {
         ThreadUtils.assertOnUiThread();
         sComponentUpdateServiceName = name;

@@ -11,6 +11,4 @@ source_set("text_fragments") {
   ]
 
   sources = [ "text_fragments_manager.h" ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

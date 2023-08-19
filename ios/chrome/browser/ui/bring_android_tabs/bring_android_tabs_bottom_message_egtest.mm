@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/bring_android_tabs/bring_android_tabs_app_interface.h"
+#import "ios/chrome/browser/ui/bring_android_tabs/bring_android_tabs_test_session.h"
 #import "ios/chrome/browser/ui/bring_android_tabs/bring_android_tabs_test_utils.h"
 #import "ios/chrome/browser/ui/bring_android_tabs/constants.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -12,10 +12,7 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/disabled_test_macros.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+#import "net/test/embedded_test_server/embedded_test_server.h"
 
 // Test suite that tests user interactions with the Bring Android Tabs bottom
 // message prompt.
@@ -34,9 +31,10 @@
   [[self class] testForStartup];
   [super setUp];
   if (![ChromeEarlGrey isIPadIdiom]) {
-    [BringAndroidTabsAppInterface
-        addSessionToFakeSyncServer:BringAndroidTabsAppInterfaceForeignSession::
-                                       kRecentFromAndroidPhone];
+    GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+    AddSessionToFakeSyncServerFromTestServer(
+        BringAndroidTabsTestSession::kRecentFromAndroidPhone,
+        self.testServer->base_url());
     CompleteFREWithSyncEnabled(YES);
   }
 }
@@ -63,7 +61,8 @@
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGreyUI openTabGrid];
   VerifyBottomMessagePromptVisibility(NO);
-  VerifyThatPromptDoesNotShowOnRestart(/*bottom_message=*/YES);
+  VerifyThatPromptDoesNotShowOnRestart(
+      /*bottom_message=*/YES, self.testServer->base_url());
 }
 
 // Tests that the user can review the list of Android tabs by tapping the
@@ -82,7 +81,8 @@
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kBringAndroidTabsPromptTabListAXId)]
       assertWithMatcher:grey_sufficientlyVisible()];
-  VerifyThatPromptDoesNotShowOnRestart(/*bottom_message=*/YES);
+  VerifyThatPromptDoesNotShowOnRestart(
+      /*bottom_message=*/YES, self.testServer->base_url());
 }
 
 // Tests that the if the user leaves the tab grid without interacting with the
@@ -99,7 +99,8 @@
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGreyUI openTabGrid];
   VerifyBottomMessagePromptVisibility(YES);
-  VerifyThatPromptDoesNotShowOnRestart(/*bottom_message=*/YES);
+  VerifyThatPromptDoesNotShowOnRestart(
+      /*bottom_message=*/YES, self.testServer->base_url());
 }
 
 // Tests that the bottom message only shows on regular tab grid.

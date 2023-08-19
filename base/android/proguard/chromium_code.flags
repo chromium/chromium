@@ -6,7 +6,7 @@
 # appropriate for third-party apps to include.
 
 # Allow unused native methods to be removed, but prevent renaming on those that are kept.
--keepclasseswithmembernames,includedescriptorclasses,allowaccessmodification class ** {
+-keepclasseswithmembernames,includedescriptorclasses,allowaccessmodification class !cr_allowunused,** {
   native <methods>;
 }
 
@@ -19,7 +19,7 @@
 }
 
 # Keep all CREATOR fields within Parcelable that are kept.
--keepclassmembers class org.chromium.** implements android.os.Parcelable {
+-keepclassmembers class !cr_allowunused,org.chromium.** implements android.os.Parcelable {
   public static *** CREATOR;
 }
 
@@ -27,19 +27,19 @@
 # If we annotated all Parcelables that get put into Bundles other than
 # for saveInstanceState (e.g. PendingIntents), then we could actually keep the
 # names of just those ones. For now, we'll just keep them all.
--keepnames,allowaccessmodification class org.chromium.** implements android.os.Parcelable {}
+-keepnames,allowaccessmodification class !cr_allowunused,org.chromium.** implements android.os.Parcelable {}
 
 # Keep all enum values and valueOf methods. See
 # http://proguard.sourceforge.net/index.html#manual/examples.html
 # for the reason for this. Also, see http://crbug.com/248037.
--keepclassmembers enum org.chromium.** {
+-keepclassmembers enum !cr_allowunused,org.chromium.** {
     public static **[] values();
 }
 
 # -identifiernamestring doesn't keep the module impl around, we have to
 # explicitly keep it.
 -if @org.chromium.components.module_installer.builder.ModuleInterface interface *
--keep,allowobfuscation,allowaccessmodification class * extends <1> {
+-keep,allowobfuscation,allowaccessmodification class !cr_allowunused,** extends <1> {
   <init>();
 }
 

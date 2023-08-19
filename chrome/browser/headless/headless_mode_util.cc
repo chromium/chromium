@@ -73,11 +73,6 @@ void SetUpCommandLine(const base::CommandLine* command_line) {
         ::switches::kNoErrorDialogs);
   }
 
-  // Disable lazy loading in the new headless mode, similar to the behavior of
-  // the old headless mode.
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableLazyLoading);
-
 #if BUILDFLAG(IS_LINUX)
   // Headless mode on Linux relies on ozone/headless platform.
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(

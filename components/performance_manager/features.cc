@@ -83,6 +83,9 @@ BASE_FEATURE(kForceHeuristicMemorySaver,
 BASE_FEATURE(kHighEfficiencyMultistateMode,
              "HighEfficiencyMultistateMode",
              base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<bool> kHighEfficiencyShowRecommendedBadge{
+    &kHighEfficiencyMultistateMode, "show_recommended_badge", false};
+
 BASE_FEATURE(kDiscardedTabTreatment,
              "DiscardedTabTreatment",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -118,32 +121,39 @@ const base::FeatureParam<int> kHighEfficiencyChartPmf50PercentileBytes{
 const base::FeatureParam<int> kHighEfficiencyChartPmf75PercentileBytes{
     &kMemorySavingsReportingImprovements,
     "high_efficiency_chart_pmf_75_percentile_bytes", 197 * 1024 * 1024};
+const base::FeatureParam<int> kHighEfficiencyChartPmf99PercentileBytes{
+    &kMemorySavingsReportingImprovements,
+    "high_efficiency_chart_pmf_99_percentile_bytes", 800 * 1024 * 1024};
 
 const base::FeatureParam<double> kDiscardedTabTreatmentOpacity{
-    &kDiscardedTabTreatment, "discard_tab_treatment_opacity", 0.3};
+    &kDiscardedTabTreatment, "discard_tab_treatment_opacity", 0.5};
 
 const base::FeatureParam<int> kDiscardedTabTreatmentOption{
     &kDiscardedTabTreatment, "discard_tab_treatment_option",
-    static_cast<int>(DiscardTabTreatmentOptions::kFadeFullsizedFavicon)};
+    static_cast<int>(DiscardTabTreatmentOptions::kFadeSmallFaviconWithRing)};
 
 const base::FeatureParam<int> kMemoryUsageInHovercardsHighThresholdBytes{
     &kMemoryUsageInHovercards,
     "memory_usage_in_hovercards_high_threshold_bytes", 800 * 1024 * 1024};
 
-BASE_FEATURE(kUseDeviceBatterySaverChromeOS,
-             "UseDeviceBatterySaverChromeOS",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+// Mapping of enum value to parameter string for "memory_update_trigger" param.
+constexpr base::FeatureParam<MemoryUsageInHovercardsUpdateTrigger>::Option
+    kMemoryUsageInHovercardsUpdateTriggerOptions[] = {
+        {MemoryUsageInHovercardsUpdateTrigger::kBackground, "background"},
+        {MemoryUsageInHovercardsUpdateTrigger::kNavigation, "navigation"},
+};
+
+const base::FeatureParam<MemoryUsageInHovercardsUpdateTrigger>
+    kMemoryUsageInHovercardsUpdateTrigger{
+        &kMemoryUsageInHovercards, "memory_update_trigger",
+        MemoryUsageInHovercardsUpdateTrigger::kBackground,
+        &kMemoryUsageInHovercardsUpdateTriggerOptions};
 
 #endif
 
 BASE_FEATURE(kBFCachePerformanceManagerPolicy,
              "BFCachePerformanceManagerPolicy",
-#if !BUILDFLAG(IS_ANDROID)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUrgentPageDiscarding,
              "UrgentPageDiscarding",

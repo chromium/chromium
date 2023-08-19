@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.tab;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.Referrer;
@@ -82,7 +80,6 @@ public class TabStateExtractor {
         }
     }
 
-    @VisibleForTesting
     public static void setTabStateForTesting(int tabId, TabState tabState) {
         if (sTabStatesForTesting == null) {
             sTabStatesForTesting = new HashMap<>();
@@ -90,7 +87,6 @@ public class TabStateExtractor {
         sTabStatesForTesting.put(tabId, tabState);
     }
 
-    @VisibleForTesting
     public static void resetTabStatesForTesting() {
         sTabStatesForTesting = null;
     }

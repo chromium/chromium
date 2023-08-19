@@ -8,6 +8,7 @@
 #include <limits>
 
 #include "base/synchronization/lock.h"
+#include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
@@ -646,6 +647,10 @@ double OscillatorHandler::ProcessARate(int n,
 }
 
 void OscillatorHandler::Process(uint32_t frames_to_process) {
+  TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
+              "OscillatorHandler::Process", "this",
+              reinterpret_cast<void*>(this), "type", GetType());
+
   AudioBus* output_bus = Output(0).Bus();
 
   if (!IsInitialized() || !output_bus->NumberOfChannels()) {

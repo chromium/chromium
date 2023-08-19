@@ -103,6 +103,25 @@ suite('localized_link', function() {
     });
   });
 
+  test('LinkAuxclick', function() {
+    document.body.innerHTML = getLocalizedStringWithLinkElementHtml(
+        `Text with a <a href='#'>link</a>`, ``);
+
+    return flushTasks().then(async () => {
+      const localizedLink = document.body.querySelector('localized-link');
+      assertTrue(!!localizedLink);
+      const anchorTag = localizedLink.shadowRoot!.querySelector('a');
+      assertTrue(!!anchorTag);
+      const localizedLinkPromise =
+          eventToPromise('link-clicked', localizedLink);
+
+      // simulate a middle-button click
+      anchorTag.dispatchEvent(new MouseEvent('auxclick', {button: 1}));
+
+      await Promise.all([localizedLinkPromise, flushTasks()]);
+    });
+  });
+
   test('link disabled', async function() {
     document.body.innerHTML = getLocalizedStringWithLinkElementHtml(
         `Text with a <a href='#'>link</a>`, ``);

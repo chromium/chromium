@@ -19,6 +19,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/aura/client/aura_constants.h"
@@ -112,9 +113,16 @@ IN_PROC_BROWSER_TEST_F(SystemWebDialogTest, FontSize) {
   profile_prefs->SetInteger(prefs::kWebKitDefaultFixedFontSize,
                             kDefaultFixedFontSize + 1);
 
-  // Open a system dialog.
+  // Open a system dialog and ensure it has successfully committed.
+  const GURL expected_url = GURL(chrome::kChromeUIInternetConfigDialogURL);
+  content::TestNavigationObserver navigation_observer(expected_url);
+  navigation_observer.StartWatchingNewWebContents();
   MockSystemWebDialog* dialog = new MockSystemWebDialog();
   dialog->ShowSystemDialog();
+  navigation_observer.Wait();
+
+  // Ensure web preferences are updated.
+  dialog->GetWebUIForTest()->GetWebContents()->NotifyPreferencesChanged();
 
   // Dialog font sizes are still the default values.
   blink::web_pref::WebPreferences dialog_prefs =

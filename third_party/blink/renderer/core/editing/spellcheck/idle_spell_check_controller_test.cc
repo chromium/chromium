@@ -146,11 +146,11 @@ TEST_F(IdleSpellCheckControllerTest, ColdModeRangeCrossesShadow) {
       "<menu style=\"all: initial\">1127</menu>"
       "<object><optgroup></optgroup></object>"
       "</div>");
-  auto* html_object_element =
-      To<HTMLObjectElement>(GetDocument().QuerySelector("object"));
+  auto* html_object_element = To<HTMLObjectElement>(
+      GetDocument().QuerySelector(AtomicString("object")));
   html_object_element->RenderFallbackContent(
       HTMLObjectElement::ErrorEventPolicy::kDispatch);
-  GetDocument().QuerySelector("div")->Focus();
+  GetDocument().QuerySelector(AtomicString("div"))->Focus();
   UpdateAllLifecyclePhasesForTest();
 
   // Advance to cold mode invocation

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
@@ -15,6 +16,10 @@ component("kcer") {
     "kcer_impl.h",
     "kcer_notifier_net.cc",
     "kcer_notifier_net.h",
+    "kcer_nss/cert_cache_nss.cc",
+    "kcer_nss/cert_cache_nss.h",
+    "kcer_nss/kcer_token_impl_nss.cc",
+    "kcer_nss/kcer_token_impl_nss.h",
     "kcer_token.h",
     "token_key_finder.cc",
     "token_key_finder.h",
@@ -24,8 +29,12 @@ component("kcer") {
   deps = [
     ":key_permissions_proto",
     "//base",
+    "//content/public/browser",
     "//net",
   ]
+  if (is_chromeos_ash) {
+    deps += [ "//chromeos/ash/components/chaps_util" ]
+  }
 }
 
 proto_library("key_permissions_proto") {
@@ -35,10 +44,31 @@ proto_library("key_permissions_proto") {
   proto_out_dir = "chromeos/components/kcer"
 }
 
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "kcer_nss/test_utils.cc",
+    "kcer_nss/test_utils.h",
+  ]
+
+  deps = [
+    ":kcer",
+    ":key_permissions_proto",
+    "//base",
+    "//content/public/browser",
+    "//crypto",
+    "//crypto:test_support",
+    "//net",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "kcer_nss/cert_cache_nss_unittest.cc",
+    "kcer_nss/kcer_nss_unittest.cc",
     "token_key_finder_unittest.cc",
     "token_results_merger_unittest.cc",
   ]
@@ -46,8 +76,29 @@ source_set("unit_tests") {
   deps = [
     ":kcer",
     ":key_permissions_proto",
+    ":test_support",
     "//base/test:test_support",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//crypto:test_support",
     "//net",
+    "//net:test_support",
+    "//testing/gtest",
+  ]
+}
+
+fuzzer_test("kcer_nss_fuzzer") {
+  sources = [ "kcer_nss/kcer_nss_fuzzer.cc" ]
+
+  deps = [
+    ":kcer",
+    ":key_permissions_proto",
+    ":test_support",
+    "//base/test:test_support",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//net",
+    "//net:test_support",
     "//testing/gtest",
   ]
 }

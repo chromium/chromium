@@ -21,11 +21,12 @@ scoped_refptr<CachedMetadata> CachedMetadata::CreateFromSerializedData(
 scoped_refptr<CachedMetadata> CachedMetadata::CreateFromSerializedData(
     Vector<uint8_t> data) {
   // Ensure the data is big enough, otherwise discard the data.
-  if (data.size() < kCachedMetaDataStart)
+  if (data.size() < sizeof(CachedMetadataHeader)) {
     return nullptr;
+  }
   // Ensure the marker matches, otherwise discard the data.
-  if (*reinterpret_cast<const uint32_t*>(data.data()) !=
-      CachedMetadataHandler::kSingleEntry) {
+  if (reinterpret_cast<const CachedMetadataHeader*>(data.data())->marker !=
+      CachedMetadataHandler::kSingleEntryWithTag) {
     return nullptr;
   }
   return base::AdoptRef(new CachedMetadata(std::move(data)));
@@ -34,11 +35,12 @@ scoped_refptr<CachedMetadata> CachedMetadata::CreateFromSerializedData(
 scoped_refptr<CachedMetadata> CachedMetadata::CreateFromSerializedData(
     mojo_base::BigBuffer data) {
   // Ensure the data is big enough, otherwise discard the data.
-  if (data.size() < kCachedMetaDataStart)
+  if (data.size() < sizeof(CachedMetadataHeader)) {
     return nullptr;
+  }
   // Ensure the marker matches, otherwise discard the data.
-  if (*reinterpret_cast<const uint32_t*>(data.data()) !=
-      CachedMetadataHandler::kSingleEntry) {
+  if (reinterpret_cast<const CachedMetadataHeader*>(data.data())->marker !=
+      CachedMetadataHandler::kSingleEntryWithTag) {
     return nullptr;
   }
   return base::AdoptRef(new CachedMetadata(std::move(data)));
@@ -46,32 +48,33 @@ scoped_refptr<CachedMetadata> CachedMetadata::CreateFromSerializedData(
 
 CachedMetadata::CachedMetadata(Vector<uint8_t> data) {
   // Serialized metadata should have non-empty data.
-  DCHECK_GT(data.size(), kCachedMetaDataStart);
+  DCHECK_GT(data.size(), sizeof(CachedMetadataHeader));
   DCHECK(!data.empty());
   // Make sure that the first int in the data is the single entry marker.
-  CHECK_EQ(*reinterpret_cast<const uint32_t*>(data.data()),
-           CachedMetadataHandler::kSingleEntry);
+  CHECK_EQ(reinterpret_cast<const CachedMetadataHeader*>(data.data())->marker,
+           CachedMetadataHandler::kSingleEntryWithTag);
 
   vector_ = std::move(data);
 }
 
 CachedMetadata::CachedMetadata(uint32_t data_type_id,
                                const uint8_t* data,
-                               wtf_size_t size) {
+                               wtf_size_t size,
+                               uint64_t tag) {
   // Don't allow an ID of 0, it is used internally to indicate errors.
   DCHECK(data_type_id);
   DCHECK(data);
 
-  vector_ = CachedMetadata::GetSerializedDataHeader(data_type_id, size);
+  vector_ = CachedMetadata::GetSerializedDataHeader(data_type_id, size, tag);
   vector_.Append(data, size);
 }
 
 CachedMetadata::CachedMetadata(mojo_base::BigBuffer data) {
   // Serialized metadata should have non-empty data.
-  DCHECK_GT(data.size(), kCachedMetaDataStart);
+  DCHECK_GT(data.size(), sizeof(CachedMetadataHeader));
   // Make sure that the first int in the data is the single entry marker.
-  CHECK_EQ(*reinterpret_cast<const uint32_t*>(data.data()),
-           CachedMetadataHandler::kSingleEntry);
+  CHECK_EQ(reinterpret_cast<const CachedMetadataHeader*>(data.data())->marker,
+           CachedMetadataHandler::kSingleEntryWithTag);
 
   buffer_ = std::move(data);
 }

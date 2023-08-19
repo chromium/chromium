@@ -4,14 +4,14 @@
 
 module network.mojom;
 
-// Represents AddressSpace from the "Local Network Access" spec. The ordering is
-// important, as it's used to determine whether preflights are required, as per
-// https://wicg.github.io/local-network-access/#framework
+// Represents AddressSpace from the "Private Network Access" spec. The ordering
+// is important, as it's used to determine whether preflights are required, as
+// per https://wicg.github.io/private-network-access/#framework
 enum IPAddressSpace {
-  kLoopback, // contains the local host only. In other words, addresses whose
+  kLocal,    // contains the local host only. In other words, addresses whose
              // target differs for every device.
 
-  kLocal,    // contains addresses that have meaning only within the current
+  kPrivate,  // contains addresses that have meaning only within the current
              // network. In other words, addresses whose target differs based
              // on network position.
 

@@ -9,7 +9,7 @@ language features.
 
 As the C++ style guide tells you, we never use C casts and prefer
 `static_cast<T>` and `dynamic_cast<T>`. However, for Objective-C casts we have
-two specific casts: `base::mac::ObjCCast<T>arg` is similar to `dynamic_cast<T>`,
+two specific casts: `base::apple::ObjCCast<T>arg` is similar to `dynamic_cast<T>`,
 and `ObjcCCastStrict` `DCHECKs` against that class.
 
 ## Blocks

@@ -33,7 +33,8 @@
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_window_builder.h"
-#include "ash/wallpaper/wallpaper_widget_controller.h"
+#include "ash/wallpaper/views/wallpaper_widget_controller.h"
+#include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/drag_window_resizer.h"
 #include "ash/wm/float/float_controller.h"
@@ -49,6 +50,7 @@
 #include "ash/wm/splitview/split_view_metrics_controller.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/test/fake_window_state.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_resizer.h"
 #include "ash/wm/window_state.h"
@@ -61,6 +63,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/wm/features.h"
@@ -348,31 +351,6 @@ class SplitViewControllerTest : public AshTestBase {
   }
   std::vector<std::string> trace_names_;
   base::HistogramTester histograms_;
-};
-
-class TestWindowStateDelegate : public WindowStateDelegate {
- public:
-  TestWindowStateDelegate() = default;
-
-  TestWindowStateDelegate(const TestWindowStateDelegate&) = delete;
-  TestWindowStateDelegate& operator=(const TestWindowStateDelegate&) = delete;
-
-  ~TestWindowStateDelegate() override = default;
-
-  // WindowStateDelegate:
-  std::unique_ptr<PresentationTimeRecorder> OnDragStarted(
-      int component) override {
-    drag_in_progress_ = true;
-    return nullptr;
-  }
-  void OnDragFinished(bool cancel, const gfx::PointF& location) override {
-    drag_in_progress_ = false;
-  }
-
-  bool drag_in_progress() { return drag_in_progress_; }
-
- private:
-  bool drag_in_progress_ = false;
 };
 
 // Tests the basic functionalities.
@@ -706,13 +684,22 @@ TEST_F(SplitViewControllerTest,
 
   WallpaperWidgetController* wallpaper_widget_controller =
       Shell::GetPrimaryRootWindowController()->wallpaper_widget_controller();
-  EXPECT_GT(wallpaper_widget_controller->GetWallpaperBlur(), 0);
+
+  const bool is_jellyroll_enabled = chromeos::features::IsJellyrollEnabled();
+  // When Jellyroll is enabled, the wallpaper blur is removed in overview mode.
+  EXPECT_EQ(wallpaper_widget_controller->GetWallpaperBlur(),
+            chromeos::features::IsJellyrollEnabled()
+                ? wallpaper_constants::kClear
+                : wallpaper_constants::kOverviewBlur);
   EXPECT_FALSE(wallpaper_widget_controller->IsAnimating());
 
   ui::ScopedAnimationDurationScaleMode animation_scale(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   ToggleOverview();
-  EXPECT_GT(wallpaper_widget_controller->GetWallpaperBlur(), 0);
+
+  EXPECT_EQ(wallpaper_widget_controller->GetWallpaperBlur(),
+            is_jellyroll_enabled ? wallpaper_constants::kClear
+                                 : wallpaper_constants::kOverviewBlur);
   EXPECT_FALSE(wallpaper_widget_controller->IsAnimating());
 
   WaitForOverviewExitAnimation();
@@ -2342,8 +2329,8 @@ TEST_F(SplitViewControllerTest, ExitTabletModeDuringResizeCompletesDrags) {
   auto* w2_state = WindowState::Get(window2.get());
 
   // Setup delegates
-  auto* window_state_delegate1 = new TestWindowStateDelegate();
-  auto* window_state_delegate2 = new TestWindowStateDelegate();
+  auto* window_state_delegate1 = new FakeWindowStateDelegate();
+  auto* window_state_delegate2 = new FakeWindowStateDelegate();
   w1_state->SetDelegate(base::WrapUnique(window_state_delegate1));
   w2_state->SetDelegate(base::WrapUnique(window_state_delegate2));
 
@@ -2388,7 +2375,7 @@ TEST_F(SplitViewControllerTest,
   auto* w1_state = WindowState::Get(window1.get());
 
   // Setup delegate
-  auto* window_state_delegate1 = new TestWindowStateDelegate();
+  auto* window_state_delegate1 = new FakeWindowStateDelegate();
   w1_state->SetDelegate(base::WrapUnique(window_state_delegate1));
 
   // Set up window.
@@ -2432,8 +2419,8 @@ TEST_F(SplitViewControllerTest,
   auto* w2_state = WindowState::Get(window2.get());
 
   // Setup delegates
-  auto* window_state_delegate1 = new TestWindowStateDelegate();
-  auto* window_state_delegate2 = new TestWindowStateDelegate();
+  auto* window_state_delegate1 = new FakeWindowStateDelegate();
+  auto* window_state_delegate2 = new FakeWindowStateDelegate();
   w1_state->SetDelegate(base::WrapUnique(window_state_delegate1));
   w2_state->SetDelegate(base::WrapUnique(window_state_delegate2));
 
@@ -3477,25 +3464,20 @@ TEST_F(SplitViewControllerTest, SnapWindowWithMinSizeOpensOverview) {
   split_view_controller()->SnapWindow(
       window2.get(), SplitViewController::SnapPosition::kSecondary);
 
-  // Snap `window1` to 2/3. Since `window2` can't fit in 1/3, test that we open
-  // Overview instead.
+  // Try to snap `window1` to 2/3. Since `window2` can't fit in 1/3, test that
+  // the divider and both windows bounce back to 1/2.
   WindowSnapWMEvent snap_primary_two_third(WM_EVENT_SNAP_PRIMARY,
                                            chromeos::kTwoThirdSnapRatio);
   WindowState::Get(window1.get())->OnWMEvent(&snap_primary_two_third);
-  EXPECT_EQ(split_view_controller()->state(),
-            SplitViewController::State::kPrimarySnapped);
-  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
-
-  // Activate `window2`, i.e. from Overview. Test that `window2` gets pushed to
-  // 1/2 and `window1` also gets updated to 1/2.
-  wm::ActivateWindow(window2.get());
-  EXPECT_EQ(split_view_controller()->state(),
-            SplitViewController::State::kBothSnapped);
-  const int divider_delta = kSplitviewDividerShortSideLength / 2;
-  EXPECT_EQ(work_area_bounds.width() * 0.5f,
-            window1->bounds().width() + divider_delta);
-  EXPECT_EQ(work_area_bounds.width() * 0.5f,
-            window2->bounds().width() + divider_delta);
+  SkipDividerSnapAnimation();
+  gfx::Rect divider_bounds =
+      split_view_divider()->GetDividerBoundsInScreen(/*is_dragging=*/false);
+  ASSERT_NEAR(work_area_bounds.width() * 0.5f, divider_bounds.x(),
+              divider_bounds.width());
+  ASSERT_NEAR(work_area_bounds.width() * 0.5f, window1->bounds().width(),
+              kSplitviewDividerShortSideLength / 2);
+  ASSERT_NEAR(work_area_bounds.width() * 0.5f, window2->bounds().width(),
+              kSplitviewDividerShortSideLength / 2);
 }
 
 // Tests that auto-snap for partial windows works correctly.

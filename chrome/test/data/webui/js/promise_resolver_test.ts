@@ -5,7 +5,7 @@
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-suite('PromiseResolverModuleTest', function() {
+suite('PromiseResolverTest', function() {
   test('resolves', function(done) {
     const resolver = new PromiseResolver<void>();
     resolver.promise.then(done);

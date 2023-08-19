@@ -44,6 +44,8 @@ EnumTraits<network::mojom::SourceType, net::SourceStream::SourceType>::ToMojom(
       return network::mojom::SourceType::kDeflate;
     case net::SourceStream::SourceType::TYPE_GZIP:
       return network::mojom::SourceType::kGzip;
+    case net::SourceStream::SourceType::TYPE_ZSTD:
+      return network::mojom::SourceType::kZstd;
     case net::SourceStream::SourceType::TYPE_NONE:
       return network::mojom::SourceType::kNone;
     case net::SourceStream::SourceType::TYPE_UNKNOWN:
@@ -65,6 +67,9 @@ bool EnumTraits<network::mojom::SourceType, net::SourceStream::SourceType>::
       return true;
     case network::mojom::SourceType::kGzip:
       *out = net::SourceStream::SourceType::TYPE_GZIP;
+      return true;
+    case network::mojom::SourceType::kZstd:
+      *out = net::SourceStream::SourceType::TYPE_ZSTD;
       return true;
     case network::mojom::SourceType::kNone:
       *out = net::SourceStream::SourceType::TYPE_NONE;
@@ -101,6 +106,8 @@ bool StructTraits<network::mojom::TrustedUrlRequestParamsDataView,
   }
   out->accept_ch_frame_observer = data.TakeAcceptChFrameObserver<
       mojo::PendingRemote<network::mojom::AcceptCHFrameObserver>>();
+  out->shared_dictionary_observer = data.TakeSharedDictionaryObserver<
+      mojo::PendingRemote<network::mojom::SharedDictionaryAccessObserver>>();
   return true;
 }
 
@@ -169,7 +176,9 @@ bool StructTraits<
       !data.ReadNetLogReferenceInfo(&out->net_log_reference_info) ||
       !data.ReadNavigationRedirectChain(&out->navigation_redirect_chain) ||
       !data.ReadAttributionReportingRuntimeFeatures(
-          &out->attribution_reporting_runtime_features)) {
+          &out->attribution_reporting_runtime_features) ||
+      !data.ReadAttributionReportingSrcToken(
+          &out->attribution_reporting_src_token)) {
     // Note that data.ReadTrustTokenParams is temporarily handled below.
     return false;
   }
@@ -205,6 +214,7 @@ bool StructTraits<
   out->upgrade_if_insecure = data.upgrade_if_insecure();
   out->is_revalidating = data.is_revalidating();
   out->is_fetch_like_api = data.is_fetch_like_api();
+  out->is_fetch_later_api = data.is_fetch_later_api();
   out->is_favicon = data.is_favicon();
   out->original_destination = data.original_destination();
   out->target_ip_address_space = data.target_ip_address_space();
@@ -214,6 +224,11 @@ bool StructTraits<
       data.attribution_reporting_eligibility();
   out->shared_dictionary_writer_enabled =
       data.shared_dictionary_writer_enabled();
+#if BUILDFLAG(IS_ANDROID)
+  if (!data.ReadCreatedLocation(&out->created_location)) {
+    return false;
+  }
+#endif
   return true;
 }
 

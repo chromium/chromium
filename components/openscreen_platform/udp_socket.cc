@@ -23,7 +23,7 @@ namespace openscreen {
 
 // static
 ErrorOr<std::unique_ptr<UdpSocket>> UdpSocket::Create(
-    TaskRunner* task_runner,
+    TaskRunner& task_runner,
     Client* client,
     const IPEndpoint& local_endpoint) {
   network::mojom::NetworkContext* const network_context =
@@ -158,7 +158,6 @@ void UdpSocket::OnReceived(
     client_->OnRead(this, Error::Code::kSocketReadFailure);
   } else if (data) {
     UdpPacket packet(data->begin(), data->end());
-    packet.set_socket(this);
     if (source_endpoint) {
       packet.set_source(
           openscreen_platform::ToOpenScreenEndPoint(source_endpoint.value()));

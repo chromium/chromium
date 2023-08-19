@@ -112,14 +112,8 @@ def _CppImplementation(filename):
 
 
 def _ObjCppImplementation(filename):
-  implementation = '\n#import "' + _RemoveTestSuffix(filename) + '.h"\n'
-  if not _IsIOSFile(filename):
-    return implementation
-  implementation += '\n'
-  implementation += '#if !defined(__has_feature) || !__has_feature(objc_arc)\n'
-  implementation += '#error "This file requires ARC support."\n'
-  implementation += '#endif\n'
-  return implementation
+  return '\n#import "' + _FilePathSlashesToCpp(_RemoveTestSuffix(filename)) \
+    + '.h"\n'
 
 
 def _CreateFile(filename):
@@ -159,7 +153,7 @@ def Main():
       print('A file at path %s already exists' % f, file=sys.stderr)
       return 2
 
-    # TODO(crbug.com/1375793): Remove this check.
+    # TODO(https://crbug.com/1375793): Remove this check.
     if _IsIOSFile(f) and f.endswith('.js'):
       print(
           'Invalid file type for %s. (Please use \'.ts\' for new iOS scripts.)'

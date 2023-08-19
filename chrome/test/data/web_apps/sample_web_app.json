@@ -59,27 +59,6 @@
       "MASKABLE": [ 256 ],
       "MONOCHROME": [ 256 ]
    },
-   "downloaded_shortcuts_menu_icons_sizes": [ {
-      "ANY": [  ],
-      "MASKABLE": [  ],
-      "MONOCHROME": [  ],
-      "index": 0
-   }, {
-      "ANY": [ 118 ],
-      "MASKABLE": [ 38 ],
-      "MONOCHROME": [ 228 ],
-      "index": 1
-   }, {
-      "ANY": [ 80, 47 ],
-      "MASKABLE": [ 240, 164 ],
-      "MONOCHROME": [ 138, 107 ],
-      "index": 2
-   }, {
-      "ANY": [ 3, 4, 22 ],
-      "MASKABLE": [ 141, 14, 123 ],
-      "MONOCHROME": [ 16, 115, 22 ],
-      "index": 3
-   } ],
    "file_handler_approval_state": "kRequiresPrompt",
    "file_handler_os_integration_state": "kDisabled",
    "file_handlers": [ {
@@ -184,22 +163,31 @@
       "name": "32484220704 file"
    } ],
    "install_time": "1970-01-27 09:52:51.713 UTC",
+   "is_user_selected_app_for_capturing_links": true,
    "is_from_sync_and_pending_installation": true,
    "is_generated_icon": true,
    "is_locally_installed": true,
    "is_uninstalling": false,
    "isolation_data": {
-      "controlled_frame_partitions": [ "partition_name" ],
+      "controlled_frame_partitions (on-disk)": [ "partition_name" ],
       "isolated_web_app_location": {
          "dev_mode_bundle": {
             "path": "1234"
          }
       },
+      "pending_update_info": {
+         "isolated_web_app_location": {
+            "dev_mode_bundle": {
+               "path": "1234"
+            }
+         },
+         "version": "2943622033.3502924369.2975492436"
+      },
       "version": "2831420433.2572177745.363425051"
    },
    "last_badging_time": "1970-02-06 10:58:36.765 UTC",
    "last_launch_time": "1970-01-28 05:07:28.623 UTC",
-   "latest_install_source": 11,
+   "latest_install_source": "menu create shortcut",
    "launch_handler": {
       "client_mode": "kNavigateExisting"
    },
@@ -322,6 +310,11 @@
       }
    },
    "shortcuts_menu_item_infos": [ {
+      "downloaded_icons_sizes": {
+         "ANY": [  ],
+         "MASKABLE": [  ],
+         "MONOCHROME": [  ]
+      },
       "icons": {
          "ANY": [  ],
          "MASKABLE": [ {
@@ -345,6 +338,11 @@
       "name": "shortcut9442928603",
       "url": "https://example.com/scope1234/shortcut9442928603"
    }, {
+      "downloaded_icons_sizes": {
+         "ANY": [ 118 ],
+         "MASKABLE": [ 38 ],
+         "MONOCHROME": [ 228 ]
+      },
       "icons": {
          "ANY": [  ],
          "MASKABLE": [ {
@@ -365,6 +363,11 @@
       "name": "shortcut9442928602",
       "url": "https://example.com/scope1234/shortcut9442928602"
    }, {
+      "downloaded_icons_sizes": {
+         "ANY": [ 80, 47 ],
+         "MASKABLE": [ 240, 164 ],
+         "MONOCHROME": [ 138, 107 ]
+      },
       "icons": {
          "ANY": [  ],
          "MASKABLE": [ {
@@ -382,6 +385,11 @@
       "name": "shortcut9442928601",
       "url": "https://example.com/scope1234/shortcut9442928601"
    }, {
+      "downloaded_icons_sizes": {
+         "ANY": [ 3, 4, 22 ],
+         "MASKABLE": [ 141, 14, 123 ],
+         "MONOCHROME": [ 16, 115, 22 ]
+      },
       "icons": {
          "ANY": [  ],
          "MASKABLE": [ {
@@ -465,7 +473,7 @@
       "origin": "https://app-17838994132.com",
       "paths": [  ]
    } ],
-   "user_display_mode": "tabbed",
+   "user_display_mode": "kTabbed",
    "user_launch_ordinal": "INVALID[]",
    "user_page_ordinal": "INVALID[]",
    "window_controls_overlay_enabled": false

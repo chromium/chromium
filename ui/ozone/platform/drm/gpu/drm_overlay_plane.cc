@@ -55,13 +55,14 @@ DrmOverlayPlane::DrmOverlayPlane(
     const scoped_refptr<DrmFramebuffer>& buffer,
     const gfx::OverlayPlaneData& overlay_plane_data,
     std::unique_ptr<gfx::GpuFence> gpu_fence)
-    : DrmOverlayPlane(buffer,
-                      overlay_plane_data.z_order,
-                      overlay_plane_data.plane_transform,
-                      gfx::ToNearestRect(overlay_plane_data.display_bounds),
-                      overlay_plane_data.crop_rect,
-                      overlay_plane_data.enable_blend,
-                      std::move(gpu_fence)) {}
+    : DrmOverlayPlane(
+          buffer,
+          overlay_plane_data.z_order,
+          absl::get<gfx::OverlayTransform>(overlay_plane_data.plane_transform),
+          gfx::ToNearestRect(overlay_plane_data.display_bounds),
+          overlay_plane_data.crop_rect,
+          overlay_plane_data.enable_blend,
+          std::move(gpu_fence)) {}
 
 DrmOverlayPlane::DrmOverlayPlane(DrmOverlayPlane&& other) = default;
 

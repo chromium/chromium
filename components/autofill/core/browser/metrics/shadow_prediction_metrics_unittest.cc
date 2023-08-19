@@ -21,22 +21,29 @@ using ::testing::UnorderedElementsAre;
 
 namespace autofill::autofill_metrics {
 
-// These constants mirror the similarly named values in
-// `AutofillPredictionsComparisonResult` in
-// tools/metrics/histograms/metadata/autofill/histograms.xml.
-constexpr int kNameFirstSamePredictionValueAgrees = 19;
-constexpr int kNameFirstSamePredictionValueDisagrees = 20;
-constexpr int kNameFirstDifferentPredictionsValueAgreesWithOld = 21;
-constexpr int kNameFirstDifferentPredictionsValueAgreesWithBoth = 24;
-constexpr int kNameFirstDifferentPredictionsValueAgreesWithNeither = 23;
-constexpr int kEmailAddressDifferentPredictionsValueAgreesWithNew = 58;
-constexpr int kNameFullSamePredictionValueAgrees = 43;
-constexpr int kSearchTermDifferentPredictionsValueAgreesWithNew = 586;
+// These mirrors some of the values of `AutofillPredictionsComparisonResult`
+// defined in tools/metrics/histograms/enums.xml. The
+// `AutofillPredictionsComparisonResult` represents all the type-specific
+// `ShadowPredictionComparison` results returned by `GetShadowPrediction()`.
+// Only a subset of them are tested.
+// This is intentionally not an enum class to implicitly convert the values to
+// ints in comparisons with `GetShadowPrediction()`.
+enum AutofillPredictionsComparisonResult {
+  kNoPrediction = 0,
+  kNameFirstSamePredictionValueAgrees = 19,
+  kNameFirstSamePredictionValueDisagrees = 20,
+  kNameFirstDifferentPredictionsValueAgreesWithOld = 21,
+  kNameFirstDifferentPredictionsValueAgreesWithBoth = 24,
+  kNameFirstDifferentPredictionsValueAgreesWithNeither = 23,
+  kEmailAddressDifferentPredictionsValueAgreesWithNew = 58,
+  kNameFullSamePredictionValueAgrees = 43,
+  kSearchTermDifferentPredictionsValueAgreesWithNew = 586,
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-constexpr int kNameFullDifferentPredictionsValueAgreesWithOld = 45;
-constexpr int kEmailAddressDifferentPredictionsValueAgreesWithOld = 57;
-constexpr int kSearchTermSamePredictionValueDisagrees = 584;
+  kNameFullDifferentPredictionsValueAgreesWithOld = 45,
+  kEmailAddressDifferentPredictionsValueAgreesWithOld = 57,
+  kSearchTermSamePredictionValueDisagrees = 584,
 #endif
+};
 
 namespace {
 

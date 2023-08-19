@@ -23,6 +23,7 @@
 #include "device/bluetooth/floss/bluetooth_socket_floss.h"
 #include "device/bluetooth/floss/floss_adapter_client.h"
 #include "device/bluetooth/floss/floss_battery_manager_client.h"
+#include "device/bluetooth/floss/floss_bluetooth_telephony_client.h"
 #include "device/bluetooth/floss/floss_dbus_client.h"
 #include "device/bluetooth/floss/floss_gatt_manager_client.h"
 #include "device/bluetooth/floss/floss_lescan_client.h"
@@ -183,6 +184,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
   // Set the adapter name to one chosen from the system information. Only Ash
   // needs to do this.
   void SetStandardChromeOSAdapterName() override;
+  // Enable telephony feature for floss. Only Ash needs to do this.
+  void ConfigureBluetoothTelephony(bool enabled);
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // ScannerClientObserver overrides
@@ -273,6 +277,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
   void AdapterDiscoveringChanged(bool state) override;
   void AdapterFoundDevice(const FlossDeviceId& device_found) override;
   void AdapterClearedDevice(const FlossDeviceId& device_found) override;
+  void AdapterDevicePropertyChanged(
+      FlossAdapterClient::BtPropertyType prop_type,
+      const FlossDeviceId& device) override;
   void AdapterSspRequest(const FlossDeviceId& remote_device,
                          uint32_t cod,
                          FlossAdapterClient::BluetoothSspVariant variant,

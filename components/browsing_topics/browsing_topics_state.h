@@ -78,8 +78,8 @@ class BrowsingTopicsState
   void ClearContextDomain(const HashedDomain& hashed_context_domain);
 
   // Append `epoch_topics` to `epochs_`. This is invoked at the end of each
-  // epoch calculation.
-  void AddEpoch(EpochTopics epoch_topics);
+  // epoch calculation. If an old EpochTopics is removed as a result, return it.
+  absl::optional<EpochTopics> AddEpoch(EpochTopics epoch_topics);
 
   // Set `next_scheduled_calculation_time_` to one epoch later from
   // base::Time::Now(). This is invoked at the end of each epoch calculation.
@@ -114,6 +114,8 @@ class BrowsingTopicsState
                            EpochsForSite_OneEpoch_SwitchTimeNotArrived);
   FRIEND_TEST_ALL_PREFIXES(BrowsingTopicsStateTest,
                            EpochsForSite_OneEpoch_SwitchTimeArrived);
+  FRIEND_TEST_ALL_PREFIXES(BrowsingTopicsStateTest,
+                           EpochsForSite_OneEpoch_ManuallyTriggered);
 
   base::TimeDelta CalculateSiteStickyTimeDelta(
       const std::string& top_domain) const;

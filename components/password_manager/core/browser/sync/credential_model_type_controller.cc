@@ -10,8 +10,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_features_util.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/sync/base/features.h"
@@ -22,20 +22,6 @@
 #include "components/sync/service/sync_user_settings.h"
 
 namespace password_manager {
-
-namespace {
-
-#if BUILDFLAG(IS_IOS)
-// Master kill switch that can be used to disable enabling PASSWORDS transport
-// mode for users using non-standard encryption passphrase types (explicit
-// passphrase or kTrustedVaultPassphrase). Note that this is necessary but not
-// sufficient to enable PASSWORDS in transport mode.
-BASE_FEATURE(kSyncAllowTransportModeWithNonStandardEncryption,
-             "SyncAllowTransportModeWithNonStandardEncryption",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_IOS)
-
-}  // namespace
 
 CredentialModelTypeController::CredentialModelTypeController(
     syncer::ModelType model_type,
@@ -112,31 +98,13 @@ CredentialModelTypeController::GetPreconditionState() const {
 }
 
 bool CredentialModelTypeController::ShouldRunInTransportOnlyMode() const {
-  if (type() == syncer::PASSWORDS &&
-      !base::FeatureList::IsEnabled(features::kEnablePasswordsAccountStorage)) {
-    return false;
-  }
-#if BUILDFLAG(IS_IOS)
-  // Non-standard passphrase types require UI support to deal with error cases.
-  // On iOS, these UI changes (for transport mode) are guarded behind
-  // kIndicateAccountStorageErrorInAccountCell.
-  if (sync_service_->GetUserSettings()->IsUsingExplicitPassphrase() ||
-      sync_service_->GetUserSettings()->GetPassphraseType() ==
-          syncer::PassphraseType::kTrustedVaultPassphrase) {
-    if (!base::FeatureList::IsEnabled(
-            syncer::kIndicateAccountStorageErrorInAccountCell) ||
-        !base::FeatureList::IsEnabled(
-            kSyncAllowTransportModeWithNonStandardEncryption)) {
-      return false;
-    }
-  }
-#else
+#if !BUILDFLAG(IS_IOS)
   // Outside iOS, passphrase errors aren't reported in the UI, so it doesn't
   // make sense to enable this datatype.
   if (sync_service_->GetUserSettings()->IsUsingExplicitPassphrase()) {
     return false;
   }
-#endif  // BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
   return true;
 }
 

@@ -17,11 +17,10 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fast_pair_advertiser.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
-#include "chrome/browser/ash/login/oobe_quick_start/logging/logging.h"
-#include "chrome/browser/ash/login/oobe_quick_start/oobe_quick_start_pref_names.h"
-#include "chrome/browser/browser_process.h"
-#include "components/prefs/pref_service.h"
-#include "crypto/random.h"
+#include "chrome/browser/ash/nearby/quick_start_connectivity_service.h"
+#include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
+#include "chromeos/ash/components/quick_start/logging.h"
+#include "chromeos/ash/components/quick_start/quick_start_metrics.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -63,10 +62,8 @@ constexpr size_t kEndpointInfoAdvertisingIdLength = 10;
 // Base64 padding character
 constexpr char kBase64PaddingChar = '=';
 
-// The keys used for the dict returned in PrepareForUpdate().
-constexpr char kPrepareForUpdateRandomSessionIdKey[] = "random_session_id";
-constexpr char kPrepareForUpdateSecondarySharedSecretKey[] =
-    "secondary_shared_secret";
+constexpr base::TimeDelta kNearbyConnectionsAdvertisementAfterUpdateTimeout =
+    base::Seconds(30);
 
 // The display name must:
 // - Be a variable-length string of utf-8 bytes
@@ -131,22 +128,13 @@ TargetDeviceConnectionBrokerImpl::BluetoothAdapterFactoryWrapper*
         bluetooth_adapter_factory_wrapper_for_testing_ = nullptr;
 
 TargetDeviceConnectionBrokerImpl::TargetDeviceConnectionBrokerImpl(
-    base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager,
-    std::unique_ptr<Connection::Factory> connection_factory,
-    mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder,
-    bool is_resume_after_update)
-    : nearby_connections_manager_(nearby_connections_manager),
-      connection_factory_(std::move(connection_factory)),
-      quick_start_decoder_(std::move(quick_start_decoder)),
-      is_resume_after_update_(is_resume_after_update) {
-  if (is_resume_after_update_) {
-    FetchPersistedSessionContext();
-  } else {
-    random_session_id_ = RandomSessionId();
-    crypto::RandBytes(shared_secret_);
-    crypto::RandBytes(secondary_shared_secret_);
-  }
-
+    SessionContext session_context,
+    QuickStartConnectivityService* quick_start_connectivity_service,
+    std::unique_ptr<Connection::Factory> connection_factory)
+    : session_context_(session_context),
+      quick_start_connectivity_service_(quick_start_connectivity_service),
+      connection_factory_(std::move(connection_factory)) {
+  is_resume_after_update_ = session_context_.is_resume_after_update();
   GetBluetoothAdapter();
 }
 
@@ -233,8 +221,8 @@ void TargetDeviceConnectionBrokerImpl::StartAdvertising(
 void TargetDeviceConnectionBrokerImpl::StartFastPairAdvertising(
     ResultCallback callback) {
   QS_LOG(INFO) << "Starting Fast Pair advertising with session id "
-               << random_session_id_ << " ("
-               << random_session_id_.GetDisplayCode() << ")";
+               << session_context_.random_session_id() << " ("
+               << session_context_.random_session_id().GetDisplayCode() << ")";
 
   fast_pair_advertiser_ =
       FastPairAdvertiser::Factory::Create(bluetooth_adapter_);
@@ -248,7 +236,7 @@ void TargetDeviceConnectionBrokerImpl::StartFastPairAdvertising(
       base::BindOnce(
           &TargetDeviceConnectionBrokerImpl::OnStartFastPairAdvertisingError,
           weak_ptr_factory_.GetWeakPtr(), std::move(failure_callback)),
-      random_session_id_);
+      session_context_.random_session_id(), use_pin_authentication_);
 }
 
 void TargetDeviceConnectionBrokerImpl::OnStartFastPairAdvertisingSuccess(
@@ -281,81 +269,8 @@ void TargetDeviceConnectionBrokerImpl::StopAdvertising(
       weak_ptr_factory_.GetWeakPtr(), std::move(on_stop_advertising_callback)));
 }
 
-base::Value::Dict TargetDeviceConnectionBrokerImpl::GetPrepareForUpdateInfo() {
-  base::Value::Dict prepare_for_update_info;
-  prepare_for_update_info.Set(kPrepareForUpdateRandomSessionIdKey,
-                              random_session_id_.ToString());
-  std::string secondary_shared_secret_bytes(secondary_shared_secret_.begin(),
-                                            secondary_shared_secret_.end());
-  std::string secondary_shared_secret_base64;
-  // The secondary_shared_secret_bytes string likely contains non-UTF-8
-  // characters, which are disallowed in pref values. Base64Encode the string
-  // for compatibility with prefs.
-  base::Base64Encode(secondary_shared_secret_bytes,
-                     &secondary_shared_secret_base64);
-  prepare_for_update_info.Set(kPrepareForUpdateSecondarySharedSecretKey,
-                              secondary_shared_secret_base64);
-
-  return prepare_for_update_info;
-}
-
 std::string TargetDeviceConnectionBrokerImpl::GetSessionIdDisplayCode() {
-  return random_session_id_.GetDisplayCode();
-}
-
-void TargetDeviceConnectionBrokerImpl::FetchPersistedSessionContext() {
-  PrefService* prefs = g_browser_process->local_state();
-  CHECK(prefs->GetBoolean(prefs::kShouldResumeQuickStartAfterReboot));
-  prefs->ClearPref(prefs::kShouldResumeQuickStartAfterReboot);
-
-  const base::Value::Dict& session_info =
-      prefs->GetDict(prefs::kResumeQuickStartAfterRebootInfo);
-  const std::string* random_session_id_str =
-      session_info.FindString(kPrepareForUpdateRandomSessionIdKey);
-  CHECK(random_session_id_str);
-  absl::optional<RandomSessionId> random_session_id =
-      RandomSessionId::ParseFromBase64(*random_session_id_str);
-  if (!random_session_id.has_value()) {
-    // TODO(b/234655072) Cancel Quick Start if this error occurs. The secondary
-    // connection cannot bootstrap if the RandomSessionId doesn't match.
-    prefs->ClearPref(prefs::kResumeQuickStartAfterRebootInfo);
-    return;
-  }
-  random_session_id_ = random_session_id.value();
-
-  const std::string* secondary_shared_secret_str =
-      session_info.FindString(kPrepareForUpdateSecondarySharedSecretKey);
-  CHECK(secondary_shared_secret_str);
-  DecodeSharedSecret(*secondary_shared_secret_str);
-  prefs->ClearPref(prefs::kResumeQuickStartAfterRebootInfo);
-}
-
-void TargetDeviceConnectionBrokerImpl::DecodeSharedSecret(
-    const std::string& encoded_shared_secret) {
-  std::string decoded_output;
-
-  if (!base::Base64Decode(encoded_shared_secret, &decoded_output)) {
-    // TODO(b/234655072) Cancel Quick Start if this error occurs. The secondary
-    // connection can't bootstrap if the SharedSecret doesn't match the
-    // secondary SharedSecret of the primary connection.
-    QS_LOG(ERROR)
-        << "Failed to decode the secondary shared secret from previous "
-           "session. Encoded secondary shared secret: "
-        << encoded_shared_secret;
-    return;
-  }
-
-  if (decoded_output.length() != shared_secret_.size()) {
-    // TODO(b/234655072) Cancel Quick Start if this error occurs.
-    QS_LOG(ERROR) << "Decoded shared secret is an unexpected length. Decoded "
-                     "shared secret output: "
-                  << decoded_output;
-    return;
-  }
-
-  for (size_t i = 0; i < decoded_output.length(); i++) {
-    shared_secret_[i] = uint8_t(decoded_output[i]);
-  }
+  return session_context_.random_session_id().GetDisplayCode();
 }
 
 void TargetDeviceConnectionBrokerImpl::OnStopFastPairAdvertising(
@@ -377,9 +292,9 @@ void TargetDeviceConnectionBrokerImpl::OnStopFastPairAdvertising(
 //   - Pad with zeros to 60 bytes. Extra space reserved for futureproofing.
 std::vector<uint8_t> TargetDeviceConnectionBrokerImpl::GenerateEndpointInfo()
     const {
-  std::string session_id = random_session_id_.ToString();
+  std::string session_id = session_context_.random_session_id().ToString();
   std::vector<uint8_t> display_name_bytes =
-      GetEndpointInfoDisplayNameBytes(random_session_id_);
+      GetEndpointInfoDisplayNameBytes(session_context_.random_session_id());
   uint8_t verification_style = use_pin_authentication_
                                    ? kEndpointInfoVerificationStyleDigits
                                    : kEndpointInfoVerificationStyleOutOfBand;
@@ -417,41 +332,28 @@ std::vector<uint8_t> TargetDeviceConnectionBrokerImpl::GenerateEndpointInfo()
 
 void TargetDeviceConnectionBrokerImpl::StartNearbyConnectionsAdvertising(
     ResultCallback callback) {
-  if (!nearby_connections_manager_) {
-    QS_LOG(ERROR)
-        << "NearbyConnectionsManager is null, cannot start Nearby Connections "
-           "advertising.";
-    std::move(callback).Run(/*success=*/false);
-    return;
-  }
-
+  CHECK(quick_start_connectivity_service_);
   QS_LOG(INFO) << "Starting Nearby Connections Advertising";
   // TODO(b/234655072): PowerLevel::kHighPower implies using Bluetooth classic,
   // but we should also advertise over BLE. Nearby Connections does not yet
   // support BLE as an upgrade medium, so Quick Start over BLE is planned for
   // post-launch.
-  nearby_connections_manager_->StartAdvertising(
-      GenerateEndpointInfo(), /*listener=*/this, PowerLevel::kHighPower,
-      DataUsage::kOffline,
-      base::BindOnce(&TargetDeviceConnectionBrokerImpl::
-                         OnStartNearbyConnectionsAdvertising,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  quick_start_connectivity_service_->GetNearbyConnectionsManager()
+      ->StartAdvertising(
+          GenerateEndpointInfo(), /*listener=*/this, PowerLevel::kHighPower,
+          DataUsage::kOffline,
+          base::BindOnce(&TargetDeviceConnectionBrokerImpl::
+                             OnStartNearbyConnectionsAdvertising,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void TargetDeviceConnectionBrokerImpl::StopNearbyConnectionsAdvertising(
     base::OnceClosure callback) {
-  if (!nearby_connections_manager_) {
-    QS_LOG(ERROR)
-        << "NearbyConnectionsManager is null, cannot stop Nearby Connections "
-           "advertising.";
-    std::move(callback).Run();
-    return;
-  }
-
   QS_LOG(INFO) << "Stopping Nearby Connections Advertising";
-  nearby_connections_manager_->StopAdvertising(base::BindOnce(
-      &TargetDeviceConnectionBrokerImpl::OnStopNearbyConnectionsAdvertising,
-      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  quick_start_connectivity_service_->GetNearbyConnectionsManager()
+      ->StopAdvertising(base::BindOnce(
+          &TargetDeviceConnectionBrokerImpl::OnStopNearbyConnectionsAdvertising,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void TargetDeviceConnectionBrokerImpl::OnStartNearbyConnectionsAdvertising(
@@ -461,6 +363,15 @@ void TargetDeviceConnectionBrokerImpl::OnStartNearbyConnectionsAdvertising(
                << status;
   bool success =
       status == NearbyConnectionsManager::ConnectionsStatus::kSuccess;
+
+  if (success && is_resume_after_update_) {
+    nearby_connections_advertisement_after_update_timeout_timer_.Start(
+        FROM_HERE, kNearbyConnectionsAdvertisementAfterUpdateTimeout,
+        base::BindOnce(&TargetDeviceConnectionBrokerImpl::
+                           OnNearbyConnectionsAdvertisementAfterUpdateTimeout,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
   std::move(callback).Run(success);
 }
 
@@ -492,14 +403,12 @@ void TargetDeviceConnectionBrokerImpl::OnIncomingConnectionInitiated(
   CHECK(connection_lifecycle_listener_);
   if (use_pin_authentication_) {
     absl::optional<std::string> auth_token =
-        nearby_connections_manager_->GetAuthenticationToken(endpoint_id);
+        quick_start_connectivity_service_->GetNearbyConnectionsManager()
+            ->GetAuthenticationToken(endpoint_id);
     CHECK(auth_token);
     std::string pin = DerivePin(*auth_token);
     QS_LOG(INFO) << "Incoming Nearby Connection Initiated: pin=" << pin;
     connection_lifecycle_listener_->OnPinVerificationRequested(pin);
-  } else {
-    connection_lifecycle_listener_->OnQRCodeVerificationRequested(
-        GetQrCodeData(random_session_id_, shared_secret_));
   }
 }
 
@@ -507,12 +416,20 @@ void TargetDeviceConnectionBrokerImpl::OnIncomingConnectionAccepted(
     const std::string& endpoint_id,
     const std::vector<uint8_t>& endpoint_info,
     NearbyConnection* nearby_connection) {
+  // Nearby Connections advertisement succeeded when connection is accepted so
+  // stop timer when running.
+  if (nearby_connections_advertisement_after_update_timeout_timer_
+          .IsRunning()) {
+    nearby_connections_advertisement_after_update_timeout_timer_.Stop();
+  }
+
   QS_LOG(INFO) << "Incoming Nearby Connection Accepted: endpoint_id="
                << endpoint_id;
 
   // TODO(b/234655072): Handle Connection Closed in the Connection Broker
   connection_ = connection_factory_->Create(
-      nearby_connection, BuildConnectionSessionContext(), quick_start_decoder_,
+      nearby_connection, session_context_,
+      quick_start_connectivity_service_->GetQuickStartDecoder(),
       base::BindOnce(&TargetDeviceConnectionBrokerImpl::OnConnectionClosed,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(
@@ -521,12 +438,15 @@ void TargetDeviceConnectionBrokerImpl::OnIncomingConnectionAccepted(
 
   if (use_pin_authentication_ && !is_resume_after_update_) {
     QS_LOG(INFO) << "Pin authentication completed!";
+    quick_start_metrics::RecordHandshakeStarted(/*handshake_started=*/false);
     connection_->MarkConnectionAuthenticated();
   } else {
     QS_LOG(INFO) << "Initiating cryptographic handshake.";
     absl::optional<std::string> auth_token =
-        nearby_connections_manager_->GetAuthenticationToken(endpoint_id);
+        quick_start_connectivity_service_->GetNearbyConnectionsManager()
+            ->GetAuthenticationToken(endpoint_id);
     CHECK(auth_token);
+    quick_start_metrics::RecordHandshakeStarted(/*handshake_started=*/true);
     connection_->InitiateHandshake(
         *auth_token,
         base::BindOnce(&TargetDeviceConnectionBrokerImpl::OnHandshakeCompleted,
@@ -546,14 +466,16 @@ void TargetDeviceConnectionBrokerImpl::OnHandshakeCompleted(bool success) {
   connection_->MarkConnectionAuthenticated();
 }
 
-const Connection::SessionContext
-TargetDeviceConnectionBrokerImpl::BuildConnectionSessionContext() const {
-  Connection::SessionContext context = {
-      .session_id = random_session_id_,
-      .shared_secret = shared_secret_,
-      .secondary_shared_secret = secondary_shared_secret_};
-
-  return context;
+void TargetDeviceConnectionBrokerImpl::
+    OnNearbyConnectionsAdvertisementAfterUpdateTimeout() {
+  is_resume_after_update_ = false;
+  QS_LOG(ERROR) << "The Nearby Connections advertisement timed out during "
+                   "attempt to automatically resume after an update. Will now "
+                   "attempt to stop Nearby Connections advertising and "
+                   "fallback to Fast Pair advertising.";
+  auto start_fast_pair_advertising = base::BindOnce(
+      &TargetDeviceConnectionBrokerImpl::StartFastPairAdvertising,
+      weak_ptr_factory_.GetWeakPtr(), base::DoNothing());
+  StopNearbyConnectionsAdvertising(std::move(start_fast_pair_advertising));
 }
-
 }  // namespace ash::quick_start

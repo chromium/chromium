@@ -35,9 +35,9 @@ class ASH_EXPORT SearchResultPageView : public AppListPage {
 
   // Overridden from views::View:
   const char* GetClassName() const override;
+  void VisibilityChanged(View* starting_from, bool is_visible) override;
   gfx::Size CalculatePreferredSize() const override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
-  void OnThemeChanged() override;
 
   // AppListPage overrides:
   void OnHidden() override;
@@ -100,9 +100,6 @@ class ASH_EXPORT SearchResultPageView : public AppListPage {
 
   // Search result container used for productivity launcher.
   raw_ptr<AppListSearchView, ExperimentalAsh> search_view_ = nullptr;
-
-  // View containing SearchCardView instances. Owned by view hierarchy.
-  raw_ptr<views::View, ExperimentalAsh> root_view_ = nullptr;
 
   // The currently shown search results state. Used with productivity launcher.
   SearchResultsState current_search_results_state_ =

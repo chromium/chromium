@@ -11,7 +11,7 @@ class OfflineItemModelManager;
 
 namespace base {
 template <typename T>
-struct DefaultSingletonTraits;
+class NoDestructor;
 }  // namespace base
 
 namespace content {
@@ -37,7 +37,7 @@ class OfflineItemModelManagerFactory : public ProfileKeyedServiceFactory {
       const OfflineItemModelManagerFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<OfflineItemModelManagerFactory>;
+  friend base::NoDestructor<OfflineItemModelManagerFactory>;
 
   OfflineItemModelManagerFactory();
   ~OfflineItemModelManagerFactory() override;

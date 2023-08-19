@@ -34,10 +34,6 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Mock class for testing MetricsMediator.
 @interface MetricsMediatorMock : MetricsMediator
 @property(nonatomic) NSInteger reportingValue;
@@ -128,20 +124,20 @@ class MetricsMediatorLogLaunchTest : public PlatformTest {
     } copy];
     if (coldStart) {
       tabs_uma_histogram_swizzler_.reset(new ScopedBlockSwizzler(
-          [MetricsMediator class], @selector(recordNumTabAtStartup:),
+          [MetricsMediator class], @selector(recordStartupTabCount:),
           num_tabs_swizzle_block_));
       ntp_tabs_uma_histogram_swizzler_.reset(new ScopedBlockSwizzler(
-          [MetricsMediator class], @selector(recordNumNTPTabAtStartup:),
+          [MetricsMediator class], @selector(recordStartupNTPTabCount:),
           num_ntp_tabs_swizzle_block_));
     } else {
       tabs_uma_histogram_swizzler_.reset(new ScopedBlockSwizzler(
-          [MetricsMediator class], @selector(recordNumTabAtResume:),
+          [MetricsMediator class], @selector(recordResumeTabCount:),
           num_tabs_swizzle_block_));
       ntp_tabs_uma_histogram_swizzler_.reset(new ScopedBlockSwizzler(
-          [MetricsMediator class], @selector(recordNumNTPTabAtResume:),
+          [MetricsMediator class], @selector(recordResumeNTPTabCount:),
           num_ntp_tabs_swizzle_block_));
       live_ntp_tabs_uma_histogram_swizzler_.reset(new ScopedBlockSwizzler(
-          [MetricsMediator class], @selector(recordNumLiveNTPTabAtResume:),
+          [MetricsMediator class], @selector(recordResumeLiveNTPTabCount:),
           num_live_ntp_tabs_swizzle_block_));
     }
   }
@@ -269,7 +265,7 @@ TEST_F(MetricsMediatorNoFixtureTest, logDateInUserDefaultsTest) {
   EXPECT_NE(nil, lastAppClose);
 }
 
-// Tests that +logStartupDuration:connectionInformation: calls
+// Tests that +logStartupDuration: calls
 // +endExtendedLaunchTask on cold start.
 TEST_F(MetricsMediatorNoFixtureTest, endExtendedLaunchTaskOnColdStart) {
   id startupInformation =
@@ -289,36 +285,25 @@ TEST_F(MetricsMediatorNoFixtureTest, endExtendedLaunchTaskOnColdStart) {
     [invocation setReturnValue:(void*)&time];
   }] firstSceneConnectionTime];
 
-  id connectionInformation =
-      [OCMockObject mockForProtocol:@protocol(ConnectionInformation)];
-  id startupParameters =
-      [OCMockObject mockForClass:[AppStartupParameters class]];
-  [[[connectionInformation stub] andReturn:startupParameters]
-      startupParameters];
-
   id metricKitSubscriber =
       [OCMockObject mockForClass:[MetricKitSubscriber class]];
   [[metricKitSubscriber expect] endExtendedLaunchTask];
 
-  [MetricsMediator logStartupDuration:startupInformation
-                connectionInformation:connectionInformation];
+  [MetricsMediator logStartupDuration:startupInformation];
   EXPECT_OCMOCK_VERIFY(metricKitSubscriber);
 }
 
-// Tests that +logStartupDuration:connectionInformation: does not call
+// Tests that +logStartupDuration: does not call
 // +endExtendedLaunchTask on warm start.
 TEST_F(MetricsMediatorNoFixtureTest, endExtendedLaunchTaskOnWarmStart) {
   id startupInformation =
       [OCMockObject mockForProtocol:@protocol(StartupInformation)];
   [[[startupInformation stub] andReturnValue:@NO] isColdStart];
-  id connectionInformation =
-      [OCMockObject mockForProtocol:@protocol(ConnectionInformation)];
 
   id metricKitSubscriber =
       [OCMockObject mockForClass:[MetricKitSubscriber class]];
   [[metricKitSubscriber reject] endExtendedLaunchTask];
 
-  [MetricsMediator logStartupDuration:startupInformation
-                connectionInformation:connectionInformation];
+  [MetricsMediator logStartupDuration:startupInformation];
   EXPECT_OCMOCK_VERIFY(metricKitSubscriber);
 }

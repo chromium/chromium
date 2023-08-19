@@ -175,9 +175,7 @@ class ServiceWorkerVersionTest : public testing::Test {
     EXPECT_TRUE(version_->FinishRequest(request_id, /*was_handled=*/true));
   }
 
-  void SetTickClockForTesting(base::SimpleTestTickClock* tick_clock) {
-    version_->SetTickClockForTesting(tick_clock);
-  }
+  void SetupTestTickClock() { version_->SetTickClockForTesting(&tick_clock_); }
 
   virtual absl::optional<ServiceWorkerVersion::FetchHandlerType>
   GetFetchHandlerType() const {
@@ -228,6 +226,9 @@ class ServiceWorkerVersionTest : public testing::Test {
   std::vector<std::unique_ptr<MockRenderProcessHost>>
       client_render_process_hosts_;
   GURL scope_;
+  // Some tests sets a custom tick clock, store it here to ensure that it
+  // outlives `version_`.
+  base::SimpleTestTickClock tick_clock_;
 };
 
 // An instance client that breaks the Mojo connection upon receiving the
@@ -556,8 +557,7 @@ TEST_F(ServiceWorkerVersionTest, SetDevToolsAttached) {
 //
 // Regression test for crbug.com/1152255#c144
 TEST_F(ServiceWorkerVersionTest, DevToolsAttachThenDetach) {
-  base::SimpleTestTickClock tick_clock;
-  SetTickClockForTesting(&tick_clock);
+  SetupTestTickClock();
   absl::optional<blink::ServiceWorkerStatusCode> status;
 
   auto start_external_request_test =
@@ -576,8 +576,7 @@ TEST_F(ServiceWorkerVersionTest, DevToolsAttachThenDetach) {
           // Add an external request.
           EXPECT_EQ(ServiceWorkerExternalRequestResult::kOk,
                     version_->StartExternalRequest(
-                        base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                        timeout_type));
+                        base::Uuid::GenerateRandomV4(), timeout_type));
           run_loop.Run();
           EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status.value());
           EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version_->running_status());
@@ -600,7 +599,7 @@ TEST_F(ServiceWorkerVersionTest, DevToolsAttachThenDetach) {
         }
 
         // Now advance time to check worker's running state.
-        tick_clock.Advance(kTestTimeoutBeyondRequestTimeout);
+        tick_clock_.Advance(kTestTimeoutBeyondRequestTimeout);
         version_->timeout_timer_.user_task().Run();
         base::RunLoop().RunUntilIdle();
 
@@ -1025,8 +1024,7 @@ TEST_F(ServiceWorkerVersionTest, RequestCustomizedTimeout) {
   ASSERT_EQ(blink::ServiceWorkerStatusCode::kOk,
             StartServiceWorker(version_.get()));
 
-  base::SimpleTestTickClock tick_clock;
-  SetTickClockForTesting(&tick_clock);
+  SetupTestTickClock();
 
   // Create two requests. One which times out in 10 seconds, one in 20 seconds.
   int timeout_seconds = 10;
@@ -1051,7 +1049,7 @@ TEST_F(ServiceWorkerVersionTest, RequestCustomizedTimeout) {
   EXPECT_FALSE(second_status);
 
   // Now advance time until the second task timeout should expire.
-  tick_clock.Advance(base::Seconds(timeout_seconds + 1));
+  tick_clock_.Advance(base::Seconds(timeout_seconds + 1));
   version_->timeout_timer_.user_task().Run();
   second_run_loop.Run();
   EXPECT_FALSE(first_status);
@@ -1062,7 +1060,7 @@ TEST_F(ServiceWorkerVersionTest, RequestCustomizedTimeout) {
   EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version_->running_status());
 
   // Now advance time until both tasks should be expired.
-  tick_clock.Advance(base::Seconds(timeout_seconds + 1));
+  tick_clock_.Advance(base::Seconds(timeout_seconds + 1));
   version_->timeout_timer_.user_task().Run();
   first_run_loop.Run();
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorTimeout,
@@ -1518,6 +1516,7 @@ class NoFetchHandlerClient : public FakeEmbeddedWorkerInstanceClient {
     host()->OnScriptEvaluationStart();
     host()->OnStarted(blink::mojom::ServiceWorkerStartStatus::kNormalCompletion,
                       blink::mojom::ServiceWorkerFetchHandlerType::kNoHandler,
+                      /*has_hid_event_handlers=*/false,
                       helper()->GetNextThreadId(),
                       blink::mojom::EmbeddedWorkerStartTiming::New());
   }
@@ -1779,8 +1778,8 @@ TEST_F(ServiceWorkerVersionTest, PendingExternalRequest) {
       ReceiveServiceWorkerStatus(&status, run_loop.QuitClosure()));
   ASSERT_EQ(EmbeddedWorkerStatus::STARTING, version_->running_status());
 
-  std::string uuid1 = base::Uuid::GenerateRandomV4().AsLowercaseString();
-  std::string uuid2 = base::Uuid::GenerateRandomV4().AsLowercaseString();
+  base::Uuid uuid1 = base::Uuid::GenerateRandomV4();
+  base::Uuid uuid2 = base::Uuid::GenerateRandomV4();
 
   // Test adding request with |uuid1| and different TimeoutType-s.
   EXPECT_EQ(Result::kOk,
@@ -1807,8 +1806,7 @@ TEST_F(ServiceWorkerVersionTest, PendingExternalRequest) {
 
 // Tests worker lifetime with ServiceWorkerVersion::StartExternalRequest.
 TEST_F(ServiceWorkerVersionTest, WorkerLifetimeWithExternalRequest) {
-  base::SimpleTestTickClock tick_clock;
-  SetTickClockForTesting(&tick_clock);
+  SetupTestTickClock();
   absl::optional<blink::ServiceWorkerStatusCode> status;
 
   auto start_external_request_test =
@@ -1827,15 +1825,14 @@ TEST_F(ServiceWorkerVersionTest, WorkerLifetimeWithExternalRequest) {
           // Add an external request.
           EXPECT_EQ(ServiceWorkerExternalRequestResult::kOk,
                     version_->StartExternalRequest(
-                        base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                        timeout_type));
+                        base::Uuid::GenerateRandomV4(), timeout_type));
           run_loop.Run();
           EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status.value());
           EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version_->running_status());
         }
 
         // Now advance time to check worker's running state.
-        tick_clock.Advance(kTestTimeoutBeyondRequestTimeout);
+        tick_clock_.Advance(kTestTimeoutBeyondRequestTimeout);
         version_->timeout_timer_.user_task().Run();
         base::RunLoop().RunUntilIdle();
 
@@ -1879,8 +1876,7 @@ TEST_F(ServiceWorkerVersionTest, WorkerLifetimeWithExternalRequest) {
 // Regression test for https://crbug.com/1189678
 TEST_F(ServiceWorkerVersionTest,
        DefaultTimeoutRequestDoesNotAffectMaxTimeoutRequest) {
-  base::SimpleTestTickClock tick_clock;
-  SetTickClockForTesting(&tick_clock);
+  SetupTestTickClock();
   absl::optional<blink::ServiceWorkerStatusCode> status;
 
   using ReqTimeoutType = ServiceWorkerExternalRequestTimeoutType;
@@ -1894,22 +1890,20 @@ TEST_F(ServiceWorkerVersionTest,
 
     // Add an external request, with kDoesNotTimeout timeout.
     EXPECT_EQ(ServiceWorkerExternalRequestResult::kOk,
-              version_->StartExternalRequest(
-                  base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                  ReqTimeoutType::kDoesNotTimeout));
+              version_->StartExternalRequest(base::Uuid::GenerateRandomV4(),
+                                             ReqTimeoutType::kDoesNotTimeout));
     run_loop.Run();
     EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status.value());
     EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version_->running_status());
 
     // Add another external request with kDefault timeout.
     EXPECT_EQ(ServiceWorkerExternalRequestResult::kOk,
-              version_->StartExternalRequest(
-                  base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                  ReqTimeoutType::kDefault));
+              version_->StartExternalRequest(base::Uuid::GenerateRandomV4(),
+                                             ReqTimeoutType::kDefault));
   }
 
   // Now advance time to check worker's running state.
-  tick_clock.Advance(kTestTimeoutBeyondRequestTimeout);
+  tick_clock_.Advance(kTestTimeoutBeyondRequestTimeout);
   version_->timeout_timer_.user_task().Run();
   version_->OnPongFromWorker();  // Avoids ping timeout.
   base::RunLoop().RunUntilIdle();
@@ -1935,11 +1929,92 @@ TEST_F(ServiceWorkerVersionTest, SetResources) {
   records.push_back(WriteToDiskCacheWithIdSync(
       helper_->context()->GetStorageControl(), version->script_url(), 10,
       {} /* headers */, "I'm a body", "I'm a meta data"));
+
+  // Set fetch_handler_type, which is refereed in SetResources().
+  version->set_fetch_handler_type(
+      ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
   version->SetResources(records);
 
   // The checksum has been calculated after the SetResources.
   EXPECT_EQ("CBE5CFDF7C2118A9C3D78EF1D684F3AFA089201352886449A06A6511CFEF74A7",
             version->sha256_script_checksum());
 }
+
+class ServiceWorkerVersionStaticRouterTest : public ServiceWorkerVersionTest {
+ public:
+  ServiceWorkerVersionStaticRouterTest() {
+    feature_list_.InitWithFeatures({features::kServiceWorkerStaticRouter}, {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(ServiceWorkerVersionStaticRouterTest, SetRouterEvaluator) {
+  // Create a new version
+  scoped_refptr<ServiceWorkerVersion> version = CreateNewServiceWorkerVersion(
+      helper_->context()->registry(), registration_.get(),
+      GURL("https://www.example.com/test/service_worker.js"),
+      blink::mojom::ScriptType::kClassic);
+
+  // The router_evaluator should be unset on setup.
+  EXPECT_FALSE(version->router_evaluator());
+
+  // Leave the router_evaluator unset for invalid rules.
+  {
+    // No condition & source rule is invalid.
+    blink::ServiceWorkerRouterRules rules;
+    blink::ServiceWorkerRouterRule rule;
+    rules.rules.emplace_back(rule);
+    EXPECT_FALSE(version->SetupRouterEvaluator(rules));
+    EXPECT_FALSE(version->router_evaluator());
+  }
+
+  // Set correct rules will make the router_evaluator() return non-null.
+  {
+    blink::ServiceWorkerRouterRules rules;
+    EXPECT_TRUE(version->SetupRouterEvaluator(rules));
+    EXPECT_TRUE(version->router_evaluator());
+  }
+}
+
+// An instance client for controlling whether it has hid event handlers or not.
+class HidEventHandlerClient : public FakeEmbeddedWorkerInstanceClient {
+ public:
+  HidEventHandlerClient(EmbeddedWorkerTestHelper* helper,
+                        bool has_hid_event_handlers)
+      : FakeEmbeddedWorkerInstanceClient(helper),
+        has_hid_event_handlers_(has_hid_event_handlers) {}
+
+  HidEventHandlerClient(const NoFetchHandlerClient&) = delete;
+  HidEventHandlerClient& operator=(const NoFetchHandlerClient&) = delete;
+
+  void EvaluateScript() override {
+    host()->OnScriptEvaluationStart();
+    host()->OnStarted(
+        blink::mojom::ServiceWorkerStartStatus::kNormalCompletion,
+        blink::mojom::ServiceWorkerFetchHandlerType::kNotSkippable,
+        has_hid_event_handlers_, helper()->GetNextThreadId(),
+        blink::mojom::EmbeddedWorkerStartTiming::New());
+  }
+
+ private:
+  bool has_hid_event_handlers_;
+};
+
+TEST_F(ServiceWorkerVersionTest, HasHidEventHandler) {
+  helper_->AddNewPendingInstanceClient<HidEventHandlerClient>(
+      helper_.get(), /*has_hid_event_handlers*/ true);
+  StartServiceWorker(version_.get());
+  EXPECT_TRUE(version_->has_hid_event_handlers());
+}
+
+TEST_F(ServiceWorkerVersionTest, NoHidEventHandler) {
+  helper_->AddNewPendingInstanceClient<HidEventHandlerClient>(
+      helper_.get(), /*has_hid_event_handlers*/ false);
+  StartServiceWorker(version_.get());
+  EXPECT_FALSE(version_->has_hid_event_handlers());
+}
+
 }  // namespace service_worker_version_unittest
 }  // namespace content

@@ -66,8 +66,7 @@ class ShortcutMenuHandlingSubManagerTestBase : public WebAppTest {
     auto protocol_handler_manager =
         std::make_unique<WebAppProtocolHandlerManager>(profile());
     auto shortcut_manager = std::make_unique<WebAppShortcutManager>(
-        profile(), /*icon_manager=*/nullptr, file_handler_manager.get(),
-        protocol_handler_manager.get());
+        profile(), file_handler_manager.get(), protocol_handler_manager.get());
     auto os_integration_manager = std::make_unique<OsIntegrationManager>(
         profile(), std::move(shortcut_manager), std::move(file_handler_manager),
         std::move(protocol_handler_manager), /*url_handler_manager=*/nullptr);
@@ -289,6 +288,120 @@ TEST_P(ShortcutMenuHandlingSubManagerConfigureTest, TestConfigure) {
   }
 }
 
+// Tests handling crashes fixed in crbug.com/1417955.
+TEST_P(ShortcutMenuHandlingSubManagerConfigureTest, IconsButNoShortcutInfo) {
+  const int num_menu_items = 2;
+
+  const std::vector<int> sizes = {icon_size::k64, icon_size::k128};
+  const std::vector<SkColor> colors = {SK_ColorRED, SK_ColorRED};
+  const AppId& app_id = InstallWebAppWithShortcutMenuIcons(
+      MakeIconBitmaps({{IconPurpose::ANY, sizes, colors},
+                       {IconPurpose::MASKABLE, sizes, colors},
+                       {IconPurpose::MONOCHROME, sizes, colors}},
+                      num_menu_items));
+
+  // Remove the shortcut menu item infos from the DB and sync OS integration.
+  {
+    ScopedRegistryUpdate remove_downloaded =
+        provider().sync_bridge_unsafe().BeginUpdate();
+    remove_downloaded->UpdateApp(app_id)->SetShortcutsMenuInfo({});
+  }
+  if (AreOsIntegrationSubManagersEnabled()) {
+    base::test::TestFuture<void> future;
+    provider().scheduler().SynchronizeOsIntegration(app_id,
+                                                    future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+  }
+
+  auto state =
+      provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
+  ASSERT_TRUE(state.has_value());
+  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
+  ASSERT_FALSE(os_integration_state.has_shortcut_menus());
+}
+
+// Tests handling crashes fixed in crbug.com/1417955.
+TEST_P(ShortcutMenuHandlingSubManagerConfigureTest,
+       LessShortcutMenuItemsThanIconInfos) {
+  const int num_menu_items = 2;
+
+  const std::vector<int> sizes = {icon_size::k64, icon_size::k128};
+  const std::vector<SkColor> colors = {SK_ColorRED, SK_ColorRED};
+  auto icon_bitmaps =
+      MakeIconBitmaps({{IconPurpose::ANY, sizes, colors},
+                       {IconPurpose::MASKABLE, sizes, colors},
+                       {IconPurpose::MONOCHROME, sizes, colors}},
+                      num_menu_items);
+  const AppId& app_id = InstallWebAppWithShortcutMenuIcons(icon_bitmaps);
+
+  // Create a single WebAppShortcutsMenuItemInfo.
+  WebAppShortcutsMenuItemInfo shortcut_info;
+  shortcut_info.name = base::UTF8ToUTF16(base::StrCat({"basic_shortcut"}));
+  shortcut_info.url = kWebAppUrl;
+
+  // The URLs used do not matter because Execute() does not take the urls
+  // into account, but we still need those to initialize the mock data
+  // structure so that the GURL checks in WebAppDatabase can pass.
+  for (const auto& [size, data] : icon_bitmaps[0].any) {
+    WebAppShortcutsMenuItemInfo::Icon icon_data;
+    icon_data.square_size_px = size;
+    icon_data.url = GURL("https://icon.any/");
+    shortcut_info.any.push_back(std::move(icon_data));
+  }
+
+  for (const auto& [size, data] : icon_bitmaps[0].maskable) {
+    WebAppShortcutsMenuItemInfo::Icon icon_data;
+    icon_data.square_size_px = size;
+    icon_data.url = GURL("https://icon.maskable/");
+    shortcut_info.maskable.push_back(std::move(icon_data));
+  }
+
+  for (const auto& [size, data] : icon_bitmaps[0].monochrome) {
+    WebAppShortcutsMenuItemInfo::Icon icon_data;
+    icon_data.square_size_px = size;
+    icon_data.url = GURL("https://icon.monochrome/");
+    shortcut_info.monochrome.push_back(std::move(icon_data));
+  }
+
+  shortcut_info.downloaded_icon_sizes.any = sizes;
+  shortcut_info.downloaded_icon_sizes.maskable = sizes;
+  shortcut_info.downloaded_icon_sizes.monochrome = sizes;
+
+  // Update the shortcut menu item infos in the DB to only match a single icon
+  // and rerun OS integration.
+  {
+    ScopedRegistryUpdate remove_downloaded =
+        provider().sync_bridge_unsafe().BeginUpdate();
+    remove_downloaded->UpdateApp(app_id)->SetShortcutsMenuInfo({shortcut_info});
+  }
+
+  if (AreOsIntegrationSubManagersEnabled()) {
+    base::test::TestFuture<void> future;
+    provider().scheduler().SynchronizeOsIntegration(app_id,
+                                                    future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+  }
+
+  auto state =
+      provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
+  ASSERT_TRUE(state.has_value());
+  const proto::WebAppOsIntegrationState& os_integration_state = state.value();
+  if (AreOsIntegrationSubManagersEnabled()) {
+    ASSERT_EQ(os_integration_state.shortcut_menus().shortcut_menu_info_size(),
+              1);
+
+    auto shortcut_menu_info =
+        os_integration_state.shortcut_menus().shortcut_menu_info(0);
+    EXPECT_EQ(shortcut_menu_info.shortcut_name(), "basic_shortcut");
+    EXPECT_EQ(shortcut_menu_info.shortcut_launch_url(), kWebAppUrl.spec());
+    EXPECT_EQ(shortcut_menu_info.icon_data_any_size(), 2);
+    EXPECT_EQ(shortcut_menu_info.icon_data_maskable_size(), 2);
+    EXPECT_EQ(shortcut_menu_info.icon_data_monochrome_size(), 2);
+  } else {
+    ASSERT_FALSE(os_integration_state.has_shortcut_menus());
+  }
+}
+
 // This tests our handling of https://crbug.com/1427444.
 TEST_P(ShortcutMenuHandlingSubManagerConfigureTest, NoDownloadedIcons_1427444) {
   const int num_menu_items = 2;
@@ -302,9 +415,9 @@ TEST_P(ShortcutMenuHandlingSubManagerConfigureTest, NoDownloadedIcons_1427444) {
                       num_menu_items));
   // Remove the downloaded icons & resync os integration.
   {
-    ScopedRegistryUpdate remove_downloaded(&provider().sync_bridge_unsafe());
-    remove_downloaded->UpdateApp(app_id)->SetDownloadedShortcutsMenuIconsSizes(
-        {});
+    ScopedRegistryUpdate remove_downloaded =
+        provider().sync_bridge_unsafe().BeginUpdate();
+    remove_downloaded->UpdateApp(app_id)->SetShortcutsMenuInfo({});
   }
   if (AreOsIntegrationSubManagersEnabled()) {
     base::test::TestFuture<void> future;
@@ -317,40 +430,7 @@ TEST_P(ShortcutMenuHandlingSubManagerConfigureTest, NoDownloadedIcons_1427444) {
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
   const proto::WebAppOsIntegrationState& os_integration_state = state.value();
-  if (AreOsIntegrationSubManagersEnabled()) {
-    EXPECT_TRUE(
-        os_integration_state.shortcut_menus().shortcut_menu_info_size() ==
-        num_menu_items);
-
-    for (int menu_index = 0; menu_index < num_menu_items; menu_index++) {
-      EXPECT_THAT(os_integration_state.shortcut_menus()
-                      .shortcut_menu_info(menu_index)
-                      .shortcut_name(),
-                  testing::Eq(base::StrCat(
-                      {"shortcut_name", base::NumberToString(menu_index)})));
-
-      EXPECT_THAT(os_integration_state.shortcut_menus()
-                      .shortcut_menu_info(menu_index)
-                      .shortcut_launch_url(),
-                  testing::Eq(base::StrCat(
-                      {kWebAppUrl.spec(), base::NumberToString(menu_index)})));
-
-      EXPECT_EQ(os_integration_state.shortcut_menus()
-                    .shortcut_menu_info(menu_index)
-                    .icon_data_any_size(),
-                0);
-      EXPECT_EQ(os_integration_state.shortcut_menus()
-                    .shortcut_menu_info(menu_index)
-                    .icon_data_maskable_size(),
-                0);
-      EXPECT_EQ(os_integration_state.shortcut_menus()
-                    .shortcut_menu_info(menu_index)
-                    .icon_data_monochrome_size(),
-                0);
-    }
-  } else {
-    ASSERT_FALSE(os_integration_state.has_shortcut_menus());
-  }
+  ASSERT_FALSE(os_integration_state.has_shortcut_menus());
 }
 
 INSTANTIATE_TEST_SUITE_P(

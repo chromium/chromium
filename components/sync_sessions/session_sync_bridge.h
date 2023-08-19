@@ -51,6 +51,8 @@ class SessionSyncBridge : public syncer::ModelTypeSyncBridge,
   SessionsGlobalIdMapper* GetGlobalIdMapper();
   OpenTabsUIDelegate* GetOpenTabsUIDelegate();
 
+  bool IsLocalDataOutOfSyncForTest() const;
+
   // ModelTypeSyncBridge implementation.
   void OnSyncStarting(
       const syncer::DataTypeActivationRequest& request) override;
@@ -105,15 +107,6 @@ class SessionSyncBridge : public syncer::ModelTypeSyncBridge,
 
     std::unique_ptr<OpenTabsUIDelegateImpl> open_tabs_ui_delegate;
     std::unique_ptr<LocalSessionEventHandlerImpl> local_session_event_handler;
-
-    // Tracks whether our local representation of which sync nodes map to what
-    // tabs (belonging to the current local session) is inconsistent.  This can
-    // happen if a foreign client deems our session as "stale" and decides to
-    // delete it. Rather than respond by bullishly re-creating our nodes
-    // immediately, which could lead to ping-pong sequences, we give the benefit
-    // of the doubt and hold off until another local navigation occurs, which
-    // proves that we are still relevant.
-    bool local_data_out_of_sync = false;
   };
 
   // TODO(mastiz): We should rather rename this to |syncing_state_|.

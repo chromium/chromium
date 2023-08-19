@@ -3320,8 +3320,9 @@ TEST_F(ViewportMetaSimTest, VirtualKeyboardUpdateContent) {
   ASSERT_EQ(WebView().VirtualKeyboardModeForTesting(),
             ui::mojom::blink::VirtualKeyboardMode::kResizesContent);
 
-  Element* meta = GetDocument().QuerySelector("[name=viewport]");
-  meta->setAttribute(html_names::kContentAttr, "interactive-widget=bad-value");
+  Element* meta = GetDocument().QuerySelector(AtomicString("[name=viewport]"));
+  meta->setAttribute(html_names::kContentAttr,
+                     AtomicString("interactive-widget=bad-value"));
 
   EXPECT_EQ(WebView().VirtualKeyboardModeForTesting(),
             ui::mojom::blink::VirtualKeyboardMode::kUnset);

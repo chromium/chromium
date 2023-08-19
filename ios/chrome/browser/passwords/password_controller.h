@@ -22,10 +22,7 @@
 #import "ios/web/public/web_state_observer_bridge.h"
 
 @class CommandDispatcher;
-@class NotifyUserAutoSigninViewController;
-@protocol PasswordBreachCommands;
 @protocol PasswordControllerDelegate;
-@protocol PasswordsUiDelegate;
 @class SharedPasswordController;
 
 namespace password_manager {

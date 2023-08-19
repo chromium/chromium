@@ -1,7 +1,7 @@
 Tracing of FLEDGE worklets in subframes.
 Recording started
-Auction winner:undefined
+Auction winner:urn:uuid:(randomized)
 Tracing complete
-Saw too few bidders:0
-Saw too few sellers:0
+Saw enough bidders
+Saw enough sellers
 

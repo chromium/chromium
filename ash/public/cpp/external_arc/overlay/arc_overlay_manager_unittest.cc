@@ -64,7 +64,8 @@ class ArcOverlayManagerTest : public exo::test::ExoTestBase {
   std::unique_ptr<views::Widget> host_widget_;
 
   std::unique_ptr<exo::ShellSurface> overlay_shell_surface_;
-  raw_ptr<aura::Window, ExperimentalAsh> overlay_window_ = nullptr;
+  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> overlay_window_ =
+      nullptr;
 
   base::ScopedClosureRunner deregister_closure_;
 };

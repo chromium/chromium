@@ -63,7 +63,7 @@ class CORE_EXPORT SVGAElement final : public SVGGraphicsElement,
 
   SVGAnimatedPropertyBase* PropertyFromAttribute(
       const QualifiedName& attribute_name) const override;
-  void SynchronizeSVGAttribute(const QualifiedName& name) const override;
+  void SynchronizeAllSVGAttributes() const override;
 
   Member<SVGAnimatedString> svg_target_;
 };

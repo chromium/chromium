@@ -8,7 +8,7 @@ include_rules = [
 
 specific_include_rules = {
   # TODO(crbug.com/620932): Remove this exception.
-  "^side_swipe_controller\.h$": [
+  "^side_swipe_mediator\.h$": [
     "+ios/web/web_state/ui/crw_swipe_recognizer_provider.h",
   ],
 }

@@ -132,7 +132,7 @@ void FontFaceSet::Trace(Visitor* visitor) const {
   visitor->Trace(failed_fonts_);
   visitor->Trace(ready_);
   ExecutionContextClient::Trace(visitor);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   FontFace::LoadFontCallback::Trace(visitor);
 }
 

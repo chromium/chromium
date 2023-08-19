@@ -23,9 +23,9 @@ extern std::string StringDescription(id<NSObject> obj);
 
 TEST(GTestMac, NSStringComparators) {
   // This test wants to really guarantee that s1 and s2 aren't the same address,
-  // so it constructs an autoreleased string this way. In theory this could be
-  // done via [NSString stringWithString:] but that causes an error about using
-  // a redundant literal :)
+  // so it constructs a string this way. In theory this could be done via
+  // [NSString stringWithString:] but that causes an error about using a
+  // redundant literal :)
   NSString* s1 = [NSString stringWithFormat:@"%@", @"a"];
   NSString* s2 = @"a";
 

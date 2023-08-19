@@ -42,12 +42,13 @@ class MockSystemHost(object):
                  machine=None,
                  executive=None,
                  filesystem=None,
+                 processor=None,
                  time_return_val=123):
         self.executable = 'python'
         self.executive = executive or MockExecutive(should_log=log_executive)
         self.filesystem = filesystem or MockFileSystem()
         self.user = MockUser()
-        self.platform = MockPlatformInfo(machine=machine)
+        self.platform = MockPlatformInfo(machine=machine, processor=processor)
         if os_name:
             self.platform.os_name = os_name
         if os_version:

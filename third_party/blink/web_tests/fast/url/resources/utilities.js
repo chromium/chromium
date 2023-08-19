@@ -3,6 +3,9 @@ var lastID = 42;
 
 function canonicalize(url)
 {
+  // Return `url` as is if `url` is an invalid URL. Otherwise, return the result
+  // of the canonicalization of `url`.
+  //
   // It would be more elegant to use the DOM here, but we use document.write()
   // so the tests run correctly in Firefox.
   var id = ++lastID;

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/page_load_metrics/renderer/page_timing_metadata_recorder.h"
+#include <cstdint>
 
 namespace page_load_metrics {
 namespace {
@@ -12,7 +13,7 @@ bool IsTimeTicksRangeSensible(base::TimeTicks start, base::TimeTicks end) {
 }  // namespace
 
 // The next instance id to use for a PageTimingMetadataRecorder.
-int g_next_instance_id = 1;
+uint32_t g_next_instance_id = 1;
 
 PageTimingMetadataRecorder::MonotonicTiming::MonotonicTiming() = default;
 PageTimingMetadataRecorder::MonotonicTiming::MonotonicTiming(
@@ -88,6 +89,32 @@ void PageTimingMetadataRecorder::UpdateFirstContentfulPaintMetadata(
         /* key=*/instance_id_,
         /* value=*/1, base::SampleMetadataScope::kProcess);
   }
+}
+
+int64_t PageTimingMetadataRecorder::CreateInteractionDurationMetadataKey(
+    const uint32_t instance_id,
+    const uint32_t interaction_id) {
+  // Constructing the key as unsigned int to avoid signed wraparound issues.
+  const uint64_t composite_uint =
+      (static_cast<uint64_t>(instance_id) << 32) | interaction_id;
+  return static_cast<int64_t>(composite_uint);
+}
+
+void PageTimingMetadataRecorder::AddInteractionDurationMetadata(
+    const base::TimeTicks interaction_start,
+    const base::TimeTicks interaction_end) {
+  if (!IsTimeTicksRangeSensible(interaction_start, interaction_end)) {
+    return;
+  }
+
+  interaction_count_++;
+  ApplyMetadataToPastSamples(
+      interaction_start, interaction_end,
+      "Blink.Responsiveness.UserInteraction.MaxEventDuration",
+      /* key=*/
+      CreateInteractionDurationMetadataKey(instance_id_, interaction_count_),
+      /* value=*/(interaction_end - interaction_start).InMilliseconds(),
+      base::SampleMetadataScope::kProcess);
 }
 
 }  // namespace page_load_metrics

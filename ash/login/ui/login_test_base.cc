@@ -148,11 +148,11 @@ LoginDataDispatcher* LoginTestBase::DataDispatcher() {
 }
 
 void LoginTestBase::TearDown() {
-  widget_.reset();
-
   if (LockScreen::HasInstance()) {
     LockScreen::Get()->Destroy();
   }
+
+  widget_.reset();
 
   AshTestBase::TearDown();
 }

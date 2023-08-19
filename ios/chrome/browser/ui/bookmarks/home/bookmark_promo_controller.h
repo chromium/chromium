@@ -12,6 +12,10 @@ class Browser;
 @class SigninPromoViewConfigurator;
 @class SigninPromoViewMediator;
 
+namespace syncer {
+class SyncService;
+}
+
 @protocol BookmarkPromoControllerDelegate
 
 // Controls the state of the promo.
@@ -46,6 +50,7 @@ class Browser;
 // Designated initializer.
 // `baseViewController` is the view to present UI for sign-in.
 - (instancetype)initWithBrowser:(Browser*)browser
+                    syncService:(syncer::SyncService*)syncService
                        delegate:(id<BookmarkPromoControllerDelegate>)delegate
                       presenter:(id<SigninPresenter>)presenter
              baseViewController:(UIViewController*)baseViewController

@@ -9,10 +9,6 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 DeviceSharingManagerImpl::DeviceSharingManagerImpl(
     ChromeBrowserState* browser_state)
     : browser_state_(browser_state) {

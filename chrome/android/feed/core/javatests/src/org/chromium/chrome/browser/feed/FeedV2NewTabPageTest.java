@@ -10,9 +10,7 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -20,7 +18,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -43,8 +41,8 @@ import androidx.test.espresso.action.Swipe;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.filters.MediumTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
-import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
@@ -83,12 +81,14 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
@@ -98,15 +98,16 @@ import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.test.util.UiRestriction;
-import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 /**
  * Tests for {@link NewTabPage}. Other tests can be found in
@@ -209,7 +210,7 @@ public class FeedV2NewTabPageTest {
         when(mExternalAuthUtils.isGooglePlayServicesMissing(any())).thenReturn(false);
         when(mExternalAuthUtils.canUseGooglePlayServices()).thenReturn(true);
 
-        SignInPromo.setDisablePromoForTests(mDisableSigninPromoCard);
+        SignInPromo.setDisablePromoForTesting(mDisableSigninPromoCard);
         FeatureList.TestValues testValuesOverride = new FeatureList.TestValues();
         testValuesOverride.addFeatureFlagOverride(ChromeFeatureList.INTEREST_FEED_V2, true);
         testValuesOverride.addFeatureFlagOverride(
@@ -240,7 +241,6 @@ public class FeedV2NewTabPageTest {
     @After
     public void tearDown() {
         if (mTestServer != null) {
-            mTestServer.stopAndDestroyServer();
             mFeedServer.shutdown();
         }
     }
@@ -255,13 +255,6 @@ public class FeedV2NewTabPageTest {
 
         ViewGroup mvTilesLayout = mNtp.getView().findViewById(R.id.mv_tiles_layout);
         Assert.assertEquals(mSiteSuggestions.size(), mvTilesLayout.getChildCount());
-    }
-
-    private void waitForPopup(Matcher<View> matcher) {
-        View mainDecorView = mActivityTestRule.getActivity().getWindow().getDecorView();
-        onView(isRoot())
-                .inRoot(withDecorView(not(is(mainDecorView))))
-                .check(waitForView(matcher, ViewUtils.VIEW_VISIBLE));
     }
 
     @Test
@@ -282,7 +275,7 @@ public class FeedV2NewTabPageTest {
     @Test
     @MediumTest
     @Feature({"FeedNewTabPage"})
-    @Features.DisableFeatures(ChromeFeatureList.INTEREST_FEED_V2)
+    @DisableFeatures(ChromeFeatureList.INTEREST_FEED_V2)
     @DisabledTest(message = "Flaky -- crbug.com/1136923")
     public void testSignInPromo() {
         openNewTabPage();
@@ -468,6 +461,54 @@ public class FeedV2NewTabPageTest {
                 "feedContent_landscape"
                         + (mEnableScrollableMVT ? "_with_scrollable_mvt"
                                                 : "_with_non_scrollable_mvt"));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"NewTabPage"})
+    @EnableFeatures(ChromeFeatureList.SURFACE_POLISH)
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @DisabledTest(message = "crbug.com/1467377")
+    // clang-format off
+    public void testFakeOmniboxPolishOnNtp() throws IOException{
+        // clang-format on
+        openNewTabPage();
+
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        assertEquals(cta.getResources().getDimensionPixelSize(
+                             org.chromium.chrome.R.dimen.ntp_search_box_height_polish),
+                cta.findViewById(org.chromium.chrome.R.id.search_box).getLayoutParams().height);
+
+        // Drag the Feed header title to scroll the toolbar to the top.
+        int toY = -getFakeboxTop(mNtp)
+                + cta.getResources().getDimensionPixelSize(
+                        org.chromium.chrome.R.dimen.modern_toolbar_background_size);
+        TestTouchUtils.dragCompleteView(InstrumentationRegistry.getInstrumentation(),
+                cta.findViewById(R.id.header_title), 0, 0, 0, toY, /*stepCount*/ 10);
+
+        if (cta.findViewById(R.id.search_box).getAlpha() == 1) {
+            ToolbarPhone toolbar = cta.findViewById(R.id.toolbar);
+            // There might be a rounding issue for some devices.
+            assertEquals(toolbar.getLocationBarBackgroundHeightForTesting(),
+                    cta.getResources().getDimension(
+                            org.chromium.chrome.R.dimen.ntp_search_box_height_polish),
+                    0.5);
+        }
+    }
+
+    /**
+     * @return The position of the top of the fakebox relative to the window.
+     */
+    private int getFakeboxTop(final NewTabPage ntp) {
+        return TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<Integer>() {
+            @Override
+            public Integer call() {
+                final View fakebox = ntp.getView().findViewById(R.id.search_box);
+                int[] location = new int[2];
+                fakebox.getLocationInWindow(location);
+                return location[1];
+            }
+        });
     }
 
     /**

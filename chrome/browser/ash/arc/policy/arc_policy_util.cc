@@ -184,6 +184,8 @@ absl::optional<ArcPolicyKey> GetPolicyKeyFromString(
     return ArcPolicyKey::kCaCerts;
   } else if (policy_key == kArcPolicyKeyRequiredKeyPairs) {
     return ArcPolicyKey::kRequiredKeyPairs;
+  } else if (policy_key == kArcPolicyKeyEnabledSystemAppPackageNames) {
+    return ArcPolicyKey::kEnabledSystemAppPackageNames;
   }
 
   LOG(WARNING) << "Unknown policy key: " << policy_key;

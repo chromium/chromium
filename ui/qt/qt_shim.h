@@ -5,6 +5,8 @@
 #ifndef UI_QT_QT_SHIM_H_
 #define UI_QT_QT_SHIM_H_
 
+#include <vector>
+
 #include <QApplication>
 #include <QImage>
 #include <QObject>
@@ -24,7 +26,8 @@ class QtShim : public QObject, public QtInterface {
   ~QtShim() override;
 
   // QtInterface:
-  double GetScaleFactor() const override;
+  size_t GetMonitorConfig(MonitorScale** monitors,
+                          float* primary_scale) override;
   FontRenderParams GetFontRenderParams() const override;
   FontDescription GetFontDescription() const override;
   Image GetIconForContentType(const String& content_type,
@@ -56,6 +59,7 @@ class QtShim : public QObject, public QtInterface {
   QtInterface::Delegate* const delegate_;
 
   QApplication app_;
+  std::vector<MonitorScale> monitor_scales_;
 };
 
 }  // namespace qt

@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/performance_entry_names.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
@@ -47,8 +48,9 @@ TEST_F(LayoutShiftTrackerTest, IgnoreAfterInput) {
     </style>
     <div id='j'></div>
   )HTML");
-  GetDocument().getElementById("j")->setAttribute(html_names::kStyleAttr,
-                                                  AtomicString("top: 60px"));
+  GetDocument()
+      .getElementById(AtomicString("j"))
+      ->setAttribute(html_names::kStyleAttr, AtomicString("top: 60px"));
   SimulateInput();
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(0.0, GetLayoutShiftTracker().Score());
@@ -78,12 +80,14 @@ TEST_F(LayoutShiftTrackerTest, CompositedShiftBeforeFirstPaint) {
     </div>
   )HTML");
 
-  GetDocument().getElementById("B")->setAttribute(html_names::kClassAttr,
-                                                  AtomicString("tr"));
+  GetDocument()
+      .getElementById(AtomicString("B"))
+      ->setAttribute(html_names::kClassAttr, AtomicString("tr"));
   GetFrameView().UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kTest);
-  GetDocument().getElementById("A")->setAttribute(html_names::kClassAttr,
-                                                  AtomicString("hide"));
+  GetDocument()
+      .getElementById(AtomicString("A"))
+      ->setAttribute(html_names::kClassAttr, AtomicString("hide"));
   UpdateAllLifecyclePhasesForTest();
 }
 
@@ -94,8 +98,9 @@ TEST_F(LayoutShiftTrackerTest, IgnoreSVG) {
               stroke="black" stroke-width="3" fill="red" />
     </svg>
   )HTML");
-  GetDocument().QuerySelector("circle")->setAttribute(svg_names::kCxAttr,
-                                                      AtomicString("100"));
+  GetDocument()
+      .QuerySelector(AtomicString("circle"))
+      ->setAttribute(svg_names::kCxAttr, AtomicString("100"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
 }
@@ -111,12 +116,14 @@ TEST_F(LayoutShiftTrackerTest, IgnoreAfterChangeEvent) {
       <option value="1">1</option>
     </select>
   )HTML");
-  auto* select = To<HTMLSelectElement>(GetDocument().getElementById("sel"));
+  auto* select =
+      To<HTMLSelectElement>(GetDocument().getElementById(AtomicString("sel")));
   DCHECK(select);
   select->Focus();
   select->SelectOptionByPopup(1);
-  GetDocument().getElementById("j")->setAttribute(html_names::kStyleAttr,
-                                                  AtomicString("top: 60px"));
+  GetDocument()
+      .getElementById(AtomicString("j"))
+      ->setAttribute(html_names::kStyleAttr, AtomicString("top: 60px"));
 
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
@@ -157,7 +164,8 @@ TEST_F(LayoutShiftTrackerSimTest, SubframeWeighting) {
   WebLocalFrameImpl& child_frame =
       To<WebLocalFrameImpl>(*MainFrame().FirstChild());
 
-  Element* div = child_frame.GetFrame()->GetDocument()->getElementById("j");
+  Element* div =
+      child_frame.GetFrame()->GetDocument()->getElementById(AtomicString("j"));
   div->setAttribute(html_names::kStyleAttr, AtomicString("top: 60px"));
 
   Compositor().BeginFrame();
@@ -170,8 +178,9 @@ TEST_F(LayoutShiftTrackerSimTest, SubframeWeighting) {
   EXPECT_FLOAT_EQ(0.1 * (60.0 / 400.0), layout_shift_tracker.WeightedScore());
 
   // Move subframe halfway outside the viewport.
-  GetDocument().getElementById("i")->setAttribute(html_names::kStyleAttr,
-                                                  AtomicString("left: 600px"));
+  GetDocument()
+      .getElementById(AtomicString("i"))
+      ->setAttribute(html_names::kStyleAttr, AtomicString("left: 600px"));
 
   div->removeAttribute(html_names::kStyleAttr);
 
@@ -329,7 +338,8 @@ void LayoutShiftTrackerNavigationTest::RunTest(bool is_browser_initiated) {
   test::RunPendingTasks();
 
   WindowPerformance& perf = *DOMWindowPerformance::performance(Window());
-  auto entries = perf.getBufferedEntriesByType("layout-shift");
+  auto entries =
+      perf.getBufferedEntriesByType(performance_entry_names::kLayoutShift);
   EXPECT_EQ(1u, entries.size());
   LayoutShift* shift = static_cast<LayoutShift*>(entries.front().Get());
   // region fraction 50%, distance fraction 1/8
@@ -409,7 +419,9 @@ void LayoutShiftTrackerPointerdownTest::RunTest(
   WindowPerformance& perf = *DOMWindowPerformance::performance(Window());
   auto& tracker = MainFrame().GetFrameView()->GetLayoutShiftTracker();
 
-  EXPECT_EQ(0u, perf.getBufferedEntriesByType("layout-shift").size());
+  EXPECT_EQ(0u,
+            perf.getBufferedEntriesByType(performance_entry_names::kLayoutShift)
+                .size());
   EXPECT_FLOAT_EQ(0.0, tracker.Score());
 
   WebView().MainFrameWidget()->HandleInputEvent(
@@ -418,7 +430,8 @@ void LayoutShiftTrackerPointerdownTest::RunTest(
   // region fraction 50%, distance fraction 1/8
   const double expected_shift = 0.5 * 0.125;
 
-  auto entries = perf.getBufferedEntriesByType("layout-shift");
+  auto entries =
+      perf.getBufferedEntriesByType(performance_entry_names::kLayoutShift);
   EXPECT_EQ(1u, entries.size());
   LayoutShift* shift = static_cast<LayoutShift*>(entries.front().Get());
 
@@ -497,7 +510,9 @@ TEST_F(LayoutShiftTrackerSimTest, MouseMoveDraggingAction) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  EXPECT_EQ(0u, perf.getBufferedEntriesByType("layout-shift").size());
+  EXPECT_EQ(0u,
+            perf.getBufferedEntriesByType(performance_entry_names::kLayoutShift)
+                .size());
   EXPECT_FLOAT_EQ(0.0, tracker.Score());
 
   tracker.ResetTimerForTesting();
@@ -508,7 +523,9 @@ TEST_F(LayoutShiftTrackerSimTest, MouseMoveDraggingAction) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  EXPECT_EQ(0u, perf.getBufferedEntriesByType("layout-shift").size());
+  EXPECT_EQ(0u,
+            perf.getBufferedEntriesByType(performance_entry_names::kLayoutShift)
+                .size());
   EXPECT_FLOAT_EQ(0.0, tracker.Score());
 
   tracker.ResetTimerForTesting();
@@ -519,7 +536,8 @@ TEST_F(LayoutShiftTrackerSimTest, MouseMoveDraggingAction) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  auto entries = perf.getBufferedEntriesByType("layout-shift");
+  auto entries =
+      perf.getBufferedEntriesByType(performance_entry_names::kLayoutShift);
   EXPECT_EQ(2u, entries.size());
   LayoutShift* shift = static_cast<LayoutShift*>(entries.back().Get());
 
@@ -577,7 +595,9 @@ TEST_F(LayoutShiftTrackerSimTest, TouchDraggingAction) {
   WindowPerformance& perf = *DOMWindowPerformance::performance(Window());
   auto& tracker = MainFrame().GetFrameView()->GetLayoutShiftTracker();
 
-  EXPECT_EQ(0u, perf.getBufferedEntriesByType("layout-shift").size());
+  EXPECT_EQ(0u,
+            perf.getBufferedEntriesByType(performance_entry_names::kLayoutShift)
+                .size());
   EXPECT_FLOAT_EQ(0.0, tracker.Score());
 
   WebView().MainFrameWidget()->HandleInputEvent(
@@ -588,7 +608,9 @@ TEST_F(LayoutShiftTrackerSimTest, TouchDraggingAction) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  EXPECT_EQ(0u, perf.getBufferedEntriesByType("layout-shift").size());
+  EXPECT_EQ(0u,
+            perf.getBufferedEntriesByType(performance_entry_names::kLayoutShift)
+                .size());
   EXPECT_FLOAT_EQ(0.0, tracker.Score());
 
   WebView().MainFrameWidget()->HandleInputEvent(
@@ -597,7 +619,8 @@ TEST_F(LayoutShiftTrackerSimTest, TouchDraggingAction) {
   // region fraction 50%, distance fraction 1/8
   const double expected_shift = 0.5 * 0.125;
 
-  auto entries = perf.getBufferedEntriesByType("layout-shift");
+  auto entries =
+      perf.getBufferedEntriesByType(performance_entry_names::kLayoutShift);
   EXPECT_EQ(1u, entries.size());
   LayoutShift* shift = static_cast<LayoutShift*>(entries.back().Get());
 
@@ -658,7 +681,9 @@ TEST_F(LayoutShiftTrackerSimTest, TouchScrollingAction) {
   WindowPerformance& perf = *DOMWindowPerformance::performance(Window());
   auto& tracker = MainFrame().GetFrameView()->GetLayoutShiftTracker();
 
-  EXPECT_EQ(0u, perf.getBufferedEntriesByType("layout-shift").size());
+  EXPECT_EQ(0u,
+            perf.getBufferedEntriesByType(performance_entry_names::kLayoutShift)
+                .size());
   EXPECT_FLOAT_EQ(0.0, tracker.Score());
 
   WebView().MainFrameWidget()->HandleInputEvent(
@@ -669,7 +694,9 @@ TEST_F(LayoutShiftTrackerSimTest, TouchScrollingAction) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  EXPECT_EQ(0u, perf.getBufferedEntriesByType("layout-shift").size());
+  EXPECT_EQ(0u,
+            perf.getBufferedEntriesByType(performance_entry_names::kLayoutShift)
+                .size());
   EXPECT_FLOAT_EQ(0, tracker.Score());
 
   WebView().MainFrameWidget()->HandleInputEvent(
@@ -677,7 +704,8 @@ TEST_F(LayoutShiftTrackerSimTest, TouchScrollingAction) {
 
   // region fraction 50%, distance fraction 1/8
   const double expected_shift = 0.5 * 0.125;
-  auto entries = perf.getBufferedEntriesByType("layout-shift");
+  auto entries =
+      perf.getBufferedEntriesByType(performance_entry_names::kLayoutShift);
   EXPECT_EQ(1u, entries.size());
   LayoutShift* shift = static_cast<LayoutShift*>(entries.back().Get());
 
@@ -695,7 +723,8 @@ TEST_F(LayoutShiftTrackerSimTest, TouchScrollingAction) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  entries = perf.getBufferedEntriesByType("layout-shift");
+  entries =
+      perf.getBufferedEntriesByType(performance_entry_names::kLayoutShift);
   EXPECT_EQ(2u, entries.size());
   shift = static_cast<LayoutShift*>(entries.back().Get());
 
@@ -756,13 +785,17 @@ TEST_F(LayoutShiftTrackerSimTest, MultiplePointerDownUps) {
   WindowPerformance& perf = *DOMWindowPerformance::performance(Window());
   auto& tracker = MainFrame().GetFrameView()->GetLayoutShiftTracker();
 
-  EXPECT_EQ(0u, perf.getBufferedEntriesByType("layout-shift").size());
+  EXPECT_EQ(0u,
+            perf.getBufferedEntriesByType(performance_entry_names::kLayoutShift)
+                .size());
   EXPECT_FLOAT_EQ(0.0, tracker.Score());
 
   WebView().MainFrameWidget()->HandleInputEvent(
       WebCoalescedInputEvent(event2, ui::LatencyInfo()));
 
-  EXPECT_EQ(0u, perf.getBufferedEntriesByType("layout-shift").size());
+  EXPECT_EQ(0u,
+            perf.getBufferedEntriesByType(performance_entry_names::kLayoutShift)
+                .size());
   EXPECT_FLOAT_EQ(0, tracker.Score());
 
   WebView().MainFrameWidget()->HandleInputEvent(
@@ -773,7 +806,9 @@ TEST_F(LayoutShiftTrackerSimTest, MultiplePointerDownUps) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  EXPECT_EQ(0u, perf.getBufferedEntriesByType("layout-shift").size());
+  EXPECT_EQ(0u,
+            perf.getBufferedEntriesByType(performance_entry_names::kLayoutShift)
+                .size());
   EXPECT_FLOAT_EQ(0, tracker.Score());
 
   WebView().MainFrameWidget()->HandleInputEvent(
@@ -781,7 +816,8 @@ TEST_F(LayoutShiftTrackerSimTest, MultiplePointerDownUps) {
 
   // region fraction 50%, distance fraction 1/8
   const double expected_shift = 0.5 * 0.125;
-  auto entries = perf.getBufferedEntriesByType("layout-shift");
+  auto entries =
+      perf.getBufferedEntriesByType(performance_entry_names::kLayoutShift);
   EXPECT_EQ(1u, entries.size());
   LayoutShift* shift = static_cast<LayoutShift*>(entries.back().Get());
 
@@ -822,7 +858,7 @@ TEST_F(LayoutShiftTrackerTest, StableCompositingChanges) {
     <div id=outer><div id=inner></div></div>
   )HTML");
 
-  Element* element = GetDocument().getElementById("outer");
+  Element* element = GetDocument().getElementById(AtomicString("outer"));
   size_t state = 0;
   auto advance = [this, element, &state]() -> bool {
     //
@@ -884,7 +920,7 @@ TEST_F(LayoutShiftTrackerTest, CompositedOverflowExpansion) {
     <div id="drop" style="display: none"></div>
   )HTML");
 
-  Element* drop = GetDocument().getElementById("drop");
+  Element* drop = GetDocument().getElementById(AtomicString("drop"));
   drop->removeAttribute(html_names::kStyleAttr);
   UpdateAllLifecyclePhasesForTest();
 
@@ -893,7 +929,7 @@ TEST_F(LayoutShiftTrackerTest, CompositedOverflowExpansion) {
 
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
 
-  Element* comp = GetDocument().getElementById("comp");
+  Element* comp = GetDocument().getElementById(AtomicString("comp"));
   comp->setAttribute(html_names::kClassAttr, AtomicString("sh"));
   drop->removeAttribute(html_names::kStyleAttr);
   UpdateAllLifecyclePhasesForTest();
@@ -923,7 +959,7 @@ TEST_F(LayoutShiftTrackerTest, ContentVisibilityAutoFirstPaint) {
   // 100x100 on the first frame, via a synchronous second layout, and there is
   // no CLS impact.
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
-  EXPECT_EQ(LayoutSize(100, 100), target->Size());
+  EXPECT_EQ(PhysicalSize(100, 100), target->Size());
 }
 
 TEST_F(LayoutShiftTrackerTest,
@@ -943,7 +979,7 @@ TEST_F(LayoutShiftTrackerTest,
   auto* target = To<LayoutBox>(GetLayoutObjectByElementId("target"));
   // #target starts offsceen, which doesn't count for CLS.
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
-  EXPECT_EQ(LayoutSize(100, 1), target->Size());
+  EXPECT_EQ(PhysicalSize(100, 1), target->Size());
 
   // In the next frame, we scroll it onto the screen, but it still doesn't
   // count for CLS, and its subtree is not yet unskipped, because the
@@ -951,7 +987,7 @@ TEST_F(LayoutShiftTrackerTest,
   GetDocument().domWindow()->scrollTo(0, 100000);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
-  EXPECT_EQ(LayoutSize(100, 1), target->Size());
+  EXPECT_EQ(PhysicalSize(100, 1), target->Size());
 
   // Now the subtree is unskipped, and #target renders at size 100x100.
   // Nevertheless, there is no impact on CLS.
@@ -959,7 +995,7 @@ TEST_F(LayoutShiftTrackerTest,
   // Target's LayoutObject gets re-attached.
   target = To<LayoutBox>(GetLayoutObjectByElementId("target"));
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
-  EXPECT_EQ(LayoutSize(100, 100), target->Size());
+  EXPECT_EQ(PhysicalSize(100, 100), target->Size());
 }
 
 TEST_F(LayoutShiftTrackerTest, ContentVisibilityHiddenFirstPaint) {
@@ -979,7 +1015,7 @@ TEST_F(LayoutShiftTrackerTest, ContentVisibilityHiddenFirstPaint) {
 
   // Skipped subtrees don't cause CLS impact.
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
-  EXPECT_EQ(LayoutSize(100, 1), target->Size());
+  EXPECT_EQ(PhysicalSize(100, 1), target->Size());
 }
 
 TEST_F(LayoutShiftTrackerTest, ContentVisibilityAutoResize) {
@@ -1003,7 +1039,7 @@ TEST_F(LayoutShiftTrackerTest, ContentVisibilityAutoResize) {
   UpdateAllLifecyclePhasesForTest();
   auto* target = To<LayoutBox>(GetLayoutObjectByElementId("target"));
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
-  EXPECT_EQ(LayoutSize(100, 100), target->Size());
+  EXPECT_EQ(PhysicalSize(100, 100), target->Size());
 }
 
 TEST_F(LayoutShiftTrackerTest,
@@ -1028,8 +1064,8 @@ TEST_F(LayoutShiftTrackerTest,
 
   // #offscreen starts offsceen, which doesn't count for CLS.
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
-  EXPECT_EQ(LayoutSize(100, 1), offscreen->Size());
-  EXPECT_EQ(LayoutSize(100, 100), onscreen->Size());
+  EXPECT_EQ(PhysicalSize(100, 1), offscreen->Size());
+  EXPECT_EQ(PhysicalSize(100, 100), onscreen->Size());
 
   // In the next frame, we scroll it onto the screen, but it still doesn't
   // count for CLS, and its subtree is not yet unskipped, because the
@@ -1037,8 +1073,8 @@ TEST_F(LayoutShiftTrackerTest,
   GetDocument().domWindow()->scrollTo(0, 100000 + 100);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
-  EXPECT_EQ(LayoutSize(100, 1), offscreen->Size());
-  EXPECT_EQ(LayoutSize(100, 100), onscreen->Size());
+  EXPECT_EQ(PhysicalSize(100, 1), offscreen->Size());
+  EXPECT_EQ(PhysicalSize(100, 100), onscreen->Size());
 
   // Now the subtree is unskipped, and #offscreen renders at size 100x100.
   // Nevertheless, there is no impact on CLS.
@@ -1049,14 +1085,16 @@ TEST_F(LayoutShiftTrackerTest,
   // Target's LayoutObject gets re-attached.
   offscreen = To<LayoutBox>(GetLayoutObjectByElementId("offscreen"));
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
-  EXPECT_EQ(LayoutSize(100, 100), offscreen->Size());
-  EXPECT_EQ(LayoutSize(100, 1), onscreen->Size());
+  EXPECT_EQ(PhysicalSize(100, 100), offscreen->Size());
+  // Because content-visibility: auto implies contain-intrinsic-size auto, the
+  // size stays at 100x100.
+  EXPECT_EQ(PhysicalSize(100, 100), onscreen->Size());
 
   // Move |offscreen| (which is visible and unlocked now), for which we should
   // report layout shift.
   To<Element>(offscreen->GetNode())
       ->setAttribute(html_names::kStyleAttr,
-                     "position: relative; top: 100100px");
+                     AtomicString("position: relative; top: 100100px"));
   UpdateAllLifecyclePhasesForTest();
   auto score = GetLayoutShiftTracker().Score();
   EXPECT_GT(score, 0);
@@ -1065,8 +1103,8 @@ TEST_F(LayoutShiftTrackerTest,
   GetDocument().domWindow()->scrollTo(0, 0);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FLOAT_EQ(score, GetLayoutShiftTracker().Score());
-  EXPECT_EQ(LayoutSize(100, 100), offscreen->Size());
-  EXPECT_EQ(LayoutSize(100, 1), onscreen->Size());
+  EXPECT_EQ(PhysicalSize(100, 100), offscreen->Size());
+  EXPECT_EQ(PhysicalSize(100, 100), onscreen->Size());
 
   // In the subsequent frame, #offscreen becomes locked and changes its
   // layout size (and vice-versa for #onscreen).
@@ -1075,8 +1113,8 @@ TEST_F(LayoutShiftTrackerTest,
   onscreen = To<LayoutBox>(GetLayoutObjectByElementId("onscreen"));
 
   EXPECT_FLOAT_EQ(score, GetLayoutShiftTracker().Score());
-  EXPECT_EQ(LayoutSize(100, 1), offscreen->Size());
-  EXPECT_EQ(LayoutSize(100, 100), onscreen->Size());
+  EXPECT_EQ(PhysicalSize(100, 100), offscreen->Size());
+  EXPECT_EQ(PhysicalSize(100, 100), onscreen->Size());
 }
 
 TEST_F(LayoutShiftTrackerTest, NestedFixedPos) {
@@ -1126,8 +1164,9 @@ TEST_F(LayoutShiftTrackerTest, ClipByVisualViewport) {
             GetDocument().View()->LayoutViewport()->VisibleContentRect());
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
 
-  GetDocument().getElementById("target")->setAttribute(html_names::kStyleAttr,
-                                                       "top: 100px");
+  GetDocument()
+      .getElementById(AtomicString("target"))
+      ->setAttribute(html_names::kStyleAttr, AtomicString("top: 100px"));
   UpdateAllLifecyclePhasesForTest();
   // 50.0: visible width
   // 100.0 + 100.0: visible height + vertical shift
@@ -1158,7 +1197,7 @@ TEST_F(LayoutShiftTrackerTest, ScrollThenCauseScrollAnchoring) {
     <div class=big></div>
     <div class=big></div>
   )HTML");
-  auto* target_element = GetDocument().getElementById("target");
+  auto* target_element = GetDocument().getElementById(AtomicString("target"));
 
   // Scroll the window which accumulates a scroll in the layout shift tracker.
   GetDocument().domWindow()->scrollBy(0, 1000);
@@ -1166,14 +1205,14 @@ TEST_F(LayoutShiftTrackerTest, ScrollThenCauseScrollAnchoring) {
 
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
 
-  target_element->classList().Remove("big");
-  target_element->classList().Add("small");
+  target_element->classList().Remove(AtomicString("big"));
+  target_element->classList().Add(AtomicString("small"));
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
 
-  target_element->classList().Remove("small");
-  target_element->classList().Add("big");
+  target_element->classList().Remove(AtomicString("small"));
+  target_element->classList().Add(AtomicString("big"));
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
@@ -1309,13 +1348,14 @@ TEST_F(LayoutShiftTrackerTest, AnimatingTransformCreatesLayoutShiftRoot) {
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
 
   GetDocument()
-      .getElementById("animation")
-      ->setAttribute(html_names::kStyleAttr, "top: 400px");
+      .getElementById(AtomicString("animation"))
+      ->setAttribute(html_names::kStyleAttr, AtomicString("top: 400px"));
   // `animation` creates a layout shift root, so `child`'s shift doesn't
   // include the shift of `animation`. The 2px shift is below the threshold of
   // reporting a layout shift.
-  GetDocument().getElementById("child")->setAttribute(html_names::kStyleAttr,
-                                                      "top: 2px");
+  GetDocument()
+      .getElementById(AtomicString("child"))
+      ->setAttribute(html_names::kStyleAttr, AtomicString("top: 2px"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
 }

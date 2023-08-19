@@ -8,6 +8,10 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/paint_preview/common/subset_font.h"
+#include "third_party/skia/include/codec/SkCodec.h"
+#include "third_party/skia/include/codec/SkJpegDecoder.h"
+#include "third_party/skia/include/codec/SkPngDecoder.h"
+#include "third_party/skia/include/codec/SkWebpDecoder.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -127,8 +131,13 @@ sk_sp<SkData> SerializeImage(SkImage* image, void* ctx) {
     encoded_data = SkPngEncoder::Encode(nullptr, image, {});
   }
 
-  if (!encoded_data)
+  if (!encoded_data) {
     return SkData::MakeEmpty();
+  }
+
+  CHECK(SkPngDecoder::IsPng(encoded_data->data(), encoded_data->size()) ||
+        SkJpegDecoder::IsJpeg(encoded_data->data(), encoded_data->size()) ||
+        SkWebpDecoder::IsWebp(encoded_data->data(), encoded_data->size()));
 
   // Ensure the encoded data fits in the size restriction if present.
   // OOM Prevention: This avoids creating/keeping large serialized images
@@ -143,6 +152,29 @@ sk_sp<SkData> SerializeImage(SkImage* image, void* ctx) {
   }
 
   return encoded_data;
+}
+
+sk_sp<SkImage> DeserializeImage(const void* bytes, size_t length, void*) {
+  // Although we usually serialize images to the PNG format, if an image was
+  // already encoded as a JPEG or WEBP, those bytes are written to the
+  // SKP as-is, so we should try to decode those as well.
+  sk_sp<SkData> data = SkData::MakeWithoutCopy(bytes, length);
+  const auto get_image = [](std::unique_ptr<SkCodec> codec) -> sk_sp<SkImage> {
+    if (!codec) {
+      return nullptr;
+    }
+    // prefer premul over unpremul (this produces better filtering in general)
+    SkImageInfo targetInfo =
+        codec->getInfo().makeAlphaType(kPremul_SkAlphaType);
+    return std::get<0>(codec->getImage(targetInfo));
+  };
+  if (SkPngDecoder::IsPng(bytes, length)) {
+    return get_image(SkPngDecoder::Decode(data, nullptr));
+  }
+  if (SkJpegDecoder::IsJpeg(bytes, length)) {
+    return get_image(SkJpegDecoder::Decode(data, nullptr));
+  }
+  return get_image(SkWebpDecoder::Decode(data, nullptr));
 }
 
 // Deserializes a clip rect for a subframe within the main SkPicture. These
@@ -257,6 +289,7 @@ SkDeserialProcs MakeDeserialProcs(DeserializationContext* ctx) {
   SkDeserialProcs procs;
   procs.fPictureProc = DeserializePictureAsRectData;
   procs.fPictureCtx = ctx;
+  procs.fImageProc = DeserializeImage;
   return procs;
 }
 
@@ -264,6 +297,7 @@ SkDeserialProcs MakeDeserialProcs(LoadedFramesDeserialContext* ctx) {
   SkDeserialProcs procs;
   procs.fPictureProc = GetPictureFromDeserialContext;
   procs.fPictureCtx = ctx;
+  procs.fImageProc = DeserializeImage;
   return procs;
 }
 

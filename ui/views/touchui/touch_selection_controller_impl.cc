@@ -19,14 +19,18 @@
 #include "ui/aura/window_targeter.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 #include "ui/resources/grit/ui_resources.h"
-#include "ui/touch_selection/touch_selection_magnifier_runner.h"
+#include "ui/touch_selection/touch_selection_magnifier_aura.h"
+#include "ui/touch_selection/touch_selection_metrics.h"
+#include "ui/touch_selection/vector_icons/vector_icons.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/views_delegate.h"
 #include "ui/views/widget/widget.h"
@@ -36,10 +40,6 @@
 namespace {
 
 // Constants defining the visual attributes of selection handles
-
-// The distance by which a handle image is offset from the bottom of the
-// selection/text baseline.
-constexpr int kSelectionHandleVerticalVisualOffset = 2;
 
 // When a handle is dragged, the drag position reported to the client view is
 // offset vertically to represent the cursor position. This constant specifies
@@ -57,7 +57,7 @@ constexpr int kSelectionHandleVerticalVisualOffset = 2;
 //                            ___________
 //    Selection Highlight --->_____|__|<-|---- Drag position reported to client
 //                              _  |  O  |
-//          Vertical Padding __|   |   <-|---- ET_GESTURE_SCROLL_UPDATE position
+//            Bottom Padding __|   |   <-|---- ET_GESTURE_SCROLL_UPDATE position
 //                             |_  |_____|<--- Editing handle widget
 //
 //                                 | |
@@ -66,11 +66,6 @@ constexpr int kSelectionHandleVerticalVisualOffset = 2;
 //
 constexpr int kSelectionHandleVerticalDragOffset = 5;
 
-// Padding around the selection handle defining the area that will be included
-// in the touch target to make dragging the handle easier (see pic above).
-constexpr int kSelectionHandleHorizPadding = 10;
-constexpr int kSelectionHandleVertPadding = 20;
-
 // Minimum height for selection handle bar. If the bar height is going to be
 // less than this value, handle will not be shown.
 constexpr int kSelectionHandleBarMinHeight = 5;
@@ -78,8 +73,37 @@ constexpr int kSelectionHandleBarMinHeight = 5;
 // boundaries.
 constexpr int kSelectionHandleBarBottomAllowance = 3;
 
+// Opacity of the selection handle image.
+constexpr float kSelectionHandleOpacity = 0.8f;
+
 // Delay before showing the quick menu after it is requested, in milliseconds.
-const int kQuickMenuDelayInMs = 200;
+constexpr int kQuickMenuDelayInMs = 200;
+
+// Vertical offset to apply from the bottom of the selection/text baseline to
+// the top of the handle image.
+constexpr int kSelectionHandleVerticalOffset = 2;
+int GetSelectionHandleVerticalOffset() {
+  return ::features::IsTouchTextEditingRedesignEnabled()
+             ? 0
+             : kSelectionHandleVerticalOffset;
+}
+
+// Padding to apply horizontally around and vertically below the handle image.
+// This is included in the touch handle target area to make dragging the handle
+// easier (see pic above).
+constexpr int kSelectionHandleHorizontalPadding = 10;
+constexpr int kSelectionHandleBottomPadding = 20;
+constexpr int kSelectionHandlePadding = 6;
+int GetSelectionHandleHorizontalPadding() {
+  return ::features::IsTouchTextEditingRedesignEnabled()
+             ? kSelectionHandlePadding
+             : kSelectionHandleHorizontalPadding;
+}
+int GetSelectionHandleBottomPadding() {
+  return ::features::IsTouchTextEditingRedesignEnabled()
+             ? kSelectionHandlePadding
+             : kSelectionHandleBottomPadding;
+}
 
 gfx::Image* GetCenterHandleImage() {
   static gfx::Image* handle_image = nullptr;
@@ -123,26 +147,57 @@ gfx::Image* GetHandleImage(gfx::SelectionBound::Type bound_type) {
   }
 }
 
+// Returns the appropriate handle vector icon based on the handle bound type.
+ui::ImageModel GetHandleVectorIcon(gfx::SelectionBound::Type bound_type) {
+  const gfx::VectorIcon* icon = nullptr;
+  switch (bound_type) {
+    case gfx::SelectionBound::LEFT:
+      icon = &kTextSelectionHandleLeftIcon;
+      break;
+    case gfx::SelectionBound::CENTER:
+      icon = &kTextSelectionHandleCenterIcon;
+      break;
+    case gfx::SelectionBound::RIGHT:
+      icon = &kTextSelectionHandleRightIcon;
+      break;
+    default:
+      NOTREACHED_NORETURN()
+          << "Invalid touch handle bound type: " << bound_type;
+  }
+  return ui::ImageModel::FromVectorIcon(*icon,
+                                        /*color_id=*/ui::kColorSysPrimary);
+}
+
+// Returns the appropriate handle image model based on the handle bound type.
+ui::ImageModel GetHandleImageModel(gfx::SelectionBound::Type bound_type) {
+  return ::features::IsTouchTextEditingRedesignEnabled()
+             ? GetHandleVectorIcon(bound_type)
+             : ui::ImageModel::FromImage(*GetHandleImage(bound_type));
+  ;
+}
+
 // Calculates the bounds of the widget containing the selection handle based
 // on the SelectionBound's type and location.
 gfx::Rect GetSelectionWidgetBounds(const gfx::SelectionBound& bound) {
-  gfx::Size image_size = GetHandleImage(bound.type())->Size();
-  int widget_width = image_size.width() + 2 * kSelectionHandleHorizPadding;
+  const gfx::Size image_size = GetHandleImageModel(bound.type()).Size();
+  const int widget_width =
+      image_size.width() + 2 * GetSelectionHandleHorizontalPadding();
   // Extend the widget height to handle touch events below the painted image.
-  int widget_height = bound.GetHeight() + image_size.height() +
-                      kSelectionHandleVerticalVisualOffset +
-                      kSelectionHandleVertPadding;
+  const int widget_height = bound.GetHeight() + image_size.height() +
+                            GetSelectionHandleVerticalOffset() +
+                            GetSelectionHandleBottomPadding();
+
   // Due to the shape of the handle images, the widget is aligned differently to
   // the selection bound depending on the type of the bound.
   int widget_left = 0;
   switch (bound.type()) {
     case gfx::SelectionBound::LEFT:
       widget_left = bound.edge_start_rounded().x() - image_size.width() -
-                    kSelectionHandleHorizPadding;
+                    GetSelectionHandleHorizontalPadding();
       break;
     case gfx::SelectionBound::RIGHT:
-      widget_left =
-          bound.edge_start_rounded().x() - kSelectionHandleHorizPadding;
+      widget_left = bound.edge_start_rounded().x() -
+                    GetSelectionHandleHorizontalPadding();
       break;
     case gfx::SelectionBound::CENTER:
       widget_left = bound.edge_start_rounded().x() - widget_width / 2;
@@ -206,6 +261,12 @@ views::UniqueWidgetPtr CreateHandleWidget(gfx::NativeView parent) {
       std::make_unique<views::Widget>(std::move(params));
   widget->GetNativeWindow()->SetEventTargeter(
       std::make_unique<aura::WindowTargeter>());
+  if (::features::IsTouchTextEditingRedesignEnabled()) {
+    // Disable visibility change animations so that the handle's opacity is not
+    // overridden by fade effects.
+    widget->SetVisibilityChangedAnimationsEnabled(false);
+    widget->SetOpacity(kSelectionHandleOpacity);
+  }
 
   return widget;
 }
@@ -223,7 +284,7 @@ class TouchSelectionControllerImpl::EditingHandleView : public View {
   EditingHandleView(TouchSelectionControllerImpl* controller,
                     bool is_cursor_handle)
       : controller_(controller),
-        image_(GetCenterHandleImage()),
+        handle_image_(ui::ImageModel::FromImage(*GetCenterHandleImage())),
         is_cursor_handle_(is_cursor_handle) {}
 
   EditingHandleView(const EditingHandleView&) = delete;
@@ -236,10 +297,17 @@ class TouchSelectionControllerImpl::EditingHandleView : public View {
 
   // View:
   void OnPaint(gfx::Canvas* canvas) override {
-    // Draw the handle image.
     canvas->DrawImageInt(
-        *image_->ToImageSkia(), kSelectionHandleHorizPadding,
-        selection_bound_.GetHeight() + kSelectionHandleVerticalVisualOffset);
+        handle_image_.Rasterize(GetColorProvider()),
+        GetSelectionHandleHorizontalPadding(),
+        selection_bound_.GetHeight() + GetSelectionHandleVerticalOffset());
+  }
+
+  void OnThemeChanged() override {
+    View::OnThemeChanged();
+    if (handle_image_.IsVectorIcon()) {
+      SchedulePaint();
+    }
   }
 
   void OnGestureEvent(ui::GestureEvent* event) override {
@@ -274,6 +342,10 @@ class TouchSelectionControllerImpl::EditingHandleView : public View {
         is_dragging_ = false;
         GetWidget()->ReleaseCapture();
         controller_->OnDragEnd();
+        ui::RecordTouchSelectionDrag(
+            is_cursor_handle_
+                ? ui::TouchSelectionDragType::kCursorHandleDrag
+                : ui::TouchSelectionDragType::kSelectionHandleDrag);
         break;
       }
       default:
@@ -306,8 +378,8 @@ class TouchSelectionControllerImpl::EditingHandleView : public View {
 
   // If |is_visible| is true, this will update the widget and trigger a repaint
   // if necessary. Otherwise this will only update the internal state:
-  // |selection_bound_| and |image_|, so that the state is valid for the time
-  // this becomes visible.
+  // |selection_bound_| and |handle_image_|, so that the state is valid for the
+  // time this becomes visible.
   void SetBoundInScreen(const gfx::SelectionBound& bound, bool is_visible) {
     bool update_bound_type = false;
     // Cursor handle should always have the bound type CENTER
@@ -324,7 +396,7 @@ class TouchSelectionControllerImpl::EditingHandleView : public View {
     }
     if (update_bound_type) {
       selection_bound_.set_type(bound.type());
-      image_ = GetHandleImage(bound.type());
+      handle_image_ = GetHandleImageModel(bound.type());
       if (is_visible)
         SchedulePaint();
     }
@@ -343,8 +415,8 @@ class TouchSelectionControllerImpl::EditingHandleView : public View {
     }
 
     const auto insets = gfx::Insets::TLBR(
-        selection_bound_.GetHeight() + kSelectionHandleVerticalVisualOffset, 0,
-        0, 0);
+        selection_bound_.GetHeight() + GetSelectionHandleVerticalOffset(), 0, 0,
+        0);
 
     // Shifts the hit-test target below the apparent bounds to make dragging
     // easier.
@@ -353,12 +425,14 @@ class TouchSelectionControllerImpl::EditingHandleView : public View {
 
   bool GetIsDragging() const { return is_dragging_; }
 
+  gfx::Size GetHandleImageSize() const { return handle_image_.Size(); }
+
  private:
   raw_ptr<TouchSelectionControllerImpl> controller_;
 
   // In local coordinates
   gfx::SelectionBound selection_bound_;
-  raw_ptr<gfx::Image> image_;
+  ui::ImageModel handle_image_;
 
   // If true, this is a handle corresponding to the single cursor, otherwise it
   // is a handle corresponding to one of the two selection bounds.
@@ -375,6 +449,7 @@ class TouchSelectionControllerImpl::EditingHandleView : public View {
 BEGIN_METADATA(TouchSelectionControllerImpl, EditingHandleView, View)
 ADD_READONLY_PROPERTY_METADATA(gfx::SelectionBound::Type, SelectionBoundType)
 ADD_READONLY_PROPERTY_METADATA(bool, IsDragging)
+ADD_READONLY_PROPERTY_METADATA(gfx::Size, HandleImageSize)
 END_METADATA
 
 TouchSelectionControllerImpl::TouchSelectionControllerImpl(
@@ -531,8 +606,6 @@ void TouchSelectionControllerImpl::ShowQuickMenuImmediatelyForTesting() {
 void TouchSelectionControllerImpl::OnDragBegin(EditingHandleView* handle) {
   DCHECK_EQ(handle, GetDraggingHandle());
   UpdateQuickMenu();
-  ShowMagnifier(handle == GetSelectionHandle1() ? selection_bound_1_
-                                                : selection_bound_2_);
   if (handle == GetCursorHandle()) {
     return;
   }
@@ -667,13 +740,30 @@ void TouchSelectionControllerImpl::OnEvent(const ui::Event& event) {
 }
 
 void TouchSelectionControllerImpl::QuickMenuTimerFired() {
+  auto* menu_runner = ui::TouchSelectionMenuRunner::GetInstance();
+  if (!menu_runner) {
+    return;
+  }
+
   gfx::Rect menu_anchor = GetQuickMenuAnchorRect();
   if (menu_anchor == gfx::Rect())
     return;
 
-  ui::TouchSelectionMenuRunner::GetInstance()->OpenMenu(
-      GetWeakPtr(), menu_anchor, GetMaxHandleImageSize(),
-      client_view_->GetNativeView());
+  gfx::Size handle_image_size;
+  if (::features::IsTouchTextEditingRedesignEnabled()) {
+    if (!cursor_handle_widget_ || !selection_handle_1_widget_ ||
+        !selection_handle_2_widget_) {
+      return;
+    }
+    handle_image_size = cursor_handle_widget_->IsVisible()
+                            ? GetCursorHandle()->GetHandleImageSize()
+                            : GetSelectionHandle1()->GetHandleImageSize();
+  } else {
+    handle_image_size = GetMaxHandleImageSize();
+  }
+
+  menu_runner->OpenMenu(GetWeakPtr(), menu_anchor, handle_image_size,
+                        client_view_->GetNativeView());
 }
 
 void TouchSelectionControllerImpl::StartQuickMenuTimer() {
@@ -686,14 +776,17 @@ void TouchSelectionControllerImpl::StartQuickMenuTimer() {
 
 void TouchSelectionControllerImpl::UpdateQuickMenu() {
   HideQuickMenu();
-  if (quick_menu_requested_ && GetDraggingHandle() == nullptr) {
+  if (quick_menu_requested_ && GetDraggingHandle() == nullptr &&
+      !client_view_->IsSelectionDragging()) {
     StartQuickMenuTimer();
   }
 }
 
 void TouchSelectionControllerImpl::HideQuickMenu() {
-  if (ui::TouchSelectionMenuRunner::GetInstance()->IsRunning())
-    ui::TouchSelectionMenuRunner::GetInstance()->CloseMenu();
+  auto* menu_runner = ui::TouchSelectionMenuRunner::GetInstance();
+  if (menu_runner && menu_runner->IsRunning()) {
+    menu_runner->CloseMenu();
+  }
   quick_menu_timer_.Stop();
 }
 
@@ -723,33 +816,35 @@ gfx::Rect TouchSelectionControllerImpl::GetQuickMenuAnchorRect() const {
 
   // Enlarge the anchor rect so that the menu is offset from the text at least
   // by the same distance the handles are offset from the text.
-  menu_anchor.Inset(gfx::Insets::VH(-kSelectionHandleVerticalVisualOffset, 0));
+  menu_anchor.Outset(gfx::Outsets::VH(GetSelectionHandleVerticalOffset(), 0));
 
   return menu_anchor;
 }
 
 void TouchSelectionControllerImpl::ShowMagnifier(
     const gfx::SelectionBound& focus_bound_in_screen) {
-  if (auto* magnifier_runner =
-          ui::TouchSelectionMagnifierRunner::GetInstance()) {
-    // Convert focus bound to client native view coordinates.
-    const aura::Window* window = client_view_->GetNativeView();
-    gfx::Point edge_start = focus_bound_in_screen.edge_start_rounded();
-    gfx::Point edge_end = focus_bound_in_screen.edge_end_rounded();
-    wm::ConvertPointFromScreen(window, &edge_start);
-    wm::ConvertPointFromScreen(window, &edge_end);
-    gfx::SelectionBound focus_bound(focus_bound_in_screen);
-    focus_bound.SetEdge(gfx::PointF(edge_start), gfx::PointF(edge_end));
-
-    magnifier_runner->ShowMagnifier(client_view_->GetNativeView(), focus_bound);
+  if (!::features::IsTouchTextEditingRedesignEnabled()) {
+    return;
   }
+
+  aura::Window* root_window = client_view_->GetNativeView()->GetRootWindow();
+  DCHECK(root_window);
+  if (!touch_selection_magnifier_) {
+    touch_selection_magnifier_ =
+        std::make_unique<ui::TouchSelectionMagnifierAura>();
+  }
+
+  // Convert focus bound to root window coordinates.
+  gfx::Point focus_start = focus_bound_in_screen.edge_start_rounded();
+  gfx::Point focus_end = focus_bound_in_screen.edge_end_rounded();
+  wm::ConvertPointFromScreen(root_window, &focus_start);
+  wm::ConvertPointFromScreen(root_window, &focus_end);
+  touch_selection_magnifier_->ShowFocusBound(root_window->layer(), focus_start,
+                                             focus_end);
 }
 
 void TouchSelectionControllerImpl::HideMagnifier() {
-  if (auto* magnifier_runner =
-          ui::TouchSelectionMagnifierRunner::GetInstance()) {
-    magnifier_runner->CloseMagnifier();
-  }
+  touch_selection_magnifier_ = nullptr;
 }
 
 void TouchSelectionControllerImpl::CreateHandleWidgets() {

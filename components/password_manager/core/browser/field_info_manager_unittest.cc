@@ -1,115 +1,170 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/password_manager/core/browser/field_info_manager.h"
 
-#include <vector>
+#include <memory>
 
+#include "base/i18n/case_conversion.h"
 #include "base/test/task_environment.h"
-#include "base/time/time.h"
-#include "build/build_config.h"
-#include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/common/signatures.h"
-#include "components/password_manager/core/browser/field_info_store.h"
-#include "components/password_manager/core/browser/field_info_table.h"
-#include "components/password_manager/core/browser/mock_field_info_store.h"
-#include "components/password_manager/core/browser/mock_password_store_interface.h"
-#include "testing/gmock/include/gmock/gmock.h"
+#include "base/test/test_mock_time_task_runner.h"
+#include "components/password_manager/core/browser/form_parsing/password_field_prediction.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using autofill::PASSWORD;
-using autofill::SINGLE_USERNAME;
-using autofill::UNKNOWN_TYPE;
-using autofill::USERNAME;
-using base::Time;
+using autofill::FieldRendererId;
+using autofill::FieldSignature;
+using autofill::FormSignature;
+using autofill::ServerFieldType;
 
 namespace password_manager {
+
 namespace {
 
-MATCHER_P3(FieldInfoHasData, form_signature, field_signature, field_type, "") {
-  return arg.form_signature == form_signature &&
-         arg.field_signature == field_signature &&
-         arg.field_type == field_type && arg.create_time != base::Time();
-}
+const char kTestDomain[] = "https://firstdomain.com";
+constexpr FormSignature kTestFormSignature(100);
+constexpr FieldSignature kTestFieldSignature(200);
+constexpr int kTestDriverId = 1;
+constexpr FieldRendererId kTestFieldId(1);
+constexpr ServerFieldType kTestFieldType = autofill::USERNAME;
 
-class FieldInfoManagerTest : public testing::Test {
- public:
-  FieldInfoManagerTest() {
-    test_data_.push_back({autofill::FormSignature(101u),
-                          autofill::FieldSignature(1u), USERNAME,
-                          Time::FromTimeT(1)});
-    test_data_.push_back({autofill::FormSignature(101u),
-                          autofill::FieldSignature(10u), PASSWORD,
-                          Time::FromTimeT(5)});
-    test_data_.push_back({autofill::FormSignature(102u),
-                          autofill::FieldSignature(1u), SINGLE_USERNAME,
-                          Time::FromTimeT(10)});
+const char kAnotherDomain[] = "https://seconddomain.com";
+constexpr FormSignature kAnotherFormSignature(300);
+constexpr FieldSignature kAnotherFieldSignature(400);
+constexpr int kAnotherDriverId = 2;
+constexpr FieldRendererId kAnotherFieldId(2);
+constexpr ServerFieldType kAnotherFieldType = autofill::PASSWORD;
 
-    store_ = new testing::StrictMock<MockPasswordStoreInterface>();
-#if !BUILDFLAG(IS_ANDROID)
-    EXPECT_CALL(*store_, GetFieldInfoStore)
-        .WillRepeatedly(testing::Return(&mock_field_store_));
-    EXPECT_CALL(mock_field_store_, GetAllFieldInfo);
-#else
-    EXPECT_CALL(*store_, GetFieldInfoStore)
-        .WillRepeatedly(testing::Return(nullptr));
-#endif
-    field_info_manager_ = std::make_unique<FieldInfoManagerImpl>(store_);
-    task_environment_.RunUntilIdle();
-  }
+FormPredictions CreateTestPredictions(int driver_id,
+                                      FormSignature form_signature,
+                                      FieldSignature field_signature,
+                                      FieldRendererId renderer_id,
+                                      ServerFieldType type) {
+  FormPredictions predictions;
+  predictions.driver_id = driver_id;
+  predictions.form_signature = form_signature;
 
-  ~FieldInfoManagerTest() override { store_->ShutdownOnUIThread(); }
+  PasswordFieldPrediction field_prediction;
+  field_prediction.signature = field_signature;
+  field_prediction.renderer_id = renderer_id;
+  field_prediction.type = type;
+  predictions.fields.push_back(field_prediction);
 
- protected:
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::MainThreadType::UI};
-  scoped_refptr<MockPasswordStoreInterface> store_;
-  MockFieldInfoStore mock_field_store_;
-  std::vector<FieldInfo> test_data_;
-  std::unique_ptr<FieldInfoManagerImpl> field_info_manager_;
-};
-
-TEST_F(FieldInfoManagerTest, AddFieldType) {
-  EXPECT_EQ(UNKNOWN_TYPE,
-            field_info_manager_->GetFieldType(autofill::FormSignature(101u),
-                                              autofill::FieldSignature(1u)));
-
-#if BUILDFLAG(IS_ANDROID)
-  EXPECT_CALL(mock_field_store_, AddFieldInfo).Times(0);
-#else
-  EXPECT_CALL(mock_field_store_, AddFieldInfo(FieldInfoHasData(
-                                     autofill::FormSignature(101u),
-                                     autofill::FieldSignature(1u), PASSWORD)));
-#endif  //  !BUILDFLAG(IS_ANDROID)
-
-  field_info_manager_->AddFieldType(autofill::FormSignature(101u),
-                                    autofill::FieldSignature(1u), PASSWORD);
-  task_environment_.RunUntilIdle();
-#if BUILDFLAG(IS_ANDROID)
-  EXPECT_EQ(UNKNOWN_TYPE,
-            field_info_manager_->GetFieldType(autofill::FormSignature(101u),
-                                              autofill::FieldSignature(1u)));
-#else
-  EXPECT_EQ(PASSWORD,
-            field_info_manager_->GetFieldType(autofill::FormSignature(101u),
-                                              autofill::FieldSignature(1u)));
-#endif  //  !BUILDFLAG(IS_ANDROID)
-}
-
-TEST_F(FieldInfoManagerTest, OnGetAllFieldInfo) {
-  auto* field_info_manager_as_password_consumer =
-      static_cast<PasswordStoreConsumer*>(field_info_manager_.get());
-  field_info_manager_as_password_consumer->OnGetAllFieldInfo(test_data_);
-  for (const FieldInfo& field_info : test_data_) {
-    EXPECT_EQ(field_info.field_type,
-              field_info_manager_->GetFieldType(field_info.form_signature,
-                                                field_info.field_signature));
-  }
-  EXPECT_EQ(UNKNOWN_TYPE,
-            field_info_manager_->GetFieldType(autofill::FormSignature(1234u),
-                                              autofill::FieldSignature(1u)));
+  return predictions;
 }
 
 }  // namespace
+
+class FieldInfoManagerTest : public testing::Test {
+ public:
+  void SetUp() override {
+    manager_ = std::make_unique<FieldInfoManager>(
+        task_environment_.GetMainThreadTaskRunner());
+  }
+
+ protected:
+  std::unique_ptr<FieldInfoManager> manager_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+};
+
+TEST_F(FieldInfoManagerTest, InfoAddedRetrievedAndExpired) {
+  FieldInfo info(kTestDriverId, kTestFieldId, kTestDomain, u"value");
+  manager_->AddFieldInfo(info, /*predictions=*/absl::nullopt);
+  std::vector<FieldInfo> expected_info = {info};
+  EXPECT_EQ(manager_->GetFieldInfo(kTestDomain), expected_info);
+  EXPECT_TRUE(manager_->GetFieldInfo(kAnotherDomain).empty());
+
+  // Check that the info is still accessible.
+  task_environment_.FastForwardBy(kFieldInfoLifetime / 2);
+  EXPECT_EQ(manager_->GetFieldInfo(kTestDomain), expected_info);
+
+  // The info should not be accessible anymore
+  task_environment_.FastForwardBy(kFieldInfoLifetime / 2);
+  EXPECT_TRUE(manager_->GetFieldInfo(kTestDomain).empty());
+}
+
+TEST_F(FieldInfoManagerTest, InfoOverwrittenWithNewField) {
+  FieldInfo info1(kTestDriverId, FieldRendererId(1), kTestDomain, u"value1");
+  manager_->AddFieldInfo(info1, /*predictions=*/absl::nullopt);
+  FieldInfo info2(kTestDriverId, FieldRendererId(2), kTestDomain, u"value2");
+  manager_->AddFieldInfo(info2, /*predictions=*/absl::nullopt);
+
+  std::vector<FieldInfo> expected_info = {info1, info2};
+  EXPECT_EQ(manager_->GetFieldInfo(kTestDomain), expected_info);
+
+  // The third info should dismiss the first one.
+  FieldInfo info3(kTestDriverId, FieldRendererId(3), kTestDomain, u"value3");
+  manager_->AddFieldInfo(info3, /*predictions=*/absl::nullopt);
+
+  expected_info = {info2, info3};
+  EXPECT_EQ(manager_->GetFieldInfo(kTestDomain), expected_info);
+}
+
+TEST_F(FieldInfoManagerTest, InfoUpdatedWithNewValue) {
+  FieldInfo info1(kTestDriverId, kTestFieldId, kTestDomain, u"value");
+  manager_->AddFieldInfo(info1, /*predictions=*/absl::nullopt);
+
+  // The value should not be stored twice for the same field.
+  FieldInfo info2 = info1;
+  info2.value = u"new_value";
+  manager_->AddFieldInfo(info2, /*predictions=*/absl::nullopt);
+
+  std::vector<FieldInfo> expected_info = {info2};
+  EXPECT_EQ(manager_->GetFieldInfo(kTestDomain), expected_info);
+}
+
+TEST_F(FieldInfoManagerTest, FieldValueLowercased) {
+  std::u16string raw_value = u"VaLuE";
+  FieldInfo info(kTestDriverId, kTestFieldId, kTestDomain, raw_value);
+  EXPECT_EQ(info.value, base::i18n::ToLower(raw_value));
+}
+
+TEST_F(FieldInfoManagerTest, InfoAddedWithPredictions) {
+  FieldInfo info(kTestDriverId, kTestFieldId, kTestDomain, u"value");
+  FormPredictions predictions =
+      CreateTestPredictions(kTestDriverId, kTestFormSignature,
+                            kTestFieldSignature, kTestFieldId, kTestFieldType);
+  manager_->AddFieldInfo(info, predictions);
+
+  auto field_info_cache = manager_->GetFieldInfo(kTestDomain);
+  ASSERT_EQ(field_info_cache.size(), 1u);
+
+  EXPECT_EQ(field_info_cache[0].stored_predictions, predictions);
+  EXPECT_EQ(field_info_cache[0].type, kTestFieldType);
+}
+
+TEST_F(FieldInfoManagerTest, ProcessServerPredictions) {
+  FieldInfo info(kTestDriverId, kTestFieldId, kTestDomain, u"value");
+  manager_->AddFieldInfo(info, /*predictions=*/absl::nullopt);
+
+  // Create test predictions.
+  std::map<autofill::FormSignature, FormPredictions> predictions;
+  FormPredictions form_prediction =
+      CreateTestPredictions(kTestDriverId, kTestFormSignature,
+                            kTestFieldSignature, kTestFieldId, kTestFieldType);
+
+  // Add another field.
+  PasswordFieldPrediction another_field_prediction;
+  another_field_prediction.renderer_id = kAnotherFieldId;
+  another_field_prediction.type = kAnotherFieldType;
+  form_prediction.fields.push_back(another_field_prediction);
+
+  predictions[kTestFormSignature] = form_prediction;
+
+  // Add a prediction with the same field id, but different driver.
+  FormPredictions different_driver_prediction = CreateTestPredictions(
+      kAnotherDriverId, kAnotherFormSignature, kAnotherFieldSignature,
+      kTestFieldId, kAnotherFieldType);
+  predictions[kAnotherFormSignature] = different_driver_prediction;
+
+  manager_->ProcessServerPredictions(predictions);
+
+  auto field_info_cache = manager_->GetFieldInfo(kTestDomain);
+  ASSERT_EQ(field_info_cache.size(), 1u);
+
+  EXPECT_EQ(field_info_cache[0].stored_predictions, form_prediction);
+  EXPECT_EQ(field_info_cache[0].type, kTestFieldType);
+}
+
 }  // namespace password_manager

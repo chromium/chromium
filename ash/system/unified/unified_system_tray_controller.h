@@ -123,6 +123,8 @@ class ASH_EXPORT UnifiedSystemTrayController
   void ShowCastDetailedView();
   // Show the detailed view of accessibility. Called from the view.
   void ShowAccessibilityDetailedView();
+  // Show the detailed view of focus mode. Called from the view.
+  void ShowFocusModeDetailedView();
   // Show the detailed view of VPN. Called from the view.
   void ShowVPNDetailedView();
   // Show the detailed view of IME. Called from the view.
@@ -136,7 +138,8 @@ class ASH_EXPORT UnifiedSystemTrayController
   // Show the detailed view of notifier settings. Called from the view.
   void ShowNotifierSettingsView();
   // Show the detailed view of media controls. Called from the view.
-  void ShowMediaControlsDetailedView();
+  void ShowMediaControlsDetailedView(
+      const std::string& show_devices_for_item_id = "");
   // Show the detailed view of Calendar. Called from the view.
   void ShowCalendarView(calendar_metrics::CalendarViewShowSource show_source,
                         calendar_metrics::CalendarEventSource event_source);
@@ -247,9 +250,7 @@ class ASH_EXPORT UnifiedSystemTrayController
   // If you want to add a new feature pod item, you have to add here.
   void InitFeaturePods();
 
-  // Initialize feature pod controllers and their tile views.
-  // Temporarily only adds two feature tiles and other placeholder tiles.
-  // TODO(b/252871301): Create each feature's tile.
+  // Initialize feature pod controllers and their feature tile views.
   void InitFeatureTiles();
 
   // Add the feature pod controller and its view.
@@ -288,8 +289,10 @@ class ASH_EXPORT UnifiedSystemTrayController
   scoped_refptr<UnifiedSystemTrayModel> model_;
 
   // Unowned. Owned by Views hierarchy.
-  raw_ptr<UnifiedSystemTrayView, ExperimentalAsh> unified_view_ = nullptr;
-  raw_ptr<QuickSettingsView, ExperimentalAsh> quick_settings_view_ = nullptr;
+  raw_ptr<UnifiedSystemTrayView, DanglingUntriaged | ExperimentalAsh>
+      unified_view_ = nullptr;
+  raw_ptr<QuickSettingsView, DanglingUntriaged | ExperimentalAsh>
+      quick_settings_view_ = nullptr;
 
   // Unowned.
   raw_ptr<UnifiedSystemTrayBubble, ExperimentalAsh> bubble_ = nullptr;
@@ -312,12 +315,14 @@ class ASH_EXPORT UnifiedSystemTrayController
 
   // Controller of volume slider. Owned.
   std::unique_ptr<UnifiedVolumeSliderController> volume_slider_controller_;
-  raw_ptr<views::View, ExperimentalAsh> unified_volume_view_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh>
+      unified_volume_view_ = nullptr;
 
   // Controller of brightness slider. Owned.
   std::unique_ptr<UnifiedBrightnessSliderController>
       brightness_slider_controller_;
-  raw_ptr<views::View, ExperimentalAsh> unified_brightness_view_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh>
+      unified_brightness_view_ = nullptr;
 
   // If the previous state is expanded or not. Only valid during dragging (from
   // BeginDrag to EndDrag).

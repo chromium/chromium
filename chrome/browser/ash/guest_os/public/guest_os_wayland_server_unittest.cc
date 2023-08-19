@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_security_delegate.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/ash/components/dbus/vm_wl/wl.pb.h"
 #include "components/exo/data_exchange_delegate.h"
 #include "components/exo/input_method_surface_manager.h"
@@ -108,6 +109,24 @@ TEST_F(GuestOsWaylandServerTest, DelegateLifetimeManagedCorrectly) {
 
   EXPECT_EQ(gows.GetDelegate(vm_tools::apps::UNKNOWN, "test"), nullptr);
   EXPECT_TRUE(delegate.WasInvalidated());
+}
+
+TEST_F(GuestOsWaylandServerTest, EvictServersOnConciergeCrash) {
+  ash::ConciergeClient::InitializeFake();
+  auto* concierge_client = ash::FakeConciergeClient::Get();
+  auto wsc = std::make_unique<exo::WaylandServerController>(nullptr, nullptr,
+                                                            nullptr, nullptr);
+  GuestOsWaylandServer gows(&profile_);
+
+  exo::wayland::test::WaylandServerTestBase::ScopedTempSocket socket;
+  base::test::TestFuture<absl::optional<std::string>> listen_future;
+  gows.Listen(socket.TakeFd(), vm_tools::apps::UNKNOWN, "test",
+              listen_future.GetCallback());
+  ASSERT_FALSE(listen_future.Get().has_value());
+
+  EXPECT_NE(gows.GetDelegate(vm_tools::apps::UNKNOWN, "test"), nullptr);
+  concierge_client->NotifyConciergeStopped();
+  EXPECT_EQ(gows.GetDelegate(vm_tools::apps::UNKNOWN, "test"), nullptr);
 }
 
 }  // namespace guest_os

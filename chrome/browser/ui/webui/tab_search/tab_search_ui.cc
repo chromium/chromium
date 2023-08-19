@@ -25,6 +25,7 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/views/style/platform_style.h"
+#include "ui/webui/color_change_listener/color_change_handler.h"
 
 TabSearchUI::TabSearchUI(content::WebUI* web_ui)
     : ui::MojoBubbleWebUIController(web_ui,
@@ -63,6 +64,7 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       {"collapseRecentlyClosed", IDS_TAB_SEARCH_COLLAPSE_RECENTLY_CLOSED},
 
   };
+  webui::SetupChromeRefresh2023(source);
   source->AddLocalizedStrings(kStrings);
   source->AddBoolean("useRipples", views::PlatformStyle::kUseRipples);
 
@@ -117,6 +119,13 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
 TabSearchUI::~TabSearchUI() = default;
 
 WEB_UI_CONTROLLER_TYPE_IMPL(TabSearchUI)
+
+void TabSearchUI::BindInterface(
+    mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
+        pending_receiver) {
+  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
+      web_ui()->GetWebContents(), std::move(pending_receiver));
+}
 
 void TabSearchUI::BindInterface(
     mojo::PendingReceiver<tab_search::mojom::PageHandlerFactory> receiver) {

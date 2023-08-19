@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("banners") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "infobar_banner_accessibility_util.h",
     "infobar_banner_accessibility_util.mm",
@@ -21,13 +20,13 @@ source_set("banners") {
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements",
     "//ios/chrome/common/ui/util",
     "//ui/base",
   ]
 }
 
 source_set("public") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "infobar_banner_constants.h",
     "infobar_banner_constants.mm",
@@ -37,7 +36,6 @@ source_set("public") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "infobar_banner_view_controller_unittest.mm" ]
   deps = [

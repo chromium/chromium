@@ -8,14 +8,13 @@ import argparse
 import os
 import subprocess
 import sys
-import time
 
 from contextlib import AbstractContextManager
 from typing import Iterable, Optional, TextIO
 
 from common import catch_sigterm, read_package_paths, register_common_args, \
                    register_device_args, run_continuous_ffx_command, \
-                   stop_ffx_daemon
+                   stop_ffx_daemon, wait_for_sigterm
 from compatible_utils import running_unattended
 from ffx_integration import ScopedFfxConfig, run_symbolizer
 
@@ -118,7 +117,7 @@ def start_system_log(log_manager: LogManager,
         system_log = sys.stdout
     else:
         system_log = log_manager.open_log_file('system_log')
-    log_cmd = ['log', '--raw']
+    log_cmd = ['log', '--raw', '--no-color']
     if log_args:
         log_cmd.extend(log_args)
     if symbol_paths:
@@ -154,13 +153,9 @@ def main():
             package_paths.extend(
                 read_package_paths(manager_args.out_dir, package))
     with LogManager(None) as log_manager:
-        try:
-            start_system_log(log_manager, True, package_paths, system_log_args,
-                             manager_args.target_id)
-            while True:
-                time.sleep(10000)
-        except (KeyboardInterrupt, SystemExit):
-            pass
+        start_system_log(log_manager, True, package_paths, system_log_args,
+                         manager_args.target_id)
+        wait_for_sigterm()
 
 
 if __name__ == '__main__':

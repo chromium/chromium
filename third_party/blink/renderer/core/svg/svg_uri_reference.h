@@ -91,7 +91,7 @@ class CORE_EXPORT SVGURIReference : public GarbageCollectedMixin {
 
   SVGAnimatedPropertyBase* PropertyFromAttribute(
       const QualifiedName& attribute_name) const;
-  void SynchronizeSVGAttribute(const QualifiedName& name) const;
+  void SynchronizeAllSVGAttributes() const;
 
  private:
   Member<SVGAnimatedHref> href_;

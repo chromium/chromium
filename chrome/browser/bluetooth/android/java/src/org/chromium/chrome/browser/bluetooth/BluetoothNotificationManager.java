@@ -26,6 +26,7 @@ import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
@@ -38,8 +39,6 @@ import java.util.Set;
  * to a Bluetooth device or scanning for nearby Bluetooth devices.
  */
 public class BluetoothNotificationManager {
-    private static final String TAG = "BluetoothNotificationManager";
-
     private static final String NOTIFICATION_NAMESPACE = "BluetoothNotificationManager";
 
     public static final String ACTION_BLUETOOTH_UPDATE =
@@ -257,7 +256,7 @@ public class BluetoothNotificationManager {
 
     private static boolean shouldStartService(
             Context context, @BluetoothType int bluetoothType, int notificationTabId) {
-        if (!ContentFeatureList.isEnabled(
+        if (!ContentFeatureMap.isEnabled(
                     ContentFeatureList.WEB_BLUETOOTH_NEW_PERMISSIONS_BACKEND)) {
             return false;
         }
@@ -300,7 +299,7 @@ public class BluetoothNotificationManager {
      * @param service The bluetooth notification service class.
      */
     public static void clearBluetoothNotifications(Class service) {
-        if (!ContentFeatureList.isEnabled(
+        if (!ContentFeatureMap.isEnabled(
                     ContentFeatureList.WEB_BLUETOOTH_NEW_PERMISSIONS_BACKEND)) {
             return;
         }

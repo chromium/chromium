@@ -8,33 +8,27 @@ PASS http://web-platform.test:8001/common/blank.html to about:blank should not w
 PASS http://web-platform.test:8001/common/blank.html to about:srcdoc should not work
 PASS blob:(a blob URL for this origin) to blob:(a blob URL for this origin) should  work
 PASS blob:(a blob URL for this origin) to blob:(a blob URL for this origin)#newhash should  work
-FAIL blob:(a blob URL for this origin) to blob:(a blob URL for this origin)?newsearch should not work assert_throws_dom: function "() => {
-        iframe.contentWindow.history.pushState(null, "", to);
-      }" did not throw
+PASS blob:(a blob URL for this origin) to blob:(a blob URL for this origin)?newsearch should not work
 PASS blob:(a blob URL for this origin) to blob:newpath should not work
-FAIL blob:(a blob URL for this origin) to blob:http://web-platform.test:8001/syntheticblob should not work assert_throws_dom: function "() => {
-        iframe.contentWindow.history.pushState(null, "", to);
-      }" did not throw
-FAIL blob:(a blob URL for this origin) to blob:(another blob URL for this origin) should not work assert_throws_dom: function "() => {
-        iframe.contentWindow.history.pushState(null, "", to);
-      }" did not throw
-FAIL about:blank to about:blank should  work promise_test: Unhandled rejection with value: object "SecurityError: Failed to execute 'pushState' on 'History': A history state object with URL 'about:blank' cannot be created in a document with origin 'http://web-platform.test:8001' and URL 'about:blank'."
+PASS blob:(a blob URL for this origin) to blob:http://web-platform.test:8001/syntheticblob should not work
+PASS blob:(a blob URL for this origin) to blob:(another blob URL for this origin) should not work
+PASS about:blank to about:blank should  work
 PASS about:blank to about:srcdoc should not work
 PASS about:blank to about:blank?newsearch should not work
-FAIL about:blank to about:blank#newhash should  work promise_test: Unhandled rejection with value: object "SecurityError: Failed to execute 'pushState' on 'History': A history state object with URL 'about:blank#newhash' cannot be created in a document with origin 'http://web-platform.test:8001' and URL 'about:blank'."
+PASS about:blank to about:blank#newhash should  work
 PASS about:blank to http://web-platform.test:8001/blank should not work
 PASS http://web-platform.test:8001/common/blank.html to javascript:'foo' should not work
 PASS javascript:'foo' to javascript:'foo' should not work
 PASS javascript:'foo' to javascript:'foo'?newsearch should not work
 PASS javascript:'foo' to javascript:'foo'#newhash should not work
-FAIL about:srcdoc to about:srcdoc should  work promise_test: Unhandled rejection with value: object "SecurityError: Failed to execute 'pushState' on 'History': A history state object with URL 'about:srcdoc' cannot be created in a document with origin 'http://web-platform.test:8001' and URL 'about:srcdoc'."
+PASS about:srcdoc to about:srcdoc should  work
 PASS about:srcdoc to about:srcdoc?newsearch should not work
-FAIL about:srcdoc to about:srcdoc#newhash should  work promise_test: Unhandled rejection with value: object "SecurityError: Failed to execute 'pushState' on 'History': A history state object with URL 'about:srcdoc#newhash' cannot be created in a document with origin 'http://web-platform.test:8001' and URL 'about:srcdoc'."
+PASS about:srcdoc to about:srcdoc#newhash should  work
 PASS about:srcdoc to http://web-platform.test:8001/srcdoc should not work
 PASS sandboxed http://web-platform.test:8001/html/browsers/history/the-history-interface/resources/url-rewriting-helper.html to http://web-platform.test:8001/html/browsers/history/the-history-interface/resources/url-rewriting-helper.html should  work
 PASS sandboxed http://web-platform.test:8001/html/browsers/history/the-history-interface/resources/url-rewriting-helper.html to http://web-platform.test:8001/html/browsers/history/the-history-interface/resources/url-rewriting-helper.html#newhash should  work
 PASS sandboxed http://web-platform.test:8001/html/browsers/history/the-history-interface/resources/url-rewriting-helper.html to http://web-platform.test:8001/html/browsers/history/the-history-interface/resources/url-rewriting-helper.html?newsearch should  work
-FAIL sandboxed http://web-platform.test:8001/html/browsers/history/the-history-interface/resources/url-rewriting-helper.html to http://web-platform.test:8001/newpath should  work assert_equals: expected "no exception" but got "exception"
+PASS sandboxed http://web-platform.test:8001/html/browsers/history/the-history-interface/resources/url-rewriting-helper.html to http://web-platform.test:8001/newpath should  work
 PASS sandboxed http://web-platform.test:8001/html/browsers/history/the-history-interface/resources/url-rewriting-helper.html to http://username:password@web-platform.test:8001/html/browsers/history/the-history-interface/resources/url-rewriting-helper.html should not work
 PASS data:(script to run this test) to data:(script to run this test) should  work
 PASS data:(script to run this test) to data:(script to run this test)#newhash should  work

@@ -1,0 +1,11 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("bottom_sheet") {
+  sources = [
+    "table_view_bottom_sheet_view_controller.h",
+    "table_view_bottom_sheet_view_controller.mm",
+  ]
+  deps = [ "//ios/chrome/common/ui/confirmation_alert" ]
+}

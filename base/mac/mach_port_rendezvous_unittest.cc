@@ -8,9 +8,9 @@
 
 #include <utility>
 
+#include "base/apple/foundation_util.h"
+#include "base/apple/mach_logging.h"
 #include "base/at_exit.h"
-#include "base/mac/foundation_util.h"
-#include "base/mac/mach_logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/test_timeouts.h"
@@ -44,7 +44,7 @@ MULTIPROCESS_TEST_MAIN(TakeSendRight) {
 
   CHECK_EQ(1u, rendezvous_client->GetPortCount());
 
-  mac::ScopedMachSendRight port =
+  apple::ScopedMachSendRight port =
       rendezvous_client->TakeSendRight(kTestPortKey);
   CHECK(port.is_valid());
 
@@ -66,10 +66,10 @@ TEST_F(MachPortRendezvousServerTest, SendRight) {
   auto* server = MachPortRendezvousServer::GetInstance();
   ASSERT_TRUE(server);
 
-  mac::ScopedMachReceiveRight port;
+  apple::ScopedMachReceiveRight port;
   kern_return_t kr =
       mach_port_allocate(mach_task_self(), MACH_PORT_RIGHT_RECEIVE,
-                         mac::ScopedMachReceiveRight::Receiver(port).get());
+                         apple::ScopedMachReceiveRight::Receiver(port).get());
   ASSERT_EQ(kr, KERN_SUCCESS);
 
   MachRendezvousPort rendezvous_port(port.get(), MACH_MSG_TYPE_MAKE_SEND);
@@ -127,10 +127,10 @@ TEST_F(MachPortRendezvousServerTest, CleanupIfNoRendezvous) {
   auto* server = MachPortRendezvousServer::GetInstance();
   ASSERT_TRUE(server);
 
-  mac::ScopedMachReceiveRight port;
+  apple::ScopedMachReceiveRight port;
   kern_return_t kr =
       mach_port_allocate(mach_task_self(), MACH_PORT_RIGHT_RECEIVE,
-                         mac::ScopedMachReceiveRight::Receiver(port).get());
+                         apple::ScopedMachReceiveRight::Receiver(port).get());
   ASSERT_EQ(kr, KERN_SUCCESS);
 
   MachRendezvousPort rendezvous_port(port.get(), MACH_MSG_TYPE_MAKE_SEND);
@@ -224,7 +224,7 @@ TEST_F(MachPortRendezvousServerTest, DestroyRight) {
 MULTIPROCESS_TEST_MAIN(FailToRendezvous) {
   // The rendezvous system uses the BaseBundleID to construct the bootstrap
   // server name, so changing it will result in a failure to look it up.
-  base::mac::SetBaseBundleID("org.chromium.totallyfake");
+  base::apple::SetBaseBundleID("org.chromium.totallyfake");
   CHECK_EQ(nullptr, base::MachPortRendezvousClient::GetInstance());
   return 0;
 }

@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ENTRIES, EntryType, expectHistogramTotalCount, getCaller, getUserActionCount, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
+import {addEntries, createTestFile, ENTRIES, EntryType, expectHistogramTotalCount, getCaller, getUserActionCount, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
 import {navigateWithDirectoryTree, remoteCall, setupAndWaitUntilReady, waitForMediaApp} from './background.js';
+import {FakeTask} from './tasks.js';
 import {BASIC_DRIVE_ENTRY_SET, FILE_MANAGER_EXTENSIONS_ID, OFFLINE_ENTRY_SET, SHARED_WITH_ME_ENTRY_SET} from './test_data.js';
 
 /**
@@ -40,6 +41,12 @@ const ENABLE_DOCS_OFFLINE_MESSAGE =
 
 /** The query selector for the search box input field. */
 const searchBox = '#search-box cr-input';
+
+/** The id attribute of the dismiss button in the educational banner. */
+async function getDismissButtonId(appId) {
+  return await remoteCall.isCrosComponents(appId) ? '#dismiss-button' :
+                                                    '#dismiss-button-old';
+}
 
 /**
  * Returns the steps to start a search for 'hello' and wait for the
@@ -343,7 +350,7 @@ testcase.drivePinMultiple = async () => {
   await remoteCall.waitForElementLost(
       appId, '#file-list .dim-offline[file-name="world.ogv"]');
   await remoteCall.waitForElement(
-      appId, '#file-list .pinned[file-name="world.ogv"] .inline-status');
+      appId, '#file-list .pinned[file-name="world.ogv"] xf-inline-status');
 
   // Select world.ogv by itself.
   await remoteCall.waitAndClickElement(
@@ -411,7 +418,7 @@ testcase.drivePinHosted = async () => {
   await remoteCall.waitForElementLost(
       appId, '#file-list .dim-offline[file-name="hello.txt"]');
   await remoteCall.waitForElement(
-      appId, '#file-list .pinned[file-name="hello.txt"] .inline-status');
+      appId, '#file-list .pinned[file-name="hello.txt"] xf-inline-status');
 
   // Test Document.gdoc should not be pinned however.
   await remoteCall.waitForElement(
@@ -468,7 +475,7 @@ testcase.drivePinFileMobileNetwork = async () => {
   // Check: File is pinned.
   await remoteCall.waitForElement(appId, '[command="#toggle-pinned"][checked]');
   await remoteCall.waitForElement(
-      appId, '#file-list .pinned[file-name="hello.txt"] .inline-status');
+      appId, '#file-list .pinned[file-name="hello.txt"] xf-inline-status');
   await waitForNotification('disabled-mobile-sync');
   await sendTestMessage({
     name: 'clickNotificationButton',
@@ -500,7 +507,8 @@ testcase.drivePinToggleUpdatesInFakeEntries = async () => {
       appId, '#file-list [file-name="test.txt"]');
 
   // The pinned toggle should update to be checked.
-  await remoteCall.waitForElement(appId, '#pinned-toggle[checked]');
+  await remoteCall.waitForElementJelly(
+      appId, '#pinned-toggle-jelly[selected]', '#pinned-toggle[checked]');
 
   // Unpin the file.
   await remoteCall.waitAndClickElement(
@@ -509,7 +517,9 @@ testcase.drivePinToggleUpdatesInFakeEntries = async () => {
           '[command="#toggle-pinned"][checked]');
 
   // The pinned toggle should change to be unchecked.
-  await remoteCall.waitForElement(appId, '#pinned-toggle:not([checked])');
+  await remoteCall.waitForElementJelly(
+      appId, '#pinned-toggle-jelly:not([selected])',
+      '#pinned-toggle:not([checked])');
 
   // Navigate to the Shared with me fake entry.
   await navigateWithDirectoryTree(appId, '/Shared with me');
@@ -519,7 +529,9 @@ testcase.drivePinToggleUpdatesInFakeEntries = async () => {
       appId, '#file-list [file-name="test.txt"]');
 
   // The pinned toggle should remain unchecked.
-  await remoteCall.waitForElement(appId, '#pinned-toggle:not([checked])');
+  await remoteCall.waitForElementJelly(
+      appId, '#pinned-toggle-jelly:not([selected])',
+      '#pinned-toggle:not([checked])');
 
   // Pin the file.
   await remoteCall.waitAndClickElement(
@@ -528,7 +540,8 @@ testcase.drivePinToggleUpdatesInFakeEntries = async () => {
           '[command="#toggle-pinned"]:not([checked])');
 
   // The pinned toggle should change to be checked.
-  await remoteCall.waitForElement(appId, '#pinned-toggle[checked]');
+  await remoteCall.waitForElementJelly(
+      appId, '#pinned-toggle-jelly[selected]', '#pinned-toggle[checked]');
 };
 
 /**
@@ -663,8 +676,10 @@ testcase.driveAvailableOfflineActionBar = async () => {
 
   // Check the "Available Offline" toggle is shown in the action bar, but
   // disabled.
-  await remoteCall.waitForElement(
+  await remoteCall.waitForElementJelly(
       appId,
+      '#action-bar #pinned-toggle-wrapper:not([hidden]) ' +
+          '#pinned-toggle-jelly[disabled]:not([selected])',
       '#action-bar #pinned-toggle-wrapper:not([hidden]) ' +
           '#pinned-toggle[disabled]:not([checked])');
 
@@ -673,8 +688,10 @@ testcase.driveAvailableOfflineActionBar = async () => {
       appId, '#file-list [file-name="hello.txt"]');
 
   // Check the "Available Offline" toggle is now enabled, and pin the file.
-  await remoteCall.waitAndClickElement(
+  remoteCall.waitAndClickElementJelly(
       appId,
+      '#action-bar #pinned-toggle-wrapper:not([hidden]) ' +
+          '#pinned-toggle-jelly:not([disabled]):not([selected])',
       '#action-bar #pinned-toggle-wrapper:not([hidden]) ' +
           '#pinned-toggle:not([disabled]):not([checked])');
 
@@ -686,7 +703,7 @@ testcase.driveAvailableOfflineActionBar = async () => {
   // Hover cursor over the pinned icon.
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
       'fakeMouseOver', appId,
-      ['#file-list .pinned[file-name="hello.txt"] .inline-status']));
+      ['#file-list .pinned[file-name="hello.txt"] xf-inline-status']));
 
   // Verify the correct tooltip is displayed.
   const tooltip = await remoteCall.waitForElement(
@@ -694,8 +711,10 @@ testcase.driveAvailableOfflineActionBar = async () => {
   chrome.test.assertEq('Available offline', tooltip.text);
 
   // Check the "Available Offline" toggle is enabled and checked.
-  await remoteCall.waitForElement(
+  await remoteCall.waitForElementJelly(
       appId,
+      '#action-bar #pinned-toggle-wrapper:not([hidden]) ' +
+          '#pinned-toggle-jelly[selected]:not([disabled])',
       '#action-bar #pinned-toggle-wrapper:not([hidden]) ' +
           '#pinned-toggle[checked]:not([disabled])');
 
@@ -704,8 +723,10 @@ testcase.driveAvailableOfflineActionBar = async () => {
       appId, '#file-list [file-name="world.ogv"]');
 
   // Check the "Available Offline" toggle is enabled and unchecked.
-  await remoteCall.waitForElement(
+  await remoteCall.waitForElementJelly(
       appId,
+      '#action-bar #pinned-toggle-wrapper:not([hidden]) ' +
+          '#pinned-toggle-jelly:not([disabled]):not([selected])',
       '#action-bar #pinned-toggle-wrapper:not([hidden]) ' +
           '#pinned-toggle:not([disabled]):not([checked])');
 
@@ -714,8 +735,10 @@ testcase.driveAvailableOfflineActionBar = async () => {
       appId, '#file-list [file-name="hello.txt"]');
 
   // Check the "Available Offline" toggle is enabled and checked.
-  await remoteCall.waitForElement(
+  await remoteCall.waitForElementJelly(
       appId,
+      '#action-bar #pinned-toggle-wrapper:not([hidden]) ' +
+          '#pinned-toggle-jelly[selected]:not([disabled])',
       '#action-bar #pinned-toggle-wrapper:not([hidden]) ' +
           '#pinned-toggle[checked]:not([disabled])');
 
@@ -723,8 +746,10 @@ testcase.driveAvailableOfflineActionBar = async () => {
   await remoteCall.focus(appId, ['#directory-tree']);
 
   // Check the "Available Offline" toggle is still available in the action bar.
-  await remoteCall.waitForElement(
+  await remoteCall.waitForElementJelly(
       appId,
+      '#action-bar #pinned-toggle-wrapper:not([hidden]) ' +
+          '#pinned-toggle-jelly[selected]:not([disabled])',
       '#action-bar #pinned-toggle-wrapper:not([hidden]) ' +
           '#pinned-toggle[checked]:not([disabled])');
 };
@@ -837,7 +862,7 @@ testcase.driveWelcomeBanner = async () => {
   const driveWelcomeBannerDismissButtonQuery = [
     '#banners > drive-welcome-banner',
     'educational-banner',
-    '#dismiss-button',
+    await getDismissButtonId(appId),
   ];
 
   // Open the Drive volume in the files-list.
@@ -897,17 +922,18 @@ testcase.driveEncryptionBadge = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DRIVE, [], [ENTRIES.hello, ENTRIES.testCSEFile]);
 
-  // Check: non-encrypted file doesn't have a badge.
-  const plain = await remoteCall.waitForElementStyles(
-      appId, '#file-list [file-name="hello.txt"] .encryption-status',
-      ['display']);
-  chrome.test.assertEq('none', plain.styles.display);
-
   // Check: encrypted file has a badge.
   const encrypted = await remoteCall.waitForElementStyles(
-      appId, '#file-list [file-name="test-encrypted.txt"] .encryption-status',
-      ['display']);
-  chrome.test.assertEq('flex', encrypted.styles.display);
+      appId, '#file-list [file-name="test-encrypted.txt"] .encrypted-icon',
+      ['display', 'visibility']);
+  chrome.test.assertNe('none', encrypted.styles.display);
+  chrome.test.assertEq('visible', encrypted.styles.visibility);
+
+  // Check: non-encrypted file doesn't have a badge.
+  const plain = await remoteCall.callRemoteTestUtil(
+      'deepQueryAllElements', appId,
+      ['#file-list [file-name="hello.txt"] .encrypted-icon', []]);
+  chrome.test.assertEq(0, plain.length);
 };
 
 /**
@@ -939,7 +965,7 @@ testcase.driveInlineSyncStatusSingleFile = async () => {
     syncStatus: 'in_progress',
   });
 
-  const pieProgressQuery = '[data-sync-status=in_progress] .progress';
+  const pieProgressQuery = 'xf-inline-status[sync-status=in_progress]';
 
   // Verify this data reaches the UI as a progress value of 50%.
   const inlineStatus = await remoteCall.waitForElement(appId, pieProgressQuery);
@@ -963,7 +989,8 @@ testcase.driveInlineSyncStatusSingleFile = async () => {
   });
 
   // Verify the "sync in progress" icon is no longer displayed.
-  await remoteCall.waitForElementLost(appId, '[data-sync-status=in_progress]');
+  await remoteCall.waitForElementLost(
+      appId, 'xf-inline-status[sync-status=in_progress]');
 };
 
 /**
@@ -1026,8 +1053,8 @@ testcase.driveInlineSyncStatusParentFolder = async () => {
   // toBeUploaded - syncing in progress
   // toFailUploading - syncing in progress
 
-  const syncInProgressQuery = '[data-sync-status=in_progress]';
-  const syncFailedQuery = '[data-sync-status=error]';
+  const syncInProgressQuery = 'xf-inline-status[sync-status=in_progress]';
+  const syncFailedQuery = 'xf-inline-status[sync-status=error]';
 
   // Verify the "sync in progress" icon is displayed in the parent folder.
   await remoteCall.waitForElement(appId, syncInProgressQuery);
@@ -1095,7 +1122,7 @@ testcase.driveInlineSyncStatusSingleFileProgressEvents = async () => {
 
   // Verify this data reaches the UI as a progress value of 50%.
   const inlineStatus = await remoteCall.waitForElement(
-      appId, '[data-sync-status=in_progress] .progress');
+      appId, 'xf-inline-status[sync-status=in_progress]');
 
   chrome.test.assertEq(Number(inlineStatus.attributes['progress']), 0.5);
 
@@ -1107,7 +1134,8 @@ testcase.driveInlineSyncStatusSingleFileProgressEvents = async () => {
   });
 
   // Verify the "sync in progress" icon is no longer displayed.
-  await remoteCall.waitForElementLost(appId, '[data-sync-status=in_progress]');
+  await remoteCall.waitForElementLost(
+      appId, 'xf-inline-status[sync-status=in_progress]');
 };
 
 /**
@@ -1176,8 +1204,8 @@ testcase.driveInlineSyncStatusParentFolderProgressEvents = async () => {
   // some_folder/toBeUploaded - syncing in progress
   // some_folder/toFailUploading - syncing in progress
 
-  const syncInProgressQuery = '[data-sync-status=in_progress]';
-  const syncQueuedQuery = '[data-sync-status=queued]';
+  const syncInProgressQuery = 'xf-inline-status[sync-status=in_progress]';
+  const syncQueuedQuery = 'xf-inline-status[sync-status=queued]';
 
   // Verify the "sync in progress" icon is displayed in the parent "some_folder"
   // folder.
@@ -1458,9 +1486,11 @@ testcase.driveGoogleOneOfferBannerDismiss = async () => {
       appId, 'google-one-offer-banner:not([hidden])');
 
   // dismiss-button is provided by educational-banner.
-  await remoteCall.waitAndClickElement(
-      appId,
-      ['google-one-offer-banner', 'educational-banner', '#dismiss-button']);
+  await remoteCall.waitAndClickElement(appId, [
+    'google-one-offer-banner',
+    'educational-banner',
+    await getDismissButtonId(appId),
+  ]);
   chrome.test.assertEq(1, await getUserActionCount(userActionDismiss));
   await remoteCall.waitForElement(appId, 'google-one-offer-banner[hidden]');
 };
@@ -1474,6 +1504,11 @@ testcase.drivePinToggleIsDisabledAndHiddenWhenBulkPinningEnabled = async () => {
   const appId =
       await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.hello]);
 
+
+  const toggleId = await remoteCall.isCrosComponents(appId) ?
+      'pinned-toggle-jelly' :
+      'pinned-toggle';
+
   // Bring up the context menu for test.txt.
   await remoteCall.waitAndRightClick(
       appId, '#file-list [file-name="hello.txt"]');
@@ -1481,7 +1516,7 @@ testcase.drivePinToggleIsDisabledAndHiddenWhenBulkPinningEnabled = async () => {
   // The pinned toggle should be visible along with the command.
   await remoteCall.waitForElement(
       appId,
-      '#pinned-toggle-wrapper:not([hidden]) #pinned-toggle:not([disabled])');
+      `#pinned-toggle-wrapper:not([hidden]) #${toggleId}:not([disabled])`);
   await remoteCall.waitForElement(
       appId, '[command="#toggle-pinned"]:not([hidden][disabled])');
 
@@ -1493,7 +1528,7 @@ testcase.drivePinToggleIsDisabledAndHiddenWhenBulkPinningEnabled = async () => {
   // Wait for both the pinned toggle and the pinned command to become hidden and
   // disabled.
   await remoteCall.waitForElement(
-      appId, '#pinned-toggle-wrapper[hidden] #pinned-toggle[disabled]');
+      appId, `#pinned-toggle-wrapper[hidden] #${toggleId}[disabled]`);
   await remoteCall.waitForElement(
       appId, '[command="#toggle-pinned"][hidden][disabled]');
 
@@ -1502,66 +1537,9 @@ testcase.drivePinToggleIsDisabledAndHiddenWhenBulkPinningEnabled = async () => {
   await sendTestMessage({name: 'setBulkPinningEnabledPref', enabled: false});
   await remoteCall.waitForElement(
       appId,
-      '#pinned-toggle-wrapper:not([hidden]) #pinned-toggle:not([disabled])');
+      `#pinned-toggle-wrapper:not([hidden]) #${toggleId}:not([disabled])`);
   await remoteCall.waitForElement(
       appId, '[command="#toggle-pinned"]:not([hidden][disabled])');
-};
-
-/**
- * Tests that when bulk pinning is enabled, the "Available offline" toggle
- * should not be visible. When the preference is updated, the toggle should
- * reappear.
- */
-testcase.driveFolderShouldShowOfflineTickWhenBulkPinningEnabled = async () => {
-  const appId = await setupAndWaitUntilReady(
-      RootPath.DRIVE, [],
-      [ENTRIES.directoryA, ENTRIES.directoryB, ENTRIES.linkGtoB]);
-
-  // Wait for the directory "A" to not have the pinned class attached.
-  await remoteCall.waitForElement(
-      appId, '#file-list [file-name="A"]:not(.pinned)');
-
-  // Mock the free space returned by spaced to be 4 GB and enable the bulk
-  // pinning preference.
-  await remoteCall.setSpacedFreeSpace(4n << 30n);
-  await sendTestMessage({name: 'setBulkPinningEnabledPref', enabled: true});
-
-  // Wait for the folder to show up as pinned (the underlying folder will not
-  // actually get pinned but the class should still be added).
-  await remoteCall.waitForElement(appId, '#file-list [file-name="A"].pinned');
-
-  // Shortcuts should get excluded from the above logic and should remain the
-  // same as they were initially (in this case unpinned).
-  await remoteCall.waitForElement(
-      appId, '#file-list [file-name="G"]:not(.pinned)');
-
-  // Disable the bulk pinning preference and wait for the folder to lose the
-  // pinned class.
-  await sendTestMessage({name: 'setBulkPinningEnabledPref', enabled: false});
-  await remoteCall.waitForElement(
-      appId, '#file-list [file-name="A"]:not(.pinned)');
-
-  // Show the context menu for the "A" directory and click the pinning command.
-  await remoteCall.showContextMenuFor(appId, 'A');
-  await remoteCall.waitAndClickElement(
-      appId,
-      '#file-context-menu:not([hidden]) ' +
-          '[command="#toggle-pinned"]:not([checked])');
-
-  // Wait for the element to receive the pinned class from the explicit pinning
-  // action then enable the bulk pinning feature.
-  await remoteCall.waitForElement(appId, '#file-list [file-name="A"].pinned');
-  await sendTestMessage({name: 'setBulkPinningEnabledPref', enabled: true});
-
-  // The folder should not lose it's pinning status when the pinning manager
-  // enters the Syncing state.
-  await remoteCall.waitForBulkPinningStage('Syncing');
-  await remoteCall.waitForElement(appId, '#file-list [file-name="A"].pinned');
-
-  // Disable the bulk pinning preference and ensure the folder retains its
-  // pinned state.
-  await sendTestMessage({name: 'setBulkPinningEnabledPref', enabled: false});
-  await remoteCall.waitForElement(appId, '#file-list [file-name="A"].pinned');
 };
 
 /**
@@ -1622,6 +1600,10 @@ testcase.drivePinToggleIsEnabledInSharedWithMeWhenBulkPinningEnabled =
     ENTRIES.sharedWithMeDirectoryFile,
   ]);
 
+  const toggleId = await remoteCall.isCrosComponents(appId) ?
+      'pinned-toggle-jelly' :
+      'pinned-toggle';
+
   // Click the Shared with me volume, it has no children so navigating using the
   // directory tree doesn't work.
   chrome.test.assertFalse(!await remoteCall.callRemoteTestUtil(
@@ -1637,7 +1619,7 @@ testcase.drivePinToggleIsEnabledInSharedWithMeWhenBulkPinningEnabled =
   // The pinned toggle should be visible along with the command.
   await remoteCall.waitForElement(
       appId,
-      '#pinned-toggle-wrapper:not([hidden]) #pinned-toggle:not([disabled])');
+      `#pinned-toggle-wrapper:not([hidden]) #${toggleId}:not([disabled])`);
   await remoteCall.waitForElement(
       appId, '[command="#toggle-pinned"]:not([hidden][disabled])');
 
@@ -1651,7 +1633,7 @@ testcase.drivePinToggleIsEnabledInSharedWithMeWhenBulkPinningEnabled =
   // still be visible and enabled.
   await remoteCall.waitForElement(
       appId,
-      '#pinned-toggle-wrapper:not([hidden]) #pinned-toggle:not([disabled])');
+      `#pinned-toggle-wrapper:not([hidden]) #${toggleId}:not([disabled])`);
   await remoteCall.waitForElement(
       appId, '[command="#toggle-pinned"]:not([hidden][disabled])');
 
@@ -1661,7 +1643,7 @@ testcase.drivePinToggleIsEnabledInSharedWithMeWhenBulkPinningEnabled =
   await remoteCall.waitForBulkPinningStage('Stopped');
   await remoteCall.waitForElement(
       appId,
-      '#pinned-toggle-wrapper:not([hidden]) #pinned-toggle:not([disabled])');
+      `#pinned-toggle-wrapper:not([hidden]) #${toggleId}:not([disabled])`);
   await remoteCall.waitForElement(
       appId, '[command="#toggle-pinned"]:not([hidden][disabled])');
 };
@@ -1687,4 +1669,328 @@ testcase.driveCantPinItemsShouldHaveClassNameAndGetUpdatedWhenCanPin =
   // Wait for the `.cant-pin` class to be removed.
   await remoteCall.waitForElement(
       appId, '#file-list [file-name="text.txt"]:not(.cant-pin)');
+};
+
+/**
+ * Tests that items that are cached outside of their virtual list get their
+ * inline sync status updated when they get attached back to the DOM.
+ */
+testcase.driveItemsOutOfViewportShouldUpdateTheirSyncStatus = async () => {
+  const entries = [];
+  const emptyFile = createTestFile('text.txt');
+  for (let i = 0; i < 50; ++i) {
+    entries.push(emptyFile.cloneWithNewName(`File ${i}`));
+  }
+
+  const appId = await setupAndWaitUntilReady(RootPath.DRIVE, [], entries);
+
+  // Sort the table by the `name` column.
+  await remoteCall.waitAndClickElement(
+      appId, ['.table-header-cell:nth-of-type(1)']);
+
+  // Update the second file's metadata to "not pinnable" and wait for the
+  // corresponding icon to be displayed.
+  const secondFileName = entries[1].nameText;
+  await sendTestMessage(
+      {name: 'setCanPin', path: `/root/${secondFileName}`, canPin: false});
+  await remoteCall.waitForElement(
+      appId, `#file-list [file-name="${secondFileName}"].cant-pin`);
+
+  // Wait for the first entry to appear in the file list.
+  const firstFileName = entries[0].nameText;
+  await remoteCall.waitForElement(
+      appId, `#file-list [file-name="${firstFileName}"]`);
+
+  // Scroll to the bottom of the virtual list which ensures the first element
+  // should be removed from the DOM and cached.
+  await remoteCall.callRemoteTestUtil(
+      'setScrollTop', appId, ['#file-list', 10000]);
+
+  await remoteCall.waitForElementLost(
+      appId, `#file-list [file-name="${firstFileName}"]`);
+  const lastFileName = entries[entries.length - 1].nameText;
+  await remoteCall.waitForElement(
+      appId, `#file-list [file-name="${lastFileName}"]`);
+
+  // Send a file sync progress for the first file name.
+  await sendTestMessage({
+    name: 'setDriveSyncProgress',
+    path: `/root/${firstFileName}`,
+    progress: 50,
+  });
+
+  // Send a file sync progress event for the last file name to use as a marker
+  // to know when the first file has made it to 50% pie progress.
+  await sendTestMessage({
+    name: 'setDriveSyncProgress',
+    path: `/root/${lastFileName}`,
+    progress: 50,
+  });
+
+  const inlineSyncSelector = fileName => `#file-list [file-name="${
+      fileName}"] xf-inline-status[sync-status=in_progress]`;
+
+  // Wait for the progress to appear on the last file and assert it received the
+  // correct progress value.
+  let lastFileInlineStatus =
+      await remoteCall.waitForElement(appId, inlineSyncSelector(lastFileName));
+  chrome.test.assertEq(
+      Number(lastFileInlineStatus.attributes['progress']), 0.5);
+
+  // Send a "completed" sync progress event for the second last file and wait
+  // for its effect.
+  const secondLastFileName = entries[entries.length - 2].nameText;
+  await sendTestMessage({
+    name: 'setDriveSyncProgress',
+    path: `/root/${secondLastFileName}`,
+    progress: 100,
+  });
+
+  // Scroll back up to the first element.
+  await remoteCall.callRemoteTestUtil('setScrollTop', appId, ['#file-list', 0]);
+
+  // Assert that the first element has the 50% progress as the event was sent
+  // before the last file event was sent.
+  const firstFileInlineStatus =
+      await remoteCall.waitForElement(appId, inlineSyncSelector(firstFileName));
+  chrome.test.assertEq(
+      Number(firstFileInlineStatus.attributes['progress']), 0.5);
+
+  // Ensure the second file is still displayed as "not pinnable".
+  await remoteCall.waitForElement(
+      appId, `#file-list [file-name="${secondFileName}"].cant-pin`);
+
+  // Switch to grid view.
+  await remoteCall.waitAndClickElement(appId, '#view-button');
+
+  // Wait for the first entry to appear in the file grid.
+  await remoteCall.waitForElement(
+      appId, `grid#file-list [file-name="${firstFileName}"]`);
+
+  // Scroll back down to the last element.
+  await remoteCall.callRemoteTestUtil(
+      'setScrollTop', appId, ['grid#file-list', 10000]);
+
+  // Assert that the last element still has 50% progress.
+  lastFileInlineStatus =
+      await remoteCall.waitForElement(appId, inlineSyncSelector(lastFileName));
+  chrome.test.assertEq(
+      Number(lastFileInlineStatus.attributes['progress']), 0.5);
+};
+
+/**
+ * Tests that when bulk pinning is enabled the queued state is shown for all
+ * files that the PinManager is tracking but has not yet pinned.
+ */
+testcase.driveAllItemsShouldBeQueuedIfTrackedByPinManager = async () => {
+  // Stop the PinManager from pinning files.
+  await sendTestMessage({name: 'setBulkPinningShouldPinFiles', enabled: false});
+
+  // Add a single empty file and load Files app up at the Drive root.
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.hello]);
+
+  // Enable bulk pinning functionality.
+  await remoteCall.setSpacedFreeSpace(4n << 30n);
+  await sendTestMessage({name: 'setBulkPinningEnabledPref', enabled: true});
+
+  // Wait for bulk pinning to enter the syncing stage.
+  await remoteCall.waitForBulkPinningStage('Syncing');
+
+  // The file should have a queued despite never getting set to pinned.
+  await remoteCall.waitForElement(
+      appId,
+      '#file-list [file-name="hello.txt"] xf-inline-status[sync-status=queued]');
+
+  // Disable bulk pinning and ensure the sync status gets removed (i.e. returns
+  // to not found).
+  await sendTestMessage({name: 'setBulkPinningEnabledPref', enabled: false});
+  await remoteCall.waitForElement(
+      appId,
+      '#file-list [file-name="hello.txt"] xf-inline-status[sync-status=not_found]');
+
+  // Ensure the pin manager pins files then re-enable the bulk pinning
+  // preferece. The hello file should be pinned now.
+  await sendTestMessage({name: 'setBulkPinningShouldPinFiles', enabled: true});
+  await sendTestMessage({name: 'setBulkPinningEnabledPref', enabled: true});
+  await remoteCall.waitForElement(
+      appId,
+      '#file-list [file-name="hello.txt"].pinned xf-inline-status[sync-status=not_found]');
+};
+
+/**
+ * Tests that items that have the `dirty` metadata flag set to true have their
+ * sync_status property returned as "QUEUED".
+ */
+testcase.driveDirtyItemsShouldBeDisplayedAsQueued = async () => {
+  // Add a single test file with the dirty metadata set to "true" and load Files
+  // app up at the Drive root.
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.dirty]);
+
+  // The file should be displayed as "queued" despite it not having received any
+  // progress events yet because dirty=true.
+  await remoteCall.waitForElement(
+      appId,
+      '#file-list [file-name="dirty.txt"] xf-inline-status[sync-status=queued]');
+
+  // Fake the file starting to sync.
+  await sendTestMessage({
+    name: 'setDriveSyncProgress',
+    path: `/root/${ENTRIES.dirty.targetPath}`,
+    progress: 50,
+  });
+
+  // Verify that the sync_state transitions to "in_progress".
+  await remoteCall.waitForElement(
+      appId,
+      '#file-list [file-name="dirty.txt"] xf-inline-status[sync-status=in_progress]');
+};
+
+/**
+ * Tests that the Drive bulk pinning banner is disabled (i.e. doesn't appear
+ * between the Drive welcome banner but before the Holding space banner).
+ */
+testcase.driveBulkPinningBannerDisabled = async () => {
+  const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
+
+  // Visibility of a banner is controlled with hidden attribute once it gets
+  // attached to the DOM.
+  await remoteCall.waitForElement(appId, 'drive-welcome-banner:not([hidden])');
+
+  // extra-button (get perk button) is provided by google-one-offer-banner.
+  await remoteCall.waitAndClickElement(appId, [
+    'drive-welcome-banner',
+    'educational-banner',
+    await getDismissButtonId(appId),
+  ]);
+
+  await remoteCall.waitForElement(appId, 'drive-welcome-banner[hidden]');
+  // Check: If Google One offer banner is shown, Drive welcome banner should not
+  // be shown. Holding space welcome banner is the next one after the Drive
+  // welcome banner.
+  await remoteCall.waitForElement(
+      appId, 'holding-space-welcome-banner:not([hidden])');
+};
+
+/**
+ * Tests that the Drive bulk pinning banner is enabled (i.e. it appears directly
+ * after the Drive welcome banner).
+ */
+testcase.driveBulkPinningBannerEnabled = async () => {
+  const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
+
+  // Visibility of a banner is controlled with hidden attribute once it gets
+  // attached to the DOM.
+  await remoteCall.waitForElement(appId, 'drive-welcome-banner:not([hidden])');
+
+  // extra-button (get perk button) is provided by google-one-offer-banner.
+  await remoteCall.waitAndClickElement(appId, [
+    'drive-welcome-banner',
+    'educational-banner',
+    await getDismissButtonId(appId),
+  ]);
+
+  await remoteCall.waitForElement(appId, 'drive-welcome-banner[hidden]');
+  // Check: If Google One offer banner is shown, Drive welcome banner should not
+  // be shown. Holding space welcome banner is the next one after the Drive
+  // welcome banner.
+  await remoteCall.waitForElement(
+      appId, 'drive-bulk-pinning-banner:not([hidden])');
+};
+
+/*
+ * Checks that we cannot open Google Doc without network connection.
+ */
+testcase.openDriveDocWhenOffline = async () => {
+  const appId = await setupAndWaitUntilReady(RootPath.DRIVE, [], [
+    ENTRIES.testDocument,
+    ENTRIES.hello,
+  ]);
+
+  // Setup the open-with task for drive.
+  const fakeOpenWith = new FakeTask(
+      true, {appId: 'id', taskType: 'drive', actionId: 'open-with'},
+      'DummyOpenWith');
+  await remoteCall.callRemoteTestUtil('overrideTasks', appId, [
+    [fakeOpenWith],
+  ]);
+
+  // Start bulk pinning.
+  await remoteCall.setSpacedFreeSpace(4n << 30n);
+  await sendTestMessage({name: 'setBulkPinningEnabledPref', enabled: true});
+  await remoteCall.waitForBulkPinningStage('Syncing');
+
+  // Wait for the hello.txt file to be pinned.
+  await remoteCall.waitForElement(
+      appId, '#file-list [file-name="hello.txt"].pinned');
+  // Check that the gdoc file is not pinned.
+  await remoteCall.waitForElement(
+      appId, '#file-list [file-name="Test Document.gdoc"]:not(.pinned)');
+
+  // Turn off all services.
+  await sendTestMessage({name: 'setDeviceOffline'});
+
+  // Check that hello.txt opens on double click without network.
+  await remoteCall.waitUntilSelected(appId, 'hello.txt');
+  chrome.test.assertTrue(!!await remoteCall.callRemoteTestUtil(
+      'fakeMouseDoubleClick', appId,
+      ['#file-list li.table-row[selected] .filename-label span']));
+  await remoteCall.waitUntilTaskExecutes(
+      appId, fakeOpenWith.descriptor, ['hello.txt']);
+
+  // Check that Test Document.gdoc does not open on double click. We do not
+  // check that the task was NOT executed. Instead we check that the "You
+  // are offline" dialog was shown.
+  await remoteCall.waitUntilSelected(appId, 'Test Document.gdoc');
+  chrome.test.assertTrue(!!await remoteCall.callRemoteTestUtil(
+      'fakeMouseDoubleClick', appId,
+      ['#file-list li.table-row[selected] .filename-label span']));
+  await remoteCall.waitForElement(
+      appId, '.files-alert-dialog[aria-label="You are offline"]');
+};
+
+/*
+ * Verifies that once a file completes syncing, its syncing status
+ * indicator displays as "completed" and is dismissed about 300ms
+ * later.
+ */
+testcase.completedSyncStatusDismissesAfter300Ms = async () => {
+  const appId = await setupAndWaitUntilReady(RootPath.DRIVE, [], [
+    ENTRIES.hello,
+  ]);
+
+  const timeBeforeCompletion = Date.now();
+
+  // Fake the file finishing syncing.
+  await sendTestMessage({
+    name: 'setDriveSyncProgress',
+    path: `/root/${ENTRIES.hello.targetPath}`,
+    progress: 100,
+  });
+
+  const completedQuery = '#file-list xf-inline-status[sync-status=completed]';
+
+  // Verify the "sync completed" icon is displayed.
+  await remoteCall.waitForElement(appId, completedQuery);
+
+  // Verify the completed state is eventually dismissed.
+  await remoteCall.waitForElementLost(appId, completedQuery);
+
+  // Verify that at least 300ms have passed since the syncing completed.
+  chrome.test.assertTrue(Date.now() - timeBeforeCompletion >= 300);
+};
+
+/**
+ * Tests that when the organization limit has exceeded (not the user storage)
+ * the out of organization space banner appears.
+ */
+testcase.driveOutOfOrganizationSpaceBanner = async () => {
+  await remoteCall.setPooledStorageQuotaUsage(
+      1 * 1024 * 1024, 2 * 1024 * 1024, true);
+
+  const appId = await setupAndWaitUntilReady(RootPath.DRIVE, [ENTRIES.hello]);
+
+  await remoteCall.waitForElement(
+      appId, 'drive-out-of-organization-space-banner');
 };

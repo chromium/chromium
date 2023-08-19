@@ -23,6 +23,7 @@ namespace android_webview {
 
 class AwSafeBrowsingUIManager;
 
+// Lifetime: Temporary
 class AwSafeBrowsingBlockingPage : public safe_browsing::BaseBlockingPage {
  public:
   typedef security_interstitials::UnsafeResource UnsafeResource;

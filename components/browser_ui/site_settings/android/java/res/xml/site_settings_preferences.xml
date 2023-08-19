@@ -124,6 +124,13 @@ Also add new settings to site_settings_preferences_with_categories.xml!
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
         android:key="auto_dark_web_content" />
+    <!-- Zoom -->
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:fragment="org.chromium.components.browser_ui.site_settings.AllSiteSettings"
+        android:key="zoom"
+        android:title="@string/page_zoom_menu_title"
+        android:icon="@drawable/ic_zoom"
+        app:iconTint="@macro/default_icon_color" />
     <!-- Request Desktop Site -->
     <!-- TODO(crbug.com/1243758): Update the location of this setting once approved.
                                   Also update site_settings_preferences_with_categories.xml. -->

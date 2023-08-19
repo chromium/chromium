@@ -104,15 +104,20 @@ class CurtainModeChromeOsPixelTest
 
   [[nodiscard]] bool CompareWithScreenshot(const views::Widget& widget,
                                            const std::string& screenshot) {
-    views::ViewSkiaGoldPixelDiff pixel_diff;
-    pixel_diff.Init(
+    views::ViewSkiaGoldPixelDiff pixel_diff(
         /*screenshot_prefix=*/
         ::testing::UnitTest::GetInstance()->current_test_suite()->name());
     return pixel_diff.CompareViewScreenshot(screenshot, widget.GetRootView());
   }
 };
 
-IN_PROC_BROWSER_TEST_P(CurtainModeChromeOsPixelTest, CheckSecurityCurtain) {
+// This test is flaky because we often take the screenshot before the image
+// is displayed. So far we haven't managed to find a reliable signal that is
+// triggered after the image is displayed - even the JS on-ready signals trigger
+// before the image is shown :(
+// TODO(b/284233962): Find a reliable signal.
+IN_PROC_BROWSER_TEST_P(CurtainModeChromeOsPixelTest,
+                       DISABLED_CheckSecurityCurtain) {
   if (!ArePixelTestsEnabled()) {
     return;
   }

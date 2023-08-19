@@ -2,9 +2,12 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr-CA">
 <translation id="130631256467250065">Vos modifications prendront effet au prochain redémarrage de votre appareil.</translation>
+<translation id="1555506416658437797">modifier les modes de paiement</translation>
 <translation id="275588974610408078">Les rapports sur les plantages ne sont pas activés dans Chromium.</translation>
 <translation id="3064346599913645280">Vous consultez une page Chromium sécurisée</translation>
+<translation id="3255926992597692024">Chromium tente de modifier les paramètres de remplissage des modes de paiement.</translation>
 <translation id="358997566136285270">Logo de Chromium</translation>
+<translation id="4050599136622776556">Chromium essaie de modifier les modes de paiement.</translation>
 <translation id="4365115785552740256">Chromium fonctionne grâce au projet de code source ouvert <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> et à d'autres <ph name="BEGIN_LINK_OSS" />logiciels libres<ph name="END_LINK_OSS" />.</translation>
 <translation id="4559775032954821361">Accédez au
           menu Chromium &gt;
@@ -27,6 +30,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           et assurez-vous que vos paramètres aient comme valeur « sans mandataire » ou « direct ».</translation>
+<translation id="585620188971323280">modifier les paramètres de remplissage des modes de paiement.</translation>
 <translation id="6549378540556750549">Chromium est également rendu possible par d'autres <ph name="BEGIN_LINK_OSS" />logiciels libres<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Vos modifications seront prises en compte au prochain redémarrage de Chromium.</translation>
 <translation id="7681937895330411637">Chromium est rendu possible grâce au projet de logiciel libre <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
@@ -41,5 +45,6 @@
 <translation id="8187289872471304532">Sélectionnez
           Applications &gt; Préférences Système &gt; Réseau &gt; Avancé... &gt; Proxys et 
           désélectionnez tous les serveurs mandataires qui ont été sélectionnés.</translation>
+<translation id="8597726643333341451">Vous consultez une page sécurisée Chrome for Testing</translation>
 <translation id="8684913864886094367">Chromium n'a pas été fermé correctement.</translation>
 </translationbundle>

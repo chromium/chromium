@@ -31,10 +31,8 @@ source_set("zxcvbn-cpp") {
     "native-src/zxcvbn/util.hpp",
   ]
 
-  deps = [
-    "//base",
-    "//third_party/icu",
-  ]
+  public_deps = [ "//base" ]
+  deps = [ "//third_party/icu" ]
 
   public_configs = [ ":zxcvbn_public_config" ]
   configs += [ ":zxcvbn_internal_config" ]

@@ -260,8 +260,8 @@ class NET_EXPORT_PRIVATE SimpleIndex
 
   std::unique_ptr<base::android::ApplicationStatusListener>
       owned_app_status_listener_;
-  raw_ptr<base::android::ApplicationStatusListener> app_status_listener_ =
-      nullptr;
+  raw_ptr<base::android::ApplicationStatusListener, DanglingUntriaged>
+      app_status_listener_ = nullptr;
 #endif
 
   scoped_refptr<BackendCleanupTracker> cleanup_tracker_;

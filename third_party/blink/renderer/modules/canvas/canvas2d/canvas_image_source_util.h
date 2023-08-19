@@ -17,6 +17,8 @@ MODULES_EXPORT CanvasImageSource* ToCanvasImageSource(
     const V8CanvasImageSource* value,
     ExceptionState& exception_state);
 
+bool WouldTaintCanvasOrigin(CanvasImageSource* image_source);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_IMAGE_SOURCE_UTIL_H_

@@ -1,0 +1,431 @@
+<style include="cr-shared-style settings-shared">
+  cr-dialog::part(dialog) {
+    width: 512px;
+  }
+
+  #dialogTitle {
+    --cr-dialog-title-slot-padding-bottom: 24px;
+    --cr-dialog-title-slot-padding-end: 24px;
+    --cr-dialog-title-slot-padding-start: 24px;
+    --cr-dialog-title-slot-padding-top: 24px;
+  }
+
+  :host(:not([has-started-setup-attempt_])) #dialogTitle {
+    --cr-dialog-title-slot-padding-bottom: 20px;
+  }
+
+  :host([is-setup-screen-lock-in-progress_]) #dialogTitle {
+    --cr-dialog-title-slot-padding-bottom: 20px;
+  }
+
+  #title {
+    align-items: center;
+    color: var(--cros-text-color-primary);
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    justify-content: flex-start;
+  }
+
+  /* TODO(b/281116317) Remove once Jelly is launched */
+  :host-context(body:not(.jelly-enabled)) #title {
+    font-family: var(--cros-font-family-google-sans);
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+  }
+
+  :host-context(body.jelly-enabled) #title {
+    font: var(--cros-title-1-font);
+  }
+
+  #subtitle {
+    color: var(--cros-text-color-secondary);
+  }
+
+  /* TODO(b/281116317) Remove once Jelly is launched */
+  :host-context(body:not(.jelly-enabled)) #subtitle {
+    font-family: 'Roboto';
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  :host-context(body.jelly-enabled) #subtitle {
+    font: var(--cros-body-1-font);
+  }
+
+  #dialogBody {
+    display: flex;
+    flex-direction: column;
+    padding-inline-end: 24px;
+    padding-inline-start: 24px;
+  }
+
+  :host([has-started-setup-attempt_]) #dialogBody {
+    /* Fixed height after intro state */
+    height: 296px;
+  }
+
+  :host([is-setup-screen-lock-in-progress_]) #dialogBody {
+    /* Smaller fixed height for screen lock since subtitle occupies 40px,
+     * padding-bottom of title is 20px, 24px for second, third pages
+     * 40+20-24=36px
+     * 296-36=260px
+     */
+    height: 260px;
+  }
+
+  :host([did-setup-attempt-fail_]) #dialogBody {
+    /* Smaller fixed height to account for the presence of #failureIcon */
+    height: 288px;
+  }
+
+  :host([should-show-setup-instructions-separately_]) #dialogBody {
+    /* Add space to force setup instructions to bottom of body */
+    justify-content: space-between;
+  }
+
+  #buttonContainer {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding-bottom: 20px;
+    padding-inline-end: 24px;
+    padding-inline-start: 24px;
+    padding-top: 0;
+  }
+
+  #failure-icon {
+    --iron-icon-fill-color: var(--cros-icon-color-warning);
+    height: 32px;
+    width: 32px;
+  }
+
+  #feature-icon {
+    --iron-icon-fill-color: var(--cros-icon-color-prominent);
+    height: 20px;
+    width: 20px;
+  }
+
+  #instruction-icon {
+    --iron-icon-fill-color: var(--cros-icon-color-secondary);
+    height: 16px;
+    width: 16px;
+  }
+
+  #screen-lock-instruction-icon {
+    --iron-icon-fill-color: var(--cros-icon-color-secondary);
+    height: 20px;
+    width: 20px;
+  }
+
+  #button-detail {
+    align-items: flex-end;
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    justify-content: right;
+  }
+
+  #description {
+    color: var(--cros-text-color-secondary);
+    padding-top: 24px;
+  }
+
+  /* TODO(b/281116317) Remove once Jelly is launched */
+  :host-context(body:not(.jelly-enabled)) #description {
+    font-family: 'Roboto';
+    font-size: 13px;
+    line-height: 20px;
+  }
+
+  :host-context(body.jelly-enabled) #description {
+    font: var(--cros-body-2-font);
+  }
+
+  #feature-description {
+    align-items: flex-start;
+    display: flex;
+    flex-direction: column;
+    width: 252px;
+  }
+
+  #start-setup-description {
+    align-items: flex-start;
+    display: flex;
+    flex-direction: row;
+    height: auto;
+    justify-content: center;
+  }
+
+  #feature-details-container {
+    align-items: flex-start;
+    color: var(--cros-text-color-secondary);
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    justify-content: start;
+    padding-bottom: 16px;
+  }
+
+  /* TODO(b/281116317) Remove once Jelly is launched */
+  :host-context(body:not(.jelly-enabled)) #feature-details-container {
+    font-family: 'Roboto';
+    font-size: 13px;
+    line-height: 20px;
+  }
+
+  :host-context(body.jelly-enabled) #feature-details-container {
+    font: var(--cros-body-2-font);
+  }
+
+  #half-container {
+    flex: 1;
+  }
+
+  /*
+    * Text size specified as 11-16.
+    * Aligned to flex-end and height reduced to 14px to shift text down 2px.
+  */
+  #instruction {
+    align-items: flex-end;
+    color: var(--cros-text-color-secondary);
+    display: flex;
+    flex-direction: row;
+    font-size: 11px;
+    gap: 6px;
+    justify-content: start;
+    line-height: 14px;
+    padding-bottom: 24px;
+  }
+
+  /* TODO(b/281116317) Remove once Jelly is launched */
+  :host-context(body:not(.jelly-enabled)) #instruction {
+    font-family: 'Roboto';
+  }
+
+  #screen-lock-instruction {
+    align-items: flex-start;
+    color: var(--cros-text-color-secondary);
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    justify-content: start;
+    padding-bottom: 24px;
+  }
+
+  /* TODO(b/281116317) Remove once Jelly is launched */
+  :host-context(body:not(.jelly-enabled)) #screen-lock-instruction {
+    font-family: 'Roboto';
+    font-size: 13px;
+    line-height: 20px;
+  }
+
+  :host-context(body.jelly-enabled) #screen-lock-instruction {
+    font: var(--cros-body-2-font);
+  }
+
+  #illustration {
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: 200px;
+    width: 100%;
+  }
+
+  :host(:not([has-started-setup-attempt_])) #illustration {
+    background-image:
+        url(chrome://os-settings/images/notification_access_setup.svg);
+    padding-bottom: 8px;
+    padding-top: 8px;
+    width: 200px;
+  }
+
+  :host([is-setup-attempt-in-progress_]) #illustration {
+    background-image:
+        url(chrome://os-settings/images/notification_access_connecting.svg);
+  }
+
+  :host([did-setup-attempt-fail_]) #illustration {
+    background-image:
+        url(chrome://os-settings/images/notification_access_error.svg);
+  }
+
+  :host([has-completed-setup_]) #illustration {
+    background-image:
+        url(chrome://os-settings/images/notification_access_finished.svg);
+  }
+
+  @media(prefers-color-scheme: dark) {
+    :host(:not([has-started-setup-attempt_])) #illustration {
+      background-image: url(
+        chrome://os-settings/images/notification_access_setup_dark.svg);
+    }
+
+    :host([is-setup-attempt-in-progress_]) #illustration {
+      background-image: url(
+        chrome://os-settings/images/notification_access_connecting_dark.svg);
+    }
+
+    :host([did-setup-attempt-fail_]) #illustration {
+      background-image: url(
+        chrome://os-settings/images/notification_access_error_dark.svg);
+    }
+
+    :host([has-completed-setup-successfully_]) #illustration {
+      background-image: url(
+        chrome://os-settings/images/notification_access_finished_dark.svg);
+    }
+  }
+</style>
+<cr-dialog id="dialog" close-text="$i18n{close}">
+  <div id="dialogTitle" slot="title">
+    <div id="title" aria-live="[[getLiveStatus_(setupState_)]]"
+        aria-labelledby="title" aria-describedby="description">
+      <template is="dom-if" if="[[didSetupAttemptFail_]]" restamp>
+        <iron-icon id="failure-icon" icon="os-settings:multidevice-error">
+        </iron-icon>
+      </template>
+      [[title_]]
+    </div>
+    <template is="dom-if" if="[[hasStartedSetupAttempt_]]" restamp>
+      <template is="dom-if" if="[[shouldShowScreenLockInstructions_(flowState_)]]" restamp>
+        <div id="subtitle">
+          $i18n{multideviceNotificationAccessSetupScreenLockSubtitle}
+        </div>
+      </template>
+    </template>
+    <template is="dom-if" if="[[!hasStartedSetupAttempt_]]" restamp>
+      <div id="subtitle">
+        $i18n{multidevicePermissionsSetupAckSubtitle}
+      </div>
+    </template>
+  </div>
+  <div id="dialogBody" slot="body">
+    <template is="dom-if" if="[[!hasStartedSetupAttempt_]]" restamp>
+      <div id="start-setup-description">
+        <div id="half-container">
+          <div id="illustration"></div>
+        </div>
+        <div id="half-container">
+          <div id="feature-description">
+            <template is="dom-if" if="[[showCameraRoll]]"
+                restamp>
+              <div id="feature-details-container">
+                <iron-icon id="feature-icon"
+                    icon="os-settings:multidevice-recent-photos">
+                </iron-icon>
+                $i18n{multidevicePermissionsSetupCameraRollSummary}
+              </div>
+            </template>
+            <template is="dom-if" if="[[showNotifications]]"
+                restamp>
+              <div id="feature-details-container">
+                <iron-icon id="feature-icon"
+                    icon="os-settings:multidevice-notifications">
+                </iron-icon>
+                $i18n{multidevicePermissionsSetupNotificationsSummary}
+              </div>
+            </template>
+            <template is="dom-if" if="[[showAppStreaming]]" restamp>
+              <div id="feature-details-container">
+                <iron-icon id="feature-icon"
+                    icon="os-settings:multidevice-app-streaming">
+                </iron-icon>
+                $i18n{multidevicePermissionsSetupAppsSummary}
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>
+      <div id="instruction">
+        <iron-icon id="instruction-icon" icon="os-settings:failure-alert">
+        </iron-icon>
+        $i18n{multidevicePermissionsSetupInstructions}
+      </div>
+    </template>
+    <template is="dom-if" if="[[hasStartedSetupAttempt_]]" restamp>
+      <template is="dom-if" if="[[shouldShowScreenLockInstructions_(flowState_)]]" restamp>
+        <settings-multidevice-screen-lock-subpage
+            id="screen-lock-subpage"
+            is-screen-lock-enabled="{{isScreenLockEnabled_}}"
+            on-pin-number-selected="onPinNumberSelected_"
+            show-setup-pin-dialog="{{showSetupPinDialog_}}"
+            is-password-dialog-showing="{{isPasswordDialogShowing}}">
+        </settings-multidevice-screen-lock-subpage>
+        <div id="screen-lock-instruction">
+          <iron-icon id="screen-lock-instruction-icon" icon="os-settings:failure-alert">
+          </iron-icon>
+          $i18n{multideviceNotificationAccessSetupScreenLockIconInstruction}
+        </div>
+      </template>
+      <template is="dom-if" if="[[!shouldShowScreenLockInstructions_(flowState_)]]" restamp>
+        <div id="illustration"></div>
+        <template is="dom-if" if="[[description_]]" restamp>
+          <div id="description">
+            <localized-link localized-string="[[description_]]">
+            </localized-link>
+          </div>
+        </template>
+      </template>
+    </template>
+  </div>
+  <div id="buttonContainer" slot="button-container">
+    <div id="half-container">
+      <template is="dom-if" if="[[shouldShowLearnMoreButton_]]" restamp>
+        <cr-button id="learnMore" on-click="onLearnMoreClicked_"
+            aria-label$="[[learnMoreButtonAriaLabel_]]">
+          $i18n{multideviceLearnMoreWithoutURL}
+        </cr-button>
+      </template>
+    </div>
+    <div id="button-detail">
+      <template is="dom-if" if="[[shouldShowCancelButton_(setupState_)]]"
+          restamp>
+        <cr-button id="cancelButton" on-click="onCancelClicked_">
+          $i18n{cancel}
+        </cr-button>
+      </template>
+      <template is="dom-if" if="[[shouldShowDisabledDoneButton_]]" restamp>
+        <cr-button id="doneButton" class="action-button" disabled>
+          $i18n{done}
+        </cr-button>
+      </template>
+      <template is="dom-if" if="[[hasCompletedSetup_]]" restamp>
+        <cr-button id="doneButton" class="action-button"
+            on-click="onDoneOrCloseButtonClicked_" autofocus>
+          $i18n{done}
+        </cr-button>
+      </template>
+      <template is="dom-if" if="[[isNotificationAccessProhibited_]]"
+          restamp>
+        <cr-button id="closeButton" class="action-button"
+            on-click="onDoneOrCloseButtonClicked_">
+          $i18n{close}
+        </cr-button>
+      </template>
+      <template is="dom-if" if="[[!hasStartedSetupAttempt_]]" restamp>
+        <cr-button id="getStartedButton" class="action-button"
+            on-click="nextPage_">
+          $i18n{next}
+        </cr-button>
+      </template>
+      <template is="dom-if" if="[[hasStartedSetupAttempt_]]" restamp>
+        <template is="dom-if" if="[[shouldShowScreenLockInstructions_(flowState_)]]" restamp>
+          <cr-button id="getStartedButton" class="action-button"
+              on-click="nextPage_">
+            $i18n{next}
+          </cr-button>
+        </template>
+      </template>
+      <template is="dom-if" if="[[shouldShowTryAgainButton_(setupState_)]]"
+          restamp>
+        <cr-button id="tryAgainButton" class="action-button"
+            on-click="nextPage_">
+          $i18n{multideviceNotificationAccessSetupTryAgain}
+        </cr-button>
+      </template>
+    </div>
+  </div>
+</cr-dialog>

@@ -18,6 +18,11 @@ void FakeNotificationsInstance::SendNotificationEventToAndroid(
   events_.emplace_back(key, event);
 }
 
+void FakeNotificationsInstance::SendNotificationButtonClickToAndroid(
+    const std::string& key,
+    uint32_t button_index,
+    const std::string& input) {}
+
 void FakeNotificationsInstance::CreateNotificationWindow(
     const std::string& key) {}
 

@@ -26,7 +26,6 @@
 <translation id="2060505056492490888">'<ph name="INVALIDDOMAIN" />'ରେ ଏକ ଭୁଲ ସ୍ଥାନରେ '<ph name="DOT" />' ବ୍ୟବହୃତ ହୋଇଛି</translation>
 <translation id="2148716181193084225">ଆଜି</translation>
 <translation id="2226276347425096477">ଦୟାକରି ଏହି ଟେକ୍ସଟ୍‍କୁ <ph name="MAX_CHARACTERS" />ଟି କିମ୍ବା ତା'ଠାରୁ କମ୍ ଅକ୍ଷର ପର୍ଯ୍ୟନ୍ତ ଛୋଟ କରନ୍ତୁ (ବର୍ତ୍ତମାନ ଆପଣ <ph name="CURRENT_LENGTH" />ଟି ଅକ୍ଷର ବ୍ୟବହାର କରୁଛନ୍ତି)।</translation>
-<translation id="2246498165605549352">ସ୍ଥାନୀୟ ଫାଇଲ୍</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" /> ସପ୍ତାହ, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ଟ୍ରାକ୍ <ph name="NUMBER" /></translation>
 <translation id="2393030564806080191">ହେକ୍ସାଡେସିମାଲ୍ ରଙ୍ଗର ମୂଲ୍ୟ</translation>
@@ -89,6 +88,7 @@
 <translation id="5425179576310518467">ବର୍ତ୍ତମାନର ତାରିଖ</translation>
 <translation id="5466621249238537318">ଦୟାକରି ଏକ କିମ୍ବା ଅଧିକ ଫାଇଲ୍ ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="5468998798572797635">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍‌ରୁ ପ୍ରସ୍ଥାନ କରନ୍ତୁ</translation>
+<translation id="5514612371225420585">ଆପଣଙ୍କ ଡିଭାଇସରେ ଥିବା ଫାଇଲ</translation>
 <translation id="5516235301412634559">0.75</translation>
 <translation id="5537725057119320332">କାଷ୍ଟ</translation>
 <translation id="5546461542133609677">ଅନ୍‍ମ୍ୟୁଟ୍ କରନ୍ତୁ</translation>
@@ -113,6 +113,7 @@
 <translation id="6398862346408813489">ମାସ ଚୟନ ପ୍ୟାନେଲ୍ ଦେଖାନ୍ତୁ</translation>
 <translation id="6404546809543547843">ଅଡିଓ ସମୟ ସ୍କ୍ରବର</translation>
 <translation id="6443871981718447451">ବନ୍ଦ ଥିବା କ୍ୟାପ୍‍ସନ୍ ମେନୁ ଦେଖାନ୍ତୁ</translation>
+<translation id="6484738902856791350">ପ୍ରେଟି-ପ୍ରିଣ୍ଟ କରନ୍ତୁ</translation>
 <translation id="6550675742724504774">ବିକଳ୍ପଗୁଡ଼ିକ</translation>
 <translation id="6572309429103589720">ଅବୈଧ ବ୍ୟାକରଣ</translation>
 <translation id="658823671542763450">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍‌ରେ ପ୍ରବେଶ କରନ୍ତୁ</translation>

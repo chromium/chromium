@@ -22,8 +22,8 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
-#include "chrome/browser/policy/management_utils.h"
 #include "chrome/browser/policy/messaging_layer/upload/encrypted_reporting_client.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/reporting_util.h"
@@ -55,7 +55,7 @@ namespace reporting {
 
 BASE_FEATURE(kEnableEncryptedReportingClientForUpload,
              "EnableEncryptedReportingClientForUpload",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // TODO(b/281905099): remove after rolling out reporting managed user events
 // from unmanaged devices
@@ -131,7 +131,7 @@ class PayloadSizeUmaReporter {
   // Reports to UMA.
   void Report() {
     DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
-    DCHECK_GE(response_payload_size_, 0);
+    CHECK_GE(response_payload_size_, 0);
 
     last_reported_time_ = base::Time::Now();
     base::UmaHistogramCounts1M("Browser.ERP.ResponsePayloadSize",
@@ -208,23 +208,35 @@ void ReportingServerConnector::OnCoreDestruction(CloudPolicyCore* core) {
 // otherwise.
 bool DeviceInfoRequiredForUpload() {
   return !base::FeatureList::IsEnabled(kEnableReportingFromUnmanagedDevices) ||
-         policy::IsDeviceEnterpriseManaged();
+         // Check if this is a managed device.
+         policy::ManagementServiceFactory::GetForPlatform()
+             ->HasManagementAuthority(
+                 policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
 }
 
 void ReportingServerConnector::UploadEncryptedReportInternal(
     base::Value::Dict merging_payload,
     absl::optional<base::Value::Dict> context,
-    ResponseCallbackInternal callback) {
+    ResponseCallback callback) {
   if (base::FeatureList::IsEnabled(kEnableEncryptedReportingClientForUpload)) {
-    // TODO(b/283187811): remove cloud policy client as a parameter to
-    // `UploadReport` and read device info from `merging_payload` instead.
     encrypted_reporting_client_->UploadReport(std::move(merging_payload),
                                               std::move(context), client_,
                                               std::move(callback));
     return;
   }
+  // Deprecated: uses cloud policy client.
+  auto cb = base::BindOnce(
+      [](ResponseCallback callback,
+         absl::optional<base::Value::Dict> client_result) {
+        if (!client_result.has_value()) {
+          std::move(callback).Run(Status(error::DATA_LOSS, "Failed to upload"));
+          return;
+        }
+        std::move(callback).Run(std::move(client_result.value()));
+      },
+      std::move(callback));
   client_->UploadEncryptedReport(std::move(merging_payload), std::move(context),
-                                 std::move(callback));
+                                 std::move(cb));
 }
 
 // static
@@ -261,7 +273,6 @@ void ReportingServerConnector::UploadEncryptedReport(
           Status(error::UNAVAILABLE, "Device DM token not set"));
       return;
     }
-    // TODO(b/283187811): add device info to merging_payload
     context.SetByDottedPath("device.dmToken", connector->client_->dm_token());
   }
 
@@ -277,11 +288,10 @@ void ReportingServerConnector::UploadEncryptedReport(
              absl::optional<int> request_payload_size,
              base::WeakPtr<PayloadSizePerHourUmaReporter>
                  payload_size_per_hour_uma_reporter,
-             absl::optional<base::Value::Dict> result) {
+             StatusOr<base::Value::Dict> result) {
             DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
-            if (!result.has_value()) {
-              std::move(callback).Run(
-                  Status(error::DATA_LOSS, "Failed to upload"));
+            if (!result.ok()) {
+              std::move(callback).Run(std::move(result));
               return;
             }
 
@@ -292,7 +302,8 @@ void ReportingServerConnector::UploadEncryptedReport(
             if (request_payload_size.has_value()) {
               // Request payload has already been computed at the time of
               // request.
-              const int response_payload_size = GetPayloadSize(result.value());
+              const int response_payload_size =
+                  GetPayloadSize(result.ValueOrDie());
 
               // Let UMA report the request and response payload sizes.
               if (PayloadSizeUmaReporter::ShouldReport()) {
@@ -310,7 +321,7 @@ void ReportingServerConnector::UploadEncryptedReport(
               }
             }
 
-            std::move(callback).Run(std::move(result.value()));
+            std::move(callback).Run(std::move(result.ValueOrDie()));
           },
           std::move(callback), std::move(request_payload_size),
           connector->payload_size_per_hour_uma_reporter_.GetWeakPtr())));

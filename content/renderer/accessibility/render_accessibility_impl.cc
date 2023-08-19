@@ -545,16 +545,6 @@ void RenderAccessibilityImpl::HandleAXEvent(const ui::AXEvent& event) {
   auto obj = WebAXObject::FromWebDocumentByID(document, event.id);
   DCHECK(!obj.IsDetached());
 
-#if BUILDFLAG(IS_ANDROID)
-  // Inline text boxes are needed to support moving by character/word/line.
-  // On Android, we don't load inline text boxes by default, only on-demand, or
-  // when part of the focused object. So, when focus moves to an editable text
-  // field, ensure we re-serialize the whole thing including its inline text
-  // boxes.
-  if (event.event_type == ax::mojom::Event::kFocus && obj.IsEditable())
-    obj.MarkSerializerSubtreeDirty();
-#endif
-
   if (!ax_context_->AddPendingEvent(event)) {
     DCHECK(ax_context_);
     return;
@@ -618,7 +608,6 @@ bool RenderAccessibilityImpl::IsImmediateProcessingRequiredForEvent(
     case ax::mojom::Event::kTreeChanged:
       return serialize_post_lifecycle_;
 
-    case ax::mojom::Event::kAriaAttributeChanged:
     case ax::mojom::Event::kDocumentTitleChanged:
     case ax::mojom::Event::kExpandedChanged:
     case ax::mojom::Event::kHide:
@@ -638,6 +627,7 @@ bool RenderAccessibilityImpl::IsImmediateProcessingRequiredForEvent(
     // These events are not fired from Blink.
     // This list is duplicated in WebFrameTestProxy::PostAccessibilityEvent().
     case ax::mojom::Event::kAlert:
+    case ax::mojom::Event::kAriaAttributeChangedDeprecated:
     case ax::mojom::Event::kAutocorrectionOccured:
     case ax::mojom::Event::kChildrenChanged:
     case ax::mojom::Event::kControlsChanged:
@@ -1461,7 +1451,6 @@ void RenderAccessibilityImpl::OnLoadInlineTextBoxes(
   const WebAXObject& obj = blink_target->WebAXObject();
 
   DCHECK(!serialize_post_lifecycle_ || ax_context_);
-  ScopedFreezeAXTreeSource freeze(ax_context_.get());
   obj.OnLoadInlineTextBoxes();
 
   if (!serialize_post_lifecycle_) {
@@ -1480,12 +1469,7 @@ void RenderAccessibilityImpl::OnGetImageData(const ui::AXActionTarget* target,
     return;
   }
   const WebAXObject& obj = blink_target->WebAXObject();
-
   ScopedFreezeAXTreeSource freeze(ax_context_.get());
-  if (obj.ImageDataNodeId() == obj.AxID()) {
-    return;
-  }
-
   obj.SetImageAsDataNodeId(max_size);
 
   const WebDocument& document = GetMainDocument();

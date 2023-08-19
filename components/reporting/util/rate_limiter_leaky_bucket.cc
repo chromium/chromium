@@ -21,10 +21,10 @@ RateLimiterLeakyBucket::RateLimiterLeakyBucket(size_t max_level,
     : max_level_(max_level),
       filling_time_(filling_time),
       filling_period_(filling_period) {
-  DCHECK_GT(max_level_, 0u);
-  DCHECK_GT(filling_time_, base::TimeDelta());
+  CHECK_GT(max_level_, 0u);
+  CHECK_GT(filling_time_, base::TimeDelta());
   // Make sure filling rate is reasonable - at least 1 token per period!
-  DCHECK_LT(filling_time_ / max_level_, filling_period_);
+  CHECK_LT(filling_time_ / max_level_, filling_period_);
   DETACH_FROM_SEQUENCE(sequence_checker_);
   // Empty initially, start filling in.
   ScheduleNextFill();

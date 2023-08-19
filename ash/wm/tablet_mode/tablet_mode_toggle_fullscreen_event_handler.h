@@ -5,6 +5,7 @@
 #ifndef ASH_WM_TABLET_MODE_TABLET_MODE_TOGGLE_FULLSCREEN_EVENT_HANDLER_H_
 #define ASH_WM_TABLET_MODE_TABLET_MODE_TOGGLE_FULLSCREEN_EVENT_HANDLER_H_
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window_observer.h"
 #include "ui/events/event_handler.h"
@@ -31,7 +32,9 @@ class TabletModeToggleFullscreenEventHandler : public ui::EventHandler,
  private:
   struct DragData {
     int start_y_location;
-    aura::Window* window;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #union
+    RAW_PTR_EXCLUSION aura::Window* window;
   };
 
   // ui::EventHandler:

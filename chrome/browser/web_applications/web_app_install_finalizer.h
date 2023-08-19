@@ -38,16 +38,8 @@ enum class WebappUninstallSource;
 
 namespace web_app {
 
-class WebAppSyncBridge;
-class WebAppUiManager;
 class WebApp;
-class WebAppIconManager;
-class WebAppInstallManager;
-class WebAppPolicyManager;
-class WebAppRegistrar;
-class WebAppTranslationManager;
-class WebAppCommandManager;
-class WebAppOriginAssociationManager;
+class WebAppProvider;
 
 // An finalizer for the installation process, represents the last step.
 // Takes WebAppInstallInfo as input, writes data to disk (e.g icons, shortcuts)
@@ -79,6 +71,10 @@ class WebAppInstallFinalizer {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     absl::optional<ash::SystemWebAppData> system_web_app_data;
 #endif
+
+    // If set, will set `WebApp::IsolationData` with the given location, as well
+    // as the version from `WebAppInstallInfo::isolated_web_app_version`. Will
+    // `CHECK` if `web_app_info.isolated_web_app_version` is invalid.
     absl::optional<web_app::IsolatedWebAppLocation> isolated_web_app_location;
 
     // If true, OsIntegrationManager::InstallOsHooks won't be called at all,
@@ -102,65 +98,29 @@ class WebAppInstallFinalizer {
   WebAppInstallFinalizer& operator=(const WebAppInstallFinalizer&) = delete;
   virtual ~WebAppInstallFinalizer();
 
-  // All methods below are |virtual| for testing.
-
   // Write the WebApp data to disk and register the app.
-  virtual void FinalizeInstall(const WebAppInstallInfo& web_app_info,
-                               const FinalizeOptions& options,
-                               InstallFinalizedCallback callback);
+  void FinalizeInstall(const WebAppInstallInfo& web_app_info,
+                       const FinalizeOptions& options,
+                       InstallFinalizedCallback callback);
 
   // Write the new WebApp data to disk and update the app.
   // TODO(https://crbug.com/1196051): Chrome fails to update the manifest
   // if the app window needing update closes at the same time as Chrome.
   // Therefore, the manifest may not always update as expected.
+  // Virtual for testing.
   virtual void FinalizeUpdate(const WebAppInstallInfo& web_app_info,
                               InstallFinalizedCallback callback);
 
-  // Removes |webapp_uninstall_surface| from |app_id|. If no more interested
-  // sources left, deletes the app from disk and registrar.
-  virtual void UninstallExternalWebApp(
-      const AppId& app_id,
-      WebAppManagement::Type external_install_source,
-      webapps::WebappUninstallSource uninstall_surface,
-      UninstallWebAppCallback callback);
+  bool CanReparentTab(const AppId& app_id, bool shortcut_created) const;
+  void ReparentTab(const AppId& app_id,
+                   bool shortcut_created,
+                   content::WebContents* web_contents);
 
-  // Removes the external app for |app_url| from disk and registrar. Fails if
-  // there is no installed external app for |app_url|.
-  virtual void UninstallExternalWebAppByUrl(
-      const GURL& app_url,
-      WebAppManagement::Type external_install_source,
-      webapps::WebappUninstallSource uninstall_surface,
-      UninstallWebAppCallback callback);
-
-  // Removes |webapp_uninstall_surface| from |app_id|, no matter how many
-  // sources are left.
-  virtual void UninstallWebApp(const AppId& app_id,
-                               webapps::WebappUninstallSource uninstall_surface,
-                               UninstallWebAppCallback callback);
-
-  virtual bool CanReparentTab(const AppId& app_id, bool shortcut_created) const;
-  virtual void ReparentTab(const AppId& app_id,
-                           bool shortcut_created,
-                           content::WebContents* web_contents);
-
+  void SetProvider(base::PassKey<WebAppProvider>, WebAppProvider& provider);
   void Start();
   void Shutdown();
 
-  void SetSubsystems(
-      WebAppInstallManager* install_manager,
-      WebAppRegistrar* registrar,
-      WebAppUiManager* ui_manager,
-      WebAppSyncBridge* sync_bridge,
-      OsIntegrationManager* os_integration_manager,
-      WebAppIconManager* icon_manager,
-      WebAppPolicyManager* policy_manager,
-      WebAppTranslationManager* translation_manager,
-      WebAppCommandManager* command_manager,
-      WebAppOriginAssociationManager* origin_association_manager);
-
   Profile* profile() { return profile_; }
-
-  const WebAppRegistrar& GetWebAppRegistrar() const;
 
   // Writes external config data to the web_app DB, mapped per source.
   void WriteExternalConfigMapInfo(
@@ -170,15 +130,6 @@ class WebAppInstallFinalizer {
       GURL install_url,
       std::vector<std::string> additional_policy_ids);
 
-  // Used to schedule a WebAppUninstallCommand. The |external_install_source|
-  // field is only required for external app uninstalls to verify OS
-  // unregistration, and is not used for sync/manual uninstalls.
-  void ScheduleUninstallCommand(
-      const AppId& app_id,
-      absl::optional<WebAppManagement::Type> external_install_source,
-      webapps::WebappUninstallSource uninstall_source,
-      UninstallWebAppCallback callback);
-
  private:
   using CommitCallback = base::OnceCallback<void(bool success)>;
 
@@ -186,6 +137,11 @@ class WebAppInstallFinalizer {
                                   WebAppManagement::Type source,
                                   UninstallWebAppCallback callback,
                                   OsHooksErrors os_hooks_errors);
+
+  void UpdateIsolationDataAndResetPendingUpdateInfo(
+      WebApp* web_app,
+      const IsolatedWebAppLocation& location,
+      const base::Version& version);
 
   void SetWebAppManifestFieldsAndWriteData(
       const WebAppInstallInfo& web_app_info,
@@ -243,21 +199,9 @@ class WebAppInstallFinalizer {
       const AppId& app_id,
       const WebAppInstallInfo& new_web_app_info);
 
-  raw_ptr<WebAppInstallManager, DanglingUntriaged> install_manager_ = nullptr;
-  raw_ptr<WebAppRegistrar, DanglingUntriaged> registrar_ = nullptr;
-  raw_ptr<WebAppSyncBridge, DanglingUntriaged> sync_bridge_ = nullptr;
-  raw_ptr<WebAppUiManager, DanglingUntriaged> ui_manager_ = nullptr;
-  raw_ptr<OsIntegrationManager, DanglingUntriaged> os_integration_manager_ =
-      nullptr;
-  raw_ptr<WebAppIconManager, DanglingUntriaged> icon_manager_ = nullptr;
-  raw_ptr<WebAppPolicyManager, DanglingUntriaged> policy_manager_ = nullptr;
-  raw_ptr<WebAppTranslationManager, DanglingUntriaged> translation_manager_ =
-      nullptr;
-  raw_ptr<WebAppCommandManager, DanglingUntriaged> command_manager_ = nullptr;
-  raw_ptr<WebAppOriginAssociationManager, DanglingUntriaged>
-      origin_association_manager_ = nullptr;
-
   const raw_ptr<Profile> profile_;
+  raw_ptr<WebAppProvider> provider_ = nullptr;
+
   bool started_ = false;
 
   base::WeakPtrFactory<WebAppInstallFinalizer> weak_ptr_factory_{this};

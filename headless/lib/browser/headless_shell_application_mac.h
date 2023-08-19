@@ -6,7 +6,7 @@
 #define HEADLESS_LIB_BROWSER_HEADLESS_SHELL_APPLICATION_MAC_H_
 
 #include "base/mac/scoped_sending_event.h"
-#include "base/message_loop/message_pump_mac.h"
+#include "base/message_loop/message_pump_apple.h"
 
 // Headless shell uses |MessagePumpMac|, so it needs to implement the
 // |CRAppProtocol|.

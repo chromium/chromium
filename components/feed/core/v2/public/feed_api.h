@@ -28,10 +28,10 @@ class DataOperation;
 }  // namespace feedstore
 
 namespace feed {
-class FeedStreamSurface;
 class PersistentKeyValueStore;
 class WebFeedSubscriptions;
 struct LoggingParameters;
+class SurfaceRenderer;
 
 // This is the public access point for interacting with the Feed contents.
 // FeedApi serves multiple streams of data, one for each StreamType.
@@ -44,10 +44,21 @@ class FeedApi {
 
   virtual WebFeedSubscriptions& subscriptions() = 0;
 
-  // Attach/detach a surface. Surfaces should be attached when content is
-  // required for display, and detached when content is no longer shown.
-  virtual void AttachSurface(FeedStreamSurface*) = 0;
-  virtual void DetachSurface(FeedStreamSurface*) = 0;
+  // Surfaces present feed content to users. When a surface is visible to users
+  // and should be displaying feed content, it is attached to request to feed
+  // content and render it. A surface may be attached and detached several times
+  // through its lifetime. When a surface is no longer needed, it should be
+  // destroyed with DestroySurface.
+  virtual SurfaceId CreateSurface(const StreamType& type,
+                                  SingleWebFeedEntryPoint entry_point) = 0;
+  virtual void DestroySurface(SurfaceId surface) = 0;
+
+  // Attach/detach a surface for rendering. Surfaces should be attached when
+  // content is required for display, and detached when content is no longer
+  // shown.
+  virtual void AttachSurface(SurfaceId surface_id,
+                             SurfaceRenderer* renderer) = 0;
+  virtual void DetachSurface(SurfaceId surface_id) = 0;
 
   // Notifies |this| that the user clicked on a feed card with its |url| and
   // |entity_mids| entities.
@@ -89,12 +100,12 @@ class FeedApi {
   // Calls |callback| when complete. If no content could be added, the parameter
   // is false, and the caller should expect |LoadMore| to fail if called
   // further.
-  virtual void LoadMore(const FeedStreamSurface& surface,
+  virtual void LoadMore(SurfaceId surface_id,
                         base::OnceCallback<void(bool)> callback) = 0;
 
   // Refresh the feed content by fetching the fresh content from the server.
   // Calls |callback| when complete. If the fetch fails, the parameter is false.
-  virtual void ManualRefresh(const StreamType& stream_type,
+  virtual void ManualRefresh(SurfaceId surface_id,
                              base::OnceCallback<void(bool)> callback) = 0;
 
   // Request to fetch and image for use in the feed. Calls |callback|
@@ -113,24 +124,24 @@ class FeedApi {
   // Apply |operations| to the stream model. Does nothing if the model is not
   // yet loaded.
   virtual void ExecuteOperations(
-      const StreamType& stream_type,
+      SurfaceId surface_id,
       std::vector<feedstore::DataOperation> operations) = 0;
 
   // Create a temporary change that may be undone or committed later. Does
   // nothing if the model is not yet loaded.
   virtual EphemeralChangeId CreateEphemeralChange(
-      const StreamType& stream_type,
+      SurfaceId surface_id,
       std::vector<feedstore::DataOperation> operations) = 0;
   // Same as |CreateEphemeralChange()|, but data is a serialized
   // |feedpacking::DismissData| message.
   virtual EphemeralChangeId CreateEphemeralChangeFromPackedData(
-      const StreamType& stream_type,
+      SurfaceId surface_id,
       base::StringPiece data) = 0;
   // Commits a change. Returns false if the change does not exist.
-  virtual bool CommitEphemeralChange(const StreamType& stream_type,
+  virtual bool CommitEphemeralChange(SurfaceId surface_id,
                                      EphemeralChangeId id) = 0;
   // Rejects a change. Returns false if the change does not exist.
-  virtual bool RejectEphemeralChange(const StreamType& stream_type,
+  virtual bool RejectEphemeralChange(SurfaceId surface_id,
                                      EphemeralChangeId id) = 0;
 
   // Sends 'ThereAndBackAgainData' back to the server. |data| is a serialized
@@ -157,7 +168,7 @@ class FeedApi {
   // Called when content is viewed, providing a unique identifier of the content
   // which was viewed. Used for signed-out view demotion. This may be called
   // regardless of sign-in status, but may be ignored.
-  virtual void RecordContentViewed(uint64_t docid) = 0;
+  virtual void RecordContentViewed(SurfaceId surface_id, uint64_t docid) = 0;
 
   // User interaction reporting. Unless otherwise documented, these have no
   // side-effects other than reporting metrics.
@@ -165,58 +176,60 @@ class FeedApi {
   // A slice was viewed (2/3rds of it is in the viewport). Should be called
   // once for each viewed slice in the stream.
   virtual void ReportSliceViewed(SurfaceId surface_id,
-                                 const StreamType& stream_type,
                                  const std::string& slice_id) = 0;
   // Some feed content has been loaded and is now available to the user on the
   // feed surface. Reported only once after a surface is attached.
-  virtual void ReportFeedViewed(const StreamType& stream_type,
-                                SurfaceId surface_id) = 0;
+  virtual void ReportFeedViewed(SurfaceId surface_id) = 0;
   // A web page was loaded in response to opening a link from the Feed.
-  virtual void ReportPageLoaded() = 0;
+  virtual void ReportPageLoaded(SurfaceId surface_id) = 0;
   // The user triggered the open action which can be caused by tapping the card,
   // or selecting 'Open in new tab' menu item. The open action to trigger is
   // providen in `action_type`.
   // Remembers the URL for later calls to `WasUrlRecentlyNavigatedFromFeed()`.
   virtual void ReportOpenAction(const GURL& url,
-                                const StreamType& stream_type,
+                                SurfaceId surface_id,
                                 const std::string& slice_id,
                                 OpenActionType action_type) = 0;
   // The user triggered an open action, visited a web page, and then navigated
   // away or backgrouded the tab. |visit_time| is a measure of how long the
   // visited page was foregrounded.
-  virtual void ReportOpenVisitComplete(base::TimeDelta visit_time) = 0;
+  virtual void ReportOpenVisitComplete(SurfaceId surface_id,
+                                       base::TimeDelta visit_time) = 0;
   // The user scrolled the feed by |distance_dp| and then stopped.
-  virtual void ReportStreamScrolled(const StreamType& stream_type,
-                                    int distance_dp) = 0;
+  virtual void ReportStreamScrolled(SurfaceId surface_id, int distance_dp) = 0;
   // The user started scrolling the feed. Typically followed by a call to
   // |ReportStreamScrolled()|.
-  virtual void ReportStreamScrollStart() = 0;
+  virtual void ReportStreamScrollStart(SurfaceId surface_id) = 0;
   // Report that some user action occurred which does not have a specific
   // reporting function above..
+  virtual void ReportOtherUserAction(SurfaceId surface_id,
+                                     FeedUserActionType action_type) = 0;
+  // TODO(harringtond): Remove this one.
   virtual void ReportOtherUserAction(const StreamType& stream_type,
                                      FeedUserActionType action_type) = 0;
   // Reports that the info card is being tracked for its full visibility.
-  virtual void ReportInfoCardTrackViewStarted(const StreamType& stream_type,
+  virtual void ReportInfoCardTrackViewStarted(SurfaceId surface_id,
                                               int info_card_type) = 0;
   // Reports that the info card is visible in the viewport within the threshold.
-  virtual void ReportInfoCardViewed(const StreamType& stream_type,
+  virtual void ReportInfoCardViewed(SurfaceId surface_id,
                                     int info_card_type,
                                     int minimum_view_interval_seconds) = 0;
   // Reports that the user taps the info card.
-  virtual void ReportInfoCardClicked(const StreamType& stream_type,
+  virtual void ReportInfoCardClicked(SurfaceId surface_id,
                                      int info_card_type) = 0;
   // Reports that the user dismisses the info card explicitly by tapping the
   // close button.
-  virtual void ReportInfoCardDismissedExplicitly(const StreamType& stream_type,
+  virtual void ReportInfoCardDismissedExplicitly(SurfaceId surface_id,
                                                  int info_card_type) = 0;
   // Resets all the states of the info card.
-  virtual void ResetInfoCardStates(const StreamType& stream_type,
+  virtual void ResetInfoCardStates(SurfaceId surface_id,
                                    int info_card_type) = 0;
   // Report a period of time for which at least one content slice is visible
   // enough or at least one content slice covers enough of the viewport. See the
   // slice_exposure_threshold and slice_coverage_threshold feature params for
   // what counts as visible enough and covering enough.
   virtual void ReportContentSliceVisibleTimeForGoodVisits(
+      SurfaceId surface_id,
       base::TimeDelta elapsed) = 0;
 
   // The following methods are used for the internals page.
@@ -230,7 +243,7 @@ class FeedApi {
   virtual void SetForcedStreamUpdateForDebugging(
       const feedui::StreamUpdate& stream_update) = 0;
   // Returns the time of the last successful content fetch.
-  virtual base::Time GetLastFetchTime(const StreamType& stream_type) = 0;
+  virtual base::Time GetLastFetchTime(SurfaceId surface_id) = 0;
   // Increase the count of the number of times the user has followed from the
   // web page menu.
   virtual void IncrementFollowedFromWebPageMenuCount() = 0;

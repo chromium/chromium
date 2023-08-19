@@ -13,12 +13,26 @@
 
 namespace device {
 // static
-CardboardDeviceParams CardboardDeviceParams::GetV1DeviceParams() {
+CardboardDeviceParams CardboardDeviceParams::GetDeviceParams() {
   CardboardDeviceParams params;
   uint8_t* device_params = nullptr;
-  CardboardQrCode_getCardboardV1DeviceParams(&device_params, &params.size_);
+  int size = 0;
 
+  // Check if any device parameters have been saved.
+  CardboardQrCode_getSavedDeviceParams(&device_params, &size);
+  if (size != 0) {
+    // If saved device params were returned, store them as owned parameters so
+    // them get cleaned up properly.
+    params.encoded_device_params_ = OwnedCardboardParams(device_params);
+    params.size_ = size;
+    return params;
+  }
+
+  // If no saved device params were returned, use the default V1 device
+  // parameters as a fallback. They don't need to be cleaned up.
+  CardboardQrCode_getCardboardV1DeviceParams(&device_params, &size);
   params.encoded_device_params_ = device_params;
+  params.size_ = size;
   return params;
 }
 

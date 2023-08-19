@@ -217,7 +217,6 @@ enum class FeedSortType {
   kMaxValue = kSortedByLatest,
 };
 
-// TODO(crbug.com/1447234): Clean up the kError enum.
 // The values for the Feed Activity Buckets metric.
 enum class FeedActivityBucket {
   // No activity bucket for users active 0/28 days.

@@ -26,7 +26,7 @@ class IdentityDialogController
     : public content::IdentityRequestDialogController,
       public AccountSelectionView::Delegate {
  public:
-  IdentityDialogController();
+  explicit IdentityDialogController(content::WebContents* rp_web_contents);
 
   IdentityDialogController(const IdentityDialogController&) = delete;
   IdentityDialogController& operator=(const IdentityDialogController&) = delete;
@@ -39,7 +39,6 @@ class IdentityDialogController
 
   // content::IdentityRequestDialogController
   void ShowAccountsDialog(
-      content::WebContents* rp_web_contents,
       const std::string& top_frame_for_display,
       const absl::optional<std::string>& iframe_for_display,
       const std::vector<content::IdentityProviderData>& identity_provider_data,
@@ -47,10 +46,10 @@ class IdentityDialogController
       bool show_auto_reauthn_checkbox,
       AccountSelectionCallback on_selected,
       DismissCallback dismiss_callback) override;
-  void ShowFailureDialog(content::WebContents* rp_web_contents,
-                         const std::string& top_frame_for_display,
+  void ShowFailureDialog(const std::string& top_frame_for_display,
                          const absl::optional<std::string>& iframe_for_display,
                          const std::string& idp_for_display,
+                         const blink::mojom::RpContext& rp_context,
                          const content::IdentityProviderMetadata& idp_metadata,
                          DismissCallback dismiss_callback,
                          SigninToIdPCallback signin_callback) override;

@@ -12,19 +12,34 @@
 
 <body>
   <header>
-    <div class="header-row">
-      <h1>$i18n{title}</h1>
-      <input id="filter" class="search-field-container" type="search"
-          placeholder="$i18n{filterPlaceholder}"
-          aria-label="$i18n{filterPlaceholder}" incremental>
+    <div id="topbar" class="header-row">
+      <div id="left-content" class="topbar-item">
+        <div id="topbar-brand">
+          <if expr="not is_android and not is_ios">
+            <div id="topbar-brand-logo"></div>
+          </if>
+          <h1 id="topbar-title">$i18n{title}</h1>
+        </div>
+      </div>
+      <div id="middle-content" class="topbar-item">
+        <div id="search-field-container">
+          <div id="search-field-icon"></div>
+          <input id="search-field-input" type="search"
+            placeholder="$i18n{filterPlaceholder}"
+            aria-label="$i18n{filterPlaceholder}" incremental>
+        </div>
+      </div>
+      <div id="right-content" class="topbar-item"></div>
     </div>
-    <div class="header-row">
-      <button id="reload-policies">$i18n{reloadPolicies}</button>
-      <button id="export-policies">$i18n{exportPoliciesJSON}</button>
-      <button id="copy-policies">$i18n{copyPoliciesJSON}</button>
-<if expr="not is_chromeos">
-      <button id="upload-report">$i18n{uploadReport}</button>
-</if>
+    <div class="header-row action-header-row">
+      <div class="action-row-buttons">
+        <button id="reload-policies">$i18n{reloadPolicies}</button>
+        <button id="export-policies">$i18n{exportPoliciesJSON}</button>
+        <button id="copy-policies">$i18n{copyPoliciesJSON}</button>
+        <if expr="not is_chromeos">
+          <button id="upload-report">$i18n{uploadReport}</button>
+        </if>
+      </div>
       <div id="show-unset-container" class="show-unset-checkbox">
         <label>
           <input id="show-unset" type="checkbox">

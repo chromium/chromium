@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "ui/display/display.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace display {
 namespace test {
@@ -58,7 +59,7 @@ bool TestScreen::IsWindowUnderCursor(gfx::NativeWindow window) {
 }
 
 gfx::NativeWindow TestScreen::GetWindowAtScreenPoint(const gfx::Point& point) {
-  return nullptr;
+  return gfx::NativeWindow();
 }
 
 Display TestScreen::GetDisplayNearestWindow(gfx::NativeWindow window) const {

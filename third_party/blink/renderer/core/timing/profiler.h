@@ -26,7 +26,7 @@ class ProfilerInitOptions;
 // A web-exposed JS sampling profiler created via blink::ProfilerGroup,
 // wrapping a handle to v8::CpuProfiler. Records samples periodically from the
 // isolate until stopped.
-class CORE_EXPORT Profiler final : public EventTargetWithInlineData {
+class CORE_EXPORT Profiler final : public EventTarget {
   DEFINE_WRAPPERTYPEINFO();
   USING_PRE_FINALIZER(Profiler, DisposeAsync);
 
@@ -59,7 +59,7 @@ class CORE_EXPORT Profiler final : public EventTargetWithInlineData {
   const SecurityOrigin* SourceOrigin() const { return source_origin_.get(); }
   base::TimeTicks TimeOrigin() const { return time_origin_; }
 
-  // Overrides from extending EventTargetWithInlineData
+  // Overrides from extending EventTarget
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;
 

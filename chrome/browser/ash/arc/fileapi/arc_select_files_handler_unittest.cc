@@ -169,7 +169,8 @@ class ArcSelectFilesHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<ArcSelectFilesHandler> arc_select_files_handler_;
-  raw_ptr<MockSelectFileDialogHolder, ExperimentalAsh> mock_dialog_holder_;
+  raw_ptr<MockSelectFileDialogHolder, DanglingUntriaged | ExperimentalAsh>
+      mock_dialog_holder_;
 };
 
 TEST_F(ArcSelectFilesHandlerTest, SelectFiles_DialogType) {

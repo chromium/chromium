@@ -103,9 +103,8 @@ class NetworkDiagnosticsTest : public NetworkDiagnosticsTestHelper {
     }
 
     // Set up the IP v4 config
-    base::Value::Dict ip_config_v4_properties;
-    ip_config_v4_properties.Set(shill::kNameServersProperty,
-                                std::move(dns_servers));
+    auto ip_config_v4_properties = base::Value::Dict().Set(
+        shill::kNameServersProperty, std::move(dns_servers));
     helper()->ip_config_test()->AddIPConfig(kIPv4ConfigPath,
                                             ip_config_v4_properties.Clone());
     std::string wifi_device_path =

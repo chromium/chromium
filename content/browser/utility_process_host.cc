@@ -69,12 +69,12 @@
 #include "media/capture/capture_switches.h"
 #endif
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #include "base/task/sequenced_task_runner.h"
 #include "components/viz/host/gpu_client.h"
 #include "media/capture/capture_switches.h"
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"
-#endif  // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
 namespace content {
 
@@ -129,7 +129,7 @@ UtilityProcessHost::UtilityProcessHost(std::unique_ptr<Client> client)
       started_(false),
       name_(u"utility process"),
       file_data_(std::make_unique<ChildProcessLauncherFileData>()),
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
       gpu_client_(nullptr, base::OnTaskRunnerDeleter(nullptr)),
 #endif
       client_(std::move(client)) {
@@ -307,13 +307,14 @@ bool UtilityProcessHost::StartProcess() {
     // Browser command-line switches to propagate to the utility process.
     static const char* const kSwitchNames[] = {
       network::switches::kAdditionalTrustTokenKeyCommitments,
-      network::switches::kBlockThirdPartyCookies,
       network::switches::kForceEffectiveConnectionType,
       network::switches::kHostResolverRules,
       network::switches::kIgnoreCertificateErrorsSPKIList,
       network::switches::kIgnoreUrlFetcherCertRequests,
-      network::switches::kLogNetLog,
-      network::switches::kNetLogCaptureMode,
+      network::switches::kIPAnonymizationProxyAllowList,
+      network::switches::kIPAnonymizationProxyPassword,
+      network::switches::kIPAnonymizationProxyServer,
+      network::switches::kTestThirdPartyCookiePhaseout,
       sandbox::policy::switches::kNoSandbox,
 #if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
       switches::kDisableDevShmUsage,
@@ -353,6 +354,7 @@ bool UtilityProcessHost::StartProcess() {
       // These flags are used by the audio service:
       switches::kAudioBufferSize,
       switches::kAudioServiceQuitTimeoutMs,
+      switches::kDisableAudioInput,
       switches::kDisableAudioOutput,
       switches::kFailAudioStreamCreation,
       switches::kMuteAudio,
@@ -388,8 +390,7 @@ bool UtilityProcessHost::StartProcess() {
       switches::kHardwareVideoDecodeFrameRate,
 #endif
     };
-    cmd_line->CopySwitchesFrom(browser_command_line, kSwitchNames,
-                               std::size(kSwitchNames));
+    cmd_line->CopySwitchesFrom(browser_command_line, kSwitchNames);
 
     network_session_configurator::CopyNetworkSwitches(browser_command_line,
                                                       cmd_line.get());
@@ -432,11 +433,12 @@ bool UtilityProcessHost::StartProcess() {
 #endif  // BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_LINUX)
+    // Pass `kVideoCaptureUseGpuMemoryBuffer` flag to video capture service only
+    // when the video capture use GPU memory buffer enabled and NV12 GPU memory
+    // buffer supported.
     if (metrics_name_ == video_capture::mojom::VideoCaptureService::Name_) {
-      if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-              switches::kDisableVideoCaptureUseGpuMemoryBuffer) &&
-          base::CommandLine::ForCurrentProcess()->HasSwitch(
-              switches::kVideoCaptureUseGpuMemoryBuffer)) {
+      if (switches::IsVideoCaptureUseGpuMemoryBufferEnabled() &&
+          GpuDataManagerImpl::GetInstance()->IsGpuMemoryBufferNV12Supported()) {
         cmd_line->AppendSwitch(switches::kVideoCaptureUseGpuMemoryBuffer);
       }
     }

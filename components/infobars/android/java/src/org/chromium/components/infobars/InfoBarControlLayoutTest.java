@@ -32,7 +32,6 @@ public class InfoBarControlLayoutTest {
     private static final int SWITCH_ID_2 = 2;
     private static final int SWITCH_ID_3 = 3;
     private static final int SWITCH_ID_4 = 4;
-    private static final int SWITCH_ID_5 = 5;
     private static final int INFOBAR_WIDTH = 3200;
 
     private Context mContext;

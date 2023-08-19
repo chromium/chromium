@@ -24,12 +24,12 @@ using testing::ElementsAre;
 namespace autofill {
 namespace {
 
-std::vector<ServerFieldType> GetContactOnlyFieldTypes() {
+ServerFieldTypeSet GetContactOnlyFieldTypes() {
   return {NO_SERVER_DATA, NAME_FIRST, NAME_LAST, EMAIL_ADDRESS,
           PHONE_HOME_WHOLE_NUMBER};
 }
 
-std::vector<ServerFieldType> GetAddressOnlyFieldTypes() {
+ServerFieldTypeSet GetAddressOnlyFieldTypes() {
   return {NO_SERVER_DATA,     NAME_FIRST,
           NAME_LAST,          ADDRESS_HOME_LINE1,
           ADDRESS_HOME_LINE2, ADDRESS_HOME_DEPENDENT_LOCALITY,
@@ -37,7 +37,7 @@ std::vector<ServerFieldType> GetAddressOnlyFieldTypes() {
           ADDRESS_HOME_ZIP,   ADDRESS_HOME_COUNTRY};
 }
 
-std::vector<ServerFieldType> GetAddressPlusEmailFieldTypes() {
+ServerFieldTypeSet GetAddressPlusEmailFieldTypes() {
   return {NO_SERVER_DATA,
           NAME_FIRST,
           NAME_LAST,
@@ -51,7 +51,7 @@ std::vector<ServerFieldType> GetAddressPlusEmailFieldTypes() {
           ADDRESS_HOME_COUNTRY};
 }
 
-std::vector<ServerFieldType> GetAddressPlusContactFieldTypes() {
+ServerFieldTypeSet GetAddressPlusContactFieldTypes() {
   return {NO_SERVER_DATA,
           NAME_FIRST,
           NAME_LAST,

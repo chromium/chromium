@@ -23,6 +23,7 @@
 #include "media/base/video_frame.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/media_gpu_export.h"
+#include "media/gpu/v4l2/v4l2_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/generic_shared_memory_id.h"
 #include "ui/gfx/geometry/size.h"
@@ -33,13 +34,19 @@ struct NativePixmapPlane;
 
 namespace media {
 
-class V4L2Device;
 class V4L2Queue;
 class V4L2Buffer;
 class V4L2BufferRefBase;
 class V4L2BuffersList;
 class V4L2RequestRef;
 class V4L2BufferRefFactory;
+
+// Wrapper for the 'v4l2_ext_control' structure.
+struct V4L2ExtCtrl {
+  V4L2ExtCtrl(uint32_t id);
+  V4L2ExtCtrl(uint32_t id, int32_t val);
+  struct v4l2_ext_control ctrl;
+};
 
 // A unique reference to a buffer for clients to prepare and submit.
 //
@@ -191,6 +198,8 @@ class MEDIA_GPU_EXPORT V4L2ReadableBuffer
   bool IsLast() const;
   // Returns whether the V4L2_BUF_FLAG_KEYFRAME flag is set for this buffer.
   bool IsKeyframe() const;
+  // Returns whether the V4L2_BUF_FLAG_ERROR flag is set for this buffer.
+  bool IsError() const;
   // Return the timestamp set by the driver on this buffer.
   struct timeval GetTimeStamp() const;
   // Returns the number of planes in this buffer.
@@ -359,7 +368,7 @@ class MEDIA_GPU_EXPORT V4L2RequestsQueue {
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-// Interface representing a specific queue of a |V4L2Device|. It provides free
+// Interface representing a specific V4L2 queue. It provides free
 // and queued buffer management that is commonly required by clients.
 //
 // Buffers managed by this class undergo the following cycle:
@@ -527,12 +536,19 @@ class MEDIA_GPU_EXPORT V4L2Queue
       uint64_t modifier,
       const gfx::Size& size);
 
+  // Sends a V4L2_DEC_CMD_STOP/V4L2_DEC_CMD_START to this queue.
+  [[nodiscard]] bool SendStopCommand();
+  [[nodiscard]] bool SendStartCommand();
+
  private:
   ~V4L2Queue();
 
   // Called when clients request a buffer to be queued.
   [[nodiscard]] bool QueueBuffer(struct v4l2_buffer* v4l2_buffer,
                                  scoped_refptr<VideoFrame> video_frame);
+
+  // Sends a V4L2_DEC_CMD_* to this queue.
+  [[nodiscard]] bool SendCommand(__u32 command);
 
   const enum v4l2_buf_type type_;
   enum v4l2_memory memory_ = V4L2_MEMORY_MMAP;
@@ -558,16 +574,23 @@ class MEDIA_GPU_EXPORT V4L2Queue
   std::map<gfx::GenericSharedMemoryId, size_t> free_buffers_indexes_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  scoped_refptr<V4L2Device> device_;
+  const IoctlAsCallback ioctl_cb_ GUARDED_BY_CONTEXT(sequence_checker_);
+  const base::RepeatingClosure schedule_poll_cb_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  const MmapAsCallback mmap_cb_ GUARDED_BY_CONTEXT(sequence_checker_);
+
   // Callback to call in this queue's destructor.
   base::OnceClosure destroy_cb_;
 
-  V4L2Queue(scoped_refptr<V4L2Device> dev,
+  V4L2Queue(const IoctlAsCallback& ioctl_cb,
+            const base::RepeatingClosure& schedule_poll_cb,
+            const MmapAsCallback& mmap_cb,
             enum v4l2_buf_type type,
             base::OnceClosure destroy_cb);
   friend class V4L2QueueFactory;
   friend class V4L2BufferRefBase;
   friend class base::RefCountedThreadSafe<V4L2Queue>;
+  friend class V4L2StatefulVideoDecoder;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

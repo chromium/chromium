@@ -41,6 +41,8 @@
 
       :host-context([chrome-refresh-2023]):host {
         --cr-checkbox-ripple-size: 32px;
+        --cr-checkbox-mark-color: var(--color-checkbox-check,
+            var(--cr-fallback-color-on-primary));
         --cr-checkbox-checked-box-color: var(--color-checkbox-foreground-checked,
             var(--cr-fallback-color-primary));
         --cr-checkbox-unchecked-box-color: var(--color-checkbox-foreground-unchecked,
@@ -59,12 +61,14 @@
 
       :host-context([chrome-refresh-2023]):host([disabled]) {
         opacity: 1;
-        --cr-checkbox-checked-box-color: var(--color-checkbox-background-disabled,
-            rgba(var(--cr-fallback-color-on-surface-rgb), .12));
-        --cr-checkbox-unchecked-box-color: var(--color-checkbox-background-disabled,
-            rgba(var(--cr-fallback-color-on-surface-rgb), .12));
-        --cr-checkbox-mark-color: var(--color-checkbox-foreground-disabled,
-            rgba(var(--cr-fallback-color-on-surface-rgb), var(--cr-disabled-opacity)));
+        --cr-checkbox-checked-box-color: var(
+            --color-checkbox-container-disabled,
+            var(--cr-fallback-color-disabled-background));
+        --cr-checkbox-unchecked-box-color: var(
+            --color-checkbox-outline-disabled,
+            var(--cr-fallback-color-disabled-background));
+        --cr-checkbox-mark-color: var(--color-checkbox-check-disabled,
+            var(--cr-fallback-color-disabled-foreground));
       }
 
       #checkbox {
@@ -77,6 +81,7 @@
         display: block;
         flex-shrink: 0;
         height: var(--cr-checkbox-size);
+        isolation: isolate;
         margin: 0;
         outline: none;
         padding: 0;
@@ -115,8 +120,8 @@
       }
 
       :host-context([chrome-refresh-2023]) #checkbox:focus-visible {
-        border: none;
         outline: 2px solid var(--cr-focus-outline-color);
+        outline-offset: 2px;
       }
 
       #checkmark {
@@ -146,11 +151,6 @@
         border-color: var(--cr-checkbox-checked-box-color);
       }
 
-      :host-context([chrome-refresh-2023]):host([checked]) #checkbox:focus-visible {
-        background-clip: padding-box;
-        border: 2px solid transparent;
-      }
-
       paper-ripple {
         --paper-ripple-opacity: var(--cr-checkbox-ripple-opacity,
             var(--cr-checkbox-unchecked-ripple-opacity));
@@ -177,6 +177,10 @@
 
       :host-context([chrome-refresh-2023]) paper-ripple {
         transform: translate(-50%, -50%);
+      }
+
+      :host-context([dir=rtl][chrome-refresh-2023]) paper-ripple {
+        transform: translate(50%, -50%);
       }
 
       #label-container {

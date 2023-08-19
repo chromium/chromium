@@ -6,7 +6,6 @@ import("//ios/build/config.gni")
 import("//ios/web/public/js_messaging/optimize_ts.gni")
 
 source_set("js_messaging") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     ":frame_listeners_js",
     ":java_script_content_world_header",
@@ -44,7 +43,6 @@ source_set("js_messaging") {
 }
 
 source_set("java_script_feature") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   public_deps = [
     ":java_script_content_world_header",
     ":java_script_feature_manager_header",
@@ -70,8 +68,6 @@ source_set("java_script_feature") {
 }
 
 source_set("java_script_content_world_header") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     ":scoped_wk_script_message_handler",
     "//base",
@@ -82,8 +78,6 @@ source_set("java_script_content_world_header") {
 }
 
 source_set("java_script_content_world_util") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//base",
     "//ios/web/public/js_messaging:content_world_header",
@@ -96,8 +90,6 @@ source_set("java_script_content_world_util") {
 }
 
 source_set("java_script_feature_manager_header") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     ":java_script_content_world_header",
     "//base",
@@ -107,8 +99,6 @@ source_set("java_script_feature_manager_header") {
 }
 
 source_set("java_script_feature_util") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     ":js_messaging",
     "//base",
@@ -136,8 +126,6 @@ source_set("java_script_feature_util") {
 }
 
 source_set("scoped_wk_script_message_handler") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     ":web_view_js_utils",
     "//base",
@@ -150,8 +138,6 @@ source_set("scoped_wk_script_message_handler") {
 }
 
 source_set("web_view_js_utils") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [ "//base" ]
 
   sources = [
@@ -185,7 +171,6 @@ optimize_ts("frame_listeners_js") {
 }
 
 source_set("unittests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   deps = [
     ":java_script_content_world_util",
@@ -227,7 +212,6 @@ source_set("unittests") {
 }
 
 source_set("inttests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   deps = [
     ":java_script_content_world_header",

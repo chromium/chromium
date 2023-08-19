@@ -45,9 +45,9 @@ per-file content_security_policy*=nasko@chromium.org
 # Cookies
 per-file *cookie*=file://net/cookies/OWNERS
 
-# Local Network Access
-per-file local_network_access*=titouan@chromium.org
-per-file local_network_access*=lyf@chromium.org
+# Private Network Access
+per-file private_network_access*=titouan@chromium.org
+per-file private_network_access*=lyf@chromium.org
 
 # WebTransport
 per-file web_transport*=file://net/OWNERS

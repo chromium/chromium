@@ -4,7 +4,6 @@
 
 module attribution_reporting.mojom;
 
-import "components/aggregation_service/aggregation_service.mojom";
 import "components/attribution_reporting/source_registration_time_config.mojom";
 import "mojo/public/mojom/base/int128.mojom";
 import "mojo/public/mojom/base/time.mojom";
@@ -26,8 +25,14 @@ struct SuitableOrigin {
 // See https://github.com/WICG/attribution-reporting-api/blob/main/EVENT.md#optional-attribution-filters
 // for details.
 struct FilterData {
-  // Map of filter name to a possibly empty set of values. Must not contain a
-  // `source_type` key.
+  // Map of filter name to a possibly empty set of values. Must not contain
+  // `source_type` or `_lookback_window` keys.
+  map<string, array<string>> filter_values;
+};
+
+// Internal structure to support the lookback window implementation.
+struct FilterConfig {
+  mojo_base.mojom.TimeDelta? lookback_window;
   map<string, array<string>> filter_values;
 };
 
@@ -37,11 +42,11 @@ struct FilterData {
 struct FilterPair {
   // If non-empty, this trigger will be ignored unless the attributed source's
   // filter data matches.
-  array<map<string, array<string>>> positive;
+  array<FilterConfig> positive;
 
   // If non-empty, this trigger will be ignored unless the attributed source's
   // filter data does *NOT* match.
-  array<map<string, array<string>>> negative;
+  array<FilterConfig> negative;
 };
 
 // See https://github.com/WICG/attribution-reporting-api/blob/main/AGGREGATE.md#attribution-source-registration
@@ -62,6 +67,13 @@ struct DestinationSet {
   array<network.mojom.SchemefulSite> destinations;
 };
 
+// Reporting configuration that controls the early reporting time windows for a
+// source.
+struct EventReportWindows {
+  mojo_base.mojom.TimeDelta start_time;
+  array<mojo_base.mojom.TimeDelta> end_times;
+};
+
 struct SourceRegistration {
   DestinationSet destinations;
 
@@ -71,13 +83,23 @@ struct SourceRegistration {
   // Specifies how long this source is eligible for attribution.
   mojo_base.mojom.TimeDelta? expiry;
 
-  // Optionally specifies how long after source registration an event-level report
-  // can be generated with this source.
+  // Optionally specifies how long after source registration an event-level
+  // report can be generated with this source.
   mojo_base.mojom.TimeDelta? event_report_window;
 
   // Optionally specifies how long after source registration an aggregatable
   // report can be generated with this source.
   mojo_base.mojom.TimeDelta? aggregatable_report_window;
+
+  // Optionally specifies a custom set of report windows determining the time
+  // bounds of a report being generated with this source.
+  EventReportWindows? event_report_windows;
+
+  // Optionally specifies how many event-level reports can be generated with
+  // this source, with -1 representing absl::nullopt.
+  //
+  // TODO(crbug.com/657632): Make nullable.
+  int32 max_event_level_reports;
 
   // Priority for this source.
   int64 priority = 0;
@@ -157,17 +179,28 @@ struct TriggerRegistration {
   // Specifies whether to enable verbose debug reporting.
   bool debug_reporting = false;
 
-  // Specifies the deployment option for the aggregation service.
-  aggregation_service.mojom.AggregationCoordinator aggregation_coordinator;
+  // Specifies the deployment option for the aggregation service. The default
+  // deployment will be used if not set.
+  SuitableOrigin? aggregation_coordinator_origin;
 
   // Specifies whether to include source registration time in aggregatable
   // reports.
   SourceRegistrationTimeConfig source_registration_time_config;
 };
 
-// Represents a source or trigger registration that will be passed to the OS, if supported.
-struct OsRegistration {
-  // The URLs to which the OS will make a request in order to retrieve the actual
+// Represents a source or trigger registration item that will be passed to the OS, if supported.
+struct OsRegistrationItem {
+  // The URL to which the OS will make a request in order to retrieve the actual
   // source or trigger registration.
-  array<url.mojom.Url> urls;
+  url.mojom.Url url;
+  // Specifies whether to enable verbose debug reporting.
+  bool debug_reporting;
+};
+
+// Represents a source or trigger registration that will be passed to the OS, if supported.
+// A registration may contain multiple registration items.
+struct OsRegistration {
+  // The registrations to which the OS will make a request in order to retrieve the actual
+  // source or trigger registration.
+  array<OsRegistrationItem> items;
 };

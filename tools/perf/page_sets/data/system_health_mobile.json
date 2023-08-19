@@ -357,6 +357,9 @@
         "load:search:google:2018": {
             "DEFAULT": "system_health_mobile_09493f5937.wprgo"
         },
+        "load:search:naver:2023": {
+            "DEFAULT": "system_health_mobile_3688b0bdcd.wprgo"
+        },
         "load:search:taobao": {
             "DEFAULT": "system_health_mobile_000.wprgo"
         },

@@ -38,7 +38,6 @@ const char kText[] = "clipboard text";
 const char kEmptyDeviceName[] = "";
 const char kDeviceNameInMessage[] = "DeviceNameInMessage";
 const char16_t kDeviceNameInMessage16[] = u"DeviceNameInMessage";
-const char kHistogramName[] = "Sharing.RemoteCopyHandleMessageResult";
 const char kTestImageUrl[] = "https://foo.com/image.png";
 
 class ClipboardObserver : public ui::ClipboardObserver {
@@ -147,8 +146,6 @@ TEST_F(RemoteCopyMessageHandlerTest, NotificationWithoutDeviceName) {
       l10n_util::GetStringUTF16(
           IDS_SHARING_REMOTE_COPY_NOTIFICATION_TITLE_TEXT_CONTENT_UNKNOWN_DEVICE),
       GetNotification().title());
-  histograms_.ExpectUniqueSample(
-      kHistogramName, RemoteCopyHandleMessageResult::kSuccessHandledText, 1);
 }
 
 TEST_F(RemoteCopyMessageHandlerTest, NotificationWithDeviceName) {
@@ -161,8 +158,6 @@ TEST_F(RemoteCopyMessageHandlerTest, NotificationWithDeviceName) {
                 IDS_SHARING_REMOTE_COPY_NOTIFICATION_TITLE_TEXT_CONTENT,
                 kDeviceNameInMessage16),
             GetNotification().title());
-  histograms_.ExpectUniqueSample(
-      kHistogramName, RemoteCopyHandleMessageResult::kSuccessHandledText, 1);
 }
 
 TEST_F(RemoteCopyMessageHandlerTest, IsImageSourceAllowed) {

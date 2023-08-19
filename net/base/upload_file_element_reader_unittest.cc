@@ -22,7 +22,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_APPLE)
-#include "base/mac/scoped_nsautorelease_pool.h"
+#include "base/apple/scoped_nsautorelease_pool.h"
 #endif
 
 using net::test::IsError;
@@ -96,7 +96,7 @@ class UploadFileElementReaderTest : public testing::TestWithParam<bool>,
 
 #if BUILDFLAG(IS_APPLE)
   // May be needed to avoid leaks on OSX.
-  base::mac::ScopedNSAutoreleasePool scoped_pool_;
+  base::apple::ScopedNSAutoreleasePool scoped_pool_;
 #endif
 
   std::vector<char> bytes_;

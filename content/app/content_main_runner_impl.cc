@@ -54,7 +54,6 @@
 #include "components/download/public/common/download_task_runner.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/power_monitor/make_power_monitor_device_source.h"
-#include "components/power_scheduler/power_mode_arbiter.h"
 #include "components/variations/variations_ids_provider.h"
 #include "content/app/mojo_ipc_support.h"
 #include "content/browser/browser_main.h"
@@ -68,7 +67,6 @@
 #include "content/browser/tracing/memory_instrumentation_util.h"
 #include "content/browser/utility_process_host.h"
 #include "content/child/field_trial.h"
-#include "content/common/android/cpu_time_metrics.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/mojo_core_library_support.h"
 #include "content/common/process_visibility_tracker.h"
@@ -188,15 +186,11 @@
 #include "media/base/media_switches.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(USE_ZYGOTE)
-#include "base/rand_util.h"
-#include "chromeos/startup/startup_switches.h"
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
 #include "base/system/sys_info.h"
 #include "content/browser/android/battery_metrics.h"
 #include "content/browser/android/browser_startup_controller.h"
+#include "content/common/android/cpu_time_metrics.h"
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -305,6 +299,7 @@ pid_t LaunchZygoteHelper(base::CommandLine* cmd_line,
   // Append any switches from the browser process that need to be forwarded on
   // to the zygote/renderers.
   static const char* const kForwardSwitches[] = {
+    switches::kAllowCommandLinePlugins,
     switches::kClearKeyCdmPathForTesting,
     switches::kEnableLogging,  // Support, e.g., --enable-logging=stderr.
     // Need to tell the zygote that it is headless so that we don't try to use
@@ -322,12 +317,9 @@ pid_t LaunchZygoteHelper(base::CommandLine* cmd_line,
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     switches::kEnableResourcesFileSharing,
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    chromeos::switches::kZygoteHugepageRemap,
-#endif
   };
   cmd_line->CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
-                             kForwardSwitches, std::size(kForwardSwitches));
+                             kForwardSwitches);
 
   GetContentClient()->browser()->AppendExtraCommandLineSwitches(cmd_line, -1);
 
@@ -364,20 +356,6 @@ void InitializeZygoteSandboxForBrowserProcess(
     }
     return;
   }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // We determine whether to enable the zygote hugepage remap feature. We store
-  // the result in the current command line. This will automatically propagate
-  // to zygotes via LaunchZygoteHelper. Later,
-  // ChromeBrowserMainExtraPartsMetrics::PreBrowserStart will register the
-  // synthetic field trial.
-  // This is a 50/50 trial.
-  const bool enable_hugepage = base::RandInt(/*min=*/0, /*max=*/1) == 1;
-  if (enable_hugepage) {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        chromeos::switches::kZygoteHugepageRemap);
-  }
-#endif
 
   // Tickle the zygote host so it forks now.
   ZygoteHostImpl::GetInstance()->Init(parsed_command_line);
@@ -1209,8 +1187,15 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
     // but before the IO thread is started.
     if (base::HangWatcher::IsEnabled()) {
       base::HangWatcher::CreateHangWatcherInstance();
-      unregister_thread_closure_ = base::HangWatcher::RegisterThread(
-          base::HangWatcher::ThreadType::kMainThread);
+
+      // Register the main thread to the HangWatcher and never unregister it. It
+      // is safe to keep this scope up to the end of the process since the
+      // HangWatcher is a leaky instance.
+      base::ScopedClosureRunner unregister_thread_closure(
+          base::HangWatcher::RegisterThread(
+              base::HangWatcher::ThreadType::kMainThread));
+      std::ignore = unregister_thread_closure.Release();
+
       base::HangWatcher::GetInstance()->Start();
     }
 
@@ -1246,9 +1231,6 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
 
     discardable_shared_memory_manager_ =
         std::make_unique<discardable_memory::DiscardableSharedMemoryManager>();
-
-    // Requires base::PowerMonitor to be initialized first.
-    power_scheduler::PowerModeArbiter::GetInstance()->OnThreadPoolAvailable();
 
     mojo_ipc_support_ =
         std::make_unique<MojoIpcSupport>(BrowserTaskExecutor::CreateIOThread());

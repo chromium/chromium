@@ -10,6 +10,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/lock.h"
@@ -59,8 +60,12 @@ class AppInstall : public App {
   ~AppInstall() override;
 
   // Overrides for App.
-  void Initialize() override;
+  [[nodiscard]] int Initialize() override;
   void FirstTaskRun() override;
+
+  // Initializes or reinitializes `update_service_`. Reinitialization can be
+  // used to pick up a possible change to the active updater.
+  void CreateUpdateServiceProxy();
 
   // Called after the version of the active updater has been retrieved.
   void GetVersionDone(const base::Version& version);

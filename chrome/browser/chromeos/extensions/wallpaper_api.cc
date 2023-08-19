@@ -218,13 +218,6 @@ void WallpaperSetWallpaperFunction::OnWallpaperSetOnAsh(
   }
 }
 
-void WallpaperSetWallpaperFunction::OnWallpaperSetOnAshDeprecated(
-    const std::vector<uint8_t>& thumbnail_data) {
-  Respond(params_->details.thumbnail
-              ? WithArguments(Value(std::move(thumbnail_data)))
-              : NoArguments());
-}
-
 void WallpaperSetWallpaperFunction::SetWallpaperOnAsh() {
   const extensions::Extension* ext = extension();
   std::string extension_id;
@@ -251,17 +244,13 @@ void WallpaperSetWallpaperFunction::SetWallpaperOnAsh() {
                          ->GetInterfaceVersion<crosapi::mojom::Wallpaper>();
   if (ash_version <
       static_cast<int>(crosapi::mojom::Wallpaper::kSetWallpaperMinVersion)) {
-    wallpaper_api->SetWallpaperDeprecated(
-        std::move(settings), extension_id, extension_name,
-        base::BindOnce(
-            &WallpaperSetWallpaperFunction::OnWallpaperSetOnAshDeprecated,
-            this));
-  } else {
-    wallpaper_api->SetWallpaper(
-        std::move(settings), extension_id, extension_name,
-        base::BindOnce(&WallpaperSetWallpaperFunction::OnWallpaperSetOnAsh,
-                       this));
+    Respond(Error("Unsupported ChromeOS version."));
+    return;
   }
+  wallpaper_api->SetWallpaper(
+      std::move(settings), extension_id, extension_name,
+      base::BindOnce(&WallpaperSetWallpaperFunction::OnWallpaperSetOnAsh,
+                     this));
 #else
   // Without lacros, there is never a version mismatch between this file and
   // wallpaper_ash.

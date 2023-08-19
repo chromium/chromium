@@ -17,4 +17,11 @@ INSERT INTO meta VALUES('last_compatible_version','1');
 
 INSERT INTO browsing_topics_api_usages VALUES (111, 222, 333);
 
+CREATE TABLE  browsing_topics_api_hashed_to_unhashed_domain(
+hashed_context_domain INTEGER NOT NULL,
+context_domain TEXT NOT NULL,
+PRIMARY KEY (hashed_context_domain));
+
+INSERT INTO browsing_topics_api_hashed_to_unhashed_domain VALUES (111, '111.com');
+
 COMMIT;

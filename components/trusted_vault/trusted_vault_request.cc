@@ -61,29 +61,29 @@ net::NetworkTrafficAnnotationTag CreateTrafficAnnotationTag() {
   return net::DefineNetworkTrafficAnnotation("trusted_vault_request",
                                              R"(
       semantics {
-        sender: "Chrome Sync"
+        sender: "Trusted Vault Service"
         description:
           "Request to vault service in order to retrieve, change or support "
-          "future retrieval or change of Sync encryption keys."
+          "future retrieval or change of encryption keys for Chrome or "
+          "Chrome OS features (such as Chrome Sync)."
         trigger:
           "Periodically/upon certain non-user controlled events after user "
           "signs in Chrome profile."
         data:
-          "An OAuth2 access token, sync metadata associated with encryption "
-          "keys: encrypted encryption keys, public counterpart of encryption "
-          "keys."
+          "An OAuth2 access token, metadata associated with encryption keys: "
+          "encrypted encryption keys, public counterpart of encryption keys."
         destination: GOOGLE_OWNED_SERVICE
       }
       policy {
         cookies_allowed: NO
         setting:
-          "Users can disable Chrome Sync by going into the profile settings "
-          "and choosing to sign out."
+          "This feature cannot be disabled in settings, but if user signs "
+          "out of Chrome, this request would not be made."
         chrome_policy {
-            SyncDisabled {
-               policy_options {mode: MANDATORY}
-               SyncDisabled: false
-            }
+          SigninAllowed {
+            policy_options {mode: MANDATORY}
+            SigninAllowed: false
+          }
         }
       })");
 }

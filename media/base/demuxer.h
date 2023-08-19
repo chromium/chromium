@@ -190,6 +190,9 @@ class MEDIA_EXPORT Demuxer : public MediaResource {
   // Allows a demuxer to change behavior based on the playback rate, including
   // but not limited to changing the amount of buffer space.
   virtual void SetPlaybackRate(double rate) = 0;
+
+  // Allow canChangeType to be disabled.
+  virtual void DisableCanChangeType();
 };
 
 }  // namespace media

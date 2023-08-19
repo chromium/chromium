@@ -159,6 +159,8 @@ buckets are added later.
 *In C++*, define an `enum class` with a `kMaxValue` enumerator:
 
 ```c++
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class NewTabPageAction {
   kUseOmnibox = 0,
   kClickTitle = 1,
@@ -385,11 +387,11 @@ someone from the OWNERS file.
 ## Histogram Expiry
 
 Histogram expiry is specified by the `expires_after` attribute in histogram
-descriptions in histograms.xml. The attribute can be specified as date in
-**YYYY-MM-DD** format or as Chrome milestone in **M**\*(e.g. M105) format. In
-the latter case, the actual expiry date is about 12 weeks after that branch is
-cut, or basically when it is replaced on the "stable" channel by the following
-release.
+descriptions in histograms.xml. It is a required attribute. The attribute can
+be specified as date in **YYYY-MM-DD** format or as Chrome milestone in
+**M**\*(e.g. M105) format. In the latter case, the actual expiry date is about
+12 weeks after that branch is cut, or basically when it is replaced on the
+"stable" channel by the following release.
 
 After a histogram expires, it ceases to be displayed on the dashboard.
 Follow [these directions](#extending) to extend it.
@@ -412,8 +414,10 @@ reviewed by chromium-metrics-reviews@google.com.
 <!-- expires-never: "heartbeat" metric (internal: go/uma-heartbeats) -->
 ```
 
-For all new histograms, the use of expiry attribute is strongly encouraged and
-enforced by the Chrome Metrics team through reviews.
+It is never appropriate to set the expiry to "never" on a new histogram. Most
+new histograms don't turn out to have the properties the implementer wants,
+whether due to bugs in the implementation or simply an evolving understanding
+of what should be measured.
 
 #### How to choose expiry for histograms
 
@@ -524,6 +528,17 @@ for more thorough manual testing if needed.
 
 By default, histograms in unit or browser tests will not be actually uploaded.
 In general, you can rely on the UMA infrastructure to upload the metrics correctly.
+
+### Don't Use Histograms to Prove Main Logic Correctness
+
+Do not rely upon using histograms in tests as a way to prove correctness of
+your main program logic. If a unit or browser test uses a histogram count as a
+way to validate logic then that test coverage would be lost if the histogram is
+deleted after it has expired. That situation would prevent cleanup of the
+histogram. Construct your tests using other means to validate your general
+logic, and only use
+[`HistogramTester`](https://cs.chromium.org/chromium/src/base/test/metrics/histogram_tester.h)
+to verify that the histogram values are being generated as you would expect.
 
 ## Interpreting the Resulting Data
 
@@ -700,17 +715,27 @@ Delete the entry in the histograms.xml file.
 
 #### Add an Obsoletion Message
 
-You can choose to add a message to the removed histogram entry which will
-provide relevant information to interested Chrome developers. Whether you
-choose to add an obsoletion message or not, the date and milestone when the
-entry became obsolete will be automatically recorded.
+**Note:** You can skip this step if the histogram is already expired or
+obsolete. This is because tooling automatically records the date and milestone
+of a histogram's expiration or obsoletion.
+
+There are a couple options for adding a message to the removed histogram's
+entry to provide relevant information to interested Chrome developers.
 
 * Add the obsoletion message in the CL description in the format
-  OBSOLETE_HISTOGRAM[histogram name]=obsoletion message.
-  * Note: currently, it is not possible to add the same obsoletion message
-    to multiple histograms in a single tag. But you can add multiple obsoletion
-    message tags in one changelist. The Chrome Metrics team is in the process
-    to enable CL-level obsoletion messages.
+  OBSOLETE_HISTOGRAM[histogram name]=obsoletion message (e.g.
+  OBSOLETE_HISTOGRAM[Tab.Count]=Replaced by Tab.Count2).
+* If you want to add the same obsoletion message to all the histograms removed
+  in the CL, you can use OBSOLETE_HISTOGRAMS=message (e.g.
+  OBSOLETE_HISTOGRAMS=Patterned histogram Hist.{Token} is replaced by
+  Hist.{Token}.2).
+* **Notes:**
+  * The full tag should be put on a single line, even if it is longer than the
+    maximum CL description width.
+  * You can add multiple obsoletion message tags in one CL.
+  * OBSOLETE_HISTOGRAMS messages will be overwritten by histogram-specific ones,
+    if present.
+  * OBSOLETE_HISTOGRAMS messages are not applied to already obsolete histograms.
 * You could also include information about why the histogram has become
   obsolete. For example, you might indicate how the histogram's summary did not
   accurately describe the collected data.
@@ -775,13 +800,14 @@ recording a "parent" histogram that aggregates across a set of breakdowns.
 
 You can use the `<variants>` tag to define a set of `<variant>`s out-of-line.
 This is useful for token substitutions that are shared among multiple families
-of histograms. See
+of histograms within the same file. See
 [histograms.xml](https://source.chromium.org/search?q=file:histograms.xml%20%3Cvariants)
 for examples.
 
 *** promo
 Warning: The `name` attribute of the `<variants>` tag is globally scoped, so
-use detailed names to avoid collisions.
+use detailed names to avoid collisions. The `<variants>` defined should only
+be used within the file.
 ***
 
 By default, a `<variant>` inherits the owners declared for the patterned

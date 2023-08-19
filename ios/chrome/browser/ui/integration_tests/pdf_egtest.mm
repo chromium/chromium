@@ -14,10 +14,6 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using chrome_test_util::RegularTabGrid;
 using chrome_test_util::ScrollToTop;
 using chrome_test_util::TabGridCellAtIndex;
@@ -39,11 +35,6 @@ const char kGreenPDFPath[] = "/green.pdf";
     EARL_GREY_TEST_DISABLED(@"Disabled on iPad -- depends on swiping in the "
                             @"toolbar to change tabs, which is a compact-"
                             @"only feature.");
-  }
-  if ([ChromeEarlGrey isSortingTabsByRecency]) {
-    EARL_GREY_TEST_DISABLED(@"Disabled when sorting tabs by recency -- depends "
-                            @"on swiping in the toolbar to change tabs, which "
-                            @"is disabled when sorting tabs by recency.");
   }
 
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");

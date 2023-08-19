@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_VIDEO_CONFERENCE_BUBBLE_SET_VALUE_EFFECTS_VIEW_H_
 
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -35,7 +36,7 @@ class SetValueEffectSlider : public views::View {
 
  private:
   // Owned by the views hierarchy.
-  TabSlider* tab_slider_ = nullptr;
+  raw_ptr<TabSlider, ExperimentalAsh> tab_slider_ = nullptr;
 
   // The id associated with this effect.
   const VcEffectId effect_id_;

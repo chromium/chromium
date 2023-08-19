@@ -47,7 +47,8 @@ class PolicyRecommendationRestorerTest : public NoSessionAshTestBase {
 
     // Register sigin prefs but not connected to pref service yet. This allows
     // us set pref values before ash connects to pref service for testing.
-    RegisterSigninProfilePrefs(prefs_->registry(), true /* for_test */);
+    RegisterSigninProfilePrefs(prefs_->registry(), /*country=*/"",
+                               /*for_test=*/true);
 
     restorer_ = Shell::Get()->policy_recommendation_restorer();
   }
@@ -148,11 +149,15 @@ class PolicyRecommendationRestorerTest : public NoSessionAshTestBase {
     return true;
   }
 
-  raw_ptr<PolicyRecommendationRestorer, ExperimentalAsh> restorer_ = nullptr;
+  raw_ptr<PolicyRecommendationRestorer, DanglingUntriaged | ExperimentalAsh>
+      restorer_ = nullptr;
 
   // Ownerships are passed to SessionController.
-  raw_ptr<TestingPrefStore, ExperimentalAsh> recommended_prefs_;
-  raw_ptr<sync_preferences::TestingPrefServiceSyncable, ExperimentalAsh> prefs_;
+  raw_ptr<TestingPrefStore, DanglingUntriaged | ExperimentalAsh>
+      recommended_prefs_;
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable,
+          DanglingUntriaged | ExperimentalAsh>
+      prefs_;
 };
 
 // Verifies that when no recommended values have been set, |restorer_| does not

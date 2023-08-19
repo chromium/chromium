@@ -43,7 +43,7 @@ INSTANTIATE_TEST_SUITE_P(
         {PROCESS_TYPE_RENDERER, Config{"RendererMetrics", 2 << 20}},
         {PROCESS_TYPE_PLUGIN_DEPRECATED, absl::nullopt},
         {PROCESS_TYPE_WORKER_DEPRECATED, absl::nullopt},
-        {PROCESS_TYPE_UTILITY, Config{"UtilityMetrics", 256 << 10}},
+        {PROCESS_TYPE_UTILITY, Config{"UtilityMetrics", 512 << 10}},
         {PROCESS_TYPE_ZYGOTE, Config{"ZygoteMetrics", 64 << 10}},
         {PROCESS_TYPE_SANDBOX_HELPER, Config{"SandboxHelperMetrics", 64 << 10}},
         {PROCESS_TYPE_GPU, Config{"GpuMetrics", 256 << 10}},

@@ -138,6 +138,31 @@ void LogDesktopCaptureRequestRefreshRate(DesktopMediaID::Type capturer_type,
   }
 }
 
+// Helper class which request that the system-global Windows timer interrupt
+// frequency be raised at construction. The corresponding deactivation is done
+// at destruction. How high the frequency is raised depends on the system's
+// power state and possibly other options. Only supported on Windows.
+class ScopedHighResolutionTimer {
+ public:
+#if !BUILDFLAG(IS_WIN)
+  ScopedHighResolutionTimer() {}
+#else
+  ScopedHighResolutionTimer() {
+    if (!base::Time::IsHighResolutionTimerInUse()) {
+      enabled_ = base::Time::ActivateHighResolutionTimer(true);
+    }
+  }
+  ~ScopedHighResolutionTimer() {
+    if (enabled_) {
+      base::Time::ActivateHighResolutionTimer(false);
+    }
+  }
+
+ private:
+  bool enabled_ = false;
+#endif
+};
+
 }  // namespace
 
 class DesktopCaptureDevice::Core : public webrtc::DesktopCapturer::Callback {
@@ -196,6 +221,10 @@ class DesktopCaptureDevice::Core : public webrtc::DesktopCapturer::Callback {
   base::TimeTicks NowTicks() const;
 
   bool zero_hertz_is_supported() const { return zero_hertz_is_supported_; }
+
+  // Requests high-resolution timers on Windows if not already active.
+  // Created in AllocateAndStart() and destroyed in ~Core().
+  std::unique_ptr<ScopedHighResolutionTimer> scoped_high_res_timer_;
 
   // Task runner used for capturing operations.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
@@ -334,6 +363,7 @@ void DesktopCaptureDevice::Core::AllocateAndStart(
   DCHECK(client);
   DCHECK(!client_);
 
+  scoped_high_res_timer_ = std::make_unique<ScopedHighResolutionTimer>();
   client_ = std::move(client);
   requested_frame_rate_ = params.requested_format.frame_rate;
   frame_rate_ = requested_frame_rate_;
@@ -728,8 +758,8 @@ std::unique_ptr<media::VideoCaptureDevice> DesktopCaptureDevice::Create(
   if (base::FeatureList::IsEnabled(kAllowWinCursorEmbedded)) {
     options.set_prefer_cursor_embedded(true);
   }
-  if (base::FeatureList::IsEnabled(features::kWebRtcAllowWgcDesktopCapturer)) {
-    options.set_allow_wgc_capturer(true);
+  if (base::FeatureList::IsEnabled(features::kWebRtcAllowWgcScreenCapturer)) {
+    options.set_allow_wgc_screen_capturer(true);
 
     // 0Hz support is by default disabled for WGC but it can be enabled using
     // the `kWebRtcAllowWgcZeroHz` feature flag. When enabled, the WGC capturer
@@ -738,6 +768,11 @@ std::unique_ptr<media::VideoCaptureDevice> DesktopCaptureDevice::Create(
     // changed or not. DesktopFrame::updated_region() will be empty if nothing
     // has changed and contain one (damage) region corresponding to the complete
     // screen or window being captured if any change is detected.
+    options.set_allow_wgc_zero_hertz(
+        base::FeatureList::IsEnabled(features::kWebRtcAllowWgcZeroHz));
+  }
+  if (base::FeatureList::IsEnabled(features::kWebRtcAllowWgcWindowCapturer)) {
+    options.set_allow_wgc_window_capturer(true);
     options.set_allow_wgc_zero_hertz(
         base::FeatureList::IsEnabled(features::kWebRtcAllowWgcZeroHz));
   }
@@ -854,7 +889,8 @@ DesktopCaptureDevice::DesktopCaptureDevice(
 
   bool zero_hertz_is_supported = true;
 #if BUILDFLAG(IS_WIN)
-  if (base::FeatureList::IsEnabled(features::kWebRtcAllowWgcDesktopCapturer)) {
+  if (base::FeatureList::IsEnabled(features::kWebRtcAllowWgcScreenCapturer) ||
+      base::FeatureList::IsEnabled(features::kWebRtcAllowWgcWindowCapturer)) {
     // TODO(https://crbug.com/1421242): Finalize 0Hz support for WGC.
     // This feature flag is disabled by default.
     zero_hertz_is_supported =

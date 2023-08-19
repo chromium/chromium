@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-PASS HTML parser must perform a microtask checkpoint before constructing a custom element
-FAIL HTML parser must perform a microtask checkpoint before constructing a custom element during the adoption agency algorithm assert_equals: expected 4 but got 3
-Harness: the test ran to completion.
-

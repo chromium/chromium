@@ -46,6 +46,8 @@ static_library("ukm") {
     "app_source_url_recorder.h",
     "field_trials_provider_helper.cc",
     "field_trials_provider_helper.h",
+    "singular_ukm_entry.cc",
+    "singular_ukm_entry.h",
     "ukm_pref_names.cc",
     "ukm_pref_names.h",
     "ukm_reporting_service.cc",
@@ -129,6 +131,7 @@ source_set("unit_tests") {
   sources = [
     "app_source_url_recorder_test.cc",
     "observers/ukm_consent_state_observer_unittest.cc",
+    "singular_ukm_entry_unittest.cc",
     "ukm_recorder_impl_unittest.cc",
     "ukm_service_unittest.cc",
   ]

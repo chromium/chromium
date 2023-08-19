@@ -36,31 +36,34 @@ class BaseTestCase(unittest.TestCase):
         self.tool.builders = BuilderList({
             'MOCK Mac10.10 (dbg)': {
                 'port_name': 'test-mac-mac10.10',
-                'specifiers': ['Mac10.10', 'Debug']
+                'specifiers': ['Mac10.10', 'Debug'],
             },
             'MOCK Mac10.10': {
                 'port_name': 'test-mac-mac10.10',
-                'specifiers': ['Mac10.10', 'Release']
+                'specifiers': ['Mac10.10', 'Release'],
             },
             'MOCK Mac10.11 (dbg)': {
                 'port_name': 'test-mac-mac10.11',
-                'specifiers': ['Mac10.11', 'Debug']
+                'specifiers': ['Mac10.11', 'Debug'],
             },
             'MOCK Mac10.11 ASAN': {
                 'port_name': 'test-mac-mac10.11',
-                'specifiers': ['Mac10.11', 'Release']
+                'specifiers': ['Mac10.11', 'Release'],
             },
             'MOCK Mac10.11': {
                 'port_name': 'test-mac-mac10.11',
-                'specifiers': ['Mac10.11', 'Release']
+                'specifiers': ['Mac10.11', 'Release'],
+                'steps': {
+                    'blink_web_tests (with patch)': {},
+                },
             },
             'MOCK Precise': {
                 'port_name': 'test-linux-precise',
-                'specifiers': ['Precise', 'Release']
+                'specifiers': ['Precise', 'Release'],
             },
             'MOCK Trusty': {
                 'port_name': 'test-linux-trusty',
-                'specifiers': ['Trusty', 'Release']
+                'specifiers': ['Trusty', 'Release'],
             },
             'MOCK Trusty Multiple Steps': {
                 'port_name': 'test-linux-trusty',
@@ -74,31 +77,37 @@ class BaseTestCase(unittest.TestCase):
             },
             'MOCK Win10': {
                 'port_name': 'test-win-win10',
-                'specifiers': ['Win10', 'Release']
+                'specifiers': ['Win10', 'Release'],
             },
             'MOCK Win7 (dbg)': {
                 'port_name': 'test-win-win7',
-                'specifiers': ['Win7', 'Debug']
+                'specifiers': ['Win7', 'Debug'],
             },
             'MOCK Win7 (dbg)(1)': {
                 'port_name': 'test-win-win7',
-                'specifiers': ['Win7', 'Debug']
+                'specifiers': ['Win7', 'Debug'],
+                'steps': {
+                    'blink_web_tests (with patch)': {},
+                },
             },
             'MOCK Win7 (dbg)(2)': {
                 'port_name': 'test-win-win7',
-                'specifiers': ['Win7', 'Debug']
+                'specifiers': ['Win7', 'Debug'],
             },
             'MOCK Win7': {
                 'port_name': 'test-win-win7',
-                'specifiers': ['Win7', 'Release']
+                'specifiers': ['Win7', 'Release'],
+                'steps': {
+                    'blink_web_tests (with patch)': {},
+                },
             },
             'MOCK wpt(1)': {
                 'port_name': 'test-linux-trusty',
-                'specifiers': ['Trusty', 'Release']
+                'specifiers': ['Trusty', 'Release'],
             },
             'MOCK wpt(2)': {
                 'port_name': 'test-linux-trusty',
-                'specifiers': ['Trusty', 'Release']
+                'specifiers': ['Trusty', 'Release'],
             },
         })
         self.mac_port = self.tool.port_factory.get_from_builder_name(
@@ -471,6 +480,50 @@ class TestRebaseline(BaseTestCase):
             '--verbose',
             'userscripts/first-test.html',
         ])
+
+    def test_rebaseline_reftest_with_text_failure(self):
+        """Ensure that a reftest can still have any text output [0] rebaselined.
+
+        [0]: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/writing_web_tests.md#tests-that-are-both-pixel_reference-tests-and-text-tests
+        """
+        build = Build('MOCK Win7', 1000)
+        self.tool.results_fetcher.set_results(
+            build,
+            WebTestResults.from_json(
+                {
+                    'tests': {
+                        'reftest.html': {
+                            'expected': 'PASS',
+                            'actual': 'FAIL',
+                            'is_unexpected': True,
+                            'artifacts': {
+                                'actual_text': [
+                                    'https://results.api.cr.dev/reftest-actual.txt',
+                                ],
+                                'actual_image': [
+                                    'https://results.api.cr.dev/reftest-actual.png',
+                                ],
+                            },
+                        },
+                    },
+                },
+                step_name='blink_web_tests (with patch)'))
+        self._write('reftest-expected.html', 'reference page')
+
+        test_baseline_set = TestBaselineSet(self.tool.builders)
+        test_baseline_set.add('reftest.html', build,
+                              'blink_web_tests (with patch)')
+        self.command.rebaseline(self.options(), test_baseline_set)
+
+        self._assert_baseline_downloaded(
+            'https://results.api.cr.dev/reftest-actual.txt',
+            'platform/test-win-win7/reftest-expected.txt')
+        self.assertNotIn(
+            mock.call('https://results.api.cr.dev/reftest-actual.png'),
+            self.tool.web.get_binary.call_args_list)
+        self.assertFalse(
+            self.tool.filesystem.exists(
+                self._expand('platform/test-win-win7/reftest-expected.png')))
 
     def test_rebaseline_with_cache_hit(self):
         results = WebTestResults([

@@ -8,7 +8,7 @@
 #include <string>
 
 #include "ui/color/color_id.h"
-#include "ui/color/color_provider_manager.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/color/color_transform.h"
 #include "ui/gfx/color_utils.h"
 
@@ -19,7 +19,7 @@ std::string ChromeColorIdName(ui::ColorId color_id);
 
 // Returns the tint associated with the given ID either from the custom theme or
 // the default from ThemeProperties::GetDefaultTint().
-color_utils::HSL GetThemeTint(int id, const ui::ColorProviderManager::Key& key);
+color_utils::HSL GetThemeTint(int id, const ui::ColorProviderKey& key);
 
 // Computes the "toolbar top separator" color.  This color is drawn atop the
 // frame to separate it from tabs, the toolbar, and the new tab button, as well
@@ -37,12 +37,11 @@ ui::ColorTransform AdjustHighlightColorForContrast(ui::ColorTransform fg,
                                                    ui::ColorTransform bg);
 
 // Returns true if we should apply chrome high contrast colors for the `key`.
-bool ShouldApplyHighContrastColors(const ui::ColorProviderManager::Key& key);
+bool ShouldApplyHighContrastColors(const ui::ColorProviderKey& key);
 
 // Returns true if material color overrides should be applied over the top of
 // chrome color mixer definitions. If false color recipes from the old design
 // system should be honored.
-bool ShouldApplyChromeMaterialOverrides(
-    const ui::ColorProviderManager::Key& key);
+bool ShouldApplyChromeMaterialOverrides(const ui::ColorProviderKey& key);
 
 #endif  // CHROME_BROWSER_UI_COLOR_CHROME_COLOR_PROVIDER_UTILS_H_

@@ -10,7 +10,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.DrawableRes;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -134,7 +133,6 @@ public final class MessageWrapper implements ListMenu.Delegate {
                 itemId, resourceId, itemText, itemDescription);
     }
 
-    @VisibleForTesting
     MessageSecondaryMenuItems getMessageSecondaryMenuItemsForTesting() {
         return mMessageSecondaryMenuItems;
     }

@@ -21,10 +21,10 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/apple/mach_logging.h"
+#include "base/apple/scoped_mach_port.h"
+#include "base/apple/scoped_mach_vm.h"
 #include "base/logging.h"
-#include "base/mac/mach_logging.h"
-#include "base/mac/scoped_mach_port.h"
-#include "base/mac/scoped_mach_vm.h"
 #include "base/strings/stringprintf.h"
 #include "snapshot/mac/mach_o_image_reader.h"
 #include "snapshot/mac/process_types.h"
@@ -265,7 +265,7 @@ void ProcessReaderMac::InitializeThreads() {
   // loop below will leak thread port send rights.
   ScopedForbidReturn threads_need_owners;
 
-  base::mac::ScopedMachVM threads_vm(
+  base::apple::ScopedMachVM threads_vm(
       reinterpret_cast<vm_address_t>(threads),
       mach_vm_round_page(thread_count * sizeof(*threads)));
 

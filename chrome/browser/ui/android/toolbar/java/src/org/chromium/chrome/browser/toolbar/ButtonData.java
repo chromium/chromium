@@ -38,6 +38,7 @@ public interface ButtonData {
 
     /** A set of button properties which are not expected to change values often. */
     final class ButtonSpec {
+        public static final int INVALID_TOOLTIP_TEXT_ID = 0;
         @NonNull
         private final Drawable mDrawable;
         // TODO(crbug.com/1185382): make mOnClickListener @NonNull
@@ -71,8 +72,7 @@ public interface ButtonData {
         }
 
         /** Returns the {@link Drawable} for the button icon. */
-        @NonNull
-        public Drawable getDrawable() {
+        public @NonNull Drawable getDrawable() {
             return mDrawable;
         }
 
@@ -94,8 +94,7 @@ public interface ButtonData {
         }
 
         /** Returns the resource ID of the string for the button's action chip label. */
-        @StringRes
-        public int getActionChipLabelResId() {
+        public @StringRes int getActionChipLabelResId() {
             return mActionChipLabelResId;
         }
 
@@ -109,20 +108,29 @@ public interface ButtonData {
          * a minimum the feature name, content string, and accessibility text, but not the anchor
          * view.
          */
-        @Nullable
-        public IPHCommandBuilder getIPHCommandBuilder() {
+        public @Nullable IPHCommandBuilder getIPHCommandBuilder() {
             return mIPHCommandBuilder;
         }
 
         /** Returns the adaptive button variant used for recording metrics. */
-        @AdaptiveToolbarButtonVariant
-        public int getButtonVariant() {
+        public @AdaptiveToolbarButtonVariant int getButtonVariant() {
             return mButtonVariant;
         }
 
         /** Returns {@code true} if the button is a contextual page action. False otherwise. */
         public boolean isDynamicAction() {
             return mIsDynamicAction;
+        }
+
+        /** Get hover state tooltip text for optional toolbar buttons(e.g. share, voice search). */
+        public int getHoverTooltipTextId() {
+            if (mButtonVariant == AdaptiveToolbarButtonVariant.SHARE) {
+                return R.string.adaptive_toolbar_button_preference_share;
+            } else if (mButtonVariant == AdaptiveToolbarButtonVariant.VOICE) {
+                return R.string.adaptive_toolbar_button_preference_voice_search;
+            } else {
+                return INVALID_TOOLTIP_TEXT_ID;
+            }
         }
 
         @Override

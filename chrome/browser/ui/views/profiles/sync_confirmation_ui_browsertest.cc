@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
-#include "base/scoped_environment_variable_override.h"
+#include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
+
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
 #include "chrome/browser/ui/views/profiles/profiles_pixel_test_utils.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
-#include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -23,7 +23,7 @@
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/views/widget/any_widget_observer.h"
 
-#if !BUILDFLAG(ENABLE_DICE_SUPPORT)
+#if !BUILDFLAG(ENABLE_DICE_SUPPORT) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 #error Platform not supported
 #endif
 
@@ -66,8 +66,11 @@ const SyncConfirmationTestParam kWindowTestParams[] = {
 const SyncConfirmationTestParam kDialogTestParams[] = {
     {.pixel_test_param = {.test_suffix = "Regular"},
      .sync_style = SyncConfirmationStyle::kDefaultModal},
+// The sign-in intercept feature isn't enabled on Lacros.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
     {.pixel_test_param = {.test_suffix = "SigninInterceptStyle"},
      .sync_style = SyncConfirmationStyle::kSigninInterceptModal},
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
     {.pixel_test_param = {.test_suffix = "DarkTheme", .use_dark_theme = true},
      .sync_style = SyncConfirmationStyle::kDefaultModal},
     {.pixel_test_param = {.test_suffix = "Rtl",
@@ -127,31 +130,15 @@ class SyncConfirmationStepControllerForTest
   base::WeakPtrFactory<SyncConfirmationStepControllerForTest> weak_ptr_factory_{
       this};
 };
-
-void InitFeatures(const SyncConfirmationTestParam& params,
-                  base::test::ScopedFeatureList& feature_list) {
-  std::vector<base::test::FeatureRef> enabled_features = {};
-  std::vector<base::test::FeatureRef> disabled_features = {};
-  if (params.sync_style == SyncConfirmationStyle::kSigninInterceptModal) {
-    enabled_features.push_back(kSyncPromoAfterSigninIntercept);
-  }
-  InitPixelTestFeatures(params.pixel_test_param, feature_list, enabled_features,
-                        disabled_features);
-}
 }  // namespace
 
 class SyncConfirmationUIWindowPixelTest
-    : public UiBrowserTest,
+    : public ProfilesPixelTestBaseT<UiBrowserTest>,
       public testing::WithParamInterface<SyncConfirmationTestParam> {
  public:
-  SyncConfirmationUIWindowPixelTest() {
+  SyncConfirmationUIWindowPixelTest()
+      : ProfilesPixelTestBaseT<UiBrowserTest>(GetParam().pixel_test_param) {
     DCHECK(GetParam().sync_style == SyncConfirmationStyle::kWindow);
-    InitFeatures(GetParam(), scoped_feature_list_);
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    SetUpPixelTestCommandLine(GetParam().pixel_test_param, scoped_env_override_,
-                              command_line);
   }
 
   void ShowUi(const std::string& name) override {
@@ -159,8 +146,7 @@ class SyncConfirmationUIWindowPixelTest
         ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
     DCHECK(browser());
 
-    SignInWithPrimaryAccount(browser()->profile(),
-                             GetParam().account_management_status);
+    SignInWithPrimaryAccount(GetParam().account_management_status);
     profile_picker_view_ = new ProfileManagementStepTestView(
         ProfilePicker::Params::ForFirstRun(browser()->profile()->GetPath(),
                                            base::DoNothing()),
@@ -197,10 +183,8 @@ class SyncConfirmationUIWindowPixelTest
     return profile_picker_view_->GetWidget();
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<ProfileManagementStepTestView, DanglingUntriaged>
       profile_picker_view_;
-  std::unique_ptr<base::ScopedEnvironmentVariableOverride> scoped_env_override_;
 };
 
 IN_PROC_BROWSER_TEST_P(SyncConfirmationUIWindowPixelTest, InvokeUi_default) {
@@ -213,12 +197,12 @@ INSTANTIATE_TEST_SUITE_P(,
                          &ParamToTestSuffix);
 
 class SyncConfirmationUIDialogPixelTest
-    : public DialogBrowserTest,
+    : public ProfilesPixelTestBaseT<DialogBrowserTest>,
       public testing::WithParamInterface<SyncConfirmationTestParam> {
  public:
-  SyncConfirmationUIDialogPixelTest() {
+  SyncConfirmationUIDialogPixelTest()
+      : ProfilesPixelTestBaseT<DialogBrowserTest>(GetParam().pixel_test_param) {
     DCHECK(GetParam().sync_style != SyncConfirmationStyle::kWindow);
-    InitFeatures(GetParam(), scoped_feature_list_);
   }
 
   ~SyncConfirmationUIDialogPixelTest() override = default;
@@ -227,8 +211,7 @@ class SyncConfirmationUIDialogPixelTest
   void ShowUi(const std::string& name) override {
     DCHECK(browser());
 
-    SignInWithPrimaryAccount(browser()->profile(),
-                             GetParam().account_management_status);
+    SignInWithPrimaryAccount(GetParam().account_management_status);
     auto url = GURL(chrome::kChromeUISyncConfirmationURL);
     if (GetParam().sync_style == SyncConfirmationStyle::kSigninInterceptModal) {
       url = AppendSyncConfirmationQueryParams(url, GetParam().sync_style);
@@ -249,14 +232,6 @@ class SyncConfirmationUIDialogPixelTest
     widget_waiter.WaitIfNeededAndGet();
     observer.Wait();
   }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    SetUpPixelTestCommandLine(GetParam().pixel_test_param, scoped_env_override_,
-                              command_line);
-  }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<base::ScopedEnvironmentVariableOverride> scoped_env_override_;
 };
 
 IN_PROC_BROWSER_TEST_P(SyncConfirmationUIDialogPixelTest, InvokeUi_default) {

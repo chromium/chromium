@@ -23,9 +23,8 @@ namespace {
 bool IsHistorySyncEnabled(ChromeBrowserState* browser_state) {
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForBrowserState(browser_state);
-  return sync_service && sync_service->IsSyncFeatureActive() &&
-         sync_service->GetActiveDataTypes().Has(
-             syncer::HISTORY_DELETE_DIRECTIVES);
+  return sync_service && sync_service->GetActiveDataTypes().Has(
+                             syncer::HISTORY_DELETE_DIRECTIVES);
 }
 
 }  // namespace

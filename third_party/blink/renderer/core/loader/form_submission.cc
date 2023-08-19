@@ -282,9 +282,6 @@ FormSubmission* FormSubmission::Create(HTMLFormElement* form,
 
   form_data->SetIdentifier(GenerateFormDataIdentifier());
   form_data->SetContainsPasswordData(dom_form_data->ContainsPasswordData());
-  AtomicString target_or_base_target = copied_attributes.Target().empty()
-                                           ? document.BaseTarget()
-                                           : copied_attributes.Target();
 
   if (copied_attributes.Method() != FormSubmission::kPostMethod &&
       !action_url.ProtocolIsJavaScript()) {
@@ -329,6 +326,9 @@ FormSubmission* FormSubmission::Create(HTMLFormElement* form,
   frame_request.SetClientRedirectReason(reason);
   frame_request.SetForm(form);
   frame_request.SetTriggeringEventInfo(triggering_event_info);
+  AtomicString target_or_base_target = frame_request.CleanNavigationTarget(
+      copied_attributes.Target().empty() ? document.BaseTarget()
+                                         : copied_attributes.Target());
 
   if (RuntimeEnabledFeatures::FormRelAttributeEnabled() &&
       form->HasRel(HTMLFormElement::kNoReferrer)) {

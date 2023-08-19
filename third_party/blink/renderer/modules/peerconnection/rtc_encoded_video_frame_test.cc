@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_frame.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
@@ -24,12 +25,29 @@ namespace blink {
 
 class RTCEncodedVideoFrameTest : public testing::Test {};
 
-TEST_F(RTCEncodedVideoFrameTest, GetMetadataReturnsMetadata) {
-  V8TestingScope v8_scope;
+webrtc::VideoFrameMetadata MockVP9Metadata(MockTransformableVideoFrame* frame) {
+  webrtc::VideoFrameMetadata webrtc_metadata;
+  std::vector<webrtc::DecodeTargetIndication> decode_target_indications;
+  decode_target_indications.push_back(
+      webrtc::DecodeTargetIndication::kRequired);
+  webrtc_metadata.SetDecodeTargetIndications(decode_target_indications);
+  webrtc_metadata.SetIsLastFrameInPicture(true);
+  webrtc_metadata.SetSimulcastIdx(5);
+  webrtc_metadata.SetFrameType(webrtc::VideoFrameType::kVideoFrameKey);
+  webrtc_metadata.SetCodec(webrtc::VideoCodecType::kVideoCodecVP9);
+  webrtc::RTPVideoHeaderVP9 webrtc_vp9_specifics;
+  webrtc_vp9_specifics.InitRTPVideoHeaderVP9();
+  webrtc_vp9_specifics.inter_pic_predicted = true;
+  webrtc_vp9_specifics.flexible_mode = true;
+  webrtc_vp9_specifics.beginning_of_frame = true;
+  webrtc_metadata.SetRTPVideoHeaderCodecSpecifics(webrtc_vp9_specifics);
 
-  std::unique_ptr<MockTransformableVideoFrame> frame =
-      std::make_unique<MockTransformableVideoFrame>();
+  ON_CALL(*frame, Metadata()).WillByDefault(Return(webrtc_metadata));
 
+  return webrtc_metadata;
+}
+
+webrtc::VideoFrameMetadata MockVP8Metadata(MockTransformableVideoFrame* frame) {
   webrtc::VideoFrameMetadata webrtc_metadata;
   webrtc_metadata.SetFrameId(1);
   webrtc_metadata.SetFrameDependencies(std::vector<int64_t>{2});
@@ -58,6 +76,19 @@ TEST_F(RTCEncodedVideoFrameTest, GetMetadataReturnsMetadata) {
   webrtc_vp8_specifics.partitionId = 12;
   webrtc_vp8_specifics.beginningOfPartition = true;
   webrtc_metadata.SetRTPVideoHeaderCodecSpecifics(webrtc_vp8_specifics);
+
+  ON_CALL(*frame, Metadata()).WillByDefault(Return(webrtc_metadata));
+
+  return webrtc_metadata;
+}
+
+TEST_F(RTCEncodedVideoFrameTest, GetMetadataReturnsMetadata) {
+  V8TestingScope v8_scope;
+
+  std::unique_ptr<MockTransformableVideoFrame> frame =
+      std::make_unique<MockTransformableVideoFrame>();
+
+  webrtc::VideoFrameMetadata webrtc_metadata = MockVP8Metadata(frame.get());
 
   EXPECT_CALL(*frame, Metadata()).WillOnce(Return(webrtc_metadata));
   EXPECT_CALL(*frame, GetPayloadType()).WillRepeatedly(Return(13));
@@ -122,29 +153,234 @@ TEST_F(RTCEncodedVideoFrameTest, SetMetadataPreservesVP9CodecSpecifics) {
 
   std::unique_ptr<MockTransformableVideoFrame> frame =
       std::make_unique<NiceMock<MockTransformableVideoFrame>>();
-
-  webrtc::VideoFrameMetadata webrtc_metadata;
-  webrtc_metadata.SetCodec(webrtc::VideoCodecType::kVideoCodecVP9);
-  webrtc::RTPVideoHeaderVP9 webrtc_vp9_specifics;
-  webrtc_vp9_specifics.InitRTPVideoHeaderVP9();
-  webrtc_vp9_specifics.inter_pic_predicted = true;
-  webrtc_vp9_specifics.flexible_mode = true;
-  webrtc_vp9_specifics.beginning_of_frame = true;
-  webrtc_metadata.SetRTPVideoHeaderCodecSpecifics(webrtc_vp9_specifics);
-  ON_CALL(*frame, Metadata()).WillByDefault(Return(webrtc_metadata));
+  webrtc::VideoFrameMetadata webrtc_metadata = MockVP9Metadata(frame.get());
 
   webrtc::VideoFrameMetadata actual_metadata;
-  EXPECT_CALL(*frame, SetMetadata(_)).WillOnce(SaveArg<0>(&actual_metadata));
+  EXPECT_CALL(*frame, SetMetadata(_)).Times(0);
 
   RTCEncodedVideoFrame encoded_frame(std::move(frame));
   DummyExceptionStateForTesting exception_state;
 
-  // Expect that a GetMetadata(), SetMetadata() roundtrip will preserve all
-  // webrtc metadata data, including the VP9 header.
+  // Expect that a getMetadata call from the encoded frame will fail because
+  // getCodecSpecifics is not yet implemented for vp9.
   encoded_frame.setMetadata(encoded_frame.getMetadata(), exception_state);
-  EXPECT_FALSE(exception_state.HadException());
-  EXPECT_EQ(actual_metadata.GetRTPVideoHeaderCodecSpecifics(),
-            webrtc_metadata.GetRTPVideoHeaderCodecSpecifics());
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_EQ(exception_state.Message(),
+            "Member(s) missing in RTCEncodedVideoFrameMetadata.");
+}
+
+TEST_F(RTCEncodedVideoFrameTest, SetMetadataMissingFieldsFails) {
+  V8TestingScope v8_scope;
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{kAllowRTCEncodedVideoFrameSetMetadataAllFields},
+      /*disabled_features=*/{});
+
+  std::unique_ptr<MockTransformableVideoFrame> frame =
+      std::make_unique<NiceMock<MockTransformableVideoFrame>>();
+  MockVP8Metadata(frame.get());
+
+  RTCEncodedVideoFrame encoded_frame(std::move(frame));
+
+  RTCEncodedVideoFrameMetadata* empty_metadata =
+      RTCEncodedVideoFrameMetadata::Create();
+
+  DummyExceptionStateForTesting exception_state;
+  encoded_frame.setMetadata(empty_metadata, exception_state);
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_EQ(exception_state.Message(),
+            "Member(s) missing in RTCEncodedVideoFrameMetadata.");
+}
+
+RTCEncodedVideoFrameMetadata* CreateMetadata() {
+  RTCEncodedVideoFrameMetadata* new_metadata =
+      RTCEncodedVideoFrameMetadata::Create();
+  new_metadata->setFrameId(5);
+  new_metadata->setDependencies({2, 3, 4});
+  new_metadata->setWidth(6);
+  new_metadata->setHeight(7);
+  new_metadata->setSpatialIndex(8);
+  new_metadata->setTemporalIndex(9);
+  new_metadata->setSynchronizationSource(10);
+  new_metadata->setContributingSources({11, 12, 13});
+  new_metadata->setPayloadType(14);
+  new_metadata->setDecodeTargetIndications({});
+  new_metadata->setIsLastFrameInPicture(true);
+  new_metadata->setSimulcastIdx(15);
+  new_metadata->setCodec("vp8");
+  RTCCodecSpecificsVP8* webrtc_vp8_specifics = RTCCodecSpecificsVP8::Create();
+  webrtc_vp8_specifics->setNonReference(true);
+  webrtc_vp8_specifics->setPictureId(8);
+  webrtc_vp8_specifics->setTl0PicIdx(9);
+  webrtc_vp8_specifics->setTemporalIdx(10);
+  webrtc_vp8_specifics->setLayerSync(true);
+  webrtc_vp8_specifics->setKeyIdx(11);
+  webrtc_vp8_specifics->setPartitionId(12);
+  webrtc_vp8_specifics->setBeginningOfPartition(true);
+  new_metadata->setCodecSpecifics(webrtc_vp8_specifics);
+  new_metadata->setFrameType("key");
+  return new_metadata;
+}
+
+TEST_F(RTCEncodedVideoFrameTest, SetMetadataWithoutFeatureFailsModifications) {
+  V8TestingScope v8_scope;
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{kAllowRTCEncodedVideoFrameSetMetadataAllFields});
+
+  std::unique_ptr<MockTransformableVideoFrame> frame =
+      std::make_unique<NiceMock<MockTransformableVideoFrame>>();
+  MockVP8Metadata(frame.get());
+
+  webrtc::VideoFrameMetadata actual_metadata;
+  EXPECT_CALL(*frame, SetMetadata(_)).Times(0);
+
+  RTCEncodedVideoFrame encoded_frame(std::move(frame));
+
+  RTCEncodedVideoFrameMetadata* new_metadata = CreateMetadata();
+
+  DummyExceptionStateForTesting exception_state;
+  encoded_frame.setMetadata(new_metadata, exception_state);
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_EQ(exception_state.Message(),
+            "Invalid modification of RTCEncodedVideoFrameMetadata.");
+}
+
+TEST_F(RTCEncodedVideoFrameTest, SetMetadataWithFeatureAllowsModifications) {
+  V8TestingScope v8_scope;
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{kAllowRTCEncodedVideoFrameSetMetadataAllFields},
+      /*disabled_features=*/{});
+
+  std::unique_ptr<MockTransformableVideoFrame> frame =
+      std::make_unique<NiceMock<MockTransformableVideoFrame>>();
+  MockVP8Metadata(frame.get());
+
+  webrtc::VideoFrameMetadata actual_metadata;
+  EXPECT_CALL(*frame, SetMetadata(_)).WillOnce(SaveArg<0>(&actual_metadata));
+  EXPECT_CALL(*frame, GetPayloadType()).WillRepeatedly(Return(14));
+
+  RTCEncodedVideoFrame encoded_frame(std::move(frame));
+
+  RTCEncodedVideoFrameMetadata* new_metadata = CreateMetadata();
+
+  DummyExceptionStateForTesting exception_state;
+  encoded_frame.setMetadata(new_metadata, exception_state);
+  EXPECT_FALSE(exception_state.HadException()) << exception_state.Message();
+
+  EXPECT_EQ(actual_metadata.GetFrameId(), new_metadata->frameId());
+  Vector<int64_t> actual_dependencies;
+  for (const auto& dependency : actual_metadata.GetFrameDependencies()) {
+    actual_dependencies.push_back(dependency);
+  }
+  EXPECT_EQ(actual_dependencies, new_metadata->dependencies());
+  EXPECT_EQ(actual_metadata.GetWidth(), new_metadata->width());
+  EXPECT_EQ(actual_metadata.GetHeight(), new_metadata->height());
+  EXPECT_EQ(actual_metadata.GetSpatialIndex(), new_metadata->spatialIndex());
+  EXPECT_EQ(actual_metadata.GetTemporalIndex(), new_metadata->temporalIndex());
+  EXPECT_EQ(actual_metadata.GetSsrc(), new_metadata->synchronizationSource());
+  Vector<uint32_t> actual_csrcs;
+  for (const auto& dependency : actual_metadata.GetCsrcs()) {
+    actual_csrcs.push_back(dependency);
+  }
+  EXPECT_EQ(actual_csrcs, new_metadata->contributingSources());
+}
+
+TEST_F(RTCEncodedVideoFrameTest, SetMetadataOnEmptyFrameFails) {
+  V8TestingScope v8_scope;
+
+  std::unique_ptr<MockTransformableVideoFrame> frame =
+      std::make_unique<NiceMock<MockTransformableVideoFrame>>();
+  MockVP8Metadata(frame.get());
+
+  RTCEncodedVideoFrame encoded_frame(std::move(frame));
+  RTCEncodedVideoFrameMetadata* metadata = encoded_frame.getMetadata();
+
+  // Move the WebRTC frame out, as if the frame had been written into
+  // an encoded insertable stream's WritableStream to be sent on.
+  encoded_frame.PassWebRtcFrame();
+
+  DummyExceptionStateForTesting exception_state;
+  encoded_frame.setMetadata(metadata, exception_state);
+
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_EQ(exception_state.Message(),
+            "Cannot set metadata on an empty frame.");
+}
+
+TEST_F(RTCEncodedVideoFrameTest, SetMetadataRejectsInvalidDependencies) {
+  V8TestingScope v8_scope;
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{kAllowRTCEncodedVideoFrameSetMetadataAllFields},
+      /*disabled_features=*/{});
+
+  std::unique_ptr<MockTransformableVideoFrame> frame =
+      std::make_unique<NiceMock<MockTransformableVideoFrame>>();
+  MockVP8Metadata(frame.get());
+
+  EXPECT_CALL(*frame, SetMetadata(_)).Times(0);
+
+  RTCEncodedVideoFrame encoded_frame(std::move(frame));
+  RTCEncodedVideoFrameMetadata* new_metadata = CreateMetadata();
+  // Set an invalid dependency - all deps must be less than frame id.
+  new_metadata->setDependencies({new_metadata->frameId()});
+
+  DummyExceptionStateForTesting exception_state;
+  encoded_frame.setMetadata(new_metadata, exception_state);
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_EQ(exception_state.Message(), "Invalid frame dependency.");
+}
+
+TEST_F(RTCEncodedVideoFrameTest, SetMetadataRejectsTooEarlyDependencies) {
+  V8TestingScope v8_scope;
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{kAllowRTCEncodedVideoFrameSetMetadataAllFields},
+      /*disabled_features=*/{});
+
+  std::unique_ptr<MockTransformableVideoFrame> frame =
+      std::make_unique<NiceMock<MockTransformableVideoFrame>>();
+  MockVP8Metadata(frame.get());
+
+  EXPECT_CALL(*frame, SetMetadata(_)).Times(0);
+
+  RTCEncodedVideoFrame encoded_frame(std::move(frame));
+  RTCEncodedVideoFrameMetadata* new_metadata = CreateMetadata();
+  // Set an invalid dependency - deps must be within 1 << 14 of the frame id.
+  new_metadata->setFrameId(1 << 14);
+  new_metadata->setDependencies({0});
+
+  DummyExceptionStateForTesting exception_state;
+  encoded_frame.setMetadata(new_metadata, exception_state);
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_EQ(exception_state.Message(), "Invalid frame dependency.");
+}
+
+TEST_F(RTCEncodedVideoFrameTest, SetMetadataRejectsTooManyDependencies) {
+  V8TestingScope v8_scope;
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{kAllowRTCEncodedVideoFrameSetMetadataAllFields},
+      /*disabled_features=*/{});
+
+  std::unique_ptr<MockTransformableVideoFrame> frame =
+      std::make_unique<NiceMock<MockTransformableVideoFrame>>();
+  MockVP8Metadata(frame.get());
+
+  EXPECT_CALL(*frame, SetMetadata(_)).Times(0);
+
+  RTCEncodedVideoFrame encoded_frame(std::move(frame));
+  RTCEncodedVideoFrameMetadata* new_metadata = CreateMetadata();
+  // Set too many dependencies.
+  new_metadata->setDependencies({1, 2, 3, 4, 5, 6, 7, 8, 9});
+
+  DummyExceptionStateForTesting exception_state;
+  encoded_frame.setMetadata(new_metadata, exception_state);
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_EQ(exception_state.Message(), "Too many dependencies.");
 }
 
 }  // namespace blink

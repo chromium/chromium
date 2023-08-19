@@ -42,10 +42,10 @@ void TextAnnotationSelector::FindRange(Document& document,
 
 void TextAnnotationSelector::DidFindMatch(const RangeInFlatTree& range,
                                           bool is_unique) {
+  was_unique_ = is_unique;
+
   DCHECK(finished_callback_);
   std::move(finished_callback_).Run(&range);
-
-  was_unique_ = is_unique;
 
   finder_.Clear();
 }

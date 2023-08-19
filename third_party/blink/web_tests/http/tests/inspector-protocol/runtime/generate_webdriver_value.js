@@ -1,5 +1,5 @@
 (async function (testRunner) {
-  const { dp, session } = await testRunner.startHTML(
+  const { dp } = await testRunner.startHTML(
     '<div some_attr_name="some_attr_value">some text<h2>some another text</h2></div>',
     'Tests `generateWebDriverValue` provides proper `webDriverValue` format');
 
@@ -21,7 +21,7 @@
   await testExpression("42n");
   // Test V8 non-primitives.
   await testExpression("(Symbol('foo'))"),
-    await testExpression("[1, 'foo', true, new RegExp(/foo/g), [1]]",);
+  await testExpression("[1, 'foo', true, new RegExp(/foo/g), [1]]",);
   await testExpression("({'foo': {'bar': 'baz'}, 'qux': 'quux'})",);
   await testExpression("(()=>{})");
   await testExpression("(function(){})");
@@ -51,7 +51,11 @@
     const evalResult = await dp.Runtime.evaluate({
       expression: expression,
       generateWebDriverValue: true,
-    })
-    testRunner.log(evalResult.result.result.webDriverValue);
+    });
+    testRunner.log(
+      evalResult.result?.result?.webDriverValue ?? evalResult,
+      undefined,
+      TestRunner.extendStabilizeNames(['context']),
+    );
   }
 })

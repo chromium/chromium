@@ -37,22 +37,6 @@ namespace {
 const char kDMTokenCheckHistogram[] = "Enterprise.EnrolledPolicyHasDMToken";
 const char kPolicyCheckHistogram[] = "Enterprise.EnrolledDevicePolicyPresent";
 
-void RecordDeviceIdValidityMetric(
-    const std::string& histogram_name,
-    const em::PolicyData& policy_data,
-    const ash::InstallAttributes& install_attributes) {
-  PolicyDeviceIdValidity device_id_validity = PolicyDeviceIdValidity::kMaxValue;
-  if (install_attributes.GetDeviceId().empty())
-    device_id_validity = PolicyDeviceIdValidity::kActualIdUnknown;
-  else if (policy_data.device_id().empty())
-    device_id_validity = PolicyDeviceIdValidity::kMissing;
-  else if (policy_data.device_id() != install_attributes.GetDeviceId())
-    device_id_validity = PolicyDeviceIdValidity::kInvalid;
-  else
-    device_id_validity = PolicyDeviceIdValidity::kValid;
-  base::UmaHistogramEnumeration(histogram_name, device_id_validity);
-}
-
 }  // namespace
 
 DeviceCloudPolicyStoreAsh::DeviceCloudPolicyStoreAsh(
@@ -219,10 +203,6 @@ void DeviceCloudPolicyStoreAsh::UpdateFromService() {
       DCHECK(policy_fetch_response);
       new_policy_fetch_response->MergeFrom(*policy_fetch_response);
       new_policy->MergeFrom(*policy_data);
-
-      RecordDeviceIdValidityMetric(
-          "Enterprise.CachedDevicePolicyDeviceIdValidity", *policy_data,
-          *install_attributes_);
     }
     SetPolicy(std::move(new_policy_fetch_response), std::move(new_policy));
 
@@ -283,11 +263,6 @@ void DeviceCloudPolicyStoreAsh::CheckDMToken() {
     return;
   }
   dm_token_checked_ = true;
-
-  // PolicyData from Active Directory doesn't contain a DM token.
-  if (install_attributes_->IsActiveDirectoryManaged()) {
-    return;
-  }
 
   const em::PolicyData* policy_data = device_settings_service_->policy_data();
   if (policy_data && policy_data->has_request_token()) {

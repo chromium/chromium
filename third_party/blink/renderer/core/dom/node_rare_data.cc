@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/dom/flat_tree_node_data.h"
 #include "third_party/blink/renderer/core/dom/mutation_observer_registration.h"
 #include "third_party/blink/renderer/core/dom/node_lists_node_data.h"
+#include "third_party/blink/renderer/core/dom/part.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -46,7 +47,7 @@ namespace blink {
 
 struct SameSizeAsNodeRareData : NodeData {
   uint16_t bit_fields_;
-  Member<void*> member_[4];
+  Member<void*> member_[5];
 };
 
 ASSERT_SIZE(NodeRareData, SameSizeAsNodeRareData);
@@ -125,11 +126,41 @@ void NodeRareData::InvalidateAssociatedAnimationEffects() {
   }
 }
 
+void NodeRareData::AddDOMPart(Part& part) {
+  if (!dom_parts_) {
+    dom_parts_ = MakeGarbageCollected<PartsList>();
+  }
+  DCHECK(!base::Contains(*dom_parts_, &part));
+  dom_parts_->push_back(&part);
+}
+
+void NodeRareData::RemoveDOMPart(Part& part) {
+  DCHECK(dom_parts_ && base::Contains(*dom_parts_, &part));
+  // Common case is that one node has one part:
+  if (dom_parts_->size() == 1) {
+    DCHECK_EQ(dom_parts_->front(), &part);
+    dom_parts_->clear();
+  } else {
+    // This is the very slow case - multiple parts for a single node.
+    PartsList new_list;
+    for (auto p : *dom_parts_) {
+      if (p != &part) {
+        new_list.push_back(p);
+      }
+    }
+    dom_parts_->Swap(new_list);
+  }
+  if (dom_parts_->empty()) {
+    dom_parts_ = nullptr;
+  }
+}
+
 void NodeRareData::Trace(blink::Visitor* visitor) const {
   visitor->Trace(mutation_observer_data_);
   visitor->Trace(flat_tree_node_data_);
   visitor->Trace(node_lists_);
   visitor->Trace(scroll_timelines_);
+  visitor->Trace(dom_parts_);
   NodeData::Trace(visitor);
 }
 

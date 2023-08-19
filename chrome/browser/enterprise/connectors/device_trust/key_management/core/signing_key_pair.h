@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/ref_counted.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "crypto/unexportable_key.h"
 
@@ -17,7 +18,7 @@ class UnexportableSigningKey;
 namespace enterprise_connectors {
 
 // Class in charge of storing a signing key and its trust level.
-class SigningKeyPair {
+class SigningKeyPair : public base::RefCountedThreadSafe<SigningKeyPair> {
  public:
   using KeyTrustLevel =
       enterprise_management::BrowserPublicKeyUploadRequest::KeyTrustLevel;
@@ -27,8 +28,6 @@ class SigningKeyPair {
 
   SigningKeyPair(const SigningKeyPair&) = delete;
   SigningKeyPair& operator=(const SigningKeyPair&) = delete;
-
-  ~SigningKeyPair();
 
   bool is_empty() const {
     return trust_level_ ==
@@ -44,6 +43,10 @@ class SigningKeyPair {
   KeyTrustLevel trust_level() const { return trust_level_; }
 
  private:
+  friend class base::RefCountedThreadSafe<SigningKeyPair>;
+
+  ~SigningKeyPair();
+
   std::unique_ptr<crypto::UnexportableSigningKey> signing_key_;
   KeyTrustLevel trust_level_;
 };

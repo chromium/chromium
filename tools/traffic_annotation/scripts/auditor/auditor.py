@@ -548,8 +548,9 @@ class Annotation:
     if not all_contacts:
       return "internal::contacts"
 
-    if any(not contact.email for contact in all_contacts):
-      return "internal::contacts::email"
+    if any(not contact.email and not contact.owners
+           for contact in all_contacts):
+      return "internal::contacts::email or internal::contacts::owners"
 
     return None
 
@@ -1690,7 +1691,8 @@ class Auditor:
       errors.extend(
           self.exporter.update_grouping(self.extracted_annotations,
                                         RESERVED_IDS))
-      errors.extend(self.check_grouping_xml())
+      if report_xml_updates:
+        errors.extend(self.check_grouping_xml())
 
     # If report_xml_updates is true, look at the contents of annotations.xml
     # and grouping.xml. If it needs an update,

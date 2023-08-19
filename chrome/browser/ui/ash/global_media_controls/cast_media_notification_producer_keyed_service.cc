@@ -5,38 +5,39 @@
 #include "chrome/browser/ui/ash/global_media_controls/cast_media_notification_producer_keyed_service.h"
 
 #include "ash/shell.h"
-#include "ash/system/media/media_notification_provider.h"
 #include "components/global_media_controls/public/media_item_manager.h"
-
-namespace {
-
-global_media_controls::MediaItemManager* GetItemManager() {
-  // ash::Shell may be destroyed before Profile, so we need to check if it
-  // exists.
-  if (!ash::Shell::HasInstance())
-    return nullptr;
-
-  return ash::Shell::Get()
-      ->media_notification_provider()
-      ->GetMediaItemManager();
-}
-
-}  // namespace
 
 CastMediaNotificationProducerKeyedService::
     CastMediaNotificationProducerKeyedService(Profile* profile)
-    : item_manager_(GetItemManager()) {
-  if (!item_manager_)
-    return;
-
-  ash::Shell::Get()->AddShellObserver(this);
-  cast_producer_ =
-      std::make_unique<CastMediaNotificationProducer>(profile, item_manager_);
-  item_manager_->AddItemProducer(cast_producer_.get());
+    : profile_(profile) {
+  if (ash::Shell::HasInstance()) {
+    ash::Shell::Get()->AddShellObserver(this);
+  }
 }
 
 CastMediaNotificationProducerKeyedService::
     ~CastMediaNotificationProducerKeyedService() = default;
+
+void CastMediaNotificationProducerKeyedService::AddMediaItemManager(
+    global_media_controls::MediaItemManager* media_item_manager) {
+  CHECK(media_item_manager);
+  CHECK(!base::Contains(managers_and_producers_, media_item_manager));
+  managers_and_producers_[media_item_manager] =
+      std::make_unique<CastMediaNotificationProducer>(profile_,
+                                                      media_item_manager);
+  media_item_manager->AddItemProducer(
+      managers_and_producers_[media_item_manager].get());
+}
+
+void CastMediaNotificationProducerKeyedService::RemoveMediaItemManager(
+    global_media_controls::MediaItemManager* media_item_manager) {
+  // Reset() may have already removed it.
+  if (base::Contains(managers_and_producers_, media_item_manager)) {
+    media_item_manager->RemoveItemProducer(
+        managers_and_producers_[media_item_manager].get());
+    managers_and_producers_.erase(media_item_manager);
+  }
+}
 
 void CastMediaNotificationProducerKeyedService::Shutdown() {
   Reset();
@@ -47,15 +48,11 @@ void CastMediaNotificationProducerKeyedService::OnShellDestroying() {
 }
 
 void CastMediaNotificationProducerKeyedService::Reset() {
-  if (!item_manager_) {
-    DCHECK(!cast_producer_);
-    return;
+  for (const auto& entry : managers_and_producers_) {
+    entry.first->RemoveItemProducer(entry.second.get());
   }
-  item_manager_->RemoveItemProducer(cast_producer_.get());
-  item_manager_ = nullptr;
-  ash::Shell::Get()->RemoveShellObserver(this);
-  // |cast_producer_| depends on both the MediaRouter KeyedService and
-  // MediaItemManager (owned by ash::Shell), and must be deleted during
-  // KeyedServices shutdown or Shell destruction, whichever comes earlier.
-  cast_producer_.reset();
+  managers_and_producers_.clear();
+  if (ash::Shell::HasInstance()) {
+    ash::Shell::Get()->RemoveShellObserver(this);
+  }
 }

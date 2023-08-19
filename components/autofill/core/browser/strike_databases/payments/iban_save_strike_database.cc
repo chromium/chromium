@@ -8,26 +8,26 @@
 
 namespace autofill {
 
-IBANSaveStrikeDatabase::IBANSaveStrikeDatabase(StrikeDatabase* strike_database)
+IbanSaveStrikeDatabase::IbanSaveStrikeDatabase(StrikeDatabase* strike_database)
     : StrikeDatabaseIntegratorBase(strike_database) {
   RemoveExpiredStrikes();
 }
 
-std::string IBANSaveStrikeDatabase::GetProjectPrefix() const {
+std::string IbanSaveStrikeDatabase::GetProjectPrefix() const {
   return "IBANSave";
 }
 
-int IBANSaveStrikeDatabase::GetMaxStrikesLimit() const {
+int IbanSaveStrikeDatabase::GetMaxStrikesLimit() const {
   return 3;
 }
 
-absl::optional<base::TimeDelta> IBANSaveStrikeDatabase::GetExpiryTimeDelta()
+absl::optional<base::TimeDelta> IbanSaveStrikeDatabase::GetExpiryTimeDelta()
     const {
   // Expiry time is 6 months.
   return base::Days(183);
 }
 
-bool IBANSaveStrikeDatabase::UniqueIdsRequired() const {
+bool IbanSaveStrikeDatabase::UniqueIdsRequired() const {
   return true;
 }
 

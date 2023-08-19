@@ -13,7 +13,6 @@
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/web_app_service_ash.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
@@ -86,7 +85,7 @@ void ApkWebAppInstaller::Start(const std::string& package_name,
   }
 
   DCHECK(!web_app_install_info_);
-  web_app_install_info_ = std::make_unique<WebAppInstallInfo>();
+  web_app_install_info_ = std::make_unique<web_app::WebAppInstallInfo>();
 
   web_app_install_info_->title = base::UTF8ToUTF16(web_app_info->title);
 
@@ -98,8 +97,7 @@ void ApkWebAppInstaller::Start(const std::string& package_name,
 
   web_app_install_info_->additional_policy_ids.push_back(package_name);
 
-  // The install_url and the start_url seem to be same in this case
-  // as far as ExternallyInstalledWebAppPrefs are concerned.
+  // The install_url and the start_url seem to be same in this case.
   // This is because inside OnWebAppCreated(), the start_url is
   // passed to the external prefs to be stored as the install_url.
   web_app_install_info_->install_url = GURL(web_app_info->start_url);
@@ -150,11 +148,6 @@ void ApkWebAppInstaller::OnWebAppCreated(const GURL& start_url,
     return;
   }
 
-  // Otherwise, insert this web app into the externally installed ID map so it
-  // is not removed automatically. TODO(crbug.com/910008): have a less bad way
-  // of doing this.
-  web_app::ExternallyInstalledWebAppPrefs(profile_->GetPrefs())
-      .Insert(start_url, app_id, web_app::ExternalInstallSource::kArc);
   CompleteInstallation(app_id, code);
 }
 
@@ -180,7 +173,7 @@ void ApkWebAppInstaller::DoInstall() {
   if (web_app::IsWebAppsCrosapiEnabled()) {
     GURL start_url = web_app_install_info_->start_url;
 
-    std::unique_ptr<WebAppInstallInfo> web_app_install_info =
+    std::unique_ptr<web_app::WebAppInstallInfo> web_app_install_info =
         std::move(web_app_install_info_);
     auto arc_install_info = crosapi::mojom::ArcWebAppInstallInfo::New();
     arc_install_info->title = std::move(web_app_install_info->title);

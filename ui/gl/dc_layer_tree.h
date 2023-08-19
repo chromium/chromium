@@ -18,6 +18,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/dc_layer_overlay_params.h"
 #include "ui/gl/delegated_ink_point_renderer_gpu.h"
+#include "ui/gl/gl_export.h"
 #include "ui/gl/hdr_metadata_helper_win.h"
 
 namespace gfx {
@@ -60,7 +61,7 @@ struct VideoProcessorWrapper {
 // swap chains for given overlay layers.  It maintains a list of pending layers
 // submitted using ScheduleDCLayer() that are presented and committed in
 // CommitAndClearPendingOverlays().
-class DCLayerTree {
+class GL_EXPORT DCLayerTree {
  public:
   using VideoProcessorMap =
       base::flat_map<VideoProcessorType, VideoProcessorWrapper>;
@@ -70,6 +71,7 @@ class DCLayerTree {
                                    DCompositionInkTrailPoint>;
 
   DCLayerTree(bool disable_nv12_dynamic_textures,
+              bool disable_vp_auto_hdr,
               bool disable_vp_scaling,
               bool disable_vp_super_resolution,
               bool force_dcomp_triple_buffer_video_swap_chain,
@@ -81,7 +83,8 @@ class DCLayerTree {
   ~DCLayerTree();
 
   // Returns true on success.
-  bool Initialize(HWND window);
+  bool Initialize(HWND window,
+                  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device);
 
   // Present pending overlay layers, and perform a direct composition commit if
   // necessary.  Returns true if presentation and commit succeeded.
@@ -102,6 +105,8 @@ class DCLayerTree {
   bool disable_nv12_dynamic_textures() const {
     return disable_nv12_dynamic_textures_;
   }
+
+  bool disable_vp_auto_hdr() const { return disable_vp_auto_hdr_; }
 
   bool disable_vp_scaling() const { return disable_vp_scaling_; }
 
@@ -139,6 +144,10 @@ class DCLayerTree {
                         : nullptr;
   }
 
+#if DCHECK_IS_ON()
+  bool GetAttachedToRootFromPreviousFrameForTesting(size_t index) const;
+#endif  // DCHECK_IS_ON()
+
   void SetFrameRate(float frame_rate);
 
   const std::unique_ptr<HDRMetadataHelperWin>& GetHDRMetadataHelper() {
@@ -171,11 +180,23 @@ class DCLayerTree {
 
     ~VisualTree();
     // Given pending overlays, builds or updates this visual tree.
+    // This method is called to build visual tree when
+    // kDCompVisualTreeOptimization is disabled.
+    // Parameters:
+    // overlays - overlay inputs to build dcomp tree.
+    // needs_rebuild_visual_tree - true if the tree needs to be rebuilt.
     // Returns true if commit succeeded.
-    bool UpdateTree(
+    bool BuildTreeDefault(
         const std::vector<std::unique_ptr<DCLayerOverlayParams>>& overlays,
-        // True if the tree must rebuild.
         bool needs_rebuild_visual_tree);
+    // Given pending overlays, builds or updates this visual tree.
+    // This method is called to build visual tree when
+    // kDCompVisualTreeOptimization is enabled.
+    // Returns true if commit succeeded.
+    bool BuildTreeOptimized(
+        const std::vector<std::unique_ptr<DCLayerOverlayParams>>& overlays,
+        bool needs_rebuild_visual_tree);
+
     void GetSwapChainVisualInfoForTesting(size_t index,
                                           gfx::Transform* transform,
                                           gfx::Point* offset,
@@ -186,11 +207,18 @@ class DCLayerTree {
     IDCompositionVisual2* GetContentVisualForTesting(size_t index) const {
       return visual_subtrees_[index]->content_visual();
     }
-    // Returns true if the tree is optimized.
-    // TODO(http://crbug.com/1380822): Implement tree optimization where the
-    // tree is built incrementally and does not require full rebuild.
-    bool tree_optimized() const { return tree_optimized_; }
-
+#if DCHECK_IS_ON()
+    bool GetAttachedToRootFromPreviousFrameForTesting(size_t index) const {
+      return visual_subtrees_[index]
+          ->GetAttachedToRootFromPreviousFrameForTesting();
+    }
+#endif  // DCHECK_IS_ON()
+    // Maps the visual content to its corresponding subtree index.
+    // This is used to find matching subtrees from the previous frame
+    // that can be reused in the current frame.
+    // It's safe to use raw pointers here since we have a ComPtr to the visual
+    // content in the visual subtrees list for the previous frame.
+    using VisualSubtreeMap = base::flat_map<raw_ptr<IUnknown>, size_t>;
     // Owns a subtree of DComp visual that apply clip, offset, etc. and contains
     // some content at its leaf.
     // This class keeps track about what properties are currently set on the
@@ -205,15 +233,20 @@ class DCLayerTree {
       VisualSubtree& operator=(VisualSubtree& other) = delete;
 
       // Returns true if something was changed.
-      bool Update(IDCompositionDevice2* dcomp_device,
-                  Microsoft::WRL::ComPtr<IUnknown> dcomp_visual_content,
-                  uint64_t dcomp_surface_serial,
-                  const gfx::Size& image_size,
-                  const gfx::Rect& content_rect,
-                  const gfx::Rect& quad_rect,
-                  bool nearest_neighbor_filter,
-                  const gfx::Transform& quad_to_root_transform,
-                  const absl::optional<gfx::Rect>& clip_rect_in_root);
+      bool Update(
+          IDCompositionDevice3* dcomp_device,
+          Microsoft::WRL::ComPtr<IUnknown> dcomp_visual_content,
+          uint64_t dcomp_surface_serial,
+          const gfx::Size& image_size,
+          const gfx::Rect& content_rect,
+          Microsoft::WRL::ComPtr<IDCompositionSurface> solid_white_surface,
+          const SkColor4f& background_color,
+          const gfx::Rect& quad_rect,
+          bool nearest_neighbor_filter,
+          const gfx::Transform& quad_to_root_transform,
+          const gfx::RRectF& rounded_corner_bounds,
+          float opacity,
+          const absl::optional<gfx::Rect>& clip_rect_in_root);
 
       IDCompositionVisual2* container_visual() const {
         return clip_visual_.Get();
@@ -227,13 +260,26 @@ class DCLayerTree {
       void GetSwapChainVisualInfoForTesting(gfx::Transform* transform,
                                             gfx::Point* offset,
                                             gfx::Rect* clip_rect) const;
+#if DCHECK_IS_ON()
+      bool GetAttachedToRootFromPreviousFrameForTesting() const {
+        return attached_to_root_from_previous_frame_;
+      }
+#endif  // DCHECK_IS_ON()
 
       int z_order() const { return z_order_; }
       void set_z_order(int z_order) { z_order_ = z_order; }
 
      private:
-      // The root of this subtree. In root space and contains the clip rect.
+#if DCHECK_IS_ON()
+      friend class VisualTree;
+#endif  // DCHECK_IS_ON()
+      // The root of this subtree. In root space and contains the clip rect and
+      // controls subtree opacity.
       Microsoft::WRL::ComPtr<IDCompositionVisual2> clip_visual_;
+      // In root space and contains the rounded rectangle clip. This is separate
+      // from |clip_visual_| since an overlay layer can have both a rectangular
+      // and a rounded rectangular clip rects.
+      Microsoft::WRL::ComPtr<IDCompositionVisual2> rounded_corners_visual_;
       // The child of |clip_visual_|, transforms its children from quad to root
       // space. This visual exists because |offset_| is in quad space, so it
       // must be affected by |transform_|. They cannot be on the same visual
@@ -241,11 +287,14 @@ class DCLayerTree {
       // |IDCompositionVisual::SetOffset[XY]| are applied in the opposite order
       // than we want.
       Microsoft::WRL::ComPtr<IDCompositionVisual2> transform_visual_;
-      // The child of |transform_visual_|. In quad space, holds
+      // A child of |transform_visual_|. In quad space, holds
+      // |dcomp_visual_content_|. Visually, this is behind |content_visual_|.
+      Microsoft::WRL::ComPtr<IDCompositionVisual2> background_color_visual_;
+      // A child of |transform_visual_|. In quad space, holds
       // |dcomp_visual_content_|.
       Microsoft::WRL::ComPtr<IDCompositionVisual2> content_visual_;
 
-      // The content to be placed at the leaf of the visual subtree. Either an
+      // The content to be placed at a leaf of the visual subtree. Either an
       // IDCompositionSurface or an IDXGISwapChain.
       Microsoft::WRL::ComPtr<IUnknown> dcomp_visual_content_;
       // |dcomp_surface_serial_| is associated with |dcomp_visual_content_| of
@@ -257,6 +306,16 @@ class DCLayerTree {
       // mapped to |quad_rect_|'s bounds.
       gfx::Rect content_rect_;
 
+      // The surface containing solid white for the background color fill to be
+      // placed at a leaf of the visual subtree. Will be tinted by
+      // |background_color_|. Must be present if |background_color_| is
+      // non-transparent. Must be created from |GetOrCreateSolidWhiteTexture|.
+      Microsoft::WRL::ComPtr<IDCompositionSurface> solid_white_surface_;
+
+      // The color of the surface that will be placed on
+      // |background_color_visual_|.
+      SkColor4f background_color_;
+
       // The bounds which contain this overlay. When mapped by |transform_|,
       // this is the bounds of the overlay in root space.
       gfx::Rect quad_rect_;
@@ -267,10 +326,16 @@ class DCLayerTree {
       bool nearest_neighbor_filter_ = false;
 
       // Transform from quad space to root space.
-      gfx::Transform transform_;
+      gfx::Transform quad_to_root_transform_;
 
       // Clip rect in root space.
-      absl::optional<gfx::Rect> clip_rect_;
+      absl::optional<gfx::Rect> clip_rect_in_root_;
+
+      // Rounded corner clip in root space
+      gfx::RRectF rounded_corner_bounds_;
+
+      // The opacity of the entire visual subtree
+      float opacity_ = 1.0;
 
       // The size of overlay image in |dcomp_visual_content_| which is in
       // pixels.
@@ -280,16 +345,75 @@ class DCLayerTree {
       // visual appears in front of the root surface (i.e. overlay) and negative
       // values means the visual appears below the root surface (i.e. underlay).
       int z_order_ = 0;
+
+#if DCHECK_IS_ON()
+      // True if the subtree is reused from the previous frame and keeps its
+      // attachment to the root from the previous frame. Used for testing.
+      bool attached_to_root_from_previous_frame_ = false;
+#endif  // DCHECK_IS_ON()
     };
 
    private:
+    // This function is called as part of |BuildTreeOptimized|.
+    // For each given overlay:
+    // 1. Populate visual subtree map with visual content.
+    // 2. Find the matching subtree from the previous frame. The subtree matches
+    // if it owns identical visual content. If the match is found:
+    //    2.1. Updates |overlay_index_to_reused_subtree| with the
+    //    index to the matching subtree.
+    //    2.2. Updates |subtree_index_to_overlay| with the overlay index the
+    //    previous frame subtree is matched to.
+    // Returns populated visual subtree map.
+    VisualSubtreeMap BuildMapAndAssignMatchingSubtrees(
+        const std::vector<std::unique_ptr<DCLayerOverlayParams>>& overlays,
+        std::vector<std::unique_ptr<VisualSubtree>>& visual_subtrees,
+        std::vector<absl::optional<size_t>>& overlay_index_to_reused_subtree,
+        std::vector<absl::optional<size_t>>& subtree_index_to_overlay);
+
+    // This function is called as part of |BuildTreeOptimized|.
+    // For each overlay that has no match attempts to find unused subtree of
+    // the previous frame to be reused in the current frame. If such a subtree
+    // is identified:
+    // 1. Updates |overlay_index_to_reused_subtree| with the
+    //    index to the found subtree.
+    // 2. Updates |subtree_index_to_overlay| with the overlay index the
+    //    found subtree is assigned to.
+    // Returns previous frame subtree first unused index.
+    size_t ReuseUnmatchedSubtrees(
+        std::vector<std::unique_ptr<VisualSubtree>>& new_visual_subtrees,
+        std::vector<absl::optional<size_t>>& overlay_index_to_reused_subtree,
+        std::vector<absl::optional<size_t>>& subtree_index_to_overlay);
+
+    // This function is called as part of |BuildTreeOptimized|.
+    // Detaches unused subtrees of the previous frame from root starting with
+    // |first_prev_frame_subtree_unused_index| returned from
+    // |ReuseUnmatchedSubtrees|.
+    // Updates |prev_subtree_is_attached_to_root| accordingly.
+    // Returns true if commit is needed.
+    bool DetachUnusedSubtreesFromRoot(
+        size_t first_prev_frame_subtree_unused_index,
+        std::vector<bool>& prev_subtree_is_attached_to_root);
+
+    // This function is called as part of |BuildTreeOptimized|.
+    // Removes reused subtrees of the previous frame from the root that need to
+    // be repositioned in the current frame.
+    // Updates |prev_subtree_is_attached_to_root| accordingly.
+    // Returns true if commit is needed.
+    bool DetachReusedSubtreesThatNeedRepositioningFromRoot(
+        const std::vector<std::unique_ptr<VisualSubtree>>& new_visual_subtrees,
+        const std::vector<absl::optional<size_t>>&
+            overlay_index_to_reused_subtree,
+        const std::vector<absl::optional<size_t>>& subtree_index_to_overlay,
+        std::vector<bool>& prev_subtree_is_attached_to_root);
+
+    // Detaches given subtree from the root.
+    void DetachSubtreeFromRoot(VisualSubtree* subtree);
+
     // Tree that owns `this`.
     const raw_ptr<DCLayerTree> dc_layer_tree_ = nullptr;
     // List of DCOMP visual subtrees for previous frame.
     std::vector<std::unique_ptr<VisualSubtree>> visual_subtrees_;
-    // TODO(http://crbug.com/1380822): Implement tree optimization where the
-    // tree is built incrementally and does not require full rebuild.
-    const bool tree_optimized_ = false;
+    VisualSubtreeMap subtree_map_;
   };
 
  private:
@@ -304,14 +428,19 @@ class DCLayerTree {
   // trails. This will initially always be called directly before an OS
   // delegated ink API is used. After that, it can also be added anytime the
   // visual tree is rebuilt.
-  void AddDelegatedInkVisualToTreeIfNeeded(
+  // Returns true if the commit is needed.
+  bool AddDelegatedInkVisualToTreeIfNeeded(
       IDCompositionVisual2* root_surface_visual);
 
   // The ink renderer must be initialized before an OS API is used in order to
   // set up the delegated ink visual and delegated ink trail object.
   bool InitializeInkRenderer();
 
+  // Returns nullptr if the surface could not be created.
+  raw_ptr<IDCompositionSurface> GetOrCreateSolidWhiteTexture();
+
   const bool disable_nv12_dynamic_textures_;
+  const bool disable_vp_auto_hdr_;
   const bool disable_vp_scaling_;
   const bool disable_vp_super_resolution_;
   const bool force_dcomp_triple_buffer_video_swap_chain_;
@@ -319,8 +448,11 @@ class DCLayerTree {
 
   HWND window_;
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
-  Microsoft::WRL::ComPtr<IDCompositionDevice2> dcomp_device_;
+  Microsoft::WRL::ComPtr<IDCompositionDevice3> dcomp_device_;
   Microsoft::WRL::ComPtr<IDCompositionTarget> dcomp_target_;
+
+  // A IDCompositionSurface cleared to white, used for solid color overlays.
+  Microsoft::WRL::ComPtr<IDCompositionSurface> solid_color_texture_;
 
   // Store video processor for SDR/HDR mode separately, which could avoid
   // problem in (http://crbug.com/1121061).

@@ -14,11 +14,14 @@ namespace {
 // clients but honored if present.
 const char kLegacySyncSessionsGUID[] = "sync.session_sync_guid";
 
+const char kLocalDataOutOfSync[] = "sync.local_data_out_of_sync";
+
 }  // namespace
 
 // static
 void SessionSyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(kLegacySyncSessionsGUID, std::string());
+  registry->RegisterBooleanPref(kLocalDataOutOfSync, false);
 }
 
 SessionSyncPrefs::SessionSyncPrefs(PrefService* pref_service)
@@ -34,6 +37,14 @@ std::string SessionSyncPrefs::GetLegacySyncSessionsGUID() const {
 
 void SessionSyncPrefs::ClearLegacySyncSessionsGUID() {
   pref_service_->ClearPref(kLegacySyncSessionsGUID);
+}
+
+bool SessionSyncPrefs::GetLocalDataOutOfSync() {
+  return pref_service_->GetBoolean(kLocalDataOutOfSync);
+}
+
+void SessionSyncPrefs::SetLocalDataOutOfSync(bool local_data_out_of_sync) {
+  pref_service_->SetBoolean(kLocalDataOutOfSync, local_data_out_of_sync);
 }
 
 void SessionSyncPrefs::SetLegacySyncSessionsGUIDForTesting(

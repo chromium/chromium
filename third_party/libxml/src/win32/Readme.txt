@@ -2,6 +2,9 @@
                              Windows port
                              ============
 
+DEPRECATION WARNING: The build system in the win32 directory is deprecated
+and will be removed in a future release. Please switch to CMake.
+
 This directory contains the files required to build this software on the
 native Windows platform. This is not a place to look for help if you are
 using a POSIX emulator, such as Cygwin. Check the Unix instructions for 

@@ -92,7 +92,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_util.h"
-#include "chromeos/ash/components/dbus/hiberman/hiberman_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
@@ -293,8 +292,7 @@ int CountRegularUsers(const user_manager::UserList& users) {
     // Allow offline login from the error screen if user of one of these types
     // has already logged in.
     if (user->GetType() == user_manager::USER_TYPE_REGULAR ||
-        user->GetType() == user_manager::USER_TYPE_CHILD ||
-        user->GetType() == user_manager::USER_TYPE_ACTIVE_DIRECTORY) {
+        user->GetType() == user_manager::USER_TYPE_CHILD) {
       regular_users_counter++;
     }
   }
@@ -611,13 +609,6 @@ void ExistingUserController::SetDisplayEmail(const std::string& email) {
   display_email_ = email;
 }
 
-void ExistingUserController::SetDisplayAndGivenName(
-    const std::string& display_name,
-    const std::string& given_name) {
-  display_name_ = base::UTF8ToUTF16(display_name);
-  given_name_ = base::UTF8ToUTF16(given_name);
-}
-
 bool ExistingUserController::IsUserAllowlisted(
     const AccountId& account_id,
     const absl::optional<user_manager::UserType>& user_type) {
@@ -767,32 +758,11 @@ void ExistingUserController::OnAuthSuccess(const UserContext& user_context) {
 
   StopAutoLoginTimer();
 
-  // The hibernate service is not supported, just continue directly.
-  ContinueAuthSuccessAfterResumeAttempt(user_context, true);
+  ContinueAuthSuccessAfterResumeAttempt(user_context);
 }
 
 void ExistingUserController::ContinueAuthSuccessAfterResumeAttempt(
-    const UserContext& user_context,
-    bool resume_call_success) {
-  // There are three cases that may have led to execution here, and one that
-  // won't:
-  // 1) The ENABLE_HIBERNATE buildflag is not enabled, so this function was
-  //    simply called directly by OnAuthSuccess. Pretend the call out was a
-  //    success by passing true for resume_call_success.
-  // 2) There was a hibernation image primed for resume, and we resumed to it.
-  //    In that case execution never gets here, as the resumed image will have
-  //    replaced this world.
-  // 3) There was no hibernation image primed for resume, the resume was
-  //    cancelled, or the resume was aborted. In that case this will be running
-  //    with resume_call_success == true, indicating the hibernate daemon was
-  //    called, but opted to return control.
-  // 4) Chrome failed to make contact with the hiberman daemon at all, in which
-  //    case resume_call_success is false. Print an error here, as it represents
-  //    a broken link in the chain.
-  if (!resume_call_success) {
-    LOG(ERROR) << "Failed to call ResumeFromHibernate, continuing with login";
-  }
-
+    const UserContext& user_context) {
   // Truth table of `has_auth_cookies`:
   //                          Regular        SAML
   //  /ServiceLogin              T            T
@@ -852,12 +822,6 @@ void ExistingUserController::ContinueAuthSuccessAfterResumeAttempt(
   if (!display_email_.empty()) {
     user_manager::UserManager::Get()->SaveUserDisplayEmail(
         user_context.GetAccountId(), display_email_);
-  }
-  if (!display_name_.empty() || !given_name_.empty()) {
-    user_manager::UserManager::Get()->UpdateUserAccountData(
-        user_context.GetAccountId(),
-        user_manager::UserManager::UserAccountData(display_name_, given_name_,
-                                                   std::string() /* locale */));
   }
   ClearRecordedNames();
 
@@ -1659,8 +1623,6 @@ void ExistingUserController::OnOAuth2TokensFetched(
 
 void ExistingUserController::ClearRecordedNames() {
   display_email_.clear();
-  display_name_.clear();
-  given_name_.clear();
 }
 
 void ExistingUserController::ClearActiveDirectoryState() {

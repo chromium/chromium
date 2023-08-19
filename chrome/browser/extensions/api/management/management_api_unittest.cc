@@ -920,16 +920,6 @@ class TestManagementAPIDelegate : public ManagementAPIDelegate {
       content::BrowserContext* context,
       const GURL& web_app_url,
       InstallOrLaunchWebAppCallback callback) const override {}
-  bool CanContextInstallAndroidApps(
-      content::BrowserContext* context) const override {
-    return true;
-  }
-  void CheckAndroidAppInstallStatus(
-      const std::string& package_name,
-      AndroidAppInstallStatusCallback callback) const override {}
-  void InstallReplacementAndroidApp(
-      const std::string& package_name,
-      InstallAndroidAppCallback callback) const override {}
   GURL GetIconURL(const Extension* extension,
                   int icon_size,
                   ExtensionIconSet::MatchType match,

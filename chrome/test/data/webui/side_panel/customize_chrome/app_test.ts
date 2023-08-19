@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://customize-chrome-side-panel.top-chrome/app.js';
 
 import {AppElement} from 'chrome://customize-chrome-side-panel.top-chrome/app.js';
 import {BackgroundCollection, CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote, CustomizeChromePageRemote, CustomizeChromeSection} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertGE, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
@@ -26,8 +26,6 @@ suite('AppTest', () => {
             CustomizeChromeApiProxy.setInstance(
                 mock, new CustomizeChromePageCallbackRouter()));
     handler.setResultFor('getBackgroundImages', new Promise(() => {}));
-    handler.setResultFor('getChromeColors', new Promise(() => {}));
-    handler.setResultFor('getOverviewChromeColors', new Promise(() => {}));
     handler.setResultFor('getBackgroundCollections', new Promise(() => {}));
     callbackRouter = CustomizeChromeApiProxy.getInstance()
                          .callbackRouter.$.bindNewPipeAndPassRemote();
@@ -132,5 +130,21 @@ suite('AppTest', () => {
         sectionsScrolledTo[0]);
     assertTrue(
         customizeChromeApp.$.overviewPage.classList.contains('iron-selected'));
+  });
+
+  [true, false].forEach((flagEnabled) => {
+    suite(`ExtensionCardEnabled_${flagEnabled}`, () => {
+      suiteSetup(() => {
+        loadTimeData.overrideValues({
+          'extensionsCardEnabled': flagEnabled,
+        });
+      });
+
+      test(`extension card does ${flagEnabled ? '' : 'not '}show`, async () => {
+        assertEquals(
+            !!customizeChromeApp.shadowRoot!.querySelector('#extensions'),
+            flagEnabled);
+      });
+    });
   });
 });

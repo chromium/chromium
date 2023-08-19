@@ -15,10 +15,15 @@ class Window;
 
 namespace ash {
 
-enum ColorVisionDeficiencyType {
+// The types of color filters available in color correction settings.
+// Do not change these values, they are persisted to logs in
+// ColorCorrectionFilterTypes enum and mapped in os settings.
+enum ColorVisionCorrectionType {
   kProtanomaly = 0,
   kDeuteranomaly = 1,
   kTritanomaly = 2,
+  kGrayscale = 3,
+  kMaxValue = kGrayscale,
 };
 
 // Controls the color enhancement options on all displays. These options
@@ -39,26 +44,15 @@ class ASH_EXPORT ColorEnhancementController : public ShellObserver {
 
   // Sets whether color filtering options are enabled and updates all available
   // displays.
-  void SetColorFilteringEnabledAndUpdateDisplays(bool enabled);
+  void SetColorCorrectionEnabledAndUpdateDisplays(bool enabled);
 
   // Sets greyscale amount.
   void SetGreyscaleAmount(float amount);
 
-  // Sets saturation amount.
-  void SetSaturationAmount(float amount);
-
-  // Sets sepia amount.
-  void SetSepiaAmount(float amount);
-
-  // Sets hue rotation amount.
-  void SetHueRotationAmount(int amount);
-
   // Sets the color vision correction filter type and severity.
   // `severity` should be between 0 and 1.0, inclusive.
-  void SetColorVisionCorrectionFilter(ColorVisionDeficiencyType type,
+  void SetColorVisionCorrectionFilter(ColorVisionCorrectionType type,
                                       float severity);
-
-  bool ShouldEnableCursorCompositingForSepia() const;
 
   // ShellObserver:
   void OnRootWindowAdded(aura::Window* root_window) override;
@@ -77,18 +71,8 @@ class ASH_EXPORT ColorEnhancementController : public ShellObserver {
   // Indicates if the color filtering options are enabled or disabled.
   bool color_filtering_enabled_ = false;
 
-  // Amount of hue rotation, on the scale of 0 to 359.
-  int hue_rotation_amount_ = 0;
-
   // Amount of greyscale, on the scale of 0 to 1.
   float greyscale_amount_ = 0;
-
-  // Amount of sepia, on the scale of 0 to 1.
-  float sepia_amount_ = 0;
-
-  // Amount of saturation where 1 is normal. Values may range from
-  // 0 to max float.
-  float saturation_amount_ = 1;
 
   // Color correction matrix.
   std::unique_ptr<cc::FilterOperation::Matrix> cvd_correction_matrix_;

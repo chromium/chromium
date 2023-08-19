@@ -104,17 +104,6 @@ def main(args):
         } for path in out_json['references']],
     }
 
-    #TODO(xiaohuic): remove special case for ChromeOS Settings below.
-    if '/settings/chromeos' in arguments.gn_target:
-        # ChromeOS Settings app setup is special, the ts input dir root is not
-        # matching the source code root. It uses the browser Settings app
-        # source code root instead because of sharing some browser Settings
-        # files directly.  We should remove direct file sharing between the two
-        # Settings apps.
-        local_json['compilerOptions']['rootDirs'].append(
-                normalize_path(out_json_dir,
-                    out_json['compilerOptions']['rootDir'] + '/chromeos'))
-
     output_path = os.path.join(gn_target_src_dir, 'tsconfig.json')
     with open(output_path, 'w') as f:
         json.dump(local_json, f, indent=2)

@@ -103,6 +103,9 @@ class MockTextInputDelegate : public TextInput::Delegate {
               (base::StringPiece16, const gfx::Range&),
               (override));
   MOCK_METHOD(bool, ConfirmComposition, (bool), (override));
+  MOCK_METHOD(bool, SupportsConfirmPreedit, (), (override));
+  MOCK_METHOD(bool, HasImageInsertSupport, (), (override));
+  MOCK_METHOD(void, InsertImage, (const GURL& src), (override));
 };
 
 class TestingInputMethodObserver : public ui::InputMethodObserver {
@@ -650,7 +653,8 @@ TEST_P(TextInputTestWithConsumedByIme, InsertCharNormalKey) {
                          ui::TextInputClient::FOCUS_REASON_OTHER);
 
   char16_t ch = 'x';
-  ui::KeyEvent ev(ch, ui::VKEY_X, ui::DomCode::US_X, 0);
+  ui::KeyEvent ev =
+      ui::KeyEvent::FromCharacter(ch, ui::VKEY_X, ui::DomCode::US_X, 0);
   ui::SetKeyboardImeFlags(&ev, ui::kPropertyKeyboardImeHandledFlag);
 
   EXPECT_CALL(*delegate(), SendKey(testing::Ref(ev))).Times(1);

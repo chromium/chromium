@@ -34,6 +34,8 @@ gaia::GaiaSource MirrorLandingAccountReconcilorDelegate::GetGaiaApiSource()
 
 bool MirrorLandingAccountReconcilorDelegate::ShouldRevokeTokensOnCookieDeleted()
     const {
+  // TODO(https://crbug.com.1464523): Migrate away from `ConsentLevel::kSync` on
+  // Lacros.
   return !is_main_profile_ &&
          !identity_manager_->HasPrimaryAccount(ConsentLevel::kSync);
 }

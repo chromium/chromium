@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/infobars/modals/permissions/infobar_permissions_table_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
@@ -26,10 +26,6 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/permissions/permissions.h"
 #import "ui/base/l10n/l10n_util.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierContent = kSectionIdentifierEnumZero,
@@ -128,7 +124,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     case ItemTypePermissionsCamera:
     case ItemTypePermissionsMicrophone: {
       TableViewSwitchCell* switchCell =
-          base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
+          base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
       switchCell.switchView.tag = itemType;
       [switchCell.switchView addTarget:self
                                 action:@selector(permissionSwitchToggled:)
@@ -245,10 +241,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [self.presentationHandler resizeInfobarModal];
     } else {
       TableViewSwitchItem* currentItem =
-          base::mac::ObjCCastStrict<TableViewSwitchItem>(
+          base::apple::ObjCCastStrict<TableViewSwitchItem>(
               [self.tableViewModel itemAtIndexPath:index]);
       TableViewSwitchCell* currentCell =
-          base::mac::ObjCCastStrict<TableViewSwitchCell>(
+          base::apple::ObjCCastStrict<TableViewSwitchCell>(
               [self.tableView cellForRowAtIndexPath:index]);
       currentItem.on = state == web::PermissionStateAllowed;
       // Reload the switch cell if its value is outdated.

@@ -1612,6 +1612,11 @@ class StructTraits<remoting::mojom::VideoLayoutDataView,
     return layout.supports_full_desktop_capture();
   }
 
+  static int64_t primary_screen_id(
+      const ::remoting::protocol::VideoLayout& layout) {
+    return layout.primary_screen_id();
+  }
+
   static bool Read(remoting::mojom::VideoLayoutDataView data_view,
                    ::remoting::protocol::VideoLayout* out_layout);
 };

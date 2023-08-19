@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("lens_api") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "lens_api.h",
     "lens_configuration.h",

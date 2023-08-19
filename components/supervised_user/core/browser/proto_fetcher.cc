@@ -9,9 +9,10 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
@@ -24,12 +25,14 @@
 #include "components/supervised_user/core/browser/api_access_token_fetcher.h"
 #include "components/supervised_user/core/browser/fetcher_config.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
+#include "components/supervised_user/core/browser/proto/test.pb.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "net/base/backoff_entry.h"
 #include "net/http/http_status_code.h"
-#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
@@ -47,9 +50,6 @@ using ::base::StringPiece;
 using ::base::StringPrintf;
 using ::base::TimeDelta;
 using ::base::TimeTicks;
-using ::base::UmaHistogramEnumeration;
-using ::base::UmaHistogramSparse;
-using ::base::UmaHistogramTimes;
 using ::base::Unretained;
 using ::network::ResourceRequest;
 using ::signin::IdentityManager;
@@ -89,14 +89,14 @@ std::string CreateAuthorizationHeader(
 
 // Determines the response type. See go/system-parameters to see list of
 // possible One Platform system params.
-constexpr base::StringPiece kSystemParameters("alt=proto");
+constexpr StringPiece kSystemParameters("alt=proto");
 
 // Creates a requests for kids management api which is independent from the
 // current profile (doesn't take Profile* parameter). It also adds query
 // parameter that configures the remote endpoint to respond with a protocol
 // buffer message.
 GURL CreateRequestUrl(const FetcherConfig& config) {
-  return GURL(config.service_endpoint)
+  return GURL(config.service_endpoint.Get())
       .Resolve(base::StrCat({config.service_path, "?", kSystemParameters}));
 }
 
@@ -127,6 +127,70 @@ std::unique_ptr<network::SimpleURLLoader> InitializeSimpleUrlLoader(
   return simple_url_loader;
 }
 
+// Encapsulates metric functionalities.
+class Metrics final {
+ public:
+  Metrics() = delete;
+  explicit Metrics(StringPiece basename) : basename_(basename) {}
+
+  void RecordStatus(ProtoFetcherStatus status) const {
+    base::UmaHistogramEnumeration(GetMetricKey("Status"), status.state());
+  }
+  void RecordLatency() const {
+    base::UmaHistogramTimes(GetMetricKey("Latency"),
+                            TimeTicks::Now() - start_time_);
+  }
+  void RecordStatusLatency(ProtoFetcherStatus status) const {
+    base::UmaHistogramTimes(GetMetricKey("Latency", ToMetricEnumLabel(status)),
+                            TimeTicks::Now() - start_time_);
+  }
+  void RecordHttpStatusOrNetError(ProtoFetcherStatus status) const {
+    CHECK(status.state() ==
+          ProtoFetcherStatus::State::HTTP_STATUS_OR_NET_ERROR);
+    base::UmaHistogramSparse(GetMetricKey("HttpStatusOrNetError"),
+                             status.http_status_or_net_error().value());
+  }
+  void RecordRetryCount(int count) const {
+    // It's a prediction that it will take less than 100 retries to get a
+    // decisive response. Double exponential backoff set at 4 hour limit
+    // shouldn't exhaust this limit too soon.
+    base::UmaHistogramCounts100(GetMetricKey("RetryCount"), count);
+  }
+
+ private:
+  std::string GetMetricKey(StringPiece id) const {
+    return JoinString({basename_, id}, ".");
+  }
+  std::string GetMetricKey(StringPiece id, StringPiece suffix) const {
+    return JoinString({basename_, id, suffix}, ".");
+  }
+
+  // The returned value must match one of the labels in
+  // chromium/src/tools/metrics/histograms/enums.xml://enum[@name='ProtoFetcherStatus'],
+  // and should be reflected in tokens in histogram defined for this fetcher.
+  // See example at
+  // tools/metrics/histograms/metadata/signin/histograms.xml://histogram[@name='Signin.ListFamilyMembersRequest.{Status}.*']
+  static std::string ToMetricEnumLabel(ProtoFetcherStatus status) {
+    switch (status.state()) {
+      case ProtoFetcherStatus::OK:
+        return "NoError";
+      case ProtoFetcherStatus::GOOGLE_SERVICE_AUTH_ERROR:
+        return "AuthError";
+      case ProtoFetcherStatus::HTTP_STATUS_OR_NET_ERROR:
+        return "HttpStatusOrNetError";
+      case ProtoFetcherStatus::INVALID_RESPONSE:
+        return "ParseError";
+      case ProtoFetcherStatus::DATA_ERROR:
+        return "DataError";
+      default:
+        NOTREACHED_NORETURN();
+    }
+  }
+
+  StringPiece basename_;
+  const TimeTicks start_time_{TimeTicks::Now()};
+};
+
 // A fetcher with underlying network::SharedURLLoaderFactory.
 // Internally, it's a two-phase process: first the access token is fetched, and
 // if applicable, the remote service is called and the response is processed.
@@ -137,51 +201,34 @@ class FetcherImpl final : public ProtoFetcher<Response> {
 
  public:
   FetcherImpl() = delete;
-  explicit FetcherImpl(
-      IdentityManager& identity_manager,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const google::protobuf::MessageLite& request,
-      const FetcherConfig& fetcher_config,
-      Callback callback)
-      : payload_(request.SerializeAsString()), config_(fetcher_config) {
-    access_token_fetcher_ = std::make_unique<ApiAccessTokenFetcher>(
-        identity_manager, fetcher_config,
-        BindOnce(&FetcherImpl::OnAccessTokenFetchComplete, Unretained(this),
-                 url_loader_factory,
-                 std::move(callback)));  // Unretained(.) is safe because `this`
-                                         // owns `access_token_fetcher_`.
-  }
+  FetcherImpl(IdentityManager& identity_manager,
+              scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+              const google::protobuf::MessageLite& request,
+              const FetcherConfig& fetcher_config,
+              Callback callback)
+      : FetcherImpl(identity_manager,
+                    url_loader_factory,
+                    request.SerializeAsString(),
+                    fetcher_config,
+                    std::move(callback)) {}
+
+  FetcherImpl(IdentityManager& identity_manager,
+              scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+              StringPiece payload,
+              const FetcherConfig& fetcher_config,
+              Callback callback)
+      : fetcher_(LaunchFetcher(identity_manager,
+                               url_loader_factory,
+                               fetcher_config,
+                               std::move(callback))),
+        payload_(payload),
+        config_(fetcher_config) {}
 
   // Not copyable.
   FetcherImpl(const FetcherImpl&) = delete;
   FetcherImpl& operator=(const FetcherImpl&) = delete;
 
- private:
-  void RecordStabilityMetrics(TimeDelta latency, ProtoFetcherStatus status) {
-    UmaHistogramEnumeration(GetMetricKey("Status"), status.state());
-    UmaHistogramTimes(GetMetricKey("Latency"), latency);
-    UmaHistogramTimes(GetMetricKey("Latency", status.ToMetricEnumLabel()),
-                      latency);
-  }
-
-  void WrapCallbackWithMetrics(Callback callback,
-                               TimeTicks start_time,
-                               ProtoFetcherStatus status,
-                               std::unique_ptr<Response> response) {
-    TimeDelta latency = TimeTicks::Now() - start_time;
-    RecordStabilityMetrics(latency, status);
-
-    // Record additional metrics for various failures.
-    if (status.state() == ProtoFetcherStatus::State::HTTP_STATUS_OR_NET_ERROR) {
-      UmaHistogramSparse(GetMetricKey("HttpStatusOrNetError"),
-                         status.http_status_or_net_error().value());
-    }
-
-    DCHECK(
-        callback);  // https://chromium.googlesource.com/chromium/src/+/main/docs/callback.md#creating-a-callback-that-does-nothing
-    std::move(callback).Run(status, std::move(response));
-  }
-
+ protected:
   std::string GetMetricKey(StringPiece metric_id) const {
     return JoinString({config_.histogram_basename, metric_id}, ".");
   }
@@ -191,36 +238,52 @@ class FetcherImpl final : public ProtoFetcher<Response> {
                       ".");
   }
 
+ private:
+  void RecordMetrics(ProtoFetcherStatus status) {
+    metrics_.RecordStatus(status);
+    metrics_.RecordLatency();
+    metrics_.RecordStatusLatency(status);
+
+    // Record additional metrics for various failures.
+    if (status.state() == ProtoFetcherStatus::State::HTTP_STATUS_OR_NET_ERROR) {
+      metrics_.RecordHttpStatusOrNetError(status);
+    }
+  }
+
+  // Launch of the fetch process.
+  std::unique_ptr<ApiAccessTokenFetcher> LaunchFetcher(
+      IdentityManager& identity_manager,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      const FetcherConfig& fetcher_config,
+      Callback callback) {
+    CHECK(callback) << "Use base::DoNothing() instead of empty callback.";
+    return std::make_unique<ApiAccessTokenFetcher>(
+        identity_manager, fetcher_config,
+        BindOnce(&FetcherImpl::OnAccessTokenFetchComplete, Unretained(this),
+                 url_loader_factory,
+                 std::move(callback)));  // Unretained(.) is safe because `this`
+                                         // owns `access_token_fetcher_`.
+  }
+
   // First phase of fetching done: the access token response is ready.
   void OnAccessTokenFetchComplete(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       Callback callback,
       base::expected<signin::AccessTokenInfo, GoogleServiceAuthError>
           access_token) {
-    DCHECK(
-        callback);  // https://chromium.googlesource.com/chromium/src/+/main/docs/callback.md#creating-a-callback-that-does-nothing
-
-    Callback callback_with_metrics =
-        BindOnce(&FetcherImpl::WrapCallbackWithMetrics, Unretained(this),
-                 std::move(callback), TimeTicks::Now());
-
     if (!access_token.has_value()) {
-      std::move(callback_with_metrics)
-          .Run(ProtoFetcherStatus::GoogleServiceAuthError(access_token.error()),
-               std::make_unique<Response>());
+      OnError(std::move(callback),
+              ProtoFetcherStatus::GoogleServiceAuthError(access_token.error()));
       return;
     }
 
     simple_url_loader_ = InitializeSimpleUrlLoader(
         access_token.value(), config_, GetRequestPayload());
-
     simple_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
         url_loader_factory.get(),
-        BindOnce(
-            &FetcherImpl::OnSimpleUrlLoaderComplete, Unretained(this),
-            std::move(
-                callback_with_metrics)));  // Unretained(.) is safe because
-                                           // `this` owns `simple_url_loader_`.
+        BindOnce(&FetcherImpl::OnSimpleUrlLoaderComplete, Unretained(this),
+                 std::move(callback)));  // Unretained(.) is safe because
+                                         // `this` owns `simple_url_loader_`.
   }
 
   // Second phase of fetching done: the remote service responded.
@@ -228,44 +291,186 @@ class FetcherImpl final : public ProtoFetcher<Response> {
                                  std::unique_ptr<std::string> response_body) {
     if (!IsLoadingSuccessful(*simple_url_loader_) ||
         !HasHttpOkResponse(*simple_url_loader_)) {
-      std::move(callback).Run(ProtoFetcherStatus::HttpStatusOrNetError(
-                                  HttpStatusOrNetError(*simple_url_loader_)),
-                              nullptr);
+      OnError(std::move(callback),
+              ProtoFetcherStatus::HttpStatusOrNetError(
+                  HttpStatusOrNetError(*simple_url_loader_)));
       return;
     }
 
     std::unique_ptr<Response> response = std::make_unique<Response>();
     if (!response->ParseFromString(*response_body)) {
-      std::move(callback).Run(ProtoFetcherStatus::InvalidResponse(), nullptr);
+      OnError(std::move(callback), ProtoFetcherStatus::InvalidResponse());
       return;
     }
 
-    CHECK(response) << "ProtoFetcherStatus::Ok implies non-empty response "
-                       "(which is always a valid message).";
-    std::move(callback).Run(std::move(ProtoFetcherStatus::Ok()),
-                            std::move(response));
+    OnSuccess(std::move(callback), std::move(response));
   }
 
   // Returns payload when it's eligible for the request type.
   absl::optional<std::string> GetRequestPayload() const {
     if (config_.method == FetcherConfig::Method::kGet) {
-      CHECK(payload_.empty()) << "Unexpected payload in GET request";
       return absl::nullopt;
     }
     return payload_;
   }
 
-  std::unique_ptr<ApiAccessTokenFetcher> access_token_fetcher_;
+  void OnError(Callback callback, ProtoFetcherStatus status) {
+    RecordMetrics(status);
+    std::move(callback).Run(status, nullptr);
+  }
+
+  void OnSuccess(Callback callback, std::unique_ptr<Response> response) {
+    CHECK(response) << "ProtoFetcherStatus::Ok implies non-empty response "
+                       "(which is always a valid message).";
+    RecordMetrics(ProtoFetcherStatus::Ok());
+    std::move(callback).Run(ProtoFetcherStatus::Ok(), std::move(response));
+  }
+
+  // Entrypoint of the fetch process, which starts with ApiAccessToken access
+  // followed by a request made with SimpleURLLoader.
+  std::unique_ptr<ApiAccessTokenFetcher> fetcher_;
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
+
   const std::string payload_;
+  const FetcherConfig config_;
+  const Metrics metrics_{config_.histogram_basename};
+};
+
+// Wraps FetcherImpl deferring its startup until explicitly invoked. This is the
+// preferred type of fetcher instances, giving the most of flexibility.
+template <typename Response>
+class DeferredFetcherImpl : public DeferredProtoFetcher<Response> {
+ private:
+  using Callback = typename DeferredProtoFetcher<Response>::Callback;
+
+ public:
+  DeferredFetcherImpl() = delete;
+  DeferredFetcherImpl(
+      IdentityManager& identity_manager,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      const google::protobuf::MessageLite& request,
+      const FetcherConfig& fetcher_config)
+      : payload_(request.SerializeAsString()),
+        identity_manager_(identity_manager),
+        url_loader_factory_(url_loader_factory),
+        config_(fetcher_config) {}
+
+  void Start(Callback callback) override {
+    fetcher_ = std::make_unique<FetcherImpl<Response>>(
+        identity_manager_.get(), url_loader_factory_, payload_, config_,
+        std::move(callback));
+  }
+  void Stop() override {
+    CHECK(fetcher_) << "Only started fetcher can be stopped.";
+    fetcher_.reset();
+  }
+
+ private:
+  std::unique_ptr<FetcherImpl<Response>> fetcher_;
+  std::string payload_;
+  const raw_ref<IdentityManager, LeakedDanglingUntriaged> identity_manager_;
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const FetcherConfig config_;
 };
 
+// A subtype of DeferredFetcher that will take retrying strategy as specified in
+// FetcherConfig::backoff_policy.
+//
+// The retries are only performed on transient errors (see ::ShouldRetry).
+template <typename Response>
+class RetryingFetcherImpl final : public DeferredFetcherImpl<Response> {
+ public:
+  RetryingFetcherImpl() = delete;
+
+  RetryingFetcherImpl(
+      IdentityManager& identity_manager,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      const google::protobuf::MessageLite& request,
+      const FetcherConfig& fetcher_config,
+      const net::BackoffEntry::Policy& backoff_policy)
+      : DeferredFetcherImpl<Response>(identity_manager,
+                                      url_loader_factory,
+                                      request,
+                                      fetcher_config),
+        backoff_entry_(&backoff_policy),
+        metrics_(fetcher_config.histogram_basename) {}
+
+  // Not copyable.
+  RetryingFetcherImpl(const RetryingFetcherImpl&) = delete;
+  RetryingFetcherImpl& operator=(const RetryingFetcherImpl&) = delete;
+
+  void Start(ProtoFetcher<Response>::Callback callback) override {
+    callback_ = std::move(callback);
+    Retry();
+  }
+  void Stop() override {
+    DeferredFetcherImpl<Response>::Stop();
+    timer_.Stop();
+  }
+
+ private:
+  void Retry() {
+    retry_count_++;
+    DeferredFetcherImpl<Response>::Start(base::BindOnce(
+        &RetryingFetcherImpl<Response>::OnResponse, Unretained(this)));
+  }
+
+  bool ShouldRetry(ProtoFetcherStatus status) {
+    return status.IsTransientError();
+  }
+
+  void OnResponse(ProtoFetcherStatus status,
+                  std::unique_ptr<Response> response) {
+    if (ShouldRetry(status)) {
+      backoff_entry_.InformOfRequest(/*succeeded=*/false);
+      timer_.Start(FROM_HERE, backoff_entry_.GetTimeUntilRelease(), this,
+                   &RetryingFetcherImpl<Response>::Retry);
+      return;
+    }
+
+    CHECK(callback_) << "Callback can be used only once.";
+    backoff_entry_.InformOfRequest(/*succeeded=*/true);
+    metrics_.RecordRetryCount(retry_count_);
+    std::move(callback_).Run(status, std::move(response));
+  }
+
+  // Client callback.
+  ProtoFetcher<Response>::Callback callback_;
+
+  // Retry controls.
+  base::OneShotTimer timer_;
+  net::BackoffEntry backoff_entry_;
+  int retry_count_{0};
+
+  const Metrics metrics_;
+};
+
 using ClassifyUrlFetcher =
-    ProtoFetcher<kids_chrome_management::ClassifyUrlResponse>;
+    DeferredProtoFetcher<kids_chrome_management::ClassifyUrlResponse>;
 using ListFamilyMembersFetcher =
-    ProtoFetcher<kids_chrome_management::ListFamilyMembersResponse>;
+    DeferredProtoFetcher<kids_chrome_management::ListFamilyMembersResponse>;
+using PermissionRequestFetcher = DeferredProtoFetcher<
+    kids_chrome_management::CreatePermissionRequestResponse>;
 }  // namespace
+
+// Constructs a fetcher that needs to be launched with ::Start(). The fetcher
+// will be either one shot or retryable, depending on the
+// FetcherConfig::backoff_policy setting.
+template <typename Response>
+std::unique_ptr<DeferredProtoFetcher<Response>> CreateFetcher(
+    IdentityManager& identity_manager,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const google::protobuf::MessageLite& request,
+    const FetcherConfig& fetcher_config) {
+  if (fetcher_config.backoff_policy.has_value()) {
+    return std::make_unique<RetryingFetcherImpl<Response>>(
+        identity_manager, url_loader_factory, request, fetcher_config,
+        *fetcher_config.backoff_policy);
+  } else {
+    return std::make_unique<DeferredFetcherImpl<Response>>(
+        identity_manager, url_loader_factory, request, fetcher_config);
+  }
+}
 
 // Main constructor, referenced by the rest.
 ProtoFetcherStatus::ProtoFetcherStatus(
@@ -352,26 +557,6 @@ std::string ProtoFetcherStatus::ToString() const {
   }
 }
 
-// The returned value must match one of the labels in
-// chromium/src/tools/metrics/histograms/enums.xml://enum[@name='ProtoFetcherStatus'],
-// and should be reflected in tokens in histogram defined for this fetcher.
-// See example at
-// tools/metrics/histograms/metadata/signin/histograms.xml://histogram[@name='Signin.ListFamilyMembersRequest.{Status}.*']
-std::string ProtoFetcherStatus::ToMetricEnumLabel() const {
-  switch (state_) {
-    case ProtoFetcherStatus::OK:
-      return "NoError";
-    case ProtoFetcherStatus::GOOGLE_SERVICE_AUTH_ERROR:
-      return "AuthError";
-    case ProtoFetcherStatus::HTTP_STATUS_OR_NET_ERROR:
-      return "HttpStatusOrNetError";
-    case ProtoFetcherStatus::INVALID_RESPONSE:
-      return "ParseError";
-    case ProtoFetcherStatus::DATA_ERROR:
-      return "DataError";
-  }
-}
-
 ProtoFetcherStatus::State ProtoFetcherStatus::state() const {
   return state_;
 }
@@ -385,17 +570,49 @@ const GoogleServiceAuthError& ProtoFetcherStatus::google_service_auth_error()
   return google_service_auth_error_;
 }
 
-// Fetcher factories.
-std::unique_ptr<ClassifyUrlFetcher> ClassifyURL(
+template <typename Request, typename Response>
+ParallelFetchManager<Request, Response>::ParallelFetchManager(
+    FetcherFactory fetcher_factory)
+    : fetcher_factory_(fetcher_factory) {}
+
+template <typename Request, typename Response>
+void ParallelFetchManager<Request, Response>::Fetch(
+    const Request& request,
+    Fetcher::Callback callback) {
+  CHECK(callback) << "Use base::DoNothing() instead of empty callback.";
+  KeyType key = requests_in_flight_.Add(MakeFetcher(request));
+  requests_in_flight_.Lookup(key)->Start(
+      std::move(callback).Then(base::BindOnce(
+          &ParallelFetchManager::Remove, weak_factory_.GetWeakPtr(), key)));
+}
+
+template <typename Request, typename Response>
+void ParallelFetchManager<Request, Response>::Remove(KeyType key) {
+  requests_in_flight_.Remove(key);
+}
+
+template <typename Request, typename Response>
+std::unique_ptr<DeferredProtoFetcher<Response>>
+ParallelFetchManager<Request, Response>::MakeFetcher(
+    const Request& request) const {
+  return fetcher_factory_.Run(request);
+}
+
+// Required, because users of ParallelFetchManager are externally linked.
+template class ParallelFetchManager<
+    kids_chrome_management::ClassifyUrlRequest,
+    kids_chrome_management::ClassifyUrlResponse>;
+template class ParallelFetchManager<
+    kids_chrome_management::PermissionRequest,
+    kids_chrome_management::CreatePermissionRequestResponse>;
+
+std::unique_ptr<ClassifyUrlFetcher> CreateClassifyURLFetcher(
     IdentityManager& identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const kids_chrome_management::ClassifyUrlRequest& request,
-    ClassifyUrlFetcher::Callback callback,
     const FetcherConfig& config) {
-  return std::make_unique<
-      FetcherImpl<kids_chrome_management::ClassifyUrlResponse>>(
-      identity_manager, url_loader_factory, request, config,
-      std::move(callback));
+  return CreateFetcher<kids_chrome_management::ClassifyUrlResponse>(
+      identity_manager, url_loader_factory, request, config);
 }
 
 std::unique_ptr<ListFamilyMembersFetcher> FetchListFamilyMembers(
@@ -403,11 +620,30 @@ std::unique_ptr<ListFamilyMembersFetcher> FetchListFamilyMembers(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     ListFamilyMembersFetcher::Callback callback,
     const FetcherConfig& config) {
-  return std::make_unique<
-      FetcherImpl<kids_chrome_management::ListFamilyMembersResponse>>(
-      identity_manager, url_loader_factory,
-      kids_chrome_management::ListFamilyMembersRequest(), config,
-      std::move(callback));
+  std::unique_ptr<ListFamilyMembersFetcher> fetcher =
+      CreateFetcher<kids_chrome_management::ListFamilyMembersResponse>(
+          identity_manager, url_loader_factory,
+          kids_chrome_management::ListFamilyMembersRequest(), config);
+  fetcher->Start(std::move(callback));
+  return fetcher;
+}
+
+std::unique_ptr<PermissionRequestFetcher> CreatePermissionRequestFetcher(
+    IdentityManager& identity_manager,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const kids_chrome_management::PermissionRequest& request,
+    const FetcherConfig& config) {
+  return CreateFetcher<kids_chrome_management::CreatePermissionRequestResponse>(
+      identity_manager, url_loader_factory, request, config);
+}
+
+std::unique_ptr<DeferredProtoFetcher<Response>> CreateTestFetcher(
+    signin::IdentityManager& identity_manager,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const Request& request,
+    const FetcherConfig& config) {
+  return CreateFetcher<Response>(identity_manager, url_loader_factory, request,
+                                 config);
 }
 
 }  // namespace supervised_user

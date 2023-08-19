@@ -24,6 +24,7 @@ std::unique_ptr<blink::WebPolicyContainer> ToWebPolicyContainer(
           in->policies->sandbox_flags,
           in->policies->ip_address_space,
           in->policies->can_navigate_top_without_user_gesture,
+          in->policies->allow_cross_origin_isolation,
       },
       std::move(in->remote));
 }

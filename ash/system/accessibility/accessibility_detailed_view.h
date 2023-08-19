@@ -11,6 +11,7 @@
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/tray/tray_detailed_view.h"
+#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/memory/raw_ptr.h"
 #include "components/soda/soda_installer.h"
 #include "ui/gfx/font.h"
@@ -83,6 +84,7 @@ class ASH_EXPORT AccessibilityDetailedView
   HoverHighlightView* AddSpokenFeedbackView(views::View* container);
   HoverHighlightView* AddSelectToSpeakView(views::View* container);
   HoverHighlightView* AddDictationView(views::View* container);
+  HoverHighlightView* AddColorCorrectionView(views::View* container);
   HoverHighlightView* AddHighContrastView(views::View* container);
   HoverHighlightView* AddScreenMagnifierView(views::View* container);
   HoverHighlightView* AddDockedMagnifierView(views::View* container);
@@ -131,6 +133,7 @@ class ASH_EXPORT AccessibilityDetailedView
   raw_ptr<HoverHighlightView, ExperimentalAsh> spoken_feedback_view_ = nullptr;
   raw_ptr<HoverHighlightView, ExperimentalAsh> select_to_speak_view_ = nullptr;
   raw_ptr<HoverHighlightView, ExperimentalAsh> dictation_view_ = nullptr;
+  raw_ptr<HoverHighlightView, ExperimentalAsh> color_correction_view_ = nullptr;
   raw_ptr<HoverHighlightView, ExperimentalAsh> high_contrast_view_ = nullptr;
   raw_ptr<HoverHighlightView, ExperimentalAsh> screen_magnifier_view_ = nullptr;
   raw_ptr<HoverHighlightView, ExperimentalAsh> docked_magnifier_view_ = nullptr;
@@ -155,6 +158,8 @@ class ASH_EXPORT AccessibilityDetailedView
   raw_ptr<HoverHighlightView, ExperimentalAsh> select_to_speak_top_view_ =
       nullptr;
   raw_ptr<HoverHighlightView, ExperimentalAsh> dictation_top_view_ = nullptr;
+  raw_ptr<HoverHighlightView, ExperimentalAsh> color_correction_top_view_ =
+      nullptr;
   raw_ptr<HoverHighlightView, ExperimentalAsh> high_contrast_top_view_ =
       nullptr;
   raw_ptr<HoverHighlightView, ExperimentalAsh> screen_magnifier_top_view_ =

@@ -4,6 +4,7 @@
 
 syntax = "proto2";
 
+import "components/reporting/proto/synced/session_affiliated_user.proto";
 import "components/services/app_service/public/protos/app_types.proto";
 
 option optimize_for = LITE_RUNTIME;
@@ -431,6 +432,10 @@ message TelemetryData {
   optional DisplaysTelemetry displays_telemetry = 6;
   // App telemetry data.
   optional AppTelemetry app_telemetry = 7;
+  // Fatal crash data.
+  optional FatalCrashTelemetry fatal_crash_telemetry = 9;
+  // Runtime counter data.
+  optional RuntimeCountersTelemetry runtime_counters_telemetry = 10;
 }
 
 enum MetricEventType {
@@ -446,6 +451,7 @@ enum MetricEventType {
   WIFI_SIGNAL_STRENGTH_RECOVERED = 14;
   NETWORK_STATE_CHANGE = 15;
   VPN_CONNECTION_STATE_CHANGE = 16;
+  CRASH_FATALLY = 17;
 
   reserved 2, 3, 10, 11, 12;
 }
@@ -519,10 +525,12 @@ message AppUninstallData {
   optional apps.ApplicationType app_type = 3;
 }
 
+// Peripherals data.
 message PeripheralsTelemetry {
   repeated UsbTelemetry usb_telemetry = 1;
 }
 
+// Usb data.
 message UsbTelemetry {
   // Vendor name
   optional string vendor = 1;
@@ -543,6 +551,86 @@ message UsbTelemetry {
   optional int32 subclass_id = 7;
   // Firmware version
   optional string firmware_version = 8;
+}
+
+// Fatal crash data.
+message FatalCrashTelemetry {
+  enum CrashType {
+    // Unknown crashes.
+    CRASH_TYPE_UNSPECIFIED = 0;
+    // Kernel crashes.
+    CRASH_TYPE_KERNEL = 1;
+    // EC crashes.
+    CRASH_TYPE_EMBEDDED_CONTROLLER = 2;
+    // More is expected to be added in the future.
+  }
+  // The session types follow user_manager::UserType. The server side will
+  // translate to the types described below.
+  enum SessionType {
+    // Including when a crash occurs on the login screen.
+    SESSION_TYPE_UNSPECIFIED = 0;
+    // When presenting to the admin, the following will be SIGNED_IN_USER
+    SESSION_TYPE_REGULAR = 1;
+    SESSION_TYPE_CHILD = 2;
+
+    // When presenting to the admin, the following will be KIOSK
+    SESSION_TYPE_KIOSK_APP = 3;
+    SESSION_TYPE_ARC_KIOSK_APP = 4;
+    SESSION_TYPE_WEB_KIOSK_APP = 5;
+
+    // When presenting to the admin, the following will be MANAGED_GUEST
+    SESSION_TYPE_GUEST = 6;
+    SESSION_TYPE_PUBLIC_ACCOUNT = 7;
+
+    // When presenting to the admin, the following will be ACTIVE_DIRECTORY
+    SESSION_TYPE_ACTIVE_DIRECTORY = 8;
+  }
+  // required
+  optional CrashType type = 1;
+  // required
+  optional SessionType session_type = 2;
+  // required
+  optional int64 timestamp_us = 3;
+  // Absent if not signed in or the user is not affiliated. Currently only
+  // contains user email.
+  optional SessionAffiliatedUser affiliated_user = 4;
+  // Absent if the crash has not been uploaded by crash_sender yet.
+  optional string crash_report_id = 5;
+  // required
+  optional string local_id = 6;
+  // If crash report ID is available, has this event been reported without ID
+  // once before?
+  // The optionality of crash_report_id is not sufficient because we need to
+  // distinguish the two cases: (a) A crash is reported for the first time with
+  // a crash report ID and (b) a crash is reported for the first time without a
+  // crash report ID and only has a crash report ID when it is reported for the
+  // second time.
+  optional bool was_reported_without_id = 7;
+}
+
+// Runtime counters retrieved from CPU. Currently the runtime counters telemetry
+// is only supported by Intel vPro PSR on Gen 14+.
+message RuntimeCountersTelemetry {
+  // All fields below are currently required since Intel vPro is the only
+  // supported source, but we reserve the possibility that absence of a field
+  // implies that it is unavailable on the device in the future.
+
+  // Hardly any of the following fields can be beyond the size of int32.
+  // However, we use int64 because: (a) healthD retrieves uint32 integers from
+  // the hardware, and therefore using int32 here risks overflow. (b) Server
+  // side requires signed integers and therefore uint32 is not an option.
+
+  // Total lifetime runtime. Currently always S0 runtime from Intel vPro PSR.
+  optional int64 uptime_runtime_seconds = 1;
+  // Number of times that the device has entered into the sleep state. Currently
+  // obtained via the PSR, count from S0->S3.
+  optional int64 counter_enter_sleep = 2;
+  // Number of times that the device has entered into the hibernation state.
+  // Currently obtained via the PSR, count from S0->S4.
+  optional int64 counter_enter_hibernation = 3;
+  // Number of times that the device has entered into the power-off state.
+  // Currently obtained via the PSR, count from S0->S5.
+  optional int64 counter_enter_poweroff = 4;
 }
 
 // Indicates one of the following conditions occurred on the device, data

@@ -303,8 +303,8 @@ base::Value::Dict URLRequest::GetStateAsValue() const {
     dict.Set("delegate_blocked_by", blocked_by_);
 
   dict.Set("method", method_);
-  // TODO(https://crbug.com/1343856): Update "network_isolation_key" to
-  // "network_anonymization_key" and change NetLog viewer.
+  dict.Set("network_anonymization_key",
+           isolation_info_.network_anonymization_key().ToDebugString());
   dict.Set("network_isolation_key",
            isolation_info_.network_isolation_key().ToDebugString());
   dict.Set("has_upload", has_upload());
@@ -651,6 +651,10 @@ void URLRequest::StartJob(std::unique_ptr<URLRequestJob> job) {
   job_->SetPriority(priority_);
   job_->SetRequestHeadersCallback(request_headers_callback_);
   job_->SetEarlyResponseHeadersCallback(early_response_headers_callback_);
+  if (is_shared_dictionary_read_allowed_callback_) {
+    job_->SetIsSharedDictionaryReadAllowedCallback(
+        is_shared_dictionary_read_allowed_callback_);
+  }
   job_->SetResponseHeadersCallback(response_headers_callback_);
 
   if (upload_data_stream_.get())
@@ -983,6 +987,13 @@ void URLRequest::Redirect(
   isolation_info_ = isolation_info_.CreateForRedirect(
       url::Origin::Create(redirect_info.new_url));
 
+  if ((load_flags_ & LOAD_CAN_USE_SHARED_DICTIONARY) &&
+      (load_flags_ &
+       LOAD_DISABLE_SHARED_DICTIONARY_AFTER_CROSS_ORIGIN_REDIRECT) &&
+      !url::Origin::Create(url()).IsSameOriginWith(redirect_info.new_url)) {
+    load_flags_ &= ~LOAD_CAN_USE_SHARED_DICTIONARY;
+  }
+
   url_chain_.push_back(redirect_info.new_url);
   --redirect_limit_;
 
@@ -1063,11 +1074,13 @@ void URLRequest::NotifySSLCertificateError(int net_error,
 }
 
 bool URLRequest::CanSetCookie(const net::CanonicalCookie& cookie,
-                              CookieOptions* options) const {
+                              CookieOptions* options,
+                              CookieInclusionStatus* inclusion_status) const {
   DCHECK(!(load_flags_ & LOAD_DO_NOT_SAVE_COOKIES));
   bool can_set_cookies = g_default_can_use_cookies;
   if (network_delegate()) {
-    can_set_cookies = network_delegate()->CanSetCookie(*this, cookie, options);
+    can_set_cookies = network_delegate()->CanSetCookie(*this, cookie, options,
+                                                       inclusion_status);
   }
   if (!can_set_cookies)
     net_log_.AddEvent(NetLogEventType::COOKIE_SET_BLOCKED_BY_NETWORK_DELEGATE);
@@ -1231,6 +1244,13 @@ void URLRequest::SetEarlyResponseHeadersCallback(
   DCHECK(!job_.get());
   DCHECK(early_response_headers_callback_.is_null());
   early_response_headers_callback_ = std::move(callback);
+}
+
+void URLRequest::SetIsSharedDictionaryReadAllowedCallback(
+    base::RepeatingCallback<bool()> callback) {
+  DCHECK(!job_.get());
+  DCHECK(is_shared_dictionary_read_allowed_callback_.is_null());
+  is_shared_dictionary_read_allowed_callback_ = std::move(callback);
 }
 
 void URLRequest::set_socket_tag(const SocketTag& socket_tag) {

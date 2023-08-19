@@ -30,9 +30,11 @@ void OnFileSystemAccessedInGuestViewContinuation(
     const GURL& url,
     base::OnceCallback<void(bool)> callback,
     bool allowed) {
+  auto* rfh =
+      content::RenderFrameHost::FromID(render_process_id, render_frame_id);
   content_settings::PageSpecificContentSettings::StorageAccessed(
       content_settings::mojom::ContentSettingsManager::StorageType::FILE_SYSTEM,
-      render_process_id, render_frame_id, url, !allowed);
+      render_process_id, render_frame_id, rfh->GetStorageKey(), !allowed);
   std::move(callback).Run(allowed);
 }
 

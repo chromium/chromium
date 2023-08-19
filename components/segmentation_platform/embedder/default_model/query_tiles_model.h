@@ -13,7 +13,7 @@ struct Config;
 
 // Segmentation query tiles model provider. Provides a default model and
 // metadata for the query tiles optimization target.
-class QueryTilesModel : public ModelProvider {
+class QueryTilesModel : public DefaultModelProvider {
  public:
   QueryTilesModel();
   ~QueryTilesModel() override = default;
@@ -25,11 +25,10 @@ class QueryTilesModel : public ModelProvider {
   static std::unique_ptr<Config> GetConfig();
 
   // ModelProvider implementation.
-  void InitAndFetchModel(
-      const ModelUpdatedCallback& model_updated_callback) override;
+  std::unique_ptr<ModelConfig> GetModelConfig() override;
+
   void ExecuteModelWithInput(const ModelProvider::Request& inputs,
                              ExecutionCallback callback) override;
-  bool ModelAvailable() override;
 };
 
 }  // namespace segmentation_platform

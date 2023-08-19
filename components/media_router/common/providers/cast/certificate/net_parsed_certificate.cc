@@ -6,8 +6,8 @@
 
 #include "base/containers/contains.h"
 #include "net/cert/pki/parse_name.h"
+#include "net/cert/time_conversions.h"
 #include "net/cert/x509_util.h"
-#include "net/der/encode_values.h"
 #include "net/der/input.h"
 #include "net/der/parse_values.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
@@ -186,23 +186,22 @@ bool NetParsedCertificate::VerifySignedData(
 }
 
 bool NetParsedCertificate::HasPolicyOid(const openscreen::ByteView& oid) const {
-  net::der::Input net_oid(oid.data(), oid.size());
   if (!cert_->has_policy_oids()) {
     return false;
   }
   const std::vector<net::der::Input>& policies = cert_->policy_oids();
-  return base::Contains(policies, net_oid);
+  return base::Contains(policies, net::der::Input(oid));
 }
 
 void NetParsedCertificate::SetNotBeforeTimeForTesting(time_t not_before) {
-  CHECK(net::der::EncodeTimeAsGeneralizedTime(
-      base::Time::FromTimeT(not_before),
-      const_cast<net::der::GeneralizedTime*>(
-          &cert_->tbs().validity_not_before)));
+  CHECK(
+      net::EncodeTimeAsGeneralizedTime(base::Time::FromTimeT(not_before),
+                                       const_cast<net::der::GeneralizedTime*>(
+                                           &cert_->tbs().validity_not_before)));
 }
 
 void NetParsedCertificate::SetNotAfterTimeForTesting(time_t not_after) {
-  CHECK(net::der::EncodeTimeAsGeneralizedTime(
+  CHECK(net::EncodeTimeAsGeneralizedTime(
       base::Time::FromTimeT(not_after), const_cast<net::der::GeneralizedTime*>(
                                             &cert_->tbs().validity_not_after)));
 }

@@ -38,7 +38,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Sharing.AnyShareStartedDesktop" enum="ShareSourceDesktop"
     expires_after="never">
-  <owner>kristipark@chromium.org</owner>
+  <owner>ellyjones@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <improvement direction="HIGHER_IS_BETTER"/>
   <summary>
@@ -118,7 +118,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.DefaultSharesheetAndroid.Opened" enum="ShareOrigin"
-    expires_after="2023-09-24">
+    expires_after="2024-01-21">
+  <owner>wenyufu@chromium.org</owner>
   <owner>sophey@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -127,40 +128,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sharing.DeviceRegistrationResult"
-    enum="SharingDeviceRegistrationResult" expires_after="M97">
-  <owner>knollr@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Result of Sharing device registration. Logged after Sharing registration is
-    attempted.
-  </summary>
-</histogram>
-
-<histogram name="Sharing.DeviceUnregistrationResult"
-    enum="SharingDeviceRegistrationResult" expires_after="M97">
-  <owner>knollr@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Result of Sharing device un-registration. Logged after Sharing
-    un-registration is attempted.
-  </summary>
-</histogram>
-
-<histogram name="Sharing.MessageHandlerTime" units="ms" expires_after="M97">
-<!-- Name completed by histogram_suffix name="SharingMessage" -->
-
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    The time from receiving a SharingMessage in SharingFCMHandler until an ack
-    is sent back. Recorded when SendAckMessage callback is run in
-    SharingMessageHandler.
-  </summary>
-</histogram>
-
 <histogram name="Sharing.MessageReceivedType" enum="SharingMessageType"
-    expires_after="2023-10-08">
+    expires_after="2023-12-10">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -171,7 +140,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.PreparePreviewFaviconDuration" units="ms"
-    expires_after="2023-07-21">
+    expires_after="2024-01-21">
   <owner>wenyufu@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -182,7 +151,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.QRCodeGeneration.Duration" units="ms"
-    expires_after="2023-11-12">
+    expires_after="2024-01-14">
   <owner>danakj@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
   <owner>petewil@chromium.org</owner>
@@ -223,7 +192,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.QRCodeGeneration.Duration.QrPixelsToQrImage2"
-    units="microseconds" expires_after="2023-11-12">
+    units="microseconds" expires_after="2024-01-14">
   <owner>danakj@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
   <owner>petewil@chromium.org</owner>
@@ -240,72 +209,6 @@ chromium-metrics-reviews@google.com.
     because we are mostly interested in comparing C++ vs Rust and it seems okay
     to assume that such comparison would give similar results for the filtered
     and non-filtered population.
-  </summary>
-</histogram>
-
-<histogram name="Sharing.RemoteCopyDecodeImageTime" units="ms"
-    expires_after="M97">
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>The time to decode an image for Remote Copy. Desktop only.</summary>
-</histogram>
-
-<histogram name="Sharing.RemoteCopyHandleMessageResult"
-    enum="SharingRemoteCopyHandleMessageResult" expires_after="M97">
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    The result of handling a Remote Copy message. Logged once per message, when
-    the handler for the Remote Copy FCM message is finished handling it. Desktop
-    only.
-  </summary>
-</histogram>
-
-<histogram name="Sharing.RemoteCopyLoadImageStatusCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="M97">
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    Result code from loading an image for Remote Copy. Logs net::Error if it's
-    not net::OK. Logs net::OK if response header is not present. Otherwise, logs
-    HTTP status code. Desktop only.
-  </summary>
-</histogram>
-
-<histogram name="Sharing.RemoteCopyLoadImageTime" units="ms"
-    expires_after="M97">
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>The time to load an image for Remote Copy. Desktop only.</summary>
-</histogram>
-
-<histogram name="Sharing.RemoteCopyReceivedImageSizeAfterDecode" units="bytes"
-    expires_after="M97">
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    The size of the image loaded from the image URL specified in a Remote Copy
-    message received from FCM, after decoding. Desktop only.
-  </summary>
-</histogram>
-
-<histogram name="Sharing.RemoteCopyReceivedImageSizeBeforeDecode" units="bytes"
-    expires_after="M97">
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    The size of the image loaded from the image URL specified in a Remote Copy
-    message received from FCM, before decoding. Desktop only.
-  </summary>
-</histogram>
-
-<histogram name="Sharing.RemoteCopyReceivedTextSize" units="bytes"
-    expires_after="2022-05-01">
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    The size of the text in a Remote Copy message received from FCM. Desktop
-    only.
   </summary>
 </histogram>
 
@@ -326,14 +229,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Logged when actions are taken in the sharing screenshot fallback feature.
   </summary>
-</histogram>
-
-<histogram name="Sharing.ScreenshotsAndroid.IsEditorDismissedOnStart"
-    enum="Boolean" expires_after="2022-09-11">
-  <owner>jeffreycohen@chromium.org</owner>
-  <owner>kristipark@chromium.org</owner>
-  <owner>src/chrome/browser/share/OWNERS</owner>
-  <summary>Whether the editor was dismissed during editor recreation.</summary>
 </histogram>
 
 <histogram name="Sharing.ScrollCapture.BitmapGeneratorStatus"
@@ -361,7 +256,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SendMessageResult" enum="SharingSendMessageResult"
-    expires_after="2023-10-22">
+    expires_after="2023-12-24">
 <!-- Name completed by histogram_suffixes SharingChannelType,
     SharingDevicePlatform, SharingMessage, and SharingPulseInterval. -->
 
@@ -375,7 +270,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SendTabToSelf.NotificationStatus"
-    enum="SendTabToSelfNotificationStatus" expires_after="2023-11-12">
+    enum="SendTabToSelfNotificationStatus" expires_after="2024-01-14">
   <owner>ellyjones@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -417,47 +312,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sharing.SharedClipboardSelectedTextSize" units="characters"
-    expires_after="M88">
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    The size of the selected text in Shared Clipboard gets recorded when the
-    user shares selected text.
-  </summary>
-</histogram>
-
-<histogram name="Sharing.ShareTargetUpdate.DynamicUpdateResult"
-    enum="ShareTargetUpdateResult" expires_after="2022-09-11">
-  <owner>jeffreycohen@chromium.org</owner>
-  <owner>kristipark@chromium.org</owner>
-  <owner>src/chrome/browser/share/OWNERS</owner>
-  <summary>
-    The result of reading/parsing/accepting a new proto for the third party
-    Share Targets.
-
-    This is for the file types loaded from the component-update system. This
-    includes both those loaded from disk shortly after startup, and those
-    received over the network when the component version changes.
-  </summary>
-</histogram>
-
-<histogram name="Sharing.ShareTargetUpdate.ResourceBundleResult"
-    enum="ShareTargetUpdateResult" expires_after="2022-09-11">
-  <owner>jeffreycohen@chromium.org</owner>
-  <owner>kristipark@chromium.org</owner>
-  <owner>src/chrome/browser/share/OWNERS</owner>
-  <summary>
-    The result of reading/parsing/accepting a new proto for the third party
-    Share Targets.
-
-    This is for the file types loaded from the resource bundle packaged with
-    Chrome, which is always loaded at startup.
-  </summary>
-</histogram>
-
 <histogram name="Sharing.SharingHubAndroid.Opened" enum="ShareOrigin"
-    expires_after="2023-11-12">
+    expires_after="2024-01-21">
+  <owner>wenyufu@chromium.org</owner>
   <owner>sophey@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -467,7 +324,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SharingHubAndroid.ThirdPartyAppUsage"
-    enum="SharingHubBottomRowIndex" expires_after="2023-07-26">
+    enum="SharingHubBottomRowIndex" expires_after="2024-01-21">
+  <owner>wenyufu@chromium.org</owner>
   <owner>sophey@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -476,24 +334,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Sharing.SharingHubAndroid.TimeToSaveScreenshotImageBeforeShare"
-    units="ms" expires_after="M110">
-  <obsolete>
-    No longer gathered for several milestones as of M111. Not sure precisely
-    when gathering of this metric stopped.
-  </obsolete>
-  <owner>skare@chromium.org</owner>
-  <owner>src/chrome/browser/share/OWNERS</owner>
-  <summary>
-    Records the amount of time taken to save the output bitmap from the image
-    editor to temporary storage and generate a URI. Recorded when the followup
-    share actions panel is displayed.
-  </summary>
-</histogram>
-
 <histogram name="Sharing.SharingHubAndroid.TimeToShare" units="ms"
-    expires_after="2023-07-02">
+    expires_after="2024-01-21">
+  <owner>wenyufu@chromium.org</owner>
   <owner>sophey@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -503,7 +346,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SharingHubAndroid.TimeToShowShareSheet" units="ms"
-    expires_after="2023-07-26">
+    expires_after="2024-01-21">
+  <owner>wenyufu@chromium.org</owner>
   <owner>sophey@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -513,7 +357,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SharingHubAndroid.{DetailedContentType}.{ShareStatus}"
-    enum="LinkToggleState" expires_after="M115">
+    enum="LinkToggleState" expires_after="2024-01-21">
+  <owner>wenyufu@chromium.org</owner>
   <owner>sophey@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -536,8 +381,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SharingHubDesktop.CrOSSharesheetResult"
-    enum="SharingHubSharesheetResult" expires_after="2023-11-12">
-  <owner>kristipark@chromium.org</owner>
+    enum="SharingHubSharesheetResult" expires_after="2024-01-14">
+  <owner>tsergeant@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
     Records whether the user selects a share target after opening the Chrome OS
@@ -578,7 +423,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SharingHubDesktop.TimeToShow" units="ms"
-    expires_after="2023-09-24">
+    expires_after="2023-12-04">
   <owner>ellyjones@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -622,7 +467,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SmsFetcherTapWithChromeDestroyed" enum="Boolean"
-    expires_after="2023-11-01">
+    expires_after="2024-02-04">
   <owner>yigu@chromium.org</owner>
   <owner>src/content/browser/sms/OWNERS</owner>
   <summary>
@@ -644,7 +489,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.{ShareSurface}.ShareContentType"
-    enum="SharingContentTypeAndroid" expires_after="2023-10-13">
+    enum="SharingContentTypeAndroid" expires_after="2024-01-21">
   <owner>wenyufu@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>

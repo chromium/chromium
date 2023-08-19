@@ -680,14 +680,11 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
   }
 }
 
-#if defined(THREAD_SANITIZER) || BUILDFLAG(IS_LINUX)
 // TODO(https://crbug.com/1224978): Times out flakily on TSAN builds.
-#define MAYBE_HitTest_WithPinchZoom DISABLED_HitTest_WithPinchZoom
-#else
-#define MAYBE_HitTest_WithPinchZoom HitTest_WithPinchZoom
-#endif
+// TODO(https://crbug.com/1459570): Times out flakily on ASan builds.
+// TODO(https://crbug.com/1461935): Times out flakily on win-asan.
 IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
-                       MAYBE_HitTest_WithPinchZoom) {
+                       DISABLED_HitTest_WithPinchZoom) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));

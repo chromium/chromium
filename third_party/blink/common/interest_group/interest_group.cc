@@ -27,6 +27,8 @@ namespace blink {
 
 namespace {
 
+const size_t kMaxAdRenderIdSize = 12;
+
 // Check if `url` can be used as an interest group's ad render URL. Ad URLs can
 // be cross origin, unlike other interest group URLs, but are still restricted
 // to HTTPS with no embedded credentials.
@@ -61,18 +63,21 @@ size_t EstimateFlatMapSize(
 
 InterestGroup::Ad::Ad() = default;
 
-InterestGroup::Ad::Ad(GURL render_url,
-                      absl::optional<std::string> metadata,
-                      absl::optional<std::string> size_group,
-                      absl::optional<std::string> buyer_reporting_id,
-                      absl::optional<std::string> buyer_and_seller_reporting_id,
-                      absl::optional<std::string> ad_render_id)
+InterestGroup::Ad::Ad(
+    GURL render_url,
+    absl::optional<std::string> metadata,
+    absl::optional<std::string> size_group,
+    absl::optional<std::string> buyer_reporting_id,
+    absl::optional<std::string> buyer_and_seller_reporting_id,
+    absl::optional<std::string> ad_render_id,
+    absl::optional<std::vector<url::Origin>> allowed_reporting_origins)
     : render_url(std::move(render_url)),
       size_group(std::move(size_group)),
       metadata(std::move(metadata)),
       buyer_reporting_id(std::move(buyer_reporting_id)),
       buyer_and_seller_reporting_id(std::move(buyer_and_seller_reporting_id)),
-      ad_render_id(std::move(ad_render_id)) {}
+      ad_render_id(std::move(ad_render_id)),
+      allowed_reporting_origins(std::move(allowed_reporting_origins)) {}
 
 InterestGroup::Ad::~Ad() = default;
 
@@ -82,8 +87,9 @@ size_t InterestGroup::Ad::EstimateSize() const {
   if (size_group) {
     size += size_group->size();
   }
-  if (metadata)
+  if (metadata) {
     size += metadata->size();
+  }
   if (buyer_reporting_id) {
     size += buyer_reporting_id->size();
   }
@@ -93,15 +99,21 @@ size_t InterestGroup::Ad::EstimateSize() const {
   if (ad_render_id) {
     size += ad_render_id->size();
   }
+  if (allowed_reporting_origins) {
+    for (const url::Origin& origin : *allowed_reporting_origins) {
+      size += origin.Serialize().size();
+    }
+  }
   return size;
 }
 
 bool InterestGroup::Ad::operator==(const Ad& other) const {
   return std::tie(render_url, size_group, metadata, buyer_reporting_id,
-                  buyer_and_seller_reporting_id, ad_render_id) ==
+                  buyer_and_seller_reporting_id, ad_render_id,
+                  allowed_reporting_origins) ==
          std::tie(other.render_url, other.size_group, other.metadata,
                   other.buyer_reporting_id, other.buyer_and_seller_reporting_id,
-                  other.ad_render_id);
+                  other.ad_render_id, other.allowed_reporting_origins);
 }
 
 InterestGroup::InterestGroup() = default;
@@ -129,7 +141,8 @@ InterestGroup::InterestGroup(
     absl::optional<std::vector<InterestGroup::Ad>> ad_components,
     absl::optional<base::flat_map<std::string, blink::AdSize>> ad_sizes,
     absl::optional<base::flat_map<std::string, std::vector<std::string>>>
-        size_groups)
+        size_groups,
+    AuctionServerRequestFlags auction_server_request_flags)
     : expiry(expiry),
       owner(std::move(owner)),
       name(std::move(name)),
@@ -150,7 +163,8 @@ InterestGroup::InterestGroup(
       ads(std::move(ads)),
       ad_components(std::move(ad_components)),
       ad_sizes(std::move(ad_sizes)),
-      size_groups(std::move(size_groups)) {}
+      size_groups(std::move(size_groups)),
+      auction_server_request_flags(std::move(auction_server_request_flags)) {}
 
 InterestGroup::~InterestGroup() = default;
 
@@ -213,6 +227,22 @@ bool InterestGroup::IsValid() const {
           return false;
         }
       }
+      if (ad.ad_render_id) {
+        if (ad.ad_render_id->size() > kMaxAdRenderIdSize) {
+          return false;
+        }
+      }
+      if (ad.allowed_reporting_origins) {
+        if (ad.allowed_reporting_origins->size() >
+            blink::mojom::kMaxAllowedReportingOrigins) {
+          return false;
+        }
+        for (const auto& origin : ad.allowed_reporting_origins.value()) {
+          if (origin.scheme() != url::kHttpsScheme) {
+            return false;
+          }
+        }
+      }
     }
   }
 
@@ -226,6 +256,16 @@ bool InterestGroup::IsValid() const {
             !size_groups->contains(ad.size_group.value())) {
           return false;
         }
+      }
+      if (ad.ad_render_id) {
+        if (ad.ad_render_id->size() > kMaxAdRenderIdSize) {
+          return false;
+        }
+      }
+      // These shouldn't be in components array.
+      if (ad.buyer_reporting_id || ad.buyer_and_seller_reporting_id ||
+          ad.allowed_reporting_origins) {
+        return false;
       }
     }
   }
@@ -321,6 +361,7 @@ size_t InterestGroup::EstimateSize() const {
       }
     }
   }
+  size += sizeof(decltype(auction_server_request_flags)::EnumType);
   return size;
 }
 
@@ -332,7 +373,7 @@ bool InterestGroup::IsEqualForTesting(const InterestGroup& other) const {
                   bidding_wasm_helper_url, update_url,
                   trusted_bidding_signals_url, trusted_bidding_signals_keys,
                   user_bidding_signals, ads, ad_components, ad_sizes,
-                  size_groups) ==
+                  size_groups, auction_server_request_flags) ==
          std::tie(
              other.expiry, other.owner, other.name, other.priority,
              other.enable_bidding_signals_prioritization, other.priority_vector,
@@ -341,7 +382,8 @@ bool InterestGroup::IsEqualForTesting(const InterestGroup& other) const {
              other.bidding_url, other.bidding_wasm_helper_url, other.update_url,
              other.trusted_bidding_signals_url,
              other.trusted_bidding_signals_keys, other.user_bidding_signals,
-             other.ads, other.ad_components, other.ad_sizes, other.size_groups);
+             other.ads, other.ad_components, other.ad_sizes, other.size_groups,
+             other.auction_server_request_flags);
 }
 
 std::string KAnonKeyForAdBid(const InterestGroup& group, const GURL& ad_url) {

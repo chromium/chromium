@@ -2,8 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from blinkpy.w3c.gerrit import GerritCL, GerritError, QUERY_OPTIONS
+import urllib.parse
 
+from blinkpy.common.host_mock import MockHost
+from blinkpy.w3c.gerrit import GerritCL, GerritError, QUERY_OPTIONS
 # Some unused arguments may be included to match the real class's API.
 # pylint: disable=unused-argument
 
@@ -15,6 +17,8 @@ class MockGerritAPI(object):
         self.cl = ''
         self.cls_queried = []
         self.raise_error = raise_error
+        self.host = MockHost()
+        self.project_config = self.host.project_config
 
     def query_exportable_open_cls(self):
         return self.exportable_open_cls
@@ -34,6 +38,11 @@ class MockGerritAPI(object):
     def post(self, path, data):
         self.request_posted.append((path, data))
         return {}
+
+    @property
+    def escaped_repo(self):
+        return urllib.parse.quote(self.project_config.gerrit_project, safe='')
+
 
 
 class MockGerritCL(GerritCL):

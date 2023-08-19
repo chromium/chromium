@@ -274,7 +274,8 @@ std::unique_ptr<PDFiumEngine> PdfViewWebPlugin::Client::CreateEngine(
 
 std::unique_ptr<PdfAccessibilityDataHandler>
 PdfViewWebPlugin::Client::CreateAccessibilityDataHandler(
-    PdfAccessibilityActionHandler* action_handler) {
+    PdfAccessibilityActionHandler* action_handler,
+    PdfAccessibilityImageFetcher* image_fetcher) {
   return nullptr;
 }
 
@@ -286,7 +287,7 @@ PdfViewWebPlugin::PdfViewWebPlugin(
       pdf_service_(std::move(pdf_service)),
       initial_params_(params),
       pdf_accessibility_data_handler_(
-          client_->CreateAccessibilityDataHandler(this)) {
+          client_->CreateAccessibilityDataHandler(this, this)) {
   DCHECK(pdf_service_);
   pdf_service_->SetListener(listener_receiver_.BindNewPipeAndPassRemote());
 }
@@ -1106,7 +1107,9 @@ void PdfViewWebPlugin::DocumentLoadComplete() {
 
   RecordDocumentMetrics();
 
-  SendAttachments();
+  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfPortfolio)) {
+    SendAttachments();
+  }
   SendBookmarks();
   SendMetadata();
 
@@ -1879,6 +1882,19 @@ void PdfViewWebPlugin::UpdateSnapshot(sk_sp<SkImage> snapshot) {
           .set_image(std::move(snapshot), cc::PaintImage::GetNextContentId())
           .set_id(cc::PaintImage::GetNextId())
           .TakePaintImage();
+
+  // Every time something changes (e.g. scale or scroll position),
+  // `UpdateSnapshot()` is called, so the snapshot is effectively used only
+  // once. Make it "no-cache" so that the old snapshots are not cached
+  // downstream.
+  //
+  // Otherwise, for instance when scrolling, all the previous snapshots end up
+  // accumulating in the (for the GPU path) GpuImageDecodeCache, and then in the
+  // service transfer cache. The size of the service transfer cache is bounded,
+  // so on desktop this "only" causes a 256MiB memory spike, but it's completely
+  // wasted memory nonetheless.
+  snapshot_.set_no_cache(true);
+
   if (!plugin_rect_.IsEmpty())
     InvalidatePluginContainer();
 }
@@ -1912,6 +1928,11 @@ void PdfViewWebPlugin::EnableAccessibility() {
     return;
 
   LoadOrReloadAccessibility();
+}
+
+SkBitmap PdfViewWebPlugin::GetImageForOcr(int32_t page_index,
+                                          int32_t page_object_index) {
+  return engine_->GetImageForOcr(page_index, page_object_index);
 }
 
 void PdfViewWebPlugin::HandleAccessibilityAction(

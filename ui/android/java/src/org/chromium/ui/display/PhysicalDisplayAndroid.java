@@ -15,9 +15,7 @@ import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.WindowManager;
 
-import androidx.annotation.OptIn;
-import androidx.core.os.BuildCompat;
-
+import org.chromium.base.BuildInfo;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -27,11 +25,8 @@ import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.compat.ApiHelperForR;
 import org.chromium.base.compat.ApiHelperForS;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 
 /**
@@ -48,77 +43,9 @@ import java.util.function.Consumer;
     // the existence and value of the forced DIP scale has not yet been determined.
     private static Float sForcedDIPScale;
 
-    private static boolean sLookupMethodSucceeded;
-    private static boolean sLookupMethodFailed;
-    private static Method sIsHdrSdrRatioAvailableMethod;
-    private static Method sGetHdrSdrRatioMethod;
-    private static Method sRegisterHdrSdrRatioChangedListenerMethod;
-    private static Method sUnregisterHdrSdrRatioChangedListenerMethod;
-
-    @OptIn(markerClass = androidx.core.os.BuildCompat.PrereleaseSdkCheck.class)
-    private static boolean lookupHdrSdrRatioMethods() {
-        if (sLookupMethodFailed) return false;
-        if (sLookupMethodSucceeded) return true;
-        if (!BuildCompat.isAtLeastU()) {
-            sLookupMethodSucceeded = false;
-            return false;
-        }
-        try {
-            sIsHdrSdrRatioAvailableMethod =
-                    Display.class.getDeclaredMethod("isHdrSdrRatioAvailable");
-            sGetHdrSdrRatioMethod = Display.class.getDeclaredMethod("getHdrSdrRatio");
-            sRegisterHdrSdrRatioChangedListenerMethod = Display.class.getDeclaredMethod(
-                    "registerHdrSdrRatioChangedListener", Executor.class, Consumer.class);
-            sUnregisterHdrSdrRatioChangedListenerMethod = Display.class.getDeclaredMethod(
-                    "unregisterHdrSdrRatioChangedListener", Consumer.class);
-        } catch (NoSuchMethodException e) {
-            sLookupMethodFailed = true;
-            return false;
-        }
-        sLookupMethodSucceeded = true;
-        return true;
-    }
-
     private static Float getHdrSdrRatio(Display display) {
-        if (!lookupHdrSdrRatioMethods()) return null;
-        try {
-            return (Float) sGetHdrSdrRatioMethod.invoke(display);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            Log.w(TAG, "getHdrSdrRatioMethod failed", e);
-            return null;
-        }
-    }
-
-    private static boolean isHdrSdrRatioAvailable(Display display) {
-        if (!lookupHdrSdrRatioMethods()) return false;
-        try {
-            return (Boolean) sIsHdrSdrRatioAvailableMethod.invoke(display);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            Log.w(TAG, "isHdrSdrRatioAvailable failed", e);
-            return false;
-        }
-    }
-
-    private static boolean registerHdrSdrRatioChangedListener(
-            Display display, Executor executor, Consumer<Display> listener) {
-        if (!lookupHdrSdrRatioMethods()) return false;
-        try {
-            sRegisterHdrSdrRatioChangedListenerMethod.invoke(display, executor, listener);
-            return true;
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            Log.w(TAG, "registerHdrSdrRatioChangedListener failed", e);
-            return false;
-        }
-    }
-
-    private static void unregisterHdrSdrRatioChangedListener(
-            Display display, Consumer<Display> listener) {
-        if (!lookupHdrSdrRatioMethods()) return;
-        try {
-            sUnregisterHdrSdrRatioChangedListenerMethod.invoke(display, listener);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            Log.w(TAG, "unregisterHdrSdrRatioChangedListener failed", e);
-        }
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) return null;
+        return display.getHdrSdrRatio();
     }
 
     private static boolean hasForcedDIPScale() {
@@ -247,13 +174,12 @@ import java.util.function.Consumer;
             mDisplay = display;
         }
 
-        if (isHdrSdrRatioAvailable(mDisplay)) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+                && mDisplay.isHdrSdrRatioAvailable()) {
             mHdrSdrRatioCallback = this::hdrSdrRatioChanged;
-            if (!registerHdrSdrRatioChangedListener(mDisplay, (Runnable runnable) -> {
-                    ThreadUtils.getUiThreadHandler().post(runnable);
-                }, mHdrSdrRatioCallback)) {
-                mHdrSdrRatioCallback = null;
-            }
+            mDisplay.registerHdrSdrRatioChangedListener((Runnable runnable) -> {
+                ThreadUtils.getUiThreadHandler().post(runnable);
+            }, mHdrSdrRatioCallback);
         } else {
             mHdrSdrRatioCallback = null;
         }
@@ -270,6 +196,13 @@ import java.util.function.Consumer;
         Rect rect = ApiHelperForR.getMaximumWindowMetricsBounds(windowManager);
         size.set(rect.width(), rect.height());
         DisplayMetrics displayMetrics = mWindowContext.getResources().getDisplayMetrics();
+
+        if (BuildInfo.getInstance().isAutomotive
+                && CommandLine.getInstance().hasSwitch(
+                        DisplaySwitches.AUTOMOTIVE_WEB_UI_SCALE_UP_ENABLED)) {
+            mDisplay.getRealMetrics(displayMetrics);
+            DisplayUtil.scaleUpDisplayMetricsForAutomotive(displayMetrics);
+        }
         updateCommon(size, displayMetrics.density, displayMetrics.xdpi, displayMetrics.ydpi,
                 ApiHelperForR.getDisplay(mWindowContext));
     }
@@ -278,8 +211,9 @@ import java.util.function.Consumer;
         if (USE_CONFIGURATION) {
             mWindowContext.unregisterComponentCallbacks(mComponentCallbacks);
         }
-        if (mHdrSdrRatioCallback != null) {
-            unregisterHdrSdrRatioChangedListener(mDisplay, mHdrSdrRatioCallback);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+                && mHdrSdrRatioCallback != null) {
+            mDisplay.unregisterHdrSdrRatioChangedListener(mHdrSdrRatioCallback);
             mHdrSdrRatioCallback = null;
         }
     }
@@ -300,6 +234,12 @@ import java.util.function.Consumer;
         } else {
             display.getSize(size);
             display.getMetrics(displayMetrics);
+        }
+
+        if (BuildInfo.getInstance().isAutomotive
+                && CommandLine.getInstance().hasSwitch(
+                        DisplaySwitches.AUTOMOTIVE_WEB_UI_SCALE_UP_ENABLED)) {
+            DisplayUtil.scaleUpDisplayMetricsForAutomotive(displayMetrics);
         }
         updateCommon(
                 size, displayMetrics.density, displayMetrics.xdpi, displayMetrics.ydpi, display);

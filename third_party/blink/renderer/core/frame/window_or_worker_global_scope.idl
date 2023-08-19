@@ -27,7 +27,6 @@
 
 // https://html.spec.whatwg.org/C/#windoworworkerglobalscope-mixin
 [
-    LegacyTreatAsPartialInterface,
     Exposed=(Window,Worker)
 ] interface mixin WindowOrWorkerGlobalScope {
     [CallWith=ScriptState] void reportError(any e);

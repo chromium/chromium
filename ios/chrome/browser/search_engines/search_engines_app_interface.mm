@@ -10,10 +10,6 @@
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation SearchEnginesAppInterface
 
 + (NSString*)defaultSearchEngine {

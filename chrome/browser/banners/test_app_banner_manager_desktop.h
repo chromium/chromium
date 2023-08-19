@@ -7,12 +7,15 @@
 
 #include "base/values.h"
 #include "chrome/browser/banners/app_banner_manager_desktop.h"
-
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;
 }
+
+namespace segmentation_platform {
+class MockSegmentationPlatformService;
+}  // namespace segmentation_platform
 
 namespace webapps {
 
@@ -51,13 +54,16 @@ class TestAppBannerManagerDesktop : public AppBannerManagerDesktop {
   // Block until the current app has been installed.
   void AwaitAppInstall();
 
+  segmentation_platform::MockSegmentationPlatformService*
+  GetMockSegmentationPlatformService();
+
   // AppBannerManager:
   void OnDidGetManifest(const InstallableData& result) override;
   void OnDidPerformInstallableWebAppCheck(
       const InstallableData& result) override;
-  void PerformServiceWorkerCheck() override;
-  void OnDidPerformWorkerCheck(const InstallableData& result) override;
   void ResetCurrentPageData() override;
+  segmentation_platform::SegmentationPlatformService*
+  GetSegmentationPlatformService() override;
 
   // AppBannerManagerDesktop:
   TestAppBannerManagerDesktop* AsTestAppBannerManagerDesktopForTesting()
@@ -71,6 +77,7 @@ class TestAppBannerManagerDesktop : public AppBannerManagerDesktop {
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override;
   void UpdateState(AppBannerManager::State state) override;
+  void RecheckInstallabilityForLoadedPage() override;
 
  private:
   void SetInstallable(bool installable);
@@ -79,12 +86,13 @@ class TestAppBannerManagerDesktop : public AppBannerManagerDesktop {
 
   absl::optional<bool> installable_;
   base::Value::List debug_log_;
-  bool waiting_for_worker_;
   base::OnceClosure tear_down_quit_closure_;
   base::OnceClosure installable_quit_closure_;
   base::OnceClosure promotable_quit_closure_;
   base::OnceClosure on_done_;
   base::OnceClosure on_install_;
+  std::unique_ptr<segmentation_platform::MockSegmentationPlatformService>
+      segmentation_platform_service_;
 };
 
 }  // namespace webapps

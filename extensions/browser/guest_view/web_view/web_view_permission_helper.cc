@@ -161,16 +161,18 @@ WebViewPermissionHelper::~WebViewPermissionHelper() {
 
 // static
 WebViewPermissionHelper* WebViewPermissionHelper::FromRenderFrameHost(
-    content::RenderFrameHost* rfh) {
-  WebViewGuest* web_view_guest = WebViewGuest::FromRenderFrameHost(rfh);
+    content::RenderFrameHost* render_frame_host) {
+  WebViewGuest* web_view_guest =
+      WebViewGuest::FromRenderFrameHost(render_frame_host);
   return web_view_guest ? web_view_guest->web_view_permission_helper()
                         : nullptr;
 }
 
 // static
 WebViewPermissionHelper* WebViewPermissionHelper::FromRenderFrameHostId(
-    const content::GlobalRenderFrameHostId& rfh_id) {
-  WebViewGuest* web_view_guest = WebViewGuest::FromRenderFrameHostId(rfh_id);
+    const content::GlobalRenderFrameHostId& render_frame_host_id) {
+  WebViewGuest* web_view_guest =
+      WebViewGuest::FromRenderFrameHostId(render_frame_host_id);
   return web_view_guest ? web_view_guest->web_view_permission_helper()
                         : nullptr;
 }

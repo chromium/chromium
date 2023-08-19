@@ -21,6 +21,9 @@
 typedef NS_ENUM(NSUInteger, SceneActivationLevel) {
   // The scene is not connected and has no window.
   SceneActivationLevelUnattached = 0,
+  // The scene has been disconnected. It also corresponds to
+  // UISceneActivationStateUnattached.
+  SceneActivationLevelDisconnected,
   // The scene is connected, and has a window associated with it. The window is
   // not visible to the user, except possibly in the app switcher.
   SceneActivationLevelBackground,
@@ -108,13 +111,6 @@ typedef NS_ENUM(NSUInteger, SceneActivationLevel) {
 
 // YES if the QR scanner is visible.
 @property(nonatomic, assign) BOOL QRScannerVisible;
-
-// YES if the visible NTP should be modified for the Start Surface.
-//
-// This flag is set by SceneController to YES when the Start Surface should be
-// shown. It is checked by the NewTabPageCoordinator to modify the NTP
-// accordingly, and then reset it to NO.
-@property(nonatomic, assign) BOOL modifytVisibleNTPForStartSurface;
 
 // YES if sign-in is in progress which covers the authentication flow and the
 // sign-in prompt UI.

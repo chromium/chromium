@@ -22,14 +22,3 @@ rootWebArea
 ++++++++++++++++++++++++++staticText name='Text in nested normal iframe'
 ++++++++++++++++++++++++++++inlineTextBox name='Text in nested normal iframe'
 ++++++iframe ignored invisible
-++++++++rootWebArea invisible
-++++++++++genericContainer ignored invisible
-++++++++++++genericContainer ignored invisible
-++++++++++++++paragraph ignored invisible
-++++++++++++++++staticText ignored invisible name='Text in inert iframe'
-++++++++++++++iframe ignored invisible
-++++++++++++++++rootWebArea invisible
-++++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++++++paragraph ignored invisible
-++++++++++++++++++++++++staticText ignored invisible name='Text in nested inert iframe'

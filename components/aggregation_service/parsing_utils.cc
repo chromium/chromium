@@ -6,29 +6,20 @@
 
 #include <string>
 
-#include "components/aggregation_service/aggregation_service.mojom.h"
+#include "components/aggregation_service/aggregation_coordinator_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace aggregation_service {
 
-namespace {
-constexpr char kAwsCloud[] = "aws-cloud";
-}  // namespace
-
-absl::optional<mojom::AggregationCoordinator> ParseAggregationCoordinator(
+absl::optional<url::Origin> ParseAggregationCoordinator(
     const std::string& str) {
-  if (str == kAwsCloud)
-    return mojom::AggregationCoordinator::kAwsCloud;
-
-  return absl::nullopt;
-}
-
-std::string SerializeAggregationCoordinator(
-    mojom::AggregationCoordinator coordinator) {
-  switch (coordinator) {
-    case mojom::AggregationCoordinator::kAwsCloud:
-      return kAwsCloud;
+  auto origin = url::Origin::Create(GURL(str));
+  if (IsAggregationCoordinatorOriginAllowed(origin)) {
+    return origin;
   }
+  return absl::nullopt;
 }
 
 }  // namespace aggregation_service

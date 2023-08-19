@@ -90,7 +90,13 @@ enum class InstallResultCode {
   // non-generated icons.
   kIconDownloadingFailed = 30,
 
-  kMaxValue = kIconDownloadingFailed,
+  kCancelledDueToMainFrameNavigation = 31,
+
+  // No valid icons were provided in the manifest in an installation method
+  // which requires non-generated icons.
+  kNoValidIconsInManifest = 32,
+
+  kMaxValue = kNoValidIconsInManifest,
 };
 
 // Checks if InstallResultCode is not a failure.

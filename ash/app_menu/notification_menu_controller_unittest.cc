@@ -98,7 +98,8 @@ class NotificationMenuControllerTest : public AshTestBase {
 
  private:
   // The root MenuItemView. Owned by |host_view_|.
-  raw_ptr<views::MenuItemView, ExperimentalAsh> root_menu_item_view_ = nullptr;
+  raw_ptr<views::MenuItemView, DanglingUntriaged | ExperimentalAsh>
+      root_menu_item_view_ = nullptr;
   // Allows the dtor to access the restricted views::MenuItemView dtor.
   std::unique_ptr<views::View> host_view_;
   std::unique_ptr<NotificationMenuController> notification_menu_controller_;

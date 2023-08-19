@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/sanitizer_buildflags.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -190,7 +191,12 @@ TEST_F(BackForwardCacheMetricsTest, TimeRecordedAtStart) {
 }
 
 // TODO(crbug.com/1255492): Flaky under TSan.
-TEST_F(BackForwardCacheMetricsTest, DISABLED_TimeRecordedWhenRendererIsKilled) {
+#if BUILDFLAG(USING_SANITIZER)
+#define MAYBE_TimeRecordedWhenRendererIsKilled DISABLED_TimeRecordedWhenRendererIsKilled
+#else
+#define MAYBE_TimeRecordedWhenRendererIsKilled TimeRecordedWhenRendererIsKilled
+#endif
+TEST_F(BackForwardCacheMetricsTest, MAYBE_TimeRecordedWhenRendererIsKilled) {
   // Need to enable back-forward cache to make sure a page is put into the
   // cache.
   base::test::ScopedFeatureList scoped_feature_list;
@@ -241,10 +247,11 @@ TEST_F(BackForwardCacheMetricsTest, AllFeaturesCovered) {
       /* WebSchedulerTrackedFeature::kFreezeEventListener =*/10,
       /* WebSchedulerTrackedFeature::kResumeEventListener =*/11,
       /* WebSchedulerTrackedFeature::kServiceWorkerControlledPage =*/16,
+      /* WebSchedulerTrackedFeature::kOutstandingIndexedDBTransaction =*/17,
       /* WebSchedulerTrackedFeature::kHasScriptableFramesInMultipleTabs =*/18,
       /* WebSchedulerTrackedFeature::kRequestedGeolocationPermission =*/19,
       /* WebSchedulerTrackedFeature::kRequestedNotificationsPermission =*/20,
-      /* Never existed =*/25,
+      /* WebSchedulerTrackedFeature::kIndexedDBConnection =*/28,
       /* WebSchedulerTrackedFeature::kWebGL =*/29,
       /* WebSchedulerTrackedFeature::kWebVR =*/30,
       /* WebSchedulerTrackedFeature::kWakeLock =*/35,
@@ -252,27 +259,33 @@ TEST_F(BackForwardCacheMetricsTest, AllFeaturesCovered) {
       /* WebSchedulerTrackedFeature::kAppBanner =*/42,
       /* WebSchedulerTrackedFeature::kMediaSessionImplOnServiceCreated =*/56};
 
-  // Combine the result of |GetDisallowedFeatures()| and |GetAllowedFeatures()|.
-  std::vector<uint64_t> combined_features;
-  auto disallowed_features = BackForwardCacheImpl::GetDisallowedFeatures(
-      BackForwardCacheImpl::RequestedFeatures::kAll);
-  auto allowed_features = BackForwardCacheImpl::GetAllowedFeatures(
-      BackForwardCacheImpl::RequestedFeatures::kAll);
-  EXPECT_TRUE(Intersection(disallowed_features, allowed_features).Empty());
+  for (BackForwardCacheImpl::CacheControlNoStoreContext ccns_context :
+       {BackForwardCacheImpl::kInCCNSContext,
+        BackForwardCacheImpl::kNotInCCNSContext}) {
+    // Combine the result of |GetDisallowedFeatures()| and
+    // |GetAllowedFeatures()|.
+    std::vector<uint64_t> combined_features;
+    auto disallowed_features = BackForwardCacheImpl::GetDisallowedFeatures(
+        BackForwardCacheImpl::RequestedFeatures::kAll, ccns_context);
+    auto allowed_features = BackForwardCacheImpl::GetAllowedFeatures(
+        BackForwardCacheImpl::RequestedFeatures::kAll, ccns_context);
+    EXPECT_TRUE(Intersection(disallowed_features, allowed_features).Empty());
 
-  for (auto feature : Union(disallowed_features, allowed_features)) {
-    combined_features.push_back(static_cast<uint64_t>(feature));
+    for (auto feature : Union(disallowed_features, allowed_features)) {
+      combined_features.push_back(static_cast<uint64_t>(feature));
+    }
+    // Add the removed features to the list.
+    combined_features.insert(combined_features.begin(),
+                             removed_features.begin(), removed_features.end());
+    // Make a list of all the WebSchedulerTrackedFeatures indices.
+    std::vector<uint64_t> all_features;
+    for (auto feature : blink::scheduler::WebSchedulerTrackedFeatures::All()) {
+      all_features.push_back(static_cast<uint64_t>(feature));
+    }
+    EXPECT_THAT(combined_features,
+                testing::UnorderedElementsAreArray(all_features.begin(),
+                                                   all_features.end()));
   }
-  // Add the removed features to the list.
-  combined_features.insert(combined_features.begin(), removed_features.begin(),
-                           removed_features.end());
-  // Make a list of all the WebSchedulerTrackedFeatures indices.
-  std::vector<uint64_t> all_features;
-  for (auto feature : blink::scheduler::WebSchedulerTrackedFeatures::All()) {
-    all_features.push_back(static_cast<uint64_t>(feature));
-  }
-  EXPECT_THAT(combined_features, testing::UnorderedElementsAreArray(
-                                     all_features.begin(), all_features.end()));
 }
 
 TEST_F(BackForwardCacheMetricsTest, PageWithFormsMetricsStoredRecorded) {

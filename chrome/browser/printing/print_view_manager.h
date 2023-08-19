@@ -56,9 +56,8 @@ class PrintViewManager : public PrintViewManagerBase,
       mojo::PendingAssociatedRemote<mojom::PrintRenderer> print_renderer);
 #endif
 
-  // Notify PrintViewManager that print preview is starting in the renderer for
-  // a particular WebNode.
-  void PrintPreviewForWebNode(content::RenderFrameHost* rfh);
+  // Initiate print preview for the node under the context menu.
+  void PrintPreviewForNodeUnderContextMenu(content::RenderFrameHost* rfh);
 
   // Notify PrintViewManager that print preview is about to finish. Unblock the
   // renderer in the case of scripted print preview if needed.
@@ -119,6 +118,10 @@ class PrintViewManager : public PrintViewManagerBase,
       mojo::PendingAssociatedRemote<mojom::PrintRenderer> print_renderer,
 #endif
       bool has_selection);
+
+  // Notify PrintViewManager that print preview is starting in the renderer for
+  // a particular WebNode.
+  void PrintPreviewForWebNode(content::RenderFrameHost* rfh);
 
   // Helper method for ShowScriptedPrintPreview(), called from
   // RejectPrintPreviewRequestIfRestricted(). Based on value of

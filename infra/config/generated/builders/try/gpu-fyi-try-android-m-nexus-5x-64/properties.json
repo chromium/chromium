@@ -17,7 +17,7 @@
               },
               "legacy_chromium_config": {
                 "apply_configs": [
-                  "download_vr_test_apks"
+                  "download_xr_test_apks"
                 ],
                 "config": "android",
                 "target_platform": "android"
@@ -49,7 +49,7 @@
               },
               "legacy_chromium_config": {
                 "apply_configs": [
-                  "download_vr_test_apks"
+                  "download_xr_test_apks"
                 ],
                 "config": "android",
                 "target_platform": "android"
@@ -83,7 +83,8 @@
   "$build/reclient": {
     "instance": "rbe-chromium-untrusted",
     "jobs": 150,
-    "metrics_project": "chromium-reclient-metrics"
+    "metrics_project": "chromium-reclient-metrics",
+    "scandeps_server": true
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],

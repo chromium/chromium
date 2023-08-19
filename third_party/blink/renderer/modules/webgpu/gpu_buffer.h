@@ -46,10 +46,10 @@ class GPUBuffer : public DawnObject<WGPUBuffer> {
                          uint64_t offset,
                          uint64_t size,
                          ExceptionState& exception_state);
-  DOMArrayBuffer* getMappedRange(v8::Isolate* isolate,
+  DOMArrayBuffer* getMappedRange(ScriptState* script_state,
                                  uint64_t offset,
                                  ExceptionState& exception_state);
-  DOMArrayBuffer* getMappedRange(v8::Isolate* isolate,
+  DOMArrayBuffer* getMappedRange(ScriptState* script_state,
                                  uint64_t offset,
                                  uint64_t size,
                                  ExceptionState& exception_state);
@@ -67,7 +67,7 @@ class GPUBuffer : public DawnObject<WGPUBuffer> {
                              uint64_t offset,
                              absl::optional<uint64_t> size,
                              ExceptionState& exception_state);
-  DOMArrayBuffer* GetMappedRangeImpl(v8::Isolate* isolate,
+  DOMArrayBuffer* GetMappedRangeImpl(ScriptState* script_state,
                                      uint64_t offset,
                                      absl::optional<uint64_t> size,
                                      ExceptionState& exception_state);

@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_POLICY_MESSAGING_LAYER_UPLOAD_FILE_UPLOAD_IMPL_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/files/file.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "chrome/browser/browser_process.h"
@@ -48,30 +48,30 @@ class FileUploadDelegate : public FileUploadJob::Delegate {
 
   // FileUploadJob::Delegate:
   void DoInitiate(
-      base::StringPiece origin_path,
-      base::StringPiece upload_parameters,
+      std::string_view origin_path,
+      std::string_view upload_parameters,
       base::OnceCallback<void(
           StatusOr<std::pair<int64_t /*total*/,
                              std::string /*session_token*/>>)> cb) override;
   void DoNextStep(
       int64_t total,
       int64_t uploaded,
-      base::StringPiece session_token,
+      std::string_view session_token,
       ScopedReservation scoped_reservation,
       base::OnceCallback<void(
           StatusOr<std::pair<int64_t /*uploaded*/,
                              std::string /*session_token*/>>)> cb) override;
   void DoFinalize(
-      base::StringPiece session_token,
+      std::string_view session_token,
       base::OnceCallback<void(StatusOr<std::string /*access_parameters*/>)> cb)
       override;
 
-  void DoDeleteFile(base::StringPiece origin_path) override;
+  void DoDeleteFile(std::string_view origin_path) override;
 
   // Called once authentication is finished (with token or failure status).
   void OnAccessTokenResult(
-      base::StringPiece origin_path,
-      base::StringPiece upload_parameters,
+      std::string_view origin_path,
+      std::string_view upload_parameters,
       base::OnceCallback<void(
           StatusOr<
               std::pair<int64_t /*total*/, std::string /*session_token*/>>)> cb,

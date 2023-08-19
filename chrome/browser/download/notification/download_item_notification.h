@@ -135,13 +135,6 @@ class DownloadItemNotification : public ImageDecoder::ImageRequest,
   // prevents updates after close.
   bool closed_ = false;
 
-  // Flag if the notification has been suppressed or not. A notification being
-  // suppressed means that there is some special restriction imposed which is
-  // preventing a notification that would otherwise display from doing so, e.g.
-  // holding space in-progress downloads integration causes suppression of most
-  // download in-progress notifications.
-  bool suppressed_ = false;
-
   // Flag to indicate that a review dialog is open for the user to accept or
   // bypass an enterprise warning on the download. If this is true, the "Review"
   // button should be removed from the notification.

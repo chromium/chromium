@@ -83,20 +83,23 @@ final class SigninBridge {
                 Profile.getLastUsedRegularProfile());
         if (!signinManager.isSyncOptInAllowed()) {
             SigninMetricsUtils.logAccountConsistencyPromoAction(
-                    AccountConsistencyPromoAction.SUPPRESSED_SIGNIN_NOT_ALLOWED);
+                    AccountConsistencyPromoAction.SUPPRESSED_SIGNIN_NOT_ALLOWED,
+                    SigninAccessPoint.WEB_SIGNIN);
             return;
         }
         final List<Account> accounts = AccountUtils.getAccountsIfFulfilledOrEmpty(
                 AccountManagerFacadeProvider.getInstance().getAccounts());
         if (accounts.isEmpty()) {
             SigninMetricsUtils.logAccountConsistencyPromoAction(
-                    AccountConsistencyPromoAction.SUPPRESSED_NO_ACCOUNTS);
+                    AccountConsistencyPromoAction.SUPPRESSED_NO_ACCOUNTS,
+                    SigninAccessPoint.WEB_SIGNIN);
             return;
         }
         if (SigninPreferencesManager.getInstance().getWebSigninAccountPickerActiveDismissalCount()
                 >= ACCOUNT_PICKER_BOTTOM_SHEET_DISMISS_LIMIT) {
             SigninMetricsUtils.logAccountConsistencyPromoAction(
-                    AccountConsistencyPromoAction.SUPPRESSED_CONSECUTIVE_DISMISSALS);
+                    AccountConsistencyPromoAction.SUPPRESSED_CONSECUTIVE_DISMISSALS,
+                    SigninAccessPoint.WEB_SIGNIN);
             return;
         }
         BottomSheetController bottomSheetController =

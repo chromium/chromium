@@ -20,8 +20,6 @@ namespace os_crypt {
 enum class SelectedLinuxBackend {
   DEFER,  // No selection
   BASIC_TEXT,
-  GNOME_ANY,  // GNOME_KEYRING or GNOME_LIBSECRET, whichever is available.
-  GNOME_KEYRING,
   GNOME_LIBSECRET,
   KWALLET,
   KWALLET5,

@@ -80,6 +80,12 @@ std::vector<T> JoinVectors(const std::vector<T>& vector1,
   return joined_vector;
 }
 
+// Adds work items to `list` to install the interface `iid`.
+void AddInstallComInterfaceWorkItems(HKEY root,
+                                     const base::FilePath& typelib_path,
+                                     GUID iid,
+                                     WorkItemList* list);
+
 // Adds work items to register the per-user COM server.
 void AddComServerWorkItems(const base::FilePath& com_server_path,
                            bool is_internal,
@@ -99,6 +105,11 @@ void RegisterUserRunAtStartup(const std::wstring& run_value_name,
 // Deletes the value in the Run key in the user registry under the value
 // `run_value_name`.
 bool UnregisterUserRunAtStartup(const std::wstring& run_value_name);
+
+// Deletes any per-user legacy entries that may have been installed/registered
+// by a previous version of the updater. Returns `true` on success or if no
+// cleanup is necessary. Returns `false` if any operation fails.
+bool DeleteLegacyEntriesPerUser();
 
 class RegisterWakeTaskWorkItem : public WorkItem {
  public:

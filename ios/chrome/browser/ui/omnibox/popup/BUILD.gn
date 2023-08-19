@@ -73,7 +73,6 @@ source_set("popup") {
     "//ios/chrome/browser/default_browser:utils",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/feature_engagement",
-    "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/ntp",
@@ -81,16 +80,18 @@ source_set("popup") {
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
-    "//ios/chrome/browser/shared/coordinator/default_browser_promo",
+    "//ios/chrome/browser/shared/coordinator/default_browser_promo:default_browser_promo_scene_agent_utils",
     "//ios/chrome/browser/shared/coordinator/layout_guide",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list:web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/symbols:symbols_views",
     "//ios/chrome/browser/shared/ui/util",
@@ -98,12 +99,14 @@ source_set("popup") {
     "//ios/chrome/browser/ui/favicon",
     "//ios/chrome/browser/ui/main:default_browser_scene_agent",
     "//ios/chrome/browser/ui/menu",
-    "//ios/chrome/browser/ui/ntp/metrics",
+    "//ios/chrome/browser/ui/ntp/metrics:home_metrics",
     "//ios/chrome/browser/ui/omnibox",
     "//ios/chrome/browser/ui/omnibox:features",
     "//ios/chrome/browser/ui/omnibox:omnibox_util",
+    "//ios/chrome/browser/ui/settings/utils",
     "//ios/chrome/browser/ui/sharing",
     "//ios/chrome/browser/ui/toolbar/buttons",
+    "//ios/chrome/browser/ui/toolbar/public",
     "//ios/chrome/browser/ui/toolbar/public:constants",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/favicon",
@@ -113,7 +116,6 @@ source_set("popup") {
     "//net",
     "//ui/base",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
   public_deps = [ "//ios/third_party/material_components_ios" ]
 }
 
@@ -122,7 +124,6 @@ source_set("popup_accessibility_identifier_constants") {
     "omnibox_popup_accessibility_identifier_constants.h",
     "omnibox_popup_accessibility_identifier_constants.mm",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("popup_ui") {
@@ -140,6 +141,8 @@ source_set("popup_ui") {
     "omnibox_popup_carousel_control.mm",
     "omnibox_popup_row_cell.h",
     "omnibox_popup_row_cell.mm",
+    "omnibox_popup_row_cell_experimental.h",
+    "omnibox_popup_row_cell_experimental.mm",
     "omnibox_popup_view_controller.h",
     "omnibox_popup_view_controller.mm",
     "simple_omnibox_icon.h",
@@ -161,10 +164,10 @@ source_set("popup_ui") {
     "//components/omnibox/common",
     "//ios/chrome/app/strings",
     "//ios/chrome/app/theme",
-    "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/symbols:symbols_views",
@@ -184,7 +187,6 @@ source_set("popup_ui") {
     "//ui/base",
     "//url",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("popup_internal") {
@@ -210,7 +212,6 @@ source_set("popup_internal") {
     "//ios/chrome/common/ui/colors",
     "//ios/third_party/material_components_ios",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("popup_ui_protocols") {
@@ -222,11 +223,9 @@ source_set("popup_ui_protocols") {
     "omnibox_pedal.h",
     "popup_match_preview_delegate.h",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "omnibox_pedal_annotator_unittest.mm",
@@ -262,10 +261,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "omnibox_popup_carousel_egtest.mm",
@@ -284,8 +280,10 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/ui/history:constants",
     "//ios/chrome/browser/ui/omnibox:eg_test_support+eg2",
     "//ios/chrome/browser/ui/omnibox:features",
+    "//ios/chrome/browser/ui/omnibox:omnibox_popup_shared",
     "//ios/chrome/browser/ui/settings:constants",
     "//ios/chrome/browser/ui/settings/cells:clear_browsing_data_constants",
+    "//ios/chrome/browser/ui/settings/password:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//net:test_support",

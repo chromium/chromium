@@ -34,7 +34,7 @@ void FakePositionCache::CachePosition(const WifiData& wifi_data,
 }
 
 const mojom::Geoposition* FakePositionCache::FindPosition(
-    const WifiData& wifi_data) const {
+    const WifiData& wifi_data) {
   auto it =
       base::ranges::find_if(data, [&wifi_data](const auto& candidate_pair) {
         return SetsEqual(wifi_data.access_point_data,

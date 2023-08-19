@@ -148,27 +148,11 @@ TEST_P(VaapiWebPDecoderTest, DecodeAndExportAsNativePixmapDmaBuf) {
                 exported_pixmap->pixmap->GetBufferFormat()),
             handle.planes.size());
 
-  LocalGpuMemoryBufferManager gpu_memory_buffer_manager;
-  std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer =
-      gpu_memory_buffer_manager.ImportDmaBuf(
+  std::unique_ptr<vaapi_test_utils::DecodedImage> hw_decoded_webp =
+      vaapi_test_utils::NativePixmapToDecodedImage(
           handle, exported_pixmap->pixmap->GetBufferSize(),
           exported_pixmap->pixmap->GetBufferFormat());
-  ASSERT_TRUE(gpu_memory_buffer);
-  ASSERT_TRUE(gpu_memory_buffer->Map());
-  ASSERT_EQ(gfx::BufferFormat::YUV_420_BIPLANAR,
-            gpu_memory_buffer->GetFormat());
-
-  vaapi_test_utils::DecodedImage hw_decoded_webp{};
-  hw_decoded_webp.fourcc = VA_FOURCC_NV12;
-  hw_decoded_webp.number_of_planes = 2u;
-  hw_decoded_webp.size = gpu_memory_buffer->GetSize();
-  for (size_t plane = 0u;
-       plane < base::strict_cast<size_t>(hw_decoded_webp.number_of_planes);
-       plane++) {
-    hw_decoded_webp.planes[plane].data =
-        static_cast<uint8_t*>(gpu_memory_buffer->memory(plane));
-    hw_decoded_webp.planes[plane].stride = gpu_memory_buffer->stride(plane);
-  }
+  ASSERT_TRUE(hw_decoded_webp);
 
   // Decode the image using libwebp and wrap the decoded image in a
   // DecodedImage object.
@@ -201,9 +185,8 @@ TEST_P(VaapiWebPDecoderTest, DecodeAndExportAsNativePixmapDmaBuf) {
   sw_decoded_webp.planes[2].data = libwebp_v_plane;
   sw_decoded_webp.planes[2].stride = uv_stride;
 
-  EXPECT_TRUE(vaapi_test_utils::CompareImages(sw_decoded_webp, hw_decoded_webp,
+  EXPECT_TRUE(vaapi_test_utils::CompareImages(sw_decoded_webp, *hw_decoded_webp,
                                               kMinSsim));
-  gpu_memory_buffer->Unmap();
 }
 
 // TODO(crbug.com/986073): expand test coverage. See

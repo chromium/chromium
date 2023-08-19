@@ -7,7 +7,6 @@ import("//ios/web/public/js_messaging/optimize_js.gni")
 import("//rlz/buildflags/buildflags.gni")
 
 source_set("web") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "blocked_popup_tab_helper.h",
     "blocked_popup_tab_helper.mm",
@@ -56,6 +55,7 @@ source_set("web") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/model/utils",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/elements",
@@ -79,7 +79,6 @@ source_set("web") {
 }
 
 source_set("delegate") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "web_state_delegate_browser_agent.h",
     "web_state_delegate_browser_agent.mm",
@@ -90,10 +89,14 @@ source_set("delegate") {
     ":tab_helper_delegates",
     ":web",
     "//base",
+    "//components/content_settings/core/browser",
+    "//components/supervised_user/core/common",
+    "//ios/chrome/browser/content_settings",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/web_content_area",
     "//ios/chrome/browser/permissions:tab_helper",
     "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/snapshots",
     "//ios/chrome/browser/ui/context_menu",
@@ -113,7 +116,6 @@ source_set("delegate") {
 }
 
 source_set("page_placeholder") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "page_placeholder_browser_agent.h",
     "page_placeholder_browser_agent.mm",
@@ -134,7 +136,6 @@ source_set("page_placeholder") {
 }
 
 source_set("tab_helper_delegates") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "repost_form_tab_helper_delegate.h",
     "sad_tab_tab_helper_delegate.h",
@@ -144,7 +145,6 @@ source_set("tab_helper_delegates") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "certificate_policy_app_agent_unittest.mm",
@@ -207,7 +207,6 @@ source_set("unit_tests") {
 }
 
 source_set("web_internal") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "browser_about_rewriter.cc",
     "browser_about_rewriter.h",
@@ -249,6 +248,8 @@ source_set("web_internal") {
     "//components/resources",
     "//components/signin/public/identity_manager",
     "//components/strings",
+    "//components/supervised_user/core/browser",
+    "//components/supervised_user/core/common:buildflags",
     "//components/translate/core/browser",
     "//components/translate/ios/browser",
     "//components/url_formatter",
@@ -275,7 +276,6 @@ source_set("web_internal") {
     "//ios/chrome/browser/open_from_clipboard",
     "//ios/chrome/browser/optimization_guide",
     "//ios/chrome/browser/passwords",
-    "//ios/chrome/browser/paths",
     "//ios/chrome/browser/policy",
     "//ios/chrome/browser/prerender",
     "//ios/chrome/browser/promos_manager",
@@ -284,6 +284,7 @@ source_set("web_internal") {
     "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/url",
     "//ios/chrome/browser/shared/model/url:constants",
@@ -292,6 +293,7 @@ source_set("web_internal") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/signin:signin_util",
     "//ios/chrome/browser/ssl",
+    "//ios/chrome/browser/supervised_user",
     "//ios/chrome/browser/translate",
     "//ios/chrome/browser/ui/infobars/coordinators",
     "//ios/chrome/browser/web:feature_flags",
@@ -310,7 +312,6 @@ source_set("web_internal") {
     "//ios/components/security_interstitials/safe_browsing",
     "//ios/components/webui:url_constants",
     "//ios/net",
-    "//ios/public/provider/chrome/browser/find_in_page:find_in_page_api",
     "//ios/public/provider/chrome/browser/url_rewriters:url_rewriters_api",
     "//ios/web",
     "//ios/web/common",
@@ -337,7 +338,6 @@ source_set("web_internal") {
 }
 
 source_set("unit_tests_internal") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "blocked_popup_tab_helper_unittest.mm",
@@ -391,7 +391,6 @@ source_set("unit_tests_internal") {
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "lookalike_url_constants.h",
     "lookalike_url_constants.mm",
@@ -399,10 +398,7 @@ source_set("constants") {
 }
 
 source_set("eg_test_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
 
   sources = [
@@ -419,10 +415,7 @@ source_set("eg_test_support+eg2") {
 }
 
 source_set("eg_app_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
 
   sources = [
@@ -449,10 +442,7 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
 
   sources = [
@@ -513,7 +503,6 @@ source_set("eg2_tests") {
 }
 
 source_set("feature_flags") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "features.cc",
     "features.h",

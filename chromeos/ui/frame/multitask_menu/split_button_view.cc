@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/frame/frame_utils.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -33,6 +34,11 @@ constexpr gfx::Insets kLeftButtonInsets = gfx::Insets::TLBR(4, 4, 4, 2);
 constexpr gfx::Insets kTopButtonInsets = gfx::Insets::TLBR(4, 4, 2, 4);
 constexpr gfx::Insets kRightButtonInsets = gfx::Insets::TLBR(4, 2, 4, 4);
 constexpr gfx::Insets kBottomButtonInsets = gfx::Insets::TLBR(2, 4, 4, 4);
+
+// Change to secondary hover color when the other button on the same
+// `SplitButtonView` is hovered.
+constexpr SkColor kSplitButtonSecondaryHoverColor =
+    SkColorSetA(gfx::kGoogleBlue600, SK_AlphaOPAQUE * 0.4);
 
 bool IsHoveredOrPressedState(views::Button::ButtonState button_state) {
   return button_state == views::Button::STATE_PRESSED ||
@@ -82,9 +88,9 @@ class SplitButtonView::SplitButton : public views::Button {
  public:
   SplitButton(views::Button::PressedCallback pressed_callback,
               base::RepeatingClosure hovered_pressed_callback,
-              const std::u16string& a11y_name,
               const gfx::Insets& insets)
       : views::Button(std::move(pressed_callback)),
+        button_color_(kMultitaskButtonDefaultColor),
         insets_(insets),
         hovered_pressed_callback_(std::move(hovered_pressed_callback)) {
     // Subtract by the preferred insets so that the focus ring is drawn around
@@ -92,7 +98,6 @@ class SplitButtonView::SplitButton : public views::Button {
     // ring matches the parent border.
     views::InstallRoundRectHighlightPathGenerator(
         this, insets - kPreferredInsets, kMultitaskBaseButtonBorderRadius);
-    SetAccessibleName(a11y_name);
   }
 
   SplitButton(const SplitButton&) = delete;
@@ -106,10 +111,12 @@ class SplitButtonView::SplitButton : public views::Button {
     cc::PaintFlags pattern_flags;
     pattern_flags.setAntiAlias(true);
     pattern_flags.setColor(
-        GetEnabled()
-            ? button_color_
-            : SkColorSetA(GetColorProvider()->GetColor(ui::kColorSysOnSurface),
-                          kMultitaskDisabledButtonOpacity));
+        GetEnabled() ? button_color_
+                     : (features::IsJellyEnabled()
+                            ? SkColorSetA(GetColorProvider()->GetColor(
+                                              ui::kColorSysOnSurface),
+                                          kMultitaskDisabledButtonOpacity)
+                            : kMultitaskButtonDisabledColor));
     pattern_flags.setStyle(cc::PaintFlags::kFill_Style);
     gfx::Rect pattern_bounds = GetLocalBounds();
     pattern_bounds.Inset(insets_);
@@ -143,7 +150,6 @@ SplitButtonView::SplitButtonView(SplitButtonType type,
     : type_(type) {
   // Left button should stay on the left side for RTL languages.
   SetMirrored(false);
-
   SetOrientation(is_portrait_mode ? views::BoxLayout::Orientation::kVertical
                                   : views::BoxLayout::Orientation::kHorizontal);
   SetPreferredSize(is_portrait_mode ? kMultitaskButtonPortraitSize
@@ -157,7 +163,6 @@ SplitButtonView::SplitButtonView(SplitButtonType type,
   const SnapDirection right_bottom_direction =
       GetSnapDirectionForWindow(window, /*left_top=*/false);
 
-  // Modify `split_button_callback` to pass a direction as well.
   auto on_left_top_press =
       base::BindRepeating(split_button_callback, left_top_direction);
   auto on_right_bottom_press =
@@ -165,19 +170,25 @@ SplitButtonView::SplitButtonView(SplitButtonType type,
 
   left_top_button_ = AddChildView(std::make_unique<SplitButton>(
       on_left_top_press, on_hover_pressed,
-      GetA11yName(type, /*left_top=*/true, is_portrait_mode),
       is_portrait_mode ? kTopButtonInsets : kLeftButtonInsets));
   right_bottom_button_ = AddChildView(std::make_unique<SplitButton>(
       on_right_bottom_press, on_hover_pressed,
-      GetA11yName(type, /*left_top=*/false, is_portrait_mode),
       is_portrait_mode ? kBottomButtonInsets : kRightButtonInsets));
 
-  const int left_top_width = type_ == SplitButtonType::kHalfButtons
-                                 ? kMultitaskHalfButtonWidth
-                                 : kMultitaskTwoThirdButtonWidth;
-  const int right_bottom_width = type_ == SplitButtonType::kHalfButtons
-                                     ? kMultitaskHalfButtonWidth
-                                     : kMultitaskOneThirdButtonWidth;
+  UpdateButtons(is_portrait_mode, /*is_reversed=*/false);
+}
+
+void SplitButtonView::UpdateButtons(bool is_portrait_mode, bool is_reversed) {
+  const int left_top_width =
+      type_ == SplitButtonType::kHalfButtons
+          ? kMultitaskHalfButtonWidth
+          : (is_reversed ? kMultitaskOneThirdButtonWidth
+                         : kMultitaskTwoThirdButtonWidth);
+  const int right_bottom_width =
+      type_ == SplitButtonType::kHalfButtons
+          ? kMultitaskHalfButtonWidth
+          : (is_reversed ? kMultitaskTwoThirdButtonWidth
+                         : kMultitaskOneThirdButtonWidth);
 
   left_top_button_->SetPreferredSize(
       is_portrait_mode ? gfx::Size(kMultitaskHalfButtonHeight, left_top_width)
@@ -186,6 +197,15 @@ SplitButtonView::SplitButtonView(SplitButtonType type,
       is_portrait_mode
           ? gfx::Size(kMultitaskHalfButtonHeight, right_bottom_width)
           : gfx::Size(right_bottom_width, kMultitaskHalfButtonHeight));
+
+  left_top_button_->SetAccessibleName(
+      GetA11yName(type_, /*left_top=*/!is_reversed, is_portrait_mode));
+  right_bottom_button_->SetAccessibleName(
+      GetA11yName(type_, /*left_top=*/is_reversed, is_portrait_mode));
+}
+
+views::Button* SplitButtonView::GetLeftTopButton() {
+  return left_top_button_;
 }
 
 views::Button* SplitButtonView::GetRightBottomButton() {
@@ -194,12 +214,15 @@ views::Button* SplitButtonView::GetRightBottomButton() {
 
 void SplitButtonView::OnButtonHoveredOrPressed() {
   const auto* color_provider = GetColorProvider();
+  const bool is_jelly = features::IsJellyEnabled();
   const auto primary_hover_color =
-      color_provider->GetColor(ui::kColorSysPrimary);
+      is_jelly ? color_provider->GetColor(ui::kColorSysPrimary)
+               : kMultitaskButtonPrimaryHoverColor;
   border_color_ = primary_hover_color;
   const auto secondary_hover_color =
-      SkColorSetA(color_provider->GetColor(ui::kColorSysPrimary),
-                  kMultitaskHoverButtonOpacity);
+      is_jelly ? SkColorSetA(color_provider->GetColor(ui::kColorSysPrimary),
+                             kMultitaskHoverButtonOpacity)
+               : kSplitButtonSecondaryHoverColor;
   fill_color_ = SkColorSetA(color_provider->GetColor(ui::kColorSysPrimary),
                             kMultitaskHoverBackgroundOpacity);
 
@@ -213,8 +236,9 @@ void SplitButtonView::OnButtonHoveredOrPressed() {
     // Reset color.
     fill_color_ = SK_ColorTRANSPARENT;
     border_color_ =
-        SkColorSetA(color_provider->GetColor(ui::kColorSysOnSurface),
-                    kMultitaskDefaultButtonOpacity);
+        is_jelly ? SkColorSetA(color_provider->GetColor(ui::kColorSysOnSurface),
+                               kMultitaskDefaultButtonOpacity)
+                 : kMultitaskButtonDefaultColor;
     right_bottom_button_->set_button_color(border_color_);
     left_top_button_->set_button_color(border_color_);
   }

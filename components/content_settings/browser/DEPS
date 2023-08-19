@@ -1,5 +1,6 @@
 include_rules = [
   "+components/browsing_data/content",
+  "+components/browsing_data/core",
   "+components/page_load_metrics/browser",
   "+components/security_state/core",
   "+components/services/storage/public/cpp",
@@ -13,7 +14,23 @@ include_rules = [
   "+net/cookies",
   "+third_party/blink/public",
   "+components/privacy_sandbox",
+  "+components/site_engagement/content",
+   "+services/metrics/public",
+  "+components/strings",
+  "+components/vector_icons",
+  "+ui/base",
+  "+ui/gfx",
 
   # TODO(crbug.com/1404234) Remove when async canned helper logic is removed.
   "+components/page_info/core",
 ]
+
+specific_include_rules = {
+  "page_specific_content_settings.cc": [
+    "+services/network/public/mojom/shared_dictionary_access_observer.mojom.h",
+  ],
+  "page_specific_content_settings_unittest.cc": [
+    "+net/extras/shared_dictionary/shared_dictionary_isolation_key.h",
+    "+services/network/public/mojom/shared_dictionary_access_observer.mojom.h",
+  ],
+}

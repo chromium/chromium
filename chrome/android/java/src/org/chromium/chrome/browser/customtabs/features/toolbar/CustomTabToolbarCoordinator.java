@@ -17,11 +17,11 @@ import android.text.TextUtils;
 import android.view.View;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
@@ -79,7 +79,7 @@ public class CustomTabToolbarCoordinator {
 
     private int mControlsHidingToken = TokenHolder.INVALID_TOKEN;
     private boolean mInitializedToolbarWithNative;
-    private PendingIntent.OnFinished mCustomButtonClickOnFinished;
+    private PendingIntent.OnFinished mButtonClickOnFinishedForTesting;
 
     private static final String TAG = "CustomTabToolbarCoor";
 
@@ -173,7 +173,7 @@ public class CustomTabToolbarCoordinator {
             ActivityOptions options = ActivityOptions.makeBasic();
             ApiCompatibilityUtils.setActivityOptionsBackgroundActivityStartMode(options);
             params.getPendingIntent().send(mAppContext, 0, addedIntent,
-                    mCustomButtonClickOnFinished, null, null, options.toBundle());
+                    mButtonClickOnFinishedForTesting, null, null, options.toBundle());
         } catch (PendingIntent.CanceledException e) {
             Log.e(TAG, "CanceledException while sending pending intent in custom tab");
         }
@@ -249,9 +249,9 @@ public class CustomTabToolbarCoordinator {
     /**
      * Set the callback object for the {@link PendingIntent} which is sent by the custom buttons.
      */
-    @VisibleForTesting
     public void setCustomButtonPendingIntentOnFinishedForTesting(
             PendingIntent.OnFinished onFinished) {
-        mCustomButtonClickOnFinished = onFinished;
+        mButtonClickOnFinishedForTesting = onFinished;
+        ResettersForTesting.register(() -> mButtonClickOnFinishedForTesting = null);
     }
 }

@@ -76,7 +76,8 @@ EncoderStatus SetUpAomConfig(const VideoEncoder::Options& opts,
 
   if (opts.bitrate.has_value()) {
     auto& bitrate = opts.bitrate.value();
-    config.rc_target_bitrate = bitrate.target_bps() / 1000;
+    config.rc_target_bitrate =
+        base::saturated_cast<int32_t>(bitrate.target_bps()) / 1000;
     switch (bitrate.mode()) {
       case Bitrate::Mode::kVariable:
         config.rc_end_usage = AOM_VBR;
@@ -254,8 +255,34 @@ void Av1VideoEncoder::Initialize(VideoCodecProfile profile,
   if (config_.rc_end_usage == AOM_CBR)
     CALL_AOM_CONTROL(AV1E_SET_AQ_MODE, 3);
 
-  CALL_AOM_CONTROL(AV1E_SET_TILE_COLUMNS,
-                   static_cast<int>(std::log2(config_.g_threads)));
+  // Keep in mind that AV1E_SET_TILE_[COLUMNS|ROWS] uses log2 units.
+  int log2_threads = std::log2(config_.g_threads);
+  int tile_columns_log2 = 0;
+  int tile_rows_log2 = 0;
+  switch (log2_threads) {
+    case 4:
+      // For 16 threads we split the frame into 16 tiles 4x4
+      // We never really use more that 16 threads.
+      tile_columns_log2 = 2;
+      tile_rows_log2 = 2;
+      break;
+    case 3:
+      // For 8-15 threads we split the frame into 8 tiles 4x2
+      tile_columns_log2 = 2;
+      tile_rows_log2 = 1;
+      break;
+    case 2:
+      // For 4-7 threads we split the frame into 4 tiles 2x2
+      tile_columns_log2 = 1;
+      tile_rows_log2 = 1;
+      break;
+    default:
+      // Default: horizontal tiles for the number of threads rounded down
+      // to the power of 2.
+      tile_columns_log2 = log2_threads;
+  }
+  CALL_AOM_CONTROL(AV1E_SET_TILE_COLUMNS, tile_columns_log2);
+  CALL_AOM_CONTROL(AV1E_SET_TILE_ROWS, tile_rows_log2);
 
   // AOME_SET_CPUUSED determines tradeoff between video quality and compression
   // time. Valid range: 0..10. 0 runs the slowest, and 10 runs the fastest.
@@ -351,28 +378,28 @@ void Av1VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
 
   aom_img_fmt fmt = frame->format() == PIXEL_FORMAT_NV12 ? AOM_IMG_FMT_NV12
                                                          : AOM_IMG_FMT_I420;
-  aom_image_t* image = aom_img_wrap(&image_, fmt, options_.frame_size.width(),
-                                    options_.frame_size.height(), 1,
-                                    frame->writable_data(VideoFrame::kYPlane));
+  aom_image_t* image = aom_img_wrap(
+      &image_, fmt, options_.frame_size.width(), options_.frame_size.height(),
+      1, const_cast<uint8_t*>(frame->visible_data(VideoFrame::kYPlane)));
   DCHECK_EQ(image, &image_);
 
   switch (frame->format()) {
     case PIXEL_FORMAT_I420:
       image->planes[AOM_PLANE_Y] =
-          frame->GetWritableVisibleData(VideoFrame::kYPlane);
+          const_cast<uint8_t*>(frame->visible_data(VideoFrame::kYPlane));
       image->planes[AOM_PLANE_U] =
-          frame->GetWritableVisibleData(VideoFrame::kUPlane);
+          const_cast<uint8_t*>(frame->visible_data(VideoFrame::kUPlane));
       image->planes[AOM_PLANE_V] =
-          frame->GetWritableVisibleData(VideoFrame::kVPlane);
+          const_cast<uint8_t*>(frame->visible_data(VideoFrame::kVPlane));
       image->stride[AOM_PLANE_Y] = frame->stride(VideoFrame::kYPlane);
       image->stride[AOM_PLANE_U] = frame->stride(VideoFrame::kUPlane);
       image->stride[AOM_PLANE_V] = frame->stride(VideoFrame::kVPlane);
       break;
     case PIXEL_FORMAT_NV12:
       image->planes[AOM_PLANE_Y] =
-          frame->GetWritableVisibleData(VideoFrame::kYPlane);
+          const_cast<uint8_t*>(frame->visible_data(VideoFrame::kYPlane));
       image->planes[AOM_PLANE_U] =
-          frame->GetWritableVisibleData(VideoFrame::kUVPlane);
+          const_cast<uint8_t*>(frame->visible_data(VideoFrame::kUVPlane));
       image->planes[AOM_PLANE_V] = nullptr;
       image->stride[AOM_PLANE_Y] = frame->stride(VideoFrame::kYPlane);
       image->stride[AOM_PLANE_U] = frame->stride(VideoFrame::kUVPlane);
@@ -612,7 +639,7 @@ void Av1VideoEncoder::UpdateEncoderColorSpace() {
     auto status = aom_codec_control(codec_.get(), AV1E_SET_MATRIX_COEFFICIENTS,
                                     static_cast<int>(aom_cs.matrix));
     if (status != AOM_CODEC_OK)
-      LogAomErrorMessage(codec_.get(), "Failed to set color transfer", status);
+      LogAomErrorMessage(codec_.get(), "Failed to set color matrix", status);
   }
 
   if (last_frame_color_space_.GetRangeID() == gfx::ColorSpace::RangeID::FULL ||

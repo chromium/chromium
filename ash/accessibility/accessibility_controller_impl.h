@@ -97,6 +97,8 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
     Feature(A11yFeatureType type,
             const std::string& pref_name,
             const gfx::VectorIcon* icon,
+            const int name_resource_id,
+            const bool toggleable_in_quicksettings,
             AccessibilityControllerImpl* controller);
     Feature(const Feature&) = delete;
     Feature& operator=(Feature const&) = delete;
@@ -113,6 +115,10 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
     bool IsEnterpriseIconVisible() const;
     const std::string& pref_name() const { return pref_name_; }
     const gfx::VectorIcon& icon() const;
+    int name_resource_id() const { return name_resource_id_; }
+    bool toggleable_in_quicksettings() const {
+      return toggleable_in_quicksettings_;
+    }
     A11yFeatureType conflicting_feature() const { return conflicting_feature_; }
 
     void UpdateFromPref();
@@ -133,6 +139,15 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
     bool enabled_ = false;
     const std::string pref_name_;
     raw_ptr<const gfx::VectorIcon, ExperimentalAsh> icon_;
+
+    // The resource id used to fetch the string with this feature's name. Used
+    // in quicksettings.
+    const int name_resource_id_;
+
+    // Specifies if this feature can be toggled from the accessibility options
+    // available in the quicksettings menu.
+    const bool toggleable_in_quicksettings_;
+
     const raw_ptr<AccessibilityControllerImpl, ExperimentalAsh> owner_;
   };
 
@@ -155,6 +170,8 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
     FeatureWithDialog(A11yFeatureType type,
                       const std::string& pref_name,
                       const gfx::VectorIcon* icon,
+                      const int name_resource_id,
+                      const bool toggleable_in_quicksettings,
                       const Dialog& dialog,
                       AccessibilityControllerImpl* controller);
     ~FeatureWithDialog() override;
@@ -203,6 +220,10 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
 
   Feature& GetFeature(A11yFeatureType feature) const;
 
+  // Returns all `Feature`s that are toggleable in quicksettings and currently
+  // enabled.
+  std::vector<Feature*> GetEnabledFeaturesInQuickSettings() const;
+
   base::WeakPtr<AccessibilityControllerImpl> GetWeakPtr();
 
   // Getters for the corresponding features.
@@ -210,6 +231,7 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   Feature& caret_highlight() const;
   Feature& cursor_highlight() const;
   Feature& dictation() const;
+  Feature& color_correction() const;
   Feature& floating_menu() const;
   Feature& focus_highlight() const;
   FeatureWithDialog& fullscreen_magnifier() const;
@@ -274,6 +296,9 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
 
   bool IsHighContrastSettingVisibleInTray();
   bool IsEnterpriseIconVisibleForHighContrast();
+
+  bool IsColorCorrectionSettingVisibleInTray();
+  bool IsEnterpriseIconVisibleForColorCorrection();
 
   bool IsLargeCursorSettingVisibleInTray();
   bool IsEnterpriseIconVisibleForLargeCursor();
@@ -419,6 +444,7 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
       int point_scan_speed_dips_per_second) override;
   void SetDictationActive(bool is_active) override;
   void ToggleDictationFromSource(DictationToggleSource source) override;
+  void EnableOrToggleDictationFromSource(DictationToggleSource source) override;
   void ShowDictationLanguageUpgradedNudge(
       const std::string& dictation_locale,
       const std::string& application_locale) override;
@@ -456,8 +482,11 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   // magnifier, docked magnifier and screen rotation and when requested by the
   // AccessibilityPrivate extension API. The shown dialog is stored as a weak
   // pointer in the variable |confirmation_dialog_| below.
+  // This is also used to show the dialog for Select to Speak's enhanced network
+  // voices.
   void ShowConfirmationDialog(const std::u16string& title,
                               const std::u16string& description,
+                              const std::u16string& cancel_name,
                               base::OnceClosure on_accept_callback,
                               base::OnceClosure on_cancel_callback,
                               base::OnceClosure on_close_callback) override;
@@ -473,6 +502,7 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
     return switch_access_bubble_controller_.get();
   }
   void DisableSwitchAccessDisableConfirmationDialogTesting() override;
+  void DisableSwitchAccessEnableNotificationTesting() override;
   SelectToSpeakMenuBubbleController*
   GetSelectToSpeakMenuBubbleControllerForTest() {
     return select_to_speak_bubble_controller_.get();
@@ -493,6 +523,16 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   }
 
   DictationBubbleController* GetDictationBubbleControllerForTest();
+
+  bool IsDictationKeyboardDialogShowingForTesting() {
+    return dictation_keyboard_dialog_showing_for_testing_;
+  }
+  void AcceptDictationKeyboardDialogForTesting() {
+    OnDictationKeyboardDialogAccepted();
+  }
+  void DismissDictationKeyboardDialogForTesting() {
+    OnDictationKeyboardDialogDismissed();
+  }
 
  private:
   // Populate |features_| with the feature of the correct type.
@@ -522,7 +562,7 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   void UpdateLargeCursorFromPref();
   void UpdateLiveCaptionFromPref();
   void UpdateCursorColorFromPrefs();
-  void UpdateColorFilteringFromPrefs();
+  void UpdateColorCorrectionFromPrefs();
   void UpdateSwitchAccessKeyCodesFromPref(SwitchAccessCommand command);
   void UpdateSwitchAccessAutoScanEnabledFromPref();
   void UpdateSwitchAccessAutoScanSpeedFromPref();
@@ -539,9 +579,15 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   void SyncSwitchAccessPrefsToSignInProfile();
   void UpdateKeyCodesAfterSwitchAccessEnabled();
 
+  void ShowDictationKeyboardDialog();
+  void OnDictationKeyboardDialogAccepted();
+  void OnDictationKeyboardDialogDismissed();
+
   // Dictation's SODA download progress. Values are between 0 and 100. Tracked
   // for testing purposes only.
   int dictation_soda_download_progress_ = 0;
+
+  bool dictation_keyboard_dialog_showing_for_testing_ = false;
 
   // Client interface in chrome browser.
   raw_ptr<AccessibilityControllerClient, ExperimentalAsh> client_ = nullptr;

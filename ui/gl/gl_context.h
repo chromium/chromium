@@ -119,12 +119,6 @@ struct GL_EXPORT GLContextAttribs {
   // If true, ANGLE will support the creation of client arrays.
   bool angle_create_context_client_arrays = false;
 
-  // If true, an ANGLE external context will be created with
-  // EGL_EXTERNAL_CONTEXT_SAVE_STATE_ANGLE is true, so when ReleaseCurrent is
-  // called, ANGLE will restore the GL state of the native EGL context to the
-  // state when MakeCurrent was previously called.
-  bool angle_restore_external_context_state = false;
-
   AngleContextVirtualizationGroup angle_context_virtualization_group_number =
       AngleContextVirtualizationGroup::kDefault;
 

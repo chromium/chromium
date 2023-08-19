@@ -10,8 +10,14 @@
 #include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 
 namespace enterprise_idle {
 
@@ -19,6 +25,16 @@ namespace {
 
 constexpr base::TimeDelta kTestDialogTimeout = base::Seconds(5);
 constexpr base::TimeDelta kDialogTimeout = base::Seconds(30);
+
+IdleDialog::ActionSet GetActionSet(PrefService* prefs) {
+  std::vector<ActionType> actions;
+  base::ranges::transform(prefs->GetList(prefs::kIdleTimeoutActions),
+                          std::back_inserter(actions),
+                          [](const base::Value& action) {
+                            return static_cast<ActionType>(action.GetInt());
+                          });
+  return ActionsToActionSet(base::flat_set<ActionType>(std::move(actions)));
+}
 
 }  // namespace
 
@@ -31,32 +47,38 @@ DialogManager* DialogManager::GetInstance() {
   return instance.get();
 }
 
-base::CallbackListSubscription DialogManager::ShowDialog(
+base::CallbackListSubscription DialogManager::MaybeShowDialog(
+    Profile* profile,
     base::TimeDelta threshold,
     const base::flat_set<ActionType>& action_types,
     FinishedCallback on_finished) {
-  // Passed the guards: we're really going to show the dialog and close
-  // browsers.
-  base::CallbackListSubscription subscription =
-      callbacks_.Add(std::move(on_finished));
-
   if (dialog_) {
     // The dialog is already visible, re-use it.
-    return subscription;
+    return callbacks_.Add(std::move(on_finished));
   }
 
+  Browser* active_browser = chrome::FindBrowserWithActiveWindow();
+  if (!active_browser || !active_browser->is_type_normal()) {
+    // User is in another app, or in a window that shouldn't show the dialog
+    // (e.g. DevTools). Skip the dialog, and run actions immediately.
+    std::move(on_finished).Run(/*expired=*/true);
+    return base::CallbackListSubscription();
+  }
+
+  // Create a new dialog, modal to `active_browser`.
   base::TimeDelta timeout = base::CommandLine::ForCurrentProcess()->HasSwitch(
                                 switches::kSimulateIdleTimeout)
                                 ? kTestDialogTimeout
                                 : kDialogTimeout;
-  dialog_ =
-      IdleDialog::Show(timeout, threshold, ActionsToActionSet(action_types),
-                       base::BindOnce(&DialogManager::OnDialogDismissedByUser,
-                                      base::Unretained(this)));
   dialog_timer_.Start(
       FROM_HERE, timeout,
       base::BindOnce(&DialogManager::OnDialogExpired, base::Unretained(this)));
-  return subscription;
+  dialog_ = IdleDialog::Show(
+      active_browser, timeout, threshold, GetActionSet(profile->GetPrefs()),
+      base::BindOnce(&DialogManager::OnDialogDismissedByUser,
+                     base::Unretained(this)));
+
+  return callbacks_.Add(std::move(on_finished));
 }
 
 void DialogManager::DismissDialogForTesting() {

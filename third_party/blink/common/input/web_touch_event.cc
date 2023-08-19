@@ -108,4 +108,35 @@ WebTouchPoint WebTouchEvent::TouchPointInRootFrame(unsigned point) const {
   return transformed_point;
 }
 
+bool WebTouchEvent::IsTouchSequenceStart() const {
+  DCHECK(touches_length ||
+         GetType() == WebInputEvent::Type::kTouchScrollStarted);
+  if (GetType() != WebInputEvent::Type::kTouchStart) {
+    return false;
+  }
+  for (size_t i = 0; i < touches_length; ++i) {
+    if (touches[i].state != WebTouchPoint::State::kStatePressed) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool WebTouchEvent::IsTouchSequenceEnd() const {
+  if (GetType() != WebInputEvent::Type::kTouchEnd &&
+      GetType() != WebInputEvent::Type::kTouchCancel) {
+    return false;
+  }
+  if (!touches_length) {
+    return true;
+  }
+  for (size_t i = 0; i < touches_length; ++i) {
+    if (touches[i].state != WebTouchPoint::State::kStateReleased &&
+        touches[i].state != WebTouchPoint::State::kStateCancelled) {
+      return false;
+    }
+  }
+  return true;
+}
+
 }  // namespace blink

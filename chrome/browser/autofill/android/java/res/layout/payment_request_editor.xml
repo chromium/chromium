@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2016 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!-- PaymentRequestUI editor dialog. -->
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/editor_container"
+    android:background="@macro/default_bg_color">
+
+    <!-- Toolbar -->
+    <org.chromium.chrome.browser.autofill.editors.EditorDialogToolbar
+        android:id="@+id/action_bar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        style="@style/ModernToolbar" />
+
+    <include layout="@layout/settings_action_bar_shadow" />
+
+    <!-- All the page content in scrollable form. -->
+    <org.chromium.components.browser_ui.widget.FadingEdgeScrollView
+        android:id="@+id/scroll_view"
+        android:layout_height="0dp"
+        android:layout_width="match_parent"
+        android:layout_below="@id/action_bar"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true" >
+
+        <LinearLayout
+            android:id="@+id/contents"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/pref_autofill_content_spacing"
+            android:layout_marginEnd="@dimen/pref_autofill_content_spacing"
+            android:orientation="vertical" />
+
+    </org.chromium.components.browser_ui.widget.FadingEdgeScrollView>
+
+</RelativeLayout>

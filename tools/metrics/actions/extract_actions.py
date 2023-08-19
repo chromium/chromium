@@ -207,7 +207,7 @@ def AddBookmarkManagerActions(actions):
 
 
 def AddBookmarkUsageActions(actions):
-  """Add actions that are sent by the PDF plugin.
+  """Add actions related to bookmarks usage.
 
   Arguments
     actions: set of actions to add to.
@@ -220,6 +220,10 @@ def AddBookmarkUsageActions(actions):
   actions.add('Bookmarks.FolderAdded.AccountStorage')
   actions.add('Bookmarks.FolderAdded.LocalStorage')
   actions.add('Bookmarks.FolderAdded.LocalStorageSyncing')
+  actions.add('Bookmarks.Opened')
+  actions.add('Bookmarks.Opened.AccountStorage')
+  actions.add('Bookmarks.Opened.LocalStorage')
+  actions.add('Bookmarks.Opened.LocalStorageSyncing')
 
 
 def AddChromeOSActions(actions):

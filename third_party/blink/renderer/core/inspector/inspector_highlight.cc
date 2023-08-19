@@ -275,19 +275,19 @@ String ContrastAlgorithmToString(const ContrastAlgorithm& contrast_algorithm) {
 }
 }  // namespace
 
-void AppendStyleInfo(Node* node,
+void AppendStyleInfo(Element* element,
                      protocol::DictionaryValue* element_info,
                      const InspectorHighlightContrastInfo& node_contrast,
                      const ContrastAlgorithm& contrast_algorithm) {
   std::unique_ptr<protocol::DictionaryValue> computed_style =
       protocol::DictionaryValue::create();
   CSSComputedStyleDeclaration* style =
-      MakeGarbageCollected<CSSComputedStyleDeclaration>(node, true);
+      MakeGarbageCollected<CSSComputedStyleDeclaration>(element, true);
   Vector<CSSPropertyID> properties;
 
   // For text nodes, we can show color & font properties.
   bool has_text_children = false;
-  for (Node* child = node->firstChild(); !has_text_children && child;
+  for (Node* child = element->firstChild(); !has_text_children && child;
        child = child->nextSibling()) {
     has_text_children = child->IsTextNode();
   }
@@ -1119,14 +1119,14 @@ DevtoolsFlexInfo GetFlexLinesAndItems(LayoutBox* layout_box,
 }
 
 std::unique_ptr<protocol::DictionaryValue> BuildFlexContainerInfo(
-    Node* node,
+    Element* element,
     const InspectorFlexContainerHighlightConfig&
         flex_container_highlight_config,
     float scale) {
   CSSComputedStyleDeclaration* style =
-      MakeGarbageCollected<CSSComputedStyleDeclaration>(node, true);
-  LocalFrameView* containing_view = node->GetDocument().View();
-  LayoutObject* layout_object = node->GetLayoutObject();
+      MakeGarbageCollected<CSSComputedStyleDeclaration>(element, true);
+  LocalFrameView* containing_view = element->GetDocument().View();
+  LayoutObject* layout_object = element->GetLayoutObject();
   auto* layout_box = To<LayoutBox>(layout_object);
   DCHECK(layout_object);
   bool is_horizontal = IsHorizontalFlex(layout_object);
@@ -1207,13 +1207,13 @@ std::unique_ptr<protocol::DictionaryValue> BuildFlexContainerInfo(
 }
 
 std::unique_ptr<protocol::DictionaryValue> BuildFlexItemInfo(
-    Node* node,
+    Element* element,
     const InspectorFlexItemHighlightConfig& flex_item_highlight_config,
     float scale) {
   std::unique_ptr<protocol::DictionaryValue> flex_info =
       protocol::DictionaryValue::create();
 
-  LayoutObject* layout_object = node->GetLayoutObject();
+  LayoutObject* layout_object = element->GetLayoutObject();
   bool is_horizontal = IsHorizontalFlex(layout_object->Parent());
   Length base_size = Length::Auto();
 
@@ -1245,13 +1245,13 @@ std::unique_ptr<protocol::DictionaryValue> BuildFlexItemInfo(
 }
 
 std::unique_ptr<protocol::DictionaryValue> BuildGridInfo(
-    Node* node,
+    Element* element,
     const InspectorGridHighlightConfig& grid_highlight_config,
     float scale,
     bool isPrimary) {
-  LocalFrameView* containing_view = node->GetDocument().View();
-  DCHECK(node->GetLayoutObject());
-  auto* grid = To<LayoutNGGrid>(node->GetLayoutObject());
+  LocalFrameView* containing_view = element->GetDocument().View();
+  DCHECK(element->GetLayoutObject());
+  auto* grid = To<LayoutNGGrid>(element->GetLayoutObject());
 
   std::unique_ptr<protocol::DictionaryValue> grid_info =
       protocol::DictionaryValue::create();
@@ -1278,8 +1278,6 @@ std::unique_ptr<protocol::DictionaryValue> BuildGridInfo(
                           grid->BorderAndPaddingLogicalRight();
 
   if (grid_highlight_config.show_track_sizes) {
-    Element* element = DynamicTo<Element>(node);
-    DCHECK(element);
     StyleResolver& style_resolver = element->GetDocument().GetStyleResolver();
 
     HeapHashMap<CSSPropertyName, Member<const CSSValue>> cascaded_values =
@@ -1299,11 +1297,11 @@ std::unique_ptr<protocol::DictionaryValue> BuildGridInfo(
 
     grid_info->setValue(
         "columnTrackSizes",
-        BuildGridTrackSizes(node, kForColumns, scale, column_gap, rtl_offset,
+        BuildGridTrackSizes(element, kForColumns, scale, column_gap, rtl_offset,
                             columns, rows, &column_authored_values));
     grid_info->setValue(
         "rowTrackSizes",
-        BuildGridTrackSizes(node, kForRows, scale, row_gap, rtl_offset, rows,
+        BuildGridTrackSizes(element, kForRows, scale, row_gap, rtl_offset, rows,
                             columns, &row_authored_values));
   }
 
@@ -1383,11 +1381,11 @@ std::unique_ptr<protocol::DictionaryValue> BuildGridInfo(
   if (grid_highlight_config.show_positive_line_numbers) {
     grid_info->setValue(
         "positiveRowLineNumberPositions",
-        BuildGridPositiveLineNumberPositions(node, row_gap, kForRows, scale,
+        BuildGridPositiveLineNumberPositions(element, row_gap, kForRows, scale,
                                              rtl_offset, rows, columns));
     grid_info->setValue(
         "positiveColumnLineNumberPositions",
-        BuildGridPositiveLineNumberPositions(node, column_gap, kForColumns,
+        BuildGridPositiveLineNumberPositions(element, column_gap, kForColumns,
                                              scale, rtl_offset, columns, rows));
   }
 
@@ -1395,28 +1393,28 @@ std::unique_ptr<protocol::DictionaryValue> BuildGridInfo(
   if (grid_highlight_config.show_negative_line_numbers) {
     grid_info->setValue(
         "negativeRowLineNumberPositions",
-        BuildGridNegativeLineNumberPositions(node, row_gap, kForRows, scale,
+        BuildGridNegativeLineNumberPositions(element, row_gap, kForRows, scale,
                                              rtl_offset, rows, columns));
     grid_info->setValue(
         "negativeColumnLineNumberPositions",
-        BuildGridNegativeLineNumberPositions(node, column_gap, kForColumns,
+        BuildGridNegativeLineNumberPositions(element, column_gap, kForColumns,
                                              scale, rtl_offset, columns, rows));
   }
 
   // Area names
   if (grid_highlight_config.show_area_names) {
     grid_info->setValue("areaNames",
-                        BuildAreaNamePaths(node, scale, rows, columns));
+                        BuildAreaNamePaths(element, scale, rows, columns));
   }
 
   // line names
   if (grid_highlight_config.show_line_names) {
     grid_info->setValue(
         "rowLineNameOffsets",
-        BuildGridLineNames(node, kForRows, scale, rows, columns));
+        BuildGridLineNames(element, kForRows, scale, rows, columns));
     grid_info->setValue(
         "columnLineNameOffsets",
-        BuildGridLineNames(node, kForColumns, scale, columns, rows));
+        BuildGridLineNames(element, kForColumns, scale, columns, rows));
   }
 
   // Grid border
@@ -1436,7 +1434,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildGridInfo(
 }
 
 std::unique_ptr<protocol::DictionaryValue> BuildGridInfo(
-    Node* node,
+    Element* element,
     const InspectorHighlightConfig& highlight_config,
     float scale,
     bool isPrimary) {
@@ -1448,11 +1446,11 @@ std::unique_ptr<protocol::DictionaryValue> BuildGridInfo(
     grid_config->column_line_color = highlight_config.css_grid;
     grid_config->row_line_dash = true;
     grid_config->column_line_dash = true;
-    return BuildGridInfo(node, *grid_config, scale, isPrimary);
+    return BuildGridInfo(element, *grid_config, scale, isPrimary);
   }
 
-  return BuildGridInfo(node, *(highlight_config.grid_highlight_config), scale,
-                       isPrimary);
+  return BuildGridInfo(element, *(highlight_config.grid_highlight_config),
+                       scale, isPrimary);
 }
 
 void CollectQuads(Node* node,
@@ -1508,8 +1506,8 @@ PhysicalRect TextFragmentRectInRootFrame(
     const LayoutObject* layout_object,
     const LayoutText::TextBoxInfo& text_box) {
   PhysicalRect absolute_coords_text_box_rect =
-      layout_object->LocalToAbsoluteRect(
-          layout_object->FlipForWritingMode(text_box.local_rect));
+      layout_object->LocalToAbsoluteRect(layout_object->FlipForWritingMode(
+          text_box.local_rect.ToLayoutRect()));
   LocalFrameView* local_frame_view = layout_object->GetFrameView();
   return local_frame_view ? local_frame_view->ConvertToRootFrame(
                                 absolute_coords_text_box_rect)
@@ -1729,8 +1727,8 @@ InspectorHighlight::InspectorHighlight(
     element_info_ = BuildElementInfo(element);
   else if (append_element_info && text_node)
     element_info_ = BuildTextNodeInfo(text_node);
-  if (element_info_ && highlight_config.show_styles) {
-    AppendStyleInfo(node, element_info_.get(), node_contrast,
+  if (element && element_info_ && highlight_config.show_styles) {
+    AppendStyleInfo(element, element_info_.get(), node_contrast,
                     highlight_config.contrast_algorithm);
   }
 
@@ -1768,19 +1766,22 @@ void InspectorHighlight::AppendDistanceInfo(Node* node) {
   if (!layout_object)
     return;
 
-  CSSComputedStyleDeclaration* style =
-      MakeGarbageCollected<CSSComputedStyleDeclaration>(node, true);
-  for (unsigned i = 0; i < style->length(); ++i) {
-    AtomicString name(style->item(i));
-    const CSSValue* value = style->GetPropertyCSSValue(
-        CssPropertyID(node->GetExecutionContext(), name));
-    if (!value)
-      continue;
-    if (value->IsColorValue()) {
-      Color color = static_cast<const cssvalue::CSSColor*>(value)->Value();
-      computed_style_->setString(name, ToHEXA(color));
-    } else {
-      computed_style_->setString(name, value->CssText());
+  if (Element* element = DynamicTo<Element>(node)) {
+    CSSComputedStyleDeclaration* style =
+        MakeGarbageCollected<CSSComputedStyleDeclaration>(element, true);
+    for (unsigned i = 0; i < style->length(); ++i) {
+      AtomicString name(style->item(i));
+      const CSSValue* value = style->GetPropertyCSSValue(
+          CssPropertyID(element->GetExecutionContext(), name));
+      if (!value) {
+        continue;
+      }
+      if (value->IsColorValue()) {
+        Color color = static_cast<const cssvalue::CSSColor*>(value)->Value();
+        computed_style_->setString(name, ToHEXA(color));
+      } else {
+        computed_style_->setString(name, value->CssText());
+      }
     }
   }
 
@@ -1920,7 +1921,7 @@ void InspectorHighlight::AppendNodeHighlight(
     grid_info_ = protocol::ListValue::create();
     if (layout_object->IsLayoutNGGrid()) {
       grid_info_->pushValue(
-          BuildGridInfo(node, highlight_config, scale_, true));
+          BuildGridInfo(To<Element>(node), highlight_config, scale_, true));
     }
   }
 
@@ -1930,7 +1931,8 @@ void InspectorHighlight::AppendNodeHighlight(
     // need to avoid those.
     if (IsLayoutNGFlexibleBox(*layout_object)) {
       flex_container_info_->pushValue(BuildFlexContainerInfo(
-          node, *(highlight_config.flex_container_highlight_config), scale_));
+          To<Element>(node),
+          *(highlight_config.flex_container_highlight_config), scale_));
     }
   }
 
@@ -1938,7 +1940,8 @@ void InspectorHighlight::AppendNodeHighlight(
     flex_item_info_ = protocol::ListValue::create();
     if (IsLayoutNGFlexItem(*layout_object)) {
       flex_item_info_->pushValue(BuildFlexItemInfo(
-          node, *(highlight_config.flex_item_highlight_config), scale_));
+          To<Element>(node), *(highlight_config.flex_item_highlight_config),
+          scale_));
     }
   }
 
@@ -2141,7 +2144,7 @@ std::unique_ptr<protocol::DictionaryValue> InspectorGridHighlight(
   }
 
   std::unique_ptr<protocol::DictionaryValue> grid_info =
-      BuildGridInfo(node, config, scale, true);
+      BuildGridInfo(To<Element>(node), config, scale, true);
   return grid_info;
 }
 
@@ -2163,7 +2166,7 @@ std::unique_ptr<protocol::DictionaryValue> InspectorFlexContainerHighlight(
     return nullptr;
   }
 
-  return BuildFlexContainerInfo(node, config, scale);
+  return BuildFlexContainerInfo(To<Element>(node), config, scale);
 }
 
 std::unique_ptr<protocol::DictionaryValue> BuildSnapContainerInfo(Node* node) {

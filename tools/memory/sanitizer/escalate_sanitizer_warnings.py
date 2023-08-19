@@ -13,6 +13,7 @@ the results are returned to result_adpater."""
 import argparse
 import json
 import re
+import sys
 """
 We are looking for various types of sanitizer warnings. They have different
 formats but all end in a line 'SUMMARY: (...)Sanitizer:'.
@@ -45,6 +46,7 @@ member call on address 0x28dc001c8a00 which does not point to an object of type
 ...
 SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior
 """
+#pylint: disable=line-too-long
 _SUMMARY_MESSAGE_STR = r'\nSUMMARY: (Address|Leak|Memory|Thread|UndefinedBehavior)Sanitizer:'
 _SUMMARY_MESSAGE_REGEX = re.compile(_SUMMARY_MESSAGE_STR)
 
@@ -53,7 +55,7 @@ def escalate_test_status(test_name, test_run):
   original_status = test_run['status']
   # If test was not a SUCCESS, do not change it.
   if original_status != 'SUCCESS':
-    return
+    return False
 
   regex_result = _SUMMARY_MESSAGE_REGEX.search(test_run['output_snippet'])
   if regex_result:
@@ -62,19 +64,35 @@ def escalate_test_status(test_name, test_run):
     test_run['original_status'] = test_run['status']
     test_run['status'] = 'FAILURE'
     test_run['status_processed_by'] = 'escalate_sanitizer_warnings.py'
+    return True
+  return False
 
 
 def escalate_sanitizer_warnings(filename):
   with open(filename, 'r') as f:
     json_data = json.load(f)
 
+  failed_test_names = []
+
   for iteration_data in json_data['per_iteration_data']:
     for test_name, test_runs in iteration_data.items():
       for test_run in test_runs:
-        escalate_test_status(test_name, test_run)
-
+        if escalate_test_status(test_name, test_run):
+          failed_test_names.append(test_name)
+  if not failed_test_names:
+    return False
+  print_sanitizer_results(failed_test_names)
   with open(filename, 'w') as f:
     json.dump(json_data, f, indent=3, sort_keys=True)
+  return True
+
+
+def print_sanitizer_results(failed_test_names):
+  failure_count = len(failed_test_names)
+  print('%d test%s failed via sanitizer warnings:' %
+        (failure_count, ('s' if failure_count != 1 else '')))
+  for failed_test_name in failed_test_names:
+    print('    %s' % failed_test_name)
 
 
 def main():
@@ -89,11 +107,11 @@ def main():
       'to the JSON file.')
   args = parser.parse_args()
 
-  if args.test_summary_json_file:
-    escalate_sanitizer_warnings(args.test_summary_json_file)
-  else:
-    print("WARNING: summary json file is required")
+  if escalate_sanitizer_warnings(args.test_summary_json_file):
+    # If tests failed due to sanitizer warnings, exit with 1 returncode to
+    # influence task state.
+    return 1
 
 
 if __name__ == '__main__':
-  main()
+  sys.exit(main())

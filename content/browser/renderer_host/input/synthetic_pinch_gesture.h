@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_SYNTHETIC_PINCH_GESTURE_H_
 #define CONTENT_BROWSER_RENDERER_HOST_INPUT_SYNTHETIC_PINCH_GESTURE_H_
 
+#include <memory>
+
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "content/browser/renderer_host/input/synthetic_gesture.h"
@@ -18,14 +20,14 @@ namespace content {
 // SyntheticTouchscreenPinchGesture or SyntheticTouchpadPinchGesture, depending
 // on the SyntheticGestureParam's |input_type| and the default input type of the
 // target.
-class CONTENT_EXPORT SyntheticPinchGesture : public SyntheticGesture {
+class CONTENT_EXPORT SyntheticPinchGesture
+    : public SyntheticGestureBase<SyntheticPinchGestureParams> {
  public:
   explicit SyntheticPinchGesture(const SyntheticPinchGestureParams& params);
+  ~SyntheticPinchGesture() override;
 
   SyntheticPinchGesture(const SyntheticPinchGesture&) = delete;
   SyntheticPinchGesture& operator=(const SyntheticPinchGesture&) = delete;
-
-  ~SyntheticPinchGesture() override;
 
   SyntheticGesture::Result ForwardInputEvents(
       const base::TimeTicks& timestamp,
@@ -34,7 +36,6 @@ class CONTENT_EXPORT SyntheticPinchGesture : public SyntheticGesture {
                         SyntheticGestureTarget* target) const override;
 
  private:
-  SyntheticPinchGestureParams params_;
   std::unique_ptr<SyntheticGesture> lazy_gesture_;
 };
 

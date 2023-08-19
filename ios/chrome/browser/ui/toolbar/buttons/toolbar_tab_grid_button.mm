@@ -9,10 +9,6 @@
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 const CGFloat kLabelSize = 14;
 }  // namespace
@@ -46,6 +42,19 @@ const CGFloat kLabelSize = 14;
   if (highlighted) {
     self.tabCountLabel.textColor =
         self.toolbarConfiguration.buttonsTintColorHighlighted;
+  } else {
+    self.tabCountLabel.textColor = self.toolbarConfiguration.buttonsTintColor;
+  }
+}
+
+- (void)setIphHighlighted:(BOOL)iphHighlighted {
+  if (self.iphHighlighted == iphHighlighted) {
+    return;
+  }
+  [super setIphHighlighted:iphHighlighted];
+  if (self.iphHighlighted) {
+    self.tabCountLabel.textColor =
+        self.toolbarConfiguration.buttonsTintColorIPHHighlighted;
   } else {
     self.tabCountLabel.textColor = self.toolbarConfiguration.buttonsTintColor;
   }

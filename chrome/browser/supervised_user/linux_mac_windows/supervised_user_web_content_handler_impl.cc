@@ -25,10 +25,3 @@ void SupervisedUserWebContentHandlerImpl::RequestLocalApproval(
   // Method unsupposted on Desktop.
   NOTREACHED_NORETURN();
 }
-
-void SupervisedUserWebContentHandlerImpl::ShowFeedback(GURL url,
-                                                       std::u16string reason) {
-  // This method is never called when kWebFilterInterstitialRefresh is enabled
-  // (Supervised User Interstitial V2 is used).
-  NOTREACHED_NORETURN();
-}

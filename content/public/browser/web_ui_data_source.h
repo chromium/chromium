@@ -151,6 +151,9 @@ class WebUIDataSource {
 
   // The |source_name| this WebUIDataSource was created with.
   virtual std::string GetSource() = 0;
+
+  // Set supported scheme if not one of the default supported schemes.
+  virtual void SetSupportedScheme(base::StringPiece scheme) = 0;
 };
 
 }  // namespace content

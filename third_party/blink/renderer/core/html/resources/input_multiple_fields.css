@@ -32,7 +32,6 @@ input::-webkit-datetime-edit {
 input::-internal-datetime-container {
     display: flex;
     align-items: center;
-    -internal-align-self-block: center;
 }
 
 input::-webkit-datetime-edit-fields-wrapper {

@@ -84,7 +84,7 @@ namespace qrcode_generator {
 
 QRCodeGeneratorBubble::QRCodeGeneratorBubble(
     views::View* anchor_view,
-    content::WebContents* web_contents,
+    base::WeakPtr<content::WebContents> web_contents,
     base::OnceClosure on_closing,
     base::OnceClosure on_back_button_pressed,
     const GURL& url)
@@ -315,9 +315,9 @@ void QRCodeGeneratorBubble::Init() {
   // "More info" tooltip; looks like (i).
   auto tooltip_icon = std::make_unique<views::TooltipIcon>(
       l10n_util::GetStringUTF16(IDS_BROWSER_SHARING_QR_CODE_DIALOG_TOOLTIP));
-  tooltip_icon->set_bubble_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
+  tooltip_icon->SetBubbleWidth(ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
-  tooltip_icon->set_anchor_point_arrow(views::BubbleBorder::Arrow::TOP_LEFT);
+  tooltip_icon->SetAnchorPointArrow(views::BubbleBorder::Arrow::TOP_LEFT);
   tooltip_icon->SetProperty(
       views::kMarginsKey,
       gfx::Insets::TLBR(0, 0, 0, kPaddingTooltipDownloadButtonPx));
@@ -452,7 +452,9 @@ void QRCodeGeneratorBubble::DownloadButtonPressed() {
   const SkBitmap& bitmap = GetBitmap();
   const GURL data_url = GURL(webui::GetBitmapDataUrl(bitmap));
 
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  CHECK(web_contents_);
+
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_.get());
   content::DownloadManager* download_manager =
       browser->profile()->GetDownloadManager();
   net::NetworkTrafficAnnotationTag traffic_annotation =
@@ -481,7 +483,7 @@ void QRCodeGeneratorBubble::DownloadButtonPressed() {
       })");
   std::unique_ptr<download::DownloadUrlParameters> params =
       content::DownloadRequestUtils::CreateDownloadForWebContentsMainFrame(
-          web_contents_, data_url, traffic_annotation);
+          web_contents_.get(), data_url, traffic_annotation);
   // Suggest a name incorporating the hostname. Protocol, TLD, etc are
   // not taken into consideration. Duplicate names get automatic suffixes.
   params->set_suggested_name(GetQRCodeFilenameForURL(url_));

@@ -10,19 +10,23 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/hash/hash.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/qr_code.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/session_context.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_factory.h"
-#include "chrome/browser/ash/login/oobe_quick_start/logging/logging.h"
 #include "chrome/browser/ash/login/oobe_quick_start/oobe_quick_start_pref_names.h"
+#include "chrome/browser/ash/login/oobe_quick_start/second_device_auth_broker.h"
 #include "chrome/browser/browser_process.h"
+#include "chromeos/ash/components/quick_start/logging.h"
+#include "chromeos/ash/components/quick_start/quick_start_metrics.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/prefs/pref_service.h"
-#include "components/qr_code_generator/qr_code_generator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -41,25 +45,20 @@ namespace {
 constexpr char kQuickStartTestForcedUpdateSwitch[] =
     "quick-start-test-forced-update";
 
-TargetDeviceBootstrapController::QRCodePixelData GenerateQRCode(
-    std::vector<uint8_t> blob) {
-  QRCodeGenerator qr_generator;
-  auto generated_code = qr_generator.Generate(
-      base::as_bytes(base::make_span(blob.data(), blob.size())));
-  CHECK(generated_code.has_value());
-  auto res = TargetDeviceBootstrapController::QRCodePixelData{
-      generated_code->data.begin(), generated_code->data.end()};
-  CHECK_EQ(res.size(), static_cast<size_t>(generated_code->qr_size *
-                                           generated_code->qr_size));
-  return res;
-}
-
 }  // namespace
 
 TargetDeviceBootstrapController::TargetDeviceBootstrapController(
-    std::unique_ptr<TargetDeviceConnectionBroker>
-        target_device_connection_broker)
-    : connection_broker_(std::move(target_device_connection_broker)) {}
+    std::unique_ptr<SecondDeviceAuthBroker> auth_broker,
+    std::unique_ptr<
+        TargetDeviceBootstrapController::AccessibilityManagerWrapper>
+        accessibility_manager_wrapper,
+    QuickStartConnectivityService* quick_start_connectivity_service)
+    : auth_broker_(std::move(auth_broker)),
+      accessibility_manager_wrapper_(std::move(accessibility_manager_wrapper)) {
+  session_context_ = SessionContext();
+  connection_broker_ = TargetDeviceConnectionBrokerFactory::Create(
+      session_context_, quick_start_connectivity_service);
+}
 
 TargetDeviceBootstrapController::~TargetDeviceBootstrapController() = default;
 
@@ -90,26 +89,34 @@ TargetDeviceBootstrapController::GetAsWeakPtrForClient() {
   return weak_ptr_factory_for_clients_.GetWeakPtr();
 }
 
-void TargetDeviceBootstrapController::StartAdvertising() {
-  DCHECK(connection_broker_->GetFeatureSupportStatus() ==
-         TargetDeviceConnectionBroker::FeatureSupportStatus::kSupported);
-  DCHECK_EQ(status_.step, Step::NONE);
+void TargetDeviceBootstrapController::StartAdvertisingAndMaybeGetQRCode() {
+  CHECK(connection_broker_->GetFeatureSupportStatus() ==
+        TargetDeviceConnectionBroker::FeatureSupportStatus::kSupported);
+  CHECK_EQ(status_.step, Step::NONE);
 
   // No pending requests.
-  DCHECK(!weak_ptr_factory_.HasWeakPtrs());
+  CHECK(!weak_ptr_factory_.HasWeakPtrs());
 
-  status_.step = Step::ADVERTISING;
+  bool use_pin_authentication =
+      accessibility_manager_wrapper_->IsSpokenFeedbackEnabled();
+
+  if (use_pin_authentication || session_context_.is_resume_after_update()) {
+    status_.step = Step::ADVERTISING_WITHOUT_QR_CODE;
+  } else {
+    auto qr_code = std::make_unique<QRCode>(
+        session_context_.random_session_id(), session_context_.shared_secret());
+    status_.step = Step::ADVERTISING_WITH_QR_CODE;
+    status_.payload.emplace<QRCode::PixelData>(qr_code->pixel_data());
+  }
+
   connection_broker_->StartAdvertising(
-      this, /*use_pin_authentication=*/true,
+      this, use_pin_authentication,
       base::BindOnce(&TargetDeviceBootstrapController::OnStartAdvertisingResult,
                      weak_ptr_factory_.GetWeakPtr()));
   NotifyObservers();
 }
 
 void TargetDeviceBootstrapController::StopAdvertising() {
-  // No pending requests.
-  DCHECK(!weak_ptr_factory_.HasWeakPtrs());
-
   // Connection broker ignores the request if not advertising.
   connection_broker_->StopAdvertising(
       base::BindOnce(&TargetDeviceBootstrapController::OnStopAdvertising,
@@ -138,32 +145,21 @@ void TargetDeviceBootstrapController::PrepareForUpdate() {
 
 void TargetDeviceBootstrapController::OnPinVerificationRequested(
     const std::string& pin) {
-  constexpr Step kPossibleSteps[] = {Step::ADVERTISING,
-                                     Step::QR_CODE_VERIFICATION};
+  constexpr Step kPossibleSteps[] = {Step::ADVERTISING_WITHOUT_QR_CODE,
+                                     Step::ADVERTISING_WITH_QR_CODE};
   CHECK(base::Contains(kPossibleSteps, status_.step));
 
   pin_ = pin;
-  // TODO: display pin
   status_.step = Step::PIN_VERIFICATION;
+  status_.pin = pin_;
   status_.payload.emplace<absl::monostate>();
-  NotifyObservers();
-}
-
-void TargetDeviceBootstrapController::OnQRCodeVerificationRequested(
-    const std::vector<uint8_t>& qr_code_data) {
-  constexpr Step kPossibleSteps[] = {Step::ADVERTISING};
-  CHECK(base::Contains(kPossibleSteps, status_.step));
-
-  auto qr_code = GenerateQRCode(qr_code_data);
-  status_.step = Step::QR_CODE_VERIFICATION;
-  status_.payload.emplace<QRCodePixelData>(std::move(qr_code));
   NotifyObservers();
 }
 
 void TargetDeviceBootstrapController::OnConnectionAuthenticated(
     base::WeakPtr<TargetDeviceConnectionBroker::AuthenticatedConnection>
         authenticated_connection) {
-  constexpr Step kPossibleSteps[] = {Step::QR_CODE_VERIFICATION,
+  constexpr Step kPossibleSteps[] = {Step::ADVERTISING_WITH_QR_CODE,
                                      Step::PIN_VERIFICATION};
   CHECK(base::Contains(kPossibleSteps, status_.step));
 
@@ -188,6 +184,11 @@ void TargetDeviceBootstrapController::OnConnectionRejected() {
 
 void TargetDeviceBootstrapController::OnConnectionClosed(
     TargetDeviceConnectionBroker::ConnectionClosedReason reason) {
+  if (status_.step == Step::CONNECTING_TO_WIFI) {
+    quick_start_metrics::RecordWifiTransferResult(
+        /*succeeded=*/false, /*failure_reason=*/quick_start_metrics::
+            WifiTransferResultFailureReason::kConnectionDroppedDuringAttempt);
+  }
   status_.step = Step::ERROR;
   status_.payload = ErrorCode::CONNECTION_CLOSED;
   authenticated_connection_.reset();
@@ -207,7 +208,9 @@ void TargetDeviceBootstrapController::NotifyObservers() {
 }
 
 void TargetDeviceBootstrapController::OnStartAdvertisingResult(bool success) {
-  DCHECK_EQ(status_.step, Step::ADVERTISING);
+  constexpr Step kPossibleSteps[] = {Step::ADVERTISING_WITH_QR_CODE,
+                                     Step::ADVERTISING_WITHOUT_QR_CODE};
+  CHECK(base::Contains(kPossibleSteps, status_.step));
   if (success) {
     return;
   }
@@ -232,7 +235,8 @@ void TargetDeviceBootstrapController::OnNotifySourceOfUpdateResponse(
                     "Quick Start after the update.";
     PrefService* prefs = g_browser_process->local_state();
     prefs->SetBoolean(prefs::kShouldResumeQuickStartAfterReboot, true);
-    base::Value::Dict info = connection_broker_->GetPrepareForUpdateInfo();
+    base::Value::Dict info =
+        authenticated_connection_->GetPrepareForUpdateInfo();
     prefs->SetDict(prefs::kResumeQuickStartAfterRebootInfo, std::move(info));
   }
 
@@ -302,6 +306,11 @@ void TargetDeviceBootstrapController::OnWifiCredentialsReceived(
   status_.password = credentials->password;
   NotifyObservers();
 
+  // Record successful wifi credentials transfer. Failures will be
+  // logged from the QuickStartDecoder class.
+  quick_start_metrics::RecordWifiTransferResult(
+      /*succeeded=*/true, /*failure_reason=*/absl::nullopt);
+
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           kQuickStartTestForcedUpdateSwitch)) {
     PrepareForUpdate();
@@ -315,9 +324,39 @@ void TargetDeviceBootstrapController::AttemptGoogleAccountTransfer() {
   status_.payload.emplace<absl::monostate>();
   NotifyObservers();
 
-  // TODO: Actually pass through a real challenge here.
+  // Request the challenge bytes from Gaia to be sent to the phone.
+  CHECK(auth_broker_);
+  auth_broker_->FetchChallengeBytes(
+      base::BindOnce(&TargetDeviceBootstrapController::OnChallengeBytesReceived,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void TargetDeviceBootstrapController::OnChallengeBytesReceived(
+    SecondDeviceAuthBroker::ChallengeBytesOrError challenge) {
+  if (!challenge.has_value()) {
+    quick_start::QS_LOG(ERROR) << "Error fetching challenge bytes from Gaia. "
+                               << "Reason: " << challenge.error().ToString();
+    status_.step = Step::ERROR;
+    status_.payload = ErrorCode::FETCHING_CHALLENGE_BYTES_FAILED;
+    quick_start_metrics::RecordGaiaTransferAttempted(/*attempted=*/false);
+    NotifyObservers();
+    return;
+    // TODO(b:286853512) - Implement retry mechanism.
+  }
+
+  if (!authenticated_connection_) {
+    quick_start::QS_LOG(ERROR)
+        << "Received challenge bytes, but a phone connection no longer exists.";
+    NOTIMPLEMENTED();
+  }
+
+  quick_start::QS_LOG(INFO)
+      << "Received challenge bytes from Gaia. Requesting FIDO assertion.";
+  challenge_bytes_ = challenge.value();
+
+  quick_start_metrics::RecordGaiaTransferAttempted(/*attempted=*/true);
   authenticated_connection_->RequestAccountTransferAssertion(
-      "",
+      challenge_bytes_,
       base::BindOnce(&TargetDeviceBootstrapController::OnFidoAssertionReceived,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -332,8 +371,7 @@ void TargetDeviceBootstrapController::OnFidoAssertionReceived(
   }
 
   status_.step = Step::TRANSFERRED_GOOGLE_ACCOUNT_DETAILS;
-  status_.payload.emplace<absl::monostate>();
-  status_.fido_email = assertion->email;
+  status_.payload.emplace<FidoAssertionInfo>(assertion.value());
   NotifyObservers();
 }
 

@@ -81,7 +81,7 @@ const AtomicString& SourceBufferList::InterfaceName() const {
 void SourceBufferList::Trace(Visitor* visitor) const {
   visitor->Trace(async_event_queue_);
   visitor->Trace(list_);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
 }
 

@@ -20,6 +20,24 @@ struct DeviceInfo {
   string user_type;
 };
 
+/**
+ * These values correspond to the ActionType enum found at
+ * https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/scalable_iph/scalable_iph_constants.h;drc=ea198b54e3f6b0cfdd6bacbb01c2307fd1797b63;l=10.
+ */
+enum ActionTypeId {
+  INVALID = 0,
+  OPEN_CHROME = 1,
+  OPEN_LAUNCHER = 2,
+  OPEN_PERSONALIZATION_APP = 3,
+  OPEN_PLAY_STORE = 4,
+  OPEN_GOOGLE_DOCS = 5,
+  OPEN_GOOGLE_PHOTOS = 6,
+  OPEN_SETTINGS_PRINTER = 7,
+  OPEN_PHONE_HUB = 8,
+  OPEN_YOUTUBE = 9,
+  OPEN_FILE_MANAGER = 10,
+};
+
 // Browser interface for chrome://help-app to bootstrap a connection.
 interface PageHandlerFactory {
   // Create a page handler which exposes interfaces implemented in the browser
@@ -36,11 +54,18 @@ interface PageHandler {
   // Opens the parental controls part of OS settings.
   ShowParentalControls();
 
+  // Triggers the call-to-action associated with the given action type id.
+  TriggerWelcomeTipCallToAction(ActionTypeId action_type_id);
+
   // Returns true if Local Search Service integration is enabled.
   IsLssEnabled() => (bool enabled);
 
   // Returns true if the Help App Launcher Search feature is enabled.
   IsLauncherSearchEnabled() => (bool enabled);
+
+  // Launches the MS365 setup flow (or shows the final screen of the flow if it
+  // was already completed).
+  LaunchMicrosoft365Setup();
 
   // Requests that the help app discover notification is shown if the required
   // heuristics are present and if a notification for the Help App has not yet

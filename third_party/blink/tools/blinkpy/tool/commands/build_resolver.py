@@ -246,7 +246,12 @@ class BuildResolver:
                 'docs/testing/web_test_expectations.md#handle-bot-timeouts')
 
     def _log_build_statuses(self, build_statuses: BuildStatuses):
-        template = '  %-20s %-7s %-9s %-6s'
+        assert build_statuses
+        builder_names = [build.builder_name for build in build_statuses]
+        # Clamp to a minimum width to visually separate the `BUILDER` and
+        # `NUMBER` columns.
+        name_column_width = max(20, *map(len, builder_names))
+        template = f'  %-{name_column_width}s %-7s %-9s %-6s'
         _log.info(template, 'BUILDER', 'NUMBER', 'STATUS', 'BUCKET')
         for build in sorted(build_statuses, key=_build_sort_key):
             _log.info(template, build.builder_name,

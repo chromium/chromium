@@ -82,7 +82,7 @@ bool CachedMatchedProperties::DependenciesEqual(
   if ((parent_computed_style->IsEnsuredInDisplayNone() ||
        computed_style->IsEnsuredOutsideFlatTree()) &&
       !state.ParentStyle()->IsEnsuredInDisplayNone() &&
-      !state.StyleBuilder().IsEnsuredOutsideFlatTree()) {
+      !state.IsOutsideFlatTree()) {
     // If we cached a ComputedStyle in a display:none subtree, or outside the
     // flat tree,  we would not have triggered fetches for external resources
     // and have StylePendingImages in the ComputedStyle. Instead of having to
@@ -126,6 +126,12 @@ const CachedMatchedProperties* MatchedPropertiesCache::Find(
     const Key& key,
     const StyleResolverState& style_resolver_state) {
   DCHECK(key.IsValid());
+
+  // Matches the corresponding test in IsStyleCacheable().
+  if (style_resolver_state.TextAutosizingMultiplier() != 1.0f) {
+    return nullptr;
+  }
+
   Cache::iterator it = cache_.find(key.hash_);
   if (it == cache_.end()) {
     return nullptr;
@@ -138,7 +144,7 @@ const CachedMatchedProperties* MatchedPropertiesCache::Find(
     return nullptr;
   }
   if (cache_item->computed_style->InsideLink() !=
-      style_resolver_state.StyleBuilder().InsideLink()) {
+      style_resolver_state.InsideLink()) {
     return nullptr;
   }
   if (!cache_item->DependenciesEqual(style_resolver_state)) {
@@ -312,6 +318,18 @@ void MatchedPropertiesCache::RemoveCachedMatchedPropertiesWithDeadEntries(
   // structure will not be rehashed here. The next insertion/deletion from
   // regular code will take care of shrinking accordingly.
   cache_.RemoveAll(to_remove);
+}
+
+std::ostream& operator<<(std::ostream& stream,
+                         MatchedPropertiesCache::Key& key) {
+  stream << "Key{";
+  for (const MatchedProperties& matched_properties :
+       key.result_.GetMatchedProperties()) {
+    stream << matched_properties.properties->AsText();
+    stream << ",";
+  }
+  stream << "}";
+  return stream;
 }
 
 }  // namespace blink

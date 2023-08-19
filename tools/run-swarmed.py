@@ -102,7 +102,31 @@ def _DoSpawn(args):
       # luci/appengine/swarming/ui2/modules/alias.js
       # for example 'blueline' = 'Pixel 3'
       trigger_args += ['-d', 'device_type=' + DEFAULT_ANDROID_DEVICE_TYPE]
-  elif args.arch != 'detect':
+  elif args.target_os == 'ios':
+    print('WARNING: iOS support is quite limited.\n'
+          '1) --gtest_filter does not work with unit tests.\n' +
+          '2) Wildcards do not work with EG tests (--gtest_filter=Foo*).\n' +
+          '3) Some arguments are hardcoded (e.g. xcode version) and will ' +
+          'break over time. \n')
+
+    runner_args.append('--xcode-build-version=14c18')
+    runner_args.append('--xctest')
+    runner_args.append('--xcode-parallelization')
+    runner_args.append('--out-dir=./test-data')
+    runner_args.extend(['--platform', 'iPhone 13'])
+    runner_args.append('--version=15.5')
+    trigger_args.extend([
+        '-service-account',
+        'chromium-tester@chops-service-accounts.iam.gserviceaccount.com'
+    ])
+    trigger_args.extend(['-named-cache', 'runtime_ios_15_5=Runtime-ios-15.5'])
+    trigger_args.extend(['-named-cache', 'xcode_ios_14c18=Xcode.app'])
+    trigger_args.extend([
+        '-cipd-package', '.:infra/tools/mac_toolchain/${platform}=' +
+        'git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb'
+    ])
+
+  if args.arch != 'detect':
     trigger_args += [
         '-d',
         'cpu=' + args.arch,
@@ -263,6 +287,7 @@ def main():
   if args.swarming_os is None:
     args.swarming_os = {
       'mac': 'Mac',
+      'ios': 'Mac-13',
       'win': 'Windows',
       'linux': 'Linux',
       'android': 'Android',
@@ -275,6 +300,9 @@ def main():
 
   # Determine the CPU architecture of the test binary, if not specified.
   if args.arch == 'detect':
+    if args.target_os == 'ios':
+      print('iOS must specify --arch. Probably arm64 or x86-64.')
+      return 1
     if args.target_os not in ('android', 'mac', 'win'):
       executable_info = subprocess.check_output(
           ['file', os.path.join(args.out_dir, args.target_name)], text=True)

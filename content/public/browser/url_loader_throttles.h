@@ -35,6 +35,17 @@ CreateContentBrowserURLLoaderThrottles(
     NavigationUIData* navigation_ui_data,
     int frame_tree_node_id);
 
+// Wrapper around `ContentBrowserClient::CreateURLLoaderThrottlesForKeepAlive()`
+// which inserts additional content specific throttles for handling fetch
+// keepalive requests when their initiator is destroyed.
+CONTENT_EXPORT
+std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
+CreateContentBrowserURLLoaderThrottlesForKeepAlive(
+    const network::ResourceRequest& request,
+    BrowserContext* browser_context,
+    const base::RepeatingCallback<WebContents*()>& wc_getter,
+    int frame_tree_node_id);
+
 }  // namespace content
 
 #endif  // CONTENT_PUBLIC_BROWSER_URL_LOADER_THROTTLES_H_

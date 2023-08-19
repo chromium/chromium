@@ -555,7 +555,8 @@ class ShouldCreateDemoExtensionsExternalLoaderTest : public testing::Test {
   }
 
   // Owned by scoped_user_manager_.
-  raw_ptr<FakeChromeUserManager, ExperimentalAsh> user_manager_ = nullptr;
+  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      user_manager_ = nullptr;
 
  private:
   content::BrowserTaskEnvironment task_environment_;

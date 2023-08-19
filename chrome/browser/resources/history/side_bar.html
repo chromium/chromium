@@ -1,4 +1,4 @@
-    <style include="shared-style cr-icons cr-nav-menu-item-style">
+    <style include="cr-hidden-style cr-icons cr-nav-menu-item-style">
       :host {
         display: flex;
         flex-direction: column;
@@ -8,19 +8,11 @@
         width: var(--side-bar-width);
       }
 
-      div.separator {
+      .separator {
         background-color: var(--separator-color);
         flex-shrink: 0;
         height: 1px;
         margin: 8px 0;
-      }
-
-      #clear-browsing-data {
-        justify-content: space-between;
-      }
-
-      #clear-browsing-data .cr-icon {
-        margin-inline-end: 20px;
       }
 
       cr-menu-selector {

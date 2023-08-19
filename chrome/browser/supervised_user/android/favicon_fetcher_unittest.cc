@@ -72,6 +72,12 @@ class MockLargeIconService : public favicon::LargeIconService {
                    int desired_size_in_pixel,
                    favicon_base::LargeIconImageCallback callback,
                    base::CancelableTaskTracker* tracker));
+  MOCK_METHOD4(GetLargeIconRawBitmapForPageUrl,
+               base::CancelableTaskTracker::TaskId(
+                   const GURL& page_url,
+                   int min_source_size_in_pixel,
+                   favicon_base::FaviconRawBitmapCallback callback,
+                   base::CancelableTaskTracker* tracker));
   MOCK_METHOD5(GetLargeIconRawBitmapOrFallbackStyleForIconUrl,
                base::CancelableTaskTracker::TaskId(
                    const GURL& icon_url,

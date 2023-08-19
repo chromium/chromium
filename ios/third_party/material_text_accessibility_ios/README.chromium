@@ -5,6 +5,7 @@ Revision: 499b45d1895b565096302a209c0c728df03b95d4
 License: Apache 2.0
 License File: LICENSE
 Security Critical: yes
+Shipped: yes
 
 Description:
 MDFTextAccessibility assists in selecting text colors that will meet the W3C

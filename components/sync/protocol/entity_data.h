@@ -75,6 +75,10 @@ struct EntityData {
   // components/sync_bookmarks/parent_guid_preprocessing.cc.
   std::string legacy_parent_id;
 
+  // Recipient's Public Key used for cross-user sharing data types. Used for
+  // only outgoing password sharing invitations (created locally).
+  sync_pb::CrossUserSharingPublicKey recipient_public_key;
+
   // Indicate whether bookmark's |unique_position| was missing in the original
   // specifics during GetUpdates. If the |unique_position| in specifics was
   // evaluated by AdaptUniquePositionForBookmark(), this field will be set to

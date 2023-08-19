@@ -47,7 +47,7 @@ PASS canonicalize('//another') is 'http://another/'
 PASS canonicalize('//another/path?query#ref') is 'http://another/path?query#ref'
 PASS canonicalize('///another/path') is 'http://another/path'
 PASS canonicalize('//Another\\path') is 'http://another/path'
-PASS canonicalize('//') is 'http:'
+PASS canonicalize('//') is '//'
 PASS canonicalize('\\/another/path') is 'http://another/path'
 PASS canonicalize('/\\Another\\path') is 'http://another/path'
 PASS successfullyParsed is true

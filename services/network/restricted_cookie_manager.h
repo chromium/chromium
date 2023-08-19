@@ -5,6 +5,7 @@
 #ifndef SERVICES_NETWORK_RESTRICTED_COOKIE_MANAGER_H_
 #define SERVICES_NETWORK_RESTRICTED_COOKIE_MANAGER_H_
 
+#include <atomic>
 #include <set>
 #include <string>
 #include <tuple>
@@ -149,6 +150,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
                         const net::SiteForCookies& site_for_cookies,
                         const url::Origin& top_frame_origin,
                         bool has_storage_access,
+                        bool get_version_shared_memory,
                         GetCookiesStringCallback callback) override;
   void CookiesEnabledFor(const GURL& url,
                          const net::SiteForCookies& site_for_cookies,
@@ -173,7 +175,25 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
       const net::IsolationInfo& isolation_info,
       base::OnceCallback<void(net::FirstPartySetMetadata)> callback);
 
+  // The owner of this class has context into cookie settings changes. Calling
+  // this function makes sure the appropriate state is updated internally to
+  // reflect that.
+  void OnCookieSettingsChanged();
+
  private:
+  using SharedVersionType = std::atomic<uint64_t>;
+  static_assert(SharedVersionType::is_always_lock_free,
+                "Usage of SharedVersionType across processes might be unsafe");
+
+  // Function to be called when an event is known to potentially invalidate
+  // cookies the other side could have cached.
+  void IncrementSharedVersion();
+
+  // Returns the cookie version shared with clients to determine whether a
+  // cookie string has changed since the last request and a new request needs to
+  // be issued.
+  uint64_t GetSharedVersion();
+
   // The state associated with a CookieChangeListener.
   class Listener;
 
@@ -263,6 +283,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
 
   url::Origin origin_;
 
+  std::unique_ptr<net::CookieChangeSubscription> cookie_store_subscription_;
+  GURL change_subscribed_url_;
+
   // Holds the browser-provided site_for_cookies and top_frame_origin to which
   // this RestrictedCookieManager is bound. (The frame_origin field is not used
   // directly, but must match the `origin_` if the RCM role is SCRIPT.)
@@ -291,8 +314,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
   // update filtering.
   CookieAccessesByURLAndSite recent_cookie_accesses_;
 
-  bool same_party_attribute_enabled_;
-
   // This class can optionally bind its Receiver. If that's the case it's stored
   // done with this variable.
   mojo::Receiver<mojom::RestrictedCookieManager> receiver_;
@@ -303,6 +324,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
   // `cookies_access_timer_`.
   std::vector<network::mojom::CookieAccessDetailsPtr> cookie_access_details_;
   base::RetainingOneShotTimer cookies_access_timer_;
+
+  // Used to communicate cookie version information with renderers without going
+  // through IPCs.
+  base::MappedReadOnlyRegion mapped_region_;
 
   base::WeakPtrFactory<RestrictedCookieManager> weak_ptr_factory_{this};
 };

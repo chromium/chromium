@@ -4,10 +4,10 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/dcheck_is_on.h"
 #import "base/ios/block_types.h"
 #import "base/ios/ios_util.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "base/numerics/safe_conversions.h"
@@ -26,10 +26,6 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/modals/modals_api.h"
 #import "ui/base/l10n/l10n_util_mac.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -218,7 +214,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
   NSIndexPath* selectedItemIndexPath =
       self.collectionView.indexPathsForSelectedItems.firstObject;
-  PinnedCell* selectedCell = base::mac::ObjCCastStrict<PinnedCell>(
+  PinnedCell* selectedCell = base::apple::ObjCCastStrict<PinnedCell>(
       [self.collectionView cellForItemAtIndexPath:selectedItemIndexPath]);
 
   if ([selectedCell hasIdentifier:_selectedItemID]) {
@@ -354,7 +350,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
   NSUInteger index = [self indexOfItemWithID:itemID];
   _items[index] = item;
-  PinnedCell* cell = base::mac::ObjCCastStrict<PinnedCell>(
+  PinnedCell* cell = base::apple::ObjCCastStrict<PinnedCell>(
       [self.collectionView cellForItemAtIndexPath:CreateIndexPath(index)]);
   // `cell` may be nil if it is scrolled offscreen.
   if (cell) {
@@ -425,7 +421,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   }
 
   TabSwitcherItem* item = _items[itemIndex];
-  PinnedCell* cell = base::mac::ObjCCastStrict<PinnedCell>([collectionView
+  PinnedCell* cell = base::apple::ObjCCastStrict<PinnedCell>([collectionView
       dequeueReusableCellWithReuseIdentifier:kPinnedCellIdentifier
                                 forIndexPath:indexPath]);
 
@@ -453,7 +449,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 - (UIContextMenuConfiguration*)collectionView:(UICollectionView*)collectionView
     contextMenuConfigurationForItemAtIndexPath:(NSIndexPath*)indexPath
                                          point:(CGPoint)point {
-  PinnedCell* cell = base::mac::ObjCCastStrict<PinnedCell>(
+  PinnedCell* cell = base::apple::ObjCCastStrict<PinnedCell>(
       [self.collectionView cellForItemAtIndexPath:indexPath]);
   return [self.menuProvider
       contextMenuConfigurationForTabCell:cell
@@ -469,7 +465,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     // view. This is important to prevent cells from animating indefinitely.
     // This is safe because the animation state of GridCells is set in
     // `configureCell:withItem:` whenever a cell is used.
-    [base::mac::ObjCCastStrict<PinnedCell>(cell) hideActivityIndicator];
+    [base::apple::ObjCCastStrict<PinnedCell>(cell) hideActivityIndicator];
   }
 }
 
@@ -525,7 +521,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (UIDragPreviewParameters*)collectionView:(UICollectionView*)collectionView
     dragPreviewParametersForItemAtIndexPath:(NSIndexPath*)indexPath {
-  PinnedCell* pinedCell = base::mac::ObjCCastStrict<PinnedCell>(
+  PinnedCell* pinedCell = base::apple::ObjCCastStrict<PinnedCell>(
       [self.collectionView cellForItemAtIndexPath:indexPath]);
   return pinedCell.dragPreviewParameters;
 }
@@ -609,10 +605,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
                          reuseIdentifier:kCellIdentifier];
       placeholder.previewParametersProvider =
           ^UIDragPreviewParameters*(UICollectionViewCell* placeholderCell) {
-        PinnedCell* pinnedCell =
-            base::mac::ObjCCastStrict<PinnedCell>(placeholderCell);
-        return pinnedCell.dragPreviewParameters;
-      };
+            PinnedCell* pinnedCell =
+                base::apple::ObjCCastStrict<PinnedCell>(placeholderCell);
+            return pinnedCell.dragPreviewParameters;
+          };
 
       id<UICollectionViewDropPlaceholderContext> context =
           [coordinator dropItem:item.dragItem toPlaceholder:placeholder];
@@ -664,7 +660,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     return;
   }
 
-  PinnedCell* pinnedCell = base::mac::ObjCCastStrict<PinnedCell>(
+  PinnedCell* pinnedCell = base::apple::ObjCCastStrict<PinnedCell>(
       [self.collectionView cellForItemAtIndexPath:CreateIndexPath(itemIndex)]);
   CGAffineTransform originalTransform = pinnedCell.transform;
 

@@ -110,6 +110,12 @@ void FakeDeviceInfoTracker::Add(const std::vector<const DeviceInfo*>& devices) {
   }
 }
 
+void FakeDeviceInfoTracker::Remove(const DeviceInfo* device) {
+  const auto remove_it = base::ranges::remove(devices_, device);
+  CHECK(remove_it != devices_.end());
+  devices_.erase(remove_it);
+}
+
 void FakeDeviceInfoTracker::Replace(const DeviceInfo* old_device,
                                     const DeviceInfo* new_device) {
   std::vector<const DeviceInfo*>::iterator it =

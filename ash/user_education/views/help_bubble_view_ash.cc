@@ -12,8 +12,10 @@
 
 #include "ash/bubble/bubble_utils.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/style/pill_button.h"
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
+#include "ash/user_education/user_education_help_bubble_controller.h"
 #include "ash/user_education/user_education_types.h"
 #include "ash/user_education/user_education_util.h"
 #include "base/functional/bind.h"
@@ -21,6 +23,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/help_bubble_params.h"
 #include "components/vector_icons/vector_icons.h"
@@ -31,6 +34,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
@@ -54,7 +58,6 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/button/label_button.h"
-#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/dot_indicator.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -66,6 +69,7 @@
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/layout_types.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/vector_icons.h"
@@ -130,65 +134,6 @@ views::BubbleBorder::Arrow TranslateArrow(
       return views::BubbleBorder::RIGHT_CENTER;
   }
 }
-
-class MdIPHBubbleButton : public views::MdTextButton {
- public:
-  METADATA_HEADER(MdIPHBubbleButton);
-
-  MdIPHBubbleButton(PressedCallback callback,
-                    const std::u16string& text,
-                    bool is_default_button)
-      : MdTextButton(callback, text), is_default_button_(is_default_button) {
-    // Prominent style gives a button hover highlight.
-    SetProminent(true);
-    GetViewAccessibility().OverrideIsLeaf(true);
-  }
-  MdIPHBubbleButton(const MdIPHBubbleButton&) = delete;
-  MdIPHBubbleButton& operator=(const MdIPHBubbleButton&) = delete;
-  ~MdIPHBubbleButton() override = default;
-
-  void UpdateBackgroundColor() override {
-    // Prominent MD button does not have a border.
-    // Override this method to draw a border.
-    // Adapted from MdTextButton::UpdateBackgroundColor()
-    const auto* color_provider = GetColorProvider();
-    if (!color_provider) {
-      return;
-    }
-    SkColor background_color = color_provider->GetColor(
-        is_default_button_ ? cros_tokens::kCrosSysPrimary
-                           : cros_tokens::kCrosSysPrimaryContainer);
-    if (GetState() == STATE_PRESSED) {
-      background_color =
-          GetNativeTheme()->GetSystemButtonPressedColor(background_color);
-    }
-    SetBackground(views::CreateRoundedRectBackground(background_color,
-                                                     GetCornerRadiusValue()));
-  }
-
-  void OnThemeChanged() override {
-    views::MdTextButton::OnThemeChanged();
-
-    const auto* color_provider = GetColorProvider();
-    views::FocusRing::Get(this)->SetColorId(
-        cros_tokens::kCrosSysDialogContainer);
-
-    const SkColor foreground_color = color_provider->GetColor(
-        is_default_button_ ? cros_tokens::kCrosSysOnPrimary
-                           : cros_tokens::kCrosSysOnPrimaryContainer);
-    SetEnabledTextColors(foreground_color);
-
-    // TODO(crbug/1112244): Temporary fix for Mac. Bubble shouldn't be in
-    // inactive style when the bubble loses focus.
-    SetTextColor(ButtonState::STATE_DISABLED, foreground_color);
-  }
-
- private:
-  bool is_default_button_;
-};
-
-BEGIN_METADATA(MdIPHBubbleButton, views::MdTextButton)
-END_METADATA
 
 // Displays a simple "X" close button that will close a promo bubble view.
 // The alt-text and button callback can be set based on the needs of the
@@ -291,7 +236,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HelpBubbleViewAsh,
                                       kDefaultButtonIdForTesting);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HelpBubbleViewAsh,
                                       kFirstNonDefaultButtonIdForTesting);
-
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HelpBubbleViewAsh, kBodyIconIdForTesting);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HelpBubbleViewAsh, kBodyTextIdForTesting);
 
 // Explicitly don't use the default DIALOG_SHADOW as it will show a black
@@ -374,18 +319,31 @@ HelpBubbleViewAsh::HelpBubbleViewAsh(
     progress_container->SetVisible(false);
   }
 
+  // A body icon provided from extended properties should take precedence over a
+  // body icon provided from help bubble `params` since extended properties are
+  // the ChromeOS-specific mechanism for overriding platform agnostic behaviors.
+  const gfx::VectorIcon* body_icon = params.body_icon;
+  if (auto body_icon_from_extended_properties =
+          user_education_util::GetHelpBubbleBodyIcon(
+              params.extended_properties)) {
+    body_icon = &body_icon_from_extended_properties->get();
+  }
+
   // Add the body icon (optional).
   constexpr int kBodyIconSize = 20;
   constexpr int kBodyIconBackgroundSize = 24;
-  if (params.body_icon) {
+  if (body_icon && (body_icon != &gfx::kNoneIcon)) {
     icon_view_ = top_text_container->AddChildViewAt(
-        std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-            *params.body_icon, cros_tokens::kCrosSysDialogContainer,
-            kBodyIconSize)),
+        views::Builder<views::ImageView>()
+            .SetAccessibleName(params.body_icon_alt_text)
+            .SetImage(ui::ImageModel::FromVectorIcon(
+                *body_icon, cros_tokens::kCrosSysDialogContainer,
+                kBodyIconSize))
+            .SetPreferredSize(
+                gfx::Size(kBodyIconBackgroundSize, kBodyIconBackgroundSize))
+            .SetProperty(views::kElementIdentifierKey, kBodyIconIdForTesting)
+            .Build(),
         0);
-    icon_view_->SetPreferredSize(
-        gfx::Size(kBodyIconBackgroundSize, kBodyIconBackgroundSize));
-    icon_view_->SetAccessibleName(params.body_icon_alt_text);
   }
 
   // Add title (optional) and body label.
@@ -455,13 +413,15 @@ HelpBubbleViewAsh::HelpBubbleViewAsh(
 
     // We will hold the default button to add later, since where we add it in
     // the sequence depends on platform style.
-    std::unique_ptr<MdIPHBubbleButton> default_button;
+    std::unique_ptr<views::LabelButton> default_button;
     for (user_education::HelpBubbleButtonParams& button_params :
          params.buttons) {
-      auto button = std::make_unique<MdIPHBubbleButton>(
+      auto button = std::make_unique<PillButton>(
           base::BindRepeating(run_callback_and_close, base::Unretained(this),
                               base::Passed(std::move(button_params.callback))),
-          button_params.text, button_params.is_default);
+          button_params.text,
+          button_params.is_default ? PillButton::Type::kPrimaryWithoutIcon
+                                   : PillButton::Type::kSecondaryWithoutIcon);
       button->SetMinSize(gfx::Size(0, 0));
       if (button_params.is_default) {
         DCHECK(!default_button);
@@ -625,6 +585,8 @@ HelpBubbleViewAsh::HelpBubbleViewAsh(
     SetInitiallyFocusedView(close_button_);
   }
 
+  SetModalType(
+      user_education_util::GetHelpBubbleModalType(params.extended_properties));
   SetProperty(views::kElementIdentifierKey, kHelpBubbleElementIdForTesting);
   set_margins(gfx::Insets());
   set_title_margins(gfx::Insets());
@@ -645,16 +607,35 @@ HelpBubbleViewAsh::HelpBubbleViewAsh(
   SizeToContents();
   UpdateRoundedCorners();
 
-  widget->ShowInactive();
+  if (widget->IsModal()) {
+    // If the help bubble widget is a system modal widget, then it should be the
+    // only interactive widget on the screen. Therefore, activate `widget`.
+    widget->Show();
+  } else {
+    widget->ShowInactive();
+  }
+
   auto* const anchor_bubble =
       anchor.view->GetWidget()->widget_delegate()->AsBubbleDialogDelegate();
   if (anchor_bubble) {
     anchor_pin_ = anchor_bubble->PreventCloseOnDeactivate();
   }
   MaybeStartAutoCloseTimer();
+
+  // NOTE: `controller` may be `nullptr` in testing.
+  if (auto* controller = UserEducationHelpBubbleController::Get()) {
+    controller->NotifyHelpBubbleShown(base::PassKey<HelpBubbleViewAsh>(),
+                                      /*help_bubble_view=*/this);
+  }
 }
 
-HelpBubbleViewAsh::~HelpBubbleViewAsh() = default;
+HelpBubbleViewAsh::~HelpBubbleViewAsh() {
+  // NOTE: `controller` may be `nullptr` in testing.
+  if (auto* controller = UserEducationHelpBubbleController::Get()) {
+    controller->NotifyHelpBubbleClosed(base::PassKey<HelpBubbleViewAsh>(),
+                                       /*help_bubble_view=*/this);
+  }
+}
 
 void HelpBubbleViewAsh::MaybeStartAutoCloseTimer() {
   if (timeout_.is_zero()) {
@@ -682,6 +663,12 @@ HelpBubbleViewAsh::CreateNonClientFrameView(views::Widget* widget) {
 void HelpBubbleViewAsh::OnAnchorBoundsChanged() {
   views::BubbleDialogDelegateView::OnAnchorBoundsChanged();
   UpdateRoundedCorners();
+
+  // NOTE: `controller` may be `nullptr` in testing.
+  if (auto* controller = UserEducationHelpBubbleController::Get()) {
+    controller->NotifyHelpBubbleAnchorBoundsChanged(
+        base::PassKey<HelpBubbleViewAsh>(), /*help_bubble_view=*/this);
+  }
 }
 
 std::u16string HelpBubbleViewAsh::GetAccessibleWindowTitle() const {

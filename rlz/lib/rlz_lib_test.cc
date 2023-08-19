@@ -41,14 +41,12 @@
 #include "rlz/win/lib/machine_deal.h"
 #endif
 
-#if defined(RLZ_NETWORK_IMPLEMENTATION_CHROME_NET)
-#include "base/mac/scoped_nsautorelease_pool.h"
+#include "base/apple/scoped_nsautorelease_pool.h"
 #include "base/threading/thread.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/files/important_file_writer.h"
@@ -57,6 +55,31 @@
 #include "chromeos/ash/components/dbus/debug_daemon/fake_debug_daemon_client.h"
 #include "rlz/chromeos/lib/rlz_value_store_chromeos.h"
 #endif
+
+namespace {
+const char kProductSignature[] = "swg";
+const char kProductBrand[] = "GGLA";
+const char kProductId[] = "SwgProductId1234";
+const char kProductLang[] = "en-UK";
+
+const rlz_lib::AccessPoint kAccessPoints[] = {rlz_lib::IETB_SEARCH_BOX,
+                                              rlz_lib::NO_ACCESS_POINT,
+                                              rlz_lib::NO_ACCESS_POINT};
+
+const char kDefaultGoodPingResponse[] =
+    "version: 3.0.914.7250\r\n"
+    "url: "
+    "http://www.corp.google.com/~av/45/opt/SearchWithGoogleUpdate.exe\r\n"
+    "launch-action: custom-action\r\n"
+    "launch-target: SearchWithGoogleUpdate.exe\r\n"
+    "signature: c08a3f4438e1442c4fe5678ee147cf6c5516e5d62bb64e\r\n"
+    "rlz: 1R1_____en__252\r\n"
+    "rlzXX: 1R1_____en__250\r\n"
+    "rlzT4  1T4_____en__251\r\n"
+    "rlzT4: 1T4_____en__252\r\n"
+    "rlz\r\n"
+    "crc32: D6FD55A3";
+}  // namespace
 
 class MachineDealCodeHelper
 #if BUILDFLAG(IS_WIN)
@@ -79,34 +102,44 @@ class MachineDealCodeHelper
 
 class RlzLibTest : public RlzLibTestBase {
  protected:
-  void FakeGoodPingResponse(rlz_lib::Product product,
-                            const rlz_lib::AccessPoint* access_points,
-                            const char* product_signature,
-                            const char* product_brand,
-                            const char* product_id,
-                            const char* product_lang,
-                            bool exclude_machine_id,
-                            network::TestURLLoaderFactory* url_loader_factory) {
-    const char kGoodPingResponses[] =
-        "version: 3.0.914.7250\r\n"
-        "url: "
-        "http://www.corp.google.com/~av/45/opt/SearchWithGoogleUpdate.exe\r\n"
-        "launch-action: custom-action\r\n"
-        "launch-target: SearchWithGoogleUpdate.exe\r\n"
-        "signature: c08a3f4438e1442c4fe5678ee147cf6c5516e5d62bb64e\r\n"
-        "rlz: 1R1_____en__252\r\n"
-        "rlzXX: 1R1_____en__250\r\n"
-        "rlzT4  1T4_____en__251\r\n"
-        "rlzT4: 1T4_____en__252\r\n"
-        "rlz\r\n"
-        "crc32: D6FD55A3";
+  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
+
+  bool SendFinancialPing(rlz_lib::Product product, bool exclude_machine_id) {
+    bool success = rlz_lib::SendFinancialPing(
+        product, kAccessPoints, kProductSignature, kProductBrand, kProductId,
+        kProductLang, exclude_machine_id,
+        /* skip_time_check */ true);
+    RunUntilIdle();
+    return success;
+  }
+
+  void FakePingResponse(rlz_lib::Product product,
+                        bool exclude_machine_id,
+                        net::HttpStatusCode http_status_code,
+                        std::string content,
+                        network::TestURLLoaderFactory* url_loader_factory) {
     std::string request;
     EXPECT_TRUE(rlz_lib::FinancialPing::FormRequest(
-        product, access_points, product_signature, product_brand, product_id,
-        product_lang, exclude_machine_id, &request));
+        product, kAccessPoints, kProductSignature, kProductBrand, kProductId,
+        kProductLang, exclude_machine_id, &request));
     std::string url = base::StringPrintf(
         "https://%s%s", rlz_lib::kFinancialServer, request.c_str());
-    url_loader_factory->AddResponse(url, kGoodPingResponses);
+    url_loader_factory->AddResponse(url, content, http_status_code);
+  }
+
+  void FakeGoodPingResponse(rlz_lib::Product product,
+                            bool exclude_machine_id,
+                            network::TestURLLoaderFactory* url_loader_factory) {
+    FakePingResponse(product, exclude_machine_id, net::HttpStatusCode::HTTP_OK,
+                     kDefaultGoodPingResponse, url_loader_factory);
+  }
+
+  void FakeBadPingResponse(rlz_lib::Product product,
+                           bool exclude_machine_id,
+                           net::HttpStatusCode http_status_code,
+                           network::TestURLLoaderFactory* url_loader_factory) {
+    FakePingResponse(product, exclude_machine_id, http_status_code, "",
+                     url_loader_factory);
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -574,16 +607,14 @@ TEST_F(RlzLibTest, SendFinancialPing) {
   if (!rlz_lib::SupplementaryBranding::GetBrand().empty())
     return;
 
-#if defined(RLZ_NETWORK_IMPLEMENTATION_CHROME_NET)
 #if BUILDFLAG(IS_APPLE)
-  base::mac::ScopedNSAutoreleasePool pool;
+  base::apple::ScopedNSAutoreleasePool pool;
 #endif
 
   network::TestURLLoaderFactory test_url_loader_factory;
 
   URLLoaderFactoryRAII set_factory(
       test_url_loader_factory.GetSafeWeakWrapper().get());
-#endif
 
   MachineDealCodeHelper::Clear();
 #if BUILDFLAG(IS_WIN)
@@ -599,23 +630,44 @@ TEST_F(RlzLibTest, SendFinancialPing) {
   EXPECT_TRUE(rlz_lib::RecordProductEvent(rlz_lib::TOOLBAR_NOTIFIER,
       rlz_lib::IE_HOME_PAGE, rlz_lib::INSTALL));
 
-  rlz_lib::AccessPoint points[] =
-    {rlz_lib::IETB_SEARCH_BOX, rlz_lib::NO_ACCESS_POINT,
-     rlz_lib::NO_ACCESS_POINT};
+  // Excluding machine id from requests so that a stable URL is used and
+  // this test can use TestURLLoaderFactory.
+  FakeGoodPingResponse(rlz_lib::TOOLBAR_NOTIFIER,
+                       /* exclude_machine_id */ true, &test_url_loader_factory);
+  // On success, only one request should happen.
+  size_t expected_amount_of_request = 1;
+  EXPECT_TRUE(SendFinancialPing(rlz_lib::TOOLBAR_NOTIFIER,
+                                /* exclude_machine_id */ true));
+  EXPECT_EQ(test_url_loader_factory.total_requests(),
+            expected_amount_of_request);
 
   // Excluding machine id from requests so that a stable URL is used and
   // this test can use TestURLLoaderFactory.
-  FakeGoodPingResponse(rlz_lib::TOOLBAR_NOTIFIER, points, "swg", "GGLA",
-                       "SwgProductId1234", "en-UK",
-                       /* exclude_machine_id */ true, &test_url_loader_factory);
+  FakeBadPingResponse(rlz_lib::TOOLBAR_NOTIFIER,
+                      /* exclude_machine_id */ true,
+                      net::HttpStatusCode::HTTP_FORBIDDEN,
+                      &test_url_loader_factory);
+  // For an error HTTP_FORBIDDEN, the URLLoader should not retries.
+  expected_amount_of_request += 1;
+  EXPECT_FALSE(SendFinancialPing(rlz_lib::TOOLBAR_NOTIFIER,
+                                 /* exclude_machine_id */ true));
+  EXPECT_EQ(test_url_loader_factory.total_requests(),
+            expected_amount_of_request);
 
-  rlz_lib::SendFinancialPing(rlz_lib::TOOLBAR_NOTIFIER, points, "swg", "GGLA",
-                             "SwgProductId1234", "en-UK",
-                             /* exclude_machine_id */ true,
-                             /* skip_time_check */ true);
+  // Excluding machine id from requests so that a stable URL is used and
+  // this test can use TestURLLoaderFactory.
+  FakeBadPingResponse(rlz_lib::TOOLBAR_NOTIFIER,
+                      /* exclude_machine_id */ true,
+                      net::HttpStatusCode::HTTP_SERVICE_UNAVAILABLE,
+                      &test_url_loader_factory);
+  // For an error HTTP_SERVICE_UNAVAILABLE, the URLLoader should try once and
+  // then retry 3 times.
+  expected_amount_of_request += 4;
+  EXPECT_FALSE(SendFinancialPing(rlz_lib::TOOLBAR_NOTIFIER,
+                                 /* exclude_machine_id */ true));
+  EXPECT_EQ(test_url_loader_factory.total_requests(),
+            expected_amount_of_request);
 }
-
-#if defined(RLZ_NETWORK_IMPLEMENTATION_CHROME_NET)
 
 void ResetURLLoaderFactory() {
   rlz_lib::SetURLLoaderFactory(nullptr);
@@ -627,7 +679,7 @@ TEST_F(RlzLibTest, SendFinancialPingDuringShutdown) {
     return;
 
 #if BUILDFLAG(IS_APPLE)
-  base::mac::ScopedNSAutoreleasePool pool;
+  base::apple::ScopedNSAutoreleasePool pool;
 #endif
 
   base::Thread io_thread("rlz_unittest_io_thread");
@@ -638,24 +690,17 @@ TEST_F(RlzLibTest, SendFinancialPingDuringShutdown) {
   URLLoaderFactoryRAII set_factory(
       test_url_loader_factory.GetSafeWeakWrapper().get());
 
-  rlz_lib::AccessPoint points[] =
-    {rlz_lib::IETB_SEARCH_BOX, rlz_lib::NO_ACCESS_POINT,
-     rlz_lib::NO_ACCESS_POINT};
   rlz_lib::test::ResetSendFinancialPingInterrupted();
   EXPECT_FALSE(rlz_lib::test::WasSendFinancialPingInterrupted());
 
   io_thread.task_runner()->PostTask(FROM_HERE,
                                     base::BindOnce(&ResetURLLoaderFactory));
 
-  rlz_lib::SendFinancialPing(rlz_lib::TOOLBAR_NOTIFIER, points, "swg", "GGLA",
-                             "SwgProductId1234", "en-UK",
-                             /* exclude_machine_id */ false,
-                             /* skip_time_check */ true);
+  SendFinancialPing(rlz_lib::TOOLBAR_NOTIFIER, /* exclude_machine_id */ false);
 
   EXPECT_TRUE(rlz_lib::test::WasSendFinancialPingInterrupted());
   rlz_lib::test::ResetSendFinancialPingInterrupted();
 }
-#endif
 
 TEST_F(RlzLibTest, ClearProductState) {
   MachineDealCodeHelper::Clear();

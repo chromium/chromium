@@ -14,6 +14,7 @@
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
+#include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
@@ -40,8 +41,8 @@
 #include "chrome/browser/ash/app_list/search/test/search_results_changed_waiter.h"
 #include "chrome/browser/ash/app_list/test/chrome_app_list_test_support.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
+#include "chrome/browser/ash/login/demo_mode/demo_mode_test_utils.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
-#include "chrome/browser/ash/login/demo_mode/demo_setup_test_utils.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
@@ -59,7 +60,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -68,6 +68,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "components/app_constants/constants.h"
 #include "components/browser_sync/browser_sync_switches.h"
 #include "components/prefs/pref_service.h"
@@ -93,13 +94,12 @@ namespace {
 
 class TestObserver : public app_list::AppListSyncableService::Observer {
  public:
-  explicit TestObserver(app_list::AppListSyncableService* syncable_service)
-      : syncable_service_(syncable_service) {
-    syncable_service_->AddObserverAndStart(this);
+  explicit TestObserver(app_list::AppListSyncableService* syncable_service) {
+    observer_.Observe(syncable_service);
   }
   TestObserver(const TestObserver&) = delete;
   TestObserver& operator=(const TestObserver&) = delete;
-  ~TestObserver() override { syncable_service_->RemoveObserver(this); }
+  ~TestObserver() override = default;
 
   size_t add_or_update_count() const { return add_or_update_count_; }
 
@@ -108,8 +108,9 @@ class TestObserver : public app_list::AppListSyncableService::Observer {
   void OnAddOrUpdateFromSyncItemForTest() override { ++add_or_update_count_; }
 
  private:
-  const raw_ptr<app_list::AppListSyncableService, ExperimentalAsh>
-      syncable_service_;
+  base::ScopedObservation<app_list::AppListSyncableService,
+                          app_list::AppListSyncableService::Observer>
+      observer_{this};
   size_t add_or_update_count_ = 0;
 };
 
@@ -651,10 +652,8 @@ class AppListClientImplLacrosOnlyBrowserTest
     : public AppListClientImplBrowserTest {
  public:
   AppListClientImplLacrosOnlyBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
-         ash::features::kLacrosOnly},
-        {});
+    feature_list_.InitWithFeatures(ash::standalone_browser::GetFeatureRefs(),
+                                   {});
   }
 
  private:
@@ -854,7 +853,8 @@ class AppListAppLaunchTest : public extensions::ExtensionBrowserTest {
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 
  private:
-  raw_ptr<AppListModelUpdater, ExperimentalAsh> model_updater_;
+  raw_ptr<AppListModelUpdater, DanglingUntriaged | ExperimentalAsh>
+      model_updater_;
 };
 
 IN_PROC_BROWSER_TEST_F(AppListAppLaunchTest,

@@ -262,7 +262,7 @@ void TextInputHost::InsertText(const std::u16string& text, bool as_character) {
     // correct keycode is not needed in the current context. Send ui::EF_NONE as
     // the key modifier since |text| already accounts for the pressed key
     // modifiers.
-    text_input_client_->InsertChar(ui::KeyEvent(
+    text_input_client_->InsertChar(ui::KeyEvent::FromCharacter(
         text[0], ui::VKEY_UNKNOWN, ui::DomCode::NONE, ui::EF_NONE));
   } else {
     text_input_client_->InsertText(

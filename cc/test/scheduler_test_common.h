@@ -88,8 +88,8 @@ class TestScheduler : public Scheduler {
       int layer_tree_host_id,
       base::SingleThreadTaskRunner* task_runner,
       std::unique_ptr<CompositorTimingHistory> compositor_timing_history,
-      CompositorFrameReportingController* compositor_frame_reporting_controller,
-      power_scheduler::PowerModeArbiter* arbiter);
+      CompositorFrameReportingController*
+          compositor_frame_reporting_controller);
   TestScheduler(const TestScheduler&) = delete;
 
   TestScheduler& operator=(const TestScheduler&) = delete;

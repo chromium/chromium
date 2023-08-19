@@ -20,6 +20,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
+#import "ios/components/security_interstitials/https_only_mode/feature.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/embedded_test_server_handlers.h"
 #import "ios/web/common/features.h"
@@ -29,10 +30,6 @@
 #import "net/test/embedded_test_server/http_response.h"
 #import "net/test/embedded_test_server/request_handler_util.h"
 #import "ui/base/l10n/l10n_util.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using security_interstitials::omnibox_https_upgrades::Event;
 using security_interstitials::omnibox_https_upgrades::kEventHistogram;
@@ -46,7 +43,7 @@ std::string GetURLWithoutScheme(const GURL& url) {
 }  // namespace
 
 // Tests defaulting typed omnibox navigations to HTTPS.
-@interface TypedNavigationUpgradeTestCase : HttpsUpgradeTestCase {
+@interface TypedNavigationUpgradeTestCase : HttpsUpgradeTestCaseBase {
 }
 @end
 
@@ -56,6 +53,8 @@ std::string GetURLWithoutScheme(const GURL& url) {
   AppLaunchConfiguration config;
   config.relaunch_policy = NoForceRelaunchAndResetState;
   config.features_enabled.push_back(omnibox::kDefaultTypedNavigationsToHttps);
+  config.features_disabled.push_back(
+      security_interstitials::features::kHttpsUpgrades);
   return config;
 }
 
@@ -410,7 +409,8 @@ std::string GetURLWithoutScheme(const GURL& url) {
 //    fallback navigation using the HTTP version of the URL in step 1.
 // 3. The fallback HTTP URL immediately responds without redirecting, even
 //    though it has a ?redirect parameter.
-- (void)test_HTTPSRedirectsToSlowHTTP_ShouldFallback {
+// Disabled due to crbug.com/1469971
+- (void)DISABLED_test_HTTPSRedirectsToSlowHTTP_ShouldFallback {
   // Use the faux good HTTPS server and standard HTTP server for the test.
   [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.goodHTTPSServer->port()
                                       useFakeHTTPS:true];

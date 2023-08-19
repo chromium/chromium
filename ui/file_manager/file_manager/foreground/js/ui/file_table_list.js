@@ -4,12 +4,12 @@
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
 
+import {ArrayDataModel} from '../../../common/js/array_data_model.js';
 import {FileType} from '../../../common/js/file_type.js';
 import {str, strf, util} from '../../../common/js/util.js';
 import {EntryLocation} from '../../../externs/entry_location.js';
 import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
 import {VolumeManager} from '../../../externs/volume_manager.js';
-import {FilesTooltip} from '../../elements/files_tooltip.js';
 import {FileListModel} from '../file_list_model.js';
 import {MetadataItem} from '../metadata/metadata_item.js';
 import {MetadataModel} from '../metadata/metadata_model.js';
@@ -371,6 +371,8 @@ filelist.decorateListItem = (li, entry, metadataModel, volumeManager) => {
     'contentMimeType',
     'shortcut',
     'canPin',
+    'isDlpRestricted',
+    'syncCompletedTime',
   ])[0];
   filelist.updateListItemExternalProps(
       li, entry, externalProps, util.isTeamDriveRoot(entry));
@@ -490,50 +492,6 @@ filelist.renderFileNameLabel = (doc, entry, locationInfo) => {
 };
 
 /**
- * Renders the drive encryption status (CSE files) in the detail table.
- * @param {!Document} doc Owner document.
- * @return {!HTMLDivElement} Created element.
- */
-filelist.renderEncryptionStatus = (doc) => {
-  const box = /** @type {!HTMLDivElement} */ (doc.createElement('div'));
-  box.className = 'encryption-status';
-
-  const encryptedIcon = doc.createElement('xf-icon');
-  encryptedIcon.size = 'extra_small';
-  encryptedIcon.type = 'encrypted';
-  box.appendChild(encryptedIcon);
-
-  return box;
-};
-
-/**
- * Renders the drive inline status in the detail table.
- * @param {!Document} doc Owner document.
- * @return {!HTMLDivElement} Created element.
- */
-filelist.renderInlineStatus = (doc) => {
-  const inlineStatus =
-      /** @type {!HTMLDivElement} */ (doc.createElement('div'));
-  inlineStatus.className = 'inline-status';
-
-  const inlineStatusIcon = doc.createElement('xf-icon');
-  inlineStatusIcon.size = 'extra_small';
-  inlineStatusIcon.type = 'offline';
-  inlineStatus.appendChild(inlineStatusIcon);
-
-  if (util.isInlineSyncStatusEnabled()) {
-    const syncProgress = doc.createElement('xf-pie-progress');
-    syncProgress.className = 'progress';
-    inlineStatus.appendChild(syncProgress);
-  }
-
-  /** @type {!FilesTooltip} */ (document.querySelector('files-tooltip'))
-      .addTarget(inlineStatus);
-
-  return inlineStatus;
-};
-
-/**
  * Updates grid item or table row for the externalProps.
  * @param {ListItem} li List item.
  * @param {Entry|FilesAppEntry} entry The entry.
@@ -542,20 +500,19 @@ filelist.renderInlineStatus = (doc) => {
 filelist.updateListItemExternalProps =
     (li, entry, externalProps, isTeamDriveRoot) => {
       if (li.classList.contains('file')) {
-        li.classList.toggle(
-            'dim-offline', externalProps.availableOffline === false);
         li.classList.toggle('dim-hosted', !!externalProps.hosted);
         if (externalProps.contentMimeType) {
           li.classList.toggle(
               'dim-encrypted',
               FileType.isEncrypted(entry, externalProps.contentMimeType));
         }
+        const dlpIcon = li.querySelector('.dlp-managed-icon');
+        if (dlpIcon) {
+          dlpIcon.classList.toggle(
+              'is-dlp-restricted', externalProps.isDlpRestricted);
+        }
       }
 
-      li.classList.toggle('pinned', externalProps.pinned);
-      li.classList.toggle(
-          'encrypted',
-          FileType.isEncrypted(entry, externalProps.contentMimeType));
       li.classList.toggle('shortcut', !!externalProps.shortcut);
 
       const iconDiv = li.querySelector('.detail-icon');
@@ -996,98 +953,78 @@ filelist.focusParentList = event => {
 };
 
 /**
+ * Update the item's inline status when it's restored from List's cache..
+ * @param {!ListItem} restoredItem Item being restored from the List cache.
+ * @param {ArrayDataModel} dataModel Data model corresponding to the item.
+ * @param {MetadataModel} metadataModel Cache to retrieve metadata.
+ */
+filelist.updateCacheItemInlineStatus =
+    (restoredItem, dataModel, metadataModel) => {
+      if (!dataModel || !metadataModel) {
+        console.error('dataModel or metadataModel unavailable.');
+        return;
+      }
+
+      const entry = dataModel.item(restoredItem.listIndex);
+
+      const metadata = metadataModel.getCache([entry], [
+        'availableOffline',
+        'pinned',
+        'canPin',
+        'syncStatus',
+        'progress',
+        'syncCompletedTime',
+      ])[0];
+
+      filelist.updateInlineStatus(restoredItem, metadata);
+    };
+
+/**
  * Update status icon for file or directory entry.
  * @param {!HTMLLIElement} li The grid item.
  * @param {?MetadataItem} metadata Metadata.
  */
 filelist.updateInlineStatus = (li, metadata) => {
-  if (!metadata) {
+  const inlineStatus = li.querySelector('xf-inline-status');
+
+  if (!metadata || !inlineStatus) {
     return;
   }
 
-  const inlineStatus = li.querySelector('.inline-status');
-  if (!inlineStatus) {
-    return;
-  }
-  // Clear the inline status' aria label and set it to "in progress",
-  // "queued", or "available offline" with the respective order of
-  // precedence if applicable.
-  inlineStatus.setAttribute(
-      'aria-label', metadata.pinned ? str('OFFLINE_COLUMN_LABEL') : '');
+  const {
+    pinned,
+    availableOffline,
+    canPin,
+    progress,
+    syncStatus,
+    syncCompletedTime,
+  } = metadata;
 
   if (util.isDriveFsBulkPinningEnabled()) {
-    const inlineIcon = inlineStatus.querySelector('xf-icon');
+    const cantPin = canPin === false;
+    li.classList.toggle('cant-pin', cantPin);
+    inlineStatus.toggleAttribute('cant-pin', cantPin);
+  }
 
-    if (!util.isNullOrUndefined(metadata.canPin) &&
-        !metadata.canPin) {
-      // Items that can't be pinned should show a dashed icon to indicate
-      // they cannot be used offline (e.g. google forms can't be made
-      // available offline).
-      li.classList.toggle('cant-pin', true);
-      inlineIcon.type = 'cant-pin';
-      inlineStatus.setAttribute(
-          'aria-label', str('DRIVE_ITEM_UNAVAILABLE_OFFLINE'));
-      return;
+  // Directories are always displayed as available offline.
+  const dimOffline =
+      li.classList.contains('file') && availableOffline === false;
+  li.classList.toggle('dim-offline', dimOffline);
+  li.classList.toggle('pinned', pinned);
+  inlineStatus.toggleAttribute('available-offline', pinned && !dimOffline);
+
+  if (util.isInlineSyncStatusEnabled()) {
+    let actualSyncStatus = syncStatus;
+    let actualProgress = progress;
+    // Force sync status as completed if it has been less than 300ms since the
+    // file has completed syncing.
+    if (Date.now() - syncCompletedTime < 300) {
+      actualSyncStatus = chrome.fileManagerPrivate.SyncStatus.COMPLETED;
+      actualProgress = 1;
     }
-
-    // In the event a previous item that could not be pinned has instead
-    // become pinnable, ensure the inline status icon is reset and the class
-    // is removed.
-    li.classList.toggle('cant-pin', false);
-    inlineIcon.type = 'offline';
+    inlineStatus.setAttribute('sync-status', String(actualSyncStatus));
+    inlineStatus.setAttribute('progress', String(actualProgress));
   }
-
-  if (!util.isInlineSyncStatusEnabled()) {
-    return;
-  }
-
-  let {syncStatus} = metadata;
-  let progress = metadata.progress ?? 0;
-
-  if (!syncStatus) {
-    return;
-  }
-
-  const {syncCompletedTime} = metadata;
-
-  // Hold "completed" state for 300ms to give users a chance to see it.
-  if (syncCompletedTime && Date.now() - syncCompletedTime < 300) {
-    syncStatus = chrome.fileManagerPrivate.SyncStatus.COMPLETED;
-    progress = 1.0;
-  }
-
-  switch (syncStatus) {
-    case chrome.fileManagerPrivate.SyncStatus.QUEUED:
-    case chrome.fileManagerPrivate.SyncStatus.ERROR:
-      progress = 0;
-      inlineStatus.setAttribute('aria-label', str('QUEUED_LABEL'));
-      break;
-    case chrome.fileManagerPrivate.SyncStatus.IN_PROGRESS:
-      inlineStatus.setAttribute(
-          'aria-label',
-          strf('IN_PROGRESS_PERCENTAGE_LABEL', (progress * 100).toFixed(0)));
-      break;
-    case chrome.fileManagerPrivate.SyncStatus.NOT_FOUND:
-      // Files can have a sync status of "not_found" even though they
-      // are actually "queued". This can happen due to a delay in the
-      // "queued" status being communicated from DriveFS. In this case
-      // though, they would also be considered dirty (meaning they have
-      // unsynced changes so will eventually get queued for syncing).
-      // Hence, let's display a status "not_found" that is also "dirty"
-      // as "queued".
-      if (metadata.dirty) {
-        progress = 0;
-        syncStatus = chrome.fileManagerPrivate.SyncStatus.QUEUED;
-        inlineStatus.setAttribute('aria-label', str('QUEUED_LABEL'));
-      }
-      break;
-    default:
-      break;
-  }
-
-  li.setAttribute('data-sync-status', syncStatus);
-  inlineStatus.querySelector('.progress')
-      .setAttribute('progress', progress.toFixed(2));
 };
 
 export {filelist};

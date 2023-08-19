@@ -6,6 +6,7 @@
 #define ASH_STYLE_OPTION_BUTTON_BASE_H_
 
 #include "ash/ash_export.h"
+#include "ash/style/typography.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/label_button.h"
@@ -26,6 +27,8 @@ class ASH_EXPORT OptionButtonBase : public views::LabelButton {
 
   static constexpr int kIconSize = 20;
 
+  static constexpr int kImageLabelSpacingDP = 12;
+
   // Delegate performs further actions when the button selection states change.
   class Delegate {
    public:
@@ -41,7 +44,8 @@ class ASH_EXPORT OptionButtonBase : public views::LabelButton {
   explicit OptionButtonBase(int button_width,
                             PressedCallback callback,
                             const std::u16string& label = std::u16string(),
-                            const gfx::Insets& insets = kDefaultPadding);
+                            const gfx::Insets& insets = kDefaultPadding,
+                            int image_label_spacing = kImageLabelSpacingDP);
   OptionButtonBase(const OptionButtonBase&) = delete;
   OptionButtonBase& operator=(const OptionButtonBase&) = delete;
   ~OptionButtonBase() override;
@@ -52,7 +56,14 @@ class ASH_EXPORT OptionButtonBase : public views::LabelButton {
   // Updates the `select_` state.
   void SetSelected(bool selected);
 
+  // Sets a TypographyToken as the style of the label.
+  void SetLabelStyle(TypographyToken token);
+  // Sets a color_id as the color_id of the label.
+  void SetLabelColorId(ui::ColorId color_id);
+
   // views::LabelButton:
+  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size GetMinimumSize() const override;
   void Layout() override;
   void OnThemeChanged() override;
   void NotifyClick(const ui::Event& event) override;
@@ -71,6 +82,10 @@ class ASH_EXPORT OptionButtonBase : public views::LabelButton {
  private:
   // Update the label's color based on the enable state.
   void UpdateTextColor();
+
+  const int min_width_;
+
+  const int image_label_spacing_;
 
   // True if the button is currently selected.
   bool selected_ = false;

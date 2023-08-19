@@ -9,6 +9,7 @@
 
 #include "base/base64.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -499,7 +500,7 @@ int HttpAuthSSPI::GetNextSecurityToken(const std::string& spn,
     // sequence.  If we have already initialized our security context, then
     // we're incorrectly reusing the auth handler for a new sequence.
     if (SecIsValidHandle(&ctxt_)) {
-      NOTREACHED();
+      DUMP_WILL_BE_NOTREACHED_NORETURN();
       return ERR_UNEXPECTED;
     }
   }

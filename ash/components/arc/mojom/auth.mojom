@@ -22,7 +22,7 @@ enum ArcAuthCodeStatus {
 
   [MinVersion=10] SUCCESS = 18,
 
-  // Account is not present in Chrome OS Account Manager.
+  // Account is not present in ChromeOS Account Manager.
   [MinVersion=21] CHROME_ACCOUNT_NOT_FOUND = 21,
 
   // NOTE: If you add any entries to this enum, you must also update the
@@ -56,7 +56,7 @@ enum GeneralSignInError {
   // Account type is not supported for authorization.
   UNSUPPORTED_ACCOUNT_TYPE = 6,
 
-  // Account is not present in Chrome OS Account Manager.
+  // Account is not present in ChromeOS Account Manager.
   CHROME_ACCOUNT_NOT_FOUND = 7,
 };
 
@@ -324,9 +324,10 @@ enum ManagementChangeStatus {
 };
 
 // These values describe the type of the Chrome account to provision.
+// Next enum ID: 6.
+// Deprecated enum ID: 3 (was used for `ACTIVE_DIRECTORY_ACCOUNT`).
 [Extensible]
 enum ChromeAccountType {
-  // Next value: 6
   UNKNOWN = 0,
 
   // Chrome login account type is a user account.
@@ -335,14 +336,11 @@ enum ChromeAccountType {
   // Chrome login account type is a robot (service) account.
   ROBOT_ACCOUNT = 2,
 
-  // Chrome login account type is an Active Directory account.
-  ACTIVE_DIRECTORY_ACCOUNT = 3,
-
   // Chrome login account type is a child account.
   CHILD_ACCOUNT = 4,
 
   // Chrome login account is a demo session account that was enrolled offline,
-  // using policies bundled with Chrome OS, and thus does not have a working
+  // using policies bundled with ChromeOS, and thus does not have a working
   // robot account associated with it.
   [MinVersion=14] OFFLINE_DEMO_ACCOUNT = 5,
 };
@@ -370,33 +368,32 @@ enum MetricsType {
 // These values describe the type of account update.
 [Extensible]
 enum AccountUpdateType {
-  // An account was updated or inserted in Chrome OS Account Manager.
+  // An account was updated or inserted in ChromeOS Account Manager.
   UPSERT = 0,
 
-  // An account was removed from Chrome OS Account Manager.
+  // An account was removed from ChromeOS Account Manager.
   REMOVAL = 1,
 };
 
 // The necessary information for Android to sign in and provision itself.
+// Next field ID: 5.
 struct AccountInfo {
-  // Name of account, used to map to existing Android account.
-  [MinVersion=9] string? account_name@4;
-
   // The authorization code that can be used in Android to sign in when
   // account_type is USER_ACCOUNT, ROBOT_ACCOUNT or CHILD_ACCOUNT. If it is
   // null in these cases, sign-in will be skipped.
   string? auth_code@0;
 
-  // If account_type is ACTIVE_DIRECTORY_ACCOUNT, this contains an enrollment
-  // token for a Managed Google Play account. If it is null in this case,
-  // sign-in will be skipped.
-  [MinVersion=6] string? enrollment_token@3;
-
   // The type of Chrome account to provision.
   ChromeAccountType account_type@1;
 
-  // Whether the account is managed from Chrome OS.
+  // Whether the account is managed from ChromeOS.
   bool is_managed@2;
+
+  // This deprecated enrollment token was used for Active Directory users.
+  [MinVersion=6] string? DEPRECATED_enrollment_token@3;
+
+  // Name of account, used to map to existing Android account.
+  [MinVersion=9] string? account_name@4;
 };
 
 // Information about an account in ARC.
@@ -409,7 +406,7 @@ struct ArcAccountInfo {
 };
 
 // Next Method ID: 22.
-// Deprecated method IDs: 21
+// Deprecated method IDs: 21.
 interface AuthHost {
   // Notifies Chrome that the authorization flow is completed and provides
   // |result| and |account| that was authorized.
@@ -432,13 +429,12 @@ interface AuthHost {
 
   // Returns the primary account from Chrome.
   // |account_name| is the email address of the primary account for consumer and
-  // managed Gaia accounts and empty for all other cases (like demo sessions,
-  // Active Directory sessions, etc).
+  // managed Gaia accounts and empty for all other cases (e.g. demo sessions).
   [MinVersion=23] RequestPrimaryAccount@18()
       => (string account_name, ChromeAccountType account_type);
 
   // Requests an authorization code, as well as the account information for the
-  // Primary/Device Account in Chrome OS Account Manager.
+  // Primary/Device Account in ChromeOS Account Manager.
   // This is called for ARC's initial provisioning flow.
   // If the request completes successfully, |status| must be SUCCESS and
   // |account_info| is not null.
@@ -448,7 +444,7 @@ interface AuthHost {
       => (ArcAuthCodeStatus status, AccountInfo? account_info);
 
   // Requests an authorization code, as well as the account information for an
-  // account in Chrome OS Account Manager.
+  // account in ChromeOS Account Manager.
   // This must be called after ARC's initial provisioning flow is complete.
   // If the request completes successfully, |status| must be SUCCESS and
   // |account_info| is not null.
@@ -461,14 +457,14 @@ interface AuthHost {
           AccountInfo? account_info,
           [MinVersion=24] bool persistent_error);
 
-  // Returns |true| if Chrome OS Account Manager is available for this session.
+  // Returns |true| if ChromeOS Account Manager is available for this session.
   // Account Manager is not available in Guest Sessions and Public Sessions
   // among other cases. Returning |true| here has the effect of routing all
-  // Google account management |Intent|s from Android to Chrome OS Account
+  // Google account management |Intent|s from Android to ChromeOS Account
   // Manager, instead of launching Android's account management flows.
   [MinVersion=20] IsAccountManagerAvailable@14() => (bool is_available);
 
-  // Handles an Android |Intent| to add a Google account by displaying Chrome OS
+  // Handles an Android |Intent| to add a Google account by displaying ChromeOS
   // Account Manager's account addition UI.
   [MinVersion=20] HandleAddAccountRequest@15();
 
@@ -476,7 +472,7 @@ interface AuthHost {
   // the Google email id for the account. |account_name| cannot be null or
   // empty.
   // Note: Calling this API will not silently remove |account_name|. Currently
-  // it redirects users to Chrome OS Account Manager's Settings Page.
+  // it redirects users to ChromeOS Account Manager's Settings Page.
   [MinVersion=20] HandleRemoveAccountRequest@16(string account_name);
 
   // Handles an Android |Intent| to update a Google account by displaying Chrome
@@ -494,14 +490,14 @@ interface AuthInstance {
   [MinVersion=12] Init@2(pending_remote<AuthHost> host_remote) => ();
 
   // A notification that an account was updated (or inserted, or removed; see
-  // |AccountUpdateType|) in Chrome OS Account Manager.
+  // |AccountUpdateType|) in ChromeOS Account Manager.
   // This notification is sent for the Primary/Device Account and Secondary
   // Accounts, both.
   [MinVersion=17] OnAccountUpdated@3(
       string account_name, AccountUpdateType update_type);
 
   // Gets the list of Google accounts in ARC. Called during the one-time
-  // migration of accounts from ARC to Chrome OS Account Manager.
+  // migration of accounts from ARC to ChromeOS Account Manager.
   [MinVersion=19] GetGoogleAccounts@4() => (array<ArcAccountInfo> accounts);
 
   // Gets resolution status of main account for statistics reporting.

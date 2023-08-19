@@ -74,7 +74,7 @@ RemoteEventServiceStrategy::Create() {
   }
   return std::make_unique<RemoteEventServiceStrategyLacros>();
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 RemoteEventServiceStrategy::RemoteEventServiceStrategy() = default;

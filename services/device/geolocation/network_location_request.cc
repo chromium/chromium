@@ -20,6 +20,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/device_event_log/device_event_log.h"
 #include "net/base/load_flags.h"
@@ -27,6 +28,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/device/geolocation/location_arbitrator.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
+#include "services/device/public/mojom/geolocation_internals.mojom.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -219,8 +221,8 @@ void NetworkLocationRequest::OnRequestComplete(
 namespace {
 
 struct AccessPointLess {
-  bool operator()(const AccessPointData* ap1,
-                  const AccessPointData* ap2) const {
+  bool operator()(const mojom::AccessPointData* ap1,
+                  const mojom::AccessPointData* ap2) const {
     return ap2->radio_signal_strength < ap1->radio_signal_strength;
   }
 };
@@ -276,7 +278,8 @@ void AddWifiData(const WifiData& wifi_data,
   if (wifi_data.access_point_data.empty())
     return;
 
-  typedef std::multiset<const AccessPointData*, AccessPointLess> AccessPointSet;
+  typedef std::multiset<const mojom::AccessPointData*, AccessPointLess>
+      AccessPointSet;
   AccessPointSet access_points_by_signal_strength;
 
   for (const auto& ap_data : wifi_data.access_point_data)
@@ -384,14 +387,14 @@ mojom::GeopositionPtr ParseServerResponse(const std::string& response_body,
   DVLOG(1) << "ParseServerResponse() : Parsing response " << response_body;
 
   // Parse the response, ignoring comments.
-  auto response_result =
-      base::JSONReader::ReadAndReturnValueWithError(response_body);
-  if (!response_result.has_value()) {
-    LOG(WARNING) << "ParseServerResponse() : JSONReader failed : "
-                 << response_result.error().message;
-    return nullptr;
-  }
-  base::Value response_value = std::move(*response_result);
+  ASSIGN_OR_RETURN(base::Value response_value,
+                   base::JSONReader::ReadAndReturnValueWithError(response_body),
+                   [](base::JSONReader::Error error) -> mojom::GeopositionPtr {
+                     LOG(WARNING)
+                         << "ParseServerResponse() : JSONReader failed : "
+                         << std::move(error).message;
+                     return nullptr;
+                   });
 
   const base::Value::Dict* response_object = response_value.GetIfDict();
   if (!response_object) {

@@ -7,6 +7,7 @@
 #include <memory>
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/attestation/fake_soft_bind_attestation_flow.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -73,7 +74,9 @@ class FakeCryptAuthKeyRegistryFactory
     return instance;
   }
 
-  MockCryptAuthKeyRegistry* instance_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION MockCryptAuthKeyRegistry* instance_ = nullptr;
 };
 
 class AttestationCertificateGeneratorImplTest : public testing::Test {

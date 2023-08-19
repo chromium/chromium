@@ -112,6 +112,23 @@ extern const char kTimesReenrolledToGoogleMobileServices[];
 // migration in an attempt to reenroll into the UPM experiment. Reset to zero
 // after a successful reenrollment.
 extern const char kTimesAttemptedToReenrollToGoogleMobileServices[];
+
+// Boolean value meant to record in the prefs if the user clicked "Got it" in
+// the UPM local passwords migration warning. When set to true, the warning
+// should not be displayed again.
+extern const char kUserAcknowledgedLocalPasswordsMigrationWarning[];
+
+// The timestamp at which the last UPM local passwords migration warning was
+// shown to the user in microseconds since Windows epoch. This is needed to
+// ensure that the UI is prompted only once per given time interval (currently
+// one month).
+extern const char kLocalPasswordsMigrationWarningShownTimestamp[];
+
+// Whether the local password migration warning was already shown at startup.
+extern const char kLocalPasswordMigrationWarningShownAtStartup[];
+
+// The version of the password migration warning prefs.
+extern const char kLocalPasswordMigrationWarningPrefsVersion[];
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -218,11 +235,6 @@ extern const char kBiometricAuthenticationBeforeFilling[];
 // device.
 extern const char kHadBiometricsAvailable[];
 #endif
-
-// Boolean which indicates whether grouping info was requested from the
-// affiliation service.
-// TODO(crbug.com/1420597): Remove this after Passwords Grouping launch.
-extern const char kPasswordsGroupingInfoRequested[];
 
 #if BUILDFLAG(IS_IOS)
 // Boolean pref indicating if the one-time notice for account storage was shown.

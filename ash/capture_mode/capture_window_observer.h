@@ -6,10 +6,8 @@
 #define ASH_CAPTURE_MODE_CAPTURE_WINDOW_OBSERVER_H_
 
 #include "ash/ash_export.h"
-#include "ash/capture_mode/capture_mode_types.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/window_observer.h"
-#include "ui/base/cursor/cursor.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/wm/public/activation_change_observer.h"
@@ -32,6 +30,9 @@ class ASH_EXPORT CaptureWindowObserver : public aura::WindowObserver,
 
   ~CaptureWindowObserver() override;
 
+  aura::Window* window() { return window_; }
+  bool bar_anchored_to_window() const { return bar_anchored_to_window_; }
+
   // Updates selected window depending on the mouse/touch event location. If
   // there is an eligible window under the current mouse/touch event location,
   // its bounds will be highlighted.
@@ -50,6 +51,8 @@ class ASH_EXPORT CaptureWindowObserver : public aura::WindowObserver,
                              const gfx::Rect& old_bounds,
                              const gfx::Rect& new_bounds,
                              ui::PropertyChangeReason reason) override;
+  void OnWindowParentChanged(aura::Window* window,
+                             aura::Window* parent) override;
   void OnWindowVisibilityChanging(aura::Window* window, bool visible) override;
   void OnWindowDestroying(aura::Window* window) override;
 
@@ -57,8 +60,6 @@ class ASH_EXPORT CaptureWindowObserver : public aura::WindowObserver,
   void OnWindowActivated(ActivationReason reason,
                          aura::Window* gained_active,
                          aura::Window* lost_active) override;
-
-  aura::Window* window() { return window_; }
 
  private:
   void StartObserving(aura::Window* window);

@@ -10,10 +10,6 @@
 #import "base/check.h"
 #import "ios/chrome/browser/ui/sharing/activity_services/data/chrome_activity_item_thumbnail_generator.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface ChromeActivityURLSource () {
   NSString* _subject;
 }

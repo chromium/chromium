@@ -39,6 +39,7 @@ class ImeModeView : public TrayItemView,
   // views::TrayItemView:
   const char* GetClassName() const override;
   void HandleLocaleChange() override;
+  void UpdateLabelOrImageViewColor(bool active) override;
 
  private:
   void Update();

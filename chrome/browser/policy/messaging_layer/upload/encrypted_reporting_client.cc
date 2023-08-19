@@ -11,6 +11,8 @@
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
@@ -19,6 +21,7 @@
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
 #include "components/policy/core/common/cloud/encrypted_reporting_job_configuration.h"
+#include "components/reporting/util/statusor.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -50,8 +53,8 @@ void EncryptedReportingClient::UploadReport(
   policy::DeviceManagementService* const device_management_service =
       delegate_->device_management_service();
   if (!device_management_service) {
-    LOG(ERROR) << "Device management service required, but not found";
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(Status(
+        error::NOT_FOUND, "Device management service required, but not found"));
     return;
   }
 
@@ -99,12 +102,26 @@ void EncryptedReportingClient::OnReportUploadCompleted(
     int response_code,
     absl::optional<base::Value::Dict> response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!job) {
-    std::move(callback).Run(absl::nullopt);
+  if (job) {
+    request_jobs_.erase(job);
+  }
+  if (response_code == ::policy::DeviceManagementService::kTooManyRequests) {
+    std::move(callback).Run(
+        Status(error::OUT_OF_RANGE, "Too many upload requests"));
     return;
   }
-  std::move(callback).Run(std::move(response));
-  request_jobs_.erase(job);
+  if (response_code != ::policy::DeviceManagementService::kSuccess) {
+    std::move(callback).Run(Status(
+        error::DATA_LOSS, base::StrCat({"Response code: ",
+                                        base::NumberToString(response_code)})));
+    return;
+  }
+  if (!response.has_value()) {
+    std::move(callback).Run(
+        Status(error::DATA_LOSS, "Success response is empty"));
+    return;
+  }
+  std::move(callback).Run(std::move(response.value()));
 }
 
 }  // namespace reporting

@@ -16,10 +16,6 @@
 #import "ios/web/public/web_state.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using base::test::ios::kWaitForJSCompletionTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
 

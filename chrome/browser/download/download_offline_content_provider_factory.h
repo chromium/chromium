@@ -14,7 +14,7 @@ class SimpleFactoryKey;
 
 namespace base {
 template <typename T>
-struct DefaultSingletonTraits;
+class NoDestructor;
 }  // namespace base
 
 // This class builds and associates DownloadOfflineContentProvider with their
@@ -34,8 +34,7 @@ class DownloadOfflineContentProviderFactory : public SimpleKeyedServiceFactory {
       const DownloadOfflineContentProviderFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<
-      DownloadOfflineContentProviderFactory>;
+  friend base::NoDestructor<DownloadOfflineContentProviderFactory>;
 
   DownloadOfflineContentProviderFactory();
   ~DownloadOfflineContentProviderFactory() override;

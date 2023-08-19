@@ -193,8 +193,7 @@ class Cache::BarrierCallbackForPutResponse final
         response_list_(request_list_.size()),
         blob_list_(request_list_.size()) {
     if (request_list.size() > 1) {
-      abort_controller_ =
-          cache_->CreateAbortController(ExecutionContext::From(script_state));
+      abort_controller_ = cache_->CreateAbortController(script_state);
     }
   }
 
@@ -899,8 +898,8 @@ void Cache::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
 }
 
-AbortController* Cache::CreateAbortController(ExecutionContext* context) {
-  return AbortController::Create(context);
+AbortController* Cache::CreateAbortController(ScriptState* script_state) {
+  return AbortController::Create(script_state);
 }
 
 ScriptPromise Cache::MatchImpl(ScriptState* script_state,

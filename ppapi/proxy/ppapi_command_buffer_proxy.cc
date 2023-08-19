@@ -239,6 +239,10 @@ void PpapiCommandBufferProxy::SignalQuery(uint32_t query,
   NOTREACHED();
 }
 
+void PpapiCommandBufferProxy::CancelAllQueries() {
+  NOTREACHED();
+}
+
 void PpapiCommandBufferProxy::CreateGpuFence(uint32_t gpu_fence_id,
                                              ClientGpuFence source) {
   NOTREACHED();

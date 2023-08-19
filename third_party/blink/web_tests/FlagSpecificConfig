@@ -42,7 +42,7 @@
   {
     "name": "highdpi",
     "args": ["--force-device-scale-factor=1.5"],
-    "smoke_file": "SmokeTests/highdpi"
+    "smoke_file": "TestLists/highdpi"
   },
   {
     "name": "skia-vulkan-swiftshader",
@@ -52,13 +52,14 @@
           "--use-vulkan=swiftshader",
           "--disable-vulkan-fallback-to-gl-for-testing"
     ],
-    "smoke_file": "SmokeTests/skia-vulkan-swiftshader"
+    "smoke_file": "TestLists/skia-vulkan-swiftshader"
   },
   {
     "name": "webgpu",
     "args": [
           "--enable-unsafe-webgpu",
           "--enable-dawn-features=allow_unsafe_apis",
+          "--disable-dawn-features=use_dxc",
           "--enable-webgpu-developer-features",
           "--use-gpu-in-tests",
           "--enable-accelerated-2d-canvas",
@@ -86,6 +87,7 @@
           "--enable-unsafe-webgpu",
           "--use-webgpu-adapter=swiftshader",
           "--enable-dawn-features=allow_unsafe_apis",
+          "--disable-dawn-features=use_dxc",
           "--enable-webgpu-developer-features",
           "--use-gpu-in-tests",
           "--enable-accelerated-2d-canvas"
@@ -112,6 +114,7 @@
           "--use-webgpu-adapter=swiftshader",
           "--enable-dawn-backend-validation",
           "--enable-dawn-features=allow_unsafe_apis",
+          "--disable-dawn-features=use_dxc",
           "--enable-webgpu-developer-features",
           "--use-gpu-in-tests",
           "--enable-accelerated-2d-canvas"
@@ -137,6 +140,7 @@
           "--enable-unsafe-webgpu",
           "--enable-dawn-backend-validation",
           "--enable-dawn-features=allow_unsafe_apis",
+          "--disable-dawn-features=use_dxc",
           "--enable-webgpu-developer-features",
           "--use-gpu-in-tests",
           "--enable-accelerated-2d-canvas",
@@ -164,6 +168,7 @@
           "--enable-unsafe-webgpu",
           "--enable-dawn-backend-validation=partial",
           "--enable-dawn-features=allow_unsafe_apis",
+          "--disable-dawn-features=use_dxc",
           "--enable-webgpu-developer-features",
           "--use-gpu-in-tests",
           "--enable-accelerated-2d-canvas",

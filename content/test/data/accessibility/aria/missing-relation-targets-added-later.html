@@ -1,0 +1,25 @@
+<!--
+@BLINK-ALLOW:controlsIds*
+@BLINK-ALLOW:detailsIds*
+@BLINK-ALLOW:errorMessageIds*
+@BLINK-ALLOW:flowtoIds*
+@WAIT-FOR:done
+-->
+<input id="controls" aria-controls="controls-target">
+<input id="details" aria-details="details-target">
+<input id="errormessage" aria-errormessage="errormessage-target" aria-invalid="true">
+<input id="flowto" aria-flowto="flowto-target">
+<div role="group" class="controls-target">controls target</div>
+<div role="group" class="details-target">details target</div>
+<div role="group" class="errormessage-target">errormessage target</div>
+<div role="group" class="flowto-target">flowto target</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelector('.controls-target').id = 'controls-target';
+  document.querySelector('.details-target').id = 'details-target';
+  document.querySelector('.errormessage-target').id = 'errormessage-target';
+  document.querySelector('.flowto-target').id = 'flowto-target';
+  document.title = 'done';
+});
+</script>

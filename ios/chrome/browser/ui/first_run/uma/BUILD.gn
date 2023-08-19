@@ -5,7 +5,6 @@
 import("//build/config/chrome_build.gni")
 
 source_set("uma") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "uma_coordinator.h",
     "uma_coordinator.mm",
@@ -21,13 +20,13 @@ source_set("uma") {
 }
 
 source_set("uma_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "uma_table_view_controller.h",
     "uma_table_view_controller.mm",
   ]
   deps = [
     "//base",
+    "//components/sync/base:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/list_model",
     "//ios/chrome/browser/shared/ui/table_view",

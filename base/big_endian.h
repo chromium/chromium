@@ -13,8 +13,43 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
+#include "base/sys_byteorder.h"
+#include "build/build_config.h"
 
 namespace base {
+
+namespace internal {
+
+// ByteSwapIfLittleEndian performs ByteSwap if this platform is little-endian,
+// otherwise it is a no-op.
+
+#if defined(ARCH_CPU_LITTLE_ENDIAN)
+
+template <typename T>
+inline auto ByteSwapIfLittleEndian(T val) -> decltype(ByteSwap(val)) {
+  return ByteSwap(val);
+}
+
+#else
+
+// The use of decltype ensures this is only enabled for types for which
+// ByteSwap() is defined, so the same set of overloads will work on both
+// little-endian and big-endian platforms.
+
+template <typename T>
+inline auto ByteSwapIfLittleEndian(T val) -> decltype(ByteSwap(val)) {
+  return val;
+}
+
+#endif
+
+// We never need to byte-swap a single-byte value, but it's convenient to have
+// this overload to avoid a special case.
+inline uint8_t ByteSwapIfLittleEndian(uint8_t val) {
+  return val;
+}
+
+}  // namespace internal
 
 // Read an integer (signed or unsigned) from |buf| in Big Endian order.
 // Note: this loop is unrolled with -O1 and above.
@@ -26,13 +61,9 @@ inline void ReadBigEndian(const uint8_t buf[], T* out) {
   static_assert(std::is_integral<T>::value, "T has to be an integral type.");
   // Make an unsigned version of the output type to make shift possible
   // without UB.
-  typename std::make_unsigned<T>::type unsigned_result = buf[0];
-  for (size_t i = 1; i < sizeof(T); ++i) {
-    unsigned_result <<= 8;
-    // Must cast to uint8_t to avoid clobbering by sign extension.
-    unsigned_result |= buf[i];
-  }
-  *out = unsigned_result;
+  typename std::make_unsigned<T>::type raw;
+  memcpy(&raw, buf, sizeof(T));
+  *out = static_cast<T>(internal::ByteSwapIfLittleEndian(raw));
 }
 
 // Write an integer (signed or unsigned) |val| to |buf| in Big Endian order.
@@ -40,32 +71,10 @@ inline void ReadBigEndian(const uint8_t buf[], T* out) {
 template<typename T>
 inline void WriteBigEndian(char buf[], T val) {
   static_assert(std::is_integral<T>::value, "T has to be an integral type.");
-  auto unsigned_val = static_cast<typename std::make_unsigned<T>::type>(val);
-  for (size_t i = 0; i < sizeof(T); ++i) {
-    buf[sizeof(T) - i - 1] = static_cast<char>(unsigned_val & 0xFF);
-    unsigned_val >>= 8;
-  }
-}
-
-// Specializations to make clang happy about the (dead code) shifts above.
-template <>
-inline void ReadBigEndian<uint8_t>(const uint8_t buf[], uint8_t* out) {
-  *out = buf[0];
-}
-
-template <>
-inline void WriteBigEndian<uint8_t>(char buf[], uint8_t val) {
-  buf[0] = static_cast<char>(val);
-}
-
-template <>
-inline void ReadBigEndian<int8_t>(const uint8_t buf[], int8_t* out) {
-  *out = static_cast<int8_t>(buf[0]);
-}
-
-template <>
-inline void WriteBigEndian<int8_t>(char buf[], int8_t val) {
-  buf[0] = static_cast<char>(val);
+  const auto unsigned_val =
+      static_cast<typename std::make_unsigned<T>::type>(val);
+  const auto raw = internal::ByteSwapIfLittleEndian(unsigned_val);
+  memcpy(buf, &raw, sizeof(T));
 }
 
 // Allows reading integers in network order (big endian) while iterating over

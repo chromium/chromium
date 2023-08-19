@@ -57,7 +57,7 @@ class MediaDevicesPermissionCheckerTest : public RenderViewHostImplTestHarness {
     std::vector<blink::OriginWithPossibleWildcards> allowlist;
     if (enabled) {
       allowlist.emplace_back(
-          blink::OriginWithPossibleWildcards::FromOrigin(origin_));
+          *blink::OriginWithPossibleWildcards::FromOrigin(origin_));
     }
     navigation->SetPermissionsPolicyHeader({{feature, allowlist,
                                              /*self_if_matches=*/absl::nullopt,

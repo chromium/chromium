@@ -48,6 +48,10 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) WaylandExtension {
   // Under lacros, it controls for instance interaction with the system shelf
   // widget, when browser goes in fullscreen.
   virtual void SetImmersiveFullscreenStatus(bool status) = 0;
+
+  // Sets the top inset (header) height which is reserved or occupied by the top
+  // window frame.
+  virtual void SetTopInset(int height) = 0;
 #endif
 
   // Signals the underneath platform to shows a preview for the given window

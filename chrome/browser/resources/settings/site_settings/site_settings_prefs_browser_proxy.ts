@@ -83,6 +83,7 @@ export interface RawSiteException {
   origin: string;
   displayName: string;
   type: string;
+  description?: string;
   setting: ContentSetting;
   source: SiteSettingSource;
 }
@@ -99,11 +100,43 @@ export interface SiteException {
   origin: string;
   displayName: string;
   setting: ContentSetting;
+  description?: string;
   enforcement: chrome.settingsPrivate.Enforcement|null;
   controlledBy: chrome.settingsPrivate.ControlledBy;
   // <if expr="chromeos_ash">
   showAndroidSmsNote?: boolean;
   // </if>
+}
+
+/**
+ * A group of storage access site exceptions with the same origin for UI use.
+ * See also: StorageAccessEmbeddingException.
+ */
+export interface StorageAccessSiteException {
+  origin: string;
+  displayName: string;
+  setting: ContentSetting;
+
+  // Information needed for a static row.
+  description?: string;
+  incognito?: boolean;
+
+  // Information needed for a grouped row.
+  closeDescription?: string;
+  openDescription?: string;
+
+  exceptions: StorageAccessEmbeddingException[];
+}
+
+/**
+ * A storage access site exception for UI use. To be always used within
+ * StorageAccessSiteException.
+ */
+export interface StorageAccessEmbeddingException {
+  embeddingOrigin: string;
+  embeddingDisplayName: string;
+  description?: string;  // includes case for embargoed exception.
+  incognito: boolean;
 }
 
 /**
@@ -170,31 +203,20 @@ export interface ZoomLevelEntry {
 }
 
 /**
- * The notification permission information passed from
- * site_settings_handler.cc.
- */
-export interface NotificationPermission {
-  origin: string;
-  notificationInfoString: string;
-}
-
-/**
- * TODO(crbug.com/1373962): Remove the origin key from `RawFileSystemGrant`
+ * TODO(crbug.com/1373962): Remove the origin key from `FileSystemGrant`
  * before the launch of the Persistent Permissions settings page UI.
  */
-export interface RawFileSystemGrant {
+export interface FileSystemGrant {
   origin: string;
   filePath: string;
-  isWritable: boolean;
+  displayName: string;
   isDirectory: boolean;
 }
 
-export interface FileSystemGrantsForOrigin {
+export interface OriginFileSystemGrants {
   origin: string;
-  directoryReadGrants: RawFileSystemGrant[];
-  directoryWriteGrants: RawFileSystemGrant[];
-  fileReadGrants: RawFileSystemGrant[];
-  fileWriteGrants: RawFileSystemGrant[];
+  viewGrants: FileSystemGrant[];
+  editGrants: FileSystemGrant[];
 }
 
 export interface SiteSettingsPrefsBrowserProxy {
@@ -261,10 +283,13 @@ export interface SiteSettingsPrefsBrowserProxy {
   getExceptionList(contentType: ContentSettingsTypes):
       Promise<RawSiteException[]>;
 
+  getStorageAccessExceptionList(categorySubtype: ContentSetting):
+      Promise<StorageAccessSiteException[]>;
+
   /**
    * Gets the File System Access permission grants, grouped by origin.
    */
-  getFileSystemGrants(): Promise<FileSystemGrantsForOrigin[]>;
+  getFileSystemGrants(): Promise<OriginFileSystemGrants[]>;
 
   revokeFileSystemGrant(origin: string, filePath: string): void;
 
@@ -478,27 +503,6 @@ export interface SiteSettingsPrefsBrowserProxy {
    */
   recordAction(action: number): void;
 
-  /** Gets the site list that send a lot of notifications. */
-  getNotificationPermissionReview(): Promise<NotificationPermission[]>;
-
-  /** Blocks the notification permission for all origins in the list. */
-  blockNotificationPermissionForOrigins(origins: string[]): void;
-
-  /** Allows the notification permission for all origins in the list */
-  allowNotificationPermissionForOrigins(origins: string[]): void;
-
-  /** Adds the origins to blocklist for the notification permissions feature. */
-  ignoreNotificationPermissionForOrigins(origins: string[]): void;
-
-  /**
-   * Removes the origins from the blocklist for the notification permissions
-   * feature.
-   */
-  undoIgnoreNotificationPermissionForOrigins(origins: string[]): void;
-
-  /** Resets the notification permission for the origins. */
-  resetNotificationPermissionForOrigins(origin: string[]): void;
-
   /**
    * Gets display string for FPS information of owner and member count.
    * @param fpsNumMembers The number of members in the first party set.
@@ -550,6 +554,10 @@ export class SiteSettingsPrefsBrowserProxyImpl implements
 
   getExceptionList(contentType: ContentSettingsTypes) {
     return sendWithPromise('getExceptionList', contentType);
+  }
+
+  getStorageAccessExceptionList(categorySubtype: ContentSetting) {
+    return sendWithPromise('getStorageAccessExceptionList', categorySubtype);
   }
 
   getFileSystemGrants() {
@@ -674,40 +682,6 @@ export class SiteSettingsPrefsBrowserProxyImpl implements
 
   recordAction(action: number) {
     chrome.send('recordAction', [action]);
-  }
-
-  getNotificationPermissionReview() {
-    return sendWithPromise('getNotificationPermissionReview');
-  }
-
-  blockNotificationPermissionForOrigins(origins: string[]) {
-    chrome.send('blockNotificationPermissionForOrigins', [
-      origins,
-    ]);
-  }
-
-  allowNotificationPermissionForOrigins(origins: string[]) {
-    chrome.send('allowNotificationPermissionForOrigins', [
-      origins,
-    ]);
-  }
-
-  ignoreNotificationPermissionForOrigins(origins: string[]) {
-    chrome.send('ignoreNotificationPermissionReviewForOrigins', [
-      origins,
-    ]);
-  }
-
-  undoIgnoreNotificationPermissionForOrigins(origins: string[]) {
-    chrome.send('undoIgnoreNotificationPermissionReviewForOrigins', [
-      origins,
-    ]);
-  }
-
-  resetNotificationPermissionForOrigins(origins: string[]) {
-    chrome.send('resetNotificationPermissionForOrigins', [
-      origins,
-    ]);
   }
 
   getFpsMembershipLabel(fpsNumMembers: number, fpsOwner: string) {

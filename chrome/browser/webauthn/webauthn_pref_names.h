@@ -14,6 +14,11 @@ extern const char kRemoteProxiedRequestsAllowed[];
 // Maps to the AllowWebAuthnWithBrokenCerts enterprise policy.
 extern const char kAllowWithBrokenCerts[];
 
+// The most recently used phone pairing from sync, identified by its public key
+// encoded in base64. If there is no last recently used phone, the preference
+// will be an empty string.
+extern const char kLastUsedPairingFromSyncPublicKey[];
+
 }  // namespace webauthn::pref_names
 
 #endif  // CHROME_BROWSER_WEBAUTHN_WEBAUTHN_PREF_NAMES_H_

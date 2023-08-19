@@ -2,18 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/functional/callback_forward.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
-#include "chrome/test/interaction/widget_focus_waiter.h"
+#include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/user_education/common/help_bubble_factory_registry.h"
 #include "components/user_education/common/help_bubble_params.h"
 #include "components/user_education/views/help_bubble_factory_views.h"
@@ -22,121 +20,114 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/interaction/widget_focus_observer.h"
 #include "ui/views/test/widget_test.h"
 
-class HelpBubbleFactoryViewsUiTest : public InProcessBrowserTest {
+class HelpBubbleFactoryViewsUiTest : public InteractiveBrowserTest {
  public:
  protected:
-  ui::ElementContext context() {
-    return browser()->window()->GetElementContext();
+  auto CreateHelpBubble(ui::ElementIdentifier anchor,
+                        user_education::HelpBubbleParams params) {
+    auto create_step = base::BindOnce(
+        [](HelpBubbleFactoryViewsUiTest* test,
+           user_education::HelpBubbleParams params,
+           ui::TrackedElement* anchor) {
+          BrowserView* const browser_view =
+              BrowserView::GetBrowserViewForBrowser(test->browser());
+          test->browser_native_view_ =
+              browser_view->GetWidget()->GetNativeView();
+          auto* const registry = browser_view->GetFeaturePromoController()
+                                     ->bubble_factory_registry();
+          test->help_bubble_ =
+              registry->CreateHelpBubble(anchor, std::move(params));
+        },
+        base::Unretained(this), std::move(params));
+    return Steps(
+        WithElement(anchor, std::move(create_step)),
+        WaitForShow(
+            user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
+        WithView(user_education::HelpBubbleView::kHelpBubbleElementIdForTesting,
+                 [this](views::View* view) {
+                   help_bubble_native_view_ =
+                       view->GetWidget()->GetNativeView();
+                 }));
   }
 
-  user_education::HelpBubbleFactoryRegistry* registry() {
-    return BrowserView::GetBrowserViewForBrowser(browser())
-        ->GetFeaturePromoController()
-        ->bubble_factory_registry();
+  auto CloseHelpBubble() {
+    return Steps(
+        Do([this]() { help_bubble_.reset(); }),
+        WaitForHide(
+            user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
   }
 
-  views::TrackedElementViews* GetAnchorElement() {
-    return views::ElementTrackerViews::GetInstance()->GetElementForView(
-        BrowserView::GetBrowserViewForBrowser(browser())
-            ->toolbar()
-            ->app_menu_button());
+  static user_education::HelpBubbleParams GetDefaultHelpBubbleParams() {
+    user_education::HelpBubbleParams params;
+    params.body_text = u"Hello world!";
+    return params;
   }
+
+ protected:
+  std::unique_ptr<user_education::HelpBubble> help_bubble_;
+  gfx::NativeView browser_native_view_ = gfx::NativeView();
+  gfx::NativeView help_bubble_native_view_ = gfx::NativeView();
 };
 
-// Moved to interactive uitests due to crbug.com/1290983 (widget activation is
-// not reliable when running alongside other tests).
 IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryViewsUiTest,
                        ToggleFocusForAccessibility) {
-  user_education::HelpBubbleParams params;
-  params.body_text = u"Hello world!";
+  RunTestSequence(
+      ObserveState(views::test::kCurrentWidgetFocus),
+      // A help bubble without buttons should not start focused.
+      CreateHelpBubble(kAppMenuButtonElementId, GetDefaultHelpBubbleParams()),
+      // Toggle focus to the help bubble.
+      Do([this]() { help_bubble_->ToggleFocusForAccessibility(); }),
+      WaitForState(views::test::kCurrentWidgetFocus,
+                   std::ref(help_bubble_native_view_)),
+      // Toggle focus to the anchor view.
+      Do([this]() { help_bubble_->ToggleFocusForAccessibility(); }),
+      WaitForState(views::test::kCurrentWidgetFocus,
+                   std::ref(browser_native_view_)),
+      CheckViewProperty(kAppMenuButtonElementId, &views::View::HasFocus, true),
+      CloseHelpBubble());
+}
+
+IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryViewsUiTest,
+                       ToggleFocusForAccessibilityStartsFocused) {
+  auto params = GetDefaultHelpBubbleParams();
   user_education::HelpBubbleButtonParams button_params;
   button_params.text = u"Button";
   button_params.is_default = true;
   params.buttons.emplace_back(std::move(button_params));
 
-  std::unique_ptr<user_education::HelpBubble> help_bubble =
-      registry()->CreateHelpBubble(GetAnchorElement(), std::move(params));
-  auto* const bubble_view =
-      help_bubble->AsA<user_education::HelpBubbleViews>()->bubble_view();
-
-  // Toggle focus to the help widget and then wait for it to be focused.
-  {
-    WidgetFocusWaiter waiter(bubble_view->GetWidget());
-    waiter.WaitAfter(base::BindLambdaForTesting(
-        [&]() { ASSERT_TRUE(help_bubble->ToggleFocusForAccessibility()); }));
-    EXPECT_TRUE(bubble_view->GetDefaultButtonForTesting()->HasFocus());
-  }
-
-  // Toggle focus to the anchor view and wait for it to become focused.
-#if BUILDFLAG(IS_MAC)
-  // Widget activation is a little wonky on Mac, so we'll just ensure that the
-  // anchor element is correctly focused.
-  help_bubble->ToggleFocusForAccessibility();
-#else
-  // On non-Mac platforms, we can safely wait for widget focus to return to the
-  // browser window.
-  {
-    WidgetFocusWaiter waiter(GetAnchorElement()->view()->GetWidget());
-    waiter.WaitAfter(base::BindLambdaForTesting(
-        [&]() { ASSERT_TRUE(help_bubble->ToggleFocusForAccessibility()); }));
-  }
-#endif
-  EXPECT_TRUE(GetAnchorElement()->view()->HasFocus());
+  RunTestSequence(
+      ObserveState(views::test::kCurrentWidgetFocus),
+      // A help bubble with a button should start focused.
+      CreateHelpBubble(kAppMenuButtonElementId, std::move(params)),
+      WaitForState(views::test::kCurrentWidgetFocus,
+                   std::ref(help_bubble_native_view_)),
+      // Toggle focus to the anchor view.
+      Do([this]() { help_bubble_->ToggleFocusForAccessibility(); }),
+      WaitForState(views::test::kCurrentWidgetFocus,
+                   std::ref(browser_native_view_)),
+      CheckViewProperty(kAppMenuButtonElementId, &views::View::HasFocus, true),
+      CloseHelpBubble());
 }
-
-// Sending accelerators to the main window is flaky at best and doesn't work at
-// all at worst on Mac, so we can't test it directly here.
-// See http://crbug.com/824551 and ConstrainedWindowViewTest.FocusTest for
-// examples of the tests simply not working on Mac.
-// #if BUILDFLAG(IS_MAC)
-// #define MAYBE_ToggleFocusViaAccelerator DISABLED_ToggleFocusViaAccelerator
-// #else
-// #define MAYBE_ToggleFocusViaAccelerator ToggleFocusViaAccelerator
-// #endif
 
 IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryViewsUiTest,
                        ToggleFocusViaAccelerator) {
-  user_education::HelpBubbleParams params;
-  params.body_text = u"Hello world!";
-  auto help_bubble_ptr =
-      registry()->CreateHelpBubble(GetAnchorElement(), std::move(params));
-  auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  auto* const bubble_view =
-      help_bubble_ptr->AsA<user_education::HelpBubbleViews>()->bubble_view();
+  ui::Accelerator next_pane;
+  ASSERT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())->GetAccelerator(
+      IDC_FOCUS_NEXT_PANE, &next_pane));
 
-#if BUILDFLAG(IS_MAC)
-
-  // Focus the help bubble.
-  views::test::WidgetActivationWaiter bubble_waiter(bubble_view->GetWidget(),
-                                                    true);
-  ASSERT_TRUE(chrome::ExecuteCommand(browser(), IDC_FOCUS_NEXT_PANE));
-  bubble_waiter.Wait();
-
-  // Focus the browser.
-  views::test::WidgetActivationWaiter browser_waiter(browser_view->GetWidget(),
-                                                     true);
-  ASSERT_TRUE(chrome::ExecuteCommand(browser(), IDC_FOCUS_NEXT_PANE));
-  browser_waiter.Wait();
-
-#else  // !BUILDFLAG(IS_MAC)
-
-  // Get the appropriate accelerator.
-  ui::Accelerator accel;
-  ASSERT_TRUE(browser_view->GetAccelerator(IDC_FOCUS_NEXT_PANE, &accel));
-
-  // Focus the help bubble.
-  views::test::WidgetActivationWaiter bubble_waiter(bubble_view->GetWidget(),
-                                                    true);
-  ASSERT_TRUE(browser_view->GetFocusManager()->ProcessAccelerator(accel));
-  bubble_waiter.Wait();
-
-  // Focus the browser.
-  views::test::WidgetActivationWaiter browser_waiter(browser_view->GetWidget(),
-                                                     true);
-  ASSERT_TRUE(bubble_view->GetFocusManager()->ProcessAccelerator(accel));
-  browser_waiter.Wait();
-
-#endif  // BUILDFLAG(IS_MAC)
+  RunTestSequence(
+      ObserveState(views::test::kCurrentWidgetFocus),
+      CreateHelpBubble(kAppMenuButtonElementId, GetDefaultHelpBubbleParams()),
+      SendAccelerator(kBrowserViewElementId, next_pane),
+      WaitForState(views::test::kCurrentWidgetFocus,
+                   std::ref(help_bubble_native_view_)),
+      SendAccelerator(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting,
+          next_pane),
+      WaitForState(views::test::kCurrentWidgetFocus,
+                   std::ref(browser_native_view_)),
+      CloseHelpBubble());
 }

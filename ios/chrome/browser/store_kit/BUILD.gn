@@ -3,10 +3,10 @@
 # found in the LICENSE file.
 
 source_set("store_kit") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "store_kit_coordinator.h",
     "store_kit_coordinator.mm",
+    "store_kit_coordinator_delegate.h",
   ]
   deps = [
     "//base",
@@ -21,7 +21,6 @@ source_set("store_kit") {
 
 source_set("unit_tests") {
   testonly = true
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "store_kit_coordinator_unittest.mm" ]
   deps = [
     ":store_kit",

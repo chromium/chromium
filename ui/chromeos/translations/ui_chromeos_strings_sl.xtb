@@ -37,6 +37,7 @@
 <translation id="1297922636971898492">Google Drive trenutno ni na voljo. Ko bo spet na voljo, se bo prenos samodejno začel znova.</translation>
 <translation id="1307931752636661898">Ni si mogoče ogledati datotek za Linux</translation>
 <translation id="1313405956111467313">Samodejna konfiguracija strežnika proxy</translation>
+<translation id="134645005685694099">V napravi ni dovolj prostora za shranjevanje, da bi lahko bila sinhronizacija datotek še naprej vklopljena. Nove datoteke ne bodo več samodejno sinhronizirane.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Neuporabna datoteka ali imenik.</translation>
 <translation id="1363028406613469049">Posnetek</translation>
@@ -113,7 +114,6 @@
 <translation id="1920798810075583923">Lubenica</translation>
 <translation id="1924372192547904021">Pogon <ph name="DRIVE_NAME" /> je bil formatiran</translation>
 <translation id="1931134289871235022">slovaščina</translation>
-<translation id="1933345018156373194">Premikanje ni uspelo, nepričakovana napaka: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">finščina</translation>
 <translation id="1942765061641586207">Ločljivost slike</translation>
 <translation id="1972984168337863910">Razširitev datotek podoken povratnih informacij</translation>
@@ -130,7 +130,7 @@
 <translation id="2084108471225856927">Nastavitve naprave</translation>
 <translation id="2084809735218147718">Oseba, ki se podpisuje v zahvalo</translation>
 <translation id="2088690981887365033">Omrežje VPN</translation>
-<translation id="2089751716171649322">Preprost dostop do datotek v Googlu Drive v načinu brez povezave</translation>
+<translation id="209653272837065803">Ni dovolj prostora za shranjevanje, da bi se sinhronizacija datotek nadaljevala</translation>
 <translation id="2111134541987263231">Vklopite <ph name="BEGIN_BOLD" />Omogoči v anonimnem načinu<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> elementov bo izbrisanih in ne boste jih mogli obnoviti.</translation>
 <translation id="2122305276694332719">Samodejna povezava s skritim omrežjem omogoča drugim, da vidijo vašo napravo in nekatere nastavitve omrežja, zato tega ne priporočamo.</translation>
@@ -147,9 +147,11 @@
 <translation id="2198315389084035571">poenostavljena kitajščina</translation>
 <translation id="22085916256174561">korejščina</translation>
 <translation id="2208919847696382164">Namestitev z Linuxom</translation>
+<translation id="2215692307449050019">Baterija je skoraj prazna. Sinhronizacija datotek se bo nadaljevala, ko boste napravo priklopili na napajanje.</translation>
 <translation id="2225536596944493418">Ali ste prepričani, da želite izbrisati toliko elementov: <ph name="NUMBER_OF_ITEMS" />?</translation>
 <translation id="2230062665678605299">Ni bilo mogoče ustvariti mape »<ph name="FOLDER_NAME" />«. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">Oseba s kavo</translation>
+<translation id="2247561763838186830">Odjavljeni ste</translation>
 <translation id="2251368349685848079">Obnovi iz smetnjaka</translation>
 <translation id="2278133026967558505">Dostop do datotek za vsa spletna mesta in URL-je</translation>
 <translation id="2282155092769082568">Spletni naslov samodejne konfiguracije:</translation>
@@ -163,7 +165,7 @@
 <translation id="2312704192806647271">{COUNT,plural, =1{Razširitve z ID-jem <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ni mogoče najti. Obrnite se na skrbnika.}one{Razširitev z ID-ji <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ni mogoče najti. Obrnite se na skrbnika.}two{Razširitev z ID-ji <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ni mogoče najti. Obrnite se na skrbnika.}few{Razširitev z ID-ji <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ni mogoče najti. Obrnite se na skrbnika.}other{Razširitev z ID-ji <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ni mogoče najti. Obrnite se na skrbnika.}}</translation>
 <translation id="2325650632570794183">Ta vrsta datoteke ni podprta. Obiščite spletno trgovino Chrome in poiščite aplikacijo, ki lahko odpre to vrsto datoteke.</translation>
 <translation id="2326539130272988168">bolgarščina</translation>
-<translation id="2337715497728194187">Deli z Bruschetto</translation>
+<translation id="233822363739146957">Ni dovolj prostora za shranjevanje, da bi lahko sinhronizirali vse datoteke</translation>
 <translation id="23721837607121582">Profil za prenos v mobilni napravi, omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Preklop na pogled seznama</translation>
 <translation id="2377590462528165447">Št. map, deljenih z Linuxom: <ph name="NUMBER_OF_ITEMS" /></translation>
@@ -181,6 +183,7 @@
 <translation id="2464089476039395325">Proxy HTTP</translation>
 <translation id="2467267713099745100">Omrežje <ph name="NETWORK_TYPE" />, izklopljeno</translation>
 <translation id="2468402215065996499">Tamagoči</translation>
+<translation id="2468470447085858632">S sinhronizacijo datotek lahko dostopate do datotek v Googlu Drive brez povezave</translation>
 <translation id="2470939964922472929">Prevečkrat ste vnesli napačno kodo PIN. Če želite nastaviti novo kodo PIN, vnesite 8-mestno osebno kodo za odblokiranje (PUK), ki jo dobite od operaterja.</translation>
 <translation id="2500392669976258912">gudžaratščina (fonetična)</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -192,7 +195,6 @@
 <translation id="2544853746127077729">Omrežje je zavrnilo potrdilo za preverjanje pristnosti</translation>
 <translation id="255937426064304553">Združene države – mednarodna</translation>
 <translation id="2563185590376525700">Žaba</translation>
-<translation id="2574327434504608656">1 mapa je deljena z Bruschetto</translation>
 <translation id="2578394532502990878">tamilščina (fonetična)</translation>
 <translation id="2579959351793446050">odijščina</translation>
 <translation id="2587195714949534472">Priprava na sinhronizacijo datoteke <ph name="FILE_NAME" /> …</translation>
@@ -216,6 +218,7 @@
 <translation id="2782104745158847185">Napaka pri nameščanju aplikacije za Linux</translation>
 <translation id="2802583107108007218">Preberite več o teh omejitvah.</translation>
 <translation id="2803375539583399270">Vnesite kodo PIN</translation>
+<translation id="2819519502129272135">Sinhronizacija datotek je izklopljena</translation>
 <translation id="2820957248982571256">Iskanje ...</translation>
 <translation id="2830077785865012357">kitajščina (žujin)</translation>
 <translation id="2843806747483486897">Spremeni privzeto dejanje ...</translation>
@@ -291,7 +294,6 @@
 <translation id="3408072735282270043">Aktiviraj, <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">nemščina (Nemčija) s tipkovnico Neo 2</translation>
 <translation id="3414856743105198592">S formatiranjem izmenljivega medija boste izbrisali vse podatke. Ali želite nadaljevati?</translation>
-<translation id="3435143625481187092">Omogočite Bruschetti dostop do datotek v mapi <ph name="FOLDER_NAME" /></translation>
 <translation id="3437801641691368414">Čas ustvarjanja</translation>
 <translation id="343907260260897561">Polaroidni fotoaparat</translation>
 <translation id="3455931012307786678">estonščina</translation>
@@ -299,7 +301,6 @@
 <translation id="3479552764303398839">Ne zdaj</translation>
 <translation id="3486821258960016770">mongolščina</translation>
 <translation id="3495304270784461826">Št. napak: <ph name="COUNT" />.</translation>
-<translation id="3501954296166022751">Datoteke v Googlu Drive so na voljo brez povezave</translation>
 <translation id="3509680540198371098">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" />%, podrobnosti</translation>
 <translation id="3511705761158917664">Priprava na sinhronizacijo datotek (<ph name="NUMBER_OF_ITEMS" />) …</translation>
 <translation id="3522708245912499433">portugalščina</translation>
@@ -356,8 +357,10 @@
 <translation id="3906232975181435906">Nameščanje profila v mobilni napravi, omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Prilepi</translation>
+<translation id="3950820424414687140">Prijava</translation>
 <translation id="3952872973865944257">teluščina (fonetična)</translation>
 <translation id="3958548648197196644">Kivi</translation>
+<translation id="397105322502079400">Izračunavanje …</translation>
 <translation id="3971140002794351170">Profil za prenos v mobilni napravi, omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">angleščina (Združeno kraljestvo)</translation>
 <translation id="3975895378829046965">bengalščina (fonetična)</translation>
@@ -368,6 +371,7 @@
 <translation id="4040753847560036377">Napačna koda PUK</translation>
 <translation id="4057991113334098539">Aktiviranje ...</translation>
 <translation id="4092890906744441904">irščina</translation>
+<translation id="4124731372776320263">Sinhroniziranje 1 datoteke v Googlu Drive</translation>
 <translation id="4124935795427217608">Samorog</translation>
 <translation id="4131235941541910880">Nepotrebne elemente premaknite v smetnjak.</translation>
 <translation id="4134804435730168042">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, aktiviranje po nastavitvi naprave</translation>
@@ -377,7 +381,6 @@
 <translation id="4159731583141908892">Premaknjeno: <ph name="FILE_NAME" />.</translation>
 <translation id="4176286497474237543">Takoj izprazni koš</translation>
 <translation id="4179621117429069925">Ta element je v smetnjaku</translation>
-<translation id="4181839429935094755">Št. map, deljenih z Bruschetto: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="4186579485882418952">Omogoči delo brez povezave</translation>
 <translation id="4193154014135846272">Googlov dokument</translation>
 <translation id="4197674956721858839">Stisni izbor v datoteko zip</translation>
@@ -417,6 +420,7 @@
 <translation id="4432921877815220091">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, aktiviranje po nastavitvi naprave, upravlja skrbnik</translation>
 <translation id="4439427728133035643">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, moč signala je <ph name="SIGNAL_STRENGTH" /> %, vzpostavitev povezave</translation>
 <translation id="4442424173763614572">Iskanje DNS ni uspelo</translation>
+<translation id="4445896958353114391">Sinhroniziranje datotek</translation>
 <translation id="4462159676511157176">Imenski strežniki po meri</translation>
 <translation id="4465725236958772856">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, upravlja ga vaš skrbnik, vzpostavitev povezave</translation>
 <translation id="4470564870223067757">Dvodelni hangulski način</translation>
@@ -438,11 +442,11 @@
 <translation id="4599600860674643278">Filter je ponastavljen.</translation>
 <translation id="4603392156942865207">Kopiranje datoteke <ph name="FILE_NAME" /> v mapo <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">Izvajalec</translation>
+<translation id="4635373743001040938">V napravi je skoraj popolnoma zmanjkalo prostora za shranjevanje. Sinhronizacija datotek je bila izklopljena.</translation>
 <translation id="4642769377300286600">Nameščanje profila v mobilni napravi, omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">češčina s tipkovnico Qwerty</translation>
 <translation id="4656777537938206294">Omogočite datoteke za dostop brez povezave</translation>
 <translation id="4658782175094886150">Oseba na snegu</translation>
-<translation id="466782788172479199">Omogočite Bruschetti dostop do datotek v Googlu Drive. Spremembe bodo sinhronizirane z drugimi napravami.</translation>
 <translation id="4669606053856530811">Člani skupine »<ph name="SOURCE_NAME" />« bodo izgubili dostop, razen če te elemente delite z njimi.</translation>
 <translation id="467809019005607715">Google Predstavitve</translation>
 <translation id="4690246192099372265">švedščina</translation>
@@ -491,8 +495,8 @@
 <translation id="4961158930123534723">1 mapa je deljena s programom Parallels Desktop</translation>
 <translation id="496656650103537022">Datoteka <ph name="FILE_NAME" /> je obnovljena.</translation>
 <translation id="4969785127455456148">Album</translation>
+<translation id="4972330214479971536">Nastavitve sinhronizacije datotek ni bilo mogoče dokončati</translation>
 <translation id="4973523518332075481">Uporabite ime, ki vsebuje največ toliko znakov: <ph name="MAX_LENGTH" /></translation>
-<translation id="4973970068702235170">Ustvarjanje arhiva zip ni uspelo, nepričakovana napaka: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">japonščina</translation>
 <translation id="4987699874727873250">angleščina (Indija)</translation>
 <translation id="4988205478593450158">Ali ste prepričani, da želite izbrisati datoteko »<ph name="FILE_NAME" />«?</translation>
@@ -514,6 +518,7 @@
 <translation id="5102922915594634436">Upravljanje sinhroniziranih map</translation>
 <translation id="5109254780565519649">Prišlo je do napake. Nekateri elementi morda niso obnovljeni.</translation>
 <translation id="5110329002213341433">angleščina (Kanada)</translation>
+<translation id="5119780910075847424">Sinhronizacija je začasno zaustavljena</translation>
 <translation id="5123433949759960244">Košarkarska žoga</translation>
 <translation id="5129662217315786329">poljščina</translation>
 <translation id="5144820558584035333">Trodelni hangulski način (390)</translation>
@@ -552,7 +557,6 @@
 <translation id="5323213332664049067">Latinskoameriško</translation>
 <translation id="5330145655348521461">Te datoteke so odprte na drugem namizju. Če si jih želite ogledati, preklopite na uporabnika <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="5330512191124428349">Pridobi podatke</translation>
-<translation id="5344246330454251646">Upravljanje deljenja z Bruschetto</translation>
 <translation id="535792325654997756">Oseba z mačkami</translation>
 <translation id="5358764674931277">Število sličic v sekundi</translation>
 <translation id="5363339716524495120">Jezik vnosa je kitajščina</translation>
@@ -564,6 +568,7 @@
 <translation id="5422221874247253874">Dostopna točka</translation>
 <translation id="5428105026674456456">španščina</translation>
 <translation id="5438282218546237410">Ni rezultatov za »<ph name="SEARCH_TERM" />«.</translation>
+<translation id="5447680084201416734">Ni dovolj prostora za shranjevanje.</translation>
 <translation id="5449551289610225147">Neveljavno geslo</translation>
 <translation id="5459064203055649751">Datoteka z imenom »<ph name="FILENAME" />« že obstaja. Ali jo želite zamenjati z datoteko, ki jo premikate?</translation>
 <translation id="5463231940765244860">Vnos</translation>
@@ -574,7 +579,6 @@
 <translation id="5494920125229734069">Izberi vse</translation>
 <translation id="5500122897333236901">islandščina</translation>
 <translation id="5508696409934741614">Pike</translation>
-<translation id="5519161320735100193">Nastavitve za Google Drive</translation>
 <translation id="5522908512596376669">Seznam datotek je spremenjen na prikaz seznama.</translation>
 <translation id="5524517123096967210">Datoteke ni bilo mogoče prebrati.</translation>
 <translation id="5533102081734025921">Slika <ph name="IMAGE_TYPE" /></translation>
@@ -602,6 +606,7 @@
 <translation id="5720028165859493293">Datoteka <ph name="FILE_NAME" /> je premaknjena v smetnjak.</translation>
 <translation id="5724172041621205163">tajščina s tipkovnico pattachote</translation>
 <translation id="57383366388012121">Prejšnji mesec</translation>
+<translation id="575175778971367197">Te datoteke trenutno ni mogoče sinhronizirati</translation>
 <translation id="5756666464756035725">madžarščina – QWERTY</translation>
 <translation id="5760252553414789727">Izbranih je toliko elementov: <ph name="SELECTED_FILES_COUNT" /></translation>
 <translation id="5763377084591234761">nemščina (Švica)</translation>
@@ -627,7 +632,6 @@
 <translation id="5896749729057314184"><ph name="NETWORK_INDEX" />. omrežje od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, neaktivirano, moč signala <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>
 <translation id="5911887972742538906">Med nameščanjem aplikacije za Linux je prišlo do napake.</translation>
 <translation id="5912396950572065471">Oblika</translation>
-<translation id="5913638992615760742">Operacija kopiranja ni uspela, nepričakovana napaka: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5918480239180455431">Na voljo so nove oblike iskanja</translation>
 <translation id="5926082595146149752">nizozemščina (Nizozemska) z mednarodno angleško tipkovnico (ZDA – za računalnike s sistemom Windows)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -635,7 +639,6 @@
 <translation id="5955954492236143329">Št. datotek: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Chromeboxi</translation>
 <translation id="5982621672636444458">Možnosti razvrščanja</translation>
-<translation id="6007237601604674381">Premikanje ni uspelo. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Ethernetno omrežje</translation>
 <translation id="60357267506638014">češčina – QWERTY</translation>
 <translation id="603895874132768835">Dokler ne nastavite nove kode PIN, ne bo mogoče uporabljati tega omrežja.</translation>
@@ -691,6 +694,7 @@
 <translation id="6423031066725912715">vietnamščina s tipkovnico TCVN</translation>
 <translation id="6430271654280079150">Imate še 1 poskus.</translation>
 <translation id="643243556292470964">Izbrisane datoteke so zdaj premaknjene v smetnjak.</translation>
+<translation id="6438480100790416671">Preverjanje prostora za shranjevanje …</translation>
 <translation id="6485131920355264772">Podatkov o prostoru ni bilo mogoče prenesti</translation>
 <translation id="6495925982925244349">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" /> %, upravlja ga vaš skrbnik, podrobnosti</translation>
 <translation id="649877868557234318">Razširjanje datoteke <ph name="FILE_NAME" /> v mapo <ph name="FOLDER_NAME" /></translation>
@@ -703,6 +707,7 @@
 <translation id="6558280019477628686">Prišlo je do napake. Nekateri elementi morda niso izbrisani.</translation>
 <translation id="656398493051028875">Brisanje datoteke »<ph name="FILENAME" />« ...</translation>
 <translation id="6581162200855843583">Povezava Google Drive</translation>
+<translation id="6588648400954570689">Nastavitve sinhronizacije datotek</translation>
 <translation id="6594855146910089723">Ta mapa je deljena z Linuxom in programom Parallels Desktop</translation>
 <translation id="6607272825297743757">Podatki o datoteki</translation>
 <translation id="6609332149380188670">Št. map, deljenih s programom Parallels Desktop: <ph name="NUMBER_OF_ITEMS" /></translation>
@@ -717,7 +722,6 @@
 <translation id="6710213216561001401">Prejšnji</translation>
 <translation id="6732801395666424405">Potrdila niso naložena</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
-<translation id="6740270213273127264">Deljenje mape z Bruschetto</translation>
 <translation id="6750737795876287924">Trenutni imenik</translation>
 <translation id="6751256176799620176">Izbrana je 1 mapa</translation>
 <translation id="6755827872271341378">Naprava ChromeOS Flex</translation>
@@ -794,6 +798,7 @@
 <translation id="7256405249507348194">Neprepoznana napaka: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Razpoložljive storitve</translation>
 <translation id="7291818353625820805">Želite, da se tipke ponovijo? Izklopite naglasna znamenja v nastavitvah tipkovnice</translation>
+<translation id="729236380049459563">Sinhronizacija datotek je vklopljena</translation>
 <translation id="7292816689782057017">Pravilnik skrbnika omejuje shranjevanje v nekaterih lokacijah.</translation>
 <translation id="7294063083760278948">teluščina (transkripcija)</translation>
 <translation id="7295662345261934369">Deljenje z drugimi</translation>
@@ -801,6 +806,7 @@
 <translation id="7309413087278791451">nemščina (Belgija)</translation>
 <translation id="7339898014177206373">Novo okno</translation>
 <translation id="7343393116438664539">vietnamščina (Telex)</translation>
+<translation id="7347346221088620549">Šifrirana datoteka</translation>
 <translation id="7357762654218998920">Ta vrsta datoteke ni podprta. <ph name="BEGIN_LINK_HELP" />Preberite več<ph name="END_LINK_HELP" /> o odpiranju datotek v sistemu Chrome OS.</translation>
 <translation id="7359359531237882347">Kopiranje toliko elementov: <ph name="NUMBER_OF_ITEMS" /> …</translation>
 <translation id="7375951387215729722">Seznam datotek, razvrščen glede na <ph name="COLUMN_NAME" />, v padajočem vrstnem redu.</translation>
@@ -827,6 +833,7 @@
 <translation id="7547811415869834682">nizozemščina</translation>
 <translation id="7551643184018910560">Pripenjanje na polico</translation>
 <translation id="7553492409867692754">Aplikacijam za Linux dovolite dostop do datotek v mapi <ph name="FOLDER_NAME" />.</translation>
+<translation id="7555339735447658365">Trenutno ste brez povezave. Sinhronizacija datotek se bo nadaljevala, ko vzpostavite internetno povezavo</translation>
 <translation id="7589661784326793847">Počakajte trenutek</translation>
 <translation id="7592775719802218421">Omogočanje dostopa do datoteke <ph name="FILE_NAME" /> brez povezave</translation>
 <translation id="7600126690270271294">srbščina</translation>
@@ -845,6 +852,7 @@
 <translation id="76959938259365003">Smetnjaka ni bilo mogoče izprazniti.</translation>
 <translation id="770015031906360009">grščina</translation>
 <translation id="7705251383879779343">Kopirano: <ph name="FILE_NAME" />.</translation>
+<translation id="7707941139430559579">Datoteke ni mogoče premakniti. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="7708271999969613024">Če želite uporabiti to omrežje, morate vnesti 8-mestno osebno kodo za odblokiranje (PUK), ki jo zagotovi operater.</translation>
 <translation id="7711920809702896782">Podatki o sliki</translation>
 <translation id="7724603315864178912">Izreži</translation>
@@ -890,10 +898,10 @@
 <translation id="7972920761225148017">francoščina (Švica)</translation>
 <translation id="7973962044839454485">Preverjanje pristnosti PPP ni uspelo zaradi napačnega uporabniškega imena ali gesla</translation>
 <translation id="7980421588063892270">angleščina (ZDA) s tipkovnico Colemak</translation>
-<translation id="7985008041109611710">Sinhroniziranje toliko datotek: <ph name="NUMBER_OF_FILES_SYNCING" /></translation>
 <translation id="8000066093800657092">Ni omrežja</translation>
 <translation id="8008366997883261463">Pes</translation>
 <translation id="8028993641010258682">Velikost</translation>
+<translation id="8034974485549318493">Pri začetni nastavitvi se morate povezati v internet, da se datoteke lahko sinhronizirajo.</translation>
 <translation id="803771048473350947">Datoteka</translation>
 <translation id="8038111231936746805">(privzeto)</translation>
 <translation id="8042602468072383151">Zvok <ph name="AUDIO_TYPE" /></translation>
@@ -904,6 +912,7 @@
 <translation id="8087576439476816834">Prenos, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">V skupni rabi z menoj</translation>
 <translation id="8116072619078571545">Voda z ledom</translation>
+<translation id="8124093710070495550">Težava s sinhronizacijo</translation>
 <translation id="8128733386027980860">angleščina (VB) s tipkovnico Dvorak</translation>
 <translation id="8137331602592933310">Datoteka »<ph name="FILENAME" />« je v skupni rabi z vami. Ne morete je izbrisati, ker niste njen lastnik.</translation>
 <translation id="8138705869659070104">Aktiv. po nastavitvi naprave</translation>
@@ -913,9 +922,11 @@
 <translation id="8154842056504218462">Izbrani so vsi vnosi.</translation>
 <translation id="8157684860301034423">Prenos podatkov aplikacije ni uspel.</translation>
 <translation id="8175731104491895765">francoščina (Belgija)</translation>
+<translation id="8175799081768705361">Sinhroniziranje tega števila datotek v Googlu Drive: <ph name="NUMBER_OF_FILES_SYNCING" /></translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Model naprave</translation>
 <translation id="8223479393428528563">Če želite te datoteke shraniti za uporabo brez povezave, vzpostavite povezavo, z desnim gumbom miške kliknite datoteke in izberite možnost <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
+<translation id="8241139360630443550">Ogled shrambe</translation>
 <translation id="8249296373107784235">Prekini</translation>
 <translation id="8250690786522693009">Latinščina</translation>
 <translation id="8250920743982581267">Dokumenti</translation>
@@ -946,6 +957,7 @@
 <translation id="8404498045299006085">Ohrani vse</translation>
 <translation id="8408068190360279472">Omrežje <ph name="NETWORK_TYPE" />, vzpostavljanje povezave</translation>
 <translation id="8425213833346101688">Spremeni</translation>
+<translation id="8428213095426709021">Nastavitve</translation>
 <translation id="8431909052837336408">Spreminjanje kode PIN kartice SIM</translation>
 <translation id="8437209419043462667">Združene države</translation>
 <translation id="8452135315243592079">Ni kartice SIM</translation>
@@ -982,6 +994,7 @@
 <translation id="8609695766746872526">islandščina</translation>
 <translation id="863903787380594467">Napačna koda PIN. Imate še toliko poskusov: <ph name="RETRIES" />.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – vrata</translation>
+<translation id="8656407365183407932">Datoteke brez povezave je bilo treba odstraniti</translation>
 <translation id="8656768832129462377">Ne preverjaj</translation>
 <translation id="8688591111840995413">Napačno geslo</translation>
 <translation id="8698464937041809063">Googlova risba</translation>
@@ -1012,10 +1025,12 @@
 <translation id="8919081441417203123">danščina</translation>
 <translation id="8949925099261528566">Vzpostavljena povezava, brez interneta</translation>
 <translation id="8965697826696209160">Na voljo ni dovolj prostora.</translation>
+<translation id="8970887620466824814">Prišlo je do napake.</translation>
 <translation id="8971742885766657349">Sinhroniziranje – <ph name="PERCENT" /> %</translation>
 <translation id="8997962250644902079">kitajščina (tradicionalna), pinjin</translation>
 <translation id="8998871447376656508">V Googlu Drive ni dovolj prostora za dokončanje nalaganja.</translation>
 <translation id="9003940392834790328">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" /> %, upravlja ga vaš skrbnik, podrobnosti</translation>
+<translation id="9007990314804111233">Prijavite se v račun pri Microsoftu</translation>
 <translation id="9017798300203431059">ruščina (fonetična)</translation>
 <translation id="9034924485347205037">Datoteke za Linux</translation>
 <translation id="9035012421917565900">Elementov ni mogoče premakniti nazaj v »<ph name="DESTINATION_NAME" />«, zato tega dejanja ne bo mogoče razveljaviti.</translation>
@@ -1046,7 +1061,6 @@
 <translation id="9213073329713032541">Namestitev je bila uspešno začeta.</translation>
 <translation id="9219103736887031265">Slike</translation>
 <translation id="9219908252191632183">Mesečeva pokrajina</translation>
-<translation id="937795003075802289">Sinhroniziranje 1 datoteke</translation>
 <translation id="938470336146445890">Namestite uporabniško potrdilo.</translation>
 <translation id="939736085109172342">Nova mapa</translation>
 <translation id="943972244133411984">Spremenil(-a):</translation>

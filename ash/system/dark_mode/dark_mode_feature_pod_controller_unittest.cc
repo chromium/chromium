@@ -71,7 +71,8 @@ class DarkModeFeaturePodControllerTest
   std::unique_ptr<DarkModeFeaturePodController> feature_pod_controller_;
   std::unique_ptr<FeaturePodButton> button_;
   std::unique_ptr<FeatureTile> tile_;
-  raw_ptr<UnifiedSystemTray, ExperimentalAsh> system_tray_ = nullptr;
+  raw_ptr<UnifiedSystemTray, DanglingUntriaged | ExperimentalAsh> system_tray_ =
+      nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(QsRevamp,

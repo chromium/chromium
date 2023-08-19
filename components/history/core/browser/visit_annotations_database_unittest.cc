@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "components/history/core/browser/visit_annotations_database.h"
+#include <string>
+#include <vector>
 
 #include "base/test/gtest_util.h"
 #include "base/time/time.h"
@@ -671,6 +673,69 @@ TEST_F(VisitAnnotationsDatabaseTest, AddClusters_DeleteClusters) {
   // https://crbug.com/1383274
   EXPECT_THAT(GetDuplicateClusterVisitIdsForClusterVisit(6), ElementsAre());
   EXPECT_TRUE(GetClusterKeywords(4).empty());
+}
+
+TEST_F(VisitAnnotationsDatabaseTest, SerializeDataForCrossDeviceSync) {
+  // Create required data to be serialized.
+  std::vector<VisitContentModelAnnotations::Category> categories = {
+      {/*id=*/"1", /*weight=*/1}, {/*id=*/"2", /*weight=*/1}};
+  std::vector<std::string> related_searches{"related searches",
+                                            "búsquedas relacionadas"};
+  // Serialize data being synced X-Device.
+  const auto serialized_categories =
+      VisitAnnotationsDatabase::ConvertCategoriesToStringColumn(categories);
+  const auto serialized_related_searches =
+      VisitAnnotationsDatabase::SerializeToStringColumn(related_searches);
+  // Expected serialized format.
+  const std::string expected_serialized_categories = "1:1,2:1";
+  using std::string_literals::operator""s;
+  const std::string expected_serialized_related_searches =
+      "related searches\0búsquedas relacionadas"s;
+
+  EXPECT_EQ(serialized_categories, expected_serialized_categories);
+  EXPECT_EQ(serialized_related_searches, expected_serialized_related_searches);
+}
+
+TEST_F(VisitAnnotationsDatabaseTest, DeserializeDataFromCrossDeviceSync) {
+  // Create required data to be deserialized.
+  const std::string serialized_categories = "1:1,2:1";
+  using std::string_literals::operator""s;
+  const std::string serialized_related_searches =
+      "related searches\0búsquedas relacionadas"s;
+
+  // Deserialize data being synced X-Device.
+  const auto deserialized_categories =
+      VisitAnnotationsDatabase::GetCategoriesFromStringColumn(
+          serialized_categories);
+  const auto deserialized_related_searches =
+      VisitAnnotationsDatabase::DeserializeFromStringColumn(
+          serialized_related_searches);
+  // Expected deserialized data.
+  std::vector<VisitContentModelAnnotations::Category>
+      expected_deserialized_categories = {{/*id=*/"1", /*weight=*/1},
+                                          {/*id=*/"2", /*weight=*/1}};
+  std::vector<std::string> expected_deserialized_related_searches{
+      "related searches", "búsquedas relacionadas"};
+
+  EXPECT_EQ(deserialized_categories, expected_deserialized_categories);
+  EXPECT_EQ(deserialized_related_searches,
+            expected_deserialized_related_searches);
+}
+
+TEST_F(VisitAnnotationsDatabaseTest, AddClusters_UpdateVisitsInteractionState) {
+  const std::vector<VisitID>& kSampleVisitIds = {3, 2, 5};
+  auto clusters = CreateClusters({kSampleVisitIds});
+  AddClusters(clusters);
+
+  EXPECT_EQ(GetClusterVisit(kSampleVisitIds.front()).interaction_state,
+            ClusterVisit::InteractionState::kDefault);
+
+  UpdateVisitsInteractionState(kSampleVisitIds,
+                               ClusterVisit::InteractionState::kDone);
+  for (auto visit_id : kSampleVisitIds) {
+    EXPECT_EQ(GetClusterVisit(visit_id).interaction_state,
+              ClusterVisit::InteractionState::kDone);
+  }
 }
 
 }  // namespace history

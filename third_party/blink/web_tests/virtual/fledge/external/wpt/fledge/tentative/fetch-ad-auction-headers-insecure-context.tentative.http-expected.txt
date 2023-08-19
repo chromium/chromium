@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-PASS test fetch(<url>, {adAuctionHeaders: true}) in insecure context
-Harness: the test ran to completion.
-

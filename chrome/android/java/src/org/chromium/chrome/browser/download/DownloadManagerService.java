@@ -27,6 +27,7 @@ import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
@@ -39,7 +40,6 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.media.MediaViewerUtils;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
@@ -93,7 +93,6 @@ public class DownloadManagerService implements DownloadController.Observer,
     private static boolean sIsNetworkListenerDisabled;
     private static boolean sIsNetworkMetered;
 
-    private final SharedPreferencesManager mSharedPrefs;
     private final HashMap<String, DownloadProgress> mDownloadProgressMap =
             new HashMap<String, DownloadProgress>(4, 0.75f);
 
@@ -224,7 +223,6 @@ public class DownloadManagerService implements DownloadController.Observer,
     protected DownloadManagerService(
             DownloadNotifier downloadNotifier, Handler handler, long updateDelayInMillis) {
         Context applicationContext = ContextUtils.getApplicationContext();
-        mSharedPrefs = SharedPreferencesManager.getInstance();
         mDownloadNotifier = downloadNotifier;
         mUpdateDelayInMillis = updateDelayInMillis;
         mHandler = handler;
@@ -240,8 +238,6 @@ public class DownloadManagerService implements DownloadController.Observer,
     @VisibleForTesting
     protected void init() {
         DownloadController.setDownloadNotificationService(this);
-        // Clean up unused shared prefs. TODO(qinmin): remove this after M84.
-        mSharedPrefs.removeKey(ChromePreferenceKeys.DOWNLOAD_UMA_ENTRY);
     }
 
     /**
@@ -269,7 +265,9 @@ public class DownloadManagerService implements DownloadController.Observer,
 
     /** For testing only. */
     public void setInfoBarControllerForTesting(DownloadMessageUiController infoBarController) {
+        var oldValue = mMessageUiController;
         mMessageUiController = infoBarController;
+        ResettersForTesting.register(() -> mMessageUiController = oldValue);
     }
 
     // Deprecated after new download backend.
@@ -490,12 +488,10 @@ public class DownloadManagerService implements DownloadController.Observer,
                                 ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER)
                         && (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q);
                 if (!success && shouldAddCompletedDownload) {
-                    // TODO(https://crbug.com/783819): Migrate mReferrer and mOriginalUrl to GURL
-                    long systemDownloadId =
-                            DownloadManagerBridge.addCompletedDownload(info.getFileName(),
-                                    info.getDescription(), info.getMimeType(), info.getFilePath(),
-                                    info.getBytesReceived(), info.getOriginalUrl().getSpec(),
-                                    info.getReferrer().getSpec(), info.getDownloadGuid());
+                    long systemDownloadId = DownloadManagerBridge.addCompletedDownload(
+                            info.getFileName(), info.getDescription(), info.getMimeType(),
+                            info.getFilePath(), info.getBytesReceived(), info.getOriginalUrl(),
+                            info.getReferrer(), info.getDownloadGuid());
                     success = systemDownloadId != DownloadConstants.INVALID_DOWNLOAD_ID;
                     if (success) item.setSystemDownloadId(systemDownloadId);
                 }
@@ -676,8 +672,7 @@ public class DownloadManagerService implements DownloadController.Observer,
         if (messageUiController != null) messageUiController.onDownloadStarted();
     }
 
-    @Nullable
-    static Intent getLaunchIntentForDownload(@Nullable String filePath, long downloadId,
+    static @Nullable Intent getLaunchIntentForDownload(@Nullable String filePath, long downloadId,
             boolean isSupportedMimeType, String originalUrl, String referrer,
             @Nullable String mimeType) {
         assert !ThreadUtils.runningOnUiThread();
@@ -711,8 +706,7 @@ public class DownloadManagerService implements DownloadController.Observer,
      * @param mimeType   MIME type of the downloaded file.
      * @return the intent to launch for the given download item.
      */
-    @Nullable
-    private static Intent getLaunchIntentFromDownloadUri(String contentUri,
+    private static @Nullable Intent getLaunchIntentFromDownloadUri(String contentUri,
             boolean isSupportedMimeType, String originalUrl, String referrer,
             @Nullable String mimeType) {
         assert !ThreadUtils.runningOnUiThread();
@@ -1172,7 +1166,6 @@ public class DownloadManagerService implements DownloadController.Observer,
     /**
      * Called by tests to disable listening to network connection changes.
      */
-    @VisibleForTesting
     static void disableNetworkListenerForTest() {
         sIsNetworkListenerDisabled = true;
     }
@@ -1181,9 +1174,10 @@ public class DownloadManagerService implements DownloadController.Observer,
      * Called by tests to set the network type.
      * @isNetworkMetered Whether the network should appear to be metered.
      */
-    @VisibleForTesting
     static void setIsNetworkMeteredForTest(boolean isNetworkMetered) {
+        var oldValue = sIsNetworkMetered;
         sIsNetworkMetered = isNetworkMetered;
+        ResettersForTesting.register(() -> sIsNetworkMetered = oldValue);
     }
 
     /**
@@ -1578,16 +1572,10 @@ public class DownloadManagerService implements DownloadController.Observer,
         assert count >= 0;
         SharedPreferences.Editor editor = sharedPrefs.edit();
         editor.remove(name);
-        if (isAutoRetryOnly) {
-            RecordHistogram.recordSparseHistogram(
-                    "MobileDownload.ResumptionsCount.Automatic", count);
-        } else {
-            RecordHistogram.recordSparseHistogram("MobileDownload.ResumptionsCount.Manual", count);
+        if (!isAutoRetryOnly) {
             name = getDownloadRetryCountSharedPrefName(downloadGuid, false, true);
             count = sharedPrefs.getInt(name, 0);
             assert count >= 0;
-            RecordHistogram.recordSparseHistogram(
-                    "MobileDownload.ResumptionsCount.Total", Math.min(count, 500));
             editor.remove(name);
         }
         editor.apply();

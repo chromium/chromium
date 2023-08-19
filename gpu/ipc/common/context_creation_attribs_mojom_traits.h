@@ -6,6 +6,7 @@
 #define GPU_IPC_COMMON_CONTEXT_CREATION_ATTRIBS_MOJOM_TRAITS_H_
 
 #include "base/notreached.h"
+#include "build/build_config.h"
 #include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/gpu_export.h"
 #include "gpu/ipc/common/gpu_channel.mojom-shared.h"
@@ -97,16 +98,12 @@ struct GPU_EXPORT EnumTraits<gpu::mojom::ContextType, gpu::ContextType> {
 template <>
 struct GPU_EXPORT StructTraits<gpu::mojom::ContextCreationAttribsDataView,
                                gpu::ContextCreationAttribs> {
-  static gfx::Size offscreen_framebuffer_size(
-      const gpu::ContextCreationAttribs& attribs) {
-    return attribs.offscreen_framebuffer_size;
-  }
-
   static gl::GpuPreference gpu_preference(
       const gpu::ContextCreationAttribs& attribs) {
     return attribs.gpu_preference;
   }
 
+#if BUILDFLAG(IS_ANDROID)
   static int32_t alpha_size(const gpu::ContextCreationAttribs& attribs) {
     return attribs.alpha_size;
   }
@@ -122,26 +119,7 @@ struct GPU_EXPORT StructTraits<gpu::mojom::ContextCreationAttribsDataView,
   static int32_t red_size(const gpu::ContextCreationAttribs& attribs) {
     return attribs.red_size;
   }
-
-  static int32_t depth_size(const gpu::ContextCreationAttribs& attribs) {
-    return attribs.depth_size;
-  }
-
-  static int32_t stencil_size(const gpu::ContextCreationAttribs& attribs) {
-    return attribs.stencil_size;
-  }
-
-  static int32_t samples(const gpu::ContextCreationAttribs& attribs) {
-    return attribs.samples;
-  }
-
-  static int32_t sample_buffers(const gpu::ContextCreationAttribs& attribs) {
-    return attribs.sample_buffers;
-  }
-
-  static bool buffer_preserved(const gpu::ContextCreationAttribs& attribs) {
-    return attribs.buffer_preserved;
-  }
+#endif
 
   static bool bind_generates_resource(
       const gpu::ContextCreationAttribs& attribs) {
@@ -156,15 +134,6 @@ struct GPU_EXPORT StructTraits<gpu::mojom::ContextCreationAttribsDataView,
   static bool lose_context_when_out_of_memory(
       const gpu::ContextCreationAttribs& attribs) {
     return attribs.lose_context_when_out_of_memory;
-  }
-
-  static bool should_use_native_gmb_for_backbuffer(
-      const gpu::ContextCreationAttribs& attribs) {
-    return attribs.should_use_native_gmb_for_backbuffer;
-  }
-
-  static bool single_buffer(const gpu::ContextCreationAttribs& attribs) {
-    return attribs.single_buffer;
   }
 
   static bool enable_gles2_interface(

@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "components/browser_sync/browser_sync_switches.h"
+#include "components/supervised_user/core/common/buildflags.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
@@ -53,7 +54,7 @@ class SyncServiceFactoryTest : public PlatformTest {
  protected:
   // Returns the collection of default datatypes.
   syncer::ModelTypeSet DefaultDatatypes() {
-    static_assert(48 == syncer::GetNumModelTypes(),
+    static_assert(49 == syncer::GetNumModelTypes(),
                   "When adding a new type, you probably want to add it here as "
                   "well (assuming it is already enabled).");
 
@@ -63,13 +64,15 @@ class SyncServiceFactoryTest : public PlatformTest {
     // is null for testing and hence no controller gets instantiated.
     datatypes.Put(syncer::AUTOFILL);
     datatypes.Put(syncer::AUTOFILL_PROFILE);
+    if (base::FeatureList::IsEnabled(
+            syncer::kSyncAutofillWalletCredentialData)) {
+      datatypes.Put(syncer::AUTOFILL_WALLET_CREDENTIAL);
+    }
     datatypes.Put(syncer::AUTOFILL_WALLET_DATA);
     datatypes.Put(syncer::AUTOFILL_WALLET_METADATA);
     datatypes.Put(syncer::AUTOFILL_WALLET_OFFER);
     datatypes.Put(syncer::BOOKMARKS);
-    if (base::FeatureList::IsEnabled(syncer::kSyncEnableContactInfoDataType)) {
-      datatypes.Put(syncer::CONTACT_INFO);
-    }
+    datatypes.Put(syncer::CONTACT_INFO);
     datatypes.Put(syncer::DEVICE_INFO);
     if (base::FeatureList::IsEnabled(syncer::kSyncEnableHistoryDataType)) {
       datatypes.Put(syncer::HISTORY);
@@ -83,6 +86,11 @@ class SyncServiceFactoryTest : public PlatformTest {
     }
     // TODO(crbug.com/919489) Add SECURITY_EVENTS data type once it is enabled.
     datatypes.Put(syncer::SESSIONS);
+
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+    datatypes.Put(syncer::SUPERVISED_USER_SETTINGS);
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
+
     datatypes.Put(syncer::PROXY_TABS);
     datatypes.Put(syncer::TYPED_URLS);
     datatypes.Put(syncer::USER_EVENTS);

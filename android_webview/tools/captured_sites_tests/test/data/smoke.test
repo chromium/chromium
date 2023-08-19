@@ -1,0 +1,28 @@
+
+{
+  "startingURL": "https://rsolomakhin.github.io/autofill/",
+  "actions": [
+    {
+      "url": "https://rsolomakhin.github.io/autofill/",
+      "type": "loadPage"
+    },
+    {
+      "selector": "//*[@id=\"form1\"]/input[1]",
+      "type": "autofill"
+    },
+    {
+      "expectedValue": "John Smith",
+      "selector": "//*[@id=\"form1\"]/input[1]",
+      "type": "validateField"
+    },
+    {
+      "selector": "//*[@id=\"credit_card_name\"]",
+      "type": "autofill"
+    },
+    {
+      "expectedValue": "Santa Claus",
+      "selector": "//*[@id=\"credit_card_name\"]",
+      "type": "validateField"
+    }
+  ]
+}

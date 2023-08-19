@@ -94,6 +94,10 @@ class CORE_EXPORT NGLineInfo {
   void SetBreakToken(const NGInlineBreakToken* break_token) {
     break_token_ = break_token;
   }
+  // True if this line ends a paragraph; i.e., ends a block or has a forced
+  // break.
+  bool IsEndParagraph() const { return !BreakToken() || HasForcedBreak(); }
+
   HeapVector<Member<const NGBlockBreakToken>>& PropagatedBreakTokens() {
     return propagated_break_tokens_;
   }
@@ -146,10 +150,10 @@ class CORE_EXPORT NGLineInfo {
   bool HasOverflow() const { return has_overflow_; }
   void SetHasOverflow(bool value = true) { has_overflow_ = value; }
 
+  // True if this line is hyphenated.
+  bool IsHyphenated() const;
+
   void SetBfcOffset(const NGBfcOffset& bfc_offset) { bfc_offset_ = bfc_offset; }
-  void SetBfcBlockOffset(LayoutUnit block_offset) {
-    bfc_offset_.block_offset = block_offset;
-  }
   void SetWidth(LayoutUnit available_width, LayoutUnit width) {
     available_width_ = available_width;
     width_ = width;

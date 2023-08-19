@@ -140,14 +140,13 @@ void SnapContainerData::AddSnapAreaData(SnapAreaData snap_area_data) {
   snap_area_list_.push_back(snap_area_data);
 }
 
-bool SnapContainerData::FindSnapPosition(
+SnapPositionData SnapContainerData::FindSnapPosition(
     const SnapSelectionStrategy& strategy,
-    gfx::PointF* snap_position,
-    TargetSnapAreaElementIds* target_element_ids,
     const ElementId& active_element_id) const {
-  *target_element_ids = TargetSnapAreaElementIds();
+  SnapPositionData result;
+  result.target_element_ids = TargetSnapAreaElementIds();
   if (scroll_snap_type_.is_none)
-    return false;
+    return result;
 
   gfx::PointF base_position = strategy.base_position();
   SnapAxis axis = scroll_snap_type_.axis;
@@ -156,7 +155,7 @@ bool SnapContainerData::FindSnapPosition(
   bool should_snap_on_y = strategy.ShouldSnapOnY() &&
                           (axis == SnapAxis::kY || axis == SnapAxis::kBoth);
   if (!should_snap_on_x && !should_snap_on_y)
-    return false;
+    return result;
 
   bool should_prioritize_x_target =
       strategy.ShouldPrioritizeSnapTargets() &&
@@ -202,10 +201,12 @@ bool SnapContainerData::FindSnapPosition(
     // Searching along each axis separately can miss valid snap positions if
     // snapping along both axes and the snap positions are off screen.
     if (should_snap_on_x && should_snap_on_y &&
-        !strategy.ShouldRespectSnapStop())
-      return FindSnapPositionForMutualSnap(strategy, snap_position);
+        !strategy.ShouldRespectSnapStop() &&
+        FindSnapPositionForMutualSnap(strategy, &result.position)) {
+      result.type = SnapPositionData::Type::kAligned;
+    }
 
-    return false;
+    return result;
   }
 
   // If snapping in one axis pushes off-screen the other snap area, this snap
@@ -232,18 +233,24 @@ bool SnapContainerData::FindSnapPosition(
     }
   }
 
-  *snap_position = strategy.current_position();
-  if (selected_x.has_value()) {
-    snap_position->set_x(selected_x.value().snap_offset());
-    target_element_ids->x = selected_x.value().element_id();
-  }
+  result.type = SnapPositionData::Type::kAligned;
+  result.position = strategy.current_position();
 
-  if (selected_y.has_value()) {
-    snap_position->set_y(selected_y.value().snap_offset());
-    target_element_ids->y = selected_y.value().element_id();
+  if (selected_x) {
+    result.position.set_x(selected_x->snap_offset());
+    result.target_element_ids.x = selected_x->element_id();
+    result.covered_range_x = selected_x->covered_range();
   }
-
-  return true;
+  if (selected_y) {
+    result.position.set_y(selected_y->snap_offset());
+    result.target_element_ids.y = selected_y->element_id();
+    result.covered_range_y = selected_y->covered_range();
+  }
+  if ((!selected_x || result.covered_range_x) &&
+      (!selected_y || result.covered_range_y)) {
+    result.type = SnapPositionData::Type::kCovered;
+  }
+  return result;
 }
 
 // This method is called only if the preferred algorithm fails to find either an
@@ -428,12 +435,15 @@ SnapContainerData::FindClosestValidAreaInternal(
       continue;
 
     SnapSearchResult candidate = GetSnapSearchResult(axis, area);
+    gfx::RangeF covered_range;
     if (should_consider_covering &&
-        IsSnapportCoveredOnAxis(axis, intended_position, area.rect)) {
+        IsSnapportCoveredOnAxis(axis, intended_position, area.rect,
+                                covered_range)) {
       // Since snap area will cover the snapport, we consider the intended
       // position as a valid snap position.
       SnapSearchResult covering_candidate = candidate;
       covering_candidate.set_snap_offset(intended_position);
+      covering_candidate.set_covered_range(covered_range);
       if (IsMutualVisible(covering_candidate, cross_axis_snap_result))
         SetOrUpdateResult(covering_candidate, &covering, active_element_id);
 
@@ -532,22 +542,34 @@ SnapSearchResult SnapContainerData::GetSnapSearchResult(
   return result;
 }
 
+constexpr float kSnapportCoveredTolerance = 0.5;
 bool SnapContainerData::IsSnapportCoveredOnAxis(
     SearchAxis axis,
     float current_offset,
-    const gfx::RectF& area_rect) const {
+    const gfx::RectF& area_rect,
+    gfx::RangeF& out_covered_range) const {
+  // We expand the range that SnapContainerData considers covering the snapport
+  // by kSnapportCoveredTolerance to handle offsets at the boundaries of
+  // the snap container. At the boundaries, |current_offset| might be a rounded
+  // int coming from ScrollTree::ClampScrollOffsetToLimits which uses
+  // ScrollNode::bounds which is a gfx::Size which stores ints.
+  // See crbug.com/1468412.
   if (axis == SearchAxis::kX) {
     if (area_rect.width() < rect_.width())
       return false;
     float left = area_rect.x() - rect_.x();
     float right = area_rect.right() - rect_.right();
-    return current_offset >= left && current_offset <= right;
+    out_covered_range = gfx::RangeF(left, right);
+    return current_offset >= left - kSnapportCoveredTolerance &&
+           current_offset <= right + kSnapportCoveredTolerance;
   } else {
     if (area_rect.height() < rect_.height())
       return false;
     float top = area_rect.y() - rect_.y();
     float bottom = area_rect.bottom() - rect_.bottom();
-    return current_offset >= top && current_offset <= bottom;
+    out_covered_range = gfx::RangeF(top, bottom);
+    return current_offset >= top - kSnapportCoveredTolerance &&
+           current_offset <= bottom + kSnapportCoveredTolerance;
   }
 }
 

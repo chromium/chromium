@@ -23,10 +23,6 @@
 #import "ios/web/web_state/policy_decision_state_tracker.h"
 #import "ui/gfx/image/image.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace web {
 
 void FakeWebState::AddObserver(WebStateObserver* observer) {
@@ -57,11 +53,17 @@ FakeWebState::~FakeWebState() {
     observer.ResetWebState();
 }
 
+void FakeWebState::SerializeToProto(proto::WebStateStorage& storage) const {}
+
 WebStateDelegate* FakeWebState::GetDelegate() {
   return nil;
 }
 
 void FakeWebState::SetDelegate(WebStateDelegate* delegate) {}
+
+std::unique_ptr<WebState> FakeWebState::Clone() const {
+  return std::make_unique<FakeWebState>();
+}
 
 bool FakeWebState::IsRealized() const {
   return is_realized_;
@@ -173,7 +175,7 @@ FakeWebState::GetSessionCertificatePolicyCache() {
   return nullptr;
 }
 
-CRWSessionStorage* FakeWebState::BuildSessionStorage() {
+CRWSessionStorage* FakeWebState::BuildSessionStorage() const {
   CRWSessionStorage* session_storage = [[CRWSessionStorage alloc] init];
   session_storage.userData =
       web::SerializableUserDataManager::FromWebState(this)
@@ -572,6 +574,10 @@ id<CRWFindInteraction> FakeWebState::GetFindInteraction()
 }
 
 id FakeWebState::GetActivityItem() API_AVAILABLE(ios(16.4)) {
+  return nil;
+}
+
+UIColor* FakeWebState::GetThemeColor() {
   return nil;
 }
 

@@ -11,11 +11,11 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/sessions/core/session_id.h"
@@ -51,6 +51,8 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
                                public ui::SimpleMenuModel::Delegate,
                                public sessions::TabRestoreServiceObserver {
  public:
+  using LogMenuMetricsCallback = base::RepeatingCallback<void(int)>;
+
   // Command ID for recently closed items header or disabled item to which the
   // accelerator string will be appended.
   static constexpr int kDisabledRecentlyClosedHeaderCommandId =
@@ -77,6 +79,8 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
   bool GetAcceleratorForCommandId(int command_id,
                                   ui::Accelerator* accelerator) const override;
   void ExecuteCommand(int command_id, int event_flags) override;
+
+  void RegisterLogMenuMetricsCallback(LogMenuMetricsCallback callback);
 
  private:
   struct TabNavigationItem;
@@ -125,8 +129,14 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
                            size_t curr_model_index);
 
   // Build the tab item for other devices with parameters needed to restore it.
-  void BuildOtherDevicesTabItem(const std::string& session_tag,
+  void BuildOtherDevicesTabItem(SimpleMenuModel* containing_model,
+                                const std::string& session_tag,
                                 const sessions::SessionTab& tab);
+
+  // Build a sub menu model for given device session.
+  std::unique_ptr<ui::SimpleMenuModel> CreateOtherDeviceSubMenu(
+      const sync_sessions::SyncedSession* session,
+      const std::vector<const sessions::SessionTab*>& tabs_in_session);
 
   // Create a submenu model representing the tabs within a window.
   std::unique_ptr<ui::SimpleMenuModel> CreateWindowSubMenuModel(
@@ -151,7 +161,8 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
   int GetParentCommandId(int command_id) const;
 
   // Add the favicon for the device section header.
-  void AddDeviceFavicon(size_t index_in_menu,
+  void AddDeviceFavicon(SimpleMenuModel* containing_model,
+                        size_t index_in_menu,
                         syncer::DeviceInfo::FormFactor device_form_factor);
 
   // Add the favicon for a local or other devices' tab asynchronously,
@@ -210,7 +221,13 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
   // Returns true if the command id identifies a sub menu item.
   bool IsSubMenuModelCommandId(int command_id) const;
 
+  // Returns true if the command id identifies a sub menu item representing
+  // other device tabs.
+  bool IsDeviceSubMenuModelCommandId(int command_id) const;
+
   const raw_ptr<Browser> browser_;  // Weak.
+
+  LogMenuMetricsCallback log_menu_metrics_callback_;
 
   const raw_ptr<sync_sessions::SessionSyncService>
       session_sync_service_;  // Weak.
@@ -247,6 +264,9 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
   // closed groups and windows. These are not executable.
   SubMenuItems local_sub_menu_items_;
 
+  // Sub menu items for sub menus representing other device tabs.
+  SubMenuItems device_sub_menu_items_;
+
   // Index of "Recently closed" title item.
   absl::optional<size_t> recently_closed_title_index_;
 
@@ -255,9 +275,6 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
   size_t last_local_model_index_ = kHistorySeparatorIndex;
 
   base::CancelableTaskTracker local_tab_cancelable_task_tracker_;
-
-  // Time the menu is open for until a recent tab is selected.
-  base::ElapsedTimer menu_opened_timer_;
 
   base::ScopedObservation<sessions::TabRestoreService,
                           sessions::TabRestoreServiceObserver>

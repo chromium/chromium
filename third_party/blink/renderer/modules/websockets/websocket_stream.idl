@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Explainer: https://github.com/ricea/websocketstream-explainer/blob/master/README.md
 // TODO(ricea): Add standard link when there is one.
 
 [
@@ -11,7 +12,7 @@
 ] interface WebSocketStream {
   [CallWith=ScriptState, RaisesException, MeasureAs=WebSocketStreamConstructor] constructor(USVString url, optional WebSocketStreamOptions options = {});
   readonly attribute USVString url;
-  [CallWith=ScriptState] readonly attribute Promise<WebSocketConnection> connection;
+  [CallWith=ScriptState] readonly attribute Promise<WebSocketOpenInfo> opened;
   [CallWith=ScriptState] readonly attribute Promise<WebSocketCloseInfo> closed;
   [RaisesException] void close(optional WebSocketCloseInfo closeInfo = {});
 };

@@ -101,10 +101,10 @@ test(() => {
   assert_equals(testGradient("background-image: radial-gradient(ellipse 10px, white, 25%, 75%, black)"), 'none');
   assert_equals(testGradient("background-image: radial-gradient(ellipse 10px 20px, white, black)"), 'radial-gradient(10px 20px, rgb(255, 255, 255), rgb(0, 0, 0))');
   assert_equals(testGradient("background-image: radial-gradient(circle 10px, white, black)"), 'radial-gradient(10px, rgb(255, 255, 255), rgb(0, 0, 0))');
-  assert_equals(testGradient("background-image: radial-gradient(10px 10px at center, white, black)"), 'radial-gradient(10px 10px at center center, rgb(255, 255, 255), rgb(0, 0, 0))');
-  assert_equals(testGradient("background-image: radial-gradient(10px 10px at center, white, 50%, black)"), 'radial-gradient(10px 10px at center center, rgb(255, 255, 255), 50%, rgb(0, 0, 0))');
-  assert_equals(testGradient("background-image: radial-gradient(10px 10px at center, white, 0%, black)"), 'radial-gradient(10px 10px at center center, rgb(255, 255, 255), 0%, rgb(0, 0, 0))');
-  assert_equals(testGradient("background-image: radial-gradient(10px 10px at center, white, 100%, black)"), 'radial-gradient(10px 10px at center center, rgb(255, 255, 255), 100%, rgb(0, 0, 0))');
+  assert_equals(testGradient("background-image: radial-gradient(10px 10px at center, white, black)"), 'radial-gradient(10px 10px, rgb(255, 255, 255), rgb(0, 0, 0))');
+  assert_equals(testGradient("background-image: radial-gradient(10px 10px at center, white, 50%, black)"), 'radial-gradient(10px 10px, rgb(255, 255, 255), 50%, rgb(0, 0, 0))');
+  assert_equals(testGradient("background-image: radial-gradient(10px 10px at center, white, 0%, black)"), 'radial-gradient(10px 10px, rgb(255, 255, 255), 0%, rgb(0, 0, 0))');
+  assert_equals(testGradient("background-image: radial-gradient(10px 10px at center, white, 100%, black)"), 'radial-gradient(10px 10px, rgb(255, 255, 255), 100%, rgb(0, 0, 0))');
 
   assert_equals(testGradient("background-image: radial-gradient(black, 10% 20%, white)"), 'none');
   assert_equals(testGradient("background-image: radial-gradient(black 10% 20% 30%, white)"), 'none');

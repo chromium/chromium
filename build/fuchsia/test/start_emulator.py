@@ -7,11 +7,10 @@
 import argparse
 import logging
 import sys
-import time
 
 from contextlib import AbstractContextManager
 
-from common import catch_sigterm, register_log_args
+from common import catch_sigterm, register_log_args, wait_for_sigterm
 from ffx_emulator import FfxEmulator
 
 
@@ -38,7 +37,7 @@ def register_emulator_args(parser: argparse.ArgumentParser,
         action='store_true',
         help='Use host GPU hardware instead of Swiftshader.')
     femu_args.add_argument(
-        '--product-bundle',
+        '--product',
         help='Specify a product bundle used for booting the '
         'emulator. Defaults to the terminal product.')
     femu_args.add_argument('--with-network',
@@ -64,19 +63,21 @@ def main():
     parser = argparse.ArgumentParser()
     register_emulator_args(parser, True)
     register_log_args(parser)
+    parser.add_argument('--target-id-only',
+                        action='store_true',
+                        help='Write only the target emulator id to the ' \
+                             'stdout. It is usually useful in the unattended ' \
+                             'environment.')
     args = parser.parse_args()
     with create_emulator_from_args(args) as target_id:
-        logging.info(
-            'Emulator successfully started. You can now run Chrome '
-            'Fuchsia tests with --target-id=%s to target this emulator.',
-            target_id)
-        try:
-            while True:
-                time.sleep(10000)
-        except KeyboardInterrupt:
-            logging.info('Ctrl-C received; shutting down the emulator.')
-        except SystemExit:
-            logging.info('SIGTERM received; shutting down the emulator.')
+        if args.target_id_only:
+            print(target_id, flush=True)
+        else:
+            logging.info(
+                'Emulator successfully started. You can now run Chrome '
+                'Fuchsia tests with --target-id=%s to target this emulator.',
+                target_id)
+        wait_for_sigterm('shutting down the emulator.')
 
 
 if __name__ == '__main__':

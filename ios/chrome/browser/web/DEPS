@@ -1,4 +1,52 @@
+include_rules = [
+  "+ios/chrome/browser/overlays/public",
+  "+ios/chrome/browser/permissions/permissions_tab_helper.h",
+  "+ios/chrome/browser/snapshots/snapshot_tab_helper.h",
+  "+ios/chrome/browser/web_state_list/tab_insertion_browser_agent.h",
+  "+ios/chrome/browser/feature_engagement/tracker_factory.h",
+  "+ios/chrome/browser/lens/lens_browser_agent.h",
+  "+ios/chrome/browser/ntp/new_tab_page_tab_helper.h",
+  "+ios/chrome/browser/mailto_handler",
+  "+ios/chrome/browser/text_selection",
+  "+ios/chrome/browser/infobars",
+  "+ios/chrome/browser/content_settings",
+  "+ios/chrome/browser/flags/chrome_switches.h",
+  "+ios/chrome/browser/follow",
+  "+ios/chrome/browser/https_upgrades",
+  "+ios/chrome/browser/link_to_text",
+  "+ios/chrome/browser/ntp",
+  "+ios/chrome/browser/prerender",
+  "+ios/chrome/browser/reading_list",
+  "+ios/chrome/browser/safe_browsing",
+  "+ios/chrome/browser/search_engines",
+  "+ios/chrome/browser/ssl",
+  "+ios/chrome/browser/web_selection",
+  "+ios/chrome/browser/supervised_user",
+  "+ios/chrome/browser/url_loading",
+  "+ios/chrome/browser/autofill",
+  "+ios/chrome/browser/application_context",
+  "+ios/chrome/browser/browser_state",
+  "+ios/chrome/browser/crash_report",
+  "+ios/chrome/browser/first_run",
+  "+ios/chrome/browser/flags/about_flags.h",
+  "+ios/chrome/browser/flags/ios_chrome_field_trials.h",
+  "+ios/chrome/browser/metrics",
+  "+ios/chrome/browser/open_from_clipboard",
+  "+ios/chrome/browser/optimization_guide",
+  "+ios/chrome/browser/policy",
+  "+ios/chrome/browser/promos_manager",
+  "+ios/chrome/browser/signin",
+  "+ios/chrome/browser/translate",
+  "+ios/chrome/browser/rlz",
+]
+
 specific_include_rules = {
+  "page_placeholder_tab_helper.mm": [
+    "+ios/chrome/browser/shared/ui/util/named_guide.h",
+  ],
+  "page_placeholder_tab_helper.h": [
+    "+ios/chrome/browser/shared/ui/elements/top_aligned_image_view.h",
+  ],
   "browser_about_rewriter.cc": [
     "+ios/chrome/browser/ui/ui_feature_flags.h",
   ],
@@ -68,16 +116,7 @@ specific_include_rules = {
 
   # TODO(crbug.com/1294160): Remove these dependencies.
   "^chrome_web_client.mm": [
-    "+ios/chrome/browser/ui/elements/windowed_container_view.h",
-    "+ios/chrome/browser/ui/reading_list/reading_list_features.h",
-    "+ios/chrome/browser/ui/reading_list/reading_list_javascript_feature.h",
-    "+ios/chrome/browser/ui/ui_feature_flags.h",
-  ],
-  "^page_placeholder_tab_helper.h": [
-    "+ios/chrome/browser/ui/elements/top_aligned_image_view.h",
-  ],
-  "^page_placeholder_tab_helper.mm": [
-    "+ios/chrome/browser/ui/util/named_guide.h",
+    "+ios/chrome/browser/shared/ui/elements/windowed_container_view.h",
   ],
   "^sad_tab_tab_helper.mm": [
     "+ios/chrome/browser/ui/fullscreen/fullscreen_controller.h",

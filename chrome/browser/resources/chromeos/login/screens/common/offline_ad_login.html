@@ -18,7 +18,7 @@ Attributes:
   'adWelcomeMessageKey' - ID of localized welcome message on top of the UI.
 
 Events:
-  'authCompleted' - Fired when user enters login and password. Fires with an
+  'authCompletedAd' - Fired when user enters login and password. Fires with an
                     argument |credentials| which contains:
                     |credentials| = { 'machineName': <machine name input>,
                                       'distinguished_name': <orgUnitInput>,
@@ -36,18 +36,26 @@ Methods:
                       optional. If user passed, the password input would be
                       invalidated.
 -->
-<style include="md-select oobe-dialog-host-styles">
+<style include="md-select oobe-dialog-host-styles cros-color-overrides">
   .select-title {
     color: var(--cros-menu-label-color);
-    font-size: 13px;
+    font-size: var(--oobe-offline-ad-login-select-title-font-size);
     line-height: var(--subtitle-line-height);
     padding-inline-end: 16px;
+  }
+
+  :host-context(.jelly-enabled) .select-title {
+    color: var(--oobe-text-color);
   }
 
   .encryption-subtitle {
     color: var(--cros-text-color-secondary);
     padding-bottom: 9px;
     padding-top: 9px;
+  }
+
+  :host-context(.jelly-enabled) .encryption-subtitle {
+    color: var(--oobe-subheader-text-color);
   }
 
   .encryption-select-row {
@@ -62,8 +70,12 @@ Methods:
     margin-top: 0;
   }
 
+  :host-context(.jelly-enabled) iron-icon[icon='cr:warning'] {
+    color: var(--cros-sys-warning);
+  }
+
   .select-divider-line {
-    border-bottom: 1px solid #ebebeb;
+    border-bottom: 1px solid var(--cros-sys-separator);
     display: block;
     margin-inline-end: 0;
     margin-inline-start: 0;
@@ -90,6 +102,21 @@ Methods:
 
   #orgUnitInput {
     padding-bottom: 28px;
+  }
+
+  :host-context(.jelly-enabled)
+    cr-input#unlockPasswordInput,
+    cr-input#machineNameInput,
+    cr-input#userInput,
+    cr-input#passwordInput,
+    cr-input#orgUnitInput {
+      --cr-input-background-color: var(--cros-sys-input_field_on_shaded);
+  }
+
+  :host-context(.jelly-enabled)
+    select#joinConfigSelect,
+    select#encryptionList {
+      --md-select-bg-color: var(--cros-sys-input_field_on_shaded);
   }
 </style>
 <oobe-adaptive-dialog id="unlockStep" for-step="unlock" role="dialog"

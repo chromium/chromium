@@ -111,16 +111,14 @@ void AndroidAutofillManager::OnAskForValuesToFillImpl(
     const FormData& form,
     const FormFieldData& field,
     const gfx::RectF& bounding_box,
-    AutoselectFirstSuggestion autoselect_first_suggestion,
-    FormElementWasClicked form_element_was_clicked) {
+    AutofillSuggestionTriggerSource trigger_source) {
   auto* provider = GetAutofillProvider();
   if (!provider) {
     return;
   }
 
   provider->OnAskForValuesToFill(this, form, field, bounding_box,
-                                 autoselect_first_suggestion,
-                                 form_element_was_clicked);
+                                 trigger_source);
 
   if (auto* logger = GetEventFormLogger(form, field)) {
     logger->OnDidInteractWithAutofillableForm();
@@ -165,7 +163,7 @@ void AndroidAutofillManager::OnHidePopupImpl() {
     provider->OnHidePopup(this);
 }
 
-void AndroidAutofillManager::PropagateAutofillPredictions(
+void AndroidAutofillManager::PropagateAutofillPredictionsDeprecated(
     const std::vector<FormStructure*>& forms) {
   has_server_prediction_ = true;
   if (auto* provider = GetAutofillProvider())
@@ -207,10 +205,8 @@ void AndroidAutofillManager::OnContextMenuShownInField(
 }
 
 AutofillProvider* AndroidAutofillManager::GetAutofillProvider() {
-  if (autofill_provider_for_testing_)
-    return autofill_provider_for_testing_;
   if (auto* rfh =
-          static_cast<ContentAutofillDriver*>(driver())->render_frame_host()) {
+          static_cast<ContentAutofillDriver&>(driver()).render_frame_host()) {
     if (rfh->IsActive()) {
       if (auto* web_contents = content::WebContents::FromRenderFrameHost(rfh)) {
         return AutofillProvider::FromWebContents(web_contents);
@@ -231,12 +227,12 @@ FieldTypeGroup AndroidAutofillManager::ComputeFieldTypeGroupForField(
 }
 
 void AndroidAutofillManager::FillOrPreviewForm(
-    mojom::RendererFormDataAction action,
+    mojom::AutofillActionPersistence action_persistence,
     const FormData& form,
     FieldTypeGroup field_type_group,
     const url::Origin& triggered_origin) {
-  DCHECK_EQ(action, mojom::RendererFormDataAction::kFill);
-  driver()->FillOrPreviewForm(action, form, triggered_origin, {});
+  DCHECK_EQ(action_persistence, mojom::AutofillActionPersistence::kFill);
+  driver().FillOrPreviewForm(action_persistence, form, triggered_origin, {});
 
   if (auto* logger = GetEventFormLogger(field_type_group)) {
     logger->OnDidFillSuggestion();

@@ -15,10 +15,6 @@
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 const char kScriptName[] = "annotations";
 const char kScriptHandlerName[] = "annotations";
@@ -80,6 +76,22 @@ void AnnotationsJavaScriptFeature::RemoveDecorations(WebState* web_state) {
   }
 
   CallJavaScriptFunction(frame, "annotations.removeDecorations", {});
+}
+
+void AnnotationsJavaScriptFeature::RemoveDecorationsWithType(
+    WebState* web_state,
+    const std::string& type) {
+  DCHECK(web_state);
+  WebFrame* frame = GetWebFramesManager(web_state)->GetMainWebFrame();
+  if (!frame) {
+    return;
+  }
+
+  base::Value::List parameters;
+  parameters.Append(std::move(type));
+
+  CallJavaScriptFunction(frame, "annotations.removeDecorationsWithType",
+                         parameters);
 }
 
 void AnnotationsJavaScriptFeature::RemoveHighlight(WebState* web_state) {

@@ -41,7 +41,7 @@ using Checkpoint = ::testing::MockFunction<void(int)>;
 
 // TODO(alexmt): Consider changing tests to avoid the assumption that this time
 // is after `base::Time::Now()`.
-const base::Time kExampleTime = base::Time::FromJavaTime(1652984901234);
+constexpr base::Time kExampleTime = base::Time::FromJavaTime(1652984901234);
 
 }  // namespace
 

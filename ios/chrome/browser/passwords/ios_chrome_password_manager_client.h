@@ -142,7 +142,6 @@ class IOSChromePasswordManagerClient
   void UpdateFormManagers() override;
   bool IsIsolationForPasswordSitesEnabled() const override;
   bool IsNewTabPage() const override;
-  password_manager::FieldInfoManager* GetFieldInfoManager() const override;
 
   safe_browsing::PasswordProtectionService* GetPasswordProtectionService()
       const override;

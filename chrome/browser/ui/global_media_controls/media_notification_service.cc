@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/callback_list.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/unguessable_token.h"
@@ -25,7 +24,6 @@
 #include "components/global_media_controls/public/media_dialog_delegate.h"
 #include "components/global_media_controls/public/media_item_manager.h"
 #include "components/global_media_controls/public/media_item_producer.h"
-#include "components/global_media_controls/public/media_item_ui.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "components/media_router/browser/media_router_factory.h"
 #include "components/media_router/browser/presentation/start_presentation_context.h"
@@ -221,11 +219,12 @@ void MediaNotificationService::ShowDialogAsh(
   auto routes = media_router::WebContentsPresentationManager::Get(web_contents)
                     ->GetMediaRoutes();
   std::string item_id;
-  if (!routes.empty()) {
-    // It is possible for a sender page to connect to two routes. For the
-    // sake of the Zenith dialog, only one notification is needed.
-    item_id = routes.begin()->media_route_id();
-  } else {
+  // TODO(crbug.com/1462768): When `routes` is not empty, we'd ideally set
+  // `item_id` to be the ID of a MediaRoute so that we'd only show the
+  // corresponding notification item. However, MediaRoute IDs are not the same
+  // between Lacros and Ash, so we resort to showing all the items by leaving
+  // `item_id` empty.
+  if (routes.empty()) {
     item_id = content::MediaSession::GetRequestIdFromWebContents(web_contents)
                   .ToString();
   }
@@ -241,14 +240,21 @@ MediaNotificationService::~MediaNotificationService() {
 }
 
 void MediaNotificationService::Shutdown() {
-  // `cast_notification_producer_` and
-  // `presentation_request_notification_producer_` depend on MediaRouter,
-  // which is another keyed service. So they must be destroyed here.
+  shutdown_has_started_ = true;
+  // `cast_notification_producer_`,
+  // `presentation_request_notification_producer_` and `host_receivers_`
+  // depend on MediaRouter, which is another keyed service. So they must be
+  // destroyed here.
   if (cast_notification_producer_) {
     item_manager_->RemoveItemProducer(cast_notification_producer_.get());
   }
   cast_notification_producer_.reset();
   presentation_request_notification_producer_.reset();
+  for (const auto& host : host_receivers_) {
+    if (host.second) {
+      host.second->Close();
+    }
+  }
 }
 
 void MediaNotificationService::OnAudioSinkChosen(const std::string& item_id,
@@ -363,15 +369,20 @@ void MediaNotificationService::OnStartPresentationContextCreated(
     return;
   }
 
-  // If there exists a cast notification / tab mirroring session associated with
-  // `web_contents`, delete `context` because users should not start a new
-  // presentation at this time.
+  // If there exists a cast notification associated with `web_contents`, delete
+  // `context` because users should not start a new presentation at this time.
   if (HasCastNotificationsForWebContents(web_contents)) {
     CancelRequest(std::move(context), "A presentation has already started.");
-  } else if (HasTabMirroringSessionForWebContents(web_contents)) {
-    CancelRequest(std::move(context),
-                  "A tab mirroring session has already started.");
   } else if (HasActiveControllableSessionForWebContents(web_contents)) {
+    // If there exists a media session notification and a tab mirroring session,
+    // both, associated with `web_contents`, delete `context` because users
+    // should not start a new presentation at this time.
+    if (HasTabMirroringSessionForWebContents(web_contents)) {
+      CancelRequest(std::move(context),
+                    "A tab mirroring session has already started.");
+      return;
+    }
+
     // If there exists a media session notification associated with
     // |web_contents|, hold onto the context for later use.
     context_ = std::move(context);
@@ -466,7 +477,7 @@ MediaNotificationService::CreateCastDialogControllerForPresentationRequest() {
 
 void MediaNotificationService::CreateCastDeviceListHost(
     std::unique_ptr<media_router::CastDialogController> dialog_controller,
-    mojo::PendingReceiver<mojom::DeviceListHost> host_receiver,
+    mojo::PendingReceiver<mojom::DeviceListHost> host_pending_receiver,
     mojo::PendingRemote<mojom::DeviceListClient> client_remote,
     absl::optional<std::string> session_id) {
   if (!dialog_controller) {
@@ -480,14 +491,19 @@ void MediaNotificationService::CreateCastDeviceListHost(
                 &MediaNotificationService::OnMediaRemotingRequested,
                 weak_ptr_factory_.GetWeakPtr(), session_id.value())
           : base::DoNothing();
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<CastDeviceListHost>(
-          std::move(dialog_controller), std::move(client_remote),
-          std::move(media_remoting_callback_),
-          base::BindRepeating(
-              &global_media_controls::MediaItemManager::HideDialog,
-              item_manager_->GetWeakPtr())),
-      std::move(host_receiver));
+  auto host = std::make_unique<CastDeviceListHost>(
+      std::move(dialog_controller), std::move(client_remote),
+      std::move(media_remoting_callback_),
+      base::BindRepeating(&global_media_controls::MediaItemManager::HideDialog,
+                          item_manager_->GetWeakPtr()));
+  int host_id = host->id();
+  mojo::SelfOwnedReceiverRef<global_media_controls::mojom::DeviceListHost>
+      host_receiver = mojo::MakeSelfOwnedReceiver(
+          std::move(host), std::move(host_pending_receiver));
+  host_receiver->set_connection_error_handler(
+      base::BindOnce(&MediaNotificationService::RemoveDeviceListHost,
+                     weak_ptr_factory_.GetWeakPtr(), host_id));
+  host_receivers_.emplace(host_id, std::move(host_receiver));
 }
 
 void MediaNotificationService::set_device_provider_for_testing(
@@ -549,4 +565,13 @@ MediaNotificationService::GetActiveControllableSessionForWebContents(
     }
   }
   return "";
+}
+
+void MediaNotificationService::RemoveDeviceListHost(int host_id) {
+  // If shutdown has started, then we may currently be iterating through
+  // `host_receivers_` so we should not erase from it. `host_receivers_` will
+  // get destroyed soon anyways.
+  if (!shutdown_has_started_) {
+    host_receivers_.erase(host_id);
+  }
 }

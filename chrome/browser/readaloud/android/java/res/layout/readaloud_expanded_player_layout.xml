@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/readaloud_expanded_player"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <!-- Top bar containing drag handle, close button and "Chrome now playing". -->
+    <LinearLayout
+        android:id="@+id/readaloud_expanded_player_top_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <!-- This empty view balances the close button so the drag handlebar and "Chrome now playing" can be centered. -->
+        <View
+            android:layout_width="@dimen/readaloud_close_button_size"
+            android:layout_height="@dimen/readaloud_close_button_size"
+            android:layout_margin="@dimen/readaloud_close_button_margin"
+            android:layout_weight="0"/>
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            tools:ignore="UseCompoundDrawables">
+            <ImageView
+                android:id="@+id/drag_handlebar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/readaloud_sheet_drag_bar_margin"
+                android:layout_gravity="center_horizontal|top"
+                android:importantForAccessibility="no"
+                android:src="@drawable/drag_handlebar" />
+            <TextView
+                android:id="@+id/chrome_now_playing_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/readaloud_now_playing_spacing"
+                android:text="@string/readaloud_chrome_now_playing"
+                android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
+        </LinearLayout>
+        <ImageView
+            android:id="@+id/readaloud_expanded_player_close_button"
+            android:src="@drawable/baseline_close_24"
+            android:contentDescription="@string/readaloud_close_player_button_content_description"
+            android:layout_width="@dimen/readaloud_close_button_size"
+            android:layout_height="@dimen/readaloud_close_button_size"
+            android:layout_margin="@dimen/readaloud_close_button_margin"
+            android:layout_weight="0"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginHorizontal="@dimen/readaloud_expanded_player_margin_horizontal"
+        android:layout_marginBottom="@dimen/readaloud_expanded_player_margin_bottom"
+        android:orientation="vertical">
+        <!-- Title. -->
+        <TextView
+            android:id="@+id/readaloud_expanded_player_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="@dimen/readaloud_expanded_player_title_margin_vertical"
+            android:layout_gravity="center_horizontal"
+            android:textAppearance="@style/TextAppearance.Headline2Thick.Primary"/>
+
+        <!-- Publisher button. -->
+        <LinearLayout
+            android:id="@+id/readaloud_player_publisher_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/secondary_gray_rounded">
+            <TextView
+                android:id="@+id/readaloud_expanded_player_publisher"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/readaloud_expanded_player_publisher_margin_left"
+                android:layout_marginVertical="@dimen/readaloud_expanded_player_publisher_margin_vertical"
+                android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+                tools:ignore="RtlHardcoded"/>
+                <!-- RtlHardcoded: The chevron always is drawn on the right, so we use marginLeft instead of marginStart. -->
+            <ImageView
+                android:layout_width="@dimen/readaloud_expanded_player_publisher_chevron_width"
+                android:layout_height="@dimen/readaloud_expanded_player_publisher_chevron_height"
+                android:layout_marginHorizontal="@dimen/readaloud_expanded_player_publisher_chevron_margin_horizontal"
+                android:layout_marginVertical="@dimen/readaloud_expanded_player_publisher_chevron_margin_vertical"
+                android:src="@drawable/chevron_right"
+                android:importantForAccessibility="no"/>
+        </LinearLayout>
+
+        <!-- Seek bar and times. -->
+        <!-- TODO replace with working bar -->
+        <View
+            android:id="@+id/readaloud_expanded_player_seek_bar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/readaloud_expanded_player_seek_bar_height"
+            android:layout_marginTop="@dimen/readaloud_expanded_player_seek_bar_margin_top"
+            android:background="@color/readaloud_progress_bar_bg"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/readaloud_expanded_player_times_margin_top"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/readaloud_player_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:textAppearance="@style/TextAppearance.TextSmall.Primary"/>
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"/>
+            <TextView
+                android:id="@+id/readaloud_player_duration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:textAppearance="@style/TextAppearance.TextSmall.Primary"/>
+        </LinearLayout>
+
+        <!-- Player control buttons. -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/readaloud_control_buttons_margin_top"
+            android:layout_marginBottom="@dimen/readaloud_control_buttons_margin_bottom"
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal">
+            <ImageView
+                android:id="@+id/readaloud_seek_back_button"
+                android:layout_width="@dimen/readaloud_control_button_diameter"
+                android:layout_height="@dimen/readaloud_control_button_diameter"
+                android:src="@drawable/replay_10_button"
+                android:contentDescription="@string/readaloud_replay"/>
+            <ImageView
+                android:id="@+id/readaloud_play_pause_button"
+                android:layout_width="@dimen/readaloud_play_button_width"
+                android:layout_height="@dimen/readaloud_control_button_diameter"
+                android:layout_marginHorizontal="@dimen/readaloud_control_button_spacing"
+                android:src="@drawable/play_button"
+                android:contentDescription="@string/readaloud_play"/>
+            <ImageView
+                android:id="@+id/readaloud_seek_forward_button"
+                android:layout_width="@dimen/readaloud_control_button_diameter"
+                android:layout_height="@dimen/readaloud_control_button_diameter"
+                android:src="@drawable/forward_30_button"
+                android:contentDescription="@string/readaloud_forward"/>
+        </LinearLayout>
+
+        <!-- Speed and overflow menu. -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/readaloud_playback_speed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:textAppearance="@style/TextAppearance.TextAccentMediumThick"
+                tools:ignore="ContentDescription" />
+            <!-- Note: contentDescription for playback speed button above is set in ExpandedPlayerSheetContent.java. -->
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"/>
+            <ImageView
+                android:id="@+id/readaloud_more_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:src="@drawable/baseline_more_horiz_24"
+                android:contentDescription="@string/readaloud_options_menu_button"/>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

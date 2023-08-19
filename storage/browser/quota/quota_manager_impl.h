@@ -349,9 +349,16 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // deletion, `callback` may be called with a kErrorAbort status.
   // TODO(estade): Consider removing the status code from `callback` as it's
   // unused outside of tests.
+  // TODO(crbug/1456643): DEPRECATED please prefer using `DeleteStorageKeyData`.
+  // This should be removed as part of `CookiesTreeModel` deprecation.
   void DeleteHostData(const std::string& host,
                       blink::mojom::StorageType type,
                       StatusCallback callback);
+
+  // Deletes buckets of a particular blink::StorageKey.
+  void DeleteStorageKeyData(const blink::StorageKey& storage_key,
+                            blink::mojom::StorageType type,
+                            StatusCallback callback);
 
   // Queries QuotaDatabase for the bucket with `storage_key` and `bucket_name`
   // for StorageType::kTemporary and deletes bucket data for all clients for the
@@ -557,6 +564,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // manager by RegisterClient().
   void EnsureDatabaseOpened();
 
+  // Bootstraps only if it hasn't already happened.
+  void MaybeBootstrapDatabase();
   // Bootstraps database with storage keys that may not have been registered.
   // Bootstrapping ensures that there is a bucket entry in the buckets table for
   // all storage keys that have stored data by quota managed Storage APIs. Will
@@ -691,7 +700,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   void ContinueIncognitoGetStorageCapacity(const QuotaSettings& settings);
   void DidGetStorageCapacity(const QuotaAvailability& total_and_available);
 
-  void DidRazeForReBootstrap(QuotaError raze_and_reopen_result);
+  void DidRecoverOrRazeForReBootstrap(bool success);
 
   void NotifyUpdatedBucket(const QuotaErrorOr<BucketInfo>& result);
   void OnBucketDeleted(

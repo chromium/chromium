@@ -217,10 +217,8 @@ class LocalCardMigrationBrowserTest
         test_shared_loader_factory_);
 
     // Set up this class as the ObserverForTest implementation.
-    local_card_migration_manager_ =
-        client->GetFormDataImporter()->local_card_migration_manager_.get();
-
-    local_card_migration_manager_->SetEventObserverForTesting(this);
+    client->GetFormDataImporter()
+        ->local_card_migration_manager_->SetEventObserverForTesting(this);
     personal_data_ = PersonalDataManagerFactory::GetForProfile(GetProfile(0));
 
     // Wait for Personal Data Manager to be fully loaded to prevent that
@@ -246,7 +244,6 @@ class LocalCardMigrationBrowserTest
 
   void TearDownOnMainThread() override {
     personal_data_ = nullptr;
-    local_card_migration_manager_ = nullptr;
 
     SyncTest::TearDownOnMainThread();
   }
@@ -328,7 +325,7 @@ class LocalCardMigrationBrowserTest
                                                 : test::NextYear().c_str(),
                             "1");
     local_card.set_guid("00000000-0000-0000-0000-" + card_number.substr(0, 12));
-    local_card.set_record_type(CreditCard::LOCAL_CARD);
+    local_card.set_record_type(CreditCard::RecordType::kLocalCard);
     if (set_nickname)
       local_card.SetNickname(u"card nickname");
 
@@ -342,7 +339,7 @@ class LocalCardMigrationBrowserTest
                             "12", test::NextYear().c_str(), "1");
     server_card.set_guid("00000000-0000-0000-0000-" +
                          card_number.substr(0, 12));
-    server_card.set_record_type(CreditCard::FULL_SERVER_CARD);
+    server_card.set_record_type(CreditCard::RecordType::kFullServerCard);
     server_card.set_server_id("full_id_" + card_number);
     AddTestServerCreditCard(GetProfile(0), server_card);
     return server_card;
@@ -493,13 +490,13 @@ class LocalCardMigrationBrowserTest
     return icon;
   }
 
-  views::View* GetCloseButton() {
+  views::View* close_button() {
     LocalCardMigrationBubbleViews* local_card_migration_bubble_views =
         static_cast<LocalCardMigrationBubbleViews*>(
             GetLocalCardMigrationOfferBubbleViews());
     CHECK(local_card_migration_bubble_views);
     return local_card_migration_bubble_views->GetBubbleFrameView()
-        ->GetCloseButtonForTesting();
+        ->close_button();
   }
 
   views::View* GetCardListView() {
@@ -527,8 +524,6 @@ class LocalCardMigrationBrowserTest
 
   void WaitForCardDeletion() { WaitForPersonalDataChange(GetProfile(0)); }
 
-  raw_ptr<LocalCardMigrationManager, DanglingUntriaged>
-      local_card_migration_manager_ = nullptr;
   raw_ptr<PersonalDataManager> personal_data_ = nullptr;
   PersonalDataLoadedObserverMock personal_data_observer_;
 
@@ -696,7 +691,7 @@ IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTest,
   SaveLocalCard(kFirstCardNumber);
   SaveLocalCard(kSecondCardNumber);
   UseCardAndWaitForMigrationOffer(kFirstCardNumber);
-  ClickOnDialogViewAndWait(GetCloseButton(),
+  ClickOnDialogViewAndWait(close_button(),
                            GetLocalCardMigrationOfferBubbleViews());
 
   // No bubble should be showing.
@@ -721,13 +716,14 @@ IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTest,
 // Ensures that clicking on the credit card icon in the omnibox reopens the
 // offer bubble after closing it.
 IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTest,
-                       ClickingOmniboxIconReshowsBubble) {
+                       // TODO(crbug.com/1007051): Re-enable this test
+                       DISABLED_ClickingOmniboxIconReshowsBubble) {
   base::HistogramTester histogram_tester;
 
   SaveLocalCard(kFirstCardNumber);
   SaveLocalCard(kSecondCardNumber);
   UseCardAndWaitForMigrationOffer(kFirstCardNumber);
-  ClickOnDialogViewAndWait(GetCloseButton(),
+  ClickOnDialogViewAndWait(close_button(),
                            GetLocalCardMigrationOfferBubbleViews());
   ClickOnView(GetLocalCardMigrationIconView());
 
@@ -939,7 +935,7 @@ IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTest,
   SaveLocalCard(kFirstCardNumber);
   SaveLocalCard(kSecondCardNumber);
   UseCardAndWaitForMigrationOffer(kFirstCardNumber);
-  ClickOnDialogViewAndWait(GetCloseButton(),
+  ClickOnDialogViewAndWait(close_button(),
                            GetLocalCardMigrationOfferBubbleViews());
 
   // No bubble should be showing.
@@ -962,11 +958,11 @@ IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTest,
   SaveLocalCard(kFirstCardNumber);
   SaveLocalCard(kSecondCardNumber);
   UseCardAndWaitForMigrationOffer(kFirstCardNumber);
-  ClickOnDialogViewAndWait(GetCloseButton(),
+  ClickOnDialogViewAndWait(close_button(),
                            GetLocalCardMigrationOfferBubbleViews());
   // Do it again for the same tab.
   UseCardAndWaitForMigrationOffer(kFirstCardNumber);
-  ClickOnDialogViewAndWait(GetCloseButton(),
+  ClickOnDialogViewAndWait(close_button(),
                            GetLocalCardMigrationOfferBubbleViews());
 
   // No bubble should be showing.
@@ -988,11 +984,12 @@ IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTest,
 // Ensures that reshowing and closing bubble after previously closing it does
 // not add strikes.
 IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTest,
-                       ReshowingBubbleDoesNotAddStrikes) {
+                       // TODO(crbug.com/1007051): Re-enable this test
+                       DISABLED_ReshowingBubbleDoesNotAddStrikes) {
   SaveLocalCard(kFirstCardNumber);
   SaveLocalCard(kSecondCardNumber);
   UseCardAndWaitForMigrationOffer(kFirstCardNumber);
-  ClickOnDialogViewAndWait(GetCloseButton(),
+  ClickOnDialogViewAndWait(close_button(),
                            GetLocalCardMigrationOfferBubbleViews());
   base::HistogramTester histogram_tester;
   ClickOnView(GetLocalCardMigrationIconView());
@@ -1003,7 +1000,7 @@ IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTest,
                            GetLocalCardMigrationOfferBubbleViews())
           ->GetVisible());
 
-  ClickOnDialogViewAndWait(GetCloseButton(),
+  ClickOnDialogViewAndWait(close_button(),
                            GetLocalCardMigrationOfferBubbleViews());
 
   // Metrics
@@ -1033,7 +1030,7 @@ IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTest,
   SaveLocalCard(kFirstCardNumber);
   SaveLocalCard(kSecondCardNumber);
   UseCardAndWaitForMigrationOffer(kFirstCardNumber);
-  ClickOnDialogViewAndWait(GetCloseButton(),
+  ClickOnDialogViewAndWait(close_button(),
                            GetLocalCardMigrationOfferBubbleViews());
 
   EXPECT_THAT(histogram_tester.GetAllSamples(

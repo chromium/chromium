@@ -32,6 +32,9 @@ ContainerSelector::ContainerSelector(AtomicString name,
   if (feature_flags & MediaQueryExpNode::kFeatureState) {
     has_sticky_query_ = true;
   }
+  if (feature_flags & MediaQueryExpNode::kFeatureUnknown) {
+    has_unknown_feature_ = true;
+  }
 }
 
 unsigned ContainerSelector::GetHash() const {

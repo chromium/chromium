@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <map>
-#include <vector>
 
 #include "base/compiler_specific.h"
 #include "ppapi/c/dev/ppb_video_decoder_dev.h"

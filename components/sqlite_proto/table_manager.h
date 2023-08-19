@@ -73,7 +73,7 @@ class TableManager : public base::RefCountedThreadSafe<TableManager> {
   friend class base::RefCountedThreadSafe<TableManager>;
 
   scoped_refptr<base::SequencedTaskRunner> db_task_runner_;
-  raw_ptr<sql::Database, DanglingUntriaged> db_;
+  raw_ptr<sql::Database, AcrossTasksDanglingUntriaged> db_;
 };
 
 }  // namespace sqlite_proto

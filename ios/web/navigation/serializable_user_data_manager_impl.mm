@@ -4,13 +4,9 @@
 
 #import "ios/web/navigation/serializable_user_data_manager_impl.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "ios/web/public/session/crw_session_user_data.h"
 #import "ios/web/public/web_state.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace web {
 namespace {

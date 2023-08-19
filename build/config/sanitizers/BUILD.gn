@@ -280,6 +280,13 @@ config("asan_flags") {
   cflags = []
   if (is_asan) {
     cflags += [ "-fsanitize=address" ]
+    if (!is_win && !is_apple && !is_fuchsia) {
+      # TODO(crbug.com/1459233, crbug.com/1462248): This causes asan
+      # odr-violation errors in rust code, and link failures for cros/asan.
+      # Clang recently turned it on by default for all ELF targets (it was
+      # already on for Fuchsia). Pass the flag to turn it back off.
+      cflags += ["-fno-sanitize-address-globals-dead-stripping"]
+    }
     if (is_win) {
       if (!defined(asan_win_blocklist_path)) {
         asan_win_blocklist_path =

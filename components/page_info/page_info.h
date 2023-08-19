@@ -20,6 +20,7 @@
 #include "components/safe_browsing/buildflags.h"
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/schemeful_site.h"
 
 namespace content_settings {
 class PageSpecificContentSettings;
@@ -47,7 +48,8 @@ class PageInfoUI;
 // information and allows users to change the permissions. |PageInfo|
 // objects must be created on the heap. They destroy themselves after the UI is
 // closed.
-class PageInfo : private content_settings::CookieControlsView {
+class PageInfo : private content_settings::CookieControlsObserver,
+                 content_settings::OldCookieControlsObserver {
  public:
   // Status of a connection to a website.
   enum SiteConnectionStatus {
@@ -200,6 +202,10 @@ class PageInfo : private content_settings::CookieControlsView {
     // Only set for settings that can have multiple permissions for different
     // embedded origins.
     absl::optional<url::Origin> requesting_origin;
+    // When the permission was used.
+    base::Time last_used;
+    // Whether the permission is in use.
+    bool is_in_use = false;
   };
 
   // Creates a PageInfo for the passed |url| using the given |ssl| status
@@ -338,19 +344,30 @@ class PageInfo : private content_settings::CookieControlsView {
     is_subscribed_to_permission_change_for_testing = true;
   }
 
+  void PresentSitePermissionsForTesting() { PresentSitePermissions(); }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(PageInfoTest,
-                           NonFactoryDefaultAndRecentlyChangedPermissionsShown);
-  FRIEND_TEST_ALL_PREFIXES(PageInfoTest, IncognitoPermissionsEmptyByDefault);
-  FRIEND_TEST_ALL_PREFIXES(PageInfoTest, IncognitoPermissionsDontShowAsk);
+                           ShowInfoBarWhenAllowingThirdPartyCookies);
+  FRIEND_TEST_ALL_PREFIXES(PageInfoTest,
+                           ShowInfoBarWhenBlockingThirdPartyCookies);
 
-  // CookieControlsView:
+  // OldCookieControlsObserver:
   void OnStatusChanged(CookieControlsStatus status,
                        CookieControlsEnforcement enforcement,
                        int allowed_cookies,
                        int blocked_cookies) override;
   void OnCookiesCountChanged(int allowed_cookies, int blocked_cookies) override;
   void OnStatefulBounceCountChanged(int bounce_count) override;
+
+  // CookieControlsObserver:
+  void OnStatusChanged(CookieControlsStatus status,
+                       CookieControlsEnforcement enforcement,
+                       base::Time expiration) override;
+  void OnSitesCountChanged(int allowed_third_party_sites_count,
+                           int blocked_third_party_sites_count) override;
+  void OnBreakageConfidenceLevelChanged(
+      CookieControlsBreakageConfidenceLevel level) override;
 
   // Populates this object's UI state with provided security context. This
   // function does not update visible UI-- that's part of Present*().
@@ -363,7 +380,7 @@ class PageInfo : private content_settings::CookieControlsView {
   void PopulatePermissionInfo(PermissionInfo& permission_info,
                               HostContentSettingsMap* content_settings,
                               const content_settings::SettingInfo& info,
-                              const base::Value& value) const;
+                              ContentSetting setting) const;
 
   // Returns whether |info| should be displayed in the UI.
   bool ShouldShowPermission(const PageInfo::PermissionInfo& info) const;
@@ -423,8 +440,6 @@ class PageInfo : private content_settings::CookieControlsView {
   // Get counts of allowed and blocked cookies.
   int GetFirstPartyAllowedCookiesCount(const GURL& site_url);
   int GetFirstPartyBlockedCookiesCount(const GURL& site_url);
-  int GetThirdPartyAllowedCookiesCount(const GURL& site_url);
-  int GetThirdPartyBlockedCookiesCount(const GURL& site_url);
 
   // Get the count of blocked and allowed sites.
   int GetSitesWithAllowedCookiesAccessCount();
@@ -432,11 +447,14 @@ class PageInfo : private content_settings::CookieControlsView {
 
   bool IsIsolatedWebApp() const;
 
+  std::set<net::SchemefulSite> GetTwoSitePermissionRequesters(
+      ContentSettingsType type);
+
   // The page info UI displays information and controls for site-
   // specific data (local stored objects like cookies), site-specific
   // permissions (location, pop-up, plugin, etc. permissions) and site-specific
   // information (identity, connection status, etc.).
-  raw_ptr<PageInfoUI, DanglingUntriaged> ui_;
+  raw_ptr<PageInfoUI, DanglingUntriaged> ui_ = nullptr;
 
   // A web contents getter used to retrieve the associated WebContents object.
   base::WeakPtr<content::WebContents> web_contents_;
@@ -524,13 +542,27 @@ class PageInfo : private content_settings::CookieControlsView {
 
   std::unique_ptr<content_settings::CookieControlsController> controller_;
   base::ScopedObservation<content_settings::CookieControlsController,
-                          content_settings::CookieControlsView>
+                          content_settings::CookieControlsObserver>
       observation_{this};
+  base::ScopedObservation<content_settings::CookieControlsController,
+                          content_settings::OldCookieControlsObserver>
+      old_observation_{this};
 
   CookieControlsStatus status_ = CookieControlsStatus::kUninitialized;
 
   CookieControlsEnforcement enforcement_ =
       CookieControlsEnforcement::kNoEnforcement;
+
+  base::Time cookie_exception_expiration_;
+
+  CookieControlsBreakageConfidenceLevel cookie_controls_confidence_ =
+      CookieControlsBreakageConfidenceLevel::kUninitialized;
+
+  // The number of third-party sites blocked from accessing storage.
+  absl::optional<int> blocked_third_party_sites_count_;
+
+  // The number of third-party sites allowed to access storage.
+  absl::optional<int> allowed_third_party_sites_count_;
 
   bool is_subscribed_to_permission_change_for_testing = false;
 

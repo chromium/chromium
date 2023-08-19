@@ -16,10 +16,8 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
-#include "base/notreached.h"
-#include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
+#include "base/trace_event/trace_event.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
@@ -29,8 +27,11 @@
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
+#include "components/webauthn/core/browser/passkey_model.h"
+#include "components/webauthn/core/browser/passkey_model_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace webauthn {
 namespace {
 
 // The byte length of the WebauthnCredentialSpecifics `sync_id` field.
@@ -65,40 +66,19 @@ absl::optional<std::string> FindHeadOfShadowChain(
     const std::string& rp_id,
     const std::string& user_id) {
   // Collect all credentials for the user.id, rpid pair.
-  base::flat_map<std::string, const sync_pb::WebauthnCredentialSpecifics*>
-      associated_passkeys;
+  std::vector<sync_pb::WebauthnCredentialSpecifics> rpid_passkeys;
   for (const auto& passkey : passkeys) {
     if (passkey.second.user_id() == user_id &&
         passkey.second.rp_id() == rp_id) {
-      associated_passkeys[passkey.second.credential_id()] = &passkey.second;
+      rpid_passkeys.emplace_back(passkey.second);
     }
   }
-
-  // Remove all credentials that appear on another credential's
-  // |newly_shadowed_credential_ids| field.
-  base::flat_map<std::string, const sync_pb::WebauthnCredentialSpecifics*>
-      shadow_head_candidates = associated_passkeys;
-  for (const auto& it : associated_passkeys) {
-    for (const std::string& shadowed_credential_id :
-         it.second->newly_shadowed_credential_ids()) {
-      shadow_head_candidates.erase(shadowed_credential_id);
-    }
-  }
-
-  if (shadow_head_candidates.empty()) {
-    return absl::nullopt;
-  }
-
-  // Then, pick the credential with the latest creation time.
-  return std::reduce(
-             shadow_head_candidates.begin(), shadow_head_candidates.end(),
-             *shadow_head_candidates.begin(),
-             [](const auto& left, const auto& right) {
-               const auto& creation_time_left = left.second->creation_time();
-               const auto& creation_time_right = right.second->creation_time();
-               return creation_time_left > creation_time_right ? left : right;
-             })
-      .second->sync_id();
+  // Filter the shadowed credentials.
+  std::vector<sync_pb::WebauthnCredentialSpecifics> filtered =
+      passkey_model_utils::FilterShadowedCredentials(rpid_passkeys);
+  CHECK_LE(filtered.size(), 1u);
+  return filtered.empty() ? absl::nullopt
+                          : absl::make_optional(filtered.at(0).sync_id());
 }
 
 }  // namespace
@@ -117,6 +97,14 @@ PasskeySyncBridge::PasskeySyncBridge(
 }
 
 PasskeySyncBridge::~PasskeySyncBridge() = default;
+
+void PasskeySyncBridge::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void PasskeySyncBridge::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
 
 std::unique_ptr<syncer::MetadataChangeList>
 PasskeySyncBridge::CreateMetadataChangeList() {
@@ -150,6 +138,7 @@ absl::optional<syncer::ModelError> PasskeySyncBridge::MergeFullSyncData(
       std::move(write_batch),
       base::BindOnce(&PasskeySyncBridge::OnStoreCommitWriteBatch,
                      weak_ptr_factory_.GetWeakPtr()));
+  NotifyPasskeysChanged();
   return absl::nullopt;
 }
 
@@ -184,6 +173,9 @@ PasskeySyncBridge::ApplyIncrementalSyncChanges(
       std::move(write_batch),
       base::BindOnce(&PasskeySyncBridge::OnStoreCommitWriteBatch,
                      weak_ptr_factory_.GetWeakPtr()));
+  if (!entity_changes.empty()) {
+    NotifyPasskeysChanged();
+  }
   return absl::nullopt;
 }
 
@@ -228,6 +220,7 @@ void PasskeySyncBridge::ApplyDisableSyncChanges(
   CHECK(store_);
   store_->DeleteAllDataAndMetadata(base::DoNothing());
   data_.clear();
+  NotifyPasskeysChanged();
 }
 
 base::WeakPtr<syncer::ModelTypeControllerDelegate>
@@ -250,10 +243,22 @@ PasskeySyncBridge::GetAllPasskeys() const {
   return passkeys;
 }
 
+std::vector<sync_pb::WebauthnCredentialSpecifics>
+PasskeySyncBridge::GetPasskeysForRelyingPartyId(
+    const std::string& rp_id) const {
+  std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys;
+  for (const auto& passkey : data_) {
+    if (passkey.second.rp_id() == rp_id) {
+      passkeys.emplace_back(passkey.second);
+    }
+  }
+  return passkey_model_utils::FilterShadowedCredentials(passkeys);
+}
+
 bool PasskeySyncBridge::DeletePasskey(const std::string& credential_id) {
   // Find the credential with the given |credential_id|.
-  const auto passkey_it = std::find_if(
-      data_.begin(), data_.end(), [&credential_id](const auto& passkey) {
+  const auto passkey_it =
+      std::ranges::find_if(data_, [&credential_id](const auto& passkey) {
         return passkey.second.credential_id() == credential_id;
       });
   if (passkey_it == data_.end()) {
@@ -296,6 +301,35 @@ bool PasskeySyncBridge::DeletePasskey(const std::string& credential_id) {
       std::move(write_batch),
       base::BindOnce(&PasskeySyncBridge::OnStoreCommitWriteBatch,
                      weak_ptr_factory_.GetWeakPtr()));
+  NotifyPasskeysChanged();
+  return true;
+}
+
+bool PasskeySyncBridge::UpdatePasskey(const std::string& credential_id,
+                                      PasskeyChange change) {
+  // Find the credential with the given |credential_id|.
+  const auto passkey_it =
+      std::ranges::find_if(data_, [&credential_id](const auto& passkey) {
+        return passkey.second.credential_id() == credential_id;
+      });
+  if (passkey_it == data_.end()) {
+    DVLOG(1) << "Attempted to update non existent passkey";
+    return false;
+  }
+  passkey_it->second.set_user_name(std::move(change.user_name));
+  passkey_it->second.set_user_display_name(std::move(change.user_display_name));
+  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
+      store_->CreateWriteBatch();
+  change_processor()->Put(passkey_it->second.sync_id(),
+                          CreateEntityData(passkey_it->second),
+                          write_batch->GetMetadataChangeList());
+  write_batch->WriteData(passkey_it->second.sync_id(),
+                         passkey_it->second.SerializeAsString());
+  store_->CommitWriteBatch(
+      std::move(write_batch),
+      base::BindOnce(&PasskeySyncBridge::OnStoreCommitWriteBatch,
+                     weak_ptr_factory_.GetWeakPtr()));
+  NotifyPasskeysChanged();
   return true;
 }
 
@@ -316,6 +350,7 @@ std::string PasskeySyncBridge::AddNewPasskeyForTesting(
       base::BindOnce(&PasskeySyncBridge::OnStoreCommitWriteBatch,
                      weak_ptr_factory_.GetWeakPtr()));
   data_[sync_id] = std::move(specifics);
+  NotifyPasskeysChanged();
   return sync_id;
 }
 
@@ -348,6 +383,7 @@ void PasskeySyncBridge::OnStoreReadAllMetadata(
     std::unique_ptr<syncer::ModelTypeStore::RecordList> entries,
     const absl::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
+  TRACE_EVENT0("sync", "PasskeySyncBridge::OnStoreReadAllMetadata");
   if (error) {
     change_processor()->ReportError(*error);
     return;
@@ -363,6 +399,7 @@ void PasskeySyncBridge::OnStoreReadAllMetadata(
     std::string storage_key = specifics.sync_id();
     data_[std::move(storage_key)] = std::move(specifics);
   }
+  NotifyPasskeysChanged();
 }
 
 void PasskeySyncBridge::OnStoreCommitWriteBatch(
@@ -372,3 +409,12 @@ void PasskeySyncBridge::OnStoreCommitWriteBatch(
     return;
   }
 }
+
+void PasskeySyncBridge::NotifyPasskeysChanged() {
+  TRACE_EVENT0("sync", "PasskeySyncBridge::NotifyPasskeysChanged");
+  for (auto& observer : observers_) {
+    observer.OnPasskeysChanged();
+  }
+}
+
+}  // namespace webauthn

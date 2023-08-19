@@ -5,6 +5,7 @@
 #include "services/network/tcp_client_socket_brokered.h"
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "net/base/address_list.h"
@@ -39,8 +40,16 @@ TCPClientSocketBrokered::~TCPClientSocketBrokered() {
 }
 
 int TCPClientSocketBrokered::Bind(const net::IPEndPoint& address) {
-  // TODO(liza): Implement this.
-  NOTREACHED();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (IsConnected() || is_connect_in_progress_) {
+    // Cannot bind the socket if we are already connected or connecting.
+    NOTREACHED();
+    return net::ERR_UNEXPECTED;
+  }
+  // Since opening a socket must be done via an asynchronous IPC, we will store
+  // the bind address and attempt to bind when Connect() is called. Bind() will
+  // be done after opening a socket but before actually connecting.
+  bind_address_ = std::make_unique<net::IPEndPoint>(address);
   return net::OK;
 }
 
@@ -93,20 +102,6 @@ int TCPClientSocketBrokered::Connect(net::CompletionOnceCallback callback) {
   return net::ERR_IO_PENDING;
 }
 
-int TCPClientSocketBrokered::OpenSocketForBind(const net::IPEndPoint& address) {
-  // TODO(liza): Implement this.
-  NOTREACHED();
-  return net::OK;
-}
-
-void TCPClientSocketBrokered::DidCompleteOpenForBind(
-    const net::IPEndPoint& address,
-    std::unique_ptr<net::TCPSocket> new_socket,
-    net::Error result) {
-  // TODO(liza): Implement this.
-  NOTREACHED();
-}
-
 void TCPClientSocketBrokered::DidCompleteConnect(
     net::CompletionOnceCallback callback,
     int result) {
@@ -136,11 +131,22 @@ void TCPClientSocketBrokered ::DidCompleteCreate(
       std::move(socket_performance_watcher_), net_log_source_);
   tcp_socket->AdoptUnconnectedSocket(socket.TakeSocket());
 
+  // If Bind() was called prior to connecting, attempt to bind now that a socket
+  // has been opened.
+  if (bind_address_) {
+    int bind_result = tcp_socket->Bind(*bind_address_);
+    if (bind_result != net::OK) {
+      tcp_socket->Close();
+      std::move(callback).Run(bind_result);
+      return;
+    }
+  }
   // TODO(liza): Pass through the NetworkHandle.
   brokered_socket_ = std::make_unique<net::TCPClientSocket>(
-      std::move(tcp_socket), addresses_, network_quality_estimator_);
-  brokered_socket_->ApplySocketTag(tag_);
+      std::move(tcp_socket), addresses_, std::move(bind_address_),
+      network_quality_estimator_);
 
+  brokered_socket_->ApplySocketTag(tag_);
   if (before_connect_callback_) {
     int callback_result = before_connect_callback_.Run();
     DCHECK_NE(net::ERR_IO_PENDING, callback_result);
@@ -152,9 +158,15 @@ void TCPClientSocketBrokered ::DidCompleteCreate(
     }
   }
 
-  brokered_socket_->Connect(base::BindOnce(
-      &TCPClientSocketBrokered::DidCompleteConnect,
-      brokered_weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  auto split_connect_callback = base::SplitOnceCallback(std::move(callback));
+  int connect_result = brokered_socket_->Connect(
+      base::BindOnce(&TCPClientSocketBrokered::DidCompleteConnect,
+                     brokered_weak_ptr_factory_.GetWeakPtr(),
+                     std::move(split_connect_callback.first)));
+  if (connect_result != net::ERR_IO_PENDING) {
+    DidCompleteConnect(std::move(split_connect_callback.second),
+                       connect_result);
+  }
 }
 
 void TCPClientSocketBrokered::Disconnect() {
@@ -162,6 +174,7 @@ void TCPClientSocketBrokered::Disconnect() {
   if (brokered_socket_) {
     brokered_socket_->Disconnect();
   }
+  bind_address_.reset();
   is_connect_in_progress_ = false;
 }
 

@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+PASS text/json
+PASS application/json
+FAIL text/html+json assert_unreached: [object Event] Reached unreachable code
+FAIL image/svg+json assert_unreached: [object Event] Reached unreachable code
+PASS text/json;boundary=something
+PASS text/json;foo=bar
+Harness: the test ran to completion.
+

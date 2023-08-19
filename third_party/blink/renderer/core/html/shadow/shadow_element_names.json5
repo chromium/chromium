@@ -13,10 +13,12 @@
     // ID names for UA shadow elements
     //
     {
+      // This has an experimental pseudo-element to expose it to the Web.
       name: "details-content",
       Symbol: "kIdDetailsContent",
     },
     {
+      // This has an experimental pseudo-element to expose it to the Web.
       name: "details-summary",
       Symbol: "kIdDetailsSummary",
     },

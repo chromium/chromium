@@ -393,6 +393,7 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   // the active scroll sequence.
   // Returns false if their is no position to snap to.
   virtual bool GetSnapFlingInfoAndSetAnimatingSnapTarget(
+      const gfx::Vector2dF& current_delta,
       const gfx::Vector2dF& natural_displacement_in_viewport,
       gfx::PointF* initial_offset,
       gfx::PointF* target_offset);
@@ -416,6 +417,8 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   virtual void UpdateBrowserControlsState(BrowserControlsState constraints,
                                           BrowserControlsState current,
                                           bool animate);
+
+  virtual void SetIsHandlingTouchSequence(bool is_handling_touch_sequence);
 
   bool CanConsumeDelta(const ScrollState& scroll_state,
                        const ScrollNode& scroll_node);
@@ -487,19 +490,16 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   void SetPrefersReducedMotion(bool prefers_reduced_motion) override;
   bool IsCurrentlyScrolling() const override;
   ActivelyScrollingType GetActivelyScrollingType() const override;
+  bool IsHandlingTouchSequence() const override;
   bool IsCurrentScrollMainRepainted() const override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(ScrollUnifiedLayerTreeHostImplTest,
+  FRIEND_TEST_ALL_PREFIXES(LayerTreeHostImplTest,
                            AbortAnimatedScrollBeforeStartingAutoscroll);
-  FRIEND_TEST_ALL_PREFIXES(ScrollUnifiedLayerTreeHostImplTest,
-                           AnimatedScrollYielding);
-  FRIEND_TEST_ALL_PREFIXES(ScrollUnifiedLayerTreeHostImplTest,
-                           AutoscrollOnDeletedScrollbar);
-  FRIEND_TEST_ALL_PREFIXES(ScrollUnifiedLayerTreeHostImplTest,
-                           ThumbDragAfterJumpClick);
-  FRIEND_TEST_ALL_PREFIXES(ScrollUnifiedLayerTreeHostImplTest,
-                           ScrollOnLargeThumb);
+  FRIEND_TEST_ALL_PREFIXES(LayerTreeHostImplTest, AnimatedScrollYielding);
+  FRIEND_TEST_ALL_PREFIXES(LayerTreeHostImplTest, AutoscrollOnDeletedScrollbar);
+  FRIEND_TEST_ALL_PREFIXES(LayerTreeHostImplTest, ThumbDragAfterJumpClick);
+  FRIEND_TEST_ALL_PREFIXES(LayerTreeHostImplTest, ScrollOnLargeThumb);
   FRIEND_TEST_ALL_PREFIXES(LayerTreeHostImplTest, AutoscrollTaskAbort);
 
   // This method gets the scroll offset for a regular scroller, or the combined
@@ -570,14 +570,24 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   // scroll position to a snap point. Otherwise returns false.
   bool SnapAtScrollEnd(SnapReason reason);
 
-  // |layer| is returned from a regular hit test, and
-  // |first_scrolling_layer_or_drawn_scrollbar| is returned from a hit test
-  // performed only on scrollers and scrollbars. Initial scroll hit testing can
-  // be unreliable if the latter is not the direct scroll ancestor of the
-  // former. In this case, we will fall back to main thread scrolling because
-  // the compositor thread doesn't know which layer to scroll. This happens when
-  // a layer covers a scroller that doesn't scroll the former, or a scroller is
-  // masked by a mask layer for mask image, clip-path, rounded border, etc.
+  // `layer` is returned from a regular hit test, and
+  // `first_scrolling_layer_or_drawn_scrollbar` is returned from a hit test
+  // performed only on scrollers and scrollbars.
+  // - If the latter is the direct scroll ancestor of `layer`, this function
+  //   returns true;
+  // - Otherwise, which scroller to scroll depends on the hit test opaqueness
+  //   of `layer`:
+  //   - If `layer` is opaque to hit test, then we should scroll `layer`'s
+  //     direct scroll ancestor.
+  //   - Otherwise the initial scroll hit testing is unreliable and this
+  //     function returns false. Then we will fall back to main thread
+  //     scrolling because the compositor thread doesn't know which layer to
+  //     scroll.
+  //   This happens when a layer covers a scroller that doesn't scroll the
+  //   former, or a scroller is masked by a mask layer for mask image,
+  //   clip-path, rounded border, etc.
+  // If this function returns true, `out_node_to_scroll` is set to the scroll
+  // node to scroll.
   //
   // Note, position: fixed layers use the inner viewport as their ScrollNode
   // (since they don't scroll with the outer viewport), however, scrolls from
@@ -587,7 +597,8 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   // this method must use the same scroll chaining logic we use in ApplyScroll.
   bool IsInitialScrollHitTestReliable(
       const LayerImpl* layer,
-      const LayerImpl* first_scrolling_layer_or_drawn_scrollbar) const;
+      const LayerImpl* first_scrolling_layer_or_drawn_scrollbar,
+      ScrollNode*& out_node_to_scroll) const;
 
   // Similar to above but includes complicated logic to determine whether the
   // ScrollNode is able to be scrolled on the compositor or requires main
@@ -677,6 +688,8 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
     return scrollbar_controller_.get();
   }
 
+  absl::optional<gfx::PointF> ConstrainFling(gfx::PointF original);
+
   // The input handler is owned by the delegate so their lifetimes are tied
   // together.
   const raw_ref<CompositorDelegateForInput> compositor_delegate_;
@@ -712,6 +725,16 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   // At the end of a scroll animation, the target should be set as the scroll
   // node's snap target.
   TargetSnapAreaElementIds scroll_animating_snap_target_ids_;
+
+  enum SnapFlingState {
+    kNoFling,
+    kNativeFling,
+    kConstrainedNativeFling,
+    kSnapFling
+  };
+  SnapFlingState snap_fling_state_ = kNoFling;
+  absl::optional<gfx::RangeF> fling_snap_constrain_x_;
+  absl::optional<gfx::RangeF> fling_snap_constrain_y_;
 
   // A set of elements that scroll-snapped to a new target since the last
   // begin main frame. The snap target ids of these elements will be sent to
@@ -779,6 +802,8 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   bool has_scrolled_by_scrollbar_ = false;
 
   bool prefers_reduced_motion_ = false;
+
+  bool is_handling_touch_sequence_ = false;
 
   // Must be the last member to ensure this is destroyed first in the
   // destruction order and invalidates all weak pointers.

@@ -355,7 +355,7 @@ help bubble attached to that element.
 
 This feature is implemented with a single function call at the desired entry
 point;
-[documentation can be found here](/chrome/browser/ui/user_education/open_page_and_show_help_bubble.h).
+[documentation can be found here](/chrome/browser/ui/user_education/show_promo_in_page.h).
 
 ## Configuring the Feature Engagement backend
 

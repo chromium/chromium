@@ -77,12 +77,21 @@ Example:
 #ifndef COMPONENTS_POLICY_TEST_SUPPORT_FAKE_DMSERVER_H_
 #define COMPONENTS_POLICY_TEST_SUPPORT_FAKE_DMSERVER_H_
 
+#include <set>
 #include <string>
 
 #include "base/command_line.h"
+#include "base/containers/unique_ptr_adapters.h"
+#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
+#include "base/timer/timer.h"
 #include "base/values.h"
+#include "chromecast/cast_core/grpc/grpc_server.h"
+#include "chromecast/cast_core/grpc/grpc_unary_handler.h"
 #include "components/policy/test_support/client_storage.h"
 #include "components/policy/test_support/embedded_policy_test_server.h"
+#include "components/policy/test_support/remote_commands_service.castcore.pb.h"  // NOLINT(build/include_directory)
+#include "components/policy/test_support/remote_commands_state.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace fakedms {
@@ -93,20 +102,29 @@ void InitLogging(const absl::optional<std::string>& log_path,
 void ParseFlags(const base::CommandLine& command_line,
                 std::string& policy_blob_path,
                 std::string& client_state_path,
+                std::string& grpc_unix_socket_path,
                 absl::optional<std::string>& log_path,
                 base::ScopedFD& startup_pipe,
                 bool& log_to_console,
                 int& min_log_level);
 
+// TODO(b/293451778): Move this to its own file.
+class RemoteCommandsWaitOperation;
+
 class FakeDMServer : public policy::EmbeddedPolicyTestServer {
  public:
   FakeDMServer(const std::string& policy_blob_path,
                const std::string& client_state_path,
+               const std::string& grpc_unix_socket_path,
                base::OnceClosure shutdown_cb = base::DoNothing());
   ~FakeDMServer() override;
-  // Starts the FakeDMServer and EmbeddedPolicyTestServer, it will return true
-  // if it's able to start the server successfully, and false otherwise.
-  bool Start() override;
+
+  // Starts the EmbeddedPolicyTestServer on a different thread other than the
+  // fake_dmserver_main thread, note that the EmbeddedPolicyTestServer will
+  // shut down on its own when the destructor is called.
+  // Starts the gRPC server on the same thread as the fake_dmserver_main thread.
+  // Returns true if it's starts the servers successfully and false otherwise.
+  bool StartFakeServer();
 
   // Writes the host and port of the EmbeddedPolicyTestServer to the given pipe
   // in a json format {"host": "localhost", "port": 1234}, it will return true
@@ -154,8 +172,58 @@ class FakeDMServer : public policy::EmbeddedPolicyTestServer {
   static absl::optional<policy::ClientStorage::ClientInfo> GetClientFromValue(
       const base::Value& v);
 
-  std::string policy_blob_path_, client_state_path_;
-  base::OnceClosure shutdown_cb_;
+  // Starts the gRPC server on the same thread as the fake_dmserver_main thread.
+  void StartGrpcServer();
+
+  // Shuts down the the gRPC server.
+  void ShutdownGrpcServer(base::OnceClosure);
+
+  // Resets the gRPC server and shuts down the fake_dmserver_main.
+  void OnShutdownGrpcServerDone(base::OnceClosure);
+
+  // Triggers Shutting down the fake_dmserver_main and the grpc server.
+  void TriggerShutdown();
+
+  // Handles the RemoteCommandsService gRPC request SendRemoteCommand.
+  void HandleSendRemoteCommand(
+      remote_commands::SendRemoteCommandRequest request,
+      remote_commands::RemoteCommandsServiceHandler::SendRemoteCommand::Reactor*
+          reactor);
+
+  // Handles the RemoteCommandsService gRPC request WaitRemoteCommandResult. If
+  // the result isn't available withing 10 seconds, the grpc call will be
+  // cancelled.
+  void HandleWaitRemoteCommandResult(
+      remote_commands::WaitRemoteCommandResultRequest request,
+      remote_commands::RemoteCommandsServiceHandler::WaitRemoteCommandResult::
+          Reactor* reactor);
+
+  // Erase the wait operation from the waiters_ set.
+  void EraseWaitOperation(RemoteCommandsWaitOperation*);
+
+  std::string policy_blob_path_;
+  std::string client_state_path_;
+  std::string grpc_unix_socket_uri_;
+
+  // Sequence checker for fake_dmserver main IO thread.
+  SEQUENCE_CHECKER(fake_dmserver_main_sequence_checker_);
+  // Sequence checker for embedded server's request handling thread, and all the
+  // functions called by HandleRequest
+  SEQUENCE_CHECKER(embedded_server_sequence_checker_);
+
+  absl::optional<cast::utils::GrpcServer> grpc_server_;
+  // Callback to shut down the grpc server.
+  base::OnceClosure shut_down_on_main_task_runner_;
+  // Callback to reset the grpc server then shut down the fake_dmserver main.
+  base::OnceClosure shut_down_server_;
+
+  // Stores the wait operations to be erased later when the remote command
+  // result is available.
+  std::set<std::unique_ptr<RemoteCommandsWaitOperation>,
+           base::UniquePtrComparator>
+      waiters_;
+
+  base::WeakPtrFactory<FakeDMServer> weak_ptr_factory_{this};
 };
 
 }  // namespace fakedms

@@ -130,6 +130,7 @@ public class CallbackHelper {
 
     private final Object mLock = new Object();
     private int mCallCount;
+    private int mLastWaitedForCount;
     private String mFailureString;
     private boolean mSingleShotMode;
 
@@ -193,6 +194,7 @@ public class CallbackHelper {
             if (timer.isTimedOut()) {
                 throw new TimeoutException(msg == null ? "waitForCallback timed out!" : msg);
             }
+            mLastWaitedForCount = callCountWhenDoneWaiting;
         }
     }
 
@@ -233,7 +235,7 @@ public class CallbackHelper {
      * @throws TimeoutException
      */
     public void waitForNext(String msg) throws TimeoutException {
-        waitForCallback(msg, mCallCount, 1, WAIT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        waitForCallback(msg, mLastWaitedForCount, 1, WAIT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
     }
 
     /** @see #waitForNext(String) */
@@ -248,7 +250,7 @@ public class CallbackHelper {
      * @throws TimeoutException
      */
     public void waitForNext(long timeout, TimeUnit unit) throws TimeoutException {
-        waitForCallback(null, mCallCount, 1, timeout, unit);
+        waitForCallback(null, mLastWaitedForCount, 1, timeout, unit);
     }
 
     /**
@@ -256,8 +258,8 @@ public class CallbackHelper {
      */
     public void waitForFirst(String msg, long timeout, TimeUnit unit) throws TimeoutException {
         MatcherAssert.assertThat(
-                "Use waitForCallback(currentCallCount) for callbacks that are called multiple "
-                        + "times.",
+                "Use waitForCallback(currentCallCount) or waitForNext() for callbacks that are "
+                        + "called multiple times.",
                 mCallCount, Matchers.lessThanOrEqualTo(1));
         mSingleShotMode = true;
         waitForCallback(msg, 0, 1, timeout, unit);

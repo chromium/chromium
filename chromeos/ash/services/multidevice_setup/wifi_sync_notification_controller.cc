@@ -8,6 +8,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/power_monitor/power_monitor.h"
+#include "base/trace_event/trace_event.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/multidevice/software_feature.h"
@@ -92,6 +93,8 @@ WifiSyncNotificationController::~WifiSyncNotificationController() {
 }
 
 void WifiSyncNotificationController::OnSessionStateChanged() {
+  TRACE_EVENT0("login",
+               "WifiSyncNotificationController::OnSessionStateChanged");
   ShowAnnouncementNotificationIfEligible();
 }
 
@@ -100,6 +103,9 @@ void WifiSyncNotificationController::OnResume() {
 }
 
 void WifiSyncNotificationController::ShowAnnouncementNotificationIfEligible() {
+  TRACE_EVENT0(
+      "ui",
+      "WifiSyncNotificationController::ShowAnnouncementNotificationIfEligible");
   // Show the announcement notification when the device is unlocked and
   // eligible for wi-fi sync.  This is done on unlock/resume to avoid showing
   // it on the first sign-in when it would distract from showoff and other

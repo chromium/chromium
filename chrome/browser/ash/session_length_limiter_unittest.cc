@@ -114,7 +114,7 @@ class SessionLengthLimiterTest : public testing::Test {
   TestingPrefServiceSimple local_state_;
   bool user_activity_seen_;
 
-  raw_ptr<MockSessionLengthLimiterDelegate, ExperimentalAsh>
+  raw_ptr<MockSessionLengthLimiterDelegate, DanglingUntriaged | ExperimentalAsh>
       delegate_;  // Owned by
                   // session_length_limiter_.
   std::unique_ptr<SessionLengthLimiter> session_length_limiter_;

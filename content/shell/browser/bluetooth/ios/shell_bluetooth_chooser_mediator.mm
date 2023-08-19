@@ -8,10 +8,6 @@
 #import "content/shell/browser/bluetooth/ios/shell_bluetooth_chooser_ios.h"
 #import "content/shell/browser/bluetooth/ios/shell_bluetooth_device_list_consumer.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation ShellBluetoothChooserMediator
 - (instancetype)initWithBluetoothChooser:
     (content::ShellBluetoothChooserIOS*)bluetoothChooser {

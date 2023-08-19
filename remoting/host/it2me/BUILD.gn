@@ -39,6 +39,7 @@ source_set("helpers") {
 
 source_set("common") {
   sources = [
+    "connection_details.h",
     "it2me_confirmation_dialog.h",
     "it2me_confirmation_dialog_proxy.cc",
     "it2me_confirmation_dialog_proxy.h",
@@ -112,6 +113,7 @@ source_set("common") {
     deps += [
       "//chromeos/ui/vector_icons",
       "//remoting/host/chromeos",
+      "//remoting/host/chromeos:features",
       "//remoting/host/chromeos:host_event_reporter_impl",
       "//ui/message_center",
       "//ui/message_center/public/cpp",
@@ -164,6 +166,7 @@ if (is_chromeos) {
         "//extensions/browser/api/messaging:native_messaging",
         "//remoting/base:base",
         "//remoting/host:common",
+        "//remoting/host/chromeos:browser_interop",
         "//remoting/host/chromeos:enterprise_support",
         "//remoting/host/chromeos:features",
         "//remoting/host/mojom:mojom",
@@ -327,18 +330,13 @@ if (!is_chromeos_ash && enable_remoting_host) {
           "BUNDLE_ID=$remote_assistance_host_bundle_id",
           "VERSION_FULL=$remoting_version_full",
           "VERSION_SHORT=$remoting_version_short",
-          "MACOSX_DEPLOYMENT_TARGET=10.7",
-        ]
-        extra_configs = [
-          "//build/config/compiler:wexit_time_destructors",
-          "//remoting/build/config:version",
-        ]
-      } else {
-        configs += [
-          "//build/config/compiler:wexit_time_destructors",
-          "//remoting/build/config:version",
+          "MACOSX_DEPLOYMENT_TARGET=10.15",
         ]
       }
+      configs += [
+        "//build/config/compiler:wexit_time_destructors",
+        "//remoting/build/config:version",
+      ]
 
       sources = [ "it2me_native_messaging_host_entry_point.cc" ]
 

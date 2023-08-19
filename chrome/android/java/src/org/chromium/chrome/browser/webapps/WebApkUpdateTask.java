@@ -28,8 +28,7 @@ public class WebApkUpdateTask extends NativeBackgroundTask {
     private boolean mMoreToUpdate;
 
     @Override
-    @StartBeforeNativeResult
-    protected int onStartTaskBeforeNativeLoaded(
+    protected @StartBeforeNativeResult int onStartTaskBeforeNativeLoaded(
             Context context, TaskParameters taskParameters, TaskFinishedCallback callback) {
         assert taskParameters.getTaskId() == TaskIds.WEBAPK_UPDATE_JOB_ID;
 

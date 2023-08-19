@@ -31,6 +31,19 @@ enum TtsEventType {
   kResume,
 };
 
+// See chrome/browser/speech/extension_api/tts_extension_api_constants.cc
+enum TtsError {
+  kNoError = 0,
+  kErrorExtensionIdMismatch,
+  kErrorInvalidLang,
+  kErrorInvalidPitch,
+  kErrorInvalidRate,
+  kErrorInvalidVolume,
+  kErrorMissingPauseOrResume,
+  kErrorUndeclaredEventType,
+  kErrorUtteranceTooLong,
+};
+
 // A description of a voice available for speech synthesis.
 struct TtsVoice {
   // The name of the voice.
@@ -52,9 +65,111 @@ struct TtsVoice {
   array<TtsEventType>? event_types;
 };
 
+// The speech options for the TTS engine.
+struct TtsOptions {
+  // Speaking pitch between 0 and 2 inclusive, with 0 being lowest and 2
+  // being highest. 1.0 corresponds to a voice's default pitch.
+  double pitch = 1.0;
+
+  // Speaking rate relative to the default rate for this voice. 1.0 is the
+  // default rate, normally around 180 to 220 words per minute. 2.0 is
+  // twice as fast, and 0.5 is half as fast. Values below 0.1 or above
+  // 10.0 are strictly disallowed, but many voices will constrain the
+  // minimum and maximum rates further&mdash;for example a particular
+  // voice may not actually speak faster than 3 times normal even if you
+  // specify a value larger than 3.0.
+  double rate = 1.0;
+
+  // Speaking volume between 0 and 1 inclusive, with 0 being lowest and 1
+  // being highest, with a default of 1.0.
+  double volume = 1.0;
+
+  // If true, enqueues this utterance if TTS is already in progress. If
+  // false (the default), interrupts any current speech and flushes the
+  // speech queue before speaking this new utterance.
+  bool enqueue = false;
+
+  // The name of the voice to use for synthesis. If empty, uses any
+  // available voice.
+  string? voice_name;
+
+  // The engine ID of the speech engine to use, if known.
+  string? engine_id;
+
+  // The language to be used for synthesis, in the form
+  // <em>language</em>-<em>region</em>. Examples: 'en', 'en-US', 'en-GB',
+  // 'zh-CN'.
+  string? lang;
+
+  // If true, construct and return a TtsUtteranceClient.
+  bool on_event = false;
+};
+
+// An event from the TTS engine to communicate the status of an utterance.
+// This is constructed from the OS browser process and passed to the
+// Accessibility Service's TtsUtteranceClient.
+struct TtsEvent {
+  // The event type for this TtsEvent.
+  TtsEventType type;
+
+  // The index of the current character in the utterance. For word events,
+  // the event fires at the end of one word and before the beginning of the
+  // next. The `char_index` represents a point in the text at the beginning
+  // of the next word to be spoken.
+  int32 char_index;
+
+  // The error description, if the event type is kError.
+  string? error_message;
+
+  // The length of the next part of the utterance. For example, in a kWord
+  // event, this is the length of the word which will be spoken next. It will
+  // be set to -1 if not set by the speech engine.
+  int32 length;
+
+  // Whether this is the final event which will be sent to the
+  // TtsUtteranceClient.
+  bool is_final;
+};
+
+// This interface receives events from an utterance which is being spoken.
+// The remote is in the OS browser process and the receiver is in the
+// Accessibility Service.
+interface TtsUtteranceClient {
+  // This function is called with events that occur in the process of speaking
+  // the utterance.
+  OnEvent(TtsEvent event);
+};
+
+// The result of calling Tts.Speak, this contains an error code if one was set,
+// and an utterance client if there was no error.
+struct TtsSpeakResult {
+  TtsError error = kNoError;
+  pending_receiver<TtsUtteranceClient>? utterance_client;
+};
+
 // Provides speech. Implemented in the main OS browser process
 // and called from Accessibility Service Javascript.
 interface Tts {
+  // Speaks text using a text-to-speech engine, and returns async right
+  // away, before speech finishes, with a speak result that contains an
+  // utterance client or an error.
+  Speak(string utterance, TtsOptions options) => (TtsSpeakResult result);
+
+  // Stops any current speech and flushes the queue of any pending utterances.
+  // In addition, if speech was paused, it will now be un-paused for the next
+  // call to speak.
+  Stop();
+
+  // Pauses speech synthesis, potentially in the middle of an utterance.
+  // A call to resume or stop will un-pause speech.
+  Pause();
+
+  // If speech was paused, resumes speaking where it left off.
+  Resume();
+
+  // Checks whether the engine is currently speaking.
+  IsSpeaking() => (bool speaking);
+
   // Gets an array of all available voices.
   GetVoices() => (array<TtsVoice> voices);
 };

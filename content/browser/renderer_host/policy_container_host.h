@@ -6,10 +6,11 @@
 #define CONTENT_BROWSER_RENDERER_HOST_POLICY_CONTAINER_HOST_H_
 
 #include <iosfwd>
+#include <memory>
+#include <vector>
 
 #include "content/browser/child_process_host_impl.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/content_browser_client.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
@@ -26,6 +27,8 @@
 
 namespace content {
 
+class ContentBrowserClient;
+
 // The contents of a PolicyContainerHost.
 struct CONTENT_EXPORT PolicyContainerPolicies {
   PolicyContainerPolicies();
@@ -40,7 +43,8 @@ struct CONTENT_EXPORT PolicyContainerPolicies {
       const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
       network::mojom::WebSandboxFlags sandbox_flags,
       bool is_credentialless,
-      bool can_navigate_top_without_user_gesture);
+      bool can_navigate_top_without_user_gesture,
+      bool allow_cross_origin_isolation);
 
   explicit PolicyContainerPolicies(
       const blink::mojom::PolicyContainerPolicies& policies);
@@ -126,6 +130,14 @@ struct CONTENT_EXPORT PolicyContainerPolicies {
   // using sandboxing. A document that is same-origin to the top-level frame
   // will always have this value set to true.
   bool can_navigate_top_without_user_gesture = true;
+
+  // The top-level initial empty document opened as a popup by a cross-origin
+  // iframe might inherit the COOP policies of the top-level document but it
+  // shouldn't have crossOriginIsolated capabilities if COOP was initially set
+  // by another origin. Hence, we pass down this boolean to tell the renderer to
+  // restrict those capabilities. For more detail, see
+  // https://github.com/hemeryar/coi-with-popups/blob/main/docs/cross_origin_iframe_popup.MD
+  bool allow_cross_origin_isolation = false;
 };
 
 // PolicyContainerPolicies structs are comparable for equality.
@@ -199,7 +211,7 @@ class CONTENT_EXPORT PolicyContainerHost
     return policies_.ip_address_space;
   }
 
-  network::CrossOriginOpenerPolicy cross_origin_opener_policy() const {
+  network::CrossOriginOpenerPolicy& cross_origin_opener_policy() {
     return policies_.cross_origin_opener_policy;
   }
 
@@ -235,6 +247,10 @@ class CONTENT_EXPORT PolicyContainerHost
 
   void SetCanNavigateTopWithoutUserGesture(bool value) {
     policies_.can_navigate_top_without_user_gesture = value;
+  }
+
+  void SetAllowCrossOriginIsolation(bool value) {
+    policies_.allow_cross_origin_isolation = value;
   }
 
   // Return a PolicyContainer containing copies of the policies and a pending

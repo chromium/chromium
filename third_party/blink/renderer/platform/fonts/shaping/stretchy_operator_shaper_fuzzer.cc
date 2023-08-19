@@ -23,8 +23,8 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   FontCachePurgePreventer font_cache_purge_preventer;
   FontDescription::VariantLigatures ligatures;
-  Font math =
-      test::CreateTestFont("MathTestFont", data, size, kFontSize, &ligatures);
+  Font math = test::CreateTestFont(AtomicString("MathTestFont"), data, size,
+                                   kFontSize, &ligatures);
 
   // TODO(crbug.com/1340884): This is only testing API for three characters.
   // TODO(crbug.com/1340884): Use FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION to

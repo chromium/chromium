@@ -28,7 +28,6 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -41,7 +40,7 @@ import org.chromium.ui.test.util.UiRestriction;
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 // NOTE: Disable online detection so we we'll default to online on test bots with no network.
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures({ChromeFeatureList.CONTEXTUAL_SEARCH_DISABLE_ONLINE_DETECTION})
+@EnableFeatures(ChromeFeatureList.CONTEXTUAL_SEARCH_DISABLE_ONLINE_DETECTION)
 @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
 @Batch(Batch.PER_CLASS)
 public class ContextualSearchTriggerTest extends ContextualSearchInstrumentationBase {
@@ -214,12 +213,13 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
     }
 
     /**
-     * Tests a "retap" -- that sequential Tap gestures nearby keep selecting.
+     * Tests a "tap-near" -- that sequential Tap gestures nearby keep selecting.
      */
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
     // Previously disabled at https://crbug.com/1075895
+    @DisabledTest(message = "See crbug.com/1455161") // Disabled because it is flaky
     public void testTapGesturesNearbyKeepSelecting() throws Exception {
         FeatureList.setTestFeatures(ENABLE_NONE);
 
@@ -285,7 +285,7 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
     @SmallTest
     @Feature({"ContextualSearch"})
     @Restriction(Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE)
-    @Features.EnableFeatures(ChromeFeatureList.CONTEXTUAL_SEARCH_SUPPRESS_SHORT_VIEW)
+    @EnableFeatures(ChromeFeatureList.CONTEXTUAL_SEARCH_SUPPRESS_SHORT_VIEW)
     public void testIsSuppressedOnViewHeight_ridiculouslyShort() {
         FeatureList.TestValues testValues = new FeatureList.TestValues();
         testValues.addFieldTrialParamOverride(
@@ -299,7 +299,7 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
     @SmallTest
     @Feature({"ContextualSearch"})
     @Restriction(Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE)
-    @Features.EnableFeatures(ChromeFeatureList.CONTEXTUAL_SEARCH_SUPPRESS_SHORT_VIEW)
+    @EnableFeatures(ChromeFeatureList.CONTEXTUAL_SEARCH_SUPPRESS_SHORT_VIEW)
     public void testIsSuppressedOnViewHeight_ridiculouslyTall() {
         FeatureList.TestValues testValues = new FeatureList.TestValues();
         testValues.addFieldTrialParamOverride(

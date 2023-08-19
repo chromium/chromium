@@ -14,10 +14,6 @@
 #import "ios/web/public/test/web_test.h"
 #import "testing/gtest/include/gtest/gtest.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Timeout before failure if the FindInPageManager does not report to the
@@ -30,20 +26,12 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace web {
 
-// Config for FindInPageManagerImplTest
-struct FindInPageManagerImplTestConfig {
-  // Whether to use a Find interaction in the FindInPageManagerImpl.
-  bool use_find_interaction;
-};
-
 // Tests FindInPageManagerImpl and verifies that the state of
 // FindInPageManagerDelegate is correct depending on what the Find session
 // returns. FindInPageManagerImplTest is part of an iOS 16+ feature so this
 // test class only applies to iOS 16+. For the old Find in Page tests, please
 // see java_script_find_in_page_manager_impl_unittest.mm
-class FindInPageManagerImplTest
-    : public WebTest,
-      public testing::WithParamInterface<FindInPageManagerImplTestConfig> {
+class FindInPageManagerImplTest : public WebTest {
  protected:
   FindInPageManagerImplTest() : WebTest(std::make_unique<FakeWebClient>()) {}
 
@@ -55,33 +43,24 @@ class FindInPageManagerImplTest
       fake_web_state_ = std::make_unique<FakeWebState>();
       fake_web_state_->SetBrowserState(GetBrowserState());
 
-      FindInPageManagerImpl::CreateForWebState(fake_web_state_.get(),
-                                               GetParam().use_find_interaction);
+      FindInPageManagerImpl::CreateForWebState(fake_web_state_.get());
       GetFindInPageManager()->SetDelegate(&fake_delegate_);
       // Sets a smaller delay between each manager's call to
       // `PollActiveFindSession()` so tests run faster.
       GetFindInPageManager()->poll_active_find_session_delay_ =
           base::Milliseconds(5);
 
-      if (GetParam().use_find_interaction) {
         // Enable and set up fake Find interaction in the fake web state.
         fake_web_state_->SetFindInteractionEnabled(true);
         fake_web_state_->SetFindInteraction(
             [[CRWFakeFindInteraction alloc] init]);
-      }
     }
   }
 
   // Sets the fake Find session analyzed by the FindInPageManager.
   void SetFindSession(CRWFakeFindSession* find_session) API_AVAILABLE(ios(16)) {
-    if (GetParam().use_find_interaction) {
-      static_cast<CRWFakeFindInteraction*>(
-          fake_web_state_->GetFindInteraction())
-          .activeFindSession = find_session;
-    } else {
-      static_cast<FakeWebClient*>(GetWebClient())
-          ->SetFindSessionPrototype(find_session);
-    }
+    static_cast<CRWFakeFindInteraction*>(fake_web_state_->GetFindInteraction())
+        .activeFindSession = find_session;
   }
 
   // Create a fake Find session which returns the appropriate match counts for
@@ -147,7 +126,7 @@ class FindInPageManagerImplTest
 
 // Tests that Find In Page responds with a total match count of three when it
 // calls Find on a query with three matches.
-TEST_P(FindInPageManagerImplTest, FindThreeMatches) {
+TEST_F(FindInPageManagerImplTest, FindThreeMatches) {
   if (@available(iOS 16, *)) {
     SetFindSessionWithResultCountsForQueries(@{@"foo" : @3});
 
@@ -160,7 +139,7 @@ TEST_P(FindInPageManagerImplTest, FindThreeMatches) {
 
 // Tests that Find In Page returns a total match count matching the latest find
 // if two finds are called.
-TEST_P(FindInPageManagerImplTest, ReturnLatestFind) {
+TEST_F(FindInPageManagerImplTest, ReturnLatestFind) {
   if (@available(iOS 16, *)) {
     SetFindSessionWithResultCountsForQueries(@{@"foo" : @3, @"bar" : @2});
 
@@ -177,7 +156,7 @@ TEST_P(FindInPageManagerImplTest, ReturnLatestFind) {
 
 // Tests that the Find In Page manager does not report to the delegate if the
 // web state is destroyed during a Find operation.
-TEST_P(FindInPageManagerImplTest, DestroyWebStateDuringFind) {
+TEST_F(FindInPageManagerImplTest, DestroyWebStateDuringFind) {
   if (@available(iOS 16, *)) {
     SetFindSessionWithResultCountsForQueries(@{@"foo" : @3});
     GetFindInPageManager()->Find(@"foo", FindInPageOptions::FindInPageSearch);
@@ -189,7 +168,7 @@ TEST_P(FindInPageManagerImplTest, DestroyWebStateDuringFind) {
 }
 
 // Tests that Find In Page doesn't fail when delegate is not set.
-TEST_P(FindInPageManagerImplTest, DelegateNotSet) {
+TEST_F(FindInPageManagerImplTest, DelegateNotSet) {
   if (@available(iOS 16, *)) {
     GetFindInPageManager()->SetDelegate(nullptr);
     SetFindSessionWithResultCountsForQueries(@{@"foo" : @3});
@@ -205,7 +184,7 @@ TEST_P(FindInPageManagerImplTest, DelegateNotSet) {
 // Tests that Find in Page manager responds with a total match count of zero
 // when there are no matches in the web page. Tests that Find in Page also did
 // not respond with a valid selected match index value.
-TEST_P(FindInPageManagerImplTest, PageWithNoMatchNoHighlight) {
+TEST_F(FindInPageManagerImplTest, PageWithNoMatchNoHighlight) {
   if (@available(iOS 16, *)) {
     GetFindInPageManager()->Find(@"foo", FindInPageOptions::FindInPageSearch);
 
@@ -217,7 +196,7 @@ TEST_P(FindInPageManagerImplTest, PageWithNoMatchNoHighlight) {
 
 // Tests that Find in Page responds with index zero after a find when there are
 // three matches in a page.
-TEST_P(FindInPageManagerImplTest, DidHighlightFirstIndex) {
+TEST_F(FindInPageManagerImplTest, DidHighlightFirstIndex) {
   if (@available(iOS 16, *)) {
     SetFindSessionWithResultCountsForQueries(@{@"foo" : @3});
     GetFindInPageManager()->Find(@"foo", FindInPageOptions::FindInPageSearch);
@@ -229,7 +208,7 @@ TEST_P(FindInPageManagerImplTest, DidHighlightFirstIndex) {
 
 // Tests that Find in Page responds with index one to a FindInPageNext find
 // after a FindInPageSearch find finishes when there are two matches in a page.
-TEST_P(FindInPageManagerImplTest, FindDidHighlightSecondIndexAfterNextCall) {
+TEST_F(FindInPageManagerImplTest, FindDidHighlightSecondIndexAfterNextCall) {
   if (@available(iOS 16, *)) {
     SetFindSessionWithResultCountsForQueries(@{@"foo" : @2});
     GetFindInPageManager()->Find(@"foo", FindInPageOptions::FindInPageSearch);
@@ -244,7 +223,7 @@ TEST_P(FindInPageManagerImplTest, FindDidHighlightSecondIndexAfterNextCall) {
 
 // Tests that Find in Page selects all matches in a page with three matches and
 // wraps when making successive FindInPageNext calls.
-TEST_P(FindInPageManagerImplTest, FindDidSelectAllMatchesWithNextCall) {
+TEST_F(FindInPageManagerImplTest, FindDidSelectAllMatchesWithNextCall) {
   if (@available(iOS 16, *)) {
     SetFindSessionWithResultCountsForQueries(@{@"foo" : @3});
     GetFindInPageManager()->Find(@"foo", FindInPageOptions::FindInPageSearch);
@@ -271,7 +250,7 @@ TEST_P(FindInPageManagerImplTest, FindDidSelectAllMatchesWithNextCall) {
 
 // Tests that Find in Page selects all matches in a page with three matches and
 // wraps when making successive FindInPagePrevious calls.
-TEST_P(FindInPageManagerImplTest,
+TEST_F(FindInPageManagerImplTest,
        FindDidLoopThroughAllMatchesWithPreviousCall) {
   if (@available(iOS 16, *)) {
     SetFindSessionWithResultCountsForQueries(@{@"foo" : @3});
@@ -302,7 +281,7 @@ TEST_P(FindInPageManagerImplTest,
 
 // Tests that Find in Page does not respond to a FindInPageNext or a
 // FindInPagePrevious call if no FindInPageSearch find was executed beforehand.
-TEST_P(FindInPageManagerImplTest, FindDidNotRepondToNextOrPrevIfNoSearch) {
+TEST_F(FindInPageManagerImplTest, FindDidNotRepondToNextOrPrevIfNoSearch) {
   if (@available(iOS 16, *)) {
     SetFindSessionWithResultCountsForQueries(@{@"foo" : @3});
 
@@ -320,7 +299,7 @@ TEST_P(FindInPageManagerImplTest, FindDidNotRepondToNextOrPrevIfNoSearch) {
 
 // Tests that Find in Page resets the match count to 0 and the query to nil
 // after calling StopFinding().
-TEST_P(FindInPageManagerImplTest, FindInPageCanStopFind) {
+TEST_F(FindInPageManagerImplTest, FindInPageCanStopFind) {
   if (@available(iOS 16, *)) {
     SetFindSessionWithResultCountsForQueries(@{@"foo" : @3});
     GetFindInPageManager()->Find(@"foo", FindInPageOptions::FindInPageSearch);
@@ -335,18 +314,13 @@ TEST_P(FindInPageManagerImplTest, FindInPageCanStopFind) {
 }
 
 // Tests that Find in Page logs correct UserActions for given API calls.
-TEST_P(FindInPageManagerImplTest, FindUserActions) {
+TEST_F(FindInPageManagerImplTest, FindUserActions) {
   if (@available(iOS 16, *)) {
     SetFindSessionWithResultCountsForQueries(@{@"foo" : @3});
     ASSERT_EQ(
         0, user_action_tester_.GetActionCount("IOS.FindInPage.SearchStarted"));
     GetFindInPageManager()->Find(@"foo", FindInPageOptions::FindInPageSearch);
     ASSERT_TRUE(WaitForValidIndexOrTimeout());
-    if (!GetParam().use_find_interaction) {
-      // This should only be recorded when no Find interaction is used.
-      EXPECT_EQ(1, user_action_tester_.GetActionCount(
-                       "IOS.FindInPage.SearchStarted"));
-    }
 
     ASSERT_EQ(0, user_action_tester_.GetActionCount("IOS.FindInPage.FindNext"));
     GetFindInPageManager()->Find(@"foo", FindInPageOptions::FindInPageNext);
@@ -370,12 +344,8 @@ TEST_P(FindInPageManagerImplTest, FindUserActions) {
 
 // Tests that the Find navigator is presented when the Find session starts and
 // dismissed when the Find session stops, if a Find interaction is used.
-TEST_P(FindInPageManagerImplTest, FindNavigatorPresentedAndDismissed) {
+TEST_F(FindInPageManagerImplTest, FindNavigatorPresentedAndDismissed) {
   if (@available(iOS 16, *)) {
-    if (!GetParam().use_find_interaction) {
-      return;
-    }
-
     GetFindInPageManager()->Find(@"foo", FindInPageOptions::FindInPageSearch);
     ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForFindCompletionTimeout, ^{
       base::RunLoop().RunUntilIdle();
@@ -393,13 +363,9 @@ TEST_P(FindInPageManagerImplTest, FindNavigatorPresentedAndDismissed) {
 // Tests that the manager reports to its delegate when it detects the Find
 // navigator has been dismissed by the user, and set the query back to nil and
 // the match count to 0.
-TEST_P(FindInPageManagerImplTest,
+TEST_F(FindInPageManagerImplTest,
        UserDismissesFindNavigatorDetectedAndStopsSearch) {
   if (@available(iOS 16, *)) {
-    if (!GetParam().use_find_interaction) {
-      return;
-    }
-
     SetFindSessionWithResultCountsForQueries(@{@"foo" : @3});
     GetFindInPageManager()->Find(@"foo", FindInPageOptions::FindInPageSearch);
     ASSERT_TRUE(WaitForValidIndexOrTimeout());
@@ -414,36 +380,5 @@ TEST_P(FindInPageManagerImplTest,
     EXPECT_FALSE(fake_delegate_.state()->query);
   }
 }
-
-// Tests that the manager starts a text search when a Find session starts and
-// stops it when the Find session ends, if no Find interaction is used.
-TEST_P(FindInPageManagerImplTest, TextSearchStartedAndStoppedInWebState) {
-  if (@available(iOS 16, *)) {
-    if (GetParam().use_find_interaction) {
-      return;
-    }
-
-    EXPECT_FALSE(
-        static_cast<FakeWebClient*>(GetWebClient())->IsTextSearchStarted());
-
-    SetFindSessionWithResultCountsForQueries(@{@"foo" : @3});
-    GetFindInPageManager()->Find(@"foo", FindInPageOptions::FindInPageSearch);
-    ASSERT_TRUE(WaitForValidIndexOrTimeout());
-    EXPECT_TRUE(
-        static_cast<FakeWebClient*>(GetWebClient())->IsTextSearchStarted());
-
-    GetFindInPageManager()->StopFinding();
-    fake_delegate_.Reset();
-    EXPECT_FALSE(
-        static_cast<FakeWebClient*>(GetWebClient())->IsTextSearchStarted());
-  }
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    FindInPageManagerImplTestAllConfigs,
-    FindInPageManagerImplTest,
-    testing::Values(
-        FindInPageManagerImplTestConfig{/* use_find_interaction= */ false},
-        FindInPageManagerImplTestConfig{/* use_find_interaction= */ true}));
 
 }  // namespace web

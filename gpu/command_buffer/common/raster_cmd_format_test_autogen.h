@@ -408,6 +408,58 @@ TEST_F(RasterFormatTest, WritePixelsINTERNALImmediate) {
       next_cmd, sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)));
 }
 
+TEST_F(RasterFormatTest, WritePixelsYUVINTERNALImmediate) {
+  const int kSomeBaseValueToTestWith = 51;
+  static GLbyte data[] = {
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 0),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 1),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 2),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 3),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 4),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 5),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 6),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 7),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 8),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 9),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 10),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 11),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 12),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 13),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 14),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 15),
+  };
+  cmds::WritePixelsYUVINTERNALImmediate& cmd =
+      *GetBufferAs<cmds::WritePixelsYUVINTERNALImmediate>();
+  void* next_cmd = cmd.Set(
+      &cmd, static_cast<GLuint>(11), static_cast<GLuint>(12),
+      static_cast<GLuint>(13), static_cast<GLuint>(14), static_cast<GLuint>(15),
+      static_cast<GLuint>(16), static_cast<GLuint>(17), static_cast<GLuint>(18),
+      static_cast<GLuint>(19), static_cast<GLint>(20), static_cast<GLuint>(21),
+      static_cast<GLuint>(22), static_cast<GLuint>(23), static_cast<GLuint>(24),
+      data);
+  EXPECT_EQ(
+      static_cast<uint32_t>(cmds::WritePixelsYUVINTERNALImmediate::kCmdId),
+      cmd.header.command);
+  EXPECT_EQ(sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)),
+            cmd.header.size * 4u);
+  EXPECT_EQ(static_cast<GLuint>(11), cmd.src_width);
+  EXPECT_EQ(static_cast<GLuint>(12), cmd.src_height);
+  EXPECT_EQ(static_cast<GLuint>(13), cmd.src_row_bytes_plane1);
+  EXPECT_EQ(static_cast<GLuint>(14), cmd.src_row_bytes_plane2);
+  EXPECT_EQ(static_cast<GLuint>(15), cmd.src_row_bytes_plane3);
+  EXPECT_EQ(static_cast<GLuint>(16), cmd.src_row_bytes_plane4);
+  EXPECT_EQ(static_cast<GLuint>(17), cmd.src_yuv_plane_config);
+  EXPECT_EQ(static_cast<GLuint>(18), cmd.src_yuv_subsampling);
+  EXPECT_EQ(static_cast<GLuint>(19), cmd.src_yuv_datatype);
+  EXPECT_EQ(static_cast<GLint>(20), cmd.shm_id);
+  EXPECT_EQ(static_cast<GLuint>(21), cmd.shm_offset);
+  EXPECT_EQ(static_cast<GLuint>(22), cmd.plane2_offset);
+  EXPECT_EQ(static_cast<GLuint>(23), cmd.plane3_offset);
+  EXPECT_EQ(static_cast<GLuint>(24), cmd.plane4_offset);
+  CheckBytesWrittenMatchesExpectedSize(
+      next_cmd, sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)));
+}
+
 TEST_F(RasterFormatTest, ReadbackARGBImagePixelsINTERNALImmediate) {
   const int kSomeBaseValueToTestWith = 51;
   static GLbyte data[] = {

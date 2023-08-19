@@ -79,6 +79,8 @@ GPUTestConfig::OS GetCurrentOS() {
       return GPUTestConfig::kOsMacMonterey;
     case 13:
       return GPUTestConfig::kOsMacVentura;
+    case 14:
+      return GPUTestConfig::kOsMacSonoma;
   }
   return GPUTestConfig::kOsUnknown;
 #elif BUILDFLAG(IS_ANDROID)
@@ -223,6 +225,7 @@ bool GPUTestBotConfig::IsValid() const {
     case kOsMacBigSur:
     case kOsMacMonterey:
     case kOsMacVentura:
+    case kOsMacSonoma:
     case kOsLinux:
     case kOsChromeOS:
     case kOsAndroid:

@@ -18,6 +18,7 @@
 #include "base/supports_user_data.h"
 #include "components/payments/content/android_app_communication.h"
 #include "components/payments/content/android_payment_app.h"
+#include "components/payments/content/content_payment_request_delegate.h"
 #include "components/payments/content/payment_request_spec.h"
 #include "components/payments/core/android_app_description.h"
 #include "components/payments/core/android_app_description_tools.h"
@@ -209,7 +210,8 @@ class AppFinder : public base::SupportsUserData::Data {
           delegate_->GetTopOrigin(), delegate_->GetFrameOrigin(),
           delegate_->GetSpec()->details().id.value(),
           std::move(app_description), communication_,
-          delegate_->GetInitiatorRenderFrameHost()->GetGlobalId()));
+          delegate_->GetInitiatorRenderFrameHost()->GetGlobalId(),
+          delegate_->GetChromeOSTWAInstanceId()));
     }
 
     if (--number_of_pending_is_ready_to_pay_queries_ == 0)

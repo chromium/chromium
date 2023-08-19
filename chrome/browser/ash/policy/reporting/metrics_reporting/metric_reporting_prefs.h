@@ -36,6 +36,9 @@ constexpr char kReportAppUsage[] = "reporting.report_app_usage";
 constexpr char kReportAppUsageCollectionRateMs[] =
     "reporting.report_app_usage_collection_rate_ms";
 
+// A list pref used to track installed apps for a particular user.
+constexpr char kAppsInstalled[] = "reporting.apps_installed";
+
 // Application category types tracked by the app metric reporting user policies.
 constexpr char kAppCategoryAndroidApps[] = "android_apps";
 constexpr char kAppCategoryBrowser[] = "browser";

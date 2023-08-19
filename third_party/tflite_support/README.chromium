@@ -6,6 +6,7 @@ Date: 2022/11/30
 License: Apache 2.0
 License File: LICENSE
 Security Critical: Yes
+Shipped: yes
 CPEPrefix: unknown
 
 Description:
@@ -20,7 +21,7 @@ Third party dependencies:
 - tensorflow-text
 
 Modifications:
-01) Use re2::StringPiece instead of absl::string_view in regex_tokenizer.cc
+01) Patch since removed
 02) Remove support for sentencepiece tokenization because the required overhead
     isn't worth adding this functionality, esp since no feature team needs it.
 03) Remove the ABSL_DEPRECATED annotation from a deprecated struct since this
@@ -43,6 +44,7 @@ Modifications:
 16) Fix dependencies which were moved out of experimental folder.
 17) Fix shim headers being removed in TFLite.
 18) Fix shim headers for Text Embedder and related header/cc files.
+19) Fix shim headers for Image Embedder.
 
 Update Process (internal: http://shortn/_nwz8liqimy):
 1) Run these commands:

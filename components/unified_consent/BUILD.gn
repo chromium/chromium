@@ -6,6 +6,8 @@ static_library("unified_consent") {
   sources = [
     "consent_throttle.cc",
     "consent_throttle.h",
+    "msbb_session_durations_metrics_recorder.cc",
+    "msbb_session_durations_metrics_recorder.h",
     "pref_names.cc",
     "pref_names.h",
     "unified_consent_metrics.cc",
@@ -17,7 +19,6 @@ static_library("unified_consent") {
   ]
   deps = [
     "//base",
-    "//components/autofill/core/common",
     "//components/pref_registry",
     "//components/prefs",
     "//components/signin/public/identity_manager",

@@ -19,8 +19,15 @@ bool IsURLSupported(GURL url);
 absl::optional<::mojom::LifecycleUnitDiscardReason> GetDiscardReason(
     content::WebContents* contents);
 
-// Adds the given site to the discard exclusion list
-void AddSiteToExceptionsList(PrefService* pref_service, std::string site);
+// Returns if the given site is in the discard exception list
+bool IsSiteInExceptionsList(PrefService* pref_service, const std::string& site);
+
+// Adds the given site to the discard exception list
+void AddSiteToExceptionsList(PrefService* pref_service,
+                             const std::string& site);
+
+// Returns how much memory was saved through discarding `contents`
+uint64_t GetDiscardedMemorySavingsInBytes(content::WebContents* contents);
 
 }  // namespace high_efficiency
 

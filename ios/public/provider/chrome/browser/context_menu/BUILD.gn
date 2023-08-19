@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("context_menu_api") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "context_menu_api.h",
     "context_menu_api.mm",

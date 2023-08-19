@@ -103,7 +103,6 @@ export class Intent {
   /**
    * @param url URL passed along with app launch event.
    * @param mode Mode for the intent.
-   * @return Created intent object.
    */
   static create(url: URL, mode: Mode): Intent {
     const params = url.searchParams;

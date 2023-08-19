@@ -210,7 +210,6 @@ void FidoDeviceAuthenticator::OnHaveCompressedLargeBlobForGetAssertion(
     size_t original_size,
     base::expected<mojo_base::BigBuffer, std::string> result) {
   if (!result.has_value()) {
-    LogLargeBlobResult(LargeBlobKeyWriteResult::kCompressionError);
     FIDO_LOG(ERROR) << "Failed to compress large blob: " << result.error();
   } else {
     // If the authenticator supports the largeBlob extension then the blob is
@@ -357,7 +356,6 @@ void FidoDeviceAuthenticator::PerformGetAssertionLargeBlobOperation(
     DCHECK(options_.large_blob_type == LargeBlobSupportType::kKey);
     DCHECK_EQ(responses.size(), 1u);
     if (!responses.at(0).large_blob_key) {
-      LogLargeBlobResult(LargeBlobKeyWriteResult::kCredentialHasNoLargeBlobKey);
       std::move(callback).Run(CtapDeviceResponseCode::kSuccess,
                               std::move(responses));
       return;
@@ -1021,16 +1019,6 @@ void FidoDeviceAuthenticator::OnWroteLargeBlobForGetAssertion(
     std::vector<AuthenticatorGetAssertionResponse> responses,
     GetAssertionCallback callback,
     CtapDeviceResponseCode status) {
-  switch (status) {
-    case CtapDeviceResponseCode::kSuccess:
-      LogLargeBlobResult(LargeBlobKeyWriteResult::kSuccess);
-      break;
-    case CtapDeviceResponseCode::kCtap2ErrRequestTooLarge:
-      LogLargeBlobResult(LargeBlobKeyWriteResult::kNotEnoughSpace);
-      break;
-    default:
-      LogLargeBlobResult(LargeBlobKeyWriteResult::kCtapError);
-  }
   responses.at(0).large_blob_written =
       status == CtapDeviceResponseCode::kSuccess;
   std::move(callback).Run(CtapDeviceResponseCode::kSuccess,
@@ -1377,14 +1365,6 @@ void FidoDeviceAuthenticator::OnHaveLargeBlobArrayForGarbageCollect(
                       std::move(callback));
 }
 
-void FidoDeviceAuthenticator::LogLargeBlobResult(
-    LargeBlobKeyWriteResult result) {
-  if (options_.large_blob_type == LargeBlobSupportType::kKey) {
-    base::UmaHistogramEnumeration("WebAuthentication.LargeBlobKey.WriteResult",
-                                  result);
-  }
-}
-
 absl::optional<base::span<const int32_t>>
 FidoDeviceAuthenticator::GetAlgorithms() {
   if (device_->supported_protocol() == ProtocolVersion::kU2f) {
@@ -1419,6 +1399,13 @@ void FidoDeviceAuthenticator::Cancel() {
   if (task_) {
     task_->Cancel();
   }
+}
+
+AuthenticatorType FidoDeviceAuthenticator::GetType() const {
+  if (device_->DeviceTransport() == FidoTransportProtocol::kHybrid) {
+    return AuthenticatorType::kPhone;
+  }
+  return AuthenticatorType::kOther;
 }
 
 std::string FidoDeviceAuthenticator::GetId() const {

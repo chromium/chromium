@@ -214,11 +214,20 @@ void BluetoothSocketFloss::DoConnectionStateChanged(
 
   // We also always want to be accepting and queue up connections here to be
   // consumed when in the ready state.
-  if (state == FlossSocketManager::ServerSocketState::kReady) {
+  if (state == FlossSocketManager::ServerSocketState::kReady &&
+      status == FlossDBusClient::BtifStatus::kSuccess) {
     FlossDBusManager::Get()->GetSocketManager()->Accept(
         listening_socket_info_->id, absl::nullopt,
         base::BindOnce(&BluetoothSocketFloss::CompleteAccept,
                        weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+
+  if (status != FlossDBusClient::BtifStatus::kSuccess && accept_request_) {
+    std::move(accept_request_->error_callback)
+        .Run(net::ErrorToString(net::ERR_CONNECTION_FAILED));
+    accept_request_.reset(nullptr);
+    return;
   }
 }
 

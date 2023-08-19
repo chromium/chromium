@@ -13,8 +13,6 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.text.EmptyTextWatcher;
 
@@ -204,7 +202,6 @@ public class RadioButtonWithEditText extends RadioButtonWithDescription {
     /**
      * @return the EditText living inside this widget.
      */
-    @VisibleForTesting
     public EditText getEditTextForTests() {
         return mEditText;
     }

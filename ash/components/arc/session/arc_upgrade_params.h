@@ -105,6 +105,13 @@ struct UpgradeParams {
   // Comma separated list of high priority apps that would have a delay before
   // considered to be killed.
   std::string priority_app_lmk_delay_list;
+
+  // Flag to enable update for minimum Android process state to be considered to
+  // be killed under perceptible memory pressure
+  bool enable_lmk_perceptible_min_state_update = false;
+
+  // Whether to run post boot dex opt without device idle requirement
+  bool force_post_boot_dex_opt = false;
 };
 
 }  // namespace arc

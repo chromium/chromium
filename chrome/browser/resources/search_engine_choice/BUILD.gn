@@ -1,0 +1,28 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/signin/features.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
+
+assert(enable_search_engine_choice)
+
+build_webui("build") {
+  grd_prefix = "search_engine_choice"
+
+  static_files = [ "search_engine_choice.html" ]
+
+  web_component_files = [ "app.ts" ]
+
+  non_web_component_files = [ "browser_proxy.ts" ]
+
+  mojo_files_deps = [ "//chrome/browser/ui/webui/search_engine_choice:mojo_bindings_ts__generator" ]
+  mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/search_engine_choice/search_engine_choice.mojom-webui.ts" ]
+
+  ts_deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+}

@@ -6557,8 +6557,7 @@ TEST_F(ManifestParserTest, TabStripParseRules) {
       EXPECT_FALSE(manifest->tab_strip.is_null());
       EXPECT_EQ(manifest->tab_strip->home_tab->get_visibility(),
                 Visibility::kAuto);
-      EXPECT_EQ(manifest->tab_strip->new_tab_button->get_visibility(),
-                Visibility::kAuto);
+      EXPECT_FALSE(manifest->tab_strip->new_tab_button->url.has_value());
       EXPECT_EQ(0u, GetErrorCount());
     }
 
@@ -6573,9 +6572,7 @@ TEST_F(ManifestParserTest, TabStripParseRules) {
       EXPECT_EQ(
           manifest->tab_strip->home_tab->get_params()->scope_patterns.size(),
           0u);
-      EXPECT_FALSE(manifest->tab_strip->new_tab_button->is_visibility());
-      EXPECT_FALSE(
-          manifest->tab_strip->new_tab_button->get_params()->url.has_value());
+      EXPECT_FALSE(manifest->tab_strip->new_tab_button->url.has_value());
       EXPECT_EQ(0u, GetErrorCount());
     }
 
@@ -6588,9 +6585,7 @@ TEST_F(ManifestParserTest, TabStripParseRules) {
       EXPECT_EQ(manifest->tab_strip->home_tab->get_visibility(),
                 Visibility::kAuto);
       EXPECT_FALSE(manifest->tab_strip->home_tab->is_params());
-      EXPECT_EQ(manifest->tab_strip->new_tab_button->get_visibility(),
-                Visibility::kAuto);
-      EXPECT_FALSE(manifest->tab_strip->new_tab_button->is_params());
+      EXPECT_FALSE(manifest->tab_strip->new_tab_button->url.has_value());
       EXPECT_EQ(0u, GetErrorCount());
     }
 
@@ -6603,9 +6598,7 @@ TEST_F(ManifestParserTest, TabStripParseRules) {
       EXPECT_EQ(manifest->tab_strip->home_tab->get_visibility(),
                 Visibility::kAuto);
       EXPECT_FALSE(manifest->tab_strip->home_tab->is_params());
-      EXPECT_EQ(manifest->tab_strip->new_tab_button->get_visibility(),
-                Visibility::kAuto);
-      EXPECT_FALSE(manifest->tab_strip->new_tab_button->is_params());
+      EXPECT_FALSE(manifest->tab_strip->new_tab_button->url.has_value());
       EXPECT_EQ(0u, GetErrorCount());
     }
 
@@ -6619,8 +6612,7 @@ TEST_F(ManifestParserTest, TabStripParseRules) {
       EXPECT_FALSE(manifest->tab_strip.is_null());
       EXPECT_FALSE(manifest->tab_strip->home_tab->is_visibility());
       EXPECT_EQ(manifest->tab_strip->home_tab->get_params()->icons.size(), 1u);
-      EXPECT_FALSE(manifest->tab_strip->new_tab_button->is_visibility());
-      EXPECT_EQ(manifest->tab_strip->new_tab_button->get_params()->url,
+      EXPECT_EQ(manifest->tab_strip->new_tab_button->url,
                 KURL(DefaultDocumentUrl(), "foo"));
       EXPECT_EQ(0u, GetErrorCount());
     }
@@ -6631,9 +6623,7 @@ TEST_F(ManifestParserTest, TabStripParseRules) {
           "display_override": [ "tabbed" ],
           "tab_strip": {"new_tab_button": {"url": "https://bar.com"}} })");
       EXPECT_FALSE(manifest->tab_strip.is_null());
-      EXPECT_FALSE(manifest->tab_strip->new_tab_button->is_visibility());
-      EXPECT_FALSE(
-          manifest->tab_strip->new_tab_button->get_params()->url.has_value());
+      EXPECT_FALSE(manifest->tab_strip->new_tab_button->url.has_value());
       EXPECT_EQ(1u, GetErrorCount());
       EXPECT_EQ(
           "property 'url' ignored, should be within scope of the manifest.",
@@ -6649,24 +6639,20 @@ TEST_F(ManifestParserTest, TabStripParseRules) {
       EXPECT_EQ(manifest->tab_strip->home_tab->get_visibility(),
                 Visibility::kAuto);
       EXPECT_FALSE(manifest->tab_strip->home_tab->is_params());
-      EXPECT_EQ(manifest->tab_strip->new_tab_button->get_visibility(),
-                Visibility::kAuto);
-      EXPECT_FALSE(manifest->tab_strip->new_tab_button->is_params());
+      EXPECT_FALSE(manifest->tab_strip->new_tab_button->url.has_value());
       EXPECT_EQ(0u, GetErrorCount());
     }
 
-    // Home tab and new tab button set to 'absent'.
+    // Home tab set to 'absent'.
     {
       auto& manifest = ParseManifest(R"({
           "display_override": [ "tabbed" ],
-          "tab_strip": {"home_tab": "absent", "new_tab_button": "absent"} })");
+          "tab_strip": {"home_tab": "absent"} })");
       EXPECT_FALSE(manifest->tab_strip.is_null());
       EXPECT_EQ(manifest->tab_strip->home_tab->get_visibility(),
                 Visibility::kAbsent);
       EXPECT_FALSE(manifest->tab_strip->home_tab->is_params());
-      EXPECT_EQ(manifest->tab_strip->new_tab_button->get_visibility(),
-                Visibility::kAbsent);
-      EXPECT_FALSE(manifest->tab_strip->new_tab_button->is_params());
+      EXPECT_FALSE(manifest->tab_strip->new_tab_button->url.has_value());
       EXPECT_EQ(0u, GetErrorCount());
     }
 
@@ -6680,9 +6666,7 @@ TEST_F(ManifestParserTest, TabStripParseRules) {
       EXPECT_FALSE(manifest->tab_strip.is_null());
       EXPECT_FALSE(manifest->tab_strip->home_tab->is_visibility());
       EXPECT_EQ(manifest->tab_strip->home_tab->get_params()->icons.size(), 0u);
-      EXPECT_FALSE(manifest->tab_strip->new_tab_button->is_visibility());
-      EXPECT_FALSE(
-          manifest->tab_strip->new_tab_button->get_params()->url.has_value());
+      EXPECT_FALSE(manifest->tab_strip->new_tab_button->url.has_value());
       EXPECT_EQ(0u, GetErrorCount());
     }
   }

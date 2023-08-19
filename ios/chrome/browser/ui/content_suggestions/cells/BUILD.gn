@@ -60,11 +60,9 @@ source_set("cells") {
     "//ui/base",
     "//url",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "content_suggestions_cells_constants.h",
     "content_suggestions_cells_constants.mm",
@@ -92,5 +90,4 @@ source_set("unit_tests") {
     "//ui/base",
     "//url",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

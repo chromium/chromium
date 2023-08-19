@@ -7,8 +7,8 @@
 
 #include <stdint.h>
 
-#include "content/browser/indexed_db/indexed_db_callbacks.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
+#include "content/browser/indexed_db/indexed_db_factory_client.h"
 
 namespace content {
 

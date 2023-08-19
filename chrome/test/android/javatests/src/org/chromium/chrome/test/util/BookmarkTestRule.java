@@ -58,8 +58,7 @@ public class BookmarkTestRule implements TestRule {
     /**
      * Returns the bookmark activity.
      */
-    @Nullable
-    public BookmarkActivity getBookmarkActivity() {
+    public @Nullable BookmarkActivity getBookmarkActivity() {
         return mBookmarkActivity;
     }
 

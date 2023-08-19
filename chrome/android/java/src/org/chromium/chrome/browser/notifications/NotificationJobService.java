@@ -9,8 +9,7 @@ import org.chromium.chrome.browser.base.SplitCompatJobService;
 
 /** See {@link NotificationJobServiceImpl}. */
 public class NotificationJobService extends SplitCompatJobService {
-    @IdentifierNameString
-    private static String sImplClassName =
+    private static @IdentifierNameString String sImplClassName =
             "org.chromium.chrome.browser.notifications.NotificationJobServiceImpl";
 
     public NotificationJobService() {

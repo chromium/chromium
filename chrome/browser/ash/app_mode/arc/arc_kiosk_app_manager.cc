@@ -142,7 +142,7 @@ void ArcKioskAppManager::UpdateAppsFromPolicy() {
   CrosSettings::Get()->GetString(kAccountsPrefDeviceLocalAccountAutoLoginId,
                                  &auto_login_account_id_from_settings);
 
-  // Re-populates |apps_| and reuses existing apps when possible.
+  // Re-populates `apps_` and reuses existing apps when possible.
   const std::vector<policy::DeviceLocalAccount> device_local_accounts =
       policy::GetDeviceLocalAccounts(CrosSettings::Get());
   for (auto account : device_local_accounts) {

@@ -17,7 +17,6 @@
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/skia/include/core/SkDeferredDisplayList.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -47,6 +46,15 @@ class VIZ_SERVICE_EXPORT OverlayCandidateFactory {
  public:
   using CandidateStatus = OverlayCandidate::CandidateStatus;
 
+  struct VIZ_SERVICE_EXPORT OverlayContext {
+    bool is_delegated_context = false;
+    bool supports_clip_rect = false;
+    bool supports_out_of_window_clip_rect = false;
+    bool supports_arbitrary_transform = false;
+    bool supports_rounded_display_masks = false;
+    bool supports_mask_filter = false;
+  };
+
   // The coordinate space of |render_pass| is the target space for candidates
   // produced by this factory.
   OverlayCandidateFactory(
@@ -56,10 +64,7 @@ class VIZ_SERVICE_EXPORT OverlayCandidateFactory {
       const SkM44* output_color_matrix,
       const gfx::RectF primary_rect,
       const OverlayProcessorInterface::FilterOperationsMap* render_pass_filters,
-      bool is_delegated_context = false,
-      bool supports_clip_rect = false,
-      bool supports_arbitrary_transform = false,
-      bool supports_rounded_display_masks = false);
+      const OverlayContext& context);
 
   OverlayCandidateFactory(const OverlayCandidateFactory&) = delete;
   OverlayCandidateFactory& operator=(const OverlayCandidateFactory&) = delete;
@@ -142,16 +147,18 @@ class VIZ_SERVICE_EXPORT OverlayCandidateFactory {
   CandidateStatus DoGeometricClipping(const DrawQuad* quad,
                                       OverlayCandidate& candidate) const;
 
+  // Set |candidate.display_rect| based on |quad|. In delegated contexts, this
+  // will also apply content clipping in the quad, and expand to a render pass's
+  // filter bounds.
+  void SetDisplayRect(const DrawQuad& quad, OverlayCandidate& candidate) const;
+
   raw_ptr<const AggregatedRenderPass> render_pass_;
   raw_ptr<DisplayResourceProvider> resource_provider_;
   raw_ptr<const SurfaceDamageRectList> surface_damage_rect_list_;
   const gfx::RectF primary_rect_;
   raw_ptr<const OverlayProcessorInterface::FilterOperationsMap>
       render_pass_filters_;
-  const bool is_delegated_context_;
-  const bool supports_clip_rect_;
-  const bool supports_arbitrary_transform_;
-  const bool supports_rounded_display_masks_;
+  const OverlayContext context_;
 
   // The union of all surface damages that are not specifically assigned to a
   // draw quad.

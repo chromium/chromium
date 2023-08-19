@@ -4,13 +4,11 @@
 
 #include "device/bluetooth/test/mock_bluetooth_cbcharacteristic_mac.h"
 
-#include "base/mac/foundation_util.h"
-#include "base/mac/scoped_nsobject.h"
+#include "base/apple/foundation_util.h"
 #include "device/bluetooth/bluetooth_gatt_characteristic.h"
 #include "device/bluetooth/test/mock_bluetooth_cbdescriptor_mac.h"
 
-using base::mac::ObjCCast;
-using base::scoped_nsobject;
+using base::apple::ObjCCast;
 
 namespace device {
 
@@ -92,10 +90,10 @@ CBCharacteristicProperties GattCharacteristicPropertyToCBCharacteristicProperty(
 @interface MockCBCharacteristic () {
   // Owner of this instance.
   CBService* _service;
-  scoped_nsobject<CBUUID> _UUID;
+  CBUUID* __strong _UUID;
   CBCharacteristicProperties _cb_properties;
-  scoped_nsobject<NSMutableArray> _descriptors;
-  scoped_nsobject<NSObject> _value;
+  NSMutableArray* __strong _descriptors;
+  NSObject* __strong _value;
   BOOL _notifying;
 }
 @end
@@ -108,11 +106,11 @@ CBCharacteristicProperties GattCharacteristicPropertyToCBCharacteristicProperty(
   self = [super init];
   if (self) {
     _service = service;
-    _UUID.reset([uuid retain]);
+    _UUID = uuid;
     _cb_properties =
         device::GattCharacteristicPropertyToCBCharacteristicProperty(
             properties);
-    _descriptors.reset([[NSMutableArray alloc] init]);
+    _descriptors = [[NSMutableArray alloc] init];
   }
   return self;
 }
@@ -134,7 +132,7 @@ CBCharacteristicProperties GattCharacteristicPropertyToCBCharacteristicProperty(
 }
 
 - (void)simulateReadWithValue:(id)value error:(NSError*)error {
-  _value.reset([value copy]);
+  _value = [value copy];
   CBPeripheral* peripheral = _service.peripheral;
   [peripheral.delegate peripheral:peripheral
       didUpdateValueForCharacteristic:self.characteristic
@@ -181,7 +179,7 @@ CBCharacteristicProperties GattCharacteristicPropertyToCBCharacteristicProperty(
 }
 
 - (void)simulateGattCharacteristicChangedWithValue:(NSData*)value {
-  _value.reset([value copy]);
+  _value = [value copy];
   CBPeripheral* peripheral = _service.peripheral;
   [peripheral.delegate peripheral:peripheral
       didUpdateValueForCharacteristic:self.characteristic
@@ -189,9 +187,9 @@ CBCharacteristicProperties GattCharacteristicPropertyToCBCharacteristicProperty(
 }
 
 - (void)addDescriptorWithUUID:(CBUUID*)uuid {
-  scoped_nsobject<MockCBDescriptor> descriptor_mock([[MockCBDescriptor alloc]
-      initWithCharacteristic:self.characteristic
-                      CBUUID:uuid]);
+  MockCBDescriptor* descriptor_mock =
+      [[MockCBDescriptor alloc] initWithCharacteristic:self.characteristic
+                                                CBUUID:uuid];
   [_descriptors addObject:descriptor_mock];
 }
 

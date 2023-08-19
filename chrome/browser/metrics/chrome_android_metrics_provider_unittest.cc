@@ -7,6 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/flags/android/chrome_session_state.h"
+#include "components/metrics/android_metrics_helper.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
@@ -32,6 +33,7 @@ class ChromeAndroidMetricsProviderTest
     // In case the test played with the activity type, restore it to what it
     // was before the test.
     SetInitialActivityTypeForTesting(orig_activity_type_);
+    ChromeAndroidMetricsProvider::ResetGlobalStateForTesting();
   }
 
   ActivityType activity_type() const { return GetParam(); }
@@ -60,11 +62,11 @@ TEST_F(ChromeAndroidMetricsProviderTest,
 }
 
 TEST_F(ChromeAndroidMetricsProviderTest,
-       ProvideCurrentSessionData_HasMultipleUserProfiles) {
-  metrics_provider_.ProvideCurrentSessionData(&uma_proto_);
+       OnDidCreateMetricsLog_HasMultipleUserProfiles) {
+  metrics_provider_.OnDidCreateMetricsLog();
   histogram_tester_.ExpectTotalCount("Android.MultipleUserProfilesState", 1);
   // Caches value, test a second time.
-  metrics_provider_.ProvideCurrentSessionData(&uma_proto_);
+  metrics_provider_.OnDidCreateMetricsLog();
   histogram_tester_.ExpectTotalCount("Android.MultipleUserProfilesState", 2);
 }
 
@@ -75,6 +77,28 @@ TEST_F(ChromeAndroidMetricsProviderTest,
   // Caches value, test a second time.
   metrics_provider_.ProvidePreviousSessionData(&uma_proto_);
   histogram_tester_.ExpectTotalCount("Android.MultipleUserProfilesState", 2);
+}
+
+TEST_F(ChromeAndroidMetricsProviderTest,
+       OnDidCreateMetricsLog_AndroidMetricsHelper) {
+  metrics_provider_.OnDidCreateMetricsLog();
+  histogram_tester_.ExpectTotalCount("Android.VersionCode", 1);
+  histogram_tester_.ExpectTotalCount("Android.CpuAbiBitnessSupport", 1);
+}
+
+TEST_F(ChromeAndroidMetricsProviderTest,
+       ProvidePreviousSessionData_AndroidMetricsHelper) {
+  metrics_provider_.ProvidePreviousSessionData(&uma_proto_);
+  histogram_tester_.ExpectTotalCount("Android.VersionCode", 0);
+  histogram_tester_.ExpectTotalCount("Android.CpuAbiBitnessSupport", 1);
+}
+
+TEST_F(ChromeAndroidMetricsProviderTest,
+       ProvidePreviousSessionDataWithSavedLocalState_AndroidMetricsHelper) {
+  metrics::AndroidMetricsHelper::SaveLocalState(&pref_service_, 588700002);
+  metrics_provider_.ProvidePreviousSessionData(&uma_proto_);
+  histogram_tester_.ExpectTotalCount("Android.VersionCode", 1);
+  histogram_tester_.ExpectTotalCount("Android.CpuAbiBitnessSupport", 1);
 }
 
 TEST_F(ChromeAndroidMetricsProviderTest,

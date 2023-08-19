@@ -109,6 +109,9 @@ class SurfaceDelegate {
   // Sets the system modality.
   virtual void SetSystemModal(bool modal) = 0;
 
+  // Sets the top inset (header height).
+  virtual void SetTopInset(int height) = 0;
+
   // Returns the SecurityDelegate which this surface should use to perform
   // security-sensitive operations. See go/secure-exo-ids for more information.
   virtual SecurityDelegate* GetSecurityDelegate() = 0;

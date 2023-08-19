@@ -6,28 +6,30 @@
 #define UI_BASE_COCOA_REMOTE_ACCESSIBILITY_API_H_
 
 #import <Cocoa/Cocoa.h>
+
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/mac/scoped_nsobject.h"
+
+// NSAccessibilityRemoteUIElement is a private class in AppKit.
 
 @interface NSAccessibilityRemoteUIElement : NSObject
 + (void)registerRemoteUIProcessIdentifier:(int)pid;
 + (NSData*)remoteTokenForLocalUIElement:(id)element;
 - (id)initWithRemoteToken:(NSData*)token;
-@property(retain) id windowUIElement;
-@property(retain) id topLevelUIElement;
+@property(strong) id windowUIElement;
+@property(strong) id topLevelUIElement;
 @end
 
 namespace ui {
 
-// Helper functions to implement the above functions using std::vectors intsead
+// Helper functions to implement the above functions using std::vectors instead
 // of NSData.
 class COMPONENT_EXPORT(UI_BASE) RemoteAccessibility {
  public:
   static std::vector<uint8_t> GetTokenForLocalElement(id element);
-  static base::scoped_nsobject<NSAccessibilityRemoteUIElement>
-  GetRemoteElementFromToken(const std::vector<uint8_t>& token);
+  static NSAccessibilityRemoteUIElement* GetRemoteElementFromToken(
+      const std::vector<uint8_t>& token);
 };
 
 }  // namespace ui

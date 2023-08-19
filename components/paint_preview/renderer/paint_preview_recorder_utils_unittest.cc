@@ -32,6 +32,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/codec/SkCodec.h"
+#include "third_party/skia/include/codec/SkPngDecoder.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -408,7 +410,11 @@ TEST_P(PaintPreviewRecorderUtilsSerializeAsSkPictureTest,
     sk_canvas.drawColor(SkColors::kRed);
     auto sk_image = SkImages::RasterFromBitmap(bitmap);
     auto data = SkPngEncoder::Encode(nullptr, sk_image.get(), {});
+    CHECK(data);
+    ASSERT_TRUE(SkPngDecoder::IsPng(data->data(), data->size()));
+    SkCodecs::Register(SkPngDecoder::Decoder());
     auto lazy_sk_image = SkImages::DeferredFromEncodedData(data);
+    CHECK(lazy_sk_image);
     ASSERT_TRUE(lazy_sk_image->isLazyGenerated());
     cc::PaintImage paint_image =
         cc::PaintImageBuilder::WithDefault()

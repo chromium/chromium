@@ -12,6 +12,7 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/ash/app_list/search/search_provider.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -85,11 +86,9 @@ class AppSearchDataSource : public apps::AppRegistryCache::Observer {
   // repeatedly calling `Refresh()` during batch updates in app service.
   void ScheduleRefresh();
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
   const raw_ptr<AppListControllerDelegate, ExperimentalAsh> list_controller_;
   const raw_ptr<base::Clock, ExperimentalAsh> clock_;
-
-  const raw_ptr<apps::AppServiceProxy, ExperimentalAsh> proxy_;
 
   base::CallbackListSubscription foreign_session_updated_subscription_;
 
@@ -108,6 +107,10 @@ class AppSearchDataSource : public apps::AppRegistryCache::Observer {
   std::vector<std::unique_ptr<AppInfo>> apps_;
 
   base::RepeatingClosureList app_updates_callback_list_;
+
+  base::ScopedObservation<apps::AppRegistryCache,
+                          apps::AppRegistryCache::Observer>
+      app_registry_cache_observer_{this};
 
   // Weak ptr factory for `ScheduleRefresh()` tasks - used to track and easily
   // cancel scheduled tasks.

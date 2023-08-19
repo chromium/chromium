@@ -17,10 +17,6 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using security_interstitials::UnsafeResource;
 using testing::_;
 
@@ -31,10 +27,12 @@ class MockQueryManagerObserver : public SafeBrowsingQueryManager::Observer {
   MockQueryManagerObserver() {}
   ~MockQueryManagerObserver() override {}
 
-  MOCK_METHOD3(SafeBrowsingQueryFinished,
+  MOCK_METHOD4(SafeBrowsingQueryFinished,
                void(SafeBrowsingQueryManager*,
                     const SafeBrowsingQueryManager::Query&,
-                    const SafeBrowsingQueryManager::Result&));
+                    const SafeBrowsingQueryManager::Result&,
+                    safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck
+                        performed_check));
 
   // Override rather than mocking so that the observer can remove itself.
   void SafeBrowsingQueryManagerDestroyed(
@@ -106,7 +104,7 @@ class SafeBrowsingQueryManagerTest
 // Tests a query for a safe URL.
 TEST_P(SafeBrowsingQueryManagerTest, SafeURLQuery) {
   GURL url("http://chromium.test");
-  EXPECT_CALL(observer_, SafeBrowsingQueryFinished(manager(), _, _))
+  EXPECT_CALL(observer_, SafeBrowsingQueryFinished(manager(), _, _, _))
       .WillOnce(VerifyQueryFinished(url, http_method_, navigation_item_id_,
                                     /*is_url_safe=*/true));
 
@@ -120,7 +118,7 @@ TEST_P(SafeBrowsingQueryManagerTest, SafeURLQuery) {
 // Tests a query for an unsafe URL.
 TEST_P(SafeBrowsingQueryManagerTest, UnsafeURLQuery) {
   GURL url("http://" + FakeSafeBrowsingService::kUnsafeHost);
-  EXPECT_CALL(observer_, SafeBrowsingQueryFinished(manager(), _, _))
+  EXPECT_CALL(observer_, SafeBrowsingQueryFinished(manager(), _, _, _))
       .WillOnce(VerifyQueryFinished(url, http_method_, navigation_item_id_,
                                     /*is_url_safe=*/false));
 
@@ -142,7 +140,7 @@ TEST_P(SafeBrowsingQueryManagerTest, UnsafeURLQuery) {
 // UnsafeResource on both queries.
 TEST_P(SafeBrowsingQueryManagerTest, MultipleUnsafeURLQueries) {
   GURL url("http://" + FakeSafeBrowsingService::kUnsafeHost);
-  EXPECT_CALL(observer_, SafeBrowsingQueryFinished(manager(), _, _))
+  EXPECT_CALL(observer_, SafeBrowsingQueryFinished(manager(), _, _, _))
       .Times(2)
       .WillRepeatedly(VerifyQueryFinished(url, http_method_,
                                           navigation_item_id_,
@@ -169,7 +167,7 @@ TEST_P(SafeBrowsingQueryManagerTest, MultipleUnsafeURLQueries) {
 // queries that match the UnsafeResource's URL.
 TEST_P(SafeBrowsingQueryManagerTest, StoreUnsafeResourceMultipleQueries) {
   GURL url("http://" + FakeSafeBrowsingService::kUnsafeHost);
-  EXPECT_CALL(observer_, SafeBrowsingQueryFinished(manager(), _, _))
+  EXPECT_CALL(observer_, SafeBrowsingQueryFinished(manager(), _, _, _))
       .Times(2)
       .WillRepeatedly(VerifyQueryFinished(url, http_method_,
                                           navigation_item_id_,
@@ -218,7 +216,9 @@ class WebStateDestroyingQueryManagerObserver
   void SafeBrowsingQueryFinished(
       SafeBrowsingQueryManager* query_manager,
       const SafeBrowsingQueryManager::Query& query,
-      const SafeBrowsingQueryManager::Result& result) override {
+      const SafeBrowsingQueryManager::Result& result,
+      safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check)
+      override {
     web_state_.reset();
   }
 

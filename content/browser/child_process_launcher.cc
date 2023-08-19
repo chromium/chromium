@@ -148,14 +148,15 @@ void ChildProcessLauncher::SetRenderProcessPriority(
           helper_, std::move(to_pass), priority));
 }
 #else   // !BUILDFLAG(IS_ANDROID)
-void ChildProcessLauncher::SetProcessBackgrounded(bool is_background) {
+void ChildProcessLauncher::SetProcessPriority(
+    base::Process::Priority priority) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   base::Process to_pass = process_.process.Duplicate();
   GetProcessLauncherTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &ChildProcessLauncherHelper::SetProcessBackgroundedOnLauncherThread,
-          helper_, std::move(to_pass), is_background));
+          &ChildProcessLauncherHelper::SetProcessPriorityOnLauncherThread,
+          helper_, std::move(to_pass), priority));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

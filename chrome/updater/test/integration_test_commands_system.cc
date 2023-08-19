@@ -88,11 +88,14 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
 
   void EnterTestMode(const GURL& update_url,
                      const GURL& crash_upload_url,
-                     const GURL& device_management_url) const override {
+                     const GURL& device_management_url,
+                     const base::TimeDelta& idle_timeout) const override {
     RunCommand("enter_test_mode",
                {Param("update_url", update_url.spec()),
                 Param("crash_upload_url", crash_upload_url.spec()),
-                Param("device_management_url", device_management_url.spec())});
+                Param("device_management_url", device_management_url.spec()),
+                Param("idle_timeout",
+                      base::NumberToString(idle_timeout.InSeconds()))});
   }
 
   void ExitTestMode() const override { RunCommand("exit_test_mode"); }
@@ -100,6 +103,11 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
   void SetGroupPolicies(const base::Value::Dict& values) const override {
     RunCommand("set_group_policies",
                {Param("values", StringFromValue(base::Value(values.Clone())))});
+  }
+
+  void SetMachineManaged(bool is_managed_device) const override {
+    RunCommand("set_machine_managed",
+               {Param("managed", is_managed_device ? "true" : "false")});
   }
 
   void ExpectSelfUpdateSequence(ScopedServer* test_server) const override {
@@ -130,6 +138,18 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     updater::test::ExpectUpdateSequence(updater_scope_, test_server, app_id,
                                         install_data_index, priority,
                                         from_version, to_version);
+  }
+
+  void ExpectUpdateSequenceBadHash(
+      ScopedServer* test_server,
+      const std::string& app_id,
+      const std::string& install_data_index,
+      UpdateService::Priority priority,
+      const base::Version& from_version,
+      const base::Version& to_version) const override {
+    updater::test::ExpectUpdateSequenceBadHash(
+        updater_scope_, test_server, app_id, install_data_index, priority,
+        from_version, to_version);
   }
 
   void ExpectInstallSequence(ScopedServer* test_server,
@@ -218,6 +238,12 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
 
   void RunCrashMe() const override { RunCommand("run_crash_me", {}); }
 
+  void RunServer(int expected_exit_code, bool internal) const override {
+    RunCommand("run_server",
+               {Param("internal", internal ? "true" : "false"),
+                Param("exit_code", base::NumberToString(expected_exit_code))});
+  }
+
   void CheckForUpdate(const std::string& app_id) const override {
     RunCommand("check_for_update", {Param("app_id", app_id)});
   }
@@ -230,6 +256,14 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
 
   void UpdateAll() const override { RunCommand("update_all", {}); }
 
+  void GetAppStates(
+      const base::Value::Dict& expected_app_states) const override {
+    RunCommand(
+        "get_app_states",
+        {Param("expected_app_states",
+               StringFromValue(base::Value(expected_app_states.Clone())))});
+  }
+
   void DeleteUpdaterDirectory() const override {
     RunCommand("delete_updater_directory", {});
   }
@@ -238,8 +272,10 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     RunCommand("delete_file", {Param("path", path.MaybeAsASCII())});
   }
 
-  void InstallApp(const std::string& app_id) const override {
-    RunCommand("install_app", {Param("app_id", app_id)});
+  void InstallApp(const std::string& app_id,
+                  const base::Version& version) const override {
+    RunCommand("install_app", {Param("app_id", app_id),
+                               Param("version", version.GetString())});
   }
 
   bool WaitForUpdaterExit() const override {
@@ -358,6 +394,13 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
   void RunOfflineInstall(bool is_legacy_install,
                          bool is_silent_install) override {
     RunCommand("run_offline_install",
+               {Param("legacy_install", is_legacy_install ? "true" : "false"),
+                Param("silent", is_silent_install ? "true" : "false")});
+  }
+
+  void RunOfflineInstallOsNotSupported(bool is_legacy_install,
+                                       bool is_silent_install) override {
+    RunCommand("run_offline_install_os_not_supported",
                {Param("legacy_install", is_legacy_install ? "true" : "false"),
                 Param("silent", is_silent_install ? "true" : "false")});
   }

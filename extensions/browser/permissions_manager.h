@@ -180,8 +180,9 @@ class PermissionsManager : public KeyedService {
   ExtensionSiteAccess GetSiteAccess(const Extension& extension,
                                     const GURL& url) const;
 
-  // Returns whether the extension requests host permissions.
-  bool ExtensionRequestsHostPermissions(const Extension& extension) const;
+  // Returns whether the extension requests host permissions or activeTab.
+  bool ExtensionRequestsHostPermissionsOrActiveTab(
+      const Extension& extension) const;
 
   // Returns true if the associated extension can be affected by
   // runtime host permissions.
@@ -255,6 +256,11 @@ class PermissionsManager : public KeyedService {
   // Returns the subset of active permissions which can be withheld for a given
   // `extension`.
   std::unique_ptr<const PermissionSet> GetRevokablePermissions(
+      const Extension& extension) const;
+
+  // Returns the current set of granted permissions for the extension. Note that
+  // permissions that are specified but withheld will not be returned.
+  std::unique_ptr<const PermissionSet> GetExtensionGrantedPermissions(
       const Extension& extension) const;
 
   // Notifies `observers_` that the permissions have been updated for an

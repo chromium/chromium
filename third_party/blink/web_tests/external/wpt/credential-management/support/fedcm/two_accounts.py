@@ -9,6 +9,10 @@ def main(request, response):
     return (533, [], "Should not have Referer")
   if request.headers.get(b"Origin"):
     return (534, [], "Should not have Origin")
+  if request.headers.get(b"Sec-Fetch-Mode") != b"no-cors":
+    return (535, [], "Wrong Sec-Fetch-Mode header")
+  if request.headers.get(b"Sec-Fetch-Site") != b"none":
+    return (536, [], "Wrong Sec-Fetch-Site header")
 
   response.headers.set(b"Content-Type", b"application/json")
 
@@ -29,9 +33,10 @@ def main(request, response):
    "name": "John Doe",
    "email": "john_doe@idp.example",
    "picture": "https://idp.example/profile/123",
-   "approved_clients": ["123", "456", "789"]
+   "approved_clients": ["123", "456", "789"],
+   "login_hints": ["john_doe"],
+   "hosted_domains": ["idp.example", "example"]
   }
   ]
 }
 """
-

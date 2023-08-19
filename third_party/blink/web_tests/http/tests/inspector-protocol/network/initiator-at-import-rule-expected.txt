@@ -1,0 +1,11 @@
+Tests that the initiator position is precise on @import style rules
+initiator type: parser
+initiator url:http://127.0.0.1:8000/inspector-protocol/resources/stylesheet-loading-issues.html 4:43
+error: net::ERR_ABORTED (canceled: true)
+initiator type: parser
+initiator url:http://127.0.0.1:8000/inspector-protocol/resources/stylesheet-loading-issues.html 12:11
+error: net::ERR_ABORTED (canceled: true)
+initiator type: parser
+initiator url:http://127.0.0.1:8000/inspector-protocol/resources/stylesheet-loading-issues.css 3:1
+error: net::ERR_ABORTED (canceled: true)
+

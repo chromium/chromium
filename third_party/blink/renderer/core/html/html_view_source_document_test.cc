@@ -518,4 +518,41 @@ TEST_F(HTMLViewSourceDocumentTest, UnfinishedScript) {
       "html>");
 }
 
+TEST_F(HTMLViewSourceDocumentTest, Linebreak) {
+  LoadMainResource("<html>\nR\n\rN\n\nNR\n\n\rRN\n\r\n</html>");
+  EXPECT_EQ(
+      GetDocument().documentElement()->outerHTML(),
+      "<html><head><meta name=\"color-scheme\" content=\"light dark\"></head>"
+      "<body><div class=\"line-gutter-backdrop\"></div>"
+      "<form autocomplete=\"off\"><label class=\"line-wrap-control\">"
+      "<input type=\"checkbox\"></label></form>"
+      "<table><tbody>"
+      "<tr><td class=\"line-number\" value=\"1\"></td>"
+      "<td class=\"line-content\">"
+      "<span class=\"html-tag\">&lt;html&gt;</span></td></tr>"
+      "<tr><td class=\"line-number\" value=\"2\"></td>"
+      "<td class=\"line-content\">R</td></tr>"  // \r -> 1 linebreak
+      "<tr><td class=\"line-number\" value=\"3\"></td>"
+      "<td class=\"line-content\"><br></td></tr>"
+      "<tr><td class=\"line-number\" value=\"4\"></td>"
+      "<td class=\"line-content\">N</td></tr>"  // \n -> 1 linebraek
+      "<tr><td class=\"line-number\" value=\"5\"></td>"
+      "<td class=\"line-content\"><br></td></tr><tr>"
+      "<td class=\"line-number\" value=\"6\"></td>"
+      "<td class=\"line-content\">NR</td></tr>"  // \n\r -> 2 linebreaks
+      "<tr><td class=\"line-number\" value=\"7\"></td>"
+      "<td class=\"line-content\"><br></td></tr>"
+      "<tr><td class=\"line-number\" value=\"8\"></td>"
+      "<td class=\"line-content\"><br></td></tr>"
+      "<tr><td class=\"line-number\" value=\"9\"></td>"
+      "<td class=\"line-content\">RN</td></tr>"  // \r\n -> 1 linebreak
+      "<tr><td class=\"line-number\" value=\"10\"></td>"
+      "<td class=\"line-content\"><br></td></tr>"
+      "<tr><td class=\"line-number\" value=\"11\"></td>"
+      "<td class=\"line-content\">"
+      "<span class=\"html-tag\">&lt;/html&gt;</span>"
+      "<span class=\"html-end-of-file\"></span>"
+      "</td></tr></tbody></table></body></html>");
+}
+
 }  // namespace blink

@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
@@ -14,6 +15,7 @@
 #include "base/task/task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "dbus/bus.h"
+#include "dbus/error.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "dbus/scoped_dbus_error.h"
@@ -42,7 +44,7 @@ bool ExportedObject::ExportMethodAndBlock(
   // Check if the method is already exported.
   const std::string absolute_method_name =
       GetAbsoluteMemberName(interface_name, method_name);
-  if (method_table_.find(absolute_method_name) != method_table_.end()) {
+  if (base::Contains(method_table_, absolute_method_name)) {
     LOG(ERROR) << absolute_method_name << " is already exported";
     return false;
   }
@@ -196,18 +198,16 @@ bool ExportedObject::Register() {
   if (object_is_registered_)
     return true;
 
-  ScopedDBusError error;
+  Error error;
 
   DBusObjectPathVTable vtable = {};
   vtable.message_function = &ExportedObject::HandleMessageThunk;
   vtable.unregister_function = &ExportedObject::OnUnregisteredThunk;
-  const bool success = bus_->TryRegisterObjectPath(object_path_,
-                                                   &vtable,
-                                                   this,
-                                                   error.get());
+  const bool success =
+      bus_->TryRegisterObjectPath(object_path_, &vtable, this, &error);
   if (!success) {
     LOG(ERROR) << "Failed to register the object: " << object_path_.value()
-               << ": " << (error.is_set() ? error.message() : "");
+               << ": " << error.message();
     return false;
   }
 

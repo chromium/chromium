@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_NETWORK_SESSION_CONFIGURATOR_BROWSER_NETWORK_SESSION_CONFIGURATOR_H_
 #define COMPONENTS_NETWORK_SESSION_CONFIGURATOR_BROWSER_NETWORK_SESSION_CONFIGURATOR_H_
 
-#include <string>
-
 #include "net/quic/quic_context.h"
 #include "net/url_request/url_request_context_builder.h"
 
@@ -27,7 +25,6 @@ namespace network_session_configurator {
 // and forcing (policy or other command line) arguments.
 void ParseCommandLineAndFieldTrials(const base::CommandLine& command_line,
                                     bool is_quic_force_disabled,
-                                    const std::string& quic_user_agent_id,
                                     net::HttpNetworkSessionParams* params,
                                     net::QuicParams* quic_params);
 

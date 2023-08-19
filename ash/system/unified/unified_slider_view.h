@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/vector_icon_types.h"
-#include "ui/views/controls/image_view.h"
 
 namespace gfx {
 struct VectorIcon;
@@ -54,6 +53,7 @@ class UnifiedSliderView : public views::View {
  public:
   METADATA_HEADER(UnifiedSliderView);
 
+  // `is_togglable` determines whether `slider_button_` is togglable or not.
   // If `read_only` is set, the slider will not accept any user events.
   // `slider_style` is `kDefaultSliderStyle` by default. `kRadioSliderStyle`
   // should be set explicitly.
@@ -61,6 +61,7 @@ class UnifiedSliderView : public views::View {
                     UnifiedSliderListener* listener,
                     const gfx::VectorIcon& icon,
                     int accessible_name_id,
+                    bool is_togglable = true,
                     bool read_only = false,
                     QuickSettingsSlider::Style slider_style =
                         QuickSettingsSlider::Style::kDefault);
@@ -84,6 +85,7 @@ class UnifiedSliderView : public views::View {
  private:
   raw_ptr<const gfx::VectorIcon, ExperimentalAsh> icon_;
   views::Button::PressedCallback callback_;
+  const bool is_togglable_;
 
   // Unowned. Owned by views hierarchy.
   raw_ptr<IconButton, ExperimentalAsh> button_ = nullptr;

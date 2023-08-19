@@ -96,8 +96,6 @@ class ContentBrowserClientImpl : public content::ContentBrowserClient {
                                    blink::mojom::WebFeature feature) override;
   std::string GetProduct() override;
   std::string GetUserAgent() override;
-  std::string GetFullUserAgent() override;
-  std::string GetReducedUserAgent() override;
   blink::UserAgentMetadata GetUserAgentMetadata() override;
   void OverrideWebkitPrefs(content::WebContents* web_contents,
                            blink::web_pref::WebPreferences* prefs) override;
@@ -117,6 +115,12 @@ class ContentBrowserClientImpl : public content::ContentBrowserClient {
       const base::RepeatingCallback<content::WebContents*()>& wc_getter,
       content::NavigationUIData* navigation_ui_data,
       int frame_tree_node_id) override;
+  std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
+  CreateURLLoaderThrottlesForKeepAlive(
+      const network::ResourceRequest& request,
+      content::BrowserContext* browser_context,
+      const base::RepeatingCallback<content::WebContents*()>& wc_getter,
+      int frame_tree_node_id) override;
   bool IsHandledURL(const GURL& url) override;
   std::vector<url::Origin> GetOriginsRequiringDedicatedProcess() override;
   bool MayReuseHost(content::RenderProcessHost* process_host) override;
@@ -132,6 +136,7 @@ class ContentBrowserClientImpl : public content::ContentBrowserClient {
       content::ChildProcessSecurityPolicy::IsolatedOriginSource source)
       override;
   base::OnceClosure SelectClientCertificate(
+      content::BrowserContext* browser_context,
       content::WebContents* web_contents,
       net::SSLCertRequestInfo* cert_request_info,
       net::ClientCertIdentityList client_certs,
@@ -243,6 +248,11 @@ class ContentBrowserClientImpl : public content::ContentBrowserClient {
 
   std::unique_ptr<permissions::BluetoothDelegateImpl> bluetooth_delegate_;
 #endif
+  std::unique_ptr<blink::URLLoaderThrottle>
+  MaybeCreateSafeBrowsingURLLoaderThrottle(
+      content::BrowserContext* browser_context,
+      const base::RepeatingCallback<content::WebContents*()>& wc_getter,
+      int frame_tree_node_id);
 
   raw_ptr<MainParams> params_;
 

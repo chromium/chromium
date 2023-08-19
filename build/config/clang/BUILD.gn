@@ -2,7 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/rust.gni")
 import("clang.gni")
+
+if (is_ios) {
+  import("//build/config/ios/config.gni")  # For `target_environment`
+}
 
 config("find_bad_constructs") {
   if (clang_use_chrome_plugins) {
@@ -43,17 +48,20 @@ config("find_bad_constructs") {
         "-Xclang",
         "check-raw-ptr-fields",
 
-        # TODO(keishi): Remove this once crrev.com/c/4387753 is rolled out.
+        # TODO(mikt): Remove this once crbug.com/1449812 is resolved.
         "-Xclang",
         "-plugin-arg-find-bad-constructs",
         "-Xclang",
-        "raw-ptr-exclude-path=base/no_destructor.h",
+        "raw-ptr-exclude-path=um/winnt.h",
+      ]
+    }
 
-        # TODO(keishi): Remove this once crrev.com/c/4086161 lands.
+    if (enable_check_raw_ref_fields) {
+      cflags += [
         "-Xclang",
         "-plugin-arg-find-bad-constructs",
         "-Xclang",
-        "raw-ptr-exclude-path=base/containers/span.h",
+        "check-raw-ref-fields",
       ]
     }
   }
@@ -77,5 +85,127 @@ group("llvm-symbolizer_data") {
     data = [ "$clang_base_path/bin/llvm-symbolizer.exe" ]
   } else {
     data = [ "$clang_base_path/bin/llvm-symbolizer" ]
+  }
+}
+
+template("clang_lib") {
+  if (!defined(invoker.libname)) {
+    not_needed(invoker, "*")
+    config(target_name) {
+    }
+  } else {
+    config(target_name) {
+      _dir = ""
+      _libname = invoker.libname
+      _prefix = "lib"
+      _suffix = ""
+      _ext = "a"
+      if (is_win) {
+        _dir = "windows"
+        _prefix = ""
+        _ext = "lib"
+        if (current_cpu == "x64") {
+          _suffix = "-x86_64"
+        } else if (current_cpu == "x86") {
+          _suffix = "-i386"
+        } else if (current_cpu == "arm64") {
+          _suffix = "-aarch64"
+        } else {
+          assert(false)  # Unhandled cpu type
+        }
+      } else if (is_apple) {
+        _dir = "darwin"
+      } else if (is_linux || is_chromeos) {
+        if (current_cpu == "x64") {
+          _dir = "x86_64-unknown-linux-gnu"
+        } else if (current_cpu == "x86") {
+          _dir = "i386-unknown-linux-gnu"
+        } else if (current_cpu == "arm") {
+          _dir = "armv7-unknown-linux-gnueabihf"
+        } else if (current_cpu == "arm64") {
+          _dir = "aarch64-unknown-linux-gnu"
+        } else {
+          assert(false)  # Unhandled cpu type
+        }
+      } else if (is_fuchsia) {
+        if (current_cpu == "x64") {
+          _dir = "x86_64-unknown-fuchsia"
+        } else if (current_cpu == "arm64") {
+          _dir = "aarch64-unknown-fuchsia"
+        } else {
+          assert(false)  # Unhandled cpu type
+        }
+      } else if (is_android) {
+        _dir = "linux"
+        if (current_cpu == "x64") {
+          _suffix = "-x86_64-android"
+        } else if (current_cpu == "x86") {
+          _suffix = "-i686-android"
+        } else if (current_cpu == "arm") {
+          _suffix = "-arm-android"
+        } else if (current_cpu == "arm64") {
+          _suffix = "-aarch64-android"
+        } else if (current_cpu == "riscv64") {
+          _suffix = "-riscv64-android"
+        } else {
+          assert(false)  # Unhandled cpu type
+        }
+      } else {
+        assert(false)  # Unhandled target platform
+      }
+
+      _clang_lib_dir = "$clang_base_path/lib/clang/$clang_version/lib"
+      _lib_file = "${_prefix}clang_rt.${_libname}${_suffix}.${_ext}"
+      libs = [ "$_clang_lib_dir/$_dir/$_lib_file" ]
+    }
+  }
+}
+
+# Adds a dependency on the Clang runtime library clang_rt.builtins.
+clang_lib("compiler_builtins") {
+  if (!toolchain_has_rust) {
+    # Since there's no Rust in the toolchain, there's no concern that we'll use
+    # the Rust stdlib's intrinsics here.
+    #
+    # Don't define libname which makes this target do nothing.
+  } else if (is_mac) {
+    libname = "osx"
+  } else if (is_ios) {
+    if (target_environment == "simulator") {
+      libname = "iossim"
+    } else if (target_environment == "catalyst") {
+      libname = "osx"
+    } else {
+      libname = "ios"
+    }
+  } else {
+    libname = "builtins"
+  }
+}
+
+# Adds a dependency on the Clang runtime library clang_rt.profile.
+clang_lib("compiler_profile") {
+  if (!toolchain_has_rust) {
+    # This is only used when `toolchain_has_rust` to support Rust linking.
+    #
+    # Don't define libname which makes this target do nothing.
+  } else if (is_mac) {
+    libname = "profile_osx"
+  } else if (is_ios) {
+    if (target_environment == "simulator") {
+      libname = "profile_iossim"
+    } else if (target_environment == "catalyst") {
+      # We don't enable clang coverage on iOS device builds, and the library is
+      # not part of the Clang package tarball as a result.
+      #
+      # Don't define libname which makes this target do nothing.
+    } else {
+      # We don't enable clang coverage on iOS device builds, and the library is
+      # not part of the Clang package tarball as a result.
+      #
+      # Don't define libname which makes this target do nothing.
+    }
+  } else {
+    libname = "profile"
   }
 }

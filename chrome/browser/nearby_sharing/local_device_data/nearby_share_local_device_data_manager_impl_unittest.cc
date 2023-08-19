@@ -22,6 +22,7 @@
 #include "chromeos/ash/components/nearby/common/scheduling/nearby_scheduler_factory.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -270,7 +271,7 @@ TEST_F(NearbyShareLocalDeviceDataManagerImplTest, DeviceId) {
   std::string id = manager()->GetId();
   EXPECT_EQ(10u, id.size());
   for (const char c : id)
-    EXPECT_TRUE(std::isalnum(c));
+    EXPECT_TRUE(absl::ascii_isalnum(static_cast<unsigned char>(c)));
 
   // The ID is persisted.
   DestroyManager();

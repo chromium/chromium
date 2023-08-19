@@ -42,7 +42,7 @@ TEST_F(LocalCaretRectTest, DOMAndFlatTrees) {
   SetBodyContent(body_content);
   SetShadowContent(shadow_content, "host");
 
-  Element* one = GetDocument().getElementById("one");
+  Element* one = GetDocument().getElementById(AtomicString("one"));
 
   const LocalCaretRect& caret_rect_from_dom_tree = LocalCaretRectOfPosition(
       PositionWithAffinity(Position(one->firstChild(), 0)));
@@ -544,7 +544,7 @@ TEST_F(LocalCaretRectTest, CaretRectAtBR) {
   LoadAhem();
   SetBodyContent(
       "<div style='font: 10px/10px Ahem; width: 30px'><br>foo</div>");
-  const Element& br = *GetDocument().QuerySelector("br");
+  const Element& br = *GetDocument().QuerySelector(AtomicString("br"));
 
   EXPECT_EQ(LocalCaretRect(br.GetLayoutObject(), PhysicalRect(0, 0, 1, 10)),
             LocalCaretRectOfPosition(PositionWithAffinity(
@@ -558,7 +558,7 @@ TEST_F(LocalCaretRectTest, CaretRectAtRtlBR) {
   SetBodyContent(
       "<bdo dir=rtl style='display: block; font: 10px/10px Ahem; width: 30px'>"
       "<br>foo</bdo>");
-  const Element& br = *GetDocument().QuerySelector("br");
+  const Element& br = *GetDocument().QuerySelector(AtomicString("br"));
 
   EXPECT_EQ(LocalCaretRect(br.GetLayoutObject(), PhysicalRect(29, 0, 1, 10)),
             LocalCaretRectOfPosition(PositionWithAffinity(
@@ -827,7 +827,7 @@ TEST_F(LocalCaretRectTest, AbsoluteCaretBoundsOfWithShadowDOM) {
   SetShadowContent(shadow_content, "host");
 
   Element* body = GetDocument().body();
-  Element* one = body->QuerySelector("#one");
+  Element* one = body->QuerySelector(AtomicString("#one"));
 
   gfx::Rect bounds_in_dom_tree = AbsoluteCaretBoundsOf(
       CreateVisiblePosition(Position(one, 0)).ToPositionWithAffinity());
@@ -843,7 +843,7 @@ TEST_F(LocalCaretRectTest, AbsoluteCaretBoundsOfWithShadowDOM) {
 TEST_F(LocalCaretRectTest, AbsoluteSelectionBoundsOfWithImage) {
   SetBodyContent("<div>foo<img></div>");
 
-  Node* node = GetDocument().QuerySelector("img");
+  Node* node = GetDocument().QuerySelector(AtomicString("img"));
   gfx::Rect rect = AbsoluteSelectionBoundsOf(VisiblePosition::Create(
       PositionWithAffinity(Position::LastPositionInNode(*node))));
   EXPECT_FALSE(rect.IsEmpty());
@@ -1007,7 +1007,7 @@ TEST_F(LocalCaretRectTest, NextLineWithoutLeafChild) {
       "foo"
       "</div>");
 
-  const Element& br = *GetDocument().QuerySelector("br");
+  const Element& br = *GetDocument().QuerySelector(AtomicString("br"));
   EXPECT_EQ(
       PhysicalRect(50, 10, 1, 10),
       LocalCaretRectOfPosition(PositionWithAffinity(Position::AfterNode(br)))
@@ -1038,8 +1038,9 @@ TEST_F(LocalCaretRectTest, RtlMeterNoCrash) {
   // Shouldn't crash inside
   const LocalCaretRect local_caret_rect =
       LocalCaretRectOfPosition(PositionWithAffinity(position));
-  EXPECT_EQ(GetDocument().QuerySelector("meter")->GetLayoutObject(),
-            local_caret_rect.layout_object);
+  EXPECT_EQ(
+      GetDocument().QuerySelector(AtomicString("meter"))->GetLayoutObject(),
+      local_caret_rect.layout_object);
 }
 
 // https://crbug.com/883044
@@ -1061,7 +1062,7 @@ TEST_F(LocalCaretRectTest, AfterIneditableInline) {
   InsertStyleElement("div { font: 10px/10px Ahem }");
   SetBodyContent(
       "<div contenteditable><span contenteditable=\"false\">foo</span></div>");
-  const Element* div = GetDocument().QuerySelector("div");
+  const Element* div = GetDocument().QuerySelector(AtomicString("div"));
   const Node* text = div->firstChild()->firstChild();
 
   const Position position = Position::LastPositionInNode(*div);
@@ -1077,12 +1078,55 @@ TEST_F(LocalCaretRectTest, LocalCaretAtBeginningOfNonEditable) {
       "span { padding-left: 15px }");
   SetBodyContent(
       "<div contenteditable><span contenteditable=\"false\">foo</span></div>");
-  const Element* div = GetDocument().QuerySelector("div");
+  const Element* div = GetDocument().QuerySelector(AtomicString("div"));
   const Element* span = To<Element>(div->firstChild());
   const Node* text = span->firstChild();
 
   const Position& position = Position::FirstPositionInNode(*div);
   EXPECT_EQ(LocalCaretRect(text->GetLayoutObject(), PhysicalRect(25, 0, 1, 10)),
+            LocalCaretRectOf(position, kCanCrossEditingBoundary));
+  EXPECT_EQ(LocalCaretRect(span->GetLayoutObject(), PhysicalRect(10, 0, 1, 10)),
+            LocalCaretRectOf(position, kCannotCrossEditingBoundary));
+}
+
+// http://crbug.com/1456664
+TEST_F(LocalCaretRectTest,
+       LocalCaretAtBeginningOfNonEditableWithCollapsedWhitespace) {
+  LoadAhem();
+  InsertStyleElement(
+      "div { width: 70px; padding-left: 10px; font: 10px/10px Ahem }"
+      "span { padding-left: 15px }");
+  // Note the space before the span!
+  SetBodyContent(
+      "<div contenteditable> <span contenteditable=\"false\">foo</span></div>");
+  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  const Element* span = div->firstElementChild();
+  const Node* text = span->firstChild();
+
+  const Position& position = Position::FirstPositionInNode(*div);
+  EXPECT_EQ(LocalCaretRect(text->GetLayoutObject(), PhysicalRect(25, 0, 1, 10)),
+            LocalCaretRectOf(position, kCanCrossEditingBoundary));
+  EXPECT_EQ(LocalCaretRect(span->GetLayoutObject(), PhysicalRect(10, 0, 1, 10)),
+            LocalCaretRectOf(position, kCannotCrossEditingBoundary));
+}
+
+// http://crbug.com/1384470
+TEST_F(LocalCaretRectTest, LocalCaretAtBeginningOfNonEditableWithSvg) {
+  LoadAhem();
+  InsertStyleElement(
+      "div { width: 70px; padding-left: 10px; font: 10px/10px Ahem }"
+      "span { padding-left: 15px }"
+      "svg { vertical-align: text-bottom; }");
+  // Note the space before the span!
+  SetBodyContent(
+      "<div contenteditable> <span contenteditable=\"false\">"
+      "<svg width=\"30\" height=\"10\"></svg></span></div>");
+  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  const Element* span = div->firstElementChild();
+
+  const Position& position = Position::FirstPositionInNode(*div);
+  // TODO(abotella): Should be (0, 0), with the svg as the layout object.
+  EXPECT_EQ(LocalCaretRect(div->GetLayoutObject(), PhysicalRect(10, 0, 1, 10)),
             LocalCaretRectOf(position, kCanCrossEditingBoundary));
   EXPECT_EQ(LocalCaretRect(span->GetLayoutObject(), PhysicalRect(10, 0, 1, 10)),
             LocalCaretRectOf(position, kCannotCrossEditingBoundary));
@@ -1102,7 +1146,7 @@ TEST_F(LocalCaretRectTest, LocalCaretAtBeginningOfNonEditableInFlatTree) {
       "<span contenteditable='false' id='foo2'>foo2</span>";
   SetBodyContent(body_content);
   SetShadowContent(shadow_content, "host");
-  const Element* target = GetDocument().getElementById("host");
+  const Element* target = GetDocument().getElementById(AtomicString("host"));
   const Element* foo1_span = To<Element>(target->firstChild());
   const Node* foo1 = foo1_span->firstChild();
 
@@ -1140,7 +1184,7 @@ TEST_F(LocalCaretRectTest, LocalCaretAtEndOfNonEditable) {
       "span { padding: 15px }");
   SetBodyContent(
       "<div contenteditable><span contenteditable=\"false\">foo</span></div>");
-  const Element* div = GetDocument().QuerySelector("div");
+  const Element* div = GetDocument().QuerySelector(AtomicString("div"));
   const Element* span = To<Element>(div->firstChild());
   const Node* text = span->firstChild();
 
@@ -1148,6 +1192,52 @@ TEST_F(LocalCaretRectTest, LocalCaretAtEndOfNonEditable) {
   EXPECT_EQ(
       LocalCaretRect(text->GetLayoutObject(), PhysicalRect(55, 10, 1, 10)),
       LocalCaretRectOf(position, kCanCrossEditingBoundary));
+  EXPECT_EQ(
+      LocalCaretRect(span->GetLayoutObject(), PhysicalRect(69, 10, 1, 10)),
+      LocalCaretRectOf(position, kCannotCrossEditingBoundary));
+}
+
+// http://crbug.com/1456664
+TEST_F(LocalCaretRectTest,
+       LocalCaretAtEndOfNonEditableWithCollapsedWhitespace) {
+  LoadAhem();
+  InsertStyleElement(
+      "div { width: 70px; padding: 10px; font: 10px/10px Ahem }"
+      "span { padding: 15px }");
+  // Note the space after the span!
+  SetBodyContent(
+      "<div contenteditable><span contenteditable=\"false\">foo</span> </div>");
+  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  const Element* span = To<Element>(div->firstChild());
+  const Node* text = span->firstChild();
+
+  const Position& position = Position::LastPositionInNode(*div);
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(55, 10, 1, 10)),
+      LocalCaretRectOf(position, kCanCrossEditingBoundary));
+  EXPECT_EQ(
+      LocalCaretRect(span->GetLayoutObject(), PhysicalRect(69, 10, 1, 10)),
+      LocalCaretRectOf(position, kCannotCrossEditingBoundary));
+}
+
+// http://crbug.com/1384470
+TEST_F(LocalCaretRectTest, LocalCaretAtEndOfNonEditableWithSvg) {
+  LoadAhem();
+  InsertStyleElement(
+      "div { width: 70px; padding: 10px; font: 10px/10px Ahem }"
+      "span { padding: 15px }"
+      "svg { vertical-align: text-bottom; }");
+  // Note the space after the span!
+  SetBodyContent(
+      "<div contenteditable><span contenteditable=\"false\">"
+      "<svg width=\"30\" height=\"10\"></svg></span> </div>");
+  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  const Element* span = To<Element>(div->firstChild());
+  const Element* svg = To<Element>(span->firstChild());
+
+  const Position& position = Position::LastPositionInNode(*div);
+  EXPECT_EQ(LocalCaretRect(svg->GetLayoutObject(), PhysicalRect(29, 0, 1, 10)),
+            LocalCaretRectOf(position, kCanCrossEditingBoundary));
   EXPECT_EQ(
       LocalCaretRect(span->GetLayoutObject(), PhysicalRect(69, 10, 1, 10)),
       LocalCaretRectOf(position, kCannotCrossEditingBoundary));
@@ -1167,8 +1257,8 @@ TEST_F(LocalCaretRectTest, LocalCaretAtEndOfNonEditableInFlatTree) {
       "<span contenteditable='false' id='foo2'>foo2</span>";
   SetBodyContent(body_content);
   auto* shadow_root = SetShadowContent(shadow_content, "host");
-  const Element* target = GetDocument().getElementById("host");
-  const Element* foo2_span = shadow_root->getElementById("foo2");
+  const Element* target = GetDocument().getElementById(AtomicString("host"));
+  const Element* foo2_span = shadow_root->getElementById(AtomicString("foo2"));
   const Node* foo2 = foo2_span->firstChild();
 
   const Position& position = Position::LastPositionInNode(*target);
@@ -1214,7 +1304,7 @@ TEST_F(LocalCaretRectTest, AbsoluteCaretAtEndOfNonEditable) {
   SetBodyContent(
       "<div contenteditable><span contenteditable=\"false\">foo</span></div>");
 
-  const Element* div = GetDocument().QuerySelector("div");
+  const Element* div = GetDocument().QuerySelector(AtomicString("div"));
   const Position& position = Position::LastPositionInNode(*div);
   EXPECT_EQ("60,5 1x10",
             AbsoluteCaretBoundsOf(PositionWithAffinity(position), nullptr,
@@ -1236,7 +1326,7 @@ TEST_F(LocalCaretRectTest, AbsoluteCaretAtBeginningOfNonEditable) {
   SetBodyContent(
       "<div contenteditable><span contenteditable=\"false\">foo</span></div>");
 
-  const Element* div = GetDocument().QuerySelector("div");
+  const Element* div = GetDocument().QuerySelector(AtomicString("div"));
   const Position& position = Position::FirstPositionInNode(*div);
   EXPECT_EQ("30,5 1x10",
             AbsoluteCaretBoundsOf(PositionWithAffinity(position), nullptr,
@@ -1256,7 +1346,7 @@ TEST_F(LocalCaretRectTest, OptionWithDisplayContents) {
       "option { display: contents; }");
   SetBodyContent("<option>a</option>");
   const Element* body = GetDocument().body();
-  const Element* option = GetDocument().QuerySelector("option");
+  const Element* option = GetDocument().QuerySelector(AtomicString("option"));
   LocalCaretRect empty;
   LocalCaretRect start(body->GetLayoutObject(), PhysicalRect(0, 0, 1, 10));
   LocalCaretRect end(body->GetLayoutObject(), PhysicalRect(299, 0, 1, 10));
@@ -1414,7 +1504,7 @@ TEST_F(LocalCaretRectTest,
       "span { padding: 10px; font: 10px/10px Ahem }");
   SetBodyContent(
       "<div contenteditable><span contenteditable=false>foo</span> bar</div>");
-  const Element& div = *GetDocument().QuerySelector("div");
+  const Element& div = *GetDocument().QuerySelector(AtomicString("div"));
   const Element& span = *To<Element>(div.firstChild());
   const Text& text = *To<Text>(span.firstChild());
 
@@ -1432,7 +1522,7 @@ TEST_F(LocalCaretRectTest, LocalCaretAtEndOfNonEditableWithDifferentFontSizes) {
       "span { padding: 15px; font: 15px/15px Ahem }");
   SetBodyContent(
       "<div contenteditable>foo <span contenteditable=false>bar</span></div>");
-  const Element& div = *GetDocument().QuerySelector("div");
+  const Element& div = *GetDocument().QuerySelector(AtomicString("div"));
   const Element& span = *To<Element>(div.lastChild());
   const Text& text = *To<Text>(span.firstChild());
 
@@ -1455,7 +1545,7 @@ TEST_F(LocalCaretRectTest, AbsoluteCaretAtStartOrEndOfNonEditableBidi) {
   SetBodyContent(
       "<div dir=rtl contenteditable><span contenteditable=false>"
       "<bdo dir=ltr>abc</bdo> <bdo dir=rtl>ABC</bdo></span></div>");
-  const Element& div = *GetDocument().QuerySelector("div");
+  const Element& div = *GetDocument().QuerySelector(AtomicString("div"));
 
   const Position& startPosition = Position::FirstPositionInNode(div);
   EXPECT_EQ("95,10 1x10",
@@ -1487,7 +1577,7 @@ TEST_F(LocalCaretRectTest, AbsoluteCaretAtStartOrEndOfNonEditableBidiCulled) {
   SetBodyContent(
       "<div dir=rtl contenteditable><span contenteditable=false>"
       "<bdo dir=ltr>abc</bdo> <bdo dir=rtl>ABC</bdo></span></div>");
-  const Element& div = *GetDocument().QuerySelector("div");
+  const Element& div = *GetDocument().QuerySelector(AtomicString("div"));
 
   const Position& startPosition = Position::FirstPositionInNode(div);
   EXPECT_EQ("95,10 1x10",

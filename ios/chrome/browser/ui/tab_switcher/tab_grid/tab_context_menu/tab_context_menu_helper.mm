@@ -25,10 +25,6 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/web/public/web_state.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using PinnedState = WebStateSearchCriteria::PinnedState;
 
 @interface TabContextMenuHelper ()
@@ -158,13 +154,12 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
     }
   }
 
-  // Thumb strip, pinned tabs, inactive tabs and search results menus don't
+  // Pinned tabs, inactive tabs and search results menus don't
   // support tab selection.
   BOOL scenarioDisablesSelection =
       scenario == MenuScenarioHistogram::kTabGridSearchResult ||
       scenario == MenuScenarioHistogram::kPinnedTabsEntry ||
-      scenario == MenuScenarioHistogram::kInactiveTabsEntry ||
-      scenario == MenuScenarioHistogram::kThumbStrip;
+      scenario == MenuScenarioHistogram::kInactiveTabsEntry;
   if (!scenarioDisablesSelection) {
     [menuElements addObject:[actionFactory actionToSelectTabsWithBlock:^{
                     [self.contextMenuDelegate selectTabs];

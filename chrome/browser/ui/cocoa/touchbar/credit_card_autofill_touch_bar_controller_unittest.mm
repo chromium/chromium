@@ -25,10 +25,6 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/test/scoped_default_font_description.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace autofill {
 
 namespace {
@@ -52,11 +48,11 @@ class CreditCardAutofillTouchBarControllerUnitTest : public CocoaTest {
   }
 
   void SetSuggestions(
-      const std::vector<Suggestion::FrontendId>& frontends_ids) {
+      const std::vector<autofill::PopupItemId>& popup_item_ids) {
     std::vector<Suggestion> suggestions;
-    suggestions.reserve(frontends_ids.size());
-    for (Suggestion::FrontendId frontend_id : frontends_ids) {
-      suggestions.emplace_back("", "", "", frontend_id);
+    suggestions.reserve(popup_item_ids.size());
+    for (autofill::PopupItemId popup_item_id : popup_item_ids) {
+      suggestions.emplace_back("", "", "", popup_item_id);
     }
     SetSuggestions(std::move(suggestions));
   }
@@ -78,8 +74,8 @@ TEST_F(CreditCardAutofillTouchBarControllerUnitTest, TouchBar) {
   EXPECT_FALSE([touch_bar_controller_ makeTouchBar]);
 
   [touch_bar_controller_ setIsCreditCardPopup:true];
-  SetSuggestions({Suggestion::FrontendId(PopupItemId::kCreditCardEntry),
-                  Suggestion::FrontendId(PopupItemId::kCreditCardEntry)});
+  SetSuggestions(
+      {PopupItemId::kCreditCardEntry, PopupItemId::kCreditCardEntry});
   NSTouchBar* touch_bar = [touch_bar_controller_ makeTouchBar];
   EXPECT_TRUE(touch_bar);
   EXPECT_TRUE([[touch_bar customizationIdentifier]
@@ -90,10 +86,9 @@ TEST_F(CreditCardAutofillTouchBarControllerUnitTest, TouchBar) {
 // Tests to check that the touch bar doesn't show more than 3 items
 TEST_F(CreditCardAutofillTouchBarControllerUnitTest, TouchBarCardLimit) {
   [touch_bar_controller_ setIsCreditCardPopup:true];
-  SetSuggestions({Suggestion::FrontendId(PopupItemId::kCreditCardEntry),
-                  Suggestion::FrontendId(PopupItemId::kCreditCardEntry),
-                  Suggestion::FrontendId(PopupItemId::kCreditCardEntry),
-                  Suggestion::FrontendId(PopupItemId::kCreditCardEntry)});
+  SetSuggestions({PopupItemId::kCreditCardEntry, PopupItemId::kCreditCardEntry,
+                  PopupItemId::kCreditCardEntry,
+                  PopupItemId::kCreditCardEntry});
   NSTouchBar* touch_bar = [touch_bar_controller_ makeTouchBar];
   EXPECT_TRUE(touch_bar);
   EXPECT_TRUE([[touch_bar customizationIdentifier]
@@ -111,9 +106,8 @@ TEST_F(CreditCardAutofillTouchBarControllerUnitTest, TouchBarCardLimit) {
 // Tests for for the credit card button.
 TEST_F(CreditCardAutofillTouchBarControllerUnitTest, CreditCardButtonCheck) {
   [touch_bar_controller_ setIsCreditCardPopup:true];
-  SetSuggestions(
-      {Suggestion("bufflehead", "canvasback", "goldeneye",
-                  Suggestion::FrontendId(PopupItemId::kCreditCardEntry))});
+  SetSuggestions({Suggestion("bufflehead", "canvasback", "goldeneye",
+                             PopupItemId::kCreditCardEntry)});
   NSButton* button = [touch_bar_controller_ createCreditCardButtonAtRow:0];
   EXPECT_TRUE(button);
   EXPECT_EQ(0, [button tag]);

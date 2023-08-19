@@ -1,11 +1,15 @@
 include_rules = [
   "+chrome/browser/browser_controls/android",
+  "+chrome/browser/history/web_history_service_factory.h",
+  "+chrome/browser/profiles/profile_android.h",
   "+chrome/browser/tab",
   "+chrome/browser/tabmodel",
   "+components/browser_ui/bottomsheet/android",
   "+components/browser_ui/widget/android",
   "+components/embedder_support/android",
+  "+components/history/core/browser/web_history_service.h",
   "+content/public/android",
+  "+net/traffic_annotation/network_traffic_annotation.h",
   "+ui/android",
   "+url/android",
 ]

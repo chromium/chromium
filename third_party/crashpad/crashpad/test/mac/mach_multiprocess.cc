@@ -21,8 +21,8 @@
 #include <string>
 #include <tuple>
 
+#include "base/apple/scoped_mach_port.h"
 #include "base/auto_reset.h"
-#include "base/mac/scoped_mach_port.h"
 #include "gtest/gtest.h"
 #include "test/errors.h"
 #include "test/mac/mach_errors.h"
@@ -64,9 +64,9 @@ struct MachMultiprocessInfo {
   }
 
   std::string service_name;
-  base::mac::ScopedMachReceiveRight local_port;
-  base::mac::ScopedMachSendRight remote_port;
-  base::mac::ScopedMachSendRight child_task;  // valid only in parent
+  base::apple::ScopedMachReceiveRight local_port;
+  base::apple::ScopedMachSendRight remote_port;
+  base::apple::ScopedMachSendRight child_task;  // valid only in parent
 };
 
 }  // namespace internal

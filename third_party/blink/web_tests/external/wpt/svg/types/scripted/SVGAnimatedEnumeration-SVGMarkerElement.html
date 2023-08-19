@@ -62,7 +62,7 @@ test(function() {
   assert_equals(markerElement.orientType.baseVal, SVGMarkerElement.SVG_MARKER_ORIENT_AUTO);
 
   // Switch to 'Pi/2 rad' value - via setOrientToAngle().
-  anglePiHalfRad = createSVGAngle();
+  let anglePiHalfRad = createSVGAngle();
   anglePiHalfRad.newValueSpecifiedUnits(SVGAngle.SVG_ANGLETYPE_RAD, (Math.PI / 2).toFixed(2));
   markerElement.setOrientToAngle(anglePiHalfRad);
   assert_equals(markerElement.orientAngle.baseVal.value.toFixed(1), "90.0");
@@ -78,7 +78,7 @@ test(function() {
   assert_equals(markerElement.getAttribute('orient'), "auto");
 
   // Switch to '20deg' value - via setOrientToAngle().
-  angle20deg = createSVGAngle();
+  let angle20deg = createSVGAngle();
   angle20deg.newValueSpecifiedUnits(SVGAngle.SVG_ANGLETYPE_DEG, 20);
   markerElement.setOrientToAngle(angle20deg);
   assert_equals(markerElement.orientAngle.baseVal.value, 20);
@@ -137,6 +137,12 @@ test(function() {
   markerElement.setAttribute('orient', '1turn');
   assert_equals(markerElement.orientAngle.baseVal.value, 360);
   assert_equals(markerElement.orientAngle.baseVal.unitType, SVGAngle.SVG_ANGLETYPE_UNKNOWN);
+
+  let angle = createSVGAngle();
+  angle = markerElement.orientAngle.baseVal;
+  angle.value = 720;
+  markerElement.setOrientToAngle(angle);
+  assert_equals(markerElement.getAttribute('orient'), "2turn");
 }, "Test turn units");
 
 test(function() {

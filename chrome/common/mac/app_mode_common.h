@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/macros/concat.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/strings/stringize_macros.h"
 
@@ -25,10 +26,8 @@
 #define APP_SHIM_VERSION_NUMBER 7
 
 // All the other macro magic to make APP_SHIM_VERSION_NUMBER usable.
-#define APP_MODE_CONCAT(a, b) a##b
-#define APP_MODE_CONCAT2(a, b) APP_MODE_CONCAT(a, b)
 #define APP_SHIM_ENTRY_POINT_NAME \
-  APP_MODE_CONCAT2(ChromeAppModeStart_v, APP_SHIM_VERSION_NUMBER)
+  BASE_CONCAT(ChromeAppModeStart_v, APP_SHIM_VERSION_NUMBER)
 #define APP_SHIM_ENTRY_POINT_NAME_STRING STRINGIZE(APP_SHIM_ENTRY_POINT_NAME)
 
 namespace app_mode {

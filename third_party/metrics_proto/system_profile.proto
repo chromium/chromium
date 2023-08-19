@@ -17,7 +17,7 @@ import "extension_install.proto";
 // Almost all the fields should be populated on every upload. (The only
 // exception is some fields in the stability section that are only uploaded
 // once per browsing session, usually shortly after startup.)
-// Next tag: 44
+// Next tag: 46
 message SystemProfileProto {
   // The time when the client was compiled/linked, in seconds since the epoch.
   optional int64 build_timestamp = 1;
@@ -267,7 +267,7 @@ message SystemProfileProto {
   optional OS os = 5;
 
   // Information on the user's hardware.
-  // Next tag: 27
+  // Next tag: 28
   message Hardware {
     // OS CPU architecture. Common options are: x86, x86_64, arm64, armv7,
     // armv7l, armv8l and aarch64.
@@ -498,6 +498,10 @@ message SystemProfileProto {
     // Firmware version of the TPM on the device. This field is only filled in
     // on ChromeOS devices (both CrOS and LaCrOS platforms).
     optional uint64 tpm_firmware_version = 26;
+
+    // RW Firmware version of the TPM on the device. This field is only filled
+    // in on ChromeOS devices.
+    optional string tpm_rw_firmware_version = 27;
   }
   optional Hardware hardware = 6;
 
@@ -1165,6 +1169,23 @@ message SystemProfileProto {
   // not set this field, which will result in the default value of UNKNOWN.
   optional ClientSideSamplingStatus client_side_sampling_status = 43;
 
+  enum MetricsFilteringStatus {
+    // Not expected to be reported explicitly, used when the field was not set.
+    METRICS_UNKNOWN = 0;
+    // Client is reporting all recorded histograms and user actions.
+    METRICS_ALL = 1;
+    // Client is reporting only a chosen set of histogrms and user actions.
+    // The semantics of METRICS_ONLY_CRITICAL may vary by platform and evolve
+    // over time.
+    METRICS_ONLY_CRITICAL = 2;
+  }
+
+  // Specifies whether metrics filtering was applied on the client. Metrics
+  // filtering applies to both histograms and user actions. The chosen metrics
+  // to filter may vary by platform and evolve over time. Older clients will not
+  // set this field, which will result in the default value of METRICS_UNKNOWN.
+  optional MetricsFilteringStatus metrics_filtering_status = 44;
+
   // The package which installed Chrome, as reported by
   // PackageManager.getInstallerPackageName().
   enum InstallerPackage {
@@ -1222,4 +1243,24 @@ message SystemProfileProto {
     repeated CustomizationFacet customization_facet = 3 [packed = true];
   }
   optional DemoModeDimensions demo_mode_dimensions = 41;
+
+  // LTSChannel indicates whether ChromeOS is running an lts channel.
+  // https://chromium.googlesource.com/chromiumos/docs/+/HEAD/releases.md#channels
+  enum LTSChannel {
+    // This field was not set.
+    LTS_CHANNEL_UNKNOWN = 0;
+    // ChromeOS is running stable-channel and not lts.
+    LTS_CHANNEL_STABLE = 1;
+    // ChromeOS is running ltc-channel.
+    LTS_CHANNEL_LTC = 2;
+    // ChromeOS is running lts-channel.
+    LTS_CHANNEL_LTS = 3;
+  }
+
+  // Report whether ChromeOS is running ltc or lts channel.
+  // Instead of extending the Channel enum, we report stable-channel and use
+  // this separate field to filter out for ltc or lts. Most UMA users are not
+  // aware of the existence of lts and we would lose monitoring for many Chrome
+  // features.
+  optional LTSChannel lts_channel = 45;
 }

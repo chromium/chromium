@@ -25,8 +25,10 @@ constexpr size_t kMaxBitmapSizeBytes = 4 * (16384 * 8192);
 // bytes. If |viewport_size| is not a valid size then this will return false.
 bool GetViewportSizeInBytes(const gfx::Size& viewport_size, size_t* out_bytes) {
   size_t bytes;
-  if (!ResourceSizes::MaybeSizeInBytes(viewport_size, RGBA_8888, &bytes))
+  if (!ResourceSizes::MaybeSizeInBytes(viewport_size,
+                                       SinglePlaneFormat::kRGBA_8888, &bytes)) {
     return false;
+  }
   if (bytes > kMaxBitmapSizeBytes)
     return false;
   *out_bytes = bytes;

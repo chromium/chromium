@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_sync_bridge.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
@@ -20,6 +21,8 @@ struct EntityData;
 class MetadataChangeList;
 class ModelError;
 }  // namespace syncer
+
+namespace webauthn {
 
 // Sync bridge implementation for WEBAUTHN_CREDENTIAL model type.
 class PasskeySyncBridge : public syncer::ModelTypeSyncBridge,
@@ -48,12 +51,18 @@ class PasskeySyncBridge : public syncer::ModelTypeSyncBridge,
                                    delete_metadata_change_list) override;
 
   // PasskeyModel:
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
   base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetModelTypeControllerDelegate() override;
   base::flat_set<std::string> GetAllSyncIds() const override;
   std::vector<sync_pb::WebauthnCredentialSpecifics> GetAllPasskeys()
       const override;
+  std::vector<sync_pb::WebauthnCredentialSpecifics>
+  GetPasskeysForRelyingPartyId(const std::string& rp_id) const override;
   bool DeletePasskey(const std::string& credential_id) override;
+  bool UpdatePasskey(const std::string& credential_id,
+                     PasskeyChange change) override;
   std::string AddNewPasskeyForTesting(
       sync_pb::WebauthnCredentialSpecifics passkey) override;
 
@@ -68,6 +77,7 @@ class PasskeySyncBridge : public syncer::ModelTypeSyncBridge,
       const absl::optional<syncer::ModelError>& error,
       std::unique_ptr<syncer::MetadataBatch> metadata_batch);
   void OnStoreCommitWriteBatch(const absl::optional<syncer::ModelError>& error);
+  void NotifyPasskeysChanged();
 
   // Local view of the stored data. Indexes specifics protos by storage key.
   std::map<std::string, sync_pb::WebauthnCredentialSpecifics> data_;
@@ -75,7 +85,11 @@ class PasskeySyncBridge : public syncer::ModelTypeSyncBridge,
   // Passkeys are stored locally in leveldb.
   std::unique_ptr<syncer::ModelTypeStore> store_;
 
+  base::ObserverList<Observer> observers_;
+
   base::WeakPtrFactory<PasskeySyncBridge> weak_ptr_factory_{this};
 };
+
+}  // namespace webauthn
 
 #endif  // COMPONENTS_WEBAUTHN_CORE_BROWSER_PASSKEY_SYNC_BRIDGE_H_

@@ -6,7 +6,6 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "base/mac/scoped_nsobject.h"
 #include "ui/gfx/image/image.h"
 
 namespace gfx {
@@ -14,26 +13,27 @@ namespace gfx {
 bool JPEG1xEncodedDataFromImage(const Image& image,
                                 int quality,
                                 std::vector<unsigned char>* dst) {
-  if (!image.HasRepresentation(gfx::Image::kImageRepCocoa))
+  if (!image.HasRepresentation(gfx::Image::kImageRepCocoa)) {
     return JPEG1xEncodedDataFromSkiaRepresentation(image, quality, dst);
+  }
 
   NSImage* nsImage = image.ToNSImage();
-
-  CGImageRef cgImage =
-      [nsImage CGImageForProposedRect:nil context:nil hints:nil];
-  base::scoped_nsobject<NSBitmapImageRep> rep(
-      [[NSBitmapImageRep alloc] initWithCGImage:cgImage]);
+  CGImageRef cgImage = [nsImage CGImageForProposedRect:nil
+                                               context:nil
+                                                 hints:nil];
+  NSBitmapImageRep* rep = [[NSBitmapImageRep alloc] initWithCGImage:cgImage];
 
   float compressionFactor = quality / 100.0;
-  NSDictionary* options = @{ NSImageCompressionFactor : @(compressionFactor)};
+  NSDictionary* options = @{NSImageCompressionFactor : @(compressionFactor)};
   NSData* data = [rep representationUsingType:NSBitmapImageFileTypeJPEG
                                    properties:options];
 
-  if ([data length] == 0)
+  if (data.length == 0) {
     return false;
+  }
 
-  dst->resize([data length]);
-  [data getBytes:&dst->at(0) length:[data length]];
+  dst->resize(data.length);
+  [data getBytes:&dst->at(0) length:data.length];
   return true;
 }
 

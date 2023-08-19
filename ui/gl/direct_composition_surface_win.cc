@@ -47,15 +47,18 @@ DirectCompositionSurfaceWin::DirectCompositionSurfaceWin(
     VSyncCallback vsync_callback,
     const Settings& settings)
     : GLSurfaceEGL(display),
+      d3d11_device_(GetDirectCompositionD3D11Device()),
       vsync_callback_(std::move(vsync_callback)),
       vsync_thread_(VSyncThreadWin::GetInstance()),
       task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       max_pending_frames_(settings.max_pending_frames),
       root_surface_(new DirectCompositionChildSurfaceWin(
           display,
+          d3d11_device_,
           settings.use_angle_texture_offset)),
       layer_tree_(std::make_unique<DCLayerTree>(
           settings.disable_nv12_dynamic_textures,
+          settings.disable_vp_auto_hdr,
           settings.disable_vp_scaling,
           settings.disable_vp_super_resolution,
           settings.force_dcomp_triple_buffer_video_swap_chain,
@@ -71,11 +74,9 @@ bool DirectCompositionSurfaceWin::Initialize(GLSurfaceFormat format) {
     return false;
   }
 
-  d3d11_device_ = QueryD3D11DeviceObjectFromANGLE();
-
   child_window_.Initialize();
 
-  if (!layer_tree_->Initialize(window())) {
+  if (!layer_tree_->Initialize(window(), d3d11_device_)) {
     return false;
   }
 

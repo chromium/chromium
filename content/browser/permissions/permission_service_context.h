@@ -69,8 +69,8 @@ class CONTENT_EXPORT PermissionServiceContext
   void CreateSubscription(
       blink::PermissionType permission_type,
       const url::Origin& origin,
-      blink::mojom::PermissionStatus current_status,
-      blink::mojom::PermissionStatus last_known_status,
+      PermissionStatus current_status,
+      PermissionStatus last_known_status,
       mojo::PendingRemote<blink::mojom::PermissionObserver> observer);
 
   // Called when the connection to a PermissionObserver has an error.

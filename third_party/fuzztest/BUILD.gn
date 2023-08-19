@@ -15,6 +15,8 @@ source_set("centipede_runner_no_main") {
     "src/centipede/byte_array_mutator.cc",
     "src/centipede/byte_array_mutator.h",
     "src/centipede/defs.h",
+    "src/centipede/execution_metadata.cc",
+    "src/centipede/execution_metadata.h",
     "src/centipede/execution_request.cc",
     "src/centipede/execution_request.h",
     "src/centipede/execution_result.cc",
@@ -68,12 +70,29 @@ source_set("centipede_weak_sancov_stubs") {
   sources = [ "src/centipede/weak_sancov_stubs.cc" ]
 }
 
+source_set("fuzztest_internal") {
+  sources = [
+    "src/fuzztest/internal/coverage.cc",
+    "src/fuzztest/internal/coverage.h",
+    "src/fuzztest/internal/logging.cc",
+    "src/fuzztest/internal/logging.h",
+    "src/fuzztest/internal/type_support.cc",
+    "src/fuzztest/internal/type_support.h",
+  ]
+  configs -= fuzzing_engine_remove_configs
+  configs += fuzzing_engine_add_configs
+  include_dirs = [ "src" ]
+  deps = [ "//third_party/abseil-cpp:absl" ]
+}
+
 executable("centipede") {
   configs += [ ":centipede_internal_config" ]
   configs -= fuzzing_engine_remove_configs
   configs += fuzzing_engine_add_configs
   include_dirs = [ "src" ]
   deps = [
+    ":fuzztest_internal",
+
     # Depend on fuzzing_engine_no_main so that we are automatically built in builds
     # destined for ClusterFuzz.
     "//testing/libfuzzer:fuzzing_engine",
@@ -105,7 +124,11 @@ executable("centipede") {
     "src/centipede/corpus.cc",
     "src/centipede/coverage.cc",
     "src/centipede/defs.h",
+    "src/centipede/distill.cc",
+    "src/centipede/distill.h",
     "src/centipede/environment.cc",
+    "src/centipede/execution_metadata.cc",
+    "src/centipede/execution_metadata.h",
     "src/centipede/execution_request.cc",
     "src/centipede/execution_request.h",
     "src/centipede/execution_result.cc",
@@ -114,6 +137,8 @@ executable("centipede") {
     "src/centipede/feature.h",
     "src/centipede/feature_set.cc",
     "src/centipede/feature_set.h",
+    "src/centipede/fuzztest_mutator.cc",
+    "src/centipede/fuzztest_mutator.h",
     "src/centipede/hash.cc",
     "src/centipede/knobs.cc",
     "src/centipede/knobs.h",
@@ -122,17 +147,7 @@ executable("centipede") {
     "src/centipede/minimize_crash.cc",
     "src/centipede/remote_file.cc",
     "src/centipede/reverse_pc_table.h",
-    "src/centipede/runner.cc",
-    "src/centipede/runner.h",
     "src/centipede/runner_cmp_trace.h",
-    "src/centipede/runner_dl_info.cc",
-    "src/centipede/runner_dl_info.h",
-    "src/centipede/runner_fork_server.cc",
-    "src/centipede/runner_interceptors.cc",
-    "src/centipede/runner_interface.h",
-    "src/centipede/runner_sancov.cc",
-    "src/centipede/runner_utils.cc",
-    "src/centipede/runner_utils.h",
     "src/centipede/rusage_profiler.cc",
     "src/centipede/rusage_stats.cc",
     "src/centipede/shard_reader.cc",

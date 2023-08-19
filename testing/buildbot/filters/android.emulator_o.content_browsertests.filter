@@ -1,0 +1,6 @@
+# crbug.com/1463808
+-FormControlsBrowserTest.MultiSelect
+-FormControlsBrowserTest.Select
+
+# crbug.com/1344391
+-All/SitePerProcessBrowserTest.KeyboardScrollBubblingFromOOPIF/*

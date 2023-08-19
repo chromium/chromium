@@ -15,7 +15,7 @@
       <div slot="tab" id="csbrr">Client Safe Browsing Report Requests</h1></div>
       <div slot="tab" id="cpr">Client Phishing Requests</h1></div>
       <div slot="tab" id="password-protection">Password Protection</h1></div>
-      <div slot="tab" id="rt-lookup">RT Lookup</div>
+      <div slot="tab" id="urt-lookup">URT Lookup</div>
       <div slot="tab" id="referrer-chain">Referrer Chain</div>
       <div slot="tab" id="log">Log Messages</div>
 <if expr="not is_android">
@@ -24,6 +24,7 @@
       <div slot="tab" id="hash-cache">Hash Cache</div>
       <div slot="tab" id="download-protection">Download Protection</div>
       <div slot="tab" id="deep-scan">Deep Scans</div>
+      <div slot="tab" id="hprt-lookup">HPRT Lookup</div>
 </if>
       <div slot="panel">
         <h2>Experiments</h2>
@@ -80,8 +81,8 @@
         <table id="pg-ping-list" class="request-response"></table>
       </div>
       <div slot="panel">
-        <h2>RT Lookup Pings</h2>
-        <table id="rt-lookup-ping-list" class="request-response"></table>
+        <h2>URT Lookup Pings</h2>
+        <table id="urt-lookup-ping-list" class="request-response"></table>
       </div>
       <div slot="panel">
         <h2>Referrer Chain</h2>
@@ -139,6 +140,10 @@
       <div slot="panel">
         <h2>Deep Scans</h2>
         <table id="deep-scan-list" class="request-response"></table>
+      </div>
+      <div slot="panel">
+        <h2>HPRT Lookup Pings</h2>
+        <table id="hprt-lookup-ping-list" class="request-response"></table>
       </div>
 </if>
     </cr-tab-box>

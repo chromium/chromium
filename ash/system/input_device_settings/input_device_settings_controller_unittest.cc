@@ -288,9 +288,11 @@ class InputDeviceSettingsControllerTest : public NoSessionAshTestBase {
     session_controller->Reset();
 
     auto user_1_prefs = std::make_unique<TestingPrefServiceSimple>();
-    RegisterUserProfilePrefs(user_1_prefs->registry(), /*for_test=*/true);
+    RegisterUserProfilePrefs(user_1_prefs->registry(), /*country=*/"",
+                             /*for_test=*/true);
     auto user_2_prefs = std::make_unique<TestingPrefServiceSimple>();
-    RegisterUserProfilePrefs(user_2_prefs->registry(), /*for_test=*/true);
+    RegisterUserProfilePrefs(user_2_prefs->registry(), /*country=*/"",
+                             /*for_test=*/true);
     session_controller->AddUserSession(kUserEmail1,
                                        user_manager::USER_TYPE_REGULAR,
                                        /*provide_pref_service=*/false);
@@ -342,8 +344,8 @@ class InputDeviceSettingsControllerTest : public NoSessionAshTestBase {
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   std::unique_ptr<InputDeviceSettingsController::ScopedResetterForTest>
       scoped_resetter_;
-  raw_ptr<FakeKeyboardPrefHandler, ExperimentalAsh> keyboard_pref_handler_ =
-      nullptr;
+  raw_ptr<FakeKeyboardPrefHandler, DanglingUntriaged | ExperimentalAsh>
+      keyboard_pref_handler_ = nullptr;
 };
 
 TEST_F(InputDeviceSettingsControllerTest, KeyboardAddingOne) {
@@ -396,7 +398,8 @@ TEST_F(InputDeviceSettingsControllerTest, DeletesPrefsWhenFlagDisabled) {
 
   std::unique_ptr<TestingPrefServiceSimple> pref_service =
       std::make_unique<TestingPrefServiceSimple>();
-  ash::RegisterUserProfilePrefs(pref_service->registry(), /*for_test=*/true);
+  ash::RegisterUserProfilePrefs(pref_service->registry(), /*country=*/"",
+                                /*for_test=*/true);
 
   base::Value::Dict test_pref_value;
   test_pref_value.Set("Fake Key", base::Value::Dict());
@@ -428,7 +431,8 @@ TEST_F(InputDeviceSettingsControllerTest,
   feature_list.InitAndDisableFeature(
       features::kAltClickAndSixPackCustomization);
   auto user_prefs = std::make_unique<TestingPrefServiceSimple>();
-  RegisterUserProfilePrefs(user_prefs->registry(), /*for_test=*/true);
+  RegisterUserProfilePrefs(user_prefs->registry(), /*country=*/"",
+                           /*for_test=*/true);
 
   base::Value::Dict test_pref_value;
   base::Value::Dict six_pack_remappings_dict;
@@ -457,7 +461,8 @@ TEST_F(InputDeviceSettingsControllerTest,
   feature_list.InitAndDisableFeature(
       features::kAltClickAndSixPackCustomization);
   auto user_prefs = std::make_unique<TestingPrefServiceSimple>();
-  RegisterUserProfilePrefs(user_prefs->registry(), /*for_test=*/true);
+  RegisterUserProfilePrefs(user_prefs->registry(), /*country=*/"",
+                           /*for_test=*/true);
 
   base::Value::Dict test_pref_value;
   base::Value::Dict six_pack_remappings_dict;
@@ -790,7 +795,8 @@ TEST_F(InputDeviceSettingsControllerTest,
   // Test when policy status is kRecommended.
   std::unique_ptr<TestingPrefServiceSimple> pref_service =
       std::make_unique<TestingPrefServiceSimple>();
-  ash::RegisterUserProfilePrefs(pref_service->registry(), /*for_test=*/true);
+  ash::RegisterUserProfilePrefs(pref_service->registry(), /*country=*/"",
+                                /*for_test=*/true);
   controller_->OnActiveUserPrefServiceChanged(pref_service.get());
   pref_service->SetRecommendedPref(prefs::kSendFunctionKeys,
                                    base::Value(kDefaultTopRowAreFKeys));
@@ -821,8 +827,7 @@ TEST_F(InputDeviceSettingsControllerTest,
       Shell::Get()->session_controller()->GetActivePrefService());
 }
 
-TEST_F(InputDeviceSettingsControllerTest,
-       RestoreDefaultKeyboardModifierRemappings) {
+TEST_F(InputDeviceSettingsControllerTest, RestoreDefaultKeyboardRemappings) {
   base::HistogramTester histogram_tester;
 
   ui::DeviceDataManagerTestApi().SetKeyboardDevices({kSampleKeyboardInternal});
@@ -839,7 +844,7 @@ TEST_F(InputDeviceSettingsControllerTest,
       controller_->GetKeyboardSettings((DeviceId)kSampleKeyboardInternal.id)
           ->modifier_remappings.size(),
       1u);
-  controller_->RestoreDefaultKeyboardModifierRemappings(
+  controller_->RestoreDefaultKeyboardRemappings(
       (DeviceId)kSampleKeyboardInternal.id);
   EXPECT_EQ(
       controller_->GetKeyboardSettings((DeviceId)kSampleKeyboardInternal.id)

@@ -10,6 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace storage {
 class SpecialStoragePolicy;
@@ -23,6 +24,7 @@ namespace content {
 
 class BrowsingDataFilterBuilder;
 class BrowsingDataRemoverDelegate;
+class StoragePartitionConfig;
 
 ////////////////////////////////////////////////////////////////////////////////
 // BrowsingDataRemover is responsible for removing data related to browsing:
@@ -95,6 +97,8 @@ class BrowsingDataRemover {
   // prohibited from deleting history or downloads.
   static constexpr DataType DATA_TYPE_NO_CHECKS = 1 << 13;
 
+  // 14 is already taken by DATA_TYPE_BACKGROUND_FETCH.
+
   // AVOID_CLOSING_CONNECTIONS is a pseudo-datatype indicating that when
   // deleting COOKIES, BrowsingDataRemover should skip
   // storage backends whose deletion would cause closing network connections.
@@ -142,9 +146,14 @@ class BrowsingDataRemover {
   // information.
   static constexpr DataType DATA_TYPE_INTEREST_GROUPS_INTERNAL = 1 << 23;
 
+  // Web Environment Integrity
+  // (https://github.com/RupertBenWiser/Web-Environment-Integrity/blob/main/explainer.md)
+  // persistent storage.
+  static constexpr DataType DATA_TYPE_ENVIRONMENT_INTEGRITY = 1 << 24;
+
   // Embedders can add more datatypes beyond this point.
   static constexpr DataType DATA_TYPE_CONTENT_END =
-      DATA_TYPE_INTEREST_GROUPS_INTERNAL;
+      DATA_TYPE_ENVIRONMENT_INTEGRITY;
 
   // All data stored by the Attribution Reporting API.
   static constexpr DataType DATA_TYPE_ATTRIBUTION_REPORTING =
@@ -156,7 +165,7 @@ class BrowsingDataRemover {
       DATA_TYPE_TRUST_TOKENS | DATA_TYPE_ATTRIBUTION_REPORTING |
       DATA_TYPE_AGGREGATION_SERVICE | DATA_TYPE_INTEREST_GROUPS |
       DATA_TYPE_SHARED_STORAGE | DATA_TYPE_PRIVATE_AGGREGATION_INTERNAL |
-      DATA_TYPE_INTEREST_GROUPS_INTERNAL;
+      DATA_TYPE_INTEREST_GROUPS_INTERNAL | DATA_TYPE_ENVIRONMENT_INTEGRITY;
 
   // Internal data stored by APIs in the Privacy Sandbox, e.g. privacy budgeting
   // information.
@@ -164,6 +173,13 @@ class BrowsingDataRemover {
       DATA_TYPE_ATTRIBUTION_REPORTING_INTERNAL |
       DATA_TYPE_PRIVATE_AGGREGATION_INTERNAL |
       DATA_TYPE_INTEREST_GROUPS_INTERNAL;
+
+  // Data types stored within a StoragePartition (i.e. not Profile-scoped).
+  static constexpr DataType DATA_TYPE_ON_STORAGE_PARTITION =
+      DATA_TYPE_APP_CACHE_DEPRECATED | DATA_TYPE_FILE_SYSTEMS |
+      DATA_TYPE_INDEXED_DB | DATA_TYPE_LOCAL_STORAGE | DATA_TYPE_WEB_SQL |
+      DATA_TYPE_SERVICE_WORKERS | DATA_TYPE_CACHE_STORAGE |
+      DATA_TYPE_BACKGROUND_FETCH | DATA_TYPE_COOKIES | DATA_TYPE_CACHE;
 
   using OriginType = uint64_t;
   // Web storage origins that StoragePartition recognizes as NOT protected
@@ -271,6 +287,9 @@ class BrowsingDataRemover {
   virtual const base::Time& GetLastUsedBeginTimeForTesting() = 0;
   virtual uint64_t GetLastUsedRemovalMaskForTesting() = 0;
   virtual uint64_t GetLastUsedOriginTypeMaskForTesting() = 0;
+  virtual absl::optional<StoragePartitionConfig>
+  GetLastUsedStoragePartitionConfigForTesting() = 0;
+  virtual uint64_t GetPendingTaskCountForTesting() = 0;
 };
 
 }  // namespace content

@@ -37,6 +37,7 @@
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/test_event_router.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_id.h"
 #include "printing/backend/print_backend.h"
 #include "printing/backend/test_print_backend.h"
 #include "printing/mojom/print.mojom.h"
@@ -88,7 +89,7 @@ class PrintingEventObserver : public TestEventRouter::EventObserver {
     }
   }
 
-  const std::string& extension_id() const { return extension_id_; }
+  const ExtensionId& extension_id() const { return extension_id_; }
 
   const base::Value& event_args() const { return event_args_; }
 
@@ -100,7 +101,7 @@ class PrintingEventObserver : public TestEventRouter::EventObserver {
   const std::string event_name_;
 
   // The extension id passed for the last observed event.
-  std::string extension_id_;
+  ExtensionId extension_id_;
 
   // The arguments passed for the last observed event.
   base::Value event_args_;
@@ -204,10 +205,10 @@ ConstructPrinterCapabilities() {
   capabilities.duplex_modes.push_back(printing::mojom::DuplexMode::kSimplex);
   capabilities.copies_max = 5;
   capabilities.dpis.emplace_back(kHorizontalDpi, kVerticalDpi);
-  printing::PrinterSemanticCapsAndDefaults::Paper paper;
-  paper.vendor_id = kMediaSizeVendorId;
-  paper.size_um = gfx::Size(kMediaSizeWidth, kMediaSizeHeight);
-  capabilities.papers.push_back(paper);
+  printing::PrinterSemanticCapsAndDefaults::Paper paper(
+      /*display_name=*/"", kMediaSizeVendorId,
+      {kMediaSizeWidth, kMediaSizeHeight});
+  capabilities.papers.push_back(std::move(paper));
   capabilities.collate_capable = true;
   return capabilities;
 }

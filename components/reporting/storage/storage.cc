@@ -161,8 +161,8 @@ class Storage::KeyDelivery {
   }
 
   void EuqueueRequestAndPossiblyStart(RequestCallback callback) {
+    CHECK(callback);
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK(callback);
     const bool first_call = callbacks_.empty();
     callbacks_.push_back(std::move(callback));
     if (!first_call) {
@@ -223,7 +223,7 @@ class Storage::KeyDelivery {
 
 class Storage::KeyInStorage {
  public:
-  KeyInStorage(base::StringPiece signature_verification_public_key,
+  KeyInStorage(std::string_view signature_verification_public_key,
                const base::FilePath& directory)
       : verifier_(signature_verification_public_key), directory_(directory) {}
   ~KeyInStorage() = default;
@@ -497,7 +497,7 @@ void Storage::Create(
     // Context can only be deleted by calling Response method.
     ~StorageInitContext() override {
       DCHECK_CALLED_ON_VALID_SEQUENCE(storage_->sequence_checker_);
-      DCHECK_EQ(count_, 0u);
+      CHECK_EQ(count_, 0u);
     }
 
     void OnStart() override {
@@ -538,7 +538,7 @@ void Storage::Create(
 
       if (status.ok()) {
         // Encryption key has been found and set up. Must be available now.
-        DCHECK(storage_->encryption_module_->has_encryption_key());
+        CHECK(storage_->encryption_module_->has_encryption_key());
       } else {
         LOG(WARNING)
             << "Encryption is enabled, but the key is not available yet, "
@@ -584,7 +584,7 @@ void Storage::Create(
       if (storage_queue_result.ok()) {
         auto add_result = storage_->queues_.emplace(
             priority, storage_queue_result.ValueOrDie());
-        DCHECK(add_result.second);
+        CHECK(add_result.second);
       } else {
         LOG(ERROR) << "Could not create queue, priority=" << priority
                    << ", status=" << storage_queue_result.status();
@@ -592,7 +592,7 @@ void Storage::Create(
           final_status_ = storage_queue_result.status();
         }
       }
-      DCHECK_GT(count_, 0u);
+      CHECK_GT(count_, 0u);
       if (--count_ > 0u) {
         return;
       }
@@ -604,10 +604,10 @@ void Storage::Create(
       // in an ascending priorities order. The lowest priority queue has
       // an empty vector.
       std::vector<scoped_refptr<StorageQueue>> degradation_queues;
-      DCHECK_EQ(storage_->queues_.size(), queues_options_.size());
+      CHECK_EQ(storage_->queues_.size(), queues_options_.size());
       for (const auto& queue_options : queues_options_) {
         const auto queue_or_error = storage_->GetQueue(queue_options.first);
-        DCHECK(queue_or_error.ok()) << queue_or_error.status();
+        CHECK_OK(queue_or_error) << queue_or_error.status();
         queue_or_error.ValueOrDie()->AssignDegradationQueues(
             degradation_queues);
         // Add newly created queue to the list to be used by all the later ones.
@@ -806,7 +806,7 @@ void Storage::RegisterCompletionCallback(base::OnceClosure callback) {
   // destructed until the callback is registered - StorageQueue is held by added
   // reference here. Thus, the callback being registered is guaranteed
   // to be called when the Storage is being destructed.
-  DCHECK(callback);
+  CHECK(callback);
   sequenced_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(

@@ -129,7 +129,8 @@ class SyncSessionsRouterTabHelperBrowserTest : public InProcessBrowserTest {
 
  protected:
  private:
-  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_ = nullptr;
+  raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> web_contents_ =
+      nullptr;
   content::test::PrerenderTestHelper prerender_helper_;
   TestLocalSessionEventHandler handler;
   TestTranslateDriverObserver observer_;

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
 
+#include "base/callback_list.h"
 #include "base/check_is_test.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
@@ -21,7 +22,6 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_factory.h"
-#include "chrome/browser/ui/web_applications/web_app_dialog_manager.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
@@ -226,9 +226,7 @@ bool WebAppBrowserController::HasReloadButton() const {
 
 #if !BUILDFLAG(IS_CHROMEOS)
 bool WebAppBrowserController::HasProfileMenuButton() const {
-  return (app_id() == web_app::kPasswordManagerAppId) &&
-         base::FeatureList::IsEnabled(
-             password_manager::features::kPasswordManagerRedesign);
+  return app_id() == web_app::kPasswordManagerAppId;
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
@@ -387,13 +385,9 @@ absl::optional<SkColor> WebAppBrowserController::GetThemeColor() const {
     return web_theme_color;
 
 #if BUILDFLAG(IS_CHROMEOS)
-  if (chromeos::features::IsUploadOfficeToCloudEnabled()) {
-    if (absl::optional<SkColor> fallback_page_theme_color =
-            ChromeOsWebAppExperiments::GetFallbackPageThemeColor(
-                app_id(),
-                browser()->tab_strip_model()->GetActiveWebContents())) {
-      return fallback_page_theme_color;
-    }
+  if (chromeos::features::IsUploadOfficeToCloudEnabled() &&
+      ChromeOsWebAppExperiments::IgnoreManifestColor(app_id())) {
+    return absl::nullopt;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -419,8 +413,17 @@ absl::optional<SkColor> WebAppBrowserController::GetThemeColor() const {
 }
 
 absl::optional<SkColor> WebAppBrowserController::GetBackgroundColor() const {
-  auto web_contents_color = AppBrowserController::GetBackgroundColor();
-  auto manifest_color = GetResolvedManifestBackgroundColor();
+  absl::optional<SkColor> web_contents_color =
+      AppBrowserController::GetBackgroundColor();
+  absl::optional<SkColor> manifest_color = GetResolvedManifestBackgroundColor();
+
+#if BUILDFLAG(IS_CHROMEOS)
+  if (chromeos::features::IsUploadOfficeToCloudEnabled() &&
+      ChromeOsWebAppExperiments::IgnoreManifestColor(app_id())) {
+    manifest_color = absl::nullopt;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   // Prefer an available web contents color but when such a color is
   // unavailable (i.e. in the time between when a window launches and it's web
   // content loads) attempt to pull the background color from the manifest.
@@ -451,6 +454,17 @@ GURL WebAppBrowserController::GetAppStartUrl() const {
 
 GURL WebAppBrowserController::GetAppNewTabUrl() const {
   return registrar().GetAppNewTabUrl(app_id());
+}
+
+bool WebAppBrowserController::ShouldHideNewTabButton() const {
+  if (!registrar().IsTabbedWindowModeEnabled(app_id())) {
+    return false;
+  }
+
+  // If the app added a pinned home tab without changing their new tab URL, we
+  // hide the new tab button to avoid the start_url being opened in a non home
+  // tab.
+  return IsUrlInHomeTabScope(GetAppNewTabUrl());
 }
 
 bool WebAppBrowserController::IsUrlInHomeTabScope(const GURL& url) const {
@@ -586,9 +600,9 @@ bool WebAppBrowserController::CanUserUninstall() const {
 void WebAppBrowserController::Uninstall(
     webapps::WebappUninstallSource webapp_uninstall_source) {
   WebAppUiManagerImpl::Get(&*provider_)
-      ->dialog_manager()
-      .UninstallWebApp(app_id(), webapps::WebappUninstallSource::kAppMenu,
-                       browser()->window(), base::DoNothing());
+      ->PresentUserUninstallDialog(app_id(),
+                                   webapps::WebappUninstallSource::kAppMenu,
+                                   browser()->window(), base::DoNothing());
 }
 
 bool WebAppBrowserController::IsInstalled() const {
@@ -740,7 +754,7 @@ absl::optional<RE2::Set> WebAppBrowserController::GetTabbedHomeTabScope()
   TabStrip tab_strip = web_app->tab_strip().value();
   if (const auto* params =
           absl::get_if<blink::Manifest::HomeTabParams>(&tab_strip.home_tab)) {
-    std::vector<blink::UrlPattern> scope_patterns = params->scope_patterns;
+    std::vector<blink::SafeUrlPattern> scope_patterns = params->scope_patterns;
 
     RE2::Set scope_set = RE2::Set(RE2::Options(), RE2::Anchor::UNANCHORED);
     for (auto& scope : scope_patterns) {

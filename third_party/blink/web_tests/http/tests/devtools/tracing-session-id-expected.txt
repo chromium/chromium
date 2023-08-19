@@ -1,5 +1,0 @@
-Tests that Tracing agent returns a session id upon a start that is matching one issued in trace events.
-
-Got DevTools metadata event: TracingStartedInBrowser
-Got DevTools metadata event: SetLayerTreeId
-

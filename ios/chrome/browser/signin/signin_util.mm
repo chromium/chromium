@@ -14,13 +14,10 @@
 #import "google_apis/gaia/gaia_auth_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/signin_util_internal.h"
 #import "ios/chrome/browser/signin/system_identity.h"
 #import "ios/public/provider/chrome/browser/signin/signin_error_api.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -97,6 +94,9 @@ CGSize GetSizeForIdentityAvatarSize(IdentityAvatarSize avatar_size) {
 }
 
 signin::Tribool IsFirstSessionAfterDeviceRestore() {
+  if (experimental_flags::SimulatePostDeviceRestore()) {
+    return signin::Tribool::kTrue;
+  }
   static signin::Tribool is_first_session_after_device_restore =
       signin::Tribool::kUnknown;
   static dispatch_once_t once;

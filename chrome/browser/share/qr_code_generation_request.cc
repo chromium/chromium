@@ -11,7 +11,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/share/android/jni_headers/QRCodeGenerationRequest_jni.h"
+#include "chrome/android/chrome_jni_headers/QRCodeGenerationRequest_jni.h"
 #include "chrome/services/qrcode_generator/public/cpp/qrcode_generator_service.h"
 #include "chrome/services/qrcode_generator/public/mojom/qrcode_generator.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"

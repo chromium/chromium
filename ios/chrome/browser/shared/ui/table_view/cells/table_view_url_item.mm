@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/net/crurl.h"
@@ -17,10 +17,6 @@
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/common/ui/table_view/table_view_url_cell_favicon_badge_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 // Default delimiter to use between the hostname and the supplemental URL text
@@ -45,7 +41,7 @@ const char kDefaultSupplementalURLTextDelimiter[] = "•";
   [super configureCell:tableCell withStyler:styler];
 
   TableViewURLCell* cell =
-      base::mac::ObjCCastStrict<TableViewURLCell>(tableCell);
+      base::apple::ObjCCastStrict<TableViewURLCell>(tableCell);
   cell.titleLabel.text = [self titleLabelText];
   cell.URLLabel.text = [self URLLabelText];
   cell.thirdRowLabel.text = self.thirdRowText;
@@ -188,6 +184,7 @@ const char kDefaultSupplementalURLTextDelimiter[] = "•";
     _metadataLabel.adjustsFontForContentSizeCategory = YES;
     _metadataLabel.hidden = YES;
     _metadataImage.contentMode = UIViewContentModeCenter;
+    _metadataImage.accessibilityIdentifier = kTableViewURLCellMetadataImageID;
 
     // Use stack views to layout the subviews except for the favicon.
     UIStackView* verticalStack = [[UIStackView alloc]
@@ -299,6 +296,10 @@ const char kDefaultSupplementalURLTextDelimiter[] = "•";
   [self.faviconContainerView setFaviconBackgroundColor:backgroundColor];
 }
 
+- (void)setFaviconContainerBorderColor:(UIColor*)borderColor {
+  [self.faviconContainerView setFaviconBorderColor:borderColor];
+}
+
 // Hide or show the metadata and URL labels depending on the presence of text.
 // Align the horizontal stack properly depending on if the metadata label will
 // be present or not.
@@ -336,6 +337,7 @@ const char kDefaultSupplementalURLTextDelimiter[] = "•";
   [super prepareForReuse];
   [self.faviconView configureWithAttributes:nil];
   [self setFaviconContainerBackgroundColor:nil];
+  [self setFaviconContainerBorderColor:nil];
   self.faviconBadgeView.image = nil;
   self.metadataLabel.hidden = YES;
   self.metadataImage.image = nil;

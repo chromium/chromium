@@ -10,10 +10,7 @@ import {
 } from 'chrome://resources/mwc/lit/index.js';
 
 import {assertExists} from '../assert.js';
-import * as dom from '../dom.js';
 import {preloadedImages} from '../preload_images.js';
-
-const loadedSvgs = new Map<string, SVGElement>();
 
 export class SvgWrapper extends LitElement {
   static override styles = css`
@@ -52,38 +49,11 @@ export class SvgWrapper extends LitElement {
     if (this.name === null) {
       return null;
     }
-    return assertExists(loadedSvgs.get(this.name)).cloneNode(true);
+    return assertExists(preloadedImages.get(this.name));
   }
 }
 
-/**
- * Loads all svg images, and define the <svg-wrapper> element.
- *
- * This only needs to be called once at startup.
- */
-export function loadSvgImages(): void {
-  for (const [imageName, image] of Object.entries(preloadedImages)) {
-    const container = document.createElement('div');
-    container.innerHTML = image;
-    const svg = assertExists(container.querySelector('svg'));
-    loadedSvgs.set(imageName, svg);
-  }
-
-  for (const el of dom.getAll('[data-svg]', HTMLElement)) {
-    const imageName = assertExists(el.dataset['svg']);
-    const svg = document.createElement('svg-wrapper');
-    svg.setAttribute('name', imageName);
-    // Prepend the svg so it's on the bottom-most layer and won't be covering
-    // other possible children (e.g. inkdrop effect).
-    el.prepend(svg);
-  }
-
-  // This needs to be called after svg are loaded, so the SvgWrapper will
-  // always find the svg.
-  // JavaScript code that want to show svg should use <svg-wrapper> directly
-  // instead of using data-svg attribute.
-  window.customElements.define('svg-wrapper', SvgWrapper);
-}
+window.customElements.define('svg-wrapper', SvgWrapper);
 
 declare global {
   interface HTMLElementTagNameMap {

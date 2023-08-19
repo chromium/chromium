@@ -65,7 +65,7 @@ void GestureNavigationScreen::GesturePageChange(const std::string& new_page) {
 bool GestureNavigationScreen::MaybeSkip(WizardContext& context) {
   AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
   if (context.skip_post_login_screens_for_tests ||
-      chrome_user_manager_util::IsPublicSessionOrEphemeralLogin() ||
+      chrome_user_manager_util::IsManagedGuestSessionOrEphemeralLogin() ||
       !features::IsHideShelfControlsInTabletModeEnabled() ||
       ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
           prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled) ||

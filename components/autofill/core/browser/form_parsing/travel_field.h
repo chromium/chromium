@@ -30,18 +30,10 @@ class TravelField : public FormField {
 
  private:
   // All of the following fields are optional.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION AutofillField* passport_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION AutofillField* origin_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION AutofillField* destination_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION AutofillField* flight_;
+  raw_ptr<AutofillField> passport_;
+  raw_ptr<AutofillField> origin_;
+  raw_ptr<AutofillField> destination_;
+  raw_ptr<AutofillField> flight_;
 };
 }  // namespace autofill
 

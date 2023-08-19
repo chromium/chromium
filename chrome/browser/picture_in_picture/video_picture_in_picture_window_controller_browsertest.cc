@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/scoped_observation.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -196,6 +197,35 @@ void WaitForTitle(content::WebContents* web_contents,
       content::TitleWatcher(web_contents, expected_title).WaitAndGetTitle());
 }
 
+class OverlayControlsBecomingVisibleObserver : public views::ViewObserver {
+ public:
+  OverlayControlsBecomingVisibleObserver(views::View* controls_container,
+                                         base::OnceClosure cb)
+      : visibility_changed_callback_(std::move(cb)) {
+    observation_.Observe(controls_container);
+  }
+  OverlayControlsBecomingVisibleObserver(
+      const OverlayControlsBecomingVisibleObserver&) = delete;
+  OverlayControlsBecomingVisibleObserver& operator=(
+      const OverlayControlsBecomingVisibleObserver&) = delete;
+
+  ~OverlayControlsBecomingVisibleObserver() override = default;
+
+  void OnViewVisibilityChanged(views::View*,
+                               views::View* controls_container) override {
+    if (controls_container->GetVisible()) {
+      std::move(visibility_changed_callback_).Run();
+    } else {
+      LOG(WARNING) << "Expected to receive callback after container is "
+                      "visible, but did not";
+    }
+  }
+
+ private:
+  base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
+  base::OnceClosure visibility_changed_callback_;
+};
+
 }  // namespace
 
 class VideoPictureInPictureWindowControllerBrowserTest
@@ -305,7 +335,8 @@ class VideoPictureInPictureWindowControllerBrowserTest
   }
 
  private:
-  raw_ptr<content::VideoPictureInPictureWindowController, DanglingUntriaged>
+  raw_ptr<content::VideoPictureInPictureWindowController,
+          AcrossTasksDanglingUntriaged>
       pip_window_controller_ = nullptr;
   MockVideoPictureInPictureWindowController mock_controller_;
 };
@@ -346,6 +377,15 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
 
   EXPECT_FALSE(GetOverlayWindow()->AreControlsVisible());
   MoveMouseOverOverlayWindow();
+
+  // Wait for controls to become visible. This might not be immediate, if the
+  // window has been moved.
+  base::RunLoop run_loop;
+  OverlayControlsBecomingVisibleObserver observer(
+      GetOverlayWindow()->GetControlsContainerView(),
+      base::BindLambdaForTesting([&] { run_loop.Quit(); }));
+  run_loop.Run();
+
   EXPECT_TRUE(GetOverlayWindow()->AreControlsVisible());
 }
 

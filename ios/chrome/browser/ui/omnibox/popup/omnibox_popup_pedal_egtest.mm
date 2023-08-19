@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_app_interface.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_accessibility_identifier_constants.h"
+#import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -16,10 +17,6 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -123,6 +120,11 @@ NSString* kDinoSearchString = @"dino game";
   // Manage passwords pedal should be visible.
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:managePasswordsPedal];
 
+  // Mock successful reauth when opening the Password Manager.
+  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
+
   // Tap on Manage passwords pedal.
   [[EarlGrey selectElementWithMatcher:managePasswordsPedal]
       performAction:grey_tap()];
@@ -139,6 +141,9 @@ NSString* kDinoSearchString = @"dino game";
                       chrome_test_util::PasswordsTableViewMatcher()];
 
   [ChromeEarlGrey closeCurrentTab];
+
+  // Remove mock to keep the app in the same state as before running the test.
+  [PasswordSettingsAppInterface removeMockReauthenticationModule];
 }
 
 // Tests that the clear browsing data pedal is present and it opens the clear

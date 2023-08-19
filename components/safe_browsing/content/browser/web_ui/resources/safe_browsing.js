@@ -132,22 +132,40 @@ function initialize() {
     addPGResponse(result);
   });
 
-  sendWithPromise('getRTLookupPings', []).then((rtLookupPings) => {
-    rtLookupPings.forEach(function(rtLookupPing) {
-      addRTLookupPing(rtLookupPing);
+  sendWithPromise('getURTLookupPings', []).then((urtLookupPings) => {
+    urtLookupPings.forEach(function(urtLookupPing) {
+      addURTLookupPing(urtLookupPing);
     });
   });
-  addWebUiListener('rt-lookup-pings-update', function(result) {
-    addRTLookupPing(result);
+  addWebUiListener('urt-lookup-pings-update', function(result) {
+    addURTLookupPing(result);
   });
 
-  sendWithPromise('getRTLookupResponses', []).then((rtLookupResponses) => {
-    rtLookupResponses.forEach(function(rtLookupResponse) {
-      addRTLookupResponse(rtLookupResponse);
+  sendWithPromise('getURTLookupResponses', []).then((urtLookupResponses) => {
+    urtLookupResponses.forEach(function(urtLookupResponse) {
+      addURTLookupResponse(urtLookupResponse);
     });
   });
-  addWebUiListener('rt-lookup-responses-update', function(result) {
-    addRTLookupResponse(result);
+  addWebUiListener('urt-lookup-responses-update', function(result) {
+    addURTLookupResponse(result);
+  });
+
+  sendWithPromise('getHPRTLookupPings', []).then((hprtLookupPings) => {
+    hprtLookupPings.forEach(function(hprtLookupPing) {
+      addHPRTLookupPing(hprtLookupPing);
+    });
+  });
+  addWebUiListener('hprt-lookup-pings-update', function(result) {
+    addHPRTLookupPing(result);
+  });
+
+  sendWithPromise('getHPRTLookupResponses', []).then((hprtLookupResponses) => {
+    hprtLookupResponses.forEach(function(hprtLookupResponse) {
+      addHPRTLookupResponse(hprtLookupResponse);
+    });
+  });
+  addWebUiListener('hprt-lookup-responses-update', function(result) {
+    addHPRTLookupResponse(result);
   });
 
   sendWithPromise('getLogMessages', []).then((logMessages) => {
@@ -362,12 +380,20 @@ function addPGResponse(result) {
   addResultToTable('pg-ping-list', result[0], result[1], 1);
 }
 
-function addRTLookupPing(result) {
-  addResultToTable('rt-lookup-ping-list', result[0], result[1], 0);
+function addURTLookupPing(result) {
+  addResultToTable('urt-lookup-ping-list', result[0], result[1], 0);
 }
 
-function addRTLookupResponse(result) {
-  addResultToTable('rt-lookup-ping-list', result[0], result[1], 1);
+function addURTLookupResponse(result) {
+  addResultToTable('urt-lookup-ping-list', result[0], result[1], 1);
+}
+
+function addHPRTLookupPing(result) {
+  addResultToTable('hprt-lookup-ping-list', result[0], result[1], 0);
+}
+
+function addHPRTLookupResponse(result) {
+  addResultToTable('hprt-lookup-ping-list', result[0], result[1], 1);
 }
 
 function addDeepScan(result) {

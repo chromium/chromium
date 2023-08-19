@@ -342,14 +342,20 @@ void TooltipController::OnWindowVisibilityChanged(aura::Window* window,
     HideAndReset();
 }
 
+void TooltipController::OnWindowDestroying(aura::Window* window) {
+  // Reset tooltip before `observed_window_` is destructed since Tooltip::Hide
+  // which is called by HideAndReset() may try to access to the raw_ptr of the
+  // window.
+  if (state_manager_->tooltip_parent_window() == window) {
+    HideAndReset();
+  }
+}
+
 void TooltipController::OnWindowDestroyed(aura::Window* window) {
   if (observed_window_ == window) {
     RemoveTooltipDelayFromMap(observed_window_);
     observed_window_ = nullptr;
   }
-
-  if (state_manager_->tooltip_parent_window() == window)
-    HideAndReset();
 }
 
 void TooltipController::OnWindowPropertyChanged(aura::Window* window,

@@ -196,6 +196,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   // Retrieve the timestamp when the device came active.
   base::Time GetActiveTs() const;
 
+  // Retrieve the ChromeOS release channel.
+  Channel GetChromeOSChannel() const;
+
  protected:
   // Retrieve full hardware class from MachineStatistics.
   // |DeviceActivityController| waits for object to finish loading, to avoid
@@ -204,9 +207,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
 
   // Retrieve the ChromeOS major version number.
   std::string GetChromeOSVersion() const;
-
-  // Retrieve the ChromeOS release channel.
-  Channel GetChromeOSChannel() const;
 
   // Retrieve the ChromeOS device market segment.
   MarketSegment GetMarketSegment() const;

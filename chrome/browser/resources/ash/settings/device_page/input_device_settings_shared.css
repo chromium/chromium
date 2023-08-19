@@ -1,0 +1,52 @@
+/* Copyright 2023 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #css_wrapper_metadata_end */
+
+:host(:not([is-last-device])) .bottom-divider {
+  border-bottom: var(--cr-separator-line);
+}
+
+.subsection {
+  margin-bottom: 16px;
+  padding-inline-start: var(--cr-section-indent-width);
+}
+
+.subsection > * {
+  padding-inline-start: 0;
+}
+
+.subsection-header {
+  height: 24px;
+  padding-inline-start: var(--cr-section-padding);
+  padding-top: 12px;
+}
+
+.key-container {
+  align-items: center;
+  border-radius: 12px;
+  box-sizing: border-box;
+  color: var(--cros-text-color-secondary);
+  display: flex;
+  height: 28px;
+  justify-content: center;
+  margin-inline-end: 8px;
+  min-width: 28px;
+  padding: 6px;
+}
+
+/* TODO(b/281116317) Remove once Jelly is launched */
+:host-context(body:not(.jelly-enabled)) .key-container {
+  font-family: 'Google Sans', Roboto, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 20px;
+}
+
+#keyLabel {
+  padding-inline: 6px;
+}

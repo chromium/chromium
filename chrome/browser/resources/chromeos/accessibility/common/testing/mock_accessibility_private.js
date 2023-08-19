@@ -44,6 +44,15 @@ class MockAccessibilityPrivate {
       DICTATION_CONTEXT_CHECKING: 'dictationContextChecking',
     };
 
+    this.AssistiveTechnologyType = {
+      CHROME_VOX: 'chromeVox',
+      SELECT_TO_SPEAK: 'selectToSpeak',
+      SWITCH_ACCESS: 'switchAccess',
+      AUTO_CLICK: 'autoClick',
+      MAGNIFIER: 'magnifier',
+      DICTATION: 'dictation',
+    };
+
     this.DictationBubbleIconType = {
       HIDDEN: 'hidden',
       STANDBY: 'standby',
@@ -219,8 +228,9 @@ class MockAccessibilityPrivate {
    * assume that it is only setting one set of rings at a time, and safely
    * extract focusRingInfos[0].rects.
    * @param {!Array<!chrome.accessibilityPrivate.FocusRingInfo>} focusRingInfos
+   * @param {chrome.accessibilityPrivate.AssistiveTechnologyType} atType
    */
-  setFocusRings(focusRingInfos) {
+  setFocusRings(focusRingInfos, atType) {
     this.focusRings_ = focusRingInfos;
   }
 

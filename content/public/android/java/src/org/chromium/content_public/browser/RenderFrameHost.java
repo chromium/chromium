@@ -105,6 +105,11 @@ public interface RenderFrameHost {
     void notifyUserActivation();
 
     /**
+     * Notifies the native RenderFrameHost about a successful WebAuthn assertion request.
+     */
+    void notifyWebAuthnAssertionRequestSucceeded();
+
+    /**
      * If a CloseWatcher is active in this RenderFrameHost, signal it to close.
      * @return Whether a close signal was sent.
      */

@@ -18,6 +18,9 @@ import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.OTH
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.READING_LIST_BOOKMARK_ID;
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.ROOT_BOOKMARK_ID;
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.URL_BOOKMARK_ID_A;
+import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.URL_BOOKMARK_ID_F;
+import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.URL_BOOKMARK_ID_G;
+import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.URL_BOOKMARK_ID_H;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -38,13 +41,14 @@ import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.sync.SyncService;
-import org.chromium.chrome.browser.sync.SyncService.SyncStateChangedListener;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.sync.SyncService;
+import org.chromium.components.sync.SyncService.SyncStateChangedListener;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /** Unit tests for {@link LegacyBookmarkQueryHandler}. */
@@ -78,13 +82,12 @@ public class LegacyBookmarkQueryHandlerTest {
 
     @Before
     public void setup() {
-        SyncService.overrideForTests(mSyncService);
         TrackerFactory.setTrackerForTests(mTracker);
         Profile.setLastUsedProfileForTesting(mProfile);
         SharedBookmarkModelMocks.initMocks(mBookmarkModel);
         ShoppingFeatures.setShoppingListEligibleForTesting(false);
 
-        mHandler = new LegacyBookmarkQueryHandler(mBookmarkModel, mBookmarkUiPrefs);
+        mHandler = new LegacyBookmarkQueryHandler(mBookmarkModel, mBookmarkUiPrefs, mSyncService);
     }
 
     @Test
@@ -150,9 +153,12 @@ public class LegacyBookmarkQueryHandlerTest {
     public void testBuildBookmarkListForParent_nonRootFolder() {
         List<BookmarkListEntry> result = mHandler.buildBookmarkListForParent(MOBILE_BOOKMARK_ID);
 
-        assertEquals(2, result.size());
+        assertEquals(5, result.size());
         assertEquals(FOLDER_BOOKMARK_ID_A, result.get(0).getBookmarkItem().getId());
         assertEquals(URL_BOOKMARK_ID_A, result.get(1).getBookmarkItem().getId());
+        assertEquals(URL_BOOKMARK_ID_F, result.get(2).getBookmarkItem().getId());
+        assertEquals(URL_BOOKMARK_ID_G, result.get(3).getBookmarkItem().getId());
+        assertEquals(URL_BOOKMARK_ID_H, result.get(4).getBookmarkItem().getId());
     }
 
     @Test
@@ -160,7 +166,8 @@ public class LegacyBookmarkQueryHandlerTest {
         doReturn(Arrays.asList(FOLDER_BOOKMARK_ID_A, URL_BOOKMARK_ID_A))
                 .when(mBookmarkModel)
                 .searchBookmarks("A", 500);
-        List<BookmarkListEntry> result = mHandler.buildBookmarkListForSearch("A");
+        List<BookmarkListEntry> result =
+                mHandler.buildBookmarkListForSearch("A", Collections.emptySet());
         assertEquals(2, result.size());
     }
 }

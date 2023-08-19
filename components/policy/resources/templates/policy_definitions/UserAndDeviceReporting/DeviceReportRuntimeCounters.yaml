@@ -1,0 +1,28 @@
+arc_support: This policy has no effect on the logging done by Android.
+caption: Report device runtime counters
+default: false
+desc: |-
+  Setting the policy to enabled has enrolled devices report device runtime counters (Intel vPro Gen 14+ only).
+
+  Setting the policy to disabled or leaving it unset would make enrolled devices not record or report device runtime counters.
+device_only: true
+example_value: false
+features:
+  dynamic_refresh: true
+items:
+- caption: Report device runtime counters
+  value: true
+- caption: Do not report device runtime counters
+  value: false
+owners:
+- cros-reporting-team@google.com
+- xuhong@chromium.org
+schema:
+  type: boolean
+supported_chrome_os_management:
+- google_cloud
+future_on:
+- chrome_os
+tags:
+- admin-sharing
+type: main

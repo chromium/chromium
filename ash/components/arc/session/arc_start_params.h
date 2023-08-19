@@ -65,7 +65,7 @@ struct StartParams {
   bool disable_download_provider = false;
 
   // Flag to disable ureadahead completely, including host and guest parts.
-  // TODO(b/264585671): Refactore this and |host_ureadahead_generation| to
+  // TODO(b/264585671): Refactor this and |host_ureadahead_generation| to
   // mode enum.
   bool disable_ureadahead = false;
 
@@ -73,6 +73,9 @@ struct StartParams {
   // TODO(b/264585671): Refactore this and |disable_ureadahead| to
   // mode enum.
   bool host_ureadahead_generation = false;
+
+  // Flag to indicate whether to use dev caches.
+  bool use_dev_caches = false;
 
   // The number of logical CPU cores that are currently disabled on the host.
   uint32_t num_cores_disabled = 0;

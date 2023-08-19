@@ -10,6 +10,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
 
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingResponse;
 import org.chromium.base.Callback;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
@@ -22,6 +23,7 @@ import java.util.concurrent.Callable;
  * Most callbacks do no go through here, but get forwarded to AwContentsClient directly. The
  * messages processed here may originate from the IO or UI thread.
  */
+@Lifetime.WebView
 public class AwContentsClientCallbackHelper {
     /**
      * Interface to tell CallbackHelper to cancel posted callbacks.

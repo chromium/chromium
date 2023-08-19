@@ -5,10 +5,10 @@
 #include "chrome/browser/ash/extensions/file_manager/system_notification_manager.h"
 
 #include <set>
-#include <unordered_map>
 
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/webui/file_manager/url_constants.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
@@ -19,19 +19,23 @@
 #include "chrome/browser/ash/extensions/file_manager/device_event_router.h"
 #include "chrome/browser/ash/extensions/file_manager/event_router.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
-#include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
-#include "chrome/browser/chromeos/policy/dlp/dialogs/files_policy_dialog.h"
+#include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
+#include "chrome/browser/ash/policy/dlp/files_policy_notification_manager.h"
+#include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
+#include "chrome/browser/ash/policy/dlp/test/mock_files_policy_notification_manager.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
 #include "chrome/browser/notifications/notification_platform_bridge_delegator.h"
+#include "chrome/common/extensions/api/file_manager_private.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/disks/disk.h"
+#include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
@@ -57,7 +61,7 @@ using fmp::FileTransferStatus;
 using fmp::MountCompletedEvent;
 using fmp::ToString;
 using message_center::NotificationDelegate;
-using testing::ElementsAre;
+using testing::IsEmpty;
 
 using enum extensions::events::HistogramValue;
 using enum fmp::BulkPinStage;
@@ -146,11 +150,10 @@ class TestNotificationPlatformBridgeDelegator
   std::set<std::string> notification_ids_;
 
   // Maps a notification ID to its displayed title and message.
-  std::unordered_map<std::string, Strings> notifications_;
+  base::flat_map<std::string, Strings> notifications_;
 
   // Maps a notification ID to its delegate to verify click handlers.
-  std::unordered_map<std::string, scoped_refptr<NotificationDelegate>>
-      delegates_;
+  base::flat_map<std::string, scoped_refptr<NotificationDelegate>> delegates_;
 };
 
 // DeviceEventRouter implementation for testing.
@@ -278,13 +281,14 @@ class SystemNotificationManagerTest
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  file_manager::FakeDiskMountManager disk_mount_manager_;
+  ash::disks::FakeDiskMountManager disk_mount_manager_;
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
   // Externally owned raw pointers:
   // profile_ is owned by TestingProfileManager.
   raw_ptr<TestingProfile, ExperimentalAsh> profile_;
   // notification_display_service is owned by NotificationDisplayServiceFactory.
-  raw_ptr<NotificationDisplayServiceImpl, ExperimentalAsh> display_service_;
+  raw_ptr<NotificationDisplayServiceImpl, DanglingUntriaged | ExperimentalAsh>
+      display_service_;
   std::unique_ptr<SystemNotificationManager> notification_manager_;
   std::unique_ptr<DeviceEventRouterImpl> event_router_;
 
@@ -294,15 +298,17 @@ class SystemNotificationManagerTest
   size_t notification_count_ = 0;
 
   // notification_platform_bridge is owned by NotificationDisplayService.
-  raw_ptr<TestNotificationPlatformBridgeDelegator, ExperimentalAsh> bridge_;
+  raw_ptr<TestNotificationPlatformBridgeDelegator,
+          DanglingUntriaged | ExperimentalAsh>
+      bridge_;
 
   // Used for tests with IOTask:
-  raw_ptr<io_task::IOTaskController, ExperimentalAsh> io_task_controller;
+  raw_ptr<io_task::IOTaskController, DanglingUntriaged | ExperimentalAsh>
+      io_task_controller;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
 
   // Keep track of the task state transitions.
-  std::unordered_map<io_task::IOTaskId, std::vector<io_task::State>>
-      task_statuses_;
+  base::flat_map<io_task::IOTaskId, std::vector<io_task::State>> task_statuses_;
 
   base::WeakPtrFactory<SystemNotificationManagerTest> weak_ptr_factory_{this};
 };
@@ -1095,98 +1101,6 @@ TEST_F(SystemNotificationManagerTest, CancelButtonIOTask) {
   ASSERT_EQ(io_task::State::kCancelled, task_statuses_[task_id].back());
 }
 
-TEST_F(SystemNotificationManagerTest, HandleIOTaskProgressWarning) {
-  // The system notification only sees the IOTask ProgressStatus.
-  file_manager::io_task::ProgressStatus status;
-  status.task_id = 1;
-  status.state = file_manager::io_task::State::kQueued;
-  status.type = file_manager::io_task::OperationType::kCopy;
-  status.total_bytes = 100;
-  status.bytes_transferred = 0;
-  status.sources.emplace_back(CreateTestFile("volume/src_file1.txt"),
-                              absl::nullopt);
-  status.sources.emplace_back(CreateTestFile("volume/src_file2.txt"),
-                              absl::nullopt);
-  status.SetDestinationFolder(CreateTestFile("volume/dest_dir/"));
-
-  // Send the copy begin/queued progress.
-  notification_manager_->HandleIOTaskProgress(status);
-
-  // Check: We have the 1 notification.
-  ASSERT_EQ(1u, GetNotificationCount());
-
-  Strings strings = bridge_->GetStrings("swa-file-operation-1");
-
-  // Check: the expected strings match.
-  EXPECT_EQ(strings.title, u"Files");
-  EXPECT_EQ(strings.message, u"Copying 2 items\x2026");
-
-  // Set the status to warning.
-  status.state = file_manager::io_task::State::kPaused;
-  status.pause_params.policy_params =
-      io_task::PolicyPauseParams(policy::Policy::kDlp);
-  notification_manager_->HandleIOTaskProgress(status);
-
-  // Check: We have the same notification.
-  ASSERT_EQ(1u, GetNotificationCount());
-  strings = bridge_->GetStrings("swa-file-operation-1");
-  EXPECT_EQ(strings.title, u"Confirmation required");
-  EXPECT_EQ(strings.message, u"files may contain sensitive content");
-
-  // Send the success progress status.
-  status.bytes_transferred = 100;
-  status.state = file_manager::io_task::State::kSuccess;
-  notification_manager_->HandleIOTaskProgress(status);
-
-  // Notification should disappear.
-  ASSERT_EQ(0u, GetNotificationCount());
-}
-
-TEST_F(SystemNotificationManagerTest, HandleIOTaskProgressPolicyError) {
-  // The system notification only sees the IOTask ProgressStatus.
-  file_manager::io_task::ProgressStatus status;
-  status.task_id = 1;
-  status.state = file_manager::io_task::State::kQueued;
-  status.type = file_manager::io_task::OperationType::kCopy;
-  status.total_bytes = 100;
-  status.bytes_transferred = 0;
-  status.sources.emplace_back(CreateTestFile("volume/src_file.txt"),
-                              absl::nullopt);
-  status.SetDestinationFolder(CreateTestFile("volume/dest_dir/"));
-
-  // Send the copy begin/queued progress.
-  notification_manager_->HandleIOTaskProgress(status);
-
-  // Check: We have the 1 notification.
-  ASSERT_EQ(1u, GetNotificationCount());
-
-  Strings strings = bridge_->GetStrings("swa-file-operation-1");
-
-  // Check: the expected strings match.
-  EXPECT_EQ(strings.title, u"Files");
-  EXPECT_EQ(strings.message, u"Copying src_file.txt\x2026");
-
-  // Set the security error value.
-  status.state = file_manager::io_task::State::kError;
-  status.policy_error =
-      file_manager::io_task::PolicyErrorType::kEnterpriseConnectors;
-  notification_manager_->HandleIOTaskProgress(status);
-
-  // Check: We have the same notification.
-  ASSERT_EQ(1u, GetNotificationCount());
-  strings = bridge_->GetStrings("swa-file-operation-1");
-  EXPECT_EQ(strings.title, u"files blocked");
-  EXPECT_EQ(strings.message, u"File was blocked");
-
-  // Send the success progress status.
-  status.bytes_transferred = 100;
-  status.state = file_manager::io_task::State::kSuccess;
-  notification_manager_->HandleIOTaskProgress(status);
-
-  // Notification should disappear.
-  ASSERT_EQ(0u, GetNotificationCount());
-}
-
 TEST_F(SystemNotificationManagerTest, HandleIOTaskProgressPolicyScanning) {
   // The system notification only sees the IOTask ProgressStatus.
   file_manager::io_task::ProgressStatus status;
@@ -1253,6 +1167,7 @@ TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
   EXPECT_EQ(0u, notification_count_);
 
   // Not enough space without going through syncing phase.
+  EXPECT_FALSE(progress.emptied_queue);
   progress.stage = BULK_PIN_STAGE_NOT_ENOUGH_SPACE;
   notification_manager_->HandleEvent(
       Event(FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS, event_name,
@@ -1290,14 +1205,13 @@ TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
 
   // Get the strings for the displayed notification.
   const std::string notification_id = "drive-bulk-pinning-error";
-  Strings strings = bridge_->GetStrings(notification_id);
-  EXPECT_EQ(strings.title, u"Sync error");
-  EXPECT_EQ(
-      strings.message,
-      u"We couldn't sync all of your My Drive files because you don't have "
-      u"enough storage available. Files that were already synced will stay "
-      u"available offline, but automatic syncing has been turned off.");
-  EXPECT_THAT(strings.buttons, ElementsAre(u"Settings"));
+  {
+    const Strings strings = bridge_->GetStrings(notification_id);
+    EXPECT_EQ(strings.title, u"Couldn’t finish setting up file sync");
+    EXPECT_EQ(strings.message,
+              u"There isn’t enough storage space to sync all of your files");
+    EXPECT_THAT(strings.buttons, IsEmpty());
+  }
 
   // Click the notification body.
   bridge_->ClickNotification(notification_id);
@@ -1307,7 +1221,6 @@ TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
       BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
                weak_ptr_factory_.GetWeakPtr()));
   EXPECT_EQ(0u, notification_count_);
-  EXPECT_EQ(0, notification_manager_->drive_settings_open_count_);
 
   // Not enough space without going through syncing phase.
   progress.stage = BULK_PIN_STAGE_NOT_ENOUGH_SPACE;
@@ -1321,8 +1234,9 @@ TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
                weak_ptr_factory_.GetWeakPtr()));
   EXPECT_EQ(0u, notification_count_);
 
-  // Syncing.
+  // Back to syncing stage. Pretend that everything has been synced.
   progress.stage = BULK_PIN_STAGE_SYNCING;
+  progress.emptied_queue = true;
   notification_manager_->HandleEvent(
       Event(FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS, event_name,
             List().Append(progress.ToValue())));
@@ -1345,15 +1259,64 @@ TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
                weak_ptr_factory_.GetWeakPtr()));
   EXPECT_EQ(1u, notification_count_);
 
-  // Click the notification button #0.
-  bridge_->ClickButton(notification_id, 0);
+  // Get the strings for the displayed notification.
+  {
+    const Strings strings = bridge_->GetStrings(notification_id);
+    EXPECT_EQ(strings.title, u"File sync turned off");
+    EXPECT_EQ(strings.message,
+              u"There isn’t enough storage space to continue syncing files");
+    EXPECT_THAT(strings.buttons, IsEmpty());
+  }
+
+  // Click the notification body.
+  bridge_->ClickNotification(notification_id);
 
   // The notification should have been closed.
   display_service_->GetDisplayed(
       BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
                weak_ptr_factory_.GetWeakPtr()));
   EXPECT_EQ(0u, notification_count_);
-  EXPECT_EQ(1, notification_manager_->drive_settings_open_count_);
+
+  // Back to syncing stage.
+  progress.stage = BULK_PIN_STAGE_SYNCING;
+  notification_manager_->HandleEvent(
+      Event(FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS, event_name,
+            List().Append(progress.ToValue())));
+
+  // There should be no notification.
+  display_service_->GetDisplayed(
+      BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
+               weak_ptr_factory_.GetWeakPtr()));
+  EXPECT_EQ(0u, notification_count_);
+
+  // Error duing syncing phase.
+  progress.stage = BULK_PIN_STAGE_CANNOT_GET_FREE_SPACE;
+  notification_manager_->HandleEvent(
+      Event(FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS, event_name,
+            List().Append(progress.ToValue())));
+
+  // There should be one notification.
+  display_service_->GetDisplayed(
+      BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
+               weak_ptr_factory_.GetWeakPtr()));
+  EXPECT_EQ(1u, notification_count_);
+
+  // Get the strings for the displayed notification.
+  {
+    const Strings strings = bridge_->GetStrings(notification_id);
+    EXPECT_EQ(strings.title, u"File sync turned off");
+    EXPECT_EQ(strings.message, u"Something went wrong.");
+    EXPECT_THAT(strings.buttons, IsEmpty());
+  }
+
+  // Click the notification body.
+  bridge_->ClickNotification(notification_id);
+
+  // The notification should have been closed.
+  display_service_->GetDisplayed(
+      BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
+               weak_ptr_factory_.GetWeakPtr()));
+  EXPECT_EQ(0u, notification_count_);
 }
 
 // Tests all the various error notifications.
@@ -1747,6 +1710,133 @@ TEST_F(SystemNotificationManagerTest, PinProgressMultiple) {
   // Check: the expected strings match.
   EXPECT_EQ(strings.title, u"Files");
   EXPECT_EQ(strings.message, u"Making 10 files available offline");
+}
+
+class SystemNotificationManagerPolicyTest
+    : public SystemNotificationManagerTest {
+ public:
+  void SetUp() override {
+    SystemNotificationManagerTest::SetUp();
+    // Set FilesPolicyNotificationManager.
+    policy::FilesPolicyNotificationManagerFactory::GetInstance()
+        ->SetTestingFactory(
+            profile_.get(),
+            base::BindRepeating(&SystemNotificationManagerPolicyTest::
+                                    SetFilesPolicyNotificationManager,
+                                base::Unretained(this)));
+    ASSERT_TRUE(
+        policy::FilesPolicyNotificationManagerFactory::GetForBrowserContext(
+            profile_.get()));
+    ASSERT_TRUE(fpnm_);
+  }
+
+  policy::MockFilesPolicyNotificationManager* fpnm() { return fpnm_; }
+
+ private:
+  std::unique_ptr<KeyedService> SetFilesPolicyNotificationManager(
+      content::BrowserContext* context) {
+    auto fpnm = std::make_unique<policy::MockFilesPolicyNotificationManager>(
+        profile_.get());
+    fpnm_ = fpnm.get();
+
+    return fpnm;
+  }
+
+  raw_ptr<policy::MockFilesPolicyNotificationManager,
+          DanglingUntriaged | ExperimentalAsh>
+      fpnm_ = nullptr;
+};
+
+TEST_F(SystemNotificationManagerPolicyTest, HandleIOTaskProgressWarning) {
+  // The system notification only sees the IOTask ProgressStatus.
+  file_manager::io_task::ProgressStatus status;
+  status.task_id = 1;
+  status.state = file_manager::io_task::State::kQueued;
+  status.type = file_manager::io_task::OperationType::kCopy;
+  status.total_bytes = 100;
+  status.bytes_transferred = 0;
+  status.sources.emplace_back(CreateTestFile("volume/src_file1.txt"),
+                              absl::nullopt);
+  status.sources.emplace_back(CreateTestFile("volume/src_file2.txt"),
+                              absl::nullopt);
+  status.SetDestinationFolder(CreateTestFile("volume/dest_dir/"));
+
+  // Send the copy begin/queued progress.
+  notification_manager_->HandleIOTaskProgress(status);
+
+  // Check: We have the 1 notification.
+  ASSERT_EQ(1u, GetNotificationCount());
+
+  Strings strings = bridge_->GetStrings("swa-file-operation-1");
+
+  // Check: the expected strings match.
+  EXPECT_EQ(strings.title, u"Files");
+  EXPECT_EQ(strings.message, u"Copying 2 items\x2026");
+
+  // Set the status to warning.
+  status.state = file_manager::io_task::State::kPaused;
+  status.pause_params.policy_params =
+      io_task::PolicyPauseParams(policy::Policy::kDlp);
+  // The manager delegates to FPNM to show the notification.
+  EXPECT_CALL(
+      *fpnm(),
+      ShowFilesPolicyNotification(
+          "swa-file-operation-1",
+          AllOf(testing::Field(&file_manager::io_task::ProgressStatus::task_id,
+                               status.task_id),
+                testing::Field(&file_manager::io_task::ProgressStatus::state,
+                               file_manager::io_task::State::kPaused),
+                testing::Field(
+                    &file_manager::io_task::ProgressStatus::pause_params,
+                    status.pause_params))))
+      .Times(1);
+  notification_manager_->HandleIOTaskProgress(status);
+}
+
+TEST_F(SystemNotificationManagerPolicyTest, HandleIOTaskProgressPolicyError) {
+  // The system notification only sees the IOTask ProgressStatus.
+  file_manager::io_task::ProgressStatus status;
+  status.task_id = 1;
+  status.state = file_manager::io_task::State::kQueued;
+  status.type = file_manager::io_task::OperationType::kCopy;
+  status.total_bytes = 100;
+  status.bytes_transferred = 0;
+  status.sources.emplace_back(CreateTestFile("volume/src_file.txt"),
+                              absl::nullopt);
+  status.SetDestinationFolder(CreateTestFile("volume/dest_dir/"));
+
+  // Send the copy begin/queued progress.
+  notification_manager_->HandleIOTaskProgress(status);
+
+  // Check: We have the 1 notification.
+  ASSERT_EQ(1u, GetNotificationCount());
+
+  Strings strings = bridge_->GetStrings("swa-file-operation-1");
+
+  // Check: the expected strings match.
+  EXPECT_EQ(strings.title, u"Files");
+  EXPECT_EQ(strings.message, u"Copying src_file.txt\x2026");
+
+  // Set the security error value.
+  status.state = file_manager::io_task::State::kError;
+  status.policy_error.emplace(
+      file_manager::io_task::PolicyErrorType::kEnterpriseConnectors,
+      /*blocked_files=*/1);
+  // The manager delegates to FPNM to show the notification.
+  EXPECT_CALL(
+      *fpnm(),
+      ShowFilesPolicyNotification(
+          "swa-file-operation-1",
+          AllOf(testing::Field(&file_manager::io_task::ProgressStatus::task_id,
+                               status.task_id),
+                testing::Field(&file_manager::io_task::ProgressStatus::state,
+                               file_manager::io_task::State::kError),
+                testing::Field(
+                    &file_manager::io_task::ProgressStatus::policy_error,
+                    status.policy_error))))
+      .Times(1);
+
+  notification_manager_->HandleIOTaskProgress(status);
 }
 
 }  // namespace file_manager

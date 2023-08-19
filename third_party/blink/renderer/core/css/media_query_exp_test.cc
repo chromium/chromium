@@ -321,19 +321,19 @@ TEST(MediaQueryExpTest, SerializeNode) {
 
   EXPECT_EQ("special(width < 10px)",
             FunctionNode(FeatureNode(RightExp("width", LtCmp(PxValue(10)))),
-                         "special")
+                         AtomicString("special"))
                 ->Serialize());
   EXPECT_EQ(
       "special((width < 10px))",
       FunctionNode(EnclosedFeatureNode(RightExp("width", LtCmp(PxValue(10)))),
-                   "special")
+                   AtomicString("special"))
           ->Serialize());
   EXPECT_EQ(
       "special((11px >= thing) and (height = 12px))",
       FunctionNode(
           AndNode(EnclosedFeatureNode(LeftExp("thing", GeCmp(PxValue(11)))),
                   EnclosedFeatureNode(RightExp("height", EqCmp(PxValue(12))))),
-          "special")
+          AtomicString("special"))
           ->Serialize());
 }
 
@@ -446,7 +446,7 @@ TEST(MediaQueryExpTest, UtilsNullptrHandling) {
   MediaQueryExp exp = RightExp("width", LtCmp(PxValue(10)));
 
   EXPECT_FALSE(MediaQueryExpNode::Nested(nullptr));
-  EXPECT_FALSE(MediaQueryExpNode::Function(nullptr, "test"));
+  EXPECT_FALSE(MediaQueryExpNode::Function(nullptr, AtomicString("test")));
   EXPECT_FALSE(MediaQueryExpNode::Not(nullptr));
   EXPECT_FALSE(MediaQueryExpNode::And(nullptr, FeatureNode(exp)));
   EXPECT_FALSE(MediaQueryExpNode::And(FeatureNode(exp), nullptr));

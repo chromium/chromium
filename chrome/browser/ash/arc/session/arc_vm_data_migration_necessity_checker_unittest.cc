@@ -116,7 +116,8 @@ TEST_F(ArcVmDataMigrationNecessityCheckerTest, StartJobFailed) {
   ash::FakeArcVmDataMigratorClient::Get()->set_has_data_to_migrate(true);
   ash::FakeUpstartClient::Get()->set_start_job_cb(base::BindLambdaForTesting(
       [](const std::string& job_name, const std::vector<std::string>& env) {
-        return job_name != kArcVmDataMigratorJobName;
+        return ash::FakeUpstartClient::StartJobResult(
+            job_name != kArcVmDataMigratorJobName);
       }));
   checker_->Check(base::BindLambdaForTesting(
       [&migration_needed](absl::optional<bool> result) {

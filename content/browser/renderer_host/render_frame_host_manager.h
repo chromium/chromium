@@ -277,9 +277,9 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // be deleted soon and we are just waiting for the frame's unload handler).
   RenderFrameProxyHost* GetProxyToParent();
 
-  // If this is a RenderFrameHostManager for a main frame, returns the proxy to
-  // inner WebContents in the outer WebContents's SiteInstance. Returns nullptr
-  // if this WebContents isn't part of inner/outer relationship.
+  // If this is a RenderFrameHostManager for a main frame, returns the proxy
+  // representing this main frame to its outer document's SiteInstance. Returns
+  // nullptr if this is not the main frame of an inner frame tree.
   RenderFrameProxyHost* GetProxyToOuterDelegate();
 
   // If this is a main frame for an inner delegate, return the
@@ -631,6 +631,14 @@ class CONTENT_EXPORT RenderFrameHostManager {
         ->current_replication_state();
   }
 
+  // In certain cases, such as when navigating from a non-live (e.g., crashed
+  // or initial) RenderFrameHost, the target speculative RenderFrameHost needs
+  // to be swapped in and become the current RenderFrameHost before the
+  // navigation commit.  This is a helper for performing this early
+  // RenderFrameHost swap when necessary.  It should only be called once during
+  // `request`'s lifetime.
+  void PerformEarlyRenderFrameHostSwapIfNeeded(NavigationRequest* request);
+
   base::WeakPtr<RenderFrameHostManager> GetWeakPtr();
 
  private:
@@ -822,7 +830,8 @@ class CONTENT_EXPORT RenderFrameHostManager {
       const UrlInfo& dest_url_info,
       SiteInstanceImpl* source_instance,
       bool was_server_redirect,
-      NavigationRequest::ErrorPageProcess error_page_process);
+      NavigationRequest::ErrorPageProcess error_page_process,
+      std::string* reason = nullptr);
 
   // Converts a SiteInstanceDescriptor to the actual SiteInstance it describes.
   // If a |candidate_instance| is provided (is not nullptr) and it matches the

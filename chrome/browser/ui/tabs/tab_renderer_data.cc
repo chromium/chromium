@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
+#include "components/performance_manager/public/features.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -110,6 +111,18 @@ TabRendererData TabRendererData::FromTabInModel(TabStripModel* model,
       contents->WasDiscarded() && discard_reason.has_value() &&
       discard_reason.value() == mojom::LifecycleUnitDiscardReason::PROACTIVE;
 
+  if (contents->WasDiscarded()) {
+    data.discarded_memory_savings_in_bytes =
+        high_efficiency::GetDiscardedMemorySavingsInBytes(contents);
+  }
+
+  const auto* const resource_tab_helper =
+      performance_manager::user_tuning::UserPerformanceTuningManager::
+          ResourceUsageTabHelper::FromWebContents(contents);
+  if (resource_tab_helper) {
+    data.tab_resource_usage = resource_tab_helper->resource_usage();
+  }
+
   return data;
 }
 
@@ -135,7 +148,10 @@ bool TabRendererData::operator==(const TabRendererData& other) const {
          alert_state == other.alert_state &&
          should_hide_throbber == other.should_hide_throbber &&
          is_tab_discarded == other.is_tab_discarded &&
-         should_show_discard_status == other.should_show_discard_status;
+         should_show_discard_status == other.should_show_discard_status &&
+         discarded_memory_savings_in_bytes ==
+             other.discarded_memory_savings_in_bytes &&
+         tab_resource_usage == other.tab_resource_usage;
 }
 
 bool TabRendererData::IsCrashed() const {

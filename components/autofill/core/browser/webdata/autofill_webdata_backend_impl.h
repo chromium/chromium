@@ -22,7 +22,7 @@
 #include "components/webdata/common/web_database.h"
 
 namespace base {
-class SingleThreadTaskRunner;
+class SequencedTaskRunner;
 }
 
 class WebDatabaseBackend;
@@ -31,7 +31,7 @@ namespace autofill {
 
 class AutofillWebDataServiceObserverOnDBSequence;
 class CreditCard;
-class IBAN;
+class Iban;
 
 // Backend implementation for the AutofillWebDataService. This class runs on the
 // DB sequence, as it handles reads and writes to the WebDatabase, and functions
@@ -51,8 +51,8 @@ class AutofillWebDataBackendImpl
   // times).
   AutofillWebDataBackendImpl(
       scoped_refptr<WebDatabaseBackend> web_database_backend,
-      scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> db_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> db_task_runner,
       const base::RepeatingClosure& on_changed_callback,
       const base::RepeatingClosure& on_address_conversion_completed_callback,
       const base::RepeatingCallback<void(syncer::ModelType)>&
@@ -183,16 +183,16 @@ class AutofillWebDataBackendImpl
   std::unique_ptr<WDTypedResult> GetServerCreditCards(WebDatabase* db);
 
   // Returns a vector of local IBANs from the web database.
-  std::unique_ptr<WDTypedResult> GetIBANs(WebDatabase* db);
+  std::unique_ptr<WDTypedResult> GetIbans(WebDatabase* db);
 
   // Adds an IBAN to the web database. Valid only for local IBANs.
-  WebDatabase::State AddIBAN(const IBAN& iban, WebDatabase* db);
+  WebDatabase::State AddIban(const Iban& iban, WebDatabase* db);
 
   // Updates an IBAN in the web database. Valid only for local IBANs.
-  WebDatabase::State UpdateIBAN(const IBAN& iban, WebDatabase* db);
+  WebDatabase::State UpdateIban(const Iban& iban, WebDatabase* db);
 
   // Removes an IBAN from the web database. Valid only for local IBANs.
-  WebDatabase::State RemoveIBAN(const std::string& guid, WebDatabase* db);
+  WebDatabase::State RemoveIban(const std::string& guid, WebDatabase* db);
 
   // Server credit cards can be masked (only last 4 digits stored) or unmasked
   // (all data stored). These toggle between the two states.
@@ -207,6 +207,16 @@ class AutofillWebDataBackendImpl
 
   WebDatabase::State UpdateServerAddressMetadata(const AutofillProfile& profile,
                                                  WebDatabase* db);
+
+  // Methods to add, update, remove, clear server cvc in the web database.
+  WebDatabase::State AddServerCvc(int64_t instrument_id,
+                                  const std::u16string& cvc,
+                                  WebDatabase* db);
+  WebDatabase::State UpdateServerCvc(int64_t instrument_id,
+                                     const std::u16string& cvc,
+                                     WebDatabase* db);
+  WebDatabase::State RemoveServerCvc(int64_t instrument_id, WebDatabase* db);
+  WebDatabase::State ClearServerCvcs(WebDatabase* db);
 
   WebDatabase::State AddUpiId(const std::string& upi_id, WebDatabase* db);
 
@@ -265,7 +275,7 @@ class AutofillWebDataBackendImpl
   };
 
   // The task runner that this class uses for its UI tasks.
-  scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
 
   // Storage for user data to be accessed only on the DB sequence. May
   // be used e.g. for SyncableService subclasses that need to be owned

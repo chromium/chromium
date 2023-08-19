@@ -60,7 +60,7 @@ suite('LocalImagesTest', function() {
       data: {[kDefaultImageSymbol]: false},
     };
 
-    localImagesElement = initElement(LocalImages, {hidden: false});
+    localImagesElement = initElement(LocalImages);
     await waitAfterNextRender(localImagesElement);
 
     // Iron-list creates some extra dom elements as a scroll buffer and
@@ -112,7 +112,7 @@ suite('LocalImagesTest', function() {
           data: {[kDefaultImageSymbol]: false},
         };
 
-        localImagesElement = initElement(LocalImages, {hidden: false});
+        localImagesElement = initElement(LocalImages);
 
         const ironList =
             localImagesElement.shadowRoot!.querySelector('iron-list');
@@ -184,7 +184,7 @@ suite('LocalImagesTest', function() {
       },
     };
 
-    localImagesElement = initElement(LocalImages, {hidden: false});
+    localImagesElement = initElement(LocalImages);
     await waitAfterNextRender(localImagesElement);
 
     // iron-list pre-creates some extra DOM elements but marks them as
@@ -223,7 +223,7 @@ suite('LocalImagesTest', function() {
       },
     };
 
-    localImagesElement = initElement(LocalImages, {hidden: false});
+    localImagesElement = initElement(LocalImages);
     await waitAfterNextRender(localImagesElement);
 
     // iron-list pre-creates some extra DOM elements but marks them as
@@ -253,7 +253,7 @@ suite('LocalImagesTest', function() {
       data: {[kDefaultImageSymbol]: false},
     };
 
-    localImagesElement = initElement(LocalImages, {hidden: false});
+    localImagesElement = initElement(LocalImages);
     await waitAfterNextRender(localImagesElement);
 
     const images =
@@ -275,7 +275,7 @@ suite('LocalImagesTest', function() {
       },
     };
 
-    localImagesElement = initElement(LocalImages, {hidden: false});
+    localImagesElement = initElement(LocalImages);
     await waitAfterNextRender(localImagesElement);
 
     const container = getDefaultImageHtmlElement();
@@ -290,7 +290,7 @@ suite('LocalImagesTest', function() {
       data: {[kDefaultImageSymbol]: {url: ''}},
     };
 
-    localImagesElement = initElement(LocalImages, {hidden: false});
+    localImagesElement = initElement(LocalImages);
 
     await waitAfterNextRender(localImagesElement);
 

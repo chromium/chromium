@@ -13,12 +13,6 @@ FakeLockHandler::~FakeLockHandler() {}
 void FakeLockHandler::ShowBannerMessage(const std::u16string& message,
                                         bool is_warning) {}
 
-void FakeLockHandler::ShowUserPodCustomIcon(
-    const AccountId& account_id,
-    const ScreenlockBridge::UserPodCustomIconInfo& icon_info) {}
-
-void FakeLockHandler::HideUserPodCustomIcon(const AccountId& account_id) {}
-
 void FakeLockHandler::SetSmartLockState(const AccountId& account_id,
                                         ash::SmartLockState state) {
   smart_lock_state_ = state;

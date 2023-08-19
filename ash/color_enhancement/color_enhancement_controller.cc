@@ -15,14 +15,8 @@ namespace ash {
 
 namespace {
 
-// Sepia filter above .3 should enable cursor compositing. Beyond this point,
-// users can perceive the mouse is too white if compositing does not occur.
-// TODO (crbug.com/1031959): Check this value with UX to see if it can be
-// larger.
-const float kMinSepiaPerceptableDifference = 0.3f;
-
 //
-// Parameters for simulating color vision deficiency.
+// Parameters for simulating color vision changes.
 // Copied from the Javascript ColorEnhancer extension:
 //   ui/accessibility/extensions/colorenhancer/src/cvd.js
 // Initial source:
@@ -30,10 +24,10 @@ const float kMinSepiaPerceptableDifference = 0.3f;
 // Original Research Paper:
 //   http://www.inf.ufrgs.br/~oliveira/pubs_files/CVD_Simulation/Machado_Oliveira_Fernandes_CVD_Vis2009_final.pdf
 //
-// The first index is ColorVisionDeficiencyType enum, so this must be kept in
+// The first index is ColorVisionCorrectionType enum, so this must be kept in
 // that order.
 const float kSimulationParams[3][9][3] = {
-    // ColorVisionDeficiencyType::kProtanomaly:
+    // ColorVisionCorrectionType::kProtanomaly:
     {{0.4720, -1.2946, 0.9857},
      {-0.6128, 1.6326, 0.0187},
      {0.1407, -0.3380, -0.0044},
@@ -43,7 +37,7 @@ const float kSimulationParams[3][9][3] = {
      {0.0222, -0.0253, -0.0004},
      {-0.0290, -0.0201, 0.0006},
      {0.0068, 0.0454, 0.9990}},
-    // ColorVisionDeficiencyType::kDeuteranomaly:
+    // ColorVisionCorrectionType::kDeuteranomaly:
     {{0.5442, -1.1454, 0.9818},
      {-0.7091, 1.5287, 0.0238},
      {0.1650, -0.3833, -0.0055},
@@ -53,7 +47,7 @@ const float kSimulationParams[3][9][3] = {
      {0.0180, -0.0288, -0.0006},
      {-0.0232, -0.0649, 0.0007},
      {0.0052, 0.0360, 0.9998}},
-    // ColorVisionDeficiencyType::kTritanomaly:
+    // ColorVisionCorrectionType::kTritanomaly:
     {{0.4275, -0.0181, 0.9307},
      {-0.2454, 0.0013, 0.0827},
      {-0.1821, 0.0168, -0.0134},
@@ -68,7 +62,7 @@ const float kSimulationParams[3][9][3] = {
 // severity.
 // Calculation from CVD.getCvdSimulationMatrix_ in
 // ui/accessibility/extensions/colorenhancer/src/cvd.js.
-gfx::Matrix3F GetCvdSimulationMatrix(ColorVisionDeficiencyType type,
+gfx::Matrix3F GetCvdSimulationMatrix(ColorVisionCorrectionType type,
                                      float severity) {
   float severity_squared = severity * severity;
   gfx::Matrix3F result = gfx::Matrix3F::Zeros();
@@ -85,12 +79,11 @@ gfx::Matrix3F GetCvdSimulationMatrix(ColorVisionDeficiencyType type,
 }
 
 // Computes a 3x3 matrix that can be applied to any three-color-channel image
-// to shift original colors to be more visible for someone with the given `type`
-// and `severity` of color vision deficiency.
-gfx::Matrix3F ComputeColorVisionFilterMatrix(ColorVisionDeficiencyType type,
+// to shift original colors to be more visible for a simulation with the given
+// `type` and `severity`.
+gfx::Matrix3F ComputeColorVisionFilterMatrix(ColorVisionCorrectionType type,
                                              float severity) {
-  // Compute the matrix that could be used to simulate the color vision
-  // deficiency.
+  // Compute the matrix that could be used to simulate the color vision.
   gfx::Matrix3F simulation_matrix = GetCvdSimulationMatrix(type, severity);
 
   // Now use the simulation to calculate a correction matrix. This process is
@@ -102,7 +95,7 @@ gfx::Matrix3F ComputeColorVisionFilterMatrix(ColorVisionDeficiencyType type,
   // can see, then adding it back onto the original image (Fidaner, Lin and
   // Ozguven, 2006). The correction matrix is used to map the error between the
   // initial image and the simulated image into a color space that can be seen
-  // by the user based on their type of color deficiency. So for example someone
+  // by the user based on the type of color deficiency. So for example someone
   // with Protanopia can see less of the red channel, so the correction matrix
   // could be:
   //    [0.0, 0.0, 0.0,
@@ -115,21 +108,23 @@ gfx::Matrix3F ComputeColorVisionFilterMatrix(ColorVisionDeficiencyType type,
   // Tritanopia we correct on the blue axis.
   gfx::Matrix3F correction_matrix = gfx::Matrix3F::Zeros();
   switch (type) {
-    case ColorVisionDeficiencyType::kProtanomaly:
+    case ColorVisionCorrectionType::kProtanomaly:
       // Correct on red axis: Shift colors in the red channel to the other
       // channels.
       correction_matrix.set(0.0, 0.0, 0.0, 0.7, 1.0, 0.0, 0.7, 0.0, 1.0);
       break;
-    case ColorVisionDeficiencyType::kDeuteranomaly:
+    case ColorVisionCorrectionType::kDeuteranomaly:
       // Correct on green axis: Shift colors in the green channel to the other
       // channels.
       correction_matrix.set(1.0, 0.7, 0.0, 0.0, 0.0, 0.0, 0.0, 0.7, 1.0);
       break;
-    case ColorVisionDeficiencyType::kTritanomaly:
+    case ColorVisionCorrectionType::kTritanomaly:
       // Correct on blue axis: Shift colors in the blue channel into the other
       // channels.
       correction_matrix.set(1.0, 0.0, 0.7, 0.0, 1.0, 0.7, 0.0, 0.0, 0.0);
       break;
+    case ash::ColorVisionCorrectionType::kGrayscale:
+      NOTREACHED() << "Grayscale should be handled in SetGreyscaleAmount";
   }
 
   // For Daltonization of an image `original_img`, we would calculate the
@@ -186,7 +181,7 @@ void ColorEnhancementController::SetHighContrastEnabled(bool enabled) {
   UpdateAllDisplays();
 }
 
-void ColorEnhancementController::SetColorFilteringEnabledAndUpdateDisplays(
+void ColorEnhancementController::SetColorCorrectionEnabledAndUpdateDisplays(
     bool enabled) {
   color_filtering_enabled_ = enabled;
   UpdateAllDisplays();
@@ -200,36 +195,16 @@ void ColorEnhancementController::SetGreyscaleAmount(float amount) {
   // Note: No need to do cursor compositing since cursors are greyscale already.
 }
 
-void ColorEnhancementController::SetSaturationAmount(float amount) {
-  if (saturation_amount_ == amount || amount < 0)
-    return;
-
-  saturation_amount_ = amount;
-  // Note: No need to do cursor compositing since cursors are greyscale and not
-  // impacted by saturation.
-}
-
-void ColorEnhancementController::SetSepiaAmount(float amount) {
-  if (sepia_amount_ == amount || amount < 0 || amount > 1)
-    return;
-
-  sepia_amount_ = amount;
-  // The cursor should be tinted sepia as well. Update cursor compositing.
-  Shell::Get()->UpdateCursorCompositingEnabled();
-}
-
-void ColorEnhancementController::SetHueRotationAmount(int amount) {
-  if (hue_rotation_amount_ == amount || amount < 0 || amount > 359)
-    return;
-
-  hue_rotation_amount_ = amount;
-  // Note: No need to do cursor compositing since cursors are greyscale and not
-  // impacted by hue rotation.
-}
-
 void ColorEnhancementController::SetColorVisionCorrectionFilter(
-    ColorVisionDeficiencyType type,
+    ColorVisionCorrectionType type,
     float amount) {
+  if (type == ColorVisionCorrectionType::kGrayscale) {
+    SetGreyscaleAmount(amount);
+    cvd_correction_matrix_.reset();
+    return;
+  }
+
+  SetGreyscaleAmount(0);
   if ((amount <= 0 || amount > 1) && cvd_correction_matrix_) {
     cvd_correction_matrix_.reset();
     return;
@@ -254,18 +229,6 @@ void ColorEnhancementController::SetColorVisionCorrectionFilter(
   }
 }
 
-bool ColorEnhancementController::ShouldEnableCursorCompositingForSepia() const {
-  if (!::features::
-          AreExperimentalAccessibilityColorEnhancementSettingsEnabled()) {
-    return false;
-  }
-
-  // Enable cursor compositing if the sepia filter is on enough that
-  // the white mouse cursor stands out. Sepia will not be set on the root
-  // window if the setting value is greater than 1, so ignore that state.
-  return sepia_amount_ >= kMinSepiaPerceptableDifference && sepia_amount_ <= 1;
-}
-
 void ColorEnhancementController::OnRootWindowAdded(aura::Window* root_window) {
   UpdateDisplay(root_window);
 }
@@ -287,17 +250,11 @@ void ColorEnhancementController::UpdateDisplay(aura::Window* root_window) {
   if (!color_filtering_enabled_) {
     // Reset layer state to defaults.
     layer->SetLayerGrayscale(0.0);
-    layer->SetLayerSaturation(1.0);
-    layer->SetLayerSepia(0);
-    layer->SetLayerHueRotation(0);
     layer->ClearLayerCustomColorMatrix();
     return;
   }
 
   layer->SetLayerGrayscale(greyscale_amount_);
-  layer->SetLayerSaturation(saturation_amount_);
-  layer->SetLayerSepia(sepia_amount_);
-  layer->SetLayerHueRotation(hue_rotation_amount_);
   if (cvd_correction_matrix_) {
     layer->SetLayerCustomColorMatrix(*cvd_correction_matrix_);
   } else {

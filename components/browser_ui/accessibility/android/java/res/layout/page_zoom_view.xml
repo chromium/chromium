@@ -8,24 +8,51 @@ found in the LICENSE file.
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:clipToPadding="false"
     android:paddingLeft="@dimen/page_zoom_view_padding"
     android:paddingRight="@dimen/page_zoom_view_padding"
+    android:clipToPadding="false"
     android:gravity="center"
-    android:orientation="vertical" >
+    android:orientation="vertical">
+
+  <LinearLayout
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="@dimen/page_zoom_view_level_margin"
+      android:background="@drawable/page_zoom_background"
+      android:elevation="@dimen/page_zoom_view_elevation"
+      android:orientation="horizontal">
 
     <TextView
         android:id="@+id/page_zoom_current_zoom_level"
         style="@style/TextAppearance.TextLarge"
-        android:background="@drawable/page_zoom_background"
+        android:padding="@dimen/page_zoom_view_level_padding"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:elevation="@dimen/page_zoom_view_elevation"
-        android:layout_marginBottom="@dimen/page_zoom_view_level_margin"
-        android:padding="@dimen/page_zoom_view_level_padding"
-        android:textAlignment="center"
-        android:accessibilityLiveRegion="assertive" />
+        android:accessibilityLiveRegion="assertive"
+        android:layout_gravity="center_vertical"
+        android:gravity="center"
+        android:textAlignment="center" />
 
-    <include layout="@layout/page_zoom_slider" />
+    <View
+        android:id="@+id/page_zoom_reset_divider"
+        style="@style/VerticalDivider"
+        android:layout_gravity="center_vertical"
+        android:visibility="gone" />
+
+    <!-- TODO aashnas: do not use a hardcoded value for the width
+            (should be wrap_content) -->
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/page_zoom_reset_zoom_button"
+        style="@style/TextAppearance.PageZoomResetButton"
+        android:layout_width="@dimen/page_zoom_reset_button_width"
+        android:layout_height="@dimen/min_touch_target_size"
+        android:text="@string/reset"
+        android:textAlignment="center"
+        android:layout_gravity="center_vertical"
+        android:visibility="gone" />
+
+  </LinearLayout>
+
+  <include layout="@layout/page_zoom_slider" />
 
 </LinearLayout>

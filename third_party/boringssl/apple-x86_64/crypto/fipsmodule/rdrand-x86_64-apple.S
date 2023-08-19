@@ -1,16 +1,9 @@
 // This file is generated from a similarly-named Perl script in the BoringSSL
 // source tree. Do not edit by hand.
 
-#if defined(__has_feature)
-#if __has_feature(memory_sanitizer) && !defined(OPENSSL_NO_ASM)
-#define OPENSSL_NO_ASM
-#endif
-#endif
+#include <openssl/asm_base.h>
 
-#if defined(__x86_64__) && !defined(OPENSSL_NO_ASM) && defined(__APPLE__)
-#if defined(BORINGSSL_PREFIX)
-#include <boringssl_prefix_symbols_asm.h>
-#endif
+#if !defined(OPENSSL_NO_ASM) && defined(OPENSSL_X86_64) && defined(__APPLE__)
 .text	
 
 
@@ -22,6 +15,7 @@
 .p2align	4
 _CRYPTO_rdrand:
 
+_CET_ENDBR
 	xorq	%rax,%rax
 .byte	72,15,199,242
 
@@ -41,6 +35,7 @@ _CRYPTO_rdrand:
 .p2align	4
 _CRYPTO_rdrand_multiple8_buf:
 
+_CET_ENDBR
 	testq	%rsi,%rsi
 	jz	L$out
 	movq	$8,%rdx
@@ -59,8 +54,4 @@ L$err:
 	.byte	0xf3,0xc3
 
 
-#endif
-#if defined(__ELF__)
-// See https://www.airs.com/blog/archives/518.
-.section .note.GNU-stack,"",%progbits
 #endif

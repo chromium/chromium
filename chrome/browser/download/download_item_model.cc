@@ -18,6 +18,7 @@
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
@@ -78,11 +79,6 @@ using ReportThreatDetailsResult =
 using TailoredVerdict = safe_browsing::ClientDownloadResponse::TailoredVerdict;
 
 namespace {
-
-#if !BUILDFLAG(IS_ANDROID)
-// How long an ephemeral warning is displayed on the download bubble.
-constexpr base::TimeDelta kEphemeralWarningLifetimeOnBubble = base::Minutes(5);
-#endif
 
 // Per DownloadItem data used by DownloadItemModel. The model doesn't keep any
 // state since there could be multiple models associated with a single
@@ -392,6 +388,7 @@ bool DownloadItemModel::IsMalicious() const {
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING:
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK:
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE:
+    case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED:
     case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING:
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE:
       return false;
@@ -687,6 +684,7 @@ void DownloadItemModel::OnDownloadOpened(DownloadItem* download) {
 
 void DownloadItemModel::OnDownloadDestroyed(DownloadItem* download) {
   ContentId id = GetContentId();
+  download_->RemoveObserver(this);
   download_ = nullptr;
   // The object could get deleted after this.
   if (delegate_)
@@ -745,10 +743,13 @@ bool DownloadItemModel::IsCommandEnabled(
     case DownloadCommands::LEARN_MORE_SCANNING:
     case DownloadCommands::LEARN_MORE_INTERRUPTED:
     case DownloadCommands::LEARN_MORE_INSECURE_DOWNLOAD:
+    case DownloadCommands::LEARN_MORE_DOWNLOAD_BLOCKED:
+    case DownloadCommands::OPEN_SAFE_BROWSING_SETTING:
     case DownloadCommands::DEEP_SCAN:
     case DownloadCommands::BYPASS_DEEP_SCANNING:
     case DownloadCommands::REVIEW:
     case DownloadCommands::RETRY:
+    case DownloadCommands::CANCEL_DEEP_SCAN:
       return DownloadUIModel::IsCommandEnabled(download_commands, command);
   }
   NOTREACHED();
@@ -785,11 +786,14 @@ bool DownloadItemModel::IsCommandChecked(
     case DownloadCommands::LEARN_MORE_SCANNING:
     case DownloadCommands::LEARN_MORE_INTERRUPTED:
     case DownloadCommands::LEARN_MORE_INSECURE_DOWNLOAD:
+    case DownloadCommands::LEARN_MORE_DOWNLOAD_BLOCKED:
+    case DownloadCommands::OPEN_SAFE_BROWSING_SETTING:
     case DownloadCommands::COPY_TO_CLIPBOARD:
     case DownloadCommands::DEEP_SCAN:
     case DownloadCommands::BYPASS_DEEP_SCANNING:
     case DownloadCommands::REVIEW:
     case DownloadCommands::RETRY:
+    case DownloadCommands::CANCEL_DEEP_SCAN:
       return false;
   }
   return false;
@@ -831,11 +835,11 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
 #endif
       if (GetDangerType() == download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING) {
         base::UmaHistogramEnumeration(
-            "SBClientDownload.DeepScanEvent",
+            "SBClientDownload.DeepScanEvent2",
             safe_browsing::DeepScanEvent::kScanCanceled);
       } else {
         base::UmaHistogramEnumeration(
-            "SBClientDownload.DeepScanEvent",
+            "SBClientDownload.DeepScanEvent2",
             safe_browsing::DeepScanEvent::kPromptBypassed);
       }
       [[fallthrough]];
@@ -894,6 +898,8 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
     case DownloadCommands::CANCEL:
     case DownloadCommands::LEARN_MORE_INTERRUPTED:
     case DownloadCommands::LEARN_MORE_INSECURE_DOWNLOAD:
+    case DownloadCommands::LEARN_MORE_DOWNLOAD_BLOCKED:
+    case DownloadCommands::OPEN_SAFE_BROWSING_SETTING:
     case DownloadCommands::PAUSE:
     case DownloadCommands::RESUME:
     case DownloadCommands::COPY_TO_CLIPBOARD:
@@ -901,15 +907,12 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
     case DownloadCommands::RETRY:
       DownloadUIModel::ExecuteCommand(download_commands, command);
       break;
-    case DownloadCommands::DEEP_SCAN:
-      safe_browsing::SafeBrowsingService* sb_service =
-          g_browser_process->safe_browsing_service();
-      if (!sb_service)
-        break;
-      safe_browsing::DownloadProtectionService* protection_service =
-          sb_service->download_protection_service();
-      if (!protection_service)
-        break;
+    case DownloadCommands::DEEP_SCAN: {
+      safe_browsing::DownloadProtectionService::UploadForConsumerDeepScanning(
+          download_, /*password=*/"");
+      break;
+    }
+    case DownloadCommands::CANCEL_DEEP_SCAN: {
       DownloadCoreService* download_core_service =
           DownloadCoreServiceFactory::GetForBrowserContext(
               content::DownloadItemUtils::GetBrowserContext(download_));
@@ -917,27 +920,11 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
       ChromeDownloadManagerDelegate* delegate =
           download_core_service->GetDownloadManagerDelegate();
       DCHECK(delegate);
-
-      // Create an analysis settings object for UploadForDeepScanning().
-      // Make sure it specifies a cloud analysis is required and does not
-      // specify a DM token, which is what triggers an APP scan.
-      enterprise_connectors::AnalysisSettings settings;
-      settings.cloud_or_local_settings =
-          enterprise_connectors::CloudOrLocalAnalysisSettings(
-              enterprise_connectors::CloudAnalysisSettings());
-      settings.tags = {{"malware", enterprise_connectors::TagSettings()}};
-      protection_service->UploadForDeepScanning(
-          download_,
-          base::BindRepeating(
-              &ChromeDownloadManagerDelegate::CheckClientDownloadDone,
-              delegate->GetWeakPtr(), download_->GetId()),
-          safe_browsing::DeepScanningRequest::DeepScanTrigger::
-              TRIGGER_CONSUMER_PROMPT,
-          safe_browsing::DownloadCheckResult::UNKNOWN, std::move(settings));
-      base::UmaHistogramEnumeration(
-          "SBClientDownload.DeepScanEvent",
-          safe_browsing::DeepScanEvent::kPromptAccepted);
+      delegate->CheckClientDownloadDone(
+          download_->GetId(),
+          safe_browsing::DownloadCheckResult::PROMPT_FOR_SCANNING);
       break;
+    }
   }
 }
 
@@ -951,21 +938,11 @@ DownloadItemModel::GetBubbleUIInfoForTailoredWarning() const {
   if (danger_type == download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT &&
       tailored_verdict.tailored_verdict_type() ==
           TailoredVerdict::SUSPICIOUS_ARCHIVE) {
-    return DownloadUIModel::BubbleUIInfo()
-        .AddSubpageSummary(l10n_util::GetStringUTF16(
-            IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_SUSPICIOUS_ARCHIVE))
-        .AddIconAndColor(features::IsChromeRefresh2023()
-                             ? vector_icons::kNotSecureWarningChromeRefreshIcon
-                             : vector_icons::kNotSecureWarningIcon,
-                         ui::kColorAlertMediumSeverityIcon)
-        .AddSecondaryTextColor(ui::kColorAlertMediumSeverityText)
-        .AddPrimaryButton(DownloadCommands::Command::DISCARD)
-        .AddPrimarySubpageButton(
-            l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE),
-            DownloadCommands::Command::DISCARD)
-        .AddSecondarySubpageButton(
-            l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_CONTINUE),
-            DownloadCommands::Command::KEEP, ui::kColorAlertMediumSeverityText);
+    return DownloadUIModel::BubbleUIInfo::SuspiciousUiPattern(
+        l10n_util::GetStringUTF16(
+            IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_MALWARE),
+        l10n_util::GetStringUTF16(
+            IDS_DOWNLOAD_BUBBLE_CONTINUE_SUSPICIOUS_FILE));
   }
 
   // Cookie theft
@@ -986,31 +963,15 @@ DownloadItemModel::GetBubbleUIInfoForTailoredWarning() const {
           "SBClientDownload.TailoredWarning.HasVaidEmailForAccountInfo",
           !email.empty());
       if (!email.empty()) {
-        return DownloadUIModel::BubbleUIInfo()
-            .AddSubpageSummary(l10n_util::GetStringFUTF16(
-                IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_COOKIE_THEFT_AND_ACCOUNT,
-                base::ASCIIToUTF16(email)))
-            .AddIconAndColor(features::IsChromeRefresh2023()
-                                 ? vector_icons::kDangerousChromeRefreshIcon
-                                 : vector_icons::kDangerousIcon,
-                             ui::kColorAlertHighSeverity)
-            .AddPrimaryButton(DownloadCommands::Command::DISCARD)
-            .AddPrimarySubpageButton(
-                l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE),
-                DownloadCommands::Command::DISCARD);
+        return DownloadUIModel::BubbleUIInfo::DangerousUiPattern(
+            l10n_util::GetStringFUTF16(
+                IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_COOKIE_THEFT_AND_ACCOUNT,
+                base::ASCIIToUTF16(email)));
       }
     }
-    return DownloadUIModel::BubbleUIInfo()
-        .AddSubpageSummary(l10n_util::GetStringUTF16(
-            IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_COOKIE_THEFT))
-        .AddIconAndColor(features::IsChromeRefresh2023()
-                             ? vector_icons::kDangerousChromeRefreshIcon
-                             : vector_icons::kDangerousIcon,
-                         ui::kColorAlertHighSeverity)
-        .AddPrimaryButton(DownloadCommands::Command::DISCARD)
-        .AddPrimarySubpageButton(
-            l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE),
-            DownloadCommands::Command::DISCARD);
+    return DownloadUIModel::BubbleUIInfo::DangerousUiPattern(
+        l10n_util::GetStringUTF16(
+            IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_COOKIE_THEFT));
   }
 
   NOTREACHED();
@@ -1107,6 +1068,7 @@ bool DownloadItemModel::IsEphemeralWarning() const {
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL:
     case download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT:
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING:
+    case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED:
       return true;
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS:
     case download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS:

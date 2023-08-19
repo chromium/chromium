@@ -17,7 +17,6 @@ import androidx.annotation.StringRes;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.ui.base.WindowAndroid.OnCloseContextMenuListener;
 import org.chromium.ui.mojom.WindowOpenDisposition;
@@ -44,8 +43,8 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
         // the value of the existing ones should be modified so they stay in order.
         // Values are also used for indexing - should start from 0 and can't have gaps.
         int SEARCH = 0;
-        int OPEN_IN_NEW_TAB = 1;
-        int OPEN_IN_NEW_TAB_IN_GROUP = 2;
+        int OPEN_IN_NEW_TAB_IN_GROUP = 1;
+        int OPEN_IN_NEW_TAB = 2;
         int OPEN_IN_INCOGNITO_TAB = 3;
         int OPEN_IN_NEW_WINDOW = 4;
         int SAVE_FOR_OFFLINE = 5;
@@ -156,33 +155,7 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
         boolean hasItems = false;
 
         for (@ContextMenuItemId int itemId = 0; itemId < ContextMenuItemId.NUM_ENTRIES; itemId++) {
-            if (!shouldShowItem(itemId, delegate)
-                    || itemId == ContextMenuItemId.OPEN_IN_NEW_TAB_IN_GROUP) {
-                continue;
-            }
-
-            if (itemId == ContextMenuItemId.OPEN_IN_NEW_TAB
-                    && shouldShowItem(ContextMenuItemId.OPEN_IN_NEW_TAB_IN_GROUP, delegate)) {
-                if (TabUiFeatureUtilities.showContextMenuOpenNewTabInGroupItemFirst()) {
-                    menu.add(Menu.NONE, ContextMenuItemId.OPEN_IN_NEW_TAB_IN_GROUP, Menu.NONE,
-                                getResourceIdForMenuItem(associatedView.getContext(),
-                                        ContextMenuItemId.OPEN_IN_NEW_TAB_IN_GROUP))
-                            .setOnMenuItemClickListener(listener);
-                    menu.add(Menu.NONE, itemId, Menu.NONE,
-                                getResourceIdForMenuItem(associatedView.getContext(), itemId))
-                            .setOnMenuItemClickListener(listener);
-                } else {
-                    menu.add(Menu.NONE, itemId, Menu.NONE,
-                                getResourceIdForMenuItem(associatedView.getContext(), itemId))
-                            .setOnMenuItemClickListener(listener);
-                    menu.add(Menu.NONE, ContextMenuItemId.OPEN_IN_NEW_TAB_IN_GROUP, Menu.NONE,
-                                getResourceIdForMenuItem(associatedView.getContext(),
-                                        ContextMenuItemId.OPEN_IN_NEW_TAB_IN_GROUP))
-                            .setOnMenuItemClickListener(listener);
-                }
-                hasItems = true;
-                continue;
-            }
+            if (!shouldShowItem(itemId, delegate)) continue;
 
             menu.add(Menu.NONE, itemId, Menu.NONE,
                         getResourceIdForMenuItem(associatedView.getContext(), itemId))
@@ -254,8 +227,7 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
             case ContextMenuItemId.OPEN_IN_NEW_TAB:
                 return true;
             case ContextMenuItemId.OPEN_IN_NEW_TAB_IN_GROUP:
-                return !TabUiFeatureUtilities.ENABLE_TAB_GROUP_AUTO_CREATION.getValue()
-                        && mNavigationDelegate.isOpenInNewTabInGroupEnabled();
+                return mNavigationDelegate.isOpenInNewTabInGroupEnabled();
             case ContextMenuItemId.OPEN_IN_INCOGNITO_TAB:
                 return mNavigationDelegate.isOpenInIncognitoEnabled();
             case ContextMenuItemId.OPEN_IN_NEW_WINDOW:
@@ -281,11 +253,7 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
     protected @StringRes int getResourceIdForMenuItem(Context context, @ContextMenuItemId int id) {
         switch (id) {
             case ContextMenuItemId.OPEN_IN_NEW_TAB:
-                return (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(context)
-                               && TabUiFeatureUtilities.ENABLE_TAB_GROUP_AUTO_CREATION.getValue()
-                               && mNavigationDelegate.isOpenInNewTabInGroupEnabled())
-                        ? R.string.contextmenu_open_in_new_tab_group
-                        : R.string.contextmenu_open_in_new_tab;
+                return R.string.contextmenu_open_in_new_tab;
             case ContextMenuItemId.OPEN_IN_NEW_TAB_IN_GROUP:
                 return R.string.contextmenu_open_in_new_tab_group;
             case ContextMenuItemId.OPEN_IN_INCOGNITO_TAB:

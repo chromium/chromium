@@ -51,7 +51,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobTransportStrategy {
   BlobTransportStrategy(BlobDataBuilder* builder,
                         ResultCallback result_callback);
 
-  raw_ptr<BlobDataBuilder, DanglingUntriaged> builder_;
+  raw_ptr<BlobDataBuilder, AcrossTasksDanglingUntriaged> builder_;
   ResultCallback result_callback_;
 };
 

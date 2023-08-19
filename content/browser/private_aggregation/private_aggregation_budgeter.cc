@@ -7,7 +7,9 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <functional>
 #include <memory>
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -27,6 +29,7 @@
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_storage.h"
 #include "content/browser/private_aggregation/proto/private_aggregation_budgets.pb.h"
+#include "content/public/browser/private_aggregation_data_model.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -134,7 +137,8 @@ GetBudgetEntries(PrivateAggregationBudgetKey::Api api,
   }
 }
 
-void CleanUpStaleBudgetEntries(
+// Returns whether any entries were deleted.
+bool CleanUpStaleBudgetEntries(
     google::protobuf::RepeatedPtrField<proto::PrivateAggregationBudgetEntry>*
         budget_entries,
     const int64_t earliest_window_in_larger_scope_start) {
@@ -144,10 +148,13 @@ void CleanUpStaleBudgetEntries(
         return elem.entry_start_timestamp() <
                earliest_window_in_larger_scope_start;
       });
+  bool was_modified = new_end != budget_entries->end();
   budget_entries->erase(new_end, budget_entries->end());
+  return was_modified;
 }
 
-void CleanUpStaleReportingOrigins(
+// Returns whether any entries were deleted.
+bool CleanUpStaleReportingOrigins(
     google::protobuf::RepeatedPtrField<proto::ReportingOrigin>*
         reporting_origins,
     const int64_t earliest_window_in_larger_scope_start) {
@@ -157,7 +164,9 @@ void CleanUpStaleReportingOrigins(
         return elem.last_used_timestamp() <
                earliest_window_in_larger_scope_start;
       });
+  bool was_modified = new_end != reporting_origins->end();
   reporting_origins->erase(new_end, reporting_origins->end());
+  return was_modified;
 }
 
 // `current_window_start` should be in microseconds since the Windows epoch,
@@ -239,19 +248,23 @@ void PrivateAggregationBudgeter::ConsumeBudget(
   }
 }
 
+void PrivateAggregationBudgeter::OnUserVisibleTaskStarted() {
+  // When a user visible task is queued or running, we use a higher priority.
+  // We do this even if the storage hasn't finished initializing.
+  ++num_pending_user_visible_tasks_;
+  db_task_runner_->UpdatePriority(base::TaskPriority::USER_VISIBLE);
+}
+
 void PrivateAggregationBudgeter::ClearData(
     base::Time delete_begin,
     base::Time delete_end,
     StoragePartition::StorageKeyMatcherFunction filter,
     base::OnceClosure done) {
-  // When a clear data task is queued or running, we use a higher priority. We
-  // do this even if the storage hasn't finished initializing.
-  ++num_pending_clear_data_tasks_;
-  db_task_runner_->UpdatePriority(base::TaskPriority::USER_VISIBLE);
+  OnUserVisibleTaskStarted();
 
   EnsureStorageInitializationBegun();
 
-  done = base::BindOnce(&PrivateAggregationBudgeter::OnClearDataComplete,
+  done = base::BindOnce(&PrivateAggregationBudgeter::OnUserVisibleTaskComplete,
                         weak_factory_.GetWeakPtr())
              .Then(std::move(done));
 
@@ -268,12 +281,12 @@ void PrivateAggregationBudgeter::ClearData(
   }
 }
 
-void PrivateAggregationBudgeter::OnClearDataComplete() {
-  DCHECK_GT(num_pending_clear_data_tasks_, 0);
-  --num_pending_clear_data_tasks_;
+void PrivateAggregationBudgeter::OnUserVisibleTaskComplete() {
+  DCHECK_GT(num_pending_user_visible_tasks_, 0);
+  --num_pending_user_visible_tasks_;
 
-  // No more clear data tasks, so we can reset the priority.
-  if (num_pending_clear_data_tasks_ == 0) {
+  // No more pending tasks, so we can reset the priority.
+  if (num_pending_user_visible_tasks_ == 0) {
     db_task_runner_->UpdatePriority(base::TaskPriority::BEST_EFFORT);
   }
 }
@@ -293,6 +306,9 @@ void PrivateAggregationBudgeter::OnStorageDoneInitializing(
   shutdown_initializing_storage_.Reset();
 
   ProcessAllPendingCalls();
+
+  // No-op if storage initialization failed.
+  CleanUpStaleDataSoon();
 }
 
 void PrivateAggregationBudgeter::ProcessAllPendingCalls() {
@@ -302,22 +318,72 @@ void PrivateAggregationBudgeter::ProcessAllPendingCalls() {
   pending_calls_.clear();
 }
 
+void PrivateAggregationBudgeter::GetAllDataKeys(
+    base::OnceCallback<void(std::set<PrivateAggregationDataModel::DataKey>)>
+        callback) {
+  OnUserVisibleTaskStarted();
+
+  EnsureStorageInitializationBegun();
+
+  base::OnceCallback<void(std::set<PrivateAggregationDataModel::DataKey>)>
+      impl_callback = std::move(callback).Then(
+          base::BindOnce(&PrivateAggregationBudgeter::OnUserVisibleTaskComplete,
+                         weak_factory_.GetWeakPtr()));
+
+  if (storage_status_ == StorageStatus::kInitializing) {
+    // `base::Unretained` is safe as `pending_calls_` is owned by `this`.
+    pending_calls_.push_back(
+        base::BindOnce(&PrivateAggregationBudgeter::GetAllDataKeysImpl,
+                       base::Unretained(this), std::move(impl_callback)));
+  } else {
+    return GetAllDataKeysImpl(std::move(impl_callback));
+  }
+}
+
+void PrivateAggregationBudgeter::GetAllDataKeysImpl(
+    base::OnceCallback<void(std::set<PrivateAggregationDataModel::DataKey>)>
+        callback) {
+  if (!DidStorageInitializationSucceed()) {
+    std::move(callback).Run(std::set<PrivateAggregationDataModel::DataKey>());
+    return;
+  }
+
+  std::set<PrivateAggregationDataModel::DataKey> keys;
+  for (const auto& [site_key, budgets] :
+       storage_->budgets_data()->GetAllCached()) {
+    for (const proto::ReportingOrigin& elem :
+         budgets.reporting_origins_for_deletion()) {
+      url::Origin reporting_origin = url::Origin::Create(GURL(elem.origin()));
+      if (reporting_origin.opaque()) {
+        continue;
+      }
+      keys.emplace(std::move(reporting_origin));
+    }
+  }
+  std::move(callback).Run(std::move(keys));
+}
+
+void PrivateAggregationBudgeter::DeleteByDataKey(
+    const PrivateAggregationDataModel::DataKey& key,
+    base::OnceClosure callback) {
+  ClearData(/*delete_begin=*/base::Time::Min(),
+            /*delete_end=*/base::Time::Max(),
+            /*filter=*/
+            base::BindRepeating(
+                std::equal_to<blink::StorageKey>(),
+                blink::StorageKey::CreateFirstParty(key.reporting_origin())),
+            std::move(callback));
+}
+
 // TODO(crbug.com/1336733): Consider enumerating different error cases and log
 // metrics and/or expose to callers.
 void PrivateAggregationBudgeter::ConsumeBudgetImpl(
     int additional_budget,
     const PrivateAggregationBudgetKey& budget_key,
     base::OnceCallback<void(RequestResult)> on_done) {
-  switch (storage_status_) {
-    case StorageStatus::kPendingInitialization:
-    case StorageStatus::kInitializing:
-      NOTREACHED();
-      break;
-    case StorageStatus::kInitializationFailed:
-      std::move(on_done).Run(RequestResult::kStorageInitializationFailed);
-      return;
-    case StorageStatus::kOpen:
-      break;
+  if (!DidStorageInitializationSucceed()) {
+    std::move(on_done).Run(RequestResult::kStorageInitializationFailed);
+    return;
   }
 
   if (additional_budget <= 0) {
@@ -364,11 +430,9 @@ void PrivateAggregationBudgeter::ConsumeBudgetImpl(
   proto::PrivateAggregationBudgetEntry* window_for_key = nullptr;
   base::CheckedNumeric<int> total_budget_used_smaller_scope = 0;
   base::CheckedNumeric<int> total_budget_used_larger_scope = 0;
-  bool should_clean_up_stale_budgets = false;
 
   for (proto::PrivateAggregationBudgetEntry& elem : *budget_entries) {
     if (elem.entry_start_timestamp() < earliest_window_in_larger_scope_start) {
-      should_clean_up_stale_budgets = true;
       continue;
     }
     if (elem.entry_start_timestamp() == current_window_start) {
@@ -422,17 +486,9 @@ void PrivateAggregationBudgeter::ConsumeBudgetImpl(
     window_for_key->set_budget_used(budget_used_for_key);
   }
 
-  if (should_clean_up_stale_budgets) {
-    CleanUpStaleBudgetEntries(budget_entries,
-                              earliest_window_in_larger_scope_start);
-  }
-
   google::protobuf::RepeatedPtrField<proto::ReportingOrigin>*
       reporting_origins_for_deletion =
           budgets.mutable_reporting_origins_for_deletion();
-
-  CleanUpStaleReportingOrigins(reporting_origins_for_deletion,
-                               earliest_window_in_larger_scope_start);
 
   if (budget_increase_request_result == RequestResult::kApproved) {
     std::string reporting_origin_serialized = budget_key.origin().Serialize();
@@ -462,6 +518,8 @@ void PrivateAggregationBudgeter::ConsumeBudgetImpl(
 
   storage_->budgets_data()->UpdateData(site_key, budgets);
   std::move(on_done).Run(budget_increase_request_result);
+
+  CleanUpStaleDataSoon();
 }
 
 void PrivateAggregationBudgeter::ClearDataImpl(
@@ -469,16 +527,9 @@ void PrivateAggregationBudgeter::ClearDataImpl(
     base::Time delete_end,
     StoragePartition::StorageKeyMatcherFunction filter,
     base::OnceClosure done) {
-  switch (storage_status_) {
-    case StorageStatus::kPendingInitialization:
-    case StorageStatus::kInitializing:
-      NOTREACHED();
-      break;
-    case StorageStatus::kInitializationFailed:
-      std::move(done).Run();
-      return;
-    case StorageStatus::kOpen:
-      break;
+  if (!DidStorageInitializationSucceed()) {
+    std::move(done).Run();
+    return;
   }
 
   // Treat null times as unbounded lower or upper range. This is used by
@@ -547,11 +598,8 @@ void PrivateAggregationBudgeter::ClearDataImpl(
     proto::PrivateAggregationBudgets budgets;
     storage_->budgets_data()->TryGetData(site_key, &budgets);
 
-    static constexpr PrivateAggregationBudgetKey::Api kAllApis[] = {
-        PrivateAggregationBudgetKey::Api::kProtectedAudience,
-        PrivateAggregationBudgetKey::Api::kSharedStorage};
-
-    for (PrivateAggregationBudgetKey::Api api : kAllApis) {
+    for (PrivateAggregationBudgetKey::Api api :
+         PrivateAggregationBudgetKey::kAllApis) {
       google::protobuf::RepeatedPtrField<proto::PrivateAggregationBudgetEntry>*
           budget_entries = GetBudgetEntries(api, budgets);
       DCHECK(budget_entries);
@@ -591,6 +639,101 @@ void PrivateAggregationBudgeter::ClearDataImpl(
   // `PrivateAggregationBudgetStorage::kFlushDelay`. Runs the `done` callback
   // once flushing is complete.
   storage_->budgets_data()->FlushDataToDisk(std::move(done));
+}
+
+void PrivateAggregationBudgeter::CleanUpStaleDataSoon() {
+  if (!DidStorageInitializationSucceed()) {
+    return;
+  }
+
+  if (clean_up_stale_data_timer_.IsRunning()) {
+    return;
+  }
+
+  // Wait for `kMinStaleDataCleanUpGap` to pass between invocations.
+  base::TimeTicks now = base::TimeTicks::Now();
+  base::TimeTicks earliest_allowed_clean_up_time =
+      last_clean_up_time_ + kMinStaleDataCleanUpGap;
+
+  // If enough time has already passed, post a zero-delay task as it does not
+  // need to be invoked synchronously.
+  base::TimeDelta wait_time =
+      std::max(earliest_allowed_clean_up_time - now, base::TimeDelta());
+
+  clean_up_stale_data_timer_.Start(
+      FROM_HERE, wait_time,
+      base::BindOnce(&PrivateAggregationBudgeter::CleanUpStaleData,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void PrivateAggregationBudgeter::CleanUpStaleData() {
+  CHECK(DidStorageInitializationSucceed());
+
+  last_clean_up_time_ = base::TimeTicks::Now();
+
+  std::vector<std::string> all_sites;
+
+  for (const auto& [site_key, budgets] :
+       storage_->budgets_data()->GetAllCached()) {
+    all_sites.push_back(site_key);
+  }
+
+  const int64_t earliest_non_stale_window_start =
+      CalculateEarliestWindowStartInScope(
+          /*current_window_start=*/SerializeTimeForStorage(
+              PrivateAggregationBudgetKey::TimeWindow(base::Time::Now())
+                  .start_time()),
+          kLargerScopeValues.budget_scope_duration);
+
+  for (const std::string& site_key : all_sites) {
+    proto::PrivateAggregationBudgets budgets;
+    bool success = storage_->budgets_data()->TryGetData(site_key, &budgets);
+    CHECK(success);
+
+    bool was_modified = false;
+
+    for (PrivateAggregationBudgetKey::Api api :
+         PrivateAggregationBudgetKey::kAllApis) {
+      google::protobuf::RepeatedPtrField<proto::PrivateAggregationBudgetEntry>*
+          budget_entries = GetBudgetEntries(api, budgets);
+      CHECK(budget_entries);
+
+      was_modified |= CleanUpStaleBudgetEntries(
+          budget_entries, earliest_non_stale_window_start);
+    }
+
+    google::protobuf::RepeatedPtrField<proto::ReportingOrigin>*
+        reporting_origins_for_deletion =
+            budgets.mutable_reporting_origins_for_deletion();
+
+    was_modified |= CleanUpStaleReportingOrigins(
+        reporting_origins_for_deletion, earliest_non_stale_window_start);
+
+    if (!was_modified) {
+      continue;
+    }
+
+    bool is_entry_empty = budgets.protected_audience_budgets().empty() &&
+                          budgets.shared_storage_budgets().empty() &&
+                          budgets.reporting_origins_for_deletion().empty();
+    if (is_entry_empty) {
+      storage_->budgets_data()->DeleteData({site_key});
+    } else {
+      storage_->budgets_data()->UpdateData(site_key, budgets);
+    }
+  }
+}
+
+bool PrivateAggregationBudgeter::DidStorageInitializationSucceed() {
+  switch (storage_status_) {
+    case StorageStatus::kPendingInitialization:
+    case StorageStatus::kInitializing:
+      NOTREACHED_NORETURN();
+    case StorageStatus::kInitializationFailed:
+      return false;
+    case StorageStatus::kOpen:
+      return true;
+  }
 }
 
 }  // namespace content

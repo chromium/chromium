@@ -6,10 +6,14 @@
 
 #include "base/base64.h"
 #include "base/logging.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/companion/core/constants.h"
+#include "chrome/browser/companion/core/features.h"
+#include "chrome/browser/companion/core/mock_signin_delegate.h"
 #include "chrome/browser/companion/core/promo_handler.h"
 #include "chrome/browser/companion/core/proto/companion_url_params.pb.h"
-#include "chrome/browser/companion/core/signin_delegate.h"
+#include "chrome/browser/companion/visual_search/features.h"
+#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/unified_consent/pref_names.h"
@@ -27,26 +31,23 @@ constexpr char kValidUrl[] = "https://foo.com/";
 constexpr char kTextQuery[] = "Apples";
 constexpr char kOrigin[] = "chrome-untrusted://companion-side-panel.top-chrome";
 
-class MockSigninDelegate : public SigninDelegate {
- public:
-  MOCK_METHOD0(AllowedSignin, bool());
-  MOCK_METHOD0(IsSignedIn, bool());
-  MOCK_METHOD0(StartSigninFlow, void());
-  MOCK_METHOD1(EnableMsbb, void(bool));
-  MOCK_METHOD1(LoadUrlInNewTab, void(const GURL&));
-};
-
 }  // namespace
 
 class CompanionUrlBuilderTest : public testing::Test {
  public:
-  CompanionUrlBuilderTest() = default;
   ~CompanionUrlBuilderTest() override = default;
 
   void SetUp() override {
+    scoped_list_.InitWithFeaturesAndParameters(GetEnabledFeatures(),
+                                               /** disabled_features= */ {});
+
     pref_service_.registry()->RegisterBooleanPref(
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
         false);
+
+    pref_service_.registry()->RegisterBooleanPref(
+        prefs::kSidePanelCompanionEntryPinnedToToolbar,
+        EntryPointDefaultPinned());
 
     PromoHandler::RegisterProfilePrefs(pref_service_.registry());
 
@@ -54,9 +55,19 @@ class CompanionUrlBuilderTest : public testing::Test {
     SetSignInAndMsbbExpectations(/*is_sign_in_allowed=*/true,
                                  /*is_signed_in=*/true,
                                  /*msbb_pref_enabled=*/true);
+    EXPECT_CALL(signin_delegate_, ShouldShowRegionSearchIPH())
+        .WillRepeatedly(testing::Return(true));
     url_builder_ = std::make_unique<CompanionUrlBuilder>(&pref_service_,
                                                          &signin_delegate_);
   }
+
+  virtual std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() {
+    return {base::test::FeatureRefAndParams(
+        features::internal::kSidePanelCompanion,
+        {{"open-links-in-current-tab", "false"}})};
+  }
+
+  virtual bool EntryPointDefaultPinned() { return true; }
 
  protected:
   void VerifyPageUrlSent(GURL page_url, bool expect_was_sent) {
@@ -101,6 +112,7 @@ class CompanionUrlBuilderTest : public testing::Test {
         base::Value(msbb_pref_enabled));
   }
 
+  base::test::ScopedFeatureList scoped_list_;
   TestingPrefServiceSimple pref_service_;
   MockSigninDelegate signin_delegate_;
   std::unique_ptr<CompanionUrlBuilder> url_builder_;
@@ -171,6 +183,7 @@ TEST_F(CompanionUrlBuilderTest, MsbbOff) {
   EXPECT_TRUE(proto.is_signed_in());
   EXPECT_TRUE(proto.is_sign_in_allowed());
   EXPECT_FALSE(proto.has_msbb_enabled());
+  EXPECT_TRUE(proto.is_upload_dialog_supported());
 }
 
 TEST_F(CompanionUrlBuilderTest, MsbbOn) {
@@ -205,6 +218,10 @@ TEST_F(CompanionUrlBuilderTest, MsbbOn) {
   EXPECT_EQ(proto.page_url(), page_url.spec());
   EXPECT_TRUE(proto.has_msbb_enabled());
   EXPECT_TRUE(proto.is_signed_in());
+  EXPECT_TRUE(proto.is_entrypoint_pinned_by_default());
+  EXPECT_TRUE(proto.links_open_in_new_tab());
+  EXPECT_FALSE(proto.is_vqs_enabled_on_chrome());
+  EXPECT_TRUE(proto.is_upload_dialog_supported());
 
   // Verify promo state.
   EXPECT_TRUE(proto.has_promo_state());
@@ -212,6 +229,7 @@ TEST_F(CompanionUrlBuilderTest, MsbbOn) {
   EXPECT_EQ(0, proto.promo_state().msbb_promo_denial_count());
   EXPECT_EQ(0, proto.promo_state().exps_promo_denial_count());
   EXPECT_EQ(2, proto.promo_state().exps_promo_shown_count());
+  EXPECT_TRUE(proto.promo_state().should_show_region_search_iph());
 }
 
 TEST_F(CompanionUrlBuilderTest, NonProtobufParams) {
@@ -260,6 +278,66 @@ TEST_F(CompanionUrlBuilderTest, WithoutTextQuery) {
 
   EXPECT_TRUE(net::GetValueForKeyInQuery(companion_url, "origin", &value));
   EXPECT_EQ(value, kOrigin);
+}
+
+class CompanionUrlBuilderCurrentTabTest : public CompanionUrlBuilderTest {
+ public:
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
+    return {base::test::FeatureRefAndParams(
+        features::internal::kSidePanelCompanion,
+        {{"open-links-in-current-tab", "true"}})};
+  }
+};
+
+TEST_F(CompanionUrlBuilderCurrentTabTest, CurrentTab) {
+  GURL page_url(kValidUrl);
+  std::string encoded_proto =
+      url_builder_->BuildCompanionUrlParamProto(page_url);
+
+  // Deserialize the query param into protobuf.
+  companion::proto::CompanionUrlParams proto =
+      DeserializeCompanionRequest(encoded_proto);
+
+  EXPECT_FALSE(proto.links_open_in_new_tab());
+}
+
+class CompanionUrlBuilderDefaultUnpinnedTest : public CompanionUrlBuilderTest {
+ public:
+  bool EntryPointDefaultPinned() override { return false; }
+};
+
+TEST_F(CompanionUrlBuilderDefaultUnpinnedTest, DefaultUnpinned) {
+  GURL page_url(kValidUrl);
+  std::string encoded_proto =
+      url_builder_->BuildCompanionUrlParamProto(page_url);
+
+  // Deserialize the query param into protobuf.
+  companion::proto::CompanionUrlParams proto =
+      DeserializeCompanionRequest(encoded_proto);
+
+  EXPECT_FALSE(proto.is_entrypoint_pinned_by_default());
+}
+
+class CompanionUrlBuilderVqsEnabledTest : public CompanionUrlBuilderTest {
+ public:
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
+    return {base::test::FeatureRefAndParams(
+                features::internal::kSidePanelCompanion, {}),
+            base::test::FeatureRefAndParams(
+                visual_search::features::kVisualSearchSuggestions, {})};
+  }
+};
+
+TEST_F(CompanionUrlBuilderVqsEnabledTest, VqsEnabled) {
+  GURL page_url(kValidUrl);
+  std::string encoded_proto =
+      url_builder_->BuildCompanionUrlParamProto(page_url);
+
+  // Deserialize the query param into protobuf.
+  companion::proto::CompanionUrlParams proto =
+      DeserializeCompanionRequest(encoded_proto);
+
+  EXPECT_TRUE(proto.is_vqs_enabled_on_chrome());
 }
 
 }  // namespace companion

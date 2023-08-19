@@ -7,10 +7,6 @@
 #import "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation ChromeCoordinator {
   base::WeakPtr<Browser> _browser;
 }

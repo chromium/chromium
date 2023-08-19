@@ -26,7 +26,6 @@
 <translation id="2060505056492490888">„<ph name="DOT" />“ er notað á röngum stað í „<ph name="INVALIDDOMAIN" />“.</translation>
 <translation id="2148716181193084225">Í dag</translation>
 <translation id="2226276347425096477">Styttu þennan texta í <ph name="MAX_CHARACTERS" /> stafi eða minna (sem stendur notarðu <ph name="CURRENT_LENGTH" /> stafi).</translation>
-<translation id="2246498165605549352">Staðbundin skrá</translation>
 <translation id="2247351761944213033">Vika <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Hljóðrás <ph name="NUMBER" /></translation>
 <translation id="2393030564806080191">Sextándakerfisgildi litar</translation>
@@ -89,6 +88,7 @@
 <translation id="5425179576310518467">núverandi dagsetning</translation>
 <translation id="5466621249238537318">Veldu eina eða fleiri skrár.</translation>
 <translation id="5468998798572797635">hætta að nota allan skjáinn</translation>
+<translation id="5514612371225420585">Skrá í tækinu þínu</translation>
 <translation id="5516235301412634559">0,75</translation>
 <translation id="5537725057119320332">Senda út</translation>
 <translation id="5546461542133609677">hætta að þagga</translation>
@@ -113,6 +113,7 @@
 <translation id="6398862346408813489">Sýna glugga fyrir mánaðarval</translation>
 <translation id="6404546809543547843">tímasleði hljóðs</translation>
 <translation id="6443871981718447451">sýna valmynd fyrir skjátexta</translation>
+<translation id="6484738902856791350">Fagurprenta</translation>
 <translation id="6550675742724504774">Valkostir</translation>
 <translation id="6572309429103589720">Málfræðivilla</translation>
 <translation id="658823671542763450">nota allan skjáinn</translation>

@@ -8,9 +8,9 @@
 // Utility functions for converting between DIP (device independent pixels) and
 // PX (physical pixels).
 //
-// "Supported scale factor" means a ui::ResourceScaleFactor enum value
+// "Supported scale factor" means a `ui::ResourceScaleFactor` enum value
 // (representing one of a finite number of floating point values) returned by
-// ui::GetSupportedScaleFactor, defined in ui/base/layout.h.
+// `ui::GetSupportedScaleFactor`.
 
 #include "ui/base/resource/resource_scale_factor.h"
 

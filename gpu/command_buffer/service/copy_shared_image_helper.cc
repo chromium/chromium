@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
@@ -18,24 +19,26 @@
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "skia/ext/rgba_to_yuva.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
-#include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "third_party/skia/include/core/SkYUVAInfo.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
+#include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
 #include "third_party/skia/include/gpu/graphite/Image.h"
 #include "third_party/skia/include/gpu/graphite/Recorder.h"
 #include "third_party/skia/include/gpu/graphite/YUVABackendTextures.h"
+#include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 
 namespace gpu {
 
@@ -354,14 +357,11 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertRGBAToYUVAMailboxes(
   int num_yuva_planes;
   std::array<std::unique_ptr<SkiaImageRepresentation>, SkYUVAInfo::kMaxPlanes>
       yuva_images;
-  auto result = ConvertYUVACommon(
+  RETURN_IF_ERROR(ConvertYUVACommon(
       "ConvertYUVAMailboxesToRGB", yuv_color_space, plane_config, subsampling,
       mailboxes_in, representation_factory_, shared_context_state_,
       dst_color_space, dst_plane_config, dst_subsampling, rgba_image,
-      num_yuva_planes, yuva_images);
-  if (!result.has_value()) {
-    return result;
-  }
+      num_yuva_planes, yuva_images));
 
   std::vector<GrBackendSemaphore> begin_semaphores;
   std::vector<GrBackendSemaphore> end_semaphores;
@@ -374,6 +374,14 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertRGBAToYUVAMailboxes(
                                     "glConvertYUVAMailboxesToRGB",
                                     "RGBA shared image is not readable"));
   }
+  // Perform ApplyBackendSurfaceEndState() on the ScopedReadAccess before
+  // exiting.
+  absl::Cleanup cleanup = [&]() {
+    rgba_scoped_access->ApplyBackendSurfaceEndState();
+    SubmitIfNecessary(std::move(end_semaphores), shared_context_state_,
+                      is_drdc_enabled_);
+  };
+
   auto rgba_sk_image = rgba_scoped_access->CreateSkImage(shared_context_state_);
   if (!rgba_sk_image) {
     return base::unexpected(GLError(GL_INVALID_OPERATION,
@@ -418,9 +426,6 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertRGBAToYUVAMailboxes(
       yuva_images[i]->SetCleared();
     }
   }
-  rgba_scoped_access->ApplyBackendSurfaceEndState();
-  SubmitIfNecessary(std::move(end_semaphores), shared_context_state_,
-                    is_drdc_enabled_);
   return base::ok();
 }
 
@@ -436,14 +441,11 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertYUVAMailboxesToRGB(
   int num_src_planes;
   std::array<std::unique_ptr<SkiaImageRepresentation>, SkYUVAInfo::kMaxPlanes>
       yuva_images;
-  auto result = ConvertYUVACommon(
+  RETURN_IF_ERROR(ConvertYUVACommon(
       "ConvertYUVAMailboxesToRGB", planes_yuv_color_space, plane_config,
       subsampling, bytes_in, representation_factory_, shared_context_state_,
       src_yuv_color_space, src_plane_config, src_subsampling, rgba_image,
-      num_src_planes, yuva_images);
-  if (!result.has_value()) {
-    return result;
-  }
+      num_src_planes, yuva_images));
 
   sk_sp<SkColorSpace> src_rgb_color_space = ReadSkColorSpace(
       bytes_in + (SkYUVAInfo::kMaxPlanes + 1) * sizeof(gpu::Mailbox));
@@ -461,6 +463,7 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertYUVAMailboxesToRGB(
                 "Destination shared image is not writable"));
   }
 
+  base::expected<void, GLError> result;
   bool source_access_valid = true;
   std::array<std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess>,
              SkYUVAInfo::kMaxPlanes>
@@ -522,7 +525,7 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertYUVAMailboxesToRGB(
         yuva_textures[i] = source_scoped_access[i]->graphite_texture();
       }
       skgpu::graphite::YUVABackendTextures yuva_backend_textures(
-          recorder, yuva_info, yuva_textures.data());
+          recorder, yuva_info, yuva_textures);
       result_image = SkImages::TextureFromYUVATextures(
           recorder, yuva_backend_textures, src_rgb_color_space);
     }
@@ -586,6 +589,14 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
   if (!dest_shared_image) {
     return base::unexpected(
         GLError(GL_INVALID_VALUE, "glCopySubTexture", "unknown mailbox"));
+  }
+
+  auto dest_format = dest_shared_image->format();
+  // Destination shared image cannot prefer external sampler.
+  if (dest_format.IsLegacyMultiplanar() ||
+      dest_format.PrefersExternalSampler()) {
+    return base::unexpected(
+        GLError(GL_INVALID_VALUE, "glCopySubTexture", "unexpected format"));
   }
 
   gfx::Size dest_size = dest_shared_image->size();
@@ -695,11 +706,7 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
     // Skia will flip the image if the surface origins do not match.
     DCHECK_EQ(unpack_flip_y, source_shared_image->surface_origin() !=
                                  dest_shared_image->surface_origin());
-    auto dest_format = dest_shared_image->format();
     if (dest_format.is_single_plane()) {
-      // Destination shared image cannot prefer external sampler.
-      DCHECK(!dest_format.IsLegacyMultiplanar());
-
       auto* canvas = dest_scoped_access->surface()->getCanvas();
       SkPaint paint;
       paint.setBlendMode(SkBlendMode::kSrc);
@@ -711,11 +718,23 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
         source_image_reinterpreted = source_image->reinterpretColorSpace(
             canvas->imageInfo().refColorSpace());
       }
+      // Flip via canvas as Graphite doesn't support bottom left origin images.
+      // TODO(crbug.com/1449764): Remove this once Graphite supports bottom left
+      // origin images and we remove bottom left destination surfaces.
+      const int save_count = canvas->save();
+      if (shared_context_state_->graphite_context() && unpack_flip_y) {
+        canvas->translate(0.0f, static_cast<float>(dest_rect.height()));
+        canvas->scale(1.0f, -1.0f);
+      }
       canvas->drawImageRect(source_image_reinterpreted,
                             gfx::RectToSkRect(source_rect),
                             gfx::RectToSkRect(dest_rect), SkSamplingOptions(),
                             &paint, SkCanvas::kStrict_SrcRectConstraint);
+      canvas->restoreToCount(save_count);
     } else {
+      // TODO(crbug.com/1450879): Make this path work for Graphite after Dawn
+      // supports multiplanar rendering and we integrate it into Chrome.
+      CHECK(shared_context_state_->gr_context());
       SkSurface* yuva_sk_surfaces[SkYUVAInfo::kMaxPlanes] = {};
       for (int plane_index = 0; plane_index < dest_format.NumberOfPlanes();
            plane_index++) {
@@ -732,13 +751,18 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
       SkYUVAInfo yuva_info(gfx::SizeToSkISize(dest_shared_image->size()),
                            ToSkYUVAPlaneConfig(dest_format),
                            ToSkYUVASubsampling(dest_format), yuv_color_space);
-      // Perform skia::BlitRGBAToYUVA for the multiplanar YUV format image,
-      // having it clear the destination image if necessary and then populate
-      // |dest_rect|.
-      skia::BlitRGBAToYUVA(
-          source_image.get(), yuva_sk_surfaces, yuva_info,
-          gfx::RectToSkRect(dest_rect),
-          /*clear_destination=*/!dest_shared_image->IsCleared());
+      // Perform skia::BlitRGBAToYUVA for the multiplanar YUV format image.
+      // TODO(crbug.com/1451025): This will scale the image if the source image
+      // is smaller than the destination image. What we should actually do
+      // instead is just blit the destination rect and clear out the rest.
+      // However, doing that resulted in resulted in pixeltest failures due to
+      // images having pixel bleeding at their borders when this codepath is
+      // used by RenderableGMBVideoFramePool (see the bug for details). The
+      // current behavior of scaling the image matches the legacy
+      // (non-multiplanar SI) behavior in RenderableGMBVideoFramePool, so it is
+      // not a regression. Nonetheless, this behavior should
+      // ideally be changed to that described above for correctness.
+      skia::BlitRGBAToYUVA(source_image.get(), yuva_sk_surfaces, yuva_info);
       dest_shared_image->SetCleared();
     }
 
@@ -778,8 +802,8 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImageToGLTexture(
   texture_info.fTarget = target;
   // Get the surface color format similar to that in VideoFrameYUVConverter.
   texture_info.fFormat = GetSurfaceColorFormat(internal_format, type);
-  GrBackendTexture backend_texture(width, height, GrMipMapped::kNo,
-                                   texture_info);
+  auto backend_texture = GrBackendTextures::MakeGL(
+      width, height, skgpu::Mipmapped::kNo, texture_info);
 
   auto dest_color_space = SkColorSpace::MakeSRGB();
   GrDirectContext* direct_context = shared_context_state_->gr_context();
@@ -914,7 +938,8 @@ base::expected<void, GLError> CopySharedImageHelper::ReadPixels(
   }
 
   sk_sp<SkImage> sk_image;
-  if (source_shared_image->format().is_single_plane()) {
+  if (source_shared_image->format().is_single_plane() ||
+      source_shared_image->format().PrefersExternalSampler()) {
     // Create SkImage without plane index for single planar formats or legacy
     // multiplanar formats with external sampler.
     sk_image = source_scoped_access->CreateSkImage(shared_context_state_);
@@ -940,19 +965,28 @@ base::expected<void, GLError> CopySharedImageHelper::ReadPixels(
   } else {
     CHECK(shared_context_state_->graphite_context());
     ReadPixelsContext context;
-    shared_context_state_->graphite_context()->asyncReadPixels(
-        sk_image.get(), dst_info.colorInfo(),
-        SkIRect::MakeXYWH(src_x, src_y, dst_info.width(), dst_info.height()),
-        &OnReadPixelsDone, &context);
+    const SkIRect src_rect =
+        SkIRect::MakeXYWH(src_x, src_y, dst_info.width(), dst_info.height());
+    shared_context_state_->graphite_context()->asyncRescaleAndReadPixels(
+        sk_image.get(), dst_info, src_rect, SkImage::RescaleGamma::kSrc,
+        SkImage::RescaleMode::kRepeatedLinear, &OnReadPixelsDone, &context);
     InsertRecordingAndSubmit(shared_context_state_, /*sync_cpu=*/true);
     CHECK(context.finished);
     if (context.async_result) {
       success = true;
+      // Use CopyPlane to flip as Graphite doesn't support bottom left origin
+      // images. Using a negative height causes CopyPlane to flip while copying.
+      // TODO(crbug.com/1449764): Remove this if Graphite performs the flip once
+      // it supports bottom left origin images.
+      const int height =
+          source_shared_image->surface_origin() == kTopLeft_GrSurfaceOrigin
+              ? dst_info.height()
+              : -dst_info.height();
       libyuv::CopyPlane(
           static_cast<const uint8_t*>(context.async_result->data(0)),
           context.async_result->rowBytes(0),
           static_cast<uint8_t*>(pixel_address), row_bytes,
-          dst_info.width() * dst_info.bytesPerPixel(), dst_info.height());
+          dst_info.width() * dst_info.bytesPerPixel(), height);
     } else {
       success = false;
     }
@@ -965,6 +999,55 @@ base::expected<void, GLError> CopySharedImageHelper::ReadPixels(
     return base::unexpected(GLError(GL_INVALID_OPERATION,
                                     "glReadbackImagePixels",
                                     "Failed to read pixels from SkImage"));
+  }
+  return base::ok();
+}
+
+base::expected<void, GLError> CopySharedImageHelper::WritePixelsYUV(
+    GLuint src_width,
+    GLuint src_height,
+    std::array<SkPixmap, SkYUVAInfo::kMaxPlanes> pixmaps,
+    std::vector<GrBackendSemaphore> end_semaphores,
+    std::unique_ptr<SkiaImageRepresentation> dest_shared_image,
+    std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess>
+        dest_scoped_access) {
+  // Order of destruction for moved unique pointers is not guaranteed and the
+  // ScopedWriteAccess must be destroyed before representation; so perform a
+  // Cleanup before exiting.
+  absl::Cleanup cleanup = [&]() { dest_scoped_access.reset(); };
+  viz::SharedImageFormat dest_format = dest_shared_image->format();
+  auto* gr_context = shared_context_state_->gr_context();
+  for (int plane = 0; plane < dest_format.NumberOfPlanes(); plane++) {
+    bool written = false;
+    if (gr_context) {
+      written = gr_context->updateBackendTexture(
+          dest_scoped_access->promise_image_texture(plane)->backendTexture(),
+          &pixmaps[plane],
+          /*numLevels=*/1, dest_shared_image->surface_origin(), nullptr,
+          nullptr);
+    } else {
+      CHECK(shared_context_state_->graphite_context());
+      written =
+          shared_context_state_->gpu_main_graphite_recorder()
+              ->updateBackendTexture(
+                  dest_scoped_access->graphite_texture(plane), &pixmaps[plane],
+                  /*numLevels=*/1);
+    }
+    if (!written) {
+      return base::unexpected(
+          GLError(GL_INVALID_OPERATION, "glWritePixelsYUV",
+                  "Failed to upload pixels to dest shared image"));
+    }
+  }
+
+  if (gr_context) {
+    dest_scoped_access->ApplyBackendSurfaceEndState();
+  }
+  SubmitIfNecessary(std::move(end_semaphores), shared_context_state_,
+                    is_drdc_enabled_);
+
+  if (!dest_shared_image->IsCleared()) {
+    dest_shared_image->SetClearedRect(gfx::Rect(src_width, src_height));
   }
   return base::ok();
 }

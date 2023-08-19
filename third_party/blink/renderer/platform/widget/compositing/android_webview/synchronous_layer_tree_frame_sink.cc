@@ -14,9 +14,6 @@
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
-#include "components/power_scheduler/power_mode.h"
-#include "components/power_scheduler/power_mode_arbiter.h"
-#include "components/power_scheduler/power_mode_voter.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/gpu/context_provider.h"
@@ -130,7 +127,7 @@ base::TimeDelta SynchronousLayerTreeFrameSink::StubDisplayClient::
 }
 
 SynchronousLayerTreeFrameSink::SynchronousLayerTreeFrameSink(
-    scoped_refptr<viz::ContextProvider> context_provider,
+    scoped_refptr<viz::RasterContextProvider> context_provider,
     scoped_refptr<cc::RasterContextProviderWrapper>
         worker_context_provider_wrapper,
     scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
@@ -157,8 +154,7 @@ SynchronousLayerTreeFrameSink::SynchronousLayerTreeFrameSink(
           features::IsUsingVizFrameSubmissionForWebView()),
       use_zero_copy_sw_draw_(
           Platform::Current()
-              ->IsZeroCopySynchronousSwDrawEnabledForAndroidWebView()),
-      power_mode_voter_("PowerModeVoter.Animation") {
+              ->IsZeroCopySynchronousSwDrawEnabledForAndroidWebView()) {
   DCHECK(registry_);
   DETACH_FROM_THREAD(thread_checker_);
   memory_policy_.priority_cutoff_when_visible =
@@ -292,13 +288,6 @@ void SynchronousLayerTreeFrameSink::SubmitCompositorFrame(
     device_scale_factor_ = frame.metadata.device_scale_factor;
   }
 
-  power_mode_voter_.OnFrameProduced(frame.render_pass_list.back()->damage_rect,
-                                    frame.device_scale_factor());
-
-  // Reset the timestamp to null so that the next BeginFrame marks the time when
-  // it is called.
-  nop_animation_timeout_start_ = base::TimeTicks();
-
   if (in_software_draw_) {
     // The frame we send to the client is actually just the metadata. Preserve
     // the |frame| for the software path below.
@@ -316,12 +305,12 @@ void SynchronousLayerTreeFrameSink::SubmitCompositorFrame(
     display_->Resize(display_size);
 
     if (!root_local_surface_id_.is_valid() || display_size_ != display_size ||
-        device_scale_factor_ != frame.metadata.device_scale_factor) {
+        root_device_scale_factor_ != frame.metadata.device_scale_factor) {
       root_local_surface_id_allocator_.GenerateId();
       root_local_surface_id_ =
           root_local_surface_id_allocator_.GetCurrentLocalSurfaceId();
       display_size_ = display_size;
-      device_scale_factor_ = frame.metadata.device_scale_factor;
+      root_device_scale_factor_ = frame.metadata.device_scale_factor;
     }
 
     display_->SetLocalSurfaceId(root_local_surface_id_,
@@ -339,6 +328,7 @@ void SynchronousLayerTreeFrameSink::SubmitCompositorFrame(
     // the LayerTreeFrameSink client too? (We'd have to do the same for
     // hardware frames in SurfacesInstance?)
     viz::CompositorFrame embed_frame;
+    embed_frame.metadata.frame_token = ++root_next_frame_token_;
     embed_frame.metadata.begin_frame_ack = frame.metadata.begin_frame_ack;
     embed_frame.metadata.device_scale_factor =
         frame.metadata.device_scale_factor;
@@ -633,11 +623,9 @@ void SynchronousLayerTreeFrameSink::OnNeedsBeginFrames(
     if (needs_begin_frames) {
       TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("cc,benchmark", "NeedsBeginFrames",
                                         this);
-      nop_animation_timeout_start_ = base::TimeTicks::Now();
     } else {
       TRACE_EVENT_NESTABLE_ASYNC_END0("cc,benchmark", "NeedsBeginFrames", this);
     }
-    power_mode_voter_.OnNeedsBeginFramesChanged(needs_begin_frames);
   }
   needs_begin_frames_ = needs_begin_frames;
   if (sync_client_) {
@@ -659,22 +647,6 @@ void SynchronousLayerTreeFrameSink::BeginFrame(
     const viz::BeginFrameArgs& args) {
   if (!external_begin_frame_source_)
     return;
-
-  if (!nop_animation_timeout_start_.is_null()) {
-    if ((base::TimeTicks::Now() - nop_animation_timeout_start_) >
-        power_scheduler::PowerModeVoter::kAnimationTimeout) {
-      // BeginFrame was not followed by SubmitCompositorFrame within the
-      // expected time, so the frame was likely skipped.
-      power_mode_voter_.OnFrameTimeout();
-
-      // Update the timestamp to start a new measurement.
-      nop_animation_timeout_start_ = base::TimeTicks::Now();
-    }
-  } else {
-    // Mark the time when BeginFrame was called after a previous
-    // SubmitCompositorFrame.
-    nop_animation_timeout_start_ = base::TimeTicks::Now();
-  }
   external_begin_frame_source_->OnBeginFrame(args);
 }
 

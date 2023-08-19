@@ -38,6 +38,10 @@ class Browser;
 
 @property(nonatomic, strong, readonly) UIViewController* viewController;
 
+// Flag indicating whether the PasswordManagerViewController should be presented
+// in search mode.
+@property(nonatomic, assign) BOOL openViewControllerForPasswordSearch;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORDS_COORDINATOR_H_

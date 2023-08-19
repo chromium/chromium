@@ -7,6 +7,7 @@
 
 #include "ash/game_dashboard/game_dashboard_context.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/aura/window_observer.h"
 
@@ -15,6 +16,9 @@ namespace ash {
 // Base class for GameDashboard related unittests, and contains common functions
 class GameDashboardTestBase : public AshTestBase {
  public:
+  // The bounds for the screen that will contain app windows.
+  static constexpr gfx::Rect kScreenBounds = gfx::Rect(10, 10, 1000, 750);
+
   GameDashboardTestBase();
   GameDashboardTestBase(const GameDashboardTestBase&) = delete;
   GameDashboardTestBase& operator=(const GameDashboardTestBase&) = delete;
@@ -22,7 +26,6 @@ class GameDashboardTestBase : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override;
-  void TearDown() override;
 
  protected:
   // Returns true if the `GameDashboardController` is observing the `window`.
@@ -60,7 +63,7 @@ class IsGameWindowPropertyObserver : public aura::WindowObserver {
 
  private:
   bool received_on_property_change_ = false;
-  aura::Window* window_;
+  raw_ptr<aura::Window, ExperimentalAsh> window_;
 };
 
 }  // namespace ash

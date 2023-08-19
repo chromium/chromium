@@ -338,8 +338,8 @@ void CastConfigControllerMediaRouter::UpdateDevices() {
         // Only set freeze info if the appropriate feature is enabled. Else,
         // values default to false and freeze ui is not shown.
         if (freeze_host) {
-          device.route.freeze_info.can_freeze = freeze_host->can_freeze();
-          device.route.freeze_info.is_frozen = freeze_host->is_frozen();
+          device.route.freeze_info.can_freeze = freeze_host->CanFreeze();
+          device.route.freeze_info.is_frozen = freeze_host->IsFrozen();
         }
 
         // Default to a tab/app capture. This will display the media router

@@ -205,9 +205,7 @@ leveldb::Status IndexedDBTransaction::Abort(
   state_ = FINISHED;
 
   if (backing_store_transaction_begun_) {
-    leveldb::Status status = transaction_->Rollback();
-    if (!status.ok())
-      return status;
+    transaction_->Rollback();
   }
 
   // Run the abort tasks, if any.
@@ -217,20 +215,13 @@ leveldb::Status IndexedDBTransaction::Abort(
   preemptive_task_queue_.clear();
   pending_preemptive_events_ = 0;
 
+  task_queue_.clear();
+
   // Backing store resources (held via cursors) must be released
   // before script callbacks are fired, as the script callbacks may
   // release references and allow the backing store itself to be
   // released, and order is critical.
-  CloseOpenCursorBindings();
-
-  // Open cursors have to be deleted before we clear the task queue.
-  // If we clear the task queue and closures exist in it that refer
-  // to callbacks associated with the cursor mojo bindings, the callback
-  // deletion will fail due to a mojo assert.  |CloseOpenCursorBindings()|
-  // above will clear the binding, which also deletes the owned
-  // |IndexedDBCursor| objects.  After that, we can safely clear the
-  // task queue.
-  task_queue_.clear();
+  CloseOpenCursors();
 
   transaction_->Reset();
 
@@ -283,13 +274,6 @@ void IndexedDBTransaction::Start() {
   DCHECK(!locks_receiver_.locks.empty());
   diagnostics_.start_time = base::Time::Now();
   run_tasks_callback_.Run();
-}
-
-void IndexedDBTransaction::EnsureBackingStoreTransactionBegun() {
-  if (!backing_store_transaction_begun_) {
-    transaction_->Begin(std::move(locks_receiver_.locks));
-    backing_store_transaction_begun_ = true;
-  }
 }
 
 leveldb::Status IndexedDBTransaction::BlobWriteComplete(
@@ -560,15 +544,6 @@ void IndexedDBTransaction::Timeout() {
                              u"Transaction timed out due to inactivity."));
   if (!result.ok())
     tear_down_callback_.Run(result);
-}
-
-void IndexedDBTransaction::CloseOpenCursorBindings() {
-  TRACE_EVENT1("IndexedDB", "IndexedDBTransaction::CloseOpenCursorBindings",
-               "txn.id", id());
-  std::vector<IndexedDBCursor*> cursor_ptrs(open_cursors_.begin(),
-                                            open_cursors_.end());
-  for (auto* cursor_ptr : cursor_ptrs)
-    cursor_ptr->RemoveBinding();
 }
 
 void IndexedDBTransaction::CloseOpenCursors() {

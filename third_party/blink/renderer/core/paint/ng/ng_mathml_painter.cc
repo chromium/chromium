@@ -103,11 +103,15 @@ void NGMathMLPainter::PaintOperator(const PaintInfo& info,
 void NGMathMLPainter::PaintRadicalSymbol(
     const PaintInfo& info,
     PhysicalOffset paint_offset) {
-  auto children = box_fragment_.Children();
-  if (children.size() == 0)
-    return;
-
-  const auto& base_child = To<NGPhysicalBoxFragment>(*children[0]);
+  LayoutUnit base_child_width;
+  LayoutUnit base_child_ascent;
+  if (box_fragment_.Children().size() > 0) {
+    const auto& base_child =
+        To<NGPhysicalBoxFragment>(*box_fragment_.Children()[0]);
+    base_child_width = base_child.Size().width;
+    base_child_ascent =
+        base_child.FirstBaseline().value_or(base_child.Size().height);
+  }
 
   const NGMathMLPaintInfo& parameters = box_fragment_.GetMathMLPaintInfo();
   DCHECK(box_fragment_.Style().IsHorizontalWritingMode());
@@ -119,8 +123,7 @@ void NGMathMLPainter::PaintRadicalSymbol(
   auto vertical = GetRadicalVerticalParameters(style, has_index);
 
   auto radical_base_ascent =
-      base_child.FirstBaseline().value_or(base_child.Size().height) +
-      parameters.radical_base_margins.inline_start;
+      base_child_ascent + parameters.radical_base_margins.inline_start;
   LayoutUnit block_offset =
       box_fragment_.FirstBaseline().value_or(box_fragment_.Size().height) -
       vertical.vertical_gap - radical_base_ascent;
@@ -145,15 +148,13 @@ void NGMathMLPainter::PaintRadicalSymbol(
   if (!rule_thickness)
     return;
   LayoutUnit base_width =
-      base_child.Size().width + parameters.radical_base_margins.InlineSum();
+      base_child_width + parameters.radical_base_margins.InlineSum();
   LogicalOffset bar_offset =
       LogicalOffset(inline_offset, block_offset) +
       LogicalSize(parameters.operator_inline_size, LayoutUnit());
-  LayoutSize bar_size = {base_width, rule_thickness};
   auto bar_physical_offset = bar_offset.ConvertToPhysical(
-      style.GetWritingDirection(),
-      PhysicalSize(box_fragment_.Size().width, box_fragment_.Size().height),
-      PhysicalSize(bar_size));
+      style.GetWritingDirection(), box_fragment_.Size(),
+      PhysicalSize(base_width, rule_thickness));
   PhysicalRect bar_rect = {bar_physical_offset.left, bar_physical_offset.top,
                            base_width, rule_thickness};
   bar_rect.Move(paint_offset);

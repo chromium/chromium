@@ -1,3 +1,2 @@
-monorail {
-  component: "Services>SignIn"
-}
+mixins: "//components/signin/COMMON_METADATA"
+os: ANDROID

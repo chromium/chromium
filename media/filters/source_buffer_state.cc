@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/media_switches.h"
@@ -686,7 +687,7 @@ bool SourceBufferState::OnNewConfigs(
   for (const auto& track : tracks->tracks()) {
     const auto& track_id = track->bytestream_track_id();
 
-    if (track->type() == MediaTrack::Audio) {
+    if (track->type() == MediaTrack::Type::kAudio) {
       AudioDecoderConfig audio_config = tracks->getAudioConfig(track_id);
       DVLOG(1) << "Audio track_id=" << track_id
                << " config: " << audio_config.AsHumanReadableString();
@@ -742,7 +743,7 @@ bool SourceBufferState::OnNewConfigs(
       frame_processor_->OnPossibleAudioConfigUpdate(audio_config);
       success &= stream->UpdateAudioConfig(audio_config, allow_codec_changes,
                                            media_log_);
-    } else if (track->type() == MediaTrack::Video) {
+    } else if (track->type() == MediaTrack::Type::kVideo) {
       VideoDecoderConfig video_config = tracks->getVideoConfig(track_id);
       DVLOG(1) << "Video track_id=" << track_id
                << " config: " << video_config.AsHumanReadableString();
@@ -826,7 +827,7 @@ bool SourceBufferState::OnNewConfigs(
                                            media_log_);
     } else {
       MEDIA_LOG(ERROR, media_log_) << "Error: unsupported media track type "
-                                   << track->type();
+                                   << base::to_underlying(track->type());
       return false;
     }
   }

@@ -47,7 +47,6 @@ mojom("mojom_platform") {
     "content_index/content_index.mojom",
     "context_menu/context_menu.mojom",
     "conversions/attribution_data_host.mojom",
-    "conversions/attribution_reporting.mojom",
     "conversions/conversions.mojom",
     "cookie_manager/cookie_manager_automation.mojom",
     "cookie_store/cookie_store.mojom",
@@ -75,6 +74,7 @@ mojom("mojom_platform") {
     "file/file_utilities.mojom",
     "file_system_access/file_system_access_access_handle_host.mojom",
     "file_system_access/file_system_access_capacity_allocation_host.mojom",
+    "file_system_access/file_system_access_cloud_identifier.mojom",
     "file_system_access/file_system_access_data_transfer_token.mojom",
     "file_system_access/file_system_access_directory_handle.mojom",
     "file_system_access/file_system_access_error.mojom",
@@ -82,6 +82,8 @@ mojom("mojom_platform") {
     "file_system_access/file_system_access_file_handle.mojom",
     "file_system_access/file_system_access_file_writer.mojom",
     "file_system_access/file_system_access_manager.mojom",
+    "file_system_access/file_system_access_observer.mojom",
+    "file_system_access/file_system_access_observer_host.mojom",
     "file_system_access/file_system_access_transfer_token.mojom",
     "filesystem/file_system.mojom",
     "font_access/font_access.mojom",
@@ -105,6 +107,7 @@ mojom("mojom_platform") {
     "interest_group/ad_display_size.mojom",
     "interest_group/interest_group_types.mojom",
     "keyboard_lock/keyboard_lock.mojom",
+    "lcp_critical_path_predictor/lcp_critical_path_predictor.mojom",
     "leak_detector/leak_detector.mojom",
     "link_to_text/link_to_text.mojom",
     "loader/code_cache.mojom",
@@ -179,6 +182,7 @@ mojom("mojom_platform") {
     "renderer_preferences.mojom",
     "reporting/reporting.mojom",
     "runtime_feature_state/runtime_feature_state_controller.mojom",
+    "safe_url_pattern.mojom",
     "scroll/scroll_enums.mojom",
     "scroll/scroll_into_view_params.mojom",
     "scroll/scrollbar_mode.mojom",
@@ -189,6 +193,7 @@ mojom("mojom_platform") {
     "service_worker/service_worker_ancestor_frame_type.mojom",
     "service_worker/service_worker_client.mojom",
     "service_worker/service_worker_container_type.mojom",
+    "service_worker/service_worker_embedded_worker_status.mojom",
     "service_worker/service_worker_error_type.mojom",
     "service_worker/service_worker_event_status.mojom",
     "service_worker/service_worker_fetch_handler_bypass_option.mojom",
@@ -213,7 +218,6 @@ mojom("mojom_platform") {
     "subapps/sub_apps_service.mojom",
     "timing/performance_mark_or_measure.mojom",
     "timing/resource_timing.mojom",
-    "url_pattern.mojom",
     "use_counter/use_counter_feature.mojom",
     "user_agent/user_agent_metadata.mojom",
     "v8_cache_options.mojom",
@@ -222,6 +226,7 @@ mojom("mojom_platform") {
     "webaudio/audio_context_manager.mojom",
     "webdatabase/web_database.mojom",
     "webid/federated_auth_request.mojom",
+    "webid/federated_auth_request_automation.mojom",
     "webpreferences/web_preferences.mojom",
     "websockets/websocket_connector.mojom",
     "webtransport/web_transport_connector.mojom",
@@ -255,6 +260,7 @@ mojom("mojom_platform") {
 
   if (use_blink_extensions_chromeos) {
     sources += [
+      "chromeos/diagnostics/cros_diagnostics.mojom",
       "chromeos/system_extensions/hid/cros_hid.mojom",
       "chromeos/system_extensions/managed_device_health_services/telemetry/cros_telemetry.mojom",
       "chromeos/system_extensions/managed_device_health_services/telemetry/nullable_primitives.mojom",
@@ -350,7 +356,7 @@ mojom("mojom_platform") {
   if (use_ozone) {
     enabled_features += [ "is_selection_clipboard_buffer_possible" ]
   }
-  if (is_android || is_mac) {
+  if (is_android || is_apple) {
     enabled_features += [ "is_using_open_color_chooser" ]
   }
 
@@ -629,8 +635,8 @@ mojom("mojom_platform") {
     {
       types = [
         {
-          mojom = "blink.mojom.UrlPattern"
-          cpp = "::blink::UrlPattern"
+          mojom = "blink.mojom.SafeUrlPattern"
+          cpp = "::blink::SafeUrlPattern"
         },
         {
           mojom = "blink.mojom.UrlPatternPart"
@@ -653,8 +659,9 @@ mojom("mojom_platform") {
           cpp = "::liburlpattern::Modifier"
         },
       ]
-      traits_headers =
-          [ "//third_party/blink/public/common/url_pattern_mojom_traits.h" ]
+      traits_headers = [
+        "//third_party/blink/public/common/safe_url_pattern_mojom_traits.h",
+      ]
       traits_public_deps = [ "//third_party/blink/public/common:headers" ]
     },
     {
@@ -666,6 +673,16 @@ mojom("mojom_platform") {
       ]
       traits_headers = [ "//third_party/blink/public/common/interest_group/auction_config_mojom_traits.h" ]
       traits_public_deps = [ "//url/mojom:mojom_traits" ]
+    },
+    {
+      types = [
+        {
+          mojom = "blink.mojom.ServiceWorkerEmbeddedWorkerStatus"
+          cpp = "::blink::EmbeddedWorkerStatus"
+        },
+      ]
+      traits_headers = [ "//third_party/blink/public/common/service_worker/embedded_worker_status.h" ]
+      traits_private_headers = [ "//third_party/blink/public/common/service_worker/service_worker_embedded_worker_status_mojom_traits.h" ]
     },
   ]
   cpp_typemaps = [
@@ -765,6 +782,16 @@ mojom("mojom_platform") {
         {
           mojom = "blink.mojom.AuctionAdConfigNonSharedParams"
           cpp = "::blink::AuctionConfig::NonSharedParams"
+        },
+      ]
+      traits_headers = [ "//third_party/blink/public/common/interest_group/auction_config_mojom_traits.h" ]
+      traits_public_deps = [ "//url/mojom:mojom_traits" ]
+    },
+    {
+      types = [
+        {
+          mojom = "blink.mojom.AuctionAdServerResponseConfig"
+          cpp = "::blink::AuctionConfig::ServerResponseConfig"
         },
       ]
       traits_headers = [ "//third_party/blink/public/common/interest_group/auction_config_mojom_traits.h" ]
@@ -1051,6 +1078,7 @@ mojom("android_mojo_bindings") {
     "blob/blob_registry.mojom",
     "blob/blob_url_store.mojom",
     "blob/data_element.mojom",
+    "blob/file_backed_blob_factory.mojom",
     "blob/serialized_blob.mojom",
     "contacts/contacts_manager.mojom",
     "digital_goods/digital_goods.mojom",
@@ -1320,6 +1348,11 @@ mojom("mojom_core") {
     ]
   }
 
+  enabled_features = []
+  if (use_aura) {
+    enabled_features += [ "use_aura" ]
+  }
+
   shared_cpp_typemaps = [
     {
       types = [
@@ -1371,6 +1404,16 @@ mojom("mojom_core") {
       ]
       traits_private_headers = [ "//third_party/blink/public/common/page/browsing_context_group_info_mojom_traits.h" ]
     },
+    {
+      types = [
+        {
+          mojom = "blink.mojom.ServiceWorkerRouterRules"
+          cpp = "::blink::ServiceWorkerRouterRules"
+        },
+      ]
+      traits_headers = [ "//third_party/blink/public/common/service_worker/service_worker_router_rule.h" ]
+      traits_private_headers = [ "//third_party/blink/public/common/service_worker/service_worker_router_rule_mojom_traits.h" ]
+    },
   ]
 
   cpp_typemaps = [
@@ -1414,16 +1457,6 @@ mojom("mojom_core") {
         "//third_party/blink/public/common/messaging/transferable_message.h",
       ]
       traits_private_headers = [ "//third_party/blink/public/common/messaging/transferable_message_mojom_traits.h" ]
-    },
-    {
-      types = [
-        {
-          mojom = "blink.mojom.ServiceWorkerRouterRules"
-          cpp = "::blink::ServiceWorkerRouterRules"
-        },
-      ]
-      traits_headers = [ "//third_party/blink/public/common/service_worker/service_worker_router_rule.h" ]
-      traits_private_headers = [ "//third_party/blink/public/common/service_worker/service_worker_router_rule_mojom_traits.h" ]
     },
   ]
   cpp_typemaps += shared_cpp_typemaps
@@ -1576,7 +1609,6 @@ mojom("mojom_modules") {
       ]
       traits_private_headers = [ "//third_party/blink/renderer/modules/indexeddb/indexed_db_blink_mojom_traits.h" ]
       traits_headers = [
-        "//third_party/blink/public/common/indexeddb/web_idb_types.h",
         "//third_party/blink/renderer/modules/indexeddb/idb_key_path.h",
         "//third_party/blink/renderer/modules/indexeddb/idb_key_range.h",
         "//third_party/blink/renderer/modules/indexeddb/idb_metadata.h",
@@ -1642,7 +1674,6 @@ mojom("mojom_modules") {
         "//third_party/blink/public/common/indexeddb/indexeddb_key_path.h",
         "//third_party/blink/public/common/indexeddb/indexeddb_key_range.h",
         "//third_party/blink/public/common/indexeddb/indexeddb_metadata.h",
-        "//third_party/blink/public/common/indexeddb/web_idb_types.h",
       ]
       traits_private_headers = [ "//third_party/blink/public/common/indexeddb/indexed_db_default_mojom_traits.h" ]
     },

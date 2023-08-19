@@ -28,7 +28,7 @@ DirectLayerTreeFrameSink::DirectLayerTreeFrameSink(
     const viz::FrameSinkId& frame_sink_id,
     viz::FrameSinkManagerImpl* frame_sink_manager,
     viz::Display* display,
-    scoped_refptr<viz::ContextProvider> context_provider,
+    scoped_refptr<viz::RasterContextProvider> context_provider,
     scoped_refptr<cc::RasterContextProviderWrapper>
         worker_context_provider_wrapper,
     scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
@@ -46,6 +46,10 @@ DirectLayerTreeFrameSink::DirectLayerTreeFrameSink(
 
 DirectLayerTreeFrameSink::~DirectLayerTreeFrameSink() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  // Reset `client_` in Display to avoid accessing `client_` after this is
+  // destructed. This is to resolve the circular dependency between Display and
+  // DirectLayerTreeFrameSink.
+  display_->ResetDisplayClientForTesting(/*old_client=*/this);
 }
 
 bool DirectLayerTreeFrameSink::BindToClient(

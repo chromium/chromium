@@ -223,6 +223,40 @@ probably what you want for installing the updater you have built.
 TODO(crbug.com/1448700): list the relevant/interesting outputs here and what
 they are, why they're relevant/interesting, etc.
 
+## Code Coverage
+Gerrit now down-votes the changes that do not have enough coverage. And it's
+nice to have good coverage regardless. To improve code-coverage, we need to
+know what are already covered and what are not.
+
+#### Coverage on Gerrit
+It's automatically generated. But the coverage shown is the combined result
+from all OS platforms.
+
+#### Coverage Dashboard
+The [updater code coverage dashboard](https://analysis.chromium.org/coverage/p/chromium/dir?host=chromium.googlesource.com&project=chromium/src&ref=refs/heads/main&path=//chrome/updater/&platform=mac)
+supports breakdown by OS platform or test type. But it is only for the code in
+trunk.
+
+#### Run Coverage Locally
+We can quickly get OS-specific coverage result with the local changes:
+
+* macOS/Linux
+```
+gn gen out/coverage --args="use_clang_coverage=true is_component_build=false is_chrome_branded=true is_debug=true use_debug_fission=true use_goma=true symbol_level=2"
+
+vpython3 tools/code_coverage/coverage.py  updater_tests -b out/coverage -o out/report -c 'out/coverage/updater_tests' -f chrome/updater
+```
+
+* Windows
+```
+gn gen out\coverage --args="use_clang_coverage=true is_component_build=false is_chrome_branded=true is_debug=true use_debug_fission=true use_goma=true symbol_level=2"
+
+vpython3 tools\code_coverage\coverage.py updater_tests -b out\coverage -o out\report -c out\coverage\updater_tests.exe  -f chrome/updater
+```
+The last command outputs an HTML file and you can open it in browser to see the
+coverages.
+
+
 ## Debugging
 ### Debug into Windows update service
 

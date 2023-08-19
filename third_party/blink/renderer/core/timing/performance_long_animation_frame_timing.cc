@@ -29,18 +29,6 @@ PerformanceLongAnimationFrameTiming::PerformanceLongAnimationFrameTiming(
   info_ = info;
   time_origin_ = time_origin;
   cross_origin_isolated_capability_ = cross_origin_isolated_capability;
-  DCHECK(source->ToLocalDOMWindow());
-  const SecurityOrigin* security_origin =
-      source->ToLocalDOMWindow()->GetSecurityOrigin();
-  DCHECK(security_origin);
-
-  for (ScriptTimingInfo* script : info->Scripts()) {
-    if (script->Window() &&
-        security_origin->CanAccess(script->Window()->GetSecurityOrigin())) {
-      scripts_.push_back(MakeGarbageCollected<PerformanceScriptTiming>(
-          script, time_origin, cross_origin_isolated_capability, source));
-    }
-  }
 }
 
 PerformanceLongAnimationFrameTiming::~PerformanceLongAnimationFrameTiming() =
@@ -83,6 +71,25 @@ PerformanceEntryType PerformanceLongAnimationFrameTiming::EntryTypeEnum()
 
 const PerformanceScriptVector& PerformanceLongAnimationFrameTiming::scripts()
     const {
+  if (!scripts_.empty() || info_->Scripts().empty()) {
+    return scripts_;
+  }
+
+  if (!source()) {
+    return scripts_;
+  }
+
+  CHECK(source()->ToLocalDOMWindow());
+  const SecurityOrigin* security_origin =
+      source()->ToLocalDOMWindow()->GetSecurityOrigin();
+  CHECK(security_origin);
+
+  for (ScriptTimingInfo* script : info_->Scripts()) {
+    if (security_origin->CanAccess(script->GetSecurityOrigin())) {
+      scripts_.push_back(MakeGarbageCollected<PerformanceScriptTiming>(
+          script, time_origin_, cross_origin_isolated_capability_, source()));
+    }
+  }
   return scripts_;
 }
 
@@ -100,7 +107,7 @@ void PerformanceLongAnimationFrameTiming::BuildJSONValue(
   builder.AddNumber("firstUIEventTimestamp", firstUIEventTimestamp());
   builder.AddNumber("blockingDuration", blockingDuration());
   ScriptState* script_state = builder.GetScriptState();
-  builder.Add("scripts", FreezeV8Object(ToV8(scripts_, script_state),
+  builder.Add("scripts", FreezeV8Object(ToV8(scripts(), script_state),
                                         script_state->GetIsolate()));
 }
 

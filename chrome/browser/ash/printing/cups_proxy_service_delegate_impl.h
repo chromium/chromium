@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/printing/printer_configurer.h"
@@ -29,7 +30,7 @@ class PrinterConfigurer;
 class CupsProxyServiceDelegateImpl
     : public cups_proxy::CupsProxyServiceDelegate {
  public:
-  CupsProxyServiceDelegateImpl();
+  explicit CupsProxyServiceDelegateImpl(Profile* profile);
   ~CupsProxyServiceDelegateImpl() override;
 
   bool IsPrinterAccessAllowed() const override;
@@ -48,9 +49,6 @@ class CupsProxyServiceDelegateImpl
   // Returns whether |printer| is currently installed in CUPS with this config.
   bool IsPrinterInstalled(const chromeos::Printer& printer) override;
 
-  // Records that |printer| has been installed into CUPS with this config.
-  void PrinterInstalled(const chromeos::Printer& printer) override;
-
   // Returns an IO-thread task runner.
   scoped_refptr<base::SingleThreadTaskRunner> GetIOTaskRunner() override;
 
@@ -66,14 +64,10 @@ class CupsProxyServiceDelegateImpl
                       PrinterSetupResult result);
 
   // Current/active Profile. Not owned.
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 
   // Handle to a CupsPrintersManager associated with profile_. Not owned.
-  CupsPrintersManager* const printers_manager_;
-
-  // Handle to the PrinterConfigurer associated with profile_.
-  // Must be created/accessed on the UI thread.
-  std::unique_ptr<PrinterConfigurer> printer_configurer_;
+  const raw_ptr<CupsPrintersManager, ExperimentalAsh> printers_manager_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<CupsProxyServiceDelegateImpl> weak_factory_{this};

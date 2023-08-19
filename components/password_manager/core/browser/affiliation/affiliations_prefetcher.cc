@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_service.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 
@@ -24,13 +25,13 @@ namespace {
 
 constexpr base::TimeDelta kInitializationDelayOnStartup = base::Seconds(30);
 
+// Filling across affiliated sites is implemented differently on Android.
 bool IsFacetValidForAffiliation(const FacetURI& facet) {
-  return facet.IsValidAndroidFacetURI() ||
-         (facet.IsValidWebFacetURI() &&
-          (base::FeatureList::IsEnabled(
-               features::kFillingAcrossAffiliatedWebsites) ||
-           base::FeatureList::IsEnabled(features::kPasswordsGrouping) ||
-           base::FeatureList::IsEnabled(features::kFillingAcrossGroupedSites)));
+#if BUILDFLAG(IS_ANDROID)
+  return facet.IsValidAndroidFacetURI();
+#else
+  return facet.IsValidAndroidFacetURI() || facet.IsValidWebFacetURI();
+#endif
 }
 
 }  // namespace
@@ -82,11 +83,8 @@ void AffiliationsPrefetcher::OnLoginsChanged(
 
     if (!facet_uri.is_valid())
       continue;
-    // Require a valid Android Facet if filling across affiliated websites is
-    // disabled.
-    if (!facet_uri.IsValidAndroidFacetURI() &&
-        !base::FeatureList::IsEnabled(
-            features::kFillingAcrossAffiliatedWebsites)) {
+
+    if (!IsFacetValidForAffiliation(facet_uri)) {
       continue;
     }
 

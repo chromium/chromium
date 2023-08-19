@@ -6,6 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_types.mojom-shared.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
@@ -97,6 +98,10 @@ bool CrostiniTerminalProvider::RecoveryRequired(int64_t display_id) {
   return false;
 }
 
+bool CrostiniTerminalProvider::AllowedByPolicy() {
+  return CrostiniFeatures::Get()->IsAllowedNow(profile_);
+}
+
 std::string CrostiniTerminalProvider::PrepareCwd(storage::FileSystemURL url) {
   std::string cwd;
   CrostiniManager::RestartOptions options;
@@ -153,9 +158,10 @@ void CrostiniTerminalProvider::EnsureRunning(
               crostini::RecordAppLaunchResultHistogram(
                   crostini::CrostiniAppLaunchAppType::kTerminal, result);
               std::move(callback).Run(
-                  false, base::StringPrintf(
-                             "Error starting crostini for terminal: %d (%s)",
-                             result, CrostiniResultString(result)));
+                  false,
+                  base::StringPrintf(
+                      "Error starting crostini for terminal: %d (%s)",
+                      static_cast<int>(result), CrostiniResultString(result)));
             }
           },
           std::move(callback)),

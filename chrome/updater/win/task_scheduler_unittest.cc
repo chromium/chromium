@@ -19,6 +19,8 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/path_service.h"
+#include "base/process/launch.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -30,7 +32,7 @@
 #include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/test_scope.h"
 #include "chrome/updater/updater_branding.h"
-#include "chrome/updater/util/unittest_util.h"
+#include "chrome/updater/util/unit_test_util.h"
 #include "chrome/updater/util/util.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/test/test_executables.h"
@@ -70,11 +72,37 @@ class TaskSchedulerTests : public ::testing::Test {
   }
 
   void TearDown() override {
-    EXPECT_TRUE(task_scheduler_->DeleteTask(kTaskName1));
-    EXPECT_TRUE(task_scheduler_->DeleteTask(kTaskName2));
+    EXPECT_TRUE(task_scheduler_->DeleteTask(kTaskName1))
+        << GetRegKeyTaskCacheTasksContents();
+    EXPECT_TRUE(task_scheduler_->DeleteTask(kTaskName2))
+        << GetRegKeyTaskCacheTasksContents();
     EXPECT_FALSE(test::IsProcessRunning(kTestProcessExecutableName))
         << test::PrintProcesses(kTestProcessExecutableName);
     EXPECT_TRUE(test::KillProcesses(kTestProcessExecutableName, 0));
+  }
+
+  std::wstring GetRegKeyTaskCacheTasksContents() {
+    base::FilePath system_path;
+    EXPECT_TRUE(base::PathService::Get(base::DIR_SYSTEM, &system_path));
+    std::string output;
+    EXPECT_TRUE(base::GetAppOutput(
+        base::StrCat({system_path.Append(L"reg.exe").value(), L" query ",
+                      base::CommandLine::QuoteForCommandLineToArgvW(
+                          L"HKLM\\SOFTWARE\\Microsoft\\Windows "
+                          L"NT\\CurrentVersion\\Schedule\\TaskCache\\Tasks"),
+                      L" /s"}),
+        &output));
+    return base::ASCIIToWide(output);
+  }
+
+  void ExpectRegisterTaskSucceeds(const std::wstring& task_name,
+                                  const std::wstring& task_description,
+                                  const base::CommandLine& run_command,
+                                  int trigger_types,
+                                  bool hidden) {
+    EXPECT_TRUE(task_scheduler_->RegisterTask(
+        task_name, task_description, run_command, trigger_types, hidden))
+        << GetRegKeyTaskCacheTasksContents();
   }
 
   // Converts a base::Time that is in UTC and returns the corresponding local
@@ -106,8 +134,8 @@ class TaskSchedulerTests : public ::testing::Test {
     test::EventHolder event_holder(test::CreateWaitableEventForTest());
 
     command_line.AppendSwitchNative(kTestEventToSignal, event_holder.name);
-    EXPECT_TRUE(task_scheduler_->RegisterTask(
-        kTaskName1, kTaskDescription1, command_line, trigger_type, false));
+    ExpectRegisterTaskSucceeds(kTaskName1, kTaskDescription1, command_line,
+                               trigger_type, false);
 
     // Check that the created task matches the trigger it was created with.
     TaskScheduler::TaskInfo info;
@@ -126,8 +154,8 @@ class TaskSchedulerTests : public ::testing::Test {
 
     EXPECT_TRUE(
         event_holder.event.TimedWait(TestTimeouts::action_max_timeout()));
-    EXPECT_TRUE(test::WaitFor(base::BindLambdaForTesting(
-        [&]() { return !task_scheduler_->IsTaskRunning(kTaskName1); })));
+    EXPECT_TRUE(test::WaitFor(
+        [&]() { return !task_scheduler_->IsTaskRunning(kTaskName1); }));
 
     if (trigger_type == TaskScheduler::TRIGGER_TYPE_NOW) {
       base::Time next_run_time;
@@ -142,9 +170,8 @@ class TaskSchedulerTests : public ::testing::Test {
     base::CommandLine command_line =
         GetTestProcessCommandLine(GetTestScope(), test::GetTestName());
 
-    EXPECT_TRUE(task_scheduler_->RegisterTask(kTaskName1, kTaskDescription1,
-                                              command_line,
-                                              expected_trigger_types, false));
+    ExpectRegisterTaskSucceeds(kTaskName1, kTaskDescription1, command_line,
+                               expected_trigger_types, false);
     TaskScheduler::TaskInfo info;
     EXPECT_TRUE(task_scheduler_->GetTaskInfo(kTaskName1, info));
     EXPECT_EQ(info.trigger_types, expected_trigger_types);
@@ -221,9 +248,9 @@ TEST_F(TaskSchedulerTests, EveryFiveHours) {
       GetTestProcessCommandLine(GetTestScope(), test::GetTestName());
 
   base::Time now(base::Time::NowFromSystemTime());
-  EXPECT_TRUE(task_scheduler_->RegisterTask(
-      kTaskName1, kTaskDescription1, command_line,
-      TaskScheduler::TRIGGER_TYPE_EVERY_FIVE_HOURS, false));
+  ExpectRegisterTaskSucceeds(kTaskName1, kTaskDescription1, command_line,
+                             TaskScheduler::TRIGGER_TYPE_EVERY_FIVE_HOURS,
+                             false);
   EXPECT_TRUE(task_scheduler_->IsTaskRegistered(kTaskName1));
 
   base::Time next_run_time;
@@ -274,14 +301,14 @@ TEST_F(TaskSchedulerTests, IsTaskRunning) {
       task_scheduler_->RegisterTask(kTaskName1, kTaskDescription1, command_line,
                                     TaskScheduler::TRIGGER_TYPE_NOW, false));
 
-  EXPECT_TRUE(test::WaitFor(base::BindLambdaForTesting(
-      [&]() { return task_scheduler_->IsTaskRunning(kTaskName1); })));
+  EXPECT_TRUE(test::WaitFor(
+      [&]() { return task_scheduler_->IsTaskRunning(kTaskName1); }));
   EXPECT_EQ(test::FindProcesses(kTestProcessExecutableName).size(), 1U);
 
   event_holder.event.Signal();
 
-  EXPECT_TRUE(test::WaitFor(base::BindLambdaForTesting(
-      [&]() { return !task_scheduler_->IsTaskRunning(kTaskName1); })));
+  EXPECT_TRUE(test::WaitFor(
+      [&]() { return !task_scheduler_->IsTaskRunning(kTaskName1); }));
   EXPECT_TRUE(test::FindProcesses(kTestProcessExecutableName).empty());
 }
 
@@ -339,9 +366,8 @@ TEST_F(TaskSchedulerTests, GetTasksIncludesHidden) {
 TEST_F(TaskSchedulerTests, GetTaskInfoExecActions) {
   base::CommandLine command_line1({L"c:\\test\\process 1.exe"});
 
-  EXPECT_TRUE(task_scheduler_->RegisterTask(
-      kTaskName1, kTaskDescription1, command_line1,
-      TaskScheduler::TRIGGER_TYPE_HOURLY, false));
+  ExpectRegisterTaskSucceeds(kTaskName1, kTaskDescription1, command_line1,
+                             TaskScheduler::TRIGGER_TYPE_HOURLY, false);
   EXPECT_TRUE(task_scheduler_->IsTaskRegistered(kTaskName1));
 
   TaskScheduler::TaskInfo info;
@@ -356,9 +382,8 @@ TEST_F(TaskSchedulerTests, GetTaskInfoExecActions) {
 
   base::CommandLine command_line2({L"c:\\test\\process2.exe"});
   command_line2.AppendSwitch(kUnitTestSwitch);
-  EXPECT_TRUE(task_scheduler_->RegisterTask(
-      kTaskName2, kTaskDescription2, command_line2,
-      TaskScheduler::TRIGGER_TYPE_HOURLY, false));
+  ExpectRegisterTaskSucceeds(kTaskName2, kTaskDescription2, command_line2,
+                             TaskScheduler::TRIGGER_TYPE_HOURLY, false);
   EXPECT_TRUE(task_scheduler_->IsTaskRegistered(kTaskName2));
 
   // The |info| struct is re-used to ensure that new task information overwrites
@@ -375,9 +400,8 @@ TEST_F(TaskSchedulerTests, GetTaskInfoNameAndDescription) {
   base::CommandLine command_line1 =
       GetTestProcessCommandLine(GetTestScope(), test::GetTestName());
 
-  EXPECT_TRUE(task_scheduler_->RegisterTask(
-      kTaskName1, kTaskDescription1, command_line1,
-      TaskScheduler::TRIGGER_TYPE_HOURLY, false));
+  ExpectRegisterTaskSucceeds(kTaskName1, kTaskDescription1, command_line1,
+                             TaskScheduler::TRIGGER_TYPE_HOURLY, false);
   EXPECT_TRUE(task_scheduler_->IsTaskRegistered(kTaskName1));
 
   TaskScheduler::TaskInfo info;
@@ -403,9 +427,8 @@ TEST_F(TaskSchedulerTests, GetTaskInfoLogonType) {
   base::CommandLine command_line1 =
       GetTestProcessCommandLine(GetTestScope(), test::GetTestName());
 
-  EXPECT_TRUE(task_scheduler_->RegisterTask(
-      kTaskName1, kTaskDescription1, command_line1,
-      TaskScheduler::TRIGGER_TYPE_HOURLY, false));
+  ExpectRegisterTaskSucceeds(kTaskName1, kTaskDescription1, command_line1,
+                             TaskScheduler::TRIGGER_TYPE_HOURLY, false);
   EXPECT_TRUE(task_scheduler_->IsTaskRegistered(kTaskName1));
 
   TaskScheduler::TaskInfo info;
@@ -423,9 +446,8 @@ TEST_F(TaskSchedulerTests, GetTaskInfoUserId) {
   base::CommandLine command_line1 =
       GetTestProcessCommandLine(GetTestScope(), test::GetTestName());
 
-  EXPECT_TRUE(task_scheduler_->RegisterTask(
-      kTaskName1, kTaskDescription1, command_line1,
-      TaskScheduler::TRIGGER_TYPE_HOURLY, false));
+  ExpectRegisterTaskSucceeds(kTaskName1, kTaskDescription1, command_line1,
+                             TaskScheduler::TRIGGER_TYPE_HOURLY, false);
   EXPECT_TRUE(task_scheduler_->IsTaskRegistered(kTaskName1));
 
   TaskScheduler::TaskInfo info;
@@ -515,25 +537,21 @@ TEST(TaskSchedulerTest, ForEachTaskWithPrefix) {
     int count_entries = 0;
 
     task_scheduler_different_namespace->ForEachTaskWithPrefix(
-        kTaskNamePrefix,
-        base::BindLambdaForTesting(
-            [&count_entries](const std::wstring& /*task_name*/) {
-              ++count_entries;
-            }));
+        kTaskNamePrefix, [&count_entries](const std::wstring& /*task_name*/) {
+          ++count_entries;
+        });
 
     EXPECT_EQ(count_entries, 0);
 
     count_entries = 0;
 
     task_scheduler->ForEachTaskWithPrefix(
-        kTaskNamePrefix,
-        base::BindLambdaForTesting(
-            [&count_entries, &task_scheduler,
-             kTaskNamePrefix](const std::wstring& task_name) {
-              EXPECT_TRUE(base::StartsWith(task_name, kTaskNamePrefix));
-              ++count_entries;
-              EXPECT_TRUE(task_scheduler->DeleteTask(task_name));
-            }));
+        kTaskNamePrefix, [&count_entries, &task_scheduler,
+                          kTaskNamePrefix](const std::wstring& task_name) {
+          EXPECT_TRUE(base::StartsWith(task_name, kTaskNamePrefix));
+          ++count_entries;
+          EXPECT_TRUE(task_scheduler->DeleteTask(task_name));
+        });
 
     EXPECT_EQ(count_entries, kNumTasks);
   }

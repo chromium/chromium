@@ -30,23 +30,6 @@ function onLogMessagesDump() {
 }
 
 /**
- * The callback to button#visits-dump to save the visits to a file.
- */
-function onVisitsDumpRequested() {
-  getProxy().getHandler().getVisitsJson().then(onVisitsJsonReady);
-}
-
-/**
- * The callback when the visits JSON string has been prepared.
- */
-function onVisitsJsonReady(resp: {visitsJson: string}) {
-  const data = resp.visitsJson;
-  const filename = 'history_clusters_visits_dump.json';
-
-  dumpFileWithJsonContents(data, filename);
-}
-
-/**
  * The callback to button#context-clusters-dump to save the most recent context
  * clusters to a file.
  */
@@ -81,8 +64,6 @@ function initialize() {
 
   getRequiredElement('log-messages-dump')
       .addEventListener('click', onLogMessagesDump);
-  getRequiredElement('visits-dump')
-      .addEventListener('click', onVisitsDumpRequested);
   getRequiredElement('context-clusters-dump')
       .addEventListener('click', onContextClustersDumpRequest);
   getRequiredElement('print-keyword-bag-state')

@@ -109,7 +109,9 @@ class CC_EXPORT PictureLayerTiling {
 
   PictureLayerTilingClient* client() const { return client_; }
 
-  void SetRasterSourceAndResize(scoped_refptr<RasterSource> raster_source);
+  // Returns true if the current tiling needs to update tile priority rects and
+  // tiles.
+  bool SetRasterSourceAndResize(scoped_refptr<RasterSource> raster_source);
   void Invalidate(const Region& layer_invalidation);
   void CreateMissingTilesInLiveTilesRect();
   void TakeTilesAndPropertiesFrom(PictureLayerTiling* pending_twin,

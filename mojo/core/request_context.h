@@ -5,10 +5,10 @@
 #ifndef MOJO_CORE_REQUEST_CONTEXT_H_
 #define MOJO_CORE_REQUEST_CONTEXT_H_
 
-#include "base/containers/stack_container.h"
 #include "mojo/core/handle_signals_state.h"
 #include "mojo/core/system_impl_export.h"
 #include "mojo/core/watch.h"
+#include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 
 namespace mojo {
 namespace core {
@@ -83,9 +83,9 @@ class MOJO_SYSTEM_IMPL_EXPORT RequestContext {
   static const size_t kStaticWatchFinalizersCapacity = 8;
 
   using WatchNotifyFinalizerList =
-      base::StackVector<WatchNotifyFinalizer, kStaticWatchFinalizersCapacity>;
+      absl::InlinedVector<WatchNotifyFinalizer, kStaticWatchFinalizersCapacity>;
   using WatchCancelFinalizerList =
-      base::StackVector<scoped_refptr<Watch>, kStaticWatchFinalizersCapacity>;
+      absl::InlinedVector<scoped_refptr<Watch>, kStaticWatchFinalizersCapacity>;
 
   const Source source_;
 

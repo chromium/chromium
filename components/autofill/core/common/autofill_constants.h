@@ -16,6 +16,10 @@ namespace autofill {
 // The origin of an AutofillDataModel created or modified in the settings page.
 extern const char kSettingsOrigin[];
 
+// The maximum number of Autofill fill operations that Autofill is allowed to
+// store in history so that they can be undone later.
+constexpr size_t kMaxStorableFieldFillHistory = 400;
+
 // The number of fields required by Autofill to execute its heuristic and
 // crowd-sourcing query/upload routines.
 constexpr size_t kMinRequiredFieldsForHeuristics = 3;
@@ -95,7 +99,7 @@ constexpr base::TimeDelta kAutocompleteRetentionPolicyPeriod =
 // form.
 // Credit card numbers are sometimes distributed between up to 19 individual
 // fields. Therefore, credit cards need a higher limit.
-// State fields are effecectively unlimited because there are sometimes hidden
+// State fields are effectively unlimited because there are sometimes hidden
 // fields select boxes, each with a list of states for one specific countries,
 // which are displayed only upon country selection.
 constexpr size_t kTypeValueFormFillingLimit = 9;

@@ -12,7 +12,7 @@ namespace arc {
 // action to start it later in an on-demand manner.
 BASE_FEATURE(kArcOnDemandFeature,
              "ArcOnDemand",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls ACTION_BOOT_COMPLETED broadcast for third party applications on ARC.
 // When disabled, third party apps will not receive this broadcast.
@@ -29,10 +29,6 @@ BASE_FEATURE(kCustomTabsExperimentFeature,
 BASE_FEATURE(kDocumentsProviderUnknownSizeFeature,
              "ArcDocumentsProviderUnknownSize",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Controls whether an Android VPN (ArcHostVpn) should be started when a host
-// VPN is started.
-BASE_FEATURE(kEnableArcHostVpn, "ArcHostVpn", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether we automatically send ARCVM into Doze mode
 // when it is mostly idle - even if Chrome is still active.
@@ -108,11 +104,6 @@ BASE_FEATURE(kExternalStorageAccess,
              "ArcExternalStorageAccess",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether to pop up ghost window for ARC app before fixup finishes.
-BASE_FEATURE(kFixupWindowFeature,
-             "ArcFixupWindowFeature",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether new UI style for ARC ghost window.
 BASE_FEATURE(kGhostWindowNewStyle,
              "ArcGhostWindowNewStyle",
@@ -147,8 +138,13 @@ BASE_FEATURE(kGameModeFeature,
 // Controls whether the guest zram is enabled. This is only for ARCVM.
 BASE_FEATURE(kGuestZram, "ArcGuestZram", base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls the size of the guest zram.
+// Controls the size of the guest zram by an absolute value. Ignored if
+// "size_percentage" is set.
 const base::FeatureParam<int> kGuestZramSize{&kGuestZram, "size", 0};
+
+// Controls the size of the guest zram by a percentage of the VM memory size.
+const base::FeatureParam<int> kGuestZramSizePercentage{&kGuestZram,
+                                                       "size_percentage", 0};
 
 // Controls swappiness for the ARCVM guest.
 const base::FeatureParam<int> kGuestZramSwappiness{&kGuestZram, "swappiness",
@@ -183,12 +179,13 @@ BASE_FEATURE(kKeyboardShortcutHelperIntegrationFeature,
 // Controls ARCVM MGLRU reclaim feature.
 BASE_FEATURE(kMglruReclaim,
              "ArcMglruReclaim",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls the interval between MGLRU reclaims in milliseconds
-// A value of 0 will disable the MGLRU reclaim feature
+// A value of 0 will disable the MGLRU reclaim feature.
+// Current value is the best tuning from the ChromeOSARCVMAppRescue experiment.
 const base::FeatureParam<int> kMglruReclaimInterval{&kMglruReclaim, "interval",
-                                                    0};
+                                                    30000};
 
 // Controls the swappiness of MGLRU reclaims, in the range of 0 to 200
 // 0 means only filecache will be used while 200 means only swap will be used
@@ -218,6 +215,16 @@ BASE_FEATURE(kOutOfProcessVideoDecoding,
 BASE_FEATURE(kPictureInPictureFeature,
              "ArcPictureInPicture",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kRoundedWindowCompat,
+             "ArcRoundedWindowCompat",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const char kRoundedWindowCompatStrategy[] = "RoundedWindowCompatStrategy";
+// The following values must be matched with `RoundedWindowCompatStrategy` enum
+// defined in //ash/components/arc/mojom/chrome_feature_flags.mojom.
+const char kRoundedWindowCompatStrategy_BottomOnlyGesture[] = "1";
+const char kRoundedWindowCompatStrategy_LeftRightBottomGesture[] = "2";
 
 // Controls ARCVM real time vcpu feature on a device with 2 logical cores
 // online.
@@ -254,6 +261,18 @@ BASE_FEATURE(kSwitchToKeyMintOnT,
 // requests.
 BASE_FEATURE(kSyncInstallPriority,
              "ArcSyncInstallPriority",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, touch screen emulation for compatibility is enabled on specific
+// apps.
+BASE_FEATURE(kTouchscreenEmulation,
+             "ArcTouchscreenEmulation",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// When enabled, compatibility logic for trackpad scrolling is enabled on
+// specific apps.
+BASE_FEATURE(kTrackpadScrollTouchscreenEmulation,
+             "ArcTrackpadScrollTouchscreenEmulation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls ARC USB Storage UI feature.
@@ -348,6 +367,9 @@ const base::FeatureParam<int> kVmmSwapOutTimeIntervalSecond{
 const base::FeatureParam<int> kVmmSwapArcSilenceIntervalSecond{
     &kVmmSwapPolicy, "arc_silence_interval_sec", 60 * 15};
 
+// When enabled, ARC uses XDG-based Wayland protocols.
+BASE_FEATURE(kXdgMode, "ArcXdgMode", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls the feature to delay low memory kills of high priority apps when the
 // memory pressure is below foreground.
 BASE_FEATURE(kPriorityAppLmkDelay,
@@ -364,4 +386,10 @@ const base::FeatureParam<int> kPriorityAppLmkDelaySecond{
 const base::FeatureParam<std::string> kPriorityAppLmkDelayList{
     &kPriorityAppLmkDelay, "priority_app_lmk_delay_list", ""};
 
+// Controls the feature to update the minimum Android process state to be
+// considered to be killed under perceptible memory pressure. This is to prevent
+// top Android apps from being killed that result in bad user experience.
+BASE_FEATURE(kLmkPerceptibleMinStateUpdate,
+             "ArcLmkPerceptibleMinStateUpdate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace arc

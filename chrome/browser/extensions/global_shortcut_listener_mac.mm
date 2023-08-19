@@ -8,17 +8,13 @@
 #import <Cocoa/Cocoa.h>
 #include <IOKit/hidsystem/ev_keymap.h>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/media_keys_listener_manager.h"
 #include "extensions/common/command.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/events/event.h"
 #import "ui/events/keycodes/keyboard_code_conversion_mac.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using content::BrowserThread;
 using extensions::GlobalShortcutListenerMac;
@@ -177,7 +173,7 @@ bool GlobalShortcutListenerMac::RegisterHotKey(
   EventHotKeyID event_hot_key_id;
 
   // Signature uniquely identifies the application that owns this hot_key.
-  event_hot_key_id.signature = base::mac::CreatorCodeForApplication();
+  event_hot_key_id.signature = base::apple::CreatorCodeForApplication();
   event_hot_key_id.id = hot_key_id;
 
   // Translate ui::Accelerator modifiers to cmdKey, altKey, etc.

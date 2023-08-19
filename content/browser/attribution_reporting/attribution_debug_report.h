@@ -19,6 +19,7 @@ class AttributionTrigger;
 class CreateReportResult;
 class StorableSource;
 
+struct OsRegistration;
 struct StoreSourceResult;
 
 // Class that contains all the data needed to serialize and send an attribution
@@ -34,6 +35,8 @@ class CONTENT_EXPORT AttributionDebugReport {
       const AttributionTrigger& trigger,
       bool is_debug_cookie_set,
       const CreateReportResult& result);
+
+  static absl::optional<AttributionDebugReport> Create(const OsRegistration&);
 
   ~AttributionDebugReport();
 

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_TEST_DEVICE_TRUST_MANAGEMENT_MIXIN_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_TEST_DEVICE_TRUST_MANAGEMENT_MIXIN_H_
 
+#include "chrome/browser/enterprise/connectors/device_trust/test/test_constants.h"
 #include "chrome/browser/enterprise/connectors/test/management_context_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -39,10 +40,13 @@ class DeviceTrustManagementMixin : public InProcessBrowserTestMixin {
 
   ~DeviceTrustManagementMixin() override;
 
+  // Will start managing the current user, but won't enable DTC.
+  void ManageCloudUser();
+
   // Will enable the cloud-machine inline flow policy by setting the policy
-  // value to [kAllowedHost].
+  // to the `url` which by default is [kAllowedHost].
   // On ChromeOS, this effectively only enables the login-screen policy.
-  void EnableMachineInlinePolicy();
+  void EnableMachineInlinePolicy(const std::string& url = kAllowedHost);
 
   // Will disable the cloud-machine inline flow policy by setting the policy
   // value to an empty list.
@@ -50,8 +54,8 @@ class DeviceTrustManagementMixin : public InProcessBrowserTestMixin {
   void DisableMachineInlinePolicy();
 
   // Will enable the cloud-user inline flow policy by setting the policy value
-  // to [kAllowedHost].
-  void EnableUserInlinePolicy();
+  // to the `url` which by default is [kAllowedHost].
+  void EnableUserInlinePolicy(const std::string& url = kAllowedHost);
 
   // Will disable the cloud-user inline flow policy by setting the policy value
   // to an empty list.
@@ -60,14 +64,15 @@ class DeviceTrustManagementMixin : public InProcessBrowserTestMixin {
   // Will disable all inline flow policies, effectively turning the feature off.
   void DisableAllInlinePolicies();
 
+  // Update the user consent based on `consent_given`.
+  void SetConsentGiven(bool consent_given);
+
  protected:
   // InProcessBrowserTestMixin:
   void SetUpOnMainThread() override;
 
   void SetMachineInlinePolicy(base::Value policy_value);
   void SetUserInlinePolicy(base::Value policy_value);
-
-  void SetConsentGiven(bool consent_given);
 
  private:
   const raw_ptr<InProcessBrowserTest> test_base_;

@@ -33,6 +33,8 @@ enum class DetailedViewSection {
   kMaxValue = kDetailedSection
 };
 
+enum NetworkDetailedViewListType { LIST_TYPE_NETWORK, LIST_TYPE_VPN };
+
 ASH_EXPORT void RecordNetworkRowClickedAction(NetworkRowClickedAction action);
 
 ASH_EXPORT void RecordDetailedViewSection(DetailedViewSection section);
@@ -40,6 +42,10 @@ ASH_EXPORT void RecordDetailedViewSection(DetailedViewSection section);
 ASH_EXPORT void RecordNetworkTypeToggled(
     chromeos::network_config::mojom::NetworkType network_type,
     bool new_state);
+
+// Returns the add esim button (`kQsRevamp` disabled) or add esim entry
+// (`kQsRevamp` enabled) tooltip message id.
+ASH_EXPORT int GetAddESimTooltipMessageId();
 
 // Returns the subtext to display for a connected network in a portal state.
 // This is used in the network menu, the tooltip, and for a11y.
@@ -56,6 +62,8 @@ ASH_EXPORT bool IsNetworkInhibited(
     const chromeos::network_config::mojom::NetworkStatePropertiesPtr&
         network_properties);
 
+ASH_EXPORT int GetStringIdForNetworkDetailedViewTitleRow(
+    NetworkDetailedViewListType list_type);
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_NETWORK_NETWORK_UTILS_H_

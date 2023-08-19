@@ -8,7 +8,7 @@
 #include <CoreFoundation/CFCalendar.h>
 #include <CoreFoundation/CFTimeZone.h>
 
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/numerics/safe_conversions.h"
 
 #if __LP64__

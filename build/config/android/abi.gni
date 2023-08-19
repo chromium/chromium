@@ -30,8 +30,8 @@ declare_args() {
   # Build additional browser splits with HWASAN instrumentation enabled.
   build_hwasan_splits = false
 
-  # *For CQ puposes only* Leads to non-working APKs.
-  # Forces all APKs/bundles to be 64-bit only to improve build speed in the CQ
+  # This configuration has minimal coverage.
+  # Forces all APKs/bundles to be 64-bit only to improve build speed
   # (no need to also build 32-bit library).
   skip_secondary_abi_for_cq = false
 }
@@ -88,7 +88,7 @@ if (target_cpu == "arm64" || target_cpu == "x64" || target_cpu == "mips64el" ||
   assert(false, "Unknown target CPU: $target_cpu")
 }
 
-# Do not define android_app_secondary_abi_cpu or android_app_secondary_abi for
+# Do not define android_secondary_abi_cpu or android_app_secondary_abi for
 # target_cpu's that are 32-bit-only or 64-bit-only, as they are not used. The
 # presence of this variable may be used in conjunction with android_64bit_target_cpu
 # to identify target_cpu's that are 32-bit-only or 64-bit-only.

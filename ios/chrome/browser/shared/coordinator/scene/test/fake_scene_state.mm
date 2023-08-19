@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -14,10 +14,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 @interface FakeSceneState ()
 // Redeclare interface provider readwrite.
@@ -46,18 +42,18 @@
     self.browserProviderInterface = [[StubBrowserProviderInterface alloc] init];
 
     _browser = std::make_unique<TestBrowser>(browserState);
-    base::mac::ObjCCastStrict<StubBrowserProvider>(
+    base::apple::ObjCCastStrict<StubBrowserProvider>(
         self.browserProviderInterface.mainBrowserProvider)
         .browser = _browser.get();
 
     _inactive_browser = std::make_unique<TestBrowser>(browserState);
-    base::mac::ObjCCastStrict<StubBrowserProvider>(
+    base::apple::ObjCCastStrict<StubBrowserProvider>(
         self.browserProviderInterface.mainBrowserProvider)
         .inactiveBrowser = _inactive_browser.get();
 
     _incognito_browser = std::make_unique<TestBrowser>(
         browserState->GetOffTheRecordChromeBrowserState());
-    base::mac::ObjCCastStrict<StubBrowserProvider>(
+    base::apple::ObjCCastStrict<StubBrowserProvider>(
         self.browserProviderInterface.incognitoBrowserProvider)
         .browser = _incognito_browser.get();
   }

@@ -30,7 +30,7 @@ public class DeveloperUiTestUtils {
      * @param intMatcher {@line Matcher} class that matches a given integer.
      */
     public static Matcher<View> withCount(final Matcher<Integer> intMatcher) {
-        return new TypeSafeMatcher<View>() {
+        return new TypeSafeMatcher<>() {
             @Override
             public boolean matchesSafely(View view) {
                 if (!(view instanceof ListView)) {

@@ -12,9 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/flat_set.h"
-#include "base/memory/raw_ptr.h"
-#include "base/timer/timer.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/authenticator_common.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
@@ -27,15 +24,9 @@
 #include "device/fido/make_credential_request_handler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
-#include "url/origin.h"
-
-namespace base {
-class OneShotTimer;
-}
 
 namespace device {
 
-class FidoRequestHandlerBase;
 class FidoDiscoveryFactory;
 
 enum class FidoReturnCode : uint8_t;
@@ -61,9 +52,20 @@ enum class AttestationErasureOption;
 // Common code for any WebAuthn Authenticator interfaces.
 class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
  public:
+  // ServingRequestsFor enumerates the sources of WebAuthn requests.
+  enum class ServingRequestsFor {
+    // kInternalUses is for synthesized requests that don't originate from
+    // any Javascript call.
+    kInternalUses,
+    // kWebContents is for typical cases where Javascript is making a
+    // `navigator.credentials` call.
+    kWebContents,
+  };
+
   // Creates a new AuthenticatorCommonImpl. Callers must ensure that this
   // instance outlives the RenderFrameHost.
-  explicit AuthenticatorCommonImpl(RenderFrameHost* render_frame_host);
+  explicit AuthenticatorCommonImpl(RenderFrameHost* render_frame_host,
+                                   ServingRequestsFor serving_requests_for);
 
   AuthenticatorCommonImpl(const AuthenticatorCommonImpl&) = delete;
   AuthenticatorCommonImpl& operator=(const AuthenticatorCommonImpl&) = delete;
@@ -106,10 +108,9 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
   virtual std::unique_ptr<AuthenticatorRequestClientDelegate>
   MaybeCreateRequestDelegate();
 
-  std::unique_ptr<AuthenticatorRequestClientDelegate> request_delegate_;
-
  private:
   friend class AuthenticatorImplTest;
+  struct RequestState;
 
   // Enumerates whether or not to check that the WebContents has focus.
   enum class Focus {
@@ -150,7 +151,8 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
   void OnSignResponse(
       device::GetAssertionStatus status_code,
       absl::optional<std::vector<device::AuthenticatorGetAssertionResponse>>
-          response_data);
+          response_data,
+      device::FidoAuthenticator* authenticator);
 
   // Begins a timeout at the beginning of a request.
   void BeginRequestTimeout(absl::optional<base::TimeDelta> timeout);
@@ -201,6 +203,7 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
       blink::mojom::WebAuthnDOMExceptionDetailsPtr dom_exception_details =
           nullptr);
 
+  AuthenticatorRequestClientDelegate::RequestSource RequestSource() const;
   BrowserContext* GetBrowserContext() const;
 
   // Returns the FidoDiscoveryFactory for the current request. This may be a
@@ -224,50 +227,19 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
       blink::mojom::GetAssertionAuthenticatorResponsePtr response);
 
   const GlobalRenderFrameHostId render_frame_host_id_;
-  bool has_pending_request_ = false;
-  std::unique_ptr<device::FidoRequestHandlerBase> request_handler_;
-  std::unique_ptr<device::FidoDiscoveryFactory> discovery_factory_;
-  // This dangling raw_ptr occurred in:
-  // interactive_ui_tests:
-  // WebAuthnDevtoolsAutofillIntegrationTest.SelectAccountWithAllowCredentials
-  // https://ci.chromium.org/ui/p/chromium/builders/try/mac-rel/1357012/test-results?q=ExactID%3Aninja%3A%2F%2Fchrome%2Ftest%3Ainteractive_ui_tests%2FWebAuthnDevtoolsAutofillIntegrationTest.SelectAccountWithAllowCredentials+VHash%3A81d118f1ad0b63a6
-  raw_ptr<device::FidoDiscoveryFactory, FlakyDanglingUntriaged>
-      discovery_factory_testing_override_ = nullptr;
-  blink::mojom::Authenticator::MakeCredentialCallback
-      make_credential_response_callback_;
-  blink::mojom::Authenticator::GetAssertionCallback
-      get_assertion_response_callback_;
-  std::string client_data_json_;
-  bool disable_ui_ = false;
+  const ServingRequestsFor serving_requests_for_;
+  const scoped_refptr<WebAuthRequestSecurityChecker> security_checker_;
+
+  // These members hold state that spans different requests. All
+  // request-specific state should go in `RequestState` to ensure that it's
+  // cleared between requests.
   bool disable_tls_check_ = false;
-  url::Origin caller_origin_;
-  std::string relying_party_id_;
-  scoped_refptr<WebAuthRequestSecurityChecker> security_checker_;
-  std::unique_ptr<base::OneShotTimer> timer_ =
-      std::make_unique<base::OneShotTimer>();
-  absl::optional<std::string> app_id_;
-  absl::optional<device::CtapMakeCredentialRequest>
-      ctap_make_credential_request_;
-  absl::optional<device::MakeCredentialOptions> make_credential_options_;
-  absl::optional<device::CtapGetAssertionRequest> ctap_get_assertion_request_;
-  absl::optional<device::CtapGetAssertionOptions> ctap_get_assertion_options_;
-  // device_public_key_attestation_requested_ is true if any form of DPK
-  // attestation was requested, even if it was mapped to "none" in
-  // |ctap_*_request_|.
-  bool device_public_key_attestation_requested_ = false;
-  // awaiting_attestation_response_ is true if the embedder has been queried
-  // about an attestsation decision and the response is still pending.
-  bool awaiting_attestation_response_ = false;
-  blink::mojom::AuthenticatorStatus error_awaiting_user_acknowledgement_ =
-      blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR;
+  bool disable_ui_ = false;
   bool enable_request_proxy_api_ = false;
-  bool discoverable_credential_request_ = false;
 
-  base::flat_set<RequestExtension> requested_extensions_;
-
-  // The request ID of a pending proxied MakeCredential or GetAssertion request.
-  absl::optional<WebAuthenticationRequestProxy::RequestId>
-      pending_proxied_request_id_;
+  // req_state_ contains all state specific to a single WebAuthn call. It
+  // only contains a value when a request is being processed.
+  std::unique_ptr<RequestState> req_state_;
 
   base::WeakPtrFactory<AuthenticatorCommonImpl> weak_factory_{this};
 };

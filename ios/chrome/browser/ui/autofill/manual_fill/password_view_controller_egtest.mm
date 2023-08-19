@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/autofill/autofill_app_interface.h"
+#import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -24,10 +25,6 @@
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::CancelButton;
@@ -104,10 +101,16 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
   [ChromeEarlGrey loadURL:self.URL];
   [ChromeEarlGrey waitForWebStateContainingText:"hello!"];
   [AutofillAppInterface saveExamplePasswordForm];
+
+  // Mock successful reauth for opening the Password Manager.
+  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
 }
 
 - (void)tearDown {
   [AutofillAppInterface clearPasswordStore];
+  [PasswordSettingsAppInterface removeMockReauthenticationModule];
   [super tearDown];
 }
 
@@ -524,7 +527,7 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
       assertWithMatcher:grey_sufficientlyVisible()];
 
   [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordTableViewMatcher()]
-      performAction:grey_typeText(@"text")];
+      performAction:grey_replaceText(@"text")];
 
   // Verify the password controller table view and the password icon is NOT
   // visible.

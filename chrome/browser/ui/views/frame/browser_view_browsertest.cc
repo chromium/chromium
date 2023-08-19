@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
@@ -17,6 +18,9 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view_observer.h"
+#include "chrome/browser/ui/views/side_panel/side_panel.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -36,6 +40,7 @@
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_test_helper.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 
 #if defined(USE_AURA)
 #include "ui/aura/client/focus_client.h"
@@ -62,6 +67,12 @@ class BrowserViewTest : public InProcessBrowserTest {
     return browser_view()->contents_web_view();
   }
 
+  SidePanel* side_panel() { return browser_view()->unified_side_panel(); }
+
+  views::View* side_panel_rounded_corner() {
+    return browser_view()->GetSidePanelRoundedCorner();
+  }
+
   void OpenDevToolsWindow(bool docked) {
     devtools_ =
         DevToolsWindowTesting::OpenDevToolsWindowSync(browser(), docked);
@@ -76,11 +87,17 @@ class BrowserViewTest : public InProcessBrowserTest {
   }
 
   raw_ptr<DevToolsWindow> devtools_;
+};
+
+class BrowserViewTestRefreshOnly : public BrowserViewTest {
+ public:
+  BrowserViewTestRefreshOnly() {
+    scoped_feature_list_.InitWithFeatures({features::kChromeRefresh2023}, {});
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
-
 namespace {
 
 // Used to simulate scenario in a crash. When WebContentsDestroyed() is invoked
@@ -215,6 +232,19 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, DISABLED_DevToolsUpdatesBrowserWindow) {
   EXPECT_EQ(full_bounds, contents_web_view()->bounds());
 }
 
+// Verifies that the side panel's rounded corner is being correctly layed out.
+IN_PROC_BROWSER_TEST_F(BrowserViewTestRefreshOnly,
+                       SidePanelRoundedCornerLayout) {
+  SidePanelCoordinator* coordinator =
+      SidePanelUtil::GetSidePanelCoordinatorForBrowser((browser()));
+  coordinator->SetNoDelaysForTesting(true);
+  coordinator->Show();
+  EXPECT_EQ(side_panel()->bounds().x(),
+            side_panel_rounded_corner()->bounds().right());
+  EXPECT_EQ(side_panel()->bounds().y(),
+            side_panel_rounded_corner()->bounds().y());
+}
+
 class BookmarkBarViewObserverImpl : public BookmarkBarViewObserver {
  public:
   BookmarkBarViewObserverImpl() : change_count_(0) {
@@ -333,27 +363,6 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, ShowFaviconInTab) {
 // On Mac, voiceover treats tab modal dialogs as native windows, so setting an
 // accessible title for tab-modal dialogs is not necessary.
 #if !BUILDFLAG(IS_MAC)
-
-// Open a tab-modal dialog and check that the accessible window title is the
-// title of the dialog.
-IN_PROC_BROWSER_TEST_F(BrowserViewTest, GetAccessibleTabModalDialogTitle) {
-  std::u16string window_title =
-      u"about:blank - " + l10n_util::GetStringUTF16(IDS_PRODUCT_NAME);
-  EXPECT_TRUE(base::StartsWith(browser_view()->GetAccessibleWindowTitle(),
-                               window_title, base::CompareCase::SENSITIVE));
-
-  content::WebContents* contents = browser_view()->GetActiveWebContents();
-  auto delegate = std::make_unique<TestTabModalConfirmDialogDelegate>(contents);
-  TestTabModalConfirmDialogDelegate* delegate_observer = delegate.get();
-  TabModalConfirmDialog::Create(std::move(delegate), contents);
-  EXPECT_EQ(browser_view()->GetAccessibleWindowTitle(),
-            delegate_observer->GetTitle());
-
-  delegate_observer->Close();
-
-  EXPECT_TRUE(base::StartsWith(browser_view()->GetAccessibleWindowTitle(),
-                               window_title, base::CompareCase::SENSITIVE));
-}
 
 // Open a tab-modal dialog and check that the accessibility tree only contains
 // the dialog.

@@ -1,0 +1,101 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("safety_check") {
+  sources = [
+    "ios_chrome_safety_check_manager.h",
+    "ios_chrome_safety_check_manager.mm",
+  ]
+  public_deps = [
+    ":constants",
+    ":utils",
+    "//base",
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//ios/chrome/browser/passwords",
+  ]
+  deps = [
+    "//components/password_manager/core/browser",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/version_info",
+    "//ios/chrome/browser/omaha",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/upgrade",
+    "//ios/chrome/browser/upgrade:public",
+    "//ios/chrome/common",
+  ]
+}
+
+source_set("factory") {
+  sources = [
+    "ios_chrome_safety_check_manager_factory.h",
+    "ios_chrome_safety_check_manager_factory.mm",
+  ]
+  public_deps = [
+    "//base",
+    "//components/keyed_service/ios",
+  ]
+  deps = [
+    ":safety_check",
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//ios/chrome/browser/passwords",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/public/features",
+  ]
+}
+
+source_set("constants") {
+  sources = [
+    "ios_chrome_safety_check_manager_constants.cc",
+    "ios_chrome_safety_check_manager_constants.h",
+  ]
+  public_deps = [
+    "//base",
+    "//third_party/abseil-cpp:absl",
+  ]
+}
+
+source_set("utils") {
+  sources = [
+    "ios_chrome_safety_check_manager_utils.h",
+    "ios_chrome_safety_check_manager_utils.mm",
+  ]
+  public_deps = [ "//components/password_manager/core/browser" ]
+  deps = [
+    ":constants",
+    "//base",
+    "//components/password_manager/core/common:features",
+    "//ios/chrome/browser/passwords",
+    "//ios/chrome/browser/passwords:password_checkup_utils",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "ios_chrome_safety_check_manager_unittest.mm" ]
+  deps = [
+    ":constants",
+    ":safety_check",
+    ":utils",
+    "//base",
+    "//base/test:test_support",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser:test_support",
+    "//components/password_manager/core/common:features",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//ios/chrome/browser/passwords",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/sync:test_support",
+    "//ios/chrome/browser/upgrade",
+    "//ios/web/public/test",
+    "//testing/gtest",
+  ]
+}

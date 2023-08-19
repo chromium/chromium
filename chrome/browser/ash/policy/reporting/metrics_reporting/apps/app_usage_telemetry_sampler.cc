@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_usage_telemetry_sampler.h"
 
 #include <memory>
+#include <string>
 
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -67,10 +68,17 @@ void AppUsageTelemetrySampler::MaybeCollect(OptionalMetricCallback callback) {
 
     ::apps::AppType app_type =
         ::apps::GetAppType(profile_.get(), usage_time.app_id);
+    std::string public_app_id = usage_time.app_id;
+    if (!usage_time.app_publisher_id.empty()) {
+      // Use publisher id if there is one set. Mostly needed for android apps,
+      // web apps, etc. because they include public app identifiers.
+      public_app_id = usage_time.app_publisher_id;
+    }
+
     AppUsageData::AppUsage* const app_usage =
         app_usage_data->mutable_app_usage()->Add();
     app_usage->set_app_instance_id(usage_it.first);
-    app_usage->set_app_id(usage_time.app_id);
+    app_usage->set_app_id(public_app_id);
     app_usage->set_app_type(
         ::apps::ConvertAppTypeToProtoApplicationType(app_type));
     app_usage->set_running_time_ms(

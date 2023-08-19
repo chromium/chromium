@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("ui_utils_api") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "ui_utils_api.h" ]
   frameworks = [ "UIKit.framework" ]
 }

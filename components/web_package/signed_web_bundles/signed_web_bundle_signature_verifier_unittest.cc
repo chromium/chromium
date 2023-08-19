@@ -13,16 +13,15 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/cbor/values.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
-#include "components/web_package/shared_file.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
@@ -147,18 +146,17 @@ TEST_P(SignedWebBundleSignatureVerifierGoToolTest, VerifySimpleWebBundle) {
   raw_integrity_block->size = 135;
   raw_integrity_block->signature_stack = std::move(raw_signature_stack);
 
-  auto integrity_block =
-      SignedWebBundleIntegrityBlock::Create(std::move(raw_integrity_block));
-  ASSERT_TRUE(integrity_block.has_value()) << integrity_block.error();
+  ASSERT_OK_AND_ASSIGN(
+      auto integrity_block,
+      SignedWebBundleIntegrityBlock::Create(std::move(raw_integrity_block)));
 
-  auto shared_file =
-      base::MakeRefCounted<SharedFile>(std::make_unique<base::File>(
-          file_path, base::File::FLAG_OPEN | base::File::FLAG_READ));
-  ASSERT_TRUE((*shared_file)->IsValid());
+  auto file =
+      base::File(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  ASSERT_TRUE(file.IsValid());
 
   SignedWebBundleSignatureVerifier signature_verifier(std::get<1>(GetParam()));
-  signature_verifier.VerifySignatures(shared_file, std::move(*integrity_block),
-                                      future.GetCallback());
+  signature_verifier.VerifySignatures(
+      std::move(file), std::move(integrity_block), future.GetCallback());
 
   auto error = future.Take();
   auto expected_error = std::get<0>(GetParam()).second;
@@ -241,13 +239,12 @@ class SignedWebBundleSignatureVerifierTest
     return signed_web_bundle_path;
   }
 
-  scoped_refptr<SharedFile> MakeSharedFile(
-      const base::FilePath& signed_web_bundle_path) {
-    auto file = std::make_unique<base::File>(
-        signed_web_bundle_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
-    EXPECT_TRUE(file->IsValid())
-        << base::File::ErrorToString(file->error_details());
-    return base::MakeRefCounted<SharedFile>(std::move(file));
+  base::File MakeWebBundleFile(const base::FilePath& signed_web_bundle_path) {
+    auto file = base::File(signed_web_bundle_path,
+                           base::File::FLAG_OPEN | base::File::FLAG_READ);
+    EXPECT_TRUE(file.IsValid())
+        << base::File::ErrorToString(file.error_details());
+    return file;
   }
 
   base::expected<SignedWebBundleIntegrityBlock, std::string>
@@ -288,17 +285,17 @@ TEST_P(SignedWebBundleSignatureVerifierTest, VerifySignatures) {
       CreateSignedWebBundle(std::get<0>(GetParam()));
   base::FilePath signed_web_bundle_path =
       WriteSignedWebBundleToDisk(signed_web_bundle);
-  auto shared_file = MakeSharedFile(signed_web_bundle_path);
-  auto parsed_integrity_block =
-      CreateParsedIntegrityBlock(integrity_block, integrity_block_size);
-  ASSERT_TRUE(parsed_integrity_block.has_value());
+  auto file = MakeWebBundleFile(signed_web_bundle_path);
+  ASSERT_OK_AND_ASSIGN(
+      auto parsed_integrity_block,
+      CreateParsedIntegrityBlock(integrity_block, integrity_block_size));
 
   base::test::TestFuture<
       absl::optional<SignedWebBundleSignatureVerifier::Error>>
       future;
   SignedWebBundleSignatureVerifier signature_verifier;
   signature_verifier.VerifySignatures(
-      shared_file, std::move(*parsed_integrity_block), future.GetCallback());
+      std::move(file), std::move(parsed_integrity_block), future.GetCallback());
 
   auto error = future.Take();
   auto expected_error = std::get<1>(GetParam());

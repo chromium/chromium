@@ -67,7 +67,7 @@ class ExtensionServiceWorkerMessageFilter
   base::CallbackListSubscription shutdown_notifier_subscription_;
 
   // Owned by the StoragePartition of our profile.
-  raw_ptr<content::ServiceWorkerContext, DanglingUntriaged>
+  raw_ptr<content::ServiceWorkerContext, AcrossTasksDanglingUntriaged>
       service_worker_context_;
 };
 

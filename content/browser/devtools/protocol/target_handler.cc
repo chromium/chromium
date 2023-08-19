@@ -649,9 +649,10 @@ class TargetHandler::TargetFilter {
     return base::WrapUnique(new TargetFilter(std::move(default_filter)));
   }
   static std::unique_ptr<TargetFilter> Create(Maybe<Filter> filter) {
-    if (!filter.isJust())
+    if (!filter.has_value()) {
       return CreateDefault();
-    return base::WrapUnique(new TargetFilter(std::move(*filter.fromJust())));
+    }
+    return base::WrapUnique(new TargetFilter(std::move(filter.value())));
   }
 
   bool Match(DevToolsAgentHost& host) const { return Match(host.GetType()); }
@@ -940,16 +941,16 @@ Response TargetHandler::FindSession(Maybe<std::string> session_id,
                                     Maybe<std::string> target_id,
                                     Session** session) {
   *session = nullptr;
-  if (session_id.isJust()) {
-    auto it = attached_sessions_.find(session_id.fromJust());
+  if (session_id.has_value()) {
+    auto it = attached_sessions_.find(session_id.value());
     if (it == attached_sessions_.end())
       return Response::InvalidParams("No session with given id");
     *session = it->second.get();
     return Response::Success();
   }
-  if (target_id.isJust()) {
+  if (target_id.has_value()) {
     for (auto& it : attached_sessions_) {
-      if (it.second->IsAttachedTo(target_id.fromJust())) {
+      if (it.second->IsAttachedTo(target_id.value())) {
         if (*session)
           return Response::ServerError(
               "Multiple sessions attached, specify id.");
@@ -970,7 +971,7 @@ Response TargetHandler::SetDiscoverTargets(
     Maybe<protocol::Array<protocol::Target::FilterEntry>> filter) {
   if (access_mode_ == AccessMode::kAutoAttachOnly)
     return Response::ServerError(kNotAllowedError);
-  if (!discover && filter.isJust() && !filter.fromJust()->empty()) {
+  if (!discover && filter && !filter->empty()) {
     return Response::InvalidParams(
         "Filter should not be present with `discover` is off");
   }
@@ -997,12 +998,12 @@ void TargetHandler::SetAutoAttach(
     Maybe<bool> flatten,
     Maybe<protocol::Array<protocol::Target::FilterEntry>> filter,
     std::unique_ptr<SetAutoAttachCallback> callback) {
-  if (access_mode_ == AccessMode::kBrowser && !flatten.fromMaybe(false)) {
+  if (access_mode_ == AccessMode::kBrowser && !flatten.value_or(false)) {
     callback->sendFailure(Response::InvalidParams(
         "Only flatten protocol is supported with browser level auto-attach"));
     return;
   }
-  if (!auto_attach && filter.isJust() && !filter.fromJust()->empty()) {
+  if (!auto_attach && filter && !filter->empty()) {
     callback->sendFailure(Response::InvalidParams(
         "Target filter should be empty whien disabling auto-attach"));
     return;
@@ -1018,7 +1019,7 @@ void TargetHandler::SetAutoAttach(
     return;
   }
   SetAutoAttachInternal(
-      auto_attach, wait_for_debugger_on_start, flatten.fromMaybe(false),
+      auto_attach, wait_for_debugger_on_start, flatten.value_or(false),
       base::BindOnce(&SetAutoAttachCallback::sendSuccess, std::move(callback)));
 }
 
@@ -1083,7 +1084,7 @@ Response TargetHandler::AttachToTarget(const std::string& target_id,
   if (!agent_host)
     return Response::InvalidParams(kTargetNotFound);
   *out_session_id =
-      Session::Attach(this, agent_host.get(), false, flatten.fromMaybe(false));
+      Session::Attach(this, agent_host.get(), false, flatten.value_or(false));
   return Response::Success();
 }
 
@@ -1130,8 +1131,7 @@ Response TargetHandler::SendMessageToTarget(const std::string& message,
 Response TargetHandler::GetTargetInfo(
     Maybe<std::string> maybe_target_id,
     std::unique_ptr<Target::TargetInfo>* target_info) {
-  const std::string& target_id =
-      maybe_target_id.isJust() ? maybe_target_id.fromJust() : owner_target_id_;
+  const std::string& target_id = maybe_target_id.value_or(owner_target_id_);
   if (access_mode_ == AccessMode::kAutoAttachOnly &&
       target_id != owner_target_id_) {
     return Response::ServerError(kNotAllowedError);
@@ -1191,7 +1191,7 @@ Response TargetHandler::ExposeDevToolsProtocol(
         "RemoteDebuggingBinding can be granted only to page targets");
   }
 
-  new BrowserToPageConnector(binding_name.fromMaybe("cdp"), agent_host.get());
+  new BrowserToPageConnector(binding_name.value_or("cdp"), agent_host.get());
   return Response::Success();
 }
 
@@ -1214,10 +1214,13 @@ Response TargetHandler::CreateTarget(const std::string& url,
   if (gurl.is_empty()) {
     gurl = GURL(url::kAboutBlankURL);
   }
+  content::DevToolsManagerDelegate::TargetType target_type =
+      for_tab.value_or(session_mode_ ==
+                       DevToolsSession::Mode::kSupportsTabTarget)
+          ? content::DevToolsManagerDelegate::kTab
+          : content::DevToolsManagerDelegate::kFrame;
   scoped_refptr<content::DevToolsAgentHost> agent_host =
-      delegate->CreateNewTarget(
-          gurl, for_tab.fromMaybe(session_mode_ ==
-                                  DevToolsSession::Mode::kSupportsTabTarget));
+      delegate->CreateNewTarget(gurl, target_type);
   if (!agent_host)
     return Response::ServerError("Not supported");
   *out_target_id = agent_host->GetId();
@@ -1230,7 +1233,7 @@ Response TargetHandler::GetTargets(
   if (access_mode_ == AccessMode::kAutoAttachOnly)
     return Response::ServerError(kNotAllowedError);
   std::unique_ptr<TargetFilter> passed_filter =
-      filter.isJust() || !discover_target_filter_
+      filter.has_value() || !discover_target_filter_
           ? TargetFilter::Create(std::move(filter))
           : nullptr;
   const TargetFilter* effective_filter =
@@ -1312,22 +1315,22 @@ void TargetHandler::CreateBrowserContext(
     return;
   }
 
-  if (in_proxyServer.isJust()) {
+  if (in_proxyServer.has_value()) {
     pending_proxy_config_ = net::ProxyConfig();
     pending_proxy_config_->proxy_rules().ParseFromString(
-        in_proxyServer.fromJust());
-    if (in_proxyBypassList.isJust()) {
+        in_proxyServer.value());
+    if (in_proxyBypassList.has_value()) {
       pending_proxy_config_->proxy_rules().bypass_rules.ParseFromString(
-          in_proxyBypassList.fromJust());
+          in_proxyBypassList.value());
     }
   }
 
   // Pre-process universal network access origins before actual context creation
   // in case we need to bail out with error.
   std::vector<url::Origin> originsToGrantUniversalNetworkAccess;
-  if (in_originsToGrantUniversalNetworkAccess.isJust()) {
+  if (in_originsToGrantUniversalNetworkAccess.has_value()) {
     for (const auto& origin_str :
-         *in_originsToGrantUniversalNetworkAccess.fromJust()) {
+         in_originsToGrantUniversalNetworkAccess.value()) {
       GURL url(origin_str);
       url::Origin origin = url::Origin::Create(url);
       if (!url.is_valid() || origin.opaque()) {
@@ -1370,8 +1373,9 @@ void TargetHandler::CreateBrowserContext(
     pending_proxy_config_.reset();
   }
 
-  if (in_disposeOnDetach.fromMaybe(false))
+  if (in_disposeOnDetach.value_or(false)) {
     dispose_on_detach_context_ids_.insert(context->UniqueId());
+  }
   callback->sendSuccess(context->UniqueId());
 }
 

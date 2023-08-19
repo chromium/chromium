@@ -104,6 +104,10 @@ class PolicyUIHandler : public web::WebUIIOSMessageHandler,
                           policy::PolicyStatusProvider::Observer>
       machine_status_provider_observation_{this};
 
+  uint32_t reload_policies_count_ = 0;
+  uint32_t copy_to_json_count_ = 0;
+  uint32_t upload_report_count_ = 0;
+
   // Vends WeakPtrs for this object.
   base::WeakPtrFactory<PolicyUIHandler> weak_factory_{this};
 };

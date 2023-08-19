@@ -68,8 +68,7 @@ class TestPasswordManagerClient
   }
 
  private:
-  raw_ptr<signin::IdentityManager, DanglingUntriaged> identity_manager_ =
-      nullptr;
+  raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
 };
 
 }  // namespace
@@ -143,6 +142,7 @@ class MultiProfileCredentialsFilterTest : public BrowserWithTestWindowTest {
   }
 
   void TearDown() override {
+    test_password_manager_client_.set_identity_manager(nullptr);
     dice_web_signin_interceptor_->Shutdown();
     identity_test_env_profile_adaptor_.reset();
     BrowserWithTestWindowTest::TearDown();

@@ -123,7 +123,7 @@ class MockCapturerSource : public media::AudioCapturerSource {
  private:
   StartCallback start_callback_;
   StopCallback stop_callback_;
-  raw_ptr<CaptureCallback, DanglingUntriaged> capture_callback_;
+  raw_ptr<CaptureCallback, AcrossTasksDanglingUntriaged> capture_callback_;
   media::AudioParameters audio_parameters_;
 };
 

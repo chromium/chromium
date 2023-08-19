@@ -33,11 +33,11 @@ class COMPONENT_EXPORT(COLOR) ColorProviderUtilsCallbacks {
 
 // Converts the ColorMode.
 base::StringPiece COMPONENT_EXPORT(COLOR)
-    ColorModeName(ColorProviderManager::ColorMode color_mode);
+    ColorModeName(ColorProviderKey::ColorMode color_mode);
 
 // Converts the ContrastMode.
 base::StringPiece COMPONENT_EXPORT(COLOR)
-    ContrastModeName(ColorProviderManager::ContrastMode contrast_mode);
+    ContrastModeName(ColorProviderKey::ContrastMode contrast_mode);
 
 // Converts SystemTheme.
 base::StringPiece COMPONENT_EXPORT(COLOR)

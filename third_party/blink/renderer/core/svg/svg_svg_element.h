@@ -38,6 +38,7 @@ class SVGLengthTearOff;
 class SVGMatrixTearOff;
 class SVGNumberTearOff;
 class SVGPointTearOff;
+class SVGRect;
 class SVGTransformTearOff;
 class SVGViewSpec;
 
@@ -52,7 +53,10 @@ class SVGSVGElement final : public SVGGraphicsElement,
 
   absl::optional<float> IntrinsicWidth() const;
   absl::optional<float> IntrinsicHeight() const;
-  gfx::SizeF CurrentViewportSize() const;
+  const SVGRect& CurrentViewBox() const;
+  // This method, as opposed to the one above, also includes the synthesized
+  // viewBox if one is active. Because of that it shouldn't be used for sizing
+  // calculations.
   gfx::RectF CurrentViewBoxRect() const;
   bool HasEmptyViewBox() const;
   const SVGPreserveAspectRatio* CurrentPreserveAspectRatio() const;
@@ -151,7 +155,7 @@ class SVGSVGElement final : public SVGGraphicsElement,
 
   SVGAnimatedPropertyBase* PropertyFromAttribute(
       const QualifiedName& attribute_name) const override;
-  void SynchronizeSVGAttribute(const QualifiedName& name) const override;
+  void SynchronizeAllSVGAttributes() const override;
   void CollectExtraStyleForPresentationAttribute(
       MutableCSSPropertyValueSet* style) override;
 

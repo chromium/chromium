@@ -15,7 +15,7 @@ std::unique_ptr<FormField> EmailField::Parse(AutofillScanner* scanner,
                                              const LanguageCode& page_language,
                                              PatternSource pattern_source,
                                              LogManager* log_manager) {
-  AutofillField* field;
+  raw_ptr<AutofillField> field;
   base::span<const MatchPatternRef> email_patterns =
       GetMatchPatterns("EMAIL_ADDRESS", page_language, pattern_source);
   if (ParseFieldSpecifics(scanner, kEmailRe,

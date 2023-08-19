@@ -23,7 +23,8 @@ class EVENTS_DEVICES_EXPORT InputDeviceEventObserver {
   static constexpr uint8_t kPointingStick = 1 << 2;
   static constexpr uint8_t kTouchpad = 1 << 3;
   static constexpr uint8_t kTouchscreen = 1 << 4;
-  static constexpr uint8_t kUncategorized = 1 << 5;
+  static constexpr uint8_t kGraphicsTablet = 1 << 5;
+  static constexpr uint8_t kUncategorized = 1 << 6;
 
   virtual ~InputDeviceEventObserver() {}
 

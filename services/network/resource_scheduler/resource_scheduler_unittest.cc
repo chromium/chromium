@@ -82,10 +82,10 @@ void ExpectSampleIsAtLeastSpecifiedValue(
 class TestRequestFactory;
 
 using ClientId = ResourceScheduler::ClientId;
-constexpr ClientId kClientId1(30);
-constexpr ClientId kClientId2(60);
-constexpr ClientId kTrustedClientId(120);
-constexpr ClientId kBackgroundClientId(150);
+const ClientId kClientId1 = ClientId::CreateForTest(30);
+const ClientId kClientId2 = ClientId::CreateForTest(60);
+const ClientId kTrustedClientId = ClientId::CreateForTest(120);
+const ClientId kBackgroundClientId = ClientId::CreateForTest(150);
 
 const size_t kMaxNumDelayableRequestsPerHostPerClient = 6;
 
@@ -189,6 +189,8 @@ class ResourceSchedulerTest : public testing::Test {
                                 &network_quality_estimator_);
     scheduler_->OnClientCreated(kBackgroundClientId, IsBrowserInitiated(false),
                                 &network_quality_estimator_);
+    scheduler_->OnClientVisibilityChanged(kBackgroundClientId.token(),
+                                          /*visible=*/false);
     scheduler_->OnClientCreated(kTrustedClientId, IsBrowserInitiated(true),
                                 &network_quality_estimator_);
   }
@@ -2333,6 +2335,66 @@ TEST_F(ResourceSchedulerTest, ProactiveThrottling_UnthrottledOnTimerFired) {
   scheduler()->DispatchLongQueuedRequestsForTesting();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(low_1->started());
+}
+
+class VisibilityAwareResourceSchedulerTest : public ResourceSchedulerTest {
+ public:
+  VisibilityAwareResourceSchedulerTest() {
+    feature_list_.InitAndEnableFeature(
+        features::kVisibilityAwareResourceScheduler);
+  }
+  ~VisibilityAwareResourceSchedulerTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(VisibilityAwareResourceSchedulerTest, DeprioritizeBackgroundRequest) {
+  InitializeScheduler();
+  std::unique_ptr<TestRequest> request =
+      NewBackgroundRequest("https://a.test", net::HIGHEST);
+  ASSERT_TRUE(request->started());
+  ASSERT_EQ(request->url_request()->priority(), net::IDLE);
+}
+
+TEST_F(VisibilityAwareResourceSchedulerTest, BackgroundRequestIgnoreLimit) {
+  InitializeScheduler();
+  std::unique_ptr<net::URLRequest> url_request =
+      NewURLRequest("https://a.test", net::MAXIMUM_PRIORITY);
+  url_request->SetLoadFlags(url_request->load_flags() |
+                            net::LOAD_IGNORE_LIMITS);
+  std::unique_ptr<ResourceScheduler::ScheduledResourceRequest>
+      scheduled_request =
+          scheduler()->ScheduleRequest(kBackgroundClientId,
+                                       /*is_async=*/true, url_request.get());
+  auto request = std::make_unique<TestRequest>(
+      std::move(url_request), std::move(scheduled_request), scheduler());
+  request->Start();
+  ASSERT_TRUE(request->started());
+  ASSERT_EQ(request->url_request()->priority(), net::MAXIMUM_PRIORITY);
+}
+
+TEST_F(VisibilityAwareResourceSchedulerTest, ChangePriorityBasedOnVisibility) {
+  InitializeScheduler();
+  SetMaxDelayableRequests(1);
+  // Create three requests. The last request becomes pending.
+  std::unique_ptr<TestRequest> request1 =
+      NewRequest("https://a.test/foo", net::HIGHEST);
+  ASSERT_TRUE(request1->started());
+
+  std::unique_ptr<TestRequest> request2 =
+      NewRequest("https://a.test/bar", net::LOWEST);
+  ASSERT_TRUE(request2->started());
+
+  std::unique_ptr<TestRequest> request3 =
+      NewRequest("https://a.test/bar", net::LOWEST);
+  ASSERT_FALSE(request3->started());
+
+  scheduler()->OnClientVisibilityChanged(kClientId1.token(), /*visible=*/false);
+  ASSERT_EQ(request3->url_request()->priority(), net::IDLE);
+
+  scheduler()->OnClientVisibilityChanged(kClientId1.token(), /*visible=*/true);
+  ASSERT_EQ(request3->url_request()->priority(), net::LOWEST);
 }
 
 }  // unnamed namespace

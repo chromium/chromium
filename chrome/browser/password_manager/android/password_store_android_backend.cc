@@ -8,6 +8,7 @@
 #include <cmath>
 #include <list>
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -17,12 +18,11 @@
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/sparse_histogram.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper_impl.h"
@@ -31,8 +31,10 @@
 #include "chrome/browser/password_manager/android/password_sync_controller_delegate_android.h"
 #include "chrome/browser/password_manager/android/password_sync_controller_delegate_bridge_impl.h"
 #include "components/autofill/core/common/autofill_regexes.h"
+#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/android_backend_error.h"
-#include "components/password_manager/core/browser/login_database.h"
+#include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/get_logins_with_affiliations_request_handler.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_eviction_util.h"
 #include "components/password_manager/core/browser/password_store_android_backend_api_error_codes.h"
@@ -40,13 +42,12 @@
 #include "components/password_manager/core/browser/password_store_backend_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_store_util.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
+#include "components/password_manager/core/browser/psl_matching_helper.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/model/proxy_model_type_controller_delegate.h"
 #include "components/sync/service/sync_service.h"
-#include "components/sync/service/sync_user_settings.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace password_manager {
@@ -92,7 +93,8 @@ std::string FormToSignonRealmQuery(const PasswordFormDigest& form,
     // Check PSL matches and matches for exact signon realm.
     return GetRegistryControlledDomain(GURL(form.signon_realm));
   }
-  if (form.scheme == PasswordForm::Scheme::kHtml) {
+  if (form.scheme == PasswordForm::Scheme::kHtml &&
+      !IsValidAndroidFacetURI(form.signon_realm)) {
     // Check federated matches and matches for exact signon realm.
     return form.url.host();
   }
@@ -100,8 +102,8 @@ std::string FormToSignonRealmQuery(const PasswordFormDigest& form,
   return form.signon_realm;
 }
 
-bool MatchesRegexWithCache(base::StringPiece16 input,
-                           base::StringPiece16 regex) {
+bool MatchesRegexWithCache(std::u16string_view input,
+                           std::u16string_view regex) {
   static base::NoDestructor<autofill::AutofillRegexCache> cache(
       autofill::ThreadSafe(true));
   const icu::RegexPattern* regex_pattern = cache->GetRegexPattern(regex);
@@ -169,6 +171,46 @@ void ValidateSignonRealm(const PasswordFormDigest& form_digest_to_match,
     }
   }
   std::move(callback).Run(std::move(matching_logins));
+}
+
+void ProcessGroupedLoginsAndReply(const PasswordFormDigest& form_digest,
+                                  LoginsOrErrorReply callback,
+                                  LoginsResultOrError logins_or_error) {
+  if (absl::holds_alternative<PasswordStoreBackendError>(logins_or_error)) {
+    std::move(callback).Run(std::move(logins_or_error));
+    return;
+  }
+  for (auto& form : absl::get<LoginsResult>(logins_or_error)) {
+    switch (GetMatchResult(*form, form_digest)) {
+      case MatchResult::NO_MATCH:
+        // If it's not PSL nor exact match it has to be affiliated or grouped.
+        CHECK(form->match_type.has_value());
+        break;
+      case MatchResult::EXACT_MATCH:
+      case MatchResult::FEDERATED_MATCH:
+        // Rewrite match type completely for exact matches so it won't be
+        // confused as other types.
+        form->match_type = PasswordForm::MatchType::kExact;
+        break;
+      case MatchResult::PSL_MATCH:
+      case MatchResult::FEDERATED_PSL_MATCH:
+        // PSL match is only possible if form was marked as grouped match.
+        CHECK(form->match_type.has_value());
+        form->match_type |= PasswordForm::MatchType::kPSL;
+        break;
+    }
+  }
+
+  // Remove grouped only matches if filling across groups is disabled.
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kFillingAcrossGroupedSites)) {
+    base::EraseIf(
+        absl::get<LoginsResult>(logins_or_error), [](const auto& form) {
+          return form->match_type == PasswordForm::MatchType::kGrouped;
+        });
+  }
+
+  std::move(callback).Run(std::move(logins_or_error));
 }
 
 LoginsResultOrError JoinRetrievedLoginsOrError(
@@ -288,6 +330,7 @@ bool IsRetriableOperation(PasswordStoreOperation operation) {
     case PasswordStoreOperation::kRemoveLoginsCreatedBetweenAsync:
     case PasswordStoreOperation::kDisableAutoSignInForOriginsAsync:
     case PasswordStoreOperation::kClearAllLocalPasswords:
+    case PasswordStoreOperation::kGetGroupedMatchingLoginsAsync:
       return false;
   }
   NOTREACHED() << "Operation code not handled";
@@ -320,6 +363,8 @@ std::string GetOperationName(PasswordStoreOperation operation) {
       return "DisableAutoSignInForOriginsAsync";
     case PasswordStoreOperation::kClearAllLocalPasswords:
       return "ClearAllLocalPasswords";
+    case PasswordStoreOperation::kGetGroupedMatchingLoginsAsync:
+      return "GetGroupedMatchingLoginsAsync";
   }
   NOTREACHED() << "Operation code not handled";
   return "";
@@ -578,9 +623,11 @@ PasswordStoreAndroidBackend::PasswordStoreAndroidBackend(
 PasswordStoreAndroidBackend::~PasswordStoreAndroidBackend() = default;
 
 void PasswordStoreAndroidBackend::InitBackend(
+    AffiliatedMatchHelper* affiliated_match_helper,
     RemoteChangesReceived remote_form_changes_received,
     base::RepeatingClosure sync_enabled_or_disabled_cb,
     base::OnceCallback<void(bool)> completion) {
+  affiliated_match_helper_ = affiliated_match_helper;
   main_task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
   stored_passwords_changed_ = std::move(remote_form_changes_received);
   lifecycle_helper_->RegisterObserver(base::BindRepeating(
@@ -592,6 +639,7 @@ void PasswordStoreAndroidBackend::InitBackend(
 
 void PasswordStoreAndroidBackend::Shutdown(
     base::OnceClosure shutdown_completed) {
+  affiliated_match_helper_ = nullptr;
   sync_service_ = nullptr;
   lifecycle_helper_->UnregisterObserver();
   // TODO(https://crbug.com/1229654): Implement (e.g. unsubscribe from GMS).
@@ -651,6 +699,24 @@ void PasswordStoreAndroidBackend::FillMatchingLoginsAsync(
         PasswordStoreOperation::kFillMatchingLoginsAsync);
   }
   std::move(callbacks_chain).Run();
+}
+
+void PasswordStoreAndroidBackend::GetGroupedMatchingLoginsAsync(
+    const PasswordFormDigest& form_digest,
+    LoginsOrErrorReply callback) {
+  if (bridge_helper_->CanUseGetAffiliatedPasswordsAPI()) {
+    JobId job_id = bridge_helper_->GetAffiliatedLoginsForSignonRealm(
+        form_digest.signon_realm, GetAccount(GetSyncingAccount(sync_service_)));
+    QueueNewJob(job_id,
+                base::BindOnce(&ProcessGroupedLoginsAndReply, form_digest,
+                               std::move(callback)),
+                MetricInfix("GetGroupedMatchingLoginsAsync"),
+                PasswordStoreOperation::kGetGroupedMatchingLoginsAsync,
+                /*delay=*/base::Seconds(0));
+    return;
+  }
+  GetLoginsWithAffiliationsRequestHandler(
+      form_digest, this, affiliated_match_helper_.get(), std::move(callback));
 }
 
 void PasswordStoreAndroidBackend::AddLoginAsync(
@@ -804,10 +870,6 @@ void PasswordStoreAndroidBackend::DisableAutoSignInForOriginsAsync(
 }
 
 SmartBubbleStatsStore* PasswordStoreAndroidBackend::GetSmartBubbleStatsStore() {
-  return nullptr;
-}
-
-FieldInfoStore* PasswordStoreAndroidBackend::GetFieldInfoStore() {
   return nullptr;
 }
 
@@ -1017,6 +1079,7 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
         case PasswordStoreOperation::kRemoveLoginsCreatedBetweenAsync:
         case PasswordStoreOperation::kDisableAutoSignInForOriginsAsync:
         case PasswordStoreOperation::kClearAllLocalPasswords:
+        case PasswordStoreOperation::kGetGroupedMatchingLoginsAsync:
           NOTREACHED();
           return;
       }

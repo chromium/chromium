@@ -99,6 +99,8 @@ struct SpecifiedFlagsCompare {
 ABSL_NAMESPACE_END
 }  // namespace absl
 
+// These flags influence how command line flags are parsed and are only intended
+// to be set on the command line.  Avoid reading or setting them from C++ code.
 ABSL_FLAG(std::vector<std::string>, flagfile, {},
           "comma-separated list of files to load flags from")
     .OnUpdate([]() {
@@ -148,6 +150,8 @@ ABSL_FLAG(std::vector<std::string>, tryfromenv, {},
       absl::flags_internal::tryfromenv_needs_processing = true;
     });
 
+// Rather than reading or setting --undefok from C++ code, please consider using
+// ABSL_RETIRED_FLAG instead.
 ABSL_FLAG(std::vector<std::string>, undefok, {},
           "comma-separated list of flag names that it is okay to specify "
           "on the command line even if the program does not define a flag "
@@ -633,7 +637,7 @@ void ReportUnrecognizedFlags(
 // --------------------------------------------------------------------
 
 bool WasPresentOnCommandLine(absl::string_view flag_name) {
-  absl::MutexLock l(&specified_flags_guard);
+  absl::ReaderMutexLock l(&specified_flags_guard);
   ABSL_INTERNAL_CHECK(specified_flags != nullptr,
                       "ParseCommandLine is not invoked yet");
 

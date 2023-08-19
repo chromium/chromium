@@ -41,6 +41,8 @@ class TestFileUtils : public FileUtilsWrapper {
 
   void SetNextDeleteFileRecursivelyResult(absl::optional<bool> delete_result);
 
+  TestFileUtils* AsTestFileUtils() override;
+
  private:
   ~TestFileUtils() override;
 

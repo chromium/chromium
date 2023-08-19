@@ -6,9 +6,8 @@
 
 #import <UIKit/UIKit.h>
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+#import "base/functional/callback_helpers.h"
+#import "ios/chrome/browser/mailto_handler/mailto_handler_service.h"
 
 namespace ios {
 namespace provider {
@@ -21,7 +20,7 @@ class ChromiumMailtoHandlerService final : public MailtoHandlerService {
   NSString* SettingsTitle() const final;
   UIViewController* CreateSettingsController() final;
   void DismissAllMailtoHandlerInterfaces() final;
-  void HandleMailtoURL(NSURL* url) final;
+  void HandleMailtoURL(NSURL* url, base::OnceClosure completion) final;
 };
 
 NSString* ChromiumMailtoHandlerService::SettingsTitle() const {
@@ -36,10 +35,14 @@ void ChromiumMailtoHandlerService::DismissAllMailtoHandlerInterfaces() {
   // nothing to do
 }
 
-void ChromiumMailtoHandlerService::HandleMailtoURL(NSURL* url) {
-  [[UIApplication sharedApplication] openURL:url
-                                     options:@{}
-                           completionHandler:nil];
+void ChromiumMailtoHandlerService::HandleMailtoURL(
+    NSURL* url,
+    base::OnceClosure completion) {
+  auto callback = base::IgnoreArgs<BOOL>(std::move(completion));
+  [[UIApplication sharedApplication]
+                openURL:url
+                options:@{}
+      completionHandler:base::CallbackToBlock(std::move(callback))];
 }
 
 }  // namespace

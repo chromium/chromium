@@ -7,14 +7,14 @@
 
 #include <fcntl.h>
 
+#include "base/apple/foundation_util.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/shared_memory_mapping.h"
@@ -83,7 +83,7 @@ class SandboxMacTest : public base::MultiProcessTest {
     ASSERT_GE(pipe_, 0);
 
     base::LaunchOptions options;
-    options.fds_to_remap.push_back(std::make_pair(pipe_, pipe_));
+    options.fds_to_remap.emplace_back(pipe_, pipe_);
 
     base::Process process = SpawnChildWithOptions(procname, options);
     ASSERT_TRUE(process.IsValid());
@@ -172,7 +172,7 @@ MULTIPROCESS_TEST_MAIN(ClipboardAccessProcess) {
   CHECK(!pasteboard_name.empty());
   CHECK([NSPasteboard pasteboardWithName:base::SysUTF8ToNSString(
                                              pasteboard_name)] == nil);
-  CHECK([NSPasteboard generalPasteboard] == nil);
+  CHECK(NSPasteboard.generalPasteboard == nil);
 
   return 0;
 }
@@ -180,9 +180,9 @@ MULTIPROCESS_TEST_MAIN(ClipboardAccessProcess) {
 TEST_F(SandboxMacTest, ClipboardAccess) {
   scoped_refptr<ui::UniquePasteboard> pb = new ui::UniquePasteboard;
   ASSERT_TRUE(pb->get());
-  EXPECT_EQ([[pb->get() types] count], 0U);
+  EXPECT_EQ(pb->get().types.count, 0U);
 
-  extra_data_ = base::SysNSStringToUTF8([pb->get() name]);
+  extra_data_ = base::SysNSStringToUTF8(pb->get().name);
 
   ExecuteInAllSandboxTypes("ClipboardAccessProcess",
                            base::BindRepeating(
@@ -206,13 +206,17 @@ TEST_F(SandboxMacTest, SSLInitTest) {
   ExecuteInAllSandboxTypes("SSLProcess", base::RepeatingClosure());
 }
 
+// This test checks to make sure that `__builtin_available()` (and therefore the
+// Objective-C equivalent `@available()`) work within a sandbox. When revving
+// the macOS releases supported by Chromium, bump this up. This value
+// specifically matches the oldest macOS release supported by Chromium.
 MULTIPROCESS_TEST_MAIN(BuiltinAvailable) {
   CheckCreateSeatbeltServer();
 
-  if (__builtin_available(macOS 10.13, *)) {
+  if (__builtin_available(macOS 10.15, *)) {
     // Can't negate a __builtin_available condition. But success!
   } else {
-    return 13;
+    return 15;
   }
 
   return 0;
@@ -225,7 +229,7 @@ TEST_F(SandboxMacTest, BuiltinAvailable) {
 MULTIPROCESS_TEST_MAIN(NetworkProcessPrefs) {
   CheckCreateSeatbeltServer();
 
-  const std::string kBundleId = base::mac::BaseBundleID();
+  const std::string kBundleId = base::apple::BaseBundleID();
   const std::string kUserName = base::SysNSStringToUTF8(NSUserName());
   const std::vector<std::string> kPaths = {
       "/Library/Managed Preferences/.GlobalPreferences.plist",

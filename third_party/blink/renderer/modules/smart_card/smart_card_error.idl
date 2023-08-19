@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://github.com/WICG/web-smart-card/blob/main/README.md#web-idl
+// https://wicg.github.io/web-smart-card/#smartcarderror-interface
 
 enum SmartCardResponseCode {
   "no-service",
@@ -16,6 +16,7 @@ enum SmartCardResponseCode {
   "server-too-busy",
   "sharing-violation",
   "system-cancelled",
+  "unknown-reader",
   "unpowered-card",
   "unresponsive-card",
   "unsupported-card",

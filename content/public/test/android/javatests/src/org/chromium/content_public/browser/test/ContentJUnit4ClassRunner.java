@@ -11,6 +11,7 @@ import org.junit.runners.model.InitializationError;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.SkipCheck;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.test.util.DeviceRestrictionSkipCheck;
 import org.chromium.ui.test.util.UiDisableIfSkipCheck;
 import org.chromium.ui.test.util.UiRestrictionSkipCheck;
@@ -28,6 +29,10 @@ public class ContentJUnit4ClassRunner extends BaseJUnit4ClassRunner {
      */
     public ContentJUnit4ClassRunner(final Class<?> klass) throws InitializationError {
         super(klass);
+
+        // Display ui scale-up on auto for tests by default, individual tests can restore this
+        // scaling.
+        DisplayUtil.setUiScalingFactorForAutomotiveForTesting(1.0f);
     }
 
     @Override

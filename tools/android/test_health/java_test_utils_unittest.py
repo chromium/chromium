@@ -33,6 +33,8 @@ _DISABLED_TEST_PATH = (_TEST_FILES_PATH / 'disabled_tests' /
                        'SampleDisabledTest.java')
 _DISABLE_IF_TEST_PATH = (_TEST_FILES_PATH / 'disabled_tests' /
                          'SampleDisableIfTest.java')
+_WHOLE_CLASS_DISABLED_TEST_PATH = (_TEST_FILES_PATH / 'disabled_tests' /
+                       'SampleWholeClassDisabledTest.java')
 
 _BASE_JAVA_PACKAGE = 'org.chromium.chrome.browser.test_health'
 _JAVA_PACKAGE_HEALTHY_TESTS = _BASE_JAVA_PACKAGE + '.healthy_tests'
@@ -82,6 +84,14 @@ class TestJavaTestHealthStats(unittest.TestCase):
                          test_health.java_package)
         self.assertEqual(0, test_health.disabled_tests_count)
         self.assertEqual(2, test_health.disable_if_tests_count)
+
+    def test_get_java_test_health_stats_whole_class_disabled_tests(self):
+        test_health = java_test_utils.get_java_test_health(_WHOLE_CLASS_DISABLED_TEST_PATH)
+
+        self.assertEqual(_JAVA_PACKAGE_DISABLED_TESTS,
+                         test_health.java_package)
+        self.assertEqual(2, test_health.disabled_tests_count)
+        self.assertEqual(0, test_health.disable_if_tests_count)
 
     def test_get_java_test_health_invalid_test_syntax(self):
         expected_filename = str(

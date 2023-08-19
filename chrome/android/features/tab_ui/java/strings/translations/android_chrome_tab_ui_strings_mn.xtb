@@ -3,8 +3,6 @@
 <translationbundle lang="mn">
 <translation id="1075622780330595106">Таны табуудаас <ph name="NUMBER_OF_TABS" />-г нь сүүлийн үед ашиглаагүй байна. Тэдгээрийг хаах уу?</translation>
 <translation id="125153950246128346">Өөр табыг харахын тулд товшино уу</translation>
-<translation id="1403228085774130835">Та хаасан табуудаа Chrome-н үндсэн цэсийн доор байх Саяхны табууд хэсгээс олох боломжтой</translation>
-<translation id="1455506303394048917">Таны эдгээр Нууцлалтай таб дахь үйл ажиллагааг энэ төхөөрөмжөөс арилгана</translation>
 <translation id="1499635324672558517">Бүх Нууцлалтай табыг хаах уу?</translation>
 <translation id="1657719826150349398">Табыг доош зөөх</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> таб}other{<ph name="TABS_COUNT_MANY" /> таб}}</translation>
@@ -47,6 +45,7 @@
 <translation id="5073204694187207510">Бүтэн дэлгэцийн торыг нуух</translation>
 <translation id="5076161749301278626">Дэлгүүрийн шүүмжүүдийг харах уу?</translation>
 <translation id="5082793167783849073">Бүлэг үүсгэх байдлаар хуудаснуудыг хурдан харьцуулаарай. Эхлүүлэхийн тулд холбоосыг удаан дарна уу.</translation>
+<translation id="5339733443032484186">Таны сүүлийн таб</translation>
 <translation id="5490235265819901748">Бүлэг табыг дэлгэсэн</translation>
 <translation id="5494920125229734069">Бүгдийг сонго</translation>
 <translation id="5556417849629758491">Дэлгэцийн дээд хэсгийн ойролцоо боломжтой дэлгүүрийн мэдээллийг үзэх сонголт</translation>
@@ -62,10 +61,12 @@
 <translation id="6228793724645064692">(дэлгүүрийн үнэлгээ)</translation>
 <translation id="6333260925957816943">Энэ дэлгүүрийн талаарх мэдээлэл</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Сонгосон <ph name="TABS_COUNT_ONE" /> табыг бүлэглэхээ болих}other{Сонгосон <ph name="TABS_COUNT_MANY" /> табыг бүлэглэхээ болих}}</translation>
+<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Та хаасан табуудаа Chrome-н үндсэн цэсийн доор байх Саяхны табуудаас олох боломжтой. Таны Нууцлалтай таб боломжгүй байх болно.}other{Та хаасан табуудаа Chrome-н үндсэн цэсийн доор байх Саяхны табуудаас олох боломжтой. Таны Нууцлалтай # таб боломжгүй байх болно.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> таб}other{<ph name="TABS_COUNT_MANY" /> таб}}</translation>
 <translation id="6549021453810473782">Дэлгүүрийн мэдээллийг үзэх</translation>
 <translation id="6562820390860419811">Табыг зүүн тийш зөөх</translation>
 <translation id="6615455863669487791">Надад үзүүлнэ үү</translation>
+<translation id="661742612106409204">Та хаасан табуудаа Chrome-н үндсэн цэсийн доор байх Саяхны табуудаас олох боломжтой.</translation>
 <translation id="6840760312327750441">Табуудыг бүлэглэхийн тулд таб дээр хүрээд, удаан дарна уу. Тэгээд уг табыг нөгөө рүү нь чирж зөөнө үү.</translation>
 <translation id="6856809498882026482">Олон сонголттой горимыг нуух</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Табыг хуваалцах}other{Табуудыг хуваалцах}}</translation>
@@ -89,6 +90,7 @@
 <translation id="8398929769197326728">Шинэ фолдер - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" /> таб бүхий бүлэг табыг дэлгэх.</translation>
 <translation id="8714939927607906138">Илүү хямд үнэ</translation>
+<translation id="8730999928494395583">Эдгээр Нууцлалтай таб дахь таны үйл ажиллагааг энэ төхөөрөмжөөс хасна</translation>
 <translation id="8820741577754260431">Табууд дээрх үнэ бууралтыг хараарай</translation>
 <translation id="9090098097337832354">Энэ дэлгүүрийн талаарх мэдээллийг хаасан</translation>
 <translation id="9150694013019234766">Дэлгэцийн доод хэсгийн ойролцоо байгаа табын бүлгээсээ таб хооронд сэлгэнэ үү</translation>

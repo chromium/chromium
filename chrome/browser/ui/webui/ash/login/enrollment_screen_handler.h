@@ -59,6 +59,7 @@ class EnrollmentScreenHandler : public BaseScreenHandler,
   void Hide() override;
   void ShowSigninScreen() override;
   void ReloadSigninScreen() override;
+  void ResetEnrollmentScreen() override;
   void ShowSkipConfirmationDialog() override;
   void ShowUserError(const std::string& email) override;
   void ShowEnrollmentDuringTrialNotAllowedError() override;
@@ -101,7 +102,7 @@ class EnrollmentScreenHandler : public BaseScreenHandler,
   void HandleOnLearnMore();
 
   // Shows a given enrollment step.
-  void ShowStep(const char* step);
+  void ShowStep(const std::string& step);
 
   // Display the given i18n resource as error message.
   void ShowError(int message_id, bool retry);
@@ -138,7 +139,8 @@ class EnrollmentScreenHandler : public BaseScreenHandler,
   bool IsOnEnrollmentScreen();
 
   // Keeps the controller for this view.
-  raw_ptr<Controller, ExperimentalAsh> controller_ = nullptr;
+  raw_ptr<Controller, DanglingUntriaged | ExperimentalAsh> controller_ =
+      nullptr;
 
   bool show_on_init_ = false;
 

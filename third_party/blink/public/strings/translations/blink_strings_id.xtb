@@ -26,7 +26,6 @@
 <translation id="2060505056492490888">'<ph name="DOT" />' digunakan pada posisi yang salah di '<ph name="INVALIDDOMAIN" />'.</translation>
 <translation id="2148716181193084225">Hari ini</translation>
 <translation id="2226276347425096477">Pendekkan teks ini menjadi <ph name="MAX_CHARACTERS" /> karakter atau kurang (saat ini Anda menggunakan <ph name="CURRENT_LENGTH" /> karakter).</translation>
-<translation id="2246498165605549352">File Lokal</translation>
 <translation id="2247351761944213033">Minggu <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Lagu <ph name="NUMBER" /></translation>
 <translation id="2393030564806080191">Nilai warna heksadesimal</translation>
@@ -89,6 +88,7 @@
 <translation id="5425179576310518467">tanggal saat ini</translation>
 <translation id="5466621249238537318">Pilih salah satu atau beberapa file.</translation>
 <translation id="5468998798572797635">keluar dari tampilan layar penuh</translation>
+<translation id="5514612371225420585">File di perangkat Anda</translation>
 <translation id="5516235301412634559">0,75</translation>
 <translation id="5537725057119320332">Transmisikan</translation>
 <translation id="5546461542133609677">suarakan</translation>
@@ -113,6 +113,7 @@
 <translation id="6398862346408813489">Tampilkan panel pilihan bulan</translation>
 <translation id="6404546809543547843">scrubber waktu audio</translation>
 <translation id="6443871981718447451">tampilkan menu subtitel</translation>
+<translation id="6484738902856791350">Pretty print</translation>
 <translation id="6550675742724504774">Opsi</translation>
 <translation id="6572309429103589720">Tata bahasa tidak valid</translation>
 <translation id="658823671542763450">masuk layar penuh</translation>

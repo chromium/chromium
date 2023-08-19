@@ -34,7 +34,9 @@
 #include "content/public/test/browser_test_base.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "base/mac/scoped_nsautorelease_pool.h"
+#include "base/apple/scoped_nsautorelease_pool.h"
+#include "base/test/scoped_path_override.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
 namespace content {
@@ -68,7 +70,7 @@ class ContentBrowserTest : public BrowserTestBase {
   base::FilePath GetTestDataFilePath();
 
  private:
-  raw_ptr<Shell, DanglingUntriaged> shell_ = nullptr;
+  raw_ptr<Shell, AcrossTasksDanglingUntriaged> shell_ = nullptr;
 
 #if BUILDFLAG(IS_MAC)
   // On Mac, without the following autorelease pool, code which is directly
@@ -78,7 +80,9 @@ class ContentBrowserTest : public BrowserTestBase {
   // deallocation via an autorelease pool (such as browser window closure and
   // browser shutdown). To avoid this, the following pool is recycled after each
   // time code is directly executed.
-  raw_ptr<base::mac::ScopedNSAutoreleasePool> pool_ = nullptr;
+  raw_ptr<base::apple::ScopedNSAutoreleasePool> pool_ = nullptr;
+
+  absl::optional<base::ScopedPathOverride> file_exe_override_;
 #endif
 
   // Used to detect incorrect overriding of PreRunTestOnMainThread() with

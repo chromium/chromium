@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -32,6 +33,7 @@
 #include "content/browser/private_aggregation/private_aggregation_budget_storage.h"
 #include "content/browser/private_aggregation/proto/private_aggregation_budgets.pb.h"
 #include "content/browser/storage_partition_impl.h"
+#include "content/public/browser/private_aggregation_data_model.h"
 #include "net/base/schemeful_site.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -48,7 +50,7 @@ using BudgetEntryValidityStatus =
 
 using RequestResult = PrivateAggregationBudgeter::RequestResult;
 
-const base::Time kExampleTime = base::Time::FromJavaTime(1652984901234);
+constexpr base::Time kExampleTime = base::Time::FromJavaTime(1652984901234);
 
 class PrivateAggregationBudgeterUnderTest : public PrivateAggregationBudgeter {
  public:
@@ -95,6 +97,14 @@ class PrivateAggregationBudgeterUnderTest : public PrivateAggregationBudgeter {
     new_budget->set_budget_used(budget_value);
 
     raw_storage_->budgets_data()->UpdateData(site_key, budgets);
+  }
+
+  int NumberOfSitesInStorage() {
+    if (raw_storage_ == nullptr) {
+      return 0;
+    }
+
+    return raw_storage_->budgets_data()->GetAllCached().size();
   }
 
   void DeleteAllData() { raw_storage_->budgets_data()->DeleteAllData(); }
@@ -186,6 +196,10 @@ class PrivateAggregationBudgeterTest : public testing::Test {
     budgeter_.get()->AddBudgetValueAtTimestamp(budget_key, value, timestamp);
   }
 
+  int NumberOfSitesInStorage() {
+    return budgeter_.get()->NumberOfSitesInStorage();
+  }
+
   void DeleteAllBudgetData() { budgeter_.get()->DeleteAllData(); }
 
   PrivateAggregationBudgetKey CreateBudgetKey() {
@@ -203,7 +217,7 @@ class PrivateAggregationBudgeterTest : public testing::Test {
     return budgeter_->GetStorageStatus();
   }
 
- private:
+ protected:
   base::FilePath storage_directory() const { return temp_directory_.GetPath(); }
 
   base::ScopedTempDir temp_directory_;
@@ -1856,6 +1870,150 @@ TEST_F(PrivateAggregationBudgeterTest,
   // Callback still run even though the budgeter was immediately destroyed.
   run_loop.Run();
   EXPECT_EQ(num_queries_processed, 2);
+}
+
+TEST_F(PrivateAggregationBudgeterTest, ClearDataByDataKey) {
+  int num_queries_processed = 0;
+
+  CreateAndInitializeBudgeterThenWait();
+
+  const url::Origin kOriginA = url::Origin::Create(GURL("https://a.example/"));
+  const url::Origin kOriginB = url::Origin::Create(GURL("https://b.example/"));
+
+  PrivateAggregationBudgetKey example_key_a =
+      PrivateAggregationBudgetKey::CreateForTesting(
+          kOriginA, kExampleTime,
+          PrivateAggregationBudgetKey::Api::kProtectedAudience);
+
+  PrivateAggregationBudgetKey example_key_b =
+      PrivateAggregationBudgetKey::CreateForTesting(
+          kOriginB, kExampleTime,
+          PrivateAggregationBudgetKey::Api::kProtectedAudience);
+
+  base::RepeatingCallback<void(RequestResult)> expect_approved =
+      base::BindLambdaForTesting(
+          [&num_queries_processed](RequestResult result) {
+            EXPECT_EQ(result, RequestResult::kApproved);
+            ++num_queries_processed;
+          });
+  base::RepeatingCallback<void(RequestResult)> expect_insufficient_budget =
+      base::BindLambdaForTesting(
+          [&num_queries_processed](RequestResult result) {
+            EXPECT_EQ(result, RequestResult::kInsufficientSmallerScopeBudget);
+            ++num_queries_processed;
+          });
+
+  budgeter()->ConsumeBudget(
+      /*budget=*/PrivateAggregationBudgeter::kSmallerScopeValues
+          .max_budget_per_scope,
+      example_key_a, expect_approved);
+
+  // Maximum budget has been used so this should fail.
+  budgeter()->ConsumeBudget(
+      /*budget=*/1, example_key_a, expect_insufficient_budget);
+
+  budgeter()->ConsumeBudget(
+      /*budget=*/PrivateAggregationBudgeter::kSmallerScopeValues
+          .max_budget_per_scope,
+      example_key_b, expect_approved);
+
+  // Maximum budget has been used so this should fail.
+  budgeter()->ConsumeBudget(
+      /*budget=*/1, example_key_b, expect_insufficient_budget);
+
+  std::set<PrivateAggregationDataModel::DataKey> keys;
+  budgeter()->GetAllDataKeys(base::BindLambdaForTesting(
+      [&keys](std::set<PrivateAggregationDataModel::DataKey> data_keys) {
+        keys = std::move(data_keys);
+      }));
+  ASSERT_THAT(keys, testing::SizeIs(2));
+
+  base::RunLoop run_loop;
+  budgeter()->DeleteByDataKey(*keys.begin(), base::BindLambdaForTesting([&]() {
+    ++num_queries_processed;
+    run_loop.Quit();
+  }));
+
+  // After clearing, we can use the full budget again for the cleared origin.
+  // Other origins aren't affected.
+  budgeter()->ConsumeBudget(
+      /*budget=*/PrivateAggregationBudgeter::kSmallerScopeValues
+          .max_budget_per_scope,
+      example_key_a, expect_approved);
+  budgeter()->ConsumeBudget(/*budget=*/1, example_key_b,
+                            expect_insufficient_budget);
+  run_loop.Run();
+  EXPECT_EQ(num_queries_processed, 7);
+}
+
+TEST_F(PrivateAggregationBudgeterTest, StaleDataClearedOnInitialization) {
+  CreateAndInitializeBudgeterThenWait();
+
+  int64_t latest_window_start =
+      PrivateAggregationBudgetKey::TimeWindow(base::Time::Now())
+          .start_time()
+          .ToDeltaSinceWindowsEpoch()
+          .InMicroseconds();
+
+  int64_t stale_window_start =
+      latest_window_start - PrivateAggregationBudgeter::kLargerScopeValues
+                                .budget_scope_duration.InMicroseconds();
+
+  AddBudgetValueAtTimestamp(CreateBudgetKey(), /*value=*/1,
+                            /*timestamp=*/stale_window_start);
+
+  EXPECT_EQ(NumberOfSitesInStorage(), 1);
+
+  // Ensure database has a chance to persist storage.
+  EnsureDbFlushes();
+
+  DestroyBudgeter();
+  CreateAndInitializeBudgeterThenWait();
+
+  // Ensure the (zero-delay) clean up task has a chance to run.
+  task_environment_.FastForwardBy(base::TimeDelta());
+
+  // The stale data should've been cleared.
+  EXPECT_EQ(NumberOfSitesInStorage(), 0);
+}
+
+TEST_F(PrivateAggregationBudgeterTest, StaleDataClearedAfterConsumeBudget) {
+  CreateAndInitializeBudgeterThenWait();
+
+  int64_t latest_window_start =
+      PrivateAggregationBudgetKey::TimeWindow(base::Time::Now())
+          .start_time()
+          .ToDeltaSinceWindowsEpoch()
+          .InMicroseconds();
+
+  int64_t stale_window_start =
+      latest_window_start - PrivateAggregationBudgeter::kLargerScopeValues
+                                .budget_scope_duration.InMicroseconds();
+
+  AddBudgetValueAtTimestamp(CreateBudgetKey(), /*value=*/1,
+                            /*timestamp=*/stale_window_start);
+
+  PrivateAggregationBudgetKey non_stale_key =
+      PrivateAggregationBudgetKey::CreateForTesting(
+          /*origin=*/url::Origin::Create(GURL("https://b.example/")),
+          /*api_invocation_time=*/kExampleTime,
+          /*api-*/ PrivateAggregationBudgetKey::Api::kProtectedAudience);
+  base::RunLoop run_loop;
+  budgeter()->ConsumeBudget(
+      /*budget=*/1, non_stale_key,
+      /*on_done=*/base::BindLambdaForTesting([&](RequestResult result) {
+        EXPECT_EQ(result, RequestResult::kApproved);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+
+  EXPECT_EQ(NumberOfSitesInStorage(), 2);
+
+  task_environment_.FastForwardBy(
+      PrivateAggregationBudgeter::kMinStaleDataCleanUpGap);
+
+  // The stale data should've been cleared.
+  EXPECT_EQ(NumberOfSitesInStorage(), 1);
 }
 
 }  // namespace

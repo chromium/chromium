@@ -49,6 +49,47 @@ bool ShouldProcessWindowList() {
 
 }  // namespace
 
+// -----------------------------------------------------------------------------
+// PersistentWindowController::WindowTracker:
+
+PersistentWindowController::WindowTracker::WindowTracker() = default;
+
+PersistentWindowController::WindowTracker::~WindowTracker() {
+  RemoveAll();
+}
+
+void PersistentWindowController::WindowTracker::Add(
+    aura::Window* window,
+    const gfx::Rect& restore_bounds_in_parent) {
+  if (window_restore_bounds_map_.emplace(window, restore_bounds_in_parent)
+          .second) {
+    window->AddObserver(this);
+  }
+}
+
+void PersistentWindowController::WindowTracker::RemoveAll() {
+  for (auto& item : window_restore_bounds_map_) {
+    item.first->RemoveObserver(this);
+  }
+  window_restore_bounds_map_.clear();
+}
+
+void PersistentWindowController::WindowTracker::Remove(aura::Window* window) {
+  auto iter = window_restore_bounds_map_.find(window);
+  if (iter != window_restore_bounds_map_.end()) {
+    iter->first->RemoveObserver(this);
+    window_restore_bounds_map_.erase(iter);
+  }
+}
+
+void PersistentWindowController::WindowTracker::OnWindowDestroying(
+    aura::Window* window) {
+  Remove(window);
+}
+
+// -----------------------------------------------------------------------------
+// PersistentWindowController:
+
 constexpr char
     PersistentWindowController::kNumOfWindowsRestoredOnDisplayAdded[];
 constexpr char
@@ -76,8 +117,15 @@ void PersistentWindowController::OnWillProcessDisplayChanges() {
     }
     // Place the window that needs persistent window info into the temporary
     // set. The persistent window info will be created and set if a display is
-    // removed.
-    need_persistent_info_windows_.Add(window);
+    // removed. Store the window's restore bounds in parent here instead of
+    // `OnDisplayRemoved`. As the window's restore bounds in parent are
+    // converted from its restore bounds in screen, which relies on the
+    // displays' layout. And displays' layout will have been updated inside
+    // `OnDisplayRemoved`.
+    need_persistent_info_windows_.Add(
+        window, window_state->HasRestoreBounds()
+                    ? window_state->GetRestoreBoundsInParent()
+                    : gfx::Rect());
   }
 }
 
@@ -91,10 +139,13 @@ void PersistentWindowController::OnDisplayAdded(
 
 void PersistentWindowController::OnDisplayRemoved(
     const display::Display& old_display) {
-  for (aura::Window* window : need_persistent_info_windows_.windows()) {
+  for (const auto& [window, restore_bounds_in_parent] :
+       need_persistent_info_windows_.window_restore_bounds_map()) {
     WindowState* window_state = WindowState::Get(window);
-    window_state->SetPersistentWindowInfoOfDisplayRemoval(
-        PersistentWindowInfo(window, /*is_landscape_before_rotation=*/false));
+    window_state->set_persistent_window_info_of_display_removal(
+        PersistentWindowInfo(window,
+                             /*is_landscape_before_rotation=*/false,
+                             restore_bounds_in_parent));
   }
   need_persistent_info_windows_.RemoveAll();
   is_landscape_orientation_map_.erase(old_display.id());
@@ -132,8 +183,9 @@ void PersistentWindowController::OnDisplayMetricsChanged(
         window_state->IsFullscreen()) {
       continue;
     }
-    window_state->SetPersistentWindowInfoOfScreenRotation(
-        PersistentWindowInfo(window, was_landscape_before_rotation));
+    window_state->set_persistent_window_info_of_screen_rotation(
+        PersistentWindowInfo(window, was_landscape_before_rotation,
+                             /*given_restore_bounds_in_parent=*/gfx::Rect()));
   }
   screen_rotation_restore_callback_ =
       base::BindOnce(&PersistentWindowController::
@@ -212,13 +264,15 @@ void PersistentWindowController::
     persistent_window_bounds.Offset(offset);
 
     window->SetBoundsInScreen(persistent_window_bounds, display);
-    if (info.restore_bounds_in_screen) {
-      gfx::Rect restore_bounds = *info.restore_bounds_in_screen;
-      restore_bounds.Offset(offset);
-      window_state->SetRestoreBoundsInScreen(restore_bounds);
+    if (info.restore_bounds_in_parent) {
+      const gfx::Rect restore_bounds = *info.restore_bounds_in_parent;
+      // Use the stored window's restore bounds in parent to set the window's
+      // restore bounds in screen. The conversion from the bounds in parent to
+      // the bounds in screen will be based on the current displays' layout.
+      window_state->SetRestoreBoundsInParent(restore_bounds);
     }
     // Reset persistent window info every time the window bounds have restored.
-    window_state->ResetPersistentWindowInfoOfDisplayRemoval();
+    window_state->reset_persistent_window_info_of_display_removal();
 
     ++window_restored_count;
   }

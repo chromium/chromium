@@ -4,10 +4,6 @@
 
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_error.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 const NSErrorDomain kLookalikeUrlErrorDomain =
     @"com.google.chrome.lookalike_url";
 const NSInteger kLookalikeUrlErrorCode = -1003;

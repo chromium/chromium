@@ -99,9 +99,8 @@ static float ComputeDecorationThickness(
   DCHECK(!text_decoration_thickness.IsFromFont());
 
   const Length& thickness_length = text_decoration_thickness.Thickness();
-  float font_size = font_data->PlatformData().size();
   float text_decoration_thickness_pixels =
-      FloatValueForLength(thickness_length, font_size);
+      FloatValueForLength(thickness_length, computed_font_size);
 
   return std::max(minimum_thickness, roundf(text_decoration_thickness_pixels));
 }

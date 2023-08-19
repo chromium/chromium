@@ -21,6 +21,11 @@ struct DistantSession;
 // tabs. If `searchTerms` is not empty, it will be used to pre-populate the
 // search bar and filter results.
 - (void)showHistoryFromRecentTabsFilteredBySearchTerms:(NSString*)searchTerms;
+// Tells the receiver to show the History Sync Opt-In screen. If the user has
+// signed-in just before this step for the sole purpose of enabling history sync
+// (Eg. using the Recent Tabs sync promo), `dedicatedSignInDone` will be `YES`,
+// and the user is signed-out if history opt-in is declined.
+- (void)showHistorySyncOptInAfterDedicatedSignIn:(BOOL)dedicatedSignInDone;
 // Tells the receiver to open all tabs from the given `session`.
 - (void)openAllTabsFromSession:(const synced_sessions::DistantSession*)session;
 

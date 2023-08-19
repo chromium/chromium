@@ -11,10 +11,6 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface BrowserContainerViewController ()
 // Properties backing public setters.
 @property(nonatomic, strong) UIView* contentView;
@@ -35,7 +31,6 @@
   [super viewDidLoad];
   self.view.autoresizingMask =
       UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-  [self.browserEditMenuHandler addEditMenuEntries];
 }
 
 - (void)viewDidLayoutSubviews {
@@ -140,33 +135,6 @@
     self.contentBlockingView.translatesAutoresizingMaskIntoConstraints = NO;
     AddSameConstraints(self.contentBlockingView, self.view);
   }
-}
-
-#pragma mark - UIResponder methods
-
-- (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
-  if ([self.browserEditMenuHandler canPerformChromeAction:action
-                                               withSender:sender]) {
-    return YES;
-  }
-  return [super canPerformAction:action withSender:sender];
-}
-
-- (id)targetForAction:(SEL)action withSender:(id)sender {
-  if ([self.browserEditMenuHandler canPerformChromeAction:action
-                                               withSender:sender]) {
-    return self.browserEditMenuHandler;
-  }
-  return [super targetForAction:action withSender:sender];
-}
-
-#pragma mark - Forwards actions if they are called directly
-
-- (id)forwardingTargetForSelector:(SEL)aSelector {
-  if ([self.browserEditMenuHandler respondsToSelector:aSelector]) {
-    return self.browserEditMenuHandler;
-  }
-  return [super forwardingTargetForSelector:aSelector];
 }
 
 #pragma mark - Private

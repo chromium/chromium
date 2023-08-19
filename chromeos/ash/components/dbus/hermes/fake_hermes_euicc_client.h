@@ -62,11 +62,15 @@ class COMPONENT_EXPORT(HERMES_CLIENT) FakeHermesEuiccClient
   bool RemoveCarrierProfile(
       const dbus::ObjectPath& euicc_path,
       const dbus::ObjectPath& carrier_profile_path) override;
+  void UpdateShillDeviceSimSlotInfo() override;
   void QueueHermesErrorStatus(HermesResponseStatus status) override;
   void SetNextInstallProfileFromActivationCodeResult(
       HermesResponseStatus status) override;
+  void SetNextRefreshSmdxProfilesResult(
+      std::vector<dbus::ObjectPath> profiles) override;
   void SetInteractiveDelay(base::TimeDelta delay) override;
   std::string GenerateFakeActivationCode() override;
+  std::string GetDBusErrorActivationCode() override;
   bool GetLastRefreshProfilesRestoreSlotArg() override;
 
   // HermesEuiccClient:
@@ -141,6 +145,11 @@ class COMPONENT_EXPORT(HERMES_CLIENT) FakeHermesEuiccClient
   // When set, this will be returned as the result of the next attempt to
   // install a profile using an activation code.
   absl::optional<HermesResponseStatus> next_install_profile_result_;
+
+  // When set, this will be returned as the result the next time that we refresh
+  // the available SM-DX profiles.
+  absl::optional<std::vector<dbus::ObjectPath>>
+      next_refresh_smdx_profiles_result_;
 
   // Queue of error code to be returned from method calls.
   std::queue<HermesResponseStatus> error_status_queue_;

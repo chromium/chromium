@@ -63,6 +63,15 @@ import WidgetKit
       }
     }
 
+    func lockScreenWidgetBackground() -> some View {
+      if #available(iOS 16.0, *) {
+        return AccessoryWidgetBackground()
+      } else {
+        // Widget only supports iOS16+
+        return EmptyView()
+      }
+    }
+
     struct LockscreenLauncherWidgetEntryView: View {
       let entry: Provider.Entry
       let configuration: LockscreenLauncherWidgetType.Configuration
@@ -70,9 +79,6 @@ import WidgetKit
       var body: some View {
         let configuration = self.configuration
         ZStack {
-          if #available(iOS 16, *) {
-            AccessoryWidgetBackground()
-          }
           Image(configuration.imageName)
             .renderingMode(.template)
             .foregroundColor(.white)
@@ -80,6 +86,7 @@ import WidgetKit
         .widgetURL(configuration.widgetURL)
         .accessibilityElement()
         .accessibilityLabel(configuration.accessibilityLabel)
+        .crContainerBackground(lockScreenWidgetBackground())
       }
     }
 
@@ -95,6 +102,8 @@ import WidgetKit
       )
       .description(Text(configuration.description))
       .supportedFamilies(configuration.supportedFamilies)
+      .crDisfavoredLocations()
+      .crContainerBackgroundRemovable(false)
     }
 
     struct LockscreenLauncherSearchWidget: Widget {

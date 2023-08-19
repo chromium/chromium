@@ -5,18 +5,13 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_OBSERVER_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_OBSERVER_H_
 
-#include <string>
+#include <stdint.h>
 
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
-#include "components/attribution_reporting/source_registration_error.mojom.h"
-#include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
 #include "content/browser/attribution_reporting/store_source_result.mojom-forward.h"
-
-namespace attribution_reporting {
-class SuitableOrigin;
-}  // namespace attribution_reporting
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -65,15 +60,6 @@ class AttributionObserver : public base::CheckedObserver {
   virtual void OnTriggerHandled(const AttributionTrigger& trigger,
                                 absl::optional<uint64_t> cleared_debug_key,
                                 const CreateReportResult& result) {}
-
-  // Called when the source header registration json parser fails.
-  virtual void OnFailedSourceRegistration(
-      const std::string& header_value,
-      base::Time source_time,
-      const attribution_reporting::SuitableOrigin& source_origin,
-      const attribution_reporting::SuitableOrigin& reporting_origin,
-      attribution_reporting::mojom::SourceType,
-      attribution_reporting::mojom::SourceRegistrationError) {}
 
   // Called when an OS source or trigger registration is handled, regardless of
   // success.

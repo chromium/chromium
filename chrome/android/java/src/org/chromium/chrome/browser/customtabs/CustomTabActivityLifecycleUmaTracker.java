@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.text.TextUtils;
 
+import androidx.annotation.StringDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.IntentUtils;
@@ -22,7 +23,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.TabInteractionRecorder;
-import org.chromium.chrome.browser.customtabs.features.sessionrestore.SessionRestoreUtils;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
@@ -31,6 +31,9 @@ import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.webapps.WebappCustomTabTimeSpentLogger;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -41,6 +44,20 @@ import javax.inject.Named;
 @ActivityScope
 public class CustomTabActivityLifecycleUmaTracker
         implements PauseResumeWithNativeObserver, StartStopWithNativeObserver, NativeInitObserver {
+    /**
+     * Identifier used for last CCT client App. Used as suffix for histogram
+     * "CustomTabs.RetainableSessionsV2.TimeBetweenLaunch".
+     */
+    @StringDef({ClientIdentifierType.DIFFERENT, ClientIdentifierType.MIXED,
+            ClientIdentifierType.REFERRER, ClientIdentifierType.PACKAGE_NAME})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface ClientIdentifierType {
+        String DIFFERENT = ".Different";
+        String MIXED = ".Mixed";
+        String REFERRER = ".Referrer";
+        String PACKAGE_NAME = ".PackageName";
+    }
+
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final Supplier<Bundle> mSavedInstanceStateSupplier;
     private final Activity mActivity;
@@ -200,7 +217,7 @@ public class CustomTabActivityLifecycleUmaTracker
             return;
         }
 
-        String histogramSuffix = SessionRestoreUtils.getClientIdentifierType(
+        String histogramSuffix = getClientIdentifierType(
                 clientPackage, prevClientPackage, referrer, prevReferrer, taskId, prevTaskId);
         String histogramPrefix = "CustomTabs.RetainableSessionsV2.TimeBetweenLaunch";
         long time = SystemClock.uptimeMillis();
@@ -219,7 +236,7 @@ public class CustomTabActivityLifecycleUmaTracker
      * {@link IntentHandler#getReferrerUrlIncludingExtraHeaders(Intent)}.
      * TODO(https://crbug.com/1350252): Move this to IntentHandler.
      */
-    public static String getReferrerUriString(Activity activity) {
+    static String getReferrerUriString(Activity activity) {
         if (activity == null || activity.getIntent() == null) {
             return "";
         }
@@ -262,5 +279,44 @@ public class CustomTabActivityLifecycleUmaTracker
                     ChromePreferenceKeys.CUSTOM_TABS_LAST_CLIENT_PACKAGE, clientPackage);
             preferences.removeKey(ChromePreferenceKeys.CUSTOM_TABS_LAST_REFERRER);
         }
+    }
+
+    /**
+     * Returns the type of Custom Tab session being launched with regards to if it can be restored.
+     * All sessions with ClientIdentifierType != 'DIFFERENT' are restorable. The embedded app is
+     * determined through taskId + package name combination. For the package name to use, this
+     * function will bias clientPackage if provided, otherwise fallback to referrer.
+     *
+     * @param clientPackage the client package CCT is currently launched from, if it can be known.
+     * @param prevClientPackage the client package the last CCT was launched from.
+     * @param referrer the referrer for the current CCT activity, if it can be known.
+     * @param prevReferrer the referrer for the last CCT activity, if one exists.
+     * @param taskId the taskId of the current CCT activity.
+     * @param prevTaskId taskId for the previous CCT activity, if one exists.
+     * @return ClientIdentifier for the CCT client app.
+     */
+    static String getClientIdentifierType(String clientPackage, String prevClientPackage,
+            String referrer, String prevReferrer, int taskId, int prevTaskId) {
+        boolean hasClientPackage = !TextUtils.isEmpty(clientPackage);
+        boolean hasReferrer = !TextUtils.isEmpty(referrer);
+        String clientIdType = ClientIdentifierType.DIFFERENT;
+        if (hasClientPackage && TextUtils.equals(clientPackage, prevClientPackage)) {
+            clientIdType = ClientIdentifierType.PACKAGE_NAME;
+        } else if (hasReferrer && TextUtils.equals(referrer, prevReferrer)
+                && prevTaskId == taskId) {
+            clientIdType = ClientIdentifierType.REFERRER;
+        } else if (hasClientPackage || prevTaskId == taskId) {
+            String currentPackage =
+                    hasClientPackage ? clientPackage : Uri.parse(referrer).getHost();
+            String prevPackage = !TextUtils.isEmpty(prevClientPackage)
+                    ? prevClientPackage
+                    : Uri.parse(prevReferrer).getHost();
+
+            if (TextUtils.equals(currentPackage, prevPackage)
+                    && !TextUtils.isEmpty(currentPackage)) {
+                clientIdType = ClientIdentifierType.MIXED;
+            }
+        }
+        return clientIdType;
     }
 }

@@ -68,7 +68,7 @@ class DataSource {
              Delegate* delegate);
   DataSource(const DataSource<T>&) = delete;
   DataSource& operator=(const DataSource<T>&) = delete;
-  ~DataSource() = default;
+  ~DataSource();
 
   void Initialize();
   void Offer(const std::vector<std::string>& mime_types);

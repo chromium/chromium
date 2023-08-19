@@ -5,7 +5,6 @@
 #include "components/policy/core/common/management/platform_management_service.h"
 
 #include "base/memory/singleton.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -15,6 +14,9 @@
 #include "components/policy/core/common/management/platform_management_status_provider_mac.h"
 #elif BUILDFLAG(IS_WIN)
 #include "components/policy/core/common/management/platform_management_status_provider_win.h"
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "build/chromeos_buildflags.h"
+#include "components/policy/core/common/management/platform_management_status_provider_lacros.h"
 #endif
 
 namespace policy {
@@ -31,6 +33,10 @@ GetPlatformManagementSatusProviders() {
 #if BUILDFLAG(IS_WIN)
   providers.emplace_back(
       std::make_unique<AzureActiveDirectoryStatusProvider>());
+#endif
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  providers.emplace_back(
+      std::make_unique<DeviceEnterpriseManagedStatusProvider>());
 #endif
   return providers;
 }
@@ -94,9 +100,6 @@ void PlatformManagementService::UpdateCache(
   }
   ManagementAuthorityTrustworthiness next =
       GetManagementAuthorityTrustworthiness();
-  base::UmaHistogramBoolean(
-      "Enterprise.ManagementAuthorityTrustworthiness.Cache.ValueChange",
-      previous != next);
   if (callback)
     std::move(callback).Run(previous, next);
 }

@@ -26,7 +26,9 @@
 #include "ui/aura/scoped_window_targeter.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_targeter.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
+#include "ui/compositor/presentation_time_recorder.h"
 #include "ui/display/display.h"
 #include "ui/events/event.h"
 #include "ui/views/widget/widget.h"
@@ -39,6 +41,11 @@ namespace {
 
 constexpr char kSameAppWindowCycleSkippedWindowsHistogramName[] =
     "Ash.WindowCycleController.SameApp.SkippedWindows";
+
+constexpr char kEnterWindowCyclePresentationHistogramName[] =
+    "Ash.WindowCycleController.Enter.PresentationTime";
+
+constexpr base::TimeDelta kEnterPresentationMaxLatency = base::Seconds(2);
 
 bool g_disable_initial_delay = false;
 
@@ -332,7 +339,16 @@ void WindowCycleList::RemoveAllWindows() {
 void WindowCycleList::InitWindowCycleView() {
   if (cycle_view_)
     return;
+
+  TRACE_EVENT0("ui", "WindowCycleList::InitWindowCycleView");
+
   aura::Window* root_window = Shell::GetRootWindowForNewWindows();
+
+  auto presentation_time_recorder = CreatePresentationTimeHistogramRecorder(
+      root_window->layer()->GetCompositor(),
+      kEnterWindowCyclePresentationHistogramName, "",
+      kEnterPresentationMaxLatency);
+  presentation_time_recorder->RequestNext();
 
   // Close any tray bubbles that are opened before creating the cycle view.
   StatusAreaWidget* status_area_widget =

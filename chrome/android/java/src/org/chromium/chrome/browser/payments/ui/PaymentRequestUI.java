@@ -31,14 +31,14 @@ import android.widget.TextView;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill.editors.EditorDialogView;
 import org.chromium.chrome.browser.autofill.editors.EditorObserverForTest;
-import org.chromium.chrome.browser.autofill.prefeditor.EditorDialog;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.payments.ShippingStrings;
@@ -51,11 +51,11 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.autofill.EditableOption;
 import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;
 import org.chromium.components.browser_ui.widget.animation.FocusAnimator;
-import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.base.ViewUtils;
+import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
@@ -299,7 +299,7 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
      * hidePaymentRequestDialog() instead.
      */
     private final DimmingDialog mDialog;
-    private final EditorDialog mEditorDialog;
+    private final EditorDialogView mEditorDialog;
     private final ViewGroup mRequestView;
     private final Callback<PaymentInformation> mUpdateSectionsCallback;
     private final ShippingStrings mShippingStrings;
@@ -407,8 +407,8 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
                 (ViewGroup) LayoutInflater.from(mContext).inflate(R.layout.payment_request, null);
         prepareRequestView(mContext, title, origin, securityLevel, profile);
 
-        mEditorDialog = new EditorDialog(activity, /*deleteRunnable =*/null,
-                HelpAndFeedbackLauncherImpl.getForProfile(profile));
+        mEditorDialog =
+                new EditorDialogView(activity, HelpAndFeedbackLauncherImpl.getForProfile(profile));
         DimmingDialog.setVisibleStatusBarIconColor(mEditorDialog.getWindow());
 
         mDialog = new DimmingDialog(activity, this);
@@ -847,7 +847,7 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
     }
 
     /** @return The common editor user interface. */
-    public EditorDialog getEditorDialog() {
+    public EditorDialogView getEditorDialog() {
         return mEditorDialog;
     }
 
@@ -1123,8 +1123,7 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
      *
      * @return The email of signed in user or null.
      */
-    @Nullable
-    private String getSignedInUsersEmail() {
+    private @Nullable String getSignedInUsersEmail() {
         if (mProfile.isOffTheRecord()) {
             return null;
         }
@@ -1360,49 +1359,41 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
         }
     }
 
-    @VisibleForTesting
     public static void setEditorObserverForTest(EditorObserverForTest editorObserverForTest) {
         sEditorObserverForTest = editorObserverForTest;
-        EditorDialog.setEditorObserverForTest(sEditorObserverForTest);
+        EditorDialogView.setEditorObserverForTest(sEditorObserverForTest);
     }
 
-    @VisibleForTesting
     public static void setPaymentRequestObserverForTest(
             PaymentRequestObserverForTest paymentRequestObserverForTest) {
         sPaymentRequestObserverForTest = paymentRequestObserverForTest;
+        ResettersForTesting.register(() -> sPaymentRequestObserverForTest = null);
     }
 
-    @VisibleForTesting
     public Dialog getDialogForTest() {
         return mDialog.getDialogForTest();
     }
 
-    @VisibleForTesting
     public TextView getOrderSummaryTotalTextViewForTest() {
         return mOrderSummarySection.getSummaryRightTextView();
     }
 
-    @VisibleForTesting
     public LineItemBreakdownSection getOrderSummarySectionForTest() {
         return mOrderSummarySection;
     }
 
-    @VisibleForTesting
     public OptionSection getShippingAddressSectionForTest() {
         return mShippingAddressSection;
     }
 
-    @VisibleForTesting
     public OptionSection getShippingOptionSectionForTest() {
         return mShippingOptionSection;
     }
 
-    @VisibleForTesting
     public ViewGroup getPaymentMethodSectionForTest() {
         return mPaymentMethodSection;
     }
 
-    @VisibleForTesting
     public PaymentRequestSection getContactDetailsSectionForTest() {
         return mContactDetailsSection;
     }

@@ -6,9 +6,7 @@ package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.assertTrue;
-
-import static org.chromium.net.CronetTestRule.getContext;
+import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
@@ -19,6 +17,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
 import org.chromium.net.CronetTestRule.RequiresMinApi;
 
@@ -29,38 +28,38 @@ import java.util.Arrays;
  */
 @RunWith(AndroidJUnit4.class)
 @RequiresMinApi(5) // Brotli support added in API version 5: crrev.com/465216
+@Batch(Batch.UNIT_TESTS)
 public class BrotliTest {
     @Rule
-    public final CronetTestRule mTestRule = new CronetTestRule();
+    public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
 
     private CronetEngine mCronetEngine;
 
     @Before
     public void setUp() throws Exception {
-        assertTrue(Http2TestServer.startHttp2TestServer(getContext()));
+        assertThat(Http2TestServer.startHttp2TestServer(mTestRule.getTestFramework().getContext()))
+                .isTrue();
     }
 
     @After
     public void tearDown() throws Exception {
-        assertTrue(Http2TestServer.shutdownHttp2TestServer());
-        if (mCronetEngine != null) {
-            mCronetEngine.shutdown();
-        }
+        assertThat(Http2TestServer.shutdownHttp2TestServer()).isTrue();
     }
 
     @Test
     @SmallTest
     @OnlyRunNativeCronet
     public void testBrotliAdvertised() throws Exception {
-        ExperimentalCronetEngine.Builder builder =
-                new ExperimentalCronetEngine.Builder(getContext());
-        builder.enableBrotli(true);
-        CronetTestUtil.setMockCertVerifierForTesting(
-                builder, QuicTestServer.createMockCertVerifier());
-        mCronetEngine = builder.build();
+        mTestRule.getTestFramework().applyEngineBuilderPatch((builder) -> {
+            builder.enableBrotli(true);
+            CronetTestUtil.setMockCertVerifierForTesting(
+                    builder, QuicTestServer.createMockCertVerifier());
+        });
+
+        mCronetEngine = mTestRule.getTestFramework().startEngine();
         String url = Http2TestServer.getEchoAllHeadersUrl();
         TestUrlRequestCallback callback = startAndWaitForComplete(url);
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).contains("accept-encoding: gzip, deflate, br");
     }
 
@@ -68,14 +67,15 @@ public class BrotliTest {
     @SmallTest
     @OnlyRunNativeCronet
     public void testBrotliNotAdvertised() throws Exception {
-        ExperimentalCronetEngine.Builder builder =
-                new ExperimentalCronetEngine.Builder(getContext());
-        CronetTestUtil.setMockCertVerifierForTesting(
-                builder, QuicTestServer.createMockCertVerifier());
-        mCronetEngine = builder.build();
+        mTestRule.getTestFramework().applyEngineBuilderPatch((builder) -> {
+            CronetTestUtil.setMockCertVerifierForTesting(
+                    builder, QuicTestServer.createMockCertVerifier());
+        });
+
+        mCronetEngine = mTestRule.getTestFramework().startEngine();
         String url = Http2TestServer.getEchoAllHeadersUrl();
         TestUrlRequestCallback callback = startAndWaitForComplete(url);
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).doesNotContain("br");
     }
 
@@ -83,18 +83,20 @@ public class BrotliTest {
     @SmallTest
     @OnlyRunNativeCronet
     public void testBrotliDecoded() throws Exception {
-        ExperimentalCronetEngine.Builder builder =
-                new ExperimentalCronetEngine.Builder(getContext());
-        builder.enableBrotli(true);
-        CronetTestUtil.setMockCertVerifierForTesting(
-                builder, QuicTestServer.createMockCertVerifier());
-        mCronetEngine = builder.build();
+        mTestRule.getTestFramework().applyEngineBuilderPatch((builder) -> {
+            builder.enableBrotli(true);
+            CronetTestUtil.setMockCertVerifierForTesting(
+                    builder, QuicTestServer.createMockCertVerifier());
+        });
+
+        mCronetEngine = mTestRule.getTestFramework().startEngine();
         String url = Http2TestServer.getServeSimpleBrotliResponse();
         TestUrlRequestCallback callback = startAndWaitForComplete(url);
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         String expectedResponse = "The quick brown fox jumps over the lazy dog";
         assertThat(callback.mResponseAsString).isEqualTo(expectedResponse);
-        assertThat(callback.mResponseInfo.getAllHeaders())
+        assertThat(callback.getResponseInfoWithChecks())
+                .hasHeadersThat()
                 .containsEntry("content-encoding", Arrays.asList("br"));
     }
 

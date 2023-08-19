@@ -14,20 +14,22 @@ ChromeVoxDesktopAutomationHandlerTest = class extends ChromeVoxE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
 
-    // Alphabetical based on file path.
-    await importModule(
-        'ChromeVoxState', '/chromevox/background/chromevox_state.js');
-    await importModule(
-        'DesktopAutomationHandler',
-        '/chromevox/background/event/desktop_automation_handler.js');
-    await importModule(
-        'DesktopAutomationInterface',
-        '/chromevox/background/event/desktop_automation_interface.js');
-    await importModule(
-        'CustomAutomationEvent',
-        '/chromevox/common/custom_automation_event.js');
-    await importModule('EventGenerator', '/common/event_generator.js');
-    await importModule('KeyCode', '/common/key_code.js');
+    await Promise.all([
+      // Alphabetical based on file path.
+      importModule(
+          'ChromeVoxState', '/chromevox/background/chromevox_state.js'),
+      importModule(
+          'DesktopAutomationHandler',
+          '/chromevox/background/event/desktop_automation_handler.js'),
+      importModule(
+          'DesktopAutomationInterface',
+          '/chromevox/background/event/desktop_automation_interface.js'),
+      importModule(
+          'CustomAutomationEvent',
+          '/chromevox/common/custom_automation_event.js'),
+      importModule('EventGenerator', '/common/event_generator.js'),
+      importModule('KeyCode', '/common/key_code.js'),
+    ]);
 
     await ChromeVoxState.ready();
     this.handler_ = DesktopAutomationInterface.instance;
@@ -251,4 +253,55 @@ AX_TEST_F(
           .expectSpeech('foo', 'List item', ' 1 of 2 ')
           .expectBraille('foo lstitm 1/2 (x)');
       await mockFeedback.replay();
+    });
+
+AX_TEST_F(
+    'ChromeVoxDesktopAutomationHandlerTest', 'OnDocumentSelectionChanged',
+    async function() {
+      const root = await this.runWithLoadedTree(`
+          <div>
+            <input type="text" value="I’m Nobody! Who are you?"></input>
+          </div>
+          <p>The first line of a poem by Emily Dickinson.<p>
+          `);
+      const input = root.find({role: RoleType.TEXT_FIELD});
+      assertNotNullNorUndefined(input);
+      const text =
+          root.find({role: RoleType.STATIC_TEXT, state: {editable: false}});
+      assertNotNullNorUndefined(text);
+      assertTrue(text.name.includes('Emily Dickinson'));
+      const instance = DesktopAutomationHandler.instance;
+
+      // Verify that onEditableChanged_ is called.
+      let called = false;
+      this.addCallbackPostMethod(
+          instance, 'onEditableChanged_', () => called = true);
+
+      // Case: editable with valid start and end.
+      const promise =
+          this.waitForEvent(instance.node_, 'documentSelectionChanged', true);
+      chrome.automation.setDocumentSelection({
+        anchorObject: input,
+        anchorOffset: 0,
+        focusObject: input,
+        focusOffset: 7,
+      });
+      await promise;
+
+      assertTrue(called);
+      called = false;
+
+      // Case: no selection start.
+      // Because automation.setDocumentSelection enforces that there is a
+      // selectionStart object, we will call the method directly.
+      instance.onDocumentSelectionChanged({
+        target: {
+          selectionStartObject: null,
+          selectionStartOffset: 0,
+          selectionEndObject: input,
+          selectionEndOffset: 3,
+        },
+      });
+
+      assertFalse(called);
     });

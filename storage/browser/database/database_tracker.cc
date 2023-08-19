@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -631,7 +632,7 @@ DatabaseTracker::CachedOriginInfo* DatabaseTracker::MaybeGetCachedOriginInfo(
     return nullptr;
 
   // Populate the cache with data for this origin if needed.
-  if (origins_info_map_.find(origin_identifier) == origins_info_map_.end()) {
+  if (!base::Contains(origins_info_map_, origin_identifier)) {
     if (!create_if_needed)
       return nullptr;
 
@@ -912,8 +913,7 @@ void DatabaseTracker::CloseIncognitoFileHandle(
 bool DatabaseTracker::HasSavedIncognitoFileHandle(
     const std::u16string& vfs_file_name) const {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  return (incognito_file_handles_.find(vfs_file_name) !=
-          incognito_file_handles_.end());
+  return base::Contains(incognito_file_handles_, vfs_file_name);
 }
 
 void DatabaseTracker::DeleteIncognitoDBDirectory() {

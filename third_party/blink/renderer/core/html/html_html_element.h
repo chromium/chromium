@@ -25,6 +25,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_HTML_ELEMENT_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/html/blocking_attribute.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 
 namespace blink {
@@ -37,13 +38,23 @@ class CORE_EXPORT HTMLHtmlElement final : public HTMLElement {
 
   void InsertedByParser();
 
+  void ParseAttribute(const AttributeModificationParams&) override;
   bool HasNonInBodyInsertionMode() const override { return true; }
   void PropagateWritingModeAndDirectionFromBody();
   scoped_refptr<const ComputedStyle> LayoutStyleForElement(
       scoped_refptr<const ComputedStyle> style);
 
+  BlockingAttribute& blocking() const { return *blocking_attribute_; }
+  bool IsPotentiallyRenderBlocking() const override {
+    return blocking_attribute_->HasRenderToken();
+  }
+
+  void Trace(Visitor*) const override;
+
  private:
   bool IsURLAttribute(const Attribute&) const override;
+
+  Member<BlockingAttribute> blocking_attribute_;
 };
 
 }  // namespace blink

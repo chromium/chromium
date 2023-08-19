@@ -10,18 +10,14 @@
 #include <utility>
 #include <vector>
 
-#include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/task/thread_pool.h"
 #include "base/version.h"
 #include "content/browser/first_party_sets/first_party_set_parser.h"
 #include "content/browser/first_party_sets/local_set_declaration.h"
-#include "net/base/schemeful_site.h"
-#include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/global_first_party_sets.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -33,6 +29,19 @@ std::string ReadSetsFile(base::File sets_file) {
   std::string raw_sets;
   base::ScopedFILE file(FileToFILE(std::move(sets_file), "r"));
   return base::ReadStreamToString(file.get(), &raw_sets) ? raw_sets : "";
+}
+
+void DisposeFile(base::File sets_file) {
+  if (!sets_file.IsValid()) {
+    return;
+  }
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(
+          [](base::File sets_file) {
+            // Run `sets_file`'s dtor in the threadpool.
+          },
+          std::move(sets_file)));
 }
 
 }  // namespace
@@ -98,18 +107,6 @@ void FirstPartySetsLoader::OnReadSetsFile(base::Version version,
       "Cookie.FirstPartySets.InitializationDuration.ReadComponentSets2",
       construction_timer_.Elapsed());
   MaybeFinishLoading();
-}
-
-void FirstPartySetsLoader::DisposeFile(base::File sets_file) {
-  if (sets_file.IsValid()) {
-    base::ThreadPool::PostTask(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-        base::BindOnce(
-            [](base::File sets_file) {
-              // Run `sets_file`'s dtor in the threadpool.
-            },
-            std::move(sets_file)));
-  }
 }
 
 void FirstPartySetsLoader::MaybeFinishLoading() {

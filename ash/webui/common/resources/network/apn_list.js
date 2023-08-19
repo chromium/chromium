@@ -62,6 +62,13 @@ export class ApnList extends ApnListBase {
       },
 
       /** @private */
+      apns_: {
+        type: Object,
+        value: [],
+        computed: 'computeApns_(managedCellularProperties)',
+      },
+
+      /** @private */
       shouldShowApnDetailDialog_: {
         type: Boolean,
         value: false,
@@ -145,7 +152,7 @@ export class ApnList extends ApnListBase {
    * @return {Array<!ApnProperties>}
    * @private
    */
-  getApns_() {
+  computeApns_() {
     if (!this.managedCellularProperties) {
       return [];
     }
@@ -154,7 +161,6 @@ export class ApnList extends ApnListBase {
     const customApnList = this.managedCellularProperties.customApnList;
 
     if (!connectedApn) {
-      // TODO(b/162365553): Show error when there is no connected APN.
       return customApnList || [];
     }
 

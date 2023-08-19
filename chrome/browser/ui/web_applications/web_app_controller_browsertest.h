@@ -7,6 +7,7 @@
 
 #include "base/auto_reset.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -81,6 +82,10 @@ class WebAppControllerBrowserTest : public InProcessBrowserTest {
   absl::optional<AppId> FindAppWithUrlInScope(const GURL& url);
 
  protected:
+  WebAppControllerBrowserTest(
+      const std::vector<base::test::FeatureRef>& enabled_features,
+      const std::vector<base::test::FeatureRef>& disabled_features);
+
   absl::optional<OsIntegrationManager::ScopedSuppressForTesting>
       os_hooks_suppress_;
 
@@ -99,10 +104,13 @@ class WebAppControllerBrowserTest : public InProcessBrowserTest {
   void TearDown() override;
   void SetUpInProcessBrowserTestFixture() override;
   void TearDownInProcessBrowserTestFixture() override;
+  void TearDownOnMainThread() override;
   void SetUpCommandLine(base::CommandLine* command_line) override;
   void SetUpOnMainThread() override;
 
  private:
+  base::TimeTicks start_time_ = base::TimeTicks::Now();
+
   base::test::ScopedFeatureList scoped_feature_list_;
   net::EmbeddedTestServer https_server_;
   base::CallbackListSubscription create_services_subscription_;

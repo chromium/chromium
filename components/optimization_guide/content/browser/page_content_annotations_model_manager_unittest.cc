@@ -136,6 +136,28 @@ class PageContentAnnotationsModelManagerTest : public testing::Test {
     RunUntilIdle();
   }
 
+  void SendTextEmbeddingModelToExecutor() {
+    model_manager()->RequestAndNotifyWhenModelAvailable(
+        AnnotationType::kTextEmbedding, base::DoNothing());
+    // The executor won't be created so skip everything else.
+    if (!model_manager()->text_embedding_model_handler_) {
+      return;
+    }
+
+    base::FilePath source_root_dir;
+    base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir);
+    // We know that the model executor itself works fine (that's tested
+    // elsewhere), so just make sure that all the plumbing for the model
+    // execution: job, queue, background sequences, etc, are working correctly.
+    base::FilePath model_file_path =
+        source_root_dir.AppendASCII("non_existent_model.tflite");
+    std::unique_ptr<ModelInfo> model_info =
+        TestModelInfoBuilder().SetModelFilePath(model_file_path).Build();
+    model_manager()->text_embedding_model_handler_->OnModelUpdated(
+        proto::OPTIMIZATION_TARGET_TEXT_EMBEDDER, *model_info);
+    RunUntilIdle();
+  }
+
   void SetPageEntitiesModelHandler(
       const base::flat_map<std::string, std::vector<ScoredEntityMetadata>>&
           entries,
@@ -417,18 +439,124 @@ TEST_F(PageContentAnnotationsModelManagerTest, CalledTwice) {
   EXPECT_EQ(result2[0].visibility_score(), absl::nullopt);
 }
 
+TEST_F(PageContentAnnotationsModelManagerTest, TextEmbedding) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kTextEmbeddingBatchAnnotations);
+
+  SendTextEmbeddingModelToExecutor();
+
+  base::HistogramTester histogram_tester;
+
+  base::RunLoop run_loop;
+  std::vector<BatchAnnotationResult> result;
+  BatchAnnotationCallback callback = base::BindOnce(
+      [](base::RunLoop* run_loop,
+         std::vector<BatchAnnotationResult>* out_result,
+         const std::vector<BatchAnnotationResult>& in_result) {
+        *out_result = in_result;
+        run_loop->Quit();
+      },
+      &run_loop, &result);
+
+  model_manager()->Annotate(std::move(callback), {"input"},
+                            AnnotationType::kTextEmbedding);
+  run_loop.Run();
+
+  EXPECT_TRUE(model_observer_tracker()->DidRegisterForTarget(
+      proto::OptimizationTarget::OPTIMIZATION_TARGET_TEXT_EMBEDDER, nullptr));
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentAnnotations.BatchRequestedSize."
+      "TextEmbedding",
+      1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentAnnotations.BatchSuccess.TextEmbedding",
+      false, 1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentAnnotations.JobExecutionTime."
+      "TextEmbedding",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentAnnotations.JobScheduleTime."
+      "TextEmbedding",
+      1);
+
+  ASSERT_EQ(result.size(), 1U);
+  EXPECT_EQ(result[0].input(), "input");
+  EXPECT_EQ(result[0].entities(), absl::nullopt);
+  EXPECT_EQ(result[0].visibility_score(), absl::nullopt);
+  EXPECT_EQ(result[0].embeddings(), absl::nullopt);
+}
+
+TEST_F(PageContentAnnotationsModelManagerTest, TextEmbeddingDisabled) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kTextEmbeddingBatchAnnotations);
+
+  SendTextEmbeddingModelToExecutor();
+
+  base::RunLoop run_loop;
+  std::vector<BatchAnnotationResult> result;
+  BatchAnnotationCallback callback = base::BindOnce(
+      [](base::RunLoop* run_loop,
+         std::vector<BatchAnnotationResult>* out_result,
+         const std::vector<BatchAnnotationResult>& in_result) {
+        *out_result = in_result;
+        run_loop->Quit();
+      },
+      &run_loop, &result);
+
+  model_manager()->Annotate(std::move(callback), {"input"},
+                            AnnotationType::kTextEmbedding);
+  run_loop.Run();
+
+  EXPECT_FALSE(model_observer_tracker()->DidRegisterForTarget(
+      proto::OptimizationTarget::OPTIMIZATION_TARGET_TEXT_EMBEDDER, nullptr));
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentAnnotations.BatchRequestedSize."
+      "TextEmbedding",
+      1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentAnnotations.BatchSuccess.TextEmbedding",
+      false, 1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentAnnotations.JobExecutionTime."
+      "TextEmbedding",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentAnnotations.JobScheduleTime."
+      "TextEmbedding",
+      1);
+
+  ASSERT_EQ(result.size(), 1U);
+  EXPECT_EQ(result[0].input(), "input");
+  EXPECT_EQ(result[0].entities(), absl::nullopt);
+  EXPECT_EQ(result[0].visibility_score(), absl::nullopt);
+  EXPECT_EQ(result[0].embeddings(), absl::nullopt);
+}
+
 TEST_F(PageContentAnnotationsModelManagerTest, GetModelInfoForType) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kTextEmbeddingBatchAnnotations);
+
   EXPECT_FALSE(
       model_manager()->GetModelInfoForType(AnnotationType::kPageEntities));
   EXPECT_FALSE(
       model_manager()->GetModelInfoForType(AnnotationType::kContentVisibility));
+  EXPECT_FALSE(
+      model_manager()->GetModelInfoForType(AnnotationType::kTextEmbedding));
 
   SendPageVisibilityModelToExecutor();
+  SendTextEmbeddingModelToExecutor();
 
   EXPECT_TRUE(
       model_manager()->GetModelInfoForType(AnnotationType::kContentVisibility));
   EXPECT_FALSE(
       model_manager()->GetModelInfoForType(AnnotationType::kPageEntities));
+  EXPECT_TRUE(
+      model_manager()->GetModelInfoForType(AnnotationType::kTextEmbedding));
 }
 
 TEST_F(PageContentAnnotationsModelManagerTest,
@@ -471,6 +599,31 @@ TEST_F(PageContentAnnotationsModelManagerTest,
   run_loop.Run();
 
   EXPECT_TRUE(success);
+}
+
+TEST_F(PageContentAnnotationsModelManagerTest,
+       NotifyWhenModelAvailable_EmbeddingsOnly) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kTextEmbeddingBatchAnnotations);
+
+  SendTextEmbeddingModelToExecutor();
+
+  base::RunLoop embeddings_run_loop;
+  bool embeddings_callback_success = false;
+
+  model_manager()->RequestAndNotifyWhenModelAvailable(
+      AnnotationType::kTextEmbedding,
+      base::BindOnce(
+          [](base::RunLoop* run_loop, bool* out_success, bool success) {
+            *out_success = success;
+            run_loop->Quit();
+          },
+          &embeddings_run_loop, &embeddings_callback_success));
+
+  embeddings_run_loop.Run();
+
+  EXPECT_TRUE(embeddings_callback_success);
 }
 
 TEST_F(PageContentAnnotationsModelManagerTest,

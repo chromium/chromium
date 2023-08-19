@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-enum EditContextInputMode { "none", "text", "decimal", "search", "email", "numeric", "tel", "url", "password" };
-enum EditContextEnterKeyHint { "enter", "done", "go", "next", "previous", "search", "send" };
-enum EditContextInputPanelPolicy { "auto", "manual" };
-
-// Iniitial parameters for EditContext interface.
+// Initial parameters for EditContext interface.
 
 // Spec draft:
 // https://w3c.github.io/editing/docs/EditContext/index.html#the-editcontext-interface
@@ -15,7 +11,4 @@ dictionary EditContextInit {
     DOMString text;
     unsigned long selectionStart;
     unsigned long selectionEnd;
-    EditContextInputMode inputMode;
-    EditContextInputPanelPolicy inputPanelPolicy;
-    EditContextEnterKeyHint enterKeyHint;
 };

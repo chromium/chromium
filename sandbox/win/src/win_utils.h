@@ -86,14 +86,6 @@ absl::optional<std::wstring> GetTypeNameFromHandle(HANDLE handle);
 // cannot be resolved.
 absl::optional<std::wstring> ResolveRegistryName(std::wstring name);
 
-// Writes |length| bytes from the provided |buffer| into the address space of
-// |child_process|, at the specified |address|, preserving the original write
-// protection attributes. Returns true on success.
-bool WriteProtectedChildMemory(HANDLE child_process,
-                               void* address,
-                               const void* buffer,
-                               size_t length);
-
 // Allocates |buffer_bytes| in child (PAGE_READWRITE) and copies data
 // from |local_buffer| in this process into |child|. |remote_buffer|
 // contains the address in the chile.  If a zero byte copy is

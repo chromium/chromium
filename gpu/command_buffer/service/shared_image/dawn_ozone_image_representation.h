@@ -23,15 +23,13 @@ namespace gpu {
 // rendering.
 class DawnOzoneImageRepresentation : public DawnImageRepresentation {
  public:
-  DawnOzoneImageRepresentation(
-      SharedImageManager* manager,
-      SharedImageBacking* backing,
-      MemoryTypeTracker* tracker,
-      WGPUDevice device,
-      WGPUTextureFormat format,
-      std::vector<WGPUTextureFormat> view_formats,
-      scoped_refptr<gfx::NativePixmap> pixmap,
-      scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs);
+  DawnOzoneImageRepresentation(SharedImageManager* manager,
+                               SharedImageBacking* backing,
+                               MemoryTypeTracker* tracker,
+                               wgpu::Device device,
+                               wgpu::TextureFormat format,
+                               std::vector<wgpu::TextureFormat> view_formats,
+                               scoped_refptr<gfx::NativePixmap> pixmap);
 
   DawnOzoneImageRepresentation(const DawnOzoneImageRepresentation&) = delete;
   DawnOzoneImageRepresentation& operator=(const DawnOzoneImageRepresentation&) =
@@ -39,7 +37,7 @@ class DawnOzoneImageRepresentation : public DawnImageRepresentation {
 
   ~DawnOzoneImageRepresentation() override;
 
-  WGPUTexture BeginAccess(WGPUTextureUsage usage) override;
+  wgpu::Texture BeginAccess(wgpu::TextureUsage usage) override;
 
   void EndAccess() override;
 
@@ -49,12 +47,11 @@ class DawnOzoneImageRepresentation : public DawnImageRepresentation {
   OzoneImageBacking* ozone_backing() {
     return static_cast<OzoneImageBacking*>(backing());
   }
-  const WGPUDevice device_;
-  const WGPUTextureFormat format_;
-  std::vector<WGPUTextureFormat> view_formats_;
+  const wgpu::Device device_;
+  const wgpu::TextureFormat format_;
+  std::vector<wgpu::TextureFormat> view_formats_;
   scoped_refptr<gfx::NativePixmap> pixmap_;
-  WGPUTexture texture_ = nullptr;
-  scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs_;
+  wgpu::Texture texture_;
 };
 
 }  // namespace gpu

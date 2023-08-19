@@ -94,6 +94,8 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
   }
 
  private:
+  friend class SplitViewController;
+
   void CreateDividerWidget(SplitViewController* controller);
 
   // Refreshes the stacking order of the `divider_widget_` to be right on top of

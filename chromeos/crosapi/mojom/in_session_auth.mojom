@@ -30,7 +30,9 @@ interface InSessionAuth {
   // Instructs Ash to summon a native authentication dialog to authenticate
   // the currently active user. Returns a prerishable authentication token on
   // success. RequestTokenReply in null if authentication was aborted.
-  RequestToken@0(Reason reason) => (RequestTokenReply? reply);
+  [MinVersion=1]
+  RequestToken@0(Reason reason, [MinVersion=1] string? prompt)
+    => (RequestTokenReply? reply);
 
   // Check the validity of the token for sensitive operations.
   CheckToken@1(Reason reason, string token) => (bool valid);

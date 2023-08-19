@@ -250,6 +250,10 @@ bool ExtensionSyncData::PopulateFromAppSpecifics(
       ? static_cast<extensions::LaunchType>(specifics.launch_type())
       : LAUNCH_TYPE_INVALID;
 
+  // Bookmark apps and chrome apps both have "app" specifics, but only bookmark
+  // apps filled out the `bookmark_app*` fields.
+  is_deprecated_bookmark_app_ = specifics.has_bookmark_app_url();
+
   for (int i = 0; i < specifics.linked_app_icons_size(); ++i) {
     const sync_pb::LinkedAppIconInfo& linked_app_icon_info =
         specifics.linked_app_icons(i);

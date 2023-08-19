@@ -6,6 +6,7 @@ Date: 2023-05-31
 License: BSD 3-Clause
 License File: LICENSE
 Security Critical: yes
+Shipped: yes
 
 Description:
 RE2 is a fast, safe, thread-friendly alternative to backtracking regular

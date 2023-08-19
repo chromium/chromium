@@ -10,6 +10,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key_range.h"
+#include "third_party/blink/renderer/modules/indexeddb/idb_request.h"
 #include "third_party/blink/renderer/modules/indexeddb/indexed_db_dispatcher.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -32,10 +33,9 @@ WebIDBCursor::~WebIDBCursor() {
   IndexedDBDispatcher::UnregisterCursor(this);
 }
 
-void WebIDBCursor::Advance(uint32_t count,
-                           std::unique_ptr<WebIDBCallbacks> callbacks) {
+void WebIDBCursor::Advance(uint32_t count, IDBRequest* request) {
   if (count <= prefetch_keys_.size()) {
-    CachedAdvance(count, callbacks.get());
+    CachedAdvance(count, request);
     return;
   }
   ResetPrefetchCache();
@@ -43,51 +43,22 @@ void WebIDBCursor::Advance(uint32_t count,
   // Reset all cursor prefetch caches except for this cursor.
   IndexedDBDispatcher::ResetCursorPrefetchCaches(transaction_id_, this);
 
-  callbacks->SetState(weak_factory_.GetWeakPtr(), transaction_id_);
-  cursor_->Advance(count,
-                   WTF::BindOnce(&WebIDBCursor::AdvanceCallback,
-                                 WTF::Unretained(this), std::move(callbacks)));
+  cursor_->Advance(
+      count, WTF::BindOnce(&WebIDBCursor::AdvanceCallback,
+                           WTF::Unretained(this), WrapWeakPersistent(request)));
 }
 
-void WebIDBCursor::AdvanceCallback(std::unique_ptr<WebIDBCallbacks> callbacks,
+void WebIDBCursor::AdvanceCallback(IDBRequest* request,
                                    mojom::blink::IDBCursorResultPtr result) {
-  if (result->is_error_result()) {
-    callbacks->Error(result->get_error_result()->error_code,
-                     std::move(result->get_error_result()->error_message));
-    callbacks.reset();
-    return;
+  // May be null in tests.
+  if (request) {
+    request->OnAdvanceCursor(std::move(result));
   }
-
-  if (result->is_empty() && result->get_empty()) {
-    callbacks->SuccessValue(nullptr);
-    callbacks.reset();
-    return;
-  } else if (result->is_empty()) {
-    callbacks->Error(mojom::blink::IDBException::kUnknownError,
-                     "Invalid response");
-    callbacks.reset();
-    return;
-  }
-
-  if (result->get_values()->keys.size() != 1u ||
-      result->get_values()->primary_keys.size() != 1u ||
-      result->get_values()->values.size() != 1u) {
-    callbacks->Error(mojom::blink::IDBException::kUnknownError,
-                     "Invalid response");
-    callbacks.reset();
-    return;
-  }
-
-  callbacks->SuccessCursorContinue(
-      std::move(result->get_values()->keys[0]),
-      std::move(result->get_values()->primary_keys[0]),
-      std::move(result->get_values()->values[0]));
-  callbacks.reset();
 }
 
 void WebIDBCursor::CursorContinue(const IDBKey* key,
                                   const IDBKey* primary_key,
-                                  std::unique_ptr<WebIDBCallbacks> callbacks) {
+                                  IDBRequest* request) {
   DCHECK(key && primary_key);
 
   if (key->GetType() == mojom::blink::IDBKeyType::None &&
@@ -97,7 +68,7 @@ void WebIDBCursor::CursorContinue(const IDBKey* key,
 
     if (!prefetch_keys_.empty()) {
       // We have a prefetch cache, so serve the result from that.
-      CachedContinue(callbacks.get());
+      CachedContinue(request);
       return;
     }
 
@@ -105,11 +76,10 @@ void WebIDBCursor::CursorContinue(const IDBKey* key,
       // Request pre-fetch.
       ++pending_onsuccess_callbacks_;
 
-      callbacks->SetState(weak_factory_.GetWeakPtr(), transaction_id_);
       cursor_->Prefetch(
           prefetch_amount_,
           WTF::BindOnce(&WebIDBCursor::PrefetchCallback, WTF::Unretained(this),
-                        std::move(callbacks)));
+                        WrapWeakPersistent(request)));
 
       // Increase prefetch_amount_ exponentially.
       prefetch_amount_ *= 2;
@@ -125,85 +95,28 @@ void WebIDBCursor::CursorContinue(const IDBKey* key,
 
   // Reset all cursor prefetch caches except for this cursor.
   IndexedDBDispatcher::ResetCursorPrefetchCaches(transaction_id_, this);
-  callbacks->SetState(weak_factory_.GetWeakPtr(), transaction_id_);
-  cursor_->CursorContinue(
+  cursor_->Continue(
       IDBKey::Clone(key), IDBKey::Clone(primary_key),
-      WTF::BindOnce(&WebIDBCursor::CursorContinueCallback,
-                    WTF::Unretained(this), std::move(callbacks)));
+      WTF::BindOnce(&WebIDBCursor::AdvanceCallback, WTF::Unretained(this),
+                    WrapWeakPersistent(request)));
 }
 
-void WebIDBCursor::CursorContinueCallback(
-    std::unique_ptr<WebIDBCallbacks> callbacks,
-    mojom::blink::IDBCursorResultPtr result) {
-  if (result->is_error_result()) {
-    callbacks->Error(result->get_error_result()->error_code,
-                     std::move(result->get_error_result()->error_message));
-    callbacks.reset();
-    return;
-  }
-
-  if (result->is_empty() && result->get_empty()) {
-    callbacks->SuccessValue(nullptr);
-    callbacks.reset();
-    return;
-  } else if (result->is_empty()) {
-    callbacks->Error(mojom::blink::IDBException::kUnknownError,
-                     "Invalid response");
-    callbacks.reset();
-    return;
-  }
-
-  if (result->get_values()->keys.size() != 1u ||
-      result->get_values()->primary_keys.size() != 1u ||
-      result->get_values()->values.size() != 1u) {
-    callbacks->Error(mojom::blink::IDBException::kUnknownError,
-                     "Invalid response");
-    callbacks.reset();
-    return;
-  }
-
-  callbacks->SuccessCursorContinue(
-      std::move(result->get_values()->keys[0]),
-      std::move(result->get_values()->primary_keys[0]),
-      std::move(result->get_values()->values[0]));
-  callbacks.reset();
-}
-
-void WebIDBCursor::PrefetchCallback(std::unique_ptr<WebIDBCallbacks> callbacks,
+void WebIDBCursor::PrefetchCallback(IDBRequest* request,
                                     mojom::blink::IDBCursorResultPtr result) {
-  if (result->is_error_result()) {
-    callbacks->Error(result->get_error_result()->error_code,
-                     std::move(result->get_error_result()->error_message));
-    callbacks.reset();
-    return;
-  }
-
-  if (result->is_empty() && result->get_empty()) {
-    callbacks->SuccessValue(nullptr);
-    callbacks.reset();
-    return;
-  } else if (result->is_empty()) {
-    callbacks->Error(mojom::blink::IDBException::kUnknownError,
-                     "Invalid response");
-    callbacks.reset();
-    return;
-  }
-
-  if (result->get_values()->keys.size() !=
-          result->get_values()->primary_keys.size() ||
-      result->get_values()->keys.size() !=
+  if (!result->is_error_result() && !result->is_empty() &&
+      result->get_values()->keys.size() ==
+          result->get_values()->primary_keys.size() &&
+      result->get_values()->keys.size() ==
           result->get_values()->values.size()) {
-    callbacks->Error(mojom::blink::IDBException::kUnknownError,
-                     "Invalid response");
-    callbacks.reset();
-    return;
+    SetPrefetchData(std::move(result->get_values()->keys),
+                    std::move(result->get_values()->primary_keys),
+                    std::move(result->get_values()->values));
+    CachedContinue(request);
+  } else if (request) {
+    // This is the error case. We want error handling to match the AdvanceCursor
+    // case.
+    request->OnAdvanceCursor(std::move(result));
   }
-
-  callbacks->SuccessCursorPrefetch(
-      std::move(result->get_values()->keys),
-      std::move(result->get_values()->primary_keys),
-      std::move(result->get_values()->values));
-  callbacks.reset();
 }
 
 void WebIDBCursor::PostSuccessHandlerCallback() {
@@ -236,7 +149,7 @@ void WebIDBCursor::SetPrefetchData(Vector<std::unique_ptr<IDBKey>> keys,
   pending_onsuccess_callbacks_ = 0;
 }
 
-void WebIDBCursor::CachedAdvance(uint32_t count, WebIDBCallbacks* callbacks) {
+void WebIDBCursor::CachedAdvance(uint32_t count, IDBRequest* request) {
   DCHECK_GE(prefetch_keys_.size(), count);
   DCHECK_EQ(prefetch_primary_keys_.size(), prefetch_keys_.size());
   DCHECK_EQ(prefetch_values_.size(), prefetch_keys_.size());
@@ -249,10 +162,10 @@ void WebIDBCursor::CachedAdvance(uint32_t count, WebIDBCallbacks* callbacks) {
     --count;
   }
 
-  CachedContinue(callbacks);
+  CachedContinue(request);
 }
 
-void WebIDBCursor::CachedContinue(WebIDBCallbacks* callbacks) {
+void WebIDBCursor::CachedContinue(IDBRequest* request) {
   DCHECK_GT(prefetch_keys_.size(), 0ul);
   DCHECK_EQ(prefetch_primary_keys_.size(), prefetch_keys_.size());
   DCHECK_EQ(prefetch_values_.size(), prefetch_keys_.size());
@@ -279,8 +192,22 @@ void WebIDBCursor::CachedContinue(WebIDBCallbacks* callbacks) {
     ResetPrefetchCache();
   }
 
-  callbacks->SuccessCursorContinue(std::move(key), std::move(primary_key),
-                                   std::move(value));
+  // May be null in tests.
+  if (request) {
+    // Since the cached request is not round tripping through the browser
+    // process, the request has to be explicitly queued. See step 11 of
+    // https://www.w3.org/TR/IndexedDB/#dom-idbcursor-continue
+    // This is prevented from becoming out-of-order with other requests that
+    // do travel through the browser process by the fact that any previous
+    // request currently making its way through the browser would have already
+    // cleared this cache via `ResetCursorPrefetchCaches()`.
+    request->GetExecutionContext()
+        ->GetTaskRunner(TaskType::kDatabaseAccess)
+        ->PostTask(FROM_HERE,
+                   WTF::BindOnce(&IDBRequest::HandleResponseAdvanceCursor,
+                                 WrapWeakPersistent(request), std::move(key),
+                                 std::move(primary_key), std::move(value)));
+  }
 }
 
 void WebIDBCursor::ResetPrefetchCache() {
@@ -293,7 +220,7 @@ void WebIDBCursor::ResetPrefetchCache() {
   }
 
   // Reset the back-end cursor.
-  cursor_->PrefetchReset(used_prefetches_, prefetch_keys_.size());
+  cursor_->PrefetchReset(used_prefetches_);
 
   // Reset the prefetch cache.
   prefetch_keys_.clear();

@@ -1,0 +1,17 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ntp.history_clusters.mojom;
+
+// Available module UI layouts. This enum must match the numbering for
+// NTPHistoryClustersModuleDisplayLayout in enums.xml. These values are
+// persisted to logs. Entries should not be renumbered, removed or reused.
+enum LayoutType {
+  kNone,
+  kLayout1,  // 2 image visits (V1)
+  kLayout2,  // 1 image visit & 2 non-image visits (V1)
+  kLayout3,  // 2 image visits & 2 non-image visits (V1)
+  kTextOnly, // No visits with images (V2)
+  kImages,   // One or more visits with images (V2)
+};

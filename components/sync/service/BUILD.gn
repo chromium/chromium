@@ -27,6 +27,8 @@ static_library("service") {
     "glue/sync_engine_impl.h",
     "glue/sync_transport_data_prefs.cc",
     "glue/sync_transport_data_prefs.h",
+    "history_sync_session_durations_metrics_recorder.cc",
+    "history_sync_session_durations_metrics_recorder.h",
     "model_load_manager.cc",
     "model_load_manager.h",
     "model_type_controller.cc",
@@ -43,6 +45,8 @@ static_library("service") {
     "sync_internals_util.h",
     "sync_policy_handler.cc",
     "sync_policy_handler.h",
+    "sync_prefs.cc",
+    "sync_prefs.h",
     "sync_service.cc",
     "sync_service.h",
     "sync_service_crypto.cc",
@@ -64,7 +68,6 @@ static_library("service") {
     "sync_user_settings_impl.h",
     "syncable_service_based_model_type_controller.cc",
     "syncable_service_based_model_type_controller.h",
-    "trusted_vault_client.h",
     "trusted_vault_histograms.cc",
     "trusted_vault_histograms.h",
   ]
@@ -78,6 +81,7 @@ static_library("service") {
     "//components/sync/nigori",
     "//components/sync/protocol",
     "//components/sync/protocol:util",
+    "//components/trusted_vault",
     "//net",
     "//url",
   ]
@@ -85,10 +89,10 @@ static_library("service") {
     "//base",
     "//base:i18n",
     "//build:chromeos_buildflags",
-    "//components/invalidation/impl:feature_list",
     "//components/keyed_service/core",
     "//components/metrics",
     "//components/os_crypt/sync",
+    "//components/password_manager/core/browser/features:password_features",
     "//components/policy:generated",
     "//components/policy/core/browser",
     "//components/prefs",
@@ -98,6 +102,14 @@ static_library("service") {
     "//components/version_info:generate_version_info",
     "//services/network/public/cpp",
   ]
+
+  if (is_android) {
+    sources += [
+      "../android/sync_service_android_bridge.cc",
+      "../android/sync_service_android_bridge.h",
+    ]
+    deps += [ "../android:jni_headers" ]
+  }
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }

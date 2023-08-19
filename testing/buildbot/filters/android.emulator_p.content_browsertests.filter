@@ -27,3 +27,7 @@
 
 # crbug.com/1047994
 -WebRtcBrowserTest.CanSetupH264VideoCallOnSupportedDevice
+
+# crbug.com/1463808
+-FormControlsBrowserTest.MultiSelect
+-FormControlsBrowserTest.Select

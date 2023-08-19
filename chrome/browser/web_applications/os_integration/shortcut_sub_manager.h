@@ -23,16 +23,13 @@ class Profile;
 
 namespace web_app {
 
-class WebAppIconManager;
-class WebAppRegistrar;
+class WebAppProvider;
 struct ShortcutInfo;
 struct SynchronizeOsOptions;
 
 class ShortcutSubManager : public OsIntegrationSubManager {
  public:
-  ShortcutSubManager(Profile& profile,
-                     WebAppIconManager& icon_manager,
-                     WebAppRegistrar& registrar);
+  ShortcutSubManager(Profile& profile, WebAppProvider& provider);
   ~ShortcutSubManager() override;
   void Configure(const AppId& app_id,
                  proto::WebAppOsIntegrationState& desired_state,
@@ -62,8 +59,7 @@ class ShortcutSubManager : public OsIntegrationSubManager {
                              base::flat_map<SquareSizePx, base::Time> time_map);
 
   const raw_ref<Profile> profile_;
-  const raw_ref<WebAppIconManager, DanglingUntriaged> icon_manager_;
-  const raw_ref<WebAppRegistrar, DanglingUntriaged> registrar_;
+  const raw_ref<WebAppProvider> provider_;
 
   base::WeakPtrFactory<ShortcutSubManager> weak_ptr_factory_{this};
 };

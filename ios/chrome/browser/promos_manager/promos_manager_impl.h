@@ -44,6 +44,9 @@ class PromosManagerImpl : public PromosManager {
                     PromosManagerEventExporter* event_exporter);
   ~PromosManagerImpl() override;
 
+  // Loads and sorts impression history from prefs.
+  void RefreshImpressionHistoryFromPrefs();
+
   // `promo`-specific impression limits, if defined. May return an empty
   // NSArray, indicating no promo-specific impression limits were defined for
   // `promo`.
@@ -118,11 +121,6 @@ class PromosManagerImpl : public PromosManager {
   // Returns a list of impression counts (std::vector<int>) from a promo
   // impression counts map.
   std::vector<int> ImpressionCounts(
-      std::map<promos_manager::Promo, int>& promo_impression_counts) const;
-
-  // Returns the greatest impression count (int) from a promo impression counts
-  // map.
-  int MaxImpressionCount(
       std::map<promos_manager::Promo, int>& promo_impression_counts) const;
 
   // Returns the total number of impressions (int) from a promo impression

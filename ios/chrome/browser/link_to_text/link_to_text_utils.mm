@@ -8,10 +8,6 @@
 #import "components/shared_highlighting/core/common/text_fragment.h"
 #import "ios/chrome/browser/link_to_text/link_to_text_constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using shared_highlighting::LinkGenerationError;
 
 namespace link_to_text {

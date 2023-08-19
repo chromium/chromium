@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("reauthentication") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "reauthentication_event.h",
     "reauthentication_module.h",
@@ -15,14 +14,12 @@ source_set("reauthentication") {
 }
 
 source_set("test_support") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "reauthentication_module_for_testing.h" ]
   deps = [ ":reauthentication" ]
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "reauthentication_module_unittest.mm" ]
   deps = [

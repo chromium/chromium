@@ -22,7 +22,9 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.Cr
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.ON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.SHOW_SUBMIT_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties.MANAGE_BUTTON_TEXT;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties.ON_CLICK_HYBRID;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties.ON_CLICK_MANAGE;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties.SHOW_HYBRID;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.FORMATTED_URL;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.ORIGIN_SECURE;
@@ -41,6 +43,7 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -49,19 +52,20 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.password_manager.GetLoginMatchType;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
 import org.chromium.chrome.browser.touch_to_fill.data.WebAuthnCredential;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -70,6 +74,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Shee
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -79,20 +84,21 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * View tests for the Touch To Fill component ensure that model changes are reflected in the sheet.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@DoNotBatch(reason = "The methods of ChromeAccessibilityUtil don't seem to work with batching.")
+@Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class TouchToFillViewTest {
     private static final Credential ANA =
-            new Credential("Ana", "S3cr3t", "Ana", "", false, false, 0);
-    private static final Credential NO_ONE =
-            new Credential("", "***", "No Username", "m.example.xyz", true, false, 0);
-    private static final Credential BOB =
-            new Credential("Bob", "***", "Bob", "mobile.example.xyz", true, false, 0);
+            new Credential("Ana", "S3cr3t", "Ana", "", "example.xyz", GetLoginMatchType.EXACT, 0);
+    private static final Credential NO_ONE = new Credential(
+            "", "***", "No Username", "m.example.xyz", "m.example.xyz", GetLoginMatchType.PSL, 0);
+    private static final Credential BOB = new Credential("Bob", "***", "Bob", "mobile.example.xyz",
+            "mobile.example.xyz", GetLoginMatchType.PSL, 0);
     private static final WebAuthnCredential CAM =
             new WebAuthnCredential("example.net", new byte[] {1}, new byte[] {2}, "Cam");
-    private static final Credential NIK =
-            new Credential("Nik", "***", "Nik", "group.xyz", false, true, 0);
+    private static final Credential NIK = new Credential(
+            "Nik", "***", "Nik", "group.xyz", "group.xyz", GetLoginMatchType.AFFILIATED, 0);
     private final AtomicBoolean mManageButtonClicked = new AtomicBoolean(false);
+    private final AtomicBoolean mHybridButtonClicked = new AtomicBoolean(false);
 
     @Mock
     private Callback<Integer> mDismissHandler;
@@ -124,6 +130,12 @@ public class TouchToFillViewTest {
         });
     }
 
+    @After
+    public void tearDown() {
+        ThreadUtils.runOnUiThread(
+                () -> { AccessibilityState.setIsTouchExplorationEnabledForTesting(false); });
+    }
+
     @Test
     @MediumTest
     public void testVisibilityChangedByModel() {
@@ -131,7 +143,7 @@ public class TouchToFillViewTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mModel.get(SHEET_ITEMS)
                     .addAll(asList(buildCredentialItem(ANA), buildConfirmationButton(ANA, true),
-                            buildFooterItem()));
+                            buildFooterItem(false)));
             mModel.set(VISIBLE, true);
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -145,7 +157,7 @@ public class TouchToFillViewTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID})
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testTitlePropagatesToView() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mModel.get(SHEET_ITEMS)
@@ -160,7 +172,7 @@ public class TouchToFillViewTest {
                                             .with(IMAGE_DRAWABLE_ID,
                                                     mResourceProvider.getHeaderImageDrawableId())
                                             .build()),
-                            buildFooterItem()));
+                            buildFooterItem(false)));
             mModel.set(VISIBLE, true);
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -173,7 +185,7 @@ public class TouchToFillViewTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID})
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testManageButtonTextPropagatesToView() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mModel.get(SHEET_ITEMS)
@@ -188,7 +200,7 @@ public class TouchToFillViewTest {
                                             .with(IMAGE_DRAWABLE_ID,
                                                     mResourceProvider.getHeaderImageDrawableId())
                                             .build()),
-                            buildFooterItem()));
+                            buildFooterItem(false)));
             mModel.set(VISIBLE, true);
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -212,7 +224,7 @@ public class TouchToFillViewTest {
                                             .with(IMAGE_DRAWABLE_ID,
                                                     mResourceProvider.getHeaderImageDrawableId())
                                             .build()),
-                            buildFooterItem()));
+                            buildFooterItem(false)));
             mModel.set(VISIBLE, true);
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -235,7 +247,7 @@ public class TouchToFillViewTest {
                                             .with(IMAGE_DRAWABLE_ID,
                                                     mResourceProvider.getHeaderImageDrawableId())
                                             .build()),
-                            buildFooterItem()));
+                            buildFooterItem(false)));
             mModel.set(VISIBLE, true);
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -259,7 +271,7 @@ public class TouchToFillViewTest {
                                             .with(IMAGE_DRAWABLE_ID,
                                                     mResourceProvider.getHeaderImageDrawableId())
                                             .build()),
-                            buildFooterItem()));
+                            buildFooterItem(false)));
             mModel.set(VISIBLE, true);
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -283,7 +295,7 @@ public class TouchToFillViewTest {
                                             .with(IMAGE_DRAWABLE_ID,
                                                     mResourceProvider.getHeaderImageDrawableId())
                                             .build()),
-                            buildFooterItem()));
+                            buildFooterItem(false)));
             mModel.set(VISIBLE, true);
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -335,7 +347,8 @@ public class TouchToFillViewTest {
     @MediumTest
     public void testCredentialsAreClickable() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.get(SHEET_ITEMS).addAll(asList(buildCredentialItem(ANA), buildFooterItem()));
+            mModel.get(SHEET_ITEMS)
+                    .addAll(asList(buildCredentialItem(ANA), buildFooterItem(false)));
             mModel.set(VISIBLE, true);
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -353,7 +366,7 @@ public class TouchToFillViewTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mModel.get(SHEET_ITEMS)
                     .addAll(asList(buildCredentialItem(ANA), buildConfirmationButton(ANA, false),
-                            buildFooterItem()));
+                            buildFooterItem(false)));
             mModel.set(VISIBLE, true);
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -373,7 +386,8 @@ public class TouchToFillViewTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mModel.get(SHEET_ITEMS)
                     .addAll(asList(buildCredentialItem(ANA),
-                            buildConfirmationButton(ANA, showSubmitButton), buildFooterItem()));
+                            buildConfirmationButton(ANA, showSubmitButton),
+                            buildFooterItem(false)));
             mModel.set(VISIBLE, true);
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -390,7 +404,7 @@ public class TouchToFillViewTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mModel.get(SHEET_ITEMS)
                     .addAll(asList(buildCredentialItem(ANA), buildConfirmationButton(ANA, true),
-                            buildFooterItem()));
+                            buildFooterItem(false)));
             mModel.set(VISIBLE, true);
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -407,7 +421,7 @@ public class TouchToFillViewTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mModel.get(SHEET_ITEMS)
                     .addAll(asList(buildCredentialItem(ANA), buildConfirmationButton(ANA, true),
-                            buildFooterItem()));
+                            buildFooterItem(false)));
             mModel.set(VISIBLE, true);
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -429,7 +443,7 @@ public class TouchToFillViewTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mModel.get(SHEET_ITEMS)
                     .addAll(asList(buildCredentialItem(ANA), buildConfirmationButton(ANA, true),
-                            buildFooterItem()));
+                            buildFooterItem(false)));
             mModel.set(VISIBLE, true);
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -444,7 +458,7 @@ public class TouchToFillViewTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mModel.get(SHEET_ITEMS)
                     .addAll(asList(buildCredentialItem(ANA), buildConfirmationButton(ANA, true),
-                            buildFooterItem()));
+                            buildFooterItem(false)));
             mModel.set(VISIBLE, true);
         });
 
@@ -462,7 +476,7 @@ public class TouchToFillViewTest {
     public void testPasskeyCredentialAccessibilityDescription() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mModel.get(SHEET_ITEMS)
-                    .addAll(asList(buildWebAuthnCredentialItem(CAM), buildFooterItem()));
+                    .addAll(asList(buildWebAuthnCredentialItem(CAM), buildFooterItem(false)));
             mModel.set(VISIBLE, true);
         });
 
@@ -480,10 +494,8 @@ public class TouchToFillViewTest {
     @MediumTest
     public void testSheetStartsInFullHeightForAccessibility() {
         // Enabling the accessibility settings.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true);
-            ChromeAccessibilityUtil.get().setTouchExplorationEnabledForTesting(true);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { AccessibilityState.setIsTouchExplorationEnabledForTesting(true); });
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mModel.get(SHEET_ITEMS)
@@ -503,7 +515,7 @@ public class TouchToFillViewTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mModel.get(SHEET_ITEMS)
                     .addAll(asList(buildCredentialItem(ANA), buildConfirmationButton(ANA, true),
-                            buildFooterItem()));
+                            buildFooterItem(false)));
             mModel.set(VISIBLE, true);
         });
 
@@ -535,6 +547,55 @@ public class TouchToFillViewTest {
                 mBottomSheetController, BottomSheetController.SheetState.FULL);
 
         assertFalse(recyclerView.isLayoutSuppressed());
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
+    public void testHybridPropertyShowsHybridButton() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mModel.get(SHEET_ITEMS)
+                    .addAll(asList(
+                            new MVCListAdapter.ListItem(TouchToFillProperties.ItemType.HEADER,
+                                    new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
+                                            .with(TITLE,
+                                                    getActivity().getString(
+                                                            R.string.touch_to_fill_sheet_uniform_title))
+                                            .with(FORMATTED_URL, "www.example.org")
+                                            .with(ORIGIN_SECURE, true)
+                                            .with(IMAGE_DRAWABLE_ID,
+                                                    mResourceProvider.getHeaderImageDrawableId())
+                                            .build()),
+                            buildFooterItem(true)));
+            mModel.set(VISIBLE, true);
+        });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+        TextView hybridButtonText = mTouchToFillView.getContentView().findViewById(
+                R.id.touch_to_fill_sheet_use_passkeys_other_device);
+
+        assertThat(hybridButtonText.getText(),
+                is(getActivity().getString(R.string.touch_to_fill_use_device_passkey)));
+    }
+
+    @Test
+    @MediumTest
+    public void testHybridButtonIsClickable() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mModel.get(SHEET_ITEMS)
+                    .addAll(asList(buildCredentialItem(ANA), buildConfirmationButton(ANA, true),
+                            buildFooterItem(true)));
+            mModel.set(VISIBLE, true);
+        });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mSheetTestSupport.setSheetState(SheetState.FULL, false));
+
+        TextView hybridButton = mTouchToFillView.getContentView().findViewById(
+                R.id.touch_to_fill_sheet_use_passkeys_other_device);
+        TouchCommon.singleClickView(hybridButton);
+
+        pollUiThread(mHybridButtonClicked::get);
     }
 
     private ChromeActivity getActivity() {
@@ -592,18 +653,20 @@ public class TouchToFillViewTest {
                 new PropertyModel.Builder(TouchToFillProperties.CredentialProperties.ALL_KEYS)
                         .with(CREDENTIAL, credential)
                         .with(ON_CLICK_LISTENER, callback)
-                        .with(FORMATTED_ORIGIN, credential.getOriginUrl())
+                        .with(FORMATTED_ORIGIN, credential.getDisplayName())
                         .with(SHOW_SUBMIT_BUTTON, showSubmitButton)
                         .build());
     }
 
-    private MVCListAdapter.ListItem buildFooterItem() {
+    private MVCListAdapter.ListItem buildFooterItem(boolean showHybrid) {
         return new MVCListAdapter.ListItem(TouchToFillProperties.ItemType.FOOTER,
                 new PropertyModel.Builder(FooterProperties.ALL_KEYS)
                         .with(MANAGE_BUTTON_TEXT,
                                 mActivityTestRule.getActivity().getString(
                                         R.string.manage_passwords_and_passkeys))
                         .with(ON_CLICK_MANAGE, () -> mManageButtonClicked.set(true))
+                        .with(SHOW_HYBRID, showHybrid)
+                        .with(ON_CLICK_HYBRID, () -> mHybridButtonClicked.set(true))
                         .build());
     }
 }

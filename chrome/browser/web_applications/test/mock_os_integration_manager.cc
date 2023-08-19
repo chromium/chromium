@@ -17,4 +17,7 @@ MockOsIntegrationManager::MockOsIntegrationManager(
                            nullptr) {}
 MockOsIntegrationManager::~MockOsIntegrationManager() = default;
 
+void MockOsIntegrationManager::SetProvider(base::PassKey<WebAppProvider>,
+                                           WebAppProvider& provider) {}
+
 }  // namespace web_app

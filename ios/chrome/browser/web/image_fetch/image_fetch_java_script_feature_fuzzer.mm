@@ -11,10 +11,6 @@
 #import "ios/web/public/js_messaging/script_message.h"
 #import "testing/libfuzzer/proto/lpm_interface.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 protobuf_mutator::protobuf::LogSilencer log_silencer;

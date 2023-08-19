@@ -15,7 +15,8 @@
 
 namespace attribution_reporting {
 
-std::vector<GURL> ParseOsSourceOrTriggerHeader(base::StringPiece header) {
+std::vector<OsRegistrationItem> ParseOsSourceOrTriggerHeader(
+    base::StringPiece header) {
   const auto list = net::structured_headers::ParseList(header);
   if (!list) {
     return {};
@@ -24,10 +25,10 @@ std::vector<GURL> ParseOsSourceOrTriggerHeader(base::StringPiece header) {
   return ParseOsSourceOrTriggerHeader(*list);
 }
 
-std::vector<GURL> ParseOsSourceOrTriggerHeader(
+std::vector<OsRegistrationItem> ParseOsSourceOrTriggerHeader(
     const net::structured_headers::List& list) {
-  std::vector<GURL> urls;
-  urls.reserve(list.size());
+  std::vector<OsRegistrationItem> items;
+  items.reserve(list.size());
 
   for (const auto& parameterized_member : list) {
     if (parameterized_member.member_is_inner_list) {
@@ -46,10 +47,23 @@ std::vector<GURL> ParseOsSourceOrTriggerHeader(
       continue;
     }
 
-    urls.emplace_back(std::move(url));
+    bool debug_reporting = false;
+    for (const auto& param : parameterized_member.params) {
+      if (param.first == "debug-reporting") {
+        if (param.second.is_boolean()) {
+          debug_reporting = param.second.GetBoolean();
+        }
+        break;
+      }
+    }
+
+    items.emplace_back(OsRegistrationItem{
+        .url = std::move(url),
+        .debug_reporting = debug_reporting,
+    });
   }
 
-  return urls;
+  return items;
 }
 
 }  // namespace attribution_reporting

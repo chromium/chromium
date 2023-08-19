@@ -16,6 +16,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "base/uuid.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
@@ -32,8 +34,9 @@
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
 
 namespace {
-constexpr base::TimeDelta discard_orphaned_tabs_threshold =
-    base::Microseconds(base::Time::kMicrosecondsPerDay * 90);
+
+// Discard orphaned tabs after 30 days if the associated group cannot be found.
+constexpr base::TimeDelta kDiscardOrphanedTabsThreshold = base::Days(30);
 
 std::unique_ptr<syncer::EntityData> CreateEntityData(
     std::unique_ptr<sync_pb::SavedTabGroupSpecifics> specific) {
@@ -218,14 +221,26 @@ void SavedTabGroupSyncBridge::SavedTabGroupRemovedLocally(
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
       store_->CreateWriteBatch();
 
+  // Intentionally only remove the group (creating orphaned tabs in the
+  // process), so other devices with the group open in the Tabstrip can react to
+  // the deletion appropriately (i.e. We do not have to determine if a tab
+  // deletion was part of a group deletion).
   RemoveEntitySpecific(removed_group->saved_guid(), write_batch.get());
-  for (const SavedTabGroupTab& tab : removed_group->saved_tabs())
-    RemoveEntitySpecific(tab.saved_tab_guid(), write_batch.get());
+
+  // Keep track of the newly orphaned tabs since their group no longer exists.
+  for (const SavedTabGroupTab& tab : removed_group->saved_tabs()) {
+    tabs_missing_groups_.emplace_back(*tab.ToSpecifics());
+  }
 
   store_->CommitWriteBatch(
       std::move(write_batch),
       base::BindOnce(&SavedTabGroupSyncBridge::OnDatabaseSave,
                      weak_ptr_factory_.GetWeakPtr()));
+
+  // Update the ModelTypeStore (local storage) and sync with the new positions
+  // of all the groups after a remove has occurred so the positions are
+  // preserved on browser restart. See crbug/1462443.
+  SavedTabGroupReorderedLocally();
 }
 
 void SavedTabGroupSyncBridge::SavedTabGroupUpdatedLocally(
@@ -234,7 +249,7 @@ void SavedTabGroupSyncBridge::SavedTabGroupUpdatedLocally(
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
       store_->CreateWriteBatch();
 
-  const SavedTabGroup* group = model_->Get(group_guid);
+  const SavedTabGroup* const group = model_->Get(group_guid);
   DCHECK(group);
 
   if (tab_guid.has_value()) {
@@ -255,17 +270,27 @@ void SavedTabGroupSyncBridge::SavedTabGroupUpdatedLocally(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+void SavedTabGroupSyncBridge::SavedTabGroupTabsReorderedLocally(
+    const base::Uuid& group_guid) {
+  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
+      store_->CreateWriteBatch();
+
+  const SavedTabGroup* const group = model_->Get(group_guid);
+  DCHECK(group);
+
+  for (const SavedTabGroupTab& tab : group->saved_tabs()) {
+    UpsertEntitySpecific(tab.ToSpecifics(), write_batch.get());
+  }
+
+  store_->CommitWriteBatch(std::move(write_batch), base::DoNothing());
+}
+
 void SavedTabGroupSyncBridge::SavedTabGroupReorderedLocally() {
-  // TODO(dljames): Find a more efficient way to only upsert the data that has
-  // changed. If a group has changed, update all groups. If a tab has changed,
-  // update all tabs in its group.
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
       store_->CreateWriteBatch();
 
   for (const SavedTabGroup& group : model_->saved_tab_groups()) {
     UpsertEntitySpecific(group.ToSpecifics(), write_batch.get());
-    for (const SavedTabGroupTab& tab : group.saved_tabs())
-      UpsertEntitySpecific(tab.ToSpecifics(), write_batch.get());
   }
 
   store_->CommitWriteBatch(std::move(write_batch), base::DoNothing());
@@ -359,8 +384,6 @@ void SavedTabGroupSyncBridge::AddDataToLocalStorage(
       // We reach this case if we were unable to find a group for this tab. This
       // can happen when sync sends the tab data before the group data. In this
       // case, we will store the tabs in case the group comes in later.
-      // TODO(dljames): Cleanup orphaned tabs after some time if the groups
-      // never come in.
       tabs_missing_groups_.emplace_back(std::move(specifics));
     }
   }
@@ -397,8 +420,9 @@ void SavedTabGroupSyncBridge::ResolveTabsMissingGroups(
           base::Microseconds(tab_iterator->update_time_windows_epoch_micros()));
       base::Time now = base::Time::Now();
 
-      // Discard orphaned tabs that have not been updated for 90 days.
-      if (now - last_update_time >= discard_orphaned_tabs_threshold) {
+      // Discard the tabs that do not have an associated group and have not been
+      // updated within the discard threshold.
+      if (now - last_update_time >= kDiscardOrphanedTabsThreshold) {
         RemoveEntitySpecific(base::Uuid::ParseLowercase(tab_iterator->guid()),
                              write_batch);
         tab_iterator = tabs_missing_groups_.erase(tab_iterator);
@@ -471,6 +495,7 @@ void SavedTabGroupSyncBridge::OnReadAllMetadata(
     std::unique_ptr<syncer::ModelTypeStore::RecordList> entries,
     const absl::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
+  TRACE_EVENT0("ui", "SavedTabGroupSyncBridge::OnReadAllMetadata");
   if (error) {
     change_processor()->ReportError({FROM_HERE, "Failed to read metadata."});
     return;

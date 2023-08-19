@@ -10,7 +10,6 @@
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "extensions/browser/extension_event_histogram_value.h"
-#include "extensions/browser/extension_prefs_scope.h"
 #include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 #include "extensions/common/permissions/permission_set.h"
 

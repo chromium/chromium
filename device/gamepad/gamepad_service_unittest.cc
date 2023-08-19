@@ -111,8 +111,8 @@ class GamepadServiceTest : public testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  raw_ptr<MockGamepadDataFetcher, DanglingUntriaged> fetcher_;
-  raw_ptr<GamepadService, DanglingUntriaged> service_;
+  raw_ptr<MockGamepadDataFetcher, AcrossTasksDanglingUntriaged> fetcher_;
+  raw_ptr<GamepadService, AcrossTasksDanglingUntriaged> service_;
   std::vector<std::unique_ptr<MockGamepadConsumer>> consumers_;
   Gamepads test_data_;
 };

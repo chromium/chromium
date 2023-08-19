@@ -18,10 +18,10 @@ from blinkpy.tool.mock_tool import MockBlinkTool
 from blinkpy.tool.commands.update_metadata import (
     UpdateMetadata,
     MetadataUpdater,
-    TestConfigurations,
     load_and_update_manifests,
     sort_metadata_ast,
 )
+from blinkpy.w3c.wpt_metadata import TestConfigurations
 from blinkpy.web_tests.builder_list import BuilderList
 
 path_finder.bootstrap_wpt_imports()
@@ -123,7 +123,8 @@ class BaseUpdateMetadataTest(LoggingTestCase):
             stack.enter_context(
                 patch('manifest.manifest.load_and_update',
                       self._manifest_load_and_update))
-            default_port = Mock()
+            default_port = Mock(wraps=self.tool.port_factory.get('test'))
+            default_port.FLAG_EXPECTATIONS_PREFIX = 'FlagExpectations'
             default_port.default_smoke_test_only.return_value = False
             default_port.skipped_due_to_smoke_tests.return_value = False
             stack.enter_context(
@@ -136,7 +137,6 @@ class BaseUpdateMetadataTest(LoggingTestCase):
 # Do not re-request try build information to check for interrupted steps.
 @patch(
     'blinkpy.common.net.rpc.BuildbucketClient.execute_batch', lambda self: [])
-@patch('concurrent.futures.ThreadPoolExecutor.map', new=map)
 class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
     """Verify the tool's frontend and build infrastructure interactions."""
 
@@ -174,7 +174,7 @@ class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
             TryJobStatus.from_bb_status('SUCCESS'),
         }
         self.git_cl = MockGitCL(self.tool, self.builds)
-        self.command = UpdateMetadata(self.tool, self.git_cl)
+        self.command = UpdateMetadata(self.tool, git_cl=self.git_cl)
 
         self.tool.web.append_prpc_response({
             'artifacts': [{
@@ -491,19 +491,19 @@ class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
     def test_execute_warn_parsing_error(self):
         self.tool.filesystem.write_text_file(
             self.finder.path_from_web_tests('external', 'wpt',
-                                            'fail.html.ini'),
+                                            'crash.html.ini'),
             textwrap.dedent("""\
-                [fail.html]
-                  expected: [OK, FAIL  # Unclosed list
+                [crash.html]
+                  expected: [OK, CRASH  # Unclosed list
                 """))
         with self._patch_builtins():
-            exit_code = self.command.main(['fail.html'])
+            exit_code = self.command.main(['crash.html'])
         self.assertEqual(exit_code, 0)
         self.assertLog([
             'INFO: All builds finished.\n',
             'INFO: Processing wptrunner report (1/1)\n',
             'INFO: Updating expectations for up to 1 test file.\n',
-            "ERROR: Failed to parse 'external/wpt/fail.html.ini': "
+            "ERROR: Failed to parse 'external/wpt/crash.html.ini': "
             'EOL in list value (comment):  line 2\n',
             'INFO: Staged 0 metadata files.\n',
         ])
@@ -633,9 +633,8 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
                         'test_port', self.tool.port_factory.get())
                     for report in reports
                 })
-            updater = MetadataUpdater.from_manifests(manifests, configs,
-                                                     self.tool.filesystem,
-                                                     **options)
+            updater = MetadataUpdater.from_manifests(
+                manifests, configs, self.tool.port_factory.get(), **options)
             updater.collect_results(
                 io.StringIO(json.dumps(report)) for report in reports)
             for test_file in updater.test_files_to_update():
@@ -671,6 +670,66 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
             'external/wpt/fail.html.ini', """\
             [fail.html]
               expected: [OK, FAIL]
+            """)
+
+    def test_migrate_comments(self):
+        self.write_contents(
+            'external/wpt/variant.html.ini', """\
+            # Comment 0
+            [variant.html?foo=bar/abc]
+              bug: crbug.com/123
+            """)
+        self.write_contents(
+            'TestExpectations', """\
+            # tags: [ Linux Mac Win ]
+            # results: [ Failure Pass ]
+
+            # This comment should not be transferred because it's in its own
+            # paragraph block.
+
+            # Comment 1
+            #   Comment 2
+            crbug.com/456 [ Linux ] external/wpt/variant.html?foo=bar/abc [ Failure ]  # Comment 3
+            crbug.com/789 [ Mac ] virtual/virtual_wpt/external/wpt/variant.html?foo=bar/abc [ Failure ]  # Comment 4
+            # Not transferred
+            external/wpt/variant.html?foo=baz [ Failure ]
+
+            # Group of tests that fail for the same reason.
+            non/wpt/test.html [ Failure ]  # Not transferred
+            wpt_internal/dir/multiglob.https.any.worker.html [ Failure ] #Comment 5
+            """)
+        self.update(
+            {
+                'results': [{
+                    'test': '/variant.html?foo=bar/abc',
+                    'status': 'OK',
+                }, {
+                    'test': '/variant.html?foo=baz',
+                    'status': 'OK',
+                }, {
+                    'test':
+                    '/wpt_internal/dir/multiglob.https.any.worker.html',
+                    'status': 'ERROR',
+                    'expected': 'OK',
+                }],
+            },
+            migrate=True)
+        # Note: Comments/bugs are migrated, even if all results are as expected.
+        self.assert_contents(
+            'external/wpt/variant.html.ini', """\
+            # Comment 1
+            #   Comment 2
+            # Comment 3
+            # Comment 4
+            [variant.html?foo=bar/abc]
+              bug: [crbug.com/123, crbug.com/456, crbug.com/789]
+            """)
+        self.assert_contents(
+            'wpt_internal/dir/multiglob.https.any.js.ini', """\
+            # Group of tests that fail for the same reason.
+            #Comment 5
+            [multiglob.https.any.worker.html]
+              expected: ERROR
             """)
 
     def test_remove_all_pass(self):
@@ -735,6 +794,9 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
               expected: ERROR
               [subtest]
                 expected: FAIL
+
+            [variant.html?also-does-not-exist]
+              expected: ERROR
             """)
         self.update({
             'results': [{
@@ -1207,6 +1269,40 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
             """)
         smoke_test_port.skipped_due_to_smoke_tests.assert_called_once_with(
             'external/wpt/variant.html?foo=baz')
+
+    def test_no_fill_for_unsupported_configs(self):
+        from wptrunner.browsers import content_shell
+        browser_info = {
+            **content_shell.__wptrunner__,
+            # Pretend `content_shell` does not support reftests.
+            'executor': {},
+        }
+        with patch('wptrunner.browsers.content_shell.__wptrunner__',
+                   browser_info):
+            self.update(
+                {
+                    'run_info': {
+                        'product': 'chrome',
+                    },
+                    'results': [{
+                        'test': '/fail.html',
+                        'status': 'FAIL',
+                        'expected': 'PASS',
+                    }],
+                }, {
+                    'run_info': {
+                        'product': 'content_shell',
+                    },
+                    'results': [],
+                })
+        # `update-metadata` should write the expectation unconditionally instead
+        # of as:
+        #   if product == "chrome": FAIL
+        self.assert_contents(
+            'external/wpt/fail.html.ini', """\
+            [fail.html]
+              expected: FAIL
+            """)
 
     def test_condition_initialization_without_starting_metadata(self):
         self.update(

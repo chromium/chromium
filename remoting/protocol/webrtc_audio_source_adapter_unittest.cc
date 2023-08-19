@@ -74,7 +74,7 @@ class WebrtcAudioSourceAdapterTest : public testing::Test {
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  raw_ptr<FakeAudioSource, DanglingUntriaged> audio_source_;
+  raw_ptr<FakeAudioSource, AcrossTasksDanglingUntriaged> audio_source_;
   scoped_refptr<WebrtcAudioSourceAdapter> audio_source_adapter_;
   FakeAudioSink sink_;
 };

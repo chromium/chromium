@@ -331,10 +331,8 @@ inline v8::Local<v8::Array> ToV8SequenceInternal(
   }
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
   uint32_t index = 0;
-  typename Sequence::const_iterator end = sequence.end();
-  for (typename Sequence::const_iterator iter = sequence.begin(); iter != end;
-       ++iter) {
-    v8::Local<v8::Value> value = ToV8(*iter, array, isolate);
+  for (const auto& item : sequence) {
+    v8::Local<v8::Value> value = ToV8(item, array, isolate);
     if (value.IsEmpty())
       value = v8::Undefined(isolate);
     bool created_property;

@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_anchor_query_map.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_logical_link.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/style/anchor_specifier_value.h"
 
 namespace blink {
@@ -30,11 +29,12 @@ CSSAnchorValue PhysicalAnchorValueUsing(CSSAnchorValue x,
 // The logical <anchor-side> keywords map to one of the physical keywords
 // depending on the property the function is being used in and the writing mode.
 // https://drafts.csswg.org/css-anchor-1/#anchor-pos
-CSSAnchorValue PhysicalAnchorValueFromLogical(
+CSSAnchorValue PhysicalAnchorValueFromLogicalOrAuto(
     CSSAnchorValue anchor_value,
     WritingDirectionMode writing_direction,
     WritingDirectionMode self_writing_direction,
-    bool is_y_axis) {
+    bool is_y_axis,
+    bool is_right_or_bottom) {
   switch (anchor_value) {
     case CSSAnchorValue::kSelfStart:
       writing_direction = self_writing_direction;
@@ -51,6 +51,17 @@ CSSAnchorValue PhysicalAnchorValueFromLogical(
           CSSAnchorValue::kRight, CSSAnchorValue::kLeft,
           CSSAnchorValue::kBottom, CSSAnchorValue::kTop, writing_direction,
           is_y_axis);
+    case CSSAnchorValue::kAuto:
+    case CSSAnchorValue::kAutoSame: {
+      bool use_right_or_bottom =
+          is_right_or_bottom == (anchor_value == CSSAnchorValue::kAutoSame);
+      if (is_y_axis) {
+        return use_right_or_bottom ? CSSAnchorValue::kBottom
+                                   : CSSAnchorValue::kTop;
+      }
+      return use_right_or_bottom ? CSSAnchorValue::kRight
+                                 : CSSAnchorValue::kLeft;
+    }
     default:
       return anchor_value;
   }
@@ -96,60 +107,6 @@ const NGLogicalAnchorQuery& NGLogicalAnchorQuery::Empty() {
   DEFINE_STATIC_LOCAL(Persistent<NGLogicalAnchorQuery>, empty,
                       (MakeGarbageCollected<NGLogicalAnchorQuery>()));
   return *empty;
-}
-
-// static
-const NGPhysicalAnchorQuery* NGPhysicalAnchorQuery::GetFromLayoutResult(
-    const LayoutObject& layout_object) {
-  if (!layout_object.IsOutOfFlowPositioned()) {
-    return nullptr;
-  }
-  LayoutBox::NGPhysicalFragmentList containing_block_fragments =
-      layout_object.ContainingBlock()->PhysicalFragments();
-  if (containing_block_fragments.IsEmpty()) {
-    return nullptr;
-  }
-  // TODO(crbug.com/1309178): Make it work when the containing block is
-  // fragmented or inline.
-  return containing_block_fragments.front().AnchorQuery();
-}
-
-// static
-NGAnchorEvaluatorImpl NGAnchorEvaluatorImpl::BuildFromLayoutResult(
-    const LayoutObject& layout_object) {
-  const NGPhysicalAnchorQuery* physical_query =
-      NGPhysicalAnchorQuery::GetFromLayoutResult(layout_object);
-  if (!physical_query) {
-    return NGAnchorEvaluatorImpl();
-  }
-
-  // TODO(crbug.com/1309178): Make it work when the containing block is
-  // fragmented or inline.
-
-  DCHECK(layout_object.IsOutOfFlowPositioned());
-  DCHECK(layout_object.ContainingBlock());
-  const LayoutBlock* container = layout_object.ContainingBlock();
-  PhysicalSize container_size = container->PhysicalFragments().front().Size();
-  WritingModeConverter container_converter(
-      container->StyleRef().GetWritingDirection(), container_size);
-
-  NGLogicalAnchorQuery* logical_query =
-      MakeGarbageCollected<NGLogicalAnchorQuery>();
-  logical_query->SetFromPhysical(*physical_query, container_converter,
-                                 LogicalOffset() /* additional_offset */,
-                                 NGLogicalAnchorQuery::SetOptions::kInFlow);
-
-  Element* element = DynamicTo<Element>(layout_object.GetNode());
-  Element* implicit_anchor =
-      element ? element->ImplicitAnchorElement() : nullptr;
-  LayoutObject* implicit_anchor_object =
-      implicit_anchor ? implicit_anchor->GetLayoutObject() : nullptr;
-
-  return NGAnchorEvaluatorImpl(layout_object, *logical_query,
-                               layout_object.StyleRef().AnchorDefault(),
-                               implicit_anchor_object, container_converter,
-                               layout_object.StyleRef().GetWritingDirection(),
-                               PhysicalOffset() /* offset_to_padding_box */);
 }
 
 const NGPhysicalAnchorReference* NGPhysicalAnchorQuery::AnchorReference(
@@ -280,9 +237,9 @@ absl::optional<LayoutUnit> NGLogicalAnchorQuery::EvaluateAnchor(
     bool is_y_axis,
     bool is_right_or_bottom) const {
   const PhysicalRect anchor = container_converter.ToPhysical(reference.rect);
-  anchor_value = PhysicalAnchorValueFromLogical(
+  anchor_value = PhysicalAnchorValueFromLogicalOrAuto(
       anchor_value, container_converter.GetWritingDirection(),
-      self_writing_direction, is_y_axis);
+      self_writing_direction, is_y_axis, is_right_or_bottom);
   LayoutUnit value;
   switch (anchor_value) {
     case CSSAnchorValue::kCenter: {
@@ -345,8 +302,10 @@ absl::optional<LayoutUnit> NGLogicalAnchorQuery::EvaluateAnchor(
     case CSSAnchorValue::kEnd:
     case CSSAnchorValue::kSelfStart:
     case CSSAnchorValue::kSelfEnd:
+    case CSSAnchorValue::kAuto:
+    case CSSAnchorValue::kAutoSame:
       // These logical values should have been converted to corresponding
-      // physical values in `PhysicalAnchorValueFromLogical`.
+      // physical values in `PhysicalAnchorValueFromLogicalOrAuto`.
       NOTREACHED();
       return absl::nullopt;
   }
@@ -472,6 +431,29 @@ absl::optional<LayoutUnit> NGAnchorEvaluatorImpl::EvaluateAnchorSize(
   return AnchorQuery()->EvaluateSize(*anchor_reference, anchor_size_value,
                                      container_converter_.GetWritingMode(),
                                      self_writing_direction_.GetWritingMode());
+}
+
+absl::optional<LogicalRect>
+NGAnchorEvaluatorImpl::GetAdditionalFallbackBoundsRect() const {
+  if (!query_object_) {
+    return absl::nullopt;
+  }
+  const ScopedCSSName* position_fallback_bounds =
+      query_object_->StyleRef().PositionFallbackBounds();
+  if (!position_fallback_bounds || !AnchorQuery()) {
+    return absl::nullopt;
+  }
+  const NGLogicalAnchorReference* reference =
+      AnchorQuery()->AnchorReference(*query_object_, position_fallback_bounds);
+  if (!reference) {
+    return absl::nullopt;
+  }
+  // `reference->rect` is in container's writing direction. Convert it to self
+  // writing direction, but the offset is still relative to container.
+  WritingModeConverter self_converter(self_writing_direction_,
+                                      container_converter_.OuterSize());
+  return self_converter.ToLogical(
+      container_converter_.ToPhysical(reference->rect));
 }
 
 void NGLogicalAnchorReference::Trace(Visitor* visitor) const {

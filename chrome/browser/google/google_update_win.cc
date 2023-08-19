@@ -102,16 +102,17 @@ GoogleUpdateErrorCode CanUpdateCurrentChrome(
     const base::FilePath& chrome_exe_path,
     bool system_level_install) {
   DCHECK_NE(InstallUtil::IsPerUserInstall(), system_level_install);
-  base::FilePath user_exe_path = installer::GetChromeInstallPath(false);
-  base::FilePath machine_exe_path = installer::GetChromeInstallPath(true);
-  if (!base::FilePath::CompareEqualIgnoreCase(chrome_exe_path.value(),
-                                        user_exe_path.value()) &&
-      !base::FilePath::CompareEqualIgnoreCase(chrome_exe_path.value(),
-                                        machine_exe_path.value())) {
-    return CANNOT_UPGRADE_CHROME_IN_THIS_DIRECTORY;
-  }
 
-  return GOOGLE_UPDATE_NO_ERROR;
+  // The currently-running browser can only be updated by Google Update if it
+  // is running from the same directory as the currently-installed browser
+  // being managed by Google Update at the desired install level.
+  const base::FilePath install_dir =
+      installer::GetInstalledDirectory(system_level_install);
+  return (!install_dir.empty() &&
+          base::FilePath::CompareEqualIgnoreCase(chrome_exe_path.value(),
+                                                 install_dir.value()))
+             ? GOOGLE_UPDATE_NO_ERROR
+             : CANNOT_UPGRADE_CHROME_IN_THIS_DIRECTORY;
 }
 
 // Explicitly allow the Google Update service to impersonate the client since
@@ -168,9 +169,9 @@ HRESULT CreateGoogleUpdate3WebClass(
   if (g_google_update_factory)
     return g_google_update_factory->Run(google_update);
 
-  const CLSID& google_update_clsid = system_level_install ?
-      CLSID_GoogleUpdate3WebMachineClass :
-      CLSID_GoogleUpdate3WebUserClass;
+  const CLSID& google_update_clsid = system_level_install
+                                         ? CLSID_GoogleUpdate3WebSystemClass
+                                         : CLSID_GoogleUpdate3WebUserClass;
   Microsoft::WRL::ComPtr<IClassFactory> class_factory;
   HRESULT hresult = S_OK;
 
@@ -195,8 +196,20 @@ HRESULT CreateGoogleUpdate3WebClass(
 
   ConfigureProxyBlanket(class_factory.Get());
 
-  return class_factory->CreateInstance(nullptr,
-                                       IID_PPV_ARGS(&(*google_update)));
+  Microsoft::WRL::ComPtr<IUnknown> unknown;
+  hresult = class_factory->CreateInstance(nullptr, IID_PPV_ARGS(&unknown));
+  if (FAILED(hresult)) {
+    return hresult;
+  }
+
+  // Chrome queries for the SxS IIDs first, with a fallback to the legacy IID.
+  // Without this change, marshaling can load the typelib from the wrong hive
+  // (HKCU instead of HKLM, or vice-versa).
+  hresult =
+      unknown.CopyTo(system_level_install ? __uuidof(IGoogleUpdate3WebSystem)
+                                          : __uuidof(IGoogleUpdate3WebUser),
+                     IID_PPV_ARGS_Helper(&(*google_update)));
+  return SUCCEEDED(hresult) ? hresult : unknown.As(&(*google_update));
 }
 
 // Returns the process-wide storage for the state of the last update check.
@@ -563,9 +576,18 @@ UpdateCheckResult UpdateCheckDriver::BeginUpdateCheckInternal() {
     hresult = google_update_->createAppBundleWeb(&dispatch);
     if (FAILED(hresult))
       return {error_code, hresult};
-    hresult = dispatch.As(&app_bundle);
-    if (FAILED(hresult))
-      return {error_code, hresult};
+
+    hresult =
+        dispatch.CopyTo(system_level_install_ ? __uuidof(IAppBundleWebSystem)
+                                              : __uuidof(IAppBundleWebUser),
+                        IID_PPV_ARGS_Helper(&app_bundle));
+    if (FAILED(hresult)) {
+      hresult = dispatch.As(&app_bundle);
+      if (FAILED(hresult)) {
+        return {error_code, hresult};
+      }
+    }
+
     dispatch.Reset();
 
     ConfigureProxyBlanket(app_bundle.Get());
@@ -611,9 +633,20 @@ UpdateCheckResult UpdateCheckDriver::BeginUpdateCheckInternal() {
     if (FAILED(hresult))
       return {error_code, hresult};
     Microsoft::WRL::ComPtr<IAppWeb> app;
-    hresult = dispatch.As(&app);
-    if (FAILED(hresult))
-      return {error_code, hresult};
+
+    // Chrome queries for the SxS IIDs first, with a fallback to the legacy IID.
+    // Without this change, marshaling can load the typelib from the wrong hive
+    // (HKCU instead of HKLM, or vice-versa).
+    hresult = dispatch.CopyTo(
+        system_level_install_ ? __uuidof(IAppWebSystem) : __uuidof(IAppWebUser),
+        IID_PPV_ARGS_Helper(&app));
+    if (FAILED(hresult)) {
+      hresult = dispatch.As(&app);
+      if (FAILED(hresult)) {
+        return {error_code, hresult};
+      }
+    }
+
     ConfigureProxyBlanket(app.Get());
     hresult = app_bundle->checkForUpdate();
     if (FAILED(hresult))
@@ -633,9 +666,20 @@ bool UpdateCheckDriver::GetCurrentState(
   *hresult = app_->get_currentState(&dispatch);
   if (FAILED(*hresult))
     return false;
-  *hresult = dispatch.As(&(*current_state));
-  if (FAILED(*hresult))
-    return false;
+
+  // Chrome queries for the SxS IIDs first, with a fallback to the legacy IID.
+  // Without this change, marshaling can load the typelib from the wrong hive
+  // (HKCU instead of HKLM, or vice-versa).
+  *hresult =
+      dispatch.CopyTo(system_level_install_ ? __uuidof(ICurrentStateSystem)
+                                            : __uuidof(ICurrentStateUser),
+                      IID_PPV_ARGS_Helper(&(*current_state)));
+  if (FAILED(*hresult)) {
+    *hresult = dispatch.As(&(*current_state));
+    if (FAILED(*hresult)) {
+      return false;
+    }
+  }
   ConfigureProxyBlanket(current_state->Get());
   LONG value = 0;
   *hresult = (*current_state)->get_stateValue(&value);
@@ -879,10 +923,10 @@ void UpdateCheckDriver::OnUpgradeError(UpdateCheckResult check_result,
     return;
   }
 
-  std::u16string html_error_msg = base::StringPrintf(
-      u"%d: <a href='%ls0x%X' target=_blank>0x%X</a>", update_state_.error_code,
-      base::UTF8ToWide(chrome::kUpgradeHelpCenterBaseURL).c_str(),
-      update_state_.hresult, update_state_.hresult);
+  std::u16string html_error_msg = base::UTF8ToUTF16(base::StringPrintf(
+      "%d: <a href='%s%#lX' target=_blank>%#lX</a>", update_state_.error_code,
+      chrome::kUpgradeHelpCenterBaseURL, update_state_.hresult,
+      update_state_.hresult));
   if (update_state_.installer_exit_code) {
     html_error_msg +=
         u": " + base::NumberToString16(*update_state_.installer_exit_code);

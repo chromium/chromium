@@ -6,10 +6,6 @@
 
 #import "ios/chrome/browser/shared/ui/util/keyboard_observer_helper.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation KeyboardObserverHelperAppInterface
 
 + (KeyboardObserverHelper*)appSharedInstance {

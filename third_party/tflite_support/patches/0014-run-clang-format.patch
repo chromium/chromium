@@ -7710,15 +7710,6 @@ index 832f9df42f824..ded6fbd13ea4a 100644
  #include "absl/strings/substitute.h"  // from @com_google_absl
  #include "tensorflow_lite_support/cc/utils/common_utils.h"
  namespace tflite {
-@@ -70,7 +70,7 @@ TokenizerResult RegexTokenizer::Tokenize(const std::string& input) {
-   re2::StringPiece extracted_delim_token;
-   while (RE2::FindAndConsume(&leftover, delim_re_, &extracted_delim_token)) {
-     re2::StringPiece token(last_end.data(),
--                            extracted_delim_token.data() - last_end.data());
-+                           extracted_delim_token.data() - last_end.data());
-     bool has_non_empty_token = token.length() > 0;
- 
-     last_end = leftover;
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/text/tokenizers/sentencepiece_jni.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/text/tokenizers/sentencepiece_jni.cc
 index 6ecfff0d2baa1..8ca14c52eb262 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/text/tokenizers/sentencepiece_jni.cc

@@ -179,11 +179,11 @@ TEST_F(H265ParserTest, SpsParsing) {
   EXPECT_EQ(sps->log2_max_pic_order_cnt_lsb_minus4, 4);
   EXPECT_EQ(sps->sps_max_dec_pic_buffering_minus1[0], 4);
   EXPECT_EQ(sps->sps_max_num_reorder_pics[0], 2);
-  EXPECT_EQ(sps->sps_max_latency_increase_plus1[0], 0);
+  EXPECT_EQ(sps->sps_max_latency_increase_plus1[0], 0u);
   for (int i = 1; i < kMaxSubLayers; ++i) {
     EXPECT_EQ(sps->sps_max_dec_pic_buffering_minus1[i], 0);
     EXPECT_EQ(sps->sps_max_num_reorder_pics[i], 0);
-    EXPECT_EQ(sps->sps_max_latency_increase_plus1[i], 0);
+    EXPECT_EQ(sps->sps_max_latency_increase_plus1[i], 0u);
   }
   EXPECT_EQ(sps->log2_min_luma_coding_block_size_minus3, 0);
   EXPECT_EQ(sps->log2_diff_max_min_luma_coding_block_size, 3);

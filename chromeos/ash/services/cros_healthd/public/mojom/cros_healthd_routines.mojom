@@ -1,0 +1,293 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Definitions for the diagnostics API exposed by the cros_healthd daemon. This
+// API is normally consumed by the browser and the diag command-line tool.
+
+// NOTE: This mojom should be kept in sync with the copy in ChromiumOS repo in
+// src/platform2/diagnostics/mojom/public/cros_healthd_routines.mojom.
+
+module ash.cros_healthd.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_exception.mojom";
+
+// Routines interface exposed by the cros_healthd daemon.
+//
+// NextMinVersion: 3, NextIndex: 2
+[Stable]
+interface CrosHealthdRoutinesService {
+  // Requests that a routine using the RoutineControl API is created on the
+  // platform. This function creates a different routine based on the
+  // RoutineArgument supplied.
+  //
+  // Error Handling:
+  // This method will result in the creation of the routine on the device, which
+  // might require allocation of additional resources and checking preconditions
+  // for the routine, e.g. available hardware, correct arguments, etc.
+  //
+  // All exceptions that occur (either during initialization or while executing
+  // the routine) will close the connection to the provided RoutineControl
+  // with a specific reason (see cros_healthd.mojom.Exception) and a string
+  // message containing human readable information about the exception.
+  // For that reason it is necessary to always setup a disconnect handler on the
+  // RoutineControl remote to be informed about potential exceptions.
+  //
+  // Please note exceptions are different from a routine reporting `has_passed
+  // == false` (in case it failed, see RoutineStateFinished). Exception are
+  // something not intended to happen. The details of the reasons for Exceptions
+  // can be found in cros_healthd.mojom.Exception type and the corresponding
+  // reason enum.
+  //
+  // To know if an exception occurs during the initialization, callers can wait
+  // for the routine being initialized (get via `GetState` or RoutineObserver)
+  // on the RoutineControl remote, before calling the `Start` method.
+  //
+  // The request:
+  // * |routine_argument| - a RoutineArgument type that provides all the
+  //                        necessary parameters and configs to create a
+  //                        particular type of routine.
+  // * |routine_receiver| - a receiver that will be bound to the actual routine
+  //                        control implementation, where the remote will be
+  //                        held by the client for starting the routine.
+  //
+  // * |routine_observer| - an optional observer to receive status updates about
+  //                        changing routine states.
+  [MinVersion=1] CreateRoutine@0(RoutineArgument routine_argument,
+      pending_receiver<RoutineControl> routine_receiver,
+      pending_remote<RoutineObserver>? routine_observer);
+
+  // Checks whether a given `RoutineArgument` is supported.
+  //
+  // The request:
+  // * |routine_argument| - a `RoutineArgument` type that provides all the
+  //                        necessary parameters to create a particular type of
+  //                        routine.
+  //
+  // The response:
+  // * |status| - See the documentation of `SupportStatus`.
+  [MinVersion=2] IsRoutineArgumentSupported@1(
+      RoutineArgument routine_argument) => (SupportStatus status);
+};
+
+// Argument types for the possible routines the routine control API can create.
+//
+// NextMinVersion: 2, NextIndex: 2
+[Stable, Extensible]
+union RoutineArgument {
+  // Default field is required by extensible unions for backward compatibility.
+  // Any unrecognized Mojo field will deserialize to this field. Don't use this.
+  [Default] bool unrecognizedArgument @0;
+  // Arguments to create a memory routine.
+  [MinVersion=1] MemoryRoutineArgument memory@1;
+};
+
+// This routine checks whether there is any memory problem by
+// reading/writing different patterns.
+//
+// NextMinVersion: 1, NextIndex: 1
+[Stable]
+struct MemoryRoutineArgument {
+  // An optional field to indicate how much memory should be tested. If the
+  // value is null, memory test will run with as much memory as possible.
+  uint32? max_testing_mem_kib@0;
+};
+
+// Interface exposed to clients for controlling a routine.
+//
+// Error Handling:
+// Please check the Error Handling section of CrosHealthdRoutinesService.
+//
+// NextMinVersion: 2, NextIndex: 2
+[Stable]
+interface RoutineControl {
+  // Gets the current state of the routine. Note that if the routine fails to
+  // initialize, the RoutineControl will disconnect before the callback is
+  // called.
+  [MinVersion=1] GetState@0() => (RoutineState state);
+
+  // Starts the routine. Each routine can only be started once. Calling this
+  // method multiple times results in no-ops.
+  //
+  // See the error handling section above to know how to handle possible
+  // exceptions that occur before and after the routine has been started.
+  [MinVersion=1] Start@1();
+};
+
+// Implemented by clients who desire routine update notifications.
+//
+// NextMinVersion: 2, NextIndex: 1
+[Stable]
+interface RoutineObserver {
+  // Called when the routine state has changed. This is also called as soon
+  // as a routine is initialized (right after calling `CreateRoutine`).
+  // Note that if the routine fails to initialize, the RoutineControl may
+  // disconnect before the first invocation of this observer method.
+  [MinVersion=1] OnRoutineStateChange@0(RoutineState state);
+};
+
+// Used to pass information regarding routine state.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
+struct RoutineState {
+  // The percentage of the completion of the routine. 0 to 100.
+  uint8 percentage@0;
+
+  RoutineStateUnion state_union@1;
+};
+
+// Possible routine states.
+//
+// NextMinVersion: 1, NextIndex: 4
+[Stable]
+union RoutineStateUnion {
+  // Default field is required by extensible unions for backward compatibility.
+  // Any unrecognized Mojo field will deserialize to this field. Don't use this.
+  [Default] bool unrecognizedArgument @0;
+  // Routine has been initialized but not yet started.
+  RoutineStateInitialized initialized@1;
+  // Routine is running.
+  RoutineStateRunning running@2;
+  // Routine is waiting for something.
+  RoutineStateWaiting waiting@3;
+  // Routine has finished.
+  RoutineStateFinished finished@4;
+};
+
+// Routine has been initialized but not yet started.
+//
+// NextMinVersion: 1, NextIndex: 0
+[Stable]
+struct RoutineStateInitialized {};
+
+// Routine is currently running.
+//
+// NextMinVersion: 1, NextIndex: 0
+[Stable]
+struct RoutineStateRunning {};
+
+// Routine is currently waiting.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
+struct RoutineStateWaiting {
+  // The reason why the routine waits.
+  //
+  // NextMinVersion: 1, NextIndex: 3
+  [Stable, Extensible]
+  enum Reason {
+    [Default] kUnmappedEnumField = 0,
+    // Waiting for the job to be scheduled for running.
+    kWaitingToBeScheduled = 1,
+    // Waiting for user input.
+    kWaitingUserInput = 2,
+  };
+  // Reason why the routine waits.
+  Reason reason@0;
+  // Additional information, may be used to pass instruction or explanation.
+  string message@1;
+};
+
+// Information about a finished routine.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
+struct RoutineStateFinished {
+  // Whether the routine has passed or not.
+  bool has_passed@0;
+  // The details of the routine.
+  RoutineDetail? detail@1;
+};
+
+// Details about a finished routine.
+//
+// NextMinVersion: 2, NextIndex: 2
+[Stable]
+union RoutineDetail {
+  // Default field is required by extensible unions for backward compatibility.
+  // Any unrecognized Mojo field will deserialize to this field. Don't use this.
+  [Default] bool unrecognizedArgument@0;
+  // Details of a completed memory routine.
+  [MinVersion=1] MemoryRoutineDetail memory@1;
+};
+
+// Details regarding memory routine.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
+struct MemoryRoutineDetail {
+  // Number of bytes tested in the memory routine.
+  uint64 bytes_tested@0;
+  // Contains the memtester test results.
+  MemtesterResult result@1;
+};
+
+// Result from running memtester.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
+struct MemtesterResult {
+  // Tests that have passed.
+  array<MemtesterTestItemEnum> passed_items@0;
+  // Tests that have failed.
+  array<MemtesterTestItemEnum> failed_items@1;
+};
+
+// Enumeration of each possible memtester test item.
+//
+// NextMinVersion: 1, NextIndex: 20
+[Stable, Extensible]
+enum MemtesterTestItemEnum {
+  [Default] kUnmappedEnumField = 0,
+  // The memtester test is not recognized.
+  kUnknown = 1,
+
+  // Test that all memory addresses to be tested can be set to itself and its
+  // complement.
+  kStuckAddress = 2,
+
+  // These tests test different operation of a random int64 with buffer
+  // initialized as 0xFFFFFFFF, repeating over 64 bit blocks.
+  // Perform AND operation.
+  kCompareAND = 3,
+  // Perform DIV operation.
+  kCompareDIV = 4,
+  // Perform MUL operation.
+  kCompareMUL = 5,
+  // Perform OR operation.
+  kCompareOR = 6,
+  // Perform SUB operation.
+  kCompareSUB = 7,
+  // Perform XOR operation.
+  kCompareXOR = 8,
+  // Perform ADD operation.
+  kSequentialIncrement = 9,
+
+  // These tests test setting memory regions in a certain pattern, repeating
+  // over each 64 bit blocks.
+  // Test Pattern: |0*10*| and |1*01*|.
+  kBitFlip = 10,
+  // Test Pattern:|0*1010*| and |1*0101*|.
+  kBitSpread = 11,
+  // Test Pattern: all 256 possible combinations of a 8 bit block, repeated 8
+  // times.
+  kBlockSequential = 12,
+  // Test Pattern: Alternating 0 and 1.
+  kCheckerboard = 13,
+  // Test Pattern: Random 64 bits.
+  kRandomValue = 14,
+  // Test Pattern: all 0s and all 1s.
+  kSolidBits = 15,
+  // Test Pattern: |0*10*|.
+  kWalkingOnes = 16,
+  // Test Pattern: |1*01*|.
+  kWalkingZeroes = 17,
+
+  // These tests test writing random n bit words across the memory regions.
+  // Test Pattern: 8 bit random words.
+  k8BitWrites = 18,
+  // Test Pattern: 16 bit random words.
+  k16BitWrites = 19,
+};

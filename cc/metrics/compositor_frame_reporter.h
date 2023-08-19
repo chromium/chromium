@@ -386,6 +386,11 @@ class CC_EXPORT CompositorFrameReporter {
   // created from this reporter using |CopyReporterAtBeginImplStage()|.
   void AdoptReporter(std::unique_ptr<CompositorFrameReporter> cloned_reporter);
 
+  // Called after the frame corresponding to this reporter was successfully
+  // presented. It doesn't get called when the frame is dropped or not submitted
+  // at all.
+  void DidSuccessfullyPresentFrame();
+
   // If this is a cloned reporter, then this returns a weak-ptr to the original
   // reporter this was cloned from (using |CopyReporterAtBeginImplStage()|).
 
@@ -424,6 +429,10 @@ class CC_EXPORT CompositorFrameReporter {
   std::vector<std::unique_ptr<EventMetrics>>& events_metrics_for_testing() {
     return events_metrics_;
   }
+
+  // Erase and return only the EventMetrics objects which depend on main thread
+  // updates (see comments on EventMetrics::requires_main_thread_update_).
+  EventMetrics::List TakeMainBlockedEventsMetrics();
 
  protected:
   void set_has_partial_update(bool has_partial_update) {
@@ -473,10 +482,6 @@ class CC_EXPORT CompositorFrameReporter {
   FrameInfo GenerateFrameInfo() const;
 
   base::WeakPtr<CompositorFrameReporter> GetWeakPtr();
-
-  // Erase and return only the EventMetrics objects which depend on main thread
-  // updates (see comments on EventMetrics::requires_main_thread_update_).
-  EventMetrics::List TakeMainBlockedEventsMetrics();
 
   void FindHighLatencyAttribution(
       CompositorLatencyInfo& previous_predictions,

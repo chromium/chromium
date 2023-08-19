@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("session") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     "//base",
     "//components/sessions:session_id",

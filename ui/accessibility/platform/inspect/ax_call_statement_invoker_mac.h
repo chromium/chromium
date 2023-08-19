@@ -9,10 +9,6 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/accessibility/platform/inspect/ax_tree_indexer_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace ui {
 
 class AXElementWrapper;

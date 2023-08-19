@@ -37,11 +37,58 @@ class IndexedDBFakeBackingStore : public IndexedDBBackingStore {
 
   ~IndexedDBFakeBackingStore() override;
 
+  leveldb::Status CreateDatabase(
+      blink::IndexedDBDatabaseMetadata& metadata) override;
   leveldb::Status DeleteDatabase(
       const std::u16string& name,
       TransactionalLevelDBTransaction* transaction) override;
+  leveldb::Status SetDatabaseVersion(
+      Transaction* transaction,
+      int64_t row_id,
+      int64_t version,
+      blink::IndexedDBDatabaseMetadata* metadata) override;
 
-  leveldb::Status PutRecord(IndexedDBBackingStore::Transaction* transaction,
+  leveldb::Status CreateObjectStore(
+      Transaction* transaction,
+      int64_t database_id,
+      int64_t object_store_id,
+      std::u16string name,
+      blink::IndexedDBKeyPath key_path,
+      bool auto_increment,
+      blink::IndexedDBObjectStoreMetadata* metadata) override;
+  leveldb::Status DeleteObjectStore(
+      Transaction* transaction,
+      int64_t database_id,
+      const blink::IndexedDBObjectStoreMetadata& object_store) override;
+  leveldb::Status RenameObjectStore(
+      Transaction* transaction,
+      int64_t database_id,
+      std::u16string new_name,
+      std::u16string* old_name,
+      blink::IndexedDBObjectStoreMetadata* metadata) override;
+
+  leveldb::Status CreateIndex(Transaction* transaction,
+                              int64_t database_id,
+                              int64_t object_store_id,
+                              int64_t index_id,
+                              std::u16string name,
+                              blink::IndexedDBKeyPath key_path,
+                              bool is_unique,
+                              bool is_multi_entry,
+                              blink::IndexedDBIndexMetadata* metadata) override;
+  leveldb::Status DeleteIndex(
+      Transaction* transaction,
+      int64_t database_id,
+      int64_t object_store_id,
+      const blink::IndexedDBIndexMetadata& metadata) override;
+  leveldb::Status RenameIndex(Transaction* transaction,
+                              int64_t database_id,
+                              int64_t object_store_id,
+                              std::u16string new_name,
+                              std::u16string* old_name,
+                              blink::IndexedDBIndexMetadata* metadata) override;
+
+  leveldb::Status PutRecord(Transaction* transaction,
                             int64_t database_id,
                             int64_t object_store_id,
                             const blink::IndexedDBKey& key,
@@ -72,6 +119,11 @@ class IndexedDBFakeBackingStore : public IndexedDBBackingStore {
       int64_t object_store_id,
       const blink::IndexedDBKey&,
       RecordIdentifier* found_record_identifier,
+      bool* found) override;
+
+  leveldb::Status ReadMetadataForDatabaseName(
+      const std::u16string& name,
+      blink::IndexedDBDatabaseMetadata* metadata,
       bool* found) override;
 
   leveldb::Status ClearIndex(Transaction*,
@@ -116,7 +168,7 @@ class IndexedDBFakeBackingStore : public IndexedDBBackingStore {
       blink::mojom::IDBCursorDirection,
       leveldb::Status*) override;
 
-  class FakeTransaction : public IndexedDBBackingStore::Transaction {
+  class FakeTransaction : public Transaction {
    public:
     FakeTransaction(leveldb::Status phase_two_result,
                     blink::mojom::IDBTransactionMode mode);
@@ -129,17 +181,15 @@ class IndexedDBFakeBackingStore : public IndexedDBBackingStore {
     leveldb::Status CommitPhaseOne(BlobWriteCallback) override;
     leveldb::Status CommitPhaseTwo() override;
     uint64_t GetTransactionSize() override;
-    leveldb::Status Rollback() override;
+    void Rollback() override;
 
    private:
     leveldb::Status result_;
   };
 
-  std::unique_ptr<IndexedDBBackingStore::Transaction> CreateTransaction(
+  std::unique_ptr<Transaction> CreateTransaction(
       blink::mojom::IDBTransactionDurability durability,
       blink::mojom::IDBTransactionMode mode) override;
-
- protected:
 };
 
 }  // namespace content

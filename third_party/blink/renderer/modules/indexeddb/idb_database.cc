@@ -34,14 +34,12 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/indexeddb/web_idb_types.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_stringsequence.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
-#include "third_party/blink/renderer/core/dom/events/event_queue.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/indexed_db_names.h"
@@ -50,7 +48,6 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_index.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key_path.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_version_change_event.h"
-#include "third_party/blink/renderer/modules/indexeddb/web_idb_transaction.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -105,16 +102,7 @@ IDBDatabase::IDBDatabase(
       ExecutionContextLifecycleObserver(context),
       backend_(std::move(backend)),
       connection_lifetime_(std::move(connection_lifetime)),
-      event_queue_(
-          MakeGarbageCollected<EventQueue>(context, TaskType::kDatabaseAccess)),
       callbacks_receiver_(this, context) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAllowPageWithIDBConnectionInBFCache) &&
-      context) {
-    feature_handle_for_scheduler_ = context->GetScheduler()->RegisterFeature(
-        SchedulingPolicy::Feature::kIndexedDBConnection,
-        {SchedulingPolicy::DisableBackForwardCache()});
-  }
   callbacks_receiver_.Bind(std::move(callbacks_receiver),
                            context->GetTaskRunner(TaskType::kDatabaseAccess));
 }
@@ -127,9 +115,8 @@ IDBDatabase::~IDBDatabase() {
 void IDBDatabase::Trace(Visitor* visitor) const {
   visitor->Trace(version_change_transaction_);
   visitor->Trace(transactions_);
-  visitor->Trace(event_queue_);
   visitor->Trace(callbacks_receiver_);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
@@ -160,16 +147,20 @@ void IDBDatabase::TransactionCreated(IDBTransaction* transaction) {
   }
 }
 
+void IDBDatabase::TransactionWillFinish(const IDBTransaction* transaction) {
+  if (version_change_transaction_ && transaction->IsVersionChange()) {
+    DCHECK_EQ(version_change_transaction_, transaction);
+    version_change_transaction_ = nullptr;
+  }
+}
+
 void IDBDatabase::TransactionFinished(const IDBTransaction* transaction) {
   DCHECK(transaction);
   DCHECK(transactions_.Contains(transaction->Id()));
   DCHECK_EQ(transactions_.at(transaction->Id()), transaction);
   transactions_.erase(transaction->Id());
 
-  if (transaction->IsVersionChange()) {
-    DCHECK_EQ(version_change_transaction_, transaction);
-    version_change_transaction_ = nullptr;
-  }
+  TransactionWillFinish(transaction);
 
   if (close_pending_ && transactions_.empty())
     CloseConnection();
@@ -177,9 +168,9 @@ void IDBDatabase::TransactionFinished(const IDBTransaction* transaction) {
 
 void IDBDatabase::ForcedClose() {
   for (const auto& it : transactions_)
-    it.value->abort(IGNORE_EXCEPTION_FOR_TESTING);
+    it.value->StartAborting(nullptr);
   this->close();
-  EnqueueEvent(Event::Create(event_type_names::kClose));
+  DispatchEvent(*Event::Create(event_type_names::kClose));
 }
 
 void IDBDatabase::VersionChange(int64_t old_version, int64_t new_version) {
@@ -199,7 +190,7 @@ void IDBDatabase::VersionChange(int64_t old_version, int64_t new_version) {
   if (new_version != IDBDatabaseMetadata::kNoVersion) {
     new_version_nullable = new_version;
   }
-  EnqueueEvent(MakeGarbageCollected<IDBVersionChangeEvent>(
+  DispatchEvent(*MakeGarbageCollected<IDBVersionChangeEvent>(
       event_type_names::kVersionchange, old_version, new_version_nullable));
 }
 
@@ -223,12 +214,6 @@ DOMStringList* IDBDatabase::objectStoreNames() const {
     object_store_names->Append(it.value->name);
   object_store_names->Sort();
   return object_store_names;
-}
-
-const String& IDBDatabase::GetObjectStoreName(int64_t object_store_id) const {
-  const auto& it = metadata_.object_stores.find(object_store_id);
-  DCHECK(it != metadata_.object_stores.end());
-  return it->value->name;
 }
 
 IDBObjectStore* IDBDatabase::createObjectStore(
@@ -283,8 +268,8 @@ IDBObjectStore* IDBDatabase::createObjectStore(
 
   int64_t object_store_id = metadata_.max_object_store_id + 1;
   DCHECK_NE(object_store_id, IDBObjectStoreMetadata::kInvalidId);
-  version_change_transaction_->transaction_backend()->CreateObjectStore(
-      object_store_id, name, key_path, auto_increment);
+  version_change_transaction_->CreateObjectStore(object_store_id, name,
+                                                 key_path, auto_increment);
 
   scoped_refptr<IDBObjectStoreMetadata> store_metadata =
       base::AdoptRef(new IDBObjectStoreMetadata(
@@ -329,8 +314,7 @@ void IDBDatabase::deleteObjectStore(const String& name,
     return;
   }
 
-  version_change_transaction_->transaction_backend()->DeleteObjectStore(
-      object_store_id);
+  version_change_transaction_->DeleteObjectStore(object_store_id);
   version_change_transaction_->ObjectStoreDeleted(object_store_id, name);
   metadata_.object_stores.erase(object_store_id);
 }
@@ -401,13 +385,6 @@ IDBTransaction* IDBDatabase::transaction(
     return nullptr;
   }
 
-  // TODO(cmp): Delete |transaction_id| once all users are removed.
-  int64_t transaction_id = NextTransactionId();
-  auto transaction_backend = std::make_unique<WebIDBTransaction>(
-      ExecutionContext::From(script_state)
-          ->GetTaskRunner(TaskType::kDatabaseAccess),
-      transaction_id);
-
   mojom::blink::IDBTransactionDurability durability =
       mojom::blink::IDBTransactionDurability::Default;
   DCHECK(options);
@@ -417,12 +394,18 @@ IDBTransaction* IDBDatabase::transaction(
     durability = mojom::blink::IDBTransactionDurability::Strict;
   }
 
-  backend_->CreateTransaction(transaction_backend->CreateReceiver(),
-                              transaction_id, object_store_ids, mode,
-                              durability);
+  // TODO(cmp): Delete |transaction_id| once all users are removed.
+  int64_t transaction_id = NextTransactionId();
+  auto* execution_context = ExecutionContext::From(script_state);
+  IDBTransaction::TransactionMojoRemote transaction_remote(execution_context);
+  mojo::PendingAssociatedReceiver<mojom::blink::IDBTransaction> receiver =
+      transaction_remote.BindNewEndpointAndPassReceiver(
+          execution_context->GetTaskRunner(TaskType::kDatabaseAccess));
+  backend_->CreateTransaction(std::move(receiver), transaction_id,
+                              object_store_ids, mode, durability);
 
   return IDBTransaction::CreateNonVersionChange(
-      script_state, std::move(transaction_backend), transaction_id, scope, mode,
+      script_state, std::move(transaction_remote), transaction_id, scope, mode,
       durability, this);
 }
 
@@ -433,7 +416,6 @@ void IDBDatabase::close() {
 
   connection_lifetime_.reset();
   close_pending_ = true;
-  feature_handle_for_scheduler_.reset();
 
   if (transactions_.empty())
     CloseConnection();
@@ -450,21 +432,6 @@ void IDBDatabase::CloseConnection() {
 
   if (callbacks_receiver_.is_bound())
     callbacks_receiver_.reset();
-
-  if (!GetExecutionContext())
-    return;
-
-  // Remove any pending versionchange events scheduled to fire on this
-  // connection. They would have been scheduled by the backend when another
-  // connection attempted an upgrade, but the frontend connection is being
-  // closed before they could fire.
-  event_queue_->CancelAllEvents();
-}
-
-void IDBDatabase::EnqueueEvent(Event* event) {
-  DCHECK(GetExecutionContext());
-  event->SetTarget(this);
-  event_queue_->EnqueueEvent(FROM_HERE, *event);
 }
 
 DispatchEventResult IDBDatabase::DispatchEventInternal(Event& event) {
@@ -561,10 +528,8 @@ void IDBDatabase::ContextDestroyed() {
 }
 
 void IDBDatabase::ContextEnteredBackForwardCache() {
-  if (features::IsAllowPageWithIDBConnectionAndTransactionInBFCacheEnabled()) {
-    if (backend_) {
-      backend_->DidBecomeInactive();
-    }
+  if (backend_) {
+    backend_->DidBecomeInactive();
   }
 }
 

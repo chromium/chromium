@@ -18,7 +18,6 @@ class BruschettaServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static bruschetta::BruschettaService* GetForProfile(Profile* profile);
   static BruschettaServiceFactory* GetInstance();
-  static void EnableForTesting(Profile* profile);
 
   BruschettaServiceFactory(const BruschettaServiceFactory&) = delete;
   BruschettaServiceFactory& operator=(const BruschettaServiceFactory&) = delete;
@@ -34,7 +33,6 @@ class BruschettaServiceFactory : public ProfileKeyedServiceFactory {
       content::BrowserContext* context) const override;
 
   bool ServiceIsCreatedWithBrowserContext() const override;
-  bool ServiceIsNULLWhileTesting() const override;
 };
 
 }  // namespace bruschetta

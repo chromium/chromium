@@ -16,10 +16,6 @@
 #import "third_party/abseil-cpp/absl/types/optional.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Interface encapsulating the properties needed to check the contents of the
 // selection and whether or not it is editable.
 @protocol EditableTextInput <UITextInput>

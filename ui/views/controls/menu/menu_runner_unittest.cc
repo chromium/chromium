@@ -199,7 +199,8 @@ TEST_F(MenuRunnerTest, NonLatinMnemonic) {
   EXPECT_TRUE(runner->IsRunning());
 
   ui::test::EventGenerator generator(GetContext(), owner()->GetNativeWindow());
-  ui::KeyEvent key_press(0x062f, ui::VKEY_N, ui::DomCode::NONE, 0);
+  ui::KeyEvent key_press =
+      ui::KeyEvent::FromCharacter(0x062f, ui::VKEY_N, ui::DomCode::NONE, 0);
   generator.Dispatch(&key_press);
   views::test::WaitForMenuClosureAnimation();
   EXPECT_FALSE(runner->IsRunning());
@@ -424,9 +425,8 @@ class MenuRunnerWidgetTest : public MenuRunnerTest {
 TEST_F(MenuRunnerWidgetTest, WidgetDoesntTakeCapture) {
   AddMenuLauncherEventHandler(owner());
 
-  EXPECT_EQ(gfx::kNullNativeView,
-            internal::NativeWidgetPrivate::GetGlobalCapture(
-                widget()->GetNativeView()));
+  EXPECT_EQ(gfx::NativeView(), internal::NativeWidgetPrivate::GetGlobalCapture(
+                                   widget()->GetNativeView()));
   auto generator(EventGeneratorForWidget(widget()));
   generator->MoveMouseTo(widget()->GetClientAreaBoundsInScreen().CenterPoint());
   // Implicit capture should not be held by |widget|.
@@ -606,9 +606,8 @@ MenuRunnerDestructionTest::MenuRunnerAsWeakPtr(
 }
 
 void MenuRunnerDestructionTest::SetUp() {
-  auto test_views_delegate = std::make_unique<ReleaseRefTestViewsDelegate>();
-  test_views_delegate_ = test_views_delegate.get();
-  set_views_delegate(std::move(test_views_delegate));
+  test_views_delegate_ =
+      set_views_delegate(std::make_unique<ReleaseRefTestViewsDelegate>());
   MenuRunnerTest::SetUp();
   InitMenuViews();
 }

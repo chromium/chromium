@@ -34,7 +34,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
@@ -44,8 +43,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.signin.base.AccountInfo;
@@ -90,27 +87,12 @@ public class AccountManagementFragmentTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    @DisableFeatures(ChromeFeatureList.HIDE_NON_DISPLAYABLE_ACCOUNT_EMAIL)
     public void testAccountManagementFragmentView() throws Exception {
         mSigninTestRule.addTestAccountThenSigninAndEnableSync();
         mSettingsActivityTestRule.startSettingsActivity();
         View view = mSettingsActivityTestRule.getFragment().getView();
         onViewWaiting(allOf(is(view), isDisplayed()));
         mRenderTestRule.render(view, "account_management_fragment_view");
-    }
-
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    @EnableFeatures(ChromeFeatureList.HIDE_NON_DISPLAYABLE_ACCOUNT_EMAIL)
-    public void testAccountManagementFragmentViewWithHideNonDisplayableAccountEmailEnabled()
-            throws Exception {
-        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
-        mSettingsActivityTestRule.startSettingsActivity();
-        View view = mSettingsActivityTestRule.getFragment().getView();
-        onViewWaiting(allOf(is(view), isDisplayed()));
-        mRenderTestRule.render(
-                view, "account_management_fragment_view_with_hide_non_displayable_account_email");
     }
 
     @Test
@@ -127,7 +109,6 @@ public class AccountManagementFragmentTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.HIDE_NON_DISPLAYABLE_ACCOUNT_EMAIL})
     public void testAccountManagementViewForChildAccountWithNonDisplayableAccountEmail()
             throws Exception {
         AccountInfo accountInfo = mSigninTestRule.addAccount(
@@ -154,7 +135,6 @@ public class AccountManagementFragmentTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.HIDE_NON_DISPLAYABLE_ACCOUNT_EMAIL})
     public void
     testAccountManagementViewForChildAccountWithNonDisplayableAccountEmailWithEmptyDisplayName()
             throws Exception {

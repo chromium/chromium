@@ -85,18 +85,29 @@ class DownloadItemWarningData : public base::SupportsUserData::Data {
 
   ~DownloadItemWarningData() override;
 
-  // Gets all warning actions associated with this `download`. Returns an empty
-  // vector if there's no warning data or there is no warning shown for this
-  // `download`.
+  // Gets all warning actions associated with this `download`. Returns an
+  // empty vector if there's no warning data or there is no warning shown for
+  // this `download`.
   static std::vector<WarningActionEvent> GetWarningActionEvents(
       const download::DownloadItem* download);
 
-  // Adds an `action` triggered on `surface` for `download`. It may not be added
-  // if `download` is null or the length of events associated with this
+  // Adds an `action` triggered on `surface` for `download`. It may not be
+  // added if `download` is null or the length of events associated with this
   // `download` exceeds the limit.
   static void AddWarningActionEvent(download::DownloadItem* download,
                                     WarningSurface surface,
                                     WarningAction action);
+
+  // Returns whether the download was an encrypted archive.
+  static bool IsEncryptedArchive(download::DownloadItem* download);
+  static void SetIsEncryptedArchive(download::DownloadItem* download,
+                                    bool is_encrypted_archive);
+
+  // Returns whether the user has entered an incorrect password for the
+  // archive.
+  static bool HasIncorrectPassword(download::DownloadItem* download);
+  static void SetHasIncorrectPassword(download::DownloadItem* download,
+                                      bool has_incorrect_password);
 
   // Converts an `event` to the Safe Browsing report proto format.
   static safe_browsing::ClientSafeBrowsingReportRequest::DownloadWarningAction
@@ -105,10 +116,20 @@ class DownloadItemWarningData : public base::SupportsUserData::Data {
  private:
   DownloadItemWarningData();
 
+  template <typename F, typename V>
+  static V GetWithDefault(const download::DownloadItem* download,
+                          F&& f,
+                          V&& default_value);
+  static DownloadItemWarningData* GetOrCreate(download::DownloadItem* download);
+
+  std::vector<WarningActionEvent> ActionEvents() const;
+
   static const char kKey[];
 
   base::Time warning_first_shown_time_;
   std::vector<WarningActionEvent> action_events_;
+  bool is_encrypted_archive_ = false;
+  bool has_incorrect_password_ = false;
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_ITEM_WARNING_DATA_H_

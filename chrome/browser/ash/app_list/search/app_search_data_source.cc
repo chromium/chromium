@@ -251,9 +251,11 @@ AppSearchDataSource::AppSearchDataSource(
     : profile_(profile),
       list_controller_(list_controller),
       clock_(clock),
-      proxy_(apps::AppServiceProxyFactory::GetForProfile(profile)),
-      icon_cache_(proxy_, apps::IconCache::GarbageCollectionPolicy::kExplicit) {
-  Observe(&proxy_->AppRegistryCache());
+      icon_cache_(apps::AppServiceProxyFactory::GetForProfile(profile),
+                  apps::IconCache::GarbageCollectionPolicy::kExplicit) {
+  app_registry_cache_observer_.Observe(
+      &apps::AppServiceProxyFactory::GetForProfile(profile)
+           ->AppRegistryCache());
 }
 
 AppSearchDataSource::~AppSearchDataSource() = default;
@@ -402,39 +404,41 @@ void AppSearchDataSource::Refresh() {
   apps_.clear();
   apps_.reserve(kMinimumReservedAppsContainerCapacity);
 
-  proxy_->AppRegistryCache().ForEachApp([this](const apps::AppUpdate& update) {
-    if (!apps_util::IsInstalled(update.Readiness()) ||
-        (!update.ShowInSearch().value_or(false) &&
-         !(update.Recommendable().value_or(false) &&
-           update.AppType() == apps::AppType::kBuiltIn))) {
-      return;
-    }
+  apps::AppServiceProxyFactory::GetForProfile(profile_)
+      ->AppRegistryCache()
+      .ForEachApp([this](const apps::AppUpdate& update) {
+        if (!apps_util::IsInstalled(update.Readiness()) ||
+            (!update.ShowInSearch().value_or(false) &&
+             !(update.Recommendable().value_or(false) &&
+               update.AppType() == apps::AppType::kBuiltIn))) {
+          return;
+        }
 
-    if (!std::strcmp(update.AppId().c_str(),
-                     ash::kInternalAppIdContinueReading)) {
-      // Don't show continue reading results in the recommended apps.
-      return;
-    }
+        if (!std::strcmp(update.AppId().c_str(),
+                         ash::kInternalAppIdContinueReading)) {
+          // Don't show continue reading results in the recommended apps.
+          return;
+        }
 
-    // TODO(crbug.com/826982): add the "can load in incognito" concept to
-    // the App Service and use it here, similar to ExtensionDataSource.
-    const std::string name = update.Name();
+        // TODO(crbug.com/826982): add the "can load in incognito" concept to
+        // the App Service and use it here, similar to ExtensionDataSource.
+        const std::string name = update.Name();
 
-    apps_.emplace_back(std::make_unique<AppInfo>(
-        update.AppId(), name, GetAppLastActivityTime(update)));
-    // TODO(crbug.com/1364452): Test that non-recommendable apps are not shown
-    // in the Recent Apps section.
-    apps_.back()->set_recommendable(update.Recommendable().value_or(false) &&
-                                    !update.Paused().value_or(false) &&
-                                    update.Readiness() !=
-                                        apps::Readiness::kDisabledByPolicy &&
-                                    update.ShowInLauncher());
-    apps_.back()->set_searchable(update.Searchable().value_or(false));
+        apps_.emplace_back(std::make_unique<AppInfo>(
+            update.AppId(), name, GetAppLastActivityTime(update)));
+        // TODO(crbug.com/1364452): Test that non-recommendable apps are not
+        // shown in the Recent Apps section.
+        apps_.back()->set_recommendable(
+            update.Recommendable().value_or(false) &&
+            !update.Paused().value_or(false) &&
+            update.Readiness() != apps::Readiness::kDisabledByPolicy &&
+            update.ShowInLauncher());
+        apps_.back()->set_searchable(update.Searchable().value_or(false));
 
-    for (const std::string& term : update.AdditionalSearchTerms()) {
-      apps_.back()->AddSearchableText(base::UTF8ToUTF16(term));
-    }
-  });
+        for (const std::string& term : update.AdditionalSearchTerms()) {
+          apps_.back()->AddSearchableText(base::UTF8ToUTF16(term));
+        }
+      });
 
   // Presort app based on last activity time in order to be able to remove
   // duplicates from results. We break ties by App ID, which is arbitrary, but
@@ -461,7 +465,7 @@ void AppSearchDataSource::OnAppUpdate(const apps::AppUpdate& update) {
 
 void AppSearchDataSource::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {
-  Observe(nullptr);
+  app_registry_cache_observer_.Reset();
 }
 
 void AppSearchDataSource::ScheduleRefresh() {

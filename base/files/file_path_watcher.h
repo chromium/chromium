@@ -53,8 +53,8 @@ class BASE_EXPORT FilePathWatcher {
 #endif  // BUILDFLAG(IS_APPLE)
   };
 
-  // Flags are a generalization of |Type|. They are used in the new
-  // PlatformDelegate::WatchWithFlags.
+  // WatchOptions are a generalization of |Type|. They are used in the new
+  // PlatformDelegate::WatchWithOptions.
   struct WatchOptions {
     Type type = Type::kNonRecursive;
 
@@ -150,6 +150,8 @@ class BASE_EXPORT FilePathWatcher {
                         const Callback& callback);
 
  private:
+  explicit FilePathWatcher(std::unique_ptr<PlatformDelegate> delegate);
+
   std::unique_ptr<PlatformDelegate> impl_;
 
   SEQUENCE_CHECKER(sequence_checker_);

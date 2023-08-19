@@ -48,6 +48,8 @@ using ::testing::DoAll;
 using ::testing::Eq;
 using ::testing::Invoke;
 using ::testing::Ne;
+using ::testing::Not;
+using ::testing::NotNull;
 using ::testing::Return;
 using ::testing::Sequence;
 using ::testing::StrEq;
@@ -124,7 +126,7 @@ class StorageQueueTest
                 (const));
     MOCK_METHOD(bool,
                 UploadRecord,
-                (int64_t /*uploader_id*/, int64_t, base::StringPiece),
+                (int64_t /*uploader_id*/, int64_t, std::string_view),
                 (const));
     MOCK_METHOD(bool,
                 UploadRecordFailure,
@@ -136,7 +138,7 @@ class StorageQueueTest
                 (const));
     MOCK_METHOD(void,
                 HasUnencryptedCopy,
-                (int64_t /*uploader_id*/, Destination, base::StringPiece),
+                (int64_t /*uploader_id*/, Destination, std::string_view),
                 (const));
     MOCK_METHOD(void,
                 UploadComplete,
@@ -301,7 +303,7 @@ class StorageQueueTest
         return std::move(uploader_);
       }
 
-      SetUp& Required(int64_t sequencing_id, base::StringPiece value) {
+      SetUp& Required(int64_t sequencing_id, std::string_view value) {
         CHECK(uploader_) << "'Complete' already called";
         EXPECT_CALL(*uploader_->mock_upload_,
                     UploadRecord(Eq(uploader_id_), Eq(sequencing_id),
@@ -311,7 +313,7 @@ class StorageQueueTest
         return *this;
       }
 
-      SetUp& Possible(int64_t sequencing_id, base::StringPiece value) {
+      SetUp& Possible(int64_t sequencing_id, std::string_view value) {
         CHECK(uploader_) << "'Complete' already called";
         EXPECT_CALL(*uploader_->mock_upload_,
                     UploadRecord(Eq(uploader_id_), Eq(sequencing_id),
@@ -343,7 +345,7 @@ class StorageQueueTest
 
       SetUp& HasUnencryptedCopy(int64_t sequencing_id,
                                 Destination destination,
-                                base::StringPiece value) {
+                                std::string_view value) {
         CHECK(uploader_) << "'Complete' already called";
         EXPECT_CALL(*uploader_->mock_upload_,
                     HasUnencryptedCopy(Eq(uploader_id_), Eq(destination),
@@ -540,15 +542,15 @@ class StorageQueueTest
       }
 
       // Verify local elements are not included in Record.
-      DCHECK_EQ(wrapped_record.record().has_reserved_space(), 0);
-      DCHECK(!wrapped_record.record().needs_local_unencrypted_copy());
+      EXPECT_FALSE(wrapped_record.record().has_reserved_space());
+      EXPECT_FALSE(wrapped_record.record().needs_local_unencrypted_copy());
 
       // Verify digest and its match.
       {
         std::string serialized_record;
         wrapped_record.record().SerializeToString(&serialized_record);
         const auto record_digest = crypto::SHA256HashString(serialized_record);
-        DCHECK_EQ(record_digest.size(), crypto::kSHA256Length);
+        CHECK_EQ(record_digest.size(), crypto::kSHA256Length);
         if (record_digest != wrapped_record.record_digest()) {
           sequence_bound_upload_
               .AsyncCall(&SequenceBoundUpload::DoUploadRecordFailure)
@@ -601,10 +603,17 @@ class StorageQueueTest
     const int64_t uploader_id_;
 
     absl::optional<int64_t> generation_id_;
-    const raw_ptr<absl::optional<int64_t>> last_upload_generation_id_;
-    const raw_ptr<LastRecordDigestMap> last_record_digest_map_;
 
-    const raw_ptr<const MockUpload> mock_upload_;
+    // These dangling raw_ptr occurred in:
+    // components_unittests:
+    // VaryingFileSize/StorageQueueTest.WriteAndRepeatedlyImmediateUpload/4
+    // https://ci.chromium.org/ui/p/chromium/builders/try/linux-rel/1425477/test-results?q=ExactID%3Aninja%3A%2F%2Fcomponents%3Acomponents_unittests%2FStorageQueueTest.WriteAndRepeatedlyImmediateUpload%2FVaryingFileSize.4+VHash%3A54d84870d628118f
+    const raw_ptr<absl::optional<int64_t>, FlakyDanglingUntriaged>
+        last_upload_generation_id_;
+    const raw_ptr<LastRecordDigestMap, FlakyDanglingUntriaged>
+        last_record_digest_map_;
+
+    const raw_ptr<const MockUpload, FlakyDanglingUntriaged> mock_upload_;
     const base::SequenceBound<SequenceBoundUpload> sequence_bound_upload_;
 
     Sequence test_encounter_sequence_;
@@ -740,7 +749,7 @@ class StorageQueueTest
             reason, std::move(start_uploader_cb), base::Unretained(this)));
   }
 
-  Status WriteString(base::StringPiece data) {
+  Status WriteString(std::string_view data) {
     Record record;
     record.set_data(std::string(data));
     record.set_destination(UPLOAD_EVENTS);
@@ -759,7 +768,7 @@ class StorageQueueTest
     return write_event.result();
   }
 
-  void WriteStringOrDie(base::StringPiece data) {
+  void WriteStringOrDie(std::string_view data) {
     const Status write_result = WriteString(data);
     ASSERT_OK(write_result) << write_result;
   }
@@ -2041,7 +2050,7 @@ TEST_P(StorageQueueTest, WriteAndImmediateUploadWithoutConfirmation) {
 
 TEST_P(StorageQueueTest, WriteEncryptFailure) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
-  DCHECK(test_encryption_module_);
+  ASSERT_THAT(test_encryption_module_, NotNull());
   EXPECT_CALL(*test_encryption_module_, EncryptRecordImpl(_, _))
       .WillOnce(WithArg<1>(
           Invoke([](base::OnceCallback<void(StatusOr<EncryptedRecord>)> cb) {

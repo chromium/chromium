@@ -44,6 +44,11 @@ class TestStructuredMetricsProvider : public Recorder::RecorderImpl {
   void EnableRecording();
   void DisableRecording();
 
+  void AddProfilePath(const base::FilePath& user_path);
+
+  // Waits until the recorder is fully initialized.
+  void WaitUntilReady();
+
   // Sets a callback that will be called after the event is flushed to
   // persistence.
   void SetOnEventsRecordClosure(

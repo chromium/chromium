@@ -15,13 +15,38 @@ The code can be found in the following directories:
 
 ## What Client Hints *are* (and how they work)
 
-HTTP Client Hints are request headers that can be optionally sent to origins that signal they want extra information via a response header (`Accept-CH`). When an origin sends an `Accept-CH` header with a (comma separated) list of client hint headers it would like to receive (on a secure top-level navigation request) those preferences are stored by the browser. Every subsequent request to an origin will contain those extra client hint request headers, as described in the HTTP Client Hints specification. This cache is cleared when session cookies are cleared, or when a user clears site data or cookies for a given origin.
+Client hints are information about the client that is supplied to origins that signal they want the extra information. Historically, this information was in headers such as `User-Agent`, `Rtt`, or `Device-Memory` and was sent with every request. Client hints contain more precise information than the `User-Agent` header, but require that the origin opt-in to receive that information.
+
+Client hints are sent to the origin as [request headers](https://developer.mozilla.org/en-US/docs/Web/HTTP/Client_hints). UA client hints are also available (in secure contexts) via the [`navigator.userAgentData` property](https://developer.mozilla.org/en-US/docs/Web/API/User-Agent_Client_Hints_API).
+
+### Client-Hint Types
+
+There are several types of client hints, which are handled differently:
+
+ * *UA* client hints contain information about the user agent which might once have been found expected in the User-Agent header.
+ * *Device* client hints contain dynamic information about the configuration of the device on which the browser is running.
+ * *Network* client hints contain dynamic information about the browser's network connection.
+ * *User Preference Media Features* client hints contain information about the user agent's preferences as represented in CSS media features.
+
+All UA client hints are distinguished by a `Sec-CH-UA` header prefix. UA hints are available via the JS `navigator.userAgentData` API, while other types are not. UA hints are further divided into [low- and high-entropy hints](https://wicg.github.io/client-hints-infrastructure/#low-entropy-table). Hints that do not contain enough information to fingerprint a user are considered low-entropy, while the remainder are high-entropy.
+
+Some device client hints are specific to the type of resource being requested. For example, `Sec-CH-Resource-Width` is sent only for image fetches.
+
+Except for `Save-Data`, network client hints are currently being deprecated.
+
+Some device and user-preference client hints are not sent for fetches in detached frames.
+
+### Requesting Client Hint Headers
+
+Client hint headers are requested via a response header (`Accept-CH`). When an origin sends an `Accept-CH` header with a (comma separated) list of client hint headers it would like to receive (on a secure, top-level navigation request) those preferences are stored by the browser. Every subsequent request to an origin will contain those extra client hint request headers, as described in the HTTP Client Hints specification. This cache is cleared when session cookies are cleared, or when a user clears site data or cookies for a given origin.
+
+The response header can also be included in the response HTML using a `meta` element. Note that this only works when the element appears in the downloaded HTML. Adding the element from a script does not work.
 
 ### Sub-resource delegation
 
 Every document created with that origin contains those preferences as a “client hint set” and uses that set alongside other settings to decide what client hints to delegate to sub-resource requests associated with that document.
 
-When requests are initiated from a document, the client hints are filtered through [Permission Policies](https://w3c.github.io/webappsec-permissions-policy/), which allows origins to control what features are used by what 3rd parties in a document. By default, the feature policies for client hints (except `Sec-CH-UA` and `Sec-CH-UA-Mobile`) are set to “self,” which means that hints are only delegated to the same origin as the (top-level) document. The permission can also be a list of origins or an asterisk `*` for all origins (`Sec-CH-UA` and `Sec-CH-UA-Mobile` are considered “[low-entropy](https://wicg.github.io/client-hints-infrastructure/#low-entropy-hint-table)” and safe to send to all origins, thus their defaults are `*`). Permissions can also be set in HTML for iframes in the same format through the `allow` attribute.
+When requests are initiated from a document, the client hints are filtered through [Permission Policies](https://w3c.github.io/webappsec-permissions-policy/), which allows origins to control what features are used by what 3rd parties in a document. By default, the feature policies for client hints (except `Sec-CH-UA` and `Sec-CH-UA-Mobile`) are set to “self,” which means that hints are only delegated to the same origin as the (top-level) document. The permission can also be a list of origins or an asterisk `*` for all origins (`Sec-CH-UA` and `Sec-CH-UA-Mobile` are considered low-entropy and safe to send to all origins, thus their defaults are `*`). Permissions can also be set in HTML for iframes in the same format through the `allow` attribute.
 
 Note: All client hints (top-level and subresource) are gated on JavaScript being enabled in Chrome. While not explicitly stated, it fits into the requirement to only reveal information visible through JavaScript interfaces.
 
@@ -34,8 +59,8 @@ There are two situations where a request could have hints that are different fro
 
 As HTTP Client Hints are defined, there’s no way to know which is the case. Two mechanisms were defined in the [Client Hints Reliability proposal](https://tools.ietf.org/html/draft-davidben-http-client-hint-reliability):
 
-*   an HTTP-header-based retry to ensure critical Client Hints are reliably available ("Critical-CH")
-*   a connection-level optimization to avoid the performance hit of a retry in most cases ("ACCEPT_CH")
+*   an HTTP-header-based retry to ensure critical Client Hints are reliably available (`Critical-CH1)
+*   a connection-level optimization to avoid the performance hit of a retry in most cases (ACCEPT_CH)
 
 An explainer for both can be found [here](https://github.com/WICG/client-hints-infrastructure/blob/main/reliability.md)
 
@@ -62,23 +87,6 @@ All client hint headers should be [forbidden request-headers](https://fetch.spec
 not be replaced with `Sec-CH-Save-Data`](https://groups.google.com/a/chromium.org/g/blink-dev/c/HR7tWmewbSA/m/R0QYg-ZAAAAJ).
 
 The "new" naming adds `CH` to distinguish client hints from other forbidden request-headers, giving the combined prefix `Sec-CH`.
-
-### Client-Hint Types
-
-There are several types of client hints, which are handled differently:
-
- * *UA* client hints contain information about the user agent which might once have been found expected in the User-Agent header.
- * *Device* client hints contain dynamic information about the configuration of the device on which the browser is running.
- * *Network* client hints contain dynamic information about the browser's network connection.
- * *User Preference Media Features* client hints contain information about the user agent's preferences as represented in CSS media features.
-
-All UA client hints are distinguished by a `Sec-CH-UA` header prefix. UA hints are available via the JS `navigator.userAgentData` API, while other types are not.
-
-Some device client hints are specific to the type of resource being requested. For example, `Sec-CH-Resource-Width` is sent only for image fetches.
-
-Except for `Save-Data`, network client hints are currently being deprecated.
-
-Some device and user-preference client hints are not sent for fetches in detached frames.
 
 ## Implementation
 
@@ -142,48 +150,52 @@ out/default/chrome --initial-client-hint-storage="{\"https://a.test\":\"Sec-CH-U
 
 ## Adding a new hint
 
-There’s two main steps to adding a hint to Chromium: adding the token, and populating the value when appropriate
+There are two main steps to adding a hint to Chromium: adding the token, and populating the value when appropriate. You will probably also want a feature to control use of the hint.
+Find an example of adding a new UA hint in https://crrev.com/c/4628277.
+
+### Adding a feature
+
+Add a new Blink feature, named `ClientHints<HintName>` (without `Sec-CH-UA`) to [/third_party/blink/public/common/features.h] and [/third_party/blink/common/features.cc].
 
 ### Adding a new client hint token
 
 The canonical enum for client hint tokens is [network::mojom::WebClientHintsType]. Any new token should be added to the end of that list. Along with that:
 
 *   Add the header name to the map in `MakeClientHintToNameMap` in [/services/network/public/cpp/client_hints.cc].
-*   Add an enum value to `WebFeature` in [/third_party/blink/public/mojom/web_feature/web_feature.mojom].
-*   Add the feature enum to the map in `MakeClientHintToWebFeatureMap` in [/third_party/blink/renderer/core/loader/frame_client_hints_preferences_context.cc].
-*   Add the client hint header to the `Accept-CH` header in the appropriate test files in [/chrome/test/data/client_hints/] and [/third_party/blink/web_tests/external/wpt/client-hints].
-*   Update `expected_client_hints_number` to the current value + 1 in [/chrome/browser/client_hints/client_hints_browsertest.cc].
-*   Add an enum value to `WebClientHintsType` in [/tools/metrics/histograms/enums.xml].
+*   Add an enum value to `WebFeature` in [/third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom] and run [/tools/metrics/histograms/update_use_counter_feature_enum.py] to update the enum in [/tools/metrics/histograms/enums.xml].
+*   Map the hint to the web feature in `MakeClientHintToWebFeatureMap` in [/third_party/blink/renderer/core/loader/frame_client_hints_preferences_context.cc].
+*   Update the `static_assert` for `network::mojom::WebClientHintsType::kMaxValue` in [/content/browser/client_hints/client_hints.cc], leaving a TODO for your implementation.
+*   Add a permissions policy in [/third_party/blink/renderer/core/permissions_policy/permissions_policy_features.json5]. Note that the entries in this file are in lexical order by name.
+*   Add an entry to the end of [/third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom] and run [/tools/metrics/histograms/update_permissions_policy_enum.py] to update [tools/metrics/histograms/enums.xml].
+*   Map the hint to the permissions policy in `MakeClientHintToPolicyFeatureMap` in [/third_party/blink/common/client_hints/client_hints.cc].
+*   Add the permissions policy name to:
+    * `third_party/blink/public/devtools_protocol/browser_protocol.pdl`
+    * `third_party/blink/web_tests/virtual/stable/webexposed/feature-policy-features-expected.txt`
+    * `third_party/blink/web_tests/webexposed/feature-policy-features-expected.txt`
+*   Update [/services/network/public/cpp/cors/cors.cc] to include this value in the "safe names", including a brief comment describing the header. Update [/services/network/public/cpp/cors/cors_unittest.cc] to correspond (note that it uses the Title-Cased header name).
 
-**NOTE:** It’s very important that the order of these arrays remain in sync.
-
-There should also be a new feature policy created:
-
-*   Define the permission policy in [/third_party/blink/renderer/core/permissions_policy/permissions_policy_features.json5].
-*   Add an enum to [/third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom].
-*   Add the same enum to the map in `MakeClientHintToPolicyFeatureMap` in [/third_party/blink/common/client_hints/client_hints.cc].
-*   Add the permission policy token to the `PermissionsPolicyFeature` enum in [/third_party/blink/public/devtools_protocol/browser_protocol.pdl], [/third_party/devtools-frontend/src/third_party/blink/public/devtools_protocol/browser_protocol.pdl], and [/third_party/devtools-frontend/src/third_party/blink/public/devtools_protocol/browser_protocol.json].
-*   Add the permission policy token to [/third_party/blink/web_tests/webexposed/feature-policy-features-expected.txt] and [/third_party/blink/web_tests/virtual/stable/webexposed/feature-policy-features-expected.txt].
-
-The header should also be added to the cors `safe_names` list in [/services/network/public/cpp/cors/cors.cc](/services/network/public/cpp/cors/cors.cc) and update its test.
+If gating the new hint on a feature:
+*   Add a conditional to `VerifyClientHintsReceived` in [/chrome/browser/client_hints/client_hints_browsertest.cc] to skip your new header when the feature is not enabled.
+*   Add a conditional to `IsDisabledByFeature` in [/third_party/blink/common/client_hints/enabled_client_hints.cc], based on your new feature.
 
 TODO(crbug.com/1176808): There should be UseCounters measuring usage, but there are not currently.
+
+At this point, if the hint is gated on a feature, tests should pass when that feature is disabled. In particular, check that `content_unittests` passes tests matching `*Cors*`, and `browser_tests` passes tests matching `*ClientHints*`.
 
 ### Populating the Client Hint
 
 As described in "Client-Hint Data Sources" above, client hints are populated in
 several places:
 
- * _UA Hints:_ Included in [`blink::UserAgentMetadata`](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/public/common/user_agent/user_agent_metadata.h?q=blink::UserAgentMetadata) and determined in [`ClientHintsControllerDelegate`](https://source.chromium.org/chromium/chromium/src/+/main:content/public/browser/client_hints_controller_delegate.h;l=55?q=clienthintscontrollerdelegate) for navigation fetches and [`ContentBrowserClient`](https://source.chromium.org/chromium/chromium/src/+/main:content/public/browser/content_browser_client.h;l=2100?q=contentbrowserclient) for programmatic access and subresource fetches.
- * _navigation fetches:_ [`content::AddNavigationRequestClientHintsHeaders`](https://source.chromium.org/chromium/chromium/src/+/main:content/browser/client_hints/client_hints.cc;l=1040?q=AddNavigationRequestClientHintsHeader) and `content::AddRequestClientHintsHeaders`.
+ * _UA Hints:_ Included in [`blink::UserAgentMetadata`](/third_party/blink/public/common/user_agent/user_agent_metadata.h) and determined in [`ClientHintsControllerDelegate`](/content/public/browser/client_hints_controller_delegate.h) for navigation fetches and [`ContentBrowserClient`](/content/public/browser/content_browser_client.h) for programmatic access and subresource fetches.
+ * _navigation fetches:_ [`content::AddNavigationRequestClientHintsHeaders`](/content/browser/client_hints/client_hints.cc) and `content::AddRequestClientHintsHeaders`.
  * _subresource fetches:_ [BaseFetchContext::AddClientHintsIfNecessary](/third_party/blink/renderer/core/loader/base_fetch_context.cc). If you need frame-based information, this should be added to [ClientHintsImageInfo](/third_party/blink/renderer/core/loader/base_fetch_context.cc), which is populated in [FrameFetchContext::AddClientHintsIfNecessary](/third_party/blink/renderer/core/loader/frame_fetch_context.cc)
 
-### Web platform tests
-* Add the new client hint to [/third_party/blink/web_tests/external/wpt/client-hints/resources/export.js], [/third_party/blink/web_tests/external/wpt/client-hints/resources/clienthintslist.py], [/third_party/blink/web_tests/external/wpt/client-hints/accept-ch/feature-policy-navigation/\_\_dir\_\_.headers], [/third_party/blink/web_tests/external/wpt/client-hints/sandbox/\_\_dir\_\_.headers], and [/third_party/blink/web_tests/external/wpt/client-hints/accept-ch/\_\_dir\_\_.headers]
+After updating these sites to populate the hint, update the various tests for this new header. This includes WPTs, Webview Java tests, and browsertests.
 
 ### Devtools Backend
 
-* Any addition to [blink::UserAgentMetadata](/third_party/blink/public/common/user_agent/user_agent_metadata.h) also needs to extend the related Chrome Devtools Protocol API calls, namely `setUserAgentOverride`. The backend implementation can be found in [/third_party/blink/renderer/core/inspector/inspector_emulation_agent.h], and the UserAgentMetadata type in [/third_party/blink/public/devtools_protocol/browser_protocol.pdl] will also need to be extended.
+* Any addition to [`blink::UserAgentMetadata`](/third_party/blink/public/common/user_agent/user_agent_metadata.h) also needs to extend the related Chrome Devtools Protocol API calls, namely `setUserAgentOverride`. The backend implementation can be found in [/third_party/blink/renderer/core/inspector/inspector_emulation_agent.h], and the UserAgentMetadata type in [/third_party/blink/public/devtools_protocol/browser_protocol.pdl] will also need to be extended.
 * Update overridden function `SetUserAgentOverride` in [/third_party/blink/renderer/core/inspector/inspector_emulation_agent.cc], and [/content/browser/devtools/protocol/emulation_handler.cc].
 * Add the new client hint to [/third_party/blink/web_tests/http/tests/inspector-protocol/emulation/resources/set-accept-ch.php] and update tests in [/third_party/blink/web_tests/http/tests/inspector-protocol/emulation/emulation-user-agent-metadata-override.js].
 
@@ -195,40 +207,47 @@ Devtools frontend source code is in a different branch [devtools/devtools-fronte
 * Add the permission policy token to the `PermissionsPolicyFeature` enum in [/third_party/devtools-frontend/src/third_party/blink/public/devtools_protocol/browser_protocol.pdl], and [/third_party/devtools-frontend/src/third_party/blink/public/devtools_protocol/browser_protocol.json].
 
 <!-- links -->
-[/components/client_hints/]: /components/client_hints/
-[/content/browser/client_hints/]: /content/browser/client_hints/
+[/android_webview/javatests/src/org/chromium/android_webview/test/ClientHintsTest.java]: /android_webview/javatests/src/org/chromium/android_webview/test/ClientHintsTest.java
 [/chrome/browser/client_hints/]: /chrome/browser/client_hints/
-[/third_party/blink/common/client_hints/]: /third_party/blink/common/client_hints/
-[/services/network/public/mojom/web_client_hints_types.mojom]: /services/network/public/mojom/web_client_hints_types.mojom
-[/third_party/blink/web_tests/external/wpt/client-hints/]: /third_party/blink/web_tests/external/wpt/client-hints/
-[content::ClientHintsControllerDelegate]: /content/public/browser/client_hints_controller_delegate.h
+[/chrome/browser/client_hints/client_hints_browsertest.cc]: /chrome/browser/client_hints/client_hints_browsertest.cc
+[/chrome/test/data/client_hints/]: /chrome/test/data/client_hints/
 [client_hints::ClientHints]: /components/client_hints/browser/client_hints.h
-[content::BrowserContext]: /content/public/browser/browser_context.h
+[/components/client_hints/]: /components/client_hints/
 [/content/browser/client_hints/client_hints.cc]: /content/browser/client_hints/client_hints.cc
+[/content/browser/client_hints/]: /content/browser/client_hints/
+[content::BrowserContext]: /content/public/browser/browser_context.h
+[/content/browser/devtools/protocol/emulation_handler.cc]: /content/browser/devtools/protocol/emulation_handler.cc
+[content::ClientHintsControllerDelegate]: /content/public/browser/client_hints_controller_delegate.h
 [content::CriticalClientHintsThrottle]: /content/browser/client_hints/critical_client_hints_throttle.h
 [network::mojom::WebClientHintsType]: /services/network/public/mojom/web_client_hints_types.mojom
 [/services/network/public/cpp/client_hints.cc]: /services/network/public/cpp/client_hints.cc
+[/services/network/public/cpp/cors/cors.cc]: /services/network/public/cpp/cors/cors.cc
+[/services/network/public/cpp/cors/cors_unittest.cc]: /services/network/public/cpp/cors/cors_unittest.cc
+[/services/network/public/mojom/web_client_hints_types.mojom]: /services/network/public/mojom/web_client_hints_types.mojom
 [/third_party/blink/common/client_hints/client_hints.cc]: /third_party/blink/common/client_hints/client_hints.cc
-[/third_party/blink/public/mojom/web_feature/web_feature.mojom]: /third_party/blink/public/mojom/web_feature/web_feature.mojom
-[/third_party/blink/renderer/core/loader/frame_client_hints_preferences_context.cc]: /third_party/blink/renderer/core/loader/frame_client_hints_preferences_context.cc
-[/chrome/test/data/client_hints/]: /chrome/test/data/client_hints/
-[/third_party/blink/web_tests/external/wpt/client-hints]: /third_party/blink/web_tests/external/wpt/client-hints
-[/chrome/browser/client_hints/client_hints_browsertest.cc]: /chrome/browser/client_hints/client_hints_browsertest.cc
-[/third_party/blink/renderer/core/permissions_policy/permissions_policy_features.json5]: /third_party/blink/renderer/core/permissions_policy/permissions_policy_features.json5
-[/third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom]: /third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom
+[/third_party/blink/common/client_hints/enabled_client_hints.cc]: /third_party/blink/common/client_hints/enabled_client_hints.cc
+[/third_party/blink/common/client_hints/]: /third_party/blink/common/client_hints/
+[/third_party/blink/common/features.cc]: /third_party/blink/common/features.cc
+[/third_party/blink/public/common/features.h]: /third_party/blink/public/common/features.h
 [/third_party/blink/public/devtools_protocol/browser_protocol.pdl]: /third_party/blink/public/devtools_protocol/browser_protocol.pdl
-[/third_party/devtools-frontend/src/third_party/blink/public/devtools_protocol/browser_protocol.pdl]: https://chromium.googlesource.com/devtools/devtools-frontend/+/main/third_party/blink/public/devtools_protocol/browser_protocol.pdl
-[/third_party/devtools-frontend/src/third_party/blink/public/devtools_protocol/browser_protocol.json]: https://chromium.googlesource.com/devtools/devtools-frontend/+/main/third_party/blink/public/devtools_protocol/browser_protocol.json
-[/third_party/devtools-frontend/src/front_end/generated/InspectorBackendCommands.js]: https://chromium.googlesource.com/devtools/devtools-frontend/+/main/front_end/generated/InspectorBackendCommands.js
-[/third_party/blink/web_tests/webexposed/feature-policy-features-expected.txt]: /third_party/blink/web_tests/webexposed/feature-policy-features-expected.txt
-[/third_party/blink/web_tests/virtual/stable/webexposed/feature-policy-features-expected.txt]: /third_party/blink/web_tests/virtual/stable/webexposed/feature-policy-features-expected.txt
-[/third_party/blink/renderer/core/inspector/inspector_emulation_agent.h]: /third_party/blink/renderer/core/inspector/inspector_emulation_agent.h
+[/third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom]: /third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom
+[/third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom]: /third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom
 [/third_party/blink/renderer/core/inspector/inspector_emulation_agent.cc]: /third_party/blink/renderer/core/inspector/inspector_emulation_agent.cc
-[/content/browser/devtools/protocol/emulation_handler.cc]: /content/browser/devtools/protocol/emulation_handler.cc
-[/third_party/blink/web_tests/http/tests/inspector-protocol/emulation/resources/set-accept-ch.php]: /third_party/blink/web_tests/http/tests/inspector-protocol/emulation/resources/set-accept-ch.php
-[/third_party/blink/web_tests/http/tests/inspector-protocol/emulation/emulation-user-agent-metadata-override.js]: /third_party/blink/web_tests/http/tests/inspector-protocol/emulation/emulation-user-agent-metadata-override.js
-[/third_party/blink/web_tests/external/wpt/client-hints/resources/export.js]: /third_party/blink/web_tests/external/wpt/client-hints/resources/export.js
+[/third_party/blink/renderer/core/inspector/inspector_emulation_agent.h]: /third_party/blink/renderer/core/inspector/inspector_emulation_agent.h
+[/third_party/blink/renderer/core/loader/frame_client_hints_preferences_context.cc]: /third_party/blink/renderer/core/loader/frame_client_hints_preferences_context.cc
+[/third_party/blink/renderer/core/permissions_policy/permissions_policy_features.json5]: /third_party/blink/renderer/core/permissions_policy/permissions_policy_features.json5
 [/third_party/blink/web_tests/external/wpt/client-hints/resources/clienthintslist.py]: /third_party/blink/web_tests/external/wpt/client-hints/resources/clienthintslist.py
-[/third_party/blink/web_tests/external/wpt/client-hints/accept-ch/feature-policy-navigation/\_\_dir\_\_.headers]: /third_party/blink/web_tests/external/wpt/client-hints/accept-ch/feature-policy-navigation/__dir__.headers
-[/third_party/blink/web_tests/external/wpt/client-hints/sandbox/\_\_dir\_\_.headers]: /third_party/blink/web_tests/external/wpt/client-hints/sandbox/__dir__.headers
-[/third_party/blink/web_tests/external/wpt/client-hints/accept-ch/\_\_dir\_\_.headers]: /third_party/blink/web_tests/external/wpt/client-hints/accept-ch/__dir__.headers
+[/third_party/blink/web_tests/external/wpt/client-hints/resources/export.js]: /third_party/blink/web_tests/external/wpt/client-hints/resources/export.js
+[/third_party/blink/web_tests/external/wpt/client-hints/]: /third_party/blink/web_tests/external/wpt/client-hints/
+[/third_party/blink/web_tests/http/tests/inspector-protocol/emulation/emulation-user-agent-metadata-override.js]: /third_party/blink/web_tests/http/tests/inspector-protocol/emulation/emulation-user-agent-metadata-override.js
+[/third_party/blink/web_tests/http/tests/inspector-protocol/emulation/resources/set-accept-ch.php]: /third_party/blink/web_tests/http/tests/inspector-protocol/emulation/resources/set-accept-ch.php
+[/third_party/blink/web_tests/virtual/stable/webexposed/feature-policy-features-expected.txt]: /third_party/blink/web_tests/virtual/stable/webexposed/feature-policy-features-expected.txt
+[/third_party/blink/web_tests/webexposed/feature-policy-features-expected.txt]: /third_party/blink/web_tests/webexposed/feature-policy-features-expected.txt
+[/third_party/devtools-frontend/src/front_end/generated/InspectorBackendCommands.js]: https://chromium.googlesource.com/devtools/devtools-frontend/+/main/front_end/generated/InspectorBackendCommands.js
+[/third_party/devtools-frontend/src/front_end/generated/protocol.d.ts]: /third_party/devtools-frontend/src/front_end/generated/protocol.d.ts
+[/third_party/devtools-frontend/src/third_party/blink/public/devtools_protocol/browser_protocol.json]: https://chromium.googlesource.com/devtools/devtools-frontend/+/main/third_party/blink/public/devtools_protocol/browser_protocol.json
+[/third_party/devtools-frontend/src/third_party/blink/public/devtools_protocol/browser_protocol.pdl]: https://chromium.googlesource.com/devtools/devtools-frontend/+/main/third_party/blink/public/devtools_protocol/browser_protocol.pdl
+[/tools/metrics/histograms/enums.xml]: /tools/metrics/histograms/enums.xml
+[tools/metrics/histograms/enums.xml]: tools/metrics/histograms/enums.xml
+[/tools/metrics/histograms/update_permissions_policy_enum.py]: /tools/metrics/histograms/update_permissions_policy_enum.py
+[/tools/metrics/histograms/update_use_counter_feature_enum.py]: /tools/metrics/histograms/update_use_counter_feature_enum.py

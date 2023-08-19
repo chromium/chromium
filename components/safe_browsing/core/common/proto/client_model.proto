@@ -109,7 +109,9 @@ message ClientSideModel {
 
   optional TfLiteModelMetadata tflite_metadata = 17;
 
-  // next available tag number: 19
+  optional TfLiteModelMetadata img_embedding_metadata = 19;
+
+  // next available tag number: 20
 }
 
 message TfLiteModelMetadata {

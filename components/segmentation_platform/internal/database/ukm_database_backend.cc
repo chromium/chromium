@@ -22,40 +22,51 @@ bool SanityCheckUrl(const GURL& url, UrlId url_id) {
   return url.is_valid() && !url.is_empty() && !url_id.is_null();
 }
 
-void BindValuesToStatement(
+std::string BindValuesToStatement(
     const std::vector<processing::ProcessedValue>& bind_values,
     sql::Statement& statement) {
+  std::stringstream debug_string;
   for (unsigned i = 0; i < bind_values.size(); ++i) {
     const processing::ProcessedValue& value = bind_values[i];
     switch (value.type) {
       case processing::ProcessedValue::Type::BOOL:
+        debug_string << i << ":" << value.bool_val << " ";
         statement.BindBool(i, value.bool_val);
         break;
       case processing::ProcessedValue::Type::INT:
+        debug_string << i << ":" << value.int_val << " ";
         statement.BindInt(i, value.int_val);
         break;
       case processing::ProcessedValue::Type::FLOAT:
+        debug_string << i << ":" << value.float_val << " ";
         statement.BindDouble(i, value.float_val);
         break;
       case processing::ProcessedValue::Type::DOUBLE:
+        debug_string << i << ":" << value.double_val << " ";
         statement.BindDouble(i, value.double_val);
         break;
       case processing::ProcessedValue::Type::STRING:
+        debug_string << i << ":" << value.str_val << " ";
         statement.BindString(i, value.str_val);
         break;
       case processing::ProcessedValue::Type::TIME:
+        debug_string << i << ":" << value.time_val << " ";
         statement.BindTime(i, value.time_val);
         break;
       case processing::ProcessedValue::Type::INT64:
+        debug_string << i << ":" << value.int64_val << " ";
         statement.BindInt64(i, value.int64_val);
         break;
       case processing::ProcessedValue::Type::URL:
+        debug_string << i << ":"
+                     << UkmUrlTable::GetDatabaseUrlString(*value.url) << " ";
         statement.BindString(i, UkmUrlTable::GetDatabaseUrlString(*value.url));
         break;
       case processing::ProcessedValue::Type::UNKNOWN:
         NOTREACHED();
     }
   }
+  return debug_string.str();
 }
 
 float GetSingleFloatOutput(sql::Statement& statement) {
@@ -221,18 +232,20 @@ void UkmDatabaseBackend::RunReadonlyQueries(QueryList&& queries,
   for (const auto& index_and_query : queries) {
     const processing::FeatureIndex index = index_and_query.first;
     const UkmDatabase::CustomSqlQuery& query = index_and_query.second;
+    std::string debug_query = query.query;
 
     sql::Statement statement(db_.GetReadonlyStatement(query.query.c_str()));
-    BindValuesToStatement(query.bind_values, statement);
+    debug_query +=
+        " Bind values: " + BindValuesToStatement(query.bind_values, statement);
 
     if (!statement.is_valid() || !statement.Step()) {
-      VLOG(1) << "Failed to run SQL query " << query.query;
+      VLOG(1) << "Failed to run SQL query " << debug_query;
       success = false;
       break;
     }
 
     float output = GetSingleFloatOutput(statement);
-    VLOG(1) << "Output from SQL query " << query.query << " Result: " << output;
+    VLOG(1) << "Output from SQL query " << debug_query << " Result: " << output;
     result[index].push_back(processing::ProcessedValue(output));
   }
   callback_task_runner_->PostTask(

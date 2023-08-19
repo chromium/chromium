@@ -10,11 +10,18 @@
 namespace device {
 
 CardboardSdkImpl::CardboardSdkImpl() = default;
+CardboardSdkImpl::~CardboardSdkImpl() = default;
 
 void CardboardSdkImpl::Initialize(jobject context) {
   Cardboard_initializeAndroid(base::android::GetVM(), context);
 }
 
-CardboardSdkImpl::~CardboardSdkImpl() = default;
+void CardboardSdkImpl::SwitchViewer() {
+  // Launches a new QR code scanner activity in order to scan a QR code with
+  // the parameters of a new Cardboard viewer. Whether the QR code with
+  // Cardboard viewer paramerter is scanned or the scanning is skipped, the
+  // scanner activity is finished.
+  CardboardQrCode_scanQrCodeAndSaveDeviceParams();
+}
 
 }  // namespace device

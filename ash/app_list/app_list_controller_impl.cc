@@ -21,6 +21,7 @@
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/search_box_view.h"
+#include "ash/app_list/views/search_notifier_controller.h"
 #include "ash/assistant/assistant_controller_impl.h"
 #include "ash/assistant/model/assistant_ui_model.h"
 #include "ash/assistant/ui/assistant_view_delegate.h"
@@ -48,6 +49,7 @@
 #include "ash/shelf/home_button.h"
 #include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shell.h"
+#include "ash/user_education/welcome_tour/welcome_tour_metrics.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/mru_window_tracker.h"
@@ -255,6 +257,14 @@ bool IsKioskSession() {
   return Shell::Get()->session_controller()->IsRunningInAppMode();
 }
 
+void MaybeLogWelcomeTourInteraction(AppListShowSource show_source) {
+  if (features::IsWelcomeTourEnabled() &&
+      IsAppListShowSourceUserTriggered(show_source)) {
+    welcome_tour_metrics::RecordInteraction(
+        welcome_tour_metrics::Interaction::kLauncher);
+  }
+}
+
 }  // namespace
 
 AppListControllerImpl::AppListControllerImpl()
@@ -317,7 +327,6 @@ void AppListControllerImpl::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(prefs::kLauncherLastContinueRequestTime,
                              base::Time());
   registry->RegisterBooleanPref(prefs::kLauncherUseLongContinueDelay, false);
-  AppListNudgeController::RegisterProfilePrefs(registry);
 }
 
 void AppListControllerImpl::SetClient(AppListClient* client) {
@@ -470,10 +479,11 @@ void AppListControllerImpl::OnUserSessionAdded(const AccountId& account_id) {
   ash::ReportPrefSortOrderOnSessionStart(client_->GetPermanentSortingOrder(),
                                          IsTabletMode());
 
+  auto* prefs =
+      Shell::Get()->session_controller()->GetUserPrefServiceForUser(account_id);
   if (features::IsLauncherNudgeSessionResetEnabled()) {
-    AppListNudgeController::ResetPrefsForNewUserSession(
-        Shell::Get()->session_controller()->GetUserPrefServiceForUser(
-            account_id));
+    AppListNudgeController::ResetPrefsForNewUserSession(prefs);
+    SearchNotifierController::ResetPrefsForNewUserSession(prefs);
   }
 }
 
@@ -498,6 +508,10 @@ void AppListControllerImpl::Show(int64_t display_id,
   if (should_record_metrics)
     LogAppListShowSource(show_source, !IsTabletMode());
 
+  // Checking `should_record_metrics` is redundant here, since this helper
+  // function never logs metrics when the app list was shown by tablet mode.
+  MaybeLogWelcomeTourInteraction(show_source);
+
   if (IsTabletMode()) {
     fullscreen_presenter_->Show(AppListViewState::kFullscreenAllApps,
                                 display_id, event_time_stamp, show_source);
@@ -511,6 +525,8 @@ void AppListControllerImpl::UpdateAppListWithNewTemporarySortOrder(
     const absl::optional<AppListSortOrder>& new_order,
     bool animate,
     base::OnceClosure update_position_closure) {
+  TRACE_EVENT0("ui",
+               "AppListControllerImpl::UpdateAppListWithNewTemporarySortOrder");
   if (new_order) {
     RecordAppListSortAction(*new_order, IsInTabletMode());
 
@@ -565,6 +581,9 @@ ShelfAction AppListControllerImpl::ToggleAppList(
     }
     LogAppListShowSource(show_source, /*app_list_bubble=*/false);
     last_open_source_ = show_source;
+
+    MaybeLogWelcomeTourInteraction(show_source);
+
     return SHELF_ACTION_APP_LIST_SHOWN;
   }
 
@@ -572,6 +591,8 @@ ShelfAction AppListControllerImpl::ToggleAppList(
   if (action == SHELF_ACTION_APP_LIST_SHOWN) {
     LogAppListShowSource(show_source, /*app_list_bubble=*/true);
     last_open_source_ = show_source;
+
+    MaybeLogWelcomeTourInteraction(show_source);
   }
   return action;
 }

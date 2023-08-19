@@ -7,12 +7,15 @@
   #container {
     box-sizing: border-box;
     height: 100%;
-    overflow: overlay;
   }
 
   #content-wrapper {
     min-width: var(--extensions-card-width);
     padding: 24px 60px 64px;
+  }
+
+  #content-wrapper:has(extensions-review-panel) {
+    padding-top: 14px;
   }
 
   .empty-list-message {
@@ -21,6 +24,12 @@
     font-weight: 500;
     margin-top: 80px;
     text-align: center;
+  }
+
+  .extension-title-container {
+    font-size: 15px;
+    font-weight: 400;
+    margin: 0 0 16px 5px;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -39,6 +48,17 @@
     margin: auto;
     max-width: calc(var(--extensions-card-width) * var(--max-columns) +
         var(--grid-gutter) * var(--max-columns));
+  }
+
+  .items-container.review-panel-container :first-child {
+    max-width: var(--cr-toolbar-field-width);
+    grid-column: 1 / -1;
+    padding-bottom: 48px;
+  }
+
+  extensions-review-panel {
+    margin: 0 auto;
+    width: 100%;
   }
 
   #checkup-container {
@@ -80,6 +100,13 @@
 <div id="container">
   <managed-footnote hidden="[[filter]]"></managed-footnote>
   <div id="content-wrapper" style="--max-columns: [[maxColumns_]];">
+    <div class="items-container review-panel-container">
+      <template is="dom-if" if="[[showSafetyCheckReviewPanel_]]" restamp>
+        <extensions-review-panel extensions="[[extensions]]" delegate="[[delegate]]">
+        </extensions-review-panel>
+        <h2 class="extension-title-container">$i18n{safetyCheckAllExtensions}</h2>
+      </template>
+    </div>
     <div id="no-items" class="empty-list-message"
         hidden$="[[!shouldShowEmptyItemsMessage_(
             apps.length, extensions.length)]]">
@@ -101,6 +128,7 @@
           filter="[[computedFilter_]]"
           rendered-item-count="{{shownExtensionsCount_::dom-change}}">
         <extensions-item id="[[item.id]]" data="[[item]]"
+            safety-check-showing="[[hasSafetyCheckTriggeringExtension_]]"
             delegate="[[delegate]]" in-dev-mode="[[inDevMode]]">
         </extensions-item>
       </template>

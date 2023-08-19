@@ -270,6 +270,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
         BluetoothAdapter* adapter,
         BluetoothRemoteGattService* service) {}
 
+#if BUILDFLAG(IS_CHROMEOS)
+    // Called when the GATT service on the peer side indicates that something is
+    // changed on their side, so we need to start re-discovery everything.
+    virtual void GattNeedsDiscovery(BluetoothDevice* device) {}
+#endif
+
     // See "Deprecated GATT Added/Removed Events NOTE" above.
     //
     // Called when properties of the remote GATT service |service| have changed.
@@ -689,6 +695,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
                                  bool new_bonded_status);
   void NotifyDeviceIsBlockedByPolicyChanged(BluetoothDevice* device,
                                             bool new_blocked_status);
+  void NotifyGattNeedsDiscovery(BluetoothDevice* device);
 #endif
 
   void NotifyGattServiceAdded(BluetoothRemoteGattService* service);

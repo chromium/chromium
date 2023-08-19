@@ -89,10 +89,6 @@ class WebInputMethodController {
   // these bounds are empty.
   virtual void GetLayoutBounds(gfx::Rect* control_bounds,
                                gfx::Rect* selection_bounds) = 0;
-  // Returns true if the inputPanelPolicy flag is set as manual in
-  // |EditContext|, which indicates that the software input panel(Virtual
-  // Keyboard) shouldn't come up on focus of the EditControl.
-  virtual bool IsVirtualKeyboardPolicyManual() const = 0;
   // Returns true if there is an active |EditContext|.
   virtual bool IsEditContextActive() const = 0;
 

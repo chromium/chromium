@@ -12,7 +12,6 @@
 #include "components/permissions/features.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_request_manager.h"
-#include "components/permissions/permission_result.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "content/public/browser/permission_result.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -59,7 +58,10 @@ class GeolocationPermissionContextDelegateTests
             ->GetPermissionContextForTesting(ContentSettingsType::GEOLOCATION))
         ->SetLocationSettingsForTesting(
             std::make_unique<MockLocationSettings>());
-    MockLocationSettings::SetLocationStatus(true, true);
+    MockLocationSettings::SetLocationStatus(
+        /*has_android_coarse_location_permission=*/true,
+        /*has_android_fine_location_permission=*/true,
+        /*is_system_location_setting_enabled=*/true);
     MockLocationSettings::SetCanPromptForAndroidPermission(true);
     MockLocationSettings::SetLocationSettingsDialogStatus(false /* enabled */,
                                                           GRANTED);
@@ -90,7 +92,8 @@ class GeolocationPermissionContextDelegateTests
       blink::PermissionType permission,
       const url::Origin& origin) {
     return PermissionManagerFactory::GetForProfile(profile)
-        ->GetPermissionResultForOriginWithoutContext(permission, origin);
+        ->GetPermissionResultForOriginWithoutContext(permission, origin,
+                                                     origin);
   }
 };
 

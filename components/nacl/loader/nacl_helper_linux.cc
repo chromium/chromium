@@ -150,11 +150,10 @@ void BecomeNaClLoader(base::ScopedFD browser_fd,
   PCHECK(signal(SIGPIPE, SIG_IGN) != SIG_ERR);
 
   base::FieldTrialList field_trial_list;
-  base::FieldTrialList::CreateTrialsFromCommandLine(command_line,
-                                                    kFieldTrialDescriptor);
+  base::FieldTrialList::CreateTrialsInChildProcess(command_line,
+                                                   kFieldTrialDescriptor);
   auto feature_list = std::make_unique<base::FeatureList>();
-  base::FieldTrialList::CreateFeaturesFromCommandLine(command_line,
-                                                      feature_list.get());
+  base::FieldTrialList::ApplyFeatureOverridesInChildProcess(feature_list.get());
   base::FeatureList::SetInstance(std::move(feature_list));
 
   // Finish layer-1 sandbox initialization and initialize the layer-2 sandbox.

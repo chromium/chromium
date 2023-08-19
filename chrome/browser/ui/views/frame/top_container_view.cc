@@ -18,10 +18,15 @@ TopContainerView::TopContainerView(BrowserView* browser_view)
   SetProperty(views::kElementIdentifierKey, kTopContainerElementId);
 }
 
-TopContainerView::~TopContainerView() {
-}
+TopContainerView::~TopContainerView() = default;
 
 void TopContainerView::PaintChildren(const views::PaintInfo& paint_info) {
+// For ChromeOS, we don't need to manually call
+// `BrowserNonClientFrameViewChromeOS::Paint` here since it will be triggered by
+// BrowserRootView::PaintChildren() on immersive revealed.
+// TODO (b/287068468): Verify if it's needed on MacOS, once it's verified, we
+// can decide whether keep or remove this function.
+#if !BUILDFLAG(IS_CHROMEOS)
   if (browser_view_->immersive_mode_controller()->IsRevealed()) {
     // Top-views depend on parts of the frame (themes, window title, window
     // controls) being painted underneath them. Clip rect has already been set
@@ -40,6 +45,7 @@ void TopContainerView::PaintChildren(const views::PaintInfo& paint_info) {
         views::PaintInfo::CreateRootPaintInfo(
             context, browser_view_->frame()->GetFrameView()->size()));
   }
+#endif
   View::PaintChildren(paint_info);
 }
 

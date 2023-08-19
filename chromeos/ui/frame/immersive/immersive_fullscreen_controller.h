@@ -254,7 +254,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) ImmersiveFullscreenController
   void EnableTouchInsets(bool enable);
 
   // Not owned.
-  raw_ptr<ImmersiveFullscreenControllerDelegate> delegate_ = nullptr;
+  raw_ptr<ImmersiveFullscreenControllerDelegate, DanglingUntriaged> delegate_ =
+      nullptr;
   raw_ptr<views::View> top_container_ = nullptr;
   raw_ptr<views::Widget> widget_ = nullptr;
 

@@ -34,11 +34,9 @@ void RoundedLabelWidget::Init(InitParams params) {
   widget_params.layer_type = ui::LAYER_NOT_DRAWN;
   widget_params.accept_events = false;
   widget_params.parent = params.parent;
+  widget_params.init_properties_container.SetProperty(kHideInDeskMiniViewKey,
+                                                      true);
   set_focus_on_creation(false);
-  if (params.hide_in_mini_view) {
-    widget_params.init_properties_container.SetProperty(kHideInDeskMiniViewKey,
-                                                        true);
-  }
   views::Widget::Init(std::move(widget_params));
 
   if (params.disable_default_visibility_animation) {

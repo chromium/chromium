@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom-forward.h"
@@ -38,6 +39,12 @@ struct OpenXrCreateInfo {
 // xrCreateSession, or different rules about XrInstance lifetime management.
 class DEVICE_VR_EXPORT OpenXrPlatformHelper {
  public:
+  using CreateInstanceCallback =
+      base::OnceCallback<void(XrResult result, XrInstance)>;
+
+  using PlatformCreateInfoReadyCallback =
+      base::OnceCallback<void(void* create_info)>;
+
   // Gets the set of RequiredExtensions that need to be present on the platform.
   static void GetRequiredExtensions(std::vector<const char*>& extensions);
 
@@ -61,12 +68,9 @@ class DEVICE_VR_EXPORT OpenXrPlatformHelper {
   // XrInstance and/or XrSession.
   // The caller is responsible for ensuring that the TextureHelper outlives the
   // GraphicsBinding.
-  // TODO(https://crbug.com/1441073): D3D11TextureHelper should be converted to
-  // either an interface that can be shared by the graphics bindings for the
-  // information that is needed (though that may require a downcast in the
-  // concrete helper), or to be entirely owned by the OpenXrGraphicsBinding and
-  // any relevant logic ported there with the necessary interfaces exposed on
-  // OpenXrGraphicsBinding.
+  // TODO(https://crbug.com/1454938): D3D11TextureHelper should be entirely
+  // owned by the OpenXrGraphicsBinding and any relevant logic ported there with
+  // the necessary interfaces exposed on OpenXrGraphicsBinding.
   virtual std::unique_ptr<OpenXrGraphicsBinding> GetGraphicsBinding(
       D3D11TextureHelper* texture_helper) = 0;
 #else
@@ -82,19 +86,23 @@ class DEVICE_VR_EXPORT OpenXrPlatformHelper {
 
   // Gets any platform-specific struct that needs to be appended to
   // `XrInstanceCreateInfo`.`next`.
-  virtual const void* GetPlatformCreateInfo(
-      const OpenXrCreateInfo& create_info) = 0;
+  virtual void GetPlatformCreateInfo(
+      const device::OpenXrCreateInfo& create_info,
+      PlatformCreateInfoReadyCallback) = 0;
 
   // Used to create an XrInstance. As the different platforms may have
   // different lifetime requirements, xrCreateInstance should only be called via
   // the methods on this class, and the same is true for xrDestroyInstance.
   // Only one "outstanding" XrInstance is allowed at a time.
-  virtual XrResult CreateInstance(XrInstance* instance,
-                                  absl::optional<OpenXrCreateInfo> create_info);
+  virtual XrResult CreateInstance(XrInstance* instance, void* create_info);
 
   // Convenience method for the above without any OpenXrCreateInfo. Platforms
   // that require additional information via this mechanism will fail creation.
   XrResult CreateInstance(XrInstance* instance);
+
+  void CreateInstanceWithCreateInfo(
+      absl::optional<OpenXrCreateInfo> create_info,
+      CreateInstanceCallback);
 
   // Destroys the instance and sets it to XR_NULL_HANDLE on success. As the
   // different platforms may have different lifetime requirements, this should
@@ -105,6 +113,8 @@ class DEVICE_VR_EXPORT OpenXrPlatformHelper {
   // features.
   virtual device::mojom::XRDeviceData GetXRDeviceData() = 0;
 
+  bool IsArBlendModeSupported(XrInstance instance);
+
  protected:
   OpenXrPlatformHelper();
 
@@ -113,6 +123,9 @@ class DEVICE_VR_EXPORT OpenXrPlatformHelper {
   // then it will not be called again. Will be the first call from
   // EnsureInitialized if not currently initialized.
   virtual bool Initialize() = 0;
+
+  void OnPlatformCreateInfoResult(CreateInstanceCallback callback,
+                                  void* instance_create_info);
 
   XrInstance xr_instance_ = XR_NULL_HANDLE;
   std::unique_ptr<OpenXrExtensionEnumeration> extension_enumeration_;

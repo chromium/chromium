@@ -48,6 +48,7 @@ CryptohomeRecoveryScreen::CryptohomeRecoveryScreen(
     const ScreenExitCallback& exit_callback)
     : BaseScreen(CryptohomeRecoveryScreenView::kScreenId,
                  OobeScreenPriority::DEFAULT),
+      auth_factor_editor_(UserDataAuthClient::Get()),
       view_(std::move(view)),
       exit_callback_(exit_callback) {}
 
@@ -98,17 +99,6 @@ void CryptohomeRecoveryScreen::OnGetAuthFactorsConfiguration(
     return;
   }
 
-  // TODO(b/272474463): remove the child user check.
-  // TODO(b/278780685): add browser test for the password change flow for child
-  // accounts.
-  auto* user =
-      user_manager::UserManager::Get()->FindUser(user_context->GetAccountId());
-  if (user && user->IsChild()) {
-    context()->user_context = std::move(user_context);
-    exit_callback_.Run(Result::kNotApplicable);
-    return;
-  }
-
   const auto& config = user_context->GetAuthFactorsConfiguration();
   bool is_configured =
       config.HasConfiguredFactor(cryptohome::AuthFactorType::kRecovery);
@@ -147,6 +137,21 @@ void CryptohomeRecoveryScreen::OnAuthenticateWithRecovery(
     context()->user_context = std::move(user_context);
     view_->OnRecoveryFailed();
     return;
+  }
+
+  auth_factor_editor_.RotateRecoveryFactor(
+      std::move(user_context),
+      base::BindOnce(&CryptohomeRecoveryScreen::OnRotateRecoveryFactor,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CryptohomeRecoveryScreen::OnRotateRecoveryFactor(
+    std::unique_ptr<UserContext> user_context,
+    absl::optional<AuthenticationError> error) {
+  if (error.has_value()) {
+    LOG(ERROR) << "Failed to rotate recovery factor, code "
+               << error->get_cryptohome_code();
+    // TODO(b/289472295): handle failure scenario.
   }
 
   std::string key_label;

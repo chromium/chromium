@@ -95,10 +95,8 @@ bool DawnControlClientHolder::IsContextLost() const {
 }
 
 std::unique_ptr<RecyclableCanvasResource>
-DawnControlClientHolder::GetOrCreateCanvasResource(const SkImageInfo& info,
-                                                   bool is_origin_top_left) {
-  return recyclable_resource_cache_.GetOrCreateCanvasResource(
-      info, is_origin_top_left);
+DawnControlClientHolder::GetOrCreateCanvasResource(const SkImageInfo& info) {
+  return recyclable_resource_cache_.GetOrCreateCanvasResource(info);
 }
 
 void DawnControlClientHolder::Flush() {

@@ -186,7 +186,7 @@ bool MetafileSkia::FinishPage() {
     canvas->drawPicture(std::move(pic));
     pic = recorder.finishRecordingAsPicture();
   }
-  data_->pages.emplace_back(data_->size, std::move(pic));
+  AppendPage(data_->size, std::move(pic));
   return true;
 }
 
@@ -272,8 +272,8 @@ mojom::MetafileDataType MetafileSkia::GetDataType() const {
 }
 
 gfx::Rect MetafileSkia::GetPageBounds(unsigned int page_number) const {
-  if (page_number < data_->pages.size()) {
-    SkSize size = data_->pages[page_number].size;
+  if (page_number > 0 && page_number - 1 < data_->pages.size()) {
+    SkSize size = data_->pages[page_number - 1].size;
     return gfx::Rect(base::ClampRound(size.width()),
                      base::ClampRound(size.height()));
   }
@@ -404,13 +404,11 @@ uint32_t MetafileSkia::CreateContentForRemoteFrame(
   sk_sp<SkPicture> pic = SkPicture::MakePlaceholder(
       SkRect::MakeXYWH(rect.x(), rect.y(), rect.width(), rect.height()));
 
-  // Store the map between content id and the proxy id.
-  uint32_t content_id = pic->uniqueID();
+  // Store the map between content id and the proxy id and store the picture
+  // content.
+  const uint32_t content_id = pic->uniqueID();
   DCHECK(!base::Contains(data_->subframe_content_info, content_id));
-  data_->subframe_content_info[content_id] = render_proxy_token;
-
-  // Store the picture content.
-  data_->subframe_pics[content_id] = pic;
+  AppendSubframeInfo(content_id, render_proxy_token, std::move(pic));
   return content_id;
 }
 

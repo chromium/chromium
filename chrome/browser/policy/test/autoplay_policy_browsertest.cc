@@ -37,12 +37,19 @@ class AutoplayPolicyTest : public PolicyTest {
     EXPECT_TRUE(embedded_test_server2()->Start());
   }
 
-  void NavigateToTestPage() {
-    GURL origin = embedded_test_server()->GetURL(kAutoplayTestPageURL);
+  void NavigateToTestPage(const std::string& main_origin = std::string(),
+                          const std::string& subframe_origin = std::string()) {
+    GURL origin =
+        main_origin.empty()
+            ? embedded_test_server()->GetURL(kAutoplayTestPageURL)
+            : embedded_test_server()->GetURL(main_origin, kAutoplayTestPageURL);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), origin));
 
     // Navigate the subframe to the test page but on the second origin.
-    GURL origin2 = embedded_test_server2()->GetURL(kAutoplayTestPageURL);
+    GURL origin2 = subframe_origin.empty()
+                       ? embedded_test_server2()->GetURL(kAutoplayTestPageURL)
+                       : embedded_test_server()->GetURL(subframe_origin,
+                                                        kAutoplayTestPageURL);
     std::string script = base::StringPrintf(
         "setTimeout(\""
         "document.getElementById('subframe').src='%s';"
@@ -95,6 +102,24 @@ IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest, AutoplayAllowedByPolicy) {
 
   // Check that autoplay was allowed by policy.
   NavigateToTestPage();
+  EXPECT_TRUE(TryAutoplay(GetPrimaryMainFrame()));
+  EXPECT_TRUE(TryAutoplay(GetChildFrame()));
+}
+
+IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest, CrossOriginIframe) {
+  NavigateToTestPage("foo.com", "bar.com");
+
+  // Check that autoplay was not allowed.
+  EXPECT_FALSE(TryAutoplay(GetPrimaryMainFrame()));
+  EXPECT_FALSE(TryAutoplay(GetChildFrame()));
+
+  // Update policy to allow autoplay.
+  PolicyMap policies;
+  SetPolicy(&policies, key::kAutoplayAllowed, base::Value(true));
+  UpdateProviderPolicy(policies);
+
+  // Check that autoplay was allowed by policy.
+  NavigateToTestPage("foo.com", "bar.com");
   EXPECT_TRUE(TryAutoplay(GetPrimaryMainFrame()));
   EXPECT_TRUE(TryAutoplay(GetChildFrame()));
 }

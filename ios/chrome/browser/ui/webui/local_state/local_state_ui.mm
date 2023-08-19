@@ -18,10 +18,6 @@
 #import "ios/web/public/webui/web_ui_ios_data_source.h"
 #import "ios/web/public/webui/web_ui_ios_message_handler.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // UI Handler for chrome://local-state. Displays the Local State file as JSON.
@@ -51,8 +47,8 @@ void LocalStateUIHandler::RegisterMessages() {
 }
 
 void LocalStateUIHandler::HandleRequestJson(const base::Value::List& args) {
-  absl::optional<std::string> json =
-      GetPrefsAsJson(GetApplicationContext()->GetLocalState());
+  absl::optional<std::string> json = local_state_utils::GetPrefsAsJson(
+      GetApplicationContext()->GetLocalState());
   if (!json) {
     json = "Error loading Local State file.";
   }

@@ -27,7 +27,7 @@ struct VIEWS_EXPORT ChildLayout {
 
   std::string ToString() const;
 
-  raw_ptr<View, DanglingUntriaged> child_view = nullptr;
+  raw_ptr<View, AcrossTasksDanglingUntriaged> child_view = nullptr;
   bool visible = false;
   gfx::Rect bounds;
   SizeBounds available_size;

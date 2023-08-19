@@ -46,6 +46,7 @@
 #include "net/base/file_stream.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/image/image_skia.h"
@@ -243,9 +244,12 @@ void UpdateOverridesLists(Profile* profile,
   for (const auto& page_override_pair : overrides) {
     base::Value::List* page_overrides =
         all_overrides.FindList(page_override_pair.first);
-    // If it's being unregistered, it should already be in the list.
     if (!page_overrides) {
-      NOTREACHED();
+      // If it's being unregistered it may or may not be in the list. Eg: On
+      // uninstalling an externally loaded extension, which has not been enabled
+      // once.
+      // But if it's being deactivated, it should already be in the list.
+      DCHECK_NE(behavior, UPDATE_DEACTIVATE);
       continue;
     }
     if (UpdateOverridesList(*page_overrides, page_override_pair.second.spec(),

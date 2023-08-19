@@ -18,7 +18,6 @@ cc_component("mojo_embedder") {
   deps = [
     "//base",
     "//cc",
-    "//components/power_scheduler",
     "//components/viz/client",
     "//components/viz/common",
     "//gpu/ipc/client",

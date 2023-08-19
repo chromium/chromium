@@ -14,6 +14,7 @@ class SafeBrowsingClientImpl : public SafeBrowsingClient {
  public:
   SafeBrowsingClientImpl(
       safe_browsing::RealTimeUrlLookupService* lookup_service,
+      safe_browsing::HashRealTimeService* hash_real_time_service,
       PrerenderService* prerender_service);
 
   ~SafeBrowsingClientImpl() override;
@@ -23,6 +24,7 @@ class SafeBrowsingClientImpl : public SafeBrowsingClient {
   SafeBrowsingService* GetSafeBrowsingService() override;
   safe_browsing::RealTimeUrlLookupService* GetRealTimeUrlLookupService()
       override;
+  safe_browsing::HashRealTimeService* GetHashRealTimeService() override;
   bool ShouldBlockUnsafeResource(
       const security_interstitials::UnsafeResource& resource) const override;
   void OnMainFrameUrlQueryCancellationDecided(web::WebState* web_state,
@@ -32,6 +34,7 @@ class SafeBrowsingClientImpl : public SafeBrowsingClient {
 
  private:
   safe_browsing::RealTimeUrlLookupService* lookup_service_;
+  safe_browsing::HashRealTimeService* hash_real_time_service_;
   PrerenderService* prerender_service_;
 
   // Must be last.

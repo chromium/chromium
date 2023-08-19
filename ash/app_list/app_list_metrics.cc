@@ -14,6 +14,7 @@
 #include "ash/app_list/model/app_list_item_list.h"
 #include "ash/app_list/views/continue_section_view.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/shell.h"
 #include "base/logging.h"
@@ -264,7 +265,11 @@ void RecordAppListAppLaunched(AppListLaunchedFrom launched_from,
 
   switch (app_list_state) {
     case AppListViewState::kClosed:
-      NOTREACHED();
+      // The app list state may be set to closed while the device is animating
+      // to tablet mode. While this transition is running, a user may be able to
+      // launch an app.
+      DCHECK_EQ(launched_from, AppListLaunchedFrom::kLaunchedFromShelf);
+      UMA_HISTOGRAM_ENUMERATION(kAppListAppLaunchedClosed, launched_from);
       break;
     case AppListViewState::kFullscreenAllApps:
       if (is_tablet_mode) {

@@ -5,12 +5,17 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import './shared_style.css.js';
+import './np_list_object.js';
+import './logging_tab.js';
+import '//resources/cr_elements/md_select.css.js';
+import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
 
 import {WebUIListenerBehavior} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
 import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './cross_device_internals.html.js';
 import {NearbyPresenceBrowserProxy} from './nearby_presence_browser_proxy.js';
+import {PresenceDevice, SelectOption} from './types.js';
 
 Polymer({
   is: 'cross-device-internals',
@@ -24,6 +29,61 @@ Polymer({
   /** @private {?NearbyPresenceBrowserProxy} */
   browserProxy_: null,
 
+  properties: {
+    /** @private {!Array<!PresenceDevice>} */
+    npDiscoveredDevicesList_: {
+      type: Array,
+      value: [],
+    },
+
+    /** @private {!Array<!SelectOption>} */
+    featuresList: {
+      type: Array,
+      value: [
+        {name: 'Nearby Presence', value: 'NearbyPresence'},
+        {name: 'Nearby Share', value: 'NearbyShare'},
+        {name: 'Nearby Connections', value: 'NearbyConnections'},
+        {name: 'Fast Pair', value: 'FastPair'},
+      ],
+    },
+
+    /** @private {!Array<!SelectOption>} */
+    nearbyPresenceActionList: {
+      type: Array,
+      value: [
+        {name: 'Start Scan', value: 'StartScan'},
+        {name: 'Stop Scan', value: 'StopScan'},
+        {name: 'Sync Credentials', value: 'SyncCredentials'},
+        {name: 'First time flow', value: 'FirstTimeFlow'},
+      ],
+    },
+
+    /** @private {!Array<!SelectOption>} */
+    nearbyShareActionList: {
+      type: Array,
+      value: [],
+    },
+
+    /** @private {!Array<!SelectOption>} */
+    nearbyConnectionsActionList: {
+      type: Array,
+      value: [],
+    },
+
+
+    /** @private {!Array<!SelectOption>} */
+    fastPairActionList: {
+      type: Array,
+      value: [],
+    },
+
+    actionsSelectList: {
+      type: Array,
+      value: [],
+    },
+
+  },
+
   created() {
     this.browserProxy_ = NearbyPresenceBrowserProxy.getInstance();
   },
@@ -34,10 +94,39 @@ Polymer({
    */
   attached() {
     this.browserProxy_.initialize();
+    this.addWebUIListener(
+        'presence-device-found', device => this.onPresenceDeviceFound_(device));
+    this.addWebUIListener(
+        'presence-device-changed',
+        device => this.onPresenceDeviceChanged_(device));
+    this.addWebUIListener(
+        'presence-device-lost', device => this.onPresenceDeviceLost_(device));
+    this.set('actionsSelectList', this.nearbyPresenceActionList);
   },
 
   onStartScanClicked() {
     this.browserProxy_.SendStartScan();
+  },
+
+  updateActionsSelect() {
+    switch (this.$.actionGroup.value) {
+      case 'NearbyPresence':
+        this.set('actionsSelectList', this.nearbyPresenceActionList);
+        break;
+      case 'NearbyConnections':
+        this.set('actionsSelectList', this.nearbyConnectionsActionList);
+        break;
+      case 'NearbyShare':
+        this.set('actionsSelectList', this.nearbyShareActionList);
+        break;
+      case 'FastPair':
+        this.set('actionsSelectList', this.fastPairActionList);
+        break;
+    }
+  },
+
+  onStopScanClicked() {
+    this.browserProxy_.SendStopScan();
   },
 
   onSyncCredentialsClicked() {
@@ -46,5 +135,74 @@ Polymer({
 
   onFirstTimeFlowClicked() {
     this.browserProxy_.SendFirstTimeFlow();
+  },
+
+  onPresenceDeviceFound_(device) {
+    const type = device['type'];
+    const endpointId = device['endpoint_id'];
+    const actions = device['actions'];
+
+    // If there is not a device with this endpoint_id currently in the devices
+    // list, add it.
+    if (!this.npDiscoveredDevicesList_.find(
+            list_device => list_device.endpoint_id === endpointId)) {
+      this.unshift('npDiscoveredDevicesList_', {
+        'connectable': true,
+        'type': type,
+        'endpoint_id': endpointId,
+        'actions': actions,
+      });
+    }
+  },
+
+  // TODO(b/277820435): Add and update device name for devices that have names
+  // included.
+  onPresenceDeviceChanged_(device) {
+    const type = device['type'];
+    const endpointId = device['endpoint_id'];
+    const actions = device['actions'];
+
+    const index = this.npDiscoveredDevicesList_.findIndex(
+        list_device => list_device.endpoint_id === endpointId);
+
+    // If a device was changed but we don't have a record of it being found,
+    // add it to the array like onPresenceDeviceFound_().
+    if (index === -1) {
+      this.unshift('npDiscoveredDevicesList_', {
+        'connectable': true,
+        'type': type,
+        'endpoint_id': endpointId,
+        'actions': actions,
+      });
+      return;
+    }
+
+    this.npDiscoveredDevicesList_[index] = {
+      'connectable': true,
+      'type': type,
+      'endpoint_id': endpointId,
+      'actions': actions,
+    };
+  },
+
+  onPresenceDeviceLost_(device) {
+    const type = device['type'];
+    const endpointId = device['endpoint_id'];
+    const actions = device['actions'];
+
+    const index = this.npDiscoveredDevicesList_.findIndex(
+        list_device => list_device.endpoint_id === endpointId);
+
+    // The device was not found in the list.
+    if (index === -1) {
+      return;
+    }
+
+    this.npDiscoveredDevicesList_[index] = {
+      'connectable': false,
+      'type': type,
+      'endpoint_id': endpointId,
+      'actions': actions,
+    };
   },
 });

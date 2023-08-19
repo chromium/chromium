@@ -5,6 +5,7 @@
 #include "ash/shelf/shelf_focus_cycler.h"
 
 #include "ash/focus_cycler.h"
+#include "ash/shelf/desk_button_widget.h"
 #include "ash/shelf/login_shelf_view.h"
 #include "ash/shelf/login_shelf_widget.h"
 #include "ash/shelf/scrollable_shelf_view.h"
@@ -16,6 +17,7 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_delegate.h"
 #include "ash/system/tray/system_tray_notifier.h"
+#include "ash/wm/desks/desk_button/desk_button.h"
 
 namespace ash {
 
@@ -26,14 +28,22 @@ void ShelfFocusCycler::FocusOut(bool reverse, SourceView source_view) {
   // simple cycling logic instead of a long switch.
   switch (source_view) {
     case SourceView::kShelfNavigationView:
-      if (reverse)
+      if (reverse) {
         FocusStatusArea(reverse);
-      else
+      } else {
+        FocusDeskButton(reverse);
+      }
+      break;
+    case SourceView::kDeskButton:
+      if (reverse) {
+        FocusNavigation(reverse);
+      } else {
         FocusShelf(reverse);
+      }
       break;
     case SourceView::kShelfView:
       if (reverse)
-        FocusNavigation(reverse);
+        FocusDeskButton(reverse);
       else
         FocusStatusArea(reverse);
       break;
@@ -69,6 +79,23 @@ void ShelfFocusCycler::FocusNavigation(bool last_element) {
   }
   navigation_widget->PrepareForGettingFocus(last_element);
   Shell::Get()->focus_cycler()->FocusWidget(navigation_widget);
+}
+
+void ShelfFocusCycler::FocusDeskButton(bool last_element) {
+  DeskButtonWidget* desk_button_widget = shelf_->desk_button_widget();
+  if (features::IsDeskButtonEnabled() &&
+      desk_button_widget->ShouldBeVisible()) {
+    desk_button_widget->set_default_last_focusable_child(last_element);
+    if (!shelf_->IsHorizontalAlignment()) {
+      desk_button_widget->SetExpanded(true);
+    }
+    desk_button_widget->GetDeskButton()->SetFocused(true);
+    Shell::Get()->focus_cycler()->FocusWidget(desk_button_widget);
+  } else if (last_element) {
+    FocusNavigation(last_element);
+  } else {
+    FocusShelf(last_element);
+  }
 }
 
 void ShelfFocusCycler::FocusShelf(bool last_element) {

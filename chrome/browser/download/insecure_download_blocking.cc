@@ -338,9 +338,10 @@ struct InsecureDownloadData {
       // insecure downloads are either delivered insecurely, or we can't trust
       // who told us to download them (i.e. have an insecure initiator).
       is_insecure_download_ =
-          (initiator_.has_value() &&
-           !network::IsUrlPotentiallyTrustworthy(initiator_->GetURL())) ||
-          !download_delivered_securely;
+          ((initiator_.has_value() &&
+            !network::IsUrlPotentiallyTrustworthy(initiator_->GetURL())) ||
+           !download_delivered_securely) &&
+          !net::IsLocalhost(dl_url);
     }
   }
 
@@ -411,11 +412,11 @@ bool IsDownloadPermittedByContentSettings(
   // TODO(crbug.com/1048957): Checking content settings crashes unit tests on
   // Android. It shouldn't.
 #if !BUILDFLAG(IS_ANDROID)
-  ContentSettingsForOneType settings;
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile);
-  host_content_settings_map->GetSettingsForOneType(
-      ContentSettingsType::MIXEDSCRIPT, &settings);
+  ContentSettingsForOneType settings =
+      host_content_settings_map->GetSettingsForOneType(
+          ContentSettingsType::MIXEDSCRIPT);
 
   // When there's only one rule, it's the default wildcard rule.
   if (settings.size() == 1) {

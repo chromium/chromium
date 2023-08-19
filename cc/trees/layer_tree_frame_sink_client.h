@@ -61,9 +61,9 @@ class CC_EXPORT LayerTreeFrameSinkClient {
       uint32_t frame_token,
       const viz::FrameTimingDetails& details) = 0;
 
-  // The LayerTreeFrameSink is lost when the viz::ContextProviders held by it
-  // encounter an error. In this case the LayerTreeFrameSink (and the
-  // viz::ContextProviders) must be recreated.
+  // The LayerTreeFrameSink is lost when the viz::RasterContextProviders held by
+  // it encounter an error. In this case the LayerTreeFrameSink (and the
+  // viz::RasterContextProviders) must be recreated.
   virtual void DidLoseLayerTreeFrameSink() = 0;
 
   // For SynchronousCompositor (WebView) to ask the layer compositor to submit

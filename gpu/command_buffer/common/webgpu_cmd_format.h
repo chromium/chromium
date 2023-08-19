@@ -19,6 +19,7 @@ namespace cmds {
 #define GPU_DAWN_RETURN_DATA_ALIGNMENT (8)
 struct alignas(GPU_DAWN_RETURN_DATA_ALIGNMENT) DawnReturnDataHeader {
   DawnReturnDataType return_data_type;
+  uint64_t trace_id;
 };
 
 static_assert(

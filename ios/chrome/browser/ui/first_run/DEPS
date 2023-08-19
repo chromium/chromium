@@ -1,10 +1,10 @@
 include_rules = [
-  "+components/signin/internal/identity_manager/account_capabilities_constants.h",
   "+ios/chrome/browser/ui/screen",
   "+ios/chrome/browser/ui/settings/elements",
   "+ios/chrome/browser/ui/authentication/signin_sync/signin_sync_coordinator.h",
   "+ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h",
   "+ios/chrome/browser/ui/start_surface/start_surface_features.h",
+  "+ios/chrome/browser/ui/authentication/history_sync/history_sync_coordinator.h",
   "+ios/chrome/browser/ui/authentication/signin/signin_constants.h",
   "+ios/chrome/browser/ui/settings/sync/utils/sync_util.h",
 ]

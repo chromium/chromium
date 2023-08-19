@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/reading_list/reading_list_list_item_factory.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/reading_list/core/reading_list_entry.h"
 #import "components/url_formatter/url_formatter.h"
@@ -15,10 +15,6 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "ui/base/l10n/time_format.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 @interface ReadingListListItemFactory ()
 

@@ -9,6 +9,10 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {SettingsPersonalizationOptionsElement} from 'chrome://settings/lazy_load.js';
 import {loadTimeData, PrivacyPageVisibility, PrivacyPageBrowserProxyImpl, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+// <if expr="_google_chrome and chromeos_ash">
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+// </if>
+import {isChildVisible} from 'chrome://webui-test/test_util.js';
 // <if expr="not is_chromeos">
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -19,7 +23,7 @@ import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 
 // clang-format on
 
-suite('PersonalizationOptionsTests_AllBuilds', function() {
+suite('AllBuilds', function() {
   let testBrowserProxy: TestPrivacyPageBrowserProxy;
   let syncBrowserProxy: TestSyncBrowserProxy;
   let customPageVisibility: PrivacyPageVisibility;
@@ -27,7 +31,11 @@ suite('PersonalizationOptionsTests_AllBuilds', function() {
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
+      // TODO(crbug.com/1459031): Remove the tests for "driveSuggest" when
+      // the setting is completely removed.
       driveSuggestAvailable: true,
+      driveSuggestNoSetting: false,
+      driveSuggestNoSyncRequirement: false,
       signinAvailable: true,
       changePriceEmailNotificationsEnabled: true,
     });
@@ -64,23 +72,54 @@ suite('PersonalizationOptionsTests_AllBuilds', function() {
   });
 
   test('DriveSearchSuggestControl', function() {
-    assertFalse(
-        !!testElement.shadowRoot!.querySelector('#driveSuggestControl'));
+    assertFalse(isChildVisible(testElement, '#driveSuggestControl'));
 
     testElement.syncStatus = {
       signedIn: true,
       statusAction: StatusAction.NO_ACTION,
     };
     flush();
-    assertTrue(!!testElement.shadowRoot!.querySelector('#driveSuggestControl'));
+    assertTrue(isChildVisible(testElement, '#driveSuggestControl'));
 
     testElement.syncStatus = {
       signedIn: true,
       statusAction: StatusAction.REAUTHENTICATE,
     };
     flush();
-    assertFalse(
-        !!testElement.shadowRoot!.querySelector('#driveSuggestControl'));
+    assertFalse(isChildVisible(testElement, '#driveSuggestControl'));
+  });
+
+  test('DriveSearchSuggestControlDeprecated', function() {
+    testElement.syncStatus = {
+      signedIn: true,
+      statusAction: StatusAction.NO_ACTION,
+    };
+    flush();
+    assertTrue(isChildVisible(testElement, '#driveSuggestControl'));
+
+    loadTimeData.overrideValues({'driveSuggestNoSetting': false});
+    buildTestElement();
+
+    assertFalse(isChildVisible(testElement, '#driveSuggestControl'));
+  });
+
+  test('DriveSearchSuggestControlNoSyncRequirement', function() {
+    testElement.syncStatus = {
+      signedIn: true,
+      statusAction: StatusAction.REAUTHENTICATE,
+    };
+    flush();
+    assertFalse(isChildVisible(testElement, '#driveSuggestControl'));
+
+    loadTimeData.overrideValues({'driveSuggestNoSyncRequirement': true});
+    buildTestElement();
+    testElement.syncStatus = {
+      signedIn: true,
+      statusAction: StatusAction.REAUTHENTICATE,
+    };
+    flush();
+
+    assertTrue(isChildVisible(testElement, '#driveSuggestControl'));
   });
 
   // <if expr="not is_chromeos">
@@ -245,7 +284,8 @@ suite('PersonalizationOptionsTests_AllBuilds', function() {
   });
 });
 
-suite('PersonalizationOptionsTests_OfficialBuild', function() {
+// <if expr="_google_chrome">
+suite('OfficialBuild', function() {
   let testBrowserProxy: TestPrivacyPageBrowserProxy;
   let testElement: SettingsPersonalizationOptionsElement;
 
@@ -329,4 +369,45 @@ suite('PersonalizationOptionsTests_OfficialBuild', function() {
         shadowRoot.querySelector<HTMLElement>('#spellCheckLink')!.hidden);
   });
   // </if>
+
+  // <if expr="chromeos_ash">
+  test(
+      'Metrics toggle links to OS sync page with deprecate sync metrics off',
+      function() {
+        let targetUrl: string = '';
+        testElement['navigateTo_'] = (url: string) => {
+          targetUrl = url;
+        };
+
+        loadTimeData.overrideValues({
+          osDeprecateSyncMetricsToggle: false,
+        });
+
+        const syncSetupUrl = loadTimeData.getString('osSyncSetupSettingsUrl');
+
+        testElement.$.metricsReportingLink.click();
+
+        assertEquals(syncSetupUrl, targetUrl);
+      });
+
+  test(
+      'Metrics toggle links to OS privacy page with deprecate sync metrics on',
+      function() {
+        let targetUrl: string = '';
+        testElement['navigateTo_'] = (url: string) => {
+          targetUrl = url;
+        };
+
+        loadTimeData.overrideValues({
+          osDeprecateSyncMetricsToggle: true,
+        });
+
+        const privacyUrl = loadTimeData.getString('osPrivacySettingsUrl');
+
+        testElement.$.metricsReportingLink.click();
+
+        assertEquals(privacyUrl, targetUrl);
+      });
+  // </if>
 });
+// </if>

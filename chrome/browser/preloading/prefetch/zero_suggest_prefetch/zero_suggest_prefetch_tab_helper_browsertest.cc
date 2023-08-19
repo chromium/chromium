@@ -16,7 +16,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
-#include "components/omnibox/browser/omnibox_edit_model.h"
+#include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/template_url_service.h"
@@ -67,11 +67,12 @@ class ZeroSuggestPrefetchTabHelperBrowserTest : public InProcessBrowserTest {
         ->GetLocationBar()
         ->GetOmniboxView()
         ->controller()
-        ->set_autocomplete_controller(std::move(controller));
+        ->SetAutocompleteControllerForTesting(std::move(controller));
   }
 
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<testing::NiceMock<MockAutocompleteController>, DanglingUntriaged>
+  raw_ptr<testing::NiceMock<MockAutocompleteController>,
+          AcrossTasksDanglingUntriaged>
       controller_;
 };
 

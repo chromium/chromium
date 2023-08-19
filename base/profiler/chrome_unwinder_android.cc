@@ -323,17 +323,15 @@ GetFunctionTableIndexFromInstructionOffset(
     return absl::nullopt;
   }
 
-  const span<const FunctionTableEntry>::const_iterator
-      function_table_entry_start =
-          function_offset_table_indices.begin() +
-          checked_cast<ptrdiff_t>(page_start_instructions[page_number]);
-  const span<const FunctionTableEntry>::const_iterator
-      function_table_entry_end =
-          page_number == page_start_instructions.size() - 1
-              ? function_offset_table_indices.end()
-              : function_offset_table_indices.begin() +
-                    checked_cast<ptrdiff_t>(
-                        page_start_instructions[page_number + 1]);
+  const span<const FunctionTableEntry>::iterator function_table_entry_start =
+      function_offset_table_indices.begin() +
+      checked_cast<ptrdiff_t>(page_start_instructions[page_number]);
+  const span<const FunctionTableEntry>::iterator function_table_entry_end =
+      page_number == page_start_instructions.size() - 1
+          ? function_offset_table_indices.end()
+          : function_offset_table_indices.begin() +
+                checked_cast<ptrdiff_t>(
+                    page_start_instructions[page_number + 1]);
 
   // `std::upper_bound` finds first element that > target in range
   // [function_table_entry_start, function_table_entry_end).

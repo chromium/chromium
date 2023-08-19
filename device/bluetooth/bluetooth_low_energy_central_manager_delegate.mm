@@ -23,7 +23,7 @@ class BluetoothLowEnergyCentralManagerBridge {
       BluetoothLowEnergyAdapterApple* adapter)
       : discovery_manager_(discovery_manager), adapter_(adapter) {}
 
-  ~BluetoothLowEnergyCentralManagerBridge() {}
+  ~BluetoothLowEnergyCentralManagerBridge() = default;
 
   void DiscoveredPeripheral(CBPeripheral* peripheral,
                             NSDictionary* advertisementData,

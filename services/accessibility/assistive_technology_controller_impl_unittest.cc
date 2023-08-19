@@ -8,7 +8,6 @@
 #include "base/test/task_environment.h"
 #include "services/accessibility/fake_service_client.h"
 #include "services/accessibility/os_accessibility_service.h"
-#include "services/accessibility/public/mojom/accessibility_service.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ax {
@@ -33,8 +32,9 @@ class AssistiveTechnologyControllerTest : public testing::Test {
   }
 
  protected:
-  raw_ptr<AssistiveTechnologyControllerImpl, ExperimentalAsh> at_controller_ =
-      nullptr;
+  raw_ptr<AssistiveTechnologyControllerImpl,
+          DanglingUntriaged | ExperimentalAsh>
+      at_controller_ = nullptr;
   std::unique_ptr<FakeServiceClient> client_;
 
  private:
@@ -63,7 +63,13 @@ TEST_F(AssistiveTechnologyControllerTest, DisablesDisabledFeatures) {
 }
 
 // Enables one feature several times in a row to ensure it doesn't cause issues.
-TEST_F(AssistiveTechnologyControllerTest, EnablesEnabledFeatures) {
+// TODO(b/262637071) Fails on Fuchsia ASAN.
+#if BUILDFLAG(IS_FUCHSIA) && defined(ADDRESS_SANITIZER)
+#define MAYBE_EnablesEnabledFeatures DISABLED_EnablesEnabledFeatures
+#else
+#define MAYBE_EnablesEnabledFeatures EnablesEnabledFeatures
+#endif  // BUILDFLAG(IS_FUCHSIA) && defined(ADDRESS_SANITIZER)
+TEST_F(AssistiveTechnologyControllerTest, MAYBE_EnablesEnabledFeatures) {
   AssistiveTechnologyControllerImpl at_controller;
   std::vector<mojom::AssistiveTechnologyType> enabled_features;
 
@@ -84,7 +90,13 @@ TEST_F(AssistiveTechnologyControllerTest, EnablesEnabledFeatures) {
 }
 
 // Toggles all features.
-TEST_F(AssistiveTechnologyControllerTest, EnableAndDisableAllFeatures) {
+// TODO(b/262637071) Fails on Fuchsia ASAN.
+#if BUILDFLAG(IS_FUCHSIA) && defined(ADDRESS_SANITIZER)
+#define MAYBE_EnableAndDisableAllFeatures DISABLED_EnableAndDisableAllFeatures
+#else
+#define MAYBE_EnableAndDisableAllFeatures EnableAndDisableAllFeatures
+#endif  // BUILDFLAG(IS_FUCHSIA) && defined(ADDRESS_SANITIZER)
+TEST_F(AssistiveTechnologyControllerTest, MAYBE_EnableAndDisableAllFeatures) {
   AssistiveTechnologyControllerImpl at_controller;
   // Turn everything on.
   std::vector<mojom::AssistiveTechnologyType> enabled_features;

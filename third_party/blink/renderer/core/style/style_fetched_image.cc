@@ -75,6 +75,11 @@ void StyleFetchedImage::Prefinalize() {
 }
 
 bool StyleFetchedImage::IsEqual(const StyleImage& other) const {
+  if (other.IsPendingImage()) {
+    // Ignore pending status when comparing; as long as the values are
+    // equal, the same, the images should be considered equal, too.
+    return base::ValuesEquivalent(CssValue(), other.CssValue());
+  }
   if (!other.IsImageResource()) {
     return false;
   }

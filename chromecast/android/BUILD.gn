@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 import("//build/config/android/abi.gni")
+import("//build/config/android/jni.gni")
 import("//build/config/sysroot.gni")
-import("//build/partitioned_shared_library.gni")
 import("//chromecast/chromecast.gni")
 import("//media/media_options.gni")
 
@@ -46,7 +46,7 @@ group("common_apk_deps") {
   }
 }
 
-shared_library("libcast_shell_android") {
+shared_library_with_jni("libcast_shell_android") {
   # TODO: Remove the ldflags after migrating away from protobuf_lite to
   # protobuf_full.
   ldflags = [ "-Wl,-z,muldefs" ]
@@ -59,9 +59,10 @@ shared_library("libcast_shell_android") {
     ":common_apk_deps",
     "//chromecast/cast_core:core_runtime_lib_simple",
   ]
+  java_targets = [ "//chromecast:cast_shell_apk" ]
 }
 
-shared_library("libcast_browser_android") {
+shared_library_with_jni("libcast_browser_android") {
   # TODO: Remove the ldflags after migrating away from protobuf_lite to
   # protobuf_full.
   ldflags = [ "-Wl,-z,muldefs" ]
@@ -75,6 +76,7 @@ shared_library("libcast_browser_android") {
     "//chromecast/cast_core:core_runtime_lib_simple",
     "//components/module_installer/android:native",
   ]
+  java_targets = [ "//chromecast:cast_shell_apk" ]
 }
 
 group("native") {
@@ -108,7 +110,6 @@ component("cast_browser") {
 group("internal_android_deps") {
   testonly = true
   public_deps = [
-    "//third_party/android_deps:com_android_support_design_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",

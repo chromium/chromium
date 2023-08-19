@@ -1,0 +1,145 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
+
+source_set("fresnel_prefs") {
+  public_deps = [ "//components/prefs:prefs" ]
+
+  deps = [ "//base" ]
+
+  sources = [
+    "//chromeos/ash/components/report/prefs/fresnel_pref_names.cc",
+    "//chromeos/ash/components/report/prefs/fresnel_pref_names.h",
+  ]
+}
+
+proto_library("fresnel_service_proto") {
+  sources = [ "//chromeos/ash/components/report/proto/fresnel_service.proto" ]
+
+  extra_configs =
+      [ "//third_party/private_membership:private_membership_config" ]
+
+  import_dirs = [
+    "//third_party/private_membership/src",
+    "//third_party/shell-encryption/src",
+    ".",
+  ]
+
+  proto_in_dir = "//"
+
+  link_deps = [ "//third_party/private_membership:private_membership_proto" ]
+}
+
+source_set("utils") {
+  deps = [
+    ":fresnel_prefs",
+    ":fresnel_service_proto",
+    "//base",
+    "//chromeos/ash/components/dbus/private_computing:private_computing_proto",
+    "//chromeos/ash/components/policy",
+    "//chromeos/ash/components/system",
+    "//components/prefs:prefs",
+    "//components/version_info",
+    "//crypto:crypto",
+    "//google_apis:google_apis",
+    "//services/network/public/cpp",
+    "//third_party/icu",
+    "//third_party/private_membership:private_membership",
+    "//url",
+  ]
+
+  sources = [
+    "//chromeos/ash/components/report/utils/device_metadata_utils.cc",
+    "//chromeos/ash/components/report/utils/device_metadata_utils.h",
+    "//chromeos/ash/components/report/utils/network_utils.cc",
+    "//chromeos/ash/components/report/utils/network_utils.h",
+    "//chromeos/ash/components/report/utils/pref_utils.cc",
+    "//chromeos/ash/components/report/utils/pref_utils.h",
+    "//chromeos/ash/components/report/utils/psm_utils.cc",
+    "//chromeos/ash/components/report/utils/psm_utils.h",
+    "//chromeos/ash/components/report/utils/test_utils.cc",
+    "//chromeos/ash/components/report/utils/test_utils.h",
+    "//chromeos/ash/components/report/utils/time_utils.cc",
+    "//chromeos/ash/components/report/utils/time_utils.h",
+  ]
+}
+
+component("report") {
+  output_name = "ash_report"
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_REPORT_IMPL" ]
+
+  deps = [
+    ":fresnel_prefs",
+    ":fresnel_service_proto",
+    ":utils",
+    "//ash/constants:constants",
+    "//base",
+    "//chromeos/ash/components/system",
+    "//components/prefs:prefs",
+    "//services/network/public/cpp",
+    "//third_party/private_membership:private_membership",
+  ]
+
+  sources = [
+    "//chromeos/ash/components/report/device_metrics/actives/one_day_impl.cc",
+    "//chromeos/ash/components/report/device_metrics/actives/one_day_impl.h",
+    "//chromeos/ash/components/report/device_metrics/actives/twenty_eight_day_impl.cc",
+    "//chromeos/ash/components/report/device_metrics/actives/twenty_eight_day_impl.h",
+    "//chromeos/ash/components/report/device_metrics/churn/active_status.cc",
+    "//chromeos/ash/components/report/device_metrics/churn/active_status.h",
+    "//chromeos/ash/components/report/device_metrics/churn/cohort_impl.cc",
+    "//chromeos/ash/components/report/device_metrics/churn/cohort_impl.h",
+    "//chromeos/ash/components/report/device_metrics/churn/observation_impl.cc",
+    "//chromeos/ash/components/report/device_metrics/churn/observation_impl.h",
+    "//chromeos/ash/components/report/device_metrics/use_case/fake_psm_delegate.cc",
+    "//chromeos/ash/components/report/device_metrics/use_case/fake_psm_delegate.h",
+    "//chromeos/ash/components/report/device_metrics/use_case/use_case.cc",
+    "//chromeos/ash/components/report/device_metrics/use_case/use_case.h",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "//chromeos/ash/components/report/device_metrics/actives/one_day_impl_unittest.cc",
+    "//chromeos/ash/components/report/device_metrics/actives/twenty_eight_day_impl_unittest.cc",
+    "//chromeos/ash/components/report/device_metrics/churn/active_status_unittest.cc",
+    "//chromeos/ash/components/report/device_metrics/churn/cohort_impl_unittest.cc",
+    "//chromeos/ash/components/report/device_metrics/churn/observation_impl_unittest.cc",
+    "//chromeos/ash/components/report/utils/device_metadata_utils_unittest.cc",
+    "//chromeos/ash/components/report/utils/network_utils_unittest.cc",
+    "//chromeos/ash/components/report/utils/pref_utils_unittest.cc",
+    "//chromeos/ash/components/report/utils/psm_utils_unittest.cc",
+    "//chromeos/ash/components/report/utils/test_utils_unittest.cc",
+    "//chromeos/ash/components/report/utils/time_utils_unittest.cc",
+  ]
+
+  deps = [
+    ":fresnel_prefs",
+    ":fresnel_service_proto",
+    ":report",
+    ":utils",
+    "//ash/constants:constants",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/components/dbus/private_computing:private_computing",
+    "//chromeos/ash/components/system",
+    "//components/prefs:test_support",
+    "//components/version_info:channel",
+    "//services/network:test_support",
+    "//testing/gtest",
+    "//third_party/icu",
+  ]
+
+  data = [
+    # TODO(crbug/1393862): Script should binarypb from textpb.
+    "//chromeos/ash/components/report/device_metrics/testing/preserved_file_test_data.binarypb",
+    "//third_party/private_membership/src/internal/testing/regression_test_data/test_data.binarypb",
+  ]
+}

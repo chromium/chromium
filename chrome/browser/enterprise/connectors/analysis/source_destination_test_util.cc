@@ -6,8 +6,9 @@
 
 #include "base/files/file_util.h"
 #include "base/test/bind.h"
-#include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
+#include "chromeos/ash/components/disks/disk_mount_manager.h"
+#include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace enterprise_connectors {
@@ -43,7 +44,7 @@ SourceDestinationTestingHelper::SourceDestinationTestingHelper(
 
   // Takes ownership of `disk_mount_manager_`, but Shutdown() must be called.
   ash::disks::DiskMountManager::InitializeForTesting(
-      new file_manager::FakeDiskMountManager);
+      new ash::disks::FakeDiskMountManager);
 
   // Register volumes.
   EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());

@@ -145,8 +145,9 @@ void Parser::Parse(ExceptionState& exception_state) {
             return;
 
           // Standard URLs default to `/` for the pathname.
-          if (should_treat_as_standard_url_)
+          if (should_treat_as_standard_url_) {
             result_->setPathname("/");
+          }
 
           // By default we treat this as a "cannot-be-a-base-URL" or what chrome
           // calls a "path" URL.  In this case we go straight to the pathname
@@ -279,30 +280,38 @@ void Parser::ChangeState(StringParseState new_state, Skip skip) {
       break;
     case StringParseState::kProtocol:
       result_->setProtocol(MakeComponentString());
+      present_components_.Put(Component::Type::kProtocol);
       break;
     case StringParseState::kAuthority:
       // No component to set when transitioning from this state.
       break;
     case StringParseState::kUsername:
       result_->setUsername(MakeComponentString());
+      present_components_.Put(Component::Type::kUsername);
       break;
     case StringParseState::kPassword:
       result_->setPassword(MakeComponentString());
+      present_components_.Put(Component::Type::kPassword);
       break;
     case StringParseState::kHostname:
       result_->setHostname(MakeComponentString());
+      present_components_.Put(Component::Type::kHostname);
       break;
     case StringParseState::kPort:
       result_->setPort(MakeComponentString());
+      present_components_.Put(Component::Type::kPort);
       break;
     case StringParseState::kPathname:
       result_->setPathname(MakeComponentString());
+      present_components_.Put(Component::Type::kPathname);
       break;
     case StringParseState::kSearch:
       result_->setSearch(MakeComponentString());
+      present_components_.Put(Component::Type::kSearch);
       break;
     case StringParseState::kHash:
       result_->setHash(MakeComponentString());
+      present_components_.Put(Component::Type::kHash);
       break;
     case StringParseState::kDone:
       NOTREACHED();

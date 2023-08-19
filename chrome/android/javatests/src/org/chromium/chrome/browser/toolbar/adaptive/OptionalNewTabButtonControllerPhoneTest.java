@@ -4,13 +4,11 @@
 
 package org.chromium.chrome.browser.toolbar.adaptive;
 
-import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
-import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
@@ -19,7 +17,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
-import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.content.res.Configuration;
 
@@ -37,8 +34,8 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -49,7 +46,8 @@ import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.UiDisableIf;
+import org.chromium.ui.test.util.DeviceRestriction;
+import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.ui.test.util.ViewUtils;
 
 /**
@@ -62,7 +60,7 @@ import org.chromium.ui.test.util.ViewUtils;
         "enable-features=" + ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2
                 + "<Study",
         "force-fieldtrials=Study/Group", "force-fieldtrial-params=Study.Group:mode/always-new-tab"})
-@DisableIf.Device(type = {UiDisableIf.TABLET})
+@Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
 public class OptionalNewTabButtonControllerPhoneTest {
     private static final String TEST_PAGE = "/chrome/test/data/android/navigate/simple.html";
 
@@ -102,6 +100,7 @@ public class OptionalNewTabButtonControllerPhoneTest {
 
     @Test
     @MediumTest
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void testClick_opensNewTab_portrait() {
         ActivityTestUtils.rotateActivityToOrientation(
                 sActivityTestRule.getActivity(), Configuration.ORIENTATION_PORTRAIT);
@@ -206,7 +205,7 @@ public class OptionalNewTabButtonControllerPhoneTest {
 
         sActivityTestRule.loadUrl(UrlConstants.NTP_URL);
 
-        onView(isRoot()).check(waitForView(
-                withId(R.id.optional_toolbar_button), ViewUtils.VIEW_GONE | ViewUtils.VIEW_NULL));
+        ViewUtils.waitForViewCheckingState(
+                withId(R.id.optional_toolbar_button), ViewUtils.VIEW_GONE | ViewUtils.VIEW_NULL);
     }
 }

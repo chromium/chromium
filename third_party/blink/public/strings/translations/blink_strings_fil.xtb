@@ -26,7 +26,6 @@
 <translation id="2060505056492490888">Ginamit ang '<ph name="DOT" />' sa maling posisyon sa '<ph name="INVALIDDOMAIN" />.'</translation>
 <translation id="2148716181193084225">Ngayong Araw</translation>
 <translation id="2226276347425096477">Mangyaring paikliin ang tekstong ito ng <ph name="MAX_CHARACTERS" /> (na) character o mas mababa (kasalukuyan kang gumagamit ng <ph name="CURRENT_LENGTH" /> (na) character).</translation>
-<translation id="2246498165605549352">Lokal na File</translation>
 <translation id="2247351761944213033">Linggo <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Track <ph name="NUMBER" /></translation>
 <translation id="2393030564806080191">Hexadecimal na value ng kulay</translation>
@@ -89,6 +88,7 @@
 <translation id="5425179576310518467">kasalukuyang petsa</translation>
 <translation id="5466621249238537318">Mangyaring pumili ng isa o higit pang mga file.</translation>
 <translation id="5468998798572797635">lumabas sa full screen</translation>
+<translation id="5514612371225420585">File sa iyong device</translation>
 <translation id="5516235301412634559">0.75</translation>
 <translation id="5537725057119320332">I-cast</translation>
 <translation id="5546461542133609677">i-unmute</translation>
@@ -113,6 +113,7 @@
 <translation id="6398862346408813489">Ipakita ang panel ng pagpipilian ng buwan</translation>
 <translation id="6404546809543547843">scrubber ng oras ng audio</translation>
 <translation id="6443871981718447451">Ipakita ang menu ng mga nakasarang caption</translation>
+<translation id="6484738902856791350">I-pretty print</translation>
 <translation id="6550675742724504774">Mga Pagpipilian</translation>
 <translation id="6572309429103589720">Invalid na grammar</translation>
 <translation id="658823671542763450">mag-full screen</translation>

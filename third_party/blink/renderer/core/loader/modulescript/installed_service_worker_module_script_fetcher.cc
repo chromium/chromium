@@ -52,13 +52,15 @@ void InstalledServiceWorkerModuleScriptFetcher::Fetch(
     return;
   }
 
+  network::mojom::ReferrerPolicy response_referrer_policy =
+      network::mojom::ReferrerPolicy::kDefault;
+
   if (level == ModuleGraphLevel::kTopLevelModuleFetch) {
     // |fetch_params.Url()| is always equal to the response URL because service
     // worker script fetch disallows redirect.
     // https://w3c.github.io/ServiceWorker/#ref-for-concept-request-redirect-mode
     KURL response_url = fetch_params.Url();
 
-    auto response_referrer_policy = network::mojom::ReferrerPolicy::kDefault;
     if (!script_data->GetReferrerPolicy().IsNull()) {
       SecurityPolicy::ReferrerPolicyFromHeaderValue(
           script_data->GetReferrerPolicy(),
@@ -96,7 +98,7 @@ void InstalledServiceWorkerModuleScriptFetcher::Fetch(
       /*source_url=*/fetch_params.Url(), /*base_url=*/fetch_params.Url(),
       ScriptSourceLocationType::kExternalFile, expected_module_type_,
       ParkableString(script_data->TakeSourceText().Impl()),
-      /*cache_handler=*/nullptr));
+      /*cache_handler=*/nullptr, response_referrer_policy));
 }
 
 void InstalledServiceWorkerModuleScriptFetcher::Trace(Visitor* visitor) const {

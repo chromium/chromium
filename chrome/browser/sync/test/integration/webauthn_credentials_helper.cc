@@ -53,11 +53,27 @@ bool PasskeySyncActiveChecker::IsExitConditionSatisfied(std::ostream* os) {
   return service()->GetActiveDataTypes().Has(syncer::WEBAUTHN_CREDENTIAL);
 }
 
+LocalPasskeysChangedChecker::LocalPasskeysChangedChecker(int profile)
+    : profile_(profile) {
+  observation_.Observe(&GetModel(profile_));
+}
+
+LocalPasskeysChangedChecker::~LocalPasskeysChangedChecker() = default;
+
+bool LocalPasskeysChangedChecker::IsExitConditionSatisfied(std::ostream* os) {
+  return satisfied_;
+}
+
+void LocalPasskeysChangedChecker::OnPasskeysChanged() {
+  satisfied_ = true;
+  CheckExitCondition();
+}
+
 LocalPasskeysMatchChecker::LocalPasskeysMatchChecker(int profile,
                                                      Matcher matcher)
-    : SingleClientStatusChangeChecker(test()->GetSyncService(profile)),
-      profile_(profile),
-      matcher_(matcher) {}
+    : profile_(profile), matcher_(matcher) {
+  observation_.Observe(&GetModel(profile_));
+}
 
 LocalPasskeysMatchChecker::~LocalPasskeysMatchChecker() = default;
 
@@ -70,8 +86,7 @@ bool LocalPasskeysMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
   return matches;
 }
 
-void LocalPasskeysMatchChecker::OnSyncCycleCompleted(
-    syncer::SyncService* sync) {
+void LocalPasskeysMatchChecker::OnPasskeysChanged() {
   CheckExitCondition();
 }
 
@@ -91,7 +106,14 @@ bool ServerPasskeysMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
   return matches;
 }
 
-PasskeyModel& GetModel(int profile_idx) {
+MockPasskeyModelObserver::MockPasskeyModelObserver(
+    webauthn::PasskeyModel* model) {
+  observation_.Observe(model);
+}
+
+MockPasskeyModelObserver::~MockPasskeyModelObserver() = default;
+
+webauthn::PasskeyModel& GetModel(int profile_idx) {
   return *PasskeyModelFactory::GetForProfile(test()->GetProfile(profile_idx));
 }
 

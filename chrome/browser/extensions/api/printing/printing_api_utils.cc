@@ -305,7 +305,7 @@ bool CheckSettingsAndCapabilitiesCompatibility(
       capabilities.papers,
       [&requested_media](
           const printing::PrinterSemanticCapsAndDefaults::Paper& paper) {
-        return paper.size_um == requested_media.size_microns;
+        return paper.IsSizeWithinBounds(requested_media.size_microns);
       });
 }
 

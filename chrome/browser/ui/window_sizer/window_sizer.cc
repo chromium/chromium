@@ -189,9 +189,10 @@ class DefaultStateProvider : public WindowSizer::StateProvider {
   raw_ptr<const Browser> browser_;
 };
 
-// This function, unlike base::clamp(), does not check if `min` is greater than
-// `max`, and returns a bogus answer if it is. TODO(crbug.com/1235666) migrate
-// all code that calls this function to use std::clamp() instead.
+// This function, unlike hardened std::clamp(), does not check if `min` is
+// greater than `max`, and returns a bogus answer if it is.
+// TODO(crbug.com/1235666) migrate all code that calls this function to use
+// std::clamp() instead.
 constexpr int BrokenClampThatShouldNotBeUsed(int value, int min, int max) {
   return std::min(std::max(value, min), max);
 }

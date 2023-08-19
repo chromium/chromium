@@ -6,7 +6,9 @@
 
 #include <dawn/webgpu.h>
 
+#include "base/command_line.h"
 #include "gpu/command_buffer/client/webgpu_interface.h"
+#include "gpu/config/gpu_switches.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_usvstring_uint32array.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_shader_module_descriptor.h"
@@ -51,6 +53,13 @@ GPUShaderModule* GPUShaderModule::Create(
       break;
     }
     case V8UnionUSVStringOrUint32Array::ContentType::kUint32Array: {
+      if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+              switches::kEnableUnsafeWebGPU)) {
+        exception_state.ThrowTypeError(
+            "SPIR-V shader module creation is disallowed. This feature "
+            "requires --enable-unsafe-webgpu");
+        return nullptr;
+      }
       NotShared<DOMUint32Array> code = wgsl_or_spirv->GetAsUint32Array();
       uint32_t length_words = 0;
       if (!base::CheckedNumeric<uint32_t>(code->length())

@@ -12,6 +12,8 @@
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
+#include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_surface.h"
@@ -34,7 +36,7 @@ SkiaOutputDeviceWebView::SkiaOutputDeviceWebView(
       context_state_(context_state),
       gl_surface_(std::move(gl_surface)) {
   // Always set uses_default_gl_framebuffer to true, since
-  // SkSurfaceCharacterization created for  GL fbo0 is compatible with
+  // GrSurfaceCharacterization created for  GL fbo0 is compatible with
   // SkSurface wrappers non GL fbo0.
   capabilities_.uses_default_gl_framebuffer = true;
   capabilities_.output_surface_origin = gl_surface_->GetOrigin();
@@ -111,9 +113,10 @@ void SkiaOutputDeviceWebView::InitSkiaSurface(unsigned int fbo) {
   framebuffer_info.fFormat = GL_RGBA8;
   SkColorType color_type = kSurfaceColorType;
 
-  GrBackendRenderTarget render_target(size_.width(), size_.height(),
-                                      /*sampleCnt=*/0,
-                                      /*stencilBits=*/0, framebuffer_info);
+  auto render_target =
+      GrBackendRenderTargets::MakeGL(size_.width(), size_.height(),
+                                     /*sampleCnt=*/0,
+                                     /*stencilBits=*/0, framebuffer_info);
   auto origin = (gl_surface_->GetOrigin() == gfx::SurfaceOrigin::kTopLeft)
                     ? kTopLeft_GrSurfaceOrigin
                     : kBottomLeft_GrSurfaceOrigin;

@@ -11,6 +11,7 @@
 #include "base/memory/shared_memory_mapping.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/device_service.h"
@@ -19,6 +20,7 @@
 #include "services/device/generic_sensor/platform_sensor.h"
 #include "services/device/generic_sensor/platform_sensor_provider.h"
 #include "services/device/public/cpp/device_features.h"
+#include "services/device/public/cpp/generic_sensor/platform_sensor_configuration.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading_shared_buffer_reader.h"
 #include "services/device/public/cpp/generic_sensor/sensor_traits.h"
@@ -31,17 +33,6 @@ namespace device {
 using mojom::SensorType;
 
 namespace {
-
-void CheckValue(double expect, double value) {
-  EXPECT_DOUBLE_EQ(expect, value);
-}
-
-void CheckSuccess(base::OnceClosure quit_closure,
-                  bool expect,
-                  bool is_success) {
-  EXPECT_EQ(expect, is_success);
-  std::move(quit_closure).Run();
-}
 
 class TestSensorClient : public mojom::SensorClient {
  public:
@@ -56,12 +47,23 @@ class TestSensorClient : public mojom::SensorClient {
       ADD_FAILURE() << "Failed to get readings from shared buffer";
       return;
     }
-    if (check_value_)
-      std::move(check_value_).Run(reading_data_.als.value);
-    if (quit_closure_)
-      std::move(quit_closure_).Run();
+    if (on_reading_changed_callback_) {
+      std::move(on_reading_changed_callback_).Run(reading_data_.als.value);
+    }
   }
   void RaiseError() override {}
+
+  double WaitForReading() {
+    base::test::TestFuture<double> future;
+    SetOnReadingChangedCallback(future.GetCallback());
+    return future.Get();
+  }
+
+  bool AddConfigurationSync(const PlatformSensorConfiguration& configuration) {
+    base::test::TestFuture<bool> future;
+    sensor()->AddConfiguration(configuration, future.GetCallback());
+    return future.Get();
+  }
 
   // Sensor mojo interfaces callbacks:
   void OnSensorCreated(base::OnceClosure quit_closure,
@@ -88,24 +90,9 @@ class TestSensorClient : public mojom::SensorClient {
     std::move(quit_closure).Run();
   }
 
-  void OnGetDefaultConfiguration(
-      base::OnceClosure quit_closure,
-      const PlatformSensorConfiguration& configuration) {
-    EXPECT_DOUBLE_EQ(30.0, configuration.frequency());
-    std::move(quit_closure).Run();
-  }
-
-  void OnAddConfiguration(base::OnceCallback<void(bool)> expect_function,
-                          bool is_success) {
-    std::move(expect_function).Run(is_success);
-  }
-
   // For SensorReadingChanged().
-  void SetQuitClosure(base::OnceClosure quit_closure) {
-    quit_closure_ = std::move(quit_closure);
-  }
-  void SetCheckValueCallback(base::OnceCallback<void(double)> callback) {
-    check_value_ = std::move(callback);
+  void SetOnReadingChangedCallback(base::OnceCallback<void(double)> callback) {
+    on_reading_changed_callback_ = std::move(callback);
   }
 
   mojom::Sensor* sensor() { return sensor_.get(); }
@@ -118,16 +105,13 @@ class TestSensorClient : public mojom::SensorClient {
       shared_buffer_reader_;
   SensorReading reading_data_;
 
-  // Test Clients set |quit_closure_| and start a RunLoop in main thread, then
-  // expect the |quit_closure| will quit the RunLoop in SensorReadingChanged().
-  // In this way we guarantee the SensorReadingChanged() does be triggered.
-  base::OnceClosure quit_closure_;
-
-  // |check_value_| is called to verify the data is same as we
+  // |on_reading_changed_callback_| is called to verify the data is same as we
   // expected in SensorReadingChanged().
-  base::OnceCallback<void(double)> check_value_;
+  base::OnceCallback<void(double)> on_reading_changed_callback_;
   SensorType type_;
 };
+
+}  //  namespace
 
 class GenericSensorServiceTest : public DeviceServiceTestBase {
  public:
@@ -178,13 +162,9 @@ TEST_F(GenericSensorServiceTest, GetDefaultConfigurationTest) {
     run_loop.Run();
   }
 
-  {
-    base::RunLoop run_loop;
-    client->sensor()->GetDefaultConfiguration(
-        base::BindOnce(&TestSensorClient::OnGetDefaultConfiguration,
-                       base::Unretained(client.get()), run_loop.QuitClosure()));
-    run_loop.Run();
-  }
+  base::test::TestFuture<const PlatformSensorConfiguration&> future;
+  client->sensor()->GetDefaultConfiguration(future.GetCallback());
+  EXPECT_DOUBLE_EQ(30.0, future.Get().frequency());
 }
 
 // Tests adding a valid configuration. Client should be notified by
@@ -200,20 +180,8 @@ TEST_F(GenericSensorServiceTest, ValidAddConfigurationTest) {
     run_loop.Run();
   }
 
-  PlatformSensorConfiguration configuration(50.0);
-  client->sensor()->AddConfiguration(
-      configuration,
-      base::BindOnce(&TestSensorClient::OnAddConfiguration,
-                     base::Unretained(client.get()),
-                     base::BindOnce(&CheckSuccess, base::DoNothing(), true)));
-
-  {
-    // Expect the SensorReadingChanged() will be called after AddConfiguration.
-    base::RunLoop run_loop;
-    client->SetCheckValueCallback(base::BindOnce(&CheckValue, 50.0));
-    client->SetQuitClosure(run_loop.QuitClosure());
-    run_loop.Run();
-  }
+  EXPECT_TRUE(client->AddConfigurationSync(PlatformSensorConfiguration(50.0)));
+  EXPECT_DOUBLE_EQ(client->WaitForReading(), 50.0);
 }
 
 // Tests adding an invalid configuation, the max allowed frequency is 50.0 in
@@ -230,18 +198,8 @@ TEST_F(GenericSensorServiceTest, InvalidAddConfigurationTest) {
     run_loop.Run();
   }
 
-  {
-    // Invalid configuration that exceeds the max allowed frequency.
-    base::RunLoop run_loop;
-    PlatformSensorConfiguration configuration(60.0);
-    client->sensor()->AddConfiguration(
-        configuration,
-        base::BindOnce(
-            &TestSensorClient::OnAddConfiguration,
-            base::Unretained(client.get()),
-            base::BindOnce(&CheckSuccess, run_loop.QuitClosure(), false)));
-    run_loop.Run();
-  }
+  // Invalid configuration that exceeds the max allowed frequency.
+  EXPECT_FALSE(client->AddConfigurationSync(PlatformSensorConfiguration(60.0)));
 }
 
 // Tests adding more than one clients. Sensor should send notification to all
@@ -263,28 +221,12 @@ TEST_F(GenericSensorServiceTest, MultipleClientsTest) {
     run_loop.Run();
   }
 
-  {
-    base::RunLoop run_loop;
-    PlatformSensorConfiguration configuration(48.0);
-    client_1->sensor()->AddConfiguration(
-        configuration,
-        base::BindOnce(
-            &TestSensorClient::OnAddConfiguration,
-            base::Unretained(client_1.get()),
-            base::BindOnce(&CheckSuccess, run_loop.QuitClosure(), true)));
-    run_loop.Run();
-  }
+  EXPECT_TRUE(
+      client_1->AddConfigurationSync(PlatformSensorConfiguration(48.0)));
 
   // Expect the SensorReadingChanged() will be called for both clients.
-  {
-    base::RunLoop run_loop;
-    auto barrier_closure = base::BarrierClosure(2, run_loop.QuitClosure());
-    client_1->SetCheckValueCallback(base::BindOnce(&CheckValue, 48.0));
-    client_2->SetCheckValueCallback(base::BindOnce(&CheckValue, 48.0));
-    client_1->SetQuitClosure(barrier_closure);
-    client_2->SetQuitClosure(barrier_closure);
-    run_loop.Run();
-  }
+  EXPECT_DOUBLE_EQ(client_1->WaitForReading(), 48.0);
+  EXPECT_DOUBLE_EQ(client_2->WaitForReading(), 48.0);
 }
 
 // Tests adding more than one clients. If mojo connection is broken on one
@@ -309,25 +251,11 @@ TEST_F(GenericSensorServiceTest, ClientMojoConnectionBrokenTest) {
   // Breaks mojo connection of client_1.
   client_1->ResetSensor();
 
-  {
-    base::RunLoop run_loop;
-    PlatformSensorConfiguration configuration(48.0);
-    client_2->sensor()->AddConfiguration(
-        configuration,
-        base::BindOnce(
-            &TestSensorClient::OnAddConfiguration,
-            base::Unretained(client_2.get()),
-            base::BindOnce(&CheckSuccess, run_loop.QuitClosure(), true)));
-    run_loop.Run();
-  }
+  EXPECT_TRUE(
+      client_2->AddConfigurationSync(PlatformSensorConfiguration(48.0)));
 
   // Expect the SensorReadingChanged() will be called on client_2.
-  {
-    base::RunLoop run_loop;
-    client_2->SetCheckValueCallback(base::BindOnce(&CheckValue, 48.0));
-    client_2->SetQuitClosure(run_loop.QuitClosure());
-    run_loop.Run();
-  }
+  EXPECT_DOUBLE_EQ(client_2->WaitForReading(), 48.0);
 }
 
 // Test add and remove configuration operations.
@@ -344,43 +272,19 @@ TEST_F(GenericSensorServiceTest, AddAndRemoveConfigurationTest) {
 
   // Expect the SensorReadingChanged() will be called. The frequency value
   // should be 10.0.
-  {
-    PlatformSensorConfiguration configuration_10(10.0);
-    client->sensor()->AddConfiguration(
-        configuration_10,
-        base::BindOnce(&TestSensorClient::OnAddConfiguration,
-                       base::Unretained(client.get()),
-                       base::BindOnce(&CheckSuccess, base::DoNothing(), true)));
-    base::RunLoop run_loop;
-    client->SetCheckValueCallback(base::BindOnce(&CheckValue, 10.0));
-    client->SetQuitClosure(run_loop.QuitClosure());
-    run_loop.Run();
-  }
+  EXPECT_TRUE(client->AddConfigurationSync(PlatformSensorConfiguration(10.0)));
+  EXPECT_DOUBLE_EQ(client->WaitForReading(), 10.0);
 
   // Expect the SensorReadingChanged() will be called. The frequency value
   // should be 40.0.
   PlatformSensorConfiguration configuration_40(40.0);
-  client->sensor()->AddConfiguration(
-      configuration_40,
-      base::BindOnce(&TestSensorClient::OnAddConfiguration,
-                     base::Unretained(client.get()),
-                     base::BindOnce(&CheckSuccess, base::DoNothing(), true)));
-  {
-    base::RunLoop run_loop;
-    client->SetCheckValueCallback(base::BindOnce(&CheckValue, 40.0));
-    client->SetQuitClosure(run_loop.QuitClosure());
-    run_loop.Run();
-  }
+  EXPECT_TRUE(client->AddConfigurationSync(PlatformSensorConfiguration(40.0)));
+  EXPECT_DOUBLE_EQ(client->WaitForReading(), 40.0);
 
   // After |configuration_40| is removed, expect the SensorReadingChanged() will
   // be called. The frequency value should be 10.0.
-  {
-    base::RunLoop run_loop;
-    client->sensor()->RemoveConfiguration(configuration_40);
-    client->SetCheckValueCallback(base::BindOnce(&CheckValue, 10.0));
-    client->SetQuitClosure(run_loop.QuitClosure());
-    run_loop.Run();
-  }
+  client->sensor()->RemoveConfiguration(configuration_40);
+  EXPECT_DOUBLE_EQ(client->WaitForReading(), 10.0);
 }
 
 // Test suspend. After suspending, the client won't be notified by
@@ -406,22 +310,11 @@ TEST_F(GenericSensorServiceTest, SuspendTest) {
   // Expect the SensorReadingChanged() won't be called. Pass a bad value(123.0)
   // to |check_value_| to guarantee SensorReadingChanged() really doesn't be
   // called. Otherwise the CheckValue() will complain on the bad value.
-  client->SetCheckValueCallback(base::BindOnce(&CheckValue, 123.0));
+  client->SetOnReadingChangedCallback(
+      base::BindOnce([](double) { ADD_FAILURE() << "Unexpected reading."; }));
 
-  base::RunLoop run_loop;
-  PlatformSensorConfiguration configuration_1(30.0);
-  client->sensor()->AddConfiguration(
-      configuration_1,
-      base::BindOnce(&TestSensorClient::OnAddConfiguration,
-                     base::Unretained(client.get()),
-                     base::BindOnce(&CheckSuccess, base::DoNothing(), true)));
-  PlatformSensorConfiguration configuration_2(31.0);
-  client->sensor()->AddConfiguration(
-      configuration_2,
-      base::BindOnce(
-          &TestSensorClient::OnAddConfiguration, base::Unretained(client.get()),
-          base::BindOnce(&CheckSuccess, run_loop.QuitClosure(), true)));
-  run_loop.Run();
+  EXPECT_TRUE(client->AddConfigurationSync(PlatformSensorConfiguration(30.0)));
+  EXPECT_TRUE(client->AddConfigurationSync(PlatformSensorConfiguration(31.0)));
 }
 
 // Test suspend and resume. After resuming, client can add configuration and
@@ -439,36 +332,16 @@ TEST_F(GenericSensorServiceTest, SuspendThenResumeTest) {
 
   // Expect the SensorReadingChanged() will be called. The frequency should
   // be 10.0 after AddConfiguration.
-  {
-    base::RunLoop run_loop;
-    PlatformSensorConfiguration configuration_1(10.0);
-    client->sensor()->AddConfiguration(
-        configuration_1,
-        base::BindOnce(&TestSensorClient::OnAddConfiguration,
-                       base::Unretained(client.get()),
-                       base::BindOnce(&CheckSuccess, base::DoNothing(), true)));
-    client->SetCheckValueCallback(base::BindOnce(&CheckValue, 10.0));
-    client->SetQuitClosure(run_loop.QuitClosure());
-    run_loop.Run();
-  }
+  EXPECT_TRUE(client->AddConfigurationSync(PlatformSensorConfiguration(10.0)));
+  EXPECT_DOUBLE_EQ(client->WaitForReading(), 10.0);
 
   client->sensor()->Suspend();
   client->sensor()->Resume();
 
   // Expect the SensorReadingChanged() will be called. The frequency should
   // be 50.0 after new configuration is added.
-  {
-    base::RunLoop run_loop;
-    PlatformSensorConfiguration configuration_2(50.0);
-    client->sensor()->AddConfiguration(
-        configuration_2,
-        base::BindOnce(&TestSensorClient::OnAddConfiguration,
-                       base::Unretained(client.get()),
-                       base::BindOnce(&CheckSuccess, base::DoNothing(), true)));
-    client->SetCheckValueCallback(base::BindOnce(&CheckValue, 50.0));
-    client->SetQuitClosure(run_loop.QuitClosure());
-    run_loop.Run();
-  }
+  EXPECT_TRUE(client->AddConfigurationSync(PlatformSensorConfiguration(50.0)));
+  EXPECT_DOUBLE_EQ(client->WaitForReading(), 50.0);
 }
 
 // Test suspend when there are more than one client. The suspended client won't
@@ -492,28 +365,12 @@ TEST_F(GenericSensorServiceTest, MultipleClientsSuspendAndResumeTest) {
 
   client_1->sensor()->Suspend();
 
-  {
-    base::RunLoop run_loop;
-    PlatformSensorConfiguration configuration(46.0);
-    client_2->sensor()->AddConfiguration(
-        configuration,
-        base::BindOnce(
-            &TestSensorClient::OnAddConfiguration,
-            base::Unretained(client_2.get()),
-            base::BindOnce(&CheckSuccess, run_loop.QuitClosure(), true)));
-    run_loop.Run();
-  }
+  EXPECT_TRUE(
+      client_2->AddConfigurationSync(PlatformSensorConfiguration(46.0)));
 
   // Expect the sensor_2 will receive SensorReadingChanged() notification while
   // sensor_1 won't.
-  {
-    base::RunLoop run_loop;
-    client_2->SetCheckValueCallback(base::BindOnce(&CheckValue, 46.0));
-    client_2->SetQuitClosure(run_loop.QuitClosure());
-    run_loop.Run();
-  }
+  EXPECT_DOUBLE_EQ(client_2->WaitForReading(), 46.0);
 }
-
-}  //  namespace
 
 }  //  namespace device

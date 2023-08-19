@@ -117,12 +117,11 @@ bool GetDiskSpaceInfo(const base::FilePath& path,
 
 namespace base {
 
-namespace internal {
-
-int NumberOfProcessors() {
+#if !BUILDFLAG(IS_OPENBSD)
+int SysInfo::NumberOfProcessors() {
 #if BUILDFLAG(IS_MAC)
   absl::optional<int> number_of_physical_cores =
-      NumberOfProcessorsWhenCpuSecurityMitigationEnabled();
+      internal::NumberOfProcessorsWhenCpuSecurityMitigationEnabled();
   if (number_of_physical_cores.has_value())
     return number_of_physical_cores.value();
 #endif  // BUILDFLAG(IS_MAC)
@@ -161,14 +160,6 @@ int NumberOfProcessors() {
 #endif  // BUILDFLAG(IS_LINUX)
 
   return num_cpus;
-}
-
-}  // namespace internal
-
-#if !BUILDFLAG(IS_OPENBSD)
-int SysInfo::NumberOfProcessors() {
-  static int number_of_processors = internal::NumberOfProcessors();
-  return number_of_processors;
 }
 #endif  // !BUILDFLAG(IS_OPENBSD)
 

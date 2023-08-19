@@ -14,7 +14,6 @@ import org.chromium.components.optimization_guide.OptimizationGuideDecision;
 import org.chromium.components.optimization_guide.proto.CommonTypesProto.Any;
 import org.chromium.components.optimization_guide.proto.CommonTypesProto.RequestContext;
 import org.chromium.components.optimization_guide.proto.HintsProto.OptimizationType;
-import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
@@ -95,26 +94,6 @@ public class OptimizationGuideBridgeNativeUnitTest {
         OptimizationGuideBridge bridge = new OptimizationGuideBridge();
         bridge.registerOptimizationTypes(Arrays.asList(new OptimizationType[] {
                 OptimizationType.LOADING_PREDICTOR, OptimizationType.DEFER_ALL_SCRIPT}));
-    }
-
-    @CalledByNative
-    public void testCanApplyOptimizationAsyncHasHint() {
-        OptimizationGuideBridge bridge = new OptimizationGuideBridge();
-
-        NavigationHandle navHandle = NavigationHandle.createForTesting(new GURL(TEST_URL),
-                false /* isRendererInitiated */, 0 /* pageTransition */,
-                false /* hasUserGesture */);
-
-        OptimizationGuideCallback callback = new OptimizationGuideCallback();
-        bridge.canApplyOptimizationAsync(navHandle, OptimizationType.LOADING_PREDICTOR, callback);
-
-        assertTrue(callback.wasCalled());
-        OptimizationGuideDecisionWithMetadata decisionMetadata = callback.getDecisionMetadata();
-        assertNotNull(decisionMetadata);
-        assertEquals(OptimizationGuideDecision.TRUE, decisionMetadata.getDecision());
-        assertNotNull(decisionMetadata.getMetadata());
-        assertEquals("optimization_guide.proto.LoadingPredictorMetadata",
-                decisionMetadata.getMetadata().getTypeUrl());
     }
 
     @CalledByNative

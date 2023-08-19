@@ -331,8 +331,7 @@ void BrowserChildProcessHostImpl::LaunchWithoutExtraCommandLineSwitches(
       switches::kV,
       switches::kVModule,
   };
-  cmd_line->CopySwitchesFrom(browser_command_line, kForwardSwitches,
-                             std::size(kForwardSwitches));
+  cmd_line->CopySwitchesFrom(browser_command_line, kForwardSwitches);
 
   // All processes should have a non-empty metrics name.
   if (data_.metrics_name.empty())
@@ -352,7 +351,7 @@ void BrowserChildProcessHostImpl::LaunchWithoutExtraCommandLineSwitches(
     child_process_host_->SetProfilingFile(OpenProfilingFile());
 #endif
 
-  child_process_ = std::make_unique<ChildProcessLauncher>(
+  child_process_launcher_ = std::make_unique<ChildProcessLauncher>(
       std::move(delegate), std::move(cmd_line), data_.id, this,
       std::move(*child_process_host_->GetMojoInvitation()),
       base::BindRepeating(&BrowserChildProcessHostImpl::OnMojoError,
@@ -366,10 +365,11 @@ void BrowserChildProcessHostImpl::LaunchWithoutExtraCommandLineSwitches(
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-void BrowserChildProcessHostImpl::SetProcessBackgrounded(bool is_background) {
-  DCHECK(child_process_);
-  DCHECK(!child_process_->IsStarting());
-  child_process_->SetProcessBackgrounded(is_background);
+void BrowserChildProcessHostImpl::SetProcessPriority(
+    base::Process::Priority priority) {
+  DCHECK(child_process_launcher_);
+  DCHECK(!child_process_launcher_->IsStarting());
+  child_process_launcher_->SetProcessPriority(priority);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -379,16 +379,17 @@ void BrowserChildProcessHostImpl::EnableWarmUpConnection() {
 }
 
 void BrowserChildProcessHostImpl::DumpProcessStack() {
-  if (!child_process_)
+  if (!child_process_launcher_) {
     return;
-  child_process_->DumpProcessStack();
+  }
+  child_process_launcher_->DumpProcessStack();
 }
 #endif
 
 ChildProcessTerminationInfo BrowserChildProcessHostImpl::GetTerminationInfo(
     bool known_dead) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!child_process_) {
+  if (!child_process_launcher_) {
     // If the delegate doesn't use Launch() helper.
     ChildProcessTerminationInfo info;
     // TODO(crbug.com/1412835): iOS is single process mode for now.
@@ -398,7 +399,7 @@ ChildProcessTerminationInfo BrowserChildProcessHostImpl::GetTerminationInfo(
 #endif
     return info;
   }
-  return child_process_->GetChildTerminationInfo(known_dead);
+  return child_process_launcher_->GetChildTerminationInfo(known_dead);
 }
 
 bool BrowserChildProcessHostImpl::OnMessageReceived(
@@ -476,7 +477,7 @@ void BrowserChildProcessHostImpl::OnChildDisconnected() {
   early_exit_watcher_.StopWatching();
 #endif
 
-  if (child_process_.get() || IsProcessLaunched()) {
+  if (child_process_launcher_.get() || IsProcessLaunched()) {
     ChildProcessTerminationInfo info =
         GetTerminationInfo(true /* known_dead */);
 #if BUILDFLAG(IS_ANDROID)
@@ -602,7 +603,7 @@ void BrowserChildProcessHostImpl::OnProcessLaunchFailed(int error_code) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   delegate_->OnProcessLaunchFailed(error_code);
   ChildProcessTerminationInfo info =
-      child_process_->GetChildTerminationInfo(/*known_dead=*/true);
+      child_process_launcher_->GetChildTerminationInfo(/*known_dead=*/true);
   DCHECK_EQ(info.status, base::TERMINATION_STATUS_LAUNCH_FAILED);
 
   for (auto& observer : g_browser_child_process_observers.Get())
@@ -619,7 +620,7 @@ bool BrowserChildProcessHostImpl::CanUseWarmUpConnection() {
 void BrowserChildProcessHostImpl::OnProcessLaunched() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  const base::Process& process = child_process_->GetProcess();
+  const base::Process& process = child_process_launcher_->GetProcess();
   DCHECK(process.IsValid());
 
 #if BUILDFLAG(IS_MAC)
@@ -701,7 +702,8 @@ void BrowserChildProcessHostImpl::RegisterCoordinatorClient(
               std::move(receiver), std::move(client_process),
               GetCoordinatorClientProcessType(
                   static_cast<ProcessType>(data_.process_type)),
-              child_process_->GetProcess().Pid(), delegate_->GetServiceName()));
+              child_process_launcher_->GetProcess().Pid(),
+              delegate_->GetServiceName()));
 }
 
 bool BrowserChildProcessHostImpl::IsProcessLaunched() const {
@@ -746,7 +748,7 @@ void BrowserChildProcessHostImpl::TerminateProcessForBadMessage(
     return;
   }
   LOG(ERROR) << "Terminating child process for bad message: " << error;
-  process->child_process_->Terminate(RESULT_CODE_KILLED_BAD_MESSAGE);
+  process->child_process_launcher_->Terminate(RESULT_CODE_KILLED_BAD_MESSAGE);
 }
 
 #if BUILDFLAG(IS_WIN)

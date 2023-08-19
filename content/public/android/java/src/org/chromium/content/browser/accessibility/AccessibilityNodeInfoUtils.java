@@ -247,6 +247,11 @@ public class AccessibilityNodeInfoUtils {
                     || action.equals(ACTION_SCROLL_RIGHT) || action.equals(ACTION_SCROLL_LEFT)) {
                 continue;
             }
+            // Page actions are dependent on screen size, so ignore them to reduce flakiness.
+            if (action.equals(ACTION_PAGE_UP) || action.equals(ACTION_PAGE_DOWN)
+                    || action.equals(ACTION_PAGE_LEFT) || action.equals(ACTION_PAGE_RIGHT)) {
+                continue;
+            }
 
             actionStrings.add(toString(action.getId()));
         }

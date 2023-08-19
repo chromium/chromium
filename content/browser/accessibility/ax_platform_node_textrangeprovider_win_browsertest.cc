@@ -5,6 +5,7 @@
 #include "ui/accessibility/platform/ax_platform_node_textrangeprovider_win.h"
 
 #include "base/command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_safearray.h"
 #include "base/win/scoped_variant.h"
@@ -21,7 +22,7 @@
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "net/dns/mock_host_resolver.h"
-#include "ui/accessibility/accessibility_switches.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/ax_tree_id.h"
@@ -116,7 +117,6 @@ class AXPlatformNodeTextRangeProviderWinBrowserTest
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
-    cl->AppendSwitch(::switches::kEnableExperimentalUIAutomation);
     cl->AppendSwitchASCII(switches::kForceDeviceScaleFactor, "1.0");
   }
 
@@ -304,9 +304,9 @@ class AXPlatformNodeTextRangeProviderWinBrowserTest
         ToBrowserAccessibilityWin(browser_accessibility_start)->GetCOM();
     ASSERT_NE(nullptr, start_browser_accessibility_com_win);
 
-    ComPtr<ITextRangeProvider> text_range_provider =
-        ui::AXPlatformNodeTextRangeProviderWin::CreateTextRangeProvider(
-            std::move(start), std::move(end));
+    ComPtr<ITextRangeProvider> text_range_provider;
+    ui::AXPlatformNodeTextRangeProviderWin::CreateTextRangeProvider(
+        std::move(start), std::move(end), &text_range_provider);
     ASSERT_NE(nullptr, text_range_provider);
 
     gfx::Rect previous_range_bounds =
@@ -422,6 +422,9 @@ class AXPlatformNodeTextRangeProviderWinBrowserTest
     EXPECT_EQ(0, count_moved);
     EXPECT_EQ(0u, index);
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{::features::kUiaProvider};
 };
 
 IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
@@ -753,6 +756,11 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
               class="non-atomic-text-field">
               <p>value2</p>
           </div>
+          <div contenteditable="false" data-placeholder="@mention or comment"
+              role="textbox" aria-readonly="true" aria-label="text_field_3"
+              class="non-atomic-text-field">
+              <p>value3</p>
+          </div>
         </body>
       </html>
   )HTML");
@@ -763,6 +771,9 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   BrowserAccessibility* text_field_node_2 =
       FindNode(ax::mojom::Role::kTextField, "text_field_2");
   ASSERT_NE(nullptr, text_field_node_2);
+  BrowserAccessibility* text_field_node_3 =
+      FindNode(ax::mojom::Role::kTextField, "text_field_3");
+  ASSERT_NE(nullptr, text_field_node_3);
 
   ComPtr<ITextRangeProvider> text_range_provider;
   GetTextRangeProviderFromTextNode(*text_field_node_1, &text_range_provider);
@@ -780,6 +791,17 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   GetTextRangeProviderFromTextNode(*text_field_node_2, &text_range_provider);
   ASSERT_NE(nullptr, text_range_provider.Get());
   EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"@mention or comment\nvalue2");
+
+  EXPECT_HRESULT_SUCCEEDED(text_range_provider->GetAttributeValue(
+      UIA_IsReadOnlyAttributeId, value.Receive()));
+  EXPECT_EQ(value.type(), VT_BOOL);
+  EXPECT_EQ(V_BOOL(value.ptr()), VARIANT_FALSE);
+  text_range_provider.Reset();
+  value.Reset();
+
+  GetTextRangeProviderFromTextNode(*text_field_node_3, &text_range_provider);
+  ASSERT_NE(nullptr, text_range_provider.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"@mention or comment\nvalue3");
 
   EXPECT_HRESULT_SUCCEEDED(text_range_provider->GetAttributeValue(
       UIA_IsReadOnlyAttributeId, value.Receive()));
@@ -3693,6 +3715,261 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   EXPECT_HRESULT_SUCCEEDED(
       text_range_provider->GetBoundingRectangles(rectangles.Receive()));
   EXPECT_UIA_DOUBLE_SAFEARRAY_EQ(rectangles.Get(), expected_values);
+}
+
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
+                       TextDeletedInTextFieldAdjustmentNeeded) {
+  // This test, tests a scenario where an AT is used to make a deletion on some
+  // text and then manually moves the caret around: On the input "hello world
+  // red green<> blue" where the caret position is noted by <>:
+  // 1. The AT creates a degenerate text range provider on the caret position
+  // 2. The AT selects "world" and then simulates a backspace to delete the
+  // word.
+  // 3. The AT moves the caret back to the original position (right after
+  // "green")
+  LoadInitialAccessibilityTreeFromHtml(
+      R"HTML(<input id='input' type='text' value='hello world red green blue'/>)HTML");
+
+  auto* node =
+      FindNode(ax::mojom::Role::kTextField, "hello world red green blue");
+  ASSERT_NE(nullptr, node);
+
+  ComPtr<ITextRangeProvider> original_text_range_provider;
+  GetTextRangeProviderFromTextNode(*node, &original_text_range_provider);
+  ASSERT_NE(nullptr, original_text_range_provider.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(original_text_range_provider,
+                          L"hello world red green blue");
+
+  ComPtr<ITextRangeProvider> deletion_text_range_provider;
+  GetTextRangeProviderFromTextNode(*node, &deletion_text_range_provider);
+  ASSERT_NE(nullptr, deletion_text_range_provider.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(deletion_text_range_provider,
+                          L"hello world red green blue");
+
+  base::win::ScopedBstr find_string(L"world");
+  EXPECT_HRESULT_SUCCEEDED(original_text_range_provider->FindText(
+      find_string.Get(), false, false, &deletion_text_range_provider));
+
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(original_text_range_provider,
+                                   TextPatternRangeEndpoint_Start,
+                                   TextUnit_Word,
+                                   /*count*/ 1,
+                                   /*expected_text*/ L"world red green blue",
+                                   /*expected_count*/ 1);
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(original_text_range_provider,
+                                   TextPatternRangeEndpoint_Start,
+                                   TextUnit_Word,
+                                   /*count*/ 1,
+                                   /*expected_text*/ L"red green blue",
+                                   /*expected_count*/ 1);
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(original_text_range_provider,
+                                   TextPatternRangeEndpoint_Start,
+                                   TextUnit_Word,
+                                   /*count*/ 1,
+                                   /*expected_text*/ L"green blue",
+                                   /*expected_count*/ 1);
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(original_text_range_provider,
+                                   TextPatternRangeEndpoint_End, TextUnit_Word,
+                                   /*count*/ -1,
+                                   /*expected_text*/ L"green ",
+                                   /*expected_count*/ -1);
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(original_text_range_provider,
+                                   TextPatternRangeEndpoint_Start,
+                                   TextUnit_Character,
+                                   /*count*/ 5,
+                                   /*expected_text*/ L" ",
+                                   /*expected_count*/ 5);
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(original_text_range_provider,
+                                   TextPatternRangeEndpoint_End,
+                                   TextUnit_Character,
+                                   /*count*/ -1,
+                                   /*expected_text*/ L"",
+                                   /*expected_count*/ -1);
+
+  // At this point, `original_text_range_provider` should be a degenerate range
+  // acting as the caret here: "hello red green<> blue" and
+  // `deletion_text_range_provider` should have "<w>orld<>".
+
+  EXPECT_HRESULT_SUCCEEDED(deletion_text_range_provider->Select());
+
+  // Now we delete "world".
+  AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                         ui::kAXModeComplete,
+                                         ax::mojom::Event::kLayoutComplete);
+  SimulateKeyPress(shell()->web_contents(), ui::DomKey::BACKSPACE,
+                   ui::DomCode::BACKSPACE, ui::VKEY_BACK, false, false, false,
+                   false);
+  ASSERT_TRUE(waiter.WaitForNotification());
+
+  // Since our deletion text range provider is also an observer to the deletion
+  // event, it will be set to nullposition after the deletion, since by design
+  // we return nullpositions when the deletion range encompasses the observing
+  // endpoints. As such, we create this textrange provider that mimmicks where
+  // blink would set the selection after the deletion is done.
+  ComPtr<ITextRangeProvider> blink_selection_text_range_provider;
+  GetTextRangeProviderFromTextNode(*node, &blink_selection_text_range_provider);
+  ASSERT_NE(nullptr, blink_selection_text_range_provider.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(blink_selection_text_range_provider,
+                          L"hello  red green blue");
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(blink_selection_text_range_provider,
+                                   TextPatternRangeEndpoint_Start,
+                                   TextUnit_Character,
+                                   /*count*/ 6,
+                                   /*expected_text*/ L" red green blue",
+                                   /*expected_count*/ 6);
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(blink_selection_text_range_provider,
+                                   TextPatternRangeEndpoint_End,
+                                   TextUnit_Character,
+                                   /*count*/ -15,
+                                   /*expected_text*/ L"",
+                                   /*expected_count*/ -15);
+
+  // Now we move the `deletion` text range to the original, which was the
+  // original caret position.
+  EXPECT_HRESULT_SUCCEEDED(
+      blink_selection_text_range_provider->MoveEndpointByRange(
+          TextPatternRangeEndpoint_Start, original_text_range_provider.Get(),
+          TextPatternRangeEndpoint_Start));
+  EXPECT_HRESULT_SUCCEEDED(
+      blink_selection_text_range_provider->MoveEndpointByRange(
+          TextPatternRangeEndpoint_End, original_text_range_provider.Get(),
+          TextPatternRangeEndpoint_End));
+
+  EXPECT_UIA_TEXTRANGE_EQ(blink_selection_text_range_provider, L"");
+
+  // Since the original caret position was right after "green" if we now expand
+  // the resulting range we would expect to have "green" here as well.
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(blink_selection_text_range_provider,
+                                   TextPatternRangeEndpoint_Start,
+                                   TextUnit_Character,
+                                   /*count*/ -5,
+                                   /*expected_text*/ L"green",
+                                   /*expected_count*/ -5);
+}
+
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
+                       TextDeletedInTextFieldAdjustmentNeededNodeDeleted) {
+  // This test, tests a scenario where an AT is used to make a deletion on some
+  // text and then manually moves the caret around: On the input "go hello
+  // <>blue" where the caret position is noted by <>: This covers the scenario
+  // where the deleted text actually deletes a node in the DOM.
+  // 1. The AT creates a degenerate text range provider on the caret position
+  // 2. The AT selects "hello" and then simulates a backspace to delete the
+  // word.
+  // 3. The AT moves the caret back to the original position (right before
+  // "blue")
+  LoadInitialAccessibilityTreeFromHtml(
+      R"HTML(<div id='input' contenteditable='true'>go <span>hello</span> blue<div/>)HTML");
+
+  auto* node = FindNode(ax::mojom::Role::kGenericContainer, "go hello blue");
+  ASSERT_NE(nullptr, node);
+
+  ComPtr<ITextRangeProvider> original_text_range_provider;
+  GetTextRangeProviderFromTextNode(*node, &original_text_range_provider);
+  ASSERT_NE(nullptr, original_text_range_provider.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(original_text_range_provider, L"go hello blue");
+
+  ComPtr<ITextRangeProvider> deletion_text_range_provider;
+  GetTextRangeProviderFromTextNode(*node, &deletion_text_range_provider);
+  ASSERT_NE(nullptr, deletion_text_range_provider.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(deletion_text_range_provider, L"go hello blue");
+
+  base::win::ScopedBstr find_string(L"hello");
+  EXPECT_HRESULT_SUCCEEDED(original_text_range_provider->FindText(
+      find_string.Get(), false, false, &deletion_text_range_provider));
+
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(original_text_range_provider,
+                                   TextPatternRangeEndpoint_Start,
+                                   TextUnit_Word,
+                                   /*count*/ 1,
+                                   /*expected_text*/ L"hello blue",
+                                   /*expected_count*/ 1);
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(original_text_range_provider,
+                                   TextPatternRangeEndpoint_Start,
+                                   TextUnit_Word,
+                                   /*count*/ 1,
+                                   /*expected_text*/ L"blue",
+                                   /*expected_count*/ 1);
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(original_text_range_provider,
+                                   TextPatternRangeEndpoint_End,
+                                   TextUnit_Character,
+                                   /*count*/ -4,
+                                   /*expected_text*/ L"",
+                                   /*expected_count*/ -4);
+
+  // At this point, `original_text_range_provider` should be a degenerate range
+  // acting as the caret here: "go hello <>blue" and
+  // `deletion_text_range_provider` should have "<h>ello<>".
+
+  AccessibilityNotificationWaiter sel_waiter(
+      shell()->web_contents(), ui::kAXModeComplete,
+      ax::mojom::Event::kDocumentSelectionChanged);
+
+  EXPECT_HRESULT_SUCCEEDED(deletion_text_range_provider->Select());
+
+  ASSERT_TRUE(sel_waiter.WaitForNotification());
+
+  // Now we delete "hello".
+  AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                         ui::kAXModeComplete,
+                                         ax::mojom::Event::kLayoutComplete);
+  SimulateKeyPress(shell()->web_contents(), ui::DomKey::BACKSPACE,
+                   ui::DomCode::BACKSPACE, ui::VKEY_BACK, /* control */ false,
+                   /* shift */ false, /* alt */ false,
+                   /* command */ false);
+  ASSERT_TRUE(waiter.WaitForNotification());
+
+  // Since our deletion text range provider is also an observer to the deletion
+  // event, it will be set to nullposition after the deletion, since by design
+  // we return nullpositions when the deletion range encompasses the observing
+  // endpoints. As such, we create this textrange provider that mimmicks where
+  // blink would set the selection after the deletion is done.
+  ComPtr<ITextRangeProvider> blink_selection_text_range_provider;
+  GetTextRangeProviderFromTextNode(*node, &blink_selection_text_range_provider);
+  ASSERT_NE(nullptr, blink_selection_text_range_provider.Get());
+  wchar_t text[11] = L"go ";
+  wchar_t non_breaking_space[2] = L"\xA0";
+  wchar_t blue[5] = L"blue";
+  wcscat(text, non_breaking_space);
+  wcscat(text, blue);
+  wchar_t text_2[7] = L"\xA0";
+  wcscat(text_2, blue);
+  EXPECT_UIA_TEXTRANGE_EQ(blink_selection_text_range_provider, text);
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(blink_selection_text_range_provider,
+                                   TextPatternRangeEndpoint_Start,
+                                   TextUnit_Character,
+                                   /*count*/ 3,
+                                   /*expected_text*/ text_2,
+                                   /*expected_count*/ 3);
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(blink_selection_text_range_provider,
+                                   TextPatternRangeEndpoint_End,
+                                   TextUnit_Character,
+                                   /*count*/ -5,
+                                   /*expected_text*/ L"",
+                                   /*expected_count*/ -5);
+
+  // Now we move the 'deletion' text range to the original, which was the
+  // original caret position.
+  EXPECT_HRESULT_SUCCEEDED(
+      blink_selection_text_range_provider->MoveEndpointByRange(
+          TextPatternRangeEndpoint_Start, original_text_range_provider.Get(),
+          TextPatternRangeEndpoint_Start));
+  EXPECT_HRESULT_SUCCEEDED(
+      blink_selection_text_range_provider->MoveEndpointByRange(
+          TextPatternRangeEndpoint_End, original_text_range_provider.Get(),
+          TextPatternRangeEndpoint_End));
+
+  EXPECT_UIA_TEXTRANGE_EQ(blink_selection_text_range_provider, L"");
+
+  // Since the original caret position was right after "blue" if we now expand
+  // the resulting range we would expect to have "blue" here as well, and the
+  // full text would be "go blue".
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(blink_selection_text_range_provider,
+                                   TextPatternRangeEndpoint_End,
+                                   TextUnit_Character,
+                                   /*count*/ 4,
+                                   /*expected_text*/ L"blue",
+                                   /*expected_count*/ 4);
 }
 
 }  // namespace content

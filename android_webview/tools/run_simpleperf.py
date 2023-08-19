@@ -13,17 +13,12 @@ Typical Usage:
 """
 
 import argparse
+import html
 import logging
 import os
 import re
 import subprocess
 import sys
-import six
-
-if six.PY2:
-  import cgi as html
-else:
-  import html
 
 sys.path.append(os.path.join(
     os.path.dirname(__file__), os.pardir, os.pardir, 'build', 'android'))
@@ -190,9 +185,10 @@ class SimplePerfRunner:
   @staticmethod
   def RunSimplePerf(perf_data_path, args):
     """Runs the simple perf commandline."""
-    cmd = ['third_party/android_ndk/simpleperf/app_profiler.py',
-           '--perf_data_path', perf_data_path,
-           '--skip_collect_binaries']
+    cmd = [
+        'third_party/android_toolchain/ndk/simpleperf/app_profiler.py',
+        '--perf_data_path', perf_data_path, '--skip_collect_binaries'
+    ]
     if args.system_wide:
       cmd.append('--system_wide')
     else:
@@ -226,10 +222,11 @@ class SimplePerfRunner:
   @staticmethod
   def GetOriginalReportHtml(perf_data_path, report_html_path):
     """Gets the original report.html from running simpleperf."""
-    cmd = ['third_party/android_ndk/simpleperf/report_html.py',
-           '--record_file', perf_data_path,
-           '--report_path', report_html_path,
-           '--no_browser']
+    cmd = [
+        'third_party/android_toolchain/ndk/simpleperf/report_html.py',
+        '--record_file', perf_data_path, '--report_path', report_html_path,
+        '--no_browser'
+    ]
     subprocess.check_call(cmd)
     lines = []
     with open(report_html_path, 'r') as f:

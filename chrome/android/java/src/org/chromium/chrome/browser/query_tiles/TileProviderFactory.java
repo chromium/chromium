@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.query_tiles;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.query_tiles.TileProvider;
@@ -27,6 +28,7 @@ public class TileProviderFactory {
     /** For testing only. */
     public static void setTileProviderForTesting(TileProvider provider) {
         sTileProviderForTesting = provider;
+        ResettersForTesting.register(() -> sTileProviderForTesting = null);
     }
 
     @NativeMethods

@@ -62,20 +62,29 @@ struct TestUrlInfo {
   AutocompleteActionPredictor::Action expected_action;
 };
 
+AutocompleteActionPredictor::Action ExpectedActionBasedOnConfidenceOnly(
+    int number_of_hits,
+    int number_of_misses) {
+  int total = number_of_hits + number_of_misses;
+  EXPECT_GT(total, 0);
+  double confidence = number_of_hits / (double)total;
+  return AutocompleteActionPredictor::DecideActionByConfidence(confidence);
+}
+
 const std::vector<TestUrlInfo>& TestUrlDb() {
   static base::NoDestructor<std::vector<TestUrlInfo>> db{
       {{GURL("http://www.testsite.com/a.html"), u"Test - site - just a test", 1,
-        u"j", 5, 0, AutocompleteActionPredictor::ACTION_PRERENDER},
+        u"j", 5, 0, ExpectedActionBasedOnConfidenceOnly(5, 0)},
        {GURL("http://www.testsite.com/b.html"), u"Test - site - just a test", 1,
-        u"ju", 3, 0, AutocompleteActionPredictor::ACTION_PRERENDER},
+        u"ju", 3, 0, ExpectedActionBasedOnConfidenceOnly(3, 0)},
        {GURL("http://www.testsite.com/c.html"), u"Test - site - just a test", 5,
-        u"just", 3, 1, AutocompleteActionPredictor::ACTION_PRECONNECT},
+        u"just", 3, 1, ExpectedActionBasedOnConfidenceOnly(3, 1)},
        {GURL("http://www.testsite.com/d.html"), u"Test - site - just a test", 5,
-        u"just", 3, 0, AutocompleteActionPredictor::ACTION_PRERENDER},
+        u"just", 3, 0, ExpectedActionBasedOnConfidenceOnly(3, 0)},
        {GURL("http://www.testsite.com/e.html"), u"Test - site - just a test", 8,
-        u"just", 3, 1, AutocompleteActionPredictor::ACTION_PRECONNECT},
+        u"just", 3, 1, ExpectedActionBasedOnConfidenceOnly(3, 1)},
        {GURL("http://www.testsite.com/f.html"), u"Test - site - just a test", 8,
-        u"just", 3, 0, AutocompleteActionPredictor::ACTION_PRERENDER},
+        u"just", 3, 0, ExpectedActionBasedOnConfidenceOnly(3, 0)},
        {GURL("http://www.testsite.com/g.html"), u"Test - site - just a test",
         12, std::u16string(), 5, 0, AutocompleteActionPredictor::ACTION_NONE},
        {GURL("http://www.testsite.com/h.html"), u"Test - site - just a test",

@@ -64,7 +64,6 @@ WebViewImpl.prototype.onElementAttached = function() {
 
 // Resets some state upon detaching <webview> element from the DOM.
 WebViewImpl.prototype.onElementDetached = function() {
-  this.guest.destroy();
   for (var i in this.attributes) {
     this.attributes[i].dirty = false;
   }
@@ -130,9 +129,10 @@ WebViewImpl.prototype.onSizeChanged = function(webViewEvent) {
 };
 
 WebViewImpl.prototype.createGuest = function() {
-  this.guest.create(this.buildParams(), $Function.bind(function() {
-    this.attachWindow();
-  }, this));
+  this.guest.create(
+      this.viewInstanceId, this.buildParams(), $Function.bind(function() {
+        this.attachWindow();
+      }, this));
 };
 
 WebViewImpl.prototype.onFrameNameChanged = function(name) {

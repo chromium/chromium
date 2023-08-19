@@ -245,11 +245,6 @@ class PLATFORM_EXPORT Length {
     return GetType() == kAuto || IsContentOrIntrinsic();
   }
 
-  // NOTE: This shouldn't be use in NG code.
-  bool IsContentOrIntrinsicOrFillAvailable() const {
-    return IsContentOrIntrinsic() || GetType() == kFillAvailable;
-  }
-
   bool IsSpecified() const {
     return GetType() == kFixed || GetType() == kPercent ||
            GetType() == kCalculated;
@@ -275,6 +270,7 @@ class PLATFORM_EXPORT Length {
   bool IsDeviceWidth() const { return GetType() == kDeviceWidth; }
   bool IsDeviceHeight() const { return GetType() == kDeviceHeight; }
   bool HasAnchorQueries() const;
+  bool HasAutoAnchorPositioning() const;
 
   Length Blend(const Length& from, double progress, ValueRange range) const {
     DCHECK(IsSpecified());

@@ -23,12 +23,16 @@ void DevToolsPrerenderAttempt::SetTriggeringOutcome(
   devtools_instrumentation::DidUpdatePrerenderStatus(
       attributes.initiator_frame_tree_node_id,
       attributes.initiator_devtools_navigation_token.value(),
-      attributes.prerendering_url, outcome, /*prerender_status=*/absl::nullopt);
+      attributes.prerendering_url, outcome, /*prerender_status=*/absl::nullopt,
+      /*disallowed_mojo_interface=*/absl::nullopt);
 }
 
 void DevToolsPrerenderAttempt::SetFailureReason(
     const PrerenderAttributes& attributes,
-    PrerenderFinalStatus status) {
+    PrerenderFinalStatus prerender_status) {
+  // Ensured by PrerenderCancellationReason.
+  CHECK_NE(prerender_status, PrerenderFinalStatus::kMojoBinderPolicy);
+
   if (!attributes.initiator_devtools_navigation_token.has_value()) {
     return;
   }
@@ -37,7 +41,29 @@ void DevToolsPrerenderAttempt::SetFailureReason(
       attributes.initiator_frame_tree_node_id,
       attributes.initiator_devtools_navigation_token.value(),
       attributes.prerendering_url, PreloadingTriggeringOutcome::kFailure,
-      status);
+      prerender_status, /*disallowed_mojo_interface=*/absl::nullopt);
+}
+
+void DevToolsPrerenderAttempt::SetFailureReason(
+    const PrerenderAttributes& attributes,
+    const PrerenderCancellationReason& reason) {
+  PrerenderFinalStatus prerender_status = reason.final_status();
+  absl::optional<std::string> disallowed_mojo_interface =
+      reason.DisallowedMojoInterface();
+
+  // Ensured by PrerenderCancellationReason.
+  CHECK_EQ(prerender_status == PrerenderFinalStatus::kMojoBinderPolicy,
+           disallowed_mojo_interface.has_value());
+
+  if (!attributes.initiator_devtools_navigation_token.has_value()) {
+    return;
+  }
+
+  devtools_instrumentation::DidUpdatePrerenderStatus(
+      attributes.initiator_frame_tree_node_id,
+      attributes.initiator_devtools_navigation_token.value(),
+      attributes.prerendering_url, PreloadingTriggeringOutcome::kFailure,
+      prerender_status, disallowed_mojo_interface);
 }
 
 }  // namespace content

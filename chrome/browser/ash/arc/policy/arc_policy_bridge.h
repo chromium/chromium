@@ -70,30 +70,6 @@ class ArcPolicyBridge : public KeyedService,
     virtual void OnComplianceReportReceived(
         const base::Value* compliance_report) {}
 
-    // Called when a request to install set of packages was sent to CloudDPS.
-    virtual void OnCloudDpsRequested(
-        base::Time time,
-        const std::set<std::string>& package_names) {}
-
-    // Called when CloudDPS successfully processed request for install for a
-    // set of packages. Note |package_names| may not match to what was
-    // requested.
-    virtual void OnCloudDpsSucceeded(
-        base::Time time,
-        const std::set<std::string>& package_names) {}
-
-    // Called when CloudDPS returned an error for the package installation
-    // request. |reason| defines the failure reason.
-    virtual void OnCloudDpsFailed(base::Time time,
-                                  const std::string& package_name,
-                                  mojom::InstallErrorReason reason) {}
-
-    // Called when in CloudDPC the main loop of retries to install apps failed
-    // to install some apps.
-    virtual void OnReportForceInstallMainLoopFailed(
-        base::Time time,
-        const std::set<std::string>& package_names) {}
-
     // Called when ARC DPC starts.
     virtual void OnReportDPCVersion(const std::string& version) {}
 
@@ -151,18 +127,6 @@ class ArcPolicyBridge : public KeyedService,
   void GetPolicies(GetPoliciesCallback callback) override;
   void ReportCompliance(const std::string& request,
                         ReportComplianceCallback callback) override;
-  void ReportCloudDpsRequested(
-      base::Time time,
-      const std::vector<std::string>& package_names) override;
-  void ReportCloudDpsSucceeded(
-      base::Time time,
-      const std::vector<std::string>& package_names) override;
-  void ReportCloudDpsFailed(base::Time time,
-                            const std::string& package_name,
-                            mojom::InstallErrorReason reason) override;
-  void ReportForceInstallMainLoopFailed(
-      base::Time time,
-      const std::vector<std::string>& package_names) override;
   void ReportDPCVersion(const std::string& version) override;
   void ReportPlayStoreLocalPolicySet(
       base::Time time,

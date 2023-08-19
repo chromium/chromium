@@ -14,7 +14,7 @@ const char kNotDeprecated[] = "NotDeprecated";
 const DeprecationInfo GetDeprecationInfo(WebFeature feature) {
   switch (feature) {
     {% for deprecation in deprecations %}
-    {% if deprecation.web_features %}
+    {% if deprecation.web_features and not deprecation.obsolete_to_be_removed_after_milestone %}
     {% for web_feature in deprecation.web_features %}
     case WebFeature::{{web_feature}}:
     {% endfor %}

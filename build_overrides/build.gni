@@ -3,11 +3,12 @@
 # found in the LICENSE file.
 
 import("//build/config/chromecast_build.gni")
+import("//build/config/features.gni")
 import("//build/config/gclient_args.gni")
 
 # Uncomment these to specify a different NDK location and version in
 # non-Chromium builds.
-# default_android_ndk_root = "//third_party/android_ndk"
+# default_android_ndk_root = "//third_party/android_toolchain/ndk"
 # default_android_ndk_version = "r10e"
 
 # Some non-Chromium builds don't support building java targets.
@@ -37,7 +38,8 @@ declare_args() {
   # Switches the TRACE_EVENT instrumentation from base's TraceLog implementation
   # to //third_party/perfetto's client library.
   # TODO(crbug/1006541): Switch to perfetto's client library on all platforms.
-  use_perfetto_client_library = is_linux && !is_castos
+  use_perfetto_client_library =
+      (is_linux || is_android || (use_blink && is_ios)) && !is_castos
 
   # Limits the defined //third_party/android_deps targets to only "buildCompile"
   # and "buildCompileNoDeps" targets. This is useful for third-party
@@ -53,6 +55,17 @@ declare_args() {
   # Allows third-party repositories to use C++17 for MSVC builds
   # TODO(https://crbug.com/pdfium/1932) Remove once pdfium builds on MSVC C++20
   msvc_use_cxx17 = false
+
+  # Allow projects that wish to stay on C++17 to override Chromium's default.
+  # TODO(crbug.com/1402249): evaluate removing this end of 2023
+  use_cxx17 = false
+}
+
+# Features used by //base/trace_event.
+declare_args() {
+  # Use Perfetto's trace processor for converting protobuf-encoded traces to
+  # the legacy JSON format in base::TraceLog.
+  use_perfetto_trace_processor = use_perfetto_client_library && !is_nacl
 }
 
 # Allows different projects to specify their own suppression/ignore lists for

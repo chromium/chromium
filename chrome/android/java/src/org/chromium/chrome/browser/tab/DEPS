@@ -54,6 +54,7 @@ include_rules = [
   "+components/browser_ui/widget/android",
   "+components/security_state/content/android/java/src/org/chromium/components/security_state/SecurityStateModel.java",
   "+content/public/android/java/src/org/chromium/content_public",
+  "+chrome/browser/back_press/android/java/src/org/chromium/chrome/browser/back_press/BackPressManager.java",
 ]
 
 specific_include_rules = {
@@ -75,8 +76,6 @@ specific_include_rules = {
   ],
   'RequestDesktopUtils\.java': [
     "+chrome/android/java/src/org/chromium/chrome/browser/page_info/SiteSettingsHelper.java",
-    "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabModel.java",
-    "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelector.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/metrics/UmaSessionStats.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/crash/ChromePureJavaExceptionReporter.java",
   ],
@@ -109,6 +108,10 @@ specific_include_rules = {
   ],
   'TabStateBrowserControlsVisibilityDelegate\.java': [
     "+chrome/browser/util/android/java/src/org/chromium/chrome/browser/util/ChromeAccessibilityUtil.java",
+  ],
+  'TabUtils\.java' : [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+    "+chrome/browser/browser_controls/android/java/src/org/chromium/chrome/browser/browser_controls/BrowserControlsStateProvider.java",
   ],
   'TabViewManagerImpl\.java': [
     "+chrome/browser/browser_controls/android/java/src/org/chromium/chrome/browser/browser_controls/BrowserControlsMarginSupplier.java",

@@ -64,14 +64,14 @@ class CAPTURE_EXPORT CameraDeviceContext {
     //
     //   ConstructDefaultRequestSettings() ->
     //   OnConstructedDefaultRequestSettings() ->
-    //   |stream_buffer_manager_|->StartPreview()
+    //   |request_manager_|->StartPreview()
     //
-    // In the kCapturing state the |stream_buffer_manager_| runs the capture
+    // In the kCapturing state the |request_manager_| runs the capture
     // loop to send capture requests and process capture results.
     kCapturing,
 
     // When the camera device is in the kCapturing state, a capture loop is
-    // constantly running in |stream_buffer_manager_|:
+    // constantly running in |request_manager_|:
     //
     // On the StreamBufferManager side, we register and submit a capture
     // request whenever a free buffer is available:

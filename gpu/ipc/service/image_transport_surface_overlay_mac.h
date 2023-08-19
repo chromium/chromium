@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#import "base/mac/scoped_nsobject.h"
 #include "base/memory/weak_ptr.h"
 #include "components/viz/common/gpu/gpu_vsync_callback.h"
 #include "gpu/ipc/service/command_buffer_stub.h"
@@ -19,7 +18,7 @@
 #include "ui/gl/presenter.h"
 
 // Put gpu_vsync_mac.h (which includes ui/display/mac/display_link_mac.h)
-// after ui/gl/gl_xxx.h. There is a conflict between MacOSX sdk gltypes.h and
+// after ui/gl/gl_xxx.h. There is a conflict between macOS sdk gltypes.h and
 // third_party/mesa_headers/GL/glext.h
 #if BUILDFLAG(IS_MAC)
 #include "gpu/ipc/service/gpu_vsync_mac.h"
@@ -81,7 +80,7 @@ class ImageTransportSurfaceOverlayMacEGL : public gl::Presenter {
   base::WeakPtr<ImageTransportSurfaceDelegate> delegate_;
 
   const bool use_remote_layer_api_;
-  base::scoped_nsobject<CAContext> ca_context_;
+  CAContext* __strong ca_context_;
   std::unique_ptr<ui::CALayerTreeCoordinator> ca_layer_tree_coordinator_;
 
   gfx::Size pixel_size_;

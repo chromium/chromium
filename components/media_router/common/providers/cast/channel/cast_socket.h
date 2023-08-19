@@ -437,7 +437,7 @@ class CastSocketImpl : public CastSocket {
   // information.
   // This pointer might dangle when running the following test:
   // PageSpecificSiteDataDialogPrivacySandboxInteractiveUiTest.FirstPartyAllowed
-  raw_ptr<AuthTransportDelegate, FlakyDanglingUntriaged> auth_delegate_;
+  raw_ptr<AuthTransportDelegate, AcrossTasksDanglingUntriaged> auth_delegate_;
 
   // List of socket observers.
   base::ObserverList<Observer>::Unchecked observers_;

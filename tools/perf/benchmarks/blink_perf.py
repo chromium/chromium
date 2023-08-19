@@ -557,7 +557,7 @@ class BlinkPerfEvents(_BlinkPerfBenchmark):
     return 'blink_perf.events'
 
 
-@benchmark.Info(emails=['cblume@chromium.org'],
+@benchmark.Info(emails=['dalecurtis@chromium.org', 'vmpstr@chromium.org'],
                 component='Internals>Images>Codecs',
                 documentation_url='https://bit.ly/blink-perf-benchmarks')
 class BlinkPerfImageDecoder(_BlinkPerfBenchmark):
@@ -587,7 +587,7 @@ class BlinkPerfLayout(_BlinkPerfBenchmark):
     return 'blink_perf.layout'
 
 
-@benchmark.Info(emails=['dmurph@chromium.org'],
+@benchmark.Info(emails=['ayui@chromium.org'],
                 component='Blink>Storage',
                 documentation_url='https://bit.ly/blink-perf-benchmarks')
 class BlinkPerfOWPStorage(_BlinkPerfBenchmark):
@@ -685,7 +685,7 @@ class BlinkPerfShadowDOM(_BlinkPerfBenchmark):
     return 'blink_perf.shadow_dom'
 
 
-@benchmark.Info(emails=['vmpstr@chromium.org'],
+@benchmark.Info(emails=['vmpstr@chromium.org', 'pdr@chromium.org'],
                 component='Blink>Paint',
                 documentation_url='https://bit.ly/blink-perf-benchmarks')
 class BlinkPerfDisplayLocking(_BlinkPerfBenchmark):
@@ -713,7 +713,7 @@ class BlinkPerfWebAudio(_BlinkPerfBenchmark):
     return 'blink_perf.webaudio'
 
 
-@benchmark.Info(emails=['media-dev@chromium.org'],
+@benchmark.Info(emails=['media-dev@chromium.org', 'eugene@chromium.org'],
                 component='Blink>WebCodecs',
                 documentation_url='https://bit.ly/blink-perf-benchmarks')
 class BlinkPerfWebCodecs(_BlinkPerfBenchmark):
@@ -742,7 +742,7 @@ class BlinkPerfWebGL(_BlinkPerfBenchmark):
 
 
 @benchmark.Info(emails=[
-    'kbr@chromium.org', 'enga@chromium.org', 'mslekova@chromium.org',
+    'kbr@chromium.org', 'enga@chromium.org',
     'junov@chromium.org', 'webgl-team@google.com'
 ],
                 component='Blink>WebGL',
@@ -778,7 +778,7 @@ class BlinkPerfWebGPU(_BlinkPerfBenchmark):
 
 
 @benchmark.Info(emails=[
-    'enga@chromium.org', 'cwallez@chromium.org', 'mslekova@chromium.org',
+    'enga@chromium.org', 'cwallez@chromium.org',
     'junov@chromium.org', 'webgpu-developers@google.com'
 ],
                 component='Blink>WebGPU',

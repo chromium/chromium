@@ -20,8 +20,6 @@ source_set("elements") {
     "//ios/chrome/common:timing",
     "//ios/chrome/common/ui/colors",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("popover_label_view_controller") {
@@ -36,12 +34,9 @@ source_set("popover_label_view_controller") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("form_input_accessory") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "form_input_accessory_view.h",
     "form_input_accessory_view.mm",

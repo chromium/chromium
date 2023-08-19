@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_default_account/consistency_default_account_view_controller.h"
 
+#import "base/check.h"
+#import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/strings/grit/components_strings.h"
@@ -21,10 +23,6 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Margins for `self.contentView` (top, bottom, leading and trailing).
@@ -37,7 +35,7 @@ constexpr CGFloat kExtraNavBarTopPadding = 3.;
 // Vertical insets of primary button.
 constexpr CGFloat kPrimaryButtonVerticalInsets = 15.5;
 
-}
+}  // namespace
 
 @interface ConsistencyDefaultAccountViewController ()
 
@@ -55,20 +53,14 @@ constexpr CGFloat kPrimaryButtonVerticalInsets = 15.5;
 @property(nonatomic, strong) NSString* continueAsTitle;
 // Activity indicator on top of `self.primaryButton`.
 @property(nonatomic, strong) UIActivityIndicatorView* activityIndicatorView;
-// The access point that triggered sign-in.
-@property(nonatomic, assign, readonly) signin_metrics::AccessPoint accessPoint;
+// Label text, or nil if there's supposed to be none.
+@property(nonatomic, assign, readwrite) NSString* labelText;
+// Text in the button that aborts the flow. Must be set before displaying.
+@property(nonatomic, assign, readwrite) NSString* skipButtonText;
 
 @end
 
 @implementation ConsistencyDefaultAccountViewController
-
-- (instancetype)initWithAccessPoint:(signin_metrics::AccessPoint)accessPoint {
-  self = [super init];
-  if (self) {
-    _accessPoint = accessPoint;
-  }
-  return self;
-}
 
 - (void)startSpinner {
   // Add spinner.
@@ -119,19 +111,9 @@ constexpr CGFloat kPrimaryButtonVerticalInsets = 15.5;
   titleLabel.adjustsFontSizeToFitWidth = YES;
   titleLabel.minimumScaleFactor = 0.1;
 
-  NSString* skipButtonTitle;
-  if (self.accessPoint ==
-      signin_metrics::AccessPoint::ACCESS_POINT_SEND_TAB_TO_SELF_PROMO) {
-    skipButtonTitle = l10n_util::GetNSString(IDS_CANCEL);
-  } else if (self.accessPoint == signin_metrics::AccessPoint::
-                                     ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO) {
-    skipButtonTitle = l10n_util::GetNSString(IDS_CLOSE);
-  } else {
-    skipButtonTitle = l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_SKIP);
-  }
-
+  CHECK(self.skipButtonText);
   UIButton* skipButton = [UIButton buttonWithType:UIButtonTypeSystem];
-  [skipButton setTitle:skipButtonTitle forState:UIControlStateNormal];
+  [skipButton setTitle:self.skipButtonText forState:UIControlStateNormal];
   skipButton.titleLabel.font =
       [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
   [skipButton addTarget:self
@@ -213,27 +195,19 @@ constexpr CGFloat kPrimaryButtonVerticalInsets = 15.5;
         constraintEqualToAnchor:self.contentView.trailingAnchor
                        constant:kContentMargin],
   ]];
+
   // Add the label.
-  UILabel* label = [[UILabel alloc] init];
-  if (self.accessPoint ==
-      signin_metrics::AccessPoint::ACCESS_POINT_SEND_TAB_TO_SELF_PROMO) {
-    label.text =
-        l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF_SIGN_IN_PROMO_LABEL);
-  } else if (self.accessPoint == signin_metrics::AccessPoint::
-                                     ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO) {
-    label.text =
-        l10n_util::GetNSString(IDS_IOS_FEED_CARD_SIGN_IN_ONLY_PROMO_LABEL);
-  } else {
-    label.text =
-        l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_LABEL);
+  if (self.labelText) {
+    UILabel* label = [[UILabel alloc] init];
+    label.text = self.labelText;
+    label.textColor = [UIColor colorNamed:kGrey700Color];
+    label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
+    label.numberOfLines = 0;
+    [self.contentView addArrangedSubview:label];
+    [label.widthAnchor constraintEqualToAnchor:self.contentView.widthAnchor]
+        .active = YES;
   }
 
-  label.textColor = [UIColor colorNamed:kGrey700Color];
-  label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
-  label.numberOfLines = 0;
-  [self.contentView addArrangedSubview:label];
-  [label.widthAnchor constraintEqualToAnchor:self.contentView.widthAnchor]
-      .active = YES;
   // Add IdentityButtonControl for the default identity.
   self.identityButtonControl =
       [[IdentityButtonControl alloc] initWithFrame:CGRectZero];

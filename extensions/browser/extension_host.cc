@@ -14,12 +14,12 @@
 #include "base/timer/elapsed_timer.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/input/native_web_keyboard_event.h"
 #include "extensions/browser/bad_message.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_error.h"
@@ -172,10 +172,14 @@ void ExtensionHost::RemoveObserver(ExtensionHostObserver* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-void ExtensionHost::OnBackgroundEventDispatched(const std::string& event_name,
-                                                int event_id) {
+void ExtensionHost::OnBackgroundEventDispatched(
+    const std::string& event_name,
+    base::TimeTicks dispatch_start_time,
+    int event_id,
+    EventDispatchSource dispatch_source) {
   CHECK(IsBackgroundPage());
-  unacked_messages_[event_id] = event_name;
+  unacked_messages_[event_id] =
+      UnackedEventData{event_name, dispatch_start_time, dispatch_source};
   for (auto& observer : observer_list_)
     observer.OnBackgroundEventDispatched(this, event_name, event_id);
 }
@@ -347,9 +351,25 @@ void ExtensionHost::OnEventAck(int event_id) {
     return;
   }
 
+  const UnackedEventData& unacked_message_data = it->second;
+
+  // Only emit events that use the EventRouter::DispatchEventToProcess() event
+  // routing flow since EventRouter::DispatchEventToSender() uses a different
+  // flow that doesn't include dispatch start and service worker start time.
+  if (unacked_messages_[event_id].dispatch_source ==
+      EventDispatchSource::kDispatchEventToProcess) {
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "Extensions.Events.DispatchToAckTime.ExtensionEventPage2",
+        /*time=*/base::TimeTicks::Now() -
+            unacked_message_data.dispatch_start_time,
+        /*minimum=*/base::Microseconds(1), /*maximum=*/base::Minutes(5),
+        /*bucket_count=*/100);
+  }
+
   EventRouter* router = EventRouter::Get(browser_context_);
   if (router)
-    router->OnEventAck(browser_context_, extension_id(), it->second);
+    router->OnEventAck(browser_context_, extension_id(),
+                       unacked_message_data.event_name);
 
   for (auto& observer : observer_list_)
     observer.OnBackgroundEventAcked(this, event_id);

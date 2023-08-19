@@ -945,17 +945,7 @@ void WorkspaceWindowResizer::CompleteDrag() {
     return;
   }
 
-  if (window_state()->IsFloated()) {
-    // Update the restore bounds of a floated window in case it has changed
-    // displays.
-    if (!details().restore_bounds_in_parent.IsEmpty()) {
-      window_state()->SetRestoreBoundsInParent(
-          details().restore_bounds_in_parent);
-    }
-    return;
-  }
-
-  DCHECK(window_state()->IsNormalStateType());
+  DCHECK(window_state()->IsNormalStateType() || window_state()->IsFloated());
   // The window was normal and stays normal. This is a user
   // resize/drag and so the current bounds should be maintained, clearing
   // any prior restore bounds.

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("history") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "history_coordinator.h",
     "history_coordinator.mm",
@@ -42,7 +41,6 @@ source_set("history") {
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "history_ui_constants.h",
     "history_ui_constants.mm",
@@ -50,7 +48,6 @@ source_set("constants") {
 }
 
 source_set("history_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "history_consumer.h",
     "history_entries_status_item.h",
@@ -65,7 +62,7 @@ source_set("history_ui") {
     "history_menu_provider.h",
     "history_table_view_controller.h",
     "history_table_view_controller.mm",
-    "history_ui_delegate.h",
+    "history_table_view_controller_delegate.h",
     "history_util.h",
     "history_util.mm",
   ]
@@ -104,11 +101,11 @@ source_set("history_ui") {
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/common/ui/util",
     "//ui/base",
+    "//ui/strings",
   ]
 }
 
 source_set("history_driver") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "ios_browsing_history_driver.h",
     "ios_browsing_history_driver.mm",
@@ -127,10 +124,10 @@ source_set("history_driver") {
 }
 
 source_set("clear_browsing_data") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "history_clear_browsing_data_coordinator.h",
     "history_clear_browsing_data_coordinator.mm",
+    "history_clear_browsing_data_coordinator_delegate.h",
   ]
   deps = [
     ":history_ui",
@@ -148,7 +145,6 @@ source_set("clear_browsing_data") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "history_entry_inserter_unittest.mm" ]
   deps = [
@@ -164,10 +160,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "history_ui_egtest.mm" ]
   deps = [

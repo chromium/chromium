@@ -156,8 +156,8 @@ class MEDIA_EXPORT DecoderSelector {
   DecoderPriorityCB decoder_priority_cb_;
   raw_ptr<MediaLog> media_log_;
 
-  raw_ptr<StreamTraits, DanglingUntriaged> traits_ = nullptr;
-  raw_ptr<DemuxerStream, DanglingUntriaged> stream_ = nullptr;
+  raw_ptr<StreamTraits, AcrossTasksDanglingUntriaged> traits_ = nullptr;
+  raw_ptr<DemuxerStream, AcrossTasksDanglingUntriaged> stream_ = nullptr;
   raw_ptr<CdmContext> cdm_context_ = nullptr;
   WaitingCB waiting_cb_;
 

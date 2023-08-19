@@ -10,7 +10,6 @@
 
 #include "base/bits.h"
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
 #include "base/format_macros.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/discardable_shared_memory.h"
@@ -22,10 +21,6 @@
 #include "base/trace_event/memory_dump_manager.h"
 
 namespace discardable_memory {
-
-BASE_FEATURE(kReleaseDiscardableFreeListPages,
-             "ReleaseDiscardableFreeListPages",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 
@@ -187,34 +182,13 @@ DiscardableSharedMemoryHeap::Grow(
 
 void DiscardableSharedMemoryHeap::MergeIntoFreeLists(
     std::unique_ptr<Span> span) {
-  if (!base::FeatureList::IsEnabled(kReleaseDiscardableFreeListPages)) {
-    dirty_freed_memory_page_count_ += span->MarkAsDirty();
-  }
+  dirty_freed_memory_page_count_ += span->MarkAsDirty();
   MergeIntoFreeListsClean(std::move(span));
 }
 
 void DiscardableSharedMemoryHeap::MergeIntoFreeListsClean(
     std::unique_ptr<Span> span) {
   DCHECK(span->shared_memory_);
-
-  if (base::FeatureList::IsEnabled(kReleaseDiscardableFreeListPages)) {
-    SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Memory.Discardable.FreeListReleaseTime");
-    // Release as much memory as possible before putting it into the freelists
-    // in order to reduce their size. Getting this memory back is still much
-    // cheaper than an IPC, while also saving us space in the freelists.
-    //
-    // The "+ 1" in the offset is for the SharedState that's at the start of
-    // the DiscardableSharedMemory. See DiscardableSharedMemory for details on
-    // what this is used for. We don't want to remove it, so we offset by an
-    // extra page.
-    size_t offset = (1 + span->start_) * base::GetPageSize() -
-                    reinterpret_cast<size_t>(span->shared_memory()->memory());
-    // Since we always offset by at least one page because of the SharedState,
-    // our offset should never be 0.
-    DCHECK_GT(offset, 0u);
-    span->shared_memory()->ReleaseMemoryIfPossible(
-        offset, span->length_ * base::GetPageSize());
-  }
 
   // First add length of |span| to |num_free_blocks_|.
   num_free_blocks_ += span->length_;

@@ -22,7 +22,9 @@ struct hb_language_impl_t;
 
 namespace blink {
 
-enum class LineBreakIteratorMode { kDefault, kNormal, kStrict, kLoose };
+// A Unicode Line Break Style Identifier (key "lb".)
+// https://www.unicode.org/reports/tr35/#UnicodeLineBreakStyleIdentifier
+enum class LineBreakStrictness : uint8_t { kDefault, kNormal, kStrict, kLoose };
 
 class PLATFORM_EXPORT LayoutLocale : public RefCounted<LayoutLocale> {
   USING_FAST_MALLOC(LayoutLocale);
@@ -72,7 +74,8 @@ class PLATFORM_EXPORT LayoutLocale : public RefCounted<LayoutLocale> {
   Hyphenation* GetHyphenation() const;
   scoped_refptr<QuotesData> GetQuotesData() const;
 
-  AtomicString LocaleWithBreakKeyword(LineBreakIteratorMode) const;
+  AtomicString LocaleWithBreakKeyword(LineBreakStrictness,
+                                      bool use_phrase = false) const;
 
   static scoped_refptr<LayoutLocale> CreateForTesting(const AtomicString&);
   static void SetHyphenationForTesting(const AtomicString&,

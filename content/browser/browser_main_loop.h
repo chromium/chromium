@@ -87,6 +87,7 @@ class HostFrameSinkManager;
 
 namespace content {
 class BrowserMainParts;
+class BackgroundTracingManager;
 class BrowserOnlineStateObserver;
 class BrowserThreadImpl;
 class MediaKeysListenerManagerImpl;
@@ -387,6 +388,7 @@ class CONTENT_EXPORT BrowserMainLoop {
   std::unique_ptr<MediaStreamManager> media_stream_manager_;
   scoped_refptr<SaveFileManager> save_file_manager_;
   std::unique_ptr<content::TracingControllerImpl> tracing_controller_;
+  std::unique_ptr<BackgroundTracingManager> background_tracing_manager_;
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<viz::HostFrameSinkManager> host_frame_sink_manager_;
 

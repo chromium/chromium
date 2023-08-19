@@ -27,8 +27,8 @@ class COMPONENT_EXPORT(DLP) FakeDlpClient : public DlpClient,
   // DlpClient implementation:
   void SetDlpFilesPolicy(const dlp::SetDlpFilesPolicyRequest request,
                          SetDlpFilesPolicyCallback callback) override;
-  void AddFile(const dlp::AddFileRequest request,
-               AddFileCallback callback) override;
+  void AddFiles(const dlp::AddFilesRequest request,
+                AddFilesCallback callback) override;
   void GetFilesSources(const dlp::GetFilesSourcesRequest request,
                        GetFilesSourcesCallback callback) override;
   void CheckFilesTransfer(const dlp::CheckFilesTransferRequest request,
@@ -48,24 +48,28 @@ class COMPONENT_EXPORT(DLP) FakeDlpClient : public DlpClient,
       dlp::CheckFilesTransferResponse response) override;
   void SetFileAccessAllowed(bool allowed) override;
   void SetIsAlive(bool is_alive) override;
-  void SetAddFileMock(AddFileCall mock) override;
+  void SetAddFilesMock(AddFilesCall mock) override;
   void SetGetFilesSourceMock(GetFilesSourceCall mock) override;
   dlp::CheckFilesTransferRequest GetLastCheckFilesTransferRequest()
       const override;
   void SetRequestFileAccessMock(RequestFileAccessCall mock) override;
+  void SetCheckFilesTransferMock(CheckFilesTransferCall mock) override;
 
  private:
   int set_dlp_files_policy_count_ = 0;
   bool file_access_allowed_ = true;
   bool is_alive_ = true;
-  base::flat_map<ino_t, std::string> files_database_;
+  // Map from file path to a pair of source_url and referrer_url.
+  base::flat_map<std::string, std::pair<std::string, std::string>>
+      files_database_;
   absl::optional<std::string> fake_source_;
   absl::optional<dlp::CheckFilesTransferResponse>
       check_files_transfer_response_;
-  absl::optional<AddFileCall> add_file_mock_;
+  absl::optional<AddFilesCall> add_files_mock_;
   absl::optional<GetFilesSourceCall> get_files_source_mock_;
   dlp::CheckFilesTransferRequest last_check_files_transfer_request_;
   absl::optional<RequestFileAccessCall> request_file_access_mock_;
+  absl::optional<CheckFilesTransferCall> check_files_transfer_mock_;
   base::ObserverList<Observer> observers_;
 };
 

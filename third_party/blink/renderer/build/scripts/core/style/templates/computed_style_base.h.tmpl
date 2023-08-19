@@ -1,5 +1,5 @@
 {% from 'templates/macros.tmpl' import license, print_if, source_files_for_generated_file %}
-{% from 'templates/fields/field.tmpl' import encode, getter_expression, setter_expression, declare_storage, fieldwise_compare, fieldwise_copy, fieldwise_diff, fieldwise_pointer_compare_inherited, field_group_access_bit_name %}
+{% from 'templates/fields/field.tmpl' import encode, getter_expression, setter_expression, declare_storage, fieldwise_compare, fieldwise_diff, fieldwise_pointer_compare_inherited, field_group_access_bit_name %}
 {% from 'templates/fields/group.tmpl' import declare_field_group_class %}
 {{license()}}
 
@@ -44,6 +44,8 @@ namespace blink {
 
 // Forward declaration for diff functions.
 class ComputedStyle;
+
+struct ComputedStyleAccessFlags;
 
 // Forward declaration of friends:
 {% for property in longhands %}
@@ -178,11 +180,16 @@ class ComputedStyleBase {
     {{field.name}},
     {% endfor %}
   };
+  struct DebugDiff {
+    DebugField field;
+    std::string correct;
+    std::string actual;
+  };
 
   CORE_EXPORT static String DebugFieldToString(DebugField);
 
   // Returns a list of all fields that differ between |this| and |o|.
-  CORE_EXPORT Vector<DebugField> DebugDiffFields(const ComputedStyleBase& o) const;
+  CORE_EXPORT Vector<DebugDiff> DebugDiffFields(const ComputedStyleBase& o) const;
 #endif // DCHECK_IS_ON()
 
  private:
@@ -195,6 +202,10 @@ class ComputedStyleBase {
   // Constructor and destructor are protected so that only the parent class ComputedStyle
   // can instantiate this class.
   ComputedStyleBase();
+  ComputedStyleBase(const ComputedStyleBase &initial_style) = default;
+  ComputedStyleBase(const ComputedStyleBase &source_for_noninherited,
+                    const ComputedStyleBase &parent_style,
+                    ComputedStyleAccessFlags &access_);
 
   {% for field in computed_style.all_fields|sort(attribute='name') %}
   {% if field.field_template not in ('pointer',) %}
@@ -220,6 +231,13 @@ class ComputedStyleBase {
   {% endfor %}
 };
 
+// Access flags. These are passed to DataRef::Access to ensure that we have
+// a private copy of the relevant DataRef before mutation.
+struct ComputedStyleAccessFlags {
+{% for group in computed_style.all_subgroups|sort(attribute='name') %}
+  bool {{group.member_name}} = false;
+{% endfor %}
+};
 
 class ComputedStyleBuilderBase {
   STACK_ALLOCATED();
@@ -251,9 +269,6 @@ class ComputedStyleBuilderBase {
     {% endfor %}
   }
 
-  CORE_EXPORT void InheritFrom(const ComputedStyleBase& other, IsAtShadowBoundary isAtShadowBoundary);
-  CORE_EXPORT void CopyNonInheritedFromCached(const ComputedStyleBase& other);
-
   void PropagateIndependentInheritedProperties(const ComputedStyleBase& parent_style);
 
   {% for field in computed_style_builder.all_fields|sort(attribute='name') %}
@@ -266,14 +281,15 @@ class ComputedStyleBuilderBase {
     memset(&access_, 0, sizeof(access_));
   }
 
+ protected:
+  // Used when constructing ComputedStyleBase, because the constructor may need
+  // to set access flags if allocating new subgroups.
+  ComputedStyleAccessFlags& GetAccessFlagsForConstructor() {
+    return access_;
+  }
+
  private:
-  // Access flags. These are passed to DataRef::Access to ensure that we have
-  // a private copy of the relevant DataRef before mutation.
-  mutable struct {
-  {% for group in computed_style.all_subgroups|sort(attribute='name') %}
-    bool {{group.member_name}} = false;
-  {% endfor %}
-  } access_;
+  mutable ComputedStyleAccessFlags access_;
 
   ComputedStyleBase* style_ = nullptr;
 };

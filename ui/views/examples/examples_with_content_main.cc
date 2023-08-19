@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/views/examples/examples_color_mixer.h"
 #include "ui/views/examples/examples_window.h"
 #include "ui/views/examples/examples_window_with_content.h"
@@ -16,7 +17,6 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "sandbox/mac/seatbelt_exec.h"
-#include "ui/display/screen.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -68,9 +68,6 @@ int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE, wchar_t*, int) {
 int main(int argc, const char** argv) {
   base::CommandLine::Init(argc, argv);
 
-#if BUILDFLAG(IS_MAC)
-  display::ScopedNativeScreen desktop_screen;
-#endif
   ui::ColorProviderManager::Get().AppendColorProviderInitializer(
       base::BindRepeating(&views::examples::AddExamplesColorMixers));
 

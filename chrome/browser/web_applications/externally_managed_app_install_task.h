@@ -5,21 +5,20 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_EXTERNALLY_MANAGED_APP_INSTALL_TASK_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_EXTERNALLY_MANAGED_APP_INSTALL_TASK_H_
 
+#include <memory>
+
 #include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/external_install_options.h"
-#include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
-#include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
+class GURL;
 
 namespace content {
 class WebContents;
@@ -32,10 +31,7 @@ enum class UninstallResultCode;
 
 namespace web_app {
 
-class WebAppUrlLoader;
-class WebAppInstallFinalizer;
-class WebAppCommandScheduler;
-class WebAppUiManager;
+class WebAppProvider;
 class WebAppDataRetriever;
 
 // Class to install WebApp from a WebContents. A queue of such tasks is owned by
@@ -53,9 +49,7 @@ class ExternallyManagedAppInstallTask {
   explicit ExternallyManagedAppInstallTask(
       Profile* profile,
       WebAppUrlLoader* url_loader,
-      WebAppUiManager* ui_manager,
-      WebAppInstallFinalizer* install_finalizer,
-      WebAppCommandScheduler* command_scheduler,
+      WebAppProvider& provider,
       DataRetrieverFactory data_retriever_factory,
       ExternalInstallOptions install_options);
 
@@ -83,9 +77,6 @@ class ExternallyManagedAppInstallTask {
   // by system apps.
   void InstallFromInfo(ResultCallback result_callback);
 
-  void OnWebContentsReady(content::WebContents* web_contents,
-                          ResultCallback result_callback,
-                          WebAppUrlLoader::Result prepare_for_load_result);
   void OnUrlLoaded(content::WebContents* web_contents,
                    ResultCallback result_callback,
                    WebAppUrlLoader::Result load_url_result);
@@ -122,11 +113,7 @@ class ExternallyManagedAppInstallTask {
 
   const raw_ptr<Profile> profile_;
   const raw_ptr<WebAppUrlLoader, DanglingUntriaged> url_loader_;
-  const raw_ptr<WebAppUiManager> ui_manager_;
-  const raw_ptr<WebAppInstallFinalizer> install_finalizer_;
-  const raw_ptr<WebAppCommandScheduler> command_scheduler_;
-
-  ExternallyInstalledWebAppPrefs externally_installed_app_prefs_;
+  const raw_ref<WebAppProvider> provider_;
 
   DataRetrieverFactory data_retriever_factory_;
   const ExternalInstallOptions install_options_;

@@ -1,2 +1,14 @@
 ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++ROLE_SYSTEM_GROUPING xml-roles:form
+++++ROLE_SYSTEM_STATICTEXT name='Unnamed ARIA form: must fall back to the native role.'
+++IA2_ROLE_SECTION xml-roles:form
+++++ROLE_SYSTEM_STATICTEXT name='Unnamed ARIA form on plain div uses generic container role.'
+++IA2_ROLE_FORM name='Named form' xml-roles:form
+++++ROLE_SYSTEM_STATICTEXT name='Named ARIA form#1 gets the form role.'
+++IA2_ROLE_FORM name='Named ARIA form#2 gets the form role.' xml-roles:form
+++++IA2_ROLE_SECTION
+++++++ROLE_SYSTEM_STATICTEXT name='Named ARIA form#2 gets the form role.'
+++IA2_ROLE_FORM name='Named form' xml-roles:form
+++++ROLE_SYSTEM_STATICTEXT name='Named ARIA form#3 gets the form role.'
 ++IA2_ROLE_FORM xml-roles:form
+++++ROLE_SYSTEM_STATICTEXT name='An aria-rolescription works on a nameless role=form.'

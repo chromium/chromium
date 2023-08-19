@@ -49,10 +49,9 @@ static_library("handler") {
       "linux/cros_crash_report_exception_handler.cc",
       "linux/cros_crash_report_exception_handler.h",
     ]
+
     # TODO(https://crbug.com/1420445): Remove this config when M115 branches.
-    configs += [
-      "../build:crashpad_is_in_chromium",
-    ]
+    configs += [ "../build:crashpad_is_in_chromium" ]
   }
 
   if (crashpad_is_win) {
@@ -101,7 +100,7 @@ static_library("common") {
     "minidump_to_upload_parameters.cc",
     "minidump_to_upload_parameters.h",
   ]
-  if (crashpad_is_mac || crashpad_is_ios) {
+  if (crashpad_is_apple) {
     sources += [
       "mac/file_limit_annotation.cc",
       "mac/file_limit_annotation.h",
@@ -337,6 +336,19 @@ if (crashpad_is_win) {
     testonly = true
 
     sources = [ "win/self_destroying_test_program.cc" ]
+
+    deps = [
+      "../client",
+      "../compat",
+      "../snapshot",
+      "../third_party/mini_chromium:base",
+    ]
+  }
+
+  crashpad_executable("heap_corrupting_program") {
+    testonly = true
+
+    sources = [ "win/heap_corrupting_program.cc" ]
 
     deps = [
       "../client",

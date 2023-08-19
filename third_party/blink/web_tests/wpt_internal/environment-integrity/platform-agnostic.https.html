@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script type="module">
+  'use strict';
+
+  // These tests run against a mocked attester and don't care about
+  // platform specific details.
+  // In Chromium's case, this means we also need to mock out the browser process
+  // calls because we mock by intercepting the mojo calls.
+
+  import {
+    convertArrayBufferToBase64,
+    convertStringToSha256,
+    EnvironmentIntegrityResponseCode,
+    MockEnvironmentIntegrity,
+  } from "./resources/mock.js";
+
+  const mockEnvironmentIntegrity = new MockEnvironmentIntegrity();
+
+  test(() => {
+    assert_idl_attribute(navigator, 'getEnvironmentIntegrity');
+  }, 'The getEnvironmentIntegrity method should exist on the navigator object');
+
+  promise_test(async () => {
+    const contentBinding = 'contentBinding';
+    mockEnvironmentIntegrity.mockResponseCode(EnvironmentIntegrityResponseCode.kSuccess);
+
+    const result = await navigator.getEnvironmentIntegrity(contentBinding);
+    // The user agent includes the top level site information in the content binding.
+    const expectedToken = await convertStringToSha256(`${contentBinding};https://${location.hostname}`);
+
+    assert_class_string(
+      result,
+      "EnvironmentIntegrity",
+      "The response should have be an instance of the 'EnvironmentIntegrity' class",
+    );
+
+    // Even though EnvironmentIntegrity has a nice encode method, the problem
+    // is our test code doesn't have an easy way to get a Base64 string that
+    // properly deals with unicode so rather getting the nasty ASCII Base64
+    // encoding for both ArrayBuffers to compare.
+    assert_equals(
+      convertArrayBufferToBase64(result.attestationToken),
+      convertArrayBufferToBase64(expectedToken),
+      "The token should have been returned from the attester",
+    );
+  }, 'getEnvironmentIntegrity should return a token');
+
+  promise_test(async (t) => {
+    mockEnvironmentIntegrity.mockResponseCode(EnvironmentIntegrityResponseCode.kInternalError);
+    await promise_rejects_dom(
+      t,
+      "UnknownError",
+      navigator.getEnvironmentIntegrity('contentBinding'),
+    );
+  }, 'getEnvironmentIntegrity should throw UnknownError');
+
+  promise_test(async (t) => {
+    mockEnvironmentIntegrity.mockResponseCode(EnvironmentIntegrityResponseCode.kTimeout);
+    await promise_rejects_dom(
+      t,
+      "TimeoutError",
+      navigator.getEnvironmentIntegrity('contentBinding'),
+    );
+  }, 'getEnvironmentIntegrity should throw TimeoutError');
+</script>

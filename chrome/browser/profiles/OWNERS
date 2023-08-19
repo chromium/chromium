@@ -1,4 +1,5 @@
 alexilin@chromium.org
+dgn@chromium.org
 droger@chromium.org
 msalama@chromium.org
 msarda@chromium.org
@@ -10,4 +11,6 @@ skuhne@chromium.org
 
 per-file host_zoom_map_browsertest.cc=wjmaclean@chromium.org
 
+# Prefer rsult for these files over directory owners.
 per-file *profile_keyed_service_*=rsult@google.com
+per-file chrome_browser_main_extra_parts_profiles.*=rsult@google.com

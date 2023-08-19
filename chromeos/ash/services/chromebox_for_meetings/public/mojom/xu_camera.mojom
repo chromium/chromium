@@ -70,7 +70,7 @@ struct ControlMapping {
   // V4L2 control name
   array<uint8, 32> name;
 
-  // UVC extension unit GUID
+  // UVC extension unit GUID (little-endian)
   array<uint8, 16> guid;
 
   // UVC control selector
@@ -113,6 +113,14 @@ union CtrlType {
 // Interface used to query UVC XU controls
 interface XuCamera {
   // Attempts to find the Local UnitID from the GUID
+  //
+  // The request:
+  // * |id| - webcam id, either a WebRtc id or a device node path.
+  // * |guid| - UVC XU GUID (little-endian).
+  //
+  // The response:
+  // * |error_code| - zero if successful and non-zero if failed or invalid.
+  // * |unit_id| - unit ID value corresponding to guid
   GetUnitId(WebcamId id, array<uint8, 16> guid) => (uint8 error_code,
                                                      uint8 unit_id);
 

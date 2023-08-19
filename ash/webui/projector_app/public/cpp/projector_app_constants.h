@@ -15,10 +15,13 @@ extern const char kChromeUIProjectorAnnotatorHost[];
 extern const char kChromeUIUntrustedProjectorUrl[];
 extern const char kChromeUIUntrustedProjectorPwaUrl[];
 
-extern const char kChromeUITrustedProjectorUrl[];
-extern const char kChromeUIUntrustedAnnotatorUrl[];
+// The ID of the Projector SWA.
+extern const char kChromeUIUntrustedProjectorSwaAppId[];
 
-extern const char kChromeUITrustedProjectorSwaAppId[];
+// The deprecated app-id of the Projector SWA.
+extern const char kChromeUITrustedProjectorSwaAppIdDeprecated[];
+
+extern const char kChromeUIUntrustedAnnotatorUrl[];
 
 // File extension of Projector metadata file. It is used to identify Projector
 // screencasts at processing pending screencasts and fetching screencast list.

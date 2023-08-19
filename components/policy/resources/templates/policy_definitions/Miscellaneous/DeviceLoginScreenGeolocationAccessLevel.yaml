@@ -9,7 +9,7 @@ desc: |-
   access is allowed for the managed devices. If an invalid policy value is sent,
   the access falls back to
   <ph name="DISALLOW">Disallow</ph>. For unmanaged devices it's always
-  <ph name="DISALLOW">Disallow</ph>.
+  <ph name="ALLOW">Allow</ph>.
 
   WARNING: Be careful when changing this setting, it could break other policies
   involving geolocation
@@ -37,7 +37,7 @@ schema:
   enum:
   - 0
   - 1
-default: 0
+default: 1
 default_for_managed_devices_doc_only: 1
 example_value: 0
 items:

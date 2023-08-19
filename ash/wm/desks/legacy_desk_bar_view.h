@@ -8,7 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/overview/overview_grid.h"
-#include "ui/views/view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
 
@@ -17,13 +17,15 @@ namespace ash {
 // buttons.
 class ASH_EXPORT LegacyDeskBarView : public DeskBarViewBase {
  public:
-  explicit LegacyDeskBarView(OverviewGrid* overview_grid);
+  METADATA_HEADER(LegacyDeskBarView);
+
+  explicit LegacyDeskBarView(base::WeakPtr<OverviewGrid> overview_grid);
 
   LegacyDeskBarView(const LegacyDeskBarView&) = delete;
   LegacyDeskBarView& operator=(const LegacyDeskBarView&) = delete;
 
   // views::View:
-  const char* GetClassName() const override;
+  gfx::Size CalculatePreferredSize() const override;
 };
 
 }  // namespace ash

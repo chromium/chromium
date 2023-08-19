@@ -14,7 +14,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/apple/bundle_locations.h"
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #endif
 
 namespace gpu::webgpu {
@@ -26,7 +26,7 @@ std::unique_ptr<DawnInstance> DawnInstance::Create(
   std::string dawn_search_path;
   base::FilePath module_path;
 #if BUILDFLAG(IS_MAC)
-  if (base::mac::AmIBundled()) {
+  if (base::apple::AmIBundled()) {
     dawn_search_path = base::apple::FrameworkBundlePath()
                            .Append("Libraries")
                            .AsEndingWithSeparator()
@@ -35,7 +35,11 @@ std::unique_ptr<DawnInstance> DawnInstance::Create(
   if (dawn_search_path.empty())
 #endif
   {
+#if BUILDFLAG(IS_IOS)
+    if (base::PathService::Get(base::DIR_ASSETS, &module_path)) {
+#else
     if (base::PathService::Get(base::DIR_MODULE, &module_path)) {
+#endif
       dawn_search_path = module_path.AsEndingWithSeparator().MaybeAsASCII();
     }
   }
@@ -56,11 +60,20 @@ std::unique_ptr<DawnInstance> DawnInstance::Create(
   }
 
   wgpu::DawnTogglesDescriptor dawn_toggle_desc;
+#ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
+  dawn_toggle_desc.enabledToggleCount = require_instance_enabled_toggles.size();
+#else
   dawn_toggle_desc.enabledTogglesCount =
-      static_cast<uint32_t>(require_instance_enabled_toggles.size());
+      require_instance_enabled_toggles.size();
+#endif
   dawn_toggle_desc.enabledToggles = require_instance_enabled_toggles.data();
+#ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
+  dawn_toggle_desc.disabledToggleCount =
+      require_instance_disabled_toggles.size();
+#else
   dawn_toggle_desc.disabledTogglesCount =
-      static_cast<uint32_t>(require_instance_disabled_toggles.size());
+      require_instance_disabled_toggles.size();
+#endif
   dawn_toggle_desc.disabledToggles = require_instance_disabled_toggles.data();
 
   wgpu::DawnInstanceDescriptor dawn_instance_desc;

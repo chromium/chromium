@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "ash/components/arc/mojom/accessibility_helper.mojom.h"
 #include "ash/components/arc/mojom/adbd.mojom.h"
 #include "ash/components/arc/mojom/app.mojom.h"
 #include "ash/components/arc/mojom/app_permissions.mojom.h"
@@ -43,7 +42,6 @@
 #include "ash/components/arc/mojom/notifications.mojom.h"
 #include "ash/components/arc/mojom/obb_mounter.mojom.h"
 #include "ash/components/arc/mojom/oemcrypto.mojom.h"
-#include "ash/components/arc/mojom/payment_app.mojom.h"
 #include "ash/components/arc/mojom/pip.mojom.h"
 #include "ash/components/arc/mojom/policy.mojom.h"
 #include "ash/components/arc/mojom/power.mojom.h"
@@ -51,7 +49,6 @@
 #include "ash/components/arc/mojom/privacy_items.mojom.h"
 #include "ash/components/arc/mojom/process.mojom.h"
 #include "ash/components/arc/mojom/property.mojom.h"
-#include "ash/components/arc/mojom/rotation_lock.mojom.h"
 #include "ash/components/arc/mojom/screen_capture.mojom.h"
 #include "ash/components/arc/mojom/sharesheet.mojom.h"
 #include "ash/components/arc/mojom/storage_manager.mojom.h"
@@ -73,7 +70,9 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/ranges/algorithm.h"
+#include "chromeos/components/payments/mojom/payment_app.mojom.h"
 #include "chromeos/components/sensors/mojom/cros_sensor_service.mojom.h"
+#include "services/accessibility/android/public/mojom/accessibility_helper.mojom.h"
 
 namespace arc {
 
@@ -92,7 +91,7 @@ ArcBridgeHostImpl::~ArcBridgeHostImpl() {
 }
 
 void ArcBridgeHostImpl::OnAccessibilityHelperInstanceReady(
-    mojo::PendingRemote<mojom::AccessibilityHelperInstance>
+    mojo::PendingRemote<ax::android::mojom::AccessibilityHelperInstance>
         accessibility_helper_remote) {
   OnInstanceReady(arc_bridge_service_->accessibility_helper(),
                   std::move(accessibility_helper_remote));
@@ -319,7 +318,8 @@ void ArcBridgeHostImpl::OnOemCryptoInstanceReady(
 }
 
 void ArcBridgeHostImpl::OnPaymentAppInstanceReady(
-    mojo::PendingRemote<mojom::PaymentAppInstance> payment_app_remote) {
+    mojo::PendingRemote<chromeos::payments::mojom::PaymentAppInstance>
+        payment_app_remote) {
   OnInstanceReady(arc_bridge_service_->payment_app(),
                   std::move(payment_app_remote));
 }
@@ -359,12 +359,6 @@ void ArcBridgeHostImpl::OnProcessInstanceReady(
 void ArcBridgeHostImpl::OnPropertyInstanceReady(
     mojo::PendingRemote<mojom::PropertyInstance> property_remote) {
   OnInstanceReady(arc_bridge_service_->property(), std::move(property_remote));
-}
-
-void ArcBridgeHostImpl::OnRotationLockInstanceReady(
-    mojo::PendingRemote<mojom::RotationLockInstance> rotation_lock_remote) {
-  OnInstanceReady(arc_bridge_service_->rotation_lock(),
-                  std::move(rotation_lock_remote));
 }
 
 void ArcBridgeHostImpl::OnScreenCaptureInstanceReady(

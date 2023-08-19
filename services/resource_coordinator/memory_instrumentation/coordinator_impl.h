@@ -182,7 +182,6 @@ class CoordinatorImpl : public Registry,
 
   // Dump IDs are unique across both heap dump and memory dump requests.
   uint64_t next_dump_id_;
-  std::unique_ptr<TracingObserver> tracing_observer_;
 
   // Timeout for registered client processes to respond to dump requests.
   base::TimeDelta client_process_timeout_;

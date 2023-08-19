@@ -101,12 +101,12 @@ class TestIMEInputContextHandler : public ash::MockIMEInputContextHandler {
     ++send_key_event_call_count_;
   }
 
-  bool SetCompositionRange(
+  bool SetComposingRange(
       uint32_t before,
       uint32_t after,
       const std::vector<ui::ImeTextSpan>& text_spans) override {
-    ash::MockIMEInputContextHandler::SetCompositionRange(before, after,
-                                                         text_spans);
+    ash::MockIMEInputContextHandler::SetComposingRange(before, after,
+                                                       text_spans);
     composition_range_history_.push_back(std::make_tuple(before, after));
     return true;
   }
@@ -400,7 +400,7 @@ TEST_F(InputConnectionImplTest, SetCompositionRange) {
   // a[b|cd]e
   connection->SetCompositionRange(gfx::Range(1, 4));
   EXPECT_EQ(1u, context_handler()->composition_range_history().size());
-  EXPECT_EQ(std::make_tuple(1, 2),
+  EXPECT_EQ(std::make_tuple(1, 4),
             context_handler()->composition_range_history().back());
 
   engine()->Blur();

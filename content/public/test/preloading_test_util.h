@@ -12,8 +12,13 @@
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/preloading_data.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-shared.h"
 
-namespace content::test {
+namespace content {
+
+class PreloadingConfig;
+
+namespace test {
 
 // The set of UKM metric names in the PreloadingAttempt and PreloadingPrediction
 // UKM logs. This is useful for calling TestUkmRecorder::GetEntries.
@@ -41,7 +46,9 @@ class PreloadingAttemptUkmEntryBuilder {
       PreloadingTriggeringOutcome triggering_outcome,
       PreloadingFailureReason failure_reason,
       bool accurate,
-      absl::optional<base::TimeDelta> ready_time = absl::nullopt) const;
+      absl::optional<base::TimeDelta> ready_time = absl::nullopt,
+      absl::optional<blink::mojom::SpeculationEagerness> eagerness =
+          absl::nullopt) const;
 
  private:
   PreloadingPredictor predictor_;
@@ -92,6 +99,32 @@ class PreloadingAttemptAccessor {
   raw_ptr<PreloadingAttempt> preloading_attempt_;
 };
 
-}  // namespace content::test
+// Creating a PreloadingConfigOverride will override the current
+// PreloadingConfig (which is normally configured via field trial) until
+// PreloadingConfigOverride is destroyed. By default the configuration disables
+// sampling UKM preloading logs (some log types are sampled by default, which
+// can make preloading tests that verify UKM logs flaky) but enables (i.e. does
+// not hold back) all preloading features. For testing holdbacks, SetHoldback
+// can be called to disable a particular preloading feature.
+class PreloadingConfigOverride {
+ public:
+  PreloadingConfigOverride();
+  ~PreloadingConfigOverride();
+
+  void SetHoldback(PreloadingType preloading_type,
+                   PreloadingPredictor predictor,
+                   bool holdback);
+
+  void SetHoldback(std::string_view preloading_type,
+                   std::string_view predictor,
+                   bool holdback);
+
+ private:
+  std::unique_ptr<PreloadingConfig> preloading_config_;
+  raw_ptr<PreloadingConfig> overridden_config_;
+};
+
+}  // namespace test
+}  // namespace content
 
 #endif  // CONTENT_PUBLIC_TEST_PRELOADING_TEST_UTIL_H_

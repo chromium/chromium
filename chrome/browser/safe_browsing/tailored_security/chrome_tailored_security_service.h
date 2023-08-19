@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service.h"
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service_observer.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/safe_browsing/tailored_security/consented_message_android.h"
@@ -60,16 +61,25 @@ class ChromeTailoredSecurityService : public TailoredSecurityService,
 #if BUILDFLAG(IS_ANDROID)
   void MessageDismissed();
 
+  // Registers this as an observer on the TabModelList and, if possible, on a
+  // TabModel.
+  void RegisterObserver();
   void AddTabModelListObserver();
-  bool AddTabModelObserver();
+  void AddTabModelObserver();
+  void RemoveTabModelListObserver();
+  void RemoveTabModelObserver();
   // This tab model is used for the observer based retry mechanism.
   // We can't depend on this being set as a tab can be deleted at
   // any time.
   raw_ptr<TabModel> observed_tab_model_ = nullptr;
+  bool observing_tab_model_list_ = false;
   std::unique_ptr<TailoredSecurityConsentedModalAndroid> message_;
 #else
   TailoredSecurityDesktopDialogManager dialog_manager_;
 #endif
+
+  void SaveRetryState(TailoredSecurityRetryState result);
+
   raw_ptr<Profile> profile_;
 };
 

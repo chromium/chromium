@@ -24,7 +24,10 @@
 #import "ios/chrome/browser/reading_list/reading_list_browser_agent.h"
 #import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -35,6 +38,8 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
+#import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
+#import "ios/chrome/browser/shared/public/commands/overflow_menu_customization_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/price_notifications_commands.h"
@@ -43,13 +48,15 @@
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
+#import "ios/chrome/browser/supervised_user/supervised_user_service_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
-#import "ios/chrome/browser/tabs/features.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_mediator.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
+#import "ios/chrome/browser/ui/popup_menu/overflow_menu/menu_customization_coordinator.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_mediator.h"
+#import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_orderer.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_action_handler.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
@@ -66,10 +73,6 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using base::RecordAction;
 using base::UserMetricsAction;
@@ -88,7 +91,8 @@ enum class IOSOverflowMenuActionType {
 
 }  // namespace
 
-@interface PopupMenuCoordinator () <PopupMenuCommands,
+@interface PopupMenuCoordinator () <OverflowMenuCustomizationCommands,
+                                    PopupMenuCommands,
                                     PopupMenuMetricsHandler,
                                     PopupMenuPresenterDelegate,
                                     UIPopoverPresentationControllerDelegate,
@@ -123,7 +127,13 @@ enum class IOSOverflowMenuActionType {
 
 @end
 
-@implementation PopupMenuCoordinator
+@implementation PopupMenuCoordinator {
+  OverflowMenuModel* _overflowMenuModel;
+
+  OverflowMenuOrderer* _overflowMenuOrderer;
+
+  MenuCustomizationCoordinator* _menuCustomizationCoordinator;
+}
 
 @synthesize mediator = _mediator;
 @synthesize presenter = _presenter;
@@ -144,6 +154,9 @@ enum class IOSOverflowMenuActionType {
   [self.browser->GetCommandDispatcher()
       startDispatchingToTarget:self
                    forProtocol:@protocol(PopupMenuCommands)];
+  [self.browser->GetCommandDispatcher()
+      startDispatchingToTarget:self
+                   forProtocol:@protocol(OverflowMenuCustomizationCommands)];
   NSNotificationCenter* defaultCenter = [NSNotificationCenter defaultCenter];
   [defaultCenter addObserver:self
                     selector:@selector(applicationDidEnterBackground:)
@@ -185,11 +198,29 @@ enum class IOSOverflowMenuActionType {
     [self dismissPopupMenuAnimated:YES];
   }
 
-  // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
-  // clean up.
+  id<OmniboxCommands> omniboxCommandsHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), OmniboxCommands);
+  // Dismiss the omnibox (if open).
+  [omniboxCommandsHandler cancelOmniboxEdit];
+
   id<BrowserCommands> callableDispatcher =
-      static_cast<id<BrowserCommands>>(self.browser->GetCommandDispatcher());
-  [callableDispatcher prepareForOverflowMenuPresentation];
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), BrowserCommands);
+  [callableDispatcher dismissSoftKeyboard];
+
+  id<FindInPageCommands> findInPageCommandsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), FindInPageCommands);
+  // Dismiss Find in Page focus.
+  [findInPageCommandsHandler defocusFindInPage];
+
+  SceneState* sceneState =
+      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+  NonModalDefaultBrowserPromoSchedulerSceneAgent* nonModalPromoScheduler =
+      [NonModalDefaultBrowserPromoSchedulerSceneAgent
+          agentFromScene:sceneState];
+  // Allow the non-modal promo scheduler to close the promo.
+  [nonModalPromoScheduler logPopupMenuEntered];
+
+  [self.bubblePresenter toolsMenuDisplayed];
 
   self.requestStartTime = [NSDate timeIntervalSinceReferenceDate];
 
@@ -226,17 +257,24 @@ enum class IOSOverflowMenuActionType {
       UIContentSizeCategory contentSizeCategory =
           self.baseViewController.traitCollection.preferredContentSizeCategory;
 
-      self.overflowMenuMediator.isIncognito =
-          self.browser->GetBrowserState()->IsOffTheRecord();
-      self.overflowMenuMediator.visibleDestinationsCount =
+      BOOL isIncognito = self.browser->GetBrowserState()->IsOffTheRecord();
+      self.overflowMenuMediator.isIncognito = isIncognito;
+      _overflowMenuOrderer =
+          [[OverflowMenuOrderer alloc] initWithIsIncognito:isIncognito];
+      _overflowMenuOrderer.visibleDestinationsCount =
           [OverflowMenuUIConfiguration
               numDestinationsVisibleWithoutHorizontalScrollingForScreenWidth:
                   screenWidth
                                                       forContentSizeCategory:
                                                           contentSizeCategory];
+      _overflowMenuOrderer.localStatePrefs =
+          GetApplicationContext()->GetLocalState();
+
+      self.overflowMenuMediator.menuOrderer = _overflowMenuOrderer;
       self.overflowMenuMediator.dispatcher =
           static_cast<id<ActivityServiceCommands, ApplicationCommands,
                          BrowserCoordinatorCommands, FindInPageCommands,
+                         OverflowMenuCustomizationCommands,
                          PriceNotificationsCommands, TextZoomCommands>>(
               self.browser->GetCommandDispatcher());
       self.overflowMenuMediator.bookmarksCommandsHandler = HandlerForProtocol(
@@ -255,10 +293,11 @@ enum class IOSOverflowMenuActionType {
       self.overflowMenuMediator.accountBookmarkModel =
           ios::AccountBookmarkModelFactory::GetForBrowserState(
               self.browser->GetBrowserState());
+      self.overflowMenuMediator.readingListModel =
+          ReadingListModelFactory::GetInstance()->GetForBrowserState(
+              self.browser->GetBrowserState());
       self.overflowMenuMediator.browserStatePrefs =
           self.browser->GetBrowserState()->GetPrefs();
-      self.overflowMenuMediator.localStatePrefs =
-          GetApplicationContext()->GetLocalState();
       self.overflowMenuMediator.engagementTracker =
           feature_engagement::TrackerFactory::GetForBrowserState(
               self.browser->GetBrowserState());
@@ -268,6 +307,9 @@ enum class IOSOverflowMenuActionType {
           GetApplicationContext()->GetBrowserPolicyConnector();
       self.overflowMenuMediator.syncService =
           SyncServiceFactory::GetForBrowserState(
+              self.browser->GetBrowserState());
+      self.overflowMenuMediator.supervisedUserService =
+          SupervisedUserServiceFactory::GetForBrowserState(
               self.browser->GetBrowserState());
       self.overflowMenuMediator.promosManager =
           PromosManagerFactory::GetForBrowserState(
@@ -298,9 +340,14 @@ enum class IOSOverflowMenuActionType {
 
       self.popupMenuHelpCoordinator.uiConfiguration = uiConfiguration;
 
+      _overflowMenuModel = [[OverflowMenuModel alloc] initWithDestinations:@[]
+                                                              actionGroups:@[]];
+
+      _overflowMenuOrderer.model = _overflowMenuModel;
+      self.overflowMenuMediator.model = _overflowMenuModel;
+
       UIViewController* menu = [OverflowMenuViewProvider
-          makeViewControllerWithModel:self.overflowMenuMediator
-                                          .overflowMenuModel
+          makeViewControllerWithModel:_overflowMenuModel
                       uiConfiguration:uiConfiguration
                        metricsHandler:self];
 
@@ -469,12 +516,12 @@ enum class IOSOverflowMenuActionType {
   }
 
   if (self.overflowMenuMediator) {
-    __weak __typeof(self) weakSelf = self;
-    [self.baseViewController
-        dismissViewControllerAnimated:animated
-                           completion:^{
-                             [weakSelf.bubblePresenter presentTabPinnedBubble];
-                           }];
+    [self.baseViewController dismissViewControllerAnimated:animated
+                                                completion:nil];
+    _overflowMenuModel = nil;
+    [_overflowMenuOrderer updateForMenuDisappearance];
+    [_overflowMenuOrderer disconnect];
+    _overflowMenuOrderer = nil;
     [self.overflowMenuMediator disconnect];
     self.overflowMenuMediator = nil;
   }
@@ -485,42 +532,19 @@ enum class IOSOverflowMenuActionType {
   self.viewController = nil;
 }
 
-- (void)showSnackbarForPinnedState:(BOOL)pinnedState
-                          webState:(web::WebState*)webState {
-  DCHECK(IsPinnedTabsOverflowEnabled());
-  int messageId = pinnedState ? IDS_IOS_SNACKBAR_MESSAGE_PINNED_TAB
-                              : IDS_IOS_SNACKBAR_MESSAGE_UNPINNED_TAB;
+#pragma mark - OverflowMenuCustomizationCommands
 
-  base::WeakPtr<web::WebState> weakWebState = webState->GetWeakPtr();
-  base::WeakPtr<Browser> weakBrowser = self.browser->AsWeakPtr();
+- (void)showActionCustomization {
+  _menuCustomizationCoordinator = [[MenuCustomizationCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser];
+  _menuCustomizationCoordinator.menuOrderer = _overflowMenuOrderer;
+  [_menuCustomizationCoordinator start];
+}
 
-  void (^undoAction)() = ^{
-    if (pinnedState) {
-      RecordAction(UserMetricsAction("MobileSnackbarUndoPinAction"));
-    } else {
-      RecordAction(UserMetricsAction("MobileSnackbarUndoUnpinAction"));
-    }
-
-    Browser* browser = weakBrowser.get();
-    if (!browser) {
-      return;
-    }
-    [OverflowMenuMediator setTabPinned:!pinnedState
-                              webState:weakWebState.get()
-                          webStateList:browser->GetWebStateList()];
-  };
-
-  MDCSnackbarMessage* message =
-      [MDCSnackbarMessage messageWithText:l10n_util::GetNSString(messageId)];
-
-  MDCSnackbarMessageAction* action = [[MDCSnackbarMessageAction alloc] init];
-  action.handler = undoAction;
-  action.title = l10n_util::GetNSString(IDS_IOS_SNACKBAR_ACTION_UNDO);
-  message.action = action;
-
-  id<SnackbarCommands> snackbarCommandsHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), SnackbarCommands);
-  [snackbarCommandsHandler showSnackbarMessage:message];
+- (void)hideActionCustomization {
+  [_menuCustomizationCoordinator stop];
+  _menuCustomizationCoordinator = nil;
 }
 
 #pragma mark - ContainedPresenterDelegate

@@ -4,7 +4,8 @@
 
 #include "media/gpu/v4l2/test/av1_decoder.h"
 
-#include <linux/media/av1-ctrls.h>
+#include <linux/v4l2-controls.h>
+#include <linux/videodev2.h>
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -696,9 +697,6 @@ void Av1Decoder::SetupFrameParams(
                               !frm_header.enable_frame_end_update_cdf,
                               V4L2_AV1_FRAME_FLAG_DISABLE_FRAME_END_UPDATE_CDF);
   conditionally_set_u32_flags(&v4l2_frame_params->flags,
-                              frm_header.tile_info.uniform_spacing,
-                              V4L2_AV1_FRAME_FLAG_UNIFORM_TILE_SPACING);
-  conditionally_set_u32_flags(&v4l2_frame_params->flags,
                               frm_header.allow_warped_motion,
                               V4L2_AV1_FRAME_FLAG_ALLOW_WARPED_MOTION);
   conditionally_set_u32_flags(&v4l2_frame_params->flags,
@@ -949,11 +947,11 @@ void Av1Decoder::QueueReusableBuffersInCaptureQueue(
   }
 }
 
-VideoDecoder::Result Av1Decoder::DecodeNextFrame(std::vector<uint8_t>& y_plane,
+VideoDecoder::Result Av1Decoder::DecodeNextFrame(const int frame_number,
+                                                 std::vector<uint8_t>& y_plane,
                                                  std::vector<uint8_t>& u_plane,
                                                  std::vector<uint8_t>& v_plane,
-                                                 gfx::Size& size,
-                                                 const int frame_number) {
+                                                 gfx::Size& size) {
   libgav1::RefCountedBufferPtr current_frame;
   const ParsingResult parser_res = ReadNextFrame(current_frame);
 

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/ash_element_identifiers.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/tray_background_view_catalog.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
@@ -28,10 +29,10 @@
 #include "ash/system/holding_space/holding_space_tray_icon.h"
 #include "ash/system/holding_space/pinned_files_section.h"
 #include "ash/system/progress_indicator/progress_indicator.h"
+#include "ash/system/progress_indicator/progress_indicator_animation_registry.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
 #include "ash/user_education/user_education_class_properties.h"
-#include "ash/user_education/user_education_constants.h"
 #include "base/check.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
@@ -40,6 +41,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
@@ -120,17 +122,49 @@ bool IsPreviewable(const std::unique_ptr<HoldingSpaceItem>& item) {
          !HoldingSpaceItem::IsSuggestionType(item->type());
 }
 
+// Creates a model representing a foreground `tray` image with the specified
+// `vector_icon`. Note that when Jelly is enabled, the image must be repainted
+// on changes to `tray` activation.
+ui::ImageModel CreateForegroundImageModel(const HoldingSpaceTray* tray,
+                                          const gfx::VectorIcon& vector_icon) {
+  // When Jelly is disabled, `tray` activation does not affect color.
+  if (!chromeos::features::IsJellyEnabled()) {
+    return ui::ImageModel::FromVectorIcon(
+        vector_icon, kColorAshIconColorPrimary, kHoldingSpaceTrayIconSize);
+  }
+
+  // When Jelly is enabled, `tray` activation affects color.
+  ui::ImageModel active = ui::ImageModel::FromVectorIcon(
+      vector_icon, cros_tokens::kCrosSysSystemOnPrimaryContainer,
+      kHoldingSpaceTrayIconSize);
+  ui::ImageModel inactive = ui::ImageModel::FromVectorIcon(
+      vector_icon, cros_tokens::kCrosSysOnSurface, kHoldingSpaceTrayIconSize);
+
+  // Create a model which considers `tray` activation during rasterization.
+  return ui::ImageModel::FromImageGenerator(
+      base::BindRepeating(
+          [](const HoldingSpaceTray* tray, const ui::ImageModel& active,
+             const ui::ImageModel& inactive,
+             const ui::ColorProvider* color_provider) {
+            return (tray->is_active() ? active : inactive)
+                .Rasterize(color_provider);
+          },
+          base::Unretained(tray), base::OwnedRef(std::move(active)),
+          base::OwnedRef(std::move(inactive))),
+      gfx::Size(kHoldingSpaceTrayIconSize, kHoldingSpaceTrayIconSize));
+}
+
 // Creates the default tray icon.
-std::unique_ptr<views::ImageView> CreateDefaultTrayIcon() {
+std::unique_ptr<views::ImageView> CreateDefaultTrayIcon(
+    const HoldingSpaceTray* tray) {
   auto icon = std::make_unique<views::ImageView>();
   icon->SetID(kHoldingSpaceTrayDefaultIconId);
   icon->SetPreferredSize(gfx::Size(kTrayItemSize, kTrayItemSize));
   icon->SetPaintToLayer();
   icon->layer()->SetFillsBoundsOpaquely(false);
-  icon->SetImage(ui::ImageModel::FromVectorIcon(
-      features::IsHoldingSpaceRefreshEnabled() ? kHoldingSpaceRefreshIcon
-                                               : kHoldingSpaceIcon,
-      kColorAshIconColorPrimary, kHoldingSpaceTrayIconSize));
+  icon->SetImage(CreateForegroundImageModel(
+      tray, features::IsHoldingSpaceRefreshEnabled() ? kHoldingSpaceRefreshIcon
+                                                     : kHoldingSpaceIcon));
   return icon;
 }
 
@@ -138,7 +172,8 @@ std::unique_ptr<views::ImageView> CreateDefaultTrayIcon() {
 // Creates the icon to be parented by the drop target overlay to indicate that
 // the parent view is a drop target and is capable of handling the current drag
 // payload.
-std::unique_ptr<views::ImageView> CreateDropTargetIcon() {
+std::unique_ptr<views::ImageView> CreateDropTargetIcon(
+    const HoldingSpaceTray* tray) {
   auto icon = std::make_unique<views::ImageView>();
   icon->SetHorizontalAlignment(views::ImageView::Alignment::kCenter);
   icon->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
@@ -146,8 +181,7 @@ std::unique_ptr<views::ImageView> CreateDropTargetIcon() {
       gfx::Size(kHoldingSpaceIconSize, kHoldingSpaceIconSize));
   icon->SetPaintToLayer();
   icon->layer()->SetFillsBoundsOpaquely(false);
-  icon->SetImage(ui::ImageModel::FromVectorIcon(
-      views::kUnpinIcon, kColorAshIconColorPrimary, kHoldingSpaceIconSize));
+  icon->SetImage(CreateForegroundImageModel(tray, views::kUnpinIcon));
   return icon;
 }
 
@@ -194,11 +228,12 @@ HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf)
     // NOTE: Set `kHelpBubbleContextKey` before `views::kElementIdentifierKey`
     // in case registration causes a help bubble to be created synchronously.
     SetProperty(kHelpBubbleContextKey, HelpBubbleContext::kAsh);
-    SetProperty(views::kElementIdentifierKey, kHoldingSpaceTrayElementId);
   }
+  SetProperty(views::kElementIdentifierKey, kHoldingSpaceTrayElementId);
 
   // Default icon.
-  default_tray_icon_ = tray_container()->AddChildView(CreateDefaultTrayIcon());
+  default_tray_icon_ =
+      tray_container()->AddChildView(CreateDefaultTrayIcon(this));
 
   // Previews icon.
   previews_tray_icon_ = tray_container()->AddChildView(
@@ -215,7 +250,7 @@ HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf)
 
   // Drop target icon.
   drop_target_icon_ =
-      drop_target_overlay_->AddChildView(CreateDropTargetIcon());
+      drop_target_overlay_->AddChildView(CreateDropTargetIcon(this));
 
   // Progress indicator.
   // NOTE: The `progress_indicator_` will only be visible when:
@@ -224,7 +259,11 @@ HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf)
   progress_indicator_ =
       holding_space_util::CreateProgressIndicatorForController(
           HoldingSpaceController::Get());
-  layer()->Add(progress_indicator_->CreateLayer());
+  layer()->Add(progress_indicator_->CreateLayer(base::BindRepeating(
+      [](const HoldingSpaceTray* self, ui::ColorId color_id) {
+        return self->GetColorProvider()->GetColor(color_id);
+      },
+      base::Unretained(this))));
 
   // Subscribe to receive notification of changes to the `progress_indicator_`'s
   // underlying progress. When progress changes, the `default_tray_icon_` may
@@ -375,28 +414,31 @@ bool HoldingSpaceTray::CanDrop(const ui::OSExchangeData& data) {
 }
 
 int HoldingSpaceTray::OnDragUpdated(const ui::DropTargetEvent& event) {
-  return ExtractUnpinnedFilePaths(event.data()).empty()
-             ? ui::DragDropTypes::DRAG_NONE
-             : ui::DragDropTypes::DRAG_COPY;
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  // NOTE: Data is assumed to be constant during a drag-and-drop sequence.
+  DCHECK(CanDrop(event.data()));
+  DCHECK(can_drop_to_pin_.value_or(false));
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
+  return ui::DragDropTypes::DRAG_COPY;
 }
 
 views::View::DropCallback HoldingSpaceTray::GetDropCallback(
     const ui::DropTargetEvent& event) {
-  std::vector<base::FilePath> unpinned_file_paths(
-      ExtractUnpinnedFilePaths(event.data()));
-  if (unpinned_file_paths.empty())
-    return base::NullCallback();
-
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  // NOTE: Data is assumed to be constant during a drag-and-drop sequence.
+  // Also note that `can_drop_to_pin_` has been reset when this code is reached.
+  DCHECK(CanDrop(event.data()));
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
   return base::BindOnce(&HoldingSpaceTray::PerformDrop,
-                        weak_factory_.GetWeakPtr(),
-                        std::move(unpinned_file_paths));
+                        weak_factory_.GetWeakPtr());
 }
 
 void HoldingSpaceTray::PerformDrop(
-    std::vector<base::FilePath> unpinned_file_paths,
     const ui::DropTargetEvent& event,
     ui::mojom::DragOperation& output_drag_op,
     std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
+  std::vector<base::FilePath> unpinned_file_paths =
+      ExtractUnpinnedFilePaths(event.data());
   DCHECK(!unpinned_file_paths.empty());
 
   holding_space_metrics::RecordPodAction(
@@ -432,6 +474,7 @@ void HoldingSpaceTray::VisibilityChanged(views::View* starting_from,
   // Therefore, `IsDrawn()` should not be replaced by `is_visible`.
   if (!IsDrawn()) {
     drag_drop_observer_.reset();
+    can_drop_to_pin_.reset();
     return;
   }
 
@@ -542,6 +585,14 @@ HoldingSpaceTray::CreateContextMenuModel() {
   }
 
   return context_menu_model;
+}
+
+void HoldingSpaceTray::UpdateTrayItemColor(bool is_active) {
+  default_tray_icon_->SchedulePaint();
+  drop_target_icon_->SchedulePaint();
+  progress_indicator_->SetColorId(
+      is_active ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                : cros_tokens::kCrosSysPrimary);
 }
 
 void HoldingSpaceTray::OnHoldingSpaceModelAttached(HoldingSpaceModel* model) {
@@ -689,7 +740,8 @@ void HoldingSpaceTray::UpdatePreviewsState() {
   if (auto* model = HoldingSpaceController::Get()->model(); model) {
     auto* registry = HoldingSpaceAnimationRegistry::GetInstance();
     for (const auto& item : model->items()) {
-      auto* animation = registry->GetProgressIconAnimationForKey(item.get());
+      auto* animation = registry->GetProgressIconAnimationForKey(
+          ProgressIndicatorAnimationRegistry::AsAnimationKey(item.get()));
       if (animation && !animation->HasAnimated())
         animation->Start();
     }
@@ -808,8 +860,26 @@ void HoldingSpaceTray::UpdateDropTargetState(
     const ui::DropTargetEvent* event) {
   bool is_drop_target = false;
 
-  if (event_type == ScopedDragDropObserver::EventType::kDragUpdated &&
-      !ExtractUnpinnedFilePaths(event->data()).empty()) {
+  switch (event_type) {
+    case ScopedDragDropObserver::EventType::kDragUpdated:
+      if (!can_drop_to_pin_) {
+        // Cache `can_drop_to_pin_` to avoid costly recalculation.
+        can_drop_to_pin_ = CanDrop(event->data());
+      }
+#if EXPENSIVE_DCHECKS_ARE_ON()
+      else {
+        // NOTE: Data is assumed to be constant during a drag-and-drop sequence.
+        DCHECK_EQ(CanDrop(event->data()), can_drop_to_pin_.value());
+      }
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
+      break;
+    case ScopedDragDropObserver::EventType::kDragCompleted:
+    case ScopedDragDropObserver::EventType::kDragCancelled:
+      can_drop_to_pin_.reset();
+      break;
+  }
+
+  if (can_drop_to_pin_.value_or(false)) {
     // If the `event` contains pinnable files and is within range of this view,
     // indicate this view is a drop target to increase discoverability.
     constexpr int kProximityThreshold = 20;

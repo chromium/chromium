@@ -12,7 +12,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/time/time.h"
-#include "components/variations/jni/VariationsSeedBridge_jni.h"
+#include "components/variations/android/variations_jni/VariationsSeedBridge_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;

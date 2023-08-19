@@ -17,6 +17,12 @@ class ShowFeedbackPageBrowserTest : public InProcessBrowserTest {
   ~ShowFeedbackPageBrowserTest() override = default;
 
  protected:
+  void SetUp() override {
+    StartUniqueAshChrome(
+        {}, {}, {}, "crbug.com/1446083 The test leaves Ash windows behind");
+    InProcessBrowserTest::SetUp();
+  }
+
   void ShowFeedbackPageWithFeedbackSource(chrome::FeedbackSource source) {
     std::string unused;
     chrome::ShowFeedbackPage(browser(), source,
@@ -76,5 +82,12 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
                        ShowFeedbackPageFromWindowLayoutMenu) {
   base::HistogramTester histogram_tester;
   ShowFeedbackPageWithFeedbackSource(chrome::kFeedbackSourceWindowLayoutMenu);
+  histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
+                       ShowFeedbackPageFromCookieControls) {
+  base::HistogramTester histogram_tester;
+  ShowFeedbackPageWithFeedbackSource(chrome::kFeedbackSourceCookieControls);
   histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
 }

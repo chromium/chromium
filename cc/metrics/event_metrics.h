@@ -84,7 +84,8 @@ class CC_EXPORT EventMetrics {
   };
 
   static std::unique_ptr<EventMetrics> Create(ui::EventType type,
-                                              base::TimeTicks timestamp);
+                                              base::TimeTicks timestamp,
+                                              absl::optional<TraceId> trace_id);
 
   // Returns a new instance if the event is of a type we are interested in.
   // Otherwise, returns `nullptr`. For scroll and pinch events, use the
@@ -92,7 +93,8 @@ class CC_EXPORT EventMetrics {
   static std::unique_ptr<EventMetrics> Create(
       ui::EventType type,
       base::TimeTicks timestamp,
-      base::TimeTicks arrived_in_browser_main_timestamp);
+      base::TimeTicks arrived_in_browser_main_timestamp,
+      absl::optional<TraceId> trace_id);
 
   // Similar to `Create()` with an extra `base::TickClock` to use in tests.
   static std::unique_ptr<EventMetrics> CreateForTesting(
@@ -118,6 +120,8 @@ class CC_EXPORT EventMetrics {
   EventMetrics& operator=(const EventMetrics&) = delete;
 
   EventType type() const { return type_; }
+
+  absl::optional<TraceId> trace_id() const { return trace_id_; }
 
   // Returns a string representing event type.
   const char* GetTypeName() const;
@@ -176,12 +180,14 @@ class CC_EXPORT EventMetrics {
  protected:
   EventMetrics(EventType type,
                base::TimeTicks timestamp,
-               const base::TickClock* tick_clock);
+               const base::TickClock* tick_clock,
+               absl::optional<TraceId> trace_id);
 
   EventMetrics(EventType type,
                base::TimeTicks timestamp,
                base::TimeTicks arrived_in_browser_main_timestamp,
-               const base::TickClock* tick_clock);
+               const base::TickClock* tick_clock,
+               absl::optional<TraceId> trace_id);
 
   // Creates a clone of `other` that might be used in creating `EventMetrics`
   // objects for some injected events. Since this object itself does not
@@ -205,7 +211,8 @@ class CC_EXPORT EventMetrics {
       ui::EventType type,
       base::TimeTicks timestamp,
       base::TimeTicks arrived_in_browser_main_timestamp,
-      const base::TickClock* tick_clock);
+      const base::TickClock* tick_clock,
+      absl::optional<TraceId> trace_id);
 
   EventType type_;
 
@@ -231,6 +238,11 @@ class CC_EXPORT EventMetrics {
   // for GestureScrollUpdate with scroll unification, when the scroller isn't
   // composited or has main-thread scrolling reasons on the ScrollNode.
   bool requires_main_thread_update_ = false;
+
+  // This is a trace id of an input event. It can be null for events which don't
+  // have a corresponding input, for example a generated event based on existing
+  // event.
+  absl::optional<TraceId> trace_id_;
 };
 
 class CC_EXPORT ScrollEventMetrics : public EventMetrics {
@@ -259,7 +271,8 @@ class CC_EXPORT ScrollEventMetrics : public EventMetrics {
       bool is_inertial,
       base::TimeTicks timestamp,
       base::TimeTicks arrived_in_browser_main_timestamp,
-      base::TimeTicks blocking_touch_dispatched_to_renderer);
+      base::TimeTicks blocking_touch_dispatched_to_renderer,
+      absl::optional<TraceId> trace_id);
 
   // Prefer to use `Create()` above. This method is used only by the Browser
   // process which have own breakdowns.
@@ -269,7 +282,8 @@ class CC_EXPORT ScrollEventMetrics : public EventMetrics {
       ui::EventType type,
       ui::ScrollInputType input_type,
       bool is_inertial,
-      base::TimeTicks timestamp);
+      base::TimeTicks timestamp,
+      absl::optional<TraceId> trace_id);
 
   // Similar to `Create()` with an extra `base::TickClock` to use in tests.
   // Should only be used for scroll events other than scroll-update.
@@ -311,7 +325,8 @@ class CC_EXPORT ScrollEventMetrics : public EventMetrics {
                      ScrollType scroll_type,
                      base::TimeTicks timestamp,
                      base::TimeTicks arrived_in_browser_main_timestamp,
-                     const base::TickClock* tick_clock);
+                     const base::TickClock* tick_clock,
+                     absl::optional<TraceId> trace_id);
   ScrollEventMetrics(const ScrollEventMetrics&);
 
  private:
@@ -321,7 +336,8 @@ class CC_EXPORT ScrollEventMetrics : public EventMetrics {
       bool is_inertial,
       base::TimeTicks timestamp,
       base::TimeTicks arrived_in_browser_main_timestamp,
-      const base::TickClock* tick_clock);
+      const base::TickClock* tick_clock,
+      absl::optional<TraceId> trace_id);
 
   // Type of the input device for the event.
   ScrollType scroll_type_;
@@ -408,8 +424,6 @@ class CC_EXPORT ScrollUpdateEventMetrics : public ScrollEventMetrics {
 
   int32_t coalesced_event_count() const { return coalesced_event_count_; }
 
-  absl::optional<TraceId> trace_id() const { return trace_id_; }
-
   void set_predicted_delta(float predicted_delta) {
     predicted_delta_ = predicted_delta;
   }
@@ -417,6 +431,13 @@ class CC_EXPORT ScrollUpdateEventMetrics : public ScrollEventMetrics {
   base::TimeTicks last_timestamp() const { return last_timestamp_; }
 
   std::unique_ptr<EventMetrics> Clone() const override;
+
+  void set_is_janky_scrolled_frame(absl::optional<bool> is_janky) {
+    is_janky_scrolled_frame_ = is_janky;
+  }
+  absl::optional<bool> is_janky_scrolled_frame() const {
+    return is_janky_scrolled_frame_;
+  }
 
  protected:
   ScrollUpdateEventMetrics(EventType type,
@@ -449,10 +470,8 @@ class CC_EXPORT ScrollUpdateEventMetrics : public ScrollEventMetrics {
 
   // Total events that were coalesced into this into this ScrollUpdate
   int32_t coalesced_event_count_ = 1;
-  // This is a trace id of an input event. It can be null for events which don't
-  // have a corresponding input, for example a generated event based on existing
-  // event.
-  absl::optional<TraceId> trace_id_;
+
+  absl::optional<bool> is_janky_scrolled_frame_ = absl::nullopt;
 };
 
 class CC_EXPORT PinchEventMetrics : public EventMetrics {
@@ -470,7 +489,8 @@ class CC_EXPORT PinchEventMetrics : public EventMetrics {
   static std::unique_ptr<PinchEventMetrics> Create(
       ui::EventType type,
       ui::ScrollInputType input_type,
-      base::TimeTicks timestamp);
+      base::TimeTicks timestamp,
+      TraceId trace_id);
 
   // Similar to `Create()` with an extra `base::TickClock` to use in tests.
   // Should only be used for pinch events.
@@ -496,7 +516,8 @@ class CC_EXPORT PinchEventMetrics : public EventMetrics {
   PinchEventMetrics(EventType type,
                     PinchType pinch_type,
                     base::TimeTicks timestamp,
-                    const base::TickClock* tick_clock);
+                    const base::TickClock* tick_clock,
+                    absl::optional<TraceId> trace_id);
   PinchEventMetrics(const PinchEventMetrics&);
 
  private:
@@ -504,7 +525,8 @@ class CC_EXPORT PinchEventMetrics : public EventMetrics {
       ui::EventType type,
       ui::ScrollInputType input_type,
       base::TimeTicks timestamp,
-      const base::TickClock* tick_clock);
+      const base::TickClock* tick_clock,
+      absl::optional<TraceId> trace_id);
 
   PinchType pinch_type_;
 };

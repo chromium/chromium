@@ -102,6 +102,8 @@ class SVGScriptElement final : public SVGElement,
   ExecutionContext* GetExecutionContext() const override;
   void DispatchLoadEvent() override;
   void DispatchErrorEvent() override;
+  bool HasLoadEventHandler() override;
+  bool HasErrorEventHandler() override;
 
   Type GetScriptElementType() override;
 
@@ -112,7 +114,7 @@ class SVGScriptElement final : public SVGElement,
 
   SVGAnimatedPropertyBase* PropertyFromAttribute(
       const QualifiedName& attribute_name) const override;
-  void SynchronizeSVGAttribute(const QualifiedName& name) const override;
+  void SynchronizeAllSVGAttributes() const override;
 
   bool have_fired_load_ = false;
 

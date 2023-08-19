@@ -112,9 +112,6 @@ class BoxLayoutOverflowModel {
   BoxLayoutOverflowModel& operator=(const BoxLayoutOverflowModel&) = delete;
 
   const LayoutRect& LayoutOverflowRect() const { return layout_overflow_; }
-  void AddLayoutOverflow(const LayoutRect& rect) {
-    UniteLayoutOverflowRect(layout_overflow_, rect);
-  }
 
  private:
   LayoutRect layout_overflow_;
@@ -131,6 +128,10 @@ class BoxVisualOverflowModel {
     self_visual_overflow_ = rect;
   }
 
+  // The resultant rectangle is in the physical coordinate system if
+  // 'LayoutNGNoLocation' flag is enabled.
+  // It's in the flipped block-flow physical coordinate system otherwise.
+  // TODO(crbug.com/1353190): Change the return type to PhysicalRect.
   const LayoutRect& SelfVisualOverflowRect() const {
     return self_visual_overflow_;
   }
@@ -138,6 +139,10 @@ class BoxVisualOverflowModel {
     self_visual_overflow_.Unite(rect);
   }
 
+  // The resultant rectangle is in the physical coordinate system if
+  // 'LayoutNGNoLocation' flag is enabled.
+  // It's in the flipped block-flow physical coordinate system otherwise.
+  // TODO(crbug.com/1353190): Change the return type to PhysicalRect.
   const LayoutRect& ContentsVisualOverflowRect() const {
     return contents_visual_overflow_;
   }

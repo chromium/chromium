@@ -83,7 +83,7 @@ bool ManagePasswordsIconViews::OnMousePressed(const ui::MouseEvent& event) {
 
 const gfx::VectorIcon& ManagePasswordsIconViews::GetVectorIcon() const {
   return OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
-             ? kKeyChromeRefreshIcon
+             ? kKeyOpenChromeRefreshIcon
              : kKeyIcon;
 }
 
@@ -107,6 +107,10 @@ std::u16string ManagePasswordsIconViews::GetTextForTooltipAndAccessibleName()
     case password_manager::ui::BIOMETRIC_AUTHENTICATION_FOR_FILLING_STATE:
     case password_manager::ui::BIOMETRIC_AUTHENTICATION_CONFIRMATION_STATE:
       return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_TOOLTIP_PROTECT);
+    case password_manager::ui::NOTIFY_RECEIVED_SHARED_CREDENTIALS: {
+      return l10n_util::GetStringUTF16(
+          IDS_PASSWORD_MANAGER_TOOLTIP_SHARED_NOTIFICATION);
+    }
   }
   NOTREACHED_NORETURN();
 }

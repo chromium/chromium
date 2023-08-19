@@ -32,8 +32,8 @@
 #include "media/gpu/windows/d3d11_status.h"
 #include "media/gpu/windows/d3d11_texture_selector.h"
 #include "media/gpu/windows/d3d11_video_decoder_client.h"
-#include "media/gpu/windows/d3d11_video_decoder_impl.h"
 #include "media/gpu/windows/d3d11_video_decoder_wrapper.h"
+#include "media/gpu/windows/d3d11_video_frame_mailbox_release_helper.h"
 #include "media/gpu/windows/d3d11_vp9_accelerator.h"
 
 namespace gpu {
@@ -121,7 +121,6 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
       std::unique_ptr<MediaLog> media_log,
       const gpu::GpuPreferences& gpu_preferences,
       const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
-      base::SequenceBound<D3D11VideoDecoderImpl> impl,
       base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()>
           get_helper_cb,
       GetD3D11DeviceCB get_d3d11_device_cb,
@@ -138,7 +137,7 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
   // Called when the gpu side of initialization is complete.
   void OnGpuInitComplete(
       bool success,
-      D3D11VideoDecoderImpl::ReleaseMailboxCB release_mailbox_cb);
+      D3D11VideoFrameMailboxReleaseHelper::ReleaseMailboxCB release_mailbox_cb);
 
   // Run the decoder loop.
   void DoDecode();
@@ -175,20 +174,6 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
   std::unique_ptr<D3D11VideoDecoderWrapper> CreateD3D11VideoDecoderWrapper(
       ComD3D11VideoDecoder video_decoder);
 
-  enum class D3D11LifetimeProgression {
-    kInitializeStarted = 0,
-    kInitializeSucceeded = 1,
-    kPlaybackSucceeded = 2,
-
-    // For UMA. Must be the last entry. It should be initialized to the
-    // numerically largest value above; if you add more entries, then please
-    // update this to the last one.
-    kMaxValue = kPlaybackSucceeded
-  };
-
-  // Log UMA progression state.
-  void AddLifetimeProgressionStage(D3D11LifetimeProgression stage);
-
   std::unique_ptr<MediaLog> media_log_;
 
   enum class State {
@@ -215,17 +200,16 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
   // Posts |status| to any pending initialization or decode callbacks.
   void PostDecoderStatus(DecoderStatus status);
 
-  // The implementation, which lives on the GPU main thread.
-  base::SequenceBound<D3D11VideoDecoderImpl> impl_;
+  // Mailbox release helper; which lives on the GPU main thread. Note: This must
+  // be ref counted to outlive D3D11VideoDecoder since each output VideoFrame
+  // uses it to wait on a SyncToken during mailbox release.
+  scoped_refptr<D3D11VideoFrameMailboxReleaseHelper> mailbox_release_helper_;
 
   // GPU main thread task runner.
   scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner_;
 
   // Task runner on which |this| lives.
   scoped_refptr<base::SequencedTaskRunner> decoder_task_runner_;
-
-  // Set in initialize, and used to determine reinitializations.
-  bool already_initialized_;
 
   gpu::GpuPreferences gpu_preferences_;
   gpu::GpuDriverBugWorkarounds gpu_workarounds_;
@@ -237,7 +221,7 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
 
   // Callback to be used as a release CB for VideoFrames.  Be sure to
   // base::BindPostTaskToCurrentDefault the closure that it takes.
-  D3D11VideoDecoderImpl::ReleaseMailboxCB release_mailbox_cb_;
+  D3D11VideoFrameMailboxReleaseHelper::ReleaseMailboxCB release_mailbox_cb_;
 
   // Right now, this is used both for the video decoder and for display.  In
   // the future, this should only be for the video decoder.  We should use
@@ -289,6 +273,9 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
 
   // Should we assume that we're outputting to an HDR display?
   bool system_hdr_enabled_ = false;
+
+  // Should we use shared handles for WebGPU interop or if using Graphite.
+  bool use_shared_handle_ = false;
 
   // Should we use multiple single textures for the decoder output (true) or one
   // texture with multiple array slices (false)?

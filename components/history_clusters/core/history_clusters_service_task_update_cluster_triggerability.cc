@@ -23,20 +23,22 @@ HistoryClustersServiceTaskUpdateClusterTriggerability::
         base::WeakPtr<HistoryClustersService> weak_history_clusters_service,
         ClusteringBackend* const backend,
         history::HistoryService* const history_service,
-        bool should_iterate_through_clusters_after_empty,
+        bool likely_has_unclustered_visits_or_unprocessed_clusters,
         base::OnceClosure callback)
     : weak_history_clusters_service_(std::move(weak_history_clusters_service)),
       backend_(backend),
       history_service_(history_service),
       callback_(std::move(callback)),
       task_created_time_(base::Time::Now()),
-      should_iterate_through_clusters_after_empty_(
-          should_iterate_through_clusters_after_empty) {
+      likely_has_unclustered_visits_or_unprocessed_clusters_(
+          likely_has_unclustered_visits_or_unprocessed_clusters) {
   DCHECK(weak_history_clusters_service_);
   DCHECK(history_service_);
   DCHECK(backend_);
 
   continuation_params_.continuation_time = task_created_time_;
+  continuation_params_.exhausted_unclustered_visits =
+      !likely_has_unclustered_visits_or_unprocessed_clusters_;
   Start();
 }
 
@@ -218,7 +220,7 @@ void HistoryClustersServiceTaskUpdateClusterTriggerability::
       updated_cluster_triggerability_after_filtered_clusters_empty_ = false;
     }
 
-    if (should_iterate_through_clusters_after_empty_) {
+    if (likely_has_unclustered_visits_or_unprocessed_clusters_) {
       // Get more persisted clusters and see if the clusters need to be updated
       // if visits have not been exhausted yet.
       Start();

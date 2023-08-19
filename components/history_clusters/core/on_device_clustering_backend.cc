@@ -17,14 +17,15 @@
 #include "base/timer/elapsed_timer.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/cluster_finalizer.h"
+#include "components/history_clusters/core/cluster_interaction_state_processor.h"
 #include "components/history_clusters/core/cluster_processor.h"
+#include "components/history_clusters/core/cluster_similarity_heuristics_processor.h"
 #include "components/history_clusters/core/clusterer.h"
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/content_annotations_cluster_processor.h"
 #include "components/history_clusters/core/content_visibility_cluster_finalizer.h"
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/filter_cluster_processor.h"
-#include "components/history_clusters/core/full_membership_cluster_processor.h"
 #include "components/history_clusters/core/history_clusters_util.h"
 #include "components/history_clusters/core/keyword_cluster_finalizer.h"
 #include "components/history_clusters/core/label_cluster_finalizer.h"
@@ -36,7 +37,7 @@
 #include "components/history_clusters/core/single_visit_cluster_finalizer.h"
 #include "components/optimization_guide/core/batch_entity_metadata_task.h"
 #include "components/optimization_guide/core/entity_metadata_provider.h"
-#include "components/optimization_guide/core/new_optimization_guide_decider.h"
+#include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/site_engagement/core/site_engagement_score_provider.h"
 #include "components/url_formatter/url_formatter.h"
 
@@ -99,7 +100,7 @@ void ProcessEntityMetadata(
 OnDeviceClusteringBackend::OnDeviceClusteringBackend(
     optimization_guide::EntityMetadataProvider* entity_metadata_provider,
     site_engagement::SiteEngagementScoreProvider* engagement_score_provider,
-    optimization_guide::NewOptimizationGuideDecider* optimization_guide_decider,
+    optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
     base::flat_set<std::string> mid_blocklist)
     : entity_metadata_provider_(entity_metadata_provider),
       engagement_score_provider_(engagement_score_provider),
@@ -530,8 +531,10 @@ OnDeviceClusteringBackend::GetClustersForUIOnBackgroundThread(
   // The cluster processors to be run.
   std::vector<std::unique_ptr<ClusterProcessor>> cluster_processors;
   cluster_processors.push_back(
-      std::make_unique<FullMembershipClusterProcessor>());
-  if (GetConfig().content_clustering_enabled) {
+      std::make_unique<ClusterInteractionStateProcessor>(filter_params));
+  cluster_processors.push_back(
+      std::make_unique<ClusterSimilarityHeuristicsProcessor>());
+  if (filter_params.group_clusters_by_content) {
     cluster_processors.push_back(
         std::make_unique<ContentAnnotationsClusterProcessor>(
             &entity_id_to_entity_metadata_map));

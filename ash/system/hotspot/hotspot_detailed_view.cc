@@ -42,10 +42,6 @@ namespace {
 // Used for setting the insets of broader hotspot entry row.
 constexpr auto kToggleRowTriViewInsets = gfx::Insets::VH(8, 24);
 
-bool IsIntermediateState(HotspotState state) {
-  return state == HotspotState::kDisabling || state == HotspotState::kEnabling;
-}
-
 bool IsEnabledOrEnabling(HotspotState state) {
   return state == HotspotState::kEnabled || state == HotspotState::kEnabling;
 }
@@ -183,8 +179,8 @@ void HotspotDetailedView::UpdateToggleState(
     const HotspotAllowStatus& allow_status) {
   toggle_->SetIsOn(IsEnabledOrEnabling(state));
 
-  bool enabled = !IsIntermediateState(state) &&
-                 allow_status == HotspotAllowStatus::kAllowed;
+  bool enabled = allow_status == HotspotAllowStatus::kAllowed &&
+                 state != HotspotState::kDisabling;
   entry_row_->SetEnabled(enabled);
 }
 

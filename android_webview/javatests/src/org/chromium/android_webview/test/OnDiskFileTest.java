@@ -14,6 +14,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwCookieManager;
 import org.chromium.base.FileUtils;
@@ -91,5 +92,41 @@ public class OnDiskFileTest {
         cookieManager.flushCookieStore();
 
         Assert.assertTrue(webViewCookiePath.isFile());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testProfilesHaveSeparateDirectories() throws Throwable {
+        mActivityTestRule.startBrowserProcess();
+
+        // Check Default uses its own constant directory.
+        mActivityTestRule.runOnUiThread(() -> {
+            Assert.assertEquals(
+                    "Default", AwBrowserContext.getNamedContextPathForTesting("Default"));
+        });
+
+        // Check NonDefaults use "Profile 1", "Profile 2", ...
+        final int numProfiles = 2;
+        for (int profile = 1; profile <= numProfiles; profile++) {
+            final String contextName = "MyAwesomeProfile" + profile;
+            final String relativePath = "Profile " + profile;
+
+            final File contextPath = new File(InstrumentationRegistry.getInstrumentation()
+                                                      .getTargetContext()
+                                                      .getDir("webview", Context.MODE_PRIVATE)
+                                                      .getPath(),
+                    relativePath);
+
+            mActivityTestRule.runOnUiThread(() -> {
+                contextPath.delete();
+
+                AwBrowserContext.getNamedContext(contextName, /*create_if_needed=*/true);
+
+                Assert.assertEquals(
+                        relativePath, AwBrowserContext.getNamedContextPathForTesting(contextName));
+                Assert.assertTrue(contextPath.isDirectory());
+            });
+        }
     }
 }

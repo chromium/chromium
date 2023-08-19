@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<!-- All tables in canvas fallback content are data tables, because there is no
+     other reason to use a table there. After all, canvas fallback content
+     not rendered, so author has no reason to use the table for layout.  -->
+<canvas width=300 height=300>
+  <table>
+    <tr>
+      <td>Rabbits</td>
+      <td>Goldfish</td>
+    </tr>
+    <tr>
+      <td>Cats</td>
+      <td>Dogs</td>
+    </tr>
+  </table>
+</canvas>
+
+<!-- The same table structure is a layout table when not in a canvas fallback -->
+<table>
+  <tr>
+    <td>Watermelon</td>
+    <td>Fish food</td>
+  </tr>
+  <tr>
+    <td>Tunafish</td>
+    <td>Beef</td>
+  </tr>
+</table>

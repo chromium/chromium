@@ -12,10 +12,6 @@
 #include "ios/web/public/thread/web_thread.h"
 #include "ios/web_view/internal/web_view_global_state_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace ios_global_state {
 
 scoped_refptr<base::SingleThreadTaskRunner>

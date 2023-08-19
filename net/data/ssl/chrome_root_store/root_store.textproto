@@ -8,7 +8,7 @@
 
 # Version # should always be incremented up whenever this (or any pem file that
 # it references) is changed.
-version_major: 10
+version_major: 11
 
 # CN=Actalis Authentication Root CA, O=Actalis S.p.A./03358520967, L=Milan, C=IT
 # https://ssltest-a.actalis.it:8443
@@ -214,13 +214,6 @@ trust_anchors {
   sha256_hex: "e23d4a036d7b70e9f595b1422079d2b91edfbb1fb651a0633eaa8a9dc5f80703"
 }
 
-# CN=E-Tugra Certification Authority, OU=E-Tugra Sertifikasyon Merkezi, O=E-Tuğra EBG Bilişim Teknolojileri ve Hizmetleri A.Ş., L=Ankara, C=TR
-# https://sslev.e-tugra.com.tr
-trust_anchors {
-  sha256_hex: "b0bfd52bb0d7d9bd92bf5d4dc13da255c02c542f378365ea893911f55e55f23c"
-  ev_policy_oids: "2.16.792.3.0.4.1.1.4"
-}
-
 # CN=emSign Root CA - C1, O=eMudhra Inc, OU=emSign PKI, C=US
 trust_anchors {
   sha256_hex: "125609aa301da0a249b97a8239cb6a34216f44dcac9f3954b14292f2e8c8608f"
@@ -395,11 +388,6 @@ trust_anchors {
   ev_policy_oids: "2.23.140.1.1"
 }
 
-# CN=Hongkong Post Root CA 1, O=Hongkong Post, C=HK
-trust_anchors {
-  sha256_hex: "f9e67d336c51002ac054c632022d66dda2e7e3fff10ad061ed31d8bbb410cfb2"
-}
-
 # C=ES, O=ACCV, OU=PKIACCV, CN=ACCVRAIZ1
 trust_anchors {
   sha256_hex: "9a6ec012e1a7da9dbe34194d478ad7c0db1822fb071df12981496ed104384113"
@@ -494,7 +482,7 @@ trust_anchors {
 # https://goodevssl.wisekey.com
 trust_anchors {
   sha256_hex: "6b9c08e86eb0f767cfad65cd98b62149e5494a67f5845e7bd1ed019f27b86bd6"
-  ev_policy_oids: "2.16.756.5.14.7.4.8"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # CN=OISTE WISeKey Global Root GC CA, OU=OISTE Foundation Endorsed, O=WISeKey, C=CH
@@ -787,16 +775,6 @@ trust_anchors {
 # CN=ANF Secure Server Root CA, OU=ANF CA Raiz, O=ANF Autoridad de Certificacion, C=ES, serialNumber=G63287510
 trust_anchors {
   sha256_hex: "fb8fec759169b9106b1e511644c618c51304373f6c0643088d8beffd1b997599"
-}
-
-# CN=E-Tugra Global Root CA ECC v3, OU=E-Tugra Trust Center, O=E-Tugra EBG A.S., L=Ankara, C=TR
-trust_anchors {
-  sha256_hex: "873f4685fa7f563625252e6d36bcd7f16fc24951f264e47e1b954f4908cdca13"
-}
-
-# CN=E-Tugra Global Root CA RSA v3, OU=E-Tugra Trust Center, O=E-Tugra EBG A.S., L=Ankara, C=TR
-trust_anchors {
-  sha256_hex: "ef66b0b10a3cdb9f2e3648c76bd2af18ead2bfe6f117655e28c4060da1a3f4c2"
 }
 
 # CN=Security Communication ECC RootCA1, O=SECOM Trust Systems CO.,LTD., C=JP

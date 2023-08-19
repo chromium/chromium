@@ -4132,6 +4132,14 @@ interface Navigator
     method sendBeacon
     method vibrate
     method webkitGetUserMedia
+interface NavigatorUAData
+    attribute @@toStringTag
+    getter brands
+    getter mobile
+    getter platform
+    method constructor
+    method getHighEntropyValues
+    method toJSON
 interface NetworkInformation : EventTarget
     attribute @@toStringTag
     getter downlink

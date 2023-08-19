@@ -4,6 +4,7 @@
 
 package org.chromium.android_webview;
 
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.UsedByReflection;
 
@@ -15,6 +16,7 @@ import java.io.File;
  * Methods in this class can be called from any thread, including threads created by
  * the client of WebView.
  */
+@Lifetime.Singleton
 @UsedByReflection("")
 public class AwDebug {
     private static final String TAG = "AwDebug";

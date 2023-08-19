@@ -131,7 +131,7 @@ class ArcBootPhaseMonitorBridgeTest : public testing::Test {
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
   std::unique_ptr<TestingProfile> testing_profile_;
-  raw_ptr<ArcBootPhaseMonitorBridge, ExperimentalAsh>
+  raw_ptr<ArcBootPhaseMonitorBridge, DanglingUntriaged | ExperimentalAsh>
       boot_phase_monitor_bridge_;
 
   size_t record_uma_counter_ = 0;

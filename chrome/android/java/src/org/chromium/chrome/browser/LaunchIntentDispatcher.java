@@ -16,7 +16,6 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsSessionToken;
@@ -42,7 +41,6 @@ import org.chromium.chrome.browser.notifications.NotificationPlatformBridge;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.translate.TranslateIntentHandler;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.chrome.browser.webapps.WebappLauncherActivity;
 import org.chromium.components.browser_ui.media.MediaNotificationUma;
@@ -52,8 +50,6 @@ import org.chromium.ui.widget.Toast;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Set;
 
 /**
@@ -220,12 +216,6 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
     }
 
     @Override
-    public void processTranslateTabIntent(
-            @Nullable String targetLanguageCode, @Nullable String expectedUrl) {
-        assert false;
-    }
-
-    @Override
     public void processUrlViewIntent(LoadUrlParams loadUrlParams, int tabOpenType,
             String externalAppId, int tabIdToBringToFront, Intent intent) {
         assert false;
@@ -244,22 +234,6 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
             if (maybeUrl != null) {
                 WarmupManager.getInstance().maybePrefetchDnsForUrlInBackground(mActivity, maybeUrl);
             }
-        }
-    }
-
-    /**
-     * Adds a token to TRANSLATE_TAB intents that we know were sent from a first party app.
-     *
-     * TRANSLATE_TAB requires a signature permission. We know that permission has been enforced (and
-     * thus comes from a first party application) if it was routed via the TranslateDispatcher
-     * activity-alias. In this case, add a token so IntentHandler knows the intent is from a first
-     * party app.
-     */
-    private static void maybeAuthenticateFirstPartyTranslateIntent(Intent intent) {
-        if (intent != null && TranslateIntentHandler.ACTION_TRANSLATE_TAB.equals(intent.getAction())
-                && TranslateIntentHandler.COMPONENT_TRANSLATE_DISPATCHER.equals(
-                        intent.getComponent().getClassName())) {
-            IntentUtils.addTrustedIntentExtras(intent);
         }
     }
 
@@ -364,9 +338,8 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
         CustomTabsConnection.getInstance().onHandledIntent(
                 CustomTabsSessionToken.getSessionTokenFromIntent(mIntent), mIntent);
 
-        boolean startedActivity = false;
         boolean isCustomTab = true;
-        if (intentHandler.shouldIgnoreIntent(mIntent, startedActivity, isCustomTab)) {
+        if (intentHandler.shouldIgnoreIntent(mIntent, isCustomTab)) {
             return false;
         }
 
@@ -383,21 +356,22 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
         // cannot be spoofed by CCT client apps.
         IntentUtils.safeRemoveExtra(mIntent, IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE);
 
-        // Create and fire a launch intent.
-        Intent launchIntent = createCustomTabActivityIntent(mActivity, mIntent);
-        Uri extraReferrer = mActivity.getReferrer();
-        if (extraReferrer != null) {
-            launchIntent.putExtra(IntentHandler.EXTRA_ACTIVITY_REFERRER, extraReferrer.toString());
-        }
+        Intent intent = new Intent(mIntent);
         ComponentName callingActivity = mActivity.getCallingActivity();
         if (callingActivity != null) {
-            launchIntent.putExtra(
+            intent.putExtra(
                     IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE, callingActivity.getPackageName());
         } else {
             String packageName = getClientPackageNameFromIdentitySharing();
             if (packageName != null) {
-                launchIntent.putExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE, packageName);
+                intent.putExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE, packageName);
             }
+        }
+        // Create and fire a launch intent.
+        Intent launchIntent = createCustomTabActivityIntent(mActivity, intent);
+        Uri extraReferrer = mActivity.getReferrer();
+        if (extraReferrer != null) {
+            launchIntent.putExtra(IntentHandler.EXTRA_ACTIVITY_REFERRER, extraReferrer.toString());
         }
 
         // Allow disk writes during startActivity() to avoid strict mode violations on some
@@ -418,18 +392,7 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
      */
     @OptIn(markerClass = androidx.core.os.BuildCompat.PrereleaseSdkCheck.class)
     private String getClientPackageNameFromIdentitySharing() {
-        if (!BuildCompat.isAtLeastU()) return null;
-
-        // Activity.getLaunchedFromPackage()
-        // TODO(crbug.com/1423489): Replace the reflection with the normal API.
-        try {
-            Method method = Activity.class.getMethod("getLaunchedFromPackage");
-            return (String) method.invoke(mActivity);
-        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            Log.e(TAG, "Reflection failure: " + e);
-            assert false : "Activity.getLaunchedFromPackage() failed.";
-        }
-        return null;
+        return BuildCompat.isAtLeastU() ? mActivity.getLaunchedFromPackage() : null;
     }
 
     /**
@@ -439,8 +402,6 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
     @SuppressWarnings("checkstyle:SystemExitCheck") // Allowed due to https://crbug.com/847921#c17.
     private @Action int dispatchToTabbedActivity() {
         maybePrefetchDnsInBackground();
-
-        maybeAuthenticateFirstPartyTranslateIntent(mIntent);
 
         Intent newIntent = new Intent(mIntent);
 

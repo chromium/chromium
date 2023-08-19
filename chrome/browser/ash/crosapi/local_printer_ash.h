@@ -24,7 +24,6 @@ class Profile;
 class ProfileManager;
 
 namespace ash {
-class PrinterConfigurer;
 struct PrintServersConfig;
 
 namespace printing {
@@ -133,8 +132,6 @@ class LocalPrinterAsh : public mojom::LocalPrinter,
   // Exposed so that unit tests can override them.
   virtual Profile* GetProfile();
   virtual scoped_refptr<chromeos::PpdProvider> CreatePpdProvider(
-      Profile* profile);
-  virtual std::unique_ptr<ash::PrinterConfigurer> CreatePrinterConfigurer(
       Profile* profile);
   virtual ash::printing::IppClientInfoCalculator* GetIppClientInfoCalculator();
 

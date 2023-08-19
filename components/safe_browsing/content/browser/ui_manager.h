@@ -166,9 +166,15 @@ class SafeBrowsingUIManager : public BaseUIManager {
   // on UI thread. If shutdown is true, the manager is disabled permanently.
   void Stop(bool shutdown);
 
-  // Called on the IO thread by the ThreatDetails with the report, so the
-  // service can send it over.
+  // Called on the UI thread by the ThreatDetails with the report, so the
+  // PingManager can send it over.
   void SendThreatDetails(
+      content::BrowserContext* browser_context,
+      std::unique_ptr<ClientSafeBrowsingReportRequest> report) override;
+
+  // Called on the UI thread by the ThreatDetails with the report, so the
+  // HaTS service can later send it over if the user takes the survey.
+  void AttachThreatDetailsAndLaunchSurvey(
       content::BrowserContext* browser_context,
       std::unique_ptr<ClientSafeBrowsingReportRequest> report) override;
 

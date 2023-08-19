@@ -7,9 +7,13 @@
 #include <utility>
 
 #include "base/containers/fixed_flat_map.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "media/base/encoder_status.h"
 #include "media/base/video_codecs.h"
+#include "media/base/video_encoder_metrics_provider.h"
 #include "media/base/video_frame.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
@@ -144,7 +148,13 @@ void H264Encoder::EncodeFrame(scoped_refptr<media::VideoFrame> frame,
   if (request_keyframe) {
     openh264_encoder_->ForceIntraFrame(true);
   }
-  if (openh264_encoder_->EncodeFrame(&picture, &info) != cmResultSuccess) {
+
+  if (int ret = openh264_encoder_->EncodeFrame(&picture, &info);
+      ret != cmResultSuccess) {
+    metrics_provider_->SetError(
+        {media::EncoderStatus::Codes::kEncoderFailedEncode,
+         base::StrCat(
+             {"OpenH264 failed to encode: ", base::NumberToString(ret)})});
     NOTREACHED() << "OpenH264 encoding failed";
     return;
   }
@@ -171,9 +181,10 @@ void H264Encoder::EncodeFrame(scoped_refptr<media::VideoFrame> frame,
     data.append(reinterpret_cast<char*>(layerInfo.pBsBuf), layer_len);
   }
 
+  metrics_provider_->IncrementEncodedFrameCount();
   const bool is_key_frame = info.eFrameType == videoFrameTypeIDR;
   on_encoded_video_cb_.Run(video_params, std::move(data), std::string(),
-                           capture_timestamp, is_key_frame);
+                           absl::nullopt, capture_timestamp, is_key_frame);
 }
 
 bool H264Encoder::ConfigureEncoder(const gfx::Size& size) {
@@ -198,7 +209,6 @@ bool H264Encoder::ConfigureEncoder(const gfx::Size& size) {
   DCHECK_EQ(AUTO_REF_PIC_COUNT, init_params.iNumRefFrame);
   DCHECK(!init_params.bSimulcastAVC);
 
-  init_params.uiIntraPeriod = 100;  // Same as for VpxEncoder.
   init_params.iPicWidth = size.width();
   init_params.iPicHeight = size.height();
 
@@ -250,7 +260,15 @@ bool H264Encoder::ConfigureEncoder(const gfx::Size& size) {
   init_params.sSpatialLayers[0].sSliceArgument.uiSliceMode =
       SM_FIXEDSLCNUM_SLICE;
 
-  if (openh264_encoder_->InitializeExt(&init_params) != cmResultSuccess) {
+  metrics_provider_->Initialize(
+      codec_profile_.profile.value_or(media::H264PROFILE_BASELINE),
+      configured_size_, /*is_hardware_encoder=*/false);
+  if (int ret = openh264_encoder_->InitializeExt(&init_params);
+      ret != cmResultSuccess) {
+    metrics_provider_->SetError(
+        {media::EncoderStatus::Codes::kEncoderInitializationError,
+         base::StrCat(
+             {"OpenH264 failed to initialize: ", base::NumberToString(ret)})});
     DLOG(WARNING) << "Failed to initialize OpenH264 encoder";
     openh264_encoder_.reset();
     return false;

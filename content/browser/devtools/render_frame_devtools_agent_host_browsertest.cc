@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -62,8 +63,16 @@ class StubDevToolsAgentHostClient : public content::DevToolsAgentHostClient {
 // is tracking while a cross-site navigation is canceled after having reached
 // the ReadyToCommit stage.
 // See https://crbug.com/695203.
+// TODO(crbug.com/1459385): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CancelCrossOriginNavigationAfterReadyToCommit \
+  DISABLED_CancelCrossOriginNavigationAfterReadyToCommit
+#else
+#define MAYBE_CancelCrossOriginNavigationAfterReadyToCommit \
+  CancelCrossOriginNavigationAfterReadyToCommit
+#endif
 IN_PROC_BROWSER_TEST_F(RenderFrameDevToolsAgentHostBrowserTest,
-                       CancelCrossOriginNavigationAfterReadyToCommit) {
+                       MAYBE_CancelCrossOriginNavigationAfterReadyToCommit) {
   net::test_server::ControllableHttpResponse response_b(embedded_test_server(),
                                                         "/response_b");
   net::test_server::ControllableHttpResponse response_c(embedded_test_server(),
@@ -200,6 +209,23 @@ IN_PROC_BROWSER_TEST_F(RenderFrameDevToolsAgentHostBrowserTest,
       &devtools_agent_host_client,
       base::as_bytes(base::make_span(kMsg, strlen(kMsg))));
   reload_observer.Wait();
+  devtools_agent_host->DetachClient(&devtools_agent_host_client);
+}
+
+IN_PROC_BROWSER_TEST_F(RenderFrameDevToolsAgentHostBrowserTest,
+                       CheckDebuggerAttachedToTabTarget) {
+  EXPECT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+
+  WebContents* web_contents = shell()->web_contents();
+
+  scoped_refptr<DevToolsAgentHost> devtools_agent_host =
+      DevToolsAgentHost::GetOrCreateForTab(web_contents);
+  StubDevToolsAgentHostClient devtools_agent_host_client;
+  devtools_agent_host->AttachClient(&devtools_agent_host_client);
+
+  EXPECT_TRUE(DevToolsAgentHost::IsDebuggerAttached(web_contents));
   devtools_agent_host->DetachClient(&devtools_agent_host_client);
 }
 

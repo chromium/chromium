@@ -44,6 +44,11 @@
 #include "remoting/signaling/signaling_id_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/feature_list.h"
+#include "remoting/host/chromeos/features.h"
+#endif
+
 #if BUILDFLAG(IS_LINUX)
 #include "remoting/host/linux/wayland_manager.h"
 #include "remoting/host/linux/wayland_utils.h"
@@ -74,7 +79,12 @@ It2MeHost::DeferredConnectContext::DeferredConnectContext() = default;
 
 It2MeHost::DeferredConnectContext::~DeferredConnectContext() = default;
 
-It2MeHost::It2MeHost() = default;
+It2MeHost::It2MeHost() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  host_event_reporter_factory_ =
+      base::BindRepeating(&HostEventReporter::Create);
+#endif
+}
 
 It2MeHost::~It2MeHost() {
   // Check that resources that need to be torn down on the UI thread are gone.
@@ -267,6 +277,9 @@ void It2MeHost::ConnectOnNetworkThread(
         chrome_os_enterprise_params_->terminate_upon_input);
     options.set_enable_curtaining(
         chrome_os_enterprise_params_->curtain_local_user_session);
+    options.set_enable_file_transfer(
+        chrome_os_enterprise_params_->allow_file_transfer &&
+        enterprise_file_transfer_allowed_);
   }
 #endif
 
@@ -287,7 +300,8 @@ void It2MeHost::ConnectOnNetworkThread(
   host_event_logger_ =
       HostEventLogger::Create(host_->status_monitor(), kApplicationName);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  host_event_reporter_ = HostEventReporter::Create(host_->status_monitor());
+  host_event_reporter_ =
+      host_event_reporter_factory_.Run(host_->status_monitor());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Connect signaling and start the host.
@@ -340,13 +354,27 @@ void It2MeHost::OnClientConnected(const std::string& signaling_id) {
 void It2MeHost::OnClientDisconnected(const std::string& signaling_id) {
   DCHECK(host_context_->network_task_runner()->BelongsToCurrentThread());
 
-  DisconnectOnNetworkThread();
+  // Handling HostStatusObserver events should not cause the destruction of the
+  // ChromotingHost instance, however that is exactly what happens inside of
+  // DisconnectOnNetworkThread() so we post a task to disconnect asynchronously
+  // which will allow any other HostStatusObservers to handle the event as well
+  // before everything is torn down.
+  host_context_->network_task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&It2MeHost::DisconnectOnNetworkThread, this,
+                                protocol::ErrorCode::OK));
 }
 
 ValidationCallback It2MeHost::GetValidationCallbackForTesting() {
   return base::BindRepeating(&It2MeHost::ValidateConnectionDetails,
                              base::Unretained(this));
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void It2MeHost::SetHostEventReporterFactoryForTesting(
+    HostEventReporterFactory factory) {
+  host_event_reporter_factory_ = factory;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void It2MeHost::OnPolicyUpdate(base::Value::Dict policies) {
   // The policy watcher runs on the |ui_task_runner|.
@@ -362,6 +390,24 @@ void It2MeHost::OnPolicyUpdate(base::Value::Dict policies) {
   // the connection process.
   remote_support_connections_allowed_ =
       policies.FindBool(GetRemoteSupportPolicyKey()).value_or(true);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  enterprise_file_transfer_allowed_ =
+      policies
+          .FindBool(policy::key::kRemoteAccessHostAllowEnterpriseFileTransfer)
+          .value_or(false);
+
+  if (base::FeatureList::IsEnabled(
+          remoting::features::kForceEnableEnterpriseCrdFileTransfer)) {
+    HOST_LOG
+        << "Overriding enable enterprise file transfer policy. Original value: "
+        << enterprise_file_transfer_allowed_;
+    enterprise_file_transfer_allowed_ = true;
+  }
+
+  HOST_LOG << "RemoteAccessHostEnterpriseFileTransfer capability is enabled: "
+           << enterprise_file_transfer_allowed_;
+#endif
 
   absl::optional<bool> nat_policy_value =
       policies.FindBool(policy::key::kRemoteAccessHostFirewallTraversal);
@@ -753,6 +799,10 @@ const char* It2MeHost::GetRemoteSupportPolicyKey() const {
 
 It2MeHostFactory::It2MeHostFactory() = default;
 It2MeHostFactory::~It2MeHostFactory() = default;
+
+std::unique_ptr<It2MeHostFactory> It2MeHostFactory::Clone() const {
+  return std::make_unique<It2MeHostFactory>();
+}
 
 scoped_refptr<It2MeHost> It2MeHostFactory::CreateIt2MeHost() {
   return new It2MeHost();

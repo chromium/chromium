@@ -3,7 +3,5 @@ include_rules = [
   "+cc/paint",
   "+components/nacl/common/buildflags.h",
   "+third_party/skia",
-  "+components/viz/common/resources/resource_format.h",
-  "+components/viz/common/resources/resource_format_utils.h",
   "+components/viz/common/resources/shared_image_format.h",
 ]

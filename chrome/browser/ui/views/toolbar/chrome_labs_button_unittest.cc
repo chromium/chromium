@@ -9,6 +9,7 @@
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/ui/toolbar/chrome_labs_model.h"
 #include "chrome/browser/ui/toolbar/chrome_labs_prefs.h"
+#include "chrome/browser/ui/toolbar/chrome_labs_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
@@ -31,6 +32,12 @@
 #include "chrome/common/pref_names.h"
 #include "components/user_manager/scoped_user_manager.h"
 #endif
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/test/base/scoped_channel_override.h"
+#endif
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH) || !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace {
 
@@ -56,10 +63,15 @@ class ChromeLabsButtonTest : public TestWithBrowserView {
         user_manager_(new ash::FakeChromeUserManager()),
         user_manager_enabler_(base::WrapUnique(user_manager_.get())),
 #endif
-
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+        channel_override_(chrome::ScopedChannelOverride(
+            chrome::ScopedChannelOverride::Channel::kDev)),
+#endif
         scoped_feature_entries_({{kFirstTestFeatureId, "", "",
                                   flags_ui::FlagsState::GetCurrentPlatform(),
-                                  FEATURE_VALUE_TYPE(kTestFeature1)}}) {
+                                  FEATURE_VALUE_TYPE(kTestFeature1)}})
+
+  {
   }
   void SetUp() override {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -68,28 +80,31 @@ class ChromeLabsButtonTest : public TestWithBrowserView {
     user_manager_->AddUser(account_id);
     user_manager_->LoginUser(account_id);
 #endif
-
-    scoped_feature_list_.InitAndEnableFeature(features::kChromeLabs);
-
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kChromeLabs,
+        {{features::kChromeLabsActivationPercentage.name, "100"}});
     std::vector<LabInfo> test_feature_info = {
         {kFirstTestFeatureId, u"", u"", "", version_info::Channel::STABLE}};
     scoped_chrome_labs_model_data_.SetModelDataForTesting(test_feature_info);
 
     TestWithBrowserView::SetUp();
-    profile()->GetPrefs()->SetBoolean(chrome_labs_prefs::kBrowserLabsEnabled,
-                                      true);
+    profile()->GetPrefs()->SetBoolean(
+        chrome_labs_prefs::kBrowserLabsEnabledEnterprisePolicy, true);
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
  protected:
-  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_;
+  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
 #endif
 
  private:
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  chrome::ScopedChannelOverride channel_override_;
+#endif
   about_flags::testing::ScopedFeatureEntries scoped_feature_entries_;
   base::test::ScopedFeatureList scoped_feature_list_;
-
   ScopedChromeLabsModelDataForTesting scoped_chrome_labs_model_data_;
 };
 
@@ -116,7 +131,7 @@ TEST_F(ChromeLabsButtonTest, ShowAndHideChromeLabsBubbleOnPress) {
   EXPECT_TRUE(coordinator->BubbleExists());
 
   views::test::WidgetDestroyedWaiter destroyed_waiter(
-      coordinator->GetChromeLabsBubbleViewForTesting()->GetWidget());
+      coordinator->GetChromeLabsBubbleView()->GetWidget());
   test_api.NotifyClick(e);
   destroyed_waiter.Wait();
   EXPECT_FALSE(coordinator->BubbleExists());
@@ -129,11 +144,12 @@ TEST_F(ChromeLabsButtonTest, ShouldButtonShowTest) {
   EXPECT_TRUE(browser_view()->toolbar()->chrome_labs_button()->GetVisible());
 
   // Default enterprise policy value should show the Chrome Labs button.
-  profile()->GetPrefs()->ClearPref(chrome_labs_prefs::kBrowserLabsEnabled);
+  profile()->GetPrefs()->ClearPref(
+      chrome_labs_prefs::kBrowserLabsEnabledEnterprisePolicy);
   EXPECT_TRUE(browser_view()->toolbar()->chrome_labs_button()->GetVisible());
 
-  profile()->GetPrefs()->SetBoolean(chrome_labs_prefs::kBrowserLabsEnabled,
-                                    false);
+  profile()->GetPrefs()->SetBoolean(
+      chrome_labs_prefs::kBrowserLabsEnabledEnterprisePolicy, false);
   EXPECT_FALSE(browser_view()->toolbar()->chrome_labs_button()->GetVisible());
 }
 
@@ -194,24 +210,35 @@ TEST_F(ChromeLabsButtonTestSecondaryUser, ButtonShouldNotShowTest) {
 class ChromeLabsButtonNoExperimentsAvailableTest : public TestWithBrowserView {
  public:
   ChromeLabsButtonNoExperimentsAvailableTest()
-      : scoped_feature_entries_({{kSecondTestFeatureId, "", "", 0,
-                                  FEATURE_VALUE_TYPE(kTestFeature2)}}) {}
+      :
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+        channel_override_(chrome::ScopedChannelOverride(
+            chrome::ScopedChannelOverride::Channel::kDev)),
+#endif
+        scoped_feature_entries_({{kSecondTestFeatureId, "", "", 0,
+                                  FEATURE_VALUE_TYPE(kTestFeature2)}}) {
+  }
+
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kChromeLabs);
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kChromeLabs,
+        {{features::kChromeLabsActivationPercentage.name, "100"}});
 
     std::vector<LabInfo> test_feature_info = {
         {kSecondTestFeatureId, u"", u"", "", version_info::Channel::STABLE}};
     scoped_chrome_labs_model_data_.SetModelDataForTesting(test_feature_info);
 
     TestWithBrowserView::SetUp();
-    profile()->GetPrefs()->SetBoolean(chrome_labs_prefs::kBrowserLabsEnabled,
-                                      true);
+    profile()->GetPrefs()->SetBoolean(
+        chrome_labs_prefs::kBrowserLabsEnabledEnterprisePolicy, true);
   }
 
  private:
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  chrome::ScopedChannelOverride channel_override_;
+#endif
   about_flags::testing::ScopedFeatureEntries scoped_feature_entries_;
   base::test::ScopedFeatureList scoped_feature_list_;
-
   ScopedChromeLabsModelDataForTesting scoped_chrome_labs_model_data_;
 };
 
@@ -223,13 +250,20 @@ class ChromeLabsButtonOnlyExpiredFeaturesAvailableTest
     : public TestWithBrowserView {
  public:
   ChromeLabsButtonOnlyExpiredFeaturesAvailableTest()
-      : scoped_feature_entries_({{kExpiredFlagTestFeatureId, "", "",
+      :
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+        channel_override_(chrome::ScopedChannelOverride(
+            chrome::ScopedChannelOverride::Channel::kDev)),
+#endif
+        scoped_feature_entries_({{kExpiredFlagTestFeatureId, "", "",
                                   flags_ui::FlagsState::GetCurrentPlatform(),
                                   FEATURE_VALUE_TYPE(kTestFeatureExpired)}}) {
     flags::testing::SetFlagExpiration(kExpiredFlagTestFeatureId, 0);
   }
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kChromeLabs);
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kChromeLabs,
+        {{features::kChromeLabsActivationPercentage.name, "100"}});
 
     std::vector<LabInfo> test_feature_info = {{kExpiredFlagTestFeatureId, u"",
                                                u"", "",
@@ -237,14 +271,16 @@ class ChromeLabsButtonOnlyExpiredFeaturesAvailableTest
     scoped_chrome_labs_model_data_.SetModelDataForTesting(test_feature_info);
 
     TestWithBrowserView::SetUp();
-    profile()->GetPrefs()->SetBoolean(chrome_labs_prefs::kBrowserLabsEnabled,
-                                      true);
+    profile()->GetPrefs()->SetBoolean(
+        chrome_labs_prefs::kBrowserLabsEnabledEnterprisePolicy, true);
   }
 
  private:
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  chrome::ScopedChannelOverride channel_override_;
+#endif
   about_flags::testing::ScopedFeatureEntries scoped_feature_entries_;
   base::test::ScopedFeatureList scoped_feature_list_;
-
   ScopedChromeLabsModelDataForTesting scoped_chrome_labs_model_data_;
 };
 
@@ -252,3 +288,5 @@ TEST_F(ChromeLabsButtonOnlyExpiredFeaturesAvailableTest,
        ButtonShouldNotShowTest) {
   EXPECT_EQ(browser_view()->toolbar()->chrome_labs_button(), nullptr);
 }
+
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) || !BUILDFLAG(GOOGLE_CHROME_BRANDING)

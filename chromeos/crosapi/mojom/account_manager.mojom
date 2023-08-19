@@ -7,7 +7,7 @@
 // versioning. Bump this value before making a change to any of the following
 // interfaces / enums.
 //
-// Next MinVersion: 14
+// Next MinVersion: 15
 
 module crosapi.mojom;
 
@@ -61,10 +61,10 @@ struct Account {
 // google_apis/gaia/google_service_auth_error.h - which does not have an
 // "unknown" value.
 //
-// Next id: 4
+// Next id: 5
 [Stable]
 struct GoogleServiceAuthError {
-  // Next value: 15
+  // Next value: 16
   [Stable, Extensible]
   enum State {
     kNone = 0,
@@ -82,6 +82,7 @@ struct GoogleServiceAuthError {
     kServiceError = 12,
     // DEPRECATED kWebLoginRequired = 13,
     [MinVersion=10] kScopeLimitedUnrecoverableError = 14,
+    [MinVersion=14] kChallengeResponseRequired = 15,
   };
 
   // Next value: 4
@@ -99,6 +100,8 @@ struct GoogleServiceAuthError {
   int64 network_error@1;
   string error_message@2;
   InvalidGaiaCredentialsReason invalid_gaia_credentials_reason@3;
+  // Challenge is set only if `state` is set to `kChallengeResponseRequired`.
+  [MinVersion=14] string? token_binding_challenge@4;
 };
 
 // See components/account_manager_core/account_addition_options.h

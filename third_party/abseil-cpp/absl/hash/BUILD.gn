@@ -22,7 +22,7 @@ absl_source_set("hash") {
     "//third_party/abseil-cpp/absl/meta:type_traits",
     "//third_party/abseil-cpp/absl/numeric:bits",
     "//third_party/abseil-cpp/absl/numeric:int128",
-    "//third_party/abseil-cpp/absl/strings",
+    "//third_party/abseil-cpp/absl/strings:string_view",
     "//third_party/abseil-cpp/absl/types:optional",
     "//third_party/abseil-cpp/absl/types:variant",
     "//third_party/abseil-cpp/absl/utility",
@@ -42,20 +42,45 @@ absl_source_set("hash_testing") {
 }
 
 absl_test("hash_test") {
-  sources = [ "hash_test.cc" ]
+  sources = [
+    "hash_test.cc",
+    "internal/hash_test.h",
+  ]
   deps = [
     ":hash",
     ":hash_testing",
     ":spy_hash_state",
+    "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/container:btree",
     "//third_party/abseil-cpp/absl/container:flat_hash_map",
     "//third_party/abseil-cpp/absl/container:flat_hash_set",
     "//third_party/abseil-cpp/absl/container:node_hash_map",
     "//third_party/abseil-cpp/absl/container:node_hash_set",
+    "//third_party/abseil-cpp/absl/memory",
     "//third_party/abseil-cpp/absl/meta:type_traits",
     "//third_party/abseil-cpp/absl/numeric:int128",
     "//third_party/abseil-cpp/absl/strings:cord_test_helpers",
+    "//third_party/abseil-cpp/absl/strings:string_view",
+    "//third_party/abseil-cpp/absl/types:optional",
+    "//third_party/abseil-cpp/absl/types:variant",
+  ]
+}
+
+absl_test("hash_instantiated_test") {
+  sources = [
+    "hash_instantiated_test.cc",
+    "internal/hash_test.h",
+  ]
+  deps = [
+    ":hash",
+    ":hash_testing",
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/container:btree",
+    "//third_party/abseil-cpp/absl/container:flat_hash_map",
+    "//third_party/abseil-cpp/absl/container:flat_hash_set",
+    "//third_party/abseil-cpp/absl/container:node_hash_map",
+    "//third_party/abseil-cpp/absl/container:node_hash_set",
   ]
 }
 
@@ -86,6 +111,7 @@ absl_source_set("low_level_hash") {
   deps = [
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:endian",
+    "//third_party/abseil-cpp/absl/base:prefetch",
     "//third_party/abseil-cpp/absl/numeric:int128",
   ]
   visibility = [ ":*" ]

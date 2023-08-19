@@ -39,6 +39,7 @@
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "chromeos/ash/components/settings/scoped_timezone_settings.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "google_apis/common/api_error_codes.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
@@ -97,10 +98,6 @@ class CalendarViewTest : public AshTestBase {
 
     delegate_ =
         std::make_unique<DetailedViewDelegate>(/*tray_controller=*/nullptr);
-    tray_model_ =
-        base::MakeRefCounted<UnifiedSystemTrayModel>(/*shelf=*/nullptr);
-    tray_controller_ =
-        std::make_unique<UnifiedSystemTrayController>(tray_model_.get());
     widget_ = CreateFramelessTestWidget();
     widget_->SetFullscreen(true);
   }
@@ -108,8 +105,6 @@ class CalendarViewTest : public AshTestBase {
   void TearDown() override {
     widget_.reset();
     delegate_.reset();
-    tray_controller_.reset();
-    tray_model_.reset();
 
     AshTestBase::TearDown();
   }
@@ -146,8 +141,7 @@ class CalendarViewTest : public AshTestBase {
     AccountId user_account = AccountId::FromUserEmail(kTestUser);
     GetSessionControllerClient()->SwitchActiveUser(user_account);
 
-    auto calendar_view =
-        std::make_unique<CalendarView>(delegate_.get(), tray_controller_.get());
+    auto calendar_view = std::make_unique<CalendarView>(delegate_.get());
 
     calendar_view_ = widget_->SetContentsView(std::move(calendar_view));
   }
@@ -324,10 +318,9 @@ class CalendarViewTest : public AshTestBase {
  private:
   std::unique_ptr<views::Widget> widget_;
   // Owned by `widget_`.
-  raw_ptr<CalendarView, ExperimentalAsh> calendar_view_ = nullptr;
+  raw_ptr<CalendarView, DanglingUntriaged | ExperimentalAsh> calendar_view_ =
+      nullptr;
   std::unique_ptr<DetailedViewDelegate> delegate_;
-  scoped_refptr<UnifiedSystemTrayModel> tray_model_;
-  std::unique_ptr<UnifiedSystemTrayController> tray_controller_;
   std::unique_ptr<CalendarEventListView> event_list_view_;
   static base::Time fake_time_;
 };
@@ -399,6 +392,7 @@ TEST_F(CalendarViewTest, InitDec) {
                 ->GetText());
 }
 
+// TODO(b/285280977): Remove when CalendarView is out of TrayDetailedView.
 TEST_F(CalendarViewTest, NoBackButton) {
   CreateCalendarView();
 
@@ -1405,10 +1399,6 @@ class CalendarViewAnimationTest : public AshTestBase {
 
     delegate_ =
         std::make_unique<DetailedViewDelegate>(/*tray_controller=*/nullptr);
-    tray_model_ =
-        base::MakeRefCounted<UnifiedSystemTrayModel>(/*shelf=*/nullptr);
-    tray_controller_ =
-        std::make_unique<UnifiedSystemTrayController>(tray_model_.get());
     widget_ = CreateFramelessTestWidget();
     widget_->SetFullscreen(true);
 
@@ -1428,8 +1418,6 @@ class CalendarViewAnimationTest : public AshTestBase {
 
   void TearDown() override {
     delegate_.reset();
-    tray_controller_.reset();
-    tray_model_.reset();
     widget_.reset();
     time_overrides_.reset();
 
@@ -1437,8 +1425,8 @@ class CalendarViewAnimationTest : public AshTestBase {
   }
 
   void CreateCalendarView() {
-    calendar_view_ = widget_->SetContentsView(std::make_unique<CalendarView>(
-        delegate_.get(), tray_controller_.get()));
+    calendar_view_ = widget_->SetContentsView(
+        std::make_unique<CalendarView>(delegate_.get()));
   }
 
   // Gets date cell of a given CalendarMonthView and numerical `day`.
@@ -1557,12 +1545,11 @@ class CalendarViewAnimationTest : public AshTestBase {
  private:
   std::unique_ptr<views::Widget> widget_;
   // Owned by `widget_`.
-  raw_ptr<CalendarView, ExperimentalAsh> calendar_view_ = nullptr;
+  raw_ptr<CalendarView, DanglingUntriaged | ExperimentalAsh> calendar_view_ =
+      nullptr;
   std::unique_ptr<DetailedViewDelegate> delegate_;
-  scoped_refptr<UnifiedSystemTrayModel> tray_model_;
-  std::unique_ptr<UnifiedSystemTrayController> tray_controller_;
   std::unique_ptr<base::subtle::ScopedTimeClockOverrides> time_overrides_;
-  raw_ptr<CalendarModel, ExperimentalAsh> calendar_model_;
+  raw_ptr<CalendarModel, DanglingUntriaged | ExperimentalAsh> calendar_model_;
   std::unique_ptr<calendar_test_utils::CalendarClientTestImpl> calendar_client_;
 };
 
@@ -2828,7 +2815,8 @@ class CalendarViewAnimationWithJellyEnabledTest
 
   void SetUp() override {
     scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitWithFeatures({features::kCalendarJelly}, {});
+    scoped_feature_list_->InitWithFeatures(
+        {features::kCalendarJelly, chromeos::features::kJelly}, {});
     CalendarViewAnimationTest::SetUp();
   }
 

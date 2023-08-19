@@ -611,6 +611,23 @@ TEST_F(AppListBubblePresenterTest, CreatingActiveWidgetClosesBubble) {
   EXPECT_FALSE(presenter->IsShowing());
 }
 
+// Verifies that a child window of the help bubble container can gain focus
+// from the app list bubble without closing the bubble.
+TEST_F(AppListBubblePresenterTest, FocusHelpBubbleContainerChild) {
+  AppListBubblePresenter* const presenter = GetBubblePresenter();
+  presenter->Show(GetPrimaryDisplay().id());
+  ASSERT_TRUE(presenter->IsShowing());
+
+  std::unique_ptr<views::Widget> widget = CreateTestWidget(
+      /*delegate=*/nullptr, kShellWindowId_HelpBubbleContainer);
+  EXPECT_TRUE(widget->GetNativeView()->HasFocus());
+
+  // Bubble is shown without focus.
+  EXPECT_TRUE(presenter->IsShowing());
+  EXPECT_FALSE(
+      presenter->bubble_widget_for_test()->GetNativeView()->HasFocus());
+}
+
 // Regression test for https://crbug.com/1268220.
 TEST_F(AppListBubblePresenterTest, CreatingChildWidgetDoesNotCloseBubble) {
   AppListBubblePresenter* presenter = GetBubblePresenter();

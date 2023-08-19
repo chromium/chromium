@@ -42,9 +42,13 @@ void SetBrowserProfileType(base::SupportsUserData* browser_context,
 
 BrowserProfileType GetBrowserProfileType(
     const base::SupportsUserData* browser_context) {
-  base::SupportsUserData::Data* data =
-      browser_context->GetUserData(ProfileTypeUserData::kKey);
-  return static_cast<ProfileTypeUserData*>(data)->browser_context_type();
+  auto* profile_type_user_data = static_cast<ProfileTypeUserData*>(
+      browser_context->GetUserData(ProfileTypeUserData::kKey));
+  // We deliberately don't want to gracefully handle this data missing as all
+  // `browser_context`s are supposed to be assigned a type as soon as they are
+  // created.
+  CHECK(profile_type_user_data);
+  return profile_type_user_data->browser_context_type();
 }
 
 }  // namespace profile_metrics

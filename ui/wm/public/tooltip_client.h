@@ -66,6 +66,8 @@ WM_PUBLIC_EXPORT void SetTooltipId(aura::Window* window, void* id);
 WM_PUBLIC_EXPORT const std::u16string GetTooltipText(aura::Window* window);
 WM_PUBLIC_EXPORT const void* GetTooltipId(aura::Window* window);
 
+WM_PUBLIC_EXPORT extern const aura::WindowProperty<TooltipClient*>* const
+    kRootWindowTooltipClientKey;
 WM_PUBLIC_EXPORT extern const aura::WindowProperty<void*>* const kTooltipIdKey;
 WM_PUBLIC_EXPORT extern const aura::WindowProperty<std::u16string*>* const
     kTooltipTextKey;

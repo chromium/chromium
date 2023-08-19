@@ -9,6 +9,8 @@
 
 namespace apps::features {
 
+// TODO(crbug.com/1357905): Remove feature on ChromeOS once all tests pass with
+// updated UI.
 BASE_FEATURE(kLinkCapturingUiUpdate,
              "LinkCapturingUiUpdate",
 #if BUILDFLAG(IS_CHROMEOS)
@@ -22,10 +24,6 @@ BASE_FEATURE(kLinkCapturingInfoBar,
              "LinkCapturingInfoBar",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kIntentChipSkipsPicker,
-             "IntentChipSkipsPicker",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 bool LinkCapturingUiUpdateEnabled() {
   return base::FeatureList::IsEnabled(kLinkCapturingUiUpdate);
 }
@@ -33,11 +31,6 @@ bool LinkCapturingUiUpdateEnabled() {
 bool LinkCapturingInfoBarEnabled() {
   return LinkCapturingUiUpdateEnabled() &&
          base::FeatureList::IsEnabled(kLinkCapturingInfoBar);
-}
-
-bool ShouldIntentChipSkipIntentPicker() {
-  return LinkCapturingUiUpdateEnabled() &&
-         base::FeatureList::IsEnabled(kIntentChipSkipsPicker);
 }
 
 }  // namespace apps::features

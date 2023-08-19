@@ -30,6 +30,7 @@
 #include "media/capture/video/video_capture_buffer_pool.h"
 #include "media/capture/video/video_capture_buffer_tracker_factory_impl.h"
 #include "media/capture/video/video_capture_device_client.h"
+#include "media/capture/video/video_capture_metrics.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "content/browser/compositor/image_transport_factory.h"
@@ -571,6 +572,16 @@ void VideoCaptureController::OnFrameReadyInBuffer(
   }
 
   if (!has_received_frames_) {
+    // Check the following group of metrics is captured only for cameras.
+    if (stream_type() == blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE) {
+      // This metric combines width and height into a single UMA metric.
+      media::LogCaptureCurrentDeviceResolution(
+          frame_ready_buffer.frame_info->coded_size.width(),
+          frame_ready_buffer.frame_info->coded_size.height());
+
+      media::LogCaptureCurrentDevicePixelFormat(
+          frame_ready_buffer.frame_info->pixel_format);
+    }
     UMA_HISTOGRAM_COUNTS_1M("Media.VideoCapture.Width",
                             frame_ready_buffer.frame_info->coded_size.width());
     UMA_HISTOGRAM_COUNTS_1M("Media.VideoCapture.Height",

@@ -57,10 +57,18 @@ class PdfOcrController : public KeyedService, ScreenAIInstallState::Observer {
   // Sends Pdf Ocr Always Active state to all relevant WebContents.
   void SendPdfOcrAlwaysActiveToAll(bool is_always_active);
 
-  // Return true if it added an observer for `ScreenAIInstallState` or
-  // triggered downloading the Screen AI library. In this case, we need to keep
-  // the request until the library is ready.
-  bool MaybeAddObserverOrTriggerDownload(
+  // If library is ready, returns false as the request can be immediately
+  // executed. Otherwise:
+  //  - Stores the request to be run when library is ready.
+  //  - Triggers library download and installation through adding observer if
+  //    not done before.
+  //  - Asks for a retry on download if a previous download has failed.
+  //  - Returns true.
+  //
+  // If `web_contents_for_only_once_request` is empty, a request to always run
+  // PDF OCR will be scheduled. Otherwise only the request for the last
+  // WebContents is scheduled.
+  bool MaybeScheduleRequest(
       content::WebContents* web_contents_for_only_once_request);
 
   // Observes changes in Screen AI component download and readiness state.

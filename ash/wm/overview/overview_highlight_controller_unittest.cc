@@ -21,6 +21,7 @@
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
+#include "ash/wm/overview/overview_highlightable_view.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_item_view.h"
 #include "ash/wm/overview/overview_test_base.h"
@@ -30,6 +31,7 @@
 #include "ash/wm/window_util.h"
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/window.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/test/display_manager_test_api.h"
@@ -389,7 +391,7 @@ class DesksOverviewHighlightControllerTest
     // Give the second desk a name. The desk name gets exposed as the accessible
     // name. And the focusable views that are painted in these tests will fail
     // the accessibility paint checker checks if they lack an accessible name.
-    desk_controller->desks()[1]->SetName(u"Desk 2", false);
+    desk_controller->GetDeskAtIndex(1)->SetName(u"Desk 2", false);
   }
 
   OverviewHighlightableView* GetHighlightedView() {
@@ -451,7 +453,11 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingBasic) {
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
 
-  EXPECT_EQ(desk_bar_view->expanded_state_new_desk_button()->GetInnerButton(),
+  EXPECT_EQ(chromeos::features::IsJellyrollEnabled()
+                ? desk_bar_view->new_desk_button()
+                : static_cast<OverviewHighlightableView*>(
+                      desk_bar_view->expanded_state_new_desk_button()
+                          ->GetInnerButton()),
             GetHighlightedView());
   CheckDeskBarViewSize(desk_bar_view, "new desk button");
 
@@ -504,7 +510,11 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingReverse) {
   // Tests that after the desks templates button (if the feature was enabled),
   // we get to the new desk button.
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  EXPECT_EQ(desk_bar_view->expanded_state_new_desk_button()->GetInnerButton(),
+  EXPECT_EQ(chromeos::features::IsJellyrollEnabled()
+                ? desk_bar_view->new_desk_button()
+                : static_cast<OverviewHighlightableView*>(
+                      desk_bar_view->expanded_state_new_desk_button()
+                          ->GetInnerButton()),
             GetHighlightedView());
 
   // Tests that after the new desk button comes the preview views and the desk
@@ -572,7 +582,11 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingChromevox) {
 
   // Check for the new desk button.
   SendKey(ui::VKEY_RIGHT, ui::EF_COMMAND_DOWN);
-  EXPECT_EQ(desk_bar_view->expanded_state_new_desk_button()->GetInnerButton(),
+  EXPECT_EQ(chromeos::features::IsJellyrollEnabled()
+                ? desk_bar_view->new_desk_button()
+                : static_cast<OverviewHighlightableView*>(
+                      desk_bar_view->expanded_state_new_desk_button()
+                          ->GetInnerButton()),
             GetHighlightedView());
 }
 
@@ -626,7 +640,11 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingMultiDisplay) {
             GetHighlightedView());
   SendKey(ui::VKEY_TAB);
 
-  EXPECT_EQ(desk_bar_view1->expanded_state_new_desk_button()->GetInnerButton(),
+  EXPECT_EQ(chromeos::features::IsJellyrollEnabled()
+                ? desk_bar_view1->new_desk_button()
+                : static_cast<OverviewHighlightableView*>(
+                      desk_bar_view1->expanded_state_new_desk_button()
+                          ->GetInnerButton()),
             GetHighlightedView());
   if (AreDeskTemplatesEnabled()) {
     SendKey(ui::VKEY_TAB);
@@ -653,7 +671,11 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingMultiDisplay) {
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
-  EXPECT_EQ(desk_bar_view2->expanded_state_new_desk_button()->GetInnerButton(),
+  EXPECT_EQ(chromeos::features::IsJellyrollEnabled()
+                ? desk_bar_view2->new_desk_button()
+                : static_cast<OverviewHighlightableView*>(
+                      desk_bar_view2->expanded_state_new_desk_button()
+                          ->GetInnerButton()),
             GetHighlightedView());
   if (AreDeskTemplatesEnabled()) {
     SendKey(ui::VKEY_TAB);
@@ -680,7 +702,11 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingMultiDisplay) {
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
-  EXPECT_EQ(desk_bar_view3->expanded_state_new_desk_button()->GetInnerButton(),
+  EXPECT_EQ(chromeos::features::IsJellyrollEnabled()
+                ? desk_bar_view3->new_desk_button()
+                : static_cast<OverviewHighlightableView*>(
+                      desk_bar_view3->expanded_state_new_desk_button()
+                          ->GetInnerButton()),
             GetHighlightedView());
   if (AreDeskTemplatesEnabled()) {
     SendKey(ui::VKEY_TAB);
@@ -725,8 +751,8 @@ TEST_P(DesksOverviewHighlightControllerTest, ActivateHighlightOnMiniView) {
 TEST_P(DesksOverviewHighlightControllerTest, CloseHighlightOnMiniView) {
   const auto* desks_controller = DesksController::Get();
   ASSERT_EQ(2u, desks_controller->desks().size());
-  auto* desk1 = desks_controller->desks()[0].get();
-  auto* desk2 = desks_controller->desks()[1].get();
+  auto* desk1 = desks_controller->GetDeskAtIndex(0);
+  auto* desk2 = desks_controller->GetDeskAtIndex(1);
   ASSERT_EQ(desk1, desks_controller->active_desk());
 
   ToggleOverview();
@@ -744,12 +770,19 @@ TEST_P(DesksOverviewHighlightControllerTest, CloseHighlightOnMiniView) {
   // with desk 2, desk 2 is destroyed.
   SendKey(ui::VKEY_W, ui::EF_CONTROL_DOWN);
   EXPECT_EQ(1u, desks_controller->desks().size());
-  EXPECT_NE(desk2, desks_controller->desks()[0].get());
+  EXPECT_NE(desk2, desks_controller->GetDeskAtIndex(0));
 
-  // Go back to zero state since there is only a single desk and mini views
-  // are empty in zero state.
-  EXPECT_TRUE(desk_bar_view->IsZeroState());
-  EXPECT_TRUE(desk_bar_view->mini_views().empty());
+  if (chromeos::features::IsJellyrollEnabled()) {
+    // When Jellyroll is enabled, desks bar never goes back to zero state after
+    // it's initialized.
+    EXPECT_FALSE(desk_bar_view->IsZeroState());
+    EXPECT_FALSE(desk_bar_view->mini_views().empty());
+  } else {
+    // Go back to zero state since there is only a single desk and mini views
+    // are empty in zero state.
+    EXPECT_TRUE(desk_bar_view->IsZeroState());
+    EXPECT_TRUE(desk_bar_view->mini_views().empty());
+  }
 }
 
 TEST_P(DesksOverviewHighlightControllerTest, ActivateDeskNameView) {
@@ -771,7 +804,7 @@ TEST_P(DesksOverviewHighlightControllerTest, ActivateDeskNameView) {
   // All should be selected.
   EXPECT_TRUE(desk_name_view_1->HasSelection());
   const auto* desks_controller = DesksController::Get();
-  auto* desk_1 = desks_controller->desks()[0].get();
+  auto* desk_1 = desks_controller->GetDeskAtIndex(0);
   EXPECT_EQ(desk_1->name(), desk_name_view_1->GetSelectedText());
 
   // Arrow keys should not change neither the focus nor the highlight.
@@ -812,14 +845,26 @@ TEST_P(DesksOverviewHighlightControllerTest, RemoveDeskWhileNameIsHighlighted) {
   EXPECT_EQ(desk_name_view_1, GetHighlightedView());
 
   const auto* desks_controller = DesksController::Get();
-  auto* desk_1 = desks_controller->desks()[0].get();
+  auto* desk_1 = desks_controller->GetDeskAtIndex(0);
   RemoveDesk(desk_1);
 
   // Tabbing again should cause no crashes.
   EXPECT_EQ(nullptr, GetHighlightedView());
   SendKey(ui::VKEY_TAB);
-  EXPECT_TRUE(desk_bar_view->IsZeroState());
-  EXPECT_EQ(desk_bar_view->zero_state_default_desk_button(),
+
+  const bool is_jellyroll_enabled = chromeos::features::IsJellyrollEnabled();
+  // When Jellyroll is enabled, desks bar never goes back to zero state after
+  // it's initialized.
+  if (is_jellyroll_enabled) {
+    EXPECT_FALSE(desk_bar_view->IsZeroState());
+  } else {
+    EXPECT_TRUE(desk_bar_view->IsZeroState());
+  }
+
+  EXPECT_EQ(is_jellyroll_enabled
+                ? desk_bar_view->mini_views()[0]->desk_preview()
+                : static_cast<OverviewHighlightableView*>(
+                      desk_bar_view->zero_state_default_desk_button()),
             GetHighlightedView());
 }
 
@@ -833,8 +878,13 @@ TEST_P(DesksOverviewHighlightControllerTest,
   const auto* desk_bar_view =
       GetDesksBarViewForRoot(Shell::GetPrimaryRootWindow());
   ASSERT_FALSE(desk_bar_view->IsZeroState());
-  const auto* new_desk_button =
-      desk_bar_view->expanded_state_new_desk_button()->GetInnerButton();
+  const views::LabelButton* new_desk_button;
+  if (chromeos::features::IsJellyEnabled()) {
+    new_desk_button = desk_bar_view->new_desk_button();
+  } else {
+    new_desk_button =
+        desk_bar_view->expanded_state_new_desk_button()->GetInnerButton();
+  }
   const auto* desks_controller = DesksController::Get();
 
   auto check_name_view_at_index = [this, desks_controller](
@@ -853,7 +903,7 @@ TEST_P(DesksOverviewHighlightControllerTest,
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
-  ASSERT_EQ(new_desk_button, GetHighlightedView());
+  ASSERT_EQ(new_desk_button, GetHighlightedView()->GetView());
 
   // Keep adding new desks until we reach the maximum allowed amount. Verify the
   // amount of desks is indeed the maximum allowed and that the new desk button
@@ -884,22 +934,39 @@ TEST_P(DesksOverviewHighlightControllerTest, ZeroStateOfDesksBar) {
                                    ->GetBoundsInScreen()
                                    .CenterPoint());
   event_generator->ClickLeftButton();
-  EXPECT_TRUE(desks_bar_view->IsZeroState());
+
+  const bool is_jellyroll_enabled = chromeos::features::IsJellyrollEnabled();
+  // When Jellyroll is enabled, desks bar never goes back to zero state after
+  // it's initialized.
+  if (is_jellyroll_enabled) {
+    ASSERT_FALSE(desks_bar_view->IsZeroState());
+  } else {
+    ASSERT_TRUE(desks_bar_view->IsZeroState());
+  }
 
   // Both zero state default desk button and zero state new desk button can be
   // focused in overview mode.
   SendKey(ui::VKEY_TAB);
-  EXPECT_EQ(desks_bar_view->zero_state_default_desk_button(),
+  EXPECT_EQ(is_jellyroll_enabled
+                ? desks_bar_view->mini_views()[0]->desk_preview()
+                : static_cast<OverviewHighlightableView*>(
+                      desks_bar_view->zero_state_default_desk_button()),
             GetHighlightedView());
   SendKey(ui::VKEY_TAB);
-  EXPECT_EQ(desks_bar_view->zero_state_new_desk_button(), GetHighlightedView());
+  EXPECT_EQ(is_jellyroll_enabled
+                ? desks_bar_view->mini_views()[0]->desk_name_view()
+                : static_cast<OverviewHighlightableView*>(
+                      desks_bar_view->zero_state_new_desk_button()),
+            GetHighlightedView());
 
   // Trigger the zero state default desk button will focus on the default desk's
   // name view.
-  SendKey(ui::VKEY_TAB);
-  EXPECT_EQ(desks_bar_view->zero_state_default_desk_button(),
-            GetHighlightedView());
-  SendKey(ui::VKEY_RETURN);
+  if (!is_jellyroll_enabled) {
+    SendKey(ui::VKEY_TAB);
+    EXPECT_EQ(desks_bar_view->zero_state_default_desk_button(),
+              GetHighlightedView());
+    SendKey(ui::VKEY_RETURN);
+  }
   EXPECT_EQ(desks_bar_view->mini_views()[0]->desk_name_view(),
             GetHighlightedView());
   ToggleOverview();
@@ -914,7 +981,11 @@ TEST_P(DesksOverviewHighlightControllerTest, ZeroStateOfDesksBar) {
   EXPECT_TRUE(desks_bar_view->IsZeroState());
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
-  EXPECT_EQ(desks_bar_view->zero_state_new_desk_button(), GetHighlightedView());
+  EXPECT_EQ(is_jellyroll_enabled
+                ? desks_bar_view->new_desk_button()
+                : static_cast<OverviewHighlightableView*>(
+                      desks_bar_view->zero_state_new_desk_button()),
+            GetHighlightedView());
   SendKey(ui::VKEY_RETURN);
   EXPECT_EQ(desks_bar_view->mini_views()[1]->desk_name_view(),
             GetHighlightedView());
@@ -960,7 +1031,7 @@ TEST_P(DesksOverviewHighlightControllerTest, SwitchingToZeroStateWhileTabbing) {
   ASSERT_EQ(desks_bar_view->mini_views()[0]->desk_preview(),
             GetHighlightedView());
 
-  // Remove one desk to enter zero state desks bar.
+  // Remove one desk to have only one desk left.
   auto* event_generator = GetEventGenerator();
   auto* mini_view = desks_bar_view->mini_views()[1];
   event_generator->MoveMouseTo(mini_view->GetBoundsInScreen().CenterPoint());
@@ -969,7 +1040,14 @@ TEST_P(DesksOverviewHighlightControllerTest, SwitchingToZeroStateWhileTabbing) {
                                    ->GetBoundsInScreen()
                                    .CenterPoint());
   event_generator->ClickLeftButton();
-  ASSERT_TRUE(desks_bar_view->IsZeroState());
+
+  // When Jellyroll is enabled, desks bar never goes back to zero state after
+  // it's initialized.
+  if (chromeos::features::IsJellyrollEnabled()) {
+    ASSERT_FALSE(desks_bar_view->IsZeroState());
+  } else {
+    ASSERT_TRUE(desks_bar_view->IsZeroState());
+  }
 
   // Try tabbing after removing the second desk triggers us to transition to
   // zero state desks bar. There should not be a crash.

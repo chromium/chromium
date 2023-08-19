@@ -74,9 +74,11 @@ class TestSliderListener : public views::SliderListener {
   // The epoch of the last time SliderDragEnded was called.
   int last_drag_ended_epoch_ = -1;
   // The sender from the last SliderDragStarted call.
-  raw_ptr<views::Slider, DanglingUntriaged> last_drag_started_sender_ = nullptr;
+  raw_ptr<views::Slider, AcrossTasksDanglingUntriaged>
+      last_drag_started_sender_ = nullptr;
   // The sender from the last SliderDragEnded call.
-  raw_ptr<views::Slider, DanglingUntriaged> last_drag_ended_sender_ = nullptr;
+  raw_ptr<views::Slider, AcrossTasksDanglingUntriaged> last_drag_ended_sender_ =
+      nullptr;
 };
 
 TestSliderListener::TestSliderListener() = default;
@@ -160,7 +162,7 @@ class SliderTest : public views::ViewsTestBase,
 
  private:
   // The Slider to be tested.
-  raw_ptr<Slider, DanglingUntriaged> slider_ = nullptr;
+  raw_ptr<Slider, AcrossTasksDanglingUntriaged> slider_ = nullptr;
 
   // Populated values for discrete slider.
   base::flat_set<float> values_;

@@ -30,6 +30,13 @@ class WebStateList;
 // The handler for activity services commands.
 @property(nonatomic, weak) id<ActivityServiceCommands> activityServiceHandler;
 
+// Returns whether the link to text feature should be offered for the current
+// user selection.
+- (BOOL)shouldOfferLinkToText;
+
+// Handles the link to text menu item selection.
+- (void)handleLinkToTextSelection;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_LINK_TO_TEXT_LINK_TO_TEXT_MEDIATOR_H_

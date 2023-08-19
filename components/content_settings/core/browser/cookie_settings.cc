@@ -7,28 +7,28 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/observer_list.h"
+#include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/cookie_settings_base.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/permissions/features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/buildflags/buildflags.h"
-#include "net/base/features.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/site_for_cookies.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_IOS)
-#include "components/content_settings/core/common/features.h"
-#else
+#if BUILDFLAG(USE_BLINK)
 #include "third_party/blink/public/common/features_generated.h"
 #endif
 
@@ -60,10 +60,8 @@ ContentSetting CookieSettings::GetDefaultCookieSetting(
 }
 
 ContentSettingsForOneType CookieSettings::GetCookieSettings() const {
-  ContentSettingsForOneType settings;
-  host_content_settings_map_->GetSettingsForOneType(
-      ContentSettingsType::COOKIES, &settings);
-  return settings;
+  return host_content_settings_map_->GetSettingsForOneType(
+      ContentSettingsType::COOKIES);
 }
 
 void CookieSettings::RegisterProfilePrefs(
@@ -89,16 +87,20 @@ void CookieSettings::SetCookieSetting(const GURL& primary_url,
 
 void CookieSettings::SetCookieSettingForUserBypass(
     const GURL& first_party_url) {
-  base::Time expiry_time = GetConstraintExpiration(kUserBypassEntriesTTL);
-  ContentSettingConstraints constraints = {expiry_time, SessionModel::Durable};
+  ContentSettingConstraints constraints;
+
+  // Only apply a lifetime outside incognito. In incognito, the duration is
+  // inherintly limited.
+  if (!is_incognito_) {
+    constraints.set_lifetime(
+        content_settings::features::kUserBypassUIExceptionExpiration.Get());
+  }
+
+  constraints.set_session_model(SessionModel::Durable);
 
   host_content_settings_map_->SetContentSettingCustomScope(
       ContentSettingsPattern::Wildcard(),
-      // TODO(njeunje): Follow up on this after decision on which scope to use
-      // is finalized. For now we will make use of an origin-scope.
-      // Ref:
-      // https://docs.google.com/document/d/12_SA875i8fPPPBdno9xlwlRsK83s67THqSQwngOfLBg/edit?disco=AAAAmN3m40k
-      ContentSettingsPattern::FromURL(first_party_url),
+      content_settings::URLToSchemefulSitePattern(first_party_url),
       ContentSettingsType::COOKIES, ContentSetting::CONTENT_SETTING_ALLOW,
       constraints);
 }
@@ -106,15 +108,13 @@ void CookieSettings::SetCookieSettingForUserBypass(
 bool CookieSettings::IsStoragePartitioningBypassEnabled(
     const GURL& first_party_url) {
   SettingInfo info;
-  const base::Value value = host_content_settings_map_->GetWebsiteSetting(
+  ContentSetting setting = host_content_settings_map_->GetContentSetting(
       GURL(), first_party_url, ContentSettingsType::COOKIES, &info);
 
   bool is_default = info.primary_pattern.MatchesAllHosts() &&
                     info.secondary_pattern.MatchesAllHosts();
 
-  DCHECK(value.is_int());
-
-  return is_default ? false : IsAllowed(ValueToContentSetting(value));
+  return is_default ? false : IsAllowed(setting);
 }
 
 void CookieSettings::ResetCookieSetting(const GURL& primary_url) {
@@ -126,11 +126,11 @@ void CookieSettings::ResetCookieSetting(const GURL& primary_url) {
 // TODO(crbug.com/1386190): Update to take in CookieSettingOverrides.
 bool CookieSettings::IsThirdPartyAccessAllowed(
     const GURL& first_party_url,
-    content_settings::SettingSource* source) {
+    content_settings::SettingInfo* info) const {
   // Use GURL() as an opaque primary url to check if any site
   // could access cookies in a 3p context on |first_party_url|.
   return IsAllowed(GetCookieSetting(GURL(), first_party_url,
-                                    net::CookieSettingOverrides(), source));
+                                    net::CookieSettingOverrides(), info));
 }
 
 void CookieSettings::SetThirdPartyCookieSetting(const GURL& first_party_url,
@@ -143,10 +143,24 @@ void CookieSettings::SetThirdPartyCookieSetting(const GURL& first_party_url,
 }
 
 void CookieSettings::ResetThirdPartyCookieSetting(const GURL& first_party_url) {
+  // Standard third party cookie settings are, with the introduction of User
+  // Bypass, site scoped. There also may be an origin scoped exception either
+  // created manually, or through the previous UI. Resetting should support
+  // both of these.
+
+  // TODO(crbug.com/1446230): Log metrics when there is pattern that has domain
+  // as wildcard.
+  auto pattern = content_settings::URLToSchemefulSitePattern(first_party_url);
+
+  SettingInfo info;
+  host_content_settings_map_->GetContentSetting(
+      GURL(), first_party_url, ContentSettingsType::COOKIES, &info);
+  if (!info.secondary_pattern.HasDomainWildcard()) {
+    pattern = info.secondary_pattern;
+  }
   host_content_settings_map_->SetContentSettingCustomScope(
-      ContentSettingsPattern::Wildcard(),
-      ContentSettingsPattern::FromURLNoWildcard(first_party_url),
-      ContentSettingsType::COOKIES, CONTENT_SETTING_DEFAULT);
+      ContentSettingsPattern::Wildcard(), pattern, ContentSettingsType::COOKIES,
+      CONTENT_SETTING_DEFAULT);
 }
 
 bool CookieSettings::IsStorageDurable(const GURL& origin) const {
@@ -158,15 +172,28 @@ bool CookieSettings::IsStorageDurable(const GURL& origin) const {
   return setting == CONTENT_SETTING_ALLOW;
 }
 
-ContentSetting CookieSettings::GetSettingForLegacyCookieAccess(
-    const std::string& cookie_domain) const {
-  // The content setting patterns are treated as domains, not URLs, so the
-  // scheme is irrelevant (so we can just arbitrarily pass false).
-  GURL cookie_domain_url = net::cookie_util::CookieOriginToURL(
-      cookie_domain, false /* secure scheme */);
+bool CookieSettings::HasAnyFrameRequestedStorageAccess(
+    const GURL& first_party_url) const {
+  ContentSettingsForOneType settings =
+      host_content_settings_map_->GetSettingsForOneType(
+          ContentSettingsType::STORAGE_ACCESS);
+  for (ContentSettingPatternSource source : settings) {
+    // Skip default exceptions.
+    if (source.primary_pattern.MatchesAllHosts() ||
+        source.secondary_pattern.MatchesAllHosts()) {
+      continue;
+    }
+    // Skip exceptions that doesn't match the secondary pattern.
+    if (!source.secondary_pattern.Matches(first_party_url)) {
+      continue;
+    }
 
-  return host_content_settings_map_->GetContentSetting(
-      cookie_domain_url, GURL(), ContentSettingsType::LEGACY_COOKIE_ACCESS);
+    // There is an active SAA exception created in the context of
+    // |first_party_url|.
+    return true;
+  }
+
+  return false;
 }
 
 bool CookieSettings::ShouldIgnoreSameSiteRestrictions(
@@ -181,6 +208,14 @@ void CookieSettings::ShutdownOnUIThread() {
   pref_change_registrar_.RemoveAll();
 }
 
+// Returns whether third-party cookie blocking should be bypassed (i.e. always
+// allow the cookie regardless of cookie content settings and third-party
+// cookie blocking settings.
+// This just checks the scheme of the |url| and |site_for_cookies|:
+//  - Allow cookies if the |site_for_cookies| is a chrome:// scheme URL, and
+//    the |url| has a secure scheme.
+//  - Allow cookies if the |site_for_cookies| and the |url| match in scheme
+//    and both have the Chrome extensions scheme.
 bool CookieSettings::ShouldAlwaysAllowCookies(
     const GURL& url,
     const GURL& first_party_url) const {
@@ -199,99 +234,31 @@ bool CookieSettings::ShouldAlwaysAllowCookies(
   return false;
 }
 
-ContentSetting CookieSettings::GetCookieSettingInternal(
-    const GURL& url,
-    const GURL& first_party_url,
-    bool is_third_party_request,
-    net::CookieSettingOverrides overrides,
-    content_settings::SettingSource* source) const {
-  // Auto-allow in extensions or for WebUI embedding a secure origin.
-  if (ShouldAlwaysAllowCookies(url, first_party_url)) {
-    return CONTENT_SETTING_ALLOW;
-  }
+ContentSetting CookieSettings::GetContentSetting(
+    const GURL& primary_url,
+    const GURL& secondary_url,
+    ContentSettingsType content_type,
+    content_settings::SettingInfo* info) const {
+  return host_content_settings_map_->GetContentSetting(
+      primary_url, secondary_url, content_type, info);
+}
 
-  // First get any host-specific settings.
-  SettingInfo info;
-  const base::Value value = host_content_settings_map_->GetWebsiteSetting(
-      url, first_party_url, ContentSettingsType::COOKIES, &info);
-  if (source) {
-    *source = info.source;
-  }
+bool CookieSettings::IsThirdPartyCookiesAllowedScheme(
+    const std::string& scheme) const {
+  return scheme == extension_scheme_;
+}
 
-  // If no explicit exception has been made and third-party cookies are blocked
-  // by default, apply CONTENT_SETTING_BLOCKED.
-  bool block_third = info.primary_pattern.MatchesAllHosts() &&
-                     info.secondary_pattern.MatchesAllHosts() &&
-                     ShouldBlockThirdPartyCookies() &&
-                     !first_party_url.SchemeIs(extension_scheme_);
-
-  // We should always have a value, at least from the default provider.
-  DCHECK(value.is_int());
-  ContentSetting setting = ValueToContentSetting(value);
-  bool block = block_third && is_third_party_request;
-
-  if (!block) {
-    FireStorageAccessHistogram(
-        net::cookie_util::StorageAccessResult::ACCESS_ALLOWED);
-  }
-
-#if !BUILDFLAG(IS_IOS)
-  // IOS doesn't use blink and as such cannot check our feature flag. Disabling
-  // by default there should be no-op as the lack of Blink also means no grants
-  // would be generated. Everywhere else we'll use |kStorageAccessAPI| to gate
-  // our checking logic.
-  // We'll perform this check after we know if we will |block| or not to avoid
-  // performing extra work in scenarios we already allow.
-
+bool CookieSettings::IsStorageAccessApiEnabled() const {
   // TODO(https://crbug.com/1411765): instead of using a BUILDFLAG and checking
   // the feature here, we should rely on CookieSettingsFactory to plumb in this
   // boolean instead.
-  bool storage_access_api_enabled =
-      base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI);
-  if (block && storage_access_api_enabled &&
-      ShouldConsiderStorageAccessGrants(overrides)) {
-    // The Storage Access API allows access in A(B(A)) case (or similar). Do the
-    // same-origin check first for performance reasons.
-    const url::Origin origin = url::Origin::Create(url);
-    const url::Origin first_party_origin = url::Origin::Create(first_party_url);
-    if (origin.IsSameOriginWith(first_party_origin) ||
-        net::SchemefulSite(origin) == net::SchemefulSite(first_party_origin) ||
-        host_content_settings_map_->GetContentSetting(
-            url, first_party_url, ContentSettingsType::STORAGE_ACCESS) ==
-            CONTENT_SETTING_ALLOW) {
-      block = false;
-      FireStorageAccessHistogram(net::cookie_util::StorageAccessResult::
-                                     ACCESS_ALLOWED_STORAGE_ACCESS_GRANT);
-    }
-  }
-
-  if (block && storage_access_api_enabled &&
-      ShouldConsiderTopLevelStorageAccessGrants(overrides)) {
-    ContentSetting host_setting = host_content_settings_map_->GetContentSetting(
-        url, first_party_url, ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS);
-
-    if (host_setting == CONTENT_SETTING_ALLOW) {
-      block = false;
-      FireStorageAccessHistogram(
-          net::cookie_util::StorageAccessResult::
-              ACCESS_ALLOWED_TOP_LEVEL_STORAGE_ACCESS_GRANT);
-    }
-  }
+#if BUILDFLAG(USE_BLINK)
+  return base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI) ||
+         base::FeatureList::IsEnabled(
+             permissions::features::kPermissionStorageAccessAPI);
+#else
+  return false;
 #endif
-
-  if (block && is_third_party_request &&
-      overrides.Has(net::CookieSettingOverride::kForceThirdPartyByUser)) {
-    block = false;
-    FireStorageAccessHistogram(
-        net::cookie_util::StorageAccessResult::ACCESS_ALLOWED_FORCED);
-  }
-
-  if (block) {
-    FireStorageAccessHistogram(
-        net::cookie_util::StorageAccessResult::ACCESS_BLOCKED);
-  }
-
-  return block ? CONTENT_SETTING_BLOCK : setting;
 }
 
 CookieSettings::~CookieSettings() = default;

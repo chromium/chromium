@@ -18,9 +18,14 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/feature_discovery_duration_reporter.h"
 #include "ash/public/cpp/feature_discovery_metric_util.h"
+#include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/resource/resource_bundle.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/animation_builder.h"
@@ -169,14 +174,12 @@ void AppListToastContainerView::CreateReorderNudgeView() {
   reporter->MaybeActivateObservation(
       feature_discovery::TrackableFeature::
           kAppListReorderAfterEducationNudgePerTabletMode);
-
   toast_view_ = AddChildView(
       toast_view_builder.SetStyleForTabletMode(tablet_mode_)
           .SetSubtitle(l10n_util::GetStringUTF16(subtitle_message_id))
-          .SetThemingIcons(tablet_mode_ ? &kReorderNudgeDarkTabletIcon
-                                        : &kReorderNudgeDarkClamshellIcon,
-                           tablet_mode_ ? &kReorderNudgeLightTabletIcon
-                                        : &kReorderNudgeLightClamshellIcon)
+          .SetIcon(
+              ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
+                  IDR_APP_LIST_SORT_NUDGE_IMAGE))
           .SetIconBackground(true)
           .Build());
   current_toast_ = AppListToastType::kReorderNudge;
@@ -258,12 +261,17 @@ void AppListToastContainerView::OnTemporarySortOrderChanged(
   const gfx::VectorIcon* toast_icon = GetToastIconForOrder(*new_order);
   const std::u16string a11y_text_on_undo_button =
       GetA11yTextOnUndoButtonFromOrder(*new_order);
+  const ui::ColorId toast_icon_color_id =
+      chromeos::features::IsJellyEnabled()
+          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
+          : kColorAshIconColorPrimary;
 
   if (toast_view_) {
     // If the reorder undo toast is showing, updates the title and icon of the
     // toast.
     toast_view_->SetTitle(toast_text);
-    toast_view_->SetIcon(toast_icon);
+    toast_view_->SetIcon(
+        ui::ImageModel::FromVectorIcon(*toast_icon, toast_icon_color_id));
     toast_view_->toast_button()->GetViewAccessibility().OverrideName(
         a11y_text_on_undo_button);
     return;
@@ -277,7 +285,8 @@ void AppListToastContainerView::OnTemporarySortOrderChanged(
 
   toast_view_ = AddChildView(
       toast_view_builder.SetStyleForTabletMode(tablet_mode_)
-          .SetIcon(toast_icon)
+          .SetIcon(
+              ui::ImageModel::FromVectorIcon(*toast_icon, toast_icon_color_id))
           .SetButton(l10n_util::GetStringUTF16(
                          IDS_ASH_LAUNCHER_UNDO_SORT_TOAST_ACTION_BUTTON),
                      base::BindRepeating(

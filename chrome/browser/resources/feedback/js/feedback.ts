@@ -1,8 +1,11 @@
 // Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import '../../strings.m.js';
 
+import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {$, getRequiredElement} from 'chrome://resources/js/util_ts.js';
 
 import {FEEDBACK_LANDING_PAGE, FEEDBACK_LANDING_PAGE_TECHSTOP, FEEDBACK_LEGAL_HELP_URL, FEEDBACK_PRIVACY_POLICY_URL, FEEDBACK_TERM_OF_SERVICE_URL, openUrlInAppWindow} from './feedback_util.js';
@@ -703,6 +706,8 @@ function initialize() {
 
       // Now we can unhide the user email section:
       getRequiredElement('user-email').hidden = false;
+      // Only show email consent checkbox when an email address exists.
+      getRequiredElement('consent-container').hidden = false;
     });
 
     // An extension called us with an attached file.
@@ -838,6 +843,11 @@ function initialize() {
       feedbackInfo = JSON.parse(dialogArgs);
     }
     applyData(feedbackInfo);
+
+    if (loadTimeData.getBoolean('isJellyEnabledForOsFeedback')) {
+      document.body.classList.add('jelly-enabled');
+      ColorChangeUpdater.forDocument().start();
+    }
 
     Object.assign(window, {feedbackInfo, feedbackHelper});
 

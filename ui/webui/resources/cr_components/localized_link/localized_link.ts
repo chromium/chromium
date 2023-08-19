@@ -161,6 +161,12 @@ export class LocalizedLinkElement extends PolymerElement {
     if (anchorTag) {
       anchorTag.addEventListener(
           'click', (event) => this.onAnchorTagClick_(event));
+      anchorTag.addEventListener('auxclick', (event) => {
+        // trigger the click handler on middle-button clicks
+        if (event.button === 1) {
+          this.onAnchorTagClick_(event);
+        }
+      });
     }
   }
 

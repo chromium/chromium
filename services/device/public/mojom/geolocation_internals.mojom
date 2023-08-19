@@ -1,0 +1,139 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module device.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "services/device/public/mojom/geoposition.mojom";
+
+// Types and interfaces defined in this file are intended for use by the
+// geolocation internals WebUI. (chrome://location-internals)
+
+const int32 kInvalidRadioSignalStrength = -2147483648;  // INT32_MIN
+const int32 kInvalidChannel = -2147483648;  // INT32_MIN
+const int32 kInvalidSignalToNoise = -2147483648;  // INT32_MIN
+
+// Information about a nearby Wi-Fi access point seen while scanning.
+struct AccessPointData {
+  // MAC address, formatted as per MacAddressAsString.
+  string mac_address;
+
+  // Signal strength measured in dBm, or kInvalidRadioSignalStrength if the
+  // signal strength is not provided.
+  int32 radio_signal_strength = kInvalidRadioSignalStrength;
+
+  // An integer representing the frequency range used by this access point, or
+  // kInvalidChannel if the channel is not provided.
+  int32 channel = kInvalidChannel;
+
+  // The ratio in dB of the signal strength to the background noise level, or
+  // kInvalidSignalToNoise if the signal to noise ratio is not provided.
+  int32 signal_to_noise = kInvalidSignalToNoise;
+
+  // Timestamp when this access point was last seen, or null if the platform
+  // does not provide a last seen timestamp.
+  mojo_base.mojom.Time? timestamp;
+};
+
+// A snapshot of the internal state of the NetworkLocationProvider.
+struct NetworkLocationDiagnostics {
+  // The most recently received set of nearby Wi-Fi access points, or an empty
+  // array if no access point data has been received.
+  array<AccessPointData> access_point_data;
+
+  // The time when `access_point_data` was received from the platform API, or
+  // null if no access point data has been received.
+  mojo_base.mojom.Time? wifi_timestamp;
+};
+
+// Diagnostic information about the cache of responses from the location
+// service.
+struct PositionCacheDiagnostics {
+  // The number of entries in the cache.
+  uint32 cache_size = 0;
+
+  // Timestamps recorded for the most recent cache hit and miss. May be null if
+  // the cache has not been accessed.
+  mojo_base.mojom.Time? last_hit;
+  mojo_base.mojom.Time? last_miss;
+
+  // The cache hit rate. May be null if the cache has not been accessed.
+  double? hit_rate;
+
+  // The most recently used network position estimate or error, or null if no
+  // network position estimate has been created.
+  GeopositionResult? last_network_result;
+};
+
+// Diagnostic information about the WifiPollingPolicy.
+struct WifiPollingPolicyDiagnostics {
+  // The time when the last Wi-Fi scan was started, or null if
+  // no Wi-Fi scanning has occurred.
+  mojo_base.mojom.Time? interval_start;
+
+  // The duration of the current interval.
+  mojo_base.mojom.TimeDelta interval_duration;
+
+  // The duration of the next Wi-Fi polling interval.
+  mojo_base.mojom.TimeDelta polling_interval;
+
+  // The duration of the default polling interval.
+  mojo_base.mojom.TimeDelta default_interval;
+
+  // The duration of the polling interval when the scan data has not changed
+  // significantly between the last two consecutive scans.
+  mojo_base.mojom.TimeDelta no_change_interval;
+
+  // The duration of the polling interval when the scan data has not changed
+  // significantly between the last three consecutive scans.
+  mojo_base.mojom.TimeDelta two_no_change_interval;
+
+  // The duration of the polling interval when Wi-Fi scanning is not available.
+  mojo_base.mojom.TimeDelta no_wifi_interval;
+};
+
+// A snapshot of the internal state of the Geolocation API implementation.
+struct GeolocationDiagnostics {
+  // The current state of a LocationProvider.
+  [Extensible]
+  enum ProviderState {
+    // The provider is not started.
+    [Default] kStopped,
+    // The provider is started and configured for high accuracy.
+    kHighAccuracy,
+    // The provider is started and configured for low accuracy.
+    kLowAccuracy,
+    // The provider is started but blocked by a system-level permission.
+    kBlockedBySystemPermission,
+  };
+
+  // The state of the active provider, or kStopped if there is no provider.
+  ProviderState provider_state;
+
+  // Internal state of the network location provider, or null if the network
+  // location provider is not active.
+  NetworkLocationDiagnostics? network_location_diagnostics;
+
+  // Diagnostic information about the position cache, or null if the position
+  // cache has not been created.
+  PositionCacheDiagnostics? position_cache_diagnostics;
+
+  // Internal state of Wi-Fi data polling policy.
+  WifiPollingPolicyDiagnostics? wifi_polling_policy_diagnostics;
+};
+
+// Interface for chrome://location-internals to be notified when the debug data
+// is updated.
+interface GeolocationInternalsObserver {
+  // Called after handling an event that may have changed the debug data.
+  OnDiagnosticsChanged(GeolocationDiagnostics diagnostics);
+};
+
+// Interface for chrome://location-internals to access geolocation debug data.
+interface GeolocationInternals {
+  // Registers a geolocation debug data observer. Responds with the current
+  // debug data, or null if the geolocation API has not been initialized.
+  AddInternalsObserver(pending_remote<GeolocationInternalsObserver> observer) =>
+      (GeolocationDiagnostics? diagnostics);
+};

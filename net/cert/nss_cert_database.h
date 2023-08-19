@@ -14,6 +14,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list_threadsafe.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "crypto/scoped_nss_types.h"
@@ -22,11 +23,6 @@
 #include "net/cert/cert_type.h"
 #include "net/cert/scoped_nss_types.h"
 #include "net/cert/x509_certificate.h"
-
-namespace base {
-template <class ObserverType>
-class ObserverListThreadSafe;
-}
 
 namespace net {
 
@@ -44,7 +40,8 @@ class NET_EXPORT NSSCertDatabase {
 
     // Will be called when a certificate is added, removed, or trust settings
     // are changed.
-    virtual void OnCertDBChanged() {}
+    virtual void OnTrustStoreChanged() {}
+    virtual void OnClientCertStoreChanged() {}
 
    protected:
     Observer() = default;
@@ -323,20 +320,28 @@ class NET_EXPORT NSSCertDatabase {
                                         NSSRootsHandling nss_roots_handling);
 
   // Broadcasts notifications to all registered observers.
-  void NotifyObserversCertDBChanged();
+  void NotifyObserversTrustStoreChanged();
+  void NotifyObserversClientCertStoreChanged();
 
  private:
+  enum class DeleteCertAndKeyResult {
+    ERROR,
+    OK_FOUND_KEY,
+    OK_NO_KEY,
+  };
   // Notifies observers of the removal of a cert and calls |callback| with
   // |success| as argument.
-  void NotifyCertRemovalAndCallBack(DeleteCertCallback callback, bool success);
+  void NotifyCertRemovalAndCallBack(DeleteCertCallback callback,
+                                    DeleteCertAndKeyResult result);
 
   // Certificate removal implementation used by |DeleteCertAndKey*|. Static so
   // it may safely be used on the worker thread.
-  static bool DeleteCertAndKeyImpl(CERTCertificate* cert);
+  static DeleteCertAndKeyResult DeleteCertAndKeyImpl(CERTCertificate* cert);
   // Like above, but taking a ScopedCERTCertificate. This is a workaround for
   // base::Bind not having a way to own a unique_ptr but pass it to the
   // function as a raw pointer.
-  static bool DeleteCertAndKeyImplScoped(ScopedCERTCertificate cert);
+  static DeleteCertAndKeyResult DeleteCertAndKeyImplScoped(
+      ScopedCERTCertificate cert);
 
   crypto::ScopedPK11Slot public_slot_;
   crypto::ScopedPK11Slot private_slot_;

@@ -2,16 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/apple/compile_entitlements.gni")
-import("//build/apple/tweak_info_plist.gni")
-import("//build/config/ios/rules.gni")
+import("//build/config/ios/ios_sdk.gni")
 import("//build/config/ios/swift_source_set.gni")
 import("//build/config/locales.gni")
 import("//ios/build/chrome_build.gni")
-import("//ios/build/config.gni")
 import("//ios/chrome/extension_repack.gni")
 import("//ios/chrome/tools/strings/generate_localizable_strings.gni")
-import("//ios/public/provider/chrome/browser/build_config.gni")
 
 config("ios_available_lockscreen_widget") {
   swiftflags = [ "-DIOS_AVAILABLE_LOCKSCREEN_WIDGET" ]
@@ -25,18 +21,8 @@ config("ios_enable_shortcuts_widget") {
   swiftflags = [ "-DIOS_ENABLE_SHORTCUTS_WIDGET" ]
 }
 
-tweak_info_plist("tweak_info_plist") {
-  info_plist = "Info.plist"
-}
-
-compile_entitlements("entitlements") {
-  substitutions = [
-    "IOS_BUNDLE_ID_PREFIX=$ios_app_bundle_id_prefix",
-    "CHROMIUM_BUNDLE_ID=$chromium_bundle_id",
-  ]
-  output_name = "$target_gen_dir/widget_kit_extension.appex.entitlements"
-  entitlements_templates =
-      [ "entitlements/external/widget_kit_extension.appex.entitlements" ]
+config("ios_enable_search_passwords_widget") {
+  swiftflags = [ "-DIOS_ENABLE_SEARCH_PASSWORDS_WIDGET" ]
 }
 
 source_set("crash_helper") {
@@ -47,11 +33,11 @@ source_set("crash_helper") {
 
   deps = [ "//ios/chrome/common/crash_report" ]
   frameworks = [ "Foundation.framework" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 swift_source_set("widget_kit_extension_swift") {
   sources = [
+    "compat_util.swift",
     "dino_game_widget.swift",
     "lockscreen_launcher_widget.swift",
     "main.swift",
@@ -76,6 +62,7 @@ swift_source_set("widget_kit_extension_swift") {
     "resources:widget_dino_background_placeholder",
     "resources:widget_incognito_icon",
     "resources:widget_lens_icon",
+    "resources:widget_password_manager_logo",
     "resources:widget_search_bar_color",
     "resources:widget_separator_color",
     "resources:widget_text_color",
@@ -83,8 +70,6 @@ swift_source_set("widget_kit_extension_swift") {
     "//ios/chrome/common/ntp_tile",
     "//ui/base:base",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   # Swift does not have the equivalent of __IPHONE_16_0, so use a
   # custom define instead.
@@ -101,18 +86,16 @@ swift_source_set("widget_kit_extension_swift") {
     sources += [ "shortcuts_widget.swift" ]
   }
 
+  if (ios_enable_search_passwords_widget) {
+    configs += [ ":ios_enable_search_passwords_widget" ]
+    sources += [ "search_passwords_widget.swift" ]
+  }
+
   frameworks = [
     "WidgetKit.framework",
     "Foundation.framework",
     "SwiftUI.framework",
   ]
-}
-
-ios_appex_bundle("widget_kit_extension") {
-  entitlements_target = ":entitlements"
-  info_plist_target = ":tweak_info_plist"
-  bundle_identifier = "$chromium_bundle_id.WidgetKitExtension"
-  deps = [ ":widget_kit_extension_swift" ]
 }
 
 extension_repack_all_locales("packed_resources") {

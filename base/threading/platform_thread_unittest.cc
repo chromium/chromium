@@ -593,9 +593,6 @@ class RealtimeTestThread : public FunctionTestThread {
     mach_timebase_info(&tb_info);
 
     if (FeatureList::IsEnabled(kOptimizedRealtimeThreadingMac) &&
-#if BUILDFLAG(IS_MAC)
-        !mac::IsOS10_14() &&  // Should not be applied on 10.14.
-#endif
         !realtime_period_.is_zero()) {
       uint32_t abs_realtime_period = saturated_cast<uint32_t>(
           realtime_period_.InNanoseconds() *

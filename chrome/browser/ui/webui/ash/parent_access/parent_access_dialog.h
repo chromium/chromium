@@ -53,6 +53,8 @@ class ParentAccessDialog : public ParentAccessUIHandlerDelegate,
   ui::ModalType GetDialogModalType() const override;
   void GetDialogSize(gfx::Size* size) const override;
   bool ShouldCloseDialogOnEscape() const override;
+  bool ShouldShowDialogTitle() const override;
+  bool ShouldShowCloseButton() const override;
 
   // ParentAccessUIHandlerDelegate:
   parent_access_ui::mojom::ParentAccessParamsPtr CloneParentAccessParams()

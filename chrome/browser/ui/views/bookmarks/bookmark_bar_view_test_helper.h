@@ -41,7 +41,7 @@ class BookmarkBarViewTestHelper {
   }
 
  private:
-  raw_ptr<BookmarkBarView, DanglingUntriaged> bbv_;
+  raw_ptr<BookmarkBarView, AcrossTasksDanglingUntriaged> bbv_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_BOOKMARKS_BOOKMARK_BAR_VIEW_TEST_HELPER_H_

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/login/demo_mode/demo_mode_test_utils.h"
 #include "chrome/browser/ash/policy/status_collector/device_status_collector.h"
 
 #include <stddef.h>
@@ -35,6 +36,7 @@
 #include "base/test/scoped_path_override.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/publisher_host.h"
@@ -395,8 +397,9 @@ class TestingDeviceStatusCollector : public DeviceStatusCollector {
 
   std::unique_ptr<DeviceLocalAccount> GetAutoLaunchedKioskSessionInfo()
       override {
-    if (kiosk_account_)
+    if (kiosk_account_) {
       return std::make_unique<DeviceLocalAccount>(*kiosk_account_);
+    }
     return nullptr;
   }
 
@@ -757,26 +760,36 @@ void SetFakeCrosHealthdData() {
   cros_healthd::TelemetryInfo fake_info;
   // Always gather system result.
   telemetry_info->system_result = CreateSystemResult();
-  if (SettingEnabled(ash::kReportDevicePowerStatus))
+  if (SettingEnabled(ash::kReportDevicePowerStatus)) {
     telemetry_info->battery_result = CreateBatteryResult();
-  if (SettingEnabled(ash::kReportDeviceStorageStatus))
+  }
+  if (SettingEnabled(ash::kReportDeviceStorageStatus)) {
     telemetry_info->block_device_result = CreateBlockDeviceResult();
-  if (SettingEnabled(ash::kReportDeviceCpuInfo))
+  }
+  if (SettingEnabled(ash::kReportDeviceCpuInfo)) {
     telemetry_info->cpu_result = CreateCpuResult();
-  if (SettingEnabled(ash::kReportDeviceTimezoneInfo))
+  }
+  if (SettingEnabled(ash::kReportDeviceTimezoneInfo)) {
     telemetry_info->timezone_result = CreateTimezoneResult();
-  if (SettingEnabled(ash::kReportDeviceMemoryInfo))
+  }
+  if (SettingEnabled(ash::kReportDeviceMemoryInfo)) {
     telemetry_info->memory_result = CreateMemoryResult();
-  if (SettingEnabled(ash::kReportDeviceBacklightInfo))
+  }
+  if (SettingEnabled(ash::kReportDeviceBacklightInfo)) {
     telemetry_info->backlight_result = CreateBacklightResult();
-  if (SettingEnabled(ash::kReportDeviceFanInfo))
+  }
+  if (SettingEnabled(ash::kReportDeviceFanInfo)) {
     telemetry_info->fan_result = CreateFanResult();
-  if (SettingEnabled(ash::kReportDeviceStorageStatus))
+  }
+  if (SettingEnabled(ash::kReportDeviceStorageStatus)) {
     telemetry_info->stateful_partition_result = CreateStatefulPartitionResult();
-  if (SettingEnabled(ash::kReportDeviceBluetoothInfo))
+  }
+  if (SettingEnabled(ash::kReportDeviceBluetoothInfo)) {
     telemetry_info->bluetooth_result = CreateBluetoothResult();
-  if (SettingEnabled(ash::kReportDeviceVersionInfo))
+  }
+  if (SettingEnabled(ash::kReportDeviceVersionInfo)) {
     telemetry_info->tpm_result = CreateTpmResult();
+  }
   if (SettingEnabled(ash::kReportDeviceNetworkConfiguration)) {
     telemetry_info->bus_result = CreateBusResult();
   }
@@ -1036,11 +1049,13 @@ class DeviceStatusCollectorTest : public testing::Test {
   }
 
   void OnStatusReceived(StatusCollectorParams callback_params) {
-    if (callback_params.device_status)
+    if (callback_params.device_status) {
       device_status_ = *callback_params.device_status;
+    }
     got_session_status_ = callback_params.session_status != nullptr;
-    if (got_session_status_)
+    if (got_session_status_) {
       session_status_ = *callback_params.session_status;
+    }
     EXPECT_TRUE(run_loop_);
     run_loop_->Quit();
   }
@@ -1212,7 +1227,8 @@ class DeviceStatusCollectorTest : public testing::Test {
   const DeviceLocalAccount fake_web_kiosk_device_local_account_;
   base::ScopedPathOverride user_data_dir_override_;
   base::ScopedPathOverride crash_dumps_dir_override_;
-  raw_ptr<ash::FakeUpdateEngineClient, ExperimentalAsh> update_engine_client_;
+  raw_ptr<ash::FakeUpdateEngineClient, DanglingUntriaged | ExperimentalAsh>
+      update_engine_client_;
   std::unique_ptr<base::RunLoop> run_loop_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::SimpleTestClock test_clock_;
@@ -3829,6 +3845,30 @@ TEST_F(DeviceStatusCollectorTest, GenerateAppInfo) {
   EXPECT_EQ(session_status_.app_infos(1).active_time_periods_size(), 0);
 }
 
+TEST_F(DeviceStatusCollectorTest, DemoModeDimensions) {
+  enterprise_management::DemoModeDimensions expected;
+  GetStatus();
+  ash::test::AssertDemoDimensionsEqual(device_status_.demo_mode_dimensions(),
+                                       expected);
+
+  scoped_stub_install_attributes_.Get()->SetDemoMode();
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kFeatureManagementFeatureAwareDeviceDemoMode);
+  scoped_local_state_.Get()->SetString(prefs::kDemoModeCountry, "CA");
+  scoped_local_state_.Get()->SetString(prefs::kDemoModeRetailerId, "retailer");
+  scoped_local_state_.Get()->SetString(prefs::kDemoModeStoreId, "1234");
+
+  expected.set_country("CA");
+  expected.set_retailer_name("retailer");
+  expected.set_store_number("1234");
+  expected.add_customization_facets(
+      enterprise_management::DemoModeDimensions::FEATURE_AWARE_DEVICE);
+
+  GetStatus();
+  ash::test::AssertDemoDimensionsEqual(device_status_.demo_mode_dimensions(),
+                                       expected);
+}
+
 struct FakeSimSlotInfo {
   std::string object_path;
   std::string eid;
@@ -3988,9 +4028,10 @@ class DeviceStatusCollectorNetworkTest : public DeviceStatusCollectorTest {
                                          base::Value(kShillFakeProfilePath));
       if (strlen(fake_network.address) > 0) {
         // Set the IP config.
-        base::Value::Dict ip_config_properties;
-        ip_config_properties.Set(shill::kAddressProperty, fake_network.address);
-        ip_config_properties.Set(shill::kGatewayProperty, fake_network.gateway);
+        auto ip_config_properties =
+            base::Value::Dict()
+                .Set(shill::kAddressProperty, fake_network.address)
+                .Set(shill::kGatewayProperty, fake_network.gateway);
         const std::string kIPConfigPath = "test_ip_config";
         ip_config_client->AddIPConfig(kIPConfigPath,
                                       std::move(ip_config_properties));
@@ -4055,8 +4096,9 @@ class DeviceStatusCollectorNetworkInterfacesTest
   void VerifyReporting() override {
     int count = 0;
     for (const FakeDeviceData& dev : kFakeDevices) {
-      if (dev.expected_type == -1)
+      if (dev.expected_type == -1) {
         continue;
+      }
 
       // Find the corresponding entry in reporting data.
       bool found_match = false;
@@ -4233,14 +4275,16 @@ class DeviceStatusCollectorNetworkStateTest
             proto_state.has_signal_strength() == should_have_signal_strength &&
             proto_state.signal_strength() == state.expected_signal_strength &&
             proto_state.connection_state() == state.expected_state) {
-          if (proto_state.has_ip_address())
+          if (proto_state.has_ip_address()) {
             EXPECT_EQ(proto_state.ip_address(), state.address);
-          else
+          } else {
             EXPECT_EQ(0U, strlen(state.address));
-          if (proto_state.has_gateway())
+          }
+          if (proto_state.has_gateway()) {
             EXPECT_EQ(proto_state.gateway(), state.gateway);
-          else
+          } else {
             EXPECT_EQ(0U, strlen(state.gateway));
+          }
           found_match = true;
           break;
         }

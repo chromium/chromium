@@ -358,8 +358,10 @@ class DeviceSyncCryptAuthSchedulerImplTest : public testing::Test {
   FakeCryptAuthSchedulerDeviceSyncDelegate fake_device_sync_delegate_;
   TestingPrefServiceSimple pref_service_;
   base::SimpleTestClock test_clock_;
-  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> mock_enrollment_timer_;
-  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> mock_device_sync_timer_;
+  raw_ptr<base::MockOneShotTimer, DanglingUntriaged | ExperimentalAsh>
+      mock_enrollment_timer_;
+  raw_ptr<base::MockOneShotTimer, DanglingUntriaged | ExperimentalAsh>
+      mock_device_sync_timer_;
   NetworkStateTestHelper network_helper_{
       false /* use_default_devices_and_services */};
   std::string wifi_network_service_path_;

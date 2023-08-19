@@ -8,7 +8,9 @@
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/base/user_selectable_type.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "url/gurl.h"
 
 namespace safe_browsing {
@@ -17,14 +19,19 @@ bool CanQueryTailoredSecurityForUrl(GURL url) {
   return url.DomainIs("google.com") || url.DomainIs("youtube.com");
 }
 
-bool CanShowUnconsentedTailoredSecurityDialog(
-    signin::IdentityManager* identity_manager,
-    PrefService* prefs) {
+bool CanShowUnconsentedTailoredSecurityDialog(syncer::SyncService* sync_service,
+                                              PrefService* prefs) {
   if (IsEnhancedProtectionEnabled(*prefs))
     return false;
 
-  if (!identity_manager ||
-      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+  if (!sync_service) {
+    return false;
+  }
+
+  bool sync_history_enabled =
+      sync_service->GetUserSettings()->GetSelectedTypes().Has(
+          syncer::UserSelectableType::kHistory);
+  if (sync_history_enabled) {
     return false;
   }
 

@@ -293,9 +293,9 @@ class TestCache : public Cache {
   }
 
  protected:
-  AbortController* CreateAbortController(ExecutionContext* context) override {
+  AbortController* CreateAbortController(ScriptState* script_state) override {
     if (!abort_controller_)
-      abort_controller_ = AbortController::Create(context);
+      abort_controller_ = AbortController::Create(script_state);
     return abort_controller_;
   }
 

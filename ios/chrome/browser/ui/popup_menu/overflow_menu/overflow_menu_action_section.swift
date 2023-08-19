@@ -23,7 +23,9 @@ struct OverflowMenuActionSection: View {
       content: {
         ForEach(actionGroup.actions) { action in
           OverflowMenuActionRow(action: action, metricsHandler: metricsHandler)
+            .moveDisabled(!actionGroup.supportsReordering)
         }
+        .onMove(perform: move)
       },
       header: {
         Spacer()
@@ -43,5 +45,9 @@ struct OverflowMenuActionSection: View {
             .accessibilityHidden(true)
         }
       })
+  }
+
+  func move(fromOffsets offsets: IndexSet, toOffset destination: Int) {
+    actionGroup.actions.move(fromOffsets: offsets, toOffset: destination)
   }
 }

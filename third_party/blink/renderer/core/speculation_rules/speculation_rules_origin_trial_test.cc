@@ -94,13 +94,13 @@ namespace {
 
   HTMLMetaElement* meta =
       MakeGarbageCollected<HTMLMetaElement>(document, CreateElementFlags());
-  meta->setAttribute(html_names::kHttpEquivAttr, "Origin-Trial");
-  meta->setAttribute(html_names::kContentAttr, trial_token);
+  meta->setAttribute(html_names::kHttpEquivAttr, AtomicString("Origin-Trial"));
+  meta->setAttribute(html_names::kContentAttr, AtomicString(trial_token));
   document.head()->appendChild(meta);
 
   HTMLScriptElement* script =
       MakeGarbageCollected<HTMLScriptElement>(document, CreateElementFlags());
-  script->setAttribute(html_names::kTypeAttr, "speculationrules");
+  script->setAttribute(html_names::kTypeAttr, AtomicString("speculationrules"));
   script->setText(json);
   document.head()->appendChild(script);
 

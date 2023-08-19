@@ -1,0 +1,208 @@
+<style include="settings-shared">
+  :host {
+    --cr-toolbar-search-field-background:
+        var(--cros-toolbar-search-bg-color);
+    --cr-toolbar-focused-min-height: 40px;
+    --cr-toolbar-icon-container-size: 32px;
+    --cr-toolbar-icon-margin: 8px 16px;
+    --cr-toolbar-search-field-icon-opacity: 1;
+    --cr-toolbar-search-field-narrow-mode-prompt-opacity: 1;
+    --cr-toolbar-search-field-prompt-opacity: 1;
+    --cr-toolbar-search-icon-margin-inline-start: 16px;
+    --cr-toolbar-query-exists-min-height:
+        var(--cr-toolbar-focused-min-height);
+    --separator-height: 8px;
+    -webkit-tap-highlight-color: transparent;
+    display: flex;
+    flex-basis: var(--cr-toolbar-field-width);
+    transition: width 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    width: var(--cr-toolbar-field-width);
+  }
+
+  :host-context(body.jelly-enabled):host {
+    --cr-toolbar-search-field-background: var(--cros-sys-input_field_on_shaded);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host {
+      --cr-toolbar-search-field-narrow-mode-prompt-opacity: 1;
+    }
+  }
+
+  /* Only search icon is visible in this mode */
+  :host([narrow]:not([showing-search])) {
+    /* Row flex keeps magnifying glass on the rightmost edge. */
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+
+  :host([narrow][showing-search]) {
+    justify-content: center;
+  }
+
+  cr-toolbar-search-field {
+    --cr-toolbar-search-field-term-margin: 0;
+    --cr-toolbar-search-field-border-radius: 20px;
+    --cr-toolbar-search-field-paper-spinner-margin: 0 12px;
+    --cr-toolbar-search-field-input-icon-color:
+        var(--cros-icon-color-primary);
+    --cr-toolbar-search-field-input-text-color:
+        var(--cros-text-color-primary);
+    --cr-toolbar-search-field-input-caret-color: currentColor;
+    --cr-toolbar-search-field-prompt-color:
+        var(--cros-text-color-secondary);
+    --cr-toolbar-icon-button-focus-outline-color:
+        var(--cros-focus-ring-color);
+    font-size: 13px;
+  }
+
+  :host([narrow][showing-search]) cr-toolbar-search-field {
+    background-color: var(--cr-toolbar-search-field-background);
+  }
+
+  :host([narrow]:not([showing-search])) cr-toolbar-search-field {
+    padding-inline-end: 10px;
+  }
+
+  :host(:focus-within[showing-search]) cr-toolbar-search-field {
+    --cr-toolbar-search-field-background: var(--cros-bg-color-elevation-3);
+    box-shadow: var(--cr-elevation-1);
+    min-height: var(--cr-toolbar-focused-min-height);
+  }
+
+  :host([has-search-query]) cr-toolbar-search-field {
+    min-height: var(--cr-toolbar-query-exists-min-height);
+  }
+
+  :host(:not(:focus-within)) cr-toolbar-search-field {
+    --cr-toolbar-search-field-cursor: pointer;
+  }
+
+  :host(:focus-within[should-show-dropdown_]) cr-toolbar-search-field {
+    --cr-toolbar-search-field-border-radius: 20px 20px 0 0;
+    box-shadow: var(--cr-elevation-3);
+    height: 56px;
+    margin-top: var(--separator-height);
+    padding-bottom: var(--separator-height);
+  }
+
+  iron-dropdown {
+    margin-top: 72px;
+  }
+
+  iron-dropdown [slot='dropdown-content'] {
+    background-color: var(--cros-bg-color-elevation-3);
+    border-radius: 0 0 20px 20px;
+    box-shadow: var(--cr-elevation-3);
+    display: table;
+    padding-bottom: 8px;
+    width: var(--cr-toolbar-field-width);
+  }
+
+  iron-list {
+    max-height: 50vh;
+  }
+
+  .pill-button-with-icon {
+    --border-color: transparent;
+    --cr-button-height: 24px;
+    --hover-bg-color: var(--cros-highlight-color);
+    --text-color: var(--cros-text-color-secondary);
+    border-radius: 24px;
+    margin-inline-end: 8px;
+    padding: 4px 8px;
+  }
+
+  .pill-button-with-icon:hover {
+    --text-color: var(--cros-text-color-prominent);
+  }
+
+  #noSearchResultsContainer {
+    height: 32px;
+    line-height: 32px;
+    margin-inline-start: 24px;
+  }
+
+  #reportSearchResult {
+    display: flex;
+    justify-content: flex-end;
+    margin-inline-start: 8px;
+  }
+
+  /* The separator covers the top box shadow of the dropdown so that
+    * var(--cr-elevation-3) can be used instead of custom values. */
+  .separator {
+    background-color: var(--cros-bg-color-elevation-3);
+    border-bottom: none;
+    border-inline-end: none;
+    border-inline-start: none;
+    border-top: 1px solid var(--cros-separator-color);
+    height: var(--separator-height);
+    margin-inline-end: 0;
+    margin-inline-start: 0;
+    margin-top: -9px;
+  }
+
+  :host-context(body.jelly-enabled) .separator {
+    border-color: var(--cros-sys-separator);
+  }
+</style>
+<cr-toolbar-search-field id="search" narrow="[[narrow]]"
+    on-search-icon-clicked="onSearchIconClicked_"
+    label="$i18n{searchPrompt}" clear-label="$i18n{clearSearch}"
+    showing-search="{{showingSearch}}" spinner-active="[[spinnerActive]]">
+</cr-toolbar-search-field>
+<iron-dropdown id="searchResults" opened="[[shouldShowDropdown_]]"
+    allow-outside-scroll no-cancel-on-outside-click>
+  <!--  As part of iron-dropdown's behavior, the slot 'dropdown-content' is
+        hidden until iron-dropdown's opened attribute is set true, or when
+        iron-dropdown's open() is called on the JS side. -->
+  <div slot="dropdown-content">
+    <div class="separator"></div>
+    <iron-list id="searchResultList" selection-enabled risk-selection
+        items="[[searchResults_]]" selected-item="{{selectedItem_}}"
+        on-selected-item-changed="onSelectedItemChanged_">
+      <template>
+        <os-search-result-row actionable search-result="[[item]]"
+            search-query="[[getCurrentQuery_(searchResults_)]]"
+            selected="[[isItemSelected_(item, selectedItem_)]]"
+            tabindex$="[[getRowTabIndex_(item, selectedItem_,
+                shouldShowDropdown_)]]"
+            iron-list-tab-index$="[[getRowTabIndex_(item, selectedItem_,
+                shouldShowDropdown_)]]"
+            on-navigated-to-result-route="onNavigatedToResultRowRoute_"
+            last-focused="{{lastFocused_}}"
+            list-blurred="{{listBlurred_}}"
+            list-length="[[getListLength_(searchResults_)]]"
+            focus-row-index="[[index]]"
+            first$="[[!index]]">
+        </os-search-result-row>
+      </template>
+    </iron-list>
+  <!-- noSearchResultsContainer is aria-hidden because the aria-label of this
+    specific container gets announced as soon as search results have changed
+    (onSearchResultsChanged_) and no search results exist.-->
+    <div
+      id="noSearchResultsContainer"
+      aria-hidden="true"
+      hidden="[[searchResultsExist_]]">
+        $i18n{searchNoResults}
+    </div>
+    <if expr="_google_chrome">
+      <div id="reportSearchResult">
+        <cr-button
+            id="reportSearchResultButton"
+            class="pill-button-with-icon"
+            hidden="[[shouldHideFeedbackButton_]]"
+            on-click="onSendFeedbackClick_">
+            <iron-icon
+                class="search-feedback-icon"
+                icon="os-settings:feedback"
+                slot="prefix-icon">
+            </iron-icon>
+            <span>$i18n{searchFeedbackButton}</span>
+        </cr-button>
+      </div>
+    </if>
+  </div>
+</iron-dropdown>

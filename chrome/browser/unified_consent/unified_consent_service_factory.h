@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UNIFIED_CONSENT_UNIFIED_CONSENT_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_UNIFIED_CONSENT_UNIFIED_CONSENT_SERVICE_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
@@ -30,7 +30,7 @@ class UnifiedConsentServiceFactory : public ProfileKeyedServiceFactory {
       delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<UnifiedConsentServiceFactory>;
+  friend base::NoDestructor<UnifiedConsentServiceFactory>;
 
   UnifiedConsentServiceFactory();
   ~UnifiedConsentServiceFactory() override;

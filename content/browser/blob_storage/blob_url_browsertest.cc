@@ -139,37 +139,40 @@ IN_PROC_BROWSER_TEST_F(BlobUrlBrowserTest, ReplaceStateToAddAuthorityToBlob) {
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   ShellAddedObserver new_shell_observer;
-  EXPECT_TRUE(ExecJs(
-      shell(),
-      "var spoof_fn = function () {\n"
-      "  host_port = self.origin.split('://')[1];\n"
-      "  spoof_url = 'blob:http://spoof.com@' + host_port + '/abcd';\n"
-      "  window.history.replaceState({}, '', spoof_url);\n"
-      "};\n"
-      "args = ['<body>potato<scr', 'ipt>(', spoof_fn, ')();</scri', 'pt>'];\n"
-      "b = new Blob(args, {type: 'text/html'});"
-      "window.open(URL.createObjectURL(b));"));
+  EXPECT_TRUE(ExecJs(shell(),
+                     "args = ['<body>potato</body>'];\n"
+                     "b = new Blob(args, {type: 'text/html'});"
+                     "window.open(URL.createObjectURL(b));"));
 
   Shell* new_shell = new_shell_observer.GetShell();
   WebContents* new_contents = new_shell->web_contents();
   EXPECT_TRUE(WaitForLoadStop(new_contents));
 
+  const GURL non_spoofy_blob_url = new_contents->GetLastCommittedURL();
+
+  // Now try to URL spoof by embedding an authority to the inner URL using
+  // `replaceState()` to perform a same-document navigation.
+  EXPECT_FALSE(
+      ExecJs(new_contents,
+             "let host_port = self.origin.split('://')[1];\n"
+             "let spoof_url = 'blob:http://spoof.com@' + host_port + '/abcd';\n"
+             "window.history.replaceState({}, '', spoof_url);\n"));
+
   // The spoofy URL should not be shown to the user.
   EXPECT_FALSE(
       base::MatchPattern(new_contents->GetVisibleURL().spec(), "*spoof*"));
 
-  // The currently implemented behavior is that the URL gets rewritten to
-  // about:blank#blocked. The content of the page stays the same.
-  EXPECT_EQ(kBlockedURL, new_contents->GetVisibleURL().spec());
-  EXPECT_EQ(
-      origin.Serialize() + " potato",
-      EvalJs(new_contents, "self.origin + ' ' + document.body.innerText;"));
+  // The currently implemented behavior is a same-document navigation to a
+  // blocked URL gets rewritten to the current document's URL, i.e.
+  // `non_spoofy_blob_url`.
+  // The content of the page stays the same.
+  EXPECT_EQ(non_spoofy_blob_url, new_contents->GetVisibleURL());
+  EXPECT_EQ(origin.Serialize(), EvalJs(new_contents, "origin"));
+  EXPECT_EQ("potato", EvalJs(new_contents, "document.body.innerText"));
 
-  // TODO(nick): Currently, window.location still reflects the spoof URL.
-  // This seems unfortunate -- can we fix it?
   std::string window_location =
       EvalJs(new_contents, "window.location.href;").ExtractString();
-  EXPECT_TRUE(base::MatchPattern(window_location, "*spoof*"));
+  EXPECT_FALSE(base::MatchPattern(window_location, "*spoof*"));
 }
 
 enum class PartitionedBlobUrlBrowserTestTestCase {

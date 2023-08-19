@@ -5,7 +5,6 @@
 import("//build/config/chrome_build.gni")
 
 source_set("views") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "identity_button_control.h",
     "identity_button_control.mm",
@@ -23,7 +22,6 @@ source_set("views") {
 }
 
 source_set("views_constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "views_constants.h",
     "views_constants.mm",

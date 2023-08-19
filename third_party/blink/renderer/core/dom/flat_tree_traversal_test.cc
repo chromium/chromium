@@ -101,16 +101,16 @@ TEST_F(FlatTreeTraversalTest, childAt) {
   SetupSampleHTML(main_html, shadow_html, 0);
 
   Element* body = GetDocument().body();
-  Element* m0 = body->QuerySelector("#m0");
-  Element* m00 = m0->QuerySelector("#m00");
-  Element* m01 = m0->QuerySelector("#m01");
+  Element* m0 = body->QuerySelector(AtomicString("#m0"));
+  Element* m00 = m0->QuerySelector(AtomicString("#m00"));
+  Element* m01 = m0->QuerySelector(AtomicString("#m01"));
 
   Element* shadow_host = m0;
   ShadowRoot* shadow_root = shadow_host->OpenShadowRoot();
-  Element* s00 = shadow_root->QuerySelector("#s00");
-  Element* s02 = shadow_root->QuerySelector("#s02");
-  Element* s03 = shadow_root->QuerySelector("#s03");
-  Element* s04 = shadow_root->QuerySelector("#s04");
+  Element* s00 = shadow_root->QuerySelector(AtomicString("#s00"));
+  Element* s02 = shadow_root->QuerySelector(AtomicString("#s02"));
+  Element* s03 = shadow_root->QuerySelector(AtomicString("#s03"));
+  Element* s04 = shadow_root->QuerySelector(AtomicString("#s04"));
 
   const unsigned kNumberOfChildNodes = 5;
   Node* expected_child_nodes[5] = {s00, m01, s02, s03, s04};
@@ -152,7 +152,7 @@ TEST_F(FlatTreeTraversalTest, ChildrenOf) {
       "<p id=sample>ZERO<span slot=three>three</b><span "
       "slot=one>one</b>FOUR</p>",
       "zero<slot name=one></slot>two<slot name=three></slot>four", 0);
-  Element* const sample = GetDocument().getElementById("sample");
+  Element* const sample = GetDocument().getElementById(AtomicString("sample"));
 
   HeapVector<Member<Node>> expected_nodes;
   for (Node* runner = FlatTreeTraversal::FirstChild(*sample); runner;
@@ -208,24 +208,24 @@ TEST_F(FlatTreeTraversalTest, commonAncestor) {
       "<a id='s14'>s14</a>";
   SetupSampleHTML(main_html, shadow_html, 1);
   Element* body = GetDocument().body();
-  Element* m0 = body->QuerySelector("#m0");
-  Element* m1 = body->QuerySelector("#m1");
-  Element* m2 = body->QuerySelector("#m2");
+  Element* m0 = body->QuerySelector(AtomicString("#m0"));
+  Element* m1 = body->QuerySelector(AtomicString("#m1"));
+  Element* m2 = body->QuerySelector(AtomicString("#m2"));
 
-  Element* m00 = body->QuerySelector("#m00");
-  Element* m01 = body->QuerySelector("#m01");
-  Element* m10 = body->QuerySelector("#m10");
-  Element* m11 = body->QuerySelector("#m11");
-  Element* m12 = body->QuerySelector("#m12");
-  Element* m20 = body->QuerySelector("#m20");
-  Element* m21 = body->QuerySelector("#m21");
+  Element* m00 = body->QuerySelector(AtomicString("#m00"));
+  Element* m01 = body->QuerySelector(AtomicString("#m01"));
+  Element* m10 = body->QuerySelector(AtomicString("#m10"));
+  Element* m11 = body->QuerySelector(AtomicString("#m11"));
+  Element* m12 = body->QuerySelector(AtomicString("#m12"));
+  Element* m20 = body->QuerySelector(AtomicString("#m20"));
+  Element* m21 = body->QuerySelector(AtomicString("#m21"));
 
   ShadowRoot* shadow_root = m1->OpenShadowRoot();
-  Element* s10 = shadow_root->QuerySelector("#s10");
-  Element* s11 = shadow_root->QuerySelector("#s11");
-  Element* s12 = shadow_root->QuerySelector("#s12");
-  Element* s13 = shadow_root->QuerySelector("#s13");
-  Element* s14 = shadow_root->QuerySelector("#s14");
+  Element* s10 = shadow_root->QuerySelector(AtomicString("#s10"));
+  Element* s11 = shadow_root->QuerySelector(AtomicString("#s11"));
+  Element* s12 = shadow_root->QuerySelector(AtomicString("#s12"));
+  Element* s13 = shadow_root->QuerySelector(AtomicString("#s13"));
+  Element* s14 = shadow_root->QuerySelector(AtomicString("#s14"));
 
   TestCommonAncestor(body, *m0, *m1);
   TestCommonAncestor(body, *m1, *m2);
@@ -278,19 +278,19 @@ TEST_F(FlatTreeTraversalTest, SkippingChildrenFunctions) {
   SetupSampleHTML(main_html, shadow_html, 1);
 
   Element* body = GetDocument().body();
-  Element* m0 = body->QuerySelector("#m0");
-  Element* m1 = body->QuerySelector("#m1");
-  Element* m2 = body->QuerySelector("#m2");
+  Element* m0 = body->QuerySelector(AtomicString("#m0"));
+  Element* m1 = body->QuerySelector(AtomicString("#m1"));
+  Element* m2 = body->QuerySelector(AtomicString("#m2"));
 
-  Element* m10 = body->QuerySelector("#m10");
+  Element* m10 = body->QuerySelector(AtomicString("#m10"));
   Element* m10_slot_parent = To<Element>(FlatTreeTraversal::Parent(*m10));
-  Element* m11 = body->QuerySelector("#m11");
+  Element* m11 = body->QuerySelector(AtomicString("#m11"));
   Element* m11_slot_parent = To<Element>(FlatTreeTraversal::Parent(*m11));
 
   ShadowRoot* shadow_root = m1->OpenShadowRoot();
-  Element* s11 = shadow_root->QuerySelector("#s11");
-  Element* s12 = shadow_root->QuerySelector("#s12");
-  Element* s120 = shadow_root->QuerySelector("#s120");
+  Element* s11 = shadow_root->QuerySelector(AtomicString("#s11"));
+  Element* s12 = shadow_root->QuerySelector(AtomicString("#s12"));
+  Element* s120 = shadow_root->QuerySelector(AtomicString("#s120"));
 
   // Main tree node to main tree node
   EXPECT_EQ(*m1, FlatTreeTraversal::NextSkippingChildren(*m0));
@@ -318,7 +318,7 @@ TEST_F(FlatTreeTraversalTest, SkippingChildrenFunctions) {
 
 TEST_F(FlatTreeTraversalTest, AncestorsOf) {
   SetupDocumentTree("<div><div><div id=sample></div></div></div>");
-  Element* const sample = GetDocument().getElementById("sample");
+  Element* const sample = GetDocument().getElementById(AtomicString("sample"));
 
   HeapVector<Member<Node>> expected_nodes;
   for (Node* parent = FlatTreeTraversal::Parent(*sample); parent;
@@ -335,7 +335,7 @@ TEST_F(FlatTreeTraversalTest, AncestorsOf) {
 
 TEST_F(FlatTreeTraversalTest, InclusiveAncestorsOf) {
   SetupDocumentTree("<div><div><div id=sample></div></div></div>");
-  Element* const sample = GetDocument().getElementById("sample");
+  Element* const sample = GetDocument().getElementById(AtomicString("sample"));
 
   HeapVector<Member<Node>> expected_nodes;
   for (Node* parent = sample; parent;
@@ -371,15 +371,15 @@ TEST_F(FlatTreeTraversalTest, lastWithin) {
   SetupSampleHTML(main_html, shadow_html, 1);
 
   Element* body = GetDocument().body();
-  Element* m0 = body->QuerySelector("#m0");
-  Element* m1 = body->QuerySelector("#m1");
-  Element* m2 = body->QuerySelector("#m2");
+  Element* m0 = body->QuerySelector(AtomicString("#m0"));
+  Element* m1 = body->QuerySelector(AtomicString("#m1"));
+  Element* m2 = body->QuerySelector(AtomicString("#m2"));
 
-  Element* m10 = body->QuerySelector("#m10");
+  Element* m10 = body->QuerySelector(AtomicString("#m10"));
 
   ShadowRoot* shadow_root = m1->OpenShadowRoot();
-  Element* s11 = shadow_root->QuerySelector("#s11");
-  Element* s12 = shadow_root->QuerySelector("#s12");
+  Element* s11 = shadow_root->QuerySelector(AtomicString("#s11"));
+  Element* s12 = shadow_root->QuerySelector(AtomicString("#s12"));
 
   EXPECT_EQ(m0->firstChild(), FlatTreeTraversal::LastWithin(*m0));
   EXPECT_EQ(*m0->firstChild(), FlatTreeTraversal::LastWithinOrSelf(*m0));
@@ -415,18 +415,18 @@ TEST_F(FlatTreeTraversalTest, previousPostOrder) {
   SetupSampleHTML(main_html, shadow_html, 1);
 
   Element* body = GetDocument().body();
-  Element* m0 = body->QuerySelector("#m0");
-  Element* m1 = body->QuerySelector("#m1");
-  Element* m2 = body->QuerySelector("#m2");
+  Element* m0 = body->QuerySelector(AtomicString("#m0"));
+  Element* m1 = body->QuerySelector(AtomicString("#m1"));
+  Element* m2 = body->QuerySelector(AtomicString("#m2"));
 
-  Element* m10 = body->QuerySelector("#m10");
+  Element* m10 = body->QuerySelector(AtomicString("#m10"));
   Element* m10_slot_parent = To<Element>(FlatTreeTraversal::Parent(*m10));
-  Element* m11 = body->QuerySelector("#m11");
+  Element* m11 = body->QuerySelector(AtomicString("#m11"));
 
   ShadowRoot* shadow_root = m1->OpenShadowRoot();
-  Element* s11 = shadow_root->QuerySelector("#s11");
-  Element* s12 = shadow_root->QuerySelector("#s12");
-  Element* s120 = shadow_root->QuerySelector("#s120");
+  Element* s11 = shadow_root->QuerySelector(AtomicString("#s11"));
+  Element* s12 = shadow_root->QuerySelector(AtomicString("#s12"));
+  Element* s120 = shadow_root->QuerySelector(AtomicString("#s120"));
 
   EXPECT_EQ(*m0->firstChild(), FlatTreeTraversal::PreviousPostOrder(*m0));
   EXPECT_EQ(*s12, FlatTreeTraversal::PreviousPostOrder(*m1));
@@ -460,7 +460,7 @@ TEST_F(FlatTreeTraversalTest, nextSiblingNotInDocumentFlatTree) {
   SetupSampleHTML(main_html, shadow_html, 1);
 
   Element* body = GetDocument().body();
-  Element* m10 = body->QuerySelector("#m10");
+  Element* m10 = body->QuerySelector(AtomicString("#m10"));
 
   EXPECT_EQ(nullptr, FlatTreeTraversal::NextSibling(*m10));
   EXPECT_EQ(nullptr, FlatTreeTraversal::PreviousSibling(*m10));
@@ -481,16 +481,18 @@ TEST_F(FlatTreeTraversalTest, v1Simple) {
 
   SetupDocumentTree(main_html);
   Element* body = GetDocument().body();
-  Element* host = body->QuerySelector("#host");
-  Element* child1 = body->QuerySelector("#child1");
-  Element* child2 = body->QuerySelector("#child2");
+  Element* host = body->QuerySelector(AtomicString("#host"));
+  Element* child1 = body->QuerySelector(AtomicString("#child1"));
+  Element* child2 = body->QuerySelector(AtomicString("#child2"));
 
   AttachOpenShadowRoot(*host, shadow_html);
   ShadowRoot* shadow_root = host->OpenShadowRoot();
-  Element* slot1 = shadow_root->QuerySelector("[name=slot1]");
-  Element* slot2 = shadow_root->QuerySelector("[name=slot2]");
-  Element* shadow_child1 = shadow_root->QuerySelector("#shadow-child1");
-  Element* shadow_child2 = shadow_root->QuerySelector("#shadow-child2");
+  Element* slot1 = shadow_root->QuerySelector(AtomicString("[name=slot1]"));
+  Element* slot2 = shadow_root->QuerySelector(AtomicString("[name=slot2]"));
+  Element* shadow_child1 =
+      shadow_root->QuerySelector(AtomicString("#shadow-child1"));
+  Element* shadow_child2 =
+      shadow_root->QuerySelector(AtomicString("#shadow-child2"));
 
   EXPECT_TRUE(slot1);
   EXPECT_TRUE(slot2);
@@ -559,29 +561,29 @@ TEST_F(FlatTreeTraversalTest, v1Redistribution) {
   SetupDocumentTree(main_html);
 
   Element* body = GetDocument().body();
-  Element* d1 = body->QuerySelector("#d1");
-  Element* d2 = body->QuerySelector("#d2");
-  Element* d3 = body->QuerySelector("#d3");
-  Element* d4 = body->QuerySelector("#d4");
-  Element* d5 = body->QuerySelector("#d5");
-  Element* d6 = body->QuerySelector("#d6");
+  Element* d1 = body->QuerySelector(AtomicString("#d1"));
+  Element* d2 = body->QuerySelector(AtomicString("#d2"));
+  Element* d3 = body->QuerySelector(AtomicString("#d3"));
+  Element* d4 = body->QuerySelector(AtomicString("#d4"));
+  Element* d5 = body->QuerySelector(AtomicString("#d5"));
+  Element* d6 = body->QuerySelector(AtomicString("#d6"));
 
   AttachOpenShadowRoot(*d1, shadow_html1);
   ShadowRoot* shadow_root1 = d1->OpenShadowRoot();
-  Element* d11 = shadow_root1->QuerySelector("#d1-1");
-  Element* d12 = shadow_root1->QuerySelector("#d1-2");
-  Element* d13 = shadow_root1->QuerySelector("#d1-3");
-  Element* d14 = shadow_root1->QuerySelector("#d1-4");
-  Element* d1s0 = shadow_root1->QuerySelector("#d1-s0");
-  Element* d1s1 = shadow_root1->QuerySelector("[name=d1-s1]");
-  Element* d1s2 = shadow_root1->QuerySelector("[name=d1-s2]");
+  Element* d11 = shadow_root1->QuerySelector(AtomicString("#d1-1"));
+  Element* d12 = shadow_root1->QuerySelector(AtomicString("#d1-2"));
+  Element* d13 = shadow_root1->QuerySelector(AtomicString("#d1-3"));
+  Element* d14 = shadow_root1->QuerySelector(AtomicString("#d1-4"));
+  Element* d1s0 = shadow_root1->QuerySelector(AtomicString("#d1-s0"));
+  Element* d1s1 = shadow_root1->QuerySelector(AtomicString("[name=d1-s1]"));
+  Element* d1s2 = shadow_root1->QuerySelector(AtomicString("[name=d1-s2]"));
 
   AttachOpenShadowRoot(*d11, shadow_html2);
   ShadowRoot* shadow_root2 = d11->OpenShadowRoot();
-  Element* d111 = shadow_root2->QuerySelector("#d1-1-1");
-  Element* d112 = shadow_root2->QuerySelector("#d1-1-2");
-  Element* d11s1 = shadow_root2->QuerySelector("[name=d1-1-s1]");
-  Element* d11s2 = shadow_root2->QuerySelector("[name=d1-1-s2]");
+  Element* d111 = shadow_root2->QuerySelector(AtomicString("#d1-1-1"));
+  Element* d112 = shadow_root2->QuerySelector(AtomicString("#d1-1-2"));
+  Element* d11s1 = shadow_root2->QuerySelector(AtomicString("[name=d1-1-s1]"));
+  Element* d11s2 = shadow_root2->QuerySelector(AtomicString("[name=d1-1-s2]"));
 
   EXPECT_TRUE(d5);
   EXPECT_TRUE(d12);
@@ -623,10 +625,10 @@ TEST_F(FlatTreeTraversalTest, v1SlotInDocumentTree) {
 
   SetupDocumentTree(main_html);
   Element* body = GetDocument().body();
-  Element* parent = body->QuerySelector("#parent");
-  Element* slot = body->QuerySelector("slot");
-  Element* child1 = body->QuerySelector("#child1");
-  Element* child2 = body->QuerySelector("#child2");
+  Element* parent = body->QuerySelector(AtomicString("#parent"));
+  Element* slot = body->QuerySelector(AtomicString("slot"));
+  Element* child1 = body->QuerySelector(AtomicString("#child1"));
+  Element* child2 = body->QuerySelector(AtomicString("#child2"));
 
   EXPECT_EQ(slot, FlatTreeTraversal::FirstChild(*parent));
   EXPECT_EQ(child1, FlatTreeTraversal::FirstChild(*slot));
@@ -647,14 +649,14 @@ TEST_F(FlatTreeTraversalTest, v1FallbackContent) {
   SetupDocumentTree(main_html);
 
   Element* body = GetDocument().body();
-  Element* d1 = body->QuerySelector("#d1");
+  Element* d1 = body->QuerySelector(AtomicString("#d1"));
 
   AttachOpenShadowRoot(*d1, shadow_html);
   ShadowRoot* shadow_root = d1->OpenShadowRoot();
-  Element* before = shadow_root->QuerySelector("#before");
-  Element* after = shadow_root->QuerySelector("#after");
-  Element* fallback_content = shadow_root->QuerySelector("p");
-  Element* slot = shadow_root->QuerySelector("slot");
+  Element* before = shadow_root->QuerySelector(AtomicString("#before"));
+  Element* after = shadow_root->QuerySelector(AtomicString("#after"));
+  Element* fallback_content = shadow_root->QuerySelector(AtomicString("p"));
+  Element* slot = shadow_root->QuerySelector(AtomicString("slot"));
 
   EXPECT_EQ(before, FlatTreeTraversal::FirstChild(*d1));
   EXPECT_EQ(after, FlatTreeTraversal::LastChild(*d1));
@@ -681,15 +683,15 @@ TEST_F(FlatTreeTraversalTest, v1FallbackContentSkippedInTraversal) {
   SetupDocumentTree(main_html);
 
   Element* body = GetDocument().body();
-  Element* d1 = body->QuerySelector("#d1");
-  Element* span = body->QuerySelector("span");
+  Element* d1 = body->QuerySelector(AtomicString("#d1"));
+  Element* span = body->QuerySelector(AtomicString("span"));
 
   AttachOpenShadowRoot(*d1, shadow_html);
   ShadowRoot* shadow_root = d1->OpenShadowRoot();
-  Element* before = shadow_root->QuerySelector("#before");
-  Element* after = shadow_root->QuerySelector("#after");
-  Element* fallback_content = shadow_root->QuerySelector("p");
-  Element* slot = shadow_root->QuerySelector("slot");
+  Element* before = shadow_root->QuerySelector(AtomicString("#before"));
+  Element* after = shadow_root->QuerySelector(AtomicString("#after"));
+  Element* fallback_content = shadow_root->QuerySelector(AtomicString("p"));
+  Element* slot = shadow_root->QuerySelector(AtomicString("slot"));
 
   EXPECT_EQ(before, FlatTreeTraversal::FirstChild(*d1));
   EXPECT_EQ(after, FlatTreeTraversal::LastChild(*d1));
@@ -719,16 +721,16 @@ TEST_F(FlatTreeTraversalTest, v1AllFallbackContent) {
   SetupDocumentTree(main_html);
 
   Element* body = GetDocument().body();
-  Element* d1 = body->QuerySelector("#d1");
+  Element* d1 = body->QuerySelector(AtomicString("#d1"));
 
   AttachOpenShadowRoot(*d1, shadow_html);
   ShadowRoot* shadow_root = d1->OpenShadowRoot();
-  Element* slot_a = shadow_root->QuerySelector("slot[name=a]");
-  Element* slot_b = shadow_root->QuerySelector("slot[name=b]");
-  Element* slot_c = shadow_root->QuerySelector("slot[name=c]");
-  Element* fallback_x = shadow_root->QuerySelector("#x");
-  Element* fallback_y = shadow_root->QuerySelector("#y");
-  Element* fallback_z = shadow_root->QuerySelector("#z");
+  Element* slot_a = shadow_root->QuerySelector(AtomicString("slot[name=a]"));
+  Element* slot_b = shadow_root->QuerySelector(AtomicString("slot[name=b]"));
+  Element* slot_c = shadow_root->QuerySelector(AtomicString("slot[name=c]"));
+  Element* fallback_x = shadow_root->QuerySelector(AtomicString("#x"));
+  Element* fallback_y = shadow_root->QuerySelector(AtomicString("#y"));
+  Element* fallback_z = shadow_root->QuerySelector(AtomicString("#z"));
 
   EXPECT_EQ(slot_a, FlatTreeTraversal::FirstChild(*d1));
   EXPECT_EQ(slot_c, FlatTreeTraversal::LastChild(*d1));

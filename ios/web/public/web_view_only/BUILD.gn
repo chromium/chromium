@@ -5,21 +5,17 @@
 import("//ios/build/config.gni")
 
 source_set("web_view_only") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   public_deps = [ ":web_view_only_api_header" ]
 
   deps = [ "//ios/web/web_view_only" ]
 
   visibility = [
-    "//ios/web_view:*",
     "//ios/web/web_view_only:unittests",
+    "//ios/web_view:*",
   ]
 }
 
 source_set("web_view_only_api_header") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   sources = [ "wk_web_view_configuration_util.h" ]
 
   visibility = [
@@ -29,7 +25,6 @@ source_set("web_view_only_api_header") {
 }
 
 source_set("unittests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
 
   deps = [ "//ios/web/web_view_only:unittests" ]

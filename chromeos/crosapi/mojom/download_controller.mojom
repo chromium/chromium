@@ -43,6 +43,7 @@ enum DownloadDangerType {
   kDownloadDangerTypePromptForScanning = 17,
   kDownloadDangerTypeBlockedUnsupportedFiletype = 18,
   kDownloadDangerTypeDangerousAccountCompromise = 19,
+  [MinVersion=1] kDownloadDangerTypeDeepScannedFailed = 20,
 };
 
 // This mirrors `download::DownloadItem::InsecureDownloadStatus`, anything

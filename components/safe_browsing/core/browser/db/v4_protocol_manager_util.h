@@ -118,6 +118,15 @@ enum class MechanismExperimentHashDatabaseCache {
   kHashDatabaseOnly = 3
 };
 
+// Used to specify the type of check to perform in CheckBrowseUrl function.
+enum class CheckBrowseUrlType {
+  // Performs the hash-prefix database check.
+  kHashDatabase = 0,
+  // Performs the hash-prefix real-time check. Only the remote database used on
+  // Android supports it.
+  kHashRealTime = 1,
+};
+
 // Different types of threats that SafeBrowsing protects against. This is the
 // type that's returned to the clients of SafeBrowsing in Chromium.
 // These values are persisted to logs. Entries should not be renumbered and

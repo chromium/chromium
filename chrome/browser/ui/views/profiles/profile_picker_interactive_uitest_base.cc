@@ -61,10 +61,6 @@ void WithProfilePickerInteractiveUiTestHelpers::
   SendKeyPress(GetAccelerator(IDC_CLOSE_WINDOW));
 }
 
-void WithProfilePickerInteractiveUiTestHelpers::SendBackKeyboardCommand() {
-  SendKeyPress(GetAccelerator(IDC_BACK));
-}
-
 void WithProfilePickerInteractiveUiTestHelpers::
     SendToggleFullscreenKeyboardCommand() {
   SendKeyPress(GetAccelerator(IDC_FULLSCREEN));

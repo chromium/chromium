@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
@@ -201,7 +200,6 @@ public class IncognitoRestoreAppLaunchDrawBlocker {
     /**
      * Test-only method.
      */
-    @VisibleForTesting
     public void resetIsUnblockDrawRunnableInvokedForTesting() {
         mIsUnblockDrawRunnableInvoked = false;
     }

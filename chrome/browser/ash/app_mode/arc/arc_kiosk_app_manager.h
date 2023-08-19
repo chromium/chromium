@@ -63,7 +63,7 @@ class ArcKioskAppManager : public KioskAppManagerBase {
       std::vector<const ArcKioskAppData*>* apps_internal) const;
 
   // KioskAppmanagerBase:
-  // Updates |apps_| based on CrosSettings.
+  // Updates `apps_` based on CrosSettings.
   void UpdateAppsFromPolicy() override;
 
   std::vector<std::unique_ptr<ArcKioskAppData>> apps_;

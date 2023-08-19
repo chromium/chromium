@@ -60,7 +60,8 @@ class ASH_EXPORT PrivacyScreenToastController
   const raw_ptr<UnifiedSystemTray, ExperimentalAsh> tray_;
   raw_ptr<TrayBubbleView, ExperimentalAsh> bubble_view_ = nullptr;
   raw_ptr<views::Widget, ExperimentalAsh> bubble_widget_ = nullptr;
-  raw_ptr<PrivacyScreenToastView, ExperimentalAsh> toast_view_ = nullptr;
+  raw_ptr<PrivacyScreenToastView, DanglingUntriaged | ExperimentalAsh>
+      toast_view_ = nullptr;
   bool mouse_hovered_ = false;
   base::OneShotTimer close_timer_;
 };

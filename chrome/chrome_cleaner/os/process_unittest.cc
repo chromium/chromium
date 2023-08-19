@@ -6,8 +6,6 @@
 
 #include <windows.h>
 
-#include <ctype.h>
-
 #include "base/base_paths.h"
 #include "base/containers/contains.h"
 #include "base/path_service.h"

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("keyboard") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "UIKeyCommand+Chrome.h",
     "UIKeyCommand+Chrome.mm",
@@ -11,14 +10,10 @@ source_set("keyboard") {
     "menu_builder.h",
     "menu_builder.mm",
   ]
-  deps = [
-    "//base",
-    "//ios/chrome/browser/shared/ui/util",
-  ]
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "UIKeyCommand+ChromeTest.mm",
@@ -27,7 +22,6 @@ source_set("unit_tests") {
   deps = [
     ":keyboard",
     "//base",
-    "//base:i18n",
     "//ios/chrome/app/strings",
     "//testing/gtest",
     "//ui/base",
@@ -35,16 +29,14 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "keyboard_commands_egtest.mm" ]
   deps = [
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/table_view:constants",
     "//ios/chrome/browser/ui/bookmarks:constants",
+    "//ios/chrome/browser/ui/bookmarks:eg_test_support+eg2",
     "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",

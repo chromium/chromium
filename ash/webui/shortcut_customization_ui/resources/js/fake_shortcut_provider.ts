@@ -8,7 +8,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 
 import {AcceleratorResultData, AcceleratorsUpdatedObserverRemote} from '../mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
 
-import {Accelerator, AcceleratorConfig, AcceleratorConfigResult, AcceleratorSource, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface} from './shortcut_types.js';
+import {Accelerator, AcceleratorConfigResult, AcceleratorSource, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface} from './shortcut_types.js';
 
 
 /**
@@ -28,6 +28,7 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
   private acceleratorsUpdatedPromise: Promise<void>|null = null;
   private restoreDefaultCallCount: number = 0;
   private preventProcessingAcceleratorsCallCount: number = 0;
+  private addAcceleratorCallCount: number = 0;
 
   constructor() {
     this.methods = new FakeMethodResolver();
@@ -44,6 +45,8 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
     this.methods.register('restoreAllDefaults');
     this.methods.register('addObserver');
     this.methods.register('preventProcessingAccelerators');
+    this.methods.register('getConflictAccelerator');
+    this.methods.register('getDefaultAcceleratorsForId');
     this.registerObservables();
   }
 
@@ -55,6 +58,7 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
   reset(): void {
     this.restoreDefaultCallCount = 0;
     this.preventProcessingAcceleratorsCallCount = 0;
+    this.addAcceleratorCallCount = 0;
     this.observables = new FakeObservables();
     this.registerObservables();
   }
@@ -83,7 +87,8 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
 
   addObserver(observer: AcceleratorsUpdatedObserverRemote): void {
     this.acceleratorsUpdatedPromise = this.observe(
-        ON_ACCELERATORS_UPDATED_METHOD_NAME, (config: AcceleratorConfig) => {
+        ON_ACCELERATORS_UPDATED_METHOD_NAME,
+        (config: MojoAcceleratorConfig) => {
           observer.onAcceleratorsUpdated(config);
         });
   }
@@ -95,7 +100,7 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
 
   // Set the value that will be retuned when `onAcceleratorsUpdated()` is
   // called.
-  setFakeAcceleratorsUpdated(config: AcceleratorConfig[]): void {
+  setFakeAcceleratorsUpdated(config: MojoAcceleratorConfig[]): void {
     this.observables.setObservableData(
         ON_ACCELERATORS_UPDATED_METHOD_NAME, config);
   }
@@ -103,6 +108,7 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
   addAccelerator(
       _source: AcceleratorSource, _actionId: number,
       _accelerator: Accelerator): Promise<{result: AcceleratorResultData}> {
+    ++this.addAcceleratorCallCount;
     return this.methods.resolveMethod('addAccelerator');
   }
 
@@ -116,8 +122,8 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
 
   removeAccelerator(): Promise<{result: AcceleratorResultData}> {
     // Always return kSuccess in this fake.
-    const result = new AcceleratorResultData();
-    result.result = AcceleratorConfigResult.kSuccess;
+    const result:
+        AcceleratorResultData = {result: AcceleratorConfigResult.kSuccess};
     this.methods.setResult('removeAccelerator', {result});
     return this.methods.resolveMethod('removeAccelerator');
   }
@@ -125,17 +131,17 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
   restoreDefault(_source: AcceleratorSource, _actionId: number):
       Promise<{result: AcceleratorResultData}> {
     ++this.restoreDefaultCallCount;
-    // Always return kSuccess in this fake.
-    const result = new AcceleratorResultData();
-    result.result = AcceleratorConfigResult.kSuccess;
-    this.methods.setResult('restoreDefault', {result});
     return this.methods.resolveMethod('restoreDefault');
+  }
+
+  setRestoreDefault(result: AcceleratorResultData): void {
+    this.methods.setResult('restoreDefault', {result});
   }
 
   restoreAllDefaults(): Promise<{result: AcceleratorResultData}> {
     // Always return kSuccess in this fake.
-    const result = new AcceleratorResultData();
-    result.result = AcceleratorConfigResult.kSuccess;
+    const result:
+        AcceleratorResultData = {result: AcceleratorConfigResult.kSuccess};
     this.methods.setResult('restoreAllDefaults', {result});
     return this.methods.resolveMethod('restoreAllDefaults');
   }
@@ -144,6 +150,34 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
       Promise<void> {
     ++this.preventProcessingAcceleratorsCallCount;
     return this.methods.resolveMethod('preventProcessingAccelerators');
+  }
+
+  getConflictAccelerator(
+      _source: AcceleratorSource, _actionId: number,
+      _accelerator: Accelerator): Promise<{result: AcceleratorResultData}> {
+    return this.methods.resolveMethod('getConflictAccelerator');
+  }
+
+  getDefaultAcceleratorsForId(
+      _actionId: number,
+      ): Promise<{accelerators: Accelerator[]}> {
+    return this.methods.resolveMethod('getDefaultAcceleratorsForId');
+  }
+
+  /**
+   * Set the config result that will be returned when calling
+   * `getConflictAccelerator()`.
+   */
+  setFakeGetConflictAccelerator(result: AcceleratorResultData): void {
+    this.methods.setResult('getConflictAccelerator', {result});
+  }
+
+  /**
+   * Set the default accelerators that will be returned when calling
+   * `getDefaultAcceleratorsForId()`.
+   */
+  setFakeGetDefaultAcceleratorsForId(accelerators: Accelerator[]): void {
+    this.methods.setResult('getDefaultAcceleratorsForId', {accelerators});
   }
 
   /**
@@ -168,6 +202,10 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
 
   getPreventProcessingAcceleratorsCallCount(): number {
     return this.preventProcessingAcceleratorsCallCount;
+  }
+
+  getAddAcceleratorCallCount(): number {
+    return this.addAcceleratorCallCount;
   }
 
   setFakeHasLauncherButton(hasLauncherButton: boolean): void {

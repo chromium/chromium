@@ -1,2 +1,2 @@
 AXWebArea
-++AXGroup AXSubrole=AXLandmarkApplication AXRoleDescription='application'
+++AXGroup AXSubrole=AXWebApplication AXRoleDescription='application'

@@ -12,6 +12,7 @@
 #include "cc/paint/paint_flags.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
@@ -23,6 +24,7 @@
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/ink_drop_ripple.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/window/hit_test_utils.h"
 
@@ -81,7 +83,6 @@ FrameCaptionButton::FrameCaptionButton(PressedCallback callback,
   SetHasInkDropActionOnClick(true);
   InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
   InkDrop::Get(this)->SetVisibleOpacity(kInkDropVisibleOpacity);
-  UpdateInkDropBaseColor();
   InkDrop::UseInkDropWithoutAutoHighlight(InkDrop::Get(this),
                                           /*highlight_on_hover=*/false);
   InkDrop::Get(this)->SetCreateRippleCallback(base::BindRepeating(
@@ -131,8 +132,17 @@ float FrameCaptionButton::GetInactiveButtonColorAlphaRatio() {
 void FrameCaptionButton::SetImage(CaptionButtonIcon icon,
                                   Animate animate,
                                   const gfx::VectorIcon& icon_definition) {
+  // If the button is not yet in a widget, OnThemeChanged() will call back
+  // here once it is, updating the color as needed.
+  SkColor icon_color = gfx::kPlaceholderColor;
+  if (absl::holds_alternative<SkColor>(color_)) {
+    icon_color = GetButtonColor(absl::get<SkColor>(color_));
+  } else if (const auto* color_provider = GetColorProvider()) {
+    icon_color = color_provider->GetColor(absl::get<ui::ColorId>(color_));
+  }
+
   gfx::ImageSkia new_icon_image =
-      gfx::CreateVectorIcon(icon_definition, GetButtonColor(background_color_));
+      gfx::CreateVectorIcon(icon_definition, icon_color);
 
   // The early return is dependent on |animate| because callers use SetImage()
   // with Animate::kNo to progress the crossfade animation to the end.
@@ -157,7 +167,9 @@ void FrameCaptionButton::SetImage(CaptionButtonIcon icon,
     swap_images_animation_->Reset(1);
   }
 
-  SchedulePaint();
+  if (GetWidget()) {
+    SchedulePaint();
+  }
 }
 
 bool FrameCaptionButton::IsAnimatingImageSwap() const {
@@ -201,20 +213,27 @@ views::PaintInfo::ScaleType FrameCaptionButton::GetPaintScaleType() const {
 }
 
 void FrameCaptionButton::SetBackgroundColor(SkColor background_color) {
-  if (background_color_ == background_color)
+  if (absl::holds_alternative<SkColor>(color_) &&
+      absl::get<SkColor>(color_) == background_color) {
     return;
+  }
 
-  background_color_ = background_color;
-  // Refresh the icon since the color may have changed.
-  if (icon_definition_)
-    SetImage(icon_, Animate::kNo, *icon_definition_);
-  UpdateInkDropBaseColor();
+  color_ = background_color;
+  MaybeRefreshIconAndInkdropBaseColor();
+}
 
-  OnPropertyChanged(&background_color_, kPropertyEffectsPaint);
+void FrameCaptionButton::SetIconColorId(ui::ColorId icon_color_id) {
+  if (absl::holds_alternative<ui::ColorId>(color_) &&
+      absl::get<ui::ColorId>(color_) == icon_color_id) {
+    return;
+  }
+
+  color_ = icon_color_id;
+  MaybeRefreshIconAndInkdropBaseColor();
 }
 
 SkColor FrameCaptionButton::GetBackgroundColor() const {
-  return background_color_;
+  return absl::get<SkColor>(color_);
 }
 
 void FrameCaptionButton::SetInkDropCornerRadius(int ink_drop_corner_radius) {
@@ -231,7 +250,7 @@ int FrameCaptionButton::GetInkDropCornerRadius() const {
 base::CallbackListSubscription
 FrameCaptionButton::AddBackgroundColorChangedCallback(
     PropertyChangedCallback callback) {
-  return AddPropertyChangedCallback(&background_color_, callback);
+  return AddPropertyChangedCallback(&color_, callback);
 }
 
 void FrameCaptionButton::SetPaintAsActive(bool paint_as_active) {
@@ -267,6 +286,17 @@ gfx::Insets FrameCaptionButton::GetInkdropInsets(
     const gfx::Size& button_size) const {
   return gfx::Insets::VH((button_size.height() - GetInkDropSize().height()) / 2,
                          (button_size.width() - GetInkDropSize().width()) / 2);
+}
+
+void FrameCaptionButton::MaybeRefreshIconAndInkdropBaseColor() {
+  if (!GetColorProvider()) {
+    return;
+  }
+
+  if (icon_definition_) {
+    SetImage(icon_, Animate::kNo, *icon_definition_);
+  }
+  UpdateInkDropBaseColor();
 }
 
 void FrameCaptionButton::PaintButtonContents(gfx::Canvas* canvas) {
@@ -328,6 +358,12 @@ void FrameCaptionButton::PaintButtonContents(gfx::Canvas* canvas) {
   }
 }
 
+void FrameCaptionButton::OnThemeChanged() {
+  views::Button::OnThemeChanged();
+
+  MaybeRefreshIconAndInkdropBaseColor();
+}
+
 SkAlpha FrameCaptionButton::GetAlphaForIcon(SkAlpha base_alpha) const {
   if (!GetEnabled())
     return base::ClampRound<SkAlpha>(base_alpha * kDisabledButtonAlphaRatio);
@@ -349,6 +385,7 @@ SkAlpha FrameCaptionButton::GetAlphaForIcon(SkAlpha base_alpha) const {
 
 void FrameCaptionButton::UpdateInkDropBaseColor() {
   using color_utils::GetColorWithMaxContrast;
+
   // A typical implementation would simply do
   // GetColorWithMaxContrast(background_color_).  However, this could look odd
   // if we use a light button glyph and dark ink drop or vice versa.  So
@@ -356,13 +393,16 @@ void FrameCaptionButton::UpdateInkDropBaseColor() {
   // glyph color.
   // TODO(pkasting): It would likely be better to make the button glyph always
   // be an alpha-blended version of GetColorWithMaxContrast(background_color_).
-  const SkColor button_color = GetButtonColor(background_color_);
+  const SkColor button_color =
+      absl::holds_alternative<ui::ColorId>(color_)
+          ? GetColorProvider()->GetColor(absl::get<ui::ColorId>(color_))
+          : GetButtonColor(absl::get<SkColor>(color_));
+
   InkDrop::Get(this)->SetBaseColor(
       GetColorWithMaxContrast(GetColorWithMaxContrast(button_color)));
 }
 
 BEGIN_METADATA(FrameCaptionButton, Button)
-ADD_PROPERTY_METADATA(SkColor, BackgroundColor, ui::metadata::SkColorConverter)
 ADD_PROPERTY_METADATA(int, InkDropCornerRadius)
 ADD_READONLY_PROPERTY_METADATA(CaptionButtonIcon, Icon)
 ADD_PROPERTY_METADATA(bool, PaintAsActive)

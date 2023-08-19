@@ -8,6 +8,7 @@
 
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
@@ -25,10 +26,7 @@
 #import "ios/web/public/thread/web_task_traits.h"
 #import "net/base/mac/url_conversions.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
+using safe_browsing::SafeBrowsingUrlCheckerImpl;
 using security_interstitials::UnsafeResource;
 
 namespace {
@@ -59,6 +57,53 @@ GURL GetCanonicalizedUrl(const GURL& url) {
   replacements.ClearRef();
 
   return url.ReplaceComponents(replacements);
+}
+
+// Records a histogram tracking how often Safe Browsing delays navigations.
+void RecordCheckCompletedOnResponseMetric(bool check_completed) {
+  base::UmaHistogramBoolean(
+      "SafeBrowsing.IOS.IsCheckCompletedOnShouldAllowResponse",
+      check_completed);
+}
+
+// Records histograms tracking the amount of time that navigations are delayed
+// by Safe Browsing, broken down by the type of Safe Browsing check that was
+// performed. Unlike `RecordTotalDelayMetricForDelayedAllowedNavigation`, this
+// should be called for all completed checks, even those that don't cause any
+// delay and those that are blocked by Safe Browsing.
+void RecordTotalDelay2MetricForNavigation(
+    base::TimeDelta delay,
+    SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check) {
+  std::string performed_check_str;
+  switch (performed_check) {
+    case SafeBrowsingUrlCheckerImpl::PerformedCheck::kUrlRealTimeCheck:
+      performed_check_str = ".FullUrlLookup";
+      break;
+    case SafeBrowsingUrlCheckerImpl::PerformedCheck::kHashDatabaseCheck:
+      performed_check_str = ".HashPrefixDatabaseCheck";
+      break;
+    case SafeBrowsingUrlCheckerImpl::PerformedCheck::kCheckSkipped:
+      performed_check_str = ".SkippedCheck";
+      break;
+    case SafeBrowsingUrlCheckerImpl::PerformedCheck::kHashRealTimeCheck:
+      performed_check_str = ".HashPrefixRealTimeCheck";
+      break;
+    case SafeBrowsingUrlCheckerImpl::PerformedCheck::kUnknown:
+      NOTREACHED();
+  }
+
+  base::UmaHistogramTimes("SafeBrowsing.IOS.TotalDelay2" + performed_check_str,
+                          delay);
+}
+
+// Records a histogram tracking the amount of time that navigations are delayed
+// by Safe Browsing but ultimately allowed to proceed.
+void RecordTotalDelayMetricForDelayedAllowedNavigation(
+    base::TimeTicks delay_start_time,
+    SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check) {
+  base::TimeDelta delay = base::TimeTicks::Now() - delay_start_time;
+  base::UmaHistogramTimes("SafeBrowsing.IOS.TotalDelay", delay);
+  RecordTotalDelay2MetricForNavigation(delay, performed_check);
 }
 }  // namespace
 
@@ -117,12 +162,13 @@ bool SafeBrowsingTabHelper::PolicyDecider::IsQueryStale(
 
 void SafeBrowsingTabHelper::PolicyDecider::HandlePolicyDecision(
     const SafeBrowsingQueryManager::Query& query,
-    const web::WebStatePolicyDecider::PolicyDecision& policy_decision) {
+    const web::WebStatePolicyDecider::PolicyDecision& policy_decision,
+    SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check) {
   DCHECK(!IsQueryStale(query));
   if (query.IsMainFrame()) {
-    OnMainFrameUrlQueryDecided(query.url, policy_decision);
+    OnMainFrameUrlQueryDecided(query.url, policy_decision, performed_check);
   } else {
-    OnSubFrameUrlQueryDecided(query.url, policy_decision);
+    OnSubFrameUrlQueryDecided(query.url, policy_decision, performed_check);
   }
 }
 
@@ -281,10 +327,13 @@ void SafeBrowsingTabHelper::PolicyDecider::HandleMainFrameResponsePolicy(
 
   auto decision = MainFrameRedirectChainDecision();
   if (decision) {
+    RecordCheckCompletedOnResponseMetric(/*check_completed=*/true);
     std::move(callback).Run(*decision);
     pending_main_frame_redirect_chain_.clear();
   } else {
+    RecordCheckCompletedOnResponseMetric(/*check_completed=*/false);
     pending_main_frame_query_->response_callback = std::move(callback);
+    pending_main_frame_query_->delay_start_time = base::TimeTicks::Now();
   }
 }
 
@@ -305,16 +354,21 @@ void SafeBrowsingTabHelper::PolicyDecider::HandleSubFrameResponsePolicy(
                                  ->GetUniqueID();
     query_manager_->StartQuery(
         SafeBrowsingQueryManager::Query(url, "GET", main_frame_item_id));
-    pending_sub_frame_queries_[url].response_callbacks.push_back(
-        std::move(callback));
+    RecordCheckCompletedOnResponseMetric(/*check_completed=*/false);
+    SubFrameUrlQuery& new_sub_frame_query = pending_sub_frame_queries_[url];
+    new_sub_frame_query.response_callbacks.push_back(std::move(callback));
+    new_sub_frame_query.delay_start_times.push_back(base::TimeTicks::Now());
     return;
   }
 
   SubFrameUrlQuery& sub_frame_query = it->second;
   if (sub_frame_query.decision) {
+    RecordCheckCompletedOnResponseMetric(/*check_completed=*/true);
     std::move(callback).Run(*(sub_frame_query.decision));
   } else {
+    RecordCheckCompletedOnResponseMetric(/*check_completed=*/false);
     sub_frame_query.response_callbacks.push_back(std::move(callback));
+    sub_frame_query.delay_start_times.push_back(base::TimeTicks::Now());
   }
 }
 
@@ -339,7 +393,8 @@ SafeBrowsingTabHelper::PolicyDecider::GetOldestPendingMainFrameQuery(
 
 void SafeBrowsingTabHelper::PolicyDecider::OnMainFrameUrlQueryDecided(
     const GURL& url,
-    web::WebStatePolicyDecider::PolicyDecision decision) {
+    web::WebStatePolicyDecider::PolicyDecision decision,
+    SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check) {
   GetOldestPendingMainFrameQuery(url)->decision = decision;
 
   // If ShouldAllowResponse() has already been called for this URL, and if
@@ -350,9 +405,19 @@ void SafeBrowsingTabHelper::PolicyDecider::OnMainFrameUrlQueryDecided(
     absl::optional<web::WebStatePolicyDecider::PolicyDecision>
         overall_decision = MainFrameRedirectChainDecision();
     if (overall_decision) {
+      if (overall_decision->ShouldAllowNavigation()) {
+        RecordTotalDelayMetricForDelayedAllowedNavigation(
+            pending_main_frame_query_->delay_start_time, performed_check);
+      } else {
+        base::TimeDelta delay = base::TimeTicks::Now() -
+                                pending_main_frame_query_->delay_start_time;
+        RecordTotalDelay2MetricForNavigation(delay, performed_check);
+      }
       std::move(response_callback).Run(*overall_decision);
       pending_main_frame_redirect_chain_.clear();
     }
+  } else {
+    RecordTotalDelay2MetricForNavigation(base::TimeDelta(), performed_check);
   }
 
   if (decision.ShouldCancelNavigation()) {
@@ -362,7 +427,8 @@ void SafeBrowsingTabHelper::PolicyDecider::OnMainFrameUrlQueryDecided(
 
 void SafeBrowsingTabHelper::PolicyDecider::OnSubFrameUrlQueryDecided(
     const GURL& url,
-    web::WebStatePolicyDecider::PolicyDecision decision) {
+    web::WebStatePolicyDecider::PolicyDecision decision,
+    SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check) {
   web::NavigationManager* navigation_manager =
       web_state()->GetNavigationManager();
   web::NavigationItem* main_frame_item =
@@ -377,7 +443,19 @@ void SafeBrowsingTabHelper::PolicyDecider::OnSubFrameUrlQueryDecided(
   SubFrameUrlQuery& sub_frame_query = pending_sub_frame_queries_[url];
   sub_frame_query.decision = decision;
   for (auto& response_callback : sub_frame_query.response_callbacks) {
+    if (decision.ShouldAllowNavigation()) {
+      RecordTotalDelayMetricForDelayedAllowedNavigation(
+          sub_frame_query.delay_start_times.front(), performed_check);
+    } else {
+      base::TimeDelta delay =
+          base::TimeTicks::Now() - sub_frame_query.delay_start_times.front();
+      RecordTotalDelay2MetricForNavigation(delay, performed_check);
+    }
+    sub_frame_query.delay_start_times.pop_front();
     std::move(response_callback).Run(decision);
+  }
+  if (sub_frame_query.response_callbacks.size() == 0) {
+    RecordTotalDelay2MetricForNavigation(base::TimeDelta(), performed_check);
   }
   sub_frame_query.response_callbacks.clear();
 
@@ -478,7 +556,8 @@ SafeBrowsingTabHelper::QueryObserver::~QueryObserver() = default;
 void SafeBrowsingTabHelper::QueryObserver::SafeBrowsingQueryFinished(
     SafeBrowsingQueryManager* manager,
     const SafeBrowsingQueryManager::Query& query,
-    const SafeBrowsingQueryManager::Result& result) {
+    const SafeBrowsingQueryManager::Result& result,
+    SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check) {
   if (policy_decider_->IsQueryStale(query))
     return;
 
@@ -521,7 +600,8 @@ void SafeBrowsingTabHelper::QueryObserver::SafeBrowsingQueryFinished(
     }
   }
 
-  policy_decider_->HandlePolicyDecision(query, policy_decision);
+  policy_decider_->HandlePolicyDecision(query, policy_decision,
+                                        performed_check);
 }
 
 void SafeBrowsingTabHelper::QueryObserver::SafeBrowsingQueryManagerDestroyed(

@@ -4,6 +4,7 @@
 
 import("//ash/ambient/resources/resources.gni")
 import("//build/config/chromeos/ui_mode.gni")
+import("//chromeos/ash/components/scalable_iph/scalable_iph.gni")
 import("//tools/grit/repack.gni")
 import("//ui/base/ui_features.gni")
 
@@ -23,6 +24,11 @@ repack("ash_test_resources_unscaled") {
       "$root_gen_dir/ash/ambient/resources/ash_ambient_lottie_resources.pak",
     ]
     deps += [ "//ash/ambient/resources:lottie_resources" ]
+  }
+
+  if (enable_cros_scalable_iph) {
+    sources += [ "$root_gen_dir/chromeos/ash/ash_resources.pak" ]
+    deps += [ "//chromeos/ash/resources" ]
   }
 }
 

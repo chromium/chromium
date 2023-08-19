@@ -11,6 +11,8 @@
     ['gzip', 'br'],
     ['gzip', 'br', 'deflate'],
     ['br'],
+    ['zstd', 'gzip'],
+    ['zstd'],
   ];
 
   async function runTest(injectTestResource) {

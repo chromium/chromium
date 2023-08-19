@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/readaloud_mini_player"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="start|bottom"
+    android:orientation="vertical"
+    android:animateLayoutChanges="true"
+    android:visibility="gone"
+    android:clickable="true"
+    android:focusable="true">
+
+    <!-- Shadow -->
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/readaloud_mini_player_top_shadow_height"
+        android:src="@drawable/modern_toolbar_shadow"
+        android:scaleType="fitXY"
+        android:scaleY="-1"
+        android:importantForAccessibility="no"/>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@macro/toolbar_background_primary">
+
+        <!-- Buttons and text -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/readaloud_mini_player_margin_horizontal"
+            android:orientation="horizontal">
+
+            <!-- Play/pause button -->
+            <ImageView
+                android:id="@+id/readaloud_mini_player_play_button"
+                android:layout_width="@dimen/readaloud_mini_player_play_button_diameter"
+                android:layout_height="@dimen/readaloud_mini_player_play_button_diameter"
+                android:layout_marginVertical="@dimen/readaloud_mini_player_play_button_margin_vertical"
+                android:layout_marginRight="@dimen/readaloud_mini_player_play_button_margin_right"
+                android:src="@drawable/mini_play_button"
+                android:contentDescription="@string/readaloud_play"
+                tools:ignore="RtlHardcoded"/>
+
+            <!-- Title and publisher -->
+            <LinearLayout
+                android:id="@+id/readaloud_mini_player_title_and_publisher"
+                android:layout_weight="1"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:orientation="vertical"
+                android:clickable="true"
+                android:focusable="true">
+                <TextView
+                    android:id="@+id/readaloud_mini_player_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.TextMediumThick"/>
+                <TextView
+                    android:id="@+id/readaloud_mini_player_publisher"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.TextSmall"/>
+            </LinearLayout>
+
+            <!-- Close button -->
+            <ImageView
+                android:id="@+id/readaloud_mini_player_close_button"
+                android:src="@drawable/baseline_close_24"
+                android:contentDescription="@string/readaloud_close_player_button_content_description"
+                android:layout_weight="0"
+                android:layout_width="@dimen/readaloud_close_button_size"
+                android:layout_height="@dimen/readaloud_close_button_size"
+                android:layout_marginVertical="@dimen/readaloud_mini_player_close_button_margin_vertical"
+                android:scaleType="fitCenter"/>
+        </LinearLayout>
+
+        <!-- Bottom progress bar -->
+        <View
+            android:id="@+id/readaloud_mini_player_progress_bar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/readaloud_mini_player_progress_bar_height"
+            android:layout_gravity="bottom"
+            android:background="@color/readaloud_progress_bar_bg"/>
+    </FrameLayout>
+</LinearLayout>

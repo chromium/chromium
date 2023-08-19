@@ -42,7 +42,7 @@ class WaylandPointerDelegate : public WaylandInputDelegate,
   void OnPointerScroll(base::TimeTicks time_stamp,
                        const gfx::Vector2dF& offset,
                        bool discrete) override;
-  void OnPointerScrollStop(base::TimeTicks time_stamp) override;
+  void OnFingerScrollStop(base::TimeTicks time_stamp) override;
   void OnPointerFrame() override;
 
  private:

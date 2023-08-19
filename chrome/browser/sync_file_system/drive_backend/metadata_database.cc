@@ -650,14 +650,14 @@ SyncStatusCode MetadataDatabase::RegisterApp(const std::string& app_id,
 
   if (trackers.has_active()) {
     // The folder is tracked by another tracker.
-    util::Log(logging::LOG_WARNING, FROM_HERE,
+    util::Log(logging::LOGGING_WARNING, FROM_HERE,
               "Failed to register App for %s", app_id.c_str());
     return SYNC_STATUS_HAS_CONFLICT;
   }
 
   int64_t sync_root_tracker_id = index_->GetSyncRootTrackerID();
   if (!sync_root_tracker_id) {
-    util::Log(logging::LOG_WARNING, FROM_HERE,
+    util::Log(logging::LOGGING_WARNING, FROM_HERE,
               "Sync-root needs to be set up before registering app-root");
     return SYNC_DATABASE_ERROR_NOT_FOUND;
   }

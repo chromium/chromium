@@ -50,6 +50,11 @@ class BASE_EXPORT MemoryDumpManager {
   static MemoryDumpManager* GetInstance();
   static std::unique_ptr<MemoryDumpManager> CreateInstanceForTesting();
 
+  // Resets the initialization. When destroying and recreating the manager in
+  // multi threaded environment is hard, this method can be used to reset the
+  // state to begin new initialization.
+  void ResetForTesting();
+
   MemoryDumpManager(const MemoryDumpManager&) = delete;
   MemoryDumpManager& operator=(const MemoryDumpManager&) = delete;
 
@@ -143,6 +148,11 @@ class BASE_EXPORT MemoryDumpManager {
   // When set to true, calling |RegisterMemoryDumpProvider| is a no-op.
   void set_dumper_registrations_ignored_for_testing(bool ignored) {
     dumper_registrations_ignored_for_testing_ = ignored;
+  }
+
+  bool IsInitialized() {
+    AutoLock lock(lock_);
+    return can_request_global_dumps();
   }
 
   scoped_refptr<SequencedTaskRunner> GetDumpThreadTaskRunner();

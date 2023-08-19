@@ -36,7 +36,8 @@ class DeskAsh : public mojom::Desk {
   void LaunchEmptyDesk(const std::string& desk_name,
                        LaunchEmptyDeskCallback callback) override;
   void RemoveDesk(const base::Uuid& desk_uuid,
-                  bool close_all,
+                  bool combine_desk,
+                  absl::optional<bool> allow_undo,
                   RemoveDeskCallback callback) override;
   void GetTemplateJson(const base::Uuid& uuid,
                        GetTemplateJsonCallback callback) override;
@@ -60,7 +61,7 @@ class DeskAsh : public mojom::Desk {
                    GetDeskByIDCallback callback) override;
   void AddDeskEventObserver(
       mojo::PendingRemote<crosapi::mojom::DeskEventObserver> observer) override;
-  void NotifyDeskAdded(const base::Uuid& uuid);
+  void NotifyDeskAdded(const base::Uuid& uuid, bool from_undo = false);
   void NotifyDeskRemoved(const base::Uuid& uuid);
   void NotifyDeskSwitched(const base::Uuid& current_id,
                           const base::Uuid& previous_id);

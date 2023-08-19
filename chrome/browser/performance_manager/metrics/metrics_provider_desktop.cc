@@ -137,11 +137,11 @@ void MetricsProviderDesktop::Initialize() {
       kHighEfficiencyModeState,
       base::BindRepeating(&MetricsProviderDesktop::OnHighEfficiencyPrefChanged,
                           base::Unretained(this)));
-  performance_manager::user_tuning::UserPerformanceTuningManager::GetInstance()
+  performance_manager::user_tuning::BatterySaverModeManager::GetInstance()
       ->AddObserver(this);
-  battery_saver_enabled_ = performance_manager::user_tuning::
-                               UserPerformanceTuningManager::GetInstance()
-                                   ->IsBatterySaverActive();
+  battery_saver_enabled_ =
+      performance_manager::user_tuning::BatterySaverModeManager::GetInstance()
+          ->IsBatterySaverActive();
 
   initialized_ = true;
   current_mode_ = ComputeCurrentMode();
@@ -212,7 +212,7 @@ MetricsProviderDesktop::ComputeCurrentMode() const {
   }
 
   // It's possible for this function to be called during shutdown, after
-  // UserPerformanceTuningManager is destroyed. Do not access UPTM directly from
+  // BatterySaverModeManager is destroyed. Do not access UPTM directly from
   // here.
 
   bool high_efficiency_enabled = IsHighEfficiencyEnabled();

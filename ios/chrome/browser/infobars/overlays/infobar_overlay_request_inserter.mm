@@ -18,10 +18,6 @@
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 WEB_STATE_USER_DATA_KEY_IMPL(InfobarOverlayRequestInserter)
 
 InsertParams::InsertParams(InfoBarIOS* infobar) : infobar(infobar) {}

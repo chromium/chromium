@@ -231,15 +231,13 @@ class BitIterator {
 struct Config {
   size_t MakeFromBits(const uint8_t* bits, size_t size) {
     BitIterator it(bits, size);
+#if BUILDFLAG(IS_ANDROID)
     attrib_helper.red_size = 8;
     attrib_helper.green_size = 8;
     attrib_helper.blue_size = 8;
     attrib_helper.alpha_size = it.GetBit() ? 8 : 0;
-    attrib_helper.depth_size = it.GetBit() ? 24 : 0;
-    attrib_helper.stencil_size = it.GetBit() ? 8 : 0;
-    attrib_helper.buffer_preserved = it.GetBit();
+#endif
     attrib_helper.bind_generates_resource = it.GetBit();
-    attrib_helper.single_buffer = it.GetBit();
     [[maybe_unused]] bool es3 = it.GetBit();
 #if defined(GPU_FUZZER_USE_RASTER_DECODER)
     attrib_helper.context_type = CONTEXT_TYPE_OPENGLES2;
@@ -430,8 +428,7 @@ class CommandBufferSetup {
 
       Mailbox mailbox;
       mailbox.SetName(name);
-      viz::SharedImageFormat si_format =
-          viz::SharedImageFormat::SinglePlane(viz::RGBA_8888);
+      viz::SharedImageFormat si_format = viz::SinglePlaneFormat::kRGBA_8888;
 
       shared_image_factory_->CreateSharedImage(
           mailbox, si_format, gfx::Size(256, 256),

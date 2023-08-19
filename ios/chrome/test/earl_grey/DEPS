@@ -32,4 +32,9 @@ specific_include_rules = {
   "chrome_test_case\.mm": [
     "+ios/third_party/edo",
   ],
+
+  "eg_tests_hook\.mm": [
+   "+components/signin/internal/identity_manager",
+   "+components/password_manager/ios",
+  ],
 }

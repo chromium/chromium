@@ -7,6 +7,7 @@
 #import <Foundation/Foundation.h>
 #import <MetricKit/MetricKit.h>
 
+#import "base/containers/contains.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
 #import "base/files/scoped_temp_dir.h"
@@ -23,10 +24,6 @@
 #import "third_party/crashpad/crashpad/client/crash_report_database.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 class MetricKitSubscriberTest : public PlatformTest {
  public:
@@ -212,7 +209,7 @@ TEST_F(MetricKitSubscriberTest, SaveDiagnosticReport) {
   std::map<std::string, crashpad::FileReader*> attachments =
       upload_report->GetAttachments();
   EXPECT_EQ(attachments.size(), 1u);
-  ASSERT_NE(attachments.find("MetricKit"), attachments.end());
+  ASSERT_TRUE(base::Contains(attachments, "MetricKit"));
   char result_buffer[sizeof(file_data)];
   attachments["MetricKit"]->Read(result_buffer, sizeof(result_buffer));
 

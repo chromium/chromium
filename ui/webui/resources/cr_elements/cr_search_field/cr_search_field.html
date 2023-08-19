@@ -59,6 +59,11 @@
         right: 0;
       }
 
+      :host-context([chrome-refresh-2023]) #clearSearch {
+        /* Necessary to be above the '#hover-layer' in cr-input. */
+        z-index: 1;
+      }
+
       :host-context([dir='rtl']) #clearSearch {
         left: 0;
         right: auto;

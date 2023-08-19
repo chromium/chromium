@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/mac/scoped_nsobject.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -97,7 +96,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterMac
   void InitForTest(
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner) override;
   BluetoothLowEnergyAdapterApple::GetDevicePairedStatusCallback
-  GetDevicePariedStatus() const override;
+  GetDevicePairedStatus() const override;
 
   // Queries the state of the IOBluetoothHostController.
   HostControllerState GetHostControllerState();

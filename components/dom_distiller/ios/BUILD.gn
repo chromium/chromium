@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("ios") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "distiller_page_factory_ios.h",
     "distiller_page_factory_ios.mm",

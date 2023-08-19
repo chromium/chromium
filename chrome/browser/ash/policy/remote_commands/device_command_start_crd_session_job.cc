@@ -22,7 +22,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "build/build_config.h"
 #include "chrome/browser/ash/policy/remote_commands/crd_logging.h"
 #include "chrome/browser/ash/policy/remote_commands/crd_remote_command_utils.h"
 #include "chrome/browser/ash/policy/remote_commands/crd_uma_logger.h"
@@ -41,8 +40,8 @@ namespace policy {
 
 namespace {
 
-using SessionParameters =
-    DeviceCommandStartCrdSessionJob::Delegate::SessionParameters;
+using SessionParameters = StartCrdSessionJobDelegate::SessionParameters;
+using ErrorCallback = StartCrdSessionJobDelegate::ErrorCallback;
 
 // OAuth2 Token scopes
 constexpr char kCloudDevicesOAuth2Scope[] =
@@ -159,6 +158,11 @@ void OnCrdSessionFinished(CrdSessionType crd_session_type,
       .LogSessionDuration(session_duration);
 }
 
+bool IsKioskSession(UserSessionType session_type) {
+  return session_type == UserSessionType::AUTO_LAUNCHED_KIOSK_SESSION ||
+         session_type == UserSessionType::MANUALLY_LAUNCHED_KIOSK_SESSION;
+}
+
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -218,34 +222,19 @@ class DeviceCommandStartCrdSessionJob::OAuthTokenFetcher
   const raw_ref<DeviceOAuth2TokenService, ExperimentalAsh> oauth_service_;
   absl::optional<std::string> oauth_token_for_test_;
   DeviceCommandStartCrdSessionJob::OAuthTokenCallback success_callback_;
-  DeviceCommandStartCrdSessionJob::ErrorCallback error_callback_;
+  ErrorCallback error_callback_;
   // Handler for the OAuth access token request.
   // When deleted the token manager will cancel the request (and not call us).
   std::unique_ptr<OAuth2AccessTokenManager::Request> oauth_request_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-// DeviceCommandStartCrdSessionJob::Delegate::SessionParameters
-////////////////////////////////////////////////////////////////////////////////
-
-SessionParameters::SessionParameters() = default;
-SessionParameters::~SessionParameters() = default;
-
-SessionParameters::SessionParameters(const SessionParameters&) = default;
-SessionParameters& SessionParameters::operator=(const SessionParameters&) =
-    default;
-SessionParameters::SessionParameters(SessionParameters&&) = default;
-SessionParameters& SessionParameters::operator=(SessionParameters&&) = default;
-
-////////////////////////////////////////////////////////////////////////////////
 // DeviceCommandStartCrdSessionJob
 ////////////////////////////////////////////////////////////////////////////////
 
 DeviceCommandStartCrdSessionJob::DeviceCommandStartCrdSessionJob(
-    Delegate* crd_host_delegate)
-    : delegate_(crd_host_delegate) {
-  DCHECK(crd_host_delegate);
-}
+    Delegate& delegate)
+    : delegate_(delegate) {}
 
 DeviceCommandStartCrdSessionJob::~DeviceCommandStartCrdSessionJob() = default;
 
@@ -381,7 +370,9 @@ void DeviceCommandStartCrdSessionJob::StartCrdHostAndGetCode(
   parameters.curtain_local_user_session = curtain_local_user_session_;
   parameters.admin_email = admin_email_;
   parameters.allow_troubleshooting_tools = ShouldAllowTroubleshootingTools();
+  parameters.show_troubleshooting_tools = ShouldShowTroubleshootingTools();
   parameters.allow_reconnections = ShouldAllowReconnections();
+  parameters.allow_file_transfer = ShouldAllowFileTransfer();
 
   delegate_->StartCrdHostAndGetCode(
       parameters,
@@ -555,19 +546,23 @@ bool DeviceCommandStartCrdSessionJob::ShouldAllowReconnections() const {
   return curtain_local_user_session_;
 }
 
-bool DeviceCommandStartCrdSessionJob::ShouldAllowTroubleshootingTools() const {
-  if (GetCurrentUserSessionType() !=
-          UserSessionType::AUTO_LAUNCHED_KIOSK_SESSION &&
-      GetCurrentUserSessionType() !=
-          UserSessionType::MANUALLY_LAUNCHED_KIOSK_SESSION) {
-    return false;
-  }
-  return CHECK_DEREF(ProfileManager::GetActiveUserProfile()->GetPrefs())
-      .GetBoolean(prefs::kKioskTroubleshootingToolsEnabled);
+bool DeviceCommandStartCrdSessionJob::ShouldShowTroubleshootingTools() const {
+  return IsKioskSession(GetCurrentUserSessionType());
 }
 
-DeviceCommandStartCrdSessionJob::ErrorCallback
-DeviceCommandStartCrdSessionJob::GetErrorCallback() {
+bool DeviceCommandStartCrdSessionJob::ShouldAllowTroubleshootingTools() const {
+  return IsKioskSession(GetCurrentUserSessionType()) &&
+         CHECK_DEREF(ProfileManager::GetActiveUserProfile()->GetPrefs())
+             .GetBoolean(prefs::kKioskTroubleshootingToolsEnabled);
+}
+
+bool DeviceCommandStartCrdSessionJob::ShouldAllowFileTransfer() const {
+  return IsKioskSession(GetCurrentUserSessionType()) &&
+         base::FeatureList::IsEnabled(
+             remoting::features::kEnableCrdFileTransferForKiosk);
+}
+
+ErrorCallback DeviceCommandStartCrdSessionJob::GetErrorCallback() {
   return base::BindOnce(&DeviceCommandStartCrdSessionJob::FinishWithError,
                         weak_factory_.GetWeakPtr());
 }

@@ -1,4 +1,0 @@
-include_rules = [
-  "+ios/chrome/browser/ui/gestures",
-  "+ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h",
-]

@@ -6,15 +6,11 @@
 
 #import "ios/chrome/browser/find_in_page/find_tab_helper.h"
 #import "ios/chrome/browser/find_in_page/java_script_find_tab_helper.h"
-#import "ios/public/provider/chrome/browser/find_in_page/find_in_page_api.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+#import "ios/chrome/browser/find_in_page/util.h"
 
 AbstractFindTabHelper* GetConcreteFindTabHelperFromWebState(
     web::WebState* web_state) {
-  if (ios::provider::IsNativeFindInPageEnabled()) {
+  if (IsNativeFindInPageAvailable()) {
     return FindTabHelper::FromWebState(web_state);
   }
   return JavaScriptFindTabHelper::FromWebState(web_state);

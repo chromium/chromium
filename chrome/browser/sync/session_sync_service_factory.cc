@@ -132,8 +132,9 @@ SessionSyncServiceFactory* SessionSyncServiceFactory::GetInstance() {
   return instance.get();
 }
 
-// static
-bool SessionSyncServiceFactory::ShouldSyncURLForTesting(const GURL& url) {
+// static - exposed for testing and metrics.
+bool SessionSyncServiceFactory::ShouldSyncURLForTestingAndMetrics(
+    const GURL& url) {
   return ShouldSyncURLImpl(url);
 }
 

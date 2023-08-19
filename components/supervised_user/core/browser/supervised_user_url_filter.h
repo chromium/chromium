@@ -17,6 +17,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/safe_search_api/url_checker.h"
 #include "components/supervised_user/core/browser/supervised_user_error_page.h"
+#include "ui/base/page_transition_types.h"
 
 class GURL;
 
@@ -162,6 +163,13 @@ class SupervisedUserURLFilter {
   static std::string WebFilterTypeToDisplayString(
       WebFilterType web_filter_type);
 
+  // Records the metrics on navigation loaded after completing a filtering
+  // event.
+  static void RecordFilterResultEvent(FilteringBehavior behavior,
+                                      FilteringBehaviorReason reason,
+                                      bool is_filtering_behavior_known,
+                                      ui::PageTransition transition_type);
+
   // Returns the filtering behavior for a given URL, based on the default
   // behavior and whether it is on a site list.
   FilteringBehavior GetFilteringBehaviorForURL(const GURL& url);
@@ -245,6 +253,13 @@ class SupervisedUserURLFilter {
 
  private:
   friend class SupervisedUserURLFilterTest;
+
+  // Converts FilteringBehavior to SupervisedUserSafetyFilterResult histogram
+  // value in tools/metrics/histograms/enums.xml.
+  static int GetHistogramValueForFilteringBehavior(
+      FilteringBehavior behavior,
+      FilteringBehaviorReason reason,
+      bool is_filtering_behavior_known);
 
   bool IsExemptedFromGuardianApproval(const GURL& effective_url);
 

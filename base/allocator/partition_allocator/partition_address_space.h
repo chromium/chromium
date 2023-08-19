@@ -5,26 +5,27 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ADDRESS_SPACE_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ADDRESS_SPACE_H_
 
-#include <algorithm>
-#include <array>
 #include <cstddef>
-#include <limits>
+#include <utility>
 
 #include "base/allocator/partition_allocator/address_pool_manager_types.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/notreached.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
-#include "base/allocator/partition_allocator/partition_alloc_notreached.h"
 #include "base/allocator/partition_allocator/tagging.h"
 #include "base/allocator/partition_allocator/thread_isolation/alignment.h"
-#include "base/allocator/partition_allocator/thread_isolation/thread_isolation.h"
 #include "build/build_config.h"
+
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#include "base/allocator/partition_allocator/thread_isolation/thread_isolation.h"
+#endif
 
 // The feature is not applicable to 32-bit address space.
 #if BUILDFLAG(HAS_64_BIT_POINTERS)
@@ -37,6 +38,13 @@ namespace internal {
 // See `glossary.md`.
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
  public:
+  // Represents pool-specific information about a given address.
+  struct PoolInfo {
+    pool_handle handle;
+    uintptr_t base;
+    uintptr_t offset;
+  };
+
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
   PA_ALWAYS_INLINE static uintptr_t RegularPoolBaseMask() {
     return setup_.regular_pool_base_mask_;
@@ -47,22 +55,22 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   }
 #endif
 
-  PA_ALWAYS_INLINE static std::pair<pool_handle, uintptr_t> GetPoolAndOffset(
-      uintptr_t address) {
+  PA_ALWAYS_INLINE static PoolInfo GetPoolInfo(uintptr_t address) {
     // When USE_BACKUP_REF_PTR is off, BRP pool isn't used.
 #if !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     PA_DCHECK(!IsInBRPPool(address));
 #endif
     pool_handle pool = kNullPoolHandle;
     uintptr_t base = 0;
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+    if (IsInBRPPool(address)) {
+      pool = kBRPPoolHandle;
+      base = setup_.brp_pool_base_address_;
+    } else
+#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     if (IsInRegularPool(address)) {
       pool = kRegularPoolHandle;
       base = setup_.regular_pool_base_address_;
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-    } else if (IsInBRPPool(address)) {
-      pool = kBRPPoolHandle;
-      base = setup_.brp_pool_base_address_;
-#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     } else if (IsInConfigurablePool(address)) {
       PA_DCHECK(IsConfigurablePoolInitialized());
       pool = kConfigurablePoolHandle;
@@ -75,7 +83,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
     } else {
       PA_NOTREACHED();
     }
-    return std::make_pair(pool, address - base);
+    return PoolInfo{.handle = pool, .base = base, .offset = address - base};
   }
   PA_ALWAYS_INLINE static constexpr size_t ConfigurablePoolMaxSize() {
     return kConfigurablePoolMaxSize;
@@ -367,13 +375,13 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
 #endif
 };
 
-PA_ALWAYS_INLINE std::pair<pool_handle, uintptr_t> GetPoolAndOffset(
+PA_ALWAYS_INLINE PartitionAddressSpace::PoolInfo GetPoolInfo(
     uintptr_t address) {
-  return PartitionAddressSpace::GetPoolAndOffset(address);
+  return PartitionAddressSpace::GetPoolInfo(address);
 }
 
 PA_ALWAYS_INLINE pool_handle GetPool(uintptr_t address) {
-  return std::get<0>(GetPoolAndOffset(address));
+  return GetPoolInfo(address).handle;
 }
 
 PA_ALWAYS_INLINE uintptr_t OffsetInBRPPool(uintptr_t address) {

@@ -357,21 +357,18 @@ void ControllerImpl::OnStartScheduledTask(DownloadTaskType task_type,
       }
       break;
     case State::UNAVAILABLE:
-      HandleTaskFinished(task_type, false,
-                         stats::ScheduledTaskStatus::ABORTED_ON_FAILED_INIT);
-      break;
     case State::CREATED:       // Intentional fallthrough.
     case State::INITIALIZING:  // Intentional fallthrough.
     case State::RECOVERING:    // Intentional fallthrough.
     default:
-      NOTREACHED();
+      HandleTaskFinished(task_type,
+                         stats::ScheduledTaskStatus::ABORTED_ON_FAILED_INIT);
       break;
   }
 }
 
 bool ControllerImpl::OnStopScheduledTask(DownloadTaskType task_type) {
-  HandleTaskFinished(task_type, false,
-                     stats::ScheduledTaskStatus::CANCELLED_ON_STOP);
+  HandleTaskFinished(task_type, stats::ScheduledTaskStatus::CANCELLED_ON_STOP);
   return false;
 }
 
@@ -380,7 +377,7 @@ Logger* ControllerImpl::GetLogger() {
 }
 
 void ControllerImpl::OnCompleteCleanupTask() {
-  HandleTaskFinished(DownloadTaskType::CLEANUP_TASK, false,
+  HandleTaskFinished(DownloadTaskType::CLEANUP_TASK,
                      stats::ScheduledTaskStatus::COMPLETED_NORMALLY);
 }
 
@@ -423,18 +420,21 @@ void ControllerImpl::RemoveCleanupEligibleDownloads() {
 }
 
 void ControllerImpl::HandleTaskFinished(DownloadTaskType task_type,
-                                        bool needs_reschedule,
                                         stats::ScheduledTaskStatus status) {
   if (task_finished_callbacks_.count(task_type) == 0)
     return;
 
   if (status != stats::ScheduledTaskStatus::CANCELLED_ON_STOP) {
-    std::move(task_finished_callbacks_[task_type]).Run(needs_reschedule);
+    std::move(task_finished_callbacks_[task_type]).Run(false);
   }
   // TODO(dtrainor): It might be useful to log how many downloads we have
   // running when we're asked to stop processing.
   stats::LogScheduledTaskStatus(task_type, status);
   task_finished_callbacks_.erase(task_type);
+
+  if (status == stats::ScheduledTaskStatus::ABORTED_ON_FAILED_INIT) {
+    return;
+  }
 
   switch (task_type) {
     case DownloadTaskType::DOWNLOAD_TASK:
@@ -1348,7 +1348,7 @@ void ControllerImpl::ActivateMoreDownloads() {
     scheduler_->Reschedule(candidates);
 
   if (!has_actionable_downloads) {
-    HandleTaskFinished(DownloadTaskType::DOWNLOAD_TASK, false,
+    HandleTaskFinished(DownloadTaskType::DOWNLOAD_TASK,
                        stats::ScheduledTaskStatus::COMPLETED_NORMALLY);
   }
 }

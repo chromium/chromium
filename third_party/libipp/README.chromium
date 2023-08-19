@@ -4,6 +4,7 @@ Version: 2209bb84a8e122dab7c02fe66cc61a7b42873d7f
 License: BSD
 License File: LICENSE
 Security Critical: yes
+Shipped: yes
 
 Description:
 ChromeOS library for bulding/parsing IPP frames.

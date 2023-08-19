@@ -31,7 +31,7 @@ GFX_EXPORT void SetGetMinimumFontSizeCallback(
 // of the embedding application. Optional. If not specified, no adjustments
 // are performed other than clamping to a minimum font size if
 // |get_minimum_font_size_callback| is specified.
-typedef void (*AdjustFontCallback)(FontAdjustment* font_adjustment);
+typedef void (*AdjustFontCallback)(FontAdjustment& font_adjustment);
 GFX_EXPORT void SetAdjustFontCallback(AdjustFontCallback callback);
 
 // Returns the specified Windows default system font. By default, this is the

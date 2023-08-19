@@ -19,10 +19,4 @@ cr-icon-button {
   --cr-icon-button-size: calc(var(--mwb-icon-size) * 1.5);
 }
 
-cr-icon-button:hover {
-  background-color: var(--mwb-icon-button-hover-background-color);
-}
 
-cr-icon-button:focus {
-  box-shadow: 0 0 0 2px var(--mwb-icon-button-focus-ring-color);
-}

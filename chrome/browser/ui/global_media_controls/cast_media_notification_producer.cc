@@ -22,9 +22,9 @@
 
 namespace {
 
-// Returns false if a notification item shouldn't be created for |route|.
-// If a route should be hidden, it's not possible to create an item
-// for this route until the next time |OnModuleUpdated()| is called.
+// Returns false if a notification item shouldn't be created for |route|. If a
+// route should be hidden, it's impossible to create an item for this route
+// until the next time |OnRoutesUpdated()| is called.
 bool ShouldHideNotification(Profile* profile,
                             const media_router::MediaRoute& route) {
   // TODO(crbug.com/1195382): Display multizone group route.

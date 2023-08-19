@@ -37,7 +37,6 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//storage/browser:browser",
     "//testing/gmock",
     "//testing/gtest",
   ]

@@ -124,8 +124,10 @@ component("evdev") {
 
   deps = [
     ":event_device_info",
+    ":keyboard_mouse_combo_metrics",
     "//base",
     "//build:chromeos_buildflags",
+    "//third_party/re2:re2",
     "//ui/display",
     "//ui/events",
     "//ui/events:dom_keycode_converter",
@@ -201,6 +203,18 @@ component("evdev") {
   ]
 }
 
+source_set("keyboard_mouse_combo_metrics") {
+  sources = [ "keyboard_mouse_combo_device_metrics.h" ]
+
+  deps = [
+    "//base",
+    "//ui/events/devices",
+    "//ui/events/ozone",
+  ]
+
+  visibility += [ "//ash:*" ]
+}
+
 source_set("event_device_info") {
   sources = [
     "event_device_info.cc",
@@ -208,6 +222,7 @@ source_set("event_device_info") {
   ]
 
   deps = [
+    ":keyboard_mouse_combo_metrics",
     "//base",
     "//ui/events/devices",
     "//ui/events/ozone",
@@ -216,6 +231,7 @@ source_set("event_device_info") {
   visibility += [
     "//ash:ash_unittests",
     "//ash/webui/diagnostics_ui/backend:*",
+    "//chrome/browser/ash:unit_tests",
     "//chromeos/ash/services/cros_healthd/*",
     "//ui/chromeos/*",
     "//ui/events/ash/*",
@@ -239,6 +255,7 @@ source_set("event_device_info_test_utils") {
   visibility += [
     "//ash:ash_unittests",
     "//ash/webui/diagnostics_ui/backend:unit_tests",
+    "//chrome/browser/ash:unit_tests",
   ]
 }
 

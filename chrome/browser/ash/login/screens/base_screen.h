@@ -81,7 +81,8 @@ class BaseScreen {
 
   // Wizard context itself is owned by WizardController and is accessible
   // to screen only between OnShow / OnHide calls.
-  raw_ptr<WizardContext, ExperimentalAsh> wizard_context_ = nullptr;
+  raw_ptr<WizardContext, DanglingUntriaged | ExperimentalAsh> wizard_context_ =
+      nullptr;
 
   const OobeScreenId screen_id_;
 

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("unified_consent") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "unified_consent_service_factory.h",
     "unified_consent_service_factory.mm",

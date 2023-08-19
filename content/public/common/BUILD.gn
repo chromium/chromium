@@ -171,8 +171,10 @@ source_set("common_sources") {
     "content_paths.h",
     "content_switch_dependent_feature_overrides.cc",
     "content_switch_dependent_feature_overrides.h",
+    "dips_utils.h",
     "drop_data.cc",
     "drop_data.h",
+    "input/native_web_keyboard_event.h",
     "input_event_ack_state.h",
     "isolated_world_ids.h",
     "javascript_dialog_type.h",
@@ -271,6 +273,7 @@ source_set("common_sources") {
     # This looks needless as we have //content/common in public_deps, but it's
     # needed because of allow_circular_includes_from.
     "//content/common:mojo_bindings",
+    "//device/vr/buildflags",
     "//media",
     "//media/mojo/mojom",
     "//ppapi/buildflags",

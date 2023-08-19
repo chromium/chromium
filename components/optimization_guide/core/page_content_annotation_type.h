@@ -24,6 +24,9 @@ enum class AnnotationType {
   // will be persisted, make sure that only the entity IDs are persisted. To map
   // the IDs back to human-readable strings, use `EntityMetadataProvider`.
   kPageEntities,
+
+  // The input will be annotated for text embedding.
+  kTextEmbedding,
 };
 
 std::string AnnotationTypeToString(AnnotationType type);

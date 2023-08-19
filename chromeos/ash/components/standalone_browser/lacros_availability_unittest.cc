@@ -46,11 +46,6 @@ TEST_F(LacrosAvailabilityTest,
   EXPECT_EQ(LacrosAvailability::kUserChoice,
             DetermineLacrosAvailabilityFromPolicyValue(user, ""));
 
-  // If the policy value is valid and there is no command line flag, the policy
-  // should be respected.
-  EXPECT_EQ(LacrosAvailability::kLacrosPrimary,
-            DetermineLacrosAvailabilityFromPolicyValue(user, "lacros_primary"));
-
   // If the policy value is invalid, the choice is left to the user.
   EXPECT_EQ(
       LacrosAvailability::kUserChoice,
@@ -103,8 +98,8 @@ TEST_F(LacrosAvailabilityTest,
 
   // If the policy value is valid and there is no command line flag, the policy
   // should be respected.
-  EXPECT_EQ(LacrosAvailability::kLacrosPrimary,
-            DetermineLacrosAvailabilityFromPolicyValue(user, "lacros_primary"));
+  EXPECT_EQ(LacrosAvailability::kLacrosOnly,
+            DetermineLacrosAvailabilityFromPolicyValue(user, "lacros_only"));
 
   // If the policy value is invalid, the choice is left to the user.
   EXPECT_EQ(

@@ -32,7 +32,6 @@
 
 #include "base/allocator/partition_alloc_features.h"
 #include "base/allocator/partition_alloc_support.h"
-#include "base/allocator/partition_allocator/memory_reclaimer.h"
 #include "base/allocator/partition_allocator/oom.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
@@ -46,7 +45,6 @@
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
 #include "components/crash/core/common/crash_key.h"
-#include "third_party/blink/renderer/platform/wtf/allocator/partition_allocator.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace WTF {
@@ -66,11 +64,9 @@ bool Partitions::scan_is_enabled_ = false;
 
 // These statics are inlined, so cannot be LazyInstances. We create the values,
 // and then set the pointers correctly in Initialize().
-partition_alloc::ThreadSafePartitionRoot* Partitions::fast_malloc_root_ =
-    nullptr;
-partition_alloc::ThreadSafePartitionRoot* Partitions::array_buffer_root_ =
-    nullptr;
-partition_alloc::ThreadSafePartitionRoot* Partitions::buffer_root_ = nullptr;
+partition_alloc::PartitionRoot* Partitions::fast_malloc_root_ = nullptr;
+partition_alloc::PartitionRoot* Partitions::array_buffer_root_ = nullptr;
+partition_alloc::PartitionRoot* Partitions::buffer_root_ = nullptr;
 
 namespace {
 
@@ -92,12 +88,10 @@ partition_alloc::PartitionOptions PartitionOptionsFromFeatures() {
       base::features::kBackupRefPtrEnabledProcessesParam.Get() ==
           BackupRefPtrEnabledProcesses::kBrowserAndRenderer;
 #endif  // BUILDFLAG(FORCIBLY_ENABLE_BACKUP_REF_PTR_IN_ALL_PROCESSES)
-  const bool enable_brp =
-      base::FeatureList::IsEnabled(
-          base::features::kPartitionAllocBackupRefPtr) &&
-      (brp_mode == BackupRefPtrMode::kEnabled ||
-       brp_mode == BackupRefPtrMode::kEnabledWithMemoryReclaimer) &&
-      process_affected_by_brp_flag;
+  const bool enable_brp = base::FeatureList::IsEnabled(
+                              base::features::kPartitionAllocBackupRefPtr) &&
+                          (brp_mode == BackupRefPtrMode::kEnabled) &&
+                          process_affected_by_brp_flag;
 #else  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   const bool enable_brp = false;
 #endif
@@ -116,10 +110,9 @@ partition_alloc::PartitionOptions PartitionOptionsFromFeatures() {
   // be handled in ReconfigureAfterFeatureListInit().
 
   return PartitionOptions{
-      .quarantine = PartitionOptions::Quarantine::kAllowed,
-      .cookie = PartitionOptions::Cookie::kAllowed,
+      .star_scan_quarantine = PartitionOptions::StarScanQuarantine::kAllowed,
       .backup_ref_ptr = brp_setting,
-      .memory_tagging = memory_tagging,
+      .memory_tagging = {.enabled = memory_tagging},
   };
 }
 
@@ -139,8 +132,7 @@ bool Partitions::InitializeOnce() {
 
   auto options = PartitionOptionsFromFeatures();
   static base::NoDestructor<partition_alloc::PartitionAllocator>
-      buffer_allocator{};
-  buffer_allocator->init(options);
+      buffer_allocator(options);
   buffer_root_ = buffer_allocator->root();
 
   scan_is_enabled_ =
@@ -167,8 +159,7 @@ bool Partitions::InitializeOnce() {
     options.thread_cache = PartitionOptions::ThreadCache::kEnabled;
 #endif
     static base::NoDestructor<partition_alloc::PartitionAllocator>
-        fast_malloc_allocator{};
-    fast_malloc_allocator->init(options);
+        fast_malloc_allocator(options);
     fast_malloc_root_ = fast_malloc_allocator->root();
   }
 
@@ -195,27 +186,27 @@ void Partitions::InitializeArrayBufferPartition() {
   CHECK(initialized_);
   CHECK(!ArrayBufferPartitionInitialized());
 
-  static base::NoDestructor<partition_alloc::PartitionAllocator>
-      array_buffer_allocator{};
-
   // BackupRefPtr disallowed because it will prevent allocations from being 16B
   // aligned as required by ArrayBufferContents.
-  array_buffer_allocator->init(partition_alloc::PartitionOptions{
-      .quarantine = partition_alloc::PartitionOptions::Quarantine::kAllowed,
-      .cookie = partition_alloc::PartitionOptions::Cookie::kAllowed,
-      .backup_ref_ptr =
-          partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
-      // When the V8 virtual memory cage is enabled, the ArrayBuffer partition
-      // must be placed inside of it. For that, PA's ConfigurablePool is
-      // created inside the V8 Cage during initialization. As such, here all we
-      // need to do is indicate that we'd like to use that Pool if it has been
-      // created by now (if it hasn't been created, the cage isn't enabled, and
-      // so we'll use the default Pool).
-      .use_configurable_pool =
-          partition_alloc::PartitionOptions::UseConfigurablePool::kIfAvailable,
-      .memory_tagging =
-          partition_alloc::PartitionOptions::MemoryTagging::kDisabled,
-  });
+  static base::NoDestructor<partition_alloc::PartitionAllocator>
+      array_buffer_allocator(partition_alloc::PartitionOptions{
+          .star_scan_quarantine =
+              partition_alloc::PartitionOptions::StarScanQuarantine::kAllowed,
+          .backup_ref_ptr =
+              partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
+          // When the V8 virtual memory cage is enabled, the ArrayBuffer
+          // partition must be placed inside of it. For that, PA's
+          // ConfigurablePool is created inside the V8 Cage during
+          // initialization. As such, here all we need to do is indicate that
+          // we'd like to use that Pool if it has been created by now (if it
+          // hasn't been created, the cage isn't enabled, and so we'll use the
+          // default Pool).
+          .use_configurable_pool = partition_alloc::PartitionOptions::
+              UseConfigurablePool::kIfAvailable,
+          .memory_tagging =
+              {.enabled =
+                   partition_alloc::PartitionOptions::MemoryTagging::kDisabled},
+      });
 
   array_buffer_root_ = array_buffer_allocator->root();
 
@@ -230,7 +221,7 @@ void Partitions::InitializeArrayBufferPartition() {
 }
 
 // static
-void Partitions::StartPeriodicReclaim(
+void Partitions::StartMemoryReclaimer(
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   CHECK(IsMainThread());
   DCHECK(initialized_);

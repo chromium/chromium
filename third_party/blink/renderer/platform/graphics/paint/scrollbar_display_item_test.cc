@@ -57,7 +57,7 @@ TEST_F(ScrollbarDisplayItemTest, HorizontalSolidColorScrollbar) {
   auto layer = display_item.CreateOrReuseLayer(nullptr);
   ASSERT_EQ(cc::ScrollbarLayerBase::kSolidColor,
             layer->GetScrollbarLayerType());
-  EXPECT_FALSE(layer->HitTestable());
+  EXPECT_EQ(cc::HitTestOpaqueness::kTransparent, layer->hit_test_opaqueness());
 
   auto* scrollbar_layer =
       static_cast<cc::SolidColorScrollbarLayer*>(layer.get());
@@ -90,7 +90,7 @@ TEST_F(ScrollbarDisplayItemTest, VerticalSolidColorScrollbar) {
   auto layer = display_item.CreateOrReuseLayer(nullptr);
   ASSERT_EQ(cc::ScrollbarLayerBase::kSolidColor,
             layer->GetScrollbarLayerType());
-  EXPECT_FALSE(layer->HitTestable());
+  EXPECT_EQ(cc::HitTestOpaqueness::kTransparent, layer->hit_test_opaqueness());
 
   auto* scrollbar_layer =
       static_cast<cc::SolidColorScrollbarLayer*>(layer.get());
@@ -116,7 +116,7 @@ TEST_F(ScrollbarDisplayItemTest, PaintedScrollbar) {
       client.VisualRectOutsetForRasterEffects());
   auto layer = display_item.CreateOrReuseLayer(nullptr);
   ASSERT_EQ(cc::ScrollbarLayerBase::kPainted, layer->GetScrollbarLayerType());
-  EXPECT_TRUE(layer->HitTestable());
+  EXPECT_EQ(cc::HitTestOpaqueness::kOpaque, layer->hit_test_opaqueness());
 
   EXPECT_EQ(layer.get(), display_item.CreateOrReuseLayer(layer.get()).get());
 }
@@ -138,7 +138,7 @@ TEST_F(ScrollbarDisplayItemTest, PaintedScrollbarOverlayNonNinePatch) {
   // We should create PaintedScrollbarLayer instead of
   // PaintedOverlayScrollbarLayer for non-nine-patch overlay scrollbars.
   ASSERT_EQ(cc::ScrollbarLayerBase::kPainted, layer->GetScrollbarLayerType());
-  EXPECT_TRUE(layer->HitTestable());
+  EXPECT_EQ(cc::HitTestOpaqueness::kOpaque, layer->hit_test_opaqueness());
 
   EXPECT_EQ(layer.get(), display_item.CreateOrReuseLayer(layer.get()).get());
 }
@@ -160,7 +160,7 @@ TEST_F(ScrollbarDisplayItemTest, PaintedScrollbarOverlayNinePatch) {
   auto layer = display_item.CreateOrReuseLayer(nullptr);
   ASSERT_EQ(cc::ScrollbarLayerBase::kPaintedOverlay,
             layer->GetScrollbarLayerType());
-  EXPECT_TRUE(layer->HitTestable());
+  EXPECT_EQ(cc::HitTestOpaqueness::kOpaque, layer->hit_test_opaqueness());
 
   EXPECT_EQ(layer.get(), display_item.CreateOrReuseLayer(layer.get()).get());
 }

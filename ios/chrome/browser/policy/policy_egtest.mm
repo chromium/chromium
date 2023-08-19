@@ -36,6 +36,7 @@
 #import "ios/chrome/browser/ui/settings/elements/elements_constants.h"
 #import "ios/chrome/browser/ui/settings/language/language_settings_ui_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_constants.h"
+#import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_root_table_constants.h"
@@ -53,10 +54,6 @@
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using policy_test_utils::SetPolicy;
 
@@ -231,6 +228,12 @@ NSString* const kDomain2 = @"domain2.com";
       @"Preference was unexpectedly true");
   // Open settings menu and tap password manager.
   [self openSettingsMenu];
+
+  // Mock successful reauth when opening the Password Manager.
+  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
+
   [ChromeEarlGreyUI
       tapSettingsMenuButton:chrome_test_util::SettingsMenuPasswordsButton()];
 
@@ -242,6 +245,9 @@ NSString* const kDomain2 = @"domain2.com";
   VerifyManagedSettingItem(
       kPasswordSettingsManagedSavePasswordSwitchTableViewId,
       kPasswordsSettingsTableViewId);
+
+  // Remove mock to keep the app in the same state as before running the test.
+  [PasswordSettingsAppInterface removeMockReauthenticationModule];
 }
 
 // Tests for the AutofillAddressEnabled policy Settings UI.

@@ -10,10 +10,6 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // static
 RemoteSuggestionsService* RemoteSuggestionsServiceFactory::GetForBrowserState(
     ChromeBrowserState* browser_state,
@@ -36,6 +32,7 @@ RemoteSuggestionsServiceFactory::BuildServiceInstanceFor(
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<RemoteSuggestionsService>(
+      /*document_suggestions_service=*/nullptr,
       browser_state->GetSharedURLLoaderFactory());
 }
 

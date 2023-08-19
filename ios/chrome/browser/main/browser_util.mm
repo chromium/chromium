@@ -18,10 +18,6 @@
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/web/public/web_state.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Moves snapshot associated with `snapshot_id` from `source_browser` to
@@ -34,16 +30,8 @@ void MoveSnapshot(NSString* snapshot_id,
       SnapshotBrowserAgent::FromBrowser(source_browser)->snapshot_cache();
   SnapshotCache* destination_cache =
       SnapshotBrowserAgent::FromBrowser(destination_browser)->snapshot_cache();
-  [source_cache
-      retrieveImageForSnapshotID:snapshot_id
-                        callback:^(UIImage* snapshot) {
-                          if (snapshot) {
-                            [destination_cache setImage:snapshot
-                                         withSnapshotID:snapshot_id];
-                            [source_cache
-                                removeImageWithSnapshotID:snapshot_id];
-                          }
-                        }];
+  [source_cache migrateImageWithSnapshotID:snapshot_id
+                           toSnapshotCache:destination_cache];
 }
 
 }  // namespace
@@ -63,7 +51,7 @@ void MoveTabFromBrowserToBrowser(Browser* source_browser,
       source_browser->GetWebStateList()->DetachWebStateAt(source_tab_index);
   SnapshotTabHelper* snapshot_tab_helper =
       SnapshotTabHelper::FromWebState(web_state.get());
-  MoveSnapshot(snapshot_tab_helper->GetSnapshotIdentifier(), source_browser,
+  MoveSnapshot(snapshot_tab_helper->GetSnapshotID(), source_browser,
                destination_browser);
 
   int insertion_flags = flags;

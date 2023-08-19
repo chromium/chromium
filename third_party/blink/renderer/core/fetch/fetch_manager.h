@@ -18,6 +18,7 @@ class ExceptionState;
 class ExecutionContext;
 class FetchRequestData;
 class ScriptState;
+class FetchLaterResult;
 
 class CORE_EXPORT FetchManager final
     : public GarbageCollected<FetchManager>,
@@ -29,17 +30,25 @@ class CORE_EXPORT FetchManager final
                       FetchRequestData*,
                       AbortSignal*,
                       ExceptionState&);
+  FetchLaterResult* FetchLater(ScriptState*,
+                               FetchRequestData*,
+                               AbortSignal*,
+                               ExceptionState&);
   void ContextDestroyed() override;
 
   void Trace(Visitor*) const override;
 
  private:
   class Loader;
+  class DeferredLoader;
 
-  // Removes loader from |m_loaders|.
+  // Removes loader from `loaders_`.
   void OnLoaderFinished(Loader*);
+  // Removes loader from `deferred_loaders_`.
+  void OnDeferredLoaderFinished(DeferredLoader*);
 
   HeapHashSet<Member<Loader>> loaders_;
+  HeapHashSet<Member<DeferredLoader>> deferred_loaders_;
 };
 
 }  // namespace blink

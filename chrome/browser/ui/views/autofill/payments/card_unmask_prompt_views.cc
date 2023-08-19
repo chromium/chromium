@@ -125,6 +125,11 @@ void CardUnmaskPromptViews::GotVerificationResult(
 
       // Remove all child views. Since this is a permanent error we do not
       // intend to return to a previous state.
+      // `RemoveAllChildViews()` destroys the views owned by the `overlay_`.
+      // Prevent dangling pointers by setting pointers to the overlay's children
+      // to null.
+      overlay_label_ = nullptr;
+      progress_throbber_ = nullptr;
       overlay_->RemoveAllChildViews();
 
       // Create and add the error icon.
@@ -197,9 +202,8 @@ views::View* CardUnmaskPromptViews::GetContentsView() {
 }
 
 void CardUnmaskPromptViews::AddedToWidget() {
-  GetBubbleFrameView()->SetTitleView(
-      std::make_unique<TitleWithIconAndSeparatorView>(
-          GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY));
+  GetBubbleFrameView()->SetTitleView(CreateTitleView(
+      GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY));
 }
 
 std::u16string CardUnmaskPromptViews::GetWindowTitle() const {

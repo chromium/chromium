@@ -15,6 +15,7 @@
 #include "components/autofill/content/renderer/test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "content/public/test/render_view_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -69,7 +70,7 @@ class FormCacheBrowserTest : public content::RenderViewTest {
         base::BindRepeating(&FormCacheBrowserTest::ExecuteJavaScriptForTests,
                             base::Unretained(this)));
     scoped_feature_list_.InitAndEnableFeature(
-        features::kAutofillEnableSelectMenu);
+        features::kAutofillEnableSelectList);
   }
   ~FormCacheBrowserTest() override = default;
   FormCacheBrowserTest(const FormCacheBrowserTest&) = delete;
@@ -426,8 +427,9 @@ void FillAndCheckState(
     value_to_fill->is_autofilled = true;
   }
 
-  form_util::FillOrPreviewForm(values_to_fill, autofill_initiating_element,
-                               mojom::RendererFormDataAction::kFill);
+  form_util::ApplyAutofillAction(values_to_fill, autofill_initiating_element,
+                                 mojom::AutofillActionType::kFill,
+                                 mojom::AutofillActionPersistence::kFill);
 
   for (const FillElementData& field_to_fill : form_to_fill) {
     EXPECT_EQ(field_to_fill.value, field_to_fill.element.Value().Utf16());
@@ -440,7 +442,7 @@ void FillAndCheckState(
 }
 
 TEST_F(FormCacheBrowserTest, FillAndClear) {
-  // TODO(crbug.com/1422114): Make test work without explicit <selectmenu>
+  // TODO(crbug.com/1422114): Make test work without explicit <selectlist>
   // tabindex.
   LoadHTML(R"(
     <input type="text" name="text" id="text">
@@ -449,10 +451,10 @@ TEST_F(FormCacheBrowserTest, FillAndClear) {
       <option value="first">first</option>
       <option value="second" selected>second</option>
     </select>
-    <selectmenu name="selectmenu" id="selectmenu" tabindex=0>
+    <selectlist name="selectlist" id="selectlist" tabindex=0>
       <option value="uno">uno</option>
       <option value="dos" selected>dos</option>
-    </selectmenu>
+    </selectlist>
   )");
 
   FormCache form_cache(GetMainFrame());
@@ -466,12 +468,12 @@ TEST_F(FormCacheBrowserTest, FillAndClear) {
   auto text = GetFormControlElementById(doc, "text");
   auto checkbox = GetElementById(doc, "checkbox").To<WebInputElement>();
   auto select_element = GetFormControlElementById(doc, "select");
-  auto selectmenu_element = GetFormControlElementById(doc, "selectmenu");
+  auto selectlist_element = GetFormControlElementById(doc, "selectlist");
 
   FillAndCheckState(forms.updated_forms[0], text,
                     {{text, u"test"},
                      {select_element, u"first"},
-                     {selectmenu_element, u"uno"}},
+                     {selectlist_element, u"uno"}},
                     checkbox, CheckStatus::kCheckableButUnchecked);
 
   // Validate that clearing works, in particular that the previous values
@@ -481,7 +483,7 @@ TEST_F(FormCacheBrowserTest, FillAndClear) {
   EXPECT_EQ("", text.Value().Ascii());
   EXPECT_TRUE(checkbox.IsChecked());
   EXPECT_EQ("second", select_element.Value().Ascii());
-  EXPECT_EQ("dos", selectmenu_element.Value().Ascii());
+  EXPECT_EQ("dos", selectlist_element.Value().Ascii());
 }
 
 // Tests that correct focus, change and blur events are emitted during the
@@ -516,8 +518,9 @@ TEST_F(FormCacheBrowserTest,
       GetFormControlElementById(GetMainFrame()->GetDocument(), "fname");
 
   // Simulate filling the form using Autofill.
-  form_util::FillOrPreviewForm(values_to_fill, fname,
-                               mojom::RendererFormDataAction::kFill);
+  form_util::ApplyAutofillAction(values_to_fill, fname,
+                                 mojom::AutofillActionType::kFill,
+                                 mojom::AutofillActionPersistence::kFill);
 
   // Simulate clearing the form.
   form_cache.ClearSectionWithElement(fname);
@@ -549,10 +552,10 @@ TEST_F(FormCacheBrowserTest, FreeDataOnElementRemoval) {
         <option value="first">first</option>
         <option value="second" selected>second</option>
       </select>
-      <selectmenu name="selectmenu" id="selectmenu">
+      <selectlist name="selectlist" id="selectlist">
         <option value="first">first</option>
         <option value="second" selected>second</option>
-      </selectmenu>
+      </selectlist>
     </div>
   )");
 
@@ -563,9 +566,9 @@ TEST_F(FormCacheBrowserTest, FreeDataOnElementRemoval) {
   EXPECT_THAT(forms.updated_forms, ElementsAre(HasId(FormRendererId())));
   EXPECT_TRUE(forms.removed_forms.empty());
 
-  EXPECT_EQ(1u, FormCacheTestApi(&form_cache).initial_select_values_size());
-  EXPECT_EQ(1u, FormCacheTestApi(&form_cache).initial_selectmenu_values_size());
-  EXPECT_EQ(1u, FormCacheTestApi(&form_cache).initial_checked_state_size());
+  EXPECT_EQ(1u, test_api(form_cache).initial_select_values_size());
+  EXPECT_EQ(1u, test_api(form_cache).initial_selectlist_values_size());
+  EXPECT_EQ(1u, test_api(form_cache).initial_checked_state_size());
 
   ExecuteJavaScriptForTests(R"(
     const container = document.getElementById('container');
@@ -577,89 +580,9 @@ TEST_F(FormCacheBrowserTest, FreeDataOnElementRemoval) {
   forms = form_cache.UpdateFormCache(/*field_data_manager=*/nullptr);
   EXPECT_TRUE(forms.updated_forms.empty());
   EXPECT_THAT(forms.removed_forms, ElementsAre(FormRendererId()));
-  EXPECT_EQ(0u, FormCacheTestApi(&form_cache).initial_select_values_size());
-  EXPECT_EQ(0u, FormCacheTestApi(&form_cache).initial_selectmenu_values_size());
-  EXPECT_EQ(0u, FormCacheTestApi(&form_cache).initial_checked_state_size());
-}
-
-// Test that the select element's user edited field state is set
-// to false after clearing the form.
-TEST_F(FormCacheBrowserTest, ClearFormSelectElementEditedStateReset) {
-  // TODO(crbug.com/1422114): Make test work without explicit <selectmenu>
-  // tabindex.
-  LoadHTML(R"(
-    <input type="text" name="text" id="text">
-    <select name="date" id="date">
-      <option value="first">first</option>
-      <option value="second" selected>second</option>
-      <option value="third">third</option>
-    </select>
-    <select name="month" id="month">
-      <option value="january">january</option>
-      <option value="february">february</option>
-      <option value="march" selected>march</option>
-    </select>
-    <selectmenu name="time" id="time" tabindex=0>
-      <option value="sunrise">sunrise</option>
-      <option value="noon" selected>noon</option>
-      <option value="sunset">sunset</option>
-    </selectmenu>
-    <selectmenu name="location" id="location" tabindex=1>
-      <option value="churchill">Churchill</option>
-      <option value="dawson">Dawson City</option>
-      <option value="whitehorse" selected>Whitehorse</option>
-    </selectmenu>
-  )");
-
-  FormCache form_cache(GetMainFrame());
-  FormCache::UpdateFormCacheResult forms =
-      form_cache.UpdateFormCache(/*field_data_manager=*/nullptr);
-
-  WebDocument doc = GetMainFrame()->GetDocument();
-  auto text = GetFormControlElementById(doc, "text");
-  auto select_date = GetFormControlElementById(doc, "date");
-  auto select_month = GetFormControlElementById(doc, "month");
-  auto selectmenu_time = GetFormControlElementById(doc, "time");
-  auto selectmenu_location = GetFormControlElementById(doc, "location");
-
-  EXPECT_THAT(forms.updated_forms, ElementsAre(HasId(FormRendererId())));
-  EXPECT_TRUE(forms.removed_forms.empty());
-  FillAndCheckState(forms.updated_forms[0], text,
-                    {{text, u"test"},
-                     {select_date, u"first"},
-                     {select_month, u"january"},
-                     {selectmenu_time, u"sunrise"},
-                     {selectmenu_location, u"churchill"}});
-
-  // Expect that the 'user has edited field' state is set
-  EXPECT_TRUE(select_date.UserHasEditedTheField());
-  EXPECT_TRUE(select_month.UserHasEditedTheField());
-  EXPECT_TRUE(selectmenu_time.UserHasEditedTheField());
-  EXPECT_TRUE(selectmenu_location.UserHasEditedTheField());
-
-  // Clear form
-  form_cache.ClearSectionWithElement(text);
-
-  // Expect that the state is now cleared
-  EXPECT_FALSE(select_date.UserHasEditedTheField());
-  EXPECT_FALSE(select_month.UserHasEditedTheField());
-  EXPECT_FALSE(selectmenu_time.UserHasEditedTheField());
-  EXPECT_FALSE(selectmenu_location.UserHasEditedTheField());
-
-  // Fill the form again, this time the select elements are being filled
-  // with different values just for additional check.
-  FillAndCheckState(forms.updated_forms[0], text,
-                    {{text, u"test"},
-                     {select_date, u"third"},
-                     {select_month, u"february"},
-                     {selectmenu_time, u"sunset"},
-                     {selectmenu_location, u"dawson"}});
-
-  // Expect that the state is set again
-  EXPECT_TRUE(select_date.UserHasEditedTheField());
-  EXPECT_TRUE(select_month.UserHasEditedTheField());
-  EXPECT_TRUE(selectmenu_time.UserHasEditedTheField());
-  EXPECT_TRUE(selectmenu_location.UserHasEditedTheField());
+  EXPECT_EQ(0u, test_api(form_cache).initial_select_values_size());
+  EXPECT_EQ(0u, test_api(form_cache).initial_selectlist_values_size());
+  EXPECT_EQ(0u, test_api(form_cache).initial_checked_state_size());
 }
 
 TEST_F(FormCacheBrowserTest, IsFormElementEligibleForManualFilling) {
@@ -695,11 +618,11 @@ TEST_F(FormCacheBrowserTest, IsFormElementEligibleForManualFilling) {
   form_cache.SetFieldsEligibleForManualFilling(
       fields_eligible_for_manual_filling);
 
-  EXPECT_TRUE(FormCacheTestApi(&form_cache)
+  EXPECT_TRUE(test_api(form_cache)
                   .IsFormElementEligibleForManualFilling(first_name_element));
-  EXPECT_FALSE(FormCacheTestApi(&form_cache)
+  EXPECT_FALSE(test_api(form_cache)
                    .IsFormElementEligibleForManualFilling(middle_name_element));
-  EXPECT_TRUE(FormCacheTestApi(&form_cache)
+  EXPECT_TRUE(test_api(form_cache)
                   .IsFormElementEligibleForManualFilling(last_name_element));
 }
 
@@ -715,7 +638,7 @@ TEST_F(FormCacheBrowserTest, DoNotStoreEmptyForms) {
   EXPECT_TRUE(forms.removed_forms.empty());
 
   EXPECT_EQ(1u, GetMainFrame()->GetDocument().Forms().size());
-  EXPECT_EQ(0u, FormCacheTestApi(&form_cache).extracted_forms_size());
+  EXPECT_EQ(0u, test_api(form_cache).extracted_forms_size());
 }
 
 // Test that the FormCache never contains more than |kMaxExtractableFields|
@@ -738,8 +661,7 @@ TEST_F(FormCacheBrowserTest, FormCacheSizeUpperBound) {
 
   EXPECT_EQ(kMaxExtractableFields + 1,
             GetMainFrame()->GetDocument().Forms().size());
-  EXPECT_EQ(kMaxExtractableFields,
-            FormCacheTestApi(&form_cache).extracted_forms_size());
+  EXPECT_EQ(kMaxExtractableFields, test_api(form_cache).extracted_forms_size());
 }
 
 // Test that FormCache::UpdateFormCache() limits the number of total fields by

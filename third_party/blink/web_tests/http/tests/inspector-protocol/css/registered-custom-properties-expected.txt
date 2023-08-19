@@ -1,0 +1,49 @@
+Test reporting of parser errors for registered custom properties
+[
+    [0] : {
+        name : --registered-prop
+        parsedOk : false
+    }
+    [1] : {
+        name : --correct-prop
+        parsedOk : undefined
+    }
+]
+[
+    [0] : {
+        inherits : false
+        initialValue : {
+            text : red
+        }
+        propertyName : --js-prop
+        syntax : <color>
+    }
+]
+[
+    [0] : {
+        origin : regular
+        propertyName : {
+            text : --registered-prop
+        }
+        style : {
+            cssProperties : [
+                [0] : {
+                    name : inherits
+                    value : false
+                }
+                [1] : {
+                    name : initial-value
+                    value : red
+                }
+                [2] : {
+                    name : syntax
+                    value : "<color>"
+                }
+            ]
+            shorthandEntries : [
+            ]
+        }
+        styleSheetId : <string>
+    }
+]
+

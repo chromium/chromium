@@ -32,7 +32,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class ThumbnailDiskStorageTest {
-    private static final String TAG = "ThumbnailDiskTest";
     private static final String CONTENT_ID1 = "contentId1";
     private static final String CONTENT_ID2 = "contentId2";
     private static final String CONTENT_ID3 = "contentId3";

@@ -24,6 +24,13 @@ void MakeEglMockFunctionUnique(const char* func_name) {
 
 namespace gl {
 
+void GL_BINDING_CALL
+MockEGLInterface::Mock_eglAcquireExternalContextANGLE(EGLDisplay dpy,
+                                                      EGLSurface readAndDraw) {
+  MakeEglMockFunctionUnique("eglAcquireExternalContextANGLE");
+  interface_->AcquireExternalContextANGLE(dpy, readAndDraw);
+}
+
 EGLBoolean GL_BINDING_CALL MockEGLInterface::Mock_eglBindAPI(EGLenum api) {
   MakeEglMockFunctionUnique("eglBindAPI");
   return interface_->BindAPI(api);
@@ -632,6 +639,12 @@ MockEGLInterface::Mock_eglReacquireHighPowerGPUANGLE(EGLDisplay dpy,
 }
 
 void GL_BINDING_CALL
+MockEGLInterface::Mock_eglReleaseExternalContextANGLE(EGLDisplay dpy) {
+  MakeEglMockFunctionUnique("eglReleaseExternalContextANGLE");
+  interface_->ReleaseExternalContextANGLE(dpy);
+}
+
+void GL_BINDING_CALL
 MockEGLInterface::Mock_eglReleaseHighPowerGPUANGLE(EGLDisplay dpy,
                                                    EGLContext ctx) {
   MakeEglMockFunctionUnique("eglReleaseHighPowerGPUANGLE");
@@ -786,6 +799,10 @@ static void MockEglInvalidFunction() {
 
 GLFunctionPointerType GL_BINDING_CALL
 MockEGLInterface::GetGLProcAddress(const char* name) {
+  if (strcmp(name, "eglAcquireExternalContextANGLE") == 0) {
+    return reinterpret_cast<GLFunctionPointerType>(
+        Mock_eglAcquireExternalContextANGLE);
+  }
   if (strcmp(name, "eglBindAPI") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglBindAPI);
   if (strcmp(name, "eglBindTexImage") == 0)
@@ -961,6 +978,10 @@ MockEGLInterface::GetGLProcAddress(const char* name) {
   if (strcmp(name, "eglReacquireHighPowerGPUANGLE") == 0)
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglReacquireHighPowerGPUANGLE);
+  if (strcmp(name, "eglReleaseExternalContextANGLE") == 0) {
+    return reinterpret_cast<GLFunctionPointerType>(
+        Mock_eglReleaseExternalContextANGLE);
+  }
   if (strcmp(name, "eglReleaseHighPowerGPUANGLE") == 0)
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglReleaseHighPowerGPUANGLE);

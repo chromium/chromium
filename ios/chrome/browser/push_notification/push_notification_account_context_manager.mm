@@ -15,10 +15,6 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation PushNotificationAccountContextManager {
   // Used to retrieve BrowserStates located at a given path.
   ios::ChromeBrowserStateManager* _chromeBrowserStateManager;

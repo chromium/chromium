@@ -15,10 +15,10 @@
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_event.pb.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager_test_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
-#include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/test/dlp_reporting_manager_test_helper.h"
+#include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_rules_manager.h"
 #include "chrome/browser/extensions/api/file_system/file_entry_picker.h"
 #include "chrome/browser/file_select_helper.h"
 #include "chrome/browser/ui/browser.h"
@@ -111,7 +111,8 @@ class DlpFilesControllerAshBrowserTest : public InProcessBrowserTest {
  protected:
   // MockDlpRulesManager is owned by KeyedService and is guaranteed to outlive
   // this class.
-  raw_ptr<MockDlpRulesManager, ExperimentalAsh> mock_rules_manager_ = nullptr;
+  raw_ptr<MockDlpRulesManager, DanglingUntriaged | ExperimentalAsh>
+      mock_rules_manager_ = nullptr;
 
   std::unique_ptr<DlpFilesControllerAsh> files_controller_ = nullptr;
 
@@ -169,7 +170,7 @@ IN_PROC_BROWSER_TEST_F(DlpFilesControllerAshBrowserTest,
   const std::string file_path = "Downloads/file.txt";
 
   files_controller_->CheckIfDownloadAllowed(
-      DlpFileDestination(kExampleUrl),
+      DlpFileDestination(GURL(kExampleUrl)),
       base::FilePath(file_system_list[0].mount_path().Append(file_path)),
       cb.Get());
 

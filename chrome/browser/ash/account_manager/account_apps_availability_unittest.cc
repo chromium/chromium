@@ -131,8 +131,8 @@ class AccountAppsAvailabilityTest : public testing::Test {
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   AccountInfo primary_account_;
   // Owned by `scoped_user_manager_`.
-  raw_ptr<user_manager::FakeUserManager, ExperimentalAsh> fake_user_manager_ =
-      nullptr;
+  raw_ptr<user_manager::FakeUserManager, DanglingUntriaged | ExperimentalAsh>
+      fake_user_manager_ = nullptr;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 };
 

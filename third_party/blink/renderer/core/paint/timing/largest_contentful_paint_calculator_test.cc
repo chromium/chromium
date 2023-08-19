@@ -60,7 +60,7 @@ class LargestContentfulPaintCalculatorTest : public RenderingTest {
   }
 
   void SetImage(const char* id, int width, int height, int bytes = 0) {
-    To<HTMLImageElement>(GetDocument().getElementById(id))
+    To<HTMLImageElement>(GetElementById(id))
         ->SetImageForTest(CreateImageForTest(width, height, bytes));
   }
 
@@ -282,7 +282,7 @@ TEST_F(LargestContentfulPaintCalculatorTest, LargestImageRemoved) {
   EXPECT_FLOAT_EQ(LargestContentfulPaintCandidateImageBPP(), 0.08f);
   EXPECT_EQ(CountCandidates(), 1u);
 
-  GetDocument().getElementById("large")->remove();
+  GetDocument().getElementById(AtomicString("large"))->remove();
   UpdateAllLifecyclePhasesForTest();
   // The LCP does not move after the image is removed.
   EXPECT_EQ(LargestReportedSize(), 20000u);
@@ -311,7 +311,7 @@ TEST_F(LargestContentfulPaintCalculatorTest, LargestTextRemoved) {
   // Image presentation occurred first, so we have would have two candidates.
   EXPECT_EQ(CountCandidates(), 2u);
 
-  GetDocument().getElementById("large")->remove();
+  GetDocument().getElementById(AtomicString("large"))->remove();
   UpdateAllLifecyclePhasesForTest();
   // The LCP should not move after removal.
   EXPECT_GT(LargestReportedSize(), 50u);

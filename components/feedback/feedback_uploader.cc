@@ -206,6 +206,18 @@ void FeedbackUploader::DispatchReport() {
             "information' prevents sending logs as well), the screenshot, or "
             "even his/her email address."
           destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+              email: "cros-feedback-app@google.com"
+            }
+          }
+          user_data {
+            type: ARBITRARY_DATA
+            type: EMAIL
+            type: IMAGE
+            type: USER_CONTENT
+          }
+          last_reviewed: "2023-08-14"
         }
         policy {
           cookies_allowed: NO

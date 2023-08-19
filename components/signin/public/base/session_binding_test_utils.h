@@ -12,7 +12,7 @@
 namespace signin {
 
 // Verifies that `jwt` is well-formed and properly signed.
-[[nodiscard]] bool VefiryJwtSingature(
+[[nodiscard]] bool VerifyJwtSignature(
     base::StringPiece jwt,
     crypto::SignatureVerifier::SignatureAlgorithm algorithm,
     base::span<const uint8_t> public_key);

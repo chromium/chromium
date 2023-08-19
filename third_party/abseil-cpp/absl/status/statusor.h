@@ -411,7 +411,7 @@ class StatusOr : private internal_statusor::StatusOrData<T>,
       typename = typename std::enable_if<absl::conjunction<
           std::is_constructible<T, U&&>, std::is_assignable<T&, U&&>,
           absl::disjunction<
-              std::is_same<absl::remove_cv_t<absl::remove_reference_t<U>>, T>,
+              std::is_same<absl::remove_cvref_t<U>, T>,
               absl::conjunction<
                   absl::negation<std::is_convertible<U&&, absl::Status>>,
                   absl::negation<internal_statusor::
@@ -444,8 +444,7 @@ class StatusOr : private internal_statusor::StatusOrData<T>,
               internal_statusor::IsDirectInitializationValid<T, U&&>,
               std::is_constructible<T, U&&>, std::is_convertible<U&&, T>,
               absl::disjunction<
-                  std::is_same<absl::remove_cv_t<absl::remove_reference_t<U>>,
-                               T>,
+                  std::is_same<absl::remove_cvref_t<U>, T>,
                   absl::conjunction<
                       absl::negation<std::is_convertible<U&&, absl::Status>>,
                       absl::negation<
@@ -461,8 +460,7 @@ class StatusOr : private internal_statusor::StatusOrData<T>,
           absl::conjunction<
               internal_statusor::IsDirectInitializationValid<T, U&&>,
               absl::disjunction<
-                  std::is_same<absl::remove_cv_t<absl::remove_reference_t<U>>,
-                               T>,
+                  std::is_same<absl::remove_cvref_t<U>, T>,
                   absl::conjunction<
                       absl::negation<std::is_constructible<absl::Status, U&&>>,
                       absl::negation<

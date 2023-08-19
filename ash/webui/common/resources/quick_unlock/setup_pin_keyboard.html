@@ -9,7 +9,7 @@ Usage:
               is-confirm-step="{{isConfirmStep_}}"
               on-pin-submit="onPinSubmit_"
               on-set-pin-done="onSetPinDone_"
-              set-modes="{{setModes}}">
+              auth-token="[[authToken]]">
           </setup-pin-keyboard>
 
 Where:
@@ -27,7 +27,6 @@ Where:
   * on-set-pin-done - Event handler for the "set pin done" event, which should
         normally close the pin setup UI. This object state is reset before
         sending this event.
-  * set-modes - Reflects property set in password_prompt_dialog.js.
 
 -->
 
@@ -60,7 +59,7 @@ Where:
 <pin-keyboard id="pinKeyboard" on-pin-change="onPinChange_"
     on-submit="onPinSubmit_" value="{{pinKeyboardValue_}}"
     has-error="[[hasError_(problemMessageId_, problemClass_)]]"
-    disabled="[[isSetModesCallPending_]]"
+    disabled="[[isSetPinCallPending_]]"
     enable-placeholder="[[enablePlaceholder]]">
   <!-- Warning/error; only shown if title is hidden. -->
   <div id="problemDiv" class$="[[problemClass_]]"

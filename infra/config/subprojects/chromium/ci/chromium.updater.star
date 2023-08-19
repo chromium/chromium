@@ -19,6 +19,7 @@ ci.defaults.set(
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.DEFAULT,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
+    shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
 )
 
 consoles.console_view(
@@ -56,7 +57,6 @@ ci.builder(
         ),
     ),
     builderless = True,
-    cores = None,
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "debug|linux",
@@ -81,7 +81,6 @@ ci.builder(
         ),
     ),
     builderless = True,
-    cores = None,
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "release|linux",
@@ -261,102 +260,6 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "debug|mac",
         short_name = "bld-asan",
-    ),
-)
-
-ci.thin_tester(
-    name = "mac10.13-updater-tester-dbg",
-    triggered_by = ["mac-updater-builder-dbg"],
-    builder_spec = builder_config.builder_spec(
-        execution_mode = builder_config.execution_mode.TEST,
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.DEBUG,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.MAC,
-        ),
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "debug|mac",
-        short_name = "10.13",
-    ),
-)
-
-ci.thin_tester(
-    name = "mac10.13-updater-tester-rel",
-    triggered_by = ["mac-updater-builder-rel"],
-    builder_spec = builder_config.builder_spec(
-        execution_mode = builder_config.execution_mode.TEST,
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.MAC,
-        ),
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "release|mac",
-        short_name = "10.13",
-    ),
-)
-
-ci.thin_tester(
-    name = "mac10.14-updater-tester-dbg",
-    triggered_by = ["mac-updater-builder-dbg"],
-    builder_spec = builder_config.builder_spec(
-        execution_mode = builder_config.execution_mode.TEST,
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.DEBUG,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.MAC,
-        ),
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "debug|mac",
-        short_name = "10.14",
-    ),
-)
-
-ci.thin_tester(
-    name = "mac10.14-updater-tester-rel",
-    triggered_by = ["mac-updater-builder-rel"],
-    builder_spec = builder_config.builder_spec(
-        execution_mode = builder_config.execution_mode.TEST,
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.MAC,
-        ),
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "release|mac",
-        short_name = "10.14",
     ),
 )
 

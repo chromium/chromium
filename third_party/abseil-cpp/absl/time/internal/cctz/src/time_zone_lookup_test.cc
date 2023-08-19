@@ -135,6 +135,7 @@ const char* const kTimeZoneNames[] = {"Africa/Abidjan",
                                       "America/Cayman",
                                       "America/Chicago",
                                       "America/Chihuahua",
+                                      "America/Ciudad_Juarez",
                                       "America/Coral_Harbour",
                                       "America/Cordoba",
                                       "America/Costa_Rica",
@@ -734,6 +735,10 @@ TEST(TimeZone, UTC) {
   time_zone loaded_utc0;
   EXPECT_TRUE(load_time_zone("UTC0", &loaded_utc0));
   EXPECT_EQ(loaded_utc0, utc);
+
+  time_zone loaded_bad;
+  EXPECT_FALSE(load_time_zone("Invalid/TimeZone", &loaded_bad));
+  EXPECT_EQ(loaded_bad, utc);
 }
 
 TEST(TimeZone, NamedTimeZones) {
@@ -1034,16 +1039,16 @@ TEST(MakeTime, SysSecondsLimits) {
     const time_zone cut = LoadZone("libc:UTC");
     const year_t max_tm_year = year_t{std::numeric_limits<int>::max()} + 1900;
     tp = convert(civil_second(max_tm_year, 12, 31, 23, 59, 59), cut);
-#if defined(__FreeBSD__) || defined(__OpenBSD__)
-    // The BSD gmtime_r() fails on extreme positive tm_year values.
+#if defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__EMSCRIPTEN__)
+    // Some gmtime_r() impls fail on extreme positive values.
 #else
     EXPECT_EQ("2147485547-12-31T23:59:59+00:00",
               absl::time_internal::cctz::format(RFC3339, tp, cut));
 #endif
     const year_t min_tm_year = year_t{std::numeric_limits<int>::min()} + 1900;
     tp = convert(civil_second(min_tm_year, 1, 1, 0, 0, 0), cut);
-#if defined(__Fuchsia__)
-    // Fuchsia's gmtime_r() fails on extreme negative values (fxbug.dev/78527).
+#if defined(__Fuchsia__) || defined(__EMSCRIPTEN__)
+    // Some gmtime_r() impls fail on extreme negative values (fxbug.dev/78527).
 #else
     EXPECT_EQ("-2147481748-01-01T00:00:00+00:00",
               absl::time_internal::cctz::format(RFC3339, tp, cut));
@@ -1072,7 +1077,7 @@ TEST(MakeTime, LocalTimeLibC) {
          tp = zi.lookup(transition.to).trans) {
       const auto fcl = zi.lookup(transition.from);
       const auto tcl = zi.lookup(transition.to);
-      civil_second cs;  // compare cs in zi and lc
+      civil_second cs, us;  // compare cs and us in zi and lc
       if (fcl.kind == time_zone::civil_lookup::UNIQUE) {
         if (tcl.kind == time_zone::civil_lookup::UNIQUE) {
           // Both unique; must be an is_dst or abbr change.
@@ -1088,12 +1093,14 @@ TEST(MakeTime, LocalTimeLibC) {
         }
         ASSERT_EQ(time_zone::civil_lookup::REPEATED, tcl.kind);
         cs = transition.to;
+        us = transition.from;
       } else {
         ASSERT_EQ(time_zone::civil_lookup::UNIQUE, tcl.kind);
         ASSERT_EQ(time_zone::civil_lookup::SKIPPED, fcl.kind);
         cs = transition.from;
+        us = transition.to;
       }
-      if (cs.year() > 2037) break;  // limit test time (and to 32-bit time_t)
+      if (us.year() > 2037) break;  // limit test time (and to 32-bit time_t)
       const auto cl_zi = zi.lookup(cs);
       if (zi.lookup(cl_zi.pre).is_dst == zi.lookup(cl_zi.post).is_dst) {
         // The "libc" implementation cannot correctly classify transitions
@@ -1125,6 +1132,13 @@ TEST(MakeTime, LocalTimeLibC) {
       EXPECT_EQ(cl_zi.pre, cl_lc.pre);
       EXPECT_EQ(cl_zi.trans, cl_lc.trans);
       EXPECT_EQ(cl_zi.post, cl_lc.post);
+      const auto ucl_zi = zi.lookup(us);
+      const auto ucl_lc = lc.lookup(us);
+      SCOPED_TRACE(testing::Message() << "For " << us << " in " << *np);
+      EXPECT_EQ(ucl_zi.kind, ucl_lc.kind);
+      EXPECT_EQ(ucl_zi.pre, ucl_lc.pre);
+      EXPECT_EQ(ucl_zi.trans, ucl_lc.trans);
+      EXPECT_EQ(ucl_zi.post, ucl_lc.post);
     }
   }
   if (ep == nullptr) {

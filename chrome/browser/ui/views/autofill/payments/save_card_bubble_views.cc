@@ -43,8 +43,6 @@ SaveCardBubbleViews::SaveCardBubbleViews(views::View* anchor_view,
   DCHECK(controller);
   SetButtonLabel(ui::DIALOG_BUTTON_OK, controller->GetAcceptButtonText());
   SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, controller->GetDeclineButtonText());
-  SetCancelCallback(base::BindOnce(&SaveCardBubbleViews::OnDialogCancelled,
-                                   base::Unretained(this)));
   SetAcceptCallback(base::BindOnce(&SaveCardBubbleViews::OnDialogAccepted,
                                    base::Unretained(this)));
 
@@ -78,12 +76,6 @@ void SaveCardBubbleViews::OnDialogAccepted() {
     controller_->OnSaveButton({});
 }
 
-void SaveCardBubbleViews::OnDialogCancelled() {
-  // TODO(https://crbug.com/1046793): Maybe delete this.
-  if (controller_)
-    controller_->OnCancelButton();
-}
-
 void SaveCardBubbleViews::AddedToWidget() {
   // Use a custom title container if offering to upload a server card.
   // Done when this view is added to the widget, so the bubble frame
@@ -91,16 +83,8 @@ void SaveCardBubbleViews::AddedToWidget() {
   if (!controller_->IsUploadSave())
     return;
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillMoveLegalTermsAndIconForNewCardEnrollment)) {
-    GetBubbleFrameView()->SetTitleView(
-        std::make_unique<TitleWithIconAfterLabelView>(
-            GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY));
-  } else {
-    GetBubbleFrameView()->SetTitleView(
-        std::make_unique<TitleWithIconAndSeparatorView>(
-            GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY));
-  }
+  GetBubbleFrameView()->SetTitleView(CreateTitleView(
+      GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY));
 }
 
 std::u16string SaveCardBubbleViews::GetWindowTitle() const {
@@ -237,14 +221,20 @@ void SaveCardBubbleViews::Init() {
   // For server cards, there is an explanation between the title and the
   // controls; use DialogContentType::kText. For local cards, since there is no
   // explanation, use DialogContentType::kControl instead.
+  // When feature kAutofillMoveLegalTermsAndIconForNewCardEnrollment is enabled,
+  // there are legal messages before the buttons for server cards, so use
+  // DialogContentType::kText. For local card, since there is no legal message,
+  // use DialogContentType::kControl instead.
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       controller_->GetExplanatoryMessage().empty()
           ? views::DialogContentType::kControl
           : views::DialogContentType::kText,
-      GetDialogButtons() == ui::DIALOG_BUTTON_NONE
+      base::FeatureList::IsEnabled(
+          features::kAutofillMoveLegalTermsAndIconForNewCardEnrollment) &&
+              !controller_->GetLegalMessageLines().empty()
           ? views::DialogContentType::kText
           : views::DialogContentType::kControl));
-  AddChildView(CreateMainContentView().release());
+  AddChildView(CreateMainContentView());
 }
 
 }  // namespace autofill

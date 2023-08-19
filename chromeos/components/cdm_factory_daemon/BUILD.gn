@@ -89,6 +89,6 @@ source_set("unit_tests") {
     "//mojo/public/cpp/bindings",
     "//testing/gmock",
     "//testing/gtest",
-    "//ui/display/fake",
+    "//ui/display:test_support",
   ]
 }

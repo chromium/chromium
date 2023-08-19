@@ -55,7 +55,7 @@ TSAN_TEST(FontObjectThreadedTest, GetDefaultFontData) {
           FontDescription::kFantasyFamily}) {
       FontDescription font_description;
       font_description.SetComputedSize(12.0);
-      font_description.SetLocale(LayoutLocale::Get("en"));
+      font_description.SetLocale(LayoutLocale::Get(AtomicString("en")));
       ASSERT_EQ(USCRIPT_LATIN, font_description.GetScript());
       font_description.SetGenericFamily(family_type);
 
@@ -68,14 +68,16 @@ TSAN_TEST(FontObjectThreadedTest, GetDefaultFontData) {
 // This test passes by not crashing TSAN.
 TSAN_TEST(FontObjectThreadedTest, FontSelector) {
   RunOnThreads([]() {
-    Font font = CreateTestFont("Ahem", test::CoreTestDataPath("Ahem.ttf"), 16);
+    Font font = CreateTestFont(AtomicString("Ahem"),
+                               test::CoreTestDataPath("Ahem.ttf"), 16);
   });
 }
 
 TSAN_TEST(FontObjectThreadedTest, TextIntercepts) {
   callbacks_per_thread_ = 10;
   RunOnThreads([]() {
-    Font font = CreateTestFont("Ahem", test::CoreTestDataPath("Ahem.ttf"), 16);
+    Font font = CreateTestFont(AtomicString("Ahem"),
+                               test::CoreTestDataPath("Ahem.ttf"), 16);
     // A sequence of LATIN CAPITAL LETTER E WITH ACUTE and LATIN SMALL LETTER P
     // characters. E ACUTES are squares above the baseline in Ahem, while p's
     // are rectangles below the baseline.
@@ -110,7 +112,7 @@ TSAN_TEST(FontObjectThreadedTest, WordShaperTest) {
   RunOnThreads([]() {
     FontDescription font_description;
     font_description.SetComputedSize(12.0);
-    font_description.SetLocale(LayoutLocale::Get("en"));
+    font_description.SetLocale(LayoutLocale::Get(AtomicString("en")));
     ASSERT_EQ(USCRIPT_LATIN, font_description.GetScript());
     font_description.SetGenericFamily(FontDescription::kStandardFamily);
 

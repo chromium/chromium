@@ -14,10 +14,13 @@
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
+#include "chromeos/ash/services/cros_healthd/public/cpp/fake_routine_control.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_routines.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_health_types.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "mojo/public/cpp/system/handle.h"
 #include "mojo/public/cpp/system/platform_handle.h"
@@ -63,6 +66,8 @@ void FakeCrosHealthd::Initialize() {
                   g_instance->event_provider_.BindNewPipeAndPassRemote());
   proxy->Register(chromeos::mojo_services::kCrosHealthdProbe,
                   g_instance->probe_provider_.BindNewPipeAndPassRemote());
+  proxy->Register(chromeos::mojo_services::kCrosHealthdRoutines,
+                  g_instance->routines_provider_.BindNewPipeAndPassRemote());
 }
 
 // static
@@ -96,6 +101,8 @@ void FakeCrosHealthd::InitializeInBrowserTest() {
                   g_instance->event_provider_.BindNewPipeAndPassRemote());
   proxy->Register(chromeos::mojo_services::kCrosHealthdProbe,
                   g_instance->probe_provider_.BindNewPipeAndPassRemote());
+  proxy->Register(chromeos::mojo_services::kCrosHealthdRoutines,
+                  g_instance->routines_provider_.BindNewPipeAndPassRemote());
 }
 
 // static
@@ -133,6 +140,25 @@ void FakeCrosHealthd::SetProbeTelemetryInfoResponseForTesting(
 void FakeCrosHealthd::SetIsEventSupportedResponseForTesting(
     mojom::SupportStatusPtr& result) {
   is_event_supported_response_.Swap(&result);
+}
+
+void FakeCrosHealthd::SetIsRoutineArgumentSupportedResponseForTesting(
+    mojom::SupportStatusPtr& result) {
+  is_routine_argument_supported_response_.Swap(&result);
+}
+
+void FakeCrosHealthd::FlushRoutineServiceForTesting() {
+  routines_provider_.FlushForTesting();
+}
+
+FakeRoutineControl* FakeCrosHealthd::GetRoutineControlForArgumentTag(
+    mojom::RoutineArgument::Tag tag) {
+  auto it = routine_controllers_.find(tag);
+  if (it == routine_controllers_.end()) {
+    return nullptr;
+  }
+
+  return &it->second;
 }
 
 void FakeCrosHealthd::SetProbeProcessInfoResponseForTesting(
@@ -483,7 +509,9 @@ void FakeCrosHealthd::RunBatteryChargeRoutine(
       callback_delay_);
 }
 
-void FakeCrosHealthd::RunMemoryRoutine(RunMemoryRoutineCallback callback) {
+void FakeCrosHealthd::RunMemoryRoutine(
+    absl::optional<uint32_t> max_testing_mem_kib,
+    RunMemoryRoutineCallback callback) {
   actual_passed_parameters_.clear();
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kMemory;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -633,11 +661,11 @@ void FakeCrosHealthd::RunPrivacyScreenRoutine(
       callback_delay_);
 }
 
-void FakeCrosHealthd::RunLedLitUpRoutine(
-    mojom::LedName name,
-    mojom::LedColor color,
-    mojo::PendingRemote<mojom::LedLitUpRoutineReplier> replier,
-    RunLedLitUpRoutineCallback callback) {
+void FakeCrosHealthd::DEPRECATED_RunLedLitUpRoutine(
+    mojom::DEPRECATED_LedName name,
+    mojom::DEPRECATED_LedColor color,
+    mojo::PendingRemote<mojom::DEPRECATED_LedLitUpRoutineReplier> replier,
+    DEPRECATED_RunLedLitUpRoutineCallback callback) {
   actual_passed_parameters_.clear();
   actual_passed_parameters_.Set("name", static_cast<int32_t>(name));
   actual_passed_parameters_.Set("color", static_cast<int32_t>(color));
@@ -701,6 +729,29 @@ void FakeCrosHealthd::RunBluetoothPairingRoutine(
     const std::string& peripheral_id,
     RunBluetoothPairingRoutineCallback callback) {
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kBluetoothPairing;
+  std::move(callback).Run(run_routine_response_.Clone());
+}
+
+void FakeCrosHealthd::RunPowerButtonRoutine(
+    uint32_t timeout_seconds,
+    RunPowerButtonRoutineCallback callback) {
+  actual_passed_parameters_.clear();
+  actual_passed_parameters_.Set("timeout_seconds",
+                                static_cast<int32_t>(timeout_seconds));
+
+  last_run_routine_ = mojom::DiagnosticRoutineEnum::kPowerButton;
+  std::move(callback).Run(run_routine_response_.Clone());
+}
+
+void FakeCrosHealthd::RunAudioDriverRoutine(
+    RunAudioDriverRoutineCallback callback) {
+  last_run_routine_ = mojom::DiagnosticRoutineEnum::kAudioDriver;
+  std::move(callback).Run(run_routine_response_.Clone());
+}
+
+void FakeCrosHealthd::RunUfsLifetimeRoutine(
+    RunUfsLifetimeRoutineCallback callback) {
+  last_run_routine_ = mojom::DiagnosticRoutineEnum::kUfsLifetime;
   std::move(callback).Run(run_routine_response_.Clone());
 }
 
@@ -783,6 +834,21 @@ void FakeCrosHealthd::ProbeMultipleProcessInfo(
       FROM_HERE,
       base::BindOnce(std::move(callback), multiple_process_response_.Clone()),
       callback_delay_);
+}
+
+void FakeCrosHealthd::CreateRoutine(
+    mojom::RoutineArgumentPtr argument,
+    mojo::PendingReceiver<mojom::RoutineControl> pending_receiver,
+    mojo::PendingRemote<mojom::RoutineObserver> observer) {
+  routine_controllers_.emplace(
+      std::piecewise_construct, std::forward_as_tuple(argument->which()),
+      std::forward_as_tuple(std::move(pending_receiver), std::move(observer)));
+}
+
+void FakeCrosHealthd::IsRoutineArgumentSupported(
+    mojom::RoutineArgumentPtr arg,
+    IsRoutineArgumentSupportedCallback callback) {
+  std::move(callback).Run(is_routine_argument_supported_response_->Clone());
 }
 
 }  // namespace ash::cros_healthd

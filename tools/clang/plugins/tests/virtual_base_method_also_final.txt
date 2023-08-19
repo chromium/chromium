@@ -1,7 +1,7 @@
 virtual_base_method_also_final.cpp:10:3: warning: [chromium-style] 'virtual' is redundant; 'final' implies 'virtual'.
   virtual void F() final {}
-  ^~~~~~~~
+  ^~~~~~~
 virtual_base_method_also_final.cpp:13:8: warning: [chromium-style] 'virtual' is redundant; 'final' implies 'virtual'.
   void virtual G() final {}
-       ^~~~~~~~
+       ^~~~~~~
 2 warnings generated.

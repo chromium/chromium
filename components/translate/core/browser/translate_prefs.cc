@@ -137,33 +137,6 @@ void MigrateObsoleteAlwaysTranslateLanguagesPref(PrefService* prefs) {
 
 }  // namespace
 
-const char TranslatePrefs::kPrefForceTriggerTranslateCount[] =
-    "translate_force_trigger_on_english_count_for_backoff_1";
-const char TranslatePrefs::kPrefNeverPromptSitesDeprecated[] =
-    "translate_site_blacklist";
-const char TranslatePrefs::kPrefTranslateDeniedCount[] =
-    "translate_denied_count_for_language";
-const char TranslatePrefs::kPrefTranslateIgnoredCount[] =
-    "translate_ignored_count_for_language";
-const char TranslatePrefs::kPrefTranslateAcceptedCount[] =
-    "translate_accepted_count";
-
-// TODO(crbug/1303963): Deprecated 10/2021. Check status of bug before removing.
-const char TranslatePrefs::kPrefAlwaysTranslateListDeprecated[] =
-    "translate_whitelists";
-
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-const char TranslatePrefs::kPrefTranslateAutoAlwaysCount[] =
-    "translate_auto_always_count";
-const char TranslatePrefs::kPrefTranslateAutoNeverCount[] =
-    "translate_auto_never_count";
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-const char TranslatePrefs::kPrefExplicitLanguageAskShown[] =
-    "translate_explicit_language_ask_shown";
-#endif
-
 // The below properties used to be used but now are deprecated. Don't use them
 // since an old profile might have some values there.
 //
@@ -845,14 +818,6 @@ void TranslatePrefs::ResetTranslationAutoNeverCount(
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)
-bool TranslatePrefs::GetExplicitLanguageAskPromptShown() const {
-  return prefs_->GetBoolean(kPrefExplicitLanguageAskShown);
-}
-
-void TranslatePrefs::SetExplicitLanguageAskPromptShown(bool shown) {
-  prefs_->SetBoolean(kPrefExplicitLanguageAskShown, shown);
-}
-
 bool TranslatePrefs::GetAppLanguagePromptShown() const {
   return prefs_->GetBoolean(language::prefs::kAppLanguagePromptShown);
 }
@@ -959,9 +924,7 @@ void TranslatePrefs::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(
       kPrefTranslateDeniedCount,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterDictionaryPref(
-      kPrefTranslateIgnoredCount,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterDictionaryPref(kPrefTranslateIgnoredCount);
   registry->RegisterDictionaryPref(
       kPrefTranslateAcceptedCount,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
@@ -979,12 +942,6 @@ void TranslatePrefs::RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterDictionaryPref(
       kPrefTranslateAutoNeverCount,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-  registry->RegisterBooleanPref(
-      kPrefExplicitLanguageAskShown, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 #endif
 

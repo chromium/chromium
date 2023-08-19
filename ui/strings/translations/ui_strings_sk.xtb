@@ -105,7 +105,6 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{pred mesiacom}few{pred # mesiacmi}many{pred # mesiacom}other{pred # mesiacmi}}</translation>
 <translation id="4289300219472526559">Začať hovoriť</translation>
 <translation id="4289540628985791613">Prehľad</translation>
-<translation id="4306392492252714209">Odstrániť zo schránky</translation>
 <translation id="4491109536499578614">Obrázok</translation>
 <translation id="4565377596337484307">Skryť heslo</translation>
 <translation id="4588090240171750605">Rolovať doprava</translation>
@@ -148,6 +147,7 @@
 <translation id="6142413573757616983"><ph name="QUANTITY" /> B/s</translation>
 <translation id="6237461503717005873">Je vybraný riadok <ph name="ROW_NAME" />.</translation>
 <translation id="6264365405983206840">Vybrať &amp;všetko</translation>
+<translation id="6346952829206698721">Prilepiť zo schránky</translation>
 <translation id="6364916375976753737">Rolovať doľava</translation>
 <translation id="6394627529324717982">Čiarka</translation>
 <translation id="6397363302884558537">Prestať hovoriť</translation>
@@ -174,6 +174,7 @@
 <translation id="7170202025028120564">Nastavenia zobrazovania vašej aplikácie sa uplatnia po jej ďalšom reštartovaní.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{Zostáva 1 min}few{Zostávajú # min}many{Zostáva # min}other{Zostáva # min}}</translation>
+<translation id="7363164521834647158">Poslať odpoveď</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{Pred 1 min}few{Pred # min}many{Pred # min}other{Pred # min}}</translation>
 <translation id="7389409599945284130">– <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{Zostáva 1 minúta}few{Zostávajú # minúty}many{Zostáva # minúty}other{Zostáva # minút}}</translation>

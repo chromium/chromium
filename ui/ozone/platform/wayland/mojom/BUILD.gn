@@ -27,6 +27,10 @@ mojom("mojom") {
           cpp = "::wl::WaylandOverlayConfig"
           move_only = true
         },
+        {
+          mojom = "wl.mojom.TransformUnion"
+          cpp = "::absl::variant<::gfx::OverlayTransform, ::gfx::Transform>"
+        },
       ]
       traits_sources = [ "wayland_overlay_config_mojom_traits.cc" ]
       traits_headers = [ "wayland_overlay_config_mojom_traits.h" ]
@@ -47,4 +51,10 @@ mojom("mojom") {
       traits_deps = [ "//ui/ozone/platform/wayland:common" ]
     },
   ]
+}
+
+mojom("test_interfaces") {
+  sources = [ "wayland_overlay_config_traits_test_service.mojom" ]
+
+  public_deps = [ ":mojom" ]
 }

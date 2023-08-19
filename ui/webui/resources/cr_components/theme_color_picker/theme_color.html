@@ -1,0 +1,89 @@
+<style>
+  :host {
+    --cr-theme-color-border-radius: 50%;
+    --cr-theme-color-check-mark-end: -1px;
+    --cr-theme-color-check-mark-size: 16px;
+    --cr-theme-color-check-mark-top: 0;
+    box-sizing: border-box;
+    cursor: pointer;
+    display: block;
+    outline: none;
+    padding: 8px;
+    width: 100%;
+  }
+
+  :host(:focus):host-context(.focus-outline-visible) {
+    box-shadow: 0 0 0 2px var(--cr-focus-outline-color);
+  }
+
+  svg {
+    border-radius: var(--cr-theme-color-border-radius);
+    box-sizing: border-box;
+    display: block;
+    width: 100%;
+  }
+
+  cr-theme-color-check-mark-wrapper {
+    --cr-theme-color-check-mark-wrapper-end: var(--cr-theme-color-check-mark-end);
+    --cr-theme-color-check-mark-wrapper-size: var(--cr-theme-color-check-mark-size);
+    --cr-theme-color-check-mark-wrapper-top: var(--cr-theme-color-check-mark-top);
+  }
+
+  :host-context([chrome-refresh-2023]) cr-theme-color-check-mark-wrapper {
+    --cr-theme-color-check-mark-wrapper-background: var(
+        --color-theme-color-picker-checkmark-background,
+        var(--cr-fallback-color-on-surface));
+    --cr-theme-color-check-mark-wrapper-color: var(
+        --color-theme-color-picker-checkmark-foreground,
+        var(--cr-fallback-color-inverse-on-surface));
+  }
+
+  #background {
+    fill: var(--cr-theme-color-background-color);
+  }
+
+  :host(:not([checked])) svg {
+    border: 1px solid var(--cr-theme-color-border-color,
+                          var(--cr-theme-color-foreground-color));
+  }
+
+  :host([background-color-hidden]) #background {
+    display: none;
+  }
+
+  #foreground {
+    fill: var(--cr-theme-color-foreground-color);
+  }
+
+  #base {
+    display: none;
+    fill: var(--cr-theme-color-base-color);
+  }
+
+  /* Set styles for high contrast mode in Windows. */
+  @media (forced-colors: active) {
+    :host(:focus):host-context(.focus-outline-visible) {
+      /* Set outline to hcm (high contrast mode) value. */
+      outline: var(--cr-focus-outline-hcm) !important;
+    }
+  }
+
+  :host([basic-color]):host-context([chrome-refresh-2023]) svg {
+    border: none;
+  }
+
+  :host([basic-color]):host(:not([background-color-hidden])):host-context([chrome-refresh-2023]) #base {
+    display: block;
+  }
+</style>
+<cr-theme-color-check-mark-wrapper checked="[[checked]]">
+  <svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"
+      xmlns:xlink="http://www.w3.org/1999/xlink">
+    <rect id="foreground" x="0" y="0" width="50" height="50">
+    </rect>
+    <rect id="background" x="0" y="25" width="50" height="25">
+    </rect>
+    <rect id="base" x="25" y="25" width="25" height="25">
+    </rect>
+  </svg>
+</cr-theme-color-check-mark-wrapper>

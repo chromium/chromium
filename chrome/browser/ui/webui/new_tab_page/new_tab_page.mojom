@@ -60,8 +60,6 @@ struct BackgroundImage {
   string? repeat_y;
   string? position_x;
   string? position_y;
-  // The CSS styling property set on the background image's scrim.
-  string? scrim_display;
   // Source of background image.
   NtpBackgroundImageSource image_source;
 };
@@ -367,4 +365,6 @@ interface Page {
   SetModulesFreVisibility(bool visible);
   // Sets NTP homepage promo.
   SetPromo(Promo? promo);
+  // Shows a toast with information about Chrome Webstore themes.
+  ShowWebstoreToast();
 };

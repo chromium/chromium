@@ -5,6 +5,8 @@ desc: |-
   The user must explicitly allow all extensions in this list to run in Incognito mode, otherwise navigation in Incognito is not allowed.
 
   If an extension specified in this policy is not installed, Incognito navigation is blocked.
+
+  This policy is applied to the Incognito mode. This means Incognito must be enabled in the browser. If Incognito mode is disabled via the policy <ph name="INCOGNITO_MODE_AVAILABILITY">IncognitoModeAvailability</ph>, this policy has no effect.
 example_value:
 - abcdefghijklmnopabcdefghijklmnop
 features:

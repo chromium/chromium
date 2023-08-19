@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+FAIL sendKeyFrameRequest resolves for video receiver, and throws for video sender promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
+FAIL sendKeyFrameRequest throws for audio sender/receiver promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
+FAIL sendKeyFrameRequest throws for unused transforms promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
+FAIL sendKeyFrameRequest throws for unset transforms promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
+FAIL sendKeyFrameRequest rejects when the receiver is negotiated inactive, and resumes succeeding when negotiated back to active promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
+FAIL sendKeyFrameRequest rejects when the receiver is stopped promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
+Harness: the test ran to completion.
+

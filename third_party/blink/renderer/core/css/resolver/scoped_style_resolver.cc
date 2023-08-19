@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/css/cascade_layer_map.h"
 #include "third_party/blink/renderer/core/css/counter_style_map.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
+#include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/font_face.h"
 #include "third_party/blink/renderer/core/css/page_rule_collector.h"
@@ -48,6 +49,7 @@
 #include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/svg/svg_style_element.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
 
 namespace blink {
 
@@ -123,6 +125,7 @@ void ScopedStyleResolver::AppendActiveStyleSheets(
     AddCounterStyleRules(rule_set);
     AddPositionFallbackRules(rule_set);
     AddFontFeatureValuesRules(rule_set);
+    AddViewTransitionsRules(rule_set);
   }
 }
 
@@ -261,15 +264,9 @@ void ScopedStyleResolver::ForAllStylesheets(const Func& func) {
 
 void ScopedStyleResolver::CollectMatchingElementScopeRules(
     ElementRuleCollector& collector) {
-  if (super_rule_set_) {
-    MatchRequest match_request{&scope_->RootNode()};
-    match_request.AddRuleset(super_rule_set_);
+  ForAllStylesheets([&collector](const MatchRequest& match_request) {
     collector.CollectMatchingRules(match_request);
-  } else {
-    ForAllStylesheets([&collector](const MatchRequest& match_request) {
-      collector.CollectMatchingRules(match_request);
-    });
-  }
+  });
 }
 
 void ScopedStyleResolver::CollectMatchingShadowHostRules(
@@ -307,14 +304,7 @@ void ScopedStyleResolver::MatchPageRules(PageRuleCollector& collector) {
 
 void ScopedStyleResolver::RebuildCascadeLayerMap(
     const ActiveStyleSheetVector& sheets) {
-  if (super_rule_set_) {
-    ActiveStyleSheetVector super{{nullptr, super_rule_set_}};
-    cascade_layer_map_ =
-        MakeGarbageCollected<CascadeLayerMap>(super, super_rule_set_mapping_);
-  } else {
-    cascade_layer_map_ =
-        MakeGarbageCollected<CascadeLayerMap>(sheets, super_rule_set_mapping_);
-  }
+  cascade_layer_map_ = MakeGarbageCollected<CascadeLayerMap>(sheets);
 }
 
 void ScopedStyleResolver::AddPositionFallbackRules(const RuleSet& rule_set) {
@@ -363,6 +353,38 @@ void ScopedStyleResolver::AddFontFeatureValuesRules(const RuleSet& rule_set) {
   }
 }
 
+void ScopedStyleResolver::AddViewTransitionsRules(const RuleSet& rule_set) {
+  // Not clear what should happen for @view-transitions inside a shadow
+  // tree. Ignore it for now.
+  if (!GetTreeScope().RootNode().IsDocumentNode()) {
+    return;
+  }
+
+  if (rule_set.ViewTransitionsRules().empty()) {
+    return;
+  }
+
+  // TODO(https://crbug.com/1463966): Need to collect and resolve multiple
+  // rules. Last one wins for now.
+
+  StyleRuleViewTransitions* style_rule =
+      rule_set.ViewTransitionsRules().back().Get();
+  CHECK(style_rule);
+
+  bool cross_document_enabled = false;
+
+  // TODO(https://crbug.com/1463966): This will likely need to change to a
+  // CSSValueList if we want to support multiple tokens as a trigger.
+  if (const CSSValue* value = style_rule->GetNavigationTrigger()) {
+    cross_document_enabled = To<CSSIdentifierValue>(value)->GetValueID() ==
+                             CSSValueID::kCrossDocumentSameOrigin;
+  }
+
+  Document& document = GetTreeScope().GetDocument();
+  ViewTransitionSupplement::From(document)->OnViewTransitionsStyleUpdated(
+      cross_document_enabled);
+}
+
 StyleRulePositionFallback* ScopedStyleResolver::PositionFallbackForName(
     const AtomicString& fallback_name) {
   DCHECK(fallback_name);
@@ -388,33 +410,6 @@ const FontFeatureValuesStorage* ScopedStyleResolver::FontFeatureValuesForFamily(
   return &(it->value);
 }
 
-void ScopedStyleResolver::RebuildSuperRuleset(
-    const ActiveStyleSheetVector& new_style_sheets) {
-  // TODO(sesse): Consider removing the constituent rulesets to save on RAM.
-  // TODO(sesse): Consider starting with the largest ruleset and merging
-  // all the other ones into it, to save on merge time. (This would naturally
-  // be destructive for the largest one, of course.)
-  // TODO(sesse): Consider keeping some rulesets out; in particular, the ones
-  // that have been modified.
-  super_rule_set_ = MakeGarbageCollected<RuleSet>();
-  super_rule_set_mapping_.clear();
-  for (const ActiveStyleSheet& sheet : new_style_sheets) {
-    AppendToSuperRuleset(sheet);
-  }
-}
-
-void ScopedStyleResolver::AppendToSuperRuleset(
-    const ActiveStyleSheet& new_sheet) {
-  if (new_sheet.second != nullptr) {
-    super_rule_set_->Merge(*new_sheet.second, super_rule_set_mapping_);
-  }
-}
-
-void ScopedStyleResolver::ClearSuperRuleset() {
-  super_rule_set_.Clear();
-  super_rule_set_mapping_.clear();
-}
-
 void ScopedStyleResolver::Trace(Visitor* visitor) const {
   visitor->Trace(scope_);
   visitor->Trace(style_sheets_);
@@ -422,8 +417,6 @@ void ScopedStyleResolver::Trace(Visitor* visitor) const {
   visitor->Trace(position_fallback_rule_map_);
   visitor->Trace(counter_style_map_);
   visitor->Trace(cascade_layer_map_);
-  visitor->Trace(super_rule_set_);
-  visitor->Trace(super_rule_set_mapping_);
 }
 
 }  // namespace blink

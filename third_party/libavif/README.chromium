@@ -6,6 +6,7 @@ Revision: DEPS controlled
 License: 2-Clause BSD
 License File: LICENSE
 Security Critical: yes
+Shipped: yes
 
 Description:
 This contains the source to the AV1 image format demuxer; used for demuxing and

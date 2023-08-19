@@ -1100,6 +1100,10 @@ xmlBufSetInputBaseCur(xmlBufPtr buf, xmlParserInputPtr input,
                       size_t base, size_t cur) {
     if (input == NULL)
         return(-1);
+    /*
+     * TODO: It might be safer to keep using the buffer content if there
+     * was an error.
+     */
     if ((buf == NULL) || (buf->error)) {
         input->base = input->cur = input->end = BAD_CAST "";
         return(-1);

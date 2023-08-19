@@ -40,6 +40,7 @@ class TestCSSParserObserver : public CSSParserObserver {
                        bool is_important,
                        bool is_parsed) override {}
   void ObserveComment(unsigned start_offset, unsigned end_offset) override {}
+  void ObserveErroneousAtRule(unsigned start_offset, CSSAtRuleID id) override {}
 
   StyleRule::RuleType rule_type_ = StyleRule::RuleType::kStyle;
   unsigned rule_header_start_ = 0;
@@ -427,6 +428,31 @@ TEST(CSSParserImplTest, ObserveNestedMediaQuery) {
   EXPECT_EQ(test_css_parser_observer.rule_header_end_, 67u);
   EXPECT_EQ(test_css_parser_observer.rule_body_start_, 67u);
   EXPECT_EQ(test_css_parser_observer.rule_body_end_, 101u);
+}
+
+TEST(CSSParserImplTest, ObserveNestedLayer) {
+  ScopedCSSNestingForTest enabled(true);
+  String sheet_text = R"CSS(
+    .element {
+      color: green;
+      @layer foo {
+        color: navy;
+      }
+    }
+    )CSS";
+
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
+  TestCSSParserObserver test_css_parser_observer;
+  CSSParserImpl::ParseStyleSheetForInspector(sheet_text, context, sheet,
+                                             test_css_parser_observer);
+
+  EXPECT_EQ(test_css_parser_observer.rule_type_, StyleRule::RuleType::kStyle);
+  EXPECT_EQ(test_css_parser_observer.rule_header_start_, 54u);
+  EXPECT_EQ(test_css_parser_observer.rule_header_end_, 54u);
+  EXPECT_EQ(test_css_parser_observer.rule_body_start_, 54u);
+  EXPECT_EQ(test_css_parser_observer.rule_body_end_, 88u);
 }
 
 TEST(CSSParserImplTest, RemoveImportantAnnotationIfPresent) {
@@ -843,12 +869,50 @@ TEST(CSSParserImplTest, FontPaletteValuesBasicRuleParsing) {
       DynamicTo<StyleRuleFontPaletteValues>(ParseRule(*document, rule));
   ASSERT_TRUE(parsed);
   ASSERT_EQ("--myTestPalette", parsed->GetName());
-  ASSERT_EQ("testFamily",
-            DynamicTo<CSSFontFamilyValue>(parsed->GetFontFamily())->Value());
+  ASSERT_EQ("testFamily", parsed->GetFontFamily()->CssText());
   ASSERT_EQ(
       0, DynamicTo<CSSPrimitiveValue>(parsed->GetBasePalette())->GetIntValue());
   ASSERT_TRUE(parsed->GetOverrideColors()->IsValueList());
   ASSERT_EQ(2u, DynamicTo<CSSValueList>(parsed->GetOverrideColors())->length());
+}
+
+TEST(CSSParserImplTest, FontPaletteValuesMultipleFamiliesParsing) {
+  using css_test_helpers::ParseRule;
+  ScopedNullExecutionContext execution_context;
+  Document* document =
+      Document::CreateForTest(execution_context.GetExecutionContext());
+  String rule = R"CSS(@font-palette-values --myTestPalette {
+    font-family: testFamily1, testFamily2;
+    base-palette: 0;
+  })CSS";
+  auto* parsed =
+      DynamicTo<StyleRuleFontPaletteValues>(ParseRule(*document, rule));
+  ASSERT_TRUE(parsed);
+  ASSERT_EQ("--myTestPalette", parsed->GetName());
+  ASSERT_EQ("testFamily1, testFamily2", parsed->GetFontFamily()->CssText());
+  ASSERT_EQ(
+      0, DynamicTo<CSSPrimitiveValue>(parsed->GetBasePalette())->GetIntValue());
+}
+
+// Font-family descriptor inside @font-palette-values should not contain generic
+// families, compare:
+// https://drafts.csswg.org/css-fonts/#descdef-font-palette-values-font-family.
+TEST(CSSParserImplTest, FontPaletteValuesGenericFamiliesNotParsing) {
+  using css_test_helpers::ParseRule;
+  ScopedNullExecutionContext execution_context;
+  Document* document =
+      Document::CreateForTest(execution_context.GetExecutionContext());
+  String rule = R"CSS(@font-palette-values --myTestPalette {
+    font-family: testFamily1, testFamily2, serif;
+    base-palette: 0;
+  })CSS";
+  auto* parsed =
+      DynamicTo<StyleRuleFontPaletteValues>(ParseRule(*document, rule));
+  ASSERT_TRUE(parsed);
+  ASSERT_EQ("--myTestPalette", parsed->GetName());
+  ASSERT_FALSE(parsed->GetFontFamily());
+  ASSERT_EQ(
+      0, DynamicTo<CSSPrimitiveValue>(parsed->GetBasePalette())->GetIntValue());
 }
 
 TEST(CSSParserImplTest, FontFeatureValuesRuleParsing) {
@@ -868,8 +932,8 @@ TEST(CSSParserImplTest, FontFeatureValuesRuleParsing) {
   ASSERT_EQ(AtomicString("fontFam1"), families[0]);
   ASSERT_EQ(AtomicString("fontFam2"), families[1]);
   ASSERT_EQ(parsed->GetStyleset()->size(), 4u);
-  ASSERT_TRUE(parsed->GetStyleset()->Contains("cool"));
-  ASSERT_EQ(parsed->GetStyleset()->at("curly").indices,
+  ASSERT_TRUE(parsed->GetStyleset()->Contains(AtomicString("cool")));
+  ASSERT_EQ(parsed->GetStyleset()->at(AtomicString("curly")).indices,
             Vector<uint32_t>({4, 3, 2, 1}));
 }
 
@@ -888,6 +952,36 @@ TEST(CSSParserImplTest, FontFeatureValuesOffsets) {
   EXPECT_EQ(test_css_parser_observer.rule_header_end_, 27u);
   EXPECT_EQ(test_css_parser_observer.rule_body_start_, 28u);
   EXPECT_EQ(test_css_parser_observer.rule_body_end_, 53u);
+}
+
+TEST(CSSParserImplTest, PositionFallbackRuleMaxLength) {
+  ScopedCSSAnchorPositioningForTest enabled(true);
+
+  String sheet_text = R"CSS(
+    @position-fallback --pf {
+      @try {}
+      @try {}
+      @try {}
+      @try {}
+      @try {}
+      @try {}
+    }
+  )CSS";
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(context);
+  TestCSSParserObserver test_css_parser_observer;
+  CSSParserImpl::ParseStyleSheetForInspector(sheet_text, context, style_sheet,
+                                             test_css_parser_observer);
+  EXPECT_EQ(style_sheet->ChildRules().size(), 1u);
+
+  const StyleRulePositionFallback* rule =
+      DynamicTo<StyleRulePositionFallback>(style_sheet->ChildRules()[0].Get());
+  EXPECT_TRUE(rule);
+
+  // We allow only 5 @try rules at maximum. See kPositionFallbackRuleMaxLength
+  // in css_parser_impl.cc.
+  EXPECT_EQ(5u, rule->ChildRules().size());
 }
 
 }  // namespace blink

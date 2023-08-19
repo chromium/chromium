@@ -1,0 +1,11 @@
+This tests whether referrer information gets properly set and reset when "noreferrer" links are present. We do the following:
+1. Open a rel="opener" link in a new window: referrer is sent and window.opener is sent.
+2. Click a rel="noreferrer" link: referrer is null, but window.opener remains set since the link was not opened with target="_blank".
+3. Click a link without rel="noreferrer": referrer is sent, but window.opener is still set.
+Start reset test
+Referrer: http://127.0.0.1:8000/navigation/no-referrer-reset.html
+window.opener: http://127.0.0.1:8000/navigation/no-referrer-reset.html
+Referrer: Warning: Undefined array key "HTTP_REFERER" in C:\b\s\w\ir\third_party\blink\web_tests\http\tests\navigation\resources\no-referrer-reset-helper.php on line 9
+window.opener: http://127.0.0.1:8000/navigation/no-referrer-reset.html
+Referrer: http://127.0.0.1:8000/navigation/resources/no-referrer-reset-helper.php
+window.opener: http://127.0.0.1:8000/navigation/no-referrer-reset.html

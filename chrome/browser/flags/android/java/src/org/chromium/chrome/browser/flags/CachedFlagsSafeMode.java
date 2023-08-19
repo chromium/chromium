@@ -14,6 +14,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
@@ -393,7 +394,7 @@ class CachedFlagsSafeMode {
 
         if (mSafeModeExperimentEnabled == null) {
             mSafeModeExperimentEnabled = SharedPreferencesManager.getInstance().readBoolean(
-                    ChromePreferenceKeys.FLAGS_SAFE_MODE_ENABLED, false);
+                    ChromePreferenceKeys.FLAGS_SAFE_MODE_ENABLED, true);
         }
 
         return mSafeModeExperimentEnabled;
@@ -418,5 +419,6 @@ class CachedFlagsSafeMode {
 
     void setExperimentEnabledForTesting(Boolean value) {
         mSafeModeExperimentForcedForTesting = value;
+        ResettersForTesting.register(() -> mSafeModeExperimentForcedForTesting = null);
     }
 }

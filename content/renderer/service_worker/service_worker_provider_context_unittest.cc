@@ -278,6 +278,9 @@ class FakeServiceWorkerContainerHost
     std::move(callback).Run();
   }
   void OnExecutionReady() override {}
+  void GetRunningStatus(GetRunningStatusCallback callback) override {
+    NOTIMPLEMENTED();
+  }
 
  private:
   mojo::ReceiverSet<blink::mojom::ServiceWorkerContainerHost> receivers_;

@@ -22,7 +22,6 @@
 #include "base/syslog_logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/policy/core/common/policy_bundle.h"
-#include "components/policy/core/common/policy_load_status.h"
 #include "components/policy/core/common/policy_types.h"
 
 namespace policy {
@@ -34,24 +33,6 @@ constexpr base::FilePath::CharType kMandatoryConfigDir[] =
     FILE_PATH_LITERAL("managed");
 constexpr base::FilePath::CharType kRecommendedConfigDir[] =
     FILE_PATH_LITERAL("recommended");
-
-PolicyLoadStatus JsonErrorToPolicyLoadStatus(int status) {
-  switch (status) {
-    case JSONFileValueDeserializer::JSON_ACCESS_DENIED:
-    case JSONFileValueDeserializer::JSON_CANNOT_READ_FILE:
-    case JSONFileValueDeserializer::JSON_FILE_LOCKED:
-      return POLICY_LOAD_STATUS_READ_ERROR;
-    case JSONFileValueDeserializer::JSON_NO_SUCH_FILE:
-      return POLICY_LOAD_STATUS_MISSING;
-    case base::ValueDeserializer::kErrorCodeNoError:
-      NOTREACHED();
-      return POLICY_LOAD_STATUS_STARTED;
-  }
-  if (!base::ValueDeserializer::ErrorCodeIsDataError(status)) {
-    NOTREACHED() << "Invalid status " << status;
-  }
-  return POLICY_LOAD_STATUS_PARSE_ERROR;
-}
 
 }  // namespace
 
@@ -127,9 +108,7 @@ void ConfigDirPolicyLoader::LoadFromPath(const base::FilePath& path,
        !config_file_path.empty(); config_file_path = file_enumerator.Next())
     files.insert(config_file_path);
 
-  PolicyLoadStatusUmaReporter status;
   if (files.empty()) {
-    status.Add(POLICY_LOAD_STATUS_NO_POLICY);
     return;
   }
 
@@ -141,21 +120,18 @@ void ConfigDirPolicyLoader::LoadFromPath(const base::FilePath& path,
     JSONFileValueDeserializer deserializer(
         config_file, base::JSON_PARSE_CHROMIUM_EXTENSIONS |
                          base::JSON_ALLOW_TRAILING_COMMAS);
-    int error_code = 0;
     std::string error_msg;
     std::unique_ptr<base::Value> value =
-        deserializer.Deserialize(&error_code, &error_msg);
+        deserializer.Deserialize(nullptr, &error_msg);
     if (!value) {
       SYSLOG(WARNING) << "Failed to read configuration file "
                       << config_file.value() << ": " << error_msg;
-      status.Add(JsonErrorToPolicyLoadStatus(error_code));
       continue;
     }
     base::Value::Dict* dictionary_value = value->GetIfDict();
     if (!dictionary_value) {
       SYSLOG(WARNING) << "Expected JSON dictionary in configuration file "
                       << config_file.value();
-      status.Add(POLICY_LOAD_STATUS_PARSE_ERROR);
       continue;
     }
 

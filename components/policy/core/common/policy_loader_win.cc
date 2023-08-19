@@ -45,7 +45,6 @@
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "components/policy/core/common/policy_bundle.h"
-#include "components/policy/core/common/policy_load_status.h"
 #include "components/policy/core/common/policy_loader_common.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
@@ -300,7 +299,6 @@ PolicyBundle PolicyLoaderWin::Load() {
       &bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
   for (size_t i = 0; i < std::size(kScopes); ++i) {
     PolicyScope scope = kScopes[i].scope;
-    PolicyLoadStatusUmaReporter status;
     RegistryDict gpo_dict;
 
     gpo_dict.ReadRegistry(kScopes[i].hive, chrome_policy_key_);

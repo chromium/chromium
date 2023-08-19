@@ -2,3 +2,9 @@ include_rules = [
   "+components/headless",
   "+components/devtools/simple_devtools_protocol_client",
 ]
+
+specific_include_rules = {
+  "headless_mode_command_browsertest\.cc": [
+    "+pdf",
+  ],
+}

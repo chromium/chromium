@@ -11,7 +11,6 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -291,114 +290,11 @@ public class BackgroundTaskSchedulerUmaTest {
 
     @Test
     @Feature({"BackgroundTaskScheduler"})
-    public void testReportTaskStartedNativeFullBrowser() {
+    public void testReportTaskStartedNative() {
         doNothing().when(mUmaSpy).cacheEvent(anyString(), anyInt());
-        mExternalUma.reportTaskStartedNative(TaskIds.DOWNLOAD_SERVICE_JOB_ID, false);
+        mExternalUma.reportTaskStartedNative(TaskIds.DOWNLOAD_SERVICE_JOB_ID);
         verify(mUmaSpy, times(1))
                 .cacheEvent(eq("Android.BackgroundTaskScheduler.TaskLoadedNative"),
-                        ArgumentMatchers.eq(
-                                BackgroundTaskSchedulerUma.BACKGROUND_TASK_DOWNLOAD_SERVICE));
-        verify(mUmaSpy, never())
-                .cacheEvent(eq("Android.BackgroundTaskScheduler.TaskLoadedNative.ReducedMode"),
-                        ArgumentMatchers.eq(
-                                BackgroundTaskSchedulerUma.BACKGROUND_TASK_DOWNLOAD_SERVICE));
-        verify(mUmaSpy, times(1))
-                .cacheEvent(eq("Android.BackgroundTaskScheduler.TaskLoadedNative.FullBrowser"),
-                        ArgumentMatchers.eq(
-                                BackgroundTaskSchedulerUma.BACKGROUND_TASK_DOWNLOAD_SERVICE));
-    }
-
-    @Test
-    @Feature({"BackgroundTaskScheduler"})
-    public void testReportTaskStartedNativeReducedMode() {
-        doNothing().when(mUmaSpy).cacheEvent(anyString(), anyInt());
-        mExternalUma.reportTaskStartedNative(TaskIds.DOWNLOAD_SERVICE_JOB_ID, true);
-        verify(mUmaSpy, times(1))
-                .cacheEvent(eq("Android.BackgroundTaskScheduler.TaskLoadedNative"),
-                        ArgumentMatchers.eq(
-                                BackgroundTaskSchedulerUma.BACKGROUND_TASK_DOWNLOAD_SERVICE));
-        verify(mUmaSpy, times(1))
-                .cacheEvent(eq("Android.BackgroundTaskScheduler.TaskLoadedNative.ReducedMode"),
-                        ArgumentMatchers.eq(
-                                BackgroundTaskSchedulerUma.BACKGROUND_TASK_DOWNLOAD_SERVICE));
-        verify(mUmaSpy, never())
-                .cacheEvent(eq("Android.BackgroundTaskScheduler.TaskLoadedNative.FullBrowser"),
-                        ArgumentMatchers.eq(
-                                BackgroundTaskSchedulerUma.BACKGROUND_TASK_DOWNLOAD_SERVICE));
-    }
-
-    @Test
-    @Feature({"BackgroundTaskScheduler"})
-    public void testReportNativeTaskStartedFullBrowser() {
-        doNothing().when(mUmaSpy).cacheEvent(anyString(), anyInt());
-        mExternalUma.reportNativeTaskStarted(TaskIds.DOWNLOAD_SERVICE_JOB_ID, false);
-        verify(mUmaSpy, times(1))
-                .cacheEvent(eq("Android.NativeBackgroundTask.TaskStarted"),
-                        ArgumentMatchers.eq(
-                                BackgroundTaskSchedulerUma.BACKGROUND_TASK_DOWNLOAD_SERVICE));
-        verify(mUmaSpy, never())
-                .cacheEvent(eq("Android.NativeBackgroundTask.TaskStarted.ReducedMode"),
-                        ArgumentMatchers.eq(
-                                BackgroundTaskSchedulerUma.BACKGROUND_TASK_DOWNLOAD_SERVICE));
-        verify(mUmaSpy, times(1))
-                .cacheEvent(eq("Android.NativeBackgroundTask.TaskStarted.FullBrowser"),
-                        ArgumentMatchers.eq(
-                                BackgroundTaskSchedulerUma.BACKGROUND_TASK_DOWNLOAD_SERVICE));
-    }
-
-    @Test
-    @Feature({"BackgroundTaskScheduler"})
-    public void testReportNativeTaskStartedReducedMode() {
-        doNothing().when(mUmaSpy).cacheEvent(anyString(), anyInt());
-        mExternalUma.reportNativeTaskStarted(TaskIds.DOWNLOAD_SERVICE_JOB_ID, true);
-        verify(mUmaSpy, times(1))
-                .cacheEvent(eq("Android.NativeBackgroundTask.TaskStarted"),
-                        ArgumentMatchers.eq(
-                                BackgroundTaskSchedulerUma.BACKGROUND_TASK_DOWNLOAD_SERVICE));
-        verify(mUmaSpy, times(1))
-                .cacheEvent(eq("Android.NativeBackgroundTask.TaskStarted.ReducedMode"),
-                        ArgumentMatchers.eq(
-                                BackgroundTaskSchedulerUma.BACKGROUND_TASK_DOWNLOAD_SERVICE));
-        verify(mUmaSpy, never())
-                .cacheEvent(eq("Android.NativeBackgroundTask.TaskStarted.FullBrowser"),
-                        ArgumentMatchers.eq(
-                                BackgroundTaskSchedulerUma.BACKGROUND_TASK_DOWNLOAD_SERVICE));
-    }
-
-    @Test
-    @Feature({"BackgroundTaskScheduler"})
-    public void testReportNativeTaskFinishedFullBrowser() {
-        doNothing().when(mUmaSpy).cacheEvent(anyString(), anyInt());
-        mExternalUma.reportNativeTaskFinished(TaskIds.DOWNLOAD_SERVICE_JOB_ID, false);
-        verify(mUmaSpy, times(1))
-                .cacheEvent(eq("Android.NativeBackgroundTask.TaskFinished"),
-                        ArgumentMatchers.eq(
-                                BackgroundTaskSchedulerUma.BACKGROUND_TASK_DOWNLOAD_SERVICE));
-        verify(mUmaSpy, never())
-                .cacheEvent(eq("Android.NativeBackgroundTask.TaskFinished.ReducedMode"),
-                        ArgumentMatchers.eq(
-                                BackgroundTaskSchedulerUma.BACKGROUND_TASK_DOWNLOAD_SERVICE));
-        verify(mUmaSpy, times(1))
-                .cacheEvent(eq("Android.NativeBackgroundTask.TaskFinished.FullBrowser"),
-                        ArgumentMatchers.eq(
-                                BackgroundTaskSchedulerUma.BACKGROUND_TASK_DOWNLOAD_SERVICE));
-    }
-
-    @Test
-    @Feature({"BackgroundTaskScheduler"})
-    public void testReportNativeTaskFinishedReducedMode() {
-        doNothing().when(mUmaSpy).cacheEvent(anyString(), anyInt());
-        mExternalUma.reportNativeTaskFinished(TaskIds.DOWNLOAD_SERVICE_JOB_ID, true);
-        verify(mUmaSpy, times(1))
-                .cacheEvent(eq("Android.NativeBackgroundTask.TaskFinished"),
-                        ArgumentMatchers.eq(
-                                BackgroundTaskSchedulerUma.BACKGROUND_TASK_DOWNLOAD_SERVICE));
-        verify(mUmaSpy, times(1))
-                .cacheEvent(eq("Android.NativeBackgroundTask.TaskFinished.ReducedMode"),
-                        ArgumentMatchers.eq(
-                                BackgroundTaskSchedulerUma.BACKGROUND_TASK_DOWNLOAD_SERVICE));
-        verify(mUmaSpy, never())
-                .cacheEvent(eq("Android.NativeBackgroundTask.TaskFinished.FullBrowser"),
                         ArgumentMatchers.eq(
                                 BackgroundTaskSchedulerUma.BACKGROUND_TASK_DOWNLOAD_SERVICE));
     }

@@ -77,4 +77,4 @@ Bridging a code module to Java will have three parts:
  3. chrome/android/java/src/org/chromium/chrome/browser/omnibox/FooFeature.java
     - Java side of the bridge.
 
-See the [JNI README](../base/android/jni_generator/README.md) for more details.
+See the [JNI README](/third_party/jni_zero/README.md) for more details.

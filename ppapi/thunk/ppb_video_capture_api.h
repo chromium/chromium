@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <string>
-#include <vector>
 
 #include "base/memory/scoped_refptr.h"
 #include "ppapi/c/dev/ppb_video_capture_dev.h"

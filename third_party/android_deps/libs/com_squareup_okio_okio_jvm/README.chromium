@@ -1,11 +1,12 @@
 Name: okio
 Short Name: okio-jvm
 URL: https://github.com/square/okio/
-Version: 3.0.0
+Version: 3.3.0
 License: Apache Version 2.0
-License File: NOT_SHIPPED
+License File: LICENSE
 CPEPrefix: unknown
 Security Critical: no
+Shipped: no
 
 Description:
 A modern I/O API for Java

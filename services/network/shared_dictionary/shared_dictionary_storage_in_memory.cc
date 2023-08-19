@@ -4,32 +4,99 @@
 
 #include "services/network/shared_dictionary/shared_dictionary_storage_in_memory.h"
 
+#include "base/containers/cxx20_erase_map.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
 #include "net/base/io_buffer.h"
 #include "services/network/shared_dictionary/shared_dictionary_in_memory.h"
+#include "services/network/shared_dictionary/shared_dictionary_manager_in_memory.h"
 #include "services/network/shared_dictionary/shared_dictionary_writer_in_memory.h"
 #include "url/scheme_host_port.h"
 
 namespace network {
 
 SharedDictionaryStorageInMemory::SharedDictionaryStorageInMemory(
+    base::WeakPtr<SharedDictionaryManagerInMemory> manager,
+    const net::SharedDictionaryIsolationKey& isolation_key,
     base::ScopedClosureRunner on_deleted_closure_runner)
-    : on_deleted_closure_runner_(std::move(on_deleted_closure_runner)) {}
+    : manager_(manager),
+      isolation_key_(isolation_key),
+      on_deleted_closure_runner_(std::move(on_deleted_closure_runner)) {}
 
 SharedDictionaryStorageInMemory::~SharedDictionaryStorageInMemory() = default;
 
 std::unique_ptr<SharedDictionary>
-SharedDictionaryStorageInMemory::GetDictionary(const GURL& url) {
-  const DictionaryInfo* info =
+SharedDictionaryStorageInMemory::GetDictionarySync(const GURL& url) {
+  DictionaryInfo* info =
       GetMatchingDictionaryFromDictionaryInfoMap(dictionary_info_map_, url);
 
   if (!info) {
     return nullptr;
   }
+
+  if (info->response_time() + info->expiration() <= base::Time::Now()) {
+    DeleteDictionary(url::SchemeHostPort(info->url()), info->match());
+    return nullptr;
+  }
+  info->set_last_used_time(base::Time::Now());
   return std::make_unique<SharedDictionaryInMemory>(info->data(), info->size(),
                                                     info->hash());
+}
+
+void SharedDictionaryStorageInMemory::GetDictionary(
+    const GURL& url,
+    base::OnceCallback<void(std::unique_ptr<SharedDictionary>)> callback) {
+  std::move(callback).Run(GetDictionarySync(url));
+}
+
+void SharedDictionaryStorageInMemory::DeleteDictionary(
+    const url::SchemeHostPort& host,
+    const std::string& match) {
+  auto it = dictionary_info_map_.find(host);
+  if (it != dictionary_info_map_.end()) {
+    it->second.erase(match);
+    if (it->second.empty()) {
+      dictionary_info_map_.erase(it);
+    }
+  }
+}
+
+void SharedDictionaryStorageInMemory::ClearData(
+    base::Time start_time,
+    base::Time end_time,
+    base::RepeatingCallback<bool(const GURL&)> url_matcher) {
+  for (auto& it : dictionary_info_map_) {
+    base::EraseIf(it.second, [start_time, end_time, url_matcher](auto& it2) {
+      const DictionaryInfo& dict = it2.second;
+      return (dict.response_time() >= start_time) &&
+             (dict.response_time() < end_time) &&
+             (!url_matcher || url_matcher.Run(dict.url().GetWithEmptyPath()));
+    });
+  }
+  base::EraseIf(dictionary_info_map_,
+                [](auto& it) { return it.second.empty(); });
+}
+
+void SharedDictionaryStorageInMemory::ClearAllDictionaries() {
+  dictionary_info_map_.clear();
+}
+
+bool SharedDictionaryStorageInMemory::HasDictionaryBetween(
+    base::Time start_time,
+    base::Time end_time) {
+  for (const auto& [scheme_host_port, info_map] : dictionary_info_map_) {
+    std::ignore = scheme_host_port;
+    for (const auto& [match, dict] : info_map) {
+      std::ignore = match;
+      if ((dict.response_time() >= start_time) &&
+          (dict.response_time() < end_time)) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 scoped_refptr<SharedDictionaryWriter>
@@ -40,6 +107,15 @@ SharedDictionaryStorageInMemory::CreateWriter(const GURL& url,
   return base::MakeRefCounted<SharedDictionaryWriterInMemory>(base::BindOnce(
       &SharedDictionaryStorageInMemory::OnDictionaryWritten,
       weak_factory_.GetWeakPtr(), url, response_time, expiration, match));
+}
+
+bool SharedDictionaryStorageInMemory::IsAlreadyRegistered(
+    const GURL& url,
+    base::Time response_time,
+    base::TimeDelta expiration,
+    const std::string& match) {
+  return IsAlreadyRegisteredInDictionaryInfoMap(
+      dictionary_info_map_, url, response_time, expiration, match);
 }
 
 void SharedDictionaryStorageInMemory::OnDictionaryWritten(
@@ -54,9 +130,14 @@ void SharedDictionaryStorageInMemory::OnDictionaryWritten(
   if (result != SharedDictionaryWriterInMemory::Result::kSuccess) {
     return;
   }
-  dictionary_info_map_[url::SchemeHostPort(url)].insert(std::make_pair(
+  dictionary_info_map_[url::SchemeHostPort(url)].insert_or_assign(
       match,
-      DictionaryInfo(url, response_time, expiration, match, data, size, hash)));
+      DictionaryInfo(url, response_time, expiration, match,
+                     /*last_used_time=*/base::Time::Now(), data, size, hash));
+  if (manager_) {
+    manager_->MaybeRunCacheEvictionPerSite(isolation_key_.top_frame_site());
+    manager_->MaybeRunCacheEviction();
+  }
 }
 
 SharedDictionaryStorageInMemory::DictionaryInfo::DictionaryInfo(
@@ -64,6 +145,7 @@ SharedDictionaryStorageInMemory::DictionaryInfo::DictionaryInfo(
     base::Time response_time,
     base::TimeDelta expiration,
     const std::string& match,
+    base::Time last_used_time,
     scoped_refptr<net::IOBuffer> data,
     size_t size,
     const net::SHA256HashValue& hash)
@@ -71,6 +153,7 @@ SharedDictionaryStorageInMemory::DictionaryInfo::DictionaryInfo(
       response_time_(response_time),
       expiration_(expiration),
       match_(match),
+      last_used_time_(last_used_time),
       data_(std::move(data)),
       size_(size),
       hash_(hash) {}

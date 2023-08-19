@@ -16,6 +16,7 @@
   }
 
   #content {
+    outline: none;
     padding-bottom: 20px;
     padding-inline-end: 24px;
     padding-inline-start: 24px;
@@ -69,7 +70,7 @@
   }
 </style>
 
-<div id="content">
+<div id="content" role="dialog" autofocus tabindex="-1" aria-labelledby="title" aria-describedby="body">
   <div id="title">
   </div>
   <div id="body">
@@ -77,7 +78,7 @@
     <div id="instructions-message"></div>
   </div>
   <div id="button-container">
-    <cr-button id="quick-office-button" custom-tab-index="-1">
+    <cr-button id="quick-office-button">
       $i18n{officeFallbackOpenWithOfflineEditor}
     </cr-button>
     <cr-button id="cancel-button" class="cancel-button" style="margin-left: auto;">

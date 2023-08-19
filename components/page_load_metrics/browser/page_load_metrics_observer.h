@@ -148,7 +148,7 @@ class PageLoadMetricsObserver : public PageLoadMetricsObserverInterface {
       const std::string& mime_type) const override;
   void OnTimingUpdate(content::RenderFrameHost* subframe_rfh,
                       const mojom::PageLoadTiming& timing) override {}
-  void OnSoftNavigationCountUpdated() override {}
+  void OnSoftNavigationUpdated(const mojom::SoftNavigationMetrics&) override {}
   void OnInputTimingUpdate(
       content::RenderFrameHost* subframe_rfh,
       const mojom::InputTiming& input_timing_delta) override {}
@@ -244,7 +244,8 @@ class PageLoadMetricsObserver : public PageLoadMetricsObserverInterface {
   void OnSharedStorageWorkletHostCreated() override {}
 
  private:
-  raw_ptr<PageLoadMetricsObserverDelegate> delegate_ = nullptr;
+  raw_ptr<PageLoadMetricsObserverDelegate, DanglingUntriaged> delegate_ =
+      nullptr;
 };
 
 }  // namespace page_load_metrics

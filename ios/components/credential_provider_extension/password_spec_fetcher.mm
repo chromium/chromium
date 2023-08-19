@@ -7,10 +7,6 @@
 #import "base/base64.h"
 #import "components/autofill/core/browser/proto/password_requirements.pb.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using autofill::DomainSuggestions;
 using autofill::PasswordRequirementsSpec;
 

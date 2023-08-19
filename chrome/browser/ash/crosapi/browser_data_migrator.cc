@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
@@ -18,8 +19,8 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
+#include "base/version.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/crosapi/copy_migrator.h"
 #include "chrome/browser/ash/crosapi/move_migrator.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -186,11 +187,13 @@ bool BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
       case MigrationStep::kEnded:
       default:
         // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises,
-        // remove
-        // this log message or reduce to VLOG(1).
-        LOG(WARNING)
-            << "Migration has ended and either completed or failed. step = "
-            << static_cast<int>(step);
+        // remove this log message or reduce to VLOG(1).
+        if (crosapi::browser_util::IsProfileMigrationCompletedForUser(
+                local_state, user_id_hash, true /* print_mode */)) {
+          LOG(WARNING) << "Migration was attempted and successfully completed.";
+        } else {
+          LOG(WARNING) << "Migration was attempted but failed or was skipped.";
+        }
         break;
     }
 
@@ -213,6 +216,20 @@ bool BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
   // Check if user exists i.e. not a guest session.
   if (!user)
     return false;
+
+  // Migration should not run for secondary users.
+  const auto* primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
+  // `MaybeRestartToMigrateInternal()` either gets called before profile
+  // initialization or after profile initialization. In case of the former, its
+  // called from `PreProfileInit()` and this is only called for the primary
+  // profile so we can assume that the user is the primary user if `primary_user
+  // == nullptr`. If primary_user is not null then we check if `user !=
+  // primary_user`.
+  if (primary_user && (user != primary_user)) {
+    LOG(WARNING) << "Skip migration for secondary users.";
+    return false;
+  }
+
   // Check if profile migration is enabled. If not immediately return.
   if (!crosapi::browser_util::
           IsProfileMigrationEnabledWithUserAndPolicyInitState(
@@ -267,26 +284,12 @@ bool BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
     return false;
   }
 
-  if (crosapi::browser_util::IsDataWipeRequired(local_state, user_id_hash)) {
-    // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises, remove
-    // this log message.
-    LOG(WARNING)
-        << "Restarting to run profile migration since data wipe is required.";
-    // If data wipe is required, no need for a further check to determine if
-    // lacros data dir exists or not.
-    return true;
-  }
+  if (crosapi::browser_util::IsProfileMigrationCompletedForUser(
+          local_state, user_id_hash, true /* print_mode */)) {
+    LOG(WARNING) << "Profile migration is already completed at version "
+                 << crosapi::browser_util::GetDataVer(local_state, user_id_hash)
+                        .GetString();
 
-  if (crosapi::browser_util::IsCopyOrMoveProfileMigrationCompletedForUser(
-          local_state, user_id_hash)) {
-    // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises,
-    // remove this log message.
-    if (crosapi::browser_util::IsProfileMigrationCompletedForUser(
-            local_state, user_id_hash,
-            crosapi::browser_util::MigrationMode::kMove)) {
-      LOG(WARNING) << "Profile move migration has been completed already.";
-    }
-    LOG(WARNING) << "Profile migration has been completed already.";
     return false;
   }
 
@@ -315,22 +318,14 @@ bool BrowserDataMigratorImpl::RestartToMigrate(
   // `user` should exist by the time `RestartToMigrate()` is called.
   CHECK(user) << "User could not be found for " << account_id.GetUserEmail()
               << " but RestartToMigrate() was called.";
-  const bool is_move =
-      crosapi::browser_util::GetMigrationMode(user, policy_init_state) ==
-          crosapi::browser_util::MigrationMode::kMove ||
-      MoveMigrator::ResumeRequired(local_state, user_id_hash);
-
-  std::string mode = browser_data_migrator_util::kCopySwitchValue;
-  if (is_move) {
-    mode = browser_data_migrator_util::kMoveSwitchValue;
-  }
 
   // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises, remove
   // this log message.
   LOG(WARNING) << "Making a dbus method call to session_manager";
   bool success =
       SessionManagerClient::Get()->BlockingRequestBrowserDataMigration(
-          cryptohome::CreateAccountIdentifierFromAccountId(account_id), mode);
+          cryptohome::CreateAccountIdentifierFromAccountId(account_id),
+          browser_data_migrator_util::kMoveSwitchValue);
 
   // TODO(crbug.com/1261730): Add an UMA.
   if (!success) {
@@ -362,8 +357,7 @@ BrowserDataMigratorImpl::~BrowserDataMigratorImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void BrowserDataMigratorImpl::Migrate(crosapi::browser_util::MigrationMode mode,
-                                      MigrateCallback callback) {
+void BrowserDataMigratorImpl::Migrate(MigrateCallback callback) {
   DCHECK(local_state_);
   DCHECK(completion_callback_.is_null());
   completion_callback_ = std::move(callback);
@@ -375,26 +369,12 @@ void BrowserDataMigratorImpl::Migrate(crosapi::browser_util::MigrationMode mode,
   DCHECK(GetMigrationStep(local_state_) == MigrationStep::kRestartCalled);
   SetMigrationStep(local_state_, MigrationStep::kStarted);
 
-  switch (mode) {
-    case crosapi::browser_util::MigrationMode::kMove:
-      LOG(WARNING) << "Initializing MoveMigrator.";
-      migrator_delegate_ = std::make_unique<MoveMigrator>(
-          original_profile_dir_, user_id_hash_, std::move(progress_tracker_),
-          cancel_flag_, local_state_,
-          base::BindOnce(
-              &BrowserDataMigratorImpl::MigrateInternalFinishedUIThread,
-              weak_factory_.GetWeakPtr(), mode));
-      break;
-    case crosapi::browser_util::MigrationMode::kCopy:
-      LOG(WARNING) << "Initializing CopyMigrator.";
-      migrator_delegate_ = std::make_unique<CopyMigrator>(
-          original_profile_dir_, user_id_hash_, std::move(progress_tracker_),
-          cancel_flag_,
-          base::BindOnce(
-              &BrowserDataMigratorImpl::MigrateInternalFinishedUIThread,
-              weak_factory_.GetWeakPtr(), mode));
-      break;
-  }
+  LOG(WARNING) << "Initializing MoveMigrator.";
+  migrator_delegate_ = std::make_unique<MoveMigrator>(
+      original_profile_dir_, user_id_hash_, std::move(progress_tracker_),
+      cancel_flag_, local_state_,
+      base::BindOnce(&BrowserDataMigratorImpl::MigrateInternalFinishedUIThread,
+                     weak_factory_.GetWeakPtr()));
 
   migrator_delegate_->Migrate();
 }
@@ -405,7 +385,7 @@ void BrowserDataMigratorImpl::Cancel() {
 }
 
 void BrowserDataMigratorImpl::MigrateInternalFinishedUIThread(
-    crosapi::browser_util::MigrationMode mode,
+
     MigrationResult result) {
   DCHECK(local_state_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -426,21 +406,31 @@ void BrowserDataMigratorImpl::MigrateInternalFinishedUIThread(
                                          version_info::GetVersion());
   }
 
-  if (result.data_migration_result.kind == ResultKind::kSucceeded) {
-    crosapi::browser_util::SetProfileMigrationCompletedForUser(
-        local_state_, user_id_hash_, mode);
+  switch (result.data_migration_result.kind) {
+    case ResultKind::kSucceeded:
+      crosapi::browser_util::SetProfileMigrationCompletedForUser(
+          local_state_, user_id_hash_,
+          crosapi::browser_util::MigrationMode::kMove);
 
-    // Profile migration is marked as completed both when the migration is
-    // performed (here) and for a new user without actually performing data
-    // migration (`ProfileImpl::OnLocaleReady`). The timestamp of completed
-    // migration is only recorded when the migration is actually performed.
-    crosapi::browser_util::SetProfileMigrationCompletionTimeForUser(
-        local_state_, user_id_hash_);
+      // Profile migration is marked as completed both when the migration is
+      // performed (here) and for a new user without actually performing data
+      // migration (`ProfileImpl::OnLocaleReady`). The timestamp of completed
+      // migration is only recorded when the migration is actually performed.
+      crosapi::browser_util::SetProfileMigrationCompletionTimeForUser(
+          local_state_, user_id_hash_);
 
-    ClearMigrationAttemptCountForUser(local_state_, user_id_hash_);
+      ClearMigrationAttemptCountForUser(local_state_, user_id_hash_);
+      break;
+    case ResultKind::kFailed:
+      LOG(ERROR) << "Migration failed for some reason. Look at logs from "
+                    "move_migrator.cc for details.";
+      // This should not happen often. Send a crash report for debugging.
+      base::debug::DumpWithoutCrashing();
+      break;
+    case ResultKind::kCancelled:
+      LOG(WARNING) << "Migration was cancelled by the user.";
+      break;
   }
-  // If migration has failed or skipped, we silently relaunch ash and send them
-  // to their home screen. In that case lacros will be disabled.
 
   local_state_->CommitPendingWrite();
 

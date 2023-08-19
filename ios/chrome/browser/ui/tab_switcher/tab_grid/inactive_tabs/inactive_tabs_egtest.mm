@@ -8,7 +8,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_app_interface.h"
-#import "ios/chrome/browser/ui/settings/tabs/inactive_tabs/inactive_tabs_settings_constants.h"
+#import "ios/chrome/browser/ui/settings/tabs/tabs_settings_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/test/query_title_server_util.h"
@@ -25,10 +25,6 @@
 #import "ios/testing/earl_grey/matchers.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using chrome_test_util::AddToBookmarksButton;
 using chrome_test_util::AddToReadingListButton;
@@ -370,7 +366,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
 
   // Search for the title of the 3rd inactive tab.
   [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
-      performAction:grey_typeText(@"Tab3")];
+      performAction:grey_replaceText(@"Tab3")];
 
   // Check that the tab is here.
   [[EarlGrey selectElementWithMatcher:TabWithTitle(@"Tab3")]
@@ -491,8 +487,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
 
   // Check the presence of the Share sheet, for example by looking for the Copy
   // button.
-  [[EarlGrey selectElementWithMatcher:CopyActivityButton()]
-      performAction:grey_tap()];
+  [ChromeEarlGrey tapButtonInActivitySheetWithID:@"Copy"];
 
   // There should be still be an inactive tab.
   GREYAssertTrue([ChromeEarlGrey mainTabCount] == 1,

@@ -362,12 +362,13 @@ void Seat::OnKeyEvent(ui::KeyEvent* event) {
   // Ignore synthetic key repeat events.
   if (event->is_repeat())
     return;
+
   if (physical_code_for_currently_processing_event_ != ui::DomCode::NONE) {
     switch (event->type()) {
       case ui::ET_KEY_PRESSED:
-        pressed_keys_.emplace(
-            physical_code_for_currently_processing_event_,
-            KeyState{event->code(), /*consumed_by_ime=*/false});
+        pressed_keys_.emplace(physical_code_for_currently_processing_event_,
+                              KeyState{event->code(), /*consumed_by_ime=*/false,
+                                       event->key_code()});
         break;
       case ui::ET_KEY_RELEASED:
         pressed_keys_.erase(physical_code_for_currently_processing_event_);

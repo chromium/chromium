@@ -100,6 +100,12 @@ class AutoEnrollmentClient {
   // Triggers a retry of the currently pending step. This is intended to be
   // called by consumers when they become aware of environment changes (such as
   // captive portal setup being complete).
+  // It is safe to call the retry at any point of the client lifetime:
+  // 1. If the client is idle, the retry will trigger the auto-enrollment check.
+  // 2. If the client is in progress, the retry will be ignored.
+  // 3. If the client failed the check, the retry will trigger the last failed
+  //    step to be re-executed.
+  // 4. If the client finished, the retry will be ignored.
   virtual void Retry() = 0;
 };
 

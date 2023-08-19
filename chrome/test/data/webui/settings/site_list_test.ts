@@ -871,7 +871,7 @@ suite('SiteList', function() {
     flush();  // Populates action menu.
     openActionMenu(0);
     // 'Clear on exit' is visible as this is not an incognito item.
-    assertMenu(['Allow', 'Clear on exit', 'Edit', 'Remove']);
+    assertMenu(['Allow', 'Delete on exit', 'Edit', 'Remove']);
 
     // Select 'Remove' from menu.
     const remove = testElement.shadowRoot!.querySelector<HTMLElement>('#reset');
@@ -1308,6 +1308,7 @@ suite('EditExceptionDialog', function() {
       controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
       displayName: 'foo.com',
       origin: 'foo.com',
+      description: '',
     };
 
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();

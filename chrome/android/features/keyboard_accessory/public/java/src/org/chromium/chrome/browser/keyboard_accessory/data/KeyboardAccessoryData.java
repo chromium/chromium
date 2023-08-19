@@ -366,8 +366,7 @@ public class KeyboardAccessoryData {
             mToggle = toggle;
         }
 
-        @Nullable
-        public OptionToggle getOptionToggle() {
+        public @Nullable OptionToggle getOptionToggle() {
             return mToggle;
         }
 

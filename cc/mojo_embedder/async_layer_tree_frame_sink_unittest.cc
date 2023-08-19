@@ -66,7 +66,7 @@ TEST(AsyncLayerTreeFrameSinkTest,
   bg_thread.Start();
 
   scoped_refptr<viz::TestContextProvider> provider =
-      viz::TestContextProvider::Create();
+      viz::TestContextProvider::CreateRaster();
   viz::TestGpuMemoryBufferManager test_gpu_memory_buffer_manager;
 
   mojo::PendingRemote<viz::mojom::CompositorFrameSink> sink_remote;
@@ -131,7 +131,7 @@ class AsyncLayerTreeFrameSinkSimpleTest : public testing::Test {
       : task_runner_(base::MakeRefCounted<base::TestMockTimeTaskRunner>(
             base::TestMockTimeTaskRunner::Type::kStandalone)),
         display_rect_(1, 1) {
-    auto context_provider = viz::TestContextProvider::Create();
+    auto context_provider = viz::TestContextProvider::CreateRaster();
 
     mojo::PendingRemote<viz::mojom::CompositorFrameSink> sink_remote;
     mojo::PendingReceiver<viz::mojom::CompositorFrameSink> sink_receiver =

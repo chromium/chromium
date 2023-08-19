@@ -7,7 +7,6 @@
  */
 import {AsyncUtil} from '../../../common/async_util.js';
 import {AutomationPredicate} from '../../../common/automation_predicate.js';
-import {constants} from '../../../common/constants.js';
 import {CursorRange} from '../../../common/cursors/range.js';
 import {ChromeVoxEvent} from '../../common/custom_automation_event.js';
 import {QueueMode, TtsSpeechProperties} from '../../common/tts_types.js';
@@ -19,10 +18,8 @@ import {BaseAutomationHandler} from './base_automation_handler.js';
 
 const AutomationEvent = chrome.automation.AutomationEvent;
 const AutomationNode = chrome.automation.AutomationNode;
-const Dir = constants.Dir;
 const EventType = chrome.automation.EventType;
 const RoleType = chrome.automation.RoleType;
-const StateType = chrome.automation.StateType;
 
 export class FocusAutomationHandler extends BaseAutomationHandler {
   /** @private */

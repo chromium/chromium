@@ -74,7 +74,7 @@ class DeskSyncBridge : public syncer::ModelTypeSyncBridge, public DeskModel {
   size_t GetDeskTemplateEntryCount() const override;
   size_t GetMaxSaveAndRecallDeskEntryCount() const override;
   size_t GetMaxDeskTemplateEntryCount() const override;
-  std::vector<base::Uuid> GetAllEntryUuids() const override;
+  std::set<base::Uuid> GetAllEntryUuids() const override;
   bool IsReady() const override;
   // Whether this sync bridge is syncing local data to sync. This sync bridge
   // still allows user to save desk templates locally when users disable syncing
@@ -116,8 +116,6 @@ class DeskSyncBridge : public syncer::ModelTypeSyncBridge, public DeskModel {
   void OnStoreCreated(const absl::optional<syncer::ModelError>& error,
                       std::unique_ptr<syncer::ModelTypeStore> store);
   void OnReadAllData(std::unique_ptr<DeskEntries> initial_entries,
-                     std::unique_ptr<base::flat_map<std::string, base::Uuid>>
-                         floating_workspace_cache_guid_to_uuid,
                      const absl::optional<syncer::ModelError>& error);
   void OnReadAllMetadata(const absl::optional<syncer::ModelError>& error,
                          std::unique_ptr<syncer::MetadataBatch> metadata_batch);
@@ -135,9 +133,6 @@ class DeskSyncBridge : public syncer::ModelTypeSyncBridge, public DeskModel {
 
   // `desk_template_entries_` is keyed by UUIDs.
   DeskEntries desk_template_entries_;
-
-  // `floating_workspace_templates_uuid_` is keyed by cache_guids.
-  base::flat_map<std::string, base::Uuid> floating_workspace_templates_uuid_;
 
   // Whether local data and metadata have finished loading and this sync bridge
   // is ready to be accessed.

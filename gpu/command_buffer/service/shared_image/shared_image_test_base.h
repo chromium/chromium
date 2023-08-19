@@ -50,6 +50,7 @@ class SharedImageTestBase : public testing::Test {
 
   bool use_passthrough() const;
   GrDirectContext* gr_context();
+  GrContextType gr_context_type();
 
   // Initializes `context_state_` for `context_type`. Expected to be called as
   // part of test SetUp(). Note this function can fail with an assertion error
@@ -80,7 +81,7 @@ class SharedImageTestBase : public testing::Test {
   std::unique_ptr<viz::MetalContextProvider> metal_context_provider_;
 #endif
 #if BUILDFLAG(SKIA_USE_DAWN)
-  std::unique_ptr<viz::DawnContextProvider> dawn_context_provider_;
+  std::unique_ptr<DawnContextProvider> dawn_context_provider_;
 #endif
 
   scoped_refptr<gl::GLSurface> gl_surface_;

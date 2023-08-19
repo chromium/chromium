@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/prefs/browser_prefs.h"
@@ -276,6 +278,125 @@ TEST_F(ExternalProtocolHandlerTest,
 
 // Android doesn't use the external protocol dialog.
 #if !BUILDFLAG(IS_ANDROID)
+
+// Tests for the PromptForExternalNewsSchemes feature. When enabled, news: and
+// snews: schemes are not considered default-allowed, and a prompt may be
+// shown. When the feature is disabled, those schemes are default-allowed.
+class ExternalProtocolHandlerPromptNewsSchemesFeatureTest
+    : public ExternalProtocolHandlerTest {
+ public:
+  ExternalProtocolHandlerPromptNewsSchemesFeatureTest()
+      : initiating_origin_(url::Origin::Create(GURL("https://example.com"))) {}
+
+ protected:
+  const url::Origin& initiating_origin() { return initiating_origin_; }
+
+  void DoFeatureTest(bool enable_feature,
+                     shell_integration::DefaultWebClientState os_state,
+                     Action expected_action,
+                     const GURL& url,
+                     const std::u16string& program_name) {
+    base::test::ScopedFeatureList feature_list;
+    if (enable_feature) {
+      feature_list.InitAndEnableFeature(kPromptForExternalNewsSchemes);
+    } else {
+      feature_list.InitAndDisableFeature(kPromptForExternalNewsSchemes);
+    }
+
+    const url::Origin precursor =
+        url::Origin::Create(GURL("https://precursor.test"));
+
+    ExternalProtocolHandler::BlockState block_state =
+        ExternalProtocolHandler::GetBlockState(
+            url.scheme(), &initiating_origin_, profile_.get());
+
+    DoTest(block_state, os_state, expected_action, url, initiating_origin_,
+           precursor, program_name);
+  }
+
+  void ExpectBlockStateHistogram(
+      ExternalProtocolHandler::BlockStateMetric sample,
+      int count) {
+    histogram_tester_.ExpectBucketCount(
+        ExternalProtocolHandler::kBlockStateMetric, sample, count);
+  }
+
+ private:
+  const url::Origin initiating_origin_;
+  base::HistogramTester histogram_tester_;
+};
+
+TEST_F(ExternalProtocolHandlerPromptNewsSchemesFeatureTest, Enabled_Mail) {
+  DoFeatureTest(true, shell_integration::NOT_DEFAULT, Action::LAUNCH,
+                GURL("mailto:test@example.com"), u"MailClient");
+  ExpectBlockStateHistogram(
+      ExternalProtocolHandler::BlockStateMetric::kAllowedDefaultMail, 1);
+}
+
+TEST_F(ExternalProtocolHandlerPromptNewsSchemesFeatureTest, Disabled_Mail) {
+  DoFeatureTest(false, shell_integration::NOT_DEFAULT, Action::LAUNCH,
+                GURL("mailto:test@example.com"), u"MailClient");
+  ExpectBlockStateHistogram(
+      ExternalProtocolHandler::BlockStateMetric::kAllowedDefaultMail, 1);
+}
+
+TEST_F(ExternalProtocolHandlerPromptNewsSchemesFeatureTest, Enabled_News) {
+  DoFeatureTest(true, shell_integration::NOT_DEFAULT, Action::PROMPT,
+                GURL("news:alt.software.chrome"), u"UsenetReader");
+  ExpectBlockStateHistogram(
+      ExternalProtocolHandler::BlockStateMetric::kNewsNotDefault, 1);
+  ExpectBlockStateHistogram(ExternalProtocolHandler::BlockStateMetric::kPrompt,
+                            1);
+}
+
+TEST_F(ExternalProtocolHandlerPromptNewsSchemesFeatureTest,
+       Enabled_News_Remember) {
+  ExternalProtocolHandler::SetBlockState("news", initiating_origin(),
+                                         ExternalProtocolHandler::DONT_BLOCK,
+                                         profile_.get());
+  DoFeatureTest(true, shell_integration::NOT_DEFAULT, Action::LAUNCH,
+                GURL("news:alt.software.chrome"), u"UsenetReader");
+  ExpectBlockStateHistogram(
+      ExternalProtocolHandler::BlockStateMetric::kNewsNotDefault, 1);
+  ExpectBlockStateHistogram(
+      ExternalProtocolHandler::BlockStateMetric::kAllowedByPreference, 1);
+}
+
+TEST_F(ExternalProtocolHandlerPromptNewsSchemesFeatureTest, Disabled_News) {
+  DoFeatureTest(false, shell_integration::NOT_DEFAULT, Action::LAUNCH,
+                GURL("news:alt.software.chrome"), u"UsenetReader");
+  ExpectBlockStateHistogram(
+      ExternalProtocolHandler::BlockStateMetric::kAllowedDefaultNews, 1);
+}
+
+TEST_F(ExternalProtocolHandlerPromptNewsSchemesFeatureTest, Enabled_SNews) {
+  DoFeatureTest(true, shell_integration::NOT_DEFAULT, Action::PROMPT,
+                GURL("snews:alt.software.chrome"), u"UsenetReader");
+  ExpectBlockStateHistogram(
+      ExternalProtocolHandler::BlockStateMetric::kNewsNotDefault, 1);
+  ExpectBlockStateHistogram(ExternalProtocolHandler::BlockStateMetric::kPrompt,
+                            1);
+}
+
+TEST_F(ExternalProtocolHandlerPromptNewsSchemesFeatureTest,
+       Enabled_SNews_Remember) {
+  ExternalProtocolHandler::SetBlockState("snews", initiating_origin(),
+                                         ExternalProtocolHandler::DONT_BLOCK,
+                                         profile_.get());
+  DoFeatureTest(true, shell_integration::NOT_DEFAULT, Action::LAUNCH,
+                GURL("snews:alt.software.chrome"), u"UsetnetReader");
+  ExpectBlockStateHistogram(
+      ExternalProtocolHandler::BlockStateMetric::kNewsNotDefault, 1);
+  ExpectBlockStateHistogram(
+      ExternalProtocolHandler::BlockStateMetric::kAllowedByPreference, 1);
+}
+
+TEST_F(ExternalProtocolHandlerPromptNewsSchemesFeatureTest, Disabled_SNews) {
+  DoFeatureTest(false, shell_integration::NOT_DEFAULT, Action::LAUNCH,
+                GURL("snews:alt.software.chrome"), u"UsenetReader");
+  ExpectBlockStateHistogram(
+      ExternalProtocolHandler::BlockStateMetric::kAllowedDefaultNews, 1);
+}
 
 TEST_F(ExternalProtocolHandlerTest, TestLaunchSchemeUnBlockedChromeDefault) {
   DoTest(ExternalProtocolHandler::DONT_BLOCK, shell_integration::IS_DEFAULT,

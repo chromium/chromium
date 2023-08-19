@@ -149,6 +149,23 @@ LocationProviderWinrt::~LocationProviderWinrt() {
   StopProvider();
 }
 
+void LocationProviderWinrt::FillDiagnostics(
+    mojom::GeolocationDiagnostics& diagnostics) {
+  if (!is_started_) {
+    diagnostics.provider_state =
+        mojom::GeolocationDiagnostics::ProviderState::kStopped;
+  } else if (!permission_granted_) {
+    diagnostics.provider_state = mojom::GeolocationDiagnostics::ProviderState::
+        kBlockedBySystemPermission;
+  } else if (enable_high_accuracy_) {
+    diagnostics.provider_state =
+        mojom::GeolocationDiagnostics::ProviderState::kHighAccuracy;
+  } else {
+    diagnostics.provider_state =
+        mojom::GeolocationDiagnostics::ProviderState::kLowAccuracy;
+  }
+}
+
 void LocationProviderWinrt::SetUpdateCallback(
     const LocationProviderUpdateCallback& callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -158,6 +175,7 @@ void LocationProviderWinrt::SetUpdateCallback(
 void LocationProviderWinrt::StartProvider(bool high_accuracy) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
+  is_started_ = true;
   enable_high_accuracy_ = high_accuracy;
 
   HRESULT hr = S_OK;
@@ -193,6 +211,8 @@ void LocationProviderWinrt::StartProvider(bool high_accuracy) {
 
 void LocationProviderWinrt::StopProvider() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  is_started_ = false;
 
   // Reset the reference location state (provider+position)
   // so that future starts use fresh locations from

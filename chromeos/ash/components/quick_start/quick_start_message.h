@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_QUICK_START_QUICK_START_MESSAGE_H_
 
 #include <string>
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "chromeos/ash/components/quick_start/quick_start_message_type.h"
 
@@ -16,6 +17,15 @@ namespace ash::quick_start {
 // used by both request builders and parsers.
 class QuickStartMessage {
  public:
+  enum class ReadError {
+    INVALID_JSON,
+    MISSING_MESSAGE_PAYLOAD,
+    BASE64_DESERIALIZATION_FAILURE
+  };
+
+  using ReadResult =
+      base::expected<std::unique_ptr<QuickStartMessage>, ReadError>;
+
   explicit QuickStartMessage(QuickStartMessageType message_type);
   QuickStartMessage(QuickStartMessageType message_type,
                     base::Value::Dict payload);
@@ -29,9 +39,9 @@ class QuickStartMessage {
   // Read a message from raw data.
   // NOTE: This function must be called in a process isolated from the
   // browser process - it will fail otherwise.
-  static std::unique_ptr<QuickStartMessage> ReadMessage(
-      std::vector<uint8_t> data,
-      QuickStartMessageType message_type);
+  static base::expected<std::unique_ptr<QuickStartMessage>,
+                        QuickStartMessage::ReadError>
+  ReadMessage(std::vector<uint8_t> data, QuickStartMessageType message_type);
 
   static void DisableSandboxCheckForTesting();
 

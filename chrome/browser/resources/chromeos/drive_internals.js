@@ -92,6 +92,10 @@ function updateCacheContents(cacheEntry) {
   $('cache-contents').appendChild(tr);
 }
 
+function updateBulkPinningVisible(enabled) {
+  $('bulk-pinning-visible').checked = enabled;
+}
+
 function updateVerboseLogging(enabled) {
   $('verbose-logging-toggle').checked = enabled;
 }
@@ -105,6 +109,7 @@ function updateBulkPinning(enabled) {
 }
 
 function onBulkPinningProgress(progress) {
+  updateBulkPinning(progress.enabled);
   $('bulk-pinning-stage').innerText = progress.stage;
   $('bulk-pinning-free-space').innerText = progress.free_space;
   $('bulk-pinning-required-space').innerText = progress.required_space;
@@ -130,6 +135,7 @@ function onBulkPinningProgress(progress) {
       progress.time_spent_listing_items;
   $('bulk-pinning-time-spent-pinning-files').innerText =
       progress.time_spent_pinning_files;
+  $('bulk-pinning-remaining-time').innerText = progress.remaining_time;
 }
 
 function updateStartupArguments(args) {
@@ -385,72 +391,71 @@ function onZipDone(success) {
   $('button-export-logs').removeAttribute('disabled');
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', () => {
   chrome.send('pageLoaded');
 
   updateToc();
 
-  $('verbose-logging-toggle').addEventListener('change', function(e) {
-    chrome.send('setVerboseLoggingEnabled', [e.target.checked]);
-  });
+  $('bulk-pinning-visible')
+      .addEventListener(
+          'change',
+          e => chrome.send('setBulkPinningVisible', [e.target.checked]));
 
-  $('mirroring-toggle').addEventListener('change', function(e) {
-    chrome.send('setMirroringEnabled', [e.target.checked]);
-  });
+  $('verbose-logging-toggle')
+      .addEventListener(
+          'change',
+          e => chrome.send('setVerboseLoggingEnabled', [e.target.checked]));
 
-  $('bulk-pinning-toggle').addEventListener('change', function(e) {
-    chrome.send('setBulkPinningEnabled', [e.target.checked]);
-  });
+  $('mirroring-toggle')
+      .addEventListener(
+          'change',
+          e => chrome.send('setMirroringEnabled', [e.target.checked]));
 
-  $('startup-arguments-form').addEventListener('submit', function(e) {
+  $('bulk-pinning-toggle')
+      .addEventListener(
+          'change',
+          e => chrome.send('setBulkPinningEnabled', [e.target.checked]));
+
+  $('startup-arguments-form').addEventListener('submit', e => {
     e.preventDefault();
     $('arguments-status-text').textContent = 'applying...';
     chrome.send('setStartupArguments', [$('startup-arguments-input').value]);
   });
 
-  $('mirror-path-form').addEventListener('submit', function(e) {
+  $('mirror-path-form').addEventListener('submit', e => {
     e.preventDefault();
     $('mirroring-path-status').textContent = 'adding...';
     chrome.send('addSyncPath', [$('mirror-path-input').value]);
   });
 
-  $('button-enable-tracing').addEventListener('click', function() {
-    chrome.send('enableTracing');
-  });
+  $('button-enable-tracing')
+      .addEventListener('click', () => chrome.send('enableTracing'));
 
-  $('button-disable-tracing').addEventListener('click', function() {
-    chrome.send('disableTracing');
-  });
+  $('button-disable-tracing')
+      .addEventListener('click', () => chrome.send('disableTracing'));
 
-  $('button-enable-networking').addEventListener('click', function() {
-    chrome.send('enableNetworking');
-  });
+  $('button-enable-networking')
+      .addEventListener('click', () => chrome.send('enableNetworking'));
 
-  $('button-disable-networking').addEventListener('click', function() {
-    chrome.send('disableNetworking');
-  });
+  $('button-disable-networking')
+      .addEventListener('click', () => chrome.send('disableNetworking'));
 
-  $('button-enable-force-pause-syncing').addEventListener('click', function() {
-    chrome.send('enableForcePauseSyncing');
-  });
+  $('button-enable-force-pause-syncing')
+      .addEventListener('click', () => chrome.send('enableForcePauseSyncing'));
 
-  $('button-disable-force-pause-syncing').addEventListener('click', function() {
-    chrome.send('disableForcePauseSyncing');
-  });
+  $('button-disable-force-pause-syncing')
+      .addEventListener('click', () => chrome.send('disableForcePauseSyncing'));
 
-  $('button-dump-account-settings').addEventListener('click', function() {
-    chrome.send('dumpAccountSettings');
-  });
+  $('button-dump-account-settings')
+      .addEventListener('click', () => chrome.send('dumpAccountSettings'));
 
-  $('button-load-account-settings').addEventListener('click', function() {
-    chrome.send('loadAccountSettings');
-  });
+  $('button-load-account-settings')
+      .addEventListener('click', () => chrome.send('loadAccountSettings'));
 
-  $('button-restart-drive').addEventListener('click', function() {
-    chrome.send('restartDrive');
-  });
+  $('button-restart-drive')
+      .addEventListener('click', () => chrome.send('restartDrive'));
 
-  $('button-reset-drive-filesystem').addEventListener('click', function() {
+  $('button-reset-drive-filesystem').addEventListener('click', () => {
     if (window.confirm(
             'Warning: Any local changes not yet uploaded to the Drive server ' +
             'will be lost, continue?')) {
@@ -459,12 +464,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
-  $('button-export-logs').addEventListener('click', function() {
+  $('button-export-logs').addEventListener('click', () => {
     $('button-export-logs').setAttribute('disabled', 'true');
     chrome.send('zipLogs');
   });
 
-  window.setInterval(function() {
-    chrome.send('periodicUpdate');
-  }, 1000);
+  window.setInterval(() => chrome.send('periodicUpdate'), 1000);
 });

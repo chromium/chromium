@@ -37,6 +37,7 @@ _setup_sys_path()
 from . import file_io
 from .argument import Argument
 from .ast_group import AstGroup
+from .async_iterator import AsyncIterator
 from .attribute import Attribute
 from .callback_function import CallbackFunction
 from .callback_interface import CallbackInterface
@@ -64,13 +65,13 @@ from .interface import LegacyWindowAlias
 from .interface import Maplike
 from .interface import Setlike
 from .interface import Stringifier
-from .interface import SyncIterator
 from .literal_constant import LiteralConstant
 from .namespace import Namespace
 from .observable_array import ObservableArray
 from .operation import Operation
 from .operation import OperationGroup
 from .runtime_enabled_features import RuntimeEnabledFeatures
+from .sync_iterator import SyncIterator
 from .typedef import Typedef
 from .union import Union
 

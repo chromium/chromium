@@ -160,6 +160,12 @@ WebPerformanceMetricsForReporting::LargestContentfulDetailsForMetrics() const {
               ->LargestContentfulPaintDetailsForMetrics());
 }
 
+LargestContentfulPaintDetailsForReporting WebPerformanceMetricsForReporting::
+    SoftNavigationLargestContentfulDetailsForMetrics() const {
+  return (private_->timingForReporting()
+              ->SoftNavigationLargestContentfulPaintDetailsForMetrics());
+}
+
 double WebPerformanceMetricsForReporting::FirstEligibleToPaint() const {
   return base::Milliseconds(
              private_->timingForReporting()->FirstEligibleToPaint())

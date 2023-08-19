@@ -109,7 +109,7 @@ MediaFoundationRendererClientFactory::CreateRenderer(
 
 media::MediaResource::Type
 MediaFoundationRendererClientFactory::GetRequiredMediaResourceType() {
-  return media::MediaResource::Type::STREAM;
+  return media::MediaResource::Type::kStream;
 }
 
 }  // namespace media

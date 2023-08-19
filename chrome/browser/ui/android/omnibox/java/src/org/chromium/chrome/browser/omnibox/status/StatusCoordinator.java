@@ -161,6 +161,11 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
         mMediator.setUrlFocusChangePercent(percent);
     }
 
+    /** Set the x translation of the status view. */
+    public void setTranslationX(float translationX) {
+        mMediator.setTranslationX(translationX);
+    }
+
     /**
      * @param brandedColorScheme The {@link BrandedColorScheme} to use for the status icon and text.
      */
@@ -191,6 +196,16 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
     public void onSecurityStateChanged() {
         updateSecurityIcon();
         updateVerboseStatusVisibility();
+    }
+
+    @Override
+    public void onUrlChanged() {
+        mMediator.onUrlChanged();
+    }
+
+    @Override
+    public void onPageLoadStopped() {
+        mMediator.onPageLoadStopped();
     }
 
     /** Returns the resource identifier of the current security icon drawable. */
@@ -228,8 +243,7 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
     }
 
     /** Returns the ID of the drawable currently shown in the security icon. */
-    @DrawableRes
-    public int getSecurityIconResourceIdForTesting() {
+    public @DrawableRes int getSecurityIconResourceIdForTesting() {
         return mModel.get(StatusProperties.STATUS_ICON_RESOURCE) == null
                 ? 0
                 : mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconResForTesting();

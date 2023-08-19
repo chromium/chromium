@@ -33,11 +33,12 @@ class CONTENT_EXPORT IdentityRegistry
   // registry is attached to, a |delegate| which is used to control modal dialog
   // views and a |registry_origin| which is the origin of this constructor's
   // caller.
-  explicit IdentityRegistry(content::WebContents* web_contents,
-                            FederatedIdentityModalDialogViewDelegate* delegate,
-                            const url::Origin& registry_origin);
+  explicit IdentityRegistry(
+      content::WebContents* web_contents,
+      base::WeakPtr<FederatedIdentityModalDialogViewDelegate> delegate,
+      const url::Origin& registry_origin);
 
-  raw_ptr<FederatedIdentityModalDialogViewDelegate> delegate_;
+  base::WeakPtr<FederatedIdentityModalDialogViewDelegate> delegate_;
   url::Origin registry_origin_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();

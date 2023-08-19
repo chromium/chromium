@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_view.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_view_factory.h"
 #include "ui/gfx/native_widget_types.h"
@@ -17,13 +18,18 @@
 namespace password_manager {
 class PasskeyCredential;
 class UiCredential;
+class KeyboardReplacingSurfaceVisibilityController;
+class ContentPasswordManagerDriver;
 }  // namespace password_manager
 
 class TouchToFillControllerDelegate;
 
 class TouchToFillController {
  public:
-  TouchToFillController();
+  explicit TouchToFillController(
+      base::WeakPtr<
+          password_manager::KeyboardReplacingSurfaceVisibilityController>
+          visibility_controller);
   TouchToFillController(const TouchToFillController&) = delete;
   TouchToFillController& operator=(const TouchToFillController&) = delete;
   ~TouchToFillController();
@@ -32,7 +38,9 @@ class TouchToFillController {
   // |passkey_credentials| to the user.
   void Show(base::span<const password_manager::UiCredential> credentials,
             base::span<password_manager::PasskeyCredential> passkey_credentials,
-            std::unique_ptr<TouchToFillControllerDelegate> delegate);
+            std::unique_ptr<TouchToFillControllerDelegate> delegate,
+            base::WeakPtr<password_manager::ContentPasswordManagerDriver>
+                frame_driver);
 
   // Informs the controller that the user has made a selection. Invokes both
   // FillSuggestion() and TouchToFillDismissed() on |driver_|. No-op if invoked
@@ -49,6 +57,10 @@ class TouchToFillController {
   // indicates passkeys were displayed to the user, which can affect which
   // password management screen is displayed.
   void OnManagePasswordsSelected(bool passkeys_shown);
+
+  // Informs the controller that the user has tapped the "Use Passkey on a
+  // Different Device" option, which initiates hybrid passkey sign-in.
+  void OnHybridSignInSelected();
 
   // Informs the controller that the user has dismissed the sheet. No-op if
   // invoked repeatedly.
@@ -71,16 +83,9 @@ class TouchToFillController {
 #endif
 
  private:
-  enum class TouchToFillState {
-    kNone,
-    kIsShowing,
-    kWasShown,
-  };
   // Callback method for the delegate to signal that it has completed its
   // action and is no longer needed. This destroys the delegate.
   void ActionCompleted();
-
-  TouchToFillState touch_to_fill_state_ = TouchToFillState::kNone;
 
   // Delegate for interacting with the client that owns this controller.
   // It is provided when Show() is called, and reset when the view is
@@ -90,6 +95,9 @@ class TouchToFillController {
   // View used to communicate with the Android frontend. Lazily instantiated so
   // that it can be injected by tests.
   std::unique_ptr<TouchToFillView> view_;
+
+  base::WeakPtr<password_manager::KeyboardReplacingSurfaceVisibilityController>
+      visibility_controller_;
 };
 
 #endif  // CHROME_BROWSER_TOUCH_TO_FILL_TOUCH_TO_FILL_CONTROLLER_H_

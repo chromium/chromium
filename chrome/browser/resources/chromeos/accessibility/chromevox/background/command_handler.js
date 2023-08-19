@@ -18,7 +18,7 @@ import {RectUtil} from '../../common/rect_util.js';
 import {NavBraille} from '../common/braille/nav_braille.js';
 import {BridgeConstants} from '../common/bridge_constants.js';
 import {BridgeHelper} from '../common/bridge_helper.js';
-import {Command, CommandStore} from '../common/command_store.js';
+import {Command} from '../common/command_store.js';
 import {ChromeVoxEvent, CustomAutomationEvent} from '../common/custom_automation_event.js';
 import {EarconId} from '../common/earcon_id.js';
 import {EventSourceType} from '../common/event_source_type.js';
@@ -27,7 +27,6 @@ import {ChromeVoxKbHandler} from '../common/keyboard_handler.js';
 import {Msgs} from '../common/msgs.js';
 import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
 import {PermissionChecker} from '../common/permission_checker.js';
-import {SettingsManager} from '../common/settings_manager.js';
 import {Personality, QueueMode, TtsSettings, TtsSpeechProperties} from '../common/tts_types.js';
 
 import {AutoScrollHandler} from './auto_scroll_handler.js';
@@ -36,7 +35,6 @@ import {BrailleTranslatorManager} from './braille/braille_translator_manager.js'
 import {ChromeVox} from './chromevox.js';
 import {ChromeVoxRange} from './chromevox_range.js';
 import {ChromeVoxState} from './chromevox_state.js';
-import {ChromeVoxBackground} from './classic_background.js';
 import {ClipboardHandler} from './clipboard_handler.js';
 import {Color} from './color.js';
 import {CommandHandlerInterface} from './command_handler_interface.js';
@@ -71,12 +69,6 @@ export class CommandHandler extends CommandHandlerInterface {
   /** @private */
   constructor() {
     super();
-
-    /**
-     * To support viewGraphicAsBraille_(), the current image node.
-     * @private {?AutomationNode}
-     */
-    this.imageNode_;
 
     /**
      * To support Command.SHOW_OPTIONS_PAGE, the state of the ChromeVox Page
@@ -825,57 +817,17 @@ export class CommandHandler extends CommandHandlerInterface {
   }
 
   /**
-   * Called when an image frame is received on a node.
-   * @param {!ChromeVoxEvent} event The event.
-   * @private
-   */
-  onImageFrameUpdated_(event) {
-    const target = event.target;
-    if (target !== this.imageNode_) {
-      return;
-    }
-
-    if (!AutomationUtil.isDescendantOf(
-            ChromeVoxRange.current.start.node, this.imageNode_)) {
-      this.imageNode_.removeEventListener(
-          EventType.IMAGE_FRAME_UPDATED, this.onImageFrameUpdated_, false);
-      this.imageNode_ = null;
-      return;
-    }
-
-    if (target.imageDataUrl) {
-      ChromeVox.braille.writeRawImage(target.imageDataUrl);
-      ChromeVox.braille.freeze();
-    }
-  }
-
-  /**
    * Handle the command to view the first graphic within the current range
    * as braille.
    * @param {!CursorRange} currentRange The current range.
    * @private
    */
   viewGraphicAsBraille_(currentRange) {
-    this.imageNode_?.removeEventListener(
-        EventType.IMAGE_FRAME_UPDATED, this.onImageFrameUpdated_, false);
-    this.imageNode_ = null;
-
     // Find the first node within the current range that supports image data.
     const imageNode = AutomationUtil.findNodePost(
         currentRange.start.node, Dir.FORWARD,
         AutomationPredicate.supportsImageData);
-    if (!imageNode) {
-      return;
-    }
-
-    imageNode.addEventListener(
-        EventType.IMAGE_FRAME_UPDATED, this.onImageFrameUpdated_, false);
-    this.imageNode_ = imageNode;
-    if (imageNode.imageDataUrl) {
-      const event = new CustomAutomationEvent(
-          EventType.IMAGE_FRAME_UPDATED, imageNode, {eventFrom: 'page'});
-      this.onImageFrameUpdated_(event);
-    } else {
+    if (imageNode) {
       imageNode.getImageData(0, 0);
     }
   }
@@ -1692,7 +1644,8 @@ export class CommandHandler extends CommandHandlerInterface {
       // If this is the first time, show a confirmation dialog.
       chrome.accessibilityPrivate.showConfirmationDialog(
           Msgs.getMsg('toggle_screen_title'),
-          Msgs.getMsg('toggle_screen_description'), confirmed => {
+          Msgs.getMsg('toggle_screen_description'), /*cancelName=*/ null,
+          confirmed => {
             if (confirmed) {
               ChromeVoxPrefs.darkScreen = true;
               LocalStorage.set('acceptToggleScreen', true);

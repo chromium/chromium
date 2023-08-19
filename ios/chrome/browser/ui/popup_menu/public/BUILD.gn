@@ -3,14 +3,12 @@
 # found in the LICENSE file.
 
 source_set("public") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "popup_menu_ui_updating.h" ]
   deps = [ "//base" ]
   frameworks = [ "UIKit.framework" ]
 }
 
 source_set("popup_menu_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "popup_menu_consumer.h",
     "popup_menu_presenter.h",
@@ -50,7 +48,6 @@ source_set("popup_menu_ui") {
 }
 
 source_set("ui_constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "popup_menu_ui_constants.h",
     "popup_menu_ui_constants.mm",

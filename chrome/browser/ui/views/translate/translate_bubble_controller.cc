@@ -127,8 +127,7 @@ void TranslateBubbleController::StartPartialTranslate(
   // the bubble will be shown in a loading state until the translation is ready.
   partial_translate_timer_.Start(
       FROM_HERE,
-      base::Milliseconds(
-          translate::kDesktopPartialTranslateBubbleShowDelayMs.Get()),
+      base::Milliseconds(translate::kDesktopPartialTranslateBubbleShowDelayMs),
       base::BindOnce(&TranslateBubbleController::OnPartialTranslateWaitExpired,
                      weak_ptr_factory_.GetWeakPtr()));
 
@@ -196,7 +195,7 @@ void TranslateBubbleController::CreatePartialTranslateBubble(
       source_text.length());
   std::u16string truncated_source_text = gfx::TruncateString(
       source_text,
-      translate::kDesktopPartialTranslateTextSelectionMaxCharacters.Get(),
+      translate::kDesktopPartialTranslateTextSelectionMaxCharacters,
       gfx::WORD_BREAK);
   bool is_truncated = (source_text.compare(truncated_source_text) != 0);
 

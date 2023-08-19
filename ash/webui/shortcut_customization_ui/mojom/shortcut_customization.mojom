@@ -58,6 +58,18 @@ interface AcceleratorConfigurationProvider {
   // False if the keyboard has a search button.
   HasLauncherButton() => (bool has_launcher_button);
 
+  // Checks if the `accelerator` from `action_id` is used by another
+  // accelerator. If an error is found with the input accelerator, return
+  // the error without the accelerator name.
+  GetConflictAccelerator(ash.mojom.AcceleratorSource source,
+                         uint32 action_id, SimpleAccelerator accelerator)
+      => (AcceleratorResultData result);
+
+  // Get the default accelerators for the given accelerator id. The
+  // accelerators are filtered and aliased accelerators are included.
+  GetDefaultAcceleratorsForId(uint32 action_id)
+    => (array<SimpleAccelerator> accelerators);
+
   // Get the accelerator mappings for all sources. This is formatted as
   // AcceleratorSource -> map<AcceleratorActionId, Array<AcceleratorInfo>>.
   // Note that an accelerator action can have multiple accelerators associated

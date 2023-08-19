@@ -108,6 +108,7 @@ constexpr char kChallengeResponse[] = "fake_va_challenge_response_1";
 constexpr char kSignatureBase64[] = "AQIDBAU=";
 constexpr unsigned int kNonVaKeyModulusLengthBits = 2048;
 
+// TODO(b/289983352): This should be an exponential backoff instead.
 constexpr base::TimeDelta kDefaultTryLaterDelay = base::Seconds(30);
 
 const std::string& GetPublicKey() {
@@ -161,44 +162,66 @@ void VerifyDeleteKeyCalledOnce(CertScope cert_scope) {
             ::attestation::DeleteKeysRequest::MATCH_BEHAVIOR_EXACT);
 }
 
-em::CertProvNextActionResponse NextActionTryLater(int64_t delay_ms) {
-  em::CertProvNextActionResponse next_action_response;
-  next_action_response.set_invalidation_topic(kInvalidationTopic);
+using GetNextInstructionResult =
+    base::expected<em::CertProvGetNextInstructionResponse,
+                   CertProvisioningClient::Error>;
 
-  next_action_response.mutable_try_later_instruction()->set_delay_ms(delay_ms);
+using StartResult =
+    base::expected<em::CertProvStartResponse, CertProvisioningClient::Error>;
 
-  return next_action_response;
-}
+using NoDataResult = base::expected<void, CertProvisioningClient::Error>;
 
-em::CertProvNextActionResponse NextActionVaChallenge() {
-  em::CertProvNextActionResponse next_action_response;
-  next_action_response.set_invalidation_topic(kInvalidationTopic);
-
-  next_action_response.mutable_authorize_instruction()->set_va_challenge(
+GetNextInstructionResult NextInstructionAuthorize() {
+  em::CertProvGetNextInstructionResponse next_instruction_response;
+  next_instruction_response.mutable_authorize_instruction()->set_va_challenge(
       kChallenge);
 
-  return next_action_response;
+  return next_instruction_response;
 }
 
-em::CertProvNextActionResponse NextActionProofOfPossession() {
-  em::CertProvNextActionResponse next_action_response;
-  next_action_response.set_invalidation_topic(kInvalidationTopic);
-
-  next_action_response.mutable_proof_of_possession_instruction()
+GetNextInstructionResult NextInstructionProofOfPossession() {
+  em::CertProvGetNextInstructionResponse next_instruction_response;
+  next_instruction_response.mutable_proof_of_possession_instruction()
       ->set_data_to_sign(GetDataToSignStr());
 
-  return next_action_response;
+  return next_instruction_response;
 }
 
-em::CertProvNextActionResponse NextActionImportCertificate(
+GetNextInstructionResult NextInstructionImportCertificate(
     const std::string& pem) {
-  em::CertProvNextActionResponse next_action_response;
-  next_action_response.set_invalidation_topic(kInvalidationTopic);
-
-  next_action_response.mutable_import_certificate_instruction()
+  em::CertProvGetNextInstructionResponse next_instruction_response;
+  next_instruction_response.mutable_import_certificate_instruction()
       ->set_pem_encoded_certificate(pem);
 
-  return next_action_response;
+  return next_instruction_response;
+}
+
+StartResult StartResultOk() {
+  em::CertProvStartResponse start_response;
+  start_response.set_invalidation_topic(kInvalidationTopic);
+
+  return start_response;
+}
+
+NoDataResult NoDataResultOk() {
+  return {};
+}
+
+CertProvisioningClient::Error DmStatusError(
+    policy::DeviceManagementStatus dm_status) {
+  em::CertProvBackendError backend_error;
+  return {dm_status, backend_error};
+}
+
+CertProvisioningClient::Error BackendError(
+    em::CertProvBackendError::Error error) {
+  em::CertProvBackendError backend_error;
+  backend_error.set_error(error);
+  return {policy::DM_STATUS_SUCCESS, backend_error};
+}
+
+CertProvisioningClient::Error InstructionNotYetAvailable() {
+  return BackendError(em::CertProvBackendError::INSTRUCTION_NOT_YET_AVAILABLE);
 }
 
 // Using macros to reduce boilerplate code, but keep real line numbers in
@@ -234,96 +257,41 @@ em::CertProvNextActionResponse NextActionImportCertificate(
         .WillOnce(RunOnceCallback<0>(register_key_result));               \
   }
 
-#define EXPECT_START_OR_CONTINUE_OK(START_OR_CONTINUE_FUNC,           \
-                                    NEXT_ACTION_RESPONSE)             \
-  {                                                                   \
-    EXPECT_CALL(cert_provisioning_client_, START_OR_CONTINUE_FUNC)    \
-        .Times(1)                                                     \
-        .WillOnce(RunOnceCallback<1>(                                 \
-            policy::DeviceManagementStatus::DM_STATUS_SUCCESS,        \
-            /*response_error=*/absl::nullopt, NEXT_ACTION_RESPONSE)); \
+#define EXPECT_START(START_FUNC, RESPONSE_VALUE)       \
+  {                                                    \
+    EXPECT_CALL(cert_provisioning_client_, START_FUNC) \
+        .Times(1)                                      \
+        .WillOnce(RunOnceCallback<1>(RESPONSE_VALUE)); \
   }
 
-#define EXPECT_START_OR_CONTINUE_INVALID_REQUEST(START_OR_CONTINUE_FUNC) \
-  {                                                                      \
-    EXPECT_CALL(cert_provisioning_client_, START_OR_CONTINUE_FUNC)       \
-        .Times(1)                                                        \
-        .WillOnce(RunOnceCallback<1>(                                    \
-            policy::DeviceManagementStatus::DM_STATUS_REQUEST_INVALID,   \
-            /*response_error=*/absl::nullopt,                            \
-            em::CertProvNextActionResponse()));                          \
-  }
+#define EXPECT_START_NO_OP(START_FUNC) \
+  { EXPECT_CALL(cert_provisioning_client_, START_FUNC).Times(1); }
 
-#define EXPECT_START_OR_CONTINUE_CA_ERROR(START_OR_CONTINUE_FUNC)       \
-  {                                                                     \
-    EXPECT_CALL(cert_provisioning_client_, START_OR_CONTINUE_FUNC)      \
-        .Times(1)                                                       \
-        .WillOnce(RunOnceCallback<1>(                                   \
-            policy::DeviceManagementStatus::DM_STATUS_SUCCESS,          \
-            /*response_error=*/CertProvisioningResponseError::CA_ERROR, \
-            em::CertProvNextActionResponse()));                         \
-  }
-
-#define EXPECT_START_OR_CONTINUE_TEMPORARY_UNAVAILABLE(START_OR_CONTINUE_FUNC) \
+#define EXPECT_GET_NEXT_INSTRUCTION(GET_NEXT_INSTRUCTION_FUNC, RESPONSE_VALUE) \
   {                                                                            \
-    EXPECT_CALL(cert_provisioning_client_, START_OR_CONTINUE_FUNC)             \
+    EXPECT_CALL(cert_provisioning_client_, GET_NEXT_INSTRUCTION_FUNC)          \
         .Times(1)                                                              \
-        .WillOnce(RunOnceCallback<1>(                                          \
-            policy::DeviceManagementStatus::DM_STATUS_TEMPORARY_UNAVAILABLE,   \
-            /*response_error=*/absl::nullopt,                                  \
-            em::CertProvNextActionResponse()));                                \
+        .WillOnce(RunOnceCallback<1>(RESPONSE_VALUE));                         \
   }
 
-#define EXPECT_START_OR_CONTINUE_INCONSISTENT_DATA(START_OR_CONTINUE_FUNC) \
-  {                                                                        \
-    EXPECT_CALL(cert_provisioning_client_, START_OR_CONTINUE_FUNC)         \
-        .Times(1)                                                          \
-        .WillOnce(RunOnceCallback<1>(                                      \
-            policy::DeviceManagementStatus::                               \
-                DM_STATUS_SUCCESS, /*response_error=*/                     \
-            CertProvisioningResponseError::INCONSISTENT_DATA,              \
-            em::CertProvNextActionResponse()));                            \
+#define EXPECT_GET_NEXT_INSTRUCTION_NO_OP(GET_NEXT_INSTRUCTION_FUNC)  \
+  {                                                                   \
+    EXPECT_CALL(cert_provisioning_client_, GET_NEXT_INSTRUCTION_FUNC) \
+        .Times(1);                                                    \
   }
 
-#define EXPECT_START_OR_CONTINUE_NO_OP(START_OR_CONTINUE_FUNC) \
-  { EXPECT_CALL(cert_provisioning_client_, START_OR_CONTINUE_FUNC).Times(1); }
-
-#define EXPECT_AUTHORIZE(AUTHORIZE_FUNC, NEXT_ACTION_RESPONSE)                \
-  {                                                                           \
-    EXPECT_CALL(cert_provisioning_client_, AUTHORIZE_FUNC)                    \
-        .Times(1)                                                             \
-        .WillOnce(RunOnceCallback<2>(                                         \
-            policy::DeviceManagementStatus::DM_STATUS_SUCCESS, absl::nullopt, \
-            NEXT_ACTION_RESPONSE));                                           \
+#define EXPECT_AUTHORIZE(AUTHORIZE_FUNC, RESPONSE_VALUE)   \
+  {                                                        \
+    EXPECT_CALL(cert_provisioning_client_, AUTHORIZE_FUNC) \
+        .Times(1)                                          \
+        .WillOnce(RunOnceCallback<2>(RESPONSE_VALUE));     \
   }
 
-#define EXPECT_AUTHORIZE_TEMPORARY_UNAVAILABLE(AUTHORIZE_FUNC)               \
-  {                                                                          \
-    EXPECT_CALL(cert_provisioning_client_, AUTHORIZE_FUNC)                   \
-        .Times(1)                                                            \
-        .WillOnce(RunOnceCallback<2>(                                        \
-            policy::DeviceManagementStatus::DM_STATUS_TEMPORARY_UNAVAILABLE, \
-            /*response_error=*/absl::nullopt,                                \
-            em::CertProvNextActionResponse()));                              \
-  }
-
-#define EXPECT_UPLOAD_PROOF_OF_POSSESSION(UPLOAD_FUNC, NEXT_ACTION_RESPONSE)  \
-  {                                                                           \
-    EXPECT_CALL(cert_provisioning_client_, UPLOAD_FUNC)                       \
-        .Times(1)                                                             \
-        .WillOnce(RunOnceCallback<2>(                                         \
-            policy::DeviceManagementStatus::DM_STATUS_SUCCESS, absl::nullopt, \
-            NEXT_ACTION_RESPONSE));                                           \
-  }
-
-#define EXPECT_UPLOAD_PROOF_OF_POSSESSION_TEMPORARY_UNAVAILABLE(UPLOAD_FUNC) \
-  {                                                                          \
-    EXPECT_CALL(cert_provisioning_client_, UPLOAD_FUNC)                      \
-        .Times(1)                                                            \
-        .WillOnce(RunOnceCallback<2>(                                        \
-            policy::DeviceManagementStatus::DM_STATUS_TEMPORARY_UNAVAILABLE, \
-            /*response_error=*/absl::nullopt,                                \
-            em::CertProvNextActionResponse()));                              \
+#define EXPECT_UPLOAD_PROOF_OF_POSSESSION(UPLOAD_FUNC, RESPONSE_VALUE) \
+  {                                                                    \
+    EXPECT_CALL(cert_provisioning_client_, UPLOAD_FUNC)                \
+        .Times(1)                                                      \
+        .WillOnce(RunOnceCallback<2>(RESPONSE_VALUE));                 \
   }
 
 #define EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(SET_FUNC)        \
@@ -489,8 +457,8 @@ class CertProvisioningWorkerDynamicTest : public ::testing::Test {
 
 // Checks that the worker makes all necessary requests to other modules during
 // success scenario.
-// The worker gets a "no next operation available yet" response after the result
-// for each operation and is triggered by an invalidation.
+// The worker gets a "no next operation available yet" response on each initial
+// GetNextOperation query and is then triggered by an invalidation.
 TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllSteps) {
   base::HistogramTester histogram_tester;
 
@@ -517,25 +485,46 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllSteps) {
     testing::InSequence seq;
 
     // kInitState
-    EXPECT_PREPARE_KEY_OK(
-        *mock_tpm_challenge_key,
-        StartPrepareKeyStep(attestation::AttestationKeyType::KEY_USER,
-                            /*will_register_key=*/true,
-                            ::attestation::KEY_TYPE_RSA,
-                            GetKeyName(kCertProfileId),
-                            /*profile=*/_,
-                            /*callback=*/_, /*signals=*/_));
+    EXPECT_PREPARE_KEY_OK(*mock_tpm_challenge_key,
+                          StartPrepareKeyStep(::attestation::ENTERPRISE_USER,
+                                              /*will_register_key=*/true,
+                                              ::attestation::KEY_TYPE_RSA,
+                                              GetKeyName(kCertProfileId),
+                                              /*profile=*/_,
+                                              /*callback=*/_, /*signals=*/_));
+
+    // kKeypairGenerated
+    EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
+        .WillOnce(VerifyNoBackendErrorsSeen);
+
+    EXPECT_START(Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
+                 StartResultOk());
+
+    EXPECT_CALL(*mock_invalidator, Register(kInvalidationTopic, _))
+        .WillOnce(SaveArg<1>(&on_invalidation_callback));
 
     // kReadyForNextOperation
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
         .WillOnce(VerifyNoBackendErrorsSeen);
 
-    EXPECT_START_OR_CONTINUE_OK(
-        StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_),
-        NextActionVaChallenge());
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        base::unexpected(InstructionNotYetAvailable()));
 
-    EXPECT_CALL(*mock_invalidator, Register(kInvalidationTopic, _))
-        .WillOnce(SaveArg<1>(&on_invalidation_callback));
+    // Waiting mode.
+    EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
+        .WillOnce(VerifyNoBackendErrorsSeen);
+
+    worker.DoStep();
+    EXPECT_EQ(worker.GetState(),
+              CertProvisioningWorkerState::kReadyForNextOperation);
+  }
+  {
+    testing::InSequence seq;
+
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        NextInstructionAuthorize());
 
     // kAuthorizeInstructionReceived
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
@@ -568,10 +557,16 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllSteps) {
     EXPECT_AUTHORIZE(
         Authorize(Eq(std::ref(provisioning_process)), kChallengeResponse,
                   /*callback=*/_),
-        NextActionTryLater(kDefaultTryLaterDelay.InMilliseconds()));
+        NoDataResultOk());
+
     // kReadyForNextOperation
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
         .WillOnce(VerifyNoBackendErrorsSeen);
+
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        base::unexpected(InstructionNotYetAvailable()));
+
     // Waiting mode.
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
         .WillOnce(VerifyNoBackendErrorsSeen);
@@ -583,9 +578,9 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllSteps) {
   {
     testing::InSequence seq;
 
-    EXPECT_START_OR_CONTINUE_OK(
-        StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_),
-        NextActionProofOfPossession());
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        NextInstructionProofOfPossession());
 
     // kProofOfPossessionInstructionReceived
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
@@ -602,10 +597,16 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllSteps) {
         UploadProofOfPossession(Eq(std::ref(provisioning_process)),
                                 GetSignatureStr(),
                                 /*callback=*/_),
-        NextActionTryLater(kDefaultTryLaterDelay.InMilliseconds()));
+        NoDataResultOk());
+
     // kReadyForNextOperation
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
         .WillOnce(VerifyNoBackendErrorsSeen);
+
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        base::unexpected(InstructionNotYetAvailable()));
+
     // Waiting mode.
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
         .WillOnce(VerifyNoBackendErrorsSeen);
@@ -618,9 +619,9 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllSteps) {
   {
     testing::InSequence seq;
 
-    EXPECT_START_OR_CONTINUE_OK(
-        StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_),
-        NextActionImportCertificate(kFakeCertificate));
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        NextInstructionImportCertificate(kFakeCertificate));
 
     // kImportCertificateInstructionReceived
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
@@ -688,22 +689,32 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllStepsNoWaiting) {
     testing::InSequence seq;
 
     // kInitState
-    EXPECT_PREPARE_KEY_OK(
-        *mock_tpm_challenge_key,
-        StartPrepareKeyStep(attestation::AttestationKeyType::KEY_USER,
-                            /*will_register_key=*/true,
-                            ::attestation::KEY_TYPE_RSA,
-                            GetKeyName(kCertProfileId),
-                            /*profile=*/_,
-                            /*callback=*/_, /*signals=*/_));
+    EXPECT_PREPARE_KEY_OK(*mock_tpm_challenge_key,
+                          StartPrepareKeyStep(::attestation::ENTERPRISE_USER,
+                                              /*will_register_key=*/true,
+                                              ::attestation::KEY_TYPE_RSA,
+                                              GetKeyName(kCertProfileId),
+                                              /*profile=*/_,
+                                              /*callback=*/_, /*signals=*/_));
+
+    // kKeypairGenerated
+    EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
+        .WillOnce(VerifyNoBackendErrorsSeen);
+
+    EXPECT_START(Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
+                 StartResultOk());
+
+    base::RepeatingClosure on_invalidation_callback;
+    EXPECT_CALL(*mock_invalidator, Register(kInvalidationTopic, _))
+        .WillOnce(SaveArg<1>(&on_invalidation_callback));
 
     // kReadyForNextOperation
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
         .WillOnce(VerifyNoBackendErrorsSeen);
 
-    EXPECT_START_OR_CONTINUE_OK(
-        StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_),
-        NextActionVaChallenge());
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        NextInstructionAuthorize());
 
     // kAuthorizeInstructionReceived
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
@@ -733,9 +744,18 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllStepsNoWaiting) {
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
         .WillOnce(VerifyNoBackendErrorsSeen);
 
-    EXPECT_AUTHORIZE(Authorize(Eq(std::ref(provisioning_process)),
-                               kChallengeResponse, /*callback=*/_),
-                     NextActionProofOfPossession());
+    EXPECT_AUTHORIZE(
+        Authorize(Eq(std::ref(provisioning_process)), kChallengeResponse,
+                  /*callback=*/_),
+        NoDataResultOk());
+
+    // kReadyForNextOperation
+    EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
+        .WillOnce(VerifyNoBackendErrorsSeen);
+
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        NextInstructionProofOfPossession());
 
     // kProofOfPossessionInstructionReceived
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
@@ -752,7 +772,15 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllStepsNoWaiting) {
         UploadProofOfPossession(Eq(std::ref(provisioning_process)),
                                 GetSignatureStr(),
                                 /*callback=*/_),
-        NextActionImportCertificate(kFakeCertificate));
+        NoDataResultOk());
+
+    // kReadyForNextOperation
+    EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
+        .WillOnce(VerifyNoBackendErrorsSeen);
+
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        NextInstructionImportCertificate(kFakeCertificate));
 
     // kImportCertificateInstructionReceived
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
@@ -810,18 +838,20 @@ TEST_F(CertProvisioningWorkerDynamicTest, VaChallengeRequired) {
   {
     testing::InSequence seq;
 
-    EXPECT_PREPARE_KEY_OK(
-        *mock_tpm_challenge_key,
-        StartPrepareKeyStep(attestation::AttestationKeyType::KEY_USER,
-                            /*will_register_key=*/true,
-                            ::attestation::KEY_TYPE_RSA,
-                            GetKeyName(kCertProfileId),
-                            /*profile=*/_,
-                            /*callback=*/_, /*signals=*/_));
+    EXPECT_PREPARE_KEY_OK(*mock_tpm_challenge_key,
+                          StartPrepareKeyStep(::attestation::ENTERPRISE_USER,
+                                              /*will_register_key=*/true,
+                                              ::attestation::KEY_TYPE_RSA,
+                                              GetKeyName(kCertProfileId),
+                                              /*profile=*/_,
+                                              /*callback=*/_, /*signals=*/_));
 
-    EXPECT_START_OR_CONTINUE_OK(
-        StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_),
-        NextActionProofOfPossession());
+    EXPECT_START(Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
+                 StartResultOk());
+
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        NextInstructionProofOfPossession());
 
     EXPECT_CALL(callback_observer_,
                 Callback(cert_profile, CertProvisioningWorkerState::kFailed))
@@ -855,18 +885,20 @@ TEST_F(CertProvisioningWorkerDynamicTest, NoProofOfPossession) {
   {
     testing::InSequence seq;
 
-    EXPECT_PREPARE_KEY_OK(
-        *mock_tpm_challenge_key,
-        StartPrepareKeyStep(attestation::AttestationKeyType::KEY_USER,
-                            /*will_register_key=*/true,
-                            ::attestation::KEY_TYPE_RSA,
-                            GetKeyName(kCertProfileId),
-                            /*profile=*/_,
-                            /*callback=*/_, /*signals=*/_));
+    EXPECT_PREPARE_KEY_OK(*mock_tpm_challenge_key,
+                          StartPrepareKeyStep(::attestation::ENTERPRISE_USER,
+                                              /*will_register_key=*/true,
+                                              ::attestation::KEY_TYPE_RSA,
+                                              GetKeyName(kCertProfileId),
+                                              /*profile=*/_,
+                                              /*callback=*/_, /*signals=*/_));
 
-    EXPECT_START_OR_CONTINUE_OK(
-        StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_),
-        NextActionVaChallenge());
+    EXPECT_START(Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
+                 StartResultOk());
+
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        NextInstructionAuthorize());
 
     EXPECT_SIGN_CHALLENGE_OK(*mock_tpm_challenge_key,
                              StartSignChallengeStep(kChallenge,
@@ -882,9 +914,14 @@ TEST_F(CertProvisioningWorkerDynamicTest, NoProofOfPossession) {
                            KeyAttributeType::kCertificateProvisioningId,
                            GetCertProfileIdBin(), _));
 
-    EXPECT_AUTHORIZE(Authorize(Eq(std::ref(provisioning_process)),
-                               kChallengeResponse, /*callback=*/_),
-                     NextActionImportCertificate(kFakeCertificate));
+    EXPECT_AUTHORIZE(
+        Authorize(Eq(std::ref(provisioning_process)), kChallengeResponse,
+                  /*callback=*/_),
+        NoDataResultOk());
+
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        NextInstructionImportCertificate(kFakeCertificate));
 
     EXPECT_IMPORT_CERTIFICATE_OK(
         ImportCertificate(TokenId::kUser, /*certificate=*/_, /*callback=*/_));
@@ -937,9 +974,12 @@ TEST_F(CertProvisioningWorkerDynamicTest, NoVaSuccess) {
                            KeyAttributeType::kCertificateProvisioningId,
                            GetCertProfileIdBin(), _));
 
-    EXPECT_START_OR_CONTINUE_OK(
-        StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_),
-        NextActionProofOfPossession());
+    EXPECT_START(Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
+                 StartResultOk());
+
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        NextInstructionProofOfPossession());
 
     EXPECT_SIGN_RSAPKC1_RAW_OK(
         SignRSAPKCS1Raw(::testing::Optional(TokenId::kUser), GetDataToSignBin(),
@@ -949,7 +989,11 @@ TEST_F(CertProvisioningWorkerDynamicTest, NoVaSuccess) {
         UploadProofOfPossession(Eq(std::ref(provisioning_process)),
                                 GetSignatureStr(),
                                 /*callback=*/_),
-        NextActionImportCertificate(kFakeCertificate));
+        NoDataResultOk());
+
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        NextInstructionImportCertificate(kFakeCertificate));
 
     EXPECT_IMPORT_CERTIFICATE_OK(
         ImportCertificate(TokenId::kUser, /*certificate=*/_, /*callback=*/_));
@@ -983,18 +1027,20 @@ TEST_F(CertProvisioningWorkerDynamicTest, VaTooManyTwoProofsOfPossession) {
   {
     testing::InSequence seq;
 
-    EXPECT_PREPARE_KEY_OK(
-        *mock_tpm_challenge_key,
-        StartPrepareKeyStep(attestation::AttestationKeyType::KEY_USER,
-                            /*will_register_key=*/true,
-                            ::attestation::KEY_TYPE_RSA,
-                            GetKeyName(kCertProfileId),
-                            /*profile=*/_,
-                            /*callback=*/_, /*signals=*/_));
+    EXPECT_PREPARE_KEY_OK(*mock_tpm_challenge_key,
+                          StartPrepareKeyStep(::attestation::ENTERPRISE_USER,
+                                              /*will_register_key=*/true,
+                                              ::attestation::KEY_TYPE_RSA,
+                                              GetKeyName(kCertProfileId),
+                                              /*profile=*/_,
+                                              /*callback=*/_, /*signals=*/_));
 
-    EXPECT_START_OR_CONTINUE_OK(
-        StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_),
-        NextActionVaChallenge());
+    EXPECT_START(Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
+                 StartResultOk());
+
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        NextInstructionAuthorize());
 
     EXPECT_SIGN_CHALLENGE_OK(*mock_tpm_challenge_key,
                              StartSignChallengeStep(kChallenge,
@@ -1012,7 +1058,11 @@ TEST_F(CertProvisioningWorkerDynamicTest, VaTooManyTwoProofsOfPossession) {
 
     EXPECT_AUTHORIZE(Authorize(Eq(std::ref(provisioning_process)),
                                kChallengeResponse, /*callback=*/_),
-                     NextActionProofOfPossession());
+                     NoDataResultOk());
+
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        NextInstructionProofOfPossession());
 
     EXPECT_SIGN_RSAPKC1_RAW_OK(
         SignRSAPKCS1Raw(::testing::Optional(TokenId::kUser), GetDataToSignBin(),
@@ -1022,7 +1072,11 @@ TEST_F(CertProvisioningWorkerDynamicTest, VaTooManyTwoProofsOfPossession) {
         UploadProofOfPossession(Eq(std::ref(provisioning_process)),
                                 GetSignatureStr(),
                                 /*callback=*/_),
-        NextActionProofOfPossession());
+        NoDataResultOk());
+
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        NextInstructionProofOfPossession());
 
     EXPECT_CALL(
         *platform_keys_service_,
@@ -1075,9 +1129,12 @@ TEST_F(CertProvisioningWorkerDynamicTest, NoVaTooManyTwoProofsOfPossession) {
                            KeyAttributeType::kCertificateProvisioningId,
                            GetCertProfileIdBin(), _));
 
-    EXPECT_START_OR_CONTINUE_OK(
-        StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_),
-        NextActionProofOfPossession());
+    EXPECT_START(Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
+                 StartResultOk());
+
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        NextInstructionProofOfPossession());
 
     EXPECT_SIGN_RSAPKC1_RAW_OK(
         SignRSAPKCS1Raw(::testing::Optional(TokenId::kUser), GetDataToSignBin(),
@@ -1087,7 +1144,11 @@ TEST_F(CertProvisioningWorkerDynamicTest, NoVaTooManyTwoProofsOfPossession) {
         UploadProofOfPossession(Eq(std::ref(provisioning_process)),
                                 GetSignatureStr(),
                                 /*callback=*/_),
-        NextActionProofOfPossession());
+        NoDataResultOk());
+
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        NextInstructionProofOfPossession());
 
     EXPECT_CALL(
         *platform_keys_service_,
@@ -1104,7 +1165,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, NoVaTooManyTwoProofsOfPossession) {
   worker.DoStep();
 }
 
-// Checks that when the server returns try_again_later_ms instruction, the
+// Checks that when the server returns INSTRUCTION_NOT_YET_AVAILABLE, the
 // worker will retry a request when it asked to continue the provisioning.
 TEST_F(CertProvisioningWorkerDynamicTest, TryLaterManualRetry) {
   CertProfile cert_profile(kCertProfileId, kCertProfileName,
@@ -1128,16 +1189,19 @@ TEST_F(CertProvisioningWorkerDynamicTest, TryLaterManualRetry) {
 
     EXPECT_PREPARE_KEY_OK(
         *mock_tpm_challenge_key,
-        StartPrepareKeyStep(attestation::AttestationKeyType::KEY_DEVICE,
+        StartPrepareKeyStep(::attestation::ENTERPRISE_MACHINE,
                             /*will_register_key=*/true,
                             ::attestation::KEY_TYPE_RSA,
                             /*key_name=*/GetKeyName(kCertProfileId),
                             /*profile=*/_,
                             /*callback=*/_, /*signals=*/_));
 
-    EXPECT_START_OR_CONTINUE_OK(
-        StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_),
-        NextActionTryLater(kDefaultTryLaterDelay.InMilliseconds()));
+    EXPECT_START(Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
+                 StartResultOk());
+
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        base::unexpected(InstructionNotYetAvailable()));
 
     worker.DoStep();
     EXPECT_EQ(worker.GetState(),
@@ -1147,9 +1211,9 @@ TEST_F(CertProvisioningWorkerDynamicTest, TryLaterManualRetry) {
   {
     testing::InSequence seq;
 
-    EXPECT_START_OR_CONTINUE_OK(
-        StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_),
-        NextActionVaChallenge());
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        NextInstructionAuthorize());
 
     EXPECT_SIGN_CHALLENGE_OK(*mock_tpm_challenge_key,
                              StartSignChallengeStep(kChallenge,
@@ -1169,7 +1233,11 @@ TEST_F(CertProvisioningWorkerDynamicTest, TryLaterManualRetry) {
     EXPECT_AUTHORIZE(
         Authorize(Eq(std::ref(provisioning_process)), kChallengeResponse,
                   /*callback=*/_),
-        NextActionTryLater(kDefaultTryLaterDelay.InMilliseconds()));
+        NoDataResultOk());
+
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        base::unexpected(InstructionNotYetAvailable()));
 
     worker.DoStep();
     EXPECT_EQ(worker.GetState(),
@@ -1178,9 +1246,9 @@ TEST_F(CertProvisioningWorkerDynamicTest, TryLaterManualRetry) {
   {
     testing::InSequence seq;
 
-    EXPECT_START_OR_CONTINUE_OK(
-        StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_),
-        NextActionProofOfPossession());
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        NextInstructionProofOfPossession());
 
     EXPECT_SIGN_RSAPKC1_RAW_OK(
         SignRSAPKCS1Raw(::testing::Optional(TokenId::kSystem),
@@ -1190,7 +1258,11 @@ TEST_F(CertProvisioningWorkerDynamicTest, TryLaterManualRetry) {
         UploadProofOfPossession(Eq(std::ref(provisioning_process)),
                                 GetSignatureStr(),
                                 /*callback=*/_),
-        NextActionTryLater(kDefaultTryLaterDelay.InMilliseconds()));
+        NoDataResultOk());
+
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        base::unexpected(InstructionNotYetAvailable()));
 
     worker.DoStep();
     EXPECT_EQ(worker.GetState(),
@@ -1200,9 +1272,9 @@ TEST_F(CertProvisioningWorkerDynamicTest, TryLaterManualRetry) {
   {
     testing::InSequence seq;
 
-    EXPECT_START_OR_CONTINUE_OK(
-        StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_),
-        NextActionTryLater(kDefaultTryLaterDelay.InMilliseconds()));
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        base::unexpected(InstructionNotYetAvailable()));
 
     worker.DoStep();
     EXPECT_EQ(worker.GetState(),
@@ -1212,9 +1284,9 @@ TEST_F(CertProvisioningWorkerDynamicTest, TryLaterManualRetry) {
   {
     testing::InSequence seq;
 
-    EXPECT_START_OR_CONTINUE_OK(
-        StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_),
-        NextActionImportCertificate(kFakeCertificate));
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        NextInstructionImportCertificate(kFakeCertificate));
 
     EXPECT_IMPORT_CERTIFICATE_OK(
         ImportCertificate(TokenId::kSystem, /*certificate=*/_, /*callback=*/_));
@@ -1228,8 +1300,8 @@ TEST_F(CertProvisioningWorkerDynamicTest, TryLaterManualRetry) {
   }
 }
 
-// Checks that when the server returns try_again_later field, the worker will
-// automatically retry a request after some time.
+// Checks that when the server returns INSTRUCTION_NOT_YET_AVAILABLE, the worker
+// will automatically retry a request after some time.
 TEST_F(CertProvisioningWorkerDynamicTest, TryLaterWait) {
   CertProfile cert_profile(kCertProfileId, kCertProfileName,
                            kCertProfileVersion,
@@ -1244,8 +1316,6 @@ TEST_F(CertProvisioningWorkerDynamicTest, TryLaterWait) {
       &cert_provisioning_client_, MakeInvalidator(), GetStateChangeCallback(),
       GetResultCallback());
 
-  const base::TimeDelta too_short_delay = base::Milliseconds(100);
-  const base::TimeDelta min_try_later_delay = base::Seconds(10);
   const base::TimeDelta small_delay = base::Milliseconds(500);
 
   EXPECT_CALL(state_change_callback_observer_, StateChangeCallback)
@@ -1253,18 +1323,20 @@ TEST_F(CertProvisioningWorkerDynamicTest, TryLaterWait) {
   {
     testing::InSequence seq;
 
-    EXPECT_PREPARE_KEY_OK(
-        *mock_tpm_challenge_key,
-        StartPrepareKeyStep(attestation::AttestationKeyType::KEY_USER,
-                            /*will_register_key=*/true,
-                            ::attestation::KEY_TYPE_RSA,
-                            GetKeyName(kCertProfileId),
-                            /*profile=*/_,
-                            /*callback=*/_, /*signals=*/_));
+    EXPECT_PREPARE_KEY_OK(*mock_tpm_challenge_key,
+                          StartPrepareKeyStep(::attestation::ENTERPRISE_USER,
+                                              /*will_register_key=*/true,
+                                              ::attestation::KEY_TYPE_RSA,
+                                              GetKeyName(kCertProfileId),
+                                              /*profile=*/_,
+                                              /*callback=*/_, /*signals=*/_));
 
-    EXPECT_START_OR_CONTINUE_OK(
-        StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_),
-        NextActionTryLater(kDefaultTryLaterDelay.InMilliseconds()));
+    EXPECT_START(Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
+                 StartResultOk());
+
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        base::unexpected(InstructionNotYetAvailable()));
 
     worker.DoStep();
     EXPECT_EQ(worker.GetState(),
@@ -1274,9 +1346,9 @@ TEST_F(CertProvisioningWorkerDynamicTest, TryLaterWait) {
   {
     testing::InSequence seq;
 
-    EXPECT_START_OR_CONTINUE_OK(
-        StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_),
-        NextActionVaChallenge());
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        NextInstructionAuthorize());
 
     EXPECT_SIGN_CHALLENGE_OK(*mock_tpm_challenge_key,
                              StartSignChallengeStep(kChallenge,
@@ -1296,7 +1368,12 @@ TEST_F(CertProvisioningWorkerDynamicTest, TryLaterWait) {
     EXPECT_AUTHORIZE(
         Authorize(Eq(std::ref(provisioning_process)), kChallengeResponse,
                   /*callback=*/_),
-        NextActionTryLater(kDefaultTryLaterDelay.InMilliseconds()));
+        NoDataResultOk());
+
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        base::unexpected(InstructionNotYetAvailable()));
+
     FastForwardBy(kDefaultTryLaterDelay + small_delay);
     EXPECT_EQ(worker.GetState(),
               CertProvisioningWorkerState::kReadyForNextOperation);
@@ -1305,9 +1382,9 @@ TEST_F(CertProvisioningWorkerDynamicTest, TryLaterWait) {
   {
     testing::InSequence seq;
 
-    EXPECT_START_OR_CONTINUE_OK(
-        StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_),
-        NextActionProofOfPossession());
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        NextInstructionProofOfPossession());
 
     EXPECT_SIGN_RSAPKC1_RAW_OK(
         SignRSAPKCS1Raw(::testing::Optional(TokenId::kUser), GetDataToSignBin(),
@@ -1317,7 +1394,11 @@ TEST_F(CertProvisioningWorkerDynamicTest, TryLaterWait) {
         UploadProofOfPossession(Eq(std::ref(provisioning_process)),
                                 GetSignatureStr(),
                                 /*callback=*/_),
-        NextActionTryLater(too_short_delay.InMilliseconds()));
+        NoDataResultOk());
+
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        base::unexpected(InstructionNotYetAvailable()));
 
     FastForwardBy(kDefaultTryLaterDelay + small_delay);
     EXPECT_EQ(worker.GetState(),
@@ -1327,28 +1408,9 @@ TEST_F(CertProvisioningWorkerDynamicTest, TryLaterWait) {
   {
     testing::InSequence seq;
 
-    // Check that minimum wait time is not too small even if the server
-    // has responded with a small one (too_short_delay): No request has been
-    // performed after too_short_delay.
-    FastForwardBy(too_short_delay + small_delay);
-    Mock::VerifyAndClearExpectations(&cert_provisioning_client_);
-
-    // Only after min_try_later_delay does the worker perform the next request.
-    EXPECT_START_OR_CONTINUE_OK(
-        StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_),
-        NextActionTryLater(kDefaultTryLaterDelay.InMilliseconds()));
-    FastForwardBy(min_try_later_delay - too_short_delay);
-
-    EXPECT_EQ(worker.GetState(),
-              CertProvisioningWorkerState::kReadyForNextOperation);
-  }
-
-  {
-    testing::InSequence seq;
-
-    EXPECT_START_OR_CONTINUE_OK(
-        StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_),
-        NextActionImportCertificate(kFakeCertificate));
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        NextInstructionImportCertificate(kFakeCertificate));
 
     EXPECT_IMPORT_CERTIFICATE_OK(
         ImportCertificate(TokenId::kUser, /*certificate=*/_, /*callback=*/_));
@@ -1361,8 +1423,8 @@ TEST_F(CertProvisioningWorkerDynamicTest, TryLaterWait) {
   }
 }
 
-// Checks that when the server returns error status, the worker will enter an
-// error state and stop the provisioning.
+// Checks that when the server returns an error in the "DM Status", the worker
+// will enter an error state and stop the provisioning.
 TEST_F(CertProvisioningWorkerDynamicTest, StatusErrorHandling) {
   const CertScope kCertScope = CertScope::kUser;
   CertProfile cert_profile(kCertProfileId, kCertProfileName,
@@ -1383,17 +1445,17 @@ TEST_F(CertProvisioningWorkerDynamicTest, StatusErrorHandling) {
   {
     testing::InSequence seq;
 
-    EXPECT_PREPARE_KEY_OK(
-        *mock_tpm_challenge_key,
-        StartPrepareKeyStep(attestation::AttestationKeyType::KEY_USER,
-                            /*will_register_key=*/true,
-                            ::attestation::KEY_TYPE_RSA,
-                            GetKeyName(kCertProfileId),
-                            /*profile=*/_,
-                            /*callback=*/_, /*signals=*/_));
+    EXPECT_PREPARE_KEY_OK(*mock_tpm_challenge_key,
+                          StartPrepareKeyStep(::attestation::ENTERPRISE_USER,
+                                              /*will_register_key=*/true,
+                                              ::attestation::KEY_TYPE_RSA,
+                                              GetKeyName(kCertProfileId),
+                                              /*profile=*/_,
+                                              /*callback=*/_, /*signals=*/_));
 
-    EXPECT_START_OR_CONTINUE_INVALID_REQUEST(
-        StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_));
+    EXPECT_START(
+        Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        base::unexpected(DmStatusError(policy::DM_STATUS_REQUEST_INVALID)));
 
     EXPECT_CALL(callback_observer_,
                 Callback(cert_profile, CertProvisioningWorkerState::kFailed))
@@ -1406,8 +1468,9 @@ TEST_F(CertProvisioningWorkerDynamicTest, StatusErrorHandling) {
   VerifyDeleteKeyCalledOnce(kCertScope);
 }
 
-// Checks that when the server returns response error, the worker will enter an
-// error state and stop the provisioning. Also check factory.
+// Checks that when the server returns an error encoded in the proto response ,
+// the worker will enter an error state and stop the provisioning. Also check
+// factory.
 TEST_F(CertProvisioningWorkerDynamicTest, ResponseErrorHandling) {
   const CertScope kCertScope = CertScope::kUser;
   base::HistogramTester histogram_tester;
@@ -1430,17 +1493,17 @@ TEST_F(CertProvisioningWorkerDynamicTest, ResponseErrorHandling) {
   {
     testing::InSequence seq;
 
-    EXPECT_PREPARE_KEY_OK(
-        *mock_tpm_challenge_key,
-        StartPrepareKeyStep(attestation::AttestationKeyType::KEY_USER,
-                            /*will_register_key=*/true,
-                            ::attestation::KEY_TYPE_RSA,
-                            GetKeyName(kCertProfileId),
-                            /*profile=*/_,
-                            /*callback=*/_, /*signals=*/_));
+    EXPECT_PREPARE_KEY_OK(*mock_tpm_challenge_key,
+                          StartPrepareKeyStep(::attestation::ENTERPRISE_USER,
+                                              /*will_register_key=*/true,
+                                              ::attestation::KEY_TYPE_RSA,
+                                              GetKeyName(kCertProfileId),
+                                              /*profile=*/_,
+                                              /*callback=*/_, /*signals=*/_));
 
-    EXPECT_START_OR_CONTINUE_CA_ERROR(
-        StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_));
+    EXPECT_START(
+        Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        base::unexpected(BackendError(em::CertProvBackendError::CA_FAILURE)));
 
     EXPECT_CALL(callback_observer_,
                 Callback(cert_profile, CertProvisioningWorkerState::kFailed))
@@ -1457,7 +1520,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, ResponseErrorHandling) {
       CertProvisioningWorkerState::kFailed, 1);
   histogram_tester.ExpectBucketCount(
       "ChromeOS.CertProvisioning.Result.Dynamic.User",
-      CertProvisioningWorkerState::kReadyForNextOperation, 1);
+      CertProvisioningWorkerState::kKeypairGenerated, 1);
   histogram_tester.ExpectTotalCount(
       "ChromeOS.CertProvisioning.Result.Dynamic.User", 2);
 }
@@ -1482,17 +1545,17 @@ TEST_F(CertProvisioningWorkerDynamicTest, InconsistentDataErrorHandling) {
   {
     testing::InSequence seq;
 
-    EXPECT_PREPARE_KEY_OK(
-        *mock_tpm_challenge_key,
-        StartPrepareKeyStep(attestation::AttestationKeyType::KEY_USER,
-                            /*will_register_key=*/true,
-                            ::attestation::KEY_TYPE_RSA,
-                            GetKeyName(kCertProfileId),
-                            /*profile=*/_,
-                            /*callback=*/_, /*signals=*/_));
+    EXPECT_PREPARE_KEY_OK(*mock_tpm_challenge_key,
+                          StartPrepareKeyStep(::attestation::ENTERPRISE_USER,
+                                              /*will_register_key=*/true,
+                                              ::attestation::KEY_TYPE_RSA,
+                                              GetKeyName(kCertProfileId),
+                                              /*profile=*/_,
+                                              /*callback=*/_, /*signals=*/_));
 
-    EXPECT_START_OR_CONTINUE_INCONSISTENT_DATA(
-        StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_));
+    EXPECT_START(Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
+                 base::unexpected(BackendError(
+                     em::CertProvBackendError::INCONSISTENT_DATA)));
 
     EXPECT_CALL(callback_observer_,
                 Callback(cert_profile,
@@ -1531,25 +1594,26 @@ TEST_F(CertProvisioningWorkerDynamicTest, BackoffStrategy) {
   {
     testing::InSequence seq;
 
-    EXPECT_PREPARE_KEY_OK(
-        *mock_tpm_challenge_key,
-        StartPrepareKeyStep(attestation::AttestationKeyType::KEY_USER,
-                            /*will_register_key=*/true,
-                            ::attestation::KEY_TYPE_RSA,
-                            GetKeyName(kCertProfileId),
-                            /*profile=*/_,
-                            /*callback=*/_, /*signals=*/_));
+    EXPECT_PREPARE_KEY_OK(*mock_tpm_challenge_key,
+                          StartPrepareKeyStep(::attestation::ENTERPRISE_USER,
+                                              /*will_register_key=*/true,
+                                              ::attestation::KEY_TYPE_RSA,
+                                              GetKeyName(kCertProfileId),
+                                              /*profile=*/_,
+                                              /*callback=*/_, /*signals=*/_));
 
-    EXPECT_START_OR_CONTINUE_TEMPORARY_UNAVAILABLE(
-        StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_));
+    EXPECT_START(Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
+                 base::unexpected(
+                     DmStatusError(policy::DM_STATUS_TEMPORARY_UNAVAILABLE)));
     worker.DoStep();
   }
 
   Mock::VerifyAndClearExpectations(&cert_provisioning_client_);
 
   {
-    EXPECT_START_OR_CONTINUE_TEMPORARY_UNAVAILABLE(
-        StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_));
+    EXPECT_START(Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
+                 base::unexpected(
+                     DmStatusError(policy::DM_STATUS_TEMPORARY_UNAVAILABLE)));
     FastForwardBy(next_delay + small_delay * 10);
     next_delay *= 2;
   }
@@ -1557,8 +1621,9 @@ TEST_F(CertProvisioningWorkerDynamicTest, BackoffStrategy) {
   Mock::VerifyAndClearExpectations(&cert_provisioning_client_);
 
   {
-    EXPECT_START_OR_CONTINUE_TEMPORARY_UNAVAILABLE(
-        StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_));
+    EXPECT_START(Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
+                 base::unexpected(
+                     DmStatusError(policy::DM_STATUS_TEMPORARY_UNAVAILABLE)));
     FastForwardBy(next_delay + small_delay * 10);
     next_delay *= 2;
   }
@@ -1566,8 +1631,9 @@ TEST_F(CertProvisioningWorkerDynamicTest, BackoffStrategy) {
   Mock::VerifyAndClearExpectations(&cert_provisioning_client_);
 
   {
-    EXPECT_START_OR_CONTINUE_TEMPORARY_UNAVAILABLE(
-        StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_));
+    EXPECT_START(Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
+                 base::unexpected(
+                     DmStatusError(policy::DM_STATUS_TEMPORARY_UNAVAILABLE)));
     FastForwardBy(next_delay + small_delay);
     next_delay *= 2;
   }
@@ -1594,18 +1660,20 @@ TEST_F(CertProvisioningWorkerDynamicTest, RetryAuthorize) {
   {
     testing::InSequence seq;
 
-    EXPECT_PREPARE_KEY_OK(
-        *mock_tpm_challenge_key,
-        StartPrepareKeyStep(attestation::AttestationKeyType::KEY_USER,
-                            /*will_register_key=*/true,
-                            ::attestation::KEY_TYPE_RSA,
-                            GetKeyName(kCertProfileId),
-                            /*profile=*/_,
-                            /*callback=*/_, /*signals=*/_));
+    EXPECT_PREPARE_KEY_OK(*mock_tpm_challenge_key,
+                          StartPrepareKeyStep(::attestation::ENTERPRISE_USER,
+                                              /*will_register_key=*/true,
+                                              ::attestation::KEY_TYPE_RSA,
+                                              GetKeyName(kCertProfileId),
+                                              /*profile=*/_,
+                                              /*callback=*/_, /*signals=*/_));
 
-    EXPECT_START_OR_CONTINUE_OK(
-        StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_),
-        NextActionVaChallenge());
+    EXPECT_START(Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
+                 StartResultOk());
+
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        NextInstructionAuthorize());
 
     EXPECT_SIGN_CHALLENGE_OK(*mock_tpm_challenge_key,
                              StartSignChallengeStep(kChallenge,
@@ -1621,18 +1689,26 @@ TEST_F(CertProvisioningWorkerDynamicTest, RetryAuthorize) {
                            KeyAttributeType::kCertificateProvisioningId,
                            GetCertProfileIdBin(), _));
 
-    EXPECT_AUTHORIZE_TEMPORARY_UNAVAILABLE(
+    EXPECT_AUTHORIZE(
         Authorize(Eq(std::ref(provisioning_process)), kChallengeResponse,
-                  /*callback=*/_));
+                  /*callback=*/_),
+        base::unexpected(
+            DmStatusError(policy::DM_STATUS_TEMPORARY_UNAVAILABLE)));
+
     worker.DoStep();
   }
 
   {
     testing::InSequence seq;
 
-    EXPECT_AUTHORIZE(Authorize(Eq(std::ref(provisioning_process)),
-                               kChallengeResponse, /*callback=*/_),
-                     NextActionImportCertificate(kFakeCertificate));
+    EXPECT_AUTHORIZE(
+        Authorize(Eq(std::ref(provisioning_process)), kChallengeResponse,
+                  /*callback=*/_),
+        NoDataResultOk());
+
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        NextInstructionImportCertificate(kFakeCertificate));
 
     EXPECT_IMPORT_CERTIFICATE_OK(
         ImportCertificate(TokenId::kUser, /*certificate=*/_, /*callback=*/_));
@@ -1683,18 +1759,23 @@ TEST_F(CertProvisioningWorkerDynamicTest, RetryUploadProofOfPossession) {
                            KeyAttributeType::kCertificateProvisioningId,
                            GetCertProfileIdBin(), _));
 
-    EXPECT_START_OR_CONTINUE_OK(
-        StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_),
-        NextActionProofOfPossession());
+    EXPECT_START(Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
+                 StartResultOk());
+
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        NextInstructionProofOfPossession());
 
     EXPECT_SIGN_RSAPKC1_RAW_OK(
         SignRSAPKCS1Raw(::testing::Optional(TokenId::kUser), GetDataToSignBin(),
                         GetPublicKeyBin(), /*callback=*/_));
 
-    EXPECT_UPLOAD_PROOF_OF_POSSESSION_TEMPORARY_UNAVAILABLE(
+    EXPECT_UPLOAD_PROOF_OF_POSSESSION(
         UploadProofOfPossession(Eq(std::ref(provisioning_process)),
                                 GetSignatureStr(),
-                                /*callback=*/_));
+                                /*callback=*/_),
+        base::unexpected(
+            DmStatusError(policy::DM_STATUS_TEMPORARY_UNAVAILABLE)));
     worker.DoStep();
   }
 
@@ -1705,7 +1786,11 @@ TEST_F(CertProvisioningWorkerDynamicTest, RetryUploadProofOfPossession) {
         UploadProofOfPossession(Eq(std::ref(provisioning_process)),
                                 GetSignatureStr(),
                                 /*callback=*/_),
-        NextActionImportCertificate(kFakeCertificate));
+        NoDataResultOk());
+
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        NextInstructionImportCertificate(kFakeCertificate));
 
     EXPECT_IMPORT_CERTIFICATE_OK(
         ImportCertificate(TokenId::kUser, /*certificate=*/_, /*callback=*/_));
@@ -1739,18 +1824,18 @@ TEST_F(CertProvisioningWorkerDynamicTest, ProcessBackendServerErrorResponse) {
   {
     testing::InSequence seq;
 
-    EXPECT_PREPARE_KEY_OK(
-        *mock_tpm_challenge_key,
-        StartPrepareKeyStep(attestation::AttestationKeyType::KEY_USER,
-                            /*will_register_key=*/true,
-                            ::attestation::KEY_TYPE_RSA,
-                            GetKeyName(kCertProfileId),
-                            /*profile=*/_,
-                            /*callback=*/_, /*signals=*/_));
+    EXPECT_PREPARE_KEY_OK(*mock_tpm_challenge_key,
+                          StartPrepareKeyStep(::attestation::ENTERPRISE_USER,
+                                              /*will_register_key=*/true,
+                                              ::attestation::KEY_TYPE_RSA,
+                                              GetKeyName(kCertProfileId),
+                                              /*profile=*/_,
+                                              /*callback=*/_, /*signals=*/_));
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback());
 
-    EXPECT_START_OR_CONTINUE_TEMPORARY_UNAVAILABLE(
-        StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_));
+    EXPECT_START(Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
+                 base::unexpected(
+                     DmStatusError(policy::DM_STATUS_TEMPORARY_UNAVAILABLE)));
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
         .WillOnce([&worker]() {
           EXPECT_THAT(worker.GetLastBackendServerError(),
@@ -1763,14 +1848,23 @@ TEST_F(CertProvisioningWorkerDynamicTest, ProcessBackendServerErrorResponse) {
 
   {
     testing::InSequence seq;
-    EXPECT_START_OR_CONTINUE_OK(
-        StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_),
-        NextActionVaChallenge());
+    EXPECT_START(Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
+                 StartResultOk());
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
         .WillOnce([&worker]() {
           EXPECT_THAT(worker.GetLastBackendServerError(),
                       testing::Eq(absl::nullopt));
         });
+
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        base::unexpected(InstructionNotYetAvailable()));
+    EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
+        .WillOnce([&worker]() {
+          EXPECT_THAT(worker.GetLastBackendServerError(),
+                      testing::Eq(absl::nullopt));
+        });
+
     worker.DoStep();
   }
 }
@@ -1799,20 +1893,22 @@ TEST_F(CertProvisioningWorkerDynamicTest, RemoveRegisteredKey) {
   {
     testing::InSequence seq;
 
-    EXPECT_PREPARE_KEY_OK(
-        *mock_tpm_challenge_key,
-        StartPrepareKeyStep(attestation::AttestationKeyType::KEY_USER,
-                            /*will_register_key=*/true,
-                            ::attestation::KEY_TYPE_RSA,
-                            GetKeyName(kCertProfileId),
-                            /*profile=*/_,
-                            /*callback=*/_, /*signals=*/_));
+    EXPECT_PREPARE_KEY_OK(*mock_tpm_challenge_key,
+                          StartPrepareKeyStep(::attestation::ENTERPRISE_USER,
+                                              /*will_register_key=*/true,
+                                              ::attestation::KEY_TYPE_RSA,
+                                              GetKeyName(kCertProfileId),
+                                              /*profile=*/_,
+                                              /*callback=*/_, /*signals=*/_));
 
-    EXPECT_START_OR_CONTINUE_OK(
-        StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_),
-        NextActionVaChallenge());
+    EXPECT_START(Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
+                 StartResultOk());
 
     EXPECT_CALL(*mock_invalidator, Register(kInvalidationTopic, _)).Times(1);
+
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        NextInstructionAuthorize());
 
     EXPECT_SIGN_CHALLENGE_OK(*mock_tpm_challenge_key,
                              StartSignChallengeStep(kChallenge,
@@ -1898,7 +1994,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationSuccess) {
   std::unique_ptr<CertProvisioningWorker> worker =
       CertProvisioningWorkerFactory::Get()->Create(
           kCertScope, GetProfile(), &testing_pref_service_, cert_profile,
-          &cert_provisioning_client_, MakeInvalidator(),
+          &cert_provisioning_client_, MakeInvalidator(&mock_invalidator),
           GetStateChangeCallback(), GetResultCallback());
 
   StrictMock<PrefServiceObserver> pref_observer(
@@ -1908,19 +2004,19 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationSuccess) {
   EXPECT_CALL(state_change_callback_observer_, StateChangeCallback)
       .Times(AtLeast(1));
 
-  // Prepare key, send StartOrContinue request.
+  // Prepare key, send Start request.
   {
     testing::InSequence seq;
 
-    EXPECT_PREPARE_KEY_OK(
-        *mock_tpm_challenge_key,
-        StartPrepareKeyStep(attestation::AttestationKeyType::KEY_USER,
-                            /*will_register_key=*/true,
-                            ::attestation::KEY_TYPE_RSA,
-                            GetKeyName(kCertProfileId),
-                            /*profile=*/_,
-                            /*callback=*/_, /*signals=*/_));
+    EXPECT_PREPARE_KEY_OK(*mock_tpm_challenge_key,
+                          StartPrepareKeyStep(::attestation::ENTERPRISE_USER,
+                                              /*will_register_key=*/true,
+                                              ::attestation::KEY_TYPE_RSA,
+                                              GetKeyName(kCertProfileId),
+                                              /*profile=*/_,
+                                              /*callback=*/_, /*signals=*/_));
 
+    // Serialized in kKeypairGenerated = 1 state
     pref_val = ParseJsonDict(base::StringPrintf(
         R"({
           "cert_profile_1": {
@@ -1939,14 +2035,44 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationSuccess) {
             "attempted_proof_of_possession": false,
             "proof_of_possession_signature": "",
             "public_key": "%s",
-            "state": 12
+            "state": 1
           }
         })",
         kPublicKeyBase64));
     EXPECT_CALL(pref_observer, OnPrefValueUpdated(IsJson(pref_val))).Times(1);
 
-    EXPECT_START_OR_CONTINUE_NO_OP(
-        StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_));
+    EXPECT_START(Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
+                 StartResultOk());
+
+    EXPECT_CALL(*mock_invalidator, Register(kInvalidationTopic, _)).Times(1);
+
+    // Serialized in kReadyForNextOperation = 12 state
+    pref_val = ParseJsonDict(base::StringPrintf(
+        R"({
+          "cert_profile_1": {
+            "cert_profile": {
+              "policy_version": "cert_profile_version_1",
+              "name": "Certificate Profile 1",
+              "profile_id": "cert_profile_1",
+              "va_enabled": true,
+              "renewal_period": 1200300,
+              "protocol_version": 2
+            },
+            "cert_scope": 0,
+            "invalidation_topic": "fake_invalidation_topic_1",
+            "key_location": 1,
+            "attempted_va_challenge": false,
+            "attempted_proof_of_possession": false,
+            "proof_of_possession_signature": "",
+            "public_key": "%s",
+            "state": 12
+          }
+        })",
+        kPublicKeyBase64));
+
+    EXPECT_CALL(pref_observer, OnPrefValueUpdated(IsJson(pref_val))).Times(1);
+    EXPECT_GET_NEXT_INSTRUCTION_NO_OP(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_));
 
     worker->DoStep();
   }
@@ -1955,11 +2081,14 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationSuccess) {
   {
     testing::InSequence seq;
 
+    mock_invalidator_obj = MakeInvalidator(&mock_invalidator);
+    EXPECT_CALL(*mock_invalidator, Register(kInvalidationTopic, _)).Times(1);
+
     mock_tpm_challenge_key = PrepareTpmChallengeKey();
 
     EXPECT_CALL(*mock_tpm_challenge_key,
                 RestorePreparedKeyState(
-                    attestation::AttestationKeyType::KEY_USER,
+                    ::attestation::ENTERPRISE_USER,
                     /*will_register_key=*/true, ::attestation::KEY_TYPE_RSA,
                     GetKeyName(kCertProfileId), GetPublicKey(), /*profile=*/_))
         .Times(1);
@@ -1967,19 +2096,17 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationSuccess) {
     worker = CertProvisioningWorkerFactory::Get()->Deserialize(
         kCertScope, GetProfile(), &testing_pref_service_,
         *pref_val.FindDict(kCertProfileId), &cert_provisioning_client_,
-        MakeInvalidator(&mock_invalidator), GetStateChangeCallback(),
+        std::move(mock_invalidator_obj), GetStateChangeCallback(),
         GetResultCallback());
   }
 
-  // Retry StartOrContinue, receive response, try sign challenge.
+  // Retry GetNextInstruction, receive response, try sign challenge.
   {
     testing::InSequence seq;
 
-    EXPECT_START_OR_CONTINUE_OK(
-        StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_),
-        NextActionVaChallenge());
-
-    EXPECT_CALL(*mock_invalidator, Register(kInvalidationTopic, _)).Times(1);
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        NextInstructionAuthorize());
 
     pref_val = ParseJsonDict("{}");
     EXPECT_CALL(pref_observer, OnPrefValueUpdated(IsJson(pref_val))).Times(1);
@@ -2002,7 +2129,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationSuccess) {
     EXPECT_AUTHORIZE(
         Authorize(Eq(std::ref(provisioning_process)), kChallengeResponse,
                   /*callback=*/_),
-        NextActionTryLater(kDefaultTryLaterDelay.InMilliseconds()));
+        NoDataResultOk());
 
     pref_val = ParseJsonDict(base::StringPrintf(
         R"({
@@ -2028,6 +2155,10 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationSuccess) {
         kPublicKeyBase64));
     EXPECT_CALL(pref_observer, OnPrefValueUpdated(IsJson(pref_val))).Times(1);
 
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        base::unexpected(InstructionNotYetAvailable()));
+
     worker->DoStep();
   }
 
@@ -2049,9 +2180,9 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationSuccess) {
   {
     testing::InSequence seq;
 
-    EXPECT_START_OR_CONTINUE_OK(
-        StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_),
-        NextActionProofOfPossession());
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        NextInstructionProofOfPossession());
 
     pref_val = ParseJsonDict("{}");
     EXPECT_CALL(pref_observer, OnPrefValueUpdated(IsJson(pref_val))).Times(1);
@@ -2084,10 +2215,12 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationSuccess) {
         kSignatureBase64, kPublicKeyBase64));
     EXPECT_CALL(pref_observer, OnPrefValueUpdated(IsJson(pref_val))).Times(1);
 
-    EXPECT_UPLOAD_PROOF_OF_POSSESSION_TEMPORARY_UNAVAILABLE(
+    EXPECT_UPLOAD_PROOF_OF_POSSESSION(
         UploadProofOfPossession(Eq(std::ref(provisioning_process)),
                                 GetSignatureStr(),
-                                /*callback=*/_));
+                                /*callback=*/_),
+        base::unexpected(
+            DmStatusError(policy::DM_STATUS_TEMPORARY_UNAVAILABLE)));
     worker->DoStep();
   }
 
@@ -2112,7 +2245,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationSuccess) {
         UploadProofOfPossession(Eq(std::ref(provisioning_process)),
                                 GetSignatureStr(),
                                 /*callback=*/_),
-        NextActionTryLater(kDefaultTryLaterDelay.InMilliseconds()));
+        NoDataResultOk());
 
     pref_val = ParseJsonDict(base::StringPrintf(
         R"({
@@ -2138,6 +2271,10 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationSuccess) {
         kPublicKeyBase64));
     EXPECT_CALL(pref_observer, OnPrefValueUpdated(IsJson(pref_val))).Times(1);
 
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        base::unexpected(InstructionNotYetAvailable()));
+
     worker->DoStep();
   }
 
@@ -2155,13 +2292,13 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationSuccess) {
         GetResultCallback());
   }
 
-  // Retry StartOrContinue request, receive import certificate instruction.
+  // Retry GetNextInstruction request, receive import certificate instruction.
   {
     testing::InSequence seq;
 
-    EXPECT_START_OR_CONTINUE_OK(
-        StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_),
-        NextActionImportCertificate(kFakeCertificate));
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        NextInstructionImportCertificate(kFakeCertificate));
 
     pref_val = ParseJsonDict("{}");
     EXPECT_CALL(pref_observer, OnPrefValueUpdated(IsJson(pref_val))).Times(1);
@@ -2204,14 +2341,13 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationOnFailure) {
   {
     testing::InSequence seq;
 
-    EXPECT_PREPARE_KEY_OK(
-        *mock_tpm_challenge_key,
-        StartPrepareKeyStep(attestation::AttestationKeyType::KEY_USER,
-                            /*will_register_key=*/true,
-                            ::attestation::KEY_TYPE_RSA,
-                            GetKeyName(kCertProfileId),
-                            /*profile=*/_,
-                            /*callback=*/_, /*signals=*/_));
+    EXPECT_PREPARE_KEY_OK(*mock_tpm_challenge_key,
+                          StartPrepareKeyStep(::attestation::ENTERPRISE_USER,
+                                              /*will_register_key=*/true,
+                                              ::attestation::KEY_TYPE_RSA,
+                                              GetKeyName(kCertProfileId),
+                                              /*profile=*/_,
+                                              /*callback=*/_, /*signals=*/_));
 
     pref_val = ParseJsonDict(base::StringPrintf(
         R"({
@@ -2230,14 +2366,15 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationOnFailure) {
             "attempted_proof_of_possession": false,
             "proof_of_possession_signature": "",
             "public_key": "%s",
-            "state": 12
+            "state": 1
           }
         })",
         kPublicKeyBase64));
     EXPECT_CALL(pref_observer, OnPrefValueUpdated(IsJson(pref_val))).Times(1);
 
-    EXPECT_START_OR_CONTINUE_CA_ERROR(
-        StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_));
+    EXPECT_START(
+        Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        base::unexpected(BackendError(em::CertProvBackendError::CA_FAILURE)));
 
     pref_val = ParseJsonDict("{}");
     EXPECT_CALL(pref_observer, OnPrefValueUpdated(IsJson(pref_val))).Times(1);
@@ -2275,15 +2412,18 @@ TEST_F(CertProvisioningWorkerDynamicTest, InformationalGetters) {
 
     EXPECT_PREPARE_KEY_OK(*mock_tpm_challenge_key, StartPrepareKeyStep);
 
-    EXPECT_START_OR_CONTINUE_OK(
-        StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_),
-        NextActionTryLater(kDefaultTryLaterDelay.InMilliseconds()));
+    EXPECT_START(Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
+                 StartResultOk());
+
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        base::unexpected(InstructionNotYetAvailable()));
 
     worker.DoStep();
     EXPECT_EQ(worker.GetState(),
               CertProvisioningWorkerState::kReadyForNextOperation);
     EXPECT_EQ(worker.GetPreviousState(),
-              CertProvisioningWorkerState::kReadyForNextOperation);
+              CertProvisioningWorkerState::kKeypairGenerated);
     EXPECT_EQ(worker.GetCertProfile(), cert_profile);
     EXPECT_EQ(worker.GetPublicKey(), GetPublicKeyBin());
   }
@@ -2291,8 +2431,9 @@ TEST_F(CertProvisioningWorkerDynamicTest, InformationalGetters) {
   {
     testing::InSequence seq;
 
-    EXPECT_START_OR_CONTINUE_CA_ERROR(
-        StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_));
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        base::unexpected(BackendError(em::CertProvBackendError::CA_FAILURE)));
 
     EXPECT_CALL(callback_observer_,
                 Callback(cert_profile, CertProvisioningWorkerState::kFailed))
@@ -2341,7 +2482,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, CancelDeviceWorker) {
 
     EXPECT_PREPARE_KEY_OK(
         *mock_tpm_challenge_key,
-        StartPrepareKeyStep(attestation::AttestationKeyType::KEY_DEVICE,
+        StartPrepareKeyStep(::attestation::ENTERPRISE_MACHINE,
                             /*will_register_key=*/true,
                             ::attestation::KEY_TYPE_RSA,
                             /*key_name=*/GetKeyName(kCertProfileId),
@@ -2365,14 +2506,14 @@ TEST_F(CertProvisioningWorkerDynamicTest, CancelDeviceWorker) {
             "attempted_proof_of_possession": false,
             "proof_of_possession_signature": "",
             "public_key": "%s",
-            "state": 12
+            "state": 1
           }
         })",
         kPublicKeyBase64));
     EXPECT_CALL(pref_observer, OnPrefValueUpdated(IsJson(pref_val))).Times(1);
 
-    EXPECT_START_OR_CONTINUE_NO_OP(
-        StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_));
+    EXPECT_START_NO_OP(
+        Start(Eq(std::ref(provisioning_process)), /*callback=*/_));
 
     worker->DoStep();
   }

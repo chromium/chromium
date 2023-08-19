@@ -11,11 +11,19 @@ import("//components/feed/features.gni")
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable/favicon_background.xml",
+    "java/res/drawable/home_surface_ui_background.xml",
     "java/res/drawable/single_tab_background.xml",
+    "java/res/drawable/single_tab_card_ripple.xml",
+    "java/res/drawable/single_tab_thumbnail_background.xml",
     "java/res/layout/query_tiles_layout.xml",
+    "java/res/layout/single_tab_module_layout.xml",
     "java/res/layout/single_tab_view_layout.xml",
     "java/res/layout/tasks_surface_search_box_layout.xml",
     "java/res/layout/tasks_view_layout.xml",
+    "java/res/layout/tasks_view_layout_polish.xml",
+    "java/res/values-night/dimens.xml",
+    "java/res/values-sw600dp/dimens.xml",
     "java/res/values/dimens.xml",
     "java/res/values/ids.xml",
   ]
@@ -26,14 +34,12 @@ android_resources("java_resources") {
 }
 
 android_library("public_java") {
+  srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/chrome/features/start_surface/ReturnToStartSurfaceUtil.java",
     "java/src/org/chromium/chrome/features/start_surface/StartSurfaceConfiguration.java",
     "java/src/org/chromium/chrome/features/start_surface/StartSurfaceState.java",
     "java/src/org/chromium/chrome/features/start_surface/StartSurfaceUserData.java",
-    "java/src/org/chromium/chrome/features/tasks/SingleTabView.java",
-    "java/src/org/chromium/chrome/features/tasks/SingleTabViewBinder.java",
-    "java/src/org/chromium/chrome/features/tasks/SingleTabViewProperties.java",
   ]
 
   deps = [
@@ -62,7 +68,7 @@ android_library("public_java") {
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
   resources_package = "org.chromium.chrome.start_surface"
 }
 

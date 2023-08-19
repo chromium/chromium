@@ -109,6 +109,7 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   void GenerateMipmap() override;
   void SetDelegatedInkPointRendererSkiaForTest(
       std::unique_ptr<DelegatedInkPointRendererSkia> renderer) override;
+  bool SupportsBGRA() const override;
 
   std::unique_ptr<DelegatedInkHandler> delegated_ink_handler_;
 
@@ -149,6 +150,8 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   void PrepareColorOrCanvasForRPDQ(const DrawRPDQParams& rpdq_params,
                                    DrawQuadParams* params,
                                    SkColor4f* color);
+
+  bool NeedsFlipY(const DrawQuad* quad) const;
 
   // The returned DrawQuadParams can be modified by the DrawX calls that accept
   // params so that they can apply explicit data transforms before sending to
@@ -487,6 +490,7 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
 #endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
 
   const bool is_using_raw_draw_;
+  const bool is_using_graphite_;
 
   gfx::ColorConversionSkFilterCache color_filter_cache_;
 

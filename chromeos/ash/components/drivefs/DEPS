@@ -4,6 +4,7 @@ include_rules = [
   "+chromeos/ash/components/dbus/userdataauth",
   "+chromeos/ash/components/disks",
   "+chromeos/ash/components/network",
+  "+chromeos/ash/components/file_manager",
   "+components/drive",
   "+components/invalidation/impl/fake_invalidation_service.h",
   "+components/signin",

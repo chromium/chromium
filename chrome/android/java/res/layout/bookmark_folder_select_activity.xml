@@ -12,8 +12,8 @@ found in the LICENSE file.
         android:id="@+id/bookmark_folder_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="@dimen/bookmark_list_view_padding_top"
-        android:clipToPadding="false"
+        android:paddingTop="@dimen/toolbar_height_no_shadow"
+        android:clipToPadding="true"
         android:divider="@null"
         android:dividerHeight="0dp" />
 

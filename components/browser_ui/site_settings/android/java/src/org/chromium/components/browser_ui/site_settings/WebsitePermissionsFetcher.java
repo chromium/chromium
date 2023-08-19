@@ -10,13 +10,13 @@ import static org.chromium.components.browser_ui.site_settings.WebsitePreference
 import android.util.Pair;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.common.ContentSwitches;
 
 import java.util.ArrayList;
@@ -206,7 +206,7 @@ public class WebsitePermissionsFetcher {
         private void addAllFetchers(TaskQueue queue) {
             addFetcherForStorage(queue);
             // Fetch cookies if the new UI is enabled.
-            if (SiteSettingsFeatureList.isEnabled(SiteSettingsFeatureList.SITE_DATA_IMPROVEMENTS)) {
+            if (SiteSettingsFeatureMap.isEnabled(SiteSettingsFeatureList.SITE_DATA_IMPROVEMENTS)) {
                 queue.add(new CookiesInfoFetcher());
             }
             for (@ContentSettingsType int type = 0; type < ContentSettingsType.NUM_TYPES; type++) {
@@ -235,7 +235,9 @@ public class WebsitePermissionsFetcher {
 
             if (category.getType() == SiteSettingsCategory.Type.ALL_SITES) {
                 addAllFetchers(queue);
-            } else if (category.getType() == SiteSettingsCategory.Type.USE_STORAGE) {
+                // TODO(crbug.com/1459631): Add in fetcher for Zoom info.
+            } else if (category.getType() == SiteSettingsCategory.Type.USE_STORAGE
+                    || category.getType() == SiteSettingsCategory.Type.ZOOM) {
                 addFetcherForStorage(queue);
             } else {
                 assert getPermissionsType(category.getContentSettingsType()) != null;
@@ -268,6 +270,8 @@ public class WebsitePermissionsFetcher {
             queue.add(new LocalStorageInfoFetcher());
             // Website storage is per-host.
             queue.add(new WebStorageInfoFetcher());
+            // Shared Dictionary info is per {origin, top level site}.
+            queue.add(new SharedDictionaryInfoFetcher());
         }
 
         private void addFetcherForContentSettingsType(
@@ -291,7 +295,7 @@ public class WebsitePermissionsFetcher {
 
             // Remove this check after the flag is removed.
             if (contentSettingsType == ContentSettingsType.NFC
-                    && !ContentFeatureList.isEnabled(ContentFeatureList.WEB_NFC)) {
+                    && !ContentFeatureMap.isEnabled(ContentFeatureList.WEB_NFC)) {
                 return;
             }
 
@@ -303,7 +307,7 @@ public class WebsitePermissionsFetcher {
             // list of permitted Bluetooth devices that each site can connect to.
             // Remove this check after the flag is removed.
             if (contentSettingsType == ContentSettingsType.BLUETOOTH_GUARD
-                    && !ContentFeatureList.isEnabled(
+                    && !ContentFeatureMap.isEnabled(
                             ContentFeatureList.WEB_BLUETOOTH_NEW_PERMISSIONS_BACKEND)) {
                 return;
             }
@@ -497,6 +501,27 @@ public class WebsitePermissionsFetcher {
             }
         }
 
+        private class SharedDictionaryInfoFetcher extends Task {
+            @Override
+            public void runAsync(final TaskQueue queue) {
+                mWebsitePreferenceBridge.fetchSharedDictionaryInfo(
+                        mBrowserContextHandle, new Callback<ArrayList>() {
+                            @Override
+                            public void onResult(ArrayList result) {
+                                @SuppressWarnings("unchecked")
+                                ArrayList<SharedDictionaryInfo> infoArray = result;
+
+                                for (SharedDictionaryInfo info : infoArray) {
+                                    String origin = info.getOrigin();
+                                    if (origin == null) continue;
+                                    findOrCreateSite(origin, null).addSharedDictionaryInfo(info);
+                                }
+                                queue.next();
+                            }
+                        });
+            }
+        }
+
         private class CookiesInfoFetcher extends Task {
             @Override
             public void runAsync(final TaskQueue queue) {
@@ -583,7 +608,6 @@ public class WebsitePermissionsFetcher {
         }
     }
 
-    @VisibleForTesting
     public void setWebsitePreferenceBridgeForTesting(
             WebsitePreferenceBridge websitePreferenceBridge) {
         mWebsitePreferenceBridge = websitePreferenceBridge;

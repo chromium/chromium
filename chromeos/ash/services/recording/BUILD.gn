@@ -8,8 +8,14 @@ assert(is_chromeos_ash)
 
 source_set("recording") {
   sources = [
+    "audio_capture_util.cc",
+    "audio_capture_util.h",
     "audio_capturer.cc",
     "audio_capturer.h",
+    "audio_stream.cc",
+    "audio_stream.h",
+    "audio_stream_mixer.cc",
+    "audio_stream_mixer.h",
     "color_quantization.cc",
     "color_quantization.h",
     "gif_encoder.cc",
@@ -51,6 +57,7 @@ source_set("test_support") {
 
   deps = [
     "//base",
+    "//base/test:test_support",
     "//chromeos/ash/services/recording",
     "//chromeos/ash/services/recording/public/mojom",
     "//media",
@@ -60,7 +67,13 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "lzw_pixel_color_indices_writer_test.cc" ]
+  sources = [
+    "audio_capture_test_base.cc",
+    "audio_capture_test_base.h",
+    "audio_stream_mixer_unittest.cc",
+    "audio_stream_unittest.cc",
+    "lzw_pixel_color_indices_writer_test.cc",
+  ]
 
   deps = [
     ":recording",

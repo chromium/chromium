@@ -19,8 +19,7 @@ void RecordSettingsHistogram(PrefService* pref_service);
 
 // Records the sync data types that were turned off during the advanced sync
 // opt-in flow. When none of the data types were turned off, kNone is recorded.
-void RecordSyncSetupDataTypesHistrogam(syncer::SyncUserSettings* sync_settings,
-                                       PrefService* pref_service);
+void RecordSyncSetupDataTypesHistrogam(syncer::SyncUserSettings* sync_settings);
 
 }  // namespace metrics
 }  // namespace unified_consent

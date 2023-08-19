@@ -213,47 +213,5 @@ public class ChildProcessConnectionMetrics {
                 "Android.ChildProcessBinding.ContentWaivedConnections", contentWaivedBindingCount);
         RecordHistogram.recordCount100Histogram(
                 "Android.ChildProcessBinding.WaivableConnections", waivableBindingCount);
-
-        // Percentages only if there are connections.
-        if (totalConnections > 0) {
-            String bucket = getBucket(totalConnections);
-            RecordHistogram.recordPercentageHistogram(
-                    "Android.ChildProcessBinding.PercentageStrongConnections_" + bucket,
-                    Math.round((float) strongBindingCount / totalConnections * 100));
-            RecordHistogram.recordPercentageHistogram(
-                    "Android.ChildProcessBinding.PercentageVisibleConnections_" + bucket,
-                    Math.round((float) visibleBindingCount / totalConnections * 100));
-            RecordHistogram.recordPercentageHistogram(
-                    "Android.ChildProcessBinding.PercentageNotPerceptibleConnections_" + bucket,
-                    Math.round((float) notPerceptibleBindingCount / totalConnections * 100));
-            RecordHistogram.recordPercentageHistogram(
-                    "Android.ChildProcessBinding.PercentageWaivedConnections_" + bucket,
-                    Math.round((float) waivedBindingCount / totalConnections * 100));
-
-            RecordHistogram.recordPercentageHistogram(
-                    "Android.ChildProcessBinding.PercentageContentVisibleConnections_" + bucket,
-                    Math.round((float) contentVisibleBindingCount / totalConnections * 100));
-            RecordHistogram.recordPercentageHistogram(
-                    "Android.ChildProcessBinding.PercentageContentWaivedConnections_" + bucket,
-                    Math.round((float) contentWaivedBindingCount / totalConnections * 100));
-            RecordHistogram.recordPercentageHistogram(
-                    "Android.ChildProcessBinding.PercentageWaivableConnections_" + bucket,
-                    Math.round((float) waivableBindingCount / totalConnections * 100));
-        }
-    }
-
-    private static String getBucket(int totalConnections) {
-        if (totalConnections < 3) {
-            return "LessThan3Connections";
-        } else if (totalConnections < 6) {
-            return "3To5Connections";
-        } else if (totalConnections < 11) {
-            return "6To10Connections";
-        } else if (totalConnections < 21) {
-            return "11To20Connections";
-        } else if (totalConnections < 51) {
-            return "21To50Connections";
-        }
-        return "MoreThan51Connections";
     }
 }

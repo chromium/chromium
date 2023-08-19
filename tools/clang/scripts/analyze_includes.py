@@ -466,7 +466,7 @@ def main():
 
   parser = argparse.ArgumentParser(description='Analyze an #include graph.')
   parser.add_argument('build_log',
-                      type=argparse.FileType('r'),
+                      type=argparse.FileType('r', errors='replace'),
                       help='The build log to analyze (- for stdin).')
   parser.add_argument('--target',
                       help='The target that was built (e.g. chrome).')

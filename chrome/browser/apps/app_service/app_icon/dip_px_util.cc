@@ -5,7 +5,7 @@
 #include "chrome/browser/apps/app_service/app_icon/dip_px_util.h"
 
 #include "base/check_op.h"
-#include "ui/base/layout.h"
+#include "ui/base/resource/resource_scale_factor.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/size.h"

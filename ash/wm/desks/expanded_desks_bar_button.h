@@ -62,6 +62,7 @@ class ASH_EXPORT ExpandedDesksBarButton : public views::View {
   // views::View:
   void Layout() override;
   void OnThemeChanged() override;
+  gfx::Size CalculatePreferredSize() const override;
 
   absl::optional<ui::ColorId> GetFocusColorIdForTesting();
 

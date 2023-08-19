@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -60,12 +61,12 @@ bool IsBrowserSigninAllowed(Profile* profile) {
   return profile->GetPrefs()->GetBoolean(prefs::kSigninAllowed);
 }
 
-std::string GetOAuth2MintTokenFlowVersion() {
-  return std::string(version_info::GetVersionNumber());
+base::StringPiece GetOAuth2MintTokenFlowVersion() {
+  return version_info::GetVersionNumber();
 }
 
-std::string GetOAuth2MintTokenFlowChannel() {
-  return std::string(version_info::GetChannelString(chrome::GetChannel()));
+base::StringPiece GetOAuth2MintTokenFlowChannel() {
+  return version_info::GetChannelString(chrome::GetChannel());
 }
 
 void RecordFunctionResult(const IdentityGetAuthTokenError& error,
@@ -90,34 +91,11 @@ bool IsInteractionAllowed(
     case IdentityGetAuthTokenFunction::InteractivityStatus::kAllowedWithGesture:
     case IdentityGetAuthTokenFunction::InteractivityStatus::
         kAllowedWithActivity:
-    case IdentityGetAuthTokenFunction::InteractivityStatus::kAllowedNoIdleCheck:
       return true;
   }
 }
 
-// Returns the idle time threshold, which is a parameter of the
-// `kGetAuthTokenCheckInteractivity` experiment. Defaults to
-// `kDefaultGetAuthTokenInactivityThreshold` if the parameter is not defined.
-base::TimeDelta GetIdleTimeThreshold() {
-  DCHECK(base::FeatureList::IsEnabled(kGetAuthTokenCheckInteractivity));
-  int threshold_seconds = base::GetFieldTrialParamByFeatureAsInt(
-      kGetAuthTokenCheckInteractivity, "idle_time_threshold_seconds",
-      kDefaultGetAuthTokenInactivityThreshold.InSeconds());
-  return base::Seconds(threshold_seconds);
-}
-
 }  // namespace
-
-BASE_FEATURE(kGetAuthTokenCheckInteractivity,
-             "InteractiveGetAuthTokenCheckActivity",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-const char kGetAuthTokenActivityStatusHistogramBaseName[] =
-    "Signin.Extensions.GetAuthTokenInteractivityStatus";
-const char kGetAuthTokenIdleTimeHistogramBaseName[] =
-    "Signin.Extensions.GetAuthTokenNoGestureIdleTime";
-const char kGetAuthTokenHistogramConsentSuffix[] = ".Consent";
-const char kGetAuthTokenHistogramSigninSuffix[] = ".Signin";
 
 IdentityGetAuthTokenFunction::IdentityGetAuthTokenFunction() = default;
 
@@ -260,7 +238,7 @@ void IdentityGetAuthTokenFunction::OnReceivedExtensionAccountInfo(
 #if BUILDFLAG(IS_CHROMEOS)
   if (g_browser_process->browser_policy_connector()
           ->IsDeviceEnterpriseManaged()) {
-    if (profiles::IsPublicSession()) {
+    if (profiles::IsManagedGuestSession()) {
       CompleteFunctionWithError(IdentityGetAuthTokenError(
           IdentityGetAuthTokenError::State::kNotAllowlistedInPublicSession));
       return;
@@ -275,7 +253,6 @@ void IdentityGetAuthTokenFunction::OnReceivedExtensionAccountInfo(
   if (account_info.IsEmpty() ||
       !IdentityManagerFactory::GetForProfile(GetProfile())
            ->HasAccountWithRefreshToken(account_info.account_id)) {
-    RecordInteractivityMetrics(InteractionType::kSignin);
     if (!ShouldStartSigninFlow()) {
       CompleteFunctionWithError(
           GetErrorFromInteractivityStatus(InteractionType::kSignin));
@@ -435,7 +412,6 @@ void IdentityGetAuthTokenFunction::StartMintTokenFlow(
   if (!IsInteractionAllowed(interactivity_status_for_consent_)) {
     if (type == IdentityMintRequestQueue::MINT_TYPE_INTERACTIVE) {
       // GAIA told us to do a consent UI.
-      RecordInteractivityMetrics(InteractionType::kConsent);
       CompleteFunctionWithError(
           GetErrorFromInteractivityStatus(InteractionType::kConsent));
       return;
@@ -481,8 +457,9 @@ void IdentityGetAuthTokenFunction::StartMintToken(
     switch (cache_status) {
       case IdentityTokenCacheValue::CACHE_STATUS_NOTFOUND:
 #if BUILDFLAG(IS_CHROMEOS)
-        // Always force minting token for ChromeOS kiosk app and public session.
-        if (profiles::IsPublicSession()) {
+        // Always force minting token for ChromeOS kiosk app and managed guest
+        // session.
+        if (profiles::IsManagedGuestSession()) {
           CompleteFunctionWithError(
               IdentityGetAuthTokenError(IdentityGetAuthTokenError::State::
                                             kNotAllowlistedInPublicSession));
@@ -543,7 +520,6 @@ void IdentityGetAuthTokenFunction::StartMintToken(
         break;
       case IdentityTokenCacheValue::CACHE_STATUS_NOTFOUND:
       case IdentityTokenCacheValue::CACHE_STATUS_REMOTE_CONSENT:
-        RecordInteractivityMetrics(InteractionType::kConsent);
         ShowRemoteConsentDialog(resolution_data_);
         break;
       case IdentityTokenCacheValue::CACHE_STATUS_REMOTE_CONSENT_APPROVED:
@@ -581,7 +557,6 @@ void IdentityGetAuthTokenFunction::OnMintTokenFailure(
   switch (error.state()) {
     case GoogleServiceAuthError::SERVICE_ERROR:
     case GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS:
-      RecordInteractivityMetrics(InteractionType::kSignin);
       if (ShouldStartSigninFlow()) {
         StartSigninFlow();
         return;
@@ -683,14 +658,8 @@ void IdentityGetAuthTokenFunction::OnGaiaRemoteConsentFlowFailed(
 
   switch (failure) {
     case GaiaRemoteConsentFlow::WINDOW_CLOSED:
-    case GaiaRemoteConsentFlow::USER_NAVIGATED_AWAY:
       error = IdentityGetAuthTokenError(
           IdentityGetAuthTokenError::State::kRemoteConsentFlowRejected);
-      break;
-
-    case GaiaRemoteConsentFlow::SET_ACCOUNTS_IN_COOKIE_FAILED:
-      error = IdentityGetAuthTokenError(
-          IdentityGetAuthTokenError::State::kSetAccountsInCookieFailure);
       break;
 
     case GaiaRemoteConsentFlow::LOAD_FAILED:
@@ -711,6 +680,10 @@ void IdentityGetAuthTokenFunction::OnGaiaRemoteConsentFlowFailed(
     case GaiaRemoteConsentFlow::NONE:
       NOTREACHED();
       break;
+
+    case GaiaRemoteConsentFlow::CANNOT_CREATE_WINDOW:
+      error = IdentityGetAuthTokenError(
+          IdentityGetAuthTokenError::State::kCannotCreateWindow);
   }
 
   CompleteFunctionWithError(error);
@@ -889,7 +862,7 @@ void IdentityGetAuthTokenFunction::ShowExtensionLoginPrompt() {
 void IdentityGetAuthTokenFunction::ShowRemoteConsentDialog(
     const RemoteConsentResolutionData& resolution_data) {
   gaia_remote_consent_flow_ = std::make_unique<GaiaRemoteConsentFlow>(
-      this, GetProfile(), token_key_, resolution_data);
+      this, GetProfile(), token_key_, resolution_data, user_gesture());
   gaia_remote_consent_flow_->Start();
 }
 
@@ -899,13 +872,13 @@ IdentityGetAuthTokenFunction::CreateMintTokenFlow() {
       GetSigninScopedDeviceIdForProfile(GetProfile());
   auto mint_token_flow = std::make_unique<OAuth2MintTokenFlow>(
       this,
-      OAuth2MintTokenFlow::Parameters(
+      OAuth2MintTokenFlow::Parameters::CreateForExtensionFlow(
           extension()->id(), oauth2_client_id_,
-          std::vector<std::string>(token_key_.scopes.begin(),
-                                   token_key_.scopes.end()),
-          enable_granular_permissions_, signin_scoped_device_id,
-          GetSelectedUserId(), consent_result_, GetOAuth2MintTokenFlowVersion(),
-          GetOAuth2MintTokenFlowChannel(), gaia_mint_token_mode_));
+          std::vector<base::StringPiece>(token_key_.scopes.begin(),
+                                         token_key_.scopes.end()),
+          gaia_mint_token_mode_, enable_granular_permissions_,
+          GetOAuth2MintTokenFlowVersion(), GetOAuth2MintTokenFlowChannel(),
+          signin_scoped_device_id, GetSelectedUserId(), consent_result_));
   return mint_token_flow;
 }
 
@@ -954,44 +927,6 @@ std::string IdentityGetAuthTokenFunction::GetSelectedUserId() const {
   return "";
 }
 
-void IdentityGetAuthTokenFunction::RecordInteractivityMetrics(
-    InteractionType interaction_type) {
-  // Only record the metrics once per function call.
-  if (interactivity_metrics_recorded_) {
-    return;
-  }
-  interactivity_metrics_recorded_ = true;
-
-  InteractivityStatus interactivity_status = InteractivityStatus::kNotRequested;
-
-  base::StringPiece histogram_suffix;
-  switch (interaction_type) {
-    case InteractionType::kSignin:
-      histogram_suffix = kGetAuthTokenHistogramSigninSuffix;
-      interactivity_status = interactivity_status_for_signin_;
-      break;
-    case InteractionType::kConsent:
-      histogram_suffix = kGetAuthTokenHistogramConsentSuffix;
-      interactivity_status = interactivity_status_for_consent_;
-      break;
-  }
-  base::UmaHistogramEnumeration(
-      base::StrCat(
-          {kGetAuthTokenActivityStatusHistogramBaseName, histogram_suffix}),
-      interactivity_status);
-
-  // When the request is allowed or disallowed based on the idle state, log the
-  // idle time, to help tweak the threshold value. Do not log when
-  // `user_gesture()` is true because these requests should always be allowed.
-  if (interactivity_status == InteractivityStatus::kAllowedWithActivity ||
-      interactivity_status == InteractivityStatus::kDisallowedIdle) {
-    base::UmaHistogramLongTimes(
-        base::StrCat(
-            {kGetAuthTokenIdleTimeHistogramBaseName, histogram_suffix}),
-        idle_time_);
-  }
-}
-
 void IdentityGetAuthTokenFunction::ComputeInteractivityStatus(
     const absl::optional<api::identity::TokenDetails>& details) {
   bool interactive = details && details->interactive.value_or(false);
@@ -1001,19 +936,15 @@ void IdentityGetAuthTokenFunction::ComputeInteractivityStatus(
     return;
   }
 
-  InteractivityStatus status = InteractivityStatus::kAllowedNoIdleCheck;
+  InteractivityStatus status = InteractivityStatus::kDisallowedIdle;
   // Interactive mode requires user action, to prevent unwanted signin tabs.
   // See b/259072565.
-  if (base::FeatureList::IsEnabled(kGetAuthTokenCheckInteractivity)) {
-    idle_time_ = base::Seconds(ui::CalculateIdleTime());
-    if (user_gesture()) {
-      status = InteractivityStatus::kAllowedWithGesture;
-    } else if (ui::CalculateIdleState(GetIdleTimeThreshold().InSeconds()) ==
-               ui::IDLE_STATE_ACTIVE) {
-      status = InteractivityStatus::kAllowedWithActivity;
-    } else {
-      status = InteractivityStatus::kDisallowedIdle;
-    }
+  idle_time_ = base::Seconds(ui::CalculateIdleTime());
+  if (user_gesture()) {
+    status = InteractivityStatus::kAllowedWithGesture;
+  } else if (ui::CalculateIdleState(kGetAuthTokenInactivityTime.InSeconds()) ==
+             ui::IDLE_STATE_ACTIVE) {
+    status = InteractivityStatus::kAllowedWithActivity;
   }
 
   interactivity_status_for_consent_ = status;
@@ -1057,7 +988,6 @@ IdentityGetAuthTokenFunction::GetErrorFromInteractivityStatus(
       break;
     case InteractivityStatus::kAllowedWithGesture:
     case InteractivityStatus::kAllowedWithActivity:
-    case InteractivityStatus::kAllowedNoIdleCheck:
       NOTREACHED();
       break;
   }

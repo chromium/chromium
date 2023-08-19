@@ -120,6 +120,11 @@ void SurfaceLayerImpl::SetIsReflection(bool is_reflection) {
   NoteLayerPropertyChanged();
 }
 
+void SurfaceLayerImpl::ResetStateForUpdateSubmissionStateCallback() {
+  will_draw_needs_reset_ = true;
+  NoteLayerPropertyChanged();
+}
+
 void SurfaceLayerImpl::PushPropertiesTo(LayerImpl* layer) {
   LayerImpl::PushPropertiesTo(layer);
   SurfaceLayerImpl* layer_impl = static_cast<SurfaceLayerImpl*>(layer);
@@ -131,6 +136,11 @@ void SurfaceLayerImpl::PushPropertiesTo(LayerImpl* layer) {
   layer_impl->SetSurfaceHitTestable(surface_hit_testable_);
   layer_impl->SetHasPointerEventsNone(has_pointer_events_none_);
   layer_impl->SetIsReflection(is_reflection_);
+
+  if (layer_impl->IsActive() && will_draw_needs_reset_) {
+    layer_impl->will_draw_ = false;
+    will_draw_needs_reset_ = false;
+  }
 }
 
 bool SurfaceLayerImpl::WillDraw(

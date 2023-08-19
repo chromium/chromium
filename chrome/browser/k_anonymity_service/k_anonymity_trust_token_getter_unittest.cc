@@ -101,15 +101,21 @@ class KAnonymityTrustTokenGetterTest : public testing::Test {
   }
 
   void SimulateResponseForPendingRequest(std::string url, std::string content) {
+    constexpr network::TestURLLoaderFactory::ResponseMatchFlags flags =
+        static_cast<network::TestURLLoaderFactory::ResponseMatchFlags>(
+            network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix |
+            network::TestURLLoaderFactory::ResponseMatchFlags::kWaitForRequest);
     EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
-        url, content, net::HTTP_OK,
-        network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix));
+        url, content, net::HTTP_OK, flags));
   }
 
   void SimulateFailedResponseForPendingRequest(std::string url) {
+    constexpr network::TestURLLoaderFactory::ResponseMatchFlags flags =
+        static_cast<network::TestURLLoaderFactory::ResponseMatchFlags>(
+            network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix |
+            network::TestURLLoaderFactory::ResponseMatchFlags::kWaitForRequest);
     EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
-        url, "", net::HTTP_NOT_FOUND,
-        network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix));
+        url, "", net::HTTP_NOT_FOUND, flags));
   }
 
   void SimulateFailedResponseForAuthToken() {
@@ -124,12 +130,24 @@ class KAnonymityTrustTokenGetterTest : public testing::Test {
                                                                   expiration);
   }
 
+  // Wait for the TestURLLoaderFactory to have a pending request, returning a
+  // pointer to it (but leaving the request in the factory).
+  const network::TestURLLoaderFactory::PendingRequest* WaitForPendingRequest() {
+    while (true) {
+      const auto* pending_request =
+          test_url_loader_factory_.GetPendingRequest(0);
+      if (pending_request) {
+        return pending_request;
+      }
+      task_environment_.RunUntilIdle();
+    }
+  }
+
   void RespondWithTrustTokenNonUniqueUserId(int id) {
     std::string request_url =
         base::StrCat({kAuthServer, "/v1/generateShortIdentifier"});
 
-    const auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
-    ASSERT_TRUE(pending_request);
+    const auto* pending_request = WaitForPendingRequest();
     const auto& request = pending_request->request;
     EXPECT_EQ(request_url, request.url);
     EXPECT_TRUE(
@@ -148,8 +166,7 @@ class KAnonymityTrustTokenGetterTest : public testing::Test {
     std::string request_url =
         base::StringPrintf("%s/v1/%d/fetchKeys?key=", kAuthServer, id);
 
-    const auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
-    ASSERT_TRUE(pending_request);
+    const auto* pending_request = WaitForPendingRequest();
     const auto& request = pending_request->request;
     EXPECT_EQ(0u, request.url.spec().rfind(request_url));
     EXPECT_FALSE(
@@ -181,8 +198,7 @@ class KAnonymityTrustTokenGetterTest : public testing::Test {
     std::string request_url =
         base::StringPrintf("%s/v1/%d/issueTrustToken", kAuthServer, id);
 
-    const auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
-    ASSERT_TRUE(pending_request);
+    const auto* pending_request = WaitForPendingRequest();
     const auto& request = pending_request->request;
     EXPECT_EQ(request_url, request.url);
     EXPECT_TRUE(

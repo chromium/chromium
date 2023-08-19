@@ -88,12 +88,20 @@ class LayoutSVGImage final : public LayoutSVGModelObject {
     return object_bounding_box_;
   }
 
+  gfx::RectF DecoratedBoundingBox() const override {
+    NOT_DESTROYED();
+    return object_bounding_box_;
+  }
+
   void ImageChanged(WrappedImagePtr, CanDeferInvalidation) override;
 
   void UpdateLayout() override;
   void Paint(const PaintInfo&) const override;
 
   bool UpdateBoundingBox();
+  // Update LayoutObject state after layout has completed. Returns true if
+  // boundaries needs to be propagated (because of a change to the transform).
+  bool UpdateAfterLayout(bool bbox_changed);
 
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,

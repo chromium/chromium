@@ -121,14 +121,14 @@ class HEADLESS_EXPORT HeadlessBrowserImpl : public HeadlessBrowser {
 
   base::OnceCallback<void(HeadlessBrowser*)> on_start_callback_;
   absl::optional<HeadlessBrowser::Options> options_;
-  raw_ptr<HeadlessBrowserMainParts, DanglingUntriaged> browser_main_parts_ =
-      nullptr;
+  raw_ptr<HeadlessBrowserMainParts, AcrossTasksDanglingUntriaged>
+      browser_main_parts_ = nullptr;
   int exit_code_ = 0;
 
   base::flat_map<std::string, std::unique_ptr<HeadlessBrowserContextImpl>>
       browser_contexts_;
-  raw_ptr<HeadlessBrowserContext, DanglingUntriaged> default_browser_context_ =
-      nullptr;
+  raw_ptr<HeadlessBrowserContext, AcrossTasksDanglingUntriaged>
+      default_browser_context_ = nullptr;
   scoped_refptr<content::DevToolsAgentHost> agent_host_;
   std::unique_ptr<HeadlessRequestContextManager>
       system_request_context_manager_;

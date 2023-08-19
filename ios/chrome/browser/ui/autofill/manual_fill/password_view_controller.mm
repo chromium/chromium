@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/autofill/manual_fill/password_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/google/core/common/google_util.h"
@@ -31,10 +31,6 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 typedef NS_ENUM(NSInteger, ManualFallbackItemType) {
   ManualFallbackItemTypeUnkown = kItemTypeEnumZero,
@@ -123,7 +119,7 @@ NSString* const kPasswordTableViewAccessibilityIdentifier =
 
     case ManualFallbackItemTypeHeader: {
       TableViewTextLinkCell* linkCell =
-          base::mac::ObjCCastStrict<TableViewTextLinkCell>(cell);
+          base::apple::ObjCCastStrict<TableViewTextLinkCell>(cell);
       linkCell.delegate = self;
       break;
     }
@@ -187,13 +183,13 @@ NSString* const kPasswordTableViewAccessibilityIdentifier =
   DCHECK(cell);
 
   ManualFillCredentialItem* passwordItem =
-      base::mac::ObjCCastStrict<ManualFillCredentialItem>(item);
+      base::apple::ObjCCastStrict<ManualFillCredentialItem>(item);
   if (passwordItem.isConnectedToPreviousItem) {
     return;
   }
 
   ManualFillPasswordCell* passwordCell =
-      base::mac::ObjCCastStrict<ManualFillPasswordCell>(cell);
+      base::apple::ObjCCastStrict<ManualFillPasswordCell>(cell);
 
   NSString* itemIdentifier = passwordItem.uniqueIdentifier;
   CrURL* crurl = [[CrURL alloc] initWithGURL:passwordItem.faviconURL];

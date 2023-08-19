@@ -35,8 +35,10 @@
 <translation id="1280820357415527819">Szukam sieci komórkowych</translation>
 <translation id="1293556467332435079">Pliki</translation>
 <translation id="1297922636971898492">Dysk Google nie jest teraz dostępny. Gdy znów będzie można z niego korzystać, przesyłanie zostanie automatycznie wznowione.</translation>
+<translation id="1306130176943817227">Nie można usunąć. Element jest używany.</translation>
 <translation id="1307931752636661898">Nie można wyświetlić plików Linuksa</translation>
 <translation id="1313405956111467313">Automatyczna konfiguracja serwera proxy</translation>
+<translation id="134645005685694099">Na urządzeniu jest za mało miejsca, aby nadal synchronizować pliki. Nowe pliki nie będą już automatycznie synchronizowane.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Plik lub katalog nie nadaje się do użycia.</translation>
 <translation id="1363028406613469049">Utwór</translation>
@@ -113,7 +115,6 @@
 <translation id="1920798810075583923">Arbuz</translation>
 <translation id="1924372192547904021">Sformatowano: <ph name="DRIVE_NAME" /></translation>
 <translation id="1931134289871235022">Słowacki</translation>
-<translation id="1933345018156373194">Przenoszenie nie powiodło się z powodu nieoczekiwanego błędu: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Fiński</translation>
 <translation id="1942765061641586207">Rozdzielczość grafiki</translation>
 <translation id="1972984168337863910">Rozwiń panele informacji zwrotnej o plikach</translation>
@@ -130,7 +131,7 @@
 <translation id="2084108471225856927">Ustawienia urządzenia</translation>
 <translation id="2084809735218147718">Osoba śpiewająca, aby wyrazić podziękowanie</translation>
 <translation id="2088690981887365033">Sieć VPN</translation>
-<translation id="2089751716171649322">Łatwy dostęp do plików na Dysku Google w trybie offline</translation>
+<translation id="209653272837065803">Za mało miejsca – nie można kontynuować synchronizacji plików</translation>
 <translation id="2111134541987263231">Włącz opcję <ph name="BEGIN_BOLD" />Zezwalaj w trybie incognito<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086">Elementy (<ph name="NUMBER_OF_ITEMS" />) zostaną usunięte i nie będzie można ich przywrócić.</translation>
 <translation id="2122305276694332719">Automatyczne łączenie się z ukrytą siecią pozwala innym widzieć Twoje urządzenie wraz z niektórymi ustawieniami sieci. Nie zalecamy korzystania z tej funkcji.</translation>
@@ -147,9 +148,11 @@
 <translation id="2198315389084035571">chiński uproszczony</translation>
 <translation id="22085916256174561">Koreański</translation>
 <translation id="2208919847696382164">Zainstaluj za pomocą Linuksa</translation>
+<translation id="2215692307449050019">Bateria jest słaba. Synchronizacja zostanie wznowiona, gdy podłączysz urządzenie do zasilania.</translation>
 <translation id="2225536596944493418">Czy na pewno chcesz usunąć te elementy (<ph name="NUMBER_OF_ITEMS" />)?</translation>
 <translation id="2230062665678605299">Nie można utworzyć folderu „<ph name="FOLDER_NAME" />”. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">Osoba z kawą</translation>
+<translation id="2247561763838186830">Wylogowano</translation>
 <translation id="2251368349685848079">Przywróć z kosza</translation>
 <translation id="2278133026967558505">Dostęp do plików dla wszystkich witryn i adresów URL</translation>
 <translation id="2282155092769082568">URL automatycznej konfiguracji:</translation>
@@ -163,7 +166,7 @@
 <translation id="2312704192806647271">{COUNT,plural, =1{Nie udało się znaleźć rozszerzenia o identyfikatorze <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Skontaktuj się z administratorem.}few{Nie udało się znaleźć rozszerzeń o identyfikatorach <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Skontaktuj się z administratorem.}many{Nie udało się znaleźć rozszerzeń o identyfikatorach <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Skontaktuj się z administratorem.}other{Nie udało się znaleźć rozszerzeń o identyfikatorach <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Skontaktuj się z administratorem.}}</translation>
 <translation id="2325650632570794183">Ten typ plików jest nieobsługiwany. W Chrome Web Store znajdziesz aplikację otwierającą pliki tego typu.</translation>
 <translation id="2326539130272988168">Bułgarski</translation>
-<translation id="2337715497728194187">Udostępnij maszynie wirtualnej Bruschetta</translation>
+<translation id="233822363739146957">Za mało miejsca na synchronizację wszystkich plików</translation>
 <translation id="23721837607121582">Pobierz profil mobilny: sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Przełącz na widok listy</translation>
 <translation id="2377590462528165447">Foldery (<ph name="NUMBER_OF_ITEMS" />) zostały udostępnione na Linuksie</translation>
@@ -181,6 +184,7 @@
 <translation id="2464089476039395325">Serwer proxy HTTP</translation>
 <translation id="2467267713099745100">Sieć <ph name="NETWORK_TYPE" />, wyłączona</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
+<translation id="2468470447085858632">Uzyskiwanie dostępu do plików na Dysku Google w trybie offline dzięki synchronizacji plików</translation>
 <translation id="2470939964922472929">Zbyt wiele razy podano nieprawidłowy kod PIN. Aby ustawić nowy kod PIN, wpisz 8-cyfrowy kod PUK otrzymany od operatora.</translation>
 <translation id="2500392669976258912">Gudżarati (znaki fonetyczne)</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -192,7 +196,6 @@
 <translation id="2544853746127077729">Certyfikat uwierzytelniania został odrzucony przez sieć</translation>
 <translation id="255937426064304553">amerykańska klawiatura międzynarodowa</translation>
 <translation id="2563185590376525700">Żaba</translation>
-<translation id="2574327434504608656">Maszynie wirtualnej Bruschetta udostępniono 1 folder</translation>
 <translation id="2578394532502990878">Tamilski fonetyczny</translation>
 <translation id="2579959351793446050">Orija</translation>
 <translation id="2587195714949534472">Przygotowuję do synchronizacji pliku <ph name="FILE_NAME" />…</translation>
@@ -216,6 +219,7 @@
 <translation id="2782104745158847185">Błąd podczas instalowania aplikacji na Linuksa</translation>
 <translation id="2802583107108007218">Więcej informacji o tych ograniczeniach</translation>
 <translation id="2803375539583399270">Wpisz kod PIN</translation>
+<translation id="2819519502129272135">Synchronizacja plików jest wyłączona</translation>
 <translation id="2820957248982571256">Skanuję…</translation>
 <translation id="2830077785865012357">Chiński zhuyin</translation>
 <translation id="2843806747483486897">Zmień ustawienie domyślne...</translation>
@@ -291,7 +295,6 @@
 <translation id="3408072735282270043">Aktywuj, <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">Niemiecki (Niemcy) z klawiaturą Neo 2</translation>
 <translation id="3414856743105198592">Formatowanie nośnika wymiennego spowoduje usunięcie wszystkich danych. Czy chcesz kontynuować?</translation>
-<translation id="3435143625481187092">Przyznaj maszynie wirtualnej Bruschetta uprawnienia dostępu do plików w folderze <ph name="FOLDER_NAME" /></translation>
 <translation id="3437801641691368414">Godzina utworzenia</translation>
 <translation id="343907260260897561">Polaroid</translation>
 <translation id="3455931012307786678">Estoński</translation>
@@ -299,7 +302,6 @@
 <translation id="3479552764303398839">Nie teraz</translation>
 <translation id="3486821258960016770">Mongolski</translation>
 <translation id="3495304270784461826">Błędy: <ph name="COUNT" />.</translation>
-<translation id="3501954296166022751">Twoje pliki na Dysku Google są dostępne offline</translation>
 <translation id="3509680540198371098">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, szczegóły</translation>
 <translation id="3511705761158917664">Przygotowuję do synchronizacji <ph name="NUMBER_OF_ITEMS" /> elementów…</translation>
 <translation id="3522708245912499433">Portugalski</translation>
@@ -356,8 +358,10 @@
 <translation id="3906232975181435906">Instalowanie profilu mobilnego: sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Wklej</translation>
+<translation id="3950820424414687140">Zaloguj się</translation>
 <translation id="3952872973865944257">Telugu (znaki fonetyczne)</translation>
 <translation id="3958548648197196644">Kiwi</translation>
+<translation id="397105322502079400">Obliczanie...</translation>
 <translation id="3971140002794351170">Pobierz profil mobilny: sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Angielski (Wielka Brytania)</translation>
 <translation id="3975895378829046965">Bengalski fonetyczny</translation>
@@ -368,6 +372,7 @@
 <translation id="4040753847560036377">Nieprawidłowy kod PUK</translation>
 <translation id="4057991113334098539">Aktywowanie...</translation>
 <translation id="4092890906744441904">Irlandzki</translation>
+<translation id="4124731372776320263">Synchronizuję 1 plik z Dysku</translation>
 <translation id="4124935795427217608">Jednorożec</translation>
 <translation id="4131235941541910880">Przenieś niepotrzebne elementy do kosza</translation>
 <translation id="4134804435730168042">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, aktywuj po skonfigurowaniu urządzenia</translation>
@@ -377,7 +382,6 @@
 <translation id="4159731583141908892">Plik <ph name="FILE_NAME" /> został przeniesiony.</translation>
 <translation id="4176286497474237543">Opróżnij kosz</translation>
 <translation id="4179621117429069925">Ten element jest w koszu</translation>
-<translation id="4181839429935094755">Foldery udostępnione maszynie wirtualnej Bruschetta: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="4186579485882418952">Włącz tryb offline</translation>
 <translation id="4193154014135846272">Dokument Google</translation>
 <translation id="4197674956721858839">Spakuj wybrane do pliku ZIP</translation>
@@ -417,6 +421,7 @@
 <translation id="4432921877815220091">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, aktywuj po skonfigurowaniu urządzenia, zarządzana przez administratora</translation>
 <translation id="4439427728133035643">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, połącz</translation>
 <translation id="4442424173763614572">Wyszukiwanie DNS nie powiodło się.</translation>
+<translation id="4445896958353114391">Synchronizuję pliki</translation>
 <translation id="4462159676511157176">Własne serwery nazw</translation>
 <translation id="4465725236958772856">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, zarządzana przez administratora, połącz</translation>
 <translation id="4470564870223067757">zestaw Hangul 2</translation>
@@ -438,11 +443,11 @@
 <translation id="4599600860674643278">Filtr został zresetowany.</translation>
 <translation id="4603392156942865207">Kopiuję plik <ph name="FILE_NAME" /> do folderu <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">Wykonawca</translation>
+<translation id="4635373743001040938">Dostępne miejsce prawie się skończyło. Synchronizacja plików została wyłączona.</translation>
 <translation id="4642769377300286600">Instalowanie profilu mobilnego: sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Czeski z klawiaturą QWERTY</translation>
 <translation id="4656777537938206294">Udostępnij pliki offline</translation>
 <translation id="4658782175094886150">Osoba w śniegu</translation>
-<translation id="466782788172479199">Przyznaj maszynie wirtualnej Bruschetta uprawnienia dostępu do plików na Dysku Google. Zmiany będą synchronizowane z innymi urządzeniami.</translation>
 <translation id="4669606053856530811">Osoby z uprawnieniami do: „<ph name="SOURCE_NAME" />” utracą dostęp do tych elementów, chyba że zostaną one im udostępnione.</translation>
 <translation id="467809019005607715">Prezentacje Google</translation>
 <translation id="4690246192099372265">Szwedzki</translation>
@@ -491,8 +496,8 @@
 <translation id="4961158930123534723">Udostępniono 1 folder aplikacji Parallels Desktop</translation>
 <translation id="496656650103537022">Plik <ph name="FILE_NAME" /> został przywrócony</translation>
 <translation id="4969785127455456148">Album</translation>
+<translation id="4972330214479971536">Nie udało się dokończyć konfigurowania synchronizacji plików</translation>
 <translation id="4973523518332075481">Użyj nazwy, której długość nie przekracza <ph name="MAX_LENGTH" /> znaków</translation>
-<translation id="4973970068702235170">Pakowanie nie powiodło się z powodu nieoczekiwanego błędu: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Japoński</translation>
 <translation id="4987699874727873250">Angielski (Indie)</translation>
 <translation id="4988205478593450158">Czy na pewno chcesz usunąć plik „<ph name="FILE_NAME" />”?</translation>
@@ -514,6 +519,7 @@
 <translation id="5102922915594634436">Zarządzaj zsynchronizowanymi folderami</translation>
 <translation id="5109254780565519649">Wystąpił błąd. Niektóre elementy mogły nie zostać przywrócone.</translation>
 <translation id="5110329002213341433">Angielski (Kanada)</translation>
+<translation id="5119780910075847424">Synchronizacja została wstrzymana</translation>
 <translation id="5123433949759960244">Piłka do koszykówki</translation>
 <translation id="5129662217315786329">polski</translation>
 <translation id="5144820558584035333">zestaw Hangul 3 (390)</translation>
@@ -532,6 +538,7 @@
 <translation id="5218183485292899140">szwajcarski francuski</translation>
 <translation id="5234764350956374838">Zamknij</translation>
 <translation id="5253070652067921974">Autor:</translation>
+<translation id="5254207638927440400">Nie można przenieść pliku. Jest on używany.</translation>
 <translation id="5257456363153333584">Ważka</translation>
 <translation id="5262311848634918433"><ph name="MARKUP_1" />Korzystaj z plików, gdziekolwiek jesteś – nawet offline.<ph name="MARKUP_2" />
     Pliki zapisane na Dysku Google są zawsze aktualne i dostępne z dowolnego urządzenia.<ph name="MARKUP_3" />
@@ -552,7 +559,6 @@
 <translation id="5323213332664049067">Ameryka Łacińska</translation>
 <translation id="5330145655348521461">Te pliki zostały otwarte na innym pulpicie. Przejdź do <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />), aby je zobaczyć.</translation>
 <translation id="5330512191124428349">Więcej informacji</translation>
-<translation id="5344246330454251646">Zarządzaj udostępnianiem danych maszynie wirtualnej Bruschetta</translation>
 <translation id="535792325654997756">Osoba z kotami</translation>
 <translation id="5358764674931277">Liczba klatek</translation>
 <translation id="5363339716524495120">Język wprowadzania: chiński</translation>
@@ -564,6 +570,7 @@
 <translation id="5422221874247253874">Punkt dostępu</translation>
 <translation id="5428105026674456456">Hiszpański</translation>
 <translation id="5438282218546237410">Brak wyników dla: <ph name="SEARCH_TERM" />.</translation>
+<translation id="5447680084201416734">Za mało miejsca.</translation>
 <translation id="5449551289610225147">Nieprawidłowe hasło</translation>
 <translation id="5459064203055649751">Plik „<ph name="FILENAME" />” już istnieje. Czy chcesz zastąpić go tym, który przenosisz?</translation>
 <translation id="5463231940765244860">Wpisz</translation>
@@ -574,7 +581,6 @@
 <translation id="5494920125229734069">Wybierz wszystko</translation>
 <translation id="5500122897333236901">Islandzki</translation>
 <translation id="5508696409934741614">Punkty</translation>
-<translation id="5519161320735100193">Ustawienia Dysku Google</translation>
 <translation id="5522908512596376669">Lista plików została przełączona na widok listy.</translation>
 <translation id="5524517123096967210">Nie można odczytać pliku.</translation>
 <translation id="5533102081734025921">Obraz <ph name="IMAGE_TYPE" /></translation>
@@ -602,6 +608,7 @@
 <translation id="5720028165859493293">Plik <ph name="FILE_NAME" /> przeniesiono do kosza</translation>
 <translation id="5724172041621205163">Tajski z klawiaturą pattachote</translation>
 <translation id="57383366388012121">Ostatni miesiąc</translation>
+<translation id="575175778971367197">Nie można teraz zsynchronizować tego pliku</translation>
 <translation id="5756666464756035725">Węgierski QWERTY</translation>
 <translation id="5760252553414789727">Wybrany element: <ph name="SELECTED_FILES_COUNT" /></translation>
 <translation id="5763377084591234761">Niemiecki (Szwajcaria)</translation>
@@ -627,7 +634,6 @@
 <translation id="5896749729057314184">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, nieaktywowana, siła sygnału <ph name="SIGNAL_STRENGTH" />%, szczegóły</translation>
 <translation id="5911887972742538906">Podczas instalowania aplikacji na Linuksa wystąpił błąd.</translation>
 <translation id="5912396950572065471">Format</translation>
-<translation id="5913638992615760742">Kopiowanie nie powiodło się z powodu nieoczekiwanego błędu: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5918480239180455431">Dostępne są nowe funkcje wyszukiwania</translation>
 <translation id="5926082595146149752">Niderlandzki (Holandia) z klawiaturą amerykańską międzynarodową (PC)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -635,7 +641,6 @@
 <translation id="5955954492236143329">Elementy: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Chromeboksy</translation>
 <translation id="5982621672636444458">Opcje sortowania</translation>
-<translation id="6007237601604674381">Przenoszenie nie powiodło się. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Sieć Ethernet</translation>
 <translation id="60357267506638014">czeski (QWERTY)</translation>
 <translation id="603895874132768835">Nie możesz korzystać z tej sieci, dopóki nie ustawisz nowego kodu PIN</translation>
@@ -691,6 +696,7 @@
 <translation id="6423031066725912715">Wietnamski z klawiaturą TCVN</translation>
 <translation id="6430271654280079150">Pozostała 1 próba.</translation>
 <translation id="643243556292470964">Usunięte pliki zostały przeniesione do kosza</translation>
+<translation id="6438480100790416671">Sprawdzam dostępne miejsce…</translation>
 <translation id="6485131920355264772">Pobieranie informacji o wolnym miejscu nie powiodło się</translation>
 <translation id="6495925982925244349">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, zarządzana przez administratora, szczegóły</translation>
 <translation id="649877868557234318">Rozpakowuję plik <ph name="FILE_NAME" /> do folderu <ph name="FOLDER_NAME" /></translation>
@@ -703,6 +709,7 @@
 <translation id="6558280019477628686">Wystąpił błąd. Niektóre elementy mogły nie zostać usunięte.</translation>
 <translation id="656398493051028875">Usuwam „<ph name="FILENAME" />”...</translation>
 <translation id="6581162200855843583">Link Dysku Google</translation>
+<translation id="6588648400954570689">Ustawienia synchronizacji plików</translation>
 <translation id="6594855146910089723">Ten folder jest udostępniany systemowi Linux i Parallels Desktop</translation>
 <translation id="6607272825297743757">Informacje o pliku</translation>
 <translation id="6609332149380188670">Udostępniono foldery (<ph name="NUMBER_OF_ITEMS" />) aplikacji Parallels Desktop</translation>
@@ -717,7 +724,6 @@
 <translation id="6710213216561001401">Poprzedni</translation>
 <translation id="6732801395666424405">Certyfikaty nie zostały wczytane</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
-<translation id="6740270213273127264">Udostępnij folder maszynie wirtualnej Bruschetta</translation>
 <translation id="6750737795876287924">Bieżący katalog</translation>
 <translation id="6751256176799620176">Wybrano jeden folder</translation>
 <translation id="6755827872271341378">Urządzenie z ChromeOS Flex</translation>
@@ -794,6 +800,7 @@
 <translation id="7256405249507348194">Nierozpoznany błąd: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Dostępne usługi</translation>
 <translation id="7291818353625820805">Chcesz, żeby klawisze powtarzały ten sam znak? Wyłącz znaki akcentowane w Ustawieniach klawiatury</translation>
+<translation id="729236380049459563">Synchronizacja plików jest włączona</translation>
 <translation id="7292816689782057017">Zasady administratora nie pozwalają na zapisywanie w niektórych lokalizacjach.</translation>
 <translation id="7294063083760278948">Telugu – transliteracja</translation>
 <translation id="7295662345261934369">Udostępnij innym</translation>
@@ -801,6 +808,7 @@
 <translation id="7309413087278791451">Niemiecki (Belgia)</translation>
 <translation id="7339898014177206373">Nowe okno</translation>
 <translation id="7343393116438664539">Wietnamski teleks</translation>
+<translation id="7347346221088620549">Zaszyfrowany plik</translation>
 <translation id="7357762654218998920">Ten typ pliku nie jest obsługiwany. <ph name="BEGIN_LINK_HELP" />Dowiedz się więcej<ph name="END_LINK_HELP" /> o otwieraniu plików w Chrome OS.</translation>
 <translation id="7359359531237882347">Kopiuję elementy (<ph name="NUMBER_OF_ITEMS" />)...</translation>
 <translation id="7375951387215729722">Lista plików posortowana według kolumny <ph name="COLUMN_NAME" /> w kolejności malejącej.</translation>
@@ -827,6 +835,7 @@
 <translation id="7547811415869834682">Niderlandzki</translation>
 <translation id="7551643184018910560">Przypnij do półki</translation>
 <translation id="7553492409867692754">Przyznaj aplikacjom na Linuksa uprawnienia dostępu do plików w folderze <ph name="FOLDER_NAME" /></translation>
+<translation id="7555339735447658365">Jesteś teraz offline. Synchronizacja plików zostanie wznowiona, gdy będziesz mieć połączenie z internetem.</translation>
 <translation id="7589661784326793847">Chwileczkę</translation>
 <translation id="7592775719802218421">Pobieram plik <ph name="FILE_NAME" /> do udostępnienia w trybie offline</translation>
 <translation id="7600126690270271294">Serbski</translation>
@@ -845,6 +854,7 @@
 <translation id="76959938259365003">Nie udało się opróżnić kosza.</translation>
 <translation id="770015031906360009">Grecki</translation>
 <translation id="7705251383879779343">Plik <ph name="FILE_NAME" /> został skopiowany.</translation>
+<translation id="7707941139430559579">Nie udało się przenieść pliku. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="7708271999969613024">Aby skorzystać z tej sieci, musisz wpisać 8-cyfrowy PUK otrzymany od operatora.</translation>
 <translation id="7711920809702896782">Informacje o pliku graficznym</translation>
 <translation id="7724603315864178912">Wytnij</translation>
@@ -890,10 +900,10 @@
 <translation id="7972920761225148017">Francuski (Szwajcaria)</translation>
 <translation id="7973962044839454485">Uwierzytelnianie PPP nie powiodło się z powodu nieprawidłowej nazwy użytkownika lub hasła</translation>
 <translation id="7980421588063892270">Angielski (USA) z klawiaturą Colemak</translation>
-<translation id="7985008041109611710">Synchronizuję <ph name="NUMBER_OF_FILES_SYNCING" /> pliki(ów)</translation>
 <translation id="8000066093800657092">Brak sieci</translation>
 <translation id="8008366997883261463">Pies</translation>
 <translation id="8028993641010258682">Rozmiar</translation>
+<translation id="8034974485549318493">Aby przeprowadzić wstępną konfigurację, musisz połączyć się z internetem. Dzięki temu będzie można zsynchronizować pliki.</translation>
 <translation id="803771048473350947">Plik</translation>
 <translation id="8038111231936746805">(domyślnie)</translation>
 <translation id="8042602468072383151">Plik audio <ph name="AUDIO_TYPE" /></translation>
@@ -904,6 +914,7 @@
 <translation id="8087576439476816834">Pobierz, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Udostępnione dla mnie</translation>
 <translation id="8116072619078571545">Woda z lodem</translation>
+<translation id="8124093710070495550">Problem z synchronizacją</translation>
 <translation id="8128733386027980860">Angielski (Wielka Brytania) z klawiaturą Dvoraka</translation>
 <translation id="8137331602592933310">Plik „<ph name="FILENAME" />” został Ci udostępniony. Nie możesz go usunąć, ponieważ nie jesteś jego właścicielem.</translation>
 <translation id="8138705869659070104">Aktywuj po konfiguracji urządzenia</translation>
@@ -913,9 +924,11 @@
 <translation id="8154842056504218462">Zaznaczono wszystkie elementy.</translation>
 <translation id="8157684860301034423">Nie udało się pobrać informacji o aplikacji.</translation>
 <translation id="8175731104491895765">Francuski (Belgia)</translation>
+<translation id="8175799081768705361">Synchronizuję pliki (<ph name="NUMBER_OF_FILES_SYNCING" />) na Dysku</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Model urządzenia</translation>
 <translation id="8223479393428528563">Aby zapisać te pliki i używać ich offline, przejdź do trybu online, kliknij pliki prawym przyciskiem myszy i wybierz opcję <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
+<translation id="8241139360630443550">Pokaż miejsce na dane</translation>
 <translation id="8249296373107784235">Przerwij</translation>
 <translation id="8250690786522693009">łacina</translation>
 <translation id="8250920743982581267">Dokumenty</translation>
@@ -946,6 +959,7 @@
 <translation id="8404498045299006085">Zachowaj wszystkie</translation>
 <translation id="8408068190360279472">Sieć <ph name="NETWORK_TYPE" />, łączę</translation>
 <translation id="8425213833346101688">Zmień</translation>
+<translation id="8428213095426709021">Ustawienia</translation>
 <translation id="8431909052837336408">Zmień PIN do karty SIM</translation>
 <translation id="8437209419043462667">amerykański</translation>
 <translation id="8452135315243592079">Brak karty SIM</translation>
@@ -982,6 +996,7 @@
 <translation id="8609695766746872526">Islandzki</translation>
 <translation id="863903787380594467">Nieprawidłowy kod PIN. Pozostałe próby: <ph name="RETRIES" />.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – port</translation>
+<translation id="8656407365183407932">Pliki offline musiały zostać usunięte</translation>
 <translation id="8656768832129462377">Nie sprawdzaj</translation>
 <translation id="8688591111840995413">Nieprawidłowe hasło</translation>
 <translation id="8698464937041809063">Rysunek Google</translation>
@@ -1012,10 +1027,12 @@
 <translation id="8919081441417203123">Duński</translation>
 <translation id="8949925099261528566">Połączono, brak internetu</translation>
 <translation id="8965697826696209160">Nie ma wystarczającej ilości miejsca.</translation>
+<translation id="8970887620466824814">Coś poszło nie tak.</translation>
 <translation id="8971742885766657349">Synchronizuję – <ph name="PERCENT" />%</translation>
 <translation id="8997962250644902079">Chiński (tradycyjny) pinyin</translation>
 <translation id="8998871447376656508">Na Dysku Google jest za mało wolnego miejsca, aby można było przesłać pliki.</translation>
 <translation id="9003940392834790328">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, zarządzana przez administratora, szczegóły</translation>
+<translation id="9007990314804111233">Zaloguj się na konto Microsoft</translation>
 <translation id="9017798300203431059">rosyjska klawiatura fonetyczna</translation>
 <translation id="9034924485347205037">Pliki Linuksa</translation>
 <translation id="9035012421917565900">Nie można przenieść elementów z powrotem do: „<ph name="DESTINATION_NAME" />”, więc tej czynności nie da się cofnąć.</translation>
@@ -1046,7 +1063,6 @@
 <translation id="9213073329713032541">Instalacja rozpoczęła się.</translation>
 <translation id="9219103736887031265">Grafika</translation>
 <translation id="9219908252191632183">Księżycowy</translation>
-<translation id="937795003075802289">Synchronizuję 1 plik</translation>
 <translation id="938470336146445890">Zainstaluj certyfikat użytkownika.</translation>
 <translation id="939736085109172342">Nowy folder</translation>
 <translation id="943972244133411984">Zmodyfikowany przez:</translation>

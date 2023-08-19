@@ -17,7 +17,6 @@ namespace blink {
 
 enum AspectRatioFit { kAspectRatioFitShrink, kAspectRatioFitGrow };
 
-class LayoutSize;
 struct LogicalSize;
 
 // PhysicalSize is the size of a rect (typically a fragment) in the physical
@@ -65,6 +64,12 @@ struct CORE_EXPORT PhysicalSize {
     return *this;
   }
 
+  // Returns a new PhysicalSize scaling `this` by `scale`.
+  PhysicalSize operator*(float scale) const {
+    return PhysicalSize(LayoutUnit(this->width * scale),
+                        LayoutUnit(this->height * scale));
+  }
+
   constexpr bool operator==(const PhysicalSize& other) const {
     return std::tie(other.width, other.height) == std::tie(width, height);
   }
@@ -91,6 +96,20 @@ struct CORE_EXPORT PhysicalSize {
     height *= s;
   }
 
+  // Returns a new PhysicalSize with the maximum width of `this` and `other`,
+  // and the maximum height of `this` and `other`.
+  PhysicalSize ExpandedTo(const PhysicalSize& other) const {
+    return {std::max(this->width, other.width),
+            std::max(this->height, other.height)};
+  }
+
+  // Returns a new PhysicalSize with the minimum width of `this` and `other`,
+  // and the minimum height of `this` and `other`.
+  PhysicalSize ShrunkTo(const PhysicalSize& other) const {
+    return {std::min(this->width, other.width),
+            std::min(this->height, other.height)};
+  }
+
   void ClampNegativeToZero() {
     width = std::max(width, LayoutUnit());
     height = std::max(height, LayoutUnit());
@@ -101,9 +120,11 @@ struct CORE_EXPORT PhysicalSize {
 
   // Conversions from/to existing code. New code prefers type safety for
   // logical/physical distinctions.
-  constexpr explicit PhysicalSize(const LayoutSize& size)
+  constexpr explicit PhysicalSize(const DeprecatedLayoutSize& size)
       : width(size.Width()), height(size.Height()) {}
-  constexpr LayoutSize ToLayoutSize() const { return {width, height}; }
+  constexpr DeprecatedLayoutSize ToLayoutSize() const {
+    return {width, height};
+  }
 
   constexpr explicit operator gfx::SizeF() const { return {width, height}; }
 
@@ -142,10 +163,10 @@ inline gfx::Size ToCeiledSize(const PhysicalSize& s) {
   return {s.width.Ceil(), s.height.Ceil()};
 }
 
-// TODO(wangxianzhu): For temporary conversion from LayoutSize to PhysicalSize,
-// where the input will be changed to PhysicalSize soon, to avoid redundant
-// PhysicalSize() which can't be discovered by the compiler.
-inline PhysicalSize PhysicalSizeToBeNoop(const LayoutSize& s) {
+// TODO(wangxianzhu): For temporary conversion from DeprecatedLayoutSize to
+// PhysicalSize, where the input will be changed to PhysicalSize soon, to avoid
+// redundant PhysicalSize() which can't be discovered by the compiler.
+inline PhysicalSize PhysicalSizeToBeNoop(const DeprecatedLayoutSize& s) {
   return PhysicalSize(s);
 }
 

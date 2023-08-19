@@ -1,0 +1,13 @@
+<!-- A page that is used to test that filling <select> works properly if the <select> is hidden. -->
+<body>
+  <form name="addr1.1" id="form1" action="https://example.com/" method="post">
+    Name: <input type="text" name="firstname" id="firstname" autocomplete="given-name"><br>
+    Address: <input type="text" name="address1" id="address1"><br>
+    City: <input type="text" name="city" id="city"><br>
+    State: <select name="state" id="state" style="display:none">
+      <option value="MI">MI</option>
+      <option value="NY">NY</option>
+      <option value="TX">TX</option>
+    </select>
+  </form>
+</body>

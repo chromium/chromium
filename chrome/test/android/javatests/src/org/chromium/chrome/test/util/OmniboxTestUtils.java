@@ -4,6 +4,11 @@
 
 package org.chromium.chrome.test.util;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Context;
@@ -16,6 +21,8 @@ import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.test.espresso.UiController;
+import androidx.test.espresso.ViewAction;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matcher;
@@ -60,6 +67,47 @@ public class OmniboxTestUtils {
     private final @NonNull UrlBar mUrlBar;
     private final @NonNull Instrumentation mInstrumentation;
     private final @Nullable ToolbarLayout mToolbar;
+
+    /**
+     * Invokes a specific ViewAction on an {@link
+     * org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxAction} at specific position.
+     *
+     * This class can be chained with {@link
+     * androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition}.
+     */
+    private static class ActionOnOmniobxActionAtPosition implements ViewAction {
+        private final ViewAction mAction;
+
+        public ActionOnOmniobxActionAtPosition(int position, ViewAction action) {
+            mAction = actionOnItemAtPosition(position, action);
+        }
+
+        @Override
+        public Matcher<View> getConstraints() {
+            return withId(R.id.omnibox_actions_carousel);
+        }
+
+        @Override
+        public String getDescription() {
+            return mAction.getDescription();
+        }
+
+        @Override
+        public void perform(UiController uiController, View view) {
+            mAction.perform(uiController, view.findViewById(R.id.omnibox_actions_carousel));
+        }
+    }
+
+    /**
+     * Create a ViewAction that can be executed on a Suggestion with Action Chips.
+     *
+     * @param position the index of an {@link
+     *         org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxAction},
+     * @param action the action to perform.
+     */
+    public static ViewAction actionOnOmniboxActionAtPosition(int position, ViewAction action) {
+        return new ActionOnOmniobxActionAtPosition(position, action);
+    }
 
     /**
      * Class describing individual suggestion, delivering access to broad range of information.
@@ -543,5 +591,17 @@ public class OmniboxTestUtils {
             conn.setComposingRegion(composingRegionStart, composingRegionEnd);
             conn.setComposingText(composingText, /* newCursorPosition=*/0);
         });
+    }
+
+    /**
+     * Click the n-th action.
+     *
+     * @param suggestionIndex the index of suggestion to click an action on.
+     * @param actionIndex the index of action to invoke.
+     */
+    public void clickOnAction(int suggestionIndex, int actionIndex) {
+        onView(withId(R.id.omnibox_suggestions_dropdown))
+                .perform(actionOnItemAtPosition(suggestionIndex,
+                        OmniboxTestUtils.actionOnOmniboxActionAtPosition(actionIndex, click())));
     }
 }

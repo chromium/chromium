@@ -13,16 +13,18 @@
 #include <vector>
 
 #include "base/allocator/partition_allocator/address_space_randomization.h"
+#include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/cpu.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/logging.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/notreached.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
-#include "base/allocator/partition_allocator/partition_alloc_notreached.h"
 #include "base/allocator/partition_allocator/tagging.h"
 #include "build/build_config.h"
 
-#if BUILDFLAG(IS_ANDROID)
+#if defined(LINUX_NAME_REGION)
 #include "base/debug/proc_maps_linux.h"
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif
+
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_POSIX)
@@ -44,16 +46,6 @@
 #if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
 namespace partition_alloc::internal {
-
-#if BUILDFLAG(IS_ANDROID)
-namespace base::debug {
-
-using ::base::debug::MappedMemoryRegion;
-using ::base::debug::ParseProcMaps;
-using ::base::debug::ReadProcMaps;
-
-}  // namespace base::debug
-#endif
 
 namespace {
 
@@ -490,33 +482,47 @@ TEST(PartitionAllocPageAllocatorTest, MAYBE_ReadExecutePages) {
 
 #endif  // BUILDFLAG(IS_POSIX)
 
-#if BUILDFLAG(IS_ANDROID)
+#if defined(LINUX_NAME_REGION)
 TEST(PartitionAllocPageAllocatorTest, PageTagging) {
+  size_t size = PageAllocationGranularity();
   uintptr_t buffer =
-      AllocPages(PageAllocationGranularity(), PageAllocationGranularity(),
+      AllocPages(size, PageAllocationGranularity(),
                  PageAccessibilityConfiguration(
                      PageAccessibilityConfiguration::kInaccessible),
                  PageTag::kChromium);
-  EXPECT_TRUE(buffer);
+  ASSERT_TRUE(buffer);
 
-  std::string proc_maps;
-  EXPECT_TRUE(base::debug::ReadProcMaps(&proc_maps));
-  std::vector<base::debug::MappedMemoryRegion> regions;
-  EXPECT_TRUE(base::debug::ParseProcMaps(proc_maps, &regions));
+  auto is_region_named = [](uintptr_t start_address) {
+    std::string proc_maps;
+    EXPECT_TRUE(::base::debug::ReadProcMaps(&proc_maps));
+    std::vector<::base::debug::MappedMemoryRegion> regions;
+    EXPECT_TRUE(::base::debug::ParseProcMaps(proc_maps, &regions));
 
-  bool found = false;
-  for (const auto& region : regions) {
-    if (region.start == buffer) {
-      found = true;
-      EXPECT_EQ("[anon:chromium]", region.path);
-      break;
+    bool found = false;
+    for (const auto& region : regions) {
+      if (region.start == start_address) {
+        found = true;
+        return "[anon:chromium]" == region.path;
+      }
     }
-  }
+    EXPECT_TRUE(found);
+    return false;
+  };
 
-  FreePages(buffer, PageAllocationGranularity());
-  EXPECT_TRUE(found);
+  bool before = is_region_named(buffer);
+  DecommitAndZeroSystemPages(buffer, size);
+  bool after = is_region_named(buffer);
+
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_TRUE(before) << "VMA tagging should always work on Android";
+#endif
+  // When not running on Android, the prctl() command may be defined in the
+  // headers, but not be implemented by the host kernel.
+  EXPECT_EQ(before, after);
+
+  FreePages(buffer, size);
 }
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // defined(LINUX_NAME_REGION)
 
 TEST(PartitionAllocPageAllocatorTest, DecommitErasesMemory) {
   if (!DecommittedMemoryIsAlwaysZeroed()) {
@@ -620,6 +626,51 @@ TEST(PartitionAllocPageAllocatorTest, MappedPagesAccounting) {
     FreePages(data, size);
     EXPECT_EQ(mapped_size_before, GetTotalMappedSize());
   }
+}
+
+TEST(PartitionAllocPageAllocatorTest, AllocInaccessibleWillJitLater) {
+  // Verify that kInaccessibleWillJitLater allows read/write, and read/execute
+  // permissions to be set.
+  uintptr_t buffer =
+      AllocPages(PageAllocationGranularity(), PageAllocationGranularity(),
+                 PageAccessibilityConfiguration(
+                     PageAccessibilityConfiguration::kInaccessibleWillJitLater),
+                 PageTag::kChromium);
+  EXPECT_TRUE(
+      TrySetSystemPagesAccess(buffer, PageAllocationGranularity(),
+                              PageAccessibilityConfiguration(
+                                  PageAccessibilityConfiguration::kReadWrite)));
+  EXPECT_TRUE(TrySetSystemPagesAccess(
+      buffer, PageAllocationGranularity(),
+      PageAccessibilityConfiguration(
+          PageAccessibilityConfiguration::kReadExecute)));
+  FreePages(buffer, PageAllocationGranularity());
+}
+
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_MAC)
+// TODO(crbug.com/1452151): Fix test to GTEST_SKIP() if MAP_JIT is in-use,
+// or to be run otherwise, since kReadWriteExecute is used in some other
+// configurations.
+#define MAYBE_AllocReadWriteExecute DISABLED_AllocReadWriteExecute
+#else
+#define MAYBE_AllocReadWriteExecute AllocReadWriteExecute
+#endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_MAC)
+TEST(PartitionAllocPageAllocatorTest, MAYBE_AllocReadWriteExecute) {
+  // Verify that kReadWriteExecute is similarly functional.
+  uintptr_t buffer =
+      AllocPages(PageAllocationGranularity(), PageAllocationGranularity(),
+                 PageAccessibilityConfiguration(
+                     PageAccessibilityConfiguration::kReadWriteExecute),
+                 PageTag::kChromium);
+  EXPECT_TRUE(
+      TrySetSystemPagesAccess(buffer, PageAllocationGranularity(),
+                              PageAccessibilityConfiguration(
+                                  PageAccessibilityConfiguration::kReadWrite)));
+  EXPECT_TRUE(TrySetSystemPagesAccess(
+      buffer, PageAllocationGranularity(),
+      PageAccessibilityConfiguration(
+          PageAccessibilityConfiguration::kReadExecute)));
+  FreePages(buffer, PageAllocationGranularity());
 }
 
 }  // namespace partition_alloc::internal

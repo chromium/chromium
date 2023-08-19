@@ -117,6 +117,10 @@ void TrayItemView::DestroyImageView() {
   image_view_ = nullptr;
 }
 
+void TrayItemView::UpdateLabelOrImageViewColor(bool active) {
+  is_active_ = active;
+}
+
 base::ScopedClosureRunner TrayItemView::DisableAnimation() {
   if (layer()->GetAnimator()->is_animating()) {
     layer()->GetAnimator()->StopAnimating();
@@ -150,9 +154,9 @@ void TrayItemView::SetVisible(bool visible) {
     observer.OnTrayItemVisibilityAboutToChange(target_visible_);
   }
   views::View::SetVisible(visible);
-  if (!GetWidget() ||
-      ui::ScopedAnimationDurationScaleMode::duration_multiplier() ==
-          ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
+  // During startup TrayItemViews are often SetVisible(false) before they are
+  // attached to a widget. Don't bother constructing animations for them.
+  if (!GetWidget()) {
     return;
   }
   PerformVisibilityAnimation(visible);
@@ -173,7 +177,10 @@ void TrayItemView::PerformVisibilityAnimation(bool visible) {
   }
 
   // Immediately progress to the end of the animation if animation is disabled.
-  if (!ShouldVisibilityChangeBeAnimated()) {
+  // NOTE: `ScreenRotationAnimator` can set animations to ZERO_DURATION.
+  if (!ShouldVisibilityChangeBeAnimated() ||
+      ui::ScopedAnimationDurationScaleMode::duration_multiplier() ==
+          ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
     // Tray items need to stay visible if the notification center tray's hide
     // animation is going to run, so don't hide the tray item here.
     // `StatusAreaAnimationController` will call `ImmediatelyUpdateVisibility()`
@@ -193,14 +200,14 @@ void TrayItemView::PerformVisibilityAnimation(bool visible) {
 
   if (target_visible_) {
     SetupThroughputTrackerForAnimationSmoothness(
-        GetWidget(), throughput_tracker_,
+        GetWidget(), show_throughput_tracker_,
         kShowAnimationSmoothnessHistogramName);
     animation_->SetSlideDuration(base::Milliseconds(400));
     animation_->Show();
     AnimationProgressed(animation_.get());
   } else {
     SetupThroughputTrackerForAnimationSmoothness(
-        GetWidget(), throughput_tracker_,
+        GetWidget(), hide_throughput_tracker_,
         kHideAnimationSmoothnessHistogramName);
     animation_->SetSlideDuration(base::Milliseconds(100));
     animation_->Hide();
@@ -224,6 +231,9 @@ gfx::Size TrayItemView::CalculatePreferredSize() const {
   gfx::Size size = views::View::CalculatePreferredSize();
   if (image_view_) {
     size = gfx::Size(kUnifiedTrayIconSize, kUnifiedTrayIconSize);
+    // Some TrayItemViews have slightly larger icons (e.g. Ethernet with VPN
+    // badge).
+    size.SetToMax(image_view_->CalculatePreferredSize());
   }
 
   if (!animation_.get() || !animation_->is_animating() ||
@@ -293,10 +303,16 @@ void TrayItemView::AnimationEnded(const gfx::Animation* animation) {
   views::View::SetVisible(target_visible_);
   layer()->SetOpacity(target_visible_ ? 1.0 : 0.0);
 
-  if (throughput_tracker_) {
-    // Reset `throughput_tracker_` to reset animation metrics recording.
-    throughput_tracker_->Stop();
-    throughput_tracker_.reset();
+  if (show_throughput_tracker_) {
+    // Reset `show_throughput_tracker_` to reset animation metrics recording.
+    show_throughput_tracker_->Stop();
+    show_throughput_tracker_.reset();
+  }
+
+  if (hide_throughput_tracker_) {
+    // Reset `hide_throughput_tracker_` to reset animation metrics recording.
+    hide_throughput_tracker_->Stop();
+    hide_throughput_tracker_.reset();
   }
 
   if (animation_idle_closure_) {

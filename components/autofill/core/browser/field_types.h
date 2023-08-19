@@ -122,6 +122,9 @@ namespace autofill {
 // GetInfo() returns an unformatted number (digits only). It is used for
 // filling!
 //
+// A Java counterpart will be generated for this enum.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill
+//
 enum ServerFieldType {
   // Server indication that it has no data for the requested field.
   NO_SERVER_DATA = 0,
@@ -361,28 +364,63 @@ enum ServerFieldType {
   // One-time code used for verifying user identity.
   ONE_TIME_CODE = 129,
 
+  // Type for additional delivery instructions to find the address.
+  DELIVERY_INSTRUCTIONS = 133,
+
+  // Additional information for describing the location within a building or
+  // gated community. Often called "extra information", "additional
+  // information", "address extension", etc.
+  ADDRESS_HOME_OVERFLOW = 135,
+
   // A well-known object or feature of the landscape that can easily be
   // recognized to understand where the building is situated.
   ADDRESS_HOME_LANDMARK = 136,
+
+  // Combination of types ADDRESS_HOME_OVERFLOW and ADDRESS_HOME_LANDMARK.
+  ADDRESS_HOME_OVERFLOW_AND_LANDMARK = 140,
 
   // Administrative area level 2. A sub-division of a state, e.g. a Municipio in
   // Brazil or Mexico.
   ADDRESS_HOME_ADMIN_LEVEL2 = 141,
 
+  // Street name and house number in structured address forms. Should NOT be
+  // used for US.
+  ADDRESS_HOME_STREET_LOCATION = 142,
+
   // The type indicates that the address is at the intersection between two
   // streets. This is a common way of writing addresses in Mexico.
   ADDRESS_HOME_BETWEEN_STREETS = 143,
 
-  // Reserved for a server-side-only use: 130-153. Except 136 , 141 and 143.
+  // Combination of types ADDRESS_HOME_BETWEEN_STREETS or ADDRESS_HOME_LANDMARK.
+  ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK = 144,
+
+  // The meaning of the field is the same as ADDRESS_HOME_BETWEEN_STREETS. The
+  // field type should be used for "Entre calle 1" in MX forms which also
+  // contain the "Entre calle 2" field.
+  ADDRESS_HOME_BETWEEN_STREETS_1 = 151,
+
+  // The meaning of the field is the same as ADDRESS_HOME_BETWEEN_STREETS. The
+  // field type should be used for "Entre calle 2" in MX forms which also
+  // contain the "Entre calle 1" field.
+  ADDRESS_HOME_BETWEEN_STREETS_2 = 152,
+
+  // ADDRESS_HOME_HOUSE_NUMBER_AND_APT 153 is server-side only.
+
+  // Username field in a password-less forgot password form.
+  SINGLE_USERNAME_FORGOT_PASSWORD = 154,
+
+  // Autofill fallback type for username fields which accept also email or
+  // phone number.
+  // EMAIL_OR_PHONE_NUMBER = 155 is server-side only.
 
   // No new types can be added without a corresponding change to the Autofill
   // server.
-  // Please update the following enums in `tools/metrics/histogram/enums.xml`
-  // for metrics tracking.
-  // - `AutofillServerFieldType`
-  // - `AutofilledFieldUserEditingStatusByFieldType` (16 * type + x)
-  // - `AutofillPredictionsComparisonResult` (6 * type + x)
-  MAX_VALID_FIELD_TYPE = 153,
+  // This enum must be kept in sync with ServerFieldType from
+  // * chrome/common/extensions/api/autofill_private.idl
+  // * tools/typescript/definitions/autofill_private.d.ts
+  // Please update `tools/metrics/histograms/enums.xml` by executing
+  // `tools/metrics/histograms/update_autofill_enums.py`.
+  MAX_VALID_FIELD_TYPE = 156,
 };
 
 enum class FieldTypeGroup {
@@ -405,7 +443,14 @@ enum class FieldTypeGroup {
   kMaxValue = kIban,
 };
 
-using ServerFieldTypeSet = DenseSet<ServerFieldType, MAX_VALID_FIELD_TYPE>;
+template <>
+struct DenseSetTraits<ServerFieldType> {
+  static constexpr ServerFieldType kMinValue = NO_SERVER_DATA;
+  static constexpr ServerFieldType kMaxValue = MAX_VALID_FIELD_TYPE;
+  static constexpr bool kPacked = false;
+};
+
+using ServerFieldTypeSet = DenseSet<ServerFieldType>;
 
 std::ostream& operator<<(std::ostream& o, ServerFieldTypeSet field_type_set);
 
@@ -422,6 +467,14 @@ bool IsFillableFieldType(ServerFieldType field_type);
 // Returns a StringPiece describing |type|. As the StringPiece points to a
 // static string, you don't need to worry about memory deallocation.
 base::StringPiece FieldTypeToStringPiece(ServerFieldType type);
+
+// Returns a StringPiece describing `type`. The devtools UI uses this string to
+// give developers feedback about autofill's filling decision. Note that
+// different field types can map to the same string representation for
+// simplicity of the feedback. Returns an empty string if the type is not
+// supported.
+base::StringPiece FieldTypeToDeveloperRepresentationString(
+    ServerFieldType type);
 
 // Inverse map of FieldTypeToStringPiece. Checks that only valid ServerFieldType
 // string representations are being passed.

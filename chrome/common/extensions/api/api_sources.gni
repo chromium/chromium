@@ -35,7 +35,6 @@ schema_sources_ = [
   "gcm.json",
   "history.json",
   "identity.idl",
-  "identity_private.idl",
   "image_writer_private.idl",
   "instance_id.json",
   "language_settings_private.idl",
@@ -44,6 +43,7 @@ schema_sources_ = [
   "page_capture.json",
   "passwords_private.idl",
   "permissions.json",
+  "reading_list.idl",
   "resources_private.idl",
   "safe_browsing_private.idl",
   "scripting.idl",
@@ -55,7 +55,6 @@ schema_sources_ = [
   "tab_capture.idl",
   "tab_groups.json",
   "tabs.json",
-  "types.json",
   "web_authentication_proxy.idl",
   "web_navigation.json",
 
@@ -75,6 +74,7 @@ if (!is_android) {
 
 if (is_chromeos) {
   schema_sources_ += [
+    "accessibility_service_private.idl",
     "certificate_provider.idl",
     "certificate_provider_internal.idl",
     "document_scan.idl",
@@ -113,6 +113,7 @@ if (is_chromeos_ash) {
     "enterprise_platform_keys_private.json",
     "file_manager_private.idl",
     "file_manager_private_internal.idl",
+    "image_loader_private.idl",
     "input_ime.json",
     "input_method_private.json",
     "login_screen_ui.idl",

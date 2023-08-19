@@ -497,12 +497,12 @@ static CreateNode node_creators[] = {
     },
     [](Document& document) -> Node* {
       Element* element = document.CreateRawElement(html_names::kSpanTag);
-      element->classList().Add("abspos");
+      element->classList().Add(AtomicString("abspos"));
       return element;
     },
     [](Document& document) -> Node* {
       Element* element = document.CreateRawElement(html_names::kSpanTag);
-      element->classList().Add("float");
+      element->classList().Add(AtomicString("float"));
       return element;
     }};
 
@@ -786,7 +786,7 @@ TEST_F(NGFragmentItemTest, MarkLineBoxesDirtyByRemoveChildAfterForcedBreak) {
       line 3<br>
     </div>
   )HTML");
-  Element& target = *GetDocument().getElementById("target");
+  Element& target = *GetDocument().getElementById(AtomicString("target"));
   target.remove();
   // TODO(kojii): This can be optimized more.
   TestFirstDirtyLineIndex("container", 0);
@@ -800,7 +800,7 @@ TEST_F(NGFragmentItemTest, MarkLineBoxesDirtyByRemoveForcedBreak) {
       line 3<br>
     </div>"
   )HTML");
-  Element& target = *GetDocument().getElementById("target");
+  Element& target = *GetDocument().getElementById(AtomicString("target"));
   target.remove();
   // TODO(kojii): This can be optimized more.
   TestFirstDirtyLineIndex("container", 0);
@@ -815,7 +815,7 @@ TEST_F(NGFragmentItemTest, MarkLineBoxesDirtyByRemoveSpanWithForcedBreak) {
     </div>
   )HTML");
   // |target| is a culled inline box. There is no fragment in fragment tree.
-  Element& target = *GetDocument().getElementById("target");
+  Element& target = *GetDocument().getElementById(AtomicString("target"));
   target.remove();
   // TODO(kojii): This can be optimized more.
   TestFirstDirtyLineIndex("container", 0);
@@ -829,7 +829,7 @@ TEST_F(NGFragmentItemTest, MarkLineBoxesDirtyByInsertAtStart) {
       line 3<br>
     </div>
   )HTML");
-  Element& target = *GetDocument().getElementById("target");
+  Element& target = *GetDocument().getElementById(AtomicString("target"));
   target.parentNode()->insertBefore(Text::Create(GetDocument(), "XYZ"),
                                     &target);
   GetDocument().UpdateStyleAndLayoutTree();
@@ -845,7 +845,7 @@ TEST_F(NGFragmentItemTest, MarkLineBoxesDirtyByInsertAtLast) {
       line 3<br>
     </div>
   )HTML");
-  Element& target = *GetDocument().getElementById("target");
+  Element& target = *GetDocument().getElementById(AtomicString("target"));
   target.parentNode()->appendChild(Text::Create(GetDocument(), "XYZ"));
   GetDocument().UpdateStyleAndLayoutTree();
   TestFirstDirtyLineIndex("container", 1);
@@ -859,7 +859,7 @@ TEST_F(NGFragmentItemTest, MarkLineBoxesDirtyByInsertAtMiddle) {
       line 3<br>
     </div>
   )HTML");
-  Element& target = *GetDocument().getElementById("target");
+  Element& target = *GetDocument().getElementById(AtomicString("target"));
   target.parentNode()->insertBefore(Text::Create(GetDocument(), "XYZ"),
                                     target.nextSibling());
   GetDocument().UpdateStyleAndLayoutTree();
@@ -875,7 +875,7 @@ TEST_F(NGFragmentItemTest, MarkLineBoxesDirtyByTextSetData) {
       line 3<br>
     </div>
   )HTML");
-  Element& target = *GetDocument().getElementById("target");
+  Element& target = *GetDocument().getElementById(AtomicString("target"));
   To<Text>(*target.firstChild()).setData("abc");
   // TODO(kojii): This can be optimized more.
   TestFirstDirtyLineIndex("container", 0);
@@ -894,7 +894,7 @@ TEST_F(NGFragmentItemTest, MarkLineBoxesDirtyWrappedLine) {
       123456<span id="target">7</span>
     </div>
   )HTML");
-  Element& target = *GetDocument().getElementById("target");
+  Element& target = *GetDocument().getElementById(AtomicString("target"));
   target.remove();
   // TODO(kojii): This can be optimized more.
   TestFirstDirtyLineIndex("container", 0);
@@ -908,7 +908,7 @@ TEST_F(NGFragmentItemTest, MarkLineBoxesDirtyInsideInlineBlock) {
       </div>
     </div>
   )HTML");
-  Element& target = *GetDocument().getElementById("target");
+  Element& target = *GetDocument().getElementById(AtomicString("target"));
   target.remove();
   TestFirstDirtyLineIndex("container", 0);
 }

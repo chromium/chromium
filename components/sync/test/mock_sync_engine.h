@@ -63,6 +63,10 @@ class MockSyncEngine : public SyncEngine {
   MOCK_METHOD(void, Shutdown, (ShutdownReason), (override));
   MOCK_METHOD(const SyncStatus&, GetDetailedStatus, (), (const override));
   MOCK_METHOD(void,
+              GetTypesWithUnsyncedData,
+              (base::OnceCallback<void(ModelTypeSet)>),
+              (const override));
+  MOCK_METHOD(void,
               HasUnsyncedItemsForTest,
               (base::OnceCallback<void(bool)>),
               (const override));
@@ -76,7 +80,6 @@ class MockSyncEngine : public SyncEngine {
               (override));
   MOCK_METHOD(void, DisableProtocolEventForwarding, (), (override));
   MOCK_METHOD(void, OnCookieJarChanged, (bool, base::OnceClosure), (override));
-  MOCK_METHOD(void, SetInvalidationsForSessionsEnabled, (bool), (override));
   MOCK_METHOD(bool, IsNextPollTimeInThePast, (), (const override));
   MOCK_METHOD(void, GetNigoriNodeForDebugging, (AllNodesCallback), (override));
 };

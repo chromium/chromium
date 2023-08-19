@@ -128,6 +128,8 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoDir:
     case CSSSelector::kPseudoNot:
     case CSSSelector::kPseudoPlaceholder:
+    case CSSSelector::kPseudoDetailsContent:
+    case CSSSelector::kPseudoDetailsSummary:
     case CSSSelector::kPseudoFileSelectorButton:
     case CSSSelector::kPseudoResizer:
     case CSSSelector::kPseudoRoot:
@@ -174,6 +176,8 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoHostHasAppearance:
     case CSSSelector::kPseudoOpen:
     case CSSSelector::kPseudoClosed:
+    case CSSSelector::kPseudoDialogInTopLayer:
+    case CSSSelector::kPseudoPopoverInTopLayer:
     case CSSSelector::kPseudoPopoverOpen:
     case CSSSelector::kPseudoSlotted:
     case CSSSelector::kPseudoVideoPersistent:
@@ -584,11 +588,9 @@ void RuleFeatureSet::UpdateFeaturesFromCombinator(
 void RuleFeatureSet::UpdateFeaturesFromStyleScope(
     const StyleScope& style_scope,
     InvalidationSetFeatures& descendant_features) {
-  for (const StyleScope* scope = &style_scope; scope; scope = scope->Parent()) {
-    if (!scope->From()) {
-      continue;
-    }
-    for (const CSSSelector* selector = scope->From(); selector;
+  auto add_features = [this](const CSSSelector* selector_list,
+                             InvalidationSetFeatures& descendant_features) {
+    for (const CSSSelector* selector = selector_list; selector;
          selector = CSSSelectorList::Next(*selector)) {
       InvalidationSetFeatures scope_features;
       ExtractInvalidationSetFeaturesFromCompound(
@@ -596,6 +598,11 @@ void RuleFeatureSet::UpdateFeaturesFromStyleScope(
           /* for_logical_combination_in_has */ false, /*in_nth_child=*/false);
       descendant_features.Merge(scope_features);
     }
+  };
+
+  for (const StyleScope* scope = &style_scope; scope; scope = scope->Parent()) {
+    add_features(scope->From(), descendant_features);
+    add_features(scope->To(), descendant_features);
   }
 }
 
@@ -1033,7 +1040,8 @@ const CSSSelector* RuleFeatureSet::ExtractInvalidationSetFeaturesFromCompound(
     }
 
     if (!simple_selector->NextSimpleSelector() ||
-        simple_selector->Relation() != CSSSelector::kSubSelector) {
+        (simple_selector->Relation() != CSSSelector::kSubSelector &&
+         simple_selector->Relation() != CSSSelector::kScopeActivation)) {
       return simple_selector;
     }
   }
@@ -1310,7 +1318,6 @@ void RuleFeatureSet::AddFeaturesToInvalidationSetsForLogicalCombinationInHas(
     InvalidationSetFeatures& descendant_features,
     CSSSelector::RelationType previous_combinator,
     AddFeaturesMethodForLogicalCombinationInHas add_features_method) {
-  DCHECK(logical_combination.SelectorList());
   DCHECK(compound_containing_has);
 
   for (const CSSSelector* complex = logical_combination.SelectorListOrParent();
@@ -1325,6 +1332,7 @@ void RuleFeatureSet::AddFeaturesToInvalidationSetsForLogicalCombinationInHas(
         descendant_features);
 
     const CSSSelector* compound_in_logical_combination = complex;
+    InvalidationSetFeatures* inner_sibling_features = sibling_features;
     InvalidationSetFeatures last_compound_in_adjacent_chain_features;
     while (compound_in_logical_combination) {
       AddFeaturesToInvalidationSetsForLogicalCombinationInHasContext context(
@@ -1336,14 +1344,14 @@ void RuleFeatureSet::AddFeaturesToInvalidationSetsForLogicalCombinationInHas(
         last_in_compound =
             SkipAddingAndGetLastInCompoundForLogicalCombinationInHas(
                 compound_in_logical_combination, compound_containing_has,
-                sibling_features, descendant_features, previous_combinator,
-                add_features_method);
+                inner_sibling_features, descendant_features,
+                previous_combinator, add_features_method);
       } else {
         last_in_compound =
             AddFeaturesAndGetLastInCompoundForLogicalCombinationInHas(
                 compound_in_logical_combination, compound_containing_has,
-                sibling_features, descendant_features, previous_combinator,
-                add_features_method);
+                inner_sibling_features, descendant_features,
+                previous_combinator, add_features_method);
       }
 
       if (!last_in_compound) {
@@ -1358,7 +1366,7 @@ void RuleFeatureSet::AddFeaturesToInvalidationSetsForLogicalCombinationInHas(
                 ? CSSSelector::kIndirectAdjacent
                 : previous_combinator,
             context.last_compound_in_adjacent_chain,
-            last_compound_in_adjacent_chain_features, sibling_features,
+            last_compound_in_adjacent_chain_features, inner_sibling_features,
             descendant_features);
       }
 

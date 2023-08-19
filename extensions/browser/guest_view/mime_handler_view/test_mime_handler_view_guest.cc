@@ -18,8 +18,8 @@ using guest_view::GuestViewBase;
 namespace extensions {
 
 TestMimeHandlerViewGuest::TestMimeHandlerViewGuest(
-    content::WebContents* owner_web_contents)
-    : MimeHandlerViewGuest(owner_web_contents) {}
+    content::RenderFrameHost* owner_rfh)
+    : MimeHandlerViewGuest(owner_rfh) {}
 
 TestMimeHandlerViewGuest::~TestMimeHandlerViewGuest() = default;
 
@@ -34,8 +34,8 @@ void TestMimeHandlerViewGuest::RegisterTestGuestViewType(
 
 // static
 std::unique_ptr<GuestViewBase> TestMimeHandlerViewGuest::Create(
-    content::WebContents* owner_web_contents) {
-  return base::WrapUnique(new TestMimeHandlerViewGuest(owner_web_contents));
+    content::RenderFrameHost* owner_rfh) {
+  return base::WrapUnique(new TestMimeHandlerViewGuest(owner_rfh));
 }
 
 // static

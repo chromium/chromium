@@ -6,10 +6,10 @@
 
 #import <WebKit/WebKit.h>
 
+#import "base/apple/foundation_util.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#import "base/mac/foundation_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
@@ -32,10 +32,6 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/canonical_cookie.h"
 #include "url/gurl.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -187,7 +183,7 @@ void AccountConsistencyService::AccountConsistencyHandler::ShouldAllowResponse(
     web::WebStatePolicyDecider::ResponseInfo response_info,
     web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
   NSHTTPURLResponse* http_response =
-      base::mac::ObjCCast<NSHTTPURLResponse>(response);
+      base::apple::ObjCCast<NSHTTPURLResponse>(response);
   if (!http_response) {
     std::move(callback).Run(PolicyDecision::Allow());
     return;

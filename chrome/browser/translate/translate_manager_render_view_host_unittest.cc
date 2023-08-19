@@ -509,7 +509,7 @@ class TranslateManagerRenderViewHostInvalidLocaleTest
 // does not have the display name for a language unless it's in the
 // Accept-Language list.
 static const char* kServerLanguageList[] = {"ak",    "af", "en-CA", "zh", "yi",
-                                            "fr-FR", "tl", "iw",    "in", "xx"};
+                                            "fr-FR", "tl", "iw",    "hz", "xx"};
 
 // Test the fetching of languages from the translate server
 TEST_F(TranslateManagerRenderViewHostTest, FetchLanguagesFromTranslateServer) {
@@ -543,13 +543,17 @@ TEST_F(TranslateManagerRenderViewHostTest, FetchLanguagesFromTranslateServer) {
   current_supported_languages.clear();
   translate::TranslateDownloadManager::GetSupportedLanguages(
       true /* translate_allowed */, &current_supported_languages);
-  // "xx" can't be displayed in the Translate infobar, so this is eliminated.
-  EXPECT_EQ(server_languages.size() - 1, current_supported_languages.size());
+  // "in" is not in the kAcceptList and "xx" can't be displayed, so both are
+  // removed from the downloaded list.
+  EXPECT_EQ(server_languages.size() - 2, current_supported_languages.size());
   // Not sure we need to guarantee the order of languages, so we find them.
   for (size_t i = 0; i < server_languages.size(); ++i) {
     const std::string& lang = server_languages[i];
-    if (lang == "xx")
+    if (lang == "xx") {
       continue;
+    } else if (lang == "hz") {
+      continue;
+    }
     EXPECT_TRUE(base::Contains(current_supported_languages, lang))
         << "lang=" << lang;
   }

@@ -61,7 +61,7 @@ function overridedValues(privacyHubVersion: string) {
 }
 
 async function parametrizedPrivacyHubSubpageTestsuite(
-    privacyHubVersion: string) {
+    privacyHubVersion: string, enforceCameraLedFallback: boolean) {
   let privacyHubSubpage: SettingsPrivacyHubSubpage;
   let privacyHubBrowserProxy: TestPrivacyHubBrowserProxy;
   let mediaDevices: FakeMediaDevices;
@@ -70,6 +70,9 @@ async function parametrizedPrivacyHubSubpageTestsuite(
     loadTimeData.overrideValues(overridedValues(privacyHubVersion));
 
     privacyHubBrowserProxy = new TestPrivacyHubBrowserProxy();
+    if (enforceCameraLedFallback) {
+      privacyHubBrowserProxy.cameraLEDFallbackState = true;
+    }
     PrivacyHubBrowserProxyImpl.setInstanceForTesting(privacyHubBrowserProxy);
 
     mediaDevices = new FakeMediaDevices();
@@ -276,9 +279,16 @@ async function parametrizedPrivacyHubSubpageTestsuite(
     assertEquals(
         privacyHubSubpage.i18n('noCameraConnectedText'),
         getNoCameraText()!.textContent!.trim());
-    assertEquals(
-        privacyHubSubpage.i18n('cameraToggleSubtext'),
-        getCameraToggleSublabel()!.textContent!.trim());
+
+    if (privacyHubBrowserProxy.cameraLEDFallbackState) {
+      assertEquals(
+          privacyHubSubpage.i18n('cameraToggleFallbackSubtext'),
+          getCameraToggleSublabel()!.textContent!.trim());
+    } else {
+      assertEquals(
+          privacyHubSubpage.i18n('cameraToggleSubtext'),
+          getCameraToggleSublabel()!.textContent!.trim());
+    }
 
     assertEquals(null, getMicrophoneList());
     assert(getNoMicrophoneText());
@@ -556,17 +566,66 @@ async function parametrizedPrivacyHubSubpageTestsuite(
             'ChromeOS.PrivacyHub.Microphone.Settings.Enabled', true),
         1);
   });
+
+  test('Send HaTS messages', async () => {
+    privacyHubSubpage.remove();
+
+    loadTimeData.overrideValues({
+      isPrivacyHubHatsEnabled: true,
+    });
+    privacyHubSubpage = document.createElement('settings-privacy-hub-subpage');
+
+    document.body.appendChild(privacyHubSubpage);
+    await waitAfterNextRender(privacyHubSubpage);
+    flush();
+
+    // Reset the callcounts here as the appendChild etc trigger one left page
+    // call which makes the numbers on the asserts not very intuitive.
+    privacyHubBrowserProxy.reset();
+    assertEquals(
+        0, privacyHubBrowserProxy.getCallCount('sendOpenedOsPrivacyPage'));
+    assertEquals(
+        0, privacyHubBrowserProxy.getCallCount('sendLeftOsPrivacyPage'));
+
+    const params = new URLSearchParams();
+    params.append('settingId', settingMojom.Setting.kCameraOnOff.toString());
+    Router.getInstance().navigateTo(routes.PRIVACY_HUB, params);
+
+    flush();
+
+    assertEquals(
+        1, privacyHubBrowserProxy.getCallCount('sendOpenedOsPrivacyPage'));
+    assertEquals(
+        0, privacyHubBrowserProxy.getCallCount('sendLeftOsPrivacyPage'));
+
+    params.set(
+        'settingId',
+        settingMojom.Setting.kShowUsernamesAndPhotosAtSignInV2.toString());
+    Router.getInstance().navigateTo(routes.ACCOUNTS, params);
+
+    flush();
+
+    assertEquals(
+        1, privacyHubBrowserProxy.getCallCount('sendOpenedOsPrivacyPage'));
+    assertEquals(
+        1, privacyHubBrowserProxy.getCallCount('sendLeftOsPrivacyPage'));
+  });
 }
 
 suite(
     '<settings-privacy-hub-subpage> Dogfood',
-    () => parametrizedPrivacyHubSubpageTestsuite(PrivacyHubVersion.Dogfood));
+    () => parametrizedPrivacyHubSubpageTestsuite(
+        PrivacyHubVersion.Dogfood, false));
 suite(
     '<settings-privacy-hub-subpage> MVP',
-    () => parametrizedPrivacyHubSubpageTestsuite(PrivacyHubVersion.MVP));
+    () => parametrizedPrivacyHubSubpageTestsuite(PrivacyHubVersion.MVP, false));
 suite(
     '<settings-privacy-hub-subpage> Future',
-    () => parametrizedPrivacyHubSubpageTestsuite(PrivacyHubVersion.Future));
+    () => parametrizedPrivacyHubSubpageTestsuite(
+        PrivacyHubVersion.Future, false));
+suite(
+    '<settings-privacy-hub-subpage> MVP with LED Fallback',
+    () => parametrizedPrivacyHubSubpageTestsuite(PrivacyHubVersion.MVP, true));
 
 async function parametrizedTestsuiteForMetricsConsentToggle(
     isPrivacyHubVisible: boolean) {
@@ -609,6 +668,7 @@ async function parametrizedTestsuiteForMetricsConsentToggle(
         metricsConsentBrowserProxy);
 
     settingsPage = document.createElement(pageId);
+
   });
 
   async function setUpPage(prefName: string, isConfigurable: boolean) {

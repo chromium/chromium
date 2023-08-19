@@ -46,13 +46,19 @@ class HistoryClustersModuleService : public KeyedService {
   // Queries clusters and invokes `callback` when clusters are ready.
   //
   // Virtual for testing.
-  virtual void GetClusters(GetClustersCallback callback);
+  virtual void GetClusters(
+      const history_clusters::QueryClustersFilterParams filter_params,
+      size_t min_required_related_searches,
+      GetClustersCallback callback);
 
  private:
   // Queries clusters starting at `begin_time` and with `continuation_params`.
   void GetClusters(
       base::Time begin_time,
+      const history_clusters::QueryClustersFilterParams filter_params,
+      size_t min_required_related_searches,
       history_clusters::QueryClustersContinuationParams continuation_params,
+      std::vector<history::Cluster> continuation_clusters,
       GetClustersCallback callback);
 
   // Callback invoked when `history_clusters_service_` returns filtered
@@ -60,6 +66,9 @@ class HistoryClustersModuleService : public KeyedService {
   void OnGetFilteredClusters(
       size_t pending_task_id,
       base::Time begin_time,
+      history_clusters::QueryClustersFilterParams filter_params,
+      size_t min_required_related_searches,
+      std::vector<history::Cluster> continuation_clusters,
       GetClustersCallback callback,
       std::vector<history::Cluster> clusters,
       history_clusters::QueryClustersContinuationParams continuation_params);
@@ -70,9 +79,6 @@ class HistoryClustersModuleService : public KeyedService {
       std::vector<history::Cluster> clusters,
       base::flat_map<int64_t, HistoryClustersModuleRankingSignals>
           ranking_signals);
-
-  // The filtering parameters to use for all calls to fetch clusters.
-  const history_clusters::QueryClustersFilterParams filter_params_;
 
   // The max number of clusters to return.
   const size_t max_clusters_to_return_;

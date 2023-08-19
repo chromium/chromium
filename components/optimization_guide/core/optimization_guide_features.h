@@ -25,6 +25,7 @@ namespace features {
 BASE_DECLARE_FEATURE(kOptimizationHints);
 BASE_DECLARE_FEATURE(kRemoteOptimizationGuideFetching);
 BASE_DECLARE_FEATURE(kRemoteOptimizationGuideFetchingAnonymousDataConsent);
+BASE_DECLARE_FEATURE(kOptimizationGuideFetchingForSRP);
 BASE_DECLARE_FEATURE(kContextMenuPerformanceInfoAndRemoteHintFetching);
 BASE_DECLARE_FEATURE(kOptimizationTargetPrediction);
 BASE_DECLARE_FEATURE(kOptimizationGuideModelDownloading);
@@ -33,10 +34,12 @@ BASE_DECLARE_FEATURE(kPageEntitiesPageContentAnnotations);
 BASE_DECLARE_FEATURE(kPageEntitiesModelBypassFilters);
 BASE_DECLARE_FEATURE(kPageEntitiesModelResetOnShutdown);
 BASE_DECLARE_FEATURE(kPageVisibilityPageContentAnnotations);
+BASE_DECLARE_FEATURE(kTextEmbeddingPageContentAnnotations);
 BASE_DECLARE_FEATURE(kPageTextExtraction);
 BASE_DECLARE_FEATURE(kPushNotifications);
 BASE_DECLARE_FEATURE(kOptimizationGuideMetadataValidation);
 BASE_DECLARE_FEATURE(kPageVisibilityBatchAnnotations);
+BASE_DECLARE_FEATURE(kTextEmbeddingBatchAnnotations);
 BASE_DECLARE_FEATURE(kPageContentAnnotationsValidation);
 BASE_DECLARE_FEATURE(kPreventLongRunningPredictionModels);
 BASE_DECLARE_FEATURE(kOverrideNumThreadsForModelExecution);
@@ -47,6 +50,10 @@ BASE_DECLARE_FEATURE(kOptimizationGuideInstallWideModelStore);
 BASE_DECLARE_FEATURE(kExtractRelatedSearchesFromPrefetchedZPSResponse);
 BASE_DECLARE_FEATURE(kPageContentAnnotationsPersistSalientImageMetadata);
 BASE_DECLARE_FEATURE(kModelStoreUseRelativePath);
+BASE_DECLARE_FEATURE(kOptimizationGuidePersonalizedFetching);
+BASE_DECLARE_FEATURE(kOptimizationGuideHintsURLKeyedCacheDropFragments);
+BASE_DECLARE_FEATURE(kQueryInMemoryTextEmbeddings);
+BASE_DECLARE_FEATURE(kOptimizationGuidePredictionModelKillswitch);
 
 // Enables use of task runner with trait CONTINUE_ON_SHUTDOWN for page content
 // annotations on-device models.
@@ -61,12 +68,18 @@ base::TimeDelta PageTextExtractionOutstandingRequestsGracePeriod();
 bool ShouldBatchUpdateHintsForActiveTabsAndTopHosts();
 
 // The maximum number of hosts allowed to be requested by the client to the
-// remote Optimzation Guide Service.
+// remote Optimization Guide Service.
 size_t MaxHostsForOptimizationGuideServiceHintsFetch();
 
 // The maximum number of URLs allowed to be requested by the client to the
-// remote Optimzation Guide Service.
+// remote Optimization Guide Service.
 size_t MaxUrlsForOptimizationGuideServiceHintsFetch();
+
+// Whether hints fetching for search results is enabled.
+bool IsSRPFetchingEnabled();
+// The maximum number of search results allowed to be requested by the client to
+// the remote Optimization Guide Service.
+size_t MaxResultsForSRPFetch();
 
 // The maximum number of hosts allowed to be stored as covered by the hints
 // fetcher.
@@ -160,8 +173,12 @@ base::TimeDelta StoredModelsValidDuration();
 // allowed to be used and not be purged.
 base::TimeDelta URLKeyedHintValidCacheDuration();
 
+// The amount of time the PCAService will wait for the title of a page to be
+// modified.
+base::TimeDelta PCAServiceWaitForTitleDelayDuration();
+
 // The maximum number of hosts allowed to be requested by the client to the
-// remote Optimzation Guide Service for use by prediction models.
+// remote Optimization Guide Service for use by prediction models.
 size_t MaxHostsForOptimizationGuideServiceModelsFetch();
 
 // The maximum number of hosts allowed to be maintained in a least-recently-used
@@ -186,6 +203,12 @@ bool ShouldPersistHintsToDisk();
 bool ShouldOverrideOptimizationTargetDecisionForMetricsPurposes(
     proto::OptimizationTarget optimization_target);
 
+// Returns which OAuth scopes to use for personalized metadata.
+base::flat_set<std::string> OAuthScopesForPersonalizedMetadata();
+
+// Returns whether personalized metadata is enabled for |request_context|.
+bool EnabledPersonalizedMetadata(proto::RequestContext request_context);
+
 // Returns the minimum number of seconds to randomly delay before starting to
 // fetch for prediction models and host model features.
 int PredictionModelFetchRandomMinDelaySecs();
@@ -205,6 +228,16 @@ base::TimeDelta PredictionModelFetchStartupDelay();
 // Returns the time to wait after a successful fetch of prediction models to
 // refresh models.
 base::TimeDelta PredictionModelFetchInterval();
+
+// Returns whether to enable fetching the model again when a new optimization
+// target observer registration happens, after the initial model fetch is
+// completed.
+bool IsPredictionModelNewRegistrationFetchEnabled();
+
+// Returns the time to wait for starting a model fetch when a new optimization
+// target observer registration happens, after the initial model fetch is
+// completed.
+base::TimeDelta PredictionModelNewRegistrationFetchDelay();
 
 // Whether to use the model execution watchdog.
 bool IsModelExecutionWatchdogEnabled();
@@ -241,6 +274,10 @@ bool ShouldExecutePageEntitiesModelOnPageContent(const std::string& locale);
 // for a user using |locale| as their browser language.
 bool ShouldExecutePageVisibilityModelOnPageContent(const std::string& locale);
 
+// Returns whether the text embedding model should be executed on page content
+// for a user using |locale| as their browser language.
+bool ShouldExecuteTextEmbeddingModelOnPageContent(const std::string& locale);
+
 // Returns whether page metadata should be retrieved from the remote
 // Optimization Guide service.
 bool RemotePageMetadataEnabled();
@@ -266,6 +303,9 @@ bool ShouldMetadataValidationFetchHostKeyed();
 
 // Returns if Page Visibility Batch Annotations are enabled.
 bool PageVisibilityBatchAnnotationsEnabled();
+
+// Returns if Text Embedding Batch Annotations are enabled.
+bool TextEmbeddingBatchAnnotationsEnabled();
 
 // The number of visits batch before running the page content annotation
 // models. A size of 1 is equivalent to annotating one page load at time
@@ -304,6 +344,17 @@ bool IsInstallWideModelStoreEnabled();
 
 // Whether to persist salient image metadata for each visit.
 bool ShouldPersistSalientImageMetadata();
+
+// Whether to drop fragments for the URL-keyed hint cache key.
+bool ShouldDropFragmentsForURLKeyedHintCacheKey();
+
+// Returns whether to query text embeddings coming from history service.
+bool ShouldQueryEmbeddings();
+
+// Returns whether the `model_version` for `opt_target` is part of emergency
+// killswitch, and this model should be stopped serving immediately.
+std::map<proto::OptimizationTarget, std::set<int64_t>>
+GetPredictionModelVersionsInKillSwitch();
 
 }  // namespace features
 }  // namespace optimization_guide

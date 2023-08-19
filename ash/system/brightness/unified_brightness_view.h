@@ -47,6 +47,10 @@ class ASH_EXPORT UnifiedBrightnessView
   // The maximum index of `kBrightnessLevelIcons`.
   static constexpr int kBrightnessLevels = std::size(kBrightnessLevelIcons) - 1;
 
+  IconButton* more_button() { return more_button_; }
+
+  IconButton* night_light_button() { return night_light_button_; }
+
  private:
   friend class UnifiedBrightnessViewTest;
 
@@ -68,6 +72,7 @@ class ASH_EXPORT UnifiedBrightnessView
       night_light_controller_;
   // Owned by the views hierarchy.
   raw_ptr<IconButton, ExperimentalAsh> night_light_button_ = nullptr;
+  raw_ptr<IconButton> more_button_ = nullptr;
 };
 
 }  // namespace ash

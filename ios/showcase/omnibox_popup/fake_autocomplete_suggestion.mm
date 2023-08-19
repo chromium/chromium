@@ -10,10 +10,6 @@
 
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // Spacer attributed string for dividing parts of an autocomplete suggestion's
 // text and detail text.

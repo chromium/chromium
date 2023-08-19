@@ -442,9 +442,9 @@ void SiteInstanceImpl::ReuseExistingProcessIfPossible(
 
 void SiteInstanceImpl::SetProcessInternal(RenderProcessHost* process) {
   if (!site_instance_group_) {
-    site_instance_group_ =
-        browsing_instance_->site_instance_group_manager()
-            .GetOrCreateGroupForNewSiteInstance(this, process);
+    site_instance_group_ = base::WrapRefCounted(
+        new SiteInstanceGroup(browsing_instance(), process));
+    site_instance_group_->AddSiteInstance(this);
   }
 
   LockProcessIfNeeded();
@@ -514,7 +514,7 @@ void SiteInstanceImpl::SetSiteInfoToDefault(
   original_url_ = GetDefaultSiteURL();
   SetSiteInfoInternal(SiteInfo::CreateForDefaultSiteInstance(
       GetIsolationContext(), storage_partition_config,
-      browsing_instance_->web_exposed_isolation_info()));
+      GetWebExposedIsolationInfo()));
 }
 
 void SiteInstanceImpl::SetSiteInfoInternal(const SiteInfo& site_info) {
@@ -1506,6 +1506,45 @@ bool SiteInstanceImpl::IsCoopRelatedSiteInstance(
 
 void SiteInstanceImpl::SetProcessForTesting(RenderProcessHost* process) {
   SetProcessInternal(process);
+}
+
+void SiteInstanceImpl::IncrementActiveDocumentCount(
+    const SiteInfo& url_derived_site_info) {
+  if (url_derived_site_info.site_url().is_empty()) {
+    // This can happen when this function is called when destructing an active
+    // RenderFrameHost, e.g. on frame detach. In this case, there's no need to
+    // increment the count.
+    return;
+  }
+  if (active_document_counts_.contains(url_derived_site_info)) {
+    active_document_counts_[url_derived_site_info]++;
+  } else {
+    active_document_counts_[url_derived_site_info] = 1;
+  }
+}
+
+void SiteInstanceImpl::DecrementActiveDocumentCount(
+    const SiteInfo& url_derived_site_info) {
+  if (url_derived_site_info.site_url().is_empty()) {
+    // This can happen when this function is called for the initial
+    // RenderFrameHost, whose `url_derived_site_info` was never set. In that
+    // case, `IncrementActiveDocumentCount()` will never be called and the map
+    // won't contain the SiteInfo, so just return early here.
+    return;
+  }
+  CHECK(active_document_counts_.contains(url_derived_site_info));
+  active_document_counts_[url_derived_site_info]--;
+  if (active_document_counts_[url_derived_site_info] == 0) {
+    active_document_counts_.erase(url_derived_site_info);
+  }
+}
+
+size_t SiteInstanceImpl::GetActiveDocumentCount(
+    const SiteInfo& url_derived_site_info) {
+  if (active_document_counts_.contains(url_derived_site_info)) {
+    return active_document_counts_[url_derived_site_info];
+  }
+  return 0;
 }
 
 }  // namespace content

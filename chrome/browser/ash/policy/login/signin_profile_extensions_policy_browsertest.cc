@@ -13,19 +13,20 @@
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/version.h"
 #include "chrome/browser/ash/policy/login/signin_profile_extensions_policy_test_base.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/install_observer.h"
+#include "chrome/browser/extensions/install_tracker.h"
 #include "chrome/browser/policy/extension_force_install_mixin.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_source.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
 #include "content/public/test/test_utils.h"
@@ -33,10 +34,10 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/update_observer.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/mojom/view_type.mojom.h"
@@ -98,41 +99,37 @@ base::FilePath GetNoImmediateUpdateExtensionPath(const std::string& version) {
 
 // Observer that allows waiting for an installation failure of a specific
 // extension/app.
-// TODO(emaxx): Extract this into a more generic helper class for using in other
-// tests.
-class ExtensionInstallErrorObserver final {
+class ExtensionInstallErrorObserver : public extensions::InstallObserver {
  public:
-  ExtensionInstallErrorObserver(const Profile* profile,
+  ExtensionInstallErrorObserver(Profile* profile,
                                 const std::string& extension_id)
-      : profile_(profile),
-        extension_id_(extension_id),
-        notification_observer_(
-            extensions::NOTIFICATION_EXTENSION_INSTALL_ERROR,
-            base::BindRepeating(
-                &ExtensionInstallErrorObserver::IsNotificationRelevant,
-                base::Unretained(this))) {}
+      : extension_id_(extension_id) {
+    auto* tracker = extensions::InstallTracker::Get(profile);
+    CHECK(tracker);
+    observation_.Observe(tracker);
+  }
 
   ExtensionInstallErrorObserver(const ExtensionInstallErrorObserver&) = delete;
   ExtensionInstallErrorObserver& operator=(
       const ExtensionInstallErrorObserver&) = delete;
 
-  void Wait() { notification_observer_.Wait(); }
+  void Wait() { run_loop_.Run(); }
 
- private:
-  // Callback which is used for |WindowedNotificationObserver| for checking
-  // whether the condition being awaited is met.
-  bool IsNotificationRelevant(
-      const content::NotificationSource& source,
-      const content::NotificationDetails& details) const {
-    extensions::CrxInstaller* const crx_installer =
-        content::Source<extensions::CrxInstaller>(source).ptr();
-    return crx_installer->profile() == profile_ &&
-           crx_installer->extension()->id() == extension_id_;
+  // extensions::InstallObserver:
+  void OnFinishCrxInstall(content::BrowserContext* context,
+                          const extensions::CrxInstaller& installer,
+                          const std::string& extension_id,
+                          bool success) override {
+    if (extension_id == extension_id_) {
+      run_loop_.Quit();
+    }
   }
 
-  const raw_ptr<const Profile, ExperimentalAsh> profile_;
-  const std::string extension_id_;
-  content::WindowedNotificationObserver notification_observer_;
+ private:
+  base::RunLoop run_loop_;
+  const extensions::ExtensionId extension_id_;
+  base::ScopedObservation<extensions::InstallTracker, InstallObserver>
+      observation_{this};
 };
 
 // Observer that allows waiting until the specified version of the given
@@ -180,7 +177,7 @@ class ExtensionUpdateAvailabilityObserver final
 
  private:
   const raw_ptr<Profile, ExperimentalAsh> profile_;
-  const std::string extension_id_;
+  const extensions::ExtensionId extension_id_;
   const base::Version awaited_version_;
   base::RunLoop run_loop_;
 };

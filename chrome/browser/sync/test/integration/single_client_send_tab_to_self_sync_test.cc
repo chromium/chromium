@@ -153,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSendTabToSelfSyncTest,
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
   AccountInfo account = secondary_account_helper::SignInUnconsentedAccount(
       GetProfile(0), &test_url_loader_factory_, "user@g.com");
-  GetClient(0)->AwaitSyncTransportActive();
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
   send_tab_to_self::SendTabToSelfModel* model =
       SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0))

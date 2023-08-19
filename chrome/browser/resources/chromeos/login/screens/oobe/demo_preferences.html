@@ -1,28 +1,43 @@
-<style include="oobe-dialog-host-styles">
+<style include="oobe-dialog-host-styles cros-color-overrides">
   cr-input {
     --cr-input-width: 240px; /*Same width as country selection dropdown.*/
   }
 
   #demoPreferencesDialog .language-selection-entry {
-    border-top: 1px solid var(--cros-color-primary-inverted);
+    border-top: 1px solid var(--cros-sys-separator);
     min-height: 60px;
   }
   #demoPreferencesDialog .language-selection-title {
     color: var(--cros-text-color-primary);
-    font-size: 13px;
+    font-size: var(--oobe-demo-preferences-selection-title-font-size);
+  }
+  :host-context(.jelly-enabled)
+    #demoPreferencesDialog .language-selection-title {
+      color: var(--oobe-text-color);
   }
   #store-number-input-display-text {
     color: var(--cros-text-color-secondary);
     display: var(--cr-input-error-display, block);
-    font-size: 10px;
+    font-size: var(--oobe-demo-preferences-number-input-font-size);
     height: var(--cr-form-field-label-height);
     line-height: var(--cr-form-field-label-line-height);
     margin-inline-start: 55%;
     visibility: visible;
     white-space: var(--cr-input-error-white-space);
   }
+  :host-context(.jelly-enabled) #store-number-input-display-text {
+    color: var(--oobe-subheader-text-color);
+  }
   :host([store_number_input_invalid_]) #store-number-input-display-text {
     color: var(--cros-textfield-label-color-error);
+  }
+  :host-context(.jelly-enabled):host([store_number_input_invalid_])
+    #store-number-input-display-text {
+      color: var(--cros-sys-error);
+  }
+
+  :host-context(.jelly-enabled) cr-input.language-selection-title {
+    --cr-input-background-color: var(--cros-sys-input_field_on_shaded);
   }
 
 </style>

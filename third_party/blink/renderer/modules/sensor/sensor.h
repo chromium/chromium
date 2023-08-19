@@ -27,7 +27,7 @@ class DOMException;
 class ExceptionState;
 class ExecutionContext;
 
-class Sensor : public EventTargetWithInlineData,
+class Sensor : public EventTarget,
                public ActiveScriptWrappable<Sensor>,
                public ExecutionContextLifecycleObserver,
                public SensorProxy::Observer {

@@ -8,8 +8,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
-#include "components/feed/core/v2/public/feed_stream_surface.h"
 #include "components/feed/core/v2/public/reliability_logging_bridge.h"
+#include "components/feed/core/v2/public/surface_renderer.h"
 #include "components/feed/core/v2/public/types.h"
 
 namespace feed {
@@ -60,7 +60,7 @@ class LaunchReliabilityLogger {
   // depending on update type. Should be called just
   // before sending each stream update during launch.
   void OnStreamUpdate(StreamUpdateType type);
-  void OnStreamUpdate(StreamUpdateType type, FeedStreamSurface& surface);
+  void OnStreamUpdate(StreamUpdateType type, SurfaceRenderer& renderer);
 
   void LogLaunchFinishedAfterStreamUpdate(
       feedwire::DiscoverLaunchResult result);

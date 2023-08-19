@@ -7,12 +7,13 @@
 /**
  * Launches the PaymentRequest UI that request a phone number and offers free
  * shipping worldwide.
+ *
+ * @param {Array<Object>} methods An array of payment method objects.
  */
-function buy() {
+function buyWithMethods(methods) {
   try {
     var request = new PaymentRequest(
-        [{supportedMethods: 'basic-card', data: {supportedNetworks: ['visa']}}],
-        {
+        methods, {
           total: {label: 'Total', amount: {currency: 'USD', value: '5.00'}},
           shippingOptions: [{
             id: 'freeShippingOption',

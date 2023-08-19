@@ -12,6 +12,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "components/permissions/features.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/permissions/permission_util.h"
@@ -23,6 +24,8 @@
 #include "third_party/blink/public/mojom/permissions/permission.mojom-shared.h"
 #include "url/origin.h"
 
+using blink::mojom::EmbeddedPermissionControlResult;
+using blink::mojom::EmbeddedPermissionRequestDescriptorPtr;
 using blink::mojom::PermissionDescriptorPtr;
 using blink::mojom::PermissionName;
 using blink::mojom::PermissionStatus;
@@ -38,6 +41,33 @@ void PermissionRequestResponseCallbackWrapper(
     const std::vector<PermissionStatus>& vector) {
   DCHECK_EQ(vector.size(), 1ul);
   std::move(callback).Run(vector[0]);
+}
+
+// Helper converts given `PermissionStatus` to `EmbeddedPermissionControlResult`
+EmbeddedPermissionControlResult
+PermissionStatusToEmbeddedPermissionControlResult(PermissionStatus status) {
+  switch (status) {
+    case PermissionStatus::GRANTED:
+      return EmbeddedPermissionControlResult::kGranted;
+    case PermissionStatus::DENIED:
+      return EmbeddedPermissionControlResult::kDenied;
+    case PermissionStatus::ASK:
+      return EmbeddedPermissionControlResult::kDismissed;
+  }
+
+  NOTREACHED();
+  return EmbeddedPermissionControlResult::kNotSupported;
+}
+
+// Helper wraps `RequestPageEmbeddedPermissionCallback` to
+// `RequestPermissionsCallback`.
+void EmbeddedPermissionRequestCallbackWrapper(
+    base::OnceCallback<void(EmbeddedPermissionControlResult)> callback,
+    const std::vector<PermissionStatus>& statuses) {
+  DCHECK(base::ranges::all_of(
+      statuses, [&](auto const& status) { return statuses[0] == status; }));
+  std::move(callback).Run(
+      PermissionStatusToEmbeddedPermissionControlResult(statuses[0]));
 }
 
 }  // anonymous namespace
@@ -71,6 +101,28 @@ PermissionServiceImpl::PermissionServiceImpl(PermissionServiceContext* context,
 
 PermissionServiceImpl::~PermissionServiceImpl() {}
 
+void PermissionServiceImpl::RequestPageEmbeddedPermission(
+    EmbeddedPermissionRequestDescriptorPtr descriptor,
+    RequestPageEmbeddedPermissionCallback callback) {
+  if (!base::FeatureList::IsEnabled(
+          permissions::features::kPermissionElement)) {
+    bad_message::ReceivedBadMessage(
+        context_->render_frame_host()->GetProcess(),
+        bad_message::
+            PERMISSION_SERVICE_REQUEST_EMBEDDED_PERMISSION_WITHOUT_FEATURE);
+    std::move(callback).Run(EmbeddedPermissionControlResult::kNotSupported);
+    return;
+  }
+
+  if (auto* browser_context = context_->GetBrowserContext()) {
+    RequestPermissionsInternal(
+        browser_context, descriptor->permissions,
+        /*user_gesture=*/true,
+        base::BindOnce(&EmbeddedPermissionRequestCallbackWrapper,
+                       std::move(callback)));
+  }
+}
+
 void PermissionServiceImpl::RequestPermission(
     PermissionDescriptorPtr permission,
     bool user_gesture,
@@ -86,25 +138,36 @@ void PermissionServiceImpl::RequestPermissions(
     std::vector<PermissionDescriptorPtr> permissions,
     bool user_gesture,
     RequestPermissionsCallback callback) {
-  // This condition is valid if the call is coming from a ChildThread instead of
-  // a RenderFrame. Some consumers of the service run in Workers and some in
-  // Frames. In the context of a Worker, it is not possible to show a
-  // permission prompt because there is no tab. In the context of a Frame, we
-  // can. Even if the call comes from a context where it is not possible to show
-  // any UI, we want to still return something relevant so the current
-  // permission status is returned for each permission.
   BrowserContext* browser_context = context_->GetBrowserContext();
-  if (!browser_context)
+  if (!browser_context) {
     return;
+  }
 
+  // This condition is valid if the call is coming from a ChildThread instead
+  // of a RenderFrame. Some consumers of the service run in Workers and some
+  // in Frames. In the context of a Worker, it is not possible to show a
+  // permission prompt because there is no tab. In the context of a Frame, we
+  // can. Even if the call comes from a context where it is not possible to
+  // show any UI, we want to still return something relevant so the current
+  // permission status is returned for each permission.
   if (!context_->render_frame_host()) {
     std::vector<PermissionStatus> result(permissions.size());
-    for (size_t i = 0; i < permissions.size(); ++i)
+    for (size_t i = 0; i < permissions.size(); ++i) {
       result[i] = GetPermissionStatus(permissions[i]);
+    }
     std::move(callback).Run(result);
     return;
   }
 
+  RequestPermissionsInternal(browser_context, permissions, user_gesture,
+                             std::move(callback));
+}
+
+void PermissionServiceImpl::RequestPermissionsInternal(
+    BrowserContext* browser_context,
+    const std::vector<PermissionDescriptorPtr>& permissions,
+    bool user_gesture,
+    RequestPermissionsCallback callback) {
   std::vector<blink::PermissionType> types(permissions.size());
   std::set<blink::PermissionType> duplicates_check;
   for (size_t i = 0; i < types.size(); ++i) {
@@ -214,8 +277,9 @@ void PermissionServiceImpl::NotifyEventListener(
   }
 
   BrowserContext* browser_context = context_->GetBrowserContext();
-  if (!browser_context)
+  if (!browser_context) {
     return;
+  }
 
   if (!context_->render_frame_host()) {
     return;
@@ -258,8 +322,9 @@ PermissionStatus PermissionServiceImpl::GetPermissionStatus(
 PermissionStatus PermissionServiceImpl::GetPermissionStatusFromType(
     blink::PermissionType type) {
   BrowserContext* browser_context = context_->GetBrowserContext();
-  if (!browser_context)
+  if (!browser_context) {
     return PermissionStatus::DENIED;
+  }
 
   if (context_->render_frame_host()) {
     return browser_context->GetPermissionController()
@@ -281,8 +346,9 @@ PermissionStatus PermissionServiceImpl::GetPermissionStatusFromType(
 
 void PermissionServiceImpl::ResetPermissionStatus(blink::PermissionType type) {
   BrowserContext* browser_context = context_->GetBrowserContext();
-  if (!browser_context)
+  if (!browser_context) {
     return;
+  }
 
   GURL requesting_origin(origin_.GetURL());
   // If the embedding_origin is empty we'll use |origin_| instead.

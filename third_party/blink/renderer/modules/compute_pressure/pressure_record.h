@@ -16,7 +16,7 @@ namespace blink {
 class ScriptState;
 class ScriptValue;
 
-// https://wicg.github.io/compute-pressure/#dom-pressurerecord
+// https://w3c.github.io/compute-pressure/#the-pressurerecord-interface
 
 class MODULES_EXPORT PressureRecord final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();

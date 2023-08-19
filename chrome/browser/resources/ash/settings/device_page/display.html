@@ -1,0 +1,323 @@
+<style include="cr-shared-style settings-shared md-select iron-flex
+  iron-flex-alignment">
+  .indented {
+    align-self: stretch;
+    margin-inline-start: var(--cr-section-indent-padding);
+    padding: 0;
+  }
+
+  .display-tabs {
+    width: 100%;
+  }
+
+  display-layout {
+    align-self: stretch;
+    flex: 1 1 auto;
+    height: 300px;
+    margin: 10px;
+    min-height: 300px;
+  }
+
+  .text-area {
+    margin: 10px 0;
+  }
+
+  .settings-box > cr-button:first-child {
+    padding-inline-start: 0
+  }
+
+  .settings-box > cr-policy-pref-indicator {
+    margin-inline-end: var(--cr-controlled-by-spacing);
+  }
+
+  .underbar {
+    border-bottom: var(--cr-separator-line);
+  }
+
+  #controlsDiv > .settings-box:first-of-type {
+    border-top: none;
+  }
+
+  #mirrorDisplayToggleButton {
+    display: flex;
+    align-self: stretch;
+    margin-bottom: 20px;
+  }
+
+</style>
+
+<!-- Night Light Settings -->
+<template is="dom-if"
+    if="[[isRevampWayfindingEnabled_]]" restamp>
+  <settings-display-night-light prefs="{{prefs}}">
+  </settings-display-night-light>
+  <div class="hr"></div>
+</template>
+
+<!-- Arrangement section -->
+<template is="dom-if"
+    if="[[shouldShowArrangementSection_(displays)]]" restamp>
+  <div class="settings-box first layout vertical self-stretch underbar"
+      id="arrangement-section">
+    <h2 class="layout self-start">
+      $i18n{displayArrangementTitle}
+    </h2>
+    <div class="secondary layout self-start"
+        hidden="[[isMirrored_(displays)]]">
+      $i18n{displayArrangementText}
+    </div>
+    <display-layout id="displayLayout"
+        selected-display="[[selectedDisplay]]"
+        on-select-display="onSelectDisplay_"
+        deep-link-focus-id$="[[Setting.kDisplayArrangement]]">
+    </display-layout>
+
+    <template is="dom-if"
+        if="[[showMirror_(unifiedDesktopMode_, displays)]]" restamp>
+      <!-- Mirror display toggle button -->
+      <template is="dom-if"
+          if="[[isRevampWayfindingEnabled_]]" restamp>
+        <div id="mirrorDisplayToggleButton" class="text-area">
+          <div id="mirrorDisplayToggleLabel" class="start">
+            [[getDisplayMirrorText_(displays)]]
+          </div>
+          <cr-toggle id="mirrorDisplayToggle"
+              checked="[[isMirrored_(displays)]]"
+              on-click="onMirroredClick_"
+              aria-label="[[getDisplayMirrorText_(displays)]]"
+              deep-link-focus-id$="[[Setting.kDisplayMirroring]]">
+          </cr-toggle>
+        </div>
+      </template>
+
+      <!-- Mirror display checkbox -->
+      <template is="dom-if"
+          if="[[!isRevampWayfindingEnabled_]]" restamp>
+        <div class="secondary self-start">
+          <cr-checkbox id="displayMirrorCheckbox"
+              checked="[[isMirrored_(displays)]]"
+              on-click="onMirroredClick_"
+              aria-label="[[getDisplayMirrorText_(displays)]]"
+              deep-link-focus-id$="[[Setting.kDisplayMirroring]]">
+            <div class="text-area">[[getDisplayMirrorText_(displays)]]</div>
+          </cr-checkbox>
+        </div>
+      </template>
+    </template>
+
+  </div>
+</template>
+
+<!-- Display tabs -->
+<div hidden="[[!hasMultipleDisplays_(displays)]]"
+    class="settings-box first">
+  <cr-tabs selected="[[selectedTab_]]" class="display-tabs"
+      on-selected-changed="onSelectDisplayTab_"
+      tab-names="[[displayTabNames_]]"></cr-tabs>
+</div>
+
+<div id="controlsDiv" class="settings-box layout vertical first">
+  <h2>[[selectedDisplay.name]]</h2>
+  <template is="dom-if" if="[[showUnifiedDesktop_(unifiedDesktopAvailable_,
+      unifiedDesktopMode_, displays)]]" restamp>
+    <div class="settings-box indented two-line">
+      <div class="start">
+        <div id="displayUnifiedDesktopCheckboxLabel">
+          $i18n{displayUnifiedDesktop}
+        </div>
+        <div class="secondary">
+          [[getUnifiedDesktopText_(unifiedDesktopMode_)]]
+        </div>
+      </div>
+      <cr-toggle checked="[[unifiedDesktopMode_]]"
+          on-click="onUnifiedDesktopClick_"
+          aria-labelledby="displayUnifiedDesktopCheckboxLabel"
+          deep-link-focus-id$="[[Setting.kAllowWindowsToSpanDisplays]]">
+      </cr-toggle>
+    </div>
+  </template>
+
+  <template is="dom-if" restamp
+      if="[[showDisplaySelectMenu_(displays, selectedDisplay)]]">
+    <div class="settings-box indented">
+      <div id="displayScreenTitle" class="start" aria-hidden="true">
+        $i18n{displayScreenTitle}
+      </div>
+      <select id="primaryDisplaySelect"
+          class="md-select"
+          on-change="updatePrimaryDisplay_"
+          aria-labelledby="displayScreenTitle"
+          value="[[getDisplaySelectMenuIndex_(
+              selectedDisplay, primaryDisplayId)]]">
+        <option value="0">$i18n{displayScreenPrimary}</option>
+        <option value="1">$i18n{displayScreenExtended}</option>
+      </select>
+    </div>
+  </template>
+
+  <!-- Display zoom selection slider -->
+  <div class="settings-box indented two-line first">
+    <div class="start text-area layout vertical">
+      <div id="displayZoomLabel" aria-hidden="true">
+        $i18n{displayZoomLabel}
+      </div>
+      <div id="displayZoomDescription" class="secondary self-start"
+          aria-hidden="true">
+        $i18n{displayZoomDescription}
+      </div>
+      <div id="logicalResolutionText" class="secondary self-start"
+          hidden$="[[!logicalResolutionText_]]" aria-hidden="true">
+        [[logicalResolutionText_]]
+      </div>
+    </div>
+    <template is="dom-if" if="[[isDisplayScaleManagedByPolicy_(
+        selectedDisplay, prefs.cros.device_display_resolution)]]">
+      <cr-policy-pref-indicator
+          pref="[[prefs.cros.device_display_resolution]]"
+          icon-aria-label="$i18n{displayZoomLabel}">
+      </cr-policy-pref-indicator>
+    </template>
+    <settings-slider id="displaySizeSlider"
+        ticks="[[zoomValues_]]" pref="{{selectedZoomPref_}}"
+        label-aria="$i18n{displayZoomLabel}"
+        label-min="$i18n{displaySizeSliderMinLabel}"
+        label-max="$i18n{displaySizeSliderMaxLabel}"
+        disabled="[[isDisplayScaleMandatory_(
+            selectedDisplay,
+            prefs.cros.device_display_resolution)]]"
+        on-cr-slider-value-changed="onDisplaySizeSliderDrag_"
+        aria-describedby="displayZoomSublabel logicalResolutionText"
+        deep-link-focus-id$="[[Setting.kDisplaySize]]">
+    </settings-slider>
+  </div>
+
+  <!-- Drop down select menu for resolution -->
+  <template is="dom-if"
+      if="[[showDropDownResolutionSetting_(selectedDisplay)]]" restamp>
+    <div class="settings-box indented two-line">
+      <div class="start text-area layout vertical" aria-hidden="true">
+        <div>$i18n{displayResolutionTitle}</div>
+        <div class="secondary self-start" id="displayResolutionSublabel">
+          $i18n{displayResolutionSublabel}
+        </div>
+      </div>
+      <template is="dom-if" if="[[isDisplayResolutionManagedByPolicy_(
+          prefs.cros.device_display_resolution)]]">
+        <cr-policy-pref-indicator
+            pref="[[prefs.cros.device_display_resolution]]"
+            icon-aria-label="$i18n{displayResolutionTitle}">
+        </cr-policy-pref-indicator>
+      </template>
+      <settings-dropdown-menu id="displayModeSelector"
+          pref="{{selectedParentModePref_}}"
+          disabled="[[isDisplayResolutionMandatory_(
+              prefs.cros.device_display_resolution)]]"
+          label="$i18n{displayResolutionTitle}"
+          aria-describedby="displayResolutionSublabel"
+          menu-options="[[displayModeList_]]"
+          deep-link-focus-id$="[[Setting.kDisplayResolution]]">
+      </settings-dropdown-menu>
+    </div>
+  </template>
+
+  <!-- Drop down select menu for refresh rate -->
+  <template is="dom-if" if="[[showRefreshRateSetting_(selectedDisplay)]]"
+      restamp>
+    <div class="settings-box indented two-line">
+      <div class="start text-area layout vertical" aria-hidden="true">
+        <div>$i18n{displayRefreshRateTitle}</div>
+        <div class="secondary self-start" id="displayRefreshRateSublabel">
+          $i18n{displayRefreshRateSublabel}
+        </div>
+      </div>
+      <template is="dom-if" if="[[isDisplayResolutionManagedByPolicy_(
+          prefs.cros.device_display_resolution)]]">
+        <cr-policy-pref-indicator
+            pref="[[prefs.cros.device_display_resolution]]"
+            icon-aria-label="$i18n{displayResolutionText}">
+        </cr-policy-pref-indicator>
+      </template>
+      <settings-dropdown-menu id="refreshRateSelector"
+          pref="{{selectedModePref_}}"
+          disabled="[[isDisplayResolutionMandatory_(
+              prefs.cros.device_display_resolution)]]"
+          label="Refresh Rate Menu"
+          aria-describedby="displayRefreshRateSublabel"
+          menu-options="[[refreshRateList_]]"
+          deep-link-focus-id$="[[Setting.kDisplayRefreshRate]]">
+      </settings-dropdown-menu>
+    </div>
+  </template>
+
+
+  <template is="dom-if" if="[[!unifiedDesktopMode_]]" restamp>
+    <div class="settings-box indented">
+      <div id="displayOrientation" class="start text-area"
+          aria-hidden="true">
+        $i18n{displayOrientation}
+      </div>
+      <template is="dom-if" if="[[isDevicePolicyEnabled_(
+          prefs.cros.display_rotation_default)]]">
+        <cr-policy-pref-indicator
+            pref="[[prefs.cros.display_rotation_default]]"
+            icon-aria-label="$i18n{displayOrientation}">
+        </cr-policy-pref-indicator>
+      </template>
+      <select id="orientationSelect"
+          class="md-select"
+          value="[[selectedDisplay.rotation]]"
+          aria-labelledby="displayOrientation"
+          on-change="onOrientationChange_"
+          deep-link-focus-id$="[[Setting.kDisplayOrientation]]">
+        <option value="-1"
+            hidden$="[[!showAutoRotateOption_(selectedDisplay)]]">
+          $i18n{displayOrientationAutoRotate}
+        </option>
+        <option value="0">$i18n{displayOrientationStandard}</option>
+        <option value="90">90&deg;</option>
+        <option value="180">180&deg;</option>
+        <option value="270">270&deg;</option>
+      </select>
+    </div>
+  </template>
+
+  <template is="dom-if" if="[[showAmbientColorSetting_(
+      ambientColorAvailable_, selectedDisplay)]]">
+    <settings-toggle-button id="ambientColor"
+        class="indented hr"
+        pref="{{prefs.ash.ambient_color.enabled}}"
+        label="$i18n{displayAmbientColorTitle}"
+        sub-label="$i18n{displayAmbientColorSubtitle}"
+        deep-link-focus-id$="[[Setting.kAmbientColors]]">
+    </settings-toggle-button>
+  </template>
+
+  <cr-link-row class="indented hr" id="overscan"
+      label="$i18n{displayOverscanPageTitle}"
+      sub-label="$i18n{displayOverscanPageText}" on-click="onOverscanClick_"
+      hidden$="[[!showOverscanSetting_(selectedDisplay)]]" embedded
+      deep-link-focus-id$="[[Setting.kDisplayOverscan]]">
+  </cr-link-row>
+
+  <settings-display-overscan-dialog id="displayOverscan"
+      display-id="{{overscanDisplayId}}"
+      on-close="onCloseOverscanDialog_">
+  </settings-display-overscan-dialog>
+
+  <!-- Link row to touch calibration -->
+  <cr-link-row class="indented hr" id="touchCalibration"
+      label="$i18n{displayTouchCalibrationTitle}"
+      sub-label="$i18n{displayTouchCalibrationText}"
+      on-click="onTouchCalibrationClick_"
+      hidden$="[[!showTouchCalibrationSetting_(selectedDisplay)]]" embedded
+      deep-link-focus-id$="[[Setting.kTouchscreenCalibration]]">
+  </cr-link-row>
+</div>
+
+<!-- Night Light Settings -->
+<template is="dom-if"
+    if="[[!isRevampWayfindingEnabled_]]" restamp>
+  <div class="hr"></div>
+  <settings-display-night-light prefs="{{prefs}}">
+  </settings-display-night-light>
+</template>

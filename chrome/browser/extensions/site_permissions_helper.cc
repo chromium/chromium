@@ -135,32 +135,31 @@ void SitePermissionsHelper::UpdateSiteAccess(
     return;
   }
 
-  // This is to determine when to show the reload page dialog if revoking
-  // permissions, or increasing permissions with pending actions that mandate a
-  // page refresh. While revoking permissions doesn't necessarily mandate a page
-  // refresh, it is complicated to determine when an extension has affected the
-  // page. Showing a reload page bubble after the user blocks the extension re
-  // enforces the user confidence on blocking the extension. Also, this
-  // scenario should not be that common and therefore hopefully is not too
-  // noisy.
+  // Clear extension's tab permission when revoking user site permissions.
   bool revoking_current_site_permissions =
       new_access == PermissionsManager::UserSiteAccess::kOnClick;
-  int blocked_actions = runner->GetBlockedActions(extension.id());
-  bool reload_needed = revoking_current_site_permissions ||
-                       PageNeedsRefreshToRun(blocked_actions);
-
-  if (reload_needed) {
-    runner->ShowReloadPageBubbleWithReloadPageCallback(extension.id());
-  } else if (blocked_actions != BLOCKED_ACTION_NONE) {
-    runner->RunBlockedActions(&extension);
-  }
-
-  // Clear extension's active tab permission since it is set when granting user
-  // site permissions.
   if (revoking_current_site_permissions) {
     TabHelper::FromWebContents(web_contents)
         ->active_tab_permission_granter()
         ->ClearActiveExtensionAndNotify(extension.id());
+    // While revoking permissions doesn't necessarily mandate a page
+    // refresh, it is complicated to determine when an extension has affected
+    // the page. Showing a reload page bubble after the user blocks the
+    // extension re enforces the user confidence on blocking the extension.
+    // Also, this scenario should not be that common and therefore hopefully is
+    // not too noisy.
+    runner->ShowReloadPageBubble({extension.id()});
+    return;
+  }
+
+  // Run blocked actions when granting user site permissions.
+  int blocked_actions = runner->GetBlockedActions(extension.id());
+  if (PageNeedsRefreshToRun(blocked_actions)) {
+    // Show reload bubble when blocked actions mandate a page refresh.
+    // Refreshing the page will run them.
+    runner->ShowReloadPageBubble({extension.id()});
+  } else if (blocked_actions != BLOCKED_ACTION_NONE) {
+    runner->RunBlockedActions(&extension);
   }
 }
 

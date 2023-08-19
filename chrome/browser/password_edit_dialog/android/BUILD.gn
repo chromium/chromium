@@ -20,6 +20,7 @@ source_set("android") {
 }
 
 android_library("java") {
+  srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/chrome/browser/password_edit_dialog/NoFilterArrayAdapter.java",
     "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogBridge.java",
@@ -46,7 +47,6 @@ android_library("java") {
     "//ui/android:ui_no_recycler_view_java",
   ]
 
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   resources_package = "org.chromium.chrome.browser.password_edit_dialog"
 }
 
@@ -82,6 +82,7 @@ robolectric_library("junit") {
     "//chrome/browser/flags:java",
     "//chrome/test/android:chrome_java_unit_test_support",
     "//third_party/android_deps:espresso_java",
+    "//third_party/hamcrest:hamcrest_java",
     "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
@@ -103,6 +104,7 @@ android_library("unit_device_javatests") {
   deps = [
     ":java",
     ":java_resources",
+    "//base:base_java",
     "//base:base_java_test_support",
     "//chrome/browser/flags:java",
     "//chrome/browser/ui/android/night_mode:java",

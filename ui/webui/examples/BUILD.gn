@@ -3,16 +3,17 @@
 # found in the LICENSE file.
 
 import("//build/config/ui.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/repack.gni")
 import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
-
-assert(use_aura)
 
 static_library("webui_examples_lib") {
   testonly = true
 
   sources = [
+    "app/mac_init.h",
+    "app/mac_init.mm",
     "app/main_delegate.cc",
     "app/main_delegate.h",
     "browser/browser_context.cc",
@@ -27,48 +28,79 @@ static_library("webui_examples_lib") {
     "browser/devtools/devtools_manager_delegate.h",
     "browser/devtools/devtools_server.cc",
     "browser/devtools/devtools_server.h",
-    "browser/ui/aura/aura_context.cc",
-    "browser/ui/aura/aura_context.h",
-    "browser/ui/aura/content_window.cc",
-    "browser/ui/aura/content_window.h",
-    "browser/ui/aura/fill_layout.cc",
-    "browser/ui/aura/fill_layout.h",
+    "browser/ui/web/browser.cc",
+    "browser/ui/web/browser.h",
+    "browser/ui/web/browser_page_handler.cc",
+    "browser/ui/web/browser_page_handler.h",
     "browser/ui/web/webui.cc",
     "browser/ui/web/webui.h",
     "browser/webui_controller_factory.cc",
     "browser/webui_controller_factory.h",
     "common/content_client.cc",
     "common/content_client.h",
+    "renderer/content_renderer_client.cc",
+    "renderer/content_renderer_client.h",
+    "renderer/render_frame_observer.cc",
+    "renderer/render_frame_observer.h",
   ]
 
-  data_deps = [ "//tools/v8_context_snapshot" ]
-
   deps = [
+    ":browser_mojo_bindings",
     ":pak",
     ":resources_grit",
+    "resources/browser:resources",
     "//base",
     "//chrome/browser/resources/webui_gallery:resources",
     "//content/public/app",
     "//content/public/browser",
+    "//content/public/renderer",
     "//ipc",
+    "//mojo/public/cpp/bindings",
     "//net",
-    "//ui/aura",
-    "//ui/aura:test_support",
+    "//third_party/blink/public:blink",
     "//ui/base",
     "//ui/display",
     "//ui/platform_window",
-    "//ui/wm",
-    "//ui/wm/public",
+    "//ui/webui",
     "//url",
+    "//v8:v8_headers",
   ]
+
+  data_deps = [ "//tools/v8_context_snapshot" ]
+
+  if (use_aura) {
+    sources += [
+      "browser/browser_main_parts_aura.cc",
+      "browser/ui/aura/aura_context.cc",
+      "browser/ui/aura/aura_context.h",
+      "browser/ui/aura/content_window.cc",
+      "browser/ui/aura/content_window.h",
+      "browser/ui/aura/fill_layout.cc",
+      "browser/ui/aura/fill_layout.h",
+    ]
+    deps += [
+      "//ui/aura",
+      "//ui/aura:test_support",
+      "//ui/wm",
+      "//ui/wm/public",
+    ]
+  }
+
+  if (is_mac) {
+    sources += [
+      "browser/browser_main_parts_mac.mm",
+      "browser/ui/cocoa/content_ns_window.h",
+      "browser/ui/cocoa/content_ns_window.mm",
+    ]
+    frameworks = [
+      "AppKit.framework",
+      "Cocoa.framework",
+    ]
+  }
 }
 
 grit("resources") {
   testonly = true
-  grit_flags = [
-    "-E",
-    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-  ]
   source = "resources/webui_examples_resources.grd"
   outputs = [
     "grit/webui_examples_resources.h",
@@ -87,10 +119,12 @@ repack("pak") {
     "$root_gen_dir/ui/resources/webui_resources.pak",
     "$root_gen_dir/ui/strings/app_locale_settings_en-US.pak",
     "$root_gen_dir/ui/strings/ui_strings_en-US.pak",
+    "$root_gen_dir/ui/webui/examples/resources/browser/webui_examples_browser_resources.pak",
     "$target_gen_dir/webui_examples_resources.pak",
   ]
   deps = [
     ":resources",
+    "resources/browser:resources",
     "//chrome/browser/resources/webui_gallery:resources",
     "//content/browser/devtools:devtools_resources",
     "//third_party/blink/public:devtools_inspector_resources",
@@ -100,6 +134,12 @@ repack("pak") {
     "//ui/strings",
   ]
   output = "$root_out_dir/webui_examples.pak"
+}
+
+mojom("browser_mojo_bindings") {
+  sources = [ "browser/ui/web/browser.mojom" ]
+  webui_module_path = "/"
+  use_typescript_sources = true
 }
 
 executable("webui_examples") {
@@ -121,5 +161,9 @@ executable("webui_examples") {
       "//content:sandbox_helper_win",
       "//sandbox/win:sandbox",
     ]
+  }
+
+  if (is_mac) {
+    deps += [ "//sandbox/mac:seatbelt" ]
   }
 }

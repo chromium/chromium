@@ -72,6 +72,12 @@ def _switch_to_window(marionette, handle):
     marionette.window = handle
 
 
+class MarionetteCallbackHandler(CallbackHandler):
+    def __init__(self, logger, protocol, test_window):
+        MarionetteCallbackHandler.expected_exc = (errors.MarionetteException,)
+        super().__init__(logger, protocol, test_window)
+
+
 class MarionetteBaseProtocolPart(BaseProtocolPart):
     def __init__(self, parent):
         super().__init__(parent)
@@ -965,7 +971,7 @@ class MarionetteTestharnessExecutor(TestharnessExecutor):
         if self.debug_test and self.browser.supports_devtools:
             self.protocol.debug.load_devtools()
 
-        handler = CallbackHandler(self.logger, protocol, test_window)
+        handler = MarionetteCallbackHandler(self.logger, protocol, test_window)
         protocol.marionette.navigate(url)
         while True:
             result = protocol.base.execute_script(

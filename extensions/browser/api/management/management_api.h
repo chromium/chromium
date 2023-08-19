@@ -20,6 +20,7 @@
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/preload_check.h"
 #include "extensions/browser/supervised_user_extensions_delegate.h"
+#include "extensions/common/extension_id.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace extensions {
@@ -124,7 +125,7 @@ class ManagementSetEnabledFunction : public ExtensionFunction {
   void OnExtensionApprovalDone(
       SupervisedUserExtensionsDelegate::ExtensionApprovalResult result);
 
-  std::string extension_id_;
+  ExtensionId extension_id_;
 
   std::unique_ptr<InstallPromptDelegate> install_prompt_;
 
@@ -139,7 +140,10 @@ class ManagementUninstallFunctionBase : public ExtensionFunction {
                                         const std::u16string& error);
 
  protected:
+  // ExtensionFunction:
   ~ManagementUninstallFunctionBase() override;
+  bool ShouldKeepWorkerAliveIndefinitely() override;
+
   ResponseAction Uninstall(const std::string& extension_id,
                            bool show_confirm_dialog);
 
@@ -220,40 +224,6 @@ class ManagementGenerateAppForLinkFunction : public ExtensionFunction {
 
  private:
   std::unique_ptr<AppForLinkDelegate> app_for_link_delegate_;
-};
-
-class ManagementCanInstallReplacementAndroidAppFunction
-    : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("management.canInstallReplacementAndroidApp",
-                             MANAGEMENT_CANINSTALLREPLACEMENTANDROIDAPP)
-
-  ManagementCanInstallReplacementAndroidAppFunction();
-
- protected:
-  ~ManagementCanInstallReplacementAndroidAppFunction() override;
-
-  ResponseAction Run() override;
-
- private:
-  void OnFinishedAndroidAppCheck(bool result);
-};
-
-class ManagementInstallReplacementAndroidAppFunction
-    : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("management.installReplacementAndroidApp",
-                             MANAGEMENT_INSTALLREPLACEMENTANDROIDAPP)
-
-  ManagementInstallReplacementAndroidAppFunction();
-
- protected:
-  ~ManagementInstallReplacementAndroidAppFunction() override;
-
-  ResponseAction Run() override;
-
- private:
-  void OnAppInstallInitiated(bool installable);
 };
 
 class ManagementInstallReplacementWebAppFunction : public ExtensionFunction {

@@ -45,6 +45,4 @@ source_set("display") {
 
   # TODO(crbug.com/875022) fix for OpenGLES deprecation.
   defines = [ "GLES_SILENCE_DEPRECATION" ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

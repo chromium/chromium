@@ -6,17 +6,20 @@
 
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_coordinator+subclassing.h"
+#import "ios/chrome/browser/ui/toolbar/secondary_toolbar_keyboard_state_provider.h"
 #import "ios/chrome/browser/ui/toolbar/secondary_toolbar_view_controller.h"
+#import "ios/web/public/ui/crw_web_view_proxy.h"
+#import "ios/web/public/web_state.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
-@interface SecondaryToolbarCoordinator ()
+@interface SecondaryToolbarCoordinator () <
+    SecondaryToolbarKeyboardStateProvider>
 @property(nonatomic, strong) SecondaryToolbarViewController* viewController;
 @end
 
@@ -36,8 +39,30 @@
       self.browser->GetCommandDispatcher(), PopupMenuCommands);
   self.viewController.layoutGuideCenter =
       LayoutGuideCenterForBrowser(self.browser);
+  self.viewController.keyboardStateProvider = self;
+  FullscreenController* controller =
+      FullscreenController::FromBrowser(self.browser);
+  self.viewController.fullscreenController = controller;
 
   [super start];
+}
+
+- (void)stop {
+  [self.viewController disconnect];
+  [super stop];
+}
+
+#pragma mark - SecondaryToolbarKeyboardStateProvider
+
+// TODO(crbug.com/1462578): Move this to SecondaryToolbarMediator once the
+// mediator is created.
+- (BOOL)keyboardIsActiveForWebContent {
+  web::WebState* activeWebState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  if (activeWebState && activeWebState->GetWebViewProxy()) {
+    return activeWebState->GetWebViewProxy().keyboardVisible;
+  }
+  return NO;
 }
 
 #pragma mark - ToolbarCommands

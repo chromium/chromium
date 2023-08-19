@@ -12,9 +12,11 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/container_stuck.h"
 #include "third_party/blink/renderer/core/css/css_length_resolver.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 #include "ui/base/pointer/pointer_device.h"
 
@@ -65,6 +67,7 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues>,
   virtual bool DeviceSupportsHDR() const = 0;
   virtual int ColorBitsPerComponent() const = 0;
   virtual int MonochromeBitsPerComponent() const = 0;
+  virtual bool InvertedColors() const = 0;
   virtual mojom::blink::PointerType PrimaryPointerType() const = 0;
   virtual int AvailablePointerTypes() const = 0;
   virtual mojom::blink::HoverType PrimaryHoverType() const = 0;
@@ -84,11 +87,30 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues>,
   virtual mojom::blink::PreferredContrast GetPreferredContrast() const = 0;
   virtual bool PrefersReducedMotion() const = 0;
   virtual bool PrefersReducedData() const = 0;
+  virtual bool PrefersReducedTransparency() const = 0;
   virtual ForcedColors GetForcedColors() const = 0;
   virtual NavigationControls GetNavigationControls() const = 0;
   virtual int GetHorizontalViewportSegments() const = 0;
   virtual int GetVerticalViewportSegments() const = 0;
   virtual device::mojom::blink::DevicePostureType GetDevicePosture() const = 0;
+  // For evaluating state(stuck: left), state(stuck: right)
+  virtual ContainerStuckPhysical StuckHorizontal() const {
+    return ContainerStuckPhysical::kNo;
+  }
+  // For evaluating state(stuck: top), state(stuck: bottom)
+  virtual ContainerStuckPhysical StuckVertical() const {
+    return ContainerStuckPhysical::kNo;
+  }
+  // For evaluating state(stuck: inset-inline-start),
+  // state(stuck: inset-inline-end)
+  virtual ContainerStuckLogical StuckInline() const {
+    return ContainerStuckLogical::kNo;
+  }
+  // For evaluating state(stuck: inset-block-start),
+  // state(stuck: inset-block-end)
+  virtual ContainerStuckLogical StuckBlock() const {
+    return ContainerStuckLogical::kNo;
+  }
   // Returns the container element used to retrieve base style and parent style
   // when computing the computed value of a style() container query.
   virtual Element* ContainerElement() const { return nullptr; }
@@ -106,6 +128,7 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues>,
   static float CalculateExSize(LocalFrame*);
   static float CalculateChSize(LocalFrame*);
   static float CalculateIcSize(LocalFrame*);
+  static float CalculateCapSize(LocalFrame*);
   static float CalculateLineHeight(LocalFrame*);
   static int CalculateDeviceWidth(LocalFrame*);
   static int CalculateDeviceHeight(LocalFrame*);
@@ -114,6 +137,7 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues>,
   static bool CalculateDeviceSupportsHDR(LocalFrame*);
   static int CalculateColorBitsPerComponent(LocalFrame*);
   static int CalculateMonochromeBitsPerComponent(LocalFrame*);
+  static bool CalculateInvertedColors(LocalFrame*);
   static const String CalculateMediaType(LocalFrame*);
   static blink::mojom::DisplayMode CalculateDisplayMode(LocalFrame*);
   static bool CalculateThreeDEnabled(LocalFrame*);
@@ -130,6 +154,7 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues>,
       LocalFrame*);
   static bool CalculatePrefersReducedMotion(LocalFrame*);
   static bool CalculatePrefersReducedData(LocalFrame*);
+  static bool CalculatePrefersReducedTransparency(LocalFrame*);
   static ForcedColors CalculateForcedColors(LocalFrame*);
   static NavigationControls CalculateNavigationControls(LocalFrame*);
   static int CalculateHorizontalViewportSegments(LocalFrame*);

@@ -30,6 +30,8 @@ class Size;
 
 namespace media {
 
+class VideoEncoderMetricsProvider;
+
 namespace cast {
 
 class VideoFrameInput : public base::RefCountedThreadSafe<VideoFrameInput> {
@@ -102,6 +104,7 @@ class CastSender {
   // |status_change_cb| will be run as operational status changes.
   virtual void InitializeVideo(
       const FrameSenderConfig& video_config,
+      std::unique_ptr<VideoEncoderMetricsProvider> metrics_provider,
       const StatusChangeCallback& status_change_cb,
       const CreateVideoEncodeAcceleratorCallback& create_vea_cb) = 0;
 

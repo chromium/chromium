@@ -8,6 +8,7 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/new_tab_page/modules/drive/drive_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -33,6 +34,8 @@ DriveServiceFactory::DriveServiceFactory()
               .Build()) {
   DependsOn(CookieSettingsFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(
+      segmentation_platform::SegmentationPlatformServiceFactory::GetInstance());
 }
 
 DriveServiceFactory::~DriveServiceFactory() = default;
@@ -44,5 +47,7 @@ KeyedService* DriveServiceFactory::BuildServiceInstanceFor(
   auto* profile = Profile::FromBrowserContext(context);
   return new DriveService(
       url_loader_factory, IdentityManagerFactory::GetForProfile(profile),
+      segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
+          profile),
       g_browser_process->GetApplicationLocale(), profile->GetPrefs());
 }

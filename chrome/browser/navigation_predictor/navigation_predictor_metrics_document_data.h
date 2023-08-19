@@ -65,6 +65,9 @@ class NavigationPredictorMetricsDocumentData
   // |navigation_start_to_click_| to update |max_hover_dwell_time|. We then
   // record |max_time_in_viewport|, and |max_hover_dwell_time| to UKM.
   struct UserInteractionsData {
+    UserInteractionsData();
+    UserInteractionsData(const UserInteractionsData&);
+
     // True if the anchor element is still in viewport, otherwise false.
     bool is_in_viewport = false;
     // True if the pointer is still hovering over the anchor element,
@@ -72,6 +75,8 @@ class NavigationPredictorMetricsDocumentData
     bool is_hovered = false;
     // Number of times the pointer was hovering over the anchor element.
     int pointer_hovering_over_count = 0;
+    // Number of times the anchor element entered the viewport.
+    int entered_viewport_count = 0;
     // If the anchor element is still in viewport, it is the TimeDelta between
     // the navigation start of the anchor element's root document and the last
     // time the anchor element entered the viewport, otherwise empty.
@@ -88,6 +93,10 @@ class NavigationPredictorMetricsDocumentData
     absl::optional<base::TimeDelta> last_navigation_start_to_last_pointer_down;
     // The maximum the pointer hover dwell time over the anchor element.
     absl::optional<base::TimeDelta> max_hover_dwell_time;
+    // Mouse velocity when the on-hover event was triggered.
+    absl::optional<double> mouse_velocity;
+    // Mouse acceleration when the on-hover event was triggered.
+    absl::optional<double> mouse_acceleration;
   };
 
   struct PreloadOnHoverData {

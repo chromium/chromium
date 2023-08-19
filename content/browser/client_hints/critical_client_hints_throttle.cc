@@ -129,8 +129,7 @@ void CriticalClientHintsThrottle::MaybeRestartWithHints(
   blink::EnabledClientHints hints;
   for (const WebClientHintsType hint :
        response_head.parsed_headers->accept_ch.value())
-    hints.SetIsEnabled(response_url_, /*third_party_url=*/absl::nullopt,
-                       response_head.headers.get(), hint, true);
+    hints.SetIsEnabled(hint, true);
 
   std::vector<WebClientHintsType> critical_hints;
   for (const WebClientHintsType hint :

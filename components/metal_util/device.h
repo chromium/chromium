@@ -6,13 +6,14 @@
 #define COMPONENTS_METAL_UTIL_DEVICE_H_
 
 #include "components/metal_util/metal_util_export.h"
-#include "components/metal_util/types.h"
+
+@protocol MTLDevice;
 
 namespace metal {
 
 // Return a low-power device, if one exists, otherwise return the system default
 // device.
-MTLDevicePtr METAL_UTIL_EXPORT CreateDefaultDevice();
+id<MTLDevice> METAL_UTIL_EXPORT GetDefaultDevice();
 
 }  // namespace metal
 

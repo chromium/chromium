@@ -13,7 +13,7 @@
 // This is a workaround for https://crbug.com/778929.
 struct IcuEnvironment {
   IcuEnvironment() {
-    logging::SetMinLogLevel(logging::LOG_FATAL);
+    logging::SetMinLogLevel(logging::LOGGING_FATAL);
     CHECK(base::i18n::InitializeICU());
   }
   // used by ICU integration.

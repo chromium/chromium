@@ -96,7 +96,6 @@ class FullScreenIncognitoReauthCoordinator extends IncognitoReauthCoordinatorBas
     /**
      * A test-only method to set a mock {@link IncognitoReauthDialog}.
      */
-    @VisibleForTesting
     void setIncognitoReauthDialogForTesting(IncognitoReauthDialog incognitoReauthDialog) {
         mIncognitoReauthDialog = incognitoReauthDialog;
     }

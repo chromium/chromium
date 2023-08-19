@@ -1,0 +1,11 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+# See build/ios/update_bundle_filelist.py for details on how .globlist
+# files are used to update their .filelist counterparts.
+
+//components/test/data/value_store/**
+-//components/test/data/value_store/*.filelist
+-//components/test/data/value_store/*.globlist
+-//components/test/data/value_store/OWNERS

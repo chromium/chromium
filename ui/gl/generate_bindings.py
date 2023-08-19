@@ -2451,6 +2451,10 @@ GL_FUNCTIONS = [
 ]
 
 EGL_FUNCTIONS = [
+{ 'return_type': 'void',
+  'versions': [{ 'name': 'eglAcquireExternalContextANGLE',
+                 'extensions': ['EGL_ANGLE_external_context_and_surface'] }],
+  'arguments': 'EGLDisplay dpy, EGLSurface readAndDraw' },
 { 'return_type': 'EGLBoolean',
   'names': ['eglBindAPI'],
   'arguments': 'EGLenum api', },
@@ -2810,6 +2814,10 @@ EGL_FUNCTIONS = [
                  'extensions': ['EGL_ANGLE_power_preference'] }],
   'arguments': 'EGLDisplay dpy, EGLContext ctx' },
 { 'return_type': 'void',
+  'versions': [{ 'name': 'eglReleaseExternalContextANGLE',
+                 'extensions': ['EGL_ANGLE_external_context_and_surface'] }],
+  'arguments': 'EGLDisplay dpy' },
+{ 'return_type': 'void',
   'versions': [{ 'name': 'eglReleaseHighPowerGPUANGLE',
                  'extensions': ['EGL_ANGLE_power_preference'] }],
   'arguments': 'EGLDisplay dpy, EGLContext ctx' },
@@ -2921,7 +2929,6 @@ EGL_EXTENSIONS_EXTRA = [
   'EGL_ANGLE_create_context_backwards_compatible',
   'EGL_ANGLE_create_context_client_arrays',
   'EGL_ANGLE_create_context_webgl_compatibility',
-  'EGL_ANGLE_external_context_and_surface',
   'EGL_ANGLE_iosurface_client_buffer',
   'EGL_ANGLE_keyed_mutex',
   'EGL_ANGLE_robust_resource_initialization',

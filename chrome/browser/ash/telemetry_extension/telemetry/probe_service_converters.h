@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_TELEMETRY_PROBE_SERVICE_CONVERTERS_H_
 
 #include <cstdint>
+#include <type_traits>
 #include <vector>
 
 #include "base/check.h"
@@ -13,8 +14,9 @@
 #include "chromeos/ash/services/cros_healthd/public/mojom/nullable_primitives.mojom-forward.h"
 #include "chromeos/crosapi/mojom/nullable_primitives.mojom-forward.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash::converters {
+namespace ash::converters::telemetry {
 
 // This file contains helper functions used by ProbeService to convert its
 // types to/from cros_healthd ProbeService types.
@@ -25,11 +27,23 @@ namespace unchecked {
 // nullptr, they should be called only via ConvertPtr wrapper that checks
 // whether input pointer is nullptr.
 
+crosapi::mojom::UInt64ValuePtr LegacyUncheckedConvertPtr(
+    cros_healthd::mojom::NullableUint64Ptr input);
+
 crosapi::mojom::ProbeErrorPtr UncheckedConvertPtr(
     cros_healthd::mojom::ProbeErrorPtr input);
 
-crosapi::mojom::UInt64ValuePtr UncheckedConvertPtr(
-    cros_healthd::mojom::NullableUint64Ptr input);
+absl::optional<double> UncheckedConvertPtr(
+    cros_healthd::mojom::NullableDoublePtr input);
+
+absl::optional<uint8_t> UncheckedConvertPtr(
+    cros_healthd::mojom::NullableUint8Ptr input);
+
+absl::optional<uint16_t> UncheckedConvertPtr(
+    cros_healthd::mojom::NullableUint16Ptr input);
+
+absl::optional<uint32_t> UncheckedConvertPtr(
+    cros_healthd::mojom::NullableUint32Ptr input);
 
 crosapi::mojom::ProbeAudioInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::AudioInfoPtr input);
@@ -88,6 +102,18 @@ crosapi::mojom::ProbeCpuInfoPtr UncheckedConvertPtr(
 
 crosapi::mojom::ProbeCpuResultPtr UncheckedConvertPtr(
     cros_healthd::mojom::CpuResultPtr input);
+
+crosapi::mojom::ProbeDisplayResultPtr UncheckedConvertPtr(
+    cros_healthd::mojom::DisplayResultPtr input);
+
+crosapi::mojom::ProbeDisplayInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::DisplayInfoPtr input);
+
+crosapi::mojom::ProbeEmbeddedDisplayInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::EmbeddedDisplayInfoPtr input);
+
+crosapi::mojom::ProbeExternalDisplayInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::ExternalDisplayInfoPtr input);
 
 crosapi::mojom::ProbeTimezoneInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::TimezoneInfoPtr input);
@@ -178,6 +204,9 @@ crosapi::mojom::ProbeUsbSpecSpeed Convert(
 crosapi::mojom::ProbeFwupdVersionFormat Convert(
     cros_healthd::mojom::FwupdVersionFormat input);
 
+crosapi::mojom::ProbeDisplayInputType Convert(
+    cros_healthd::mojom::DisplayInputType input);
+
 crosapi::mojom::BoolValuePtr Convert(bool input);
 
 crosapi::mojom::DoubleValuePtr Convert(double input);
@@ -207,10 +236,31 @@ std::vector<OutputT> ConvertPtrVector(std::vector<InputT> input) {
   return output;
 }
 
+template <class OutputT, class InputT>
+absl::optional<std::vector<OutputT>> ConvertOptionalPtrVector(
+    absl::optional<std::vector<InputT>> input) {
+  if (!input.has_value()) {
+    return absl::nullopt;
+  }
+  return ConvertPtrVector<OutputT, InputT>(std::move(input.value()));
+}
+
 template <class InputT>
-auto ConvertProbePtr(InputT input) {
+auto LegacyConvertProbePtr(InputT input) {
+  return (!input.is_null())
+             ? unchecked::LegacyUncheckedConvertPtr(std::move(input))
+             : nullptr;
+}
+
+template <class InputT,
+          class... Types,
+          class OutputT = decltype(unchecked::UncheckedConvertPtr(
+              std::declval<InputT>(),
+              std::declval<Types>()...)),
+          class = std::enable_if_t<std::is_default_constructible_v<OutputT>>>
+OutputT ConvertProbePtr(InputT input) {
   return (!input.is_null()) ? unchecked::UncheckedConvertPtr(std::move(input))
-                            : nullptr;
+                            : OutputT();
 }
 
 template <class InputT>
@@ -223,6 +273,6 @@ auto ConvertProbePairPtr(InputT input) {
 std::vector<cros_healthd::mojom::ProbeCategoryEnum> ConvertCategoryVector(
     const std::vector<crosapi::mojom::ProbeCategoryEnum>& input);
 
-}  // namespace ash::converters
+}  // namespace ash::converters::telemetry
 
 #endif  // CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_TELEMETRY_PROBE_SERVICE_CONVERTERS_H_

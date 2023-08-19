@@ -26,7 +26,3 @@ void PasswordGenerationPopupViewTesterViews::SimulateMouseMovementAt(
                             ui::EventTimeForNow(), 0, 0);
   static_cast<views::View*>(view_)->OnMouseMoved(mouse_down);
 }
-
-bool PasswordGenerationPopupViewTesterViews::IsPopupMinimized() const {
-  return view_->IsPopupMinimized();
-}

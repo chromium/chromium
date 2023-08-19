@@ -10,10 +10,14 @@ GEN_INCLUDE(['../../../common/testing/accessibility_test_base.js']);
 ChromeVoxPanStrategyUnitTest = class extends AccessibilityTestBase {
   /** @override */
   async setUpDeferred() {
-    await importModule(
-        'CursorDots', '/chromevox/background/braille/cursor_dots.js');
-    await importModule(
-        'PanStrategy', '/chromevox/background/braille/pan_strategy.js');
+    await super.setUpDeferred();
+
+    await Promise.all([
+      importModule(
+          'CursorDots', '/chromevox/background/braille/cursor_dots.js'),
+      importModule(
+          'PanStrategy', '/chromevox/background/braille/pan_strategy.js'),
+    ]);
   }
 };
 

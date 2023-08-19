@@ -47,6 +47,8 @@ const std::u16string kTelemetryNetworkInformationPermissionMessage =
     u"Read ChromeOS network information";
 const std::u16string kAttachedDeviceInfo =
     u"Read attached devices information and data";
+const std::u16string kBluetoothPeripheralsInfo =
+    u"Read Bluetooth peripherals information and data";
 }  // namespace
 
 // Tests that ChromePermissionMessageProvider provides not only correct, but
@@ -152,6 +154,26 @@ TEST_F(ChromeOSPermissionMessageUnittest, OsAttachedDeviceInfo) {
   EXPECT_EQ(0U, GetInactiveOptionalPermissionMessages().size());
   ASSERT_EQ(1U, active_permissions().size());
   EXPECT_EQ(kAttachedDeviceInfo, active_permissions()[0]);
+}
+
+TEST_F(ChromeOSPermissionMessageUnittest, OsBluetoothPeripheralsInfo) {
+  CreateAndInstallExtensionWithPermissions(
+      base::Value::List(),
+      base::Value::List().Append("os.bluetooth_peripherals_info"));
+
+  ASSERT_EQ(1U, optional_permissions().size());
+  EXPECT_EQ(kBluetoothPeripheralsInfo, optional_permissions()[0]);
+  ASSERT_EQ(1U, GetInactiveOptionalPermissionMessages().size());
+  EXPECT_EQ(kBluetoothPeripheralsInfo,
+            GetInactiveOptionalPermissionMessages()[0]);
+  EXPECT_EQ(0U, required_permissions().size());
+  EXPECT_EQ(0U, active_permissions().size());
+
+  GrantOptionalPermissions();
+
+  EXPECT_EQ(0U, GetInactiveOptionalPermissionMessages().size());
+  ASSERT_EQ(1U, active_permissions().size());
+  EXPECT_EQ(kBluetoothPeripheralsInfo, active_permissions()[0]);
 }
 
 TEST_F(ChromeOSPermissionMessageUnittest, OsDiagnosticsMessage) {

@@ -19,6 +19,7 @@
 #include "components/mirroring/service/mirror_settings.h"
 #include "components/mirroring/service/openscreen_message_port.h"
 #include "components/mirroring/service/openscreen_rpc_dispatcher.h"
+#include "components/mirroring/service/openscreen_stats_client.h"
 #include "components/mirroring/service/rtp_stream.h"
 #include "components/openscreen_platform/event_trace_logging_platform.h"
 #include "components/openscreen_platform/task_runner.h"
@@ -131,6 +132,9 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
 
   // Callback by media::cast::VideoSender to set a new target playout delay.
   void SetTargetPlayoutDelay(base::TimeDelta playout_delay);
+
+  base::Value::Dict GetMirroringStats() const;
+  void SetSenderStatsForTest(const openscreen::cast::SenderStats& test_stats);
 
  private:
   friend class OpenscreenSessionHostTest;
@@ -331,6 +335,10 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
   // Records the time when the streaming session is started and `media_remoter_`
   // is initialized.
   absl::optional<base::Time> remote_playback_start_time_;
+
+  // An optional stats client for fetching quality statistics from an Openscreen
+  // casting session.
+  std::unique_ptr<OpenscreenStatsClient> stats_client_;
 
   // Used in callbacks executed on task runners, such as by RtpStream.
   // TODO(https://crbug.com/1363503): determine if weak pointers can be removed.

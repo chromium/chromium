@@ -12,7 +12,6 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/privacy_hub_delegate.h"
-#include "ash/public/cpp/sensor_disabled_notification_delegate.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -20,6 +19,7 @@
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_metrics.h"
 #include "ash/system/privacy_hub/privacy_hub_notification_controller.h"
+#include "ash/system/privacy_hub/sensor_disabled_notification_delegate.h"
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/command_line.h"
@@ -118,8 +118,7 @@ class PrivacyHubMicrophoneControllerTest
       fake_video_conference_tray_controller_ =
           std::make_unique<FakeVideoConferenceTrayController>();
       enabled_features.push_back(features::kVideoConference);
-      base::CommandLine::ForCurrentProcess()->AppendSwitch(
-          switches::kCameraEffectsSupportedByHardware);
+      enabled_features.push_back(features::kCameraEffectsSupportedByHardware);
     }
     scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
     scoped_feature_list_->InitWithFeatures(enabled_features, {});
@@ -142,11 +141,18 @@ class PrivacyHubMicrophoneControllerTest
     // This makes sure a global instance of `SensorDisabledNotificationDelegate`
     // is created before running tests.
     Shell::Get()->privacy_hub_controller()->set_frontend(&mock_frontend_);
+
+    // Set up the fake SensorDisabledNotificationDelegate.
+    scoped_delegate_ =
+        std::make_unique<ScopedSensorDisabledNotificationDelegateForTest>(
+            std::make_unique<FakeSensorDisabledNotificationDelegate>());
   }
 
   void TearDown() override {
     SetMicrophoneMuteSwitchState(/*muted=*/false);
 
+    // We need to destroy the delegate while the Ash still exists.
+    scoped_delegate_.reset();
     AshTestBase::TearDown();
   }
 
@@ -221,11 +227,17 @@ class PrivacyHubMicrophoneControllerTest
   }
 
   void LaunchApp(absl::optional<std::u16string> app_name) {
-    delegate_.LaunchAppAccessingMicrophone(app_name);
+    sensor_delegate()->LaunchAppAccessingMicrophone(app_name);
   }
 
   void CloseApp(const std::u16string& app_name) {
-    delegate_.CloseAppAccessingMicrophone(app_name);
+    sensor_delegate()->CloseAppAccessingMicrophone(app_name);
+  }
+
+  FakeSensorDisabledNotificationDelegate* sensor_delegate() {
+    return static_cast<FakeSensorDisabledNotificationDelegate*>(
+        PrivacyHubNotificationController::Get()
+            ->sensor_disabled_notification_delegate());
   }
 
   const base::HistogramTester& histogram_tester() const {
@@ -241,10 +253,11 @@ class PrivacyHubMicrophoneControllerTest
   raw_ptr<MockNewWindowDelegate, ExperimentalAsh> new_window_delegate_ =
       nullptr;
   std::unique_ptr<TestNewWindowDelegateProvider> window_delegate_provider_;
-  FakeSensorDisabledNotificationDelegate delegate_;
   std::unique_ptr<FakeVideoConferenceTrayController>
       fake_video_conference_tray_controller_;
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
+  std::unique_ptr<ScopedSensorDisabledNotificationDelegateForTest>
+      scoped_delegate_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -287,10 +300,8 @@ TEST_P(PrivacyHubMicrophoneControllerTest, OnInputMuteChanged) {
 
 TEST_P(PrivacyHubMicrophoneControllerTest, OnMicrophoneMuteSwitchValueChanged) {
   EXPECT_CALL(mock_frontend_, MicrophoneHardwareToggleChanged(_));
-  Shell::Get()
-      ->privacy_hub_controller()
-      ->microphone_controller()
-      .OnInputMutedByMicrophoneMuteSwitchChanged(true);
+  MicrophonePrivacySwitchController::Get()
+      ->OnInputMutedByMicrophoneMuteSwitchChanged(true);
 }
 
 TEST_P(PrivacyHubMicrophoneControllerTest, SimpleMuteUnMute) {

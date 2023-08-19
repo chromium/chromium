@@ -12,8 +12,10 @@
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_list_controller.h"
+#include "chrome/browser/ui/views/desktop_capture/desktop_media_pane_view.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane_listener.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -27,6 +29,7 @@ class MdTextButton;
 class DesktopMediaPickerViews;
 
 BASE_DECLARE_FEATURE(kShareThisTabDialog);
+BASE_DECLARE_FEATURE(kDisplayMediaPickerRedesign);
 
 // Dialog view used for DesktopMediaPickerViews.
 //
@@ -99,6 +102,7 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
     // category. Primarily used if there is a separate selection surface that we
     // may need to re-open.
     bool supports_reselect_button;
+    raw_ptr<DesktopMediaPaneView> pane = nullptr;
   };
 
   static bool AudioSupported(DesktopMediaList::Type type);
@@ -110,6 +114,19 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   void MaybeCreateAudioCheckboxForPane(const DisplaySurfaceCategory& category);
   void MaybeSetAudioCheckboxMaxSize();
 
+  std::u16string GetLabelForAudioToggle(
+      const DisplaySurfaceCategory& category) const;
+
+  // Sets up the view for the pane based on the passed-in content_view and the
+  // corresponding category object.
+  std::unique_ptr<views::View> SetupPane(
+      DesktopMediaList::Type type,
+      std::unique_ptr<DesktopMediaListController> controller,
+      bool audio_offered,
+      bool audio_checked,
+      bool supports_reselect_button,
+      std::unique_ptr<views::View> content_view);
+
   void OnSourceTypeSwitched(int index);
 
   int GetSelectedTabIndex() const;
@@ -118,8 +135,10 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   DesktopMediaListController* GetSelectedController();
 
   DesktopMediaList::Type GetSelectedSourceListType() const;
+  bool IsAudioSharingApprovedByUser() const;
 
-  const raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
+  const raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged>
+      web_contents_;
   const bool is_get_display_media_call_;
   const std::u16string app_name_;
   const bool audio_requested_;

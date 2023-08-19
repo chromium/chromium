@@ -9,9 +9,10 @@
 
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/download/download_ui_model.h"
+#include "chrome/browser/ui/views/download/bubble/download_bubble_primary_view.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/focus/focus_manager.h"
-#include "ui/views/view.h"
 
 class Browser;
 class DownloadBubbleUIController;
@@ -19,24 +20,24 @@ class DownloadBubbleNavigationHandler;
 
 // This class encapsulates the "partial view" in the download bubble. This gives
 // a compact representation of downloads that recently completed.
-class DownloadBubblePartialView : public views::View,
+class DownloadBubblePartialView : public DownloadBubblePrimaryView,
                                   public views::FocusChangeListener {
  public:
   METADATA_HEADER(DownloadBubblePartialView);
 
-  static std::unique_ptr<DownloadBubblePartialView> Create(
+  DownloadBubblePartialView(
       base::WeakPtr<Browser> browser,
       base::WeakPtr<DownloadBubbleUIController> bubble_controller,
       base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
       std::vector<DownloadUIModel::DownloadUIModelPtr> rows,
       base::OnceClosure on_interacted_closure);
-
   DownloadBubblePartialView(const DownloadBubblePartialView&) = delete;
   DownloadBubblePartialView& operator=(const DownloadBubblePartialView&) =
       delete;
   ~DownloadBubblePartialView() override;
 
-  // views::View
+  // DownloadBubblePrimaryView:
+  base::StringPiece GetVisibleTimeHistogramName() const override;
   void AddedToWidget() override;
   void RemovedFromWidget() override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
@@ -46,19 +47,15 @@ class DownloadBubblePartialView : public views::View,
   void OnDidChangeFocus(views::View* before, views::View* now) override {}
 
  private:
-  DownloadBubblePartialView(
-      base::WeakPtr<Browser> browser,
-      base::WeakPtr<DownloadBubbleUIController> bubble_controller,
-      base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
-      std::vector<DownloadUIModel::DownloadUIModelPtr> rows,
-      base::OnceClosure on_interacted_closure);
-
   // Run the |on_interacted_closure_|.
   void OnInteracted();
 
   // A callback to be run when this view has been hovered over by the mouse or
   // focused by the keyboard.
   base::OnceClosure on_interacted_closure_;
+
+  // Records the end time of the last download if it is successful.
+  absl::optional<base::Time> last_download_completed_time_;
 };
 
 #endif

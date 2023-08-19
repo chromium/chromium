@@ -57,7 +57,7 @@ LocalFrameView* ValidationMessageClientImpl::CurrentView() {
 }
 
 void ValidationMessageClientImpl::ShowValidationMessage(
-    const Element& anchor,
+    Element& anchor,
     const String& original_message,
     TextDirection message_dir,
     const String& sub_message,
@@ -143,7 +143,7 @@ void ValidationMessageClientImpl::HideValidationMessageImmediately(
 }
 
 void ValidationMessageClientImpl::Reset(TimerBase*) {
-  const Element& anchor = *current_anchor_;
+  Element& anchor = *current_anchor_;
 
   // Clearing out the pointer does not stop the timer.
   if (timer_)
@@ -160,7 +160,7 @@ void ValidationMessageClientImpl::Reset(TimerBase*) {
 }
 
 void ValidationMessageClientImpl::ValidationMessageVisibilityChanged(
-    const Element& element) {
+    Element& element) {
   Document& document = element.GetDocument();
   if (AXObjectCache* cache = document.ExistingAXObjectCache())
     cache->HandleValidationMessageVisibilityChanged(&element);

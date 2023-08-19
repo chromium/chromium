@@ -45,6 +45,7 @@ constexpr char kIppMediaRightMargin[] = "media-right-margin";
 constexpr char kIppMediaSize[] = "media-size";
 constexpr char kIppMediaSource[] = "media-source";
 constexpr char kIppMediaTopMargin[] = "media-top-margin";
+constexpr char kIppMediaType[] = "media-type";
 constexpr char kIppXDimension[] = "x-dimension";
 constexpr char kIppYDimension[] = "y-dimension";
 

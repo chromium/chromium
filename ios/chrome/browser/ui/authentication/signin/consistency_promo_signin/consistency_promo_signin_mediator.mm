@@ -17,10 +17,6 @@
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_completion_info.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Sign-in time out duration.
@@ -33,9 +29,11 @@ constexpr NSInteger kSigninTimeoutDurationSeconds = 10;
   // Observer for changes to the user's Google identities.
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserverBridge;
-  // Closure to trigger the sign-in time out error. This closure has to be
-  // canceled if the sign-in is done in time (or fails).
-  base::CancelableOnceClosure _signinTimeoutClosure;
+  // Closure to trigger the sign-in time out error. This closure exists to make
+  // sure the user doesn't wait too long before to get the cookies available
+  // on the web. This is used only when `_accessPoint` is equal to
+  // `ACCESS_POINT_WEB_SIGNIN`.
+  base::CancelableOnceClosure _cookieTimeoutClosure;
   AuthenticationFlow* _authenticationFlow;
   // True if the mediator was initialized with no existing account on device.
   // Kept for metrics reasons.
@@ -146,6 +144,7 @@ constexpr NSInteger kSigninTimeoutDurationSeconds = 10;
           _accessPoint);
       break;
     }
+    case SigninCoordinatorResultDisabled:
     case SigninCoordinatorResultInterrupted: {
       RecordConsistencyPromoUserAction(
           signin_metrics::AccountConsistencyPromoAction::DISMISSED_OTHER,
@@ -153,7 +152,7 @@ constexpr NSInteger kSigninTimeoutDurationSeconds = 10;
       break;
     }
   }
-  _signinTimeoutClosure.Cancel();
+  _cookieTimeoutClosure.Cancel();
   self.accountManagerService = nullptr;
   self.authenticationService = nullptr;
   self.identityManager = nullptr;
@@ -178,12 +177,6 @@ constexpr NSInteger kSigninTimeoutDurationSeconds = 10;
     [weakSelf authenticationFlowCompletedWithSuccess:success];
   }];
   [self.delegate consistencyPromoSigninMediatorSigninStarted:self];
-  _signinTimeoutClosure.Reset(base::BindOnce(^{
-    [weakSelf cancelSigninWithError:ConsistencyPromoSigninMediatorErrorTimeout];
-  }));
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, _signinTimeoutClosure.callback(),
-      base::Seconds(self.signinTimeoutDurationSeconds));
 }
 
 #pragma mark - Properties
@@ -197,15 +190,27 @@ constexpr NSInteger kSigninTimeoutDurationSeconds = 10;
 - (void)authenticationFlowCompletedWithSuccess:(BOOL)success {
   DCHECK(_authenticationFlow);
   _authenticationFlow = nil;
-  if (success) {
-    // `-[ConsistencyPromoSigninMediator onAccountsInCookieUpdated:error:]` will
-    // be called when the cookies will be ready, and then the sign-in can be
-    // finished. Or `_signinTimeoutClosure` will be called if it takes too long.
+  if (!success) {
+    [self cancelSigninWithError:
+              ConsistencyPromoSigninMediatorErrorFailedToSignin];
     return;
   }
-  _signinTimeoutClosure.Cancel();
-  [self
-      cancelSigninWithError:ConsistencyPromoSigninMediatorErrorFailedToSignin];
+  if (_accessPoint == signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN) {
+    // `-[ConsistencyPromoSigninMediator onAccountsInCookieUpdated:error:]` will
+    // be called when the cookies will be ready, and then the sign-in can be
+    // finished. Or `_cookieTimeoutClosure` will be called if it takes too long.
+    __weak __typeof(self) weakSelf = self;
+    _cookieTimeoutClosure.Reset(base::BindOnce(^{
+      [weakSelf
+          cancelSigninWithError:ConsistencyPromoSigninMediatorErrorTimeout];
+    }));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, _cookieTimeoutClosure.callback(),
+        base::Seconds(self.signinTimeoutDurationSeconds));
+    return;
+  }
+  [self.delegate consistencyPromoSigninMediatorSignInDone:self
+                                             withIdentity:self.signingIdentity];
 }
 
 // Cancels sign-in and calls the delegate to display the error.
@@ -267,10 +272,13 @@ constexpr NSInteger kSigninTimeoutDurationSeconds = 10;
 - (void)onAccountsInCookieUpdated:
             (const signin::AccountsInCookieJarInfo&)accountsInCookieJarInfo
                             error:(const GoogleServiceAuthError&)error {
-  if (_authenticationFlow) {
+  if (_authenticationFlow ||
+      _accessPoint != signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN) {
     // Ignore if `_authenticationFlow` is in progress since
     // `onAccountsInCookieUpdated` may be called when data is cleared on
     // sign-in.
+    // Ignore if the access point is different than WebSignin. Only the web
+    // sign-in needs to wait for the cookies.
     return;
   }
   id<SystemIdentity> signingIdentity = self.signingIdentity;
@@ -282,7 +290,7 @@ constexpr NSInteger kSigninTimeoutDurationSeconds = 10;
     return;
   }
   DCHECK(!_authenticationFlow);
-  _signinTimeoutClosure.Cancel();
+  _cookieTimeoutClosure.Cancel();
   if (error.state() == GoogleServiceAuthError::State::NONE &&
       self.authenticationService->GetPrimaryIdentity(
           signin::ConsentLevel::kSignin) &&

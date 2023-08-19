@@ -9,6 +9,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/bits.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
@@ -25,7 +27,33 @@
 #include "gpu/vulkan/vulkan_util.h"
 #include "ui/gl/gl_angle_util_vulkan.h"
 
+namespace features {
+// 4MB was picked for the size here by looking at memory usage of Android
+// apps and runs of DM. It seems to be a good compromise of not wasting
+// unused allocated space and not making too many small allocations. The
+// AMD allocator will start making blocks at 1/8 the max size and builds
+// up block size as needed before capping at the max set here.
+//
+// To understand the amount of fragmentation caused by this choice of 4MB as
+// the block size, a few finch experiments are run to try different block
+// sizes.
+BASE_FEATURE(kVulkanVMALargeHeapBlockSizeExperiment,
+             "VulkanVMALargeHeapBlockSizeExperiment",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+constexpr base::FeatureParam<int> kVulkanVMALargeHeapBlockSize{
+    &kVulkanVMALargeHeapBlockSizeExperiment, "VulkanVMALargeHeapBlockSize",
+    4 * 1024 * 1024};
+}  // namespace features
+
 namespace gpu {
+namespace {
+VkDeviceSize GetPreferredVMALargeHeapBlockSize() {
+  const VkDeviceSize block_size =
+      ::features::kVulkanVMALargeHeapBlockSize.Get();
+  DCHECK(base::bits::IsPowerOfTwo(block_size));
+  return block_size;
+}
+}  // anonymous namespace
 
 VulkanDeviceQueue::VulkanDeviceQueue(VkInstance vk_instance)
     : vk_instance_(vk_instance) {}
@@ -232,8 +260,10 @@ bool VulkanDeviceQueue::Initialize(
   // Disable all physical device features by default.
   enabled_device_features_2_ = {VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2};
 
-  // Android, Fuchsia, and Linux(VaapiVideoDecoder) need YCbCr sampler support.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX)
+  // Android, Fuchsia, Linux, and CrOS (VaapiVideoDecoder) need YCbCr sampler
+  // support.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
   if (!physical_device_info.feature_sampler_ycbcr_conversion) {
     LOG(ERROR) << "samplerYcbcrConversion is not supported.";
     return false;
@@ -247,6 +277,7 @@ bool VulkanDeviceQueue::Initialize(
   sampler_ycbcr_conversion_features_.pNext = enabled_device_features_2_.pNext;
   enabled_device_features_2_.pNext = &sampler_ycbcr_conversion_features_;
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX)
+        // || BUILDFLAG(IS_CHROMEOS)
 
   if (allow_protected_memory) {
     if (!physical_device_info.feature_protected_memory) {
@@ -307,8 +338,9 @@ bool VulkanDeviceQueue::Initialize(
       VK_MAX_MEMORY_HEAPS,
       heap_memory_limit ? heap_memory_limit : VK_WHOLE_SIZE);
   vma::CreateAllocator(vk_physical_device_, vk_device_, vk_instance_,
-                       enabled_extensions_, heap_size_limit.data(),
-                       is_thread_safe, &owned_vma_allocator_);
+                       enabled_extensions_, GetPreferredVMALargeHeapBlockSize(),
+                       heap_size_limit.data(), is_thread_safe,
+                       &owned_vma_allocator_);
   vma_allocator_ = owned_vma_allocator_;
 
   cleanup_helper_ = std::make_unique<VulkanFenceHelper>(this);
@@ -342,7 +374,9 @@ bool VulkanDeviceQueue::InitCommon(VkPhysicalDevice vk_physical_device,
 
   if (vma_allocator_ == VK_NULL_HANDLE) {
     vma::CreateAllocator(vk_physical_device_, vk_device_, vk_instance_,
-                         enabled_extensions_, /*heap_size_limit=*/nullptr,
+                         enabled_extensions_,
+                         GetPreferredVMALargeHeapBlockSize(),
+                         /*heap_size_limit=*/nullptr,
                          /*is_thread_safe =*/false, &owned_vma_allocator_);
     vma_allocator_ = owned_vma_allocator_;
   }

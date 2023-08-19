@@ -18,11 +18,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.autofill.bottom_sheet_utils.DetailScreenScrollListener;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.ViewUtils;
 /**
@@ -293,8 +293,8 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
 
     @Override
     public boolean skipHalfStateOnScrollingDown() {
-        // Skip the half state if TalkBack is enabled.
-        return ChromeAccessibilityUtil.get().isTouchExplorationEnabled();
+        // Skip the half state if a service requesting touch exploration is enabled.
+        return AccessibilityState.isTouchExplorationEnabled();
     }
 
     @Override
@@ -311,8 +311,8 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
 
     @Override
     public float getHalfHeightRatio() {
-        // Disable the half state when TalkBack is on.
-        if (ChromeAccessibilityUtil.get().isTouchExplorationEnabled()) return HeightMode.DISABLED;
+        // Disable the half state when touch exploration is enabled.
+        if (skipHalfStateOnScrollingDown()) return HeightMode.DISABLED;
         return Math.min(getDesiredSheetHeightPx(), mBottomSheetController.getContainerHeight())
                 / (float) mBottomSheetController.getContainerHeight();
     }

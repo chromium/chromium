@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {InternetPageBrowserProxyImpl, Router, routes} from 'chrome://os-settings/os_settings.js';
+import {InternetPageBrowserProxyImpl, Router, routes, setUserActionRecorderForTesting, userActionRecorderMojom} from 'chrome://os-settings/os_settings.js';
 import {MojoConnectivityProvider} from 'chrome://resources/ash/common/connectivity/mojo_connectivity_provider.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
@@ -16,6 +16,8 @@ import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_confi
 import {FakePasspointService} from 'chrome://webui-test/chromeos/fake_passpoint_service_mojom.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
+
+import {FakeUserActionRecorder} from '../fake_user_action_recorder.js';
 
 import {TestInternetPageBrowserProxy} from './test_internet_page_browser_proxy.js';
 
@@ -31,6 +33,9 @@ suite('InternetDetailPage', function() {
 
   /** @type {?TestInternetPageBrowserProxy} */
   let browserProxy = null;
+
+  /** @type {?userActionRecorderMojom.UserActionRecorderInterface} */
+  let userActionRecorder = null;
 
   /** @type {Object} */
   const prefs_ = {
@@ -125,10 +130,7 @@ suite('InternetDetailPage', function() {
   }
 
   function getHiddenToggle() {
-    if (loadTimeData.getBoolean('enableHiddenNetworkMigration')) {
-      return internetDetailPage.shadowRoot.querySelector('#hiddenToggle');
-    }
-    return internetDetailPage.shadowRoot.querySelector('#hiddenToggleLegacy');
+    return internetDetailPage.shadowRoot.querySelector('#hiddenToggle');
   }
 
   /**
@@ -168,6 +170,9 @@ suite('InternetDetailPage', function() {
   }
 
   setup(function() {
+    userActionRecorder = new FakeUserActionRecorder();
+    setUserActionRecorderForTesting(userActionRecorder);
+
     loadTimeData.overrideValues({
       internetAddConnection: 'internetAddConnection',
       internetAddConnectionExpandA11yLabel:
@@ -198,6 +203,7 @@ suite('InternetDetailPage', function() {
       internetDetailPage = null;
       Router.getInstance().resetRouteForTesting();
     });
+    setUserActionRecorderForTesting(null);
   });
 
   /**
@@ -415,47 +421,6 @@ suite('InternetDetailPage', function() {
       });
     });
 
-    // Syntactic sugar for running test twice with different values for the
-    // apnRevamp feature flag.
-    [true, false].forEach(shouldEnableHiddenNetworkMigration => {
-      test(
-          'Hidden toggle is shown in a different location depending on feature flag',
-          async () => {
-            loadTimeData.overrideValues({
-              enableHiddenNetworkMigration: shouldEnableHiddenNetworkMigration,
-            });
-
-            init();
-            mojoApi_.resetForTest();
-            mojoApi_.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
-            const wifiNetwork =
-                getManagedProperties(NetworkType.kWiFi, 'wifi_user');
-            wifiNetwork.source = OncSource.kUser;
-            wifiNetwork.connectable = true;
-
-            mojoApi_.setManagedPropertiesForTest(wifiNetwork);
-
-            internetDetailPage.init('wifi_user_guid', 'WiFi', 'wifi_user');
-
-            return flushAsync().then(() => {
-              const enableHiddenNetworkMigration =
-                  loadTimeData.getBoolean('enableHiddenNetworkMigration');
-              const hiddenToggle =
-                  internetDetailPage.shadowRoot.querySelector('#hiddenToggle');
-              const hiddenToggleLegacy =
-                  internetDetailPage.shadowRoot.querySelector(
-                      '#hiddenToggleLegacy');
-              if (loadTimeData.getBoolean('enableHiddenNetworkMigration')) {
-                assertTrue(!!hiddenToggle);
-                assertFalse(!!hiddenToggleLegacy);
-              } else {
-                assertFalse(!!hiddenToggle);
-                assertTrue(!!hiddenToggleLegacy);
-              }
-            });
-          });
-    });
-
     test('Proxy Unshared', function() {
       init();
       mojoApi_.resetForTest();
@@ -614,7 +579,10 @@ suite('InternetDetailPage', function() {
     });
 
     test('WiFi Passpoint removal shows a dialog', async () => {
-      loadTimeData.overrideValues({isPasspointEnabled: true});
+      loadTimeData.overrideValues({
+        isPasspointEnabled: true,
+        isPasspointSettingsEnabled: false,
+      });
       init();
       mojoApi_.resetForTest();
       mojoApi_.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
@@ -636,24 +604,72 @@ suite('InternetDetailPage', function() {
       // Click the button and check the dialog is displayed.
       forgetButton.click();
       await waitAfterNextRender(forgetButton);
-      const dialog = getDialog('passpointRemovalDialog');
-      assertTrue(dialog.open);
+      const removeDialog = getDialog('passpointRemovalDialog');
+      assertTrue(removeDialog.$.dialog.open);
 
       // Check "Cancel" dismiss the dialog.
-      const cancelButton = getButton('passpointRemovalCancelButton');
+      const cancelButton = removeDialog.$.cancelButton;
       assertTrue(!!cancelButton);
       cancelButton.click();
       await flushAsync();
-      assertFalse(dialog.open);
+      assertFalse(removeDialog.$.dialog.open);
 
       // Check "Confirm" triggers network removal
       forgetButton.click();
       await flushAsync();
-      const confirmButton = getButton('passpointRemovalConfirmButton');
+      const confirmButton = removeDialog.$.confirmButton;
       confirmButton.click();
       await flushAsync();
-      assertFalse(dialog.open);
+      assertFalse(removeDialog.$.dialog.open);
       await mojoApi_.whenCalled('forgetNetwork');
+    });
+
+    test('WiFi Passpoint removal leads to subscription page', async () => {
+      loadTimeData.overrideValues({
+        isPasspointEnabled: true,
+        isPasspointSettingsEnabled: true,
+      });
+      init();
+
+      const subId = 'a_passpoint_id';
+      setSubscriptionForTest({
+        id: subId,
+        friendlyName: 'My Passpoint provider',
+      });
+
+      mojoApi_.resetForTest();
+      mojoApi_.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
+      const wifiNetwork =
+          getManagedProperties(NetworkType.kWiFi, 'wifi_passpoint');
+      wifiNetwork.source = OncSource.kUser;
+      wifiNetwork.connectable = true;
+      wifiNetwork.typeProperties.wifi.passpointId = subId;
+      wifiNetwork.typeProperties.wifi.passpointMatchType = MatchType.kHome;
+      mojoApi_.setManagedPropertiesForTest(wifiNetwork);
+
+      internetDetailPage.init('wifi_passpoint_guid', 'WiFi', 'wifi_passpoint');
+      await flushAsync();
+
+      const forgetButton = getButton('forgetButton');
+      assertFalse(forgetButton.hidden);
+      assertFalse(forgetButton.disabled);
+
+      // Click the button and check the dialog is displayed.
+      forgetButton.click();
+      await waitAfterNextRender(forgetButton);
+      const removeDialog = getDialog('passpointRemovalDialog');
+      assertTrue(removeDialog.$.dialog.open);
+
+      // Check "Confirm" leads to Passpoint subscription page.
+      forgetButton.click();
+      await flushAsync();
+      assertTrue(removeDialog.$.dialog.open);
+      const confirmButton = removeDialog.$.confirmButton;
+      const showDetailPromise = eventToPromise('show-passpoint-detail', window);
+      confirmButton.click();
+      await flushAsync();
+      const showDetailEvent = await showDetailPromise;
+      assertEquals(subId, showDetailEvent.detail.id);
     });
 
     [true, false].forEach(isPasspointEnabled => {
@@ -753,6 +769,34 @@ suite('InternetDetailPage', function() {
                   '#passpointProviderRow'));
         });
 
+    test('WiFi network with Passpoint has no configure button', async () => {
+      loadTimeData.overrideValues({
+        isPasspointEnabled: true,
+        isPasspointSettingsEnabled: true,
+      });
+      init();
+
+      const subId = 'a_passpoint_id';
+      setSubscriptionForTest({
+        id: subId,
+        friendlyName: 'My Passpoint provider',
+      });
+      mojoApi_.resetForTest();
+      mojoApi_.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
+      const wifiNetwork =
+          getManagedProperties(NetworkType.kWiFi, 'wifi_passpoint');
+      wifiNetwork.source = OncSource.kUser;
+      wifiNetwork.connectable = true;
+      wifiNetwork.typeProperties.wifi.passpointId = subId;
+      wifiNetwork.typeProperties.wifi.passpointMatchType = MatchType.kHome;
+      mojoApi_.setManagedPropertiesForTest(wifiNetwork);
+
+      internetDetailPage.init('wifi_passpoint_guid', 'WiFi', 'wifi_passpoint');
+      await flushAsync();
+
+      const configureButton = getButton('configureButton');
+      assertTrue(configureButton.hidden);
+    });
   });
 
   suite('DetailsPageVPN', function() {
@@ -1593,15 +1637,24 @@ suite('InternetDetailPage', function() {
           }],
         });
         await flushAsync();
-        const crLink =
+        const getCrLink = () =>
             internetDetailPage.shadowRoot.querySelector('#apnSubpageButton');
-        const apn =
-            crLink ? crLink.shadowRoot.querySelector('#subLabel') : null;
+        const getApn = () => getCrLink() ?
+            getCrLink().shadowRoot.querySelector('#subLabel') :
+            null;
         if (isApnRevampEnabled) {
-          assertTrue(!!apn);
-          assertEquals(apn.textContent.trim(), apnName);
+          assertTrue(!!getApn());
+          assertEquals(apnName, getApn().textContent.trim());
+
+          const name = 'name';
+          cellularNetwork.typeProperties.cellular.connectedApn.name = name;
+          mojoApi_.setManagedPropertiesForTest(cellularNetwork);
+          internetDetailPage.init('cellular_guid', 'Cellular', 'cellular');
+          await flushAsync();
+          assertTrue(!!getApn());
+          assertEquals(name, getApn().textContent.trim());
         } else {
-          assertFalse(!!apn);
+          assertFalse(!!getApn());
         }
       });
     });

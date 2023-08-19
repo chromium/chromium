@@ -6,9 +6,11 @@
 #define CHROME_BROWSER_ASH_CROSAPI_IN_SESSION_AUTH_ASH_H_
 
 #include "base/memory/weak_ptr.h"
+#include "chromeos/ash/components/osauth/public/common_types.h"
 #include "chromeos/crosapi/mojom/in_session_auth.mojom-shared.h"
 #include "chromeos/crosapi/mojom/in_session_auth.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crosapi {
 
@@ -26,6 +28,7 @@ class InSessionAuthAsh : public mojom::InSessionAuth {
 
   // crosapi::mojom::InSessionAuth
   void RequestToken(mojom::Reason reason,
+                    const absl::optional<std::string>& prompt,
                     RequestTokenCallback callback) override;
   void CheckToken(mojom::Reason reason,
                   const std::string& token,
@@ -36,8 +39,8 @@ class InSessionAuthAsh : public mojom::InSessionAuth {
   // Continuation of InSessionAuthAsh::RequestToken. Last 3 params match
   // InSessionAuthDialogController::OnAuthComplete
   void OnAuthComplete(RequestTokenCallback callback,
-                      bool sucess,
-                      const base::UnguessableToken& token,
+                      bool success,
+                      const ash::AuthProofToken& token,
                       base::TimeDelta timeout);
 
   mojo::ReceiverSet<mojom::InSessionAuth> receivers_;

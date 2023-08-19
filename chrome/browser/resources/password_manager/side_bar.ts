@@ -7,7 +7,6 @@ import 'chrome://resources/cr_elements/cr_nav_menu_item_style.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
-import './shared_style.css.js';
 import './icons.html.js';
 
 import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
@@ -125,6 +124,8 @@ export class PasswordManagerSideBarElement extends
           'PasswordManager.BulkCheck.PasswordCheckReferrer',
           PasswordCheckReferrer.PASSWORD_SETTINGS, PasswordCheckReferrer.COUNT);
     }
+    this.dispatchEvent(
+        new CustomEvent('close-drawer', {bubbles: true, composed: true}));
   }
 
   private getSelectedPage_(): string {

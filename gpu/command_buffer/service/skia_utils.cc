@@ -7,8 +7,6 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "build/build_config.h"
-#include "components/viz/common/resources/resource_format.h"
-#include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -21,6 +19,7 @@
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrContextThreadSafeProxy.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 #include "third_party/skia/include/gpu/graphite/GraphiteTypes.h"
 #include "ui/base/ui_base_features.h"
@@ -97,8 +96,6 @@ GrContextOptions GetDefaultGrContextOptions() {
   // in a more granular way.  For OOPR-Canvas we want 8, but for other purposes,
   // a texture atlas with sample count of 4 would be sufficient
   options.fInternalMultisampleCount = 8;
-  options.fAllowMSAAOnNewIntel =
-      base::FeatureList::IsEnabled(features::kEnableMSAAOnNewIntelGPUs);
 
   options.fSuppressMipmapSupport =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -110,13 +107,27 @@ GrContextOptions GetDefaultGrContextOptions() {
   return options;
 }
 
-skgpu::graphite::ContextOptions GetDefaultGraphiteContextOptions() {
+skgpu::graphite::ContextOptions GetDefaultGraphiteContextOptions(
+    const GpuDriverBugWorkarounds& workarounds) {
   skgpu::graphite::ContextOptions options;
   size_t max_resource_cache_bytes;
   size_t glyph_cache_max_texture_bytes;
   DetermineGrCacheLimitsFromAvailableMemory(&max_resource_cache_bytes,
                                             &glyph_cache_max_texture_bytes);
   options.fGlyphCacheTextureMaximumBytes = glyph_cache_max_texture_bytes;
+
+  // Disable multisampled antialiasing when it's slow if the relevant
+  // base::Feature is enabled.
+  // NOTE: `workarounds.msaa_is_slow` is true on all Intel devices.
+  // gpu::gles2::MSAAIsSlow() will return true on Intel devices unless the
+  // features::kEnableMSAAOnNewIntelGPUs base::Feature is enabled. If rolling
+  // out single-sampling for Graphite, we should consider whether to tie the
+  // rollout to the features::kEnableMSSAOnNewIntelGPUs experiment.
+  if (workarounds.msaa_is_slow &&
+      base::FeatureList::IsEnabled(features::kDisableSlowMSAAInGraphite)) {
+    options.fInternalMultisampleCount = 1;
+  }
+
   return options;
 }
 
@@ -152,10 +163,9 @@ GLuint GetGrGLBackendTextureFormat(
 
   // Map ETC1 to ETC2 type depending on conversion by skia
   if (gl_storage_format == GL_ETC1_RGB8_OES) {
-    GrGLFormat gr_gl_format =
-        gr_context_thread_safe
-            ->compressedBackendFormat(SkTextureCompressionType::kETC1_RGB8)
-            .asGLFormat();
+    GrGLFormat gr_gl_format = GrBackendFormats::AsGLFormat(
+        gr_context_thread_safe->compressedBackendFormat(
+            SkTextureCompressionType::kETC1_RGB8));
     if (gr_gl_format == GrGLFormat::kCOMPRESSED_ETC1_RGB8) {
       internal_format = GL_ETC1_RGB8_OES;
     } else if (gr_gl_format == GrGLFormat::kCOMPRESSED_RGB8_ETC2) {
@@ -190,8 +200,8 @@ bool GetGrBackendTexture(const gles2::FeatureInfo* feature_info,
   texture_info.fTarget = target;
   texture_info.fFormat = GetGrGLBackendTextureFormat(
       feature_info, gl_storage_format, gr_context_thread_safe);
-  *gr_texture = GrBackendTexture(size.width(), size.height(), GrMipMapped::kNo,
-                                 texture_info);
+  *gr_texture = GrBackendTextures::MakeGL(size.width(), size.height(),
+                                          skgpu::Mipmapped::kNo, texture_info);
   return true;
 }
 
@@ -307,7 +317,9 @@ GrVkImageInfo CreateGrVkImageInfo(VulkanImage* image) {
       (image->format() == VK_FORMAT_R8G8B8A8_UNORM ||
        image->format() == VK_FORMAT_R8G8B8_UNORM ||
        image->format() == VK_FORMAT_B8G8R8A8_UNORM ||
-       image->format() == VK_FORMAT_B8G8R8_UNORM)) {
+       image->format() == VK_FORMAT_B8G8R8_UNORM ||
+       image->format() == VK_FORMAT_R8_UNORM ||
+       image->format() == VK_FORMAT_R8G8_UNORM)) {
     image_info.fImageTiling = VK_IMAGE_TILING_OPTIMAL;
   } else {
     image_info.fImageTiling = image->image_tiling();
@@ -405,8 +417,9 @@ uint64_t GrBackendTextureTracingID(const GrBackendTexture& backend_texture) {
   switch (backend_texture.backend()) {
     case GrBackendApi::kOpenGL: {
       GrGLTextureInfo tex_info;
-      if (backend_texture.getGLTextureInfo(&tex_info))
+      if (GrBackendTextures::GetGLTextureInfo(backend_texture, &tex_info)) {
         return tex_info.fID;
+      }
       break;
     }
 #if BUILDFLAG(ENABLE_VULKAN)

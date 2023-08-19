@@ -47,8 +47,8 @@ ChromeWebContentsViewDelegateViewsMac::GetDelegateForHost(
   if (is_popup) {
     return nil;
   }
-  return [[[ChromeRenderWidgetHostViewMacDelegate alloc]
-      initWithRenderWidgetHost:render_widget_host] autorelease];
+  return [[ChromeRenderWidgetHostViewMacDelegate alloc]
+      initWithRenderWidgetHost:render_widget_host];
 }
 
 content::WebDragDestDelegate*

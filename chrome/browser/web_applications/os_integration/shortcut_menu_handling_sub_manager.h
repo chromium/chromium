@@ -5,17 +5,20 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_OS_INTEGRATION_SHORTCUT_MENU_HANDLING_SUB_MANAGER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_OS_INTEGRATION_SHORTCUT_MENU_HANDLING_SUB_MANAGER_H_
 
+#include <vector>
+
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 
-class WebAppRegistrar;
+class WebAppProvider;
 
 // Used to track when information, like shortcut menu icons, app title and app
 // launch url in shortcut menu were last updated at and update them once they
@@ -23,8 +26,7 @@ class WebAppRegistrar;
 class ShortcutMenuHandlingSubManager : public OsIntegrationSubManager {
  public:
   ShortcutMenuHandlingSubManager(const base::FilePath& profile_path,
-                                 WebAppIconManager& icon_manager,
-                                 WebAppRegistrar& registrar);
+                                 WebAppProvider& provider);
   ~ShortcutMenuHandlingSubManager() override;
 
   void Configure(const AppId& app_id,
@@ -39,9 +41,11 @@ class ShortcutMenuHandlingSubManager : public OsIntegrationSubManager {
                        base::OnceClosure callback) override;
 
  private:
-  void StoreShortcutMenuData(const AppId& app_id,
-                             proto::ShortcutMenus* shortcut_menus,
-                             WebAppIconManager::ShortcutIconDataVector data);
+  void StoreShortcutMenuData(
+      const AppId& app_id,
+      std::vector<WebAppShortcutsMenuItemInfo> shortcut_menu_item_info,
+      proto::ShortcutMenus* shortcut_menus,
+      WebAppIconManager::ShortcutIconDataVector data);
   void StartShortcutsMenuUnregistration(
       const AppId& app_id,
       const proto::WebAppOsIntegrationState& current_state,
@@ -57,8 +61,7 @@ class ShortcutMenuHandlingSubManager : public OsIntegrationSubManager {
       ShortcutsMenuIconBitmaps shortcut_menu_icon_bitmaps);
 
   const base::FilePath profile_path_;
-  const raw_ref<WebAppIconManager, DanglingUntriaged> icon_manager_;
-  const raw_ref<WebAppRegistrar, DanglingUntriaged> registrar_;
+  const raw_ref<WebAppProvider> provider_;
 
   base::WeakPtrFactory<ShortcutMenuHandlingSubManager> weak_ptr_factory_{this};
 };

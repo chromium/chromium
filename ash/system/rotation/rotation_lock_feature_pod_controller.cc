@@ -92,6 +92,17 @@ void RotationLockFeaturePodController::OnIconPressed() {
 
 void RotationLockFeaturePodController::OnUserRotationLockChanged() {
   if (features::IsQsRevampEnabled()) {
+    if (!Shell::Get()
+             ->tablet_mode_controller()
+             ->is_in_tablet_physical_state()) {
+      // Tablet mode transition results in a call to
+      // `OnUserRotationLockChanged()`, but the rotation lock feature pod is not
+      // visible in clamshell mode. The parent bubble is destroyed during the
+      // tablet mode transition. Calling `UpdateTile()` which results in one of
+      // two compact `FeatureTile`'s visibilities updating results in
+      // undesirable UI. See b/272747756.
+      return;
+    }
     UpdateTile();
   } else {
     UpdateButton();

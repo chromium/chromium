@@ -15,6 +15,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -403,6 +404,7 @@ void UserActivityManager::HandleSmartDimDecision(
 }
 
 void UserActivityManager::OnSessionStateChanged() {
+  TRACE_EVENT0("ui", "UserActivityManager::OnSessionStateChanged");
   DCHECK(session_manager_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const bool was_locked = screen_is_locked_;

@@ -21,10 +21,6 @@
 #import "net/test/embedded_test_server/request_handler_util.h"
 #import "ui/base/device_form_factor.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using chrome_test_util::CloseTabMenuButton;
 using chrome_test_util::TabGridDoneButton;
 using chrome_test_util::TabGridIncognitoTabsPanelButton;
@@ -546,16 +542,8 @@ void ExpectIdleHistogramBucketCount(const char* histogram,
   [ChromeEarlGrey showTabSwitcher];
 
   // Close tab #3 and open the current selected tab.
-  unsigned int tab3_index;
-  if ([ChromeEarlGrey isSortingTabsByRecency]) {
-    // When sorting by recency, the tab #3 moved to the first place.
-    tab3_index = 0;
-  } else {
-    // Otherwise, tab #3 is in the second place.
-    tab3_index = 1;
-  }
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::TabGridCloseButtonForCellAtIndex(tab3_index)]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          TabGridCloseButtonForCellAtIndex(1)]
       performAction:grey_tap()];
   SelectTab(tab1_title);
   [ChromeEarlGrey

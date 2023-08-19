@@ -723,9 +723,9 @@ TEST_F(WindowRestoreControllerTest, ClamshellFloatWindow) {
   EXPECT_TRUE(floated_window_state->IsFloated());
 
   auto* float_controller = Shell::Get()->float_controller();
-  EXPECT_EQ(
-      float_controller->GetPreferredFloatWindowClamshellBounds(floated_window),
-      floated_window->GetBoundsInScreen());
+  EXPECT_EQ(float_controller->GetFloatWindowClamshellBounds(
+                floated_window, chromeos::FloatStartLocation::kBottomRight),
+            floated_window->GetBoundsInScreen());
 
   // Test that after restoring the floated windows, they have the bounds we
   // saved into the fake file.

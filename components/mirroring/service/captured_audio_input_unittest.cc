@@ -156,7 +156,7 @@ class CapturedAudioInputTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<media::AudioInputIPC> audio_input_;
   MockDelegate delegate_;
-  raw_ptr<MockStream, DanglingUntriaged> stream_ = nullptr;
+  raw_ptr<MockStream, AcrossTasksDanglingUntriaged> stream_ = nullptr;
   mojo::Remote<media::mojom::AudioInputStreamClient> stream_client_;
   base::CancelableSyncSocket socket_;
 };

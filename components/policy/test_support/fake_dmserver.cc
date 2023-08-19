@@ -10,7 +10,11 @@
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/logging.h"
+#include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/bind_post_task.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "components/policy/test_support/client_storage.h"
 #include "components/policy/test_support/embedded_policy_test_server.h"
 #include "components/policy/test_support/policy_storage.h"
@@ -53,10 +57,25 @@ constexpr bool kDefaultLogToConsole = false;
 
 constexpr char kPolicyBlobPathSwitch[] = "policy-blob-path";
 constexpr char kClientStatePathSwitch[] = "client-state-path";
+constexpr char kGrpcUnixSocketUriSwitch[] = "grpc-unix-socket-uri";
 constexpr char kLogPathSwitch[] = "log-path";
 constexpr char kStartupPipeSwitch[] = "startup-pipe";
 constexpr char kMinLogLevelSwitch[] = "min-log-level";
 constexpr char kLogToConsoleSwitch[] = "log-to-console";
+
+constexpr base::TimeDelta kRemoteCommandTimeoutSeconds = base::Seconds(10);
+constexpr int64_t kDefaultServerStopTimeoutMs = 100;
+
+static remote_commands::WaitRemoteCommandResultResponse
+BuildWaitRemoteCommandResultResponse(const em::RemoteCommandResult& result) {
+  remote_commands::WaitRemoteCommandResultResponse resp;
+  em::RemoteCommandResult* rcResult = resp.mutable_result();
+  rcResult->set_result(result.result());
+  rcResult->set_command_id(result.command_id());
+  rcResult->set_timestamp(result.timestamp());
+  rcResult->set_payload(result.payload());
+  return resp;
+}
 
 }  // namespace
 
@@ -77,11 +96,14 @@ void InitLogging(const absl::optional<std::string>& log_path,
   }
   logging::SetMinLogLevel(min_log_level);
   logging::InitLogging(settings);
+  logging::SetLogItems(/*enable_process_id=*/true, /*enable_thread_id=*/true,
+                       /*enable_timestamp=*/true, /*enable_timestamp=*/false);
 }
 
 void ParseFlags(const base::CommandLine& command_line,
                 std::string& policy_blob_path,
                 std::string& client_state_path,
+                std::string& grpc_unix_socket_uri,
                 absl::optional<std::string>& log_path,
                 base::ScopedFD& startup_pipe,
                 bool& log_to_console,
@@ -102,6 +124,11 @@ void ParseFlags(const base::CommandLine& command_line,
   if (command_line.HasSwitch(kClientStatePathSwitch)) {
     client_state_path =
         command_line.GetSwitchValueASCII(kClientStatePathSwitch);
+  }
+
+  if (command_line.HasSwitch(kGrpcUnixSocketUriSwitch)) {
+    grpc_unix_socket_uri =
+        command_line.GetSwitchValueASCII(kGrpcUnixSocketUriSwitch);
   }
 
   if (command_line.HasSwitch(kStartupPipeSwitch)) {
@@ -125,18 +152,167 @@ void ParseFlags(const base::CommandLine& command_line,
   }
 }
 
+class RemoteCommandsWaitOperation
+    : public policy::RemoteCommandsState::Observer {
+ public:
+  RemoteCommandsWaitOperation(
+      policy::RemoteCommandsState*,
+      remote_commands::RemoteCommandsServiceHandler::WaitRemoteCommandResult::
+          Reactor*,
+      base::OnceCallback<void(RemoteCommandsWaitOperation*)>);
+
+  ~RemoteCommandsWaitOperation() override;
+
+  void OnRemoteCommandResultAvailable(int64_t command_id) override;
+  void OnTimeout();
+
+ private:
+  const raw_ptr<policy::RemoteCommandsState> remote_commands_state_;
+  const raw_ptr<remote_commands::RemoteCommandsServiceHandler::
+                    WaitRemoteCommandResult::Reactor>
+      reactor_;
+  base::ScopedObservation<policy::RemoteCommandsState,
+                          policy::RemoteCommandsState::Observer>
+      state_observation_{this};
+  // Timer that fires to prevent indefinite wait if the remote command result
+  // takes too long.
+  base::OneShotTimer result_timeout_timer_;
+  // Callback to erase the wait operation.
+  base::OnceCallback<void(RemoteCommandsWaitOperation*)> erase_cb_;
+  base::WeakPtrFactory<RemoteCommandsWaitOperation> weak_ptr_factory_{this};
+};
+
+RemoteCommandsWaitOperation::RemoteCommandsWaitOperation(
+    policy::RemoteCommandsState* remote_commands_state,
+    remote_commands::RemoteCommandsServiceHandler::WaitRemoteCommandResult::
+        Reactor* reactor,
+    base::OnceCallback<void(RemoteCommandsWaitOperation*)> erase_cb)
+    : remote_commands_state_(remote_commands_state),
+      reactor_(reactor),
+      erase_cb_(std::move(erase_cb)) {
+  state_observation_.Observe(remote_commands_state);
+  // Start a timer for 10 seconds to wait for the remote command result.
+  result_timeout_timer_.Start(
+      FROM_HERE, kRemoteCommandTimeoutSeconds,
+      base::BindOnce(&RemoteCommandsWaitOperation::OnTimeout,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+RemoteCommandsWaitOperation::~RemoteCommandsWaitOperation() = default;
+
+void RemoteCommandsWaitOperation::OnRemoteCommandResultAvailable(
+    int64_t command_id) {
+  em::RemoteCommandResult result;
+  const bool result_available =
+      remote_commands_state_->GetRemoteCommandResult(command_id, &result);
+  // The result must be available now.
+  CHECK(result_available);
+  remote_commands::WaitRemoteCommandResultResponse resp;
+  em::RemoteCommandResult* rcResult = resp.mutable_result();
+  rcResult->set_result(result.result());
+  rcResult->set_command_id(result.command_id());
+  rcResult->set_timestamp(result.timestamp());
+  rcResult->set_payload(result.payload());
+  reactor_->Write(std::move(resp));
+  // Erase the wait operation from the set and delete its pointer.
+  std::move(erase_cb_).Run(this);
+}
+
+void RemoteCommandsWaitOperation::OnTimeout() {
+  reactor_->Write(grpc::Status(
+      grpc::StatusCode::CANCELLED,
+      "Timeout waiting for remote command result took more than 10 seconds"));
+  std::move(erase_cb_).Run(this);
+}
+
 FakeDMServer::FakeDMServer(const std::string& policy_blob_path,
                            const std::string& client_state_path,
+                           const std::string& grpc_unix_socket_uri,
                            base::OnceClosure shutdown_cb)
     : policy_blob_path_(policy_blob_path),
       client_state_path_(client_state_path),
-      shutdown_cb_(std::move(shutdown_cb)) {}
+      grpc_unix_socket_uri_(grpc_unix_socket_uri) {
+  shut_down_on_main_task_runner_ =
+      base::BindPostTaskToCurrentDefault(base::BindOnce(
+          &FakeDMServer::TriggerShutdown, weak_ptr_factory_.GetWeakPtr()));
+  shut_down_server_ = base::BindPostTaskToCurrentDefault(
+      base::BindOnce(&FakeDMServer::OnShutdownGrpcServerDone,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(shutdown_cb)));
+  DETACH_FROM_SEQUENCE(embedded_server_sequence_checker_);
+}
 
-FakeDMServer::~FakeDMServer() = default;
+FakeDMServer::~FakeDMServer() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(fake_dmserver_main_sequence_checker_);
+}
 
-bool FakeDMServer::Start() {
+void FakeDMServer::EraseWaitOperation(RemoteCommandsWaitOperation* operation) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(fake_dmserver_main_sequence_checker_);
+  auto it = waiters_.find(operation);
+  CHECK(it != waiters_.end());
+  waiters_.erase(it);
+}
+
+void FakeDMServer::StartGrpcServer() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(fake_dmserver_main_sequence_checker_);
+  LOG(INFO) << "Starting the gRPC server on endpoint " << grpc_unix_socket_uri_;
+  grpc_server_.emplace();
+  grpc_server_->SetHandler<
+      remote_commands::RemoteCommandsServiceHandler::SendRemoteCommand>(
+      base::BindPostTask(
+          base::SingleThreadTaskRunner::GetCurrentDefault(),
+          base::BindRepeating(&FakeDMServer::HandleSendRemoteCommand,
+                              weak_ptr_factory_.GetWeakPtr())));
+  grpc_server_->SetHandler<
+      remote_commands::RemoteCommandsServiceHandler::WaitRemoteCommandResult>(
+      base::BindPostTask(
+          base::SingleThreadTaskRunner::GetCurrentDefault(),
+          base::BindRepeating(&FakeDMServer::HandleWaitRemoteCommandResult,
+                              weak_ptr_factory_.GetWeakPtr())));
+  grpc_server_->Start(grpc_unix_socket_uri_);
+}
+
+void FakeDMServer::HandleSendRemoteCommand(
+    remote_commands::SendRemoteCommandRequest request,
+    remote_commands::RemoteCommandsServiceHandler::SendRemoteCommand::Reactor*
+        reactor) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(fake_dmserver_main_sequence_checker_);
+  LOG(INFO) << "Processing SendRemoteCommand grpc request.";
+  remote_commands_state()->AddPendingRemoteCommand(request.remote_command());
+  remote_commands::SendRemoteCommandResponse resp;
+  resp.set_command_id(request.remote_command().command_id());
+  reactor->Write(std::move(resp));
+}
+
+void FakeDMServer::HandleWaitRemoteCommandResult(
+    remote_commands::WaitRemoteCommandResultRequest request,
+    remote_commands::RemoteCommandsServiceHandler::WaitRemoteCommandResult::
+        Reactor* reactor) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(fake_dmserver_main_sequence_checker_);
+  LOG(INFO) << "Processing WaitRemoteCommandResult grpc request.";
+  int64_t command_id = request.command_id();
+  em::RemoteCommandResult result;
+  bool result_available =
+      remote_commands_state()->GetRemoteCommandResult(command_id, &result);
+  if (!result_available) {
+    LOG(INFO) << "Remote command result isn't available yet.";
+    // Insert the wait operation into the set and bind the erase function to
+    // erase it if the result is available.
+    waiters_.insert(std::make_unique<RemoteCommandsWaitOperation>(
+        remote_commands_state(), reactor,
+        base::BindOnce(&FakeDMServer::EraseWaitOperation,
+                       weak_ptr_factory_.GetWeakPtr())));
+    return;
+  }
+  LOG(INFO) << "Remote command result is available. Resolving the grpc call.";
+  auto resp = BuildWaitRemoteCommandResultResponse(result);
+  reactor->Write(std::move(resp));
+}
+
+bool FakeDMServer::StartFakeServer() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(fake_dmserver_main_sequence_checker_);
   LOG(INFO) << "Starting the FakeDMServer with args policy_blob_path="
-            << policy_blob_path_ << " client_state_path=" << client_state_path_;
+            << policy_blob_path_ << " client_state_path=" << client_state_path_
+            << " grpc_unix_socket_uri=" << grpc_unix_socket_uri_;
 
   if (!policy::EmbeddedPolicyTestServer::Start()) {
     LOG(ERROR) << "Failed to start the EmbeddedPolicyTestServer";
@@ -144,10 +320,39 @@ bool FakeDMServer::Start() {
   }
   LOG(INFO) << "Server started running on URL: "
             << EmbeddedPolicyTestServer::GetServiceURL();
+  if (grpc_unix_socket_uri_.empty()) {
+    LOG(INFO) << "grpc_unix_socket_uri is empty the grpc server won't start";
+    return true;
+  }
+  StartGrpcServer();
   return true;
 }
 
+void FakeDMServer::ShutdownGrpcServer(
+    base::OnceClosure server_stopped_callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(fake_dmserver_main_sequence_checker_);
+  CHECK(grpc_server_);
+  grpc_server_->Stop(kDefaultServerStopTimeoutMs,
+                     std::move(server_stopped_callback));
+}
+
+void FakeDMServer::OnShutdownGrpcServerDone(
+    base::OnceClosure server_stopped_callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(fake_dmserver_main_sequence_checker_);
+  grpc_server_.reset();
+  std::move(server_stopped_callback).Run();
+}
+
+void FakeDMServer::TriggerShutdown() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(fake_dmserver_main_sequence_checker_);
+  if (!grpc_server_) {
+    return std::move(shut_down_server_).Run();
+  }
+  ShutdownGrpcServer(std::move(shut_down_server_));
+}
+
 bool FakeDMServer::WriteURLToPipe(base::ScopedFD&& startup_pipe) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(fake_dmserver_main_sequence_checker_);
   GURL server_url = EmbeddedPolicyTestServer::GetServiceURL();
   std::string server_data =
       base::StringPrintf("{\"host\": \"%s\", \"port\": %s}",
@@ -165,17 +370,17 @@ bool FakeDMServer::WriteURLToPipe(base::ScopedFD&& startup_pipe) {
 
 std::unique_ptr<net::test_server::HttpResponse> FakeDMServer::HandleRequest(
     const net::test_server::HttpRequest& request) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(embedded_server_sequence_checker_);
   GURL url = request.GetURL();
-
   if (url.path() == "/test/exit") {
     LOG(INFO) << "Stopping the FakeDMServer";
-    CHECK(shutdown_cb_);
-    std::move(shutdown_cb_).Run();
+    std::move(shut_down_on_main_task_runner_).Run();
     return policy::CreateHttpResponse(net::HTTP_OK, "Policy Server exited.");
   }
 
-  if (url.path() == "/test/ping")
+  if (url.path() == "/test/ping") {
     return policy::CreateHttpResponse(net::HTTP_OK, "Pong.");
+  }
 
   EmbeddedPolicyTestServer::ResetServerState();
 
@@ -199,6 +404,7 @@ std::unique_ptr<net::test_server::HttpResponse> FakeDMServer::HandleRequest(
 bool FakeDMServer::SetPolicyPayload(const std::string* policy_type,
                                     const std::string* entity_id,
                                     const std::string* serialized_proto) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(embedded_server_sequence_checker_);
   if (!policy_type || !serialized_proto) {
     LOG(ERROR) << "Couldn't find the policy type or value fields";
     return false;
@@ -221,6 +427,7 @@ bool FakeDMServer::SetExternalPolicyPayload(
     const std::string* policy_type,
     const std::string* entity_id,
     const std::string* serialized_raw_policy) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(embedded_server_sequence_checker_);
   if (!policy_type || !entity_id || !serialized_raw_policy) {
     LOG(ERROR) << "Couldn't find the policy type or entity id or value fields";
     return false;
@@ -237,6 +444,7 @@ bool FakeDMServer::SetExternalPolicyPayload(
 }
 
 bool FakeDMServer::ReadPolicyBlobFile() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(embedded_server_sequence_checker_);
   base::FilePath policy_blob_file(policy_blob_path_);
   if (!base::PathExists(policy_blob_file)) {
     LOG(INFO) << "Policy blob file doesn't exist yet.";
@@ -454,22 +662,26 @@ base::Value::Dict FakeDMServer::GetValueFromClient(
   dict.Set(kMachineNameKey, c.machine_name);
   dict.Set(kUsernameKey, c.username.value_or(""));
   base::Value::List state_keys, allowed_policy_types;
-  for (auto& key : c.state_keys)
+  for (auto& key : c.state_keys) {
     state_keys.Append(key);
+  }
   dict.Set(kStateKeysKey, std::move(state_keys));
-  for (auto& policy_type : c.allowed_policy_types)
+  for (auto& policy_type : c.allowed_policy_types) {
     allowed_policy_types.Append(policy_type);
+  }
   dict.Set(kAllowedPolicyTypesKey, std::move(allowed_policy_types));
   return dict;
 }
 
 bool FakeDMServer::WriteClientStateFile() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(embedded_server_sequence_checker_);
   base::FilePath client_state_file(client_state_path_);
   std::vector<policy::ClientStorage::ClientInfo> clients =
       client_storage()->GetAllClients();
   base::Value::Dict dict_clients;
-  for (auto& c : clients)
+  for (auto& c : clients) {
     dict_clients.Set(c.device_id, GetValueFromClient(c));
+  }
 
   JSONFileValueSerializer serializer(client_state_file);
   return serializer.Serialize(base::ValueView(dict_clients));
@@ -546,6 +758,7 @@ FakeDMServer::GetClientFromValue(const base::Value& v) {
 }
 
 bool FakeDMServer::ReadClientStateFile() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(embedded_server_sequence_checker_);
   base::FilePath client_state_file(client_state_path_);
   if (!base::PathExists(client_state_file)) {
     LOG(INFO) << "Client state file doesn't exist yet.";

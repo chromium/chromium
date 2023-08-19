@@ -5,8 +5,6 @@
 #ifndef NET_COOKIES_COOKIE_ACCESS_DELEGATE_H_
 #define NET_COOKIES_COOKIE_ACCESS_DELEGATE_H_
 
-#include <set>
-
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
@@ -17,7 +15,6 @@
 #include "net/cookies/cookie_partition_key.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
-#include "net/first_party_sets/same_party_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -52,10 +49,8 @@ class NET_EXPORT CookieAccessDelegate {
       const GURL& url,
       const SiteForCookies& site_for_cookies) const = 0;
 
-  // Calls `callback` with metadata indicating whether `site` is same-party with
-  // `party_context` and `top_frame_site`; and `site`'s owner, if applicable..
-  // If `top_frame_site` is nullptr, then `site` will be checked only against
-  // `party_context`.
+  // Calls `callback` with First-Party Sets metadata about `site` and
+  // `top_frame_site`.
   //
   // This may return a result synchronously, or asynchronously invoke `callback`
   // with the result. The callback will be invoked iff the return value is
@@ -65,7 +60,6 @@ class NET_EXPORT CookieAccessDelegate {
   ComputeFirstPartySetMetadataMaybeAsync(
       const net::SchemefulSite& site,
       const net::SchemefulSite* top_frame_site,
-      const std::set<net::SchemefulSite>& party_context,
       base::OnceCallback<void(FirstPartySetMetadata)> callback) const = 0;
 
   // Returns the entries of a set of sites if the sites are in non-trivial sets.

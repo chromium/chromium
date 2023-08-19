@@ -185,9 +185,9 @@ def escalate_sanitizer_warnings_in_json(cmd, env):
   """Escalate sanitizer warnings inside the JSON test summary."""
   json_path = get_json_path(cmd)
   if json_path is None:
-    print("Error: Cannot escalate sanitizer warnings without a json summary "
+    print("Warning: Cannot escalate sanitizer warnings without a json summary "
           "file:\n", file=sys.stderr)
-    raise
+    return 0
 
   try:
     escalate_command = get_escalate_sanitizer_warnings_command(json_path)
@@ -202,7 +202,8 @@ def escalate_sanitizer_warnings_in_json(cmd, env):
     print("Error: failed to escalate sanitizer warnings status in JSON:\n",
           file=sys.stderr)
     print(stderr, file=sys.stderr)
-    raise subprocess.CalledProcessError(p.returncode, escalate_command)
+  return p.returncode
+
 
 
 def run_command_with_output(argv, stdoutfile, env=None, cwd=None):
@@ -424,8 +425,10 @@ def run_executable(cmd, env, stdoutfile=None, cwd=None):
       returncode = run_command(cmd, env=env, cwd=cwd, log=False)
     # Check if we should post-process sanitizer warnings.
     if use_sanitizer_warnings_script:
-      escalate_sanitizer_warnings_in_json(cmd, env)
-
+      escalate_returncode = escalate_sanitizer_warnings_in_json(cmd, env)
+      if not returncode and escalate_returncode:
+        print('Tests with sanitizer warnings led to task failure.')
+        returncode = escalate_returncode
     return returncode
   except OSError:
     print('Failed to start %s' % cmd, file=sys.stderr)

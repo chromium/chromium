@@ -49,7 +49,7 @@ TEST(FilterOperationsTest, mapRectBlur) {
 TEST(FilterOperationsTest, mapRectDropShadow) {
   FilterOperations ops;
   ops.Operations().push_back(MakeGarbageCollected<DropShadowFilterOperation>(
-      ShadowData(gfx::PointF(3, 8), 20, 0, ShadowStyle::kNormal,
+      ShadowData(gfx::Vector2dF(3, 8), 20, 0, ShadowStyle::kNormal,
                  StyleColor(Color(1, 2, 3)))));
   EXPECT_TRUE(ops.HasFilterThatMovesPixels());
   EXPECT_EQ(gfx::Rect(-54, -49, 124, 124),
@@ -71,7 +71,7 @@ TEST(FilterOperationsTest, mapRectDropShadowAndBoxReflect) {
   // important that the bounds be filtered in the correct order.
   FilterOperations ops;
   ops.Operations().push_back(MakeGarbageCollected<DropShadowFilterOperation>(
-      ShadowData(gfx::PointF(100, 200), 0, 0, ShadowStyle::kNormal,
+      ShadowData(gfx::Vector2dF(100, 200), 0, 0, ShadowStyle::kNormal,
                  StyleColor(Color::kBlack))));
   ops.Operations().push_back(MakeGarbageCollected<BoxReflectFilterOperation>(
       BoxReflection(BoxReflection::kVerticalReflection, 50)));

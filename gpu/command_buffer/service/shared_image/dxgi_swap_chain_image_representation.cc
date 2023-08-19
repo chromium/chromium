@@ -13,8 +13,9 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/command_buffer/service/texture_manager.h"
-#include "third_party/skia/include/core/SkPromiseImageTexture.h"
+#include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrContextThreadSafeProxy.h"
+#include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 #include "ui/gl/scoped_restore_texture.h"
 
 namespace gpu {
@@ -69,11 +70,6 @@ GLTexturePassthroughDXGISwapChainBufferRepresentation::
 
 bool GLTexturePassthroughDXGISwapChainBufferRepresentation::BeginAccess(
     GLenum mode) {
-  // Assume that BindTexImage has already been called for us.
-  auto texture =
-      GLTexturePassthroughImageRepresentation::GetTexturePassthrough();
-  DCHECK(!texture->is_bind_pending());
-
   return true;
 }
 
@@ -90,20 +86,20 @@ SkiaGLImageRepresentationDXGISwapChain::Create(
   GrBackendTexture backend_texture;
   bool angle_rgbx_internal_format =
       context_state->feature_info()->feature_flags().angle_rgbx_internal_format;
-  GLenum gl_texture_storage_format = TextureStorageFormat(
-      backing->format(), angle_rgbx_internal_format, /*plane_index=*/0);
+  GLFormatDesc format_desc = ToGLFormatDesc(
+      backing->format(), /*plane_index=*/0, angle_rgbx_internal_format);
   if (!GetGrBackendTexture(
           context_state->feature_info(),
           gl_representation->GetTextureBase()->target(), backing->size(),
           gl_representation->GetTextureBase()->service_id(),
-          gl_texture_storage_format,
+          format_desc.storage_internal_format,
           context_state->gr_context()->threadSafeProxy(), &backend_texture)) {
     return nullptr;
   }
-  auto promise_texture = SkPromiseImageTexture::Make(backend_texture);
+  auto promise_texture = GrPromiseImageTexture::Make(backend_texture);
   if (!promise_texture)
     return nullptr;
-  std::vector<sk_sp<SkPromiseImageTexture>> promise_textures = {
+  std::vector<sk_sp<GrPromiseImageTexture>> promise_textures = {
       promise_texture};
   return base::WrapUnique(new SkiaGLImageRepresentationDXGISwapChain(
       std::move(gl_representation), std::move(promise_textures),
@@ -112,7 +108,7 @@ SkiaGLImageRepresentationDXGISwapChain::Create(
 
 SkiaGLImageRepresentationDXGISwapChain::SkiaGLImageRepresentationDXGISwapChain(
     std::unique_ptr<GLTextureImageRepresentationBase> gl_representation,
-    std::vector<sk_sp<SkPromiseImageTexture>> promise_textures,
+    std::vector<sk_sp<GrPromiseImageTexture>> promise_textures,
     scoped_refptr<SharedContextState> context_state,
     SharedImageManager* manager,
     SharedImageBacking* backing,
@@ -134,7 +130,7 @@ SkiaGLImageRepresentationDXGISwapChain::BeginWriteAccess(
     const gfx::Rect& update_rect,
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores,
-    std::unique_ptr<GrBackendSurfaceMutableState>* end_state) {
+    std::unique_ptr<skgpu::MutableTextureState>* end_state) {
   std::vector<sk_sp<SkSurface>> surfaces =
       SkiaGLImageRepresentation::BeginWriteAccess(
           final_msaa_count, surface_props, update_rect, begin_semaphores,
@@ -165,6 +161,42 @@ void SkiaGLImageRepresentationDXGISwapChain::EndWriteAccess() {
   // convenience. It's possible to have multiple draws per Present, but we
   // assume that 1:1 is the most common case.
   SkiaGLImageRepresentation::ClearCachedSurfaces();
+}
+
+DawnRepresentationDXGISwapChain::DawnRepresentationDXGISwapChain(
+    SharedImageManager* manager,
+    SharedImageBacking* backing,
+    MemoryTypeTracker* tracker,
+    wgpu::Device device,
+    wgpu::BackendType backend_type)
+    : DawnImageRepresentation(manager, backing, tracker), device_(device) {
+  DCHECK(device_);
+}
+
+DawnRepresentationDXGISwapChain::~DawnRepresentationDXGISwapChain() {
+  EndAccess();
+}
+
+wgpu::Texture DawnRepresentationDXGISwapChain::BeginAccess(
+    wgpu::TextureUsage usage,
+    const gfx::Rect& update_rect) {
+  auto* swapchain_backing = static_cast<DXGISwapChainImageBacking*>(backing());
+  texture_ = swapchain_backing->BeginAccessDawn(device_, usage, update_rect);
+  return texture_;
+}
+
+wgpu::Texture DawnRepresentationDXGISwapChain::BeginAccess(
+    wgpu::TextureUsage usage) {
+  NOTREACHED_NORETURN();
+}
+
+void DawnRepresentationDXGISwapChain::EndAccess() {
+  if (!texture_) {
+    return;
+  }
+
+  auto* swapchain_backing = static_cast<DXGISwapChainImageBacking*>(backing());
+  swapchain_backing->EndAccessDawn(device_, std::move(texture_));
 }
 
 }  // namespace gpu

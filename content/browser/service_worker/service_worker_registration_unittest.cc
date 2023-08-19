@@ -561,10 +561,10 @@ class ServiceWorkerActivationTest : public ServiceWorkerRegistrationTest,
 
   // Mojo implementation fakes for the renderer-side service workers. Their
   // lifetime is bound to the Mojo connection.
-  raw_ptr<FakeEmbeddedWorkerInstanceClient, DanglingUntriaged>
+  raw_ptr<FakeEmbeddedWorkerInstanceClient, AcrossTasksDanglingUntriaged>
       version_1_client_ = nullptr;
-  raw_ptr<FakeServiceWorker, DanglingUntriaged> version_1_service_worker_ =
-      nullptr;
+  raw_ptr<FakeServiceWorker, AcrossTasksDanglingUntriaged>
+      version_1_service_worker_ = nullptr;
   raw_ptr<FakeEmbeddedWorkerInstanceClient> version_2_client_ = nullptr;
   raw_ptr<FakeServiceWorker> version_2_service_worker_ = nullptr;
 
@@ -695,6 +695,11 @@ TEST_P(ServiceWorkerActivationTest, TimeSinceSkipWaiting_Installing) {
   SimulateSkipWaiting(version.get(), &result);
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(base::Seconds(33), version->TimeSinceSkipWaiting());
+
+  // Restore the TickClock to the default. This is required because the
+  // TickClock must outlive ServiceWorkerVersion, otherwise ServiceWorkerVersion
+  // will hold a dangling pointer.
+  version->SetTickClockForTesting(base::DefaultTickClock::GetInstance());
 }
 
 // Test lame duck timer triggered by skip waiting.
@@ -729,9 +734,9 @@ TEST_P(ServiceWorkerActivationTest, LameDuckTime_SkipWaiting) {
   EXPECT_EQ(version_2.get(), reg->active_version());
   EXPECT_FALSE(IsLameDuckTimerRunning());
 
-  // Restore the TickClock to the default. This is required because the dtor
-  // of ServiceWorkerVersions can access the TickClock and it should outlive
-  // ServiceWorkerVersion.
+  // Restore the TickClock to the default. This is required because the
+  // TickClock must outlive ServiceWorkerVersion, otherwise ServiceWorkerVersion
+  // will hold a dangling pointer.
   version_1->SetTickClockForTesting(base::DefaultTickClock::GetInstance());
   version_2->SetTickClockForTesting(base::DefaultTickClock::GetInstance());
 }
@@ -788,6 +793,12 @@ TEST_P(ServiceWorkerActivationTest, LameDuckTime_NoControllee) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(version_2.get(), reg->active_version());
   EXPECT_FALSE(IsLameDuckTimerRunning());
+
+  // Restore the TickClock to the default. This is required because the
+  // TickClock must outlive ServiceWorkerVersion, otherwise ServiceWorkerVersion
+  // will hold a dangling pointer.
+  version_1->SetTickClockForTesting(base::DefaultTickClock::GetInstance());
+  version_2->SetTickClockForTesting(base::DefaultTickClock::GetInstance());
 }
 
 INSTANTIATE_TEST_SUITE_P(ServiceWorkerActivationTestWithDevTools,

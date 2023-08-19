@@ -25,10 +25,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.widget.ImageViewCompat;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemViewBase;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
@@ -534,8 +534,8 @@ public class PickerBitmapView extends SelectableItemViewBase<PickerBitmap> {
                 || mBitmapDetails.type() == PickerBitmap.TileTypes.VIDEO;
     }
 
-    @VisibleForTesting
     public static void setAnimationListenerForTest(AnimationListener listener) {
         sAnimationListenerForTest = listener;
+        ResettersForTesting.register(() -> sAnimationListenerForTest = null);
     }
 }

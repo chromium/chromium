@@ -11,12 +11,15 @@ import androidx.annotation.Nullable;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
@@ -36,11 +39,11 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
     private long mNativeView;
     private final AccountSelectionComponent mAccountSelectionComponent;
 
-    private AccountSelectionBridge(long nativeView, WindowAndroid windowAndroid,
+    private AccountSelectionBridge(long nativeView, Tab tab, WindowAndroid windowAndroid,
             BottomSheetController bottomSheetController) {
         mNativeView = nativeView;
-        mAccountSelectionComponent = new AccountSelectionCoordinator(
-                windowAndroid.getContext().get(), bottomSheetController, this);
+        mAccountSelectionComponent =
+                new AccountSelectionCoordinator(tab, windowAndroid, bottomSheetController, this);
     }
 
     @CalledByNative
@@ -62,11 +65,12 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
 
     @CalledByNative
     private static @Nullable AccountSelectionBridge create(
-            long nativeView, WindowAndroid windowAndroid) {
+            long nativeView, WebContents webContents, WindowAndroid windowAndroid) {
         BottomSheetController bottomSheetController =
                 BottomSheetControllerProvider.from(windowAndroid);
         if (bottomSheetController == null) return null;
-        return new AccountSelectionBridge(nativeView, windowAndroid, bottomSheetController);
+        Tab tab = TabUtils.fromWebContents(webContents);
+        return new AccountSelectionBridge(nativeView, tab, windowAndroid, bottomSheetController);
     }
 
     @CalledByNative
@@ -82,6 +86,8 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
      * @param iframeForDisplay is the formatted RP iframe URL to display in the FedCM prompt.
      * @param idpForDisplay is the formatted IDP URL to display in the FedCM prompt.
      * @param accounts is the list of accounts to be shown.
+     * @param idpMetadata is the metadata of the IDP.
+     * @param clientIdMetadata is the metadata of the RP.
      * @param isAutoReauthn represents whether this is an auto re-authn flow.
      * @param rpContext is a {@link String} representing the desired text to be used in the title of
      *         the FedCM prompt: "signin", "continue", etc.
@@ -95,6 +101,24 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
                 Arrays.asList(accounts), idpMetadata, clientIdMetadata, isAutoReauthn, rpContext);
     }
 
+    /**
+     * Shows a bottomsheet prompting the user to sign in to an IDP for the purpose of federated
+     * login when the IDP sign-in status is signin but no accounts are received from the fetch.
+     *
+     * @param topFrameForDisplay is the formatted RP top frame URL to display in the FedCM prompt.
+     * @param iframeForDisplay is the formatted RP iframe URL to display in the FedCM prompt.
+     * @param idpForDisplay is the formatted IDP URL to display in the FedCM prompt.
+     * @param idpMetadata is the metadata of the IDP.
+     * @param rpContext is a {@link String} representing the desired text to be used in the title of
+     *         the FedCM prompt: "signin", "continue", etc.
+     */
+    @CalledByNative
+    private void showFailureDialog(String topFrameForDisplay, String iframeForDisplay,
+            String idpForDisplay, IdentityProviderMetadata idpMetadata, String rpContext) {
+        mAccountSelectionComponent.showFailureDialog(
+                topFrameForDisplay, iframeForDisplay, idpForDisplay, idpMetadata, rpContext);
+    }
+
     @CalledByNative
     private String getTitle() {
         return mAccountSelectionComponent.getTitle();
@@ -103,6 +127,16 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
     @CalledByNative
     private String getSubtitle() {
         return mAccountSelectionComponent.getSubtitle();
+    }
+
+    @CalledByNative
+    private WebContents showModalDialog(GURL url) {
+        return mAccountSelectionComponent.showModalDialog(url);
+    }
+
+    @CalledByNative
+    private void closeModalDialog() {
+        mAccountSelectionComponent.closeModalDialog();
     }
 
     @Override
@@ -119,17 +153,28 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
             // optimization to avoid needing multiple JNI getters on the Account class on for each
             // field.
             AccountSelectionBridgeJni.get().onAccountSelected(mNativeView, idpConfigUrl,
-                    account.getStringFields(), account.getPictureUrl(), account.getLoginHints(),
-                    account.isSignIn());
+                    account.getStringFields(), account.getPictureUrl(), account.isSignIn());
         }
+    }
+
+    @Override
+    public void onSignInToIdp() {
+        if (mNativeView != 0) {
+            AccountSelectionBridgeJni.get().onSignInToIdp(mNativeView);
+        }
+    }
+
+    @Override
+    public void onModalDialogClosed() {
+        mAccountSelectionComponent.onModalDialogClosed();
     }
 
     @NativeMethods
     interface Natives {
         void onAccountSelected(long nativeAccountSelectionViewAndroid, GURL idpConfigUrl,
-                String[] accountFields, GURL accountPictureUrl, String[] accountHints,
-                boolean isSignedIn);
+                String[] accountFields, GURL accountPictureUrl, boolean isSignedIn);
         void onDismiss(long nativeAccountSelectionViewAndroid,
                 @IdentityRequestDialogDismissReason int dismissReason);
+        void onSignInToIdp(long nativeAccountSelectionViewAndroid);
     }
 }

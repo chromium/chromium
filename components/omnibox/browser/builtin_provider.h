@@ -32,6 +32,7 @@ class BuiltinProvider : public AutocompleteProvider {
   typedef std::vector<std::u16string> Builtins;
 
   static const int kRelevance;
+  static const int kStarterPackRelevance;
 
   // Populates `matches_` with matching starter pack keywords such as @history,
   // and @bookmarks

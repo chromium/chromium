@@ -47,7 +47,7 @@ namespace http://www.w3.org/1999/xhtml
     property ariaDescription
     property ariaDetailsElements
     property ariaDisabled
-    property ariaErrorMessageElement
+    property ariaErrorMessageElements
     property ariaExpanded
     property ariaFlowToElements
     property ariaHasPopup
@@ -575,6 +575,12 @@ html element embed
     property src
     property type
     property width
+html element fencedframe
+    property allow
+    property config
+    property height
+    property sandbox
+    property width
 html element fieldset
     property checkValidity
     property disabled
@@ -666,6 +672,7 @@ html element hr
     property size
     property width
 html element html
+    property blocking
     property version
 html element i
 html element iframe
@@ -673,6 +680,7 @@ html element iframe
     property allow
     property allowFullscreen
     property allowPaymentRequest
+    property browsingTopics
     property contentDocument
     property contentWindow
     property credentialless
@@ -961,6 +969,7 @@ html element script
     property src
     property text
     property type
+html element search
 html element section
 html element select
     property add
@@ -986,7 +995,7 @@ html element select
     property validity
     property value
     property willValidate
-html element selectmenu
+html element selectlist
     property checkValidity
     property disabled
     property form
@@ -1298,7 +1307,7 @@ namespace http://www.w3.org/2000/svg
     property ariaDescription
     property ariaDetailsElements
     property ariaDisabled
-    property ariaErrorMessageElement
+    property ariaErrorMessageElements
     property ariaExpanded
     property ariaFlowToElements
     property ariaHasPopup

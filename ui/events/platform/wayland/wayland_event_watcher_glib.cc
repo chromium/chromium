@@ -19,7 +19,7 @@ constexpr int kPriorityFdWatch = G_PRIORITY_DEFAULT_IDLE - 10;
 
 struct GLibWaylandSource : public GSource {
   // Note: The GLibWaylandSource is created and destroyed by GLib. So its
-  // constructor/destructor may or may not get called.
+  // constructor/destructor will not get called.
   raw_ptr<WaylandEventWatcherGlib> event_watcher;
   raw_ptr<GPollFD> poll_fd;
 };
@@ -54,8 +54,21 @@ gboolean WatchSourceDispatch(GSource* source,
   return TRUE;
 }
 
-GSourceFuncs WatchSourceFuncs = {WatchSourcePrepare, WatchSourceCheck,
-                                 WatchSourceDispatch, nullptr};
+void WatchSourceFinalize(GSource* source) {
+  // GSource objects' memory is managed by glib, which doesn't call destructors
+  // upon objects deletion. Thus, we need to manually reset the raw_ptr's
+  // to avoid adding pressure on the BRP memory quarantine.
+  GLibWaylandSource* src = static_cast<GLibWaylandSource*>(source);
+  src->event_watcher = nullptr;
+  src->poll_fd = nullptr;
+}
+
+GSourceFuncs WatchSourceFuncs = {
+    WatchSourcePrepare,
+    WatchSourceCheck,
+    WatchSourceDispatch,
+    WatchSourceFinalize,
+};
 
 }  // namespace
 

@@ -79,7 +79,7 @@ class DeleteOnBlurDelegate : public aura::test::TestWindowDelegate,
     }
   }
 
-  raw_ptr<aura::Window, ExperimentalAsh> window_{nullptr};
+  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> window_{nullptr};
 };
 
 aura::LayoutManager* GetLayoutManager(RootWindowController* controller,

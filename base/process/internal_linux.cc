@@ -29,6 +29,17 @@
 namespace base {
 namespace internal {
 
+namespace {
+
+void TrimKeyValuePairs(StringPairs* pairs) {
+  for (auto& pair : *pairs) {
+    TrimWhitespaceASCII(pair.first, TRIM_ALL, &pair.first);
+    TrimWhitespaceASCII(pair.second, TRIM_ALL, &pair.second);
+  }
+}
+
+}  // namespace
+
 const char kProcDir[] = "/proc";
 
 const char kStatFile[] = "stat";
@@ -68,6 +79,75 @@ bool ReadProcFile(const FilePath& file, std::string* buffer) {
     return false;
   }
   return !buffer->empty();
+}
+
+bool ReadProcFileToTrimmedStringPairs(pid_t pid,
+                                      StringPiece filename,
+                                      StringPairs* key_value_pairs) {
+  std::string status_data;
+  FilePath status_file = GetProcPidDir(pid).Append(filename);
+  if (!ReadProcFile(status_file, &status_data)) {
+    return false;
+  }
+  SplitStringIntoKeyValuePairs(status_data, ':', '\n', key_value_pairs);
+  TrimKeyValuePairs(key_value_pairs);
+  return true;
+}
+
+size_t ReadProcStatusAndGetKbFieldAsSizeT(pid_t pid, StringPiece field) {
+  StringPairs pairs;
+  if (!ReadProcFileToTrimmedStringPairs(pid, "status", &pairs)) {
+    return 0;
+  }
+
+  for (const auto& pair : pairs) {
+    const std::string& key = pair.first;
+    const std::string& value_str = pair.second;
+    if (key != field) {
+      continue;
+    }
+
+    std::vector<StringPiece> split_value_str =
+        SplitStringPiece(value_str, " ", TRIM_WHITESPACE, SPLIT_WANT_ALL);
+    if (split_value_str.size() != 2 || split_value_str[1] != "kB") {
+      NOTREACHED();
+      return 0;
+    }
+    size_t value;
+    if (!StringToSizeT(split_value_str[0], &value)) {
+      NOTREACHED();
+      return 0;
+    }
+    return value;
+  }
+  // This can be reached if the process dies when proc is read -- in that case,
+  // the kernel can return missing fields.
+  return 0;
+}
+
+bool ReadProcStatusAndGetFieldAsUint64(pid_t pid,
+                                       StringPiece field,
+                                       uint64_t* result) {
+  StringPairs pairs;
+  if (!ReadProcFileToTrimmedStringPairs(pid, "status", &pairs)) {
+    return false;
+  }
+
+  for (const auto& pair : pairs) {
+    const std::string& key = pair.first;
+    const std::string& value_str = pair.second;
+    if (key != field) {
+      continue;
+    }
+
+    uint64_t value;
+    if (!StringToUint64(value_str, &value)) {
+      return false;
+    }
+    *result = value;
+    return true;
+  }
+  return false;
 }
 
 bool ReadProcStats(pid_t pid, std::string* buffer) {

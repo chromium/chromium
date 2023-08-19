@@ -18,7 +18,10 @@
 
 class PrefRegistrySimple;
 class Profile;
+
+namespace web_app {
 struct WebAppInstallInfo;
+}  // namespace web_app
 
 namespace ash {
 
@@ -52,12 +55,12 @@ class WebKioskAppManager : public KioskAppManagerBase {
   // thus is_valid() returns empty AccountId.
   const AccountId& GetAutoLaunchAccountId() const;
 
-  // Obtains an app associated with given |account_id|.
+  // Obtains an app associated with given `account_id`.
   const WebKioskAppData* GetAppByAccountId(const AccountId& account_id) const;
 
   // Updates app by the data obtained during installation.
   void UpdateAppByAccountId(const AccountId& account_id,
-                            const WebAppInstallInfo& app_info);
+                            const web_app::WebAppInstallInfo& app_info);
 
   // Updates app by title, start_url and icon_bitmaps.
   void UpdateAppByAccountId(const AccountId& account_id,
@@ -68,18 +71,19 @@ class WebKioskAppManager : public KioskAppManagerBase {
   // Adds fake apps in tests.
   void AddAppForTesting(const AccountId& account_id, const GURL& install_url);
 
-  // Initialize current app session.
-  // `app_name` indicates the name of the app if it's running in Ash
-  void InitSession(Profile* profile,
-                   const KioskAppId& kiosk_app_id,
-                   const absl::optional<std::string>& app_name);
+  // Initializes current kiosk system session.
+  //
+  // `app_name` indicates the name of the app if it's running in Ash.
+  void InitKioskSystemSession(Profile* profile,
+                              const KioskAppId& kiosk_app_id,
+                              const absl::optional<std::string>& app_name);
 
   // Starts observing web app updates from App Service in a Kiosk session.
   void StartObservingAppUpdate(Profile* profile, const AccountId& account_id);
 
  private:
   // KioskAppManagerBase:
-  // Updates |apps_| based on CrosSettings.
+  // Updates `apps_` based on CrosSettings.
   void UpdateAppsFromPolicy() override;
 
   std::vector<std::unique_ptr<WebKioskAppData>> apps_;

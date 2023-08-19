@@ -1,0 +1,43 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++canvas
+++++++++staticText name='<newline>  '
+++++++++table
+++++++++++staticText name='<newline>    '
+++++++++++rowGroup ignored
+++++++++++++row
+++++++++++++++staticText name='<newline>      '
+++++++++++++++cell name='Rabbits'
+++++++++++++++++staticText name='Rabbits'
+++++++++++++++staticText name='<newline>      '
+++++++++++++++cell name='Goldfish'
+++++++++++++++++staticText name='Goldfish'
+++++++++++++++staticText name='<newline>    '
+++++++++++++staticText name='<newline>    '
+++++++++++++row
+++++++++++++++staticText name='<newline>      '
+++++++++++++++cell name='Cats'
+++++++++++++++++staticText name='Cats'
+++++++++++++++staticText name='<newline>      '
+++++++++++++++cell name='Dogs'
+++++++++++++++++staticText name='Dogs'
+++++++++++++++staticText name='<newline>    '
+++++++++++++staticText name='<newline>  '
+++++++++staticText name='<newline>'
+++++++layoutTable
+++++++++genericContainer ignored
+++++++++++layoutTableRow
+++++++++++++layoutTableCell name='Watermelon'
+++++++++++++++staticText name='Watermelon'
+++++++++++++++++inlineTextBox name='Watermelon'
+++++++++++++layoutTableCell name='Fish food'
+++++++++++++++staticText name='Fish food'
+++++++++++++++++inlineTextBox name='Fish food'
+++++++++++layoutTableRow
+++++++++++++layoutTableCell name='Tunafish'
+++++++++++++++staticText name='Tunafish'
+++++++++++++++++inlineTextBox name='Tunafish'
+++++++++++++layoutTableCell name='Beef'
+++++++++++++++staticText name='Beef'
+++++++++++++++++inlineTextBox name='Beef'

@@ -12,10 +12,12 @@
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
 #include "components/password_manager/core/browser/form_saver_impl.h"
 #include "components/password_manager/core/browser/mock_password_store_interface.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "password_form.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -63,7 +65,7 @@ PasswordForm CreateSavedPSL() {
   form.action = GURL("https://login.example.org");
   form.username_value = u"old_username2";
   form.password_value = u"passw0rd";
-  form.is_public_suffix_match = true;
+  form.match_type = PasswordForm::MatchType::kPSL;
   return form;
 }
 
@@ -404,18 +406,22 @@ TEST_F(PasswordGenerationManagerTest, PresaveGeneratedPassword_ThenUpdate) {
   related_password.username_value = u"username";
   related_password.username_element = u"username_field";
   related_password.password_value = u"old password";
+  related_password.match_type = PasswordForm::MatchType::kExact;
 
   PasswordForm related_psl_password = CreateSavedPSL();
   related_psl_password.username_value = u"username";
   related_psl_password.password_value = u"old password";
+  related_psl_password.match_type = PasswordForm::MatchType::kPSL;
 
   PasswordForm unrelated_password = CreateSaved();
   unrelated_password.username_value = u"another username";
   unrelated_password.password_value = u"some password";
+  unrelated_password.match_type = PasswordForm::MatchType::kExact;
 
   PasswordForm unrelated_psl_password = CreateSavedPSL();
   unrelated_psl_password.username_value = u"another username";
   unrelated_psl_password.password_value = u"some password";
+  unrelated_psl_password.match_type = PasswordForm::MatchType::kPSL;
 
   EXPECT_CALL(store(), AddLogin);
   const std::vector<const PasswordForm*> matches = {

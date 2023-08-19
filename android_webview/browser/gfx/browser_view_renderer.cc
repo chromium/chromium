@@ -127,6 +127,11 @@ BrowserViewRenderer::BrowserViewRenderer(
 BrowserViewRenderer::~BrowserViewRenderer() {
   DCHECK(compositor_map_.empty());
   DCHECK(!current_compositor_frame_consumer_);
+  if (foreground_for_gpu_resources_) {
+    // Cannot leave a dangling foreground compositor. Just detach from
+    // destructor.
+    OnDetachedFromWindow();
+  }
 
   // We need to destroy |root_frame_sink_proxy_| before |begin_frame_source_|;
   root_frame_sink_proxy_.reset();
@@ -501,6 +506,7 @@ void BrowserViewRenderer::SetWindowVisibility(bool window_visible) {
                        window_visible);
   window_visible_ = window_visible;
   UpdateBeginFrameSource();
+  UpdateForegroundForGpuResources();
 }
 
 void BrowserViewRenderer::OnSizeChanged(int width, int height) {
@@ -530,6 +536,7 @@ void BrowserViewRenderer::OnAttachedToWindow(int width, int height) {
   if (offscreen_pre_raster_)
     ComputeTileRectAndUpdateMemoryPolicy();
   UpdateBeginFrameSource();
+  UpdateForegroundForGpuResources();
 }
 
 void BrowserViewRenderer::OnDetachedFromWindow() {
@@ -537,6 +544,7 @@ void BrowserViewRenderer::OnDetachedFromWindow() {
   attached_to_window_ = false;
   ReleaseHardware();
   UpdateBeginFrameSource();
+  UpdateForegroundForGpuResources();
 }
 
 void BrowserViewRenderer::ZoomBy(float delta) {
@@ -587,6 +595,21 @@ void BrowserViewRenderer::UpdateBeginFrameSource() {
   }
 }
 
+void BrowserViewRenderer::UpdateForegroundForGpuResources() {
+  bool foreground = attached_to_window_ && window_visible_;
+  if (foreground != foreground_for_gpu_resources_) {
+    foreground_for_gpu_resources_ = foreground;
+    if (!compositor_) {
+      return;
+    }
+    if (foreground_for_gpu_resources_) {
+      compositor_->OnCompositorVisible();
+    } else {
+      compositor_->OnCompositorHidden();
+    }
+  }
+}
+
 gfx::Rect BrowserViewRenderer::GetScreenRect() const {
   return gfx::Rect(client_->GetLocationOnScreen(), size_);
 }
@@ -622,6 +645,9 @@ void BrowserViewRenderer::DidDestroyCompositor(
                        TRACE_EVENT_SCOPE_THREAD);
   DCHECK(compositor_map_.count(frame_sink_id));
   if (compositor_ == compositor) {
+    if (compositor_ && foreground_for_gpu_resources_) {
+      compositor_->OnCompositorHidden();
+    }
     compositor_ = nullptr;
     copy_requests_.clear();
   }
@@ -642,13 +668,23 @@ void BrowserViewRenderer::SetActiveCompositor(
   if (compositor_ == compositor)
     return;
 
-  if (compositor_)
-    compositor_->SetMemoryPolicy(0u);
+  content::SynchronousCompositor* existing_compositor = compositor_;
+  if (existing_compositor) {
+    existing_compositor->SetMemoryPolicy(0u);
+  }
   compositor_ = compositor;
   copy_requests_.clear();
   if (compositor_) {
     ComputeTileRectAndUpdateMemoryPolicy();
     compositor_->DidBecomeActive();
+  }
+  if (foreground_for_gpu_resources_) {
+    if (compositor_) {
+      compositor_->OnCompositorVisible();
+    }
+    if (existing_compositor) {
+      existing_compositor->OnCompositorHidden();
+    }
   }
 }
 

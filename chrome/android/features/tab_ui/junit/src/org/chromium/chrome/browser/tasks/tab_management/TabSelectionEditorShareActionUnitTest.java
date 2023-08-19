@@ -15,7 +15,6 @@ import android.graphics.drawable.Drawable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -102,11 +101,6 @@ public class TabSelectionEditorShareActionUnitTest {
                 .thenReturn(new TabModelFilterProvider());
         mJniMocker.mock(DomDistillerUrlUtilsJni.TEST_HOOKS, mDomDistillerUrlUtilsJni);
         mAction.configure(mTabModelSelector, mSelectionDelegate, mDelegate, false);
-    }
-
-    @After
-    public void tearDown() {
-        TabSelectionEditorShareAction.setIntentCallbackForTesting(null);
     }
 
     @Test

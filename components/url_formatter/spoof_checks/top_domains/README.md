@@ -36,10 +36,10 @@
   domains. For now, the skeletons must be ASCII. Unicode domains are supported
   but they are written as punycode to the trie.
 
-* `top_domain_list_variable_builder.cc` / `top500_domains.h`
+* `make_top_domain_list_variables.cc` / `top_bucket_domains.h`
 
-  `top_domain_list_variable_builder.cc` is run at compile time to generate
-  information about the top 500 domains (currently, skeletons and keywords are
+  `make_top_domain_list_variables.cc` is run at compile time to generate
+  information about the top bucket domains (currently, skeletons and keywords are
   created from these domains). This information is then embedded directly into
-  the chrome binary, and can be accessed via the variables in the top500_domains
-  namespace.
+  the chrome binary, and can be accessed via the variables in the
+  top_bucketdomains namespace.

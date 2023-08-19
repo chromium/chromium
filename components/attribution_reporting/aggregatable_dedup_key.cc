@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/parsing_utils.h"
@@ -32,16 +33,13 @@ AggregatableDedupKey::FromJSON(base::Value& value) {
         TriggerRegistrationError::kAggregatableDedupKeyWrongType);
   }
 
-  auto filters = FilterPair::FromJSON(*dict);
-  if (!filters.has_value()) {
-    return base::unexpected(filters.error());
-  }
+  ASSIGN_OR_RETURN(auto filters, FilterPair::FromJSON(*dict));
   absl::optional<uint64_t> dedup_key;
   if (!ParseDeduplicationKey(*dict, dedup_key)) {
     return base::unexpected(
         TriggerRegistrationError::kAggregatableDedupKeyValueInvalid);
   }
-  return AggregatableDedupKey(dedup_key, std::move(*filters));
+  return AggregatableDedupKey(dedup_key, std::move(filters));
 }
 
 AggregatableDedupKey::AggregatableDedupKey() = default;

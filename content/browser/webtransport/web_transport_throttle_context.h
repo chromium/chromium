@@ -76,6 +76,10 @@ class CONTENT_EXPORT WebTransportThrottleContext final
   // is considered started.
   ThrottleResult PerformThrottle(ThrottleDoneCallback on_throttle_done);
 
+  // Called when a handshake fails. Adds handshake delays unless it is
+  // explicitly suppressed.
+  void MaybeQueueHandshakeFailurePenalty();
+
   base::WeakPtr<WebTransportThrottleContext> GetWeakPtr();
 
  private:
@@ -103,6 +107,10 @@ class CONTENT_EXPORT WebTransportThrottleContext final
   // Start the timer for removing items from `pending_queue_timer_`, to fire
   // after `after` has passed.
   void StartPendingQueueTimer(base::TimeDelta after);
+
+  // False when the `--webtransport-developer-mode` flag is specified, true
+  // otherwise.
+  const bool should_queue_handshake_failure_penalty_;
 
   int pending_handshakes_ = 0;
 

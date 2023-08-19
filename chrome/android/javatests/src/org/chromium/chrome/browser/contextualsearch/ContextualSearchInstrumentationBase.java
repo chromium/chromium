@@ -35,7 +35,6 @@ import org.junit.Rule;
 import org.mockito.Mock;
 
 import org.chromium.base.FeatureList;
-import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
@@ -309,7 +308,6 @@ public class ContextualSearchInstrumentationBase {
     private static final int TEST_TIMEOUT = 1500;
     private static final int TEST_EXPECTED_FAILURE_TIMEOUT = 1000;
 
-    private static final int PANEL_INTERACTION_MAX_RETRIES = 3;
     private static final int PANEL_INTERACTION_RETRY_DELAY_MS = 200;
 
     private static final int DOUBLE_TAP_DELAY_MULTIPLIER = 3;
@@ -563,35 +561,6 @@ public class ContextualSearchInstrumentationBase {
         void run() throws TimeoutException;
     }
 
-    // Panel interactions are flaky, see crbug.com/635661. Rather than adding a long delay to
-    // each test, we can retry failures. When trying to make the panel peak, we may also have to
-    // clear the selection before trying again.
-    protected void retryPanelBarInteractions(ThrowingRunnable r, boolean clearSelection)
-            throws AssertionError, TimeoutException {
-        int tries = 0;
-        boolean success = false;
-        while (!success) {
-            tries++;
-            try {
-                r.run();
-                success = true;
-            } catch (AssertionError | TimeoutException e) {
-                if (tries > PANEL_INTERACTION_MAX_RETRIES) {
-                    Log.e(TAG, "ctxs Failed interactions and giving up.", e);
-                    Thread.dumpStack();
-                    throw e;
-                } else {
-                    Log.e(TAG, "Failed to peek panel bar, trying again.", e);
-                    if (clearSelection) clearSelection();
-                    try {
-                        Thread.sleep(PANEL_INTERACTION_RETRY_DELAY_MS);
-                    } catch (InterruptedException ex) {
-                    }
-                }
-            }
-        }
-    }
-
     protected void clearSelection() {
         ThreadUtils.runOnUiThreadBlocking(() -> {
             SelectionPopupController.fromWebContents(sActivityTestRule.getWebContents())
@@ -619,10 +588,8 @@ public class ContextualSearchInstrumentationBase {
      * @param nodeId A string containing the node ID.
      */
     public void longPressNode(String nodeId) throws TimeoutException {
-        retryPanelBarInteractions(() -> {
-            longPressNodeWithoutWaiting(nodeId);
-            waitForPanelToPeek();
-        }, true);
+        longPressNodeWithoutWaiting(nodeId);
+        waitForPanelToPeek();
     }
 
     /**
@@ -957,10 +924,8 @@ public class ContextualSearchInstrumentationBase {
      * @param nodeId A string containing the node ID.
      */
     protected void clickWordNode(String nodeId) throws TimeoutException {
-        retryPanelBarInteractions(() -> {
-            clickNode(nodeId);
-            waitForPanelToPeek();
-        }, true);
+        clickNode(nodeId);
+        waitForPanelToFreshlyPeek();
     }
 
     /**
@@ -1139,6 +1104,21 @@ public class ContextualSearchInstrumentationBase {
     }
 
     /**
+     * Waits for the Search Panel (the Search Bar) to peek up from the bottom, and asserts that it
+     * did peek. Ignores an existing Search Panel that peeked.
+     */
+    protected void waitForPanelToFreshlyPeek() {
+        int lastPeekSequence = mPanel.getLastPeekSequence();
+        final @PanelState int state = PanelState.PEEKED;
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(mPanel, Matchers.notNullValue());
+            Criteria.checkThat(mPanel.getPanelState(), Matchers.is(state));
+            Criteria.checkThat(mPanel.getLastPeekSequence(), Matchers.not(lastPeekSequence));
+            Criteria.checkThat(mPanel.isHeightAnimationRunning(), Matchers.is(false));
+        }, TEST_TIMEOUT, DEFAULT_POLLING_INTERVAL);
+    }
+
+    /**
      * Waits for the Search Panel to expand, and asserts that it did expand.
      */
     protected void waitForPanelToExpand() {
@@ -1291,7 +1271,7 @@ public class ContextualSearchInstrumentationBase {
      * Swipes the panel down to its peeked state.
      */
     protected void swipePanelDown() {
-        swipe(0.5f, 0.55f, 0.5f, 0.95f, 100);
+        swipe(0.5f, 0.55f, 0.5f, 0.95f, 1000);
     }
 
     /**

@@ -6,9 +6,7 @@ package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.assertTrue;
-
-import static org.chromium.net.CronetTestRule.getContext;
+import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
@@ -20,6 +18,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
 
 import java.nio.ByteBuffer;
@@ -29,36 +28,32 @@ import java.util.Date;
  * Tests functionality of BidirectionalStream's QUIC implementation.
  */
 @RunWith(AndroidJUnit4.class)
+@Batch(Batch.UNIT_TESTS)
 public class BidirectionalStreamQuicTest {
     @Rule
-    public final CronetTestRule mTestRule = new CronetTestRule();
+    public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
 
     private ExperimentalCronetEngine mCronetEngine;
 
     @Before
     public void setUp() throws Exception {
-        // Load library first to create MockCertVerifier.
-        System.loadLibrary("cronet_tests");
-        ExperimentalCronetEngine.Builder builder =
-                new ExperimentalCronetEngine.Builder(getContext());
+        mTestRule.getTestFramework().applyEngineBuilderPatch((builder) -> {
+            QuicTestServer.startQuicTestServer(mTestRule.getTestFramework().getContext());
 
-        QuicTestServer.startQuicTestServer(getContext());
+            JSONObject quicParams = new JSONObject();
+            JSONObject hostResolverParams = CronetTestUtil.generateHostResolverRules();
+            JSONObject experimentalOptions = new JSONObject()
+                                                     .put("QUIC", quicParams)
+                                                     .put("HostResolverRules", hostResolverParams);
+            builder.setExperimentalOptions(experimentalOptions.toString())
+                    .addQuicHint(QuicTestServer.getServerHost(), QuicTestServer.getServerPort(),
+                            QuicTestServer.getServerPort());
 
-        builder.enableQuic(true);
-        JSONObject quicParams = new JSONObject();
-        JSONObject hostResolverParams = CronetTestUtil.generateHostResolverRules();
-        JSONObject experimentalOptions = new JSONObject()
-                                                 .put("QUIC", quicParams)
-                                                 .put("HostResolverRules", hostResolverParams);
-        builder.setExperimentalOptions(experimentalOptions.toString());
+            CronetTestUtil.setMockCertVerifierForTesting(
+                    builder, QuicTestServer.createMockCertVerifier());
+        });
 
-        builder.addQuicHint(QuicTestServer.getServerHost(), QuicTestServer.getServerPort(),
-                QuicTestServer.getServerPort());
-
-        CronetTestUtil.setMockCertVerifierForTesting(
-                builder, QuicTestServer.createMockCertVerifier());
-
-        mCronetEngine = builder.build();
+        mCronetEngine = mTestRule.getTestFramework().startEngine();
     }
 
     @After
@@ -81,11 +76,13 @@ public class BidirectionalStreamQuicTest {
                         .build();
         stream.start();
         callback.blockForDone();
-        assertTrue(stream.isDone());
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(stream.isDone()).isTrue();
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString)
                 .isEqualTo("This is a simple text file served by QUIC.\n");
-        assertThat(callback.mResponseInfo.getNegotiatedProtocol()).isEqualTo("quic/1+spdy/3");
+        assertThat(callback.getResponseInfoWithChecks())
+                .hasNegotiatedProtocolThat()
+                .isEqualTo("quic/1+spdy/3");
     }
 
     @Test
@@ -114,7 +111,7 @@ public class BidirectionalStreamQuicTest {
         Date startTime = new Date();
         stream.start();
         callback.blockForDone();
-        assertTrue(stream.isDone());
+        assertThat(stream.isDone()).isTrue();
         requestFinishedListener.blockUntilDone();
         Date endTime = new Date();
         RequestFinishedInfo finishedInfo = requestFinishedListener.getRequestInfo();
@@ -122,10 +119,12 @@ public class BidirectionalStreamQuicTest {
         assertThat(finishedInfo.getFinishedReason()).isEqualTo(RequestFinishedInfo.SUCCEEDED);
         MetricsTestUtil.checkHasConnectTiming(finishedInfo.getMetrics(), startTime, endTime, true);
         assertThat(finishedInfo.getAnnotations()).containsExactly("request annotation", this);
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString)
                 .isEqualTo("This is a simple text file served by QUIC.\n");
-        assertThat(callback.mResponseInfo.getNegotiatedProtocol()).isEqualTo("quic/1+spdy/3");
+        assertThat(callback.getResponseInfoWithChecks())
+                .hasNegotiatedProtocolThat()
+                .isEqualTo("quic/1+spdy/3");
     }
 
     @Test
@@ -152,11 +151,13 @@ public class BidirectionalStreamQuicTest {
                                                  .build();
             stream.start();
             callback.blockForDone();
-            assertTrue(stream.isDone());
-            assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+            assertThat(stream.isDone()).isTrue();
+            assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
             assertThat(callback.mResponseAsString)
                     .isEqualTo("This is a simple text file served by QUIC.\n");
-            assertThat(callback.mResponseInfo.getNegotiatedProtocol()).isEqualTo("quic/1+spdy/3");
+            assertThat(callback.getResponseInfoWithChecks())
+                    .hasNegotiatedProtocolThat()
+                    .isEqualTo("quic/1+spdy/3");
         }
     }
 
@@ -187,11 +188,13 @@ public class BidirectionalStreamQuicTest {
                                                  .build();
             stream.start();
             callback.blockForDone();
-            assertTrue(stream.isDone());
-            assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+            assertThat(stream.isDone()).isTrue();
+            assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
             assertThat(callback.mResponseAsString)
                     .isEqualTo("This is a simple text file served by QUIC.\n");
-            assertThat(callback.mResponseInfo.getNegotiatedProtocol()).isEqualTo("quic/1+spdy/3");
+            assertThat(callback.getResponseInfoWithChecks())
+                    .hasNegotiatedProtocolThat()
+                    .isEqualTo("quic/1+spdy/3");
         }
     }
 
@@ -225,16 +228,18 @@ public class BidirectionalStreamQuicTest {
 
             stream.start();
             callback.blockForDone();
-            assertTrue(stream.isDone());
+            assertThat(stream.isDone()).isTrue();
 
             // Flush after stream is completed is no-op. It shouldn't call into the destroyed
             // adapter.
             stream.flush();
 
-            assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+            assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
             assertThat(callback.mResponseAsString)
                     .isEqualTo("This is a simple text file served by QUIC.\n");
-            assertThat(callback.mResponseInfo.getNegotiatedProtocol()).isEqualTo("quic/1+spdy/3");
+            assertThat(callback.getResponseInfoWithChecks())
+                    .hasNegotiatedProtocolThat()
+                    .isEqualTo("quic/1+spdy/3");
         }
     }
 
@@ -259,12 +264,14 @@ public class BidirectionalStreamQuicTest {
                             .build();
             stream.start();
             callback.blockForDone();
-            assertTrue(stream.isDone());
+            assertThat(stream.isDone()).isTrue();
 
-            assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+            assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
             assertThat(callback.mResponseAsString)
                     .isEqualTo("This is a simple text file served by QUIC.\n");
-            assertThat(callback.mResponseInfo.getNegotiatedProtocol()).isEqualTo("quic/1+spdy/3");
+            assertThat(callback.getResponseInfoWithChecks())
+                    .hasNegotiatedProtocolThat()
+                    .isEqualTo("quic/1+spdy/3");
         }
     }
 
@@ -304,7 +311,7 @@ public class BidirectionalStreamQuicTest {
                         .build();
         stream.start();
         callback.blockForDone();
-        assertTrue(stream.isDone());
+        assertThat(stream.isDone()).isTrue();
         // Server terminated on us, so the stream must fail.
         // QUIC reports this as ERR_QUIC_PROTOCOL_ERROR. Sometimes we get ERR_CONNECTION_REFUSED.
         assertThat(callback.mError).isInstanceOf(NetworkException.class);
@@ -338,7 +345,7 @@ public class BidirectionalStreamQuicTest {
                         .build();
         stream.start();
         callback.blockForDone();
-        assertTrue(stream.isDone());
+        assertThat(stream.isDone()).isTrue();
         assertThat(callback.mError).isNotNull();
         if (callback.mError instanceof QuicException) {
             QuicException quicException = (QuicException) callback.mError;

@@ -26,7 +26,7 @@ TEST_F(DialogModelButtonTest, UsesParamsUniqueId) {
   // are supported.
   auto host = std::make_unique<TestDialogModelHost>(
       DialogModel::Builder()
-          .AddOkButton(base::OnceClosure(),
+          .AddOkButton(base::DoNothing(),
                        DialogModelButton::Params().SetId(kUniqueId))
           .Build());
   EXPECT_EQ(kUniqueId, host->GetId(TestDialogModelHost::ButtonId::kOk));
@@ -40,9 +40,9 @@ TEST_F(DialogModelButtonTest, UsesParamsAccelerators) {
   // are supported.
   auto host = std::make_unique<TestDialogModelHost>(
       DialogModel::Builder()
-          .AddOkButton(base::OnceClosure(), DialogModelButton::Params()
-                                                .AddAccelerator(accelerator_1)
-                                                .AddAccelerator(accelerator_2))
+          .AddOkButton(base::DoNothing(), DialogModelButton::Params()
+                                              .AddAccelerator(accelerator_1)
+                                              .AddAccelerator(accelerator_2))
           .Build());
   EXPECT_THAT(host->GetAccelerators(TestDialogModelHost::ButtonId::kOk),
               testing::UnorderedElementsAre(accelerator_1, accelerator_2));

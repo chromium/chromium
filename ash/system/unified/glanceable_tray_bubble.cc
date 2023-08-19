@@ -4,7 +4,9 @@
 
 #include "ash/system/unified/glanceable_tray_bubble.h"
 
+#include "ash/glanceables/glanceables_v2_controller.h"
 #include "ash/shelf/shelf.h"
+#include "ash/shell.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_event_filter.h"
 #include "ash/system/tray/tray_utils.h"
@@ -18,6 +20,14 @@ GlanceableTrayBubble::GlanceableTrayBubble(DateTray* tray) : tray_(tray) {
       CreateInitParamsForTrayBubble(tray, /*anchor_to_shelf_corner=*/true);
   // TODO(b:277268122): Update with glanceable spec.
   init_params.preferred_width = kRevampedTrayMenuWidth;
+  init_params.transparent = true;
+  init_params.has_shadow = false;
+  init_params.translucent = false;
+  // Adjust default bubble insets for the default margin added to insividual
+  // glanceable bubble views.
+  if (init_params.insets) {
+    *init_params.insets -= gfx::Insets::VH(8, 0);
+  }
 
   bubble_view_ = new GlanceableTrayBubbleView(init_params, tray_->shelf());
 
@@ -25,10 +35,10 @@ GlanceableTrayBubble::GlanceableTrayBubble(DateTray* tray) : tray_(tray) {
   bubble_widget_ = views::BubbleDialogDelegateView::CreateBubble(bubble_view_);
   bubble_widget_->AddObserver(this);
   TrayBackgroundView::InitializeBubbleAnimations(bubble_widget_);
+  bubble_view_->InitializeContents();
   bubble_view_->InitializeAndShowBubble();
 
   tray->tray_event_filter()->AddBubble(this);
-  bubble_view_->UpdateBubble();
 }
 
 GlanceableTrayBubble::~GlanceableTrayBubble() {
@@ -38,6 +48,8 @@ GlanceableTrayBubble::~GlanceableTrayBubble() {
     bubble_widget_->RemoveObserver(this);
     bubble_widget_->Close();
   }
+
+  Shell::Get()->glanceables_v2_controller()->NotifyGlanceablesBubbleClosed();
 }
 
 void GlanceableTrayBubble::OnWidgetDestroying(views::Widget* widget) {
@@ -61,8 +73,20 @@ views::Widget* GlanceableTrayBubble::GetBubbleWidget() const {
   return bubble_widget_;
 }
 
-TasksBubbleView* GlanceableTrayBubble::GetTasksView() const {
+TasksBubbleView* GlanceableTrayBubble::GetTasksView() {
   return bubble_view_->GetTasksView();
+}
+
+ClassroomBubbleTeacherView* GlanceableTrayBubble::GetClassroomTeacherView() {
+  return bubble_view_->GetClassroomTeacherView();
+}
+
+ClassroomBubbleStudentView* GlanceableTrayBubble::GetClassroomStudentView() {
+  return bubble_view_->GetClassroomStudentView();
+}
+
+CalendarView* GlanceableTrayBubble::GetCalendarView() {
+  return bubble_view_->GetCalendarView();
 }
 
 bool GlanceableTrayBubble::IsBubbleActive() const {

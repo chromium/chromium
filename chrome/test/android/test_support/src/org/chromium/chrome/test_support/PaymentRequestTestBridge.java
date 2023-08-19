@@ -243,8 +243,6 @@ public class PaymentRequestTestBridge {
         }
     }
 
-    private static final String TAG = "PaymentRequestTestBridge";
-
     @CalledByNative
     private static void setUseDelegateForTest(boolean isOffTheRecord, boolean isValidSsl,
             boolean prefsCanMakePayment, String twaPackageName) {

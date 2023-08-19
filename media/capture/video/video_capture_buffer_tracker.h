@@ -12,6 +12,7 @@
 #include "media/capture/mojom/video_capture_buffer.mojom.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/capture/video/video_capture_buffer_handle.h"
+#include "media/capture/video/video_capture_device.h"
 #include "media/capture/video_capture_types.h"
 #include "mojo/public/cpp/system/buffer.h"
 
@@ -70,6 +71,9 @@ class CAPTURE_EXPORT VideoCaptureBufferTracker {
   uint64_t LastCustomerUseSequenceNumber() const {
     return last_customer_use_sequence_number_;
   }
+
+  // This is called when the a tracker is reused or created.
+  virtual void UpdateExternalData(CapturedExternalVideoBuffer buffer) {}
 
  private:
   // Indicates whether this VideoCaptureBufferTracker is currently referenced by

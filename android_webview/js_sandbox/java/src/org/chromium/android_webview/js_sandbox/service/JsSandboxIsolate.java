@@ -63,10 +63,13 @@ public class JsSandboxIsolate extends IJsSandboxIsolate.Stub {
     public void evaluateJavascriptWithFd(
             AssetFileDescriptor afd, IJsSandboxIsolateSyncCallback callback) {
         synchronized (mLock) {
-            String code;
-            Utils.checkAssetFileDescriptor(afd, Integer.MAX_VALUE);
             if (mJsSandboxIsolate == 0) {
                 throw new IllegalStateException("evaluateJavascript() called after close()");
+            }
+            Utils.checkAssetFileDescriptor(afd);
+            if (afd.getLength() > Integer.MAX_VALUE) {
+                throw new IllegalArgumentException("Evaluation code larger than "
+                        + Integer.MAX_VALUE + " bytes not supported");
             }
             JsSandboxIsolateJni.get().evaluateJavascriptWithFd(mJsSandboxIsolate, this,
                     afd.getParcelFileDescriptor().detachFd(), (int) afd.getLength(),
@@ -92,7 +95,11 @@ public class JsSandboxIsolate extends IJsSandboxIsolate.Stub {
                 throw new IllegalStateException(
                         "provideNamedData(String, AssetFileDescriptor) called after close()");
             }
-            Utils.checkAssetFileDescriptor(afd, Integer.MAX_VALUE);
+            Utils.checkAssetFileDescriptor(afd);
+            if (afd.getLength() > Integer.MAX_VALUE) {
+                throw new IllegalArgumentException(
+                        "Named data larger than " + Integer.MAX_VALUE + " bytes not supported");
+            }
             boolean nativeReturn = JsSandboxIsolateJni.get().provideNamedData(mJsSandboxIsolate,
                     this, name, afd.getParcelFileDescriptor().detachFd(), (int) afd.getLength());
             return nativeReturn;

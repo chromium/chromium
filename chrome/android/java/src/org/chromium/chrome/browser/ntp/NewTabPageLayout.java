@@ -19,13 +19,13 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewStub;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
@@ -80,7 +80,6 @@ public class NewTabPageLayout extends LinearLayout {
     private final int mTileGridLayoutBleed;
     private int mSearchBoxTwoSideMargin;
     private final Context mContext;
-    private int mSearchBoxEndPadding = UNSET_RESOURCE_FLAG;
 
     private final int mMvtLandscapeLateralMarginTablet;
     private final int mMvtExtraRightMarginTablet;
@@ -129,7 +128,6 @@ public class NewTabPageLayout extends LinearLayout {
     private boolean mIsIncognito;
     private WindowAndroid mWindowAndroid;
     private boolean mIsNtpAsHomeSurfaceEnabled;
-    private boolean mIsMultiColumnFeedEnabled;
 
     /**
      * Vertical inset to add to the top and bottom of the search box bounds. May be 0 if no inset
@@ -146,6 +144,7 @@ public class NewTabPageLayout extends LinearLayout {
     private Integer mInitialTileNum;
     private Boolean mIsHalfMvtLandscape;
     private Boolean mIsHalfMvtPortrait;
+    private boolean mIsSurfacePolishEnabled;
 
     /**
      * Constructor for inflating from XML.
@@ -190,14 +189,14 @@ public class NewTabPageLayout extends LinearLayout {
      * @param isIncognito Whether the new tab page is in incognito mode.
      * @param windowAndroid An instance of a {@link WindowAndroid}
      * @param isNtpAsHomeSurfaceEnabled {@code true} if the NTP is showing as the home surface.
-     * @param isMultiColumnFeedEnabled {@code true} if the number of feed columns is 2.
+     * @param isSurfacePolishEnabled {@code true} if the NTP surface is polished.
      */
     public void initialize(NewTabPageManager manager, Activity activity, Delegate tileGroupDelegate,
             boolean searchProviderHasLogo, boolean searchProviderIsGoogle,
             FeedSurfaceScrollDelegate scrollDelegate, TouchEnabledDelegate touchEnabledDelegate,
             UiConfig uiConfig, ActivityLifecycleDispatcher lifecycleDispatcher, NewTabPageUma uma,
             boolean isIncognito, WindowAndroid windowAndroid, boolean isNtpAsHomeSurfaceEnabled,
-            boolean isMultiColumnFeedEnabled) {
+            boolean isSurfacePolishEnabled) {
         TraceEvent.begin(TAG + ".initialize()");
         mScrollDelegate = scrollDelegate;
         mManager = manager;
@@ -207,22 +206,36 @@ public class NewTabPageLayout extends LinearLayout {
         mIsIncognito = isIncognito;
         mWindowAndroid = windowAndroid;
         mIsNtpAsHomeSurfaceEnabled = isNtpAsHomeSurfaceEnabled;
-        mIsMultiColumnFeedEnabled = isMultiColumnFeedEnabled;
+        mIsSurfacePolishEnabled = isSurfacePolishEnabled;
         Profile profile = Profile.getLastUsedRegularProfile();
 
         mSearchBoxCoordinator = new SearchBoxCoordinator(getContext(), this);
         mSearchBoxCoordinator.initialize(lifecycleDispatcher, mIsIncognito, mWindowAndroid);
         if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)) {
-            mSearchBoxBoundsVerticalInset = getResources().getDimensionPixelSize(
-                    R.dimen.ntp_search_box_bounds_vertical_inset_modern);
+            if (isSurfacePolishEnabled) {
+                int searchBoxHeightPolish =
+                        getResources().getDimensionPixelSize(R.dimen.ntp_search_box_height_polish);
+                mSearchBoxCoordinator.getView().getLayoutParams().height = searchBoxHeightPolish;
+                mSearchBoxBoundsVerticalInset = (searchBoxHeightPolish
+                                                        - getResources().getDimensionPixelSize(
+                                                                R.dimen.toolbar_height_no_shadow))
+                        / 2;
+            } else {
+                mSearchBoxBoundsVerticalInset = getResources().getDimensionPixelSize(
+                        R.dimen.ntp_search_box_bounds_vertical_inset_modern);
+            }
         }
 
-        if (mIsMultiColumnFeedEnabled && mIsNtpAsHomeSurfaceEnabled) {
+        if (mIsNtpAsHomeSurfaceEnabled) {
             // We add extra side margins to the fake search box when multiple column Feeds are
             // shown. There is only one exception that we don't shorten the width of the fake search
             // box: one row of MV tiles in portrait mode.
             mSearchBoxTwoSideMargin =
                     getResources().getDimensionPixelSize(R.dimen.ntp_search_box_start_margin) * 2;
+        } else if (mIsSurfacePolishEnabled) {
+            mSearchBoxTwoSideMargin = getResources().getDimensionPixelSize(
+                                              R.dimen.mvt_container_lateral_margin_polish)
+                    * 2;
         }
         initializeLogoCoordinator(searchProviderHasLogo, searchProviderIsGoogle);
         initializeMostVisitedTilesCoordinator(profile, lifecycleDispatcher, tileGroupDelegate,
@@ -242,6 +255,11 @@ public class NewTabPageLayout extends LinearLayout {
         mInitialized = true;
 
         TraceEvent.end(TAG + ".initialize()");
+
+        if (mIsSurfacePolishEnabled) {
+            setBackground(
+                    AppCompatResources.getDrawable(mContext, R.drawable.home_surface_background));
+        }
     }
 
     /**
@@ -439,8 +457,14 @@ public class NewTabPageLayout extends LinearLayout {
     private void insertSiteSectionView() {
         int insertionPoint = indexOfChild(mMiddleSpacer) + 1;
 
-        mMvTilesContainerLayout = (ViewGroup) LayoutInflater.from(this.getContext())
-                                          .inflate(R.layout.mv_tiles_container, this, false);
+        if (ChromeFeatureList.sSurfacePolish.isEnabled()) {
+            mMvTilesContainerLayout =
+                    (ViewGroup) LayoutInflater.from(getContext())
+                            .inflate(R.layout.mv_tiles_container_polish, this, false);
+        } else {
+            mMvTilesContainerLayout = (ViewGroup) LayoutInflater.from(getContext())
+                                              .inflate(R.layout.mv_tiles_container, this, false);
+        }
         mMvTilesContainerLayout.setVisibility(View.VISIBLE);
         addView(mMvTilesContainerLayout, insertionPoint);
         // The page contents are initially hidden; otherwise they'll be drawn centered on the
@@ -458,7 +482,7 @@ public class NewTabPageLayout extends LinearLayout {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        if (mIsNtpAsHomeSurfaceEnabled && mIsMultiColumnFeedEnabled && isScrollableMvtEnabled()) {
+        if (mIsNtpAsHomeSurfaceEnabled && isScrollableMvtEnabled()) {
             calculateTabletMvtMargin(MeasureSpec.getSize(widthMeasureSpec));
         }
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -562,10 +586,16 @@ public class NewTabPageLayout extends LinearLayout {
         MarginLayoutParams marginLayoutParams =
                 (MarginLayoutParams) mMvTilesContainerLayout.getLayoutParams();
 
+        if (mIsSurfacePolishEnabled) {
+            marginLayoutParams.bottomMargin = getResources().getDimensionPixelOffset(
+                    R.dimen.mvt_container_bottom_margin_polish);
+            return;
+        }
+
         if (isScrollableMvtEnabled()) {
             // Let mMvTilesContainerLayout attached to the edge of the screen.
             setClipToPadding(false);
-            if (mIsNtpAsHomeSurfaceEnabled && mIsMultiColumnFeedEnabled) {
+            if (mIsNtpAsHomeSurfaceEnabled) {
                 updateTilesLayoutLeftAndRightMarginsOnTablet(marginLayoutParams);
             } else {
                 int lateralPaddingsForNTP = -getResources().getDimensionPixelSize(
@@ -585,6 +615,7 @@ public class NewTabPageLayout extends LinearLayout {
             marginLayoutParams.topMargin = getGridMvtTopMargin();
             marginLayoutParams.bottomMargin = getGridMvtBottomMargin();
         }
+
         if (mIsNtpAsHomeSurfaceEnabled) {
             marginLayoutParams.bottomMargin = getResources().getDimensionPixelOffset(
                     R.dimen.mvt_container_bottom_margin_tablet);
@@ -849,15 +880,8 @@ public class NewTabPageLayout extends LinearLayout {
         }
     }
 
-    @VisibleForTesting
     MostVisitedTilesCoordinator getMostVisitedTilesCoordinatorForTesting() {
         return mMostVisitedTilesCoordinator;
-    }
-
-    @VisibleForTesting
-    void setMostVisitedTilesCoordinatorForTesting(
-            MostVisitedTilesCoordinator mostVisitedTilesCoordinator) {
-        mMostVisitedTilesCoordinator = mostVisitedTilesCoordinator;
     }
 
     void maybeShowFeatureNotificationVoiceSearchIPH() {
@@ -897,7 +921,8 @@ public class NewTabPageLayout extends LinearLayout {
     private void unifyElementWidths() {
         View searchBoxView = getSearchBoxView();
         if (mMvTilesContainerLayout.getVisibility() != GONE) {
-            final int width = getMeasuredWidth() - mTileGridLayoutBleed;
+            final int width =
+                    getMeasuredWidth() - (mIsSurfacePolishEnabled ? 0 : mTileGridLayoutBleed);
             if (!isScrollableMvtEnabled()) {
                 measureExactly(searchBoxView, width - mSearchBoxTwoSideMargin,
                         searchBoxView.getMeasuredHeight());
@@ -908,7 +933,8 @@ public class NewTabPageLayout extends LinearLayout {
                 int searchBoxTwoSideMargin = mSearchBoxTwoSideMargin;
                 if (mSearchBoxTwoSideMargin != 0
                         && getResources().getConfiguration().orientation
-                                == Configuration.ORIENTATION_PORTRAIT) {
+                                == Configuration.ORIENTATION_PORTRAIT
+                        && !mIsSurfacePolishEnabled) {
                     searchBoxTwoSideMargin = 0;
                 }
 
@@ -969,7 +995,6 @@ public class NewTabPageLayout extends LinearLayout {
                 MeasureSpec.makeMeasureSpec(heightPx, MeasureSpec.EXACTLY));
     }
 
-    @VisibleForTesting
     LogoCoordinator getLogoCoordinatorForTesting() {
         return mLogoCoordinator;
     }
@@ -981,8 +1006,7 @@ public class NewTabPageLayout extends LinearLayout {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        if (!mIsNtpAsHomeSurfaceEnabled || !isScrollableMvtEnabled()
-                || !mIsMultiColumnFeedEnabled) {
+        if (!mIsNtpAsHomeSurfaceEnabled || !isScrollableMvtEnabled()) {
             return;
         }
         MarginLayoutParams marginLayoutParams =

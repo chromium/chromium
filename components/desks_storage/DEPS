@@ -6,6 +6,8 @@ include_rules = [
   "+components/account_id/account_id.h",
   "+components/app_constants/constants.h",
   "+components/app_restore",
+  "+components/prefs",
+  "+components/policy",
   "+components/keyed_service/core",
   "+components/services/app_service/public/cpp",
   "+components/sync",

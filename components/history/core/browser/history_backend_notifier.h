@@ -31,9 +31,14 @@ class HistoryBackendNotifier {
                                      const GURL& icon_url) = 0;
 
   // Sends notification that a visit to `url_row` occurred with the details
-  // (transition type, visit time, etc) given in `visit_row`.
-  virtual void NotifyURLVisited(const URLRow& url_row,
-                                const VisitRow& visit_row) = 0;
+  // (transition type, visit time, etc) given in `visit_row` and the associated
+  // `local_navigation_id` from the underlying `content::NavigationHandle`,
+  // which will be non-null only for navigations on the local device.
+  // It is valid to call NotifyURLVisited() with an empty `local_navigation_id`.
+  virtual void NotifyURLVisited(
+      const URLRow& url_row,
+      const VisitRow& visit_row,
+      absl::optional<int64_t> local_navigation_id) = 0;
 
   // Sends notification that `changed_urls` have been changed or added.
   virtual void NotifyURLsModified(const URLRows& changed_urls,

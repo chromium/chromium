@@ -12,9 +12,9 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "chrome/browser/ui/views/controls/rich_controls_container_view.h"
 #include "chrome/browser/ui/views/page_info/chosen_object_view_observer.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
-#include "chrome/browser/ui/views/page_info/page_info_row_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "components/page_info/page_info_delegate.h"
 #include "components/vector_icons/vector_icons.h"
@@ -34,8 +34,10 @@ ChosenObjectView::ChosenObjectView(
     std::unique_ptr<PageInfoUI::ChosenObjectInfo> info,
     std::u16string display_name)
     : info_(std::move(info)) {
+  // TODO(crbug.com/1446230): Directly subclass `RichControlsContainerView`
+  // instead of adding it as the only child.
   SetUseDefaultFillLayout(true);
-  row_view_ = AddChildView(std::make_unique<PageInfoRowView>());
+  row_view_ = AddChildView(std::make_unique<RichControlsContainerView>());
   row_view_->SetTitle(display_name);
 
   // Create the delete button. It is safe to use base::Unretained here
@@ -44,8 +46,8 @@ ChosenObjectView::ChosenObjectView(
       views::CreateVectorImageButton(base::BindRepeating(
           &ChosenObjectView::ExecuteDeleteCommand, base::Unretained(this)));
   delete_button->SetRequestFocusOnPress(true);
-  delete_button->SetTooltipText(
-      l10n_util::GetStringUTF16(info_->ui_info->delete_tooltip_string_id));
+  delete_button->SetTooltipText(l10n_util::GetStringFUTF16(
+      info_->ui_info->delete_tooltip_string_id, display_name));
   views::InstallCircleHighlightPathGenerator(delete_button.get());
 
   // Disable the delete button for policy controlled objects and display the
@@ -64,11 +66,12 @@ ChosenObjectView::ChosenObjectView(
   delete_button_ = row_view_->AddControl(std::move(delete_button));
 
   UpdateIconImage(/*is_deleted=*/false);
-  // Set flex rule, defined in `PageInfoRowView`, to wrap the subtitle text but
-  // size the parent view to match the content.
-  SetProperty(views::kFlexBehaviorKey,
-              views::FlexSpecification(base::BindRepeating(
-                  &PageInfoRowView::FlexRule, base::Unretained(row_view_))));
+  // Set flex rule, defined in `RichControlsContainerView`, to wrap the subtitle
+  // text but size the parent view to match the content.
+  SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(base::BindRepeating(
+          &RichControlsContainerView::FlexRule, base::Unretained(row_view_))));
 }
 
 void ChosenObjectView::AddObserver(ChosenObjectViewObserver* observer) {

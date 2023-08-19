@@ -7,7 +7,7 @@
 
 #include "base/command_line.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ash/app_mode/app_session_ash.h"
+#include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
 #include "chrome/browser/ash/login/app_mode/test/web_kiosk_base_test.h"
@@ -36,11 +36,11 @@ class LoadWaiter final : public content::WebContentsObserver {
       : WebContentsObserver(web_contents) {}
   ~LoadWaiter() override = default;
 
-  // Blocks until |web_contents| has finished loading.
+  // Blocks until `web_contents` has finished loading.
   [[nodiscard]] bool Wait() { return signal_.Wait(); }
 
  private:
-  // Unblocks any callers currently waiting on |Wait()|.
+  // Unblocks any callers currently waiting on `Wait()`.
   void UnblockCallers() {
     if (!signal_.IsReady()) {
       signal_.SetValue();
@@ -79,8 +79,7 @@ void VerifyBrowserContents(Browser const* browser,
 
   AwaitContentsLoaded(contents_view->web_contents());
 
-  views::ViewSkiaGoldPixelDiff pixel_diff;
-  pixel_diff.Init(
+  views::ViewSkiaGoldPixelDiff pixel_diff(
       ::testing::UnitTest::GetInstance()->current_test_suite()->name());
   EXPECT_TRUE(pixel_diff.CompareViewScreenshot(screenshot_name, contents_view));
 }
@@ -109,9 +108,9 @@ IN_PROC_BROWSER_TEST_F(KioskPixelTest, DISABLED_AccessibilitySettings) {
   }
 
   InitializeRegularOnlineKiosk();
-  ASSERT_NE(WebKioskAppManager::Get()->app_session(), nullptr);
-  Browser const* settings_browser =
-      OpenA11ySettingsBrowser(WebKioskAppManager::Get()->app_session());
+  ASSERT_NE(WebKioskAppManager::Get()->kiosk_system_session(), nullptr);
+  Browser const* settings_browser = OpenA11ySettingsBrowser(
+      WebKioskAppManager::Get()->kiosk_system_session());
   MoveCursorToCorner();
   VerifyBrowserContents(settings_browser, "AccessibilitySettings_rev0");
 }

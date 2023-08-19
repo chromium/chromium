@@ -142,7 +142,7 @@ class SharingFCMSender : public SharingMessageSender::SendMessageDelegate {
   raw_ptr<SharingMessageBridge, DanglingUntriaged> sharing_message_bridge_;
   raw_ptr<SharingSyncPreference, DanglingUntriaged> sync_preference_;
   raw_ptr<VapidKeyManager, DanglingUntriaged> vapid_key_manager_;
-  raw_ptr<gcm::GCMDriver, DanglingUntriaged> gcm_driver_;
+  raw_ptr<gcm::GCMDriver, AcrossTasksDanglingUntriaged> gcm_driver_;
   raw_ptr<syncer::LocalDeviceInfoProvider, DanglingUntriaged>
       local_device_info_provider_;
   raw_ptr<syncer::SyncService, DanglingUntriaged> sync_service_;

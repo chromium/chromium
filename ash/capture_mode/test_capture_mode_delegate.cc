@@ -195,4 +195,17 @@ bool TestCaptureModeDelegate::IsAudioCaptureDisabledByPolicy() const {
   return is_audio_capture_disabled_by_policy_;
 }
 
+void TestCaptureModeDelegate::RegisterVideoConferenceManagerClient(
+    crosapi::mojom::VideoConferenceManagerClient* client,
+    const base::UnguessableToken& client_id) {}
+
+void TestCaptureModeDelegate::UnregisterVideoConferenceManagerClient(
+    const base::UnguessableToken& client_id) {}
+
+void TestCaptureModeDelegate::UpdateVideoConferenceManager(
+    crosapi::mojom::VideoConferenceMediaUsageStatusPtr status) {}
+
+void TestCaptureModeDelegate::NotifyDeviceUsedWhileDisabled(
+    crosapi::mojom::VideoConferenceMediaDevice device) {}
+
 }  // namespace ash

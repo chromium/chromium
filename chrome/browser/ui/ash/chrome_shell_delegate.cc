@@ -11,9 +11,11 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/game_dashboard/game_dashboard_delegate.h"
+#include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/system_sounds_delegate.h"
+#include "ash/wm/window_state.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -275,7 +277,9 @@ bool ChromeShellDelegate::IsSessionRestoreInProgress() const {
   return SessionRestore::IsRestoring(profile);
 }
 
-void ChromeShellDelegate::SetUpEnvironmentForLockedFullscreen(bool locked) {
+void ChromeShellDelegate::SetUpEnvironmentForLockedFullscreen(
+    const ash::WindowState& window_state) {
+  bool locked = window_state.IsPinned();
   // Reset the clipboard and kill dev tools when entering or exiting locked
   // fullscreen (security concerns).
   ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
@@ -296,7 +300,8 @@ void ChromeShellDelegate::SetUpEnvironmentForLockedFullscreen(bool locked) {
   // Disable ARC while in the locked fullscreen mode.
   arc::ArcSessionManager* const arc_session_manager =
       arc::ArcSessionManager::Get();
-  if (arc_session_manager && arc::IsArcAllowedForProfile(profile)) {
+  if (!ash::IsArcWindow(window_state.window()) && arc_session_manager &&
+      arc::IsArcAllowedForProfile(profile)) {
     if (locked) {
       // Disable ARC, preserve data.
       arc_session_manager->RequestDisable();

@@ -29,21 +29,21 @@ XMLPUBFUN void xmlCheckVersion(int version);
  *
  * the version string like "1.2.3"
  */
-#define LIBXML_DOTTED_VERSION "2.11.0"
+#define LIBXML_DOTTED_VERSION "2.12.0"
 
 /**
  * LIBXML_VERSION:
  *
  * the version number: 1.2.3 value is 10203
  */
-#define LIBXML_VERSION 21100
+#define LIBXML_VERSION 21200
 
 /**
  * LIBXML_VERSION_STRING:
  *
  * the version number string, 1.2.3 value is "10203"
  */
-#define LIBXML_VERSION_STRING "21100"
+#define LIBXML_VERSION_STRING "21200"
 
 /**
  * LIBXML_VERSION_EXTRA:
@@ -58,7 +58,7 @@ XMLPUBFUN void xmlCheckVersion(int version);
  * Macro to check that the libxml version in use is compatible with
  * the version the software has been compiled against
  */
-#define LIBXML_TEST_VERSION xmlCheckVersion(21100);
+#define LIBXML_TEST_VERSION xmlCheckVersion(21200);
 
 #ifndef VMS
 #if 0
@@ -449,15 +449,21 @@ XMLPUBFUN void xmlCheckVersion(int version);
 #endif
 
 #if defined(__clang__) || (__GNUC__ * 100 + __GNUC_MINOR__ >= 406)
-#define XML_IGNORE_FPTR_CAST_WARNINGS \
-    _Pragma("GCC diagnostic push") \
-    _Pragma("GCC diagnostic ignored \"-Wpedantic\"") \
-    _Pragma("GCC diagnostic ignored \"-Wcast-function-type\"")
-#define XML_POP_WARNINGS \
+  #if defined(__clang__) || (__GNUC__ * 100 + __GNUC_MINOR__ >= 800)
+    #define XML_IGNORE_FPTR_CAST_WARNINGS \
+      _Pragma("GCC diagnostic push") \
+      _Pragma("GCC diagnostic ignored \"-Wpedantic\"") \
+      _Pragma("GCC diagnostic ignored \"-Wcast-function-type\"")
+  #else
+    #define XML_IGNORE_FPTR_CAST_WARNINGS \
+      _Pragma("GCC diagnostic push") \
+      _Pragma("GCC diagnostic ignored \"-Wpedantic\"")
+  #endif
+  #define XML_POP_WARNINGS \
     _Pragma("GCC diagnostic pop")
 #else
-#define XML_IGNORE_FPTR_CAST_WARNINGS
-#define XML_POP_WARNINGS
+  #define XML_IGNORE_FPTR_CAST_WARNINGS
+  #define XML_POP_WARNINGS
 #endif
 
 /** DOC_ENABLE */

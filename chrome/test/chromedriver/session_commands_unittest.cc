@@ -397,6 +397,22 @@ TEST(SessionCommandsTest, MatchCapabilitiesVirtualAuthenticatorsLargeBlob) {
   EXPECT_FALSE(MatchCapabilities(merged));
 }
 
+TEST(SessionCommandsTest, MatchCapabilitiesFedCm) {
+  // Match fedcm:accounts.
+  base::Value::Dict merged;
+  merged.SetByDottedPath("fedcm:accounts", true);
+  EXPECT_TRUE(MatchCapabilities(merged));
+
+  // Don't match false.
+  merged.SetByDottedPath("fedcm:accounts", false);
+  EXPECT_FALSE(MatchCapabilities(merged));
+
+  // Don't match values other than bools.
+  merged.clear();
+  merged.Set("fedcm:accounts", "not a bool");
+  EXPECT_FALSE(MatchCapabilities(merged));
+}
+
 TEST(SessionCommandsTest, Quit) {
   DetachChrome* chrome = new DetachChrome();
   Session session("id", std::unique_ptr<Chrome>(chrome));
@@ -481,13 +497,13 @@ TEST(SessionCommandsTest, ConfigureHeadlessSession_dotNotation) {
 
   Status status = capabilities.Parse(caps);
   BrowserInfo binfo;
-  binfo.is_headless = true;
+  binfo.is_headless_shell = true;
   MockChrome* chrome = new MockChrome(binfo);
   Session session("id", std::unique_ptr<Chrome>(chrome));
 
   status = internal::ConfigureHeadlessSession(&session, capabilities);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  ASSERT_TRUE(session.chrome->GetBrowserInfo()->is_headless);
+  ASSERT_TRUE(session.chrome->GetBrowserInfo()->is_headless_shell);
   ASSERT_STREQ("/examples/python/downloads",
                session.headless_download_directory->c_str());
 }
@@ -503,13 +519,13 @@ TEST(SessionCommandsTest, ConfigureHeadlessSession_nestedMap) {
 
   Status status = capabilities.Parse(caps);
   BrowserInfo binfo;
-  binfo.is_headless = true;
+  binfo.is_headless_shell = true;
   MockChrome* chrome = new MockChrome(binfo);
   Session session("id", std::unique_ptr<Chrome>(chrome));
 
   status = internal::ConfigureHeadlessSession(&session, capabilities);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  ASSERT_TRUE(session.chrome->GetBrowserInfo()->is_headless);
+  ASSERT_TRUE(session.chrome->GetBrowserInfo()->is_headless_shell);
   ASSERT_STREQ("/examples/python/downloads",
                session.headless_download_directory->c_str());
 }
@@ -523,13 +539,13 @@ TEST(SessionCommandsTest, ConfigureHeadlessSession_noDownloadDir) {
 
   Status status = capabilities.Parse(caps);
   BrowserInfo binfo;
-  binfo.is_headless = true;
+  binfo.is_headless_shell = true;
   MockChrome* chrome = new MockChrome(binfo);
   Session session("id", std::unique_ptr<Chrome>(chrome));
 
   status = internal::ConfigureHeadlessSession(&session, capabilities);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  ASSERT_TRUE(session.chrome->GetBrowserInfo()->is_headless);
+  ASSERT_TRUE(session.chrome->GetBrowserInfo()->is_headless_shell);
   ASSERT_STREQ(".", session.headless_download_directory->c_str());
 }
 
@@ -546,7 +562,7 @@ TEST(SessionCommandsTest, ConfigureHeadlessSession_notHeadless) {
 
   status = internal::ConfigureHeadlessSession(&session, capabilities);
   ASSERT_EQ(kOk, status.code()) << status.message();
-  ASSERT_FALSE(session.chrome->GetBrowserInfo()->is_headless);
+  ASSERT_FALSE(session.chrome->GetBrowserInfo()->is_headless_shell);
   ASSERT_FALSE(session.headless_download_directory);
 }
 

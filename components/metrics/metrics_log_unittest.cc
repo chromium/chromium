@@ -33,6 +33,7 @@
 #include "components/metrics/metrics_state_manager.h"
 #include "components/metrics/test/test_metrics_provider.h"
 #include "components/metrics/test/test_metrics_service_client.h"
+#include "components/network_time/network_time_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/variations/active_field_trials.h"
@@ -101,6 +102,17 @@ std::string GetExpectedHardwareClass() {
 #else
   return base::SysInfo::HardwareModelName();
 #endif
+}
+
+// Sets the time in |network_time| to |time|.
+void UpdateNetworkTime(network_time::NetworkTimeTracker* network_time_tracker,
+                       base::TickClock* tick_clock,
+                       base::Time time) {
+  network_time_tracker->UpdateNetworkTime(
+      time,
+      base::Seconds(1),         // resolution
+      base::Milliseconds(250),  // latency
+      tick_clock->NowTicks());  // posting time
 }
 
 }  // namespace
@@ -208,7 +220,7 @@ TEST_F(MetricsLogTest, BasicRecord) {
 
   std::string encoded;
   log.FinalizeLog(/*truncate_events=*/false, client_.GetVersionString(),
-                  &encoded);
+                  log.GetCurrentClockTime(/*record_time_zone=*/true), &encoded);
 
   // A couple of fields are hard to mock, so these will be copied over directly
   // for the expected output.
@@ -319,13 +331,14 @@ TEST_F(MetricsLogTest, FinalizeLog) {
   // the one that was used when the log was created.
   std::string encoded;
   log.FinalizeLog(/*truncate_events=*/true, client_.GetVersionString(),
-                  &encoded);
+                  log.GetCurrentClockTime(/*record_time_zone=*/true), &encoded);
 
   // Finalize |log2|. We do not truncate events, and we pass a different version
   // string than the one that was used when the log was created.
   client_.set_version_string(kNewVersionString);
   std::string encoded2;
   log2.FinalizeLog(/*truncate_events=*/false, client_.GetVersionString(),
+                   log.GetCurrentClockTime(/*record_time_zone=*/true),
                    &encoded2);
 
   ChromeUserMetricsExtension parsed;
@@ -361,8 +374,9 @@ TEST_F(MetricsLogTest, Timestamps_InitialStabilityLog) {
                  clock.get(), nullptr, &client_);
   clock->SetNow(base::Time::FromTimeT(2));
   std::string encoded;
+  // Don't set the close_time param since this is an initial stability log.
   log.FinalizeLog(/*truncate_events=*/false, client_.GetVersionString(),
-                  &encoded);
+                  /*close_time=*/absl::nullopt, &encoded);
   ChromeUserMetricsExtension parsed;
   ASSERT_TRUE(parsed.ParseFromString(encoded));
   EXPECT_FALSE(parsed.has_time_log_created());
@@ -379,8 +393,9 @@ TEST_F(MetricsLogTest, Timestamps_IndependentLog) {
                  clock.get(), nullptr, &client_);
   clock->SetNow(base::Time::FromTimeT(2));
   std::string encoded;
+  // Don't set the close_time param since this is an independent log.
   log.FinalizeLog(/*truncate_events=*/false, client_.GetVersionString(),
-                  &encoded);
+                  /*close_time=*/absl::nullopt, &encoded);
   ChromeUserMetricsExtension parsed;
   ASSERT_TRUE(parsed.ParseFromString(encoded));
   EXPECT_FALSE(parsed.has_time_log_created());
@@ -398,7 +413,7 @@ TEST_F(MetricsLogTest, Timestamps_OngoingLog) {
   clock->SetNow(base::Time::FromTimeT(2));
   std::string encoded;
   log.FinalizeLog(/*truncate_events=*/false, client_.GetVersionString(),
-                  &encoded);
+                  log.GetCurrentClockTime(/*record_time_zone=*/true), &encoded);
   ChromeUserMetricsExtension parsed;
   ASSERT_TRUE(parsed.ParseFromString(encoded));
   EXPECT_TRUE(parsed.has_time_log_created());
@@ -411,6 +426,181 @@ TEST_F(MetricsLogTest, Timestamps_OngoingLog) {
   EXPECT_EQ(parsed.time_log_closed().time_sec(), 2);
   EXPECT_EQ(parsed.time_log_closed().time_source(),
             ChromeUserMetricsExtension::RealLocalTime::CLIENT_CLOCK);
+  // The timezone should be set, but we don't check what it is.
+  EXPECT_TRUE(parsed.time_log_closed().has_time_zone_offset_from_gmt_sec());
+}
+
+TEST_F(MetricsLogTest,
+       Timestamps_OngoingLogLog_WithNetworkClockExists_AlwaysUnavailable) {
+  // Setup a network clock that doesn't provide a timestamp (time unavailable).
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO);
+  std::unique_ptr<network_time::FieldTrialTest> field_trial_test(
+      new network_time::FieldTrialTest());
+  field_trial_test->SetFeatureParams(
+      true, 0.0, network_time::NetworkTimeTracker::FETCHES_ON_DEMAND_ONLY,
+      network_time::NetworkTimeTracker::ClockDriftSamples::NO_SAMPLES);
+  scoped_refptr<network::TestSharedURLLoaderFactory> shared_url_loader_factory =
+      base::MakeRefCounted<network::TestSharedURLLoaderFactory>();
+  TestingPrefServiceSimple pref_service;
+  network_time::NetworkTimeTracker::RegisterPrefs(pref_service.registry());
+  network_time::NetworkTimeTracker network_time_tracker(
+      std::make_unique<base::DefaultClock>(),
+      std::make_unique<base::DefaultTickClock>(), &pref_service,
+      shared_url_loader_factory);
+
+  // Set up the backup client clock.
+  TestMetricsServiceClient client;
+  std::unique_ptr<base::SimpleTestClock> clock =
+      std::make_unique<base::SimpleTestClock>();
+
+  // Should have times from regular (ongoing) logs.  These times should come
+  // from the backup client clock, not the (unavailable) network clock.
+  clock->SetNow(base::Time::FromTimeT(1));
+  MetricsLog log(kClientId, kSessionId, MetricsLog::ONGOING_LOG, clock.get(),
+                 &network_time_tracker, &client);
+  clock->SetNow(base::Time::FromTimeT(2));
+
+  // Check the output.
+  std::string encoded;
+  log.FinalizeLog(/*truncate_events=*/false, client_.GetVersionString(),
+                  log.GetCurrentClockTime(/*record_time_zone=*/true), &encoded);
+  ChromeUserMetricsExtension parsed;
+  ASSERT_TRUE(parsed.ParseFromString(encoded));
+  EXPECT_TRUE(parsed.has_time_log_created());
+  EXPECT_EQ(parsed.time_log_created().time_sec(), 1);
+  EXPECT_EQ(parsed.time_log_created().time_source(),
+            ChromeUserMetricsExtension::RealLocalTime::CLIENT_CLOCK);
+  // The timezone should not be set in the time_log_created field.
+  EXPECT_FALSE(parsed.time_log_created().has_time_zone_offset_from_gmt_sec());
+  EXPECT_TRUE(parsed.has_time_log_closed());
+  EXPECT_EQ(parsed.time_log_closed().time_sec(), 2);
+  EXPECT_EQ(parsed.time_log_closed().time_source(),
+            ChromeUserMetricsExtension::RealLocalTime::CLIENT_CLOCK);
+  // The timezone should be set, but we don't check what it is.
+  EXPECT_TRUE(parsed.time_log_closed().has_time_zone_offset_from_gmt_sec());
+}
+
+TEST_F(
+    MetricsLogTest,
+    Timestamps_OngoingLogLog_WithNetworkClockExists_UnavailableThenAvailable) {
+  // Setup a network clock that initially doesn't provide a timestamp (time
+  // unavailable).
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO);
+  std::unique_ptr<network_time::FieldTrialTest> field_trial_test(
+      new network_time::FieldTrialTest());
+  field_trial_test->SetFeatureParams(
+      true, 0.0, network_time::NetworkTimeTracker::FETCHES_ON_DEMAND_ONLY,
+      network_time::NetworkTimeTracker::ClockDriftSamples::NO_SAMPLES);
+  scoped_refptr<network::TestSharedURLLoaderFactory> shared_url_loader_factory =
+      base::MakeRefCounted<network::TestSharedURLLoaderFactory>();
+  TestingPrefServiceSimple pref_service;
+  network_time::NetworkTimeTracker::RegisterPrefs(pref_service.registry());
+  base::SimpleTestClock* clock = new base::SimpleTestClock;
+  base::SimpleTestTickClock* tick_clock = new base::SimpleTestTickClock();
+  // Do this to be sure that |is_null| returns false.
+  clock->Advance(base::Days(111));
+  tick_clock->Advance(base::Days(222));
+  network_time::NetworkTimeTracker network_time_tracker(
+      std::unique_ptr<base::Clock>(clock),
+      std::unique_ptr<const base::TickClock>(tick_clock), &pref_service,
+      shared_url_loader_factory);
+
+  // Should have times from regular (ongoing) logs.  The creation time should
+  // come from the backup client clock; the closure time should come from the
+  // network clock.
+  clock->SetNow(base::Time::FromTimeT(1));
+  TestMetricsServiceClient client;
+  MetricsLog log(kClientId, kSessionId, MetricsLog::ONGOING_LOG, clock,
+                 &network_time_tracker, &client);
+  // Advance the backup client clock.  (Value should not be used; merely
+  // advanced to make sure the new value doesn't show up anywhere.)
+  clock->SetNow(base::Time::FromTimeT(2));
+  // Set the network time tracker.
+  UpdateNetworkTime(&network_time_tracker, tick_clock,
+                    base::Time::FromTimeT(3));
+
+  // Check the output.
+  std::string encoded;
+  log.FinalizeLog(/*truncate_events=*/false, client_.GetVersionString(),
+                  log.GetCurrentClockTime(/*record_time_zone=*/true), &encoded);
+  ChromeUserMetricsExtension parsed;
+  ASSERT_TRUE(parsed.ParseFromString(encoded));
+  EXPECT_TRUE(parsed.has_time_log_created());
+  EXPECT_EQ(parsed.time_log_created().time_sec(), 1);
+  EXPECT_EQ(parsed.time_log_created().time_source(),
+            ChromeUserMetricsExtension::RealLocalTime::CLIENT_CLOCK);
+  // The timezone should not be set in the time_log_created field.
+  EXPECT_FALSE(parsed.time_log_created().has_time_zone_offset_from_gmt_sec());
+  EXPECT_TRUE(parsed.has_time_log_closed());
+  EXPECT_EQ(parsed.time_log_closed().time_sec(), 3);
+  EXPECT_EQ(parsed.time_log_closed().time_source(),
+            ChromeUserMetricsExtension::RealLocalTime::NETWORK_TIME_CLOCK);
+  // The timezone should be set, but we don't check what it is.
+  EXPECT_TRUE(parsed.time_log_closed().has_time_zone_offset_from_gmt_sec());
+}
+
+TEST_F(MetricsLogTest,
+       Timestamps_OngoingLogLog_WithNetworkClockExists_AlwaysAvailable) {
+  // Setup a network clock that provides a timestamp.
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO);
+  std::unique_ptr<network_time::FieldTrialTest> field_trial_test(
+      new network_time::FieldTrialTest());
+  field_trial_test->SetFeatureParams(
+      true, 0.0, network_time::NetworkTimeTracker::FETCHES_ON_DEMAND_ONLY,
+      network_time::NetworkTimeTracker::ClockDriftSamples::NO_SAMPLES);
+  scoped_refptr<network::TestSharedURLLoaderFactory> shared_url_loader_factory =
+      base::MakeRefCounted<network::TestSharedURLLoaderFactory>();
+  TestingPrefServiceSimple pref_service;
+  network_time::NetworkTimeTracker::RegisterPrefs(pref_service.registry());
+  base::SimpleTestClock* clock = new base::SimpleTestClock;
+  base::SimpleTestTickClock* tick_clock = new base::SimpleTestTickClock();
+  // Do this to be sure that |is_null| returns false.
+  clock->Advance(base::Days(111));
+  tick_clock->Advance(base::Days(222));
+  network_time::NetworkTimeTracker network_time_tracker(
+      std::unique_ptr<base::Clock>(clock),
+      std::unique_ptr<const base::TickClock>(tick_clock), &pref_service,
+      shared_url_loader_factory);
+
+  // Should have times from regular (ongoing) logs.  These times should come
+  // from the network clock.
+  // Set the backup client clock time.  (Value should not be used; merely set
+  // to make sure the value doesn't show up anywhere.)
+  clock->SetNow(base::Time::FromTimeT(1));
+  // Set the network time tracker.
+  UpdateNetworkTime(&network_time_tracker, tick_clock,
+                    base::Time::FromTimeT(2));
+  TestMetricsServiceClient client;
+  MetricsLog log(kClientId, kSessionId, MetricsLog::ONGOING_LOG, clock,
+                 &network_time_tracker, &client);
+  // Advance the backup client clock.  (Value should not be used; merely
+  // advanced to make sure the new value doesn't show up anywhere.)
+  clock->SetNow(base::Time::FromTimeT(3));
+  // Advance and set the network time clock.
+  UpdateNetworkTime(&network_time_tracker, tick_clock,
+                    base::Time::FromTimeT(4));
+
+  // Check the output.
+  std::string encoded;
+  log.FinalizeLog(/*truncate_events=*/false, client_.GetVersionString(),
+                  log.GetCurrentClockTime(/*record_time_zone=*/true), &encoded);
+  ChromeUserMetricsExtension parsed;
+  ASSERT_TRUE(parsed.ParseFromString(encoded));
+  EXPECT_TRUE(parsed.has_time_log_created());
+  // Time should be the first time returned by the network time tracker.
+  EXPECT_EQ(parsed.time_log_created().time_sec(), 2);
+  EXPECT_EQ(parsed.time_log_created().time_source(),
+            ChromeUserMetricsExtension::RealLocalTime::NETWORK_TIME_CLOCK);
+  // The timezone should not be set in the time_log_created field.
+  EXPECT_FALSE(parsed.time_log_created().has_time_zone_offset_from_gmt_sec());
+  EXPECT_TRUE(parsed.has_time_log_closed());
+  // Time should be the second time returned by the network time tracker.
+  EXPECT_EQ(parsed.time_log_closed().time_sec(), 4);
+  EXPECT_EQ(parsed.time_log_closed().time_source(),
+            ChromeUserMetricsExtension::RealLocalTime::NETWORK_TIME_CLOCK);
   // The timezone should be set, but we don't check what it is.
   EXPECT_TRUE(parsed.time_log_closed().has_time_zone_offset_from_gmt_sec());
 }

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_DECORATORS_FRAME_VISIBILITY_DECORATOR_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_DECORATORS_FRAME_VISIBILITY_DECORATOR_H_
 
+#include "components/performance_manager/graph/initializing_frame_node_observer.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
@@ -19,7 +20,7 @@ namespace performance_manager {
 // Shorty after creation, a OnViewportIntersectionChanged() notification is
 // expected.
 class FrameVisibilityDecorator : public GraphOwnedDefaultImpl,
-                                 public FrameNode::ObserverDefaultImpl,
+                                 public InitializingFrameNodeObserver,
                                  public PageNode::ObserverDefaultImpl {
  public:
   FrameVisibilityDecorator();
@@ -36,6 +37,8 @@ class FrameVisibilityDecorator : public GraphOwnedDefaultImpl,
   void OnIsVisibleChanged(const PageNode* page_node) override;
 
   // FrameNodeObserver:
+  void OnFrameNodeInitializing(const FrameNode* frame_node) override;
+  void OnIsCurrentChanged(const FrameNode* frame_node) override;
   void OnViewportIntersectionChanged(const FrameNode* frame_node) override;
 };
 

@@ -14,6 +14,9 @@ class BookmarkModel;
 
 // Allows the bookmark editor’s view controller to reflect user’s change in the
 // model.
+// TODO(crbug.com/1412479): Change of model should be done through the mutator.
+// Right now they are done through the coordinator, because some utils function
+// deals simultaneously with changing the model and opening a toast.
 @protocol BookmarksEditorMutator <NSObject>
 
 // Save the bookmark being edited.

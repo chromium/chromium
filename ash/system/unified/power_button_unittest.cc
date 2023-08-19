@@ -47,9 +47,15 @@ class PowerButtonTest : public NoSessionAshTestBase {
   void SetUp() override {
     feature_list_.InitAndEnableFeature(features::kQsRevamp);
     NoSessionAshTestBase::SetUp();
+
     // Test with the real system tray bubble so that the power button has a real
     // UnifiedSystemTrayController to test clicking on the email item.
-    UnifiedSystemTray* system_tray = GetPrimaryUnifiedSystemTray();
+    ShowSystemTrayBubble();
+  }
+
+ protected:
+  void ShowSystemTrayBubble() {
+    auto* system_tray = GetPrimaryUnifiedSystemTray();
     system_tray->ShowBubble();
     button_ = system_tray->bubble()
                   ->quick_settings_view()
@@ -57,7 +63,6 @@ class PowerButtonTest : public NoSessionAshTestBase {
                   ->power_button_for_testing();
   }
 
- protected:
   views::MenuItemView* GetMenuView() {
     return button_->GetMenuViewForTesting();
   }
@@ -138,7 +143,7 @@ class PowerButtonTest : public NoSessionAshTestBase {
   bool IsDownChevron() { return ChevronIconsMatch(/*use_up_chevron=*/false); }
 
   // Owned by view hierarchy.
-  raw_ptr<PowerButton, ExperimentalAsh> button_ = nullptr;
+  raw_ptr<PowerButton, DanglingUntriaged | ExperimentalAsh> button_ = nullptr;
 
   base::test::ScopedFeatureList feature_list_;
   base::HistogramTester histogram_tester_;
@@ -299,6 +304,9 @@ TEST_F(PowerButtonTest, ButtonStatesLockScreen) {
   CreateUserSessions(1);
   BlockUserSession(BLOCKED_BY_LOCK_SCREEN);
 
+  // Changes in lock state close the system tray bubble, so re-show it.
+  ShowSystemTrayBubble();
+
   EXPECT_TRUE(GetPowerButton()->GetVisible());
 
   // No menu buttons are visible before showing the menu.
@@ -391,12 +399,6 @@ TEST_F(PowerButtonTest, EmailIsNotShownForPublicAccount) {
 
 // NOTE: Kiosk user types are not tested because quick settings cannot be
 // accessed in kiosk mode.
-
-TEST_F(PowerButtonTest, EmailIsNotShownForActiveDirectory) {
-  SimulateUserLogin("test@test.com", user_manager::USER_TYPE_ACTIVE_DIRECTORY);
-  SimulatePowerButtonPress();
-  EXPECT_EQ(nullptr, GetEmailButton());
-}
 
 TEST_F(PowerButtonTest, ClickingEmailShowsUserChooserView) {
   SimulateUserLogin("user@gmail.com", user_manager::USER_TYPE_REGULAR);

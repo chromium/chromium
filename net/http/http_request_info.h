@@ -54,7 +54,8 @@ struct NET_EXPORT HttpRequestInfo {
   HttpRequestHeaders extra_headers;
 
   // Any upload data.
-  raw_ptr<UploadDataStream, DanglingUntriaged> upload_data_stream = nullptr;
+  raw_ptr<UploadDataStream, AcrossTasksDanglingUntriaged> upload_data_stream =
+      nullptr;
 
   // Any load flags (see load_flags.h).
   int load_flags = 0;
@@ -93,6 +94,10 @@ struct NET_EXPORT HttpRequestInfo {
   /// behavior, and may still provide useful metrics.
   absl::optional<url::Origin> possibly_top_frame_origin;
 
+  // The frame origin associated with a request. This is used to isolate shared
+  // dictionaries between different frame origins.
+  absl::optional<url::Origin> frame_origin;
+
   // Idempotency of the request, which determines that if it is safe to enable
   // 0-RTT for the request. By default, 0-RTT is only enabled for safe
   // HTTP methods, i.e., GET, HEAD, OPTIONS, and TRACE. For other methods,
@@ -101,14 +106,6 @@ struct NET_EXPORT HttpRequestInfo {
   // happen multiple times. It is only safe to enable the 0-RTT if it is known
   // that the request is idempotent.
   net::Idempotency idempotency = net::DEFAULT_IDEMPOTENCY;
-
-  // Index of the requested URL in Cache Transparency's pervasive payload list.
-  // Only used for logging purposes.
-  int pervasive_payloads_index_for_logging = -1;
-
-  // Checksum of the request body and selected headers, in upper-case
-  // hexadecimal. Only non-empty if the USE_SINGLE_KEYED_CACHE load flag is set.
-  std::string checksum;
 
   // If not null, the value is used to evaluate whether the cache entry should
   // be bypassed; if is null, that means the request site does not match the

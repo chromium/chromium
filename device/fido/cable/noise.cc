@@ -48,6 +48,7 @@ void Noise::Init(Noise::HandshakeType type) {
   // See https://www.noiseprotocol.org/noise.html#the-handshakestate-object
   static const char kKNProtocolName[] = "Noise_KNpsk0_P256_AESGCM_SHA256";
   static const char kNKProtocolName[] = "Noise_NKpsk0_P256_AESGCM_SHA256";
+  static const char kNKNoPskProtocolName[] = "Noise_NK_P256_AESGCM_SHA256";
   static_assert(sizeof(kNKProtocolName) == sizeof(kKNProtocolName),
                 "protocol names are different lengths");
   static_assert(sizeof(kKNProtocolName) == crypto::kSHA256Length,
@@ -65,6 +66,12 @@ void Noise::Init(Noise::HandshakeType type) {
 
     case HandshakeType::kKNpsk0:
       memcpy(chaining_key_.data(), kKNProtocolName, sizeof(kKNProtocolName));
+      break;
+
+    case HandshakeType::kNK:
+      memset(chaining_key_.data(), 0, chaining_key_.size());
+      memcpy(chaining_key_.data(), kNKNoPskProtocolName,
+             sizeof(kNKNoPskProtocolName));
       break;
   }
 

@@ -185,6 +185,14 @@ bool FrameSinkVideoCaptureDevice::CanSupportNV12Format() const {
     return false;
   }
 
+  // TODO(crbug.com/1452092): Disable zero-copy NV12 tab capture with Graphite
+  // until Dawn NV12 rendering is supported.
+  if (!gpu_data_manager->IsGpuFeatureInfoAvailable() ||
+      gpu_data_manager->GetFeatureStatus(gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE) ==
+          gpu::kGpuFeatureStatusEnabled) {
+    return false;
+  }
+
   // We only support NV12 if GL_EXT_texture_rg extension is available. GPU
   // capabilities need to be present in order to determine that.
   if (!gpu_capabilities_) {

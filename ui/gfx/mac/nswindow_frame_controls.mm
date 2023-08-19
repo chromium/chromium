@@ -8,10 +8,6 @@
 
 #include "ui/gfx/geometry/size.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // The value used to represent an unbounded width or height.

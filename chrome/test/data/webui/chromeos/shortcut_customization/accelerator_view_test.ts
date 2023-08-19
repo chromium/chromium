@@ -5,6 +5,7 @@
 import 'chrome://shortcut-customization/js/accelerator_view.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
+import {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -16,7 +17,7 @@ import {InputKeyElement, KeyInputState} from 'chrome://shortcut-customization/js
 import {setShortcutProviderForTesting} from 'chrome://shortcut-customization/js/mojo_interface_provider.js';
 import {AcceleratorConfigResult, AcceleratorSource, LayoutStyle, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {AcceleratorResultData} from 'chrome://shortcut-customization/mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -68,7 +69,7 @@ suite('acceleratorViewTest', function() {
 
   function getEditIcon(): HTMLDivElement {
     return strictQuery(
-        '#editIconContainer', viewElement!.shadowRoot, HTMLDivElement);
+        '.edit-icon-container', viewElement!.shadowRoot, HTMLDivElement);
   }
 
   test('LoadsBasicAccelerator', async () => {
@@ -114,11 +115,11 @@ suite('acceleratorViewTest', function() {
 
     await flush();
 
-    const ctrlKey = getInputKey('#ctrlKey');
-    const altKey = getInputKey('#altKey');
-    const shiftKey = getInputKey('#shiftKey');
-    const metaKey = getInputKey('#searchKey');
-    const pendingKey = getInputKey('#pendingKey');
+    let ctrlKey = getInputKey('#ctrlKey');
+    let altKey = getInputKey('#altKey');
+    let shiftKey = getInputKey('#shiftKey');
+    let metaKey = getInputKey('#searchKey');
+    let pendingKey = getInputKey('#pendingKey');
 
     // By default, no keys should be registered.
     assertEquals(KeyInputState.NOT_SELECTED, ctrlKey.keyState);
@@ -135,61 +136,88 @@ suite('acceleratorViewTest', function() {
 
     provider.setFakeReplaceAcceleratorResult(fakeResult);
 
-    // Simulate Ctrl + Alt + e.
+    // Simulate Ctrl.
     viewElement.dispatchEvent(new KeyboardEvent('keydown', {
-      key: 'e',
-      keyCode: 69,
-      code: 'KeyE',
+      key: 'Control',
+      keyCode: 17,
+      code: 'Control',
       ctrlKey: true,
-      altKey: true,
+      altKey: false,
       shiftKey: false,
       metaKey: false,
     }));
 
     await flush();
 
-    assertEquals('modifier-selected', ctrlKey.keyState);
-    assertEquals('modifier-selected', altKey.keyState);
-    assertEquals('not-selected', shiftKey.keyState);
-    assertEquals('not-selected', metaKey.keyState);
-    assertEquals('alpha-numeric-selected', pendingKey.keyState);
+    assertEquals(KeyInputState.MODIFIER_SELECTED, ctrlKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, altKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, shiftKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, metaKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, pendingKey.keyState);
+
+    // Release Ctrl, expect it to not be selected.
+    viewElement.dispatchEvent(new KeyboardEvent('keyup', {
+      key: 'Control',
+      keyCode: 17,
+      code: 'Control',
+      ctrlKey: true,
+      altKey: false,
+      shiftKey: false,
+      metaKey: false,
+    }));
+
+    await flush();
+    ctrlKey = getInputKey('#ctrlKey');
+    altKey = getInputKey('#altKey');
+    shiftKey = getInputKey('#shiftKey');
+    metaKey = getInputKey('#searchKey');
+    pendingKey = getInputKey('#pendingKey');
+
+    assertEquals(KeyInputState.NOT_SELECTED, ctrlKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, altKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, shiftKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, metaKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, pendingKey.keyState);
+
+    viewElement.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'e',
+      keyCode: 69,
+      code: 'KeyE',
+      ctrlKey: false,
+      altKey: false,
+      shiftKey: false,
+      metaKey: false,
+    }));
+    await flush();
+    pendingKey = getInputKey('#pendingKey');
+
+    assertEquals(KeyInputState.ALPHANUMERIC_SELECTED, pendingKey.keyState);
     assertEquals('e', pendingKey.key);
-  });
 
-  test('ElementFocusableWhenCustomizationEnabled', async () => {
-    loadTimeData.overrideValues({isCustomizationEnabled: true});
-    viewElement = initAcceleratorViewElement();
-    await flushTasks();
+    // Release `e`, expect it to not be selected.
+    viewElement.dispatchEvent(new KeyboardEvent('keyup', {
+      key: '',
+      keyCode: 69,
+      code: 'KeyE',
+      ctrlKey: false,
+      altKey: false,
+      shiftKey: false,
+      metaKey: false,
+    }));
 
-    const acceleratorInfo = createStandardAcceleratorInfo(
-        Modifier.CONTROL | Modifier.SHIFT,
-        /*key=*/ 71,
-        /*keyDisplay=*/ 'g');
+    await flush();
+    ctrlKey = getInputKey('#ctrlKey');
+    altKey = getInputKey('#altKey');
+    shiftKey = getInputKey('#shiftKey');
+    metaKey = getInputKey('#searchKey');
+    pendingKey = getInputKey('#pendingKey');
 
-    viewElement.acceleratorInfo = acceleratorInfo;
-
-    await flushTasks();
-    const containerElement =
-        viewElement.shadowRoot!.querySelector('#container') as HTMLDivElement;
-    assertEquals(0, containerElement.tabIndex);
-  });
-
-  test('ElementNotFocusableWhenCustomizationDisabled', async () => {
-    loadTimeData.overrideValues({isCustomizationEnabled: false});
-    viewElement = initAcceleratorViewElement();
-    await flushTasks();
-
-    const acceleratorInfo = createStandardAcceleratorInfo(
-        Modifier.CONTROL | Modifier.SHIFT,
-        /*key=*/ 71,
-        /*keyDisplay=*/ 'g');
-
-    viewElement.acceleratorInfo = acceleratorInfo;
-
-    await flushTasks();
-    const containerElement =
-        viewElement.shadowRoot!.querySelector('#container') as HTMLDivElement;
-    assertEquals(-1, containerElement.tabIndex);
+    assertEquals(KeyInputState.NOT_SELECTED, ctrlKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, altKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, shiftKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, metaKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, pendingKey.keyState);
+    assertEquals('key', pendingKey.key);
   });
 
   test('EditWithFunctionKeyAsOnlyKey', async () => {
@@ -253,6 +281,7 @@ suite('acceleratorViewTest', function() {
   });
 
   test('LockIconVisibilityBasedOnProperties', async () => {
+    viewElement = initAcceleratorViewElement();
     const scenarios = [
       {customizationEnabled: true, locked: true, sourceIsLocked: true},
       {customizationEnabled: true, locked: true, sourceIsLocked: false},
@@ -291,7 +320,6 @@ suite('acceleratorViewTest', function() {
     for (const testCase of testCases) {
       loadTimeData.overrideValues(
           {isCustomizationEnabled: testCase.customizationEnabled});
-      viewElement = initAcceleratorViewElement();
       viewElement.source = testCase.layoutInfo.source;
       viewElement.action = testCase.layoutInfo.action;
       viewElement.categoryIsLocked = testCase.categoryIsLocked;
@@ -309,6 +337,7 @@ suite('acceleratorViewTest', function() {
   });
 
   test('EditIconVisibilityBasedOnProperties', async () => {
+    viewElement = initAcceleratorViewElement();
     // Mainly test on customizationEnabled and accelerator is not locked.
     const scenarios = [
       {
@@ -316,30 +345,35 @@ suite('acceleratorViewTest', function() {
         locked: false,
         sourceIsLocked: false,
         isAcceleratorRow: false,
+        isFirstAccelerator: true,
       },
       {
         customizationEnabled: true,
         locked: false,
         sourceIsLocked: false,
         isAcceleratorRow: true,
+        isFirstAccelerator: true,
       },
       {
         customizationEnabled: true,
         locked: true,
         sourceIsLocked: false,
         isAcceleratorRow: false,
+        isFirstAccelerator: true,
       },
       {
         customizationEnabled: true,
         locked: false,
         sourceIsLocked: true,
         isAcceleratorRow: true,
+        isFirstAccelerator: false,
       },
       {
         customizationEnabled: false,
         locked: false,
         sourceIsLocked: false,
         isAcceleratorRow: false,
+        isFirstAccelerator: true,
       },
     ];
 
@@ -358,7 +392,8 @@ suite('acceleratorViewTest', function() {
         // replicate shouldShowLockIcon() logic.
         const expectEditIconVisible = scenario.customizationEnabled &&
             scenario.isAcceleratorRow && !categoryIsLocked &&
-            !scenario.locked && !scenario.sourceIsLocked;
+            !scenario.locked && !scenario.sourceIsLocked &&
+            scenario.isFirstAccelerator;
         testCases.push({
           ...scenario,
           layoutInfo: layoutInfo,
@@ -370,11 +405,11 @@ suite('acceleratorViewTest', function() {
     for (const testCase of testCases) {
       loadTimeData.overrideValues(
           {isCustomizationEnabled: testCase.customizationEnabled});
-      viewElement = initAcceleratorViewElement();
       viewElement.source = testCase.layoutInfo.source;
       viewElement.action = testCase.layoutInfo.action;
       viewElement.categoryIsLocked = testCase.categoryIsLocked;
       viewElement.showEditIcon = testCase.isAcceleratorRow;
+      viewElement.isFirstAccelerator = testCase.isFirstAccelerator;
       const acceleratorInfo = createStandardAcceleratorInfo(
           Modifier.CONTROL | Modifier.SHIFT,
           /*key=*/ 71,
@@ -388,5 +423,227 @@ suite('acceleratorViewTest', function() {
           testCase.expectEditIconVisible,
           !getEditIcon().hasAttribute('hidden'));
     }
+  });
+
+  test('KeyDisplayAndIconDuringEdit', async () => {
+    viewElement = initAcceleratorViewElement();
+    await flushTasks();
+    const acceleratorInfo = createStandardAcceleratorInfo(
+        Modifier.ALT,
+        /*key=*/ 221,
+        /*keyDisplay=*/ ']');
+    viewElement.acceleratorInfo = acceleratorInfo;
+    viewElement.source = AcceleratorSource.kAsh;
+    viewElement.action = 1;
+    await flush();
+
+    // Enable the edit view.
+    viewElement.viewState = ViewState.EDIT;
+    await flush();
+
+    const pendingKey = getInputKey('#pendingKey');
+
+    const fakeResult: AcceleratorResultData = {
+      result: AcceleratorConfigResult.kConflict,
+      shortcutName: {data: [1]},
+    };
+    provider.setFakeReplaceAcceleratorResult(fakeResult);
+
+    // Simulate SHIFT + SPACE, expect the key display to be 'space'.
+    viewElement.dispatchEvent(new KeyboardEvent('keydown', {
+      key: ' ',
+      code: 'Space',
+      shiftKey: true,
+    }));
+
+    await flush();
+    assertEquals('space', pendingKey.key);
+
+    // Simulate SHIFT + OVERVIEW, expect the key display to be
+    // 'LaunchApplication1' and the icon to be 'overview'.
+    viewElement.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'F4',
+      code: 'ShowAllWindows',
+      shiftKey: true,
+    }));
+    await flush();
+
+    assertEquals('LaunchApplication1', pendingKey.key);
+    const keyIconElement =
+        pendingKey.shadowRoot!.querySelector('#key-icon') as IronIconElement;
+    assertEquals('shortcut-customization-keys:overview', keyIconElement.icon);
+
+    // Simulate SHIFT + BRIGHTNESS_UP, expect the key display to be
+    // 'BrightnessUp' and the icon to be 'display-brightness-up'.
+    viewElement.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'BrightnessUp',
+      code: 'BrightnessUp',
+      shiftKey: true,
+    }));
+    await flush();
+
+    assertEquals('BrightnessUp', pendingKey.key);
+    const keyIconElement2 =
+        pendingKey.shadowRoot!.querySelector('#key-icon') as IronIconElement;
+    assertEquals(
+        'shortcut-customization-keys:display-brightness-up',
+        keyIconElement2.icon);
+
+    // Simulate SHIFT + MUTE_MICROPHONE.
+    viewElement.dispatchEvent(new KeyboardEvent('keydown', {
+      key: '',
+      code: '',
+      keyCode: 159,
+      shiftKey: true,
+    }));
+    await flush();
+
+    assertEquals('MicrophoneMuteToggle', pendingKey.key);
+    const keyIconElement3 =
+        pendingKey.shadowRoot!.querySelector('#key-icon') as IronIconElement;
+    assertEquals(
+        'shortcut-customization-keys:microphone-mute', keyIconElement3.icon);
+  });
+
+  test('GetAriaLabels', async () => {
+    viewElement = initAcceleratorViewElement();
+    await flushTasks();
+
+    const acceleratorInfo = createStandardAcceleratorInfo(
+        Modifier.SHIFT | Modifier.ALT,
+        /*key=*/ 221,
+        /*keyDisplay=*/ 's');
+    viewElement.acceleratorInfo = acceleratorInfo;
+    viewElement.source = AcceleratorSource.kAsh;
+    viewElement.action = 1;
+    await flush();
+
+    const viewContainer =
+        viewElement.shadowRoot!.querySelector('#container') as HTMLDivElement;
+    assertEquals('alt shift s', viewContainer.ariaLabel);
+  });
+
+  test('GetAriaLabelsWithIcon', async () => {
+    viewElement = initAcceleratorViewElement();
+    await flushTasks();
+
+    const acceleratorInfo = createStandardAcceleratorInfo(
+        Modifier.SHIFT | Modifier.ALT | Modifier.COMMAND,
+        /*key=*/ 220,
+        /*keyDisplay=*/ 'LaunchApplication1');
+    viewElement.acceleratorInfo = acceleratorInfo;
+    viewElement.source = AcceleratorSource.kAsh;
+    viewElement.action = 1;
+    await flush();
+
+    const viewContainer =
+        viewElement.shadowRoot!.querySelector('#container') as HTMLDivElement;
+    // The icon name is 'overview' in keyToIconNameMap.
+    const regex = /^meta (search|launcher) alt shift overview$/;
+    assertTrue(!!viewContainer.ariaLabel);
+    assertTrue(regex.test(viewContainer.ariaLabel));
+  });
+
+  test('GetAriaLabelsWithLwinKey', async () => {
+    viewElement = initAcceleratorViewElement();
+    await flushTasks();
+    // Open/close launcher -> Lwin key.
+    const acceleratorInfo = createStandardAcceleratorInfo(
+        Modifier.NONE,
+        /*key=*/ 224,
+        /*keyDisplay=*/ 'Meta');
+    viewElement.acceleratorInfo = acceleratorInfo;
+    viewElement.source = AcceleratorSource.kAsh;
+    viewElement.action = 1;
+    await flush();
+
+    const viewContainer =
+        viewElement.shadowRoot!.querySelector('#container') as HTMLDivElement;
+    const regex = /^meta (search|launcher)$/;
+    assertTrue(!!viewContainer.ariaLabel);
+    assertTrue(regex.test(viewContainer.ariaLabel));
+  });
+
+  test('CancelInputWithShortcut', async () => {
+    viewElement = initAcceleratorViewElement();
+    await flushTasks();
+
+    const acceleratorInfo = createStandardAcceleratorInfo(
+        Modifier.ALT,
+        /*key=*/ 221,
+        /*keyDisplay=*/ ']');
+
+    viewElement.acceleratorInfo = acceleratorInfo;
+    viewElement.source = AcceleratorSource.kAsh;
+    viewElement.action = 1;
+    // Enable the edit view.
+    viewElement.viewState = ViewState.EDIT;
+
+    await flush();
+
+    // Assert that this is in the EDIT state.
+    assertEquals(ViewState.EDIT, viewElement.viewState);
+
+    let ctrlKey = getInputKey('#ctrlKey');
+    let altKey = getInputKey('#altKey');
+    let shiftKey = getInputKey('#shiftKey');
+    let metaKey = getInputKey('#searchKey');
+    let pendingKey = getInputKey('#pendingKey');
+
+    // By default, no keys should be registered.
+    assertEquals(KeyInputState.NOT_SELECTED, ctrlKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, altKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, shiftKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, metaKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, pendingKey.keyState);
+    assertEquals('key', pendingKey.key);
+
+    // Simulate Alt.
+    viewElement.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'Alt',
+      keyCode: 18,
+      code: 'Alt',
+      ctrlKey: false,
+      altKey: true,
+      shiftKey: false,
+      metaKey: false,
+    }));
+
+    await flush();
+
+    assertEquals(KeyInputState.NOT_SELECTED, ctrlKey.keyState);
+    assertEquals(KeyInputState.MODIFIER_SELECTED, altKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, shiftKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, metaKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, pendingKey.keyState);
+
+    // Now press Escape.
+    viewElement.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'Escape',
+      keyCode: 27,
+      code: 'Escape',
+      ctrlKey: false,
+      altKey: true,
+      shiftKey: false,
+      metaKey: false,
+    }));
+
+    await flush();
+    ctrlKey = getInputKey('#ctrlKey');
+    altKey = getInputKey('#altKey');
+    shiftKey = getInputKey('#shiftKey');
+    metaKey = getInputKey('#searchKey');
+    pendingKey = getInputKey('#pendingKey');
+
+    assertEquals(KeyInputState.NOT_SELECTED, ctrlKey.keyState);
+    assertEquals(KeyInputState.MODIFIER_SELECTED, altKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, shiftKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, metaKey.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, pendingKey.keyState);
+
+    // Expect that press Alt + Esc will cancel the edit state.
+    assertEquals(ViewState.VIEW, viewElement.viewState);
+    assertFalse(viewElement.hasError);
+    assertEquals('', viewElement.statusMessage);
   });
 });

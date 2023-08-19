@@ -51,7 +51,6 @@ export class Resolution {
    * Compares width/height of resolutions, see if they are equal or not.
    *
    * @param resolution Resolution to be compared with.
-   * @return Whether width/height of resolutions are equal.
    */
   equals(resolution: Resolution|null): boolean {
     if (resolution === null) {
@@ -65,7 +64,6 @@ export class Resolution {
    * returns true if the resolution is rotated.
    *
    * @param resolution Resolution to be compared with.
-   * @return Whether width/height of resolutions are equal.
    */
   equalsWithRotation(resolution: Resolution): boolean {
     return (this.width === resolution.width &&
@@ -77,7 +75,6 @@ export class Resolution {
    * Compares aspect ratio of resolutions, see if they are equal or not.
    *
    * @param resolution Resolution to be compared with.
-   * @return Whether aspect ratio of resolutions are equal.
    */
   aspectRatioEquals(resolution: Resolution): boolean {
     return this.aspectRatio === resolution.aspectRatio;
@@ -343,6 +340,7 @@ export enum ErrorType {
   NO_AVAILABLE_LEVEL = 'no-available-level',
   PERF_METRICS_FAILURE = 'perf-metrics-failure',
   PRELOAD_IMAGE_FAILURE = 'preload-image-failure',
+  RESUME_PAUSE_FAILURE = 'resume-pause-failure',
   SET_FPS_RANGE_FAILURE = 'set-fps-range-failure',
   START_CAMERA_FAILURE = 'start-camera-failure',
   START_CAPTURE_FAILURE = 'start-capture-failure',
@@ -452,7 +450,7 @@ export class NoFrameError extends Error {
 /**
  * Throws when the portrait mode fails to detect a human face.
  */
-export class PortraitModeProcessError extends Error {
+export class PortraitErrorNoFaceDetected extends Error {
   constructor(message = 'No human face detected in the scene') {
     super(message);
     this.name = this.constructor.name;
@@ -460,7 +458,7 @@ export class PortraitModeProcessError extends Error {
 }
 
 /**
- * Throws when the camera is suspended while reprocess effects are ongoing.
+ * Throws when the camera is suspended while camera effects are ongoing.
  */
 export class CameraSuspendError extends Error {
   constructor(message = 'camera suspended') {
@@ -481,6 +479,7 @@ export enum LocalStorageKey {
   ENABLE_PTZ_FOR_BUILTIN = 'enablePTZForBuiltin',
   EXPERT_MODE = 'expert',
   GA_USER_ID = 'google-analytics.analytics.user-id',
+  GA4_CLIENT_ID = 'ga4ClientId',
   MIRRORING_TOGGLES = 'mirroringToggles',
   PREF_DEVICE_PHOTO_ASPECT_RATIO_SET = 'devicePhotoAspectRatioSet',
   PREF_DEVICE_PHOTO_RESOLUTION_EXPERT = 'devicePhotoResolutionExpert',
@@ -492,6 +491,7 @@ export enum LocalStorageKey {
   SAVE_METADATA = 'saveMetadata',
   SHOW_ALL_RESOLUTIONS = 'showAllResolutions',
   SHOW_METADATA = 'showMetadata',
+  TIME_LAPSE_DIALOG_SHOWN = 'timeLapseDialogShown',
   TOGGLE_MIC = 'toggleMic',
 }
 

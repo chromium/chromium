@@ -6,7 +6,7 @@ found in the LICENSE file.
 -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
-  <style name="SplashTheme" parent="@android:style/Theme.Holo">
+  <style name="SplashTheme" parent="@android:style/Theme.Holo.Light">
     <item name="android:windowActionBar">false</item>
     <item name="android:windowNoTitle">true</item>
     <item name="android:windowBackground">@color/background_color_non_empty</item>

@@ -9,10 +9,11 @@
 
 #include "base/component_export.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
+#include "ui/accessibility/platform/sequence_affine_com_object_root_win.h"
 
 namespace ui {
 class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeTextChildProviderWin
-    : public CComObjectRootEx<CComMultiThreadModel>,
+    : public SequenceAffineComObjectRoot,
       public ITextChildProvider {
  public:
   BEGIN_COM_MAP(AXPlatformNodeTextChildProviderWin)

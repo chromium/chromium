@@ -29,6 +29,7 @@
 #include "components/bookmarks/browser/bookmark_node_data.h"
 #include "components/bookmarks/browser/bookmark_storage.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
+#include "components/bookmarks/browser/bookmark_uuids.h"
 #include "components/bookmarks/browser/model_loader.h"
 #include "components/bookmarks/browser/scoped_group_bookmark_actions.h"
 #include "components/bookmarks/browser/titled_url_index.h"
@@ -123,13 +124,13 @@ void DeleteAccountStorageFileSynchronously(
 // BookmarkModel --------------------------------------------------------------
 
 BookmarkModel::BookmarkModel(std::unique_ptr<BookmarkClient> client)
-    : client_(std::move(client)),
-      owned_root_(std::make_unique<BookmarkNode>(
+    : owned_root_(std::make_unique<BookmarkNode>(
           /*id=*/0,
-          base::Uuid::ParseLowercase(BookmarkNode::kRootNodeUuid),
+          base::Uuid::ParseLowercase(kRootNodeUuid),
           GURL())),
       root_(owned_root_.get()),
-      observers_(base::ObserverListPolicy::EXISTING_ONLY) {
+      observers_(base::ObserverListPolicy::EXISTING_ONLY),
+      client_(std::move(client)) {
   DCHECK(client_);
   client_->Init(this);
 }
@@ -146,6 +147,14 @@ BookmarkModel::~BookmarkModel() {
     // so that it doesn't try and invoke a method back on us again.
     store_->BookmarkModelDeleted();
   }
+
+  // `TitledUrlIndex` owns  a `TypedCountSorter` that keeps a raw_ptr to the
+  // client. So titled_url_index_ must be reset first.
+  titled_url_index_.reset();
+
+  // ChromeBookmarkClient indirectly observes the model. The client should thus
+  // be reset before the observer list.
+  client_.reset();
 }
 
 void BookmarkModel::Load(const base::FilePath& profile_path,
@@ -252,7 +261,7 @@ void BookmarkModel::Remove(const BookmarkNode* node,
   metrics::RecordBookmarkRemoved(source);
 }
 
-void BookmarkModel::MoveToOtherModelWithNewNodeIdsAndUuids(
+const BookmarkNode* BookmarkModel::MoveToOtherModelWithNewNodeIdsAndUuids(
     const BookmarkNode* node,
     BookmarkModel* dest_model,
     const BookmarkNode* dest_parent) {
@@ -317,6 +326,7 @@ void BookmarkModel::MoveToOtherModelWithNewNodeIdsAndUuids(
   client_->OnBookmarkNodeRemovedUndoable(this, parent, index.value(),
                                          std::move(owned_node));
   // TODO(https://crbug.com/1416567): Record metrics.
+  return added_node;
 }
 
 std::unique_ptr<BookmarkNode>
@@ -449,7 +459,8 @@ void BookmarkModel::UpdateLastUsedTime(const BookmarkNode* node,
   base::Time last_used_time = node->date_last_used();
   UpdateLastUsedTimeImpl(node, time);
   if (just_opened) {
-    metrics::RecordBookmarkOpened(time, last_used_time, node->date_added());
+    metrics::RecordBookmarkOpened(time, last_used_time, node->date_added(),
+                                  client_->GetStorageStateForUma());
   }
 }
 
@@ -897,6 +908,8 @@ const BookmarkNode* BookmarkModel::AddURL(
     absl::optional<base::Time> creation_time,
     absl::optional<base::Uuid> uuid,
     bool added_by_user) {
+  // TODO(b/294100289): We should ensure that the specified UUID does not
+  //                    conflict with a reserved folder ID.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(loaded_);
   DCHECK(url.is_valid());
@@ -1036,8 +1049,6 @@ void BookmarkModel::ClearStore() {
 // static
 void BookmarkModel::WipeAccountStorageForRollback(
     const base::FilePath& profile_path) {
-  CHECK(
-      !base::FeatureList::IsEnabled(bookmarks::kEnableBookmarksAccountStorage));
   CHECK(base::FeatureList::IsEnabled(
       bookmarks::kRollbackBookmarksAccountStorage));
 

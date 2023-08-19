@@ -5,11 +5,10 @@
 const DB = 'db';
 const STORE = 'store';
 const DATA = 'blob value';
-run();
 
 function run() {
   Object.assign(indexedDB.open(DB), {
-    unexpectedErrorCallback,
+    onerror: unexpectedErrorCallback,
     onupgradeneeded(e) {
       debug("Created object store.");
       e.target.result.createObjectStore(STORE, {
@@ -26,7 +25,7 @@ function run() {
           id: 'foo',
           blob: new Blob([DATA]),
         });
-      op.onerror = onerror;
+      op.onerror = unexpectedErrorCallback;
       op.onsuccess = () => {
         debug("Wrote blob.");
         idb.close();
@@ -39,14 +38,14 @@ function run() {
 function verify(e) {
   debug("Reading blob.");
   Object.assign(indexedDB.open(DB), {
-    onerror,
+    onerror: unexpectedErrorCallback,
     onsuccess(e) {
       const idb = /** @type IDBDatabase */ e.target.result;
       const op = idb
         .transaction(STORE, 'readonly')
         .objectStore(STORE)
         .get('foo');
-      op.onerror = onerror;
+      op.onerror = unexpectedErrorCallback;
       op.onsuccess = async e => {
         debug("Got blob.");
         idb.close();

@@ -25,9 +25,9 @@ class PrefetchCanaryChecker;
 // http://crbug.com/1109992 for more details.
 class CONTENT_EXPORT PrefetchOriginProber {
  public:
-  explicit PrefetchOriginProber(BrowserContext* browser_context,
-                                const GURL& dns_canary_check_url,
-                                const GURL& tls_canary_check_url);
+  PrefetchOriginProber(BrowserContext* browser_context,
+                       const GURL& dns_canary_check_url,
+                       const GURL& tls_canary_check_url);
   virtual ~PrefetchOriginProber();
 
   PrefetchOriginProber(const PrefetchOriginProber&) = delete;
@@ -72,7 +72,7 @@ class CONTENT_EXPORT PrefetchOriginProber {
                                     const net::AddressList& addresses);
 
   // The current browser context, not owned.
-  raw_ptr<BrowserContext, DanglingUntriaged> browser_context_;
+  raw_ptr<BrowserContext, AcrossTasksDanglingUntriaged> browser_context_;
 
   // The TLS canary url checker.
   std::unique_ptr<PrefetchCanaryChecker> tls_canary_checker_;

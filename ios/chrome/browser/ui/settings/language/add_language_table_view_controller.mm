@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/language/add_language_table_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_item+Controller.h"
@@ -19,10 +19,6 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -134,7 +130,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  LanguageItem* languageItem = base::mac::ObjCCastStrict<LanguageItem>(
+  LanguageItem* languageItem = base::apple::ObjCCastStrict<LanguageItem>(
       [self.tableViewModel itemAtIndexPath:indexPath]);
 
   [self.delegate addLanguageTableViewController:self

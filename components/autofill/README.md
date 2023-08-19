@@ -162,33 +162,52 @@ may sacrifice a little bit of correctness in favor of simplicity.
 * Browser:
   * `ContentAutofillDriver`
     * One instance per `RenderFrameHost` (frame), owned by
-      `ContentAutofillDriverFactory`
+      `ContentAutofillDriverFactory`.
     * Responsibilities:
       * Facilitates communication between the browser and the renderer logic.
     * Implements interfaces `AutofillDriver` and `mojom::AutofillDriver`
     * Has sibling `AutofillDriverIOS` for iOS
   * `ContentAutofillDriverFactory`
-    * One instance per `WebContents` (tab)
+    * One instance per `WebContents` (tab).
     * Responsibilities:
       * Manages life-cycle of `ContentAutofillDriver` and ensures that there is
         one Driver instance per renderer frame.
     * Has sibling `AutofillDriverIOSFactory` for iOS
+  * `ContentAutofillRouter`
+    * One instance per `WebContents` (tab).
+    * Responsibilities:
+      * Flattens frame-transcending forms into a single `FormData`.
+      * Routes events between the unflattened forms' drivers and the flattened
+        form's driver.
   * `AutofillManager` and `BrowserAutofillManager`
-    * One instance per `RenderFrameHost` (frame), owned by
-      `AutofillDriver`.
+    * One instance per `RenderFrameHost` (frame), owned by `AutofillDriver`.
     * Responsibilities:
       * Main orchestrator for Autofill logic.
     * `BrowserAutofillManager` extends the `AutofillManager` base class.
     * `BrowserAutofillManager` has sibling `AndroidAutofillManager` which is
       responsible for Android Autofill for WebViews.
   * `ChromeAutofillClient`
-    * One instance per `WebContents` (tab)
+    * One instance per `WebContents` (tab).
     * Responsibilities:
       * Serves as bridge from platform aganostic `BrowserAutofillManager` to the
         OS specific logic.
     * Implements `AutofillClient` interface.
     * Has siblings `AwAutofillClient`, `ChromeAutofillClientIOS` and
       `WebViewAutofillClientIOS`.
+  * `PersonalDataManager`
+    * One instance per `BrowserContext` (Chrome profile). In incognito mode, the
+      original profile's instance is used. This enables filling even in
+      incognito mode. Imports are disabled in incognito mode by the
+      `BrowserAutofillManager`.
+    * Responsibilities:
+      * Reading/writing/updating AutofillProfiles and payment information from
+        `AutofillTable` - an SQLite database used to persist data across browser
+        shutdown.
+      * Keeps a copy of `AutofillTable`'s data in memory, making them available
+        to the rest of Autofill.
+      * Modifications triggered through the `PersonalDataManager` generally
+        happen asynchronously. For details, see
+        [go/pdm-autofill-table-interface](http://go/pdm-autofill-table-interface).
 
 ## What's the difference between Autofill and Autocomplete?
 
@@ -220,6 +239,7 @@ may sacrifice a little bit of correctness in favor of simplicity.
       * Other Autofill metadata
 
 ## How are forms and fields identified?
+
 * Per page load, in particular for distinguishing DOM elements:
   * `FormGlobalId` is a pair of a `LocalFrameToken` and a `FormRendererId`,
      which uniquely identify the frame and the form element in that frame.
@@ -233,6 +253,7 @@ may sacrifice a little bit of correctness in favor of simplicity.
     password, tel, ...)
 
 ## How are field classified?
+
 * Local heuristics
   * See `components/autofill/core/browser/form_parsing/`.
   * `FormField::ParseFormFields` is the global entry point for parsing fields
@@ -254,6 +275,19 @@ may sacrifice a little bit of correctness in favor of simplicity.
     the server can handle small forms differently, see
     [`http://cs/IsSmallForm%20file:autofill`](http://cs/IsSmallForm%20file:autofill).
   * Crowd sourcing trumps local heuristics.
+  * For testing purposes, crowd sourcing can be overridden manually by command
+    line parameter:
+    ```
+    chrome --enable-features=AutofillOverridePredictions:spec/1_2_4-7_8_9
+    ```
+
+    This creates two manual overrides that supersede server predictions as
+    follows:
+    * The server prediction for the field with signature 2 in the form with
+      signature 1 is overridden to be 4 (`NAME_MIDDLE`).
+    * The server prediction for the field with signature 8 in the form with
+      signature 7 is overridden to be 9 (`EMAIL_ADDRESS`).
+    For more detail, see the documentation of [`ServerPredictionOverrides`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/server_prediction_overrides.h).
 * Autocomplete attribute
   * The autocomplete attribute is parsed in `ParseAutocompleteAttribute`.
   * The autocomplete attribute trumps local heuristics and crowd sourcing
@@ -264,7 +298,46 @@ may sacrifice a little bit of correctness in favor of simplicity.
     combinations that don't make sense (street-address followed by
     address-line1).
 
+Predicted types are represented as [ServerFieldTypes](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/field_types.h;l=125;drc=bce2963801691db93bc7f05b5d320cef32effa24)
+and types derived from the autocomplete attribute are represented as [HtmlFieldTypes](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/common/mojom/autofill_types.mojom;l=24;drc=f330bdbafa2714f8a6431a9dee412fdb38d5adbe).
+
+## What about forms in iframes?
+
+* A form can contain iframes, which in turn can contain forms themselves.
+  Such a tree of forms (and frames) is called a *frame-transcending form*.
+* Autofill treats every frame-transcending form like a single, ordinary form:
+  [docs/security/autofill-across-iframes.md](https://source.chromium.org/chromium/chromium/src/+/main:docs/security/autofill-across-iframes.md)
+* [`ContentAutofillRouter`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/content/browser/content_autofill_router.h)
+  flattens each tree of forms by merging the fields of the `FormData` nodes
+  into the root `FormData`, and routes events between the nodes' drivers to the
+  root's driver and vice versa.
+* We refer to the form nodes as *renderer forms* and to the flattened form as
+  *browser form*. `AutofillAgent` only sees renderer forms, `AutofillManager`
+  only sees browser forms.
+
+## Field type terminology
+
+Several important subsets of ServerFieldTypes exist:
+* Supported types of a [form group](https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:components/autofill/core/browser/data_model/form_group.h):
+  Every form group defines which ServerFieldTypes it maintains. For example:
+  * The supported type of [EmailInfo](https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:components/autofill/core/browser/data_model/contact_info.h;l=87;drc=10009f6ff9f3b626979c9422321686f360df7cee) is [EMAIL_ADDRESS](https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:components/autofill/core/browser/data_model/contact_info.cc;l=184;drc=59b1cf76cc21ae34bc99073e963f7d268b0a5c17).
+  * The supported types of AutofillProfile are all name, address, phone number, etc. types.
+* Stored types of AutofillProfile: The set of types stored in AutofillTable, defined by [AutofillTable::GetStoredTypesForAutofillProfile()](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/webdata/autofill_table.h;l=565;drc=d9e2cfc408da9805b9e711c33081eabe2fca299b).
+  * Conceptually, the stored types are a subset of the supported types of AutofillProfile. In practice,
+    this is not always true, since types might not be fully implemented yet and are still behind feature flags.
+    An example of a stored type that is not supported by AutofillProfile is NAME_HONORIFIC_PREFIX.
+  * Not all supported types of AutofillProfile are stored, since types following a standard format can unambiguously be derived from
+    another type. See derived types below.
+  * Since parsing and formatting are not necessarily inverse operations, most supported types of AutofillProfile are stored.
+* Derived types of AutofillProfile: The relative complement of stored types in the supported types of AutofillProfile. Every derived type is derived directly from a stored type. The set of derived types and their corresponding stored types are listed [here](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/profile_token_quality.cc;l=32-62;drc=c50f718fc17e5a616359370bb4bbe9e702934aa1).
+* Setting-visible types of AutofillProfiles: The types shown in the "Addresses and more" settings UI. They correspond to the top-level types of the hierarchy: NAME_FULL, ADDRESS_HOME_COUNTRY, etc.
+
+## How to introduce new field types?
+
+See [go/autofill-new-fieldtypes-in-data-model-dd](http://go/autofill-new-fieldtypes-in-data-model-dd).
+
 ## How is data represented internally?
+
 * See `components/autofill/core/browser/data_model/`
   * For addresses, see
     `components/autofill/core/browser/data_model/autofill_structured_address.h`
@@ -290,10 +363,12 @@ may sacrifice a little bit of correctness in favor of simplicity.
     much data, it is discarded via `AddressComponent::WipeInvalidStructure()`.
 
 ## Where is Autofill data persisted?
+
 * See
   [`../../components/autofill/core/browser/webdata/autofill_table.h`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/webdata/autofill_table.h)
 
 ## What is a form submission?
+
 The following situations are considered form submissions by Autofill and end up
 at `AutofillManager::OnFormSubmitted()` with a submission source and an
 assessment whether the form submission should be considered successful (meaning
@@ -328,6 +403,7 @@ succeeded):
   * Triggers `SubmissionSource::FRAME_DETACHED` with `known_success=true`.
 
 ## When are votes uploaded?
+
 Autofill votes are theoretically uploaded
 * when a **form is submitted**
   (`BrowserAutofillManager::OnFormSubmittedImpl()`).

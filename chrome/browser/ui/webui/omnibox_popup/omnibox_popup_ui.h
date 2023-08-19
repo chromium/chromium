@@ -15,6 +15,7 @@
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom-forward.h"
 #include "ui/webui/resources/js/metrics_reporter/metrics_reporter.mojom-forward.h"
 
+class OmniboxController;
 class Profile;
 class RealboxHandler;
 
@@ -25,6 +26,11 @@ class ColorChangeHandler;
 // The Web UI controller for the chrome://omnibox-popup.top-chrome.
 class OmniboxPopupUI : public ui::MojoWebUIController {
  public:
+  // Called in advance of navigation for the webui omnibox popup,
+  // this lets the next instance of the webui handler connect with the
+  // `OmniboxController` instance owned by the `OmniboxView`.
+  static void SetOmniboxController(OmniboxController* omnibox_controller);
+
   explicit OmniboxPopupUI(content::WebUI* web_ui);
   OmniboxPopupUI(const OmniboxPopupUI&) = delete;
   OmniboxPopupUI& operator=(const OmniboxPopupUI&) = delete;
@@ -44,10 +50,10 @@ class OmniboxPopupUI : public ui::MojoWebUIController {
       mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
           pending_receiver);
 
-  RealboxHandler* webui_handler() { return webui_handler_.get(); }
+  RealboxHandler* handler() { return handler_.get(); }
 
  private:
-  std::unique_ptr<RealboxHandler> webui_handler_;
+  std::unique_ptr<RealboxHandler> handler_;
   std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
   raw_ptr<Profile> profile_;
   MetricsReporter metrics_reporter_;

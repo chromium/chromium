@@ -82,5 +82,13 @@ bool IsHdcpKeyProvisioningRequired() {
   return base::FeatureList::IsEnabled(kRequireHdcpKeyProvisioning);
 }
 
+BASE_FEATURE(kPanelSelfRefresh2,
+             "PanelSelfRefresh2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsPanelSelfRefresh2Enabled() {
+  return base::FeatureList::IsEnabled(kPanelSelfRefresh2);
+}
+
 }  // namespace features
 }  // namespace display

@@ -112,6 +112,7 @@ class MultilineExample::RenderTextView : public View {
 
     render_text_->SetText(new_contents);
     render_text_->SetStyle(gfx::TEXT_STYLE_UNDERLINE, false);
+    render_text_->SetStyle(gfx::TEXT_STYLE_STRIKE, false);
     render_text_->ApplyStyle(gfx::TEXT_STYLE_ITALIC, true, italic_range);
     render_text_->ApplyWeight(gfx::Font::Weight::BOLD, bold_range);
     UpdateColors();

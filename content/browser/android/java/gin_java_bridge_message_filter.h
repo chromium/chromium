@@ -99,7 +99,7 @@ class GinJavaBridgeMessageFilter : public BrowserMessageFilter,
 
   // The `AgentSchedulingGroupHost` that this object is associated with. This
   // filter is installed on the host's channel.
-  const raw_ref<AgentSchedulingGroupHost, DanglingUntriaged>
+  const raw_ref<AgentSchedulingGroupHost, AcrossTasksDanglingUntriaged>
       agent_scheduling_group_;
 
   // The routing id of the RenderFrameHost whose request we are processing.

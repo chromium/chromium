@@ -158,8 +158,8 @@ class WebRtcBrowserTest : public WebRtcTestBase {
     HangUp(right_tab_);
   }
 
-  raw_ptr<content::WebContents, DanglingUntriaged> left_tab_;
-  raw_ptr<content::WebContents, DanglingUntriaged> right_tab_;
+  raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> left_tab_;
+  raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> right_tab_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebRtcBrowserTest,

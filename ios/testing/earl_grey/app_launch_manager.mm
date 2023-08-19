@@ -16,10 +16,6 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/third_party/edo/src/Service/Sources/EDOServiceException.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // Returns the list of extra app launch args from test command line args.
 NSArray<NSString*>* ExtraAppArgsFromTestSwitch() {
@@ -149,8 +145,6 @@ bool LaunchArgumentsAreEqual(NSArray<NSString*>* args1,
   }
 
   if (appIsRunning) {
-    [CoverageUtils writeClangCoverageProfile];
-
     if (gracefullyKill) {
       GREYAssertTrue([self backgroundApplication],
                      @"Failed to background application.");
@@ -268,6 +262,12 @@ bool LaunchArgumentsAreEqual(NSArray<NSString*>* args1,
     if (@available(iOS 14, *)) {
       [BaseEarlGreyTestCaseAppInterface enableFastAnimation];
     }
+
+#if !TARGET_IPHONE_SIMULATOR
+    if (@available(iOS 17, *)) {
+      [BaseEarlGreyTestCaseAppInterface swizzleKeyboardOOP];
+    }
+#endif
 
     // Wait for application to settle before continuing on with test.
     GREYWaitForAppToIdle(@"App failed to idle BEFORE test body started.\n\n"

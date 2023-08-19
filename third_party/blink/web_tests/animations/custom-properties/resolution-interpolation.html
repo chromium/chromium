@@ -23,7 +23,6 @@ assertInterpolation({
   from: neutralKeyframe,
   to: '20dppx',
 }, [
-  {at: -0.3, is: '7dppx'},
   {at: 0, is: '10dppx'},
   {at: 0.5, is: '15dppx'},
   {at: 1, is: '20dppx'},
@@ -35,7 +34,6 @@ assertInterpolation({
   from: 'initial',
   to: '20dppx',
 }, [
-  {at: -0.3, is: '46dppx'},
   {at: 0, is: '40dppx'},
   {at: 0.5, is: '30dppx'},
   {at: 1, is: '20dppx'},
@@ -47,7 +45,6 @@ assertInterpolation({
   from: 'inherit',
   to: '20dppx',
 }, [
-  {at: -0.3, is: '33dppx'},
   {at: 0, is: '30dppx'},
   {at: 0.5, is: '25dppx'},
   {at: 1, is: '20dppx'},
@@ -59,7 +56,6 @@ assertInterpolation({
   from: 'unset',
   to: '20dppx',
 }, [
-  {at: -0.3, is: '46dppx'},
   {at: 0, is: '40dppx'},
   {at: 0.5, is: '30dppx'},
   {at: 1, is: '20dppx'},
@@ -68,22 +64,9 @@ assertInterpolation({
 
 assertInterpolation({
   property: '--resolution',
-  from: '-10dppx',
-  to: '10dppx',
-}, [
-  {at: -0.3, is: '-16dppx'},
-  {at: 0, is: '-10dppx'},
-  {at: 0.5, is: '0dppx'},
-  {at: 1, is: '10dppx'},
-  {at: 1.5, is: '20dppx'},
-]);
-
-assertInterpolation({
-  property: '--resolution',
   from: '10dpi',
   to: '20dpcm',
 }, [
-  {at: -0.3, is: '-0.0233333dppx'},
   {at: 0, is: '0.104167dppx'},
   {at: 0.5, is: '0.316667dppx'},
   {at: 1, is: '0.529167dppx'},
@@ -95,7 +78,6 @@ assertInterpolation({
   from: '200dpi',
   to: '90dppx',
 }, [
-  {at: -0.3, is: '-24.2917dppx'},
   {at: 0, is: '2.08333dppx'},
   {at: 0.5, is: '46.0417dppx'},
   {at: 1, is: '90dppx'},

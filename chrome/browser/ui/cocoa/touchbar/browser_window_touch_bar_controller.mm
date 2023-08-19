@@ -16,10 +16,6 @@
 #include "content/public/browser/web_contents_observer.h"
 #import "ui/base/cocoa/touch_bar_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface BrowserWindowTouchBarController () {
   NSWindow* __weak _window;
 

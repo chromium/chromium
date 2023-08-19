@@ -9,10 +9,12 @@ import android.content.Context;
 import android.content.Intent;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.omnibox.suggestions.base.HistoryClustersProcessor.OpenHistoryClustersDelegate;
+import org.chromium.chrome.browser.omnibox.suggestions.history_clusters.HistoryClustersProcessor.OpenHistoryClustersDelegate;
+import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFragment;
@@ -33,12 +35,14 @@ public class OmniboxActionDelegateImpl implements OmniboxActionDelegate {
     private final @NonNull Runnable mOpenPasswordSettingsCb;
     private final @NonNull OpenHistoryClustersDelegate mOpenHistoryClustersForQueryCb;
     private final @NonNull Supplier<Tab> mTabSupplier;
+    private final @Nullable Runnable mOpenQuickDeleteCb;
 
     public OmniboxActionDelegateImpl(@NonNull Context context, @NonNull Supplier<Tab> tabSupplier,
             @NonNull SettingsLauncher settingsLauncher,
             @NonNull Consumer<String> openUrlInExistingTabElseNewTabCb,
             @NonNull Runnable openIncognitoTabCb, @NonNull Runnable openPasswordSettingsCb,
-            @NonNull OpenHistoryClustersDelegate openHistoryClustersForQueryCb) {
+            @NonNull OpenHistoryClustersDelegate openHistoryClustersForQueryCb,
+            @Nullable Runnable openQuickDeleteCb) {
         mContext = context;
         mTabSupplier = tabSupplier;
         mSettingsLauncher = settingsLauncher;
@@ -46,11 +50,21 @@ public class OmniboxActionDelegateImpl implements OmniboxActionDelegate {
         mOpenIncognitoTabCb = openIncognitoTabCb;
         mOpenPasswordSettingsCb = openPasswordSettingsCb;
         mOpenHistoryClustersForQueryCb = openHistoryClustersForQueryCb;
+        mOpenQuickDeleteCb = openQuickDeleteCb;
     }
 
     @Override
     public void openHistoryClustersPage(String query) {
         mOpenHistoryClustersForQueryCb.openHistoryClustersUi(query);
+    }
+
+    @Override
+    public void handleClearBrowsingData() {
+        if (QuickDeleteController.isQuickDeleteEnabled() && mOpenQuickDeleteCb != null) {
+            mOpenQuickDeleteCb.run();
+        } else {
+            openSettingsPage(SettingsFragment.CLEAR_BROWSING_DATA_ADVANCED_PAGE);
+        }
     }
 
     @Override
@@ -70,13 +84,14 @@ public class OmniboxActionDelegateImpl implements OmniboxActionDelegate {
 
     @Override
     public boolean isIncognito() {
-        return mTabSupplier.get().isIncognito();
+        var tab = mTabSupplier.get();
+        return (tab != null && tab.isIncognito());
     }
 
     @Override
     public void loadPageInCurrentTab(String url) {
         var tab = mTabSupplier.get();
-        if (tab.isUserInteractable()) {
+        if (tab != null && tab.isUserInteractable()) {
             tab.loadUrl(new LoadUrlParams(url));
         } else {
             mOpenUrlInExistingTabElseNewTabCb.accept(url);

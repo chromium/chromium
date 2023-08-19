@@ -35,7 +35,8 @@ class ASH_EXPORT AccelGryoSamplesObserver
       float scale,
       OnSampleUpdatedCallback on_sample_updated_callback,
       chromeos::sensors::mojom::DeviceType device_type =
-          chromeos::sensors::mojom::DeviceType::ACCEL);
+          chromeos::sensors::mojom::DeviceType::ACCEL,
+      float frequency = kReadFrequencyInHz);
   AccelGryoSamplesObserver(const AccelGryoSamplesObserver&) = delete;
   AccelGryoSamplesObserver& operator=(const AccelGryoSamplesObserver&) = delete;
   ~AccelGryoSamplesObserver() override;
@@ -56,8 +57,10 @@ class ASH_EXPORT AccelGryoSamplesObserver
       const std::vector<std::string>& iio_channel_ids);
   void StartReading();
 
-  // Update this sensor device's frequency to kReadFrequencyInHz if |enabled_|
-  // is true, and to 0 if |enabled_| is false.
+  // If |frequency_| is 0, updates this sensor device's frequency to
+  // kReadFrequencyInHz if |enabled_| is true, and to 0 if |enabled_| is false.
+  // If |frequency_| is not 0, updates this sensor device's frequency to
+  // frequency_ if |enabled_| is true, and to 0 if |enabled_| is false.
   void UpdateSensorDeviceFrequency();
 
   mojo::PendingRemote<chromeos::sensors::mojom::SensorDeviceSamplesObserver>
@@ -67,10 +70,14 @@ class ASH_EXPORT AccelGryoSamplesObserver
   void SetFrequencyCallback(bool enabled, double result_frequency);
   void SetChannelsEnabledCallback(const std::vector<int32_t>& failed_indices);
 
+  static constexpr double kReadFrequencyInHz = 10.0;
+
   int iio_device_id_;
   mojo::Remote<chromeos::sensors::mojom::SensorDevice> sensor_device_remote_;
 
   double scale_;
+
+  float frequency_;
 
   const chromeos::sensors::mojom::DeviceType device_type_;
 

@@ -28,6 +28,7 @@
 #include "cc/trees/clip_node.h"
 #include "cc/trees/effect_node.h"
 #include "cc/trees/layer_tree_impl.h"
+#include "cc/trees/proxy_impl.h"
 #include "cc/trees/scroll_node.h"
 #include "cc/trees/single_thread_proxy.h"
 #include "cc/trees/transform_node.h"
@@ -1611,16 +1612,10 @@ class LayerTreeHostScrollTestScrollNonDrawnLayer
     InputHandler::ScrollStatus status = impl->GetInputHandler().ScrollBegin(
         BeginState(gfx::Point(0, 0), gfx::Vector2dF(0, 1)).get(),
         ui::ScrollInputType::kTouchscreen);
-    if (base::FeatureList::IsEnabled(features::kScrollUnification)) {
-      EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
-      EXPECT_EQ(MainThreadScrollingReason::kNonFastScrollableRegion,
-                status.main_thread_hit_test_reasons);
-      impl->GetInputHandler().ScrollEnd();
-    } else {
-      EXPECT_EQ(ScrollThread::SCROLL_ON_MAIN_THREAD, status.thread);
-      EXPECT_EQ(MainThreadScrollingReason::kNonFastScrollableRegion,
-                status.main_thread_scrolling_reasons);
-    }
+    EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
+    EXPECT_EQ(MainThreadScrollingReason::kNonFastScrollableRegion,
+              status.main_thread_hit_test_reasons);
+    impl->GetInputHandler().ScrollEnd();
 
     status = impl->GetInputHandler().ScrollBegin(
         BeginState(gfx::Point(21, 21), gfx::Vector2dF(0, 1)).get(),
@@ -1650,7 +1645,7 @@ class LayerTreeHostScrollTestImplScrollUnderMainThreadScrollingParent
     LayerTreeHostScrollTest::SetupTree();
     GetScrollNode(layer_tree_host()->OuterViewportScrollLayerForTesting())
         ->main_thread_scrolling_reasons =
-        MainThreadScrollingReason::kThreadedScrollingDisabled;
+        MainThreadScrollingReason::kPreferNonCompositedScrolling;
 
     scroller_ = Layer::Create();
     scroller_->SetIsDrawable(true);
@@ -1687,20 +1682,9 @@ class LayerTreeHostScrollTestImplScrollUnderMainThreadScrollingParent
     {
       InputHandler::ScrollStatus status = impl->GetInputHandler().ScrollBegin(
           &scroll_state, ui::ScrollInputType::kTouchscreen);
-      if (base::FeatureList::IsEnabled(features::kScrollUnification)) {
-        EXPECT_EQ(impl->CurrentlyScrollingNode(), scroller_scroll_node);
-        EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-                  status.main_thread_hit_test_reasons);
-        ;
-      } else {
-        // Despite the fact that we hit the scroller, which has no main thread
-        // scrolling reason, we still must fallback to main thread scrolling due
-        // to the fact that it has a main thread scrolling ancestor.
-        EXPECT_EQ(impl->CurrentlyScrollingNode(), nullptr);
-        EXPECT_EQ(ScrollThread::SCROLL_ON_MAIN_THREAD, status.thread);
-        EXPECT_EQ(MainThreadScrollingReason::kThreadedScrollingDisabled,
-                  status.main_thread_scrolling_reasons);
-      }
+      EXPECT_EQ(impl->CurrentlyScrollingNode(), scroller_scroll_node);
+      EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
+                status.main_thread_hit_test_reasons);
       impl->GetInputHandler().ScrollEnd();
     }
 
@@ -1712,21 +1696,11 @@ class LayerTreeHostScrollTestImplScrollUnderMainThreadScrollingParent
 
       InputHandler::ScrollStatus status = impl->GetInputHandler().ScrollBegin(
           &scroll_state, ui::ScrollInputType::kTouchscreen);
-      if (base::FeatureList::IsEnabled(features::kScrollUnification)) {
-        EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
-        EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-                  status.main_thread_hit_test_reasons);
-        ;
-        EXPECT_EQ(impl->CurrentlyScrollingNode(),
-                  impl->OuterViewportScrollNode());
-      } else {
-        // Since the viewport has a main thread scrolling reason, this
-        // too should fallback to the main thread.
-        EXPECT_EQ(impl->CurrentlyScrollingNode(), nullptr);
-        EXPECT_EQ(ScrollThread::SCROLL_ON_MAIN_THREAD, status.thread);
-        EXPECT_EQ(MainThreadScrollingReason::kThreadedScrollingDisabled,
-                  status.main_thread_scrolling_reasons);
-      }
+      EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
+      EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
+                status.main_thread_hit_test_reasons);
+      EXPECT_EQ(impl->CurrentlyScrollingNode(),
+                impl->OuterViewportScrollNode());
       impl->GetInputHandler().ScrollEnd();
     }
 
@@ -2401,7 +2375,8 @@ class LayerTreeHostScrollTestElasticOverscroll
   // These values should be used on the impl thread only.
   int num_begin_main_frames_impl_thread_;
   MockInputHandlerClient input_handler_client_;
-  raw_ptr<ScrollElasticityHelper, DanglingUntriaged> scroll_elasticity_helper_;
+  raw_ptr<ScrollElasticityHelper, AcrossTasksDanglingUntriaged>
+      scroll_elasticity_helper_;
 
   // These values should be used on the main thread only.
   int num_begin_main_frames_main_thread_;
@@ -2658,14 +2633,8 @@ class LayerTreeHostScrollTestImplSideInvalidation
 
 MULTI_THREAD_TEST_F(LayerTreeHostScrollTestImplSideInvalidation);
 
-class LayerTreeHostScrollTestMainRepaint : public LayerTreeHostScrollTest {
+class LayerTreeHostRasterPriorityTest : public LayerTreeHostScrollTest {
  public:
-  LayerTreeHostScrollTestMainRepaint() {
-    scoped_feature_list.InitWithFeatures(
-        {features::kScrollUnification},
-        {features::kMainRepaintScrollPrefersNewContent});
-  }
-
   void SetupTree() override {
     LayerTreeHostScrollTest::SetupTree();
     GetViewportScrollNode()->main_thread_scrolling_reasons =
@@ -2683,15 +2652,17 @@ class LayerTreeHostScrollTestMainRepaint : public LayerTreeHostScrollTest {
   void DidActivateTreeOnThread(LayerTreeHostImpl* host_impl) override {
     int frame_number = host_impl->active_tree()->source_frame_number();
     InputHandler& input_handler = host_impl->GetInputHandler();
+    auto* proxy_impl =
+        static_cast<const ProxyImpl*>(host_impl->client_for_testing());
 
     if (frame_number == 0) {
       EXPECT_EQ(SAME_PRIORITY_FOR_BOTH_TREES, host_impl->GetTreePriority());
       DoScrollBeginAndUpdate(input_handler);
 
-      // In frame 0, scroll node has main_thread_scrolling_reasons. Do not
-      // prioritize smoothness, since we need to repaint on the main thread for
-      // the user to see the scroll.
-      EXPECT_EQ(ExpectedMainRepaintPriority(), host_impl->GetTreePriority());
+      // In frame 0, scroll node has main_thread_scrolling_reasons. Prioritize
+      // new content and not smoothness, since we need to repaint on the main
+      // thread for the user to see the scroll.
+      EXPECT_EQ(NEW_CONTENT_TAKES_PRIORITY, host_impl->GetTreePriority());
       input_handler.ScrollEnd();
       PostSetNeedsCommitToMainThread();
     }
@@ -2704,13 +2675,30 @@ class LayerTreeHostScrollTestMainRepaint : public LayerTreeHostScrollTest {
       // Prioritize smoothness.
       EXPECT_EQ(SMOOTHNESS_TAKES_PRIORITY, host_impl->GetTreePriority());
       input_handler.ScrollEnd();
-      EndTest();
+      PostSetNeedsCommitToMainThread();
     }
-  }
 
- protected:
-  virtual TreePriority ExpectedMainRepaintPriority() {
-    return SAME_PRIORITY_FOR_BOTH_TREES;
+    if (frame_number == 2) {
+      // We should stay in smoothness mode for another 250ms.
+      EXPECT_EQ(SMOOTHNESS_TAKES_PRIORITY, host_impl->GetTreePriority());
+      PostSetNeedsCommitToMainThread();
+    }
+
+    if (frame_number > 2) {
+      if (proxy_impl->SmoothnessPriorityExpirationNotifierForTesting()
+              .HasPendingNotification()) {
+        EXPECT_EQ(SMOOTHNESS_TAKES_PRIORITY, host_impl->GetTreePriority());
+        MainThreadTaskRunner()->PostDelayedTask(
+            FROM_HERE,
+            base::BindOnce(&LayerTreeTest::PostSetNeedsCommitToMainThread,
+                           base::Unretained(this)),
+            base::Milliseconds(50));
+      } else {
+        // Once the notifier fires, we should return to the default.
+        EXPECT_EQ(SAME_PRIORITY_FOR_BOTH_TREES, host_impl->GetTreePriority());
+        EndTest();
+      }
+    }
   }
 
  private:
@@ -2728,30 +2716,9 @@ class LayerTreeHostScrollTestMainRepaint : public LayerTreeHostScrollTest {
     input_handler.ScrollUpdate(
         UpdateState(gfx::Point(), gfx::Vector2dF(0, 10)).get());
   }
-
-  base::test::ScopedFeatureList scoped_feature_list;
 };
 
-MULTI_THREAD_TEST_F(LayerTreeHostScrollTestMainRepaint);
-
-class LayerTreeHostScrollTestMainRepaintNewContent
-    : public LayerTreeHostScrollTestMainRepaint {
- public:
-  LayerTreeHostScrollTestMainRepaintNewContent() {
-    scoped_feature_list.InitAndEnableFeature(
-        features::kMainRepaintScrollPrefersNewContent);
-  }
-
- protected:
-  TreePriority ExpectedMainRepaintPriority() override {
-    return NEW_CONTENT_TAKES_PRIORITY;
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list;
-};
-
-MULTI_THREAD_TEST_F(LayerTreeHostScrollTestMainRepaintNewContent);
+MULTI_THREAD_TEST_F(LayerTreeHostRasterPriorityTest);
 
 class NonScrollingNonFastScrollableRegion : public LayerTreeHostScrollTest {
  public:
@@ -2817,21 +2784,12 @@ class NonScrollingNonFastScrollableRegion : public LayerTreeHostScrollTest {
       auto status = impl->GetInputHandler().ScrollBegin(
           BeginState(gfx::Point(20, 20), gfx::Vector2dF(0, 1)).get(),
           ui::ScrollInputType::kTouchscreen);
-      if (base::FeatureList::IsEnabled(features::kScrollUnification)) {
-        // Hitting a non fast region should request a hit test from the main
-        // thread.
-        EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
-        EXPECT_EQ(MainThreadScrollingReason::kNonFastScrollableRegion,
-                  status.main_thread_hit_test_reasons);
-        ;
-        impl->GetInputHandler().ScrollEnd();
-      } else {
-        // Prior to scroll unification, this forces scrolling to the main
-        // thread.
-        EXPECT_EQ(ScrollThread::SCROLL_ON_MAIN_THREAD, status.thread);
-        EXPECT_EQ(MainThreadScrollingReason::kNonFastScrollableRegion,
-                  status.main_thread_scrolling_reasons);
-      }
+      // Hitting a non fast region should request a hit test from the main
+      // thread.
+      EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
+      EXPECT_EQ(MainThreadScrollingReason::kNonFastScrollableRegion,
+                status.main_thread_hit_test_reasons);
+      impl->GetInputHandler().ScrollEnd();
     }
 
     // The top-right hit should hit the top layer but not the non-fast region
@@ -2840,16 +2798,9 @@ class NonScrollingNonFastScrollableRegion : public LayerTreeHostScrollTest {
       InputHandler::ScrollStatus status = impl->GetInputHandler().ScrollBegin(
           BeginState(gfx::Point(80, 20), gfx::Vector2dF(0, 1)).get(),
           ui::ScrollInputType::kTouchscreen);
-      if (base::FeatureList::IsEnabled(features::kScrollUnification)) {
-        EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
-        EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-                  status.main_thread_hit_test_reasons);
-        ;
-      } else {
-        EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
-        EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-                  status.main_thread_scrolling_reasons);
-      }
+      EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
+      EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
+                status.main_thread_hit_test_reasons);
       EXPECT_EQ(scroll_node, impl->CurrentlyScrollingNode());
       impl->GetInputHandler().ScrollEnd();
     }
@@ -2859,24 +2810,14 @@ class NonScrollingNonFastScrollableRegion : public LayerTreeHostScrollTest {
       InputHandler::ScrollStatus status = impl->GetInputHandler().ScrollBegin(
           BeginState(gfx::Point(80, 80), gfx::Vector2dF(0, 1)).get(),
           ui::ScrollInputType::kTouchscreen);
-      if (base::FeatureList::IsEnabled(features::kScrollUnification)) {
-        // Even though the point intersects a non-fast region, the first hit
-        // layer is scrollable from the compositor thread so no need to involve
-        // the main thread.
-        EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
-        EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-                  status.main_thread_hit_test_reasons);
-        ;
-        EXPECT_EQ(scroll_node, impl->CurrentlyScrollingNode());
-        impl->GetInputHandler().ScrollEnd();
-      } else {
-        // Though the middle layer is a composited scroller and is hit first, we
-        // cannot do a fast scroll because an ancestor on the scroll chain has
-        // hit a non-fast region.
-        EXPECT_EQ(ScrollThread::SCROLL_ON_MAIN_THREAD, status.thread);
-        EXPECT_EQ(MainThreadScrollingReason::kNonFastScrollableRegion,
-                  status.main_thread_scrolling_reasons);
-      }
+      // Even though the point intersects a non-fast region, the first hit
+      // layer is scrollable from the compositor thread so no need to involve
+      // the main thread.
+      EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
+      EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
+                status.main_thread_hit_test_reasons);
+      EXPECT_EQ(scroll_node, impl->CurrentlyScrollingNode());
+      impl->GetInputHandler().ScrollEnd();
     }
 
     EndTest();
@@ -2898,10 +2839,6 @@ SINGLE_THREAD_TEST_F(NonScrollingNonFastScrollableRegion);
 // from LayerTreeHostScrollTest since that enables LayerLists.
 class UnifiedScrollingRepaintOnScroll : public LayerTreeTest {
  public:
-  UnifiedScrollingRepaintOnScroll() {
-    scoped_feature_list.InitAndEnableFeature(features::kScrollUnification);
-  }
-
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
 
   void SetupTree() override {

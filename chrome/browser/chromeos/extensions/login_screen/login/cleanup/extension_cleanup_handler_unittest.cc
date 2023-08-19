@@ -130,18 +130,18 @@ class ExtensionCleanupHandlerUnittest : public testing::Test {
   }
 
   void SetupExemptList() {
-    base::Value::List exempt_list;
-    exempt_list.Append(kExemptExtensionId);
     mock_prefs_->SetManagedPref(
         prefs::kRestrictedManagedGuestSessionExtensionCleanupExemptList,
-        base::Value(std::move(exempt_list)));
+        base::Value::List().Append(kExemptExtensionId));
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  raw_ptr<sync_preferences::TestingPrefServiceSyncable, ExperimentalAsh>
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable,
+          DanglingUntriaged | ExperimentalAsh>
       mock_prefs_;
   TestingProfileManager mock_profile_manager_;
-  raw_ptr<FakeChromeUserManager, ExperimentalAsh> fake_user_manager_;
+  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      fake_user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   std::unique_ptr<ExtensionCleanupHandler> extension_cleanup_handler_;
   raw_ptr<MockExtensionService, ExperimentalAsh> extension_service_;

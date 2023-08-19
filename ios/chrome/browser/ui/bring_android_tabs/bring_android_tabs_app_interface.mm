@@ -4,143 +4,137 @@
 
 #import "ios/chrome/browser/ui/bring_android_tabs/bring_android_tabs_app_interface.h"
 
+#import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
 #import "components/sync_device_info/device_info.h"
 #import "ios/chrome/browser/synced_sessions/distant_session.h"
 #import "ios/chrome/browser/synced_sessions/distant_tab.h"
+#import "ios/chrome/browser/ui/bring_android_tabs/bring_android_tabs_test_session.h"
 #import "ios/chrome/test/app/sync_test_util.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
-// Website names and urls.
-const char kChromiumURL[] = "https://chromium.org/";
-const char kGoogleURL[] = "https://google.com/";
-const char kYouTubeURL[] = "https://youtube.com/";
-const char kBardURL[] = "https://bard.google.com/";
+void AddDistantTabWithTitleAndURLToSession(
+    const std::string& title,
+    const GURL& url,
+    synced_sessions::DistantSession& session) {
+  // Tab ID to monotonically increment for each new tab to avoid conflicts.
+  static int g_next_tab_id = 1;
+
+  auto tab = std::make_unique<synced_sessions::DistantTab>();
+  tab->session_tag = session.tag;
+  tab->tab_id = SessionID::FromSerializedValue(g_next_tab_id++);
+  tab->title = base::UTF8ToUTF16(title);
+  tab->virtual_url = url;
+  session.tabs.push_back(std::move(tab));
+}
+
+// Distant session lazy getter for `g_recent_session_android_phone`. The
+// `test_server` is needed for initialization purpose, but will be disregarded
+// if the property is already set.
+synced_sessions::DistantSession& GetRecentSessionFromAndroidPhone(
+    const GURL& test_server) {
+  static synced_sessions::DistantSession g_recent_session_android_phone;
+  if (g_recent_session_android_phone.tag.empty()) {
+    std::string sessionName("recent_session_from_android_phone");
+    g_recent_session_android_phone.tag = sessionName;
+    g_recent_session_android_phone.name = sessionName;
+    g_recent_session_android_phone.modified_time =
+        base::Time::Now() - base::Days(14) + base::Minutes(10);
+    g_recent_session_android_phone.form_factor =
+        syncer::DeviceInfo::FormFactor::kPhone;
+    AddDistantTabWithTitleAndURLToSession("ponies",
+                                          test_server.Resolve("/pony.html"),
+                                          g_recent_session_android_phone);
+    AddDistantTabWithTitleAndURLToSession(
+        "chromium logo", test_server.Resolve("/chromium_logo_page.html"),
+        g_recent_session_android_phone);
+  }
+  return g_recent_session_android_phone;
+}
+
+// Distant session lazy getter for `g_expired_session_android_phone`. The
+// `test_server` is needed for initialization purpose, but will be disregarded
+// if the property is already set.
+synced_sessions::DistantSession& GetExpiredSessionFromAndroidPhone(
+    const GURL& test_server) {
+  static synced_sessions::DistantSession g_expired_session_android_phone;
+  if (g_expired_session_android_phone.tag.empty()) {
+    std::string sessionName("expired_session_from_android_phone");
+    g_expired_session_android_phone.tag = sessionName;
+    g_expired_session_android_phone.name = sessionName;
+    g_expired_session_android_phone.modified_time =
+        base::Time::Now() - base::Days(14) - base::Minutes(10);
+    g_expired_session_android_phone.form_factor =
+        syncer::DeviceInfo::FormFactor::kPhone;
+    AddDistantTabWithTitleAndURLToSession(
+        "Full Screen", test_server.Resolve("/tall_page.html"),
+        g_expired_session_android_phone);
+  }
+  return g_expired_session_android_phone;
+}
+
+// Distant session lazy getter for `g_recent_session_desktop`. The `test_server`
+// is needed for initialization purpose, but will be disregarded if the property
+// is already set.
+synced_sessions::DistantSession& GetRecentSessionFromDesktop(
+    const GURL& test_server) {
+  static synced_sessions::DistantSession g_recent_session_desktop;
+  if (g_recent_session_desktop.tag.empty()) {
+    std::string sessionName = "recent_session_from_desktop";
+    g_recent_session_desktop.tag = sessionName;
+    g_recent_session_desktop.name = sessionName;
+    g_recent_session_desktop.modified_time =
+        base::Time::Now() - base::Days(14) + base::Minutes(10);
+    g_recent_session_desktop.form_factor =
+        syncer::DeviceInfo::FormFactor::kDesktop;
+    AddDistantTabWithTitleAndURLToSession(
+        "Test Request Desktop/Mobile Script",
+        test_server.Resolve("/user_agent_test_page.html"),
+        g_recent_session_desktop);
+  }
+  return g_recent_session_desktop;
+}
 
 }  // namespace
 
+#pragma mark - BringAndroidTabsAppInterface
+
 @implementation BringAndroidTabsAppInterface
 
-// Distant sessions to be injected to fake server. Instance variables to be set
-// lazily; please use the respective private getter (e.g.
-// [BringAndroidTabsAppInterface recentSessionFromAndroidPhone]) for access.
-static synced_sessions::DistantSession _recentSessionFromAndroidPhone;
-static synced_sessions::DistantSession _expiredSessionFromAndroidPhone;
-static synced_sessions::DistantSession _recentSessionFromDesktop;
-
-// Tab ID to monotonically increment for each new tab to avoid conflicts.
-static int _tabId = 1;
-
-+ (void)addSessionToFakeSyncServer:
-    (BringAndroidTabsAppInterfaceForeignSession)session {
-  switch (session) {
-    case BringAndroidTabsAppInterfaceForeignSession::kRecentFromAndroidPhone:
++ (void)addFakeSyncServerSession:(BringAndroidTabsTestSession)sessionType
+                  fromTestServer:(NSString*)testServerHost {
+  const GURL testServer = GURL(base::SysNSStringToUTF8(testServerHost));
+  switch (sessionType) {
+    case BringAndroidTabsTestSession::kRecentFromAndroidPhone:
       chrome_test_util::AddSessionToFakeSyncServer(
-          [BringAndroidTabsAppInterface recentSessionFromAndroidPhone]);
+          GetRecentSessionFromAndroidPhone(testServer));
       return;
-    case BringAndroidTabsAppInterfaceForeignSession::kExpiredFromAndroidPhone:
+    case BringAndroidTabsTestSession::kExpiredFromAndroidPhone:
       chrome_test_util::AddSessionToFakeSyncServer(
-          [BringAndroidTabsAppInterface expiredSessionFromAndroidPhone]);
+          GetExpiredSessionFromAndroidPhone(testServer));
       return;
-    case BringAndroidTabsAppInterfaceForeignSession::kRecentFromDesktop:
+    case BringAndroidTabsTestSession::kRecentFromDesktop:
       chrome_test_util::AddSessionToFakeSyncServer(
-          [BringAndroidTabsAppInterface recentSessionFromDesktop]);
+          GetRecentSessionFromDesktop(testServer));
       return;
   }
 }
 
-+ (int)tabsCountForSession:(BringAndroidTabsAppInterfaceForeignSession)session {
-  size_t count;
-  switch (session) {
-    case BringAndroidTabsAppInterfaceForeignSession::kRecentFromAndroidPhone:
-      count = [BringAndroidTabsAppInterface recentSessionFromAndroidPhone]
-                  .tabs.size();
-      break;
-    case BringAndroidTabsAppInterfaceForeignSession::kExpiredFromAndroidPhone:
-      count = [BringAndroidTabsAppInterface expiredSessionFromAndroidPhone]
-                  .tabs.size();
-      break;
-    case BringAndroidTabsAppInterfaceForeignSession::kRecentFromDesktop:
-      count =
-          [BringAndroidTabsAppInterface recentSessionFromDesktop].tabs.size();
-      break;
++ (int)tabsCountForPrompt {
+  const synced_sessions::DistantSession& session =
+      GetRecentSessionFromAndroidPhone(GURL());
+  size_t tabCount = session.tabs.size();
+
+  // If the URL of the session tab is empty, the session itself is created at
+  // the time of declaration, instead of before. That means it has not been
+  // added to the fake sync server, and should not be prompted.
+  if (tabCount < 1 || session.tabs[0]->virtual_url.is_empty()) {
+    return 0;
   }
-  return static_cast<int>(count);
-}
-
-#pragma mark - Private
-
-+ (synced_sessions::DistantSession&)recentSessionFromAndroidPhone {
-  if (_recentSessionFromAndroidPhone.tag.empty()) {
-    std::string sessionName("recent_session_from_android_phone");
-    _recentSessionFromAndroidPhone.tag = sessionName;
-    _recentSessionFromAndroidPhone.name = sessionName;
-    _recentSessionFromAndroidPhone.modified_time =
-        base::Time::Now() - base::Days(14) + base::Minutes(10);
-    _recentSessionFromAndroidPhone.form_factor =
-        syncer::DeviceInfo::FormFactor::kPhone;
-    [BringAndroidTabsAppInterface
-        addDistantTabWithTitle:"Home"
-                           URL:kChromiumURL
-                     toSession:_recentSessionFromAndroidPhone];
-    [BringAndroidTabsAppInterface
-        addDistantTabWithTitle:"Google"
-                           URL:kGoogleURL
-                     toSession:_recentSessionFromAndroidPhone];
-  }
-  return _recentSessionFromAndroidPhone;
-}
-
-+ (synced_sessions::DistantSession&)expiredSessionFromAndroidPhone {
-  if (_expiredSessionFromAndroidPhone.tag.empty()) {
-    std::string sessionName("expired_session_from_android_phone");
-    _expiredSessionFromAndroidPhone.tag = sessionName;
-    _expiredSessionFromAndroidPhone.name = sessionName;
-    _expiredSessionFromAndroidPhone.modified_time =
-        base::Time::Now() - base::Days(14) - base::Minutes(10);
-    _expiredSessionFromAndroidPhone.form_factor =
-        syncer::DeviceInfo::FormFactor::kPhone;
-    [BringAndroidTabsAppInterface
-        addDistantTabWithTitle:"YouTube"
-                           URL:kYouTubeURL
-                     toSession:_expiredSessionFromAndroidPhone];
-  }
-  return _expiredSessionFromAndroidPhone;
-}
-
-+ (synced_sessions::DistantSession&)recentSessionFromDesktop {
-  if (_recentSessionFromDesktop.tag.empty()) {
-    std::string sessionName = "recent_session_from_desktop";
-    _recentSessionFromDesktop.tag = sessionName;
-    _recentSessionFromDesktop.name = sessionName;
-    _recentSessionFromDesktop.modified_time =
-        base::Time::Now() - base::Days(14) + base::Minutes(10);
-    _recentSessionFromDesktop.form_factor =
-        syncer::DeviceInfo::FormFactor::kDesktop;
-    [BringAndroidTabsAppInterface
-        addDistantTabWithTitle:"Bard"
-                           URL:kBardURL
-                     toSession:_recentSessionFromDesktop];
-  }
-  return _recentSessionFromDesktop;
-}
-
-+ (void)addDistantTabWithTitle:(std::string)title
-                           URL:(std::string)url
-                     toSession:(synced_sessions::DistantSession&)session {
-  auto tab = std::make_unique<synced_sessions::DistantTab>();
-  tab->session_tag = session.tag;
-  tab->tab_id = SessionID::FromSerializedValue(_tabId++);
-  tab->title = base::UTF8ToUTF16(title);
-  tab->virtual_url = GURL(url);
-  session.tabs.push_back(std::move(tab));
+  return static_cast<int>(tabCount);
 }
 
 @end

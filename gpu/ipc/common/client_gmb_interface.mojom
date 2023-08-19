@@ -1,0 +1,35 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module gpu.mojom;
+
+import "ui/gfx/mojom/buffer_types.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "gpu/ipc/common/surface_handle.mojom";
+import "mojo/public/mojom/base/shared_memory.mojom";
+
+// Interface used by clients in the renderer process to create
+// GpuMemoryBuffers. This interface is only enabled and used when the feature
+// UseClientGmbInterface is enabled.
+interface ClientGmbInterface {
+
+  // Create a new GMB and return the GMB handle.
+  CreateGpuMemoryBuffer(gfx.mojom.GpuMemoryBufferId id,
+                        gfx.mojom.Size size,
+                        gfx.mojom.BufferFormat format,
+                        gfx.mojom.BufferUsage usage,
+                        gpu.mojom.SurfaceHandle surface_handle)
+      => (gfx.mojom.GpuMemoryBufferHandle buffer_handle);
+
+  // Destroys the GMB.
+  DestroyGpuMemoryBuffer(gfx.mojom.GpuMemoryBufferId id);
+
+  // Copies GMB pixel data to |shared_memory|.
+  // Returns |true| if the copy has succeeded.
+  CopyGpuMemoryBuffer(gfx.mojom.GpuMemoryBufferHandle buffer_handle,
+                     mojo_base.mojom.UnsafeSharedMemoryRegion shared_memory)
+                     => (bool success);
+
+};
+

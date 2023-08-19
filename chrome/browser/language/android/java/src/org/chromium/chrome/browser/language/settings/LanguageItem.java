@@ -92,16 +92,19 @@ public class LanguageItem {
             return false;
         }
 
-        // Currently the only two country variants that are translateable are zh-CN and zh-TW.
-        if (TextUtils.equals(mCode, "zh-CN") || TextUtils.equals(mCode, "zh-TW")) {
-            return true;
+        switch (mCode) {
+            case "zh-CN":
+            case "zh-TW":
+            case "mni-Mtei":
+                // Cases with a variant that support translate
+                return true;
+            case "nb":
+                // Translate uses the macrolangauge code "no" instead of "nb".
+                return false;
+            default:
+                // If not a language with supported variants check that the code is a base language.
+                return !mCode.contains("-");
         }
-
-        // "no" is used by translate as the macrolanguage including "nb".
-        if (TextUtils.equals(mCode, "nb")) return false;
-
-        // If not a language with supported variants check that the code is a base language.
-        return !mCode.contains("-");
     }
 
     /**

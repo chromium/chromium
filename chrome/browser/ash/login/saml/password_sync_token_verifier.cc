@@ -14,7 +14,6 @@
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
-#include "content/public/browser/storage_partition.h"
 
 namespace ash {
 namespace {

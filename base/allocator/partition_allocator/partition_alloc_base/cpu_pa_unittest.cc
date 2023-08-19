@@ -13,7 +13,7 @@ namespace partition_alloc {
 // MMX, SSE, etc.) supported by the CPU and sees we can run them without
 // "undefined instruction" exceptions. That is, this test succeeds when this
 // test finishes without a crash.
-TEST(CPU, RunExtendedInstructions) {
+TEST(CPUPA, RunExtendedInstructions) {
   // Retrieve the CPU information.
   internal::base::CPU cpu;
 #if defined(ARCH_CPU_X86_FAMILY)

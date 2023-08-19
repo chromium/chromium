@@ -1,0 +1,8 @@
+[document web]
+++[paragraph]
+++++[static] name='This '
+++++[section] details=[panel]
+++++++[static] name='text'
+++++[static] name=' has details'
+++[panel] details-for=[section]
+++++[static] name='Text details'

@@ -5,6 +5,7 @@
 #include "media/gpu/v4l2/v4l2_queue.h"
 
 #include <errno.h>
+#include <fcntl.h>
 #include <libdrm/drm_fourcc.h>
 #include <linux/media.h>
 #include <poll.h>
@@ -16,8 +17,6 @@
 #include "base/trace_event/trace_event.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
-#include "media/gpu/v4l2/v4l2_device.h"
-#include "media/gpu/v4l2/v4l2_utils.h"
 
 namespace media {
 
@@ -40,7 +39,7 @@ struct v4l2_format BuildV4L2Format(const enum v4l2_buf_type type,
   format.fmt.pix_mp.pixelformat = fourcc;
   format.fmt.pix_mp.width = size.width();
   format.fmt.pix_mp.height = size.height();
-  format.fmt.pix_mp.num_planes = V4L2Device::GetNumPlanesOfV4L2PixFmt(fourcc);
+  format.fmt.pix_mp.num_planes = GetNumPlanesOfV4L2PixFmt(fourcc);
   format.fmt.pix_mp.plane_fmt[0].sizeimage = buffer_size;
 
   return format;
@@ -59,14 +58,6 @@ const char* V4L2BufferTypeToString(const enum v4l2_buf_type buf_type) {
     default:
       return "UNKNOWN";
   }
-}
-
-int64_t V4L2BufferTimestampInMilliseconds(
-    const struct v4l2_buffer* v4l2_buffer) {
-  struct timespec ts;
-  TIMEVAL_TO_TIMESPEC(&v4l2_buffer->timestamp, &ts);
-
-  return base::TimeDelta::FromTimeSpec(ts).InMilliseconds();
 }
 
 // For decoding and encoding data to be processed is enqueued in the
@@ -92,21 +83,53 @@ void V4L2ProcessingTrace(const struct v4l2_buffer* v4l2_buffer, bool start) {
   TRACE_EVENT_INSTANT1(kTracingCategory, name, TRACE_EVENT_SCOPE_THREAD, "type",
                        v4l2_buffer->type);
 
-  const int64_t timestamp = V4L2BufferTimestampInMilliseconds(v4l2_buffer);
-  if (timestamp <= 0) {
+  const auto timestamp_ms =
+      TimeValToTimeDelta(v4l2_buffer->timestamp).InMilliseconds();
+  if (timestamp_ms <= 0) {
     return;
   }
 
   if (start && v4l2_buffer->type == V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE) {
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(kTracingCategory, kVideoDecoding,
-                                      TRACE_ID_LOCAL(timestamp), "timestamp",
-                                      timestamp);
+                                      TRACE_ID_LOCAL(timestamp_ms), "timestamp",
+                                      timestamp_ms);
   } else if (!start &&
              v4l2_buffer->type == V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE) {
     TRACE_EVENT_NESTABLE_ASYNC_END1(kTracingCategory, kVideoDecoding,
-                                    TRACE_ID_LOCAL(timestamp), "timestamp",
-                                    timestamp);
+                                    TRACE_ID_LOCAL(timestamp_ms), "timestamp",
+                                    timestamp_ms);
   }
+}
+
+// Returns a vector of dmabuf file descriptors, exported for V4L2 buffer with
+// |index|, assuming the buffer contains |num_planes| V4L2 planes and is of
+// |buf_type|. Returns an empty vector on failure. The caller is responsible for
+// closing the file descriptors after use.
+std::vector<base::ScopedFD> GetDmabufsForV4L2Buffer(
+    const IoctlAsCallback& ioctl_cb,
+    int index,
+    size_t num_planes,
+    enum v4l2_buf_type buf_type) {
+  DVLOGF(3);
+  DCHECK(V4L2_TYPE_IS_MULTIPLANAR(buf_type));
+
+  std::vector<base::ScopedFD> dmabuf_fds;
+  for (size_t i = 0; i < num_planes; ++i) {
+    struct v4l2_exportbuffer expbuf;
+    memset(&expbuf, 0, sizeof(expbuf));
+    expbuf.type = buf_type;
+    expbuf.index = index;
+    expbuf.plane = i;
+    expbuf.flags = O_CLOEXEC;
+    if (ioctl_cb.Run(VIDIOC_EXPBUF, &expbuf) != 0) {
+      dmabuf_fds.clear();
+      break;
+    }
+
+    dmabuf_fds.push_back(base::ScopedFD(expbuf.fd));
+  }
+
+  return dmabuf_fds;
 }
 
 }  // namespace
@@ -128,7 +151,8 @@ V4L2ExtCtrl::V4L2ExtCtrl(uint32_t id, int32_t val) : V4L2ExtCtrl(id) {
 // Also provides helper functions.
 class V4L2Buffer {
  public:
-  static std::unique_ptr<V4L2Buffer> Create(scoped_refptr<V4L2Device> device,
+  static std::unique_ptr<V4L2Buffer> Create(const IoctlAsCallback& ioctl_cb,
+                                            const MmapAsCallback& mmap_cb,
                                             enum v4l2_buf_type type,
                                             enum v4l2_memory memory,
                                             const struct v4l2_format& format,
@@ -145,7 +169,8 @@ class V4L2Buffer {
   scoped_refptr<VideoFrame> GetVideoFrame();
 
  private:
-  V4L2Buffer(scoped_refptr<V4L2Device> device,
+  V4L2Buffer(const IoctlAsCallback& ioctl_cb,
+             const MmapAsCallback& mmap_cb,
              enum v4l2_buf_type type,
              enum v4l2_memory memory,
              const struct v4l2_format& format,
@@ -153,7 +178,8 @@ class V4L2Buffer {
   bool Query();
   scoped_refptr<VideoFrame> CreateVideoFrame();
 
-  scoped_refptr<V4L2Device> device_;
+  const IoctlAsCallback ioctl_cb_;
+  const MmapAsCallback mmap_cb_;
   std::vector<void*> plane_mappings_;
 
   // V4L2 data as queried by QUERYBUF.
@@ -167,28 +193,27 @@ class V4L2Buffer {
   scoped_refptr<VideoFrame> video_frame_;
 };
 
-std::unique_ptr<V4L2Buffer> V4L2Buffer::Create(scoped_refptr<V4L2Device> device,
+std::unique_ptr<V4L2Buffer> V4L2Buffer::Create(const IoctlAsCallback& ioctl_cb,
+                                               const MmapAsCallback& mmap_cb,
                                                enum v4l2_buf_type type,
                                                enum v4l2_memory memory,
                                                const struct v4l2_format& format,
                                                size_t buffer_id) {
   // Not using std::make_unique because constructor is private.
-  std::unique_ptr<V4L2Buffer> buffer(
-      new V4L2Buffer(device, type, memory, format, buffer_id));
+  std::unique_ptr<V4L2Buffer> buffer(new V4L2Buffer(std::move(ioctl_cb),
+                                                    std::move(mmap_cb), type,
+                                                    memory, format, buffer_id));
 
-  if (!buffer->Query()) {
-    return nullptr;
-  }
-
-  return buffer;
+  return buffer->Query() ? std::move(buffer) : nullptr;
 }
 
-V4L2Buffer::V4L2Buffer(scoped_refptr<V4L2Device> device,
+V4L2Buffer::V4L2Buffer(const IoctlAsCallback& ioctl_cb,
+                       const MmapAsCallback& mmap_cb,
                        enum v4l2_buf_type type,
                        enum v4l2_memory memory,
                        const struct v4l2_format& format,
                        size_t buffer_id)
-    : device_(device), format_(format) {
+    : ioctl_cb_(ioctl_cb), mmap_cb_(mmap_cb), format_(format) {
   DCHECK(V4L2_TYPE_IS_MULTIPLANAR(type));
   DCHECK_LE(format.fmt.pix_mp.num_planes, std::size(v4l2_planes_));
 
@@ -209,14 +234,14 @@ V4L2Buffer::~V4L2Buffer() {
   if (v4l2_buffer_.memory == V4L2_MEMORY_MMAP) {
     for (size_t i = 0; i < plane_mappings_.size(); i++) {
       if (plane_mappings_[i] != nullptr) {
-        device_->Munmap(plane_mappings_[i], v4l2_buffer_.m.planes[i].length);
+        munmap(plane_mappings_[i], v4l2_buffer_.m.planes[i].length);
       }
     }
   }
 }
 
 bool V4L2Buffer::Query() {
-  int ret = device_->Ioctl(VIDIOC_QUERYBUF, &v4l2_buffer_);
+  int ret = ioctl_cb_.Run(VIDIOC_QUERYBUF, &v4l2_buffer_);
   if (ret) {
     VPLOGF(1) << "VIDIOC_QUERYBUF failed: ";
     return false;
@@ -245,9 +270,9 @@ void* V4L2Buffer::GetPlaneMapping(const size_t plane) {
     return nullptr;
   }
 
-  p = device_->Mmap(nullptr, v4l2_buffer_.m.planes[plane].length,
-                    PROT_READ | PROT_WRITE, MAP_SHARED,
-                    v4l2_buffer_.m.planes[plane].m.mem_offset);
+  p = mmap_cb_.Run(nullptr, v4l2_buffer_.m.planes[plane].length,
+                   PROT_READ | PROT_WRITE, MAP_SHARED,
+                   v4l2_buffer_.m.planes[plane].m.mem_offset);
   if (p == MAP_FAILED) {
     VPLOGF(1) << "mmap() failed: ";
     return nullptr;
@@ -266,14 +291,14 @@ size_t V4L2Buffer::GetMemoryUsage() const {
 }
 
 scoped_refptr<VideoFrame> V4L2Buffer::CreateVideoFrame() {
-  auto layout = V4L2Device::V4L2FormatToVideoFrameLayout(format_);
+  auto layout = V4L2FormatToVideoFrameLayout(format_);
   if (!layout) {
     VLOGF(1) << "Cannot create frame layout for V4L2 buffers";
     return nullptr;
   }
 
-  std::vector<base::ScopedFD> dmabuf_fds = device_->GetDmabufsForV4L2Buffer(
-      v4l2_buffer_.index, v4l2_buffer_.length,
+  std::vector<base::ScopedFD> dmabuf_fds = GetDmabufsForV4L2Buffer(
+      ioctl_cb_, v4l2_buffer_.index, v4l2_buffer_.length,
       static_cast<enum v4l2_buf_type>(v4l2_buffer_.type));
   if (dmabuf_fds.empty()) {
     VLOGF(1) << "Failed to get DMABUFs of V4L2 buffer";
@@ -889,6 +914,19 @@ bool V4L2ReadableBuffer::IsKeyframe() const {
   return buffer_data_->v4l2_buffer_.flags & V4L2_BUF_FLAG_KEYFRAME;
 }
 
+bool V4L2ReadableBuffer::IsError() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(buffer_data_);
+  // "The driver may also set V4L2_BUF_FLAG_ERROR in the flags field. It
+  //  indicates a non-critical (recoverable) streaming error. In such case the
+  //  application may continue as normal, but should be aware that data in the
+  //  dequeued buffer might be corrupted." IOW it is more a discard-this-buffer
+  //  marker than a fatal error indication, so it's down to the caller to take
+  //  action if needed/desired.
+  // https://www.kernel.org/doc/html/v5.15/userspace-api/media/v4l/vidioc-qbuf.html#description
+  return buffer_data_->v4l2_buffer_.flags & V4L2_BUF_FLAG_ERROR;
+}
+
 struct timeval V4L2ReadableBuffer::GetTimeStamp() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(buffer_data_);
@@ -949,50 +987,41 @@ size_t V4L2ReadableBuffer::BufferId() const {
 #define DVQLOGF(level) \
   DVLOGF(level) << "(" << V4L2BufferTypeToString(type_) << ") "
 
-V4L2Queue::V4L2Queue(scoped_refptr<V4L2Device> dev,
+V4L2Queue::V4L2Queue(const IoctlAsCallback& ioctl_cb,
+                     const base::RepeatingClosure& schedule_poll_cb,
+                     const MmapAsCallback& mmap_cb,
                      enum v4l2_buf_type type,
                      base::OnceClosure destroy_cb)
     : type_(type),
-      device_(dev),
+      ioctl_cb_(ioctl_cb),
+      schedule_poll_cb_(schedule_poll_cb),
+      mmap_cb_(mmap_cb),
       destroy_cb_(std::move(destroy_cb)),
       weak_this_factory_(this) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Check if this queue support requests.
-  struct v4l2_requestbuffers reqbufs;
-  memset(&reqbufs, 0, sizeof(reqbufs));
-  reqbufs.count = 0;
-  reqbufs.type = type;
-  reqbufs.memory = V4L2_MEMORY_MMAP;
-  if (device_->Ioctl(VIDIOC_REQBUFS, &reqbufs) != 0) {
-    VPLOGF(1) << "Request support checks's VIDIOC_REQBUFS ioctl failed.";
-    return;
-  }
+  struct v4l2_requestbuffers reqbufs = {
+      .count = 0, .type = type_, .memory = V4L2_MEMORY_MMAP};
+  supports_requests_ = (ioctl_cb_.Run(VIDIOC_REQBUFS, &reqbufs) == kIoctlOk) &&
+                       (reqbufs.capabilities & V4L2_BUF_CAP_SUPPORTS_REQUESTS);
 
-  if (reqbufs.capabilities & V4L2_BUF_CAP_SUPPORTS_REQUESTS) {
-    supports_requests_ = true;
-    DVLOGF(4) << "Queue supports request API.";
-  }
+  // Stateful backends for example do not support requests.
+  VPLOG_IF(4, supports_requests_)
+      << "This queue does " << (supports_requests_ ? "" : "not")
+      << " support requests.";
 }
 
 V4L2Queue::~V4L2Queue() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (is_streaming_) {
-    VQLOGF(1) << "Queue is still streaming, trying to stop it...";
-    if (!Streamoff()) {
-      VQLOGF(1) << "Failed to stop queue";
-    }
+  if (is_streaming_ && !Streamoff()) {
+    VQLOGF(1) << "Failed to stop queue";
   }
 
   DCHECK(queued_buffers_.empty());
-  DCHECK(!free_buffers_);
 
-  if (!buffers_.empty()) {
-    VQLOGF(1) << "Buffers are still allocated, trying to deallocate them...";
-    if (!DeallocateBuffers()) {
-      VQLOGF(1) << "Failed to deallocate queue buffers";
-    }
+  if (!buffers_.empty() && !DeallocateBuffers()) {
+    VQLOGF(1) << "Failed to deallocate queue buffers";
   }
 
   std::move(destroy_cb_).Run();
@@ -1001,8 +1030,9 @@ V4L2Queue::~V4L2Queue() {
 absl::optional<struct v4l2_format> V4L2Queue::SetFormat(uint32_t fourcc,
                                                         const gfx::Size& size,
                                                         size_t buffer_size) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   struct v4l2_format format = BuildV4L2Format(type_, fourcc, size, buffer_size);
-  if (device_->Ioctl(VIDIOC_S_FMT, &format) != 0 ||
+  if (ioctl_cb_.Run(VIDIOC_S_FMT, &format) != 0 ||
       format.fmt.pix_mp.pixelformat != fourcc) {
     VPQLOGF(2) << "Failed to set format fourcc: " << FourccToString(fourcc);
     return absl::nullopt;
@@ -1015,8 +1045,9 @@ absl::optional<struct v4l2_format> V4L2Queue::SetFormat(uint32_t fourcc,
 absl::optional<struct v4l2_format> V4L2Queue::TryFormat(uint32_t fourcc,
                                                         const gfx::Size& size,
                                                         size_t buffer_size) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   struct v4l2_format format = BuildV4L2Format(type_, fourcc, size, buffer_size);
-  if (device_->Ioctl(VIDIOC_TRY_FMT, &format) != 0 ||
+  if (ioctl_cb_.Run(VIDIOC_TRY_FMT, &format) != 0 ||
       format.fmt.pix_mp.pixelformat != fourcc) {
     VPQLOGF(2) << "Failed to try format fourcc: " << FourccToString(fourcc);
     return absl::nullopt;
@@ -1026,10 +1057,11 @@ absl::optional<struct v4l2_format> V4L2Queue::TryFormat(uint32_t fourcc,
 }
 
 std::pair<absl::optional<struct v4l2_format>, int> V4L2Queue::GetFormat() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   struct v4l2_format format;
   memset(&format, 0, sizeof(format));
   format.type = type_;
-  if (device_->Ioctl(VIDIOC_G_FMT, &format) != 0) {
+  if (ioctl_cb_.Run(VIDIOC_G_FMT, &format) != 0) {
     VPQLOGF(2) << "Failed to get format";
     return std::make_pair(absl::nullopt, errno);
   }
@@ -1038,45 +1070,15 @@ std::pair<absl::optional<struct v4l2_format>, int> V4L2Queue::GetFormat() {
 }
 
 absl::optional<gfx::Rect> V4L2Queue::GetVisibleRect() {
-  // Some drivers prior to 4.13 only accept the non-MPLANE variant when using
-  // VIDIOC_G_SELECTION. This block can be removed once we stop supporting
-  // kernels < 4.13.
-  // For details, see the note at
-  // https://www.kernel.org/doc/html/latest/media/uapi/v4l/vidioc-g-selection.html
-  enum v4l2_buf_type compose_type;
-  switch (type_) {
-    case V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE:
-      compose_type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-      break;
-    case V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE:
-      compose_type = V4L2_BUF_TYPE_VIDEO_OUTPUT;
-      break;
-    default:
-      compose_type = type_;
-      break;
-  }
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  struct v4l2_selection selection;
-  memset(&selection, 0, sizeof(selection));
-  selection.type = compose_type;
-  selection.target = V4L2_SEL_TGT_COMPOSE;
-  if (device_->Ioctl(VIDIOC_G_SELECTION, &selection) == 0) {
-    DVQLOGF(3) << "VIDIOC_G_SELECTION is supported";
-    return V4L2RectToGfxRect(selection.r);
+  struct v4l2_selection selection = {.type = type_,
+                                     .target = V4L2_SEL_TGT_COMPOSE};
+  if (ioctl_cb_.Run(VIDIOC_G_SELECTION, &selection) != 0) {
+    VQLOGF(1) << "Failed to get visible rect";
+    return absl::nullopt;
   }
-
-  // TODO(acourbot) using VIDIOC_G_CROP is considered legacy and can be
-  // removed once no active devices use it anymore.
-  DVQLOGF(3) << "Fallback to VIDIOC_G_CROP";
-  struct v4l2_crop crop;
-  memset(&crop, 0, sizeof(crop));
-  crop.type = type_;
-  if (device_->Ioctl(VIDIOC_G_CROP, &crop) == 0) {
-    return V4L2RectToGfxRect(crop.c);
-  }
-
-  VQLOGF(1) << "Failed to get visible rect";
-  return absl::nullopt;
+  return V4L2RectToGfxRect(selection.r);
 }
 
 size_t V4L2Queue::AllocateBuffers(size_t count,
@@ -1115,21 +1117,21 @@ size_t V4L2Queue::AllocateBuffers(size_t count,
   planes_count_ = format->fmt.pix_mp.num_planes;
   DCHECK_LE(planes_count_, static_cast<size_t>(VIDEO_MAX_PLANES));
 
-  struct v4l2_requestbuffers reqbufs;
-  memset(&reqbufs, 0, sizeof(reqbufs));
-  reqbufs.count = count;
-  reqbufs.type = type_;
-  reqbufs.memory = memory;
-  reqbufs.flags = incoherent ? V4L2_MEMORY_FLAG_NON_COHERENT : 0;
-  DVQLOGF(3) << "Requesting " << count << " buffers.";
-  DVQLOGF(3) << "Incoherent flag is " << incoherent << ".";
+  const __u8 coherency = incoherent ? V4L2_MEMORY_FLAG_NON_COHERENT : 0;
+  struct v4l2_requestbuffers reqbufs = {
+      .count = base::checked_cast<decltype(v4l2_requestbuffers::count)>(count),
+      .type = type_,
+      .memory = memory,
+      .flags = coherency};
+  DVQLOGF(3) << "Requesting " << count << " buffers ("
+             << (incoherent ? "incoherent" : "coherent") << ")";
 
-  int ret = device_->Ioctl(VIDIOC_REQBUFS, &reqbufs);
+  int ret = ioctl_cb_.Run(VIDIOC_REQBUFS, &reqbufs);
   if (ret) {
     VPQLOGF(1) << "VIDIOC_REQBUFS failed";
     return 0;
   }
-  DVQLOGF(3) << "queue " << type_ << ": got " << reqbufs.count << " buffers.";
+  DVQLOGF(3) << "Allocated " << reqbufs.count << " buffers.";
 
   memory_ = memory;
 
@@ -1137,7 +1139,8 @@ size_t V4L2Queue::AllocateBuffers(size_t count,
 
   // Now query all buffer information.
   for (size_t i = 0; i < reqbufs.count; i++) {
-    auto buffer = V4L2Buffer::Create(device_, type_, memory_, *format, i);
+    auto buffer =
+        V4L2Buffer::Create(ioctl_cb_, mmap_cb_, type_, memory_, *format, i);
 
     if (!buffer) {
       if (!DeallocateBuffers()) {
@@ -1176,14 +1179,11 @@ bool V4L2Queue::DeallocateBuffers() {
   free_buffers_ = nullptr;
 
   // Free all buffers.
-  struct v4l2_requestbuffers reqbufs;
-  memset(&reqbufs, 0, sizeof(reqbufs));
-  reqbufs.count = 0;
-  reqbufs.type = type_;
-  reqbufs.memory = memory_;
-  reqbufs.flags = incoherent_ ? V4L2_MEMORY_FLAG_NON_COHERENT : 0;
+  const __u8 coherency = incoherent_ ? V4L2_MEMORY_FLAG_NON_COHERENT : 0;
+  struct v4l2_requestbuffers reqbufs = {
+      .count = 0, .type = type_, .memory = memory_, .flags = coherency};
 
-  int ret = device_->Ioctl(VIDIOC_REQBUFS, &reqbufs);
+  int ret = ioctl_cb_.Run(VIDIOC_REQBUFS, &reqbufs);
   if (ret) {
     VPQLOGF(1) << "VIDIOC_REQBUFS failed";
     return false;
@@ -1205,6 +1205,7 @@ size_t V4L2Queue::GetMemoryUsage() const {
 }
 
 v4l2_memory V4L2Queue::GetMemoryType() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return memory_;
 }
 
@@ -1307,7 +1308,7 @@ bool V4L2Queue::QueueBuffer(struct v4l2_buffer* v4l2_buffer,
 
   V4L2ProcessingTrace(v4l2_buffer, /*start=*/true);
 
-  int ret = device_->Ioctl(VIDIOC_QBUF, v4l2_buffer);
+  int ret = ioctl_cb_.Run(VIDIOC_QBUF, v4l2_buffer);
   if (ret) {
     VPQLOGF(1) << "VIDIOC_QBUF failed";
     return false;
@@ -1317,7 +1318,7 @@ bool V4L2Queue::QueueBuffer(struct v4l2_buffer* v4l2_buffer,
       queued_buffers_.emplace(v4l2_buffer->index, std::move(video_frame));
   DCHECK(inserted.second);
 
-  device_->SchedulePoll();
+  schedule_poll_cb_.Run();
 
   return true;
 }
@@ -1346,7 +1347,7 @@ std::pair<bool, V4L2ReadableBufferRef> V4L2Queue::DequeueBuffer() {
   v4l2_buffer.memory = memory_;
   v4l2_buffer.m.planes = planes;
   v4l2_buffer.length = planes_count_;
-  int ret = device_->Ioctl(VIDIOC_DQBUF, &v4l2_buffer);
+  int ret = ioctl_cb_.Run(VIDIOC_DQBUF, &v4l2_buffer);
   if (ret) {
     // TODO(acourbot): we should not have to check for EPIPE as codec clients
     // should not call this method after the last buffer is dequeued.
@@ -1355,7 +1356,7 @@ std::pair<bool, V4L2ReadableBufferRef> V4L2Queue::DequeueBuffer() {
       case EPIPE:
         // This is not an error so we'll need to continue polling but won't
         // provide a buffer.
-        device_->SchedulePoll();
+        schedule_poll_cb_.Run();
         return std::make_pair(true, nullptr);
       default:
         VPQLOGF(1) << "VIDIOC_DQBUF failed";
@@ -1371,7 +1372,7 @@ std::pair<bool, V4L2ReadableBufferRef> V4L2Queue::DequeueBuffer() {
   V4L2ProcessingTrace(&v4l2_buffer, /*start=*/false);
 
   if (QueuedBuffersCount() > 0) {
-    device_->SchedulePoll();
+    schedule_poll_cb_.Run();
   }
 
   DCHECK(free_buffers_);
@@ -1394,7 +1395,7 @@ bool V4L2Queue::Streamon() {
   }
 
   int arg = static_cast<int>(type_);
-  int ret = device_->Ioctl(VIDIOC_STREAMON, &arg);
+  int ret = ioctl_cb_.Run(VIDIOC_STREAMON, &arg);
   if (ret) {
     VPQLOGF(1) << "VIDIOC_STREAMON failed";
     return false;
@@ -1413,7 +1414,7 @@ bool V4L2Queue::Streamoff() {
   // need to do a VIDIOC_STREAMOFF on a stopped queue.
 
   int arg = static_cast<int>(type_);
-  int ret = device_->Ioctl(VIDIOC_STREAMOFF, &arg);
+  int ret = ioctl_cb_.Run(VIDIOC_STREAMOFF, &arg);
   if (ret) {
     VPQLOGF(1) << "VIDIOC_STREAMOFF failed";
     return false;
@@ -1462,6 +1463,7 @@ bool V4L2Queue::SupportsRequests() {
 absl::optional<struct v4l2_format> V4L2Queue::SetModifierFormat(
     uint64_t modifier,
     const gfx::Size& size) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (DRM_FORMAT_MOD_QCOM_COMPRESSED == modifier) {
     auto format = SetFormat(V4L2_PIX_FMT_QC08C, size, 0);
 
@@ -1471,6 +1473,32 @@ absl::optional<struct v4l2_format> V4L2Queue::SetModifierFormat(
     return format;
   }
   return absl::nullopt;
+}
+
+bool V4L2Queue::SendStopCommand() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return SendCommand(V4L2_DEC_CMD_STOP);
+}
+
+bool V4L2Queue::SendStartCommand() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return SendCommand(V4L2_DEC_CMD_START);
+}
+
+bool V4L2Queue::SendCommand(__u32 command) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // TODO(mcasas): Restrict this to V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE, after
+  // deprecating V4L2StatefulVideoDecoderBackend.
+
+  struct v4l2_decoder_cmd cmd;
+  memset(&cmd, 0, sizeof(cmd));  // Must use memset() due to unions.
+  cmd.cmd = command;
+  const bool success = ioctl_cb_.Run(VIDIOC_DECODER_CMD, &cmd) == kIoctlOk;
+  PLOG_IF(ERROR, !success) << "Failed to issue command " << command
+                           << " (V4L2_DEC_CMD_START: " << V4L2_DEC_CMD_START
+                           << ", V4L2_DEC_CMD_STOP: " << V4L2_DEC_CMD_STOP
+                           << ")";
+  return success;
 }
 
 class V4L2Request {
@@ -1567,7 +1595,12 @@ bool V4L2Request::Submit() {
     return false;
   }
 
-  return HANDLE_EINTR(ioctl(request_fd_.get(), MEDIA_REQUEST_IOC_QUEUE)) == 0;
+  if (HANDLE_EINTR(ioctl(request_fd_.get(), MEDIA_REQUEST_IOC_QUEUE)) != 0) {
+    RecordMediaIoctlUMA(MediaIoctlRequests::kMediaRequestIocQueue);
+    return false;
+  }
+
+  return true;
 }
 
 bool V4L2Request::IsCompleted() {
@@ -1611,6 +1644,7 @@ bool V4L2Request::Reset() {
 
   // Reinit the request to make sure we can use it for a new submission.
   if (HANDLE_EINTR(ioctl(request_fd_.get(), MEDIA_REQUEST_IOC_REINIT)) < 0) {
+    RecordMediaIoctlUMA(MediaIoctlRequests::kMediaRequestIocReinit);
     VPLOGF(1) << "Failed to reinit request.";
     return false;
   }
@@ -1696,6 +1730,7 @@ absl::optional<base::ScopedFD> V4L2RequestsQueue::CreateRequestFD() {
   int ret = HANDLE_EINTR(
       ioctl(media_fd_.get(), MEDIA_IOC_REQUEST_ALLOC, &request_fd));
   if (ret < 0) {
+    RecordMediaIoctlUMA(MediaIoctlRequests::kMediaIocRequestAlloc);
     VPLOGF(1) << "Failed to create request";
     return absl::nullopt;
   }

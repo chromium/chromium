@@ -90,7 +90,6 @@ source_set("printing") {
         "printer_capabilities_mac.h",
         "printer_capabilities_mac.mm",
       ]
-      configs += [ "//build/config/compiler:enable_arc" ]
     }
   }
 }
@@ -117,7 +116,6 @@ source_set("unit_tests") {
 
     if (is_mac) {
       sources += [ "printer_capabilities_mac_unittest.mm" ]
-      configs += [ "//build/config/compiler:enable_arc" ]
     }
   }
 }

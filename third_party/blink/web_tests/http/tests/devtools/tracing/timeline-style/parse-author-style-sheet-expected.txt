@@ -1,4 +1,0 @@
-Tests that ParseAuthorStyleSheet trace event is recorded.
-
-SUCCESS: found ParseAuthorStyleSheet record
-

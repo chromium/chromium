@@ -24,12 +24,17 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/privacy_sandbox/canonical_topic.h"
+#include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/base/schemeful_site.h"
 #include "net/cookies/site_for_cookies.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -49,7 +54,18 @@ constexpr char kIsAttributionReportingAllowedHistogram[] =
     "PrivacySandbox.IsAttributionReportingAllowed";
 constexpr char kMaySendAttributionReportHistogram[] =
     "PrivacySandbox.MaySendAttributionReport";
-constexpr char kIsFledgeAllowedHistogram[] = "PrivacySandbox.IsFledgeAllowed";
+constexpr char kIsFledgeJoinAllowedHistogram[] =
+    "PrivacySandbox.IsFledgeJoinAllowed";
+constexpr char kIsFledgeLeaveAllowedHistogram[] =
+    "PrivacySandbox.IsFledgeLeaveAllowed";
+constexpr char kIsFledgeUpdateAllowedHistogram[] =
+    "PrivacySandbox.IsFledgeUpdateAllowed";
+constexpr char kIsFledgeSellAllowedHistogram[] =
+    "PrivacySandbox.IsFledgeSellAllowed";
+constexpr char kIsFledgeBuyAllowedHistogram[] =
+    "PrivacySandbox.IsFledgeBuyAllowed";
+constexpr char kIsPrivacySandboxReportingDestinationAttestedHistogram[] =
+    "PrivacySandbox.IsPrivacySandboxReportingDestinationAttested";
 constexpr char kIsSharedStorageAllowedHistogram[] =
     "PrivacySandbox.IsSharedStorageAllowed";
 constexpr char kIsSharedStorageSelectURLAllowedHistogram[] =
@@ -96,6 +112,29 @@ void PrivacySandboxSettingsImpl::JoinHistogram(const char* name,
   base::UmaHistogramEnumeration(name, status);
 }
 
+// static
+void PrivacySandboxSettingsImpl::JoinFledgeHistogram(
+    content::InterestGroupApiOperation interest_group_api_operation,
+    Status status) {
+  switch (interest_group_api_operation) {
+    case content::InterestGroupApiOperation::kJoin:
+      JoinHistogram(kIsFledgeJoinAllowedHistogram, status);
+      break;
+    case content::InterestGroupApiOperation::kLeave:
+      JoinHistogram(kIsFledgeLeaveAllowedHistogram, status);
+      break;
+    case content::InterestGroupApiOperation::kUpdate:
+      JoinHistogram(kIsFledgeUpdateAllowedHistogram, status);
+      break;
+    case content::InterestGroupApiOperation::kSell:
+      JoinHistogram(kIsFledgeSellAllowedHistogram, status);
+      break;
+    case content::InterestGroupApiOperation::kBuy:
+      JoinHistogram(kIsFledgeBuyAllowedHistogram, status);
+      break;
+  }
+}
+
 PrivacySandboxSettingsImpl::PrivacySandboxSettingsImpl(
     std::unique_ptr<Delegate> delegate,
     HostContentSettingsMap* host_content_settings_map,
@@ -104,8 +143,7 @@ PrivacySandboxSettingsImpl::PrivacySandboxSettingsImpl(
     : delegate_(std::move(delegate)),
       host_content_settings_map_(host_content_settings_map),
       cookie_settings_(cookie_settings),
-      pref_service_(pref_service),
-      attestations_({}) {
+      pref_service_(pref_service) {
   DCHECK(pref_service_);
   DCHECK(host_content_settings_map_);
   DCHECK(cookie_settings_);
@@ -191,13 +229,19 @@ bool PrivacySandboxSettingsImpl::IsTopicsAllowed() const {
 
 bool PrivacySandboxSettingsImpl::IsTopicsAllowedForContext(
     const url::Origin& top_frame_origin,
-    const GURL& url) const {
+    const GURL& url,
+    content::RenderFrameHost* console_frame) const {
   // Check for attestation on the calling context's site.
-  if (!attestations_.IsSiteAttested(
-          net::SchemefulSite(url),
-          PrivacySandboxAttestationsGatedAPI::kTopics)) {
-    JoinHistogram(kIsTopicsAllowedForContextHistogram,
-                  Status::kAttestationFailed);
+  Status attestation_status =
+      PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
+          net::SchemefulSite(url), PrivacySandboxAttestationsGatedAPI::kTopics);
+  if (!IsAllowed(attestation_status)) {
+    JoinHistogram(kIsTopicsAllowedForContextHistogram, attestation_status);
+    if (console_frame) {
+      console_frame->AddMessageToConsole(
+          blink::mojom::ConsoleMessageLevel::kError,
+          "Attestation check for Topics on " + url.spec() + " failed.");
+    }
     return false;
   }
 
@@ -324,13 +368,21 @@ bool PrivacySandboxSettingsImpl::IsAttributionReportingEverAllowed() const {
 
 bool PrivacySandboxSettingsImpl::IsAttributionReportingAllowed(
     const url::Origin& top_frame_origin,
-    const url::Origin& reporting_origin) const {
+    const url::Origin& reporting_origin,
+    content::RenderFrameHost* console_frame) const {
   // Check for attestation on the reporting origin.
-  if (!attestations_.IsSiteAttested(
+  Status attestation_status =
+      PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
           net::SchemefulSite(reporting_origin),
-          PrivacySandboxAttestationsGatedAPI::kAttributionReporting)) {
-    JoinHistogram(kIsAttributionReportingAllowedHistogram,
-                  Status::kAttestationFailed);
+          PrivacySandboxAttestationsGatedAPI::kAttributionReporting);
+  if (!IsAllowed(attestation_status)) {
+    JoinHistogram(kIsAttributionReportingAllowedHistogram, attestation_status);
+    if (console_frame) {
+      console_frame->AddMessageToConsole(
+          blink::mojom::ConsoleMessageLevel::kError,
+          "Attestation check for Attribution Reporting on " +
+              reporting_origin.Serialize() + " failed.");
+    }
     return false;
   }
 
@@ -349,13 +401,21 @@ bool PrivacySandboxSettingsImpl::IsAttributionReportingAllowed(
 bool PrivacySandboxSettingsImpl::MaySendAttributionReport(
     const url::Origin& source_origin,
     const url::Origin& destination_origin,
-    const url::Origin& reporting_origin) const {
+    const url::Origin& reporting_origin,
+    content::RenderFrameHost* console_frame) const {
   // Check for attestation on the reporting origin.
-  if (!attestations_.IsSiteAttested(
+  Status attestation_status =
+      PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
           net::SchemefulSite(reporting_origin),
-          PrivacySandboxAttestationsGatedAPI::kAttributionReporting)) {
-    JoinHistogram(kMaySendAttributionReportHistogram,
-                  Status::kAttestationFailed);
+          PrivacySandboxAttestationsGatedAPI::kAttributionReporting);
+  if (!IsAllowed(attestation_status)) {
+    JoinHistogram(kMaySendAttributionReportHistogram, attestation_status);
+    if (console_frame) {
+      console_frame->AddMessageToConsole(
+          blink::mojom::ConsoleMessageLevel::kError,
+          "Attestation check for Attribution Reporting on " +
+              reporting_origin.Serialize() + " failed.");
+    }
     return false;
   }
 
@@ -486,21 +546,52 @@ PrivacySandboxSettingsImpl::GetM1FledgeAllowedStatus(
   return GetSiteAccessAllowedStatus(top_frame_origin, auction_party.GetURL());
 }
 
+bool PrivacySandboxSettingsImpl::IsEventReportingDestinationAttested(
+    const url::Origin& destination_origin,
+    privacy_sandbox::PrivacySandboxAttestationsGatedAPI invoking_api) const {
+  // Check for attestation on the event recipient's site with whichever API
+  // created the frame that invoked the event reporting.
+  Status attestation_status =
+      PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
+          net::SchemefulSite(destination_origin), invoking_api);
+  JoinHistogram(kIsPrivacySandboxReportingDestinationAttestedHistogram,
+                attestation_status);
+  return IsAllowed(attestation_status);
+}
+
 bool PrivacySandboxSettingsImpl::IsFledgeAllowed(
     const url::Origin& top_frame_origin,
-    const url::Origin& auction_party) const {
+    const url::Origin& auction_party,
+    content::InterestGroupApiOperation interest_group_api_operation,
+    content::RenderFrameHost* console_frame) const {
   // Check for attestation on the auction party's site. The auction party is a
   // variety of entities during the auction, all of which need to be attested.
-  if (!attestations_.IsSiteAttested(
+  Status attestation_status =
+      PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
           net::SchemefulSite(auction_party),
-          PrivacySandboxAttestationsGatedAPI::kProtectedAudience)) {
-    JoinHistogram(kIsFledgeAllowedHistogram, Status::kAttestationFailed);
+          PrivacySandboxAttestationsGatedAPI::kProtectedAudience);
+  if (!IsAllowed(attestation_status)) {
+    JoinFledgeHistogram(interest_group_api_operation, attestation_status);
+    if (console_frame) {
+      console_frame->AddMessageToConsole(
+          blink::mojom::ConsoleMessageLevel::kError,
+          "Attestation check for Protected Audience on " +
+              auction_party.Serialize() + " failed.");
+    }
+    return false;
+  }
+
+  if (interest_group_api_operation ==
+          content::InterestGroupApiOperation::kJoin &&
+      !IsFledgeJoiningAllowed(top_frame_origin)) {
+    JoinFledgeHistogram(interest_group_api_operation,
+                        Status::kJoiningTopFrameBlocked);
     return false;
   }
 
   if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
     Status status = GetM1FledgeAllowedStatus(top_frame_origin, auction_party);
-    JoinHistogram(kIsFledgeAllowedHistogram, status);
+    JoinFledgeHistogram(interest_group_api_operation, status);
     return IsAllowed(status);
   }
 
@@ -510,12 +601,21 @@ bool PrivacySandboxSettingsImpl::IsFledgeAllowed(
 
 bool PrivacySandboxSettingsImpl::IsSharedStorageAllowed(
     const url::Origin& top_frame_origin,
-    const url::Origin& accessing_origin) const {
+    const url::Origin& accessing_origin,
+    content::RenderFrameHost* console_frame) const {
   // Check for attestation on the caller's site.
-  if (!attestations_.IsSiteAttested(
+  Status attestation_status =
+      PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
           net::SchemefulSite(accessing_origin),
-          PrivacySandboxAttestationsGatedAPI::kSharedStorage)) {
-    JoinHistogram(kIsSharedStorageAllowedHistogram, Status::kAttestationFailed);
+          PrivacySandboxAttestationsGatedAPI::kSharedStorage);
+  if (!IsAllowed(attestation_status)) {
+    JoinHistogram(kIsSharedStorageAllowedHistogram, attestation_status);
+    if (console_frame) {
+      console_frame->AddMessageToConsole(
+          blink::mojom::ConsoleMessageLevel::kError,
+          "Attestation check for Shared Storage on " +
+              accessing_origin.Serialize() + " failed.");
+    }
     return false;
   }
 
@@ -552,11 +652,12 @@ bool PrivacySandboxSettingsImpl::IsPrivateAggregationAllowed(
     const url::Origin& top_frame_origin,
     const url::Origin& reporting_origin) const {
   // Check for attestation on the worklet's site.
-  if (!attestations_.IsSiteAttested(
+  Status attestation_status =
+      PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
           net::SchemefulSite(reporting_origin),
-          PrivacySandboxAttestationsGatedAPI::kPrivateAggregation)) {
-    JoinHistogram(kIsPrivateAggregationAllowedHistogram,
-                  Status::kAttestationFailed);
+          PrivacySandboxAttestationsGatedAPI::kPrivateAggregation);
+  if (!IsAllowed(attestation_status)) {
+    JoinHistogram(kIsPrivateAggregationAllowedHistogram, attestation_status);
     return false;
   }
 
@@ -655,21 +756,6 @@ void PrivacySandboxSettingsImpl::RemoveObserver(Observer* observer) {
 void PrivacySandboxSettingsImpl::SetDelegateForTesting(
     std::unique_ptr<Delegate> delegate) {
   delegate_ = std::move(delegate);
-}
-
-void PrivacySandboxSettingsImpl::SetPrivacySandboxAttestationsMapForTesting(
-    const PrivacySandboxAttestationsMap& attestations_map) {
-  attestations_ = PrivacySandboxAttestations(attestations_map);
-}
-
-void PrivacySandboxSettingsImpl::AddPrivacySandboxAttestationOverride(
-    const GURL& url) {
-  attestations_.AddOverride(net::SchemefulSite(url));
-}
-
-const std::vector<net::SchemefulSite>
-PrivacySandboxSettingsImpl::GetAttestationOverridesForTesting() const {
-  return attestations_.GetOverridesForTesting();  // IN-TEST
 }
 
 bool PrivacySandboxSettingsImpl::IsPrivacySandboxEnabledForContext(

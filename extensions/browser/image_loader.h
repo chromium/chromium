@@ -11,7 +11,6 @@
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/common/extension_resource.h"
-#include "ui/base/layout.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace content {

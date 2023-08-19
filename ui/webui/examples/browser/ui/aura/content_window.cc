@@ -4,10 +4,6 @@
 
 #include "ui/webui/examples/browser/ui/aura/content_window.h"
 
-#include "base/containers/flat_set.h"
-#include "base/no_destructor.h"
-#include "content/public/browser/browser_context.h"
-#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
@@ -39,14 +35,13 @@ class QuitOnClose : public aura::WindowTreeHostObserver {
 }  // namespace
 
 ContentWindow::ContentWindow(AuraContext* aura_context,
-                             content::BrowserContext* browser_context) {
+                             std::unique_ptr<content::WebContents> web_contents)
+    : web_contents_(std::move(web_contents)) {
   host_ = aura_context->CreateWindowTreeHost();
 
   // Cursor support.
   root_window_event_filter_ = std::make_unique<wm::CompoundEventFilter>();
 
-  content::WebContents::CreateParams params(browser_context);
-  web_contents_ = content::WebContents::Create(params);
   aura::Window* web_contents_window = web_contents_->GetNativeView();
   aura::WindowTreeHost* window_tree_host = host_->window_tree_host();
   window_tree_host->window()->GetRootWindow()->AddChild(web_contents_window);
@@ -69,11 +64,6 @@ void ContentWindow::Show() {
   aura::WindowTreeHost* window_tree_host = host_->window_tree_host();
   window_tree_host->window()->Show();
   window_tree_host->Show();
-}
-
-void ContentWindow::NavigateToURL(GURL url) {
-  content::NavigationController::LoadURLParams url_params(url);
-  web_contents_->GetController().LoadURLWithParams(url_params);
 }
 
 void ContentWindow::SetCloseCallback(base::OnceClosure on_close) {

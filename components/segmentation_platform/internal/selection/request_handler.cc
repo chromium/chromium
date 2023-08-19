@@ -72,7 +72,7 @@ class RequestHandlerImpl : public RequestHandler {
   std::unique_ptr<SegmentResultProvider> result_provider_;
 
   // Pointer to the execution service.
-  const raw_ptr<ExecutionService> execution_service_{};
+  const raw_ptr<ExecutionService> execution_service_ = nullptr;
 
   base::WeakPtrFactory<RequestHandlerImpl> weak_ptr_factory_{this};
 };
@@ -121,10 +121,9 @@ void RequestHandlerImpl::OnGetPredictionResult(
     std::unique_ptr<SegmentResultProvider::SegmentResult> segment_result) {
   RawResult result(PredictionStatus::kFailed);
   if (segment_result) {
-    result.request_id = CollectTrainingData(input_context);
-
     auto status = ResultStateToPredictionStatus(segment_result->state);
     result = PostProcessor().GetRawResult(segment_result->result, status);
+    result.request_id = CollectTrainingData(input_context);
 
     stats::RecordSegmentSelectionFailure(
         *config_, stats::GetSuccessOrFailureReason(segment_result->state));

@@ -17,7 +17,7 @@ class StyleContainmentScopeTree final
  public:
   StyleContainmentScopeTree()
       : root_scope_(MakeGarbageCollected<StyleContainmentScope>(nullptr)),
-        outermost_dirty_scope_(nullptr) {}
+        outermost_quotes_dirty_scope_(nullptr) {}
   StyleContainmentScopeTree(const StyleContainmentScopeTree&) = delete;
   StyleContainmentScopeTree& operator=(const StyleContainmentScopeTree&) =
       delete;
@@ -25,22 +25,21 @@ class StyleContainmentScopeTree final
   void CreateScopeForElement(const Element&);
   void DestroyScopeForElement(const Element&);
   void ElementWillBeRemoved(const Element&);
+  StyleContainmentScope* FindOrCreateEnclosingScopeForElement(const Element&);
 
   // If there is a dirty scope start an update from it going down its subtree.
   // During the update we calculate the correct depth for each quote and set
   // the correct text.
   // It can change the layout tree by creating text fragments.
   void UpdateQuotes();
-  void UpdateOutermostDirtyScope(StyleContainmentScope*);
-
-  StyleContainmentScope* FindOrCreateEnclosingScopeForElement(const Element&);
+  void UpdateOutermostQuotesDirtyScope(StyleContainmentScope*);
 
   void Trace(Visitor*) const;
 
  private:
   // The implicit top level scope for elements with no contain:style ancestors.
   Member<StyleContainmentScope> root_scope_;
-  Member<StyleContainmentScope> outermost_dirty_scope_;
+  Member<StyleContainmentScope> outermost_quotes_dirty_scope_;
   HeapHashMap<Member<const Element>, Member<StyleContainmentScope>> scopes_;
 };
 

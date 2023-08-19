@@ -5,12 +5,12 @@
 #ifndef DEVICE_BLUETOOTH_BLUETOOTH_CHANNEL_MAC_H_
 #define DEVICE_BLUETOOTH_BLUETOOTH_CHANNEL_MAC_H_
 
-#include "base/memory/raw_ptr.h"
-
 #import <IOKit/IOReturn.h>
 #include <stdint.h>
 
 #include <string>
+
+#include "base/memory/raw_ptr.h"
 
 @class IOBluetoothDevice;
 

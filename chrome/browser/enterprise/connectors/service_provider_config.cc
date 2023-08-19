@@ -50,6 +50,14 @@ constexpr std::array<SupportedTag, 1> kBrcmChrmCasSupportedTags = {{
     },
 }};
 
+constexpr std::array<SupportedTag, 1> kTrellixSupportedTags = {{
+    {
+        .name = "dlp",
+        .display_name = "Sensitive data protection",
+        .max_file_size = 52428800,
+    },
+}};
+
 constexpr AnalysisConfig kLocalTestUserAnalysisConfig = {
     .local_path = "path_user",
     .supported_tags = base::span<const SupportedTag>(kLocalTestSupportedTags),
@@ -62,6 +70,16 @@ constexpr AnalysisConfig kBrcmChrmCasAnalysisConfig = {
     .user_specific = false,
 };
 
+constexpr std::array<const char*, 1> kTrellixSubjectNames = {
+    {"MUSARUBRA US LLC"}};
+
+constexpr AnalysisConfig kTrellixAnalysisConfig = {
+    .local_path = "Trellix_DLP",
+    .supported_tags = base::span<const SupportedTag>(kTrellixSupportedTags),
+    .user_specific = true,
+    .subject_names = base::span<const char* const>(kTrellixSubjectNames),
+};
+
 constexpr ReportingConfig kGoogleReportingConfig = {
     .url = "https://chromereporting-pa.googleapis.com/v1/events",
 };
@@ -69,6 +87,10 @@ constexpr ReportingConfig kGoogleReportingConfig = {
 }  // namespace
 
 const ServiceProviderConfig* GetServiceProviderConfig() {
+  // The policy schema validates that the provider name is an expected value, so
+  // when one is added to this dictionary it also needs to be added to the
+  // corresponding policy definitions.
+  // LINT.IfChange
   static constexpr ServiceProviderConfig kServiceProviderConfig =
       base::MakeFixedFlatMap<base::StringPiece, ServiceProvider>({
           {
@@ -105,7 +127,21 @@ const ServiceProviderConfig* GetServiceProviderConfig() {
                   .analysis = &kBrcmChrmCasAnalysisConfig,
               },
           },
+          {
+              "trellix",
+              {
+                  .display_name = "Trellix DLP Endpoint",
+                  .analysis = &kTrellixAnalysisConfig,
+              },
+          },
       });
+  // LINT.ThenChange(//components/policy/resources/templates/policy_definitions/Miscellaneous)
+  // The following policies should have their service_provider entries updated:
+  //   //components/policy/resources/templates/policy_definitions/Miscellaneous/OnBulkDataEntryEnterpriseConnector.yaml,
+  //   //components/policy/resources/templates/policy_definitions/Miscellaneous/OnFileAttachedEnterpriseConnector.yaml,
+  //   //components/policy/resources/templates/policy_definitions/Miscellaneous/OnFileDownloadedEnterpriseConnector.yaml,
+  //   //components/policy/resources/templates/policy_definitions/Miscellaneous/OnPrintEnterpriseConnector.yaml
+  // )
   return &kServiceProviderConfig;
 }
 

@@ -40,4 +40,27 @@ void FakeFrontendChannel::SendProtocolNotification(
   protocol_notification_messages_.push_back(std::move(json));
 }
 
+void FakeUIElement::GetBounds(gfx::Rect* bounds) const {
+  *bounds = bounds_;
+}
+void FakeUIElement::SetBounds(const gfx::Rect& bounds) {
+  bounds_ = bounds;
+}
+void FakeUIElement::GetVisible(bool* visible) const {
+  *visible = visible_;
+}
+void FakeUIElement::SetVisible(bool visible) {
+  visible_ = visible;
+}
+std::vector<std::string> FakeUIElement::GetAttributes() const {
+  return {};
+}
+std::pair<gfx::NativeWindow, gfx::Rect>
+FakeUIElement::GetNodeWindowAndScreenBounds() const {
+  return {};
+}
+void FakeUIElement::AddSource(std::string path, int line) {
+  UIElement::AddSource(path, line);
+}
+
 }  // namespace ui_devtools

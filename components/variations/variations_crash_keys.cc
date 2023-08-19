@@ -22,7 +22,7 @@
 #include "components/variations/buildflags.h"
 #include "components/variations/synthetic_trials.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "base/task/thread_pool.h"
 #include "components/variations/variations_crash_keys_chromeos.h"
 #endif
@@ -53,6 +53,9 @@ crash_reporter::CrashKeyString<8> g_num_variations_crash_key(
 // Crash key reporting the variations state.
 crash_reporter::CrashKeyString<kVariationsKeySize> g_variations_crash_key(
     kExperimentListKey);
+
+crash_reporter::CrashKeyString<64> g_variations_seed_version_crash_key(
+    kVariationsSeedVersionKey);
 
 std::string ActiveGroupToString(const ActiveGroupId& active_group) {
   return base::StringPrintf("%x-%x,", active_group.name, active_group.group);
@@ -100,11 +103,11 @@ class VariationsCrashKeys final : public base::FieldTrialList::Observer {
   // observer calls that happen on a different thread.
   scoped_refptr<base::SequencedTaskRunner> ui_thread_task_runner_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // Task runner corresponding to a background thread, used for tasks that may
   // block.
   scoped_refptr<base::SequencedTaskRunner> background_thread_task_runner_;
-#endif  // IS_CHROMEOS_ASH
+#endif  // IS_CHROMEOS_ASH || BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // A serialized string containing the variations state.
   std::string variations_string_;
@@ -144,10 +147,10 @@ VariationsCrashKeys::VariationsCrashKeys() {
   for (const auto& entry : active_groups) {
     AppendFieldTrial(entry.trial_name, entry.group_name);
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   background_thread_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::TaskPriority::BEST_EFFORT, base::MayBlock()});
-#endif  // IS_CHROMEOS_ASH
+#endif  // IS_CHROMEOS_ASH || BUILDFLAG(IS_CHROMEOS_LACROS)
 
   UpdateCrashKeys();
 }
@@ -156,6 +159,7 @@ VariationsCrashKeys::~VariationsCrashKeys() {
   base::FieldTrialListIncludingLowAnonymity::RemoveObserver(this);
   g_num_variations_crash_key.Clear();
   g_variations_crash_key.Clear();
+  g_variations_seed_version_crash_key.Clear();
 }
 
 void VariationsCrashKeys::OnFieldTrialGroupFinalized(
@@ -226,10 +230,11 @@ void VariationsCrashKeys::UpdateCrashKeys() {
   }
 
   g_variations_crash_key.Set(info.experiment_list);
+  g_variations_seed_version_crash_key.Set(GetSeedVersion());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   ReportVariationsToChromeOs(background_thread_task_runner_, info);
-#endif  // IS_CHROMEOS_ASH
+#endif  // IS_CHROMEOS_ASH || BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 void VariationsCrashKeys::OnSyntheticTrialsChanged(
@@ -255,6 +260,7 @@ VariationsCrashKeys* g_variations_crash_keys = nullptr;
 
 const char kNumExperimentsKey[] = "num-experiments";
 const char kExperimentListKey[] = "variations";
+const char kVariationsSeedVersionKey[] = "variations-seed-version";
 
 void InitCrashKeys() {
   DCHECK(!g_variations_crash_keys);
@@ -278,5 +284,4 @@ ExperimentListInfo GetExperimentListInfo() {
   DCHECK(g_variations_crash_keys);
   return g_variations_crash_keys->GetExperimentListInfo();
 }
-
 }  // namespace variations

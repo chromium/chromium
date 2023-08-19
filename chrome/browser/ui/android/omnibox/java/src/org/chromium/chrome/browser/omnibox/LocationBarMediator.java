@@ -72,7 +72,8 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.interpolators.BakedBezierInterpolator;
+import org.chromium.ui.interpolators.Interpolators;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -161,7 +162,7 @@ class LocationBarMediator
     private final Context mContext;
     private final BackKeyBehaviorDelegate mBackKeyBehavior;
     private final WindowAndroid mWindowAndroid;
-    private String mOriginalUrl = "";
+    private GURL mOriginalUrl = GURL.emptyGURL();
     private Animator mUrlFocusChangeAnimator;
     private final ObserverList<UrlFocusChangeListener> mUrlFocusChangeListeners =
             new ObserverList<>();
@@ -304,7 +305,7 @@ class LocationBarMediator
             }
         } // Focus change caused by a closed tab may result in there not being an active tab.
         if (!hasFocus && mLocationBarDataProvider.hasTab()) {
-            setUrl(mLocationBarDataProvider.getCurrentUrl(),
+            setUrl(mLocationBarDataProvider.getCurrentGurl(),
                     mLocationBarDataProvider.getUrlBarData());
         }
     }
@@ -316,7 +317,7 @@ class LocationBarMediator
                 (templateUrlService) -> { templateUrlService.addObserver(this); });
 
         mLocationBarLayout.onFinishNativeInitialization();
-        setProfile(mProfileSupplier.get());
+        if (mProfileSupplier.hasValue()) setProfile(mProfileSupplier.get());
         onPrimaryColorChanged();
 
         for (Runnable deferredRunnable : mDeferredNativeRunnables) {
@@ -403,7 +404,7 @@ class LocationBarMediator
 
     /*package */ void revertChanges() {
         if (mUrlHasFocus) {
-            String currentUrl = mLocationBarDataProvider.getCurrentUrl();
+            GURL currentUrl = mLocationBarDataProvider.getCurrentGurl();
             if (NativePage.isNativePageUrl(currentUrl, mLocationBarDataProvider.isIncognito())) {
                 setUrlBarTextEmpty();
             } else {
@@ -412,7 +413,7 @@ class LocationBarMediator
             }
             mUrlCoordinator.setKeyboardVisibility(false, false);
         } else {
-            setUrl(mLocationBarDataProvider.getCurrentUrl(),
+            setUrl(mLocationBarDataProvider.getCurrentGurl(),
                     mLocationBarDataProvider.getUrlBarData());
         }
     }
@@ -441,10 +442,13 @@ class LocationBarMediator
                 && DeviceClassManager.enablePrerendering()
                 && PreloadPagesSettingsBridge.getState() != PreloadPagesState.NO_PRELOADING
                 && mLocationBarDataProvider.hasTab()) {
-            mOmniboxPrerender.prerenderMaybe(userText, mOriginalUrl,
+            mOmniboxPrerender.prerenderMaybe(userText, mOriginalUrl.getSpec(),
                     mAutocompleteCoordinator.getCurrentNativeAutocompleteResult(),
                     mProfileSupplier.get(), mLocationBarDataProvider.getTab());
         }
+
+        mUrlCoordinator.onUrlBarSuggestionsChanged(
+                mAutocompleteCoordinator.getSuggestionCount() != 0);
     }
 
     /* package */ void loadUrl(String url, int transition, long inputStart) {
@@ -538,11 +542,11 @@ class LocationBarMediator
      *
      * <p>If the current tab is null, the URL text will be cleared.
      */
-    /* package */ void setUrl(String currentUrlString, UrlBarData urlBarData) {
+    /* package */ void setUrl(GURL currentUrl, UrlBarData urlBarData) {
         // If the URL is currently focused, do not replace the text they have entered with the URL.
         // Once they stop editing the URL, the current tab's URL will automatically be filled in.
         if (mUrlCoordinator.hasFocus()) {
-            if (mUrlFocusedWithoutAnimations && !UrlUtilities.isNTPUrl(currentUrlString)) {
+            if (mUrlFocusedWithoutAnimations && !UrlUtilities.isNTPUrl(currentUrl)) {
                 // If we did not run the focus animations, then the user has not typed any text.
                 // So, clear the focus and accept whatever URL the page is currently attempting to
                 // display. If the NTP is showing, the current page's URL should not be displayed.
@@ -552,7 +556,7 @@ class LocationBarMediator
             }
         }
 
-        mOriginalUrl = currentUrlString;
+        mOriginalUrl = currentUrl;
         setUrlBarText(urlBarData, UrlBar.ScrollType.SCROLL_TO_TLD, SelectionState.SELECT_ALL);
     }
 
@@ -717,7 +721,7 @@ class LocationBarMediator
             button.setAlpha(0.f);
         }
         ObjectAnimator buttonAnimator = ObjectAnimator.ofFloat(button, View.ALPHA, 1.f);
-        buttonAnimator.setInterpolator(BakedBezierInterpolator.FADE_IN_CURVE);
+        buttonAnimator.setInterpolator(Interpolators.LINEAR_OUT_SLOW_IN_INTERPOLATOR);
         buttonAnimator.setStartDelay(ICON_FADE_ANIMATION_DELAY_MS);
         buttonAnimator.setDuration(ICON_FADE_ANIMATION_DURATION_MS);
         return buttonAnimator;
@@ -731,7 +735,7 @@ class LocationBarMediator
     /* package */ ObjectAnimator createHideButtonAnimatorForTablet(View button) {
         assert mIsTablet;
         ObjectAnimator buttonAnimator = ObjectAnimator.ofFloat(button, View.ALPHA, 0.f);
-        buttonAnimator.setInterpolator(BakedBezierInterpolator.FADE_OUT_CURVE);
+        buttonAnimator.setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR);
         buttonAnimator.setDuration(ICON_FADE_ANIMATION_DURATION_MS);
         return buttonAnimator;
     }
@@ -755,7 +759,7 @@ class LocationBarMediator
         Animator widthChangeAnimator =
                 ObjectAnimator.ofFloat(this, mWidthChangeFractionPropertyTablet, 0f);
         widthChangeAnimator.setDuration(WIDTH_CHANGE_ANIMATION_DURATION_MS);
-        widthChangeAnimator.setInterpolator(BakedBezierInterpolator.TRANSFORM_CURVE);
+        widthChangeAnimator.setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR);
         widthChangeAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(Animator animation) {
@@ -824,7 +828,7 @@ class LocationBarMediator
                 ObjectAnimator.ofFloat(this, mWidthChangeFractionPropertyTablet, 1f);
         widthChangeAnimator.setStartDelay(WIDTH_CHANGE_ANIMATION_DELAY_MS);
         widthChangeAnimator.setDuration(WIDTH_CHANGE_ANIMATION_DURATION_MS);
-        widthChangeAnimator.setInterpolator(BakedBezierInterpolator.TRANSFORM_CURVE);
+        widthChangeAnimator.setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR);
         widthChangeAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(Animator animation) {
@@ -901,7 +905,7 @@ class LocationBarMediator
     /* package */ void forceOnTextChanged() {
         String textWithoutAutocomplete = mUrlCoordinator.getTextWithoutAutocomplete();
         String textWithAutocomplete = mUrlCoordinator.getTextWithAutocomplete();
-        mAutocompleteCoordinator.onTextChanged(textWithoutAutocomplete, textWithAutocomplete);
+        mAutocompleteCoordinator.onTextChanged(textWithoutAutocomplete);
     }
 
     /* package */ boolean shouldClearOmniboxOnFocus() {
@@ -1101,15 +1105,14 @@ class LocationBarMediator
     }
 
     private void updateUrl() {
-        setUrl(mLocationBarDataProvider.getCurrentUrl(), mLocationBarDataProvider.getUrlBarData());
+        setUrl(mLocationBarDataProvider.getCurrentGurl(), mLocationBarDataProvider.getUrlBarData());
     }
 
     private void updateOmniboxPrerender() {
         if (mOmniboxPrerender == null) return;
         // Profile may be null if switching to a tab that has not yet been initialized.
-        Profile profile = mProfileSupplier.get();
-        if (profile == null) return;
-        mOmniboxPrerender.clear(profile);
+        if (!mProfileSupplier.hasValue()) return;
+        mOmniboxPrerender.clear(mProfileSupplier.get());
     }
 
     @SuppressLint("GestureBackNavigation")
@@ -1159,42 +1162,6 @@ class LocationBarMediator
             // padding area. Set clip padding to false to prevent them from getting clipped.
             mLocationBarLayout.setClipToPadding(false);
         }
-    }
-
-    float getUrlBarTranslationXForToolbarAnimation(float urlExpansionPercent, boolean isOnNtp) {
-        // No offset is required if we are not showing the SE logo.
-        if (!mSearchEngineLogoUtils.shouldShowSearchEngineLogo(
-                    mLocationBarDataProvider.isIncognito())) {
-            return 0;
-        }
-
-        boolean isRtl = mLocationBarLayout.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
-        // The calculation here is: the difference in padding between the focused vs unfocused
-        // states and also accounts for the translation that the status icon will do. In the end,
-        // this translation will be the distance that the url bar needs to travel to arrive at the
-        // desired padding when focused.
-        float translation =
-                urlExpansionPercent * mLocationBarLayout.getEndPaddingPixelSizeOnFocusDelta();
-
-        boolean scrollingOnNtp =
-                !mUrlHasFocus && mStatusCoordinator.isSearchEngineStatusIconVisible() && isOnNtp;
-        if (scrollingOnNtp) {
-            // When:
-            // 1. unfocusing the LocationBar on the NTP.
-            // 2. scrolling the fakebox to the LocationBar on the NTP.
-            // The status icon and the URL bar text overlap in the animation.
-            //
-            // This branch calculates the negative distance the URL bar needs to travel to
-            // completely overlap the status icon and end up in a state that matches the fakebox.
-            translation -= (1f - urlExpansionPercent)
-                    * (mStatusCoordinator.getStatusIconWidth()
-                            - mLocationBarLayout.getEndPaddingPixelSizeOnFocusDelta());
-        }
-        // For LTR, the value is negative because the status icon is left of the url bar on the
-        // x/y plane.
-        // For RTL, the value is positive because the status icon is right of the url bar on the
-        // x/y plane.
-        return isRtl ? -translation : translation;
     }
 
     // LocationBarData.Observer implementation
@@ -1286,7 +1253,7 @@ class LocationBarMediator
               the restored omnibox text input.
              */
             if (reason == OmniboxFocusReason.FOLD_TRANSITION_RESTORATION) {
-                mAutocompleteCoordinator.onTextChanged(pastedText, pastedText);
+                mAutocompleteCoordinator.onTextChanged(pastedText);
             } else {
                 forceOnTextChanged();
             }
@@ -1415,7 +1382,7 @@ class LocationBarMediator
 
         setUrlBarFocus(false, null, OmniboxFocusReason.UNFOCUS);
         // Revert the URL to match the current page.
-        setUrl(mLocationBarDataProvider.getCurrentUrl(), mLocationBarDataProvider.getUrlBarData());
+        setUrl(mLocationBarDataProvider.getCurrentGurl(), mLocationBarDataProvider.getUrlBarData());
         focusCurrentTab();
     }
 

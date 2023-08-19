@@ -200,7 +200,6 @@ test("sandbox_linux_unittests") {
     ":sandbox_linux_unittests_sources",
     "//sandbox/policy:tests",
   ]
-  data_deps = [ "//testing/buildbot/filters:sandbox_linux_unittests_filters" ]
   if (is_android) {
     use_raw_android_executable = true
   }

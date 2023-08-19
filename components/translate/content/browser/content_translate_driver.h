@@ -116,24 +116,13 @@ class ContentTranslateDriver : public TranslateDriver,
   void RegisterPage(
       mojo::PendingRemote<translate::mojom::TranslateAgent> translate_agent,
       const translate::LanguageDetectionDetails& details,
-      bool page_level_translation_critiera_met) override;
+      bool page_level_translation_criteria_met) override;
 
   // translate::mojom::ContentTranslateDriver implementation:
   void GetLanguageDetectionModel(
       GetLanguageDetectionModelCallback callback) override;
 
  protected:
-  const base::ObserverList<TranslationObserver, true>& translation_observers()
-      const {
-    return translation_observers_;
-  }
-
-  TranslateManager* translate_manager() const { return translate_manager_; }
-
-  language::UrlLanguageHistogram* language_histogram() const {
-    return language_histogram_;
-  }
-
   bool IsAutoHrefTranslateAllOriginsEnabled() const;
 
  private:

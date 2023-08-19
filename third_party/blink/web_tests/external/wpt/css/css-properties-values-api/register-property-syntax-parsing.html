@@ -75,7 +75,6 @@ assert_valid("<time>", "2s");
 assert_valid("<time>", "calc(2s - 9ms)");
 assert_valid("<resolution>", "10dpi");
 assert_valid("<resolution>", "3dPpX");
-assert_valid("<resolution>", "-5.3dpcm");
 assert_valid("<transform-function>", "translateX(2px)");
 assert_valid("<transform-function>|<integer>", "5");
 assert_valid("<transform-function>|<integer>", "scale(2)");
@@ -90,6 +89,7 @@ assert_valid("<image>", "linear-gradient(yellow, blue)");
 assert_valid("<url>", "url(a)");
 
 assert_valid("<color>+", "yellow blue");
+assert_valid("<color>+", "yellow blue ");
 assert_valid("<color>+ | <color>", "yellow blue");
 assert_valid("<color> | <color>+", "yellow blue");
 assert_valid("<color># | <color>", "yellow, blue");
@@ -109,6 +109,7 @@ assert_valid("<transform-list> | <transform-function># ", "scale(2) rotate(90deg
 assert_valid("<transform-function># | <transform-list>", "scale(2) rotate(90deg)");
 assert_valid("<transform-list> | <transform-function># ", "scale(2), rotate(90deg)");
 assert_valid("<transform-function># | <transform-list>", "scale(2), rotate(90deg)");
+assert_valid("<transform-list>", "scale(2) rotate(90deg) ");
 assert_valid("<integer>+ | <percentage>+ | <length>+ ", "1");
 assert_valid("<integer>+ | <percentage>+ | <length>+ ", "1 1");
 assert_valid("<integer>+ | <percentage>+ | <length>+ ", "1%");
@@ -140,6 +141,7 @@ assert_valid("\\1F914 hmm", "🤔hmm");
 assert_valid("\\1F914\\1F914", "🤔🤔");
 
 // Invalid syntax
+assert_invalid("<color>#", "yellow blue");
 assert_invalid("banana,nya", "banana");
 assert_invalid("<\\6c ength>", "10px");
 assert_invalid("<banana>", "banana");
@@ -157,6 +159,8 @@ assert_invalid("<length>##", "10px");
 assert_invalid("<length>+#", "10px");
 assert_invalid("<length>#+", "10px");
 assert_invalid("<length> | *", "10px");
+assert_invalid("<length>+", "2px,7px,calc(8px)");
+assert_invalid("<length>#", "2px 7px calc(8px)");
 assert_invalid("*|banana", "banana");
 assert_invalid("|banana", "banana");
 assert_invalid("*+", "banana");
@@ -247,6 +251,11 @@ assert_invalid("<angle>", "0");
 assert_invalid("<angle>", "10%");
 assert_invalid("<time>", "2px");
 assert_invalid("<resolution>", "10");
+
+// "The allowed range of <resolution> values always excludes negative values"
+// https://www.w3.org/TR/css-values-4/#resolution-value
+assert_invalid("<resolution>", "-5.3dpcm");
+
 assert_invalid("<transform-function>", "scale()");
 assert_invalid("<transform-list>", "scale()");
 assert_invalid("<transform-list>+", "translateX(2px) rotate(20deg)");

@@ -45,9 +45,9 @@ TransformPaintPropertyNode::State::ComputeTransformChange(
   }
 
   if ((direct_compositing_reasons & CompositingReason::kStickyPosition) ||
-      (direct_compositing_reasons & CompositingReason::kAnchorScroll)) {
-    // The compositor handles sticky offset changes and anchor-scroll offset
-    // changes automatically.
+      (direct_compositing_reasons & CompositingReason::kAnchorPosition)) {
+    // The compositor handles sticky offset changes and anchor position
+    // translation offset changes automatically.
     DCHECK(transform_and_origin.matrix.Preserves2dAxisAlignment());
     DCHECK(other.matrix.Preserves2dAxisAlignment());
     return PaintPropertyChangeType::kChangedOnlyCompositedValues;
@@ -94,8 +94,8 @@ PaintPropertyChangeType TransformPaintPropertyNode::State::ComputeChange(
       scroll != other.scroll ||
       scroll_translation_for_fixed != other.scroll_translation_for_fixed ||
       !base::ValuesEquivalent(sticky_constraint, other.sticky_constraint) ||
-      !base::ValuesEquivalent(anchor_scroll_containers_data,
-                              other.anchor_scroll_containers_data) ||
+      !base::ValuesEquivalent(anchor_position_scrollers_data,
+                              other.anchor_position_scrollers_data) ||
       visible_frame_element_id != other.visible_frame_element_id) {
     return PaintPropertyChangeType::kChangedOnlyValues;
   }

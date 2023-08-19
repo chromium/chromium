@@ -71,6 +71,7 @@ void VideoCaptureDeviceFactoryAsh::OnDeviceCreated(
 void VideoCaptureDeviceFactoryAsh::OnClientConnectionErrorOrClose(
     const std::string& device_id) {
   devices_.erase(device_id);
+  device_factory_->StopDevice(device_id);
 }
 
 }  // namespace crosapi

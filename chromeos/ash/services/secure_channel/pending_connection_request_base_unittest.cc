@@ -123,7 +123,7 @@ class SecureChannelPendingConnectionRequestBaseTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
 
-  raw_ptr<FakeClientConnectionParameters, ExperimentalAsh>
+  raw_ptr<FakeClientConnectionParameters, DanglingUntriaged | ExperimentalAsh>
       fake_client_connection_parameters_;
   std::unique_ptr<FakePendingConnectionRequestDelegate>
       fake_pending_connection_request_delegate_;

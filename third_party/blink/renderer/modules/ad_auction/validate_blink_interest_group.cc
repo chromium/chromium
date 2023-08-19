@@ -15,6 +15,8 @@ namespace blink {
 
 namespace {
 
+const size_t kMaxAdRenderIdSize = 12;
+
 // Check if `url` can be used as an interest group's ad render URL. Ad URLs can
 // be cross origin, unlike other interest group URLs, but are still restricted
 // to HTTPS with no embedded credentials.
@@ -98,6 +100,11 @@ size_t EstimateBlinkInterestGroupSize(
       size += ad->buyer_and_seller_reporting_id.length();
       size += ad->metadata.length();
       size += ad->ad_render_id.length();
+      if (ad->allowed_reporting_origins) {
+        for (const auto& origin : ad->allowed_reporting_origins.value()) {
+          size += origin->ToString().length();
+        }
+      }
     }
   }
 
@@ -128,6 +135,8 @@ size_t EstimateBlinkInterestGroupSize(
       }
     }
   }
+  constexpr size_t kAuctionServerRequestFlagsSize = 4;
+  size += kAuctionServerRequestFlagsSize;
 
   return size;
 }
@@ -251,6 +260,38 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
           return false;
         }
       }
+      if (group.ads.value()[i]->ad_render_id.length() > kMaxAdRenderIdSize) {
+        error_field_name = String::Format("ads[%u].adRenderId", i);
+        error_field_value = group.ads.value()[i]->ad_render_id;
+        error = "The adRenderId is too long.";
+        return false;
+      }
+      auto& allowed_reporting_origins =
+          group.ads.value()[i]->allowed_reporting_origins;
+      if (allowed_reporting_origins) {
+        if (allowed_reporting_origins->size() >
+            mojom::blink::kMaxAllowedReportingOrigins) {
+          error_field_name =
+              String::Format("ads[%u].allowedReportingOrigins", i);
+          error_field_value = "";
+          error = String::Format(
+              "allowedReportingOrigins cannot have more than %hu elements.",
+              mojom::blink::kMaxAllowedReportingOrigins);
+          return false;
+        }
+        for (WTF::wtf_size_t j = 0; j < allowed_reporting_origins->size();
+             ++j) {
+          if (allowed_reporting_origins.value()[j]->Protocol() !=
+              url::kHttpsScheme) {
+            error_field_name =
+                String::Format("ads[%u].allowedReportingOrigins", i);
+            error_field_value =
+                allowed_reporting_origins.value()[j]->ToString();
+            error = "allowedReportingOrigins must all be HTTPS.";
+            return false;
+          }
+        }
+      }
     }
   }
 
@@ -280,6 +321,20 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
           return false;
         }
       }
+      if (group.ad_components.value()[i]->ad_render_id.length() >
+          kMaxAdRenderIdSize) {
+        error_field_name = String::Format("adComponents[%u].adRenderId", i);
+        error_field_value = group.ad_components.value()[i]->ad_render_id;
+        error = "The adRenderId is too long.";
+        return false;
+      }
+
+      // The code should not be setting these for `ad_components`
+      DCHECK(group.ad_components.value()[i]->buyer_reporting_id.IsNull());
+      DCHECK(group.ad_components.value()[i]
+                 ->buyer_and_seller_reporting_id.IsNull());
+      DCHECK(!group.ad_components.value()[i]
+                  ->allowed_reporting_origins.has_value());
     }
   }
 

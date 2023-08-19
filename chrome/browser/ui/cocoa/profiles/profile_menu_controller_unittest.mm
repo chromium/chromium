@@ -4,7 +4,6 @@
 
 #import "chrome/browser/ui/cocoa/profiles/profile_menu_controller.h"
 
-#include "base/mac/scoped_nsobject.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -36,11 +35,10 @@ class ProfileMenuControllerTest : public BrowserWithTestWindowTest {
   }
 
   void RebuildController() {
-    item_.reset([[NSMenuItem alloc] initWithTitle:@"Users"
-                                           action:nil
-                                    keyEquivalent:@""]);
-    controller_.reset(
-        [[ProfileMenuController alloc] initWithMainMenuItem:item_]);
+    item_ = [[NSMenuItem alloc] initWithTitle:@"Users"
+                                       action:nil
+                                keyEquivalent:@""];
+    controller_ = [[ProfileMenuController alloc] initWithMainMenuItem:item_];
   }
 
   void TestBottomItems() {
@@ -76,13 +74,13 @@ class ProfileMenuControllerTest : public BrowserWithTestWindowTest {
     }
   }
 
-  ProfileMenuController* controller() { return controller_.get(); }
+  ProfileMenuController* controller() { return controller_; }
 
-  NSMenuItem* menu_item() { return item_.get(); }
+  NSMenuItem* menu_item() { return item_; }
 
  private:
-  base::scoped_nsobject<NSMenuItem> item_;
-  base::scoped_nsobject<ProfileMenuController> controller_;
+  NSMenuItem* __strong item_;
+  ProfileMenuController* __strong controller_;
 };
 
 TEST_F(ProfileMenuControllerTest, InitializeMenu) {
@@ -137,7 +135,7 @@ TEST_F(ProfileMenuControllerTest, RebuildMenu) {
 }
 
 TEST_F(ProfileMenuControllerTest, InsertItems) {
-  base::scoped_nsobject<NSMenu> menu([[NSMenu alloc] initWithTitle:@""]);
+  NSMenu* menu = [[NSMenu alloc] initWithTitle:@""];
   ASSERT_EQ(0, [menu numberOfItems]);
 
   // Even with one profile items can still be inserted.
@@ -194,7 +192,7 @@ TEST_F(ProfileMenuControllerTest, InsertItems) {
 }
 
 TEST_F(ProfileMenuControllerTest, InitialActiveBrowser) {
-  [controller() activeBrowserChangedTo:NULL];
+  [controller() activeBrowserChangedTo:nullptr];
   VerifyProfileNamedIsActive(l10n_util::GetNSString(IDS_DEFAULT_PROFILE_NAME),
                              __LINE__);
 }
@@ -276,7 +274,7 @@ TEST_F(ProfileMenuControllerTest, DeleteActiveProfile) {
   // Simulate the active browser changing to NULL and ensure a profile doesn't
   // get created by disallowing IO operations temporarily.
   base::ScopedDisallowBlocking scoped_disallow_blocking;
-  [controller() activeBrowserChangedTo:NULL];
+  [controller() activeBrowserChangedTo:nullptr];
   // Check that validateMenuItem does not load a profile, and edit is disabled.
   // Adding a new profile is still possible since this happens through the
   // profile picker.

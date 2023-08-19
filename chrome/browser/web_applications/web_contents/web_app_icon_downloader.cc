@@ -7,7 +7,7 @@
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "content/public/browser/navigation_handle.h"
@@ -144,7 +144,7 @@ void WebAppIconDownloader::MaybeCompleteCallback() {
       callback_.is_null()) {
     return;
   }
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback_), IconsDownloadedResult::kCompleted,
                      std::move(icons_map_), std::move(icons_http_results_)));

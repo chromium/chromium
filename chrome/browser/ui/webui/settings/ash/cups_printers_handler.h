@@ -14,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/printing/cups_printers_manager.h"
-#include "chrome/browser/ash/printing/printer_configurer.h"
 #include "chrome/browser/ash/printing/printer_event_tracker.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chromeos/printing/cups_printer_status.h"
@@ -56,7 +55,6 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
   static std::unique_ptr<CupsPrintersHandler> CreateForTesting(
       Profile* profile,
       scoped_refptr<chromeos::PpdProvider> ppd_provider,
-      std::unique_ptr<PrinterConfigurer> printer_configurer,
       CupsPrintersManager* printers_manager);
 
   CupsPrintersHandler(Profile* profile, CupsPrintersManager* printers_manager);
@@ -76,7 +74,6 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
  private:
   CupsPrintersHandler(Profile* profile,
                       scoped_refptr<chromeos::PpdProvider> ppd_provider,
-                      std::unique_ptr<PrinterConfigurer> printer_configurer,
                       CupsPrintersManager* printers_manager);
 
   // Gets all CUPS printers and return it to WebUI.
@@ -85,11 +82,11 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
   void HandleUpdateCupsPrinter(const base::Value::List& args);
   void HandleRemoveCupsPrinter(const base::Value::List& args);
   void HandleRetrieveCupsPrinterPpd(const base::Value::List& args);
-  void OnSetUpPrinter(
-      const std::string& printer_id,
-      const std::string& printer_name,
-      const std::string& eula,
-      const absl::optional<printing::PrinterSemanticCapsAndDefaults>& caps);
+
+  void OnSetUpPrinter(const std::string& printer_id,
+                      const std::string& printer_name,
+                      const std::string& eula,
+                      PrinterSetupResult result);
 
   // For a CupsPrinterInfo in |args|, retrieves the relevant PrinterInfo object
   // using an IPP call to the printer.
@@ -211,8 +208,7 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
 
   // Code common between the discovered and manual add printer code paths.
   void OnAddedOrEditedPrinterCommon(const chromeos::Printer& printer,
-                                    PrinterSetupResult result_code,
-                                    bool is_automatic);
+                                    PrinterSetupResult result_code);
 
   // CupsPrintersManager::Observer override:
   void OnPrintersChanged(
@@ -271,7 +267,7 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
       const std::string& callback_id,
       const chromeos::CupsPrinterStatus& printer_status);
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
 
   // Discovery support.  discovery_active_ tracks whether or not the UI
   // currently wants updates about printer availability.  The two vectors track
@@ -285,7 +281,6 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
   //
   // TODO(crbug/757887) - Remove this subtle initialization constraint.
   scoped_refptr<chromeos::PpdProvider> ppd_provider_;
-  std::unique_ptr<PrinterConfigurer> printer_configurer_;
 
   // Cached list of {printer name, PpdReference} pairs for each manufacturer
   // that has been resolved in the lifetime of this object.

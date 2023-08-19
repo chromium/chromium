@@ -143,10 +143,6 @@ const char kCredits[] = "credits";
 // devtools://devtools/bundled/<path>
 const char kCustomDevtoolsFrontend[] = "custom-devtools-frontend";
 
-// Enables a frame context menu item that toggles the frame in and out of glass
-// mode (Windows Vista and up only).
-const char kDebugEnableFrameToggle[] = "debug-enable-frame-toggle";
-
 // Adds debugging entries such as Inspect Element to context menus of packed
 // apps.
 const char kDebugPackedApps[] = "debug-packed-apps";
@@ -200,6 +196,9 @@ const char kDisableExtensionsExcept[] = "disable-extensions-except";
 // Disables lazy loading of images and frames.
 const char kDisableLazyLoading[] = "disable-lazy-loading";
 
+// Disables NaCl. If kEnableNaCl is also set, this switch takes precedence.
+const char kDisableNaCl[] = "disable-nacl";
+
 // Disables print preview (For testing, and for users who don't like us. :[ )
 const char kDisablePrintPreview[] = "disable-print-preview";
 
@@ -250,6 +249,11 @@ const char kEnableCriticalPersistedTabData[] =
 // Enables Domain Reliability Monitoring.
 const char kEnableDomainReliability[] = "enable-domain-reliability";
 
+// Enables a number of UI improvements to downloads, download scanning, and
+// download warnings.
+const char kEnableDownloadWarningImprovements[] =
+    "enable-download-warning-improvements";
+
 // Enables the early process singleton feature. The process singleton will be
 // held for the whole lifetime of BrowserImpl (see https://crbug.com/1340599).
 const char kEnableEarlyProcessSingleton[] = "enable-early-process-singleton";
@@ -265,8 +269,8 @@ const char kEnableExtensionActivityLogTesting[] =
 const char kEnableHangoutServicesExtensionForTesting[] =
     "enable-hangout-services-extension-for-testing";
 
-// Runs the Native Client inside the renderer process and enables GPU plugin
-// (internally adds lEnableGpuPlugin to the command line).
+// Allows NaCl to run in all contexts (such as open web). Note that
+// kDisableNaCl disables NaCl in all contexts and takes precedence.
 const char kEnableNaCl[] = "enable-nacl";
 
 // Enables the network-related benchmarking extensions.
@@ -302,6 +306,12 @@ const char kExtensionsNotWebstore[] = "extensions-not-webstore";
 // Forces application mode. This hides certain system UI elements and forces
 // the app to be installed if it hasn't been already.
 const char kForceAppMode[] = "force-app-mode";
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Forces developer tools availability, no matter what values the enterprise
+// policies DeveloperToolsDisabled and DeveloperToolsAvailability are set to.
+const char kForceDevToolsAvailable[] = "force-devtools-available";
+#endif
 
 // Displays the First Run experience when the browser is started, regardless of
 // whether or not it's actually the First Run (this overrides kNoFirstRun).
@@ -513,6 +523,10 @@ const char kSilentDebuggerExtensionAPI[] = "silent-debugger-extension-api";
 // one wishes to use Chrome as an ash server.
 const char kSilentLaunch[] = "silent-launch";
 
+// Sets the BrowsingDataLifetime policy to a very short value (shorter than
+// normally possible) for testing purposes.
+const char kSimulateBrowsingDataLifetime[] = "simulate-browsing-data-lifetime";
+
 // Simulates a critical update being available.
 const char kSimulateCriticalUpdate[] = "simulate-critical-update";
 
@@ -549,11 +563,6 @@ const char kStartMaximized[] = "start-maximized";
 
 // Starts the stack sampling profiler in the child process.
 const char kStartStackProfiler[] = "start-stack-profiler";
-
-// Starts the stack sampling profiler in the child process with only periodic
-// profiling enabled, i.e. no startup profiling.
-const char kStartStackProfilerPeriodicOnly[] =
-    "start-stack-profiler-periodic-only";
 
 // Browser test mode for the |kStartStackProfiler| switch. Limits the profile
 // durations to be significantly less than the test timeout. On ChromeOS,
@@ -681,11 +690,6 @@ const char kForceUpdateMenuType[] = "force-update-menu-type";
 // Forces a custom summary to be displayed below the update menu item.
 const char kForceShowUpdateMenuItemCustomSummary[] = "custom_summary";
 
-// Force hiding non-displayable account email during the FRE flow. Only for
-// testing purposes.
-const char kForceHideNonDisplayableAccountEmailFRE[] =
-    "force-hide-non-displayable-account-email-fre";
-
 // Sets the market URL for Chrome for use in testing.
 const char kMarketUrlForTesting[] = "market-url-for-testing";
 
@@ -725,8 +729,8 @@ const char kHelp[] = "help";
 const char kHelpShort[] = "h";
 
 // Specifies which encryption storage backend to use. Possible values are
-// kwallet, kwallet5, gnome, gnome-keyring, gnome-libsecret, basic. Any other
-// value will lead to Chrome detecting the best backend automatically.
+// kwallet, kwallet5, kwallet6, gnome, gnome-keyring, gnome-libsecret, basic.
+// Any other value will lead to Chrome detecting the best backend automatically.
 // TODO(crbug.com/571003): Once PasswordStore no longer uses the Keyring or
 // KWallet for storing passwords, rename this flag to stop referencing
 // passwords. Do not rename it sooner, though; developers and testers might
@@ -866,6 +870,10 @@ const char kListApps[] = "list-apps";
 // Pass the basename of the profile directory to specify which profile to get
 // information. Only relevant when used with --list-apps switch.
 const char kProfileBaseName[] = "profile-base-name";
+
+// Domains and associated SAML attributes for which third-party profile
+// management should be enabled. Input should be in JSON format.
+const char kProfileManagementAttributes[] = "profile-management-attributes";
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)

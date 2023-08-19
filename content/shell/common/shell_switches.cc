@@ -51,6 +51,9 @@ const char kRemoteDebuggingAddress[] = "remote-debugging-address";
 // blink web tests.
 const char kRunWebTests[] = "run-web-tests";
 
+// Register the provided scheme as a standard scheme.
+const char kTestRegisterStandardScheme[] = "test-register-standard-scheme";
+
 bool IsRunWebTestsSwitchPresent() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kRunWebTests);

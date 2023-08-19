@@ -573,7 +573,7 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
     // becomes available for networks. Production code does this through
     // NSSCertDatabase::ImportUserCert.
     ScopedNetworkCertLoaderRefreshWaiter network_cert_loader_refresh_waiter;
-    net::CertDatabase::GetInstance()->NotifyObserversCertDBChanged();
+    net::CertDatabase::GetInstance()->NotifyObserversClientCertStoreChanged();
     network_cert_loader_refresh_waiter.Wait();
   }
 
@@ -758,13 +758,17 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
   }
 
   // Unowned pointers -- just pointers to the singleton instances.
-  raw_ptr<ash::ShillManagerClient::TestInterface, ExperimentalAsh>
+  raw_ptr<ash::ShillManagerClient::TestInterface,
+          DanglingUntriaged | ExperimentalAsh>
       shill_manager_client_test_ = nullptr;
-  raw_ptr<ash::ShillServiceClient::TestInterface, ExperimentalAsh>
+  raw_ptr<ash::ShillServiceClient::TestInterface,
+          DanglingUntriaged | ExperimentalAsh>
       shill_service_client_test_ = nullptr;
-  raw_ptr<ash::ShillProfileClient::TestInterface, ExperimentalAsh>
+  raw_ptr<ash::ShillProfileClient::TestInterface,
+          DanglingUntriaged | ExperimentalAsh>
       shill_profile_client_test_ = nullptr;
-  raw_ptr<ash::ShillDeviceClient::TestInterface, ExperimentalAsh>
+  raw_ptr<ash::ShillDeviceClient::TestInterface,
+          DanglingUntriaged | ExperimentalAsh>
       shill_device_client_test_ = nullptr;
 
   AccountId test_account_id_;

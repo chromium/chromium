@@ -15,6 +15,9 @@ const char kOemFolderId[] = "ddb1da55-d478-4243-8642-56d3041f0263";
 // Generated using crx_file::id_util::GenerateId("LinuxAppsFolder")
 const char kCrostiniFolderId[] = "ddolnhmblagmcagkedkbfejapapdimlk";
 
+// Generated using crx_file::id_util::GenerateId("BruschettaAppsFolder")
+const char kBruschettaFolderId[] = "olojmkekngdacpmgcffeipkflkgohcja";
+
 bool IsAppListSearchResultAnApp(AppListSearchResultType result_type) {
   switch (result_type) {
     case AppListSearchResultType::kInstalledApp:
@@ -206,10 +209,10 @@ std::ostream& operator<<(std::ostream& os, AppListViewState state) {
 
 SearchResultIconInfo::SearchResultIconInfo() = default;
 
-SearchResultIconInfo::SearchResultIconInfo(gfx::ImageSkia icon, int dimension)
+SearchResultIconInfo::SearchResultIconInfo(ui::ImageModel icon, int dimension)
     : icon(icon), dimension(dimension) {}
 
-SearchResultIconInfo::SearchResultIconInfo(gfx::ImageSkia icon,
+SearchResultIconInfo::SearchResultIconInfo(ui::ImageModel icon,
                                            int dimension,
                                            SearchResultIconShape shape)
     : icon(icon), dimension(dimension), shape(shape) {}
@@ -232,18 +235,64 @@ SystemInfoAnswerCardData::SystemInfoAnswerCardData(double bar_chart_percentage)
     : display_type(SystemInfoAnswerCardDisplayType::kBarChart),
       bar_chart_percentage(bar_chart_percentage) {}
 
-SystemInfoAnswerCardData::SystemInfoAnswerCardData(
-    std::map<SearchResultSystemInfoStorageType, int64_t>
-        storage_type_to_size_map)
-    : display_type(SystemInfoAnswerCardDisplayType::kMultiElementBarChart),
-      storage_type_to_size(std::move(storage_type_to_size_map)) {
-  DCHECK(!storage_type_to_size.empty());
-}
-
 SystemInfoAnswerCardData::~SystemInfoAnswerCardData() = default;
 
 SystemInfoAnswerCardData::SystemInfoAnswerCardData(
     const SystemInfoAnswerCardData& other) = default;
+
+void SystemInfoAnswerCardData::SetExtraDetails(
+    const std::u16string& description_on_right) {
+  extra_details = description_on_right;
+}
+
+void SystemInfoAnswerCardData::SetUpperLimitForBarChart(double upper_limit) {
+  DCHECK(upper_limit <= 100 && upper_limit >= 0);
+  upper_warning_limit_bar_chart = upper_limit;
+}
+void SystemInfoAnswerCardData::SetLowerLimitForBarChart(double lower_limit) {
+  DCHECK(lower_limit <= 100 && lower_limit >= 0);
+  lower_warning_limit_bar_chart = lower_limit;
+}
+
+void SystemInfoAnswerCardData::UpdateBarChartPercentage(
+    double new_bar_chart_percentage) {
+  DCHECK(new_bar_chart_percentage <= 100 && new_bar_chart_percentage >= 0);
+  bar_chart_percentage = new_bar_chart_percentage;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// FileMetadata:
+
+FileMetadata::FileMetadata() = default;
+FileMetadata::FileMetadata(const FileMetadata&) = default;
+FileMetadata& FileMetadata::operator=(const FileMetadata&) = default;
+FileMetadata::~FileMetadata() = default;
+
+////////////////////////////////////////////////////////////////////////////////
+// FileMetadataLoader:
+
+FileMetadataLoader::FileMetadataLoader() = default;
+FileMetadataLoader::FileMetadataLoader(const FileMetadataLoader&) = default;
+FileMetadataLoader& FileMetadataLoader::operator=(const FileMetadataLoader&) =
+    default;
+FileMetadataLoader::~FileMetadataLoader() = default;
+
+void FileMetadataLoader::RequestFileInfo(
+    OnMetadataLoadedCallback on_loaded_callback) {
+  // Return an empty FileMetadata if the loader callback is not set.
+  if (loader_callback_.is_null()) {
+    on_loaded_callback.Run(FileMetadata());
+    return;
+  }
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+      loader_callback_, on_loaded_callback);
+}
+
+void FileMetadataLoader::SetLoaderCallback(MetadataLoaderCallback callback) {
+  loader_callback_ = std::move(callback);
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // SearchResultTag:

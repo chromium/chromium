@@ -193,6 +193,19 @@ suite('ModelSettingsPolicyTest', function() {
        expectedShortEdgeAvailable: false,
        expectedShortEdgeEnforced: false,
      },
+     {
+       // Policies are undefined.
+       duplexCap: {option: [{type: 'NO_DUPLEX', is_default: true}]},
+       duplexPolicy: undefined,
+       duplexDefault: undefined,
+       expectedValue: false,
+       expectedAvailable: false,
+       expectedManaged: false,
+       expectedEnforced: false,
+       expectedShortEdge: false,
+       expectedShortEdgeAvailable: false,
+       expectedShortEdgeEnforced: false,
+     },
      // Couple of tests that verify the default and available duplex values set
      // by policies.
      // Default printing destination duplex mode should always be overwritten by

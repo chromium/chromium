@@ -18,6 +18,7 @@
 #include "chrome/browser/lacros/app_mode/chrome_kiosk_launch_controller_lacros.h"
 #include "chrome/browser/lacros/app_mode/device_local_account_extension_installer_lacros.h"
 #include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
+#include "chrome/browser/lacros/app_mode/web_kiosk_installer_lacros.h"
 #include "chrome/browser/lacros/arc/arc_icon_cache.h"
 #include "chrome/browser/lacros/automation_manager_lacros.h"
 #include "chrome/browser/lacros/browser_service_lacros.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/lacros/download_controller_client_lacros.h"
 #include "chrome/browser/lacros/drivefs_cache.h"
 #include "chrome/browser/lacros/drivefs_native_message_host_bridge_lacros.h"
+#include "chrome/browser/lacros/embedded_a11y_manager_lacros.h"
 #include "chrome/browser/lacros/field_trial_observer.h"
 #include "chrome/browser/lacros/force_installed_tracker_lacros.h"
 #include "chrome/browser/lacros/fullscreen_controller_client_lacros.h"
@@ -65,6 +67,24 @@
 #include "ui/views/controls/views_text_services_context_menu_chromeos.h"
 
 namespace {
+
+// Creates a `crosapi::ClipboardHistoryLacros` instance. This function should
+// only be called if the clipboard history refresh is enabled.
+std::unique_ptr<crosapi::ClipboardHistoryLacros>
+CreateClipboardHistoryLacros() {
+  CHECK(chromeos::features::IsClipboardHistoryRefreshEnabled());
+
+  if (chromeos::LacrosService* const service = chromeos::LacrosService::Get();
+      service->IsAvailable<crosapi::mojom::ClipboardHistory>() &&
+      service->GetInterfaceVersion<crosapi::mojom::ClipboardHistory>() >=
+          int{crosapi::mojom::ClipboardHistory::MethodMinVersions::
+                  kRegisterClientMinVersion}) {
+    return std::make_unique<crosapi::ClipboardHistoryLacros>(
+        service->GetRemote<crosapi::mojom::ClipboardHistory>().get());
+  }
+
+  return nullptr;
+}
 
 extensions::mojom::FeatureSessionType GetExtSessionType() {
   using extensions::mojom::FeatureSessionType;
@@ -136,8 +156,7 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
   web_page_info_provider_ =
       std::make_unique<crosapi::WebPageInfoProviderLacros>();
   if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
-    clipboard_history_lacros_ =
-        std::make_unique<crosapi::ClipboardHistoryLacros>();
+    clipboard_history_lacros_ = CreateClipboardHistoryLacros();
   }
 
   memory_pressure::MultiSourceMemoryPressureMonitor* monitor =
@@ -166,6 +185,8 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
     web_app_provider_bridge_ =
         std::make_unique<crosapi::WebAppProviderBridgeLacros>();
   }
+
+  EmbeddedA11yManagerLacros::GetInstance()->Init();
 
 #if !BUILDFLAG(IS_CHROMEOS_DEVICE)
   // The test controller is only created in test builds AND when Ash's test
@@ -242,8 +263,9 @@ void ChromeBrowserMainExtraPartsLacros::PostProfileInit(
   sync_crosapi_manager_.PostProfileInit(profile);
 
   // The setup below is intended to run for only the initial profile.
-  if (!is_initial_profile)
+  if (!is_initial_profile) {
     return;
+  }
 
   quick_answers_controller_ = std::make_unique<QuickAnswersControllerImpl>();
   QuickAnswersController::Get()->SetClient(
@@ -262,6 +284,10 @@ void ChromeBrowserMainExtraPartsLacros::PostProfileInit(
     chrome_kiosk_launch_controller_ =
         std::make_unique<ChromeKioskLaunchControllerLacros>(*profile);
   }
+  if (chromeos::BrowserParamsProxy::Get()->SessionType() ==
+      crosapi::mojom::SessionType::kWebKioskSession) {
+    web_kiosk_installer_ = std::make_unique<WebKioskInstallerLacros>(*profile);
+  }
 
   views::ViewsTextServicesContextMenuChromeos::SetImplFactory(
       base::BindRepeating(
@@ -276,8 +302,16 @@ void ChromeBrowserMainExtraPartsLacros::PostProfileInit(
   if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
     chromeos::clipboard_history::SetQueryItemDescriptorsImpl(
         base::BindRepeating([]() {
-          return crosapi::ClipboardHistoryLacros::Get()->cached_descriptors();
+          if (const crosapi::ClipboardHistoryLacros* const
+                  clipboard_history_lacros =
+                      crosapi::ClipboardHistoryLacros::Get()) {
+            return clipboard_history_lacros->cached_descriptors();
+          }
+
+          return chromeos::clipboard_history::QueryItemDescriptorsImpl::
+              ResultType();
         }));
+
     chromeos::clipboard_history::SetPasteClipboardItemByIdImpl(
         base::BindRepeating(
             [](const base::UnguessableToken& id, int event_flags,
@@ -298,12 +332,15 @@ void ChromeBrowserMainExtraPartsLacros::PostProfileInit(
 }
 
 void ChromeBrowserMainExtraPartsLacros::PostMainMessageLoopRun() {
-  // Must be destroyed before |chrome_kiosk_launch_controller_->profile_| is
+  // Must be destroyed before `chrome_kiosk_launch_controller_->profile_` is
   // destroyed.
   chrome_kiosk_launch_controller_.reset();
-  // Must be destroyed before |kiosk_session_service_->app_session_->profile_|
-  // is destroyed.
+  web_kiosk_installer_.reset();
+  // Must be destroyed before
+  // `kiosk_session_service_->kiosk_browser_session_->profile_` is destroyed.
   kiosk_session_service_.reset();
+  // Must be destroyed before the extension system gets destroyed.
+  force_installed_tracker_.reset();
 
   // Initialized in PreProfileInit.
   device::GeolocationManager::SetInstance(nullptr);

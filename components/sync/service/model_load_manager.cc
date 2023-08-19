@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/barrier_closure.h"
+#include "base/debug/alias.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -132,13 +133,19 @@ void ModelLoadManager::StopDatatypeImpl(
     SyncStopMetadataFate metadata_fate,
     DataTypeController* dtc,
     DataTypeController::StopCallback callback) {
-  loaded_types_.Remove(dtc->type());
+  const ModelType model_type = dtc->type();
+
+  // Avoid that the local variable is optimized away, motivated by
+  // crbug.com/1456872.
+  base::debug::Alias(&model_type);
+
+  loaded_types_.Remove(model_type);
 
   DCHECK(base::FeatureList::IsEnabled(
              syncer::kSyncAllowClearingMetadataWhenDataTypeIsStopped) ||
          error.IsSet() || (dtc->state() != DataTypeController::NOT_RUNNING));
 
-  delegate_->OnSingleDataTypeWillStop(dtc->type(), error);
+  delegate_->OnSingleDataTypeWillStop(model_type, error);
 
   // Note: Depending on |metadata_fate|, data types will clear their metadata
   // in response to Stop().

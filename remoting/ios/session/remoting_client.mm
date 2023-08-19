@@ -29,10 +29,6 @@
 #include "remoting/protocol/session.h"
 #include "remoting/protocol/video_renderer.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 NSString* const kHostSessionStatusChanged = @"kHostSessionStatusChanged";
 NSString* const kHostSessionPinProvided = @"kHostSessionPinProvided";
 

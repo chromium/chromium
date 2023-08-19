@@ -79,9 +79,10 @@ void SelectFileDialog::Listener::MultiFilesSelectedWithExtraInfo(
 }
 
 // static
-void SelectFileDialog::SetFactory(ui::SelectFileDialogFactory* factory) {
+void SelectFileDialog::SetFactory(
+    std::unique_ptr<ui::SelectFileDialogFactory> factory) {
   delete dialog_factory_;
-  dialog_factory_ = factory;
+  dialog_factory_ = factory.release();
 }
 
 // static

@@ -48,8 +48,6 @@ class MEDIA_EXPORT AudioDeviceStatsReporter {
     int callback_count = 0;
     int glitch_count = 0;
     base::TimeDelta glitch_duration;
-    base::TimeDelta smallest_delay = base::TimeDelta::Max();
-    base::TimeDelta largest_delay = base::TimeDelta::Min();
   };
 
   // Logs data aggregated over intervals.
@@ -61,14 +59,14 @@ class MEDIA_EXPORT AudioDeviceStatsReporter {
 
   static AggregateLogCallback CreateAggregateCallback(
       const std::string& stat_name,
-      media::AudioLatency::LatencyType latency,
+      media::AudioLatency::Type latency,
       int max_value,
       size_t bucket_count,
       Type type);
 
   static RealtimeLogCallback CreateRealtimeCallback(
       const std::string& stat_name,
-      media::AudioLatency::LatencyType latency,
+      media::AudioLatency::Type latency,
       int max_value,
       size_t bucket_count,
       Type type);
@@ -82,7 +80,6 @@ class MEDIA_EXPORT AudioDeviceStatsReporter {
 
   // Callback functions for writing to the histograms.
   const RealtimeLogCallback delay_log_callback_;
-  const AggregateLogCallback delay_difference_log_callback_;
   const AggregateLogCallback glitch_count_log_callback_;
   const AggregateLogCallback glitch_duration_log_callback_;
 

@@ -15,9 +15,6 @@ build_webui_tests("build") {
     "categories_test.ts",
     "check_mark_wrapper_test.ts",
     "chrome_colors_test.ts",
-    "color_test.ts",
-    "colors_test.ts",
-    "colors_focus_test.ts",
     "hover_button_test.ts",
     "shortcuts_test.ts",
     "test_support.ts",
@@ -34,7 +31,9 @@ build_webui_tests("build") {
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/help_bubble:build_ts",
     "//ui/webui/resources/cr_components/managed_dialog:build_ts",
+    "//ui/webui/resources/cr_components/theme_color_picker:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
   ]
 }

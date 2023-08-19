@@ -387,16 +387,18 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
               // 3. Both container and bitstream.
               // Thus we should also extract HDR metadata here in case we
               // miss the information.
-              if (!hdr_metadata_)
-                hdr_metadata_ = gfx::HDRMetadata();
-              sei_msg.content_light_level_info.PopulateHDRMetadata(
-                  hdr_metadata_.value());
+              if (!hdr_metadata_.has_value()) {
+                hdr_metadata_.emplace();
+              }
+              hdr_metadata_->cta_861_3 =
+                  sei_msg.content_light_level_info.ToGfx();
               break;
             case H265SEIMessage::kSEIMasteringDisplayInfo:
-              if (!hdr_metadata_)
-                hdr_metadata_ = gfx::HDRMetadata();
-              sei_msg.mastering_display_info.PopulateColorVolumeMetadata(
-                  hdr_metadata_->smpte_st_2086);
+              if (!hdr_metadata_.has_value()) {
+                hdr_metadata_.emplace();
+              }
+              hdr_metadata_->smpte_st_2086 =
+                  sei_msg.mastering_display_info.ToGfx();
               break;
             default:
               break;
@@ -495,9 +497,13 @@ bool H265Decoder::ProcessPPS(int pps_id,
 
   VideoCodecProfile new_profile = H265Parser::ProfileIDCToVideoCodecProfile(
       sps->profile_tier_level.general_profile_idc);
-  uint8_t new_bit_depth = 0;
-  if (!ParseBitDepth(*sps, new_bit_depth))
+  if (new_profile == VIDEO_CODEC_PROFILE_UNKNOWN) {
     return false;
+  }
+  uint8_t new_bit_depth = 0;
+  if (!ParseBitDepth(*sps, new_bit_depth)) {
+    return false;
+  }
   if (!IsValidBitDepth(new_bit_depth, new_profile)) {
     DVLOG(1) << "Invalid bit depth=" << base::strict_cast<int>(new_bit_depth)
              << ", profile=" << GetProfileName(new_profile);
@@ -536,6 +542,9 @@ bool H265Decoder::ProcessPPS(int pps_id,
 
   if (new_color_space.IsSpecified() &&
       new_color_space != picture_color_space_) {
+    if (!Flush()) {
+      return false;
+    }
     DVLOG(1) << "Picture color space: " << new_color_space.ToString();
     picture_color_space_ = new_color_space;
     *color_space_changed = true;
@@ -944,22 +953,31 @@ H265Decoder::H265Accelerator::Status H265Decoder::StartNewFrame(
 }
 
 H265Decoder::H265Accelerator::Status H265Decoder::FinishPrevFrameIfPresent() {
-  // If we already have a frame waiting to be decoded, decode it and finish.
-  if (curr_pic_) {
-    H265Accelerator::Status result = DecodePicture();
-    if (result != H265Accelerator::Status::kOk)
-      return result;
+  // If we don't already have a frame waiting to be decoded, do nothing.
+  if (!curr_pic_) {
+    return H265Accelerator::Status::kOk;
+  }
 
-    scoped_refptr<H265Picture> pic = curr_pic_;
-    curr_pic_ = nullptr;
-    FinishPicture(pic);
+  // If there is no slice header (eg. because the last one was dropped due to
+  // a missing PPS), this picture can't be decoded.
+  if (!last_slice_hdr_) {
+    return H265Accelerator::Status::kFail;
+  }
+
+  H265Accelerator::Status result = DecodePicture();
+  if (result != H265Accelerator::Status::kOk) {
+    return result;
+  }
+
+  if (!FinishPicture(std::move(curr_pic_), std::move(last_slice_hdr_))) {
+    return H265Accelerator::Status::kFail;
   }
 
   return H265Accelerator::Status::kOk;
 }
 
 bool H265Decoder::PerformDpbOperations(const H265SPS* sps) {
-  // C.5.2.2
+  // C.5.2.2 - Output and removal of pictures from the DPB
   if (curr_pic_->irap_pic_ && curr_pic_->no_rasl_output_flag_ &&
       !curr_pic_->first_picture_) {
     if (!curr_pic_->no_output_of_prior_pics_flag_) {
@@ -979,16 +997,39 @@ bool H265Decoder::PerformDpbOperations(const H265SPS* sps) {
       // Calculate how many pictures we need to output.
       num_to_output = 0;
       int highest_tid = sps->sps_max_sub_layers_minus1;
+
+      // C.5.2.2 - "The number of pictures in the DPB that are marked as "needed
+      // for output" is greater than sps_max_num_reorder_pics[ HighestTid ]."
       num_to_output = std::max(num_to_output,
                                static_cast<int>(not_outputted.size()) -
                                    sps->sps_max_num_reorder_pics[highest_tid]);
+
+      // C.5.2.2 - "The number of pictures in the DPB is greater than or equal
+      // to sps_max_dec_pic_buffering_minus1[ HighestTid ] + 1 −
+      // TwoVersionsOfCurrDecPicFlag."
       num_to_output =
           std::max(num_to_output,
                    static_cast<int>(dpb_.size()) -
                        sps->sps_max_dec_pic_buffering_minus1[highest_tid]);
 
+      // C.5.2.2 - "sps_max_latency_increase_plus1[ HighestTid ] is not equal to
+      // 0 and there is at least one picture in the DPB that is marked as
+      // "needed for output" for which the associated variable PicLatencyCount
+      // is greater than or equal to SpsMaxLatencyPictures[ HighestTid ]."
+      int pic_latency_output_count = 0;
+      if (sps->sps_max_latency_increase_plus1[highest_tid] != 0) {
+        for (const auto& pic : not_outputted) {
+          if (pic->pic_latency_count_ >=
+              sps->sps_max_latency_pictures[highest_tid]) {
+            ++pic_latency_output_count;
+          }
+        }
+      }
+      num_to_output = std::max(num_to_output, pic_latency_output_count);
+
       num_to_output =
           std::min(num_to_output, static_cast<int>(not_outputted.size()));
+
       if (!num_to_output && dpb_.IsFull()) {
         // This is wrong, we should try to output pictures until we can clear
         // one from the DPB. This is better than failing, but we then may end up
@@ -1001,10 +1042,6 @@ bool H265Decoder::PerformDpbOperations(const H265SPS* sps) {
         }
       }
 
-      // TODO(jkardatzke): There's another output picture requirement regarding
-      // the sps_max_latency_increase_plus1, but I have yet to understand how
-      // that could be larger than the sps_max_num_reorder_pics since the actual
-      // latency value used is the sum of both.
       not_outputted.resize(num_to_output);
       for (auto& pic : not_outputted) {
         if (!OutputPic(pic))
@@ -1025,10 +1062,86 @@ bool H265Decoder::PerformDpbOperations(const H265SPS* sps) {
   return true;
 }
 
-void H265Decoder::FinishPicture(scoped_refptr<H265Picture> pic) {
+bool H265Decoder::FinishPicture(scoped_refptr<H265Picture> pic,
+                                std::unique_ptr<H265SliceHeader> slice_hdr) {
   // 8.3.1
   if (pic->valid_for_prev_tid0_pic_)
     prev_tid0_pic_ = pic;
+
+  int pps_id = slice_hdr->slice_pic_parameter_set_id;
+  const H265PPS* pps = parser_.GetPPS(pps_id);
+  // Slice header parsing already verified this should exist.
+  DCHECK(pps);
+
+  int sps_id = pps->pps_seq_parameter_set_id;
+  const H265SPS* sps = parser_.GetSPS(sps_id);
+  // Slice header parsing already verified this should exist.
+  DCHECK(sps);
+
+  // C.5.2.3 - Additional bumping
+  if (pic->pic_output_flag_) {
+    // C.5.2.3 - "When the current picture has PicOutputFlag equal to 1, for
+    // each picture in the DPB that is marked as "needed for output" and follows
+    // the current picture in output order, the associated variable
+    // PicLatencyCount is set equal to PicLatencyCount + 1."
+    H265Picture::Vector to_output;
+    dpb_.AppendPendingOutputPics(&to_output);
+    for (const auto& pending_output_pic : to_output) {
+      if (pic->pic_order_cnt_val_ < pending_output_pic->pic_order_cnt_val_) {
+        ++pending_output_pic->pic_latency_count_;
+      }
+    }
+
+    // C.5.2.3 - "If the current decoded picture has PicOutputFlag equal to 1,
+    // it is marked as "needed for output" and its associated variable
+    // PicLatencyCount is set equal to 0."
+    pic->pic_latency_count_ = 0;
+  }
+
+  // Get all pictures that haven't been outputted yet.
+  H265Picture::Vector not_outputted;
+  dpb_.AppendPendingOutputPics(&not_outputted);
+
+  // Sort in output order.
+  std::sort(not_outputted.begin(), not_outputted.end(), POCAscCompare());
+
+  // C.5.2.3 - "When one or more of the following conditions are true, the
+  // "bumping" process specified in clause C.5.2.4 is invoked repeatedly until
+  // none of the following conditions are true:
+
+  // C.5.2.3 - "The number of pictures in the DPB that are marked as "needed
+  // for output" is greater than sps_max_num_reorder_pics[ HighestTid ]."
+  int num_to_output = 0;
+  int highest_tid = sps->sps_max_sub_layers_minus1;
+  num_to_output =
+      std::max(num_to_output, static_cast<int>(not_outputted.size()) -
+                                  sps->sps_max_num_reorder_pics[highest_tid]);
+
+  // C.5.2.3 - "sps_max_latency_increase_plus1[ HighestTid ] is not equal to 0
+  // and there is at least one picture in the DPB that is marked as "needed for
+  // output" for which the associated variable PicLatencyCount that is greater
+  // than or equal to SpsMaxLatencyPictures[ HighestTid ]."
+  int pic_latency_output_count = 0;
+  if (sps->sps_max_latency_increase_plus1[highest_tid] != 0) {
+    for (auto& pending_output_pic : not_outputted) {
+      if (pending_output_pic->pic_latency_count_ >=
+          sps->sps_max_latency_pictures[highest_tid]) {
+        ++pic_latency_output_count;
+      }
+    }
+  }
+  num_to_output = std::max(num_to_output, pic_latency_output_count);
+
+  // C.5.2.4 - "Bumping" process
+  num_to_output =
+      std::min(num_to_output, static_cast<int>(not_outputted.size()));
+  not_outputted.resize(num_to_output);
+  for (auto& pending_output_pic : not_outputted) {
+    if (!OutputPic(pending_output_pic)) {
+      return false;
+    }
+  }
+  dpb_.DeleteUnused();
 
   ref_pic_list_.clear();
   ref_pic_list0_.clear();
@@ -1037,7 +1150,7 @@ void H265Decoder::FinishPicture(scoped_refptr<H265Picture> pic) {
   ref_pic_set_st_curr_after_.clear();
   ref_pic_set_st_curr_before_.clear();
 
-  last_slice_hdr_.reset();
+  return true;
 }
 
 H265Decoder::H265Accelerator::Status H265Decoder::DecodePicture() {

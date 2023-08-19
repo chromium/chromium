@@ -24,8 +24,7 @@ class RgbKeyboardManagerTest : public testing::Test {
  public:
   RgbKeyboardManagerTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kRgbKeyboard,
-                              features::kExperimentalRgbKeyboardPatterns},
+        /*enabled_features=*/{features::kExperimentalRgbKeyboardPatterns},
         /*disabled_features=*/{});
     // ImeControllerImpl must be initialized before RgbKeyboardManager.
     ime_controller_ = std::make_unique<ImeControllerImpl>();
@@ -59,7 +58,7 @@ class RgbKeyboardManagerTest : public testing::Test {
   // ImeControllerImpl must be destroyed after RgbKeyboardManager.
   std::unique_ptr<ImeControllerImpl> ime_controller_;
   std::unique_ptr<RgbKeyboardManager> manager_;
-  raw_ptr<FakeRgbkbdClient> client_;
+  raw_ptr<FakeRgbkbdClient, DanglingUntriaged> client_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -213,6 +212,24 @@ TEST_F(RgbKeyboardManagerTest, SetZoneRgbValues) {
             std::make_tuple(expected_r_1, expected_g_1, expected_b_1));
   EXPECT_EQ(zone_colors[zone_2],
             std::make_tuple(expected_r_2, expected_g_2, expected_b_2));
+}
+
+TEST_F(RgbKeyboardManagerTest, SetInvalidZoneId) {
+  const int invalid_zone = 100;
+  const uint8_t expected_r = 1;
+  const uint8_t expected_g = 2;
+  const uint8_t expected_b = 3;
+
+  manager_->SetZoneColor(invalid_zone, expected_r, expected_g, expected_b);
+  auto zone_colors = client_->get_zone_colors();
+  EXPECT_EQ(0u, zone_colors.size());
+
+  const int valid_zone = 0;
+  manager_->SetZoneColor(valid_zone, expected_r, expected_g, expected_b);
+  zone_colors = client_->get_zone_colors();
+  EXPECT_EQ(1u, zone_colors.size());
+  EXPECT_EQ(zone_colors[valid_zone],
+            std::make_tuple(expected_r, expected_g, expected_b));
 }
 
 TEST_F(RgbKeyboardManagerTest, SetRainbowMode) {

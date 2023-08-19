@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources>
+    <!-- Chips default measures -->
+    <dimen name="chip_icon_size">20dp</dimen>
+    <dimen name="keyboard_accessory_bar_item_icon_width">32dp</dimen>
+</resources>

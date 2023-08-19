@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/mac/scoped_nsobject.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chrome {
@@ -126,7 +125,7 @@ class MenuItemBuilder {
   }
 
   // Builds a NSMenuItem instance from the properties set on the Builder.
-  base::scoped_nsobject<NSMenuItem> Build() const;
+  NSMenuItem* Build() const;
 
  private:
   bool is_separator_ = false;
@@ -136,10 +135,10 @@ class MenuItemBuilder {
 
   int tag_ = 0;
 
-  id target_ = nil;
+  id __strong target_ = nil;
   SEL action_ = nil;
 
-  NSString* key_equivalent_ = @"";
+  NSString* __strong key_equivalent_ = @"";
   NSEventModifierFlags key_equivalent_flags_ = 0;
 
   bool is_alternate_ = false;

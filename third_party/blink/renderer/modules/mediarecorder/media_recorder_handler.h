@@ -11,6 +11,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
+#include "media/base/video_encoder.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream.h"
 #include "third_party/blink/public/web/modules/mediastream/encoded_video_frame.h"
@@ -26,6 +27,7 @@ namespace media {
 class AudioBus;
 class AudioParameters;
 class VideoFrame;
+class VideoEncoderMetricsProvider;
 class Muxer;
 }  // namespace media
 
@@ -46,6 +48,8 @@ struct WebMediaConfiguration;
 // i.e. the Main Render thread.
 class MODULES_EXPORT MediaRecorderHandler final
     : public GarbageCollected<MediaRecorderHandler>,
+      public VideoTrackRecorder::CallbackInterface,
+      public AudioTrackRecorder::CallbackInterface,
       public WebMediaStreamObserver {
  public:
   MediaRecorderHandler(
@@ -86,7 +90,7 @@ class MODULES_EXPORT MediaRecorderHandler final
                     OnMediaCapabilitiesEncodingInfoCallback cb);
   String ActualMimeType();
 
-  void Trace(Visitor*) const;
+  void Trace(Visitor*) const override;
 
  private:
   friend class MediaRecorderHandlerFixture;
@@ -96,36 +100,44 @@ class MODULES_EXPORT MediaRecorderHandler final
   void TrackAdded(const WebString& track_id) override;
   void TrackRemoved(const WebString& track_id) override;
 
-  void OnStreamChanged(const String& message);
-
-  // Called to indicate there is encoded video data available. |encoded_alpha|
-  // represents the encode output of alpha channel when available, can be
-  // nullptr otherwise.
-  void OnEncodedVideo(const media::Muxer::VideoParameters& params,
-                      std::string encoded_data,
-                      std::string encoded_alpha,
-                      base::TimeTicks timestamp,
-                      bool is_key_frame);
+  // VideoTrackRecorder::CallbackInterface overrides.
+  void OnEncodedVideo(
+      const media::Muxer::VideoParameters& params,
+      std::string encoded_data,
+      std::string encoded_alpha,
+      absl::optional<media::VideoEncoder::CodecDescription> codec_description,
+      base::TimeTicks timestamp,
+      bool is_key_frame) override;
   void OnPassthroughVideo(const media::Muxer::VideoParameters& params,
                           std::string encoded_data,
                           std::string encoded_alpha,
                           base::TimeTicks timestamp,
-                          bool is_key_frame);
-  void HandleEncodedVideo(const media::Muxer::VideoParameters& params,
-                          std::string encoded_data,
-                          std::string encoded_alpha,
-                          base::TimeTicks timestamp,
-                          bool is_key_frame);
-  void OnEncodedAudio(const media::AudioParameters& params,
-                      std::string encoded_data,
-                      base::TimeTicks timestamp);
+                          bool is_key_frame) override;
+  std::unique_ptr<media::VideoEncoderMetricsProvider>
+  CreateVideoEncoderMetricsProvider() override;
+  void OnVideoEncodingError() override;
+  // AudioTrackRecorder::CallbackInterface overrides.
+  void OnEncodedAudio(
+      const media::AudioParameters& params,
+      std::string encoded_data,
+      absl::optional<media::AudioEncoder::CodecDescription> codec_description,
+      base::TimeTicks timestamp) override;
+  // [Audio/Video]TrackRecorder::CallbackInterface overrides.
+  void OnSourceReadyStateChanged() override;
+
+  void OnStreamChanged(const String& message);
+
+  void HandleEncodedVideo(
+      const media::Muxer::VideoParameters& params,
+      std::string encoded_data,
+      std::string encoded_alpha,
+      absl::optional<media::VideoEncoder::CodecDescription> codec_description,
+      base::TimeTicks timestamp,
+      bool is_key_frame);
   void WriteData(base::StringPiece data);
 
   // Updates recorded tracks live and enabled.
   void UpdateTracksLiveAndEnabled();
-
-  // Stops recording if all sources are ended
-  void OnSourceReadyStateChanged();
 
   void OnVideoFrameForTesting(scoped_refptr<media::VideoFrame> frame,
                               const base::TimeTicks& timestamp);
@@ -136,8 +148,6 @@ class MODULES_EXPORT MediaRecorderHandler final
   void SetAudioFormatForTesting(const media::AudioParameters& params);
   void UpdateTrackLiveAndEnabled(const MediaStreamComponent& track,
                                  bool is_video);
-
-  void OnVideoEncodingError();
 
   // Variant holding configured keyframe intervals.
   const KeyFrameRequestProcessor::Configuration key_frame_config_;

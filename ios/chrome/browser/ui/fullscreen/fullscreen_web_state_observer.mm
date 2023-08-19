@@ -20,10 +20,6 @@
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/web_state.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 FullscreenWebStateObserver::FullscreenWebStateObserver(
     FullscreenController* controller,
     FullscreenModel* model,

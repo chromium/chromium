@@ -23,7 +23,7 @@ UrlRewriteRulesProvider::UrlRewriteRulesProvider(
 
 UrlRewriteRulesProvider::~UrlRewriteRulesProvider() = default;
 
-const scoped_refptr<url_rewrite::UrlRequestRewriteRules>&
+scoped_refptr<url_rewrite::UrlRequestRewriteRules>
 UrlRewriteRulesProvider::GetCachedRules() const {
   return url_request_rules_receiver_.GetCachedRules();
 }

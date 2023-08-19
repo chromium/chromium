@@ -4,17 +4,11 @@
 
 import logging
 
-from blinkpy.common.path_finder import RELATIVE_WPT_TESTS
 from blinkpy.w3c.chromium_commit import ChromiumCommit
-from blinkpy.w3c.chromium_finder import absolute_chromium_dir
 
 _log = logging.getLogger(__name__)
 
 DEFAULT_COMMIT_HISTORY_WINDOW = 10000
-SKIPPED_REVISIONS = [
-    # The great blink mv: https://crbug.com/843412#c13
-    '77578ccb4082ae20a9326d9e673225f1189ebb63',
-]
 
 
 def exportable_commits_over_last_n_commits(
@@ -75,15 +69,14 @@ def _exportable_commits_since(chromium_commit_hash,
     """
     chromium_repo_root = host.executive.run_command(
         ['git', 'rev-parse', '--show-toplevel'],
-        cwd=absolute_chromium_dir(host)).strip()
-
-    wpt_path = chromium_repo_root + '/' + RELATIVE_WPT_TESTS
+        host.project_config.project_root).strip()
+    wpt_path = chromium_repo_root + '/' + host.project_config.relative_tests_path
     commit_range = '{}..HEAD'.format(chromium_commit_hash)
-    skipped_revs = ['^' + rev for rev in SKIPPED_REVISIONS]
+    skipped_revs = ['^' + rev for rev in wpt_github.skipped_revisions]
     command = (['git', 'rev-list', commit_range] + skipped_revs +
                ['--reverse', '--', wpt_path])
     commit_hashes = host.executive.run_command(
-        command, cwd=absolute_chromium_dir(host)).splitlines()
+        command, cwd=host.project_config.project_root).splitlines()
     chromium_commits = [ChromiumCommit(host, sha=sha) for sha in commit_hashes]
     exportable_commits = []
     errors = []

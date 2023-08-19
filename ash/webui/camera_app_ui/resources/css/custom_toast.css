@@ -113,27 +113,27 @@ Use these custom properties to control the feature toasts, for example:
 
 .custom-toast {
   align-items: center;
-  background-color: var(--cros-sys-primary);
-  border-radius: 18px;
+  background-color: var(--cros-sys-tertiary_container);
+  border-radius: 16px;
   display: flex;
-  padding: 8px 16px 8px 16px;
+  padding: 8px 12px;
   position: fixed;
   white-space: nowrap;
 }
 
 .custom-toast-text {
-  color: var(--cros-sys-on_primary);
-  font: var(--cros-body-2-font);
+  color: var(--cros-sys-on_tertiary_container);
+  font: var(--cros-annotation-1-font);
 }
 
 #new-feature-toast svg-wrapper {
-  color: var(--cros-sys-on_primary);
+  color: var(--cros-sys-on_tertiary_container);
   margin-inline: 0 8px;
 }
 
 #indicator-icon {
   align-items: center;
-  color: var(--cros-sys-on_primary);
+  color: var(--cros-sys-on_tertiary_container);
   display: flex;
   height: 20px;
   justify-content: center;
@@ -144,7 +144,7 @@ Use these custom properties to control the feature toasts, for example:
 #indicator-dot {
   --dot-size: 8px;
 
-  background-color: var(--cros-sys-primary);
+  background-color: var(--cros-sys-tertiary_container);
   border-radius: 50%;
   height: var(--dot-size);
   position: absolute;
@@ -185,4 +185,25 @@ Use these custom properties to control the feature toasts, for example:
 
 .ripple.animate {
   animation: ripple-scale var(--duration) cubic-bezier(0.4, 0, 0, 1), ripple-opacity var(--duration) cubic-bezier(0, 0, 0.4, 1);
+}
+
+#modes-group .mode-item {
+  --ripple-start-height: 20px;
+  --ripple-start-width: 54px;
+
+  --toast-ref-x: left;
+  --toast-element-ref-x: left;
+  --toast-offset-x: 0;
+
+  --toast-ref-y: bottom;
+  --toast-element-ref-y: top;
+  --toast-offset-y: -30px;
+
+  --indicator-dot-ref-x: left;
+  --indicator-dot-element-ref-x: center;
+  --indicator-dot-offset-x: 0px;
+
+  --indicator-dot-ref-y: bottom;
+  --indicator-dot-element-ref-y: top;
+  --indicator-dot-offset-y: -14px;
 }

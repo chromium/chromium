@@ -83,14 +83,11 @@ class GetUpdatesProcessor {
   FRIEND_TEST_ALL_PREFIXES(GetUpdatesProcessorTest, InvalidResponse);
   FRIEND_TEST_ALL_PREFIXES(GetUpdatesProcessorTest, MoreToDownloadResponse);
   FRIEND_TEST_ALL_PREFIXES(GetUpdatesProcessorTest, NormalResponseTest);
-  FRIEND_TEST_ALL_PREFIXES(DownloadUpdatesDebugInfoTest,
-                           VerifyCopyClientDebugInfo_Empty);
-  FRIEND_TEST_ALL_PREFIXES(DownloadUpdatesDebugInfoTest, VerifyCopyOverwrites);
 
   // A map of 'update handlers', one for each enabled type.
   // This must be kept in sync with the routing info.  Our temporary solution to
   // that problem is to initialize this map in set_routing_info().
-  raw_ptr<UpdateHandlerMap> update_handler_map_;
+  const raw_ptr<UpdateHandlerMap> update_handler_map_;
 
   // Whether last GetUpdatesResponse has non-zero `changes_remaining`.
   bool has_more_updates_to_download_ = false;

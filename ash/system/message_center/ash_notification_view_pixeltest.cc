@@ -6,6 +6,7 @@
 #include "ash/capture_mode/capture_mode_test_util.h"
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/constants/ash_features.h"
+#include "ash/system/message_center/ash_notification_expand_button.h"
 #include "ash/system/message_center/ash_notification_view.h"
 #include "ash/system/message_center/message_popup_animation_waiter.h"
 #include "ash/system/notification_center/notification_center_test_api.h"
@@ -95,17 +96,21 @@ class AshNotificationViewPixelTestBase : public AshTestBase {
 
 class AshNotificationViewPixelTest
     : public AshNotificationViewPixelTestBase,
-      public testing::WithParamInterface<bool /*IsQsRevampEnabled()*/> {
+      public testing::WithParamInterface<
+          std::tuple<bool /*IsQsRevampEnabled()*/, bool /*IsJellyEnabled()*/>> {
  public:
   // AshTestBase:
   void SetUp() override {
     scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitWithFeatureState(features::kQsRevamp,
-                                               /*enabled=*/IsQsRevampEnabled());
+    scoped_feature_list_->InitWithFeatureStates(
+        {{features::kQsRevamp, /*enabled=*/IsQsRevampEnabled()},
+         {chromeos::features::kJelly, /*enabled=*/IsJellyEnabled()}});
     AshNotificationViewPixelTestBase::SetUp();
   }
 
-  bool IsQsRevampEnabled() { return GetParam(); }
+  bool IsQsRevampEnabled() { return std::get<0>(GetParam()); }
+
+  bool IsJellyEnabled() { return std::get<1>(GetParam()); }
 
  private:
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
@@ -113,7 +118,9 @@ class AshNotificationViewPixelTest
 
 INSTANTIATE_TEST_SUITE_P(IsQsRevampEnabled,
                          AshNotificationViewPixelTest,
-                         /*IsQsRevampEnabled()=*/testing::Bool());
+                         testing::Combine(
+                             /*QsRevamp*/ testing::Bool(),
+                             /*Jelly*/ testing::Bool()));
 
 // Tests that a notification's close button is visible when it is focused.
 TEST_P(AshNotificationViewPixelTest, CloseButtonFocused) {
@@ -143,30 +150,57 @@ TEST_P(AshNotificationViewPixelTest, CloseButtonFocused) {
   EXPECT_TRUE(close_button->HasFocus());
   EXPECT_EQ(control_buttons_layer->opacity(), 1);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "close_button_focused", /*revision_number=*/0u, notification_view));
+      "close_button_focused", /*revision_number=*/2, notification_view));
+}
+
+TEST_P(AshNotificationViewPixelTest, ExpandButtonDisabledState) {
+  // Create a notification and open the notification center bubble to view it.
+  const auto id = test_api()->AddNotification();
+  test_api()->ToggleBubble();
+
+  auto* notification_view = static_cast<AshNotificationView*>(
+      test_api()->GetNotificationViewForId(id));
+
+  notification_view->SetExpandCollapseEnabled(/*enabled=*/false);
+  ASSERT_TRUE(notification_view->disable_expand_collapse_for_test());
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "expand_button_disabled", /*revision_number=*/0,
+      notification_view->expand_button_for_test()));
+
+  notification_view->SetExpandCollapseEnabled(/*enabled=*/true);
+  ASSERT_FALSE(notification_view->disable_expand_collapse_for_test());
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "expand_button_enabled", /*revision_number=*/0,
+      notification_view->expand_button_for_test()));
 }
 
 class AshNotificationViewTitlePixelTest
     : public AshNotificationViewPixelTestBase,
       public testing::WithParamInterface<
           std::tuple<bool /*IsQsRevampEnabled()*/,
+                     bool /*IsJellyEnabled()*/,
                      std::pair<const char* /*notification title string*/,
                                const char* /*screenshot name*/>>> {
  public:
   // AshTestBase:
   void SetUp() override {
     scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitWithFeatureState(features::kQsRevamp,
-                                               /*enabled=*/IsQsRevampEnabled());
+    scoped_feature_list_->InitWithFeatureStates(
+        {{features::kQsRevamp, /*enabled=*/IsQsRevampEnabled()},
+         {chromeos::features::kJelly, /*enabled=*/IsJellyEnabled()}});
     AshNotificationViewPixelTestBase::SetUp();
   }
 
   bool IsQsRevampEnabled() { return std::get<0>(GetParam()); }
 
-  const std::string GetTitle() { return std::get<1>(GetParam()).first; }
+  bool IsJellyEnabled() { return std::get<1>(GetParam()); }
+
+  const std::string GetTitle() { return std::get<2>(GetParam()).first; }
 
   const std::string GetScreenshotName() {
-    return std::get<1>(GetParam()).second;
+    return std::get<2>(GetParam()).second;
   }
 
  private:
@@ -177,7 +211,8 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     AshNotificationViewTitlePixelTest,
     testing::Combine(
-        testing::Bool(),
+        /*QsRevamp*/ testing::Bool(),
+        /*Jelly*/ testing::Bool(),
         testing::ValuesIn({
             std::make_pair(kShortTitleString, kShortTitleScreenshot),
             std::make_pair(kMediumTitleString, kMediumTitleScreenshot),
@@ -207,7 +242,7 @@ TEST_P(AshNotificationViewTitlePixelTest, NotificationTitleTest) {
   // Compare pixels.
   const std::string screenshot_name = GetScreenshotName();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      screenshot_name, /*revision_number=*/0, notification_view));
+      screenshot_name, /*revision_number=*/2, notification_view));
 }
 
 class ScreenCaptureNotificationPixelTest
@@ -284,7 +319,7 @@ TEST_P(ScreenCaptureNotificationPixelTest, VerifyPopup) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       base::StrCat({"screen_capture_popup_notification_",
                     GetDisplayTypeName(GetDisplayType())}),
-      /*revision_number=*/1,
+      /*revision_number=*/6,
       test_api()->GetPopupViewForId(kScreenCaptureNotificationId)));
 }
 

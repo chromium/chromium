@@ -85,7 +85,8 @@ class SuggestionWindowViewTest
                : absl::make_optional(std::distance(children.cbegin(), it));
   }
 
-  raw_ptr<SuggestionWindowView, ExperimentalAsh> suggestion_window_view_;
+  raw_ptr<SuggestionWindowView, DanglingUntriaged | ExperimentalAsh>
+      suggestion_window_view_;
   std::unique_ptr<MockAssistiveDelegate> delegate_ =
       std::make_unique<MockAssistiveDelegate>();
   std::vector<std::u16string> candidates_;

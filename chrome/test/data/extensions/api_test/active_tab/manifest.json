@@ -16,8 +16,6 @@
     "scripts": ["background.js"]
   },
 
-  "automation": true,
-
   "manifest_version": 2,
 
   "web_accessible_resources": [ "iframe.html" ]

@@ -11,8 +11,6 @@ import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.SparseArray;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.ContextUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -233,7 +231,6 @@ class RequestThrottler {
         editor.apply();
     }
 
-    @VisibleForTesting
     static void purgeAllEntriesForTesting() {
         SharedPreferences sharedPreferences =
                 ContextUtils.getApplicationContext().getSharedPreferences(PREFERENCES_NAME, 0);

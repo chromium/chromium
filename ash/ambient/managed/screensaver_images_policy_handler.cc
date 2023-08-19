@@ -110,6 +110,9 @@ ScreensaverImagesPolicyHandler::ScreensaverImagesPolicyHandler(
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(pref_service);
 
+  // TODO(b/286011972): Consider observing kAmbientModeManagedScreensaverEnabled
+  // pref to clean up the cache when the policy is set to false.
+
   // TODO(b/271093110): Use weak ptr factory for this callback.
   pref_change_registrar_->Add(
       ambient::prefs::kAmbientModeManagedScreensaverImages,
@@ -124,9 +127,23 @@ ScreensaverImagesPolicyHandler::~ScreensaverImagesPolicyHandler() = default;
 
 void ScreensaverImagesPolicyHandler::
     OnAmbientModeManagedScreensaverImagesPrefChanged() {
-  const base::Value::List& url_list = pref_service_->GetList(
-      ash::ambient::prefs::kAmbientModeManagedScreensaverImages);
-  image_downloader_->UpdateImageUrlList(url_list);
+  const PrefService::Preference& images_pref =
+      CHECK_DEREF(pref_service_->FindPreference(
+          ash::ambient::prefs::kAmbientModeManagedScreensaverImages));
+
+  // Ignore default value (not set by policy) to prevent cache invalidation.
+  if (images_pref.IsDefaultValue() && !IsManagedScreensaverDisabledByPolicy()) {
+    return;
+  }
+
+  image_downloader_->UpdateImageUrlList(images_pref.GetValue()->GetList());
+}
+
+bool ScreensaverImagesPolicyHandler::IsManagedScreensaverDisabledByPolicy() {
+  const PrefService::Preference& enabled_pref =
+      CHECK_DEREF(pref_service_->FindPreference(
+          ash::ambient::prefs::kAmbientModeManagedScreensaverEnabled));
+  return !enabled_pref.IsDefaultValue() && !enabled_pref.GetValue()->GetBool();
 }
 
 void ScreensaverImagesPolicyHandler::OnDownloadedImageListUpdated(

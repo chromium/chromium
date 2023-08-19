@@ -44,18 +44,15 @@ class LayoutSVGTransformableContainer final : public LayoutSVGContainer {
     return additional_translation_;
   }
 
-  void SetNeedsTransformUpdate() override;
-
  private:
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
-  SVGTransformChange CalculateLocalTransform(bool bounds_changed) override;
+  SVGTransformChange UpdateLocalTransform(
+      const gfx::RectF& reference_box) override;
   AffineTransform LocalSVGTransform() const override {
     NOT_DESTROYED();
     return local_transform_;
   }
 
-  bool needs_transform_update_ : 1;
-  bool transform_uses_reference_box_ : 1;
   AffineTransform local_transform_;
   gfx::Vector2dF additional_translation_;
 };

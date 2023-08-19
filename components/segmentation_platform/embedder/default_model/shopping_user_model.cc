@@ -6,7 +6,6 @@
 
 #include <array>
 
-#include "base/metrics/field_trial_params.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 #include "components/segmentation_platform/public/config.h"
@@ -52,6 +51,7 @@ std::unique_ptr<Config> ShoppingUserModel::GetConfig() {
   auto config = std::make_unique<Config>();
   config->segmentation_key = kShoppingUserSegmentationKey;
   config->segmentation_uma_name = kShoppingUserUmaName;
+  config->auto_execute_and_cache = true;
   config->AddSegmentId(
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER,
       std::make_unique<ShoppingUserModel>());
@@ -64,10 +64,10 @@ std::unique_ptr<Config> ShoppingUserModel::GetConfig() {
 }
 
 ShoppingUserModel::ShoppingUserModel()
-    : ModelProvider(kShoppingUserSegmentId) {}
+    : DefaultModelProvider(kShoppingUserSegmentId) {}
 
-void ShoppingUserModel::InitAndFetchModel(
-    const ModelUpdatedCallback& model_updated_callback) {
+std::unique_ptr<DefaultModelProvider::ModelConfig>
+ShoppingUserModel::GetModelConfig() {
   proto::SegmentationModelMetadata shopping_user_metadata;
   MetadataWriter writer(&shopping_user_metadata);
   writer.SetDefaultSegmentationMetadataConfig(
@@ -79,11 +79,8 @@ void ShoppingUserModel::InitAndFetchModel(
   // Set features.
   writer.AddUmaFeatures(kShoppingUserUMAFeatures.data(),
                         kShoppingUserUMAFeatures.size());
-
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindRepeating(model_updated_callback, kShoppingUserSegmentId,
-                          std::move(shopping_user_metadata), kModelVersion));
+  return std::make_unique<ModelConfig>(std::move(shopping_user_metadata),
+                                       kModelVersion);
 }
 
 void ShoppingUserModel::ExecuteModelWithInput(
@@ -107,10 +104,6 @@ void ShoppingUserModel::ExecuteModelWithInput(
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), ModelProvider::Response(1, result)));
-}
-
-bool ShoppingUserModel::ModelAvailable() {
-  return true;
 }
 
 }  // namespace segmentation_platform

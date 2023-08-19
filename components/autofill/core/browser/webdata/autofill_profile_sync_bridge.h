@@ -10,8 +10,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
-#include "base/threading/thread_checker.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
@@ -103,7 +103,7 @@ class AutofillProfileSyncBridge
   void LoadMetadata();
 
   // The bridge should be used on the same sequence where it is constructed.
-  THREAD_CHECKER(thread_checker_);
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // Locale needed for comparing autofill profiles when resolving conflicts.
   const std::string app_locale_;

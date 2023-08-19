@@ -1,0 +1,25 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Configuration for a generic x86_64 android-14 AVD with playstore (user build).
+
+emulator_package {
+  package_name: "chromium/third_party/android_sdk/public/emulator"
+  version: "N0gQj09CUhpE7QRA3E_tXn2hi-tyW_uSHUXJUILp5AoC"  # 32.1.13
+  dest_path: "generic_playstore_android34"
+}
+
+system_image_package {
+  package_name: "chromium/third_party/android_sdk/public/system-images/android-34/google_apis_playstore/x86_64"
+  version: "BRXsfpCMqppNHrUV7QPHOeyA1nXldEILVsoj6g94lFYC"  # r6, UPB3.230519.006
+  dest_path: "generic_playstore_android34"
+}
+system_image_name: "system-images;android-34;google_apis_playstore;x86_64"
+
+avd_package {
+  package_name: "chromium/third_party/android_sdk/public/avds/android-34/google_apis_playstore/x86_64"
+  version: "JEE3FdVhwg_68dww3eGfdJadh_VQVGK5odRys38jioYC"  # created in bb_id 8777600060006860961
+  dest_path: "generic_playstore_android34"
+}
+avd_name: "android_34_google_apis_playstore_x86_64"

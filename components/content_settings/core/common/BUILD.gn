@@ -10,7 +10,9 @@ static_library("common") {
   sources = [
     "content_settings.cc",
     "content_settings.h",
+    "content_settings_constraints.cc",
     "content_settings_constraints.h",
+    "content_settings_metadata.cc",
     "content_settings_metadata.h",
     "content_settings_param_traits.cc",
     "content_settings_param_traits.h",
@@ -21,12 +23,14 @@ static_library("common") {
     "content_settings_types.h",
     "content_settings_utils.cc",
     "content_settings_utils.h",
+    "cookie_controls_breakage_confidence_level.h",
     "cookie_controls_enforcement.h",
     "cookie_controls_status.h",
     "cookie_settings_base.cc",
     "cookie_settings_base.h",
     "pref_names.cc",
     "pref_names.h",
+    "third_party_site_data_access_type.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
@@ -53,6 +57,9 @@ static_library("common") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "content_settings_constraints_unittest.cc",
+    "content_settings_metadata_unittest.cc",
+    "content_settings_mojom_traits_unittest.cc",
     "content_settings_pattern_parser_unittest.cc",
     "content_settings_pattern_unittest.cc",
     "content_settings_utils_unittest.cc",
@@ -61,8 +68,10 @@ source_set("unit_tests") {
 
   deps = [
     ":common",
+    ":mojo_bindings",
     "//base",
     "//base/test:test_support",
+    "//mojo/public/cpp/test_support:test_utils",
     "//net",
     "//testing/gmock",
     "//testing/gtest",
@@ -102,6 +111,14 @@ mojom("mojo_bindings") {
         {
           mojom = "content_settings.mojom.RendererContentSettingRules"
           cpp = "::RendererContentSettingRules"
+        },
+        {
+          mojom = "content_settings.mojom.SessionModel"
+          cpp = "::content_settings::SessionModel"
+        },
+        {
+          mojom = "content_settings.mojom.RuleMetaData"
+          cpp = "::content_settings::RuleMetaData"
         },
       ]
       traits_headers = [ "content_settings_mojom_traits.h" ]

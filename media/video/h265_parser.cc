@@ -407,8 +407,8 @@ H265Parser::Result H265Parser::ParseSPS(int* sps_id) {
       TRUE_OR_RETURN(sps->sps_max_num_reorder_pics[i] >=
                      sps->sps_max_num_reorder_pics[i - 1]);
     }
-    int sps_max_latency_increase_plus1;
-    READ_UE_OR_RETURN(&sps_max_latency_increase_plus1);
+    READ_UE_OR_RETURN(&sps->sps_max_latency_increase_plus1[i]);
+    IN_RANGE_OR_RETURN(sps->sps_max_latency_increase_plus1[i], 0, 0xFFFFFFFE);
   }
   if (!sps_sub_layer_ordering_info_present_flag) {
     // Fill in the default values for the other sublayers.
@@ -421,6 +421,18 @@ H265Parser::Result H265Parser::ParseSPS(int* sps_id) {
           sps->sps_max_latency_increase_plus1[sps->sps_max_sub_layers_minus1];
     }
   }
+
+  // Equation 7-9: Calculate SpsMaxLatencyPictures.
+  for (int i = 0; i <= sps->sps_max_sub_layers_minus1; ++i) {
+    if (sps->sps_max_latency_increase_plus1[i] != 0) {
+      sps->sps_max_latency_pictures[i] =
+          static_cast<uint32_t>(sps->sps_max_num_reorder_pics[i]) +
+          sps->sps_max_latency_increase_plus1[i] - 1;
+    } else {
+      sps->sps_max_latency_pictures[i] = 0;
+    }
+  }
+
   READ_UE_OR_RETURN(&sps->log2_min_luma_coding_block_size_minus3);
   // This enforces that min_cb_log2_size_y below will be <= 30 and prevents
   // integer overflow math there.
@@ -1199,27 +1211,26 @@ VideoCodecProfile H265Parser::ProfileIDCToVideoCodecProfile(int profile_idc) {
   }
 }
 
-void H265SEIContentLightLevelInfo::PopulateHDRMetadata(
-    gfx::HDRMetadata& hdr_metadata) const {
-  hdr_metadata.cta_861_3 = gfx::HdrMetadataCta861_3(
-      max_content_light_level, max_picture_average_light_level);
+gfx::HdrMetadataCta861_3 H265SEIContentLightLevelInfo::ToGfx() const {
+  return gfx::HdrMetadataCta861_3(max_content_light_level,
+                                  max_picture_average_light_level);
 }
 
-void H265SEIMasteringDisplayInfo::PopulateColorVolumeMetadata(
-    gfx::HdrMetadataSmpteSt2086& smpte_st_2086) const {
+gfx::HdrMetadataSmpteSt2086 H265SEIMasteringDisplayInfo::ToGfx() const {
   constexpr auto kChromaDenominator = 50000.0f;
   constexpr auto kLumaDenoninator = 10000.0f;
   // display primaries are in G/B/R order in MDCV SEI.
-  smpte_st_2086.primaries = {display_primaries[2][0] / kChromaDenominator,
-                             display_primaries[2][1] / kChromaDenominator,
-                             display_primaries[0][0] / kChromaDenominator,
-                             display_primaries[0][1] / kChromaDenominator,
-                             display_primaries[1][0] / kChromaDenominator,
-                             display_primaries[1][1] / kChromaDenominator,
-                             white_points[0] / kChromaDenominator,
-                             white_points[1] / kChromaDenominator};
-  smpte_st_2086.luminance_max = max_luminance / kLumaDenoninator;
-  smpte_st_2086.luminance_min = min_luminance / kLumaDenoninator;
+  return gfx::HdrMetadataSmpteSt2086(
+      {display_primaries[2][0] / kChromaDenominator,
+       display_primaries[2][1] / kChromaDenominator,
+       display_primaries[0][0] / kChromaDenominator,
+       display_primaries[0][1] / kChromaDenominator,
+       display_primaries[1][0] / kChromaDenominator,
+       display_primaries[1][1] / kChromaDenominator,
+       white_points[0] / kChromaDenominator,
+       white_points[1] / kChromaDenominator},
+      /*luminance_max=*/max_luminance / kLumaDenoninator,
+      /*luminance_min=*/min_luminance / kLumaDenoninator);
 }
 
 H265Parser::Result H265Parser::ParseProfileTierLevel(

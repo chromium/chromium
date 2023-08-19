@@ -27,8 +27,6 @@ import static org.mockito.Mockito.verify;
 
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_LOW_END_DEVICE;
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUPS_ANDROID;
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUPS_FOR_TABLETS;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_TO_GTS_ANIMATION;
 
 import android.content.Intent;
@@ -59,7 +57,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
@@ -88,7 +85,6 @@ import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -109,8 +105,6 @@ import java.util.Map;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group",
         "force-fieldtrial-params=Study.Group:enable_launch_polish/true"})
-@EnableFeatures({TAB_GROUPS_ANDROID + "<Study",
-        TAB_GROUPS_FOR_TABLETS})
 @DisableFeatures(TAB_TO_GTS_ANIMATION)
 @Batch(Batch.PER_CLASS)
 public class TabSelectionEditorTest {
@@ -163,7 +157,8 @@ public class TabSelectionEditorTest {
         mSnackbarManager = sActivityTestRule.getActivity().getSnackbarManager();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mTabSelectionEditorCoordinator = new TabSelectionEditorCoordinator(
-                    sActivityTestRule.getActivity(), mParentView, mTabModelSelector,
+                    sActivityTestRule.getActivity(), mParentView,
+                    sActivityTestRule.getActivity().getBrowserControlsManager(), mTabModelSelector,
                     sActivityTestRule.getActivity().getTabContentManager(),
                     mSetRecyclerViewPosition, getMode(),
                     sActivityTestRule.getActivity().getCompositorViewHolderForTesting(),
@@ -179,7 +174,6 @@ public class TabSelectionEditorTest {
 
     @After
     public void tearDown() {
-        TabSelectionEditorShareAction.setIntentCallbackForTesting(null);
         if (mTabSelectionEditorCoordinator != null) {
             if (sActivityTestRule.getActivity().findViewById(R.id.app_menu_list) != null) {
                 Espresso.pressBack();
@@ -306,11 +300,11 @@ public class TabSelectionEditorTest {
     @Test
     @MediumTest
     // clang-format off
-    @Features.EnableFeatures({
+    @EnableFeatures({
         ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study"})
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
         "force-fieldtrial-params=Study.Group:enable_launch_polish/true"})
-    public void testToolbarNavigationButtonHideTabSelectionEditorV2() {
+    public void testToolbarNavigationButtonHideTabSelectionEditor() {
         // clang-format on
         prepareBlankTab(2, false);
         List<Tab> tabs = getTabsInCurrentTabModel();
@@ -357,7 +351,7 @@ public class TabSelectionEditorTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void testUndoToolbarGroup() {
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         prepareBlankTab(2, false);
@@ -534,13 +528,12 @@ public class TabSelectionEditorTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "crbug.com/1420233")
     public void testToolbarMenuItem_GroupActionAndUndo() throws Exception {
         prepareBlankTabWithThumbnail(2, false);
         prepareBlankTabGroup(3, false);
         prepareBlankTabGroup(1, false);
         prepareBlankTabGroup(2, false);
-        prepareBlankTabWithThumbnail(1, false);
+        TabUiTestHelper.createTabsWithThumbnail(sActivityTestRule, 1, "about:blank", false);
         List<Tab> tabs = getTabsInCurrentTabModelFilter();
         List<Tab> beforeTabOrder = getTabsInCurrentTabModel();
 
@@ -570,13 +563,14 @@ public class TabSelectionEditorTest {
                 .clickItemAtAdapterPosition(1)
                 .clickItemAtAdapterPosition(2)
                 .clickItemAtAdapterPosition(3)
-                .clickItemAtAdapterPosition(4);
+                .clickItemAtAdapterPosition(4)
+                .clickItemAtAdapterPosition(5);
 
         mRobot.resultRobot.verifyToolbarActionViewEnabled(groupId).verifyToolbarSelectionText(
-                "8 tabs");
+                "9 tabs");
 
         View group = mTabSelectionEditorLayout.getToolbar().findViewById(groupId);
-        assertEquals("Group 8 selected tabs", group.getContentDescription());
+        assertEquals("Group 9 selected tabs", group.getContentDescription());
 
         // Force the position to something fixed to 100% avoid flakes here.
         TabListRecyclerView tabListRecyclerView =
@@ -590,7 +584,7 @@ public class TabSelectionEditorTest {
 
         TabUiTestHelper.waitForThumbnailsToFetch(tabListRecyclerView);
         ChromeRenderTestRule.sanitize(mTabSelectionEditorLayout);
-        mRenderTestRule.render(mTabSelectionEditorLayout, "groups_before_undo");
+        mRenderTestRule.render(mTabSelectionEditorLayout, "groups_before_undo_scrolled");
 
         mRobot.actionRobot.clickToolbarActionView(groupId);
 
@@ -598,7 +592,7 @@ public class TabSelectionEditorTest {
         TabUiTestHelper.verifyTabSwitcherCardCount(sActivityTestRule.getActivity(), 1);
 
         CriteriaHelper.pollInstrumentationThread(TabUiTestHelper::verifyUndoBarShowingAndClickUndo);
-        TabUiTestHelper.verifyTabSwitcherCardCount(sActivityTestRule.getActivity(), 5);
+        TabUiTestHelper.verifyTabSwitcherCardCount(sActivityTestRule.getActivity(), 6);
 
         assertEquals(selectedTab, mTabModelSelector.getCurrentTab());
         List<Tab> finalTabs = getTabsInCurrentTabModel();
@@ -1315,7 +1309,7 @@ public class TabSelectionEditorTest {
     @MediumTest
     @Feature({"RenderTest"})
     @CommandLineFlags.Add(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_LOW_END_DEVICE})
     public void testListViewAppearance() throws IOException {
         prepareBlankTab(2, false);
@@ -1340,7 +1334,7 @@ public class TabSelectionEditorTest {
     @MediumTest
     @Feature({"RenderTest"})
     @CommandLineFlags.Add(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_LOW_END_DEVICE})
     public void testListViewV2Shows() throws IOException {
         prepareBlankTab(2, false);
@@ -1355,7 +1349,7 @@ public class TabSelectionEditorTest {
     @MediumTest
     @Feature({"RenderTest"})
     @CommandLineFlags.Add(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_LOW_END_DEVICE})
     public void testListViewAppearance_oneSelectedTab() throws IOException {
         prepareBlankTab(2, false);
@@ -1381,7 +1375,7 @@ public class TabSelectionEditorTest {
     @Test
     @MediumTest
     @CommandLineFlags.Add(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_LOW_END_DEVICE})
     public void testListView_select() throws IOException {
         prepareBlankTab(2, false);
@@ -1404,7 +1398,6 @@ public class TabSelectionEditorTest {
 
     @Test
     @MediumTest
-    @DisableFeatures({TAB_GROUPS_ANDROID})
     public void testTabSelectionEditorLayoutCanBeGarbageCollected() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mTabSelectionEditorCoordinator.destroy();
@@ -1517,12 +1510,7 @@ public class TabSelectionEditorTest {
     // This is a regression test for crbug.com/1132478.
     @Test
     @MediumTest
-    // clang-format off
-    @EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study"})
-    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
-            "force-fieldtrial-params=Study.Group:enable_launch_polish/true"})
     public void testTabSelectionEditorContentDescription() {
-        // clang-format on
         prepareBlankTab(2, false);
         List<Tab> tabs = getTabsInCurrentTabModel();
         showSelectionEditor(tabs);
@@ -1550,12 +1538,7 @@ public class TabSelectionEditorTest {
 
     @Test
     @MediumTest
-    // clang-format off
-    @EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study"})
-    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
-        "force-fieldtrial-params=Study.Group:enable_launch_polish/true"})
     public void testEditorHideCorrectly() {
-        // clang-format on
         prepareBlankTab(2, false);
         List<Tab> tabs = getTabsInCurrentTabModel();
         showSelectionEditor(tabs);

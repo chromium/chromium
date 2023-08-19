@@ -18,8 +18,8 @@ import "chromeos/crosapi/mojom/nullable_primitives.mojom";
 
 // Interface for exposing diagnostics service. Implemented in ash-chrome.
 //
-// Next version: 2
-// Next ID: 24
+// Next version: 8
+// Next ID: 31
 [Stable, Uuid="14bc6194-c059-4048-9bea-ca6823eeda82",
 RenamedFrom="ash.health.mojom.DiagnosticsService"]
 interface DiagnosticsService {
@@ -311,7 +311,7 @@ interface DiagnosticsService {
   // * |response| - contains a unique identifier and status for the created
   //                routine.
   RunDnsResolutionRoutine@17() => (DiagnosticsRunRoutineResponse response);
-  
+
   // Requests that the SignalStrength routine is created and started on the
   // platform. This routine checks whether there is an acceptable signal
   // strength on wireless networks.
@@ -386,11 +386,110 @@ interface DiagnosticsService {
   //                routine.
   RunEmmcLifetimeRoutine@23()
       => (DiagnosticsRunRoutineResponse response);
+
+  // Requests that the BluetoothPower routine is created and started on the
+  // platform. This routine checks whether the Bluetooth adapter can be powered
+  // off/on and the power status is consistent in both HCI and D-Bus levels.
+  // The availability of this routine can be determined by checking that
+  // kBluetoothPower is returned by GetAvailableRoutines.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  [MinVersion=2] RunBluetoothPowerRoutine@24()
+      => (DiagnosticsRunRoutineResponse response);
+
+  // Requests that the UfsLifetime routine is created and started on the
+  // platform. This routine checks the UFS drive's life time.
+  // The availability of this routine can be determined by checking that
+  // kUfsLifetime is returned by GetAvailableRoutines.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  [MinVersion=3] RunUfsLifetimeRoutine@25()
+      => (DiagnosticsRunRoutineResponse response);
+
+  // Requests that the PowerButton routine is created and started on the
+  // platform. This routine checks the functionality of the power button. The
+  // routine passes if a power button event is received before the timeout.
+  // Otherwise, the routine fails.
+  // The availability of this routine can be determined by checking that
+  // kPowerButton is returned by GetAvailableRoutines.
+  //
+  // The request:
+  // * |timeout_seconds| - length of time, in seconds, to listen to the power
+  //                       button events. Range: [1, 600].
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  [MinVersion=4] RunPowerButtonRoutine@26(uint32 timeout_seconds)
+      => (DiagnosticsRunRoutineResponse response);
+
+  // Requests that the AudioDriver routine is created and started on the
+  // platform. This routine checks whether there is any errors about the audio
+  // driver.
+  // The availability of this routine can be determined by checking that
+  // kAudioDriver is returned by GetAvailableRoutines.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  [MinVersion=5] RunAudioDriverRoutine@27()
+      => (DiagnosticsRunRoutineResponse response);
+
+  // Requests that the BluetoothDiscovery routine is created and started on the
+  // platform. This routine checks whether the Bluetooth adapter can start/stop
+  // discovery mode and the discovering status is consistent in both HCI and
+  // D-Bus levels.
+  // The availability of this routine can be determined by checking that
+  // kBluetoothDiscovery is returned by GetAvailableRoutines.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  [MinVersion=6] RunBluetoothDiscoveryRoutine@28()
+      => (DiagnosticsRunRoutineResponse response);
+
+  // Requests that the BluetoothScanning routine is created and started on the
+  // platform. This routine checks whether the Bluetooth adapter can scan nearby
+  // Bluetooth peripherals and collect peripherals' information.
+  // The availability of this routine can be determined by checking that
+  // kBluetoothScanning is returned by GetAvailableRoutines.
+  //
+  // The request:
+  // * |length_seconds| - length of time, in seconds, to run the Bluetooth
+  //                      scanning routine for. This parameter needs to be
+  //                      strictly greater than zero.
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  [MinVersion=7] RunBluetoothScanningRoutine@29(uint32 length_seconds)
+      => (DiagnosticsRunRoutineResponse response);
+
+  // Requests that the BluetoothPairing routine is created and started on the
+  // platform. This routine checks whether the adapter can find and pair with a
+  // device with a specific peripheral id.
+  // The availability of this routine can be determined by checking that
+  // kBluetoothPairing is returned by GetAvailableRoutines.
+  //
+  // The request:
+  // * |peripheral_id| - the unique id of the target peripheral device to test.
+  //                     This id can be obtained from the output of the
+  //                     Bluetooth scanning routine.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  [MinVersion=7] RunBluetoothPairingRoutine@30(string peripheral_id)
+      => (DiagnosticsRunRoutineResponse response);
 };
 
 // Enumeration of each of the diagnostics routines the platform may support.
 //
-// Next ID: 24
+// Next version: 7
+// Next ID: 31
 [Stable, Extensible, RenamedFrom="ash.health.mojom.DiagnosticRoutineEnum"]
 enum DiagnosticsRoutineEnum {
   [Default] kUnknown = 15,
@@ -417,6 +516,13 @@ enum DiagnosticsRoutineEnum {
   kFingerprintAlive = 21,
   kSmartctlCheckWithPercentageUsed = 22,
   kEmmcLifetime = 23,
+  [MinVersion=1] kBluetoothPower = 24,
+  [MinVersion=2] kUfsLifetime = 25,
+  [MinVersion=3] kPowerButton = 26,
+  [MinVersion=4] kAudioDriver = 27,
+  [MinVersion=5] kBluetoothDiscovery = 28,
+  [MinVersion=6] kBluetoothScanning = 29,
+  [MinVersion=6] kBluetoothPairing = 30,
 };
 
 // Enumeration of each of the possible statuses for a diagnostics routine.
@@ -444,13 +550,16 @@ enum DiagnosticsRoutineStatusEnum {
 // Enumeration of each of the messages a diagnostics routine can pass back.
 // These messages prompt interaction from the user of the routine.
 //
-// Next ID: 3
+// Next version: 2
+// Next ID: 4
 [Stable, Extensible,
 RenamedFrom="ash.health.mojom.DiagnosticRoutineUserMessageEnum"]
 enum DiagnosticsRoutineUserMessageEnum {
   [Default] kUnknown = 2,
   kUnplugACPower = 0,  // The user needs to unplug the AC power cord.
   kPlugInACPower = 1,  // The user needs to plug in the AC power cord.
+  [MinVersion=1] kPressPowerButton = 3,  // The user needs to press the power
+                                         // button.
 };
 
 // Enumeration of the possible commands to send a diagnostics routine.

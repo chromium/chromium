@@ -5,10 +5,9 @@
 #ifndef DEVICE_BLUETOOTH_BLUETOOTH_ADVERTISEMENT_MAC_H_
 #define DEVICE_BLUETOOTH_BLUETOOTH_ADVERTISEMENT_MAC_H_
 
-#include "base/memory/raw_ptr.h"
-
 #import <CoreBluetooth/CoreBluetooth.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "dbus/object_path.h"
 #include "device/bluetooth/bluetooth_adapter.h"

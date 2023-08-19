@@ -32,6 +32,29 @@ source_set("chrome_os_webui_config") {
   ]
 }
 
+source_set("trusted_types_util") {
+  sources = [
+    "trusted_types_util.cc",
+    "trusted_types_util.h",
+  ]
+
+  deps = [
+    "//content/public/browser",
+    "//services/network/public/mojom:url_loader_base",
+  ]
+}
+
+source_set("trusted_types_test_util") {
+  testonly = true
+
+  sources = [
+    "trusted_types_test_util.cc",
+    "trusted_types_test_util.h",
+  ]
+
+  deps = [ "//content/test:test_support" ]
+}
+
 group("closure_compile") {
   deps = [ "resources:closure_compile" ]
 }

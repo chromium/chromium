@@ -55,7 +55,7 @@ class GlobalWebStateEventTracker : public WebStateObserver {
       scoped_observations_{this};
 
   // List of observers currently registered with the tracker.
-  base::ObserverList<GlobalWebStateObserver, true>::Unchecked observer_list_;
+  base::ObserverList<GlobalWebStateObserver, true> observer_list_;
 };
 
 }  // namespace web

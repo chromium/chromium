@@ -3,13 +3,9 @@
 # found in the LICENSE file.
 
 source_set("safe_browsing") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "safe_browsing_enhanced_protection_consumer.h",
     "safe_browsing_enhanced_protection_coordinator.h",
     "safe_browsing_enhanced_protection_coordinator.mm",
-    "safe_browsing_enhanced_protection_mediator.h",
-    "safe_browsing_enhanced_protection_mediator.mm",
     "safe_browsing_enhanced_protection_view_controller.h",
     "safe_browsing_enhanced_protection_view_controller.mm",
     "safe_browsing_standard_protection_consumer.h",
@@ -25,6 +21,7 @@ source_set("safe_browsing") {
     ":safe_browsing_constants",
     "//components/password_manager/core/common",
     "//components/prefs",
+    "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/signin/public/identity_manager/objc",
     "//components/strings",
@@ -34,6 +31,7 @@ source_set("safe_browsing") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
@@ -56,7 +54,6 @@ source_set("safe_browsing") {
 }
 
 source_set("safe_browsing_constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "safe_browsing_constants.h",
     "safe_browsing_constants.mm",

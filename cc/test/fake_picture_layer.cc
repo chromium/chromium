@@ -41,4 +41,8 @@ bool FakePictureLayer::Update() {
   return updated || always_update_resources_;
 }
 
+bool FakePictureLayer::RequiresSetNeedsDisplayOnHdrHeadroomChange() const {
+  return reraster_on_hdr_change_;
+}
+
 }  // namespace cc

@@ -160,8 +160,8 @@ class COMPONENT_EXPORT(UI_DATA_PACK) DataPack : public ResourceHandle {
 
   // ResourceHandle implementation:
   bool HasResource(uint16_t resource_id) const override;
-  bool GetStringPiece(uint16_t resource_id,
-                      base::StringPiece* data) const override;
+  absl::optional<base::StringPiece> GetStringPiece(
+      uint16_t resource_id) const override;
   base::RefCountedStaticMemory* GetStaticMemory(
       uint16_t resource_id) const override;
   TextEncodingType GetTextEncodingType() const override;
@@ -208,12 +208,10 @@ class COMPONENT_EXPORT(UI_DATA_PACK) DataPack : public ResourceHandle {
                                            const uint8_t* data,
                                            size_t data_length);
 
-  // Get string data from file offset in bytes.
-  // Returns string between `target_offset` and `next_offset` in data pack.
-  static void GetStringPieceFromOffset(uint32_t target_offset,
-                                       uint32_t next_offset,
-                                       const uint8_t* data_source,
-                                       base::StringPiece* data);
+  // Returns the string between `target_offset` and `next_offset` in data pack.
+  static base::StringPiece GetStringPieceFromOffset(uint32_t target_offset,
+                                                    uint32_t next_offset,
+                                                    const uint8_t* data_source);
 
   std::unique_ptr<DataSource> data_source_;
 

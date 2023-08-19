@@ -19,15 +19,15 @@ class SignatureVerifier {
   // Well-known public signature verification keys that is used to verify
   // that signed data is indeed originating from reporting server.
   // Exists in two flavors: PROD and DEV.
-  static base::StringPiece VerificationKey();
-  static base::StringPiece VerificationKeyDev();
+  static std::string_view VerificationKey();
+  static std::string_view VerificationKeyDev();
 
   // Ed25519 |verification_public_key| must consist of kKeySize bytes.
-  explicit SignatureVerifier(base::StringPiece verification_public_key);
+  explicit SignatureVerifier(std::string_view verification_public_key);
 
   // Actual verification - returns error status if provided |signature| does not
   // match |message|. Signature must be kSignatureSize bytes.
-  Status Verify(base::StringPiece message, base::StringPiece signature);
+  Status Verify(std::string_view message, std::string_view signature);
 
  private:
   std::string verification_public_key_;

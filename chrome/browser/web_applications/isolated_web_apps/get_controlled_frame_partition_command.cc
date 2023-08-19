@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -27,13 +28,29 @@ base::Value GetControlledFramePartitionWithLock(
     base::OnceCallback<void(absl::optional<content::StoragePartitionConfig>)>
         callback,
     AppLock& lock) {
+  base::Value::Dict debug_info;
+  debug_info.Set("app_id", url_info.app_id());
+  debug_info.Set("partition_name", partition_name);
+  debug_info.Set("in_memory", in_memory);
+
+  if (in_memory) {
+    absl::optional<content::StoragePartitionConfig> config =
+        lock.registrar().SaveAndGetInMemoryControlledFramePartitionConfig(
+            url_info, partition_name);
+
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), config));
+
+    return base::Value(std::move(debug_info));
+  }
+
   content::StoragePartitionConfig storage_partition_config =
       url_info.GetStoragePartitionConfigForControlledFrame(
-          profile, partition_name, in_memory);
+          profile, partition_name, /*in_memory=*/false);
 
-  // If persisted, register the StoragePartition with the web_app system.
-  if (!in_memory) {
-    ScopedRegistryUpdate update(&lock.sync_bridge());
+  // Register the StoragePartition with the web_app system.
+  {
+    ScopedRegistryUpdate update = lock.sync_bridge().BeginUpdate();
     WebApp* iwa = update->UpdateApp(url_info.app_id());
     CHECK(iwa && iwa->isolation_data().has_value());
 
@@ -42,13 +59,9 @@ base::Value GetControlledFramePartitionWithLock(
     iwa->SetIsolationData(isolation_data);
   }
 
-  base::Value::Dict debug_info;
-  debug_info.Set("app_id", url_info.app_id());
-  debug_info.Set("partition_name", partition_name);
-
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), storage_partition_config));
-  return base::Value(debug_info.Clone());
+  return base::Value(std::move(debug_info));
 }
 
 }  // namespace web_app

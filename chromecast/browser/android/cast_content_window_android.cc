@@ -9,7 +9,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "chromecast/browser/jni_headers/CastContentWindowAndroid_jni.h"
+#include "chromecast/browser/android/jni_headers/CastContentWindowAndroid_jni.h"
 #include "components/media_control/browser/media_blocker.h"
 #include "content/public/browser/web_contents_observer.h"
 

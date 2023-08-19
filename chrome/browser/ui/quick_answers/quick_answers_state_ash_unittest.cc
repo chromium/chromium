@@ -10,8 +10,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/quick_answers/test/chrome_quick_answers_test_base.h"
+#include "chromeos/ash/components/login/login_state/login_state.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
+#include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/language/core/browser/pref_names.h"
+#include "components/prefs/testing_pref_service.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 
 namespace {
@@ -79,20 +83,21 @@ class QuickAnswersStateAshTest : public ChromeQuickAnswersTestBase {
   void SetUp() override {
     ChromeQuickAnswersTestBase::SetUp();
 
-    prefs_ =
-        ash::Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+    prefs_ = static_cast<TestingPrefServiceSimple*>(
+        ash::Shell::Get()->session_controller()->GetPrimaryUserPrefService());
     DCHECK(prefs_);
     DCHECK(QuickAnswersState::Get()->prefs_initialized());
 
     observer_ = std::make_unique<TestQuickAnswersStateObserver>();
   }
 
-  PrefService* prefs() { return prefs_; }
+  TestingPrefServiceSimple* prefs() { return prefs_; }
 
   TestQuickAnswersStateObserver* observer() { return observer_.get(); }
 
  private:
-  raw_ptr<PrefService, ExperimentalAsh> prefs_ = nullptr;
+  raw_ptr<TestingPrefServiceSimple, DanglingUntriaged | ExperimentalAsh>
+      prefs_ = nullptr;
   std::unique_ptr<TestQuickAnswersStateObserver> observer_;
 };
 
@@ -272,4 +277,53 @@ TEST_F(QuickAnswersStateAshTest, IneligibleLocales) {
   SimulateUserLogin(kTestUser);
   EXPECT_FALSE(QuickAnswersState::Get()->is_eligible());
   EXPECT_FALSE(observer()->is_eligible());
+}
+
+TEST_F(QuickAnswersStateAshTest, DisabledByPolicy) {
+  QuickAnswersState::Get()->AddObserver(observer());
+
+  ASSERT_FALSE(
+      prefs()->IsManagedPreference(quick_answers::prefs::kQuickAnswersEnabled));
+  ASSERT_FALSE(prefs()->GetBoolean(quick_answers::prefs::kQuickAnswersEnabled));
+  ASSERT_EQ(quick_answers::prefs::ConsentStatus::kUnknown,
+            observer()->consent_status());
+
+  prefs()->SetManagedPref(quick_answers::prefs::kQuickAnswersEnabled,
+                          base::Value(false));
+  EXPECT_EQ(quick_answers::prefs::ConsentStatus::kRejected,
+            observer()->consent_status());
+  EXPECT_FALSE(observer()->settings_enabled());
+}
+
+TEST_F(QuickAnswersStateAshTest, EnabledThenDisabledByPolicy) {
+  QuickAnswersState::Get()->AddObserver(observer());
+
+  prefs()->SetBoolean(quick_answers::prefs::kQuickAnswersEnabled, true);
+  ASSERT_FALSE(
+      prefs()->IsManagedPreference(quick_answers::prefs::kQuickAnswersEnabled));
+  ASSERT_TRUE(prefs()->GetBoolean(quick_answers::prefs::kQuickAnswersEnabled));
+  ASSERT_EQ(quick_answers::prefs::ConsentStatus::kAccepted,
+            observer()->consent_status());
+
+  prefs()->SetManagedPref(quick_answers::prefs::kQuickAnswersEnabled,
+                          base::Value(false));
+  EXPECT_EQ(quick_answers::prefs::ConsentStatus::kRejected,
+            observer()->consent_status());
+  EXPECT_FALSE(observer()->settings_enabled());
+}
+
+TEST_F(QuickAnswersStateAshTest, ForceDisabledForKiosk) {
+  QuickAnswersState::Get()->AddObserver(observer());
+
+  ash::LoginState::Get()->SetLoggedInState(
+      ash::LoginState::LoggedInState::LOGGED_IN_NONE,
+      ash::LoginState::LoggedInUserType::LOGGED_IN_USER_KIOSK);
+  EXPECT_TRUE(chromeos::IsKioskSession());
+  prefs()->SetBoolean(quick_answers::prefs::kQuickAnswersEnabled, true);
+
+  EXPECT_FALSE(
+      prefs()->IsManagedPreference(quick_answers::prefs::kQuickAnswersEnabled));
+  EXPECT_EQ(quick_answers::prefs::ConsentStatus::kRejected,
+            observer()->consent_status());
+  EXPECT_FALSE(observer()->settings_enabled());
 }

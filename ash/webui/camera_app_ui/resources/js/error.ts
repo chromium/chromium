@@ -4,6 +4,7 @@
 
 import {assertInstanceof} from './assert.js';
 import * as metrics from './metrics.js';
+import {isLocalDev} from './models/load_time_data.js';
 import {
   ErrorLevel,
   ErrorType,
@@ -31,8 +32,6 @@ function parseTopFrameInfo(stackTrace: string): StackFrame {
     colNo: Number(match[4]),
   };
 }
-
-const appWindow = window.appWindow;
 
 /**
  * Initializes error collecting functions.
@@ -80,8 +79,8 @@ export function reportError(
   }
   triggeredErrorSet.add(hash);
 
-  if (appWindow !== null) {
-    void appWindow.reportError({
+  if (window.appWindow !== null) {
+    void window.appWindow.reportError({
       type: errorType,
       level,
       stack: stackStr,
@@ -114,9 +113,14 @@ export function reportError(
     columnNumber: colNo,
   };
 
-  chrome.crashReportPrivate.reportError(
-      params,
-      () => {
-          // Do nothing after error reported.
-      });
+  if (isLocalDev()) {
+    // eslint-disable-next-line no-console
+    console.info('crashReportPrivate called with:', params);
+  } else {
+    chrome.crashReportPrivate.reportError(
+        params,
+        () => {
+            // Do nothing after error reported.
+        });
+  }
 }

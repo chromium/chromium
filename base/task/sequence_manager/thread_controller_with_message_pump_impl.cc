@@ -26,7 +26,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_IOS)
-#include "base/message_loop/message_pump_mac.h"
+#include "base/message_loop/message_pump_apple.h"
 #elif BUILDFLAG(IS_ANDROID)
 #include "base/message_loop/message_pump_android.h"
 #endif
@@ -56,8 +56,8 @@ BASE_FEATURE(kRunTasksByBatches,
 // instead of waiting for next DoIdleWork.
 BASE_FEATURE(kUseLessHighResTimers,
              "UseLessHighResTimers",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-std::atomic_bool g_use_less_high_res_timers = false;
+             base::FEATURE_ENABLED_BY_DEFAULT);
+std::atomic_bool g_use_less_high_res_timers = true;
 
 // If enabled, high resolution timer will be used all the time on Windows. This
 // is for test only.
@@ -69,7 +69,7 @@ BASE_FEATURE(kAlwaysUseHighResTimers,
 std::atomic_bool g_align_wake_ups = false;
 std::atomic_bool g_run_tasks_by_batches = false;
 #if BUILDFLAG(IS_WIN)
-bool g_explicit_high_resolution_timer_win = false;
+bool g_explicit_high_resolution_timer_win = true;
 #endif  // BUILDFLAG(IS_WIN)
 
 TimeTicks WakeUpRunTime(const WakeUp& wake_up) {
@@ -187,12 +187,6 @@ void ThreadControllerWithMessagePumpImpl::SetWorkBatchSize(
   DCHECK_GE(work_batch_size, 1);
   CHECK(main_thread_only().can_change_batch_size);
   main_thread_only().work_batch_size = work_batch_size;
-}
-
-void ThreadControllerWithMessagePumpImpl::SetTimerSlack(
-    TimerSlack timer_slack) {
-  DCHECK(RunsTasksInCurrentSequence());
-  pump_->SetTimerSlack(timer_slack);
 }
 
 void ThreadControllerWithMessagePumpImpl::WillQueueTask(

@@ -41,9 +41,8 @@ class NotificationCenterTrayTest : public AshTestBase {
 
   void SetUp() override {
     // Enable quick settings revamp feature.
-    scoped_feature_list_.InitAndEnableFeature(features::kQsRevamp);
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kCameraEffectsSupportedByHardware);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kQsRevamp, features::kCameraEffectsSupportedByHardware}, {});
 
     AshTestBase::SetUp();
 
@@ -122,6 +121,35 @@ TEST_F(NotificationCenterTrayTest, NotificationsRemovedByMessageCenterApi) {
 
   EXPECT_FALSE(test_api()->IsBubbleShown());
   EXPECT_FALSE(test_api()->IsTrayShown());
+}
+
+// Tests that clicking on the tray immediately after all notifications have been
+// removed does not result in an empty bubble being shown. This addresses
+// b/293174118.
+TEST_F(NotificationCenterTrayTest, ClickOnTrayAfterRemovingNotifications) {
+  // Add a notification to make the tray visible. Note that animations complete
+  // immediately in this part of the test.
+  std::string id = test_api()->AddNotification();
+  auto* tray = test_api()->GetTray();
+
+  // Make sure animations don't complete immediately for the rest of the test,
+  // so that we can click on the tray while its running its hide animation.
+  ui::ScopedAnimationDurationScaleMode animation_duration_scale(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Remove all notifications and verify that the tray's hide animation is
+  // running.
+  test_api()->RemoveNotification(id);
+  ASSERT_EQ(0u, test_api()->GetNotificationCount());
+  EXPECT_TRUE(test_api()->IsTrayAnimating());
+  EXPECT_FALSE(test_api()->GetTray()->layer()->GetTargetVisibility());
+  EXPECT_EQ(test_api()->GetTray()->layer()->GetTargetOpacity(), 0);
+
+  // Click on the tray and verify that notification bubble does not show (we do
+  // not need to wait for animations here because if the bubble were to be shown
+  // it would happen immediately, without animation, after clicking the tray).
+  LeftClickOn(tray);
+  EXPECT_FALSE(test_api()->IsBubbleShown());
 }
 
 // Tests that opening the bubble results in existing popups being dismissed
@@ -237,13 +265,13 @@ TEST_F(NotificationCenterTrayTest, DoNotDisturbIconVisibility) {
 
 TEST_F(NotificationCenterTrayTest, DoNotDisturbUpdatesPinnedIcons) {
   test_api()->AddPinnedNotification();
-  EXPECT_TRUE(test_api()->IsPinnedIconShown());
+  EXPECT_TRUE(test_api()->IsNotificationIconShown());
 
   message_center::MessageCenter::Get()->SetQuietMode(true);
-  EXPECT_FALSE(test_api()->IsPinnedIconShown());
+  EXPECT_FALSE(test_api()->IsNotificationIconShown());
 
   message_center::MessageCenter::Get()->SetQuietMode(false);
-  EXPECT_TRUE(test_api()->IsPinnedIconShown());
+  EXPECT_TRUE(test_api()->IsNotificationIconShown());
 }
 
 TEST_F(NotificationCenterTrayTest, NoPrivacyIndicators) {
@@ -324,7 +352,8 @@ TEST_F(NotificationCenterTrayTest,
 
   // Verify that the secondary display's notification center tray shows an icon
   // for the pinned notification and not the `NotificationCounterView`.
-  ASSERT_TRUE(test_api()->IsPinnedIconShownOnDisplay(secondary_display_id));
+  ASSERT_TRUE(
+      test_api()->IsNotificationIconShownOnDisplay(secondary_display_id));
   ASSERT_FALSE(secondary_notification_counter_view->GetVisible());
 
   // Go to the lock screen.
@@ -371,7 +400,7 @@ TEST_F(NotificationCenterTrayNoPopupsTest,
 
   // Verify that both the notification counter as well as an icon for the pinned
   // notification are visible in the notification center tray.
-  ASSERT_TRUE(test_api()->IsPinnedIconShown());
+  ASSERT_TRUE(test_api()->IsNotificationIconShown());
   ASSERT_TRUE(test_api()->IsNotificationCounterShown());
 
   // Add a secondary display.
@@ -381,7 +410,8 @@ TEST_F(NotificationCenterTrayNoPopupsTest,
   // Verify that both the notification counter as well as an icon for the pinned
   // notification are visible in the secondary display's notification center
   // tray.
-  EXPECT_TRUE(test_api()->IsPinnedIconShownOnDisplay(secondary_display_id));
+  EXPECT_TRUE(
+      test_api()->IsNotificationIconShownOnDisplay(secondary_display_id));
   EXPECT_TRUE(
       test_api()->IsNotificationCounterShownOnDisplay(secondary_display_id));
 }

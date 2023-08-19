@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key_subtle.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_client.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
@@ -72,14 +73,14 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
   void OnGenerateKeyForVaDone(base::TimeTicks start_time,
                               const attestation::TpmChallengeKeyResult& result);
 
-  void StartOrContinue();
-  void OnNextActionReceived(
-      policy::DeviceManagementStatus status,
-      absl::optional<
-          enterprise_management::ClientCertificateProvisioningResponse::Error>
-          error,
-      const enterprise_management::CertProvNextActionResponse&
-          next_action_response);
+  void Start();
+  void OnStartResponse(
+      base::expected<enterprise_management::CertProvStartResponse,
+                     CertProvisioningClient::Error> response);
+  void GetNextInstruction();
+  void OnGetNextInstructionResponse(
+      base::expected<enterprise_management::CertProvGetNextInstructionResponse,
+                     CertProvisioningClient::Error> response);
   void OnAuthorizeInstructionReceived(
       const enterprise_management::CertProvAuthorizeInstruction&
           authorize_instruction);
@@ -105,6 +106,8 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
                      chromeos::platform_keys::Status status);
 
   void UploadAuthorization();
+  void OnUploadAuthorizationResponse(
+      base::expected<void, CertProvisioningClient::Error> response);
 
   void BuildProofOfPossession();
   void OnBuildProofOfPossessionDone(base::TimeTicks start_time,
@@ -112,6 +115,8 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
                                     chromeos::platform_keys::Status status);
 
   void UploadProofOfPossession();
+  void OnUploadProofOfPossessionResponse(
+      base::expected<void, CertProvisioningClient::Error> response);
 
   void ImportCert();
   void OnImportCertDone(chromeos::platform_keys::Status status);
@@ -157,12 +162,17 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
 
   CertProvisioningClient::ProvisioningProcess GetProvisioningProcessForClient();
 
-  // Returns true if there are no errors and the flow can be continued.
-  // |request_type| is the type of the request to which the DM server has
-  // responded with the given |status|.
+  // Processes the general status of a "dynamic flow" response and sets members
+  // accordingly. If this returns true, processing of the actual response should
+  // continue. If this returns false, processing should not continue, and this
+  // function has already set the worker to the corresponding state.
+  template <typename ResultType>
   bool ProcessResponseErrors(
-      policy::DeviceManagementStatus status,
-      absl::optional<CertProvisioningResponseErrorType> error);
+      const base::expected<ResultType, CertProvisioningClient::Error>&
+          response);
+  // Helper method for the above overload of ProcessResponseErrors. All other
+  // callers should use the above overload.
+  void ProcessResponseErrors(const CertProvisioningClient::Error& error);
 
   CertScope cert_scope_ = CertScope::kUser;
   raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;

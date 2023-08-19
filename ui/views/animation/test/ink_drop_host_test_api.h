@@ -50,6 +50,8 @@ class InkDropHostTestApi {
 
   InkDropMode ink_drop_mode() const { return ink_drop_host_->ink_drop_mode_; }
 
+  void RemoveInkDropMask();
+
  private:
   // The InkDropHost to provide internal access to.
   raw_ptr<InkDropHost, DanglingUntriaged> ink_drop_host_;

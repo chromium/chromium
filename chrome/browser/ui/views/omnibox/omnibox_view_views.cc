@@ -41,6 +41,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_result_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 #include "chrome/grit/generated_resources.h"
@@ -48,8 +49,8 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/omnibox_client.h"
+#include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
-#include "components/omnibox/browser/omnibox_edit_model_delegate.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
@@ -167,17 +168,13 @@ bool IsClipboardDataMarkedAsConfidential() {
 
 // OmniboxViewViews -----------------------------------------------------------
 
-OmniboxViewViews::OmniboxViewViews(
-    OmniboxEditModelDelegate* edit_model_delegate,
-    std::unique_ptr<OmniboxClient> client,
-    bool popup_window_mode,
-    LocationBarView* location_bar,
-    const gfx::FontList& font_list)
-    : OmniboxView(edit_model_delegate, std::move(client)),
+OmniboxViewViews::OmniboxViewViews(std::unique_ptr<OmniboxClient> client,
+                                   bool popup_window_mode,
+                                   LocationBarView* location_bar_view,
+                                   const gfx::FontList& font_list)
+    : OmniboxView(std::move(client)),
       popup_window_mode_(popup_window_mode),
-      popup_is_webui_(
-          base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup)),
-      location_bar_view_(location_bar),
+      location_bar_view_(location_bar_view),
       latency_histogram_state_(NOT_ACTIVE),
       friendly_suggestion_text_prefix_length_(0) {
   SetID(VIEW_ID_OMNIBOX);
@@ -226,18 +223,20 @@ void OmniboxViewViews::Init() {
   GetRenderText()->set_symmetric_selection_visual_bounds(true);
   InstallPlaceholderText();
   scoped_template_url_service_observation_.Observe(
-      model()->client()->GetTemplateURLService());
+      controller()->client()->GetTemplateURLService());
 
   if (popup_window_mode_) {
     SetReadOnly(true);
   }
 
   if (location_bar_view_) {
-    popup_view_ = popup_is_webui_ ? std::make_unique<OmniboxPopupViewWebUI>(
-                                        this, model(), location_bar_view_)
-                                  : std::make_unique<OmniboxPopupViewViews>(
-                                        this, model(), location_bar_view_);
-
+    if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup)) {
+      popup_view_ = std::make_unique<OmniboxPopupViewWebUI>(
+          /*omnibox_view=*/this, controller(), location_bar_view_);
+    } else {
+      popup_view_ = std::make_unique<OmniboxPopupViewViews>(
+          /*omnibox_view=*/this, controller(), location_bar_view_);
+    }
     // Set whether the text should be used to improve typing suggestions.
     SetShouldDoLearning(!location_bar_view_->profile()->IsOffTheRecord());
   }
@@ -316,8 +315,10 @@ void OmniboxViewViews::ResetTabState(content::WebContents* web_contents) {
 }
 
 void OmniboxViewViews::InstallPlaceholderText() {
-  const TemplateURL* const default_provider =
-      model()->client()->GetTemplateURLService()->GetDefaultSearchProvider();
+  const TemplateURL* const default_provider = controller()
+                                                  ->client()
+                                                  ->GetTemplateURLService()
+                                                  ->GetDefaultSearchProvider();
   if (default_provider) {
     SetPlaceholderText(l10n_util::GetStringFUTF16(
         IDS_OMNIBOX_PLACEHOLDER_TEXT, default_provider->short_name()));
@@ -340,7 +341,8 @@ void OmniboxViewViews::EmphasizeURLComponents() {
   SetStyle(gfx::TEXT_STYLE_STRIKE, false);
 
   std::u16string text = GetText();
-  UpdateTextStyle(text, text_is_url, model()->client()->GetSchemeClassifier());
+  UpdateTextStyle(text, text_is_url,
+                  controller()->client()->GetSchemeClassifier());
 }
 
 void OmniboxViewViews::Update() {
@@ -610,16 +612,15 @@ void OmniboxViewViews::UpdateSchemeStyle(const gfx::Range& range) {
   // in about:blank URLs. Or in blob: or filesystem: URLs, which have an inner
   // origin, the URL is likely too syntax-y to be able to meaningfully draw
   // attention to any part of it.
-  auto* const location_bar_model = edit_model_delegate()->GetLocationBarModel();
+  auto* const location_bar_model = GetLocationBarModel();
   if (!location_bar_model->GetURL().SchemeIsHTTPOrHTTPS())
     return;
 
   if (net::IsCertStatusError(location_bar_model->GetCertStatus())) {
     if (location_bar_view_) {
-      ApplyColor(
-          location_bar_view_->GetSecurityChipColor(
-              edit_model_delegate()->GetLocationBarModel()->GetSecurityLevel()),
-          range);
+      ApplyColor(location_bar_view_->GetSecurityChipColor(
+                     GetLocationBarModel()->GetSecurityLevel()),
+                 range);
     }
     ApplyStyle(gfx::TEXT_STYLE_STRIKE, true, range);
   }
@@ -629,9 +630,8 @@ void OmniboxViewViews::OnThemeChanged() {
   views::Textfield::OnThemeChanged();
 
   bool gm3_text_color_enabled =
-      features::GetChromeRefresh2023Level() ==
-          features::ChromeRefresh2023Level::kLevel2 ||
-      base::FeatureList::IsEnabled(omnibox::kOmniboxSteadyStateTextColor);
+      omnibox::IsOmniboxCr23CustomizeGuardedFeatureEnabled(
+          omnibox::kOmniboxSteadyStateTextColor);
 
   set_placeholder_text_color(GetColorProvider()->GetColor(
       gm3_text_color_enabled ? kColorOmniboxText : kColorOmniboxTextDimmed));
@@ -731,10 +731,7 @@ bool OmniboxViewViews::HandleEarlyTabActions(const ui::KeyEvent& event) {
   if (!model()->PopupIsOpen())
     return false;
 
-  model()->StepPopupSelection(event.IsShiftDown()
-                                  ? OmniboxPopupSelection::kBackward
-                                  : OmniboxPopupSelection::kForward,
-                              OmniboxPopupSelection::kStateOrLine);
+  model()->OnTabPressed(event.IsShiftDown());
 
   return true;
 }
@@ -856,7 +853,7 @@ void OmniboxViewViews::SetAccessibilityLabel(const std::u16string& display_text,
     // bypass OmniboxPopupModel and get the label from our synthetic |match|.
     friendly_suggestion_text_ = AutocompleteMatchType::ToAccessibilityLabel(
         match, display_text, OmniboxPopupSelection::kNoMatch,
-        model()->result().size(), std::u16string(),
+        controller()->result().size(), std::u16string(),
         &friendly_suggestion_text_prefix_length_);
   } else {
     friendly_suggestion_text_ =
@@ -1144,8 +1141,7 @@ bool OmniboxViewViews::OnMousePressed(const ui::MouseEvent& event) {
       if (IsSelectAll()) {
         SelectWordAt(event.location());
         std::u16string shown_url = GetText();
-        std::u16string full_url =
-            edit_model_delegate()->GetLocationBarModel()->GetFormattedFullURL();
+        std::u16string full_url = GetLocationBarModel()->GetFormattedFullURL();
         size_t offset = full_url.find(shown_url);
         if (offset != std::u16string::npos) {
           next_double_click_selection_len_ = GetSelectedText().length();
@@ -1363,8 +1359,8 @@ void OmniboxViewViews::OnFocus() {
 
   // TODO(oshima): Get control key state.
   model()->OnSetFocus(false);
-  // Don't call edit_model_delegate()->OnSetFocus, this view has already
-  // acquired focus.
+  // Don't call WebLocationBar::OnSetFocus(), this view has already acquired
+  // focus.
 
   // Restore the selection we saved in OnBlur() if it's still valid.
   if (!saved_selection_for_focus_change_.empty()) {
@@ -1535,10 +1531,10 @@ void OmniboxViewViews::ExecuteTextEditCommand(ui::TextEditCommand command) {
 
   switch (command) {
     case ui::TextEditCommand::MOVE_UP:
-      model()->OnUpOrDownKeyPressed(-1);
+      model()->OnUpOrDownPressed(false, false);
       break;
     case ui::TextEditCommand::MOVE_DOWN:
-      model()->OnUpOrDownKeyPressed(1);
+      model()->OnUpOrDownPressed(true, false);
       break;
     case ui::TextEditCommand::PASTE:
       OnOmniboxPaste();
@@ -1658,19 +1654,13 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
     case ui::VKEY_PRIOR:
       if (control || alt || shift || GetReadOnly())
         return false;
-      if (!model()->MaybeStartQueryForPopup()) {
-        model()->StepPopupSelection(OmniboxPopupSelection::kBackward,
-                                    OmniboxPopupSelection::kAllLines);
-      }
+      model()->OnUpOrDownPressed(false, true);
       return true;
 
     case ui::VKEY_NEXT:
       if (control || alt || shift || GetReadOnly())
         return false;
-      if (!model()->MaybeStartQueryForPopup()) {
-        model()->StepPopupSelection(OmniboxPopupSelection::kForward,
-                                    OmniboxPopupSelection::kAllLines);
-      }
+      model()->OnUpOrDownPressed(true, true);
       return true;
 
     case ui::VKEY_V:

@@ -6,6 +6,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/time/time.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/user_education/common/feature_promo_controller.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -48,6 +49,17 @@ bool WaitForStartupPromo(FeaturePromoControllerCommon* controller,
   return controller &&
          WaitForStartupPromo(controller->feature_engagement_tracker(),
                              iph_feature);
+}
+
+bool SetClock(FeaturePromoControllerCommon* controller,
+              const base::Clock& clock,
+              base::Time initial_time) {
+  if (!controller || !controller->feature_engagement_tracker()) {
+    return false;
+  }
+  controller->feature_engagement_tracker()->SetClockForTesting(clock,
+                                                               initial_time);
+  return true;
 }
 
 }  // namespace user_education::test

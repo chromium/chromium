@@ -2927,8 +2927,7 @@ TEST_F(SharedStoragePrivateAggregationTest, NonBigIntBucket_Rejected) {
       "privateAggregation.contributeToHistogram({bucket: 1, value: 2});",
       /*expect_use_counter=*/false);
 
-  EXPECT_THAT(error_str,
-              testing::HasSubstr("The provided value is not a BigInt"));
+  EXPECT_THAT(error_str, testing::HasSubstr("Cannot convert 1 to a BigInt"));
 }
 
 TEST_F(SharedStoragePrivateAggregationTest, NegativeValue_Rejected) {

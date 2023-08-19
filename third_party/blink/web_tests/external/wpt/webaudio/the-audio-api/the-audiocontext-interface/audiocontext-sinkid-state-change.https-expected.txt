@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-PASS Calling setSinkId() on a suspended AudioContext should fire only sink change events.
-FAIL Calling setSinkId() on a running AudioContext should fire both state and sink change events. assert_equals: expected 3 but got 1
-Harness: the test ran to completion.
-

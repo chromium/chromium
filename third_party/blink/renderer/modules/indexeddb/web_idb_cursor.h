@@ -10,15 +10,18 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
+#include "third_party/blink/renderer/modules/indexeddb/idb_factory_client.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_value.h"
-#include "third_party/blink/renderer/modules/indexeddb/web_idb_callbacks.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 
 namespace blink {
+
+class IDBRequest;
 
 class MODULES_EXPORT WebIDBCursor final {
  public:
@@ -32,7 +35,7 @@ class MODULES_EXPORT WebIDBCursor final {
   WebIDBCursor& operator=(const WebIDBCursor&) = delete;
 
   // Used to implement IDBCursor.advance().
-  void Advance(uint32_t count, std::unique_ptr<WebIDBCallbacks> callback);
+  void Advance(uint32_t count, IDBRequest* request);
 
   // Used to implement IDBCursor.continue() and IDBCursor.continuePrimaryKey().
   //
@@ -44,11 +47,9 @@ class MODULES_EXPORT WebIDBCursor final {
   // the duration of the call.
   void CursorContinue(const IDBKey* key,
                       const IDBKey* primary_key,
-                      std::unique_ptr<WebIDBCallbacks> callback);
-  void CursorContinueCallback(std::unique_ptr<WebIDBCallbacks> callbacks,
-                              mojom::blink::IDBCursorResultPtr result);
+                      IDBRequest* request);
 
-  void PrefetchCallback(std::unique_ptr<WebIDBCallbacks> callbacks,
+  void PrefetchCallback(IDBRequest* request,
                         mojom::blink::IDBCursorResultPtr result);
 
   // Called after a cursor request's success handler is executed.
@@ -61,18 +62,16 @@ class MODULES_EXPORT WebIDBCursor final {
                        Vector<std::unique_ptr<IDBKey>> primary_keys,
                        Vector<std::unique_ptr<IDBValue>> values);
 
-  void CachedAdvance(uint32_t count, WebIDBCallbacks* callbacks);
-  void CachedContinue(WebIDBCallbacks* callbacks);
+  void CachedAdvance(uint32_t count, IDBRequest* request);
+  void CachedContinue(IDBRequest* request);
 
   void ResetPrefetchCache();
 
   int64_t transaction_id() const { return transaction_id_; }
 
  private:
-  void AdvanceCallback(std::unique_ptr<WebIDBCallbacks> callbacks,
+  void AdvanceCallback(IDBRequest* request,
                        mojom::blink::IDBCursorResultPtr result);
-  mojo::PendingAssociatedRemote<mojom::blink::IDBCallbacks> GetCallbacksProxy(
-      std::unique_ptr<WebIDBCallbacks> callbacks);
 
   FRIEND_TEST_ALL_PREFIXES(WebIDBCursorTest, AdvancePrefetchTest);
   FRIEND_TEST_ALL_PREFIXES(WebIDBCursorTest, PrefetchReset);

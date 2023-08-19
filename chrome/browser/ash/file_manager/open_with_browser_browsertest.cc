@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/test/profile_test_helper.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/base/filename_util.h"
@@ -85,7 +86,7 @@ class OpenWithBrowserBrowserTest
  public:
   OpenWithBrowserBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {}, /*disabled_features=*/{ash::features::kLacrosPrimary});
+        {}, /*disabled_features=*/ash::standalone_browser::GetFeatureRefs());
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {

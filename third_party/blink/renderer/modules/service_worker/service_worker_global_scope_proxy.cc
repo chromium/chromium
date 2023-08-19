@@ -254,6 +254,12 @@ void ServiceWorkerGlobalScopeProxy::RequestTermination(
   Client().RequestTermination(ConvertToBaseOnceCallback(std::move(callback)));
 }
 
+bool ServiceWorkerGlobalScopeProxy::
+    ShouldNotifyServiceWorkerOnWebSocketActivity(
+        v8::Local<v8::Context> context) {
+  return Client().ShouldNotifyServiceWorkerOnWebSocketActivity(context);
+}
+
 ServiceWorkerGlobalScopeProxy::ServiceWorkerGlobalScopeProxy(
     WebEmbeddedWorkerImpl& embedded_worker,
     WebServiceWorkerContextClient& client,
@@ -294,6 +300,10 @@ void ServiceWorkerGlobalScopeProxy::ResumeEvaluation() {
 mojom::blink::ServiceWorkerFetchHandlerType
 ServiceWorkerGlobalScopeProxy::FetchHandlerType() {
   return WorkerGlobalScope()->FetchHandlerType();
+}
+
+bool ServiceWorkerGlobalScopeProxy::HasHidEventHandlers() {
+  return WorkerGlobalScope()->HasHidEventHandlers();
 }
 
 WebServiceWorkerContextClient& ServiceWorkerGlobalScopeProxy::Client() const {

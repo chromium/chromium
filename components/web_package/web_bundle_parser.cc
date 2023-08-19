@@ -898,16 +898,12 @@ void WebBundleParser::SharedBundleDataSource::IsRandomAccessContext(
 }
 
 WebBundleParser::WebBundleParser(
-    mojo::PendingReceiver<mojom::WebBundleParser> receiver,
     mojo::PendingRemote<mojom::BundleDataSource> data_source,
     const GURL& base_url)
-    : receiver_(this, std::move(receiver)),
-      data_source_(
+    : data_source_(
           base::MakeRefCounted<SharedBundleDataSource>(std::move(data_source))),
       base_url_(base_url) {
   DCHECK(base_url_.is_empty() || base_url_.is_valid());
-  receiver_.set_disconnect_handler(base::BindOnce(
-      &base::DeletePointer<WebBundleParser>, base::Unretained(this)));
 }
 
 WebBundleParser::~WebBundleParser() = default;

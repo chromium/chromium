@@ -15,7 +15,9 @@ namespace blink {
 constexpr blink::mojom::PermissionsPolicyFeature
     kFencedFrameFledgeDefaultRequiredFeatures[] = {
         blink::mojom::PermissionsPolicyFeature::kAttributionReporting,
-        blink::mojom::PermissionsPolicyFeature::kPrivateAggregation};
+        blink::mojom::PermissionsPolicyFeature::kPrivateAggregation,
+        blink::mojom::PermissionsPolicyFeature::kSharedStorage,
+        blink::mojom::PermissionsPolicyFeature::kSharedStorageSelectUrl};
 
 constexpr blink::mojom::PermissionsPolicyFeature
     kFencedFrameSharedStorageDefaultRequiredFeatures[] = {

@@ -24,6 +24,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/common/extension_id.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -114,7 +115,7 @@ class IdentityInternalsTokenRevoker : public GaiaAuthConsumer {
   const std::string& access_token() const { return access_token_; }
 
   // Returns the ID of the extension the access token is related to.
-  const std::string& extension_id() const { return extension_id_; }
+  const extensions::ExtensionId& extension_id() const { return extension_id_; }
 
   // GaiaAuthConsumer implementation.
   void OnOAuth2RevokeTokenCompleted(
@@ -124,7 +125,7 @@ class IdentityInternalsTokenRevoker : public GaiaAuthConsumer {
   // An object used to start a token revoke request.
   GaiaAuthFetcher fetcher_;
   // An ID of an extension the access token is related to.
-  const std::string extension_id_;
+  const extensions::ExtensionId extension_id_;
   // The access token to revoke.
   const std::string access_token_;
   // The JS callback to resolve when revoking is done.

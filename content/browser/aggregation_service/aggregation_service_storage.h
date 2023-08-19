@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <set>
 #include <vector>
 
 #include "content/browser/aggregation_service/aggregatable_report.h"
@@ -19,6 +20,10 @@ class GURL;
 namespace base {
 class Time;
 }  // namespace base
+
+namespace url {
+class Origin;
+}  // namespace url
 
 namespace content {
 
@@ -100,6 +105,10 @@ class AggregationServiceStorage {
       base::Time now,
       base::TimeDelta min_delay,
       base::TimeDelta max_delay) = 0;
+
+  // Returns all distinct report request reporting origins.
+  // Partial data will still be returned in the event of an error.
+  virtual std::set<url::Origin> GetReportRequestReportingOrigins() = 0;
 
   // == Joint methods =====
 

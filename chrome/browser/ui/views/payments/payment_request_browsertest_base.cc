@@ -493,7 +493,7 @@ void PaymentRequestBrowserTestBase::AddAutofillProfile(
 void PaymentRequestBrowserTestBase::AddCreditCard(
     const autofill::CreditCard& card) {
   autofill::PersonalDataManager* personal_data_manager = GetDataManager();
-  if (card.record_type() != autofill::CreditCard::LOCAL_CARD) {
+  if (card.record_type() != autofill::CreditCard::RecordType::kLocalCard) {
     personal_data_manager->AddServerCreditCardForTest(
         std::make_unique<autofill::CreditCard>(card));
     return;

@@ -15,7 +15,6 @@
 #include "chrome/browser/apps/almanac_api_client/proto/client_context.pb.h"
 #include "chrome/browser/apps/app_preload_service/preload_app_definition.h"
 #include "chrome/browser/apps/app_preload_service/proto/app_preload.pb.h"
-#include "components/version_info/channel.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/resource_request.h"

@@ -20,7 +20,6 @@ import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -56,12 +55,11 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.TabLoadObserver;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
@@ -101,11 +99,6 @@ public class NavigateTest {
         mTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
                 ApplicationProvider.getApplicationContext(), ServerCertificate.CERT_OK);
         mOmnibox = new OmniboxTestUtils(mActivityTestRule.getActivity());
-    }
-
-    @After
-    public void tearDown() {
-        mTestServer.stopAndDestroyServer();
     }
 
     private void navigateAndObserve(final String url) throws Exception {
@@ -246,39 +239,6 @@ public class NavigateTest {
         Assert.assertEquals("Desired Link not open", url2,
                 ChromeTabUtils.getUrlStringOnUiThread(
                         mActivityTestRule.getActivity().getActivityTab()));
-    }
-
-    /**
-     * Test 'Request Desktop Site' option is preserved after navigation to a new entry
-     * through a click on a link.
-     */
-    @Test
-    @MediumTest
-    @Feature({"Navigation"})
-    @DisableFeatures(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS)
-    public void testRequestDesktopSiteSettingPers() throws Exception {
-        String url1 = mTestServer.getURL("/chrome/test/data/android/google.html");
-        String url2 = mTestServer.getURL("/chrome/test/data/android/about.html");
-
-        navigateAndObserve(url1);
-        mActivityTestRule.assertWaitForPageScaleFactorMatch(0.5f);
-
-        final Tab tab = mActivityTestRule.getActivity().getActivityTab();
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> TabUtils.switchUserAgent(tab, /* switchToDesktop */ true,
-                                /* forcedByUser */ true, UseDesktopUserAgentCaller.OTHER));
-        ChromeTabUtils.waitForTabPageLoaded(tab, url1);
-        mActivityTestRule.assertWaitForPageScaleFactorChange(0.5f);
-
-        DOMUtils.clickNode(tab.getWebContents(), "aboutLink");
-        ChromeTabUtils.waitForTabPageLoaded(tab, url2);
-        Assert.assertEquals("Request Desktop site setting should stay turned on", true,
-                mActivityTestRule.getActivity()
-                        .getActivityTab()
-                        .getWebContents()
-                        .getNavigationController()
-                        .getUseDesktopUserAgent());
     }
 
     /**
@@ -579,7 +539,7 @@ public class NavigateTest {
     @MediumTest
     @Feature({"Navigation"})
     @DisabledTest(message = "https://crbug.com/1410635")
-    @Features.DisableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
+    @DisableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
     public void testNavigateBackWithTabSwitcher() throws Exception {
         final String[] urls = {mTestServer.getURL("/chrome/test/data/android/navigate/one.html"),
                 mTestServer.getURL("/chrome/test/data/android/navigate/two.html"),
@@ -621,7 +581,7 @@ public class NavigateTest {
     @Test
     @MediumTest
     @Feature({"Navigation"})
-    @Features.EnableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
+    @EnableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
     @DisabledTest(message = "https://crbug.com/1410635")
     public void testNavigateBackWithTabSwitcher_BackPressRefactor() throws Exception {
         // Disable iph

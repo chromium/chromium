@@ -6,6 +6,7 @@
 
 #include <limits>
 
+#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
@@ -406,7 +407,7 @@ void XServerClipboard::AssertSelectionOwnership(x11::Atom selection) {
 }
 
 bool XServerClipboard::IsSelectionOwner(x11::Atom selection) {
-  return selections_owned_.find(selection) != selections_owned_.end();
+  return base::Contains(selections_owned_, selection);
 }
 
 }  // namespace remoting

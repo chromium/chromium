@@ -18,17 +18,16 @@
 #import "components/prefs/persistent_pref_store.h"
 #import "components/prefs/pref_filter.h"
 #import "components/prefs/pref_service.h"
+#import "components/prefs/pref_store.h"
 #import "components/prefs/pref_value_store.h"
 #import "components/proxy_config/proxy_config_pref_names.h"
+#import "components/supervised_user/core/browser/supervised_user_pref_store.h"
+#import "components/supervised_user/core/common/features.h"
 #import "components/sync/base/features.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "components/sync_preferences/pref_service_syncable_factory.h"
 #import "ios/chrome/browser/prefs/ios_chrome_pref_model_associator_client.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -47,11 +46,16 @@ void PrepareFactory(sync_preferences::PrefServiceSyncableFactory* factory,
                     const base::FilePath& pref_filename,
                     base::SequencedTaskRunner* pref_io_task_runner,
                     policy::PolicyService* policy_service,
-                    policy::BrowserPolicyConnector* policy_connector) {
+                    policy::BrowserPolicyConnector* policy_connector,
+                    const scoped_refptr<PrefStore>& supervised_user_prefs) {
   if (policy_service || policy_connector) {
     DCHECK(policy_service && policy_connector);
     factory->SetManagedPolicies(policy_service, policy_connector);
     factory->SetRecommendedPolicies(policy_service, policy_connector);
+  }
+
+  if (supervised_user_prefs) {
+    factory->set_supervised_user_prefs(supervised_user_prefs);
   }
 
   factory->set_user_prefs(base::MakeRefCounted<JsonPrefStore>(
@@ -72,7 +76,7 @@ std::unique_ptr<PrefService> CreateLocalState(
     policy::BrowserPolicyConnector* policy_connector) {
   sync_preferences::PrefServiceSyncableFactory factory;
   PrepareFactory(&factory, pref_filename, pref_io_task_runner, policy_service,
-                 policy_connector);
+                 policy_connector, /*supervised_user_prefs=*/nullptr);
   return factory.Create(pref_registry.get());
 }
 
@@ -81,7 +85,8 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateBrowserStatePrefs(
     base::SequencedTaskRunner* pref_io_task_runner,
     const scoped_refptr<user_prefs::PrefRegistrySyncable>& pref_registry,
     policy::PolicyService* policy_service,
-    policy::BrowserPolicyConnector* policy_connector) {
+    policy::BrowserPolicyConnector* policy_connector,
+    const scoped_refptr<PrefStore>& supervised_user_prefs) {
   // chrome_prefs::CreateProfilePrefs uses ProfilePrefStoreManager to create
   // the preference store however since Chrome on iOS does not need to track
   // preference modifications (as applications are sand-boxed), it can use a
@@ -89,7 +94,8 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateBrowserStatePrefs(
   // on platforms that do not track preference modifications).
   sync_preferences::PrefServiceSyncableFactory factory;
   PrepareFactory(&factory, browser_state_path.Append(kPreferencesFilename),
-                 pref_io_task_runner, policy_service, policy_connector);
+                 pref_io_task_runner, policy_service, policy_connector,
+                 supervised_user_prefs);
   if (base::FeatureList::IsEnabled(syncer::kEnablePreferencesAccountStorage) &&
       base::FeatureList::IsEnabled(
           syncer::kSyncEnablePersistentStorageForAccountPreferences)) {

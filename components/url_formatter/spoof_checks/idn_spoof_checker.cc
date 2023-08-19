@@ -49,8 +49,9 @@ class TopDomainPreloadDecoder : public net::extras::PreloadDecoder {
       return false;
 
     TopDomainEntry top_domain;
-    if (!reader->Next(&top_domain.is_top_500))
+    if (!reader->Next(&top_domain.is_top_bucket)) {
       return false;
+    }
     uint32_t skeletontype_value;
     if (!reader->Read(kSkeletonTypeBitLength, &skeletontype_value))
       return false;

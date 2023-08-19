@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/components/arc/compat_mode/test/compat_mode_test_base.h"
+#include "ash/public/cpp/system/scoped_toast_pause.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -34,6 +35,11 @@ class FakeToastManager : public ash::ToastManager {
     return false;
   }
   bool IsRunning(const std::string& id) const override { return false; }
+  std::unique_ptr<ash::ScopedToastPause> CreateScopedPause() override {
+    return nullptr;
+  }
+  void Pause() override {}
+  void Resume() override {}
 
   void ResetState() {
     called_show_ = false;

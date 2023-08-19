@@ -70,8 +70,13 @@ async function main(arg) {
     framerate: fps
   };
 
-  let support = await VideoEncoder.isConfigSupported(encoder_config);
-  if (!support.supported) {
+  let supported = false;
+  try {
+    supported =
+        (await VideoEncoder.isConfigSupported(encoder_config)).supported;
+  } catch (e) {
+  }
+  if (!supported) {
     TEST.skip('Unsupported codec: ' + arg.codec);
     return;
   }

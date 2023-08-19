@@ -88,6 +88,17 @@ enum class MessageType : uint8_t {
   kMaxValue = 2,
 };
 
+enum class Event {
+  // kPhoneConnected means that the phone has connected to the tunnel server
+  // and started BLE advertising.
+  kPhoneConnected,
+  // kBLEAdvertReceived means that a matching BLE advert has been
+  // received and a corresponding "device" has been discovered.
+  kBLEAdvertReceived,
+  // kReady means that the device is ready to receive a CTAP-level message.
+  kReady,
+};
+
 }  // namespace cablev2
 }  // namespace device
 

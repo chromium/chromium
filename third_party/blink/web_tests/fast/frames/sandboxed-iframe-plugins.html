@@ -2,8 +2,10 @@
 <head>
 <script src="../../resources/js-test.js"></script>
 <script>
-if (window.testRunner)
+if (window.testRunner) {
     testRunner.dumpAsText();
+    testRunner.setDumpConsoleMessages(false);
+}
 
 window.onload = function() {
   shouldBeTrue("(self.embedFrame1.document.getElementById('plugin').postMessage) != undefined");

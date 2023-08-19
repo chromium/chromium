@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_SYNTHETIC_SMOOTH_MOVE_GESTURE_H_
 #define CONTENT_BROWSER_RENDERER_HOST_INPUT_SYNTHETIC_SMOOTH_MOVE_GESTURE_H_
 
+#include <memory>
 #include <vector>
 
 #include "base/time/time.h"
@@ -12,8 +13,7 @@
 #include "content/browser/renderer_host/input/synthetic_gesture_target.h"
 #include "content/browser/renderer_host/input/synthetic_pointer_driver.h"
 #include "content/common/content_export.h"
-#include "content/common/input/synthetic_smooth_drag_gesture_params.h"
-#include "content/common/input/synthetic_smooth_scroll_gesture_params.h"
+#include "content/common/input/synthetic_gesture_params.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "ui/events/types/scroll_types.h"
@@ -22,12 +22,15 @@
 
 namespace content {
 
-class CONTENT_EXPORT SyntheticSmoothMoveGestureParams {
+struct CONTENT_EXPORT SyntheticSmoothMoveGestureParams
+    : public SyntheticGestureParams {
  public:
   SyntheticSmoothMoveGestureParams();
   SyntheticSmoothMoveGestureParams(
       const SyntheticSmoothMoveGestureParams& other);
-  ~SyntheticSmoothMoveGestureParams();
+  ~SyntheticSmoothMoveGestureParams() override;
+
+  GestureType GetGestureType() const override;
 
   enum InputType { MOUSE_DRAG_INPUT, MOUSE_WHEEL_INPUT, TOUCH_INPUT };
 
@@ -42,7 +45,6 @@ class CONTENT_EXPORT SyntheticSmoothMoveGestureParams {
   ui::ScrollGranularity granularity = ui::ScrollGranularity::kScrollByPixel;
   // A bitfield of values from blink::WebInputEvent::Modifiers.
   int modifiers = 0;
-  bool from_devtools_debugger = false;
 };
 
 // This class is used as helper class for simulation of scroll and drag.
@@ -53,9 +55,11 @@ class CONTENT_EXPORT SyntheticSmoothMoveGestureParams {
 // generated.
 // When synthesizing touch events for scrolling, the first distance is extended
 // to compensate for the touch slop.
-class CONTENT_EXPORT SyntheticSmoothMoveGesture : public SyntheticGesture {
+class CONTENT_EXPORT SyntheticSmoothMoveGesture
+    : public SyntheticGestureBase<SyntheticSmoothMoveGestureParams> {
  public:
-  explicit SyntheticSmoothMoveGesture(SyntheticSmoothMoveGestureParams params);
+  explicit SyntheticSmoothMoveGesture(
+      const SyntheticSmoothMoveGestureParams& gesture_params);
 
   SyntheticSmoothMoveGesture(const SyntheticSmoothMoveGesture&) = delete;
   SyntheticSmoothMoveGesture& operator=(const SyntheticSmoothMoveGesture&) =
@@ -109,7 +113,6 @@ class CONTENT_EXPORT SyntheticSmoothMoveGesture : public SyntheticGesture {
   bool IsLastMoveSegment() const;
   bool MoveIsNoOp() const;
 
-  SyntheticSmoothMoveGestureParams params_;
   std::unique_ptr<SyntheticPointerDriver> synthetic_pointer_driver_;
   // Used for mouse input.
   gfx::Vector2dF current_move_segment_total_delta_;

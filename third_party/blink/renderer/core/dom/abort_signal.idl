@@ -5,8 +5,7 @@
 // https://dom.spec.whatwg.org/#interface-AbortSignal
 
 [
-    Exposed=(Window,Worker),
-    ActiveScriptWrappable
+    Exposed=(Window,Worker)
 ] interface AbortSignal : EventTarget {
     [
         CallWith=ScriptState,
@@ -16,18 +15,18 @@
     [
         CallWith=ScriptState,
         MeasureAs=AbortSignalTimeout,
-        NewObject,
-        RuntimeEnabled=AbortSignalTimeout
+        NewObject
     ] static AbortSignal timeout([EnforceRange] unsigned long long milliseconds);
     [
         CallWith=ScriptState,
+        MeasureAs=AbortSignalAny,
         NewObject,
         RuntimeEnabled=AbortSignalAny
     ] static AbortSignal _any(sequence<AbortSignal> signals);
 
     readonly attribute boolean aborted;
     [CallWith=ScriptState] readonly attribute any reason;
-    [CallWith=ScriptState, MeasureAs=AbortSignalThrowIfAborted, RaisesException, RuntimeEnabled=AbortSignalThrowIfAborted] void throwIfAborted();
+    [CallWith=ScriptState, MeasureAs=AbortSignalThrowIfAborted, RaisesException] void throwIfAborted();
 
     attribute EventHandler onabort;
 };

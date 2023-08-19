@@ -7,6 +7,7 @@
 
 #include "base/files/file_path.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "extensions/common/extension_id.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -28,7 +29,7 @@ struct DefaultKeyboardExtensionBrowserTestConfig {
   std::string base_framework_;
 
   // The virtual keyboard's extension id.
-  std::string extension_id_;
+  extensions::ExtensionId extension_id_;
 
   // Path to the test directory.
   std::string test_dir_;

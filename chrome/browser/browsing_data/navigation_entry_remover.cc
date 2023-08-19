@@ -225,7 +225,19 @@ void RemoveNavigationEntries(Profile* profile,
                              deletion_info.restrict_urls(), url_set);
   DeleteTabRestoreEntries(profile, deletion_info.time_range(),
                           deletion_info.restrict_urls(), url_set);
-  DeleteLastSessionFromSessionService(profile);
+
+  // Removal of navigation entries may occur at any point during runtime and
+  // session service data is cleared so that it can be later rebuilt without the
+  // deleted entries.
+  // However deletion of foreign visits specifically can occur during startup
+  // and clearing session service data will delete the user's previous session
+  // with no ability to rebuild/recover (see crbug.com/1424800). Foreign visits
+  // can't be part of the local session so there is no risk of retaining the
+  // session service data in this case.
+  if (deletion_info.deletion_reason() !=
+      history::DeletionInfo::Reason::kDeleteAllForeignVisits) {
+    DeleteLastSessionFromSessionService(profile);
+  }
 }
 
 }  // namespace browsing_data

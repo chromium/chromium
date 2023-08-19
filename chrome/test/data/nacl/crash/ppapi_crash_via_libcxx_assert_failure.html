@@ -1,0 +1,20 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+  <!-- Copyright (c) 2023 Google Inc.  All rights reserved. -->
+  <head>
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="-1" />
+    <script type="text/javascript" src="nacltest.js"></script>
+    <script type="text/javascript" src="ppapi_crash.js"> </script>
+    <title>Nexe Crash Test</title>
+  </head>
+  <body>
+    <h1>Nexe Crash Test</h1>
+    <script type="text/javascript">
+      //<![CDATA[
+      crashTest('crash_via_libcxx_assert_failure', 'CrashViaLibcxxAssertFailure');
+      //]]>
+    </script>
+  </body>
+</html>

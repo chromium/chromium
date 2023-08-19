@@ -298,7 +298,8 @@ class SingleClientVideoCaptureHostTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<MockVideoCaptureObserver> consumer_;
   base::WeakPtr<VideoFrameReceiver> frame_receiver_;
-  raw_ptr<MockVideoCaptureDevice, DanglingUntriaged> launched_device_ = nullptr;
+  raw_ptr<MockVideoCaptureDevice, AcrossTasksDanglingUntriaged>
+      launched_device_ = nullptr;
 
  private:
   std::unique_ptr<content::VideoCaptureDeviceLauncher> CreateDeviceLauncher() {

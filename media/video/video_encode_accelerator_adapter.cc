@@ -381,14 +381,6 @@ void VideoEncodeAcceleratorAdapter::InitializeOnAcceleratorThread(
     return;
   }
 
-  if (options.bitrate.has_value() &&
-      options.bitrate->mode() == Bitrate::Mode::kExternal) {
-    std::move(done_cb).Run(
-        EncoderStatus(EncoderStatus::Codes::kEncoderUnsupportedConfig,
-                      "Unsupported bitrate mode"));
-    return;
-  }
-
   if (!options.frame_size.GetCheckedArea().IsValid()) {
     std::move(done_cb).Run(
         EncoderStatus(EncoderStatus::Codes::kEncoderUnsupportedConfig,
@@ -511,7 +503,7 @@ void VideoEncodeAcceleratorAdapter::Encode(scoped_refptr<VideoFrame> frame,
 
 void VideoEncodeAcceleratorAdapter::EncodeOnAcceleratorThread(
     scoped_refptr<VideoFrame> frame,
-    const EncodeOptions& encode_options,
+    EncodeOptions encode_options,
     EncoderStatusCB done_cb) {
   TRACE_EVENT1("media",
                "VideoEncodeAcceleratorAdapter::EncodeOnAcceleratorThread",
@@ -571,10 +563,9 @@ void VideoEncodeAcceleratorAdapter::EncodeOnAcceleratorThread(
 
   frame = std::move(result).value();
 
-  bool key_frame = encode_options.key_frame;
   if (last_frame_color_space_ != frame->ColorSpace()) {
     last_frame_color_space_ = frame->ColorSpace();
-    key_frame = true;
+    encode_options.key_frame = true;
   }
 
   auto active_encode = std::make_unique<PendingOp>();
@@ -582,7 +573,7 @@ void VideoEncodeAcceleratorAdapter::EncodeOnAcceleratorThread(
   active_encode->timestamp = frame->timestamp();
   active_encode->color_space = frame->ColorSpace();
   active_encodes_.push_back(std::move(active_encode));
-  accelerator_->Encode(frame, key_frame);
+  accelerator_->Encode(frame, encode_options);
 }
 
 void VideoEncodeAcceleratorAdapter::ChangeOptions(const Options& options,

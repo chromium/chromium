@@ -57,7 +57,7 @@ TEST(StringImplTest, LowerASCII) {
   EXPECT_TRUE(Equal(test_string_impl.get(),
                     StringImpl::Create("lInk")->LowerASCII().get()));
 
-  CaseMap case_map("");
+  CaseMap case_map(g_empty_atom);
   EXPECT_TRUE(Equal(case_map.ToLower(StringImpl::Create("LINK")).Impl(),
                     StringImpl::Create("LINK")->LowerASCII().get()));
   EXPECT_TRUE(Equal(case_map.ToLower(StringImpl::Create("lInk")).Impl(),
@@ -115,7 +115,7 @@ TEST(StringImplTest, UpperASCII) {
   EXPECT_TRUE(Equal(test_string_impl.get(),
                     StringImpl::Create("lInk")->UpperASCII().get()));
 
-  CaseMap case_map("");
+  CaseMap case_map(g_empty_atom);
   EXPECT_TRUE(Equal(case_map.ToUpper(StringImpl::Create("LINK")).Impl(),
                     StringImpl::Create("LINK")->UpperASCII().get()));
   EXPECT_TRUE(Equal(case_map.ToUpper(StringImpl::Create("lInk")).Impl(),

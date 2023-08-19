@@ -4,7 +4,7 @@
 
 #include "components/services/heap_profiling/public/cpp/settings.h"
 
-#include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"

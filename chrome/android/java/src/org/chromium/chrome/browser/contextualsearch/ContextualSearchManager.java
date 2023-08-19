@@ -100,8 +100,6 @@ public class ContextualSearchManager
     // having the manager itself implement the interface because that exposes all the public methods
     // of that interface at the manager level.
 
-    private static final String TAG = "ContextualSearch";
-
     private static final String INTENT_URL_PREFIX = "intent:";
 
     // We denylist this URL because malformed URLs may bring up this page.
@@ -422,14 +420,12 @@ public class ContextualSearchManager
     }
 
     /** @return The Base Page's {@link WebContents}. */
-    @Nullable
-    private WebContents getBaseWebContents() {
+    private @Nullable WebContents getBaseWebContents() {
         return mSelectionController.getBaseWebContents();
     }
 
     /** @return The Base Page's {@link GURL}. */
-    @Nullable
-    private GURL getBasePageURL() {
+    private @Nullable GURL getBasePageURL() {
         WebContents baseWebContents = mSelectionController.getBaseWebContents();
         if (baseWebContents == null) return null;
         return baseWebContents.getVisibleUrl();
@@ -579,8 +575,7 @@ public class ContextualSearchManager
     }
 
     @Override
-    @Nullable
-    public GURL getBasePageUrl() {
+    public @Nullable GURL getBasePageUrl() {
         WebContents baseWebContents = getBaseWebContents();
         if (baseWebContents == null) return null;
         return baseWebContents.getLastCommittedUrl();
@@ -977,13 +972,13 @@ public class ContextualSearchManager
     // ============================================================================================
 
     /** @param observer An observer to notify when the user performs a contextual search. */
-    void addObserver(ContextualSearchObserver observer) {
+    public void addObserver(ContextualSearchObserver observer) {
         mObservers.addObserver(observer);
     }
 
     /** @param observer An observer to no longer notify when the user performs a contextual search.
      */
-    void removeObserver(ContextualSearchObserver observer) {
+    public void removeObserver(ContextualSearchObserver observer) {
         mObservers.removeObserver(observer);
     }
 

@@ -148,6 +148,11 @@ notified of breakages.
 Same as Blink web tests, you can use
 [`run_web_tests.py`](web_tests.md#running-the-tests) to run any WPT test.
 
+*** promo
+Consider running WPTs with [`wptrunner`](web_platform_tests_wptrunner.md), the
+harness developed by the WPT project that Chromium now supports.
+***
+
 One thing to note is that glob patterns for WPT tests are not yet supported.
 
 See [Running WPT tests in Content Shell](web_tests_in_content_shell.md#Running-WPT-Tests-in-Content-Shell)
@@ -221,13 +226,18 @@ wpt {
 }
 ```
 
-When a test under `external/wpt/css/css-grid/` newly fails in a WPT import, the
-importer will automatically file a bug against the Blink>Layout>Grid component
-in [crbug.com](https://crbug.com), with details of which test failed and the
-output.
+When tests under `external/wpt/css/css-grid/` newly fail in a WPT import, the
+importer will automatically file a bug against the `Blink>Layout>Grid` component
+in [crbug.com](https://crbug.com), with details of which tests failed and the
+outputs.
+The importer will also copy `layout-dev@chromium.org` (the `team_email`) and any
+`external/wpt/css/css-grid/OWNERS` on the bug.
+
+Failing tests are grouped according to the most specific `DIR_METADATA` that
+they roll up to.
 
 Note that we are considering making the notifications opt-out instead of
-opt-in: see https://crbug.com/845232
+opt-in: see https://crbug.com/1454853
 
 ### Skipped tests (and how to re-enable them)
 

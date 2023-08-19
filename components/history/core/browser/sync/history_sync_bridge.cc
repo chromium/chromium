@@ -4,6 +4,8 @@
 
 #include "components/history/core/browser/sync/history_sync_bridge.h"
 
+#include <vector>
+
 #include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -16,6 +18,7 @@
 #include "components/history/core/browser/sync/history_sync_metadata_database.h"
 #include "components/history/core/browser/sync/visit_id_remapper.h"
 #include "components/history/core/browser/url_row.h"
+#include "components/history/core/browser/visit_annotations_database.h"
 #include "components/sync/base/page_transition_conversion.h"
 #include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/entity_change.h"
@@ -217,6 +220,9 @@ VisitRow MakeVisitRow(const sync_pb::HistorySpecifics& specifics,
     // any).
     row.originator_referring_visit = specifics.originator_referring_visit_id();
     row.originator_opener_visit = specifics.originator_opener_visit_id();
+    if (row.originator_referring_visit == kInvalidVisitID) {
+      row.external_referrer_url = GURL(specifics.referrer_url());
+    }
   } else {
     // All later visits in the chain are implicitly referred to by the preceding
     // visit.
@@ -271,6 +277,18 @@ absl::optional<VisitContentAnnotations> MakeContentAnnotations(
   annotations.page_language = specifics.page_language();
   annotations.password_state =
       PasswordStateFromProto(specifics.password_state());
+  annotations.has_url_keyed_image = specifics.has_url_keyed_image();
+  if (!specifics.related_searches().empty()) {
+    annotations.related_searches =
+        std::vector<std::string>(specifics.related_searches().begin(),
+                                 specifics.related_searches().end());
+  }
+  if (!specifics.categories().empty()) {
+    for (const auto& category : specifics.categories()) {
+      annotations.model_annotations.categories.emplace_back(category.id(),
+                                                            category.weight());
+    }
+  }
   return annotations;
 }
 
@@ -400,6 +418,18 @@ std::unique_ptr<syncer::EntityData> MakeEntityData(
   history->set_page_language(content_annotations.page_language);
   history->set_password_state(
       PasswordStateToProto(content_annotations.password_state));
+  history->set_has_url_keyed_image(content_annotations.has_url_keyed_image);
+  for (const auto& category :
+       content_annotations.model_annotations.categories) {
+    auto* category_to_sync = history->add_categories();
+    category_to_sync->set_id(category.id);
+    category_to_sync->set_weight(category.weight);
+  }
+  if (!content_annotations.related_searches.empty()) {
+    history->mutable_related_searches()->Add(
+        content_annotations.related_searches.begin(),
+        content_annotations.related_searches.end());
+  }
 
   if (!favicon_urls.empty()) {
     // If there are multiple favicon URLs (which should be rare), they're
@@ -810,7 +840,11 @@ void HistorySyncBridge::OnVisitUpdated(const VisitRow& visit_row,
       // Standard case: These are all interesting, process this update.
       break;
     case VisitUpdateReason::kUpdateSyncedVisit:
-      CHECK(processing_syncer_changes_);
+      // UpdateSyncedVisit() should only be called by this bridge (so typically
+      // `processing_syncer_changes_` should be true here, but this doesn't hold
+      // in some tests). Anyway, if a foreign visit somehow does get updated on
+      // this device (e.g. due to a bug), better *not* to send out updates and
+      // potentially mess up other clients. So ignore this.
       return;
     case VisitUpdateReason::kSetOnCloseContextAnnotations:
       // None of the on-close context annotations are synced, so ignore this.
@@ -1011,7 +1045,9 @@ HistorySyncBridge::QueryRedirectChainAndMakeEntityData(
 
     // Query the URL and annotation info for the current subchain.
     std::vector<AnnotatedVisit> annotated_visits =
-        history_backend_->ToAnnotatedVisits(subchain_visits);
+        history_backend_->ToAnnotatedVisits(
+            subchain_visits,
+            /*compute_redirect_chain_start_properties=*/false);
     if (annotated_visits.empty()) {
       // Again, this can happen if there's invalid data in the DB. In that case,
       // skip this subchain but still try to handle any others.
@@ -1028,8 +1064,13 @@ HistorySyncBridge::QueryRedirectChainAndMakeEntityData(
     }
 
     // Convert the current subchain into a SyncEntity.
-    GURL referrer_url =
-        GetURLForVisit(annotated_visits.front().visit_row.referring_visit);
+    GURL referrer_url;
+    VisitID referrer_id = annotated_visits.front().visit_row.referring_visit;
+    if (referrer_id != kInvalidVisitID) {
+      referrer_url = GetURLForVisit(referrer_id);
+    } else {
+      referrer_url = annotated_visits.front().visit_row.external_referrer_url;
+    }
     // Note: `favicon_urls` may legitimately be empty, that's fine.
     std::vector<GURL> favicon_urls = history_backend_->GetFaviconURLsForURL(
         annotated_visits.back().url_row.url());

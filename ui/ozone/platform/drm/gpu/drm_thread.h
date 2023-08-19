@@ -24,6 +24,7 @@
 #include "ui/ozone/platform/drm/gpu/drm_device_generator.h"
 #include "ui/ozone/platform/drm/mojom/device_cursor.mojom.h"
 #include "ui/ozone/platform/drm/mojom/drm_device.mojom.h"
+#include "ui/ozone/public/drm_modifiers_filter.h"
 #include "ui/ozone/public/hardware_capabilities.h"
 #include "ui/ozone/public/overlay_surface_candidate.h"
 #include "ui/ozone/public/swap_completion_callback.h"
@@ -140,6 +141,10 @@ class DrmThread : public base::Thread,
                         PresentationOnceCallback presentation_callback);
 
   void IsDeviceAtomic(gfx::AcceleratedWidget widget, bool* is_atomic);
+
+  // Sets a filter that the DRM thread can invoke to filter out modifiers
+  // incompatible with use in GPU main and Viz threads.
+  void SetDrmModifiersFilter(std::unique_ptr<DrmModifiersFilter> filter);
 
   // ozone::mojom::DrmDevice
   void CreateWindow(gfx::AcceleratedWidget widget,

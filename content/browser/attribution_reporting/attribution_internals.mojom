@@ -5,7 +5,6 @@
 module attribution_internals.mojom;
 
 import "components/attribution_reporting/registration.mojom";
-import "components/attribution_reporting/source_registration_error.mojom";
 import "components/attribution_reporting/source_type.mojom";
 import "content/browser/attribution_reporting/store_source_result.mojom";
 import "content/browser/attribution_reporting/attribution_reporting.mojom";
@@ -93,7 +92,8 @@ struct WebUISource {
   url.mojom.Origin reporting_origin;
   double source_time;
   double expiry_time;
-  double event_report_window_time;
+  // TODO(crbug.com/1462699): Display `event_report_windows` and
+  // `max_event_level_reports` fields.
   double aggregatable_report_window_time;
   attribution_reporting.mojom.SourceType source_type;
   int64 priority;
@@ -128,7 +128,7 @@ struct WebUIRegistration {
 
 struct WebUITrigger {
   WebUIRegistration registration;
-  network.mojom.TriggerVerification? verification;
+  array<network.mojom.TriggerVerification> verifications;
 
   enum Status {
     // Shared statuses:
@@ -141,6 +141,7 @@ struct WebUITrigger {
     kExcessiveReportingOrigins,
     kProhibitedByBrowserPolicy,
     kDeduplicated,
+    kReportWindowNotStarted,
     kReportWindowPassed,
     kNotRegistered,
     kExcessiveReports,
@@ -159,15 +160,10 @@ struct WebUITrigger {
   Status aggregatable_status;
 };
 
-union SourceStatus {
-  attribution_reporting.mojom.StoreSourceResult store_source_result;
-  attribution_reporting.mojom.SourceRegistrationError json_error;
-};
-
 struct WebUISourceRegistration {
   WebUIRegistration registration;
   attribution_reporting.mojom.SourceType type;
-  SourceStatus status;
+  attribution_reporting.mojom.StoreSourceResult status;
 };
 
 // Struct containing info of successfully passed OS registrations to be
@@ -179,7 +175,8 @@ struct WebUIOsRegistration {
   url.mojom.Url registration_url;
   url.mojom.Origin top_level_origin;
   bool is_debug_key_allowed;
-  attribution_reporting.mojom.OsRegistrationType type;
+  bool debug_reporting;
+  attribution_reporting.mojom.RegistrationType type;
   attribution_reporting.mojom.OsRegistrationResult result;
 };
 

@@ -214,8 +214,8 @@ GetSlotStartInSuperPage(uintptr_t maybe_inner_address) {
 
   const uintptr_t partition_page_index =
       (maybe_inner_address & kSuperPageOffsetMask) >> PartitionPageShift();
-  auto* page = PartitionSuperPageToMetadataArea<ThreadSafe>(super_page) +
-               partition_page_index;
+  auto* page =
+      PartitionSuperPageToMetadataArea(super_page) + partition_page_index;
   // Check if page is valid. The check also works for the guard pages and the
   // metadata page.
   if (!page->is_valid) {
@@ -230,9 +230,11 @@ GetSlotStartInSuperPage(uintptr_t maybe_inner_address) {
   if (!slot_span->bucket) {
     return {};
   }
-  PA_SCAN_DCHECK(PartitionRoot<ThreadSafe>::IsValidSlotSpan(slot_span));
+#if PA_SCAN_DCHECK_IS_ON()
+  DCheckIsValidSlotSpan(slot_span);
+#endif
   const uintptr_t slot_span_start =
-      SlotSpanMetadata<ThreadSafe>::ToSlotSpanStart(slot_span);
+      SlotSpanMetadata::ToSlotSpanStart(slot_span);
   const ptrdiff_t ptr_offset = maybe_inner_address - slot_span_start;
   PA_SCAN_DCHECK(0 <= ptr_offset &&
                  ptr_offset < static_cast<ptrdiff_t>(
@@ -295,29 +297,29 @@ void IterateNonEmptySlotSpans(uintptr_t super_page,
   size_t visited = 0;
 #endif
 
-  IterateSlotSpans<ThreadSafe>(
-      super_page, true /*with_quarantine*/,
-      [&function, &slot_spans_to_visit
+  IterateSlotSpans(super_page, true /*with_quarantine*/,
+                   [&function, &slot_spans_to_visit
 #if PA_SCAN_DCHECK_IS_ON()
-       ,
-       &visited
+                    ,
+                    &visited
 #endif
-  ](SlotSpanMetadata<ThreadSafe>* slot_span) {
-        if (slot_span->is_empty() || slot_span->is_decommitted()) {
-          // Skip empty/decommitted slot spans.
-          return false;
-        }
-        function(slot_span);
-        --slot_spans_to_visit;
+  ](SlotSpanMetadata* slot_span) {
+                     if (slot_span->is_empty() || slot_span->is_decommitted()) {
+                       // Skip empty/decommitted slot spans.
+                       return false;
+                     }
+                     function(slot_span);
+                     --slot_spans_to_visit;
 #if PA_SCAN_DCHECK_IS_ON()
-        // In debug builds, scan all the slot spans to check that number of
-        // visited slot spans is equal to the number of nonempty_slot_spans.
-        ++visited;
-        return false;
+                     // In debug builds, scan all the slot spans to check that
+                     // number of visited slot spans is equal to the number of
+                     // nonempty_slot_spans.
+                     ++visited;
+                     return false;
 #else
         return slot_spans_to_visit == 0;
 #endif
-      });
+                   });
 #if PA_SCAN_DCHECK_IS_ON()
   // Check that exactly all non-empty slot spans have been visited.
   PA_DCHECK(nonempty_slot_spans == visited);
@@ -406,11 +408,12 @@ static_assert(
     "SuperPageSnapshot must stay relatively small to be allocated on stack");
 
 SuperPageSnapshot::SuperPageSnapshot(uintptr_t super_page) {
-  using SlotSpan = SlotSpanMetadata<ThreadSafe>;
+  using SlotSpan = SlotSpanMetadata;
 
-  auto* extent_entry = PartitionSuperPageToExtent<ThreadSafe>(super_page);
+  auto* extent_entry = PartitionSuperPageToExtent(super_page);
 
-  ::partition_alloc::internal::ScopedGuard lock(extent_entry->root->lock_);
+  ::partition_alloc::internal::ScopedGuard lock(
+      ::partition_alloc::internal::PartitionRootLock(extent_entry->root));
 
   const size_t nonempty_slot_spans =
       extent_entry->number_of_nonempty_slot_spans;
@@ -497,7 +500,7 @@ class PCScanTask final : public base::RefCountedThreadSafe<PCScanTask>,
   friend class PCScanScanLoop;
 
   using Root = PCScan::Root;
-  using SlotSpan = SlotSpanMetadata<ThreadSafe>;
+  using SlotSpan = SlotSpanMetadata;
 
   // This is used:
   // - to synchronize all scanning threads (mutators and the scanner);
@@ -736,7 +739,7 @@ void PCScanTask::ClearQuarantinedSlotsAndPrepareCardTable() {
       auto* slot_span = SlotSpan::FromSlotStart(slot_start);
       // Use zero as a zapping value to speed up the fast bailout check in
       // ScanPartitions.
-      const size_t size = slot_span->GetUsableSize(root);
+      const size_t size = root->GetSlotUsableSize(slot_span);
       if (clear_type == PCScan::ClearType::kLazy) {
         void* object = root->SlotStartToObject(slot_start);
         memset(object, 0, size);
@@ -938,8 +941,7 @@ struct SweepStat {
   size_t discarded_bytes = 0;
 };
 
-void UnmarkInCardTable(uintptr_t slot_start,
-                       SlotSpanMetadata<ThreadSafe>* slot_span) {
+void UnmarkInCardTable(uintptr_t slot_start, SlotSpanMetadata* slot_span) {
 #if PA_CONFIG(STARSCAN_USE_CARD_TABLE)
   // Reset card(s) for this quarantined slot. Please note that the cards may
   // still contain quarantined slots (which were promoted in this scan cycle),
@@ -950,38 +952,37 @@ void UnmarkInCardTable(uintptr_t slot_start,
 #endif  // PA_CONFIG(STARSCAN_USE_CARD_TABLE)
 }
 
-[[maybe_unused]] size_t FreeAndUnmarkInCardTable(
-    PartitionRoot<ThreadSafe>* root,
-    SlotSpanMetadata<ThreadSafe>* slot_span,
-    uintptr_t slot_start) {
+[[maybe_unused]] size_t FreeAndUnmarkInCardTable(PartitionRoot* root,
+                                                 SlotSpanMetadata* slot_span,
+                                                 uintptr_t slot_start) {
   void* object = root->SlotStartToObject(slot_start);
   root->FreeNoHooksImmediate(object, slot_span, slot_start);
   UnmarkInCardTable(slot_start, slot_span);
   return slot_span->bucket->slot_size;
 }
 
-[[maybe_unused]] void SweepSuperPage(ThreadSafePartitionRoot* root,
+[[maybe_unused]] void SweepSuperPage(PartitionRoot* root,
                                      uintptr_t super_page,
                                      size_t epoch,
                                      SweepStat& stat) {
   auto* bitmap = StateBitmapFromAddr(super_page);
-  ThreadSafePartitionRoot::FromFirstSuperPage(super_page);
+  PartitionRoot::FromFirstSuperPage(super_page);
   bitmap->IterateUnmarkedQuarantined(epoch, [root,
                                              &stat](uintptr_t slot_start) {
-    auto* slot_span = SlotSpanMetadata<ThreadSafe>::FromSlotStart(slot_start);
+    auto* slot_span = SlotSpanMetadata::FromSlotStart(slot_start);
     stat.swept_bytes += FreeAndUnmarkInCardTable(root, slot_span, slot_start);
   });
 }
 
 [[maybe_unused]] void SweepSuperPageAndDiscardMarkedQuarantine(
-    ThreadSafePartitionRoot* root,
+    PartitionRoot* root,
     uintptr_t super_page,
     size_t epoch,
     SweepStat& stat) {
   auto* bitmap = StateBitmapFromAddr(super_page);
   bitmap->IterateQuarantined(epoch, [root, &stat](uintptr_t slot_start,
                                                   bool is_marked) {
-    auto* slot_span = SlotSpanMetadata<ThreadSafe>::FromSlotStart(slot_start);
+    auto* slot_span = SlotSpanMetadata::FromSlotStart(slot_start);
     if (PA_LIKELY(!is_marked)) {
       stat.swept_bytes += FreeAndUnmarkInCardTable(root, slot_span, slot_start);
       return;
@@ -1004,12 +1005,11 @@ void UnmarkInCardTable(uintptr_t slot_start,
   });
 }
 
-[[maybe_unused]] void SweepSuperPageWithBatchedFree(
-    ThreadSafePartitionRoot* root,
-    uintptr_t super_page,
-    size_t epoch,
-    SweepStat& stat) {
-  using SlotSpan = SlotSpanMetadata<ThreadSafe>;
+[[maybe_unused]] void SweepSuperPageWithBatchedFree(PartitionRoot* root,
+                                                    uintptr_t super_page,
+                                                    size_t epoch,
+                                                    SweepStat& stat) {
+  using SlotSpan = SlotSpanMetadata;
 
   auto* bitmap = StateBitmapFromAddr(super_page);
   SlotSpan* previous_slot_span = nullptr;
@@ -1070,17 +1070,18 @@ void PCScanTask::SweepQuarantine() {
   StarScanSnapshot::SweepingView sweeping_view(*snapshot_);
   sweeping_view.VisitNonConcurrently(
       [this, &stat, should_discard](uintptr_t super_page) {
-        auto* root = ThreadSafePartitionRoot::FromFirstSuperPage(super_page);
+        auto* root = PartitionRoot::FromFirstSuperPage(super_page);
 
 #if PA_CONFIG(STARSCAN_BATCHED_FREE)
         SweepSuperPageWithBatchedFree(root, super_page, pcscan_epoch_, stat);
         (void)should_discard;
 #else
-        if (PA_UNLIKELY(should_discard && !root->flags.allow_cookie))
+        if (PA_UNLIKELY(should_discard && !root->settings.use_cookie)) {
           SweepSuperPageAndDiscardMarkedQuarantine(root, super_page,
                                                    pcscan_epoch_, stat);
-        else
+        } else {
           SweepSuperPage(root, super_page, pcscan_epoch_, stat);
+        }
 #endif  // PA_CONFIG(STARSCAN_BATCHED_FREE)
       });
 
@@ -1424,8 +1425,8 @@ PCScanInternal::SuperPages GetSuperPagesAndCommitStateBitmaps(
          super_page != super_page_end; super_page += kSuperPageSize) {
       // Make sure the metadata is committed.
       // TODO(bikineev): Remove once this is known to work.
-      const volatile char* metadata = reinterpret_cast<char*>(
-          PartitionSuperPageToMetadataArea<ThreadSafe>(super_page));
+      const volatile char* metadata =
+          reinterpret_cast<char*>(PartitionSuperPageToMetadataArea(super_page));
       *metadata;
       RecommitSystemPages(SuperPageStateBitmapAddr(super_page),
                           state_bitmap_size_to_commit,
@@ -1445,15 +1446,16 @@ void PCScanInternal::RegisterScannableRoot(Root* root) {
   // Avoid nesting locks and store super_pages in a temporary vector.
   SuperPages super_pages;
   {
-    ::partition_alloc::internal::ScopedGuard guard(root->lock_);
+    ::partition_alloc::internal::ScopedGuard guard(
+        ::partition_alloc::internal::PartitionRootLock(root));
     PA_CHECK(root->IsQuarantineAllowed());
     if (root->IsScanEnabled()) {
       return;
     }
     PA_CHECK(!root->IsQuarantineEnabled());
     super_pages = GetSuperPagesAndCommitStateBitmaps(*root);
-    root->flags.scan_mode = Root::ScanMode::kEnabled;
-    root->flags.quarantine_mode = Root::QuarantineMode::kEnabled;
+    root->settings.scan_mode = Root::ScanMode::kEnabled;
+    root->settings.quarantine_mode = Root::QuarantineMode::kEnabled;
   }
   std::lock_guard<std::mutex> lock(roots_mutex_);
   PA_DCHECK(!scannable_roots_.count(root));
@@ -1468,14 +1470,15 @@ void PCScanInternal::RegisterNonScannableRoot(Root* root) {
   // Avoid nesting locks and store super_pages in a temporary vector.
   SuperPages super_pages;
   {
-    ::partition_alloc::internal::ScopedGuard guard(root->lock_);
+    ::partition_alloc::internal::ScopedGuard guard(
+        ::partition_alloc::internal::PartitionRootLock(root));
     PA_CHECK(root->IsQuarantineAllowed());
     PA_CHECK(!root->IsScanEnabled());
     if (root->IsQuarantineEnabled()) {
       return;
     }
     super_pages = GetSuperPagesAndCommitStateBitmaps(*root);
-    root->flags.quarantine_mode = Root::QuarantineMode::kEnabled;
+    root->settings.quarantine_mode = Root::QuarantineMode::kEnabled;
   }
   std::lock_guard<std::mutex> lock(roots_mutex_);
   PA_DCHECK(!nonscannable_roots_.count(root));
@@ -1493,7 +1496,7 @@ void PCScanInternal::RegisterNewSuperPage(Root* root,
   // Make sure the metadata is committed.
   // TODO(bikineev): Remove once this is known to work.
   const volatile char* metadata = reinterpret_cast<char*>(
-      PartitionSuperPageToMetadataArea<ThreadSafe>(super_page_base));
+      PartitionSuperPageToMetadataArea(super_page_base));
   *metadata;
 
   std::lock_guard<std::mutex> lock(roots_mutex_);
@@ -1595,12 +1598,12 @@ void PCScanInternal::ClearRootsForTesting() {
   // Set all roots as non-scannable and non-quarantinable.
   for (auto& pair : scannable_roots_) {
     Root* root = pair.first;
-    root->flags.scan_mode = Root::ScanMode::kDisabled;
-    root->flags.quarantine_mode = Root::QuarantineMode::kDisabledByDefault;
+    root->settings.scan_mode = Root::ScanMode::kDisabled;
+    root->settings.quarantine_mode = Root::QuarantineMode::kDisabledByDefault;
   }
   for (auto& pair : nonscannable_roots_) {
     Root* root = pair.first;
-    root->flags.quarantine_mode = Root::QuarantineMode::kDisabledByDefault;
+    root->settings.quarantine_mode = Root::QuarantineMode::kDisabledByDefault;
   }
   // Make sure to destroy maps so that on the following ReinitForTesting() call
   // the maps don't attempt to destroy the backing.

@@ -210,7 +210,7 @@ TEST_F(DocumentProviderTest, IsDocumentProviderAllowed) {
   }
 
   // Search suggestions must be enabled.
-  EXPECT_CALL(*client_.get(), IsSyncActive()).WillOnce(Return(false));
+  EXPECT_CALL(*client_.get(), IsSyncActive()).WillRepeatedly(Return(false));
   EXPECT_FALSE(provider_->IsDocumentProviderAllowed(client_.get(), ac_input));
   EXPECT_CALL(*client_.get(), IsSyncActive()).WillRepeatedly(Return(true));
   EXPECT_TRUE(provider_->IsDocumentProviderAllowed(client_.get(), ac_input));
@@ -223,17 +223,42 @@ TEST_F(DocumentProviderTest, IsDocumentProviderAllowed) {
   fake_prefs->SetBoolean(omnibox::kDocumentSuggestEnabled, true);
   EXPECT_TRUE(provider_->IsDocumentProviderAllowed(client_.get(), ac_input));
 
+  // Unless the "no setting" Feature is enabled, in which case the setting state
+  // shouldn't matter.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(omnibox::kDocumentProviderNoSetting);
+
+    fake_prefs->SetBoolean(omnibox::kDocumentSuggestEnabled, false);
+    EXPECT_TRUE(provider_->IsDocumentProviderAllowed(client_.get(), ac_input));
+    fake_prefs->SetBoolean(omnibox::kDocumentSuggestEnabled, true);
+    EXPECT_TRUE(provider_->IsDocumentProviderAllowed(client_.get(), ac_input));
+  }
+
   // Should not be an incognito window.
-  EXPECT_CALL(*client_.get(), IsOffTheRecord()).WillOnce(Return(true));
+  EXPECT_CALL(*client_.get(), IsOffTheRecord()).WillRepeatedly(Return(true));
   EXPECT_FALSE(provider_->IsDocumentProviderAllowed(client_.get(), ac_input));
   EXPECT_CALL(*client_.get(), IsOffTheRecord()).WillRepeatedly(Return(false));
   EXPECT_TRUE(provider_->IsDocumentProviderAllowed(client_.get(), ac_input));
 
   // Sync should be enabled.
-  EXPECT_CALL(*client_.get(), IsSyncActive()).WillOnce(Return(false));
+  EXPECT_CALL(*client_.get(), IsSyncActive()).WillRepeatedly(Return(false));
   EXPECT_FALSE(provider_->IsDocumentProviderAllowed(client_.get(), ac_input));
   EXPECT_CALL(*client_.get(), IsSyncActive()).WillRepeatedly(Return(true));
   EXPECT_TRUE(provider_->IsDocumentProviderAllowed(client_.get(), ac_input));
+
+  // Unless the "no sync requirement" Feature is enabled, in which case the Sync
+  // state shouldn't matter.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(
+        omnibox::kDocumentProviderNoSyncRequirement);
+
+    EXPECT_CALL(*client_.get(), IsSyncActive()).WillRepeatedly(Return(false));
+    EXPECT_TRUE(provider_->IsDocumentProviderAllowed(client_.get(), ac_input));
+    EXPECT_CALL(*client_.get(), IsSyncActive()).WillRepeatedly(Return(true));
+    EXPECT_TRUE(provider_->IsDocumentProviderAllowed(client_.get(), ac_input));
+  }
 
   // |backoff_for_session_| should be false. This should be the case by default;
   // i.e. we didn't explicitly set this to false above.

@@ -176,7 +176,7 @@ class TabStatsDataStore : public TabStatsObserver {
       base::SampleMetadata("NumberOfTabs", base::SampleMetadataScope::kProcess);
 
   // A raw pointer to the PrefService used to read and write the statistics.
-  raw_ptr<PrefService, DanglingUntriaged> pref_service_;
+  raw_ptr<PrefService, LeakedDanglingUntriaged> pref_service_;
 
   // The interval maps, one per period of time that we want to observe.
   std::vector<std::unique_ptr<TabsStateDuringIntervalMap>> interval_maps_;

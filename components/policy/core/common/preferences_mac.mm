@@ -5,18 +5,14 @@
 #import <Foundation/Foundation.h>
 
 #include "base/apple/bridging.h"
+#include "base/apple/foundation_util.h"
 #include "base/feature_list.h"
-#include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/values.h"
 #include "components/policy/core/common/features.h"
 #include "components/policy/core/common/mac_util.h"
 #include "components/policy/core/common/preferences_mac.h"
 #include "components/policy/policy_constants.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 // `CFPrefsManagedSource` and `_CFXPreferences` are used to determine the scope
 // of a policy. A policy can be read with `copyValueForKey()` below with

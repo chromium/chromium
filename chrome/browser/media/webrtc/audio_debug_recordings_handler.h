@@ -87,7 +87,8 @@ class AudioDebugRecordingsHandler
                                   const base::FilePath& log_directory);
 
   // The browser context associated with our renderer process.
-  const raw_ptr<content::BrowserContext, DanglingUntriaged> browser_context_;
+  const raw_ptr<content::BrowserContext, AcrossTasksDanglingUntriaged>
+      browser_context_;
 
   // This counter allows saving each debug recording in separate files.
   uint64_t current_audio_debug_recordings_id_;

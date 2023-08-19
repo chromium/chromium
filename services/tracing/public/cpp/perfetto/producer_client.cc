@@ -32,6 +32,8 @@ namespace {
 constexpr char kSharedBufferIsValidMetricName[] = "Tracing.SharedBufferIsValid";
 }  // namespace
 
+using ShmemMode = perfetto::SharedMemoryArbiter::ShmemMode;
+
 namespace tracing {
 
 ProducerClient::ProducerClient(base::tracing::PerfettoTaskRunner* task_runner)
@@ -420,7 +422,7 @@ bool ProducerClient::InitSharedMemoryIfNeeded() {
   }
 
   shared_memory_arbiter_ = perfetto::SharedMemoryArbiter::CreateUnboundInstance(
-      shared_memory_.get(), kSMBPageSizeBytes);
+      shared_memory_.get(), kSMBPageSizeBytes, ShmemMode::kDefault);
   shared_memory_arbiter_->SetDirectSMBPatchingSupportedByService();
   shared_memory_arbiter_->EnableDirectSMBPatching();
   shared_memory_arbiter_->SetBatchCommitsDuration(

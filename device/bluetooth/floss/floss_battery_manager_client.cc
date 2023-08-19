@@ -94,6 +94,13 @@ std::unique_ptr<FlossBatteryManagerClient> FlossBatteryManagerClient::Create() {
 
 FlossBatteryManagerClient::FlossBatteryManagerClient() = default;
 FlossBatteryManagerClient::~FlossBatteryManagerClient() {
+  if (battery_manager_callback_id_) {
+    CallBatteryManagerMethod<bool>(
+        base::BindOnce(&FlossBatteryManagerClient::BatteryCallbackUnregistered,
+                       weak_ptr_factory_.GetWeakPtr()),
+        battery_manager::kUnregisterBatteryCallback,
+        battery_manager_callback_id_.value());
+  }
   if (bus_) {
     exported_callback_manager_.UnexportCallback(
         dbus::ObjectPath(kExportedCallbacksPath));
@@ -166,6 +173,13 @@ void FlossBatteryManagerClient::BatteryCallbackRegistered(
 
   battery_manager_callback_id_ = result.value();
   CompleteInit();
+}
+
+void FlossBatteryManagerClient::BatteryCallbackUnregistered(
+    DBusResult<bool> result) {
+  if (!result.has_value() || *result == false) {
+    LOG(WARNING) << __func__ << "Failed to unregister callback";
+  }
 }
 
 void FlossBatteryManagerClient::CompleteInit() {

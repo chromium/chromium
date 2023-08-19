@@ -16,6 +16,10 @@ TasksComboboxModel::TasksComboboxModel(
 
 TasksComboboxModel::~TasksComboboxModel() = default;
 
+GlanceablesTaskList* TasksComboboxModel::GetTaskListAt(size_t index) const {
+  return task_list_->GetItemAt(index);
+}
+
 size_t TasksComboboxModel::GetItemCount() const {
   return task_list_->item_count();
 }

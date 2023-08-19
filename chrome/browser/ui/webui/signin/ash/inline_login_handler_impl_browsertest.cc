@@ -17,12 +17,15 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/webui/ash/edu_coexistence/edu_coexistence_login_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #include "components/account_manager_core/mock_account_manager_facade.h"
@@ -359,12 +362,21 @@ class InlineLoginHandlerTestWithArcRestrictions
     : public InlineLoginHandlerTest {
  public:
   InlineLoginHandlerTestWithArcRestrictions() {
-    feature_list_.InitAndEnableFeature(ash::features::kLacrosSupport);
+    auto lacros = ash::standalone_browser::GetFeatureRefs();
+    lacros.push_back(crosapi::browser_util::kLacrosForSupervisedUsers);
+    feature_list_.InitWithFeatures(/*enabled=*/lacros, /*disabled=*/{});
   }
 
   ~InlineLoginHandlerTestWithArcRestrictions() override = default;
 
   void SetUpOnMainThread() override {
+    if (browser() == nullptr) {
+      // Create a new Ash browser window so test code using browser() can work
+      // even when Lacros is the only browser.
+      // TODO(crbug.com/1450158): Remove uses of browser() from such tests.
+      chrome::NewEmptyWindow(ProfileManager::GetActiveUserProfile());
+      SelectFirstBrowser();
+    }
     InlineLoginHandlerTest::SetUpOnMainThread();
     // In-session account addition happens when `AccountAppsAvailability` is
     // already initialized.

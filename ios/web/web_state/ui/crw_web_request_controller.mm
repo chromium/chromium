@@ -30,10 +30,6 @@
 #import "net/base/mac/url_conversions.h"
 #import "net/base/url_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using web::wk_navigation_util::ExtractTargetURL;
 using web::wk_navigation_util::IsRestoreSessionUrl;
 using web::wk_navigation_util::IsWKInternalUrl;
@@ -310,7 +306,8 @@ enum class BackForwardNavigationType {
         requestURL, referrer, transition,
         rendererInitiated ? web::NavigationInitiationType::RENDERER_INITIATED
                           : web::NavigationInitiationType::BROWSER_INITIATED,
-        isPostNavigation, web::HttpsUpgradeType::kNone);
+        isPostNavigation, /*is_error_navigation=*/false,
+        web::HttpsUpgradeType::kNone);
     item =
         self.navigationManagerImpl->GetPendingItemInCurrentOrRestoredSession();
   }
@@ -499,13 +496,8 @@ enum class BackForwardNavigationType {
                     rendererInitiated:NO];
 
   if (self.navigationManagerImpl->IsRestoreSessionInProgress()) {
-    if (self.navigationManagerImpl->RestoreNativeSession(navigationURL)) {
-      // Return early if the session was restored via native API.
-      return;
-    }
-    [self.delegate
-        webRequestControllerDisableNavigationGesturesUntilFinishNavigation:
-            self];
+    self.navigationManagerImpl->RestoreNativeSession();
+    return;
   }
 
   WKNavigation* navigation = nil;

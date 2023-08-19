@@ -18,6 +18,7 @@
 #include "content/public/browser/android/compositor.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "device/vr/android/xr_image_transport_base.h"
 #include "device/vr/openxr/context_provider_callbacks.h"
 #include "device/vr/openxr/openxr_device.h"
 #include "device/vr/openxr/openxr_platform.h"
@@ -38,27 +39,30 @@ OpenXrDeviceProvider::~OpenXrDeviceProvider() {
 void OpenXrDeviceProvider::Initialize(device::VRDeviceProviderClient* client) {
   CHECK(!initialized_);
 
-  openxr_platform_helper_ = std::make_unique<OpenXrPlatformHelperAndroid>();
+  // TODO(https://crbug.com/1454942): Support non-shared buffer rendering path.
+  if (device::XrImageTransportBase::UseSharedBuffer()) {
+    openxr_platform_helper_ = std::make_unique<OpenXrPlatformHelperAndroid>();
 
-  if (openxr_platform_helper_->EnsureInitialized()) {
-    DVLOG(2) << __func__ << ": OpenXr is supported, creating device";
-    // Unretained is safe since we own the device this callback is being passed
-    // to and we ensure that it does not outlive us. The device is expected to
-    // wind down any threads that it spins up as well (for e.g. rendering), so
-    // this destruction is also safe.
-    // The OpenXrDevice passes this off to different render loops as it creates
-    // them, so we can't just use a WeakPtr of ourselves here, since it would
-    // technically end up dereferenced on different threads (albeit all
-    // children).
-    openxr_device_ = std::make_unique<device::OpenXrDevice>(
-        base::BindRepeating(&OpenXrDeviceProvider::CreateContextProviderAsync,
-                            base::Unretained(this)),
-        openxr_platform_helper_.get());
+    if (openxr_platform_helper_->EnsureInitialized()) {
+      DVLOG(2) << __func__ << ": OpenXr is supported, creating device";
+      // Unretained is safe since we own the device this callback is being
+      // passed to and we ensure that it does not outlive us. The device is
+      // expected to wind down any threads that it spins up as well (for e.g.
+      // rendering), so this destruction is also safe. The OpenXrDevice passes
+      // this off to different render loops as it creates them, so we can't just
+      // use a WeakPtr of ourselves here, since it would technically end up
+      // dereferenced on different threads (albeit all children).
+      openxr_device_ = std::make_unique<device::OpenXrDevice>(
+          base::BindRepeating(&OpenXrDeviceProvider::CreateContextProviderAsync,
+                              base::Unretained(this)),
+          openxr_platform_helper_.get());
 
-    client->AddRuntime(openxr_device_->GetId(), openxr_device_->GetDeviceData(),
-                       openxr_device_->BindXRRuntime());
-  } else {
-    DVLOG(2) << __func__ << ": No OpenXR Hardware found.";
+      client->AddRuntime(openxr_device_->GetId(),
+                         openxr_device_->GetDeviceData(),
+                         openxr_device_->BindXRRuntime());
+    } else {
+      DVLOG(2) << __func__ << ": No OpenXR Hardware found.";
+    }
   }
 
   initialized_ = true;
@@ -88,10 +92,6 @@ void OpenXrDeviceProvider::CreateContextProviderAsync(
             attributes.red_size = 8;
             attributes.green_size = 8;
             attributes.blue_size = 8;
-            attributes.stencil_size = 0;
-            attributes.depth_size = 0;
-            attributes.samples = 0;
-            attributes.sample_buffers = 0;
             attributes.bind_generates_resource = false;
             if (base::SysInfo::IsLowEndDevice()) {
               attributes.alpha_size = 0;

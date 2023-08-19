@@ -71,8 +71,14 @@ class BrowsingDataQuotaHelper
 
   virtual void StartFetching(FetchResultCallback callback) = 0;
 
+  // TODO(crbug/1456643): DEPRECATED please prefer using `DeleteStorageKeyData`.
+  // This should be removed as part of `CookiesTreeModel` deprecation.
   virtual void DeleteHostData(const std::string& host,
                               blink::mojom::StorageType type) = 0;
+
+  virtual void DeleteStorageKeyData(const blink::StorageKey& storage_key,
+                                    blink::mojom::StorageType type,
+                                    base::OnceClosure completed) = 0;
 
  protected:
   BrowsingDataQuotaHelper();

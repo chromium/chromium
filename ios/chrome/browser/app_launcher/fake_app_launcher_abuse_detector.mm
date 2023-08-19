@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/app_launcher/fake_app_launcher_abuse_detector.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation FakeAppLauncherAbuseDetector
 
 - (instancetype)init {

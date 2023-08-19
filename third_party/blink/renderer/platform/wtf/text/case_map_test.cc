@@ -84,7 +84,7 @@ INSTANTIATE_TEST_SUITE_P(CaseMapTest,
 
 TEST_P(CaseMapTest, ToLowerWithoutOffset) {
   const auto data = GetParam();
-  CaseMap case_map(data.locale);
+  CaseMap case_map(AtomicString(data.locale));
   String source(data.source);
   String lower = case_map.ToLower(source);
   EXPECT_EQ(lower, String(data.lower_expected));
@@ -92,7 +92,7 @@ TEST_P(CaseMapTest, ToLowerWithoutOffset) {
 
 TEST_P(CaseMapTest, ToUpperWithoutOffset) {
   const auto data = GetParam();
-  CaseMap case_map(data.locale);
+  CaseMap case_map(AtomicString(data.locale));
   String source(data.source);
   String upper = case_map.ToUpper(source);
   EXPECT_EQ(upper, String(data.upper_expected));
@@ -100,7 +100,7 @@ TEST_P(CaseMapTest, ToUpperWithoutOffset) {
 
 TEST_P(CaseMapTest, ToLower) {
   const auto data = GetParam();
-  CaseMap case_map(data.locale);
+  CaseMap case_map(AtomicString(data.locale));
   String source(data.source);
   TextOffsetMap offset_map;
   String lower = case_map.ToLower(source, &offset_map);
@@ -110,7 +110,7 @@ TEST_P(CaseMapTest, ToLower) {
 
 TEST_P(CaseMapTest, ToUpper) {
   const auto data = GetParam();
-  CaseMap case_map(data.locale);
+  CaseMap case_map(AtomicString(data.locale));
   String source(data.source);
   TextOffsetMap offset_map;
   String upper = case_map.ToUpper(source, &offset_map);
@@ -124,7 +124,7 @@ TEST_P(CaseMapTest, ToLower8Bit) {
   source = To8BitOrNull(source);
   if (!source)
     return;
-  CaseMap case_map(data.locale);
+  CaseMap case_map(AtomicString(data.locale));
   TextOffsetMap offset_map;
   String lower = case_map.ToLower(source, &offset_map);
   EXPECT_EQ(lower, String(data.lower_expected));
@@ -137,7 +137,7 @@ TEST_P(CaseMapTest, ToUpper8Bit) {
   source = To8BitOrNull(source);
   if (!source)
     return;
-  CaseMap case_map(data.locale);
+  CaseMap case_map(AtomicString(data.locale));
   TextOffsetMap offset_map;
   String upper = case_map.ToUpper(source, &offset_map);
   EXPECT_EQ(upper, String(data.upper_expected));
@@ -252,7 +252,7 @@ TEST(CaseMapTest, ToUpperLocale) {
     String source = String::FromUTF8(test_data_list[i].source);
     for (size_t j = 0; j < test_data_list[i].locale_list_length; ++j) {
       const char* locale = test_data_list[i].locale_list[j];
-      CaseMap case_map(locale);
+      CaseMap case_map{AtomicString(locale)};
       EXPECT_EQ(expected, case_map.ToUpper(source).Utf8())
           << test_data_list[i].source_description << "; locale=" << locale;
     }
@@ -325,7 +325,7 @@ TEST(CaseMapTest, ToLowerLocale) {
     String source = String::FromUTF8(test_data_list[i].source);
     for (size_t j = 0; j < test_data_list[i].locale_list_length; ++j) {
       const char* locale = test_data_list[i].locale_list[j];
-      CaseMap case_map(locale);
+      CaseMap case_map{AtomicString(locale)};
       EXPECT_EQ(expected, case_map.ToLower(source).Utf8())
           << test_data_list[i].source_description << "; locale=" << locale;
     }

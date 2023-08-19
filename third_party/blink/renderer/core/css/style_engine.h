@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/css/active_style_sheets.h"
 #include "third_party/blink/renderer/core/css/color_scheme_flags.h"
 #include "third_party/blink/renderer/core/css/css_global_rule_set.h"
+#include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/invalidation/pending_invalidations.h"
 #include "third_party/blink/renderer/core/css/invalidation/style_invalidator.h"
 #include "third_party/blink/renderer/core/css/layout_tree_rebuild_root.h"
@@ -52,6 +53,7 @@
 #include "third_party/blink/renderer/core/css/style_invalidation_root.h"
 #include "third_party/blink/renderer/core/css/style_recalc_root.h"
 #include "third_party/blink/renderer/core/css/vision_deficiency.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/layout/geometry/axis.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
@@ -659,10 +661,17 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   const char* NameInHeapSnapshot() const override { return "StyleEngine"; }
 
   RuleSet* DefaultViewTransitionStyle() const;
-  void InvalidateUAViewTransitionStyle();
 
   const ActiveStyleSheetVector& ActiveUserStyleSheets() const {
     return active_user_style_sheets_;
+  }
+
+  // See comment on viewport_size_.
+  void UpdateViewportSize();
+  const CSSToLengthConversionData::ViewportSize& GetViewportSize() const {
+    DCHECK(viewport_size_ == CSSToLengthConversionData::ViewportSize(
+                                 GetDocument().GetLayoutView()));
+    return viewport_size_;
   }
 
  private:
@@ -913,12 +922,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   Member<MediaQueryEvaluator> media_query_evaluator_;
   Member<CSSGlobalRuleSet> global_rule_set_;
 
-  // This is the default UA generated style sheet for the ::transition* pseudo
-  // elements. This is tracked by StyleEngine as opposed to
-  // CSSDefaultStyleSheets since it is 1:1 with a Document and can be
-  // dynamically updated.
-  Member<RuleSet> ua_view_transition_style_;
-
   PendingInvalidations pending_invalidations_;
 
   StyleInvalidationRoot style_invalidation_root_;
@@ -1020,6 +1023,10 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // for more info.
   HeapHashMap<AtomicString, Member<const CSSValue>>
       fill_or_clip_path_uri_value_cache_;
+
+  // Cached because it can be expensive to compute anew for each element.
+  // You must call UpdateViewportSize() once before resolving style.
+  CSSToLengthConversionData::ViewportSize viewport_size_;
 };
 
 void PossiblyScheduleNthPseudoInvalidations(Node& node);

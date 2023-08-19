@@ -1,0 +1,63 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "camera_app/camera_app_integration_browsertest.cc",
+    "demo_mode_app_integration_browsertest.cc",
+    "diagnostics_app_integration_browsertest.cc",
+    "eche_app_integration_browsertest.cc",
+    "face_ml_integration_browsertest.cc",
+    "firmware_update_app_integration_browsertest.cc",
+    "help_app/help_app_integration_browsertest.cc",
+    "media_app/media_app_integration_browsertest.cc",
+    "os_feedback_app_integration_browsertest.cc",
+    "personalization_app/personalization_app_integration_browsertest.cc",
+    "personalization_app/personalization_app_time_of_day_browsertest.cc",
+    "print_management_app_integration_browsertest.cc",
+    "projector_app/projector_app_integration_browsertest.cc",
+    "scanning_app_integration_browsertest.cc",
+    "settings_app_integration_browsertest.cc",
+    "shimless_rma_integration_browsertest.cc",
+    "shortcut_customization_app_integration_browsertest.cc",
+  ]
+
+  if (!is_official_build) {
+    sources += [ "sample_system_web_app_integration_browsertest.cc" ]
+  }
+
+  deps = [
+    "//ash/webui/demo_mode_app_ui",
+    "//ash/webui/diagnostics_ui",
+    "//ash/webui/firmware_update_ui",
+    "//ash/webui/help_app_ui:buildflags",
+    "//ash/webui/help_app_ui/search:mojo_bindings",
+    "//ash/webui/media_app_ui:browser_test_support",
+    "//ash/webui/media_app_ui:buildflags",
+    "//ash/webui/os_feedback_ui",
+    "//ash/webui/print_management",
+    "//ash/webui/projector_app:buildflags",
+    "//ash/webui/web_applications/test:test_support",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
+    "//chrome/browser/error_reporting:test_support",
+    "//chrome/browser/ui/ash/system_web_apps",
+    "//components/crash/content/browser/error_reporting:mock_crash_endpoint",
+    "//components/language/core/browser",
+    "//ui/base/idle:test_support",
+  ]
+
+  if (!is_official_build) {
+    deps += [ "//ash/webui/sample_system_web_app_ui" ]
+  }
+}

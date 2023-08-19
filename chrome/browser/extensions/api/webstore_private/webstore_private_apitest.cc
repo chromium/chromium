@@ -5,6 +5,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
@@ -76,7 +77,7 @@ namespace {
 
 constexpr char kExtensionId[] = "enfkhcelefdadlmkffamgdlgplcionje";
 
-class WebstoreInstallListener : public WebstoreInstaller::Delegate {
+class WebstoreInstallListener : public WebstorePrivateApi::Delegate {
  public:
   WebstoreInstallListener()
       : received_failure_(false), received_success_(false), waiting_(false) {}
@@ -294,7 +295,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebstorePrivateApiTestParameterized,
 IN_PROC_BROWSER_TEST_P(ExtensionWebstorePrivateApiTestParameterized,
                        AppInstallBubble) {
   WebstoreInstallListener listener;
-  WebstorePrivateApi::SetWebstoreInstallerDelegateForTesting(&listener);
+  auto delegate_reset = WebstorePrivateApi::SetDelegateForTesting(&listener);
   ASSERT_TRUE(RunInstallTest("app_install_bubble.html", "app.crx"));
   listener.Wait();
   ASSERT_TRUE(listener.received_success());
@@ -345,7 +346,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebstorePrivateApiTestParameterized,
 IN_PROC_BROWSER_TEST_P(ExtensionWebstorePrivateApiTestParameterized,
                        InstallTheme) {
   WebstoreInstallListener listener;
-  WebstorePrivateApi::SetWebstoreInstallerDelegateForTesting(&listener);
+  auto delegate_reset = WebstorePrivateApi::SetDelegateForTesting(&listener);
   ASSERT_TRUE(RunInstallTest("theme.html", "../../theme.crx"));
   listener.Wait();
   ASSERT_TRUE(listener.received_success());
@@ -511,6 +512,8 @@ class SupervisedUserExtensionWebstorePrivateApiTest
  private:
   // Create another embedded test server to avoid starting the same one twice.
   std::unique_ptr<net::EmbeddedTestServer> embedded_test_server_;
+  // TODO(b/289179073): Replace ash::LoggedInUserMixin with
+  // supervised_user::SupervisionMixin so this fixture runs everywhere.
   ash::LoggedInUserMixin logged_in_user_mixin_;
   absl::optional<NextDialogAction> next_dialog_action_;
   base::test::ScopedFeatureList feature_list_;
@@ -524,7 +527,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 IN_PROC_BROWSER_TEST_P(SupervisedUserExtensionWebstorePrivateApiTest,
                        ParentPermissionGranted) {
   WebstoreInstallListener listener;
-  WebstorePrivateApi::SetWebstoreInstallerDelegateForTesting(&listener);
+  auto delegate_reset = WebstorePrivateApi::SetDelegateForTesting(&listener);
   set_next_dialog_action(NextDialogAction::kAccept);
 
   ASSERT_TRUE(RunInstallTest("install_child.html", "app.crx"));
@@ -546,7 +549,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserExtensionWebstorePrivateApiTest,
                        ParentPermissionCanceled) {
   WebstoreInstallListener listener;
   set_next_dialog_action(NextDialogAction::kCancel);
-  WebstorePrivateApi::SetWebstoreInstallerDelegateForTesting(&listener);
+  auto delegate_reset = WebstorePrivateApi::SetDelegateForTesting(&listener);
   ASSERT_TRUE(RunInstallTest("install_cancel_child.html", "app.crx"));
   listener.Wait();
   ASSERT_TRUE(listener.received_failure());
@@ -566,7 +569,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserExtensionWebstorePrivateApiTest,
 IN_PROC_BROWSER_TEST_P(SupervisedUserExtensionWebstorePrivateApiTest,
                        NoParentPermissionRequiredForTheme) {
   WebstoreInstallListener listener;
-  WebstorePrivateApi::SetWebstoreInstallerDelegateForTesting(&listener);
+  auto delegate_reset = WebstorePrivateApi::SetDelegateForTesting(&listener);
   ASSERT_TRUE(RunInstallTest("theme.html", "../../theme.crx"));
   listener.Wait();
   ASSERT_TRUE(listener.received_success());

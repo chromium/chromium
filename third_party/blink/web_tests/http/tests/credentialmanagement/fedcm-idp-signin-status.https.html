@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<!-- Generate token with the command:
+generate_token.py https://127.0.0.1:8443 FedCmIdpSigninStatus --expire-timestamp=2000000000
+-- -->
+<meta http-equiv="origin-trial"
+  content="A9a3fMLbgTmgdENpn0k3Xa5PyVf3Zuf7T93E0WkqOfannbR7I6EUCkuxOx/5x/vtou4iHIzov2F8huBcm/sFDgEAAABdeyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6ODQ0MyIsICJmZWF0dXJlIjogIkZlZENtSWRwU2lnbmluU3RhdHVzIiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9" />
+<title>FedCM IDP sign-in status API - check that the OT can be enabled</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+const prefix = 'https://127.0.0.1:8443/resources/fedcm';
+const provider = {
+  configURL: `${prefix}/fedcm.json`,
+  clientId: '123',
+  nonce: '2',
+};
+const config = {
+  identity: {
+    providers: [provider]
+  },
+  mediation: 'required',
+};
+
+promise_test(async t => {
+  await fetch(`${prefix}/mark-signout.php`, { mode: 'no-cors' });
+  const result = navigator.credentials.get(config);
+  return promise_rejects_dom(t, 'NetworkError', result);
+}, 'FedCM request should fail because we are marked as not logged in');
+
+promise_test(async t => {
+  const prefix = 'https://127.0.0.1:8443/resources/fedcm';
+  await fetch(`${prefix}/mark-signout.php`, { mode: 'no-cors' });
+  const result = IdentityProvider.getUserInfo(provider);
+  return promise_rejects_dom(t, 'NetworkError', result);
+}, 'User info request should fail because we are marked as not logged in');
+</script>

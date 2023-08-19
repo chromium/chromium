@@ -390,8 +390,7 @@ public class TileGroup implements MostVisitedSites.Observer {
 
         if (!dataChanged) return;
 
-        mOfflineModelObserver.updateAllSuggestionsOfflineAvailability(
-                /* reportPrefetchedSuggestionsCount = */ false);
+        mOfflineModelObserver.updateAllSuggestionsOfflineAvailability();
 
         if (countChanged) mObserver.onTileCountChanged();
 
@@ -401,8 +400,7 @@ public class TileGroup implements MostVisitedSites.Observer {
         if (isInitialLoad) removeTask(TileTask.FETCH_DATA);
     }
 
-    @Nullable
-    private Tile findTile(SiteSuggestion suggestion) {
+    private @Nullable Tile findTile(SiteSuggestion suggestion) {
         if (mTileSections.get(suggestion.sectionType) == null) return null;
         for (Tile tile : mTileSections.get(suggestion.sectionType)) {
             if (tile.getData().equals(suggestion)) return tile;
@@ -468,8 +466,7 @@ public class TileGroup implements MostVisitedSites.Observer {
         return mPendingTasks.contains(task);
     }
 
-    @Nullable
-    public SiteSuggestion getHomepageTileData() {
+    public @Nullable SiteSuggestion getHomepageTileData() {
         for (Tile tile : mTileSections.get(TileSectionType.PERSONALIZED)) {
             if (tile.getSource() == TileSource.HOMEPAGE) {
                 return tile.getData();

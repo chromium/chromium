@@ -14,8 +14,6 @@ source_set("session_state") {
     "web_session_state_tab_helper.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//build:branding_buildflags",
     "//components/keyed_service/core",
@@ -42,8 +40,6 @@ source_set("unit_tests") {
     "web_session_state_cache_unittest.mm",
     "web_session_state_tab_helper_unittest.mm",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
     ":session_state",

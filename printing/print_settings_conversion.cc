@@ -102,7 +102,7 @@ void SetPrintableAreaIfValid(PrintSettings& settings,
 
   // Scale the page size and printable area to device units.
   // Blink doesn't support different dpi settings in X and Y axis. Because of
-  // this, printers with non-square DPIs still scale page size and printable
+  // this, printers with non-square pixels still scale page size and printable
   // area using device_units_per_inch() instead of their respective dimensions
   // in device_units_per_inch_size().
   float scale =
@@ -268,6 +268,11 @@ std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
     }
   }
   settings->set_requested_media(requested_media);
+
+  const std::string* media_type = job_settings.FindString(kSettingMediaType);
+  if (media_type && !media_type->empty()) {
+    settings->set_media_type(*media_type);
+  }
 
   settings->set_ranges(GetPageRangesFromJobSettings(job_settings));
 

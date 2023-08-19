@@ -8,7 +8,7 @@
 #include <mach/mach_vm.h>
 #include <memory>
 
-#include "base/mac/mach_logging.h"
+#include "base/apple/mach_logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
 

@@ -29,6 +29,14 @@ class TestFederatedIdentityModalDialogViewDelegate
   bool closed_{false};
 
   void NotifyClose() override { closed_ = true; }
+
+  base::WeakPtr<TestFederatedIdentityModalDialogViewDelegate> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<TestFederatedIdentityModalDialogViewDelegate>
+      weak_ptr_factory_{this};
 };
 
 class IdentityRegistryTest : public RenderViewHostImplTestHarness {
@@ -42,7 +50,8 @@ class IdentityRegistryTest : public RenderViewHostImplTestHarness {
     test_delegate_ =
         std::make_unique<TestFederatedIdentityModalDialogViewDelegate>();
 
-    IdentityRegistry::CreateForWebContents(web_contents(), test_delegate_.get(),
+    IdentityRegistry::CreateForWebContents(web_contents(),
+                                           test_delegate_->GetWeakPtr(),
                                            url::Origin::Create(GURL(kIdpUrl)));
     identity_registry_ = IdentityRegistry::FromWebContents(web_contents());
 

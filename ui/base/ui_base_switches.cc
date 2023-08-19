@@ -14,9 +14,6 @@ const char kDisableOverscrollEdgeEffect[] = "disable-overscroll-edge-effect";
 
 // Disable the pull-to-refresh effect when vertically overscrolling content.
 const char kDisablePullToRefreshEffect[] = "disable-pull-to-refresh-effect";
-
-// Use Toat manager for managing/queuing Android toast UIs.
-const char kUseToastManager[] = "use-toast-manager";
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -32,6 +29,17 @@ const char kShowMacOverlayBorders[] = "show-mac-overlay-borders";
 // This flag is enabled when feature::kLacrosResourcesFileSharing is set and
 // ash-side operation is successfully done.
 const char kEnableResourcesFileSharing[] = "enable-resources-file-sharing";
+#endif
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+// Specifies system font family name. Improves determenism when rendering
+// pages in headless mode.
+const char kSystemFontFamily[] = "system-font-family";
+#endif
+
+#if BUILDFLAG(IS_LINUX)
+// Specify the toolkit used to construct the Linux GUI.
+const char kUiToolkitFlag[] = "ui-toolkit";
 #endif
 
 // Disables layer-edge anti-aliasing in the compositor.

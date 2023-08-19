@@ -9,6 +9,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -119,7 +120,6 @@ public class PaintPreviewTabService implements NativePaintPreviewServiceProvider
         return mNativePaintPreviewBaseService;
     }
 
-    @VisibleForTesting
     public boolean hasNativeServiceForTesting() {
         return mNativePaintPreviewTabService != 0;
     }
@@ -229,9 +229,9 @@ public class PaintPreviewTabService implements NativePaintPreviewServiceProvider
                 mNativePaintPreviewTabService, activeTabIds);
     }
 
-    @VisibleForTesting
     public static void setAccessibilityEnabledForTesting(boolean isAccessibilityEnabled) {
         sIsAccessibilityEnabledForTesting = isAccessibilityEnabled;
+        ResettersForTesting.register(() -> sIsAccessibilityEnabledForTesting = false);
     }
 
     @NativeMethods

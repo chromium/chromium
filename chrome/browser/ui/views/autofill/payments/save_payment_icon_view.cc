@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/autofill/payments/save_iban_bubble_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -92,11 +93,7 @@ void SavePaymentIconView::UpdateImpl() {
   }
 
   if (command_enabled && controller->ShouldShowPaymentSavedLabelAnimation()) {
-    if (command_id_ == IDC_SAVE_CREDIT_CARD_FOR_PAGE) {
-      AnimateIn(IDS_AUTOFILL_CARD_SAVED);
-    } else if (command_id_ == IDC_SAVE_IBAN_FOR_PAGE) {
-      AnimateIn(IDS_AUTOFILL_IBAN_SAVED);
-    }
+    AnimateIn(controller->GetSaveSuccessAnimationStringId());
   }
 }
 
@@ -104,7 +101,9 @@ void SavePaymentIconView::OnExecuting(
     PageActionIconView::ExecuteSource execute_source) {}
 
 const gfx::VectorIcon& SavePaymentIconView::GetVectorIcon() const {
-  return kCreditCardIcon;
+  return OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
+             ? kCreditCardChromeRefreshIcon
+             : kCreditCardIcon;
 }
 
 const gfx::VectorIcon& SavePaymentIconView::GetVectorIconBadge() const {

@@ -201,6 +201,11 @@ class ClientSessionTest : public testing::Test {
   // ownership of the HostExtensions themselves.
   std::vector<HostExtension*> extensions_;
 
+  // Vectors of events to bind to `client_sessions_`, must outlive it.
+  std::vector<protocol::KeyEvent> key_events_;
+  std::vector<protocol::MouseEvent> mouse_events_;
+  std::vector<protocol::ClipboardEvent> clipboard_events_;
+
   // ClientSession instance under test.
   std::unique_ptr<ClientSession> client_session_;
 
@@ -458,8 +463,7 @@ TEST_F(ClientSessionTest, MultiMonMouseMove) {
       desktop_environment_factory_->last_desktop_environment()
           ->last_input_injector()
           .get();
-  std::vector<protocol::MouseEvent> mouse_events;
-  input_injector->set_mouse_events(&mouse_events);
+  input_injector->set_mouse_events(&mouse_events_);
 
   // These mouse events are in global (full desktop) coordinates.
   connection_->input_stub()->InjectMouseEvent(MakeMouseMoveEvent(70, 50));
@@ -486,22 +490,22 @@ TEST_F(ClientSessionTest, MultiMonMouseMove) {
   client_session_->DisconnectSession(protocol::OK);
   client_session_.reset();
 
-  EXPECT_EQ(7U, mouse_events.size());
+  EXPECT_EQ(7U, mouse_events_.size());
   // Full desktop.
-  EXPECT_THAT(mouse_events[0], EqualsMouseMoveEvent(70, 50));
-  EXPECT_THAT(mouse_events[1], EqualsMouseMoveEvent(1000, 650));
+  EXPECT_THAT(mouse_events_[0], EqualsMouseMoveEvent(70, 50));
+  EXPECT_THAT(mouse_events_[1], EqualsMouseMoveEvent(1000, 650));
   // Second display.
-  EXPECT_THAT(mouse_events[2], EqualsMouseMoveEvent(1005 + kDisplay1Width,
-                                                    625 + kDisplay2YOffset));
-  EXPECT_THAT(mouse_events[3],
+  EXPECT_THAT(mouse_events_[2], EqualsMouseMoveEvent(1005 + kDisplay1Width,
+                                                     625 + kDisplay2YOffset));
+  EXPECT_THAT(mouse_events_[3],
               EqualsMouseMoveEvent(kDisplay1Width + kDisplay2Width - 1,
                                    700 + kDisplay2YOffset));
   // First display.
-  EXPECT_THAT(mouse_events[4], EqualsMouseMoveEvent(80, 60));
-  EXPECT_THAT(mouse_events[5],
+  EXPECT_THAT(mouse_events_[4], EqualsMouseMoveEvent(80, 60));
+  EXPECT_THAT(mouse_events_[5],
               EqualsMouseMoveEvent(kDisplay1Width - 1, kDisplay1Height - 1));
   // Full desktop.
-  EXPECT_THAT(mouse_events[6],
+  EXPECT_THAT(mouse_events_[6],
               EqualsMouseMoveEvent(kDisplay1Width + kDisplay2Width - 1,
                                    kDisplay2Height + kDisplay2YOffset - 1));
 }
@@ -515,8 +519,7 @@ TEST_F(ClientSessionTest, MultiMonMouseMove_SameSize) {
       desktop_environment_factory_->last_desktop_environment()
           ->last_input_injector()
           .get();
-  std::vector<protocol::MouseEvent> mouse_events;
-  input_injector->set_mouse_events(&mouse_events);
+  input_injector->set_mouse_events(&mouse_events_);
 
   // These mouse events are in global (full desktop) coordinates.
   connection_->input_stub()->InjectMouseEvent(MakeMouseMoveEvent(70, 50));
@@ -543,21 +546,21 @@ TEST_F(ClientSessionTest, MultiMonMouseMove_SameSize) {
   client_session_->DisconnectSession(protocol::OK);
   client_session_.reset();
 
-  EXPECT_EQ(7U, mouse_events.size());
+  EXPECT_EQ(7U, mouse_events_.size());
   // Full desktop.
-  EXPECT_THAT(mouse_events[0], EqualsMouseMoveEvent(70, 50));
-  EXPECT_THAT(mouse_events[1], EqualsMouseMoveEvent(1000, 550));
+  EXPECT_THAT(mouse_events_[0], EqualsMouseMoveEvent(70, 50));
+  EXPECT_THAT(mouse_events_[1], EqualsMouseMoveEvent(1000, 550));
   // Second display.
-  EXPECT_THAT(mouse_events[2], EqualsMouseMoveEvent(705 + kDisplay1Width,
-                                                    525 + kDisplay2YOffset));
-  EXPECT_THAT(mouse_events[3], EqualsMouseMoveEvent(2 * kDisplay1Width - 1,
-                                                    500 + kDisplay2YOffset));
+  EXPECT_THAT(mouse_events_[2], EqualsMouseMoveEvent(705 + kDisplay1Width,
+                                                     525 + kDisplay2YOffset));
+  EXPECT_THAT(mouse_events_[3], EqualsMouseMoveEvent(2 * kDisplay1Width - 1,
+                                                     500 + kDisplay2YOffset));
   // First display.
-  EXPECT_THAT(mouse_events[4], EqualsMouseMoveEvent(80, 60));
-  EXPECT_THAT(mouse_events[5],
+  EXPECT_THAT(mouse_events_[4], EqualsMouseMoveEvent(80, 60));
+  EXPECT_THAT(mouse_events_[5],
               EqualsMouseMoveEvent(kDisplay1Width - 1, kDisplay1Height - 1));
   // Full desktop.
-  EXPECT_THAT(mouse_events[6],
+  EXPECT_THAT(mouse_events_[6],
               EqualsMouseMoveEvent(2 * kDisplay1Width - 1,
                                    kDisplay1Height + kDisplay2YOffset - 1));
 }
@@ -571,12 +574,9 @@ TEST_F(ClientSessionTest, DisableInputs) {
       desktop_environment_factory_->last_desktop_environment()
           ->last_input_injector()
           .get();
-  std::vector<protocol::KeyEvent> key_events;
-  input_injector->set_key_events(&key_events);
-  std::vector<protocol::MouseEvent> mouse_events;
-  input_injector->set_mouse_events(&mouse_events);
-  std::vector<protocol::ClipboardEvent> clipboard_events;
-  input_injector->set_clipboard_events(&clipboard_events);
+  input_injector->set_key_events(&key_events_);
+  input_injector->set_mouse_events(&mouse_events_);
+  input_injector->set_clipboard_events(&clipboard_events_);
 
   // Inject test events that are expected to be injected.
   connection_->clipboard_stub()->InjectClipboardEvent(MakeClipboardEvent("a"));
@@ -601,20 +601,20 @@ TEST_F(ClientSessionTest, DisableInputs) {
   client_session_->DisconnectSession(protocol::OK);
   client_session_.reset();
 
-  EXPECT_EQ(2U, mouse_events.size());
-  EXPECT_THAT(mouse_events[0], EqualsMouseMoveEvent(100, 101));
-  EXPECT_THAT(mouse_events[1], EqualsMouseMoveEvent(300, 301));
+  EXPECT_EQ(2U, mouse_events_.size());
+  EXPECT_THAT(mouse_events_[0], EqualsMouseMoveEvent(100, 101));
+  EXPECT_THAT(mouse_events_[1], EqualsMouseMoveEvent(300, 301));
 
-  EXPECT_EQ(4U, key_events.size());
-  EXPECT_THAT(key_events[0], EqualsKeyEvent(1, true));
-  EXPECT_THAT(key_events[1], EqualsKeyEvent(1, false));
-  EXPECT_THAT(key_events[2], EqualsKeyEvent(3, true));
-  EXPECT_THAT(key_events[3], EqualsKeyEvent(3, false));
+  EXPECT_EQ(4U, key_events_.size());
+  EXPECT_THAT(key_events_[0], EqualsKeyEvent(1, true));
+  EXPECT_THAT(key_events_[1], EqualsKeyEvent(1, false));
+  EXPECT_THAT(key_events_[2], EqualsKeyEvent(3, true));
+  EXPECT_THAT(key_events_[3], EqualsKeyEvent(3, false));
 
-  EXPECT_EQ(2U, clipboard_events.size());
-  EXPECT_THAT(clipboard_events[0],
+  EXPECT_EQ(2U, clipboard_events_.size());
+  EXPECT_THAT(clipboard_events_[0],
               EqualsClipboardEvent(kMimeTypeTextUtf8, "a"));
-  EXPECT_THAT(clipboard_events[1],
+  EXPECT_THAT(clipboard_events_[1],
               EqualsClipboardEvent(kMimeTypeTextUtf8, "c"));
 }
 
@@ -623,10 +623,9 @@ TEST_F(ClientSessionTest, LocalInputTest) {
   ConnectClientSession();
   SetupSingleDisplay();
 
-  std::vector<protocol::MouseEvent> mouse_events;
   desktop_environment_factory_->last_desktop_environment()
       ->last_input_injector()
-      ->set_mouse_events(&mouse_events);
+      ->set_mouse_events(&mouse_events_);
 
   connection_->input_stub()->InjectMouseEvent(MakeMouseMoveEvent(100, 101));
 
@@ -647,9 +646,9 @@ TEST_F(ClientSessionTest, LocalInputTest) {
   connection_->input_stub()->InjectMouseEvent(MakeMouseMoveEvent(300, 301));
 
   // Verify that we've received correct set of mouse events.
-  ASSERT_EQ(2U, mouse_events.size());
-  EXPECT_THAT(mouse_events[0], EqualsMouseMoveEvent(100, 101));
-  EXPECT_THAT(mouse_events[1], EqualsMouseMoveEvent(200, 201));
+  ASSERT_EQ(2U, mouse_events_.size());
+  EXPECT_THAT(mouse_events_[0], EqualsMouseMoveEvent(100, 101));
+  EXPECT_THAT(mouse_events_[1], EqualsMouseMoveEvent(200, 201));
 
   // Verify that we're still connected.
   EXPECT_TRUE(connection_->is_connected());
@@ -678,10 +677,8 @@ TEST_F(ClientSessionTest, RestoreEventState) {
       desktop_environment_factory_->last_desktop_environment()
           ->last_input_injector()
           .get();
-  std::vector<protocol::KeyEvent> key_events;
-  input_injector->set_key_events(&key_events);
-  std::vector<protocol::MouseEvent> mouse_events;
-  input_injector->set_mouse_events(&mouse_events);
+  input_injector->set_key_events(&key_events_);
+  input_injector->set_mouse_events(&mouse_events_);
 
   connection_->input_stub()->InjectKeyEvent(MakeKeyEvent(true, 1));
   connection_->input_stub()->InjectKeyEvent(MakeKeyEvent(true, 2));
@@ -694,17 +691,17 @@ TEST_F(ClientSessionTest, RestoreEventState) {
   client_session_->DisconnectSession(protocol::OK);
   client_session_.reset();
 
-  EXPECT_EQ(2U, mouse_events.size());
-  EXPECT_THAT(mouse_events[0],
+  EXPECT_EQ(2U, mouse_events_.size());
+  EXPECT_THAT(mouse_events_[0],
               EqualsMouseButtonEvent(protocol::MouseEvent::BUTTON_LEFT, true));
-  EXPECT_THAT(mouse_events[1],
+  EXPECT_THAT(mouse_events_[1],
               EqualsMouseButtonEvent(protocol::MouseEvent::BUTTON_LEFT, false));
 
-  EXPECT_EQ(4U, key_events.size());
-  EXPECT_THAT(key_events[0], EqualsKeyEvent(1, true));
-  EXPECT_THAT(key_events[1], EqualsKeyEvent(2, true));
-  EXPECT_THAT(key_events[2], EqualsKeyEvent(1, false));
-  EXPECT_THAT(key_events[3], EqualsKeyEvent(2, false));
+  EXPECT_EQ(4U, key_events_.size());
+  EXPECT_THAT(key_events_[0], EqualsKeyEvent(1, true));
+  EXPECT_THAT(key_events_[1], EqualsKeyEvent(2, true));
+  EXPECT_THAT(key_events_[2], EqualsKeyEvent(1, false));
+  EXPECT_THAT(key_events_[3], EqualsKeyEvent(2, false));
 }
 
 TEST_F(ClientSessionTest, ClampMouseEvents) {
@@ -712,10 +709,9 @@ TEST_F(ClientSessionTest, ClampMouseEvents) {
   ConnectClientSession();
   SetupSingleDisplay();
 
-  std::vector<protocol::MouseEvent> mouse_events;
   desktop_environment_factory_->last_desktop_environment()
       ->last_input_injector()
-      ->set_mouse_events(&mouse_events);
+      ->set_mouse_events(&mouse_events_);
 
   int input_x[3] = {-999, 100, 999};
   int expected_x[3] = {0, 100, protocol::FakeDesktopCapturer::kWidth - 1};
@@ -725,12 +721,12 @@ TEST_F(ClientSessionTest, ClampMouseEvents) {
   protocol::MouseEvent expected_event;
   for (int j = 0; j < 3; j++) {
     for (int i = 0; i < 3; i++) {
-      mouse_events.clear();
+      mouse_events_.clear();
       connection_->input_stub()->InjectMouseEvent(
           MakeMouseMoveEvent(input_x[i], input_y[j]));
 
-      EXPECT_EQ(1U, mouse_events.size());
-      EXPECT_THAT(mouse_events[0],
+      EXPECT_EQ(1U, mouse_events_.size());
+      EXPECT_THAT(mouse_events_[0],
                   EqualsMouseMoveEvent(expected_x[i], expected_y[j]));
     }
   }
@@ -788,6 +784,9 @@ TEST_F(ClientSessionTest, Extensions) {
 
   // ext3 was sent a message but not instantiated.
   EXPECT_FALSE(extension3.was_instantiated());
+
+  // Drop references to locals before they go out of scope.
+  extensions_.clear();
 }
 
 TEST_F(ClientSessionTest, DataChannelCallbackIsCalled) {

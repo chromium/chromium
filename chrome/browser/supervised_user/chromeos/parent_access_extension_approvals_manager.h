@@ -5,9 +5,8 @@
 #ifndef CHROME_BROWSER_SUPERVISED_USER_CHROMEOS_PARENT_ACCESS_EXTENSION_APPROVALS_MANAGER_H_
 #define CHROME_BROWSER_SUPERVISED_USER_CHROMEOS_PARENT_ACCESS_EXTENSION_APPROVALS_MANAGER_H_
 
-#include <memory>
-
-#include "chrome/browser/ui/webui/ash/parent_access/parent_access_dialog.h"
+#include "base/memory/weak_ptr.h"
+#include "chromeos/crosapi/mojom/parent_access.mojom.h"
 #include "extensions/browser/supervised_user_extensions_delegate.h"
 
 namespace content {
@@ -37,6 +36,14 @@ class ParentAccessExtensionApprovalsManager {
     kInstallationDenied = 1
   };
 
+  // For Ash, true if the feature flag is enabled. For Lacros, true if the
+  // minimum version required is met to trigger extension approval in the
+  // ParentAccessWidget.
+  static bool ShouldShowExtensionApprovalsV2();
+
+  // Opens the ParentAccessDialog via crosapi. Before calling, the caller should
+  // check that the Lacros version is at least the min version required for the
+  // GetExtensionParentApproval API.
   void ShowParentAccessDialog(
       const Extension& extension,
       content::BrowserContext* context,
@@ -44,21 +51,14 @@ class ParentAccessExtensionApprovalsManager {
       ExtensionInstallMode extension_install_mode,
       SupervisedUserExtensionsDelegate::ExtensionApprovalDoneCallback callback);
 
-  // For testing
-  ash::ParentAccessDialogProvider* SetDialogProviderForTest(
-      std::unique_ptr<ash::ParentAccessDialogProvider> provider);
-
  private:
-  void OnParentAccessDialogClosed(
-      std::unique_ptr<ash::ParentAccessDialog::Result> result);
-
-  // Lazily initializes dialog_provider_.
-  ash::ParentAccessDialogProvider* GetParentAccessDialogProvider();
-
-  std::unique_ptr<ash::ParentAccessDialogProvider> dialog_provider_;
+  void OnParentAccessDialogClosed(crosapi::mojom::ParentAccessResultPtr result);
 
   SupervisedUserExtensionsDelegate::ExtensionApprovalDoneCallback
       done_callback_;
+
+  base::WeakPtrFactory<ParentAccessExtensionApprovalsManager> weak_ptr_factory_{
+      this};
 };
 
 // Observes the creation of the ParentAccessDialog for testing purposes.

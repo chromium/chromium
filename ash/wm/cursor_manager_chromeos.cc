@@ -9,6 +9,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/keyboard_util.h"
+#include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
@@ -44,7 +45,8 @@ void CursorManager::Init() {
         ui::Cursor::NewCustom(std::move(bitmap), std::move(hotspot), dsf);
     cursor.SetPlatformCursor(
         ui::CursorFactory::GetInstance()->CreateImageCursor(
-            cursor.type(), cursor.custom_bitmap(), cursor.custom_hotspot()));
+            cursor.type(), cursor.custom_bitmap(), cursor.custom_hotspot(),
+            cursor.image_scale_factor()));
 
     SetCursor(std::move(cursor));
     LockCursor();
@@ -107,6 +109,14 @@ bool CursorManager::ShouldHideCursorOnKeyEvent(
     case ui::VKEY_ZOOM:
       return false;
     default:
+      // If the target window has the property kShowCursorDuringKeypress don't
+      // hide the cursor.
+      aura::Window* target = static_cast<aura::Window*>(event.target());
+      aura::Window* top_level = target->GetToplevelWindow();
+      if (top_level && top_level->GetProperty(ash::kShowCursorOnKeypress)) {
+        return false;
+      }
+
       return true;
   }
 }

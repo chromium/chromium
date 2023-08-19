@@ -4,20 +4,18 @@
 
 #include "components/segmentation_platform/internal/migration/result_migration_utils.h"
 
-#include "components/segmentation_platform/internal/metadata/metadata_utils.h"
-#include "components/segmentation_platform/internal/metadata/metadata_writer.h"
+#include <string>
+
 #include "components/segmentation_platform/internal/migration/adaptive_toolbar_migration.h"
 #include "components/segmentation_platform/internal/migration/binary_classifier_migration.h"
-#include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/public/proto/output_config.pb.h"
-#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 
 namespace segmentation_platform::pref_migration_utils {
 
 proto::ClientResult CreateClientResultFromOldResult(
     Config* config,
     const SelectedSegment& old_result) {
-  if (GetClassifierType(config->segmentation_key) ==
+  if (GetClassifierTypeForMigration(config->segmentation_key) ==
       proto::Predictor::kBinaryClassifier) {
     return pref_migration_utils::CreateClientResultForBinaryClassifier(
         config, old_result);
@@ -28,6 +26,34 @@ proto::ClientResult CreateClientResultFromOldResult(
     NOTREACHED();
     return proto::ClientResult();
   }
+}
+
+proto::Predictor::PredictorTypeCase GetClassifierTypeForMigration(
+    const std::string& segmentation_key) {
+  if (segmentation_key == kAdaptiveToolbarSegmentationKey ||
+      segmentation_key == kContextualPageActionsKey) {
+    return proto::Predictor::kMultiClassClassifier;
+  } else if (segmentation_key == kChromeStartAndroidSegmentationKey ||
+             segmentation_key == kChromeStartAndroidV2SegmentationKey ||
+             segmentation_key == kChromeLowUserEngagementSegmentationKey ||
+             segmentation_key == kCrossDeviceUserKey ||
+             segmentation_key == kDeviceSwitcherKey ||
+             segmentation_key == kFrequentFeatureUserKey ||
+             segmentation_key == kIntentionalUserKey ||
+             segmentation_key == kResumeHeavyUserKey ||
+             segmentation_key == kShoppingUserSegmentationKey ||
+             segmentation_key == kQueryTilesSegmentationKey) {
+    return proto::Predictor::kBinaryClassifier;
+  } else if (segmentation_key == kFeedUserSegmentationKey ||
+             segmentation_key == kPowerUserKey ||
+             segmentation_key == kSearchUserKey ||
+             segmentation_key == kDeviceTierKey ||
+             segmentation_key == kTabletProductivityUserKey) {
+    return proto::Predictor::kBinnedClassifier;
+  }
+  // This case is reached for non-legacy models, and it is ok to return
+  // regressor because migration is not required for these cases.
+  return proto::Predictor::kRegressor;
 }
 
 }  // namespace segmentation_platform::pref_migration_utils

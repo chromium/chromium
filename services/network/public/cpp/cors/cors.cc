@@ -4,7 +4,6 @@
 
 #include "services/network/public/cpp/cors/cors.h"
 
-#include <cctype>
 #include <set>
 #include <vector>
 
@@ -21,6 +20,7 @@
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/request_mode.h"
+#include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -43,13 +43,14 @@ bool IsSimilarToDoubleABNF(const std::string& header_value) {
   if (header_value.empty())
     return false;
   char first_char = header_value.at(0);
-  if (!isdigit(first_char))
+  if (!absl::ascii_isdigit(static_cast<unsigned char>(first_char))) {
     return false;
+  }
 
   bool period_found = false;
   bool digit_found_after_period = false;
   for (char ch : header_value) {
-    if (isdigit(ch)) {
+    if (absl::ascii_isdigit(static_cast<unsigned char>(ch))) {
       if (period_found) {
         digit_found_after_period = true;
       }
@@ -74,8 +75,9 @@ bool IsSimilarToIntABNF(const std::string& header_value) {
     return false;
 
   for (char ch : header_value) {
-    if (!isdigit(ch))
+    if (!absl::ascii_isdigit(static_cast<unsigned char>(ch))) {
       return false;
+    }
   }
   return true;
 }
@@ -132,6 +134,8 @@ const char kAccessControlRequestHeaders[] = "Access-Control-Request-Headers";
 const char kAccessControlRequestMethod[] = "Access-Control-Request-Method";
 const char kAccessControlRequestPrivateNetwork[] =
     "Access-Control-Request-Private-Network";
+const char kPrivateNetworkDeviceId[] = "Private-Network-Access-ID";
+const char kPrivateNetworkDeviceName[] = "Private-Network-Access-Name";
 
 }  // namespace header_names
 
@@ -330,11 +334,6 @@ bool IsCorsSafelistedHeader(const std::string& name, const std::string& value) {
       // https://wicg.github.io/user-preference-media-features-headers/#sec-ch-prefers-color-scheme
       "sec-ch-prefers-color-scheme",
       "sec-ch-ua-bitness",
-      // The `Sec-CH-UA-Reduced` header field is a temporary client hint, which
-      // will only be sent in the presence of a valid Origin Trial token.  It
-      // was introduced to enable safely experimenting with sending a reduced
-      // user agent string in the `User-Agent` header.
-      "sec-ch-ua-reduced",
       // The Sec-CH-Viewport-height header field gives a server information
       // about the user-agent's current viewport height.
       // https://wicg.github.io/responsive-image-client-hints/#sec-ch-viewport-height
@@ -352,12 +351,6 @@ bool IsCorsSafelistedHeader(const std::string& name, const std::string& value) {
       // full version for each brand in its brands list.
       // https://wicg.github.io/ua-client-hints/#sec-ch-ua-full-version-list
       "sec-ch-ua-full-version-list",
-      // The `Sec-CH-UA-Full` header field is a temporary client hint, which
-      // will only be sent in the presence of a valid Origin Trial token.  It
-      // was introduced to enable sites to register for the deprecation UA
-      // reduction origin trial and continue to receive the full UA string for
-      // some period, once UA reduction rolls out.
-      "sec-ch-ua-full",
       "sec-ch-ua-wow64",
       "save-data",
       // The `Sec-CH-Prefers-Reduced-Motion` header field is modeled after the
@@ -367,6 +360,9 @@ bool IsCorsSafelistedHeader(const std::string& name, const std::string& value) {
       // although there may be internal UI in the future.
       // https://wicg.github.io/user-preference-media-features-headers/#sec-ch-prefers-reduced-motion
       "sec-ch-prefers-reduced-motion",
+      // The `Sec-CH-UA-Form-Factor` header field provides information on the
+      // form factor of the user agent device.
+      "sec-ch-ua-form-factor",
   });
 
   // Check if the name of the header to send is safe.

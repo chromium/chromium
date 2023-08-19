@@ -41,28 +41,7 @@ WaylandInputEmulate::WaylandInputEmulate(
   CHECK(!request_processed_callback_.is_null());
 
   auto* wayland_proxy = wl::WaylandProxy::GetInstance();
-  DCHECK(wayland_proxy);
   wayland_proxy->SetDelegate(this);
-}
-
-WaylandInputEmulate::~WaylandInputEmulate() {
-  auto* wayland_proxy = wl::WaylandProxy::GetInstance();
-  DCHECK(wayland_proxy);
-  wayland_proxy->SetDelegate(nullptr);
-
-  // If Initialize() failed, `ui_controls_` is null.
-  if (ui_controls_) {
-    zcr_ui_controls_v1_destroy(ui_controls_);
-  }
-
-  CHECK(registry_)
-      << "WaylandInputEmulate destroyed before Initialize() called";
-  wl_registry_destroy(registry_);
-}
-
-bool WaylandInputEmulate::Initialize() {
-  auto* wayland_proxy = wl::WaylandProxy::GetInstance();
-  DCHECK(wayland_proxy);
 
   registry_ = wl_display_get_registry(wayland_proxy->GetDisplayWrapper());
   if (!registry_) {
@@ -80,14 +59,20 @@ bool WaylandInputEmulate::Initialize() {
   // Roundtrip one time to get the ui_controls global.
   wayland_proxy->RoundTripQueue();
   if (!ui_controls_) {
-    return false;
+    LOG(FATAL) << "ui-controls protocol extension is not available.";
   }
 
   static const struct zcr_ui_controls_v1_listener listener = {
       &WaylandInputEmulate::HandleRequestProcessed};
   zcr_ui_controls_v1_add_listener(ui_controls_, &listener, this);
+}
 
-  return true;
+WaylandInputEmulate::~WaylandInputEmulate() {
+  auto* wayland_proxy = wl::WaylandProxy::GetInstance();
+  wayland_proxy->SetDelegate(nullptr);
+
+  zcr_ui_controls_v1_destroy(ui_controls_);
+  wl_registry_destroy(registry_);
 }
 
 void WaylandInputEmulate::EmulateKeyboardKey(ui::DomCode dom_code,
@@ -137,7 +122,6 @@ void WaylandInputEmulate::EmulatePointerMotion(
   }
 
   auto* wayland_proxy = wl::WaylandProxy::GetInstance();
-  DCHECK(wayland_proxy);
 
   xdg_surface* target_surface = nullptr;
   gfx::Point target_location = mouse_screen_location;
@@ -208,7 +192,7 @@ void WaylandInputEmulate::EmulateTouch(int action,
 void WaylandInputEmulate::OnWindowConfigured(gfx::AcceleratedWidget widget,
                                              bool is_configured) {
   auto it = windows_.find(widget);
-  DCHECK(it != windows_.end());
+  CHECK(it != windows_.end());
 
   auto* test_surface = it->second.get();
   // The buffer is no longer attached as the window lost its role. Wait until
@@ -224,7 +208,6 @@ void WaylandInputEmulate::OnWindowConfigured(gfx::AcceleratedWidget widget,
     // ... and the buffer.
     if (test_surface->buffer) {
       auto* wayland_proxy = wl::WaylandProxy::GetInstance();
-      DCHECK(wayland_proxy);
       wayland_proxy->DestroyShmForWlBuffer(test_surface->buffer);
       wayland_proxy->FlushForTesting();
       test_surface->buffer = nullptr;
@@ -239,7 +222,6 @@ void WaylandInputEmulate::OnWindowConfigured(gfx::AcceleratedWidget widget,
 
   test_surface->waiting_for_buffer_commit = true;
   auto* wayland_proxy = wl::WaylandProxy::GetInstance();
-  DCHECK(wayland_proxy);
 
   // Once window is configured aka xdg_toplevel/popup role is assigned, a buffer
   // with correct size must be attached. Otherwise, actual size of the surface
@@ -277,7 +259,7 @@ void WaylandInputEmulate::OnWindowConfigured(gfx::AcceleratedWidget widget,
 
 void WaylandInputEmulate::OnWindowRoleAssigned(gfx::AcceleratedWidget widget) {
   auto it = windows_.find(widget);
-  DCHECK(it != windows_.end());
+  CHECK(it != windows_.end());
 
   // If a window has been assigned a popup role, then we must wait for a buffer
   // to be committed before any events can be processed.
@@ -287,7 +269,7 @@ void WaylandInputEmulate::OnWindowRoleAssigned(gfx::AcceleratedWidget widget) {
 
 void WaylandInputEmulate::OnWindowRemoved(gfx::AcceleratedWidget widget) {
   auto it = windows_.find(widget);
-  DCHECK(it != windows_.end());
+  CHECK(it != windows_.end());
 
   // Destroy the frame callback.
   if (it->second->frame_callback) {
@@ -298,7 +280,6 @@ void WaylandInputEmulate::OnWindowRemoved(gfx::AcceleratedWidget widget) {
   // Destroy the attached buffer.
   if (it->second->buffer) {
     auto* wayland_proxy = wl::WaylandProxy::GetInstance();
-    DCHECK(wayland_proxy);
     wayland_proxy->DestroyShmForWlBuffer(it->second->buffer);
     wayland_proxy->FlushForTesting();
   }
@@ -353,7 +334,7 @@ void WaylandInputEmulate::FrameCallbackHandler(void* data,
     wl_callback_destroy(window->frame_callback);
     window->frame_callback = nullptr;
 
-    DCHECK(!window->buffer_attached_and_configured);
+    CHECK(!window->buffer_attached_and_configured);
     window->buffer_attached_and_configured = true;
     window->waiting_for_buffer_commit = false;
   }

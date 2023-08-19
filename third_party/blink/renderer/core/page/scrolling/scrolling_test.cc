@@ -31,6 +31,7 @@
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/layers/scrollbar_layer_base.h"
 #include "cc/trees/compositor_commit_data.h"
+#include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/property_tree.h"
 #include "cc/trees/scroll_node.h"
 #include "cc/trees/single_thread_proxy.h"
@@ -159,7 +160,7 @@ class ScrollingTest : public testing::Test, public PaintTestConfigurations {
       const char* id_value) const {
     return GetFrame()
         ->GetDocument()
-        ->getElementById(id_value)
+        ->getElementById(AtomicString(id_value))
         ->GetLayoutBoxForScrolling()
         ->GetScrollableArea();
   }
@@ -290,7 +291,8 @@ TEST_P(ScrollingTest, fastFractionalScrollingDiv) {
   SetupHttpTestURL("fractional-scroll-div.html");
 
   Document* document = GetFrame()->GetDocument();
-  Element* scrollable_element = document->getElementById("scroller");
+  Element* scrollable_element =
+      document->getElementById(AtomicString("scroller"));
   DCHECK(scrollable_element);
 
   scrollable_element->setScrollTop(1.0);
@@ -336,7 +338,7 @@ TEST_P(ScrollingTest, fastScrollingForStickyPosition) {
 
   Document* document = GetFrame()->GetDocument();
   {
-    Element* element = document->getElementById("div-tl");
+    Element* element = document->getElementById(AtomicString("div-tl"));
     auto constraint = GetStickyConstraint(element);
     EXPECT_TRUE(constraint.is_anchored_top && constraint.is_anchored_left &&
                 !constraint.is_anchored_right &&
@@ -349,32 +351,32 @@ TEST_P(ScrollingTest, fastScrollingForStickyPosition) {
               constraint.scroll_container_relative_containing_block_rect);
   }
   {
-    Element* element = document->getElementById("div-tr");
+    Element* element = document->getElementById(AtomicString("div-tr"));
     auto constraint = GetStickyConstraint(element);
     EXPECT_TRUE(constraint.is_anchored_top && !constraint.is_anchored_left &&
                 constraint.is_anchored_right && !constraint.is_anchored_bottom);
   }
   {
-    Element* element = document->getElementById("div-bl");
+    Element* element = document->getElementById(AtomicString("div-bl"));
     auto constraint = GetStickyConstraint(element);
     EXPECT_TRUE(!constraint.is_anchored_top && constraint.is_anchored_left &&
                 !constraint.is_anchored_right && constraint.is_anchored_bottom);
   }
   {
-    Element* element = document->getElementById("div-br");
+    Element* element = document->getElementById(AtomicString("div-br"));
     auto constraint = GetStickyConstraint(element);
     EXPECT_TRUE(!constraint.is_anchored_top && !constraint.is_anchored_left &&
                 constraint.is_anchored_right && constraint.is_anchored_bottom);
   }
   {
-    Element* element = document->getElementById("span-tl");
+    Element* element = document->getElementById(AtomicString("span-tl"));
     auto constraint = GetStickyConstraint(element);
     EXPECT_TRUE(constraint.is_anchored_top && constraint.is_anchored_left &&
                 !constraint.is_anchored_right &&
                 !constraint.is_anchored_bottom);
   }
   {
-    Element* element = document->getElementById("span-tlbr");
+    Element* element = document->getElementById(AtomicString("span-tlbr"));
     auto constraint = GetStickyConstraint(element);
     EXPECT_TRUE(constraint.is_anchored_top && constraint.is_anchored_left &&
                 constraint.is_anchored_right && constraint.is_anchored_bottom);
@@ -384,7 +386,7 @@ TEST_P(ScrollingTest, fastScrollingForStickyPosition) {
     EXPECT_EQ(1.f, constraint.bottom_offset);
   }
   {
-    Element* element = document->getElementById("composited-top");
+    Element* element = document->getElementById(AtomicString("composited-top"));
     auto constraint = GetStickyConstraint(element);
     EXPECT_TRUE(constraint.is_anchored_top);
     EXPECT_EQ(gfx::RectF(100, 110, 10, 10),
@@ -636,8 +638,10 @@ TEST_P(ScrollingTest, nestedTouchActionInvalidation) {
   EXPECT_EQ(region.GetRegionComplexity(), 2);
   EXPECT_EQ(region.bounds(), gfx::Rect(5, 5, 150, 100));
 
-  auto* scrollable = GetFrame()->GetDocument()->getElementById("scrollable");
-  scrollable->setAttribute("style", "touch-action: none", ASSERT_NO_EXCEPTION);
+  auto* scrollable =
+      GetFrame()->GetDocument()->getElementById(AtomicString("scrollable"));
+  scrollable->setAttribute(html_names::kStyleAttr,
+                           AtomicString("touch-action: none"));
   ForceFullCompositingUpdate();
   region = cc_layer->touch_action_region().GetRegionForTouchAction(
       TouchAction::kPanX | TouchAction::kInternalPanXScrolls |
@@ -677,8 +681,10 @@ TEST_P(ScrollingTest, nestedTouchActionChangesUnion) {
       TouchAction::kNone);
   EXPECT_TRUE(region.IsEmpty());
 
-  Element* ancestor = GetFrame()->GetDocument()->getElementById("ancestor");
-  ancestor->setAttribute(html_names::kStyleAttr, "touch-action: pan-y");
+  Element* ancestor =
+      GetFrame()->GetDocument()->getElementById(AtomicString("ancestor"));
+  ancestor->setAttribute(html_names::kStyleAttr,
+                         AtomicString("touch-action: pan-y"));
   ForceFullCompositingUpdate();
 
   region = cc_layer->touch_action_region().GetRegionForTouchAction(
@@ -723,9 +729,10 @@ TEST_P(ScrollingTest, touchActionEditableElement) {
   EXPECT_TRUE(region.IsEmpty());
 
   // Make touchaction scrollable by making child overflow.
-  Element* child = GetFrame()->GetDocument()->getElementById("child");
-  child->setAttribute("style", "width: 1000px; height: 100px;",
-                      ASSERT_NO_EXCEPTION);
+  Element* child =
+      GetFrame()->GetDocument()->getElementById(AtomicString("child"));
+  child->setAttribute(html_names::kStyleAttr,
+                      AtomicString("width: 1000px; height: 100px;"));
   ForceFullCompositingUpdate();
 
   cc_layer = ScrollingContentsLayerByDOMElementId("touchaction");
@@ -962,7 +969,8 @@ TEST_P(ScrollingTest, TouchActionChangeWithoutContent) {
   auto* resolved_options =
       MakeGarbageCollected<AddEventListenerOptionsResolved>();
   resolved_options->setPassive(false);
-  auto* target_element = GetFrame()->GetDocument()->getElementById("blocking");
+  auto* target_element =
+      GetFrame()->GetDocument()->getElementById(AtomicString("blocking"));
   target_element->addEventListener(event_type_names::kTouchstart, listener,
                                    resolved_options);
   ForceFullCompositingUpdate();
@@ -1050,7 +1058,7 @@ TEST_P(ScrollingTest, WheelEventHandlerInvalidation) {
   resolved_options->setPassive(false);
   GetFrame()
       ->GetDocument()
-      ->getElementById("scrollable")
+      ->getElementById(AtomicString("scrollable"))
       ->addEventListener(event_type_names::kWheel, listener, resolved_options);
   ForceFullCompositingUpdate();
   region = cc_layer->wheel_event_region();
@@ -1061,7 +1069,7 @@ TEST_P(ScrollingTest, WheelEventHandlerInvalidation) {
   // Removing the window event handler also removes the wheel event region.
   GetFrame()
       ->GetDocument()
-      ->getElementById("scrollable")
+      ->getElementById(AtomicString("scrollable"))
       ->RemoveAllEventListeners();
   ForceFullCompositingUpdate();
   region = cc_layer->wheel_event_region();
@@ -1157,7 +1165,7 @@ TEST_P(ScrollingTest, WheelEventRegionUpdatedOnSubscrollerScrollChange) {
   EXPECT_EQ(region.bounds(), gfx::Rect(8, 50, 100, 100));
 
   Element* scrollable_element =
-      GetFrame()->GetDocument()->getElementById("noncomposited");
+      GetFrame()->GetDocument()->getElementById(AtomicString("noncomposited"));
   DCHECK(scrollable_element);
 
   // Change scroll position and verify that blocking wheel handler region is
@@ -1288,7 +1296,8 @@ TEST_P(ScrollingTest, WheelEventHandlerChangeWithoutContent) {
   auto* resolved_options =
       MakeGarbageCollected<AddEventListenerOptionsResolved>();
   resolved_options->setPassive(false);
-  auto* target_element = GetFrame()->GetDocument()->getElementById("blocking");
+  auto* target_element =
+      GetFrame()->GetDocument()->getElementById(AtomicString("blocking"));
   target_element->addEventListener(event_type_names::kWheel, listener,
                                    resolved_options);
   ForceFullCompositingUpdate();
@@ -1318,7 +1327,7 @@ TEST_P(ScrollingTest, PluginBecomesLayoutInline) {
   // ScrollingCoordinator can deal with LayoutInline plugins when generating
   // NonFastScrollableRegions.
   auto* plugin = To<HTMLObjectElement>(
-      GetFrame()->GetDocument()->getElementById("plugin"));
+      GetFrame()->GetDocument()->getElementById(AtomicString("plugin")));
   ASSERT_TRUE(plugin->GetLayoutObject()->IsLayoutInline());
   ForceFullCompositingUpdate();
 }
@@ -1352,9 +1361,9 @@ TEST_P(ScrollingTest, WheelEventRegionsForPlugins) {
   )HTML");
 
   auto* plugin = To<HTMLObjectElement>(
-      GetFrame()->GetDocument()->getElementById("plugin"));
+      GetFrame()->GetDocument()->getElementById(AtomicString("plugin")));
   auto* plugin_fixed = To<HTMLObjectElement>(
-      GetFrame()->GetDocument()->getElementById("pluginfixed"));
+      GetFrame()->GetDocument()->getElementById(AtomicString("pluginfixed")));
   // Wheel event regions are generated for plugins that require wheel
   // events.
   plugin->OwnedPlugin()->SetWantsWheelEvents(true);
@@ -1428,9 +1437,9 @@ TEST_P(ScrollingTest, ElementRegionCaptureData) {
             )HTML");
 
   Element* scrollable_element =
-      GetFrame()->GetDocument()->getElementById("scrollable");
+      GetFrame()->GetDocument()->getElementById(AtomicString("scrollable"));
   Element* content_element =
-      GetFrame()->GetDocument()->getElementById("content");
+      GetFrame()->GetDocument()->getElementById(AtomicString("content"));
 
   const RegionCaptureCropId scrollable_id(
       GUIDToToken(base::Uuid::GenerateRandomV4()));
@@ -1502,7 +1511,7 @@ TEST_P(ScrollingTest, iframeScrolling) {
   ForceFullCompositingUpdate();
 
   Element* scrollable_frame =
-      GetFrame()->GetDocument()->getElementById("scrollable");
+      GetFrame()->GetDocument()->getElementById(AtomicString("scrollable"));
   ASSERT_TRUE(scrollable_frame);
 
   LayoutObject* layout_object = scrollable_frame->GetLayoutObject();
@@ -1533,7 +1542,7 @@ TEST_P(ScrollingTest, rtlIframe) {
   ForceFullCompositingUpdate();
 
   Element* scrollable_frame =
-      GetFrame()->GetDocument()->getElementById("scrollable");
+      GetFrame()->GetDocument()->getElementById(AtomicString("scrollable"));
   ASSERT_TRUE(scrollable_frame);
 
   LayoutObject* layout_object = scrollable_frame->GetLayoutObject();
@@ -1743,8 +1752,9 @@ TEST_P(ScrollingTest, IframeCompositedScrollingHideAndShow) {
       gfx::Rect(2, 2, 100, 100));
 
   // Hiding the iframe should clear the NFSR.
-  Element* iframe = GetFrame()->GetDocument()->getElementById("iframe");
-  iframe->setAttribute(html_names::kStyleAttr, "display: none");
+  Element* iframe =
+      GetFrame()->GetDocument()->getElementById(AtomicString("iframe"));
+  iframe->setAttribute(html_names::kStyleAttr, AtomicString("display: none"));
   ForceFullCompositingUpdate();
   EXPECT_TRUE(MainFrameScrollingContentsLayer()
                   ->non_fast_scrollable_region()
@@ -1752,7 +1762,7 @@ TEST_P(ScrollingTest, IframeCompositedScrollingHideAndShow) {
                   .IsEmpty());
 
   // Showing it again should compute the NFSR.
-  iframe->setAttribute(html_names::kStyleAttr, "");
+  iframe->setAttribute(html_names::kStyleAttr, g_empty_atom);
   ForceFullCompositingUpdate();
   EXPECT_EQ(
       MainFrameScrollingContentsLayer()->non_fast_scrollable_region().bounds(),
@@ -1787,7 +1797,8 @@ TEST_P(ScrollingTest, IframeCompositedScrollingHideAndShowScrollable) {
   Page* page = GetFrame()->GetPage();
   const auto* inner_viewport_scroll_layer =
       page->GetVisualViewport().LayerForScrolling();
-  Element* iframe = GetFrame()->GetDocument()->getElementById("iframe");
+  Element* iframe =
+      GetFrame()->GetDocument()->getElementById(AtomicString("iframe"));
 
   // Should have a NFSR initially.
   ForceFullCompositingUpdate();
@@ -1802,7 +1813,7 @@ TEST_P(ScrollingTest, IframeCompositedScrollingHideAndShowScrollable) {
                   .IsEmpty());
 
   // Hiding the iframe should clear the NFSR.
-  iframe->setAttribute(html_names::kStyleAttr, "display: none");
+  iframe->setAttribute(html_names::kStyleAttr, AtomicString("display: none"));
   ForceFullCompositingUpdate();
   EXPECT_TRUE(MainFrameScrollingContentsLayer()
                   ->non_fast_scrollable_region()
@@ -1810,7 +1821,7 @@ TEST_P(ScrollingTest, IframeCompositedScrollingHideAndShowScrollable) {
                   .IsEmpty());
 
   // Showing it again should compute the NFSR.
-  iframe->setAttribute(html_names::kStyleAttr, "");
+  iframe->setAttribute(html_names::kStyleAttr, g_empty_atom);
   ForceFullCompositingUpdate();
   EXPECT_FALSE(MainFrameScrollingContentsLayer()
                    ->non_fast_scrollable_region()
@@ -2010,8 +2021,10 @@ TEST_P(ScrollingTest, TouchActionUpdatesOutsideInterestRect) {
 
   ForceFullCompositingUpdate();
 
-  auto* touch_action = GetFrame()->GetDocument()->getElementById("touchaction");
-  touch_action->setAttribute(html_names::kStyleAttr, "touch-action: none;");
+  auto* touch_action =
+      GetFrame()->GetDocument()->getElementById(AtomicString("touchaction"));
+  touch_action->setAttribute(html_names::kStyleAttr,
+                             AtomicString("touch-action: none;"));
 
   ForceFullCompositingUpdate();
 
@@ -2035,7 +2048,8 @@ TEST_P(ScrollingTest, MainThreadScrollAndDeltaFromImplSide) {
   )HTML");
   ForceFullCompositingUpdate();
 
-  auto* scroller = GetFrame()->GetDocument()->getElementById("scroller");
+  auto* scroller =
+      GetFrame()->GetDocument()->getElementById(AtomicString("scroller"));
   auto* scrollable_area = scroller->GetLayoutBox()->GetScrollableArea();
   auto element_id = scrollable_area->GetScrollElementId();
 
@@ -2115,7 +2129,7 @@ class UnifiedScrollingSimTest : public SimTest, public PaintTestConfigurations {
     auto* box = MainFrame()
                     .GetFrame()
                     ->GetDocument()
-                    ->getElementById(id_value)
+                    ->getElementById(AtomicString(id_value))
                     ->GetLayoutBoxForScrolling();
     return box ? box->GetScrollableArea() : nullptr;
   }
@@ -2129,11 +2143,6 @@ INSTANTIATE_PAINT_TEST_SUITE_P(UnifiedScrollingSimTest);
 // noncomposited reasons set. It then removes the box-shadow property and
 // ensures the compositor node updates accordingly.
 TEST_P(UnifiedScrollingSimTest, ScrollNodeForNonCompositedScroller) {
-  if (!base::FeatureList::IsEnabled(::features::kScrollUnification)) {
-    // This test requires scroll unification.
-    return;
-  }
-
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -2160,7 +2169,8 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForNonCompositedScroller) {
   Compositor().BeginFrame();
 
   Element* noncomposited_element =
-      MainFrame().GetFrame()->GetDocument()->getElementById("noncomposited");
+      MainFrame().GetFrame()->GetDocument()->getElementById(
+          AtomicString("noncomposited"));
   auto* scrollable_area =
       noncomposited_element->GetLayoutBoxForScrolling()->GetScrollableArea();
   const auto* scroll_node = ScrollNodeForScrollableArea(scrollable_area);
@@ -2175,7 +2185,7 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForNonCompositedScroller) {
   // Now remove the box-shadow property and ensure the compositor scroll node
   // changes.
   noncomposited_element->setAttribute(html_names::kStyleAttr,
-                                      "box-shadow: none");
+                                      AtomicString("box-shadow: none"));
   Compositor().BeginFrame();
 
   ASSERT_COMPOSITED(scroll_node);
@@ -2187,11 +2197,6 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForNonCompositedScroller) {
 // IsComposited state updated accordingly.
 TEST_P(UnifiedScrollingSimTest,
        ScrollNodeForCompositedToNonCompositedScroller) {
-  if (!base::FeatureList::IsEnabled(::features::kScrollUnification)) {
-    // This test requires scroll unification.
-    return;
-  }
-
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -2217,7 +2222,8 @@ TEST_P(UnifiedScrollingSimTest,
   Compositor().BeginFrame();
 
   Element* composited_element =
-      MainFrame().GetFrame()->GetDocument()->getElementById("composited");
+      MainFrame().GetFrame()->GetDocument()->getElementById(
+          AtomicString("composited"));
   auto* scrollable_area =
       composited_element->GetLayoutBoxForScrolling()->GetScrollableArea();
   const auto* scroll_node = ScrollNodeForScrollableArea(scrollable_area);
@@ -2226,8 +2232,9 @@ TEST_P(UnifiedScrollingSimTest,
 
   // Now add an inset box-shadow property to make the node noncomposited and
   // ensure the compositor scroll node updates accordingly.
-  composited_element->setAttribute(html_names::kStyleAttr,
-                                   "box-shadow: 10px 10px black inset");
+  composited_element->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("box-shadow: 10px 10px black inset"));
   Compositor().BeginFrame();
 
   ASSERT_NOT_COMPOSITED(
@@ -2244,11 +2251,6 @@ TEST_P(UnifiedScrollingSimTest,
 // scroller with an inset box shadow, and ensuring that scroller generates a
 // compositor scroll node with the proper noncomposited reasons set.
 TEST_P(UnifiedScrollingSimTest, ScrollNodeForEmbeddedScrollers) {
-  if (!base::FeatureList::IsEnabled(::features::kScrollUnification)) {
-    // This test requires scroll unification.
-    return;
-  }
-
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -2291,8 +2293,8 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForEmbeddedScrollers) {
   RunIdleTasks();
   Compositor().BeginFrame();
 
-  HTMLFrameOwnerElement* iframe =
-      To<HTMLFrameOwnerElement>(GetDocument().getElementById("iframe"));
+  HTMLFrameOwnerElement* iframe = To<HTMLFrameOwnerElement>(
+      GetDocument().getElementById(AtomicString("iframe")));
   auto* iframe_scrollable_area =
       iframe->contentDocument()->View()->LayoutViewport();
   const auto* iframe_scroll_node =
@@ -2305,7 +2307,7 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForEmbeddedScrollers) {
 
   // Ensure we have a compositor scroll node for the noncomposited subscroller.
   auto* child_scrollable_area = iframe->contentDocument()
-                                    ->getElementById("scroller")
+                                    ->getElementById(AtomicString("scroller"))
                                     ->GetLayoutBoxForScrolling()
                                     ->GetScrollableArea();
   const auto* child_scroll_node =
@@ -2323,10 +2325,6 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForEmbeddedScrollers) {
 // Similar to the above test, but for deeper nesting iframes to ensure we
 // generate scroll nodes that are deeper than the main frame's children.
 TEST_P(UnifiedScrollingSimTest, ScrollNodeForNestedEmbeddedScrollers) {
-  // This test requires scroll unification.
-  if (!base::FeatureList::IsEnabled(::features::kScrollUnification))
-    return;
-
   SimRequest request("https://example.com/test.html", "text/html");
   SimRequest child_request_1("https://example.com/child1.html", "text/html");
   SimRequest child_request_2("https://example.com/child2.html", "text/html");
@@ -2381,16 +2379,17 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForNestedEmbeddedScrollers) {
   RunIdleTasks();
   Compositor().BeginFrame();
 
-  HTMLFrameOwnerElement* child_iframe_1 =
-      To<HTMLFrameOwnerElement>(GetDocument().getElementById("child1"));
+  HTMLFrameOwnerElement* child_iframe_1 = To<HTMLFrameOwnerElement>(
+      GetDocument().getElementById(AtomicString("child1")));
 
   HTMLFrameOwnerElement* child_iframe_2 = To<HTMLFrameOwnerElement>(
-      child_iframe_1->contentDocument()->getElementById("child2"));
+      child_iframe_1->contentDocument()->getElementById(
+          AtomicString("child2")));
 
   // Ensure we have a compositor scroll node for the noncomposited subscroller
   // nested in the second iframe.
   auto* child_scrollable_area = child_iframe_2->contentDocument()
-                                    ->getElementById("scroller")
+                                    ->getElementById(AtomicString("scroller"))
                                     ->GetLayoutBoxForScrolling()
                                     ->GetScrollableArea();
   const auto* child_scroll_node =
@@ -2412,10 +2411,6 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForNestedEmbeddedScrollers) {
 // is no scroll node for a display:none scroller, as there is no scrollable
 // area.
 TEST_P(UnifiedScrollingSimTest, ScrollNodeForInvisibleNonCompositedScroller) {
-  // This test requires scroll unification.
-  if (!base::FeatureList::IsEnabled(::features::kScrollUnification))
-    return;
-
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -2471,10 +2466,6 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForInvisibleNonCompositedScroller) {
 // Tests that the compositor gets a scroll node for a non-composited (due to
 // non-opaque background) scrollable input box.
 TEST_P(UnifiedScrollingSimTest, ScrollNodeForInputBox) {
-  // This test requires scroll unification.
-  if (!base::FeatureList::IsEnabled(::features::kScrollUnification))
-    return;
-
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -2496,17 +2487,11 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForInputBox) {
   EXPECT_FALSE(scroll_node->is_composited);
 }
 
-class ScrollingSimTest : public SimTest,
-                         public testing::WithParamInterface<bool> {
+class ScrollingSimTest : public SimTest {
  public:
   ScrollingSimTest() = default;
 
   void SetUp() override {
-    if (GetParam())
-      feature_list_.InitAndEnableFeature(::features::kScrollUnification);
-    else
-      feature_list_.InitAndDisableFeature(::features::kScrollUnification);
-
     was_threaded_animation_enabled_ =
         content::TestBlinkWebUnitTestSupport::SetThreadedAnimationEnabled(true);
 
@@ -2574,9 +2559,7 @@ class ScrollingSimTest : public SimTest,
   bool was_threaded_animation_enabled_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All, ScrollingSimTest, testing::Bool());
-
-TEST_P(ScrollingSimTest, BasicScroll) {
+TEST_F(ScrollingSimTest, BasicScroll) {
   String kUrl = "https://example.com/test.html";
   SimRequest request(kUrl, "text/html");
   LoadURL(kUrl);
@@ -2602,12 +2585,12 @@ TEST_P(ScrollingSimTest, BasicScroll) {
 
   Compositor().BeginFrame();
 
-  Element* scroller = GetDocument().getElementById("s");
+  Element* scroller = GetDocument().getElementById(AtomicString("s"));
   LayoutBox* box = To<LayoutBox>(scroller->GetLayoutObject());
   EXPECT_EQ(100, box->ScrolledContentOffset().top);
 }
 
-TEST_P(ScrollingSimTest, ImmediateCompositedScroll) {
+TEST_F(ScrollingSimTest, ImmediateCompositedScroll) {
   String kUrl = "https://example.com/test.html";
   SimRequest request(kUrl, "text/html");
   LoadURL(kUrl);
@@ -2622,7 +2605,7 @@ TEST_P(ScrollingSimTest, ImmediateCompositedScroll) {
   )HTML");
 
   Compositor().BeginFrame();
-  Element* scroller = GetDocument().getElementById("s");
+  Element* scroller = GetDocument().getElementById(AtomicString("s"));
   LayoutBox* box = To<LayoutBox>(scroller->GetLayoutObject());
   EXPECT_EQ(0, GetActiveScrollOffset(box->GetScrollableArea()).y());
 
@@ -2657,7 +2640,7 @@ TEST_P(ScrollingSimTest, ImmediateCompositedScroll) {
   EXPECT_EQ(100, box->ScrolledContentOffset().top);
 }
 
-TEST_P(ScrollingSimTest, CompositedScrollDeferredWithLinkedAnimation) {
+TEST_F(ScrollingSimTest, CompositedScrollDeferredWithLinkedAnimation) {
   ScopedScrollTimelineForTest scroll_timeline_enabled(true);
 
   String kUrl = "https://example.com/test.html";
@@ -2690,7 +2673,7 @@ TEST_P(ScrollingSimTest, CompositedScrollDeferredWithLinkedAnimation) {
       ->mutator_host()
       ->PromoteScrollTimelinesPendingToActive();
 
-  Element* scroller = GetDocument().getElementById("s");
+  Element* scroller = GetDocument().getElementById(AtomicString("s"));
   LayoutBox* box = To<LayoutBox>(scroller->GetLayoutObject());
 
   WebGestureEvent scroll_begin(
@@ -2725,7 +2708,94 @@ TEST_P(ScrollingSimTest, CompositedScrollDeferredWithLinkedAnimation) {
   EXPECT_EQ(100, box->ScrolledContentOffset().top);
 }
 
-TEST_P(ScrollingSimTest, ScrollTimelineActiveAtBoundary) {
+TEST_F(ScrollingSimTest, CompositedStickyTracksMainRepaintScroll) {
+  SetPreferCompositingToLCDText(false);
+
+  String kUrl = "https://example.com/test.html";
+  SimRequest request(kUrl, "text/html");
+  LoadURL(kUrl);
+
+  request.Complete(R"HTML(
+    <style>
+    .spincont { position: absolute;
+                width: 10px; height: 10px; left: 50px; top: 20px; }
+    .spinner { animation: spin 1s linear infinite; }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .scroller { position: absolute; overflow: scroll;
+                left: 10px; top: 50px; width: 750px; height: 400px;
+                border: 10px solid #ccc; }
+    .spacer { position: absolute; width: 9000px; height: 100px; }
+    .sticky { position: sticky; background: #eee;
+              left: 50px; top: 50px; width: 600px; height: 200px; }
+    .bluechip { position: absolute; background: blue; color: white;
+                left: 100px; top: 50px; width: 200px; height: 30px; }
+    </style>
+    <div class="spincont"><div class="spinner">X</div></div>
+    <div class="scroller">
+      <div class="spacer">scrolling</div>
+      <div class="sticky"><div class="bluechip">sticky?</div></div>
+    </div>
+  )HTML");
+
+  Compositor().BeginFrame(0.016, /* raster */ true);
+  Element* scroller = GetDocument().QuerySelector(AtomicString(".scroller"));
+  LayoutBox* box = To<LayoutBox>(scroller->GetLayoutObject());
+  EXPECT_EQ(0, GetActiveScrollOffset(box->GetScrollableArea()).y());
+
+  WebGestureEvent scroll_begin(
+      WebInputEvent::Type::kGestureScrollBegin, WebInputEvent::kNoModifiers,
+      WebInputEvent::GetStaticTimeStampForTests(), WebGestureDevice::kTouchpad);
+  scroll_begin.SetPositionInWidget(gfx::PointF(200, 200));
+  scroll_begin.data.scroll_begin.delta_x_hint = -100;
+
+  WebGestureEvent scroll_update(
+      WebInputEvent::Type::kGestureScrollUpdate, WebInputEvent::kNoModifiers,
+      WebInputEvent::GetStaticTimeStampForTests(), WebGestureDevice::kTouchpad);
+  scroll_update.SetPositionInWidget(gfx::PointF(200, 200));
+  scroll_update.data.scroll_update.delta_x = -100;
+
+  WebGestureEvent scroll_end(
+      WebInputEvent::Type::kGestureScrollEnd, WebInputEvent::kNoModifiers,
+      WebInputEvent::GetStaticTimeStampForTests(), WebGestureDevice::kTouchpad);
+  scroll_end.SetPositionInWidget(gfx::PointF(200, 200));
+
+  auto& widget = GetWebFrameWidget();
+  widget.DispatchThroughCcInputHandler(scroll_begin);
+  widget.DispatchThroughCcInputHandler(scroll_update);
+  widget.DispatchThroughCcInputHandler(scroll_end);
+
+  // Scroll applied immediately in the scroll tree.
+  EXPECT_EQ(100, GetActiveScrollOffset(box->GetScrollableArea()).x());
+
+  // Tick impl animation to dirty draw properties.
+  static_cast<cc::SingleThreadProxy*>(
+      GetWebFrameWidget().LayerTreeHostForTesting()->proxy())
+      ->BeginImplFrameForTest(Compositor().LastFrameTime() +
+                              base::Seconds(0.016));
+
+  // Update draw properties.
+  cc::LayerTreeHostImpl::FrameData frame;
+  auto* lthi = GetLayerTreeHostImpl();
+  lthi->PrepareToDraw(&frame);
+
+  Element* sticky = GetDocument().QuerySelector(AtomicString(".sticky"));
+  cc::ElementId sticky_translation = CompositorElementIdFromUniqueObjectId(
+      sticky->GetLayoutObject()->UniqueId(),
+      CompositorElementIdNamespace::kStickyTranslation);
+  auto* transform_node = lthi->active_tree()
+                             ->property_trees()
+                             ->transform_tree()
+                             .FindNodeFromElementId(sticky_translation);
+
+  // Sticky translation should NOT reflect the updated scroll, since the scroll
+  // is main-repainted and we haven't had a main frame yet.
+  EXPECT_EQ(50, transform_node->to_parent.To2dTranslation().x());
+}
+
+TEST_F(ScrollingSimTest, ScrollTimelineActiveAtBoundary) {
   String kUrl = "https://example.com/test.html";
   SimRequest request(kUrl, "text/html");
   LoadURL(kUrl);
@@ -2753,7 +2823,7 @@ TEST_P(ScrollingSimTest, ScrollTimelineActiveAtBoundary) {
   Compositor().BeginFrame();
 
   blink::Animation* animation =
-      GetDocument().getElementById("align")->getAnimations()[0];
+      GetDocument().getElementById(AtomicString("align"))->getAnimations()[0];
   cc::Animation* cc_animation =
       animation->GetCompositorAnimation()->CcAnimation();
   cc::ElementId element_id = cc_animation->element_id();
@@ -2780,7 +2850,7 @@ TEST_P(ScrollingSimTest, ScrollTimelineActiveAtBoundary) {
   EXPECT_EQ(gfx::KeyframeModel::RUNNING, keyframe_model_impl->run_state());
 
   // Scroll to the end.
-  GetDocument().getElementById("s")->setScrollTop(800);
+  GetDocument().getElementById(AtomicString("s"))->setScrollTop(800);
 
   // Third frame: LayerTreeHost::ApplyMutatorEvents dispatches
   // AnimationEvent::STARTED and resets
@@ -2797,7 +2867,7 @@ TEST_P(ScrollingSimTest, ScrollTimelineActiveAtBoundary) {
   // Try reversed playbackRate, and verify that we are also ACTIVE in the case
   // local_time == before_active_boundary_time.
   animation->setPlaybackRate(-1);
-  GetDocument().getElementById("s")->setScrollTop(0);
+  GetDocument().getElementById(AtomicString("s"))->setScrollTop(0);
   Compositor().BeginFrame(0.016, /* raster */ true);
   Compositor().BeginFrame();
 
@@ -2814,10 +2884,8 @@ TEST_P(ScrollingSimTest, ScrollTimelineActiveAtBoundary) {
   EXPECT_TRUE(keyframe_model_impl->HasActiveTime(base::TimeTicks()));
 }
 
-// Pre-scroll-unification, ensures that ScrollBegin and ScrollUpdate cause
-// layout and ScrollEnd does not. Post unification, Blink will not handle these
-// events but ensure that a unification main-thread-hit-test does cause layout.
-TEST_P(ScrollingSimTest, ScrollLayoutTriggers) {
+// Ensure that a main thread hit test for ScrollBegin does cause layout.
+TEST_F(ScrollingSimTest, ScrollLayoutTriggers) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -2835,63 +2903,22 @@ TEST_P(ScrollingSimTest, ScrollLayoutTriggers) {
   Compositor().BeginFrame();
   ASSERT_EQ(0u, NumObjectsNeedingLayout());
 
-  Element* box = GetDocument().getElementById("box");
-  if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
-    // Dirty the layout
-    box->setAttribute(html_names::kStyleAttr, "height: 10px");
-    GetDocument().UpdateStyleAndLayoutTree();
-    ASSERT_NE(NumObjectsNeedingLayout(), 0u);
+  Element* box = GetDocument().getElementById(AtomicString("box"));
 
-    // The hit test (which may be performed by a scroll begin) should cause a
-    // layout to occur.
-    WebView().MainFrameWidget()->HitTestResultAt(gfx::PointF(10, 10));
-    EXPECT_EQ(NumObjectsNeedingLayout(), 0u);
+  // Dirty the layout
+  box->setAttribute(html_names::kStyleAttr, AtomicString("height: 10px"));
+  GetDocument().UpdateStyleAndLayoutTree();
+  ASSERT_NE(NumObjectsNeedingLayout(), 0u);
 
-  } else {
-    // ScrollBegin should trigger a layout.
-    {
-      // Dirty the layout
-      box->setAttribute(html_names::kStyleAttr, "height: 10px");
-      GetDocument().UpdateStyleAndLayoutTree();
-      ASSERT_NE(NumObjectsNeedingLayout(), 0u);
-
-      WebView().MainFrameWidget()->HandleInputEvent(
-          GenerateCoalescedGestureEvent(
-              WebInputEvent::Type::kGestureScrollBegin, 0, 10));
-      EXPECT_EQ(NumObjectsNeedingLayout(), 0u);
-    }
-
-    // ScrollUpdate should trigger a layout.
-    {
-      // Dirty the layout
-      box->setAttribute(html_names::kStyleAttr, "height: 11px");
-      GetDocument().UpdateStyleAndLayoutTree();
-      ASSERT_NE(NumObjectsNeedingLayout(), 0u);
-
-      WebView().MainFrameWidget()->HandleInputEvent(
-          GenerateCoalescedGestureEvent(
-              WebInputEvent::Type::kGestureScrollUpdate, 0, 10));
-      EXPECT_EQ(NumObjectsNeedingLayout(), 0u);
-    }
-
-    // ScrollEnd shouldn't trigger a layout.
-    {
-      // Dirty the layout
-      box->setAttribute(html_names::kStyleAttr, "height: 12px");
-      GetDocument().UpdateStyleAndLayoutTree();
-      ASSERT_NE(NumObjectsNeedingLayout(), 0u);
-
-      WebView().MainFrameWidget()->HandleInputEvent(
-          GenerateCoalescedGestureEvent(WebInputEvent::Type::kGestureScrollEnd,
-                                        0, 0));
-      EXPECT_NE(NumObjectsNeedingLayout(), 0u);
-    }
-  }
+  // The hit test (which may be performed by a scroll begin) should cause a
+  // layout to occur.
+  WebView().MainFrameWidget()->HitTestResultAt(gfx::PointF(10, 10));
+  EXPECT_EQ(NumObjectsNeedingLayout(), 0u);
 }
 
 // Verifies that a composited scrollbar scroll uses the target scroller
 // specified by the widget input handler and does not bubble up.
-TEST_P(ScrollingSimTest, CompositedScrollbarScrollDoesNotBubble) {
+TEST_F(ScrollingSimTest, CompositedScrollbarScrollDoesNotBubble) {
   String kUrl = "https://example.com/test.html";
   SimRequest request(kUrl, "text/html");
   LoadURL(kUrl);
@@ -2915,7 +2942,7 @@ TEST_P(ScrollingSimTest, CompositedScrollbarScrollDoesNotBubble) {
 
   Compositor().BeginFrame();
 
-  Element* scroller = GetDocument().getElementById("scroller");
+  Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
   ScrollOffset max_offset = scroller->GetLayoutBoxForScrolling()
                                 ->GetScrollableArea()
                                 ->MaximumScrollOffset();
@@ -2932,10 +2959,8 @@ TEST_P(ScrollingSimTest, CompositedScrollbarScrollDoesNotBubble) {
   // Location outside the scrolling div; input manager should accept the
   // targeted element without performing a hit test.
   scroll_begin.SetPositionInWidget(gfx::PointF(150, 150));
-  if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
-    scroll_begin.data.scroll_begin.main_thread_hit_tested_reasons =
-        cc::MainThreadScrollingReason::kScrollbarScrolling;
-  }
+  scroll_begin.data.scroll_begin.main_thread_hit_tested_reasons =
+      cc::MainThreadScrollingReason::kScrollbarScrolling;
   scroll_begin.data.scroll_begin.scrollable_area_element_id =
       CompositorElementIdFromUniqueObjectId(
           scroller->GetLayoutObject()->UniqueId(),

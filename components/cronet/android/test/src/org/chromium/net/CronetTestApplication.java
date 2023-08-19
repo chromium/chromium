@@ -5,22 +5,8 @@
 package org.chromium.net;
 
 import android.app.Application;
-import android.content.Context;
-import android.os.Build;
-
-import androidx.multidex.MultiDex;
 
 /**
  * Application for managing the Cronet Test.
  */
-public class CronetTestApplication extends Application {
-    @Override
-    protected void attachBaseContext(Context base) {
-        super.attachBaseContext(base);
-
-        // install multidex for Kitkat - crbug/1393424
-        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
-            MultiDex.install(this);
-        }
-    }
-}
+public class CronetTestApplication extends Application {}

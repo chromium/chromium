@@ -630,4 +630,61 @@ TEST(FileEnumerator, OnlyName) {
   EXPECT_THAT(found_paths, UnorderedElementsAre(subdir, dummy_file));
 }
 
+struct FileEnumeratorForEachTestCase {
+  const bool recursive;
+  const int file_type;
+  const int expected_invocation_count;
+};
+
+class FileEnumeratorForEachTest
+    : public ::testing::TestWithParam<FileEnumeratorForEachTestCase> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    FileEnumeratorForEachTestCases,
+    FileEnumeratorForEachTest,
+    ::testing::ValuesIn(std::vector<FileEnumeratorForEachTestCase>{
+        {false, FileEnumerator::FILES, 2},
+        {true, FileEnumerator::FILES, 8},
+        {false, FileEnumerator::DIRECTORIES, 3},
+        {true, FileEnumerator::DIRECTORIES, 3},
+        {false, FileEnumerator::FILES | FileEnumerator::DIRECTORIES, 5},
+        {true, FileEnumerator::FILES | FileEnumerator::DIRECTORIES, 11},
+    }));
+
+TEST_P(FileEnumeratorForEachTest, TestCases) {
+  ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const FilePath mock_path(temp_dir.GetPath());
+
+  // Create a top-level directory, and 3 sub-directories, with 2 files within
+  // each directory.
+  for (const FilePath& path :
+       {mock_path, mock_path.Append(FILE_PATH_LITERAL("1.2.3.4")),
+        mock_path.Append(FILE_PATH_LITERAL("Download")),
+        mock_path.Append(FILE_PATH_LITERAL("Install"))}) {
+    ASSERT_TRUE(CreateDirectory(path));
+    for (const FilePath::StringType& file_name :
+         {FILE_PATH_LITERAL("mock.executable"),
+          FILE_PATH_LITERAL("mock.text")}) {
+      ASSERT_TRUE(
+          File(path.Append(file_name), File::FLAG_CREATE | File::FLAG_WRITE)
+              .IsValid());
+    }
+  }
+
+  int invocation_count = 0;
+
+  FileEnumerator(mock_path, GetParam().recursive, GetParam().file_type)
+      .ForEach([&invocation_count](const FilePath& item) {
+        ++invocation_count;
+        if (invocation_count > GetParam().expected_invocation_count) {
+          ADD_FAILURE() << "Unexpected file/directory found: " << item << ": "
+                        << invocation_count << ": "
+                        << GetParam().expected_invocation_count;
+        }
+      });
+
+  EXPECT_EQ(invocation_count, GetParam().expected_invocation_count);
+}
+
 }  // namespace base

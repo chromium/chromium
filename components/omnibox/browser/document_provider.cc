@@ -36,12 +36,12 @@
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
-#include "components/omnibox/browser/document_suggestions_service.h"
 #include "components/omnibox/browser/history_provider.h"
 #include "components/omnibox/browser/in_memory_url_index_types.h"
 #include "components/omnibox/browser/keyword_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
+#include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/search_provider.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -51,6 +51,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "net/base/url_util.h"
+#include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
@@ -450,30 +451,42 @@ bool DocumentProvider::IsDocumentProviderAllowed(
     AutocompleteProviderClient* client,
     const AutocompleteInput& input) {
   // Feature must be on.
-  if (!base::FeatureList::IsEnabled(omnibox::kDocumentProvider))
+  if (!base::FeatureList::IsEnabled(omnibox::kDocumentProvider)) {
     return false;
+  }
 
   // These may seem like search suggestions, so gate on that setting too.
-  if (!client->SearchSuggestEnabled())
+  if (!client->SearchSuggestEnabled()) {
     return false;
+  }
 
   // Client-side toggle must be enabled.
-  if (!client->GetPrefs()->GetBoolean(omnibox::kDocumentSuggestEnabled))
+  if (!base::FeatureList::IsEnabled(omnibox::kDocumentProviderNoSetting) &&
+      !client->GetPrefs()->GetBoolean(omnibox::kDocumentSuggestEnabled)) {
     return false;
+  }
 
   // No incognito.
-  if (client->IsOffTheRecord())
+  if (client->IsOffTheRecord()) {
     return false;
+  }
 
-  // Check sync's status and proceed if active.
-  bool authenticated_and_syncing =
-      client->IsAuthenticated() && client->IsSyncActive();
-  if (!authenticated_and_syncing)
+  // Must be logged in.
+  if (!client->IsAuthenticated()) {
     return false;
+  }
+
+  // Sync must be enabled and active.
+  if (!base::FeatureList::IsEnabled(
+          omnibox::kDocumentProviderNoSyncRequirement) &&
+      !client->IsSyncActive()) {
+    return false;
+  }
 
   // We haven't received a server backoff signal.
-  if (backoff_for_session_)
+  if (backoff_for_session_) {
     return false;
+  }
 
   // Google must be set as default search provider.
   auto* template_url_service = client->GetTemplateURLService();
@@ -495,8 +508,9 @@ bool DocumentProvider::IsDocumentProviderAllowed(
   }
 
   // Don't issue queries for input likely to be a URL.
-  if (IsInputLikelyURL(input))
+  if (IsInputLikelyURL(input)) {
     return false;
+  }
 
   return true;
 }
@@ -551,7 +565,7 @@ void DocumentProvider::Start(const AutocompleteInput& input,
 
 void DocumentProvider::Run() {
   time_run_invoked_ = base::TimeTicks::Now();
-  client_->GetDocumentSuggestionsService(/*create_if_necessary=*/true)
+  client_->GetRemoteSuggestionsService(/*create_if_necessary=*/true)
       ->CreateDocumentSuggestionsRequest(
           input_.text(), client_->IsOffTheRecord(),
           base::BindOnce(
@@ -588,10 +602,9 @@ void DocumentProvider::Stop(bool clear_cached_results,
     time_run_invoked_ = base::TimeTicks();
   }
 
-  auto* document_suggestions_service =
-      client_->GetDocumentSuggestionsService(/*create_if_necessary=*/false);
-  if (document_suggestions_service != nullptr) {
-    document_suggestions_service->StopCreatingDocumentSuggestionsRequest();
+  if (auto* remote_suggestions_service =
+          client_->GetRemoteSuggestionsService(/*create_if_necessary=*/false)) {
+    remote_suggestions_service->StopCreatingDocumentSuggestionsRequest();
   }
 }
 
@@ -624,6 +637,7 @@ DocumentProvider::~DocumentProvider() = default;
 
 void DocumentProvider::OnURLLoadComplete(
     const network::SimpleURLLoader* source,
+    const int response_code,
     std::unique_ptr<std::string> response_body) {
   DCHECK(!done_);
   DCHECK_EQ(loader_.get(), source);
@@ -631,15 +645,16 @@ void DocumentProvider::OnURLLoadComplete(
   LogRequestTime(time_request_sent_, false);
   LogOmniboxDocumentRequest(DOCUMENT_REPLY_RECEIVED);
 
-  int httpStatusCode = source->ResponseInfo() && source->ResponseInfo()->headers
-                           ? source->ResponseInfo()->headers->response_code()
-                           : 0;
-
-  if (httpStatusCode == 400 || httpStatusCode == 499)
+  // The following are codes that we believe indicate non-transient failures,
+  // based on experience working with the owners of the API. Since they are
+  // expected to be semi-persistent, it does not make sense to continue to issue
+  // requests during the current session after receiving one.
+  if (response_code == 400 || response_code == 403 || response_code == 499) {
     backoff_for_session_ = true;
+  }
 
   const bool results_updated =
-      response_body && source->NetError() == net::OK && httpStatusCode == 200 &&
+      response_code == 200 &&
       UpdateResults(SearchSuggestionParser::ExtractJsonData(
           source, std::move(response_body)));
   LogTotalTime(time_run_invoked_, false);

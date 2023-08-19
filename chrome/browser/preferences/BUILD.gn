@@ -24,29 +24,32 @@ android_library("java") {
     "//components/browser_ui/site_settings/android:constants_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
-  srcjar_deps = [ ":java_pref_names_srcjar" ]
+
+  srcjar_deps = [
+    ":java_pref_names_srcjar",
+    ":jni_headers",
+  ]
 }
 
 # TODO(chouinard,estade): Consider breaking this target up into a different target for each pref file.
 java_cpp_strings("java_pref_names_srcjar") {
   sources = [
-    "//chrome/common/pref_names.cc",
+    "//chrome/common/pref_names.h",
     "//components/autofill/core/common/autofill_prefs.cc",
     "//components/commerce/core/pref_names.cc",
     "//components/dom_distiller/core/pref_names.cc",
-    "//components/embedder_support/pref_names.cc",
+    "//components/embedder_support/pref_names.h",
     "//components/feed/core/common/pref_names.cc",
     "//components/feed/core/shared_prefs/pref_names.cc",
     "//components/history/core/common/pref_names.cc",
-    "//components/language/core/browser/pref_names.cc",
+    "//components/language/core/browser/pref_names.h",
     "//components/password_manager/core/common/password_manager_pref_names.cc",
     "//components/payments/core/payment_prefs.cc",
     "//components/policy/core/common/policy_pref_names.cc",
-    "//components/privacy_sandbox/privacy_sandbox_prefs.cc",
+    "//components/privacy_sandbox/privacy_sandbox_prefs.h",
     "//components/safe_browsing/core/common/safe_browsing_prefs.cc",
     "//components/signin/public/base/signin_pref_names.cc",
-    "//components/supervised_user/core/common/pref_names.cc",
+    "//components/supervised_user/core/common/pref_names.h",
     "//components/translate/core/browser/translate_pref_names.cc",
   ]
 

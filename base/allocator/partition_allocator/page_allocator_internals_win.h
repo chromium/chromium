@@ -10,9 +10,9 @@
 #include "base/allocator/partition_allocator/oom.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/page_allocator_internal.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/notreached.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
-#include "base/allocator/partition_allocator/partition_alloc_notreached.h"
 
 namespace partition_alloc::internal {
 
@@ -94,10 +94,10 @@ int GetAccessFlags(PageAccessibilityConfiguration accessibility) {
     case PageAccessibilityConfiguration::kReadWriteExecute:
       return PAGE_EXECUTE_READWRITE;
     case PageAccessibilityConfiguration::kInaccessible:
+    case PageAccessibilityConfiguration::kInaccessibleWillJitLater:
       return PAGE_NOACCESS;
-    default:
-      PA_NOTREACHED();
   }
+  PA_NOTREACHED();
 }
 
 uintptr_t SystemAllocPagesInternal(
@@ -106,11 +106,9 @@ uintptr_t SystemAllocPagesInternal(
     PageAccessibilityConfiguration accessibility,
     PageTag page_tag,
     [[maybe_unused]] int file_descriptor_for_shared_alloc) {
-  DWORD access_flag = GetAccessFlags(accessibility);
-  const DWORD type_flags = (accessibility.permissions !=
-                            PageAccessibilityConfiguration::kInaccessible)
-                               ? (MEM_RESERVE | MEM_COMMIT)
-                               : MEM_RESERVE;
+  const DWORD access_flag = GetAccessFlags(accessibility);
+  const DWORD type_flags =
+      (access_flag == PAGE_NOACCESS) ? MEM_RESERVE : (MEM_RESERVE | MEM_COMMIT);
   void* ret = VirtualAllocWithRetry(reinterpret_cast<void*>(hint), length,
                                     type_flags, access_flag);
   if (ret == nullptr) {
@@ -141,8 +139,7 @@ bool TrySetSystemPagesAccessInternal(
     size_t length,
     PageAccessibilityConfiguration accessibility) {
   void* ptr = reinterpret_cast<void*>(address);
-  if (accessibility.permissions ==
-      PageAccessibilityConfiguration::kInaccessible) {
+  if (GetAccessFlags(accessibility) == PAGE_NOACCESS) {
     return VirtualFree(ptr, length, MEM_DECOMMIT) != 0;
   }
   // Call the retry path even though this function can fail, because callers of
@@ -157,16 +154,15 @@ void SetSystemPagesAccessInternal(
     size_t length,
     PageAccessibilityConfiguration accessibility) {
   void* ptr = reinterpret_cast<void*>(address);
-  if (accessibility.permissions ==
-      PageAccessibilityConfiguration::kInaccessible) {
+  const DWORD access_flag = GetAccessFlags(accessibility);
+  if (access_flag == PAGE_NOACCESS) {
     if (!VirtualFree(ptr, length, MEM_DECOMMIT)) {
       // We check `GetLastError` for `ERROR_SUCCESS` here so that in a crash
       // report we get the error number.
       PA_CHECK(static_cast<uint32_t>(ERROR_SUCCESS) == GetLastError());
     }
   } else {
-    if (!VirtualAllocWithRetry(ptr, length, MEM_COMMIT,
-                               GetAccessFlags(accessibility))) {
+    if (!VirtualAllocWithRetry(ptr, length, MEM_COMMIT, access_flag)) {
       int32_t error = GetLastError();
       if (error == ERROR_COMMITMENT_LIMIT) {
         OOM_CRASH(length);
@@ -193,7 +189,9 @@ void DecommitSystemPagesInternal(
                            PageAccessibilityConfiguration::kInaccessible));
 }
 
-void DecommitAndZeroSystemPagesInternal(uintptr_t address, size_t length) {
+void DecommitAndZeroSystemPagesInternal(uintptr_t address,
+                                        size_t length,
+                                        PageTag page_tag) {
   // https://docs.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-virtualfree:
   // "If a page is decommitted but not released, its state changes to reserved.
   // Subsequently, you can call VirtualAlloc to commit it, or VirtualFree to

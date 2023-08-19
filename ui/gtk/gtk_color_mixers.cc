@@ -17,7 +17,7 @@
 namespace gtk {
 
 void AddGtkNativeColorMixer(ui::ColorProvider* provider,
-                            const ui::ColorProviderManager::Key& key) {
+                            const ui::ColorProviderKey& key) {
   if (key.system_theme != ui::SystemTheme::kGtk) {
     return;
   }
@@ -25,7 +25,7 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
   ui::ColorMixer& mixer = provider->AddMixer();
 
   const std::string header_selector =
-      key.frame_type == ui::ColorProviderManager::FrameType::kChromium
+      key.frame_type == ui::ColorProviderKey::FrameType::kChromium
           ? "headerbar.header-bar.titlebar"
           : "menubar";
   const std::string header_selector_inactive = header_selector + ":backdrop";
@@ -108,10 +108,10 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
   mixer[ui::kColorHelpIconActive] = {GetFgColor("button.image-button:hover")};
   mixer[ui::kColorIcon] = {GetFgColor("button.flat.scale image")};
   mixer[ui::kColorHelpIconInactive] = {GetFgColor("button.image-button")};
-  mixer[ui::kColorLinkForeground] = {GetFgColor("label.link:link")};
+  mixer[ui::kColorLinkForegroundDefault] = {GetFgColor("label.link:link")};
   mixer[ui::kColorLinkForegroundDisabled] = {
       GetFgColor("label.link:link:disabled")};
-  mixer[ui::kColorLinkForegroundPressed] = {
+  mixer[ui::kColorLinkForegroundPressedDefault] = {
       GetFgColor("label.link:link:hover:active")};
   mixer[ui::kColorMenuBackground] = {GetBgColor(GtkCssMenu())};
   mixer[ui::kColorMenuBorder] = {GetBorderColor(GtkCssMenu())};

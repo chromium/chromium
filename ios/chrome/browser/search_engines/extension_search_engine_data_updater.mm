@@ -14,10 +14,6 @@
 #import "ios/chrome/browser/widget_kit/widget_kit_swift.h"  // nogncheck
 #endif
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 ExtensionSearchEngineDataUpdater::ExtensionSearchEngineDataUpdater(
     TemplateURLService* urlService)
     : templateURLService_(urlService) {

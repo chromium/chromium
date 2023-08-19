@@ -10,7 +10,7 @@ load("//lib/branches.star", "branches")
 load("//project.star", "settings")
 
 lucicfg.check_version(
-    min = "1.38.1",
+    min = "1.39.14",
     message = "Update depot_tools",
 )
 
@@ -40,7 +40,7 @@ lucicfg.config(
         "outages.pyl",
         "sheriff-rotations/*.txt",
         "project.pyl",
-        "testing/gn_isolate_map.pyl",
+        "testing/*.pyl",
     ],
     fail_on_warnings = True,
     lint_checks = [
@@ -114,6 +114,11 @@ luci.project(
             roles = "role/analysis.editor",
             groups = ["project-chromium-committers", "googlers"],
         ),
+        # Role for builder health indicators
+        luci.binding(
+            roles = "role/buildbucket.healthUpdater",
+            users = ["guterman@google.com", "generate-builder@cr-builder-health-indicators.iam.gserviceaccount.com", "tne@google.com"],
+        ),
     ],
 )
 
@@ -183,6 +188,34 @@ luci.realm(
     ],
 )
 
+# Allows builders to write baselines and query ResultDB for new tests.
+# TODO(crbug/1465953) @project is not available, and @root should inherit into
+# project so we'll do this for now until @project is supported.
+luci.realm(
+    name = "@root",
+    bindings = [
+        luci.binding(
+            roles = "role/resultdb.baselineWriter",
+            groups = [
+                "project-chromium-ci-task-accounts",
+                "project-chromium-try-task-accounts",
+            ],
+            users = [
+                "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com",
+            ],
+        ),
+        luci.binding(
+            roles = "role/resultdb.baselineReader",
+            groups = [
+                "project-chromium-try-task-accounts",
+            ],
+            users = [
+                "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com",
+            ],
+        ),
+    ],
+)
+
 luci.realm(
     name = "webrtc",
     bindings = [
@@ -199,7 +232,9 @@ luci.builder.defaults.test_presentation.set(resultdb.test_presentation(grouping_
 exec("//swarming.star")
 
 exec("//recipes.star")
+exec("//targets/mixins.star")
 exec("//targets/targets.star")
+exec("//targets/variants.star")
 
 exec("//notifiers.star")
 

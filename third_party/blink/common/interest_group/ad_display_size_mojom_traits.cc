@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/public/common/interest_group/ad_display_size_mojom_traits.h"
+#include "third_party/blink/public/common/interest_group/ad_display_size_utils.h"
 
 #include "url/mojom/url_gurl_mojom_traits.h"
 
@@ -17,7 +18,8 @@ bool StructTraits<blink::mojom::AdSizeDataView, blink::AdSize>::Read(
   }
   out->width = data.width();
   out->height = data.height();
-  return true;
+
+  return blink::IsValidAdSize(*out);
 }
 
 bool StructTraits<blink::mojom::AdDescriptorDataView, blink::AdDescriptor>::

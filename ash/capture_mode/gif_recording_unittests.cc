@@ -528,6 +528,31 @@ TEST_F(GifRecordingTest, RegionToScreenRatioHistogram) {
   }
 }
 
+// Regression test for b/293340894. When the region is selected in a such a way
+// that will cause the default bounds of the recording type menu to go outside
+// the display bounds, the bounds should be adjusted such that it remains within
+// the target display.
+TEST_F(GifRecordingTest, RecordingMenuOutsideOfBounds) {
+  UpdateDisplay("800x700,801+0-800x700");
+  auto* controller = CaptureModeController::Get();
+  controller->SetUserCaptureRegion(gfx::Rect(1550, 650, 50, 50),
+                                   /*by_user=*/true);
+  controller->SetRecordingType(RecordingType::kGif);
+
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(gfx::Point(1000, 500));
+  StartRegionVideoCapture();
+  ClickOnDropDownButton();
+
+  // The menu should be created without any crashes and should be contained
+  // within the bounds of the external display.
+  auto* recording_type_menu_widget = GetRecordingTypeMenuWidget();
+  ASSERT_TRUE(recording_type_menu_widget);
+  const gfx::Rect display_bounds{801, 0, 800, 700};
+  EXPECT_TRUE(display_bounds.Contains(
+      recording_type_menu_widget->GetWindowBoundsInScreen()));
+}
+
 // -----------------------------------------------------------------------------
 // ProjectorGifRecordingTest:
 

@@ -140,43 +140,51 @@ bool BrailleDisplayPrivateAPI::DefaultEventDelegate::HasListener() {
 }
 
 namespace api {
-bool BrailleDisplayPrivateGetDisplayStateFunction::Prepare() {
-  return true;
+
+ExtensionFunction::ResponseAction
+BrailleDisplayPrivateGetDisplayStateFunction::Run() {
+  auto get_display_state_on_io = []() {
+    return BrailleController::GetInstance()->GetDisplayState()->ToValue();
+  };
+  bool did_post_task =
+      content::GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
+          FROM_HERE, base::BindOnce(get_display_state_on_io),
+          base::BindOnce(
+              &BrailleDisplayPrivateGetDisplayStateFunction::ReplyWithState,
+              this));
+  DCHECK(did_post_task);
+  return RespondLater();
 }
 
-void BrailleDisplayPrivateGetDisplayStateFunction::Work() {
-  SetResult(base::Value(
-      BrailleController::GetInstance()->GetDisplayState()->ToValue()));
-}
-
-bool BrailleDisplayPrivateGetDisplayStateFunction::Respond() {
-  return true;
+void BrailleDisplayPrivateGetDisplayStateFunction::ReplyWithState(
+    base::Value::Dict state) {
+  Respond(WithArguments(std::move(state)));
 }
 
 BrailleDisplayPrivateWriteDotsFunction::
-BrailleDisplayPrivateWriteDotsFunction() {
-}
+    BrailleDisplayPrivateWriteDotsFunction() = default;
 
 BrailleDisplayPrivateWriteDotsFunction::
-~BrailleDisplayPrivateWriteDotsFunction() {
-}
+    ~BrailleDisplayPrivateWriteDotsFunction() = default;
 
-bool BrailleDisplayPrivateWriteDotsFunction::Prepare() {
+ExtensionFunction::ResponseAction
+BrailleDisplayPrivateWriteDotsFunction::Run() {
   params_ = WriteDots::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params_);
-  EXTENSION_FUNCTION_VALIDATE(
-      params_->cells.size() >=
-      static_cast<size_t>(params_->columns * params_->rows));
-  return true;
+
+  bool did_post_task = content::GetIOThreadTaskRunner({})->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(&BrailleDisplayPrivateWriteDotsFunction::WriteDotsOnIO,
+                     this),
+      base::BindOnce(&BrailleDisplayPrivateWriteDotsFunction::Respond, this,
+                     NoArguments()));
+  DCHECK(did_post_task);
+  return RespondLater();
 }
 
-void BrailleDisplayPrivateWriteDotsFunction::Work() {
+void BrailleDisplayPrivateWriteDotsFunction::WriteDotsOnIO() {
   BrailleController::GetInstance()->WriteDots(params_->cells, params_->columns,
                                               params_->rows);
-}
-
-bool BrailleDisplayPrivateWriteDotsFunction::Respond() {
-  return true;
 }
 
 ExtensionFunction::ResponseAction

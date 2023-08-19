@@ -47,7 +47,7 @@ class SyntheticGestureTargetMac : public SyntheticGestureTargetBase {
   RenderWidgetHostViewMac* GetView() const;
   bool PointIsWithinContents(RenderWidgetHostView* view,
                              const gfx::PointF& point);
-  RenderWidgetHostViewCocoa* cocoa_view_;
+  RenderWidgetHostViewCocoa* __strong cocoa_view_;
 };
 
 }  // namespace content

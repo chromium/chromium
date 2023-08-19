@@ -289,6 +289,24 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::
 }
 
 template <typename OffsetMappingBuilder>
+inline void
+NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::DidAppendForcedBreak() {
+  // Bisecting available widths can't handle multiple logical paragraphs, so
+  // forced break should disable it. See `NGParagraphLineBreaker`.
+  is_bisect_line_break_disabled_ = true;
+}
+
+template <typename OffsetMappingBuilder>
+inline void
+NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::DidAppendTextReusing(
+    const NGInlineItem& item) {
+  is_block_level_ &= item.IsBlockLevel();
+  if (item.IsForcedLineBreak()) {
+    DidAppendForcedBreak();
+  }
+}
+
+template <typename OffsetMappingBuilder>
 bool NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextReusing(
     const NGInlineNodeData& original_data,
     LayoutText* layout_text) {
@@ -435,7 +453,7 @@ bool NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextReusing(
     // itself may be reused.
     if (item.StartOffset() == start) {
       items_->push_back(item);
-      is_block_level_ &= item.IsBlockLevel();
+      DidAppendTextReusing(item);
       continue;
     }
 
@@ -465,7 +483,7 @@ bool NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextReusing(
 #endif
 
     items_->push_back(adjusted_item);
-    is_block_level_ &= adjusted_item.IsBlockLevel();
+    DidAppendTextReusing(adjusted_item);
   }
   return true;
 }
@@ -956,9 +974,7 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendForcedBreak(
     }
   }
 
-  // Bisecting available widths can't handle multiple logical paragraphs, so
-  // forced break should disable it. See `NGParagraphLineBreaker`.
-  is_bisect_line_break_disabled_ = true;
+  DidAppendForcedBreak();
 }
 
 template <typename OffsetMappingBuilder>
@@ -1083,10 +1099,11 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendFloating(
     LayoutObject* layout_object) {
   AppendOpaque(NGInlineItem::kFloating, kObjectReplacementCharacter,
                layout_object);
+  has_floats_ = true;
   // Floats/exclusions require computing line heights, which is currently
   // skipped during the bisect. See `NGParagraphLineBreaker`.
   is_bisect_line_break_disabled_ = true;
-  is_score_line_break_disabled_ = true;
+  // `NGScoreLineBreaker` supports "simple" floats. See`NGLineWidths`.
 }
 
 template <typename OffsetMappingBuilder>
@@ -1413,6 +1430,7 @@ void NGInlineItemsBuilderTemplate<
   // |SegmentText()| will analyze the text and reset |is_bidi_enabled_| if it
   // doesn't contain any RTL characters.
   data->is_bidi_enabled_ = MayBeBidiEnabled();
+  data->has_floats_ = has_floats_;
   data->has_initial_letter_box_ = has_initial_letter_box_;
   data->has_ruby_ = has_ruby_;
   data->is_block_level_ = IsBlockLevel();

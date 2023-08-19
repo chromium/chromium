@@ -98,6 +98,11 @@ guestMessagePipe.registerHandler(Message.SHOW_PARENTAL_CONTROLS, () => {
 });
 
 guestMessagePipe.registerHandler(
+    Message.TRIGGER_WELCOME_TIP_CALL_TO_ACTION, (actionTypeId) => {
+      help_app.handler.triggerWelcomeTipCallToAction(actionTypeId);
+    });
+
+guestMessagePipe.registerHandler(
     Message.ADD_OR_UPDATE_SEARCH_INDEX, async (message) => {
       if (!(await isLssEnabled)) {
         return;
@@ -291,6 +296,10 @@ guestMessagePipe.registerHandler(
       });
       return searchHandlerRemote.update(dataFiltered);
     });
+
+guestMessagePipe.registerHandler(Message.LAUNCH_MICROSOFT_365_SETUP, () => {
+  help_app.handler.launchMicrosoft365Setup();
+});
 
 guestMessagePipe.registerHandler(
     Message.MAYBE_SHOW_DISCOVER_NOTIFICATION, () => {

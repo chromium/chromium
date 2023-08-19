@@ -17,6 +17,7 @@
  *     indicate this is a leaf node. Null values are placeholders to indicate
  *     children that haven't been loaded in yet.
  * @property {?TreeNode} parent - Parent tree node, null if this is a root node.
+ * @property {string} id - Unique identifier of a node.
  * @property {string} idPath - Full path to this node.
  * @property {string} objPath - Path to the object file containing this symbol.
  * @property {string} srcPath - Path to the source containing this symbol.
@@ -73,6 +74,11 @@
  * Properties loaded from .size / .sizediff files.
  * @typedef {Object} SizeProperties
  * @property {boolean} isMultiContainer - Whether multiple containers exist.
+ */
+
+/**
+ * @typedef {Object} QueryAncestryResults
+ * @property {!Array<number>} ancestorIds
  */
 
 /**

@@ -1,0 +1,19 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/browsing_data/TimePeriodUtils.java",
+  ]
+
+  deps = [
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browsing_data/core:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+
+  resources_package = "org.chromium.chrome.browser.browsing_data"
+}

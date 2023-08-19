@@ -19,6 +19,10 @@
 #include "components/sync/test/sync_user_settings_mock.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/scoped_java_ref.h"
+#endif
+
 namespace syncer {
 
 // Mock implementation of SyncService. You probably don't need this; look at
@@ -35,6 +39,12 @@ class MockSyncService : public SyncService {
   // SyncService implementation.
   syncer::SyncUserSettings* GetUserSettings() override;
   const syncer::SyncUserSettings* GetUserSettings() const override;
+#if BUILDFLAG(IS_ANDROID)
+  MOCK_METHOD(base::android::ScopedJavaLocalRef<jobject>,
+              GetJavaObject,
+              (),
+              (override));
+#endif  // BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(void, SetSyncFeatureRequested, (), (override));
   MOCK_METHOD(DisableReasonSet, GetDisableReasons, (), (const override));
   MOCK_METHOD(TransportState, GetTransportState, (), (const override));
@@ -75,19 +85,6 @@ class MockSyncService : public SyncService {
   MOCK_METHOD(void,
               SetInvalidationsForSessionsEnabled,
               (bool enabled),
-              (override));
-  MOCK_METHOD(void,
-              AddTrustedVaultDecryptionKeysFromWeb,
-              (const std::string& gaia_id,
-               const std::vector<std::vector<uint8_t>>& keys,
-               int last_key_version),
-              (override));
-  MOCK_METHOD(void,
-              AddTrustedVaultRecoveryMethodFromWeb,
-              (const std::string& gaia_id,
-               const std::vector<uint8_t>& public_key,
-               int method_type_hint,
-               base::OnceClosure callback),
               (override));
   MOCK_METHOD(void, AddObserver, (SyncServiceObserver * observer), (override));
   MOCK_METHOD(void,
@@ -144,6 +141,10 @@ class MockSyncService : public SyncService {
   MOCK_METHOD(ModelTypeDownloadStatus,
               GetDownloadStatusFor,
               (ModelType type),
+              (const override));
+  MOCK_METHOD(void,
+              GetTypesWithUnsyncedData,
+              (base::OnceCallback<void(ModelTypeSet)>),
               (const override));
 
   // KeyedService implementation.

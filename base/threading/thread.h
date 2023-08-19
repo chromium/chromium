@@ -15,7 +15,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/message_loop/timer_slack.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/synchronization/lock.h"
@@ -66,9 +65,8 @@ class BASE_EXPORT Thread : PlatformThread::Delegate {
     virtual scoped_refptr<SingleThreadTaskRunner> GetDefaultTaskRunner() = 0;
 
     // Binds a RunLoop::Delegate and task runner CurrentDefaultHandle to the
-    // thread. The underlying MessagePump will have its |timer_slack| set to the
-    // specified amount.
-    virtual void BindToCurrentThread(TimerSlack timer_slack) = 0;
+    // thread.
+    virtual void BindToCurrentThread() = 0;
   };
 
   struct BASE_EXPORT Options {
@@ -89,9 +87,6 @@ class BASE_EXPORT Thread : PlatformThread::Delegate {
     // An unbound Delegate that will be bound to the thread. Ownership
     // of |delegate| will be transferred to the thread.
     std::unique_ptr<Delegate> delegate = nullptr;
-
-    // Specifies timer slack for thread message loop.
-    TimerSlack timer_slack = TIMER_SLACK_NONE;
 
     // Used to create the MessagePump for the MessageLoop. The callback is Run()
     // on the thread. If message_pump_factory.is_null(), then a MessagePump
@@ -324,10 +319,6 @@ class BASE_EXPORT Thread : PlatformThread::Delegate {
   std::unique_ptr<Delegate> delegate_;
 
   raw_ptr<RunLoop> run_loop_ = nullptr;
-
-  // Stores Options::timer_slack_ until the sequence manager has been bound to
-  // a thread.
-  TimerSlack timer_slack_ = TIMER_SLACK_NONE;
 
   // The name of the thread.  Used for debugging purposes.
   const std::string name_;

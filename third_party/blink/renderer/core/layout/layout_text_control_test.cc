@@ -20,7 +20,7 @@ class LayoutTextControlTest : public RenderingTest {
 
  protected:
   TextControlElement* GetTextControlElementById(const char* id) {
-    return To<TextControlElement>(GetDocument().getElementById(id));
+    return To<TextControlElement>(GetElementById(id));
   }
   // Return the LayoutText from inside a text control's user agent shadow tree.
   LayoutText* GetInnerLayoutText(TextControlElement* control) {
@@ -62,7 +62,8 @@ TEST_F(LayoutTextControlTest,
   auto* text_control = GetTextControlElementById("input");
   auto* selected_text = SetupLayoutTextWithCleanSelection(text_control);
 
-  text_control->setAttribute(html_names::kClassAttr, "pseudoSelection");
+  text_control->setAttribute(html_names::kClassAttr,
+                             AtomicString("pseudoSelection"));
   CheckSelectionInvalidationChanges(*selected_text);
 }
 
@@ -79,7 +80,8 @@ TEST_F(LayoutTextControlTest,
   auto* text_control = GetTextControlElementById("textarea");
   auto* selected_text = SetupLayoutTextWithCleanSelection(text_control);
 
-  text_control->setAttribute(html_names::kClassAttr, "pseudoSelection");
+  text_control->setAttribute(html_names::kClassAttr,
+                             AtomicString("pseudoSelection"));
   CheckSelectionInvalidationChanges(*selected_text);
 }
 
@@ -95,7 +97,8 @@ TEST_F(LayoutTextControlTest,
   auto* text_control = GetTextControlElementById("input");
   auto* selected_text = SetupLayoutTextWithCleanSelection(text_control);
 
-  text_control->setAttribute(html_names::kClassAttr, "pseudoSelection");
+  text_control->setAttribute(html_names::kClassAttr,
+                             AtomicString("pseudoSelection"));
   CheckSelectionInvalidationChanges(*selected_text);
 }
 
@@ -111,7 +114,8 @@ TEST_F(LayoutTextControlTest,
   auto* text_control = GetTextControlElementById("textarea");
   auto* selected_text = SetupLayoutTextWithCleanSelection(text_control);
 
-  text_control->setAttribute(html_names::kClassAttr, "pseudoSelection");
+  text_control->setAttribute(html_names::kClassAttr,
+                             AtomicString("pseudoSelection"));
   CheckSelectionInvalidationChanges(*selected_text);
 }
 

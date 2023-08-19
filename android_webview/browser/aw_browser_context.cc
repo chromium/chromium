@@ -6,8 +6,10 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
+#include "android_webview/browser/aw_browser_context_store.h"
 #include "android_webview/browser/aw_browser_process.h"
 #include "android_webview/browser/aw_client_hints_controller_delegate.h"
 #include "android_webview/browser/aw_content_browser_client.h"
@@ -26,16 +28,21 @@
 #include "android_webview/common/aw_features.h"
 #include "android_webview/common/aw_switches.h"
 #include "android_webview/common/crash_reporter/crash_keys.h"
+#include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/base_paths_posix.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/path_service.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/thread_restrictions.h"
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/cdm/browser/media_drm_storage_impl.h"
@@ -69,6 +76,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/zoom_level_delegate.h"
 #include "media/mojo/buildflags.h"
+#include "net/base/features.h"
 #include "net/http/http_util.h"
 #include "net/proxy_resolution/proxy_config_service_android.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
@@ -84,8 +92,6 @@ namespace android_webview {
 namespace {
 
 const void* const kDownloadManagerDelegateKey = &kDownloadManagerDelegateKey;
-
-AwBrowserContext* g_browser_context = NULL;
 
 crash_reporter::CrashKeyString<1> g_web_view_compat_crash_key(
     crash_keys::kWeblayerWebViewCompatMode);
@@ -154,27 +160,42 @@ void MigrateProfileData(base::FilePath cache_path,
   migrate_context_storage_data("webrtc_event_logs");
 }
 
+base::FilePath BuildCachePath(const base::FilePath& relative_path) {
+  FilePath cache_path;
+  if (!base::PathService::Get(base::DIR_CACHE, &cache_path)) {
+    NOTREACHED() << "Failed to get app cache directory for Android WebView";
+  }
+  return cache_path.Append(relative_path);
+}
+
+base::FilePath BuildHttpCachePath(const base::FilePath& relative_path) {
+  return BuildCachePath(relative_path).Append(FILE_PATH_LITERAL("HTTP Cache"));
+}
+
 }  // namespace
 
-AwBrowserContext::AwBrowserContext()
-    : context_storage_path_(GetContextStoragePath()),
+AwBrowserContext::AwBrowserContext(base::FilePath relative_path,
+                                   const bool is_default)
+    : relative_path_(std::move(relative_path)),
+      is_default_(is_default),
+      context_storage_path_(BuildStoragePath(relative_path_)),
+      http_cache_path_(BuildHttpCachePath(relative_path_)),
       simple_factory_key_(GetPath(), IsOffTheRecord()),
       service_worker_xrw_allowlist_matcher_(
           base::MakeRefCounted<AwContentsOriginMatcher>()) {
-  DCHECK(!g_browser_context);
-
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   TRACE_EVENT0("startup", "AwBrowserContext::AwBrowserContext");
 
   profile_metrics::SetBrowserProfileType(
       this, profile_metrics::BrowserProfileType::kRegular);
 
-  g_web_view_compat_crash_key.Set("0");
-
   if (IsDefaultBrowserContext()) {
-    MigrateProfileData(GetCacheDir(), GetContextStoragePath());
+    g_web_view_compat_crash_key.Set("0");
+    MigrateProfileData(GetHttpCachePath(), GetPath());
+  } else {
+    cookie_manager_ = std::make_unique<CookieManager>(this);
   }
 
-  g_browser_context = this;
   SimpleKeyMap::GetInstance()->Associate(this, &simple_factory_key_);
 
   CreateUserPrefService();
@@ -187,54 +208,32 @@ AwBrowserContext::AwBrowserContext()
       std::make_unique<AwFormDatabaseService>(context_storage_path_);
 
   EnsureResourceContextInitialized();
-
-  // This constructor is entered during the creation of ContentBrowserClient,
-  // before browser threads are created. Therefore any checks to enforce
-  // threading (such as BrowserThread::CurrentlyOn()) will fail here.
 }
 
 AwBrowserContext::~AwBrowserContext() {
-  DCHECK_EQ(this, g_browser_context);
   NotifyWillBeDestroyed();
   SimpleKeyMap::GetInstance()->Dissociate(this);
   ShutdownStoragePartitions();
-
-  g_browser_context = NULL;
 }
 
 // static
 AwBrowserContext* AwBrowserContext::GetDefault() {
-  // TODO(joth): rather than store in a global here, lookup this instance
-  // from the Java-side peer.
-  return g_browser_context;
+  return AwBrowserContextStore::GetInstance()->GetDefault();
 }
 
 // static
 AwBrowserContext* AwBrowserContext::FromWebContents(
     content::WebContents* web_contents) {
-  // This is safe; this is the only implementation of the browser context.
+  // This cast is safe; this is the only implementation of the browser context.
   return static_cast<AwBrowserContext*>(web_contents->GetBrowserContext());
 }
 
-base::FilePath AwBrowserContext::GetCacheDir() {
-  FilePath cache_path;
-  if (!base::PathService::Get(base::DIR_CACHE, &cache_path)) {
-    NOTREACHED() << "Failed to get app cache directory for Android WebView";
-  }
-  cache_path = cache_path.Append(FILE_PATH_LITERAL("Default"))
-                   .Append(FILE_PATH_LITERAL("HTTP Cache"));
-  return cache_path;
+base::FilePath AwBrowserContext::GetHttpCachePath() {
+  return http_cache_path_;
 }
 
 base::FilePath AwBrowserContext::GetPrefStorePath() {
-  FilePath pref_store_path;
-  base::PathService::Get(base::DIR_ANDROID_APP_DATA, &pref_store_path);
-  // TODO(amalova): Assign a proper file path for non-default profiles
-  // when we support multiple profiles
-  pref_store_path =
-      pref_store_path.Append(FILE_PATH_LITERAL("Default/Preferences"));
-
-  return pref_store_path;
+  return GetPath().Append(FILE_PATH_LITERAL("Preferences"));
 }
 
 base::FilePath AwBrowserContext::GetCookieStorePath() {
@@ -250,17 +249,6 @@ AwBrowserContext::UpdateServiceWorkerXRequestedWithAllowListOriginMatcher(
   std::vector<std::string> bad_rules =
       service_worker_xrw_allowlist_matcher_->UpdateRuleList(rules);
   return base::android::ToJavaArrayOfStrings(env, bad_rules);
-}
-
-// static
-base::FilePath AwBrowserContext::GetContextStoragePath() {
-  base::FilePath user_data_dir;
-  if (!base::PathService::Get(base::DIR_ANDROID_APP_DATA, &user_data_dir)) {
-    NOTREACHED() << "Failed to get app data directory for Android WebView";
-  }
-
-  user_data_dir = user_data_dir.Append(FILE_PATH_LITERAL("Default"));
-  return user_data_dir;
 }
 
 // static
@@ -322,8 +310,20 @@ void AwBrowserContext::CreateUserPrefService() {
           browser_policy_connector->GetPolicyService(),
           browser_policy_connector->GetHandlerList(),
           policy::POLICY_LEVEL_MANDATORY));
-
-  user_pref_service_ = pref_service_factory.Create(pref_registry);
+  {
+    // TODO(crbug.com/1446913): We can potentially use
+    // pref_service_factory.set_async(true) instead of ScopedAllowBlocking in
+    // order to avoid blocking here or to at least parallelize work in the
+    // background, but it might require additional cross-thread synchronization.
+    //
+    // Note that for the default profile blocking IO is already permitted on the
+    // UI thread due to being called during Chromium/browser
+    // initialization. ScopedAllowBlocking is explicitly needed for non-default
+    // profiles as they are instead created from a calling environment where
+    // normal threading restrictions apply.
+    base::ScopedAllowBlocking scoped_allow_blocking;
+    user_pref_service_ = pref_service_factory.Create(pref_registry);
+  }
 
   if (IsDefaultBrowserContext()) {
     MigrateLocalStatePrefs();
@@ -386,8 +386,20 @@ AwBrowserContext::GetAutocompleteHistoryManager() {
 }
 
 CookieManager* AwBrowserContext::GetCookieManager() {
-  // TODO(amalova): create cookie manager for non-default profile
-  return CookieManager::GetInstance();
+  if (IsDefaultBrowserContext()) {
+    // For the default context, the CookieManager isn't owned by the context,
+    // and may be initialized externally.
+    CHECK(!cookie_manager_);
+    return CookieManager::GetDefaultInstance();
+  } else {
+    // Non-default contexts own their cookie managers
+    CHECK(cookie_manager_);
+    return cookie_manager_.get();
+  }
+}
+
+bool AwBrowserContext::IsDefaultBrowserContext() const {
+  return is_default_;
 }
 
 base::FilePath AwBrowserContext::GetPath() {
@@ -546,11 +558,12 @@ void AwBrowserContext::ConfigureNetworkContextParams(
   // HTTP cache
   context_params->http_cache_enabled = true;
   context_params->http_cache_max_size = GetHttpCacheSize();
-  context_params->http_cache_directory = GetCacheDir();
 
   // WebView should persist and restore cookies between app sessions (including
   // session cookies).
   context_params->file_paths = network::mojom::NetworkContextFilePaths::New();
+  // Adding HTTP cache dir here
+  context_params->file_paths->http_cache_directory = GetHttpCachePath();
   base::FilePath cookie_path = AwBrowserContext::GetCookieStorePath();
   context_params->file_paths->data_directory = cookie_path.DirName();
   context_params->file_paths->cookie_database_name = cookie_path.BaseName();
@@ -581,6 +594,8 @@ void AwBrowserContext::ConfigureNetworkContextParams(
 
   context_params->enable_brotli = base::FeatureList::IsEnabled(
       android_webview::features::kWebViewBrotliSupport);
+  context_params->enable_zstd =
+      base::FeatureList::IsEnabled(net::features::kZstdContentEncoding);
 
   context_params->check_clear_text_permitted =
       AwContentBrowserClient::get_check_cleartext_permitted();
@@ -592,7 +607,9 @@ void AwBrowserContext::ConfigureNetworkContextParams(
 
 base::android::ScopedJavaLocalRef<jobject> JNI_AwBrowserContext_GetDefaultJava(
     JNIEnv* env) {
-  return g_browser_context->GetJavaBrowserContext();
+  AwBrowserContext* default_context = AwBrowserContext::GetDefault();
+  CHECK(default_context);
+  return default_context->GetJavaBrowserContext();
 }
 
 void AwBrowserContext::ClearPersistentOriginTrialStorageForTesting(
@@ -651,6 +668,108 @@ std::string AwBrowserContext::GetExtraHeaders(const GURL& url) {
   std::map<std::string, std::string>::iterator iter =
       extra_headers_.find(url.spec());
   return iter != extra_headers_.end() ? iter->second : std::string();
+}
+
+jboolean JNI_AwBrowserContext_CheckNamedContextExists(
+    JNIEnv* const env,
+    const base::android::JavaParamRef<jstring>& jname) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  return AwBrowserContextStore::GetInstance()->Exists(
+      base::android::ConvertJavaStringToUTF8(env, jname));
+}
+
+base::android::ScopedJavaLocalRef<jobject>
+JNI_AwBrowserContext_GetNamedContextJava(
+    JNIEnv* const env,
+    const base::android::JavaParamRef<jstring>& jname,
+    jboolean create_if_needed) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  AwBrowserContext* context = AwBrowserContextStore::GetInstance()->Get(
+      base::android::ConvertJavaStringToUTF8(env, jname), create_if_needed);
+  return context ? context->GetJavaBrowserContext() : nullptr;
+}
+
+jboolean JNI_AwBrowserContext_DeleteNamedContext(
+    JNIEnv* const env,
+    const base::android::JavaParamRef<jstring>& jname) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  const std::string name = base::android::ConvertJavaStringToUTF8(env, jname);
+  AwBrowserContextStore::DeletionResult result =
+      AwBrowserContextStore::GetInstance()->Delete(name);
+  switch (result) {
+    case AwBrowserContextStore::DeletionResult::kDeleted:
+      return true;
+    case AwBrowserContextStore::DeletionResult::kDoesNotExist:
+      return false;
+    case AwBrowserContextStore::DeletionResult::kInUse:
+      const std::string error_message =
+          base::StrCat({"Cannot delete in-use profile ", name});
+      env->ThrowNew(env->FindClass("java/lang/IllegalStateException"),
+                    error_message.c_str());
+      return false;
+  }
+}
+
+base::android::ScopedJavaLocalRef<jstring>
+JNI_AwBrowserContext_GetNamedContextPathForTesting(  // IN-TEST
+    JNIEnv* const env,
+    const base::android::JavaParamRef<jstring>& jname) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  std::string name = base::android::ConvertJavaStringToUTF8(env, jname);
+  AwBrowserContextStore* store = AwBrowserContextStore::GetInstance();
+  if (!store->Exists(name)) {
+    return nullptr;
+  }
+  base::FilePath path = store->GetRelativePathForTesting(name);  // IN-TEST
+  return base::android::ConvertUTF8ToJavaString(env, path.value());
+}
+
+base::android::ScopedJavaLocalRef<jobjectArray>
+JNI_AwBrowserContext_ListAllContexts(JNIEnv* env) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  const std::vector<std::string> names =
+      AwBrowserContextStore::GetInstance()->List();
+  return base::android::ToJavaArrayOfStrings(env, names);
+}
+
+// static
+base::FilePath AwBrowserContext::BuildStoragePath(
+    const base::FilePath& relative_path) {
+  base::FilePath user_data_dir;
+  if (!base::PathService::Get(base::DIR_ANDROID_APP_DATA, &user_data_dir)) {
+    NOTREACHED() << "Failed to get app data directory for Android WebView";
+  }
+  return user_data_dir.Append(relative_path);
+}
+
+// static
+void AwBrowserContext::PrepareNewContext(const base::FilePath& relative_path) {
+  base::ScopedAllowBlocking scoped_allow_blocking;
+  const base::FilePath storage_path = BuildStoragePath(relative_path);
+  bool storage_created = base::CreateDirectory(storage_path);
+  CHECK(storage_created);
+}
+
+// static
+void AwBrowserContext::DeleteContext(const base::FilePath& relative_path) {
+  // The default profile handles its own directory creation in migration code
+  // and (as of writing) should never be deleted.
+  CHECK_NE(relative_path.value(), AwBrowserContextStore::kDefaultContextPath);
+
+  // TODO(crbug.com/1446913): This could be partially backgrounded by deleting
+  // on the thread pool. Ideally, any interrupted profile directory deletion
+  // would be resumed in the background on startup. For now, this just deletes
+  // synchronously.
+  //
+  // We probably also won't want to CHECK in the final solution, but perhaps
+  // instead allow for some kind of retry-later logic.
+  base::ScopedAllowBlocking scoped_allow_blocking;
+  const base::FilePath storage_path = BuildStoragePath(relative_path);
+  const base::FilePath cache_path = BuildCachePath(relative_path);
+  bool storage_deleted = base::DeletePathRecursively(storage_path);
+  CHECK(storage_deleted);
+  bool cache_deleted = base::DeletePathRecursively(cache_path);
+  CHECK(cache_deleted);
 }
 
 }  // namespace android_webview

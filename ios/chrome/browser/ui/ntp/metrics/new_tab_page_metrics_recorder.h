@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_NTP_METRICS_NEW_TAB_PAGE_METRICS_RECORDER_H_
 #define IOS_CHROME_BROWSER_UI_NTP_METRICS_NEW_TAB_PAGE_METRICS_RECORDER_H_
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 
 namespace base {
 class TimeDelta;

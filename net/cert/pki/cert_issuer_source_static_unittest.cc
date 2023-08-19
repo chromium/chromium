@@ -32,6 +32,9 @@ INSTANTIATE_TYPED_TEST_SUITE_P(CertIssuerSourceStaticNormalizationTest,
                                CertIssuerSourceSyncNormalizationTest,
                                CertIssuerSourceStaticTestDelegate);
 
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
+    CertIssuerSourceSyncNotNormalizedTest);
+
 }  // namespace
 
 }  // namespace net

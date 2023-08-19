@@ -3,4 +3,5 @@ URL: https://crates.io/crates/memoffset
 Description: offset_of functionality for Rust structs.
 Version: 0.6.5
 Security Critical: yes
+Shipped: yes
 License: MIT

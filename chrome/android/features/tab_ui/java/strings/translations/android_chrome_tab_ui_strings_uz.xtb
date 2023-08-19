@@ -3,8 +3,6 @@
 <translationbundle lang="uz">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> ta varaq oxirgi vaqtlarda ishlatilmayapti. Ular yopilsinmi?</translation>
 <translation id="125153950246128346">Boshqa varaqni ochish uchun bosing</translation>
-<translation id="1403228085774130835">Yopilgan varaqlar Chrome asosiy menyusidagi Oxirgi varaqlar bandida chiqadi</translation>
-<translation id="1455506303394048917">Bu Inkognito varaqlardagi xatti-harakatlaringiz ushbu qurilmadan tozalanadi</translation>
 <translation id="1499635324672558517">Barcha Inkognito varaqlar yopilsinmi?</translation>
 <translation id="1657719826150349398">Varaqni pastga tushirish</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ta varaq}other{<ph name="TABS_COUNT_MANY" /> ta varaq}}</translation>
@@ -47,6 +45,7 @@
 <translation id="5073204694187207510">Butun ekranga chiqarilgan jadval shaklini yopish</translation>
 <translation id="5076161749301278626">Doʻkon sharhlari ochilsinmi?</translation>
 <translation id="5082793167783849073">Sahifalarni guruhlab, tezkor solishtiring. Boshlash uchun havolani uzoq bosib turing.</translation>
+<translation id="5339733443032484186">Oxirgi varaq</translation>
 <translation id="5490235265819901748">Varaqlar guruhi yoyildi</translation>
 <translation id="5494920125229734069">Hammasini tanlash</translation>
 <translation id="5556417849629758491">Doʻkon axboroti ekranning yuqori qismida chiqadi</translation>
@@ -62,10 +61,12 @@
 <translation id="6228793724645064692">(doʻkon reytingi)</translation>
 <translation id="6333260925957816943">Bu doʻkon haqidagi axborot</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Tanlangan <ph name="TABS_COUNT_ONE" /> ta varaq guruhini yechish}other{Tanlangan <ph name="TABS_COUNT_MANY" /> ta varaq guruhini yechish}}</translation>
+<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Yopilgan varaqlar Chrome asosiy menyusidagi Oxirgi varaqlarda chiqadi. Inkognito varagʻi chiqmaydi.}other{Yopilgan varaqlar Chrome asosiy menyusidagi Oxirgi varaqlarda chiqadi. # ta inkognito varagʻi chiqmaydi.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ta varaq}other{<ph name="TABS_COUNT_MANY" /> ta varaq}}</translation>
 <translation id="6549021453810473782">Doʻkon axborotini ochish</translation>
 <translation id="6562820390860419811">Varaqni chapga siljitish</translation>
 <translation id="6615455863669487791">Ko‘rsatish</translation>
+<translation id="661742612106409204">Yopilgan varaqlar Chrome asosiy menyusidagi Oxirgi varaqlarda chiqadi.</translation>
 <translation id="6840760312327750441">Varaqlarni guruhlash uchun: bitta varaqni bosib ushlang, keyin uni boshqa varaqning ustiga tortib tashlang.</translation>
 <translation id="6856809498882026482">Bir nechta variant tanlanadigan rejimni yopish</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Varaqni ulashish}other{Varaqlarni ulashish}}</translation>

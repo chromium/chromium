@@ -43,6 +43,7 @@ import org.chromium.content.app.SandboxedProcessService;
 import org.chromium.content.common.ContentSwitchUtils;
 import org.chromium.content_public.browser.ChildProcessImportance;
 import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.content_public.common.ContentSwitches;
 
@@ -396,7 +397,7 @@ public final class ChildProcessLauncherHelperImpl {
         if (!ContentSwitches.SWITCH_RENDERER_PROCESS.equals(processType)) {
             if (ContentSwitches.SWITCH_GPU_PROCESS.equals(processType)) {
                 sandboxed = false;
-                reducePriorityOnBackground = ContentFeatureList.isEnabled(
+                reducePriorityOnBackground = ContentFeatureMap.isEnabled(
                         ContentFeatures.REDUCE_GPU_PRIORITY_ON_BACKGROUND);
             } else {
                 // We only support sandboxed utility processes now.
@@ -533,7 +534,6 @@ public final class ChildProcessLauncherHelperImpl {
         });
     }
 
-    @VisibleForTesting
     public static void setSandboxServicesSettingsForTesting(
             ChildConnectionAllocator.ConnectionFactory factory, int serviceCount,
             String serviceName) {
@@ -542,7 +542,6 @@ public final class ChildProcessLauncherHelperImpl {
         sSandboxedServicesNameForTesting = serviceName;
     }
 
-    @VisibleForTesting
     public static void setSkipDelayForReducePriorityOnBackgroundForTesting() {
         sSkipDelayForReducePriorityOnBackgroundForTesting = true;
     }
@@ -719,7 +718,7 @@ public final class ChildProcessLauncherHelperImpl {
             boostForPendingViews = false;
         }
 
-        boolean mediaRendererHasModerate = ContentFeatureList.isEnabled(
+        boolean mediaRendererHasModerate = ContentFeatureMap.isEnabled(
                 ContentFeatureList.BACKGROUND_MEDIA_RENDERER_HAS_MODERATE_BINDING);
 
         @ChildProcessImportance
@@ -870,18 +869,15 @@ public final class ChildProcessLauncherHelperImpl {
 
     // Testing only related methods.
 
-    @VisibleForTesting
     int getPidForTesting() {
         assert LauncherThread.runningOnLauncherThread();
         return mLauncher.getPid();
     }
 
-    @VisibleForTesting
     public static Map<Integer, ChildProcessLauncherHelperImpl> getAllProcessesForTesting() {
         return sLauncherByPid;
     }
 
-    @VisibleForTesting
     public static ChildProcessLauncherHelperImpl createAndStartForTesting(String[] commandLine,
             FileDescriptorInfo[] filesToBeMapped, boolean sandboxed,
             boolean reducePriorityOnBackground, boolean canUseWarmUpConnection,
@@ -894,7 +890,6 @@ public final class ChildProcessLauncherHelperImpl {
     }
 
     /** @return the count of services set-up and working. */
-    @VisibleForTesting
     static int getConnectedServicesCountForTesting() {
         int count = sPrivilegedChildConnectionAllocator == null
                 ? 0
@@ -902,7 +897,6 @@ public final class ChildProcessLauncherHelperImpl {
         return count + getConnectedSandboxedServicesCountForTesting();
     }
 
-    @VisibleForTesting
     public static int getConnectedSandboxedServicesCountForTesting() {
         return sSandboxedChildConnectionAllocator == null
                 ? 0
@@ -914,12 +908,10 @@ public final class ChildProcessLauncherHelperImpl {
         return mLauncher.getConnection();
     }
 
-    @VisibleForTesting
     public ChildConnectionAllocator getChildConnectionAllocatorForTesting() {
         return mLauncher.getConnectionAllocator();
     }
 
-    @VisibleForTesting
     public static ChildProcessConnection getWarmUpConnectionForTesting(boolean sandboxed) {
         SpareChildConnection connection =
                 sandboxed ? sSpareSandboxedConnection : sSparePrivilegedConntection;

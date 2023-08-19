@@ -8,6 +8,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_backdrop.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/webui/common/trusted_types_util.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
@@ -27,12 +28,14 @@
 #include "chrome/grit/multidevice_setup_resources_map.h"
 #include "chromeos/ash/services/multidevice_setup/multidevice_setup_service.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/url_provider.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/wm/core/shadow_types.h"
 
 namespace ash::multidevice_setup {
@@ -41,7 +44,8 @@ namespace ash::multidevice_setup {
 MultiDeviceSetupDialog* MultiDeviceSetupDialog::current_instance_ = nullptr;
 
 // static
-gfx::NativeWindow MultiDeviceSetupDialog::containing_window_ = nullptr;
+gfx::NativeWindow MultiDeviceSetupDialog::containing_window_ =
+    gfx::NativeWindow();
 
 // static
 void MultiDeviceSetupDialog::Show() {
@@ -117,12 +121,17 @@ MultiDeviceSetupDialogUI::MultiDeviceSetupDialogUI(content::WebUI* web_ui)
 
   AddLocalizedStrings(source);
   source->UseStringsJs();
+  source->AddBoolean("isJellyEnabled", chromeos::features::IsJellyEnabled());
 
   webui::SetupWebUIDataSource(
       source,
       base::make_span(kMultideviceSetupResources,
                       kMultideviceSetupResourcesSize),
       IDR_MULTIDEVICE_SETUP_MULTIDEVICE_SETUP_DIALOG_HTML);
+  // Enabling trusted types via trusted_types_util must be done after
+  // webui::SetupWebUIDataSource to override the trusted type CSP with correct
+  // policies for JS WebUIs.
+  ash::EnableTrustedTypesCSP(source);
 
   web_ui->AddMessageHandler(std::make_unique<MultideviceSetupHandler>());
   web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());
@@ -137,6 +146,12 @@ void MultiDeviceSetupDialogUI::BindInterface(
           Profile::FromWebUI(web_ui()));
   if (service)
     service->BindMultiDeviceSetup(std::move(receiver));
+}
+
+void MultiDeviceSetupDialogUI::BindInterface(
+    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
+  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
+      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(MultiDeviceSetupDialogUI)

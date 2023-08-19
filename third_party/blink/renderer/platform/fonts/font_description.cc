@@ -265,8 +265,7 @@ FontDescription FontDescription::SizeAdjustedFontDescription(
 
 FontCacheKey FontDescription::CacheKey(
     const FontFaceCreationParams& creation_params,
-    bool is_unique_match,
-    bool is_generic_family) const {
+    bool is_unique_match) const {
   unsigned options =
       static_cast<unsigned>(fields_.font_optical_sizing_) << 7 |  // bit 8
       static_cast<unsigned>(fields_.synthetic_italic_) << 6 |     // bit 7
@@ -284,8 +283,7 @@ FontCacheKey FontDescription::CacheKey(
                          options | font_selection_request_.GetHash() << 9,
                          device_scale_factor_for_key, size_adjust_,
                          variation_settings_, font_palette_,
-                         font_variant_alternates_, is_unique_match,
-                         is_generic_family);
+                         font_variant_alternates_, is_unique_match);
 #if BUILDFLAG(IS_ANDROID)
   if (const LayoutLocale* locale = Locale()) {
     if (FontCache::GetLocaleSpecificFamilyName(creation_params.Family()))
@@ -382,8 +380,13 @@ unsigned FontDescription::StyleHashWithoutFamilyList() const {
     }
   }
 
-  if (VariationSettings())
+  if (VariationSettings()) {
     WTF::AddIntToHash(hash, VariationSettings()->GetHash());
+  }
+
+  if (font_palette_) {
+    WTF::AddIntToHash(hash, font_palette_->GetHash());
+  }
 
   if (locale_) {
     const AtomicString& locale = locale_->LocaleString();

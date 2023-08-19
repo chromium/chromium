@@ -15,8 +15,6 @@ import subprocess
 import shutil
 import time
 
-from six.moves import range  # pylint: disable=redefined-builtin
-from devil import base_error
 from devil.android import crash_handler
 from devil.android import device_errors
 from devil.android import device_temp_file
@@ -32,6 +30,7 @@ from pylib.local import local_test_server_spawner
 from pylib.local.device import local_device_environment
 from pylib.local.device import local_device_test_run
 from pylib.symbols import stack_symbolizer
+from pylib.utils import code_coverage_utils
 from pylib.utils import google_storage_helper
 from pylib.utils import logdog_helper
 from py_trace_event import trace_event
@@ -69,15 +68,6 @@ _SUITE_REQUIRES_TEST_SERVER_SPAWNER = [
   'components_browsertests', 'content_unittests', 'content_browsertests',
   'net_unittests', 'services_unittests', 'unit_tests'
 ]
-
-# These are use for code coverage.
-_LLVM_PROFDATA_PATH = os.path.join(constants.DIR_SOURCE_ROOT, 'third_party',
-                                   'llvm-build', 'Release+Asserts', 'bin',
-                                   'llvm-profdata')
-# Name of the file extension for profraw data files.
-_PROFRAW_FILE_EXTENSION = 'profraw'
-# Name of the file where profraw data files are merged.
-_MERGE_PROFDATA_FILE_NAME = 'coverage_merged.' + _PROFRAW_FILE_EXTENSION
 
 # No-op context manager. If we used Python 3, we could change this to
 # contextlib.ExitStack()
@@ -139,92 +129,6 @@ def _GetDeviceTimeoutMultiplier():
   if multiplier:
     return int(multiplier)
   return 1
-
-
-def _MergeCoverageFiles(coverage_dir, profdata_dir):
-  """Merge coverage data files.
-
-  Each instrumentation activity generates a separate profraw data file. This
-  merges all profraw files in profdata_dir into a single file in
-  coverage_dir. This happens after each test, rather than waiting until after
-  all tests are ran to reduce the memory footprint used by all the profraw
-  files.
-
-  Args:
-    coverage_dir: The path to the coverage directory.
-    profdata_dir: The directory where the profraw data file(s) are located.
-
-  Return:
-    None
-  """
-  # profdata_dir may not exist if pulling coverage files failed.
-  if not os.path.exists(profdata_dir):
-    logging.debug('Profraw directory does not exist.')
-    return
-
-  merge_file = os.path.join(coverage_dir, _MERGE_PROFDATA_FILE_NAME)
-  profraw_files = [
-      os.path.join(profdata_dir, f) for f in os.listdir(profdata_dir)
-      if f.endswith(_PROFRAW_FILE_EXTENSION)
-  ]
-
-  try:
-    logging.debug('Merging target profraw files into merged profraw file.')
-    subprocess_cmd = [
-        _LLVM_PROFDATA_PATH,
-        'merge',
-        '-o',
-        merge_file,
-        '-sparse=true',
-    ]
-    # Grow the merge file by merging it with itself and the new files.
-    if os.path.exists(merge_file):
-      subprocess_cmd.append(merge_file)
-    subprocess_cmd.extend(profraw_files)
-    output = subprocess.check_output(subprocess_cmd)
-    logging.debug('Merge output: %s', output)
-  except subprocess.CalledProcessError:
-    # Don't raise error as that will kill the test run. When code coverage
-    # generates a report, that will raise the error in the report generation.
-    logging.error(
-        'Failed to merge target profdata files to create merged profraw file.')
-
-  # Free up memory space on bot as all data is in the merge file.
-  for f in profraw_files:
-    os.remove(f)
-
-
-def _PullCoverageFiles(device, device_coverage_dir, output_dir):
-  """Pulls coverage files on device to host directory.
-
-  Args:
-    device: The working device.
-    device_coverage_dir: The directory to store coverage data on device.
-    output_dir: The output directory on host.
-  """
-  try:
-    if not os.path.exists(output_dir):
-      os.makedirs(output_dir)
-    device.PullFile(device_coverage_dir, output_dir)
-    if not os.listdir(os.path.join(output_dir, 'profraw')):
-      logging.warning('No coverage data was generated for this run')
-  except (OSError, base_error.BaseError) as e:
-    logging.warning('Failed to handle coverage data after tests: %s', e)
-  finally:
-    device.RemovePath(device_coverage_dir, force=True, recursive=True)
-
-
-def _GetDeviceCoverageDir(device):
-  """Gets the directory to generate coverage data on device.
-
-  Args:
-    device: The working device.
-
-  Returns:
-    The directory path on the device.
-  """
-  return posixpath.join(device.GetExternalStoragePath(), 'chrome', 'test',
-                        'coverage', 'profraw')
 
 
 def _GetLLVMProfilePath(device_coverage_dir, suite, coverage_index):
@@ -291,7 +195,8 @@ class _ApkDelegate:
     device_api = device.build_version_sdk
 
     if self._coverage_dir and device_api >= version_codes.LOLLIPOP:
-      device_coverage_dir = _GetDeviceCoverageDir(device)
+      device_coverage_dir = (
+          code_coverage_utils.GetDeviceClangCoverageDir(device))
       extras[_EXTRA_COVERAGE_DEVICE_FILE] = _GetLLVMProfilePath(
           device_coverage_dir, self._suite, self._coverage_index)
       self._coverage_index += 1
@@ -355,9 +260,9 @@ class _ApkDelegate:
         if self._coverage_dir and device_api >= version_codes.LOLLIPOP:
           if not os.path.isdir(self._coverage_dir):
             os.makedirs(self._coverage_dir)
-        # TODO(crbug.com/1179004) Use _MergeCoverageFiles when llvm-profdata
+        # TODO(crbug.com/1179004) Use MergeClangCoverageFiles when llvm-profdata
         # not found is fixed.
-          _PullCoverageFiles(
+          code_coverage_utils.PullClangCoverageFiles(
               device, device_coverage_dir,
               os.path.join(self._coverage_dir, str(self._coverage_index)))
 
@@ -429,7 +334,8 @@ class _ExeDelegate:
     }
 
     if self._coverage_dir:
-      device_coverage_dir = _GetDeviceCoverageDir(device)
+      device_coverage_dir = (
+          code_coverage_utils.GetDeviceClangCoverageDir(device))
       env['LLVM_PROFILE_FILE'] = _GetLLVMProfilePath(
           device_coverage_dir, self._suite, self._coverage_index)
       self._coverage_index += 1
@@ -451,7 +357,7 @@ class _ExeDelegate:
         cmd, cwd=cwd, env=env, check_return=False, large_output=True, **kwargs)
 
     if self._coverage_dir:
-      _PullCoverageFiles(
+      code_coverage_utils.PullClangCoverageFiles(
           device, device_coverage_dir,
           os.path.join(self._coverage_dir, str(self._coverage_index)))
 

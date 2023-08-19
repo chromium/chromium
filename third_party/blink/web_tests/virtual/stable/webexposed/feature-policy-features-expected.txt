@@ -15,6 +15,7 @@ ch-save-data
 ch-ua
 ch-ua-arch
 ch-ua-bitness
+ch-ua-form-factor
 ch-ua-full-version
 ch-ua-full-version-list
 ch-ua-mobile
@@ -45,6 +46,8 @@ midi
 otp-credentials
 payment
 picture-in-picture
+private-state-token-issuance
+private-state-token-redemption
 publickey-credentials-get
 screen-wake-lock
 serial

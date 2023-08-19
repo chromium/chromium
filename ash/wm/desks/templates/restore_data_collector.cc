@@ -13,7 +13,6 @@
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "base/uuid.h"
 #include "components/app_restore/app_launch_info.h"
-#include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_info.h"
 #include "ui/wm/core/window_util.h"
@@ -65,7 +64,7 @@ void RestoreDataCollector::CaptureActiveDeskAsSavedDesk(
     }
 
     // Skip windows that do not associate with a full restore app id.
-    const std::string app_id = full_restore::GetAppId(window);
+    const std::string app_id = saved_desk_util::GetAppId(window);
     if (!Shell::Get()
              ->overview_controller()
              ->disable_app_id_check_for_saved_desks() &&

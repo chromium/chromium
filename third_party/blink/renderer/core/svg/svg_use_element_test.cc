@@ -32,18 +32,19 @@ TEST_F(SVGUseElementTest, InstanceInvalidatedWhenNonAttachedTargetRemoved) {
   UpdateAllLifecyclePhasesForTest();
 
   // Remove #target.
-  ASSERT_TRUE(GetDocument().getElementById("target"));
-  GetDocument().getElementById("target")->remove();
+  ASSERT_TRUE(GetDocument().getElementById(AtomicString("target")));
+  GetDocument().getElementById(AtomicString("target"))->remove();
 
   // This should cause a rebuild of the <use> shadow tree.
   UpdateAllLifecyclePhasesForTest();
 
   // There should be no instance for #target anymore, since that element was
   // removed.
-  auto* use = To<SVGUseElement>(GetDocument().getElementById("use"));
+  auto* use =
+      To<SVGUseElement>(GetDocument().getElementById(AtomicString("use")));
   ASSERT_TRUE(use);
   ASSERT_TRUE(use->GetShadowRoot());
-  ASSERT_FALSE(use->GetShadowRoot()->getElementById("target"));
+  ASSERT_FALSE(use->GetShadowRoot()->getElementById(AtomicString("target")));
 }
 
 TEST_F(SVGUseElementTest,
@@ -61,7 +62,7 @@ TEST_F(SVGUseElementTest,
   UpdateAllLifecyclePhasesForTest();
 
   // Move #target in the document (leaving it still "connected").
-  Element* target = GetDocument().getElementById("target");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
   ASSERT_TRUE(target);
   GetDocument().body()->appendChild(target);
 
@@ -70,10 +71,11 @@ TEST_F(SVGUseElementTest,
 
   // There should be no instance for #target anymore, since that element was
   // removed.
-  auto* use = To<SVGUseElement>(GetDocument().getElementById("use"));
+  auto* use =
+      To<SVGUseElement>(GetDocument().getElementById(AtomicString("use")));
   ASSERT_TRUE(use);
   ASSERT_TRUE(use->GetShadowRoot());
-  ASSERT_FALSE(use->GetShadowRoot()->getElementById("target"));
+  ASSERT_FALSE(use->GetShadowRoot()->getElementById(AtomicString("target")));
 }
 
 TEST_F(SVGUseElementTest, NullInstanceRootWhenNotConnectedToDocument) {
@@ -87,7 +89,8 @@ TEST_F(SVGUseElementTest, NullInstanceRootWhenNotConnectedToDocument) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  auto* target = To<SVGUseElement>(GetDocument().getElementById("target"));
+  auto* target =
+      To<SVGUseElement>(GetDocument().getElementById(AtomicString("target")));
   ASSERT_TRUE(target);
   ASSERT_TRUE(target->InstanceRoot());
 
@@ -107,7 +110,8 @@ TEST_F(SVGUseElementTest, NullInstanceRootWhenConnectedToInactiveDocument) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  auto* target = To<SVGUseElement>(GetDocument().getElementById("target"));
+  auto* target =
+      To<SVGUseElement>(GetDocument().getElementById(AtomicString("target")));
   ASSERT_TRUE(target);
   ASSERT_TRUE(target->InstanceRoot());
 
@@ -129,11 +133,14 @@ TEST_F(SVGUseElementTest, NullInstanceRootWhenShadowTreePendingRebuild) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  auto* target = To<SVGUseElement>(GetDocument().getElementById("target"));
+  auto* target =
+      To<SVGUseElement>(GetDocument().getElementById(AtomicString("target")));
   ASSERT_TRUE(target);
   ASSERT_TRUE(target->InstanceRoot());
 
-  GetDocument().getElementById("r")->setAttribute(html_names::kWidthAttr, "50");
+  GetDocument()
+      .getElementById(AtomicString("r"))
+      ->setAttribute(html_names::kWidthAttr, AtomicString("50"));
 
   ASSERT_FALSE(target->InstanceRoot());
 }

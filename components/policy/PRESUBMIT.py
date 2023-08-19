@@ -585,6 +585,10 @@ def CheckPolicyChangeVersionPlatformCompatibility(input_api, output_api):
 
       if not new_policy_platforms[platform]['to']:
         continue
+      # These warnings fire inappropriately in presubmit --all/--files runs, so
+      # disable them in these cases to reduce the noise.
+      if input_api.no_diffs:
+        continue
       # Support for policies can only be removed for past version until we have
       # a better reminder process to cleanup the code related to deprecated
       # policies.

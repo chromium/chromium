@@ -31,7 +31,7 @@ GeolocationPrivacySwitchController* GeolocationPrivacySwitchController::Get() {
   PrivacyHubController* privacy_hub_controller =
       Shell::Get()->privacy_hub_controller();
   return privacy_hub_controller
-             ? &privacy_hub_controller->geolocation_controller()
+             ? privacy_hub_controller->geolocation_controller()
              : nullptr;
 }
 
@@ -45,18 +45,17 @@ void GeolocationPrivacySwitchController::OnActiveUserPrefServiceChanged(
           &GeolocationPrivacySwitchController::OnPreferenceChanged,
           base::Unretained(this)));
   UpdateNotification();
-  // TODO(zauri): Set 0-state
 }
 
-void GeolocationPrivacySwitchController::OnAppStartsUsingGeolocation(
-    const std::u16string& app_name) {
+void GeolocationPrivacySwitchController::TrackGeolocationAttempted(
+    const std::string& app_name) {
   ++usage_per_app_[app_name];
   ++usage_cnt_;
   UpdateNotification();
 }
 
-void GeolocationPrivacySwitchController::OnAppStopsUsingGeolocation(
-    const std::u16string& app_name) {
+void GeolocationPrivacySwitchController::TrackGeolocationRelinquished(
+    const std::string& app_name) {
   --usage_per_app_[app_name];
   --usage_cnt_;
   if (usage_per_app_[app_name] < 0 || usage_cnt_ < 0) {
@@ -74,19 +73,16 @@ std::vector<std::u16string> GeolocationPrivacySwitchController::GetActiveApps(
   std::vector<std::u16string> apps;
   for (const auto& [name, cnt] : usage_per_app_) {
     if (cnt > 0) {
-      apps.push_back(name);
+      apps.push_back(base::UTF8ToUTF16(name));
       if (apps.size() == max_count) {
         break;
       }
     }
   }
-
   return apps;
 }
 
 void GeolocationPrivacySwitchController::OnPreferenceChanged() {
-  // TODO(zauri): This is a stub code. Sync the state with
-  // SimpleGeolocationProvider.
   const bool geolocation_state = pref_change_registrar_->prefs()->GetBoolean(
       prefs::kUserGeolocationAllowed);
   DLOG(ERROR) << "Privacy Hub: Geolocation switch state = "

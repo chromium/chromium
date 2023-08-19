@@ -13,14 +13,8 @@
       <message name="IDS_BLOCK_INTERSTITIAL_HEADER_NOT_SIGNED_IN" desc="A heading for the supervised user when the status cannot be established because they haven't signed in to Chrome).">
         Please start and sign in to Chrome before using this app.
       </message>
-      <message name="IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE" desc="A message for the child user when they attempt to visit a site that is not permitted by their parent.">
-        You need permission to visit this site
-      </message>
       <message name="IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_V2" desc="A message for the child user when they attempt to visit a site that is not permitted by their parent.">
         A parent or guardian has to say that it's OK for you to visit this website
-      </message>
-      <message name="IDS_BACK_BUTTON" desc="A button for going back to the last safe url after being blocked.">
-        Go back
       </message>
       <message name="IDS_REQUEST_SENT_OK" desc="A button acknowledging that the request has been sent for accessing a blocked site.">
         OK
@@ -33,15 +27,6 @@
       </message>
       <message name="IDS_BLOCK_INTERSTITIAL_ASK_IN_A_MESSAGE_BUTTON" desc="A button to send a message to request access to blocked sites.">
         Ask in a message
-      </message>
-      <message name="IDS_BLOCK_INTERSTITIAL_REQUEST_ACCESS_BUTTON" desc="A button for requesting access to blocked sites.">
-        Ask permission
-      </message>
-      <message name="IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_SENT_MESSAGE_SINGLE_PARENT" desc="The text that tells the child user that a request has been sent to their parent.">
-        You asked your parent if it's OK to visit this site
-      </message>
-      <message name="IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_SENT_MESSAGE_MULTI_PARENT" desc="The text that tells the child user that a request has been sent to their parents.">
-        You asked your parents if it's OK to visit this site
       </message>
       <message name="IDS_CHILD_BLOCK_INTERSTITIAL_WAITING_APPROVAL_MESSAGE" desc="The text that tells the child that a request has been sent to their parents.">
         Waiting for permission...
@@ -57,9 +42,6 @@
       </message>
       <message name="IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_FAILED_MESSAGE_MULTI_PARENT" desc="The text that tells the child user that a request to their parents failed.">
         We could not reach your parents at the moment. Please try again.
-      </message>
-      <message name="IDS_BLOCK_INTERSTITIAL_SEND_FEEDBACK" desc="The text for a link to submit feedback about a blocked site.">
-        Was this result unexpected? <ph name="BEGIN_LINK">&lt;a href="#" id="feedback-link"&gt;</ph>Send feedback<ph name="END_LINK">&lt;/a&gt;</ph>
       </message>
       <message name="IDS_BLOCK_INTERSTITIAL_SHOW_DETAILS" desc="The text for the link to show details about the interstitial.">
         Details

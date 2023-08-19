@@ -10,10 +10,9 @@ namespace switches {
 // All switches in alphabetical order.
 
 #if BUILDFLAG(IS_ANDROID)
-// If enabled, starts gaia id fetching process from android accounts in
-// AccountManagerFacade (AMF). Thus clients can get gaia id from AMF directly.
-BASE_FEATURE(kGaiaIdCacheInAccountManagerFacade,
-             "GaiaIdCacheInAccountManagerFacade",
+// Feature to add a signed-out avatar on the NTP.
+BASE_FEATURE(kIdentityStatusConsistency,
+             "IdentityStatusConsistency",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
@@ -26,13 +25,12 @@ const char kDisableSigninScopedDeviceId[] = "disable-signin-scoped-device-id";
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 // Enable experimental binding session credentials to the device.
-BASE_FEATURE(kEnableBoundSessionCrendentials,
-             "EnableBoundSessionCrendentials",
+BASE_FEATURE(kEnableBoundSessionCredentials,
+             "EnableBoundSessionCredentials",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsBoundSessionCredentialsEnabled() {
-  return base::FeatureList::IsEnabled(
-      switches::kEnableBoundSessionCrendentials);
+  return base::FeatureList::IsEnabled(switches::kEnableBoundSessionCredentials);
 }
 #endif
 
@@ -52,10 +50,10 @@ BASE_FEATURE(kForceDisableExtendedSyncPromos,
 BASE_FEATURE(kForceStartupSigninPromo,
              "ForceStartupSigninPromo",
              base::FEATURE_DISABLED_BY_DEFAULT);
-// Feature to add a signed-out avatar on the NTP.
-BASE_FEATURE(kIdentityStatusConsistency,
-             "IdentityStatusConsistency",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
+#if BUILDFLAG(IS_IOS)
+BASE_FEATURE(kFinchIosFre, "FinchIosFre", base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Enables a new version of the sync confirmation UI.
@@ -69,5 +67,9 @@ BASE_FEATURE(kTangibleSync,
 #endif
 
 );
+
+BASE_FEATURE(kSearchEngineChoice,
+             "SearchEngineChoice",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace switches

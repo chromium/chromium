@@ -50,7 +50,7 @@
     // TODO(crbug.com/1396384) Eventually remove this.
     [ImplementedAs=OpenShadowRoot] readonly attribute ShadowRoot? shadowRoot;
 
-    // This is the "new" declarative Shadow DOM IDL attribute, which reflects
-    // the 'shadowrootmode' content attribute.
-    [RuntimeEnabled=StreamingDeclarativeShadowDOM,Reflect,ReflectOnly=("open","closed")] attribute DOMString? shadowRootMode;
+    // This is the declarative Shadow DOM IDL attribute, which reflects the
+    // 'shadowrootmode' content attribute.
+    [Reflect,ReflectOnly=("open","closed")] attribute DOMString? shadowRootMode;
 };

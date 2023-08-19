@@ -42,8 +42,7 @@ public class SplashImageHolder {
     /**
      * Takes the bitmap out of the cache.
      */
-    @Nullable
-    public Bitmap takeImage(CustomTabsSessionToken token) {
+    public @Nullable Bitmap takeImage(CustomTabsSessionToken token) {
         return mBitmaps.remove(token);
     }
 }

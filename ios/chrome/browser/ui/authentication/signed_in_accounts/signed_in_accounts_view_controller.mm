@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/authentication/signed_in_accounts/signed_in_accounts_view_controller.h"
 
 #import "base/ios/ios_util.h"
+#import "base/memory/raw_ptr.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -24,10 +25,6 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 const size_t kMaxShownAccounts = 3;
@@ -42,15 +39,17 @@ constexpr CGFloat kViewControllerHorizontalPadding = 20;
 constexpr CGFloat kDialogMaxWidth = 328;
 constexpr CGFloat kDefaultCellHeight = 54;
 
-// Whether the Signed In Accounts view is currently being shown.
-BOOL gSignedInAccountsViewControllerIsShown = NO;
-
 }  // namespace
 
 @interface SignedInAccountsViewController () <
     IdentityManagerObserverBridgeDelegate,
-    UIViewControllerTransitioningDelegate> {
+    UIViewControllerTransitioningDelegate>
+@end
+
+@implementation SignedInAccountsViewController {
   ChromeBrowserState* _browserState;  // Weak.
+  id<ApplicationSettingsCommands> _dispatcher;
+  raw_ptr<signin::IdentityManager> _identityManager;
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserver;
 
@@ -60,12 +59,6 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
   UIButton* _primaryButton;
   UIButton* _secondaryButton;
 }
-@property(nonatomic, readonly, weak) id<ApplicationSettingsCommands> dispatcher;
-@property(nonatomic, assign) signin::IdentityManager* identityManager;
-@end
-
-@implementation SignedInAccountsViewController
-@synthesize dispatcher = _dispatcher;
 
 + (BOOL)shouldBePresentedForBrowserState:(ChromeBrowserState*)browserState {
   if (!browserState || browserState->IsOffTheRecord()) {
@@ -73,8 +66,7 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
   }
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForBrowserState(browserState);
-  return !gSignedInAccountsViewControllerIsShown &&
-         authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin) &&
+  return authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin) &&
          !authService->IsAccountListApprovedByUser();
 }
 
@@ -85,9 +77,11 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
                               (id<ApplicationSettingsCommands>)dispatcher {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
+    CHECK(browserState);
+    CHECK(dispatcher);
     _browserState = browserState;
     _dispatcher = dispatcher;
-    self.identityManager =
+    _identityManager =
         IdentityManagerFactory::GetForBrowserState(_browserState);
     _identityManagerObserver =
         std::make_unique<signin::IdentityManagerObserverBridge>(
@@ -107,19 +101,36 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
   if (authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
     authService->ApproveAccountList();
   }
-
-  [self.presentingViewController dismissViewControllerAnimated:YES
-                                                    completion:completion];
+  __weak __typeof(self) weakSelf = self;
+  [self.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:^{
+                           [weakSelf.delegate
+                               signedInAccountsViewControllerIsDismissed:
+                                   weakSelf];
+                           if (completion) {
+                             completion();
+                           }
+                         }];
 }
 
-- (void)dealloc {
+- (void)teardownUI {
+  if (!_browserState) {
+    return;
+  }
+  [_accountTableView teardownUI];
   [_primaryButton removeTarget:self
                         action:@selector(onPrimaryButtonPressed:)
               forControlEvents:UIControlEventTouchDown];
   [_secondaryButton removeTarget:self
                           action:@selector(onSecondaryButtonPressed:)
                 forControlEvents:UIControlEventTouchDown];
-  self.identityManager = nullptr;
+  _primaryButton = nil;
+  _secondaryButton = nil;
+  _identityManager = nullptr;
+  _identityManagerObserver.reset();
+  _dispatcher = nil;
+  _browserState = nullptr;
 }
 
 #pragma mark UIViewController
@@ -128,9 +139,14 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
   CGFloat width = std::min(
       kDialogMaxWidth, self.presentingViewController.view.bounds.size.width -
                            2 * kViewControllerHorizontalPadding);
+  // Note (crbug.com/1472236#c2): |preferredContentSize| may be called by UIKit when
+  // |_identityManger| is null (which from the code corresponds to a call after |teardownUI|).
+  // Check if it is non-null before using it to avoid the crash.
   int shownAccounts =
-      std::min(kMaxShownAccounts,
-               self.identityManager->GetAccountsWithRefreshTokens().size());
+      _identityManager
+          ? std::min(kMaxShownAccounts,
+                     _identityManager->GetAccountsWithRefreshTokens().size())
+          : kMaxShownAccounts;
   CGSize maxSize = CGSizeMake(width - 2 * kHorizontalPadding, CGFLOAT_MAX);
   CGSize buttonSize = [_primaryButton sizeThatFits:maxSize];
   CGSize infoSize = [_infoLabel sizeThatFits:maxSize];
@@ -160,7 +176,7 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
   ChromeAccountManagerService* accountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(_browserState);
   _accountTableView = [[SignedInAccountsTableViewController alloc]
-      initWithIdentityManager:self.identityManager
+      initWithIdentityManager:_identityManager
         accountManagerService:accountManagerService];
   _accountTableView.view.translatesAutoresizingMaskIntoConstraints = NO;
   [self addChildViewController:_accountTableView];
@@ -285,17 +301,7 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
 
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
-  if ([self isBeingPresented] || [self isMovingToParentViewController]) {
-    gSignedInAccountsViewControllerIsShown = YES;
-  }
   [_accountTableView loadModel];
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-  [super viewWillDisappear:animated];
-  if ([self isBeingDismissed] || [self isMovingFromParentViewController]) {
-    gSignedInAccountsViewControllerIsShown = NO;
-  }
 }
 
 #pragma mark Events
@@ -305,7 +311,7 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
 }
 
 - (void)onSecondaryButtonPressed:(id)sender {
-  __weak id<ApplicationSettingsCommands> weakDispatcher = self.dispatcher;
+  __weak id<ApplicationSettingsCommands> weakDispatcher = _dispatcher;
   __weak UIViewController* weakPresentingViewController =
       self.presentingViewController;
   [self dismissWithCompletion:^{
@@ -317,7 +323,7 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
 #pragma mark IdentityManagerObserverBridgeDelegate
 
 - (void)onEndBatchOfRefreshTokenStateChanges {
-  if (self.identityManager->GetAccountsWithRefreshTokens().empty()) {
+  if (_identityManager->GetAccountsWithRefreshTokens().empty()) {
     [self dismissWithCompletion:nil];
     return;
   }

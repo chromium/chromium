@@ -275,6 +275,49 @@ TEST_F(CalendarUpNextViewTest,
   EXPECT_EQ(ScrollPosition(), 0);
 }
 
+TEST_F(CalendarUpNextViewTest,
+       ShouldScrollLeftAndRightWhenScrollButtonsArePressed_RTL) {
+  // Set time override.
+  base::subtle::ScopedTimeClockOverrides time_override(
+      []() { return base::subtle::TimeNowIgnoringOverride().LocalMidnight(); },
+      nullptr, nullptr);
+
+  // Add multiple upcoming events.
+  const int event_count = 5;
+  CreateUpNextView(CreateUpcomingEvents(event_count));
+
+  EXPECT_EQ(GetContentsView()->children().size(), size_t(event_count));
+  EXPECT_EQ(ScrollPosition(), 0);
+
+  // Sets the UI to be RTL.
+  base::i18n::SetRTLForTesting(true);
+
+  // Press scroll right. We should scroll past the first event + margin.
+  const int first_event_width =
+      GetContentsView()->children()[0]->GetContentsBounds().width() +
+      calendar_utils::kUpNextBetweenChildSpacing;
+  PressScrollRightButton();
+  EXPECT_EQ(ScrollPosition(), first_event_width);
+
+  // Press scroll right again. We should scroll past the second event +
+  // margin.
+  const int second_event_width =
+      GetContentsView()->children()[1]->GetContentsBounds().width() +
+      calendar_utils::kUpNextBetweenChildSpacing;
+  PressScrollRightButton();
+  EXPECT_EQ(ScrollPosition(), first_event_width + second_event_width);
+
+  // Press scroll left. Now we should be back to being past the first event +
+  // margin.
+  PressScrollLeftButton();
+  EXPECT_EQ(ScrollPosition(), first_event_width);
+
+  // Press scroll left again. We should be back at the beginning of the scroll
+  // view.
+  PressScrollLeftButton();
+  EXPECT_EQ(ScrollPosition(), 0);
+}
+
 TEST_F(CalendarUpNextViewTest, ShouldHideScrollButtons_WhenOnlyOneEvent) {
   // Set time override.
   base::subtle::ScopedTimeClockOverrides time_override(
@@ -546,6 +589,36 @@ TEST_F(CalendarUpNextViewTest, ShouldFocusViewsInCorrectOrder_WhenPressingTab) {
   // Going back again, the second event list item view should be focused.
   PressShiftTab();
   EXPECT_EQ(second_item, focus_manager->GetFocusedView());
+  EXPECT_STREQ("CalendarEventListItemViewJelly",
+               focus_manager->GetFocusedView()->GetClassName());
+}
+
+// Add unittest for the fix of this bug: b/286596205.
+TEST_F(CalendarUpNextViewTest, ShouldPreserveFocusAfterRefreshEvent) {
+  // Set time override.
+  base::subtle::ScopedTimeClockOverrides time_override(
+      []() { return base::subtle::TimeNowIgnoringOverride().LocalMidnight(); },
+      nullptr, nullptr);
+
+  // Create up next view with 2 upcoming google meet events.
+  CreateUpNextView(
+      CreateUpcomingEvents(2, false, GURL("https://meet.google.com/abc-123")));
+  EXPECT_EQ(GetContentsView()->children().size(), size_t(2));
+  auto* focus_manager = up_next_view()->GetFocusManager();
+
+  // First the event list item view should be focused.
+  PressTab();
+  auto* first_item = GetContentsView()->children()[0];
+  ASSERT_TRUE(first_item);
+  EXPECT_EQ(first_item, focus_manager->GetFocusedView());
+  EXPECT_STREQ("CalendarEventListItemViewJelly",
+               focus_manager->GetFocusedView()->GetClassName());
+
+  up_next_view()->RefreshEvents();
+
+  // After refresh the events, the first event list item view should still be
+  // focused.
+  EXPECT_EQ(first_item, focus_manager->GetFocusedView());
   EXPECT_STREQ("CalendarEventListItemViewJelly",
                focus_manager->GetFocusedView()->GetClassName());
 }

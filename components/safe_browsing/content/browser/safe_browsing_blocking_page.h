@@ -114,11 +114,23 @@ class SafeBrowsingBlockingPage : public BaseBlockingPage {
       SafeBrowsingNavigationObserverManager* navigation_observer_manager,
       SafeBrowsingMetricsCollector* metrics_collector,
       TriggerManager* trigger_manager,
+      bool is_proceed_anyway_disabled,
+      bool is_safe_browsing_surveys_enabled,
       network::SharedURLLoaderFactory* url_loader_for_testing = nullptr);
 
   // Called when an interstitial is closed, either due to a click through or a
   // navigation elsewhere.
   void OnInterstitialClosing() override;
+
+  // Called when the trigger manager can't send the report because the threat
+  // details are unavailable. This typically happens when the user closes the
+  // tab without using the interstitial UI.
+  void SendFallbackReport(
+      const security_interstitials::UnsafeResource resource,
+      bool did_proceed,
+      int num_visits,
+      security_interstitials::InterstitialInteractionMap* interactions,
+      bool is_hats_candidate);
 
   // Called when the interstitial is going away. If there is a
   // pending threat details object, we look at the user's
@@ -135,12 +147,24 @@ class SafeBrowsingBlockingPage : public BaseBlockingPage {
   // The threat source that triggers the blocking page.
   ThreatSource threat_source_;
 
+  // The threat type of the resource that triggered the blocking page.
+  SBThreatType threat_type_;
+
+  // Whether the blocking page is triggered by subresource.
+  bool is_subresource_;
+
  private:
   raw_ptr<history::HistoryService> history_service_ = nullptr;
   raw_ptr<SafeBrowsingNavigationObserverManager> navigation_observer_manager_ =
       nullptr;
   raw_ptr<SafeBrowsingMetricsCollector> metrics_collector_ = nullptr;
   raw_ptr<TriggerManager> trigger_manager_ = nullptr;
+  std::unique_ptr<security_interstitials::InterstitialInteractionMap>
+      interstitial_interactions_;
+  // Whether the user has SafeBrowsingProceedAnywayDisabled enabled.
+  bool is_proceed_anyway_disabled_;
+  // Whether the user has SafeBrowsingSurveysEnabled enabled.
+  bool is_safe_browsing_surveys_enabled_;
 };
 
 }  // namespace safe_browsing

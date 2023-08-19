@@ -7,7 +7,7 @@
 
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_ui_controller.h"
-#include "ui/base/layout.h"
+#include "ui/base/resource/resource_scale_factor.h"
 
 class Profile;
 

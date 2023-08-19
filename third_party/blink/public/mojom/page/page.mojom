@@ -10,6 +10,7 @@ import "third_party/blink/public/mojom/frame/frame_replication_state.mojom";
 import "third_party/blink/public/mojom/frame/remote_frame.mojom";
 import "third_party/blink/public/mojom/frame/view_transition_state.mojom";
 import "third_party/blink/public/mojom/navigation/was_activated_option.mojom";
+import "third_party/blink/public/mojom/page/browsing_context_group_info.mojom";
 import "third_party/blink/public/mojom/page/page_visibility_state.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "third_party/blink/public/mojom/webpreferences/web_preferences.mojom";
@@ -149,4 +150,9 @@ interface PageBroadcast {
     mojo_base.mojom.UnguessableToken devtools_frame_token,
     RemoteFrameInterfacesFromBrowser remote_frame_interfaces,
     RemoteMainFrameInterfaces remote_main_frame_interfaces);
+
+  // Update the page's browsing context group, with the information contained
+  // in `browsing_context_group_info`.
+  UpdatePageBrowsingContextGroup(
+    blink.mojom.BrowsingContextGroupInfo browsing_context_group_info);
 };

@@ -49,8 +49,16 @@ import java.util.TreeMap;
  *
  * // Assert
  * histogramWatcher.assertExpected();
+ *
+ * Alternatively, Java's try-with-resources can be used to wrap the act block to make the assert
+ * implicit. This can be especially helpful when a test case needs to create multiple watchers,
+ * as the watcher variables are scoped separately and cannot be accidentally swapped.
+ *
+ * try (HistogramWatcher ignored = HistogramWatcher.newSingleRecordWatcher("Histogram1") {
+ *     [code under test that is expected to record the histogram above]
+ * }
  */
-public class HistogramWatcher {
+public class HistogramWatcher implements AutoCloseable {
     /**
      * Create a new {@link HistogramWatcher.Builder} to instantiate {@link HistogramWatcher}.
      */
@@ -250,6 +258,16 @@ public class HistogramWatcher {
             mStartingSamples.put(
                     histogram, RecordHistogram.getHistogramSamplesForTesting(histogram));
         }
+    }
+
+    /**
+     * Implements {@link AutoCloseable}. Note while this interface throws an {@link Exception}, we
+     * do not have to, and this allows call sites that know they're handling a
+     * {@link HistogramWatcher} to not catch or declare an exception either.
+     */
+    @Override
+    public void close() {
+        assertExpected();
     }
 
     /**

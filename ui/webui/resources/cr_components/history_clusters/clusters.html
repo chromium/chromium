@@ -26,8 +26,21 @@
     padding: 8px 0 0;
   }
 
+  :host-context([chrome-refresh-2023]):host([in-side-panel_]) #clusters {
+    padding: 0;
+  }
+
+  :host-context(.focus-outline-visible) history-cluster:focus,
+  history-cluster:focus-visible {
+    outline: none;
+  }
+
   :host([in-side-panel_]) history-cluster {
     border-bottom: 4px solid var(--cr-separator-color);
+  }
+
+  :host-context([chrome-refresh-2023]):host([in-side-panel_]) history-cluster {
+    border-bottom: none;
   }
 
   :host([in-side-panel_]) history-cluster[is-last] {
@@ -51,6 +64,27 @@
     padding:
         0 var(--cluster-padding-horizontal) var(--cluster-padding-vertical);
   }
+
+  :host-context([chrome-refresh-2023]):host([in-side-panel_]) #footer {
+    padding-top: var(--cluster-padding-vertical);
+  }
+
+  /*TODO(mfacey): Refactor history clusters side panel to use shadow parts*/
+  :host-context([chrome-refresh-2023]):host([in-side-panel_]) cr-dialog {
+    --cr-dialog-background-color: var(--color-history-clusters-side-panel-dialog-background);
+    --cr-primary-text-color: var(--color-history-clusters-side-panel-dialog-primary-foreground);
+    --cr-secondary-text-color: var(
+        --color-history-clusters-side-panel-dialog-secondary-foreground);
+    --cr-dialog-title-font-size: 16px;
+    --cr-dialog-title-slot-padding-bottom: 8px;
+    font-weight: 500;
+  }
+
+:host-context([chrome-refresh-2023]):host([in-side-panel_]) cr-dialog::part(dialog) {
+  --scroll-border-color: var(--color-history-clusters-side-panel-dialog-divider);
+  border-radius: 12px;
+  box-shadow: var(--cr-elevation-3);
+}
 </style>
 <div id="placeholder" hidden="[[!placeholderText_]]">
   [[placeholderText_]]

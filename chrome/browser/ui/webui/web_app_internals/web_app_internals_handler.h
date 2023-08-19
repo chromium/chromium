@@ -8,6 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals.mojom.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_from_command_line.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -33,14 +34,22 @@ class WebAppInternalsHandler : public mojom::WebAppInternalsHandler {
   // mojom::WebAppInternalsHandler:
   void GetDebugInfoAsJsonString(
       GetDebugInfoAsJsonStringCallback callback) override;
+  void InstallIsolatedWebAppFromDevProxy(
+      const GURL& url,
+      InstallIsolatedWebAppFromDevProxyCallback callback) override;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   void ClearExperimentalWebAppIsolationData(
       ClearExperimentalWebAppIsolationDataCallback callback) override;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
  private:
+  void OnInstallIsolatedWebAppFromDevModeProxy(
+      InstallIsolatedWebAppFromDevProxyCallback callback,
+      web_app::MaybeInstallIsolatedWebAppCommandSuccess result);
+
   const raw_ptr<Profile> profile_;
   mojo::Receiver<mojom::WebAppInternalsHandler> receiver_;
+  base::WeakPtrFactory<WebAppInternalsHandler> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_WEB_APP_INTERNALS_WEB_APP_INTERNALS_HANDLER_H_

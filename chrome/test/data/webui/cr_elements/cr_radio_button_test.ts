@@ -6,7 +6,7 @@
 import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 
 import {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
-import {assertEquals, assertNotEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertNotEquals, assertFalse, assertTrue, assertLT, assertGT} from 'chrome://webui-test/chai_assert.js';
 // clang-format on
 
 suite('cr-radio-button', function() {
@@ -117,5 +117,20 @@ suite('cr-radio-button', function() {
     assertEquals(
         radioButton.shadowRoot!.querySelector('#label')!.textContent!.trim(),
         'foo');
+  });
+
+  test('Label First', () => {
+    const button = radioButton.$.button;
+    let buttonRect = button.getBoundingClientRect();
+    const labelWrapper = radioButton.shadowRoot!.querySelector('#labelWrapper');
+    assertTrue(!!labelWrapper);
+
+    let labelWrapperRect = labelWrapper.getBoundingClientRect();
+    assertLT(buttonRect.left, labelWrapperRect.left);
+
+    radioButton.classList.add('label-first');
+    buttonRect = button.getBoundingClientRect();
+    labelWrapperRect = labelWrapper.getBoundingClientRect();
+    assertGT(buttonRect.left, labelWrapperRect.left);
   });
 });

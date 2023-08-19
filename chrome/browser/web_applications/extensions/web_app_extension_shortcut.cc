@@ -35,6 +35,7 @@
 #include "extensions/browser/image_loader.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
+#include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/image/image_skia.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -170,7 +171,7 @@ void GetShortcutInfoForApp(const extensions::Extension* extension,
       info_list.emplace_back(
           resource, extensions::ImageLoader::ImageRepresentation::ALWAYS_RESIZE,
           gfx::Size(size, size),
-          GetScaleForResourceScaleFactor(ui::k100Percent));
+          ui::GetScaleForResourceScaleFactor(ui::k100Percent));
     }
   }
 
@@ -189,7 +190,8 @@ void GetShortcutInfoForApp(const extensions::Extension* extension,
     }
     info_list.emplace_back(
         resource, extensions::ImageLoader::ImageRepresentation::ALWAYS_RESIZE,
-        gfx::Size(size, size), GetScaleForResourceScaleFactor(ui::k100Percent));
+        gfx::Size(size, size),
+        ui::GetScaleForResourceScaleFactor(ui::k100Percent));
   }
 
   // |info_list| may still be empty at this point, in which case

@@ -17,7 +17,6 @@ import static org.chromium.chrome.browser.keyboard_accessory.bar_component.Keybo
 
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -150,7 +149,6 @@ class KeyboardAccessoryMediator
                 // The insecure context warning has a replacement in the fallback sheet.
             case PopupItemId.SEPARATOR:
             case PopupItemId.CLEAR_FORM:
-            case PopupItemId.CREDIT_CARD_SIGNIN_PROMO:
             case PopupItemId.ALL_SAVED_PASSWORDS_ENTRY:
             case PopupItemId.GENERATE_PASSWORD_ENTRY:
             case PopupItemId.SHOW_ACCOUNT_CARDS:
@@ -226,6 +224,7 @@ class KeyboardAccessoryMediator
             case AccessoryAction.CREDMAN_CONDITIONAL_UI_REENTRY:
                 return BarItem.Type.ACTION_BUTTON;
             case AccessoryAction.MANAGE_PASSWORDS: // Intentional fallthrough - no view defined.
+            case AccessoryAction.CROSS_DEVICE_PASSKEY:
             case AccessoryAction.COUNT:
                 throw new IllegalArgumentException("No view defined for :" + accessoryAction);
         }
@@ -328,7 +327,6 @@ class KeyboardAccessoryMediator
         return mModel.get(VISIBLE) && mTabSwitcher.getActiveTab() != null;
     }
 
-    @VisibleForTesting
     PropertyModel getModelForTesting() {
         return mModel;
     }

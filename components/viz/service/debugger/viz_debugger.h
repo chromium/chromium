@@ -6,15 +6,20 @@
 #define COMPONENTS_VIZ_SERVICE_DEBUGGER_VIZ_DEBUGGER_H_
 
 #include <atomic>
+#include <memory>
 #include <string>
 #include <tuple>
 #include <utility>
 #include <vector>
 
 #include "base/debug/debugging_buildflags.h"
+#include "base/macros/concat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
+#include "base/trace_event/traced_value.h"
 #include "base/values.h"
 #include "components/viz/common/buildflags.h"
 #include "components/viz/service/debugger/rwlock.h"
@@ -27,9 +32,14 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
-// The visual debugger can be completely disabled/enabled at compile time via
-// the |USE_VIZ_DEBUGGER| build flag which corresponds to boolean gn arg
-// 'use_viz_debugger'. Consult README.md for more information.
+// The visual debugger runtime can be completely disabled/enabled at compile
+// time via the |USE_VIZ_DEBUGGER| build flag which corresponds to boolean gn
+// arg 'use_viz_debugger'. Consult README.md for more information.
+
+// To allow specific debug calls to become traces for end users you need to
+// specify the DBG_USE_VIZ_DEBUGGER_TRACE() macro to the value 1. You can define
+// this just prior to the callsite rather than needing to definite this prior to
+// the header inclusion.
 
 #if BUILDFLAG(USE_VIZ_DEBUGGER)
 
@@ -98,30 +108,13 @@ class VIZ_SERVICE_EXPORT VizDebugger {
   void CompleteFrame(const uint64_t counter,
                      const gfx::Size& window_pix,
                      base::TimeTicks time_ticks);
-  void DrawText(const gfx::Point& pos,
-                const std::string& text,
-                const StaticSource* dcs,
-                DrawOption option);
-  void DrawText(const gfx::Vector2dF& pos,
-                const std::string& text,
-                const StaticSource* dcs,
-                DrawOption option);
-  void DrawText(const gfx::PointF& pos,
-                const std::string& text,
-                const StaticSource* dcs,
-                DrawOption option);
   void Draw(const gfx::SizeF& obj_size,
             const gfx::Vector2dF& pos,
             const StaticSource* dcs,
             DrawOption option,
             int* id,
-            const gfx::RectF& uv);
-  void Draw(const gfx::Size& obj_size,
-            const gfx::Vector2dF& pos,
-            const StaticSource* dcs,
-            DrawOption option,
-            int* id,
-            const gfx::RectF& uv);
+            const gfx::RectF& uv,
+            const std::string& text);
 
   void AddLogMessage(std::string log,
                      const StaticSource* dcs,
@@ -141,12 +134,13 @@ class VIZ_SERVICE_EXPORT VizDebugger {
   void AddFrame();
   void UpdateFilters();
   void RegisterSource(StaticSource* source);
-  void DrawInternal(const gfx::Size& obj_size,
+  void DrawInternal(const gfx::SizeF& obj_size,
                     const gfx::Vector2dF& pos,
                     const StaticSource* dcs,
                     DrawOption option,
                     int* id,
-                    const gfx::RectF& uv);
+                    const gfx::RectF& uv,
+                    const std::string& text);
   void ApplyFilters(VizDebugger::StaticSource* source);
   mojo::Remote<mojom::VizDebugOutput> debug_output_;
 
@@ -173,33 +167,21 @@ class VIZ_SERVICE_EXPORT VizDebugger {
              int source,
              int thread,
              DrawOption draw_option,
-             gfx::Size size,
+             gfx::SizeF size,
              gfx::Vector2dF position,
              int buffer_id,
-             gfx::RectF uv_rect)
+             gfx::RectF uv_rect,
+             std::string text_str)
         : CallSubmitCommon(index, source, thread, draw_option),
           obj_size(size),
           pos(position),
           buff_id(buffer_id),
-          uv(uv_rect) {}
-    gfx::Size obj_size;
+          uv(uv_rect),
+          text(text_str) {}
+    gfx::SizeF obj_size;
     gfx::Vector2dF pos;
     int buff_id;
     gfx::RectF uv;
-  };
-
-  struct DrawTextCall : public CallSubmitCommon {
-    DrawTextCall() = default;
-    DrawTextCall(int index,
-                 int source,
-                 int thread,
-                 DrawOption draw_option,
-                 gfx::Vector2dF position,
-                 std::string str)
-        : CallSubmitCommon(index, source, thread, draw_option),
-          pos(position),
-          text(str) {}
-    gfx::Vector2dF pos;
     std::string text;
   };
 
@@ -256,7 +238,6 @@ class VIZ_SERVICE_EXPORT VizDebugger {
   // Buffers/vectors for each type of debug calls. These vectors can be accessed
   // and mutated by multiple threads simultaneously or individually.
   std::vector<DrawCall> draw_rect_calls_{kDefaultBufferSize};
-  std::vector<DrawTextCall> draw_text_calls_{kDefaultBufferSize};
   std::vector<LogCall> logs_{kDefaultBufferSize};
   std::vector<StaticSource*> sources_;
   std::vector<Buffer> buffers_;
@@ -264,8 +245,7 @@ class VIZ_SERVICE_EXPORT VizDebugger {
   // Individual tail indices tracker variables for next insertion index in
   // each buffer. These variables can be accessed by multiple threads
   // atomically.
-  std::atomic<int> draw_rect_calls_tail_idx_ = 0;
-  std::atomic<int> draw_text_calls_tail_idx_ = 0;
+  std::atomic<int> draw_calls_tail_idx_ = 0;
   std::atomic<int> logs_tail_idx_ = 0;
 };
 
@@ -275,22 +255,20 @@ class VIZ_SERVICE_EXPORT VizDebugger {
 #define DBG_OPT_GREEN viz::VizDebugger::DrawOption({0, 255, 0, 0})
 #define DBG_OPT_BLUE viz::VizDebugger::DrawOption({0, 0, 255, 0})
 #define DBG_OPT_BLACK viz::VizDebugger::DrawOption({0, 0, 0, 0})
-#define DEFAULT_UV gfx::RectF(0, 0, 1, 1)
+#define DBG_DEFAULT_UV gfx::RectF(0, 0, 1, 1)
 
-#define DBG_DRAW_RECTANGLE_OPT_BUFF_UV(anno, option, pos, size, id, uv)    \
-  do {                                                                     \
-    if (viz::VizDebugger::IsEnabled()) {                                   \
-      static viz::VizDebugger::StaticSource dcs(anno, __FILE__, __LINE__,  \
-                                                __func__);                 \
-      if (dcs.IsActive()) {                                                \
-        viz::VizDebugger::GetInstance()->Draw(size, pos, &dcs, option, id, \
-                                              uv);                         \
-      }                                                                    \
-    }                                                                      \
+#define DBG_DRAW_RECTANGLE_OPT_BUFF_UV_TEXT(anno, option, pos, size, id, uv,   \
+                                            text)                              \
+  do {                                                                         \
+    if (viz::VizDebugger::IsEnabled()) {                                       \
+      static viz::VizDebugger::StaticSource dcs(anno, __FILE__, __LINE__,      \
+                                                __func__);                     \
+      if (dcs.IsActive()) {                                                    \
+        viz::VizDebugger::GetInstance()->Draw(size, pos, &dcs, option, id, uv, \
+                                              text);                           \
+      }                                                                        \
+    }                                                                          \
   } while (0)
-
-#define DBG_DRAW_RECTANGLE_OPT_BUFF(anno, option, pos, size, id) \
-  DBG_DRAW_RECTANGLE_OPT_BUFF_UV(anno, option, pos, size, id, DEFAULT_UV)
 
 #define DBG_COMPLETE_BUFFERS(buff_id, buffer)                           \
   do {                                                                  \
@@ -299,26 +277,6 @@ class VIZ_SERVICE_EXPORT VizDebugger {
                                                     std::move(buffer)); \
     }                                                                   \
   } while (0)
-
-#define DBG_DRAW_RECTANGLE_OPT(anno, option, pos, size) \
-  DBG_DRAW_RECTANGLE_OPT_BUFF(anno, option, pos, size, nullptr)
-
-#define DBG_DRAW_RECTANGLE(anno, pos, size) \
-  DBG_DRAW_RECTANGLE_OPT_BUFF(anno, DBG_OPT_BLACK, pos, size, nullptr)
-
-#define DBG_DRAW_TEXT_OPT(anno, option, pos, text)                          \
-  do {                                                                      \
-    if (viz::VizDebugger::IsEnabled()) {                                    \
-      static viz::VizDebugger::StaticSource dcs(anno, __FILE__, __LINE__,   \
-                                                __func__);                  \
-      if (dcs.IsActive()) {                                                 \
-        viz::VizDebugger::GetInstance()->DrawText(pos, text, &dcs, option); \
-      }                                                                     \
-    }                                                                       \
-  } while (0)
-
-#define DBG_DRAW_TEXT(anno, pos, text) \
-  DBG_DRAW_TEXT_OPT(anno, DBG_OPT_BLACK, pos, text)
 
 #define DBG_LOG_OPT(anno, option, format, ...)                            \
   do {                                                                    \
@@ -332,31 +290,8 @@ class VIZ_SERVICE_EXPORT VizDebugger {
     }                                                                     \
   } while (0)
 
-#define DBG_LOG(anno, format, ...) \
-  DBG_LOG_OPT(anno, DBG_OPT_BLACK, format, __VA_ARGS__)
-
-#define DBG_DRAW_RECT_OPT_BUFF(anno, option, rect, id)                    \
-  DBG_DRAW_RECTANGLE_OPT_BUFF(                                            \
-      anno, option, gfx::Vector2dF(rect.origin().x(), rect.origin().y()), \
-      rect.size(), id)
-
-#define DBG_DRAW_RECT_OPT_BUFF_UV(anno, option, rect, id, uv)             \
-  DBG_DRAW_RECTANGLE_OPT_BUFF_UV(                                         \
-      anno, option, gfx::Vector2dF(rect.origin().x(), rect.origin().y()), \
-      rect.size(), id, uv)
-
-#define DBG_DRAW_RECT_OPT(anno, option, rect)                                  \
-  DBG_DRAW_RECTANGLE_OPT(anno, option,                                         \
-                         gfx::Vector2dF(rect.origin().x(), rect.origin().y()), \
-                         rect.size())
-
-#define DBG_DRAW_RECT_BUFF(anno, rect, id) \
-  DBG_DRAW_RECT_OPT_BUFF(anno, DBG_OPT_BLACK, rect, id)
-
-#define DBG_DRAW_RECT_BUFF_UV(anno, rect, id, uv) \
-  DBG_DRAW_RECT_OPT_BUFF_UV(anno, DBG_OPT_BLACK, rect, id, uv)
-
-#define DBG_DRAW_RECT(anno, rect) DBG_DRAW_RECT_OPT(anno, DBG_OPT_BLACK, rect)
+#define DBG_CONNECTED_OR_TRACING(is_enabled) \
+  is_enabled = VizDebugger::GetInstance()->IsEnabled();
 
 #define DBG_FLAG_FBOOL(anno, fun_name)                                    \
   namespace {                                                             \
@@ -414,8 +349,14 @@ class VIZ_SERVICE_EXPORT VizDebugger {
   VizDebugger& operator=(const VizDebugger&) = delete;
 };
 
+std::unique_ptr<base::trace_event::ConvertableToTraceFormat>
+DrawRectToTraceValue(const gfx::Vector2dF& pos,
+                     const gfx::SizeF& size,
+                     const std::string& text);
+
 }  // namespace viz
 
+#define VIZ_DEBUGGER_TRACING_CATEGORY "viz.visual_debugger"
 #define DBG_OPT_RED 0
 
 #define DBG_OPT_GREEN 0
@@ -424,76 +365,112 @@ class VIZ_SERVICE_EXPORT VizDebugger {
 
 #define DBG_OPT_BLACK 0
 
-#define DEFAULT_UV 0
+#define DBG_DEFAULT_UV 0
 
-#define DBG_DRAW_RECTANGLE_OPT_BUFF_UV(anno, option, pos, size, id, uv) \
-  std::ignore = anno;                                                   \
-  std::ignore = option;                                                 \
-  std::ignore = pos;                                                    \
-  std::ignore = size;                                                   \
-  std::ignore = id;                                                     \
-  std::ignore = uv;
+#define DBG_VIZ_DEBUGGER_TRACE_IMPL(anno, pos, size, text)                \
+  BASE_CONCAT(DBG_VIZ_DEBUGGER_TRACE_IMPL_, DBG_USE_VIZ_DEBUGGER_TRACE()) \
+  (anno, pos, size, text)
 
-#define DBG_DRAW_RECTANGLE_OPT_BUFF(anno, option, pos, size, id) \
-  std::ignore = anno;                                            \
-  std::ignore = option;                                          \
-  std::ignore = pos;                                             \
-  std::ignore = size;                                            \
-  std::ignore = id;
+// Allow definition of DBG_USE_VIZ_DEBUGGER_TRACE() just before callsite
+// (instead of before inclusion of this header).
+#define DBG_VIZ_DEBUGGER_TRACE_IMPL_DBG_USE_VIZ_DEBUGGER_TRACE() \
+  DBG_VIZ_DEBUGGER_TRACE_IMPL_0
+
+#define DBG_VIZ_DEBUGGER_TRACE_IMPL_0(anno, pos, size, text) \
+  std::ignore = anno;                                        \
+  std::ignore = pos;                                         \
+  std::ignore = size;                                        \
+  std::ignore = text;
+
+#define DBG_VIZ_DEBUGGER_TRACE_IMPL_1(anno, pos, size, text)                   \
+  TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT(VIZ_DEBUGGER_TRACING_CATEGORY), anno, \
+               "args", viz::DrawRectToTraceValue(pos, size, text))
+
+#define DBG_DRAW_RECTANGLE_OPT_BUFF_UV_TEXT(anno, option, pos, size, id, uv, \
+                                            text)                            \
+  std::ignore = option;                                                      \
+  std::ignore = id;                                                          \
+  std::ignore = uv;                                                          \
+  DBG_VIZ_DEBUGGER_TRACE_IMPL(anno, pos, size, text)
 
 #define DBG_COMPLETE_BUFFERS(buff_id, buffer) \
   std::ignore = buff_id;                      \
   std::ignore = buffer;
-
-#define DBG_DRAW_RECTANGLE_OPT(anno, option, pos, size) \
-  DBG_DRAW_RECTANGLE_OPT_BUFF(anno, option, pos, size, nullptr)
-
-#define DBG_DRAW_TEXT_OPT(anno, option, pos, text) \
-  std::ignore = anno;                              \
-  std::ignore = option;                            \
-  std::ignore = pos;                               \
-  std::ignore = text;
-
-#define DBG_DRAW_TEXT(anno, pos, text) \
-  DBG_DRAW_TEXT_OPT(anno, DBG_OPT_BLACK, pos, text)
 
 #define DBG_LOG_OPT(anno, option, format, ...) \
   std::ignore = anno;                          \
   std::ignore = option;                        \
   std::ignore = format;
 
-#define DBG_LOG(anno, format, ...) DBG_LOG_OPT(anno, DBG_OPT_BLACK, format, ...)
+#define DBG_CONNECTED_OR_TRACING(enabled)                             \
+  BASE_CONCAT(DBG_VIZ_CATEGORY_ENABLE_, DBG_USE_VIZ_DEBUGGER_TRACE()) \
+  (enabled)
 
-#define DBG_DRAW_RECT_OPT_BUFF_UV(anno, option, rect, id, uv) \
-  std::ignore = anno;                                         \
-  std::ignore = option;                                       \
-  std::ignore = rect;                                         \
-  std::ignore = id;                                           \
-  std::ignore = uv;
+// Allow definition of DBG_USE_VIZ_DEBUGGER_TRACE() just before callsite
+// (instead of before inclusion of this header).
+#define DBG_VIZ_CATEGORY_ENABLE_DBG_USE_VIZ_DEBUGGER_TRACE() \
+  DBG_VIZ_CATEGORY_ENABLE_0
+
+#define DBG_VIZ_CATEGORY_ENABLE_0(enabled) \
+  do {                                     \
+    enabled = false;                       \
+  } while (0)
+
+#define DBG_VIZ_CATEGORY_ENABLE_1(enabled) \
+  TRACE_EVENT_CATEGORY_GROUP_ENABLED(      \
+      TRACE_DISABLED_BY_DEFAULT(VIZ_DEBUGGER_TRACING_CATEGORY), (&enabled))
+
+#define DBG_FLAG_FBOOL(anno, fun_name) \
+  namespace {                          \
+  constexpr bool fun_name() {          \
+    return false;                      \
+  }                                    \
+  }
+
+#endif  // BUILDFLAG(USE_VIZ_DEBUGGER)
+
+// These are forwarding macro implementations common to the enabled/disabled
+// compile paths
+#define DBG_DRAW_RECTANGLE_OPT_BUFF_UV(anno, option, pos, size, id, uv) \
+  DBG_DRAW_RECTANGLE_OPT_BUFF_UV_TEXT(anno, option, pos, size, id, uv, "")
+
+#define DBG_DRAW_RECTANGLE_OPT(anno, option, pos, size) \
+  DBG_DRAW_RECTANGLE_OPT_BUFF(anno, option, pos, size, nullptr)
+
+#define DBG_DRAW_RECTANGLE(anno, pos, size) \
+  DBG_DRAW_RECTANGLE_OPT_BUFF(anno, DBG_OPT_BLACK, pos, size, nullptr)
+
+#define DBG_DRAW_RECTANGLE_OPT_BUFF(anno, option, pos, size, id) \
+  DBG_DRAW_RECTANGLE_OPT_BUFF_UV(anno, option, pos, size, id, DBG_DEFAULT_UV)
 
 #define DBG_DRAW_RECT_OPT_BUFF(anno, option, rect, id) \
-  std::ignore = anno;                                  \
-  std::ignore = option;                                \
-  std::ignore = rect;                                  \
-  std::ignore = id;
+  DBG_DRAW_RECT_OPT_BUFF_UV(anno, option, rect, id, DBG_DEFAULT_UV)
 
 #define DBG_DRAW_RECT_OPT(anno, option, rect) \
   DBG_DRAW_RECT_OPT_BUFF(anno, option, rect, nullptr)
 
-#define DBG_DRAW_RECT_BUFF_UV(anno, rect, id, uv) \
-  DBG_DRAW_RECT_OPT_BUFF_UV(anno, DBG_OPT_BLACK, rect, id, uv)
-
 #define DBG_DRAW_RECT_BUFF(anno, rect, id) \
   DBG_DRAW_RECT_OPT_BUFF(anno, DBG_OPT_BLACK, rect, id)
 
-#define DBG_DRAW_RECT(anno, rect) \
-  DBG_DRAW_RECT_OPT_BUFF(anno, DBG_OPT_BLACK, rect, nullptr)
+#define DBG_DRAW_RECT_BUFF_UV(anno, rect, id, uv) \
+  DBG_DRAW_RECT_OPT_BUFF_UV(anno, DBG_OPT_BLACK, rect, id, uv)
 
-#define DBG_FLAG_FBOOL(anno, fun_name)        \
-  namespace {                                 \
-  constexpr bool fun_name() { return false; } \
-  }
+#define DBG_DRAW_RECT(anno, rect) DBG_DRAW_RECT_OPT(anno, DBG_OPT_BLACK, rect)
 
-#endif  // BUILDFLAG(USE_VIZ_DEBUGGER)
+#define DBG_DRAW_TEXT_OPT(anno, option, pos, text)                        \
+  DBG_DRAW_RECTANGLE_OPT_BUFF_UV_TEXT(                                    \
+      anno, option, gfx::Vector2dF(pos.x(), pos.y()), gfx::SizeF(-1, -1), \
+      nullptr, DBG_DEFAULT_UV, text)
+
+#define DBG_DRAW_TEXT(anno, pos, text) \
+  DBG_DRAW_TEXT_OPT(anno, DBG_OPT_BLACK, pos, text)
+
+#define DBG_LOG(anno, format, ...) \
+  DBG_LOG_OPT(anno, DBG_OPT_BLACK, format, __VA_ARGS__)
+
+#define DBG_DRAW_RECT_OPT_BUFF_UV(anno, option, rect, id, uv)             \
+  DBG_DRAW_RECTANGLE_OPT_BUFF_UV(                                         \
+      anno, option, gfx::Vector2dF(rect.origin().x(), rect.origin().y()), \
+      gfx::SizeF(rect.size()), id, uv)
 
 #endif  // COMPONENTS_VIZ_SERVICE_DEBUGGER_VIZ_DEBUGGER_H_

@@ -31,6 +31,7 @@ class ConfiguredProxyResolutionRequest final : public ProxyResolutionRequest {
   ConfiguredProxyResolutionRequest(
       ConfiguredProxyResolutionService* service,
       const GURL& url,
+      const GURL& top_frame_url,
       const std::string& method,
       const NetworkAnonymizationKey& network_anonymization_key,
       ProxyInfo* results,
@@ -85,6 +86,7 @@ class ConfiguredProxyResolutionRequest final : public ProxyResolutionRequest {
   CompletionOnceCallback user_callback_;
   raw_ptr<ProxyInfo> results_;
   const GURL url_;
+  const GURL top_frame_url_;
   const std::string method_;
   const NetworkAnonymizationKey network_anonymization_key_;
   std::unique_ptr<ProxyResolver::Request> resolve_job_;

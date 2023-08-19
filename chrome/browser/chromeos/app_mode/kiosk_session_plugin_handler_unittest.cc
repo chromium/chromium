@@ -110,12 +110,12 @@ TEST_F(KioskSessionPluginHandlerTest, PluginCrashed) {
   // At the beginning, no crash is notified to the delegate.
   EXPECT_FALSE(delegate()->has_crashed());
 
-  // No crash is notified if the |plugin_path| is invalid.
+  // No crash is notified if the `plugin_path` is invalid.
   watcher->PluginCrashed(base::FilePath(kInvalidPluginPath),
                          base::ProcessId(kProcessId));
   EXPECT_FALSE(delegate()->has_crashed());
 
-  // Crash is notified if the |plugin_path| is valid.
+  // Crash is notified if the `plugin_path` is valid.
   watcher->PluginCrashed(base::FilePath(kValidPluginPath),
                          base::ProcessId(kProcessId));
   EXPECT_TRUE(delegate()->has_crashed());
@@ -134,12 +134,12 @@ TEST_F(KioskSessionPluginHandlerTest, PluginHungStatusChanged) {
   // At the beginning, there is no hung plugin.
   EXPECT_EQ(observer->GetHungPluginsForTesting().size(), 0U);
 
-  // The hung plugin is not stored if the |plugin_path| is invalid.
+  // The hung plugin is not stored if the `plugin_path` is invalid.
   watcher->PluginHungStatusChanged(kPluginChildId,
                                    base::FilePath(kInvalidPluginPath), true);
   EXPECT_EQ(observer->GetHungPluginsForTesting().size(), 0U);
 
-  // The hung plugin is not stored if the |is_hung| is false.
+  // The hung plugin is not stored if the `is_hung` is false.
   watcher->PluginHungStatusChanged(kPluginChildId,
                                    base::FilePath(kValidPluginPath), false);
   EXPECT_EQ(observer->GetHungPluginsForTesting().size(), 0U);

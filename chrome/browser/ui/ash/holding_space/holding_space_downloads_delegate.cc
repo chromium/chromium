@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_downloads_delegate.h"
 
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
+#include "ash/public/cpp/holding_space/holding_space_file.h"
 #include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
 #include "ash/public/cpp/image_util.h"
@@ -887,13 +888,19 @@ void HoldingSpaceDownloadsDelegate::CreateOrUpdateHoldingSpaceItem(
                             weak_factory_.GetWeakPtr()));
   }
 
+  // File.
+  const base::FilePath file_path = in_progress_download->GetFilePath();
+  const GURL file_system_url =
+      holding_space_util::ResolveFileSystemUrl(profile(), file_path);
+  const HoldingSpaceFile::FileSystemType file_system_type =
+      holding_space_util::ResolveFileSystemType(profile(), file_system_url);
+
   // Update.
   service()
       ->UpdateItem(item->id())
       ->SetAccessibleName(in_progress_download->GetAccessibleName())
-      .SetBackingFile(in_progress_download->GetFilePath(),
-                      holding_space_util::ResolveFileSystemUrl(
-                          profile(), in_progress_download->GetFilePath()))
+      .SetBackingFile(HoldingSpaceFile(file_system_type), file_path,
+                      file_system_url)
       .SetInProgressCommands(std::move(in_progress_commands))
       .SetInvalidateImage(invalidate_image)
       .SetText(in_progress_download->GetText())

@@ -81,8 +81,16 @@ PdfURLLoaderRequestInterceptor::CreateRequestHandler(
   if (!contents)
     return {};
 
+  // Normally, `content::WebContents::UnsafeFindFrameByFrameTreeNodeId()` should
+  // not be used, since a FrameTreeNode's `RenderFrameHost` may change over its
+  // lifetime. However, the only use for this `RenderFrameHost` is to get its
+  // parent `RenderFrameHost`, which cannot change during the lifetime of the
+  // FrameTreeNode.
+  content::RenderFrameHost* content_frame =
+      contents->UnsafeFindFrameByFrameTreeNodeId(frame_tree_node_id_);
+
   absl::optional<PdfStreamDelegate::StreamInfo> stream =
-      stream_delegate_->GetStreamInfo(contents);
+      stream_delegate_->GetStreamInfo(content_frame->GetParent());
   if (!stream.has_value())
     return {};
 

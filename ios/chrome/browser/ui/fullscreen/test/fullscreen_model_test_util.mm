@@ -7,10 +7,6 @@
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_model.h"
 #import "testing/gtest/include/gtest/gtest.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 void SetUpFullscreenModelForTesting(FullscreenModel* model,
                                     CGFloat toolbar_height) {
   EXPECT_GE(toolbar_height, 0.0);

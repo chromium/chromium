@@ -34,7 +34,7 @@ rootWebArea
 ++++++contentInfo
 ++++++++staticText name='This is an ARIA contentinfo landmark.'
 ++++++++++inlineTextBox name='This is an ARIA contentinfo landmark.'
-++++++form
+++++++form name='Named form'
 ++++++++staticText name='This is an ARIA form landmark.'
 ++++++++++inlineTextBox name='This is an ARIA form landmark.'
 ++++++main

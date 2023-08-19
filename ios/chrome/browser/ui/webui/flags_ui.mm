@@ -18,6 +18,7 @@
 #import "components/flags_ui/flags_ui_pref_names.h"
 #import "components/flags_ui/pref_service_flags_storage.h"
 #import "components/grit/flags_ui_resources.h"
+#import "components/grit/flags_ui_resources_map.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_chromium_strings.h"
@@ -33,10 +34,6 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/resource/resource_bundle.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 web::WebUIIOSDataSource* CreateFlagsUIHTMLSource() {
@@ -47,8 +44,8 @@ web::WebUIIOSDataSource* CreateFlagsUIHTMLSource() {
 
   source->UseStringsJs();
   FlagsUI::AddFlagsIOSStrings(source);
-  source->AddResourcePath(flags_ui::kFlagsJS, IDR_FLAGS_UI_FLAGS_JS);
-  source->AddResourcePath(flags_ui::kFlagsCSS, IDR_FLAGS_UI_FLAGS_CSS);
+  source->AddResourcePaths(
+      base::make_span(kFlagsUiResources, kFlagsUiResourcesSize));
   source->SetDefaultResource(IDR_FLAGS_UI_FLAGS_HTML);
   source->UseStringsJs();
   return source;

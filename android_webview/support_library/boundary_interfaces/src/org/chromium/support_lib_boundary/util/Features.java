@@ -244,5 +244,6 @@ public class Features {
     public static final String IMAGE_DRAG_DROP = "IMAGE_DRAG_DROP";
 
     // WebSettingsCompat.enableRestrictSensitiveWebContent
+    @Deprecated()
     public static final String RESTRICT_SENSITIVE_WEB_CONTENT = "RESTRICT_SENSITIVE_WEB_CONTENT";
 }

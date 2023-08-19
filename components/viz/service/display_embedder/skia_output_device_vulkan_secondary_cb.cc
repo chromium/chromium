@@ -7,10 +7,10 @@
 #include <utility>
 
 #include "components/viz/common/gpu/vulkan_context_provider.h"
-#include "third_party/skia/include/core/SkDeferredDisplayList.h"
-#include "third_party/skia/include/core/SkSurfaceCharacterization.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/private/chromium/GrDeferredDisplayList.h"
+#include "third_party/skia/include/private/chromium/GrSurfaceCharacterization.h"
 #include "third_party/skia/include/private/chromium/GrVkSecondaryCBDrawContext.h"
 #include "ui/gfx/presentation_feedback.h"
 
@@ -35,7 +35,7 @@ SkiaOutputDeviceVulkanSecondaryCB::SkiaOutputDeviceVulkanSecondaryCB(
 
   GrVkSecondaryCBDrawContext* secondary_cb_draw_context =
       context_provider_->GetGrSecondaryCBDrawContext();
-  SkSurfaceCharacterization characterization;
+  GrSurfaceCharacterization characterization;
   VkFormat vkFormat = VK_FORMAT_UNDEFINED;
   bool result = secondary_cb_draw_context->characterize(&characterization);
   CHECK(result);
@@ -131,7 +131,7 @@ bool SkiaOutputDeviceVulkanSecondaryCB::Wait(
 
 bool SkiaOutputDeviceVulkanSecondaryCB::Draw(
     SkSurface* sk_surface,
-    sk_sp<const SkDeferredDisplayList> ddl) {
+    sk_sp<const GrDeferredDisplayList> ddl) {
   DCHECK(!sk_surface);
   return context_provider_->GetGrSecondaryCBDrawContext()->draw(ddl);
 }

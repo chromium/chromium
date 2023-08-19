@@ -65,8 +65,8 @@ namespace content {
 class LevelDBScope {
  public:
   using RollbackCallback =
-      base::OnceCallback<leveldb::Status(int64_t scope_id,
-                                         std::vector<PartitionedLock> locks)>;
+      base::OnceCallback<void(int64_t scope_id,
+                              std::vector<PartitionedLock> locks)>;
   using TearDownCallback = base::RepeatingCallback<void(leveldb::Status)>;
   using CleanupCallback = base::OnceCallback<void(int64_t scope_id)>;
 
@@ -97,7 +97,7 @@ class LevelDBScope {
   // In the case of LevelDBScopes being in the mode
   // TaskRunnerMode::kUseCurrentSequence, rollbacks happen synchronously. The
   // status of this possibly synchronous rollback is returned.
-  leveldb::Status Rollback();
+  void Rollback();
 
   uint64_t GetMemoryUsage() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

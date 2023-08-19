@@ -41,7 +41,7 @@ const destination_settings_test = {
     NoDestinations: 'no destinations',
     // <if expr="is_chromeos">
     EulaIsRetrieved: 'eula is retrieved',
-    DriveIsNotMounted: 'drive is not mounted',
+    SaveToDriveDisabled: 'Save to Drive disabled',
     // </if>
   },
 };
@@ -67,7 +67,7 @@ suite(destination_settings_test.suiteName, function() {
 
   let pdfPrinterDisabled: boolean = false;
 
-  let isDriveMounted: boolean = true;
+  let saveToDriveDisabled: boolean = false;
 
   // <if expr="is_chromeos">
   const driveDestinationKey: string = 'Save to Drive CrOS/local/';
@@ -122,7 +122,7 @@ suite(destination_settings_test.suiteName, function() {
         // still not loaded.
         destinationSettings.init(
             'FooDevice' /* printerName */, false /* pdfPrinterDisabled */,
-            isDriveMounted,
+            saveToDriveDisabled,
             '' /* serializedDefaultDestinationSelectionRulesStr */);
         assertFalse(dropdown.loaded);
 
@@ -205,7 +205,7 @@ suite(destination_settings_test.suiteName, function() {
     // Initialize destination settings.
     destinationSettings.setSetting('recentDestinations', recentDestinations);
     destinationSettings.init(
-        '' /* printerName */, pdfPrinterDisabled, isDriveMounted,
+        '' /* printerName */, pdfPrinterDisabled, saveToDriveDisabled,
         '' /* serializedDefaultDestinationSelectionRulesStr */);
     destinationSettings.state = State.READY;
     destinationSettings.disabled = false;
@@ -746,7 +746,7 @@ suite(destination_settings_test.suiteName, function() {
 
     // Initialize destination settings with the PDF printer disabled.
     pdfPrinterDisabled = true;
-    isDriveMounted = false;
+    saveToDriveDisabled = true;
     initialize();
 
     // 'getPrinters' will be called because there are no printers known to
@@ -832,8 +832,8 @@ suite(destination_settings_test.suiteName, function() {
   // Tests that disabling Google Drive on Chrome OS hides the Save to Drive
   // destination.
   test(
-      destination_settings_test.TestNames.DriveIsNotMounted, function() {
-        isDriveMounted = false;
+      destination_settings_test.TestNames.SaveToDriveDisabled, function() {
+        saveToDriveDisabled = true;
         initialize();
 
         return nativeLayer.whenCalled('getPrinterCapabilities')

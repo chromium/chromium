@@ -20,14 +20,11 @@
         "name": "foo_test",
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "iama": "mixin",
-              "integrity": "high",
-              "os": "Linux"
-            }
-          ],
+          "dimensions": {
+            "iama": "mixin",
+            "integrity": "high",
+            "os": "Linux"
+          },
           "expiration": 120,
           "idempotent": false,
           "value": "test"

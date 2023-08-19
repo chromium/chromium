@@ -17,7 +17,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/single_thread_task_runner.h"
 #include "components/webdata/common/web_data_service_base.h"
 #include "components/webdata/common/web_database.h"
 #include "components/webdata/common/webdata_export.h"
@@ -26,6 +25,7 @@ class WebDatabaseBackend;
 
 namespace base {
 class Location;
+class SequencedTaskRunner;
 }
 
 class WDTypedResult;
@@ -53,10 +53,9 @@ class WEBDATA_EXPORT WebDatabaseService
 
   // WebDatabaseService lives on the UI sequence and posts tasks to the DB
   // sequence.  |path| points to the WebDatabase file.
-  WebDatabaseService(
-      const base::FilePath& path,
-      scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> db_task_runner);
+  WebDatabaseService(const base::FilePath& path,
+                     scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
+                     scoped_refptr<base::SequencedTaskRunner> db_task_runner);
 
   WebDatabaseService(const WebDatabaseService&) = delete;
   WebDatabaseService& operator=(const WebDatabaseService&) = delete;
@@ -124,7 +123,7 @@ class WEBDATA_EXPORT WebDatabaseService
   // Callbacks to be called if the DB has failed to load.
   ErrorCallbacks error_callbacks_;
 
-  scoped_refptr<base::SingleThreadTaskRunner> db_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> db_task_runner_;
 
   // All vended weak pointers are invalidated in ShutdownDatabase().
   base::WeakPtrFactory<WebDatabaseService> weak_ptr_factory_{this};

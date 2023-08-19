@@ -274,10 +274,10 @@ TEST_P(D3D11CopyingTexture2DWrapperTest,
 
 TEST_P(D3D11CopyingTexture2DWrapperTest, HDRMetadataIsSentToVideoProcessor) {
   gfx::HDRMetadata metadata;
-  metadata.smpte_st_2086.primaries = {0.1f, 0.2f, 0.3f, 0.4f,
-                                      0.5f, 0.6f, 0.7f, 0.8f};
-  metadata.smpte_st_2086.luminance_max = 0.9;
-  metadata.smpte_st_2086.luminance_min = 0.05;
+  metadata.smpte_st_2086 = gfx::HdrMetadataSmpteSt2086(
+      {0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f},
+      /*luminance_max=*/0.9,
+      /*luminance_min=*/0.05);
   metadata.cta_861_3 = gfx::HdrMetadataCta861_3(1000, 10000);
 
   auto processor = ExpectProcessorProxy();

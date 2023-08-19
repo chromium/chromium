@@ -394,7 +394,6 @@ public class AndroidPaymentApp
         });
     }
 
-    @VisibleForTesting
     public void onIntentCompletedForTesting(IntentResult intentResult) {
         onIntentCompleted(intentResult);
     }

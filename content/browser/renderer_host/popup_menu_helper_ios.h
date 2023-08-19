@@ -6,11 +6,14 @@
 #define CONTENT_BROWSER_RENDERER_HOST_POPUP_MENU_HELPER_IOS_H_
 
 #include "base/scoped_observation.h"
+#include "content/browser/renderer_host/popup_menu_interaction_delegate.h"
 #include "content/public/browser/render_widget_host_observer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/choosers/popup_menu.mojom.h"
 #include "ui/gfx/geometry/rect.h"
+
+@class WebMenuRunner;
 
 namespace content {
 
@@ -18,7 +21,8 @@ class RenderFrameHost;
 class RenderFrameHostImpl;
 class RenderWidgetHostViewIOS;
 
-class PopupMenuHelper : public RenderWidgetHostObserver {
+class PopupMenuHelper : public RenderWidgetHostObserver,
+                        public MenuInteractionDelegate {
  public:
   class Delegate {
    public:
@@ -40,7 +44,7 @@ class PopupMenuHelper : public RenderWidgetHostObserver {
   void CloseMenu();
 
   // Shows the popup menu and notifies the RenderFrameHost of the selection/
-  // cancellation. This call is blocking.
+  // cancellation.
   void ShowPopupMenu(const gfx::Rect& bounds,
                      int item_height,
                      double item_font_size,
@@ -48,6 +52,10 @@ class PopupMenuHelper : public RenderWidgetHostObserver {
                      std::vector<blink::mojom::MenuItemPtr> items,
                      bool right_aligned,
                      bool allow_multiple_selection);
+
+  // MenuInteractionDelegate implementation:
+  void OnMenuItemSelected(int idx) override;
+  void OnMenuCanceled() override;
 
  private:
   // RenderWidgetHostObserver implementation:
@@ -63,6 +71,8 @@ class PopupMenuHelper : public RenderWidgetHostObserver {
       observation_{this};
   base::WeakPtr<RenderFrameHostImpl> render_frame_host_;
   mojo::Remote<blink::mojom::PopupMenuClient> popup_client_;
+
+  WebMenuRunner* __strong menu_runner_;
 
   base::WeakPtrFactory<PopupMenuHelper> weak_ptr_factory_{this};
 };

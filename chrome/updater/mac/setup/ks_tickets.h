@@ -7,10 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 extern NSString* _Nonnull const kCRUTicketBrandKey;
 extern NSString* _Nonnull const kCRUTicketTagKey;
 

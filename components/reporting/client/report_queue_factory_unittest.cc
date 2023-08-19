@@ -83,8 +83,10 @@ TEST_F(ReportQueueFactoryTest, CreateAndGetQueue) {
   EXPECT_FALSE(consumer_->GetReportQueue());
   {
     test::TestCallbackAutoWaiter set_waiter;
-    ReportQueueFactory::Create(EventType::kDevice, destination_,
-                               consumer_->GetReportQueueSetter(&set_waiter));
+    ReportQueueFactory::Create(
+        ReportQueueConfiguration::Create(
+            {.event_type = EventType::kDevice, .destination = destination_}),
+        consumer_->GetReportQueueSetter(&set_waiter));
     EXPECT_CALL(*provider_.get(), OnInitCompletedMock()).Times(1);
     provider_->ExpectCreateNewQueueAndReturnNewMockQueue(1);
   }
@@ -95,9 +97,11 @@ TEST_F(ReportQueueFactoryTest, CreateAndGetQueue) {
 TEST_F(ReportQueueFactoryTest, CreateQueueWithInvalidConfig) {
   // Initially the queue must be an uninitialized unique_ptr
   EXPECT_FALSE(consumer_->GetReportQueue());
-  ReportQueueFactory::Create(EventType::kDevice,
-                             Destination::UNDEFINED_DESTINATION,
-                             consumer_->GetReportQueueSetter(nullptr));
+  ReportQueueFactory::Create(
+      ReportQueueConfiguration::Create(
+          {.event_type = EventType::kDevice,
+           .destination = Destination::UNDEFINED_DESTINATION}),
+      consumer_->GetReportQueueSetter(nullptr));
   // Expect failure before it gets to the report queue provider
   EXPECT_CALL(*provider_.get(), OnInitCompletedMock()).Times(0);
   // We do not expect the report queue to be existing in the consumer.
@@ -108,9 +112,11 @@ TEST_F(ReportQueueFactoryTest, CreateAndGetQueueWithRateLimiter) {
   EXPECT_FALSE(consumer_->GetReportQueue());
   {
     test::TestCallbackAutoWaiter set_waiter;
-    ReportQueueFactory::Create(EventType::kDevice, destination_,
-                               consumer_->GetReportQueueSetter(&set_waiter),
-                               std::make_unique<MockRateLimiter>());
+    ReportQueueFactory::Create(
+        ReportQueueConfiguration::Create(
+            {.event_type = EventType::kDevice, .destination = destination_})
+            .SetRateLimiter(std::make_unique<MockRateLimiter>()),
+        consumer_->GetReportQueueSetter(&set_waiter));
     EXPECT_CALL(*provider_.get(), OnInitCompletedMock()).Times(1);
     provider_->ExpectCreateNewQueueAndReturnNewMockQueue(1);
   }
@@ -122,10 +128,11 @@ TEST_F(ReportQueueFactoryTest, CreateAndGetQueueWithValidReservedSpace) {
   EXPECT_FALSE(consumer_->GetReportQueue());
   {
     test::TestCallbackAutoWaiter set_waiter;
-    ReportQueueFactory::Create(EventType::kDevice, destination_,
-                               consumer_->GetReportQueueSetter(&set_waiter),
-                               /*rate_limiter=*/nullptr,
-                               /*reserved_space=*/12345L);
+    ReportQueueFactory::Create(
+        ReportQueueConfiguration::Create({.event_type = EventType::kDevice,
+                                          .destination = destination_,
+                                          .reserved_space = 12345L}),
+        consumer_->GetReportQueueSetter(&set_waiter));
     EXPECT_CALL(*provider_.get(), OnInitCompletedMock()).Times(1);
     provider_->ExpectCreateNewQueueAndReturnNewMockQueue(1);
   }
@@ -136,10 +143,67 @@ TEST_F(ReportQueueFactoryTest, CreateAndGetQueueWithValidReservedSpace) {
 TEST_F(ReportQueueFactoryTest, CreateQueueWithInvalidReservedSpace) {
   // Initially the queue must be an uninitialized unique_ptr
   EXPECT_FALSE(consumer_->GetReportQueue());
-  ReportQueueFactory::Create(EventType::kDevice, destination_,
-                             consumer_->GetReportQueueSetter(nullptr),
-                             /*rate_limiter=*/nullptr,
-                             /*reserved_space=*/-1L);
+  ReportQueueFactory::Create(
+      ReportQueueConfiguration::Create({.event_type = EventType::kDevice,
+                                        .destination = destination_,
+                                        .reserved_space = -1L}),
+      consumer_->GetReportQueueSetter(nullptr));
+  // Expect failure before it gets to the report queue provider
+  EXPECT_CALL(*provider_.get(), OnInitCompletedMock()).Times(0);
+  // We do not expect the report queue to be existing in the consumer.
+  EXPECT_FALSE(consumer_->GetReportQueue());
+}
+
+TEST_F(ReportQueueFactoryTest, CreateAndGetQueueWithSource) {
+  // Initially the queue must be an uninitialized unique_ptr
+  EXPECT_FALSE(consumer_->GetReportQueue());
+  {
+    test::TestCallbackAutoWaiter set_waiter;
+    SourceInfo source_info;
+    source_info.set_source(SourceInfo::ASH);
+    ReportQueueFactory::Create(
+        ReportQueueConfiguration::Create(
+            {.event_type = EventType::kUser, .destination = destination_})
+            .SetSourceInfo(std::move(source_info)),
+        consumer_->GetReportQueueSetter(&set_waiter));
+    EXPECT_CALL(*provider_.get(), OnInitCompletedMock()).Times(1);
+    provider_->ExpectCreateNewQueueAndReturnNewMockQueue(1);
+  }
+  // We expect the report queue to be existing in the consumer.
+  EXPECT_TRUE(consumer_->GetReportQueue());
+}
+
+TEST_F(ReportQueueFactoryTest, CreateAndGetQueueWithSourceVersion) {
+  // Initially the queue must be an uninitialized unique_ptr
+  EXPECT_FALSE(consumer_->GetReportQueue());
+  {
+    test::TestCallbackAutoWaiter set_waiter;
+    SourceInfo source_info;
+    source_info.set_source(SourceInfo::ASH);
+    source_info.set_source_version("1.0.0");
+    ReportQueueFactory::Create(
+        ReportQueueConfiguration::Create(
+            {.event_type = EventType::kUser, .destination = destination_})
+            .SetSourceInfo(std::move(source_info)),
+        consumer_->GetReportQueueSetter(&set_waiter));
+    EXPECT_CALL(*provider_.get(), OnInitCompletedMock()).Times(1);
+    provider_->ExpectCreateNewQueueAndReturnNewMockQueue(1);
+  }
+  // We expect the report queue to be existing in the consumer.
+  EXPECT_TRUE(consumer_->GetReportQueue());
+}
+
+TEST_F(ReportQueueFactoryTest, CreateQueueWithSourceVersionAndInvalidSource) {
+  // Initially the queue must be an uninitialized unique_ptr
+  EXPECT_FALSE(consumer_->GetReportQueue());
+  SourceInfo source_info;
+  source_info.set_source(SourceInfo::SOURCE_UNSPECIFIED);
+  source_info.set_source_version("1.0.0");
+  ReportQueueFactory::Create(
+      ReportQueueConfiguration::Create(
+          {.event_type = EventType::kUser, .destination = destination_})
+          .SetSourceInfo(std::move(source_info)),
+      consumer_->GetReportQueueSetter(nullptr));
   // Expect failure before it gets to the report queue provider
   EXPECT_CALL(*provider_.get(), OnInitCompletedMock()).Times(0);
   // We do not expect the report queue to be existing in the consumer.
@@ -150,7 +214,8 @@ TEST_F(ReportQueueFactoryTest, CreateSpeculativeQueue) {
   // Mock internal implementation to use a MockReportQueue
   provider_->ExpectCreateNewSpeculativeQueueAndReturnNewMockQueue(1);
   const auto report_queue = ReportQueueFactory::CreateSpeculativeReportQueue(
-      EventType::kDevice, destination_);
+      ReportQueueConfiguration::Create(
+          {.event_type = EventType::kDevice, .destination = destination_}));
   EXPECT_THAT(report_queue, NotNull());
 }
 
@@ -158,23 +223,62 @@ TEST_F(ReportQueueFactoryTest, CreateSpeculativeQueueWithValidReservedSpace) {
   // Mock internal implementation to use a MockReportQueue
   provider_->ExpectCreateNewSpeculativeQueueAndReturnNewMockQueue(1);
   const auto report_queue = ReportQueueFactory::CreateSpeculativeReportQueue(
-      EventType::kDevice, destination_,
-      /*rate_limiter=*/nullptr,
-      /*reserved_space=*/12345L);
+      ReportQueueConfiguration::Create({.event_type = EventType::kDevice,
+                                        .destination = destination_,
+                                        .reserved_space = 12345L}));
   EXPECT_THAT(report_queue, NotNull());
 }
 
 TEST_F(ReportQueueFactoryTest, CreateSpeculativeQueueWithInvalidReservedSpace) {
   const auto report_queue = ReportQueueFactory::CreateSpeculativeReportQueue(
-      EventType::kDevice, destination_,
-      /*rate_limiter=*/nullptr,
-      /*reserved_space=*/-1L);
+      ReportQueueConfiguration::Create({.event_type = EventType::kDevice,
+                                        .destination = destination_,
+                                        .reserved_space = -1L}));
   EXPECT_THAT(report_queue, IsNull());
 }
 
 TEST_F(ReportQueueFactoryTest, CreateSpeculativeQueueWithInvalidConfig) {
   const auto report_queue = ReportQueueFactory::CreateSpeculativeReportQueue(
-      EventType::kDevice, Destination::UNDEFINED_DESTINATION);
+      ReportQueueConfiguration::Create(
+          {.event_type = EventType::kDevice,
+           .destination = Destination::UNDEFINED_DESTINATION}));
+  EXPECT_THAT(report_queue, IsNull());
+}
+
+TEST_F(ReportQueueFactoryTest, CreateSpeculativeQueueWithSource) {
+  // Mock internal implementation to use a MockReportQueue
+  provider_->ExpectCreateNewSpeculativeQueueAndReturnNewMockQueue(1);
+  SourceInfo source_info;
+  source_info.set_source(SourceInfo::ASH);
+  const auto report_queue = ReportQueueFactory::CreateSpeculativeReportQueue(
+      ReportQueueConfiguration::Create(
+          {.event_type = EventType::kUser, .destination = destination_})
+          .SetSourceInfo(std::move(source_info)));
+  EXPECT_THAT(report_queue, NotNull());
+}
+
+TEST_F(ReportQueueFactoryTest, CreateSpeculativeQueueWithSourceVersion) {
+  // Mock internal implementation to use a MockReportQueue
+  provider_->ExpectCreateNewSpeculativeQueueAndReturnNewMockQueue(1);
+  SourceInfo source_info;
+  source_info.set_source(SourceInfo::ASH);
+  source_info.set_source_version("1.0.0");
+  const auto report_queue = ReportQueueFactory::CreateSpeculativeReportQueue(
+      ReportQueueConfiguration::Create(
+          {.event_type = EventType::kUser, .destination = destination_})
+          .SetSourceInfo(std::move(source_info)));
+  EXPECT_THAT(report_queue, NotNull());
+}
+
+TEST_F(ReportQueueFactoryTest,
+       CreateSpeculativeQueueWithSourceVersionAndInvalidSource) {
+  SourceInfo source_info;
+  source_info.set_source(SourceInfo::SOURCE_UNSPECIFIED);
+  source_info.set_source_version("1.0.0");
+  const auto report_queue = ReportQueueFactory::CreateSpeculativeReportQueue(
+      ReportQueueConfiguration::Create(
+          {.event_type = EventType::kUser, .destination = destination_})
+          .SetSourceInfo(std::move(source_info)));
   EXPECT_THAT(report_queue, IsNull());
 }
 
@@ -186,10 +290,14 @@ TEST_F(ReportQueueFactoryTest, SameProviderForMultipleThreads) {
   {
     test::TestCallbackAutoWaiter set_waiter;
     set_waiter.Attach();
-    ReportQueueFactory::Create(EventType::kDevice, destination_,
-                               consumer_->GetReportQueueSetter(&set_waiter));
-    ReportQueueFactory::Create(EventType::kUser, destination_,
-                               consumer2->GetReportQueueSetter(&set_waiter));
+    ReportQueueFactory::Create(
+        ReportQueueConfiguration::Create(
+            {.event_type = EventType::kDevice, .destination = destination_}),
+        consumer_->GetReportQueueSetter(&set_waiter));
+    ReportQueueFactory::Create(
+        ReportQueueConfiguration::Create(
+            {.event_type = EventType::kUser, .destination = destination_}),
+        consumer2->GetReportQueueSetter(&set_waiter));
     EXPECT_CALL(*provider_.get(), OnInitCompletedMock()).Times(1);
     provider_->ExpectCreateNewQueueAndReturnNewMockQueue(2);
   }

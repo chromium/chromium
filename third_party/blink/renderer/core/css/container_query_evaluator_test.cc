@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/container_query_evaluator.h"
 
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/container_query.h"
 #include "third_party/blink/renderer/core/css/css_container_rule.h"
 #include "third_party/blink/renderer/core/css/css_custom_property_declaration.h"
@@ -21,7 +22,6 @@
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
-#include "third_party/blink/renderer/core/dom/parent_node.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -43,7 +43,7 @@ class ContainerQueryEvaluatorTest : public PageTestBase {
   }
 
   Element& ContainerElement() {
-    return *GetDocument().getElementById("container");
+    return *GetDocument().getElementById(AtomicString("container"));
   }
 
   ContainerQuery* ParseContainer(String query) {
@@ -119,6 +119,17 @@ class ContainerQueryEvaluatorTest : public PageTestBase {
     return evaluator->SizeContainerChanged(size, axes);
   }
 
+  Change StickyContainerChanged(ContainerQueryEvaluator* evaluator,
+                                ContainerStuckPhysical stuck_horizontal,
+                                ContainerStuckPhysical stuck_vertical,
+                                unsigned container_type) {
+    ComputedStyleBuilder builder(
+        *GetDocument().GetStyleResolver().InitialStyleForElement());
+    builder.SetContainerType(container_type);
+    ContainerElement().SetComputedStyle(builder.TakeStyle());
+    return evaluator->StickyContainerChanged(stuck_horizontal, stuck_vertical);
+  }
+
   bool EvalAndAdd(ContainerQueryEvaluator* evaluator,
                   const ContainerQuery& query,
                   Change change = Change::kNearestContainer) {
@@ -156,6 +167,7 @@ class ContainerQueryEvaluatorTest : public PageTestBase {
   const unsigned type_normal = kContainerTypeNormal;
   const unsigned type_size = kContainerTypeSize;
   const unsigned type_inline_size = kContainerTypeInlineSize;
+  const unsigned type_sticky = kContainerTypeSticky;
 };
 
 TEST_F(ContainerQueryEvaluatorTest, ContainmentMatch) {
@@ -320,7 +332,8 @@ TEST_F(ContainerQueryEvaluatorTest, StyleContainerChanged) {
   // Set --no: match. Should not cause change because size query part does not
   // match.
   builder = ComputedStyleBuilder(*style);
-  builder.SetVariableData("--no", css_test_helpers::CreateVariableData("match"),
+  builder.SetVariableData(AtomicString("--no"),
+                          css_test_helpers::CreateVariableData("match"),
                           inherited);
   style = builder.TakeStyle();
   container_element.SetComputedStyle(style);
@@ -329,7 +342,8 @@ TEST_F(ContainerQueryEvaluatorTest, StyleContainerChanged) {
 
   // Set --foo: bar. Should trigger change.
   builder = ComputedStyleBuilder(*style);
-  builder.SetVariableData("--foo", css_test_helpers::CreateVariableData("bar"),
+  builder.SetVariableData(AtomicString("--foo"),
+                          css_test_helpers::CreateVariableData("bar"),
                           inherited);
   style = builder.TakeStyle();
   container_element.SetComputedStyle(style);
@@ -339,12 +353,53 @@ TEST_F(ContainerQueryEvaluatorTest, StyleContainerChanged) {
   // Set --bar: foo. Should trigger change because size part also matches.
   eval_and_add_all();
   builder = ComputedStyleBuilder(*style);
-  builder.SetVariableData("--bar", css_test_helpers::CreateVariableData("foo"),
+  builder.SetVariableData(AtomicString("--bar"),
+                          css_test_helpers::CreateVariableData("foo"),
                           inherited);
   style = builder.TakeStyle();
   container_element.SetComputedStyle(style);
   EXPECT_EQ(Change::kNearestContainer, evaluator->StyleContainerChanged());
   EXPECT_EQ(0u, GetResults(evaluator).size());
+}
+
+TEST_F(ContainerQueryEvaluatorTest, StickyContainerChanged) {
+  ContainerQuery* container_query_left = ParseContainer("state(stuck: left)");
+  ContainerQuery* container_query_bottom =
+      ParseContainer("state(stuck: bottom)");
+  ASSERT_TRUE(container_query_left);
+  ASSERT_TRUE(container_query_bottom);
+
+  ContainerQueryEvaluator* evaluator = CreateEvaluatorForType(type_sticky);
+  StickyContainerChanged(evaluator, ContainerStuckPhysical::kLeft,
+                         ContainerStuckPhysical::kNo, type_sticky);
+
+  EXPECT_TRUE(EvalAndAdd(evaluator, *container_query_left));
+  EXPECT_FALSE(EvalAndAdd(evaluator, *container_query_bottom));
+  EXPECT_EQ(2u, GetResults(evaluator).size());
+
+  // Calling StickyContainerChanged the values we already have should not
+  // produce a Change.
+  EXPECT_EQ(Change::kNone,
+            StickyContainerChanged(evaluator, ContainerStuckPhysical::kLeft,
+                                   ContainerStuckPhysical::kNo, type_sticky));
+  EXPECT_EQ(2u, GetResults(evaluator).size());
+
+  // EvalAndAdding the same queries again is allowed.
+  EXPECT_TRUE(EvalAndAdd(evaluator, *container_query_left));
+  EXPECT_FALSE(EvalAndAdd(evaluator, *container_query_bottom));
+  EXPECT_EQ(2u, GetResults(evaluator).size());
+
+  // Set vertically stuck to bottom.
+  EXPECT_EQ(
+      Change::kNearestContainer,
+      StickyContainerChanged(evaluator, ContainerStuckPhysical::kLeft,
+                             ContainerStuckPhysical::kBottom, type_sticky));
+  EXPECT_EQ(0u, GetResults(evaluator).size());
+
+  // Now both left and bottom queries should return true.
+  EXPECT_TRUE(EvalAndAdd(evaluator, *container_query_left));
+  EXPECT_TRUE(EvalAndAdd(evaluator, *container_query_bottom));
+  EXPECT_EQ(2u, GetResults(evaluator).size());
 }
 
 TEST_F(ContainerQueryEvaluatorTest, ClearResults) {
@@ -498,7 +553,7 @@ TEST_F(ContainerQueryEvaluatorTest, SizeInvalidation) {
     </div>
   )HTML");
 
-  Element* container = GetDocument().getElementById("container");
+  Element* container = GetDocument().getElementById(AtomicString("container"));
   ASSERT_TRUE(container);
   ASSERT_TRUE(container->GetContainerQueryEvaluator());
 
@@ -603,30 +658,30 @@ TEST_F(ContainerQueryEvaluatorTest, EvaluatorDisplayNone) {
   )HTML");
 
   // Inner container
-  Element* inner = GetDocument().getElementById("inner");
+  Element* inner = GetDocument().getElementById(AtomicString("inner"));
   ASSERT_TRUE(inner);
   EXPECT_TRUE(inner->GetContainerQueryEvaluator());
 
-  inner->classList().Add("none");
+  inner->classList().Add(AtomicString("none"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(inner->GetContainerQueryEvaluator());
 
-  inner->classList().Remove("none");
+  inner->classList().Remove(AtomicString("none"));
   UpdateAllLifecyclePhasesForTest();
   ASSERT_TRUE(inner->GetContainerQueryEvaluator());
 
   // Outer container
-  Element* outer = GetDocument().getElementById("outer");
+  Element* outer = GetDocument().getElementById(AtomicString("outer"));
   ASSERT_TRUE(outer);
   EXPECT_TRUE(outer->GetContainerQueryEvaluator());
   EXPECT_TRUE(inner->GetContainerQueryEvaluator());
 
-  outer->classList().Add("none");
+  outer->classList().Add(AtomicString("none"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(outer->GetContainerQueryEvaluator());
   EXPECT_FALSE(inner->GetContainerQueryEvaluator());
 
-  outer->classList().Remove("none");
+  outer->classList().Remove(AtomicString("none"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(outer->GetContainerQueryEvaluator());
   EXPECT_TRUE(inner->GetContainerQueryEvaluator());
@@ -652,13 +707,13 @@ TEST_F(ContainerQueryEvaluatorTest, Printing) {
   )HTML");
 
   UpdateAllLifecyclePhasesForTest();
-  Element* target = GetDocument().getElementById("target");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
   EXPECT_NE(
       target->ComputedStyleRef().VisitedDependentColor(GetCSSPropertyColor()),
       Color(0, 128, 0));
 
   constexpr gfx::SizeF initial_page_size(400, 400);
-  GetDocument().GetFrame()->StartPrinting(initial_page_size, initial_page_size);
+  GetDocument().GetFrame()->StartPrinting(initial_page_size);
   GetDocument().View()->UpdateLifecyclePhasesForPrinting();
 
   EXPECT_EQ(
@@ -696,10 +751,10 @@ TEST_F(ContainerQueryEvaluatorTest, FindContainer) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  Element* outer_size = ParentNode::firstElementChild(*GetDocument().body());
-  Element* outer = ParentNode::firstElementChild(*outer_size);
-  Element* inner_size = ParentNode::firstElementChild(*outer);
-  Element* inner = ParentNode::firstElementChild(*inner_size);
+  Element* outer_size = GetDocument().body()->firstElementChild();
+  Element* outer = outer_size->firstElementChild();
+  Element* inner_size = outer->firstElementChild();
+  Element* inner = inner_size->firstElementChild();
 
   EXPECT_EQ(ContainerQueryEvaluator::FindContainer(
                 inner, ParseContainer("style(--foo: bar)")->Selector(),
@@ -740,11 +795,11 @@ TEST_F(ContainerQueryEvaluatorTest, FindStickyContainer) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  Element* sticky_size = ParentNode::firstElementChild(*GetDocument().body());
-  Element* outer_sticky = ParentNode::firstElementChild(*sticky_size);
-  Element* outer = ParentNode::firstElementChild(*outer_sticky);
-  Element* inner_sticky = ParentNode::firstElementChild(*outer);
-  Element* inner = ParentNode::firstElementChild(*inner_sticky);
+  Element* sticky_size = GetDocument().body()->firstElementChild();
+  Element* outer_sticky = sticky_size->firstElementChild();
+  Element* outer = outer_sticky->firstElementChild();
+  Element* inner_sticky = outer->firstElementChild();
+  Element* inner = inner_sticky->firstElementChild();
 
   EXPECT_EQ(
       ContainerQueryEvaluator::FindContainer(
@@ -771,7 +826,7 @@ TEST_F(ContainerQueryEvaluatorTest, ScopedCaching) {
       .documentElement()
       ->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
     <div id="host" style="container-name: n1">
-      <template shadowroot=open>
+      <template shadowrootmode=open>
         <div style="container-name: n1">
           <slot id="slot"></slot>
         </div>
@@ -794,7 +849,7 @@ TEST_F(ContainerQueryEvaluatorTest, ScopedCaching) {
   //  Element* slotted = GetElementById("slotted");
   Element* host = GetElementById("host");
   ShadowRoot* shadow_root = host->GetShadowRoot();
-  Element* slot = shadow_root->getElementById("slot");
+  Element* slot = shadow_root->getElementById(AtomicString("slot"));
 
   result.BeginAddingAuthorRulesForTreeScope(*shadow_root);
 
@@ -844,12 +899,12 @@ TEST_F(ContainerQueryEvaluatorTest, DisplayContentsStyleQueryInvalidation) {
     </div>
   )HTML");
 
-  Element* container = GetDocument().getElementById("container");
+  Element* container = GetDocument().getElementById(AtomicString("container"));
   ASSERT_TRUE(container);
   ContainerQueryEvaluator* evaluator = container->GetContainerQueryEvaluator();
   ASSERT_TRUE(evaluator);
 
-  container->setAttribute(html_names::kClassAttr, "contents");
+  container->setAttribute(html_names::kClassAttr, AtomicString("contents"));
 
   unsigned before_count = GetStyleEngine().StyleForElementCount();
 
@@ -864,6 +919,40 @@ TEST_F(ContainerQueryEvaluatorTest, DisplayContentsStyleQueryInvalidation) {
   // The ContainerQueryEvaluator should still be the same. No need to re-create
   // the evaluator if when the display changes.
   EXPECT_EQ(evaluator, container->GetContainerQueryEvaluator());
+}
+
+struct EvalUnknownQueries {
+  const char* query_string;
+  bool contains_unknown;
+};
+
+EvalUnknownQueries eval_unknown_queries[] = {
+    {"style(--foo: bar)", false},
+    {"style(--foo: bar) or (foo: bar)", true},
+    {"style(--foo: bar) and unknown()", true},
+    {"style(font-size: 10px)", true},
+    {"(width > 30px) and (height < 900px)", false},
+    {"(width > 0px) or (unknown())", true},
+    {"(height > 0px) and ((width > 20px) and unknown())", true},
+    {"(not (unknown: 10px)) or (height)", true},
+    {"(width: 'wide')", true},
+};
+
+class UseCountEvalUnknownTest
+    : public ContainerQueryEvaluatorTest,
+      public ::testing::WithParamInterface<EvalUnknownQueries> {};
+
+INSTANTIATE_TEST_SUITE_P(ContainerQueryEvaluatorTest,
+                         UseCountEvalUnknownTest,
+                         testing::ValuesIn(eval_unknown_queries));
+
+TEST_P(UseCountEvalUnknownTest, All) {
+  EvalUnknownQueries param = GetParam();
+  SCOPED_TRACE(param.query_string);
+
+  Eval(param.query_string, 100.0, 100.0, type_size, horizontal);
+  EXPECT_EQ(GetDocument().IsUseCounted(WebFeature::kContainerQueryEvalUnknown),
+            param.contains_unknown);
 }
 
 }  // namespace blink

@@ -6,6 +6,7 @@
 
 #import <map>
 
+#import "base/containers/contains.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/infobars/badge_state.h"
@@ -32,10 +33,6 @@
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/web_state_user_data.h"
 #import "testing/gtest/include/gtest/gtest.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 // The two infobar types used in tests.  Both support badges.
@@ -309,7 +306,7 @@ TEST_P(BadgeMediatorTest, InfobarBannerOverlayObserving) {
   std::map<InfobarType, BadgeState> badge_states =
       tab_helper->GetInfobarBadgeStates();
   ASSERT_EQ(1U, badge_states.size());
-  ASSERT_NE(badge_states.find(type), badge_states.end());
+  ASSERT_TRUE(base::Contains(badge_states, type));
   BadgeState state = badge_states[type];
   ASSERT_FALSE(state & BadgeStatePresented);
 

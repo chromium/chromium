@@ -5,12 +5,14 @@
 /** @fileoverview Wallpaper related utility functions in personalization app */
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 
-import {CurrentWallpaper, GooglePhotosAlbum, GooglePhotosPhoto, WallpaperImage, WallpaperLayout, WallpaperType} from '../../personalization_app.mojom-webui.js';
+import {CurrentAttribution, CurrentWallpaper, GooglePhotosAlbum, GooglePhotosPhoto, WallpaperImage, WallpaperLayout, WallpaperType} from '../../personalization_app.mojom-webui.js';
 import {getNumberOfGridItemsPerRow, isNonEmptyArray, isNonEmptyString} from '../utils.js';
 
 import {DefaultImageSymbol, DisplayableImage, kDefaultImageSymbol} from './constants.js';
+import {DailyRefreshState} from './wallpaper_state.js';
 
 export function isWallpaperImage(obj: any): obj is WallpaperImage {
   return !!obj && typeof obj.unitId === 'bigint';
@@ -120,6 +122,49 @@ export function getLocalStorageAttribution(key: string): string[] {
     console.warn('Unable to get attribution from local storage.', key);
   }
   return attribution;
+}
+
+/**
+ * Get the aria label of the currently selected wallpaper.
+ */
+export function getWallpaperAriaLabel(
+    image: CurrentWallpaper|null, attribution: CurrentAttribution|null,
+    dailyRefreshState: DailyRefreshState|null): string {
+  if (!image || !attribution || image.key !== attribution.key) {
+    return `${loadTimeData.getString('currentlySet')} ${
+        loadTimeData.getString('unknownImageAttribution')}`;
+  }
+  if (image.type === WallpaperType.kDefault) {
+    return `${loadTimeData.getString('currentlySet')} ${
+        loadTimeData.getString('defaultWallpaper')}`;
+  }
+  const isDailyRefreshActive = !!dailyRefreshState;
+  if (isNonEmptyArray(attribution.attribution)) {
+    return isDailyRefreshActive ?
+        [
+          loadTimeData.getString('currentlySet'),
+          loadTimeData.getString('dailyRefresh'),
+          ...attribution.attribution,
+        ].join(' ') :
+        [
+          loadTimeData.getString('currentlySet'),
+          ...attribution.attribution,
+        ].join(' ');
+  }
+  // Fallback to cached attribution.
+  const cachedAttribution = getLocalStorageAttribution(image.key);
+  if (isNonEmptyArray(cachedAttribution)) {
+    return isDailyRefreshActive ?
+        [
+          loadTimeData.getString('currentlySet'),
+          loadTimeData.getString('dailyRefresh'),
+          ...attribution.attribution,
+        ].join(' ') :
+        [loadTimeData.getString('currentlySet'), ...cachedAttribution].join(
+            ' ');
+  }
+  return `${loadTimeData.getString('currentlySet')} ${
+      loadTimeData.getString('unknownImageAttribution')}`;
 }
 
 /**

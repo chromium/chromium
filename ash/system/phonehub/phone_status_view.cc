@@ -247,15 +247,14 @@ void PhoneStatusView::UpdateBatteryStatus() {
   const PhoneStatusModel& phone_status =
       phone_model_->phone_status_model().value();
 
-  const PowerStatus::BatteryImageInfo& info = CalculateBatteryInfo();
-
   const SkColor icon_fg_color = AshColorProvider::Get()->GetContentLayerColor(
       IsBatterySaverModeOn(phone_status)
           ? AshColorProvider::ContentLayerType::kIconColorWarning
           : AshColorProvider::ContentLayerType::kIconColorPrimary);
 
   battery_icon_->SetImage(PowerStatus::GetBatteryImage(
-      info, kUnifiedTrayBatteryIconSize, icon_fg_color));
+      CalculateBatteryInfo(icon_fg_color), kUnifiedTrayBatteryIconSize,
+      battery_icon_->GetColorProvider()));
   SetBatteryTooltipText();
   battery_label_->SetText(
       base::FormatPercent(phone_status.battery_percentage()));
@@ -264,12 +263,11 @@ void PhoneStatusView::UpdateBatteryStatus() {
       base::NumberToString16(phone_status.battery_percentage())));
 }
 
-PowerStatus::BatteryImageInfo PhoneStatusView::CalculateBatteryInfo() {
-  PowerStatus::BatteryImageInfo info;
-
+PowerStatus::BatteryImageInfo PhoneStatusView::CalculateBatteryInfo(
+    const SkColor icon_fg_color) {
   const PhoneStatusModel& phone_status =
       phone_model_->phone_status_model().value();
-
+  PowerStatus::BatteryImageInfo info(icon_fg_color);
   info.charge_percent = phone_status.battery_percentage();
 
   if (IsBatterySaverModeOn(phone_status)) {

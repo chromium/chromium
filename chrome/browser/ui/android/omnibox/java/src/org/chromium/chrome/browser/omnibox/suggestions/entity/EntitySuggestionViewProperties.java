@@ -4,25 +4,16 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.entity;
 
-import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
+import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewProperties;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /**
  * The properties associated with rendering the entity suggestion view.
  */
-class EntitySuggestionViewProperties {
-    /** Text content for the first line of text (subject). */
-    public static final WritableObjectPropertyKey<String> SUBJECT_TEXT =
-            new WritableObjectPropertyKey<>();
-    /** Text content for the second line of text (description). */
-    public static final WritableObjectPropertyKey<String> DESCRIPTION_TEXT =
-            new WritableObjectPropertyKey<>();
-
-    public static final PropertyKey[] ALL_UNIQUE_KEYS =
-            new PropertyKey[] {SUBJECT_TEXT, DESCRIPTION_TEXT};
+@interface EntitySuggestionViewProperties {
+    public static final PropertyKey[] ALL_UNIQUE_KEYS = new PropertyKey[] {};
 
     public static final PropertyKey[] ALL_KEYS =
-            PropertyModel.concatKeys(ALL_UNIQUE_KEYS, BaseSuggestionViewProperties.ALL_KEYS);
+            PropertyModel.concatKeys(ALL_UNIQUE_KEYS, SuggestionViewProperties.ALL_KEYS);
 }

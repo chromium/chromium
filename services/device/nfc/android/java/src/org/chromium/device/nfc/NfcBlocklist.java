@@ -10,6 +10,7 @@ import android.nfc.tech.IsoDep;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.components.variations.VariationsAssociatedData;
 
 import java.util.ArrayList;
@@ -47,9 +48,9 @@ public class NfcBlocklist {
         return sInstance;
     }
 
-    @VisibleForTesting
     public static void overrideNfcBlocklistForTests(String serverProvidedValues) {
         sInstance = new NfcBlocklist(serverProvidedValues);
+        ResettersForTesting.register(() -> sInstance = null);
     }
 
     private NfcBlocklist() {
@@ -140,8 +141,8 @@ public class NfcBlocklist {
     }
 
     /** Block/unblock NFC tag access for testing use only. */
-    @VisibleForTesting
     public void setIsTagBlockedForTesting(Boolean blocked) {
         mIsTagBlockedForTesting = blocked;
+        ResettersForTesting.register(() -> mIsTagBlockedForTesting = null);
     }
 }

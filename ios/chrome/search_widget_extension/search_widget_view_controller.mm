@@ -4,7 +4,7 @@
 
 #import "ios/chrome/search_widget_extension/search_widget_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/open_from_clipboard/clipboard_recent_content_impl_ios.h"
@@ -17,10 +17,6 @@
 #import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/chrome/search_widget_extension/copied_content_view.h"
 #import "ios/chrome/search_widget_extension/search_widget_view.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 @interface SearchWidgetViewController ()<SearchWidgetViewActionTarget>
 @property(nonatomic, weak) SearchWidgetView* widgetView;

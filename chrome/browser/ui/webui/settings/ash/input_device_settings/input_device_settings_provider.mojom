@@ -63,8 +63,8 @@ interface InputDeviceSettingsProvider {
   // The observer which is registered is immediately informed
   // of the current state via its ObserveMouseSettings function.
   ObserveMouseSettings(pending_remote<MouseSettingsObserver> observer);
-  // Restore the keyboard modifier remappings to default base on its id.
-  RestoreDefaultKeyboardModifierRemappings(uint32 device_id);
+  // Restore the keyboard remappings to default base on its id.
+  RestoreDefaultKeyboardRemappings(uint32 device_id);
   // Sets the keyboard settings based on its id.
   SetKeyboardSettings(uint32 device_id, ash.mojom.KeyboardSettings settings);
   // Sets the point stick settings based on its id.

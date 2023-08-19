@@ -1,0 +1,51 @@
+<style>
+  :host {
+    height: 100%;
+    width: 100%;
+  }
+
+  cr-grid {
+    --cr-grid-gap: 8px;
+  }
+
+  #moduleContent {
+    display: flex;
+    justify-content: center;
+  }
+
+  :host([format='narrow']) .tile-item,
+  :host([format='narrow']) img {
+    width: 120px;
+  }
+
+  .tile-item {
+    color: var(--color-new-tab-page-primary-foreground);
+    height: 120px;
+    width: 170px;
+  }
+
+  img {
+    border-radius: 8px;
+  }
+</style>
+<ntp-module-header
+    disable-text="[[i18nRecursive('',
+                                  'modulesDisableButtonText',
+                                  'modulesDummyLower')]]"
+    more-actions-text="[[i18nRecursive('',
+                                  'modulesMoreActions',
+                                  'modulesDummyLower')]]"
+    icon-src="icons/generic_globe.svg"
+    on-disable-button-click="onDisableButtonClick_">
+  [[title]]
+</ntp-module-header>
+<div id="moduleContent">
+  <cr-grid id="tiles" columns="2">
+    <template is="dom-repeat" items="[[tiles]]">
+      <div class="tile-item" title="[[item.label]]">
+        <img is="cr-auto-img" auto-src="[[item.imageUrl]]"></img>
+        <span>[[item.value]]</span>
+      </div>
+    </template>
+  </cr-grid>
+</div>

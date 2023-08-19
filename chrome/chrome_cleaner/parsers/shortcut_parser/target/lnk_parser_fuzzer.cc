@@ -14,7 +14,7 @@
 #include "chrome/chrome_cleaner/parsers/shortcut_parser/target/lnk_parser.h"
 
 struct Environment {
-  Environment() { logging::SetMinLogLevel(logging::LOG_FATAL); }
+  Environment() { logging::SetMinLogLevel(logging::LOGGING_FATAL); }
 };
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {

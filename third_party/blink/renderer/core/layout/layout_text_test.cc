@@ -69,7 +69,7 @@ class LayoutTextTest : public RenderingTest {
     stream << "<div style='font: 10px/10px Ahem;'>" << selection_text
            << "</div>";
     SetSelectionAndUpdateLayoutSelection(stream.str());
-    const Node* target = GetDocument().getElementById("target");
+    const Node* target = GetDocument().getElementById(AtomicString("target"));
     const LayoutObject* layout_object =
         target ? target->GetLayoutObject() : FindFirstLayoutText();
     return layout_object->LocalSelectionVisualRect();
@@ -628,19 +628,19 @@ TEST_F(LayoutTextTest, GetTextBoxInfoWithCollapsedWhiteSpace) {
 
   EXPECT_EQ(1u, results[0].dom_start_offset);
   EXPECT_EQ(4u, results[0].dom_length);
-  EXPECT_EQ(LayoutRect(0, 0, 40, 10), results[0].local_rect);
+  EXPECT_EQ(PhysicalRect(0, 0, 40, 10), results[0].local_rect);
 
   EXPECT_EQ(6u, results[1].dom_start_offset);
   EXPECT_EQ(3u, results[1].dom_length);
-  EXPECT_EQ(LayoutRect(40, 0, 30, 10), results[1].local_rect);
+  EXPECT_EQ(PhysicalRect(40, 0, 30, 10), results[1].local_rect);
 
   EXPECT_EQ(9u, results[2].dom_start_offset);
   EXPECT_EQ(1u, results[2].dom_length);
-  EXPECT_EQ(LayoutRect(70, 0, 0, 10), results[2].local_rect);
+  EXPECT_EQ(PhysicalRect(70, 0, 0, 10), results[2].local_rect);
 
   EXPECT_EQ(14u, results[3].dom_start_offset);
   EXPECT_EQ(3u, results[3].dom_length);
-  EXPECT_EQ(LayoutRect(0, 10, 30, 10), results[3].local_rect);
+  EXPECT_EQ(PhysicalRect(0, 10, 30, 10), results[3].local_rect);
 }
 
 TEST_F(LayoutTextTest, GetTextBoxInfoWithGeneratedContent) {
@@ -666,22 +666,22 @@ TEST_F(LayoutTextTest, GetTextBoxInfoWithGeneratedContent) {
   EXPECT_EQ(1u, boxes_xyz.size());
   EXPECT_EQ(0u, boxes_xyz[0].dom_start_offset);
   EXPECT_EQ(3u, boxes_xyz[0].dom_length);
-  EXPECT_EQ(LayoutRect(40, 0, 30, 10), boxes_xyz[0].local_rect);
+  EXPECT_EQ(PhysicalRect(40, 0, 30, 10), boxes_xyz[0].local_rect);
 
   auto boxes_first_letter = layout_text_first_letter.GetTextBoxInfo();
   EXPECT_EQ(1u, boxes_first_letter.size());
   EXPECT_EQ(2u, boxes_first_letter[0].dom_start_offset);
   EXPECT_EQ(1u, boxes_first_letter[0].dom_length);
-  EXPECT_EQ(LayoutRect(0, 0, 10, 10), boxes_first_letter[0].local_rect);
+  EXPECT_EQ(PhysicalRect(0, 0, 10, 10), boxes_first_letter[0].local_rect);
 
   auto boxes_remaining = layout_text_remaining.GetTextBoxInfo();
   EXPECT_EQ(2u, boxes_remaining.size());
   EXPECT_EQ(0u, boxes_remaining[0].dom_start_offset);
   EXPECT_EQ(1u, boxes_remaining[0].dom_length) << "two spaces to one space";
-  EXPECT_EQ(LayoutRect(10, 0, 10, 10), boxes_remaining[0].local_rect);
+  EXPECT_EQ(PhysicalRect(10, 0, 10, 10), boxes_remaining[0].local_rect);
   EXPECT_EQ(3u, boxes_remaining[1].dom_start_offset);
   EXPECT_EQ(2u, boxes_remaining[1].dom_length);
-  EXPECT_EQ(LayoutRect(20, 0, 20, 10), boxes_remaining[1].local_rect);
+  EXPECT_EQ(PhysicalRect(20, 0, 20, 10), boxes_remaining[1].local_rect);
 }
 
 // For http://crbug.com/985488
@@ -707,11 +707,11 @@ TEST_F(LayoutTextTest, GetTextBoxInfoWithHidden) {
 
   EXPECT_EQ(2u, boxes[0].dom_start_offset);
   EXPECT_EQ(6u, boxes[0].dom_length);
-  EXPECT_EQ(LayoutRect(0, 0, 60, 10), boxes[0].local_rect);
+  EXPECT_EQ(PhysicalRect(0, 0, 60, 10), boxes[0].local_rect);
 
   EXPECT_EQ(9u, boxes[1].dom_start_offset);
   EXPECT_EQ(5u, boxes[1].dom_length);
-  EXPECT_EQ(LayoutRect(60, 0, 50, 10), boxes[1].local_rect);
+  EXPECT_EQ(PhysicalRect(60, 0, 50, 10), boxes[1].local_rect);
 }
 
 // For http://crbug.com/985488
@@ -738,11 +738,11 @@ TEST_F(LayoutTextTest, GetTextBoxInfoWithEllipsis) {
 
   EXPECT_EQ(2u, boxes[0].dom_start_offset);
   EXPECT_EQ(6u, boxes[0].dom_length);
-  EXPECT_EQ(LayoutRect(0, 0, 60, 10), boxes[0].local_rect);
+  EXPECT_EQ(PhysicalRect(0, 0, 60, 10), boxes[0].local_rect);
 
   EXPECT_EQ(9u, boxes[1].dom_start_offset);
   EXPECT_EQ(5u, boxes[1].dom_length);
-  EXPECT_EQ(LayoutRect(60, 0, 50, 10), boxes[1].local_rect);
+  EXPECT_EQ(PhysicalRect(60, 0, 50, 10), boxes[1].local_rect);
 }
 
 // For http://crbug.com/1003413
@@ -773,7 +773,7 @@ TEST_F(LayoutTextTest, GetTextBoxInfoWithEllipsisForPseudoAfter) {
 
   EXPECT_EQ(0u, boxes[0].dom_start_offset);
   EXPECT_EQ(1u, boxes[0].dom_length);
-  EXPECT_EQ(LayoutRect(30, 0, 10, 10), boxes[0].local_rect);
+  EXPECT_EQ(PhysicalRect(30, 0, 10, 10), boxes[0].local_rect);
 }
 
 // Test the specialized code path in |PlainText| for when |!GetNode()|.
@@ -1040,9 +1040,9 @@ TEST_F(LayoutTextTest, PhysicalLinesBoundingBox) {
   //     Box offset:0,-17 size:89x53
   //       Box offset:20,15 size:49x23
   //         Text offset:5,5 size:39x13 start: 8 end: 11
-  const Element& div = *GetDocument().getElementById("div");
-  const Element& one = *GetDocument().getElementById("one");
-  const Element& two = *GetDocument().getElementById("two");
+  const Element& div = *GetDocument().getElementById(AtomicString("div"));
+  const Element& one = *GetDocument().getElementById(AtomicString("one"));
+  const Element& two = *GetDocument().getElementById(AtomicString("two"));
   EXPECT_EQ(PhysicalRect(3, 6, 52, 13),
             To<LayoutText>(div.firstChild()->GetLayoutObject())
                 ->PhysicalLinesBoundingBox());
@@ -1110,9 +1110,9 @@ TEST_F(LayoutTextTest, PhysicalLinesBoundingBoxVerticalRL) {
   )HTML");
   // Similar to the previous test, with logical coordinates converted to
   // physical coordinates.
-  const Element& div = *GetDocument().getElementById("div");
-  const Element& one = *GetDocument().getElementById("one");
-  const Element& two = *GetDocument().getElementById("two");
+  const Element& div = *GetDocument().getElementById(AtomicString("div"));
+  const Element& one = *GetDocument().getElementById(AtomicString("one"));
+  const Element& two = *GetDocument().getElementById(AtomicString("two"));
   EXPECT_EQ(PhysicalRect(25, 3, 13, 52),
             To<LayoutText>(div.firstChild()->GetLayoutObject())
                 ->PhysicalLinesBoundingBox());
@@ -1127,7 +1127,7 @@ TEST_F(LayoutTextTest, PhysicalLinesBoundingBoxVerticalRL) {
 TEST_F(LayoutTextTest, WordBreakElement) {
   SetBasicBody("foo <wbr> bar");
 
-  const Element* wbr = GetDocument().QuerySelector("wbr");
+  const Element* wbr = GetDocument().QuerySelector(AtomicString("wbr"));
   DCHECK(wbr->GetLayoutObject()->IsText());
   const auto* layout_wbr = To<LayoutText>(wbr->GetLayoutObject());
 

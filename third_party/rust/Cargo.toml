@@ -17,6 +17,7 @@ cfg-if = "1"
 clap = "4"
 cxx = "1"
 cxxbridge-cmd = "1"
+font-types = "0.3"
 hex = "0.4"
 hex-literal = "0.4"
 lazy_static = "1"
@@ -27,11 +28,14 @@ qr_code = "2"
 quote = "1"
 rand = "0.8"
 rand_pcg = "0.3"
+read-fonts = "0.10"
 regex = "1"
 rstest_reuse = "0.5"
+rustc-demangle-capi = "0.1"
 semver = "1"
 serde = "1"
 serde_json = "1"
+skrifa = "0.9"
 small_ctor = "0.1"
 static_assertions = "1"
 tempfile = "3"
@@ -139,6 +143,10 @@ package = "env_logger"
 path = "fastrand/v1/crate"
 package = "fastrand"
 
+[patch.crates-io.font-types_v0_3]
+path = "font_types/v0_3/crate"
+package = "font-types"
+
 [patch.crates-io.getrandom_v0_2]
 path = "getrandom/v0_2/crate"
 package = "getrandom"
@@ -231,6 +239,10 @@ package = "rand_pcg"
 path = "rand/v0_8/crate"
 package = "rand"
 
+[patch.crates-io.read-fonts_v0_10]
+path = "read_fonts/v0_10/crate"
+package = "read-fonts"
+
 [patch.crates-io.regex-syntax_v0_6]
 path = "regex_syntax/v0_6/crate"
 package = "regex-syntax"
@@ -254,6 +266,14 @@ package = "rstest_reuse"
 [patch.crates-io.rstest_v0_17]
 path = "rstest/v0_17/crate"
 package = "rstest"
+
+[patch.crates-io.rustc-demangle-capi_v0_1]
+path = "rustc_demangle_capi/v0_1/crate"
+package = "rustc-demangle-capi"
+
+[patch.crates-io.rustc-demangle_v0_1]
+path = "rustc_demangle/v0_1/crate"
+package = "rustc-demangle"
 
 [patch.crates-io.rustc_version_v0_4]
 path = "rustc_version/v0_4/crate"
@@ -286,6 +306,10 @@ package = "serde_json"
 [patch.crates-io.serde_v1]
 path = "serde/v1/crate"
 package = "serde"
+
+[patch.crates-io.skrifa_v0_9]
+path = "skrifa/v0_9/crate"
+package = "skrifa"
 
 [patch.crates-io.small_ctor_v0_1]
 path = "small_ctor/v0_1/crate"

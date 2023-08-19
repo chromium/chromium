@@ -13,6 +13,8 @@
 #include "media/cast/encoding/video_encoder.h"
 
 namespace media {
+
+class VideoEncoderMetricsProvider;
 class VideoFrame;
 
 namespace cast {
@@ -29,9 +31,11 @@ class VideoEncoderImpl final : public VideoEncoder {
   // Returns true if VideoEncoderImpl can be used with the given |video_config|.
   static bool IsSupported(const FrameSenderConfig& video_config);
 
-  VideoEncoderImpl(scoped_refptr<CastEnvironment> cast_environment,
-                   const FrameSenderConfig& video_config,
-                   StatusChangeCallback status_change_cb);
+  VideoEncoderImpl(
+      scoped_refptr<CastEnvironment> cast_environment,
+      const FrameSenderConfig& video_config,
+      std::unique_ptr<VideoEncoderMetricsProvider> metrics_provider,
+      StatusChangeCallback status_change_cb);
 
   VideoEncoderImpl(const VideoEncoderImpl&) = delete;
   VideoEncoderImpl& operator=(const VideoEncoderImpl&) = delete;

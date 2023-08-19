@@ -31,9 +31,9 @@
 #include "content/public/browser/web_contents.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #endif
 
@@ -109,6 +109,9 @@ void SSLErrorControllerClient::Proceed() {
           profile->GetSSLHostStateDelegate());
   // StatefulSSLHostStateDelegate can be null during tests.
   if (state) {
+    // Notifies the browser process when a certificate exception is allowed.
+    web_contents_->SetAlwaysSendSubresourceNotifications();
+
     state->AllowCert(
         request_url_.host(), *ssl_info_.cert.get(), cert_error_,
         web_contents_->GetPrimaryMainFrame()->GetStoragePartition());

@@ -6,11 +6,13 @@
 <translation id="1352919863522755794">El Gestor de contraseñas de Google no ha podido comprobar tus contraseñas. Revisa tu conexión a Internet.</translation>
 <translation id="1462727070346936664">Inicia sesión para sacarle el máximo partido a Chrome.</translation>
 <translation id="1479202195792305274">Chrome puede comprobar tus contraseñas cuando inicias sesión con tu cuenta de Google.</translation>
+<translation id="1491435845014430217">Activa Bloquear pestañas de Incógnito al cerrar Chrome.</translation>
 <translation id="1493827051843127077">Selecciona Chrome como navegador principal para sincronizar tus pestañas, contraseñas e información de pago en todos tus dispositivos</translation>
 <translation id="1504372625950710826">Chrome no ha podido comprobar si hay actualizaciones. Revisa tu conexión a Internet.</translation>
 <translation id="1511320244449497906">Has iniciado sesión y se están sincronizando tus datos con una cuenta gestionada por <ph name="DOMAIN" />, cuyo administrador ahora puede establecer políticas de usuarios específicas de esa cuenta que pueden cambiar el comportamiento de Chrome.</translation>
 <translation id="1554731936187952550">Tienes el sistema de seguridad más resistente de Chrome frente a sitios web dañinos</translation>
 <translation id="1682483655351012182">Sincronizar tus datos de Chrome</translation>
+<translation id="1733654336159102143">Bloquea tus pestañas de Incógnito al salir de Chrome o al cambiar de aplicación.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1843217788865538014">Usa Chrome automáticamente cuando hagas clic en enlaces de mensajes, documentos y otras aplicaciones.</translation>
 <translation id="1917964099031477364">Esta cuenta y los datos sin guardar se quitarán de Chrome y de las demás aplicaciones de Google instaladas en este dispositivo.</translation>
@@ -37,6 +39,7 @@
 <translation id="2767464022270041271">No hay contraseñas guardadas. El Gestor de contraseñas de Google puede comprobar tus contraseñas cuando las guardas.</translation>
 <translation id="2840432500933227975">En iOS, ve a Ajustes, selecciona Chrome, toca "App del navegador por omisión" y elige Chrome.</translation>
 <translation id="2869959624320573933">Inicia sesión en Chrome</translation>
+<translation id="2876628302275096482">Más información sobre <ph name="BEGIN_LINK" />cómo protege Chrome la privacidad de tus datos<ph name="END_LINK" /></translation>
 <translation id="2957447865124070833">Selecciona <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Al cerrar sesión en una cuenta gestionada por <ph name="SIGNOUT_MANAGED_DOMAIN" />, se eliminan tus datos de Chrome en este dispositivo, pero permanecen en tu cuenta de Google.</translation>
 <translation id="3167189358072330585">Tu cuenta no funciona en Google Chrome. Ponte en contacto con el administrador del dominio o utiliza una cuenta de Google normal para iniciar sesión.</translation>
@@ -48,15 +51,16 @@
 <translation id="3503014945441706099">Usa Navegación segura mejorada en este perfil de Chrome también</translation>
 <translation id="3522659714780527202">Activa la sincronización para ver tus pestañas dondequiera que uses Chrome</translation>
 <translation id="3533694711092285624">No hay ninguna contraseña guardada. Chrome puede comprobar tus contraseñas cuando las guardas.</translation>
+<translation id="3594076341410558780">Ocultar "Sácale el máximo partido a Chrome"</translation>
 <translation id="3655656110921623717">Esto significa que Chrome siempre solicitará la vista del sitio web como móvil.</translation>
-<translation id="3706101708757577809">Ahora puedes usar Chrome cada vez que toques enlaces de mensajes, documentos y otras aplicaciones.</translation>
-<translation id="3720541637541300822">Bloquear las pestañas de Incógnito al cerrar Chrome</translation>
+<translation id="3720541637541300822">Bloquear pestañas de Incógnito al cerrar Chrome</translation>
 <translation id="3827545470516145620">Estás usando la protección de seguridad estándar en este dispositivo</translation>
 <translation id="384394811301901750">Google Chrome no puede usar la cámara en este momento</translation>
 <translation id="3980220367029651214">Estás cambiando las cuentas de sincronización de <ph name="USER_EMAIL1" /> a <ph name="USER_EMAIL2" />. Tus datos actuales de Chrome están administrados por <ph name="DOMAIN" />. Se van a eliminar tus datos de este dispositivo, pero van a permanecer en <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Tu organización requiere que mantengas tu sesión cerrada en Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome no puede acceder a tus fotos y vídeos (para permitirlo, ve a Ajustes de iOS &gt; Privacidad &gt; Fotos).</translation>
 <translation id="4064699917955374540">Para usar y guardar los datos de Chrome en tu cuenta de Google, debes verificar tu identidad.</translation>
+<translation id="4093042601582616698">¿Establecer Chrome como navegador predeterminado?</translation>
 <translation id="417201473131094001">No compatible con Chrome Canary</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> ha usado Chrome y ha dejado marcadores, contraseñas y otras configuraciones en este dispositivo.</translation>
 <translation id="424864128008805179">¿Quieres cerrar sesión en Chrome?</translation>
@@ -69,15 +73,19 @@
 <translation id="4819268619367838612">Para ayudar a mejorar la aplicación, Chrome envía datos de uso y de fallos a Google. <ph name="BEGIN_LINK" />Gestionar<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">No compatible con Chrome Beta</translation>
 <translation id="4840404732697892756">El Gestor de contraseñas de Google puede comprobar tus contraseñas si inicias sesión con tu cuenta de Google.</translation>
+<translation id="4903674399067644695">En esta tarjeta se muestran sugerencias sobre cómo sacarle el máximo partido a Chrome.</translation>
 <translation id="5030102366287574140">Chrome puede ayudarte a protegerte frente a quiebras de seguridad de datos, sitios web no seguros y mucho más</translation>
 <translation id="5108659628347594808">Mejorar Chrome</translation>
 <translation id="5119391094379141756">Selecciona Chrome</translation>
 <translation id="5162467219239570114">Chrome no está actualizado. Si no hay ninguna actualización disponible en el <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, es posible que el dispositivo ya no sea compatible con las nuevas versiones de Chrome.</translation>
 <translation id="5389212809648216794">Google Chrome no puede utilizar la cámara porque la está usando otra aplicación</translation>
 <translation id="5395376160638294582">Asegúrate de que siempre puedas usar los datos de Chrome en tu cuenta de Google</translation>
+<translation id="5439191312780166229">Te envía advertencias sobre sitios peligrosos (aunque Google no los conozca) analizando más datos de sitios que la protección estándar. Si quieres, puedes omitir las advertencias de Chrome.</translation>
 <translation id="5460571915754665838">4. Selecciona Chrome</translation>
 <translation id="5492504007368565877">El Gestor de contraseñas de Google no puede comprobar tus contraseñas.</translation>
+<translation id="5527026824954593399">Toca Ver con Google Maps en Chrome.</translation>
 <translation id="5552137475244467770">Chrome comprueba de forma periódica si tus contraseñas se encuentran en alguna lista publicada en Internet. Cuando lo hace, se cifran tus contraseñas y nombres de usuario para que nadie pueda leerlos, ni siquiera Google.</translation>
+<translation id="5554520618550346933">Cuando usas una contraseña, Chrome te avisa si se ha publicado online. Al hacerlo, tus contraseñas y nombres de usuario se cifran para que nadie pueda leerlos, ni siquiera Google.</translation>
 <translation id="5639704535586432836">Abre Ajustes &gt; Privacidad &gt; Cámara &gt; Google Chrome y activa la cámara.</translation>
 <translation id="5642200033778930880">Google Chrome no puede usar la cámara en el modo Vista dividida</translation>
 <translation id="5661521615548540542">El Gestor de contraseñas de Google no ha podido comprobar todas las contraseñas. Inténtalo de nuevo más tarde.</translation>
@@ -112,10 +120,12 @@
 <translation id="7261678641327190792">Chrome no puede comprobar tus contraseñas</translation>
 <translation id="7272930098487145294">Para guardar imágenes, toca Ajustes y permite que Chrome añada fotos</translation>
 <translation id="7275945473750112644"><ph name="HOSTED_DOMAIN" /> gestiona tu cuenta, así que se borrarán tus datos de Chrome en este dispositivo</translation>
+<translation id="7394108421562933108">Maps en Chrome</translation>
 <translation id="7400722733683201933">Información de Google Chrome</translation>
 <translation id="7501046334262221972">Para seleccionar Chrome como navegador predeterminado, abre Ajustes, toca Aplicación de navegador predeterminada y, después, selecciona Chrome.</translation>
 <translation id="756809126120519699">Datos de Chrome borrados</translation>
 <translation id="7662994914830945754">Inicia sesión y activa la sincronización para ver tus pestañas dondequiera que uses Chrome</translation>
+<translation id="7669869107155339016">Ve a la configuración de Chrome.</translation>
 <translation id="7693590760643069321">Ahora puedes usar Chrome cada vez que toques enlaces de mensajes, documentos y otras aplicaciones.</translation>
 <translation id="7698568245838009292">Chrome quiere acceder a la cámara</translation>
 <translation id="7754633291442704733">Tu organización <ph name="DOMAIN" /> tendrá acceso a tus datos, tus marcadores, tu historial, tus contraseñas y otros ajustes de Chrome que almacenes en esta cuenta. Si cierras sesión, tus datos se borrarán de este dispositivo.  Sin embargo, tus datos permanecerán almacenados en tu cuenta de Google gestionada y estarán disponibles para tu organización. Tu organización también puede establecer políticas de usuarios específicas de esa cuenta que pueden cambiar el comportamiento de Chrome.</translation>
@@ -141,6 +151,7 @@
 <translation id="8765470054473112089">Al escribir en la barra de direcciones o en el cuadro de búsqueda, Chrome envía lo que escribes a tu buscador predeterminado para que obtengas mejores sugerencias. Esta función está desactivada en el modo Incógnito.</translation>
 <translation id="8772179140489533211">Muestra solicitudes para iniciar sesión en Chrome.</translation>
 <translation id="8788269841521769222">No tendrás que recordar esta contraseña. Se guardará en el Gestor de contraseñas de Google de <ph name="EMAIL" />.</translation>
+<translation id="8808828119384186784">Configuración de Chrome</translation>
 <translation id="8857676124663337448">El Gestor de contraseñas de Google no ha podido comprobar todas las contraseñas. Vuelve a intentarlo mañana.</translation>
 <translation id="8897749957032330183">Las contraseñas se guardan en el Gestor de contraseñas de Google en este dispositivo.</translation>
 <translation id="8969290730818637510">Si esta opción está activada:

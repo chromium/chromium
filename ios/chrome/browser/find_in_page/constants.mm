@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/find_in_page/constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 NSString* const kFindBarTextFieldWillBecomeFirstResponderNotification =
     @"kFindBarTextFieldWillBecomeFirstResponderNotification";
 NSString* const kFindBarTextFieldDidResignFirstResponderNotification =

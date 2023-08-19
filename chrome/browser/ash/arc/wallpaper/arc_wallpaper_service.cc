@@ -11,6 +11,7 @@
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -152,15 +153,14 @@ void ArcWallpaperService::SetDefaultWallpaper() {
   decode_request_.reset();
   const user_manager::User* const primary_user =
       UserManager::Get()->GetPrimaryUser();
-  WallpaperControllerClientImpl::Get()->SetDefaultWallpaper(
+  ash::WallpaperController::Get()->SetDefaultWallpaper(
       primary_user->GetAccountId(),
       primary_user->is_active() /*show_wallpaper=*/, base::DoNothing());
 }
 
 void ArcWallpaperService::GetWallpaper(GetWallpaperCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  gfx::ImageSkia image =
-      WallpaperControllerClientImpl::Get()->GetWallpaperImage();
+  gfx::ImageSkia image = ash::WallpaperController::Get()->GetWallpaperImage();
   if (!image.isNull())
     image.SetReadOnly();
   base::ThreadPool::PostTaskAndReplyWithResult(

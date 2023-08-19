@@ -5,10 +5,13 @@
 #include "components/live_caption/live_translate_controller.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
@@ -71,21 +74,17 @@ LiveTranslateController::LiveTranslateController(
 }
 
 LiveTranslateController::~LiveTranslateController() = default;
-
 // static
 void LiveTranslateController::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterBooleanPref(
-      prefs::kLiveTranslateEnabled, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(prefs::kLiveTranslateEnabled, false);
 
   registry->RegisterStringPref(prefs::kLiveTranslateTargetLanguageCode,
-                               speech::kUsEnglishLocale,
-                               user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+                               speech::kEnglishLocaleNoCountry);
 }
 
 void LiveTranslateController::GetTranslation(
-    const media::SpeechRecognitionResult& result,
+    const std::string& result,
     std::string source_language,
     std::string target_language,
     OnTranslateEventCallback callback) {
@@ -131,9 +130,8 @@ void LiveTranslateController::GetTranslation(
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  traffic_annotation);
   url_loader_->AttachStringForUpload(
-      base::StringPrintf(kTranslateBodyRequestTemplate,
-                         result.transcription.c_str(), source_language.c_str(),
-                         target_language.c_str()),
+      base::StringPrintf(kTranslateBodyRequestTemplate, result.c_str(),
+                         source_language.c_str(), target_language.c_str()),
       kUploadContentType);
   url_loader_->SetAllowHttpErrorResults(true);
 
@@ -141,9 +139,13 @@ void LiveTranslateController::GetTranslation(
   url_loader_->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(&LiveTranslateController::OnURLLoadComplete,
-                     base::Unretained(this), result.is_final,
-                     std::move(callback)),
+                     base::Unretained(this), std::move(callback)),
       kMaxMessageSize);
+
+  base::UmaHistogramSparse("Accessibility.LiveTranslate.TargetLanguage",
+                           base::HashMetricName(target_language));
+  base::UmaHistogramSparse("Accessibility.LiveTranslate.SourceLanguage",
+                           base::HashMetricName(source_language));
 }
 
 void LiveTranslateController::ResetURLLoaderFactory() {
@@ -159,7 +161,6 @@ void LiveTranslateController::ResetURLLoaderFactory() {
 }
 
 void LiveTranslateController::OnURLLoadComplete(
-    bool is_final,
     OnTranslateEventCallback callback,
     std::unique_ptr<std::string> response_body) {
   if (!response_body) {
@@ -171,12 +172,10 @@ void LiveTranslateController::OnURLLoadComplete(
   data_decoder_.ParseJson(
       *response_body,
       base::BindOnce(&LiveTranslateController::OnResponseJsonParsed,
-                     weak_factory_.GetWeakPtr(), is_final,
-                     std::move(callback)));
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void LiveTranslateController::OnResponseJsonParsed(
-    bool is_final,
     OnTranslateEventCallback callback,
     data_decoder::DataDecoder::ValueOrError result) {
   std::string error = [&]() -> std::string {
@@ -208,7 +207,7 @@ void LiveTranslateController::OnResponseJsonParsed(
 
     if (const std::string* value =
             translated_text->FindString(kTranslatedTextKey)) {
-      std::move(callback).Run(media::SpeechRecognitionResult(*value, is_final));
+      std::move(callback).Run(*value);
     }
     return std::string();
   }();

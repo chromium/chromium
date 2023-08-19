@@ -13,7 +13,7 @@ struct Config;
 
 // Segmentation Chrome Power user model provider. Provides a default model and
 // metadata for the Power user optimization target.
-class PowerUserSegment : public ModelProvider {
+class PowerUserSegment : public DefaultModelProvider {
  public:
   PowerUserSegment();
   ~PowerUserSegment() override = default;
@@ -29,11 +29,10 @@ class PowerUserSegment : public ModelProvider {
   static absl::optional<std::string> GetSubsegmentName(int subsegment_rank);
 
   // ModelProvider implementation.
-  void InitAndFetchModel(
-      const ModelUpdatedCallback& model_updated_callback) override;
+  std::unique_ptr<ModelConfig> GetModelConfig() override;
+
   void ExecuteModelWithInput(const std::vector<float>& inputs,
                              ExecutionCallback callback) override;
-  bool ModelAvailable() override;
 };
 
 }  // namespace segmentation_platform

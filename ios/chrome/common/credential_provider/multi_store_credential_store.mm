@@ -8,10 +8,6 @@
 #import "base/notreached.h"
 #import "ios/chrome/common/credential_provider/credential.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface MultiStoreCredentialStore ()
 
 @property(nonatomic, strong) NSArray<id<CredentialStore>>* stores;

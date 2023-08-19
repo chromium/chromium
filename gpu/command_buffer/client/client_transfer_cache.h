@@ -112,8 +112,10 @@ class GLES2_IMPL_EXPORT ClientTransferCache {
 
  private:
   using EntryKey = std::pair<uint32_t, uint32_t>;
-  ClientDiscardableHandle::Id FindDiscardableHandleId(const EntryKey& key);
-  ClientDiscardableHandle CreateDiscardableHandle(const EntryKey& key);
+  ClientDiscardableHandle::Id FindDiscardableHandleId(const EntryKey& key)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  ClientDiscardableHandle CreateDiscardableHandle(const EntryKey& key)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   const raw_ptr<Client> client_;  // not owned --- client_ outlives this
 
@@ -122,8 +124,9 @@ class GLES2_IMPL_EXPORT ClientTransferCache {
 
   // Access to other members must always be done with |lock_| held.
   base::Lock lock_;
-  ClientDiscardableManager discardable_manager_;
-  std::map<EntryKey, ClientDiscardableHandle::Id> discardable_handle_id_map_;
+  ClientDiscardableManager discardable_manager_ GUARDED_BY(lock_);
+  std::map<EntryKey, ClientDiscardableHandle::Id> discardable_handle_id_map_
+      GUARDED_BY(lock_);
 };
 
 }  // namespace gpu

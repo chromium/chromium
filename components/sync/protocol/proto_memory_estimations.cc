@@ -13,6 +13,7 @@
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
+#include "components/sync/protocol/nigori_specifics.pb.h"
 #include "components/sync/protocol/persisted_entity_data.pb.h"
 #include "components/sync/protocol/proto_visitors.h"
 #include "components/sync/protocol/sync_entity.pb.h"
@@ -145,6 +146,7 @@ size_t EstimateMemoryUsage(const P& proto) {
 #define INSTANTIATE(Proto) \
   template size_t EstimateMemoryUsage<Proto>(const Proto&);
 
+INSTANTIATE(CrossUserSharingPublicKey)
 INSTANTIATE(DataTypeContext)
 INSTANTIATE(DataTypeProgressMarker)
 INSTANTIATE(EntityMetadata)

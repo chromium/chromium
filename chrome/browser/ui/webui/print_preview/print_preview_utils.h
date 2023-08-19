@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_PRINT_PREVIEW_PRINT_PREVIEW_UTILS_H_
 #define CHROME_BROWSER_UI_WEBUI_PRINT_PREVIEW_PRINT_PREVIEW_UTILS_H_
 
-#include <string>
-
 #include "base/values.h"
 #include "chrome/browser/ui/webui/print_preview/printer_handler.h"
 #include "printing/backend/print_backend.h"
@@ -49,20 +47,20 @@ base::Value::Dict ValidateCddForPrintPreview(base::Value::Dict cdd);
 // Assumes `cdd` is the output from ValidateCddForPrintPreview().
 base::Value::Dict UpdateCddWithDpiIfMissing(base::Value::Dict cdd);
 
+// Returns the list of media size options from the `cdd`, or nullptr if it does
+// not exist.  Returns a pointer into `cdd`.
+const base::Value::List* GetMediaSizeOptionsFromCdd(
+    const base::Value::Dict& cdd);
+
+// Updates `cdd` by removing all continuous feed media size options.
+void FilterContinuousFeedMediaSizes(base::Value::Dict& cdd);
+
 // Starts a local print of `print_data` with print settings dictionary
 // `job_settings`. Runs `callback` on failure or success.
 void StartLocalPrint(base::Value::Dict job_settings,
                      scoped_refptr<base::RefCountedMemory> print_data,
                      content::WebContents* preview_web_contents,
                      PrinterHandler::PrintCallback callback);
-
-// Parses print job settings. Returns `true` on success.
-// This is used by extension printers.
-bool ParseSettings(const base::Value::Dict& settings,
-                   std::string* out_destination_id,
-                   std::string* out_capabilities,
-                   gfx::Size* out_page_size,
-                   base::Value::Dict* out_ticket);
 
 }  // namespace printing
 

@@ -158,7 +158,6 @@ public class OptionalBrowsingModeButtonController {
     }
 
     /** Returns the list of {@link ButtonDataProvider}s. */
-    @VisibleForTesting
     public List<ButtonDataProvider> getButtonDataProvidersForTesting() {
         return mButtonDataProviders;
     }

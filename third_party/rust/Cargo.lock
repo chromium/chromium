@@ -76,6 +76,7 @@ dependencies = [
  "cxx",
  "cxxbridge-cmd",
  "env_logger",
+ "font-types",
  "hex",
  "hex-literal",
  "lazy_static",
@@ -87,14 +88,17 @@ dependencies = [
  "quote",
  "rand",
  "rand_pcg",
+ "read-fonts",
  "regex",
  "rstest",
  "rstest_reuse",
+ "rustc-demangle-capi",
  "rustversion",
  "semver",
  "serde",
  "serde_json",
  "serde_json_lenient",
+ "skrifa",
  "small_ctor",
  "static_assertions",
  "syn",
@@ -173,6 +177,10 @@ version = "1.7.0"
 dependencies = [
  "instant",
 ]
+
+[[package]]
+name = "font-types"
+version = "0.3.4"
 
 [[package]]
 name = "getrandom"
@@ -273,7 +281,7 @@ version = "0.2.17"
 
 [[package]]
 name = "proc-macro2"
-version = "1.0.56"
+version = "1.0.66"
 dependencies = [
  "unicode-ident",
 ]
@@ -318,6 +326,13 @@ name = "rand_pcg"
 version = "0.3.1"
 dependencies = [
  "rand_core",
+]
+
+[[package]]
+name = "read-fonts"
+version = "0.10.0"
+dependencies = [
+ "font-types",
 ]
 
 [[package]]
@@ -380,6 +395,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "rustc-demangle"
+version = "0.1.23"
+
+[[package]]
+name = "rustc-demangle-capi"
+version = "0.1.0"
+dependencies = [
+ "rustc-demangle",
+]
+
+[[package]]
 name = "rustc_version"
 version = "0.4.0"
 dependencies = [
@@ -436,8 +462,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "skrifa"
+version = "0.9.0"
+dependencies = [
+ "read-fonts",
+]
+
+[[package]]
 name = "small_ctor"
-version = "0.1.0"
+version = "0.1.1"
 
 [[package]]
 name = "static_assertions"

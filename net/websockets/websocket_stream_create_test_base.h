@@ -90,7 +90,7 @@ class WebSocketStreamCreateTestBase : public WithTaskEnvironment {
       ssl_error_callbacks_;
   SSLInfo ssl_info_;
   bool ssl_fatal_ = false;
-  raw_ptr<URLRequest, DanglingUntriaged> url_request_ = nullptr;
+  raw_ptr<URLRequest, AcrossTasksDanglingUntriaged> url_request_ = nullptr;
   AuthChallengeInfo auth_challenge_info_;
   base::OnceCallback<void(const AuthCredentials*)> on_auth_required_callback_;
 

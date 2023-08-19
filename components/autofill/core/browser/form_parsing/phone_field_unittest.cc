@@ -160,9 +160,9 @@ FieldRendererId PhoneFieldTest::MakeFieldRendererId() {
 }
 
 void PhoneFieldTest::Clear() {
-  list_.clear();
-  field_.reset();
   field_candidates_map_.clear();
+  field_.reset();
+  list_.clear();
 }
 
 INSTANTIATE_TEST_SUITE_P(

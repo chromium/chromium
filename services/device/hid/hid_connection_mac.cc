@@ -4,9 +4,9 @@
 
 #include "services/device/hid/hid_connection_mac.h"
 
+#include "base/apple/foundation_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/mac/foundation_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/stringprintf.h"

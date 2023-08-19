@@ -29,9 +29,6 @@ def get_chromium_src_path() -> pathlib.Path:
         checkout containing this file.
     """
     _CHROMIUM_SRC_ROOT = pathlib.Path(__file__).resolve(strict=True).parents[3]
-    if _CHROMIUM_SRC_ROOT.name != 'src':
-        raise AssertionError(
-            f'_CHROMIUM_SRC_ROOT "{_CHROMIUM_SRC_ROOT}" should end in "src".')
 
     try:
         _assert_git_repository(_CHROMIUM_SRC_ROOT)

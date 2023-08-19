@@ -38,7 +38,6 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
-import org.chromium.ui.util.AccessibilityUtil;
 
 /**
  * Root component for the HistoryClusters UI component, which displays lists of related history
@@ -83,8 +82,7 @@ public class HistoryClustersCoordinator extends RecyclerView.OnScrollListener
     HistoryClustersCoordinator(@NonNull Profile profile, @NonNull Activity activity,
             TemplateUrlService templateUrlService, HistoryClustersDelegate historyClustersDelegate,
             HistoryClustersMetricsLogger metricsLogger,
-            SelectionDelegate<ClusterVisit> selectionDelegate, AccessibilityUtil accessibilityUtil,
-            SnackbarManager snackbarManager) {
+            SelectionDelegate<ClusterVisit> selectionDelegate, SnackbarManager snackbarManager) {
         mActivity = activity;
         mDelegate = historyClustersDelegate;
         mModelList = new ModelList();
@@ -99,7 +97,7 @@ public class HistoryClustersCoordinator extends RecyclerView.OnScrollListener
         mMediator = new HistoryClustersMediator(HistoryClustersBridge.getForProfile(profile),
                 new LargeIconBridge(profile), mActivity, mActivity.getResources(), mModelList,
                 mToolbarModel, mDelegate, System::currentTimeMillis, templateUrlService,
-                mSelectionDelegate, mMetricsLogger, accessibilityUtil, (message) -> {
+                mSelectionDelegate, mMetricsLogger, (message) -> {
                     if (mRecyclerView == null) return;
                     mRecyclerView.announceForAccessibility(message);
                 }, new Handler());
@@ -116,10 +114,10 @@ public class HistoryClustersCoordinator extends RecyclerView.OnScrollListener
      */
     public HistoryClustersCoordinator(@NonNull Profile profile, @NonNull Activity activity,
             TemplateUrlService templateUrlService, HistoryClustersDelegate historyClustersDelegate,
-            AccessibilityUtil accessibilityUtil, SnackbarManager snackbarManager) {
+            SnackbarManager snackbarManager) {
         this(profile, activity, templateUrlService, historyClustersDelegate,
                 new HistoryClustersMetricsLogger(templateUrlService), new SelectionDelegate<>(),
-                accessibilityUtil, snackbarManager);
+                snackbarManager);
     }
 
     public void destroy() {
@@ -357,7 +355,6 @@ public class HistoryClustersCoordinator extends RecyclerView.OnScrollListener
         return mRecyclerView;
     }
 
-    @VisibleForTesting
     public SelectableListToolbar getToolbarForTesting() {
         return mToolbar;
     }

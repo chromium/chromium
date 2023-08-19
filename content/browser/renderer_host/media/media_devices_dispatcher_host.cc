@@ -26,7 +26,6 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/media_device_id.h"
 #include "media/audio/audio_system.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_facing.h"
@@ -57,11 +56,9 @@ ToVectorAudioInputDeviceCapabilitiesPtr(
     blink::mojom::AudioInputDeviceCapabilitiesPtr capabilities_ptr =
         blink::mojom::AudioInputDeviceCapabilities::New();
     capabilities_ptr->device_id =
-        GetHMACForMediaDeviceID(salt_and_origin.device_id_salt,
-                                salt_and_origin.origin, capabilities.device_id);
-    capabilities_ptr->group_id =
-        GetHMACForMediaDeviceID(salt_and_origin.group_id_salt,
-                                salt_and_origin.origin, capabilities.group_id);
+        GetHMACForRawMediaDeviceID(salt_and_origin, capabilities.device_id);
+    capabilities_ptr->group_id = GetHMACForRawMediaDeviceID(
+        salt_and_origin, capabilities.group_id, /*use_group_salt=*/true);
     capabilities_ptr->parameters = capabilities.parameters;
     result.push_back(std::move(capabilities_ptr));
   }
@@ -163,13 +160,15 @@ void MediaDevicesDispatcherHost::EnumerateDevices(
 void MediaDevicesDispatcherHost::GetVideoInputCapabilities(
     GetVideoInputCapabilitiesCallback client_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+  GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(media_stream_manager_->media_devices_manager()
-                         ->salt_and_origin_callback(),
-                     render_process_id_, render_frame_id_),
-      base::BindOnce(&MediaDevicesDispatcherHost::GetDefaultVideoInputDeviceID,
-                     weak_factory_.GetWeakPtr(), std::move(client_callback)));
+      base::BindOnce(
+          media_stream_manager_->media_devices_manager()
+              ->get_salt_and_origin_cb(),
+          GlobalRenderFrameHostId(render_process_id_, render_frame_id_),
+          base::BindPostTaskToCurrentDefault(base::BindOnce(
+              &MediaDevicesDispatcherHost::GetDefaultVideoInputDeviceID,
+              weak_factory_.GetWeakPtr(), std::move(client_callback)))));
 }
 
 void MediaDevicesDispatcherHost::GetAllVideoInputDeviceFormats(
@@ -178,15 +177,17 @@ void MediaDevicesDispatcherHost::GetAllVideoInputDeviceFormats(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   auto scoped_trace = ScopedMediaStreamTrace::CreateIfEnabled(__func__);
-  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+  GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(media_stream_manager_->media_devices_manager()
-                         ->salt_and_origin_callback(),
-                     render_process_id_, render_frame_id_),
-      base::BindOnce(&MediaDevicesDispatcherHost::GetVideoInputDeviceFormats,
-                     weak_factory_.GetWeakPtr(), hashed_device_id,
-                     false /* try_in_use_first */, std::move(client_callback),
-                     std::move(scoped_trace)));
+      base::BindOnce(
+          media_stream_manager_->media_devices_manager()
+              ->get_salt_and_origin_cb(),
+          GlobalRenderFrameHostId(render_process_id_, render_frame_id_),
+          base::BindPostTaskToCurrentDefault(base::BindOnce(
+              &MediaDevicesDispatcherHost::GetVideoInputDeviceFormats,
+              weak_factory_.GetWeakPtr(), hashed_device_id,
+              false /* try_in_use_first */, std::move(client_callback),
+              std::move(scoped_trace)))));
 }
 
 void MediaDevicesDispatcherHost::GetAvailableVideoInputDeviceFormats(
@@ -195,26 +196,30 @@ void MediaDevicesDispatcherHost::GetAvailableVideoInputDeviceFormats(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   auto scoped_trace = ScopedMediaStreamTrace::CreateIfEnabled(__func__);
-  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+  GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(media_stream_manager_->media_devices_manager()
-                         ->salt_and_origin_callback(),
-                     render_process_id_, render_frame_id_),
-      base::BindOnce(&MediaDevicesDispatcherHost::GetVideoInputDeviceFormats,
-                     weak_factory_.GetWeakPtr(), hashed_device_id,
-                     true /* try_in_use_first */, std::move(client_callback),
-                     std::move(scoped_trace)));
+      base::BindOnce(
+          media_stream_manager_->media_devices_manager()
+              ->get_salt_and_origin_cb(),
+          GlobalRenderFrameHostId(render_process_id_, render_frame_id_),
+          base::BindPostTaskToCurrentDefault(base::BindOnce(
+              &MediaDevicesDispatcherHost::GetVideoInputDeviceFormats,
+              weak_factory_.GetWeakPtr(), hashed_device_id,
+              true /* try_in_use_first */, std::move(client_callback),
+              std::move(scoped_trace)))));
 }
 
 void MediaDevicesDispatcherHost::GetAudioInputCapabilities(
     GetAudioInputCapabilitiesCallback client_callback) {
-  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+  GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(media_stream_manager_->media_devices_manager()
-                         ->salt_and_origin_callback(),
-                     render_process_id_, render_frame_id_),
-      base::BindOnce(&MediaDevicesDispatcherHost::GetDefaultAudioInputDeviceID,
-                     weak_factory_.GetWeakPtr(), std::move(client_callback)));
+      base::BindOnce(
+          media_stream_manager_->media_devices_manager()
+              ->get_salt_and_origin_cb(),
+          GlobalRenderFrameHostId(render_process_id_, render_frame_id_),
+          base::BindPostTaskToCurrentDefault(base::BindOnce(
+              &MediaDevicesDispatcherHost::GetDefaultAudioInputDeviceID,
+              weak_factory_.GetWeakPtr(), std::move(client_callback)))));
 }
 
 void MediaDevicesDispatcherHost::AddMediaDevicesListener(
@@ -344,18 +349,18 @@ void MediaDevicesDispatcherHost::ProduceCropId(ProduceCropIdCallback callback) {
 
 void MediaDevicesDispatcherHost::GetDefaultVideoInputDeviceID(
     GetVideoInputCapabilitiesCallback client_callback,
-    MediaDeviceSaltAndOrigin salt_and_origin) {
+    const MediaDeviceSaltAndOrigin& salt_and_origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   GetDefaultMediaDeviceID(
       MediaDeviceType::MEDIA_VIDEO_INPUT, render_process_id_, render_frame_id_,
       base::BindOnce(&MediaDevicesDispatcherHost::GotDefaultVideoInputDeviceID,
                      weak_factory_.GetWeakPtr(), std::move(client_callback),
-                     std::move(salt_and_origin)));
+                     salt_and_origin));
 }
 
 void MediaDevicesDispatcherHost::GotDefaultVideoInputDeviceID(
     GetVideoInputCapabilitiesCallback client_callback,
-    MediaDeviceSaltAndOrigin salt_and_origin,
+    const MediaDeviceSaltAndOrigin& salt_and_origin,
     const std::string& default_device_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   MediaDevicesManager::BoolDeviceTypes requested_types;
@@ -368,7 +373,7 @@ void MediaDevicesDispatcherHost::GotDefaultVideoInputDeviceID(
       base::BindOnce(
           &MediaDevicesDispatcherHost::FinalizeGetVideoInputCapabilities,
           weak_factory_.GetWeakPtr(), std::move(client_callback),
-          std::move(salt_and_origin), std::move(default_device_id)));
+          salt_and_origin, default_device_id));
 }
 
 void MediaDevicesDispatcherHost::FinalizeGetVideoInputCapabilities(
@@ -382,11 +387,9 @@ void MediaDevicesDispatcherHost::FinalizeGetVideoInputCapabilities(
   for (const auto& device_info :
        enumeration[static_cast<size_t>(MediaDeviceType::MEDIA_VIDEO_INPUT)]) {
     std::string hmac_device_id =
-        GetHMACForMediaDeviceID(salt_and_origin.device_id_salt,
-                                salt_and_origin.origin, device_info.device_id);
-    std::string hmac_group_id =
-        GetHMACForMediaDeviceID(salt_and_origin.group_id_salt,
-                                salt_and_origin.origin, device_info.group_id);
+        GetHMACForRawMediaDeviceID(salt_and_origin, device_info.device_id);
+    std::string hmac_group_id = GetHMACForRawMediaDeviceID(
+        salt_and_origin, device_info.group_id, /*use_group_salt=*/true);
     blink::mojom::VideoInputDeviceCapabilitiesPtr capabilities =
         blink::mojom::VideoInputDeviceCapabilities::New();
     capabilities->device_id = std::move(hmac_device_id);
@@ -420,10 +423,9 @@ void MediaDevicesDispatcherHost::GetVideoInputDeviceFormats(
       "MDDH::GetVideoInputDeviceFormats({hashed_device_id=%s}, "
       "{try_in_use_first=%s})",
       hashed_device_id.c_str(), try_in_use_first ? "true" : "false"));
-  MediaStreamManager::GetMediaDeviceIDForHMAC(
-      blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
-      salt_and_origin.device_id_salt, salt_and_origin.origin, hashed_device_id,
-      base::SequencedTaskRunner::GetCurrentDefault(),
+  GetRawDeviceIDForMediaStreamHMAC(
+      blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, salt_and_origin,
+      hashed_device_id, base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(
           &MediaDevicesDispatcherHost::GetVideoInputDeviceFormatsWithRawId,
           weak_factory_.GetWeakPtr(), hashed_device_id, try_in_use_first,

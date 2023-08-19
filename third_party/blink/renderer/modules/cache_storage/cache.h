@@ -95,7 +95,7 @@ class MODULES_EXPORT Cache : public ScriptWrappable {
 
  protected:
   // Virtual for testing.
-  virtual AbortController* CreateAbortController(ExecutionContext* context);
+  virtual AbortController* CreateAbortController(ScriptState*);
 
  private:
   class BarrierCallbackForPutResponse;

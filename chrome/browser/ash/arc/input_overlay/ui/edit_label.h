@@ -14,31 +14,42 @@
 namespace arc::input_overlay {
 
 class Action;
+class DisplayOverlayController;
 
 // EditLabel shows input mappings and can be edited to change mappings.
 class EditLabel : public views::LabelButton {
  public:
   METADATA_HEADER(EditLabel);
-  explicit EditLabel(Action* action, size_t index = 0);
+  EditLabel(DisplayOverlayController* controller,
+            Action* action,
+            size_t index = 0);
 
   EditLabel(const EditLabel&) = delete;
   EditLabel& operator=(const EditLabel&) = delete;
   ~EditLabel() override;
 
- private:
-  void Init();
-  std::u16string CalculateAccessibleName();
+  void OnActionInputBindingUpdated();
+  // Returns true if the EditLabel shows "?".
   bool IsInputUnbound();
+
+ private:
+  friend class EditLabelTest;
+
+  void Init();
+  void SetTextLabel(const std::u16string& text);
+  void SetNameTagState(bool is_error, const std::u16string& error_tooltip);
+  std::u16string CalculateAccessibleName();
 
   void SetToDefault();
   void SetToFocused();
-  void SetToUnbound();
 
   // views::View:
   void OnFocus() override;
   void OnBlur() override;
+  bool OnKeyPressed(const ui::KeyEvent& event) override;
 
-  raw_ptr<Action> action_;
+  raw_ptr<DisplayOverlayController> controller_ = nullptr;
+  raw_ptr<Action, DanglingUntriaged> action_ = nullptr;
   size_t index_ = 0;
 };
 

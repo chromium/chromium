@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.ui.messages.snackbar;
 import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
-import android.os.Build;
 import android.widget.FrameLayout;
 
 import androidx.test.filters.MediumTest;
@@ -27,12 +26,11 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.MaxAndroidSdkLevel;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.chrome.browser.ui.messages.test.R;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.util.concurrent.TimeUnit;
@@ -86,7 +84,7 @@ public class SnackbarTest {
     @AfterClass
     public static void teardownSuite() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            SnackbarManager.restDurationForTesting();
+            SnackbarManager.resetDurationForTesting();
             sActivity = null;
             sMainParent = null;
             sAlternateParent = null;
@@ -95,8 +93,11 @@ public class SnackbarTest {
 
     @Before
     public void setupTest() {
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
-                () -> { mManager = new SnackbarManager(sActivity, sMainParent, null); });
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
+            mManager = new SnackbarManager(sActivity, sMainParent, null);
+            mManager.dismissAllSnackbars();
+            AccessibilityState.setIsPerformGesturesEnabledForTesting(false);
+        });
     }
 
     @Test
@@ -203,12 +204,10 @@ public class SnackbarTest {
 
     @Test
     @SmallTest
-    @MaxAndroidSdkLevel(value = Build.VERSION_CODES.P,
-            reason = "AccessibilityManager#getRecommendedTimeoutMillis() is only available in Q+")
-    public void
-    testSnackbarDuration() {
+    public void testSnackbarDuration() {
         final Snackbar snackbar = Snackbar.make(
                 "persistent", mDismissController, Snackbar.TYPE_ACTION, Snackbar.UMA_TEST_SNACKBAR);
+
         PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             snackbar.setDuration(0);
             Assert.assertEquals(
@@ -217,12 +216,29 @@ public class SnackbarTest {
         });
 
         PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
+            snackbar.setDuration(7);
+            Assert.assertEquals("Snackbar should use set duration when no gesture performing a11y "
+                            + "services are running.",
+                    7, mManager.getDuration(snackbar));
+        });
+
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
+            AccessibilityState.setIsPerformGesturesEnabledForTesting(true);
             snackbar.setDuration(SnackbarManager.getDefaultA11yDurationForTesting() / 3);
-            ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true);
             Assert.assertEquals(
-                    "Default a11y duration should be used if the duration of snackbar in non-a11y mode is less than half of it",
+                    "Snackbar should use default a11y duration when set duration is less "
+                            + "than default and a gesture performing a11y service is running.",
                     SnackbarManager.getDefaultA11yDurationForTesting(),
                     mManager.getDuration(snackbar));
+        });
+
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
+            AccessibilityState.setIsPerformGesturesEnabledForTesting(true);
+            snackbar.setDuration(SnackbarManager.getDefaultA11yDurationForTesting() * 3);
+            Assert.assertTrue("Snackbar should use the recommended duration if it is more than "
+                            + "the default a11y duration.",
+                    SnackbarManager.getDefaultA11yDurationForTesting()
+                            < mManager.getDuration(snackbar));
         });
     }
 
@@ -307,8 +323,8 @@ public class SnackbarTest {
     public void testSupplier_BeforeShowing() {
         final Snackbar snackbar = Snackbar.make(
                 "stack", mDismissController, Snackbar.TYPE_ACTION, Snackbar.UMA_TEST_SNACKBAR);
-        pollSnackbarCondition(
-                "Snackbar isShowing() and isShowingSupplier().get() values are not both false before showing snackbar.",
+        pollSnackbarCondition("Snackbar isShowing() and isShowingSupplier().get() values are not "
+                        + "both false before showing snackbar.",
                 () -> !mManager.isShowing() && !mManager.isShowingSupplier().get());
     }
 
@@ -318,8 +334,8 @@ public class SnackbarTest {
         final Snackbar snackbar = Snackbar.make(
                 "stack", mDismissController, Snackbar.TYPE_ACTION, Snackbar.UMA_TEST_SNACKBAR);
         PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> mManager.showSnackbar(snackbar));
-        pollSnackbarCondition(
-                "Snackbar isShowing() and isShowingSupplier().get() values are not both true while snackbar is showing.",
+        pollSnackbarCondition("Snackbar isShowing() and isShowingSupplier().get() values are not "
+                        + "both true while snackbar is showing.",
                 () -> mManager.isShowing() && mManager.isShowingSupplier().get());
     }
 
@@ -331,8 +347,8 @@ public class SnackbarTest {
         PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> mManager.showSnackbar(snackbar));
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT, () -> mManager.dismissSnackbars(mDismissController));
-        pollSnackbarCondition(
-                "Snackbar isShowing() and isShowingSupplier().get() values are not both false after dismissing snackbar.",
+        pollSnackbarCondition("Snackbar isShowing() and isShowingSupplier().get() values are not "
+                        + "both false after dismissing snackbar.",
                 () -> !mManager.isShowing() && !mManager.isShowingSupplier().get());
     }
 

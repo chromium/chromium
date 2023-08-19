@@ -58,8 +58,6 @@ class ShellSurfaceBase : public SurfaceTreeHost,
                          public wm::ActivationChangeObserver,
                          public wm::TooltipObserver {
  public:
-  using ShapeRects = std::vector<gfx::Rect>;
-
   // The |origin| is the initial position in screen coordinates. The position
   // specified as part of the geometry is relative to the shell surface.
   ShellSurfaceBase(Surface* surface,
@@ -259,6 +257,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   void Pin(bool trusted) override;
   void Unpin() override;
   void SetSystemModal(bool system_modal) override;
+  void SetTopInset(int height) override;
 
   // SurfaceObserver:
   void OnSurfaceDestroying(Surface* surface) override;
@@ -348,6 +347,8 @@ class ShellSurfaceBase : public SurfaceTreeHost,
     in_extended_drag_ = in_extended_drag;
   }
 
+  const absl::optional<cc::Region>& shape_dp() const { return shape_dp_; }
+
  protected:
   // Creates the |widget_| for |surface_|. |show_state| is the initial state
   // of the widget (e.g. maximized).
@@ -375,8 +376,8 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   virtual void SetWidgetBounds(const gfx::Rect& bounds,
                                bool adjusted_by_server) = 0;
 
-  // Updates the bounds of surface to match the current widget bounds.
-  void UpdateSurfaceBounds();
+  // Updates the bounds of host window to match the current widget bounds.
+  void UpdateHostWindowOrigin();
 
   // Creates, deletes and update the shadow bounds based on
   // |shadow_bounds_|.
@@ -443,8 +444,8 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   gfx::Rect geometry_;
   gfx::Rect pending_geometry_;
   absl::optional<gfx::Rect> initial_bounds_;
-  absl::optional<ShapeRects> shape_rects_dp_;
-  absl::optional<ShapeRects> pending_shape_rects_dp_;
+  absl::optional<cc::Region> shape_dp_;
+  absl::optional<cc::Region> pending_shape_dp_;
 
   int64_t display_id_ = display::kInvalidDisplayId;
   int64_t pending_display_id_ = display::kInvalidDisplayId;
@@ -460,6 +461,11 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   gfx::Size minimum_size_;
   gfx::Size maximum_size_;
 
+  // Effective and pending top inset (header) heights, that are reserved or
+  // occupied by the top window frame.
+  int top_inset_height_ = 0;
+  int pending_top_inset_height_ = 0;
+
   // The orientation to be applied when widget is being created. Only set when
   // widget is not created yet orientation lock is being set. This is currently
   // only used by ClientControlledShellSurface.
@@ -469,6 +475,13 @@ class ShellSurfaceBase : public SurfaceTreeHost,
  private:
   FRIEND_TEST_ALL_PREFIXES(ShellSurfaceTest,
                            HostWindowBoundsUpdatedAfterCommitWidget);
+  FRIEND_TEST_ALL_PREFIXES(ShellSurfaceTest,
+                           HostWindowBoundsUpdatedWithNegativeCoordinate);
+  FRIEND_TEST_ALL_PREFIXES(ShellSurfaceTest,
+                           HostWindowIncludesAllSubSurfacesWithScaleFactor);
+  FRIEND_TEST_ALL_PREFIXES(ShellSurfaceTest,
+                           ShadowBoundsWithNegativeCoordinate);
+  FRIEND_TEST_ALL_PREFIXES(ShellSurfaceTest, ShadowBoundsWithScaleFactor);
 
   // Called on widget creation to initialize its window state.
   // TODO(reveman): Remove virtual functions below to avoid FBC problem.
@@ -490,6 +503,8 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   bool IsFrameDecorationSupported(SurfaceFrameType frame_type);
 
   void UpdatePinned();
+
+  void UpdateTopInset();
 
   // Returns the resizability of the window. Useful to get the resizability
   // without actually updating it.

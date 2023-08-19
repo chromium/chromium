@@ -22,11 +22,7 @@ class ClipboardHistoryMainButton : public views::Button {
       delete;
   ~ClipboardHistoryMainButton() override;
 
-  void OnHostPseudoFocusUpdated();
-
  private:
-  void SetShouldHighlight(bool should_highlight);
-
   // views::Button:
   void OnClickCanceled(const ui::Event& event) override;
   void OnThemeChanged() override;
@@ -35,9 +31,6 @@ class ClipboardHistoryMainButton : public views::Button {
 
   // The parent view.
   const raw_ptr<ClipboardHistoryItemView, ExperimentalAsh> container_;
-
-  // Indicates whether the view should be highlighted.
-  bool should_highlight_ = false;
 };
 
 }  // namespace ash

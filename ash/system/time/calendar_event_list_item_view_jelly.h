@@ -41,6 +41,9 @@ struct SelectedDateParams {
 struct UIParams {
   bool round_top_corners = false;
   bool round_bottom_corners = false;
+  // If this view is for `CalendarUpNextView`. `CalendarUpNextView` event list
+  // item has a different focus ring rounded corner radius.
+  bool is_up_next_event_list_item = false;
   // Show the calendar indicator dots which show the event colors. If
   // false this piece of UI is not added to the view hierarchy.
   bool show_event_list_dot = false;

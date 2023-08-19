@@ -50,6 +50,12 @@ struct BLINK_COMMON_EXPORT
     return r.compositing_scale_factor;
   }
 
+  static float cursor_accessibility_scale_factor(
+      const blink::FrameVisualProperties& r) {
+    DCHECK_GE(r.cursor_accessibility_scale_factor, 1.f);
+    return r.cursor_accessibility_scale_factor;
+  }
+
   static const gfx::Size& visible_viewport_size(
       const blink::FrameVisualProperties& r) {
     return r.visible_viewport_size;

@@ -15,12 +15,12 @@
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/sync/password_sync_bridge.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
@@ -95,49 +95,14 @@ class SingleClientPasswordsSyncTestWithVerifier
   }
 };
 
-class SingleClientPasswordsSyncTestWithBaseSpecificsInMetadata
-    : public SyncTest {
+class SingleClientPasswordsSyncTestWithNotes : public SyncTest {
  public:
-  SingleClientPasswordsSyncTestWithBaseSpecificsInMetadata()
-      : SyncTest(SINGLE_CLIENT) {
+  SingleClientPasswordsSyncTestWithNotes() : SyncTest(SINGLE_CLIENT) {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{syncer::kCacheBaseEntitySpecificsInMetadata},
+        /*enabled_features=*/{syncer::kPasswordNotesWithBackup},
         /*disabled_features=*/{});
   }
-  ~SingleClientPasswordsSyncTestWithBaseSpecificsInMetadata() override =
-      default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-class SingleClientPasswordsSyncTestWithBaseSpecificsInMetadataAndNotes
-    : public SyncTest {
- public:
-  SingleClientPasswordsSyncTestWithBaseSpecificsInMetadataAndNotes()
-      : SyncTest(SINGLE_CLIENT) {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{syncer::kCacheBaseEntitySpecificsInMetadata,
-                              syncer::kPasswordNotesWithBackup},
-        /*disabled_features=*/{});
-  }
-  ~SingleClientPasswordsSyncTestWithBaseSpecificsInMetadataAndNotes() override =
-      default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-class SingleClientPasswordsSyncTestWithCachingSpecificsEnabledAfterRestart
-    : public SyncTest {
- public:
-  SingleClientPasswordsSyncTestWithCachingSpecificsEnabledAfterRestart()
-      : SyncTest(SINGLE_CLIENT) {
-    feature_list_.InitWithFeatureState(
-        syncer::kCacheBaseEntitySpecificsInMetadata, GetTestPreCount() == 0);
-  }
-  ~SingleClientPasswordsSyncTestWithCachingSpecificsEnabledAfterRestart()
-      override = default;
+  ~SingleClientPasswordsSyncTestWithNotes() override = default;
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -620,7 +585,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTestWithBaseSpecificsInMetadata,
+IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTest,
                        PreservesUnsupportedFieldsDataOnCommits) {
   // Create an unsupported field with an unused tag.
   const std::string kUnsupportedField =
@@ -671,9 +636,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTestWithBaseSpecificsInMetadata,
                   cryptographer.get(), "new_password", kUnsupportedField)));
 }
 
-IN_PROC_BROWSER_TEST_F(
-    SingleClientPasswordsSyncTestWithBaseSpecificsInMetadataAndNotes,
-    PreservesUnsupportedNotesFieldsDataOnCommits) {
+IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTestWithNotes,
+                       PreservesUnsupportedNotesFieldsDataOnCommits) {
   // Create an unsupported field in the PasswordSpecificsData_Notes with an
   // unused tag.
   const std::string kUnsupportedNotesField =
@@ -749,52 +713,6 @@ IN_PROC_BROWSER_TEST_F(
     EXPECT_EQ("new note value", decrypted_note.value());
     EXPECT_EQ(kUnsupportedNoteField, decrypted_note.unknown_fields());
   }
-}
-
-IN_PROC_BROWSER_TEST_F(
-    SingleClientPasswordsSyncTestWithCachingSpecificsEnabledAfterRestart,
-    PRE_PasswordBridgeIgnoresEntriesWithoutCachedBaseSpecificOnRestart) {
-  // Disabled by the test fixture.
-  ASSERT_FALSE(base::FeatureList::IsEnabled(
-      syncer::kCacheBaseEntitySpecificsInMetadata));
-
-  // Add password entity with caching entity specifics disabled in the PRE test.
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
-  PasswordForm form = CreateTestPasswordForm(0);
-  GetProfilePasswordStoreInterface(0)->AddLogin(form);
-  ASSERT_EQ(1, GetPasswordCount(0));
-
-  // Setup sync, wait for its completion, and make sure changes were synced.
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
-  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
-}
-
-// Regression test for crrev.com/c/3755526. Checks that password bridge ignores
-// entries without a password field in entity specifics cache (added by the PRE
-// test with `syncer::kCacheBaseEntitySpecificsInMetadata` disabled).
-IN_PROC_BROWSER_TEST_F(
-    SingleClientPasswordsSyncTestWithCachingSpecificsEnabledAfterRestart,
-    PasswordBridgeIgnoresEntriesWithoutCachedBaseSpecificOnRestart) {
-  // Enabled by the test fixture.
-  ASSERT_TRUE(base::FeatureList::IsEnabled(
-      syncer::kCacheBaseEntitySpecificsInMetadata));
-
-  base::HistogramTester histogram_tester;
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
-  ASSERT_EQ(1, GetPasswordCount(0));
-
-  // Wait for data types to be ready for sync (and hence model types are
-  // loaded).
-  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
-
-  // The original metric is defined in password_sync_bridge.cc.
-  const int kNone = 0;
-  // Since the local base entity specifics cache doesn't contain supported
-  // fields, running into the initial sync flow is not expected. Since the
-  // bridge is initialized for both account and profile store, the metric is
-  // expected to be recorded twice.
-  histogram_tester.ExpectUniqueSample("PasswordManager.SyncMetadataReadError2",
-                                      kNone, /*expected_bucket_count=*/2);
 }
 
 // The follow 3 tests are testing the interaction between clients that support

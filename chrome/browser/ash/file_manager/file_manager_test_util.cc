@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
-#include "base/memory/raw_ptr.h"
 
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/bind.h"
@@ -15,12 +15,16 @@
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager_observer.h"
+#include "chrome/browser/ash/file_system_provider/fake_extension_provider.h"
+#include "chrome/browser/ash/file_system_provider/fake_provided_file_system.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/common/extensions/extension_constants.h"
 #include "components/services/app_service/public/cpp/intent_test_util.h"
 #include "extensions/browser/entry_info.h"
 #include "extensions/browser/extension_system.h"
@@ -247,6 +251,162 @@ void AddFakeWebApp(const std::string& app_id,
                                                      activity_label));
   AddFakeAppWithIntentFilters(app_id, std::move(filters), apps::AppType::kWeb,
                               handles_intents, app_service_proxy);
+}
+
+FakeSimpleDriveFs::FakeSimpleDriveFs(const base::FilePath& mount_path)
+    : drivefs::FakeDriveFs(mount_path) {}
+
+FakeSimpleDriveFs::~FakeSimpleDriveFs() = default;
+
+void FakeSimpleDriveFs::SetMetadata(const drivefs::FakeMetadata& metadata) {
+  alternate_urls_[metadata.path] = metadata.alternate_url;
+}
+
+void FakeSimpleDriveFs::GetMetadata(const base::FilePath& path,
+                                    GetMetadataCallback callback) {
+  if (!alternate_urls_.count(path)) {
+    std::move(callback).Run(drive::FILE_ERROR_NOT_FOUND, nullptr);
+    return;
+  }
+  auto metadata = drivefs::mojom::FileMetadata::New();
+  metadata->alternate_url = alternate_urls_[path];
+  // Fill the rest of `metadata` with default values.
+  metadata->content_mime_type = "";
+  const drivefs::mojom::Capabilities& capabilities = {};
+  metadata->capabilities = capabilities.Clone();
+  metadata->folder_feature = {};
+  metadata->available_offline = false;
+  metadata->shared = false;
+  std::move(callback).Run(drive::FILE_ERROR_OK, std::move(metadata));
+}
+
+FakeSimpleDriveFsHelper::FakeSimpleDriveFsHelper(
+    Profile* profile,
+    const base::FilePath& mount_path)
+    : drive::FakeDriveFsHelper(profile, mount_path),
+      mount_path_(mount_path),
+      fake_drivefs_(mount_path_) {}
+
+base::RepeatingCallback<std::unique_ptr<drivefs::DriveFsBootstrapListener>()>
+FakeSimpleDriveFsHelper::CreateFakeDriveFsListenerFactory() {
+  return base::BindRepeating(&drivefs::FakeDriveFs::CreateMojoListener,
+                             base::Unretained(&fake_drivefs_));
+}
+
+FakeProvidedFileSystemOneDrive::FakeProvidedFileSystemOneDrive(
+    const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info)
+    : FakeProvidedFileSystem(file_system_info) {}
+
+ash::file_system_provider::AbortCallback
+FakeProvidedFileSystemOneDrive::CreateFile(
+    const base::FilePath& file_path,
+    storage::AsyncFileUtil::StatusCallback callback) {
+  if (create_file_error_ != base::File::Error::FILE_OK) {
+    std::move(callback).Run(create_file_error_);
+    return ash::file_system_provider::AbortCallback();
+  }
+  return FakeProvidedFileSystem::CreateFile(file_path, std::move(callback));
+}
+
+void FakeProvidedFileSystemOneDrive::SetCreateFileError(
+    base::File::Error error) {
+  create_file_error_ = error;
+}
+
+void FakeProvidedFileSystemOneDrive::SetGetActionsError(
+    base::File::Error error) {
+  get_actions_error_ = error;
+}
+
+void FakeProvidedFileSystemOneDrive::SetReauthenticationRequired(
+    bool reauthentication_required) {
+  reauthentication_required_ = reauthentication_required;
+}
+
+ash::file_system_provider::AbortCallback
+FakeProvidedFileSystemOneDrive::GetActions(
+    const std::vector<base::FilePath>& entry_paths,
+    GetActionsCallback callback) {
+  ash::file_system_provider::Actions actions;
+  // Expect only single entry requests.
+  if (entry_paths.size() != 1) {
+    std::move(callback).Run(actions, base::File::FILE_ERROR_NOT_FOUND);
+    return ash::file_system_provider::AbortCallback();
+  }
+  // If root requested, return ODFS metadata.
+  if (entry_paths[0].value() == ash::cloud_upload::kODFSMetadataQueryPath) {
+    actions.push_back(
+        {ash::cloud_upload::kUserEmailActionId, kSampleUserEmail1});
+    actions.push_back({ash::cloud_upload::kReauthenticationRequiredId,
+                       reauthentication_required_ ? "true" : "false"});
+    std::move(callback).Run(actions, base::File::FILE_OK);
+    return ash::file_system_provider::AbortCallback();
+  }
+  // If `get_actions_error_` set, mock error for non-root entry.
+  if (get_actions_error_ != base::File::Error::FILE_OK) {
+    std::move(callback).Run(actions, get_actions_error_);
+    return ash::file_system_provider::AbortCallback();
+  }
+  ash::file_system_provider::FakeEntry* entry = GetEntry(entry_paths[0]);
+  // If no entry exists, return error.
+  if (!entry) {
+    std::move(callback).Run(actions, base::File::FILE_ERROR_NOT_FOUND);
+    return ash::file_system_provider::AbortCallback();
+  }
+  // Otherwise, return |kODFSSampleUrl|.
+  actions.push_back({ash::cloud_upload::kOneDriveUrlActionId, kODFSSampleUrl});
+
+  std::move(callback).Run(actions, base::File::FILE_OK);
+  return ash::file_system_provider::AbortCallback();
+}
+
+std::unique_ptr<ash::file_system_provider::ProviderInterface>
+FakeExtensionProviderOneDrive::Create(
+    const extensions::ExtensionId& extension_id) {
+  ash::file_system_provider::Capabilities default_capabilities(
+      false, false, false, extensions::SOURCE_NETWORK);
+  return std::unique_ptr<ProviderInterface>(
+      new FakeExtensionProviderOneDrive(extension_id, default_capabilities));
+}
+
+std::unique_ptr<ash::file_system_provider::ProvidedFileSystemInterface>
+FakeExtensionProviderOneDrive::CreateProvidedFileSystem(
+    Profile* profile,
+    const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info) {
+  DCHECK(profile);
+  std::unique_ptr<FakeProvidedFileSystemOneDrive> fake_provided_file_system =
+      std::make_unique<FakeProvidedFileSystemOneDrive>(file_system_info);
+  return fake_provided_file_system;
+}
+
+FakeExtensionProviderOneDrive::FakeExtensionProviderOneDrive(
+    const extensions::ExtensionId& extension_id,
+    const ash::file_system_provider::Capabilities& capabilities)
+    : FakeExtensionProvider(extension_id, capabilities) {}
+
+FakeProvidedFileSystemOneDrive* CreateFakeProvidedFileSystemOneDrive(
+    Profile* profile) {
+  // Create a fake ODFS.
+  ash::file_system_provider::Service* service =
+      ash::file_system_provider::Service::Get(profile);
+  service->RegisterProvider(test::FakeExtensionProviderOneDrive::Create(
+      extension_misc::kODFSExtensionId));
+  ash::file_system_provider::ProviderId provider_id =
+      ash::file_system_provider::ProviderId::CreateFromExtensionId(
+          extension_misc::kODFSExtensionId);
+  ash::file_system_provider::MountOptions options("odfs", "ODFS");
+  EXPECT_EQ(base::File::FILE_OK,
+            service->MountFileSystem(provider_id, options));
+
+  // Get a pointer to the fake ODFS.
+  std::vector<ash::file_system_provider::ProvidedFileSystemInfo> file_systems =
+      service->GetProvidedFileSystemInfoList(provider_id);
+  FakeProvidedFileSystemOneDrive* provided_file_system =
+      static_cast<test::FakeProvidedFileSystemOneDrive*>(
+          service->GetProvidedFileSystem(provider_id,
+                                         file_systems[0].file_system_id()));
+
+  return provided_file_system;
 }
 
 }  // namespace test

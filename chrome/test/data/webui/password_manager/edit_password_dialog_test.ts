@@ -108,6 +108,46 @@ suite('EditPasswordDialogTest', function() {
         dialog.$.usernameInput.errorMessage);
   });
 
+  test('username validation ignores passkeys & federated', async function() {
+    passwordManager.data.passwords = [
+      createPasswordEntry({
+        url: 'www.example.com',
+        username: 'password-username',
+        password: 'pass',
+      }),
+      createPasswordEntry({
+        url: 'www.example.com',
+        username: 'passkey-username',
+        isPasskey: true,
+      }),
+      createPasswordEntry({
+        url: 'www.example.com',
+        username: 'federated-username',
+        federationText: 'Sign in via google.com',
+      }),
+    ];
+    passwordManager.data.passwords[0]!.affiliatedDomains =
+        [createAffiliatedDomain('www.example.com')];
+    passwordManager.data.passwords[1]!.affiliatedDomains =
+        [createAffiliatedDomain('www.example.com')];
+    passwordManager.data.passwords[2]!.affiliatedDomains =
+        [createAffiliatedDomain('www.example.com')];
+
+    const dialog = document.createElement('edit-password-dialog');
+    dialog.credential = passwordManager.data.passwords[0]!;
+    document.body.appendChild(dialog);
+    await flushTasks();
+
+    // Update username to the same value as the passkey. There should not be an
+    // error.
+    dialog.$.usernameInput.value = 'passkey-username';
+    assertFalse(dialog.$.usernameInput.invalid);
+
+    // Update username to the same value as the federated credential.
+    dialog.$.usernameInput.value = 'federated-username';
+    assertFalse(dialog.$.usernameInput.invalid);
+  });
+
   test('view duplicated password', async function() {
     passwordManager.data.passwords = [
       createPasswordEntry(
@@ -201,12 +241,12 @@ suite('EditPasswordDialogTest', function() {
     assertFalse(dialog.$.saveButton.disabled);
     dialog.$.saveButton.click();
 
-    const {id, params} =
-        await passwordManager.whenCalled('changeSavedPassword');
+    const updatedCredential =
+        await passwordManager.whenCalled('changeCredential');
 
-    assertEquals(password.id, id);
-    assertEquals(dialog.$.usernameInput.value, params.username);
-    assertEquals(dialog.$.passwordInput.value, params.password);
-    assertEquals(dialog.$.passwordNote.value, params.note);
+    assertEquals(password.id, updatedCredential.id);
+    assertEquals(dialog.$.usernameInput.value, updatedCredential.username);
+    assertEquals(dialog.$.passwordInput.value, updatedCredential.password);
+    assertEquals(dialog.$.passwordNote.value, updatedCredential.note);
   });
 });

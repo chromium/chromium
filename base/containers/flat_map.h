@@ -7,6 +7,7 @@
 
 #include <functional>
 #include <tuple>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -381,6 +382,18 @@ constexpr flat_map<Key, Mapped, KeyCompare, Container> MakeFlatMap(
   return flat_map<Key, Mapped, KeyCompare, Container>(std::move(elements),
                                                       comp);
 }
+
+// Deduction guide to construct a flat_map from a Container of std::pair<Key,
+// Mapped> elements. The container does not have to be sorted or contain only
+// unique keys; construction will automatically discard duplicate keys, keeping
+// only the first.
+template <
+    class Container,
+    class Compare = std::less<>,
+    class Key = typename std::decay_t<Container>::value_type::first_type,
+    class Mapped = typename std::decay_t<Container>::value_type::second_type>
+flat_map(Container&&, Compare comp = {})
+    -> flat_map<Key, Mapped, Compare, std::decay_t<Container>>;
 
 }  // namespace base
 

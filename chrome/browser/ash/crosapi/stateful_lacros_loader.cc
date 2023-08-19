@@ -73,10 +73,10 @@ void PreloadComponent(
     std::string component) {
   if (!component.empty()) {
     LOG(WARNING) << "Preloading stateful lacros. " << component;
-    manager->Load(
-        component, component_updater::CrOSComponentManager::MountPolicy::kMount,
-        component_updater::CrOSComponentManager::UpdatePolicy::kDontForce,
-        base::BindOnce(&DonePreloading));
+    manager->Load(component,
+                  component_updater::CrOSComponentManager::MountPolicy::kMount,
+                  component_updater::CrOSComponentManager::UpdatePolicy::kSkip,
+                  base::BindOnce(&DonePreloading));
   }
 }
 
@@ -190,6 +190,8 @@ void StatefulLacrosLoader::GetVersion(
     return;
   }
 
+  // TODO(crbug.com/1455070): There's KI that the current implementation
+  // occasionally wrongly identifies there exists. Fix the logic.
   // If there currently isn't a stateful lacros-chrome binary, set `verison_`
   // null to proceed to use the rootfs lacros-chrome binary and start the
   // installation of the stateful lacros-chrome binary in the background.
@@ -205,8 +207,9 @@ void StatefulLacrosLoader::LoadInternal(LoadCompletionCallback callback) {
       lacros_component_name_,
       component_updater::CrOSComponentManager::MountPolicy::kMount,
       // If a compatible installation exists, use that and download any updates
-      // in the background.
-      component_updater::CrOSComponentManager::UpdatePolicy::kDontForce,
+      // in the background. Otherwise, report just there is no available
+      // stateful lacros.
+      component_updater::CrOSComponentManager::UpdatePolicy::kSkip,
       // If `callback` is null, means stateful lacros-chrome should be
       // installed/updated but rootfs lacros-chrome will be used.
       base::BindOnce(&StatefulLacrosLoader::OnLoad, weak_factory_.GetWeakPtr(),
@@ -277,7 +280,7 @@ void StatefulLacrosLoader::OnCheckInstalledToUnload(bool was_installed) {
     return;
   }
 
-  // Workaround for login crash when the user un-sets the LacrosSupport flag.
+  // Workaround for login crash when the user disables Lacros.
   // CrOSComponentManager::Unload() calls into code in MetadataTable that
   // assumes that system salt is available. This isn't always true when chrome
   // restarts to apply non-owner flags. It's hard to make MetadataTable async.

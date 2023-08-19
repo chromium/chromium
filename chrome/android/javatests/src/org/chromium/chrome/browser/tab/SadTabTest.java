@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -189,6 +190,7 @@ public class SadTabTest {
     @Test
     @MediumTest
     @Feature({"SadTab"})
+    @DisabledTest(message = "https://crbug.com/1447840")
     public void testSadTabBrowserControlsVisibility() {
         TestThreadUtils.runOnUiThreadBlocking(
                 TabStateBrowserControlsVisibilityDelegate::disablePageLoadDelayForTests);

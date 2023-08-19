@@ -136,18 +136,17 @@ void Installer::DeleteOlderInstallPaths() {
     return;
   }
 
-  base::FileEnumerator file_enumerator(*app_install_dir, false,
-                                       base::FileEnumerator::DIRECTORIES);
-  for (auto path = file_enumerator.Next(); !path.value().empty();
-       path = file_enumerator.Next()) {
-    const base::Version version_dir(path.BaseName().MaybeAsASCII());
+  base::FileEnumerator(*app_install_dir, false,
+                       base::FileEnumerator::DIRECTORIES)
+      .ForEach([this](const base::FilePath& path) {
+        const base::Version version_dir(path.BaseName().MaybeAsASCII());
 
-    // Mark for deletion any valid versioned directory except the directory
-    // for the currently registered app.
-    if (version_dir.IsValid() && version_dir.CompareTo(pv_)) {
-      base::DeletePathRecursively(path);
-    }
-  }
+        // Mark for deletion any valid versioned directory except the directory
+        // for the currently registered app.
+        if (version_dir.IsValid() && version_dir.CompareTo(pv_)) {
+          base::DeletePathRecursively(path);
+        }
+      });
 }
 
 Installer::Result Installer::InstallHelper(

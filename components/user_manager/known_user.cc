@@ -21,6 +21,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/common_types.h"
 #include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_names.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -112,6 +113,9 @@ const char kPendingOnboardingScreen[] = "onboarding_screen_pending";
 // Key of the obsolete token handle rotation flag.
 const char kTokenHandleRotatedObsolete[] = "TokenHandleRotated";
 
+// Cache of the auth factors configured for the user.
+const char kAuthFactorPresenceCache[] = "AuthFactorsPresenceCache";
+
 // List containing all the known user preferences keys.
 const char* kReservedKeys[] = {kCanonicalEmail,
                                kGAIAIdKey,
@@ -134,7 +138,8 @@ const char* kReservedKeys[] = {kCanonicalEmail,
                                kPinAutosubmitBackfillNeeded,
                                kPasswordSyncToken,
                                kOnboardingCompletedVersion,
-                               kPendingOnboardingScreen};
+                               kPendingOnboardingScreen,
+                               kAuthFactorPresenceCache};
 
 // List containing all known user preference keys that used to be reserved and
 // are now obsolete.
@@ -200,6 +205,22 @@ void UpdateIdentity(const AccountId& account_id, base::Value::Dict& dict) {
   }
   dict.Set(kAccountTypeKey,
            AccountId::AccountTypeToString(account_id.GetAccountType()));
+}
+
+// Checks for platform-specific known users matching given |user_email|. If
+// data matches a known account, returns it.
+absl::optional<AccountId> GetPlatformKnownUserId(
+    const base::StringPiece user_email) {
+  if (user_email == kStubUserEmail) {
+    return StubAccountId();
+  }
+  if (user_email == kStubAdUserEmail) {
+    return StubAdAccountId();
+  }
+  if (user_email == kGuestUserName) {
+    return GuestAccountId();
+  }
+  return absl::nullopt;
 }
 
 }  // namespace
@@ -382,11 +403,12 @@ AccountId KnownUser::GetAccountId(const std::string& user_email,
     return EmptyAccountId();
   }
 
-  AccountId result(EmptyAccountId());
   // UserManager is usually NULL in unit tests.
-  if (account_type == AccountType::UNKNOWN && UserManager::IsInitialized() &&
-      UserManager::Get()->GetPlatformKnownUserId(user_email, &result)) {
-    return result;
+  if (account_type == AccountType::UNKNOWN) {
+    if (absl::optional<AccountId> result = GetPlatformKnownUserId(user_email);
+        result.has_value()) {
+      return result.value();
+    }
   }
 
   const std::string sanitized_email =
@@ -456,13 +478,10 @@ AccountId KnownUser::GetAccountIdByCryptohomeId(
     }
   }
 
-  // GetPlatformKnownAccountId
-  AccountId result(EmptyAccountId());
-  // UserManager is usually NULL in unit tests.
-  if (UserManager::IsInitialized() &&
-      UserManager::Get()->GetPlatformKnownUserId(cryptohome_id.value(),
-                                                 &result)) {
-    return result;
+  if (absl::optional<AccountId> result =
+          GetPlatformKnownUserId(cryptohome_id.value());
+      result.has_value()) {
+    return result.value();
   }
   return AccountId::FromNonCanonicalEmail(cryptohome_id.value(), std::string(),
                                           AccountType::UNKNOWN);
@@ -716,6 +735,19 @@ void KnownUser::PinAutosubmitSetBackfillNotNeeded(const AccountId& account_id) {
 void KnownUser::PinAutosubmitSetBackfillNeededForTests(
     const AccountId& account_id) {
   SetBooleanPref(account_id, kPinAutosubmitBackfillNeeded, true);
+}
+
+void KnownUser::SetAuthFactorCache(const AccountId& account_id,
+                                   base::Value::Dict cache) {
+  SetPath(account_id, kAuthFactorPresenceCache, base::Value(std::move(cache)));
+}
+
+base::Value::Dict KnownUser::GetAuthFactorCache(const AccountId& account_id) {
+  const auto* value = FindPath(account_id, kAuthFactorPresenceCache);
+  if (!value || !value->is_dict()) {
+    return base::Value::Dict();
+  }
+  return value->GetDict().Clone();
 }
 
 void KnownUser::SetPasswordSyncToken(const AccountId& account_id,

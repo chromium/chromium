@@ -5,14 +5,20 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 
 #import "base/memory/scoped_refptr.h"
+#import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/test/test_timeouts.h"
 #import "base/time/default_clock.h"
 #import "components/favicon/core/large_icon_service_impl.h"
 #import "components/favicon/core/test/mock_favicon_service.h"
 #import "components/ntp_tiles/icon_cacher.h"
 #import "components/ntp_tiles/most_visited_sites.h"
 #import "components/reading_list/core/reading_list_model_impl.h"
+#import "components/segmentation_platform/public/constants.h"
+#import "components/segmentation_platform/public/features.h"
+#import "components/segmentation_platform/public/segmentation_platform_service.h"
+#import "components/signin/public/base/signin_pref_names.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_cache_factory.h"
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
@@ -25,6 +31,7 @@
 #import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/browser/reading_list/reading_list_test_utils.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -38,9 +45,11 @@
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/query_suggestion_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_consumer.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator_util.h"
@@ -59,18 +68,29 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+using set_up_list_prefs::SetUpListItemState;
 
 @protocol ContentSuggestionsMediatorDispatcher <BrowserCoordinatorCommands,
                                                 SnackbarCommands>
+@end
+
+@interface ContentSuggestionsMediator ()
+@property(nonatomic, assign, readonly) BOOL hasReceivedMagicStackResponse;
 @end
 
 // Testing Suite for ContentSuggestionsMediator
 class ContentSuggestionsMediatorTest : public PlatformTest {
  public:
   ContentSuggestionsMediatorTest() {
+    // Need to initialize features before constructing
+    // SegmentationPlatformServiceFactory.
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{segmentation_platform::features::kSegmentationPlatformFeature, {}},
+         {segmentation_platform::features::kSegmentationPlatformIosModuleRanker,
+          {{segmentation_platform::kDefaultModelEnabledParam, "true"}}},
+         {kIOSSetUpList, {}}},
+        {});
+
     TestChromeBrowserState::Builder test_cbs_builder;
     test_cbs_builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
@@ -88,9 +108,14 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
     test_cbs_builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         base::BindRepeating(AuthenticationServiceFactory::GetDefaultFactory()));
+    test_cbs_builder.AddTestingFactory(
+        segmentation_platform::SegmentationPlatformServiceFactory::
+            GetInstance(),
+        segmentation_platform::SegmentationPlatformServiceFactory::
+            GetDefaultFactory());
     chrome_browser_state_ = test_cbs_builder.Build();
 
-    scoped_feature_list_.InitWithFeatures({kIOSSetUpList}, {});
+    // Necessary set up for kIOSSetUpList.
     base::ScopedAllowBlockingForTesting allow_blocking;
     FirstRun::RemoveSentinel();
     base::File::Error fileError;
@@ -130,6 +155,9 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
         ReadingListModelFactory::GetForBrowserState(
             chrome_browser_state_.get());
 
+    syncer::SyncService* sync_service =
+        SyncServiceFactory::GetForBrowserState(chrome_browser_state_.get());
+
     AuthenticationService* authentication_service =
         AuthenticationServiceFactory::GetForBrowserState(
             chrome_browser_state_.get());
@@ -144,6 +172,7 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
                      readingListModel:readingListModel
                           prefService:chrome_browser_state_.get()->GetPrefs()
         isGoogleDefaultSearchProvider:NO
+                          syncService:sync_service
                 authenticationService:authentication_service
                       identityManager:identityManager
                               browser:browser_.get()];
@@ -152,7 +181,8 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
     mediator_.webStateList = browser_.get()->GetWebStateList();
     mediator_.webState = fake_web_state_.get();
 
-    metrics_recorder_ = [[ContentSuggestionsMetricsRecorder alloc] init];
+    metrics_recorder_ = [[ContentSuggestionsMetricsRecorder alloc]
+        initWithLocalState:chrome_browser_state_.get()->GetPrefs()];
     mediator_.contentSuggestionsMetricsRecorder = metrics_recorder_;
 
     promos_manager_ = std::make_unique<MockPromosManager>();
@@ -313,7 +343,41 @@ TEST_F(ContentSuggestionsMediatorTest, TestMagicStackConsumerCall) {
   OCMExpect([consumer_ setMagicStackOrder:[OCMArg any]]);
   OCMExpect([consumer_ showSetUpListWithItems:[OCMArg any]]);
   OCMExpect([consumer_ setShortcutTilesWithConfigs:[OCMArg any]]);
+  [consumer_ setExpectationOrderMatters:YES];
   mediator_.consumer = consumer_;
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that the -setMagicStackOrder: consumer call is executed with the
+// correct order when fetching from the SegmentationPlatformService.
+TEST_F(ContentSuggestionsMediatorTest,
+       TestMagicStackOrderSegmentationServiceCall) {
+  consumer_ = OCMProtocolMock(@protocol(ContentSuggestionsConsumer));
+  mediator_.segmentationService =
+      segmentation_platform::SegmentationPlatformServiceFactory::
+          GetForBrowserState(chrome_browser_state_.get());
+
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {{segmentation_platform::features::kSegmentationPlatformFeature, {}},
+       {segmentation_platform::features::kSegmentationPlatformIosModuleRanker,
+        {{segmentation_platform::kDefaultModelEnabledParam, "true"}}},
+       {kMagicStack, {}}},
+      {});
+  OCMExpect(
+      [consumer_ setMagicStackOrder:[OCMArg checkWithBlock:^BOOL(id value) {
+                   NSArray<NSNumber*>* magicStackOrder = (NSArray*)value;
+                   return [magicStackOrder count] == 2 &&
+                          0 == [magicStackOrder[0] intValue] &&
+                          1 == [magicStackOrder[1] intValue];
+                 }]]);
+  mediator_.consumer = consumer_;
+
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      TestTimeouts::action_timeout(), true, ^bool() {
+        base::RunLoop().RunUntilIdle();
+        return mediator_.hasReceivedMagicStackResponse;
+      }));
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
 
@@ -337,4 +401,21 @@ TEST_F(ContentSuggestionsMediatorTest, TestSetUpListConsumerCall) {
   set_up_list_prefs::MarkItemComplete(local_state_.Get(),
                                       SetUpListItemType::kAutofill);
   EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that when the user changes the setting to disable signin, the
+// SetUpList signin item is marked complete.
+TEST_F(ContentSuggestionsMediatorTest, TestOnServiceStatusChanged) {
+  // Verify the initial state.
+  SetUpListItemState item_state = set_up_list_prefs::GetItemState(
+      local_state_.Get(), SetUpListItemType::kSignInSync);
+  EXPECT_EQ(item_state, SetUpListItemState::kNotComplete);
+
+  // Simulate the user disabling signin.
+  chrome_browser_state_.get()->GetPrefs()->SetBoolean(prefs::kSigninAllowed,
+                                                      false);
+  // Verify that the signin item is complete.
+  item_state = set_up_list_prefs::GetItemState(local_state_.Get(),
+                                               SetUpListItemType::kSignInSync);
+  EXPECT_EQ(item_state, SetUpListItemState::kCompleteInList);
 }

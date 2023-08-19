@@ -4,14 +4,10 @@
 
 #import "ios/chrome/browser/ui/infobars/presentation/infobar_banner_transition_driver.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check_op.h"
-#import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/infobars/presentation/infobar_banner_animator.h"
 #import "ios/chrome/browser/ui/infobars/presentation/infobar_banner_presentation_controller.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 @interface InfobarBannerTransitionDriver ()
 // Object that handles the animation and interactivity for the Banner

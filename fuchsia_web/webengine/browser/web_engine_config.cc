@@ -11,6 +11,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/strings/strcat.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "cc/base/switches.h"
 #include "components/embedder_support/switches.h"
 #include "components/network_session_configurator/common/network_switches.h"
@@ -22,11 +23,24 @@
 #include "gpu/config/gpu_switches.h"
 #include "media/base/media_switches.h"
 #include "third_party/blink/public/common/switches.h"
+#include "third_party/widevine/cdm/buildflags.h"
 #include "ui/display/display_switches.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/ozone/public/ozone_switches.h"
 
 namespace {
+
+// Returns true if protected memory is supported. Currently we assume that it is
+// supported on ARM64, but not on x64.
+//
+// TODO(crbug.com/1013412): Detect if protected memory is supported.
+bool IsProtectedMemorySupported() {
+#if defined(ARCH_CPU_ARM64)
+  return true;
+#else
+  return false;
+#endif
+}
 
 // Appends `value` to the value of `switch_name` in the `command_line`.
 // The switch is assumed to consist of comma-separated values. If `switch_name`
@@ -49,8 +63,9 @@ void AppendToSwitch(base::StringPiece switch_name,
 bool AddCommandLineArgsFromConfig(const base::Value::Dict& config,
                                   base::CommandLine* command_line) {
   const base::Value::Dict* args = config.FindDict("command-line-args");
-  if (!args)
+  if (!args) {
     return true;
+  }
 
   static const base::StringPiece kAllowedArgs[] = {
       blink::switches::kSharedArrayBufferAllowedOrigins,
@@ -137,8 +152,9 @@ bool UpdateCommandLineFromConfigFile(const base::Value::Dict& config,
   // The FieldTrialList should be initialized only after config is loaded.
   CHECK(!base::FieldTrialList::GetInstance());
 
-  if (!AddCommandLineArgsFromConfig(config, command_line))
+  if (!AddCommandLineArgsFromConfig(config, command_line)) {
     return false;
+  }
 
   // The following two args are set by calling component. They are used to set
   // other flags below.
@@ -146,18 +162,23 @@ bool UpdateCommandLineFromConfigFile(const base::Value::Dict& config,
       command_line->HasSwitch(switches::kPlayreadyKeySystem);
   const bool widevine_enabled =
       command_line->HasSwitch(switches::kEnableWidevine);
-  // TODO(fxbug.dev/126639): Add `|| force_protected_video_buffers` once fixed.
-  const bool enable_protected_graphics = playready_enabled || widevine_enabled;
+
+  // Ignore "force-protected-video-buffers" if protected memory is not
+  // supported. This is necessary to workaround https://fxbug.dev/126639.
+  const bool force_protected_video_buffers =
+      IsProtectedMemorySupported() &&
+      config.FindBool("force-protected-video-buffers").value_or(false);
+
+  const bool enable_protected_graphics =
+      playready_enabled || widevine_enabled || force_protected_video_buffers;
 
   if (enable_protected_graphics) {
     command_line->AppendSwitch(switches::kEnableVulkanProtectedMemory);
     command_line->AppendSwitch(switches::kEnableProtectedVideoBuffers);
+  }
 
-    const bool force_protected_video_buffers =
-        config.FindBool("force-protected-video-buffers").value_or(false);
-    if (force_protected_video_buffers) {
-      command_line->AppendSwitch(switches::kForceProtectedVideoOutputBuffers);
-    }
+  if (force_protected_video_buffers) {
+    command_line->AppendSwitch(switches::kForceProtectedVideoOutputBuffers);
   }
 
   // TODO(crbug.com/1449048): Remove this switch once fixed.

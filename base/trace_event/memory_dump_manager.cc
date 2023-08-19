@@ -275,6 +275,12 @@ bool MemoryDumpManager::IsDumpProviderRegisteredForTesting(
   return false;
 }
 
+void MemoryDumpManager::ResetForTesting() {
+  AutoLock lock(lock_);
+  request_dump_function_.Reset();
+  dump_providers_.clear();
+}
+
 scoped_refptr<SequencedTaskRunner>
 MemoryDumpManager::GetDumpThreadTaskRunner() {
   base::AutoLock lock(lock_);

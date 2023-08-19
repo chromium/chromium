@@ -496,7 +496,7 @@ TEST(CertVerifierServiceFactoryTest, RootStoreInfoWithUpdatedRootStore) {
   EXPECT_EQ(info_ptr->version, root_store_proto.version_major());
   ASSERT_EQ(info_ptr->root_cert_info.size(), static_cast<std::size_t>(1));
 
-  net::der::Input subject_tlv(&root->GetSubject());
+  net::der::Input subject_tlv(root->GetSubject());
   net::RDNSequence subject_rdn;
   ASSERT_TRUE(net::ParseName(subject_tlv, &subject_rdn));
   std::string subject_string;

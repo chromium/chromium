@@ -180,6 +180,11 @@ class DownloadProtectionService {
 
   static std::string GetDownloadPingToken(const download::DownloadItem* item);
 
+  // Whether a DownloadProtectionData is found on the item.
+  static bool HasDownloadProtectionVerdict(const download::DownloadItem* item);
+
+  // Returns ClientDownloadResponse::SAFE by default if no
+  // DownloadProtectionData is found.
   static ClientDownloadResponse::Verdict GetDownloadProtectionVerdict(
       const download::DownloadItem* item);
 
@@ -215,7 +220,12 @@ class DownloadProtectionService {
       CheckDownloadRepeatingCallback callback,
       DeepScanningRequest::DeepScanTrigger trigger,
       DownloadCheckResult download_check_result,
-      enterprise_connectors::AnalysisSettings analysis_settings);
+      enterprise_connectors::AnalysisSettings analysis_settings,
+      const std::string& password);
+
+  // Helper function for consumer deep scans.
+  static void UploadForConsumerDeepScanning(download::DownloadItem* item,
+                                            const std::string& password);
 
   // Uploads a save package `item` for deep scanning. `save_package_file`
   // contains a mapping of on-disk files part of that save package to their

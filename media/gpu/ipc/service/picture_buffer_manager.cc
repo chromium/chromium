@@ -14,11 +14,12 @@
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
-#include "components/viz/common/resources/resource_format_utils.h"
+#include "build/build_config.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
 #if BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
+#include "media/base/media_switches.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #endif  // BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
 
@@ -97,6 +98,14 @@ class PictureBufferManagerImpl : public PictureBufferManager {
     DCHECK(!allocate_gpu_memory_buffers_ ||
            mode == VideoDecodeAccelerator::TextureAllocationMode::
                        kDoNotAllocateGLTextures);
+#if BUILDFLAG(IS_APPLE)
+    // GL texture allocation is not supported (and never requested) on Apple
+    // platforms: see
+    // VideoDecodeAccelerator::GetSharedImageTextureAllocationMode(), which is
+    // where the value of `mode` that is passed in to this method comes from.
+    CHECK_EQ(mode, VideoDecodeAccelerator::TextureAllocationMode::
+                       kDoNotAllocateGLTextures);
+#endif
 
     // TODO(sandersd): Consider requiring that CreatePictureBuffers() is
     // called with the context current.
@@ -112,6 +121,7 @@ class PictureBufferManagerImpl : public PictureBufferManager {
         picture_buffers_and_gmbs;
     for (uint32_t i = 0; i < count; i++) {
       PictureBufferData picture_data = {pixel_format, texture_size};
+#if !BUILDFLAG(IS_APPLE)
       if (mode ==
           VideoDecodeAccelerator::TextureAllocationMode::kAllocateGLTextures) {
         for (uint32_t j = 0; j < planes; j++) {
@@ -145,6 +155,7 @@ class PictureBufferManagerImpl : public PictureBufferManager {
               gpu::SyncToken(), texture_target);
         }
       }
+#endif  // !BUILDFLAG(IS_APPLE)
 
       gfx::GpuMemoryBufferHandle gmb_handle;
       if (allocate_gpu_memory_buffers_) {
@@ -153,7 +164,14 @@ class PictureBufferManagerImpl : public PictureBufferManager {
             CreateGpuMemoryBufferVideoFrame(
                 pixel_format, texture_size, gfx::Rect(texture_size),
                 texture_size, base::TimeDelta(),
-                gfx::BufferUsage::SCANOUT_VDA_WRITE);
+#if defined(ARCH_CPU_ARM_FAMILY)
+                base::FeatureList::IsEnabled(media::kPreferSoftwareMT21)
+                    ? gfx::BufferUsage::SCANOUT_CPU_READ_WRITE
+                    : gfx::BufferUsage::SCANOUT_VDA_WRITE
+#else
+                gfx::BufferUsage::SCANOUT_VDA_WRITE
+#endif
+            );
         if (!gpu_memory_buffer_video_frame)
           return {};
         if (gpu_memory_buffer_video_frame->format() != pixel_format) {
@@ -192,6 +210,12 @@ class PictureBufferManagerImpl : public PictureBufferManager {
         DCHECK(!picture_buffers_.count(picture_buffer_id));
         picture_buffers_[picture_buffer_id] = picture_data;
       }
+
+      // `picture_data.service_ids()` should be non-empty only when allocating
+      // GL textures.
+      CHECK(picture_data.service_ids.empty() ||
+            mode == VideoDecodeAccelerator::TextureAllocationMode::
+                        kAllocateGLTextures);
 
       // Since our textures have no client IDs, we reuse the service IDs as
       // convenient unique identifiers.

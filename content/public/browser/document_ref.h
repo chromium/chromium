@@ -14,7 +14,7 @@ class RenderFrameHost;
 
 // A non-nullable, checked reference to a document. This will CHECK if it is
 // accessed after the document is no longer valid, because the RenderFrameHost
-// is deleted or navigatese to a different document. See also
+// is deleted or navigated to a different document. See also
 // document_user_data.h.
 //
 // Note that though this is implemented as a base::SafeRef<RenderFrameHost>,
@@ -26,7 +26,7 @@ class RenderFrameHost;
 //
 // Treat this like you would a base::SafeRef, because that's essentially what it
 // is.
-class DocumentRef {
+class CONTENT_EXPORT DocumentRef {
  public:
   // Copyable and movable.
   DocumentRef(DocumentRef&&);

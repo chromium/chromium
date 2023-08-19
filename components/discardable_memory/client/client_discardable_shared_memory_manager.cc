@@ -30,10 +30,6 @@
 namespace discardable_memory {
 namespace {
 
-BASE_FEATURE(kShorterPeriodicPurge,
-             "ShorterPeriodicPurge",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Global atomic to generate unique discardable shared memory IDs.
 base::AtomicSequenceNumber g_next_discardable_shared_memory_id;
 
@@ -423,15 +419,8 @@ void ClientDiscardableSharedMemoryManager::ScheduledPurge() {
   // From local testing and UMA, memory usually accumulates slowly in renderers,
   // and can sit idle for hours. We purge only the old memory, as this should
   // recover the memory without adverse latency effects.
-  // TODO(crbug.com/1123679): Determine if |kMinAgeForScheduledPurge| and the
-  // constant from |ScheduledPurge| need to be tuned.
-  if (base::FeatureList::IsEnabled(kShorterPeriodicPurge)) {
-    PurgeUnlockedMemory(
-        ClientDiscardableSharedMemoryManager::kMinAgeForScheduledPurge / 2);
-  } else {
-    PurgeUnlockedMemory(
-        ClientDiscardableSharedMemoryManager::kMinAgeForScheduledPurge);
-  }
+  PurgeUnlockedMemory(
+      ClientDiscardableSharedMemoryManager::kMinAgeForScheduledPurge);
 
   bool should_schedule = false;
   {

@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "base/strings/escape.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -13,8 +15,10 @@
 #include "base/time/time.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "google_apis/google_api_keys.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -48,7 +52,9 @@ scoped_refptr<net::HttpResponseHeaders> CreateKeyRotatedHeaders() {
 class OhttpKeyServiceTest : public ::testing::Test {
  public:
   OhttpKeyServiceTest() {
-    feature_list_.InitAndDisableFeature(kSafeBrowsingLookupMechanismExperiment);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{kHashPrefixRealTimeLookups},
+        /*disabled_features=*/{kHashRealTimeOverOhttp});
   }
 
   void SetUp() override {
@@ -60,19 +66,30 @@ class OhttpKeyServiceTest : public ::testing::Test {
             test_url_loader_factory_.get());
     ohttp_key_service_ = std::make_unique<OhttpKeyService>(
         test_shared_loader_factory_, &pref_service_);
+    std::string key = google_apis::GetAPIKey();
+    key_param_ =
+        !key.empty()
+            ? base::StringPrintf("?key=%s",
+                                 base::EscapeQueryParamValue(key, true).c_str())
+            : "";
   }
 
   void TearDown() override { ohttp_key_service_->Shutdown(); }
 
  protected:
+  std::string GetExpectedKeyFetchServerUrl() {
+    return kExpectedKeyFetchServerUrl + key_param_;
+  }
+
   void SetupSuccessResponse() {
     test_url_loader_factory_->SetInterceptor(base::BindLambdaForTesting(
         [&](const network::ResourceRequest& resource_request) {
-          ASSERT_EQ(kExpectedKeyFetchServerUrl, resource_request.url.spec());
+          ASSERT_EQ(GetExpectedKeyFetchServerUrl(),
+                    resource_request.url.spec());
           ASSERT_EQ(network::mojom::CredentialsMode::kOmit,
                     resource_request.credentials_mode);
         }));
-    test_url_loader_factory_->AddResponse(kExpectedKeyFetchServerUrl,
+    test_url_loader_factory_->AddResponse(GetExpectedKeyFetchServerUrl(),
                                           kTestOhttpKey);
   }
 
@@ -83,7 +100,7 @@ class OhttpKeyServiceTest : public ::testing::Test {
     // update the key.
     ohttp_key_service_->set_ohttp_key_for_testing(
         {kTestOldOhttpKey, base::Time::Now() + base::Days(6)});
-    test_url_loader_factory_->AddResponse(kExpectedKeyFetchServerUrl,
+    test_url_loader_factory_->AddResponse(GetExpectedKeyFetchServerUrl(),
                                           kTestNewOhttpKey);
   }
 
@@ -103,6 +120,10 @@ class OhttpKeyServiceTest : public ::testing::Test {
   std::unique_ptr<network::TestURLLoaderFactory> test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   TestingPrefServiceSimple pref_service_;
+  std::string key_param_;
+
+ private:
+  hash_realtime_utils::GoogleChromeBrandingPretenderForTesting apply_branding_;
 };
 
 TEST_F(OhttpKeyServiceTest, GetOhttpKey_Success) {
@@ -127,7 +148,7 @@ TEST_F(OhttpKeyServiceTest, GetOhttpKey_Success) {
 }
 
 TEST_F(OhttpKeyServiceTest, GetOhttpKey_Failure) {
-  test_url_loader_factory_->AddResponse(kExpectedKeyFetchServerUrl,
+  test_url_loader_factory_->AddResponse(GetExpectedKeyFetchServerUrl(),
                                         kTestOhttpKey, net::HTTP_FORBIDDEN);
   base::MockCallback<OhttpKeyService::Callback> response_callback;
   EXPECT_CALL(response_callback, Run(Eq(absl::nullopt))).Times(1);
@@ -147,7 +168,7 @@ TEST_F(OhttpKeyServiceTest, GetOhttpKey_Failure) {
 }
 
 TEST_F(OhttpKeyServiceTest, GetOhttpKey_Backoff) {
-  test_url_loader_factory_->AddResponse(kExpectedKeyFetchServerUrl,
+  test_url_loader_factory_->AddResponse(GetExpectedKeyFetchServerUrl(),
                                         kTestOhttpKey, net::HTTP_FORBIDDEN);
   // Wait for 2 minutes so the async workflow triggers the backoff mode.
   task_environment_.FastForwardBy(base::Minutes(2));
@@ -205,7 +226,7 @@ TEST_F(OhttpKeyServiceTest, GetOhttpKey_WithExpiredCache) {
   ohttp_key_service_->GetOhttpKey(response_callback1.Get());
   task_environment_.RunUntilIdle();
 
-  test_url_loader_factory_->AddResponse(kExpectedKeyFetchServerUrl,
+  test_url_loader_factory_->AddResponse(GetExpectedKeyFetchServerUrl(),
                                         kTestNewOhttpKey);
   task_environment_.FastForwardBy(base::Days(5));
   base::MockCallback<OhttpKeyService::Callback> response_callback2;
@@ -303,7 +324,23 @@ TEST_F(OhttpKeyServiceTest, AsyncFetch_PrefChanges) {
   EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->expiration,
             original_expiration);
 
+  auto new_expiration = base::Time::Now() + base::Days(7);
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
+  task_environment_.RunUntilIdle();
+  // The service is re-enabled, so the expiration date is updated.
+  EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->expiration,
+            new_expiration);
+
+  pref_service_.SetBoolean(prefs::kHashPrefixRealTimeChecksAllowedByPolicy,
+                           false);
+  task_environment_.FastForwardBy(base::Days(6));
+  task_environment_.RunUntilIdle();
+  // The expiration is not extended because the service is disabled.
+  EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->expiration,
+            new_expiration);
+
+  pref_service_.SetBoolean(prefs::kHashPrefixRealTimeChecksAllowedByPolicy,
+                           true);
   task_environment_.RunUntilIdle();
   // The service is re-enabled, so the expiration date is updated.
   EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->expiration,
@@ -323,7 +360,7 @@ TEST_F(OhttpKeyServiceTest, AsyncFetch_Backoff) {
     }
   };
 
-  test_url_loader_factory_->AddResponse(kExpectedKeyFetchServerUrl,
+  test_url_loader_factory_->AddResponse(GetExpectedKeyFetchServerUrl(),
                                         kTestOhttpKey, net::HTTP_FORBIDDEN);
 
   // Try to fetch a new key three times in a row with the minimum wait time
@@ -340,14 +377,14 @@ TEST_F(OhttpKeyServiceTest, AsyncFetch_Backoff) {
   forward_and_check(base::Minutes(1), /*expected_key=*/absl::nullopt);
 
   // Set up a successful response.
-  test_url_loader_factory_->AddResponse(kExpectedKeyFetchServerUrl,
+  test_url_loader_factory_->AddResponse(GetExpectedKeyFetchServerUrl(),
                                         kTestOhttpKey);
   // Enter the backoff mode again with a longer duration.
   forward_and_check(base::Minutes(9), /*expected_key=*/absl::nullopt);
   // The key is succesfully fetched after exiting the backoff mode.
   forward_and_check(base::Minutes(1), /*expected_key=*/kTestOhttpKey);
 
-  test_url_loader_factory_->AddResponse(kExpectedKeyFetchServerUrl,
+  test_url_loader_factory_->AddResponse(GetExpectedKeyFetchServerUrl(),
                                         kTestNewOhttpKey);
   // After exiting the backoff mode, a new key should be fetched based on the
   // key expiration date.
@@ -365,7 +402,7 @@ TEST_F(OhttpKeyServiceTest, AsyncFetch_RescheduledBasedOnBackoffRemainingTime) {
   task_environment_.RunUntilIdle();
   ohttp_key_service_->set_ohttp_key_for_testing(
       {kTestOldOhttpKey, base::Time::Now() - base::Hours(1)});
-  test_url_loader_factory_->AddResponse(kExpectedKeyFetchServerUrl,
+  test_url_loader_factory_->AddResponse(GetExpectedKeyFetchServerUrl(),
                                         kTestOhttpKey, net::HTTP_FORBIDDEN);
   base::MockCallback<OhttpKeyService::Callback> response_callback;
   EXPECT_CALL(response_callback, Run(Eq(absl::nullopt))).Times(3);
@@ -448,17 +485,20 @@ TEST_F(OhttpKeyServiceTest, Shutdown) {
   task_environment_.RunUntilIdle();
 }
 
-class OhttpKeyServiceLookupMechnismEnabledTest : public OhttpKeyServiceTest {
+class OhttpKeyServiceLookupMechanismExperimentTest
+    : public OhttpKeyServiceTest {
  public:
-  OhttpKeyServiceLookupMechnismEnabledTest() {
-    feature_list_.InitAndEnableFeature(kSafeBrowsingLookupMechanismExperiment);
+  OhttpKeyServiceLookupMechanismExperimentTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{kHashRealTimeOverOhttp},
+        /*disabled_features=*/{kHashPrefixRealTimeLookups});
   }
 
  protected:
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(OhttpKeyServiceLookupMechnismEnabledTest, AsyncFetch_PrefChanges) {
+TEST_F(OhttpKeyServiceLookupMechanismExperimentTest, AsyncFetch_PrefChanges) {
   SetupSuccessResponse();
 
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);

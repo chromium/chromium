@@ -45,6 +45,7 @@ class CSSTryRule;
 class CSSKeyframeRule;
 class CSSMediaRule;
 class CSSContainerRule;
+class CSSPropertyRule;
 class CSSStyleDeclaration;
 class CSSStyleRule;
 class CSSStyleSheet;
@@ -200,6 +201,8 @@ class InspectorStyleSheet : public InspectorStyleSheetBase {
   std::unique_ptr<protocol::CSS::RuleUsage> BuildObjectForRuleUsage(CSSRule*,
                                                                     bool);
   std::unique_ptr<protocol::CSS::CSSTryRule> BuildObjectForTryRule(CSSTryRule*);
+  std::unique_ptr<protocol::CSS::CSSPropertyRule> BuildObjectForPropertyRule(
+      CSSPropertyRule*);
   std::unique_ptr<protocol::CSS::CSSKeyframeRule> BuildObjectForKeyframeRule(
       CSSKeyframeRule*);
   std::unique_ptr<protocol::CSS::SelectorList> BuildObjectForSelectorList(

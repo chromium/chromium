@@ -5,7 +5,6 @@
 import("//build/config/chrome_build.gni")
 
 source_set("cells") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "signin_promo_view.h",
     "signin_promo_view.mm",
@@ -15,6 +14,8 @@ source_set("cells") {
     "signin_promo_view_delegate.h",
     "table_view_account_item.h",
     "table_view_account_item.mm",
+    "table_view_central_account_item.h",
+    "table_view_central_account_item.mm",
     "table_view_identity_cell.h",
     "table_view_identity_cell.mm",
     "table_view_identity_item.h",
@@ -33,6 +34,7 @@ source_set("cells") {
     "//ios/chrome/browser/signin:constants",
     "//ios/chrome/browser/signin:signin_util",
     "//ios/chrome/browser/ui/authentication/views",
+    "//ios/chrome/browser/ui/content_suggestions:feature_flags",
     "//ios/chrome/browser/ui/ntp",
     "//ios/chrome/browser/ui/settings/cells:public",
     "//ios/chrome/common:button_config",
@@ -52,11 +54,11 @@ source_set("cells") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "signin_promo_view_unittest.mm",
     "table_view_account_item_unittest.mm",
+    "table_view_central_account_item_unittest.mm",
   ]
   deps = [
     ":cells",
@@ -91,7 +93,6 @@ source_set("unit_tests") {
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "signin_promo_view_constants.h",
     "signin_promo_view_constants.mm",

@@ -49,7 +49,13 @@
 #include "gpu/ipc/gpu_in_process_thread_service.h"
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "services/viz/privileged/mojom/gl/gpu_host.mojom.h"
+#include "skia/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(SKIA_USE_DAWN)
+#include "third_party/dawn/include/dawn/dawn_proc.h"
+#include "third_party/dawn/include/dawn/native/DawnNative.h"  // nogncheck
+#endif
 
 namespace cc {
 
@@ -61,20 +67,22 @@ PixelTest::PixelTest(GraphicsBackend backend)
   // floating point badness in texcoords.
   renderer_settings_.dont_round_texture_sizes_for_pixel_tests = true;
 
-  // Check if the graphics backend needs to initialize Vulkan.
+  // Check if the graphics backend needs to initialize Vulkan, Dawn.
   bool init_vulkan = false;
+  bool init_dawn = false;
   if (backend == kSkiaVulkan) {
     scoped_feature_list_.InitAndEnableFeature(features::kVulkan);
     init_vulkan = true;
   } else if (backend == kSkiaGraphite) {
     scoped_feature_list_.InitAndEnableFeature(features::kSkiaGraphite);
+    init_dawn = true;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     init_vulkan = true;
-#elif BUILDFLAG(IS_WIN)
-    // TODO(rivr): Initialize D3D12 for Windows.
-#else
-    NOTREACHED();
 #endif
+  } else {
+    // Ensure that we don't accidentally have vulkan or graphite enabled.
+    scoped_feature_list_.InitWithFeatures(
+        {}, {features::kVulkan, features::kSkiaGraphite});
   }
 
   if (init_vulkan) {
@@ -84,6 +92,12 @@ PixelTest::PixelTest(GraphicsBackend backend)
         ::switches::kUseVulkan,
         use_gpu ? ::switches::kVulkanImplementationNameNative
                 : ::switches::kVulkanImplementationNameSwiftshader);
+  }
+
+  if (init_dawn) {
+#if BUILDFLAG(SKIA_USE_DAWN)
+    dawnProcSetProcs(&dawn::native::GetProcs());
+#endif
   }
 }
 
@@ -277,7 +291,7 @@ void PixelTest::SetUpSkiaRenderer(gfx::SurfaceOrigin output_surface_origin) {
   // Set up the client side context provider, etc
   child_context_provider_ =
       base::MakeRefCounted<viz::TestInProcessContextProvider>(
-          viz::TestContextType::kGLES2, /*support_locking=*/false);
+          viz::TestContextType::kGLES2WithRaster, /*support_locking=*/false);
   gpu::ContextResult result = child_context_provider_->BindToCurrentSequence();
   DCHECK_EQ(result, gpu::ContextResult::kSuccess);
   child_resource_provider_ = std::make_unique<viz::ClientResourceProvider>();

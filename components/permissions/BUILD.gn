@@ -55,8 +55,6 @@ source_set("permissions") {
     "contexts/webxr_permission_context.h",
     "contexts/window_management_permission_context.cc",
     "contexts/window_management_permission_context.h",
-    "notification_permission_review_service.cc",
-    "notification_permission_review_service.h",
     "notifications_engagement_service.cc",
     "notifications_engagement_service.h",
     "object_permission_context_base.cc",
@@ -86,8 +84,6 @@ source_set("permissions") {
     "permission_request_manager.h",
     "permission_request_queue.cc",
     "permission_request_queue.h",
-    "permission_result.cc",
-    "permission_result.h",
     "permission_ui_selector.cc",
     "permission_ui_selector.h",
     "permission_uma_util.cc",
@@ -104,8 +100,6 @@ source_set("permissions") {
     "request_type.h",
     "switches.cc",
     "switches.h",
-    "unused_site_permissions_service.cc",
-    "unused_site_permissions_service.h",
   ]
   deps = [
     "//base",
@@ -163,8 +157,8 @@ source_set("permissions") {
       "android/permission_prompt/permission_prompt_android_factory.cc",
       "android/permission_prompt/permission_prompt_infobar.cc",
       "android/permission_prompt/permission_prompt_infobar.h",
-      "android/permissions_android_feature_list.cc",
-      "android/permissions_android_feature_list.h",
+      "android/permissions_android_feature_map.cc",
+      "android/permissions_android_feature_map.h",
       "android/permissions_reprompt_controller_android.cc",
       "android/permissions_reprompt_controller_android.h",
       "contexts/geolocation_permission_context_android.cc",
@@ -177,6 +171,7 @@ source_set("permissions") {
       "//components/location/android:location_settings_dialog_enums_java",
       "//components/location/android:settings",
       "//components/messages/android:android",
+      "//components/permissions/android:core_jni",
       "//components/permissions/android:jni_headers",
       "//components/permissions/android:native",
       "//components/prefs",
@@ -275,7 +270,6 @@ source_set("unit_tests") {
     sources += [
       "bluetooth_chooser_controller_unittest.cc",
       "bluetooth_scanning_prompt_controller_unittest.cc",
-      "unused_site_permissions_service_unittest.cc",
     ]
   }
   if (is_android) {

@@ -14,6 +14,7 @@ import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.InsetDrawable;
 import android.os.Handler;
@@ -28,7 +29,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.StringRes;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.R;
@@ -94,7 +94,7 @@ public abstract class PartialCustomTabBaseStrategy
     private ValueAnimator mAnimator;
     private Runnable mPostAnimationRunnable;
 
-    private BooleanSupplier mIsFullscreen;
+    private BooleanSupplier mIsFullscreenForTesting;
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
@@ -155,7 +155,6 @@ public abstract class PartialCustomTabBaseStrategy
         mIsInMultiWindowMode = MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity);
 
         mHandleStrategyFactory = handleStrategyFactory;
-        mIsFullscreen = fullscreenManager::getPersistentFullscreenMode;
 
         // Initialize size info used for resize callback to skip the very first one that settles
         // down to the initial height/width.
@@ -332,14 +331,11 @@ public abstract class PartialCustomTabBaseStrategy
         mOnActivityLayoutCallback.onActivityLayout(left, top, right, bottom, activityLayoutState);
     }
 
-    @PartialCustomTabType
-    public abstract int getStrategyType();
+    public abstract @PartialCustomTabType int getStrategyType();
 
-    @StringRes
-    public abstract int getTypeStringId();
+    public abstract @StringRes int getTypeStringId();
 
-    @ActivityLayoutState
-    protected abstract int getActivityLayoutState();
+    protected abstract @ActivityLayoutState int getActivityLayoutState();
 
     protected abstract void updatePosition();
 
@@ -484,6 +480,9 @@ public abstract class PartialCustomTabBaseStrategy
 
     protected void resetCoordinatorLayoutInsets() {
         ViewGroup coordinatorLayout = getCoordinatorLayout();
+        Drawable backgroundDrawable = coordinatorLayout.getBackground();
+        if (backgroundDrawable == null) return;
+
         // Get the insets of the CoordinatorLayout
         int insetLeft = coordinatorLayout.getPaddingLeft();
         int insetTop = coordinatorLayout.getPaddingTop();
@@ -491,13 +490,14 @@ public abstract class PartialCustomTabBaseStrategy
         int insetBottom = coordinatorLayout.getPaddingBottom();
 
         // Set the CoordinatorLayout to a new InsetDrawable with insets all offset back to 0.
-        InsetDrawable newDrawable = new InsetDrawable(coordinatorLayout.getBackground(), -insetLeft,
-                -insetTop, -insetRight, -insetBottom);
+        InsetDrawable newDrawable = new InsetDrawable(
+                backgroundDrawable, -insetLeft, -insetTop, -insetRight, -insetBottom);
         coordinatorLayout.setBackground(newDrawable);
     }
 
     protected boolean isFullscreen() {
-        return mIsFullscreen.getAsBoolean();
+        return mIsFullscreenForTesting != null ? mIsFullscreenForTesting.getAsBoolean()
+                                               : mFullscreenManager.getPersistentFullscreenMode();
     }
 
     protected void setupAnimator() {
@@ -585,7 +585,6 @@ public abstract class PartialCustomTabBaseStrategy
         }
     }
 
-    @VisibleForTesting
     void setMockViewForTesting(
             ViewGroup coordinatorLayout, CustomTabToolbar toolbar, View toolbarCoordinator) {
         mPositionUpdater = this::updatePosition;
@@ -595,18 +594,15 @@ public abstract class PartialCustomTabBaseStrategy
         onPostInflationStartup();
     }
 
-    @VisibleForTesting
     void setFullscreenSupplierForTesting(BooleanSupplier fullscreen) {
-        mIsFullscreen = fullscreen;
+        mIsFullscreenForTesting = fullscreen;
     }
 
-    @VisibleForTesting
     int getTopMarginForTesting() {
         var mlp = (ViewGroup.MarginLayoutParams) mToolbarCoordinator.getLayoutParams();
         return mlp.topMargin;
     }
 
-    @VisibleForTesting
     int getShadowOffsetForTesting() {
         return mShadowOffset;
     }

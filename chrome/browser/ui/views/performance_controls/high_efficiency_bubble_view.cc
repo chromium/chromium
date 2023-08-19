@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/performance_controls/high_efficiency_bubble_delegate.h"
 #include "chrome/browser/ui/performance_controls/high_efficiency_bubble_observer.h"
 #include "chrome/browser/ui/performance_controls/high_efficiency_chip_tab_helper.h"
+#include "chrome/browser/ui/performance_controls/high_efficiency_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
@@ -62,16 +63,25 @@ void AddBubbleBodyText(
       HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId);
 }
 
-void AddSiteToExclusionListButton(
-    ui::DialogModel::Builder* dialog_model_builder,
-    HighEfficiencyBubbleDelegate* bubble_delegate) {
+void AddCancelButton(ui::DialogModel::Builder* dialog_model_builder,
+                     HighEfficiencyBubbleDelegate* bubble_delegate,
+                     const bool is_site_excluded) {
+  int button_string_id;
+  base::OnceClosure callback;
+  if (is_site_excluded) {
+    button_string_id = IDS_HIGH_EFFICIENCY_DIALOG_BODY_LINK_TEXT;
+    callback = base::BindOnce(&HighEfficiencyBubbleDelegate::OnSettingsClicked,
+                              base::Unretained(bubble_delegate));
+  } else {
+    button_string_id = IDS_HIGH_EFFICIENCY_DIALOG_BUTTON_ADD_TO_EXCLUSION_LIST;
+    callback = base::BindOnce(
+        &HighEfficiencyBubbleDelegate::OnAddSiteToExceptionsListClicked,
+        base::Unretained(bubble_delegate));
+  }
   dialog_model_builder->AddCancelButton(
-      base::BindOnce(
-          &HighEfficiencyBubbleDelegate::OnAddSiteToExclusionListButtonClicked,
-          base::Unretained(bubble_delegate)),
+      std::move(callback),
       ui::DialogModelButton::Params()
-          .SetLabel(l10n_util::GetStringUTF16(
-              IDS_HIGH_EFFICIENCY_DIALOG_BUTTON_ADD_TO_EXCLUSION_LIST))
+          .SetLabel(l10n_util::GetStringUTF16(button_string_id))
           .SetId(HighEfficiencyBubbleView::kHighEfficiencyDialogCancelButton));
 }
 }  // namespace
@@ -105,30 +115,29 @@ views::BubbleDialogModelHost* HighEfficiencyBubbleView::ShowBubble(
 
   content::WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
-  HighEfficiencyChipTabHelper* const tab_helper =
-      HighEfficiencyChipTabHelper::FromWebContents(web_contents);
-  const uint64_t memory_savings = tab_helper->GetMemorySavingsInBytes();
+  const uint64_t memory_savings =
+      high_efficiency::GetDiscardedMemorySavingsInBytes(web_contents);
 
   ui::DialogModelLabel::TextReplacement memory_savings_text =
       ui::DialogModelLabel::CreatePlainText(ui::FormatBytes(memory_savings));
 
-  const Profile* profile = browser->profile();
+  Profile* const profile = browser->profile();
   const bool is_guest = profile->IsGuestSession();
   const bool is_forced_incognito =
       IncognitoModePrefs::GetAvailability(profile->GetPrefs()) ==
       policy::IncognitoModeAvailability::kForced;
 
   if (show_memory_savings_chart) {
-    AddBubbleBodyText(&dialog_model_builder,
-                      IDS_HIGH_EFFICIENCY_DIALOG_BODY_V2);
-
-    if (memory_savings > 0) {
+    if (memory_savings > kMemoryUsageThresholdInBytes) {
       dialog_model_builder.AddCustomField(
           std::make_unique<views::BubbleDialogModelHost::CustomView>(
               std::make_unique<HighEfficiencyResourceView>(memory_savings),
               views::BubbleDialogModelHost::FieldType::kText),
           kHighEfficiencyDialogResourceViewElementId);
     }
+
+    AddBubbleBodyText(&dialog_model_builder,
+                      IDS_HIGH_EFFICIENCY_DIALOG_BODY_V2);
   } else if (is_guest || is_forced_incognito) {
     // Show bubble without Performance Settings Page Link since guest users or
     // forced incognito users are not allowed to navigate to the performance
@@ -160,8 +169,11 @@ views::BubbleDialogModelHost* HighEfficiencyBubbleView::ShowBubble(
   }
 
   if (base::FeatureList::IsEnabled(
-          performance_manager::features::kDiscardExceptionsImprovements)) {
-    AddSiteToExclusionListButton(&dialog_model_builder, bubble_delegate);
+          performance_manager::features::kDiscardExceptionsImprovements) &&
+      !is_guest && !profile->IsIncognitoProfile()) {
+    const bool is_site_excluded = high_efficiency::IsSiteInExceptionsList(
+        profile->GetPrefs(), web_contents->GetURL().host());
+    AddCancelButton(&dialog_model_builder, bubble_delegate, is_site_excluded);
   }
 
   auto dialog_model = dialog_model_builder.Build();
@@ -173,12 +185,6 @@ views::BubbleDialogModelHost* HighEfficiencyBubbleView::ShowBubble(
       BrowserView::GetBrowserViewForBrowser(browser)
           ->toolbar_button_provider()
           ->GetPageActionIconView(PageActionIconType::kHighEfficiency));
-
-  if (base::FeatureList::IsEnabled(
-          performance_manager::features::kDiscardExceptionsImprovements)) {
-    bubble->SetButtonEnabled(ui::DialogButton::DIALOG_BUTTON_CANCEL,
-                             !tab_helper->GetWasSiteAddedToExclusionList());
-  }
 
   views::Widget* const widget =
       views::BubbleDialogDelegate::CreateBubble(std::move(bubble_unique));

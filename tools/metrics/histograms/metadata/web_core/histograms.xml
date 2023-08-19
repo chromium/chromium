@@ -22,16 +22,8 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<variants name="FindInPageRequestEndState">
-  <variant name=".Aborted"
-      summary="The request got aborted before it went through every text in
-               the document."/>
-  <variant name=".Finished"
-      summary="The request finished going through every text in the document."/>
-</variants>
-
 <histogram name="WebCore.DistillabilityUs" units="microseconds"
-    expires_after="2023-11-12">
+    expires_after="2024-01-14">
   <owner>wychen@chromium.org</owner>
   <owner>gilmanmh@google.com</owner>
   <summary>
@@ -48,9 +40,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.Document.execCommand" enum="MappedEditingCommands"
-    expires_after="2023-10-01">
-  <owner>yosin@chromium.org</owner>
+    expires_after="2024-02-04">
   <owner>kojii@chromium.org</owner>
+  <owner>tkent@chromium.org</owner>
   <summary>
     Counts the number of times each document.execCommand is executed. This
     doesn't count commands not supported by Blink.
@@ -58,9 +50,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.Editing.Commands" enum="MappedEditingCommands"
-    expires_after="2023-07-31">
-  <owner>yosin@chromium.org</owner>
+    expires_after="2023-12-04">
   <owner>kojii@chromium.org</owner>
+  <owner>tkent@chromium.org</owner>
   <summary>
     Counts the number of times each Editor::Command::execute is called. This
     doesn't count commands not supported by Blink.
@@ -68,7 +60,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.FindInPage.DurationBetweenKeystrokes" units="ms"
-    expires_after="2023-11-12">
+    expires_after="2024-01-14">
   <owner>jarhar@chromium.org</owner>
   <owner>vmpstr@chromium.org</owner>
   <summary>
@@ -80,32 +72,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="WebCore.FindInPage.NumberOfTasksPerRequest{FindInPageRequestEndState}"
-    units="tasks" expires_after="2021-04-04">
-  <owner>rakina@chromium.org</owner>
-  <owner>altimin@chromium.org</owner>
-  <summary>
-    Records the number of find-in-page tasks executed for a find-in-page
-    request. Emitted when a find-in-page request is finished (it went through
-    the whole document) or when it got aborted. {FindInPageRequestEndState}
-  </summary>
-  <token key="FindInPageRequestEndState" variants="FindInPageRequestEndState"/>
-</histogram>
-
-<histogram name="WebCore.FindInPage.RequestDuration{FindInPageRequestEndState}"
-    units="ms" expires_after="2021-04-04">
-  <owner>rakina@chromium.org</owner>
-  <owner>altimin@chromium.org</owner>
-  <summary>
-    Records how long one find-in-page request (consisting multiple tasks) took
-    from the request start until the last find-in-page task for the request
-    finished. Emitted when a find-in-page request is finished (it went through
-    the whole document) or when it got aborted. {FindInPageRequestEndState}
-  </summary>
-  <token key="FindInPageRequestEndState" variants="FindInPageRequestEndState"/>
-</histogram>
-
 <histogram name="WebCore.FindInPage.TaskDuration" units="ms"
     expires_after="2023-05-07">
   <owner>rakina@chromium.org</owner>
@@ -114,21 +80,6 @@ chromium-metrics-reviews@google.com.
     Records how long one find-in-page task took from invocation start to end.
     Emitted when a find-in-page task finished running.
   </summary>
-</histogram>
-
-<histogram
-    name="WebCore.FindInPage.TotalTaskDuration{FindInPageRequestEndState}"
-    units="ms" expires_after="2021-04-04">
-  <owner>rakina@chromium.org</owner>
-  <owner>altimin@chromium.org</owner>
-  <summary>
-    Records the total task duration of all of the find-in-page tasks for one
-    find-in-page request. Nothe that this does not include the time spent in
-    between tasks. Emitted when a find-in-page request is finished (it went
-    through the whole document) or when it got aborted.
-    {FindInPageRequestEndState}
-  </summary>
-  <token key="FindInPageRequestEndState" variants="FindInPageRequestEndState"/>
 </histogram>
 
 <histogram name="WebCore.Framebust.ClickThroughPosition"
@@ -539,6 +490,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebCore.IndexedDB.RequestDuration.{IDBRequestType}" units="ms"
+    expires_after="2024-08-01">
+  <owner>estade@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>Records end to end duration of an IndexedDB operation.</summary>
+  <token key="IDBRequestType">
+    <variant name="ObjectStoreAdd"/>
+    <variant name="ObjectStoreGet"/>
+    <variant name="ObjectStorePut"/>
+  </token>
+</histogram>
+
 <histogram name="WebCore.IndexedDB.TombstoneSweeper.DeletedTombstonesSize"
     units="bytes" expires_after="2024-05-24">
   <owner>ayui@chromium.org</owner>
@@ -720,7 +683,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.Scripts.Async.NotStreamingReason"
-    enum="NotStreamingReason" expires_after="2023-10-08">
+    enum="NotStreamingReason" expires_after="2023-12-10">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>Reason for not streaming an async script.</summary>
@@ -734,7 +697,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.Scripts.Deferred.NotStreamingReason"
-    enum="NotStreamingReason" expires_after="2023-10-08">
+    enum="NotStreamingReason" expires_after="2023-12-10">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>Reason for not streaming a deferred script.</summary>
@@ -759,7 +722,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.Scripts.InlineStreamerWaitTime" units="microseconds"
-    expires_after="2023-10-01">
+    expires_after="2023-12-04">
   <owner>cduvall@chromium.org</owner>
   <owner>leszeks@chromium.org</owner>
   <summary>
@@ -772,7 +735,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.Scripts.Other.NotStreamingReason"
-    enum="NotStreamingReason" expires_after="2023-10-08">
+    enum="NotStreamingReason" expires_after="2023-12-10">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>

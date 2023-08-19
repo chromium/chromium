@@ -8,6 +8,7 @@ import static org.chromium.components.browser_ui.settings.SearchUtils.handleSear
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -31,6 +32,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.UsedByReflection;
+import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.SearchUtils;
@@ -38,6 +40,10 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.BrowserContextHandle;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -82,6 +88,8 @@ public class AllSiteSettings extends SiteSettingsPreferenceFragment
     private String mSearch;
     // The websites that are currently displayed to the user.
     private List<WebsitePreference> mWebsites;
+    private PropertyModel mDialogModel;
+    private ModalDialogManager mDialogManager;
 
     @Nullable
     private Set<String> mSelectedDomains;
@@ -125,8 +133,13 @@ public class AllSiteSettings extends SiteSettingsPreferenceFragment
             mCategory = SiteSettingsCategory.createFromType(
                     browserContextHandle, SiteSettingsCategory.Type.ALL_SITES);
         }
+        if (mCategory.getType() == SiteSettingsCategory.Type.ZOOM) {
+            mCategory = SiteSettingsCategory.createFromType(
+                    browserContextHandle, SiteSettingsCategory.Type.ZOOM);
+        };
         if (!(mCategory.getType() == SiteSettingsCategory.Type.ALL_SITES
-                    || mCategory.getType() == SiteSettingsCategory.Type.USE_STORAGE)) {
+                    || mCategory.getType() == SiteSettingsCategory.Type.USE_STORAGE
+                    || mCategory.getType() == SiteSettingsCategory.Type.ZOOM)) {
             throw new IllegalArgumentException("Use SingleCategorySettings instead.");
         };
 
@@ -138,6 +151,14 @@ public class AllSiteSettings extends SiteSettingsPreferenceFragment
             mEmptyView = view.findViewById(R.id.empty_storage);
             mClearButton = view.findViewById(R.id.clear_button);
             mClearButton.setOnClickListener(this);
+        }
+
+        // Add custom views for Zoom Preferences to bottom of the fragment.
+        if (mCategory.getType() == SiteSettingsCategory.Type.ZOOM) {
+            inflater.inflate(R.layout.zoom_preferences_view, view, true);
+            mEmptyView = view.findViewById(R.id.site_settings_zoom_empty_zoom_levels_message_text);
+            mClearButton = view.findViewById(R.id.site_settings_zoom_clear_all_zoom_levels_button);
+            mClearButton.setOnClickListener(this::handleZoomClearAll);
         }
 
         mListView = getListView();
@@ -173,6 +194,51 @@ public class AllSiteSettings extends SiteSettingsPreferenceFragment
                         if (--numLeft[0] <= 0) getInfoForOrigins();
                     });
         }
+    }
+
+    /**
+     * This clears all the zooms for websites that are displayed to the user.
+     */
+    public void clearZooms() {
+        // TODO(crbug.com/1459631)
+        // - Hook up to HostZoomMap and reset all zooms to default zoom.
+        // - Remove all preferences from page and reset page if needed.
+    }
+
+    /** OnClickListener for the zoom button **/
+    public void handleZoomClearAll(View v) {
+        Resources resources = getContext().getResources();
+        mDialogModel =
+                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                        .with(ModalDialogProperties.CONTROLLER, makeController())
+                        .with(ModalDialogProperties.TITLE, resources,
+                                R.string.zoom_clear_all_zooms_dialog_title)
+                        .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1,
+                                getContext().getString(
+                                        R.string.site_settings_clear_all_zoom_levels_warning))
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources, R.string.clear)
+                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources,
+                                R.string.cancel)
+                        .build();
+
+        mDialogManager =
+                new ModalDialogManager(new AppModalPresenter(getContext()), ModalDialogType.APP);
+        mDialogManager.showDialog(mDialogModel, ModalDialogType.APP);
+    }
+
+    private ModalDialogProperties.Controller makeController() {
+        return new ModalDialogProperties.Controller() {
+            @Override
+            public void onClick(PropertyModel model, int buttonType) {
+                clearZooms();
+                mDialogManager.destroy();
+            }
+
+            @Override
+            public void onDismiss(PropertyModel model, int dismissalCause) {
+                mDialogManager.destroy();
+            }
+        };
     }
 
     /** OnClickListener for the clear button. We show an alert dialog to confirm the action */

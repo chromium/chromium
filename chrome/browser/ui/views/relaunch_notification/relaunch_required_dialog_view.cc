@@ -70,7 +70,7 @@ std::u16string RelaunchRequiredDialogView::GetWindowTitle() const {
   // "3..2..1.." countdown to change precisely on the per-second boundaries.
   const base::TimeDelta rounded_offset =
       relaunch_required_timer_.GetRoundedDeadlineDelta();
-
+  DCHECK_GE(rounded_offset, base::TimeDelta());
   int amount = rounded_offset.InSeconds();
   int message_id = IDS_RELAUNCH_REQUIRED_TITLE_SECONDS;
   if (rounded_offset.InDays() >= 2) {
@@ -103,6 +103,7 @@ RelaunchRequiredDialogView::RelaunchRequiredDialogView(
           deadline,
           base::BindRepeating(&RelaunchRequiredDialogView::UpdateWindowTitle,
                               base::Unretained(this))) {
+  set_internal_name("RelaunchRequiredDialog");
   SetDefaultButton(ui::DIALOG_BUTTON_NONE);
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringUTF16(IDS_RELAUNCH_ACCEPT_BUTTON));

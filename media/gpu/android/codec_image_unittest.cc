@@ -29,13 +29,16 @@
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/init/gl_factory.h"
 
+using testing::_;
+using testing::Eq;
 using testing::InSequence;
 using testing::Invoke;
 using testing::NiceMock;
 using testing::Return;
-using testing::_;
 
 namespace media {
+
+constexpr gfx::Size kFrameSize(640, 480);
 
 class CodecImageTest : public testing::Test {
  public:
@@ -47,7 +50,7 @@ class CodecImageTest : public testing::Test {
     wrapper_ = std::make_unique<CodecWrapper>(
         CodecSurfacePair(std::move(codec), new CodecSurfaceBundle()),
         base::DoNothing(), base::SequencedTaskRunner::GetCurrentDefault(),
-        gfx::Size(640, 480));
+        kFrameSize, absl::nullopt);
     ON_CALL(*codec_, DequeueOutputBuffer(_, _, _, _, _, _, _))
         .WillByDefault(Return(MEDIA_CODEC_OK));
 
@@ -73,6 +76,15 @@ class CodecImageTest : public testing::Test {
 
     auto texture_owner = base::MakeRefCounted<NiceMock<gpu::MockTextureOwner>>(
         texture_id_, context_.get(), surface_.get(), BindsTextureOnUpdate());
+    ON_CALL(*texture_owner, GetCodedSizeAndVisibleRect(_, _, _))
+        .WillByDefault(
+            Invoke([](gfx::Size rotated_visible_size, gfx::Size* coded_size,
+                      gfx::Rect* visible_rect) {
+              *visible_rect = gfx::Rect(rotated_visible_size);
+              *coded_size = visible_rect->size();
+              return true;
+            }));
+
     codec_buffer_wait_coordinator_ =
         base::MakeRefCounted<NiceMock<MockCodecBufferWaitCoordinator>>(
             std::move(texture_owner));
@@ -103,6 +115,9 @@ class CodecImageTest : public testing::Test {
             ? base::MakeRefCounted<gpu::RefCountedLockForTest>()
             : nullptr);
 
+    buffer_renderer->set_frame_info_callback(base::BindOnce(
+        &CodecImageTest::OnFrameInfoReady, base::Unretained(this)));
+
     scoped_refptr<CodecImage> image =
         new CodecImage(buffer_renderer->size(),
                        features::NeedThreadSafeAndroidMedia()
@@ -116,6 +131,12 @@ class CodecImageTest : public testing::Test {
     image->AddUnusedCB(std::move(unused_cb));
     return image;
   }
+
+  MOCK_METHOD(void,
+              OnFrameInfoReady,
+              (absl::optional<gfx::Size> coded_size,
+               absl::optional<gfx::Rect> visible_rect),
+              ());
 
   virtual bool BindsTextureOnUpdate() { return true; }
 
@@ -152,6 +173,7 @@ TEST_F(CodecImageTest, UnusedCBRunsOnDestruction) {
   i->AddUnusedCB(cb_2.Get());
   EXPECT_CALL(cb_1, Run(i.get()));
   EXPECT_CALL(cb_2, Run(i.get()));
+  EXPECT_CALL(*this, OnFrameInfoReady(Eq(absl::nullopt), Eq(absl::nullopt)));
   i = nullptr;
 }
 
@@ -165,6 +187,7 @@ TEST_F(CodecImageTest, UnusedCBRunsOnNotifyUnused) {
   i->AddUnusedCB(cb_2.Get());
   EXPECT_CALL(cb_1, Run(i.get()));
   EXPECT_CALL(cb_2, Run(i.get()));
+  EXPECT_CALL(*this, OnFrameInfoReady(Eq(absl::nullopt), Eq(absl::nullopt)));
 
   // Also verify that the output buffer and texture owner are released.
   i->NotifyUnused();
@@ -178,18 +201,21 @@ TEST_F(CodecImageTest, UnusedCBRunsOnNotifyUnused) {
 TEST_F(CodecImageTest, ImageStartsUnrendered) {
   auto i = NewImage(kTextureOwner);
   ASSERT_FALSE(i->was_rendered_to_front_buffer());
+  EXPECT_CALL(*this, OnFrameInfoReady(Eq(absl::nullopt), Eq(absl::nullopt)));
 }
 
 TEST_F(CodecImageTest, CanRenderTextureOwnerImageToBackBuffer) {
   auto i = NewImage(kTextureOwner);
   ASSERT_TRUE(i->RenderToTextureOwnerBackBuffer());
   ASSERT_FALSE(i->was_rendered_to_front_buffer());
+  EXPECT_CALL(*this, OnFrameInfoReady(Eq(absl::nullopt), Eq(absl::nullopt)));
 }
 
 TEST_F(CodecImageTest, CodecBufferInvalidationResultsInRenderingFailure) {
   auto i = NewImage(kTextureOwner);
   // Invalidate the backing codec buffer.
   wrapper_->TakeCodecSurfacePair();
+  EXPECT_CALL(*this, OnFrameInfoReady(Eq(absl::nullopt), Eq(absl::nullopt)));
   ASSERT_FALSE(i->RenderToTextureOwnerBackBuffer());
 }
 
@@ -201,6 +227,7 @@ TEST_F(CodecImageTest, RenderToBackBufferDoesntWait) {
   EXPECT_CALL(*codec_buffer_wait_coordinator_, WaitForFrameAvailable())
       .Times(0);
   ASSERT_TRUE(i->RenderToTextureOwnerBackBuffer());
+  EXPECT_CALL(*this, OnFrameInfoReady(Eq(absl::nullopt), Eq(absl::nullopt)));
 }
 
 TEST_F(CodecImageTest, PromotingTheBackBufferWaits) {
@@ -208,6 +235,8 @@ TEST_F(CodecImageTest, PromotingTheBackBufferWaits) {
   EXPECT_CALL(*codec_buffer_wait_coordinator_, SetReleaseTimeToNow()).Times(1);
   i->RenderToTextureOwnerBackBuffer();
   EXPECT_CALL(*codec_buffer_wait_coordinator_, WaitForFrameAvailable());
+  EXPECT_CALL(*this,
+              OnFrameInfoReady(Eq(kFrameSize), Eq(gfx::Rect(kFrameSize))));
   ASSERT_TRUE(i->RenderToFrontBuffer());
 }
 
@@ -217,12 +246,15 @@ TEST_F(CodecImageTest, PromotingTheBackBufferAlwaysSucceeds) {
   // Invalidating the codec buffer doesn't matter after it's rendered to the
   // back buffer.
   wrapper_->TakeCodecSurfacePair();
+  EXPECT_CALL(*this,
+              OnFrameInfoReady(Eq(kFrameSize), Eq(gfx::Rect(kFrameSize))));
   ASSERT_TRUE(i->RenderToFrontBuffer());
 }
 
 TEST_F(CodecImageTest, FrontBufferRenderingFailsIfBackBufferRenderingFailed) {
   auto i = NewImage(kTextureOwner);
   wrapper_->TakeCodecSurfacePair();
+  EXPECT_CALL(*this, OnFrameInfoReady(Eq(absl::nullopt), Eq(absl::nullopt)));
   i->RenderToTextureOwnerBackBuffer();
   ASSERT_FALSE(i->RenderToFrontBuffer());
 }
@@ -234,6 +266,8 @@ TEST_F(CodecImageTest, RenderToFrontBufferRestoresTextureBindings) {
   auto i = NewImage(kTextureOwner);
   EXPECT_CALL(*codec_buffer_wait_coordinator_->texture_owner(),
               UpdateTexImage());
+  EXPECT_CALL(*this,
+              OnFrameInfoReady(Eq(kFrameSize), Eq(gfx::Rect(kFrameSize))));
   i->RenderToFrontBuffer();
   GLint post_bound_texture = 0;
   glGetIntegerv(GL_TEXTURE_BINDING_EXTERNAL_OES, &post_bound_texture);
@@ -247,6 +281,8 @@ TEST_F(CodecImageTestExplicitBind, RenderToFrontBufferDoesNotBindTexture) {
   auto i = NewImage(kTextureOwner);
   EXPECT_CALL(*codec_buffer_wait_coordinator_->texture_owner(),
               UpdateTexImage());
+  EXPECT_CALL(*this,
+              OnFrameInfoReady(Eq(kFrameSize), Eq(gfx::Rect(kFrameSize))));
   i->RenderToFrontBuffer();
   GLint post_bound_texture = 0;
   glGetIntegerv(GL_TEXTURE_BINDING_EXTERNAL_OES, &post_bound_texture);
@@ -267,6 +303,8 @@ TEST_F(CodecImageTest, RenderToFrontBufferRestoresGLContext) {
   // UpdateTexImage sets it's own context.
   EXPECT_CALL(*codec_buffer_wait_coordinator_->texture_owner(),
               UpdateTexImage());
+  EXPECT_CALL(*this,
+              OnFrameInfoReady(Eq(kFrameSize), Eq(gfx::Rect(kFrameSize))));
   i->RenderToFrontBuffer();
   // Our context should have been restored.
   ASSERT_TRUE(context->IsCurrent(surface.get()));
@@ -285,6 +323,8 @@ TEST_F(CodecImageTest, GetAHardwareBuffer) {
 
   EXPECT_CALL(*codec_buffer_wait_coordinator_->texture_owner(),
               UpdateTexImage());
+  EXPECT_CALL(*this,
+              OnFrameInfoReady(Eq(kFrameSize), Eq(gfx::Rect(kFrameSize))));
   i->GetAHardwareBuffer();
   EXPECT_EQ(codec_buffer_wait_coordinator_->texture_owner()
                 ->get_a_hardware_buffer_count,
@@ -295,17 +335,17 @@ TEST_F(CodecImageTest, GetAHardwareBuffer) {
 TEST_F(CodecImageTest, GetAHardwareBufferAfterRelease) {
   // Make sure that we get a nullptr AHB once we've marked the image as unused.
   auto i = NewImage(kTextureOwner);
+  EXPECT_CALL(*this, OnFrameInfoReady(Eq(absl::nullopt), Eq(absl::nullopt)));
   i->NotifyUnused();
   EXPECT_FALSE(i->GetAHardwareBuffer());
 }
 
 TEST_F(CodecImageTest, RenderAfterUnusedDoesntCrash) {
   auto i = NewImage(kTextureOwner);
+  EXPECT_CALL(*this, OnFrameInfoReady(Eq(absl::nullopt), Eq(absl::nullopt)));
   i->NotifyUnused();
   EXPECT_FALSE(i->RenderToTextureOwnerBackBuffer());
-  EXPECT_FALSE(i->RenderToTextureOwnerFrontBuffer(
-      CodecImage::BindingsMode::kBindImage,
-      codec_buffer_wait_coordinator_->texture_owner()->GetTextureId()));
+  EXPECT_FALSE(i->RenderToTextureOwnerFrontBuffer());
 }
 
 }  // namespace media

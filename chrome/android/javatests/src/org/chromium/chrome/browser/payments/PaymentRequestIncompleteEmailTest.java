@@ -13,16 +13,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
-import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppPresence;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
 import org.chromium.chrome.browser.payments.ui.PaymentRequestSection;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
+import org.chromium.components.autofill.AutofillProfile;
 
 import java.util.concurrent.TimeoutException;
 
@@ -61,11 +60,11 @@ public class PaymentRequestIncompleteEmailTest {
     /** Attempt to update the email with invalid data and cancel the transaction. */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testEditIncompleteEmailAndCancel() throws TimeoutException {
         // Not ready to pay since Contact email is invalid.
-        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+                "buy();", mPaymentRequestTestRule.getReadyForInput());
         // Check that there is a selected payment method (makes sure we are not ready to pay because
         // of the Contact Details).
         mPaymentRequestTestRule.expectPaymentMethodRowIsSelected(0);
@@ -96,7 +95,8 @@ public class PaymentRequestIncompleteEmailTest {
     @Feature({"Payments"})
     public void testAddIncompleteEmailAndCancel() throws TimeoutException {
         // Not ready to pay since Contact email is invalid.
-        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+                "buy();", mPaymentRequestTestRule.getReadyForInput());
         // Check that there is a selected payment method (makes sure we are not ready to pay because
         // of the Contact Details).
         mPaymentRequestTestRule.expectPaymentMethodRowIsSelected(0);
@@ -127,7 +127,8 @@ public class PaymentRequestIncompleteEmailTest {
     @MediumTest
     @Feature({"Payments"})
     public void testEditIncompleteEmailAndPay() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+                "buy();", mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInContactInfoAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInContactInfoAndWait(

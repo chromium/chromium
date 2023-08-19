@@ -1,0 +1,23 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module data_decoder.mojom;
+
+import "mojo/public/mojom/base/values.mojom";
+import "mojo/public/mojom/base/big_buffer.mojom";
+
+// Interface to parse CBOR documents into a base::Value structure.
+interface CborParser {
+  // Parses the input |cbor| accordingly and converts it into a base::Value.
+  // Returns the parsed |result| on success or a string
+  // |error| message on failure.
+
+  //   Current Limitations:
+  // - Does not support null or undefined values
+  // - Integers must fit in the 'int' type
+  // - The keys in Maps must be a string or bytestring
+  // - If at least one Map key is invalid, an error will be returned
+  Parse(mojo_base.mojom.BigBuffer cbor) =>
+      (mojo_base.mojom.Value? result, string? error);
+};

@@ -35,7 +35,8 @@ source_set("common") {
     "url_constants.h",
   ]
   deps = [
-    "//android_webview:common_jni_headers",
+    "//android_webview:common_jni",
+    "//android_webview:crash_client_jni",
     "//base",
     "//components/cdm/common",
     "//components/crash/core/app",

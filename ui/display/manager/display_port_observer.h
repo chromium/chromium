@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/display/manager/display_configurator.h"
 
@@ -39,7 +40,7 @@ class DISPLAY_MANAGER_EXPORT DisplayPortObserver
 
   void SetTypeCPortsUsingDisplays(std::vector<uint32_t> port_nums);
 
-  DisplayConfigurator* const configurator_;
+  const raw_ptr<DisplayConfigurator, ExperimentalAsh> configurator_;
 
   // Used to determine if there is a change in ports.
   std::set<uint64_t> prev_base_connector_ids_;

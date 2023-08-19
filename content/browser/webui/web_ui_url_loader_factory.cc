@@ -399,7 +399,7 @@ class WebUIURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
         scheme_(scheme),
         allowed_hosts_(std::move(allowed_hosts)) {}
 
-  raw_ptr<BrowserContext, DanglingUntriaged> browser_context_;
+  raw_ptr<BrowserContext, AcrossTasksDanglingUntriaged> browser_context_;
   int const frame_tree_node_id_;
   const std::string scheme_;
   const base::flat_set<std::string> allowed_hosts_;  // if empty all allowed.

@@ -26,6 +26,7 @@
 #include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/policy/extension_force_install_mixin.h"
 #include "chrome/common/chrome_paths.h"
+#include "chromeos/ash/components/chaps_util/test_util.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -271,8 +272,7 @@ class EnterprisePlatformKeysTest
   // Allows tests to generate software-backed keys by configuring fake ChapsUtil
   // instances to be created in its constructor (and undoing the change in its
   // destructor).
-  ash::platform_keys::test_util::ScopedChapsUtilOverride
-      scoped_chaps_util_override_;
+  chromeos::ScopedChapsUtilOverride scoped_chaps_util_override_;
 };
 
 }  // namespace
@@ -446,8 +446,7 @@ class EnterprisePlatformKeysLoginScreenTest
   // Allows tests to generate software-backed keys by configuring fake ChapsUtil
   // instances to be created in its constructor (and undoing the change in its
   // destructor).
-  ash::platform_keys::test_util::ScopedChapsUtilOverride
-      scoped_chaps_util_override_;
+  chromeos::ScopedChapsUtilOverride scoped_chaps_util_override_;
 };
 
 IN_PROC_BROWSER_TEST_P(EnterprisePlatformKeysLoginScreenTest, Basic) {

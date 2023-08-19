@@ -73,6 +73,8 @@ extern const char kSettingMediaSizeVendorId[];
 COMPONENT_EXPORT(PRINTING_BASE)
 extern const char kSettingMediaSizeIsDefault[];
 COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingMediaType[];
+COMPONENT_EXPORT(PRINTING_BASE)
 extern const char kSettingMarginBottom[];
 COMPONENT_EXPORT(PRINTING_BASE)
 extern const char kSettingMarginLeft[];

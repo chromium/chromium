@@ -4,7 +4,7 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -19,10 +19,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 #include "ui/gfx/geometry/size.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using BrowserCrApplicationAppleScriptTest = InProcessBrowserTest;
 
@@ -113,9 +109,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCrApplicationAppleScriptTest, BookmarkFolders) {
   }
 
   BookmarkFolderAppleScript* other_bookmarks =
-      base::mac::ObjCCast<BookmarkFolderAppleScript>([NSApp otherBookmarks]);
+      base::apple::ObjCCast<BookmarkFolderAppleScript>([NSApp otherBookmarks]);
   EXPECT_NSEQ(@"Other Bookmarks", other_bookmarks.title);
   BookmarkFolderAppleScript* bookmarks_bar =
-      base::mac::ObjCCast<BookmarkFolderAppleScript>([NSApp bookmarksBar]);
+      base::apple::ObjCCast<BookmarkFolderAppleScript>([NSApp bookmarksBar]);
   EXPECT_NSEQ(@"Bookmarks Bar", bookmarks_bar.title);
 }

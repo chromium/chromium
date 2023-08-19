@@ -297,7 +297,6 @@ public class SecurePaymentConfirmationAuthnController {
         if (mInputProtector.shouldInputBeProcessed()) onOptOut();
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     void setInputProtectorForTesting(InputProtector inputProtector) {
         mInputProtector = inputProtector;
     }
@@ -307,13 +306,11 @@ public class SecurePaymentConfirmationAuthnController {
      * bypass the input protector. The Java unit tests simulate clicking the button and therefore
      * test the input protector.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     public boolean cancelForTest() {
         onCancel();
         return true;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     public boolean optOutForTest() {
         if (mOptOutCallback == null) return false;
         onOptOut();

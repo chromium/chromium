@@ -44,4 +44,6 @@ CREATE INDEX rate_limit_time_idx ON rate_limits(time);
 
 CREATE INDEX rate_limit_source_id_idx ON rate_limits(source_id);
 
+INSERT INTO rate_limits VALUES (0,1,2,'3','4','5','https://a.r.test',7,8,9);
+
 COMMIT;

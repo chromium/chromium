@@ -159,7 +159,7 @@ void ParsePathAndImageSpec(const GURL& url,
             pos + 1, stripped_path.length() - pos - 1), &factor)) {
       // Strip scale factor specification from path.
       stripped_path.remove_suffix(stripped_path.length() - pos);
-      path->assign(stripped_path.data(), stripped_path.size());
+      *path = std::string(stripped_path);
     }
     if (scale_factor)
       *scale_factor = factor;
@@ -176,7 +176,7 @@ void ParsePathAndImageSpec(const GURL& url,
             &index)) {
       // Strip frame index specification from path.
       stripped_path.remove_suffix(stripped_path.length() - pos);
-      path->assign(stripped_path.data(), stripped_path.size());
+      *path = std::string(stripped_path);
     }
     if (frame_index)
       *frame_index = index;

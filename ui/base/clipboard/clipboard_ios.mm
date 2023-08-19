@@ -6,7 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "skia/ext/skia_utils_base.h"
@@ -15,10 +15,6 @@
 #include "ui/base/clipboard/clipboard_metrics.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/gfx/image/image.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace ui {
 
@@ -297,8 +293,8 @@ void ClipboardIOS::ReadFilenames(ClipboardBuffer buffer,
                                                  encoding:NSUTF8StringEncoding];
       NSURL* file_url = [NSURL URLWithString:file_str];
       files.emplace_back(
-          base::mac::NSURLToFilePath(file_url),
-          base::mac::NSStringToFilePath(file_url.lastPathComponent));
+          base::apple::NSURLToFilePath(file_url),
+          base::apple::NSStringToFilePath(file_url.lastPathComponent));
     }
   }
   base::ranges::move(files, std::back_inserter(*result));
@@ -409,7 +405,7 @@ void ClipboardIOS::WriteFilenames(std::vector<ui::FileInfo> filenames) {
   NSMutableArray<NSDictionary<NSString*, id>*>* items =
       [NSMutableArray arrayWithCapacity:filenames.size()];
   for (const auto& file : filenames) {
-    NSURL* url = base::mac::FilePathToNSURL(file.path);
+    NSURL* url = base::apple::FilePathToNSURL(file.path);
     NSString* fileURLType = ClipboardFormatType::FilenamesType().ToNSString();
     NSDictionary<NSString*, id>* item = @{fileURLType : url.absoluteString};
     [items addObject:item];

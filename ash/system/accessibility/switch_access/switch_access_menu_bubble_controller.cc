@@ -49,6 +49,8 @@ void SwitchAccessMenuBubbleController::ShowMenu(
     init_params.insets =
         gfx::Insets::VH(kBubbleMenuPadding, kBubbleMenuPadding);
     init_params.translucent = true;
+    init_params.type = TrayBubbleView::TrayBubbleType::kAccessibilityBubble;
+
     bubble_view_ = new TrayBubbleView(init_params);
     bubble_view_->SetArrow(views::BubbleBorder::Arrow::TOP_LEFT);
 

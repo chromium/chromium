@@ -22,7 +22,6 @@ import {GestureInterface} from './gesture_interface.js';
 import {Output} from './output/output.js';
 import {UserActionMonitor} from './user_action_monitor.js';
 
-const RoleType = chrome.automation.RoleType;
 const Gesture = chrome.accessibilityPrivate.Gesture;
 
 export class GestureCommandHandler {

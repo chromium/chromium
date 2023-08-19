@@ -23,6 +23,8 @@ COMPONENT_EXPORT(CROSAPI) extern const char kReleaseChannelCanary[];
 COMPONENT_EXPORT(CROSAPI) extern const char kReleaseChannelDev[];
 COMPONENT_EXPORT(CROSAPI) extern const char kReleaseChannelBeta[];
 COMPONENT_EXPORT(CROSAPI) extern const char kReleaseChannelStable[];
+COMPONENT_EXPORT(CROSAPI) extern const char kReleaseChannelLtc[];
+COMPONENT_EXPORT(CROSAPI) extern const char kReleaseChannelLts[];
 
 COMPONENT_EXPORT(CROSAPI) extern const char kCrosapiMojoPlatformChannelHandle[];
 

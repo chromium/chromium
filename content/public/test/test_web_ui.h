@@ -115,8 +115,9 @@ class TestWebUI : public WebUI {
   std::vector<std::unique_ptr<WebUIMessageHandler>> handlers_;
   int bindings_ = 0;
   std::u16string temp_string_;
-  raw_ptr<WebContents, DanglingUntriaged> web_contents_ = nullptr;
-  raw_ptr<RenderFrameHost> render_frame_host_ = nullptr;
+  raw_ptr<WebContents, AcrossTasksDanglingUntriaged> web_contents_ = nullptr;
+  raw_ptr<RenderFrameHost, AcrossTasksDanglingUntriaged> render_frame_host_ =
+      nullptr;
   std::unique_ptr<WebUIController> controller_;
 
   // Observers to be notified on all javascript calls.

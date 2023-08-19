@@ -76,7 +76,7 @@ class ASH_EXPORT HoldingSpaceTrayBubble : public ScreenLayoutObserver,
   HoldingSpaceViewDelegate delegate_{this};
 
   // Views owned by view hierarchy.
-  views::View* header_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> header_ = nullptr;
   raw_ptr<ChildBubbleContainer, ExperimentalAsh> child_bubble_container_ =
       nullptr;
   std::vector<HoldingSpaceTrayChildBubble*> child_bubbles_;

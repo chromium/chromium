@@ -9,9 +9,8 @@
 
 #include "base/memory/raw_ptr_exclusion.h"
 #include "chrome/browser/ui/views/frame/web_contents_close_handler_delegate.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/controls/webview/webview.h"
 
 class StatusBubbleViews;
@@ -39,6 +38,8 @@ class ContentsWebView
   // Toggles whether the background is visible.
   void SetBackgroundVisible(bool background_visible);
 
+  void SetBackgroundRadii(const gfx::RoundedCornersF& radii);
+
   // WebView overrides:
   bool GetNeedsNotificationWhenVisibleBoundsChange() const override;
   void OnVisibleBoundsChanged() override;
@@ -60,6 +61,8 @@ class ContentsWebView
   RAW_PTR_EXCLUSION StatusBubbleViews* status_bubble_;
 
   bool background_visible_ = true;
+
+  gfx::RoundedCornersF background_radii_;
 
   std::unique_ptr<ui::LayerTreeOwner> cloned_layer_tree_;
 };

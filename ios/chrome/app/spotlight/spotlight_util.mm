@@ -11,11 +11,9 @@
 #import "base/strings/sys_string_conversions.h"
 #import "build/branding_buildflags.h"
 #import "ios/chrome/app/spotlight/spotlight_logger.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 // This enum is used for Histogram. Items should not be removed or reordered and
@@ -50,8 +48,11 @@ NSString* const kSpotlightTopSitesPrefix = @"com.google.chrome.topsites.";
 NSString* const kSpotlightActionsDomain = @"com.google.chrome.actions";
 NSString* const kSpotlightActionsPrefix = @"com.google.chrome.actions.";
 
-NSString* const kSpotlightReadingListDomain = @"org.chromium.readinglist";
-NSString* const kSpotlightReadingListPrefix = @"org.chromium.readinglist.";
+NSString* const kSpotlightReadingListDomain = @"com.google.readinglist";
+NSString* const kSpotlightReadingListPrefix = @"com.google.readinglist.";
+
+NSString* const kSpotlightOpenTabsDomain = @"com.google.opentabs";
+NSString* const kSpotlightOpenTabsPrefix = @"com.google.opentabs.";
 #else
 
 NSString* const kSpotlightBookmarkDomain = @"org.chromium.bookmarks";
@@ -65,6 +66,9 @@ NSString* const kSpotlightActionsPrefix = @"org.chromium.actions.";
 
 NSString* const kSpotlightReadingListDomain = @"org.chromium.readinglist";
 NSString* const kSpotlightReadingListPrefix = @"org.chromium.readinglist.";
+
+NSString* const kSpotlightOpenTabsDomain = @"org.chromium.opentabs";
+NSString* const kSpotlightOpenTabsPrefix = @"org.chromium.opentabs.";
 
 #endif
 
@@ -83,7 +87,7 @@ const char kSpotlightLastIndexingVersionKey[] = "SpotlightLastIndexingVersion";
 // Change this value if there are change int the information indexed in
 // Spotlight. This will force reindexation on next startup.
 // Value is stored in `kSpotlightLastIndexingVersionKey`.
-const int kCurrentSpotlightIndexVersion = 3;
+const int kCurrentSpotlightIndexVersion = 4;
 
 Domain SpotlightDomainFromString(NSString* domain) {
   if ([domain hasPrefix:kSpotlightBookmarkPrefix]) {
@@ -94,6 +98,8 @@ Domain SpotlightDomainFromString(NSString* domain) {
     return DOMAIN_ACTIONS;
   } else if ([domain hasPrefix:kSpotlightReadingListPrefix]) {
     return DOMAIN_READING_LIST;
+  } else if ([domain hasPrefix:kSpotlightOpenTabsPrefix]) {
+    return DOMAIN_OPEN_TABS;
   }
   // On normal flow, it is not possible to reach this point. When testing the
   // app, it may be possible though if the app is downgraded.
@@ -111,6 +117,31 @@ NSString* StringFromSpotlightDomain(Domain domain) {
       return kSpotlightActionsDomain;
     case DOMAIN_READING_LIST:
       return kSpotlightReadingListDomain;
+    case DOMAIN_OPEN_TABS:
+      return kSpotlightOpenTabsDomain;
+
+    default:
+      // On normal flow, it is not possible to reach this point. When testing
+      // the app, it may be possible though if the app is downgraded.
+      NOTREACHED();
+      return nil;
+  }
+}
+
+NSString* SpotlightItemSourceLabelFromDomain(Domain domain) {
+  switch (domain) {
+    case DOMAIN_BOOKMARKS:
+      return l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_BOOKMARKS);
+    case DOMAIN_TOPSITES:
+      return l10n_util::GetNSString(
+          IDS_IOS_CONTENT_SUGGESTIONS_MOST_VISITED_MODULE_TITLE);
+    case DOMAIN_ACTIONS:
+      return l10n_util::GetNSString(IDS_IOS_SPOTLIGHT_CHROME_ACTIONS_LABEL);
+    case DOMAIN_READING_LIST:
+      return l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_READING_LIST);
+    case DOMAIN_OPEN_TABS:
+      return l10n_util::GetNSString(IDS_IOS_SPOTLIGHT_OPEN_TAB_LABEL);
+
     default:
       // On normal flow, it is not possible to reach this point. When testing
       // the app, it may be possible though if the app is downgraded.

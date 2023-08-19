@@ -9,8 +9,6 @@ import static org.chromium.chrome.browser.password_manager.PasswordManagerDialog
 import android.content.res.Resources;
 import android.view.View;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.Callback;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -130,7 +128,6 @@ class PasswordManagerDialogMediator implements View.OnLayoutChangeListener {
         mAndroidContentView.removeOnLayoutChangeListener(this);
     }
 
-    @VisibleForTesting
     public PropertyModel getModelForTesting() {
         return mModel;
     }

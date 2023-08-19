@@ -6,10 +6,6 @@
 
 #import "ios/chrome/browser/ui/infobars/presentation/infobar_modal_positioner.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // The presented view outer margins.

@@ -50,9 +50,9 @@ if sys.platform == 'win32':
 else:
     import fcntl
     import os
-    import pipes
+    import shlex
     import select
-    _quote_cmd = lambda cmdline: ' '.join(pipes.quote(arg) for arg in cmdline)
+    _quote_cmd = lambda cmdline: ' '.join(shlex.quote(arg) for arg in cmdline)
 
 _log = logging.getLogger(__name__)
 

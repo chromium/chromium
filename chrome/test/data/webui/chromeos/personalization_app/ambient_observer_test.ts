@@ -127,15 +127,6 @@ suite('GooglePhotosPreviewLoadPerformance', () => {
     assertFalse(AmbientObserver.shouldLogPreviewsLoadPerformance);
   });
 
-  test('sets to false if topic source is not kGooglePhotos', async () => {
-    ambientProvider.ambientObserverRemote!.onTopicSourceChanged(
-        TopicSource.kArtGallery);
-    personalizationStore.expectAction(AmbientActionName.SET_TOPIC_SOURCE);
-    await personalizationStore.waitForAction(
-        AmbientActionName.SET_TOPIC_SOURCE);
-    assertFalse(AmbientObserver.shouldLogPreviewsLoadPerformance);
-  });
-
   test('sets to false if already received preview images', async () => {
     personalizationStore.data.ambient.previews = [];
     ambientProvider.ambientObserverRemote!.onPreviewsFetched([]);

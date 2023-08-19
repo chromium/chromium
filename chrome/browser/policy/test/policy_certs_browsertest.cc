@@ -132,24 +132,6 @@ class NetworkCertLoaderTestObserver : public ash::NetworkCertLoader::Observer {
   base::RunLoop run_loop_;
 };
 
-// Allows waiting until the |CertDatabase| notifies its observers that it has
-// changd.
-class CertDatabaseChangedObserver : public net::CertDatabase::Observer {
- public:
-  CertDatabaseChangedObserver() {}
-
-  CertDatabaseChangedObserver(const CertDatabaseChangedObserver&) = delete;
-  CertDatabaseChangedObserver& operator=(const CertDatabaseChangedObserver&) =
-      delete;
-
-  void OnCertDBChanged() override { run_loop_.Quit(); }
-
-  void Wait() { run_loop_.Run(); }
-
- private:
-  base::RunLoop run_loop_;
-};
-
 // Retrieves the path to the directory containing certificates designated for
 // testing of policy-provided certificates into *|out_test_certs_path|.
 base::FilePath GetTestCertsPath() {

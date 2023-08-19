@@ -127,7 +127,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 class MockOutputGlitchCounter : public OutputGlitchCounter {
  public:
   MockOutputGlitchCounter()
-      : OutputGlitchCounter(media::AudioLatency::LATENCY_RTC) {}
+      : OutputGlitchCounter(media::AudioLatency::Type::kRtc) {}
   MockOutputGlitchCounter(const MockOutputGlitchCounter&) = delete;
   MockOutputGlitchCounter& operator=(const MockOutputGlitchCounter&) = delete;
 

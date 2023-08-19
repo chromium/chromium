@@ -179,7 +179,7 @@ void TouchActionTest::RunShadowDOMTest(String file) {
   Persistent<Document> document =
       static_cast<Document*>(web_view->MainFrameImpl()->GetDocument());
   Persistent<StaticElementList> host_nodes =
-      document->QuerySelectorAll("[shadow-host]", es);
+      document->QuerySelectorAll(AtomicString("[shadow-host]"), es);
   ASSERT_FALSE(es.HadException());
   ASSERT_GE(host_nodes->length(), 1u);
 
@@ -251,7 +251,7 @@ void TouchActionTest::RunTestOnTree(ContainerNode* root, WebView* web_view) {
   // Oilpan: see runTouchActionTest() comment why these are persistent
   // references.
   Persistent<StaticElementList> elements =
-      root->QuerySelectorAll("[expected-action]", es);
+      root->QuerySelectorAll(AtomicString("[expected-action]"), es);
   ASSERT_FALSE(es.HadException());
 
   for (unsigned index = 0; index < elements->length(); index++) {
@@ -355,7 +355,8 @@ void TouchActionTest::RunTestOnTree(ContainerNode* root, WebView* web_view) {
           static_cast<TouchActionTrackingWebFrameWidget*>(
               web_view->MainFrameWidget());
 
-      AtomicString expected_action = element->getAttribute("expected-action");
+      AtomicString expected_action =
+          element->getAttribute(AtomicString("expected-action"));
       // Should have received exactly one touch action, even for auto.
       EXPECT_EQ(1, widget->TouchActionSetCount()) << failure_context_pos;
       if (widget->TouchActionSetCount()) {

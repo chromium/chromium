@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_AUDIO_CROS_AUDIO_CONFIG_H_
 #define CHROMEOS_ASH_COMPONENTS_AUDIO_CROS_AUDIO_CONFIG_H_
 
-#include "ash/constants/ash_features.h"
 #include "base/component_export.h"
 #include "chromeos/ash/components/audio/public/mojom/cros_audio_config.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

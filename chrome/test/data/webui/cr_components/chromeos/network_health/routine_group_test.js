@@ -49,7 +49,7 @@ suite('RoutineGroupTest', function routineGroupTest() {
   let routineGroup = null;
 
   setup(() => {
-    document.body.innerHTML = '';
+    document.body.innerHTML = window.trustedTypes.emptyHTML;
     routineGroup = /** @type {!RoutineGroupElement} */ (
         document.createElement('routine-group'));
     routineGroup.name = 'Group';

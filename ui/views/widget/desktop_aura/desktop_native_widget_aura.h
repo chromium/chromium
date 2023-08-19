@@ -301,7 +301,7 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
 
   // This is the return value from GetNativeView().
   // WARNING: this may be NULL, in particular during shutdown it becomes NULL.
-  raw_ptr<aura::Window, DanglingUntriaged> content_window_;
+  raw_ptr<aura::Window, AcrossTasksDanglingUntriaged> content_window_;
 
   base::WeakPtr<internal::NativeWidgetDelegate> native_widget_delegate_;
 

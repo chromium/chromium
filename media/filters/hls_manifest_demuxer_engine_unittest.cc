@@ -93,47 +93,14 @@ using testing::Return;
 using testing::SaveArg;
 using testing::SetArgPointee;
 
-class MockManifestDemuxerEngineHost : public ManifestDemuxerEngineHost {
- public:
-  MOCK_METHOD(bool,
-              AddRole,
-              (base::StringPiece, std::string, std::string),
-              (override));
-  MOCK_METHOD(void, RemoveRole, (base::StringPiece), (override));
-  MOCK_METHOD(void, SetSequenceMode, (base::StringPiece, bool), (override));
-  MOCK_METHOD(void, SetDuration, (double), (override));
-  MOCK_METHOD(Ranges<base::TimeDelta>,
-              GetBufferedRanges,
-              (base::StringPiece),
-              (override));
-  MOCK_METHOD(void,
-              Remove,
-              (base::StringPiece, base::TimeDelta, base::TimeDelta),
-              (override));
-  MOCK_METHOD(
-      void,
-      RemoveAndReset,
-      (base::StringPiece, base::TimeDelta, base::TimeDelta, base::TimeDelta*),
-      (override));
-  MOCK_METHOD(void,
-              SetGroupStartIfParsingAndSequenceMode,
-              (base::StringPiece, base::TimeDelta),
-              (override));
-  MOCK_METHOD(void,
-              EvictCodedFrames,
-              (base::StringPiece, base::TimeDelta, size_t),
-              (override));
-  MOCK_METHOD(bool,
-              AppendAndParseData,
-              (base::StringPiece,
-               base::TimeDelta,
-               base::TimeDelta,
-               base::TimeDelta*,
-               const uint8_t*,
-               size_t),
-              (override));
-  MOCK_METHOD(void, OnError, (PipelineStatus), (override));
-};
+MATCHER_P2(CloseTo,
+           Target,
+           Radius,
+           std::string(negation ? "isn't" : "is") + " within " +
+               testing::PrintToString(Radius) + " of " +
+               testing::PrintToString(Target)) {
+  return (arg - Target <= Radius) || (Target - arg <= Radius);
+}
 
 class MockHlsDataSourceProvider : public HlsDataSourceProvider {
  public:
@@ -147,7 +114,7 @@ class MockHlsDataSourceProvider : public HlsDataSourceProvider {
 
 class FakeHlsDataSourceProvider : public HlsDataSourceProvider {
  private:
-  base::raw_ptr<HlsDataSourceProvider> mock_;
+  raw_ptr<HlsDataSourceProvider> mock_;
 
  public:
   FakeHlsDataSourceProvider(HlsDataSourceProvider* mock) : mock_(mock) {}
@@ -273,6 +240,64 @@ TEST_F(HlsManifestDemuxerEngineTest, TestMultivariantWithNoSupportedCodecs) {
               OnError(HasStatusCode(DEMUXER_ERROR_COULD_NOT_PARSE)));
   InitializeEngine();
   task_environment_.RunUntilIdle();
+}
+
+TEST_F(HlsManifestDemuxerEngineTest, TestMultiRenditionCheckState) {
+  auto rendition1 = std::make_unique<MockHlsRendition>();
+  auto rendition2 = std::make_unique<MockHlsRendition>();
+  auto* rend1 = rendition1.get();
+  auto* rend2 = rendition2.get();
+  engine_->AddRenditionForTesting(std::move(rendition1));
+
+  // While there is only one rendition, the response from |OnTimeUpdate| is
+  // whatever that rendition wants.
+  EXPECT_CALL(*rend1, CheckState(_, _, _))
+      .WillOnce(RunOnceCallback<2>(base::Seconds(7)));
+  engine_->OnTimeUpdate(base::Seconds(0), 0.0,
+                        base::BindOnce([](base::TimeDelta r) {
+                          ASSERT_EQ(r, base::Seconds(7));
+                        }));
+
+  EXPECT_CALL(*rend1, CheckState(_, _, _))
+      .WillOnce(RunOnceCallback<2>(kNoTimestamp));
+  engine_->OnTimeUpdate(
+      base::Seconds(0), 0.0,
+      base::BindOnce([](base::TimeDelta r) { ASSERT_EQ(r, kNoTimestamp); }));
+
+  // After adding the second rendition, the response from OnTimeUpdate is now
+  // the lesser of (rend1.response - (calc time of rend2)) and
+  // (rend2.response)
+  engine_->AddRenditionForTesting(std::move(rendition2));
+
+  // Both renditions request time, so pick the lesser.
+  EXPECT_CALL(*rend1, CheckState(_, _, _))
+      .WillOnce(RunOnceCallback<2>(base::Seconds(7)));
+  EXPECT_CALL(*rend2, CheckState(_, _, _))
+      .WillOnce(RunOnceCallback<2>(base::Seconds(3)));
+  engine_->OnTimeUpdate(
+      base::Seconds(0), 0.0, base::BindOnce([](base::TimeDelta r) {
+        EXPECT_THAT(r, CloseTo(base::Seconds(3), base::Milliseconds(1)));
+      }));
+
+  // When one rendition provides kNoTimestamp and another does not, use the
+  // non-kNoTimestamp value.
+  EXPECT_CALL(*rend1, CheckState(_, _, _))
+      .WillOnce(RunOnceCallback<2>(kNoTimestamp));
+  EXPECT_CALL(*rend2, CheckState(_, _, _))
+      .WillOnce(RunOnceCallback<2>(base::Seconds(3)));
+  engine_->OnTimeUpdate(
+      base::Seconds(0), 0.0, base::BindOnce([](base::TimeDelta r) {
+        EXPECT_THAT(r, CloseTo(base::Seconds(3), base::Milliseconds(1)));
+      }));
+
+  EXPECT_CALL(*rend1, CheckState(_, _, _))
+      .WillOnce(RunOnceCallback<2>(base::Seconds(7)));
+  EXPECT_CALL(*rend2, CheckState(_, _, _))
+      .WillOnce(RunOnceCallback<2>(kNoTimestamp));
+  engine_->OnTimeUpdate(
+      base::Seconds(0), 0.0, base::BindOnce([](base::TimeDelta r) {
+        EXPECT_THAT(r, CloseTo(base::Seconds(7), base::Milliseconds(1)));
+      }));
 }
 
 }  // namespace media

@@ -1623,7 +1623,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MultiDevice.DeviceSyncService.ForceSyncNow.Result"
     enum="MultiDevice_DeviceSyncService_ForceCryptAuthOperationResult"
-    expires_after="2023-10-22">
+    expires_after="2023-12-24">
   <owner>hansberry@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>Result for when ForceSyncNow is called.</summary>
@@ -1950,7 +1950,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiDevice.Setup.HasDuplicateEligibleHostDeviceNames"
-    enum="BooleanDuplicate" expires_after="2023-08-08">
+    enum="BooleanDuplicate" expires_after="2023-12-31">
   <owner>hansenmichael@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1988,11 +1988,66 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MultiDevice.VerifyButtonClicked"
     enum="MultiDevice_VerifyAndForgetHostConfirmationState"
-    expires_after="2023-08-08">
+    expires_after="2024-05-10">
   <owner>hansberry@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     Compares when the Verify Host Button is pressed to when setup completes.
+  </summary>
+</histogram>
+
+<histogram name="MultiDeviceSetup.NotificationInteracted" units="count"
+    expires_after="2024-07-19">
+  <owner>pushi@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Counts the number of interactions with MultiDevice setup notification when
+    visible. Emitted if user clicks on Phone Hub icon when the notification is
+    visible or clicks on the notification. This metric and
+    MultiDeviceSetup_NotificationClicked should be compared with
+    MultiDeviceSetup_NotificationShown.
+  </summary>
+</histogram>
+
+<histogram name="MultiDeviceSetup.NudgeActionDuration" units="ms"
+    expires_after="2024-05-10">
+  <owner>pushi@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the time for users to act on nudge while it's visible. Emitted when
+    nudge dismissed after clicked either on the nudge or Phone Hub icon by user.
+  </summary>
+</histogram>
+
+<histogram name="MultiDeviceSetup.NudgeInteracted"
+    enum="MultideviceSetupNudgeInteraction" expires_after="2024-05-10">
+  <owner>pushi@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Counts the number of nudges for MultideviceSetup interacted by users. Split
+    by click on nudge and click on Phone Hub icon. Emitted when users either
+    click on the nudge itself or click on Phone Hub icon. Should be compared
+    with MultideviceSetup_NudgeShown.
+  </summary>
+</histogram>
+
+<histogram name="MultiDeviceSetup.NudgeShown" units="count"
+    expires_after="2024-05-10">
+  <owner>pushi@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Counts the number of nudges for MultideviceSetup shown to users. Emitted
+    when a nudge is shown.
+  </summary>
+</histogram>
+
+<histogram name="MultiDeviceSetup.NudgeShownTimesBeforeActed" units="attempts"
+    expires_after="2024-05-10">
+  <owner>pushi@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Counts the average times that nudge is shown to a customer before they
+    clicks on it. Emitted when users click on the nudge or Phone Hub icon.
   </summary>
 </histogram>
 
@@ -2004,6 +2059,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     Breaks down the percentage of users who either accepted or declined
     MultiDevice OOBE setup.
+  </summary>
+</histogram>
+
+<histogram name="MultiDeviceSetup.SetupDialogEntryPoint"
+    enum="MultiDeviceSetupDialogEntrypoint" expires_after="2024-07-31">
+  <owner>pushi@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Tracks the UI surface with which users opened MultiDevice setup dialog.
+    Emitted when user clicks (settings page, notifications or Phone Hub bubble)
+    to enter the setup dialog.
   </summary>
 </histogram>
 
@@ -2116,16 +2182,13 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SmartLock.AuthMethodChoice.Unlock"
     enum="SmartLockAuthMethodChoice" expires_after="2023-12-31">
-  <obsolete>
-    SmartLock.AuthResult.* is sufficient to determine engaged user count.
-  </obsolete>
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>Records the user's unlock method choice.</summary>
 </histogram>
 
 <histogram name="SmartLock.AuthMethodChoice.Unlock.PasswordState"
-    enum="SmartLockAuthEventPasswordState" expires_after="2023-08-08">
+    enum="SmartLockAuthEventPasswordState" expires_after="2024-02-04">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2194,7 +2257,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SmartLock.AuthResult.Unlock.Failure"
-    enum="SmartLockAuthResultFailureReason" expires_after="2023-08-08">
+    enum="SmartLockAuthResultFailureReason" expires_after="2024-02-04">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>

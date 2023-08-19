@@ -30,10 +30,6 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // Constants used in tests.
 NSString* const kUsername = @"username";
@@ -147,4 +143,17 @@ TEST_F(PasswordInfobarBannerOverlayMediatorTest,
 
   [mediator_ bannerInfobarButtonWasPressed:nil];
   [commands_handler verify];
+}
+
+// Ensures that calling the -bannerInfobarButtonWasPressed: after the infobar
+// has been removed does not cause a crash. This could happen if the infobar is
+// removed before the banner has finished appearing.
+TEST_F(PasswordInfobarBannerOverlayMediatorTest,
+       BannerInfobarButtonWasPressedAfterRemoval) {
+  InitInfobar();
+
+  // Removes the infobar.
+  infobar_ = nullptr;
+
+  [mediator_ bannerInfobarButtonWasPressed:nil];
 }

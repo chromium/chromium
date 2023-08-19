@@ -7,10 +7,6 @@
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface FlowLayout ()
 @property(nonatomic, strong) NSArray<NSIndexPath*>* indexPathsOfDeletingItems;
 @property(nonatomic, strong) NSArray<NSIndexPath*>* indexPathsOfInsertingItems;

@@ -95,10 +95,6 @@ class BLINK_PLATFORM_EXPORT WebHTTPBody {
                        int64_t file_length,
                        const absl::optional<base::Time>& modification_time);
   void AppendBlob(const WebString& uuid);
-  // TODO(shimazu): Remove this once Network Service is enabled.
-  void AppendBlob(const WebString& uuid,
-                  uint64_t length,
-                  CrossVariantMojoRemote<mojom::BlobInterfaceBase> blob);
   void AppendDataPipe(
       CrossVariantMojoRemote<network::mojom::DataPipeGetterInterfaceBase>
           data_pipe_getter);
@@ -122,7 +118,7 @@ class BLINK_PLATFORM_EXPORT WebHTTPBody {
  private:
   void EnsureMutable();
 
-  WebPrivatePtr<EncodedFormData> private_;
+  WebPrivatePtrForRefCounted<EncodedFormData> private_;
 };
 
 }  // namespace blink

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_SCOPED_FILE_ACCESS_DELEGATE_H_
 #define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_SCOPED_FILE_ACCESS_DELEGATE_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -52,6 +53,9 @@ class DlpScopedFileAccessDelegate
 
  private:
   friend class DlpScopedFileAccessDelegateTest;
+  friend class DlpScopedFileAccessDelegateInteractiveUITest;
+  friend std::unique_ptr<DlpScopedFileAccessDelegate>
+  std::make_unique<DlpScopedFileAccessDelegate>(chromeos::DlpClient*&& client);
 
   // Starts a RequestFileAccess request to the daemon.
   void PostRequestFileAccessToDaemon(
@@ -67,7 +71,7 @@ class DlpScopedFileAccessDelegate
   // This is a pointer to a global dbus client singleton that is owned by the
   // browser instance. It is initialized and destructed at the same time as
   // dbus.
-  raw_ptr<chromeos::DlpClient> client_;
+  raw_ptr<chromeos::DlpClient, LeakedDanglingUntriaged> client_;
 
   base::WeakPtrFactory<DlpScopedFileAccessDelegate> weak_ptr_factory_;
 };

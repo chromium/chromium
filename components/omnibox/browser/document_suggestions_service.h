@@ -37,9 +37,11 @@ class DocumentSuggestionsService : public KeyedService {
   DocumentSuggestionsService& operator=(const DocumentSuggestionsService&) =
       delete;
 
-  using StartCallback = base::OnceCallback<void(
-      std::unique_ptr<network::SimpleURLLoader> loader)>;
-
+  using CreationCallback =
+      base::OnceCallback<void(network::ResourceRequest* request)>;
+  using StartCallback =
+      base::OnceCallback<void(std::unique_ptr<network::SimpleURLLoader> loader,
+                              const std::string& request_body)>;
   using CompletionCallback =
       base::OnceCallback<void(const network::SimpleURLLoader* source,
                               std::unique_ptr<std::string> response_body)>;
@@ -48,6 +50,7 @@ class DocumentSuggestionsService : public KeyedService {
   // May obtain an OAuth2 token for the signed-in user.
   void CreateDocumentSuggestionsRequest(const std::u16string& query,
                                         bool is_incognito,
+                                        CreationCallback creation_callback,
                                         StartCallback start_callback,
                                         CompletionCallback completion_callback);
 

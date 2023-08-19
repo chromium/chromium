@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_LOCATION_INTERNALS_LOCATION_INTERNALS_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_LOCATION_INTERNALS_LOCATION_INTERNALS_UI_H_
 
+#include "chrome/browser/ui/webui/location_internals/location_internals.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
+
+class LocationInternalsHandler;
 
 // The WebUI for chrome://location-internals
 class LocationInternalsUI : public ui::MojoWebUIController {
@@ -18,7 +21,13 @@ class LocationInternalsUI : public ui::MojoWebUIController {
 
   ~LocationInternalsUI() override;
 
+  // Instantiates the implementor of the mojom::LocationInternalsHandler mojo
+  // interface passing the pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<mojom::LocationInternalsHandler> receiver);
+
  private:
+  std::unique_ptr<LocationInternalsHandler> handler_;
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 

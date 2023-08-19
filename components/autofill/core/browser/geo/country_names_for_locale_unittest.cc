@@ -36,8 +36,19 @@ TEST(CountryNamesForLocaleTest, EmptyCountryCodeForInvalidLocale) {
 // The behavior depends on the platform. On Android the locale reverts back to
 // the standard locale.
 #if !BUILDFLAG(IS_ANDROID)
+// TODO:(crbug.com/1456465) Re-enable test for iOS
+// In iOS17, NSLocale's internal implementation was modified resulting in
+// redefined behavior for existing functions. As a result,
+// `l10n_util::GetDisplayNameForCountry` no longer produces the same output in
+// iOS17 as previous versions.
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_EmptyCountryCodeForEmptyLocale \
+  DISABLED_EmptyCountryCodeForEmptyLocale
+#else
+#define MAYBE_EmptyCountryCodeForEmptyLocale EmptyCountryCodeForEmptyLocale
+#endif
 // Test that an empty string is returned for an empty locale.
-TEST(CountryNamesForLocaleTest, EmptyCountryCodeForEmptyLocale) {
+TEST(CountryNamesForLocaleTest, MAYBE_EmptyCountryCodeForEmptyLocale) {
   CountryNamesForLocale empty_locale_names("");
   EXPECT_EQ("", empty_locale_names.GetCountryCode(u"United States"));
 }

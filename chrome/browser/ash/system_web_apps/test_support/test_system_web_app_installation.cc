@@ -20,6 +20,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
+#include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -101,8 +102,8 @@ UnittestingSystemAppDelegate::UnittestingSystemAppDelegate(
 
 UnittestingSystemAppDelegate::~UnittestingSystemAppDelegate() = default;
 
-std::unique_ptr<WebAppInstallInfo> UnittestingSystemAppDelegate::GetWebAppInfo()
-    const {
+std::unique_ptr<web_app::WebAppInstallInfo>
+UnittestingSystemAppDelegate::GetWebAppInfo() const {
   return info_factory_.Run();
 }
 
@@ -340,8 +341,9 @@ TestSystemWebAppInstallation::TestSystemWebAppInstallation() {
 
 TestSystemWebAppInstallation::~TestSystemWebAppInstallation() = default;
 
-std::unique_ptr<WebAppInstallInfo> GenerateWebAppInstallInfoForTestApp() {
-  auto info = std::make_unique<WebAppInstallInfo>();
+std::unique_ptr<web_app::WebAppInstallInfo>
+GenerateWebAppInstallInfoForTestApp() {
+  auto info = std::make_unique<web_app::WebAppInstallInfo>();
   // the pwa.html is arguably wrong, but the manifest version uses it
   // incorrectly as well, and it's a lot of work to fix it. App ids are
   // generated from this, and it's important to keep it stable across the
@@ -356,7 +358,7 @@ std::unique_ptr<WebAppInstallInfo> GenerateWebAppInstallInfoForTestApp() {
   return info;
 }
 
-std::unique_ptr<WebAppInstallInfo>
+std::unique_ptr<web_app::WebAppInstallInfo>
 GenerateWebAppInstallInfoForTestAppUntrusted() {
   auto info = GenerateWebAppInstallInfoForTestApp();
   info->start_url = GURL("chrome-untrusted://test-system-app/pwa.html");
@@ -364,17 +366,20 @@ GenerateWebAppInstallInfoForTestAppUntrusted() {
   return info;
 }
 
-std::unique_ptr<WebAppInstallInfo> GenerateWebAppInstallInfoWithValidIcons() {
-  const SquareSizePx icon_size = 256;
+SkBitmap CreateIcon(int size) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(size, size);
+  bitmap.eraseColor(SK_ColorBLUE);
+  return bitmap;
+}
+
+std::unique_ptr<web_app::WebAppInstallInfo>
+GenerateWebAppInstallInfoWithValidIcons() {
   auto info = GenerateWebAppInstallInfoForTestApp();
   info->manifest_icons.emplace_back(info->start_url.Resolve("test.png"),
-                                    icon_size);
-
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(icon_size, icon_size, true);
-  bitmap.eraseColor(SK_ColorBLUE);
-  info->icon_bitmaps.any[icon_size] = bitmap;
-
+                                    web_app::icon_size::k256);
+  info->icon_bitmaps.any[web_app::icon_size::k256] =
+      CreateIcon(web_app::icon_size::k256);
   return info;
 }
 
@@ -394,6 +399,9 @@ TestSystemWebAppInstallation::SetUpTabbedMultiWindowApp() {
           base::BindRepeating(&GenerateWebAppInstallInfoForTestApp));
   delegate->SetShouldReuseExistingWindow(false);
   delegate->SetShouldHaveTabStrip(true);
+  // Terminal, the only tabbed SWA ATM never uses system colors (or it wouldn't
+  // get per tab coloring).
+  delegate->SetUseSystemThemeColor(false);
 
   return base::WrapUnique(
       new TestSystemWebAppInstallation(std::move(delegate)));
@@ -527,7 +535,7 @@ TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation() {
       std::make_unique<UnittestingSystemAppDelegate>(
           SystemWebAppType::SETTINGS, "Initiating App", kInitiatingAppUrl,
           base::BindLambdaForTesting([]() {
-            auto info = std::make_unique<WebAppInstallInfo>();
+            auto info = std::make_unique<web_app::WebAppInstallInfo>();
             // the pwa.html is arguably wrong, but the manifest
             // version uses it incorrectly as well, and it's a lot of
             // work to fix it. App ids are generated from this, and
@@ -662,7 +670,7 @@ TestSystemWebAppInstallation::SetUpAppWithShortcuts() {
           SystemWebAppType::SHORTCUT_CUSTOMIZATION, "Shortcuts",
           GURL("chrome://test-system-app/pwa.html"),
           base::BindLambdaForTesting([]() {
-            std::unique_ptr<WebAppInstallInfo> info =
+            std::unique_ptr<web_app::WebAppInstallInfo> info =
                 GenerateWebAppInstallInfoForTestApp();
             info->title = u"Shortcuts";
             {
@@ -670,12 +678,22 @@ TestSystemWebAppInstallation::SetUpAppWithShortcuts() {
               menu_item.name = u"One";
               menu_item.url = GURL("chrome://test-system-app/pwa.html#one");
               info->shortcuts_menu_item_infos.push_back(std::move(menu_item));
+
+              IconBitmaps bitmaps;
+              bitmaps.any[web_app::icon_size::k256] =
+                  CreateIcon(web_app::icon_size::k256);
+              info->shortcuts_menu_icon_bitmaps.push_back(bitmaps);
             }
             {
               WebAppShortcutsMenuItemInfo menu_item;
               menu_item.name = u"Two";
               menu_item.url = GURL("chrome://test-system-app/pwa.html#two");
               info->shortcuts_menu_item_infos.push_back(std::move(menu_item));
+
+              IconBitmaps bitmaps;
+              bitmaps.any[web_app::icon_size::k256] =
+                  CreateIcon(web_app::icon_size::k256);
+              info->shortcuts_menu_icon_bitmaps.push_back(bitmaps);
             }
             return info;
           }));
@@ -715,7 +733,7 @@ CreateSystemAppDelegateWithWindowConfig(
     SystemWebAppWindowConfig window_config) {
   auto* delegate = new UnittestingSystemAppDelegate(
       type, "Test App", app_url, base::BindLambdaForTesting([=]() {
-        auto info = std::make_unique<WebAppInstallInfo>();
+        auto info = std::make_unique<web_app::WebAppInstallInfo>();
         info->start_url = app_url;
         info->scope = app_url.DeprecatedGetOriginAsURL();
         info->title = u"Test System App";

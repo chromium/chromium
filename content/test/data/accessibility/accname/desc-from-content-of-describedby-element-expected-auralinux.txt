@@ -1,1 +1,1 @@
-[entry] description='My name is Garaventa the weird. (QED) Where are my marbles?' described-by description-from:aria-describedby
+[entry] description='My name is Garaventa the weird. (QED) Where are my marbles?' described-by=[section] description-from:aria-describedby

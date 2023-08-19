@@ -14,7 +14,10 @@ enum class UninstallResultCode {
   kNoAppToUninstall,
   kCancelled,
   kError,
+  kShutdown,
 };
+
+bool UninstallSucceeded(UninstallResultCode code);
 
 std::string ConvertUninstallResultCodeToString(UninstallResultCode code);
 

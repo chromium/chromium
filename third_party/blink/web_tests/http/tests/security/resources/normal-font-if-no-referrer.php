@@ -1,7 +1,8 @@
 <?php
 header("Content-Type: font/woff2");
 header("Access-Control-Allow-Origin: *");
-if ($_SERVER['HTTP_REFERER'] != '') {
+$HTTP_REFERER = $_SERVER['HTTP_REFERER'] ?? null;
+if ($HTTP_REFERER != '') {
     $font = 'montez.woff2';
 } else {
     $font = 'opensans.woff2';

@@ -117,7 +117,6 @@ public class NotificationPlatformBridge {
      * @return The instance of the NotificationPlatformBridge, if any.
      */
     @Nullable
-    @VisibleForTesting
     static NotificationPlatformBridge getInstanceForTests() {
         return sInstance;
     }
@@ -129,7 +128,6 @@ public class NotificationPlatformBridge {
      *
      * @param notificationManager The notification manager instance to use instead of the system's.
      */
-    @VisibleForTesting
     static void overrideNotificationManagerForTesting(
             NotificationManagerProxy notificationManager) {
         sNotificationManagerOverride = notificationManager;
@@ -224,8 +222,7 @@ public class NotificationPlatformBridge {
         }
     }
 
-    @Nullable
-    static String getNotificationReply(Intent intent) {
+    static @Nullable String getNotificationReply(Intent intent) {
         if (intent.getStringExtra(NotificationConstants.EXTRA_NOTIFICATION_REPLY) != null) {
             // If the notification click went through the job scheduler, we will have set
             // the reply as a standard string extra.
@@ -369,8 +366,7 @@ public class NotificationPlatformBridge {
      * @return The origin string. Returns null if there was no relevant tag extra in the given
      * intent, or if a relevant notification tag value did not match the expected format.
      */
-    @Nullable
-    private static String getOriginFromIntent(Intent intent) {
+    private static @Nullable String getOriginFromIntent(Intent intent) {
         String originFromChannelId =
                 getOriginFromChannelId(intent.getStringExtra(Notification.EXTRA_CHANNEL_ID));
         return originFromChannelId != null ? originFromChannelId
@@ -388,8 +384,7 @@ public class NotificationPlatformBridge {
      * @return The origin string. Return null if there was no tag extra in the given notification
      * tag, or if the notification tag didn't match the expected format.
      */
-    @Nullable
-    public static String getOriginFromNotificationTag(@Nullable String tag) {
+    public static @Nullable String getOriginFromNotificationTag(@Nullable String tag) {
         if (tag == null
                 || !tag.startsWith(NotificationConstants.PERSISTENT_NOTIFICATION_TAG_PREFIX
                         + NotificationConstants.NOTIFICATION_TAG_SEPARATOR)) {

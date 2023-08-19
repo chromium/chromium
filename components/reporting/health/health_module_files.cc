@@ -22,7 +22,7 @@ namespace reporting {
 
 std::unique_ptr<HealthModuleFiles> HealthModuleFiles::Create(
     const base::FilePath& directory,
-    base::StringPiece file_base_name,
+    std::string_view file_base_name,
     const uint32_t max_storage_space) {
   if (max_storage_space == 0) {
     return nullptr;
@@ -67,7 +67,7 @@ std::unique_ptr<HealthModuleFiles> HealthModuleFiles::Create(
 
 HealthModuleFiles::HealthModuleFiles(
     const base::FilePath& directory,
-    base::StringPiece file_base_name,
+    std::string_view file_base_name,
     uint32_t max_storage_space,
     uint32_t storage_used,
     uint32_t max_file_header,
@@ -126,7 +126,7 @@ void HealthModuleFiles::PopulateHistory(ERPHealthData* data) const {
   }
 }
 
-Status HealthModuleFiles::Write(base::StringPiece data) {
+Status HealthModuleFiles::Write(std::string_view data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Status free_status = ReserveStorage(data.size());
   RETURN_IF_ERROR(free_status);
@@ -169,7 +169,7 @@ Status HealthModuleFiles::FreeStorage(uint32_t storage) {
     }
   }
 
-  DCHECK_GE(storage_used_, storage_removed);
+  CHECK_GE(storage_used_, storage_removed);
   storage_used_ -= storage_removed;
   return Status::StatusOK();
 }

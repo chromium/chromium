@@ -22,7 +22,6 @@ import 'chrome://resources/cr_elements/action_link.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './add_languages_dialog.js';
-import '/shared/settings/controls/settings_toggle_button.js';
 import '../icons.html.js';
 import '../relaunch_confirmation_dialog.js';
 import '../settings_shared.css.js';
@@ -39,10 +38,6 @@ import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 // <if expr="is_win">
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // </if>
-
-import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
-
-import {loadTimeData} from '../i18n_setup.js';
 
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 
@@ -114,20 +109,11 @@ export class SettingsLanguagesPageElement extends
         type: Boolean,
         value: false,
       },
-
-      enableDesktopDetailedLanguageSettings_: {
-        type: Boolean,
-        value: function() {
-          return loadTimeData.getBoolean(
-              'enableDesktopDetailedLanguageSettings');
-        },
-      },
     };
   }
 
   languages?: LanguagesModel;
   languageHelper: LanguageHelper;
-  private enableDesktopDetailedLanguageSettings_: boolean;
   private detailLanguage_?: LanguageState;
   private showAddLanguagesDialog_: boolean;
   private addLanguagesDialogLanguages_:
@@ -191,15 +177,6 @@ export class SettingsLanguagesPageElement extends
   }
 
   /**
-   * Used to determine whether to show the separator between checkbox settings
-   * and move buttons in the dialog menu.
-   * @return True if there is currently more than one selected language.
-   */
-  private shouldShowDialogSeparator_(): boolean {
-    return this.languages !== undefined && this.languages.enabled.length > 1;
-  }
-
-  /**
    * Used to determine which "Move" buttons to show for ordering enabled
    * languages.
    * @return True if |language| is at the |n|th index in the list of enabled
@@ -249,13 +226,6 @@ export class SettingsLanguagesPageElement extends
     } else {
       return 'non-target';
     }
-  }
-
-  private onTranslateToggleChange_(e: Event) {
-    this.languageSettingsMetricsProxy_.recordSettingsMetric(
-        (e.target as SettingsToggleButtonElement).checked ?
-            LanguageSettingsActionType.ENABLE_TRANSLATE_GLOBALLY :
-            LanguageSettingsActionType.DISABLE_TRANSLATE_GLOBALLY);
   }
 
   // <if expr="is_win">
@@ -357,59 +327,6 @@ export class SettingsLanguagesPageElement extends
     this.performRestart(RestartType.RESTART);
   }
   // </if>
-
-  /**
-   * @param targetLanguageCode The default translate target language.
-   * @return True if the translate checkbox should be disabled.
-   */
-  private disableTranslateCheckbox_(
-      languageState: LanguageState|undefined,
-      targetLanguageCode: string): boolean {
-    if (languageState === undefined || languageState.language === undefined ||
-        !languageState.language.supportsTranslate) {
-      return true;
-    }
-
-    if (this.languageHelper.isOnlyTranslateBlockedLanguage(languageState)) {
-      return true;
-    }
-
-    return this.languageHelper.convertLanguageCodeForTranslate(
-               languageState.language.code) === targetLanguageCode;
-  }
-
-  /**
-   * Handler for changes to the translate checkbox.
-   */
-  private onTranslateCheckboxChange_(e: Event) {
-    if ((e.target as CrCheckboxElement).checked) {
-      this.languageHelper.enableTranslateLanguage(
-          this.detailLanguage_!.language.code);
-
-      this.languageSettingsMetricsProxy_.recordSettingsMetric(
-          LanguageSettingsActionType.ENABLE_TRANSLATE_FOR_SINGLE_LANGUAGE);
-
-    } else {
-      this.languageHelper.disableTranslateLanguage(
-          this.detailLanguage_!.language.code);
-
-      this.languageSettingsMetricsProxy_.recordSettingsMetric(
-          LanguageSettingsActionType.DISABLE_TRANSLATE_FOR_SINGLE_LANGUAGE);
-    }
-    this.closeMenuSoon_();
-  }
-
-  /**
-   * Returns "complex" if the menu includes checkboxes, which should change
-   * the spacing of items and show a separator in the menu.
-   */
-  private getMenuClass_(translateEnabled: boolean): string {
-    if (isWindows ||
-        (translateEnabled && !this.enableDesktopDetailedLanguageSettings_)) {
-      return 'complex';
-    }
-    return '';
-  }
 
   /**
    * Moves the language to the top of the list.

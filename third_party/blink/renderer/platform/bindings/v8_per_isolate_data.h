@@ -105,6 +105,7 @@ class PLATFORM_EXPORT V8PerIsolateData final {
   };
 
   static v8::Isolate* Initialize(scoped_refptr<base::SingleThreadTaskRunner>,
+                                 scoped_refptr<base::SingleThreadTaskRunner>,
                                  V8ContextSnapshotMode,
                                  v8::CreateHistogramCallback,
                                  v8::AddHistogramSampleCallback);
@@ -206,6 +207,7 @@ class PLATFORM_EXPORT V8PerIsolateData final {
 
  private:
   V8PerIsolateData(scoped_refptr<base::SingleThreadTaskRunner>,
+                   scoped_refptr<base::SingleThreadTaskRunner>,
                    V8ContextSnapshotMode,
                    v8::CreateHistogramCallback,
                    v8::AddHistogramSampleCallback);

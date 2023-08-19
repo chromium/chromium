@@ -86,6 +86,10 @@
           {
             "match": "android.webkit.cts.WebViewClientTest#testOnSafeBrowsingHit",
             "_bug_id": "crbug.com/1300977"
+          },
+          {
+            "match": "android.webkit.cts.WebViewTest#testLoadUrl",
+            "_bug_id": "crbug.com/1450170"
           }
         ]
       },
@@ -151,6 +155,10 @@
           {
             "match": "android.webkit.cts.WebSettingsTest#testAppCacheEnabled",
             "_bug_id": "crbug.com/1246334"
+          },
+          {
+            "match": "android.webkit.cts.WebViewTest#testLoadUrl",
+            "_bug_id": "crbug.com/1450170"
           }
         ]
       },
@@ -208,7 +216,13 @@
     },
     "test_runs": [
       {
-        "apk": "android-cts/testcases/CtsWebkitTestCases.apk"
+        "apk": "android-cts/testcases/CtsWebkitTestCases.apk",
+        "excludes": [
+          {
+            "match": "android.webkit.cts.WebViewTest#testLoadUrl",
+            "_bug_id": "crbug.com/1450170"
+          }
+        ]
       },
       {
         "apk": "android-cts/testcases/CtsWebViewStartupApp.apk"
@@ -276,6 +290,10 @@
           {
             "match": "android.webkit.cts.WebViewClientTest#testOnSafeBrowsingHit",
             "_bug_id": "crbug.com/1245351"
+          },
+          {
+            "match": "android.webkit.cts.WebViewTest#testLoadUrl",
+            "_bug_id": "crbug.com/1450170"
           }
         ]
       },
@@ -349,6 +367,10 @@
           {
             "match": "android.webkit.cts.WebViewClientTest#testOnSafeBrowsingHitBackToSafety",
             "_bug_id": "crbug.com/1245351"
+          },
+          {
+            "match": "android.webkit.cts.WebViewTest#testLoadUrl",
+            "_bug_id": "crbug.com/1450170"
           }
         ]
       },
@@ -437,6 +459,10 @@
           {
             "match": "android.webkit.cts.WebViewClientTest#testOnSafeBrowsingHitBackToSafety",
             "_bug_id": "crbug.com/1245351"
+          },
+          {
+            "match": "android.webkit.cts.WebViewTest#testLoadUrl",
+            "_bug_id": "crbug.com/1450170"
           }
         ]
       },
@@ -573,6 +599,10 @@
           {
             "match": "android.webkit.cts.WebViewClientTest#testOnSafeBrowsingHitBackToSafety",
             "_bug_id": "crbug.com/1245351"
+          },
+          {
+            "match": "android.webkit.cts.WebViewTest#testLoadUrl",
+            "_bug_id": "crbug.com/1450170"
           }
         ]
       },
@@ -744,6 +774,10 @@
           {
             "match": "android.webkit.cts.WebViewTest#testSetNetworkAvailable",
             "_bug_id": "crbug.com/1368663"
+          },
+          {
+            "match": "android.webkit.cts.WebViewTest#testLoadUrl",
+            "_bug_id": "crbug.com/1450170"
           }
         ]
       },

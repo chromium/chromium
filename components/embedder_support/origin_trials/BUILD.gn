@@ -17,8 +17,8 @@ source_set("origin_trials") {
     "pref_names.cc",
     "pref_names.h",
   ]
+  public_deps = [ "//base" ]
   deps = [
-    "//base",
     "//components/embedder_support",
     "//components/prefs",
     "//content/public/browser",

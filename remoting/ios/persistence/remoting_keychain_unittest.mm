@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 #include "remoting/ios/persistence/remoting_keychain.h"
 
 #import <Foundation/Foundation.h>
 #import <Security/Security.h>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/base64.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/rand_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/profile_chooser_constants.h"
+#include "chrome/browser/ui/profiles/profile_chooser_constants.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/common/url_constants.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -64,7 +64,7 @@ void WelcomeHandler::HandleActivateSignIn(const base::Value::List& args) {
     // them away to the NTP instead.
     GoToNewTabPage();
   } else {
-    GURL redirect_url = GURL::EmptyGURL();
+    GURL redirect_url(chrome::kChromeUINewTabURL);
     if (args.size() == 1U) {
       const std::string& url_string = args[0].GetString();
       redirect_url = GURL(url_string);

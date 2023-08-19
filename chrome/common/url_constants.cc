@@ -144,10 +144,17 @@ const char kDownloadInterruptedLearnMoreURL[] =
 const char kDownloadScanningLearnMoreURL[] =
     "https://support.google.com/chrome/?p=ib_download_blocked";
 
+// Note: This is the same as the above URL. This is done to decouple the URLs,
+// in case the support page is split apart into separate pages in the future.
+const char kDownloadBlockedLearnMoreURL[] =
+    "https://support.google.com/chrome/?p=ib_download_blocked";
+
 const char kExtensionControlledSettingLearnMoreURL[] =
     "https://support.google.com/chrome/?p=ui_settings_api_extension";
 
 const char kExtensionInvalidRequestURL[] = "chrome-extension://invalid/";
+
+const char kFamilyGroupSiteURL[] = "https://families.google.com/families/";
 
 const char kFirstPartySetsLearnMoreURL[] =
     "https://developer.chrome.com/docs/privacy-sandbox/first-party-sets/";
@@ -264,6 +271,12 @@ const char kResetProfileSettingsLearnMoreURL[] =
 
 const char kSafeBrowsingHelpCenterURL[] =
     "https://support.google.com/chrome?p=cpn_safe_browsing";
+
+const char kSafeBrowsingHelpCenterUpdatedURL[] =
+    "https://support.google.com/chrome?p=safe_browsing_preferences";
+
+const char kSafeBrowsingInChromeHelpCenterURL[] =
+    "https://support.google.com/chrome?p=safebrowsing_in_chrome";
 
 const char kSafetyTipHelpCenterURL[] =
     "https://support.google.com/chrome/?p=safety_tip";
@@ -435,6 +448,10 @@ const char kLinuxAppsLearnMoreURL[] =
 const char kNaturalScrollHelpURL[] =
     "https://support.google.com/chromebook/?p=simple_scrolling";
 
+// TODO(zhangwenyu): Update link once confirmed.
+const char kScrollAccelerationHelpURL[] =
+    "https://support.google.com/chromebook/?p=simple_scrolling";
+
 const char kHapticFeedbackHelpURL[] =
     "https://support.google.com/chromebook?p=haptic_feedback_m100";
 
@@ -472,6 +489,12 @@ const char kSmartPrivacySettingsLearnMoreURL[] =
 
 const char kSmbSharesLearnMoreURL[] =
     "https://support.google.com/chromebook?p=network_file_shares";
+
+const char kGoogleDriveCleanUpStorageLearnMoreURL[] =
+    "https://support.google.com/chromebook?p=cleanup_offline_files";
+
+const char kGoogleDriveOfflineLearnMoreURL[] =
+    "https://support.google.com/chromebook?p=my_drive_cbx";
 
 const char kSpeakOnMuteDetectionLearnMoreURL[] =
     "https://support.google.com/chromebook?p=mic-mute";

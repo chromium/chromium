@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/enterprise/reporting/legacy_tech/legacy_tech_service.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/enterprise/reporting/legacy_tech/legacy_tech_report_generator.h"
 
 #include "base/test/mock_callback.h"
@@ -75,6 +76,22 @@ TEST_F(LegacyTechServiceTest, MatchedAndUpload) {
   LegacyTechServiceFactory::GetForProfile(&profile_)->ReportEvent(
       "type", GURL("https://example.com"), "filename",
       /*line=*/10, /*column=*/42);
+}
+
+TEST_F(LegacyTechServiceTest, DelayedInitialization) {
+  LegacyTechServiceFactory::GetInstance()->SetReportTrigger(
+      base::RepeatingCallback<void(
+          const LegacyTechReportGenerator::LegacyTechData&)>());
+  EXPECT_CALL(mock_trigger_, Run(_)).Times(0);
+  SetPolicy({"example.com"});
+  LegacyTechServiceFactory::GetForProfile(&profile_)->ReportEvent(
+      "type", GURL("https://example.com"), "filename",
+      /*line=*/10, /*column=*/42);
+  ::testing::Mock::VerifyAndClearExpectations(&mock_trigger_);
+
+  EXPECT_CALL(mock_trigger_, Run(_)).Times(1);
+  LegacyTechServiceFactory::GetInstance()->SetReportTrigger(
+      mock_trigger_.Get());
 }
 
 }  // namespace enterprise_reporting

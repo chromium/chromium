@@ -11,7 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_behavior.h"
 #include "ash/capture_mode/capture_mode_types.h"
-#include "ash/public/cpp/system_tray_observer.h"
+#include "ash/system/tray/system_tray_observer.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -253,7 +253,8 @@ class ASH_EXPORT CaptureModeCameraController
   // SystemTrayObserver:
   void OnSystemTrayBubbleShown() override;
   void OnFocusLeavingSystemTray(bool reverse) override {}
-  void OnStatusAreaAnchoredBubbleShown() override;
+  void OnStatusAreaAnchoredBubbleVisibilityChanged(TrayBubbleView* tray_bubble,
+                                                   bool visible) override;
 
   void SetOnCameraListReceivedForTesting(base::OnceClosure callback) {
     on_camera_list_received_for_test_ = std::move(callback);

@@ -28,6 +28,9 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/signin/public/identity_manager/scope_set.h"
+#include "components/sync/base/user_selectable_type.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -235,8 +238,11 @@ TailoredSecurityService::Request::~Request() = default;
 
 TailoredSecurityService::TailoredSecurityService(
     signin::IdentityManager* identity_manager,
+    syncer::SyncService* sync_service,
     PrefService* prefs)
-    : identity_manager_(identity_manager), prefs_(prefs) {
+    : identity_manager_(identity_manager),
+      sync_service_(sync_service),
+      prefs_(prefs) {
   // `prefs` can be nullptr in unit tests.
   if (prefs_) {
     pref_registrar_.Init(prefs_);
@@ -398,10 +404,13 @@ void TailoredSecurityService::MaybeNotifySyncUser(bool is_enabled,
   if (!base::FeatureList::IsEnabled(kTailoredSecurityIntegration))
     return;
 
-  if (!identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+  bool sync_history_enabled =
+      sync_service_->GetUserSettings()->GetSelectedTypes().Has(
+          syncer::UserSelectableType::kHistory);
+  if (!sync_history_enabled) {
     if (is_enabled) {
       RecordEnabledNotificationResult(
-          TailoredSecurityNotificationResult::kAccountNotConsented);
+          TailoredSecurityNotificationResult::kHistoryNotSynced);
     }
     return;
   }
@@ -502,9 +511,25 @@ void TailoredSecurityService::Shutdown() {
   pending_tailored_security_requests_.clear();
   timer_.Stop();
   is_shut_down_ = true;
+  identity_manager_ = nullptr;
+  sync_service_ = nullptr;
 }
 
 void TailoredSecurityService::TailoredSecurityTimestampUpdateCallback() {
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kTailoredSecurityRetryForSyncUsers)) {
+    // TODO(crbug.com/1469133): remove sync flow last user interaction pref.
+    prefs_->SetInteger(prefs::kTailoredSecuritySyncFlowLastUserInteractionState,
+                       TailoredSecurityRetryState::UNKNOWN);
+    prefs_->SetTime(prefs::kTailoredSecuritySyncFlowLastRunTime,
+                    base::Time::Now());
+    // If this method fails, then a retry is needed. If it succeeds, the
+    // ChromeTailoredSecurityService will set this value to NO_RETRY_NEEDED for
+    // us.
+    prefs_->SetInteger(prefs::kTailoredSecuritySyncFlowRetryState,
+                       TailoredSecurityRetryState::RETRY_NEEDED);
+  }
+
   StartRequest(base::BindOnce(&TailoredSecurityService::MaybeNotifySyncUser,
                               weak_ptr_factory_.GetWeakPtr()));
 }

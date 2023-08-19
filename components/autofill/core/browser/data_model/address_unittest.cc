@@ -159,6 +159,13 @@ TEST_F(AddressTest, SetCountry) {
   country = address.GetInfo(AutofillType(ADDRESS_HOME_COUNTRY), "en-US");
   EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_COUNTRY));
   EXPECT_EQ(std::u16string(), country);
+
+  // Test incorrect use of country codes (when a country name is passed
+  // as a country code).
+  address.SetInfo(html_type_country_code, u"日本", "ja-JP");
+  country = address.GetInfo(AutofillType(ADDRESS_HOME_COUNTRY), "en-US");
+  EXPECT_EQ(u"JP", address.GetRawInfo(ADDRESS_HOME_COUNTRY));
+  EXPECT_EQ(u"Japan", country);
 }
 
 // Test setting and getting the new structured address tokens
@@ -502,7 +509,7 @@ TEST_F(AddressTest, TestGettingTheStructuredAddress) {
   address1.SetRawInfo(ADDRESS_HOME_ZIP, u"12345");
 
   // Get the structured address and verify that it has the same test value set.
-  AddressNode structured_address = address1.GetStructuredAddress();
+  const AddressComponent& structured_address = address1.GetStructuredAddress();
   EXPECT_EQ(structured_address.GetValueForType(ADDRESS_HOME_ZIP), u"12345");
 }
 

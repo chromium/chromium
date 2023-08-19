@@ -24,7 +24,21 @@ mojo.internal.Struct(
 {%-   else %}
         false /* nullable */,
 {%-   endif %}
-        {{packed_field.field.min_version or 0}}),
+        {{packed_field.field.min_version or 0}},
+{%-   if packed_field|is_nullable_value_kind_packed_field %}
+{%-     set name = packed_field.original_field.name %}
+{%-     set is_primary = packed_field|is_primary_nullable_value_kind_packed_field %}
+        {
+{%-     if is_primary %}
+          isPrimary: true,
+          linkedValueFieldName: "{{packed_field.linked_value_packed_field.field.name}}",
+{%-     else %}
+          isPrimary: false,
+{%-     endif %}
+          originalFieldName: "{{name}}",
+        }
+{%-   endif %}
+    ),
 {%- endfor %}
     ],
     [
@@ -40,7 +54,16 @@ export const {{struct.name}}_Deserialize =
 
 export interface {{struct.name}} {
 {%- for packed_field in struct.packed.packed_fields %}
+{%-   if packed_field|is_nullable_value_kind_packed_field %}
+{%-     if packed_field|is_primary_nullable_value_kind_packed_field %}
+{%-       set original_field = packed_field.original_field %}
+{%-       set name = original_field.name %}
+{%-       set kind = original_field.kind %}
+  {{name}}{% if original_field.kind.is_nullable %}?{% endif %}: {{original_field.kind|ts_type}};
+{%-     endif %}
+{%-   else %}
   {% set f = packed_field.field -%}
   {{f.name}}{% if f.kind.is_nullable %}?{% endif %}: {{f.kind|ts_type}};
+{%-   endif %}
 {%- endfor %}
 }

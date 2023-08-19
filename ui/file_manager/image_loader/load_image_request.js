@@ -73,7 +73,7 @@ export class LoadImageResponse {
    * }}
    */
   static cacheValue(response, timestamp) {
-    if (response.status === LoadImageResponseStatus.ERROR) {
+    if (!response || response.status === LoadImageResponseStatus.ERROR) {
       return null;
     }
 

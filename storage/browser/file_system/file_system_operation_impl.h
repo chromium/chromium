@@ -37,6 +37,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemOperationImpl
   // Exposed for use with std::make_unique. Instances should be obtained from
   // the factory method FileSystemOperation::Create().
   FileSystemOperationImpl(
+      OperationType type,
       const FileSystemURL& url,
       FileSystemContext* file_system_context,
       std::unique_ptr<FileSystemOperationContext> operation_context,
@@ -194,9 +195,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemOperationImpl
                 FileWriterDelegate::WriteProgressStatus write_status);
 
   // Used only for internal assertions.
-  // Returns false if there's another inflight pending operation.
-  bool SetPendingOperationType(OperationType type);
+  void CheckOperationType(OperationType type);
 
+  const OperationType type_;
   scoped_refptr<FileSystemContext> file_system_context_;
 
   std::unique_ptr<FileSystemOperationContext> operation_context_;
@@ -208,7 +209,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemOperationImpl
   StatusCallback cancel_callback_;
 
   // A flag to make sure we call operation only once per instance.
-  OperationType pending_operation_;
+  bool operation_called_ = false;
 
   base::WeakPtr<FileSystemOperationImpl> weak_ptr_;
   base::WeakPtrFactory<FileSystemOperationImpl> weak_factory_{this};

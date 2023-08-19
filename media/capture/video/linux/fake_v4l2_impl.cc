@@ -20,6 +20,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
+#include "media/base/test_data_util.h"
 #include "media/base/video_frame.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -28,6 +29,10 @@
 #endif
 
 namespace media {
+
+constexpr char kMjpegFrameFile[] = "one_frame_1280x720.mjpeg";
+constexpr unsigned int kMjpegFrameWidth = 1280;
+constexpr unsigned int kMjpegFrameHeight = 720;
 
 static const int kInvalidId = -1;
 static const int kSuccessReturnValue = 0;
@@ -71,6 +76,48 @@ struct FakeV4L2Buffer {
   std::unique_ptr<uint8_t[]> data;
 };
 
+VideoPixelFormat V4L2FourccToPixelFormat(uint32_t fourcc) {
+  switch (fourcc) {
+    case V4L2_PIX_FMT_YUV420:
+      return PIXEL_FORMAT_I420;
+    case V4L2_PIX_FMT_NV12:
+      return PIXEL_FORMAT_NV12;
+    case V4L2_PIX_FMT_Y16:
+      return PIXEL_FORMAT_Y16;
+    case V4L2_PIX_FMT_Z16:
+      return PIXEL_FORMAT_Y16;
+    case V4L2_PIX_FMT_YUYV:
+      return PIXEL_FORMAT_YUY2;
+    case V4L2_PIX_FMT_RGB24:
+      return PIXEL_FORMAT_RGB24;
+    case V4L2_PIX_FMT_MJPEG:
+      return PIXEL_FORMAT_MJPEG;
+    default:
+      return PIXEL_FORMAT_I420;
+  }
+}
+
+size_t GetV4L2FrameSize(uint32_t pixelformat,
+                        unsigned int width,
+                        unsigned int height) {
+  auto size = VideoFrame::AllocationSize(V4L2FourccToPixelFormat(pixelformat),
+                                         gfx::Size(width, width));
+  if (pixelformat == V4L2_PIX_FMT_MJPEG) {
+    DCHECK_EQ(width, kMjpegFrameWidth);
+    DCHECK_EQ(height, kMjpegFrameHeight);
+    auto file_path = media::GetTestDataFilePath(kMjpegFrameFile);
+    if (!file_path.empty()) {
+      FILE* fp = fopen(file_path.value().c_str(), "rb");
+      if (fp) {
+        fseek(fp, 0, SEEK_END);
+        size = ftell(fp);
+        fclose(fp);
+      }
+    }
+  }
+  return size;
+}
+
 }  // namespace
 
 class FakeV4L2Impl::OpenedDevice {
@@ -83,11 +130,16 @@ class FakeV4L2Impl::OpenedDevice {
         frame_production_thread_("FakeV4L2Impl FakeProductionThread") {
     selected_format_.width = kDefaultWidth;
     selected_format_.height = kDefaultHeight;
-    selected_format_.pixelformat = V4L2_PIX_FMT_YUV420;
+    selected_format_.pixelformat = config_.v4l2_pixel_format;
+    if (config_.v4l2_pixel_format == V4L2_PIX_FMT_MJPEG) {
+      selected_format_.width = kMjpegFrameWidth;
+      selected_format_.height = kMjpegFrameHeight;
+    }
     selected_format_.field = V4L2_FIELD_NONE;
     selected_format_.bytesperline = kDefaultWidth;
-    selected_format_.sizeimage = VideoFrame::AllocationSize(
-        PIXEL_FORMAT_I420, gfx::Size(kDefaultWidth, kDefaultHeight));
+    selected_format_.sizeimage =
+        GetV4L2FrameSize(selected_format_.pixelformat, selected_format_.width,
+                         selected_format_.height);
     selected_format_.colorspace = V4L2_COLORSPACE_REC709;
     selected_format_.priv = 0;
 
@@ -141,8 +193,9 @@ class FakeV4L2Impl::OpenedDevice {
       return Error(EINVAL);
     }
     fmtdesc->flags = 0u;
-    strcpy(reinterpret_cast<char*>(fmtdesc->description), "YUV420");
-    fmtdesc->pixelformat = V4L2_PIX_FMT_YUV420;
+    strcpy(reinterpret_cast<char*>(fmtdesc->description),
+           FourccToString(config_.v4l2_pixel_format).c_str());
+    fmtdesc->pixelformat = config_.v4l2_pixel_format;
     memset(fmtdesc->reserved, 0, sizeof(fmtdesc->reserved));
     return kSuccessReturnValue;
   }
@@ -199,13 +252,13 @@ class FakeV4L2Impl::OpenedDevice {
     v4l2_pix_format& pix_format = format->fmt.pix;
     // We only support YUV420 output for now. Tell this to the client by
     // overwriting whatever format it requested.
-    pix_format.pixelformat = V4L2_PIX_FMT_YUV420;
+    pix_format.pixelformat = config_.v4l2_pixel_format;
     // We only support non-interlaced output
     pix_format.field = V4L2_FIELD_NONE;
     // We do not support padding bytes
     pix_format.bytesperline = pix_format.width;
-    pix_format.sizeimage = VideoFrame::AllocationSize(
-        PIXEL_FORMAT_I420, gfx::Size(pix_format.width, pix_format.height));
+    pix_format.sizeimage = GetV4L2FrameSize(
+        config_.v4l2_pixel_format, pix_format.width, pix_format.height);
     // Arbitrary colorspace
     pix_format.colorspace = V4L2_COLORSPACE_REC709;
     pix_format.priv = 0;
@@ -308,9 +361,29 @@ class FakeV4L2Impl::OpenedDevice {
     outgoing_queue_.pop();
     buffer->flags = V4L2_BUF_FLAG_MAPPED & V4L2_BUF_FLAG_DONE;
     buf->index = buffer->index;
-    buf->bytesused = VideoFrame::AllocationSize(
-        PIXEL_FORMAT_I420,
-        gfx::Size(selected_format_.width, selected_format_.height));
+    buf->bytesused =
+        GetV4L2FrameSize(selected_format_.pixelformat, selected_format_.width,
+                         selected_format_.height);
+    if (selected_format_.pixelformat == V4L2_PIX_FMT_MJPEG) {
+      DCHECK_EQ(selected_format_.width, kMjpegFrameWidth);
+      DCHECK_EQ(selected_format_.height, kMjpegFrameHeight);
+      auto file_path = media::GetTestDataFilePath(kMjpegFrameFile);
+      if (!file_path.empty()) {
+        FILE* fp = fopen(file_path.value().c_str(), "rb");
+        if (fp) {
+          fseek(fp, 0, SEEK_END);
+          long len = ftell(fp);
+          if (len <= static_cast<long>(buffer->length)) {
+            fseek(fp, 0, SEEK_SET);
+            auto read_size = fread(buffer->data.get(), 1, len, fp);
+            buf->bytesused = read_size;
+          }
+
+          fclose(fp);
+        }
+      }
+    }
+
     buf->flags = buffer->flags;
     buf->field = V4L2_FIELD_NONE;
     buf->timestamp = buffer->timestamp;

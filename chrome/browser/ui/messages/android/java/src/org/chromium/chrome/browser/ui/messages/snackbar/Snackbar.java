@@ -128,8 +128,7 @@ public class Snackbar {
     private Drawable mProfileImage;
     private int mType;
     private int mIdentifier = UMA_UNKNOWN;
-    @Theme
-    private int mTheme = Theme.BASIC;
+    private @Theme int mTheme = Theme.BASIC;
 
     @IntDef({Theme.BASIC, Theme.GOOGLE})
     @Retention(RetentionPolicy.SOURCE)
@@ -340,17 +339,14 @@ public class Snackbar {
     }
 
     /** So tests can trigger a press on a Snackbar. */
-    @VisibleForTesting
     public Object getActionDataForTesting() {
         return mActionData;
     }
 
-    @VisibleForTesting
     public int getIdentifierForTesting() {
         return mIdentifier;
     }
 
-    @VisibleForTesting
     public CharSequence getTextForTesting() {
         return mText;
     }

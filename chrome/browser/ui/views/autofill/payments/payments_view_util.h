@@ -15,6 +15,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/table_layout_view.h"
+#include "ui/views/view.h"
 
 class GURL;
 
@@ -70,6 +71,15 @@ class TitleWithIconAfterLabelView : public views::BoxLayoutView {
   // views::View:
   gfx::Size GetMinimumSize() const override;
 };
+
+// An intermediary method to switch between TitleWithIconAndSeparatorView and
+// TitleWithIconAfterLabelView protected by
+// kAutofillEnableMovingGPayLogoToTheRightOnDesktop.
+// TODO(crbug.com/1459361): Remove this method once
+// kAutofillEnableMovingGPayLogoToTheRightOnDesktop is fully launched.
+std::unique_ptr<views::View> CreateTitleView(
+    const std::u16string& window_title,
+    TitleWithIconAndSeparatorView::Icon icon_to_show);
 
 // Defines a view with legal message. This class handles the legal message
 // parsing and the links clicking events.

@@ -20,14 +20,12 @@
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/services/storage/filesystem_proxy_factory.h"
-#include "content/browser/indexed_db/cursor_impl.h"
 #include "content/browser/indexed_db/file_stream_reader_to_data_pipe.h"
-#include "content/browser/indexed_db/indexed_db_callbacks.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
-#include "content/browser/indexed_db/indexed_db_cursor.h"
 #include "content/browser/indexed_db/indexed_db_database_callbacks.h"
 #include "content/browser/indexed_db/indexed_db_factory.h"
+#include "content/browser/indexed_db/indexed_db_factory_client.h"
 #include "content/browser/indexed_db/indexed_db_pending_connection.h"
 #include "content/browser/indexed_db/transaction_impl.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -203,43 +201,6 @@ void IndexedDBDispatcherHost::AddReceiver(
   receivers_.Add(this, std::move(pending_receiver), std::move(context));
 }
 
-void IndexedDBDispatcherHost::AddDatabaseBinding(
-    std::unique_ptr<blink::mojom::IDBDatabase> database,
-    mojo::PendingAssociatedReceiver<blink::mojom::IDBDatabase>
-        pending_receiver) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  database_receivers_.Add(std::move(database), std::move(pending_receiver));
-}
-
-mojo::PendingAssociatedRemote<blink::mojom::IDBCursor>
-IndexedDBDispatcherHost::CreateCursorBinding(
-    const storage::BucketLocator& bucket_locator,
-    std::unique_ptr<IndexedDBCursor> cursor) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto cursor_impl = std::make_unique<CursorImpl>(
-      std::move(cursor), bucket_locator, this, IDBTaskRunner());
-  auto* cursor_impl_ptr = cursor_impl.get();
-  mojo::PendingAssociatedRemote<blink::mojom::IDBCursor> remote;
-  mojo::ReceiverId receiver_id = cursor_receivers_.Add(
-      std::move(cursor_impl), remote.InitWithNewEndpointAndPassReceiver());
-  cursor_impl_ptr->OnRemoveBinding(
-      base::BindOnce(&IndexedDBDispatcherHost::RemoveCursorBinding,
-                     weak_factory_.GetWeakPtr(), receiver_id));
-  return remote;
-}
-
-void IndexedDBDispatcherHost::RemoveCursorBinding(
-    mojo::ReceiverId receiver_id) {
-  cursor_receivers_.Remove(receiver_id);
-}
-
-void IndexedDBDispatcherHost::AddTransactionBinding(
-    std::unique_ptr<blink::mojom::IDBTransaction> transaction,
-    mojo::PendingAssociatedReceiver<blink::mojom::IDBTransaction> receiver) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  transaction_receivers_.Add(std::move(transaction), std::move(receiver));
-}
-
 storage::mojom::BlobStorageContext*
 IndexedDBDispatcherHost::mojo_blob_storage_context() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -273,7 +234,8 @@ void IndexedDBDispatcherHost::GetDatabaseInfo(
 }
 
 void IndexedDBDispatcherHost::Open(
-    mojo::PendingAssociatedRemote<blink::mojom::IDBCallbacks> pending_callbacks,
+    mojo::PendingAssociatedRemote<blink::mojom::IDBFactoryClient>
+        pending_factory_client,
     mojo::PendingAssociatedRemote<blink::mojom::IDBDatabaseCallbacks>
         database_callbacks_remote,
     const std::u16string& name,
@@ -285,8 +247,8 @@ void IndexedDBDispatcherHost::Open(
 
   // Return error if failed to retrieve bucket from the QuotaManager.
   if (!receivers_.current_context().bucket.has_value()) {
-    auto callbacks = base::MakeRefCounted<IndexedDBCallbacks>(
-        this->AsWeakPtr(), absl::nullopt, std::move(pending_callbacks),
+    auto callbacks = std::make_unique<IndexedDBFactoryClient>(
+        this->AsWeakPtr(), absl::nullopt, std::move(pending_factory_client),
         IDBTaskRunner());
     IndexedDBDatabaseError error = IndexedDBDatabaseError(
         blink::mojom::IDBException::kUnknownError, u"Internal error.");
@@ -295,8 +257,9 @@ void IndexedDBDispatcherHost::Open(
   }
 
   const auto& bucket = *receivers_.current_context().bucket;
-  auto callbacks = base::MakeRefCounted<IndexedDBCallbacks>(
-      this->AsWeakPtr(), bucket, std::move(pending_callbacks), IDBTaskRunner());
+  auto callbacks = std::make_unique<IndexedDBFactoryClient>(
+      this->AsWeakPtr(), bucket, std::move(pending_factory_client),
+      IDBTaskRunner());
   auto database_callbacks = base::MakeRefCounted<IndexedDBDatabaseCallbacks>(
       indexed_db_context_, std::move(database_callbacks_remote),
       IDBTaskRunner());
@@ -304,9 +267,10 @@ void IndexedDBDispatcherHost::Open(
   base::FilePath indexed_db_path =
       indexed_db_context_->GetDataPath(bucket_locator);
 
-  auto create_transaction_callback = base::BindOnce(
-      &IndexedDBDispatcherHost::CreateAndBindTransactionImpl, AsWeakPtr(),
-      std::move(transaction_receiver), bucket_locator);
+  auto create_transaction_callback =
+      base::BindOnce(&TransactionImpl::CreateAndBind, bucket_locator,
+                     base::WrapRefCounted(indexed_db_context_),
+                     std::move(transaction_receiver));
   std::unique_ptr<IndexedDBPendingConnection> connection =
       std::make_unique<IndexedDBPendingConnection>(
           std::move(callbacks), std::move(database_callbacks), transaction_id,
@@ -320,43 +284,34 @@ void IndexedDBDispatcherHost::Open(
 }
 
 void IndexedDBDispatcherHost::DeleteDatabase(
-    mojo::PendingAssociatedRemote<blink::mojom::IDBCallbacks> pending_callbacks,
+    mojo::PendingAssociatedRemote<blink::mojom::IDBFactoryClient>
+        pending_factory_client,
     const std::u16string& name,
     bool force_close) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Return error if failed to retrieve bucket from the QuotaManager.
   if (!receivers_.current_context().bucket.has_value()) {
-    auto callbacks = base::MakeRefCounted<IndexedDBCallbacks>(
-        this->AsWeakPtr(), absl::nullopt, std::move(pending_callbacks),
-        IDBTaskRunner());
+    IndexedDBFactoryClient factory_client(this->AsWeakPtr(), absl::nullopt,
+                                          std::move(pending_factory_client),
+                                          IDBTaskRunner());
     IndexedDBDatabaseError error = IndexedDBDatabaseError(
         blink::mojom::IDBException::kUnknownError, u"Internal error.");
-    callbacks->OnError(error);
+    factory_client.OnError(error);
     return;
   }
 
   const auto& bucket = *receivers_.current_context().bucket;
-  auto callbacks = base::MakeRefCounted<IndexedDBCallbacks>(
-      this->AsWeakPtr(), bucket, std::move(pending_callbacks), IDBTaskRunner());
+  auto factory_client = std::make_unique<IndexedDBFactoryClient>(
+      this->AsWeakPtr(), bucket, std::move(pending_factory_client),
+      IDBTaskRunner());
 
   storage::BucketLocator bucket_locator = bucket.ToBucketLocator();
   base::FilePath indexed_db_path =
       indexed_db_context_->GetDataPath(bucket_locator);
   indexed_db_context_->GetIDBFactory()->DeleteDatabase(
-      name, std::move(callbacks), bucket_locator, indexed_db_path, force_close);
-}
-
-void IndexedDBDispatcherHost::CreateAndBindTransactionImpl(
-    mojo::PendingAssociatedReceiver<blink::mojom::IDBTransaction>
-        transaction_receiver,
-    const storage::BucketLocator& bucket_locator,
-    base::WeakPtr<IndexedDBTransaction> transaction) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto transaction_impl = std::make_unique<TransactionImpl>(
-      transaction, bucket_locator, this->AsWeakPtr(), IDBTaskRunner());
-  AddTransactionBinding(std::move(transaction_impl),
-                        std::move(transaction_receiver));
+      name, std::move(factory_client), bucket_locator, indexed_db_path,
+      force_close);
 }
 
 void IndexedDBDispatcherHost::BindFileReader(
@@ -449,9 +404,10 @@ void IndexedDBDispatcherHost::CreateAllExternalObjects(
           blob_info.file_system_access_token_remote()->Clone(
               mojo_token.InitWithNewPipeAndPassReceiver());
         } else {
-          DCHECK(!blob_info.file_system_access_token().empty());
+          DCHECK(!blob_info.serialized_file_system_access_handle().empty());
           file_system_access_context()->DeserializeHandle(
-              bucket_locator.storage_key, blob_info.file_system_access_token(),
+              bucket_locator.storage_key,
+              blob_info.serialized_file_system_access_handle(),
               mojo_token.InitWithNewPipeAndPassReceiver());
         }
         mojo_object->get_file_system_access_token() = std::move(mojo_token);

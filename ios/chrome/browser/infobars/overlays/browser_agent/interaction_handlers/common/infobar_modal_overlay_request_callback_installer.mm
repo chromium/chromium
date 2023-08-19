@@ -14,10 +14,6 @@
 #import "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
 #import "ios/chrome/browser/overlays/public/overlay_dispatch_callback.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 InfobarModalOverlayRequestCallbackInstaller::
     InfobarModalOverlayRequestCallbackInstaller(
         const OverlayRequestSupport* request_support,

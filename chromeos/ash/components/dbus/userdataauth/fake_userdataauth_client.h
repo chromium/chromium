@@ -82,6 +82,11 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
       FakeUserDataAuthClient::Get()->enable_auth_check_ = enable_auth_check;
     }
 
+    // Sets whether ARC disk quota is supported or not.
+    void set_arc_quota_supported(bool supported) {
+      FakeUserDataAuthClient::Get()->arc_quota_supported_ = supported;
+    }
+
     // Changes the behavior of WaitForServiceToBeAvailable(). This method runs
     // pending callbacks if is_available is true.
     void SetServiceIsAvailable(bool is_available);
@@ -268,6 +273,9 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   void TerminateAuthFactor(
       const ::user_data_auth::TerminateAuthFactorRequest& request,
       TerminateAuthFactorCallback callback) override;
+  void GetArcDiskFeatures(
+      const ::user_data_auth::GetArcDiskFeaturesRequest& request,
+      GetArcDiskFeaturesCallback callback) override;
 
   // Returns the `unlock_webauthn_secret` parameter passed in the last
   // CheckKeyEx call (either successful or not).
@@ -456,6 +464,9 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
 
   // If set, we tell callers that service is available.
   bool service_is_available_ = true;
+
+  // Whether ARC disk quota is supported or not.
+  bool arc_quota_supported_ = true;
 
   // If set, WaitForServiceToBeAvailable will run the callback, even if
   // service is not available (instead of adding the callback to pending

@@ -133,6 +133,9 @@ class DiscardsGraphDumpImpl : public discards::mojom::GraphDump,
   void OnTypeChanged(const performance_manager::PageNode* page_node,
                      performance_manager::PageType previous_type) override {}
   // Ignored.
+  void OnIsFocusedChanged(
+      const performance_manager::PageNode* page_node) override {}
+  // Ignored.
   void OnIsVisibleChanged(
       const performance_manager::PageNode* page_node) override {}
   // Ignored.

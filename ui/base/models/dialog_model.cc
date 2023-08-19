@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
+#include "base/functional/overloaded.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -32,29 +33,41 @@ std::unique_ptr<DialogModel> DialogModel::Builder::Build() {
 }
 
 DialogModel::Builder& DialogModel::Builder::AddOkButton(
-    base::OnceClosure callback,
+    ButtonCallbackVariant callback,
     const DialogModelButton::Params& params) {
-  DCHECK(!model_->accept_action_callback_);
-  model_->accept_action_callback_ = std::move(callback);
-  // NOTREACHED() is used below to make sure this callback isn't used.
-  // DialogModelHost should be using OnDialogAccepted() instead.
-  model_->ok_button_.emplace(
-      model_->GetPassKey(), model_.get(),
-      base::BindRepeating([](const Event&) { NOTREACHED(); }), params);
-
-  return *this;
+  return AddButtonInternal(std::move(callback), params, model_->ok_button_,
+                           model_->accept_action_callback_);
 }
 
 DialogModel::Builder& DialogModel::Builder::AddCancelButton(
-    base::OnceClosure callback,
+    ButtonCallbackVariant callback,
     const DialogModelButton::Params& params) {
-  DCHECK(!model_->cancel_action_callback_);
-  model_->cancel_action_callback_ = std::move(callback);
+  return AddButtonInternal(std::move(callback), params, model_->cancel_button_,
+                           model_->cancel_action_callback_);
+}
+
+DialogModel::Builder& DialogModel::Builder::AddButtonInternal(
+    ButtonCallbackVariant callback,
+    const DialogModelButton::Params& params,
+    absl::optional<ui::DialogModelButton>& model_button,
+    ButtonCallbackVariant& model_callback) {
+  CHECK(params.is_visible_);
+  CHECK(!model_button.has_value());
+  absl::visit(
+      base::Overloaded{
+          [](decltype(base::DoNothing())& callback) {
+            // Intentional noop
+          },
+          [](base::RepeatingCallback<bool()>& callback) { CHECK(callback); },
+          [](base::OnceClosure& closure) { CHECK(closure); },
+      },
+      callback);
+  model_callback = std::move(callback);
   // NOTREACHED() is used below to make sure this callback isn't used.
   // DialogModelHost should be using OnDialogCanceled() instead.
-  model_->cancel_button_.emplace(
-      model_->GetPassKey(), model_.get(),
-      base::BindRepeating([](const Event&) { NOTREACHED(); }), params);
+  model_button.emplace(model_->GetPassKey(), model_.get(),
+                       base::BindRepeating([](const Event&) { NOTREACHED(); }),
+                       params);
 
   return *this;
 }
@@ -62,6 +75,7 @@ DialogModel::Builder& DialogModel::Builder::AddCancelButton(
 DialogModel::Builder& DialogModel::Builder::AddExtraButton(
     base::RepeatingCallback<void(const Event&)> callback,
     const DialogModelButton::Params& params) {
+  CHECK(params.is_visible_);
   DCHECK(!model_->extra_button_);
   DCHECK(!model_->extra_link_);
   // Extra buttons are required to have labels.
@@ -196,8 +210,7 @@ DialogModelField* DialogModel::GetFieldByUniqueId(ElementIdentifier id) {
   if (extra_button_ && cancel_button_->id_ == id)
     return &extra_button_.value();
 
-  NOTREACHED();
-  return nullptr;
+  NOTREACHED_NORETURN();
 }
 
 DialogModelCheckbox* DialogModel::GetCheckboxByUniqueId(ElementIdentifier id) {
@@ -213,14 +226,33 @@ DialogModelTextfield* DialogModel::GetTextfieldByUniqueId(
   return GetFieldByUniqueId(id)->AsTextfield();
 }
 
-void DialogModel::OnDialogAcceptAction(base::PassKey<DialogModelHost>) {
-  if (accept_action_callback_)
-    std::move(accept_action_callback_).Run();
+DialogModelButton* DialogModel::GetButtonByUniqueId(ElementIdentifier id) {
+  return GetFieldByUniqueId(id)->AsButton();
 }
 
-void DialogModel::OnDialogCancelAction(base::PassKey<DialogModelHost>) {
-  if (cancel_action_callback_)
-    std::move(cancel_action_callback_).Run();
+bool DialogModel::OnDialogAcceptAction(base::PassKey<DialogModelHost>) {
+  return RunDialogModelButtonCallback(accept_action_callback_);
+}
+
+bool DialogModel::OnDialogCancelAction(base::PassKey<DialogModelHost>) {
+  return RunDialogModelButtonCallback(cancel_action_callback_);
+}
+
+bool DialogModel::RunDialogModelButtonCallback(
+    ButtonCallbackVariant& callback_variant) {
+  return absl::visit(
+      base::Overloaded{
+          [](decltype(base::DoNothing())& callback) { return true; },
+          [](base::RepeatingCallback<bool()>& callback) {
+            return callback.Run();
+          },
+          [](base::OnceClosure& callback) {
+            CHECK(callback);
+            std::move(callback).Run();
+            return true;
+          },
+      },
+      callback_variant);
 }
 
 void DialogModel::OnDialogCloseAction(base::PassKey<DialogModelHost>) {
@@ -231,6 +263,27 @@ void DialogModel::OnDialogCloseAction(base::PassKey<DialogModelHost>) {
 void DialogModel::OnDialogDestroying(base::PassKey<DialogModelHost>) {
   if (dialog_destroying_callback_)
     std::move(dialog_destroying_callback_).Run();
+}
+
+void DialogModel::SetVisible(ElementIdentifier id, bool visible) {
+  DialogModelField* const field = GetFieldByUniqueId(id);
+
+  CHECK(field);
+  field->set_visible(visible);
+
+  if (host_) {
+    host_->OnFieldChanged(field);
+  }
+}
+
+void DialogModel::SetButtonLabel(DialogModelButton* button,
+                                 const std::u16string& label) {
+  CHECK(button);
+  button->label_ = label;
+
+  if (host_) {
+    host_->OnFieldChanged(button);
+  }
 }
 
 void DialogModel::AddField(std::unique_ptr<DialogModelField> field) {

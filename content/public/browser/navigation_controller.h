@@ -23,7 +23,6 @@
 #include "content/public/browser/session_storage_namespace.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/common/referrer.h"
-#include "net/base/net_errors.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/navigation/impression.h"
@@ -449,6 +448,17 @@ class NavigationController {
   // explicitly requested using SetNeedsReload().
   virtual void LoadIfNecessary() = 0;
 
+  // Reloads the current entry using the original URL used to create it. This is
+  // used for cases where the user wants to refresh a page using a different
+  // user agent after following a redirect. It is also used in the case of an
+  // intervention (e.g., preview) being served on the page and the user
+  // requesting the page without the intervention.
+  //
+  // If the current entry's original URL matches the current URL, is invalid, or
+  // contains POST data, this will result in a normal reload rather than an
+  // attempt to load the original URL.
+  virtual void LoadOriginalRequestURL() = 0;
+
   // Navigates directly to an error page in response to an event on the last
   // committed page (e.g., triggered by a subresource), with |error_page_html|
   // as the contents and |url| as the URL.
@@ -462,8 +472,7 @@ class NavigationController {
   virtual base::WeakPtr<NavigationHandle> LoadPostCommitErrorPage(
       RenderFrameHost* render_frame_host,
       const GURL& url,
-      const std::string& error_page_html,
-      net::Error error) = 0;
+      const std::string& error_page_html) = 0;
 
   // Renavigation --------------------------------------------------------------
 

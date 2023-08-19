@@ -10,10 +10,6 @@
 #import "ios/chrome/browser/ui/overlays/infobar_modal/infobar_modal_overlay_coordinator+modal_configuration.h"
 #import "ios/chrome/browser/ui/overlays/infobar_modal/passwords/password_infobar_modal_overlay_mediator.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface PasswordInfobarModalOverlayCoordinator ()
 // Redefine ModalConfiguration properties as readwrite.
 @property(nonatomic, readwrite) OverlayRequestMediator* modalMediator;

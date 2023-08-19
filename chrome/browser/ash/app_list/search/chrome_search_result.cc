@@ -7,6 +7,7 @@
 #include <map>
 
 #include "base/logging.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/app_list/app_context_menu.h"
 #include "ui/base/models/image_model.h"
 
@@ -169,7 +170,7 @@ void ChromeSearchResult::SetSkipUpdateAnimation(bool skip_update_animation) {
 }
 
 void ChromeSearchResult::SetIcon(const IconInfo& icon) {
-  icon.icon.EnsureRepsForSupportedScales();
+  TRACE_EVENT0("ui", "ChromeSearchResult::SetIcon");
   metadata_->icon = icon;
   SetSearchResultMetadata();
 }
@@ -180,6 +181,7 @@ void ChromeSearchResult::SetIconDimension(const int dimension) {
 }
 
 void ChromeSearchResult::SetChipIcon(const gfx::ImageSkia& chip_icon) {
+  TRACE_EVENT0("ui", "ChromeSearchResult::SetChipIcon");
   chip_icon.EnsureRepsForSupportedScales();
   metadata_->chip_icon = chip_icon;
   SetSearchResultMetadata();
@@ -199,6 +201,17 @@ void ChromeSearchResult::SetUseBadgeIconBackground(
 void ChromeSearchResult::SetSystemInfoAnswerCardData(
     ash::SystemInfoAnswerCardData answer_card_info) {
   metadata_->system_info_answer_card_data = answer_card_info;
+  SetSearchResultMetadata();
+}
+
+void ChromeSearchResult::SetFilePath(base::FilePath file_path) {
+  metadata_->file_path = file_path;
+  SetSearchResultMetadata();
+}
+
+void ChromeSearchResult::SetMetadataLoaderCallback(
+    MetadataLoaderCallback callback) {
+  metadata_->file_metadata_loader.SetLoaderCallback(std::move(callback));
   SetSearchResultMetadata();
 }
 

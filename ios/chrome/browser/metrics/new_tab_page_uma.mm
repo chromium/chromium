@@ -12,10 +12,6 @@
 #import "ios/web/public/web_state.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace new_tab_page_uma {
 
 void RecordAction(bool is_incognito,

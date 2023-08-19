@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
+#include "ui/aura/window_observer.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/views/corewm/tooltip_controller.h"
 #include "ui/views/corewm/tooltip_state_manager.h"
@@ -32,15 +33,16 @@ namespace views::corewm::test {
 
 // TooltipControllerTestHelper provides access to TooltipControllers private
 // state.
-class TooltipControllerTestHelper {
+class TooltipControllerTestHelper : public aura::WindowObserver {
  public:
-  explicit TooltipControllerTestHelper(TooltipController* controller);
+  // `root_window` must be non null.
+  explicit TooltipControllerTestHelper(aura::Window* root_window);
 
   TooltipControllerTestHelper(const TooltipControllerTestHelper&) = delete;
   TooltipControllerTestHelper& operator=(const TooltipControllerTestHelper&) =
       delete;
 
-  ~TooltipControllerTestHelper();
+  ~TooltipControllerTestHelper() override;
 
   TooltipController* controller() { return controller_; }
 
@@ -70,8 +72,15 @@ class TooltipControllerTestHelper {
   void SkipTooltipShowDelay(bool enable);
   void MockWindowActivated(aura::Window* window, bool active);
 
+  // aura::WindowObserver:
+  void OnWindowPropertyChanged(aura::Window* window,
+                               const void* key,
+                               intptr_t old) override;
+  void OnWindowDestroyed(aura::Window* window) override;
+
  private:
-  raw_ptr<TooltipController, DanglingUntriaged> controller_;
+  raw_ptr<aura::Window> root_window_;
+  raw_ptr<TooltipController> controller_;
 };
 
 // Trivial View subclass that lets you set the tooltip text.

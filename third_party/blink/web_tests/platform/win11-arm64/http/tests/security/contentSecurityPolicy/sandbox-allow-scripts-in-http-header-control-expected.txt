@@ -1,0 +1,3 @@
+CONSOLE MESSAGE: Script executed in iframe.
+CONSOLE MESSAGE: PASS: Iframe was not in a unique origin
+

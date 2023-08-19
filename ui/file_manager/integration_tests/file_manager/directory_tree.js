@@ -425,6 +425,9 @@ testcase.directoryTreeExpandFolder = async () => {
 
   // Open FilesApp on Downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
+  // TODO(b/272125628): Use page object.
+  const useNewTree =
+      await sendTestMessage({name: 'isFilesExperimentalEnabled'}) === 'true';
 
   const start = Date.now();
 
@@ -432,7 +435,8 @@ testcase.directoryTreeExpandFolder = async () => {
   await recursiveExpand(appId, '/My files/Downloads/large-folder-0');
 
   // Wait for all sub-folders to have the expand icon.
-  const querySubFolderExpandIcons =
+  const querySubFolderExpandIcons = useNewTree ?
+      ['#directory-tree [label="large-folder-0"] > xf-tree-item'] :
       ['#directory-tree [entry-label="large-folder-0"] > ' +
        '.tree-children > .tree-item > .tree-row[has-children="true"]'];
   await remoteCall.waitForElementsCount(
@@ -443,7 +447,8 @@ testcase.directoryTreeExpandFolder = async () => {
       appId, '/My files/Downloads/large-folder-0/sub-folder-0');
 
   // Wait sub-folder to have its 1k sub-sub-folders.
-  const querySubSubFolderItems =
+  const querySubSubFolderItems = useNewTree ?
+      ['#directory-tree [label="sub-folder-0"] > xf-tree-item'] :
       ['#directory-tree [entry-label="sub-folder-0"] > ' +
        '.tree-children > .tree-item'];
   await remoteCall.waitForElementsCount(

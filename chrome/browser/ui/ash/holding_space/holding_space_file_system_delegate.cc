@@ -11,6 +11,7 @@
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
+#include "ash/public/cpp/holding_space/holding_space_file.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "base/containers/contains.h"
@@ -442,7 +443,6 @@ void HoldingSpaceFileSystemDelegate::OnFilePathChanged(
 void HoldingSpaceFileSystemDelegate::OnFilePathModified(
     const base::FilePath& file_path) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
   model()->InvalidateItemImageIf(base::BindRepeating(
       [](const base::FilePath& file_path, const HoldingSpaceItem* item) {
         return item->file_path() == file_path;
@@ -524,9 +524,15 @@ void HoldingSpaceFileSystemDelegate::OnFilePathMoved(
     if (item_ids_to_remove.count(id))
       continue;
 
-    model()->UpdateItem(id)->SetBackingFile(
-        file_path,
-        holding_space_util::ResolveFileSystemUrl(profile(), file_path));
+    // File.
+    const GURL file_system_url =
+        holding_space_util::ResolveFileSystemUrl(profile(), file_path);
+    const HoldingSpaceFile::FileSystemType file_system_type =
+        holding_space_util::ResolveFileSystemType(profile(), file_system_url);
+
+    // Update.
+    model()->UpdateItem(id)->SetBackingFile(HoldingSpaceFile(file_system_type),
+                                            file_path, file_system_url);
   }
 
   // If a backing file update occurred, it's possible that there are no longer
@@ -608,9 +614,13 @@ void HoldingSpaceFileSystemDelegate::OnFilePathValidityChecksComplete(
   }
 
   for (auto* item : items_to_initialize) {
+    const GURL file_system_url =
+        holding_space_util::ResolveFileSystemUrl(profile(), item->file_path());
+    const HoldingSpaceFile::FileSystemType file_system_type =
+        holding_space_util::ResolveFileSystemType(profile(), file_system_url);
+
     model()->InitializeOrRemoveItem(
-        item->id(),
-        holding_space_util::ResolveFileSystemUrl(profile(), item->file_path()));
+        item->id(), HoldingSpaceFile(file_system_type), file_system_url);
   }
 }
 

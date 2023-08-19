@@ -9,7 +9,7 @@
 
 namespace base {
 template <typename T>
-struct DefaultSingletonTraits;
+class NoDestructor;
 }
 
 namespace content {
@@ -34,8 +34,7 @@ class HistoryUiFaviconRequestHandlerFactory
       const HistoryUiFaviconRequestHandlerFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<
-      HistoryUiFaviconRequestHandlerFactory>;
+  friend base::NoDestructor<HistoryUiFaviconRequestHandlerFactory>;
 
   HistoryUiFaviconRequestHandlerFactory();
   ~HistoryUiFaviconRequestHandlerFactory() override;

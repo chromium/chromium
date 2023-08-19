@@ -20,31 +20,4 @@ gfx::Rect CalculatePixelSpaceRect(const gfx::Size& texture_size,
   return gfx::Rect(rect.x(), rect.y(), rect.width(), rect.height());
 }
 
-gfx::SizeF CalculateScreenSize(const gfx::Transform& proj_matrix,
-                               float distance,
-                               const gfx::SizeF& size) {
-  // View matrix is the identity, thus, not needed in the calculation.
-  gfx::Transform scale_transform;
-  scale_transform.Scale(size.width(), size.height());
-
-  gfx::Transform translate_transform;
-  translate_transform.Translate3d(0, 0, -distance);
-
-  gfx::Transform model_view_proj_matrix =
-      proj_matrix * translate_transform * scale_transform;
-
-  gfx::Point3F projected_upper_right_corner =
-      model_view_proj_matrix.MapPoint(gfx::Point3F(0.5f, 0.5f, 0.0f));
-  gfx::Point3F projected_lower_left_corner =
-      model_view_proj_matrix.MapPoint(gfx::Point3F(-0.5f, -0.5f, 0.0f));
-
-  // Calculate and return the normalized size in screen space.
-  return gfx::SizeF((std::abs(projected_upper_right_corner.x()) +
-                     std::abs(projected_lower_left_corner.x())) /
-                        2.0f,
-                    (std::abs(projected_upper_right_corner.y()) +
-                     std::abs(projected_lower_left_corner.y())) /
-                        2.0f);
-}
-
 }  // namespace vr

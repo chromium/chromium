@@ -8,17 +8,21 @@
 
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/system_textfield.h"
 #include "base/strings/strcat.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/color/color_provider.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/gfx/range/range.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/background.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 
@@ -50,20 +54,24 @@ FlexCodeInput::FlexCodeInput(OnInputChange on_input_change,
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  code_field_ = AddChildView(std::make_unique<views::Textfield>());
+  const ui::ColorId input_color_id =
+      chromeos::features::IsJellyrollEnabled()
+          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
+          : kColorAshTextColorPrimary;
+  code_field_ = AddChildView(
+      std::make_unique<SystemTextfield>(SystemTextfield::Type::kMedium));
   code_field_->set_controller(this);
-  code_field_->SetTextColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorSecondary));
   code_field_->SetFontList(views::Textfield::GetDefaultFontList().Derive(
       kAccessCodeFontSizeDeltaDp, gfx::Font::FontStyle::NORMAL,
       gfx::Font::Weight::NORMAL));
   code_field_->SetBorder(views::CreateSolidSidedBorder(
       gfx::Insets::TLBR(0, 0, kAccessCodeFlexUnderlineThicknessDp, 0),
-      kColorAshShieldAndBaseOpaque));
-  code_field_->SetBackgroundColor(SK_ColorTRANSPARENT);
+      input_color_id));
+  code_field_->SetBackgroundColorEnabled(false);
   code_field_->SetFocusBehavior(FocusBehavior::ALWAYS);
   code_field_->SetPreferredSize(
       gfx::Size(kAccessCodeFlexLengthWidthDp, kAccessCodeInputFieldHeightDp));
+  SetInputColorId(input_color_id);
 
   if (obscure_pin) {
     code_field_->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
@@ -74,12 +82,6 @@ FlexCodeInput::FlexCodeInput(OnInputChange on_input_change,
 }
 
 FlexCodeInput::~FlexCodeInput() = default;
-
-void FlexCodeInput::OnThemeChanged() {
-  AccessCodeInput::OnThemeChanged();
-  const SkColor color = GetColorProvider()->GetColor(kColorAshTextColorPrimary);
-  SetInputColor(color);
-}
 
 void FlexCodeInput::OnAccessibleNameChanged(const std::u16string& new_name) {
   code_field_->SetAccessibleName(new_name);
@@ -116,8 +118,8 @@ absl::optional<std::string> FlexCodeInput::GetCode() const {
   return base::UTF16ToUTF8(code);
 }
 
-void FlexCodeInput::SetInputColor(SkColor color) {
-  code_field_->SetTextColor(color);
+void FlexCodeInput::SetInputColorId(ui::ColorId color_id) {
+  code_field_->SetTextColorId(color_id);
 }
 
 void FlexCodeInput::SetInputEnabled(bool input_enabled) {
@@ -184,6 +186,9 @@ bool FlexCodeInput::HandleKeyEvent(views::Textfield* sender,
   return false;
 }
 
+AccessibleInputField::AccessibleInputField()
+    : SystemTextfield(SystemTextfield::Type::kMedium) {}
+
 bool AccessibleInputField::IsGroupFocusTraversable() const {
   return false;
 }
@@ -232,25 +237,32 @@ FixedLengthCodeInput::FixedLengthCodeInput(int length,
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
+  const ui::ColorId text_color_id =
+      chromeos::features::IsJellyrollEnabled()
+          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
+          : kColorAshTextColorPrimary;
+
   for (int i = 0; i < length; ++i) {
     auto* field = new AccessibleInputField();
+    views::FocusRing::Get(field)->SetHasFocusPredicate(
+        base::BindRepeating([](const views::View* view) { return false; }));
+    field->SetBackgroundColorEnabled(false);
     field->set_controller(this);
     field->SetPreferredSize(
         gfx::Size(kAccessCodeInputFieldWidthDp, kAccessCodeInputFieldHeightDp));
     field->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
-    field->SetBackgroundColor(SK_ColorTRANSPARENT);
     if (is_obscure_pin_) {
       field->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
     } else {
       field->SetTextInputType(ui::TEXT_INPUT_TYPE_NUMBER);
     }
-    field->SetTextColor(SK_ColorTRANSPARENT);
+    field->SetTextColorId(text_color_id);
     field->SetFontList(views::Textfield::GetDefaultFontList().Derive(
         kAccessCodeFontSizeDeltaDp, gfx::Font::FontStyle::NORMAL,
         gfx::Font::Weight::NORMAL));
     field->SetBorder(views::CreateThemedSolidSidedBorder(
         gfx::Insets::TLBR(0, 0, kAccessCodeInputFieldUnderlineThicknessDp, 0),
-        kColorAshShieldAndBaseOpaque));
+        text_color_id));
     field->SetGroup(kFixedLengthInputGroup);
 
     // Ignores the a11y focus of |field| because the a11y needs to focus to the
@@ -260,17 +272,10 @@ FixedLengthCodeInput::FixedLengthCodeInput(int length,
     AddChildView(field);
     layout->SetFlexForView(field, 1);
   }
-
   text_value_for_a11y_ = std::u16string(length, ' ');
 }
 
 FixedLengthCodeInput::~FixedLengthCodeInput() = default;
-
-void FixedLengthCodeInput::OnThemeChanged() {
-  AccessCodeInput::OnThemeChanged();
-  const SkColor color = GetColorProvider()->GetColor(kColorAshTextColorPrimary);
-  SetInputColor(color);
-}
 
 // Inserts |value| into the |active_field_| and moves focus to the next field
 // if it exists.
@@ -321,17 +326,19 @@ absl::optional<std::string> FixedLengthCodeInput::GetCode() const {
   return result;
 }
 
-void FixedLengthCodeInput::SetInputColor(SkColor color) {
-  const SkColor kErrorColor = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorAlert);
+void FixedLengthCodeInput::SetInputColorId(ui::ColorId color_id) {
+  const ui::ColorId error_color_id =
+      chromeos::features::IsJellyrollEnabled()
+          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysError)
+          : kColorAshTextColorAlert;
 
   for (auto* field : input_fields_) {
-    field->SetTextColor(color);
+    field->SetTextColorId(color_id);
     // We don't update the underline color to red.
-    if (color != kErrorColor) {
-      field->SetBorder(views::CreateSolidSidedBorder(
+    if (color_id != error_color_id) {
+      field->SetBorder(views::CreateThemedSolidSidedBorder(
           gfx::Insets::TLBR(0, 0, kAccessCodeInputFieldUnderlineThicknessDp, 0),
-          color));
+          color_id));
     }
   }
 }
@@ -487,8 +494,16 @@ void FixedLengthCodeInput::SetInputEnabled(bool input_enabled) {
 }
 
 void FixedLengthCodeInput::SetReadOnly(bool read_only) {
+  const bool is_jelly = chromeos::features::IsJellyrollEnabled();
+  const ui::ColorId underline_color_id =
+      is_jelly ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
+               : kColorAshTextColorPrimary;
   for (auto* field : input_fields_) {
     field->SetReadOnly(read_only);
+    field->SetBackground(nullptr);
+    field->SetBorder(views::CreateThemedSolidSidedBorder(
+        gfx::Insets::TLBR(0, 0, kAccessCodeInputFieldUnderlineThicknessDp, 0),
+        underline_color_id));
     field->SetCursorEnabled(!read_only);
   }
 }

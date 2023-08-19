@@ -8,10 +8,6 @@
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 JavaScriptBlockingFakeWebState::JavaScriptBlockingFakeWebState()
     : web::FakeWebState() {
   last_committed_item_ = web::NavigationItem::Create();

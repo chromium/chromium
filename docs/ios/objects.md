@@ -91,8 +91,7 @@ The corresponding object on desktop is TabStripModel.
 # WebStateListDelegate
 
 WebStateListDelegate is the delegate for WebStateList. It is invoked
-before a WebState is inserted to or after a WebState is removed from
-the WebStateList.
+before a WebState is inserted to the WebStateList.
 
 Each WebStateList points to a WebStateListDelegate but does not own
 it to allow sharing the same delegate for multiple WebStateList. In

@@ -25,15 +25,12 @@ ShelfButton::ShelfButton(Shelf* shelf,
   DCHECK(shelf_button_delegate_);
   SetHideInkDropWhenShowingContextMenu(false);
   SetFocusBehavior(FocusBehavior::ALWAYS);
-  views::InkDrop::Get(this)->SetMode(
-      views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
   // Inset focus ring path to avoid clipping the edges of the ring.
+  views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
   views::FocusRing::Get(this)->SetPathGenerator(
       std::make_unique<views::CircleHighlightPathGenerator>(
           gfx::Insets(-views::FocusRing::kDefaultHaloInset)));
   SetFocusPainter(nullptr);
-  views::InkDrop::UseInkDropForSquareRipple(views::InkDrop::Get(this),
-                                            /*highlight_on_hover=*/false);
 }
 
 ShelfButton::~ShelfButton() = default;

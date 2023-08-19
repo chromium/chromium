@@ -11,7 +11,6 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/notreached.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
-#include "components/viz/common/resources/resource_format_utils.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
 namespace viz {

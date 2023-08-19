@@ -778,6 +778,9 @@ class MockConsumerHost : public mojom::TracingSessionClient {
   base::RunLoop wait_for_tracing_disabled_;
 };
 
+// Perfetto client library supports multiple parallel tracing sessions, so
+// this test is irrelevant.
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 TEST_F(TracingConsumerTest, TestConsumerPriority) {
   PerfettoService::GetInstance()->SetActiveServicePidsInitialized();
   auto trace_config_background = GetDefaultTraceConfig(
@@ -817,5 +820,6 @@ TEST_F(TracingConsumerTest, TestConsumerPriority) {
   background_consumer_3.EnableTracing(trace_config_background);
   background_consumer_3.WaitForTracingEnabled();
 }
+#endif
 
 }  // namespace tracing

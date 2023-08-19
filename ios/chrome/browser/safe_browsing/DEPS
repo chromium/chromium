@@ -1,0 +1,10 @@
+include_rules = [
+  "+ios/chrome/browser/history",
+  "+ios/chrome/browser/infobars",
+  "+ios/chrome/browser/signin",
+  "+ios/chrome/browser/sync",
+  "+ios/chrome/browser/passwords",
+  "+ios/chrome/browser/prerender",
+  "+ios/chrome/browser/policy",
+  "+ios/chrome/browser/content_settings",
+]

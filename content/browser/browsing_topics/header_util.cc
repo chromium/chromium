@@ -26,7 +26,7 @@ constexpr int kTopicMaxLength = 3;
 // grow as versions require more digits.
 constexpr int kVersionMaxLength = 13;
 
-static_assert(blink::features::kBrowsingTopicsConfigVersionDefault < 10,
+static_assert(browsing_topics::ConfigVersion::kMaxValue < 10,
               "Topics config version should not exceed 1 digit, or "
               "`kVersionMaxLength` should be updated accordingly.");
 

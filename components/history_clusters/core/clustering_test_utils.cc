@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 #include "components/history_clusters/core/clustering_test_utils.h"
+#include <vector>
 
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/history_clusters_util.h"
 
 namespace history_clusters::testing {
@@ -95,7 +97,8 @@ history::AnnotatedVisit CreateDefaultAnnotatedVisit(int visit_id,
 history::ClusterVisit CreateClusterVisit(
     const history::AnnotatedVisit& annotated_visit,
     absl::optional<GURL> normalized_url,
-    float score) {
+    float score,
+    history::ClusterVisit::InteractionState interaction_state) {
   history::ClusterVisit cluster_visit;
   cluster_visit.annotated_visit = annotated_visit;
   cluster_visit.score = score;
@@ -105,6 +108,7 @@ history::ClusterVisit CreateClusterVisit(
       ComputeURLForDeduping(cluster_visit.normalized_url);
   cluster_visit.url_for_display =
       ComputeURLForDisplay(cluster_visit.normalized_url);
+  cluster_visit.interaction_state = interaction_state;
   return cluster_visit;
 }
 
@@ -113,6 +117,13 @@ history::DuplicateClusterVisit ClusterVisitToDuplicateClusterVisit(
   return {cluster_visit.annotated_visit.visit_row.visit_id,
           cluster_visit.annotated_visit.url_row.url(),
           cluster_visit.annotated_visit.visit_row.visit_time};
+}
+
+history::Cluster CreateCluster(
+    std::vector<history::ClusterVisit>& cluster_visits) {
+  history::Cluster cluster;
+  cluster.visits = cluster_visits;
+  return cluster;
 }
 
 }  // namespace history_clusters::testing

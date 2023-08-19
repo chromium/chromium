@@ -38,6 +38,8 @@
 
 namespace blink {
 
+class Blob;
+
 class MODULES_EXPORT FileWriterBase : public GarbageCollectedMixin {
  public:
   virtual ~FileWriterBase();
@@ -49,7 +51,7 @@ class MODULES_EXPORT FileWriterBase : public GarbageCollectedMixin {
   void Trace(Visitor* visitor) const override {}
 
   virtual void Truncate(int64_t length);
-  virtual void Write(int64_t position, const String& id);
+  virtual void Write(int64_t position, const Blob& blob);
   virtual void Cancel();
 
  protected:
@@ -71,9 +73,7 @@ class MODULES_EXPORT FileWriterBase : public GarbageCollectedMixin {
   // the requested operation, and they must call the appropriate DidSomething
   // method upon completion and as progress is made in the Write case.
   virtual void DoTruncate(const KURL& path, int64_t offset) = 0;
-  virtual void DoWrite(const KURL& path,
-                       const String& blob_id,
-                       int64_t offset) = 0;
+  virtual void DoWrite(const KURL& path, const Blob& blob, int64_t offset) = 0;
   virtual void DoCancel() = 0;
 
   // These are conditionally called by the Did* methods.

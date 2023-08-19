@@ -140,8 +140,7 @@ class PersonalDataManagerCleaner {
 
   // The personal data manager, used to load and update the personal data
   // from/to the web database.
-  const raw_ptr<PersonalDataManager, DanglingUntriaged> personal_data_manager_ =
-      nullptr;
+  const raw_ptr<PersonalDataManager> personal_data_manager_ = nullptr;
 
   // The PrefService used by this instance.
   const raw_ptr<PrefService> pref_service_ = nullptr;

@@ -156,8 +156,8 @@ void InputConnectionImpl::DeleteSurroundingText(int before, int after) {
   // |before| is a number of characters is going to be deleted before the cursor
   // and |after| is a number of characters is going to be deleted after the
   // cursor.
-  if (!ime_engine_->DeleteSurroundingText(input_context_id_, before, after,
-                                          &error)) {
+  if (!ime_engine_->DeleteSurroundingText(input_context_id_, -before,
+                                          before + after, &error)) {
     LOG(ERROR) << "DeleteSurroundingText failed: before = " << before
                << ", after = " << after << ", error = \"" << error << "\"";
   }
@@ -206,18 +206,27 @@ void InputConnectionImpl::SetComposingText(
 
   StartStateUpdateTimer();
 
-  const int selection_start = new_selection_range
-                                  ? new_selection_range.value().start()
-                                  : new_cursor_pos;
-  const int selection_end =
-      new_selection_range ? new_selection_range.value().end() : new_cursor_pos;
-
   ui::TextInputClient* client = GetTextInputClient();
   if (!client)
     return;
 
-  gfx::Range selection_range;
+  // Calculate the position of composition insertion point
+  gfx::Range selection_range, composition_range;
   client->GetEditableSelectionRange(&selection_range);
+  client->GetCompositionTextRange(&composition_range);
+
+  const int insertion_point = composition_range.is_empty()
+                                  ? selection_range.start()
+                                  : composition_range.start();
+
+  const int selection_start =
+      new_selection_range
+          ? new_selection_range.value().start() - insertion_point
+          : new_cursor_pos;
+  const int selection_end =
+      new_selection_range ? new_selection_range.value().end() - insertion_point
+                          : new_cursor_pos;
+
   if (text.empty() &&
       selection_range.start() == static_cast<uint32_t>(selection_start) &&
       selection_range.end() == static_cast<uint32_t>(selection_end)) {
@@ -232,7 +241,7 @@ void InputConnectionImpl::SetComposingText(
           selection_end, new_cursor_pos,
           std::vector<ash::input_method::InputMethodEngine::SegmentInfo>(),
           &error)) {
-    LOG(ERROR) << "SetComposingText failed: pos=" << new_cursor_pos
+    LOG(ERROR) << "SetComposition failed: pos=" << new_cursor_pos
                << ", error=\"" << error << "\"";
     return;
   }
@@ -284,8 +293,6 @@ void InputConnectionImpl::SetCompositionRange(
 
   StartStateUpdateTimer();
 
-  const int before = selection_range.start() - new_composition_range.start();
-  const int after = new_composition_range.end() - selection_range.end();
   ash::input_method::InputMethodEngine::SegmentInfo segment_info;
   segment_info.start = 0;
   segment_info.end = new_composition_range.length();
@@ -293,9 +300,10 @@ void InputConnectionImpl::SetCompositionRange(
       ash::input_method::InputMethodEngine::SEGMENT_STYLE_UNDERLINE;
 
   std::string error;
-  if (!ime_engine_->ash::input_method::InputMethodEngine::SetCompositionRange(
-          input_context_id_, before, after, {segment_info}, &error)) {
-    LOG(ERROR) << "SetCompositionRange failed: range="
+  if (!ime_engine_->ash::input_method::InputMethodEngine::SetComposingRange(
+          input_context_id_, new_composition_range.start(),
+          new_composition_range.end(), {segment_info}, &error)) {
+    LOG(ERROR) << "SetComposingRange failed: range="
                << new_composition_range.ToString() << ", error=\"" << error
                << "\"";
   }

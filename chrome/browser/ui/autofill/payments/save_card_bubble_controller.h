@@ -11,7 +11,6 @@
 
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
-#include "components/autofill/core/browser/sync_utils.h"
 #include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/web_contents.h"
@@ -77,7 +76,6 @@ class SaveCardBubbleController {
   // user if they were requested, or struct with empty strings otherwise.
   virtual void OnSaveButton(const AutofillClient::UserProvidedCardDetails&
                                 user_provided_card_details) = 0;
-  virtual void OnCancelButton() = 0;
   virtual void OnLegalMessageLinkClicked(const GURL& url) = 0;
   virtual void OnManageCardsClicked() = 0;
   virtual void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) = 0;
@@ -90,8 +88,9 @@ class SaveCardBubbleController {
   virtual bool IsUploadSave() const = 0;
   // Returns the current state of the bubble.
   virtual BubbleType GetBubbleType() const = 0;
-  // Returns the current sync state.
-  virtual AutofillSyncSigninState GetSyncState() const = 0;
+  // Returns true if the user is signed in and sync transport is active for
+  // Wallet data, without having turned on sync-the-feature.
+  virtual bool IsPaymentsSyncTransportEnabledWithoutSyncFeature() const = 0;
 };
 
 }  // namespace autofill

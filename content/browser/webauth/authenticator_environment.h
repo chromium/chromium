@@ -10,7 +10,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
-#include "build/build_config.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -18,9 +17,6 @@
 
 namespace device {
 class FidoDiscoveryFactory;
-#if BUILDFLAG(IS_WIN)
-class WinWebAuthnApi;
-#endif
 }  // namespace device
 
 namespace content {
@@ -76,20 +72,6 @@ class CONTENT_EXPORT AuthenticatorEnvironment : public FrameTreeNode::Observer {
   // ReplaceDefaultDiscoveryFactoryForTesting().
   device::FidoDiscoveryFactory* MaybeGetDiscoveryFactoryTestOverride();
 
-#if BUILDFLAG(IS_WIN)
-  // win_webauthn_api returns the WinWebAuthApi instance to be used for talking
-  // to the Windows WebAuthn API. This is a testing seam that can be altered
-  // with |SetWinWebAuthnApiForTesting|.
-  device::WinWebAuthnApi* win_webauthn_api() const;
-
-  // SetWinWebAuthnApiForTesting sets a testing override for |win_webauthn_api|.
-  void SetWinWebAuthnApiForTesting(device::WinWebAuthnApi*);
-
-  // ClearWinWebAuthnApiForTesting clears the testing override for
-  // |win_webauthn_api|.
-  void ClearWinWebAuthnApiForTesting();
-#endif
-
   void ReplaceDefaultDiscoveryFactoryForTesting(
       std::unique_ptr<device::FidoDiscoveryFactory> factory);
 
@@ -107,10 +89,6 @@ class CONTENT_EXPORT AuthenticatorEnvironment : public FrameTreeNode::Observer {
 
   std::map<FrameTreeNode*, std::unique_ptr<VirtualAuthenticatorManagerImpl>>
       virtual_authenticator_managers_;
-
-#if BUILDFLAG(IS_WIN)
-  raw_ptr<device::WinWebAuthnApi> win_webauthn_api_for_testing_ = nullptr;
-#endif
 };
 
 }  // namespace content

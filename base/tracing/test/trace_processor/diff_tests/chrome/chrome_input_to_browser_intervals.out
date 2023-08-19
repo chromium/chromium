@@ -1,0 +1,4 @@
+
+"window_start_ts","window_start_id","window_end_ts","window_end_id","blocked_gesture","upid","scroll_type"
+60934320005158,1480,60934321008158,1554,1,1,"blocking_touch_move"
+60934338798158,1942,60934342078158,2147,0,1,"regular"

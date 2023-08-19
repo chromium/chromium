@@ -223,14 +223,16 @@ void ScenicSurface::Present(
 
     auto& overlay_data = overlay.overlay_plane_data;
     auto rounded_bounds = gfx::ToRoundedRect(overlay_data.display_bounds);
+    auto transform =
+        absl::get<gfx::OverlayTransform>(overlay_data.plane_transform);
     if (overlay_view_info.plane_z_order != overlay_data.z_order ||
         overlay_view_info.display_bounds != rounded_bounds ||
         overlay_view_info.crop_rect != overlay_data.crop_rect ||
-        overlay_view_info.plane_transform != overlay_data.plane_transform) {
+        overlay_view_info.plane_transform != transform) {
       overlay_view_info.plane_z_order = overlay_data.z_order;
       overlay_view_info.display_bounds = rounded_bounds;
       overlay_view_info.crop_rect = overlay_data.crop_rect;
-      overlay_view_info.plane_transform = overlay_data.plane_transform;
+      overlay_view_info.plane_transform = transform;
       layout_update_required = true;
     }
   }

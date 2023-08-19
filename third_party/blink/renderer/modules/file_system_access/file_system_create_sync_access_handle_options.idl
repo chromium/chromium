@@ -1,0 +1,15 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// TODO(crbug/1382215): Include spec link.
+
+enum FileSystemSyncAccessHandleMode {
+  "readwrite",
+  "read-only",
+  "readwrite-unsafe",
+};
+
+dictionary FileSystemCreateSyncAccessHandleOptions {
+  FileSystemSyncAccessHandleMode mode = "readwrite";
+};

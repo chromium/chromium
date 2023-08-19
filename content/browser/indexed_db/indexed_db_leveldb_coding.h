@@ -58,6 +58,14 @@ CONTENT_EXPORT void EncodeBinary(base::span<const uint8_t> value,
 CONTENT_EXPORT void EncodeDouble(double value, std::string* into);
 CONTENT_EXPORT void EncodeIDBKey(const blink::IndexedDBKey& value,
                                  std::string* into);
+// This function creates a byte stream that can be directly compared to other
+// byte streams on a byte-by-byte basis and retain semantic ordering. This
+// enables the value to be stored as a SQLite blob without a specialized
+// collation operation. Unlike `EncodeIDBKey`, which makes use of length bytes,
+// this operation re-encodes variable-length values in a way that supports
+// sentinels.
+CONTENT_EXPORT void EncodeSortableIDBKey(const blink::IndexedDBKey& value,
+                                         std::string* into);
 CONTENT_EXPORT void EncodeIDBKeyPath(const blink::IndexedDBKeyPath& value,
                                      std::string* into);
 CONTENT_EXPORT void EncodeBlobJournal(const BlobJournalType& journal,
@@ -116,7 +124,15 @@ CONTENT_EXPORT int CompareIndexKeys(const base::StringPiece& a,
 // Logging support.
 std::string IndexedDBKeyToDebugString(base::StringPiece key);
 
-CONTENT_EXPORT PartitionedLockId GetDatabaseLockId(int64_t database_id);
+// TODO(estade): these lock id factories have nothing to do with level db
+// coding and don't belong in this file.
+
+// We can't use the database ID for the database lock because we need to hold
+// this lock before we start reading/writing the database metadata, at which
+// point we don't yet know the ID, but do know the name (which is unique
+// anyway).
+CONTENT_EXPORT PartitionedLockId
+GetDatabaseLockId(std::u16string database_name);
 CONTENT_EXPORT PartitionedLockId GetObjectStoreLockId(int64_t database_id,
                                                       int64_t object_store_id);
 

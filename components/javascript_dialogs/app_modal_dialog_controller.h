@@ -120,7 +120,7 @@ class AppModalDialogController {
   raw_ptr<AppModalDialogView> view_;
 
   // The WebContents that opened this dialog.
-  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
+  raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> web_contents_;
 
   // A map of extra Chrome-only data associated with the delegate_. Can be
   // inspected via |extra_data_map_[web_contents_]|.

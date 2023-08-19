@@ -13,10 +13,6 @@
 #include "base/values.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace autofill {
 
 namespace {

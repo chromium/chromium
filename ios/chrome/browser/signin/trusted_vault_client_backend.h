@@ -13,7 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/ios/block_types.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/sync/service/trusted_vault_client.h"
+#include "components/trusted_vault/trusted_vault_client.h"
 
 @protocol SystemIdentity;
 
@@ -28,7 +28,7 @@ class TrustedVaultClientBackend : public KeyedService {
   using PublicKey = std::vector<uint8_t>;
 
   // Represents the TrustedVaultClientBackend observers.
-  using Observer = syncer::TrustedVaultClient::Observer;
+  using Observer = trusted_vault::TrustedVaultClient::Observer;
 
   // Types for the different callbacks.
   using KeyFetchedCallback = base::OnceCallback<void(const SharedKeyList&)>;

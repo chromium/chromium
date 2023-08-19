@@ -568,15 +568,6 @@ interface IPolicyStatus3 : IPolicyStatus2 {
 };
 END_INTERFACE
 
-BEGIN_INTERFACE(
-  {
-    "uuid": {
-      "user":"PLACEHOLDER-GUID-17A38E6E-A1E6-47E4-936F-F7A55EB042EB",
-      "system":"PLACEHOLDER-GUID-FFBAEC45-C5EC-4287-85CD-A831796BE952"
-    },
-    "tokensToSuffix": ["IProcessLauncher"]
-  }
-)
 [
   object,
   oleautomation,
@@ -593,17 +584,7 @@ interface IProcessLauncher : IUnknown {
                             [in] DWORD caller_proc_id,
                             [out] ULONG_PTR* proc_handle);
 };
-END_INTERFACE
 
-BEGIN_INTERFACE(
-  {
-    "uuid": {
-      "user":"PLACEHOLDER-GUID-0300C0EC-A975-4926-9A12-6F80E4D1B7E3",
-      "system":"PLACEHOLDER-GUID-5F41DC50-029C-4F5A-9860-EF352A0B66D2"
-    },
-    "tokensToSuffix": ["IProcessLauncher2", "IProcessLauncher"]
-  }
-)
 [
   object,
   oleautomation,
@@ -621,7 +602,6 @@ interface IProcessLauncher2 : IProcessLauncher {
                           [out] ULONG_PTR* proc_handle,
                           [out] ULONG_PTR* stdout_handle);
 };
-END_INTERFACE
 
 [
   uuid(PLACEHOLDER-GUID-7A1FDE1F-AAA9-441B-B9AA-95B31D78592B),

@@ -67,6 +67,10 @@
     width: 512px;
   }
 
+  :host-context([theme='refresh23']) #header-image {
+    background-color: var(--cros-sys-app_base_shaded);
+  }
+
   ::slotted([slot=header-image]) {
     /* As this surface is a dialog, replace the color palette with its elevated
      * variant. We also do this for GM3 assets so that they correctly map back
@@ -79,8 +83,8 @@
       --cros-illustration-elevation-base-color);
     --cros-illustration-secondary-color: var(
       --cros-illustration-elevation-secondary-color);
-    --cros-sys-illo-color1-1: var(--cros-sys-illo-elevated-color-1-1);
-    --cros-sys-illo-color1-2: var(--cros-sys-illo-elevated-color-1-2);
+    --cros-sys-illo-color1-1: var(--cros-sys-illo-elevated-color1-1);
+    --cros-sys-illo-color1-2: var(--cros-sys-illo-elevated-color1-2);
     --cros-sys-illo-base: var(--cros-sys-illo-elevated-base);
     --cros-sys-illo-secondary: var(--cros-sys-illo-elevated-secondary);
 

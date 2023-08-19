@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/paint/box_decoration_data.h"
 #include "third_party/blink/renderer/core/paint/box_model_object_painter.h"
 #include "third_party/blink/renderer/core/paint/box_painter.h"
+#include "third_party/blink/renderer/core/paint/object_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -73,8 +74,8 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
   if (layout_view_.StyleRef().Visibility() != EVisibility::kVisible)
     return;
 
-  bool has_hit_test_data = layout_view_.HasEffectiveAllowedTouchAction() ||
-                           layout_view_.InsideBlockingWheelEventHandler();
+  bool has_hit_test_data =
+      ObjectPainter(layout_view_).ShouldRecordSpecialHitTestData(paint_info);
   bool painting_background_in_contents_space =
       paint_info.IsPaintingBackgroundInContentsSpace();
 
@@ -113,10 +114,10 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
   if (painting_background_in_contents_space) {
     // Layout overflow, combined with the visible content size.
     auto document_rect = layout_view_.DocumentRect();
-    // DocumentRect is relative to ScrollOriginInt. Add ScrollOriginInt to let
-    // it be in the space of ContentsProperties(). See ScrollTranslation in
+    // DocumentRect is relative to ScrollOrigin. Add ScrollOrigin to let it be
+    // in the space of ContentsProperties(). See ScrollTranslation in
     // object_paint_properties.h for details.
-    document_rect.Move(PhysicalOffset(layout_view_.ScrollOriginInt()));
+    document_rect.Move(PhysicalOffset(layout_view_.ScrollOrigin()));
     background_rect.Unite(document_rect);
     background_client = &layout_view_.GetScrollableArea()
                              ->GetScrollingBackgroundDisplayItemClient();
@@ -194,9 +195,8 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
                           painted_separate_effect);
   }
   if (has_hit_test_data) {
-    BoxPainter(layout_view_)
-        .RecordHitTestData(paint_info,
-                           PhysicalRect(pixel_snapped_background_rect),
+    ObjectPainter(layout_view_)
+        .RecordHitTestData(paint_info, pixel_snapped_background_rect,
                            *background_client);
   }
 

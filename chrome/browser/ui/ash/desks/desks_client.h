@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "ash/public/cpp/session/session_observer.h"
+#include "ash/wm/desks/desks_controller.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -119,7 +120,8 @@ class DesksClient : public ash::SessionObserver {
   void GetDeskTemplates(GetDeskTemplatesCallback callback);
 
   // Returns the current available desks.
-  base::expected<std::vector<const ash::Desk*>, DeskActionError> GetAllDesks();
+  virtual base::expected<std::vector<const ash::Desk*>, DeskActionError>
+  GetAllDesks();
 
   using GetTemplateJsonCallback =
       base::OnceCallback<void(absl::optional<DeskActionError> result,
@@ -155,11 +157,13 @@ class DesksClient : public ash::SessionObserver {
 
   using ErrorHandlingCallBack =
       base::OnceCallback<void(absl::optional<DeskActionError> result)>;
-  // Remove a desk, close all windows if `close_all` set to true, otherwise
-  // combine the windows to the active desk to the left.
-  absl::optional<DesksClient::DeskActionError> RemoveDesk(
+  // Remove a desk, close all windows if `close_type` set to kCloseAllWindows,
+  // otherwise combine the windows to the active desk to the left. Provide
+  // a notification allowing the user to undo the removal if `close_type` is
+  // set to `kCloseAllWindowsAndWait`
+  virtual absl::optional<DesksClient::DeskActionError> RemoveDesk(
       const base::Uuid& desk_uuid,
-      bool close_all);
+      ash::DeskCloseType close_type);
 
   // Uses `app_launch_handler_` to launch apps from the restore data found in
   // `desk_template`.

@@ -100,4 +100,9 @@ OnDeviceTailModelService*
 FakeAutocompleteProviderClient::GetOnDeviceTailModelService() const {
   return on_device_tail_model_service_.get();
 }
+
+AutocompleteScoringModelService*
+FakeAutocompleteProviderClient::GetAutocompleteScoringModelService() const {
+  return scoring_model_service_.get();
+}
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)

@@ -22,4 +22,7 @@ public interface AuxiliarySearchController extends PauseResumeWithNativeObserver
 
     @Override
     default void onPauseWithNative() {}
+
+    /** Destroy and unhook objects at destruction. */
+    default void destroy() {}
 }

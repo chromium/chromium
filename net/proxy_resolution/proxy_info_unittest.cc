@@ -57,4 +57,13 @@ TEST(ProxyInfoTest, UseVsOverrideProxyList) {
   EXPECT_EQ("PROXY bar.com:80", info.proxy_list().ToPacString());
 }
 
+TEST(ProxyInfoTest, IsForIpProtection) {
+  ProxyInfo info;
+  EXPECT_FALSE(info.is_for_ip_protection());
+  info.set_is_for_ip_protection(true);
+  EXPECT_TRUE(info.is_for_ip_protection());
+  info.set_is_for_ip_protection(false);
+  EXPECT_FALSE(info.is_for_ip_protection());
+}
+
 }  // namespace net

@@ -45,7 +45,7 @@ public class RecognitionTestHelper {
      * @param texts       the queries representing transcription results
      * @param confidences confidence values for corresponding queries
      */
-    public static Bundle createDummyBundle(String[] texts, float[] confidences) {
+    public static Bundle createPlaceholderBundle(String[] texts, float[] confidences) {
         Bundle b = new Bundle();
 
         b.putStringArrayList(

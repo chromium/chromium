@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://github.com/WICG/web-smart-card/blob/main/README.md#web-idl
+// https://wicg.github.io/web-smart-card/#smartcardconnection-interface
 
 enum SmartCardDisposition {
   "leave",
@@ -10,6 +10,16 @@ enum SmartCardDisposition {
   "unpower",
   "eject"
 };
+
+dictionary SmartCardTransactionOptions {
+  AbortSignal signal;
+};
+
+dictionary SmartCardTransmitOptions {
+  SmartCardProtocol protocol;
+};
+
+callback SmartCardTransactionCallback = Promise<SmartCardDisposition?> ();
 
 [
   Exposed=Window,
@@ -21,8 +31,10 @@ enum SmartCardDisposition {
   Promise<void> disconnect(optional SmartCardDisposition disposition = "leave");
 
   [CallWith=ScriptState, RaisesException]
-  Promise<ArrayBuffer> transmit(BufferSource sendBuffer);
+  Promise<ArrayBuffer> transmit(BufferSource sendBuffer,
+    optional SmartCardTransmitOptions options = {});
 
+  [CallWith=ScriptState, RaisesException]
   Promise<SmartCardConnectionStatus> status();
 
   [CallWith=ScriptState, RaisesException]
@@ -32,5 +44,11 @@ enum SmartCardDisposition {
   [CallWith=ScriptState, RaisesException]
   Promise<ArrayBuffer> getAttribute([EnforceRange] unsigned long tag);
 
-  // TODO(crbug.com/1386175): add the rest of the API
+  [CallWith=ScriptState, RaisesException]
+  Promise<undefined> setAttribute([EnforceRange] unsigned long tag,
+      BufferSource value);
+
+  [CallWith=ScriptState, RaisesException]
+  Promise<undefined> startTransaction(SmartCardTransactionCallback transaction,
+      optional SmartCardTransactionOptions options = {});
 };

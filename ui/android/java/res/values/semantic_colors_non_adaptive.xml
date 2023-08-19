@@ -8,94 +8,94 @@ found in the LICENSE file.
     <!-- Semantic color references that don't change on night mode. -->
     <!-- Common icon colors for drawables. -->
     <!-- Same as ?attr/colorOnSurface. -->
-    <color name="default_icon_color_dark">@color/baseline_neutral_900</color>
-    <color name="default_icon_color_light">@color/baseline_neutral_100</color>
+    <color name="default_icon_color_dark">@color/baseline_neutral_10</color>
+    <color name="default_icon_color_light">@color/baseline_neutral_90</color>
     <!-- Same as ?attr/colorOnSurfaceVariant. -->
-    <color name="default_icon_color_secondary_dark">@color/baseline_neutral_variant_700</color>
-    <color name="default_icon_color_secondary_light">@color/baseline_neutral_variant_200</color>
+    <color name="default_icon_color_secondary_dark">@color/baseline_neutral_variant_30</color>
+    <color name="default_icon_color_secondary_light">@color/baseline_neutral_variant_80</color>
     <!-- Same as ?attr/colorPrimary. -->
     <color name="default_icon_color_blue_dark">@color/baseline_primary_40</color>
     <color name="default_icon_color_blue_light">@color/baseline_primary_80</color>
     <!-- Same as ?attr/colorOnSurface. -->
-    <color name="default_icon_color_disabled_dark">@color/baseline_neutral_900_alpha_38</color>
-    <color name="default_icon_color_disabled_light">@color/baseline_neutral_100_alpha_38</color>
+    <color name="default_icon_color_disabled_dark">@color/baseline_neutral_10_alpha_38</color>
+    <color name="default_icon_color_disabled_light">@color/baseline_neutral_90_alpha_38</color>
     <!-- Same as ?attr/colorOnSurfaceInverse -->
-    <color name="default_icon_color_inverse_light">@color/baseline_neutral_50</color>
-    <color name="default_icon_color_inverse_dark">@color/baseline_neutral_800</color>
+    <color name="default_icon_color_inverse_light">@color/baseline_neutral_95</color>
+    <color name="default_icon_color_inverse_dark">@color/baseline_neutral_20</color>
     <!-- Same as ?attr/colorOnPrimary. -->
     <color name="default_icon_color_on_accent1_light">@color/baseline_primary_100</color>
     <color name="default_icon_color_on_accent1_dark">@color/baseline_primary_20</color>
 
     <!-- Common text colors -->
     <!-- Same as ?attr/colorOnSurface. -->
-    <color name="default_text_color_dark">@color/baseline_neutral_900</color>
-    <color name="default_text_color_light">@color/baseline_neutral_100</color>
+    <color name="default_text_color_dark">@color/baseline_neutral_10</color>
+    <color name="default_text_color_light">@color/baseline_neutral_90</color>
     <!-- Same as ?attr/colorOnSurfaceVariant. -->
-    <color name="default_text_color_secondary_dark">@color/baseline_neutral_variant_700</color>
-    <color name="default_text_color_secondary_light">@color/baseline_neutral_variant_200</color>
+    <color name="default_text_color_secondary_dark">@color/baseline_neutral_variant_30</color>
+    <color name="default_text_color_secondary_light">@color/baseline_neutral_variant_80</color>
     <!-- Same as ?attr/colorOnSurface with alpha. -->
-    <color name="default_text_color_disabled_light">@color/baseline_neutral_100_alpha_38</color>
-    <color name="default_text_color_disabled_dark">@color/baseline_neutral_900_alpha_38</color>
+    <color name="default_text_color_disabled_light">@color/baseline_neutral_90_alpha_38</color>
+    <color name="default_text_color_disabled_dark">@color/baseline_neutral_10_alpha_38</color>
     <!-- Same as ?attr/colorPrimary. -->
     <color name="default_text_color_blue_dark">@color/baseline_primary_40</color>
     <color name="default_text_color_blue_light">@color/baseline_primary_80</color>
     <color name="default_text_color_link_dark">@color/baseline_primary_40</color>
     <color name="default_text_color_link_light">@color/baseline_primary_80</color>
     <!-- Same as ?attr/colorError. -->
-    <color name="default_text_color_error_light">@color/baseline_error_200</color>
-    <color name="default_text_color_error_dark">@color/baseline_error_600</color>
+    <color name="default_text_color_error_light">@color/baseline_error_80</color>
+    <color name="default_text_color_error_dark">@color/baseline_error_40</color>
     <!-- Same as ?attr/onSurface with alpha. -->
-    <color name="default_text_color_link_disabled_light">@color/baseline_neutral_100_alpha_38</color>
-    <color name="default_text_color_link_disabled_dark">@color/baseline_neutral_900_alpha_38</color>
+    <color name="default_text_color_link_disabled_light">@color/baseline_neutral_90_alpha_38</color>
+    <color name="default_text_color_link_disabled_dark">@color/baseline_neutral_10_alpha_38</color>
     <!-- Same as ?attr/colorOnPrimary. -->
     <color name="default_text_color_on_accent1_light">@color/baseline_primary_100</color>
     <color name="default_text_color_on_accent1_dark">@color/baseline_primary_20</color>
 
     <!-- Same as ?attr/colorError. -->
-    <color name="default_red_light">@color/baseline_error_200</color>
-    <color name="default_red_dark">@color/baseline_error_600</color>
+    <color name="default_red_light">@color/baseline_error_80</color>
+    <color name="default_red_dark">@color/baseline_error_40</color>
 
-    <color name="default_green_light">@color/baseline_tertiary_200</color>
-    <color name="default_green_dark">@color/baseline_tertiary_600</color>
+    <color name="default_green_light">@color/baseline_tertiary_80</color>
+    <color name="default_green_dark">@color/baseline_tertiary_40</color>
 
     <!-- Common background colors. -->
     <color name="default_bg_color_light">@color/modern_white</color>
     <color name="default_bg_color_dark">@color/modern_grey_900</color>
-    <color name="default_bg_color_secondary_light">@color/baseline_neutral_0_with_neutral_600_alpha_5_with_primary_600_2</color>
-    <color name="default_bg_color_secondary_dark">@color/baseline_neutral_900_with_neutral_200_alpha_5_with_primary_200_alpha_2</color>
-    <color name="default_bg_color_light_elev_1_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_0_with_neutral_600_alpha_5_with_primary_600_2</color>
-    <color name="default_bg_color_light_elev_2_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_0_with_neutral_600_alpha_8_with_primary_600_2</color>
-    <color name="default_bg_color_light_elev_3_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_0_with_neutral_600_alpha_11_with_primary_600_2</color>
-    <color name="default_bg_color_light_elev_4_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_0_with_neutral_600_alpha_12_with_primary_600_2</color>
-    <color name="default_bg_color_light_elev_5_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_0_with_neutral_600_alpha_14_with_primary_600_2</color>
-    <color name="default_bg_color_light_elev_6_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_0_with_neutral_600_alpha_20_with_primary_600_2</color>
-    <color name="default_bg_color_light_elev_1_gm3_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_0_with_surface_tint_light_alpha_5</color>
-    <color name="default_bg_color_light_elev_2_gm3_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_0_with_surface_tint_light_alpha_8</color>
-    <color name="default_bg_color_light_elev_3_gm3_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_0_with_surface_tint_light_alpha_11</color>
-    <color name="default_bg_color_light_elev_4_gm3_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_0_with_surface_tint_light_alpha_12</color>
-    <color name="default_bg_color_light_elev_5_gm3_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_0_with_surface_tint_light_alpha_14</color>
+    <color name="default_bg_color_secondary_light">@color/baseline_neutral_100_with_neutral_40_alpha_5_with_primary_40_2</color>
+    <color name="default_bg_color_secondary_dark">@color/baseline_neutral_10_with_neutral_80_alpha_5_with_primary_80_alpha_2</color>
+    <color name="default_bg_color_light_elev_1_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_100_with_neutral_40_alpha_5_with_primary_40_2</color>
+    <color name="default_bg_color_light_elev_2_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_100_with_neutral_40_alpha_8_with_primary_40_2</color>
+    <color name="default_bg_color_light_elev_3_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_100_with_neutral_40_alpha_11_with_primary_40_2</color>
+    <color name="default_bg_color_light_elev_4_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_100_with_neutral_40_alpha_12_with_primary_40_2</color>
+    <color name="default_bg_color_light_elev_5_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_100_with_neutral_40_alpha_14_with_primary_40_2</color>
+    <color name="default_bg_color_light_elev_6_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_100_with_neutral_40_alpha_20_with_primary_40_2</color>
+    <color name="default_bg_color_light_elev_1_gm3_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_100_with_surface_tint_light_alpha_5</color>
+    <color name="default_bg_color_light_elev_2_gm3_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_100_with_surface_tint_light_alpha_8</color>
+    <color name="default_bg_color_light_elev_3_gm3_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_100_with_surface_tint_light_alpha_11</color>
+    <color name="default_bg_color_light_elev_4_gm3_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_100_with_surface_tint_light_alpha_12</color>
+    <color name="default_bg_color_light_elev_5_gm3_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_100_with_surface_tint_light_alpha_14</color>
     <color name="legacy_bg_color_light_elev_1">@color/modern_white</color>
     <color name="legacy_bg_color_light_elev_4">@color/modern_white</color>
-    <color name="default_bg_color_dark_elev_1_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_900_with_neutral_200_alpha_5_with_primary_200_alpha_2</color>
-    <color name="default_bg_color_dark_elev_2_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_900_with_neutral_200_alpha_8_with_primary_200_alpha_2</color>
-    <color name="default_bg_color_dark_elev_3_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_900_with_neutral_200_alpha_11_with_primary_200_alpha_2</color>
-    <color name="default_bg_color_dark_elev_4_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_900_with_neutral_200_alpha_12_with_primary_200_alpha_2</color>
-    <color name="default_bg_color_dark_elev_5_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_900_with_neutral_200_alpha_14_with_primary_200_alpha_2</color>
-    <color name="default_bg_color_dark_elev_6_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_900_with_neutral_200_alpha_20_with_primary_200_alpha_2</color>
-    <color name="default_bg_color_dark_elev_1_gm3_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_0_with_surface_tint_dark_alpha_5</color>
-    <color name="default_bg_color_dark_elev_2_gm3_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_0_with_surface_tint_dark_alpha_8</color>
-    <color name="default_bg_color_dark_elev_3_gm3_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_0_with_surface_tint_dark_alpha_11</color>
-    <color name="default_bg_color_dark_elev_4_gm3_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_0_with_surface_tint_dark_alpha_12</color>
-    <color name="default_bg_color_dark_elev_5_gm3_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_0_with_surface_tint_dark_alpha_14</color>
-    <color name="legacy_bg_color_dark_elev_1">@color/baseline_neutral_900_with_neutral_200_alpha_5_with_primary_200_alpha_2</color>
-    <color name="legacy_bg_color_dark_elev_4">@color/baseline_neutral_900_with_neutral_200_alpha_12_with_primary_200_alpha_2</color>
+    <color name="default_bg_color_dark_elev_1_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_10_with_neutral_80_alpha_5_with_primary_80_alpha_2</color>
+    <color name="default_bg_color_dark_elev_2_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_10_with_neutral_80_alpha_8_with_primary_80_alpha_2</color>
+    <color name="default_bg_color_dark_elev_3_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_10_with_neutral_80_alpha_11_with_primary_80_alpha_2</color>
+    <color name="default_bg_color_dark_elev_4_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_10_with_neutral_80_alpha_12_with_primary_80_alpha_2</color>
+    <color name="default_bg_color_dark_elev_5_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_10_with_neutral_80_alpha_14_with_primary_80_alpha_2</color>
+    <color name="default_bg_color_dark_elev_6_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_10_with_neutral_80_alpha_20_with_primary_80_alpha_2</color>
+    <color name="default_bg_color_dark_elev_1_gm3_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_100_with_surface_tint_dark_alpha_5</color>
+    <color name="default_bg_color_dark_elev_2_gm3_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_100_with_surface_tint_dark_alpha_8</color>
+    <color name="default_bg_color_dark_elev_3_gm3_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_100_with_surface_tint_dark_alpha_11</color>
+    <color name="default_bg_color_dark_elev_4_gm3_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_100_with_surface_tint_dark_alpha_12</color>
+    <color name="default_bg_color_dark_elev_5_gm3_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_100_with_surface_tint_dark_alpha_14</color>
+    <color name="legacy_bg_color_dark_elev_1">@color/baseline_neutral_10_with_neutral_80_alpha_5_with_primary_80_alpha_2</color>
+    <color name="legacy_bg_color_dark_elev_4">@color/baseline_neutral_10_with_neutral_80_alpha_12_with_primary_80_alpha_2</color>
 
     <!-- Same as ?attr/colorOutline. -->
-    <color name="hairline_stroke_color_light">@color/baseline_neutral_variant_400</color>
-    <color name="hairline_stroke_color_dark">@color/baseline_neutral_variant_500</color>
+    <color name="hairline_stroke_color_light">@color/baseline_neutral_variant_60</color>
+    <color name="hairline_stroke_color_dark">@color/baseline_neutral_variant_50</color>
     <!-- Same as ?attr/colorSurfaceVariant. -->
-    <color name="divider_line_bg_color_dark">@color/baseline_neutral_variant_100</color>
-    <color name="divider_line_bg_color_light">@color/baseline_neutral_variant_700</color>
+    <color name="divider_line_bg_color_dark">@color/baseline_neutral_variant_90</color>
+    <color name="divider_line_bg_color_light">@color/baseline_neutral_variant_30</color>
     <color name="default_bg_color_blue_dark">@color/modern_blue_600</color>
     <color name="default_bg_color_blue_light">@color/modern_blue_300</color>
     <color name="default_scrim_color">@color/black_alpha_65</color>
@@ -110,18 +110,18 @@ found in the LICENSE file.
     <color name="default_control_color_active_light" tools:ignore="UnusedResources">@color/baseline_primary_40</color>
     <color name="default_control_color_active_dark" tools:ignore="UnusedResources">@color/baseline_primary_80</color>
     <!-- Same as ?attr/colorOnSurfaceVariant. -->
-    <color name="default_control_color_normal_light" tools:ignore="UnusedResources">@color/baseline_neutral_variant_700</color>
-    <color name="default_control_color_normal_dark" tools:ignore="UnusedResources">@color/baseline_neutral_variant_200</color>
+    <color name="default_control_color_normal_light" tools:ignore="UnusedResources">@color/baseline_neutral_variant_30</color>
+    <color name="default_control_color_normal_dark" tools:ignore="UnusedResources">@color/baseline_neutral_variant_80</color>
     <!-- TODO(https://crbug/1216642): Rework to route through
          ?attr/colorOnSurface with alpha. -->
-    <color name="default_control_color_highlight_light" tools:ignore="UnusedResources">@color/baseline_neutral_900_alpha_10</color>
-    <color name="default_control_color_highlight_dark" tools:ignore="UnusedResources">@color/baseline_neutral_100_alpha_10</color>
+    <color name="default_control_color_highlight_light" tools:ignore="UnusedResources">@color/baseline_neutral_10_alpha_10</color>
+    <color name="default_control_color_highlight_dark" tools:ignore="UnusedResources">@color/baseline_neutral_90_alpha_10</color>
 
     <!--  Filled Button  -->
     <color name="filled_button_bg_color_dark">@color/modern_blue_600</color>
     <color name="filled_button_bg_color_light">@color/baseline_primary_80</color>
-    <color name="filled_button_bg_color_disabled_dark">@color/baseline_neutral_900_alpha_12</color>
-    <color name="filled_button_bg_color_disabled_light">@color/baseline_neutral_100_alpha_12</color>
+    <color name="filled_button_bg_color_disabled_dark">@color/baseline_neutral_10_alpha_12</color>
+    <color name="filled_button_bg_color_disabled_light">@color/baseline_neutral_90_alpha_12</color>
 
     <!--  Dropdown divier  -->
     <color name="dropdown_divider_color">@color/modern_grey_300</color>
@@ -138,15 +138,15 @@ found in the LICENSE file.
     <!-- Incognito icon colors -->
     <color name="incognito_icon_filled_bg_color_dark">@color/modern_grey_800</color>
     <color name="incognito_icon_filled_bg_color_light">@color/modern_grey_300</color>
-    <color name="ntp_incognito_icon_color" tools:ignore="UnusedResources">@color/baseline_neutral_50</color>
+    <color name="ntp_incognito_icon_color" tools:ignore="UnusedResources">@color/baseline_neutral_95</color>
 
     <!-- Illustration -->
     <color name="promo_illustration_bg_color_light">@color/modern_grey_100_alpha_38</color>
     <color name="promo_illustration_bg_color_dark">@color/modern_grey_800_alpha_38</color>
 
     <!-- Omnibox bg color -->
-    <color name="omnibox_bg_color_light">@color/baseline_neutral_0_with_neutral_600_alpha_8_with_primary_600_2</color>
-    <color name="omnibox_bg_color_dark">@color/baseline_neutral_900_with_neutral_200_alpha_11_with_primary_200_alpha_2</color>
+    <color name="omnibox_bg_color_light">@color/baseline_neutral_100_with_neutral_40_alpha_8_with_primary_40_2</color>
+    <color name="omnibox_bg_color_dark">@color/baseline_neutral_10_with_neutral_80_alpha_11_with_primary_80_alpha_2</color>
     <color name="omnibox_bg_color_incognito" tools:ignore="UnusedResources">@color/black_alpha_38</color>
 
     <!-- Settings -->
@@ -154,7 +154,7 @@ found in the LICENSE file.
     <color name="preference_highlighted_bg_color_light">@color/white_alpha_24</color>
 
     <!-- Snackbar colors -->
-    <color name="snackbar_background_color_baseline_dark">@color/baseline_neutral_900_with_neutral_200_alpha_12_with_primary_200_alpha_2</color>
+    <color name="snackbar_background_color_baseline_dark">@color/baseline_neutral_10_with_neutral_80_alpha_12_with_primary_80_alpha_2</color>
 
     <!-- Rating star colors -->
     <color name="rating_star_yellow_dark">@color/modern_yellow_500</color>
@@ -171,10 +171,10 @@ found in the LICENSE file.
     <color name="adaptive_toolbar_preference_header_omnibox_dark">@color/white_alpha_6</color>
 
     <!-- Price-tracking colors -->
-    <color name="price_drop_annotation_bg_color_light">@color/baseline_tertiary_100</color>
-    <color name="price_drop_annotation_bg_color_dark">@color/baseline_tertiary_700</color>
-    <color name="price_drop_annotation_text_green_light">@color/baseline_tertiary_600</color>
-    <color name="price_drop_annotation_text_green_dark">@color/baseline_tertiary_200</color>
+    <color name="price_drop_annotation_bg_color_light">@color/baseline_tertiary_90</color>
+    <color name="price_drop_annotation_bg_color_dark">@color/baseline_tertiary_30</color>
+    <color name="price_drop_annotation_text_green_light">@color/baseline_tertiary_40</color>
+    <color name="price_drop_annotation_text_green_dark">@color/baseline_tertiary_80</color>
 
     <!-- NTP signed-out avatar colors-->
     <color name="signed_out_avatar_color_light">@color/modern_grey_900</color>

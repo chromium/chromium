@@ -7,22 +7,23 @@
 #include "chrome/browser/policy/messaging_layer/util/test_request_payload.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/json/json_reader.h"
+#include "third_party/abseil-cpp/absl/strings/ascii.h"
 
 namespace reporting {
 
 // Return true if s a properly formatted positive integer, i.e., is not empty,
 // contains digits only and does not start with 0.
-static bool IsPositiveInteger(base::StringPiece s) {
+static bool IsPositiveInteger(std::string_view s) {
   if (s.empty()) {
     return false;
-  } else if (s.size() == 1) {
-    return std::isdigit(s[0]);
-  } else {
-    return s[0] != '0' &&
-           s.find_first_not_of("0123456789") == std::string::npos;
   }
+  if (s.size() == 1) {
+    return absl::ascii_isdigit(static_cast<unsigned char>(s[0]));
+  }
+  return s[0] != '0' && s.find_first_not_of("0123456789") == std::string::npos;
 }
 
 // Get the record list. If it can't, print the message to listener and return a
@@ -335,7 +336,7 @@ bool RequestContainingRecordMatcher::IsSubDict(const base::Value::Dict& sub,
 }
 
 RequestContainingRecordMatcher::RequestContainingRecordMatcher(
-    base::StringPiece matched_record_json)
+    std::string_view matched_record_json)
     : matched_record_json_(matched_record_json) {}
 
 bool RequestContainingRecordMatcher::MatchAndExplain(

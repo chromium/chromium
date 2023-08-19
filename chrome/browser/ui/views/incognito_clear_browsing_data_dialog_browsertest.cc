@@ -50,7 +50,7 @@ class IncognitoClearBrowsingDataDialogTest : public InProcessBrowserTest {
   }
 
  private:
-  raw_ptr<Browser, DanglingUntriaged> incognito_browser_ = nullptr;
+  raw_ptr<Browser, AcrossTasksDanglingUntriaged> incognito_browser_ = nullptr;
 };
 
 // Used to test that the bubble widget is destroyed before the browser.

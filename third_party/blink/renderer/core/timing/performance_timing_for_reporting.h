@@ -95,6 +95,13 @@ class CORE_EXPORT PerformanceTimingForReporting final
   LargestContentfulPaintDetailsForReporting
   LargestContentfulPaintDetailsForMetrics() const;
 
+  LargestContentfulPaintDetailsForReporting
+  SoftNavigationLargestContentfulPaintDetailsForMetrics() const;
+
+  LargestContentfulPaintDetailsForReporting
+  PopulateLargestContentfulPaintDetailsForReporting(
+      PaintTimingDetector::LargestContentfulPaintDetails timing) const;
+
   // The time at which the frame is first eligible for painting due to not
   // being throttled. A zero value indicates throttling.
   uint64_t FirstEligibleToPaint() const;

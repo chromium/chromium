@@ -47,7 +47,7 @@ void ResourceManagedBuffer::Clear() {
 }
 
 char* ResourceManagedBuffer::at(size_t pos) {
-  DCHECK_LT(pos, size_);
+  CHECK_LT(pos, size_);
   return buffer_.get() + pos;
 }
 

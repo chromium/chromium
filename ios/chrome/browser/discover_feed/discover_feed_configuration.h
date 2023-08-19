@@ -12,9 +12,14 @@
 class AuthenticationService;
 @class FeedMetricsRecorder;
 class PrefService;
+class TemplateURLService;
 
 namespace signin {
 class IdentityManager;
+}
+
+namespace syncer {
+class SyncService;
 }
 
 // Configuration object used by the DiscoverFeedService.
@@ -24,8 +29,11 @@ class IdentityManager;
 // AuthenticationService used by DiscoverFeedService.
 @property(nonatomic, assign) AuthenticationService* authService;
 
-// PrefService used by DiscoverFeedService.
-@property(nonatomic, assign) PrefService* prefService;
+// The per BrowserState PrefService.
+@property(nonatomic, assign) PrefService* browserStatePrefService;
+
+// The global PrefService.
+@property(nonatomic, assign) PrefService* localStatePrefService;
 
 // IdentityManager used by DiscoverFeedService.
 @property(nonatomic, assign) signin::IdentityManager* identityManager;
@@ -35,6 +43,12 @@ class IdentityManager;
 
 // Feed metrics recorder used by DiscoverFeedService.
 @property(nonatomic, strong) FeedMetricsRecorder* metricsRecorder;
+
+// The service to get the default search engine.
+@property(nonatomic, assign) TemplateURLService* templateURLService;
+
+// The service exposing sync state.
+@property(nonatomic, assign) syncer::SyncService* syncService;
 
 @end
 

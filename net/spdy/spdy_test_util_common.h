@@ -354,34 +354,11 @@ class SpdyTestUtil {
       RequestPriority priority,
       const HostPortPair& host_port_pair);
 
-  // Constructs a PUSH_PROMISE frame and a HEADERS frame on the pushed stream.
-  // |extra_headers| are the extra header-value pairs, which typically
-  // will vary the most between calls.
-  // Returns a spdy::SpdySerializedFrame object with the two frames
-  // concatenated.
-  spdy::SpdySerializedFrame ConstructSpdyPush(const char* const extra_headers[],
-                                              int extra_header_count,
-                                              int stream_id,
-                                              int associated_stream_id,
-                                              const char* url);
-  spdy::SpdySerializedFrame ConstructSpdyPush(const char* const extra_headers[],
-                                              int extra_header_count,
-                                              int stream_id,
-                                              int associated_stream_id,
-                                              const char* url,
-                                              const char* status,
-                                              const char* location);
-
   // Constructs a PUSH_PROMISE frame.
   spdy::SpdySerializedFrame ConstructSpdyPushPromise(
       spdy::SpdyStreamId associated_stream_id,
       spdy::SpdyStreamId stream_id,
       spdy::Http2HeaderBlock headers);
-
-  spdy::SpdySerializedFrame ConstructSpdyPushHeaders(
-      int stream_id,
-      const char* const extra_headers[],
-      int extra_header_count);
 
   // Constructs a HEADERS frame with the request header compression context with
   // END_STREAM flag set to |fin|.
@@ -499,22 +476,6 @@ namespace test {
 
 // Returns a SHA1 HashValue in which each byte has the value |label|.
 HashValue GetTestHashValue(uint8_t label);
-
-// A test implementation of ServerPushDelegate that caches all the pushed
-// request and provides a interface to cancel the push given url.
-class TestServerPushDelegate : public ServerPushDelegate {
- public:
-  TestServerPushDelegate();
-  ~TestServerPushDelegate() override;
-
-  void OnPush(std::unique_ptr<ServerPushHelper> push_helper,
-              const NetLogWithSource& session_net_log) override;
-
-  bool CancelPush(GURL url);
-
- private:
-  std::map<GURL, std::unique_ptr<ServerPushHelper>> push_helpers;
-};
 
 }  // namespace test
 }  // namespace net

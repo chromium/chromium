@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/fwupd_download_client.h"
 #include "ash/webui/firmware_update_ui/mojom/firmware_update.mojom.h"
 #include "base/base_paths.h"
@@ -254,8 +255,9 @@ FirmwareUpdateManager::FirmwareUpdateManager()
     : task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})) {
-  DCHECK(FwupdClient::Get());
-  FwupdClient::Get()->AddObserver(this);
+  if (FwupdClient::Get()) {
+    FwupdClient::Get()->AddObserver(this);
+  }
 
   DCHECK_EQ(nullptr, g_instance);
   g_instance = this;
@@ -263,7 +265,9 @@ FirmwareUpdateManager::FirmwareUpdateManager()
 
 FirmwareUpdateManager::~FirmwareUpdateManager() {
   DCHECK_EQ(this, g_instance);
-  FwupdClient::Get()->RemoveObserver(this);
+  if (FwupdClient::Get()) {
+    FwupdClient::Get()->RemoveObserver(this);
+  }
   g_instance = nullptr;
 }
 
@@ -356,6 +360,10 @@ void FirmwareUpdateManager::FetchInProgressUpdate(
 
 // Query all updates for all devices.
 void FirmwareUpdateManager::RequestAllUpdates() {
+  if (!FwupdClient::Get()) {
+    return;
+  }
+
   if (should_show_notification_for_test_) {
     // Short circuit to immediately display notification.
     NotifyCriticalFirmwareUpdateReceived();
@@ -370,11 +378,15 @@ void FirmwareUpdateManager::RequestAllUpdates() {
 }
 
 void FirmwareUpdateManager::RequestDevices() {
-  FwupdClient::Get()->RequestDevices();
+  if (FwupdClient::Get()) {
+    FwupdClient::Get()->RequestDevices();
+  }
 }
 
 void FirmwareUpdateManager::RequestUpdates(const std::string& device_id) {
-  FwupdClient::Get()->RequestUpdates(device_id);
+  if (FwupdClient::Get()) {
+    FwupdClient::Get()->RequestUpdates(device_id);
+  }
 }
 
 // TODO(jimmyxgong): Currently only looks for the local cache for the update

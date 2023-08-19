@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("branded_images_api") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "branded_images_api.h" ]
   frameworks = [ "UIKit.framework" ]
 }

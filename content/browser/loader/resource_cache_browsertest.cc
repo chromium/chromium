@@ -136,7 +136,9 @@ IN_PROC_BROWSER_TEST_F(ResourceCacheTest, MAYBE_RecordHistograms) {
 
 // Tests that resource cache hosting renderer migration happens when a hosting
 // renderer has gone.
-IN_PROC_BROWSER_TEST_F(ResourceCacheTest, HostingRendererDisconnected) {
+// TODO(https://crbug.com/1451643): Enable this test when we run an experiment.
+IN_PROC_BROWSER_TEST_F(ResourceCacheTest,
+                       DISABLED_HostingRendererDisconnected) {
   const GURL kUrl = embedded_test_server()->GetURL("/simple_page.html");
   const GURL kScriptUrl = embedded_test_server()->GetURL("/cacheable.js");
 

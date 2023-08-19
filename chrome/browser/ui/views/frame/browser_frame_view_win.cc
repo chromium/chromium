@@ -33,6 +33,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle_win.h"
 #include "ui/base/theme_provider.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/win/hwnd_metrics.h"
 #include "ui/display/win/dpi.h"
 #include "ui/display/win/screen_win.h"
@@ -472,7 +473,7 @@ int BrowserFrameViewWin::FrameTopBorderThickness(bool restored) const {
     // value.
     constexpr int kTopResizeFrameArea = 5;
     if (browser_view()->GetTabStripVisible()) {
-      return kTopResizeFrameArea;
+      return features::IsChromeRefresh2023() ? 0 : kTopResizeFrameArea;
     }
 
     // There is no top border in tablet mode when the window is "restored"
@@ -531,6 +532,11 @@ int BrowserFrameViewWin::TopAreaHeight(bool restored) const {
     return top;
   }
 
+  // In Refresh, the tabstrip controls its own top padding.
+  if (features::IsChromeRefresh2023()) {
+    return top;
+  }
+
   // In maximized mode, we do not add any additional thickness to the grab
   // handle above the tabs; just return the frame thickness.
   if (maximized) {
@@ -575,6 +581,15 @@ int BrowserFrameViewWin::TitlebarHeight(bool restored) const {
               ? caption_button_container_->GetPreferredSize().height()
               : TitlebarMaximizedVisualHeight()) +
          FrameTopBorderThickness(false);
+}
+
+int BrowserFrameViewWin::GetFrameHeight() const {
+  if (browser_view()->GetTabStripVisible()) {
+    return browser_view()->tab_strip_region_view()->GetMinimumSize().height() -
+           WindowTopY() - GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP);
+  }
+  return IsMaximized() ? TitlebarMaximizedVisualHeight()
+                       : TitlebarHeight(false);
 }
 
 int BrowserFrameViewWin::WindowTopY() const {
@@ -798,6 +813,9 @@ void BrowserFrameViewWin::LayoutCaptionButtons() {
       ShouldBrowserCustomDrawTitlebar(browser_view())
           ? 0
           : width() - frame()->GetMinimizeButtonOffset();
+
+  height = features::IsChromeRefresh2023() ? GetFrameHeight()
+                                           : std::min(GetFrameHeight(), height);
 
   caption_button_container_->SetBounds(
       CaptionButtonsOnLeadingEdge()

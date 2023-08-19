@@ -360,7 +360,7 @@ public abstract class OriginVerifier {
      */
     public abstract void recordVerificationTimeMetrics(long duration, boolean online);
 
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
     public interface Natives {
         long init(OriginVerifier caller, BrowserContextHandle browserContextHandle);

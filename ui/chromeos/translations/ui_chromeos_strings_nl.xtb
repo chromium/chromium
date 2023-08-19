@@ -35,8 +35,10 @@
 <translation id="1280820357415527819">Mobiele netwerken zoeken</translation>
 <translation id="1293556467332435079">Bestanden</translation>
 <translation id="1297922636971898492">Google Drive is momenteel niet beschikbaar. Het uploaden wordt automatisch gestart zodra Google Drive weer beschikbaar is.</translation>
+<translation id="1306130176943817227">Kan niet verwijderen. Item is in gebruik.</translation>
 <translation id="1307931752636661898">Kan Linux-bestanden niet bekijken</translation>
 <translation id="1313405956111467313">Automatische proxyconfiguratie</translation>
+<translation id="134645005685694099">Je apparaat heeft onvoldoende opslagruimte om bestandssynchronisatie aan te houden. Nieuwe bestanden worden niet meer automatisch gesynchroniseerd.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Het bestand of de map is niet bruikbaar.</translation>
 <translation id="1363028406613469049">Track</translation>
@@ -113,7 +115,6 @@
 <translation id="1920798810075583923">Watermeloen</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> is geformatteerd</translation>
 <translation id="1931134289871235022">Slowaaks</translation>
-<translation id="1933345018156373194">Verplaatsen mislukt. Onverwachte fout: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Fins</translation>
 <translation id="1942765061641586207">Afbeeldingsresolutie</translation>
 <translation id="1972984168337863910">Feedbackvensters voor bestanden uitvouwen</translation>
@@ -130,7 +131,7 @@
 <translation id="2084108471225856927">Apparaatinstellingen</translation>
 <translation id="2084809735218147718">Persoon die iemand bedankt</translation>
 <translation id="2088690981887365033">VPN-netwerk</translation>
-<translation id="2089751716171649322">Krijg makkelijk toegang tot je Google Drive-bestanden als je offline bent</translation>
+<translation id="209653272837065803">Er is niet genoeg opslagruimte om bestanden te blijven synchroniseren</translation>
 <translation id="2111134541987263231">Zet <ph name="BEGIN_BOLD" />Toestaan in incognitomodus<ph name="END_BOLD" /> aan</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> items worden verwijderd en je kunt ze niet herstellen.</translation>
 <translation id="2122305276694332719">Als er automatisch verbinding wordt gemaakt met een verborgen netwerk, kunnen anderen je apparaat en bepaalde netwerkinstellingen zien. Dit wordt niet aanbevolen.</translation>
@@ -147,9 +148,11 @@
 <translation id="2198315389084035571">Vereenvoudigd Chinees</translation>
 <translation id="22085916256174561">Koreaans</translation>
 <translation id="2208919847696382164">Installeren met Linux</translation>
+<translation id="2215692307449050019">De batterij is bijna leeg. Bestandssynchronisatie wordt hervat als je het apparaat op de stroomvoorziening aansluit.</translation>
 <translation id="2225536596944493418">Weet je zeker dat je <ph name="NUMBER_OF_ITEMS" /> items wilt verwijderen?</translation>
 <translation id="2230062665678605299">Kan map '<ph name="FOLDER_NAME" />' niet maken. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">Persoon met koffie</translation>
+<translation id="2247561763838186830">Je bent uitgelogd</translation>
 <translation id="2251368349685848079">Herstellen uit prullenbak</translation>
 <translation id="2278133026967558505">Bestandstoegang door alle websites en URL's</translation>
 <translation id="2282155092769082568">URL voor autoconfiguratie</translation>
@@ -163,7 +166,7 @@
 <translation id="2312704192806647271">{COUNT,plural, =1{Er kan geen extensie met de ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> worden gevonden. Neem contact op met je beheerder.}other{Er kunnen geen extensies met de ID's <ph name="BEGIN_LIST" /><ph name="END_LIST" /> worden gevonden. Neem contact op met je beheerder.}}</translation>
 <translation id="2325650632570794183">Dit bestandstype wordt niet ondersteund. Ga naar de Chrome Web Store om een app te vinden die dit bestandstype kan openen.</translation>
 <translation id="2326539130272988168">Bulgaars</translation>
-<translation id="2337715497728194187">Delen met Bruschetta</translation>
+<translation id="233822363739146957">Er is niet genoeg opslagruimte beschikbaar om al je bestanden te synchroniseren</translation>
 <translation id="23721837607121582">Mobiel profiel downloaden, netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Overschakelen naar lijstweergave</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> mappen gedeeld met Linux</translation>
@@ -181,6 +184,7 @@
 <translation id="2464089476039395325">HTTP-proxy</translation>
 <translation id="2467267713099745100">Netwerk: <ph name="NETWORK_TYPE" />, uit</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
+<translation id="2468470447085858632">Je Google Drive-bestanden offline openen met bestandssynchronisatie</translation>
 <translation id="2470939964922472929">Je hebt te vaak een verkeerde pincode opgegeven. Als je een nieuwe pincode wilt instellen, geef je de 8-cijferige pukcode op die je van je provider hebt gekregen.</translation>
 <translation id="2500392669976258912">Gujarati (fonetisch)</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -192,7 +196,6 @@
 <translation id="2544853746127077729">Verificatiecertificaat geweigerd door netwerk</translation>
 <translation id="255937426064304553">Verenigde Staten (internationaal)</translation>
 <translation id="2563185590376525700">Kikker</translation>
-<translation id="2574327434504608656">1 map gedeeld met Bruschetta</translation>
 <translation id="2578394532502990878">Tamil (fonetisch)</translation>
 <translation id="2579959351793446050">Odia</translation>
 <translation id="2587195714949534472">Synchronisatie van <ph name="FILE_NAME" /> voorbereiden...</translation>
@@ -216,6 +219,7 @@
 <translation id="2782104745158847185">Fout bij het installeren van de Linux-app</translation>
 <translation id="2802583107108007218">Meer informatie over deze beperkingen</translation>
 <translation id="2803375539583399270">Pincode opgeven</translation>
+<translation id="2819519502129272135">Bestandssynchronisatie staat uit</translation>
 <translation id="2820957248982571256">Scannen…</translation>
 <translation id="2830077785865012357">Chinees (Zhuyin)</translation>
 <translation id="2843806747483486897">Standaardactie wijzigen...</translation>
@@ -291,7 +295,6 @@
 <translation id="3408072735282270043">Activeren, <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">Duits (Duitsland) met Neo 2-toetsenbord</translation>
 <translation id="3414856743105198592">Als je het verwisselbare medium formatteert, worden alle gegevens gewist. Wil je doorgaan?</translation>
-<translation id="3435143625481187092">Bruschetta toegang geven tot bestanden in de map <ph name="FOLDER_NAME" /></translation>
 <translation id="3437801641691368414">Gemaakt op</translation>
 <translation id="343907260260897561">Instantcamera</translation>
 <translation id="3455931012307786678">Estlands</translation>
@@ -299,7 +302,6 @@
 <translation id="3479552764303398839">Niet nu</translation>
 <translation id="3486821258960016770">Mongools</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> fouten.</translation>
-<translation id="3501954296166022751">Je Google Drive-bestanden zijn offline beschikbaar</translation>
 <translation id="3509680540198371098">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, details</translation>
 <translation id="3511705761158917664">Synchronisatie van <ph name="NUMBER_OF_ITEMS" /> items voorbereiden...</translation>
 <translation id="3522708245912499433">Portugees</translation>
@@ -356,8 +358,10 @@
 <translation id="3906232975181435906">Mobiel profiel installeren, netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Plak</translation>
+<translation id="3950820424414687140">Inloggen</translation>
 <translation id="3952872973865944257">Telugu (fonetisch)</translation>
 <translation id="3958548648197196644">Kiwi</translation>
+<translation id="397105322502079400">Berekenen...</translation>
 <translation id="3971140002794351170">Mobiel profiel downloaden, netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Engels (VK)</translation>
 <translation id="3975895378829046965">Bangla (fonetisch)</translation>
@@ -368,6 +372,7 @@
 <translation id="4040753847560036377">Onjuiste pukcode</translation>
 <translation id="4057991113334098539">Wordt geactiveerd...</translation>
 <translation id="4092890906744441904">Iers</translation>
+<translation id="4124731372776320263">1 Drive-bestand synchroniseren</translation>
 <translation id="4124935795427217608">Eenhoorn</translation>
 <translation id="4131235941541910880">Verplaats overbodige items naar de prullenbak.</translation>
 <translation id="4134804435730168042">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, activeren na apparaatinstelling</translation>
@@ -377,7 +382,6 @@
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> verplaatst.</translation>
 <translation id="4176286497474237543">Prullenbak leegmaken</translation>
 <translation id="4179621117429069925">Dit item staat in je prullenbak</translation>
-<translation id="4181839429935094755"><ph name="NUMBER_OF_ITEMS" /> mappen gedeeld met Bruschetta</translation>
 <translation id="4186579485882418952">Offline aanzetten</translation>
 <translation id="4193154014135846272">Google-document</translation>
 <translation id="4197674956721858839">Geselecteerde bestanden toevoegen aan zip-bestand</translation>
@@ -417,6 +421,7 @@
 <translation id="4432921877815220091">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, activeren na apparaatinstelling, beheerd door je beheerder</translation>
 <translation id="4439427728133035643">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, verbinden</translation>
 <translation id="4442424173763614572">DNS-lookup mislukt</translation>
+<translation id="4445896958353114391">Bestanden synchroniseren</translation>
 <translation id="4462159676511157176">Aangepaste naamservers</translation>
 <translation id="4465725236958772856">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, beheerd door je beheerder, verbinden</translation>
 <translation id="4470564870223067757">Hangul 2 Set</translation>
@@ -438,11 +443,11 @@
 <translation id="4599600860674643278">Het filter is gereset.</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" /> kopiëren naar <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">Artiest</translation>
+<translation id="4635373743001040938">Er was erg weinig opslagruimte. Bestandssynchronisatie is uitgezet.</translation>
 <translation id="4642769377300286600">Mobiel profiel installeren, netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Tsjechisch met Qwerty-toetsenbord</translation>
 <translation id="4656777537938206294">Bestanden offline beschikbaar maken</translation>
 <translation id="4658782175094886150">Persoon in de sneeuw</translation>
-<translation id="466782788172479199">Geef Bruschetta toegang tot bestanden in je Google Drive. Wijzigingen worden gesynchroniseerd met je andere apparaten.</translation>
 <translation id="4669606053856530811">Leden van '<ph name="SOURCE_NAME" />' hebben geen toegang meer, tenzij deze items met ze zijn gedeeld.</translation>
 <translation id="467809019005607715">Google Presentaties</translation>
 <translation id="4690246192099372265">Zweeds</translation>
@@ -491,8 +496,8 @@
 <translation id="4961158930123534723">1 map gedeeld met Parallels Desktop</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> hersteld</translation>
 <translation id="4969785127455456148">Album</translation>
+<translation id="4972330214479971536">Kan instellingen van de bestandssynchronisatie niet afronden</translation>
 <translation id="4973523518332075481">Gebruik een naam die maximaal <ph name="MAX_LENGTH" /> tekens bevat</translation>
-<translation id="4973970068702235170">Inpakken mislukt. Onverwachte fout: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Japans</translation>
 <translation id="4987699874727873250">Engels (India)</translation>
 <translation id="4988205478593450158">Weet je zeker dat je '<ph name="FILE_NAME" />' wilt verwijderen?</translation>
@@ -514,6 +519,7 @@
 <translation id="5102922915594634436">Gesynchroniseerde mappen beheren</translation>
 <translation id="5109254780565519649">Er is een fout opgetreden. Sommige items zijn misschien niet hersteld.</translation>
 <translation id="5110329002213341433">Engels (Canada)</translation>
+<translation id="5119780910075847424">Synchronisatie gepauzeerd</translation>
 <translation id="5123433949759960244">Basketbal</translation>
 <translation id="5129662217315786329">Pools</translation>
 <translation id="5144820558584035333">Hangul 3 Set (390)</translation>
@@ -533,6 +539,7 @@
 <translation id="5218183485292899140">Zwitsers Frans</translation>
 <translation id="5234764350956374838">Sluiten</translation>
 <translation id="5253070652067921974">Gemaakt door</translation>
+<translation id="5254207638927440400">Kan bestand niet verplaatsen. Bestand is in gebruik.</translation>
 <translation id="5257456363153333584">Libel</translation>
 <translation id="5262311848634918433"><ph name="MARKUP_1" />Open bestanden op alle locaties, zelfs offline.<ph name="MARKUP_2" /> 
     Bestanden in Google Drive zijn up-to-date en beschikbaar vanaf elk apparaat.<ph name="MARKUP_3" />
@@ -553,7 +560,6 @@
 <translation id="5323213332664049067">Latijns-Amerikaans</translation>
 <translation id="5330145655348521461">Deze bestanden zijn op een ander bureaublad geopend. Verplaats ze naar <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) om ze te bekijken.</translation>
 <translation id="5330512191124428349">Informatie ophalen</translation>
-<translation id="5344246330454251646">Delen met Bruschetta beheren</translation>
 <translation id="535792325654997756">Persoon met katten</translation>
 <translation id="5358764674931277">Framesnelheid</translation>
 <translation id="5363339716524495120">Invoertaal is Chinees</translation>
@@ -565,6 +571,7 @@
 <translation id="5422221874247253874">Toegangspunt</translation>
 <translation id="5428105026674456456">Spaans</translation>
 <translation id="5438282218546237410">Geen resultaten voor <ph name="SEARCH_TERM" />.</translation>
+<translation id="5447680084201416734">Onvoldoende opslagruimte.</translation>
 <translation id="5449551289610225147">Ongeldig wachtwoord</translation>
 <translation id="5459064203055649751">Er is al een bestand met de naam <ph name="FILENAME" />. Wil je het vervangen door het bestand dat je verplaatst?</translation>
 <translation id="5463231940765244860">Opgeven</translation>
@@ -575,7 +582,6 @@
 <translation id="5494920125229734069">Alles selecteren</translation>
 <translation id="5500122897333236901">IJslands</translation>
 <translation id="5508696409934741614">Stippen</translation>
-<translation id="5519161320735100193">Instellingen voor Google Drive</translation>
 <translation id="5522908512596376669">Bestandslijst is gewijzigd naar lijstweergave.</translation>
 <translation id="5524517123096967210">Het bestand kan niet worden gelezen.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" />-afbeelding</translation>
@@ -603,6 +609,7 @@
 <translation id="5720028165859493293"><ph name="FILE_NAME" /> naar de prullenbak verplaatst</translation>
 <translation id="5724172041621205163">Thai met Pattachote-toetsenbord</translation>
 <translation id="57383366388012121">Vorige maand</translation>
+<translation id="575175778971367197">Dit bestand kan op dit moment niet worden gesynchroniseerd</translation>
 <translation id="5756666464756035725">Hongaars QWERTY</translation>
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> items geselecteerd</translation>
 <translation id="5763377084591234761">Duits (Zwitserland)</translation>
@@ -628,7 +635,6 @@
 <translation id="5896749729057314184">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, niet geactiveerd, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, details</translation>
 <translation id="5911887972742538906">Er is een fout opgetreden tijdens de installatie van je Linux-app.</translation>
 <translation id="5912396950572065471">Indeling</translation>
-<translation id="5913638992615760742">Kopiëren mislukt. Onverwachte fout: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5918480239180455431">Nieuwe zoekfuncties beschikbaar</translation>
 <translation id="5926082595146149752">Nederlands (Nederland) met Amerikaans pc-toetsenbord (internationaal)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -636,7 +642,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> items</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">Sorteeropties</translation>
-<translation id="6007237601604674381">Verplaatsen mislukt. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Ethernet-netwerk</translation>
 <translation id="60357267506638014">Tsjechisch QWERTY</translation>
 <translation id="603895874132768835">Je kunt dit netwerk pas gebruiken nadat je een nieuwe pincode hebt ingesteld.</translation>
@@ -692,6 +697,7 @@
 <translation id="6423031066725912715">Vietnamees met TCVN-toetsenbord</translation>
 <translation id="6430271654280079150">Je hebt nog 1 poging.</translation>
 <translation id="643243556292470964">Verwijderde bestanden worden nu naar de prullenbak verplaatst</translation>
+<translation id="6438480100790416671">Opslagruimte checken…</translation>
 <translation id="6485131920355264772">Kan ruimte-informatie niet ophalen</translation>
 <translation id="6495925982925244349">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, beheerd door je beheerder, details</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> uitpakken naar <ph name="FOLDER_NAME" /></translation>
@@ -704,6 +710,7 @@
 <translation id="6558280019477628686">Er is een fout opgetreden. Sommige items zijn mogelijk niet verwijderd.</translation>
 <translation id="656398493051028875"><ph name="FILENAME" /> verwijderen...</translation>
 <translation id="6581162200855843583">Google Drive-link</translation>
+<translation id="6588648400954570689">Instellingen voor bestandssynchronisatie</translation>
 <translation id="6594855146910089723">Deze map wordt gedeeld met Linux en Parallels Desktop</translation>
 <translation id="6607272825297743757">Bestandsinformatie</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> mappen gedeeld met Parallels Desktop</translation>
@@ -718,7 +725,6 @@
 <translation id="6710213216561001401">Vorige</translation>
 <translation id="6732801395666424405">Certificaten niet geladen</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
-<translation id="6740270213273127264">Map delen met Bruschetta</translation>
 <translation id="6750737795876287924">Huidige map</translation>
 <translation id="6751256176799620176">1 map geselecteerd</translation>
 <translation id="6755827872271341378">Chrome OS Flex-apparaat</translation>
@@ -795,6 +801,7 @@
 <translation id="7256405249507348194">Onbekende fout: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Beschikbare services</translation>
 <translation id="7291818353625820805">Wil je dat toetsen worden herhaald? Zet accenttekens uit in de toetsenbordinstellingen.</translation>
+<translation id="729236380049459563">Bestandssynchronisatie staat aan</translation>
 <translation id="7292816689782057017">Op basis van het beheerdersbeleid is opslaan beperkt tot bepaalde locaties.</translation>
 <translation id="7294063083760278948">Telugu (transliteratie)</translation>
 <translation id="7295662345261934369">Delen met anderen</translation>
@@ -802,6 +809,7 @@
 <translation id="7309413087278791451">Duits (België)</translation>
 <translation id="7339898014177206373">Nieuw venster</translation>
 <translation id="7343393116438664539">Vietnamees (Telex)</translation>
+<translation id="7347346221088620549">Versleuteld bestand</translation>
 <translation id="7357762654218998920">Dit bestandstype wordt niet ondersteund. Bekijk <ph name="BEGIN_LINK_HELP" />meer informatie<ph name="END_LINK_HELP" /> over hoe je bestanden opent in Chrome OS.</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> items kopiëren...</translation>
 <translation id="7375951387215729722">Lijst met bestanden gesorteerd op <ph name="COLUMN_NAME" /> in aflopende volgorde.</translation>
@@ -828,6 +836,7 @@
 <translation id="7547811415869834682">Nederlands</translation>
 <translation id="7551643184018910560">Vastzetten op plank</translation>
 <translation id="7553492409867692754">Linux-apps toegang geven tot bestanden in de map <ph name="FOLDER_NAME" /></translation>
+<translation id="7555339735447658365">Je bent op dit moment offline. De synchronisatie wordt hervat als je verbinding hebt met internet.</translation>
 <translation id="7589661784326793847">Een ogenblik geduld</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> offline beschikbaar maken</translation>
 <translation id="7600126690270271294">Servisch</translation>
@@ -846,6 +855,7 @@
 <translation id="76959938259365003">Kan de prullenbak niet leegmaken.</translation>
 <translation id="770015031906360009">Grieks</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> gekopieerd.</translation>
+<translation id="7707941139430559579">Kan bestand niet verplaatsen. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="7708271999969613024">Als je dit netwerk wilt gebruiken, moet je de 8-cijferige pukcode opgeven die je van je provider hebt gekregen.</translation>
 <translation id="7711920809702896782">Afbeeldingsgegevens</translation>
 <translation id="7724603315864178912">Knip</translation>
@@ -891,10 +901,10 @@
 <translation id="7972920761225148017">Frans (Zwitserland)</translation>
 <translation id="7973962044839454485">PPP-verificatie mislukt wegens een onjuiste gebruikersnaam of wachtwoord</translation>
 <translation id="7980421588063892270">Engels (VS) met Colemak-toetsenbord</translation>
-<translation id="7985008041109611710"><ph name="NUMBER_OF_FILES_SYNCING" /> bestanden synchroniseren</translation>
 <translation id="8000066093800657092">Geen netwerk</translation>
 <translation id="8008366997883261463">Jack Russell-terriër</translation>
 <translation id="8028993641010258682">Grootte</translation>
+<translation id="8034974485549318493">Tijdens de eerste installatie moet je verbinding maken met internet, zodat de bestanden kunnen worden gesynchroniseerd.</translation>
 <translation id="803771048473350947">Archief</translation>
 <translation id="8038111231936746805">(standaard)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" />-audio</translation>
@@ -905,6 +915,7 @@
 <translation id="8087576439476816834">Downloaden, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Gedeeld met mij</translation>
 <translation id="8116072619078571545">IJswater</translation>
+<translation id="8124093710070495550">Synchronisatieprobleem</translation>
 <translation id="8128733386027980860">Engels (VK) met Dvorak-toetsenbord</translation>
 <translation id="8137331602592933310">'<ph name="FILENAME" />' is met je gedeeld. Je kunt dit niet verwijderen omdat jij niet de eigenaar bent.</translation>
 <translation id="8138705869659070104">Activeren na apparaatinstelling</translation>
@@ -914,9 +925,11 @@
 <translation id="8154842056504218462">Alle items zijn geselecteerd.</translation>
 <translation id="8157684860301034423">Het ophalen van app-informatie is mislukt.</translation>
 <translation id="8175731104491895765">Frans (België)</translation>
+<translation id="8175799081768705361"><ph name="NUMBER_OF_FILES_SYNCING" /> Drive-bestanden synchroniseren</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Apparaatmodel</translation>
 <translation id="8223479393428528563">Als je deze bestanden wilt opslaan voor offline gebruik, ga je weer online, klik je met de rechtermuisknop op de bestanden en selecteer je de optie <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
+<translation id="8241139360630443550">Opslag bekijken</translation>
 <translation id="8249296373107784235">Annuleren</translation>
 <translation id="8250690786522693009">Latijn</translation>
 <translation id="8250920743982581267">Documenten</translation>
@@ -947,6 +960,7 @@
 <translation id="8404498045299006085">Alles behouden</translation>
 <translation id="8408068190360279472">Netwerk: <ph name="NETWORK_TYPE" />, verbinden</translation>
 <translation id="8425213833346101688">Wijzigen</translation>
+<translation id="8428213095426709021">Instellingen</translation>
 <translation id="8431909052837336408">Pincode van simkaart wijzigen</translation>
 <translation id="8437209419043462667">Amerikaans</translation>
 <translation id="8452135315243592079">Simkaart ontbreekt</translation>
@@ -983,6 +997,7 @@
 <translation id="8609695766746872526">IJslands</translation>
 <translation id="863903787380594467">Onjuiste pincode. Je hebt nog <ph name="RETRIES" /> pogingen.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" />: poort</translation>
+<translation id="8656407365183407932">We hebben je offline bestanden moeten verwijderen</translation>
 <translation id="8656768832129462377">Niet controleren</translation>
 <translation id="8688591111840995413">Ongeldig wachtwoord</translation>
 <translation id="8698464937041809063">Google-tekening</translation>
@@ -1013,10 +1028,12 @@
 <translation id="8919081441417203123">Deens</translation>
 <translation id="8949925099261528566">Verbonden, geen internet</translation>
 <translation id="8965697826696209160">Er is onvoldoende ruimte.</translation>
+<translation id="8970887620466824814">Er is iets misgegaan.</translation>
 <translation id="8971742885766657349">Synchroniseren - <ph name="PERCENT" />%</translation>
 <translation id="8997962250644902079">Chinees (traditioneel, Pinyin)</translation>
 <translation id="8998871447376656508">Er is onvoldoende ruimte in je Google Drive beschikbaar om de upload af te ronden.</translation>
 <translation id="9003940392834790328">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, beheerd door je beheerder, details</translation>
+<translation id="9007990314804111233">Inloggen op je Microsoft-account</translation>
 <translation id="9017798300203431059">Russisch fonetisch</translation>
 <translation id="9034924485347205037">Linux-bestanden</translation>
 <translation id="9035012421917565900">De items kunnen niet worden teruggezet naar '<ph name="DESTINATION_NAME" />', dus je kunt deze actie niet ongedaan maken.</translation>
@@ -1047,7 +1064,6 @@
 <translation id="9213073329713032541">De installatie is gestart.</translation>
 <translation id="9219103736887031265">Afbeeldingen</translation>
 <translation id="9219908252191632183">Lunair</translation>
-<translation id="937795003075802289">1 bestand synchroniseren</translation>
 <translation id="938470336146445890">Installeer een gebruikerscertificaat.</translation>
 <translation id="939736085109172342">Nieuwe map</translation>
 <translation id="943972244133411984">Aangepast door</translation>

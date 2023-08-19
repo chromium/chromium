@@ -23,7 +23,22 @@ template("in_process_fuzzer") {
                              [
                                "deps",
                                "exclude_main",
+                               "asan_options",
                              ])
+
+      # As these are full browser tests, we have crashpad running,
+      # and we can't intercept signals that crashpad needs.
+      asan_options = [
+        "allow_user_segv_handler=1",
+        "handle_sigtrap=1",
+
+        # Browser tests store arbitrary data in globals; leak
+        # detection will come up with lots of false positives.
+        "detect_leaks=0",
+      ]
+      if (defined(invoker.asan_options)) {
+        asan_options += invoker.asan_options
+      }
       exclude_main = true
     }
   } else {

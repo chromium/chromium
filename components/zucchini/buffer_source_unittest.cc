@@ -112,8 +112,14 @@ TEST_F(BufferSourceTest, CheckNextValue) {
 }
 
 // Supported by MSVC, g++, and clang++.
-// Ensures no gaps in packing.
+// Ensures unaligned data access and no gaps in packing.
 #pragma pack(push, 1)
+
+// Trivial wrapper for uint32_t, to ensure data access is unaligned.
+struct UnalignedUint32T {
+  uint32_t value;
+};
+
 struct ValueType {
   uint32_t a;
   uint16_t b;
@@ -173,18 +179,34 @@ TEST_F(BufferSourceTest, GetRegion) {
 }
 
 TEST_F(BufferSourceTest, GetPointerIntegral) {
-  const uint32_t* ptr = source_.GetPointer<uint32_t>();
+  const UnalignedUint32T* ptr = source_.GetPointer<UnalignedUint32T>();
   EXPECT_NE(nullptr, ptr);
-  EXPECT_EQ(uint32_t(0x76543210), *ptr);
+  EXPECT_EQ(uint32_t(0x76543210), ptr->value);
   EXPECT_EQ(size_t(6), source_.Remaining());
 
-  ptr = source_.GetPointer<uint32_t>();
+  ptr = source_.GetPointer<UnalignedUint32T>();
   EXPECT_NE(nullptr, ptr);
-  EXPECT_EQ(uint32_t(0xFEDCBA98), *ptr);
+  EXPECT_EQ(uint32_t(0xFEDCBA98), ptr->value);
   EXPECT_EQ(size_t(2), source_.Remaining());
 
-  EXPECT_EQ(nullptr, source_.GetPointer<uint32_t>());
+  EXPECT_EQ(nullptr, source_.GetPointer<UnalignedUint32T>());
   EXPECT_EQ(size_t(2), source_.Remaining());
+}
+
+TEST_F(BufferSourceTest, GetPointerIntegralMisaligned) {
+  source_.Skip(1);
+  EXPECT_EQ(size_t(9), source_.Remaining());
+  const UnalignedUint32T* ptr = source_.GetPointer<UnalignedUint32T>();
+  EXPECT_NE(nullptr, ptr);
+  EXPECT_EQ(uint32_t(0x98765432), ptr->value);
+  EXPECT_EQ(size_t(5), source_.Remaining());
+
+  source_.Skip(1);
+  EXPECT_EQ(size_t(4), source_.Remaining());
+  ptr = source_.GetPointer<UnalignedUint32T>();
+  EXPECT_NE(nullptr, ptr);
+  EXPECT_EQ(uint32_t(0x0010FEDC), ptr->value);
+  EXPECT_EQ(size_t(0), source_.Remaining());
 }
 
 TEST_F(BufferSourceTest, GetPointerAggregate) {
@@ -196,13 +218,24 @@ TEST_F(BufferSourceTest, GetPointerAggregate) {
 }
 
 TEST_F(BufferSourceTest, GetArrayIntegral) {
-  EXPECT_EQ(nullptr, source_.GetArray<uint32_t>(3));
+  EXPECT_EQ(nullptr, source_.GetArray<UnalignedUint32T>(3));
 
-  const uint32_t* ptr = source_.GetArray<uint32_t>(2);
+  const UnalignedUint32T* ptr = source_.GetArray<UnalignedUint32T>(2);
   EXPECT_NE(nullptr, ptr);
-  EXPECT_EQ(uint32_t(0x76543210), ptr[0]);
-  EXPECT_EQ(uint32_t(0xFEDCBA98), ptr[1]);
+  EXPECT_EQ(uint32_t(0x76543210), ptr[0].value);
+  EXPECT_EQ(uint32_t(0xFEDCBA98), ptr[1].value);
   EXPECT_EQ(size_t(2), source_.Remaining());
+}
+
+TEST_F(BufferSourceTest, GetArrayIntegralMisaligned) {
+  source_.Skip(1);
+  EXPECT_EQ(nullptr, source_.GetArray<UnalignedUint32T>(3));
+
+  const UnalignedUint32T* ptr = source_.GetArray<UnalignedUint32T>(2);
+  EXPECT_NE(nullptr, ptr);
+  EXPECT_EQ(uint32_t(0x98765432), ptr[0].value);
+  EXPECT_EQ(uint32_t(0x10FEDCBA), ptr[1].value);
+  EXPECT_EQ(size_t(1), source_.Remaining());
 }
 
 TEST_F(BufferSourceTest, GetArrayAggregate) {

@@ -18,6 +18,8 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/pickle.h"
+#include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_running_on_chromeos.h"
@@ -28,12 +30,13 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
-#include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
+#include "chrome/browser/ash/fusebox/fusebox_server.h"
+#include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -50,6 +53,7 @@
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "chromeos/ash/components/disks/disk.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
+#include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -58,6 +62,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "ui/base/clipboard/custom_data_helper.h"
+#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 
 using base::FilePath;
 using storage::FileSystemURL;
@@ -77,7 +83,7 @@ class FileManagerPathUtilTest : public testing::Test {
 
   void SetUp() override {
     ash::disks::DiskMountManager::InitializeForTesting(
-        new FakeDiskMountManager);
+        new ash::disks::FakeDiskMountManager);
     profile_ = std::make_unique<TestingProfile>(
         base::FilePath("/home/chronos/u-0123456789abcdef"));
     VolumeManagerFactory::GetInstance()->SetTestingFactory(
@@ -98,6 +104,8 @@ class FileManagerPathUtilTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
   std::unique_ptr<TestingProfile> profile_;
 };
 
@@ -175,8 +183,7 @@ TEST_F(FileManagerPathUtilTest, GetPathDisplayTextForSettings) {
                                                  "/media/archive/foo"));
 
   TestingProfile profile2(base::FilePath("/home/chronos/u-0123456789abcdef"));
-  ash::FakeChromeUserManager user_manager;
-  user_manager.AddUser(
+  user_manager_->AddUser(
       AccountId::FromUserEmailGaiaId(profile2.GetProfileUserName(), "12345"));
   PrefService* prefs = profile2.GetPrefs();
   prefs->SetString(drive::prefs::kDriveFsProfileSalt, "a");
@@ -300,8 +307,7 @@ TEST_F(FileManagerPathUtilTest, MigrateToDriveFs) {
 
   // Migrate paths under old drive mount.
   TestingProfile profile2(base::FilePath("/home/chronos/u-0123456789abcdef"));
-  ash::FakeChromeUserManager user_manager;
-  user_manager.AddUser(
+  user_manager_->AddUser(
       AccountId::FromUserEmailGaiaId(profile2.GetProfileUserName(), "12345"));
   PrefService* prefs = profile2.GetPrefs();
   prefs->SetString(drive::prefs::kDriveFsProfileSalt, "a");
@@ -321,12 +327,29 @@ TEST_F(FileManagerPathUtilTest, MigrateToDriveFs) {
       result);
 }
 
+TEST_F(FileManagerPathUtilTest, GetGuestOsMountPointName) {
+  guest_os::GuestId arcvm(guest_os::VmType::ARCVM, "arcvm", "");
+  EXPECT_EQ(GetGuestOsMountPointName(profile_.get(), arcvm), "android_files");
+
+  guest_os::GuestId penguin(guest_os::VmType::TERMINA, "termina", "penguin");
+  EXPECT_EQ(GetGuestOsMountPointName(profile_.get(), penguin),
+            "crostini_0123456789abcdef_termina_penguin");
+
+  guest_os::GuestId other(guest_os::VmType::TERMINA, "termina", "other");
+  EXPECT_EQ(GetGuestOsMountPointName(profile_.get(), other),
+            "guestos+0123456789abcdef+termina+other");
+
+  guest_os::GuestId bru(guest_os::VmType::BRUSCHETTA, "bru", "penguin");
+  EXPECT_EQ(GetGuestOsMountPointName(profile_.get(), bru),
+            "guestos+0123456789abcdef+bru+penguin");
+}
+
 TEST_F(FileManagerPathUtilTest, ConvertBetweenFileSystemURLAndPathInsideVM) {
   storage::ExternalMountPoints* mount_points =
       storage::ExternalMountPoints::GetSystemInstance();
+
   // Setup for DriveFS.
-  ash::FakeChromeUserManager user_manager;
-  user_manager.AddUser(
+  user_manager_->AddUser(
       AccountId::FromUserEmailGaiaId(profile_->GetProfileUserName(), "12345"));
   profile_->GetPrefs()->SetString(drive::prefs::kDriveFsProfileSalt, "a");
 
@@ -664,7 +687,7 @@ class FileManagerPathUtilConvertUrlTest : public testing::Test {
         crostini_mount_point_);
 
     ash::disks::DiskMountManager::InitializeForTesting(
-        new FakeDiskMountManager);
+        new ash::disks::FakeDiskMountManager);
 
     // Add the disk and mount point for a fake removable device.
     ASSERT_TRUE(ash::disks::DiskMountManager::GetInstance()->AddDiskForTest(
@@ -706,8 +729,9 @@ class FileManagerPathUtilConvertUrlTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   arc::FakeFileSystemInstance fake_file_system_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh> primary_profile_;
-  raw_ptr<TestingProfile, ExperimentalAsh> secondary_profile_;
+  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh> primary_profile_;
+  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh>
+      secondary_profile_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
   base::FilePath drive_mount_point_;
@@ -1347,6 +1371,77 @@ TEST_F(FileManagerPathUtilTest, GetDisplayablePathTest) {
   EXPECT_EQ(absl::nullopt,
             GetDisplayablePath(profile_.get(),
                                base::FilePath("/mount_path/testing")));
+}
+
+TEST_F(FileManagerPathUtilTest, ParseFileSystemSources) {
+  storage::ExternalMountPoints* mount_points =
+      storage::ExternalMountPoints::GetSystemInstance();
+  base::FilePath myfiles_dir = GetMyFilesFolderForProfile(profile_.get());
+  mount_points->RegisterFileSystem(
+      GetDownloadsMountPointName(profile_.get()), storage::kFileSystemTypeLocal,
+      storage::FileSystemMountOption(), myfiles_dir);
+  mount_points->RegisterFileSystem(
+      "fake_aa_mount_name", storage::kFileSystemTypeArcContent,
+      storage::FileSystemMountOption(), base::FilePath("/fake/aa_dir"));
+  mount_points->RegisterFileSystem(
+      "fake_ad_mount_name", storage::kFileSystemTypeArcContent,
+      storage::FileSystemMountOption(), base::FilePath("/fake/ad_dir"));
+
+  const GURL file_manager_url = GetFileManagerURL();
+  const url::Origin file_manager_origin = url::Origin::Create(file_manager_url);
+  fusebox::Server fusebox_server(nullptr);
+  // Accept the "allow" flavor (but reject the "deny" one).
+  fusebox_server.RegisterFSURLPrefix(
+      "my_subdir",
+      base::StrCat({"filesystem:", file_manager_origin.Serialize(),
+                    "/external/fake_aa_mount_name/"}),
+      true);
+
+  base::FilePath shared_path = myfiles_dir.Append("shared");
+  auto* guest_os_share_path =
+      guest_os::GuestOsSharePath::GetForProfile(profile_.get());
+  guest_os_share_path->RegisterSharedPath(crostini::kCrostiniDefaultVmName,
+                                          shared_path);
+  // Start with four file_names but the last one is rejected. Its FileSystemURL
+  // has type storage::kFileSystemTypeArcContent, so its cracked data does not
+  // refer to a real (kernel visible) file path. But also, the fusebox_server
+  // (configured above) has no registered mapping.
+  std::vector<std::string> file_names = {
+      "external/Downloads/shared/file1",
+      "external/Downloads/shared/file2",
+      "external/fake_aa_mount_name/a/b/c.txt",
+      "external/fake_ad_mount_name/d/e/f.txt",
+  };
+  std::vector<std::string> file_urls;
+  base::ranges::transform(
+      file_names, std::back_inserter(file_urls),
+      [&file_manager_url](const std::string& name) {
+        return base::StrCat({url::kFileSystemScheme, ":",
+                             file_manager_url.Resolve(name).spec()});
+      });
+  std::u16string urls(base::ASCIIToUTF16(base::JoinString(file_urls, "\n")));
+  base::Pickle pickle;
+  ui::WriteCustomDataToPickle(
+      std::unordered_map<std::u16string, std::u16string>(
+          {{u"fs/tag", u"exo"}, {u"fs/sources", urls}}),
+      &pickle);
+
+  ui::DataTransferEndpoint files_app(file_manager_url.Resolve("main.html"));
+  std::vector<ui::FileInfo> file_info =
+      ParseFileSystemSources(&files_app, pickle);
+  EXPECT_EQ(3u, file_info.size());
+  EXPECT_EQ(shared_path.Append("file1"), file_info[0].path);
+  EXPECT_EQ(shared_path.Append("file2"), file_info[1].path);
+  EXPECT_EQ(base::FilePath("/media/fuse/fusebox/my_subdir/a/b/c.txt"),
+            file_info[2].path);
+  EXPECT_EQ(base::FilePath(), file_info[0].display_name);
+  EXPECT_EQ(base::FilePath(), file_info[1].display_name);
+  EXPECT_EQ(base::FilePath(), file_info[2].display_name);
+
+  // Should return empty if source is not FilesApp.
+  ui::DataTransferEndpoint crostini(ui::EndpointType::kCrostini);
+  file_info = ParseFileSystemSources(&crostini, pickle);
+  EXPECT_TRUE(file_info.empty());
 }
 
 }  // namespace

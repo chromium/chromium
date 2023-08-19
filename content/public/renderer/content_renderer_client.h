@@ -213,6 +213,11 @@ class CONTENT_EXPORT ContentRendererClient {
   // Returns true if a popup window should be allowed.
   virtual bool AllowPopup();
 
+  // Service worker may react on the activity. For example, reset the idle
+  // timer.
+  virtual bool ShouldNotifyServiceWorkerOnWebSocketActivity(
+      v8::Local<v8::Context> context);
+
   // Returns the security level to use for Navigator.RegisterProtocolHandler().
   virtual blink::ProtocolHandlerSecurityLevel GetProtocolHandlerSecurityLevel();
 

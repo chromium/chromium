@@ -1,0 +1,120 @@
+<style include="cr-icons cr-shared-style">
+  :host {
+    --menu-item-margin: 12px;
+    background: var(--color-new-tab-page-module-item-background);
+    border-radius: var(--ntp-module-item-border-radius);
+    display: flex;
+    flex-direction: column;
+  }
+
+  :host([suggestion-chip-header-enabled_]) {
+    background: transparent;
+    border: none;
+  }
+
+  :host([suggestion-chip-header-enabled_]) ntp-module-header-v2 {
+    background: transparent;
+    border: none;
+  }
+
+  cr-action-menu {
+    --cr-menu-shadow: var(--ntp-menu-shadow);
+  }
+
+  #label-container {
+    color: var(--color-new-tab-page-primary-foreground);
+    display: flex;
+    font-size: 20px;
+    height: 48px;
+    line-height: 24px;
+    padding: 0 16px;
+  }
+
+  :host([suggestion-chip-header-enabled_]) #label-container {
+    background: var(--color-new-tab-page-module-item-background);
+    border-radius: var(--ntp-module-item-border-radius);
+    height: 100%;
+  }
+
+  :host([suggestion-chip-header-enabled_][format='wide']:not([show-related-searches])) #label-container {
+    align-items: start;
+    padding: 16px;
+  }
+
+  h2 {
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    display: -webkit-box;
+    font-weight: inherit;
+    font-size: inherit;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  :host([suggestion-chip-header-enabled_]) h2 {
+    -webkit-line-clamp: 1;
+  }
+
+  #suggestion-chip {
+    display: flex;
+    font-size: var(--ntp-module-text-size);
+  }
+
+  #suggestion-chip-icon {
+    --cr-icon-ripple-size: 16px;
+    --cr-icon-image: url(chrome://resources/images/icon_history.svg);
+    background-color: var(--color-new-tab-page-primary-foreground);
+    margin: auto;
+  }
+
+  #suggestion-chip-label {
+    align-self: center;
+    margin-inline-start: 12px;
+    line-height: 20px;
+  }
+
+  .icon {
+    --cr-icon-ripple-size: 20px;
+    -webkit-mask-size: 16px;
+    background-color: transparent;
+    fill: var(--color-new-tab-page-secondary-foreground);
+    margin-inline-start: calc(-1 * var(--menu-item-margin));
+    margin-inline-end: var(--menu-item-margin);
+  }
+
+  hr {
+    background-color: var(--color-new-tab-page-module-context-menu-divider);
+    border: none;
+    height: 1px;
+    margin: 0;
+  }
+</style>
+<ntp-module-header-v2
+    header-text="[[i18n('modulesJourneysResumeJourney', '')]]"
+    on-menu-button-click="onMenuButtonClick_"
+    more-actions-text="[[i18n('modulesMoreActions', clusterLabel)]]">
+</ntp-module-header-v2>
+<div id="label-container">
+  <div id="label" hidden="[[suggestionChipHeaderEnabled_]]">
+    [[clusterLabel]]
+  </div>
+  <div id="suggestion-chip" hidden="[[!suggestionChipHeaderEnabled_]]">
+    <div id="suggestion-chip-icon" class="cr-icon"></div>
+    <span id="suggestion-chip-label">[[clusterLabel]]</span>
+  </div>
+</div>
+
+<cr-action-menu id="actionMenu">
+  <template is="dom-repeat"
+      items="[[getMenuItemGroups_()]]" as="group">
+    <template is="dom-repeat" items="[[group]]">
+      <button id="[[item.action]]" class="dropdown-item"
+          on-click="onButtonClick_" data-action$="[[item.action]]">
+        <iron-icon class="icon cr-icon" icon="[[item.icon]]"></iron-icon>
+        [[item.text]]
+      </button>
+    </template>
+    <hr hidden$="[[!showDivider_(index)]]">
+  </template>
+</cr-action-menu>

@@ -19,7 +19,7 @@
 #include "components/sync/engine/sync_encryption_handler.h"
 #include "components/sync/engine/sync_engine.h"
 #include "components/sync/service/data_type_encryption_handler.h"
-#include "components/sync/service/trusted_vault_client.h"
+#include "components/trusted_vault/trusted_vault_client.h"
 
 namespace syncer {
 
@@ -28,7 +28,7 @@ namespace syncer {
 // encryption communications with the sync thread.
 class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
                           public DataTypeEncryptionHandler,
-                          public TrustedVaultClient::Observer {
+                          public trusted_vault::TrustedVaultClient::Observer {
  public:
   class Delegate {
    public:
@@ -36,16 +36,17 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
     virtual void CryptoStateChanged() = 0;
     virtual void CryptoRequiredUserActionChanged() = 0;
     virtual void ReconfigureDataTypesDueToCrypto() = 0;
+    virtual void SetPassphraseType(PassphraseType passphrase_type) = 0;
+    virtual absl::optional<PassphraseType> GetPassphraseType() const = 0;
     virtual void SetEncryptionBootstrapToken(
         const std::string& bootstrap_token) = 0;
-    virtual std::string GetEncryptionBootstrapToken() = 0;
+    virtual std::string GetEncryptionBootstrapToken() const = 0;
   };
 
-  // |delegate| must not be null and must outlive this object.
-  // |trusted_vault_client| may be null, but if non-null, the pointee must
-  // outlive this object.
+  // |delegate| and |trusted_vault_client| must not be null and must outlive
+  // this object.
   SyncServiceCrypto(Delegate* delegate,
-                    TrustedVaultClient* trusted_vault_client);
+                    trusted_vault::TrustedVaultClient* trusted_vault_client);
 
   SyncServiceCrypto(const SyncServiceCrypto&) = delete;
   SyncServiceCrypto& operator=(const SyncServiceCrypto&) = delete;
@@ -53,11 +54,11 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
   ~SyncServiceCrypto() override;
 
   void Reset();
+  void StopObservingTrustedVaultClient();
 
   // See the SyncUserSettings header.
   base::Time GetExplicitPassphraseTime() const;
   bool IsPassphraseRequired() const;
-  bool IsUsingExplicitPassphrase() const;
   bool IsTrustedVaultKeyRequired() const;
   bool IsTrustedVaultRecoverabilityDegraded() const;
   bool IsEncryptEverythingEnabled() const;
@@ -72,7 +73,7 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
   bool IsTrustedVaultKeyRequiredStateKnown() const;
 
   // Returns the actual passphrase type being used for encryption.
-  PassphraseType GetPassphraseType() const;
+  absl::optional<PassphraseType> GetPassphraseType() const;
 
   // Used to provide the engine when it is initialized.
   void SetSyncEngine(const CoreAccountInfo& account_info, SyncEngine* engine);
@@ -163,7 +164,7 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
   const raw_ptr<Delegate> delegate_;
 
   // Never null and guaranteed to outlive us.
-  const raw_ptr<TrustedVaultClient> trusted_vault_client_;
+  const raw_ptr<trusted_vault::TrustedVaultClient> trusted_vault_client_;
 
   // All the mutable state is wrapped in a struct so that it can be easily
   // reset to its default values.
@@ -200,12 +201,6 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
     // the cached pending keys are successfully decrypted if the pending keys
     // have changed since the time they were cached.
     sync_pb::EncryptedData cached_pending_keys;
-
-    // The state of the passphrase required to decrypt the bag of encryption
-    // keys in the nigori node. Updated whenever a new nigori node arrives or
-    // the user manually changes their passphrase state. Cached so we can
-    // synchronously check it from the UI thread.
-    PassphraseType cached_passphrase_type = PassphraseType::kImplicitPassphrase;
 
     // The key derivation params for the passphrase. We save them when we
     // receive a passphrase required event, as they are a necessary piece of

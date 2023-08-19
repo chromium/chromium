@@ -2,6 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# @generated from third_party/rust/BUILD.gn.hbs by tools/crates/gnrt.
+# Do not edit!
+
 import("//build/rust/cargo_crate.gni")
 
 cargo_crate("lib") {
@@ -13,10 +16,36 @@ cargo_crate("lib") {
   # third_party.toml to use it from first-party code.
   visibility = [ "//third_party/rust/*" ]
   crate_root = "crate/src/lib.rs"
+  sources = [
+    "//third_party/rust/rustversion/v1/crate/build/build.rs",
+    "//third_party/rust/rustversion/v1/crate/build/rustc.rs",
+    "//third_party/rust/rustversion/v1/crate/src/attr.rs",
+    "//third_party/rust/rustversion/v1/crate/src/bound.rs",
+    "//third_party/rust/rustversion/v1/crate/src/constfn.rs",
+    "//third_party/rust/rustversion/v1/crate/src/date.rs",
+    "//third_party/rust/rustversion/v1/crate/src/error.rs",
+    "//third_party/rust/rustversion/v1/crate/src/expand.rs",
+    "//third_party/rust/rustversion/v1/crate/src/expr.rs",
+    "//third_party/rust/rustversion/v1/crate/src/iter.rs",
+    "//third_party/rust/rustversion/v1/crate/src/lib.rs",
+    "//third_party/rust/rustversion/v1/crate/src/release.rs",
+    "//third_party/rust/rustversion/v1/crate/src/time.rs",
+    "//third_party/rust/rustversion/v1/crate/src/token.rs",
+    "//third_party/rust/rustversion/v1/crate/src/version.rs",
+    "//third_party/rust/rustversion/v1/crate/tests/compiletest.rs",
+    "//third_party/rust/rustversion/v1/crate/tests/test_const.rs",
+    "//third_party/rust/rustversion/v1/crate/tests/test_eval.rs",
+    "//third_party/rust/rustversion/v1/crate/tests/test_parse.rs",
+    "//third_party/rust/rustversion/v1/crate/tests/ui/bad-bound.rs",
+    "//third_party/rust/rustversion/v1/crate/tests/ui/bad-date.rs",
+    "//third_party/rust/rustversion/v1/crate/tests/ui/bad-not.rs",
+    "//third_party/rust/rustversion/v1/crate/tests/ui/bad-version.rs",
+    "//third_party/rust/rustversion/v1/crate/tests/ui/const-not-fn.rs",
+  ]
+  inputs = [ "//third_party/rust/rustversion/v1/crate/README.md" ]
 
   # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
-  sources = [ "crate/src/lib.rs" ]
   edition = "2018"
   cargo_pkg_version = "1.0.6"
   cargo_pkg_authors = "David Tolnay <dtolnay@gmail.com>"

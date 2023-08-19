@@ -6,15 +6,19 @@
 
 #include <utility>
 
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/version.h"
 #include "build/chromeos_buildflags.h"
+#include "components/signin/public/base/gaia_id_hash.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/sync_prefs.h"
+#include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/engine/nigori/nigori.h"
+#include "components/sync/service/sync_prefs.h"
 #include "components/sync/service/sync_service_crypto.h"
 #include "components/version_info/version_info.h"
 
@@ -57,13 +61,15 @@ SyncUserSettingsImpl::SyncUserSettingsImpl(
     const SyncTypePreferenceProvider* preference_provider,
     ModelTypeSet registered_model_types,
     base::RepeatingCallback<SyncPrefs::SyncAccountState()>
-        sync_account_state_for_prefs_callback)
+        sync_account_state_for_prefs_callback,
+    base::RepeatingCallback<CoreAccountInfo()> sync_account_info_callback)
     : crypto_(crypto),
       prefs_(prefs),
       preference_provider_(preference_provider),
       registered_model_types_(registered_model_types),
       sync_account_state_for_prefs_callback_(
-          std::move(sync_account_state_for_prefs_callback)) {
+          std::move(sync_account_state_for_prefs_callback)),
+      sync_account_info_callback_(std::move(sync_account_info_callback)) {
   DCHECK(crypto_);
   DCHECK(prefs_);
 }
@@ -88,8 +94,16 @@ bool SyncUserSettingsImpl::IsSyncEverythingEnabled() const {
 }
 
 UserSelectableTypeSet SyncUserSettingsImpl::GetSelectedTypes() const {
-  UserSelectableTypeSet types =
-      prefs_->GetSelectedTypes(sync_account_state_for_prefs_callback_.Run());
+  UserSelectableTypeSet types;
+
+  if (ShouldUsePerAccountPrefs()) {
+    signin::GaiaIdHash gaia_id_hash =
+        signin::GaiaIdHash::FromGaiaId(sync_account_info_callback_.Run().gaia);
+    types = prefs_->GetSelectedTypesForAccount(gaia_id_hash);
+  } else {
+    types =
+        prefs_->GetSelectedTypes(sync_account_state_for_prefs_callback_.Run());
+  }
   types.RetainAll(GetRegisteredSelectableTypes());
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -112,14 +126,24 @@ bool SyncUserSettingsImpl::IsTypeManagedByPolicy(
   return prefs_->IsTypeManagedByPolicy(type);
 }
 
+bool SyncUserSettingsImpl::IsTypeManagedByCustodian(
+    UserSelectableType type) const {
+  return prefs_->IsTypeManagedByCustodian(type);
+}
+
 void SyncUserSettingsImpl::SetSelectedTypes(bool sync_everything,
                                             UserSelectableTypeSet types) {
-  // TODO(crbug.com/1429254): Add check to insure this setter is only used when
-  // sync-the-feature is running.
   UserSelectableTypeSet registered_types = GetRegisteredSelectableTypes();
   DCHECK(registered_types.HasAll(types))
       << "\n registered: " << UserSelectableTypeSetToString(registered_types)
       << "\n setting to: " << UserSelectableTypeSetToString(types);
+
+  if (ShouldUsePerAccountPrefs()) {
+    for (UserSelectableType type : registered_types) {
+      SetSelectedType(type, types.Has(type) || sync_everything);
+    }
+    return;
+  }
   prefs_->SetSelectedTypes(sync_everything, registered_types, types);
 }
 
@@ -127,10 +151,26 @@ void SyncUserSettingsImpl::SetSelectedType(UserSelectableType type,
                                            bool is_type_on) {
   UserSelectableTypeSet registered_types = GetRegisteredSelectableTypes();
   CHECK(registered_types.Has(type));
-  // To insure this setter is used in transport-mode only.
-  CHECK(sync_account_state_for_prefs_callback_.Run() ==
-        SyncPrefs::SyncAccountState::kSignedInNotSyncing);
-  prefs_->SetSelectedType(type, is_type_on);
+
+  if (ShouldUsePerAccountPrefs()) {
+    signin::GaiaIdHash gaia_id_hash =
+        signin::GaiaIdHash::FromGaiaId(sync_account_info_callback_.Run().gaia);
+    prefs_->SetSelectedTypeForAccount(type, is_type_on, gaia_id_hash);
+  } else {
+    DUMP_WILL_BE_CHECK(!IsSyncEverythingEnabled());
+    syncer::UserSelectableTypeSet selected_types = GetSelectedTypes();
+    if (is_type_on) {
+      selected_types.Put(type);
+    } else {
+      selected_types.Remove(type);
+    }
+    SetSelectedTypes(IsSyncEverythingEnabled(), selected_types);
+  }
+}
+
+void SyncUserSettingsImpl::KeepAccountSettingsPrefsOnlyForUsers(
+    const std::vector<signin::GaiaIdHash>& available_gaia_ids) {
+  prefs_->KeepAccountSettingsPrefsOnlyForUsers(available_gaia_ids);
 }
 
 #if BUILDFLAG(IS_IOS)
@@ -243,14 +283,21 @@ bool SyncUserSettingsImpl::IsTrustedVaultRecoverabilityDegraded() const {
 }
 
 bool SyncUserSettingsImpl::IsUsingExplicitPassphrase() const {
-  return crypto_->IsUsingExplicitPassphrase();
+  // TODO(crbug.com/1466401): Either make this method return a Tribool, so the
+  // "unknown" case is properly communicated, or just remove it altogether
+  // (callers can always use the global IsExplicitPassphrase() helper).
+  absl::optional<PassphraseType> type = GetPassphraseType();
+  if (!type.has_value()) {
+    return false;
+  }
+  return IsExplicitPassphrase(*type);
 }
 
 base::Time SyncUserSettingsImpl::GetExplicitPassphraseTime() const {
   return crypto_->GetExplicitPassphraseTime();
 }
 
-PassphraseType SyncUserSettingsImpl::GetPassphraseType() const {
+absl::optional<PassphraseType> SyncUserSettingsImpl::GetPassphraseType() const {
   return crypto_->GetPassphraseType();
 }
 
@@ -291,7 +338,7 @@ ModelTypeSet SyncUserSettingsImpl::GetPreferredDataTypes() const {
   // though they're technically not registered.
   types.PutAll(ControlTypes());
 
-  static_assert(48 == GetNumModelTypes(),
+  static_assert(49 == GetNumModelTypes(),
                 "If adding a new sync data type, update the list below below if"
                 " you want to disable the new data type for local sync.");
   if (prefs_->IsLocalSyncEnabled()) {
@@ -322,6 +369,12 @@ bool SyncUserSettingsImpl::IsEncryptedDatatypeEnabled() const {
   const ModelTypeSet encrypted_types = GetEncryptedDataTypes();
   DCHECK(encrypted_types.HasAll(AlwaysEncryptedUserTypes()));
   return !Intersection(preferred_types, encrypted_types).Empty();
+}
+
+bool SyncUserSettingsImpl::ShouldUsePerAccountPrefs() const {
+  return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos) &&
+         sync_account_state_for_prefs_callback_.Run() ==
+             SyncPrefs::SyncAccountState::kSignedInNotSyncing;
 }
 
 }  // namespace syncer

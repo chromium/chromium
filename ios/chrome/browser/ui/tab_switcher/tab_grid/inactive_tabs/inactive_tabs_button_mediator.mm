@@ -15,10 +15,6 @@
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_info_consumer.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using ScopedWebStateListObservation =
     base::ScopedObservation<WebStateList, WebStateListObserver>;
 
@@ -46,7 +42,10 @@ using ScopedWebStateListObservation =
                     webStateList:(WebStateList*)webStateList
                      prefService:(PrefService*)prefService {
   CHECK(IsInactiveTabsAvailable());
-  CHECK(consumer);
+  // TODO(crbug.com/1466411): Reinstate this CHECK once
+  // InactiveTabsButtonMediator is not created when not needed (for example when
+  // a policy disables the regular tab grid).
+  //CHECK(consumer);
   CHECK(webStateList);
   CHECK(prefService);
   self = [super init];
@@ -101,70 +100,34 @@ using ScopedWebStateListObservation =
 
 #pragma mark - WebStateListObserving
 
-- (void)webStateList:(WebStateList*)webStateList
-    didInsertWebState:(web::WebState*)webState
-              atIndex:(int)index
-           activating:(BOOL)activating {
-  if (_webStateList->IsBatchInProgress()) {
-    // Consumer will be updated at the end of the batch.
-    return;
-  }
-  NOTREACHED();
+- (void)willChangeWebStateList:(WebStateList*)webStateList
+                        change:(const WebStateListChangeDetach&)detachChange
+                        status:(const WebStateListStatus&)status {
+  // Do nothing. Updating the consumer with the new count will be handled in
+  // didChangeWebStateList:change:status: with kDetach.
 }
 
-- (void)webStateList:(WebStateList*)webStateList
-     didMoveWebState:(web::WebState*)webState
-           fromIndex:(int)fromIndex
-             toIndex:(int)toIndex {
-  NOTREACHED();
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-    didReplaceWebState:(web::WebState*)oldWebState
-          withWebState:(web::WebState*)newWebState
-               atIndex:(int)index {
-  NOTREACHED();
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-    willDetachWebState:(web::WebState*)webState
-               atIndex:(int)index {
-  // No-op. `-webStateList:didDetachWebState:atIndex` will soon be called and
-  // will update the consumer with the new count.
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-    didDetachWebState:(web::WebState*)webState
-              atIndex:(int)atIndex {
+- (void)didChangeWebStateList:(WebStateList*)webStateList
+                       change:(const WebStateListChange&)change
+                       status:(const WebStateListStatus&)status {
   DCHECK_EQ(_webStateList, webStateList);
   if (_webStateList->IsBatchInProgress()) {
     // Consumer will be updated at the end of the batch.
     return;
   }
-  [_consumer updateInactiveTabsCount:_webStateList->count()];
-}
 
-- (void)webStateList:(WebStateList*)webStateList
-    willCloseWebState:(web::WebState*)webState
-              atIndex:(int)atIndex
-           userAction:(BOOL)userAction {
-  // No-op. Closed tabs have previously been detached, which means the count has
-  // already been updated.
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-    didChangeActiveWebState:(web::WebState*)newWebState
-                oldWebState:(web::WebState*)oldWebState
-                    atIndex:(int)atIndex
-                     reason:(ActiveWebStateChangeReason)reason {
-  // No-op. This is called when the selected web state is moved (closed and
-  // opened elsewhere) from inactive to active.
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-    didChangePinnedStateForWebState:(web::WebState*)webState
-                            atIndex:(int)index {
-  NOTREACHED();
+  switch (change.type()) {
+    case WebStateListChange::Type::kStatusOnly:
+      // Do nothing when the status in WebStateList is updated.
+      break;
+    case WebStateListChange::Type::kDetach:
+      [_consumer updateInactiveTabsCount:_webStateList->count()];
+      break;
+    case WebStateListChange::Type::kMove:
+    case WebStateListChange::Type::kReplace:
+    case WebStateListChange::Type::kInsert:
+      NOTREACHED_NORETURN();
+  }
 }
 
 - (void)webStateListWillBeginBatchOperation:(WebStateList*)webStateList {

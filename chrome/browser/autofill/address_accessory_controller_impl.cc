@@ -10,7 +10,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/android/preferences/autofill/autofill_profile_bridge.h"
+#include "chrome/browser/android/preferences/autofill/settings_launcher_helper.h"
 #include "chrome/browser/autofill/manual_filling_controller.h"
 #include "chrome/browser/autofill/manual_filling_utils.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
@@ -84,18 +84,8 @@ AddressAccessoryControllerImpl::~AddressAccessoryControllerImpl() {
 }
 
 // static
-bool AddressAccessoryController::AllowedForWebContents(
-    content::WebContents* web_contents) {
-  DCHECK(web_contents) << "Need valid WebContents to attach controller to!";
-  return base::FeatureList::IsEnabled(
-      autofill::features::kAutofillKeyboardAccessory);
-}
-
-// static
 AddressAccessoryController* AddressAccessoryController::GetOrCreate(
     content::WebContents* web_contents) {
-  DCHECK(AddressAccessoryController::AllowedForWebContents(web_contents));
-
   AddressAccessoryControllerImpl::CreateForWebContents(web_contents);
   return AddressAccessoryControllerImpl::FromWebContents(web_contents);
 }

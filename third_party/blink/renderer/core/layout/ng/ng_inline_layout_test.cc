@@ -40,7 +40,7 @@ TEST_F(NGInlineLayoutTest, BlockWithSingleTextNode) {
   Compositor().BeginFrame();
   ASSERT_FALSE(Compositor().NeedsBeginFrame());
 
-  Element* target = GetDocument().getElementById("target");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
   auto* block_flow = To<LayoutBlockFlow>(target->GetLayoutObject());
   NGConstraintSpace constraint_space = ConstraintSpaceForElement(block_flow);
   NGBlockNode node(block_flow);
@@ -66,7 +66,7 @@ TEST_F(NGInlineLayoutTest, BlockWithTextAndAtomicInline) {
   Compositor().BeginFrame();
   ASSERT_FALSE(Compositor().NeedsBeginFrame());
 
-  Element* target = GetDocument().getElementById("target");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
   auto* block_flow = To<LayoutBlockFlow>(target->GetLayoutObject());
   NGConstraintSpace constraint_space = ConstraintSpaceForElement(block_flow);
   NGBlockNode node(block_flow);

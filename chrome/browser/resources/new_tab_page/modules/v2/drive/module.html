@@ -1,0 +1,98 @@
+<style>
+  :host {
+    background-color: var(--color-new-tab-page-module-background);
+  }
+
+  ntp-module-header-v2 {
+    margin: 8px;
+  }
+
+  #files {
+    background-color: var(--color-new-tab-page-module-item-background);
+    border-radius: var(--ntp-module-item-border-radius);
+    margin: 8px;
+    overflow: hidden;
+  }
+
+  .file {
+    align-items: center;
+    display: flex;
+    height: 52px;
+    padding-bottom: 2px;
+    padding-top: 2px;
+    text-decoration: none;
+  }
+
+  .file:hover {
+    background-color: var(--color-new-tab-page-control-background-hovered);
+  }
+
+  .file-icon {
+    height: 18px;
+    margin-inline-end: 17px;
+    margin-inline-start: 17px;
+    width: 18px;
+  }
+
+  .file-info {
+    min-width: 0;
+    padding-inline-end: 16px;
+  }
+
+  .file-title,
+  .file-description {
+    color: var(--color-new-tab-page-primary-foreground);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .file-title {
+    font-size: 13px;
+    line-height: 20px;
+  }
+
+  .file-description {
+    font-size: 9px;
+    line-height: 12px;
+  }
+</style>
+<ntp-module-header-v2
+    show-info-button-dropdown
+    disable-text="[[i18nRecursive('',
+                                  'modulesDisableButtonText',
+                                  'modulesDriveSentence2')]]"
+    dismiss-text="[[i18nRecursive('',
+                                  'modulesDismissButtonText',
+                                  'modulesDriveFilesLower')]]"
+    more-actions-text="[[i18nRecursive('',
+                                  'modulesMoreActions',
+                                  'modulesDriveSentence')]]"
+    icon-src="icons/drive_logo.svg"
+    show-info-button on-info-button-click="onInfoButtonClick_"
+    show-dismiss-button on-dismiss-button-click="onDismissButtonClick_"
+    on-disable-button-click="onDisableButtonClick_"
+    on-info-button-click="onInfoButtonClick_"
+    header-text="[[i18n('modulesDriveTitleV2')]]">
+</ntp-module-header-v2>
+<div id="files">
+  <template id="fileRepeat" is="dom-repeat" items="[[files]]">
+    <a class="file" href="[[item.itemUrl.url]]" on-click="onFileClick_">
+      <img is="cr-auto-img"
+          class="file-icon"
+          draggable="false"
+          auto-src="[[getImageSrc_(item)]]">
+      </img>
+      <div class="file-info">
+        <div class="file-title">[[item.title]]</div>
+        <div class="file-description">[[item.justificationText]]</div>
+      </div>
+    </a>
+  </template>
+</div>
+<cr-lazy-render id="infoDialogRender">
+  <template>
+    <ntp-info-dialog inner-h-t-m-l="[[i18nAdvanced('modulesDriveInfo')]]">
+    </ntp-info-dialog>
+  </template>
+</cr-lazy-render>

@@ -7,19 +7,23 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_screenshot_job.h"
-#include "chrome/browser/ash/policy/remote_commands/device_command_start_crd_session_job.h"
 #include "components/policy/core/common/remote_commands/remote_commands_factory.h"
+
+namespace ash::attestation {
+class MachineCertificateUploader;
+}  // namespace ash::attestation
 
 namespace policy {
 
-class DeviceCloudPolicyManagerAsh;
+class StartCrdSessionJobDelegate;
 
 class DeviceCommandsFactoryAsh : public RemoteCommandsFactory {
  public:
-  explicit DeviceCommandsFactoryAsh(
-      DeviceCloudPolicyManagerAsh* policy_manager);
+  DeviceCommandsFactoryAsh(
+      ash::attestation::MachineCertificateUploader* certificate_uploader,
+      StartCrdSessionJobDelegate& crd_delegate);
 
   DeviceCommandsFactoryAsh(const DeviceCommandsFactoryAsh&) = delete;
   DeviceCommandsFactoryAsh& operator=(const DeviceCommandsFactoryAsh&) = delete;
@@ -37,10 +41,10 @@ class DeviceCommandsFactoryAsh : public RemoteCommandsFactory {
   // TODO(b/269432279): Consider removing when test uses a local upload server
   static bool device_commands_test_;
 
-  raw_ptr<DeviceCloudPolicyManagerAsh, ExperimentalAsh> policy_manager_;
-  std::unique_ptr<DeviceCommandStartCrdSessionJob::Delegate> crd_host_delegate_;
+  raw_ptr<ash::attestation::MachineCertificateUploader>
+      machine_certificate_uploader_;
+  raw_ref<StartCrdSessionJobDelegate> crd_delegate_;
 
-  DeviceCommandStartCrdSessionJob::Delegate* GetCrdHostDelegate();
   std::unique_ptr<DeviceCommandScreenshotJob::Delegate>
   CreateScreenshotDelegate();
 };

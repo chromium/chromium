@@ -17,7 +17,7 @@
 #include "base/logging.h"
 #include "build/build_config.h"
 #if BUILDFLAG(IS_MAC)
-#include "base/mac/scoped_nsautorelease_pool.h"
+#include "base/apple/scoped_nsautorelease_pool.h"
 #endif
 #include "base/path_service.h"
 #include "base/process/launch.h"
@@ -129,7 +129,7 @@ bool RunGLES2ConformTest(const char* path) {
 int main(int argc, char** argv) {
   base::CommandLine::Init(argc, argv);
 #if BUILDFLAG(IS_MAC)
-  base::mac::ScopedNSAutoreleasePool pool;
+  base::apple::ScopedNSAutoreleasePool pool;
 #endif
   ::testing::InitGoogleTest(&argc, argv);
   base::TestSuite test_suite(argc, argv);

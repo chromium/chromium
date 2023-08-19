@@ -351,7 +351,9 @@ class Xcode11LogParser(object):
 
     # See XCRESULT_ROOT in xcode_log_parser_test.py for an example of |root|.
     root = json.loads(Xcode11LogParser._xcresulttool_get(xcresult))
-    metrics = root['metrics']
+    metrics = root.get('actions', {}).get('_values',
+                                          [{}])[0].get('actionResult',
+                                                       {}).get('metrics', {})
     # In case of test crash both numbers of run and failed tests are equal to 0.
     if (metrics.get('testsCount', {}).get('_value', 0) == 0 and
         metrics.get('testsFailedCount', {}).get('_value', 0) == 0):
@@ -520,8 +522,13 @@ class Xcode11LogParser(object):
             xcresult, attachments, include_jpg)
       for attachment in activity_summary.get('attachments',
                                              {}).get('_values', []):
-        payload_ref = attachment['payloadRef']['id']['_value']
         raw_file_name = str(attachment['filename']['_value'])
+        if 'payloadRef' not in attachment:
+          LOGGER.warning(
+              'Unable to export attachment %s because payloadRef is undefined' %
+              raw_file_name)
+          continue
+        payload_ref = attachment['payloadRef']['id']['_value']
         _, file_name_extension = os.path.splitext(raw_file_name)
 
         if not include_jpg and file_name_extension in ['.jpg', '.jpeg']:

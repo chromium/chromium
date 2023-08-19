@@ -9,12 +9,13 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/extensions/api/passwords_private.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 // A test PasswordsPrivateDelegate implementation which uses mock data.
 // TestDelegate starts out with kNumMocks mocks of each type (saved password
-// and password exception) and removes one mock each time RemoveSavedPassword()
+// and password exception) and removes one mock each time RemoveCredential()
 // or RemovePasswordException() is called.
 class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
  public:
@@ -39,12 +40,9 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
                    const std::u16string& note,
                    bool use_account_store,
                    content::WebContents* web_contents) override;
-  // Fake implementation of ChangeSavedPassword. This succeeds if the current
-  // list of entries has the id and if the new password isn't empty.
-  absl::optional<int> ChangeSavedPassword(
-      const int id,
-      const api::passwords_private::ChangeSavedPasswordParams& params) override;
-  void RemoveSavedPassword(
+  bool ChangeCredential(
+      const api::passwords_private::PasswordUiEntry& credential) override;
+  void RemoveCredential(
       int id,
       api::passwords_private::PasswordStoreSet from_store) override;
   void RemovePasswordException(int id) override;
@@ -59,6 +57,8 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
                                  content::WebContents* web_contents) override;
   void MovePasswordsToAccount(const std::vector<int>& ids,
                               content::WebContents* web_contents) override;
+  void FetchFamilyMembers(FetchFamilyResultsCallback callback) override;
+  void SharePassword(int id, const ShareRecipients& recipients) override;
   void ImportPasswords(api::passwords_private::PasswordStoreSet to_store,
                        ImportResultsCallback results_callback,
                        content::WebContents* web_contents) override;
@@ -68,7 +68,6 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   void ResetImporter(bool delete_file) override;
   void ExportPasswords(base::OnceCallback<void(const std::string&)> callback,
                        content::WebContents* web_contents) override;
-  void CancelExportPasswords() override;
   api::passwords_private::ExportProgressStatus GetExportProgressStatus()
       override;
   bool IsOptedInForAccountStorage() override;
@@ -86,12 +85,7 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   // delegate knows of a insecure credential with the same id.
   bool UnmuteInsecureCredential(
       const api::passwords_private::PasswordUiEntry& credential) override;
-  // Fake implementation of `RecordChangePasswordFlowStarted`. Sets the url
-  // returned by `last_change_flow_url()`.
-  void RecordChangePasswordFlowStarted(
-      const api::passwords_private::PasswordUiEntry& credential) override;
   void StartPasswordCheck(StartPasswordCheckCallback callback) override;
-  void StopPasswordCheck() override;
   api::passwords_private::PasswordCheckStatus GetPasswordCheckStatus() override;
   password_manager::InsecureCredentialsManager* GetInsecureCredentialsManager()
       override;
@@ -113,21 +107,17 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   bool ContinueImportTriggered() const { return continue_import_triggered_; }
   bool ResetImporterTriggered() const { return reset_importer_triggered_; }
   bool ExportPasswordsTriggered() const { return export_passwords_triggered_; }
-  bool CancelExportPasswordsTriggered() const {
-    return cancel_export_passwords_triggered_;
+  bool FetchFamilyMembersTriggered() const {
+    return fetch_family_members_triggered_;
   }
+  bool SharePasswordTriggered() const { return share_password_triggered_; }
   bool StartPasswordCheckTriggered() const {
     return start_password_check_triggered_;
-  }
-  bool StopPasswordCheckTriggered() const {
-    return stop_password_check_triggered_;
   }
   void SetStartPasswordCheckState(
       password_manager::BulkLeakCheckService::State state) {
     start_password_check_state_ = state;
   }
-
-  const std::string& last_change_flow_url() { return last_change_flow_url_; }
 
   const std::vector<int>& last_moved_passwords() const {
     return last_moved_passwords_;
@@ -170,6 +160,8 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
 
   api::passwords_private::ImportResults import_results_;
 
+  api::passwords_private::FamilyFetchResults family_fetch_results_;
+
   // List of insecure credentials.
   std::vector<api::passwords_private::PasswordUiEntry> insecure_credentials_;
   raw_ptr<Profile, DanglingUntriaged> profile_ = nullptr;
@@ -177,22 +169,20 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   bool is_opted_in_for_account_storage_ = false;
   bool is_account_store_default_ = false;
 
+  // Flags for detecting whether password sharing operations have been invoked.
+  bool fetch_family_members_triggered_ = false;
+  bool share_password_triggered_ = false;
+
   // Flags for detecting whether import/export operations have been invoked.
   bool import_passwords_triggered_ = false;
   bool continue_import_triggered_ = false;
   bool reset_importer_triggered_ = false;
   bool export_passwords_triggered_ = false;
-  bool cancel_export_passwords_triggered_ = false;
 
   // Flags for detecting whether password check operations have been invoked.
   bool start_password_check_triggered_ = false;
-  bool stop_password_check_triggered_ = false;
   password_manager::BulkLeakCheckService::State start_password_check_state_ =
       password_manager::BulkLeakCheckService::State::kRunning;
-
-  // Url of the last reported change password flow. Defaults to empty if
-  // none has been registered.
-  std::string last_change_flow_url_;
 
   // Records the ids of the passwords that were last moved.
   std::vector<int> last_moved_passwords_;

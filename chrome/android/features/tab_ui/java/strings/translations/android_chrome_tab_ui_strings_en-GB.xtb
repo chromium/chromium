@@ -3,8 +3,6 @@
 <translationbundle lang="en-GB">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> of your tabs haven't been used lately. Close them?</translation>
 <translation id="125153950246128346">Tap to see another tab</translation>
-<translation id="1403228085774130835">You can find your closed tabs in Recent tabs under the Chrome main menu</translation>
-<translation id="1455506303394048917">Your activity in these Incognito tabs will be cleared from this device</translation>
 <translation id="1499635324672558517">Close all Incognito tabs?</translation>
 <translation id="1657719826150349398">Move tab down</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tabs}}</translation>
@@ -47,6 +45,7 @@
 <translation id="5073204694187207510">Hide full-screen grid</translation>
 <translation id="5076161749301278626">See store reviews?</translation>
 <translation id="5082793167783849073">Quickly compare pages by making a group. To start, touch and hold a link.</translation>
+<translation id="5339733443032484186">Your last tab</translation>
 <translation id="5490235265819901748">Tab group expanded</translation>
 <translation id="5494920125229734069">Select all</translation>
 <translation id="5556417849629758491">View shop info, option available near top of the screen</translation>
@@ -62,10 +61,12 @@
 <translation id="6228793724645064692">(shop rating)</translation>
 <translation id="6333260925957816943">Information about this shop</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Ungroup <ph name="TABS_COUNT_ONE" /> selected tab}other{Ungroup <ph name="TABS_COUNT_MANY" /> selected tabs}}</translation>
+<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{You can find your closed tabs in Recent tabs under the Chrome main menu. Your Incognito tab won't be available.}other{You can find your closed tabs in Recent tabs under the Chrome main menu. Your # Incognito tabs won't be available.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tabs}}</translation>
 <translation id="6549021453810473782">View shop info</translation>
 <translation id="6562820390860419811">Move tab left</translation>
 <translation id="6615455863669487791">Show me</translation>
+<translation id="661742612106409204">You can find your closed tabs in Recent tabs under the Chrome main menu.</translation>
 <translation id="6840760312327750441">To group tabs, touch and hold a tab. Then, drag it onto another tab.</translation>
 <translation id="6856809498882026482">Hide multi-select mode</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Share tab}other{Share tabs}}</translation>

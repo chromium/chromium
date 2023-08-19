@@ -33,13 +33,15 @@ struct SameSizeAsPaintChunk {
   PaintChunk::Id id;
   PaintChunk::BackgroundColorInfo background_color;
   PropertyTreeState properties;
-  gfx::Rect bounds;
-  gfx::Rect drawable_bounds;
-  gfx::Rect rect_known_to_be_opaque;
   void* hit_test_data;
   void* region_capture_data;
   void* layer_selection;
-  bool b[2];
+  gfx::Rect bounds;
+  gfx::Rect drawable_bounds;
+  gfx::Rect rect_known_to_be_opaque;
+  uint8_t raster_effect_outset;
+  uint8_t hit_test_opaqueness;
+  bool b;
 };
 
 ASSERT_SIZE(PaintChunk, SameSizeAsPaintChunk);
@@ -48,10 +50,11 @@ bool PaintChunk::EqualsForUnderInvalidationChecking(
     const PaintChunk& other) const {
   return size() == other.size() && id == other.id &&
          properties == other.properties && bounds == other.bounds &&
-         drawable_bounds == other.drawable_bounds &&
-         raster_effect_outset == other.raster_effect_outset &&
          PointerValueEquals(hit_test_data, other.hit_test_data) &&
          PointerValueEquals(region_capture_data, other.region_capture_data) &&
+         drawable_bounds == other.drawable_bounds &&
+         raster_effect_outset == other.raster_effect_outset &&
+         hit_test_opaqueness == other.hit_test_opaqueness &&
          effectively_invisible == other.effectively_invisible;
   // Derived fields like rect_known_to_be_opaque are not checked because they
   // are updated when we create the next chunk or release chunks. We ensure
@@ -77,11 +80,13 @@ static String ToStringImpl(const PaintChunk& c, const String& id_string) {
   StringBuilder sb;
   sb.AppendFormat(
       "PaintChunk(begin=%u, end=%u, id=%s cacheable=%d props=(%s) bounds=%s "
-      "rect_known_to_be_opaque=%s effectively_invisible=%d drawscontent=%d",
+      "rect_known_to_be_opaque=%s hit_test_opaqueness=%s "
+      "effectively_invisible=%d drawscontent=%d",
       c.begin_index, c.end_index, id_string.Utf8().c_str(), c.is_cacheable,
       c.properties.ToString().Utf8().c_str(), c.bounds.ToString().c_str(),
-      c.rect_known_to_be_opaque.ToString().c_str(), c.effectively_invisible,
-      c.DrawsContent());
+      c.rect_known_to_be_opaque.ToString().c_str(),
+      cc::HitTestOpaquenessToString(c.hit_test_opaqueness),
+      c.effectively_invisible, c.DrawsContent());
   if (c.hit_test_data) {
     sb.Append(", hit_test_data=");
     sb.Append(c.hit_test_data->ToString());

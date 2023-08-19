@@ -1,0 +1,95 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Use the <code>chrome.readingList</code> API to read from and modify
+// the items in the Reading List.
+namespace readingList{
+  dictionary ReadingListEntry {
+    // The url of the entry.
+    DOMString url;
+
+    // The title of the entry.
+    DOMString title;
+
+    // True if the entry has been read.
+    boolean hasBeenRead;
+  };
+
+  dictionary RemoveOptions {
+    // The url to remove.
+    DOMString url;
+  };
+
+  dictionary UpdateEntryOptions {
+    // The url that will be updated.
+    DOMString url;
+
+    // The updated title.
+    DOMString? title;
+
+    // The updated read status.
+    boolean? hasBeenRead;
+  };
+
+  dictionary QueryInfo {
+    // The url to query for.
+    DOMString? url;
+
+    // The title to query for.
+    DOMString? title;
+
+    // The read status to query for.
+    boolean? hasBeenRead;
+  };
+
+  callback AddEntryCallback = void ();
+  callback RemoveEntryCallback = void();
+  callback UpdateEntryCallback = void();
+  callback QueryCallback = void(ReadingListEntry[] entries);
+
+  interface Functions {
+    // Adds an entry to the reading list if it does not exist.
+    // |entry|: The entry to add to the reading list.
+    // |callback|: Invoked once the entry has been added.
+    [supportsPromises] static void addEntry(
+                                      ReadingListEntry entry,
+                                      optional AddEntryCallback callback);
+
+    // Removes an entry from the reading list if it exists.
+    // |info|: The entry to remove from the reading list.
+    // |callback|: Invoked once the entry has been removed.
+    [supportsPromises] static void removeEntry(
+                                      RemoveOptions info,
+                                      optional RemoveEntryCallback callback);
+
+    // Updates the features of a reading list entry if it exists.
+    // |info|: The entry to update.
+    // |callback|: Invoked once the matched entries have been updated.
+    [supportsPromises] static void updateEntry(
+                                      UpdateEntryOptions info,
+                                      optional UpdateEntryCallback callback);
+
+    // Retrieves all entries which match the QueryInfo properties.
+    // Properties which are not provided will not be matched.
+    // |info|: The entry properties to search for.
+    // |callback|: Invoked once the entries have been matched.
+    [supportsPromises] static void query(QueryInfo info,
+                                         QueryCallback callback);
+  };
+
+  interface Events {
+    // Triggered when a ReadingListEntry was added to the reading list.
+    // |entry|: The entry that was added.
+    static void onEntryAdded(ReadingListEntry entry);
+
+    // Triggered when a ReadingListEntry is about to be removed from the
+    // reading list.
+    // |entry|: The entry that will be removed.
+    static void onEntryWillBeRemoved(ReadingListEntry entry);
+
+    // Triggered when a ReadingListEntry was updated in the reading list.
+    // |entry|: The entry that was updated.
+    static void onEntryUpdated(ReadingListEntry entry);
+  };
+};

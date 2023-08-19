@@ -162,7 +162,7 @@ class TestReportingContext : public ReportingContext {
   TestReportingContext(const TestReportingContext&) = delete;
   TestReportingContext& operator=(const TestReportingContext&) = delete;
 
-  ~TestReportingContext();
+  ~TestReportingContext() override;
 
   base::MockOneShotTimer* test_delivery_timer() { return delivery_timer_; }
   base::MockOneShotTimer* test_garbage_collection_timer() {

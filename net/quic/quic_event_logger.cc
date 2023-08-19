@@ -32,7 +32,8 @@ base::Value::Dict NetLogQuicPacketSentParams(
     quic::QuicPacketLength packet_length,
     quic::TransmissionType transmission_type,
     quic::EncryptionLevel encryption_level,
-    quic::QuicTime sent_time) {
+    quic::QuicTime sent_time,
+    uint32_t batch_id) {
   base::Value::Dict dict;
   dict.Set("transmission_type",
            quic::TransmissionTypeToString(transmission_type));
@@ -40,6 +41,7 @@ base::Value::Dict NetLogQuicPacketSentParams(
   dict.Set("size", packet_length);
   dict.Set("sent_time_us", NetLogNumberValue(sent_time.ToDebuggingValue()));
   dict.Set("encryption_level", quic::EncryptionLevelToString(encryption_level));
+  dict.Set("batch_id", NetLogNumberValue(batch_id));
   return dict;
 }
 
@@ -168,6 +170,7 @@ base::Value::Dict NetLogQuicRstStreamFrameParams(
   base::Value::Dict dict;
   dict.Set("stream_id", static_cast<int>(frame->stream_id));
   dict.Set("quic_rst_stream_error", static_cast<int>(frame->error_code));
+  dict.Set("ietf_error_code", static_cast<int>(frame->ietf_error_code));
   dict.Set("offset", NetLogNumberValue(frame->byte_offset));
   return dict;
 }
@@ -321,6 +324,7 @@ base::Value::Dict NetLogQuicStopSendingFrameParams(
   base::Value::Dict dict;
   dict.Set("stream_id", static_cast<int>(frame.stream_id));
   dict.Set("quic_rst_stream_error", static_cast<int>(frame.error_code));
+  dict.Set("ietf_error_code", static_cast<int>(frame.ietf_error_code));
   return dict;
 }
 
@@ -514,11 +518,12 @@ void QuicEventLogger::OnPacketSent(
     quic::EncryptionLevel encryption_level,
     const quic::QuicFrames& /*retransmittable_frames*/,
     const quic::QuicFrames& /*nonretransmittable_frames*/,
-    quic::QuicTime sent_time) {
+    quic::QuicTime sent_time,
+    uint32_t batch_id) {
   net_log_.AddEvent(NetLogEventType::QUIC_SESSION_PACKET_SENT, [&] {
     return NetLogQuicPacketSentParams(packet_number, packet_length,
                                       transmission_type, encryption_level,
-                                      sent_time);
+                                      sent_time, batch_id);
   });
 }
 

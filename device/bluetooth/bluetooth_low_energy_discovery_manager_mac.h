@@ -5,11 +5,9 @@
 #ifndef DEVICE_BLUETOOTH_BLUETOOTH_LOW_ENERGY_DISCOVERY_MANAGER_MAC_H_
 #define DEVICE_BLUETOOTH_BLUETOOTH_LOW_ENERGY_DISCOVERY_MANAGER_MAC_H_
 
-#include "base/memory/raw_ptr.h"
-
 #import <CoreBluetooth/CoreBluetooth.h>
 
-#include "base/mac/scoped_nsobject.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "device/bluetooth/bluetooth_device.h"
 
@@ -31,7 +29,7 @@ class BluetoothLowEnergyDiscoveryManagerMac {
                                         int rssi) = 0;
 
    protected:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
   };
 
   BluetoothLowEnergyDiscoveryManagerMac(

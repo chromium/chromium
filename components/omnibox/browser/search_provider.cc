@@ -415,7 +415,7 @@ const AutocompleteInput SearchProvider::GetInput(bool is_keyword) const {
 
 void SearchProvider::OnURLLoadComplete(
     const network::SimpleURLLoader* source,
-    const bool response_received,
+    const int response_code,
     std::unique_ptr<std::string> response_body) {
   TRACE_EVENT0("omnibox", "SearchProvider::OnURLLoadComplete");
   DCHECK(!done_);
@@ -424,7 +424,7 @@ void SearchProvider::OnURLLoadComplete(
   // Ensure the request succeeded and that the provider used is still available.
   // A verbatim match cannot be generated without this provider, causing errors.
   const bool request_succeeded =
-      response_received && GetTemplateURL(is_keyword);
+      response_code == 200 && GetTemplateURL(is_keyword);
 
   LogLoadComplete(request_succeeded, is_keyword);
 
@@ -1353,8 +1353,7 @@ bool SearchProvider::ShouldCurbDefaultSuggestions() const {
   if (providers_.has_keyword_provider()) {
     const TemplateURL* turl = providers_.GetKeywordProviderURL();
     DCHECK(turl);
-    return (OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() &&
-            (turl->starter_pack_id() > 0));
+    return turl->starter_pack_id() > 0;
   } else {
     return false;
   }

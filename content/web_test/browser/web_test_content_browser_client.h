@@ -23,6 +23,7 @@
 #include "third_party/blink/public/mojom/cookie_manager/cookie_manager_automation.mojom-forward.h"
 #include "third_party/blink/public/mojom/permissions/permission_automation.mojom-forward.h"
 #include "third_party/blink/public/mojom/storage_access/storage_access_automation.mojom-forward.h"
+#include "third_party/blink/public/mojom/webid/federated_auth_request_automation.mojom-forward.h"
 
 namespace blink {
 namespace web_pref {
@@ -112,6 +113,10 @@ class WebTestContentBrowserClient : public ShellContentBrowserClient {
                                  InterestGroupApiOperation operation,
                                  const url::Origin& top_frame_origin,
                                  const url::Origin& api_origin) override;
+  bool IsPrivacySandboxReportingDestinationAttested(
+      content::BrowserContext* browser_context,
+      const url::Origin& destination_origin,
+      content::PrivacySandboxInvokingAPI invoking_api) override;
   void GetHyphenationDictionary(
       base::OnceCallback<void(const base::FilePath&)>) override;
 
@@ -146,9 +151,17 @@ class WebTestContentBrowserClient : public ShellContentBrowserClient {
       mojo::PendingReceiver<blink::test::mojom::CookieManagerAutomation>
           receiver);
 
+  void BindFedCmAutomation(
+      RenderFrameHost* render_frame_host,
+      mojo::PendingReceiver<blink::test::mojom::FederatedAuthRequestAutomation>
+          receiver);
+
   void BindWebTestControlHost(
       int render_process_id,
       mojo::PendingAssociatedReceiver<mojom::WebTestControlHost> receiver);
+
+  void BindNonAssociatedWebTestControlHost(
+      mojo::PendingReceiver<mojom::NonAssociatedWebTestControlHost> receiver);
 
   bool block_popups_ = true;
   bool screen_orientation_changed_ = false;
@@ -160,6 +173,8 @@ class WebTestContentBrowserClient : public ShellContentBrowserClient {
   std::unique_ptr<MockBadgeService> mock_badge_service_;
   mojo::UniqueReceiverSet<blink::test::mojom::CookieManagerAutomation>
       cookie_managers_;
+  mojo::UniqueReceiverSet<blink::test::mojom::FederatedAuthRequestAutomation>
+      fedcm_managers_;
 };
 
 }  // namespace content

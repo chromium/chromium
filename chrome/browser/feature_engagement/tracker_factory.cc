@@ -5,15 +5,22 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 
 #include "base/files/file_path.h"
-#include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_constants.h"
+#include "components/feature_engagement/public/configuration_provider.h"
+#include "components/feature_engagement/public/field_trial_configuration_provider.h"
+#include "components/feature_engagement/public/local_configuration_provider.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/user_education/user_education_configuration_provider.h"
+#endif
 
 namespace feature_engagement {
 
@@ -55,8 +62,15 @@ KeyedService* TrackerFactory::BuildServiceInstanceFor(
 
   leveldb_proto::ProtoDatabaseProvider* db_provider =
       profile->GetDefaultStoragePartition()->GetProtoDatabaseProvider();
+  auto providers =
+      feature_engagement::Tracker::GetDefaultConfigurationProviders();
+#if !BUILDFLAG(IS_ANDROID)
+  providers.emplace_back(
+      std::make_unique<UserEducationConfigurationProvider>());
+#endif
   return feature_engagement::Tracker::Create(
-      storage_dir, background_task_runner, db_provider, nullptr);
+      storage_dir, background_task_runner, db_provider, nullptr,
+      std::move(providers));
 }
 
 }  // namespace feature_engagement

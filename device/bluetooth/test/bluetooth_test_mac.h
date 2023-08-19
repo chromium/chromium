@@ -15,10 +15,6 @@
 @class MockCBDescriptor;
 @class MockCBCharacteristic;
 @class MockCBPeripheral;
-#else   // __OBJC__
-class MockCBDescriptor;
-class MockCBCharacteristic;
-class MockCBPeripheral;
 #endif  // __OBJC__
 
 namespace device {
@@ -181,6 +177,8 @@ class BluetoothTestMac : public BluetoothTestBase {
  protected:
   class ScopedMockCentralManager;
 
+#if __OBJC__
+
   // Returns MockCBPeripheral from BluetoothDevice.
   MockCBPeripheral* GetMockCBPeripheral(BluetoothDevice* device) const;
   // Returns MockCBPeripheral from BluetoothRemoteGattService.
@@ -199,10 +197,13 @@ class BluetoothTestMac : public BluetoothTestBase {
   MockCBDescriptor* GetCBMockDescriptor(
       BluetoothRemoteGattDescriptor* descriptor) const;
 
+#endif  // __OBJC__
+
   // Utility function for finding CBUUIDs with relatively nice SHA256 hashes.
   std::string FindCBUUIDForHashTarget();
 
-  raw_ptr<BluetoothLowEnergyAdapterApple> adapter_low_energy_ = nullptr;
+  raw_ptr<BluetoothLowEnergyAdapterApple, DanglingUntriaged>
+      adapter_low_energy_ = nullptr;
   std::unique_ptr<ScopedMockCentralManager> mock_central_manager_;
 
   // Value set by -[CBPeripheral setNotifyValue:forCharacteristic:] call.
@@ -211,7 +212,7 @@ class BluetoothTestMac : public BluetoothTestBase {
 };
 
 // Defines common test fixture name. Use TEST_F(BluetoothTest, YourTestName).
-typedef BluetoothTestMac BluetoothTest;
+using BluetoothTest = BluetoothTestMac;
 
 }  // namespace device
 

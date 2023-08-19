@@ -37,7 +37,7 @@ class GIN_EXPORT NamedPropertyInterceptor {
       v8::Isolate* isolate);
 
  private:
-  raw_ptr<v8::Isolate> isolate_;
+  raw_ptr<v8::Isolate, LeakedDanglingUntriaged> isolate_;
   raw_ptr<WrappableBase> base_;
 };
 
@@ -59,7 +59,7 @@ class GIN_EXPORT IndexedPropertyInterceptor {
       v8::Isolate* isolate);
 
  private:
-  raw_ptr<v8::Isolate> isolate_;
+  raw_ptr<v8::Isolate, LeakedDanglingUntriaged> isolate_;
   raw_ptr<WrappableBase> base_;
 };
 

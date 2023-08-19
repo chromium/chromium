@@ -8,12 +8,9 @@
 
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/all_web_state_list_observation_registrar.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 IncognitoWebStateObserver::IncognitoWebStateObserver() {
   std::vector<ChromeBrowserState*> browser_states =
@@ -25,7 +22,8 @@ IncognitoWebStateObserver::IncognitoWebStateObserver() {
   for (ChromeBrowserState* browser_state : browser_states) {
     DCHECK(!browser_state->IsOffTheRecord());
     registrars_.insert(std::make_unique<AllWebStateListObservationRegistrar>(
-        browser_state, std::make_unique<Observer>(this),
+        BrowserListFactory::GetForBrowserState(browser_state),
+        std::make_unique<Observer>(this),
         AllWebStateListObservationRegistrar::Mode::INCOGNITO));
   }
 }
@@ -37,26 +35,29 @@ IncognitoWebStateObserver::Observer::Observer(
     : incognito_tracker_(incognito_tracker) {}
 IncognitoWebStateObserver::Observer::~Observer() {}
 
-void IncognitoWebStateObserver::Observer::WebStateInsertedAt(
-    WebStateList* web_state_list,
-    web::WebState* web_state,
-    int index,
-    bool activating) {
-  incognito_tracker_->OnIncognitoWebStateAdded();
-}
+#pragma mark - WebStateListObserver
 
-void IncognitoWebStateObserver::Observer::WebStateDetachedAt(
+void IncognitoWebStateObserver::Observer::WebStateListDidChange(
     WebStateList* web_state_list,
-    web::WebState* web_state,
-    int index) {
-  incognito_tracker_->OnIncognitoWebStateRemoved();
-}
-
-void IncognitoWebStateObserver::Observer::WebStateReplacedAt(
-    WebStateList* web_state_list,
-    web::WebState* old_web_state,
-    web::WebState* new_web_state,
-    int index) {
-  // This is invoked when a Tab is replaced by another Tab without any visible
-  // UI change. There is nothing to do since the number of Tabs haven't changed.
+    const WebStateListChange& change,
+    const WebStateListStatus& status) {
+  switch (change.type()) {
+    case WebStateListChange::Type::kStatusOnly:
+      // Do nothing when a WebState is selected and its status is updated.
+      break;
+    case WebStateListChange::Type::kDetach:
+      incognito_tracker_->OnIncognitoWebStateRemoved();
+      break;
+    case WebStateListChange::Type::kMove:
+      // Do nothing when a WebState is moved.
+      break;
+    case WebStateListChange::Type::kReplace:
+      // This is invoked when a Tab is replaced by another Tab without any
+      // visible UI change. There is nothing to do since the number of Tabs
+      // haven't changed.
+      break;
+    case WebStateListChange::Type::kInsert:
+      incognito_tracker_->OnIncognitoWebStateAdded();
+      break;
+  }
 }

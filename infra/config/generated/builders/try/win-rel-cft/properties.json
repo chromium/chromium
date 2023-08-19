@@ -37,13 +37,11 @@
       ]
     }
   },
-  "$build/flakiness": {
-    "check_for_flakiness": true
-  },
   "$build/reclient": {
     "instance": "rbe-chromium-untrusted",
     "jobs": 150,
-    "metrics_project": "chromium-reclient-metrics"
+    "metrics_project": "chromium-reclient-metrics",
+    "scandeps_server": true
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],

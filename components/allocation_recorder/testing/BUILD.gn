@@ -12,8 +12,9 @@ source_set("testing") {
   ]
 
   deps = [
-    "//components/allocation_recorder/crash_handler:crash_handler",
+    "//components/allocation_recorder/crash_handler",
     "//testing/gmock",
     "//third_party/crashpad/crashpad/minidump",
+    "//third_party/crashpad/crashpad/util",
   ]
 }

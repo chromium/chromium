@@ -134,33 +134,6 @@ class AllConstraintSets {
   Persistent<const MediaTrackConstraints> constraints_;
 };
 
-// This adapter simplifies iteration over supported basic and advanced
-// MediaTrackConstraintSets in a MediaTrackConstraints.
-// A MediaTrackConstraints is itself a (basic) MediaTrackConstraintSet and it
-// may contain advanced MediaTrackConstraintSets. So far, only the basic
-// MediaTrackConstraintSet and the first advanced MediaTrackConstraintSet are
-// supported by this implementation.
-// TODO(crbug.com/1408091): Add support for advanced constraint sets beyond
-// the first one and remove this helper class.
-class AllSupportedConstraintSets {
- public:
-  using ForwardIterator = AllConstraintSets::ForwardIterator;
-
-  explicit AllSupportedConstraintSets(const MediaTrackConstraints* constraints)
-      : all_constraint_sets_(constraints) {}
-  ForwardIterator begin() const { return all_constraint_sets_.begin(); }
-  ForwardIterator end() const {
-    const auto* constraints = all_constraint_sets_.GetConstraints();
-    return ForwardIterator(constraints, constraints->hasAdvanced() &&
-                                                !constraints->advanced().empty()
-                                            ? 2u
-                                            : 1u);
-  }
-
- private:
-  AllConstraintSets all_constraint_sets_;
-};
-
 using CopyPanTiltZoom = base::StrongAlias<class CopyPanTiltZoomTag, bool>;
 
 template <typename T>
@@ -247,7 +220,10 @@ void CopyConstraintSet(const MediaTrackConstraintSet* source,
 void CopyConstraints(const MediaTrackConstraints* source,
                      MediaTrackConstraints* destination) {
   HeapVector<Member<MediaTrackConstraintSet>> destination_constraint_sets;
-  for (const auto* source_constraint_set : AllSupportedConstraintSets(source)) {
+  if (source->hasAdvanced() && !source->advanced().empty()) {
+    destination_constraint_sets.reserve(source->advanced().size());
+  }
+  for (const auto* source_constraint_set : AllConstraintSets(source)) {
     if (source_constraint_set == source) {
       CopyConstraintSet(source_constraint_set, destination);
     } else {
@@ -1641,7 +1617,7 @@ bool ImageCapture::CheckAndApplyMediaTrackConstraintsToSettings(
     ScriptPromiseResolver* resolver) const {
   if (!IsPageVisible()) {
     for (const MediaTrackConstraintSet* constraint_set :
-         AllSupportedConstraintSets(constraints)) {
+         AllConstraintSets(constraints)) {
       if ((constraint_set->hasPan() &&
            !IsBooleanFalseConstraint(constraint_set->pan())) ||
           (constraint_set->hasTilt() &&
@@ -1676,7 +1652,7 @@ bool ImageCapture::CheckAndApplyMediaTrackConstraintsToSettings(
   auto* effective_settings = MediaTrackSettings::Create();
 
   for (const MediaTrackConstraintSet* constraint_set :
-       AllSupportedConstraintSets(constraints)) {
+       AllConstraintSets(constraints)) {
     const MediaTrackConstraintSetType constraint_set_type =
         GetMediaTrackConstraintSetType(constraint_set, constraints);
     const bool may_reject =
@@ -1711,7 +1687,7 @@ void ImageCapture::SetMediaTrackConstraints(
 
   ExecutionContext* context = GetExecutionContext();
   for (const MediaTrackConstraintSet* constraint_set :
-       AllSupportedConstraintSets(constraints)) {
+       AllConstraintSets(constraints)) {
     if (constraint_set->hasWhiteBalanceMode()) {
       UseCounter::Count(context, WebFeature::kImageCaptureWhiteBalanceMode);
     }

@@ -5,6 +5,7 @@
 #include "ui/gl/direct_composition_support.h"
 
 #include <dxgi1_6.h>
+#include <set>
 
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
@@ -104,8 +105,16 @@ int g_num_monitors = 0;
 // Whether there is a HDR capable display monitor being connected.
 bool g_system_hdr_enabled = false;
 
+// Per-monitor HDR capability
+std::set<HMONITOR>* GetHDRMonitors() {
+  static base::NoDestructor<std::set<HMONITOR>> hdr_monitors;
+  return hdr_monitors.get();
+}
+
 // Global direct composition device.
-IDCompositionDevice2* g_dcomp_device = nullptr;
+IDCompositionDevice3* g_dcomp_device = nullptr;
+// Global d3d11 device used by direct composition.
+ID3D11Device* g_d3d11_device = nullptr;
 // Whether swap chain present failed and direct composition should be disabled.
 bool g_direct_composition_swap_chain_failed = false;
 
@@ -361,6 +370,68 @@ void UpdateOverlaySupport() {
   g_overlay_format_used_hdr = overlay_format_used_hdr;
 }
 
+std::vector<DXGI_OUTPUT_DESC1> GetDirectCompositionOutputDescs() {
+  std::vector<DXGI_OUTPUT_DESC1> output_descs;
+  // HDR support was introduced in Windows 10 Creators Update.
+  if (base::win::GetVersion() < base::win::Version::WIN10_RS2) {
+    return output_descs;
+  }
+
+  // Only direct composition surface can allocate HDR swap chains.
+  if (!DirectCompositionSupported()) {
+    return output_descs;
+  }
+
+  HRESULT hr = S_OK;
+  Microsoft::WRL::ComPtr<IDXGIFactory1> factory;
+  hr = CreateDXGIFactory1(IID_PPV_ARGS(&factory));
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "Failed to create DXGI factory.";
+    return output_descs;
+  }
+
+  for (UINT adapter_index = 0;; ++adapter_index) {
+    Microsoft::WRL::ComPtr<IDXGIAdapter> adapter;
+    hr = factory->EnumAdapters(adapter_index, &adapter);
+    if (hr == DXGI_ERROR_NOT_FOUND) {
+      break;
+    }
+    if (FAILED(hr)) {
+      DLOG(ERROR) << "Unexpected error creating DXGI adapter.";
+      break;
+    }
+
+    for (UINT output_index = 0;; ++output_index) {
+      Microsoft::WRL::ComPtr<IDXGIOutput> output;
+      hr = adapter->EnumOutputs(output_index, &output);
+      if (hr == DXGI_ERROR_NOT_FOUND) {
+        break;
+      }
+      if (FAILED(hr)) {
+        DLOG(ERROR) << "Unexpected error creating DXGI adapter.";
+        break;
+      }
+
+      Microsoft::WRL::ComPtr<IDXGIOutput6> output6;
+      hr = output->QueryInterface(IID_PPV_ARGS(&output6));
+      if (FAILED(hr)) {
+        DLOG(WARNING) << "IDXGIOutput6 is required for HDR detection.";
+        continue;
+      }
+
+      DXGI_OUTPUT_DESC1 desc;
+      if (FAILED(output6->GetDesc1(&desc))) {
+        DLOG(ERROR) << "Unexpected error getting output descriptor.";
+        continue;
+      }
+
+      output_descs.push_back(std::move(desc));
+    }
+  }
+
+  return output_descs;
+}
+
 void UpdateMonitorInfo() {
   g_num_monitors = GetSystemMetrics(SM_CMONITORS);
 
@@ -372,30 +443,81 @@ void UpdateMonitorInfo() {
   } else {
     g_primary_monitor_size = gfx::Size();
   }
+
+  GetHDRMonitors()->clear();
   g_system_hdr_enabled = false;
-  auto dxgi_info = gl::GetDirectCompositionHDRMonitorDXGIInfo();
-  for (const auto& output_desc : dxgi_info->output_descs)
-    g_system_hdr_enabled |= output_desc->hdr_enabled;
+  for (const auto& desc : GetDirectCompositionOutputDescs()) {
+    if (desc.ColorSpace == DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020) {
+      GetHDRMonitors()->insert(desc.Monitor);
+      g_system_hdr_enabled = true;
+    }
+  }
+  UMA_HISTOGRAM_BOOLEAN("GPU.Output.HDR", g_system_hdr_enabled);
 }
 
 }  // namespace
 
-void InitializeDirectComposition(GLDisplayEGL* display) {
+void InitializeDirectComposition(
+    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device) {
   DCHECK(!g_dcomp_device);
-
   if (GetGlWorkarounds().disable_direct_composition) {
     return;
   }
-
-  // Direct composition can only be used with ANGLE.
-  if (gl::GetGLImplementation() != gl::kGLImplementationEGLANGLE)
-    return;
 
   // Blocklist direct composition if MCTU.dll or MCTUX.dll are injected. These
   // are user mode drivers for display adapters from Magic Control Technology
   // Corporation.
   if (GetModuleHandle(TEXT("MCTU.dll")) || GetModuleHandle(TEXT("MCTUX.dll"))) {
     DLOG(ERROR) << "Blocklisted due to third party modules";
+    return;
+  }
+
+  // Load DLL at runtime since older Windows versions don't have dcomp.
+  HMODULE dcomp_module = ::GetModuleHandle(L"dcomp.dll");
+  if (!dcomp_module) {
+    DLOG(ERROR) << "Failed to load dcomp.dll";
+    return;
+  }
+
+  using PFN_DCOMPOSITION_CREATE_DEVICE3 = HRESULT(WINAPI*)(
+      IUnknown * renderingDevice, REFIID iid, void** dcompositionDevice);
+  PFN_DCOMPOSITION_CREATE_DEVICE3 create_device3_function =
+      reinterpret_cast<PFN_DCOMPOSITION_CREATE_DEVICE3>(
+          ::GetProcAddress(dcomp_module, "DCompositionCreateDevice3"));
+  if (!create_device3_function) {
+    DLOG(ERROR) << "GetProcAddress failed for DCompositionCreateDevice3";
+    return;
+  }
+
+  Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device;
+  d3d11_device.As(&dxgi_device);
+
+  Microsoft::WRL::ComPtr<IDCompositionDesktopDevice> desktop_device;
+  HRESULT hr =
+      create_device3_function(dxgi_device.Get(), IID_PPV_ARGS(&desktop_device));
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "DCompositionCreateDevice3 failed with error 0x" << std::hex
+                << hr;
+    return;
+  }
+
+  Microsoft::WRL::ComPtr<IDCompositionDevice3> dcomp_device;
+  hr = desktop_device.As(&dcomp_device);
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "Failed to retrieve IDCompositionDevice3 with error 0x"
+                << std::hex << hr;
+    return;
+  }
+
+  g_dcomp_device = dcomp_device.Detach();
+  DCHECK(g_dcomp_device);
+
+  g_d3d11_device = d3d11_device.Detach();
+}
+
+void InitializeDirectCompositionANGLE(GLDisplayEGL* display) {
+  // Direct composition can only be used with ANGLE.
+  if (gl::GetGLImplementation() != gl::kGLImplementationEGLANGLE) {
     return;
   }
 
@@ -413,56 +535,24 @@ void InitializeDirectComposition(GLDisplayEGL* display) {
     return;
   }
 
-  // Load DLL at runtime since older Windows versions don't have dcomp.
-  HMODULE dcomp_module = ::GetModuleHandle(L"dcomp.dll");
-  if (!dcomp_module) {
-    DLOG(ERROR) << "Failed to load dcomp.dll";
-    return;
-  }
-
-  using PFN_DCOMPOSITION_CREATE_DEVICE2 = HRESULT(WINAPI*)(
-      IUnknown * renderingDevice, REFIID iid, void** dcompositionDevice);
-  PFN_DCOMPOSITION_CREATE_DEVICE2 create_device_function =
-      reinterpret_cast<PFN_DCOMPOSITION_CREATE_DEVICE2>(
-          ::GetProcAddress(dcomp_module, "DCompositionCreateDevice2"));
-  if (!create_device_function) {
-    DLOG(ERROR) << "GetProcAddress failed for DCompositionCreateDevice2";
-    return;
-  }
-
-  Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device;
-  d3d11_device.As(&dxgi_device);
-
-  Microsoft::WRL::ComPtr<IDCompositionDesktopDevice> desktop_device;
-  HRESULT hr =
-      create_device_function(dxgi_device.Get(), IID_PPV_ARGS(&desktop_device));
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "DCompositionCreateDevice2 failed with error 0x" << std::hex
-                << hr;
-    return;
-  }
-
-  Microsoft::WRL::ComPtr<IDCompositionDevice2> dcomp_device;
-  hr = desktop_device.As(&dcomp_device);
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to retrieve IDCompositionDevice2 with error 0x"
-                << std::hex << hr;
-    return;
-  }
-
-  g_dcomp_device = dcomp_device.Detach();
-  DCHECK(g_dcomp_device);
+  InitializeDirectComposition(std::move(d3d11_device));
 }
 
 void ShutdownDirectComposition() {
   if (g_dcomp_device) {
     g_dcomp_device->Release();
     g_dcomp_device = nullptr;
+    g_d3d11_device->Release();
+    g_d3d11_device = nullptr;
   }
 }
 
-IDCompositionDevice2* GetDirectCompositionDevice() {
+IDCompositionDevice3* GetDirectCompositionDevice() {
   return g_dcomp_device;
+}
+
+ID3D11Device* GetDirectCompositionD3D11Device() {
+  return g_d3d11_device;
 }
 
 bool DirectCompositionSupported() {
@@ -563,6 +653,15 @@ bool DirectCompositionSystemHDREnabled() {
   return g_system_hdr_enabled;
 }
 
+bool DirectCompositionMonitorHDREnabled(HWND window) {
+  if (g_num_monitors == 0) {
+    UpdateMonitorInfo();
+  }
+
+  return GetHDRMonitors()->find(MonitorFromWindow(
+             window, MONITOR_DEFAULTTONEAREST)) != GetHDRMonitors()->end();
+}
+
 DXGI_FORMAT GetDirectCompositionSDROverlayFormat() {
   return g_overlay_format_used;
 }
@@ -593,77 +692,26 @@ void SetDirectCompositionOverlayFormatUsedForTesting(DXGI_FORMAT format) {
 
 gfx::mojom::DXGIInfoPtr GetDirectCompositionHDRMonitorDXGIInfo() {
   auto result_info = gfx::mojom::DXGIInfo::New();
-  // HDR support was introduced in Windows 10 Creators Update.
-  if (base::win::GetVersion() < base::win::Version::WIN10_RS2)
-    return result_info;
 
-  // Only direct composition surface can allocate HDR swap chains.
-  if (!DirectCompositionSupported())
-    return result_info;
-
-  HRESULT hr = S_OK;
-  Microsoft::WRL::ComPtr<IDXGIFactory1> factory;
-  hr = CreateDXGIFactory1(IID_PPV_ARGS(&factory));
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to create DXGI factory.";
-    return result_info;
+  for (const auto& desc : GetDirectCompositionOutputDescs()) {
+    auto result_output = gfx::mojom::DXGIOutputDesc::New();
+    result_output->device_name = desc.DeviceName;
+    result_output->hdr_enabled =
+        desc.ColorSpace == DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020;
+    result_output->primaries.fRX = desc.RedPrimary[0];
+    result_output->primaries.fRY = desc.RedPrimary[1];
+    result_output->primaries.fGX = desc.GreenPrimary[0];
+    result_output->primaries.fGY = desc.GreenPrimary[1];
+    result_output->primaries.fBX = desc.BluePrimary[0];
+    result_output->primaries.fBY = desc.BluePrimary[1];
+    result_output->primaries.fWX = desc.WhitePoint[0];
+    result_output->primaries.fWY = desc.WhitePoint[1];
+    result_output->min_luminance = desc.MinLuminance;
+    result_output->max_luminance = desc.MaxLuminance;
+    result_output->max_full_frame_luminance = desc.MaxFullFrameLuminance;
+    result_info->output_descs.push_back(std::move(result_output));
   }
 
-  bool hdr_monitor_found = false;
-  for (UINT adapter_index = 0;; ++adapter_index) {
-    Microsoft::WRL::ComPtr<IDXGIAdapter> adapter;
-    hr = factory->EnumAdapters(adapter_index, &adapter);
-    if (hr == DXGI_ERROR_NOT_FOUND)
-      break;
-    if (FAILED(hr)) {
-      DLOG(ERROR) << "Unexpected error creating DXGI adapter.";
-      break;
-    }
-
-    for (UINT output_index = 0;; ++output_index) {
-      Microsoft::WRL::ComPtr<IDXGIOutput> output;
-      hr = adapter->EnumOutputs(output_index, &output);
-      if (hr == DXGI_ERROR_NOT_FOUND)
-        break;
-      if (FAILED(hr)) {
-        DLOG(ERROR) << "Unexpected error creating DXGI adapter.";
-        break;
-      }
-
-      Microsoft::WRL::ComPtr<IDXGIOutput6> output6;
-      hr = output->QueryInterface(IID_PPV_ARGS(&output6));
-      if (FAILED(hr)) {
-        DLOG(WARNING) << "IDXGIOutput6 is required for HDR detection.";
-        continue;
-      }
-
-      DXGI_OUTPUT_DESC1 desc;
-      if (FAILED(output6->GetDesc1(&desc))) {
-        DLOG(ERROR) << "Unexpected error getting output descriptor.";
-        continue;
-      }
-
-      auto result_output = gfx::mojom::DXGIOutputDesc::New();
-      result_output->device_name = desc.DeviceName;
-      result_output->hdr_enabled =
-          desc.ColorSpace == DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020;
-      result_output->primaries.fRX = desc.RedPrimary[0];
-      result_output->primaries.fRY = desc.RedPrimary[1];
-      result_output->primaries.fGX = desc.GreenPrimary[0];
-      result_output->primaries.fGY = desc.GreenPrimary[1];
-      result_output->primaries.fBX = desc.BluePrimary[0];
-      result_output->primaries.fBY = desc.BluePrimary[1];
-      result_output->primaries.fWX = desc.WhitePoint[0];
-      result_output->primaries.fWY = desc.WhitePoint[1];
-      result_output->min_luminance = desc.MinLuminance;
-      result_output->max_luminance = desc.MaxLuminance;
-      result_output->max_full_frame_luminance = desc.MaxFullFrameLuminance;
-      hdr_monitor_found |= result_output->hdr_enabled;
-      result_info->output_descs.push_back(std::move(result_output));
-    }
-  }
-
-  UMA_HISTOGRAM_BOOLEAN("GPU.Output.HDR", hdr_monitor_found);
   return result_info;
 }
 

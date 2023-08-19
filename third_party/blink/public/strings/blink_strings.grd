@@ -664,6 +664,9 @@ below:
       <message name="IDS_FORM_VALIDATION_BAD_INPUT_NUMBER" desc="Heading or short sentence shown when a user entered a non-number string to a number field in a webpage.">
         Please enter a number.
       </message>
+      <message name="IDS_PRETTY_PRINT_JSON" desc="Label for the checkbox that enables 'pretty-printing' of JSON documents.To pretty-print JSON, carriage returns and spaces are inserted to cleanly format the JSON and make it readable.">
+        Pretty-print
+      </message>
 
 <!-- The following IDS_FORM_VALIDATION_* messages were taken from Mozilla's dom.properties file.
 
@@ -746,7 +749,7 @@ below:
       </message>
 
       <message name="IDS_MEDIA_SESSION_FILE_SOURCE" desc="The name of the media session source if the media is a local file.">
-        Local File
+        File on your device
       </message>
       <message name="IDS_MEDIA_OVERFLOW_MENU_CLOSED_CAPTIONS" desc="Media controls overflow menu item label for a closed captions button. The text for this overflow menu should be short.">
         Captions

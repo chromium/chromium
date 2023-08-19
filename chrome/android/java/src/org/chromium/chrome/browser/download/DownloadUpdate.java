@@ -95,8 +95,7 @@ public final class DownloadUpdate {
         return mIsOffTheRecord;
     }
 
-    @Nullable
-    public OTRProfileID getOTRProfileID() {
+    public @Nullable OTRProfileID getOTRProfileID() {
         return mOTRProfileID;
     }
 
@@ -116,8 +115,7 @@ public final class DownloadUpdate {
         return mNotificationId;
     }
 
-    @NonNull
-    public GURL getOriginalUrl() {
+    public @NonNull GURL getOriginalUrl() {
         return mOriginalUrl;
     }
 
@@ -129,8 +127,7 @@ public final class DownloadUpdate {
         return mProgress;
     }
 
-    @NonNull
-    public GURL getReferrer() {
+    public @NonNull GURL getReferrer() {
         return mReferrer;
     }
 

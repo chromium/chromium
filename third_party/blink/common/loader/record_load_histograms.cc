@@ -31,9 +31,6 @@ void RecordLoadHistograms(const url::Origin& origin,
                                -net_error);
     }
   } else {
-    if (destination == network::mojom::RequestDestination::kImage) {
-      base::UmaHistogramSparse("Net.ErrorCodesForImages2", -net_error);
-    }
     base::UmaHistogramSparse("Net.ErrorCodesForSubresources3", -net_error);
   }
 

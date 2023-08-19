@@ -125,9 +125,9 @@ class KioskAppData : public KioskAppDataBase,
   void OnWebstoreResponseParseFailure(const std::string& extension_id,
                                       const std::string& error) override;
 
-  // Helper function for testing for the existence of |key| in
-  // |response|. Passes |key|'s content via |value| and returns
-  // true when |key| is present.
+  // Helper function for testing for the existence of `key` in
+  // `response`. Passes `key`'s content via `value` and returns
+  // true when `key` is present.
   bool CheckResponseKeyValue(const std::string& extension_id,
                              const base::Value::Dict& response,
                              const char* key,

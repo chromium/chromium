@@ -265,10 +265,15 @@ base::Value::Dict GetProfileInfoValue(content::WebUI& web_ui) {
 #endif
 }  // namespace
 
-IntroHandler::IntroHandler(base::RepeatingCallback<void(IntroChoice)> callback,
-                           bool is_device_managed)
-    : callback_(std::move(callback)), is_device_managed_(is_device_managed) {
-  DCHECK(callback_);
+IntroHandler::IntroHandler(
+    base::RepeatingCallback<void(IntroChoice)> intro_callback,
+    base::OnceCallback<void(DefaultBrowserChoice)> default_browser_callback,
+    bool is_device_managed)
+    : intro_callback_(std::move(intro_callback)),
+      default_browser_callback_(std::move(default_browser_callback)),
+      is_device_managed_(is_device_managed) {
+  DCHECK(intro_callback_);
+  DCHECK(default_browser_callback_);
 }
 
 IntroHandler::~IntroHandler() = default;
@@ -287,6 +292,14 @@ void IntroHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "initializeMainView",
       base::BindRepeating(&IntroHandler::HandleInitializeMainView,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "setAsDefaultBrowser",
+      base::BindRepeating(&IntroHandler::HandleSetAsDefaultBrowser,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "skipDefaultBrowser",
+      base::BindRepeating(&IntroHandler::HandleSkipDefaultBrowser,
                           base::Unretained(this)));
 }
 
@@ -310,13 +323,13 @@ void IntroHandler::OnJavascriptAllowed() {
 
 void IntroHandler::HandleContinueWithAccount(const base::Value::List& args) {
   CHECK(args.empty());
-  callback_.Run(IntroChoice::kContinueWithAccount);
+  intro_callback_.Run(IntroChoice::kContinueWithAccount);
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void IntroHandler::HandleContinueWithoutAccount(const base::Value::List& args) {
   CHECK(args.empty());
-  callback_.Run(IntroChoice::kContinueWithoutAccount);
+  intro_callback_.Run(IntroChoice::kContinueWithoutAccount);
 }
 
 void IntroHandler::ResetIntroButtons() {
@@ -329,6 +342,27 @@ void IntroHandler::ResetIntroButtons() {
 void IntroHandler::HandleInitializeMainView(const base::Value::List& args) {
   CHECK(args.empty());
   AllowJavascript();
+}
+
+void IntroHandler::HandleSetAsDefaultBrowser(const base::Value::List& args) {
+  CHECK(args.empty());
+  if (default_browser_callback_) {
+    std::move(default_browser_callback_)
+        .Run(DefaultBrowserChoice::kSetAsDefault);
+  }
+}
+
+void IntroHandler::HandleSkipDefaultBrowser(const base::Value::List& args) {
+  CHECK(args.empty());
+  if (default_browser_callback_) {
+    std::move(default_browser_callback_).Run(DefaultBrowserChoice::kSkip);
+  }
+}
+
+void IntroHandler::ResetDefaultBrowserButtons() {
+  if (IsJavascriptAllowed()) {
+    FireWebUIListener("reset-default-browser-buttons");
+  }
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

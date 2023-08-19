@@ -77,21 +77,16 @@ class PLATFORM_EXPORT FontFallbackList : public RefCounted<FontFallbackList> {
   FontSelector* GetFontSelector() const;
   uint16_t Generation() const { return generation_; }
 
-  NGShapeCache* GetNGShapeCache(const FontDescription& font_description) {
+  NGShapeCache& GetNGShapeCache(const FontDescription& font_description) {
     if (!ng_shape_cache_) {
-      FallbackListCompositeKey key = CompositeKey(font_description);
-      ng_shape_cache_ = FontCache::Get().GetNGShapeCache(key)->GetWeakPtr();
+      ng_shape_cache_.emplace();
     }
-    DCHECK(ng_shape_cache_);
-    if (GetFontSelector()) {
-      ng_shape_cache_->ClearIfVersionChanged(GetFontSelector()->Version());
-    }
-    return ng_shape_cache_.get();
+    return ng_shape_cache_.value();
   }
 
   ShapeCache* GetShapeCache(const FontDescription& font_description) {
     if (!shape_cache_) {
-      FallbackListCompositeKey key = CompositeKey(font_description);
+      FallbackListCompositeKey key(font_description);
       shape_cache_ = FontCache::Get().GetShapeCache(key)->GetWeakPtr();
     }
     DCHECK(shape_cache_);
@@ -138,8 +133,6 @@ class PLATFORM_EXPORT FontFallbackList : public RefCounted<FontFallbackList> {
   const SimpleFontData* DeterminePrimarySimpleFontDataCore(
       const FontDescription&);
 
-  FallbackListCompositeKey CompositeKey(const FontDescription&) const;
-
   void ReleaseFontData();
   bool ComputeCanShapeWordByWord(const FontDescription&);
 
@@ -155,7 +148,7 @@ class PLATFORM_EXPORT FontFallbackList : public RefCounted<FontFallbackList> {
   bool is_invalid_ : 1;
   bool nullify_primary_font_data_for_test_ : 1;
 
-  base::WeakPtr<NGShapeCache> ng_shape_cache_;
+  absl::optional<NGShapeCache> ng_shape_cache_;
   base::WeakPtr<ShapeCache> shape_cache_;
 };
 

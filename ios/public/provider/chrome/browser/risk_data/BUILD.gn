@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("risk_data_api") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "risk_data_api.h" ]
   frameworks = [ "Foundation.framework" ]
 }

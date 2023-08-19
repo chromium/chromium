@@ -1,6 +1,6 @@
 # Mixing C++ and Objective-C
 
-The Mac is in a unique position of having most of its relevant UI APIs be in a
+The Mac is in an unusual position of having most of its relevant UI APIs be in a
 different language than the one used for its core code. Navigating boundaries
 between C++ and Objective-C can be tricky.
 
@@ -18,7 +18,7 @@ accomplish mixing of C++ and Objective-C.
 The [pimpl idiom](https://en.wikipedia.org/wiki/Opaque_pointer#C++) is a
 standard way to hide the implementation of a C++ class from its users, exposing
 nothing but an implementation pointer in the header file. Usually it is used for
-compatibility (e.g. hiding implementation details), but it's useful in Chromium
+compatibility (e.g. hiding implementation details), but it’s useful in Chromium
 for hiding the Objective-C implementation details in the `.mm` implementation
 file and removing them from the `.h` file which might need to be included in a
 different `.cc` implementation file and which thus cannot have any Objective-C
@@ -57,29 +57,30 @@ UtilityObjectMac::UtilityObjectMac()
 This moves all of the Objective-C code into an Objective-C++ file at the cost of
 a secondary allocation and indirection on use.
 
+## Use `/base/apple/owned_objc.h` types
+
+It is, unfortunately, a common pattern in Chromium code to use macros and
+typedefs to declare a platform-neutral name for a core platform UI type (e.g.
+`ui/gfx/native_widget_types.h`’s `ui::NativeView`,
+`ui/events/platform_event.h`’s `ui::PlatformEvent`) and then for pure C++ code
+to pass those types around. For those cases, where the previous two approaches
+can’t be used, the wrappers in `/base/apple/owned_objc.h` can be used.
+
 ## Double-declaration (dangerous)
 
-If none of these techniques will work, a double-declaration can be used. An
-example can be seen in
+If none of the previous techniques will work, a double-declaration can be used.
+An example can be seen in
 [native_widget_types.h](https://source.chromium.org/chromium/chromium/src/+/main:ui/gfx/native_widget_types.h):
 
 ```objectivec
 #ifdef __OBJC__
-@class NSCursor;
-@class NSEvent;
-@class NSFont;
 @class NSImage;
 @class NSView;
 @class NSWindow;
-@class NSTextField;
 #else
-class NSCursor;
-class NSEvent;
-class NSFont;
 class NSImage;
 class NSView;
 class NSWindow;
-class NSTextField;
 #endif  // __OBJC__
 ```
 
@@ -93,10 +94,11 @@ pointer to a type declared this way will be treated by C++ as a raw pointer
 while it will be treated by Objective-C as a smart pointer with retain/release
 semantics.
 
-Because of Chromium's history as a non-ARC app, the approach of using
+Because of Chromium’s history as a non-ARC app, the approach of using
 double-declarations was found to be more acceptable of a tradeoff than it is
 nowadays, so there is a lot of double-declaration. Revising code to remove
-double-declaration improves the code; please do so when it makes sense.
+double-declaration improves the code; please do so when it makes sense. There is
+a [bug](https://crbug.com/1433041) tracking this effort of eventual removal.
 
 Do not include `<objc/objc.h>`. It has all the pitfalls of double-declaration
 for the `id` type (note that even though it defines `id` as `struct

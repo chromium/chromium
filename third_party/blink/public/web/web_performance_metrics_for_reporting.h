@@ -21,6 +21,7 @@ class WindowPerformance;
 struct LargestContentfulPaintDetailsForReporting {
   double image_paint_time = 0;
   uint64_t image_paint_size = 0;
+  absl::optional<base::TimeDelta> image_discovery_time = absl::nullopt;
   absl::optional<base::TimeDelta> image_load_start = absl::nullopt;
   absl::optional<base::TimeDelta> image_load_end = absl::nullopt;
   blink::LargestContentfulPaintType type =
@@ -97,6 +98,8 @@ class BLINK_EXPORT WebPerformanceMetricsForReporting {
   double FirstMeaningfulPaint() const;
   LargestContentfulPaintDetailsForReporting LargestContentfulDetailsForMetrics()
       const;
+  LargestContentfulPaintDetailsForReporting
+  SoftNavigationLargestContentfulDetailsForMetrics() const;
   double FirstEligibleToPaint() const;
   double FirstInputOrScrollNotifiedTimestamp() const;
   absl::optional<base::TimeDelta> FirstInputDelay() const;
@@ -125,7 +128,7 @@ class BLINK_EXPORT WebPerformanceMetricsForReporting {
 #endif
 
  private:
-  WebPrivatePtr<WindowPerformance> private_;
+  WebPrivatePtrForGC<WindowPerformance> private_;
 };
 
 }  // namespace blink

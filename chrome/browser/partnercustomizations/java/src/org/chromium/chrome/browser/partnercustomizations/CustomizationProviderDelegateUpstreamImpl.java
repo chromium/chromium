@@ -11,10 +11,10 @@ import android.net.Uri;
 import android.os.SystemClock;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.partnercustomizations.PartnerCustomizationsUma.DelegateUnusedReason;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.version_info.VersionInfo;
@@ -171,9 +171,10 @@ public class CustomizationProviderDelegateUpstreamImpl implements CustomizationP
                 .build();
     }
 
-    @VisibleForTesting
     static void setProviderAuthorityForTesting(String providerAuthority) {
+        var oldValue = sProviderAuthority;
         sProviderAuthority = providerAuthority;
+        ResettersForTesting.register(() -> sProviderAuthority = oldValue);
     }
 
     /**
@@ -183,7 +184,6 @@ public class CustomizationProviderDelegateUpstreamImpl implements CustomizationP
      *
      * @param ignore whether we should ignore browser provider system package checking.
      */
-    @VisibleForTesting
     static void ignoreBrowserProviderSystemPackageCheckForTesting(boolean ignore) {
         sIgnoreSystemPackageCheckForTesting = ignore;
     }

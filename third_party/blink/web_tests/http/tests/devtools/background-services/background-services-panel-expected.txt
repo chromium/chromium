@@ -3,7 +3,7 @@ Tests the bottom panel shows information as expected.
 Panel view:
     Click the record button
 Panel view:
-    Recording Background Fetch activity...,DevTools will record all Background Fetch activity for up to 3 days, even when closed.
+    Recording background fetch activity...,DevTools will record all background fetch activity for up to 3 days, even when closed.
 Panel view:
     Click the record button
 Panel view:

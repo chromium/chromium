@@ -5,14 +5,11 @@
 #import "ios/testing/earl_grey/base_earl_grey_test_case_app_interface.h"
 
 #import <UIKit/UIKit.h>
+#import <objc/runtime.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/logging.h"
-#import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 @interface UIApplication (Testing)
 - (void)_terminateWithStatus:(int)status;
@@ -27,11 +24,27 @@
 + (void)enableFastAnimation {
   for (UIScene* scene in UIApplication.sharedApplication.connectedScenes) {
     UIWindowScene* windowScene =
-        base::mac::ObjCCastStrict<UIWindowScene>(scene);
+        base::apple::ObjCCastStrict<UIWindowScene>(scene);
     for (UIWindow* window in windowScene.windows) {
       [[window layer] setSpeed:100];
     }
   }
+}
+
++ (BOOL)swizzledInputUIOOP {
+  return NO;
+}
+
++ (void)swizzleKeyboardOOP {
+  Class klass = NSClassFromString(@"UIKeyboard");
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
+  Method originalMethod = class_getClassMethod(klass, @selector(inputUIOOP));
+#pragma clang diagnostic pop
+
+  Method swizzledMethod =
+      class_getClassMethod([self class], @selector(swizzledInputUIOOP));
+  method_exchangeImplementations(originalMethod, swizzledMethod);
 }
 
 + (void)gracefulTerminate {

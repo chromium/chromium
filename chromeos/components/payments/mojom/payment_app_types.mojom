@@ -4,6 +4,8 @@
 
 module chromeos.payments.mojom;
 
+import "mojo/public/mojom/base/unguessable_token.mojom";
+
 // These types are used by PaymentAppInstance methods. ARC implements
 // PaymentAppInstance and invokes payments apps. Ash exposes a
 // PaymentAppInstance over Crosapi, forwarding all requests to ARC.
@@ -33,8 +35,8 @@ union IsPaymentImplementedResult {
   string error;
 };
 
-// The common payment parameters for the browser to pass to ARC in both
-// PaymentAppInstance.IsReadyToPayService() and
+// The common payment parameters for the browser to pass from Lacros or Ash
+// to ARC in both PaymentAppInstance.IsReadyToPayService() and
 // PaymentAppInstance.InvokePaymentApp() Mojo methods. ARC will forward this
 // data to either WebPaymentIntentHelper.createIsReadyToPayIntent() or
 // WebPaymentIntentHelper.createPayIntent(), depending on which method of
@@ -95,6 +97,20 @@ struct PaymentParameters {
   // identify a particular request across calls.
   [MinVersion=3]
   string? request_token;
+
+  // Opaque app instance identifier for this payment request. Used to
+  // identify which TWA instance made this request so that we can attach
+  // the payment dialog to the correct window. This value should only be
+  // created in Lacros and used in Ash. It is expected for ARC to
+  // receive a null twa_instance_identifier. If the Ash side receives a
+  // null twa_instance_identifier, the payment app would not be
+  // invoked because we will not be able to find an app window to attach
+  // the payment dialog to.
+  // Please see chromeos/components/payments/mojom/payment_app.mojom for
+  // explanation of relationship between Lacros, Ash and ARC for payment
+  // interfaces.
+  [MinVersion=4]
+  mojo_base.mojom.UnguessableToken? twa_instance_identifier;
 };
 
 // After the browser calls IsReadyToPay(), ARC sends back this result.

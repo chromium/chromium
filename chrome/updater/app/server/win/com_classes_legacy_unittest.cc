@@ -23,8 +23,8 @@
 #include "build/branding_buildflags.h"
 #include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/test_scope.h"
-#include "chrome/updater/util/unittest_util.h"
-#include "chrome/updater/util/unittest_util_win.h"
+#include "chrome/updater/util/unit_test_util.h"
+#include "chrome/updater/util/unit_test_util_win.h"
 #include "chrome/updater/util/util.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/setup/setup_util.h"
@@ -72,11 +72,11 @@ class LegacyAppCommandWebImplTest : public testing::Test {
 
   void WaitForUpdateCompletion(
       Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl>& app_command_web) {
-    EXPECT_TRUE(test::WaitFor(base::BindLambdaForTesting([&]() {
+    EXPECT_TRUE(test::WaitFor([&]() {
       UINT status = 0;
       EXPECT_HRESULT_SUCCEEDED(app_command_web->get_status(&status));
       return status == COMMAND_STATUS_COMPLETE;
-    })));
+    }));
   }
 
   base::CommandLine cmd_exe_command_line_;

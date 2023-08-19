@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("open_from_clipboard") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "create_clipboard_recent_content.h",
     "create_clipboard_recent_content.mm",

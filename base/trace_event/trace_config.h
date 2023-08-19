@@ -55,6 +55,11 @@ class BASE_EXPORT TraceConfig {
 
     // Specifies the triggers in the memory dump config.
     struct Trigger {
+      bool operator==(const Trigger& rhs) const {
+        return min_time_between_dumps_ms == rhs.min_time_between_dumps_ms &&
+               level_of_detail == rhs.level_of_detail &&
+               trigger_type == rhs.trigger_type;
+      }
       uint32_t min_time_between_dumps_ms;
       MemoryDumpLevelOfDetail level_of_detail;
       MemoryDumpType trigger_type;
@@ -72,6 +77,13 @@ class BASE_EXPORT TraceConfig {
 
       uint32_t breakdown_threshold_bytes;
     };
+
+    bool operator==(const MemoryDumpConfig& rhs) const {
+      return allowed_dump_modes == rhs.allowed_dump_modes &&
+             triggers == rhs.triggers &&
+             heap_profiler_options.breakdown_threshold_bytes ==
+                 rhs.heap_profiler_options.breakdown_threshold_bytes;
+    }
 
     // Reset the values in the config.
     void Clear();
@@ -124,6 +136,8 @@ class BASE_EXPORT TraceConfig {
     ~EventFilterConfig();
 
     EventFilterConfig& operator=(const EventFilterConfig& rhs);
+
+    bool IsEquivalentTo(const EventFilterConfig& other) const;
 
     void InitializeFromConfigDict(const Value::Dict& event_filter);
 
@@ -226,6 +240,8 @@ class BASE_EXPORT TraceConfig {
   ~TraceConfig();
 
   TraceConfig& operator=(const TraceConfig& rhs);
+
+  bool IsEquivalentTo(const TraceConfig& other) const;
 
   TraceRecordMode GetTraceRecordMode() const { return record_mode_; }
   size_t GetTraceBufferSizeInEvents() const {

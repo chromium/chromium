@@ -8,12 +8,24 @@
     </message>
   </if>
   <!-- About Page -->
-  <message name="IDS_SETTINGS_ABOUT_PROGRAM" desc="Menu title for the About Chromium page.">
-    About Chromium
-  </message>
-  <message name="IDS_SETTINGS_GET_HELP_USING_CHROME" desc="Text of the button which takes the user to the Chrome help page.">
-    Get help with Chromium
-  </message>
+  <if expr="_is_chrome_for_testing_branded">
+    <then>
+      <message name="IDS_SETTINGS_ABOUT_PROGRAM" desc="Menu title for the About Chrome for Testing page.">
+        About Chrome for Testing
+      </message>
+      <message name="IDS_SETTINGS_GET_HELP_USING_CHROME" desc="Text of the button which takes the user to the Chrome for Testing help page.">
+        Get help with Chrome for Testing
+      </message>
+    </then>
+    <else>
+      <message name="IDS_SETTINGS_ABOUT_PROGRAM" desc="Menu title for the About Chromium page.">
+        About Chromium
+      </message>
+      <message name="IDS_SETTINGS_GET_HELP_USING_CHROME" desc="Text of the button which takes the user to the Chrome help page.">
+        Get help with Chromium
+      </message>
+    </else>
+  </if>
   <if expr="not chromeos_ash">
     <message name="IDS_SETTINGS_UPGRADE_UPDATING" desc="Status label: Updating Chromium">
       Updating Chromium
@@ -88,9 +100,18 @@
     <message name="IDS_SETTINGS_DEFAULT_BROWSER_ERROR" desc="The text displayed when Chrome cannot determine or set the default browser">
       Chromium cannot determine or set the default browser
     </message>
-    <message name="IDS_SETTINGS_DEFAULT_BROWSER_SECONDARY" desc="The text displayed when Chromium is installed in side-by-side mode, which does not support setting as the default browser.">
-      This is a secondary installation of Chromium, and cannot be made your default browser.
-    </message>
+    <if expr="_is_chrome_for_testing_branded">
+      <then>
+        <message name="IDS_SETTINGS_DEFAULT_BROWSER_SECONDARY" desc="The text displayed when Chrome for Testing is installed in side-by-side mode, which does not support setting as the default browser.">
+          Google Chrome for Testing cannot be made your default browser.
+        </message>
+      </then>
+      <else>
+        <message name="IDS_SETTINGS_DEFAULT_BROWSER_SECONDARY" desc="The text displayed when Chromium is installed in side-by-side mode, which does not support setting as the default browser.">
+          This is a secondary installation of Chromium, and cannot be made your default browser.
+        </message>
+      </else>
+    </if>
   </if>
 
   <!-- Privacy Page -->
@@ -124,8 +145,8 @@
   <message name="IDS_SETTINGS_SITE_DATA_PAGE_CLEAR_ON_EXIT_RADIO_SUBLABEL" desc="A description of the benefit/cost of choosing 'Sites can save content on your device. In short, a site will remember your preferences, shopping cart content, etc. during this browser session. But once you close all open windows, and then visit the site again, it's as if you're coming to the site for the first time.">
     Sites will probably work as you expect but won't remember you after you close all Chromium windows
   </message>
-  <message name="IDS_SETTINGS_SITE_DATA_PAGE_CLEAR_ON_EXIT_EXCEPTIONS_SUB_HEADING" desc="2 of 3. A label within 'Customized behaviors' that allows for exceptions to the 'On-device site data' setting. This label and the list of sites that can appear beneath it is only relevant if the user has chosen to allow 'on-device site data' as the default value above.">
-    Always clear site data from your device when you close Chromium
+  <message name="IDS_SETTINGS_SITE_DATA_PAGE_DELETE_ON_EXIT_EXCEPTIONS_SUB_HEADING" desc="2 of 3. A label within 'Customized behaviors' that allows for exceptions to the 'On-device site data' setting. This label and the list of sites that can appear beneath it is only relevant if the user has chosen to allow 'on-device site data' as the default value above.">
+    Always delete site data from your device when you close Chromium
   </message>
 
   <!-- Privacy Guide -->
@@ -144,8 +165,14 @@
   <message name="IDS_SETTINGS_PRIVACY_GUIDE_COMPLETION_CARD_WAA_SUB_LABEL" desc="Text of the Web and App Activity sublabel in the completion card of the 'Privacy Guide'.">
     Choose whether to include Chromium history for more personalized experiences in Google services
   </message>
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_MSBB_FEATURE_DESCRIPTION3" desc="A part of the feature description of 'make searches and browsing better' in the 'Privacy Guide'.">
+    If you also save your bookmarks in your Google Account, you can track product prices in Chromium and get notified when the price drops
+  </message>
   <message name="IDS_SETTINGS_PRIVACY_GUIDE_MSBB_PRIVACY_DESCRIPTION2" desc="A part of the privacy description of 'make searches and browsing better' in the 'Privacy Guide'.">
     If you also share Chromium usage reports, those reports include the URLs you visit
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SEARCH_SUGGESTIONS_PRIVACY_DESCRIPTION2" desc="A part of the privacy description of 'search suggestions' in the 'Privacy Guide'.">
+    Depending on your settings, Chromium may also send cookies and your current URL
   </message>
 
   <!-- Privacy Sandbox -->
@@ -225,6 +252,12 @@
   <message name="IDS_SETTINGS_SAFEBROWSING_STANDARD_BULLET_TWO" desc="First bullet point under the safe browsing standard protection mode">
     Checks URLs with a list of unsafe sites stored in Chromium. If a site tries to steal your password, or when you download a harmful file, Chromium may also send URLs, including bits of page content, to Safe Browsing.
   </message>
+  <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_WHEN_ON_BULLET_ONE" desc="First bullet point under the Safe Browsing enhanced protection mode section titled 'When on'">
+    Warns you about dangerous sites, even ones Google didn't know about before, by analyzing more data from sites than standard protection. You can choose to skip Chromium warnings.
+  </message>
+  <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_LEARN_MORE_LABEL" desc="The text for a link to a help center article that gives more information about Safe Browsing.">
+    Learn more about <ph name="BEGIN_LINK">&lt;a href="$1" target=&quot;_blank&quot;&gt;<ex>&lt;a href="$1" target=&quot;_blank&quot;&gt;</ex></ph>how Chromium keeps your data private<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
+  </message>
 
   <!-- People Page -->
   <message name="IDS_SETTINGS_SYNC_DISCONNECT_DELETE_PROFILE_WARNING_WITH_COUNTS_SINGULAR" desc="Warning message displayed in the Sign out of Chrome dialog that indicates profile browsing data will be removed from the device.">
@@ -274,9 +307,6 @@
   <message name="IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_SETTING_DESCRIPTION" desc="Description for the memory saver mode setting">
     When on, Chromium frees up memory from inactive tabs. This gives active tabs and other apps more computer resources and keeps Chromium fast. Your inactive tabs automatically become active again when you go back to them.
   </message>
-  <message name="IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_HEURISTICS_LABEL" desc="Label for the memory saver mode to discard tabs based on a set of heuristics" translateable="false">
-    Chromium decides when a tab becomes inactive
-  </message>
   <message name="IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_SETTING_DESCRIPTION" desc="Description for the energy saver mode setting">
     When on, Chromium conserves battery power by limiting background activity and visual effects, such as smooth scrolling and video frame rates.
   </message>
@@ -312,4 +342,13 @@
       Information about how Chromium manages its root certificates
     </message>
   </if>
+
+  <!-- Safety Hub -->
+  <!-- TODO(crbug/1443466): Change all strings to translatable once it's final. -->
+  <message name="IDS_SETTINGS_SAFETY_HUB_ENTRY_POINT_NOTHING_TO_DO" desc="This text describes what Safety Hub does (regularly checking whether Chromium settings are safe) and indicates whether the user should take action. This text is shown when Safety Hub has not identified any issues at this time. There is nothing to do for the user. As future checks of Safety Hub may identify issues, this state may change. This text is shown on a card in privacy settings next to a button that leads to Safety Hub.">
+    Chromium regularly checks to make sure your browser has the safest settings. We'll let you know if anything needs your review.
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_EMPTY_STATE_MODULE_SUBHEADER" translateable="false" desc="The header of the 'Empty State Module' in the Safety Hub page. The 'Empty State Module' is visible if there is no safety recommendation.">
+    Chromium will let you know if anything needs your review
+  </message>
 </grit-part>

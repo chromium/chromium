@@ -15,8 +15,7 @@
 namespace device {
 
 BluetoothLowEnergyDiscoveryManagerMac::
-    ~BluetoothLowEnergyDiscoveryManagerMac() {
-}
+    ~BluetoothLowEnergyDiscoveryManagerMac() = default;
 
 bool BluetoothLowEnergyDiscoveryManagerMac::IsDiscovering() const {
   return discovering_;

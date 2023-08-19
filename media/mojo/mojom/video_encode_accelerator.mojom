@@ -41,7 +41,8 @@ import "sandbox/policy/mojom/sandbox.mojom";
 enum VideoEncodeAcceleratorSupportedRateControlMode {
   kNoMode,
   kConstantMode,
-  kVariableMode
+  kVariableMode,
+  kExternalMode
 };
 
 struct VideoEncodeAcceleratorSupportedProfile {
@@ -148,13 +149,6 @@ struct VideoEncodeAcceleratorConfig {
     kDisplay
   };
 
-  // See media::VideoEncodeAccelerator::Config::InterLayerPredMode
-  enum InterLayerPredMode {
-    kOff,
-    kOn,
-    kOnKeyPic
-  };
-
   // See media::VideoEncodeAccelerator::Config::StorageType
   enum StorageType {
     kShmem,
@@ -183,11 +177,27 @@ struct VideoEncodeAcceleratorConfig {
   bool has_storage_type;  // Whether or not config has storage type config
   ContentType content_type;
   array<SpatialLayer> spatial_layers;
-  InterLayerPredMode inter_layer_pred;
+  SVCInterLayerPredMode inter_layer_pred;
   bool require_low_delay;
   EncoderType required_encoder_type;
 };
 
+// Options for encoding a single frame by VideoEncodeAccelerator.
+// This defines a mojo transport format for a
+// media::VideoEncoder::EncodeOptions.
+struct VideoEncodeOptions {
+  // If True, next frame must be encoded as I-frame (random access point)
+  bool force_keyframe;
+
+  // Quantizer(QP) value for encoding of the given frame.
+  // This value is only heeded if VEA configured with external rate control mode
+  // TODO(crbug.com/657632): All negative values mean "ignore this field",
+  // we don't use proper optional field because Java bindgen doesn't support
+  // optional primitive types.
+  int32 quantizer;
+};
+
+// The interface to access the hardware video encoding accelerator.
 interface VideoEncodeAccelerator {
   // Responded by VideoEncodeAcceleratorClient.RequireBitstreamBuffers().
   [Sync]
@@ -197,7 +207,7 @@ interface VideoEncodeAccelerator {
       => (bool result);
 
   // Encodes a |frame|, being completely done with it after its callback.
-  Encode(VideoFrame frame, bool force_keyframe) => ();
+  Encode(VideoFrame frame, VideoEncodeOptions options) => ();
 
   UseOutputBitstreamBuffer(int32 bitstream_buffer_id,
                            mojo_base.mojom.UnsafeSharedMemoryRegion region);

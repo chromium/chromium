@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/webui/common/trusted_types_util.h"
 #include "ash/webui/grit/ash_shortcut_customization_app_resources.h"
 #include "ash/webui/grit/ash_shortcut_customization_app_resources_map.h"
 #include "ash/webui/shortcut_customization_ui/backend/accelerator_configuration_provider.h"
@@ -53,6 +54,8 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
       {"cancel", IDS_SHORTCUT_CUSTOMIZATION_CANCEL},
       {"editViewStatusMessage",
        IDS_SHORTCUT_CUSTOMIZATION_EDIT_VIEW_STATUS_MESSAGE},
+      {"restoreDefaultConflictMessage",
+       IDS_SHORTCUT_CUSTOMIZATION_RESTORE_DEFAULT_ERROR_MESSAGE},
       {"resetAllShortcuts", IDS_SHORTCUT_CUSTOMIZATION_RESET_ALL_SHORTCUTS},
       {"confirmResetAllShortcutsTitle",
        IDS_SHORTCUT_CUSTOMIZATION_CONFIRM_RESET_ALL_SHORTCUTS_TITLE},
@@ -72,6 +75,14 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
        IDS_SHORTCUT_CUSTOMIZATION_SHORTCUT_WITH_CONFILICT_STATUS_MESSAGE},
       {"lockedShortcutStatusMessage",
        IDS_SHORTCUT_CUSTOMIZATION_LOCKED_SHORTCUT_STATUS_MESSAGE},
+      {"maxAcceleratorsReachedHint",
+       IDS_SHORTCUT_CUSTOMIZATION_MAX_ACCELERATORS_REACHED_HINT},
+      {"shiftOnlyNotAllowedStatusMessage",
+       IDS_SHORTCUT_CUSTOMIZATION_SHIFT_ONLY_NOT_ALLOWED_STATUS_MESSAGE},
+      {"missingModifierStatusMessage",
+       IDS_SHORTCUT_CUSTOMIZATION_MISSING_MODIFIER_STATUS_MESSAGE},
+      {"keyNotAllowedStatusMessage",
+       IDS_SHORTCUT_CUSTOMIZATION_KEY_NOT_ALLOWED_STATUS_MESSAGE},
       {"searchNoResults", IDS_SHORTCUT_CUSTOMIZATION_SEARCH_NO_RESULTS},
       {"searchClearQueryLabel",
        IDS_SHORTCUT_CUSTOMIZATION_SEARCH_CLEAR_QUERY_LABEL},
@@ -132,8 +143,8 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
        IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_BROWSER_REFRESH},
       {"iconLabelBrowserSearch",
        IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_BROWSER_SEARCH},
-      {"iconLabelToggleDictation",
-       IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_TOGGLE_DICTATION},
+      {"iconLabelEnableOrToggleDictation",
+       IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_ENABLE_OR_TOGGLE_DICTATION},
       {"iconLabelEmojiPicker",
        IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_EMOJI_PICKER},
       {"iconLabelKeyboardBacklightToggle",
@@ -207,7 +218,7 @@ ShortcutCustomizationAppUI::ShortcutCustomizationAppUI(content::WebUI* web_ui)
       "script-src chrome://resources chrome://test chrome://webui-test "
       "'self';");
 
-  source->DisableTrustedTypesCSP();
+  ash::EnableTrustedTypesCSP(source);
 
   const auto resources =
       base::make_span(kAshShortcutCustomizationAppResources,

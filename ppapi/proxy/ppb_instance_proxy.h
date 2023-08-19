@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <string>
-#include <vector>
 
 #include "build/build_config.h"
 #include "ppapi/c/pp_instance.h"

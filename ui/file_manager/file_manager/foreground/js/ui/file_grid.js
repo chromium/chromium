@@ -12,7 +12,6 @@ import {FileType} from '../../../common/js/file_type.js';
 import {str, util} from '../../../common/js/util.js';
 import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
 import {VolumeManager} from '../../../externs/volume_manager.js';
-import {FilesTooltip} from '../../elements/files_tooltip.js';
 import {FileListModel, GROUP_BY_FIELD_DIRECTORY, GROUP_BY_FIELD_MODIFICATION_TIME, GroupValue} from '../file_list_model.js';
 import {ListThumbnailLoader} from '../list_thumbnail_loader.js';
 import {MetadataModel} from '../metadata/metadata_model.js';
@@ -31,6 +30,8 @@ import {ListSelectionModel} from './list_selection_model.js';
 const MODIFICATION_TIME_GROUP_HEADING_HEIGHT = 57;
 // Align with CSS .grid-title.group-by-isDirectory.
 const DIRECTORY_GROUP_HEADING_HEIGHT = 40;
+// Align with CSS .grid-title ~ .grid-title
+const GROUP_MARGIN_TOP = 16;
 
 /**
  * FileGrid constructor.
@@ -163,6 +164,12 @@ export class FileGrid extends Grid {
 
     self.addEventListener(
         'mouseover', self.onMouseOver_.bind(self), {passive: true});
+
+    // Update the item's inline status when it's restored from List's cache.
+    self.addEventListener(
+        'cachedItemRestored',
+        (e) => filelist.updateCacheItemInlineStatus(
+            e.detail, self.dataModel, self.metadataModel_));
   }
 
   onMouseOver_(event) {
@@ -329,13 +336,16 @@ export class FileGrid extends Grid {
 
     let top = 0;
     let totalItemCount = 0;
-    for (const group of groupBySnapshot) {
+    for (let groupIndex = 0; groupIndex < groupBySnapshot.length;
+         groupIndex++) {
+      const group = groupBySnapshot[groupIndex];
       if (index <= group.endIndex) {
         // The index falls into the current group. Calculates how many rows
         // we have in the current group up until this index.
         const indexInCurGroup = index - totalItemCount;
         const rowsInCurGroup = Math.floor(indexInCurGroup / this.columns);
-        top += (rowsInCurGroup > 0 ? this.getGroupHeadingHeight_() : 0) +
+        top +=
+            (rowsInCurGroup > 0 ? this.getGroupHeadingHeight_(groupIndex) : 0) +
             rowsInCurGroup * this.getGroupItemHeight_(group.group);
         break;
       } else {
@@ -343,7 +353,7 @@ export class FileGrid extends Grid {
         // group to the final result.
         const groupItemCount = group.endIndex - group.startIndex + 1;
         const groupRowCount = Math.ceil(groupItemCount / this.columns);
-        top += this.getGroupHeadingHeight_() +
+        top += this.getGroupHeadingHeight_(groupIndex) +
             groupRowCount * this.getGroupItemHeight_(group.group);
         totalItemCount += groupItemCount;
       }
@@ -541,11 +551,13 @@ export class FileGrid extends Grid {
     let totalItemCount = 0;
     let shouldAdd = false;
     // Find the group of "index" and accumulate the height after that group.
-    for (const group of groupBySnapshot) {
+    for (let groupIndex = 0; groupIndex < groupBySnapshot.length;
+         groupIndex++) {
+      const group = groupBySnapshot[groupIndex];
       const groupItemCount = group.endIndex - group.startIndex + 1;
       const groupRowCount = Math.ceil(groupItemCount / this.columns);
       if (shouldAdd) {
-        afterFillerHeight += this.getGroupHeadingHeight_() +
+        afterFillerHeight += this.getGroupHeadingHeight_(groupIndex) +
             groupRowCount * this.getGroupItemHeight_(group.group);
       } else if (index <= group.endIndex) {
         // index falls into the current group. Starting from this group we need
@@ -585,16 +597,23 @@ export class FileGrid extends Grid {
 
   /**
    * Returns the height of group heading.
+   *
+   * @param {number} groupIndex
    * @return {number}
    * @private
    */
-  getGroupHeadingHeight_() {
+  getGroupHeadingHeight_(groupIndex) {
     const fileListModel = /** @type {FileListModel} */ (this.dataModel);
+    // For FilesRefresh, we have an additional margin for non-first group, check
+    // the CSS rule ".grid-title ~ .grid-title" for more information in the CSS
+    // file.
+    const groupMarginTop =
+        util.isJellyEnabled() && groupIndex > 0 ? GROUP_MARGIN_TOP : 0;
     switch (fileListModel.groupByField) {
       case GROUP_BY_FIELD_DIRECTORY:
-        return DIRECTORY_GROUP_HEADING_HEIGHT;
+        return DIRECTORY_GROUP_HEADING_HEIGHT + groupMarginTop;
       case GROUP_BY_FIELD_MODIFICATION_TIME:
-        return MODIFICATION_TIME_GROUP_HEADING_HEIGHT;
+        return MODIFICATION_TIME_GROUP_HEADING_HEIGHT + groupMarginTop;
       default:
         return 0;
     }
@@ -687,17 +706,21 @@ export class FileGrid extends Grid {
     // offset.
     let currentHeight = 0;
     let curRow = 0;
-    for (const group of groupBySnapshot) {
+    for (let groupIndex = 0; groupIndex < groupBySnapshot.length;
+         groupIndex++) {
+      const group = groupBySnapshot[groupIndex];
       const groupItemCount = group.endIndex - group.startIndex + 1;
       const groupRowCount = Math.ceil(groupItemCount / this.columns);
-      const groupHeight = this.getGroupHeadingHeight_() +
+      const groupHeight = this.getGroupHeadingHeight_(groupIndex) +
           groupRowCount * this.getGroupItemHeight_(group.group);
 
       if (currentHeight + groupHeight > innerOffset) {
         // Current offset falls into the current group. Calculates how many
         // rows in the offset within the group.
         const offsetInCurGroup = Math.max(
-            0, innerOffset - currentHeight - this.getGroupHeadingHeight_());
+            0,
+            innerOffset - currentHeight -
+                this.getGroupHeadingHeight_(groupIndex));
         return curRow +
             Math.floor(
                 offsetInCurGroup / this.getGroupItemHeight_(group.group));
@@ -750,13 +773,12 @@ export class FileGrid extends Grid {
                            [
                              'availableOffline',
                              'pinned',
+                             'canPin',
                              'syncStatus',
                              'progress',
+                             'syncCompletedTime',
                            ])[0] ||
           {};
-      listItem.classList.toggle(
-          'dim-offline', metadata.availableOffline === false);
-      listItem.classList.toggle('pinned', metadata.pinned);
       filelist.updateInlineStatus(listItem, metadata);
       listItem.toggleAttribute(
           'disabled',
@@ -819,13 +841,13 @@ export class FileGrid extends Grid {
                            'canPin',
                            'syncStatus',
                            'progress',
+                           'syncCompletedTime',
                          ])[0] ||
         {};
-    const {contentMimeType, availableOffline, pinned, canPin} = metadata;
 
     const locationInfo = this.volumeManager_.getLocationInfo(entry);
     const detailIcon = filelist.renderFileTypeIcon(
-        li.ownerDocument, entry, locationInfo, contentMimeType);
+        li.ownerDocument, entry, locationInfo, metadata.contentMimeType);
 
     // For FilesNg we add the checkmark in the same location.
     const checkmark = li.ownerDocument.createElement('div');
@@ -840,37 +862,11 @@ export class FileGrid extends Grid {
     frame.appendChild(bottom);
     li.setAttribute('file-name', util.getEntryLabel(locationInfo, entry));
 
-    // The inline status box contains both sync status indicators and available
-    // offline indicators.
-    const inlineStatus = li.ownerDocument.createElement('div');
-    inlineStatus.className = 'inline-status';
-
-    const inlineStatusIcon = li.ownerDocument.createElement('xf-icon');
-    inlineStatusIcon.size = 'extra_small';
-    if (util.isDriveFsBulkPinningEnabled() && !util.isNullOrUndefined(canPin) &&
-        !canPin) {
-      inlineStatusIcon.type = 'cant-pin';
-      li.classList.toggle('cant-pin', true);
-    } else {
-      inlineStatusIcon.type = 'offline';
-      li.classList.toggle('cant-pin', false);
+    if (locationInfo && locationInfo.isDriveBased) {
+      const inlineStatus = li.ownerDocument.createElement('xf-inline-status');
+      inlineStatus.classList.add('tast-inline-status');
+      frame.appendChild(inlineStatus);
     }
-    inlineStatus.appendChild(inlineStatusIcon);
-
-    if (util.isInlineSyncStatusEnabled()) {
-      const syncProgress = li.ownerDocument.createElement('xf-pie-progress');
-      syncProgress.className = 'progress';
-      inlineStatus.appendChild(syncProgress);
-    }
-
-    /** @type {!FilesTooltip} */ (
-        li.ownerDocument.querySelector('files-tooltip'))
-        .addTarget(/** @type {!HTMLElement} */ (inlineStatus));
-
-    frame.appendChild(inlineStatus);
-
-    li.classList.toggle('dim-offline', availableOffline === false);
-    li.classList.toggle('pinned', pinned);
 
     if (entry) {
       this.decorateThumbnailBox_(assertInstanceof(li, HTMLLIElement), entry);
@@ -1087,15 +1083,17 @@ export class FileGrid extends Grid {
     let curRow = 0;
     const shift = isStart ? 0 : -this.getItemMarginTop_();
     const yAfterShift = y + shift;
-    for (const group of groupBySnapshot) {
+    for (let groupIndex = 0; groupIndex < groupBySnapshot.length;
+         groupIndex++) {
+      const group = groupBySnapshot[groupIndex];
       const groupItemCount = group.endIndex - group.startIndex + 1;
       const groupRowCount = Math.ceil(groupItemCount / this.columns);
-      const groupHeight = this.getGroupHeadingHeight_() +
+      const groupHeight = this.getGroupHeadingHeight_(groupIndex) +
           groupRowCount * this.getGroupItemHeight_(group.group);
       if (yAfterShift < currentHeight + groupHeight) {
         // The y falls into the current group.
-        const yInCurGroup =
-            yAfterShift - currentHeight - this.getGroupHeadingHeight_();
+        const yInCurGroup = yAfterShift - currentHeight -
+            this.getGroupHeadingHeight_(groupIndex);
         if (yInCurGroup < 0) {
           // The remaining y in this group can't cover the current group
           // heading height.

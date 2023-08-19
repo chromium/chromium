@@ -26,8 +26,6 @@
 #include "sql/database.h"
 #include "testing/platform_test.h"
 
-using base::ASCIIToUTF16;
-
 // In order to test the Safari import functionality effectively, we store a
 // simulated Library directory containing dummy data files in the same
 // structure as ~/Library in the Chrome test data directory.

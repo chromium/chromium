@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.test.util.ToolbarUnitTestUtils;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.components.security_state.SecurityStateModelJni;
@@ -60,7 +61,7 @@ import java.util.concurrent.ExecutionException;
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
-@Features.DisableFeatures({ChromeFeatureList.OMNIBOX_UPDATED_CONNECTION_SECURITY_INDICATORS})
+@DisableFeatures({ChromeFeatureList.OMNIBOX_UPDATED_CONNECTION_SECURITY_INDICATORS})
 public final class ToolbarSecurityIconTest {
     private static final boolean IS_SMALL_DEVICE = true;
     private static final boolean IS_OFFLINE_PAGE = true;
@@ -261,7 +262,7 @@ public final class ToolbarSecurityIconTest {
     @SmallTest
     @UiThreadTest
     public void testGetSecurityIconColorWithSecurityLevel_DangerousWebsiteWithIncognito() {
-        assertEquals(R.color.baseline_error_200,
+        assertEquals(R.color.baseline_error_80,
                 mLocationBarModel.getSecurityIconColorWithSecurityLevel(
                         /*connectionSecurityLevel*/ ConnectionSecurityLevel.DANGEROUS,
                         /*brandedColorScheme*/ BrandedColorScheme.APP_DEFAULT,

@@ -148,11 +148,12 @@ class CONTENT_EXPORT PepperTCPServerSocketMessageFilter
 
   // Following fields are initialized and used only on the IO thread.
   // Non-owning ptr.
-  raw_ptr<BrowserPpapiHostImpl, DanglingUntriaged> host_;
+  raw_ptr<BrowserPpapiHostImpl, AcrossTasksDanglingUntriaged> host_;
   // Non-owning ptr.
-  raw_ptr<ppapi::host::PpapiHost, DanglingUntriaged> ppapi_host_;
+  raw_ptr<ppapi::host::PpapiHost, AcrossTasksDanglingUntriaged> ppapi_host_;
   // Non-owning ptr.
-  raw_ptr<ContentBrowserPepperHostFactory, DanglingUntriaged> factory_;
+  raw_ptr<ContentBrowserPepperHostFactory, AcrossTasksDanglingUntriaged>
+      factory_;
   PP_Instance instance_;
 
   State state_;

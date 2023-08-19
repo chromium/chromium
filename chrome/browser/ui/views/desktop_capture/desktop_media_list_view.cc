@@ -66,7 +66,13 @@ DesktopMediaListView::DesktopMediaListView(
     DesktopMediaSourceViewStyle generic_style,
     DesktopMediaSourceViewStyle single_style,
     const std::u16string& accessible_name)
-    : controller_(controller),
+    : item_spacing_(
+          base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign) ? 4 : 0),
+      horizontal_margins_(
+          base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign) ? 16 : 0),
+      vertical_margins_(
+          base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign) ? 16 : 0),
+      controller_(controller),
       single_style_(single_style),
       generic_style_(generic_style),
       active_style_(&single_style_),
@@ -81,11 +87,15 @@ void DesktopMediaListView::OnSelectionChanged() {
 }
 
 gfx::Size DesktopMediaListView::CalculatePreferredSize() const {
-  int total_rows =
+  const int total_rows =
       (static_cast<int>(children().size()) + active_style_->columns - 1) /
       active_style_->columns;
-  return gfx::Size(active_style_->columns * active_style_->item_size.width(),
-                   total_rows * active_style_->item_size.height());
+  return gfx::Size(active_style_->columns * active_style_->item_size.width() +
+                       (active_style_->columns - 1) * item_spacing_ +
+                       2 * horizontal_margins_,
+                   total_rows * active_style_->item_size.height() +
+                       (total_rows - 1) * item_spacing_ +
+                       2 * vertical_margins_);
 }
 
 void DesktopMediaListView::Layout() {
@@ -96,11 +106,13 @@ void DesktopMediaListView::Layout() {
   // Child order is left-to-right, top-to-bottom, so lay out row-major.  The
   // last row may not be full, so the inner loop will need to be careful about
   // the child count anyway, so don't bother to compute a row count.
-  for (int y = 0;; y += height) {
-    for (int x = 0, col = 0; col < active_style_->columns; ++col, x += width) {
+  for (int y = 0;; y += (height + item_spacing_)) {
+    for (int x = 0, col = 0; col < active_style_->columns;
+         ++col, x += (width + item_spacing_)) {
       if (i == children().end())
         return;
-      (*i++)->SetBounds(x, y, width, height);
+      (*i++)->SetBounds(x + horizontal_margins_, y + vertical_margins_, width,
+                        height);
     }
   }
 }

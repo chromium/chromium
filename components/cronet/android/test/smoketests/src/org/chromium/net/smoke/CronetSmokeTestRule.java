@@ -6,11 +6,12 @@ package org.chromium.net.smoke;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
+
 import android.content.Context;
 
 import androidx.test.core.app.ApplicationProvider;
 
-import org.junit.Assert;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -84,11 +85,11 @@ public class CronetSmokeTestRule implements TestRule {
         // Check the response info
         UrlResponseInfo responseInfo = callback.getResponseInfo();
         assertThat(responseInfo).isNotNull();
-        Assert.assertFalse(responseInfo.wasCached());
-        assertThat(responseInfo.getUrl()).isEqualTo(url);
+        assertThat(responseInfo).wasNotCached();
+        assertThat(responseInfo).hasUrlThat().isEqualTo(url);
         assertThat(responseInfo.getUrlChain().get(responseInfo.getUrlChain().size() - 1))
                 .isEqualTo(url);
-        assertThat(responseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(responseInfo).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(responseInfo.toString()).isNotEmpty();
     }
 

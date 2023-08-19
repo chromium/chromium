@@ -196,10 +196,7 @@ void ExtensionActionRunner::GrantTabPermissions(
       }));
 
   std::vector<ExtensionId> extension_ids = GetExtensionIds(extensions);
-  ShowReloadPageBubble(
-      extension_ids,
-      base::BindOnce(&ExtensionActionRunner::OnReloadPageBubbleAccepted,
-                     weak_factory_.GetWeakPtr()));
+  ShowReloadPageBubble(extension_ids);
 }
 
 void ExtensionActionRunner::OnActiveTabPermissionGranted(
@@ -406,18 +403,16 @@ void ExtensionActionRunner::LogUMA() const {
   }
 }
 
-// TODO(crbug.com/1400812): Move the reload bubble outside of
-// `ExtensionActionRunner` as it is no longer tied to running an action. See if
-// it can be merged with extensions dialogs utils `ShowReloadPageDialog`.
 void ExtensionActionRunner::ShowReloadPageBubble(
-    const std::vector<ExtensionId>& extension_ids,
-    base::OnceClosure callback) {
+    const std::vector<ExtensionId>& extension_ids) {
   // For testing, simulate the bubble being accepted by directly invoking the
   // callback, or rejected by skipping the callback.
   if (accept_bubble_for_testing_.has_value()) {
     if (*accept_bubble_for_testing_) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback)));
+          FROM_HERE,
+          base::BindOnce(&ExtensionActionRunner::OnReloadPageBubbleAccepted,
+                         weak_factory_.GetWeakPtr()));
     }
     return;
   }
@@ -431,13 +426,8 @@ void ExtensionActionRunner::ShowReloadPageBubble(
   if (!extensions_container)
     return;
 
-  ShowReloadPageDialog(browser, extension_ids, std::move(callback));
-}
-
-void ExtensionActionRunner::ShowReloadPageBubbleWithReloadPageCallback(
-    const ExtensionId& extension_id) {
-  ShowReloadPageBubble(
-      {extension_id},
+  ShowReloadPageDialog(
+      browser, extension_ids,
       base::BindOnce(&ExtensionActionRunner::OnReloadPageBubbleAccepted,
                      weak_factory_.GetWeakPtr()));
 }

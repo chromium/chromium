@@ -31,6 +31,7 @@ using testing::SetArgPointee;
 namespace media {
 
 constexpr gfx::Size kInitialCodedSize(640, 480);
+constexpr gfx::Size kCodedSizeAlignment(16, 16);
 
 class CodecWrapperTest : public testing::Test {
  public:
@@ -42,7 +43,8 @@ class CodecWrapperTest : public testing::Test {
         CodecSurfacePair(std::move(codec), surface_bundle_),
         output_buffer_release_cb_.Get(),
         // Unrendered output buffers are released on our thread.
-        base::SequencedTaskRunner::GetCurrentDefault(), kInitialCodedSize);
+        base::SequencedTaskRunner::GetCurrentDefault(), kInitialCodedSize,
+        kCodedSizeAlignment);
     ON_CALL(*codec_, DequeueOutputBuffer(_, _, _, _, _, _, _))
         .WillByDefault(Return(MEDIA_CODEC_OK));
     ON_CALL(*codec_, DequeueInputBuffer(_, _))
@@ -221,6 +223,58 @@ TEST_F(CodecWrapperTest, CodecOutputBuffersHaveTheCorrectSize) {
           DoAll(SetArgPointee<0>(gfx::Size(42, 42)), Return(MEDIA_CODEC_OK)));
   auto codec_buffer = DequeueCodecOutputBuffer();
   ASSERT_EQ(codec_buffer->size(), gfx::Size(42, 42));
+}
+
+TEST_F(CodecWrapperTest, CodecOutputBuffersGuessCodedSize) {
+  EXPECT_CALL(*codec_, DequeueOutputBuffer(_, _, _, _, _, _, _))
+      .WillOnce(Return(MEDIA_CODEC_OUTPUT_FORMAT_CHANGED))
+      .WillOnce(Return(MEDIA_CODEC_OK));
+  EXPECT_CALL(*codec_, GetOutputSize(_))
+      .WillOnce(
+          DoAll(SetArgPointee<0>(gfx::Size(42, 42)), Return(MEDIA_CODEC_OK)));
+  auto codec_buffer = DequeueCodecOutputBuffer();
+  ASSERT_EQ(codec_buffer->size(), gfx::Size(42, 42));
+  EXPECT_TRUE(codec_buffer->CanGuessCodedSize());
+  EXPECT_EQ(codec_buffer->GuessCodedSize(), gfx::Size(48, 48));
+}
+
+TEST_F(CodecWrapperTest, CodecOutputBuffersGuessCodedSizeNoAlignment) {
+  auto surface_pair = wrapper_->TakeCodecSurfacePair();
+  wrapper_ = std::make_unique<CodecWrapper>(
+      std::move(surface_pair), output_buffer_release_cb_.Get(),
+      // Unrendered output buffers are released on our thread.
+      base::SequencedTaskRunner::GetCurrentDefault(), kInitialCodedSize,
+      absl::nullopt);
+
+  EXPECT_CALL(*codec_, DequeueOutputBuffer(_, _, _, _, _, _, _))
+      .WillOnce(Return(MEDIA_CODEC_OUTPUT_FORMAT_CHANGED))
+      .WillOnce(Return(MEDIA_CODEC_OK));
+  EXPECT_CALL(*codec_, GetOutputSize(_))
+      .WillOnce(
+          DoAll(SetArgPointee<0>(gfx::Size(42, 42)), Return(MEDIA_CODEC_OK)));
+  auto codec_buffer = DequeueCodecOutputBuffer();
+  ASSERT_EQ(codec_buffer->size(), gfx::Size(42, 42));
+  EXPECT_FALSE(codec_buffer->CanGuessCodedSize());
+}
+
+TEST_F(CodecWrapperTest, CodecOutputBuffersGuessCodedSizeWeirdAlignment) {
+  auto surface_pair = wrapper_->TakeCodecSurfacePair();
+  wrapper_ = std::make_unique<CodecWrapper>(
+      std::move(surface_pair), output_buffer_release_cb_.Get(),
+      // Unrendered output buffers are released on our thread.
+      base::SequencedTaskRunner::GetCurrentDefault(), kInitialCodedSize,
+      gfx::Size(128, 1));
+
+  EXPECT_CALL(*codec_, DequeueOutputBuffer(_, _, _, _, _, _, _))
+      .WillOnce(Return(MEDIA_CODEC_OUTPUT_FORMAT_CHANGED))
+      .WillOnce(Return(MEDIA_CODEC_OK));
+  EXPECT_CALL(*codec_, GetOutputSize(_))
+      .WillOnce(
+          DoAll(SetArgPointee<0>(gfx::Size(42, 42)), Return(MEDIA_CODEC_OK)));
+  auto codec_buffer = DequeueCodecOutputBuffer();
+  ASSERT_EQ(codec_buffer->size(), gfx::Size(42, 42));
+  EXPECT_TRUE(codec_buffer->CanGuessCodedSize());
+  EXPECT_EQ(codec_buffer->GuessCodedSize(), gfx::Size(128, 42));
 }
 
 TEST_F(CodecWrapperTest, OutputBufferReleaseCbIsCalledWhenRendering) {

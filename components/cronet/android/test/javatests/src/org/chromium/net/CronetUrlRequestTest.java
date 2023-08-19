@@ -7,12 +7,13 @@ package org.chromium.net;
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeTrue;
 
-import static org.chromium.net.CronetTestRule.getContext;
+import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
 
+import android.net.Network;
 import android.os.Build;
 import android.os.ConditionVariable;
 import android.os.Process;
@@ -29,13 +30,15 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.Log;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.net.CronetTestRule.CronetTestFramework;
+import org.chromium.net.CronetTestRule.OnlyRunJavaCronet;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
 import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
 import org.chromium.net.CronetTestRule.RequiresMinApi;
+import org.chromium.net.NetworkChangeNotifierAutoDetect.ConnectivityManagerDelegate;
 import org.chromium.net.TestUrlRequestCallback.FailureType;
 import org.chromium.net.TestUrlRequestCallback.ResponseStep;
 import org.chromium.net.impl.CronetUrlRequest;
+import org.chromium.net.impl.NetworkExceptionImpl;
 import org.chromium.net.impl.UrlResponseInfoImpl;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.FailurePhase;
@@ -67,18 +70,19 @@ public class CronetUrlRequestTest {
     private static final String TEST_URL = "http://127.0.0.1:8000";
 
     @Rule
-    public final CronetTestRule mTestRule = new CronetTestRule();
+    public final CronetTestRule mTestRule = CronetTestRule.withAutomaticEngineStartup();
 
-    private CronetTestFramework mTestFramework;
     private MockUrlRequestJobFactory mMockUrlRequestJobFactory;
 
     @Before
     public void setUp() throws Exception {
-        mTestFramework = mTestRule.startCronetTestFramework();
-        assertTrue(NativeTestServer.startNativeTestServer(getContext()));
+        assertThat(
+                NativeTestServer.startNativeTestServer(mTestRule.getTestFramework().getContext()))
+                .isTrue();
         // Add url interceptors after native application context is initialized.
         if (!mTestRule.testingJavaImpl()) {
-            mMockUrlRequestJobFactory = new MockUrlRequestJobFactory(mTestFramework.mCronetEngine);
+            mMockUrlRequestJobFactory =
+                    new MockUrlRequestJobFactory(mTestRule.getTestFramework().getEngine());
         }
     }
 
@@ -88,31 +92,30 @@ public class CronetUrlRequestTest {
             mMockUrlRequestJobFactory.shutdown();
         }
         NativeTestServer.shutdownNativeTestServer();
-        mTestFramework.mCronetEngine.shutdown();
     }
 
     private TestUrlRequestCallback startAndWaitForComplete(String url) throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         // Create request.
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 url, callback, callback.getExecutor());
         UrlRequest urlRequest = builder.build();
         urlRequest.start();
         callback.blockForDone();
         // Wait for all posted tasks to be executed to ensure there is no unhandled exception.
         callback.shutdownExecutorAndWait();
-        assertTrue(urlRequest.isDone());
+        assertThat(urlRequest.isDone()).isTrue();
         return callback;
     }
 
     private void checkResponseInfo(UrlResponseInfo responseInfo, String expectedUrl,
             int expectedHttpStatusCode, String expectedHttpStatusText) {
-        assertThat(responseInfo.getUrl()).isEqualTo(expectedUrl);
+        assertThat(responseInfo).hasUrlThat().isEqualTo(expectedUrl);
         assertThat(responseInfo.getUrlChain().get(responseInfo.getUrlChain().size() - 1))
                 .isEqualTo(expectedUrl);
-        assertThat(responseInfo.getHttpStatusCode()).isEqualTo(expectedHttpStatusCode);
-        assertThat(responseInfo.getHttpStatusText()).isEqualTo(expectedHttpStatusText);
-        assertFalse(responseInfo.wasCached());
+        assertThat(responseInfo).hasHttpStatusCodeThat().isEqualTo(expectedHttpStatusCode);
+        assertThat(responseInfo).hasHttpStatusTextThat().isEqualTo(expectedHttpStatusText);
+        assertThat(responseInfo).wasNotCached();
         assertThat(responseInfo.toString()).isNotEmpty();
     }
 
@@ -128,29 +131,27 @@ public class CronetUrlRequestTest {
     @SmallTest
     public void testBuilderChecks() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        try {
-            mTestFramework.mCronetEngine.newUrlRequestBuilder(
-                    null, callback, callback.getExecutor());
-            fail("URL not null-checked");
-        } catch (NullPointerException e) {
-            assertThat(e).hasMessageThat().isEqualTo("URL is required.");
-        }
-        try {
-            mTestFramework.mCronetEngine.newUrlRequestBuilder(
-                    NativeTestServer.getRedirectURL(), null, callback.getExecutor());
-            fail("Callback not null-checked");
-        } catch (NullPointerException e) {
-            assertThat(e).hasMessageThat().isEqualTo("Callback is required.");
-        }
-        try {
-            mTestFramework.mCronetEngine.newUrlRequestBuilder(
-                    NativeTestServer.getRedirectURL(), callback, null);
-            fail("Executor not null-checked");
-        } catch (NullPointerException e) {
-            assertThat(e).hasMessageThat().isEqualTo("Executor is required.");
-        }
+
+        NullPointerException e = assertThrows(NullPointerException.class,
+                ()
+                        -> mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
+                                null, callback, callback.getExecutor()));
+        assertThat(e).hasMessageThat().isEqualTo("URL is required.");
+
+        e = assertThrows(NullPointerException.class,
+                ()
+                        -> mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
+                                NativeTestServer.getRedirectURL(), null, callback.getExecutor()));
+        assertThat(e).hasMessageThat().isEqualTo("Callback is required.");
+
+        e = assertThrows(NullPointerException.class,
+                ()
+                        -> mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
+                                NativeTestServer.getRedirectURL(), callback, null));
+        assertThat(e).hasMessageThat().isEqualTo("Executor is required.");
+
         // Verify successful creation doesn't throw.
-        mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getRedirectURL(), callback, callback.getExecutor());
     }
 
@@ -159,15 +160,16 @@ public class CronetUrlRequestTest {
     public void testSimpleGet() throws Exception {
         String url = NativeTestServer.getEchoMethodURL();
         TestUrlRequestCallback callback = startAndWaitForComplete(url);
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         // Default method is 'GET'.
         assertThat(callback.mResponseAsString).isEqualTo("GET");
         assertThat(callback.mRedirectCount).isEqualTo(0);
         assertThat(ResponseStep.ON_SUCCEEDED).isEqualTo(callback.mResponseStep);
         UrlResponseInfo urlResponseInfo = createUrlResponseInfo(new String[] {url}, "OK", 200, 86,
                 "Connection", "close", "Content-Length", "3", "Content-Type", "text/plain");
-        mTestRule.assertResponseEquals(urlResponseInfo, callback.mResponseInfo);
-        checkResponseInfo(callback.mResponseInfo, NativeTestServer.getEchoMethodURL(), 200, "OK");
+        mTestRule.assertResponseEquals(urlResponseInfo, callback.getResponseInfoWithChecks());
+        checkResponseInfo(
+                callback.getResponseInfoWithChecks(), NativeTestServer.getEchoMethodURL(), 200, "OK");
     }
 
     UrlResponseInfo createUrlResponseInfo(
@@ -190,9 +192,10 @@ public class CronetUrlRequestTest {
         callback.setAutoAdvance(false);
         // Create builder, start a request, and check if default load_flags are set correctly.
         ExperimentalUrlRequest.Builder builder =
-                (ExperimentalUrlRequest.Builder) mTestFramework.mCronetEngine.newUrlRequestBuilder(
-                        NativeTestServer.getFileURL("/success.txt"), callback,
-                        callback.getExecutor());
+                (ExperimentalUrlRequest.Builder) mTestRule.getTestFramework()
+                        .getEngine()
+                        .newUrlRequestBuilder(NativeTestServer.getFileURL("/success.txt"), callback,
+                                callback.getExecutor());
         // Disable connection migration.
         if (disableConnectionMigration) builder.disableConnectionMigration();
         UrlRequest urlRequest = builder.build();
@@ -232,7 +235,7 @@ public class CronetUrlRequestTest {
         // Start the request and wait to see the redirect.
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         callback.setAutoAdvance(false);
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getRedirectURL(), callback, callback.getExecutor());
         UrlRequest urlRequest = builder.build();
         urlRequest.start();
@@ -265,9 +268,10 @@ public class CronetUrlRequestTest {
 
         assertThat(callback.mResponseStep).isEqualTo(ResponseStep.ON_RESPONSE_STARTED);
         assertThat(callback.mRedirectResponseInfoList).hasSize(1);
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
-        checkResponseInfo(callback.mResponseInfo, NativeTestServer.getSuccessURL(), 200, "OK");
-        assertThat(callback.mResponseInfo.getUrlChain())
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
+        checkResponseInfo(callback.getResponseInfoWithChecks(), NativeTestServer.getSuccessURL(), 200, "OK");
+        assertThat(callback.getResponseInfoWithChecks())
+                .hasUrlChainThat()
                 .containsExactly(
                         NativeTestServer.getRedirectURL(), NativeTestServer.getSuccessURL())
                 .inOrder();
@@ -302,7 +306,7 @@ public class CronetUrlRequestTest {
                 "header-name", "header-value", "multi-header-name", "header-value1",
                 "multi-header-name", "header-value2");
 
-        mTestRule.assertResponseEquals(urlResponseInfo, callback.mResponseInfo);
+        mTestRule.assertResponseEquals(urlResponseInfo, callback.getResponseInfoWithChecks());
         // Make sure there are no other pending messages, which would trigger
         // asserts in TestUrlRequestCallback.
         testSimpleGet();
@@ -317,7 +321,7 @@ public class CronetUrlRequestTest {
         String url = NativeTestServer.getFileURL("/redirect_broken_header.html");
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
 
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 url, callback, callback.getExecutor());
         final UrlRequest urlRequest = builder.build();
         urlRequest.start();
@@ -326,9 +330,9 @@ public class CronetUrlRequestTest {
                 .isEqualTo("<!DOCTYPE html>\n<html>\n<head>\n<title>Redirect</title>\n"
                         + "<p>Redirecting...</p>\n</head>\n</html>\n");
         assertThat(callback.mResponseStep).isEqualTo(ResponseStep.ON_SUCCEEDED);
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(302);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(302);
         assertThat(callback.mError).isNull();
-        assertFalse(callback.mOnErrorCalled);
+        assertThat(callback.mOnErrorCalled).isFalse();
     }
 
     /**
@@ -382,17 +386,17 @@ public class CronetUrlRequestTest {
             }
         };
 
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getMultiRedirectURL(), callback, callback.getExecutor());
 
         final UrlRequest urlRequest = builder.build();
         urlRequest.start();
         callback.blockForDone();
-        assertFalse(failedExpectation.get());
+        assertThat(failedExpectation.get()).isFalse();
         // Check that only one redirect is received.
         assertThat(callback.mRedirectCount).isEqualTo(1);
         // Check that onCanceled is called.
-        assertTrue(callback.mOnCanceledCalled);
+        assertThat(callback.mOnCanceledCalled).isTrue();
     }
 
     @Test
@@ -400,7 +404,7 @@ public class CronetUrlRequestTest {
     public void testNotFound() throws Exception {
         String url = NativeTestServer.getFileURL("/notfound.html");
         TestUrlRequestCallback callback = startAndWaitForComplete(url);
-        checkResponseInfo(callback.mResponseInfo, url, 404, "Not Found");
+        checkResponseInfo(callback.getResponseInfoWithChecks(), url, 404, "Not Found");
         assertThat(callback.mResponseAsString)
                 .isEqualTo("<!DOCTYPE html>\n<html>\n<head>\n<title>Not found</title>\n"
                         + "<p>Test page loaded.</p>\n</head>\n</html>\n");
@@ -417,7 +421,7 @@ public class CronetUrlRequestTest {
     public void testContentLengthMismatchFailsOnce() throws Exception {
         String url = NativeTestServer.getFileURL("/content_length_mismatch.html");
         TestUrlRequestCallback callback = startAndWaitForComplete(url);
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.getResponseInfo()).hasHttpStatusCodeThat().isEqualTo(200);
         // The entire response body will be read before the error is returned.
         // This is because the network stack returns data as it's read from the
         // socket, and the socket close message which triggers the error will
@@ -438,20 +442,17 @@ public class CronetUrlRequestTest {
     public void testSetHttpMethod() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         String methodName = "HEAD";
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getEchoMethodURL(), callback, callback.getExecutor());
         // Try to set 'null' method.
-        try {
-            builder.setHttpMethod(null);
-            fail("Exception not thrown");
-        } catch (NullPointerException e) {
-            assertThat(e).hasMessageThat().isEqualTo("Method is required.");
-        }
+        NullPointerException e =
+                assertThrows(NullPointerException.class, () -> builder.setHttpMethod(null));
+        assertThat(e).hasMessageThat().isEqualTo("Method is required.");
 
         builder.setHttpMethod(methodName);
         builder.build().start();
         callback.blockForDone();
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mHttpResponseDataLength).isEqualTo(0);
     }
 
@@ -459,59 +460,49 @@ public class CronetUrlRequestTest {
     @SmallTest
     public void testBadMethod() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 TEST_URL, callback, callback.getExecutor());
-        try {
-            builder.setHttpMethod("bad:method!");
-            builder.build().start();
-            fail("IllegalArgumentException not thrown.");
-        } catch (IllegalArgumentException e) {
-            assertThat(e).hasMessageThat().isEqualTo("Invalid http method bad:method!");
-        }
+        builder.setHttpMethod("bad:method!");
+        IllegalArgumentException e =
+                assertThrows(IllegalArgumentException.class, () -> builder.build().start());
+        assertThat(e).hasMessageThat().isEqualTo("Invalid http method bad:method!");
     }
 
     @Test
     @SmallTest
     public void testBadHeaderName() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 TEST_URL, callback, callback.getExecutor());
-        try {
-            builder.addHeader("header:name", "headervalue");
-            builder.build().start();
-            fail("IllegalArgumentException not thrown.");
-        } catch (IllegalArgumentException e) {
-            assertThat(e).hasMessageThat().isEqualTo("Invalid header header:name=headervalue");
-        }
+        builder.addHeader("header:name", "headervalue");
+        IllegalArgumentException e =
+                assertThrows(IllegalArgumentException.class, () -> builder.build().start());
+        assertThat(e).hasMessageThat().isEqualTo("Invalid header header:name=headervalue");
     }
 
     @Test
     @SmallTest
     public void testAcceptEncodingIgnored() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getEchoAllHeadersURL(), callback, callback.getExecutor());
         // This line should eventually throw an exception, once callers have migrated
         builder.addHeader("accept-encoding", "foozip");
         builder.build().start();
         callback.blockForDone();
-        assertFalse(callback.mResponseAsString.contains("foozip"));
+        assertThat(callback.mResponseAsString).doesNotContain("foozip");
     }
 
     @Test
     @SmallTest
     public void testBadHeaderValue() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 TEST_URL, callback, callback.getExecutor());
-        try {
-            builder.addHeader("headername", "bad header\r\nvalue");
-            builder.build().start();
-            fail("IllegalArgumentException not thrown.");
-        } catch (IllegalArgumentException e) {
-            assertThat(e).hasMessageThat().isEqualTo(
-                    "Invalid header headername=bad header\r\nvalue");
-        }
+        builder.addHeader("headername", "bad header\r\nvalue");
+        IllegalArgumentException e =
+                assertThrows(IllegalArgumentException.class, () -> builder.build().start());
+        assertThat(e).hasMessageThat().isEqualTo("Invalid header headername=bad header\r\nvalue");
     }
 
     @Test
@@ -520,13 +511,13 @@ public class CronetUrlRequestTest {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         String headerName = "header-name";
         String headerValue = "header-value";
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getEchoHeaderURL(headerName), callback, callback.getExecutor());
 
         builder.addHeader(headerName, headerValue);
         builder.build().start();
         callback.blockForDone();
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).isEqualTo(headerValue);
     }
 
@@ -537,13 +528,13 @@ public class CronetUrlRequestTest {
         String headerName = "header-name";
         String headerValue1 = "header-value1";
         String headerValue2 = "header-value2";
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getEchoAllHeadersURL(), callback, callback.getExecutor());
         builder.addHeader(headerName, headerValue1);
         builder.addHeader(headerName, headerValue2);
         builder.build().start();
         callback.blockForDone();
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         String headers = callback.mResponseAsString;
         Pattern pattern = Pattern.compile(headerName + ":\\s(.*)\\r\\n");
         Matcher matcher = pattern.matcher(headers);
@@ -560,12 +551,12 @@ public class CronetUrlRequestTest {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         String refererName = "Referer";
         String refererValue = "http://example.com/";
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getEchoHeaderURL(refererName), callback, callback.getExecutor());
         builder.addHeader(refererName, refererValue);
         builder.build().start();
         callback.blockForDone();
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).isEqualTo(refererValue);
     }
 
@@ -576,12 +567,12 @@ public class CronetUrlRequestTest {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         String refererName = "Referer";
         String refererValueNoTrailingSlash = "http://example.com";
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getEchoHeaderURL(refererName), callback, callback.getExecutor());
         builder.addHeader(refererName, refererValueNoTrailingSlash);
         builder.build().start();
         callback.blockForDone();
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).isEqualTo(refererValueNoTrailingSlash + "/");
     }
 
@@ -592,12 +583,12 @@ public class CronetUrlRequestTest {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         String refererName = "Referer";
         String invalidRefererValue = "foobar";
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getEchoHeaderURL(refererName), callback, callback.getExecutor());
         builder.addHeader(refererName, invalidRefererValue);
         builder.build().start();
         callback.blockForDone();
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).isEqualTo("Header not found. :(");
     }
 
@@ -607,12 +598,12 @@ public class CronetUrlRequestTest {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         String userAgentName = "User-Agent";
         String userAgentValue = "User-Agent-Value";
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getEchoHeaderURL(userAgentName), callback, callback.getExecutor());
         builder.addHeader(userAgentName, userAgentValue);
         builder.build().start();
         callback.blockForDone();
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).isEqualTo(userAgentValue);
     }
 
@@ -621,11 +612,11 @@ public class CronetUrlRequestTest {
     public void testDefaultUserAgent() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         String headerName = "User-Agent";
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getEchoHeaderURL(headerName), callback, callback.getExecutor());
         builder.build().start();
         callback.blockForDone();
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertWithMessage("Default User-Agent should contain Cronet/n.n.n.n but is "
                 + callback.mResponseAsString)
                 .that(callback.mResponseAsString)
@@ -636,11 +627,11 @@ public class CronetUrlRequestTest {
     @SmallTest
     public void testMockSuccess() throws Exception {
         TestUrlRequestCallback callback = startAndWaitForComplete(NativeTestServer.getSuccessURL());
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mRedirectResponseInfoList).isEmpty();
         assertThat(callback.mHttpResponseDataLength).isNotEqualTo(0);
         assertThat(ResponseStep.ON_SUCCEEDED).isEqualTo(callback.mResponseStep);
-        Map<String, List<String>> responseHeaders = callback.mResponseInfo.getAllHeaders();
+        Map<String, List<String>> responseHeaders = callback.getResponseInfoWithChecks().getAllHeaders();
         assertThat(responseHeaders).containsEntry("header-name", Arrays.asList("header-value"));
         assertThat(responseHeaders)
                 .containsEntry(
@@ -651,9 +642,9 @@ public class CronetUrlRequestTest {
     @SmallTest
     public void testResponseHeadersList() throws Exception {
         TestUrlRequestCallback callback = startAndWaitForComplete(NativeTestServer.getSuccessURL());
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         List<Map.Entry<String, String>> responseHeaders =
-                callback.mResponseInfo.getAllHeadersAsList();
+                callback.getResponseInfoWithChecks().getAllHeadersAsList();
 
         assertThat(new AbstractMap.SimpleEntry<>("Content-Type", "text/plain"))
                 .isEqualTo(responseHeaders.get(0));
@@ -672,9 +663,9 @@ public class CronetUrlRequestTest {
     public void testMockMultiRedirect() throws Exception {
         TestUrlRequestCallback callback =
                 startAndWaitForComplete(NativeTestServer.getMultiRedirectURL());
-        UrlResponseInfo mResponseInfo = callback.mResponseInfo;
+        UrlResponseInfo mResponseInfo = callback.getResponseInfoWithChecks();
         assertThat(callback.mRedirectCount).isEqualTo(2);
-        assertThat(mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(mResponseInfo).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mRedirectResponseInfoList).hasSize(2);
 
         // Check first redirect (multiredirect.html -> redirect.html)
@@ -705,10 +696,10 @@ public class CronetUrlRequestTest {
                 startAndWaitForComplete(NativeTestServer.getNotFoundURL());
         UrlResponseInfo expected = createUrlResponseInfo(
                 new String[] {NativeTestServer.getNotFoundURL()}, "Not Found", 404, 120);
-        mTestRule.assertResponseEquals(expected, callback.mResponseInfo);
+        mTestRule.assertResponseEquals(expected, callback.getResponseInfoWithChecks());
         assertThat(callback.mHttpResponseDataLength).isNotEqualTo(0);
         assertThat(callback.mRedirectCount).isEqualTo(0);
-        assertFalse(callback.mOnErrorCalled);
+        assertThat(callback.mOnErrorCalled).isFalse();
         assertThat(ResponseStep.ON_SUCCEEDED).isEqualTo(callback.mResponseStep);
     }
 
@@ -720,12 +711,12 @@ public class CronetUrlRequestTest {
         TestUrlRequestCallback callback =
                 startAndWaitForComplete(MockUrlRequestJobFactory.getMockUrlWithFailure(
                         FailurePhase.START, arbitraryNetError));
-        assertThat(callback.mResponseInfo).isNull();
+        assertThat(callback.getResponseInfo()).isNull();
         assertThat(callback.mError).isNotNull();
         assertThat(((NetworkException) callback.mError).getCronetInternalErrorCode())
                 .isEqualTo(arbitraryNetError);
         assertThat(callback.mRedirectCount).isEqualTo(0);
-        assertTrue(callback.mOnErrorCalled);
+        assertThat(callback.mOnErrorCalled).isTrue();
         assertThat(callback.mResponseStep).isEqualTo(ResponseStep.ON_FAILED);
     }
 
@@ -737,13 +728,13 @@ public class CronetUrlRequestTest {
         TestUrlRequestCallback callback =
                 startAndWaitForComplete(MockUrlRequestJobFactory.getMockUrlWithFailure(
                         FailurePhase.READ_SYNC, arbitraryNetError));
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
-        assertThat(callback.mResponseInfo.getReceivedByteCount()).isEqualTo(15);
+        assertThat(callback.getResponseInfo()).hasHttpStatusCodeThat().isEqualTo(200);
+        assertThat(callback.getResponseInfo()).hasReceivedByteCountThat().isEqualTo(15);
         assertThat(callback.mError).isNotNull();
         assertThat(((NetworkException) callback.mError).getCronetInternalErrorCode())
                 .isEqualTo(arbitraryNetError);
         assertThat(callback.mRedirectCount).isEqualTo(0);
-        assertTrue(callback.mOnErrorCalled);
+        assertThat(callback.mOnErrorCalled).isTrue();
         assertThat(callback.mResponseStep).isEqualTo(ResponseStep.ON_FAILED);
     }
 
@@ -755,13 +746,13 @@ public class CronetUrlRequestTest {
         TestUrlRequestCallback callback =
                 startAndWaitForComplete(MockUrlRequestJobFactory.getMockUrlWithFailure(
                         FailurePhase.READ_ASYNC, arbitraryNetError));
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
-        assertThat(callback.mResponseInfo.getReceivedByteCount()).isEqualTo(15);
+        assertThat(callback.getResponseInfo()).hasHttpStatusCodeThat().isEqualTo(200);
+        assertThat(callback.getResponseInfo()).hasReceivedByteCountThat().isEqualTo(15);
         assertThat(callback.mError).isNotNull();
         assertThat(((NetworkException) callback.mError).getCronetInternalErrorCode())
                 .isEqualTo(arbitraryNetError);
         assertThat(callback.mRedirectCount).isEqualTo(0);
-        assertTrue(callback.mOnErrorCalled);
+        assertThat(callback.mOnErrorCalled).isTrue();
         assertThat(callback.mResponseStep).isEqualTo(ResponseStep.ON_FAILED);
     }
 
@@ -774,12 +765,11 @@ public class CronetUrlRequestTest {
     public void testMockClientCertificateRequested() throws Exception {
         TestUrlRequestCallback callback = startAndWaitForComplete(
                 MockUrlRequestJobFactory.getMockUrlForClientCertificateRequest());
-        assertThat(callback.mResponseInfo).isNotNull();
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).isEqualTo("data");
         assertThat(callback.mRedirectCount).isEqualTo(0);
         assertThat(callback.mError).isNull();
-        assertFalse(callback.mOnErrorCalled);
+        assertThat(callback.mOnErrorCalled).isFalse();
     }
 
     /**
@@ -791,8 +781,8 @@ public class CronetUrlRequestTest {
     public void testMockSSLCertificateError() throws Exception {
         TestUrlRequestCallback callback = startAndWaitForComplete(
                 MockUrlRequestJobFactory.getMockUrlForSSLCertificateError());
-        assertThat(callback.mResponseInfo).isNull();
-        assertTrue(callback.mOnErrorCalled);
+        assertThat(callback.getResponseInfo()).isNull();
+        assertThat(callback.mOnErrorCalled).isTrue();
         assertThat(callback.mError)
                 .hasMessageThat()
                 .contains("Exception in CronetUrlRequest: net::ERR_CERT_DATE_INVALID");
@@ -810,10 +800,10 @@ public class CronetUrlRequestTest {
     @OnlyRunNativeCronet // Java impl doesn't support MockUrlRequestJobFactory
     public void testSSLCertificateError() throws Exception {
         EmbeddedTestServer sslServer = EmbeddedTestServer.createAndStartHTTPSServer(
-                getContext(), ServerCertificate.CERT_EXPIRED);
+                mTestRule.getTestFramework().getContext(), ServerCertificate.CERT_EXPIRED);
 
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 sslServer.getURL("/"), callback, callback.getExecutor());
 
         TestUploadDataProvider dataProvider = new TestUploadDataProvider(
@@ -825,8 +815,8 @@ public class CronetUrlRequestTest {
         callback.blockForDone();
         dataProvider.assertClosed();
 
-        assertThat(callback.mResponseInfo).isNull();
-        assertTrue(callback.mOnErrorCalled);
+        assertThat(callback.getResponseInfo()).isNull();
+        assertThat(callback.mOnErrorCalled).isTrue();
         assertThat(callback.mError)
                 .hasMessageThat()
                 .contains("Exception in CronetUrlRequest: net::ERR_CERT_DATE_INVALID");
@@ -847,7 +837,7 @@ public class CronetUrlRequestTest {
         callback.setAutoAdvance(false);
         // Since the default method is "GET", the expected response body is also
         // "GET".
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getEchoMethodURL(), callback, callback.getExecutor());
         UrlRequest urlRequest = builder.build();
         urlRequest.start();
@@ -861,7 +851,7 @@ public class CronetUrlRequestTest {
         // possible to need one read per character, though in practice,
         // shouldn't happen.
         while (callback.mResponseAsString.length() < 2) {
-            assertFalse(callback.isDone());
+            assertThat(callback.isDone()).isFalse();
             callback.startNextRead(urlRequest, readBuffer);
             callback.waitForNextStep();
         }
@@ -905,9 +895,10 @@ public class CronetUrlRequestTest {
         callback.startNextRead(urlRequest, readBuffer);
         callback.waitForNextStep();
 
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).isEqualTo("GET");
-        checkResponseInfo(callback.mResponseInfo, NativeTestServer.getEchoMethodURL(), 200, "OK");
+        checkResponseInfo(
+                callback.getResponseInfoWithChecks(), NativeTestServer.getEchoMethodURL(), 200, "OK");
 
         // Check that buffer contents were not modified.
         assertThat(bufferContentsToString(readBuffer, 0, 5)).isEqualTo("FORTE");
@@ -929,37 +920,30 @@ public class CronetUrlRequestTest {
     public void testBadBuffers() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         callback.setAutoAdvance(false);
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getEchoMethodURL(), callback, callback.getExecutor());
         UrlRequest urlRequest = builder.build();
         urlRequest.start();
         callback.waitForNextStep();
 
         // Try to read using a full buffer.
-        try {
-            ByteBuffer readBuffer = ByteBuffer.allocateDirect(4);
-            readBuffer.put("full".getBytes());
-            urlRequest.read(readBuffer);
-            fail("Exception not thrown");
-        } catch (IllegalArgumentException e) {
-            assertThat(e).hasMessageThat().isEqualTo("ByteBuffer is already full.");
-        }
+        ByteBuffer readBuffer = ByteBuffer.allocateDirect(4);
+        readBuffer.put("full".getBytes());
+        IllegalArgumentException e =
+                assertThrows(IllegalArgumentException.class, () -> urlRequest.read(readBuffer));
+        assertThat(e).hasMessageThat().isEqualTo("ByteBuffer is already full.");
 
         // Try to read using a non-direct buffer.
-        try {
-            ByteBuffer readBuffer = ByteBuffer.allocate(5);
-            urlRequest.read(readBuffer);
-            fail("Exception not thrown");
-        } catch (IllegalArgumentException e) {
-            assertThat(e).hasMessageThat().isEqualTo("byteBuffer must be a direct ByteBuffer.");
-        }
+        ByteBuffer readBuffer1 = ByteBuffer.allocate(5);
+        e = assertThrows(IllegalArgumentException.class, () -> urlRequest.read(readBuffer1));
+        assertThat(e).hasMessageThat().isEqualTo("byteBuffer must be a direct ByteBuffer.");
 
         // Finish the request with a direct ByteBuffer.
         callback.setAutoAdvance(true);
-        ByteBuffer readBuffer = ByteBuffer.allocateDirect(5);
-        urlRequest.read(readBuffer);
+        ByteBuffer readBuffer2 = ByteBuffer.allocateDirect(5);
+        urlRequest.read(readBuffer2);
         callback.blockForDone();
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).isEqualTo("GET");
     }
 
@@ -969,7 +953,8 @@ public class CronetUrlRequestTest {
         final TestUrlRequestCallback callback = new TestUrlRequestCallback();
         callback.setAutoAdvance(false);
         final UrlRequest urlRequest =
-                mTestFramework.mCronetEngine
+                mTestRule.getTestFramework()
+                        .getEngine()
                         .newUrlRequestBuilder(NativeTestServer.getEchoHeaderURL("blah-header"),
                                 callback, callback.getExecutor())
                         .addHeader("blah-header", "blahblahblah")
@@ -999,17 +984,14 @@ public class CronetUrlRequestTest {
         final TestUrlRequestCallback callback = new TestUrlRequestCallback();
         callback.setAutoAdvance(false);
         final UrlRequest urlRequest =
-                mTestFramework.mCronetEngine
+                mTestRule.getTestFramework()
+                        .getEngine()
                         .newUrlRequestBuilder(
                                 NativeTestServer.getRedirectURL(), callback, callback.getExecutor())
                         .build();
 
         // Try to read before starting request.
-        try {
-            callback.startNextRead(urlRequest);
-            fail("Exception not thrown");
-        } catch (IllegalStateException e) {
-        }
+        assertThrows(IllegalStateException.class, () -> callback.startNextRead(urlRequest));
 
         // Verify reading right after start throws an assertion. Both must be
         // invoked on the Executor thread, to prevent receiving data until after
@@ -1018,11 +1000,7 @@ public class CronetUrlRequestTest {
             @Override
             public void run() {
                 urlRequest.start();
-                try {
-                    callback.startNextRead(urlRequest);
-                    fail("Exception not thrown");
-                } catch (IllegalStateException e) {
-                }
+                assertThrows(IllegalStateException.class, () -> callback.startNextRead(urlRequest));
             }
         };
         callback.getExecutor().submit(startAndRead).get();
@@ -1030,16 +1008,12 @@ public class CronetUrlRequestTest {
 
         assertThat(ResponseStep.ON_RECEIVED_REDIRECT).isEqualTo(callback.mResponseStep);
         // Try to read after the redirect.
-        try {
-            callback.startNextRead(urlRequest);
-            fail("Exception not thrown");
-        } catch (IllegalStateException e) {
-        }
+        assertThrows(IllegalStateException.class, () -> callback.startNextRead(urlRequest));
         urlRequest.followRedirect();
         callback.waitForNextStep();
 
         assertThat(ResponseStep.ON_RESPONSE_STARTED).isEqualTo(callback.mResponseStep);
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
 
         while (!callback.isDone()) {
             Runnable readTwice = new Runnable() {
@@ -1047,11 +1021,8 @@ public class CronetUrlRequestTest {
                 public void run() {
                     callback.startNextRead(urlRequest);
                     // Try to read again before the last read completes.
-                    try {
-                        callback.startNextRead(urlRequest);
-                        fail("Exception not thrown");
-                    } catch (IllegalStateException e) {
-                    }
+                    assertThrows(
+                            IllegalStateException.class, () -> callback.startNextRead(urlRequest));
                 }
             };
             callback.getExecutor().submit(readTwice).get();
@@ -1062,11 +1033,7 @@ public class CronetUrlRequestTest {
         assertThat(callback.mResponseAsString).isEqualTo(NativeTestServer.SUCCESS_BODY);
 
         // Try to read after request is complete.
-        try {
-            callback.startNextRead(urlRequest);
-            fail("Exception not thrown");
-        } catch (IllegalStateException e) {
-        }
+        assertThrows(IllegalStateException.class, () -> callback.startNextRead(urlRequest));
     }
 
     @Test
@@ -1075,17 +1042,14 @@ public class CronetUrlRequestTest {
         final TestUrlRequestCallback callback = new TestUrlRequestCallback();
         callback.setAutoAdvance(false);
         final UrlRequest urlRequest =
-                mTestFramework.mCronetEngine
+                mTestRule.getTestFramework()
+                        .getEngine()
                         .newUrlRequestBuilder(
                                 NativeTestServer.getRedirectURL(), callback, callback.getExecutor())
                         .build();
 
         // Try to follow a redirect before starting the request.
-        try {
-            urlRequest.followRedirect();
-            fail("Exception not thrown");
-        } catch (IllegalStateException e) {
-        }
+        assertThrows(IllegalStateException.class, urlRequest::followRedirect);
 
         // Try to follow a redirect just after starting the request. Has to be
         // done on the executor thread to avoid a race.
@@ -1093,11 +1057,7 @@ public class CronetUrlRequestTest {
             @Override
             public void run() {
                 urlRequest.start();
-                try {
-                    urlRequest.followRedirect();
-                    fail("Exception not thrown");
-                } catch (IllegalStateException e) {
-                }
+                assertThrows(IllegalStateException.class, urlRequest::followRedirect);
             }
         };
         callback.getExecutor().execute(startAndRead);
@@ -1109,25 +1069,17 @@ public class CronetUrlRequestTest {
             @Override
             public void run() {
                 urlRequest.followRedirect();
-                try {
-                    urlRequest.followRedirect();
-                    fail("Exception not thrown");
-                } catch (IllegalStateException e) {
-                }
+                assertThrows(IllegalStateException.class, urlRequest::followRedirect);
             }
         };
         callback.getExecutor().execute(followRedirectTwice);
         callback.waitForNextStep();
 
         assertThat(ResponseStep.ON_RESPONSE_STARTED).isEqualTo(callback.mResponseStep);
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
 
         while (!callback.isDone()) {
-            try {
-                urlRequest.followRedirect();
-                fail("Exception not thrown");
-            } catch (IllegalStateException e) {
-            }
+            assertThrows(IllegalStateException.class, urlRequest::followRedirect);
             callback.startNextRead(urlRequest);
             callback.waitForNextStep();
         }
@@ -1136,42 +1088,31 @@ public class CronetUrlRequestTest {
         assertThat(callback.mResponseAsString).isEqualTo(NativeTestServer.SUCCESS_BODY);
 
         // Try to follow redirect after request is complete.
-        try {
-            urlRequest.followRedirect();
-            fail("Exception not thrown");
-        } catch (IllegalStateException e) {
-        }
+        assertThrows(IllegalStateException.class, urlRequest::followRedirect);
     }
 
     @Test
     @SmallTest
     public void testUploadSetDataProvider() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getEchoBodyURL(), callback, callback.getExecutor());
 
-        try {
-            builder.setUploadDataProvider(null, callback.getExecutor());
-            fail("Exception not thrown");
-        } catch (NullPointerException e) {
-            assertThat(e).hasMessageThat().isEqualTo("Invalid UploadDataProvider.");
-        }
+        NullPointerException e = assertThrows(NullPointerException.class,
+                () -> builder.setUploadDataProvider(null, callback.getExecutor()));
+        assertThat(e).hasMessageThat().isEqualTo("Invalid UploadDataProvider.");
 
         TestUploadDataProvider dataProvider = new TestUploadDataProvider(
                 TestUploadDataProvider.SuccessCallbackMode.SYNC, callback.getExecutor());
         builder.setUploadDataProvider(dataProvider, callback.getExecutor());
-        try {
-            builder.build().start();
-            fail("Exception not thrown");
-        } catch (IllegalArgumentException e) {
-        }
+        assertThrows(IllegalArgumentException.class, () -> builder.build().start());
     }
 
     @Test
     @SmallTest
     public void testUploadEmptyBodySync() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getEchoBodyURL(), callback, callback.getExecutor());
 
         TestUploadDataProvider dataProvider = new TestUploadDataProvider(
@@ -1185,7 +1126,7 @@ public class CronetUrlRequestTest {
         assertThat(dataProvider.getNumReadCalls()).isEqualTo(0);
         assertThat(dataProvider.getNumRewindCalls()).isEqualTo(0);
 
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).isEmpty();
         dataProvider.assertClosed();
     }
@@ -1194,7 +1135,7 @@ public class CronetUrlRequestTest {
     @SmallTest
     public void testUploadSync() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getEchoBodyURL(), callback, callback.getExecutor());
 
         TestUploadDataProvider dataProvider = new TestUploadDataProvider(
@@ -1210,7 +1151,7 @@ public class CronetUrlRequestTest {
         assertThat(dataProvider.getNumReadCalls()).isEqualTo(1);
         assertThat(dataProvider.getNumRewindCalls()).isEqualTo(0);
 
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).isEqualTo("test");
     }
 
@@ -1218,7 +1159,7 @@ public class CronetUrlRequestTest {
     @SmallTest
     public void testUploadMultiplePiecesSync() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getEchoBodyURL(), callback, callback.getExecutor());
 
         TestUploadDataProvider dataProvider = new TestUploadDataProvider(
@@ -1238,7 +1179,7 @@ public class CronetUrlRequestTest {
         assertThat(dataProvider.getNumReadCalls()).isEqualTo(4);
         assertThat(dataProvider.getNumRewindCalls()).isEqualTo(0);
 
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).isEqualTo("Yet another test");
     }
 
@@ -1246,7 +1187,7 @@ public class CronetUrlRequestTest {
     @SmallTest
     public void testUploadMultiplePiecesAsync() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getEchoBodyURL(), callback, callback.getExecutor());
 
         TestUploadDataProvider dataProvider = new TestUploadDataProvider(
@@ -1266,7 +1207,7 @@ public class CronetUrlRequestTest {
         assertThat(dataProvider.getNumReadCalls()).isEqualTo(4);
         assertThat(dataProvider.getNumRewindCalls()).isEqualTo(0);
 
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).isEqualTo("Yet another test");
     }
 
@@ -1274,7 +1215,7 @@ public class CronetUrlRequestTest {
     @SmallTest
     public void testUploadChangesDefaultMethod() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getEchoMethodURL(), callback, callback.getExecutor());
 
         TestUploadDataProvider dataProvider = new TestUploadDataProvider(
@@ -1286,7 +1227,7 @@ public class CronetUrlRequestTest {
         callback.blockForDone();
         dataProvider.assertClosed();
 
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).isEqualTo("POST");
     }
 
@@ -1294,7 +1235,7 @@ public class CronetUrlRequestTest {
     @SmallTest
     public void testUploadWithSetMethod() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getEchoMethodURL(), callback, callback.getExecutor());
 
         final String method = "PUT";
@@ -1309,7 +1250,7 @@ public class CronetUrlRequestTest {
         callback.blockForDone();
         dataProvider.assertClosed();
 
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).isEqualTo("PUT");
     }
 
@@ -1317,7 +1258,7 @@ public class CronetUrlRequestTest {
     @SmallTest
     public void testUploadRedirectSync() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getRedirectToEchoBody(), callback, callback.getExecutor());
 
         TestUploadDataProvider dataProvider = new TestUploadDataProvider(
@@ -1333,7 +1274,7 @@ public class CronetUrlRequestTest {
         assertThat(dataProvider.getNumReadCalls()).isEqualTo(2);
         assertThat(dataProvider.getNumRewindCalls()).isEqualTo(1);
 
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).isEqualTo("test");
     }
 
@@ -1341,7 +1282,7 @@ public class CronetUrlRequestTest {
     @SmallTest
     public void testUploadRedirectAsync() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getRedirectToEchoBody(), callback, callback.getExecutor());
 
         TestUploadDataProvider dataProvider = new TestUploadDataProvider(
@@ -1357,7 +1298,7 @@ public class CronetUrlRequestTest {
         assertThat(dataProvider.getNumReadCalls()).isEqualTo(2);
         assertThat(dataProvider.getNumRewindCalls()).isEqualTo(1);
 
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).isEqualTo("test");
     }
 
@@ -1365,7 +1306,7 @@ public class CronetUrlRequestTest {
     @SmallTest
     public void testUploadWithBadLength() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getEchoBodyURL(), callback, callback.getExecutor());
 
         TestUploadDataProvider dataProvider = new TestUploadDataProvider(
@@ -1395,14 +1336,14 @@ public class CronetUrlRequestTest {
                 .hasCauseThat()
                 .hasMessageThat()
                 .contains("Read upload data length 2 exceeds expected length 1");
-        assertThat(callback.mResponseInfo).isNull();
+        assertThat(callback.getResponseInfo()).isNull();
     }
 
     @Test
     @SmallTest
     public void testUploadWithBadLengthBufferAligned() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getEchoBodyURL(), callback, callback.getExecutor());
 
         TestUploadDataProvider dataProvider = new TestUploadDataProvider(
@@ -1431,14 +1372,14 @@ public class CronetUrlRequestTest {
                 .hasCauseThat()
                 .hasMessageThat()
                 .contains("Read upload data length 8192 exceeds expected length 8191");
-        assertThat(callback.mResponseInfo).isNull();
+        assertThat(callback.getResponseInfo()).isNull();
     }
 
     @Test
     @SmallTest
     public void testUploadReadFailSync() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getEchoBodyURL(), callback, callback.getExecutor());
 
         TestUploadDataProvider dataProvider = new TestUploadDataProvider(
@@ -1460,14 +1401,14 @@ public class CronetUrlRequestTest {
                 .hasMessageThat()
                 .contains("Exception received from UploadDataProvider");
         assertThat(callback.mError).hasCauseThat().hasMessageThat().contains("Sync read failure");
-        assertThat(callback.mResponseInfo).isNull();
+        assertThat(callback.getResponseInfo()).isNull();
     }
 
     @Test
     @SmallTest
     public void testUploadLengthFailSync() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getEchoBodyURL(), callback, callback.getExecutor());
 
         TestUploadDataProvider dataProvider = new TestUploadDataProvider(
@@ -1489,14 +1430,14 @@ public class CronetUrlRequestTest {
                 .hasMessageThat()
                 .contains("Exception received from UploadDataProvider");
         assertThat(callback.mError).hasCauseThat().hasMessageThat().contains("Sync length failure");
-        assertThat(callback.mResponseInfo).isNull();
+        assertThat(callback.getResponseInfo()).isNull();
     }
 
     @Test
     @SmallTest
     public void testUploadReadFailAsync() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getEchoBodyURL(), callback, callback.getExecutor());
 
         TestUploadDataProvider dataProvider = new TestUploadDataProvider(
@@ -1518,7 +1459,7 @@ public class CronetUrlRequestTest {
                 .hasMessageThat()
                 .contains("Exception received from UploadDataProvider");
         assertThat(callback.mError).hasCauseThat().hasMessageThat().contains("Async read failure");
-        assertThat(callback.mResponseInfo).isNull();
+        assertThat(callback.getResponseInfo()).isNull();
     }
 
     /** This test uses a direct executor for upload, and non direct for callbacks */
@@ -1533,7 +1474,7 @@ public class CronetUrlRequestTest {
                 command.run();
             }
         };
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getEchoBodyURL(), callback, callback.getExecutor());
 
         TestUploadDataProvider dataProvider = new TestUploadDataProvider(
@@ -1556,14 +1497,14 @@ public class CronetUrlRequestTest {
                 .hasCauseThat()
                 .hasMessageThat()
                 .contains("Inline execution is prohibited for this request");
-        assertThat(callback.mResponseInfo).isNull();
+        assertThat(callback.getResponseInfo()).isNull();
     }
 
     /** This test uses a direct executor for callbacks, and non direct for upload */
     @Test
     @SmallTest
     public void testDirectExecutorProhibitedByDefault() throws Exception {
-        System.out.println("testing with " + mTestFramework.mCronetEngine);
+        System.out.println("testing with " + mTestRule.getTestFramework().getEngine());
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         Executor myExecutor = new Executor() {
 
@@ -1572,7 +1513,7 @@ public class CronetUrlRequestTest {
                 command.run();
             }
         };
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getEchoBodyURL(), callback, myExecutor);
 
         TestUploadDataProvider dataProvider = new TestUploadDataProvider(
@@ -1594,7 +1535,7 @@ public class CronetUrlRequestTest {
                 .hasCauseThat()
                 .hasMessageThat()
                 .contains("Inline execution is prohibited for this request");
-        assertThat(callback.mResponseInfo).isNull();
+        assertThat(callback.getResponseInfo()).isNull();
         dataProvider.assertClosed();
     }
 
@@ -1610,7 +1551,7 @@ public class CronetUrlRequestTest {
                 command.run();
             }
         };
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getEchoBodyURL(), callback, myExecutor);
         UploadDataProvider dataProvider = UploadDataProviders.create("test".getBytes());
         builder.setUploadDataProvider(dataProvider, myExecutor);
@@ -1623,7 +1564,7 @@ public class CronetUrlRequestTest {
             throw callback.mError;
         }
 
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).isEqualTo("test");
     }
 
@@ -1631,7 +1572,7 @@ public class CronetUrlRequestTest {
     @SmallTest
     public void testUploadReadFailThrown() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getEchoBodyURL(), callback, callback.getExecutor());
 
         TestUploadDataProvider dataProvider = new TestUploadDataProvider(
@@ -1653,14 +1594,14 @@ public class CronetUrlRequestTest {
                 .hasMessageThat()
                 .contains("Exception received from UploadDataProvider");
         assertThat(callback.mError).hasCauseThat().hasMessageThat().contains("Thrown read failure");
-        assertThat(callback.mResponseInfo).isNull();
+        assertThat(callback.getResponseInfo()).isNull();
     }
 
     @Test
     @SmallTest
     public void testUploadRewindFailSync() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getRedirectToEchoBody(), callback, callback.getExecutor());
 
         TestUploadDataProvider dataProvider = new TestUploadDataProvider(
@@ -1680,14 +1621,14 @@ public class CronetUrlRequestTest {
                 .hasMessageThat()
                 .contains("Exception received from UploadDataProvider");
         assertThat(callback.mError).hasCauseThat().hasMessageThat().contains("Sync rewind failure");
-        assertThat(callback.mResponseInfo).isNull();
+        assertThat(callback.getResponseInfo()).isNull();
     }
 
     @Test
     @SmallTest
     public void testUploadRewindFailAsync() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getRedirectToEchoBody(), callback, callback.getExecutor());
 
         TestUploadDataProvider dataProvider = new TestUploadDataProvider(
@@ -1710,14 +1651,14 @@ public class CronetUrlRequestTest {
                 .hasCauseThat()
                 .hasMessageThat()
                 .contains("Async rewind failure");
-        assertThat(callback.mResponseInfo).isNull();
+        assertThat(callback.getResponseInfo()).isNull();
     }
 
     @Test
     @SmallTest
     public void testUploadRewindFailThrown() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getRedirectToEchoBody(), callback, callback.getExecutor());
 
         TestUploadDataProvider dataProvider = new TestUploadDataProvider(
@@ -1740,14 +1681,14 @@ public class CronetUrlRequestTest {
                 .hasCauseThat()
                 .hasMessageThat()
                 .contains("Thrown rewind failure");
-        assertThat(callback.mResponseInfo).isNull();
+        assertThat(callback.getResponseInfo()).isNull();
     }
 
     @Test
     @SmallTest
     public void testUploadChunked() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getEchoBodyURL(), callback, callback.getExecutor());
 
         TestUploadDataProvider dataProvider = new TestUploadDataProvider(
@@ -1772,7 +1713,7 @@ public class CronetUrlRequestTest {
     @SmallTest
     public void testUploadChunkedLastReadZeroLengthBody() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getEchoBodyURL(), callback, callback.getExecutor());
 
         TestUploadDataProvider dataProvider = new TestUploadDataProvider(
@@ -1803,7 +1744,7 @@ public class CronetUrlRequestTest {
     public void testUploadFailsWithoutInitializingStream() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         // The port for PTP will always refuse a TCP connection
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 "http://127.0.0.1:319", callback, callback.getExecutor());
 
         TestUploadDataProvider dataProvider = new TestUploadDataProvider(
@@ -1815,10 +1756,9 @@ public class CronetUrlRequestTest {
         callback.blockForDone();
         dataProvider.assertClosed();
 
-        assertThat(callback.mResponseInfo).isNull();
+        assertThat(callback.getResponseInfo()).isNull();
         if (mTestRule.testingJavaImpl()) {
-            Throwable cause = callback.mError.getCause();
-            assertTrue("Exception was: " + cause, cause instanceof ConnectException);
+            assertThat(callback.mError).hasCauseThat().isInstanceOf(ConnectException.class);
         } else {
             assertThat(callback.mError)
                     .hasMessageThat()
@@ -1833,7 +1773,7 @@ public class CronetUrlRequestTest {
         }
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         callback.setFailure(failureType, failureStep);
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getRedirectURL(), callback, callback.getExecutor());
         UrlRequest urlRequest = builder.build();
         urlRequest.start();
@@ -1846,8 +1786,8 @@ public class CronetUrlRequestTest {
         } else if (failureType == FailureType.THROW_SYNC) {
             assertThat(callback.mResponseStep).isEqualTo(ResponseStep.ON_FAILED);
         }
-        assertTrue(urlRequest.isDone());
-        assertThat(callback.mResponseInfo != null).isEqualTo(expectResponseInfo);
+        assertThat(urlRequest.isDone()).isTrue();
+        assertThat(callback.getResponseInfo() != null).isEqualTo(expectResponseInfo);
         assertThat(callback.mError != null).isEqualTo(expectError);
         assertThat(callback.mOnErrorCalled).isEqualTo(expectError);
         // When failureType is FailureType.CANCEL_ASYNC_WITHOUT_PAUSE and failureStep is
@@ -1901,19 +1841,18 @@ public class CronetUrlRequestTest {
         for (FailureType type : testTypes) {
             TestUrlRequestCallback callback = new TestUrlRequestCallback();
             callback.setFailure(type, ResponseStep.ON_SUCCEEDED);
-            UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
-                    NativeTestServer.getEchoMethodURL(), callback, callback.getExecutor());
+            UrlRequest.Builder builder =
+                    mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
+                            NativeTestServer.getEchoMethodURL(), callback, callback.getExecutor());
             UrlRequest urlRequest = builder.build();
             urlRequest.start();
             callback.blockForDone();
             // Wait for all posted tasks to be executed to ensure there is no unhandled exception.
             callback.shutdownExecutorAndWait();
-            assertThat(callback.mError).isNull();
             assertThat(callback.mResponseStep).isEqualTo(ResponseStep.ON_SUCCEEDED);
-            assertTrue(urlRequest.isDone());
-            assertThat(callback.mResponseInfo).isNotNull();
-            assertFalse(callback.mOnErrorCalled);
-            assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+            assertThat(urlRequest.isDone()).isTrue();
+            assertThat(callback.getResponseInfoWithChecks()).isNotNull();
+            assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
             assertThat(callback.mResponseAsString).isEqualTo("GET");
         }
     }
@@ -1929,19 +1868,22 @@ public class CronetUrlRequestTest {
             NativeTestServer.shutdownNativeTestServer();
             TestUrlRequestCallback callback = new TestUrlRequestCallback();
             callback.setFailure(type, ResponseStep.ON_FAILED);
-            UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
-                    url, callback, callback.getExecutor());
+            UrlRequest.Builder builder =
+                    mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
+                            url, callback, callback.getExecutor());
             UrlRequest urlRequest = builder.build();
             urlRequest.start();
             callback.blockForDone();
             // Wait for all posted tasks to be executed to ensure there is no unhandled exception.
             callback.shutdownExecutorAndWait();
             assertThat(callback.mResponseStep).isEqualTo(ResponseStep.ON_FAILED);
-            assertTrue(callback.mOnErrorCalled);
+            assertThat(callback.mOnErrorCalled).isTrue();
             assertThat(callback.mError).isNotNull();
-            assertTrue(urlRequest.isDone());
+            assertThat(urlRequest.isDone()).isTrue();
             // Start NativeTestServer again to run the test for a second time.
-            assertTrue(NativeTestServer.startNativeTestServer(getContext()));
+            assertThat(NativeTestServer.startNativeTestServer(
+                               mTestRule.getTestFramework().getContext()))
+                    .isTrue();
         }
     }
 
@@ -1959,18 +1901,18 @@ public class CronetUrlRequestTest {
                 }
             };
             callback.setFailure(type, ResponseStep.ON_CANCELED);
-            UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
-                    NativeTestServer.getEchoBodyURL(), callback, callback.getExecutor());
+            UrlRequest.Builder builder =
+                    mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
+                            NativeTestServer.getEchoBodyURL(), callback, callback.getExecutor());
             UrlRequest urlRequest = builder.build();
             urlRequest.start();
             callback.blockForDone();
             // Wait for all posted tasks to be executed to ensure there is no unhandled exception.
             callback.shutdownExecutorAndWait();
             assertResponseStepCanceled(callback);
-            assertTrue(urlRequest.isDone());
-            assertThat(callback.mResponseInfo).isNotNull();
-            assertThat(callback.mError).isNull();
-            assertTrue(callback.mOnCanceledCalled);
+            assertThat(urlRequest.isDone()).isTrue();
+            assertThat(callback.getResponseInfoWithChecks()).isNotNull();
+            assertThat(callback.mOnCanceledCalled).isTrue();
         }
     }
 
@@ -1981,13 +1923,13 @@ public class CronetUrlRequestTest {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
 
         callback.setAutoAdvance(false);
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getEchoBodyURL(), callback, callback.getExecutor());
         CronetUrlRequest urlRequest = (CronetUrlRequest) builder.build();
         urlRequest.start();
         callback.waitForNextStep();
-        assertFalse(callback.isDone());
-        assertFalse(urlRequest.isDone());
+        assertThat(callback.isDone()).isFalse();
+        assertThat(urlRequest.isDone()).isFalse();
 
         final ConditionVariable requestDestroyed = new ConditionVariable(false);
         urlRequest.setOnDestroyedCallbackForTesting(new Runnable() {
@@ -2005,8 +1947,8 @@ public class CronetUrlRequestTest {
         // but request will be destroyed from network thread.
         requestDestroyed.block();
 
-        assertFalse(callback.isDone());
-        assertTrue(urlRequest.isDone());
+        assertThat(callback.isDone()).isFalse();
+        assertThat(urlRequest.isDone()).isTrue();
     }
 
     @Test
@@ -2030,12 +1972,11 @@ public class CronetUrlRequestTest {
             }
 
             @Override
-            public void rewind(final UploadDataSink uploadDataSink) {
-            }
+            public void rewind(final UploadDataSink uploadDataSink) {}
         }
 
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getEchoBodyURL(), callback, callback.getExecutor());
 
         ExecutorService uploadExecutor = Executors.newSingleThreadExecutor();
@@ -2054,12 +1995,12 @@ public class CronetUrlRequestTest {
         // Callback.onFailed will be called on request executor even though upload
         // executor is shutdown.
         callback.blockForDone();
-        assertTrue(callback.isDone());
-        assertTrue(callback.mOnErrorCalled);
+        assertThat(callback.isDone()).isTrue();
+        assertThat(callback.mOnErrorCalled).isTrue();
         assertThat(callback.mError)
                 .hasMessageThat()
                 .contains("Exception received from UploadDataProvider");
-        assertTrue(urlRequest.isDone());
+        assertThat(urlRequest.isDone()).isTrue();
     }
 
     /**
@@ -2080,7 +2021,7 @@ public class CronetUrlRequestTest {
     // Regression test for crbug.com/564946.
     public void testDestroyUploadDataStreamAdapterOnSucceededCallback() throws Exception {
         TestUrlRequestCallback callback = new QuitOnSuccessCallback();
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getEchoBodyURL(), callback, callback.getExecutor());
 
         TestUploadDataProvider dataProvider = new TestUploadDataProvider(
@@ -2100,7 +2041,7 @@ public class CronetUrlRequestTest {
         uploadDataStreamAdapterDestroyed.block();
         callback.blockForDone();
 
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).isEmpty();
     }
 
@@ -2140,15 +2081,16 @@ public class CronetUrlRequestTest {
         // Make a request to a url that sets the cookie
         String url = NativeTestServer.getFileURL("/set_cookie.html");
         TestUrlRequestCallback callback = startAndWaitForComplete(url);
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
-        assertThat(callback.mResponseInfo.getAllHeaders())
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks())
+                .hasHeadersThat()
                 .containsEntry("Set-Cookie", Arrays.asList("A=B"));
 
         // Make a request that check that cookie header isn't sent.
         String headerName = "Cookie";
         String url2 = NativeTestServer.getEchoHeaderURL(headerName);
         TestUrlRequestCallback callback2 = startAndWaitForComplete(url2);
-        assertThat(callback2.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback2.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback2.mResponseAsString).isEqualTo("Header not found. :(");
     }
 
@@ -2159,7 +2101,7 @@ public class CronetUrlRequestTest {
         TestUrlRequestCallback callback =
                 startAndWaitForComplete(MockUrlRequestJobFactory.getMockUrlWithFailure(
                         FailurePhase.START, NetError.ERR_QUIC_PROTOCOL_ERROR));
-        assertThat(callback.mResponseInfo).isNull();
+        assertThat(callback.getResponseInfo()).isNull();
         assertThat(callback.mError).isInstanceOf(QuicException.class);
         QuicException quicException = (QuicException) callback.mError;
         // 1 is QUIC_INTERNAL_ERROR
@@ -2175,7 +2117,7 @@ public class CronetUrlRequestTest {
         TestUrlRequestCallback callback =
                 startAndWaitForComplete(MockUrlRequestJobFactory.getMockUrlWithFailure(
                         FailurePhase.START, NetError.ERR_NETWORK_CHANGED));
-        assertThat(callback.mResponseInfo).isNull();
+        assertThat(callback.getResponseInfo()).isNull();
         assertThat(callback.mError).isInstanceOf(QuicException.class);
         QuicException quicException = (QuicException) callback.mError;
         // QUIC_CONNECTION_MIGRATION_NO_NEW_NETWORK(83) is set in
@@ -2240,21 +2182,21 @@ public class CronetUrlRequestTest {
             }
         };
 
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 MockUrlRequestJobFactory.getMockUrlWithFailure(FailurePhase.START, netError),
                 callback, Executors.newSingleThreadExecutor());
         final UrlRequest urlRequest = builder.build();
         urlRequest.start();
         done.block();
         // Check that onFailed is called.
-        assertFalse(failedExpectation.get());
+        assertThat(failedExpectation.get()).isFalse();
     }
 
     private void checkSpecificErrorCode(int netError, int errorCode, String name,
             boolean immediatelyRetryable) throws Exception {
         TestUrlRequestCallback callback = startAndWaitForComplete(
                 MockUrlRequestJobFactory.getMockUrlWithFailure(FailurePhase.START, netError));
-        assertThat(callback.mResponseInfo).isNull();
+        assertThat(callback.getResponseInfo()).isNull();
         assertThat(callback.mError).isNotNull();
         assertThat(((NetworkException) callback.mError).getCronetInternalErrorCode())
                 .isEqualTo(netError);
@@ -2265,7 +2207,7 @@ public class CronetUrlRequestTest {
                 .hasMessageThat()
                 .contains("Exception in CronetUrlRequest: net::ERR_" + name);
         assertThat(callback.mRedirectCount).isEqualTo(0);
-        assertTrue(callback.mOnErrorCalled);
+        assertThat(callback.mOnErrorCalled).isTrue();
         assertThat(callback.mResponseStep).isEqualTo(ResponseStep.ON_FAILED);
     }
 
@@ -2302,7 +2244,7 @@ public class CronetUrlRequestTest {
         // cleartext.
         final String url = "http://example.com/simple.txt";
         TestUrlRequestCallback callback = startAndWaitForComplete(url);
-        assertThat(callback.mResponseInfo).isNull();
+        assertThat(callback.getResponseInfo()).isNull();
         assertThat(callback.mError).isNotNull();
         assertThat(((NetworkException) callback.mError).getCronetInternalErrorCode())
                 .isEqualTo(cleartextNotPermitted);
@@ -2320,7 +2262,8 @@ public class CronetUrlRequestTest {
             TestUrlRequestCallback callback = new TestUrlRequestCallback();
             callback.setAutoAdvance(false);
             UrlRequest urlRequest =
-                    mTestFramework.mCronetEngine
+                    mTestRule.getTestFramework()
+                            .getEngine()
                             .newUrlRequestBuilder(url, callback, callback.getExecutor())
                             .build();
             urlRequest.start();
@@ -2349,7 +2292,7 @@ public class CronetUrlRequestTest {
     /** Do a HEAD request and get back a 404. */
     public void test404Head() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getFileURL("/notfound.html"), callback, callback.getExecutor());
         builder.setHttpMethod("HEAD").build().start();
         callback.blockForDone();
@@ -2370,8 +2313,9 @@ public class CronetUrlRequestTest {
         int tag = 0;
         long priorBytes = CronetTestUtil.nativeGetTaggedBytes(tag);
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        ExperimentalUrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
-                url, callback, callback.getExecutor());
+        ExperimentalUrlRequest.Builder builder =
+                mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
+                        url, callback, callback.getExecutor());
         builder.build().start();
         callback.blockForDone();
         assertThat(CronetTestUtil.nativeGetTaggedBytes(tag)).isGreaterThan(priorBytes);
@@ -2380,7 +2324,7 @@ public class CronetUrlRequestTest {
         tag = 0x12345678;
         priorBytes = CronetTestUtil.nativeGetTaggedBytes(tag);
         callback = new TestUrlRequestCallback();
-        builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 url, callback, callback.getExecutor());
         assertThat(builder).isEqualTo(builder.setTrafficStatsTag(tag));
         builder.build().start();
@@ -2391,7 +2335,7 @@ public class CronetUrlRequestTest {
         tag = 0x87654321;
         priorBytes = CronetTestUtil.nativeGetTaggedBytes(tag);
         callback = new TestUrlRequestCallback();
-        builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 url, callback, callback.getExecutor());
         assertThat(builder).isEqualTo(builder.setTrafficStatsTag(tag));
         builder.build().start();
@@ -2402,7 +2346,7 @@ public class CronetUrlRequestTest {
         tag = 0;
         priorBytes = CronetTestUtil.nativeGetTaggedBytes(tag);
         callback = new TestUrlRequestCallback();
-        builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 url, callback, callback.getExecutor());
         assertThat(builder).isEqualTo(builder.setTrafficStatsUid(Process.myUid()));
         builder.build().start();
@@ -2429,8 +2373,9 @@ public class CronetUrlRequestTest {
             } else {
                 callbacks[i] = new TestUrlRequestCallback(callbacks[0].getExecutor());
             }
-            UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
-                    url, callbacks[i], callbacks[i].getExecutor());
+            UrlRequest.Builder builder =
+                    mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
+                            url, callbacks[i], callbacks[i].getExecutor());
             requests[i] = builder.build();
         }
         for (UrlRequest request : requests) {
@@ -2448,8 +2393,9 @@ public class CronetUrlRequestTest {
     @SmallTest
     public void testSetIdempotency() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        ExperimentalUrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
-                NativeTestServer.getEchoMethodURL(), callback, callback.getExecutor());
+        ExperimentalUrlRequest.Builder builder =
+                mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
+                        NativeTestServer.getEchoMethodURL(), callback, callback.getExecutor());
         assertThat(builder).isEqualTo(
                 builder.setIdempotency(ExperimentalUrlRequest.Builder.IDEMPOTENT));
 
@@ -2462,8 +2408,40 @@ public class CronetUrlRequestTest {
         callback.blockForDone();
         dataProvider.assertClosed();
 
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).isEqualTo("POST");
+    }
+
+    @Test
+    @SmallTest
+    @OnlyRunJavaCronet
+    @RequiresMinAndroidApi(Build.VERSION_CODES.M)
+    public void testBindToNetwork() {
+        String url = NativeTestServer.getEchoMethodURL();
+        // bind to invalid network handle
+        CronetEngine cronetEngine = mTestRule.getTestFramework().getEngine();
+        TestUrlRequestCallback callback = new TestUrlRequestCallback();
+        UrlRequest.Builder builder =
+                cronetEngine.newUrlRequestBuilder(url, callback, callback.getExecutor())
+                        .bindToNetwork(-150 /* invalid network handle */);
+        builder.build().start();
+        callback.blockForDone();
+
+        assertThat(callback.mError).hasCauseThat().isInstanceOf(NetworkExceptionImpl.class);
+        assertThat(callback.mError).hasCauseThat().hasMessageThat().contains("Network bound");
+
+        // bind to the default network
+        ConnectivityManagerDelegate delegate =
+                new ConnectivityManagerDelegate(mTestRule.getTestFramework().getContext());
+        Network defaultNetwork = delegate.getDefaultNetwork();
+        assumeTrue(defaultNetwork != null);
+        callback = new TestUrlRequestCallback();
+        builder = cronetEngine.newUrlRequestBuilder(url, callback, callback.getExecutor())
+                          .bindToNetwork(defaultNetwork.getNetworkHandle());
+        builder.build().start();
+        callback.blockForDone();
+
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
     }
 
     @NativeMethods("cronet_tests")

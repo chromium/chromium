@@ -10,13 +10,19 @@
 #import "ios/chrome/browser/ui/settings/language/language_settings_commands.h"
 #import "ios/chrome/browser/ui/settings/language/language_settings_data_source.h"
 
-class ChromeBrowserState;
+class PrefService;
+
+namespace language {
+class LanguageModelManager;
+}  // namespace language
 
 @interface LanguageSettingsMediator
     : NSObject <LanguageSettingsDataSource, LanguageSettingsCommands>
 
 // The designated initializer. `browserState` must not be nil.
-- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
+- (instancetype)initWithLanguageModelManager:
+                    (language::LanguageModelManager*)languageModelManager
+                                 prefService:(PrefService*)prefService
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

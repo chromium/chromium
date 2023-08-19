@@ -29,17 +29,23 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+ 
+dictionary ShowContextMenuItem {
+  required DOMString type;
+  [EnforceRange] unsigned short id;
+  DOMString? label;
+  boolean enabled = true;
+  boolean checked = false;
+  sequence<ShowContextMenuItem> subItems;
+};
 
 [
     LegacyNoInterfaceObject
 ] interface DevToolsHost {
     float zoomFactor();
-
     void copyText(DOMString text);
-
-    [Custom] DOMString platform();
-    [Custom] void showContextMenuAtPoint(float x, float y, any items, optional Document document);
+    DOMString platform();
+    [CallWith=Isolate] void showContextMenuAtPoint(float x, float y, sequence<ShowContextMenuItem> items, optional Document document);
     void sendMessageToEmbedder(DOMString message);
-
     boolean isHostedMode();
 };

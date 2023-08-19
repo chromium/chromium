@@ -47,9 +47,9 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/profile_picker.h"
-#include "chrome/browser/ui/signin/profile_colors_util.h"
-#include "chrome/browser/ui/signin/profile_customization_bubble_sync_controller.h"
+#include "chrome/browser/ui/profiles/profile_colors_util.h"
+#include "chrome/browser/ui/profiles/profile_customization_bubble_sync_controller.h"
+#include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -231,7 +231,7 @@ void OnSigninComplete(Profile* profile,
     if (reuse_manager) {
       reuse_manager->SaveGaiaPasswordHash(
           username, base::UTF8ToUTF16(password),
-          /*is_primary_account_=*/true,
+          /*is_sync_password_for_metrics=*/true,
           password_manager::metrics_util::GaiaPasswordHashChange::
               SAVED_ON_CHROME_SIGNIN);
     }
@@ -375,7 +375,7 @@ void InlineSigninHelper::OnClientOAuthSuccessAndBrowserOpened(
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_);
 
-  std::string primary_email =
+  std::string sync_email =
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
           .email;
 
@@ -384,7 +384,8 @@ void InlineSigninHelper::OnClientOAuthSuccessAndBrowserOpened(
         PasswordReuseManagerFactory::GetForProfile(profile_);
     if (reuse_manager) {
       reuse_manager->SaveGaiaPasswordHash(
-          primary_email, base::UTF8ToUTF16(password_), !primary_email.empty(),
+          sync_email, base::UTF8ToUTF16(password_),
+          /*is_sync_password_for_metrics=*/!sync_email.empty(),
           password_manager::metrics_util::GaiaPasswordHashChange::
               SAVED_ON_CHROME_SIGNIN);
     }
@@ -393,10 +394,12 @@ void InlineSigninHelper::OnClientOAuthSuccessAndBrowserOpened(
   if (reason == HandlerSigninReason::kReauthentication) {
     DCHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
            chrome::enterprise_util::UserAcceptedAccountManagement(profile_));
-
+    // TODO(b/278545484): support LST binding for refresh tokens created by
+    // InlineSigninHelper.
     identity_manager->GetAccountsMutator()->AddOrUpdateAccount(
         gaia_id_, email_, result.refresh_token,
         result.is_under_advanced_protection,
+        signin_metrics::AccessPoint::ACCESS_POINT_FORCED_SIGNIN,
         signin_metrics::SourceForRefreshTokenOperation::
             kInlineLoginHandler_Signin);
 
@@ -449,10 +452,13 @@ void InlineSigninHelper::CreateSyncStarter(const std::string& refresh_token) {
   }
 
   Browser* browser = chrome::FindLastActiveWithProfile(profile_);
+  // TODO(b/278545484): support LST binding for refresh tokens created by
+  // InlineSigninHelper.
   CoreAccountId account_id =
       identity_manager->GetAccountsMutator()->AddOrUpdateAccount(
           gaia_id_, email_, refresh_token,
           /*is_under_advanced_protection=*/false,
+          signin_metrics::AccessPoint::ACCESS_POINT_FORCED_SIGNIN,
           signin_metrics::SourceForRefreshTokenOperation::
               kInlineLoginHandler_Signin);
 

@@ -133,8 +133,7 @@ public class WebappActionsNotificationTest {
         });
     }
 
-    @Nullable
-    private Notification getWebappNotification() {
+    private @Nullable Notification getWebappNotification() {
         NotificationManager nm =
                 (NotificationManager) mActivityTestRule.getActivity().getSystemService(
                         Context.NOTIFICATION_SERVICE);

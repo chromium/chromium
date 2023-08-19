@@ -2,8 +2,9 @@ Name: R8
 URL: https://r8.googlesource.com/r8
 Version: unknown
 License: BSD 3-Clause
-License File: NOT_SHIPPED
+License File: LICENSE
 Security Critical: no
+Shipped: no
 
 Description:
 R8 is a whole-program optimizer and dexer. It takes in .class files and outputs

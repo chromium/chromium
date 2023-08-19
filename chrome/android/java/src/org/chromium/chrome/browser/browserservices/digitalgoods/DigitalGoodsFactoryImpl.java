@@ -6,8 +6,7 @@ package org.chromium.chrome.browser.browserservices.digitalgoods;
 
 import android.app.Activity;
 
-import androidx.annotation.VisibleForTesting;
-
+import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
@@ -32,9 +31,9 @@ public class DigitalGoodsFactoryImpl implements DigitalGoodsFactory {
     private final DigitalGoodsImpl.Delegate mDigitalGoodsDelegate;
     private final DigitalGoodsAdapter mAdapter;
 
-    @VisibleForTesting
     public static void setDigitalGoodsForTesting(DigitalGoods impl) {
         sImplForTesting = impl;
+        ResettersForTesting.register(() -> sImplForTesting = null);
     }
 
     public DigitalGoodsFactoryImpl(RenderFrameHost renderFrameHost) {

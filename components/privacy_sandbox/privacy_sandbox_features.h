@@ -77,6 +77,12 @@ COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 extern const base::FeatureParam<bool>
     kPrivacySandboxSettings4ShowSampleDataForTesting;
 
+// When true, suppress any Privacy Sandbox dialog if Chrome is launched
+// from an external app.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+extern const base::FeatureParam<bool>
+    kPrivacySandboxSettings4SuppressDialogForExternalAppLaunches;
+
 // Enables the third release of the Privacy Sandbox settings.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kPrivacySandboxSettings3);
@@ -132,6 +138,17 @@ extern const base::FeatureParam<bool> kPrivacySandboxFirstPartySetsUISampleSets;
 // Enables enforcement of Privacy Sandbox Enrollment/Attestations.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kEnforcePrivacySandboxAttestations);
+
+// Gives a list of sites permission to use Privacy Sandbox features without
+// being officially enrolled.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+extern const char kPrivacySandboxEnrollmentOverrides[];
+
+// Allow the Privacy Sandbox Attestations component registration to use higher
+// task priority.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(
+    kPrivacySandboxAttestationsHigherComponentRegistrationPriority);
 
 }  // namespace privacy_sandbox
 

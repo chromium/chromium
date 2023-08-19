@@ -34,6 +34,13 @@
     }
   }
 
+  :host-context([chrome-refresh-2023]) cr-most-visited {
+    --add-shortcut-background-color:
+        var(--color-new-tab-page-add-shortcut-background);
+    --add-shortcut-foreground-color:
+        var(--color-new-tab-page-add-shortcut-foreground);
+  }
+
   :host([modules-redesigned-enabled_]) {
     --ntp-module-border-radius: 16px;
     --ntp-module-item-border-radius: 12px;
@@ -42,10 +49,6 @@
   }
 
   :host([show-background-image_]) {
-    --ntp-theme-text-shadow: 0 0 16px rgba(0, 0, 0, .3);
-  }
-
-  :host([show-background-image_][remove-scrim_]) {
     --ntp-theme-text-shadow: 0.5px 0.5px 1px rgba(0, 0, 0, 0.5),
         0px 0px 2px rgba(0, 0, 0, 0.2), 0px 0px 10px rgba(0, 0, 0, 0.1);
     --ntp-protected-icon-background-color: rgba(0, 0, 0, .6);
@@ -53,8 +56,11 @@
   }
 
   #oneGoogleBarScrim {
-    background: linear-gradient(rgba(0, 0, 0, 0.25), transparent);
-    height: 64px;
+    background: linear-gradient(rgba(0,0,0,0.25) 0%,
+                                rgba(0,0,0,0.12) 45%,
+                                rgba(0,0,0,0.05) 65%,
+                                transparent 100%);
+    height: 80px;
     position: absolute;
     top: 0;
     width: 100%;
@@ -99,7 +105,7 @@
     width: var(--ntp-module-layout-width);
   }
 
-  ntp-modules:not([hidden]) {
+  #modules:not([hidden]) {
     /* We use animation instead of transition to allow a fade-in out of
        display: none. */
     animation: 300ms ease-in-out fade-in-animation;
@@ -136,7 +142,7 @@
 
   /* ~ because the dom-if results in a template between the middle-slot-promo
      and ntp-modules. */
-  ntp-middle-slot-promo:not([hidden]) ~ ntp-modules {
+  ntp-middle-slot-promo:not([hidden]) ~ #modules {
     margin-top: 16px;
   }
 
@@ -176,11 +182,18 @@
     box-shadow: 0 3px 6px rgba(0, 0, 0, .16), 0 1px 2px rgba(0, 0, 0, .23);
     font-weight: 400;
     min-width: 32px;
+    padding-inline-start: 16px;
+    padding-inline-end: 16px;
   }
 
   :host([show-background-image_]) #customizeButton {
     box-shadow: none;
     padding: 0;
+  }
+
+  :host-context([chrome-refresh-2023]):host([show-background-image_])
+      #customizeButton {
+    padding-inline-start: 8px;
   }
 
   :host-context(.focus-outline-visible) #customizeButton:focus {
@@ -193,8 +206,17 @@
     -webkit-mask-size: 100%;
     background-color: var(--text-color);
     height: 16px;
-    margin-inline-end: 8px;
     width: 16px;
+  }
+
+  @media (forced-colors: active) {
+    #customizeIcon {
+      background-color: ButtonText;
+    }
+  }
+
+  :host-context([chrome-refresh-2023]) #customizeButton {
+    --cr-button-height: 32px;
   }
 
   :host([show-background-image_]) #customizeIcon {
@@ -203,12 +225,13 @@
   }
 
   @media (max-width: 550px) {
-    #customizeButton {
-      padding: 0;
+    :host-context([chrome-refresh-2023]) #customizeButton {
+      padding-inline-start: 8px;
     }
 
-    #customizeIcon {
-      margin: 0;
+    #customizeButton {
+      padding-inline-start: 0;
+      padding-inline-end: 0;
     }
 
     #customizeText {
@@ -217,12 +240,14 @@
   }
 
   @media (max-width: 970px) {
-    :host([modules-shown-to-user]) #customizeButton {
-      padding: 0;
+    :host-context([chrome-refresh-2023]):host([modules-shown-to-user])
+        #customizeButton {
+      padding-inline-start: 8px;
     }
 
-    :host([modules-shown-to-user]) #customizeIcon {
-      margin: 0;
+    :host([modules-shown-to-user]) #customizeButton {
+      padding-inline-start: 0;
+      padding-inline-end: 0;
     }
 
     :host([modules-shown-to-user]) #customizeText {
@@ -231,12 +256,14 @@
   }
 
   @media (max-width: 1020px) {
-    :host([modules-fre-shown]) #customizeButton {
-      padding: 0;
+    :host-context([chrome-refresh-2023]):host([modules-fre-shown])
+        #customizeButton {
+      padding-inline-start: 8px;
     }
 
-    :host([modules-fre-shown]) #customizeIcon {
-      margin: 0;
+    :host([modules-fre-shown]) #customizeButton {
+      padding-inline-start: 0;
+      padding-inline-end: 0;
     }
 
     :host([modules-fre-shown]) #customizeText {
@@ -260,17 +287,14 @@
     max-width: 50vw;
     padding: 8px;
     position: fixed;
-    text-shadow: var(--ntp-theme-text-shadow);
     z-index: -1;
-  }
-
-  :host([remove-scrim_]) #backgroundImageAttribution {
     background-color: var(--ntp-protected-icon-background-color);
     text-shadow: none;
   }
 
-  :host([remove-scrim_]) #backgroundImageAttribution:hover {
+  #backgroundImageAttribution:hover {
     background-color: var(--ntp-protected-icon-background-color-hovered);
+    background: rgba(var(--google-grey-900-rgb), .1);
   }
 
   :host-context([dir='ltr']) #backgroundImageAttribution {
@@ -279,10 +303,6 @@
 
   :host-context([dir='rtl']) #backgroundImageAttribution {
     right: 16px;
-  }
-
-  #backgroundImageAttribution:hover {
-    background: rgba(var(--google-grey-900-rgb), .1);
   }
 
   #backgroundImageAttribution1Container {
@@ -333,6 +353,10 @@
     top: 0;
     z-index: 101;
   }
+
+  #webstoreToast {
+    padding: 16px;
+  }
 </style>
 <div id="content" style="
         --color-new-tab-page-attribution-foreground: [[rgbaOrInherit_(theme_.textColor)]];
@@ -340,7 +364,7 @@
         --ntp-logo-color: [[rgbaOrInherit_(logoColor_)]];">
   <template is="dom-if" if="[[lazyRender_]]">
     <template is="dom-if" if="[[oneGoogleBarEnabled_]]">
-      <div id="oneGoogleBarScrim" hidden$="[[!showOneGoogleBarScrim_]]"
+      <div id="oneGoogleBarScrim" hidden$="[[!showBackgroundImage_]]"
           fixed$="[[scrolledToTop_]]"></div>
       <ntp-iframe id="oneGoogleBar" src="[[oneGoogleBarIframePath_]]"
           hidden$="[[!oneGoogleBarLoaded_]]"
@@ -368,6 +392,14 @@
       </ntp-lens-upload-dialog>
     </template>
   </div>
+  <template is="dom-if" if="[[lazyRender_]]" >
+    <cr-toast id="webstoreToast" duration="10000" hidden>
+      <div>$i18n{webstoreThemesToastMessage}</div>
+      <cr-button on-click="onWebstoreToastButtonClick_">
+        $i18n{webstoreThemesToastButtonText}
+      </cr-button>
+    </cr-toast>
+  </template>
   <dom-if if="[[lazyRender_]]" on-dom-change="onLazyRendered_">
     <template>
       <template is="dom-if" if="[[shortcutsEnabled_]]">
@@ -383,13 +415,22 @@
         </ntp-middle-slot-promo>
       </template>
       <template is="dom-if" if="[[modulesEnabled_]]">
-        <ntp-modules id="modules"
-            modules-fre-shown="{{modulesFreShown}}"
-            modules-shown-to-user="{{modulesShownToUser}}"
-            on-customize-module="onCustomizeModule_"
-            on-modules-loaded="onModulesLoaded_"
-            hidden="[[!promoAndModulesLoaded_]]">
-        </ntp-modules>
+        <template is="dom-if" if="[[!modulesRedesignedEnabled_]]">
+          <ntp-modules id="modules"
+              modules-fre-shown="{{modulesFreShown}}"
+              modules-shown-to-user="{{modulesShownToUser}}"
+              on-customize-module="onCustomizeModule_"
+              on-modules-loaded="onModulesLoaded_"
+              hidden="[[!promoAndModulesLoaded_]]">
+          </ntp-modules>
+        </template>
+        <template is="dom-if" if="[[modulesRedesignedEnabled_]]">
+          <ntp-modules-v2 id="modules"
+              on-customize-module="onCustomizeModule_"
+              on-modules-loaded="onModulesLoaded_"
+              hidden="[[!promoAndModulesLoaded_]]">
+          </ntp-modules-v2>
+        </template>
       </template>
       <a id="backgroundImageAttribution"
           href="[[backgroundImageAttributionUrl_]]"
@@ -411,7 +452,7 @@
       <div id="customizeButtonContainer">
         <cr-button id="customizeButton" on-click="onCustomizeClick_"
             title="$i18n{customizeThisPage}" aria-pressed="[[showCustomize_]]">
-          <div id="customizeIcon"></div>
+          <div id="customizeIcon" slot="prefix-icon"></div>
           <div id="customizeText" hidden$="[[showBackgroundImage_]]">
             $i18n{customizeButton}
           </div>

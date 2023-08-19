@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/cells/search_engine_item.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
@@ -13,10 +13,6 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "url/gurl.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 using SearchEngineItemTest = PlatformTest;
@@ -37,7 +33,8 @@ TEST_F(SearchEngineItemTest, BasicProperties) {
   id cell = [[[item cellClass] alloc] init];
   ASSERT_TRUE([cell isMemberOfClass:[TableViewURLCell class]]);
 
-  TableViewURLCell* URLCell = base::mac::ObjCCastStrict<TableViewURLCell>(cell);
+  TableViewURLCell* URLCell =
+      base::apple::ObjCCastStrict<TableViewURLCell>(cell);
   EXPECT_FALSE(URLCell.titleLabel.text);
   EXPECT_FALSE(URLCell.URLLabel.text);
   EXPECT_EQ(item.uniqueIdentifier, URLCell.cellUniqueIdentifier);

@@ -122,6 +122,13 @@ struct Metric {
 };
 
 const Metric kAllocatorDumpNamesForMetrics[] = {
+    {"accessibility/ax_platform_node",
+     "AXPlatformNodeCount",
+     MetricSize::kCustom,
+     MemoryAllocatorDump::kNameObjectCount,
+     EmitTo::kSizeInUmaOnly,
+     /*ukm_setter=*/nullptr,
+     {1, 1000000}},
     {"blink_gc", "BlinkGC", MetricSize::kLarge, kEffectiveSize,
      EmitTo::kSizeInUkmAndUma, &Memory_Experimental::SetBlinkGC},
     {"blink_gc", "BlinkGC.AllocatedObjects", MetricSize::kLarge,
@@ -523,6 +530,20 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
      "V8.Main.Heap.ReadOnlySpace.AllocatedObjects", MetricSize::kLarge,
      kAllocatedObjectsSize, EmitTo::kSizeInUkmAndUma,
      &Memory_Experimental::SetV8_Main_Heap_ReadOnlySpace_AllocatedObjects},
+    {"v8/main/heap/large_object_space", "V8.Main.Heap.SharedLargeObjectSpace",
+     MetricSize::kLarge, kEffectiveSize, EmitTo::kSizeInUkmAndUma,
+     &Memory_Experimental::SetV8_Main_Heap_SharedLargeObjectSpace},
+    {"v8/main/heap/large_object_space",
+     "V8.Main.Heap.SharedLargeObjectSpace.AllocatedObjects", MetricSize::kLarge,
+     kAllocatedObjectsSize, EmitTo::kSizeInUkmAndUma,
+     &Memory_Experimental::
+         SetV8_Main_Heap_SharedLargeObjectSpace_AllocatedObjects},
+    {"v8/main/heap/shared_space", "V8.Main.Heap.SharedSpace",
+     MetricSize::kLarge, kEffectiveSize, EmitTo::kSizeInUkmAndUma,
+     &Memory_Experimental::SetV8_Main_Heap_SharedSpace},
+    {"v8/main/heap/shared_space", "V8.Main.Heap.SharedSpace.AllocatedObjects",
+     MetricSize::kLarge, kAllocatedObjectsSize, EmitTo::kSizeInUkmAndUma,
+     &Memory_Experimental::SetV8_Main_Heap_SharedSpace_AllocatedObjects},
     {"v8/main/malloc", "V8.Main.Malloc", MetricSize::kLarge, kEffectiveSize,
      EmitTo::kSizeInUkmAndUma, &Memory_Experimental::SetV8_Main_Malloc},
     {"v8/workers", "V8.Workers", MetricSize::kLarge, kEffectiveSize,
@@ -1212,6 +1233,8 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
 #endif  // BUILDFLAG(IS_ANDROID)
   uint32_t renderer_private_footprint_total_kb = 0;
   uint32_t renderer_malloc_total_kb = 0;
+  uint32_t renderer_blink_gc_total_kb = 0;
+  uint32_t renderer_blink_gc_fragmentation_total_kb = 0;
   uint32_t shared_footprint_total_kb = 0;
   uint32_t resident_set_total_kb = 0;
   uint64_t tiles_total_memory = 0;
@@ -1296,8 +1319,19 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
             single_page_info = &process_info.page_infos[0];
           }
         }
+
+        // Sum malloc memory from all renderers.
         renderer_malloc_total_kb +=
             pmd.GetMetric("malloc", "effective_size").value_or(0) / kKiB;
+
+        // Sum Blink memory from all renderers.
+        const uint64_t blink_gc_bytes =
+            pmd.GetMetric("blink_gc", kEffectiveSize).value_or(0);
+        const uint64_t blink_gc_allocated_objects_bytes =
+            pmd.GetMetric("blink_gc", kAllocatedObjectsSize).value_or(0);
+        renderer_blink_gc_total_kb += blink_gc_bytes / kKiB;
+        renderer_blink_gc_fragmentation_total_kb +=
+            (blink_gc_bytes - blink_gc_allocated_objects_bytes) / kKiB;
 
         int number_of_extensions = GetNumberOfExtensions(pmd.pid());
         EmitRendererMemoryMetrics(
@@ -1402,6 +1436,11 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
                                   renderer_private_footprint_total_kb / kKiB);
     UMA_HISTOGRAM_MEMORY_LARGE_MB("Memory.Total.RendererMalloc",
                                   renderer_malloc_total_kb / kKiB);
+    UMA_HISTOGRAM_MEMORY_LARGE_MB("Memory.Total.RendererBlinkGC",
+                                  renderer_blink_gc_total_kb / kKiB);
+    UMA_HISTOGRAM_MEMORY_LARGE_MB(
+        "Memory.Total.RendererBlinkGC.Fragmentation",
+        renderer_blink_gc_fragmentation_total_kb / kKiB);
     UMA_HISTOGRAM_MEMORY_LARGE_MB("Memory.Total.SharedMemoryFootprint",
                                   shared_footprint_total_kb / kKiB);
     UMA_HISTOGRAM_MEMORY_MEDIUM_MB("Memory.Total.TileMemory",

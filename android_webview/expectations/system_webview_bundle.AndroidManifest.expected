@@ -2,8 +2,8 @@
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.android.webview"
-    platformBuildVersionCode="33"
-    platformBuildVersionName="13"
+    platformBuildVersionCode="34"
+    platformBuildVersionName="14"
     android:isolatedSplits="true"
     android:versionCode="OFFSET=0"
     android:versionName="#.#.#.#">
@@ -11,10 +11,11 @@
   <uses-feature android:name="android.software.leanback" android:required="false"/>
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
   <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"/>
   <uses-permission android:name="android.permission.INTERNET"/>
   <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
   <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-  <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="33"/>
+  <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="34"/>
   <application
       android:name="org.chromium.android_webview.nonembedded.WebViewApkApplication"
       android:extractNativeLibs="false"
@@ -139,7 +140,9 @@
     <service  # DIFF-ANCHOR: adce9ea1
         android:name="org.chromium.android_webview.services.DeveloperUiService"
         android:exported="true"
+        android:foregroundServiceType="specialUse"
         android:process=":webview_service">
+      <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE" android:value="debugging"/>
     </service>  # DIFF-ANCHOR: adce9ea1
     <service  # DIFF-ANCHOR: eecf2fee
         android:name="org.chromium.android_webview.services.MetricsBridgeService"

@@ -11,7 +11,7 @@ if (document.referrer.toString() != "") {
 }
 
 <?php
-$refer = $_SERVER['HTTP_REFERER'];
+$refer = $_SERVER['HTTP_REFERER'] ?? null;
 if ($refer && $refer != "")
     print("log('HTTP Referer: FAIL')");
 else

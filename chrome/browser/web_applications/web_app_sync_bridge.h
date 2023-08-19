@@ -9,6 +9,7 @@
 
 #include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
@@ -46,6 +47,7 @@ namespace web_app {
 
 class AbstractWebAppDatabaseFactory;
 class AppLock;
+class ScopedRegistryUpdate;
 class WebAppCommandManager;
 class WebAppDatabase;
 class WebAppRegistryUpdate;
@@ -87,10 +89,22 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
       base::RepeatingCallback<void(const AppId& app_id,
                                    webapps::UninstallResultCode code)>;
   // This is the writable API for the registry. Any updates will be written to
-  // LevelDb and sync service. There can be only 1 update at a time.
-  std::unique_ptr<WebAppRegistryUpdate> BeginUpdate();
-  void CommitUpdate(std::unique_ptr<WebAppRegistryUpdate> update,
-                    CommitCallback callback);
+  // LevelDb and sync service. There can be only 1 update at a time. The
+  // returned update will be committed to the database automatically on
+  // destruction.
+  //
+  // Writes to the RAM database are synchronous. It is normally not necessary to
+  // wait for the disk write to complete, because:
+  // - All reads and writes happen from the RAM database.
+  // - The disk database is only read during startup before the system starts,
+  //   and is only written to during the rest of the browser's lifetime.
+  //
+  // The only reason waiting may be necessary here is to handle the edge case
+  // that a crash happens and the operation wants to ensure that the disk state
+  // is updated before continuing. This may be necessary for, say, a two-phase
+  // commit involving another browser system with its own storage.
+  [[nodiscard]] ScopedRegistryUpdate BeginUpdate(
+      CommitCallback callback = base::DoNothing());
 
   void Init(base::OnceClosure callback);
 
@@ -175,6 +189,9 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
                                           bool is_locally_installed);
 
  private:
+  void CommitUpdate(CommitCallback callback,
+                    std::unique_ptr<WebAppRegistryUpdate> update);
+
   void CheckRegistryUpdateData(const RegistryUpdateData& update_data) const;
 
   // Update the in-memory model.
@@ -215,9 +232,10 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
 
   std::unique_ptr<WebAppDatabase> database_;
   const raw_ptr<WebAppRegistrarMutable, DanglingUntriaged> registrar_;
-  raw_ptr<WebAppCommandManager, DanglingUntriaged> command_manager_;
-  raw_ptr<WebAppCommandScheduler, DanglingUntriaged> command_scheduler_;
-  raw_ptr<WebAppInstallManager, DanglingUntriaged> install_manager_;
+  raw_ptr<WebAppCommandManager, AcrossTasksDanglingUntriaged> command_manager_;
+  raw_ptr<WebAppCommandScheduler, AcrossTasksDanglingUntriaged>
+      command_scheduler_;
+  raw_ptr<WebAppInstallManager, AcrossTasksDanglingUntriaged> install_manager_;
 
   base::OneShotEvent on_sync_connected_;
 

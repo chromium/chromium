@@ -172,7 +172,9 @@ void EcheSignaler::ProcessAndroidNetworkInfo(const proto::ExoMessage& message) {
       is_different_network, remote_on_cellular);
 }
 
-void EcheSignaler::OnRequestCloseConnnection() {
+void EcheSignaler::OnConnectionClosed() {
+  // When a background connection is closed, reset the timer so no data will be
+  // recoreded into ConnectionFail bucket.
   signaling_timeout_timer_.reset();
 }
 

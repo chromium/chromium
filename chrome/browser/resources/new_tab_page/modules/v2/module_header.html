@@ -1,0 +1,42 @@
+<style include="cr-icons">
+  :host {
+    background: var(--color-new-tab-page-module-item-background);
+    border-radius: var(--ntp-module-item-border-radius);
+    display: flex;
+    flex-direction: column;
+  }
+
+  #titleContainer {
+    align-items: center;
+    display: flex;
+    height: 20px;
+    padding: 16px;
+  }
+
+  #title {
+    color: var(--color-new-tab-page-primary-foreground);
+    font-size: 13px;
+    font-weight: normal;
+    line-height: 20px;
+  }
+
+  #headerSpacer {
+    flex-grow: 1;
+  }
+
+  cr-icon-button {
+    --cr-icon-button-icon-size: 20px;
+    --cr-icon-button-fill-color: var(--color-new-tab-page-primary-foreground);
+    --cr-icon-button-hover-background-color:
+        var(--color-new-tab-page-control-background-hovered);
+    margin-inline: 0 -6px;
+  }
+</style>
+<div id="titleContainer">
+  <h2 id="title">[[headerText]]</h2>
+  <div id="headerSpacer"></div>
+  <slot name="title-actions"></slot>
+  <cr-icon-button id="menuButton" title="[[moreActionsText]]"
+      class="icon-more-vert" on-click="onMenuButtonClick_">
+  </cr-icon-button>
+</div>

@@ -20,7 +20,7 @@
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/profile_picker.h"
+#include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -159,7 +159,7 @@ class ChromeMultiProfileStartupBrowserTestBase
     }
   }
 
-  raw_ptr<MockMainExtraParts, DanglingUntriaged> mock_part_;
+  raw_ptr<MockMainExtraParts, AcrossTasksDanglingUntriaged> mock_part_;
 };
 
 IN_PROC_BROWSER_TEST_P(ChromeMultiProfileStartupBrowserTestBase,

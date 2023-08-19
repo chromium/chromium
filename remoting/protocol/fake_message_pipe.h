@@ -73,7 +73,7 @@ class FakeMessagePipe final : public MessagePipe {
 
   const bool asynchronous_;
   bool pipe_opened_ = false;
-  raw_ptr<EventHandler, DanglingUntriaged> event_handler_ = nullptr;
+  raw_ptr<EventHandler, AcrossTasksDanglingUntriaged> event_handler_ = nullptr;
   base::queue<std::string> sent_messages_;
   std::vector<base::WeakPtr<FakeMessagePipeWrapper>> wrappers_;
 };

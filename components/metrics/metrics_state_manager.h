@@ -340,7 +340,7 @@ class MetricsStateManager final {
 
   // Weak pointer to an enabled state provider. Used to know whether the user
   // has consented to reporting, and if reporting should be done.
-  raw_ptr<EnabledStateProvider, DanglingUntriaged> enabled_state_provider_;
+  raw_ptr<EnabledStateProvider> enabled_state_provider_;
 
   // Specified options for controlling trial randomization.
   const EntropyParams entropy_params_;

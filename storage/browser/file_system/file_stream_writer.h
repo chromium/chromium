@@ -24,6 +24,12 @@ class IOBuffer;
 
 namespace storage {
 
+// Indicates whether the flush is done in the middle or at the end of a file.
+enum class FlushMode {
+  kDefault,
+  kEndOfFile,
+};
+
 // A generic interface for writing to a file-like object.
 class FileStreamWriter {
  public:
@@ -89,13 +95,26 @@ class FileStreamWriter {
 
   // Flushes the data written so far.
   //
+  // The flush_mode argument exists because some implementations may be backed
+  // by cloud-storage APIs (not local disk) that do not support incremental
+  // writes. In such cases, only the final flush does an upload and any earlier
+  // flushes should be no-ops, but the caller still needs to tell the callee
+  // which flush is the final one.
+  //
+  // Some other "stream writer" APIs have separate Flush and Close methods, but
+  // for historical reasons, this API has Flush(FlushMode::kDefault) and
+  // Flush(FlushMode::kEndOfFile). Note that Flush(FlushMode::kEndOfFile), the
+  // equivalent of Close, still takes a callback (it can involve async I/O),
+  // unlike the FileStreamWriter destructor (as destructors have no arguments).
+  //
   // If the flush finished synchronously, it return net::OK. If the flush could
   // not be performed, it returns an error code. Otherwise, net::ERR_IO_PENDING
   // is returned, and the callback will be run on the thread where Flush() was
   // called when the flush has completed.
   //
   // It is invalid to call Flush while there is an in-flight async operation.
-  virtual int Flush(net::CompletionOnceCallback callback) = 0;
+  virtual int Flush(FlushMode flush_mode,
+                    net::CompletionOnceCallback callback) = 0;
 
  protected:
   FileStreamWriter() = default;

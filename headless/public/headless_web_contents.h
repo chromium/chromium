@@ -98,7 +98,8 @@ class HEADLESS_EXPORT HeadlessWebContents::Builder {
 
   explicit Builder(HeadlessBrowserContextImpl* browser_context);
 
-  raw_ptr<HeadlessBrowserContextImpl, DanglingUntriaged> browser_context_;
+  raw_ptr<HeadlessBrowserContextImpl, AcrossTasksDanglingUntriaged>
+      browser_context_;
 
   GURL initial_url_ = GURL("about:blank");
   gfx::Size window_size_;

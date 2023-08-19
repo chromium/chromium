@@ -1,0 +1,17 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+component("cpp") {
+  defines = [ "IS_EDITOR_MENU_PUBLIC_CPP_IMPL" ]
+  output_name = "editor_menu_public_cpp"
+
+  sources = [
+    "editor_menu_controller.cc",
+    "editor_menu_controller.h",
+  ]
+
+  deps = [ "//base" ]
+}

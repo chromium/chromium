@@ -31,10 +31,13 @@
             var(--cr-fallback-color-primary));
         --cr-input-hover-background-color: var(--cr-hover-background-color);
         --cr-input-padding-bottom: 10px;
+        --cr-input-padding-end: 10px;
+        --cr-input-padding-start: 10px;
         --cr-input-padding-top: 10px;
         --cr-input-placeholder-color:
             var(--color-textfield-foreground-placeholder,
                 var(--cr-fallback-on-surface-subtle));
+        isolation: isolate;
       }
 
       :host-context([chrome-refresh-2023]):host([readonly]) {
@@ -58,6 +61,7 @@
         color: var(--color-textfield-foreground-label,
             var(--cr-fallback-color-on-surface-subtle));
         font-size: 11px;
+        line-height: 16px;
       }
 
       /* Input styling below. */
@@ -77,8 +81,21 @@
       :host-context([chrome-refresh-2023]) #inner-input-content ::slotted(*) {
         --cr-icon-button-fill-color: var(--color-textfield-foreground-icon,
             var(--cr-fallback-color-on-surface-subtle));
+        --cr-icon-button-icon-size: 16px;
+        --cr-icon-button-size: 24px;
+        --cr-icon-button-margin-start: 0;
         --cr-icon-color: var(--color-textfield-foreground-icon,
             var(--cr-fallback-color-on-surface-subtle));
+      }
+
+      :host-context([chrome-refresh-2023]) #inner-input-content
+          ::slotted([slot='inline-prefix']) {
+        --cr-icon-button-margin-start: -8px;
+      }
+
+      :host-context([chrome-refresh-2023]) #inner-input-content
+          ::slotted([slot='inline-suffix']) {
+        --cr-icon-button-margin-end: -4px;
       }
 
       :host-context([chrome-refresh-2023]):host([invalid])
@@ -140,6 +157,14 @@
       :host-context([chrome-refresh-2023]) #input {
         font-size: 12px;
         line-height: 16px;
+        padding: 0;
+      }
+
+      :host-context([chrome-refresh-2023]) #inner-input-content {
+        padding-bottom: var(--cr-input-padding-bottom);
+        padding-inline-end: var(--cr-input-padding-end);
+        padding-inline-start: var(--cr-input-padding-start);
+        padding-top: var(--cr-input-padding-top);
       }
 
       /* Underline styling below. */
@@ -187,13 +212,12 @@
 
       :host-context([chrome-refresh-2023]):host([disabled]) {
         color: var(--color-textfield-foreground-disabled,
-              rgba(var(--cr-fallback-color-on-surface-rgb),
-                  var(--cr-disabled-opacity)));
+            var(--cr-fallback-color-disabled-foreground));
         --cr-input-border-bottom: 1px solid currentColor;
         --cr-input-placeholder-color: currentColor;
         --cr-input-color: currentColor;
         --cr-input-background-color: var(--color-textfield-background-disabled,
-            rgba(var(--cr-fallback-color-on-surface-rgb), .12));
+            var(--cr-fallback-color-disabled-background));
       }
 
       :host-context([chrome-refresh-2023]):host([disabled])
@@ -201,4 +225,3 @@
         --cr-icon-color: currentColor;
         --cr-icon-button-fill-color: currentColor;
       }
-

@@ -20,16 +20,18 @@
 #include "chrome/browser/component_updater/updater_state.h"
 #include "chrome/browser/google/google_update_policy_fetcher_win_util.h"
 #include "chrome/install_static/install_util.h"
+#include "chrome/updater/app/server/win/updater_legacy_idl.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/core/common/schema.h"
 #include "components/strings/grit/components_strings.h"
-#include "google_update/google_update_idl.h"
 
 namespace {
 
+// TODO(crbug.com/1453285): Add unit tests for these GoogleUpdate policies.
 constexpr char kAutoUpdateCheckPeriodMinutes[] = "AutoUpdateCheckPeriodMinutes";
 constexpr char kDownloadPreference[] = "DownloadPreference";
+constexpr char kForceInstallApps[] = "ForceInstallApps";
 constexpr char kInstallPolicy[] = "InstallPolicy";
 constexpr char kProxyMode[] = "ProxyMode";
 constexpr char kProxyPacUrl[] = "ProxyPacUrl";
@@ -41,16 +43,6 @@ constexpr char kUpdatePolicy[] = "UpdatePolicy";
 constexpr char kUpdatesSuppressedDurationMin[] = "UpdatesSuppressedDurationMin";
 constexpr char kUpdatesSuppressedStartHour[] = "UpdatesSuppressedStartHour";
 constexpr char kUpdatesSuppressedStartMinute[] = "UpdatesSuppressedStartMinute";
-
-// Adds the |value| of |policy_name| to |policies| using a "Mandatory" level,
-// "Machine" scope and "Platform" source.
-void AddPolicy(const char* policy_name,
-               base::Value value,
-               policy::PolicyMap& policies) {
-  policies.Set(policy_name, policy::POLICY_LEVEL_MANDATORY,
-               policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_PLATFORM,
-               std::move(value), nullptr);
-}
 
 // Adds the policy |policy_name| extracted from |policy| into |policies|.
 // |value_override_function| is an optional function that modifies and overrides
@@ -81,9 +73,10 @@ base::Time DateToTime(DATE date) {
   return time;
 }
 
-// Returns the Google Update policies as of release 1.3.36.21.
+// Returns the policies from GoogleUpdate. Requires GoogleUpdate
+// version 1.3.36.91 (released 07-02-2021) or newer.
 std::unique_ptr<policy::PolicyMap> GetGoogleUpdatePolicies(
-    IPolicyStatus2* policy_status) {
+    IPolicyStatus3* policy_status) {
   DCHECK(policy_status);
 
   policy_status->refreshPolicies();
@@ -99,6 +92,13 @@ std::unique_ptr<policy::PolicyMap> GetGoogleUpdatePolicies(
     Microsoft::WRL::ComPtr<IPolicyStatusValue> policy;
     if (SUCCEEDED(policy_status->get_downloadPreferenceGroupPolicy(&policy)))
       AddPolicy(kDownloadPreference, policy.Get(), *policies);
+  }
+  {
+    Microsoft::WRL::ComPtr<IPolicyStatusValue> policy;
+    if (SUCCEEDED(policy_status->get_forceInstallApps(
+            install_static::IsSystemInstall(), &policy))) {
+      AddPolicy(kForceInstallApps, policy.Get(), *policies);
+    }
   }
   {
     Microsoft::WRL::ComPtr<IPolicyStatusValue> policy;
@@ -152,135 +152,36 @@ std::unique_ptr<policy::PolicyMap> GetGoogleUpdatePolicies(
   }
   {
     Microsoft::WRL::ComPtr<IPolicyStatusValue> policy;
-    if (SUCCEEDED(policy_status->get_targetChannel(app_id.Get(), &policy)))
+    if (SUCCEEDED(policy_status->get_targetChannel(app_id.Get(), &policy))) {
       AddPolicy(kTargetChannel, policy.Get(), *policies);
+    }
   }
   {
     Microsoft::WRL::ComPtr<IPolicyStatusValue> policy;
-    if (SUCCEEDED(policy_status->get_proxyMode(&policy)))
+    if (SUCCEEDED(policy_status->get_proxyMode(&policy))) {
       AddPolicy(kProxyMode, policy.Get(), *policies);
+    }
   }
   {
     Microsoft::WRL::ComPtr<IPolicyStatusValue> policy;
-    if (SUCCEEDED(policy_status->get_proxyPacUrl(&policy)))
+    if (SUCCEEDED(policy_status->get_proxyPacUrl(&policy))) {
       AddPolicy(kProxyPacUrl, policy.Get(), *policies);
+    }
   }
   {
     Microsoft::WRL::ComPtr<IPolicyStatusValue> policy;
-    if (SUCCEEDED(policy_status->get_proxyServer(&policy)))
+    if (SUCCEEDED(policy_status->get_proxyServer(&policy))) {
       AddPolicy(kProxyServer, policy.Get(), *policies);
+    }
   }
 
   return policies;
 }
 
-// Returns the Google Update policies as of release 1.3.35.331
-std::unique_ptr<policy::PolicyMap> GetLegacyGoogleUpdatePolicies(
-    IPolicyStatus* policy_status) {
-  DCHECK(policy_status);
-  auto policies = std::make_unique<policy::PolicyMap>();
-  base::win::ScopedBstr app_id(install_static::GetAppGuid());
-
-  DWORD auto_update_check_period_minutes;
-  HRESULT last_com_res = policy_status->get_lastCheckPeriodMinutes(
-      &auto_update_check_period_minutes);
-  if (SUCCEEDED(last_com_res)) {
-    AddPolicy(kAutoUpdateCheckPeriodMinutes,
-              base::Value(
-                  base::saturated_cast<int>(auto_update_check_period_minutes)),
-              *policies);
-  }
-
-  base::win::ScopedBstr download_preference_group_policy;
-  last_com_res = policy_status->get_downloadPreferenceGroupPolicy(
-      download_preference_group_policy.Receive());
-  if (SUCCEEDED(last_com_res) &&
-      download_preference_group_policy.Length() > 0) {
-    AddPolicy(kDownloadPreference,
-              base::Value(base::AsStringPiece16(
-                  download_preference_group_policy.Get())),
-              *policies);
-  }
-
-  DWORD effective_policy_for_app_installs;
-  last_com_res = policy_status->get_effectivePolicyForAppInstalls(
-      app_id.Get(), &effective_policy_for_app_installs);
-  if (SUCCEEDED(last_com_res)) {
-    AddPolicy(kInstallPolicy,
-              base::Value(
-                  base::saturated_cast<int>(effective_policy_for_app_installs)),
-              *policies);
-  }
-
-  DWORD effective_policy_for_app_updates;
-  last_com_res = policy_status->get_effectivePolicyForAppUpdates(
-      app_id.Get(), &effective_policy_for_app_updates);
-  if (SUCCEEDED(last_com_res)) {
-    AddPolicy(kUpdatePolicy,
-              base::Value(
-                  base::saturated_cast<int>(effective_policy_for_app_updates)),
-              *policies);
-  }
-
-  DWORD updates_suppressed_duration;
-  DWORD updates_suppressed_start_hour;
-  DWORD updates_suppressed_start_minute;
-  VARIANT_BOOL are_updates_suppressed;
-  last_com_res = policy_status->get_updatesSuppressedTimes(
-      &updates_suppressed_start_hour, &updates_suppressed_start_minute,
-      &updates_suppressed_duration, &are_updates_suppressed);
-  if (SUCCEEDED(last_com_res)) {
-    AddPolicy(
-        kUpdatesSuppressedDurationMin,
-        base::Value(base::saturated_cast<int>(updates_suppressed_duration)),
-        *policies);
-    AddPolicy(
-        kUpdatesSuppressedStartHour,
-        base::Value(base::saturated_cast<int>(updates_suppressed_start_hour)),
-        *policies);
-    AddPolicy(
-        kUpdatesSuppressedStartMinute,
-        base::Value(base::saturated_cast<int>(updates_suppressed_start_minute)),
-        *policies);
-  }
-
-  VARIANT_BOOL is_rollback_to_target_version_allowed;
-  last_com_res = policy_status->get_isRollbackToTargetVersionAllowed(
-      app_id.Get(), &is_rollback_to_target_version_allowed);
-  if (SUCCEEDED(last_com_res)) {
-    AddPolicy(
-        kRollbackToTargetVersion,
-        base::Value(is_rollback_to_target_version_allowed == VARIANT_TRUE),
-        *policies);
-  }
-
-  base::win::ScopedBstr target_version_prefix;
-  last_com_res = policy_status->get_targetVersionPrefix(
-      app_id.Get(), target_version_prefix.Receive());
-  if (SUCCEEDED(last_com_res) && target_version_prefix.Length() > 0) {
-    AddPolicy(kTargetVersionPrefix,
-              base::Value(base::AsStringPiece16(target_version_prefix.Get())),
-              *policies);
-  }
-
-  return policies;
-}
-
-// Returns the state for versions prior to release 1.3.36.21.
-std::unique_ptr<GoogleUpdateState> GetLegacyGoogleUpdateState() {
-  component_updater::UpdaterState::Attributes state =
-      component_updater::UpdaterState::GetState(
-          install_static::IsSystemInstall());
-  auto result = std::make_unique<GoogleUpdateState>();
-  const auto version = state.find("version");
-  if (version != state.end())
-    result->version = base::ASCIIToWide(version->second);
-  return result;
-}
-
-// Returns the state for release 1.3.36.21 and newer.
+// Returns the state from GoogleUpdate. Requires GoogleUpdate version 1.3.36.91
+// (released 07-02-2021) or newer.
 std::unique_ptr<GoogleUpdateState> GetGoogleUpdateState(
-    IPolicyStatus2* policy_status) {
+    IPolicyStatus3* policy_status) {
   DCHECK(policy_status);
   auto state = std::make_unique<GoogleUpdateState>();
   base::win::ScopedBstr updater_version;
@@ -317,6 +218,7 @@ policy::PolicyConversions::PolicyToSchemaMap GetGoogleUpdatePolicySchemas() {
   return policy::PolicyConversions::PolicyToSchemaMap{{
       {kAutoUpdateCheckPeriodMinutes, policy::Schema()},
       {kDownloadPreference, policy::Schema()},
+      {kForceInstallApps, policy::Schema()},
       {kInstallPolicy, policy::Schema()},
       {kProxyMode, policy::Schema()},
       {kProxyPacUrl, policy::Schema()},
@@ -334,28 +236,32 @@ policy::PolicyConversions::PolicyToSchemaMap GetGoogleUpdatePolicySchemas() {
 std::unique_ptr<GoogleUpdatePoliciesAndState>
 GetGoogleUpdatePoliciesAndState() {
   base::win::AssertComInitialized();
-  Microsoft::WRL::ComPtr<IPolicyStatus2> policy_status2;
-  Microsoft::WRL::ComPtr<IPolicyStatus> policy_status;
+  Microsoft::WRL::ComPtr<IPolicyStatus3> policy_status3;
   auto policies_and_state = std::make_unique<GoogleUpdatePoliciesAndState>();
-  bool is_system_install = install_static::IsSystemInstall();
-  // The PolicyStatus{Machine,User}Class was introduced in Google
-  // Update 1.3.36.21. If the IPolicyStatus2 interface cannot be found on the
-  // relevant class, try to use the IPolicyStatus interface on
-  // PolicyStatusMachineClass (introduced in 1.3.35.331).
-  if (SUCCEEDED(::CoCreateInstance(
-          is_system_install ? CLSID_PolicyStatusMachineClass
-                            : CLSID_PolicyStatusUserClass,
-          nullptr, CLSCTX_ALL, IID_PPV_ARGS(&policy_status2)))) {
-    policies_and_state->policies =
-        GetGoogleUpdatePolicies(policy_status2.Get());
-    policies_and_state->state = GetGoogleUpdateState(policy_status2.Get());
-  } else if (SUCCEEDED(::CoCreateInstance(CLSID_PolicyStatusMachineClass,
-                                          nullptr, CLSCTX_ALL,
-                                          IID_PPV_ARGS(&policy_status)))) {
-    policies_and_state->policies =
-        GetLegacyGoogleUpdatePolicies(policy_status.Get());
-    policies_and_state->state = GetLegacyGoogleUpdateState();
+  const bool is_system_install = install_static::IsSystemInstall();
+  Microsoft::WRL::ComPtr<IUnknown> unknown;
+  if (FAILED(::CoCreateInstance(is_system_install
+                                    ? CLSID_PolicyStatusSystemClass
+                                    : CLSID_PolicyStatusUserClass,
+                                nullptr, CLSCTX_ALL, IID_PPV_ARGS(&unknown)))) {
+    return policies_and_state;
   }
+
+  // Chrome queries for the SxS IIDs first, with a fallback to the legacy IID.
+  // Without this change, marshaling can load the typelib from the wrong hive
+  // (HKCU instead of HKLM, or vice-versa).
+  HRESULT hr = unknown.CopyTo(is_system_install ? __uuidof(IPolicyStatus3System)
+                                                : __uuidof(IPolicyStatus3User),
+                              IID_PPV_ARGS_Helper(&policy_status3));
+  if (FAILED(hr)) {
+    hr = unknown.As(&policy_status3);
+    if (FAILED(hr)) {
+      return policies_and_state;
+    }
+  }
+
+  policies_and_state->policies = GetGoogleUpdatePolicies(policy_status3.Get());
+  policies_and_state->state = GetGoogleUpdateState(policy_status3.Get());
 
   return policies_and_state;
 }

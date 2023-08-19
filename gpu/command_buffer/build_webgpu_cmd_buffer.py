@@ -54,8 +54,9 @@ _FUNCTION_INFO = {
     'impl_func': False,
     'internal': True,
     'data_transfer_methods': ['shm'],
-    'cmd_args': 'uint32_t commands_shm_id, '
-                'uint32_t commands_shm_offset, uint32_t size',
+    'cmd_args': 'uint32_t trace_id_high, uint32_t trace_id_low, '
+                'uint32_t commands_shm_id, uint32_t commands_shm_offset, '
+                'uint32_t size',
     'size_args': {
       'commands': 'size * sizeof(char)',
     },

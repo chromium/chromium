@@ -13,10 +13,6 @@
 #import "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_client.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Default delay between each call to `PollActiveFindSession`.
@@ -26,10 +22,8 @@ auto kPollActiveFindSessionDelay = base::Milliseconds(100);
 
 namespace web {
 
-FindInPageManagerImpl::FindInPageManagerImpl(web::WebState* web_state,
-                                             bool use_find_interaction)
-    : use_find_interaction_(use_find_interaction),
-      poll_active_find_session_delay_(kPollActiveFindSessionDelay),
+FindInPageManagerImpl::FindInPageManagerImpl(web::WebState* web_state)
+    : poll_active_find_session_delay_(kPollActiveFindSessionDelay),
       web_state_(web_state),
       weak_factory_(this) {
   web_state_->AddObserver(this);
@@ -62,25 +56,19 @@ void FindInPageManagerImpl::Find(NSString* query, FindInPageOptions options) {
 
 id<CRWFindSession> FindInPageManagerImpl::GetActiveFindSession()
     API_AVAILABLE(ios(16)) {
-  // If a Find interaction should be used, then the Find session to be used is
-  // the one provided by this Find interaction.
-  if (use_find_interaction_) {
-    id<CRWFindInteraction> find_interaction = web_state_->GetFindInteraction();
-    // According to the official documentation, if `findNavigatorVisible` is
-    // `NO`, then `activeFindSession` should be `nil`. In practice, it is
-    // necessary to check the value of `findNavigatorVisible` to ensure a Find
-    // session is returned only if the Find navigator is visible.
-    if (!find_interaction.findNavigatorVisible) {
-      return nil;
-    }
-    return find_interaction.activeFindSession;
+  id<CRWFindInteraction> find_interaction = web_state_->GetFindInteraction();
+  // According to the official documentation, if `findNavigatorVisible` is
+  // `NO`, then `activeFindSession` should be `nil`. In practice, it is
+  // necessary to check the value of `findNavigatorVisible` to ensure a Find
+  // session is returned only if the Find navigator is visible.
+  if (!find_interaction.findNavigatorVisible) {
+    return nil;
   }
-  return find_session_;
+  return find_interaction.activeFindSession;
 }
 
 id<CRWFindInteraction> FindInPageManagerImpl::GetOrCreateFindInteraction()
     API_AVAILABLE(ios(16)) {
-  DCHECK(use_find_interaction_);
   id<CRWFindInteraction> find_interaction = web_state_->GetFindInteraction();
   if (!find_interaction) {
     web_state_->SetFindInteractionEnabled(true);
@@ -93,20 +81,9 @@ id<CRWFindInteraction> FindInPageManagerImpl::GetOrCreateFindInteraction()
 // Executes find logic for `FindInPageSearch` option.
 void FindInPageManagerImpl::StartSearch(NSString* query)
     API_AVAILABLE(ios(16)) {
-  if (!use_find_interaction_) {
-    // The "IOS.FindInPage.SearchStarted" user action is associated with a new
-    // text search starting i.e. when the Find UI is presented and then whenever
-    // the query changes. However, if a Find interaction is used, `StartSearch`
-    // will only be called when the Find panel is presented. The
-    // "IOS.FindInPage.SearchStarted" user action should not be recorded in this
-    // case.
-    RecordSearchStartedAction();
-  }
-
   // Stop polling Find session in case search is already ongoing.
   StopPollingActiveFindSession();
 
-  if (use_find_interaction_) {
     id<CRWFindInteraction> find_interaction = GetOrCreateFindInteraction();
     // If a Find interaction should be used, prepopulate the Find navigator and
     // present it. If it is already presented, only present it again if the
@@ -121,20 +98,6 @@ void FindInPageManagerImpl::StartSearch(NSString* query)
         [find_interaction presentFindNavigatorShowingReplace:NO];
       });
     }
-  } else {
-    if (find_session_) {
-      // If a Find session already exists internally, invalidate its found
-      // results.
-      [find_session_ invalidateFoundResults];
-    }
-
-    web::GetWebClient()->StartTextSearchInWebState(web_state_);
-
-    // Instantiate a new internal Find session with the given `query`.
-    find_session_ =
-        web::GetWebClient()->CreateFindSessionForWebState(web_state_);
-    [find_session_ performSearchWithQuery:query options:nil];
-  }
 
   // Reset latest reported Find session data.
   current_query_ = [query copy];
@@ -160,23 +123,18 @@ void FindInPageManagerImpl::StopSearch() API_AVAILABLE(ios(16)) {
   id<CRWFindSession> find_session = GetActiveFindSession();
   [find_session invalidateFoundResults];
 
-  if (use_find_interaction_) {
     id<CRWFindInteraction> find_interaction = web_state_->GetFindInteraction();
     // If there is a Find interaction, dismiss the Find navigator. This will
     // also stop and free the active Find session stored within the Find
     // interaction.
     [find_interaction dismissFindNavigator];
-  } else {
-    find_session_ = nil;
-    web::GetWebClient()->StopTextSearchInWebState(web_state_);
-  }
 
-  if (delegate_) {
-    // Calling `DidHighlightMatches` with zero matches and no query to respond
-    // to `StopFinding`.
-    delegate_->DidHighlightMatches(this, web_state_, /*match_count=*/0,
-                                   /*query=*/nil);
-  }
+    if (delegate_) {
+      // Calling `DidHighlightMatches` with zero matches and no query to respond
+      // to `StopFinding`.
+      delegate_->DidHighlightMatches(this, web_state_, /*match_count=*/0,
+                                     /*query=*/nil);
+    }
 }
 
 void FindInPageManagerImpl::StopFinding() {
@@ -213,16 +171,12 @@ void FindInPageManagerImpl::StopPollingActiveFindSession()
 void FindInPageManagerImpl::PollActiveFindSession() API_AVAILABLE(ios(16)) {
   id<CRWFindSession> findSession = GetActiveFindSession();
   if (!findSession) {
-    if (use_find_interaction_) {
-      // If a Find interaction is used but there is no active Find session
-      // anymore, then the user dismissed the Find navigator.
-      if (delegate_) {
-        delegate_->UserDismissedFindNavigator(this);
-      }
-      StopSearch();
-    } else {
-      StopPollingActiveFindSession();
+    // If a Find interaction is used but there is no active Find session
+    // anymore, then the user dismissed the Find navigator.
+    if (delegate_) {
+      delegate_->UserDismissedFindNavigator(this);
     }
+    StopSearch();
 
     return;
   }

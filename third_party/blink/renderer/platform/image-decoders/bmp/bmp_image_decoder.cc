@@ -41,7 +41,7 @@ namespace blink {
 static const wtf_size_t kSizeOfFileHeader = 14;
 
 BMPImageDecoder::BMPImageDecoder(AlphaOption alpha_option,
-                                 const ColorBehavior& color_behavior,
+                                 ColorBehavior color_behavior,
                                  wtf_size_t max_decoded_bytes)
     : ImageDecoder(alpha_option,
                    ImageDecoder::kDefaultBitDepth,
@@ -51,14 +51,19 @@ BMPImageDecoder::BMPImageDecoder(AlphaOption alpha_option,
 
 BMPImageDecoder::~BMPImageDecoder() = default;
 
+String BMPImageDecoder::FilenameExtension() const {
+  return "bmp";
+}
+
 const AtomicString& BMPImageDecoder::MimeType() const {
   DEFINE_STATIC_LOCAL(const AtomicString, bmp_mime_type, ("image/bmp"));
   return bmp_mime_type;
 }
 
 void BMPImageDecoder::OnSetData(SegmentReader* data) {
-  if (reader_)
+  if (reader_) {
     reader_->SetData(data);
+  }
 }
 
 bool BMPImageDecoder::SetFailed() {
@@ -66,27 +71,38 @@ bool BMPImageDecoder::SetFailed() {
   return ImageDecoder::SetFailed();
 }
 
-void BMPImageDecoder::Decode(bool only_size) {
-  if (Failed())
-    return;
+void BMPImageDecoder::DecodeSize() {
+  Decode(true);
+}
 
-  // If we couldn't decode the image but we've received all the data, decoding
-  // has failed.
-  if (!DecodeHelper(only_size) && IsAllDataReceived())
+void BMPImageDecoder::Decode(wtf_size_t) {
+  Decode(false);
+}
+
+void BMPImageDecoder::Decode(bool only_size) {
+  if (Failed()) {
+    return;
+  }
+
+  if (!DecodeHelper(only_size) && IsAllDataReceived()) {
+    // If we couldn't decode the image but we've received all the data, decoding
+    // has failed.
     SetFailed();
-  // If we're done decoding the image, we don't need the BMPImageReader
-  // anymore.  (If we failed, |reader_| has already been cleared.)
-  else if (!frame_buffer_cache_.empty() &&
-           (frame_buffer_cache_.front().GetStatus() ==
-            ImageFrame::kFrameComplete))
+  } else if (!frame_buffer_cache_.empty() &&
+             (frame_buffer_cache_.front().GetStatus() ==
+              ImageFrame::kFrameComplete)) {
+    // If we're done decoding the image, we don't need the BMPImageReader
+    // anymore.  (If we failed, |reader_| has already been cleared.)
     reader_.reset();
+  }
 }
 
 bool BMPImageDecoder::DecodeHelper(bool only_size) {
   wtf_size_t img_data_offset = 0;
   if ((decoded_offset_ < kSizeOfFileHeader) &&
-      !ProcessFileHeader(img_data_offset))
+      !ProcessFileHeader(img_data_offset)) {
     return false;
+  }
 
   if (!reader_) {
     reader_ = std::make_unique<BMPImageReader>(this, decoded_offset_,
@@ -94,8 +110,9 @@ bool BMPImageDecoder::DecodeHelper(bool only_size) {
     reader_->SetData(data_.get());
   }
 
-  if (!frame_buffer_cache_.empty())
+  if (!frame_buffer_cache_.empty()) {
     reader_->SetBuffer(&frame_buffer_cache_.front());
+  }
 
   return reader_->DecodeBMP(only_size);
 }
@@ -107,8 +124,9 @@ bool BMPImageDecoder::ProcessFileHeader(wtf_size_t& img_data_offset) {
   char buffer[kSizeOfFileHeader];
   const char* file_header;
   uint16_t file_type;
-  if (!GetFileType(fast_reader, buffer, file_header, file_type))
+  if (!GetFileType(fast_reader, buffer, file_header, file_type)) {
     return false;
+  }
 
   // See if this is a bitmap filetype we understand.
   enum {
@@ -127,11 +145,13 @@ bool BMPImageDecoder::ProcessFileHeader(wtf_size_t& img_data_offset) {
   if (file_type == BITMAPARRAY) {
     // Skip initial 14-byte header, try to read the first entry as a BMAP.
     decoded_offset_ += kSizeOfFileHeader;
-    if (!GetFileType(fast_reader, buffer, file_header, file_type))
+    if (!GetFileType(fast_reader, buffer, file_header, file_type)) {
       return false;
+    }
   }
-  if (file_type != BMAP)
+  if (file_type != BMAP) {
     return SetFailed();
+  }
 
   img_data_offset = BMPImageReader::ReadUint32(&file_header[10]);
   decoded_offset_ += kSizeOfFileHeader;
@@ -142,8 +162,9 @@ bool BMPImageDecoder::GetFileType(const FastSharedBufferReader& fast_reader,
                                   char* buffer,
                                   const char*& file_header,
                                   uint16_t& file_type) const {
-  if (data_->size() - decoded_offset_ < kSizeOfFileHeader)
+  if (data_->size() - decoded_offset_ < kSizeOfFileHeader) {
     return false;
+  }
   file_header = fast_reader.GetConsecutiveData(decoded_offset_,
                                                kSizeOfFileHeader, buffer);
   file_type = (static_cast<uint16_t>(file_header[0]) << 8) |

@@ -44,6 +44,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
+import org.chromium.chrome.browser.password_manager.GetLoginMatchType;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties;
@@ -55,7 +56,6 @@ import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
-import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -81,11 +81,11 @@ public class TouchToFillRenderTest {
 
     private static final GURL TEST_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
     private static final Credential ARON =
-            new Credential("אהרן", "S3cr3t", "אהרן", "", false, false, 0);
+            new Credential("אהרן", "S3cr3t", "אהרן", "", "example.com", GetLoginMatchType.EXACT, 0);
     private static final Credential BOB =
-            new Credential("Bob", "*****", "Bob", "", false, false, 0);
+            new Credential("Bob", "*****", "Bob", "", "example.com", GetLoginMatchType.EXACT, 0);
     private static final Credential MARIAM =
-            new Credential("مريم", "***", "مريم", "", false, false, 0);
+            new Credential("مريم", "***", "مريم", "", "example.com", GetLoginMatchType.EXACT, 0);
 
     @Mock
     private Callback<Integer> mDismissHandler;
@@ -248,7 +248,7 @@ public class TouchToFillRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID})
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testShowsOneCredentialModern() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             addHeader(mActivityTestRule.getActivity().getString(
@@ -269,7 +269,7 @@ public class TouchToFillRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID})
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testShowsOneCredentialModernHalfState() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             addHeader(mActivityTestRule.getActivity().getString(
@@ -293,7 +293,7 @@ public class TouchToFillRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID})
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testShowsTwoCredentialsModern() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             addHeader(mActivityTestRule.getActivity().getString(
@@ -315,7 +315,7 @@ public class TouchToFillRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID})
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testShowsTwoCredentialsModernHalfState() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             addHeader(mActivityTestRule.getActivity().getString(
@@ -340,7 +340,7 @@ public class TouchToFillRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID})
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testShowsThreeCredentialsModern() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             addHeader(mActivityTestRule.getActivity().getString(
@@ -362,7 +362,7 @@ public class TouchToFillRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID})
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testShowsThreeCredentialsModernHalfState() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             addHeader(mActivityTestRule.getActivity().getString(
@@ -396,9 +396,7 @@ public class TouchToFillRenderTest {
                 new PropertyModel.Builder(TouchToFillProperties.CredentialProperties.ALL_KEYS)
                         .with(CREDENTIAL, credential)
                         .with(ON_CLICK_LISTENER, callback)
-                        .with(FORMATTED_ORIGIN,
-                                UrlFormatter.formatUrlForDisplayOmitScheme(
-                                        credential.getOriginUrl()))
+                        .with(FORMATTED_ORIGIN, credential.getDisplayName())
                         .with(SHOW_SUBMIT_BUTTON, showSubmitButton)
                         .build());
     }
@@ -421,9 +419,7 @@ public class TouchToFillRenderTest {
                         new PropertyModel.Builder(CredentialProperties.ALL_KEYS)
                                 .with(CREDENTIAL, ARON)
                                 .with(ON_CLICK_LISTENER, (Credential clickedCredential) -> {})
-                                .with(FORMATTED_ORIGIN,
-                                        UrlFormatter.formatUrlForDisplayOmitScheme(
-                                                credential.getOriginUrl()))
+                                .with(FORMATTED_ORIGIN, credential.getDisplayName())
                                 .with(SHOW_SUBMIT_BUTTON, true)
                                 .build()));
     }

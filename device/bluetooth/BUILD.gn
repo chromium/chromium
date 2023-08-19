@@ -203,6 +203,7 @@ component("bluetooth") {
     deps += [
       "//ash/constants",
       "//chromeos/ash/services/nearby/public/cpp/",
+      "//chromeos/ash/services/secure_channel/public/cpp/shared",
     ]
   }
 
@@ -523,6 +524,8 @@ component("bluetooth") {
         "floss/fake_floss_advertiser_client.h",
         "floss/fake_floss_battery_manager_client.cc",
         "floss/fake_floss_battery_manager_client.h",
+        "floss/fake_floss_bluetooth_telephony_client.cc",
+        "floss/fake_floss_bluetooth_telephony_client.h",
         "floss/fake_floss_gatt_manager_client.cc",
         "floss/fake_floss_gatt_manager_client.h",
         "floss/fake_floss_lescan_client.cc",
@@ -541,6 +544,8 @@ component("bluetooth") {
         "floss/floss_advertiser_client.h",
         "floss/floss_battery_manager_client.cc",
         "floss/floss_battery_manager_client.h",
+        "floss/floss_bluetooth_telephony_client.cc",
+        "floss/floss_bluetooth_telephony_client.h",
         "floss/floss_dbus_client.cc",
         "floss/floss_dbus_client.h",
         "floss/floss_dbus_manager.cc",
@@ -681,6 +686,7 @@ if (is_android) {
   }
 
   android_library("java") {
+    srcjar_deps = [ ":jni_headers" ]
     sources = java_sources_needing_jni
     deps = [
       "//base:base_java",
@@ -689,6 +695,5 @@ if (is_android) {
       "//components/location/android:location_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 }

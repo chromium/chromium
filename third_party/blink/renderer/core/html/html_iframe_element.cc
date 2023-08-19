@@ -67,16 +67,6 @@ String ConvertToReportValue(const AtomicString& value) {
   return value.GetString().Left(kMaxLengthToReport);
 }
 
-bool AnonymousIframeEnabled(const FeatureContext* context) {
-  // AnonymousIframe is enabled via command line flags, or via the Origin Trial.
-  // The origin trial is gated using the `AnonymousIframeOriginTrial` flag until
-  // AnonymousIframe is safe to use. It is useful, because the OT token do not
-  // enforce a specific version.
-  return RuntimeEnabledFeatures::AnonymousIframeEnabled(nullptr) ||
-         (RuntimeEnabledFeatures::AnonymousIframeEnabled(context) &&
-          base::FeatureList::IsEnabled(features::kAnonymousIframeOriginTrial));
-}
-
 }  // namespace
 
 HTMLIFrameElement::HTMLIFrameElement(Document& document)
@@ -299,7 +289,7 @@ void HTMLIFrameElement::ParseAttribute(
       }
     }
   } else if (name == html_names::kCredentiallessAttr &&
-             AnonymousIframeEnabled(GetExecutionContext())) {
+             RuntimeEnabledFeatures::AnonymousIframeEnabled()) {
     bool new_value = !value.IsNull();
     if (credentialless_ != new_value) {
       credentialless_ = new_value;

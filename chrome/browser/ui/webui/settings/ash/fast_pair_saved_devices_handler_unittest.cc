@@ -281,7 +281,9 @@ class FastPairSavedDevicesHandlerTest : public testing::Test {
   base::HistogramTester histogram_tester_;
   std::unique_ptr<quick_pair::FakeFastPairRepository> fast_pair_repository_;
   gfx::Image test_image_;
-  raw_ptr<quick_pair::MockFastPairImageDecoder, ExperimentalAsh> mock_decoder_;
+  raw_ptr<quick_pair::MockFastPairImageDecoder,
+          DanglingUntriaged | ExperimentalAsh>
+      mock_decoder_;
   std::unique_ptr<content::TestWebUI> test_web_ui_;
   std::unique_ptr<TestFastPairSavedDevicesHandler> handler_;
   base::WeakPtrFactory<FastPairSavedDevicesHandlerTest> weak_ptr_factory_{this};

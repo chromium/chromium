@@ -23,8 +23,14 @@ PLUGIN_PROTOS_PATH = os.path.abspath(
 PLUGIN_SERVICE_WORKER_COUNT = 10
 # just picking a random port
 PLUGIN_SERVICE_ADDRESS = 'localhost:32279'
+PLUGIN_PROXY_SERVICE_PORT = '20000'
+REMOTE_PLUGIN_PROXY_PORT = '40000'
 # Max number of times a test case can be video recorded and saved to disk
 MAX_RECORDED_COUNT = 3
 # Options for enabling video recording on EG tests
 VIDEO_RECORDER_PLUGIN_OPTIONS = Enum('video_recorder_plugin_options',
                                      {'failed_only': 1})
+SIMULATOR_FOLDERS = [
+    os.path.expanduser('~/Library/Developer/CoreSimulator/Devices'),
+    os.path.expanduser('~/Library/Developer/XCTestDevices')
+]

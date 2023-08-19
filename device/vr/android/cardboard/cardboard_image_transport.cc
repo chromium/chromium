@@ -64,8 +64,7 @@ void CardboardImageTransport::DoRuntimeInitialization() {
 void CardboardImageTransport::UpdateDistortionMesh() {
   // TODO(https://crbug.com/1429088): Move this into helper classes rather than
   // directly using the cardboard types here.
-  // TODO(https://crbug.com/1429091): Actually query for saved params.
-  auto params = CardboardDeviceParams::GetV1DeviceParams();
+  auto params = CardboardDeviceParams::GetDeviceParams();
   CHECK(params.IsValid());
 
   lens_distortion_ = internal::ScopedCardboardObject<CardboardLensDistortion*>(

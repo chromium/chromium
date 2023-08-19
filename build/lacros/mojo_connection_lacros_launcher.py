@@ -14,7 +14,7 @@
 
   XDG_RUNTIME_DIR=/tmp/ash_chrome_xdg_runtime ./out/ash/chrome \\
       --user-data-dir=/tmp/ash-chrome --enable-wayland-server \\
-      --no-startup-window --enable-features=LacrosSupport \\
+      --no-startup-window --enable-features=LacrosOnly \\
       --lacros-mojo-socket-for-testing=/tmp/lacros.sock
 
   Then, run this script with '-s' pointing to the same socket path used to

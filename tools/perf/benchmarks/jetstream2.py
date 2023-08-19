@@ -39,9 +39,10 @@ class _JetStream2Base(press._PressBenchmark):  # pylint: disable=protected-acces
                       help="Only run specific tests, separated by commas.")
 
 
-@benchmark.Info(emails=['hablich@chromium.org', 'tcwang@chromium.org'],
-                component='Blink>JavaScript',
-                documentation_url='https://browserbench.org/JetStream/in-depth.html')
+@benchmark.Info(
+    emails=['vahl@chromium.org', 'cbruni@chromium.org'],
+    component='Blink>JavaScript',
+    documentation_url='https://browserbench.org/JetStream2.0/in-depth.html')
 class JetStream20(_JetStream2Base):
   """JetStream 2.0"""
   @classmethod
@@ -55,7 +56,7 @@ class JetStream20(_JetStream2Base):
 @benchmark.Info(
     emails=['hablich@chromium.org', 'tcwang@chromium.org'],
     component='Blink>JavaScript',
-    documentation_url='https://browserbench.org/JetStream/in-depth.html')
+    documentation_url='https://browserbench.org/JetStream2.1/in-depth.html')
 class JetStream21(_JetStream2Base):
   """JetStream 2.1"""
   @classmethod
@@ -69,8 +70,8 @@ class JetStream21(_JetStream2Base):
 @benchmark.Info(
     emails=['hablich@chromium.org', 'tcwang@chromium.org'],
     component='Blink>JavaScript',
-    documentation_url='https://browserbench.org/JetStream/in-depth.html')
-class JetStream2(JetStream20):
+    documentation_url='https://browserbench.org/JetStream2.0/in-depth.html')
+class JetStream2(_JetStream2Base):
   """Latest JetStream2 """
   @classmethod
   def Name(cls):
@@ -83,8 +84,8 @@ class JetStream2(JetStream20):
 @benchmark.Info(
     emails=['omerkatz@chromium.org'],
     component='Blink>JavaScript>GarbageCollection',
-    documentation_url='https://browserbench.org/JetStream/in-depth.html')
-class JetStream2MinorMC(JetStream20):
+    documentation_url='https://browserbench.org/JetStream2.0/in-depth.html')
+class JetStream2MinorMC(JetStream2):
   """Latest JetStream2 with the MinorMC flag.
 
   Shows the performance of upcoming MinorMC young generation GC in V8.
@@ -93,8 +94,5 @@ class JetStream2MinorMC(JetStream20):
   def Name(cls):
     return 'jetstream2-minormc'
 
-  def CreateStorySet(self, options):
-    return page_sets.JetStream2StorySet(options.test_list)
-
   def SetExtraBrowserOptions(self, options):
-    options.AppendExtraBrowserArgs('--js-flags=--minor-mc')
+    options.AppendExtraBrowserArgs('--js-flags=--minor-ms')

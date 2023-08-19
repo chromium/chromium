@@ -7,6 +7,7 @@
 #include "base/containers/cxx20_erase_map.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "ui/events/ozone/features.h"
 
 namespace ui {
@@ -23,14 +24,24 @@ std::vector<int> KeyboardImposterCheckerEvdev::GetIdsOnSamePhys(
   return ids_on_same_phys;
 }
 
+std::string KeyboardImposterCheckerEvdev::StandardizedPhys(
+    const std::string& phys_path) {
+  // For input devices on USB, remove the final digits in the phys_path. This
+  // means devices with the same USB topology will have identical phys_paths.
+  std::string standard_phys = phys_path;
+  static constexpr re2::LazyRE2 usb_input_re("^(usb[-:.0-9]*/input)[0-9]*$");
+  re2::RE2::Replace(&standard_phys, *usb_input_re, "\\1");
+  return standard_phys;
+}
+
 std::vector<int> KeyboardImposterCheckerEvdev::OnDeviceAdded(
     EventConverterEvdev* converter) {
   if (!base::FeatureList::IsEnabled(kEnableFakeKeyboardHeuristic))
     return std::vector<int>();
 
-  devices_on_phys_path_.emplace(converter->input_device().phys,
-                                converter->id());
-  return GetIdsOnSamePhys(converter->input_device().phys);
+  std::string standard_phys = StandardizedPhys(converter->input_device().phys);
+  devices_on_phys_path_.emplace(standard_phys, converter->id());
+  return GetIdsOnSamePhys(standard_phys);
 }
 
 bool KeyboardImposterCheckerEvdev::FlagIfImposter(
@@ -43,19 +54,22 @@ bool KeyboardImposterCheckerEvdev::FlagIfImposter(
   }
 #endif
 
-  if (!converter->HasKeyboard() ||
-      (!converter->HasMouse() &&
-       devices_on_phys_path_.count(converter->input_device().phys) < 2)) {
+  bool shared_phys = devices_on_phys_path_.count(
+                         StandardizedPhys(converter->input_device().phys)) > 1;
+  if (!converter->HasKeyboard() || (!converter->HasMouse() && !shared_phys)) {
     converter->SetSuspectedImposter(false);
     return false;
   }
 
   converter->SetSuspectedImposter(true);
-  VLOG(1) << "Device Name: " << converter->input_device().name << " Vendor ID: "
-          << base::StringPrintf("%#06x", converter->input_device().vendor_id)
-          << " Product ID: "
-          << base::StringPrintf("%#06x", converter->input_device().product_id)
-          << " has been flagged as a suspected imposter keyboard";
+  LOG(WARNING) << "Device Name: " << converter->input_device().name
+               << " Vendor ID: "
+               << base::StringPrintf("%#06x",
+                                     converter->input_device().vendor_id)
+               << " Product ID: "
+               << base::StringPrintf("%#06x",
+                                     converter->input_device().product_id)
+               << " has been flagged as a suspected imposter keyboard";
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   fake_keyboard_heuristic_metrics_.RecordUsage(true);
 #endif
@@ -71,7 +85,7 @@ std::vector<int> KeyboardImposterCheckerEvdev::OnDeviceRemoved(
                 [&](const auto& devices_on_phys_path_entry) {
                   return devices_on_phys_path_entry.second == converter->id();
                 });
-  return GetIdsOnSamePhys(converter->input_device().phys);
+  return GetIdsOnSamePhys(StandardizedPhys(converter->input_device().phys));
 }
 
 KeyboardImposterCheckerEvdev::KeyboardImposterCheckerEvdev() = default;

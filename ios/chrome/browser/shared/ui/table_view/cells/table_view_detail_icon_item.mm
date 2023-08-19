@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 
 #import "base/check.h"
+#import "base/notreached.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_cells_constants.h"
@@ -13,10 +15,6 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -30,12 +28,85 @@ constexpr CGFloat kChromeTableViewTwoLinesCellHeight = 58.f;
 // kDotSize represents the size of the dot (i.e. its height and width).
 constexpr CGFloat kDotSize = 10.f;
 
-// kMarginAroundDot represents the amount of space before and after the dot,
+// kMarginAroundDot represents the amount of space before and after the badge,
 // between itself and the surrounding UILabels `text` and `detailText`.
-constexpr CGFloat kMarginAroundDot = 5.f;
+constexpr CGFloat kMarginAroundBadge = 5.0;
+
+// The size of the "new" IPH badge.
+constexpr CGFloat kNewIPHBadgeSize = 20.0;
+// The font size of the "N" in the "new" IPH badge.
+constexpr CGFloat kNewIPHBadgeFontSize = 10.0;
+
+// kDefaultTextLabelSpacing represents the default spacing between the text
+// labels when no dot is present.
+constexpr CGFloat kDefaultTextLabelSpacing = 4;
 
 // kBlueDotColor is the specific blue used for the blue dot notification badge.
 constexpr NSString* kBlueDotColor = @"blue_600_color";
+
+// Returns the notification dot view for `TableViewDetailIconCell`.
+UIView* NotificationDotView() {
+  UIView* notificationDotUIView = [[UIView alloc] init];
+  notificationDotUIView.translatesAutoresizingMaskIntoConstraints = NO;
+
+  UIView* dotUIView = [[UIView alloc] init];
+  dotUIView.translatesAutoresizingMaskIntoConstraints = NO;
+  dotUIView.layer.cornerRadius = kDotSize / 2;
+  dotUIView.backgroundColor = [UIColor colorNamed:kBlueDotColor];
+  [notificationDotUIView addSubview:dotUIView];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [notificationDotUIView.widthAnchor
+        constraintGreaterThanOrEqualToConstant:kDotSize],
+    [dotUIView.widthAnchor constraintEqualToConstant:kDotSize],
+    [dotUIView.heightAnchor constraintEqualToConstant:kDotSize],
+    [dotUIView.leadingAnchor
+        constraintEqualToAnchor:notificationDotUIView.leadingAnchor],
+    [dotUIView.centerYAnchor
+        constraintEqualToAnchor:notificationDotUIView.centerYAnchor],
+  ]];
+  return notificationDotUIView;
+}
+
+// Returns the "new" ("N") IPH badge view for `TableViewDetailIconCell`.
+UIView* NewIPHBadgeView() {
+  UIView* newIPHBadgeView = [[UIView alloc] init];
+  newIPHBadgeView.translatesAutoresizingMaskIntoConstraints = NO;
+
+  UIImageView* newBadgeBackground = [[UIImageView alloc]
+      initWithImage:DefaultSymbolWithPointSize(kSealFillSymbol,
+                                               kNewIPHBadgeSize)];
+  newBadgeBackground.translatesAutoresizingMaskIntoConstraints = NO;
+  newBadgeBackground.tintColor = [UIColor colorNamed:kBlue600Color];
+  [newIPHBadgeView addSubview:newBadgeBackground];
+
+  UILabel* newLabel = [[UILabel alloc] init];
+  newLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  newLabel.text =
+      l10n_util::GetNSStringWithFixup(IDS_IOS_NEW_LABEL_FEATURE_BADGE);
+  newLabel.textColor = [UIColor colorNamed:kPrimaryBackgroundColor];
+  UIFont* font = [UIFont systemFontOfSize:kNewIPHBadgeFontSize
+                                   weight:UIFontWeightBold];
+  UIFontDescriptor* descriptor = [font.fontDescriptor
+      fontDescriptorWithDesign:UIFontDescriptorSystemDesignRounded];
+  font = [UIFont fontWithDescriptor:descriptor size:kNewIPHBadgeFontSize];
+  newLabel.font = font;
+  [newIPHBadgeView addSubview:newLabel];
+  AddSameCenterConstraints(newLabel, newBadgeBackground);
+
+  [NSLayoutConstraint activateConstraints:@[
+    [newIPHBadgeView.widthAnchor
+        constraintGreaterThanOrEqualToConstant:kNewIPHBadgeSize],
+    [newBadgeBackground.widthAnchor constraintEqualToConstant:kNewIPHBadgeSize],
+    [newBadgeBackground.heightAnchor
+        constraintEqualToConstant:kNewIPHBadgeSize],
+    [newBadgeBackground.centerYAnchor
+        constraintEqualToAnchor:newIPHBadgeView.centerYAnchor],
+    [newBadgeBackground.leadingAnchor
+        constraintEqualToAnchor:newIPHBadgeView.leadingAnchor],
+  ]];
+  return newIPHBadgeView;
+}
 
 }  // namespace
 
@@ -45,6 +116,7 @@ constexpr NSString* kBlueDotColor = @"blue_600_color";
   self = [super initWithType:type];
   if (self) {
     self.cellClass = [TableViewDetailIconCell class];
+    self.badgeType = BadgeType::kNone;
   }
   return self;
 }
@@ -62,7 +134,7 @@ constexpr NSString* kBlueDotColor = @"blue_600_color";
       backgroundColor:self.iconBackgroundColor
          cornerRadius:self.iconCornerRadius];
   [cell setTextLayoutConstraintAxis:self.textLayoutConstraintAxis];
-  [cell setShowNotificationDot:self.showNotificationDot];
+  [cell setBadgeType:self.badgeType];
 }
 
 @end
@@ -82,8 +154,6 @@ constexpr NSString* kBlueDotColor = @"blue_600_color";
 @property(nonatomic, strong) NSLayoutConstraint* textWidthConstraint;
 // Detail text. Can be nil if no text is set.
 @property(nonatomic, strong) UILabel* detailTextLabel;
-// View representing the colored notification dot wrapper.
-@property(nonatomic, strong) UIView* notificationDotUIView;
 
 @end
 
@@ -92,6 +162,11 @@ constexpr NSString* kBlueDotColor = @"blue_600_color";
   UIImageView* _iconImageView;
   NSLayoutConstraint* _iconHiddenConstraint;
   NSLayoutConstraint* _iconVisibleConstraint;
+
+  // View representing the current badge view.
+  UIView* _badgeView;
+  // Badge type of current badge view.
+  BadgeType _badgeType;
 }
 
 @synthesize detailTextLabel = _detailTextLabel;
@@ -122,10 +197,12 @@ constexpr NSString* kBlueDotColor = @"blue_600_color";
     _textLabel.adjustsFontForContentSizeCategory = YES;
     _textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
     _textLabel.backgroundColor = UIColor.clearColor;
+    _textLabel.numberOfLines = 2;
 
     _textStackView =
         [[UIStackView alloc] initWithArrangedSubviews:@[ _textLabel ]];
     _textStackView.translatesAutoresizingMaskIntoConstraints = NO;
+    _textStackView.spacing = kDefaultTextLabelSpacing;
     [contentView addSubview:_textStackView];
 
     // Set up the constraints for when the icon is visible and hidden.  One of
@@ -253,14 +330,14 @@ constexpr NSString* kBlueDotColor = @"blue_600_color";
   }
 }
 
-- (void)setShowNotificationDot:(BOOL)showNotificationDot {
-  if (showNotificationDot) {
-    if (!self.notificationDotUIView) {
-      [self createNotificationDot];
-    }
-  } else {
-    [self removeNotificationDot];
+- (void)setBadgeType:(BadgeType)badgeType {
+  if (badgeType == BadgeType::kNone) {
+    [self removeBadgeView];
+  } else if (_badgeType != badgeType) {
+    [self removeBadgeView];
+    [self addBadgeViewOfType:badgeType];
   }
+  _badgeType = badgeType;
 }
 
 #pragma mark - UIView
@@ -286,7 +363,7 @@ constexpr NSString* kBlueDotColor = @"blue_600_color";
   [self setTextLayoutConstraintAxis:UILayoutConstraintAxisHorizontal];
   [self setIconImage:nil tintColor:nil backgroundColor:nil cornerRadius:0];
   [self setDetailText:nil];
-  [self setShowNotificationDot:NO];
+  [self setBadgeType:BadgeType::kNone];
 }
 
 #pragma mark - Private
@@ -326,63 +403,66 @@ constexpr NSString* kBlueDotColor = @"blue_600_color";
   self.textLayoutConstraintAxis = UILayoutConstraintAxisHorizontal;
 }
 
-// Creates the UIView for the dot and adds it to the UI with the needed
-// constraints.
-- (void)createNotificationDot {
-  if (self.notificationDotUIView) {
+// Returns the view corresponding to `badgeType`. Should not be called with
+// BadgeType::kNone.
+- (UIView*)badgeViewOfType:(BadgeType)badgeType {
+  switch (badgeType) {
+    case BadgeType::kNotificationDot:
+      return NotificationDotView();
+    case BadgeType::kNew:
+      return NewIPHBadgeView();
+    case BadgeType::kNone: {
+      NOTREACHED();
+      return nil;
+    }
+  }
+}
+
+// Creates the badge of `badgeType` and insert it after the `textLabel`.
+- (void)addBadgeViewOfType:(BadgeType)badgeType {
+  CHECK(badgeType != BadgeType::kNone);
+  if (_badgeView) {
+    // Previous badge view shoulb be removed before adding a new type of badge
+    // view.
+    CHECK(badgeType == _badgeType);
     return;
   }
 
-  // Since we're inserting the dot at index 1, this DCHECK checks to make sure
+  // Since we're inserting the view at index 1, this CHECK checks to make sure
   // the main text's UILabel subview is there.
-  DCHECK(self.textStackView.subviews.count > 0);
+  CHECK(self.textStackView.subviews.count > 0);
 
-  // Since only the horizontal axis is supported for the notification dot, make
+  // Since only the horizontal axis is supported for the badge, make
   // sure we currently have the right axis.
-  DCHECK([self textLayoutConstraintAxis] == UILayoutConstraintAxisHorizontal);
+  CHECK([self textLayoutConstraintAxis] == UILayoutConstraintAxisHorizontal);
 
-  // Make sure the notification dot is always snug next to the main text.
+  // Make sure the badge is always snug next to the main text.
   [self.textLabel setContentHuggingPriority:UILayoutPriorityDefaultHigh
                                     forAxis:UILayoutConstraintAxisHorizontal];
 
-  self.notificationDotUIView = [[UIView alloc] init];
-  UIView* dotUIView = [[UIView alloc] init];
+  _badgeView = [self badgeViewOfType:badgeType];
 
-  self.notificationDotUIView.translatesAutoresizingMaskIntoConstraints = NO;
-  dotUIView.translatesAutoresizingMaskIntoConstraints = NO;
-
-  [self.notificationDotUIView addSubview:dotUIView];
-  [self.textStackView insertArrangedSubview:self.notificationDotUIView
-                                    atIndex:1];
-  [self.textStackView setCustomSpacing:kMarginAroundDot
+  [self.textStackView insertArrangedSubview:_badgeView atIndex:1];
+  [self.textStackView setCustomSpacing:kMarginAroundBadge
                              afterView:self.textLabel];
-  [self.textStackView setCustomSpacing:kMarginAroundDot
-                             afterView:self.notificationDotUIView];
+  [self.textStackView setCustomSpacing:kMarginAroundBadge afterView:_badgeView];
 
   [NSLayoutConstraint activateConstraints:@[
-    [self.notificationDotUIView.widthAnchor
-        constraintGreaterThanOrEqualToConstant:kDotSize],
-    [dotUIView.widthAnchor constraintEqualToConstant:kDotSize],
-    [dotUIView.heightAnchor constraintEqualToConstant:kDotSize],
-    [dotUIView.centerYAnchor
+    [_badgeView.centerYAnchor
         constraintEqualToAnchor:self.textLabel.centerYAnchor],
-    [dotUIView.leadingAnchor
-        constraintEqualToAnchor:self.notificationDotUIView.leadingAnchor],
   ]];
-
-  dotUIView.layer.cornerRadius = kDotSize / 2;
-  dotUIView.backgroundColor = [UIColor colorNamed:kBlueDotColor];
 }
 
-// Removes the notification dot's UIView from the UI.
-- (void)removeNotificationDot {
-  if (!self.notificationDotUIView) {
+// Removes the badge view from the UI.
+- (void)removeBadgeView {
+  if (!_badgeView) {
     return;
   }
 
-  [self.textStackView setCustomSpacing:0 afterView:self.textLabel];
-  [self.notificationDotUIView removeFromSuperview];
-  self.notificationDotUIView = nil;
+  [self.textStackView setCustomSpacing:UIStackViewSpacingUseDefault
+                             afterView:self.textLabel];
+  [_badgeView removeFromSuperview];
+  _badgeView = nil;
 }
 
 // Updates the cell such as it is layouted correctly with regard to the
@@ -412,7 +492,7 @@ constexpr NSString* kBlueDotColor = @"blue_600_color";
       _detailTextLabel.textAlignment = NSTextAlignmentNatural;
     }
     _detailTextLabel.numberOfLines = 1;
-    _textLabel.numberOfLines = 1;
+    _textLabel.numberOfLines = 2;
   }
   UIFontTextStyle preferredFont =
       _textStackView.axis == UILayoutConstraintAxisVertical
@@ -422,7 +502,10 @@ constexpr NSString* kBlueDotColor = @"blue_600_color";
 }
 
 - (NSString*)accessibilityLabel {
-  if (self.notificationDotUIView) {
+  if (self.customAccessibilityLabel) {
+    return self.customAccessibilityLabel;
+  }
+  if (_badgeView) {
     return [NSString stringWithFormat:@"%@, %@", self.textLabel.text,
                                       l10n_util::GetNSString(
                                           IDS_IOS_NEW_ITEM_ACCESSIBILITY_HINT)];
@@ -431,11 +514,17 @@ constexpr NSString* kBlueDotColor = @"blue_600_color";
 }
 
 - (NSString*)accessibilityValue {
+  if (self.customAccessibilityLabel) {
+    // If the cell already has an accessibility label for the whole cell, remove
+    // the one specifically for the detail text, so that information is not
+    // repeated by voice over.
+    return @"";
+  }
   return self.detailTextLabel.text;
 }
 
 - (NSArray<NSString*>*)accessibilityUserInputLabels {
-  if (self.notificationDotUIView) {
+  if (_badgeView) {
     return @[ [NSString
         stringWithFormat:@"%@, %@", self.textLabel.text,
                          l10n_util::GetNSString(

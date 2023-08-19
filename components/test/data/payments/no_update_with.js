@@ -49,14 +49,6 @@ function showPaymentRequest(pr) {
 }
 
 /**
- * Show a basic-card PaymentRequest that requests a shipping address, but has no
- * listeners.
- */
-function buyWithoutListeners() {
-  buyWithoutListenersWithMethods([{supportedMethods: 'basic-card'}]);
-}
-
-/**
  * Show a PaymentRequest using methodData that requests a shipping address, but
  * has no listeners.
  * @param {sequence<PaymentMethodData>} methodData An array of payment method
@@ -64,14 +56,6 @@ function buyWithoutListeners() {
  */
  function buyWithoutListenersWithMethods(methodData) {
   showPaymentRequest(buildPaymentRequest(methodData));
-}
-
-/**
- * Show a basic-card PaymentRequest that requests a shipping address, but
- * listeners don't call updateWith().
- */
-function buyWithoutCallingUpdateWith() {
-  buyWithoutCallingUpdateWithWithMethods([{supportedMethods: 'basic-card'}]);
 }
 
 /**
@@ -89,14 +73,6 @@ function buyWithoutCallingUpdateWith() {
     print('shippingoptionchange');
   });
   showPaymentRequest(pr);
-}
-
-/**
- * Show a basic-card PaymentRequest that requests a shipping address, but
- * listeners don't use promises to update the UI.
- */
-function buyWithoutPromises() {
-  buyWithoutPromisesWithMethods([{supportedMethods: 'basic-card'}]);
 }
 
 /**

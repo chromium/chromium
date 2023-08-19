@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/test_predicate_waiter.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/test/base/chrome_test_utils.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/base/features.h"
@@ -84,7 +84,7 @@ class KerberosInBrowserDialogButtonTest : public InProcessBrowserTest {
     }))->Wait();
   }
 
-  content::WebUI* webui_;
+  raw_ptr<content::WebUI, ExperimentalAsh> webui_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -103,20 +103,19 @@ IN_PROC_BROWSER_TEST_F(KerberosInBrowserDialogButtonTest, CancelButton) {
   EXPECT_FALSE(IsSettingsWindowOpened());
 }
 
-// TODO(crbug.com/1449222) Fix flaky test.
-IN_PROC_BROWSER_TEST_F(KerberosInBrowserDialogButtonTest,
-                       DISABLED_SettingsButton) {
+IN_PROC_BROWSER_TEST_F(KerberosInBrowserDialogButtonTest, SettingsButton) {
   ash::KerberosInBrowserDialog::Show();
   EXPECT_TRUE(ash::KerberosInBrowserDialog::IsShown());
   EXPECT_FALSE(IsSettingsWindowOpened());
 
   EnsureWebUIAvailable();
   PressButton(kOpenSettingsButtonPath);
-  // After pressing the button OS Settings should be opened.
-  ui_test_utils::WaitForBrowserToOpen();
-  EXPECT_TRUE(IsSettingsWindowOpened());
-
   WaitUntilDialogIsClosed();
+
+  // Waiting for a new OS settings window to be opened.
+  std::make_unique<test::TestPredicateWaiter>(base::BindRepeating([]() {
+    return IsSettingsWindowOpened();
+  }))->Wait();
 }
 
 class KerberosInBrowserDialogFeatureDisabledTest

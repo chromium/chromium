@@ -10,11 +10,9 @@
 namespace blink {
 
 class Document;
-class Element;
 class ExceptionState;
 class ScriptPromise;
 class ScriptState;
-class TreeScope;
 
 class DocumentVideoPictureInPicture {
   STATIC_ONLY(DocumentVideoPictureInPicture);
@@ -25,8 +23,6 @@ class DocumentVideoPictureInPicture {
   static ScriptPromise exitPictureInPicture(ScriptState*,
                                             Document&,
                                             ExceptionState&);
-
-  static Element* pictureInPictureElement(TreeScope&);
 };
 
 }  // namespace blink

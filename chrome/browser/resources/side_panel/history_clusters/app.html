@@ -1,15 +1,33 @@
-<style>
+<style include="sp-shared-style">
   :host {
-    --cr-toolbar-field-max-width: calc(100% - 32px);
-  }
-
-  #history-clusters {
-    height: calc(100% - 60px); /* 40px search field + 20px margin */
+    display: flex;
+    flex-direction: column;
+    height: 100%;
   }
 
   #searchbox {
     margin: 16px auto 4px;
+    flex-shrink: 0;
   }
+
+  :host-context(html:not([chrome-refresh-2023])) #searchbox {
+    --cr-toolbar-field-max-width: calc(100% - 32px);
+  }
+
+  :host-context([chrome-refresh-2023]) #searchbox {
+    margin: var(--sp-body-padding);
+    width: auto;
+  }
+
+ #history-clusters {
+    flex: 1;
+  }
+
+  :host-context([chrome-refresh-2023]) #history-clusters {
+    margin-inline-start: var(--sp-body-padding);
+    margin-bottom: var(--sp-body-padding);
+  }
+
 </style>
 <cr-toolbar-search-field id="searchbox" on-search-changed="onSearchChanged_"
                          label="$i18n{historyClustersSearchPrompt}"
@@ -19,5 +37,5 @@
 <history-clusters id="history-clusters"
     query="[[query]]"
     path="journeys"
-    on-query-changed-by-user="onQueryChangedByUser_">
+    on-query-changed-by-user="onQueryChangedByUser_" class="sp-scroller">
 </history-clusters>

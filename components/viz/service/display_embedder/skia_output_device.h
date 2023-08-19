@@ -81,7 +81,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
     bool Wait(int num_semaphores,
               const GrBackendSemaphore wait_semaphores[],
               bool delete_semaphores_after_wait);
-    bool Draw(sk_sp<const SkDeferredDisplayList> ddl);
+    bool Draw(sk_sp<const GrDeferredDisplayList> ddl);
 
     // Graphite
     bool Draw(std::unique_ptr<skgpu::graphite::Recording> graphite_recording,
@@ -238,7 +238,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
                     const GrBackendSemaphore wait_semaphores[],
                     bool delete_semaphores_after_wait);
   virtual bool Draw(SkSurface* sk_surface,
-                    sk_sp<const SkDeferredDisplayList> ddl);
+                    sk_sp<const GrDeferredDisplayList> ddl);
   virtual bool Draw(
       SkSurface* sk_surface,
       std::unique_ptr<skgpu::graphite::Recording> graphite_recording,

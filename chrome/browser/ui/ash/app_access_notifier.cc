@@ -7,8 +7,8 @@
 #include <string>
 #include <vector>
 
+#include "app_access_notifier.h"
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/sensor_disabled_notification_delegate.h"
 #include "ash/shell.h"
 #include "ash/system/privacy/privacy_indicators_controller.h"
 #include "ash/system/privacy_hub/camera_privacy_switch_controller.h"
@@ -16,6 +16,7 @@
 #include "base/check.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -23,10 +24,12 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -44,21 +47,9 @@ absl::optional<std::u16string> MapAppIdToShortName(
     std::string app_id,
     apps::AppCapabilityAccessCache* capability_cache,
     apps::AppRegistryCache* registry_cache,
-    ash::SensorDisabledNotificationDelegate::Sensor sensor) {
+    const std::set<std::string>& apps_accessing_sensor) {
   DCHECK(capability_cache);
   DCHECK(registry_cache);
-
-  std::set<std::string> apps_accessing_sensor;
-  switch (sensor) {
-    case ash::SensorDisabledNotificationDelegate::Sensor::kCamera:
-      apps_accessing_sensor = capability_cache->GetAppsAccessingCamera();
-      break;
-    case ash::SensorDisabledNotificationDelegate::Sensor::kMicrophone:
-      apps_accessing_sensor = capability_cache->GetAppsAccessingMicrophone();
-      break;
-    default:
-      return absl::nullopt;
-  }
 
   for (const std::string& app : apps_accessing_sensor) {
     absl::optional<std::u16string> name;
@@ -80,11 +71,9 @@ absl::optional<std::u16string> MapAppIdToShortName(
 // stops using the camera.
 void SendActiveCameraApplicationsChangedNotification(bool application_added) {
   if (ash::features::IsCrosPrivacyHubEnabled()) {
-    ash::PrivacyHubController* privacy_hub_controller =
-        ash::Shell::Get()->privacy_hub_controller();
-    DCHECK(privacy_hub_controller);
-    privacy_hub_controller->camera_controller().ActiveApplicationsChanged(
-        application_added);
+    auto* camera_controller = ash::CameraPrivacySwitchController::Get();
+    CHECK(camera_controller);
+    camera_controller->ActiveApplicationsChanged(application_added);
   }
 }
 
@@ -107,24 +96,31 @@ AppAccessNotifier::AppAccessNotifier() {
 
 AppAccessNotifier::~AppAccessNotifier() = default;
 
+// Returns names of apps accessing camera.
+std::vector<std::u16string> AppAccessNotifier::GetAppsAccessingCamera() {
+  return GetAppsAccessingSensor(
+      &camera_using_app_ids_[active_user_account_id_],
+      base::BindOnce([](apps::AppCapabilityAccessCache& cache) {
+        return cache.GetAppsAccessingCamera();
+      }));
+}
+// Returns names of apps accessing microphone.
+std::vector<std::u16string> AppAccessNotifier::GetAppsAccessingMicrophone() {
+  return GetAppsAccessingSensor(
+      &mic_using_app_ids_[active_user_account_id_],
+      base::BindOnce([](apps::AppCapabilityAccessCache& cache) {
+        return cache.GetAppsAccessingMicrophone();
+      }));
+}
+
 std::vector<std::u16string> AppAccessNotifier::GetAppsAccessingSensor(
-    ash::SensorDisabledNotificationDelegate::Sensor sensor) {
+    const MruAppIdList* app_id_list,
+    base::OnceCallback<std::set<std::string>(apps::AppCapabilityAccessCache&)>
+        app_getter) {
   apps::AppRegistryCache* reg_cache = GetActiveUserAppRegistryCache();
 
   apps::AppCapabilityAccessCache* cap_cache =
       GetActiveUserAppCapabilityAccessCache();
-
-  MruAppIdList* app_id_list;
-  switch (sensor) {
-    case ash::SensorDisabledNotificationDelegate::Sensor::kCamera:
-      app_id_list = &camera_using_app_ids_[active_user_account_id_];
-      break;
-    case ash::SensorDisabledNotificationDelegate::Sensor::kMicrophone:
-      app_id_list = &mic_using_app_ids_[active_user_account_id_];
-      break;
-    default:
-      return {};
-  }
 
   // A reg_cache and/or cap_cache of value nullptr is possible if we have no
   // active user, e.g. the login screen, so we test and return  empty list in
@@ -133,10 +129,13 @@ std::vector<std::u16string> AppAccessNotifier::GetAppsAccessingSensor(
     return {};
   }
 
+  const std::set<std::string>& apps_accessing_sensor =
+      std::move(app_getter).Run(*cap_cache);
+
   std::vector<std::u16string> app_names;
   for (const auto& app_id : *app_id_list) {
-    absl::optional<std::u16string> app_name =
-        MapAppIdToShortName(app_id, cap_cache, reg_cache, sensor);
+    absl::optional<std::u16string> app_name = MapAppIdToShortName(
+        app_id, cap_cache, reg_cache, apps_accessing_sensor);
     if (app_name.has_value())
       app_names.push_back(app_name.value());
   }
@@ -186,23 +185,33 @@ void AppAccessNotifier::OnCapabilityAccessUpdate(
 
   if (ash::features::IsPrivacyIndicatorsEnabled()) {
     // TODO(b/251686202): Finish Launch App functionality.
-    auto launch_app = absl::nullopt;
-    auto launch_settings =
-        base::BindRepeating(&AppAccessNotifier::LaunchAppSettings, app_id);
+    auto launch_app_callback = absl::nullopt;
+
+    auto* registry_cache = GetActiveUserAppRegistryCache();
+    if (!registry_cache) {
+      return;
+    }
+
+    auto app_type = registry_cache->GetAppType(app_id);
+    absl::optional<base::RepeatingClosure> launch_settings_callback;
+    if (app_type == apps::AppType::kSystemWeb) {
+      // We don't have the capability to launch privacy settings for system web
+      // app, so we will disable the settings button for this type of app.
+      launch_settings_callback = absl::nullopt;
+    } else {
+      launch_settings_callback =
+          base::BindRepeating(&AppAccessNotifier::LaunchAppSettings, app_id);
+    }
 
     ash::PrivacyIndicatorsController::Get()->UpdatePrivacyIndicators(
         app_id, /*app_name=*/GetAppShortNameFromAppId(app_id), is_camera_used,
         is_microphone_used, /*delegate=*/
         base::MakeRefCounted<ash::PrivacyIndicatorsNotificationDelegate>(
-            launch_app, launch_settings),
+            launch_app_callback, launch_settings_callback),
         ash::PrivacyIndicatorsSource::kApps);
 
-    auto* registry_cache = GetActiveUserAppRegistryCache();
-    if (registry_cache) {
-      base::UmaHistogramEnumeration(
-          "Ash.PrivacyIndicators.AppAccessUpdate.Type",
-          registry_cache->GetAppType(app_id));
-    }
+    base::UmaHistogramEnumeration("Ash.PrivacyIndicators.AppAccessUpdate.Type",
+                                  registry_cache->GetAppType(app_id));
   }
 }
 
@@ -224,6 +233,7 @@ void AppAccessNotifier::OnAppCapabilityAccessCacheWillBeDestroyed(
 //
 
 void AppAccessNotifier::OnSessionStateChanged() {
+  TRACE_EVENT0("ui", "AppAccessNotifier::OnSessionStateChanged");
   session_manager::SessionState state =
       session_manager::SessionManager::Get()->session_state();
   if (state == session_manager::SessionState::ACTIVE) {
@@ -259,14 +269,28 @@ void AppAccessNotifier::LaunchAppSettings(const std::string& app_id) {
     return;
   }
 
-  apps::AppServiceProxyFactory::GetForProfile(profile)->OpenNativeSettings(
-      app_id);
-
   auto* registry_cache = GetActiveUserAppRegistryCache();
-  if (registry_cache) {
-    base::UmaHistogramEnumeration("Ash.PrivacyIndicators.LaunchSettings",
-                                  registry_cache->GetAppType(app_id));
+  if (!registry_cache) {
+    return;
   }
+
+  auto app_type = registry_cache->GetAppType(app_id);
+
+  // We don't have the capability to launch privacy settings for system web
+  // app, so settings button is disabled for this type of app.
+  DCHECK(app_type != apps::AppType::kSystemWeb);
+
+  if (app_type == apps::AppType::kWeb) {
+    chrome::ShowAppManagementPage(profile, app_id,
+                                  ash::settings::AppManagementEntryPoint::
+                                      kPrivacyIndicatorsNotificationSettings);
+  } else {
+    apps::AppServiceProxyFactory::GetForProfile(profile)->OpenNativeSettings(
+        app_id);
+  }
+
+  base::UmaHistogramEnumeration("Ash.PrivacyIndicators.LaunchSettings",
+                                registry_cache->GetAppType(app_id));
 }
 
 AccountId AppAccessNotifier::GetActiveUserAccountId() {

@@ -12,6 +12,8 @@ component("manager") {
     "display_manager_export.h",
     "managed_display_info.cc",
     "managed_display_info.h",
+    "util/display_manager_test_util.cc",
+    "util/display_manager_test_util.h",
     "util/display_manager_util.cc",
     "util/display_manager_util.h",
   ]
@@ -73,6 +75,7 @@ component("manager") {
     deps += [
       "//chromeos/ash/components/system",
       "//chromeos/ui/base",
+      "//components/device_event_log",
       "//third_party/re2:re2",
     ]
   }

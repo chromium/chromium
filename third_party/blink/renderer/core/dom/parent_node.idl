@@ -29,21 +29,16 @@
  */
 
 // https://dom.spec.whatwg.org/#interface-parentnode
+interface mixin ParentNode {
+  [SameObject, PerWorldBindings] readonly attribute HTMLCollection children;
+  [PerWorldBindings] readonly attribute Element? firstElementChild;
+  [PerWorldBindings] readonly attribute Element? lastElementChild;
+  readonly attribute unsigned long childElementCount;
 
-[
-    LegacyTreatAsPartialInterface
-] interface mixin ParentNode {
-    [SameObject, PerWorldBindings] readonly attribute HTMLCollection children;
-    [PerWorldBindings] readonly attribute Element? firstElementChild;
-    [PerWorldBindings] readonly attribute Element? lastElementChild;
-    readonly attribute unsigned long childElementCount;
+  [Unscopable, RaisesException, CEReactions] void prepend((Node or DOMString or TrustedScript)... nodes);
+  [Unscopable, RaisesException, CEReactions] void append((Node or DOMString or TrustedScript)... nodes);
+  [Unscopable, RaisesException, CEReactions] void replaceChildren((Node or DOMString or TrustedScript)... nodes);
 
-    [Unscopable, RaisesException, CEReactions] void prepend((Node or DOMString or TrustedScript)... nodes);
-    [Unscopable, RaisesException, CEReactions] void append((Node or DOMString or TrustedScript)... nodes);
-    [Unscopable, RaisesException, CEReactions] void replaceChildren((Node or DOMString or TrustedScript)... nodes);
-
-    // [Unscopable] Element? query(DOMString relativeSelectors);
-    // [NewObject, Unscopable] Elements queryAll(DOMString relativeSelectors);
-    [Affects=Nothing, RaisesException] Element? querySelector(DOMString selectors);
-    [Affects=Nothing, NewObject, RaisesException] NodeList querySelectorAll(DOMString selectors);
+  [Affects=Nothing, RaisesException] Element? querySelector(DOMString selectors);
+  [Affects=Nothing, NewObject, RaisesException] NodeList querySelectorAll(DOMString selectors);
 };

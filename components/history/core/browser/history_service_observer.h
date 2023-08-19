@@ -38,6 +38,15 @@ class HistoryServiceObserver {
                             const URLRow& url_row,
                             const VisitRow& new_visit) {}
 
+  // Same as above, but including the navigation_id from the underlying
+  // `content::NavigationHandle`. Observers only need to override `OnURLVisited`
+  // or `OnNavigationURLVisited`, but not both.
+  virtual void OnURLVisitedWithNavigationId(
+      HistoryService* history_service,
+      const URLRow& url_row,
+      const VisitRow& new_visit,
+      absl::optional<int64_t> local_navigation_id) {}
+
   // Called when a URL has a metadata-only update. In situations where a URL has
   // a metadata-only update AND new visits, both `OnURLsModified` and
   // `OnURLVisited` will be called. Therefore observers that only care about new

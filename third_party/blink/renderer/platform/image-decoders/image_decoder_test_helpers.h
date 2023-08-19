@@ -24,8 +24,9 @@ using DecoderCreatorWithAlpha =
     std::unique_ptr<ImageDecoder> (*)(ImageDecoder::AlphaOption);
 
 inline void PrepareReferenceData(char* buffer, size_t size) {
-  for (size_t i = 0; i < size; ++i)
+  for (size_t i = 0; i < size; ++i) {
     buffer[i] = static_cast<char>(i);
+  }
 }
 
 scoped_refptr<SharedBuffer> ReadFile(StringView file_name);

@@ -82,7 +82,7 @@ public class TranslateMenuHelper implements AdapterView.OnItemClickListener {
             menuList.addAll(TranslateMenu.getOverflowMenu(mIsIncognito, mIsSourceLangUnknown));
         } else {
             int contentLanguagesCount = 0;
-            if (TranslateFeatureMap.getInstance().isEnabled(
+            if (TranslateFeatureMap.isEnabled(
                         TranslateFeatureMap.CONTENT_LANGUAGES_IN_LANGUAGE_PICKER)
                     && menuType == TranslateMenu.MENU_TARGET_LANGUAGE
                     && mOptions.contentLanguages() != null) {

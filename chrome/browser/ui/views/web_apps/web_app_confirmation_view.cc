@@ -20,6 +20,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/webapps/browser/installable/ml_install_operation_tracker.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -78,9 +79,12 @@ std::u16string NormalizeSuggestedAppTitle(const std::u16string& title) {
 WebAppConfirmationView::~WebAppConfirmationView() {}
 
 WebAppConfirmationView::WebAppConfirmationView(
-    std::unique_ptr<WebAppInstallInfo> web_app_info,
+    std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
+    std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
     chrome::AppInstallationAcceptanceCallback callback)
-    : web_app_info_(std::move(web_app_info)), callback_(std::move(callback)) {
+    : web_app_info_(std::move(web_app_info)),
+      install_tracker_(std::move(install_tracker)),
+      callback_(std::move(callback)) {
   DCHECK(web_app_info_);
   const ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
 
@@ -119,6 +123,12 @@ WebAppConfirmationView::WebAppConfirmationView(
               l10n_util::GetStringUTF16(IDS_CREATE_SHORTCUTS_BUTTON_LABEL))
           .SetModalType(ui::MODAL_TYPE_CHILD)
           .SetTitle(IDS_ADD_TO_OS_LAUNCH_SURFACE_BUBBLE_TITLE)
+          .SetAcceptCallback(base::BindOnce(&WebAppConfirmationView::OnAccept,
+                                            weak_ptr_factory_.GetWeakPtr()))
+          .SetCloseCallback(base::BindOnce(&WebAppConfirmationView::OnClose,
+                                           weak_ptr_factory_.GetWeakPtr()))
+          .SetCancelCallback(base::BindOnce(&WebAppConfirmationView::OnCancel,
+                                            weak_ptr_factory_.GetWeakPtr()))
           .set_margins(layout_provider->GetDialogInsetsForContentType(
               views::DialogContentType::kControl,
               views::DialogContentType::kText))
@@ -196,36 +206,6 @@ bool WebAppConfirmationView::ShouldShowCloseButton() const {
   return false;
 }
 
-void WebAppConfirmationView::WindowClosing() {
-  if (callback_) {
-    DCHECK(web_app_info_);
-    std::move(callback_).Run(false, std::move(web_app_info_));
-  }
-}
-
-bool WebAppConfirmationView::Accept() {
-  DCHECK(web_app_info_);
-  web_app_info_->title = GetTrimmedTitle();
-  if (ShowRadioButtons()) {
-    if (open_as_tabbed_window_radio_->GetChecked()) {
-      web_app_info_->user_display_mode =
-          web_app::mojom::UserDisplayMode::kTabbed;
-    } else {
-      web_app_info_->user_display_mode =
-          open_as_window_radio_->GetChecked()
-              ? web_app::mojom::UserDisplayMode::kStandalone
-              : web_app::mojom::UserDisplayMode::kBrowser;
-    }
-  } else {
-    web_app_info_->user_display_mode =
-        open_as_window_checkbox_->GetChecked()
-            ? web_app::mojom::UserDisplayMode::kStandalone
-            : web_app::mojom::UserDisplayMode::kBrowser;
-  }
-  std::move(callback_).Run(true, std::move(web_app_info_));
-  return true;
-}
-
 bool WebAppConfirmationView::IsDialogButtonEnabled(
     ui::DialogButton button) const {
   return button == ui::DIALOG_BUTTON_OK ? !GetTrimmedTitle().empty() : true;
@@ -244,21 +224,71 @@ std::u16string WebAppConfirmationView::GetTrimmedTitle() const {
   return title;
 }
 
+void WebAppConfirmationView::OnAccept() {
+  CHECK(web_app_info_);
+  web_app_info_->title = GetTrimmedTitle();
+  if (ShowRadioButtons()) {
+    if (open_as_tabbed_window_radio_->GetChecked()) {
+      web_app_info_->user_display_mode =
+          web_app::mojom::UserDisplayMode::kTabbed;
+    } else {
+      web_app_info_->user_display_mode =
+          open_as_window_radio_->GetChecked()
+              ? web_app::mojom::UserDisplayMode::kStandalone
+              : web_app::mojom::UserDisplayMode::kBrowser;
+    }
+  } else {
+    web_app_info_->user_display_mode =
+        open_as_window_checkbox_->GetChecked()
+            ? web_app::mojom::UserDisplayMode::kStandalone
+            : web_app::mojom::UserDisplayMode::kBrowser;
+  }
+  install_tracker_->ReportResult(webapps::MlInstallUserResponse::kAccepted);
+  // Some tests repeatedly create this class, and it's not guaranteed this class
+  // is destroyed for subsequent calls. So reset the tracker manually here.
+  install_tracker_.reset();
+  std::move(callback_).Run(true, std::move(web_app_info_));
+}
+
+void WebAppConfirmationView::OnClose() {
+  CHECK(install_tracker_);
+  install_tracker_->ReportResult(webapps::MlInstallUserResponse::kIgnored);
+  RunCloseCallbackIfExists();
+}
+
+void WebAppConfirmationView::OnCancel() {
+  CHECK(install_tracker_);
+  install_tracker_->ReportResult(webapps::MlInstallUserResponse::kCancelled);
+  RunCloseCallbackIfExists();
+}
+
+void WebAppConfirmationView::RunCloseCallbackIfExists() {
+  if (callback_) {
+    CHECK(web_app_info_);
+    std::move(callback_).Run(false, std::move(web_app_info_));
+  }
+}
+
 BEGIN_METADATA(WebAppConfirmationView, views::DialogDelegateView)
 ADD_READONLY_PROPERTY_METADATA(std::u16string, TrimmedTitle)
 END_METADATA
 
 namespace chrome {
 
-void ShowWebAppInstallDialog(content::WebContents* web_contents,
-                             std::unique_ptr<WebAppInstallInfo> web_app_info,
-                             AppInstallationAcceptanceCallback callback) {
-  auto* dialog =
-      new WebAppConfirmationView(std::move(web_app_info), std::move(callback));
+void ShowWebAppInstallDialog(
+    content::WebContents* web_contents,
+    std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
+    std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
+    AppInstallationAcceptanceCallback callback) {
+  CHECK(web_app_info);
+  CHECK(web_app_info->manifest_id.is_valid());
+  CHECK(install_tracker);
+  auto* dialog = new WebAppConfirmationView(
+      std::move(web_app_info), std::move(install_tracker), std::move(callback));
   constrained_window::ShowWebModalDialogViews(dialog, web_contents);
 
   if (g_auto_accept_web_app_for_testing) {
-    dialog->AcceptDialog();
+    dialog->Accept();
   }
 }
 

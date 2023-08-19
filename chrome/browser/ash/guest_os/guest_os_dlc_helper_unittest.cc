@@ -35,6 +35,41 @@ TEST_F(GuestOsDlcInstallationTest, Success) {
   EXPECT_TRUE(result.Get().has_value());
 }
 
+TEST_F(GuestOsDlcInstallationTest, AlreadyInstalled) {
+  base::test::TestFuture<GuestOsDlcInstallation::Result> result;
+
+  dlcservice::DlcState state;
+  state.set_state(dlcservice::DlcState::INSTALLED);
+  FakeDlcserviceClient()->set_dlc_state(state);
+  FakeDlcserviceClient()->set_install_error(dlcservice::kErrorInternal);
+  GuestOsDlcInstallation installation("test-dlc", result.GetCallback(),
+                                      base::DoNothing());
+
+  EXPECT_TRUE(result.Get().has_value());
+}
+
+TEST_F(GuestOsDlcInstallationTest, AlreadyInstalling) {
+  base::test::TestFuture<GuestOsDlcInstallation::Result> result;
+
+  dlcservice::DlcState state;
+  state.set_state(dlcservice::DlcState::INSTALLING);
+  FakeDlcserviceClient()->set_dlc_state(state);
+  FakeDlcserviceClient()->set_install_error(dlcservice::kErrorInternal);
+  GuestOsDlcInstallation installation("test-dlc", result.GetCallback(),
+                                      base::DoNothing());
+
+  // After some time we're still checking.
+  task_environment_.FastForwardBy(base::Seconds(5));
+  EXPECT_FALSE(result.IsReady());
+
+  state.set_state(dlcservice::DlcState::INSTALLED);
+  FakeDlcserviceClient()->set_dlc_state(state);
+
+  // Eventually the install completes.
+  task_environment_.FastForwardBy(base::Seconds(10));
+  EXPECT_TRUE(result.Get().has_value());
+}
+
 TEST_F(GuestOsDlcInstallationTest, RetryOnBusyInternal) {
   base::test::TestFuture<GuestOsDlcInstallation::Result> result;
 

@@ -23,14 +23,14 @@ class MockAXTreeDistiller : public AXTreeDistiller {
               Distill,
               (const ui::AXTree& tree,
                const ui::AXTreeUpdate& snapshot,
-               const ukm::SourceId& ukm_source_id),
+               const ukm::SourceId ukm_source_id),
               (override));
 };
 
-class MockReadAnythingPageHandler
+class MockReadAnythingUntrustedPageHandler
     : public read_anything::mojom::UntrustedPageHandler {
  public:
-  MockReadAnythingPageHandler() = default;
+  MockReadAnythingUntrustedPageHandler() = default;
 
   MOCK_METHOD(void,
               OnLinkClicked,
@@ -45,6 +45,20 @@ class MockReadAnythingPageHandler
                int focus_offset),
               (override));
   MOCK_METHOD(void, OnCopy, (), (override));
+  MOCK_METHOD(void,
+              OnLineSpaceChange,
+              (read_anything::mojom::LineSpacing line_spacing),
+              (override));
+  MOCK_METHOD(void,
+              OnLetterSpaceChange,
+              (read_anything::mojom::LetterSpacing letter_spacing),
+              (override));
+  MOCK_METHOD(void, OnFontChange, (const std::string& font), (override));
+  MOCK_METHOD(void, OnFontSizeChange, (double font_size), (override));
+  MOCK_METHOD(void,
+              OnColorChange,
+              (read_anything::mojom::Colors color),
+              (override));
 
   mojo::PendingRemote<read_anything::mojom::UntrustedPageHandler>
   BindNewPipeAndPassRemote() {
@@ -203,7 +217,7 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
 
   float LetterSpacing() { return controller_->LetterSpacing(); }
 
-  bool isSelectable() { return controller_->isSelectable(); }
+  bool isSelectable() { return controller_->IsSelectable(); }
 
   std::vector<ui::AXNodeID> GetChildren(ui::AXNodeID ax_node_id) {
     return controller_->GetChildren(ax_node_id);
@@ -253,7 +267,7 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
 
   ui::AXTreeID tree_id_;
   MockAXTreeDistiller* distiller_ = nullptr;
-  testing::StrictMock<MockReadAnythingPageHandler> page_handler_;
+  testing::StrictMock<MockReadAnythingUntrustedPageHandler> page_handler_;
 
  private:
   // ReadAnythingAppController constructor and destructor are private so it's

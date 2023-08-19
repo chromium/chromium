@@ -37,15 +37,13 @@ public class HeaderViewBinder {
             int minHeight = res.getDimensionPixelSize(R.dimen.omnibox_suggestion_header_height);
             int paddingStart =
                     res.getDimensionPixelSize(R.dimen.omnibox_suggestion_header_padding_start);
-            int paddingTop =
-                    res.getDimensionPixelSize(R.dimen.omnibox_suggestion_header_padding_top);
+            int paddingTop = OmniboxResourceProvider.getHeaderTopPadding(view.getContext());
             int paddingBottom =
                     res.getDimensionPixelSize(R.dimen.omnibox_suggestion_header_padding_bottom);
 
             // Use modified padding if the phase 2 feature is enabled.
             if (useModernizedHeaderPadding) {
-                minHeight = res.getDimensionPixelSize(
-                        R.dimen.omnibox_suggestion_header_height_modern_phase2);
+                minHeight = OmniboxResourceProvider.getHeaderMinHeight(view.getContext());
                 paddingStart = OmniboxResourceProvider.getHeaderStartPadding(view.getContext());
                 // TODO(crbug.com/1372596): Header view is off center and we should fix this.
                 paddingBottom = 0;

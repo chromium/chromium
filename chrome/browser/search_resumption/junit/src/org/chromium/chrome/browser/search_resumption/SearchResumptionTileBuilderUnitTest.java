@@ -39,7 +39,6 @@ import java.util.List;
 @Config(manifest = Config.NONE)
 public class SearchResumptionTileBuilderUnitTest {
     // The search suggestions are meant to be shown on any website.
-    private static final String URL_TO_TRACK = "/foo.com";
 
     @Rule
     public JniMocker mJniMocker = new JniMocker();

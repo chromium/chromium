@@ -7,9 +7,9 @@
 #include <tuple>
 #include <utility>
 
+#include "base/apple/foundation_util.h"
 #include "base/base64.h"
 #include "base/containers/contains.h"
-#include "base/mac/foundation_util.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
@@ -232,7 +232,7 @@ NSWindow* OriginalHostingWindowFromFullScreenWindow(
     NSWindow* full_screen_window) {
   if ([full_screen_window.delegate
           conformsToProtocol:@protocol(ImmersiveModeDelegate)]) {
-    return base::mac::ObjCCastStrict<NSObject<ImmersiveModeDelegate>>(
+    return base::apple::ObjCCastStrict<NSObject<ImmersiveModeDelegate>>(
                full_screen_window.delegate)
         .originalHostingWindow;
   }
@@ -247,7 +247,7 @@ NativeWidgetMacNSWindowHost* NativeWidgetMacNSWindowHost::GetFromNativeWindow(
   NSWindow* window = native_window.GetNativeNSWindow();
 
   if (NativeWidgetMacNSWindow* widget_window =
-          base::mac::ObjCCast<NativeWidgetMacNSWindow>(window)) {
+          base::apple::ObjCCast<NativeWidgetMacNSWindow>(window)) {
     return GetFromId([widget_window bridgedNativeWidgetId]);
   }
 
@@ -258,7 +258,7 @@ NativeWidgetMacNSWindowHost* NativeWidgetMacNSWindowHost::GetFromNativeWindow(
   if (remote_cocoa::IsNSToolbarFullScreenWindow(window)) {
     NSWindow* original = OriginalHostingWindowFromFullScreenWindow(window);
     if (NativeWidgetMacNSWindow* widget_window =
-            base::mac::ObjCCast<NativeWidgetMacNSWindow>(original)) {
+            base::apple::ObjCCast<NativeWidgetMacNSWindow>(original)) {
       return GetFromId([widget_window bridgedNativeWidgetId]);
     }
   }
@@ -269,7 +269,7 @@ NativeWidgetMacNSWindowHost* NativeWidgetMacNSWindowHost::GetFromNativeWindow(
 // static
 NativeWidgetMacNSWindowHost* NativeWidgetMacNSWindowHost::GetFromNativeView(
     gfx::NativeView native_view) {
-  return GetFromNativeWindow([native_view.GetNativeNSView() window]);
+  return GetFromNativeWindow(native_view.GetNativeNSView().window);
 }
 
 // static
@@ -332,14 +332,14 @@ NativeWidgetMacNSWindowHost::~NativeWidgetMacNSWindowHost() {
 
 NativeWidgetMacNSWindow* NativeWidgetMacNSWindowHost::GetInProcessNSWindow()
     const {
-  return in_process_ns_window_.get();
+  return in_process_ns_window_;
 }
 
 gfx::NativeViewAccessible
 NativeWidgetMacNSWindowHost::GetNativeViewAccessibleForNSView() const {
   if (in_process_ns_window_bridge_)
     return in_process_ns_window_bridge_->ns_view();
-  return remote_view_accessible_.get();
+  return remote_view_accessible_;
 }
 
 gfx::NativeViewAccessible
@@ -354,7 +354,7 @@ NativeWidgetMacNSWindowHost::GetNativeViewAccessibleForNSWindow() const {
     return [in_process_ns_window_bridge_->ns_view() window];
   }
 
-  return remote_window_accessible_.get();
+  return remote_window_accessible_;
 }
 
 remote_cocoa::mojom::NativeWidgetNSWindow*
@@ -367,12 +367,12 @@ NativeWidgetMacNSWindowHost::GetNSWindowMojo() const {
 }
 
 void NativeWidgetMacNSWindowHost::CreateInProcessNSWindowBridge(
-    base::scoped_nsobject<NativeWidgetMacNSWindow> window) {
+    NativeWidgetMacNSWindow* window) {
   in_process_ns_window_ = window;
   in_process_ns_window_bridge_ =
       std::make_unique<remote_cocoa::NativeWidgetNSWindowBridge>(
           widget_id_, this, this, text_input_host_.get());
-  in_process_ns_window_bridge_->SetWindow(window);
+  in_process_ns_window_bridge_->SetWindow(in_process_ns_window_);
 }
 
 void NativeWidgetMacNSWindowHost::CreateRemoteNSWindow(
@@ -421,7 +421,7 @@ void NativeWidgetMacNSWindowHost::InitWindow(
     const gfx::Rect& initial_bounds_in_screen) {
   native_window_mapping_ =
       std::make_unique<remote_cocoa::ScopedNativeWindowMapping>(
-          gfx::NativeWindow(in_process_ns_window_.get()), application_host_,
+          gfx::NativeWindow(in_process_ns_window_), application_host_,
           in_process_ns_window_bridge_.get(), GetNSWindowMojo());
 
   Widget* widget = native_widget_mac_->GetWidget();
@@ -450,10 +450,10 @@ void NativeWidgetMacNSWindowHost::InitWindow(
     window_params->is_tooltip = is_tooltip;
     is_headless_mode_window_ = params.headless_mode;
 
-    // OSX likes to put shadows on most things. However, frameless windows (with
-    // styleMask = NSWindowStyleMaskBorderless) default to no shadow. So change
-    // that. ShadowType::kDrop is used for Menus, which get the same shadow
-    // style on Mac.
+    // macOS likes to put shadows on most things. However, frameless windows
+    // (with styleMask = NSWindowStyleMaskBorderless) default to no shadow. So
+    // change that. ShadowType::kDrop is used for Menus, which get the same
+    // shadow style on Mac.
     switch (params.shadow_type) {
       case Widget::InitParams::ShadowType::kNone:
         window_params->has_window_server_shadow = false;
@@ -617,7 +617,7 @@ void NativeWidgetMacNSWindowHost::UpdateCompositorProperties() {
           content_bounds_in_screen_.size(), display_.device_scale_factor()));
   compositor_->UpdateSurface(content_bounds_in_pixels,
                              display_.device_scale_factor(),
-                             display_.color_spaces(), display_.id());
+                             display_.GetColorSpaces(), display_.id());
 }
 
 void NativeWidgetMacNSWindowHost::DestroyCompositor() {
@@ -1108,7 +1108,7 @@ void NativeWidgetMacNSWindowHost::OnWindowGeometryChanged(
   content_bounds_in_screen_ = new_content_bounds_in_screen;
 
   // When a window grows vertically, the AppKit origin changes, but as far as
-  // tookit-views is concerned, the window hasn't moved. Suppress these.
+  // toolkit-views is concerned, the window hasn't moved. Suppress these.
   if (window_has_moved)
     native_widget_mac_->GetWidget()->OnNativeWidgetMove();
 
@@ -1174,7 +1174,7 @@ void NativeWidgetMacNSWindowHost::OnWindowDisplayChanged(
           content_bounds_in_screen_.size(), display_.device_scale_factor()));
   compositor_->UpdateSurface(content_bounds_in_pixels,
                              display_.device_scale_factor(),
-                             display_.color_spaces(), display_.id());
+                             display_.GetColorSpaces(), display_.id());
 }
 
 void NativeWidgetMacNSWindowHost::OnWindowWillClose() {
@@ -1330,9 +1330,8 @@ void NativeWidgetMacNSWindowHost::SetRemoteAccessibilityTokens(
       ui::RemoteAccessibility::GetRemoteElementFromToken(window_token);
   remote_view_accessible_ =
       ui::RemoteAccessibility::GetRemoteElementFromToken(view_token);
-  [remote_view_accessible_ setWindowUIElement:remote_window_accessible_.get()];
-  [remote_view_accessible_
-      setTopLevelUIElement:remote_window_accessible_.get()];
+  [remote_view_accessible_ setWindowUIElement:remote_window_accessible_];
+  [remote_view_accessible_ setTopLevelUIElement:remote_window_accessible_];
 }
 
 bool NativeWidgetMacNSWindowHost::GetRootViewAccessibilityToken(

@@ -47,7 +47,7 @@ class FakeRmadClientTest : public testing::Test {
     return google::protobuf::down_cast<FakeRmadClient*>(client_.get());
   }
 
-  raw_ptr<RmadClient, ExperimentalAsh> client_ =
+  raw_ptr<RmadClient, DanglingUntriaged | ExperimentalAsh> client_ =
       nullptr;  // Unowned convenience pointer.
   // A message loop to emulate asynchronous behavior.
   base::test::SingleThreadTaskEnvironment task_environment_;

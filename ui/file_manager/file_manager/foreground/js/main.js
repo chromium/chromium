@@ -7,9 +7,9 @@
  */
 
 import '../../common/js/error_counter.js';
+import '../../widgets/xf_jellybean.js';
 import './metrics_start.js';
-
-import {startColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+import 'chrome://resources/cros_components/switch/switch.js';
 
 import {util} from '../../common/js/util.js';
 
@@ -23,5 +23,4 @@ fileManager.initializeCore();
 
 fileManager.initializeUI(document.body).then(() => {
   util.testSendMessage('ready');
-  startColorChangeUpdater();
 });

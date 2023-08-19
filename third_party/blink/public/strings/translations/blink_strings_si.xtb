@@ -26,7 +26,6 @@
 <translation id="2060505056492490888">'<ph name="DOT" />' '<ph name="INVALIDDOMAIN" />' හි වැරදි ස්ථානයක් අසල භාවිතා කෙරේ.</translation>
 <translation id="2148716181193084225">අද</translation>
 <translation id="2226276347425096477">කරුණාකර මෙම පෙළ අකුරු <ph name="MAX_CHARACTERS" /> හෝ අවම වන සේ කෙටි කරන්න (ඔබ දැනට අකුරු <ph name="CURRENT_LENGTH" /> භාවිත කරයි).</translation>
-<translation id="2246498165605549352">අභ්‍යන්තර ගොනුව</translation>
 <translation id="2247351761944213033">සතිය <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ඛණ්ඩය <ph name="NUMBER" /></translation>
 <translation id="2393030564806080191">ෂෂ්ඨ දශක වර්ණ අගය</translation>
@@ -89,6 +88,7 @@
 <translation id="5425179576310518467">වර්තමාන දිනය</translation>
 <translation id="5466621249238537318">කරුණාකර ගොනු එකක් හෝ කිහිපයක් තෝරන්න.</translation>
 <translation id="5468998798572797635">පූර්ණ තිරයෙන් පිටවන්න</translation>
+<translation id="5514612371225420585">ඔබේ උපාංගයෙහි ගොනුව</translation>
 <translation id="5516235301412634559">0.75</translation>
 <translation id="5537725057119320332">විකාශය</translation>
 <translation id="5546461542133609677">නිශ්ෂබ්ද ඉවත්</translation>
@@ -113,6 +113,7 @@
 <translation id="6398862346408813489">මාසය තේරීමේ පැනලය පෙන්වන්න</translation>
 <translation id="6404546809543547843">ශ්‍රව්‍ය කාලය පවිත්‍රකරණය</translation>
 <translation id="6443871981718447451">සංවෘත සිරස්තල මෙනුව පෙන්වන්න</translation>
+<translation id="6484738902856791350">අලංකාර මුද්‍රණය</translation>
 <translation id="6550675742724504774">අභිප්‍රේත</translation>
 <translation id="6572309429103589720">අවලංගු ව්‍යාකරණ</translation>
 <translation id="658823671542763450">සම්පූර්ණ තිරය ඇතුළු කරන්න</translation>

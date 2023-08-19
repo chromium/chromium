@@ -7,10 +7,6 @@
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/ui/badges/badge_type_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using infobars::InfoBar;
 
 OVERLAY_USER_DATA_SETUP_IMPL(InfobarOverlayRequestConfig);

@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.content_public.browser.WebContents;
@@ -142,4 +144,11 @@ public interface ExternalNavigationDelegate {
      * navigation still being allowed to leave the browser.
      */
     boolean shouldEmbedderInitiatedNavigationsStayInBrowser();
+
+    /**
+     * Returns the scheme (or null) used by web pages to start up the browser (Chrome Stable for
+     * Chrome) without an explicit Intent.
+     */
+    @Nullable
+    String getSelfScheme();
 }

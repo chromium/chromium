@@ -11,6 +11,18 @@
   }
 </style>
 
+<script>
+  var images = 0;
+
+  function load() {
+    if (++images == 3 && window.testRunner)
+      setTimeout(function() { testRunner.notifyDone() }, 0);
+  }
+
+  if (window.testRunner)
+    testRunner.waitUntilDone();
+</script>
+
 <body style="overflow: hidden">
   <!-- There should be no red on this page. -->
   <img class="t0" title="jpg image" onload="load()" src="resources/red-at-12-oclock-with-color-profile.jpg">
@@ -18,15 +30,4 @@
   <img class="t2" title="jpg image" onload="load()" src="resources/red-at-12-oclock-with-color-profile.jpg">
 </body>
 
-<script>
-var images = 0;
-
-function load() {
-  if (++images == 3 && window.testRunner)
-    setTimeout(function() { testRunner.notifyDone() }, 0);
-}
-
-if (window.testRunner)
-  testRunner.waitUntilDone();
-</script>
 </html>

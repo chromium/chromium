@@ -11,6 +11,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/scoped_multi_source_observation.h"
+#import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/drag_and_drop/drag_item_util.h"
 #import "ios/chrome/browser/main/browser_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -24,16 +25,12 @@
 #import "ios/chrome/browser/tabs/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_metrics.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_web_state_tab_switcher_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
+#import "ios/chrome/browser/ui/tab_switcher/web_state_tab_switcher_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "net/base/mac/url_conversions.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using PinnedState = WebStateSearchCriteria::PinnedState;
 
@@ -49,8 +46,8 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
     DCHECK(web_state_list->IsWebStatePinnedAt(i));
 
     web::WebState* web_state = web_state_list->GetWebStateAt(i);
-    [items addObject:[[PinnedWebStateTabSwitcherItem alloc]
-                         initWithWebState:web_state]];
+    [items
+        addObject:[[WebStateTabSwitcherItem alloc] initWithWebState:web_state]];
   }
   return items;
 }
@@ -125,85 +122,10 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
 
 #pragma mark - WebStateListObserving
 
-- (void)webStateList:(WebStateList*)webStateList
-    didInsertWebState:(web::WebState*)webState
-              atIndex:(int)index
-           activating:(BOOL)activating {
+- (void)willChangeWebStateList:(WebStateList*)webStateList
+                        change:(const WebStateListChangeDetach&)detachChange
+                        status:(const WebStateListStatus&)status {
   DCHECK_EQ(_webStateList, webStateList);
-
-  if (webStateList->IsBatchInProgress()) {
-    return;
-  }
-
-  if (!webStateList->IsWebStatePinnedAt(index)) {
-    [self.consumer
-        selectItemWithID:GetActiveWebStateIdentifier(
-                             webStateList,
-                             WebStateSearchCriteria{
-                                 .pinned_state = PinnedState::kPinned,
-                             })];
-    return;
-  }
-
-  TabSwitcherItem* item =
-      [[PinnedWebStateTabSwitcherItem alloc] initWithWebState:webState];
-  [self.consumer
-          insertItem:item
-             atIndex:index
-      selectedItemID:GetActiveWebStateIdentifier(
-                         webStateList, WebStateSearchCriteria{
-                                           .pinned_state = PinnedState::kPinned,
-                                       })];
-
-  _scopedWebStateObservation->AddObservation(webState);
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-     didMoveWebState:(web::WebState*)webState
-           fromIndex:(int)fromIndex
-             toIndex:(int)toIndex {
-  DCHECK_EQ(_webStateList, webStateList);
-
-  if (webStateList->IsBatchInProgress()) {
-    return;
-  }
-
-  if (!webStateList->IsWebStatePinnedAt(toIndex)) {
-    return;
-  }
-
-  [self.consumer moveItemWithID:webState->GetStableIdentifier()
-                        toIndex:toIndex];
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-    didReplaceWebState:(web::WebState*)oldWebState
-          withWebState:(web::WebState*)newWebState
-               atIndex:(int)index {
-  DCHECK_EQ(_webStateList, webStateList);
-
-  if (webStateList->IsBatchInProgress()) {
-    return;
-  }
-
-  if (!webStateList->IsWebStatePinnedAt(index)) {
-    return;
-  }
-
-  TabSwitcherItem* newItem =
-      [[PinnedWebStateTabSwitcherItem alloc] initWithWebState:newWebState];
-  [self.consumer replaceItemID:oldWebState->GetStableIdentifier()
-                      withItem:newItem];
-
-  _scopedWebStateObservation->RemoveObservation(oldWebState);
-  _scopedWebStateObservation->AddObservation(newWebState);
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-    willDetachWebState:(web::WebState*)webState
-               atIndex:(int)index {
-  DCHECK_EQ(_webStateList, webStateList);
-
   if (webStateList->IsBatchInProgress()) {
     return;
   }
@@ -212,7 +134,7 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
     return;
   }
 
-  if (!webStateList->IsWebStatePinnedAt(index)) {
+  if (!webStateList->IsWebStatePinnedAt(status.index)) {
     [self.consumer
         selectItemWithID:GetActiveWebStateIdentifier(
                              webStateList,
@@ -222,73 +144,121 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
     return;
   }
 
-  [self.consumer removeItemWithID:webState->GetStableIdentifier()
+  web::WebState* detachedWebState = detachChange.detached_web_state();
+  [self.consumer removeItemWithID:detachedWebState->GetStableIdentifier()
                    selectedItemID:GetActiveWebStateIdentifier(
                                       webStateList,
                                       WebStateSearchCriteria{
                                           .pinned_state = PinnedState::kPinned,
                                       })];
 
-  _scopedWebStateObservation->RemoveObservation(webState);
+  _scopedWebStateObservation->RemoveObservation(detachedWebState);
 }
 
-- (void)webStateList:(WebStateList*)webStateList
-    didChangeActiveWebState:(web::WebState*)newWebState
-                oldWebState:(web::WebState*)oldWebState
-                    atIndex:(int)atIndex
-                     reason:(ActiveWebStateChangeReason)reason {
+- (void)didChangeWebStateList:(WebStateList*)webStateList
+                       change:(const WebStateListChange&)change
+                       status:(const WebStateListStatus&)status {
   DCHECK_EQ(_webStateList, webStateList);
-
   if (webStateList->IsBatchInProgress()) {
     return;
   }
 
-  // If the selected index changes as a result of the last webstate being
-  // detached, atIndex will be kInvalidIndex.
-  if (atIndex == WebStateList::kInvalidIndex) {
-    [self.consumer selectItemWithID:nil];
-    return;
+  switch (change.type()) {
+    case WebStateListChange::Type::kStatusOnly: {
+      const WebStateListChangeStatusOnly& selectionOnlyChange =
+          change.As<WebStateListChangeStatusOnly>();
+      if (status.pinned_state_change) {
+        [self changePinnedStateForWebState:selectionOnlyChange
+                                               .selected_web_state()
+                                   atIndex:status.index];
+        break;
+      }
+      // The activation is handled after this switch statement.
+      break;
+    }
+    case WebStateListChange::Type::kDetach:
+      // Do nothing when a WebState is detached.
+      break;
+    case WebStateListChange::Type::kMove: {
+      const WebStateListChangeMove& moveChange =
+          change.As<WebStateListChangeMove>();
+      if (webStateList->IsWebStatePinnedAt(status.index)) {
+        // PinnedTabsMediator handles only pinned tabs because non pinned tabs
+        // are handled in BaseGridMediator.
+        [self.consumer
+            moveItemWithID:moveChange.moved_web_state()->GetStableIdentifier()
+                   toIndex:status.index];
+      }
+
+      // The pinned state can be updated when a tab is moved.
+      if (status.pinned_state_change) {
+        [self changePinnedStateForWebState:moveChange.moved_web_state()
+                                   atIndex:status.index];
+      }
+      break;
+    }
+    case WebStateListChange::Type::kReplace: {
+      if (!webStateList->IsWebStatePinnedAt(status.index)) {
+        break;
+      }
+
+      const WebStateListChangeReplace& replaceChange =
+          change.As<WebStateListChangeReplace>();
+      web::WebState* replacedWebState = replaceChange.replaced_web_state();
+      web::WebState* insertedWebState = replaceChange.inserted_web_state();
+      TabSwitcherItem* newItem =
+          [[WebStateTabSwitcherItem alloc] initWithWebState:insertedWebState];
+      [self.consumer replaceItemID:replacedWebState->GetStableIdentifier()
+                          withItem:newItem];
+
+      _scopedWebStateObservation->RemoveObservation(replacedWebState);
+      _scopedWebStateObservation->AddObservation(insertedWebState);
+      break;
+    }
+    case WebStateListChange::Type::kInsert: {
+      if (!webStateList->IsWebStatePinnedAt(status.index)) {
+        [self.consumer
+            selectItemWithID:GetActiveWebStateIdentifier(
+                                 webStateList,
+                                 WebStateSearchCriteria{
+                                     .pinned_state = PinnedState::kPinned,
+                                 })];
+        break;
+      }
+
+      const WebStateListChangeInsert& insertChange =
+          change.As<WebStateListChangeInsert>();
+      web::WebState* insertedWebState = insertChange.inserted_web_state();
+      TabSwitcherItem* item =
+          [[WebStateTabSwitcherItem alloc] initWithWebState:insertedWebState];
+      [self.consumer insertItem:item
+                        atIndex:status.index
+                 selectedItemID:GetActiveWebStateIdentifier(
+                                    webStateList,
+                                    WebStateSearchCriteria{
+                                        .pinned_state = PinnedState::kPinned,
+                                    })];
+
+      _scopedWebStateObservation->AddObservation(insertedWebState);
+      break;
+    }
   }
 
-  if (!webStateList->IsWebStatePinnedAt(atIndex)) {
-    [self.consumer selectItemWithID:nil];
-    return;
-  }
+  if (status.active_web_state_change()) {
+    // If the selected index changes as a result of the last webstate being
+    // detached, the active index will be kInvalidIndex.
+    if (webStateList->active_index() == WebStateList::kInvalidIndex) {
+      [self.consumer selectItemWithID:nil];
+      return;
+    }
 
-  [self.consumer selectItemWithID:newWebState->GetStableIdentifier()];
-}
+    if (!webStateList->IsWebStatePinnedAt(webStateList->active_index())) {
+      [self.consumer selectItemWithID:nil];
+      return;
+    }
 
-- (void)webStateList:(WebStateList*)webStateList
-    didChangePinnedStateForWebState:(web::WebState*)webState
-                            atIndex:(int)index {
-  DCHECK_EQ(_webStateList, webStateList);
-
-  if (webStateList->IsBatchInProgress()) {
-    return;
-  }
-
-  if (webStateList->IsWebStatePinnedAt(index)) {
-    TabSwitcherItem* item =
-        [[PinnedWebStateTabSwitcherItem alloc] initWithWebState:webState];
-    [self.consumer insertItem:item
-                      atIndex:index
-               selectedItemID:GetActiveWebStateIdentifier(
-                                  webStateList,
-                                  WebStateSearchCriteria{
-                                      .pinned_state = PinnedState::kPinned,
-                                  })];
-
-    _scopedWebStateObservation->AddObservation(webState);
-  } else {
     [self.consumer
-        removeItemWithID:webState->GetStableIdentifier()
-          selectedItemID:GetActiveWebStateIdentifier(
-                             webStateList,
-                             WebStateSearchCriteria{
-                                 .pinned_state = PinnedState::kPinned,
-                             })];
-
-    _scopedWebStateObservation->RemoveObservation(webState);
+        selectItemWithID:status.new_active_web_state->GetStableIdentifier()];
   }
 }
 
@@ -303,6 +273,13 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
 
   [self addWebStateObservations];
   [self populateConsumerItems];
+}
+
+- (void)webStateListDestroyed:(WebStateList*)webStateList {
+  DCHECK_EQ(_webStateList, webStateList);
+
+  _scopedWebStateListObservation.reset();
+  _webStateList = nullptr;
 }
 
 #pragma mark - CRWWebStateObserver
@@ -321,7 +298,7 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
 
 - (void)updateConsumerItemForWebState:(web::WebState*)webState {
   TabSwitcherItem* item =
-      [[PinnedWebStateTabSwitcherItem alloc] initWithWebState:webState];
+      [[WebStateTabSwitcherItem alloc] initWithWebState:webState];
   [self.consumer replaceItemID:webState->GetStableIdentifier() withItem:item];
 }
 
@@ -330,11 +307,11 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
 - (void)selectItemWithID:(NSString*)itemID {
   base::RecordAction(base::UserMetricsAction("MobileTabGridPinnedTabSelected"));
 
-  int index =
-      GetTabIndex(self.webStateList, WebStateSearchCriteria{
-                                         .identifier = itemID,
-                                         .pinned_state = PinnedState::kPinned,
-                                     });
+  int index = GetWebStateIndex(self.webStateList,
+                               WebStateSearchCriteria{
+                                   .identifier = itemID,
+                                   .pinned_state = PinnedState::kPinned,
+                               });
   WebStateList* itemWebStateList = self.webStateList;
 
   if (index == WebStateList::kInvalidIndex) {
@@ -355,14 +332,16 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
   }
 
   itemWebStateList->ActivateWebStateAt(index);
+
+  LogPinnedTabsUsedForDefaultBrowserPromo();
 }
 
 - (void)closeItemWithID:(NSString*)itemID {
-  int index =
-      GetTabIndex(self.webStateList, WebStateSearchCriteria{
-                                         .identifier = itemID,
-                                         .pinned_state = PinnedState::kPinned,
-                                     });
+  int index = GetWebStateIndex(self.webStateList,
+                               WebStateSearchCriteria{
+                                   .identifier = itemID,
+                                   .pinned_state = PinnedState::kPinned,
+                               });
   if (index == WebStateList::kInvalidIndex) {
     return;
   }
@@ -375,8 +354,8 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
 }
 
 - (void)moveItemWithID:(NSString*)itemID toIndex:(NSUInteger)destinationIndex {
-  int sourceIndex =
-      GetTabIndex(self.webStateList, WebStateSearchCriteria{
+  int sourceIndex = GetWebStateIndex(self.webStateList,
+                                     WebStateSearchCriteria{
                                          .identifier = itemID,
                                          .pinned_state = PinnedState::kPinned,
                                      });
@@ -449,6 +428,16 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
       int tabIndex = SetWebStatePinnedState(self.webStateList, tabInfo.tabID,
                                             /*pin_state=*/YES);
       if (tabIndex == WebStateList::kInvalidIndex) {
+        BrowserList* browserList =
+            BrowserListFactory::GetForBrowserState(self.browserState);
+        BrowserAndIndex tabBrowserAndIndex = FindBrowserAndIndex(
+            tabInfo.tabID, browserList->AllRegularBrowsers());
+        if (!tabBrowserAndIndex.browser) {
+          // This could happen if the tab is deleted during a drag-and-drop
+          // action.
+          return;
+        }
+
         // Move tab across Browsers.
         base::UmaHistogramEnumeration(kUmaPinnedViewDragOrigin,
                                       DragItemOrigin::kOtherBrwoser);
@@ -528,10 +517,11 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
   // cancel the drop operation.
   if (_dragItemID == tabInfo.tabID) {
     const BOOL tabExists =
-        GetTabIndex(self.webStateList, WebStateSearchCriteria{
-                                           .identifier = tabInfo.tabID,
-                                           .pinned_state = PinnedState::kPinned,
-                                       }) != WebStateList::kInvalidIndex;
+        GetWebStateIndex(self.webStateList,
+                         WebStateSearchCriteria{
+                             .identifier = tabInfo.tabID,
+                             .pinned_state = PinnedState::kPinned,
+                         }) != WebStateList::kInvalidIndex;
     if (!tabExists) {
       return UIDropOperationCancel;
     }
@@ -587,6 +577,34 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
   }
 
   return webStateListIndex;
+}
+
+// Inserts/removes a pinned item to/from the collection.
+- (void)changePinnedStateForWebState:(web::WebState*)webState
+                             atIndex:(int)index {
+  if (self.webStateList->IsWebStatePinnedAt(index)) {
+    TabSwitcherItem* item =
+        [[WebStateTabSwitcherItem alloc] initWithWebState:webState];
+    [self.consumer insertItem:item
+                      atIndex:index
+               selectedItemID:GetActiveWebStateIdentifier(
+                                  self.webStateList,
+                                  WebStateSearchCriteria{
+                                      .pinned_state = PinnedState::kPinned,
+                                  })];
+
+    _scopedWebStateObservation->AddObservation(webState);
+  } else {
+    [self.consumer
+        removeItemWithID:webState->GetStableIdentifier()
+          selectedItemID:GetActiveWebStateIdentifier(
+                             self.webStateList,
+                             WebStateSearchCriteria{
+                                 .pinned_state = PinnedState::kPinned,
+                             })];
+
+    _scopedWebStateObservation->RemoveObservation(webState);
+  }
 }
 
 @end

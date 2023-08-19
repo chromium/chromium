@@ -29,7 +29,6 @@ import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -132,14 +131,6 @@ public class LocationBarTest {
                     .getSearchEngineLogo(any(), anyInt(), any(), any());
         });
         UmaRecorderHolder.resetForTesting();
-    }
-
-    @After
-    public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            TemplateUrlServiceFactory.setInstanceForTesting(null);
-            SearchEngineLogoUtils.setInstanceForTesting(null);
-        });
     }
 
     private void startActivityNormally() {
@@ -354,6 +345,7 @@ public class LocationBarTest {
     @Test
     @MediumTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @SuppressWarnings("CheckReturnValue")
     public void testFocusLogic_buttonVisibilityPhone() {
         startActivityNormally();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
@@ -370,7 +362,8 @@ public class LocationBarTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> { mUrlBar.requestFocus(); });
 
-        ViewUtils.waitForView(allOf(withId(R.id.url_action_container),
+        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
+        ViewUtils.isEventuallyVisible(allOf(withId(R.id.url_action_container),
                 withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
         onView(withId(R.id.mic_button))
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
@@ -387,13 +380,15 @@ public class LocationBarTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> { mUrlBar.clearFocus(); });
 
-        ViewUtils.waitForView(allOf(withId(R.id.url_action_container),
+        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
+        ViewUtils.isEventuallyVisible(allOf(withId(R.id.url_action_container),
                 withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
     }
 
     @Test
     @MediumTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @SuppressWarnings("CheckReturnValue")
     public void testFocusLogic_cameraAssistedSearchLenButtonVisibilityPhone_lensDisabled() {
         startActivityNormally();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
@@ -408,7 +403,8 @@ public class LocationBarTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> { mUrlBar.requestFocus(); });
 
-        ViewUtils.waitForView(allOf(withId(R.id.url_action_container), isDisplayed()));
+        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
+        ViewUtils.isEventuallyVisible(allOf(withId(R.id.url_action_container), isDisplayed()));
         onView(withId(R.id.lens_camera_button)).check((matches(not(isDisplayed()))));
         onView(withId(R.id.delete_button)).check(matches(not(isDisplayed())));
         assertTheLastVisibleButtonInSearchBoxById(R.id.mic_button);
@@ -421,12 +417,14 @@ public class LocationBarTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> { mUrlBar.clearFocus(); });
 
-        ViewUtils.waitForView(allOf(withId(R.id.url_action_container), not(isDisplayed())));
+        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
+        ViewUtils.isEventuallyVisible(allOf(withId(R.id.url_action_container), not(isDisplayed())));
     }
 
     @Test
     @MediumTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @SuppressWarnings("CheckReturnValue")
     public void testFocusLogic_cameraAssistedSearchLenButtonVisibilityPhone_lensEnabled() {
         startActivityNormally();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
@@ -441,7 +439,8 @@ public class LocationBarTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> { mUrlBar.requestFocus(); });
 
-        ViewUtils.waitForView(allOf(withId(R.id.url_action_container), isDisplayed()));
+        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
+        ViewUtils.isEventuallyVisible(allOf(withId(R.id.url_action_container), isDisplayed()));
         onView(withId(R.id.lens_camera_button)).check((matches(isDisplayed())));
         onView(withId(R.id.delete_button)).check(matches(not(isDisplayed())));
         assertTheLastVisibleButtonInSearchBoxById(R.id.lens_camera_button);
@@ -454,12 +453,14 @@ public class LocationBarTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> { mUrlBar.clearFocus(); });
 
-        ViewUtils.waitForView(allOf(withId(R.id.url_action_container), not(isDisplayed())));
+        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
+        ViewUtils.isEventuallyVisible(allOf(withId(R.id.url_action_container), not(isDisplayed())));
     }
 
     @Test
     @MediumTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @SuppressWarnings("CheckReturnValue")
     public void testFocusLogic_lenButtonVisibilityOnStartNtpPhone() {
         startActivityNormally();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
@@ -467,22 +468,25 @@ public class LocationBarTest {
 
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
 
-        ViewUtils.waitForView(allOf(withId(R.id.mic_button), isDisplayed()));
-        ViewUtils.waitForView(allOf(withId(R.id.lens_camera_button), isDisplayed()));
+        // TODO(crbug.com/1469988): These are no-ops, replace with ViewUtils.waitForVisibleView().
+        ViewUtils.isEventuallyVisible(allOf(withId(R.id.mic_button), isDisplayed()));
+        ViewUtils.isEventuallyVisible(allOf(withId(R.id.lens_camera_button), isDisplayed()));
         assertTheLastVisibleButtonInSearchBoxById(R.id.lens_camera_button);
     }
 
     @Test
     @MediumTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @SuppressWarnings("CheckReturnValue")
     public void testFocusLogic_lenButtonVisibilityOnStartNtpPhone_updatedOnceWhenNtpScrolled() {
         startActivityNormally();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
 
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
 
-        ViewUtils.waitForView(allOf(withId(R.id.mic_button), isDisplayed()));
-        ViewUtils.waitForView(allOf(withId(R.id.lens_camera_button), isDisplayed()));
+        // TODO(crbug.com/1469988): These are no-ops, replace with ViewUtils.waitForVisibleView().
+        ViewUtils.isEventuallyVisible(allOf(withId(R.id.mic_button), isDisplayed()));
+        ViewUtils.isEventuallyVisible(allOf(withId(R.id.lens_camera_button), isDisplayed()));
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Mockito.reset(mVoiceRecognitionHandler);
@@ -501,6 +505,7 @@ public class LocationBarTest {
     @Test
     @MediumTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @SuppressWarnings("CheckReturnValue")
     public void testFocusLogic_lenButtonVisibilityOnLocationBarOnIncognitoStateChange() {
         startActivityNormally();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
@@ -512,8 +517,9 @@ public class LocationBarTest {
         updateLocationBar();
         onView(withId(R.id.lens_camera_button)).check(matches(not(isDisplayed())));
         TestThreadUtils.runOnUiThreadBlocking(() -> { mUrlBar.requestFocus(); });
-        ViewUtils.waitForView(allOf(withId(R.id.lens_camera_button), not(isDisplayed())));
-        ViewUtils.waitForView(allOf(withId(R.id.mic_button), isDisplayed()));
+        // TODO(crbug.com/1469988): These are no-ops, replace with ViewUtils.waitForVisibleView().
+        ViewUtils.isEventuallyVisible(allOf(withId(R.id.lens_camera_button), not(isDisplayed())));
+        ViewUtils.isEventuallyVisible(allOf(withId(R.id.mic_button), isDisplayed()));
         assertTheLastVisibleButtonInSearchBoxById(R.id.mic_button);
 
         // Test when incognito is false.
@@ -522,7 +528,8 @@ public class LocationBarTest {
         updateLocationBar();
         onView(withId(R.id.lens_camera_button)).check(matches(not(isDisplayed())));
         TestThreadUtils.runOnUiThreadBlocking(() -> { mUrlBar.requestFocus(); });
-        ViewUtils.waitForView(allOf(withId(R.id.lens_camera_button), isDisplayed()));
+        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
+        ViewUtils.isEventuallyVisible(allOf(withId(R.id.lens_camera_button), isDisplayed()));
         assertTheLastVisibleButtonInSearchBoxById(R.id.lens_camera_button);
         TestThreadUtils.runOnUiThreadBlocking(() -> { mUrlBar.clearFocus(); });
     }
@@ -530,6 +537,7 @@ public class LocationBarTest {
     @Test
     @MediumTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @SuppressWarnings("CheckReturnValue")
     public void testFocusLogic_lenButtonVisibilityOnLocationBarOnDefaultSearchEngineChange() {
         startActivityNormally();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
@@ -541,8 +549,9 @@ public class LocationBarTest {
         mActivityTestRule.loadUrlInNewTab(url, /** incognito = */ false);
         onView(withId(R.id.lens_camera_button)).check(matches(not(isDisplayed())));
         TestThreadUtils.runOnUiThreadBlocking(() -> { mUrlBar.requestFocus(); });
-        ViewUtils.waitForView(allOf(withId(R.id.lens_camera_button), not(isDisplayed())));
-        ViewUtils.waitForView(allOf(withId(R.id.mic_button), isDisplayed()));
+        // TODO(crbug.com/1469988): These are a no-ops, replace with ViewUtils.waitForVisibleView().
+        ViewUtils.isEventuallyVisible(allOf(withId(R.id.lens_camera_button), not(isDisplayed())));
+        ViewUtils.isEventuallyVisible(allOf(withId(R.id.mic_button), isDisplayed()));
         assertTheLastVisibleButtonInSearchBoxById(R.id.mic_button);
 
         // Test when search engine is Google.
@@ -552,7 +561,8 @@ public class LocationBarTest {
         updateLocationBar();
         onView(withId(R.id.lens_camera_button)).check(matches(not(isDisplayed())));
         TestThreadUtils.runOnUiThreadBlocking(() -> { mUrlBar.requestFocus(); });
-        ViewUtils.waitForView(allOf(withId(R.id.lens_camera_button), isDisplayed()));
+        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
+        ViewUtils.isEventuallyVisible(allOf(withId(R.id.lens_camera_button), isDisplayed()));
         assertTheLastVisibleButtonInSearchBoxById(R.id.lens_camera_button);
         TestThreadUtils.runOnUiThreadBlocking(() -> { mUrlBar.clearFocus(); });
     }
@@ -625,7 +635,7 @@ public class LocationBarTest {
      */
     @Test
     @MediumTest
-    @DisableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
+    @DisableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     public void testFocusLogic_backPress() {
         startActivityNormally();
@@ -641,7 +651,7 @@ public class LocationBarTest {
      */
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
+    @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     public void testFocusLogic_backPress_Refactored() {
         startActivityNormally();

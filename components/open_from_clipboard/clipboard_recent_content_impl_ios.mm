@@ -7,16 +7,12 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <UIKit/UIKit.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
-#import "base/mac/foundation_util.h"
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "components/open_from_clipboard/clipboard_async_wrapper_ios.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 ContentType const ContentTypeURL = @"ContentTypeURL";
 ContentType const ContentTypeText = @"ContentTypeString";
@@ -679,7 +675,7 @@ NSString* const kDefaultScheme = @"https";
 - (void)loadFromUserDefaults {
   self.lastPasteboardChangeCount =
       [self.sharedUserDefaults integerForKey:kPasteboardChangeCountKey];
-  self.lastPasteboardChangeDate = base::mac::ObjCCastStrict<NSDate>(
+  self.lastPasteboardChangeDate = base::apple::ObjCCastStrict<NSDate>(
       [self.sharedUserDefaults objectForKey:kPasteboardChangeDateKey]);
 }
 

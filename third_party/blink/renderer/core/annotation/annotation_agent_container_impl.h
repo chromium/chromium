@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_selector_generator.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver_set.h"
@@ -43,10 +44,22 @@ class CORE_EXPORT AnnotationAgentContainerImpl final
 
   static const char kSupplementName[];
 
+  class Observer : public GarbageCollectedMixin {
+   public:
+    virtual void WillPerformAttach() {}
+  };
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
   // Static getter for the container for the given document. Will instantiate a
   // container if the document doesn't yet have one. This can return nullptr if
   // requested from an inactive or detached document.
-  static AnnotationAgentContainerImpl* From(Document&);
+  static AnnotationAgentContainerImpl* CreateIfNeeded(Document&);
+
+  // Same as above but won't create an instance if one isn't already present on
+  // the Document.
+  static AnnotationAgentContainerImpl* FromIfExists(Document&);
 
   static void BindReceiver(
       LocalFrame* frame,
@@ -68,8 +81,9 @@ class CORE_EXPORT AnnotationAgentContainerImpl final
 
   void Trace(Visitor* visitor) const override;
 
-  // Notifies the container when parsing in its document has finished.
-  void FinishedParsing();
+  // Calls Attach() on any agent that needs an attachment. Must be called in a
+  // clean lifecycle state.
+  void PerformInitialAttachments();
 
   // Removes the given agent from this container. It is an error to try and
   // remove an agent from a container that doesn't hold it. Once removed, the
@@ -98,6 +112,10 @@ class CORE_EXPORT AnnotationAgentContainerImpl final
 
   void OpenedContextMenuOverSelection();
 
+  // Returns true if the document is in a clean state to run annotation
+  // attachment. i.e. Parsing has finished and layout and style are clean.
+  bool IsLifecycleCleanForAttachment() const;
+
  private:
   friend AnnotationAgentContainerImplTest;
 
@@ -111,13 +129,22 @@ class CORE_EXPORT AnnotationAgentContainerImpl final
       const TextFragmentSelector& selector,
       shared_highlighting::LinkGenerationError error);
 
+  void ScheduleBeginMainFrame();
+
+  Document& GetDocument() const;
+  LocalFrame& GetFrame() const;
+
   Member<AnnotationAgentGenerator> annotation_agent_generator_;
 
   HeapMojoReceiverSet<mojom::blink::AnnotationAgentContainer,
                       AnnotationAgentContainerImpl>
       receivers_;
 
-  HeapHashSet<Member<AnnotationAgentImpl>> agents_;
+  HeapVector<Member<AnnotationAgentImpl>> agents_;
+
+  HeapHashSet<Member<Observer>> observers_;
+
+  bool page_has_been_visible_ = false;
 };
 
 }  // namespace blink

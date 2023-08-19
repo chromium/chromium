@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "chrome/browser/ui/views/chrome_views_export.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 namespace ui {
@@ -32,24 +31,25 @@ struct AcceleratorMapping {
 //
 // On macOS (only), the result will only contain accelerators that do not use a
 // modifier key (e.g. escape).
-CHROME_VIEWS_EXPORT std::vector<AcceleratorMapping> GetAcceleratorList();
+std::vector<AcceleratorMapping> GetAcceleratorList();
+
+// This function should be used only for testing. Clears the accelerator list.
+void ClearAcceleratorListForTesting();
 
 // Returns true on Ash and if the command id has an associated accelerator which
 // is handled by Ash. If the return is true the accelerator is returned via the
 // second argument.
-CHROME_VIEWS_EXPORT bool GetAshAcceleratorForCommandId(
-    int command_id,
-    ui::Accelerator* accelerator);
+bool GetAshAcceleratorForCommandId(int command_id,
+                                   ui::Accelerator* accelerator);
 
 // Returns true if the command id has an associated standard
 // accelerator like cut, copy and paste. If the return is true the
 // accelerator is returned via the second argument.
-CHROME_VIEWS_EXPORT bool GetStandardAcceleratorForCommandId(
-    int command_id,
-    ui::Accelerator* accelerator);
+bool GetStandardAcceleratorForCommandId(int command_id,
+                                        ui::Accelerator* accelerator);
 
 // Returns true if the command identified by |command_id| should be executed
 // repeatedly while its accelerator keys are held down.
-CHROME_VIEWS_EXPORT bool IsCommandRepeatable(int command_id);
+bool IsCommandRepeatable(int command_id);
 
 #endif  // CHROME_BROWSER_UI_VIEWS_ACCELERATOR_TABLE_H_

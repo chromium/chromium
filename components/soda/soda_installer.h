@@ -55,8 +55,6 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstaller {
   SodaInstaller(const SodaInstaller&) = delete;
   SodaInstaller& operator=(const SodaInstaller&) = delete;
 
-  // Implemented in the platform-specific subclass to get the SodaInstaller
-  // instance.
   static SodaInstaller* GetInstance();
 
   // Registers user preferences related to the Speech On-Device API (SODA)

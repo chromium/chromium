@@ -14,10 +14,6 @@
 #import "services/network/public/cpp/simple_url_loader.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface RetryableURLFetcher ()
 - (void)urlFetchDidComplete:(std::unique_ptr<std::string>)response_body;
 @end

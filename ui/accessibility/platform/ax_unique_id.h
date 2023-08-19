@@ -48,6 +48,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXUniqueId {
   int32_t id_;
 };
 
+static constexpr int32_t kInvalidAXUniqueId = 0;
+
 }  // namespace ui
 
 #endif  // UI_ACCESSIBILITY_PLATFORM_AX_UNIQUE_ID_H_

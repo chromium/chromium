@@ -24,6 +24,64 @@
 
 namespace ash {
 namespace holding_space_util {
+namespace {
+
+// Helpers ---------------------------------------------------------------------
+
+HoldingSpaceFile::FileSystemType ToHoldingSpaceFileSystemType(
+    storage::FileSystemType file_system_type) {
+  switch (file_system_type) {
+    case storage::FileSystemType::kFileSystemTypeArcContent:
+      return HoldingSpaceFile::FileSystemType::kArcContent;
+    case storage::FileSystemType::kFileSystemTypeArcDocumentsProvider:
+      return HoldingSpaceFile::FileSystemType::kArcDocumentsProvider;
+    case storage::FileSystemType::kFileSystemTypeDeviceMedia:
+      return HoldingSpaceFile::FileSystemType::kDeviceMedia;
+    case storage::FileSystemType::kFileSystemTypeDeviceMediaAsFileStorage:
+      return HoldingSpaceFile::FileSystemType::kDeviceMediaAsFileStorage;
+    case storage::FileSystemType::kFileSystemTypeDragged:
+      return HoldingSpaceFile::FileSystemType::kDragged;
+    case storage::FileSystemType::kFileSystemTypeDriveFs:
+      return HoldingSpaceFile::FileSystemType::kDriveFs;
+    case storage::FileSystemType::kFileSystemTypeExternal:
+      return HoldingSpaceFile::FileSystemType::kExternal;
+    case storage::FileSystemType::kFileSystemTypeForTransientFile:
+      return HoldingSpaceFile::FileSystemType::kForTransientFile;
+    case storage::FileSystemType::kFileSystemTypeFuseBox:
+      return HoldingSpaceFile::FileSystemType::kFuseBox;
+    case storage::FileSystemType::kFileSystemTypeIsolated:
+      return HoldingSpaceFile::FileSystemType::kIsolated;
+    case storage::FileSystemType::kFileSystemTypeLocal:
+      return HoldingSpaceFile::FileSystemType::kLocal;
+    case storage::FileSystemType::kFileSystemTypeLocalForPlatformApp:
+      return HoldingSpaceFile::FileSystemType::kLocalForPlatformApp;
+    case storage::FileSystemType::kFileSystemTypeLocalMedia:
+      return HoldingSpaceFile::FileSystemType::kLocalMedia;
+    case storage::FileSystemType::kFileSystemTypePersistent:
+      return HoldingSpaceFile::FileSystemType::kPersistent;
+    case storage::FileSystemType::kFileSystemTypeProvided:
+      return HoldingSpaceFile::FileSystemType::kProvided;
+    case storage::FileSystemType::kFileSystemTypeSmbFs:
+      return HoldingSpaceFile::FileSystemType::kSmbFs;
+    case storage::FileSystemType::kFileSystemTypeSyncable:
+      return HoldingSpaceFile::FileSystemType::kSyncable;
+    case storage::FileSystemType::kFileSystemTypeSyncableForInternalSync:
+      return HoldingSpaceFile::FileSystemType::kSyncableForInternalSync;
+    case storage::FileSystemType::kFileSystemTypeTemporary:
+      return HoldingSpaceFile::FileSystemType::kTemporary;
+    case storage::FileSystemType::kFileSystemTypeTest:
+      return HoldingSpaceFile::FileSystemType::kTest;
+    case storage::FileSystemType::kFileSystemTypeUnknown:
+      return HoldingSpaceFile::FileSystemType::kUnknown;
+    case storage::FileSystemType::kFileSystemInternalTypeEnumStart:
+    case storage::FileSystemType::kFileSystemInternalTypeEnumEnd:
+      NOTREACHED_NORETURN();
+  }
+}
+
+}  // namespace
+
+// ValidityRequirement ---------------------------------------------------------
 
 ValidityRequirement::ValidityRequirement() = default;
 ValidityRequirement::ValidityRequirement(const ValidityRequirement&) = default;
@@ -167,6 +225,15 @@ void PartitionFilePathsByValidity(
             base::Unretained(valid_file_paths_ptr),
             base::Unretained(invalid_file_paths_ptr), barrier_closure));
   }
+}
+
+HoldingSpaceFile::FileSystemType ResolveFileSystemType(
+    Profile* profile,
+    const GURL& file_system_url) {
+  return ToHoldingSpaceFileSystemType(
+      file_manager::util::GetFileManagerFileSystemContext(profile)
+          ->CrackURLInFirstPartyContext(file_system_url)
+          .type());
 }
 
 GURL ResolveFileSystemUrl(Profile* profile, const base::FilePath& file_path) {

@@ -11,6 +11,8 @@
 #include "base/memory/weak_ptr.h"
 #include "components/safe_search_api/url_checker_client.h"
 #include "components/supervised_user/core/browser/kids_chrome_management_client.h"
+#include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
+#include "components/supervised_user/core/browser/proto_fetcher.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
 class GURL;
@@ -26,7 +28,7 @@ class KidsManagementURLCheckerClient
  public:
   // |country| should be a two-letter country code (ISO 3166-1 alpha-2), e.g.,
   // "us".
-  explicit KidsManagementURLCheckerClient(
+  KidsManagementURLCheckerClient(
       KidsChromeManagementClient* kids_chrome_management_client,
       const std::string& country);
 
@@ -45,7 +47,7 @@ class KidsManagementURLCheckerClient
   void CheckURL(const GURL& url, ClientCheckCallback callback) override;
 
  private:
-  void ConvertResponseCallback(
+  void LegacyConvertResponseCallback(
       const GURL& url,
       ClientCheckCallback client_callback,
       std::unique_ptr<google::protobuf::MessageLite> response_proto,
@@ -53,6 +55,11 @@ class KidsManagementURLCheckerClient
 
   raw_ptr<KidsChromeManagementClient> kids_chrome_management_client_;
   const std::string country_;
+
+  supervised_user::ParallelFetchManager<
+      kids_chrome_management::ClassifyUrlRequest,
+      kids_chrome_management::ClassifyUrlResponse>
+      fetch_manager_;
 
   base::WeakPtrFactory<KidsManagementURLCheckerClient> weak_factory_{this};
 };

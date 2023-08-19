@@ -65,6 +65,11 @@ function initialize() {
   getRequiredElement('shopping-list-eligible-see-details-btn')
       .addEventListener('click', seeEligibleDetails);
 
+  getRequiredElement('reset-price-tracking-email-pref-button')
+      .addEventListener('click', () => {
+        getProxy().resetPriceTrackingEmailPref();
+      });
+
   getProxy().getCallbackRouter().onShoppingListEligibilityChanged.addListener(
       (eligible: boolean) => {
         updateShoppingListEligibleStatus(eligible);

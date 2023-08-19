@@ -5,6 +5,7 @@ Version: 0657164905c607e1b2b1dbac2707b06460a9e2f4
 License: MIT
 License File: LICENSE
 Security Critical: no
+Shipped: yes
 
 Description:
 X Window System Core Protocol

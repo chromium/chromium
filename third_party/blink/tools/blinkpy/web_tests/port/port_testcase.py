@@ -34,6 +34,7 @@ from blinkpy.common import exit_codes
 from blinkpy.common.system.executive import ScriptError
 from blinkpy.common.system.executive_mock import MockExecutive
 from blinkpy.common.system.log_testing import LoggingTestCase
+from blinkpy.common.system.platform_info_mock import MockPlatformInfo
 from blinkpy.common.system.system_host import SystemHost
 from blinkpy.common.system.system_host_mock import MockSystemHost
 from blinkpy.web_tests.port.base import Port
@@ -63,6 +64,7 @@ class PortTestCase(LoggingTestCase):
     port_maker = Port
     port_name = None
     full_port_name = None
+    processor = None
 
     def make_port(self,
                   host=None,
@@ -71,11 +73,13 @@ class PortTestCase(LoggingTestCase):
                   os_name=None,
                   os_version=None,
                   machine=None,
+                  processor=None,
                   **kwargs):
         host = host or MockSystemHost(os_name=(os_name or self.os_name),
                                       os_version=(os_version
                                                   or self.os_version),
-                                      machine=(machine or self.machine))
+                                      machine=(machine or self.machine),
+                                      processor=(processor or self.processor))
         options = options or optparse.Values({
             'configuration': 'Release',
             'use_xvfb': True
@@ -149,7 +153,7 @@ class PortTestCase(LoggingTestCase):
     def make_dcheck_port(self, options):
         host = MockSystemHost(os_name=self.os_name, os_version=self.os_version)
         host.filesystem.write_text_file(
-            self.make_port(host)._build_path('args.gn'),
+            self.make_port(host).build_path('args.gn'),
             'is_debug=false\ndcheck_always_on = true # comment\n')
         port = self.make_port(host, options=options)
         return port
@@ -331,7 +335,6 @@ class PortTestCase(LoggingTestCase):
         port = self.make_port()
         self.assertEqual(list(port.default_expectations_files()), [
             port.path_to_generic_test_expectations_file(),
-            port.path_to_webdriver_expectations_file(),
             port.host.filesystem.join(port.web_tests_dir(), 'NeverFixTests'),
             port.host.filesystem.join(port.web_tests_dir(),
                                       'StaleTestExpectations'),
@@ -372,7 +375,6 @@ class PortTestCase(LoggingTestCase):
             '[{"name": "a", "args": ["--aa"]}]')
         self.assertEqual(list(port.used_expectations_files()), [
             port.path_to_generic_test_expectations_file(),
-            port.path_to_webdriver_expectations_file(),
             port.host.filesystem.join(port.web_tests_dir(), 'NeverFixTests'),
             port.host.filesystem.join(port.web_tests_dir(),
                                       'StaleTestExpectations'),

@@ -87,7 +87,8 @@ class CONTENT_EXPORT PrefetchURLLoaderServiceContext final
     return loader_factory_receivers_->current_context();
   }
 
-  raw_ptr<BrowserContext, DanglingUntriaged> browser_context_ = nullptr;
+  raw_ptr<BrowserContext, AcrossTasksDanglingUntriaged> browser_context_ =
+      nullptr;
 
   raw_ref<mojo::ReceiverSet<network::mojom::URLLoaderFactory,
                             std::unique_ptr<BindContext>>>

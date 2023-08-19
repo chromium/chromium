@@ -8,7 +8,6 @@
 #include "ash/components/arc/arc_util.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
-#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/thread_pool.h"
@@ -20,6 +19,7 @@
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
+#include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager.h"
@@ -161,6 +161,11 @@ SharedPathInfo::SharedPathInfo(std::unique_ptr<base::FilePathWatcher> watcher,
 SharedPathInfo::SharedPathInfo(SharedPathInfo&&) = default;
 SharedPathInfo::~SharedPathInfo() = default;
 
+GuestOsSharePath::PathsToShare::PathsToShare() = default;
+GuestOsSharePath::PathsToShare::PathsToShare(GuestOsSharePath::PathsToShare&) =
+    default;
+GuestOsSharePath::PathsToShare::~PathsToShare() = default;
+
 GuestOsSharePath* GuestOsSharePath::GetForProfile(Profile* profile) {
   return GuestOsSharePathFactory::GetForProfile(profile);
 }
@@ -206,6 +211,10 @@ void GuestOsSharePath::Shutdown() {
 
 void GuestOsSharePath::AddObserver(Observer* obs) {
   observers_.AddObserver(obs);
+}
+
+void GuestOsSharePath::RemoveObserver(Observer* obs) {
+  observers_.RemoveObserver(obs);
 }
 
 void GuestOsSharePath::CallSeneschalSharePath(const std::string& vm_name,
@@ -782,6 +791,40 @@ void GuestOsSharePath::UnregisterGuest(const GuestId& guest) {
 
 const base::flat_set<GuestId>& GuestOsSharePath::ListGuests() {
   return guests_;
+}
+
+absl::variant<GuestOsSharePath::PathsToShare, std::string>
+GuestOsSharePath::ConvertArgsToPathsToShare(
+    const guest_os::GuestOsRegistryService::Registration& registration,
+    const std::vector<guest_os::LaunchArg>& args,
+    const base::FilePath& vm_mount,
+    bool map_crostini_home) {
+  PathsToShare out;
+  const std::string& vm_name = registration.VmName();
+
+  // Convert any paths not in the VM.
+  out.launch_args.reserve(args.size());
+  for (const auto& arg : args) {
+    if (absl::holds_alternative<std::string>(arg)) {
+      out.launch_args.push_back(absl::get<std::string>(arg));
+      continue;
+    }
+    const storage::FileSystemURL& url = absl::get<storage::FileSystemURL>(arg);
+    base::FilePath path;
+    if (!file_manager::util::ConvertFileSystemURLToPathInsideVM(
+            profile_, url, vm_mount, map_crostini_home, &path)) {
+      return "Cannot share URL with VM.";
+    }
+    if (url.mount_filesystem_id() !=
+            file_manager::util::GetGuestOsMountPointName(
+                profile_, registration.ToGuestId()) &&
+
+        !IsPathShared(vm_name, url.path())) {
+      out.paths_to_share.push_back(url.path());
+    }
+    out.launch_args.push_back(path.value());
+  }
+  return out;
 }
 
 }  // namespace guest_os

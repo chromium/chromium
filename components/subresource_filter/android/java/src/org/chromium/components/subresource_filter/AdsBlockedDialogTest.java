@@ -35,8 +35,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** Tests for ads blocked dialog. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AdsBlockedDialogTest {
-    private static final long NATIVE_PTR = 1;
-
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

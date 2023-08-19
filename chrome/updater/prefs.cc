@@ -53,9 +53,7 @@ std::unique_ptr<PrefService> CreatePrefService(
     const base::FilePath& prefs_dir,
     scoped_refptr<PrefRegistrySimple> pref_registry,
     const base::TimeDelta& wait_period) {
-  constexpr base::TimeDelta kRetryWait = base::Milliseconds(10);
   const auto deadline(base::TimeTicks::Now() + wait_period);
-
   do {
     PrefServiceFactory pref_service_factory;
     pref_service_factory.set_user_prefs(base::MakeRefCounted<JsonPrefStore>(
@@ -77,23 +75,23 @@ std::unique_ptr<PrefService> CreatePrefService(
     VLOG(1) << "pref service init failed: "
             << pref_service->GetInitializationStatus();
 
-    // Sleep before trying again.
-    base::PlatformThread::Sleep(kRetryWait);
+    base::PlatformThread::Sleep(base::Milliseconds(10));
   } while (base::TimeTicks::Now() < deadline);
-
   return nullptr;
 }
 
 }  // namespace
 
-UpdaterPrefsImpl::UpdaterPrefsImpl(std::unique_ptr<ScopedLock> lock,
+UpdaterPrefsImpl::UpdaterPrefsImpl(const base::FilePath& prefs_dir,
+                                   std::unique_ptr<ScopedLock> lock,
                                    std::unique_ptr<PrefService> prefs)
-    : lock_(std::move(lock)), prefs_(std::move(prefs)) {
-  VLOG(1) << __func__;
+    : prefs_dir_(prefs_dir), lock_(std::move(lock)), prefs_(std::move(prefs)) {
+  VLOG(1) << __func__ << (lock_.get() ? " (global): " : " (local): ")
+          << prefs_dir_;
 }
 
 UpdaterPrefsImpl::~UpdaterPrefsImpl() {
-  VLOG(1) << __func__;
+  VLOG(1) << __func__ << ": " << prefs_dir_;
 }
 
 PrefService* UpdaterPrefsImpl::GetPrefService() const {
@@ -140,6 +138,7 @@ int UpdaterPrefsImpl::CountServerStarts() {
 }
 
 scoped_refptr<GlobalPrefs> CreateGlobalPrefs(UpdaterScope scope) {
+  VLOG(2) << __func__;
   if (WrongUser(scope)) {
     VLOG(0) << "Current user is incompatible with scope " << scope
             << "; GlobalPrefs will not be created.";
@@ -159,7 +158,6 @@ scoped_refptr<GlobalPrefs> CreateGlobalPrefs(UpdaterScope scope) {
   if (!global_prefs_dir || !base::CreateDirectory(*global_prefs_dir)) {
     return nullptr;
   }
-  VLOG(1) << "global_prefs_dir: " << global_prefs_dir;
 
   auto pref_registry = base::MakeRefCounted<PrefRegistrySimple>();
   update_client::RegisterPrefs(pref_registry.get());
@@ -176,11 +174,12 @@ scoped_refptr<GlobalPrefs> CreateGlobalPrefs(UpdaterScope scope) {
     return nullptr;
   }
 
-  return base::MakeRefCounted<UpdaterPrefsImpl>(std::move(lock),
-                                                std::move(pref_service));
+  return base::MakeRefCounted<UpdaterPrefsImpl>(
+      *global_prefs_dir, std::move(lock), std::move(pref_service));
 }
 
 scoped_refptr<LocalPrefs> CreateLocalPrefs(UpdaterScope scope) {
+  VLOG(2) << __func__;
   const absl::optional<base::FilePath> local_prefs_dir =
       GetVersionedInstallDirectory(scope);
   if (!local_prefs_dir || !base::CreateDirectory(*local_prefs_dir)) {
@@ -198,7 +197,7 @@ scoped_refptr<LocalPrefs> CreateLocalPrefs(UpdaterScope scope) {
     return nullptr;
   }
 
-  return base::MakeRefCounted<UpdaterPrefsImpl>(nullptr,
+  return base::MakeRefCounted<UpdaterPrefsImpl>(*local_prefs_dir, nullptr,
                                                 std::move(pref_service));
 }
 

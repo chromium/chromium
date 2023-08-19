@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("account_storage_notice") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "passwords_account_storage_notice_coordinator.h",
     "passwords_account_storage_notice_coordinator.mm",

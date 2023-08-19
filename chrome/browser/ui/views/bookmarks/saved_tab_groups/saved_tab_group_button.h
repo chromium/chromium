@@ -54,7 +54,6 @@ class SavedTabGroupButton : public views::MenuButton,
 
   // views::View
   bool OnKeyPressed(const ui::KeyEvent& event) override;
-  void OnFocus() override;
 
   // views::DragController
   void WriteDragDataForView(View* sender,
@@ -69,7 +68,7 @@ class SavedTabGroupButton : public views::MenuButton,
   // displayed in the context menu.
   void UpdateButtonData(const SavedTabGroup& group);
 
-  tab_groups::TabGroupColorId tab_group_color_id() {
+  tab_groups::TabGroupColorId tab_group_color_id() const {
     return tab_group_color_id_;
   }
 

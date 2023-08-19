@@ -19,6 +19,8 @@ source_set("events") {
   deps = [
     "//ash/system/diagnostics/mojom",
     "//base",
+    "//chrome/browser/ash/telemetry_extension/common",
+    "//chrome/browser/ash/telemetry_extension/telemetry:telemetry_converters",
     "//chromeos/ash/services/cros_healthd/public/cpp",
     "//chromeos/ash/services/cros_healthd/public/mojom",
     "//chromeos/crosapi/mojom",
@@ -37,6 +39,7 @@ source_set("unit_tests") {
     "//ash/system/diagnostics/mojom",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/ash/telemetry_extension/telemetry:telemetry_converters",
     "//chromeos/ash/components/mojo_service_manager",
     "//chromeos/ash/services/cros_healthd/public/cpp",
     "//chromeos/ash/services/cros_healthd/public/mojom",

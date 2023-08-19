@@ -6,10 +6,6 @@
 
 #import "base/metrics/field_trial_params.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 BASE_FEATURE(kEnableFollowIPHExpParams,
              "EnableFollowIPHExpParams",
              base::FEATURE_ENABLED_BY_DEFAULT);

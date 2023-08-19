@@ -212,6 +212,12 @@ def GetDumpFromZ7Program(out_dir, pipe_name):
                               win32con.EXCEPTION_ACCESS_VIOLATION)
 
 
+def GetDumpFromHeapCorruptingProgram(out_dir, pipe_name):
+    STATUS_HEAP_CORRUPTION = 0xC0000374
+    return GetDumpFromProgram(out_dir, pipe_name, 'heap_corrupting_program.exe',
+                              STATUS_HEAP_CORRUPTION)
+
+
 def GetDumpFromFastFailProgram(out_dir, pipe_name, *args):
     STATUS_STACK_BUFFER_OVERRUN = 0xc0000409
     return GetDumpFromProgram(out_dir, pipe_name, 'fastfail_program.exe',
@@ -444,6 +450,14 @@ def RunSigAbrtTest(cdb_path, sigabrt_main_path, sigabrt_background_path):
     out.Check('code 40000015', 'got sigabrt signal from background thread')
 
 
+def RunHeapCorruptionTest(cdb_path, heap_path):
+    """Runs tests on heap corruption caught using the vectored handler."""
+    out = CdbRun(cdb_path, heap_path, '.ecxr;k')
+    out.Check('code c0000374', 'captured exception from heap corruption crash')
+    out.Check('::HeapCorruptionCrash', 'See expected throwing function')
+    out = CdbRun(cdb_path, heap_path, '.ecxr;k')
+
+
 def RunFastFailDumpTest(cdb_path, fastfail_path):
     """Runs tests on __fastfail() caught using the runtime exception helper."""
     out = CdbRun(cdb_path, fastfail_path, '.ecxr;k')
@@ -541,8 +555,14 @@ def main(args):
                 return 1
             Run7zDumpTest(cdb_path, z7_dump_path)
 
+        heap_path = GetDumpFromHeapCorruptingProgram(args[0], pipe_name)
+        if not heap_path:
+            return 1
+        RunHeapCorruptionTest(cdb_path, heap_path)
+
         # __fastfail() & CFG crash caught by WerRuntimeExceptionHelperModule.
-        if (Win32_20H1()):
+        # TODO(crashpad:458) These are not working when launched from python.
+        if (False and Win32_20H1()):
             cfg_path = GetDumpFromFastFailProgram(args[0], pipe_name, "cf")
             if not cfg_path:
                 return 1

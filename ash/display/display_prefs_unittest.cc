@@ -44,7 +44,7 @@
 #include "ui/display/manager/json_converter.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/manager/test/touch_device_manager_test_api.h"
-#include "ui/display/manager/util/display_manager_util.h"
+#include "ui/display/manager/util/display_manager_test_util.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/display/util/display_util.h"
@@ -312,7 +312,7 @@ TEST_F(DisplayPrefsTest, ListedLayoutOverrides) {
 
   display::DisplayIdList list = display_manager()->GetConnectedDisplayIdList();
   display::DisplayIdList dummy_list = display::test::CreateDisplayIdList2(
-      list[0], display::GetNextSynthesizedDisplayId(list[1]));
+      list[0], display::SynthesizeDisplayIdFromSeed(list[1]));
   ASSERT_NE(list[0], dummy_list[1]);
 
   StoreDisplayLayoutPrefForList(list, display::DisplayPlacement::TOP, 20);
@@ -363,7 +363,7 @@ TEST_F(DisplayPrefsTest, BasicStores) {
   UpdateDisplay("300x200*2, 400x300#500x400|300x200*1.25");
   display::test::DisplayManagerTestApi display_manager_test(display_manager());
   int64_t id2 = display_manager_test.GetSecondaryDisplay().id();
-  int64_t dummy_id = display::GetNextSynthesizedDisplayId(id2);
+  int64_t dummy_id = display::SynthesizeDisplayIdFromSeed(id2);
   ASSERT_NE(id1, dummy_id);
 
   LoggedInAsUser();
@@ -602,7 +602,7 @@ TEST_F(DisplayPrefsTest, BasicStores) {
 
   // Set new display's selected resolution.
   display_manager()->RegisterDisplayProperty(
-      display::GetNextSynthesizedDisplayId(id2), display::Display::ROTATE_0,
+      display::SynthesizeDisplayIdFromSeed(id2), display::Display::ROTATE_0,
       nullptr, gfx::Size(500, 400), 1.0f, 1.0f, 60.f, false,
       display::kVrrNotCapable, absl::nullopt);
 
@@ -632,7 +632,7 @@ TEST_F(DisplayPrefsTest, BasicStores) {
 
   // Set yet another new display's selected resolution.
   display_manager()->RegisterDisplayProperty(
-      display::GetNextSynthesizedDisplayId(id2), display::Display::ROTATE_0,
+      display::SynthesizeDisplayIdFromSeed(id2), display::Display::ROTATE_0,
       nullptr, gfx::Size(500, 400), 1.0f, 1.0f, 60.f, false,
       display::kVrrNotCapable, absl::nullopt);
   // Disconnect 2nd display first to generate new id for external display.

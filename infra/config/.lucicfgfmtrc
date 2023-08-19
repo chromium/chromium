@@ -78,11 +78,30 @@ rules {
     path: "targets"
     function_args_sort {
         arg: "name"
+
+        # targets
         arg: "label"
         arg: "label_type"
         arg: "script"
         arg: "executable"
         arg: "executable_suffix"
         arg: "skip_usage_check"
+
+        # mixin/variant
+        arg: "enabled"
+        arg: "identifier"
+        arg: "description"
+        arg: "args"
+        arg: "precommit_args"
+        arg: "linux_args"
+        arg: "mac_args"
+        arg: "win64_args"
+
+        # swarming
+        arg: "dimensions"
+        arg: "optional_dimensions"
+
+        # cipd_package
+        arg: "package"
     }
 }

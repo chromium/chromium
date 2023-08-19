@@ -16,7 +16,6 @@ FakeIdentityRequestDialogController::~FakeIdentityRequestDialogController() =
     default;
 
 void FakeIdentityRequestDialogController::ShowAccountsDialog(
-    content::WebContents* rp_web_contents,
     const std::string& top_frame_for_display,
     const absl::optional<std::string>& iframe_for_display,
     const std::vector<content::IdentityProviderData>& identity_provider_data,
@@ -52,12 +51,28 @@ void FakeIdentityRequestDialogController::ShowAccountsDialog(
     // Browser automation will handle selecting an account/canceling.
     return;
   }
-  // Use the provided account, if any. Otherwise use the first one.
-  std::move(on_selected)
-      .Run(identity_provider_data[0].idp_metadata.config_url,
-           selected_account_ ? *selected_account_ : accounts[0].id,
-           /* is_sign_in= */ true);
+  // Use the provided account, if any. Otherwise do not run the callback right
+  // away.
+  if (selected_account_) {
+    std::move(on_selected)
+        .Run(identity_provider_data[0].idp_metadata.config_url,
+             *selected_account_,
+             /* is_sign_in= */ true);
+  } else if (sign_in_mode == IdentityRequestAccount::SignInMode::kAuto) {
+    std::move(on_selected)
+        .Run(identity_provider_data[0].idp_metadata.config_url,
+             identity_provider_data[0].accounts[0].id, /* is_sign_in= */ true);
+  }
 }
+
+void FakeIdentityRequestDialogController::ShowFailureDialog(
+    const std::string& top_frame_for_display,
+    const absl::optional<std::string>& iframe_for_display,
+    const std::string& idp_for_display,
+    const blink::mojom::RpContext& rp_context,
+    const IdentityProviderMetadata& idp_metadata,
+    DismissCallback dismiss_callback,
+    SigninToIdPCallback signin_callback) {}
 
 std::string FakeIdentityRequestDialogController::GetTitle() const {
   return title_;

@@ -115,14 +115,14 @@ class ClassroomApiListCourseWorkRequestTest : public testing::Test {
 TEST_F(ClassroomApiListCourseWorkRequestTest, ListCourseWorkRequest) {
   EXPECT_CALL(
       request_handler(),
-      HandleRequest(
-          AllOf(Field(&HttpRequest::method, Eq(HttpMethod::METHOD_GET)),
-                Field(&HttpRequest::relative_url,
-                      Eq("/v1/courses/course-1/courseWork"
-                         "?fields=courseWork(id%2Ctitle%2Cstate%2CalternateLink"
-                         "%2CdueDate(year%2Cmonth%2Cday)"
-                         "%2CdueTime(hours%2Cminutes%2Cseconds%2Cnanos))"
-                         "%2CnextPageToken")))))
+      HandleRequest(AllOf(
+          Field(&HttpRequest::method, Eq(HttpMethod::METHOD_GET)),
+          Field(&HttpRequest::relative_url,
+                Eq("/v1/courses/course-1/courseWork"
+                   "?fields=courseWork(id%2Ctitle%2Cstate%2CalternateLink"
+                   "%2CcreationTime%2CupdateTime%2CdueDate(year%2Cmonth%2Cday)"
+                   "%2CdueTime(hours%2Cminutes%2Cseconds%2Cnanos))"
+                   "%2CnextPageToken")))))
       .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse())));
 
   base::test::TestFuture<
@@ -143,15 +143,15 @@ TEST_F(ClassroomApiListCourseWorkRequestTest,
        ListCourseWorkRequestWithAdditionalQueryParameters) {
   EXPECT_CALL(
       request_handler(),
-      HandleRequest(
-          AllOf(Field(&HttpRequest::method, Eq(HttpMethod::METHOD_GET)),
-                Field(&HttpRequest::relative_url,
-                      Eq("/v1/courses/course-1/courseWork"
-                         "?fields=courseWork(id%2Ctitle%2Cstate%2CalternateLink"
-                         "%2CdueDate(year%2Cmonth%2Cday)"
-                         "%2CdueTime(hours%2Cminutes%2Cseconds%2Cnanos))"
-                         "%2CnextPageToken"
-                         "&pageToken=qwerty")))))
+      HandleRequest(AllOf(
+          Field(&HttpRequest::method, Eq(HttpMethod::METHOD_GET)),
+          Field(&HttpRequest::relative_url,
+                Eq("/v1/courses/course-1/courseWork"
+                   "?fields=courseWork(id%2Ctitle%2Cstate%2CalternateLink"
+                   "%2CcreationTime%2CupdateTime%2CdueDate(year%2Cmonth%2Cday)"
+                   "%2CdueTime(hours%2Cminutes%2Cseconds%2Cnanos))"
+                   "%2CnextPageToken"
+                   "&pageToken=qwerty")))))
       .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse())));
 
   base::test::TestFuture<
@@ -172,14 +172,14 @@ TEST_F(ClassroomApiListCourseWorkRequestTest,
        ListCourseWorkRequestHandlesError) {
   EXPECT_CALL(
       request_handler(),
-      HandleRequest(
-          AllOf(Field(&HttpRequest::method, Eq(HttpMethod::METHOD_GET)),
-                Field(&HttpRequest::relative_url,
-                      Eq("/v1/courses/course-1/courseWork"
-                         "?fields=courseWork(id%2Ctitle%2Cstate%2CalternateLink"
-                         "%2CdueDate(year%2Cmonth%2Cday)"
-                         "%2CdueTime(hours%2Cminutes%2Cseconds%2Cnanos))"
-                         "%2CnextPageToken")))))
+      HandleRequest(AllOf(
+          Field(&HttpRequest::method, Eq(HttpMethod::METHOD_GET)),
+          Field(&HttpRequest::relative_url,
+                Eq("/v1/courses/course-1/courseWork"
+                   "?fields=courseWork(id%2Ctitle%2Cstate%2CalternateLink"
+                   "%2CcreationTime%2CupdateTime%2CdueDate(year%2Cmonth%2Cday)"
+                   "%2CdueTime(hours%2Cminutes%2Cseconds%2Cnanos))"
+                   "%2CnextPageToken")))))
       .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));
 
   base::test::TestFuture<

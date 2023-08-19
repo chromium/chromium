@@ -6,65 +6,28 @@
 
 #include <Security/Security.h>
 
+#include "base/apple/osstatus_logging.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/mac/mac_logging.h"
-#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/process/process_handle.h"
-#include "base/synchronization/lock.h"
-#include "base/task/current_thread.h"
-#include "base/task/single_thread_task_runner.h"
-#include "crypto/mac_security_services_lock.h"
-#include "net/base/net_errors.h"
-#include "net/cert/x509_certificate.h"
+#include "net/base/network_notification_thread_mac.h"
 
 namespace net {
 
+namespace {
+
 // Helper that observes events from the Keychain and forwards them to the
-// given CertDatabase.
-class CertDatabase::Notifier {
+// CertDatabase.
+class Notifier {
  public:
-  // Creates a new Notifier that will forward Keychain events to |cert_db|.
-  // |message_loop| must refer to a thread with an associated CFRunLoop - a
-  // TYPE_UI thread. Events will be dispatched from this message loop.
-  Notifier(CertDatabase* cert_db,
-           scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-      : cert_db_(cert_db), task_runner_(std::move(task_runner)) {
-    // Ensure an associated CFRunLoop.
-    DCHECK(base::CurrentUIThread::IsSet());
-    DCHECK(task_runner_->BelongsToCurrentThread());
-    task_runner_->PostTask(
+  Notifier() {
+    GetNetworkNotificationThreadMac()->PostTask(
         FROM_HERE, base::BindOnce(&Notifier::Init, base::Unretained(this)));
   }
 
-// Much of the Keychain API was marked deprecated as of the macOS 13 SDK.
-// Removal of its use is tracked in https://crbug.com/1348251 but deprecation
-// warnings are disabled in the meanwhile.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-
-  // Should be called from the |task_runner_|'s sequence. Use Shutdown()
-  // to shutdown on arbitrary sequence.
-  ~Notifier() {
-    DCHECK(called_shutdown_);
-    // Only unregister from the same sequence where registration was performed.
-    if (registered_ && task_runner_->RunsTasksInCurrentSequence())
-      SecKeychainRemoveCallback(&Notifier::KeychainCallback);
-  }
-
-#pragma clang diagnostic pop
-
-  void Shutdown() {
-    called_shutdown_ = true;
-    if (!task_runner_->DeleteSoon(FROM_HERE, this)) {
-      // If the task runner is no longer running, it's safe to just delete
-      // the object, since no further events will or can be delivered by
-      // Keychain Services.
-      delete this;
-    }
-  }
+  ~Notifier() = delete;
 
 // Much of the Keychain API was marked deprecated as of the macOS 13 SDK.
 // Removal of its use is tracked in https://crbug.com/1348251 but deprecation
@@ -76,10 +39,7 @@ class CertDatabase::Notifier {
   void Init() {
     SecKeychainEventMask event_mask =
         kSecKeychainListChangedMask | kSecTrustSettingsChangedEventMask;
-    OSStatus status = SecKeychainAddCallback(&Notifier::KeychainCallback,
-                                             event_mask, this);
-    if (status == noErr)
-      registered_ = true;
+    SecKeychainAddCallback(&Notifier::KeychainCallback, event_mask, nullptr);
   }
 
 #pragma clang diagnostic pop
@@ -89,20 +49,12 @@ class CertDatabase::Notifier {
   static OSStatus KeychainCallback(SecKeychainEvent keychain_event,
                                    SecKeychainCallbackInfo* info,
                                    void* context);
-
-  const raw_ptr<CertDatabase> cert_db_;
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  bool registered_ = false;
-  bool called_shutdown_ = false;
 };
 
 // static
-OSStatus CertDatabase::Notifier::KeychainCallback(
-    SecKeychainEvent keychain_event,
-    SecKeychainCallbackInfo* info,
-    void* context) {
-  Notifier* that = reinterpret_cast<Notifier*>(context);
-
+OSStatus Notifier::KeychainCallback(SecKeychainEvent keychain_event,
+                                    SecKeychainCallbackInfo* info,
+                                    void* context) {
   if (info->version > SEC_KEYCHAIN_SETTINGS_VERS1) {
     NOTREACHED();
     return errSecWrongSecVersion;
@@ -119,8 +71,10 @@ OSStatus CertDatabase::Notifier::KeychainCallback(
 
   switch (keychain_event) {
     case kSecKeychainListChangedEvent:
+      CertDatabase::GetInstance()->NotifyObserversClientCertStoreChanged();
+      break;
     case kSecTrustSettingsChangedEvent:
-      that->cert_db_->NotifyObserversCertDBChanged();
+      CertDatabase::GetInstance()->NotifyObserversTrustStoreChanged();
       break;
 
     default:
@@ -130,18 +84,10 @@ OSStatus CertDatabase::Notifier::KeychainCallback(
   return errSecSuccess;
 }
 
-void CertDatabase::StartListeningForKeychainEvents() {
-  ReleaseNotifier();
-  notifier_ =
-      new Notifier(this, base::SingleThreadTaskRunner::GetCurrentDefault());
-}
+}  // namespace
 
-void CertDatabase::ReleaseNotifier() {
-  // Shutdown will take care to delete the notifier on the right thread.
-  if (notifier_) {
-    notifier_->Shutdown();
-    notifier_ = nullptr;
-  }
+void CertDatabase::StartListeningForKeychainEvents() {
+  static base::NoDestructor<Notifier> notifier;
 }
 
 }  // namespace net

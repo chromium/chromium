@@ -10,6 +10,7 @@ import {DnsView} from './dns_view.js';
 import {DomainSecurityPolicyView} from './domain_security_policy_view.js';
 import {EventsView} from './events_view.js';
 import {ProxyView} from './proxy_view.js';
+import {SharedDictionaryView} from './shared_dictionary_view.js';
 import {SocketsView} from './sockets_view.js';
 import {TabSwitcherView} from './tab_switcher_view.js';
 import {hasTouchScreen} from './util.js';
@@ -82,6 +83,7 @@ export class MainView extends WindowView {
     addTab(DnsView);
     addTab(SocketsView);
     addTab(DomainSecurityPolicyView);
+    addTab(SharedDictionaryView);
     // <if expr="chromeos_ash">
     addTab(CrosView);
     // </if>

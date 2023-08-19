@@ -222,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(WebAppMetricsBrowserTest,
   ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
       entry, UkmEntry::kCapturesLinksName, false);
   ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
-      entry, UkmEntry::kPromotableName, false);
+      entry, UkmEntry::kPromotableName, true);
   // Not in window, but is preinstalled, so should have session count (and would
   // be expected to have session time upon further interaction).
   ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(entry,

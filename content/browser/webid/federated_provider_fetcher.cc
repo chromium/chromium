@@ -4,6 +4,7 @@
 
 #include "content/browser/webid/federated_provider_fetcher.h"
 
+#include "content/browser/webid/flags.h"
 #include "content/browser/webid/webid_utils.h"
 
 namespace content {
@@ -157,7 +158,7 @@ void FederatedProviderFetcher::OnWellKnownFetched(
   bool provider_url_is_valid =
       (urls.count(fetch_result.identity_provider_config_url) != 0);
 
-  if (!provider_url_is_valid) {
+  if (!provider_url_is_valid && !IsFedCmWithoutWellKnownEnforcementEnabled()) {
     OnError(fetch_result,
             FederatedAuthRequestResult::kErrorConfigNotInWellKnown,
             TokenStatus::kConfigNotInWellKnown,
@@ -226,20 +227,26 @@ void FederatedProviderFetcher::OnConfigFetched(
 
   fetch_result.metadata = idp_metadata;
 
-  bool is_token_valid = webid::IsEndpointUrlValid(
+  bool is_token_valid = webid::IsEndpointSameOrigin(
       fetch_result.identity_provider_config_url, fetch_result.endpoints.token);
   bool is_accounts_valid =
-      webid::IsEndpointUrlValid(fetch_result.identity_provider_config_url,
-                                fetch_result.endpoints.accounts);
-  if (!is_token_valid || !is_accounts_valid) {
+      webid::IsEndpointSameOrigin(fetch_result.identity_provider_config_url,
+                                  fetch_result.endpoints.accounts);
+  bool is_signin_url_valid =
+      idp_metadata.idp_signin_url.is_empty() ||
+      webid::IsEndpointSameOrigin(fetch_result.identity_provider_config_url,
+                                  idp_metadata.idp_signin_url);
+  if (!is_token_valid || !is_accounts_valid || !is_signin_url_valid) {
     std::string console_message =
-        "Config file is missing or has an invalid URL for the following "
-        "endpoints:\n";
+        "Config file is missing or has an invalid URL for the following:\n";
     if (!is_token_valid) {
       console_message += "\"id_assertion_endpoint\"\n";
     }
     if (!is_accounts_valid) {
       console_message += "\"accounts_endpoint\"\n";
+    }
+    if (!is_signin_url_valid) {
+      console_message += "\"signin_url\"\n";
     }
 
     OnError(fetch_result,

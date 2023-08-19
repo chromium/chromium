@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "ash/public/cpp/system_tray_observer.h"
+#include "ash/system/tray/system_tray_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/webview/web_dialog_view.h"
@@ -45,7 +45,8 @@ class WebDialogView : public views::WebDialogView, public SystemTrayObserver {
  private:
   // views::WebDialogView extends views::DialogDelegate, so fully qualified name
   // is needed.
-  raw_ptr<login_screen_extension_ui::DialogDelegate, ExperimentalAsh>
+  raw_ptr<login_screen_extension_ui::DialogDelegate,
+          DanglingUntriaged | ExperimentalAsh>
       delegate_ = nullptr;
 };
 

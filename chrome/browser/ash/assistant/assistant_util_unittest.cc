@@ -101,7 +101,6 @@ class ScopedLogIn {
       case user_manager::USER_TYPE_CHILD:
         EXPECT_TRUE(IsGaiaAccount());
         return;
-      case user_manager::USER_TYPE_ACTIVE_DIRECTORY:
       case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
       case user_manager::USER_TYPE_KIOSK_APP:
       case user_manager::USER_TYPE_ARC_KIOSK_APP:
@@ -121,9 +120,6 @@ class ScopedLogIn {
     switch (user_type) {
       case user_manager::USER_TYPE_REGULAR:
         fake_user_manager_->AddUser(account_id_);
-        return;
-      case user_manager::USER_TYPE_ACTIVE_DIRECTORY:
-        fake_user_manager_->AddActiveDirectoryUser(account_id_);
         return;
       case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
         fake_user_manager_->AddPublicAccountUser(account_id_);
@@ -241,7 +237,8 @@ class ChromeAssistantUtilTest : public testing::Test {
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   // Owned by |profile_manager_|
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh> profile_ =
+      nullptr;
 };
 
 TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForProfile_PrimaryUser) {
@@ -343,16 +340,6 @@ TEST_F(ChromeAssistantUtilTest,
 
   ScopedSpoofGoogleBrandedDevice make_google_branded_device;
   EXPECT_EQ(ash::assistant::AssistantAllowedState::ALLOWED,
-            IsAssistantAllowedForProfile(profile()));
-}
-
-TEST_F(ChromeAssistantUtilTest,
-       IsAssistantAllowedForProfile_ActiveDirectoryUser) {
-  ScopedLogIn login(GetFakeUserManager(), identity_test_env(),
-                    GetActiveDirectoryUserAccountId(profile()),
-                    user_manager::USER_TYPE_ACTIVE_DIRECTORY);
-
-  EXPECT_EQ(ash::assistant::AssistantAllowedState::DISALLOWED_BY_ACCOUNT_TYPE,
             IsAssistantAllowedForProfile(profile()));
 }
 

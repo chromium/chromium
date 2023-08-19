@@ -15,23 +15,6 @@
 
 namespace support_tool_ui {
 
-// Strings that contain the human readable description of redaction::PIIType
-// enums.
-extern const char kAndroidAppInfo[];
-extern const char kSSID[];
-extern const char kCellularLocationInfo[];
-extern const char kEmail[];
-extern const char kGAIA[];
-extern const char kStableIdentifier[];
-extern const char kIPPAddress[];
-extern const char kIPAddress[];
-extern const char kMACAddress[];
-extern const char kWindowTitle[];
-extern const char kURL[];
-extern const char kSerial[];
-extern const char kRemovableStorage[];
-extern const char kEAP[];
-
 // String keys of the fields of PIIDataItem dictionary that Support Tool UI
 // stores the detected PII to display it to user.
 extern const char kPiiItemDescriptionKey[];
@@ -54,6 +37,9 @@ extern const char kSupportTokenGenerationResultToken[];
 extern const char kSupportTokenGenerationResultErrorMessage[];
 
 }  // namespace support_tool_ui
+
+// Returns the human readable name corresponding to `type_enum`.
+std::string GetPIITypeDescription(redaction::PIIType type_enum);
 
 // Returns PIIDataItems in `detected_pii` where PIIDataItem is
 // type PIIDataItem = {
@@ -113,7 +99,7 @@ std::set<support_tool::DataCollectorType> GetIncludedDataCollectorTypes(
 //   errorMessage: string,
 // }
 base::Value::Dict GetStartDataCollectionResult(bool success,
-                                               std::string error_message);
+                                               std::u16string error_message);
 
 // Generates a customized chrome://support-tool URL from given `case_id` and
 // `data_collector_items` and returns the result in a format Support Tool UI

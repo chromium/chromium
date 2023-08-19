@@ -8,6 +8,7 @@ import("//testing/test.gni")
 if (is_mac) {
   import("//build/config/mac/mac_sdk.gni")
 }
+import("//third_party/dawn/scripts/dawn_features.gni")
 
 declare_args() {
   subpixel_font_rendering_disabled = false
@@ -52,6 +53,9 @@ component("service") {
   if (subpixel_font_rendering_disabled) {
     defines += [ "SUBPIXEL_FONT_RENDERING_DISABLED" ]
   }
+  if (dawn_use_built_dxc) {
+    defines += [ "DAWN_USE_BUILT_DXC" ]
+  }
   public_deps = [
     "//base",
     "//build:chromecast_buildflags",
@@ -77,7 +81,7 @@ component("service") {
     # implicitly depended upon by gpu/config/gpu_crash_keys.h but deps (even
     # public ones) are not transitive for static libraries.
     "//components/crash/core/common:crash_key",
-    "//components/viz/common:resource_format",
+    "//components/viz/common:shared_image_format",
     "//gpu/command_buffer/common",
     "//gpu/command_buffer/service",
     "//gpu/command_buffer/service:gles2",
@@ -101,19 +105,23 @@ component("service") {
       "dxguid.lib",
     ]
   }
+  if (is_apple) {
+    sources += [
+      "gpu_memory_buffer_factory_io_surface.cc",
+      "gpu_memory_buffer_factory_io_surface.h",
+      "image_transport_surface_overlay_mac.h",
+      "image_transport_surface_overlay_mac.mm",
+    ]
+  }
   if (is_mac) {
     sources += [
       "built_in_shader_cache_loader.cc",
       "built_in_shader_cache_loader.h",
       "built_in_shader_cache_writer.cc",
       "built_in_shader_cache_writer.h",
-      "gpu_memory_buffer_factory_io_surface.cc",
-      "gpu_memory_buffer_factory_io_surface.h",
       "gpu_vsync_mac.h",
       "gpu_vsync_mac.mm",
       "image_transport_surface_mac.mm",
-      "image_transport_surface_overlay_mac.h",
-      "image_transport_surface_overlay_mac.mm",
       "timer_based_vsync_mac.h",
       "timer_based_vsync_mac.mm",
     ]
@@ -132,13 +140,7 @@ component("service") {
     defines += [ "GL_SILENCE_DEPRECATION" ]
   }
   if (is_ios) {
-    sources += [
-      "gpu_memory_buffer_factory_io_surface.cc",
-      "gpu_memory_buffer_factory_io_surface.h",
-      "image_transport_surface_ios.mm",
-      "image_transport_surface_overlay_mac.h",
-      "image_transport_surface_overlay_mac.mm",
-    ]
+    sources += [ "image_transport_surface_ios.mm" ]
     deps += [ "//ui/accelerated_widget_mac" ]
   }
   if (is_android) {

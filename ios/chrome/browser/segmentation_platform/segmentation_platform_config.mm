@@ -6,14 +6,18 @@
 
 #import <memory>
 
+#import "base/containers/cxx20_erase_vector.h"
 #import "base/feature_list.h"
 #import "base/metrics/field_trial_params.h"
 #import "base/time/time.h"
 #import "components/segmentation_platform/embedder/default_model/cross_device_user_segment.h"
 #import "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
 #import "components/segmentation_platform/embedder/default_model/feed_user_segment.h"
+#import "components/segmentation_platform/embedder/default_model/ios_module_ranker.h"
+#import "components/segmentation_platform/embedder/default_model/low_user_engagement_model.h"
 #import "components/segmentation_platform/embedder/default_model/password_manager_user_segment.h"
 #import "components/segmentation_platform/embedder/default_model/search_user_model.h"
+#import "components/segmentation_platform/embedder/default_model/shopping_user_model.h"
 #import "components/segmentation_platform/embedder/default_model/tab_resumption_ranker.h"
 #import "components/segmentation_platform/internal/stats.h"
 #import "components/segmentation_platform/public/config.h"
@@ -22,83 +26,11 @@
 #import "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #import "ios/chrome/browser/metrics/ios_chrome_metrics_service_accessor.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace segmentation_platform {
 
 namespace {
 
-constexpr char kDefaultModelEnabledParam[] = "enable_default_model";
-
 using ::segmentation_platform::proto::SegmentId;
-
-constexpr int kFeedUserSegmentSelectionTTLDays = 14;
-constexpr int kFeedUserSegmentUnknownSelectionTTLDays = 14;
-
-constexpr int kCrossDeviceUserSegmentSelectionTTLDays = 7;
-constexpr int kCrossDeviceUserSegmentUnknownSelectionTTLDays = 7;
-
-constexpr int kSearchUserSegmentSelectionTTLDays = 7;
-constexpr int kSearchUserSegmentUnknownSelectionTTLDays = 7;
-
-std::unique_ptr<Config> GetConfigForFeedSegments() {
-  auto config = std::make_unique<Config>();
-  config->segmentation_key = kFeedUserSegmentationKey;
-  config->segmentation_uma_name = kFeedUserSegmentUmaName;
-  config->AddSegmentId(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER);
-  config->segment_selection_ttl =
-      base::Days(base::GetFieldTrialParamByFeatureAsInt(
-          features::kSegmentationPlatformFeedSegmentFeature,
-          "segment_selection_ttl_days", kFeedUserSegmentSelectionTTLDays));
-  config->unknown_selection_ttl =
-      base::Days(base::GetFieldTrialParamByFeatureAsInt(
-          features::kSegmentationPlatformFeedSegmentFeature,
-          "unknown_selection_ttl_days",
-          kFeedUserSegmentUnknownSelectionTTLDays));
-  return config;
-}
-
-std::unique_ptr<Config> GetConfigForCrossDeviceSegments() {
-  auto config = std::make_unique<Config>();
-  config->segmentation_key = kCrossDeviceUserKey;
-  config->segmentation_uma_name = kCrossDeviceUserUmaName;
-  config->AddSegmentId(SegmentId::CROSS_DEVICE_USER_SEGMENT,
-                       std::make_unique<CrossDeviceUserSegment>());
-  config->segment_selection_ttl =
-      base::Days(kCrossDeviceUserSegmentSelectionTTLDays);
-  config->unknown_selection_ttl =
-      base::Days(kCrossDeviceUserSegmentUnknownSelectionTTLDays);
-  return config;
-}
-
-std::unique_ptr<ModelProvider> GetSearchUserDefaultModel() {
-  if (!base::GetFieldTrialParamByFeatureAsBool(
-          features::kSegmentationPlatformSearchUser, kDefaultModelEnabledParam,
-          true)) {
-    return nullptr;
-  }
-  return std::make_unique<SearchUserModel>();
-}
-
-std::unique_ptr<Config> GetConfigForSearchUserModel() {
-  auto config = std::make_unique<Config>();
-  config->segmentation_key = kSearchUserKey;
-  config->segmentation_uma_name = kSearchUserUmaName;
-  config->AddSegmentId(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SEARCH_USER,
-                       GetSearchUserDefaultModel());
-  config->segment_selection_ttl =
-      base::Days(base::GetFieldTrialParamByFeatureAsInt(
-          features::kSegmentationPlatformSearchUser,
-          "segment_selection_ttl_days", kSearchUserSegmentSelectionTTLDays));
-  config->unknown_selection_ttl =
-      base::Days(base::GetFieldTrialParamByFeatureAsInt(
-          features::kSegmentationPlatformSearchUser,
-          "unknown_selection_ttl_days",
-          kSearchUserSegmentUnknownSelectionTTLDays));
-  return config;
-}
 
 }  // namespace
 
@@ -106,24 +38,18 @@ using proto::SegmentId;
 
 std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig() {
   std::vector<std::unique_ptr<Config>> configs;
-  if (base::FeatureList::IsEnabled(
-          features::kSegmentationPlatformFeedSegmentFeature)) {
-    configs.emplace_back(GetConfigForFeedSegments());
-  }
-  if (base::FeatureList::IsEnabled(features::kSegmentationPlatformSearchUser)) {
-    configs.emplace_back(GetConfigForSearchUserModel());
-  }
-
-  configs.emplace_back(GetConfigForCrossDeviceSegments());
-  if (base::FeatureList::IsEnabled(features::kSegmentationPlatformDeviceSwitcher)) {
-    configs.emplace_back(DeviceSwitcherModel::GetConfig());
-  }
-
+  configs.emplace_back(FeedUserSegment::GetConfig());
+  configs.emplace_back(CrossDeviceUserSegment::GetConfig());
+  configs.emplace_back(SearchUserModel::GetConfig());
+  configs.emplace_back(DeviceSwitcherModel::GetConfig());
+  configs.emplace_back(LowUserEngagementModel::GetConfig());
   configs.emplace_back(TabResumptionRanker::GetConfig());
   configs.emplace_back(PasswordManagerUserModel::GetConfig());
+  configs.emplace_back(ShoppingUserModel::GetConfig());
+  configs.emplace_back(IosModuleRanker::GetConfig());
 
   // Add new configs here.
-
+  base::EraseIf(configs, [](const auto& config) { return !config.get(); });
   return configs;
 }
 

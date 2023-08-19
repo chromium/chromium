@@ -29,9 +29,28 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) BrokerHelperWin
 
   ~BrokerHelperWin() override;
 
-  // Returns whether a connection to |address| would require the socket creation
-  // to be brokered.
+  // Delegate for testing.
+  class COMPONENT_EXPORT(NETWORK_SERVICE) Delegate {
+   public:
+    Delegate() = default;
+
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
+    virtual ~Delegate() = default;
+
+    virtual bool ShouldBroker() const = 0;
+  };
+
+  // Returns whether a connection to |address| would require the socket
+  // creation to be brokered.
   bool ShouldBroker(const net::IPAddress& address) const;
+
+  void SetDelegateForTesting(
+      std::unique_ptr<BrokerHelperWin::Delegate> delegate) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    delegate_ = std::move(delegate);
+  }
 
  private:
   // NetworkChangeNotifier::NetworkChangeObserver implementation:
@@ -41,6 +60,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) BrokerHelperWin
   void RefreshNetworkList();
 
   net::NetworkInterfaceList interfaces_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::unique_ptr<BrokerHelperWin::Delegate> delegate_
+      GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

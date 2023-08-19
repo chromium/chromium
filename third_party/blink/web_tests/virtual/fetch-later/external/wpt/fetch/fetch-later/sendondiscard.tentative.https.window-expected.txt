@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+PASS A discarded document sends all its fetchLater requests with default config.
+Harness: the test ran to completion.
+

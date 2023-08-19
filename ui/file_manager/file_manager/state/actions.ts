@@ -9,9 +9,9 @@ import {ChangeDirectoryAction, ChangeFileTasksAction, ChangeSelectionAction, Upd
 import {AddFolderShortcutAction, RefreshFolderShortcutAction, RemoveFolderShortcutAction} from './actions/folder_shortcuts.js';
 import {RefreshNavigationRootsAction, UpdateNavigationEntryAction} from './actions/navigation.js';
 import {UpdatePreferencesAction} from './actions/preferences.js';
-import {SearchAction} from './actions/search.js';
 import {AddUiEntryAction, RemoveUiEntryAction} from './actions/ui_entries.js';
-import {AddVolumeAction, RemoveVolumeAction} from './actions/volumes.js';
+import {AddVolumeAction, RemoveVolumeAction, UpdateIsInteractiveVolumeAction} from './actions/volumes.js';
+import {SearchAction} from './ducks/search.js';
 
 /**
  * Union of all types of Actions in Files app.
@@ -27,7 +27,7 @@ export type Action = AddVolumeAction|RemoveVolumeAction|
     UpdateMetadataAction|RefreshFolderShortcutAction|AddFolderShortcutAction|
     RemoveFolderShortcutAction|AddAndroidAppsAction|AddChildEntriesAction|
     UpdateNavigationEntryAction|UpdateBulkPinProgressAction|
-    UpdatePreferencesAction;
+    UpdatePreferencesAction|UpdateIsInteractiveVolumeAction;
 
 
 /** Enum to identify every Action in Files app. */
@@ -52,4 +52,5 @@ export const enum ActionType {
   ADD_CHILD_ENTRIES = 'add-child-entries',
   UPDATE_BULK_PIN_PROGRESS = 'update-bulk-pin-progress',
   UPDATE_PREFERENCES = 'update-preferences',
+  UPDATE_IS_INTERACTIVE_VOLUME = 'update-is-interactive-volume',
 }

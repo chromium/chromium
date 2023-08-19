@@ -7,12 +7,17 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/favicon/content/large_favicon_provider_getter.h"
+#include "components/favicon/core/large_favicon_provider.h"
+#include "components/favicon/core/large_icon_worker.h"
+#include "components/favicon_base/favicon_types.h"
 #include "components/security_state/core/security_state.h"
 #include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -30,10 +35,12 @@
 #include "content/public/common/url_constants.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest_icon_selector.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/origin.h"
@@ -75,47 +82,54 @@ const int kMaximumNumOfScreenshots = 8;
 // resized).
 const int kMinimumPrimaryAdaptiveLauncherIconSizeInPx = 83;
 
-int GetIdealPrimaryIconSizeInPx() {
-#if BUILDFLAG(IS_ANDROID)
-  return WebappsIconUtils::GetIdealHomescreenIconSizeInPx();
-#else
-  return kMinimumPrimaryIconSizeInPx;
-#endif
-}
-
-int GetMinimumPrimaryIconSizeInPx() {
-#if BUILDFLAG(IS_ANDROID)
-  return WebappsIconUtils::GetMinimumHomescreenIconSizeInPx();
-#else
-  return kMinimumPrimaryIconSizeInPx;
-#endif
-}
-
-int GetIdealPrimaryAdaptiveLauncherIconSizeInPx() {
-#if BUILDFLAG(IS_ANDROID)
-  return WebappsIconUtils::GetIdealAdaptiveLauncherIconSizeInPx();
-#else
-  return kMinimumPrimaryAdaptiveLauncherIconSizeInPx;
-#endif
-}
-
-int GetIdealSplashIconSizeInPx() {
-#if BUILDFLAG(IS_ANDROID)
-  return WebappsIconUtils::GetIdealSplashImageSizeInPx();
-#else
-  return kMinimumPrimaryIconSizeInPx;
-#endif
-}
-
-int GetMinimumSplashIconSizeInPx() {
-#if BUILDFLAG(IS_ANDROID)
-  return WebappsIconUtils::GetMinimumSplashImageSizeInPx();
-#else
-  return kMinimumPrimaryIconSizeInPx;
-#endif
-}
-
 using IconPurpose = blink::mojom::ManifestImageResource_Purpose;
+
+int GetIdealPrimaryIconSizeInPx(IconPurpose purpose) {
+#if BUILDFLAG(IS_ANDROID)
+  if (purpose == IconPurpose::MASKABLE) {
+    return WebappsIconUtils::GetIdealAdaptiveLauncherIconSizeInPx();
+  } else {
+    return WebappsIconUtils::GetIdealHomescreenIconSizeInPx();
+  }
+#else
+  if (purpose == IconPurpose::MASKABLE) {
+    return kMinimumPrimaryAdaptiveLauncherIconSizeInPx;
+  } else {
+    return kMinimumPrimaryIconSizeInPx;
+  }
+#endif
+}
+
+int GetMinimumPrimaryIconSizeInPx(IconPurpose purpose) {
+  if (purpose == IconPurpose::MASKABLE) {
+    return kMinimumPrimaryAdaptiveLauncherIconSizeInPx;
+  } else {
+#if BUILDFLAG(IS_ANDROID)
+    return WebappsIconUtils::GetMinimumHomescreenIconSizeInPx();
+#else
+    return kMinimumPrimaryIconSizeInPx;
+#endif
+  }
+}
+
+// On Android, |LargeIconWorker::GetLargeIconRawBitmap| will try to find the
+// largest icon that is also larger than the minimum size from database, and
+// scale to the ideal size. However it doesn't work on desktop as Chrome stores
+// icons scaled to 16x16 and 32x32 in the database. We need to find other way to
+// fetch favicon on desktop.
+int GetMinimumFaviconForPrimaryIconSizeInPx() {
+  if (test::g_minimum_favicon_size_for_testing) {
+    CHECK_IS_TEST();
+    return test::g_minimum_favicon_size_for_testing;
+  } else {
+#if BUILDFLAG(IS_ANDROID)
+    return WebappsIconUtils::GetMinimumHomescreenIconSizeInPx();
+#else
+    NOTREACHED();
+    return kMinimumPrimaryIconSizeInPx;
+#endif
+  }
+}
 
 struct ImageTypeDetails {
   const char* extension;
@@ -208,6 +222,10 @@ void OnDidCompleteGetPrimaryIcon(
 
 }  // namespace
 
+namespace test {
+int g_minimum_favicon_size_for_testing = 0;
+}
+
 InstallableManager::EligiblityProperty::EligiblityProperty() = default;
 
 InstallableManager::EligiblityProperty::~EligiblityProperty() = default;
@@ -232,8 +250,11 @@ InstallableManager::InstallableManager(content::WebContents* web_contents)
       eligibility_(std::make_unique<EligiblityProperty>()),
       manifest_(std::make_unique<ManifestProperty>()),
       valid_manifest_(std::make_unique<ValidManifestProperty>()),
+      web_page_metadata_(std::make_unique<WebPageMetadataProperty>()),
       worker_(std::make_unique<ServiceWorkerProperty>()),
-      service_worker_context_(nullptr) {
+      primary_icon_(std::make_unique<IconProperty>()),
+      service_worker_context_(nullptr),
+      sequenced_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
   // This is null in unit tests.
   if (web_contents) {
     content::StoragePartition* storage_partition =
@@ -296,7 +317,6 @@ void InstallableManager::GetData(const InstallableParams& params,
                                  InstallableCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(callback);
-
   // Return immediately if we're already working on a task. The new task will be
   // looked at once the current task is finished.
   bool was_active = task_queue_.HasCurrent();
@@ -331,37 +351,18 @@ void InstallableManager::GetPrimaryIcon(
           base::BindOnce(OnDidCompleteGetPrimaryIcon, std::move(callback)));
 }
 
+void InstallableManager::SetSequencedTaskRunnerForTesting(
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  sequenced_task_runner_ = task_runner;
+}
+
 InstallableManager::ManifestProperty::ManifestProperty() = default;
 InstallableManager::ManifestProperty::~ManifestProperty() = default;
 
-bool InstallableManager::IsIconFetchComplete(const IconUsage usage) const {
-  const auto it = icons_.find(usage);
-  if (it == icons_.end() || !it->second.fetched)
-    return false;
-
-  // If we fetched maskable icon, but fetching was not success, do not consider
-  // it's completed since we want to fallback to fetch ANY icon.
-  if (it->second.purpose == IconPurpose::MASKABLE &&
-      it->second.error != NO_ERROR_DETECTED) {
-    return false;
-  }
-
-  return true;
-}
-
-bool InstallableManager::IsMaskableIconFetched(const IconUsage usage) const {
-  const auto it = icons_.find(usage);
-  if (it == icons_.end() || !it->second.fetched)
-    return false;
-  // if we fetched MASKABLE icon, or fetched ANY icon for fallback, consider
-  // maskable icon is fetched.
-  return it->second.purpose == IconPurpose::MASKABLE ||
-         it->second.purpose == IconPurpose::ANY;
-}
-
-void InstallableManager::SetIconFetched(const IconUsage usage) {
-  icons_[usage].fetched = true;
-}
+InstallableManager::WebPageMetadataProperty::WebPageMetadataProperty() =
+    default;
+InstallableManager::WebPageMetadataProperty::~WebPageMetadataProperty() =
+    default;
 
 std::vector<InstallableStatusCode> InstallableManager::GetErrors(
     const InstallableParams& params) {
@@ -375,6 +376,10 @@ std::vector<InstallableStatusCode> InstallableManager::GetErrors(
   if (manifest_->error != NO_ERROR_DETECTED)
     errors.push_back(manifest_->error);
 
+  if (params.fetch_metadata && web_page_metadata_->error != NO_ERROR_DETECTED) {
+    errors.push_back(web_page_metadata_->error);
+  }
+
   if (params.valid_manifest && !valid_manifest_->errors.empty()) {
     errors.insert(errors.end(), valid_manifest_->errors.begin(),
                   valid_manifest_->errors.end());
@@ -383,28 +388,9 @@ std::vector<InstallableStatusCode> InstallableManager::GetErrors(
   if (params.has_worker && worker_->error != NO_ERROR_DETECTED)
     errors.push_back(worker_->error);
 
-  if (params.valid_primary_icon) {
-    IconProperty& icon = icons_[IconUsage::kPrimary];
-    // If the icon is MASKABLE, ignore any error since we want to fallback to
-    // fetch IconPurpose::ANY.
-    if (icon.error != NO_ERROR_DETECTED &&
-        icon.purpose != IconPurpose::MASKABLE)
-      errors.push_back(icon.error);
-  }
-
-  if (params.valid_splash_icon) {
-    IconProperty& icon = icons_[IconUsage::kSplash];
-
-    // If the icon is MASKABLE, ignore any error since we want to fallback to
-    // fetch IconPurpose::ANY.
-    // If the error is NO_ACCEPTABLE_ICON, there is no icon suitable as a splash
-    // icon in the manifest. Ignore this case since we only want to fail the
-    // check if there was a suitable splash icon specified and we couldn't fetch
-    // it.
-    if (icon.error != NO_ERROR_DETECTED &&
-        icon.purpose != IconPurpose::MASKABLE &&
-        icon.error != NO_ACCEPTABLE_ICON) {
-      errors.push_back(icon.error);
+  if (params.valid_primary_icon && primary_icon_->error != NO_ERROR_DETECTED) {
+    if (!params.fetch_favicon || favicon_fetched_) {
+      errors.push_back(primary_icon_->error);
     }
   }
 
@@ -436,16 +422,16 @@ InstallableStatusCode InstallableManager::worker_error() const {
   return worker_->error;
 }
 
-InstallableStatusCode InstallableManager::icon_error(const IconUsage usage) {
-  return icons_[usage].error;
+InstallableStatusCode InstallableManager::icon_error() {
+  return primary_icon_->error;
 }
 
-GURL& InstallableManager::icon_url(const IconUsage usage) {
-  return icons_[usage].url;
+GURL& InstallableManager::icon_url() {
+  return primary_icon_->url;
 }
 
-const SkBitmap* InstallableManager::icon(const IconUsage usage) {
-  return icons_[usage].icon.get();
+const SkBitmap* InstallableManager::icon() {
+  return primary_icon_->icon.get();
 }
 
 content::WebContents* InstallableManager::GetWebContents() {
@@ -462,22 +448,23 @@ bool InstallableManager::IsComplete(const InstallableParams& params) const {
   return (!params.check_eligibility || eligibility_->fetched) &&
          manifest_->fetched &&
          (!params.valid_manifest || valid_manifest_->fetched) &&
+         (!params.fetch_metadata || web_page_metadata_->fetched) &&
          (!params.has_worker || worker_->fetched) &&
          (!params.fetch_screenshots || is_screenshots_fetch_complete_) &&
-         (!params.valid_primary_icon ||
-          IsIconFetchComplete(IconUsage::kPrimary)) &&
-         (!params.valid_splash_icon || IsIconFetchComplete(IconUsage::kSplash));
+         (!params.valid_primary_icon || primary_icon_->fetched) &&
+         (!params.fetch_favicon || favicon_fetched_);
 }
 
 void InstallableManager::Reset(InstallableStatusCode error) {
   DCHECK(error != NO_ERROR_DETECTED);
   // Prevent any outstanding callbacks to or from this object from being called.
   weak_factory_.InvalidateWeakPtrs();
-  icons_.clear();
   downloaded_screenshots_.clear();
   screenshots_.clear();
   screenshots_downloading_ = 0;
   is_screenshots_fetch_complete_ = false;
+  favicon_fetched_ = false;
+  favicon_task_tracker_.TryCancelAll();
 
   // If we have paused tasks, we are waiting for a service worker. Execute the
   // callbacks with the status_code being passed for the paused tasks.
@@ -486,7 +473,9 @@ void InstallableManager::Reset(InstallableStatusCode error) {
   eligibility_ = std::make_unique<EligiblityProperty>();
   manifest_ = std::make_unique<ManifestProperty>();
   valid_manifest_ = std::make_unique<ValidManifestProperty>();
+  web_page_metadata_ = std::make_unique<WebPageMetadataProperty>();
   worker_ = std::make_unique<ServiceWorkerProperty>();
+  primary_icon_ = std::make_unique<IconProperty>();
 
   OnResetData();
 }
@@ -494,8 +483,7 @@ void InstallableManager::Reset(InstallableStatusCode error) {
 void InstallableManager::SetManifestDependentTasksComplete() {
   valid_manifest_->fetched = true;
   worker_->fetched = true;
-  SetIconFetched(IconUsage::kPrimary);
-  SetIconFetched(IconUsage::kSplash);
+  primary_icon_->fetched = true;
   is_screenshots_fetch_complete_ = true;
 }
 
@@ -521,38 +509,16 @@ void InstallableManager::CleanupAndStartNextTask() {
 void InstallableManager::RunCallback(
     InstallableTask task,
     std::vector<InstallableStatusCode> errors) {
-  const InstallableParams& params = task.params;
-  IconProperty null_icon;
-  IconProperty* primary_icon = &null_icon;
-  bool has_maskable_primary_icon = false;
-  IconProperty* splash_icon = &null_icon;
-  bool has_maskable_splash_icon = false;
-
-  if (params.valid_primary_icon && IsIconFetchComplete(IconUsage::kPrimary)) {
-    primary_icon = &icons_[IconUsage::kPrimary];
-    has_maskable_primary_icon =
-        (primary_icon->purpose == IconPurpose::MASKABLE);
-  }
-  if (params.valid_splash_icon && IsIconFetchComplete(IconUsage::kSplash)) {
-    splash_icon = &icons_[IconUsage::kSplash];
-    has_maskable_splash_icon = (splash_icon->purpose == IconPurpose::MASKABLE);
-  }
-
-  bool worker_check_passed = worker_->has_worker || !params.has_worker;
-
   InstallableData data = {
       std::move(errors),
       manifest_url(),
       manifest(),
-      primary_icon->url,
-      primary_icon->icon.get(),
-      has_maskable_primary_icon,
-      splash_icon->url,
-      splash_icon->icon.get(),
-      has_maskable_splash_icon,
+      *web_page_metadata_->metadata,
+      primary_icon_->url,
+      primary_icon_->icon.get(),
+      primary_icon_->purpose == IconPurpose::MASKABLE,
       screenshots_,
       valid_manifest_->is_valid,
-      worker_check_passed,
   };
 
   std::move(task.callback).Run(data);
@@ -565,12 +531,10 @@ void InstallableManager::WorkOnTask() {
   const InstallableParams& params = task_queue_.Current().params;
 
   auto errors = GetErrors(params);
-  bool check_passed = errors.empty() || (errors.size() == 1 &&
-                                         errors[0] == WARN_NOT_OFFLINE_CAPABLE);
-  if ((!check_passed && !params.is_debug_mode) || IsComplete(params)) {
+  if ((!errors.empty() && !params.is_debug_mode) || IsComplete(params)) {
     // Yield the UI thread before processing the next task. If this object is
     // deleted in the meantime, the next task naturally won't run.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+    sequenced_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&InstallableManager::CleanupAndStartNextTask,
                                   weak_factory_.GetWeakPtr()));
 
@@ -578,43 +542,23 @@ void InstallableManager::WorkOnTask() {
     RunCallback(std::move(task), std::move(errors));
     return;
   }
-
   if (params.check_eligibility && !eligibility_->fetched) {
     CheckEligiblity();
+  } else if (params.fetch_metadata && !web_page_metadata_->fetched) {
+    FetchWebPageMetadata();
   } else if (!manifest_->fetched) {
     FetchManifest();
   } else if (params.valid_manifest && !valid_manifest_->fetched) {
     CheckManifestValid(params.check_webapp_manifest_display);
-  } else if (params.valid_primary_icon && params.prefer_maskable_icon &&
-             !IsMaskableIconFetched(IconUsage::kPrimary)) {
-    CheckAndFetchBestIcon(GetIdealPrimaryAdaptiveLauncherIconSizeInPx(),
-                          kMinimumPrimaryAdaptiveLauncherIconSizeInPx,
-                          IconPurpose::MASKABLE, IconUsage::kPrimary);
-  } else if (params.valid_primary_icon &&
-             !IsIconFetchComplete(IconUsage::kPrimary)) {
-    CheckAndFetchBestIcon(GetIdealPrimaryIconSizeInPx(),
-                          GetMinimumPrimaryIconSizeInPx(), IconPurpose::ANY,
-                          IconUsage::kPrimary);
+  } else if (params.valid_primary_icon && !primary_icon_->fetched) {
+    CheckAndFetchBestPrimaryIcon(params.prefer_maskable_icon);
+  } else if (params.fetch_favicon && !favicon_fetched_) {
+    FetchFavicon();
   } else if (params.fetch_screenshots && !screenshots_downloading_ &&
              !is_screenshots_fetch_complete_) {
-    if (base::FeatureList::IsEnabled(
-            webapps::features::kDesktopPWAsDetailedInstallDialog)) {
-      CheckAndFetchScreenshots();
-    } else {
-      CheckAndFetchScreenshots(/*check_form_factor=*/false);
-    }
+    CheckAndFetchScreenshots();
   } else if (params.has_worker && !worker_->fetched) {
     CheckServiceWorker();
-  } else if (params.valid_splash_icon && params.prefer_maskable_icon &&
-             !IsMaskableIconFetched(IconUsage::kSplash)) {
-    CheckAndFetchBestIcon(GetIdealSplashIconSizeInPx(),
-                          GetMinimumSplashIconSizeInPx(), IconPurpose::MASKABLE,
-                          IconUsage::kSplash);
-  } else if (params.valid_splash_icon &&
-             !IsIconFetchComplete(IconUsage::kSplash)) {
-    CheckAndFetchBestIcon(GetIdealSplashIconSizeInPx(),
-                          GetMinimumSplashIconSizeInPx(), IconPurpose::ANY,
-                          IconUsage::kSplash);
   } else {
     NOTREACHED();
   }
@@ -726,6 +670,41 @@ bool InstallableManager::IsManifestValidForWebApp(
   return is_valid;
 }
 
+void InstallableManager::FetchWebPageMetadata() {
+  content::WebContents* web_contents = GetWebContents();
+  // Send a message to the renderer to retrieve information about the page.
+  mojo::AssociatedRemote<mojom::WebPageMetadataAgent> metadata_agent;
+  web_contents->GetPrimaryMainFrame()
+      ->GetRemoteAssociatedInterfaces()
+      ->GetInterface(&metadata_agent);
+  // Bind the InterfacePtr into the callback so that it's kept alive until
+  // there's either a connection error or a response.
+  auto* web_page_metadata_proxy = metadata_agent.get();
+  metadata_agent.set_disconnect_handler(
+      base::BindOnce(&InstallableManager::OnMetadataAgentDisconnect,
+                     weak_factory_.GetWeakPtr()));
+  web_page_metadata_proxy->GetWebPageMetadata(
+      base::BindOnce(&InstallableManager::OnDidGetWebPageMetadata,
+                     weak_factory_.GetWeakPtr(), std::move(metadata_agent)));
+}
+
+void InstallableManager::OnDidGetWebPageMetadata(
+    mojo::AssociatedRemote<mojom::WebPageMetadataAgent> metadata_agent,
+    mojom::WebPageMetadataPtr web_page_metadata) {
+  if (!GetWebContents()) {
+    return;
+  }
+
+  web_page_metadata_->metadata = std::move(web_page_metadata);
+  web_page_metadata_->fetched = true;
+  WorkOnTask();
+}
+
+void InstallableManager::OnMetadataAgentDisconnect() {
+  web_page_metadata_->error = webapps::InstallableStatusCode::RENDERER_EXITING;
+  web_page_metadata_->fetched = true;
+}
+
 void InstallableManager::CheckServiceWorker() {
   DCHECK(!worker_->fetched);
   DCHECK(!blink::IsEmptyManifest(manifest()));
@@ -750,32 +729,6 @@ void InstallableManager::OnDidCheckHasServiceWorker(
 
   switch (capability) {
     case content::ServiceWorkerCapability::SERVICE_WORKER_WITH_FETCH_HANDLER:
-      if (base::FeatureList::IsEnabled(
-              blink::features::kCheckOfflineCapability)) {
-        const bool enforce_offline_capability =
-            (blink::features::kCheckOfflineCapabilityParam.Get() ==
-             blink::features::CheckOfflineCapabilityMode::kEnforce);
-
-        if (!manifest().start_url.is_valid()) {
-          worker_->has_worker = false;
-          worker_->error = NO_URL_FOR_SERVICE_WORKER;
-          worker_->fetched = true;
-          WorkOnTask();
-          return;
-        }
-
-        // Dispatch a fetch event to `start_url` while simulating an offline
-        // environment and see if the site supports an offline page.
-        service_worker_context_->CheckOfflineCapability(
-            manifest().start_url,
-            blink::StorageKey::CreateFirstParty(
-                url::Origin::Create(manifest().start_url)),
-            base::BindOnce(&InstallableManager::OnDidCheckOfflineCapability,
-                           weak_factory_.GetWeakPtr(),
-                           check_service_worker_start_time,
-                           enforce_offline_capability));
-        return;
-      }
       worker_->has_worker = true;
       break;
     case content::ServiceWorkerCapability::SERVICE_WORKER_NO_FETCH_HANDLER:
@@ -798,101 +751,120 @@ void InstallableManager::OnDidCheckHasServiceWorker(
       break;
   }
 
-  // These are recorded in OnDidCheckOfflineCapability() when
-  // CheckOfflineCapability is enabled.
-  if (!base::FeatureList::IsEnabled(blink::features::kCheckOfflineCapability)) {
     InstallableMetrics::RecordCheckServiceWorkerTime(
         base::TimeTicks::Now() - check_service_worker_start_time);
     InstallableMetrics::RecordCheckServiceWorkerStatus(
         InstallableMetrics::ConvertFromServiceWorkerCapability(capability));
-  }
 
-  worker_->fetched = true;
-  WorkOnTask();
+    worker_->fetched = true;
+    WorkOnTask();
 }
 
-void InstallableManager::OnDidCheckOfflineCapability(
-    base::TimeTicks check_service_worker_start_time,
-    bool enforce_offline_capability,
-    content::OfflineCapability capability,
-    int64_t service_worker_registration_id) {
-  InstallableMetrics::RecordCheckServiceWorkerTime(
-      base::TimeTicks::Now() - check_service_worker_start_time);
-  InstallableMetrics::RecordCheckServiceWorkerStatus(
-      InstallableMetrics::ConvertFromOfflineCapability(capability));
-
-  switch (capability) {
-    case content::OfflineCapability::kSupported:
-      worker_->has_worker = true;
-      break;
-    case content::OfflineCapability::kUnsupported:
-      if (enforce_offline_capability) {
-        worker_->has_worker = false;
-        worker_->error = NOT_OFFLINE_CAPABLE;
-      } else {
-        // No enforcement means that we are just recording metrics and logging a
-        // warning.
-        worker_->has_worker = true;
-        worker_->error = WARN_NOT_OFFLINE_CAPABLE;
-        LogToConsole(web_contents(), WARN_NOT_OFFLINE_CAPABLE,
-                     blink::mojom::ConsoleMessageLevel::kWarning);
-      }
-      break;
-  }
-
-  worker_->fetched = true;
-  WorkOnTask();
-}
-
-void InstallableManager::CheckAndFetchBestIcon(int ideal_icon_size_in_px,
-                                               int minimum_icon_size_in_px,
-                                               const IconPurpose purpose,
-                                               const IconUsage usage) {
+void InstallableManager::CheckAndFetchBestPrimaryIcon(bool prefer_maskable) {
   DCHECK(!blink::IsEmptyManifest(manifest()));
 
-  IconProperty& icon = icons_[usage];
-  icon.fetched = true;
-  icon.purpose = purpose;
-  icon.error = NO_ERROR_DETECTED;
+  primary_icon_->fetched = true;
 
-  GURL icon_url = blink::ManifestIconSelector::FindBestMatchingSquareIcon(
-      manifest().icons, ideal_icon_size_in_px, minimum_icon_size_in_px,
-      purpose);
-
-  if (icon_url.is_empty()) {
-    icon.error = NO_ACCEPTABLE_ICON;
-  } else {
-    bool can_download_icon = content::ManifestIconDownloader::Download(
-        GetWebContents(), icon_url, ideal_icon_size_in_px,
-        minimum_icon_size_in_px, InstallableManager::kMaximumIconSizeInPx,
-        base::BindOnce(&InstallableManager::OnIconFetched,
-                       weak_factory_.GetWeakPtr(), icon_url, usage));
-    if (can_download_icon)
-      return;
-    icon.error = CANNOT_DOWNLOAD_ICON;
+  downloading_icons_type_.push_back(IconPurpose::ANY);
+  if (prefer_maskable) {
+    downloading_icons_type_.push_back(IconPurpose::MASKABLE);
   }
 
+  // Initialize the error to "NO_ACCEPTABLE_ICON". It'll be set to
+  // "NO_ERROR_DETECTED" if fetched successfully.
+  primary_icon_->error = NO_ACCEPTABLE_ICON;
+
+  TryFetchingNextIcon();
+}
+
+void InstallableManager::TryFetchingNextIcon() {
+  while (!downloading_icons_type_.empty()) {
+    IconPurpose purpose = downloading_icons_type_.back();
+    downloading_icons_type_.pop_back();
+
+    GURL icon_url = blink::ManifestIconSelector::FindBestMatchingSquareIcon(
+        manifest().icons, GetIdealPrimaryIconSizeInPx(purpose),
+        GetMinimumPrimaryIconSizeInPx(purpose), purpose);
+
+    if (icon_url.is_empty()) {
+      continue;
+    }
+
+    bool can_download_icon = content::ManifestIconDownloader::Download(
+        GetWebContents(), icon_url, GetIdealPrimaryIconSizeInPx(purpose),
+        GetMinimumPrimaryIconSizeInPx(purpose),
+        InstallableManager::kMaximumIconSizeInPx,
+        base::BindOnce(&InstallableManager::OnIconFetched,
+                       weak_factory_.GetWeakPtr(), icon_url, purpose));
+    if (can_download_icon) {
+      return;
+    }
+  }
   WorkOnTask();
 }
 
 void InstallableManager::OnIconFetched(const GURL icon_url,
-                                       const IconUsage usage,
+                                       const IconPurpose purpose,
                                        const SkBitmap& bitmap) {
   if (!GetWebContents())
     return;
 
-  IconProperty& icon = icons_[usage];
   if (bitmap.drawsNothing()) {
-    icon.error = NO_ICON_AVAILABLE;
-  } else {
-    icon.url = icon_url;
-    icon.icon = std::make_unique<SkBitmap>(bitmap);
+    primary_icon_->error = NO_ICON_AVAILABLE;
+    TryFetchingNextIcon();
+    return;
+  }
+
+  primary_icon_->url = icon_url;
+  primary_icon_->purpose = purpose;
+  primary_icon_->icon = std::make_unique<SkBitmap>(bitmap);
+  primary_icon_->error = NO_ERROR_DETECTED;
+  WorkOnTask();
+}
+
+void InstallableManager::FetchFavicon() {
+  favicon_fetched_ = true;
+
+  // If primary icon is already successfully fetched, don't fetch favicon.
+  if (primary_icon_->fetched && primary_icon_->error == NO_ERROR_DETECTED) {
+    WorkOnTask();
+    return;
+  }
+
+  favicon::LargeFaviconProvider* favicon_provider =
+      favicon::GetLargeFaviconProvider(GetWebContents()->GetBrowserContext());
+  if (!favicon_provider) {
+    WorkOnTask();
+    return;
+  }
+
+  favicon_provider->GetLargeIconImageOrFallbackStyleForPageUrl(
+      GetWebContents()->GetLastCommittedURL(),
+      GetMinimumFaviconForPrimaryIconSizeInPx(),
+      GetIdealPrimaryIconSizeInPx(IconPurpose::ANY),
+      base::BindOnce(&InstallableManager::OnFaviconFetched,
+                     weak_factory_.GetWeakPtr()),
+      &favicon_task_tracker_);
+}
+
+void InstallableManager::OnFaviconFetched(
+    const favicon_base::LargeIconImageResult& image_result) {
+  if (!GetWebContents()) {
+    return;
+  }
+  // TODO(crbug.com/1462726): add histogram to record fetched favicon size.
+  if (!image_result.image.IsEmpty()) {
+    primary_icon_->url = image_result.icon_url;
+    primary_icon_->icon =
+        std::make_unique<SkBitmap>(*image_result.image.ToSkBitmap());
+    primary_icon_->purpose = IconPurpose::ANY;
+    primary_icon_->error = NO_ERROR_DETECTED;
   }
 
   WorkOnTask();
 }
 
-void InstallableManager::CheckAndFetchScreenshots(bool check_form_factor) {
+void InstallableManager::CheckAndFetchScreenshots() {
   DCHECK(!blink::IsEmptyManifest(manifest()));
   DCHECK(!is_screenshots_fetch_complete_);
 
@@ -901,15 +873,13 @@ void InstallableManager::CheckAndFetchScreenshots(bool check_form_factor) {
   int num_of_screenshots = 0;
   for (const auto& url : manifest().screenshots) {
 #if BUILDFLAG(IS_ANDROID)
-    if (check_form_factor &&
-        url->form_factor ==
-            blink::mojom::ManifestScreenshot::FormFactor::kWide) {
+    if (url->form_factor ==
+        blink::mojom::ManifestScreenshot::FormFactor::kWide) {
       continue;
     }
 #else
-    if (check_form_factor &&
-        url->form_factor !=
-            blink::mojom::ManifestScreenshot::FormFactor::kWide) {
+    if (url->form_factor !=
+        blink::mojom::ManifestScreenshot::FormFactor::kWide) {
       continue;
     }
 #endif  // BUILDFLAG(IS_ANDROID)

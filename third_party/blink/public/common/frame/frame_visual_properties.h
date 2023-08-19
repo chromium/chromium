@@ -21,6 +21,17 @@ struct BLINK_COMMON_EXPORT FrameVisualProperties {
 
   FrameVisualProperties& operator=(const FrameVisualProperties& other);
 
+  static int MaxChildFrameScreenRectMovement();
+  static int MinScreenRectStableTimeMs();
+
+  // TODO(szager): These values override the above two values for frames that
+  // utilize IntersectionObserver V2 (i.e. occlusion detection). The purpose of
+  // this specialization is to preserve existing behavior while the above two
+  // parameters are experimentally dialed in.
+  // See kTargetFrameMovedRecentlyForIOv2 in web_input_event.h.
+  static int MaxChildFrameScreenRectMovementForIOv2();
+  static int MinScreenRectStableTimeMsForIOv2();
+
   // These fields are values from VisualProperties, see comments there for
   // descriptions. They exist here to propagate from each RenderWidget to its
   // child RenderWidgets. Here they are flowing from RenderWidget in a parent
@@ -34,6 +45,7 @@ struct BLINK_COMMON_EXPORT FrameVisualProperties {
   double zoom_level = 0;
   float page_scale_factor = 1.f;
   float compositing_scale_factor = 1.f;
+  float cursor_accessibility_scale_factor = 1.f;
   gfx::Size visible_viewport_size;
   gfx::Size min_size_for_auto_resize;
   gfx::Size max_size_for_auto_resize;

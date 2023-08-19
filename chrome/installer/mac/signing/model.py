@@ -227,15 +227,6 @@ class NotarizeAndStapleLevel(enum.Enum):
             raise ValueError(f'Invalid NotarizeAndStapleLevel: {str}')
 
 
-class NotarizationTool(enum.Enum):
-    """The tool to use for submitting notarization requests."""
-    ALTOOL = 'altool'
-    NOTARYTOOL = 'notarytool'
-
-    def __str__(self):
-        return self.value
-
-
 class Distribution(object):
     """A Distribution represents a final, signed, and potentially channel-
     customized Chrome product.

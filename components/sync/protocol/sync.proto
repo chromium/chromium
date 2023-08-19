@@ -21,6 +21,7 @@ import "components/sync/protocol/client_commands.proto";
 import "components/sync/protocol/client_debug_info.proto";
 import "components/sync/protocol/data_type_progress_marker.proto";
 import "components/sync/protocol/get_updates_caller_info.proto";
+import "components/sync/protocol/password_sharing_invitation_specifics.proto";
 import "components/sync/protocol/sync_entity.proto";
 import "components/sync/protocol/sync_enums.proto";
 import "components/sync/protocol/sharing_message_specifics.proto";
@@ -186,11 +187,6 @@ message GetUpdatesMessage {
   // other datatypes, so repeated usage will likely result in throttling.
   optional bool need_encryption_key = 8 [default = false];
 
-  // Whether to create the mobile bookmarks folder if it's not
-  // already created.  Set to true by all modern clients.
-  optional bool create_mobile_bookmarks_folder = 1000
-      [default = false, deprecated = true];
-
   // This value is an updated version of the GetUpdatesCallerInfo's
   // GetUpdatesSource.  It describes the reason for the GetUpdate request.
   // Introduced in M29.
@@ -209,6 +205,8 @@ message GetUpdatesMessage {
   reserved "requested_types";
   reserved 5;
   reserved "batch_size";
+  reserved 1000;
+  reserved "create_mobile_bookmarks_folder";
 }
 
 // Message from a client asking the server to clear its data. This causes the
@@ -318,7 +316,8 @@ message ClientToServerMessage {
   // The ID that our invalidation client used to identify itself to the server.
   // Sending the ID here allows the server to not send notifications of our own
   // changes to our invalidator.
-  optional string invalidator_client_id = 14;
+  // The field was deprecated in M117 and is no longer populated.
+  optional string invalidator_client_id = 14 [deprecated = true];
 
   // Identifies this ClientToServerMessage as a clear server data request. This
   // field is present when message_contents is CLEAR_SERVER_DATA.
@@ -368,6 +367,8 @@ message CommitResponse {
     message DatatypeSpecificError {
       oneof datatype_error {
         SharingMessageCommitError sharing_message_error = 1;
+        OutgoingPasswordSharingInvitationCommitError
+            outgoing_password_sharing_invitation_error = 2;
       }
     }
     // Datatype specific error (if any).

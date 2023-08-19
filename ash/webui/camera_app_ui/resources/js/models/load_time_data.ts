@@ -2,6 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/*
+ * strings.m.js is generated when we enable it via UseStringsJs() in webUI
+ * controller. When loading it, it will populate data such as localized strings
+ * into |loadTimeData| that is imported below.
+ */
+import '../../strings.m.js';
+
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+
 import {Flag} from '../flag.js';
 import {I18nString} from '../i18n_string.js';
 
@@ -9,14 +18,14 @@ import {I18nString} from '../i18n_string.js';
  * Returns the device board name.
  */
 export function getBoard(): string {
-  return window.loadTimeData.getString('board_name');
+  return loadTimeData.getString('board_name');
 }
 
 /**
  * Returns the device type.
  */
 export function getDeviceType(): string {
-  return window.loadTimeData.getString('device_type');
+  return loadTimeData.getString('device_type');
 }
 
 /**
@@ -24,7 +33,7 @@ export function getDeviceType(): string {
  */
 export function getI18nMessage(
     name: I18nString, ...substitutions: Array<number|string>): string {
-  return window.loadTimeData.getStringF(name, ...substitutions);
+  return loadTimeData.getStringF(name, ...substitutions);
 }
 
 /**
@@ -32,21 +41,21 @@ export function getI18nMessage(
  *     language.
  */
 export function getTextDirection(): string {
-  return window.loadTimeData.getString('textdirection');
+  return loadTimeData.getString('textdirection');
 }
 
 /**
  * Returns the boolean value of the chrome flag.
  */
 export function getChromeFlag(flag: Flag): boolean {
-  return window.loadTimeData.getBoolean(flag);
+  return loadTimeData.getBoolean(flag);
 }
 
 /**
  * Returns the boolean value of whether the image is test image.
  */
 export function getIsTestImage(): boolean {
-  return window.loadTimeData.getBoolean('is_test_image');
+  return loadTimeData.getBoolean('is_test_image');
 }
 
 
@@ -54,5 +63,12 @@ export function getIsTestImage(): boolean {
  * Returns the browser version string.
  */
 export function getBrowserVersion(): string {
-  return window.loadTimeData.getString('browser_version');
+  return loadTimeData.getString('browser_version');
+}
+
+/**
+ * Returns if CCA is running on local development server.
+ */
+export function isLocalDev(): boolean {
+  return getBoard() === 'local-dev';
 }

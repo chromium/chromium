@@ -64,10 +64,6 @@ static const char kManifestLocationChanged[] =
 static const char kManifestDisplayOverrideNotSupportedMessage[] =
     "Manifest contains 'display_override' field, and the first supported "
     "display mode must be one of 'standalone', 'fullscreen', or 'minimal-ui'";
-static const char kWarnNotOfflineCapable[] =
-    "Page does not work offline. Starting in Chrome 93, the installability "
-    "criteria is changing, and this site will not be installable. See "
-    "https://goo.gle/improved-pwa-offline-detection for more information.";
 static const char kPipelineRestarted[] =
     "Web app uninstalled so that it stops any running pipeline";
 
@@ -102,7 +98,6 @@ static const char kPreferRelatedApplicationsSupportedOnlyBetaStableId[] =
 static const char kManifestLocationChangedId[] = "manifest-location-changed";
 static const char kManifestDisplayOverrideNotSupportedId[] =
     "manifest-display-override-not-supported";
-static const char kWarnNotOfflineCapableId[] = "warn-not-offline-capable";
 static const char kPipelineRestartedId[] = "pipeline-restarted";
 
 const std::string& GetMessagePrefix() {
@@ -207,9 +202,6 @@ std::string GetErrorMessage(InstallableStatusCode code) {
       break;
     case MANIFEST_DISPLAY_OVERRIDE_NOT_SUPPORTED:
       message = kManifestDisplayOverrideNotSupportedMessage;
-      break;
-    case WARN_NOT_OFFLINE_CAPABLE:
-      message = kWarnNotOfflineCapable;
       break;
     case PIPELINE_RESTARTED:
       message = kPipelineRestarted;
@@ -318,9 +310,6 @@ content::InstallabilityError GetInstallabilityError(
       break;
     case MANIFEST_DISPLAY_OVERRIDE_NOT_SUPPORTED:
       error_id = kManifestDisplayOverrideNotSupportedId;
-      break;
-    case WARN_NOT_OFFLINE_CAPABLE:
-      error_id = kWarnNotOfflineCapableId;
       break;
     case PIPELINE_RESTARTED:
       error_id = kPipelineRestartedId;

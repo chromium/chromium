@@ -167,8 +167,6 @@ bool BinaryFeatureExtractor::ExtractImageFeaturesFromData(
       debug_data->set_directory_entry(directory_entry,
                                       sizeof(*directory_entry));
       if (raw_data) {
-        base::UmaHistogramMemoryKB("SBClientDownload.ImageDebugEntrySize",
-                                   raw_data_size / 1024);
         raw_data_size = std::min(raw_data_size, kMaxDebugDataBytes);
         debug_data->set_raw_data(raw_data, raw_data_size);
       }

@@ -172,7 +172,7 @@ bool FormFetcherImpl::IsBlocklisted() const {
   return is_blocklisted_in_profile_store_;
 }
 
-bool FormFetcherImpl::IsMovingBlocked(const autofill::GaiaIdHash& destination,
+bool FormFetcherImpl::IsMovingBlocked(const signin::GaiaIdHash& destination,
                                       const std::u16string& username) const {
   for (const std::vector<std::unique_ptr<PasswordForm>>* matches_vector :
        {&federated_, &non_federated_}) {

@@ -102,14 +102,11 @@ const uint16_t kDefaultServerPort = 443;
 
 struct TestParams {
   quic::ParsedQuicVersion version;
-  bool enable_quic_priority_incremental_support;
 };
 
 // Used by ::testing::PrintToStringParamName().
 std::string PrintToString(const TestParams& p) {
-  return base::StrCat({ParsedQuicVersionToString(p.version), "_",
-                       (p.enable_quic_priority_incremental_support ? "" : "No"),
-                       "Incremental"});
+  return ParsedQuicVersionToString(p.version);
 }
 
 std::vector<TestParams> GetTestParams() {
@@ -117,8 +114,7 @@ std::vector<TestParams> GetTestParams() {
   quic::ParsedQuicVersionVector all_supported_versions =
       AllSupportedQuicVersions();
   for (const auto& version : all_supported_versions) {
-    params.push_back(TestParams{version, false});
-    params.push_back(TestParams{version, true});
+    params.push_back(TestParams{version});
   }
   return params;
 }
@@ -274,7 +270,6 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
         crypto_config_(
             quic::test::crypto_test_utils::ProofVerifierForTesting()),
         read_buffer_(base::MakeRefCounted<IOBufferWithSize>(4096)),
-        promise_id_(GetNthServerInitiatedUnidirectionalStreamId(0)),
         stream_id_(GetNthClientInitiatedBidirectionalStreamId(0)),
         connection_id_(quic::test::TestConnectionId(2)),
         client_maker_(version_,
@@ -290,9 +285,6 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
                       quic::Perspective::IS_SERVER,
                       false),
         printer_(version_) {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kPriorityIncremental,
-        GetParam().enable_quic_priority_incremental_support);
     FLAGS_quic_enable_http3_grease_randomness = false;
     quic::QuicEnableVersion(version_);
     IPAddress ip(192, 0, 2, 33);
@@ -420,7 +412,7 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
         /*cert_verify_flags=*/0, quic::test::DefaultQuicConfig(),
         std::make_unique<TestQuicCryptoClientConfigHandle>(&crypto_config_),
         dns_start, dns_end,
-        std::make_unique<quic::QuicClientPushPromiseIndex>(), nullptr,
+        std::make_unique<quic::QuicClientPushPromiseIndex>(),
         base::DefaultTickClock::GetInstance(),
         base::SingleThreadTaskRunner::GetCurrentDefault().get(),
         /*socket_performance_watcher=*/nullptr, HostResolverEndpointResult(),
@@ -437,22 +429,6 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
         session_->CreateHandle(
             url::SchemeHostPort(url::kHttpsScheme, "www.example.org", 443)),
         /*dns_aliases=*/std::set<std::string>());
-    promised_stream_ = std::make_unique<QuicHttpStream>(
-        session_->CreateHandle(
-            url::SchemeHostPort(url::kHttpsScheme, "www.example.org", 443)),
-        /*dns_aliases=*/std::set<std::string>());
-    push_promise_[":path"] = "/bar";
-    push_promise_[":authority"] = "www.example.org";
-    push_promise_[":version"] = "HTTP/1.1";
-    push_promise_[":method"] = "GET";
-    push_promise_[":scheme"] = "https";
-
-    promised_response_[":status"] = "200";
-    promised_response_[":version"] = "HTTP/1.1";
-    promised_response_["content-type"] = "text/plain";
-
-    promise_url_ =
-        quic::SpdyServerPushUtils::GetPromisedUrlFromHeaders(push_promise_);
   }
 
   void SetRequest(const string& method,
@@ -594,14 +570,6 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
     return std::string(buffer.data(), buffer.size());
   }
 
-  void ReceivePromise(quic::QuicStreamId id) {
-    auto headers = quic::test::AsHeaderList(push_promise_);
-    QuicChromiumClientStream::Handle* stream =
-        QuicHttpStreamPeer::GetQuicChromiumClientStream(stream_.get());
-    stream->OnPromiseHeaderList(id, headers.uncompressed_header_bytes(),
-                                headers);
-  }
-
   void ExpectLoadTimingValid(const LoadTimingInfo& load_timing_info,
                              bool session_reused) {
     EXPECT_EQ(session_reused, load_timing_info.socket_reused);
@@ -628,7 +596,6 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
   quic::test::QuicFlagSaver saver_;
 
   const quic::ParsedQuicVersion version_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   NetLogWithSource net_log_with_source_{
       NetLogWithSource::Make(NetLog::Get(), NetLogSourceType::NONE)};
@@ -660,12 +627,6 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
   string request_data_;
   string response_data_;
 
-  // For server push testing
-  std::unique_ptr<QuicHttpStream> promised_stream_;
-  spdy::Http2HeaderBlock push_promise_;
-  spdy::Http2HeaderBlock promised_response_;
-  const quic::QuicStreamId promise_id_;
-  string promise_url_;
   const quic::QuicStreamId stream_id_;
 
   const quic::QuicConnectionId connection_id_;

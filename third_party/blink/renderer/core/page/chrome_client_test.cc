@@ -49,7 +49,7 @@ TEST_F(ChromeClientTest, UpdateTooltipUnderCursorFlood) {
   ScopedNullExecutionContext execution_context;
   auto* doc = Document::CreateForTest(execution_context.GetExecutionContext());
   auto* element = MakeGarbageCollected<HTMLElement>(html_names::kDivTag, *doc);
-  element->setAttribute(html_names::kTitleAttr, "tooltip");
+  element->setAttribute(html_names::kTitleAttr, AtomicString("tooltip"));
   result.SetInnerNode(element);
 
   client->UpdateTooltipUnderCursor(*doc->GetFrame(), location, result);
@@ -69,7 +69,7 @@ TEST_F(ChromeClientTest, UpdateTooltipUnderCursorFlood) {
   EXPECT_EQ(String(), logger.ToolTipForLastUpdateTooltipUnderCursor());
 
   logger.ClearToolTipForLastUpdateTooltipUnderCursor();
-  element->setAttribute(html_names::kTitleAttr, "updated");
+  element->setAttribute(html_names::kTitleAttr, AtomicString("updated"));
   client->UpdateTooltipUnderCursor(*doc->GetFrame(), location, result);
   // UpdateTooltipUnderCursor(String,TextDirection) should be called because
   // tooltip string is different from the last one.
@@ -82,9 +82,8 @@ TEST_F(ChromeClientTest, UpdateTooltipUnderCursorEmptyString) {
   HitTestResult result(HitTestRequest(HitTestRequest::kMove), location);
   ScopedNullExecutionContext execution_context;
   auto& doc = *Document::CreateForTest(execution_context.GetExecutionContext());
-  auto& input_element =
-      *MakeGarbageCollected<HTMLInputElement>(doc, CreateElementFlags());
-  input_element.setAttribute(html_names::kTypeAttr, "file");
+  auto& input_element = *MakeGarbageCollected<HTMLInputElement>(doc);
+  input_element.setAttribute(html_names::kTypeAttr, AtomicString("file"));
 
   result.SetInnerNode(&input_element);
   client->UpdateTooltipUnderCursor(*doc.GetFrame(), location, result);
@@ -101,7 +100,7 @@ TEST_F(ChromeClientTest, UpdateTooltipUnderCursorEmptyString) {
   EXPECT_EQ(g_empty_atom, client->last_tool_tip_text_);
 
   client->last_tool_tip_text_ = String();
-  input_element.setAttribute(html_names::kTitleAttr, "test");
+  input_element.setAttribute(html_names::kTitleAttr, AtomicString("test"));
   client->UpdateTooltipUnderCursor(*doc.GetFrame(), location, result);
   EXPECT_EQ("test", client->last_tool_tip_text_);
 }

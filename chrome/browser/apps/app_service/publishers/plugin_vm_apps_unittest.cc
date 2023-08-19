@@ -141,13 +141,15 @@ class PluginVmAppsTest : public testing::Test {
     }
   } dbus_clients_;
 
-  raw_ptr<AppServiceProxy, ExperimentalAsh> app_service_proxy_ = nullptr;
+  raw_ptr<AppServiceProxy, DanglingUntriaged | ExperimentalAsh>
+      app_service_proxy_ = nullptr;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<plugin_vm::PluginVmTestHelper> test_helper_;
   raw_ptr<storage::ExternalMountPoints, ExperimentalAsh> mount_points_;
   std::string mount_name_;
-  raw_ptr<MockPluginVmManager, ExperimentalAsh> plugin_vm_manager_;
+  raw_ptr<MockPluginVmManager, DanglingUntriaged | ExperimentalAsh>
+      plugin_vm_manager_;
 };
 
 TEST_F(PluginVmAppsTest, AppServiceHasPluginVmIntentFilters) {

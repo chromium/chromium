@@ -27,10 +27,6 @@ struct DispatchFetchEventParams {
   // of the service worker. See more details at https://crbug.com/965802.
   bool is_offline_capability_check = false;
 
-  // Indicates if the RaceNetworkRequest is dispatched outside of the service
-  // worker. crbug.com/1420517 for more details.
-  bool did_start_race_network_request = false;
-
   // Used for BestEffortServiceWorker(crbug.com/1420517). Specifies the cusotm
   // URLLoaderFactory if the RaceNetworkRequest is triggered. This value is
   // referred by the fetch process in blink, in order to detect and dedupe

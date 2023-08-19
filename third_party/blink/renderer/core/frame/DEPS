@@ -27,6 +27,9 @@ specific_include_rules = {
   "frame_test_helpers\.h": [
     "+components/viz/common/surfaces/frame_sink_id.h"
   ],
+  "history_util\.cc": [
+    "+url/url_util.h"
+  ],
   "local_frame_back_forward_cache_test\.cc": [
     "+base/run_loop.h",
   ],

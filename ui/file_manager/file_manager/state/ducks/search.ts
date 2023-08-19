@@ -1,0 +1,104 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {SearchData, SearchLocation, SearchOptions, SearchRecency, State} from '../../externs/ts/state.js';
+import {addReducer, BaseAction, Reducer, ReducerMap as ReducersMap} from '../../lib/base_store.js';
+import {Action, ActionType} from '../actions.js';
+
+/** Map of actions to reducers for the search slice. */
+export const searchReducerMap: ReducersMap<State, Action> = new Map();
+
+/**
+ * Helper function that does a deep comparison between two SearchOptions.
+ */
+function optionsChanged(
+    stored: SearchOptions|undefined, fresh: SearchOptions|undefined): boolean {
+  if (fresh === undefined) {
+    // If fresh options are undefined, that means keep the stored options. No
+    // matter what the stored options are, we are saying they have not changed.
+    return false;
+  }
+  if (stored === undefined) {
+    return true;
+  }
+  return fresh.location !== stored.location ||
+      fresh.recency !== stored.recency ||
+      fresh.fileCategory !== stored.fileCategory;
+}
+
+/** Action to update the search state. */
+export interface SearchAction extends BaseAction {
+  type: ActionType.SEARCH;
+  payload: SearchData;
+}
+
+function searchReducer(state: State, payload: SearchData): State {
+  const blankSearch = {
+    query: undefined,
+    status: undefined,
+    options: undefined,
+  };
+  // Special case: if none of the fields are set, the action clears the search
+  // state in the store.
+  if (Object.values(payload).every(field => field === undefined)) {
+    return {
+      ...state,
+      search: blankSearch,
+    };
+  }
+
+  const currentSearch = state.search || blankSearch;
+  // Create a clone of current search. We must not modify the original object,
+  // as store customers are free to cache it and check for changes. If we modify
+  // the original object the check for changes incorrectly return false.
+  const search: SearchData = {...currentSearch};
+  let changed = false;
+  if (payload.query !== undefined && payload.query !== currentSearch.query) {
+    search.query = payload.query;
+    changed = true;
+  }
+  if (payload.status !== undefined && payload.status !== currentSearch.status) {
+    search.status = payload.status;
+    changed = true;
+  }
+  if (optionsChanged(currentSearch.options, payload.options)) {
+    search.options = {...payload.options} as SearchOptions;
+    changed = true;
+  }
+  return changed ? {...state, search} : state;
+}
+
+const search = addReducer(
+    ActionType.SEARCH, searchReducer as Reducer<State, Action>,
+    searchReducerMap);
+
+/**
+ * Generates a search action based on the supplied data.
+ * Query, status and options can be adjusted independently of each other.
+ */
+export const updateSearch = (data: SearchData) => search({
+  query: data.query,
+  status: data.status,
+  options: data.options,
+});
+
+/**
+ * Clears all search settings.
+ */
+export const clearSearch = () => search({
+  query: undefined,
+  status: undefined,
+  options: undefined,
+});
+
+/**
+ * Search options to be used if the user did not specify their own.
+ */
+export function getDefaultSearchOptions(): SearchOptions {
+  return {
+    location: SearchLocation.THIS_FOLDER,
+    recency: SearchRecency.ANYTIME,
+    fileCategory: chrome.fileManagerPrivate.FileCategory.ALL,
+  } as SearchOptions;
+}

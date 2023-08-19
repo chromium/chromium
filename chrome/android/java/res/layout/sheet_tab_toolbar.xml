@@ -79,18 +79,16 @@ found in the LICENSE file.
 
         <RelativeLayout
             android:id="@+id/page_info"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toStartOf="@id/open_in_new_tab"
             android:layout_toEndOf="@id/favicon"
-            android:layout_marginBottom="6dp"
-            android:gravity="center">
+            android:layout_centerVertical="true">
 
             <TextView
                 android:id="@+id/title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:textAlignment="viewStart"
                 android:ellipsize="end"

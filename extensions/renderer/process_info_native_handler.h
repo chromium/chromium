@@ -5,8 +5,7 @@
 #ifndef EXTENSIONS_RENDERER_PROCESS_INFO_NATIVE_HANDLER_H_
 #define EXTENSIONS_RENDERER_PROCESS_INFO_NATIVE_HANDLER_H_
 
-#include <string>
-
+#include "extensions/common/extension_id.h"
 #include "extensions/renderer/object_backed_native_handler.h"
 
 namespace extensions {
@@ -26,7 +25,7 @@ class ProcessInfoNativeHandler : public ObjectBackedNativeHandler {
   void AddRoutes() override;
 
  private:
-  std::string extension_id_;
+  ExtensionId extension_id_;
 };
 
 }  // namespace extensions

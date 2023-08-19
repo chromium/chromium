@@ -34,10 +34,6 @@ WaylandOzoneUIControlsTestHelper::WaylandOzoneUIControlsTestHelper() {
 
 WaylandOzoneUIControlsTestHelper::~WaylandOzoneUIControlsTestHelper() = default;
 
-bool WaylandOzoneUIControlsTestHelper::Initialize() {
-  return input_emulate_->Initialize();
-}
-
 void WaylandOzoneUIControlsTestHelper::Reset() {
   // There's nothing to do here, as the both Exo and Weston automatically reset
   // the state when we close the connection.
@@ -68,7 +64,7 @@ void WaylandOzoneUIControlsTestHelper::SendKeyEvents(
     int key_event_types,
     int accelerator_state,
     base::OnceClosure closure) {
-  DCHECK(!(accelerator_state & ui_controls::kCommand))
+  CHECK(!(accelerator_state & ui_controls::kCommand))
       << "No Command key on Wayland";
 
   uint32_t request_id = GetNextRequestId();
@@ -129,6 +125,12 @@ bool WaylandOzoneUIControlsTestHelper::MustUseUiControlsForMoveCursorTo() {
 }
 
 void WaylandOzoneUIControlsTestHelper::RequestProcessed(uint32_t request_id) {
+  // The Wayland base protocol does not map cleanly onto ui_controls semantics.
+  // We need to wait for a Wayland round-trip to ensure that all side-effects
+  // have been processed. See https://crbug.com/1336706#c11 and
+  // https://crbug.com/1443374#c3 for details.
+  wl::WaylandProxy::GetInstance()->RoundTripQueue();
+
   if (base::Contains(pending_closures_, request_id)) {
     if (!pending_closures_[request_id].is_null()) {
       // PostTask to avoid re-entrancy.

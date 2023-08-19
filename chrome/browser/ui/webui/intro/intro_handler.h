@@ -12,11 +12,14 @@
 #include "content/public/browser/web_ui_message_handler.h"
 
 enum class IntroChoice;
+enum class DefaultBrowserChoice;
 
 class IntroHandler : public content::WebUIMessageHandler {
  public:
-  explicit IntroHandler(base::RepeatingCallback<void(IntroChoice)> callback,
-                        bool is_device_managed);
+  explicit IntroHandler(
+      base::RepeatingCallback<void(IntroChoice)> intro_callback,
+      base::OnceCallback<void(DefaultBrowserChoice)> default_browser_callback,
+      bool is_device_managed);
 
   IntroHandler(const IntroHandler&) = delete;
   IntroHandler& operator=(const IntroHandler&) = delete;
@@ -29,6 +32,7 @@ class IntroHandler : public content::WebUIMessageHandler {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   void ResetIntroButtons();
 #endif
+  void ResetDefaultBrowserButtons();
 
  private:
   // Handles "continueWithAccount" message from the page. No arguments.
@@ -46,6 +50,16 @@ class IntroHandler : public content::WebUIMessageHandler {
   // This message is sent when the view is created.
   void HandleInitializeMainView(const base::Value::List& args);
 
+  // Handles "setAsDefaultBrowser" message from the page. No arguments.
+  // This message is sent when the user confirms that they want to set Chrome as
+  // their default browser.
+  void HandleSetAsDefaultBrowser(const base::Value::List& args);
+
+  // Handles "skipDefaultBrowser" message from the page. No arguments.
+  // This message is sent when the user skips the prompt to set Chrome as their
+  // default browser.
+  void HandleSkipDefaultBrowser(const base::Value::List& args);
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Sends an updated profile info (avatar, domain etc..) to the WebUI.
   void UpdateProfileInfo();
@@ -55,7 +69,8 @@ class IntroHandler : public content::WebUIMessageHandler {
   // that will be caught and handled in the ts file.
   void FireManagedDisclaimerUpdate(std::string disclaimer);
 
-  const base::RepeatingCallback<void(IntroChoice)> callback_;
+  const base::RepeatingCallback<void(IntroChoice)> intro_callback_;
+  base::OnceCallback<void(DefaultBrowserChoice)> default_browser_callback_;
   const bool is_device_managed_ = false;
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   std::unique_ptr<policy::CloudPolicyStore::Observer> policy_store_observer_;

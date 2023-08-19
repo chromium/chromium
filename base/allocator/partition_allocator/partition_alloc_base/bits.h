@@ -7,13 +7,12 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_BITS_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_BITS_H_
 
-#include <climits>
 #include <cstddef>
 #include <cstdint>
 #include <type_traits>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/check.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
-#include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "build/build_config.h"
 
 namespace partition_alloc::internal::base::bits {
@@ -32,7 +31,7 @@ constexpr bool IsPowerOfTwo(T value) {
 
 // Round down |size| to a multiple of alignment, which must be a power of two.
 inline constexpr size_t AlignDown(size_t size, size_t alignment) {
-  PA_DCHECK(IsPowerOfTwo(alignment));
+  PA_BASE_DCHECK(IsPowerOfTwo(alignment));
   return size & ~(alignment - 1);
 }
 
@@ -46,7 +45,7 @@ inline T* AlignDown(T* ptr, size_t alignment) {
 
 // Round up |size| to a multiple of alignment, which must be a power of two.
 inline constexpr size_t AlignUp(size_t size, size_t alignment) {
-  PA_DCHECK(IsPowerOfTwo(alignment));
+  PA_BASE_DCHECK(IsPowerOfTwo(alignment));
   return (size + alignment - 1) & ~(alignment - 1);
 }
 
@@ -149,7 +148,7 @@ constexpr T LeftmostBit() {
   static_assert(std::is_integral<T>::value,
                 "This function can only be used with integral types.");
   T one(1u);
-  return one << ((CHAR_BIT * sizeof(T) - 1));
+  return one << (8 * sizeof(T) - 1);
 }
 
 }  // namespace partition_alloc::internal::base::bits

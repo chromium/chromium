@@ -21,12 +21,10 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingMetricsRecorder.UMA_KEYBOARD_ACCESSORY_ACTION_IMPRESSION;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingMetricsRecorder.UMA_KEYBOARD_ACCESSORY_TOGGLE_CLICKED;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingMetricsRecorder.UMA_KEYBOARD_ACCESSORY_TOGGLE_IMPRESSION;
-import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingMetricsRecorder.getHistogramForType;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.Type.FOOTER_COMMAND;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.Type.PASSWORD_INFO;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.Type.TITLE;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.getType;
-import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabMetricsRecorder.UMA_KEYBOARD_ACCESSORY_SHEET_SUGGESTIONS;
 
 import android.graphics.drawable.Drawable;
 
@@ -45,7 +43,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryAction;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryToggleType;
@@ -68,7 +65,6 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {CustomShadowAsyncTask.class})
-@Features.EnableFeatures(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)
 public class PasswordAccessorySheetControllerTest {
     @Rule
     public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
@@ -155,32 +151,6 @@ public class PasswordAccessorySheetControllerTest {
     }
 
     @Test
-    @Features.DisableFeatures(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)
-    public void testSplitsTabDataToList() {
-        final PropertyProvider<AccessorySheetData> testProvider = new PropertyProvider<>();
-        final AccessorySheetData testData =
-                new AccessorySheetData(AccessoryTabType.PASSWORDS, "Passwords for this site", "");
-        testData.getUserInfoList().add(new UserInfo("www.example.com", true));
-        testData.getUserInfoList().get(0).addField(
-                new UserInfoField("Name", "Name", "", false, null));
-        testData.getUserInfoList().get(0).addField(
-                new UserInfoField("Password", "Password for Name", "", true, field -> {}));
-        testData.getFooterCommands().add(new FooterCommand("Manage passwords", result -> {}));
-
-        mCoordinator.registerDataProvider(testProvider);
-        testProvider.notifyObservers(testData);
-
-        assertThat(mSheetDataPieces.size(), is(3));
-        assertThat(getType(mSheetDataPieces.get(0)), is(TITLE));
-        assertThat(getType(mSheetDataPieces.get(1)), is(PASSWORD_INFO));
-        assertThat(getType(mSheetDataPieces.get(2)), is(FOOTER_COMMAND));
-        assertThat(mSheetDataPieces.get(0).getDataPiece(), is(equalTo("Passwords for this site")));
-        assertThat(mSheetDataPieces.get(1).getDataPiece(), is(testData.getUserInfoList().get(0)));
-        assertThat(mSheetDataPieces.get(2).getDataPiece(), is(testData.getFooterCommands().get(0)));
-    }
-
-    @Test
-    @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)
     public void testUsesTabTitleOnlyForEmptyListsForModernDesign() {
         final PropertyProvider<AccessorySheetData> testProvider = new PropertyProvider<>();
         final AccessorySheetData testData =
@@ -275,47 +245,6 @@ public class PasswordAccessorySheetControllerTest {
     }
 
     @Test
-    public void testRecordsSuggestionsImpressionsWhenShown() {
-        final PropertyProvider<AccessorySheetData> testProvider = new PropertyProvider<>();
-        mCoordinator.registerDataProvider(testProvider);
-        assertThat(RecordHistogram.getHistogramTotalCountForTesting(
-                           UMA_KEYBOARD_ACCESSORY_SHEET_SUGGESTIONS),
-                is(0));
-        assertThat(getSuggestionsImpressions(AccessoryTabType.PASSWORDS, 0), is(0));
-        assertThat(getSuggestionsImpressions(AccessoryTabType.ALL, 0), is(0));
-
-        // If the tab is shown without interactive item, log "0" samples.
-        AccessorySheetData accessorySheetData =
-                new AccessorySheetData(AccessoryTabType.PASSWORDS, "No passwords!", "");
-        accessorySheetData.getFooterCommands().add(new FooterCommand("Manage all passwords", null));
-        accessorySheetData.getFooterCommands().add(new FooterCommand("Generate password", null));
-        testProvider.notifyObservers(accessorySheetData);
-        mCoordinator.onTabShown();
-
-        assertThat(getSuggestionsImpressions(AccessoryTabType.PASSWORDS, 0), is(1));
-        assertThat(getSuggestionsImpressions(AccessoryTabType.ALL, 0), is(1));
-
-        // If the tab is shown with X interactive item, record "X" samples.
-        UserInfo userInfo1 = new UserInfo("www.example.com", true);
-        userInfo1.addField(new UserInfoField("Interactive 1", "", "", false, (v) -> {}));
-        userInfo1.addField(new UserInfoField("Non-Interactive 1", "", "", true, null));
-        accessorySheetData.getUserInfoList().add(userInfo1);
-        UserInfo userInfo2 = new UserInfo("www.example.com", true);
-        userInfo2.addField(new UserInfoField("Interactive 2", "", "", false, (v) -> {}));
-        userInfo2.addField(new UserInfoField("Non-Interactive 2", "", "", true, null));
-        accessorySheetData.getUserInfoList().add(userInfo2);
-        UserInfo userInfo3 = new UserInfo("other.origin.eg", false);
-        userInfo3.addField(new UserInfoField("Interactive 3", "", "", false, (v) -> {}));
-        userInfo3.addField(new UserInfoField("Non-Interactive 3", "", "", true, null));
-        accessorySheetData.getUserInfoList().add(userInfo3);
-        testProvider.notifyObservers(accessorySheetData);
-        mCoordinator.onTabShown();
-
-        assertThat(getSuggestionsImpressions(AccessoryTabType.PASSWORDS, 3), is(1));
-        assertThat(getSuggestionsImpressions(AccessoryTabType.ALL, 3), is(1));
-    }
-
-    @Test
     public void testRecordsToggleOnImpressionsWhenShown() {
         assertThat(getToggleImpressions(AccessoryToggleType.SAVE_PASSWORDS_TOGGLE_ON), is(0));
         assertThat(getToggleImpressions(AccessoryToggleType.SAVE_PASSWORDS_TOGGLE_OFF), is(0));
@@ -386,11 +315,6 @@ public class PasswordAccessorySheetControllerTest {
     private int getActionImpressions(@AccessoryAction int bucket) {
         return RecordHistogram.getHistogramValueCountForTesting(
                 UMA_KEYBOARD_ACCESSORY_ACTION_IMPRESSION, bucket);
-    }
-
-    private int getSuggestionsImpressions(@AccessoryTabType int type, int sample) {
-        return RecordHistogram.getHistogramValueCountForTesting(
-                getHistogramForType(UMA_KEYBOARD_ACCESSORY_SHEET_SUGGESTIONS, type), sample);
     }
 
     private int getToggleImpressions(@AccessoryToggleType int bucket) {

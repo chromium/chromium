@@ -22,8 +22,8 @@
 #elif BUILDFLAG(IS_APPLE)
 #include <mach/vm_map.h>
 
-#include "base/mac/mach_logging.h"
-#include "base/mac/scoped_mach_port.h"
+#include "base/apple/mach_logging.h"
+#include "base/apple/scoped_mach_port.h"
 #endif
 
 #if BUILDFLAG(IS_POSIX)
@@ -72,17 +72,17 @@ zx::handle CloneHandle(const zx::handle& handle) {
   return std::move(dupe);
 }
 #elif BUILDFLAG(IS_APPLE)
-base::mac::ScopedMachSendRight CloneMachPort(
-    const base::mac::ScopedMachSendRight& mach_port) {
+base::apple::ScopedMachSendRight CloneMachPort(
+    const base::apple::ScopedMachSendRight& mach_port) {
   DCHECK(mach_port.is_valid());
 
   kern_return_t kr = mach_port_mod_refs(mach_task_self(), mach_port.get(),
                                         MACH_PORT_RIGHT_SEND, 1);
   if (kr != KERN_SUCCESS) {
     MACH_DLOG(ERROR, kr) << "mach_port_mod_refs";
-    return base::mac::ScopedMachSendRight();
+    return base::apple::ScopedMachSendRight();
   }
-  return base::mac::ScopedMachSendRight(mach_port.get());
+  return base::apple::ScopedMachSendRight(mach_port.get());
 }
 #endif
 
@@ -108,9 +108,9 @@ PlatformHandle::PlatformHandle(base::win::ScopedHandle handle)
 PlatformHandle::PlatformHandle(zx::handle handle)
     : type_(Type::kHandle), handle_(std::move(handle)) {}
 #elif BUILDFLAG(IS_APPLE)
-PlatformHandle::PlatformHandle(base::mac::ScopedMachSendRight mach_port)
+PlatformHandle::PlatformHandle(base::apple::ScopedMachSendRight mach_port)
     : type_(Type::kMachSend), mach_send_(std::move(mach_port)) {}
-PlatformHandle::PlatformHandle(base::mac::ScopedMachReceiveRight mach_port)
+PlatformHandle::PlatformHandle(base::apple::ScopedMachReceiveRight mach_port)
     : type_(Type::kMachReceive), mach_receive_(std::move(mach_port)) {}
 #endif
 
@@ -210,10 +210,10 @@ PlatformHandle PlatformHandle::FromMojoPlatformHandle(
     return PlatformHandle(zx::handle(handle->value));
 #elif BUILDFLAG(IS_APPLE)
   if (handle->type == MOJO_PLATFORM_HANDLE_TYPE_MACH_SEND_RIGHT) {
-    return PlatformHandle(base::mac::ScopedMachSendRight(
+    return PlatformHandle(base::apple::ScopedMachSendRight(
         static_cast<mach_port_t>(handle->value)));
   } else if (handle->type == MOJO_PLATFORM_HANDLE_TYPE_MACH_RECEIVE_RIGHT) {
-    return PlatformHandle(base::mac::ScopedMachReceiveRight(
+    return PlatformHandle(base::apple::ScopedMachReceiveRight(
         static_cast<mach_port_t>(handle->value)));
   }
 #endif

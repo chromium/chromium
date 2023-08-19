@@ -105,6 +105,7 @@ class SessionControllerClientImpl
   // user_manager::UserManager::Observer
   void LocalStateChanged(user_manager::UserManager* user_manager) override;
   void OnUserImageChanged(const user_manager::User& user) override;
+  void OnUserNotAllowed(const std::string& user_email) override;
 
   // session_manager::SessionManagerObserver:
   void OnSessionStateChanged() override;

@@ -537,6 +537,8 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
   // In case headers are overridden, keep the original and restore them
   // upon a redirect, so that overrides don't stick across redirects.
   std::unique_ptr<HeadersOverride> headers_override_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 void DevToolsURLLoaderInterceptor::CreateJob(
@@ -775,9 +777,9 @@ bool DevToolsURLLoaderInterceptor::CreateProxyForInterception(
       target_remote.InitWithNewPipeAndPassReceiver();
   mojo::PendingRemote<network::mojom::CookieManager> cookie_manager;
 
-  // TODO(ahemery): Using 0 as the process id for navigations can lead to
-  // collisions between multiple navigations/service workers main script fetch.
-  // It should be replaced by the more robust
+  // TODO(https://crbug.com/1467851): Using 0 as the process id for navigations
+  // can lead to collisions between multiple navigations/service workers main
+  // script fetch. It should be replaced by the more robust
   // GlobalRequestID::MakeBrowserInitiated().
   int process_id_override = process_id;
   if (is_navigation)
@@ -988,8 +990,8 @@ Response InterceptionJob::InnerContinueRequest(
   }
   waiting_for_resolution_ = false;
   TRACE_EVENT_NESTABLE_ASYNC_END0("devtools", "Fetch.requestPaused", this);
-  if (modifications->intercept_response.isJust()) {
-    if (modifications->intercept_response.fromJust()) {
+  if (modifications->intercept_response.has_value()) {
+    if (modifications->intercept_response.value()) {
       if (stage_ == InterceptionStage::REQUEST)
         stage_ = InterceptionStage::BOTH;
       else
@@ -1046,7 +1048,7 @@ Response InterceptionJob::InnerContinueRequest(
   }
 
   if (state_ == State::kFollowRedirect) {
-    if (!modifications->modified_url.isJust()) {
+    if (!modifications->modified_url.has_value()) {
       // TODO(caseq): report error if other modifications are present.
       state_ = State::kRequestSent;
       std::vector<std::string> removed_headers;
@@ -1073,8 +1075,8 @@ Response InterceptionJob::InnerContinueRequest(
   }
   if (state_ == State::kRedirectReceived) {
     // TODO(caseq): report error if other modifications are present.
-    if (modifications->modified_url.isJust()) {
-      std::string location = modifications->modified_url.fromJust();
+    if (modifications->modified_url.has_value()) {
+      std::string location = modifications->modified_url.value();
       CancelRequest();
       response_metadata_->head->headers->SetHeader("location", location);
       GURL redirect_url = create_loader_params_->request.url.Resolve(location);
@@ -1130,18 +1132,19 @@ void InterceptionJob::ApplyModificationsToRequest(
 
   // Note this redirect is not visible to the page by design. If they want a
   // visible redirect they can mock a response with a 302.
-  if (modifications->modified_url.isJust()) {
+  if (modifications->modified_url.has_value()) {
     DCHECK_EQ(url_chain_.back(), request->url);
-    const GURL new_url(modifications->modified_url.fromJust());
+    const GURL new_url(modifications->modified_url.value());
     request->url = new_url;
     url_chain_.back() = new_url;
   }
 
-  if (modifications->modified_method.isJust())
-    request->method = modifications->modified_method.fromJust();
+  if (modifications->modified_method.has_value()) {
+    request->method = modifications->modified_method.value();
+  }
 
-  if (modifications->modified_post_data.isJust()) {
-    const auto& post_data = modifications->modified_post_data.fromJust();
+  if (modifications->modified_post_data.has_value()) {
+    const auto& post_data = modifications->modified_post_data.value();
     request->request_body = network::ResourceRequestBody::CreateFromBytes(
         reinterpret_cast<const char*>(post_data.data()), post_data.size());
   }
@@ -1458,16 +1461,17 @@ void InterceptionJob::FetchCookies(
 
 void InterceptionJob::NotifyClient(
     std::unique_ptr<InterceptedRequestInfo> request_info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!waiting_for_resolution_);
   FetchCookies(base::BindOnce(&InterceptionJob::NotifyClientWithCookies,
-                              base::UnsafeDanglingUntriaged(this),
-                              std::move(request_info)));
+                              base::Unretained(this), std::move(request_info)));
 }
 
 void InterceptionJob::NotifyClientWithCookies(
     std::unique_ptr<InterceptedRequestInfo> request_info,
     const net::CookieAccessResultList& cookies_with_access_result,
     const net::CookieAccessResultList& excluded_cookies) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!interceptor_)
     return;
   std::string cookie_line;

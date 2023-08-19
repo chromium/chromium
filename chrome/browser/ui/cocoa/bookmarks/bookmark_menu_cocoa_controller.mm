@@ -4,7 +4,7 @@
 
 #import "chrome/browser/ui/cocoa/bookmarks/bookmark_menu_cocoa_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/sys_string_conversions.h"
@@ -150,7 +150,8 @@ void OpenBookmarkByGUID(WindowOpenDisposition disposition,
 }  // namespace
 
 @implementation BookmarkMenuCocoaController {
-  raw_ptr<BookmarkMenuBridge, DanglingUntriaged> _bridge;  // Weak. Owns |self|.
+  raw_ptr<BookmarkMenuBridge, AcrossTasksDanglingUntriaged>
+      _bridge;  // Weak. Owns |self|.
 }
 
 + (NSString*)tooltipForNode:(const BookmarkNode*)node {

@@ -561,78 +561,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
   EXPECT_FALSE(controller.GetEntryAtIndex(1)->should_skip_on_back_forward_ui());
 }
 
-class NavigationControllerDebugHistoryInterventionNoUserActivation
-    : public NavigationControllerHistoryInterventionBrowserTest {
- protected:
-  void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        features::kDebugHistoryInterventionNoUserActivation);
-    NavigationControllerHistoryInterventionBrowserTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Tests that if a navigation entry is marked as skippable due to pushState then
-// the flag is not reset even if there is a user gesture on this document, when
-// the debug flag is enabled. This is to check the case where there wasn't
-// actually a user gesture but one is being reported somehow.
-// (See crbug.com/1201355)
-IN_PROC_BROWSER_TEST_P(
-    NavigationControllerDebugHistoryInterventionNoUserActivation,
-    OnUserGestureDoNotResetSameDocumentEntriesSkipFlag) {
-  GURL skippable_url(embedded_test_server()->GetURL("/frame_tree/top.html"));
-  EXPECT_TRUE(NavigateToURL(shell(), skippable_url));
-
-  // It is safe to obtain the root frame tree node here, as it doesn't change.
-  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetPrimaryFrameTree()
-                            .root();
-
-  EXPECT_FALSE(root->HasStickyUserActivation());
-  EXPECT_FALSE(root->HasTransientUserActivation());
-
-  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
-      shell()->web_contents()->GetController());
-
-  // Redirect to another page without a user gesture.
-  GURL redirected_url(embedded_test_server()->GetURL("/empty.html"));
-  EXPECT_TRUE(
-      NavigateToURLFromRendererWithoutUserGesture(shell(), redirected_url));
-  // Last entry should have been marked as skippable.
-  EXPECT_TRUE(controller.GetEntryAtIndex(0)->should_skip_on_back_forward_ui());
-
-  // Use the pushState API to add another entry without user gesture.
-  GURL push_state_url1(embedded_test_server()->GetURL("/title1.html"));
-  std::string script("history.pushState('', '','" + push_state_url1.spec() +
-                     "');");
-  EXPECT_TRUE(
-      ExecJs(shell()->web_contents(), script, EXECUTE_SCRIPT_NO_USER_GESTURE));
-
-  EXPECT_EQ(2, controller.GetCurrentEntryIndex());
-  EXPECT_EQ(2, controller.GetLastCommittedEntryIndex());
-
-  // We now have
-  // [skippable_url(skip), redirected_url(skip), push_state_url1*]
-  EXPECT_TRUE(controller.GetEntryAtIndex(1)->should_skip_on_back_forward_ui());
-  EXPECT_FALSE(
-      controller.GetLastCommittedEntry()->should_skip_on_back_forward_ui());
-
-  EXPECT_EQ(skippable_url, controller.GetEntryAtIndex(0)->GetURL());
-  EXPECT_EQ(redirected_url, controller.GetEntryAtIndex(1)->GetURL());
-  EXPECT_EQ(push_state_url1, controller.GetEntryAtIndex(2)->GetURL());
-
-  // Simulate a user gesture. ExecJs internally also sends a user
-  // gesture. The skippable bit for [1] should not have changed because of the
-  // DebugHistoryInterventionNoUserActivation flag.
-  script = "a=5";
-  EXPECT_TRUE(content::ExecJs(shell()->web_contents(), script));
-
-  EXPECT_TRUE(controller.GetEntryAtIndex(1)->should_skip_on_back_forward_ui());
-  EXPECT_TRUE(controller.GetEntryAtIndex(0)->should_skip_on_back_forward_ui());
-}
-
 // Tests that if a navigation entry is marked as skippable due to redirect to a
 // new document then the flag should not be reset if there is a user gesture on
 // the new document.
@@ -1414,12 +1342,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     NavigationControllerHistoryInterventionBrowserTest,
-    testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
-                     testing::Bool()),
-    NavigationControllerHistoryInterventionBrowserTest::DescribeParams);
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    NavigationControllerDebugHistoryInterventionNoUserActivation,
     testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
                      testing::Bool()),
     NavigationControllerHistoryInterventionBrowserTest::DescribeParams);

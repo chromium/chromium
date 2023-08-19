@@ -58,6 +58,7 @@ import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -77,7 +78,6 @@ import java.util.Locale;
 public class FeedSurfaceMediator
         implements FeedSurfaceScrollDelegate, TouchEnabledDelegate, TemplateUrlServiceObserver,
                    ListMenu.Delegate, IdentityManager.Observer, OptionChangedListener {
-    private static final String TAG = "FeedSurfaceMediator";
     private static final int INTEREST_FEED_HEADER_POSITION = 0;
 
     private class FeedSurfaceHeaderSelectedCallback implements OnSectionHeaderSelectedListener {
@@ -178,7 +178,6 @@ public class FeedSurfaceMediator
         }
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public static void setPrefForTest(
             PrefChangeRegistrar prefChangeRegistrar, PrefService prefService) {
         sTestPrefChangeRegistar = prefChangeRegistrar;
@@ -290,7 +289,7 @@ public class FeedSurfaceMediator
     private void updateLayout(boolean isSmallLayoutWidth) {
         ListLayoutHelper listLayoutHelper =
                 mCoordinator.getHybridListRenderer().getListLayoutHelper();
-        if (!FeedFeatures.isMultiColumnFeedEnabled(mContext) || listLayoutHelper == null
+        if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext) || listLayoutHelper == null
                 || mCurrentStream == null) {
             return;
         }
@@ -347,7 +346,6 @@ public class FeedSurfaceMediator
         mTemplateUrlService.removeObserver(this);
     }
 
-    @VisibleForTesting
     public void destroyForTesting() {
         destroy();
     }
@@ -703,7 +701,6 @@ public class FeedSurfaceMediator
         return mCurrentStream == null ? false : mCurrentStream.isPlaceholderShown();
     }
 
-    @VisibleForTesting
     Stream getCurrentStreamForTesting() {
         return mCurrentStream;
     }
@@ -941,19 +938,11 @@ public class FeedSurfaceMediator
                         R.id.ntp_feed_header_menu_item_activity, iconId));
                 itemList.add(buildMenuListItem(R.string.ntp_manage_interests,
                         R.id.ntp_feed_header_menu_item_interest, iconId));
-                if (FeedServiceBridge.isAutoplayEnabled()) {
-                    itemList.add(buildMenuListItem(R.string.ntp_manage_autoplay,
-                            R.id.ntp_feed_header_menu_item_autoplay, iconId));
-                }
                 if (ChromeFeatureList.isEnabled(ChromeFeatureList.INTEREST_FEED_V2_HEARTS)) {
                     itemList.add(buildMenuListItem(R.string.ntp_manage_reactions,
                             R.id.ntp_feed_header_menu_item_reactions, iconId));
                 }
             }
-        } else if (FeedServiceBridge.isAutoplayEnabled()) {
-            // Show manage autoplay if not signed in.
-            itemList.add(buildMenuListItem(
-                    R.string.ntp_manage_autoplay, R.id.ntp_feed_header_menu_item_autoplay, iconId));
         }
         itemList.add(buildMenuListItem(
                 R.string.learn_more, R.id.ntp_feed_header_menu_item_learn, iconId));
@@ -1123,9 +1112,6 @@ public class FeedSurfaceMediator
             FeedServiceBridge.reportOtherUserAction(
                     feedType, FeedUserActionType.TAPPED_MANAGE_REACTIONS);
             FeedUma.recordFeedControlsAction(FeedUma.CONTROLS_ACTION_CLICKED_MANAGE_INTERESTS);
-        } else if (itemId == R.id.ntp_feed_header_menu_item_autoplay) {
-            mCoordinator.launchAutoplaySettings();
-            FeedUma.recordFeedControlsAction(FeedUma.CONTROLS_ACTION_CLICKED_MANAGE_AUTOPLAY);
         } else if (itemId == R.id.ntp_feed_header_menu_item_learn) {
             mActionDelegate.openHelpPage();
             FeedServiceBridge.reportOtherUserAction(feedType, FeedUserActionType.TAPPED_LEARN_MORE);
@@ -1145,7 +1131,6 @@ public class FeedSurfaceMediator
         updateSectionHeader();
     }
 
-    @VisibleForTesting
     public SignInPromo getSignInPromoForTesting() {
         return mSignInPromo;
     }
@@ -1238,7 +1223,6 @@ public class FeedSurfaceMediator
         return getPrefService().getBoolean(Pref.ARTICLES_LIST_VISIBLE);
     }
 
-    @VisibleForTesting
     OnSectionHeaderSelectedListener getOrCreateSectionHeaderListenerForTesting() {
         OnSectionHeaderSelectedListener listener =
                 mSectionHeaderModel.get(SectionHeaderListProperties.ON_TAB_SELECTED_CALLBACK_KEY);
@@ -1248,12 +1232,10 @@ public class FeedSurfaceMediator
         return listener;
     }
 
-    @VisibleForTesting
     void setStreamForTesting(int key, Stream stream) {
         mTabToStreamMap.put(key, stream);
     }
 
-    @VisibleForTesting
     int getTabToStreamSizeForTesting() {
         return mTabToStreamMap.size();
     }

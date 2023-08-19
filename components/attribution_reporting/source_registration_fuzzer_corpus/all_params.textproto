@@ -48,6 +48,14 @@ object_value {
     }
   }
   field {
+    name: "max_event_level_reports"
+    value {
+      int_value {
+        value: 5
+      }
+    }
+  }
+  field {
     name: "debug_key"
     value {
       string_value {

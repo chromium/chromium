@@ -16,7 +16,6 @@ namespace switches {
 #if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(UI_BASE) extern const char kDisableOverscrollEdgeEffect[];
 COMPONENT_EXPORT(UI_BASE) extern const char kDisablePullToRefreshEffect[];
-COMPONENT_EXPORT(UI_BASE) extern const char kUseToastManager[];
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -26,6 +25,14 @@ COMPONENT_EXPORT(UI_BASE) extern const char kShowMacOverlayBorders[];
 
 #if BUILDFLAG(IS_CHROMEOS)
 COMPONENT_EXPORT(UI_BASE) extern const char kEnableResourcesFileSharing[];
+#endif
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+COMPONENT_EXPORT(UI_BASE) extern const char kSystemFontFamily[];
+#endif
+
+#if BUILDFLAG(IS_LINUX)
+COMPONENT_EXPORT(UI_BASE) extern const char kUiToolkitFlag[];
 #endif
 
 COMPONENT_EXPORT(UI_BASE) extern const char kDisableCompositedAntialiasing[];

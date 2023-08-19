@@ -32,8 +32,7 @@ class DesktopBrowserFrameLacros : public DesktopBrowserFrameAura {
   void TabDraggingKindChanged(TabDragKind tab_drag_kind) override;
 
  private:
-  raw_ptr<BrowserDesktopWindowTreeHostLacros, DanglingUntriaged> host_ =
-      nullptr;
+  raw_ptr<BrowserDesktopWindowTreeHostLacros> host_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_DESKTOP_BROWSER_FRAME_LACROS_H_

@@ -75,7 +75,7 @@ class FencedFramesPageLoadMetricsObserverTest
     NavigateAndCommit(GURL(kSetUpUrl));
   }
 
-  raw_ptr<FencedFramesPageLoadMetricsObserver> observer_;
+  raw_ptr<FencedFramesPageLoadMetricsObserver, DanglingUntriaged> observer_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

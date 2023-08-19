@@ -11,38 +11,8 @@
 
 namespace vr {
 
-struct VR_UI_EXPORT ButtonColors {
-  bool operator==(const ButtonColors& other) const;
-  bool operator!=(const ButtonColors& other) const;
-
-  SkColor GetBackgroundColor(bool hovered, bool pressed) const;
-  SkColor GetForegroundColor(bool disabled) const;
-
-  SkColor background = SK_ColorTRANSPARENT;
-  SkColor background_hover = SK_ColorTRANSPARENT;
-  SkColor background_down = SK_ColorTRANSPARENT;
-  SkColor foreground = SK_ColorBLACK;
-  SkColor foreground_disabled = SK_ColorBLACK;
-};
-
-struct VR_UI_EXPORT TextSelectionColors {
-  bool operator==(const TextSelectionColors& other) const;
-  bool operator!=(const TextSelectionColors& other) const;
-  SkColor cursor = SK_ColorBLACK;
-  SkColor background = SK_ColorBLACK;
-  SkColor foreground = SK_ColorBLACK;
-};
-
 struct VR_UI_EXPORT ColorScheme {
-  enum Mode : int {
-    kModeNormal = 0,
-    kModeFullscreen,
-    kModeIncognito,
-    kNumModes,
-  };
-
-  static const ColorScheme& GetColorScheme(Mode mode);
-  static void UpdateForComponent(const base::Version& component_version);
+  static const ColorScheme& GetColorScheme();
 
   ColorScheme();
   ColorScheme(const ColorScheme& other);
@@ -59,8 +29,6 @@ struct VR_UI_EXPORT ColorScheme {
   SkColor web_vr_floor_edge;
   SkColor web_vr_floor_grid;
 
-  ButtonColors disc_button_colors;
-
   // Specific element background and foregrounds
   SkColor loading_indicator_foreground;
   SkColor loading_indicator_background;
@@ -73,28 +41,20 @@ struct VR_UI_EXPORT ColorScheme {
   SkColor modal_prompt_icon_foreground;
   SkColor modal_prompt_background;
   SkColor modal_prompt_foreground;
-  ButtonColors modal_prompt_secondary_button_colors;
-  ButtonColors modal_prompt_primary_button_colors;
 
   // The colors used for text and buttons on prompts.
   SkColor prompt_foreground;
-  ButtonColors prompt_secondary_button_colors;
-  ButtonColors prompt_primary_button_colors;
 
   SkColor url_bar_background;
   SkColor url_bar_separator;
   SkColor url_bar_text;
   SkColor url_bar_hint_text;
   SkColor url_bar_dangerous_icon;
-  ButtonColors url_bar_button;
   SkColor url_text_emphasized;
   SkColor url_text_deemphasized;
   SkColor menu_text;
   SkColor omnibox_background;
-  TextSelectionColors omnibox_text_selection;
   SkColor hyperlink;
-
-  ButtonColors indicator;
 
   SkColor dimmer_outer;
   SkColor dimmer_inner;
@@ -110,7 +70,6 @@ struct VR_UI_EXPORT ColorScheme {
 
   SkColor snackbar_background;
   SkColor snackbar_foreground;
-  ButtonColors snackbar_button_colors;
 
   SkColor controller_label_callout;
   SkColor controller_button;
@@ -129,13 +88,6 @@ struct VR_UI_EXPORT ColorScheme {
 
   SkColor webvr_permission_background;
   SkColor webvr_permission_foreground;
-
-  // These are used for blending between colors that are available only in
-  // shaders. They are, as you might expect, one for a given mode, but zero
-  // otherwise.
-  float normal_factor = 0.0f;
-  float incognito_factor = 0.0f;
-  float fullscreen_factor = 0.0f;
 };
 
 }  // namespace vr

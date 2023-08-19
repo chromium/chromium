@@ -11,6 +11,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/session_context.h"
+#include "chromeos/ash/components/quick_start/types.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-shared.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -30,7 +32,7 @@ struct FidoAssertionInfo;
 class TargetDeviceConnectionBroker {
  public:
   using ResultCallback = base::OnceCallback<void(bool success)>;
-  using SharedSecret = std::array<uint8_t, 32>;
+  using SharedSecret = SessionContext::SharedSecret;
 
   enum class FeatureSupportStatus {
     kUndetermined = 0,
@@ -87,12 +89,16 @@ class TargetDeviceConnectionBroker {
     // This object's client must provide a "challenge" to be sent to the remote
     // source device.
     virtual void RequestAccountTransferAssertion(
-        const std::string& challenge_b64url,
+        const Base64UrlString& challenge,
         RequestAccountTransferAssertionCallback callback) = 0;
 
     // Wait for the user to perform verification, and return if it succeeded
     virtual void WaitForUserVerification(
         AwaitUserVerificationCallback callback) = 0;
+
+    // Exposes SessionContext::GetPrepareForUpdateInfo() to the
+    // AuthenticatedConnection caller.
+    virtual base::Value::Dict GetPrepareForUpdateInfo() = 0;
 
     // Retrieve CryptAuth ID from BootstrapConfigurations response.
     std::string get_phone_instance_id() { return phone_instance_id_; }
@@ -122,15 +128,6 @@ class TargetDeviceConnectionBroker {
     // that the user can check that the codes match, thereby authenticating the
     // connection.
     virtual void OnPinVerificationRequested(const std::string& pin) = 0;
-
-    // A connection has been initiated between this target device and the remote
-    // source device, but needs to be authenticated before messages can be
-    // exchanged. The source device has requested that the QR code be displayed
-    // so that the user can scan the code. After scanning, the source device
-    // will accept the connection, and a cryptographic handshake using a secret
-    // contained in the QR code will be used to authenticate the connection.
-    virtual void OnQRCodeVerificationRequested(
-        const std::vector<uint8_t>& qr_code_data) = 0;
 
     // Called after both sides have accepted the connection.
     //
@@ -197,13 +194,6 @@ class TargetDeviceConnectionBroker {
   virtual void StopAdvertising(
       base::OnceClosure on_stop_advertising_callback) = 0;
 
-  // Returns Dict that can be persisted to a local state Dict pref if the target
-  // device is going to update. This Dict contains the RandomSessionId and
-  // secondary SharedSecret represented as base64-encoded strings. These values
-  // are needed to resume the Quick Start connection after the target device
-  // reboots.
-  virtual base::Value::Dict GetPrepareForUpdateInfo() = 0;
-
   // Gets the 3 digits of the discoverable name. e.g.: Chromebook (123)
   virtual std::string GetSessionIdDisplayCode() = 0;
 
@@ -214,14 +204,12 @@ class TargetDeviceConnectionBroker {
 
   void OnConnectionClosed(ConnectionClosedReason reason);
 
-  // Returns a deep link URL as a vector of bytes that will form the QR code
-  // used to authenticate the connection.
-  std::vector<uint8_t> GetQrCodeData(const RandomSessionId& random_session_id,
-                                     const SharedSecret shared_secret) const;
-
   // Derive a 4-digit decimal pin code from the authentication token. This is
   // meant to match the Android implementation found here:
   // http://google3/java/com/google/android/gmscore/integ/modules/smartdevice/src/com/google/android/gms/smartdevice/d2d/nearby/advertisement/VerificationUtils.java;l=37;rcl=511361463
+  // Since the PIN is derived from the auth token, this PIN cannot be calculated
+  // until the connection is initiated between this target device and the remote
+  // source device.
   std::string DerivePin(const std::string& authentication_token) const;
 
   // Determines whether the advertisement info sent to the source device will

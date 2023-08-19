@@ -95,7 +95,7 @@ class CupsPrintJobManager : public KeyedService {
   void NotifyJobFailed(base::WeakPtr<CupsPrintJob> job);
   void NotifyJobDone(base::WeakPtr<CupsPrintJob> job);
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
 
  private:
   friend class crosapi::TestControllerAsh;

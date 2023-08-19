@@ -12,24 +12,29 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "components/omnibox/common/omnibox_features.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/page_info/core/features.h"
 #include "components/page_info/page_info.h"
 #include "components/page_info/page_info_ui_delegate.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_manager.h"
-#include "components/permissions/permission_result.h"
 #include "components/permissions/permission_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/security_interstitials/core/common_string_util.h"
 #include "components/strings/grit/components_chromium_strings.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/url_formatter/elide_url.h"
+#include "content/public/browser/permission_result.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/device/public/cpp/device_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/l10n/time_format.h"
 #include "url/gurl.h"
+#include "url/origin.h"
+
 #if BUILDFLAG(IS_ANDROID)
 #include "components/resources/android/theme_resources.h"
 #else
@@ -368,8 +373,6 @@ std::u16string GetPermissionAskStateString(ContentSettingsType type) {
 
 }  // namespace
 
-PageInfoUI::CookieInfo::CookieInfo() : allowed(-1), blocked(-1) {}
-
 PageInfoUI::CookiesNewInfo::CookiesNewInfo() = default;
 
 PageInfoUI::CookiesNewInfo::~CookiesNewInfo() = default;
@@ -546,10 +549,7 @@ PageInfoUI::GetSecurityDescription(const IdentityInfo& identity_info) const {
 
           auto description = CreateSecurityDescription(
               SecuritySummaryColor::GREEN, IDS_PAGE_INFO_SECURE_SUMMARY,
-              base::FeatureList::IsEnabled(
-                  omnibox::kUpdatedConnectionSecurityIndicators)
-                  ? IDS_PAGE_INFO_SECURE_DETAILS_V2
-                  : IDS_PAGE_INFO_SECURE_DETAILS,
+              IDS_PAGE_INFO_SECURE_DETAILS,
               SecurityDescriptionType::CONNECTION);
           if (identity_info.identity_status ==
               PageInfo::SITE_IDENTITY_STATUS_ADMIN_PROVIDED_CERT) {
@@ -592,6 +592,25 @@ std::u16string PageInfoUI::PermissionTypeToUIStringMidSentence(
   }
   NOTREACHED();
   return std::u16string();
+}
+
+// static
+std::u16string PageInfoUI::PermissionTooltipUiString(
+    ContentSettingsType type,
+    const absl::optional<url::Origin>& requesting_origin) {
+  switch (type) {
+    case ContentSettingsType::STORAGE_ACCESS:
+      return l10n_util::GetStringFUTF16(
+          IDS_PAGE_INFO_SELECTOR_STORAGE_ACCESS_TOOLTIP,
+          url_formatter::FormatOriginForSecurityDisplay(
+              *requesting_origin,
+              url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
+    default:
+      DCHECK(!requesting_origin.has_value());
+      return l10n_util::GetStringFUTF16(
+          IDS_PAGE_INFO_SELECTOR_TOOLTIP,
+          PageInfoUI::PermissionTypeToUIString(type));
+  }
 }
 
 // static
@@ -734,7 +753,25 @@ std::u16string PageInfoUI::PermissionMainPageStateToUIString(
     return PermissionStateToUIString(delegate, permission);
   }
 
-  return std::u16string();
+  if (permission.is_in_use) {
+    return l10n_util::GetStringUTF16(IDS_PAGE_INFO_PERMISSION_USING_NOW);
+  }
+
+  if (permission.setting != CONTENT_SETTING_ALLOW ||
+      permission.last_used == base::Time()) {
+    return std::u16string();
+  }
+
+  base::TimeDelta time_delta = base::Time::Now() - permission.last_used;
+  if (time_delta < base::Minutes(1)) {
+    return l10n_util::GetStringUTF16(IDS_PAGE_INFO_PERMISSION_RECENTLY_USED);
+  }
+
+  std::u16string used_time_string =
+      ui::TimeFormat::Simple(ui::TimeFormat::Format::FORMAT_DURATION,
+                             ui::TimeFormat::Length::LENGTH_LONG, time_delta);
+  return l10n_util::GetStringFUTF16(IDS_PAGE_INFO_PERMISSION_USED_TIME_AGO,
+                                    used_time_string);
 }
 
 // static
@@ -769,26 +806,25 @@ std::u16string PageInfoUI::PermissionAutoBlockedToUIString(
   if (permission.setting == CONTENT_SETTING_BLOCK &&
       permissions::PermissionDecisionAutoBlocker::IsEnabledForContentSetting(
           permission.type)) {
-    permissions::PermissionResult permission_result(
-        CONTENT_SETTING_DEFAULT,
-        permissions::PermissionStatusSource::UNSPECIFIED);
+    content::PermissionResult permission_result(
+        PermissionStatus::ASK, content::PermissionStatusSource::UNSPECIFIED);
     if (permissions::PermissionUtil::IsPermission(permission.type)) {
       blink::PermissionType permission_type =
           permissions::PermissionUtil::ContentSettingTypeToPermissionType(
               permission.type);
       permission_result = delegate->GetPermissionResult(permission_type);
     } else if (permission.type == ContentSettingsType::FEDERATED_IDENTITY_API) {
-      absl::optional<permissions::PermissionResult> embargo_result =
+      absl::optional<content::PermissionResult> embargo_result =
           delegate->GetEmbargoResult(permission.type);
       if (embargo_result)
         permission_result = *embargo_result;
     }
 
     switch (permission_result.source) {
-      case permissions::PermissionStatusSource::MULTIPLE_DISMISSALS:
+      case content::PermissionStatusSource::MULTIPLE_DISMISSALS:
         message_id = IDS_PAGE_INFO_PERMISSION_AUTOMATICALLY_BLOCKED;
         break;
-      case permissions::PermissionStatusSource::MULTIPLE_IGNORES:
+      case content::PermissionStatusSource::MULTIPLE_IGNORES:
         message_id = IDS_PAGE_INFO_PERMISSION_AUTOMATICALLY_BLOCKED;
         break;
       default:
@@ -820,6 +856,7 @@ void PageInfoUI::ToggleBetweenAllowAndBlock(
     case CONTENT_SETTING_DEFAULT: {
       CreateOppositeToDefaultSiteException(permission,
                                            opposite_to_block_setting);
+
       // If one-time permissions are supported, permission should go from
       // default state to allow once state, not directly to allow.
       if (permissions::PermissionUtil::CanPermissionBeAllowedOnce(

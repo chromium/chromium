@@ -268,7 +268,7 @@ bool TouchEmulator::HandleTouchEvent(const blink::WebTouchEvent& event) {
   if (emulated_stream_active_sequence_count_)
     return true;
 
-  bool is_sequence_start = WebTouchEventTraits::IsTouchSequenceStart(event);
+  bool is_sequence_start = event.IsTouchSequenceStart();
   // Do not allow middle-sequence event to pass through, if start was blocked.
   if (!native_stream_active_sequence_count_ && !is_sequence_start)
     return true;
@@ -297,7 +297,7 @@ bool TouchEmulator::HandleEmulatedTouchEvent(
     return true;
   }
 
-  bool is_sequence_start = WebTouchEventTraits::IsTouchSequenceStart(event);
+  bool is_sequence_start = event.IsTouchSequenceStart();
   // Do not allow middle-sequence event to pass through, if start was blocked.
   if (!emulated_stream_active_sequence_count_ && !is_sequence_start) {
     gesture_provider_->OnTouchEventAck(event.unique_touch_event_id,
@@ -319,7 +319,7 @@ bool TouchEmulator::HandleEmulatedTouchEvent(
 bool TouchEmulator::HandleTouchEventAck(
     const blink::WebTouchEvent& event,
     blink::mojom::InputEventResultState ack_result) {
-  bool is_sequence_end = WebTouchEventTraits::IsTouchSequenceEnd(event);
+  bool is_sequence_end = event.IsTouchSequenceEnd();
   if (emulated_stream_active_sequence_count_) {
     if (is_sequence_end)
       emulated_stream_active_sequence_count_--;
@@ -330,7 +330,7 @@ bool TouchEmulator::HandleTouchEventAck(
     if (gesture_provider_) {
       gesture_provider_->OnTouchEventAck(
           event.unique_touch_event_id, event_consumed,
-          InputEventResultStateIsSetNonBlocking(ack_result));
+          InputEventResultStateIsSetBlocking(ack_result));
     }
     if (pending_taps_count_ == taps_count_before)
       OnInjectedTouchCompleted();

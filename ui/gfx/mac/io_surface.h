@@ -9,7 +9,7 @@
 #include <IOSurface/IOSurfaceRef.h>
 #include <mach/mach.h>
 
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/generic_shared_memory_id.h"
@@ -52,10 +52,16 @@ using IOSurfaceId = GenericSharedMemoryId;
 // whereas for non-GL backends (Dawn and Metal) we want the formats to match.
 // TODO(sunnyps): Revisit this when we switch to ANGLE Metal completely since
 // wrapping RGBA_8888 can be implemented with Metal quite easily.
-GFX_EXPORT IOSurfaceRef CreateIOSurface(const Size& size,
-                                        BufferFormat format,
-                                        bool should_clear = true,
-                                        bool override_rgba_to_bgra = true);
+GFX_EXPORT base::ScopedCFTypeRef<IOSurfaceRef> CreateIOSurface(
+    const Size& size,
+    BufferFormat format,
+    bool should_clear = true,
+#if BUILDFLAG(IS_IOS)
+    bool override_rgba_to_bgra = false
+#else
+    bool override_rgba_to_bgra = true
+#endif
+);
 
 // A scoper for handling Mach port names that are send rights for IOSurfaces.
 // This scoper is both copyable and assignable, which will increase the kernel

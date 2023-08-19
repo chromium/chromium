@@ -23,8 +23,13 @@ RadioButton::RadioButton(int button_width,
                          const std::u16string& label,
                          IconDirection icon_direction,
                          IconType icon_type,
-                         const gfx::Insets& insets)
-    : OptionButtonBase(button_width, std::move(callback), label, insets),
+                         const gfx::Insets& insets,
+                         int image_label_spacing)
+    : OptionButtonBase(button_width,
+                       std::move(callback),
+                       label,
+                       insets,
+                       image_label_spacing),
       icon_direction_(icon_direction),
       icon_type_(icon_type) {}
 

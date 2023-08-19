@@ -1,0 +1,58 @@
+<!doctype html>
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
+<head>
+  <title>$i18n{testTitle}</title>
+  <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
+  <style>
+    #import-policies-file-input {
+      display:none;
+    }
+
+    p {
+      font-size: 100%;
+    }
+
+    button {
+      padding: 5px;
+      margin-right: 5px;
+      border: 1px solid rgba(0, 0, 0, .06);
+      margin-top: 5px;
+    }
+
+    button:hover {
+      filter: brightness(90%);
+    }
+
+    button:active {
+      filter: brightness(85%);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>$i18n{testTitle}</h1>
+  </header>
+  <div id="top-buttons">
+    <button id="restart-browser">$i18n{testRestart}</button>
+    <button id="apply-policies">$i18n{testApply}</button>
+    <button id="import-policies-json">
+      <label>
+        <input type="file" id="import-policies-file-input" accept=".json"></input>
+        $i18n{testImport}
+      </label>
+    </button>
+    <button id="export-policies-json">$i18n{exportPoliciesJSON}</button>
+    <button id="revert-applied-policies" disabled>
+      $i18n{testRevertAppliedPolicies}
+    </button>
+    <button id="clear-policies">$i18n{testClearPolicies}</button>
+    <label>
+      <input type="checkbox" id="user-affiliated" checked></input>
+      $i18n{testUserAffiliated}
+    </label>
+  </div>
+  <p>$i18n{testDesc}</p>
+  <policy-test-table id="policy-test-table"></policy-test-table>
+</body>
+<script type="module" src="/test/policy_test.js"></script>
+</html>

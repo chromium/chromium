@@ -20,17 +20,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 
 import {fakeSigninBlockedByPolicyData, TestAuthenticator, TestInlineLoginBrowserProxy} from './inline_login_test_util.js';
 
-const inline_login_signin_blocked_by_policy_page_test = {
-  suiteName: 'InlineLoginSigninBlockedByPolicyPageTest',
-  TestNames: {
-    BlockedSigninPage: 'BlockedSigninPage',
-    FireWebUIListenerCallback: 'FireWebUIListenerCallback',
-    OkButton: 'OkButton',
-  },
-};
-Object.assign(window, {inline_login_signin_blocked_by_policy_page_test});
-
-suite(inline_login_signin_blocked_by_policy_page_test.suiteName, () => {
+suite('InlineLoginSigninBlockedByPolicyPageTest', () => {
   let signinBlockedByPolicyPageComponent: SigninBlockedByPolicyPageElement;
   let inlineLoginComponent: InlineLoginAppElement;
   let testBrowserProxy: TestInlineLoginBrowserProxy;
@@ -59,100 +49,89 @@ suite(inline_login_signin_blocked_by_policy_page_test.suiteName, () => {
             'signin-blocked-by-policy-page')!;
   }
 
-  test(
-      inline_login_signin_blocked_by_policy_page_test.TestNames
-          .BlockedSigninPage,
-      () => {
-        testSetup(/*dialogArgs=*/ null);
-        // Fire web UI listener to switch the ui view to
-        // `signinBlockedByPolicy`.
-        webUIListenerCallback(
-            'show-signin-error-page', fakeSigninBlockedByPolicyData);
-        assertEquals(
-            View.SIGNIN_BLOCKED_BY_POLICY, getActiveViewId(),
-            'Sing-in blocked by policy page should be shown');
+  test('BlockedSigninPage', () => {
+    testSetup(/*dialogArgs=*/ null);
+    // Fire web UI listener to switch the ui view to
+    // `signinBlockedByPolicy`.
+    webUIListenerCallback(
+        'show-signin-error-page', fakeSigninBlockedByPolicyData);
+    assertEquals(
+        View.SIGNIN_BLOCKED_BY_POLICY, getActiveViewId(),
+        'Sing-in blocked by policy page should be shown');
 
-        const title =
-            signinBlockedByPolicyPageComponent.shadowRoot!.querySelector('h1');
-        assertTrue(!!title);
-        assertEquals(
-            title.textContent, 'Can\'t sign in with this account',
-            'The titles do not match');
-        const textBody = signinBlockedByPolicyPageComponent.shadowRoot!
-                             .querySelector<HTMLElement>('.secondary');
-        assertTrue(!!textBody);
-        assertEquals(
-            textBody.textContent!,
-            'john.doe@example.com is managed by example.com. You can\'t add ' +
-                'this email as an additional account.\n    To use ' +
-                'john.doe@example.com, first sign out of your Chromebook. ' +
-                'Then at the bottom of the login screen, select Add Person.',
-            'The text bodies do not match');
-      });
+    const title =
+        signinBlockedByPolicyPageComponent.shadowRoot!.querySelector('h1');
+    assertTrue(!!title);
+    assertEquals(
+        title.textContent, 'Can\'t sign in with this account',
+        'The titles do not match');
+    const textBody = signinBlockedByPolicyPageComponent.shadowRoot!
+                         .querySelector<HTMLElement>('.secondary');
+    assertTrue(!!textBody);
+    assertEquals(
+        textBody.textContent!,
+        'john.doe@example.com is managed by example.com. You can\'t add ' +
+            'this email as an additional account.\n    To use ' +
+            'john.doe@example.com, first sign out of your Chromebook. ' +
+            'Then at the bottom of the login screen, select Add Person.',
+        'The text bodies do not match');
+  });
 
-  test(
-      inline_login_signin_blocked_by_policy_page_test.TestNames
-          .FireWebUIListenerCallback,
-      () => {
-        testSetup(/*dialogArgs=*/ null);
-        // Fire web UI listener to switch the ui view to
-        // `signinBlockedByPolicy`.
-        webUIListenerCallback(
-            'show-signin-error-page', fakeSigninBlockedByPolicyData);
-        assertEquals(
-            View.SIGNIN_BLOCKED_BY_POLICY, getActiveViewId(),
-            'Sing-in blocked by policy should be shown');
-        let textBody = signinBlockedByPolicyPageComponent.shadowRoot!
-                           .querySelector<HTMLElement>('.secondary');
-        assertTrue(!!textBody);
-        assertTrue(
-            textBody.textContent!.includes('john.doe@example.com'),
-            'Invalid user email');
-        assertTrue(
-            textBody.textContent!.includes('example.com'),
-            'Invalid hosted domain');
-        assertTrue(
-            textBody.textContent!.includes('Chromebook'),
-            'Invalid device type');
-        webUIListenerCallback('show-signin-error-page', {
-          email: 'coyote@acme.com',
-          hostedDomain: 'acme.com',
-          deviceType: 'Chromebox',
-          signinBlockedByPolicy: true,
-        });
-        textBody = signinBlockedByPolicyPageComponent.shadowRoot!
+  test('FireWebUIListenerCallback', () => {
+    testSetup(/*dialogArgs=*/ null);
+    // Fire web UI listener to switch the ui view to
+    // `signinBlockedByPolicy`.
+    webUIListenerCallback(
+        'show-signin-error-page', fakeSigninBlockedByPolicyData);
+    assertEquals(
+        View.SIGNIN_BLOCKED_BY_POLICY, getActiveViewId(),
+        'Sing-in blocked by policy should be shown');
+    let textBody = signinBlockedByPolicyPageComponent.shadowRoot!
                        .querySelector<HTMLElement>('.secondary');
-        assertTrue(!!textBody);
-        assertTrue(
-            textBody.textContent!.includes('coyote@acme.com'),
-            'Invalid user email');
-        assertTrue(
-            textBody.textContent!.includes('acme.com'),
-            'Invalid hosted domain');
-        assertTrue(
-            textBody.textContent!.includes('Chromebox'), 'Invalid device type');
-      });
+    assertTrue(!!textBody);
+    assertTrue(
+        textBody.textContent!.includes('john.doe@example.com'),
+        'Invalid user email');
+    assertTrue(
+        textBody.textContent!.includes('example.com'), 'Invalid hosted domain');
+    assertTrue(
+        textBody.textContent!.includes('Chromebook'), 'Invalid device type');
+    webUIListenerCallback('show-signin-error-page', {
+      email: 'coyote@acme.com',
+      hostedDomain: 'acme.com',
+      deviceType: 'Chromebox',
+      signinBlockedByPolicy: true,
+    });
+    textBody = signinBlockedByPolicyPageComponent.shadowRoot!
+                   .querySelector<HTMLElement>('.secondary');
+    assertTrue(!!textBody);
+    assertTrue(
+        textBody.textContent!.includes('coyote@acme.com'),
+        'Invalid user email');
+    assertTrue(
+        textBody.textContent!.includes('acme.com'), 'Invalid hosted domain');
+    assertTrue(
+        textBody.textContent!.includes('Chromebox'), 'Invalid device type');
+  });
 
-  test(
-      inline_login_signin_blocked_by_policy_page_test.TestNames.OkButton,
-      async () => {
-        testSetup(/*dialogArgs=*/ null);
-        // Fire web UI listener to switch the ui view to
-        // `signinBlockedByPolicy`.
-        webUIListenerCallback(
-            'show-signin-error-page', fakeSigninBlockedByPolicyData);
+  test('OkButton', async () => {
+    testSetup(/*dialogArgs=*/ null);
+    // Fire web UI listener to switch the ui view to
+    // `signinBlockedByPolicy`.
+    webUIListenerCallback(
+        'show-signin-error-page', fakeSigninBlockedByPolicyData);
 
-        const okButton =
-            inlineLoginComponent.shadowRoot!.querySelector<HTMLElement>(
-                '.next-button');
-        assertTrue(!!okButton);
-        // OK button and signin blocked by policy screen should be visible.
-        assertFalse(okButton.hidden, 'OK button should be visible');
-        assertEquals(
-            View.SIGNIN_BLOCKED_BY_POLICY, getActiveViewId(),
-            'Sing-in blocked by policy should be shown');
+    const okButton =
+        inlineLoginComponent.shadowRoot!.querySelector<HTMLElement>(
+            '.next-button');
+    assertTrue(!!okButton);
+    // OK button and signin blocked by policy screen should be visible.
+    assertFalse(okButton.hidden, 'OK button should be visible');
+    assertEquals(
+        View.SIGNIN_BLOCKED_BY_POLICY, getActiveViewId(),
+        'Sing-in blocked by policy should be shown');
 
-        okButton.click();
-        await testBrowserProxy.whenCalled('dialogClose');
-      });
+    okButton.click();
+    await testBrowserProxy.whenCalled('dialogClose');
+  });
 });

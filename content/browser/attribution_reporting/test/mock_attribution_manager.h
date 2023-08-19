@@ -9,15 +9,11 @@
 
 #include <memory>
 #include <set>
-#include <string>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
-#include "components/attribution_reporting/source_registration_error.mojom-forward.h"
-#include "components/attribution_reporting/source_type.mojom-forward.h"
-#include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
@@ -85,15 +81,6 @@ class MockAttributionManager : public AttributionManager {
               (override));
 
   MOCK_METHOD(void,
-              NotifyFailedSourceRegistration,
-              (const std::string& header_value,
-               const attribution_reporting::SuitableOrigin& source_origin,
-               const attribution_reporting::SuitableOrigin& reporting_origin,
-               attribution_reporting::mojom::SourceType,
-               attribution_reporting::mojom::SourceRegistrationError),
-              (override));
-
-  MOCK_METHOD(void,
               GetAllDataKeys,
               (base::OnceCallback<void(std::set<DataKey>)>),
               (override));
@@ -106,6 +93,11 @@ class MockAttributionManager : public AttributionManager {
   MOCK_METHOD(void,
               HandleOsRegistration,
               (OsRegistration, GlobalRenderFrameHostId),
+              (override));
+
+  MOCK_METHOD(void,
+              SetDebugMode,
+              (absl::optional<bool> enabled, base::OnceClosure done),
               (override));
 
   void AddObserver(AttributionObserver*) override;
@@ -125,12 +117,6 @@ class MockAttributionManager : public AttributionManager {
       const AttributionTrigger&,
       const CreateReportResult&,
       absl::optional<uint64_t> cleared_debug_key = absl::nullopt);
-  void NotifySourceRegistrationFailure(
-      const std::string& header_value,
-      const attribution_reporting::SuitableOrigin& source_origin,
-      const attribution_reporting::SuitableOrigin& reporting_origin,
-      attribution_reporting::mojom::SourceType,
-      attribution_reporting::mojom::SourceRegistrationError);
   void NotifyDebugReportSent(const AttributionDebugReport&,
                              int status,
                              base::Time);

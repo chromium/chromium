@@ -18,10 +18,31 @@ enum class IntroChoice {
   kQuit,
 };
 
+// This is also used for logging, so do not remove or reorder existing entries.
+enum class DefaultBrowserChoice {
+  // The user set Chrome as their default browser.
+  kSetAsDefault = 0,
+  // The user skipped the prompt to set Chrome as their default browser.
+  kSkip = 1,
+  // The user exited the first run flow while on the prompt to set Chrome as
+  // their default browser.
+  kQuit = 2,
+  // The prompt was not shown due to a timeout when checking if the browser is
+  // already default.
+  kNotShownOnTimeout = 3,
+  // Add any new values above this one, and update kMaxValue to the highest
+  // enumerator value.
+  kMaxValue = kNotShownOnTimeout
+};
+
 // Callback specification for `SetSigninChoiceCallback()`.
 using IntroSigninChoiceCallback =
     base::StrongAlias<class IntroSigninChoiceCallbackTag,
                       base::OnceCallback<void(IntroChoice)>>;
+
+using DefaultBrowserCallback =
+    base::StrongAlias<class DefaultBrowserCallbackTag,
+                      base::OnceCallback<void(DefaultBrowserChoice)>>;
 
 // The WebUI controller for `chrome://intro`.
 // Drops user inputs until a callback to receive the next one is provided by
@@ -36,13 +57,16 @@ class IntroUI : public content::WebUIController {
   ~IntroUI() override;
 
   void SetSigninChoiceCallback(IntroSigninChoiceCallback callback);
+  void SetDefaultBrowserCallback(DefaultBrowserCallback callback);
 
  private:
   friend class ProfilePickerLacrosFirstRunBrowserTestBase;
 
   void HandleSigninChoice(IntroChoice choice);
+  void HandleDefaultBrowserChoice(DefaultBrowserChoice choice);
 
   IntroSigninChoiceCallback signin_choice_callback_;
+  DefaultBrowserCallback default_browser_callback_;
   raw_ptr<IntroHandler> intro_handler_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();

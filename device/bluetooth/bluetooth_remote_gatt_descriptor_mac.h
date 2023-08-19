@@ -5,17 +5,14 @@
 #ifndef DEVICE_BLUETOOTH_BLUETOOTH_REMOTE_GATT_DESCRIPTOR_MAC_H_
 #define DEVICE_BLUETOOTH_BLUETOOTH_REMOTE_GATT_DESCRIPTOR_MAC_H_
 
-#include "base/memory/raw_ptr.h"
 #include "device/bluetooth/bluetooth_remote_gatt_descriptor.h"
+
+#import <CoreBluetooth/CoreBluetooth.h>
 
 #include <vector>
 
-#include "base/mac/scoped_nsobject.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-
-#if defined(__OBJC__)
-#import <CoreBluetooth/CoreBluetooth.h>
-#endif  // defined(__OBJC__)
 
 namespace device {
 
@@ -66,7 +63,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattDescriptorMac
   // gatt_characteristic_ owns instances of this class.
   raw_ptr<BluetoothRemoteGattCharacteristicMac> gatt_characteristic_;
   // Descriptor from CoreBluetooth.
-  base::scoped_nsobject<CBDescriptor> cb_descriptor_;
+  CBDescriptor* __strong cb_descriptor_;
   // Descriptor identifier.
   std::string identifier_;
   // Descriptor UUID.

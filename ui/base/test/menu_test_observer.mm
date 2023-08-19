@@ -16,9 +16,9 @@
 
 - (instancetype)initWithMenu:(NSMenu*)menu {
   if ((self = [super init])) {
-    _menu = [menu retain];
+    _menu = menu;
 
-    NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+    NSNotificationCenter* center = NSNotificationCenter.defaultCenter;
     [center addObserver:self
                selector:@selector(menuDidBeginTracking:)
                    name:NSMenuDidBeginTrackingNotification
@@ -32,10 +32,7 @@
 }
 
 - (void)dealloc {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [_menu release];
-  [_openCallback release];
-  [super dealloc];
+  [NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 - (void)menuDidBeginTracking:(NSNotification*)notif {

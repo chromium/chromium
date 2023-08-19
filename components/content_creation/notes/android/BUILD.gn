@@ -6,6 +6,7 @@ import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 
 android_library("java") {
+  srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/components/content_creation/notes/NoteService.java",
     "java/src/org/chromium/components/content_creation/notes/bridges/NoteServiceBridge.java",
@@ -32,7 +33,6 @@ android_library("java") {
   ]
 
   resources_package = "org.chromium.components.content_creation.notes"
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 generate_jni("jni_headers") {

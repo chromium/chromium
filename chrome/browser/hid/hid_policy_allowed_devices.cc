@@ -29,7 +29,12 @@ constexpr char kPrefVendorIdKey[] = "vendor_id";
 
 }  // namespace
 
-HidPolicyAllowedDevices::HidPolicyAllowedDevices(PrefService* pref_service) {
+HidPolicyAllowedDevices::HidPolicyAllowedDevices(PrefService* pref_service,
+                                                 bool on_login_screen)
+    : allow_devices_for_urls_pref_name_(
+          on_login_screen
+              ? prefs::kManagedWebHidAllowDevicesForUrlsOnLoginScreen
+              : prefs::kManagedWebHidAllowDevicesForUrls) {
   pref_change_registrar_.Init(pref_service);
   // The lifetime of |pref_change_registrar_| is managed by this class so it is
   // safe to use base::Unretained here.
@@ -39,7 +44,7 @@ HidPolicyAllowedDevices::HidPolicyAllowedDevices(PrefService* pref_service) {
           &HidPolicyAllowedDevices::LoadAllowAllDevicesForUrlsPolicy,
           base::Unretained(this)));
   pref_change_registrar_.Add(
-      prefs::kManagedWebHidAllowDevicesForUrls,
+      allow_devices_for_urls_pref_name_,
       base::BindRepeating(
           &HidPolicyAllowedDevices::LoadAllowDevicesForUrlsPolicy,
           base::Unretained(this)));
@@ -61,6 +66,8 @@ void HidPolicyAllowedDevices::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterListPref(prefs::kManagedWebHidAllowAllDevicesForUrls);
   registry->RegisterListPref(prefs::kManagedWebHidAllowDevicesForUrls);
+  registry->RegisterListPref(
+      prefs::kManagedWebHidAllowDevicesForUrlsOnLoginScreen);
   registry->RegisterListPref(
       prefs::kManagedWebHidAllowDevicesWithHidUsagesForUrls);
 }
@@ -121,7 +128,7 @@ void HidPolicyAllowedDevices::LoadAllowDevicesForUrlsPolicy() {
   vendor_policy_.clear();
 
   const auto& pref_value = pref_change_registrar_.prefs()->GetList(
-      prefs::kManagedWebHidAllowDevicesForUrls);
+      allow_devices_for_urls_pref_name_);
 
   // The pref value has already been validated by the policy handler, so it is
   // safe to assume that |pref_value| follows the policy template.

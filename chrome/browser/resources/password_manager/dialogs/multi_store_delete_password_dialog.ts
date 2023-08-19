@@ -95,7 +95,7 @@ export class MultiStoreDeletePasswordDialogElement extends
     } else {
       assert(this.removeFromDeviceChecked_);
     }
-    PasswordManagerImpl.getInstance().removeSavedPassword(
+    PasswordManagerImpl.getInstance().removeCredential(
         this.duplicatedPassword.id, fromStores);
     this.dispatchEvent(new CustomEvent('password-removed', {
       bubbles: true,

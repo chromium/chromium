@@ -104,7 +104,7 @@ bool GinJavaBoundObject::IsObjectGetClassMethod(const JavaMethod* method) {
   jmethodID get_class_method_id =
       base::android::MethodID::LazyGet<base::android::MethodID::TYPE_INSTANCE>(
           env, java_lang_Object_clazz(env), "getClass", "()Ljava/lang/Class;",
-          &JNI_Object::g_java_lang_Object_getClass);
+          &JNI_Object::g_java_lang_Object_getClass0);
   return method->id() == get_class_method_id;
 }
 

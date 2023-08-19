@@ -103,8 +103,7 @@ public class ChromePaymentRequestFactory implements InterfaceFactory<PaymentRequ
         }
 
         @Override
-        @Nullable
-        public String getTwaPackageName() {
+        public @Nullable String getTwaPackageName() {
             WebContents liveWebContents =
                     PaymentRequestServiceUtil.getLiveWebContents(mRenderFrameHost);
             if (liveWebContents == null) return null;
@@ -127,7 +126,6 @@ public class ChromePaymentRequestFactory implements InterfaceFactory<PaymentRequ
     }
 
     /** Set an observer for the payment request service, cannot be null. */
-    @VisibleForTesting
     public static void setChromePaymentRequestDelegateImplObserverForTest(
             ChromePaymentRequestDelegateImplObserverForTest observer) {
         assert observer != null;

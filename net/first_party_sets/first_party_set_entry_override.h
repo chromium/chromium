@@ -45,7 +45,7 @@ class NET_EXPORT FirstPartySetEntryOverride {
   // Returns the new target entry, if this override is not a deletion. Must not
   // be called if `IsDeletion()` is true.
   const FirstPartySetEntry& GetEntry() const {
-    DCHECK(!IsDeletion());
+    CHECK(!IsDeletion());
     return entry_.value();
   }
 

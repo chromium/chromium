@@ -11,6 +11,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ObserverList;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
@@ -209,9 +210,9 @@ public class FontSizePrefs {
     /**
      * Sets a mock value for the system-wide font scale. Use only in tests.
      */
-    @VisibleForTesting
     public void setSystemFontScaleForTest(float fontScale) {
         mSystemFontScaleForTests = fontScale;
+        ResettersForTesting.register(() -> mSystemFontScaleForTests = null);
     }
 
     private float getSystemFontScale() {

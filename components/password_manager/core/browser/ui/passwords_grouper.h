@@ -10,6 +10,7 @@
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/ui/affiliated_group.h"
+#include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 
 namespace password_manager {
 
@@ -47,12 +48,18 @@ class PasswordsGrouper {
   // Returns all the credentials (excluding blocked sites) in a vector.
   std::vector<CredentialUIEntry> GetAllCredentials() const;
 
-  // Returns blocked sites.
+  // Returns blocked sites. Blocked sites aren't grouped using affiliation info,
+  // only deduplicated.
   std::vector<CredentialUIEntry> GetBlockedSites() const;
 
   // Returns PasswordForm corresponding to 'credential'.
   std::vector<PasswordForm> GetPasswordFormsFor(
       const CredentialUIEntry& credential) const;
+
+  // Returns the passkey corresponding to the given |credential| entry. If there
+  // is no corresponding entry, returns absl::nullopt.
+  absl::optional<PasskeyCredential> GetPasskeyFor(
+      const CredentialUIEntry& credential);
 
   void ClearCache();
 
@@ -99,9 +106,9 @@ class PasswordsGrouper {
   // passwords and passkeys.
   std::map<GroupId, Credentials> map_group_id_to_credentials_;
 
-  // Structure to keep track of the blocked sites by user. They are not grouped
-  // into affiliated groups.
-  std::vector<PasswordForm> blocked_sites_;
+  // Structure to keep track of the blocked sites by user. Key represents a name
+  // displayed in the UI.
+  std::map<std::string, std::vector<PasswordForm>> blocked_sites_;
 
   // The set of domains that the server uses as an extension to the PSL.
   base::flat_set<std::string> psl_extensions_;

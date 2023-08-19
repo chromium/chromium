@@ -697,7 +697,7 @@ TEST_F(MapCoordinatesTest, FixedPosInIFrameWhenMainFrameScrolled) {
       ScrollOffset(0.0, 1000), mojom::blink::ScrollType::kProgrammatic);
   UpdateAllLifecyclePhasesForTest();
 
-  Element* target = ChildDocument().getElementById("target");
+  Element* target = ChildDocument().getElementById(AtomicString("target"));
   ASSERT_TRUE(target);
   PhysicalOffset mapped_point =
       MapAncestorToLocal(target->GetLayoutObject(), nullptr,
@@ -728,7 +728,7 @@ TEST_F(MapCoordinatesTest, IFrameTransformed) {
       ScrollOffset(0.0, 1000), mojom::blink::ScrollType::kProgrammatic);
   ChildDocument().View()->UpdateAllLifecyclePhasesForTest();
 
-  Element* target = ChildDocument().getElementById("target");
+  Element* target = ChildDocument().getElementById(AtomicString("target"));
   ASSERT_TRUE(target);
   PhysicalOffset mapped_point =
       MapAncestorToLocal(target->GetLayoutObject(), nullptr,
@@ -764,7 +764,7 @@ TEST_F(MapCoordinatesTest, FixedPosInScrolledIFrameWithTransform) {
       ScrollOffset(0.0, 1000), mojom::blink::ScrollType::kProgrammatic);
   UpdateAllLifecyclePhasesForTest();
 
-  Element* target = ChildDocument().getElementById("target");
+  Element* target = ChildDocument().getElementById(AtomicString("target"));
   ASSERT_TRUE(target);
   PhysicalOffset mapped_point =
       MapAncestorToLocal(target->GetLayoutObject(), nullptr,

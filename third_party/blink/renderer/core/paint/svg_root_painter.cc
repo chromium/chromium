@@ -14,8 +14,23 @@
 #include "third_party/blink/renderer/core/paint/scoped_svg_paint_state.h"
 #include "third_party/blink/renderer/core/paint/svg_foreign_object_painter.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
+
+namespace {
+
+bool ShouldApplySnappingScaleAdjustment(const LayoutSVGRoot& layout_svg_root) {
+  // If the RuntimeEnabledFeatures flag isn't set then apply scale adjustment.
+  if (!RuntimeEnabledFeatures::SvgNoPixelSnappingScaleAdjustmentEnabled()) {
+    return true;
+  }
+  // Apply scale adjustment if the SVG root is the document root - i.e it is
+  // not an inline SVG.
+  return layout_svg_root.IsDocumentElement();
+}
+
+}  // namespace
 
 gfx::Rect SVGRootPainter::PixelSnappedSize(
     const PhysicalOffset& paint_offset) const {
@@ -28,11 +43,13 @@ AffineTransform SVGRootPainter::TransformToPixelSnappedBorderBox(
   const gfx::Rect snapped_size = PixelSnappedSize(paint_offset);
   AffineTransform paint_offset_to_border_box =
       AffineTransform::Translation(snapped_size.x(), snapped_size.y());
-  LayoutSize size = layout_svg_root_.Size();
-  if (!size.IsEmpty()) {
-    paint_offset_to_border_box.Scale(
-        snapped_size.width() / size.Width().ToFloat(),
-        snapped_size.height() / size.Height().ToFloat());
+  if (ShouldApplySnappingScaleAdjustment(layout_svg_root_)) {
+    PhysicalSize size = layout_svg_root_.Size();
+    if (!size.IsEmpty()) {
+      paint_offset_to_border_box.Scale(
+          snapped_size.width() / size.width.ToFloat(),
+          snapped_size.height() / size.height.ToFloat());
+    }
   }
   paint_offset_to_border_box.PreConcat(
       layout_svg_root_.LocalToBorderBoxTransform());

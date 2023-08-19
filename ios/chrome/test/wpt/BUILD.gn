@@ -10,7 +10,7 @@ import("//ios/chrome/test/xcuitest/ios_chrome_xcuitest_app_host.gni")
 import("//ios/public/provider/chrome/browser/build_config.gni")
 import("//testing/test.gni")
 
-script_test("wpt_tests_ios") {
+script_test("chrome_ios_wpt") {
   script = "//third_party/blink/tools/run_wpt_tests.py"
   args = [
     "--product",
@@ -19,8 +19,8 @@ script_test("wpt_tests_ios") {
     "Release",
     "--zero-tests-executed-ok",
 
-    # TODO(crbug.com/1351820): Enable more tests to run.
-    "/css/css-transforms/",
+    # TODO(crbug.com/1351820): Enable more tests to run, update the dependency to third_party/blink/tools build file.
+    "external/wpt/css/css-transforms/",
   ]
   deps = [ ":all_tests" ]
   data = [
@@ -33,7 +33,8 @@ script_test("wpt_tests_ios") {
     "//third_party/blink/web_tests/resources/testdriver-vendor.js",
     "//third_party/blink/web_tests/wptrunner.blink.ini",
     "//third_party/blink/web_tests/FlagSpecificConfig",
-    "//third_party/blink/web_tests/SmokeTests/",
+    "//third_party/blink/web_tests/TestLists/",
+    "//third_party/blink/web_tests/VirtualTestSuites",
     "//.vpython3",
   ]
   data_deps = [
@@ -124,7 +125,6 @@ source_set("cwt_constants") {
 
 source_set("app_support") {
   testonly = true
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   sources = [
     "cwt_stderr_logger.h",
@@ -137,6 +137,7 @@ source_set("app_support") {
     ":cwt_constants",
     "//base",
     "//base/test:test_support",
+    "//components/signin/internal/identity_manager",
     "//ios/chrome/app:app_internal",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/shared/model/browser",
@@ -155,10 +156,7 @@ source_set("app_support") {
 
 source_set("cwt_chromedriver_tests") {
   testonly = true
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
 
   sources = [
     "cwt_chrome_driver.mm",

@@ -106,7 +106,6 @@ base::SingleThreadTaskRunner* MainThread::GetWorkerTaskRunner() {
       (worker_task_runner_ && worker_task_runner_->BelongsToCurrentThread()));
   if (!worker_task_runner_) {
     base::Thread::Options options;
-    options.timer_slack = base::TIMER_SLACK_NONE;
     options.thread_type = base::ThreadType::kRealtimeAudio;
     CHECK(worker_thread_.StartWithOptions(std::move(options)));
     worker_task_runner_ = worker_thread_.task_runner();

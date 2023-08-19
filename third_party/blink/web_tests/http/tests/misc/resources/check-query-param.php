@@ -25,7 +25,7 @@ function runTest()
 <p>
 This test is for <a href="http://bugs.webkit.org/show_bug.cgi?id=21635">bug 21635</a>. The query parameter in non-UTF-8 Unicode pages (UTF-7,16,32) should be converted to UTF-8 before a request is made to a server.
 </p>
-<div style='display: none;' id='output'><?php echo $_REQUEST{'q'}; ?></div>
+<div style='display: none;' id='output'><?php $q = $_REQUEST['q'] ?? ''; echo $q; ?></div>
 <div id="result"></div>
 </body>
 </html>

@@ -6,19 +6,18 @@ package org.chromium.chrome.browser.image_descriptions;
 
 import android.content.Context;
 
-import androidx.annotation.VisibleForTesting;
-
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.ConnectionType;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.widget.Toast;
 
@@ -97,9 +96,10 @@ public class ImageDescriptionsController {
      * Set the ImageDescriptionsControllerDelegate delegate one time, used for testing purposes.
      * @param delegate      The new ImageDescriptionsControllerDelegate delegate to use.
      */
-    @VisibleForTesting
     public void setDelegateForTesting(ImageDescriptionsControllerDelegate delegate) {
+        var oldValue = this.mDelegate;
         this.mDelegate = delegate;
+        ResettersForTesting.register(() -> this.mDelegate = oldValue);
     }
 
     /**
@@ -162,7 +162,7 @@ public class ImageDescriptionsController {
     }
 
     public boolean shouldShowImageDescriptionsMenuItem() {
-        return ChromeAccessibilityUtil.get().isTouchExplorationEnabled();
+        return AccessibilityState.isScreenReaderEnabled();
     }
 
     public boolean imageDescriptionsEnabled(Profile profile) {

@@ -6,6 +6,7 @@
 
 #include <ostream>  // Needed to compile NOTREACHED() with operator <<.
 #include <set>
+#include <string>
 #include <utility>
 
 #include "base/check_op.h"
@@ -397,7 +398,7 @@ SqliteLoggedResultCode ToSqliteLoggedResultCode(int sqlite_result_code) {
   return logged_code;
 }
 
-void UmaHistogramSqliteResult(const char* histogram_name,
+void UmaHistogramSqliteResult(const std::string& histogram_name,
                               int sqlite_result_code) {
   auto logged_code = ToSqliteLoggedResultCode(sqlite_result_code);
   base::UmaHistogramEnumeration(histogram_name, logged_code);

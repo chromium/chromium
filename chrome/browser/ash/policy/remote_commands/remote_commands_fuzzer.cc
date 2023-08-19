@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/policy/remote_commands/device_command_screenshot_job.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_set_volume_job.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_start_crd_session_job.h"
+#include "chrome/browser/ash/policy/remote_commands/fake_start_crd_session_job_delegate.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
@@ -32,7 +33,7 @@ namespace policy {
 
 namespace {
 
-constexpr logging::LogSeverity kLogSeverity = logging::LOG_FATAL;
+constexpr logging::LogSeverity kLogSeverity = logging::LOGGING_FATAL;
 
 // A log handler that discards messages whose severity is lower than the
 // threshold. It's needed in order to suppress unneeded syslog logging (which by
@@ -74,18 +75,6 @@ class StubDeviceCommandScreenshotJobDelegate
   }
 };
 
-class StubDeviceCommandStartCrdSessionJobDelegate
-    : public DeviceCommandStartCrdSessionJob::Delegate {
- public:
-  bool HasActiveSession() const override { return false; }
-  void TerminateSession(base::OnceClosure) override {}
-  void StartCrdHostAndGetCode(
-      const SessionParameters&,
-      DeviceCommandStartCrdSessionJob::AccessCodeCallback,
-      DeviceCommandStartCrdSessionJob::ErrorCallback,
-      DeviceCommandStartCrdSessionJob::SessionEndCallback) override {}
-};
-
 }  // namespace
 
 // Fuzzer for command payload parsers in RemoteCommandJob subclasses.
@@ -97,9 +86,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   DeviceCommandScreenshotJob screenshot_job(
       std::make_unique<StubDeviceCommandScreenshotJobDelegate>());
   DeviceCommandSetVolumeJob set_volume_job;
-  StubDeviceCommandStartCrdSessionJobDelegate start_crd_session_job_delegate;
+  FakeStartCrdSessionJobDelegate start_crd_session_job_delegate;
   DeviceCommandStartCrdSessionJob start_crd_session_job(
-      &start_crd_session_job_delegate);
+      start_crd_session_job_delegate);
   DeviceCommandRunRoutineJob run_routine_job;
   DeviceCommandGetRoutineUpdateJob get_routine_update_job;
   std::initializer_list<RemoteCommandJob* const> jobs = {

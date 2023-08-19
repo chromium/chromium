@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright 2023 The Chromium Authors
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+-->
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:minHeight="@dimen/bookmark_minimum_dialog_size_tablet" >
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolbar_height_no_shadow"
+        style="@style/ModernToolbar" />
+
+    <org.chromium.components.browser_ui.widget.FadingShadowView
+        android:id="@+id/shadow"
+        app:layout_constraintTop_toTopOf="@id/toolbar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/bookmark_dialog_toolbar_shadow_height"
+        android:layout_marginTop="@dimen/toolbar_height_no_shadow" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/folder_recycler_view"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/button_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="4dp"
+        android:clipToPadding="true"
+        android:scrollbars="vertical"
+        android:layout_marginTop="@dimen/toolbar_height_no_shadow"
+        android:layout_marginBottom="@dimen/bookmark_folder_picker_button_container_height" />
+
+    <LinearLayout
+        android:id="@+id/button_container"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/bookmark_folder_picker_button_container_height"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:orientation="horizontal"
+        android:paddingHorizontal="20dp"
+        android:gravity="center|end">
+
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/cancel_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:focusable="true"
+            style="@style/TextButton"
+            android:text="@string/folder_picker_cancel" />
+
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/move_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:focusable="true"
+            style="@style/FilledButton"
+            android:text="@string/folder_picker_move_here" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

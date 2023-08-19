@@ -20,8 +20,8 @@ KioskSessionInitializedWaiter::KioskSessionInitializedWaiter() {
 KioskSessionInitializedWaiter::~KioskSessionInitializedWaiter() = default;
 
 void KioskSessionInitializedWaiter::Wait() {
-  if (KioskAppManager::Get()->app_session() ||
-      WebKioskAppManager::Get()->app_session()) {
+  if (KioskAppManager::Get()->kiosk_system_session() ||
+      WebKioskAppManager::Get()->kiosk_system_session()) {
     return;
   }
 
@@ -39,18 +39,5 @@ ScopedDeviceSettings::ScopedDeviceSettings() : settings_helper_(false) {
 }
 
 ScopedDeviceSettings::~ScopedDeviceSettings() = default;
-
-ScopedCanConfigureNetwork::ScopedCanConfigureNetwork(bool can_configure)
-    : can_configure_(can_configure),
-      can_configure_network_callback_(
-          base::BindRepeating(&ScopedCanConfigureNetwork::CanConfigureNetwork,
-                              base::Unretained(this))) {
-  NetworkUiController::SetCanConfigureNetworkCallbackForTesting(
-      &can_configure_network_callback_);
-}
-
-ScopedCanConfigureNetwork::~ScopedCanConfigureNetwork() {
-  NetworkUiController::SetCanConfigureNetworkCallbackForTesting(nullptr);
-}
 
 }  // namespace ash

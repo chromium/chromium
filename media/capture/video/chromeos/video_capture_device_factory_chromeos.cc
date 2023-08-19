@@ -29,9 +29,12 @@ VideoCaptureDeviceFactoryChromeOS::~VideoCaptureDeviceFactoryChromeOS() {
   auto* camera_app_device_bridge = CameraAppDeviceBridgeImpl::GetInstance();
   camera_app_device_bridge->UnsetCameraInfoGetter();
   camera_app_device_bridge->UnsetVirtualDeviceController();
-
-  camera_hal_delegate_->Reset();
-  camera_hal_delegate_.reset();
+  if (camera_hal_delegate_) {
+    camera_hal_delegate_->Reset();
+    if (vcd_task_runner_ && !vcd_task_runner_->RunsTasksInCurrentSequence()) {
+      vcd_task_runner_->DeleteSoon(FROM_HERE, std::move(camera_hal_delegate_));
+    }
+  }
 }
 
 VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryChromeOS::CreateDevice(
@@ -44,10 +47,16 @@ VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryChromeOS::CreateDevice(
   }
   auto device =
       camera_hal_delegate_->CreateDevice(ui_task_runner_, device_descriptor);
-  return device ? VideoCaptureErrorOrDevice(std::move(device))
-                : VideoCaptureErrorOrDevice(
-                      VideoCaptureError::
-                          kVideoCaptureDeviceFactoryChromeOSCreateDeviceFailed);
+
+  if (!device) {
+    return VideoCaptureErrorOrDevice(
+        VideoCaptureError::
+            kVideoCaptureDeviceFactoryChromeOSCreateDeviceFailed);
+  }
+  if (!vcd_task_runner_) {
+    vcd_task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
+  }
+  return VideoCaptureErrorOrDevice(std::move(device));
 }
 
 void VideoCaptureDeviceFactoryChromeOS::GetDevicesInfo(

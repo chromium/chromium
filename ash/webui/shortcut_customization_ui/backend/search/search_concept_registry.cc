@@ -113,12 +113,15 @@ local_search_service::Data SearchConceptRegistry::SearchConceptToData(
       /*id=*/base::StrCat({search_concept.id, "-description"}),
       /*content=*/search_concept.accelerator_layout_info->description);
 
-  // Only text accelerators should become searchable LSS Content.
+  // All SearchConcepts should contain at least one AcceleratorInfo.
   DCHECK(search_concept.accelerator_infos.size() > 0);
-  // Text accelerators should only have one entry in accelerator_infos.
+
+  // Get the first AcceleratorInfo to check if it's a text accelerator. Note
+  // that text accelerators should only have one entry in accelerator_infos.
   const mojom::AcceleratorInfoPtr& first_accelerator_info =
       search_concept.accelerator_infos.at(0);
 
+  // Only text accelerators should become searchable LSS Content.
   if (first_accelerator_info->layout_properties->is_text_accelerator()) {
     // Content->id needs to be unique across the entire index,
     // so we prefix it with the SearchConcept's id.

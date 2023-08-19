@@ -62,14 +62,6 @@ std::string IOSContentBrowserClient::GetUserAgentBasedOnPolicy(
   return GetUserAgent();
 }
 
-std::string IOSContentBrowserClient::GetFullUserAgent() {
-  return embedder_support::GetFullUserAgent();
-}
-
-std::string IOSContentBrowserClient::GetReducedUserAgent() {
-  return embedder_support::GetReducedUserAgent();
-}
-
 blink::UserAgentMetadata IOSContentBrowserClient::GetUserAgentMetadata() {
   blink::UserAgentMetadata metadata;
 

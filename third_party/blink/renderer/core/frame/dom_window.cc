@@ -9,8 +9,10 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/binding_security.h"
 #include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/post_message_helper.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_window.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_window_post_message_options.h"
@@ -25,12 +27,15 @@
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/frame_client.h"
 #include "third_party/blink/renderer/core/frame/frame_console.h"
+#include "third_party/blink/renderer/core/frame/frame_owner.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/location.h"
 #include "third_party/blink/renderer/core/frame/report.h"
 #include "third_party/blink/renderer/core/frame/reporting_context.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/user_activation.h"
+#include "third_party/blink/renderer/core/html/html_collection.h"
+#include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/input/input_device_capabilities.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
@@ -162,11 +167,13 @@ DOMWindow* DOMWindow::frames() const {
   return GetFrame()->DomWindow();
 }
 
-DOMWindow* DOMWindow::OpenerWithMetrics() const {
+ScriptValue DOMWindow::openerForBindings(v8::Isolate* isolate) const {
   RecordWindowProxyAccessMetrics(
       WebFeature::kWindowProxyCrossOriginAccessOpener,
       WebFeature::kWindowProxyCrossOriginAccessFromOtherPageOpener);
-  return opener();
+  ScriptState* script_state = ScriptState::From(isolate->GetCurrentContext());
+  return ScriptValue(isolate, ToV8Traits<IDLNullable<DOMWindow>>::ToV8(
+                                  script_state, opener()));
 }
 
 DOMWindow* DOMWindow::opener() const {
@@ -176,6 +183,51 @@ DOMWindow* DOMWindow::opener() const {
 
   Frame* opener = GetFrame()->Opener();
   return opener ? opener->DomWindow() : nullptr;
+}
+
+void DOMWindow::setOpenerForBindings(v8::Isolate* isolate,
+                                     ScriptValue opener,
+                                     ExceptionState& exception_state) {
+  ReportCoopAccess("opener");
+  if (!GetFrame()) {
+    return;
+  }
+
+  // https://html.spec.whatwg.org/C/#dom-opener
+  // 7.1.2.1. Navigating related browsing contexts in the DOM
+  // The opener attribute's setter must run these steps:
+  // step 1. If the given value is null and this Window object's browsing
+  //     context is non-null, then set this Window object's browsing context's
+  //     disowned to true.
+  //
+  // Opener can be shadowed if it is in the same domain.
+  // Have a special handling of null value to behave
+  // like Firefox. See bug http://b/1224887 & http://b/791706.
+  if (opener.IsNull()) {
+    To<LocalFrame>(GetFrame())->SetOpener(nullptr);
+  }
+
+  // step 2. If the given value is non-null, then return
+  //     ? OrdinaryDefineOwnProperty(this Window object, "opener",
+  //     { [[Value]]: the given value, [[Writable]]: true,
+  //       [[Enumerable]]: true, [[Configurable]]: true }).
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
+  v8::Local<v8::Object> this_wrapper =
+      ToV8Traits<DOMWindow>::ToV8(ScriptState::From(context), this)
+          .ToLocalChecked()
+          .As<v8::Object>();
+  v8::PropertyDescriptor desc(opener.V8Value(), /*writable=*/true);
+  desc.set_enumerable(true);
+  desc.set_configurable(true);
+  bool result = false;
+  if (!this_wrapper
+           ->DefineProperty(context, V8AtomicString(isolate, "opener"), desc)
+           .To(&result)) {
+    return;
+  }
+  if (!result) {
+    exception_state.ThrowTypeError("Cannot redefine the property.");
+  }
 }
 
 DOMWindow* DOMWindow::parent() const {
@@ -249,6 +301,125 @@ DOMWindow* DOMWindow::AnonymousIndexedGetter(uint32_t index) {
 
   Frame* child = GetFrame()->Tree().ScopedChild(index);
   return child ? child->DomWindow() : nullptr;
+}
+
+v8::Local<v8::Value> DOMWindow::AnonymousNamedGetter(const AtomicString& name) {
+  if (!GetFrame()) {
+    return v8::Local<v8::Value>();
+  }
+
+  // Verify that COOP: restrict-properties does not prevent this access.
+  // TODO(https://crbug.com/1467216): This will block all same-origin only
+  // properties accesses with a "Named property" access failure, because the
+  // properties will be tried here as part of the algorithm. See if we need to
+  // have a custom message in that case, possibly by actually printing the
+  // passed name.
+  v8::Isolate* isolate = window_proxy_manager_->GetIsolate();
+  if (UNLIKELY(IsAccessBlockedByCoopRestrictProperties(isolate))) {
+    // We need to not throw an exception if we're dealing with the special
+    // "then" property but return undefined instead. See
+    // https://html.spec.whatwg.org/#crossoriginpropertyfallback-(-p-). This
+    // makes sure WindowProxy is thenable, see the original discussion here:
+    // https://github.com/whatwg/dom/issues/536.
+    if (name == "then") {
+      return v8::Local<v8::Value>();
+    }
+    ExceptionState exception_state(isolate, ExceptionState::kNamedGetterContext,
+                                   "Window", name.Utf8().c_str());
+    exception_state.ThrowSecurityError(
+        "Cross-Origin-Opener-Policy: 'restrict-properties' blocked the access.",
+        "Cross-Origin-Opener-Policy: 'restrict-properties' blocked the "
+        "access.");
+    return v8::Null(isolate);
+  }
+
+  // Note that named access on WindowProxy is allowed in the cross-origin case.
+  // 7.4.5 [[GetOwnProperty]] (P), step 6.
+  // https://html.spec.whatwg.org/C/#windowproxy-getownproperty
+  //
+  // 7.3.3 Named access on the Window object
+  // The document-tree child browsing context name property set
+  // https://html.spec.whatwg.org/C/#document-tree-child-browsing-context-name-property-set
+  Frame* child = GetFrame()->Tree().ScopedChild(name);
+  if (child) {
+    ReportCoopAccess("named");
+    RecordWindowProxyAccessMetrics(
+        WebFeature::kWindowProxyCrossOriginAccessNamedGetter,
+        WebFeature::kWindowProxyCrossOriginAccessFromOtherPageNamedGetter);
+    UseCounter::Count(CurrentExecutionContext(isolate),
+                      WebFeature::kNamedAccessOnWindow_ChildBrowsingContext);
+
+    // step 3. Remove each browsing context from childBrowsingContexts whose
+    // active document's origin is not same origin with activeDocument's origin
+    // and whose browsing context name does not match the name of its browsing
+    // context container's name content attribute value.
+    if (GetFrame()->GetSecurityContext()->GetSecurityOrigin()->CanAccess(
+            child->GetSecurityContext()->GetSecurityOrigin()) ||
+        name == child->Owner()->BrowsingContextContainerName()) {
+      return ToV8Traits<DOMWindow>::ToV8(
+                 ScriptState::From(isolate->GetCurrentContext()),
+                 child->DomWindow())
+          .ToLocalChecked();
+    }
+
+    UseCounter::Count(
+        CurrentExecutionContext(isolate),
+        WebFeature::
+            kNamedAccessOnWindow_ChildBrowsingContext_CrossOriginNameMismatch);
+  }
+
+  // This is a cross-origin interceptor. Check that the caller has access to the
+  // named results.
+  if (!BindingSecurity::ShouldAllowAccessTo(
+          blink::ToLocalDOMWindow(isolate->GetCurrentContext()), this)) {
+    return v8::Local<v8::Value>();
+  }
+
+  // Search named items in the document.
+  auto* doc = DynamicTo<HTMLDocument>(To<LocalDOMWindow>(this)->document());
+  if (!doc) {
+    return v8::Local<v8::Value>();
+  }
+
+  bool has_named_item = doc->HasNamedItem(name);
+  bool has_id_item = doc->HasElementWithId(name);
+
+  if (!has_named_item && !has_id_item) {
+    return v8::Local<v8::Value>();
+  }
+  ReportCoopAccess("named");
+  RecordWindowProxyAccessMetrics(
+      WebFeature::kWindowProxyCrossOriginAccessNamedGetter,
+      WebFeature::kWindowProxyCrossOriginAccessFromOtherPageNamedGetter);
+
+  // If we've reached this point, we know that we're accessing an element (or
+  // collection of elements) in this window, and that this window is local. Wrap
+  // the return value in this window's relevant context, with the current
+  // wrapper world.
+  ScriptState* script_state = ToScriptState(To<LocalDOMWindow>(this),
+                                            DOMWrapperWorld::Current(isolate));
+  if (!has_named_item && has_id_item &&
+      !doc->ContainsMultipleElementsWithId(name)) {
+    UseCounter::Count(doc, WebFeature::kDOMClobberedVariableAccessed);
+    return ToV8Traits<Element>::ToV8(script_state, doc->getElementById(name))
+        .ToLocalChecked();
+  }
+
+  HTMLCollection* items = doc->WindowNamedItems(name);
+  if (!items->IsEmpty()) {
+    UseCounter::Count(doc, WebFeature::kDOMClobberedVariableAccessed);
+
+    // TODO(esprehn): Firefox doesn't return an HTMLCollection here if there's
+    // multiple with the same name, but Chrome and Safari does. What's the
+    // right behavior?
+    if (items->HasExactlyOneItem()) {
+      return ToV8Traits<Element>::ToV8(script_state, items->item(0))
+          .ToLocalChecked();
+    }
+    return ToV8Traits<HTMLCollection>::ToV8(script_state, items)
+        .ToLocalChecked();
+  }
+  return v8::Local<v8::Value>();
 }
 
 bool DOMWindow::IsCurrentlyDisplayedInFrame() const {
@@ -463,16 +634,15 @@ void DOMWindow::focus(v8::Isolate* isolate) {
   if (!page)
     return;
 
-  if (!frame->AllowFocusWithoutUserActivation()) {
+  bool allow_focus_without_user_activation =
+      frame->AllowFocusWithoutUserActivation();
+
+  if (!allow_focus_without_user_activation &&
+      !frame->HasTransientUserActivation()) {
     // Disallow script focus that crosses a fenced frame boundary on a
     // frame that doesn't have transient user activation. Note: all calls to
     // DOMWindow::focus come from JavaScript calls in the web platform
-    if (!frame->HasTransientUserActivation())
-      return;
-    // Fenced frames should consume user activation when attempting to pull
-    // focus across a fenced boundary into itself.
-    if (frame->IsInFencedFrameTree())
-      LocalFrame::ConsumeTransientUserActivation(DynamicTo<LocalFrame>(frame));
+    return;
   }
 
   RecordWindowProxyAccessMetrics(
@@ -513,6 +683,14 @@ void DOMWindow::focus(v8::Isolate* isolate) {
 
   page->GetFocusController().FocusDocumentView(GetFrame(),
                                                true /* notifyEmbedder */);
+
+  // TODO(crbug.com/1458985) Remove the IsInFencedFrameTree condition once
+  // fenced frames are enabled by default.
+  if (!allow_focus_without_user_activation && frame->IsInFencedFrameTree()) {
+    // Fenced frames should consume user activation when attempting to pull
+    // focus across a fenced boundary into itself.
+    LocalFrame::ConsumeTransientUserActivation(DynamicTo<LocalFrame>(frame));
+  }
 }
 
 void DOMWindow::blur() {
@@ -543,7 +721,8 @@ void DOMWindow::PostMessageForTesting(
 void DOMWindow::InstallCoopAccessMonitor(
     LocalFrame* accessing_frame,
     network::mojom::blink::CrossOriginOpenerPolicyReporterParamsPtr
-        coop_reporter_params) {
+        coop_reporter_params,
+    bool is_in_same_virtual_coop_related_group) {
   CoopAccessMonitor monitor;
 
   DCHECK(accessing_frame->IsMainFrame());
@@ -553,6 +732,8 @@ void DOMWindow::InstallCoopAccessMonitor(
   monitor.endpoint_defined = coop_reporter_params->endpoint_defined;
   monitor.reported_window_url =
       std::move(coop_reporter_params->reported_window_url);
+  monitor.is_in_same_virtual_coop_related_group =
+      is_in_same_virtual_coop_related_group;
 
   monitor.reporter.Bind(std::move(coop_reporter_params->reporter));
   // CoopAccessMonitor are cleared when their reporter are gone. This avoids
@@ -628,6 +809,14 @@ void DOMWindow::ReportCoopAccess(const char* property_name) {
   auto* it = coop_access_monitor_.begin();
   while (it != coop_access_monitor_.end()) {
     if (it->accessing_main_frame != accessing_main_frame_token) {
+      ++it;
+      continue;
+    }
+
+    String property_name_as_string = property_name;
+    if (it->is_in_same_virtual_coop_related_group &&
+        (property_name_as_string == "postMessage" ||
+         property_name_as_string == "closed")) {
       ++it;
       continue;
     }
@@ -866,6 +1055,43 @@ void DOMWindow::RecordWindowProxyAccessMetrics(
   }
 }
 
+bool DOMWindow::IsAccessBlockedByCoopRestrictProperties(
+    v8::Isolate* isolate) const {
+  if (!GetFrame()) {
+    return false;
+  }
+
+  LocalDOMWindow* accessing_window = CurrentDOMWindow(isolate);
+  CHECK(accessing_window);
+
+  LocalFrame* accessing_frame = accessing_window->GetFrame();
+  if (!accessing_frame) {
+    return false;
+  }
+
+  // If the two windows are not in the same CoopRelatedGroup, we should not
+  // restrict window proxy access here. This prevents restricting things that
+  // were not meant to. These are the cross browsing context group  accesses
+  // that already existed before COOP: restrict-properties.
+  // TODO(https://crbug.com/1464618): Is there actually any scenario where
+  // cross browsing context group was allowed before COOP: restrict-properties?
+  // Verify that we need to have this check.
+  if (accessing_frame->GetPage()->CoopRelatedGroupToken() !=
+      GetFrame()->GetPage()->CoopRelatedGroupToken()) {
+    return false;
+  }
+
+  // If we're dealing with an actual COOP: restrict-properties case, then
+  // compare the BrowsingInstance tokens. If they are different, the access
+  // should be restricted.
+  if (accessing_frame->GetPage()->BrowsingContextGroupToken() !=
+      GetFrame()->GetPage()->BrowsingContextGroupToken()) {
+    return true;
+  }
+
+  return false;
+}
+
 void DOMWindow::PostedMessage::Trace(Visitor* visitor) const {
   visitor->Trace(source);
   visitor->Trace(user_activation);
@@ -897,7 +1123,7 @@ void DOMWindow::Trace(Visitor* visitor) const {
   visitor->Trace(window_proxy_manager_);
   visitor->Trace(input_capabilities_);
   visitor->Trace(location_);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
 }
 
 void DOMWindow::DisconnectCoopAccessMonitor(

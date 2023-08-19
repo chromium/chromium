@@ -93,7 +93,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsAuth {
   const raw_ptr<const base::Clock, ExperimentalAsh> clock_;
   const base::FilePath profile_path_;
   const std::unique_ptr<base::OneShotTimer> timer_;
-  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  const raw_ptr<Delegate, DanglingUntriaged | ExperimentalAsh> delegate_;
 
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
       access_token_fetcher_;

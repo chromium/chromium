@@ -40,11 +40,13 @@ class CORE_EXPORT EditingBehavior {
   // can control it here.
 
   // When extending a selection beyond the top or bottom boundary of an editable
-  // area, maintain the horizontal position on Windows and Android but extend it
-  // to the boundary of the editable content on Mac and Linux.
+  // area, maintain the horizontal position on Windows, Android and ChromeOS but
+  // extend it to the boundary of the editable content on Mac and Linux.
   bool ShouldMoveCaretToHorizontalBoundaryWhenPastTopOrBottom() const {
     return type_ != mojom::blink::EditingBehavior::kEditingWindowsBehavior &&
-           type_ != mojom::blink::EditingBehavior::kEditingAndroidBehavior;
+           type_ != mojom::blink::EditingBehavior::kEditingAndroidBehavior &&
+           !(type_ == mojom::blink::EditingBehavior::kEditingChromeOSBehavior &&
+             RuntimeEnabledFeatures::TouchTextEditingRedesignEnabled());
   }
 
   bool ShouldSelectReplacement() const {

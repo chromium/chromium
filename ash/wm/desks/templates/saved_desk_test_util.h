@@ -169,6 +169,8 @@ class SavedDeskControllerTestApi {
 
   void SetAdminTemplate(std::unique_ptr<DeskTemplate> admin_template);
 
+  void ResetAutoLaunch();
+
  private:
   raw_ptr<SavedDeskController, ExperimentalAsh> saved_desk_controller_;
 };
@@ -187,13 +189,13 @@ std::vector<SavedDeskItemView*> GetItemViewsFromDeskLibrary(
 SavedDeskItemView* GetItemViewFromSavedDeskGrid(size_t grid_item_index);
 
 // These buttons are the ones on the primary root window.
-views::Button* GetZeroStateLibraryButton();
-views::Button* GetExpandedStateLibraryButton();
-views::Button* GetSaveDeskAsTemplateButton();
-views::Button* GetSaveDeskForLaterButton();
-views::Button* GetSavedDeskItemButton(int index);
-views::Button* GetSavedDeskItemDeleteButton(int index);
-views::Button* GetSavedDeskDialogAcceptButton();
+const views::Button* GetZeroStateLibraryButton();
+const views::Button* GetExpandedStateLibraryButton();
+const views::Button* GetSaveDeskAsTemplateButton();
+const views::Button* GetSaveDeskForLaterButton();
+const views::Button* GetSavedDeskItemButton(int index);
+const views::Button* GetSavedDeskItemDeleteButton(int index);
+const views::Button* GetSavedDeskDialogAcceptButton();
 
 // A lot of the UI relies on calling into the local desk data manager to
 // update, which sends callbacks via posting tasks. Call `WaitForSavedDeskUI()`

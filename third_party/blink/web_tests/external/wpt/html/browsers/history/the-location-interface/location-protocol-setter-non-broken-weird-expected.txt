@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-PASS Set location.protocol to x
-FAIL Set location.protocol to data Blocked a frame with origin "http://web-platform.test:8001" from accessing a cross-origin frame.
-PASS Set location.protocol to file
-PASS Set location.protocol to ftp
-PASS Set location.protocol to http+x
-Harness: the test ran to completion.
-

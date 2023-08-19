@@ -14,25 +14,22 @@
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/omnibox_popup_view.h"
+#include "components/omnibox/browser/omnibox_prefs.h"
 #include "ui/gfx/geometry/rect.h"
 
-OmniboxController::OmniboxController(
-    OmniboxView* view,
-    OmniboxEditModelDelegate* edit_model_delegate,
-    std::unique_ptr<OmniboxClient> client)
+OmniboxController::OmniboxController(OmniboxView* view,
+                                     std::unique_ptr<OmniboxClient> client)
     : client_(std::move(client)),
       edit_model_(std::make_unique<OmniboxEditModel>(
           /*omnibox_controller=*/this,
-          view,
-          edit_model_delegate)),
+          view)),
       autocomplete_controller_(std::make_unique<AutocompleteController>(
           client_->CreateAutocompleteProviderClient(),
           AutocompleteClassifier::DefaultOmniboxProviders())) {
   // Directly observe omnibox's `AutocompleteController` instance - i.e., when
   // `view` is provided in the constructor. In the case of realbox - i.e., when
-  // `view` is not provided in the constructor - `RealboxHandler` indirectly
-  // observes all the `AutocompleteController` instances registered with the
-  // `AutocompleteControllerEmitter`.
+  // `view` is not provided in the constructor - `RealboxHandler` directly
+  // observes the `AutocompleteController` instance itself.
   if (view) {
     autocomplete_controller_->AddObserver(this);
   }
@@ -41,15 +38,18 @@ OmniboxController::OmniboxController(
   if (auto* emitter = client_->GetAutocompleteControllerEmitter()) {
     autocomplete_controller_->AddObserver(emitter);
   }
+
+  if (PrefService* prefs = client_->GetPrefs()) {
+    pref_change_registrar_.Init(prefs);
+    pref_change_registrar_.Add(
+        omnibox::kSuggestionGroupVisibility,
+        base::BindRepeating(
+            &OmniboxController::OnSuggestionGroupVisibilityPrefChanged,
+            base::Unretained(this)));
+  }
 }
 
 OmniboxController::~OmniboxController() = default;
-
-void OmniboxController::set_edit_model(
-    std::unique_ptr<OmniboxEditModel> edit_model) {
-  CHECK_EQ(this, edit_model->omnibox_controller());
-  edit_model_ = std::move(edit_model);
-}
 
 void OmniboxController::StartAutocomplete(
     const AutocompleteInput& input) const {
@@ -123,7 +123,36 @@ void OmniboxController::ClearPopupKeywordMode() const {
   }
 }
 
+std::u16string OmniboxController::GetHeaderForSuggestionGroup(
+    omnibox::GroupId suggestion_group_id) const {
+  return result().GetHeaderForSuggestionGroup(suggestion_group_id);
+}
+
+bool OmniboxController::IsSuggestionGroupHidden(
+    omnibox::GroupId suggestion_group_id) const {
+  PrefService* prefs = client_->GetPrefs();
+  return prefs && result().IsSuggestionGroupHidden(prefs, suggestion_group_id);
+}
+
+void OmniboxController::SetSuggestionGroupHidden(
+    omnibox::GroupId suggestion_group_id,
+    bool hidden) const {
+  if (PrefService* prefs = client_->GetPrefs()) {
+    result().SetSuggestionGroupHidden(prefs, suggestion_group_id, hidden);
+  }
+}
+
 void OmniboxController::SetRichSuggestionBitmap(int result_index,
                                                 const SkBitmap& bitmap) {
   edit_model_->SetPopupRichSuggestionBitmap(result_index, bitmap);
+}
+
+void OmniboxController::OnSuggestionGroupVisibilityPrefChanged() {
+  for (size_t i = 0; i < result().size(); ++i) {
+    const AutocompleteMatch& match = result().match_at(i);
+    bool suggestion_group_hidden =
+        match.suggestion_group_id.has_value() &&
+        IsSuggestionGroupHidden(match.suggestion_group_id.value());
+    edit_model_->SetPopupSuggestionGroupVisibility(i, suggestion_group_hidden);
+  }
 }

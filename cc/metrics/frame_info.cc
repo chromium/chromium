@@ -40,6 +40,10 @@ bool ValidateFinalStateIsForMainThread(FrameInfo::FrameFinalState state) {
 
 }  // namespace
 
+FrameInfo::FrameInfo() = default;
+FrameInfo::FrameInfo(const FrameInfo& other) = default;
+FrameInfo::~FrameInfo() = default;
+
 bool FrameInfo::IsDroppedAffectingSmoothness() const {
   // If neither of the threads are expected to be smooth, then this frame cannot
   // affect smoothness.
@@ -84,6 +88,11 @@ void FrameInfo::MergeWith(const FrameInfo& other) {
 
     compositor_update_was_dropped =
         other.final_state == FrameFinalState::kDropped;
+
+    compositor_final_state = other.final_state;
+    compositor_termination_time = other.termination_time;
+    main_final_state = final_state;
+    main_termination_time = termination_time;
   } else {
     // |this| does not include main-thread updates. Therefore:
     //   - |other| must include main-thread updates.
@@ -93,6 +102,11 @@ void FrameInfo::MergeWith(const FrameInfo& other) {
 
     main_update_was_dropped = other.final_state == FrameFinalState::kDropped;
     compositor_update_was_dropped = final_state == FrameFinalState::kDropped;
+
+    compositor_final_state = final_state;
+    compositor_termination_time = termination_time;
+    main_final_state = other.final_state;
+    main_termination_time = other.termination_time;
   }
 
   was_merged = true;
@@ -131,7 +145,7 @@ void FrameInfo::MergeWith(const FrameInfo& other) {
     smooth_thread = SmoothThread::kSmoothNone;
   }
 
-  total_latency = std::max(total_latency, other.total_latency);
+  termination_time = std::max(termination_time, other.termination_time);
 
   // Validate the state after the merge.
   DCHECK(Validate());
@@ -199,6 +213,36 @@ bool FrameInfo::IsScrollPrioritizeFrameDropped() const {
       return WasSmoothMainUpdateDropped();
     case SmoothEffectDrivingThread::kUnknown:
       return IsDroppedAffectingSmoothness();
+  }
+}
+
+FrameInfo::FrameFinalState FrameInfo::GetFinalStateForThread(
+    SmoothEffectDrivingThread thread) const {
+  if (!was_merged) {
+    return final_state;
+  }
+  switch (thread) {
+    case SmoothEffectDrivingThread::kCompositor:
+      return compositor_final_state;
+    case SmoothEffectDrivingThread::kMain:
+      return main_final_state;
+    case SmoothEffectDrivingThread::kUnknown:
+      return final_state;
+  }
+}
+
+base::TimeTicks FrameInfo::GetTerminationTimeForThread(
+    SmoothEffectDrivingThread thread) const {
+  if (!was_merged) {
+    return termination_time;
+  }
+  switch (thread) {
+    case SmoothEffectDrivingThread::kCompositor:
+      return compositor_termination_time;
+    case SmoothEffectDrivingThread::kMain:
+      return main_termination_time;
+    case SmoothEffectDrivingThread::kUnknown:
+      return termination_time;
   }
 }
 

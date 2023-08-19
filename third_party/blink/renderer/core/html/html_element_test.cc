@@ -26,7 +26,7 @@ class HTMLElementTest : public RenderingTest {
 TEST_F(HTMLElementTest, AdjustDirectionalityInFlatTree) {
   SetBodyContent("<bdi><summary><i id=target></i></summary></bdi>");
   UpdateAllLifecyclePhasesForTest();
-  GetDocument().getElementById("target")->remove();
+  GetDocument().getElementById(AtomicString("target"))->remove();
   // Pass if not crashed.
 }
 
@@ -247,7 +247,7 @@ TEST_F(HTMLElementTest,
   )JS");
   GetDocument().body()->appendChild(script);
   EXPECT_EQ(GetDocument().FocusedElement(),
-            GetDocument().getElementById("box"));
+            GetDocument().getElementById(AtomicString("box")));
   EXPECT_FALSE(
       GetDocument().GetPage()->Animator().has_inline_style_mutation_for_test());
 }
@@ -256,7 +256,7 @@ TEST_F(HTMLElementTest, DirAutoByChildChanged) {
   ScopedCSSPseudoDirForTest scoped_feature(false);
 
   SetBodyInnerHTML("<div id='target' dir='auto'></div>");
-  auto* element = GetDocument().getElementById("target");
+  auto* element = GetDocument().getElementById(AtomicString("target"));
   element->setTextContent(u"\u05D1");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(element->GetComputedStyle()->Direction(), TextDirection::kRtl);
@@ -270,14 +270,14 @@ TEST_F(HTMLElementTest, SlotDirAutoBySingleSlottedNodeRemoved) {
   ScopedCSSPseudoDirForTest scoped_feature(false);
 
   SetBodyInnerHTML("<div id='host'>slotted text</div>");
-  auto* element = GetDocument().getElementById("host");
+  auto* element = GetDocument().getElementById(AtomicString("host"));
   ShadowRoot& shadow_root =
       element->AttachShadowRootInternal(ShadowRootType::kOpen);
   shadow_root.setInnerHTML(
       "<slot id='inner' dir='auto'><div>&#1571;</div></slot>");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* slot = shadow_root.getElementById("inner");
+  Element* slot = shadow_root.getElementById(AtomicString("inner"));
   EXPECT_EQ(slot->GetComputedStyle()->Direction(), TextDirection::kLtr);
 
   element->RemoveChildren();
@@ -294,15 +294,16 @@ TEST_F(HTMLElementTest, HasImplicitlyAnchoredElement) {
     <div id="target" anchor="anchor1"></div>
   )HTML");
 
-  Element* anchor1 = GetDocument().getElementById("anchor1");
-  Element* anchor2 = GetDocument().getElementById("anchor2");
-  HTMLElement* target = To<HTMLElement>(GetDocument().getElementById("target"));
+  Element* anchor1 = GetDocument().getElementById(AtomicString("anchor1"));
+  Element* anchor2 = GetDocument().getElementById(AtomicString("anchor2"));
+  HTMLElement* target =
+      To<HTMLElement>(GetDocument().getElementById(AtomicString("target")));
 
   EXPECT_EQ(target->anchorElement(), anchor1);
   EXPECT_TRUE(anchor1->HasImplicitlyAnchoredElement());
   EXPECT_FALSE(anchor2->HasImplicitlyAnchoredElement());
 
-  target->setAttribute(html_names::kAnchorAttr, "anchor2");
+  target->setAttribute(html_names::kAnchorAttr, AtomicString("anchor2"));
 
   EXPECT_EQ(target->anchorElement(), anchor2);
   EXPECT_FALSE(anchor1->HasImplicitlyAnchoredElement());
@@ -324,9 +325,10 @@ TEST_F(HTMLElementTest, HasImplicitlyAnchoredElementViaElementAttr) {
     <div id="target" anchor="anchor1"></div>
   )HTML");
 
-  Element* anchor1 = GetDocument().getElementById("anchor1");
-  Element* anchor2 = GetDocument().getElementById("anchor2");
-  HTMLElement* target = To<HTMLElement>(GetDocument().getElementById("target"));
+  Element* anchor1 = GetDocument().getElementById(AtomicString("anchor1"));
+  Element* anchor2 = GetDocument().getElementById(AtomicString("anchor2"));
+  HTMLElement* target =
+      To<HTMLElement>(GetDocument().getElementById(AtomicString("target")));
 
   EXPECT_EQ(target->anchorElement(), anchor1);
   EXPECT_TRUE(anchor1->HasImplicitlyAnchoredElement());
@@ -344,7 +346,7 @@ TEST_F(HTMLElementTest, HasImplicitlyAnchoredElementViaElementAttr) {
   EXPECT_FALSE(anchor1->HasImplicitlyAnchoredElement());
   EXPECT_FALSE(anchor2->HasImplicitlyAnchoredElement());
 
-  target->setAttribute(html_names::kAnchorAttr, "anchor1");
+  target->setAttribute(html_names::kAnchorAttr, AtomicString("anchor1"));
 
   EXPECT_EQ(target->anchorElement(), anchor1);
   EXPECT_TRUE(anchor1->HasImplicitlyAnchoredElement());
@@ -360,16 +362,17 @@ TEST_F(HTMLElementTest, ImplicitAnchorIdChange) {
     <div id="target" anchor="anchor1"></div>
   )HTML");
 
-  Element* anchor1 = GetDocument().getElementById("anchor1");
-  Element* anchor2 = GetDocument().getElementById("anchor2");
-  HTMLElement* target = To<HTMLElement>(GetDocument().getElementById("target"));
+  Element* anchor1 = GetDocument().getElementById(AtomicString("anchor1"));
+  Element* anchor2 = GetDocument().getElementById(AtomicString("anchor2"));
+  HTMLElement* target =
+      To<HTMLElement>(GetDocument().getElementById(AtomicString("target")));
 
   EXPECT_EQ(target->anchorElement(), anchor1);
   EXPECT_TRUE(anchor1->HasImplicitlyAnchoredElement());
   EXPECT_FALSE(anchor2->HasImplicitlyAnchoredElement());
 
-  anchor1->setAttribute(html_names::kIdAttr, "anchor2");
-  anchor2->setAttribute(html_names::kIdAttr, "anchor1");
+  anchor1->setAttribute(html_names::kIdAttr, AtomicString("anchor2"));
+  anchor2->setAttribute(html_names::kIdAttr, AtomicString("anchor1"));
 
   EXPECT_EQ(target->anchorElement(), anchor2);
   EXPECT_FALSE(anchor1->HasImplicitlyAnchoredElement());
@@ -385,11 +388,11 @@ TEST_F(HTMLElementTest, ImplicitlyAnchoredElementRemoved) {
     <div id="target2"></div>
   )HTML");
 
-  Element* anchor = GetDocument().getElementById("anchor");
+  Element* anchor = GetDocument().getElementById(AtomicString("anchor"));
   HTMLElement* target1 =
-      To<HTMLElement>(GetDocument().getElementById("target1"));
+      To<HTMLElement>(GetDocument().getElementById(AtomicString("target1")));
   HTMLElement* target2 =
-      To<HTMLElement>(GetDocument().getElementById("target2"));
+      To<HTMLElement>(GetDocument().getElementById(AtomicString("target2")));
 
   target2->setAnchorElement(anchor);
 
@@ -410,14 +413,14 @@ TEST_F(HTMLElementTest, ImplicitlyAnchorElementConnected) {
 
   SetBodyInnerHTML("<div id=anchor></div>");
 
-  Element* anchor = GetDocument().getElementById("anchor");
+  Element* anchor = GetDocument().getElementById(AtomicString("anchor"));
 
-  HTMLElement* target1 =
-      To<HTMLElement>(GetDocument().CreateElementForBinding("div"));
-  target1->setAttribute(html_names::kAnchorAttr, "anchor");
+  HTMLElement* target1 = To<HTMLElement>(
+      GetDocument().CreateElementForBinding(AtomicString("div")));
+  target1->setAttribute(html_names::kAnchorAttr, AtomicString("anchor"));
 
-  HTMLElement* target2 =
-      To<HTMLElement>(GetDocument().CreateElementForBinding("div"));
+  HTMLElement* target2 = To<HTMLElement>(
+      GetDocument().CreateElementForBinding(AtomicString("div")));
   target2->setAnchorElement(anchor);
 
   EXPECT_FALSE(target1->anchorElement());
@@ -433,13 +436,12 @@ TEST_F(HTMLElementTest, ImplicitlyAnchorElementConnected) {
 }
 
 TEST_F(HTMLElementTest, PopoverTopLayerRemovalTiming) {
-  ScopedHTMLPopoverAttributeForTest scoped_feature(true);
-
   SetBodyInnerHTML(R"HTML(
     <div id="target" popover></div>
   )HTML");
 
-  HTMLElement* target = To<HTMLElement>(GetDocument().getElementById("target"));
+  HTMLElement* target =
+      To<HTMLElement>(GetDocument().getElementById(AtomicString("target")));
 
   EXPECT_FALSE(target->popoverOpen());
   EXPECT_FALSE(target->IsInTopLayer());
@@ -471,7 +473,8 @@ TEST_F(HTMLElementTest, DialogTopLayerRemovalTiming) {
     <dialog id="target"></dialog>
   )HTML");
 
-  auto* target = To<HTMLDialogElement>(GetDocument().getElementById("target"));
+  auto* target = To<HTMLDialogElement>(
+      GetDocument().getElementById(AtomicString("target")));
 
   EXPECT_FALSE(target->IsInTopLayer());
   target->showModal(ASSERT_NO_EXCEPTION);
@@ -483,13 +486,13 @@ TEST_F(HTMLElementTest, DialogTopLayerRemovalTiming) {
 }
 
 TEST_F(HTMLElementTest, AnchorAttrWithFeatureDisabled) {
-  ScopedHTMLSelectMenuElementForTest select_menu_disabled(false);
+  ScopedHTMLSelectListElementForTest select_list_disabled(false);
   ScopedCSSAnchorPositioningForTest anchor_pos_disabled(false);
 
   SetBodyInnerHTML("<div id=anchor><div anchor=anchor id=target></div></div>");
 
-  Element* anchor = GetDocument().getElementById("anchor");
-  Element* target = GetDocument().getElementById("target");
+  Element* anchor = GetDocument().getElementById(AtomicString("anchor"));
+  Element* target = GetDocument().getElementById(AtomicString("target"));
 
   // Shouldn't hook up objects related to anchor attr when the feature is
   // disabled.

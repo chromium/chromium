@@ -4,6 +4,7 @@ include_rules = [
   "+components/password_manager/core/common",
   "+content/public/android/java",
   "+content/public/browser",
+  "+content/public/test",
   "+device/fido",
   "+mojo/public/cpp/base",
   "+mojo/public/java",

@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/ui/ash/system_tray_client_impl.h"
 #include "chrome/browser/ui/views/relaunch_notification/relaunch_required_timer.h"
 #include "components/session_manager/core/session_manager.h"
@@ -109,6 +110,9 @@ void RelaunchNotificationControllerPlatformImpl::OnPowerStateChanged(
 }
 
 void RelaunchNotificationControllerPlatformImpl::OnSessionStateChanged() {
+  TRACE_EVENT0(
+      "login",
+      "RelaunchNotificationControllerPlatformImpl::OnSessionStateChanged");
   if (CanScheduleReboot() && on_visible_) {
     base::Time new_deadline = std::move(on_visible_).Run();
     SetDeadline(new_deadline);

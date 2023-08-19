@@ -9,7 +9,10 @@
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/unexportable_keys/background_task.h"
+#include "components/unexportable_keys/background_task_priority.h"
 
 namespace unexportable_keys::internal {
 
@@ -26,8 +29,9 @@ class BackgroundTaskImpl : public BackgroundTask {
   // `reply` is invoked on the posting thread with the return result of
   // `task`.
   BackgroundTaskImpl(base::OnceCallback<ReturnType()> task,
-                     base::OnceCallback<void(ReturnType)> reply)
-      : task_(std::move(task)), reply_(std::move(reply)) {
+                     base::OnceCallback<void(ReturnType)> reply,
+                     BackgroundTaskPriority priority)
+      : task_(std::move(task)), reply_(std::move(reply)), priority_(priority) {
     DCHECK(task_);
     DCHECK(reply_);
   }
@@ -53,9 +57,18 @@ class BackgroundTaskImpl : public BackgroundTask {
                                 : BackgroundTask::Status::kPending;
   }
 
+  BackgroundTaskPriority GetPriority() const override { return priority_; }
+
+  base::TimeDelta GetElapsedTimeSinceCreation() const override {
+    return timer_.Elapsed();
+  }
+
  private:
   base::OnceCallback<ReturnType()> task_;
   base::OnceCallback<void(ReturnType)> reply_;
+
+  const BackgroundTaskPriority priority_;
+  const base::ElapsedTimer timer_;
 };
 
 }  // namespace unexportable_keys::internal

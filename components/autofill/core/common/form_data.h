@@ -169,9 +169,9 @@ struct FormData {
   // elements.
   bool SameFormAs(const FormData& other) const;
 
-  // Finds a field in FormData by its id attribute.
   // Returns a pointer to the field if found, otherwise returns nullptr.
-  FormFieldData* FindFieldByGlobalId(const FieldGlobalId& global_id);
+  const FormFieldData* FindFieldByGlobalId(
+      const FieldGlobalId& global_id) const;
 
   // Finds a field in the FormData by its name or id.
   // Returns a pointer to the field if found, otherwise returns nullptr.
@@ -275,7 +275,7 @@ struct FormData {
   // usernames. The order matters: elements are sorted in descending likelihood
   // of being a username (the first one is the most likely username). Can
   // contain IDs of elements which are not in |fields|. This is only used during
-  // parsing into PasswordForm, and hence not serialised for storage.
+  // parsing into PasswordForm, and hence not serialized for storage.
   std::vector<FieldRendererId> username_predictions;
 
   // True if this is a Gaia form which should be skipped on saving.

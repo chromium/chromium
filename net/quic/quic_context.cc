@@ -7,6 +7,8 @@
 #include "base/containers/contains.h"
 #include "net/quic/platform/impl/quic_chromium_clock.h"
 #include "net/quic/quic_chromium_connection_helper.h"
+#include "net/ssl/cert_compression.h"
+#include "net/ssl/ssl_key_logger.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/crypto_protocol.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_random.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_constants.h"
@@ -54,9 +56,6 @@ quic::QuicConfig InitializeQuicConfig(const QuicParams& params) {
       quic::QuicTime::Delta::FromMicroseconds(
           params.max_idle_time_before_crypto_handshake.InMicroseconds()));
   quic::QuicTagVector copt_to_send = params.connection_options;
-  if (!base::Contains(copt_to_send, quic::kRVCM)) {
-    copt_to_send.push_back(quic::kRVCM);
-  }
   config.SetConnectionOptionsToSend(copt_to_send);
   config.SetClientConnectionOptions(params.client_connection_options);
   config.set_max_undecryptable_packets(kMaxUndecryptablePackets);
@@ -65,6 +64,15 @@ quic::QuicConfig InitializeQuicConfig(const QuicParams& params) {
   config.SetInitialStreamFlowControlWindowToSend(kQuicStreamMaxRecvWindowSize);
   config.SetBytesForConnectionIdToSend(0);
   return config;
+}
+
+void ConfigureQuicCryptoClientConfig(
+    quic::QuicCryptoClientConfig& crypto_config) {
+  if (SSLKeyLoggerManager::IsActive()) {
+    SSL_CTX_set_keylog_callback(crypto_config.ssl_ctx(),
+                                SSLKeyLoggerManager::KeyLogCallback);
+  }
+  ConfigureCertificateCompression(crypto_config.ssl_ctx());
 }
 
 }  // namespace net

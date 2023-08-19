@@ -43,14 +43,12 @@ class ASH_EXPORT NetworkDetailedNetworkViewImpl
   // NetworkDetailedNetworkView:
   void NotifyNetworkListChanged() override;
   views::View* GetAsView() override;
-  NetworkListNetworkItemView* AddNetworkListItem(
-      chromeos::network_config::mojom::NetworkType type) override;
-  HoverHighlightView* AddJoinNetworkEntry() override;
+  NetworkListNetworkItemView* AddNetworkListItem(NetworkType type) override;
+  HoverHighlightView* AddConfigureNetworkEntry(NetworkType type) override;
   NetworkListMobileHeaderView* AddMobileSectionHeader() override;
   NetworkListWifiHeaderView* AddWifiSectionHeader() override;
   void UpdateScanningBarVisibility(bool visible) override;
-  views::View* GetNetworkList(
-      chromeos::network_config::mojom::NetworkType type) override;
+  views::View* GetNetworkList(NetworkType type) override;
   void ReorderFirstListView(size_t index) override;
   void ReorderNetworkTopContainer(size_t index) override;
   void ReorderNetworkListView(size_t index) override;
@@ -59,6 +57,8 @@ class ASH_EXPORT NetworkDetailedNetworkViewImpl
   void MaybeRemoveFirstListView() override;
   void UpdateWifiStatus(bool enabled) override;
   void UpdateMobileStatus(bool enabled) override;
+  void ScrollToPosition(int position) override;
+  int GetScrollPosition() override;
 
   // NetworkListNetworkHeaderView::Delegate:
   void OnMobileToggleClicked(bool new_state) override;
@@ -69,7 +69,8 @@ class ASH_EXPORT NetworkDetailedNetworkViewImpl
   // wifi header, and wifi network entries. These containers are only used and
   // added to the `network_list_` when the `features::IsQsRevampEnabled()` is
   // true.
-  raw_ptr<RoundedContainer, ExperimentalAsh> first_list_view_ = nullptr;
+  raw_ptr<RoundedContainer, DanglingUntriaged | ExperimentalAsh>
+      first_list_view_ = nullptr;
   raw_ptr<RoundedContainer, ExperimentalAsh> mobile_top_container_ = nullptr;
   raw_ptr<RoundedContainer, ExperimentalAsh> mobile_network_list_view_ =
       nullptr;

@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_length.h"
+#include "third_party/blink/renderer/core/svg/svg_length_context.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
@@ -107,13 +108,10 @@ SVGAnimatedPropertyBase* SVGLineElement::PropertyFromAttribute(
   }
 }
 
-void SVGLineElement::SynchronizeSVGAttribute(const QualifiedName& name) const {
-  if (name == AnyQName()) {
-    SVGAnimatedPropertyBase* attrs[]{x1_.Get(), y1_.Get(), x2_.Get(),
-                                     y2_.Get()};
-    SynchronizeAllSVGAttributes(attrs);
-  }
-  SVGGeometryElement::SynchronizeSVGAttribute(name);
+void SVGLineElement::SynchronizeAllSVGAttributes() const {
+  SVGAnimatedPropertyBase* attrs[]{x1_.Get(), y1_.Get(), x2_.Get(), y2_.Get()};
+  SynchronizeListOfSVGAttributes(attrs);
+  SVGGeometryElement::SynchronizeAllSVGAttributes();
 }
 
 }  // namespace blink

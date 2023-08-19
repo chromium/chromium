@@ -19,6 +19,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "ios/net/cookies/cookie_cache.h"
+#include "ios/net/cookies/cookie_notification_observer.h"
 #import "ios/net/cookies/system_cookie_store.h"
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_change_dispatcher.h"
@@ -33,15 +34,6 @@
 namespace net {
 
 class NetLog;
-
-// Observer for changes on |NSHTTPCookieStorge sharedHTTPCookieStorage|.
-class CookieNotificationObserver {
- public:
-  // Called when any cookie is added, deleted or changed in
-  // |NSHTTPCookieStorge sharedHTTPCookieStorage|.
-  virtual void OnSystemCookiesChanged() = 0;
-};
-
 class CookieStoreIOS;
 
 // The CookieStoreIOS is an implementation of CookieStore relying on

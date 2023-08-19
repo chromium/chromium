@@ -93,7 +93,7 @@ class InfobarOverlayRequestInserter
   // Map of the OverlayRequestQueues to use for each InfobarOverlayType.
   std::map<InfobarOverlayType, OverlayRequestQueue*> queues_;
   // Observers of request insertions.
-  base::ObserverList<Observer> observers_;
+  base::ObserverList<Observer, true> observers_;
 };
 
 #endif  // IOS_CHROME_BROWSER_INFOBARS_OVERLAYS_INFOBAR_OVERLAY_REQUEST_INSERTER_H_

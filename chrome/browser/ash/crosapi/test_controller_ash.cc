@@ -6,7 +6,10 @@
 
 #include <utility>
 
+#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/accessibility_controller.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/tablet_mode.h"
@@ -30,6 +33,10 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/app_list/app_list_model_updater.h"
+#include "chrome/browser/ash/app_list/app_list_syncable_service.h"
+#include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/input_method_test_interface_ash.h"
 #include "chrome/browser/ash/crosapi/vpn_service_ash.h"
@@ -48,6 +55,7 @@
 #include "chromeos/ash/components/dbus/shill/shill_third_party_vpn_driver_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/cryptohome_misc_client.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "components/sync/model/string_ordinal.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/version_info/version_info.h"
@@ -707,6 +715,82 @@ void TestControllerAsh::TtsSpeak(
 void TestControllerAsh::IsSavedDeskStorageReady(
     IsSavedDeskStorageReadyCallback callback) {
   std::move(callback).Run(DesksClient::Get()->GetDeskModel()->IsReady());
+}
+
+void TestControllerAsh::SetAssistiveTechnologyEnabled(
+    crosapi::mojom::AssistiveTechnologyType at_type,
+    bool enabled) {
+  ash::AccessibilityManager* manager = ash::AccessibilityManager::Get();
+  switch (at_type) {
+    case crosapi::mojom::AssistiveTechnologyType::kChromeVox:
+      manager->EnableSpokenFeedback(enabled);
+      break;
+    case mojom::AssistiveTechnologyType::kSelectToSpeak:
+      manager->SetSelectToSpeakEnabled(enabled);
+      break;
+    case mojom::AssistiveTechnologyType::kSwitchAccess: {
+      // Don't show "are you sure you want to turn off switch access?" dialog
+      // during these tests, as it causes a side-effect for future tests run
+      // in series.
+      auto* controller = ash::AccessibilityController::Get();
+      controller->DisableSwitchAccessDisableConfirmationDialogTesting();
+      // Don't show the dialog saying Switch Access was enabled.
+      controller->DisableSwitchAccessEnableNotificationTesting();
+      // Set some Switch Access prefs so that the os://settings page is not
+      // opened (this is done if settings are not configured on first use):
+      manager->SetSwitchAccessKeysForTest(
+          {'1', 'A'}, ash::prefs::kAccessibilitySwitchAccessNextDeviceKeyCodes);
+      manager->SetSwitchAccessKeysForTest(
+          {'2', 'B'},
+          ash::prefs::kAccessibilitySwitchAccessSelectDeviceKeyCodes);
+      manager->SetSwitchAccessEnabled(enabled);
+      break;
+    }
+    case mojom::AssistiveTechnologyType::kUnknown:
+      LOG(ERROR) << "Cannot enable unknown AssistiveTechnologyType";
+      break;
+  }
+}
+
+void TestControllerAsh::GetAppListItemAttributes(
+    const std::string& item_id,
+    GetAppListItemAttributesCallback callback) {
+  auto* profile = ProfileManager::GetPrimaryUserProfile();
+  app_list::AppListSyncableService* app_list_syncable_service =
+      app_list::AppListSyncableServiceFactory::GetForProfile(profile);
+
+  auto attributes = mojom::AppListItemAttributes::New();
+  if (const app_list::AppListSyncableService::SyncItem* sync_item =
+          app_list_syncable_service->GetSyncItem(item_id)) {
+    attributes->item_position = sync_item->item_ordinal.ToDebugString();
+    attributes->pin_position = sync_item->item_pin_ordinal.ToDebugString();
+  }
+  std::move(callback).Run(std::move(attributes));
+}
+
+void TestControllerAsh::SetAppListItemAttributes(
+    const std::string& item_id,
+    mojom::AppListItemAttributesPtr attributes,
+    SetAppListItemAttributesCallback callback) {
+  auto* profile = ProfileManager::GetPrimaryUserProfile();
+  app_list::AppListSyncableService* app_list_syncable_service =
+      app_list::AppListSyncableServiceFactory::GetForProfile(profile);
+  AppListModelUpdater* app_list_model_updater =
+      app_list_syncable_service->GetModelUpdater();
+  app_list_model_updater->SetActive(true);
+
+  app_list_model_updater->SetItemPosition(
+      item_id, syncer::StringOrdinal(attributes->item_position));
+
+  if (auto ordinal = syncer::StringOrdinal(attributes->pin_position);
+      ordinal.IsValid()) {
+    app_list_syncable_service->SetPinPosition(item_id, ordinal,
+                                              /*pinned_by_policy=*/false);
+  } else {
+    app_list_syncable_service->RemovePinPosition(item_id);
+  }
+
+  std::move(callback).Run();
 }
 
 void TestControllerAsh::OnAshUtteranceFinished(int utterance_id) {

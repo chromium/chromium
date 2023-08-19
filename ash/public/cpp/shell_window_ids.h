@@ -152,8 +152,8 @@ enum ShellWindowId {
   // The container for menus.
   kShellWindowId_MenuContainer,
 
-  // The container for drag/drop images, tooltips, toasts and widgets that are
-  // tagged with ui::ZOrderLevel::kSecuritySurface.
+  // The container for drag/drop images, tooltips and widgets that are tagged
+  // with ui::ZOrderLevel::kSecuritySurface.
   kShellWindowId_DragImageAndTooltipContainer,
 
   // The container for the fullscreen power button menu.
@@ -161,7 +161,7 @@ enum ShellWindowId {
 
   // The container for bubbles briefly overlaid onscreen to show settings
   // changes (volume, brightness, input method bubbles, etc.), tray bubbles and
-  // notifier elements such as notification popups and system nudges.
+  // notifier elements such as notification popups, toasts and system nudges.
   kShellWindowId_SettingBubbleContainer,
 
   // The container for help bubbles which are anchored to views for the purpose
@@ -245,7 +245,7 @@ enum NonContainerWindowId {
 // A list of system modal container IDs. The order of the list is important that
 // the more restrictive container appears before the less restrictive ones.
 constexpr int kSystemModalContainerIds[] = {
-    kShellWindowId_LockSystemModalContainer,
+    kShellWindowId_LockSystemModalContainer, kShellWindowId_HelpBubbleContainer,
     kShellWindowId_SystemModalContainer};
 
 // Returns the list of container ids of containers which may contain windows

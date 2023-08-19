@@ -16,6 +16,7 @@ import android.util.Rational;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
@@ -24,6 +25,8 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.compat.ApiHelperForS;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
@@ -35,9 +38,10 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.WindowAndroid;
 
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * A controller for entering Android O Picture in Picture mode with fullscreen videos.
@@ -103,11 +107,16 @@ public class FullscreenVideoPictureInPictureController {
     private static final float MIN_ASPECT_RATIO = 1 / 2.39f;
     private static final float MAX_ASPECT_RATIO = 2.39f;
 
+    // Somewhat arbitrarily-chosen minimum interval between when we're notified that we have entered
+    // Picture in Picture, and when we'll try to exit it.  Otherwise, Android can get into a bad
+    // state when chrome is broght to the foreground again -- it still is clipped to a pip-sized
+    // area, complete with rounded corners.  See https://crbug.com/1421703 for more details.
+    /* package */ static final long MIN_EXIT_DELAY_MILLIS = 50;
+
     // Components names that won't trigger the pip mode. Use cases like notification clicks won't
     // trigger pip.
-    private static final HashSet<String> NO_PIP_COMPONENT_NAMES = new HashSet<String>() {
-        { add(NotificationIntentInterceptor.TrampolineActivity.class.getName()); }
-    };
+    private static final Set<String> NO_PIP_COMPONENT_NAMES = Collections.singleton(
+            NotificationIntentInterceptor.TrampolineActivity.class.getName());
 
     /** Callbacks to cleanup after leaving PiP. */
     private final List<Runnable> mOnLeavePipCallbacks = new LinkedList<>();
@@ -127,6 +136,9 @@ public class FullscreenVideoPictureInPictureController {
     /** Should we notify the framework if Picture in Picture should be allowed? */
     private final boolean mListenForAutoEnterability;
 
+    /** Wall clock time when we last entered Picture in Picture */
+    private long mLastOnEnteredTimeMillis;
+
     public FullscreenVideoPictureInPictureController(Activity activity,
             ActivityTabProvider activityTabProvider, FullscreenManager fullscreenManager) {
         mActivity = activity;
@@ -143,8 +155,7 @@ public class FullscreenVideoPictureInPictureController {
     /**
      * Convenience method to get the {@link WebContents} from the active Tab.
      */
-    @Nullable
-    private WebContents getWebContents() {
+    private @Nullable WebContents getWebContents() {
         Tab tab = mActivityTabProvider.get();
         if (tab == null) return null;
         return tab.getWebContents();
@@ -163,15 +174,13 @@ public class FullscreenVideoPictureInPictureController {
      * @param checkCurrentMode should be true if and only if "already in PiP mode" is sufficient to
      *                         cause this to return failure.
      */
-    @MetricsAttemptResult
-    private int getAttemptResult(boolean checkCurrentMode) {
+    private @MetricsAttemptResult int getAttemptResult(boolean checkCurrentMode) {
         WebContents webContents = getWebContents();
         if (webContents == null) {
             return MetricsAttemptResult.NO_WEB_CONTENTS;
         }
 
-        // Non-null WebContents implies the native library has been loaded.
-        assert LibraryLoader.getInstance().isInitialized();
+        assertLibraryLoaderIsInitialized();
 
         // Only auto-PiP if there is a playing fullscreen video that allows PiP.
         if (!webContents.hasActiveEffectivelyFullscreenVideo()
@@ -226,8 +235,7 @@ public class FullscreenVideoPictureInPictureController {
      * Return a METRICS_ATTEMPT_REASON_* for whether Picture in Picture is okay or not.  Considers
      * that "already in PiP mode" is a reason to say no.
      */
-    @MetricsAttemptResult
-    private int getAttemptResult() {
+    private @MetricsAttemptResult int getAttemptResult() {
         return getAttemptResult(true);
     }
 
@@ -270,6 +278,8 @@ public class FullscreenVideoPictureInPictureController {
     public void onEnteredPictureInPictureMode() {
         Log.i(TAG, "Entered Picture-in-picture.");
 
+        mLastOnEnteredTimeMillis = SystemClock.elapsedRealtime();
+
         // Inform the WebContents when we enter and when we leave PiP.
         final WebContents webContents = getWebContents();
         // If we're closing the tab, just stop here.
@@ -280,11 +290,11 @@ public class FullscreenVideoPictureInPictureController {
         final Tab activityTab = mActivityTabProvider.get();
 
         // We don't want InfoBars displaying while in PiP, they cover too much content.
-        InfoBarContainer.get(activityTab).setHidden(true);
+        getInfoBarContainerForTab(activityTab).setHidden(true);
 
         mOnLeavePipCallbacks.add(() -> {
             webContents.setHasPersistentVideo(false);
-            InfoBarContainer.get(activityTab).setHidden(false);
+            getInfoBarContainerForTab(activityTab).setHidden(false);
         });
 
         // Setup observers to dismiss the Activity on events that should end PiP.  In auto-enter
@@ -469,6 +479,18 @@ public class FullscreenVideoPictureInPictureController {
         updateAutoPictureInPictureStatus();
 
         if (!isPipSessionActive()) {
+            return;
+        }
+
+        // If we just entered PiP, then re-post this.  There are corner cases where we exit PiP via
+        // some other way, then re-enter it that might go wrong if we don't cancel this, but all of
+        // these cases are very questionable.  The important thing is that, once
+        // `onExitedPictureInPicture` runs, future callbacks will either (a) do nothing because
+        // `isPipSessionActive()` will be false, or (b) try to close PiP properly.  We also don't
+        // try to pro-rate the exit delay; it's short and arbitrary anyway.
+        if (SystemClock.elapsedRealtime() - mLastOnEnteredTimeMillis < MIN_EXIT_DELAY_MILLIS) {
+            PostTask.postDelayedTask(TaskTraits.UI_USER_BLOCKING,
+                    () -> dismissActivityIfNeeded(activity, reason), MIN_EXIT_DELAY_MILLIS);
             return;
         }
 
@@ -666,5 +688,21 @@ public class FullscreenVideoPictureInPictureController {
                 dismissActivityIfNeeded(mActivity, MetricsEndReason.WEB_CONTENTS_LEFT_FULLSCREEN);
             }
         }
+    }
+
+    /** Protected to allow tests to override, since mocking statics is error-prone. */
+    @VisibleForTesting
+    /* package */ InfoBarContainer getInfoBarContainerForTab(Tab tab) {
+        return InfoBarContainer.get(tab);
+    }
+
+    /**
+     * Protected to allow tests to override, since it breaks in N.  It's also not clear that we
+     * need this at all.
+     */
+    @VisibleForTesting
+    /* package */ void assertLibraryLoaderIsInitialized() {
+        // Non-null WebContents implies the native library has been loaded.
+        assert LibraryLoader.getInstance().isInitialized();
     }
 }

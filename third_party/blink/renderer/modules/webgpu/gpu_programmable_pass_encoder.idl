@@ -5,11 +5,11 @@
 // https://gpuweb.github.io/gpuweb/
 
 interface mixin GPUProgrammablePassEncoder {
-    void setBindGroup(GPUIndex32 index, GPUBindGroup bindGroup,
+    void setBindGroup(GPUIndex32 index, GPUBindGroup? bindGroup,
                       optional sequence<GPUBufferDynamicOffset> dynamicOffsets);
 
     [RaisesException] void setBindGroup(
-        GPUIndex32 index, GPUBindGroup bindGroup,
+        GPUIndex32 index, GPUBindGroup? bindGroup,
         [AllowShared, FlexibleArrayBufferView] Uint32Array dynamicOffsetsData,
         GPUSize64 dynamicOffsetsDataStart,
         GPUSize32 dynamicOffsetsDataLength);

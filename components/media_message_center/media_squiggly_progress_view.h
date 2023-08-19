@@ -27,6 +27,8 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaSquigglyProgressView
   explicit MediaSquigglyProgressView(
       ui::ColorId foreground_color_id,
       ui::ColorId background_color_id,
+      ui::ColorId focus_ring_color_id,
+      base::RepeatingCallback<void(bool)> dragging_callback,
       base::RepeatingCallback<void(double)> seek_callback);
   MediaSquigglyProgressView(const MediaSquigglyProgressView&) = delete;
   MediaSquigglyProgressView& operator=(const MediaSquigglyProgressView&) =
@@ -37,11 +39,18 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaSquigglyProgressView
   void AnimationProgressed(const gfx::Animation* animation) override;
 
   // views::View:
+  gfx::Size CalculatePreferredSize() const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
   void VisibilityChanged(View* starting_from, bool is_visible) override;
   void AddedToWidget() override;
   void OnPaint(gfx::Canvas* canvas) override;
+  void OnFocus() override;
+  void OnBlur() override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
+  bool OnMouseDragged(const ui::MouseEvent& event) override;
+  void OnMouseReleased(const ui::MouseEvent& event) override;
+  bool OnKeyPressed(const ui::KeyEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
 
   // Updates the progress in UI given the new media position.
@@ -56,8 +65,11 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaSquigglyProgressView
   // Fires an accessibility event if the progress has changed.
   void MaybeNotifyAccessibilityValueChanged();
 
-  // Handles the event when user seeks for a new media position.
-  void HandleSeeking(const gfx::Point& location);
+  // Handles the event when user seeks to a new location on the progress view.
+  void HandleSeeking(double location);
+
+  // Returns the new current progress value given the new media position.
+  double CalculateNewValue(base::TimeDelta new_position);
 
   // Returns whether the given seek position is valid to be handled.
   bool IsValidSeekPosition(int x, int y);
@@ -65,14 +77,20 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaSquigglyProgressView
   // Init parameters.
   ui::ColorId foreground_color_id_;
   ui::ColorId background_color_id_;
+  ui::ColorId focus_ring_color_id_;
+  const base::RepeatingCallback<void(bool)> dragging_callback_;
   const base::RepeatingCallback<void(double)> seek_callback_;
 
   // Current progress value in the range from 0.0 to 1.0.
   double current_value_ = 0.0;
 
+  // Current media position and media duration.
+  base::TimeDelta current_position_;
+  base::TimeDelta media_duration_ = base::TimeDelta::Max();
+
   // Fraction of the progress amplitude used for progress path to transition
-  // between squiggly and straight lines.
-  double progress_amp_fraction_ = 1;
+  // between squiggly and straight lines, in the range from 0.0 to 1.0.
+  double progress_amp_fraction_ = 0;
 
   // The percentage progress value last announced for accessibility.
   int last_announced_percentage_ = -1;
@@ -85,14 +103,18 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaSquigglyProgressView
   // lines.
   gfx::SlideAnimation slide_animation_;
 
-  // Timer to continuously update the progress value.
-  base::RepeatingTimer update_progress_timer_;
+  // Timer to continuously update the progress value if the media is playing.
+  base::OneShotTimer update_progress_timer_;
 
   // True if the media is paused.
   bool is_paused_ = true;
 
   // True if the media is a live stream.
   bool is_live_ = false;
+
+  // Whether the media is currently paused due to the user dragging the progress
+  // line.
+  bool paused_for_dragging_ = false;
 };
 
 }  // namespace media_message_center

@@ -13,15 +13,10 @@
 #include "components/system_media_controls/mac/now_playing_info_center_delegate_cocoa.h"
 #include "skia/ext/skia_utils_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace system_media_controls::internal {
 
 namespace {
 
-API_AVAILABLE(macos(10.13.1))
 MPNowPlayingPlaybackState PlaybackStatusToMPNowPlayingPlaybackState(
     SystemMediaControls::PlaybackStatus status) {
   switch (status) {

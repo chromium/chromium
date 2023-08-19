@@ -8,12 +8,12 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.collection.ArrayMap;
 
 import org.chromium.base.Callback;
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.page_info.CertificateChainHelper;
@@ -150,6 +150,9 @@ public class PaymentRequestService
     private boolean mIsHasEnrolledInstrumentResponsePending;
     @Nullable
     private PaymentApp mInvokedPaymentApp;
+
+    /** True if a show() call is rejected for lack of a user activation. */
+    private boolean mRejectShowForUserActivation;
 
     /**
      * An observer interface injected when running tests to allow them to observe events.
@@ -416,6 +419,7 @@ public class PaymentRequestService
         mDelegate = delegate;
         mHasClosed = false;
         mPaymentAppServiceBridgeSupplier = paymentAppServiceBridgeSupplier;
+        mRejectShowForUserActivation = false;
     }
 
     /**
@@ -639,18 +643,19 @@ public class PaymentRequestService
         Log.d(TAG, debugMessage);
         if (mClient != null) {
             // Secure Payment Confirmation must make it indistinguishable to the merchant page as to
-            // whether an error is caused by user aborting or lack of credentials. There are two
+            // whether an error is caused by user aborting or lack of credentials. There are three
             // exceptions:
             //
             //   1. Erroring due to icon download failure; this happens before checking for
             //      credential matching and so is not a privacy leak.
             //   2. Handling the 'opt out' error - this error can be produced by both the matching
             //      and non-matching credential UXs, and so is not a privacy leak.
+            //   3. Erroring due to a lack of user activation when it is not allowed.
             boolean obscureRealError = PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
                                                PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)
                     && mSpec != null && mSpec.isSecurePaymentConfirmationRequested()
                     && mRejectShowErrorReason != AppCreationFailureReason.ICON_DOWNLOAD_FAILED
-                    && reason != PaymentErrorReason.USER_OPT_OUT;
+                    && reason != PaymentErrorReason.USER_OPT_OUT && !mRejectShowForUserActivation;
             mClient.onError(obscureRealError ? PaymentErrorReason.NOT_ALLOWED_ERROR : reason,
                     obscureRealError ? ErrorStrings.WEB_AUTHN_OPERATION_TIMED_OUT_OR_NOT_ALLOWED
                                      : debugMessage);
@@ -666,9 +671,9 @@ public class PaymentRequestService
      * before PaymentRequest implementations are instantiated.
      * @param nativeObserverForTest The native-side observer.
      */
-    @VisibleForTesting
     public static void setNativeObserverForTest(NativeObserverForTest nativeObserverForTest) {
         sNativeObserverForTest = nativeObserverForTest;
+        ResettersForTesting.register(() -> sNativeObserverForTest = null);
     }
 
     /** @return Get the native=side observer, for testing purpose only. */
@@ -877,7 +882,10 @@ public class PaymentRequestService
                 // preserve user privacy. An exception is failure to download the card art icon -
                 // because we download it in all cases, revealing a failure doesn't leak any
                 // information about the user to the site.
-                && mRejectShowErrorReason != AppCreationFailureReason.ICON_DOWNLOAD_FAILED) {
+                && mRejectShowErrorReason != AppCreationFailureReason.ICON_DOWNLOAD_FAILED
+                // Another exception is if the show() request is being denied for lack of a user
+                // gesture.
+                && !mRejectShowForUserActivation) {
             mJourneyLogger.setNoMatchingCredentialsShown();
             mNoMatchingController =
                     SecurePaymentConfirmationNoMatchingCredController.create(mWebContents);
@@ -1071,9 +1079,10 @@ public class PaymentRequestService
         return !TextUtils.isEmpty(mDelegate.getTwaPackageName());
     }
 
-    @VisibleForTesting
     public static void setIsLocalHasEnrolledInstrumentQueryQuotaEnforcedForTest() {
         sIsLocalHasEnrolledInstrumentQueryQuotaEnforcedForTest = true;
+        ResettersForTesting.register(
+                () -> sIsLocalHasEnrolledInstrumentQueryQuotaEnforcedForTest = false);
     }
 
     // Implements PaymentAppFactoryDelegate:
@@ -1214,7 +1223,6 @@ public class PaymentRequestService
         return result;
     }
 
-    @VisibleForTesting
     public static void resetShowingPaymentRequestForTest() {
         sShowingPaymentRequest = null;
     }
@@ -1223,7 +1231,7 @@ public class PaymentRequestService
      * The component part of the {@link PaymentRequest#show} implementation. Check {@link
      * PaymentRequest#show} for the parameters' specification.
      */
-    /* package */ void show(boolean waitForUpdatedDetails) {
+    /* package */ void show(boolean waitForUpdatedDetails, boolean hadUserActivation) {
         if (mBrowserPaymentRequest == null) return;
         assert mSpec != null;
         assert !mSpec.isDestroyed() : "mSpec is destroyed only after close().";
@@ -1244,6 +1252,20 @@ public class PaymentRequestService
             onShowFailed(NotShownReason.CONCURRENT_REQUESTS, ErrorStrings.ANOTHER_UI_SHOWING,
                     PaymentErrorReason.ALREADY_SHOWING);
             return;
+        }
+        if (!hadUserActivation) {
+            PaymentRequestWebContentsData paymentRequestWebContentsData =
+                    PaymentRequestWebContentsData.from(mWebContents);
+            if (paymentRequestWebContentsData.hadActivationlessShow()) {
+                // Reject the call to show(), because only one activationless show is allowed per
+                // page.
+                mRejectShowForUserActivation = true;
+                onShowFailed(NotShownReason.OTHER, ErrorStrings.CANNOT_SHOW_WITHOUT_USER_ACTIVATION,
+                        PaymentErrorReason.NOT_ALLOWED_ERROR);
+                return;
+            }
+            mJourneyLogger.setActivationlessShow();
+            paymentRequestWebContentsData.recordActivationlessShow();
         }
         sShowingPaymentRequest = this;
         mJourneyLogger.recordCheckoutStep(CheckoutFunnelStep.SHOW_CALLED);
@@ -1616,10 +1638,10 @@ public class PaymentRequestService
     }
 
     /** Set an observer for the payment request service, cannot be null. */
-    @VisibleForTesting
     public static void setObserverForTest(PaymentRequestServiceObserverForTest observerForTest) {
         assert observerForTest != null;
         sObserverForTest = observerForTest;
+        ResettersForTesting.register(() -> sObserverForTest = null);
     }
 
     /** Invokes {@link PaymentRequestClient.onShippingAddressChange}. */
@@ -1873,14 +1895,12 @@ public class PaymentRequestService
         }
     }
 
-    @VisibleForTesting
     @Nullable
     public static SecurePaymentConfirmationAuthnController
     getSecurePaymentConfirmationAuthnUiForTesting() {
         return sShowingPaymentRequest == null ? null : sShowingPaymentRequest.mSpcAuthnUiController;
     }
 
-    @VisibleForTesting
     @Nullable
     public static SecurePaymentConfirmationNoMatchingCredController
     getSecurePaymentConfirmationNoMatchingCredUiForTesting() {

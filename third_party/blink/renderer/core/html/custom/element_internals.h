@@ -48,7 +48,7 @@ class CORE_EXPORT ElementInternals : public ScriptWrappable,
                    ExceptionState& exception_state);
   void setValidity(ValidityStateFlags* flags,
                    const String& message,
-                   Element* anchor,
+                   HTMLElement* anchor,
                    ExceptionState& exception_state);
   bool willValidate(ExceptionState& exception_state) const;
   ValidityState* validity(ExceptionState& exception_state);

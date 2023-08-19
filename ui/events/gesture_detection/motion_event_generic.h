@@ -8,8 +8,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/containers/stack_container.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "ui/events/gesture_detection/gesture_detection_export.h"
 #include "ui/events/gesture_detection/motion_event.h"
 
@@ -135,7 +135,7 @@ class GESTURE_DETECTION_EXPORT MotionEventGeneric : public MotionEvent {
   int action_index_;
   int button_state_;
   int flags_;
-  base::StackVector<PointerProperties, kTypicalMaxPointerCount> pointers_;
+  absl::InlinedVector<PointerProperties, kTypicalMaxPointerCount> pointers_;
   std::vector<std::unique_ptr<MotionEvent>> historical_events_;
 };
 

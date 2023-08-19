@@ -43,7 +43,16 @@
 //      callback.
 //    * If one sequence is notifying observers concurrently with an observer
 //      removing itself from the observer list, the notifications will be
-//      silently dropped.
+//      silently dropped. However if the observer is currently inside a
+//      notification callback, the callback will finish running.
+//
+//   By default, observers can be removed from any sequence. However this can be
+//   error-prone since an observer may be running a callback when it's removed,
+//   in which case it isn't safe to delete until the callback is finished.
+//   Consider using the RemoveObserverPolicy::kAddingSequenceOnly template
+//   parameter, which will CHECK that observers are only removed from the
+//   sequence where they were added (which is also the sequence that runs
+//   callbacks).
 //
 //   The drawback of the threadsafe observer list is that notifications are not
 //   as real-time as the non-threadsafe version of this class. Notifications
@@ -98,8 +107,19 @@ class BASE_EXPORT ObserverListThreadSafeBase
 
 }  // namespace internal
 
-template <class ObserverType>
+enum class RemoveObserverPolicy {
+  // Observers can be removed from any sequence.
+  kAnySequence,
+  // Observers can only be removed from the sequence that added them.
+  kAddingSequenceOnly,
+};
+
+template <class ObserverType,
+          RemoveObserverPolicy RemovePolicy =
+              RemoveObserverPolicy::kAnySequence>
 class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
+  using Self = ObserverListThreadSafe<ObserverType, RemovePolicy>;
+
  public:
   enum class AddObserverResult {
     kBecameNonEmpty,
@@ -160,7 +180,7 @@ class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
             static_cast<const NotificationData*>(current_notification);
         task_runner->PostTask(
             current_notification->from_here,
-            BindOnce(&ObserverListThreadSafe<ObserverType>::NotifyWrapper, this,
+            BindOnce(&Self::NotifyWrapper, this,
                      // While `observer` may be dangling, we pass it and
                      // check it wasn't deallocated in NotifyWrapper() which can
                      // check `observers_` to verify presence (the owner of the
@@ -184,6 +204,11 @@ class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
   // observer won't stop it.
   RemoveObserverResult RemoveObserver(ObserverType* observer) {
     AutoLock auto_lock(lock_);
+    if constexpr (RemovePolicy == RemoveObserverPolicy::kAddingSequenceOnly) {
+      const auto it = observers_.find(observer);
+      CHECK(it == observers_.end() ||
+            it->second.task_runner->RunsTasksInCurrentSequence());
+    }
     observers_.erase(observer);
     return observers_.empty() ? RemoveObserverResult::kWasOrBecameEmpty
                               : RemoveObserverResult::kRemainsNonEmpty;
@@ -214,7 +239,7 @@ class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
     for (const auto& observer : observers_) {
       observer.second.task_runner->PostTask(
           from_here,
-          BindOnce(&ObserverListThreadSafe<ObserverType>::NotifyWrapper, this,
+          BindOnce(&Self::NotifyWrapper, this,
                    // While `observer.first` may be dangling, we pass it and
                    // check it wasn't deallocated in NotifyWrapper() which can
                    // check `observers_` to verify presence (the owner of the

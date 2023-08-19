@@ -56,15 +56,8 @@ generate_grd("build_grd") {
 
   input_files_base_dir = rebase_path(".", "//")
   input_files = [
-    # Vector resources
-    "assistant_ready_dm.json",
-    "assistant_ready_lm.json",
-    "assistant_related_info_dm.json",
-    "assistant_related_info_lm.json",
-    "voice_laptop_dm.json",
-    "voice_laptop_lm.json",
-    "voice_tablet_dm.json",
-    "voice_tablet_lm.json",
+    "voice_laptop.json",
+    "voice_tablet.json",
   ]
   resource_path_prefix = "assistant_optin"
 }

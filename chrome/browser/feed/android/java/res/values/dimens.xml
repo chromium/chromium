@@ -54,6 +54,12 @@ found in the LICENSE file.
     <dimen name="feed_header_dropdown_size">15dp</dimen>
     <dimen name="feed_header_tab_extra_margin_right">7dp</dimen>
     <dimen name="feed_header_background_corner_radius">60dp</dimen>
+    <dimen name="feed_header_background_corner_radius_polished">8dp</dimen>
+    <dimen name="feed_header_tab_layout_height_polished">36dp</dimen>
+    <dimen name="feed_header_tab_layout_width_max">165dp</dimen>
+    <dimen name="feed_header_menu_width_polished">24dp</dimen>
+    <dimen name="feed_header_menu_end_margin">20dp</dimen>
+    <dimen name="feed_header_tab_end_margin">8dp</dimen>
 
     <!-- Feed unread dot dimens -->
     <dimen name="feed_badge_radius">2.5dp</dimen>

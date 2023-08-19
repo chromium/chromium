@@ -92,7 +92,15 @@ class CaptionBubbleModel {
   std::string GetFullText() const { return final_text_ + partial_text_; }
   CaptionBubbleContext* GetContext() { return context_; }
 
+  // Returns the auto-detected language code or an empty string if the language
+  // was not automatically switched.
+  std::string GetAutoDetectedLanguageCode() const {
+    return auto_detected_language_code_;
+  }
+
   Id unique_id() const { return unique_id_; }
+
+  void SetLanguage(const std::string& language_code);
 
  private:
   // Generates the next unique id.
@@ -101,10 +109,16 @@ class CaptionBubbleModel {
   // Alert the observer that a change has occurred to the model text.
   void OnTextChanged();
 
+  // Alert the observer that the auto-detected language of the model has
+  // changed.
+  void OnAutoDetectedLanguageChanged();
+
   const Id unique_id_;
 
   std::string final_text_;
   std::string partial_text_;
+
+  std::string auto_detected_language_code_ = std::string();
 
   // Whether the bubble has been closed by the user.
   bool is_closed_ = false;

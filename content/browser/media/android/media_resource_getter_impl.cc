@@ -90,7 +90,13 @@ void ReturnResultOnUIThread(
 void ReturnResultOnUIThreadAndClosePipe(
     mojo::Remote<network::mojom::RestrictedCookieManager> pipe,
     base::OnceCallback<void(const std::string&)> callback,
+    uint64_t version,
+    base::ReadOnlySharedMemoryRegion shared_memory_region,
     const std::string& result) {
+  // Clients of GetCookiesString() are free to use |shared_memory_region| and
+  // |result| to avoid IPCs when possible. This class has not proven to be a
+  // high enough source of IPC traffic to warrant wiring this up. Using them
+  // is completely optional so they are simply dropped here.
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), result));
 }
@@ -161,6 +167,7 @@ void MediaResourceGetterImpl::GetCookies(
       cookie_manager.get();
   cookie_manager_ptr->GetCookiesString(
       url, site_for_cookies, top_frame_origin, has_storage_access,
+      /*get_version_shared_memory=*/false,
       base::BindOnce(&ReturnResultOnUIThreadAndClosePipe,
                      std::move(cookie_manager), std::move(callback)));
 }

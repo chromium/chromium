@@ -760,11 +760,13 @@ scoped_refptr<BrowserThemePack> BrowserThemePack::BuildFromDataPack(
     return nullptr;
   }
 
-  base::StringPiece pointer;
-  if (!data_pack->GetStringPiece(kHeaderID, &pointer))
+  absl::optional<base::StringPiece> pointer =
+      data_pack->GetStringPiece(kHeaderID);
+  if (!pointer) {
     return nullptr;
-  pack->header_ = reinterpret_cast<BrowserThemePackHeader*>(const_cast<char*>(
-      pointer.data()));
+  }
+  pack->header_ = reinterpret_cast<BrowserThemePackHeader*>(
+      const_cast<char*>(pointer->data()));
 
   if (pack->header_->version != kThemePackVersion) {
     DLOG(ERROR) << "BuildFromDataPack failure! Version mismatch!";
@@ -779,30 +781,40 @@ scoped_refptr<BrowserThemePack> BrowserThemePack::BuildFromDataPack(
     return nullptr;
   }
 
-  if (!data_pack->GetStringPiece(kTintsID, &pointer))
+  pointer = data_pack->GetStringPiece(kTintsID);
+  if (!pointer) {
     return nullptr;
-  pack->tints_ = reinterpret_cast<TintEntry*>(const_cast<char*>(
-      pointer.data()));
+  }
+  pack->tints_ =
+      reinterpret_cast<TintEntry*>(const_cast<char*>(pointer->data()));
 
-  if (!data_pack->GetStringPiece(kColorsID, &pointer))
+  pointer = data_pack->GetStringPiece(kColorsID);
+  if (!pointer) {
     return nullptr;
+  }
   pack->colors_ =
-      reinterpret_cast<ColorPair*>(const_cast<char*>(pointer.data()));
+      reinterpret_cast<ColorPair*>(const_cast<char*>(pointer->data()));
 
-  if (!data_pack->GetStringPiece(kDisplayPropertiesID, &pointer))
+  pointer = data_pack->GetStringPiece(kDisplayPropertiesID);
+  if (!pointer) {
     return nullptr;
+  }
   pack->display_properties_ = reinterpret_cast<DisplayPropertyPair*>(
-      const_cast<char*>(pointer.data()));
+      const_cast<char*>(pointer->data()));
 
-  if (!data_pack->GetStringPiece(kSourceImagesID, &pointer))
+  pointer = data_pack->GetStringPiece(kSourceImagesID);
+  if (!pointer) {
     return nullptr;
-  pack->source_images_ = reinterpret_cast<int*>(
-      const_cast<char*>(pointer.data()));
+  }
+  pack->source_images_ =
+      reinterpret_cast<int*>(const_cast<char*>(pointer->data()));
 
-  if (!data_pack->GetStringPiece(kScaleFactorsID, &pointer))
+  pointer = data_pack->GetStringPiece(kScaleFactorsID);
+  if (!pointer) {
     return nullptr;
+  }
 
-  if (!InputScalesValid(pointer, pack->scale_factors_)) {
+  if (!InputScalesValid(pointer.value(), pack->scale_factors_)) {
     DLOG(ERROR) << "BuildFromDataPack failure! The pack scale factors differ "
                 << "from those supported by platform.";
     return nullptr;
@@ -1050,9 +1062,8 @@ bool BrowserThemePack::HasCustomImage(int idr_id) const {
   return false;
 }
 
-void BrowserThemePack::AddColorMixers(
-    ui::ColorProvider* provider,
-    const ui::ColorProviderManager::Key& key) const {
+void BrowserThemePack::AddColorMixers(ui::ColorProvider* provider,
+                                      const ui::ColorProviderKey& key) const {
   ui::ColorMixer& mixer = provider->AddMixer();
 
   // TODO(http://crbug.com/878664): Enable for all cases.
@@ -1738,7 +1749,7 @@ void BrowserThemePack::GenerateWindowControlButtonColor(ImageCache* images) {
     button_bg_alpha = SkColorGetA(button_bg_color);
 
   button_bg_alpha =
-      WindowFrameUtil::CalculateWindows10GlassCaptionButtonBackgroundAlpha(
+      WindowFrameUtil::CalculateWindowsCaptionButtonBackgroundAlpha(
           button_bg_alpha);
 
   // Determine what portion of the image to use in our calculations (we won't
@@ -1749,8 +1760,7 @@ void BrowserThemePack::GenerateWindowControlButtonColor(ImageCache* images) {
   // processing time (as it is determined by the size of icons, which we don't
   // have easy access to here), so we use the glass frame area as an
   // approximation.
-  gfx::Size dest_size =
-      WindowFrameUtil::GetWindows10GlassCaptionButtonAreaSize();
+  gfx::Size dest_size = WindowFrameUtil::GetWindowsCaptionButtonAreaSize();
 
   // To get an accurate sampling, all we need to do is get a representative
   // image that is at MOST the size of the caption button area.  In the case of

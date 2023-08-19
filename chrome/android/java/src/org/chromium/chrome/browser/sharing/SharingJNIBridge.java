@@ -14,8 +14,6 @@ import org.chromium.base.annotations.CalledByNative;
  * JNI bridge for SharingService.
  */
 public class SharingJNIBridge {
-    private static final String TAG = "SharingJNIBridge";
-
     // Returns if device supports telephony capability.
     @CalledByNative
     public static boolean isTelephonySupported() {

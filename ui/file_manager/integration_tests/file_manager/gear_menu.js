@@ -614,6 +614,10 @@ testcase.showAvailableStorageMyFiles = async () => {
  * the "Google Drive" volume.
  */
 testcase.showAvailableStorageDrive = async () => {
+  // Mock the pooled storage quota to have 1 MB available.
+  await remoteCall.setPooledStorageQuotaUsage(
+      1 * 1024 * 1024, 2 * 1024 * 1024, false);
+
   // Open Files app on Drive containing ENTRIES.hello.
   const appId =
       await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.hello]);

@@ -9,10 +9,6 @@
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_tab_allow_list.h"
 #import "ios/web/public/web_state.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // Creates a metrics helper for `url`.
 std::unique_ptr<security_interstitials::IOSBlockingPageMetricsHelper>

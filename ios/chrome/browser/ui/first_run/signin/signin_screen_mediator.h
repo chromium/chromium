@@ -42,6 +42,8 @@ class SyncService;
 @property(nonatomic, assign) BOOL UMALinkWasTapped;
 // Whether an account has been added. Must be set externally.
 @property(nonatomic, assign) BOOL addedAccount;
+// Whether dismiss gestures should be ignored (e.g. swipe away).
+@property(nonatomic, assign, readonly) BOOL ignoreDismissGesture;
 
 // The designated initializer.
 // `accountManagerService` account manager service.

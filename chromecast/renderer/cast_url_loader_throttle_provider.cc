@@ -20,11 +20,11 @@ CastURLLoaderThrottleProvider::CastURLLoaderThrottleProvider(
     blink::URLLoaderThrottleProviderType type,
     CastActivityUrlFilterManager* url_filter_manager)
     : type_(type), cast_activity_url_filter_manager_(url_filter_manager) {
-  DETACH_FROM_THREAD(thread_checker_);
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 CastURLLoaderThrottleProvider::~CastURLLoaderThrottleProvider() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 CastURLLoaderThrottleProvider::CastURLLoaderThrottleProvider(
@@ -32,7 +32,7 @@ CastURLLoaderThrottleProvider::CastURLLoaderThrottleProvider(
     : type_(other.type_),
       cast_activity_url_filter_manager_(
           other.cast_activity_url_filter_manager_) {
-  DETACH_FROM_THREAD(thread_checker_);
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 std::unique_ptr<blink::URLLoaderThrottleProvider>
@@ -44,7 +44,7 @@ blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>>
 CastURLLoaderThrottleProvider::CreateThrottles(
     int render_frame_id,
     const blink::WebURLRequest& request) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
 

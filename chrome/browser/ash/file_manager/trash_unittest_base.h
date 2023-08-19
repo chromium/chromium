@@ -13,8 +13,8 @@
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
-#include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -66,15 +66,16 @@ class TrashBaseTest : public testing::Test {
   // DriveIntegrationService tied to the TestingProfile.
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<drive::FakeDriveFsHelper> fake_drivefs_helper_;
-  raw_ptr<drive::DriveIntegrationService, ExperimentalAsh>
+  raw_ptr<drive::DriveIntegrationService, DanglingUntriaged | ExperimentalAsh>
       integration_service_ = nullptr;
   drive::DriveIntegrationServiceFactory::FactoryCallback
       create_drive_integration_service_;
   std::unique_ptr<drive::DriveIntegrationServiceFactory::ScopedFactoryForTest>
       service_factory_for_test_;
 
-  raw_ptr<crostini::CrostiniManager, ExperimentalAsh> crostini_manager_;
-  file_manager::FakeDiskMountManager disk_mount_manager_;
+  raw_ptr<crostini::CrostiniManager, DanglingUntriaged | ExperimentalAsh>
+      crostini_manager_;
+  ash::disks::FakeDiskMountManager disk_mount_manager_;
 
   base::ScopedTempDir temp_dir_;
   base::FilePath downloads_dir_;

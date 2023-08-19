@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/login/ui/non_accessible_view.h"
 #include "ash/login/ui/public_account_menu_view.h"
+#include "ash/style/system_shadow.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/events/event_handler.h"
 #include "ui/views/controls/image_view.h"
@@ -89,7 +90,6 @@ class ASH_EXPORT LoginExpandedPublicAccountView : public NonAccessibleView {
   int GetHeightForWidth(int width) const override;
   void Layout() override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
-  void OnPaint(gfx::Canvas* canvas) override;
 
   // ui::EventHandler:
   void OnKeyEvent(ui::KeyEvent* event) override;
@@ -111,6 +111,7 @@ class ASH_EXPORT LoginExpandedPublicAccountView : public NonAccessibleView {
   raw_ptr<PublicAccountMonitoringInfoDialog, ExperimentalAsh>
       learn_more_dialog_ = nullptr;
   std::unique_ptr<ui::EventHandler> event_handler_;
+  std::unique_ptr<SystemShadow> shadow_;
 
   base::WeakPtrFactory<LoginExpandedPublicAccountView> weak_factory_{this};
 };

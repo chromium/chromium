@@ -43,51 +43,35 @@ struct InstanceParams {
   absl::optional<content::BrowserContext*> browser_context;
 };
 
-// InstanceRegistry keeps all of the Instances seen by AppServiceProxy.
-// It also keeps the "sum" of those previous deltas, so that observers of this
-// object can be updated with the InstanceUpdate structure. It can also be
-// queried synchronously.
+// An in-memory store of all the Instances (i.e. running apps) seen by
+// AppServiceProxy. Can be queried synchronously for information about the
+// currently running instances, and can be observed to receive updates about
+// changes to Instance state.
+//
+// InstanceRegistry receives a stream of `app::Instance` delta updates from App
+// Service, and stores the "sum" of these updates. When a new `apps::Instance`
+// is received, observers are notified about the update, and then the delta is
+// "added" to the stored state.
 //
 // This class is not thread-safe.
 class InstanceRegistry {
  public:
   class Observer : public base::CheckedObserver {
    public:
-    Observer(const Observer&) = delete;
-    Observer& operator=(const Observer&) = delete;
-
-    // The InstanceUpdate argument shouldn't be accessed after OnInstanceUpdate
-    // returns.
+    // Called whenever the InstanceRegistry receives an update for any
+    // instance. `update` exposes the latest field values and whether they have
+    // changed in this update (as per the docs on `apps::InstanceUpdate`). The
+    // `update` argument shouldn't be accessed after OnAppUpdate returns.
     virtual void OnInstanceUpdate(const InstanceUpdate& update) = 0;
 
     // Called when the InstanceRegistry object (the thing that this observer
     // observes) will be destroyed. In response, the observer, |this|, should
     // call "instance_registry->RemoveObserver(this)", whether directly or
-    // indirectly (e.g. via base::ScopedObservation::Remove or via
-    // Observe(nullptr)).
+    // indirectly (e.g. via base::ScopedObservation::Reset).
     virtual void OnInstanceRegistryWillBeDestroyed(InstanceRegistry* cache) = 0;
 
-    InstanceRegistry* instance_registry() const { return instance_registry_; }
-
    protected:
-    // Use this constructor when the observer |this| is tied to a single
-    // InstanceRegistry for its entire lifetime, or until the observee (the
-    // InstanceRegistry) is destroyed, whichever comes first.
-    explicit Observer(InstanceRegistry* cache);
-
-    // Use this constructor when the observer |this| wants to observe a
-    // InstanceRegistry for part of its lifetime. It can then call Observe() to
-    // start and stop observing.
-    Observer();
-
     ~Observer() override;
-
-    // Start observing a different InstanceRegistry. |instance_registry| may be
-    // nullptr, meaning to stop observing.
-    void Observe(InstanceRegistry* instance_registry);
-
-   private:
-    raw_ptr<InstanceRegistry, ExperimentalAsh> instance_registry_ = nullptr;
   };
 
   InstanceRegistry();
@@ -96,6 +80,8 @@ class InstanceRegistry {
   InstanceRegistry(const InstanceRegistry&) = delete;
   InstanceRegistry& operator=(const InstanceRegistry&) = delete;
 
+  // Prefer using a base::ScopedObservation to safely manage the observation,
+  // instead of calling these methods directly.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 

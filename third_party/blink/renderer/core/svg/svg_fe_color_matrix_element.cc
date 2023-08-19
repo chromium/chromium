@@ -119,13 +119,10 @@ SVGAnimatedPropertyBase* SVGFEColorMatrixElement::PropertyFromAttribute(
   }
 }
 
-void SVGFEColorMatrixElement::SynchronizeSVGAttribute(
-    const QualifiedName& name) const {
-  if (name == AnyQName()) {
-    SVGAnimatedPropertyBase* attrs[]{values_.Get(), in1_.Get(), type_.Get()};
-    SynchronizeAllSVGAttributes(attrs);
-  }
-  SVGFilterPrimitiveStandardAttributes::SynchronizeSVGAttribute(name);
+void SVGFEColorMatrixElement::SynchronizeAllSVGAttributes() const {
+  SVGAnimatedPropertyBase* attrs[]{values_.Get(), in1_.Get(), type_.Get()};
+  SynchronizeListOfSVGAttributes(attrs);
+  SVGFilterPrimitiveStandardAttributes::SynchronizeAllSVGAttributes();
 }
 
 }  // namespace blink

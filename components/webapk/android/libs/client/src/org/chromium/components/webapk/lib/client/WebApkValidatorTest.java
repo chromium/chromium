@@ -79,7 +79,6 @@ public class WebApkValidatorTest {
     public void setUp() {
         mPackageManager = Shadows.shadowOf(RuntimeEnvironment.application.getPackageManager());
         WebApkValidator.init(EXPECTED_SIGNATURE, PUBLIC_KEY);
-        WebApkValidator.setDisableValidationForTesting(false);
     }
 
     /**

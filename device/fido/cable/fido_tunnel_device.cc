@@ -14,6 +14,7 @@
 #include "crypto/random.h"
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/cbor_extract.h"
+#include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -98,10 +99,13 @@ FidoTunnelDevice::FidoTunnelDevice(
     network::mojom::NetworkContext* network_context,
     absl::optional<base::RepeatingCallback<void(std::unique_ptr<Pairing>)>>
         pairing_callback,
+    absl::optional<base::RepeatingCallback<void(Event)>> event_callback,
     base::span<const uint8_t> secret,
     base::span<const uint8_t, kQRSeedSize> local_identity_seed,
     const CableEidArray& decrypted_eid)
-    : info_(absl::in_place_type<QRInfo>), id_(RandomId()) {
+    : info_(absl::in_place_type<QRInfo>),
+      id_(RandomId()),
+      event_callback_(std::move(event_callback)) {
   const eid::Components components = eid::ToComponents(decrypted_eid);
 
   QRInfo& info = absl::get<QRInfo>(info_);
@@ -143,8 +147,11 @@ FidoTunnelDevice::FidoTunnelDevice(
     FidoRequestType request_type,
     network::mojom::NetworkContext* network_context,
     std::unique_ptr<Pairing> pairing,
-    base::OnceClosure pairing_is_invalid)
-    : info_(absl::in_place_type<PairedInfo>), id_(RandomId()) {
+    base::OnceClosure pairing_is_invalid,
+    absl::optional<base::RepeatingCallback<void(Event)>> event_callback)
+    : info_(absl::in_place_type<PairedInfo>),
+      id_(RandomId()),
+      event_callback_(std::move(event_callback)) {
   uint8_t client_nonce[kClientNonceSize];
   crypto::RandBytes(client_nonce);
 
@@ -176,6 +183,10 @@ FidoTunnelDevice::FidoTunnelDevice(
   std::vector<network::mojom::HttpHeaderPtr> headers;
   headers.emplace_back(network::mojom::HttpHeader::New(
       kCableClientPayloadHeader, client_payload_hex));
+  if (base::FeatureList::IsEnabled(device::kWebAuthnNewHybridUI)) {
+    headers.emplace_back(
+        network::mojom::HttpHeader::New(kCableSignalConnectionHeader, "true"));
+  }
   network_context->CreateWebSocket(
       url, {kCableWebSocketProtocol}, net::SiteForCookies(),
       net::IsolationInfo(), std::move(headers),
@@ -209,13 +220,15 @@ bool FidoTunnelDevice::MatchAdvert(
   info.psk = Derive<EXTENT(*info.psk)>(info.secret, *plaintext,
                                        DerivedValueType::kPSK);
 
-  if (state_ == State::kWaitingForEID) {
+  if (state_ == State::kWaitingForEID ||
+      state_ == State::kWaitingForEIDOrConnectSignal) {
     // We were waiting for this BLE advert in order to start the handshake.
     DCHECK(!handshake_);
     handshake_.emplace(*info.psk, info.peer_identity,
                        /*local_identity=*/absl::nullopt);
     websocket_client_->Write(handshake_->BuildInitialMessage());
-    state_ = State::kHandshakeSent;
+    state_ = state_ == State::kWaitingForEID ? State::kHandshakeSent
+                                             : State::kWaitingForConnectSignal;
   }
 
   return true;
@@ -263,7 +276,8 @@ base::WeakPtr<FidoDevice> FidoTunnelDevice::GetWeakPtr() {
 
 void FidoTunnelDevice::OnTunnelReady(
     WebSocketAdapter::Result result,
-    absl::optional<std::array<uint8_t, kRoutingIdSize>> routing_id) {
+    absl::optional<std::array<uint8_t, kRoutingIdSize>> routing_id,
+    WebSocketAdapter::ConnectSignalSupport connect_signal_support) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(State::kConnecting, state_);
 
@@ -288,9 +302,15 @@ void FidoTunnelDevice::OnTunnelReady(
 
       if (handshake_) {
         websocket_client_->Write(handshake_->BuildInitialMessage());
-        state_ = State::kHandshakeSent;
+        state_ = connect_signal_support ==
+                         WebSocketAdapter::ConnectSignalSupport::YES
+                     ? State::kWaitingForConnectSignal
+                     : State::kHandshakeSent;
       } else {
-        state_ = State::kWaitingForEID;
+        state_ = connect_signal_support ==
+                         WebSocketAdapter::ConnectSignalSupport::YES
+                     ? State::kWaitingForEIDOrConnectSignal
+                     : State::kWaitingForEID;
       }
       break;
 
@@ -332,6 +352,20 @@ void FidoTunnelDevice::OnTunnelData(
     case State::kConnecting:
     case State::kWaitingForEID:
       OnError();
+      break;
+
+    case State::kWaitingForConnectSignal:
+    case State::kWaitingForEIDOrConnectSignal:
+      if (!ProcessConnectSignal(*data)) {
+        FIDO_LOG(ERROR) << GetId() << ": bad connection signal";
+        OnError();
+        return;
+      }
+      if (state_ == State::kWaitingForConnectSignal) {
+        state_ = State::kHandshakeSent;
+      } else {
+        state_ = State::kWaitingForEID;
+      }
       break;
 
     case State::kHandshakeSent: {
@@ -433,6 +467,9 @@ void FidoTunnelDevice::OnTunnelData(
       FIDO_LOG(DEBUG) << GetId() << ": established v2." << protocol_revision;
       RecordEvent(CableV2TunnelEvent::kTunnelEstablished);
       state_ = State::kReady;
+      if (event_callback_) {
+        event_callback_->Run(Event::kReady);
+      }
 
       established_connection_ = base::MakeRefCounted<EstablishedConnection>(
           std::move(websocket_client_), GetId(), protocol_revision,
@@ -490,6 +527,17 @@ void FidoTunnelDevice::DeviceTransactReady(std::vector<uint8_t> command,
                getinfo_response_bytes_.end());
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(reply)));
+}
+
+bool FidoTunnelDevice::ProcessConnectSignal(base::span<const uint8_t> data) {
+  if (data.size() != 1 || data[0] != 0) {
+    return false;
+  }
+  FIDO_LOG(DEBUG) << "caBLE authenticator has connected to the tunnel server.";
+  if (event_callback_) {
+    event_callback_->Run(Event::kPhoneConnected);
+  }
+  return true;
 }
 
 // g_num_established_connection_instances is incremented when an

@@ -16,6 +16,7 @@
 #include "base/files/file_path.h"
 #include "base/version.h"
 #include "extensions/browser/content_verifier/content_verifier_utils.h"
+#include "extensions/common/extension_id.h"
 
 namespace extensions {
 
@@ -49,7 +50,7 @@ class VerifiedContents {
       base::StringPiece contents);
 
   int block_size() const { return block_size_; }
-  const std::string& extension_id() const { return extension_id_; }
+  const ExtensionId& extension_id() const { return extension_id_; }
   const base::Version& version() const { return version_; }
 
   bool HasTreeHashRoot(const base::FilePath& relative_path) const;
@@ -91,7 +92,7 @@ class VerifiedContents {
   int block_size_;
 
   // Information about which extension these signed hashes are for.
-  std::string extension_id_;
+  ExtensionId extension_id_;
   base::Version version_;
 
   // The expected treehash root hashes for each file.

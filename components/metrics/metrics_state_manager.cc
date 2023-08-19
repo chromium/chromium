@@ -178,6 +178,9 @@ class MetricsStateMetricsProvider : public MetricsProvider {
     if (metrics_ids_were_reset_) {
       LogClonedInstall();
       if (!previous_client_id_.empty()) {
+        // NOTE: If you are adding anything here, consider also changing
+        // FileMetricsProvider::ProvideIndependentMetricsOnTaskRunner().
+
         // If we know the previous client id, overwrite the client id for the
         // previous session log so the log contains the client id at the time
         // of the previous session. This allows better attribution of crashes

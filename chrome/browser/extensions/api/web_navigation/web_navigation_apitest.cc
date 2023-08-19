@@ -111,8 +111,9 @@ class DelayLoadStartAndExecuteJavascript : public TabStripModelObserver,
   // WebContentsObserver:
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override {
-    if (navigation_handle->GetURL() != delay_url_ || !rfh_)
+    if (navigation_handle->GetURL() != delay_url_ || !render_frame_host_) {
       return;
+    }
 
     auto throttle =
         std::make_unique<WillStartRequestObserverThrottle>(navigation_handle);
@@ -120,11 +121,11 @@ class DelayLoadStartAndExecuteJavascript : public TabStripModelObserver,
     navigation_handle->RegisterThrottleForTesting(std::move(throttle));
 
     if (has_user_gesture_) {
-      rfh_->ExecuteJavaScriptWithUserGestureForTests(base::UTF8ToUTF16(script_),
-                                                     base::NullCallback());
+      render_frame_host_->ExecuteJavaScriptWithUserGestureForTests(
+          base::UTF8ToUTF16(script_), base::NullCallback());
     } else {
-      rfh_->ExecuteJavaScriptForTests(base::UTF8ToUTF16(script_),
-                                      base::NullCallback());
+      render_frame_host_->ExecuteJavaScriptForTests(base::UTF8ToUTF16(script_),
+                                                    base::NullCallback());
     }
     script_was_executed_ = true;
   }
@@ -143,7 +144,7 @@ class DelayLoadStartAndExecuteJavascript : public TabStripModelObserver,
     }
 
     if (navigation_handle->IsInMainFrame())
-      rfh_ = navigation_handle->GetRenderFrameHost();
+      render_frame_host_ = navigation_handle->GetRenderFrameHost();
   }
 
   void set_has_user_gesture(bool has_user_gesture) {
@@ -184,7 +185,8 @@ class DelayLoadStartAndExecuteJavascript : public TabStripModelObserver,
   std::string script_;
   bool has_user_gesture_ = false;
   bool script_was_executed_ = false;
-  raw_ptr<content::RenderFrameHost, DanglingUntriaged> rfh_ = nullptr;
+  raw_ptr<content::RenderFrameHost, AcrossTasksDanglingUntriaged>
+      render_frame_host_ = nullptr;
 };
 
 // Handles requests for URLs with paths of "/test*" sent to the test server, so

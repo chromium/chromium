@@ -29,6 +29,12 @@ class PropertyBitsetsWriter(json5_generator.Writer):
             p.enum_key for p in properties if p.known_exposed
         ]
 
+        self._surrogate_properties = [
+            p.enum_key for p in properties
+            if (p.surrogate_for or (p.logical_property_group and
+                                    p.logical_property_group['is_logical']))
+        ]
+
         self._outputs = {
             'property_bitsets.cc': self.generate_list,
         }
@@ -41,6 +47,7 @@ class PropertyBitsetsWriter(json5_generator.Writer):
             'logical_group_properties': self._logical_group_properties,
             'properties_with_visited': self._properties_with_visited,
             'known_exposed_properties': self._known_exposed_properties,
+            'surrogate_properties': self._surrogate_properties,
         }
 
 

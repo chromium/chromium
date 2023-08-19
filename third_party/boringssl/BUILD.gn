@@ -79,7 +79,9 @@ if (enable_rust_boringssl) {
     visibility = [ ":*" ]  # private, should only be exposed through bssl_crypto
 
     _bindgen_output = get_target_outputs(":raw_bssl_sys_bindings")
-    rustenv = [ "BINDGEN_RS_FILE=" + rebase_path(_bindgen_output[0]) ]
+    rustenv =
+        [ "BINDGEN_RS_FILE=" +
+          rebase_path(_bindgen_output[0], get_path_info(crate_root, "dir")) ]
   }
 
   # Rust bindings to boringssl
@@ -92,65 +94,31 @@ if (enable_rust_boringssl) {
   }
 }
 
-# Windows' assembly is built with NASM. The other platforms use the platform
-# assembler. Exclude Windows ARM64 because NASM targets x86 and x64 only.
-if (is_win && !is_msan && current_cpu != "arm64") {
-  import("//third_party/nasm/nasm_assemble.gni")
-  nasm_assemble("boringssl_asm") {
-    if (current_cpu == "x64") {
-      sources = crypto_sources_win_x86_64
-    } else if (current_cpu == "x86") {
-      sources = crypto_sources_win_x86
-    }
-  }
-} else {
-  # This has no sources on some platforms so must be a source_set.
+if (is_msan) {
+  # MSan instrumentation is incompatible with assembly optimizations.
+  # BoringSSL's GAS-compatible assembly knows how to detect MSan, but the NASM
+  # assembly does not, so we check for MSan explicitly.
   source_set("boringssl_asm") {
     visibility = [ ":*" ]  # Only targets in this file can depend on this.
 
-    sources = []
-    asmflags = []
-    include_dirs = [ "src/include" ]
+    public_configs = [ ":no_asm_config" ]
+  }
+} else if (is_win && (current_cpu == "x86" || current_cpu == "x64")) {
+  # Windows' x86 and x86_64 assembly is built with NASM.
+  import("//third_party/nasm/nasm_assemble.gni")
+  nasm_assemble("boringssl_asm") {
+    sources = crypto_sources_nasm
+    visibility = [ ":*" ]  # Only targets in this file can depend on this.
+  }
+} else {
+  # All other targets use GAS-compatible assembler. BoringSSL's assembly files
+  # are all wrapped in processor checks for the corresponding target, so there
+  # is no need to add target conditions in the build.
+  source_set("boringssl_asm") {
+    visibility = [ ":*" ]  # Only targets in this file can depend on this.
 
-    if (is_msan) {
-      public_configs = [ ":no_asm_config" ]
-    } else if (current_cpu == "x64") {
-      if (is_apple) {
-        sources += crypto_sources_apple_x86_64
-      } else if (is_linux || is_chromeos || is_android) {
-        sources += crypto_sources_linux_x86_64
-      } else {
-        public_configs = [ ":no_asm_config" ]
-      }
-    } else if (current_cpu == "x86") {
-      if (is_apple) {
-        sources += crypto_sources_apple_x86
-      } else if (is_linux || is_chromeos || is_android) {
-        sources += crypto_sources_linux_x86
-      } else {
-        public_configs = [ ":no_asm_config" ]
-      }
-    } else if (current_cpu == "arm") {
-      if (is_linux || is_chromeos || is_android) {
-        sources += crypto_sources_linux_arm
-      } else if (is_apple) {
-        sources += crypto_sources_apple_arm
-      } else {
-        public_configs = [ ":no_asm_config" ]
-      }
-    } else if (current_cpu == "arm64") {
-      if (is_linux || is_chromeos || is_android) {
-        sources += crypto_sources_linux_aarch64
-      } else if (is_apple) {
-        sources += crypto_sources_apple_aarch64
-      } else if (is_win) {
-        sources += crypto_sources_win_aarch64
-      } else {
-        public_configs = [ ":no_asm_config" ]
-      }
-    } else {
-      public_configs = [ ":no_asm_config" ]
-    }
+    sources = crypto_sources_asm
+    include_dirs = [ "src/include" ]
   }
 }
 
@@ -284,34 +252,38 @@ if (build_with_chromium) {
   }
 
   foreach(fuzzer, fuzzers) {
-    fuzzer_test("boringssl_${fuzzer}_fuzzer") {
-      sources = [
-        "src/fuzz/${fuzzer}.cc",
-        "src/ssl/test/fuzzer.h",
-        "src/ssl/test/fuzzer_tags.h",
-      ]
-      additional_configs = [ ":internal_config" ]
-      deps = [ ":boringssl_fuzzer" ]
-      seed_corpus = "src/fuzz/${fuzzer}_corpus"
+    # TODO(crbug.com/1322914): Enable the BoringSSL libpki build and associated
+    # fuzzers.
+    if (fuzzer != "parse_certificate_fuzzer") {
+      fuzzer_test("boringssl_${fuzzer}_fuzzer") {
+        sources = [
+          "src/fuzz/${fuzzer}.cc",
+          "src/ssl/test/fuzzer.h",
+          "src/ssl/test/fuzzer_tags.h",
+        ]
+        additional_configs = [ ":internal_config" ]
+        deps = [ ":boringssl_fuzzer" ]
+        seed_corpus = "src/fuzz/${fuzzer}_corpus"
 
-      if ("cert" == fuzzer) {
-        libfuzzer_options = [ "max_len=3072" ]
-      } else if ("client" == fuzzer) {
-        libfuzzer_options = [ "max_len=20000" ]
-      } else if ("pkcs8" == fuzzer) {
-        libfuzzer_options = [ "max_len=2048" ]
-      } else if ("privkey" == fuzzer) {
-        libfuzzer_options = [ "max_len=2048" ]
-      } else if ("read_pem" == fuzzer) {
-        libfuzzer_options = [ "max_len=512" ]
-      } else if ("session" == fuzzer) {
-        libfuzzer_options = [ "max_len=8192" ]
-      } else if ("server" == fuzzer) {
-        libfuzzer_options = [ "max_len=4096" ]
-      } else if ("spki" == fuzzer) {
-        libfuzzer_options = [ "max_len=1024" ]
-      } else if ("ssl_ctx_api" == fuzzer) {
-        libfuzzer_options = [ "max_len=256" ]
+        if ("cert" == fuzzer) {
+          libfuzzer_options = [ "max_len=3072" ]
+        } else if ("client" == fuzzer) {
+          libfuzzer_options = [ "max_len=20000" ]
+        } else if ("pkcs8" == fuzzer) {
+          libfuzzer_options = [ "max_len=2048" ]
+        } else if ("privkey" == fuzzer) {
+          libfuzzer_options = [ "max_len=2048" ]
+        } else if ("read_pem" == fuzzer) {
+          libfuzzer_options = [ "max_len=512" ]
+        } else if ("session" == fuzzer) {
+          libfuzzer_options = [ "max_len=8192" ]
+        } else if ("server" == fuzzer) {
+          libfuzzer_options = [ "max_len=4096" ]
+        } else if ("spki" == fuzzer) {
+          libfuzzer_options = [ "max_len=1024" ]
+        } else if ("ssl_ctx_api" == fuzzer) {
+          libfuzzer_options = [ "max_len=256" ]
+        }
       }
     }
   }

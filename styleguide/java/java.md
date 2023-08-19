@@ -104,22 +104,31 @@ Log.d(TAG, "There are %d cats", countCats());  // countCats() not stripped.
 
 ### Asserts
 
-The Chromium build system strips asserts in release builds (via ProGuard) and
-enables them in debug builds (or when `dcheck_always_on=true`) (via a [build
-step](https://codereview.chromium.org/2517203002)). You should use asserts in
-the [same
-scenarios](https://chromium.googlesource.com/chromium/src/+/main/styleguide/c++/c++.md#CHECK_DCHECK_and-NOTREACHED)
-where C++ DCHECK()s make sense. For multi-statement asserts, use
-`org.chromium.build.BuildConfig.ENABLE_ASSERTS` to guard your code (similar to
-`#if DCHECK_IS_ON()` in C++).
-
-Example assert:
+The build system:
+ * strips asserts in release builds (via R8),
+ * enables them in debug builds,
+ * and enables them in report-only mode for Canary builds.
 
 ```java
-assert someCallWithoutSideEffects() : "assert description";
+// Code for assert expressions & messages is removed when asserts are disabled.
+assert someCallWithoutSideEffects(param) : "Call failed with: " + param;
 ```
 
-Example use of `BuildConfig.ENABLE_ASSERTS`:
+Use your judgement for when to use asserts vs exceptions. Generally speaking,
+use asserts to check program invariants (e.g. parameter constraints) and
+exceptions for unrecoverable error conditions (e.g. OS errors). You should tend
+to use exceptions more in privacy / security-sensitive code.
+
+Do not add checks when the code will crash anyways. E.g.:
+
+```java
+// Don't do this.
+assert(foo != null);
+foo.method(); // This will throw anyways.
+```
+
+For multi-statement asserts, use [`BuildConfig.ENABLE_ASSERTS`] to guard your
+code (similar to `#if DCHECK_IS_ON()` in C++). E.g.:
 
 ```java
 import org.chromium.build.BuildConfig;
@@ -127,10 +136,20 @@ import org.chromium.build.BuildConfig;
 ...
 
 if (BuildConfig.ENABLE_ASSERTS) {
-  // Any code here will be stripped in Release by ProGuard.
+  // Any code here will be stripped in release builds by R8.
   ...
 }
 ```
+
+[`BuildConfig.ENABLE_ASSERTS`]: https://source.chromium.org/search?q=symbol:BuildConfig%5C.ENABLE_ASSERTS
+
+#### DCHECKS vs Java Asserts
+
+`DCHECK` and `assert` are similar, but our guidance for them differs:
+ * CHECKs are preferred in C++, whereas asserts are preferred in Java.
+
+This is because as a memory-safe language, logic bugs in Java are much less
+likely to be exploitable.
 
 ### Streams
 
@@ -198,35 +217,6 @@ Values of `Integer` type are also supported, which allows using a sentinel
 [@IntDef annotation]: https://developer.android.com/studio/write/annotations#enum-annotations
 [Android lint]: https://chromium.googlesource.com/chromium/src/+/HEAD/build/android/docs/lint.md
 
-## Tools
-
-### Automatically Formatting Edited Files
-
-A checkout should give you clang-format to automatically format Java code.
-It is suggested that Clang's formatting of code should be accepted in code
-reviews.
-
-You can run `git cl format` to apply the automatic formatting.
-
-### IDE Setup
-
-For automatically using the correct style, follow the guide to set up your
-favorite IDE:
-
-* [Android Studio](https://chromium.googlesource.com/chromium/src/+/main/docs/android_studio.md)
-* [Eclipse](https://chromium.googlesource.com/chromium/src/+/main/docs/eclipse.md)
-
-### Checkstyle
-
-Checkstyle is automatically run by the build bots, and to ensure you do not have
-any surprises, you can also set up checkstyle locally using [this
-guide](https://sites.google.com/a/chromium.org/dev/developers/checkstyle).
-
-### Lint
-
-Lint is run as part of the build. For more information, see
-[here](https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md).
-
 ## Style / Formatting
 
 ### File Headers
@@ -288,18 +278,58 @@ This is the order of the import groups:
 1. java
 1. javax
 
-## Test-only Code
+## Testing
 
-Functions used only for testing should be restricted to test-only usages
-with the testing suffixes supported [PRESUMBIT.py](https://chromium.googlesource.com/chromium/src/+/main/PRESUBMIT.py).
-`ForTesting` is the conventional suffix although similar patterns, such as
-`ForTest`, are also accepted. These suffixes are checked at presubmit time
-to ensure the functions are called only by test files.
+Googlers, see [go/clank-test-strategy](http://go/clank-test-strategy).
 
-It's generally bad practice to directly call test-only methods from
-non-test-only code. However, occasionally it has to be done, and if so, you
-should guard the check with an `if (BuildConfig.IS_FOR_TEST)` so that our Java
-optimizer can still remove the call in non-test builds.
+In summary:
+
+* Use real dependencies when feasible and fast. Use Mockito’s `@Mock` most
+  of the time, but write fakes for frequently used dependencies.
+
+* Do not use Robolectric Shadows for Chromium code. Instead, use
+  `setForTesting()` methods so that it is clear that test hooks exist.
+  * When `setForTesting()` methods alter global state, use
+    [`ResettersForTesting.register()`] to ensure that the state is reset
+    between tests. Omit resetting them via `@After` methods.
+
+* Use Robolectric when possible (when tests do not require native). Other
+  times, use on-device tests with one of the following annotations:
+  * [`@Batch(UNIT_TESTS)`] for unit tests
+  * [`@Batch(PER_CLASS)`] for integration tests
+  * [`@DoNotBatch`] for when each test method requires an app restart
+
+[`ResettersForTesting.register()`]: https://source.chromium.org/search?q=symbol:ResettersForTesting.register
+[`@Batch(UNIT_TESTS)`]: https://source.chromium.org/search?q=symbol:Batch.UNIT_TESTS
+[`@Batch(PER_CLASS)`]: https://source.chromium.org/search?q=symbol:Batch.PER_CLASS
+[`@DoNotBatch`]: https://source.chromium.org/search?q=symbol:DoNotBatch
+
+### Test-only Code
+
+Functions and fields used only for testing should have `ForTesting` as a
+suffix so that:
+
+1. The `android-binary-size` trybot can [ensure they are removed] in
+   non-test optimized builds (by R8).
+2. [`PRESUMBIT.py`] can ensure no calls are made to such methods outside of
+   tests, and
+
+`ForTesting` methods that are `@CalledByNative` should use
+`@CalledByNativeForTesting` instead.
+
+Symbols that are made public (or package-private) for the sake of tests
+should be annotated with [`@VisibleForTesting`]. Android Lint will check
+that calls from non-test code respect the "otherwise" visibility.
+
+Symbols with a `ForTesting` suffix **should not** be annotated with
+`@VisibleForTesting`. While `otherwise=VisibleForTesting.NONE` exists, it
+is redundant given the "ForTesting" suffix and the associated lint check
+is redundant given our trybot check. You should, however, use it for
+test-only constructors.
+
+[ensure they are removed]: /docs/speed/binary_size/android_binary_size_trybot.md#Added-Symbols-named-ForTest
+[`PRESUMBIT.py`]: https://chromium.googlesource.com/chromium/src/+/main/PRESUBMIT.py
+[`@VisibleForTesting`]: https://developer.android.com/reference/androidx/annotation/VisibleForTesting
 
 ## Location
 
@@ -325,6 +355,35 @@ For example, top level directory `//base` might contain a file named
 New `<top level directory>/android` directories should have an `OWNERS` file
 much like
 [//base/android/OWNERS](https://chromium.googlesource.com/chromium/src/+/main/base/android/OWNERS).
+
+## Tools
+
+### Automatically Formatting Edited Files
+
+A checkout should give you clang-format to automatically format Java code.
+It is suggested that Clang's formatting of code should be accepted in code
+reviews.
+
+You can run `git cl format` to apply the automatic formatting.
+
+### IDE Setup
+
+For automatically using the correct style, follow the guide to set up your
+favorite IDE:
+
+* [Android Studio](https://chromium.googlesource.com/chromium/src/+/main/docs/android_studio.md)
+* [Eclipse](https://chromium.googlesource.com/chromium/src/+/main/docs/eclipse.md)
+
+### Checkstyle
+
+Checkstyle is automatically run by the build bots, and to ensure you do not have
+any surprises, you can also set up checkstyle locally using [this
+guide](https://sites.google.com/a/chromium.org/dev/developers/checkstyle).
+
+### Lint
+
+Lint is run as part of the build. For more information, see
+[here](https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md).
 
 ## Miscellany
 

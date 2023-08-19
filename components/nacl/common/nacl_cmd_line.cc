@@ -35,8 +35,7 @@ void CopyNaClCommandLineArguments(base::CommandLine* cmd_line) {
     switches::kRaiseTimerFrequency,
 #endif
   };
-  cmd_line->CopySwitchesFrom(browser_command_line, kSwitchNames,
-                             std::size(kSwitchNames));
+  cmd_line->CopySwitchesFrom(browser_command_line, kSwitchNames);
 }
 
 }  // namespace nacl

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -71,12 +71,22 @@ chrome.fileSystemProvider.CommonActionId = {
 
 /**
  * @typedef {{
+ *   providerName: string,
+ *   id: string
+ * }}
+ * @see https://developer.chrome.com/extensions/fileSystemProvider#type-CloudIdentifier
+ */
+chrome.fileSystemProvider.CloudIdentifier;
+
+/**
+ * @typedef {{
  *   isDirectory: (boolean|undefined),
  *   name: (string|undefined),
  *   size: (number|undefined),
  *   modificationTime: (Date|undefined),
  *   mimeType: (string|undefined),
- *   thumbnail: (string|undefined)
+ *   thumbnail: (string|undefined),
+ *   cloudIdentifier: (!chrome.fileSystemProvider.CloudIdentifier|undefined)
  * }}
  * @see https://developer.chrome.com/extensions/fileSystemProvider#type-EntryMetadata
  */
@@ -156,7 +166,8 @@ chrome.fileSystemProvider.UnmountRequestedOptions;
  *   size: boolean,
  *   modificationTime: boolean,
  *   mimeType: boolean,
- *   thumbnail: boolean
+ *   thumbnail: boolean,
+ *   cloudIdentifier: boolean
  * }}
  * @see https://developer.chrome.com/extensions/fileSystemProvider#type-GetMetadataRequestedOptions
  */

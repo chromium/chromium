@@ -225,7 +225,8 @@ class FakeTetherHostFetcherFactory : public TetherHostFetcherImpl::Factory {
 
  private:
   multidevice::RemoteDeviceRefList initial_devices_;
-  raw_ptr<FakeTetherHostFetcher, ExperimentalAsh> last_created_ = nullptr;
+  raw_ptr<FakeTetherHostFetcher, DanglingUntriaged | ExperimentalAsh>
+      last_created_ = nullptr;
 };
 
 class FakeDeviceSyncClientImplFactory
@@ -521,7 +522,8 @@ class TetherServiceTest : public testing::Test {
 
   NetworkHandlerTestHelper network_handler_test_helper_;
   std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<FakeChromeUserManager, ExperimentalAsh> fake_chrome_user_manager_;
+  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      fake_chrome_user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable>
       test_pref_service_;
@@ -530,9 +532,10 @@ class TetherServiceTest : public testing::Test {
       fake_remote_device_provider_factory_;
   std::unique_ptr<FakeTetherHostFetcherFactory>
       fake_tether_host_fetcher_factory_;
-  raw_ptr<FakeNotificationPresenter, ExperimentalAsh>
+  raw_ptr<FakeNotificationPresenter, DanglingUntriaged | ExperimentalAsh>
       fake_notification_presenter_;
-  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> mock_timer_;
+  raw_ptr<base::MockOneShotTimer, DanglingUntriaged | ExperimentalAsh>
+      mock_timer_;
   std::unique_ptr<device_sync::FakeDeviceSyncClient> fake_device_sync_client_;
   std::unique_ptr<FakeDeviceSyncClientImplFactory>
       fake_device_sync_client_impl_factory_;

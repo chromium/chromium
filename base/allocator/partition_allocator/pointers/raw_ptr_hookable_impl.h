@@ -29,6 +29,8 @@ struct RawPtrHooks {
   using UnsafelyUnwrapForComparison = void(uintptr_t address);
   using Advance = void(uintptr_t old_address, uintptr_t new_address);
   using Duplicate = void(uintptr_t address);
+  using WrapPtrForDuplication = void(uintptr_t address);
+  using UnsafelyUnwrapForDuplication = void(uintptr_t address);
 
   WrapPtr* wrap_ptr;
   ReleaseWrappedPtr* release_wrapped_ptr;
@@ -37,12 +39,15 @@ struct RawPtrHooks {
   UnsafelyUnwrapForComparison* unsafely_unwrap_for_comparison;
   Advance* advance;
   Duplicate* duplicate;
+  WrapPtrForDuplication* wrap_ptr_for_duplication;
+  UnsafelyUnwrapForDuplication* unsafely_unwrap_for_duplication;
 };
 
 PA_COMPONENT_EXPORT(RAW_PTR) const RawPtrHooks* GetRawPtrHooks();
 PA_COMPONENT_EXPORT(RAW_PTR) void InstallRawPtrHooks(const RawPtrHooks*);
 PA_COMPONENT_EXPORT(RAW_PTR) void ResetRawPtrHooks();
 
+template <bool EnableHooks>
 struct RawPtrHookableImpl {
   // Since this Impl is used for BRP-ASan, match BRP as closely as possible.
   static constexpr bool kMustZeroOnInit = true;
@@ -53,7 +58,9 @@ struct RawPtrHookableImpl {
   template <typename T>
   PA_ALWAYS_INLINE static constexpr T* WrapRawPtr(T* ptr) {
     if (!partition_alloc::internal::base::is_constant_evaluated()) {
-      GetRawPtrHooks()->wrap_ptr(reinterpret_cast<uintptr_t>(ptr));
+      if (EnableHooks) {
+        GetRawPtrHooks()->wrap_ptr(reinterpret_cast<uintptr_t>(ptr));
+      }
     }
     return ptr;
   }
@@ -62,7 +69,9 @@ struct RawPtrHookableImpl {
   template <typename T>
   PA_ALWAYS_INLINE static constexpr void ReleaseWrappedPtr(T* ptr) {
     if (!partition_alloc::internal::base::is_constant_evaluated()) {
-      GetRawPtrHooks()->release_wrapped_ptr(reinterpret_cast<uintptr_t>(ptr));
+      if (EnableHooks) {
+        GetRawPtrHooks()->release_wrapped_ptr(reinterpret_cast<uintptr_t>(ptr));
+      }
     }
   }
 
@@ -72,8 +81,10 @@ struct RawPtrHookableImpl {
   PA_ALWAYS_INLINE static constexpr T* SafelyUnwrapPtrForDereference(
       T* wrapped_ptr) {
     if (!partition_alloc::internal::base::is_constant_evaluated()) {
-      GetRawPtrHooks()->safely_unwrap_for_dereference(
-          reinterpret_cast<uintptr_t>(wrapped_ptr));
+      if (EnableHooks) {
+        GetRawPtrHooks()->safely_unwrap_for_dereference(
+            reinterpret_cast<uintptr_t>(wrapped_ptr));
+      }
     }
     return wrapped_ptr;
   }
@@ -84,8 +95,10 @@ struct RawPtrHookableImpl {
   PA_ALWAYS_INLINE static constexpr T* SafelyUnwrapPtrForExtraction(
       T* wrapped_ptr) {
     if (!partition_alloc::internal::base::is_constant_evaluated()) {
-      GetRawPtrHooks()->safely_unwrap_for_extraction(
-          reinterpret_cast<uintptr_t>(wrapped_ptr));
+      if (EnableHooks) {
+        GetRawPtrHooks()->safely_unwrap_for_extraction(
+            reinterpret_cast<uintptr_t>(wrapped_ptr));
+      }
     }
     return wrapped_ptr;
   }
@@ -96,8 +109,10 @@ struct RawPtrHookableImpl {
   PA_ALWAYS_INLINE static constexpr T* UnsafelyUnwrapPtrForComparison(
       T* wrapped_ptr) {
     if (!partition_alloc::internal::base::is_constant_evaluated()) {
-      GetRawPtrHooks()->unsafely_unwrap_for_comparison(
-          reinterpret_cast<uintptr_t>(wrapped_ptr));
+      if (EnableHooks) {
+        GetRawPtrHooks()->unsafely_unwrap_for_comparison(
+            reinterpret_cast<uintptr_t>(wrapped_ptr));
+      }
     }
     return wrapped_ptr;
   }
@@ -120,9 +135,11 @@ struct RawPtrHookableImpl {
           std::enable_if_t<partition_alloc::internal::is_offset_type<Z>, void>>
   PA_ALWAYS_INLINE static constexpr T* Advance(T* wrapped_ptr, Z delta_elems) {
     if (!partition_alloc::internal::base::is_constant_evaluated()) {
-      GetRawPtrHooks()->advance(
-          reinterpret_cast<uintptr_t>(wrapped_ptr),
-          reinterpret_cast<uintptr_t>(wrapped_ptr + delta_elems));
+      if (EnableHooks) {
+        GetRawPtrHooks()->advance(
+            reinterpret_cast<uintptr_t>(wrapped_ptr),
+            reinterpret_cast<uintptr_t>(wrapped_ptr + delta_elems));
+      }
     }
     return wrapped_ptr + delta_elems;
   }
@@ -135,9 +152,11 @@ struct RawPtrHookableImpl {
           std::enable_if_t<partition_alloc::internal::is_offset_type<Z>, void>>
   PA_ALWAYS_INLINE static constexpr T* Retreat(T* wrapped_ptr, Z delta_elems) {
     if (!partition_alloc::internal::base::is_constant_evaluated()) {
-      GetRawPtrHooks()->advance(
-          reinterpret_cast<uintptr_t>(wrapped_ptr),
-          reinterpret_cast<uintptr_t>(wrapped_ptr - delta_elems));
+      if (EnableHooks) {
+        GetRawPtrHooks()->advance(
+            reinterpret_cast<uintptr_t>(wrapped_ptr),
+            reinterpret_cast<uintptr_t>(wrapped_ptr - delta_elems));
+      }
     }
     return wrapped_ptr - delta_elems;
   }
@@ -153,7 +172,9 @@ struct RawPtrHookableImpl {
   template <typename T>
   PA_ALWAYS_INLINE static constexpr T* Duplicate(T* wrapped_ptr) {
     if (!partition_alloc::internal::base::is_constant_evaluated()) {
-      GetRawPtrHooks()->duplicate(reinterpret_cast<uintptr_t>(wrapped_ptr));
+      if (EnableHooks) {
+        GetRawPtrHooks()->duplicate(reinterpret_cast<uintptr_t>(wrapped_ptr));
+      }
     }
     return wrapped_ptr;
   }
@@ -162,12 +183,24 @@ struct RawPtrHookableImpl {
   // to create a new raw_ptr<T> from another raw_ptr<T> of a different flavor.
   template <typename T>
   PA_ALWAYS_INLINE static constexpr T* WrapRawPtrForDuplication(T* ptr) {
+    if (!partition_alloc::internal::base::is_constant_evaluated()) {
+      if (EnableHooks) {
+        GetRawPtrHooks()->wrap_ptr_for_duplication(
+            reinterpret_cast<uintptr_t>(ptr));
+      }
+    }
     return ptr;
   }
 
   template <typename T>
   PA_ALWAYS_INLINE static constexpr T* UnsafelyUnwrapPtrForDuplication(
       T* wrapped_ptr) {
+    if (!partition_alloc::internal::base::is_constant_evaluated()) {
+      if (EnableHooks) {
+        GetRawPtrHooks()->unsafely_unwrap_for_duplication(
+            reinterpret_cast<uintptr_t>(wrapped_ptr));
+      }
+    }
     return wrapped_ptr;
   }
 

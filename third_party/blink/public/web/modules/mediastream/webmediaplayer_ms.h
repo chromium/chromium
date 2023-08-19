@@ -173,6 +173,7 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
   // getStats().
   bool PassedTimingAllowOriginCheck() const override { return true; }
   bool HasAvailableVideoFrame() const override;
+  bool HasReadableVideoFrame() const override;
 
   void SetVolumeMultiplier(double multiplier) override;
   void SuspendForFrameClosed() override;

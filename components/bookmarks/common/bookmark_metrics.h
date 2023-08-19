@@ -61,7 +61,8 @@ void RecordBookmarkRemoved(BookmarkEditSource source);
 // Records when a bookmark is opened by the user.
 void RecordBookmarkOpened(base::Time now,
                           base::Time date_last_used,
-                          base::Time date_added);
+                          base::Time date_added,
+                          StorageStateForUma storage_state);
 
 // Records when a bookmark or bookmark folder is moved to a different parent
 // folder.

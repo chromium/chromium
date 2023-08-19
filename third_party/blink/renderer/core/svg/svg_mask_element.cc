@@ -89,16 +89,16 @@ void SVGMaskElement::CollectStyleForPresentationAttribute(
     MutableCSSPropertyValueSet* style) {
   SVGAnimatedPropertyBase* property = PropertyFromAttribute(name);
   if (property == x_) {
-    AddPropertyToPresentationAttributeStyle(style, property->CssPropertyId(),
+    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kX,
                                             x_->CssValue());
   } else if (property == y_) {
-    AddPropertyToPresentationAttributeStyle(style, property->CssPropertyId(),
+    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kY,
                                             y_->CssValue());
   } else if (property == width_) {
-    AddPropertyToPresentationAttributeStyle(style, property->CssPropertyId(),
+    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kWidth,
                                             width_->CssValue());
   } else if (property == height_) {
-    AddPropertyToPresentationAttributeStyle(style, property->CssPropertyId(),
+    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kHeight,
                                             height_->CssValue());
   } else {
     SVGElement::CollectStyleForPresentationAttribute(name, value, style);
@@ -126,9 +126,9 @@ void SVGMaskElement::SvgAttributeChanged(
     }
 
     auto* layout_object = To<LayoutSVGResourceContainer>(GetLayoutObject());
-    if (layout_object)
-      layout_object->InvalidateCacheAndMarkForLayout();
-
+    if (layout_object) {
+      layout_object->InvalidateCache();
+    }
     return;
   }
 
@@ -141,9 +141,9 @@ void SVGMaskElement::ChildrenChanged(const ChildrenChange& change) {
   if (change.ByParser())
     return;
 
-  if (LayoutObject* object = GetLayoutObject()) {
-    object->SetNeedsLayoutAndFullPaintInvalidation(
-        layout_invalidation_reason::kChildChanged);
+  auto* layout_object = To<LayoutSVGResourceContainer>(GetLayoutObject());
+  if (layout_object) {
+    layout_object->InvalidateCache();
   }
 }
 
@@ -180,23 +180,21 @@ SVGAnimatedPropertyBase* SVGMaskElement::PropertyFromAttribute(
   }
 }
 
-void SVGMaskElement::SynchronizeSVGAttribute(const QualifiedName& name) const {
-  if (name == AnyQName()) {
-    SVGAnimatedPropertyBase* attrs[]{
-        x_.Get(),      y_.Get(),          width_.Get(),
-        height_.Get(), mask_units_.Get(), mask_content_units_.Get()};
-    SynchronizeAllSVGAttributes(attrs);
-  }
-  SVGTests::SynchronizeSVGAttribute(name);
-  SVGElement::SynchronizeSVGAttribute(name);
+void SVGMaskElement::SynchronizeAllSVGAttributes() const {
+  SVGAnimatedPropertyBase* attrs[]{
+      x_.Get(),      y_.Get(),          width_.Get(),
+      height_.Get(), mask_units_.Get(), mask_content_units_.Get()};
+  SynchronizeListOfSVGAttributes(attrs);
+  SVGTests::SynchronizeAllSVGAttributes();
+  SVGElement::SynchronizeAllSVGAttributes();
 }
 
 void SVGMaskElement::CollectExtraStyleForPresentationAttribute(
     MutableCSSPropertyValueSet* style) {
   for (auto* property : (SVGAnimatedPropertyBase*[]){
            x_.Get(), y_.Get(), width_.Get(), height_.Get()}) {
-    if (property->HasPresentationAttributeMapping() &&
-        property->IsAnimating()) {
+    DCHECK(property->HasPresentationAttributeMapping());
+    if (property->IsAnimating()) {
       CollectStyleForPresentationAttribute(property->AttributeName(),
                                            g_empty_atom, style);
     }

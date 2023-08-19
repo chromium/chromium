@@ -72,11 +72,27 @@ void FocusManagerTest::AddFocusChangeListener(FocusChangeListener* listener) {
   GetFocusManager()->AddFocusChangeListener(listener);
 }
 
+void FocusManagerTest::RemoveFocusChangeListener(
+    FocusChangeListener* listener) {
+  ASSERT_TRUE(focus_change_listener_);
+  ASSERT_EQ(focus_change_listener_, listener);
+  GetFocusManager()->RemoveFocusChangeListener(listener);
+  focus_change_listener_ = nullptr;
+}
+
 void FocusManagerTest::AddWidgetFocusChangeListener(
     WidgetFocusChangeListener* listener) {
   ASSERT_FALSE(widget_focus_change_listener_);
   widget_focus_change_listener_ = listener;
   WidgetFocusManager::GetInstance()->AddFocusChangeListener(listener);
+}
+
+void FocusManagerTest::RemoveWidgetFocusChangeListener(
+    WidgetFocusChangeListener* listener) {
+  ASSERT_TRUE(widget_focus_change_listener_);
+  ASSERT_EQ(widget_focus_change_listener_, listener);
+  WidgetFocusManager::GetInstance()->RemoveFocusChangeListener(listener);
+  widget_focus_change_listener_ = nullptr;
 }
 
 void FocusManagerTest::SetAccessiblePanes(const std::vector<View*>& panes) {

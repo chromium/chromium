@@ -216,7 +216,7 @@ class AppIconLoader : public base::RefCounted<AppIconLoader>,
 
   void MaybeLoadFallbackOrCompleteEmpty();
 
-  // ProfileManagerObserver overrides.
+  // ProfileObserver overrides.
   void OnProfileWillBeDestroyed(Profile* profile) override;
 
   // If non-null, points to the profile necessary to support the icon loading.

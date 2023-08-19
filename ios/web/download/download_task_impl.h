@@ -104,7 +104,7 @@ class DownloadTaskImpl : public DownloadTask {
   SEQUENCE_CHECKER(sequence_checker_);
 
   // A list of observers. Weak references.
-  base::ObserverList<DownloadTaskObserver, true>::Unchecked observers_;
+  base::ObserverList<DownloadTaskObserver, true> observers_;
 
   // Back up corresponding public methods of DownloadTask interface.
   State state_ = State::kNotStarted;

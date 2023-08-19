@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
@@ -17,12 +16,12 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "components/device_signals/core/browser/signals_types.h"
+#endif
+
 namespace content {
 class BrowserContext;
-}
-
-namespace extensions {
-class EventRouter;
 }
 
 namespace signin {
@@ -31,10 +30,6 @@ class IdentityManager;
 
 namespace policy {
 class DeviceManagementService;
-}
-
-namespace safe_browsing {
-enum class DeepScanAccessPoint;
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -77,6 +72,8 @@ class RealtimeReportingClient : public KeyedService,
   void OnClientError(policy::CloudPolicyClient* client) override;
   void OnPolicyFetched(policy::CloudPolicyClient* client) override {}
   void OnRegistrationStateChanged(policy::CloudPolicyClient* client) override {}
+
+  base::WeakPtr<RealtimeReportingClient> GetWeakPtr();
 
   // Determines if the real-time reporting feature is enabled.
   // Obtain settings to apply to a reporting event from ConnectorsService.
@@ -163,8 +160,8 @@ class RealtimeReportingClient : public KeyedService,
   void RemoveDmTokenFromRejectedSet(const std::string& dm_token);
 
   raw_ptr<content::BrowserContext> context_;
-  raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
-  raw_ptr<extensions::EventRouter> event_router_ = nullptr;
+  raw_ptr<signin::IdentityManager, DanglingUntriaged> identity_manager_ =
+      nullptr;
 
   // The cloud policy clients used to upload browser events and profile events
   // to the cloud. These clients are never used to fetch policies. These
@@ -186,6 +183,25 @@ class RealtimeReportingClient : public KeyedService,
 
   base::WeakPtrFactory<RealtimeReportingClient> weak_ptr_factory_{this};
 };
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// Populate event dict with CrowdStrike signal values. If those signals are
+// available in `response`, this function returns a Dict with the following
+// fields added:
+// "securityAgents" : [
+//   {
+//     "crowdstrike": {
+//       "agent_id": "agent-123",
+//       "customer_id": "customer-123"
+//     }
+//   }
+// ]
+// These must match proto specified in
+// chrome/cros/reporting/api/proto/browser_events.proto
+void AddCrowdstrikeSignalsToEvent(
+    base::Value::Dict& event,
+    const device_signals::SignalsAggregationResponse& response);
+#endif
 
 }  // namespace enterprise_connectors
 

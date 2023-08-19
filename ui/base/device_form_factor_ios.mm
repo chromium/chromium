@@ -9,7 +9,7 @@
 namespace ui {
 
 DeviceFormFactor GetDeviceFormFactor() {
-  UIUserInterfaceIdiom idiom = [[UIDevice currentDevice] userInterfaceIdiom];
+  UIUserInterfaceIdiom idiom = UIDevice.currentDevice.userInterfaceIdiom;
   if (idiom == UIUserInterfaceIdiomPad)
     return DEVICE_FORM_FACTOR_TABLET;
   return DEVICE_FORM_FACTOR_PHONE;

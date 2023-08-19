@@ -10,11 +10,12 @@
 #include "build/build_config.h"
 #include "cc/mojom/render_frame_metadata.mojom-shared.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
 namespace {
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 constexpr float kEdgeThreshold = 10.0f;
 #endif
 }  // namespace
@@ -63,7 +64,8 @@ void RenderFrameMetadataObserverImpl::OnRenderFrameSubmission(
 
 #if BUILDFLAG(IS_ANDROID)
   bool is_frequency_all_updates =
-      root_scroll_offset_update_frequency_ ==
+      root_scroll_offset_update_frequency_.value_or(
+          cc::mojom::blink::RootScrollOffsetUpdateFrequency::kNone) ==
       cc::mojom::blink::RootScrollOffsetUpdateFrequency::kAllUpdates;
   const bool send_root_scroll_offset_changed =
       is_frequency_all_updates && !send_metadata &&
@@ -84,7 +86,7 @@ void RenderFrameMetadataObserverImpl::OnRenderFrameSubmission(
   // value to all the observers.
   if (send_metadata && render_frame_metadata_observer_client_) {
     auto metadata_copy = render_frame_metadata;
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
     // On non-Android, sending |root_scroll_offset| outside of tests would
     // leave the browser process with out of date information. It is an
     // optional parameter which we clear here.
@@ -136,12 +138,21 @@ void RenderFrameMetadataObserverImpl::OnRenderFrameSubmission(
 #if BUILDFLAG(IS_ANDROID)
 void RenderFrameMetadataObserverImpl::UpdateRootScrollOffsetUpdateFrequency(
     cc::mojom::blink::RootScrollOffsetUpdateFrequency frequency) {
-  root_scroll_offset_update_frequency_ = frequency;
+  if (!RuntimeEnabledFeatures::CCTNewRFMPushBehaviorEnabled()) {
+    root_scroll_offset_update_frequency_ = frequency;
+    if (frequency ==
+        cc::mojom::blink::RootScrollOffsetUpdateFrequency::kAllUpdates) {
+      SendLastRenderFrameMetadata();
+    }
+    return;
+  }
 
-  if (frequency ==
-      cc::mojom::blink::RootScrollOffsetUpdateFrequency::kAllUpdates) {
+  if ((!root_scroll_offset_update_frequency_.has_value() ||
+       frequency > root_scroll_offset_update_frequency_) &&
+      last_render_frame_metadata_.has_value()) {
     SendLastRenderFrameMetadata();
   }
+  root_scroll_offset_update_frequency_ = frequency;
 }
 #endif
 
@@ -186,7 +197,7 @@ bool RenderFrameMetadataObserverImpl::ShouldSendRenderFrameMetadata(
     return true;
   }
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   if (rfm1.bottom_controls_height != rfm2.bottom_controls_height ||
       rfm1.bottom_controls_shown_ratio != rfm2.bottom_controls_shown_ratio ||
       rfm1.top_controls_min_height_offset !=
@@ -251,7 +262,8 @@ void RenderFrameMetadataObserverImpl::DidEndScroll() {
     return;
   }
 
-  if (root_scroll_offset_update_frequency_ !=
+  if (root_scroll_offset_update_frequency_.value_or(
+          cc::mojom::blink::RootScrollOffsetUpdateFrequency::kNone) !=
       cc::mojom::blink::RootScrollOffsetUpdateFrequency::kOnScrollEnd) {
     return;
   }

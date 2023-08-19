@@ -5,17 +5,33 @@
 #ifndef COMPONENTS_SPELLCHECK_BROWSER_PREF_NAMES_H_
 #define COMPONENTS_SPELLCHECK_BROWSER_PREF_NAMES_H_
 
-namespace spellcheck {
-namespace prefs {
+namespace spellcheck::prefs {
 
-extern const char kSpellCheckEnable[];
-extern const char kSpellCheckDictionaries[];
-extern const char kSpellCheckForcedDictionaries[];
-extern const char kSpellCheckBlocklistedDictionaries[];
-extern const char kSpellCheckDictionary[];
-extern const char kSpellCheckUseSpellingService[];
+// Boolean pref to define the default values for using spellchecker.
+inline constexpr char kSpellCheckEnable[] = "browser.enable_spellchecking";
 
-}  // namespace prefs
-}  // namespace spellcheck
+// String which represents the dictionary name for our spell-checker.
+// This is an old preference that is being migrated to kSpellCheckDictionaries.
+inline constexpr char kSpellCheckDictionary[] = "spellcheck.dictionary";
+
+// List of strings representing the dictionary names for our spell-checker.
+inline constexpr char kSpellCheckDictionaries[] = "spellcheck.dictionaries";
+
+// List of strings representing the dictionary names for languages that are
+// force-enabled in our spell-checker due to the SpellcheckLanguage policy.
+inline constexpr char kSpellCheckForcedDictionaries[] =
+    "spellcheck.forced_dictionaries";
+
+// List of strings representing the dictionary names for languages that are
+// force-disabled in our spell-checker due to the SpellcheckLanguageBlocklist
+// policy.
+inline constexpr char kSpellCheckBlocklistedDictionaries[] =
+    "spellcheck.blocked_dictionaries";
+
+// String which represents whether we use the spelling service.
+inline constexpr char kSpellCheckUseSpellingService[] =
+    "spellcheck.use_spelling_service";
+
+}  // namespace spellcheck::prefs
 
 #endif  // COMPONENTS_SPELLCHECK_BROWSER_PREF_NAMES_H_

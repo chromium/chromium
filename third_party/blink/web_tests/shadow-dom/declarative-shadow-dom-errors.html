@@ -13,7 +13,7 @@
 then throw a "NotSupportedError" DOMException.
 -->
 <video>
-   <template shadowroot=open>
+   <template shadowrootmode=open>
    </template>
 </video>
 
@@ -33,7 +33,7 @@ class ShadowDisabledElement extends HTMLElement {
 customElements.define('shadow-disabled-element', ShadowDisabledElement);
 </script>
 <shadow-disabled-element>
-  <template shadowroot=open>
+  <template shadowrootmode=open>
   </template>
 </shadow-disabled-element>
 
@@ -46,7 +46,7 @@ root" property is false, then throw an "NotSupportedError" DOMException.
   <script>
   host.attachShadow({mode:'open'});
   </script>
-  <template shadowroot=open>
+  <template shadowrootmode=open>
   </template>
 </div>
 

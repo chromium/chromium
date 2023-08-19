@@ -167,8 +167,6 @@ void LinkLoader::LoadStylesheet(
 
   mojom::blink::FetchPriorityHint fetch_priority_hint =
       GetFetchPriorityAttributeValue(params.fetch_priority_hint);
-  DCHECK(fetch_priority_hint == mojom::blink::FetchPriorityHint::kAuto ||
-         RuntimeEnabledFeatures::PriorityHintsEnabled(context));
   resource_request.SetFetchPriorityHint(fetch_priority_hint);
 
   ResourceLoaderOptions options(context->GetCurrentWorld());

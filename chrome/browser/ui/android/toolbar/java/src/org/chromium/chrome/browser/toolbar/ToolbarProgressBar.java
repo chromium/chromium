@@ -14,11 +14,11 @@ import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
+import android.view.animation.Interpolator;
 import android.widget.FrameLayout.LayoutParams;
 import android.widget.ProgressBar;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.base.MathUtils;
@@ -27,7 +27,7 @@ import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar;
 import org.chromium.ui.UiUtils;
-import org.chromium.ui.interpolators.BakedBezierInterpolator;
+import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.util.ColorUtils;
 
 /**
@@ -362,8 +362,8 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar {
 
         long duration = (long) Math.abs(alphaDiff * ALPHA_ANIMATION_DURATION_MS);
 
-        BakedBezierInterpolator interpolator = BakedBezierInterpolator.FADE_IN_CURVE;
-        if (alphaDiff < 0) interpolator = BakedBezierInterpolator.FADE_OUT_CURVE;
+        Interpolator interpolator = Interpolators.LINEAR_OUT_SLOW_IN_INTERPOLATOR;
+        if (alphaDiff < 0) interpolator = Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR;
 
         if (mFadeAnimator != null) mFadeAnimator.cancel();
 
@@ -483,7 +483,6 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar {
     /**
      * @return The number of times the progress bar has been triggered.
      */
-    @VisibleForTesting
     public int getStartCountForTesting() {
         return mProgressStartCount;
     }
@@ -491,7 +490,6 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar {
     /**
      * Reset the number of times the progress bar has been triggered.
      */
-    @VisibleForTesting
     public void resetStartCountForTesting() {
         mProgressStartCount = 0;
     }
@@ -499,7 +497,6 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar {
     /**
      * Start the indeterminate progress bar animation.
      */
-    @VisibleForTesting
     public void startIndeterminateAnimationForTesting() {
         mStartSmoothIndeterminate.run();
     }
@@ -507,7 +504,6 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar {
     /**
      * @return The indeterminate animator.
      */
-    @VisibleForTesting
     public Animator getIndeterminateAnimatorForTesting() {
         return mSmoothProgressAnimator;
     }

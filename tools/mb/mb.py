@@ -15,7 +15,7 @@ import collections
 import errno
 import json
 import os
-import pipes
+import shlex
 import platform
 import re
 import shutil
@@ -1289,13 +1289,11 @@ class MetaBuildWrapper:
 
     Skylab is CrOS infra facilities for us to run hardware tests. These files
     may appear in the test target's runtime_deps for browser lab, but
-    unnecessary for CrOS lab. E.g. chrome is provisioned by our autotest
-    wrapper in Skylab, not by third_party/chromite.
+    unnecessary for CrOS lab.
     """
     file_ignore_list = [
         re.compile(r'.*build/chromeos.*'),
         re.compile(r'.*build/cros_cache.*'),
-        re.compile(r'.*third_party/chromite.*'),
         # No test target should rely on files in [output_dir]/gen.
         re.compile(r'^gen/.*'),
     ]
@@ -2072,7 +2070,7 @@ class MetaBuildWrapper:
     if self.platform == 'win32':
       shell_quoter = QuoteForCmd
     else:
-      shell_quoter = pipes.quote
+      shell_quoter = shlex.quote
 
     if cmd[0] == self.executable:
       cmd = ['python'] + cmd[1:]
@@ -2135,13 +2133,16 @@ class MetaBuildWrapper:
   def _CipdPlatform(self):
     """Returns current CIPD platform, e.g. linux-amd64.
 
-    Assumes AMD64.
+    Unless the platform is arm64, assumes amd64.
     """
+    arch = 'amd64'
+    if platform.machine() == 'arm64':
+      arch = arm64
     if self.platform == 'win32':
-      return 'windows-amd64'
+      return 'windows-' + arch
     if self.platform == 'darwin':
-      return 'mac-amd64'
-    return 'linux-amd64'
+      return 'mac-' + arch
+    return 'linux-' + arch
 
   def ExpandUser(self, path):
     # This function largely exists so it can be overridden for testing.

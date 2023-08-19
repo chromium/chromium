@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/model/utils/notification_observer_bridge.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/web/features.h"
@@ -25,10 +26,6 @@
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 // Returns true if the application is in UIApplicationStateActive state.
@@ -42,11 +39,16 @@ SadTabTabHelper::SadTabTabHelper(web::WebState* web_state,
                                  base::TimeDelta repeat_failure_interval)
     : web_state_(web_state), repeat_failure_interval_(repeat_failure_interval) {
   web_state_->AddObserver(this);
-  AddApplicationDidBecomeActiveObserver();
+
+  NotificationCallback callback = base::BindRepeating(
+      &SadTabTabHelper::OnAppDidBecomeActive, weak_factory_.GetWeakPtr());
+
+  application_did_become_active_observer_ = [[NotificationObserverBridge alloc]
+      initForNotification:UIApplicationDidBecomeActiveNotification
+            usingCallback:callback];
 }
 
 SadTabTabHelper::~SadTabTabHelper() {
-  DCHECK(!application_did_become_active_observer_);
   DCHECK(!web_state_);
 }
 
@@ -134,7 +136,6 @@ void SadTabTabHelper::WebStateDestroyed(web::WebState* web_state) {
   DCHECK_EQ(web_state_, web_state);
   web_state_->RemoveObserver(this);
   web_state_ = nullptr;
-  RemoveApplicationDidBecomeActiveObserver();
 }
 
 void SadTabTabHelper::OnVisibleCrash(const GURL& url_causing_failure) {
@@ -182,7 +183,7 @@ void SadTabTabHelper::ReloadTab() {
   web_state_->GetNavigationManager()->LoadIfNecessary();
 }
 
-void SadTabTabHelper::OnAppDidBecomeActive() {
+void SadTabTabHelper::OnAppDidBecomeActive(NSNotification* notification) {
   if (!requires_reload_on_becoming_active_)
     return;
   if (web_state_->IsVisible()) {
@@ -191,25 +192,6 @@ void SadTabTabHelper::OnAppDidBecomeActive() {
     requires_reload_on_becoming_visible_ = true;
   }
   requires_reload_on_becoming_active_ = false;
-}
-
-void SadTabTabHelper::AddApplicationDidBecomeActiveObserver() {
-  application_did_become_active_observer_ =
-      [[NSNotificationCenter defaultCenter]
-          addObserverForName:UIApplicationDidBecomeActiveNotification
-                      object:nil
-                       queue:nil
-                  usingBlock:^(NSNotification*) {
-                    OnAppDidBecomeActive();
-                  }];
-}
-
-void SadTabTabHelper::RemoveApplicationDidBecomeActiveObserver() {
-  if (application_did_become_active_observer_) {
-    [[NSNotificationCenter defaultCenter]
-        removeObserver:application_did_become_active_observer_];
-    application_did_become_active_observer_ = nil;
-  }
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(SadTabTabHelper)

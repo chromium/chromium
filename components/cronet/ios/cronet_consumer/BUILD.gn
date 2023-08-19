@@ -28,8 +28,6 @@ template("cronet_consumer_template") {
                              "bundle_deps",
                              "framework_dirs",
                            ])
-
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 }
 

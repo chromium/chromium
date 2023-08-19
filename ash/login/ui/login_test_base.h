@@ -85,7 +85,7 @@ class LoginTestBase : public NoSessionAshTestBase {
   void TearDown() override;
 
  private:
-  // The widget created using |ShowWidgetWithContent|.
+  // The widget set using `SetWidget`.
   std::unique_ptr<views::Widget> widget_;
 
   std::vector<LoginUserInfo> users_;

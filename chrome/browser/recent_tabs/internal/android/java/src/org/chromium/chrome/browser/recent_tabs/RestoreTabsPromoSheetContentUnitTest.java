@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.recent_tabs;
 
+import static org.mockito.Mockito.when;
+
 import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.CURRENT_SCREEN;
 import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.ScreenType.DEVICE_SCREEN;
 import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.ScreenType.HOME_SCREEN;
@@ -11,6 +13,9 @@ import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.Scre
 import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.VISIBLE;
 
 import android.view.View;
+import android.widget.ScrollView;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -36,6 +41,12 @@ public class RestoreTabsPromoSheetContentUnitTest {
     private View mContentView;
     @Mock
     private BottomSheetController mBottomSheetController;
+    @Mock
+    private RecyclerView mRecyclerView;
+    @Mock
+    private View mChildView;
+    @Mock
+    private ScrollView mScrollView;
 
     private RestoreTabsPromoSheetContent mSheetContent;
     private PropertyModel mModel = RestoreTabsProperties.createDefaultModel();
@@ -63,8 +74,28 @@ public class RestoreTabsPromoSheetContentUnitTest {
     }
 
     @Test
-    public void testSheetContent_getVerticalScrollOffset() {
+    public void testSheetContent_getVerticalScrollOffsetDefault() {
         Assert.assertEquals(0, mSheetContent.getVerticalScrollOffset());
+    }
+
+    @Test
+    public void testSheetContent_getVerticalScrollOffsetRecyclerView() {
+        mSheetContent.setRecyclerViewForTesting(mRecyclerView);
+        mModel.set(CURRENT_SCREEN, DEVICE_SCREEN);
+        when(mRecyclerView.getChildAt(0)).thenReturn(mChildView);
+        when(mChildView.getTop()).thenReturn(0);
+        when(mRecyclerView.getPaddingTop()).thenReturn(1);
+        Assert.assertEquals(1, mSheetContent.getVerticalScrollOffset());
+        mSheetContent.setRecyclerViewForTesting(null);
+    }
+
+    @Test
+    public void testSheetContent_getVerticalScrollOffsetScrollView() {
+        mSheetContent.setScrollViewForTesting(mScrollView);
+        mModel.set(CURRENT_SCREEN, HOME_SCREEN);
+        when(mScrollView.getScrollY()).thenReturn(1);
+        Assert.assertEquals(1, mSheetContent.getVerticalScrollOffset());
+        mSheetContent.setScrollViewForTesting(null);
     }
 
     @Test
@@ -98,9 +129,11 @@ public class RestoreTabsPromoSheetContentUnitTest {
 
     @Test
     public void testSheetContent_handleBackPressHomeScreen() {
+        RestoreTabsMetricsHelper.setPromoShownCount(1);
         mModel.set(CURRENT_SCREEN, HOME_SCREEN);
         Assert.assertTrue(mSheetContent.handleBackPress());
         Assert.assertFalse(mModel.get(VISIBLE));
+        RestoreTabsMetricsHelper.setPromoShownCount(0);
     }
 
     @Test
@@ -124,9 +157,11 @@ public class RestoreTabsPromoSheetContentUnitTest {
 
     @Test
     public void testSheetContent_onBackPressedHomeScreen() {
+        RestoreTabsMetricsHelper.setPromoShownCount(1);
         mModel.set(CURRENT_SCREEN, HOME_SCREEN);
         mSheetContent.onBackPressed();
         Assert.assertFalse(mModel.get(VISIBLE));
+        RestoreTabsMetricsHelper.setPromoShownCount(0);
     }
 
     @Test

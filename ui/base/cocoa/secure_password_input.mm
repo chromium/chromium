@@ -6,6 +6,7 @@
 
 #import <Carbon/Carbon.h>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/check_op.h"
 
 namespace {
@@ -18,17 +19,19 @@ int g_password_input_counter = 0;
 // third_party/WebKit/WebCore/platform/SecureTextInput.cpp
 //
 // The following technote describes proper EnableSecureEventInput() usage:
-// https://developer.apple.com/library/content/technotes/tn2150/_index.html
+// https://developer.apple.com/library/archive/technotes/tn2150/_index.html
 void SetPasswordInputEnabled(bool enabled) {
   if (enabled) {
     EnableSecureEventInput();
 
     CFArrayRef inputSources = TISCreateASCIICapableInputSourceList();
-    TSMSetDocumentProperty(0, kTSMDocumentEnabledInputSourcesPropertyTag,
+    TSMSetDocumentProperty(/*docID=*/nullptr,
+                           kTSMDocumentEnabledInputSourcesPropertyTag,
                            sizeof(CFArrayRef), &inputSources);
     CFRelease(inputSources);
   } else {
-    TSMRemoveDocumentProperty(0, kTSMDocumentEnabledInputSourcesPropertyTag);
+    TSMRemoveDocumentProperty(/*docID=*/nullptr,
+                              kTSMDocumentEnabledInputSourcesPropertyTag);
 
     DisableSecureEventInput();
   }

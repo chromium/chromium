@@ -22,6 +22,9 @@
 
 class PrefChangeRegistrar;
 class RichHoverButton;
+class MediaDialogViewObserver;
+class MediaNotificationService;
+class Profile;
 
 namespace content {
 class WebContents;
@@ -30,7 +33,6 @@ class WebContents;
 namespace global_media_controls {
 class MediaItemUIListView;
 class MediaItemUIView;
-class MediaItemUIFooter;
 }  // namespace global_media_controls
 
 namespace views {
@@ -39,11 +41,6 @@ class Label;
 class Separator;
 class ToggleButton;
 }  // namespace views
-
-class MediaDialogViewObserver;
-class MediaNotificationService;
-class Profile;
-class MediaItemUIDeviceSelectorView;
 
 // Dialog that shows media controls that control the active media session.
 class MediaDialogView : public views::BubbleDialogDelegateView,
@@ -157,10 +154,6 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
   void InitializeCaptionSettingsSection();
   void SetLiveCaptionTitle(const std::u16string& new_text);
 
-  std::unique_ptr<global_media_controls::MediaItemUIFooter> BuildFooterView(
-      const std::string& id,
-      base::WeakPtr<media_message_center::MediaNotificationItem> item,
-      MediaItemUIDeviceSelectorView* device_selector_view);
   std::unique_ptr<global_media_controls::MediaItemUIView> BuildMediaItemUIView(
       const std::string& id,
       base::WeakPtr<media_message_center::MediaNotificationItem> item);
@@ -200,7 +193,7 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
   // It stores the WebContents* from which a MediaRouterDialogControllerViews
   // opened the dialog for a presentation request. It is nullptr if the dialog
   // is opened from the toolbar.
-  const raw_ptr<content::WebContents, DanglingUntriaged>
+  const raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged>
       web_contents_for_presentation_request_ = nullptr;
   const global_media_controls::GlobalMediaControlsEntryPoint entry_point_;
 };

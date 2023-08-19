@@ -5,42 +5,24 @@
 #ifndef CONTENT_BROWSER_SPEECH_TTS_MAC_H_
 #define CONTENT_BROWSER_SPEECH_TTS_MAC_H_
 
+#import <AVFAudio/AVFAudio.h>
+
 #include "base/functional/callback.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/no_destructor.h"
 #include "content/browser/speech/tts_platform_impl.h"
 
-#import <Cocoa/Cocoa.h>
-
 class TtsPlatformImplMac;
 
-@interface ChromeTtsDelegate : NSObject <NSSpeechSynthesizerDelegate>
+@interface ChromeTtsDelegate : NSObject <AVSpeechSynthesizerDelegate>
 
-- (id)initWithPlatformImplMac:(TtsPlatformImplMac*)ttsImplMac;
-
-@end
-
-// Subclass of NSSpeechSynthesizer that takes an utterance
-// string on initialization, retains it and only allows it
-// to be spoken once.
-//
-// We construct a new NSSpeechSynthesizer for each utterance, for
-// two reasons:
-// 1. To associate delegate callbacks with a particular utterance,
-//    without assuming anything undocumented about the protocol.
-// 2. To work around https://openradar.appspot.com/13425549,
-//    where Nuance voices don't retain the utterance string and
-//    crash when trying to call willSpeakWord.
-@interface SingleUseSpeechSynthesizer : NSSpeechSynthesizer
-
-- (id)initWithUtterance:(NSString*)utterance;
-- (bool)startSpeakingRetainedUtterance;
-- (bool)startSpeakingString:(NSString*)utterance;
+- (instancetype)initWithPlatformImplMac:(TtsPlatformImplMac*)ttsImplMac;
 
 @end
 
 class TtsPlatformImplMac : public content::TtsPlatformImpl {
  public:
+  static constexpr int kInvalidUtteranceId = -1;
+
   ~TtsPlatformImplMac() override;
 
   TtsPlatformImplMac(const TtsPlatformImplMac&) = delete;
@@ -68,7 +50,7 @@ class TtsPlatformImplMac : public content::TtsPlatformImpl {
 
   // Called by ChromeTtsDelegate when we get a callback from the
   // native speech engine.
-  void OnSpeechEvent(NSSpeechSynthesizer* sender,
+  void OnSpeechEvent(int utterance_id,
                      content::TtsEventType event_type,
                      int char_index,
                      int char_length,
@@ -90,9 +72,9 @@ class TtsPlatformImplMac : public content::TtsPlatformImpl {
                      base::OnceCallback<void(bool)> on_speak_finished,
                      const std::string& parsed_utterance);
 
-  base::scoped_nsobject<SingleUseSpeechSynthesizer> speech_synthesizer_;
-  base::scoped_nsobject<ChromeTtsDelegate> delegate_;
-  int utterance_id_ = -1;
+  AVSpeechSynthesizer* __strong speech_synthesizer_;
+  ChromeTtsDelegate* __strong delegate_;
+  int utterance_id_ = kInvalidUtteranceId;
   std::string utterance_;
   int last_char_index_ = 0;
   bool paused_ = false;

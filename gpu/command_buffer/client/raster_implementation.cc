@@ -359,7 +359,7 @@ class RasterImplementation::PaintOpSerializer {
 
  private:
   const raw_ptr<RasterImplementation> ri_;
-  raw_ptr<char, AllowPtrArithmetic> buffer_;
+  raw_ptr<char, AllowPtrArithmetic | AcrossTasksDanglingUntriaged> buffer_;
   const raw_ptr<cc::DecodeStashingImageProvider> stashing_image_provider_;
   const raw_ptr<TransferCacheSerializeHelperImpl> transfer_cache_helper_;
   raw_ptr<ClientFontManager> font_manager_;
@@ -1259,6 +1259,63 @@ void RasterImplementation::WritePixels(const gpu::Mailbox& dest_mailbox,
       dest_mailbox.name);
 }
 
+void RasterImplementation::WritePixelsYUV(const gpu::Mailbox& dest_mailbox,
+                                          const SkYUVAPixmaps& src_yuv_pixmap) {
+  TRACE_EVENT0("gpu", "RasterImplementation::WritePixelsYUV");
+  const auto& src_yuv_info = src_yuv_pixmap.yuvaInfo();
+  const auto& src_yuv_pixmap_info = src_yuv_pixmap.pixmapsInfo();
+  const std::array<SkPixmap, SkYUVAInfo::kMaxPlanes>& src_sk_pixmaps =
+      src_yuv_pixmap.planes();
+
+  GLuint total_size = 0;
+  for (int plane = 0; plane < src_yuv_info.numPlanes(); plane++) {
+    CHECK(src_sk_pixmaps[plane].addr());
+    total_size += base::bits::AlignUp(src_sk_pixmaps[plane].computeByteSize(),
+                                      sizeof(uint64_t));
+  }
+
+  ScopedSharedMemoryPtr scoped_shared_memory(total_size, transfer_buffer_,
+                                             mapped_memory_.get(), helper());
+  if (!scoped_shared_memory.valid()) {
+    SetGLError(GL_INVALID_OPERATION, "WritePixelsYUV", "size too big");
+    return;
+  }
+
+  GLint shm_id = scoped_shared_memory.shm_id();
+  GLuint shm_offset = scoped_shared_memory.offset();
+  void* address = scoped_shared_memory.address();
+
+  // Copy the pixels for first plane at `address`.
+  CHECK(src_sk_pixmaps[0].addr());
+  memcpy(static_cast<uint8_t*>(address), src_sk_pixmaps[0].addr(),
+         src_sk_pixmaps[0].computeByteSize());
+
+  GLuint plane_offsets[SkYUVAInfo::kMaxPlanes] = {};
+  for (int plane = 1; plane < src_yuv_info.numPlanes(); plane++) {
+    CHECK(src_sk_pixmaps[plane].addr());
+    // Calculate the offset based on previous plane offset and previous plane
+    // size, and copy pixels for current plane starting at current plane
+    // offset.
+    GLuint prev_plane_size = src_sk_pixmaps[plane - 1].computeByteSize();
+    plane_offsets[plane] =
+        plane_offsets[plane - 1] +
+        base::bits::AlignUp(prev_plane_size,
+                            static_cast<GLuint>(sizeof(uint64_t)));
+    memcpy(static_cast<uint8_t*>(address) + plane_offsets[plane],
+           src_sk_pixmaps[plane].addr(),
+           src_sk_pixmaps[plane].computeByteSize());
+  }
+
+  helper_->WritePixelsYUVINTERNALImmediate(
+      src_yuv_info.width(), src_yuv_info.height(), src_sk_pixmaps[0].rowBytes(),
+      src_sk_pixmaps[1].rowBytes(), src_sk_pixmaps[2].rowBytes(),
+      src_sk_pixmaps[3].rowBytes(),
+      static_cast<int>(src_yuv_info.planeConfig()),
+      static_cast<int>(src_yuv_info.subsampling()),
+      static_cast<int>(src_yuv_pixmap_info.dataType()), shm_id, shm_offset,
+      plane_offsets[1], plane_offsets[2], plane_offsets[3], dest_mailbox.name);
+}
+
 namespace {
 constexpr size_t kNumMailboxes = SkYUVAInfo::kMaxPlanes + 1;
 }  // namespace
@@ -1526,12 +1583,7 @@ void RasterImplementation::ReadbackImagePixelsINTERNAL(
     argb_request_queue_.push(std::move(request));
     SignalQuery(query,
                 base::BindOnce(&RasterImplementation::OnAsyncARGBReadbackDone,
-                               // We know that at least one or both pointers
-                               // were dangling. Crash reports was not precise
-                               // enough to determine which was it was. Marking
-                               // the two so that the study can move forward.
-                               base::UnsafeDanglingUntriaged(this),
-                               base::UnsafeDanglingUntriaged(request_ptr)));
+                               base::Unretained(this), request_ptr));
   } else {
     WaitForCmd();
 
@@ -1576,6 +1628,7 @@ void RasterImplementation::OnAsyncARGBReadbackDone(
 }
 
 void RasterImplementation::CancelRequests() {
+  gpu_control_->CancelAllQueries();
   while (!argb_request_queue_.empty()) {
     if (argb_request_queue_.front()->query)
       DeleteQueriesEXT(1, &argb_request_queue_.front()->query);

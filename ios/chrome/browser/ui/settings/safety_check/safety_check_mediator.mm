@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_mediator.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
@@ -14,12 +14,15 @@
 #import "base/time/time.h"
 #import "base/version.h"
 #import "components/password_manager/core/browser/leak_detection_dialog_utils.h"
+#import "components/password_manager/core/browser/password_sync_util.h"
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/safety_check/safety_check.h"
+#import "components/sync/service/sync_service.h"
+#import "components/sync/service/sync_user_settings.h"
 #import "components/version_info/version_info.h"
 #import "ios/chrome/browser/omaha/omaha_service.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
@@ -35,7 +38,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_constants.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_consumer.h"
@@ -60,10 +62,6 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/time_format.h"
 #import "url/gurl.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using l10n_util::GetNSString;
 using password_manager::WarningType;
@@ -170,7 +168,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
 @property(nonatomic, assign) AuthenticationService* authService;
 
 // Service to check if passwords are synced.
-@property(nonatomic, assign) SyncSetupService* syncService;
+@property(nonatomic, assign) syncer::SyncService* syncService;
 
 // Service used to check user preference values.
 @property(nonatomic, assign, readonly) PrefService* userPrefService;
@@ -189,7 +187,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
                        (scoped_refptr<IOSChromePasswordCheckManager>)
                            passwordCheckManager
                             authService:(AuthenticationService*)authService
-                            syncService:(SyncSetupService*)syncService {
+                            syncService:(syncer::SyncService*)syncService {
   self = [super init];
   if (self) {
     DCHECK(userPrefService);
@@ -706,8 +704,9 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
 
 // Computes whether user is capable to run password check in Google Account.
 - (BOOL)canUseAccountPasswordCheckup {
-  return self.syncService->IsSyncFeatureEnabled() &&
-         !self.syncService->IsEncryptEverythingEnabled();
+  return password_manager::sync_util::GetAccountForSaving(self.userPrefService,
+                                                          self.syncService) &&
+         !self.syncService->GetUserSettings()->IsEncryptEverythingEnabled();
 }
 
 // Configures check error info with a link for popovers.

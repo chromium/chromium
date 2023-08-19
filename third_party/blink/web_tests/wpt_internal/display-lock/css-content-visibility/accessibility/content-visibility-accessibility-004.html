@@ -43,12 +43,9 @@ async_test((t) => {
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
       axHidden = axElementById("hidden");
-      // #hidden is now unlocked and saved as a normal AXLayoutObject, but it still has the same
-      // three child nodes. The whitespace node is still present because it was already created,
-      // but it's marked as ignored
-      t.step(() => { assert_equals(axHidden.childrenCount, 3, "Children count after activation"); });
-      const axChild = axHidden.childAtIndex(2);
-      t.step(() => { assert_true(axChild.isIgnored, "After update, isIgnored is true on whitespace node"); });
+      // There are now 2 children, as the whitespace nodes are no longer included in the tree.
+      // This is the same as it would be if content-visibility had never been used.
+      t.step(() => { assert_equals(axHidden.childrenCount, 2, "Children count after activation"); });
       t.done();
     });
   });

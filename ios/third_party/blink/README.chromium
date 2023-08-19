@@ -3,7 +3,9 @@ Short Name: blink
 URL: http://www.chromium.org/blink
 Version: commit 2e924d852a814dee5efde8deb412a70a4d90c5c7
 License: BSD License
+License File: LICENSE
 Security Critical: yes
+Shipped: yes
 
 Description:
 The HTMLTokenizer and associated classes from blink handle tokenizing HTML

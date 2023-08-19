@@ -59,10 +59,11 @@ message Predictor {
   // ranges. The final result supplied to the client is one of the bin labels or
   // `underflow_label`.
   message BinnedClassifier {
-    // A bin represents a bucket containing entries between the current bin min
-    // range to the next bin min range.
+    // A bin represents a bucket containing entries.
     message Bin {
-      // Minimum range for this bin.
+      // Represents minimum range for this bin. Entries are between the current
+      // bin `min_range` (inclusive) to the next bin `min_range` (exclusive).
+      // Range of bin : [min_range , next-bin min_range)
       optional float min_range = 1;
       // Signify what the bin corresponds to.
       optional string label = 2;
@@ -126,4 +127,9 @@ message OutputConfig {
   // TTL associated with the PredictionResult. Config defines when to refresh
   // results.
   optional PredictedResultTTL predicted_result_ttl = 2;
+
+  // Flag to ignore previous model TTL. If this is set to true, ttl is ignored
+  // and results are refreshed on model update. This is false by default. It
+  // doesn't have any effect on TTL.
+  optional bool ignore_previous_model_ttl = 3;
 }

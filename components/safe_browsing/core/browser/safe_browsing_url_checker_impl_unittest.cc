@@ -17,6 +17,7 @@
 #include "base/timer/mock_timer.h"
 #include "components/safe_browsing/core/browser/db/test_database_manager.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
 #include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
@@ -37,6 +38,8 @@ namespace safe_browsing {
 
 namespace {
 
+constexpr char kAllowlistedUrl[] = "https://allowlisted.url/";
+
 // A matcher for threat source in UnsafeResource.
 MATCHER_P(IsSameThreatSource, threatSource, "") {
   return arg.threat_source == threatSource;
@@ -51,16 +54,18 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
   // SafeBrowsingDatabaseManager implementation.
   // Checks the threat type of |gurl| previously set by |SetThreatTypeForUrl|.
   // It crashes if the threat type of |gurl| is not set in advance.
-  bool CheckBrowseUrl(const GURL& gurl,
-                      const safe_browsing::SBThreatTypeSet& threat_types,
-                      Client* client,
-                      MechanismExperimentHashDatabaseCache
-                          experiment_cache_selection) override {
+  bool CheckBrowseUrl(
+      const GURL& gurl,
+      const safe_browsing::SBThreatTypeSet& threat_types,
+      Client* client,
+      MechanismExperimentHashDatabaseCache experiment_cache_selection,
+      CheckBrowseUrlType check_type) override {
     std::string url = gurl.spec();
     DCHECK(base::Contains(urls_threat_type_, url));
     DCHECK(base::Contains(urls_delayed_callback_, url));
     EXPECT_TRUE(base::Contains(acceptable_cache_selections_,
                                experiment_cache_selection));
+    EXPECT_EQ(check_type, expected_check_type_);
     if (urls_threat_type_[url] == SB_THREAT_TYPE_SAFE) {
       return true;
     }
@@ -79,24 +84,35 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
 
   bool CanCheckRequestDestination(
       network::mojom::RequestDestination request_destination) const override {
-    return true;
+    // Chosen to match specific test case CheckUrl_InvalidRequestDestination.
+    return request_destination != network::mojom::RequestDestination::kAudio;
   }
 
   bool ChecksAreAlwaysAsync() const override { return false; }
 
-  ThreatSource GetThreatSource() const override {
+  ThreatSource GetBrowseUrlThreatSource(
+      CheckBrowseUrlType check_type) const override {
+    return ThreatSource::UNKNOWN;
+  }
+
+  ThreatSource GetNonBrowseUrlThreatSource() const override {
     return ThreatSource::UNKNOWN;
   }
 
   // Returns the allowlist match result previously set by
-  // |SetAllowlistResultForUrl|. It crashes if the allowlist match result for
-  // the |gurl| is not set in advance.
+  // |SetAllowlistLookupDetailsForUrl|. It also checks whether the
+  // |metric_variation| parameter passed through is an expected value. It
+  // crashes if either of the allowlist match result or the allowed metric
+  // variations are not set in advance for the |gurl|.
   void CheckUrlForHighConfidenceAllowlist(
       const GURL& gurl,
       const std::string& metric_variation,
       base::OnceCallback<void(bool)> callback) override {
     std::string url = gurl.spec();
     DCHECK(base::Contains(urls_allowlist_match_, url));
+    DCHECK(base::Contains(urls_allowlist_metric_variation_, url));
+    EXPECT_TRUE(base::Contains(urls_allowlist_metric_variation_[url],
+                               metric_variation));
     sb_task_runner()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), urls_allowlist_match_[url]));
@@ -124,15 +140,23 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
     urls_delayed_callback_[url] = delayed_callback;
   }
 
-  void SetAllowlistResultForUrl(const GURL& gurl, bool match) {
+  void SetAllowlistLookupDetailsForUrl(
+      const GURL& gurl,
+      bool match,
+      const std::set<std::string>& metric_variations) {
     std::string url = gurl.spec();
     urls_allowlist_match_[url] = match;
+    urls_allowlist_metric_variation_[url] = metric_variations;
   }
 
   void SetAcceptableExperimentCacheSelections(
       std::set<MechanismExperimentHashDatabaseCache>
           acceptable_cache_selections) {
     acceptable_cache_selections_ = acceptable_cache_selections;
+  }
+
+  void SetExpectedCheckBrowseUrlType(CheckBrowseUrlType check_type) {
+    expected_check_type_ = check_type;
   }
 
   void CancelCheck(Client* client) override { called_cancel_check_ = true; }
@@ -157,8 +181,11 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
   base::flat_map<std::string, bool> urls_delayed_callback_;
   base::flat_map<std::string, Client*> urls_client_;
   base::flat_map<std::string, bool> urls_allowlist_match_;
+  base::flat_map<std::string, std::set<std::string>>
+      urls_allowlist_metric_variation_;
   std::set<MechanismExperimentHashDatabaseCache> acceptable_cache_selections_ =
       {MechanismExperimentHashDatabaseCache::kNoExperiment};
+  CheckBrowseUrlType expected_check_type_ = CheckBrowseUrlType::kHashDatabase;
 
   bool called_cancel_check_ = false;
 };
@@ -185,7 +212,9 @@ class MockUrlCheckerDelegate : public UrlCheckerDelegate {
                void(const base::RepeatingCallback<content::WebContents*()>&));
   MOCK_METHOD0(GetUIManager, BaseUIManager*());
 
-  bool IsUrlAllowlisted(const GURL& url) override { return false; }
+  bool IsUrlAllowlisted(const GURL& url) override {
+    return url.spec() == kAllowlistedUrl;
+  }
   void SetPolicyAllowlistDomains(
       const std::vector<std::string>& allowlist_domains) override {}
   const SBThreatTypeSet& GetThreatTypes() override { return threat_types_; }
@@ -378,7 +407,8 @@ class MockHashRealTimeService : public HashRealTimeService {
             /*get_network_context=*/base::NullCallback(),
             /*cache_manager=*/nullptr,
             /*ohttp_key_service=*/nullptr,
-            /*get_is_enhanced_protection_enabled=*/base::NullCallback()) {}
+            /*get_is_enhanced_protection_enabled=*/base::NullCallback(),
+            /*webui_delegate=*/nullptr) {}
   base::WeakPtr<MockHashRealTimeService> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
@@ -400,6 +430,7 @@ class MockHashRealTimeService : public HashRealTimeService {
 
   void StartLookup(
       const GURL& gurl,
+      bool is_source_lookup_mechanism_experiment,
       HPRTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner) override {
     std::string url = gurl.spec();
@@ -420,6 +451,13 @@ class MockHashRealTimeService : public HashRealTimeService {
 
 }  // namespace
 
+struct CreateSafeBrowsingUrlCheckerOptionalArgs {
+  network::mojom::RequestDestination request_destination =
+      network::mojom::RequestDestination::kDocument;
+  bool can_urt_check_subresource_url = false;
+  std::string url_lookup_service_metric_suffix = ".Enterprise";
+  bool is_lookup_mechanism_experiment_enabled = false;
+};
 class SafeBrowsingUrlCheckerTest : public PlatformTest {
  public:
   SafeBrowsingUrlCheckerTest() = default;
@@ -435,15 +473,14 @@ class SafeBrowsingUrlCheckerTest : public PlatformTest {
   std::unique_ptr<SafeBrowsingUrlCheckerImpl> CreateSafeBrowsingUrlChecker(
       bool url_real_time_lookup_enabled,
       bool can_check_safe_browsing_db,
-      bool hash_real_time_lookup_enabled,
-      network::mojom::RequestDestination request_destination =
-          network::mojom::RequestDestination::kDocument,
-      bool is_lookup_mechanism_experiment_enabled = false) {
+      hash_realtime_utils::HashRealTimeSelection hash_real_time_selection,
+      CreateSafeBrowsingUrlCheckerOptionalArgs optional_args =
+          CreateSafeBrowsingUrlCheckerOptionalArgs()) {
     base::MockCallback<base::RepeatingCallback<content::WebContents*()>>
         mock_web_contents_getter;
     scoped_refptr<SafeBrowsingLookupMechanismExperimenter>
         mechanism_experimenter = nullptr;
-    if (is_lookup_mechanism_experiment_enabled) {
+    if (optional_args.is_lookup_mechanism_experiment_enabled) {
       mechanism_experimenter = base::MakeRefCounted<
           SafeBrowsingLookupMechanismExperimenter>(
           /*is_prefetch=*/false, /*ping_manager_on_ui=*/nullptr,
@@ -455,15 +492,16 @@ class SafeBrowsingUrlCheckerTest : public PlatformTest {
           base::TimeTicks::Now());
     }
     return std::make_unique<SafeBrowsingUrlCheckerImpl>(
-        net::HttpRequestHeaders(), /*load_flags=*/0, request_destination,
+        net::HttpRequestHeaders(), /*load_flags=*/0,
+        optional_args.request_destination,
         /*has_user_gesture=*/false, url_checker_delegate_,
         mock_web_contents_getter.Get(), UnsafeResource::kNoRenderProcessId,
         UnsafeResource::kNoRenderFrameId, UnsafeResource::kNoFrameTreeNodeId,
         url_real_time_lookup_enabled,
-        /*can_urt_check_subresource_url=*/false, can_check_safe_browsing_db,
+        optional_args.can_urt_check_subresource_url, can_check_safe_browsing_db,
         /*can_check_high_confidence_allowlist=*/true,
         /*url_lookup_service_metric_suffix=*/
-        url_real_time_lookup_enabled ? ".Enterprise" : ".None",
+        optional_args.url_lookup_service_metric_suffix,
         /*last_committed_url=*/GURL(),
         base::SequencedTaskRunner::GetCurrentDefault(),
         url_real_time_lookup_enabled ? url_lookup_service_->GetWeakPtr()
@@ -471,8 +509,8 @@ class SafeBrowsingUrlCheckerTest : public PlatformTest {
         /*webui_delegate_=*/nullptr,
         /*hash_realtime_service=*/hash_realtime_service_->GetWeakPtr(),
         /*mechanism_experimenter=*/mechanism_experimenter,
-        is_lookup_mechanism_experiment_enabled,
-        /*hash_real_time_lookup_enabled=*/hash_real_time_lookup_enabled);
+        optional_args.is_lookup_mechanism_experiment_enabled,
+        hash_real_time_selection);
   }
 
   // This can be used as the CheckUrl callback in cases where it's a local check
@@ -484,7 +522,7 @@ class SafeBrowsingUrlCheckerTest : public PlatformTest {
       SafeBrowsingUrlCheckerImpl::NativeUrlCheckNotifier* slow_check_notifier,
       bool proceed,
       bool showed_interstitial,
-      bool did_perform_url_real_time_check,
+      SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check,
       bool did_check_url_real_time_allowlist) {
     *slow_check_notifier = slow_check_notifier_callback_.Get();
   }
@@ -514,6 +552,46 @@ class SafeBrowsingUrlCheckerTest : public PlatformTest {
           /*expected_bucket_count=*/1);
     }
   }
+  void CheckUrlRealTimeLocalMatchMetrics(
+      absl::optional<bool> expected_local_match_result,
+      absl::optional<bool> expected_mainframe_log,
+      absl::optional<bool> expect_url_lookup_service_metric_suffix) {
+    ASSERT_EQ(expected_local_match_result.has_value(),
+              expected_mainframe_log.has_value());
+    ASSERT_EQ(expected_local_match_result.has_value(),
+              expect_url_lookup_service_metric_suffix.has_value());
+    if (!expected_local_match_result.has_value()) {
+      histogram_tester_.ExpectTotalCount(
+          /*name=*/"SafeBrowsing.RT.LocalMatch.Result", /*expected_count=*/0);
+      histogram_tester_.ExpectTotalCount(
+          /*name=*/"SafeBrowsing.RT.LocalMatch.Result.Mainframe",
+          /*expected_count=*/0);
+      histogram_tester_.ExpectTotalCount(
+          /*name=*/"SafeBrowsing.RT.LocalMatch.Result.NonMainframe",
+          /*expected_count=*/0);
+    } else {
+      AsyncMatch expected_local_match_result_value =
+          expected_local_match_result.value() ? AsyncMatch::MATCH
+                                              : AsyncMatch::NO_MATCH;
+      histogram_tester_.ExpectUniqueSample(
+          /*name=*/"SafeBrowsing.RT.LocalMatch.Result",
+          /*sample=*/expected_local_match_result_value,
+          /*expected_bucket_count=*/1);
+      std::string expected_base_histogram =
+          expected_mainframe_log.value()
+              ? "SafeBrowsing.RT.LocalMatch.Result.Mainframe"
+              : "SafeBrowsing.RT.LocalMatch.Result.NonMainframe";
+      histogram_tester_.ExpectUniqueSample(
+          /*name=*/expected_base_histogram,
+          /*sample=*/expected_local_match_result_value,
+          /*expected_bucket_count=*/1);
+      histogram_tester_.ExpectUniqueSample(
+          /*name=*/expected_base_histogram + ".Enterprise",
+          /*sample=*/expected_local_match_result_value,
+          /*expected_bucket_count=*/
+          expect_url_lookup_service_metric_suffix.value() ? 1 : 0);
+    }
+  }
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -531,17 +609,19 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_SafeUrl) {
   auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
       /*url_real_time_lookup_enabled=*/false,
       /*can_check_safe_browsing_db=*/true,
-      /*hash_real_time_lookup_enabled=*/false);
+      /*hash_real_time_selection=*/
+      hash_realtime_utils::HashRealTimeSelection::kNone);
 
   GURL url("https://example.test/");
   database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SAFE,
                                          /*delayed_callback=*/false);
   base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
       callback;
-  EXPECT_CALL(callback,
-              Run(nullptr, /*proceed=*/true, /*showed_interstitial=*/false,
-                  /*did_perform_url_real_time_check=*/false,
-                  /*did_check_url_real_time_allowlist=*/false));
+  EXPECT_CALL(
+      callback,
+      Run(nullptr, /*proceed=*/true, /*showed_interstitial=*/false,
+          SafeBrowsingUrlCheckerImpl::PerformedCheck::kHashDatabaseCheck,
+          /*did_check_url_real_time_allowlist=*/false));
   EXPECT_CALL(*url_checker_delegate_,
               StartDisplayingBlockingPageHelper(_, _, _, _, _))
       .Times(0);
@@ -557,7 +637,8 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_DangerousUrl) {
   auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
       /*url_real_time_lookup_enabled=*/false,
       /*can_check_safe_browsing_db=*/true,
-      /*hash_real_time_lookup_enabled=*/false);
+      /*hash_real_time_selection=*/
+      hash_realtime_utils::HashRealTimeSelection::kNone);
 
   GURL url("https://example.test/");
   database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
@@ -565,9 +646,11 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_DangerousUrl) {
 
   base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
       callback;
-  EXPECT_CALL(callback, Run(_, /*proceed=*/false, /*showed_interstitial=*/false,
-                            /*did_perform_url_real_time_check=*/false,
-                            /*did_check_url_real_time_allowlist=*/false));
+  EXPECT_CALL(
+      callback,
+      Run(_, /*proceed=*/false, /*showed_interstitial=*/false,
+          SafeBrowsingUrlCheckerImpl::PerformedCheck::kHashDatabaseCheck,
+          /*did_check_url_real_time_allowlist=*/false));
   EXPECT_CALL(*url_checker_delegate_,
               StartDisplayingBlockingPageHelper(
                   IsSameThreatSource(ThreatSource::UNKNOWN), _, _, _, _))
@@ -580,7 +663,8 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_RedirectUrlsSafe) {
   auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
       /*url_real_time_lookup_enabled=*/false,
       /*can_check_safe_browsing_db=*/true,
-      /*hash_real_time_lookup_enabled=*/false);
+      /*hash_real_time_selection=*/
+      hash_realtime_utils::HashRealTimeSelection::kNone);
 
   GURL origin_url("https://example.test/");
   database_manager_->SetThreatTypeForUrl(origin_url, SB_THREAT_TYPE_SAFE,
@@ -588,10 +672,11 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_RedirectUrlsSafe) {
 
   base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
       origin_callback;
-  EXPECT_CALL(origin_callback,
-              Run(_, /*proceed=*/true, /*showed_interstitial=*/false,
-                  /*did_perform_url_real_time_check=*/false,
-                  /*did_check_url_real_time_allowlist=*/false));
+  EXPECT_CALL(
+      origin_callback,
+      Run(_, /*proceed=*/true, /*showed_interstitial=*/false,
+          SafeBrowsingUrlCheckerImpl::PerformedCheck::kHashDatabaseCheck,
+          /*did_check_url_real_time_allowlist=*/false));
   EXPECT_CALL(*url_checker_delegate_,
               StartDisplayingBlockingPageHelper(_, _, _, _, _))
       .Times(0);
@@ -603,10 +688,11 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_RedirectUrlsSafe) {
 
   base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
       redirect_callback;
-  EXPECT_CALL(redirect_callback,
-              Run(_, /*proceed=*/true, /*showed_interstitial=*/false,
-                  /*did_perform_url_real_time_check=*/false,
-                  /*did_check_url_real_time_allowlist=*/false));
+  EXPECT_CALL(
+      redirect_callback,
+      Run(_, /*proceed=*/true, /*showed_interstitial=*/false,
+          SafeBrowsingUrlCheckerImpl::PerformedCheck::kHashDatabaseCheck,
+          /*did_check_url_real_time_allowlist=*/false));
   safe_browsing_url_checker->CheckUrl(redirect_url, "GET",
                                       redirect_callback.Get());
 
@@ -618,7 +704,8 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
       /*url_real_time_lookup_enabled=*/false,
       /*can_check_safe_browsing_db=*/true,
-      /*hash_real_time_lookup_enabled=*/false);
+      /*hash_real_time_selection=*/
+      hash_realtime_utils::HashRealTimeSelection::kNone);
 
   GURL origin_url("https://example.test/");
   database_manager_->SetThreatTypeForUrl(
@@ -626,10 +713,11 @@ TEST_F(SafeBrowsingUrlCheckerTest,
 
   base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
       origin_callback;
-  EXPECT_CALL(origin_callback,
-              Run(_, /*proceed=*/false, /*showed_interstitial=*/false,
-                  /*did_perform_url_real_time_check=*/false,
-                  /*did_check_url_real_time_allowlist=*/false));
+  EXPECT_CALL(
+      origin_callback,
+      Run(_, /*proceed=*/false, /*showed_interstitial=*/false,
+          SafeBrowsingUrlCheckerImpl::PerformedCheck::kHashDatabaseCheck,
+          /*did_check_url_real_time_allowlist=*/false));
   // Not displayed yet, because the callback is not returned.
   EXPECT_CALL(*url_checker_delegate_,
               StartDisplayingBlockingPageHelper(_, _, _, _, _))
@@ -658,10 +746,12 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_UrlRealTimeEnabledAllowlistMatch) {
   auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
       /*url_real_time_lookup_enabled=*/true,
       /*can_check_safe_browsing_db=*/true,
-      /*hash_real_time_lookup_enabled=*/false);
+      /*hash_real_time_selection=*/
+      hash_realtime_utils::HashRealTimeSelection::kNone);
 
   GURL url("https://example.test/");
-  database_manager_->SetAllowlistResultForUrl(url, true);
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true,
+                                                     {"RT"});
   // To make sure hash based check is not skipped when the URL is in the
   // allowlist, set threat type to phishing for hash based check.
   database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
@@ -679,6 +769,9 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_UrlRealTimeEnabledAllowlistMatch) {
   safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
 
   task_environment_.RunUntilIdle();
+  CheckUrlRealTimeLocalMatchMetrics(
+      /*expected_local_match_result=*/true, /*expected_mainframe_log=*/true,
+      /*expect_url_lookup_service_metric_suffix=*/true);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_UrlRealTimeEnabledSafeUrl) {
@@ -686,18 +779,21 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_UrlRealTimeEnabledSafeUrl) {
   auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
       /*url_real_time_lookup_enabled=*/true,
       /*can_check_safe_browsing_db=*/true,
-      /*hash_real_time_lookup_enabled=*/false);
+      /*hash_real_time_selection=*/
+      hash_realtime_utils::HashRealTimeSelection::kNone);
 
   GURL url("https://example.test/");
-  database_manager_->SetAllowlistResultForUrl(url, false);
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/false,
+                                                     {"RT"});
   url_lookup_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SAFE,
                                            /*should_complete_lookup=*/true);
 
   base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
       callback;
-  EXPECT_CALL(callback, Run(_, /*proceed=*/true, /*showed_interstitial=*/false,
-                            /*did_perform_url_real_time_check=*/true,
-                            /*did_check_url_real_time_allowlist=*/true));
+  EXPECT_CALL(callback,
+              Run(_, /*proceed=*/true, /*showed_interstitial=*/false,
+                  SafeBrowsingUrlCheckerImpl::PerformedCheck::kUrlRealTimeCheck,
+                  /*did_check_url_real_time_allowlist=*/true));
   EXPECT_CALL(*url_checker_delegate_,
               StartDisplayingBlockingPageHelper(_, _, _, _, _))
       .Times(0);
@@ -713,6 +809,85 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_UrlRealTimeEnabledSafeUrl) {
   histogram_tester_.ExpectTotalCount(
       "SafeBrowsing.RT.GetCache.FallbackThreatType",
       /*expected_count=*/0);
+  CheckUrlRealTimeLocalMatchMetrics(
+      /*expected_local_match_result=*/false, /*expected_mainframe_log=*/true,
+      /*expect_url_lookup_service_metric_suffix=*/true);
+}
+
+TEST_F(SafeBrowsingUrlCheckerTest,
+       CheckUrl_UrlRealTimeEnabledSafeUrl_NonMainframe) {
+  base::HistogramTester histograms;
+  auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
+      /*url_real_time_lookup_enabled=*/true,
+      /*can_check_safe_browsing_db=*/true,
+      /*hash_real_time_selection=*/
+      hash_realtime_utils::HashRealTimeSelection::kNone,
+      /*optional_args=*/
+      {.request_destination = network::mojom::RequestDestination::kFrame,
+       .can_urt_check_subresource_url = true});
+
+  GURL url("https://example.test/");
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/false,
+                                                     {"RT"});
+  url_lookup_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SAFE,
+                                           /*should_complete_lookup=*/true);
+
+  base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
+      callback;
+  EXPECT_CALL(callback,
+              Run(_, /*proceed=*/true, /*showed_interstitial=*/false,
+                  SafeBrowsingUrlCheckerImpl::PerformedCheck::kUrlRealTimeCheck,
+                  /*did_check_url_real_time_allowlist=*/true));
+  EXPECT_CALL(*url_checker_delegate_,
+              StartDisplayingBlockingPageHelper(_, _, _, _, _))
+      .Times(0);
+  safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
+
+  task_environment_.RunUntilIdle();
+  histogram_tester_.ExpectUniqueSample("SafeBrowsing.CheckUrl.Timeout",
+                                       /*sample=*/false,
+                                       /*expected_bucket_count=*/1);
+
+  CheckUrlRealTimeLocalMatchMetrics(
+      /*expected_local_match_result=*/false, /*expected_mainframe_log=*/false,
+      /*expect_url_lookup_service_metric_suffix=*/true);
+}
+
+TEST_F(SafeBrowsingUrlCheckerTest,
+       CheckUrl_UrlRealTimeEnabledSafeUrl_EmptyUrlLookupServiceMetricSuffix) {
+  base::HistogramTester histograms;
+  auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
+      /*url_real_time_lookup_enabled=*/true,
+      /*can_check_safe_browsing_db=*/true,
+      /*hash_real_time_selection=*/
+      hash_realtime_utils::HashRealTimeSelection::kNone,
+      /*optional_args=*/{.url_lookup_service_metric_suffix = ""});
+
+  GURL url("https://example.test/");
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/false,
+                                                     {"RT"});
+  url_lookup_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SAFE,
+                                           /*should_complete_lookup=*/true);
+
+  base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
+      callback;
+  EXPECT_CALL(callback,
+              Run(_, /*proceed=*/true, /*showed_interstitial=*/false,
+                  SafeBrowsingUrlCheckerImpl::PerformedCheck::kUrlRealTimeCheck,
+                  /*did_check_url_real_time_allowlist=*/true));
+  EXPECT_CALL(*url_checker_delegate_,
+              StartDisplayingBlockingPageHelper(_, _, _, _, _))
+      .Times(0);
+  safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
+
+  task_environment_.RunUntilIdle();
+  histogram_tester_.ExpectUniqueSample("SafeBrowsing.CheckUrl.Timeout",
+                                       /*sample=*/false,
+                                       /*expected_bucket_count=*/1);
+
+  CheckUrlRealTimeLocalMatchMetrics(
+      /*expected_local_match_result=*/false, /*expected_mainframe_log=*/true,
+      /*expect_url_lookup_service_metric_suffix=*/false);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest,
@@ -721,10 +896,12 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
       /*url_real_time_lookup_enabled=*/true,
       /*can_check_safe_browsing_db=*/true,
-      /*hash_real_time_lookup_enabled=*/false);
+      /*hash_real_time_selection=*/
+      hash_realtime_utils::HashRealTimeSelection::kNone);
 
   GURL url("https://example.test/");
-  database_manager_->SetAllowlistResultForUrl(url, false);
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/false,
+                                                     {"RT"});
   database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SAFE,
                                          /*delayed_callback=*/false);
   url_lookup_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SAFE,
@@ -733,9 +910,10 @@ TEST_F(SafeBrowsingUrlCheckerTest,
 
   base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
       callback;
-  EXPECT_CALL(callback, Run(_, /*proceed=*/true, /*showed_interstitial=*/false,
-                            /*did_perform_url_real_time_check=*/true,
-                            /*did_check_url_real_time_allowlist=*/true));
+  EXPECT_CALL(callback,
+              Run(_, /*proceed=*/true, /*showed_interstitial=*/false,
+                  SafeBrowsingUrlCheckerImpl::PerformedCheck::kUrlRealTimeCheck,
+                  /*did_check_url_real_time_allowlist=*/true));
   EXPECT_CALL(*url_checker_delegate_,
               StartDisplayingBlockingPageHelper(_, _, _, _, _))
       .Times(0);
@@ -747,6 +925,9 @@ TEST_F(SafeBrowsingUrlCheckerTest,
       "SafeBrowsing.RT.GetCache.FallbackThreatType",
       /*sample=*/SB_THREAT_TYPE_SAFE,
       /*expected_bucket_count=*/1);
+  CheckUrlRealTimeLocalMatchMetrics(
+      /*expected_local_match_result=*/false, /*expected_mainframe_log=*/true,
+      /*expect_url_lookup_service_metric_suffix=*/true);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest,
@@ -755,10 +936,12 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
       /*url_real_time_lookup_enabled=*/true,
       /*can_check_safe_browsing_db=*/true,
-      /*hash_real_time_lookup_enabled=*/false);
+      /*hash_real_time_selection=*/
+      hash_realtime_utils::HashRealTimeSelection::kNone);
 
   GURL url("https://example.test/");
-  database_manager_->SetAllowlistResultForUrl(url, false);
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/false,
+                                                     {"RT"});
   database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
                                          /*delayed_callback=*/false);
   url_lookup_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SAFE,
@@ -779,6 +962,9 @@ TEST_F(SafeBrowsingUrlCheckerTest,
       "SafeBrowsing.RT.GetCache.FallbackThreatType",
       /*sample=*/SB_THREAT_TYPE_URL_PHISHING,
       /*expected_bucket_count=*/1);
+  CheckUrlRealTimeLocalMatchMetrics(
+      /*expected_local_match_result=*/false, /*expected_mainframe_log=*/true,
+      /*expect_url_lookup_service_metric_suffix=*/true);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest,
@@ -786,7 +972,8 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
       /*url_real_time_lookup_enabled=*/true,
       /*can_check_safe_browsing_db=*/false,
-      /*hash_real_time_lookup_enabled=*/false);
+      /*hash_real_time_selection=*/
+      hash_realtime_utils::HashRealTimeSelection::kNone);
 
   GURL url("https://example.test/");
   url_lookup_service_->SetThreatTypeForUrl(
@@ -803,6 +990,9 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
 
   task_environment_.RunUntilIdle();
+  CheckUrlRealTimeLocalMatchMetrics(
+      /*expected_local_match_result=*/false, /*expected_mainframe_log=*/true,
+      /*expect_url_lookup_service_metric_suffix=*/true);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest,
@@ -810,7 +1000,8 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
       /*url_real_time_lookup_enabled=*/true,
       /*can_check_safe_browsing_db=*/false,
-      /*hash_real_time_lookup_enabled=*/false);
+      /*hash_real_time_selection=*/
+      hash_realtime_utils::HashRealTimeSelection::kNone);
 
   GURL url("https://example.test/");
   url_lookup_service_->SetThreatTypeForUrl(url,
@@ -828,6 +1019,9 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
 
   task_environment_.RunUntilIdle();
+  CheckUrlRealTimeLocalMatchMetrics(
+      /*expected_local_match_result=*/false, /*expected_mainframe_log=*/true,
+      /*expect_url_lookup_service_metric_suffix=*/true);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest,
@@ -835,7 +1029,8 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
       /*url_real_time_lookup_enabled=*/true,
       /*can_check_safe_browsing_db=*/false,
-      /*hash_real_time_lookup_enabled=*/false);
+      /*hash_real_time_selection=*/
+      hash_realtime_utils::HashRealTimeSelection::kNone);
 
   GURL url("https://example.test/");
   url_lookup_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
@@ -852,6 +1047,9 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
 
   task_environment_.RunUntilIdle();
+  CheckUrlRealTimeLocalMatchMetrics(
+      /*expected_local_match_result=*/false, /*expected_mainframe_log=*/true,
+      /*expect_url_lookup_service_metric_suffix=*/true);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest,
@@ -859,7 +1057,8 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
       /*url_real_time_lookup_enabled=*/true,
       /*can_check_safe_browsing_db=*/false,
-      /*hash_real_time_lookup_enabled=*/false);
+      /*hash_real_time_selection=*/
+      hash_realtime_utils::HashRealTimeSelection::kNone);
 
   GURL url("https://example.test/");
   url_lookup_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SAFE,
@@ -867,15 +1066,19 @@ TEST_F(SafeBrowsingUrlCheckerTest,
 
   base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
       callback;
-  EXPECT_CALL(callback, Run(_, /*proceed=*/true, /*showed_interstitial=*/false,
-                            /*did_perform_url_real_time_check=*/true,
-                            /*did_check_url_real_time_allowlist=*/false));
+  EXPECT_CALL(callback,
+              Run(_, /*proceed=*/true, /*showed_interstitial=*/false,
+                  SafeBrowsingUrlCheckerImpl::PerformedCheck::kUrlRealTimeCheck,
+                  /*did_check_url_real_time_allowlist=*/false));
   EXPECT_CALL(*url_checker_delegate_,
               StartDisplayingBlockingPageHelper(_, _, _, _, _))
       .Times(0);
   safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
 
   task_environment_.RunUntilIdle();
+  CheckUrlRealTimeLocalMatchMetrics(
+      /*expected_local_match_result=*/false, /*expected_mainframe_log=*/true,
+      /*expect_url_lookup_service_metric_suffix=*/true);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest,
@@ -883,22 +1086,29 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
       /*url_real_time_lookup_enabled=*/true,
       /*can_check_safe_browsing_db=*/false,
-      /*hash_real_time_lookup_enabled=*/false,
-      /*request_destination=*/network::mojom::RequestDestination::kScript);
+      /*hash_real_time_selection=*/
+      hash_realtime_utils::HashRealTimeSelection::kNone,
+      /*optional_args=*/
+      {.request_destination = network::mojom::RequestDestination::kScript});
 
   GURL url("https://example.test/");
 
   base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
       callback;
-  EXPECT_CALL(callback, Run(_, /*proceed=*/true, /*showed_interstitial=*/false,
-                            /*did_perform_url_real_time_check=*/false,
-                            /*did_check_url_real_time_allowlist=*/false));
+  EXPECT_CALL(callback,
+              Run(_, /*proceed=*/true, /*showed_interstitial=*/false,
+                  SafeBrowsingUrlCheckerImpl::PerformedCheck::kCheckSkipped,
+                  /*did_check_url_real_time_allowlist=*/false));
   EXPECT_CALL(*url_checker_delegate_,
               StartDisplayingBlockingPageHelper(_, _, _, _, _))
       .Times(0);
   safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
 
   task_environment_.RunUntilIdle();
+  CheckUrlRealTimeLocalMatchMetrics(
+      /*expected_local_match_result=*/absl::nullopt,
+      /*expected_mainframe_log=*/absl::nullopt,
+      /*expect_url_lookup_service_metric_suffix=*/absl::nullopt);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest,
@@ -906,10 +1116,12 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
       /*url_real_time_lookup_enabled=*/true,
       /*can_check_safe_browsing_db=*/true,
-      /*hash_real_time_lookup_enabled=*/false);
+      /*hash_real_time_selection=*/
+      hash_realtime_utils::HashRealTimeSelection::kNone);
 
   GURL origin_url("https://example.test/");
-  database_manager_->SetAllowlistResultForUrl(origin_url, false);
+  database_manager_->SetAllowlistLookupDetailsForUrl(origin_url,
+                                                     /*match=*/false, {"RT"});
   url_lookup_service_->SetThreatTypeForUrl(origin_url, SB_THREAT_TYPE_SAFE,
                                            /*should_complete_lookup=*/true);
 
@@ -917,7 +1129,7 @@ TEST_F(SafeBrowsingUrlCheckerTest,
       origin_callback;
   EXPECT_CALL(origin_callback,
               Run(_, /*proceed=*/true, /*showed_interstitial=*/false,
-                  /*did_perform_url_real_time_check=*/true,
+                  SafeBrowsingUrlCheckerImpl::PerformedCheck::kUrlRealTimeCheck,
                   /*did_check_url_real_time_allowlist=*/true));
   EXPECT_CALL(*url_checker_delegate_,
               StartDisplayingBlockingPageHelper(_, _, _, _, _))
@@ -925,7 +1137,8 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   safe_browsing_url_checker->CheckUrl(origin_url, "GET", origin_callback.Get());
 
   GURL redirect_url("https://example.redirect.test/");
-  database_manager_->SetAllowlistResultForUrl(redirect_url, false);
+  database_manager_->SetAllowlistLookupDetailsForUrl(redirect_url,
+                                                     /*match=*/false, {"RT"});
   url_lookup_service_->SetThreatTypeForUrl(redirect_url, SB_THREAT_TYPE_SAFE,
                                            /*should_complete_lookup=*/true);
 
@@ -933,7 +1146,7 @@ TEST_F(SafeBrowsingUrlCheckerTest,
       redirect_callback;
   EXPECT_CALL(redirect_callback,
               Run(_, /*proceed=*/true, /*showed_interstitial=*/false,
-                  /*did_perform_url_real_time_check=*/true,
+                  SafeBrowsingUrlCheckerImpl::PerformedCheck::kUrlRealTimeCheck,
                   /*did_check_url_real_time_allowlist=*/true));
   safe_browsing_url_checker->CheckUrl(redirect_url, "GET",
                                       redirect_callback.Get());
@@ -947,10 +1160,12 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_CancelCheckOnDestruct) {
     auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
         /*url_real_time_lookup_enabled=*/true,
         /*can_check_safe_browsing_db=*/true,
-        /*hash_real_time_lookup_enabled=*/false);
+        /*hash_real_time_selection=*/
+        hash_realtime_utils::HashRealTimeSelection::kNone);
 
     GURL url("https://example.test/");
-    database_manager_->SetAllowlistResultForUrl(url, false);
+    database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/false,
+                                                       {"RT"});
     url_lookup_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
                                              /*should_complete_lookup=*/true);
 
@@ -967,16 +1182,18 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_CancelCheckOnDestruct) {
     auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
         /*url_real_time_lookup_enabled=*/false,
         /*can_check_safe_browsing_db=*/true,
-        /*hash_real_time_lookup_enabled=*/false);
+        /*hash_real_time_selection=*/
+        hash_realtime_utils::HashRealTimeSelection::kNone);
 
     GURL url("https://example.test/");
     database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
                                            /*delayed_callback=*/false);
 
     base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback> cb;
-    EXPECT_CALL(cb, Run(_, /*proceed=*/false, /*showed_interstitial=*/false,
-                        /*did_perform_url_real_time_check=*/false,
-                        /*did_check_url_real_time_allowlist=*/false));
+    EXPECT_CALL(
+        cb, Run(_, /*proceed=*/false, /*showed_interstitial=*/false,
+                SafeBrowsingUrlCheckerImpl::PerformedCheck::kHashDatabaseCheck,
+                /*did_check_url_real_time_allowlist=*/false));
     safe_browsing_url_checker->CheckUrl(url, "GET", cb.Get());
     EXPECT_FALSE(database_manager_->HasCalledCancelCheck());
     safe_browsing_url_checker.reset();
@@ -993,17 +1210,20 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_CancelCheckOnTimeout) {
     auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
         /*url_real_time_lookup_enabled=*/true,
         /*can_check_safe_browsing_db=*/true,
-        /*hash_real_time_lookup_enabled=*/false);
+        /*hash_real_time_selection=*/
+        hash_realtime_utils::HashRealTimeSelection::kNone);
 
     GURL url("https://example.test/");
-    database_manager_->SetAllowlistResultForUrl(url, false);
+    database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/false,
+                                                       {"RT"});
     url_lookup_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
                                              /*should_complete_lookup=*/false);
     base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback> cb;
-    EXPECT_CALL(cb, Run(_, /*proceed=*/true,
-                        /*showed_interstitial=*/false,
-                        /*did_perform_url_real_time_check=*/true,
-                        /*did_check_url_real_time_allowlist=*/true));
+    EXPECT_CALL(
+        cb, Run(_, /*proceed=*/true,
+                /*showed_interstitial=*/false,
+                SafeBrowsingUrlCheckerImpl::PerformedCheck::kUrlRealTimeCheck,
+                /*did_check_url_real_time_allowlist=*/true));
     safe_browsing_url_checker->CheckUrl(url, "GET", cb.Get());
     EXPECT_FALSE(database_manager_->HasCalledCancelCheck());
     task_environment_.FastForwardBy(base::Seconds(5));
@@ -1019,7 +1239,8 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_CancelCheckOnTimeout) {
     auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
         /*url_real_time_lookup_enabled=*/false,
         /*can_check_safe_browsing_db=*/true,
-        /*hash_real_time_lookup_enabled=*/false);
+        /*hash_real_time_selection=*/
+        hash_realtime_utils::HashRealTimeSelection::kNone);
 
     GURL url("https://example.test/");
     database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
@@ -1029,10 +1250,11 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_CancelCheckOnTimeout) {
         base::BindOnce(&SafeBrowsingUrlCheckerTest::
                            OnCheckUrlCallbackSettingSlowCheckNotifier,
                        base::Unretained(this));
-    EXPECT_CALL(slow_check_notifier_callback_,
-                Run(/*proceed=*/true, /*showed_interstitial=*/false,
-                    /*did_perform_url_real_time_check=*/false,
-                    /*did_check_url_real_time_allowlist=*/false));
+    EXPECT_CALL(
+        slow_check_notifier_callback_,
+        Run(/*proceed=*/true, /*showed_interstitial=*/false,
+            SafeBrowsingUrlCheckerImpl::PerformedCheck::kHashDatabaseCheck,
+            /*did_check_url_real_time_allowlist=*/false));
     safe_browsing_url_checker->CheckUrl(url, "GET", std::move(callback));
     EXPECT_FALSE(database_manager_->HasCalledCancelCheck());
     task_environment_.FastForwardBy(base::Seconds(5));
@@ -1049,19 +1271,20 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_SafeUrl_LookupMechanismExperiment) {
   auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
       /*url_real_time_lookup_enabled=*/false,
       /*can_check_safe_browsing_db=*/true,
-      /*hash_real_time_lookup_enabled=*/false,
-      /*request_destination=*/network::mojom::RequestDestination::kDocument,
-      /*is_lookup_mechanism_experiment_enabled=*/true);
+      /*hash_real_time_selection=*/
+      hash_realtime_utils::HashRealTimeSelection::kNone,
+      /*optional_args=*/{.is_lookup_mechanism_experiment_enabled = true});
 
   GURL url("https://example.test/");
   database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SAFE,
                                          /*delayed_callback=*/false);
   base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
       callback;
-  EXPECT_CALL(callback,
-              Run(nullptr, /*proceed=*/true, /*showed_interstitial=*/false,
-                  /*did_perform_url_real_time_check=*/false,
-                  /*did_check_url_real_time_allowlist=*/false));
+  EXPECT_CALL(
+      callback,
+      Run(nullptr, /*proceed=*/true, /*showed_interstitial=*/false,
+          SafeBrowsingUrlCheckerImpl::PerformedCheck::kHashDatabaseCheck,
+          /*did_check_url_real_time_allowlist=*/false));
   EXPECT_CALL(*url_checker_delegate_,
               StartDisplayingBlockingPageHelper(_, _, _, _, _))
       .Times(0);
@@ -1089,12 +1312,13 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
       /*url_real_time_lookup_enabled=*/true,
       /*can_check_safe_browsing_db=*/true,
-      /*hash_real_time_lookup_enabled=*/false,
-      /*request_destination=*/network::mojom::RequestDestination::kDocument,
-      /*is_lookup_mechanism_experiment_enabled=*/true);
+      /*hash_real_time_selection=*/
+      hash_realtime_utils::HashRealTimeSelection::kNone,
+      /*optional_args=*/{.is_lookup_mechanism_experiment_enabled = true});
 
   GURL url("https://example.test/");
-  database_manager_->SetAllowlistResultForUrl(url, true);
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true,
+                                                     {"RT", "HPRT"});
   // To make sure hash based check is not skipped when the URL is in the
   // allowlist, set threat type to phishing for hash based check.
   database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
@@ -1134,12 +1358,13 @@ TEST_F(
   auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
       /*url_real_time_lookup_enabled=*/true,
       /*can_check_safe_browsing_db=*/true,
-      /*hash_real_time_lookup_enabled=*/false,
-      /*request_destination=*/network::mojom::RequestDestination::kDocument,
-      /*is_lookup_mechanism_experiment_enabled=*/true);
+      /*hash_real_time_selection=*/
+      hash_realtime_utils::HashRealTimeSelection::kNone,
+      /*optional_args=*/{.is_lookup_mechanism_experiment_enabled = true});
 
   GURL url("https://example.test/");
-  database_manager_->SetAllowlistResultForUrl(url, true);
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true,
+                                                     {"RT", "HPRT"});
   // To make sure hash based check is not skipped when the URL is in the
   // allowlist, set threat type to phishing for hash based check.
   database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
@@ -1179,12 +1404,13 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
       /*url_real_time_lookup_enabled=*/true,
       /*can_check_safe_browsing_db=*/true,
-      /*hash_real_time_lookup_enabled=*/false,
-      /*request_destination=*/network::mojom::RequestDestination::kDocument,
-      /*is_lookup_mechanism_experiment_enabled=*/true);
+      /*hash_real_time_selection=*/
+      hash_realtime_utils::HashRealTimeSelection::kNone,
+      /*optional_args=*/{.is_lookup_mechanism_experiment_enabled = true});
 
   GURL url("https://example.test/");
-  database_manager_->SetAllowlistResultForUrl(url, false);
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/false,
+                                                     {"RT", "HPRT"});
   url_lookup_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SAFE,
                                            /*should_complete_lookup=*/true);
   database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
@@ -1199,9 +1425,10 @@ TEST_F(SafeBrowsingUrlCheckerTest,
 
   base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
       callback;
-  EXPECT_CALL(callback, Run(_, /*proceed=*/true, /*showed_interstitial=*/false,
-                            /*did_perform_url_real_time_check=*/true,
-                            /*did_check_url_real_time_allowlist=*/true));
+  EXPECT_CALL(callback,
+              Run(_, /*proceed=*/true, /*showed_interstitial=*/false,
+                  SafeBrowsingUrlCheckerImpl::PerformedCheck::kUrlRealTimeCheck,
+                  /*did_check_url_real_time_allowlist=*/true));
   EXPECT_CALL(*url_checker_delegate_,
               StartDisplayingBlockingPageHelper(_, _, _, _, _))
       .Times(0);
@@ -1235,9 +1462,9 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
       /*url_real_time_lookup_enabled=*/true,
       /*can_check_safe_browsing_db=*/true,
-      /*hash_real_time_lookup_enabled=*/false,
-      /*request_destination=*/network::mojom::RequestDestination::kDocument,
-      /*is_lookup_mechanism_experiment_enabled=*/true);
+      /*hash_real_time_selection=*/
+      hash_realtime_utils::HashRealTimeSelection::kNone,
+      /*optional_args=*/{.is_lookup_mechanism_experiment_enabled = true});
 
   std::set<MechanismExperimentHashDatabaseCache> cache_selections = {
       MechanismExperimentHashDatabaseCache::kHashDatabaseOnly};
@@ -1254,7 +1481,8 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   hash_realtime_service_->SetThreatTypeForUrl(origin_url,
                                               SB_THREAT_TYPE_URL_PHISHING,
                                               /*should_fail_lookup=*/false);
-  database_manager_->SetAllowlistResultForUrl(origin_url, false);
+  database_manager_->SetAllowlistLookupDetailsForUrl(
+      origin_url, /*match=*/false, {"RT", "HPRT"});
   url_checker_delegate_->SetLookupMechanismExperimentEligibility(
       origin_url, /*eligibility=*/true);
 
@@ -1262,7 +1490,7 @@ TEST_F(SafeBrowsingUrlCheckerTest,
       origin_callback;
   EXPECT_CALL(origin_callback,
               Run(_, /*proceed=*/true, /*showed_interstitial=*/false,
-                  /*did_perform_url_real_time_check=*/true,
+                  SafeBrowsingUrlCheckerImpl::PerformedCheck::kUrlRealTimeCheck,
                   /*did_check_url_real_time_allowlist=*/true));
   safe_browsing_url_checker->CheckUrl(origin_url, "GET", origin_callback.Get());
 
@@ -1277,7 +1505,8 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   hash_realtime_service_->SetThreatTypeForUrl(redirect_url,
                                               SB_THREAT_TYPE_URL_PHISHING,
                                               /*should_fail_lookup=*/false);
-  database_manager_->SetAllowlistResultForUrl(redirect_url, false);
+  database_manager_->SetAllowlistLookupDetailsForUrl(
+      redirect_url, /*match=*/false, {"RT", "HPRT"});
   url_checker_delegate_->SetLookupMechanismExperimentEligibility(
       redirect_url, /*eligibility=*/true);
 
@@ -1285,7 +1514,7 @@ TEST_F(SafeBrowsingUrlCheckerTest,
       redirect_callback;
   EXPECT_CALL(redirect_callback,
               Run(_, /*proceed=*/true, /*showed_interstitial=*/false,
-                  /*did_perform_url_real_time_check=*/true,
+                  SafeBrowsingUrlCheckerImpl::PerformedCheck::kUrlRealTimeCheck,
                   /*did_check_url_real_time_allowlist=*/true));
   safe_browsing_url_checker->CheckUrl(redirect_url, "GET",
                                       redirect_callback.Get());
@@ -1305,25 +1534,31 @@ TEST_F(SafeBrowsingUrlCheckerTest,
       "SafeBrowsing.HPRTExperiment.Redirects.WarningsResult", 1);
 }
 
-TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_HashRealTime_AllowlistMatchSafe) {
+TEST_F(SafeBrowsingUrlCheckerTest,
+       CheckUrl_HashRealTimeService_AllowlistMatchSafe) {
   auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
       /*url_real_time_lookup_enabled=*/false,
       /*can_check_safe_browsing_db=*/true,
-      /*hash_real_time_lookup_enabled=*/true);
+      /*hash_real_time_selection=*/
+      hash_realtime_utils::HashRealTimeSelection::kHashRealTimeService);
 
   GURL url("https://example.test/");
   database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SAFE,
                                          /*delayed_callback=*/false);
-  database_manager_->SetAllowlistResultForUrl(url, true);
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true,
+                                                     {"HPRT"});
 
   base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
       callback;
-  EXPECT_CALL(callback, Run(_, /*proceed=*/true, /*showed_interstitial=*/false,
-                            /*did_perform_real_time_check=*/false,
-                            /*did_check_allowlist=*/false))
+  EXPECT_CALL(
+      callback,
+      Run(_, /*proceed=*/true, /*showed_interstitial=*/false,
+          SafeBrowsingUrlCheckerImpl::PerformedCheck::kHashRealTimeCheck,
+          /*did_check_allowlist=*/false))
       .Times(1);
   EXPECT_CALL(*url_checker_delegate_,
-              StartDisplayingBlockingPageHelper(_, _, _, _, _))
+              StartDisplayingBlockingPageHelper(
+                  IsSameThreatSource(ThreatSource::UNKNOWN), _, _, _, _))
       .Times(0);
   safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
   task_environment_.RunUntilIdle();
@@ -1331,16 +1566,19 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_HashRealTime_AllowlistMatchSafe) {
                            /*expected_is_service_found=*/absl::nullopt);
 }
 
-TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_HashRealTime_AllowlistMatchUnsafe) {
+TEST_F(SafeBrowsingUrlCheckerTest,
+       CheckUrl_HashRealTimeService_AllowlistMatchUnsafe) {
   auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
       /*url_real_time_lookup_enabled=*/false,
       /*can_check_safe_browsing_db=*/true,
-      /*hash_real_time_lookup_enabled=*/true);
+      /*hash_real_time_selection=*/
+      hash_realtime_utils::HashRealTimeSelection::kHashRealTimeService);
 
   GURL url("https://example.test/");
   database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
                                          /*delayed_callback=*/false);
-  database_manager_->SetAllowlistResultForUrl(url, true);
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true,
+                                                     {"HPRT"});
 
   base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
       callback;
@@ -1348,7 +1586,8 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_HashRealTime_AllowlistMatchUnsafe) {
   // while we perform a real-time check.
   EXPECT_CALL(callback, Run(_, _, _, _, _)).Times(0);
   EXPECT_CALL(*url_checker_delegate_,
-              StartDisplayingBlockingPageHelper(_, _, _, _, _))
+              StartDisplayingBlockingPageHelper(
+                  IsSameThreatSource(ThreatSource::UNKNOWN), _, _, _, _))
       .Times(1);
   safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
   task_environment_.RunUntilIdle();
@@ -1356,25 +1595,31 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_HashRealTime_AllowlistMatchUnsafe) {
                            /*expected_is_service_found=*/absl::nullopt);
 }
 
-TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_HashRealTime_SafeLookup) {
+TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_HashRealTimeService_SafeLookup) {
   auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
       /*url_real_time_lookup_enabled=*/false,
       /*can_check_safe_browsing_db=*/true,
-      /*hash_real_time_lookup_enabled=*/true);
+      /*hash_real_time_selection=*/
+      hash_realtime_utils::HashRealTimeSelection::kHashRealTimeService);
 
   GURL url("https://example.test/");
   hash_realtime_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SAFE,
                                               /*should_fail_lookup=*/false);
-  database_manager_->SetAllowlistResultForUrl(url, false);
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/false,
+                                                     {"HPRT"});
 
   base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
       callback;
-  EXPECT_CALL(callback, Run(_, /*proceed=*/true, /*showed_interstitial=*/false,
-                            /*did_perform_real_time_check=*/false,
-                            /*did_check_allowlist=*/false))
+  EXPECT_CALL(
+      callback,
+      Run(_, /*proceed=*/true, /*showed_interstitial=*/false,
+          SafeBrowsingUrlCheckerImpl::PerformedCheck::kHashRealTimeCheck,
+          /*did_check_allowlist=*/false))
       .Times(1);
-  EXPECT_CALL(*url_checker_delegate_,
-              StartDisplayingBlockingPageHelper(_, _, _, _, _))
+  EXPECT_CALL(
+      *url_checker_delegate_,
+      StartDisplayingBlockingPageHelper(
+          IsSameThreatSource(ThreatSource::NATIVE_PVER5_REAL_TIME), _, _, _, _))
       .Times(0);
   safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
   task_environment_.RunUntilIdle();
@@ -1382,77 +1627,28 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_HashRealTime_SafeLookup) {
                            /*expected_is_service_found=*/true);
 }
 
-TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_HashRealTime_UnsafeLookup) {
+TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_HashRealTimeService_UnsafeLookup) {
   auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
       /*url_real_time_lookup_enabled=*/false,
       /*can_check_safe_browsing_db=*/true,
-      /*hash_real_time_lookup_enabled=*/true);
+      /*hash_real_time_selection=*/
+      hash_realtime_utils::HashRealTimeSelection::kHashRealTimeService);
 
   GURL url("https://example.test/");
   hash_realtime_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
                                               /*should_fail_lookup=*/false);
-  database_manager_->SetAllowlistResultForUrl(url, false);
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/false,
+                                                     {"HPRT"});
 
   base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
       callback;
   // Note that the callback is not called, because resource fetch is not blocked
   // while we perform a real-time check.
   EXPECT_CALL(callback, Run(_, _, _, _, _)).Times(0);
-  EXPECT_CALL(*url_checker_delegate_,
-              StartDisplayingBlockingPageHelper(_, _, _, _, _))
-      .Times(1);
-  safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
-  task_environment_.RunUntilIdle();
-  CheckHashRealTimeMetrics(/*expected_local_match_result=*/false,
-                           /*expected_is_service_found=*/true);
-}
-
-TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_HashRealTime_MissingService) {
-  auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
-      /*url_real_time_lookup_enabled=*/false,
-      /*can_check_safe_browsing_db=*/true,
-      /*hash_real_time_lookup_enabled=*/true);
-  hash_realtime_service_.reset();
-
-  GURL url("https://example.test/");
-  database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
-                                         /*delayed_callback=*/false);
-  database_manager_->SetAllowlistResultForUrl(url, false);
-
-  base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
-      callback;
-  // Note that the callback is not called, because resource fetch is not blocked
-  // while we perform a real-time check.
-  EXPECT_CALL(callback, Run(_, _, _, _, _)).Times(0);
-  EXPECT_CALL(*url_checker_delegate_,
-              StartDisplayingBlockingPageHelper(_, _, _, _, _))
-      .Times(1);
-  safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
-  task_environment_.RunUntilIdle();
-  CheckHashRealTimeMetrics(/*expected_local_match_result=*/false,
-                           /*expected_is_service_found=*/false);
-}
-
-TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_HashRealTime_UnsuccessfulLookup) {
-  auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
-      /*url_real_time_lookup_enabled=*/false,
-      /*can_check_safe_browsing_db=*/true,
-      /*hash_real_time_lookup_enabled=*/true);
-
-  GURL url("https://example.test/");
-  hash_realtime_service_->SetThreatTypeForUrl(url, absl::nullopt,
-                                              /*should_fail_lookup=*/true);
-  database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
-                                         /*delayed_callback=*/false);
-  database_manager_->SetAllowlistResultForUrl(url, false);
-
-  base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
-      callback;
-  // Note that the callback is not called, because resource fetch is not blocked
-  // while we perform a real-time check.
-  EXPECT_CALL(callback, Run(_, _, _, _, _)).Times(0);
-  EXPECT_CALL(*url_checker_delegate_,
-              StartDisplayingBlockingPageHelper(_, _, _, _, _))
+  EXPECT_CALL(
+      *url_checker_delegate_,
+      StartDisplayingBlockingPageHelper(
+          IsSameThreatSource(ThreatSource::NATIVE_PVER5_REAL_TIME), _, _, _, _))
       .Times(1);
   safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
   task_environment_.RunUntilIdle();
@@ -1461,14 +1657,77 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_HashRealTime_UnsuccessfulLookup) {
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest,
-       CheckUrl_HashRealTimeAndUrlRealTimeBothEnabled) {
+       CheckUrl_HashRealTimeService_MissingService) {
+  auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
+      /*url_real_time_lookup_enabled=*/false,
+      /*can_check_safe_browsing_db=*/true,
+      /*hash_real_time_selection=*/
+      hash_realtime_utils::HashRealTimeSelection::kHashRealTimeService);
+  hash_realtime_service_.reset();
+
+  GURL url("https://example.test/");
+  database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
+                                         /*delayed_callback=*/false);
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/false,
+                                                     {"HPRT"});
+
+  base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
+      callback;
+  // Note that the callback is not called, because resource fetch is not blocked
+  // while we perform a real-time check.
+  EXPECT_CALL(callback, Run(_, _, _, _, _)).Times(0);
+  EXPECT_CALL(*url_checker_delegate_,
+              StartDisplayingBlockingPageHelper(
+                  IsSameThreatSource(ThreatSource::UNKNOWN), _, _, _, _))
+      .Times(1);
+  safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
+  task_environment_.RunUntilIdle();
+  CheckHashRealTimeMetrics(/*expected_local_match_result=*/false,
+                           /*expected_is_service_found=*/false);
+}
+
+TEST_F(SafeBrowsingUrlCheckerTest,
+       CheckUrl_HashRealTimeService_UnsuccessfulLookup) {
+  auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
+      /*url_real_time_lookup_enabled=*/false,
+      /*can_check_safe_browsing_db=*/true,
+      /*hash_real_time_selection=*/
+      hash_realtime_utils::HashRealTimeSelection::kHashRealTimeService);
+
+  GURL url("https://example.test/");
+  hash_realtime_service_->SetThreatTypeForUrl(url, absl::nullopt,
+                                              /*should_fail_lookup=*/true);
+  database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
+                                         /*delayed_callback=*/false);
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/false,
+                                                     {"HPRT"});
+
+  base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
+      callback;
+  // Note that the callback is not called, because resource fetch is not blocked
+  // while we perform a real-time check.
+  EXPECT_CALL(callback, Run(_, _, _, _, _)).Times(0);
+  EXPECT_CALL(*url_checker_delegate_,
+              StartDisplayingBlockingPageHelper(
+                  IsSameThreatSource(ThreatSource::UNKNOWN), _, _, _, _))
+      .Times(1);
+  safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
+  task_environment_.RunUntilIdle();
+  CheckHashRealTimeMetrics(/*expected_local_match_result=*/false,
+                           /*expected_is_service_found=*/true);
+}
+
+TEST_F(SafeBrowsingUrlCheckerTest,
+       CheckUrl_HashRealTimeServiceAndUrlRealTimeBothEnabled) {
   auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
       /*url_real_time_lookup_enabled=*/true,
       /*can_check_safe_browsing_db=*/true,
-      /*hash_real_time_lookup_enabled=*/true);
+      /*hash_real_time_selection=*/
+      hash_realtime_utils::HashRealTimeSelection::kHashRealTimeService);
 
   GURL url("https://example.test/");
-  database_manager_->SetAllowlistResultForUrl(url, false);
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/false,
+                                                     {"RT"});
   url_lookup_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
                                            /*should_complete_lookup=*/true);
 
@@ -1483,6 +1742,85 @@ TEST_F(SafeBrowsingUrlCheckerTest,
       .Times(1);
   safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
 
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(SafeBrowsingUrlCheckerTest,
+       CheckUrl_HashRealTimeEnabledThroughDatabaseManager) {
+  auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
+      /*url_real_time_lookup_enabled=*/false,
+      /*can_check_safe_browsing_db=*/true,
+      /*hash_real_time_selection=*/
+      hash_realtime_utils::HashRealTimeSelection::kDatabaseManager);
+
+  GURL url("https://example.test/");
+  database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
+                                         /*delayed_callback=*/false);
+  database_manager_->SetExpectedCheckBrowseUrlType(
+      CheckBrowseUrlType::kHashRealTime);
+
+  base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
+      callback;
+  // Note that the callback is not called, because resource fetch is not blocked
+  // while we perform a real-time check.
+  EXPECT_CALL(callback, Run(_, _, _, _, _)).Times(0);
+  EXPECT_CALL(*url_checker_delegate_,
+              StartDisplayingBlockingPageHelper(
+                  IsSameThreatSource(ThreatSource::UNKNOWN), _, _, _, _))
+      .Times(1);
+  safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
+
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_InvalidRequestDestination) {
+  auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
+      /*url_real_time_lookup_enabled=*/false,
+      /*can_check_safe_browsing_db=*/true,
+      /*hash_real_time_selection=*/
+      hash_realtime_utils::HashRealTimeSelection::kNone,
+      /*optional_args=*/
+      {.request_destination = network::mojom::RequestDestination::kAudio});
+  GURL url("https://example.test/");
+
+  base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
+      callback;
+  EXPECT_CALL(callback,
+              Run(nullptr, /*proceed=*/true, /*showed_interstitial=*/false,
+                  SafeBrowsingUrlCheckerImpl::PerformedCheck::kCheckSkipped,
+                  /*did_check_url_real_time_allowlist=*/false));
+  EXPECT_CALL(*url_checker_delegate_,
+              StartDisplayingBlockingPageHelper(_, _, _, _, _))
+      .Times(0);
+
+  safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
+  task_environment_.RunUntilIdle();
+
+  histogram_tester_.ExpectUniqueSample(
+      /*name=*/"SB2.RequestDestination.Skipped",
+      /*sample=*/network::mojom::RequestDestination::kAudio,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_AllowlistedUrl) {
+  auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
+      /*url_real_time_lookup_enabled=*/false,
+      /*can_check_safe_browsing_db=*/true,
+      /*hash_real_time_selection=*/
+      hash_realtime_utils::HashRealTimeSelection::kNone);
+  GURL url(kAllowlistedUrl);
+
+  base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
+      callback;
+  EXPECT_CALL(callback,
+              Run(nullptr, /*proceed=*/true, /*showed_interstitial=*/false,
+                  SafeBrowsingUrlCheckerImpl::PerformedCheck::kCheckSkipped,
+                  /*did_check_url_real_time_allowlist=*/false));
+  EXPECT_CALL(*url_checker_delegate_,
+              StartDisplayingBlockingPageHelper(_, _, _, _, _))
+      .Times(0);
+
+  safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
   task_environment_.RunUntilIdle();
 }
 

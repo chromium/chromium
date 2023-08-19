@@ -49,12 +49,14 @@ class PreloadHandler : public DevToolsDomainHandler, public Preload::Backend {
       const std::string& initiating_frame_id,
       const GURL& prefetch_url,
       PreloadingTriggeringOutcome status,
-      PrefetchStatus prefetch_status);
+      PrefetchStatus prefetch_status,
+      const std::string& request_id);
   void DidUpdatePrerenderStatus(
       const base::UnguessableToken& initiator_devtools_navigation_token,
       const GURL& prerender_url,
       PreloadingTriggeringOutcome status,
-      absl::optional<PrerenderFinalStatus> prerender_status);
+      absl::optional<PrerenderFinalStatus> prerender_status,
+      absl::optional<std::string> disallowed_mojo_interface);
 
  private:
   Response Enable() override;

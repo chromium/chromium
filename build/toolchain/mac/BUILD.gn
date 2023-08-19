@@ -43,6 +43,10 @@ template("mac_toolchain") {
         # not supported by the Chromium mac_clang_x64 toolchain on iOS
         # distribution.
         use_sanitizer_coverage = false
+
+        # iOS supports being build with or without blink, but macOS requires
+        # it to be enabled, even if iOS build force disable it in args.gn.
+        use_blink = true
       }
     }
   }

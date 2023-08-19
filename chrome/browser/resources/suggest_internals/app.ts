@@ -64,7 +64,9 @@ class SuggestInternalsAppElement extends PolymerElement {
   private callbackRouter_: PageCallbackRouter;
   private pageHandler_: PageHandlerInterface;
   private suggestionsRequestCompletedListenerId_: number|null = null;
+  private suggestionsRequestCreatedListenerId_: number|null = null;
   private suggestionsRequestStartedListenerId_: number|null = null;
+
 
   constructor() {
     super();
@@ -76,9 +78,12 @@ class SuggestInternalsAppElement extends PolymerElement {
 
   override connectedCallback() {
     super.connectedCallback();
+    this.suggestionsRequestCreatedListenerId_ =
+        this.callbackRouter_.onSuggestRequestCreated.addListener(
+            this.onSuggestRequestCreated_.bind(this));
     this.suggestionsRequestStartedListenerId_ =
-        this.callbackRouter_.onSuggestRequestStarting.addListener(
-            this.onSuggestRequestStarting_.bind(this));
+        this.callbackRouter_.onSuggestRequestStarted.addListener(
+            this.onSuggestRequestStarted_.bind(this));
     this.suggestionsRequestCompletedListenerId_ =
         this.callbackRouter_.onSuggestRequestCompleted.addListener(
             this.onSuggestRequestCompleted_.bind(this));
@@ -86,6 +91,9 @@ class SuggestInternalsAppElement extends PolymerElement {
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    assert(this.suggestionsRequestCreatedListenerId_);
+    this.callbackRouter_.removeListener(
+        this.suggestionsRequestCreatedListenerId_);
     assert(this.suggestionsRequestStartedListenerId_);
     this.callbackRouter_.removeListener(
         this.suggestionsRequestStartedListenerId_);
@@ -181,9 +189,24 @@ class SuggestInternalsAppElement extends PolymerElement {
     this.$.toast.show();
   }
 
-  private onSuggestRequestStarting_(request: Request) {
+  private onSuggestRequestCreated_(request: Request) {
     // Add the request to the start of the list of known requests.
     this.unshift('requests_', request);
+  }
+
+  private onSuggestRequestStarted_(request: Request) {
+    const index = this.requests_.findIndex((element: Request) => {
+      return request.id.high === element.id.high &&
+          request.id.low === element.id.low;
+    });
+    // If the request is known, update it with the additional information.
+    if (index !== -1) {
+      this.set(`requests_.${index}.status`, request.status);
+      this.set(
+          `requests_.${index}.data`,
+          Object.assign({}, this.requests_[index].data, request.data));
+      this.set(`requests_.${index}.startTime`, request.startTime);
+    }
   }
 
   private onSuggestRequestCompleted_(request: Request) {
@@ -194,6 +217,9 @@ class SuggestInternalsAppElement extends PolymerElement {
     // If the request is known, update it with the additional information.
     if (index !== -1) {
       this.set(`requests_.${index}.status`, request.status);
+      this.set(
+          `requests_.${index}.data`,
+          Object.assign({}, this.requests_[index].data, request.data));
       this.set(`requests_.${index}.endTime`, request.endTime);
       this.set(`requests_.${index}.response`, request.response);
     }

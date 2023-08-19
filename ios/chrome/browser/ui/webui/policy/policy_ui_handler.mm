@@ -22,6 +22,7 @@
 #import "components/policy/core/browser/webui/json_generation.h"
 #import "components/policy/core/browser/webui/machine_level_user_cloud_policy_status_provider.h"
 #import "components/policy/core/browser/webui/policy_webui_constants.h"
+#import "components/policy/core/browser/webui/statistics_collector.h"
 #import "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #import "components/policy/core/common/policy_logger.h"
 #import "components/policy/core/common/policy_map.h"
@@ -44,10 +45,6 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/webui/web_ui_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 PolicyUIHandler::PolicyUIHandler() = default;
 
 PolicyUIHandler::~PolicyUIHandler() {
@@ -56,6 +53,9 @@ PolicyUIHandler::~PolicyUIHandler() {
                                          ->GetPolicyConnector()
                                          ->GetSchemaRegistry();
   registry->RemoveObserver(this);
+  policy::RecordPolicyUIButtonUsage(reload_policies_count_,
+                                    /*export_to_json_count=*/0,
+                                    copy_to_json_count_, upload_report_count_);
 }
 
 void PolicyUIHandler::AddCommonLocalizedStringsToSource(
@@ -152,11 +152,13 @@ void PolicyUIHandler::RegisterMessages() {
 }
 
 void PolicyUIHandler::HandleCopyPoliciesJson(const base::Value::List& args) {
+  copy_to_json_count_ += 1;
   NSString* jsonString = base::SysUTF8ToNSString(GetPoliciesAsJson());
   StoreTextInPasteboard(jsonString);
 }
 
 void PolicyUIHandler::HandleUploadReport(const base::Value::List& args) {
+  upload_report_count_ += 1;
   DCHECK_EQ(1u, args.size());
   std::string callback_id = args[0].GetString();
   auto* report_scheduler = GetApplicationContext()
@@ -265,6 +267,7 @@ void PolicyUIHandler::HandleListenPoliciesUpdates(
 }
 
 void PolicyUIHandler::HandleReloadPolicies(const base::Value::List& args) {
+  reload_policies_count_ += 1;
   GetPolicyService()->RefreshPolicies(base::BindOnce(
       &PolicyUIHandler::OnRefreshPoliciesDone, weak_factory_.GetWeakPtr()));
 }

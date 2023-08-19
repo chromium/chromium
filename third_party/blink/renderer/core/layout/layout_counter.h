@@ -58,6 +58,15 @@ class LayoutCounter : public LayoutText {
   ~LayoutCounter() override;
   void Trace(Visitor*) const override;
 
+  const AtomicString& Identifier() const {
+    NOT_DESTROYED();
+    return counter_->Identifier();
+  }
+  CounterNode* GetCounterNode() const {
+    NOT_DESTROYED();
+    return counter_node_;
+  }
+
   // These functions are static so that any LayoutObject can call them.
   // The reason is that any LayoutObject in the tree can have a CounterNode
   // without a LayoutCounter (e.g. by specifying 'counter-increment' without

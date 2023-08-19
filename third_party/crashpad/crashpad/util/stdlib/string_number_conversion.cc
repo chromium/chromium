@@ -14,7 +14,6 @@
 
 #include "util/stdlib/string_number_conversion.h"
 
-#include <ctype.h>
 #include <errno.h>
 #include <inttypes.h>
 #include <stdlib.h>
@@ -22,6 +21,7 @@
 
 #include <limits>
 
+#include "base/strings/string_util.h"
 
 namespace {
 
@@ -141,7 +141,7 @@ bool StringToIntegerInternal(const std::string& string,
 
   Traits::TypeCheck();
 
-  if (string.empty() || isspace(string[0])) {
+  if (string.empty() || base::IsAsciiWhitespace(string[0])) {
     return false;
   }
 

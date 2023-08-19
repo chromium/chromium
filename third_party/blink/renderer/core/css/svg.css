@@ -45,12 +45,12 @@
     https://svgwg.org/svg2-draft/single-page.html#render-OverflowAndClipProperties
 */
 
-/*
-  TODO(khushalsagar): Switch svg:not(:root) to use the overflow: clip; and
-  overflow-clip-margin: content-box; in the following style rules.
-*/
 svg:not(:root), symbol, image, marker, pattern, foreignObject {
     overflow: hidden
+}
+
+svg:not(:root) {
+  overflow-clip-margin: content-box;
 }
 
 svg:root {

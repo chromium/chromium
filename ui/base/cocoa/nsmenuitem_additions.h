@@ -16,10 +16,17 @@
 // menu item to fire.
 - (BOOL)cr_firesForKeyEquivalentEvent:(NSEvent*)event;
 
+// Convenience method for setting a menu item's key equivalent.
+- (void)cr_setKeyEquivalent:(NSString*)aString
+               modifierMask:(NSEventModifierFlags)mask;
+
+// Convenience method for clearing a menu item's key equivalent. After calling,
+// the item has no keyEquivalent string or mask.
+- (void)cr_clearKeyEquivalent;
+
 @end
 
-namespace ui {
-namespace cocoa {
+namespace ui::cocoa {
 
 // Used by tests to set internal state without having to change global input
 // source.
@@ -46,7 +53,6 @@ bool COMPONENT_EXPORT(UI_BASE)
 // shortcut.
 NSUInteger COMPONENT_EXPORT(UI_BASE) ModifierMaskForKeyEvent(NSEvent* event);
 
-}  // namespace cocoa
-}  // namespace ui
+}  // namespace ui::cocoa
 
 #endif  // UI_BASE_COCOA_NSMENUITEM_ADDITIONS_H_

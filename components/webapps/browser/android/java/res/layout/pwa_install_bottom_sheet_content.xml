@@ -6,15 +6,89 @@ found in the LICENSE file.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
+    <FrameLayout
+        android:id="@+id/toolbar"
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/drag_handlebar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:importantForAccessibility="no"
+            app:srcCompat="@drawable/drag_handlebar" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="10"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="6dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
+
+            <ImageView
+                android:id="@+id/app_icon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                android:importantForAccessibility="no" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="10"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="4dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/app_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="true"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+                <TextView
+                    android:id="@+id/app_origin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="true"
+                    android:ellipsize="start"
+                    android:singleLine="true"
+                    android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+
+            </LinearLayout>
+
+            <org.chromium.ui.widget.ButtonCompat
+                android:id="@+id/button_install"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|center"
+                android:enabled="false"
+                android:singleLine="true"
+                android:gravity="center"
+                android:text="@string/app_banner_install"
+                style="@style/FilledButton.Flat"/>
+
+        </LinearLayout>
+    </FrameLayout>
     <View
+        android:id="@+id/horizontal_divider"
         style="@style/HorizontalDivider"
         android:layout_width="match_parent"
         android:background="@macro/divider_line_bg_color"
-        android:layout_marginTop="70dp"
         android:importantForAccessibility="no" />
 
     <androidx.core.widget.NestedScrollView
@@ -23,31 +97,31 @@ found in the LICENSE file.
         android:orientation="vertical">
 
         <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/description"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:focusable="true"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginTop="16dp"
-            android:ellipsize="end"
-            android:lineHeight="20dp"
-            android:maxLines="7"
-            android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/screenshots_container"
             android:layout_width="match_parent"
-            android:layout_height="320dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="16dp"
-            android:orientation="horizontal"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:focusable="true"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="16dp"
+                android:ellipsize="end"
+                android:lineHeight="20sp"
+                android:maxLines="7"
+                android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/screenshots_container"
+                android:layout_width="match_parent"
+                android:layout_height="320dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="16dp"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

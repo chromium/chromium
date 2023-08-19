@@ -41,6 +41,7 @@
 #include "ui/base/models/tree_model.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/download/download_browsertest_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
 #endif
@@ -140,9 +141,10 @@ BrowsingDataRemoverBrowserTestBase::BrowsingDataRemoverBrowserTestBase() =
 BrowsingDataRemoverBrowserTestBase::~BrowsingDataRemoverBrowserTestBase() =
     default;
 
-void BrowsingDataRemoverBrowserTestBase::InitFeatureList(
-    std::vector<base::test::FeatureRef> enabled_features) {
-  feature_list_.InitWithFeatures(enabled_features, {});
+void BrowsingDataRemoverBrowserTestBase::InitFeatureLists(
+    std::vector<base::test::FeatureRef> enabled_features,
+    std::vector<base::test::FeatureRef> disabled_features) {
+  feature_list_.InitWithFeatures(enabled_features, disabled_features);
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -216,6 +218,7 @@ void BrowsingDataRemoverBrowserTestBase::DownloadAnItem() {
   GURL download_url =
       ui_test_utils::GetTestUrl(base::FilePath().AppendASCII("downloads"),
                                 base::FilePath().AppendASCII("a_zip_file.zip"));
+  SetPromptForDownload(GetBrowser(), false);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), download_url));
 #endif
   observer->WaitForFinished();

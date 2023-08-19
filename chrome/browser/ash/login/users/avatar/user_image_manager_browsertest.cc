@@ -77,7 +77,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/base/layout.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
@@ -120,8 +119,9 @@ class UserImageChangeWaiter : public user_manager::UserManager::Observer {
 
   // user_manager::UserManager::Observer:
   void OnUserImageChanged(const user_manager::User& user) override {
-    if (run_loop_)
+    if (run_loop_) {
       run_loop_->Quit();
+    }
   }
 
  private:
@@ -138,8 +138,9 @@ class UserImageManagerTestBase : public LoginManagerTest,
 
   std::unique_ptr<net::test_server::BasicHttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) {
-    if (request.relative_url.find("/avatar.jpg") == std::string::npos)
+    if (request.relative_url.find("/avatar.jpg") == std::string::npos) {
       return nullptr;
+    }
 
     // Check whether the token string is the same.
     EXPECT_TRUE(request.headers.find(net::HttpRequestHeaders::kAuthorization) !=
@@ -209,8 +210,9 @@ class UserImageManagerTestBase : public LoginManagerTest,
 
   // UserManager::Observer overrides:
   void LocalStateChanged(user_manager::UserManager* user_manager) override {
-    if (run_loop_)
+    if (run_loop_) {
       run_loop_->Quit();
+    }
   }
 
   // Logs in `account_id`.
@@ -297,7 +299,7 @@ class UserImageManagerTestBase : public LoginManagerTest,
   base::FilePath test_data_dir_;
   base::FilePath user_data_dir_;
 
-  raw_ptr<PrefService, ExperimentalAsh> local_state_;
+  raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> local_state_;
 
   gfx::ImageSkia decoded_image_;
 
@@ -356,8 +358,9 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerTest, SaveAndLoadUserImage) {
       user_manager::UserManager::Get()->FindUser(test_account_id1_);
   ASSERT_TRUE(user);
   // Wait for image load.
-  if (user->image_index() == user_manager::User::USER_IMAGE_INVALID)
+  if (user->image_index() == user_manager::User::USER_IMAGE_INVALID) {
     UserImageChangeWaiter().Wait();
+  }
   // Check image dimensions. Images can't be compared since JPEG is lossy.
   const gfx::ImageSkia& saved_image = default_user_image::GetStubDefaultImage();
   EXPECT_EQ(saved_image.width(), user->GetImage().width());
@@ -585,13 +588,15 @@ class UserImageManagerPolicyTest : public UserImageManagerTestBase,
 
   // policy::CloudPolicyStore::Observer overrides:
   void OnStoreLoaded(policy::CloudPolicyStore* store) override {
-    if (run_loop_)
+    if (run_loop_) {
       run_loop_->Quit();
+    }
   }
 
   void OnStoreError(policy::CloudPolicyStore* store) override {
-    if (run_loop_)
+    if (run_loop_) {
       run_loop_->Quit();
+    }
   }
 
   std::string ConstructPolicy(const std::string& relative_path) {

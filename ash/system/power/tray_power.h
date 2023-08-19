@@ -31,16 +31,18 @@ class PowerTrayView : public TrayItemView, public PowerStatus::Observer {
 
   // TrayItemView:
   void HandleLocaleChange() override;
+  void UpdateLabelOrImageViewColor(bool active) override;
 
   // PowerStatus::Observer:
   void OnPowerStatusChanged() override;
 
  private:
-  void UpdateStatus();
+  void UpdateStatus(bool icon_color_changed);
   void UpdateImage(bool icon_color_changed);
 
   std::u16string tooltip_;
   absl::optional<PowerStatus::BatteryImageInfo> info_;
+  bool previous_battery_saver_state_ = false;
 };
 
 }  // namespace ash

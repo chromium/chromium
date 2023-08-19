@@ -14,7 +14,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "base/test/test_mock_time_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
+#include "base/time/time_override.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "cc/base/features.h"
 #include "cc/layers/recording_source.h"
@@ -382,9 +385,6 @@ TEST_F(TileManagerTilePriorityQueueTest, RasterTilePriorityQueue) {
 
 TEST_F(TileManagerTilePriorityQueueTest,
        RasterTilePriorityQueueAll_GetNextQueues) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kRasterTilePriorityQueue);
-
   host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
   gfx::Size layer_bounds(1000, 1000);
   SetupDefaultTrees(layer_bounds);
@@ -1023,7 +1023,7 @@ TEST_F(TileManagerTilePriorityQueueTest, DebugNameAppearsInMemoryDump) {
   host_impl()->resource_pool()->OnMemoryDump(dump_args, &memory_dump);
   bool found_debug_name = false;
   for (const auto& allocator_map_pair : memory_dump.allocator_dumps()) {
-    if (allocator_map_pair.first.find("debug-name") != std::string::npos) {
+    if (base::Contains(allocator_map_pair.first, "debug-name")) {
       found_debug_name = true;
       break;
     }
@@ -1217,10 +1217,11 @@ TEST_F(TileManagerTilePriorityQueueTest,
     const TilePriority& pending_priority = prioritized_tile.priority();
     EXPECT_NE(std::numeric_limits<float>::infinity(),
               pending_priority.distance_to_visible);
-    if (all_pending_child_tiles.find(tile) != all_pending_child_tiles.end())
+    if (base::Contains(all_pending_child_tiles, tile)) {
       EXPECT_EQ(TilePriority::EVENTUALLY, pending_priority.priority_bin);
-    else
+    } else {
       EXPECT_EQ(TilePriority::NOW, pending_priority.priority_bin);
+    }
     new_content_tiles.insert(tile);
     ++tile_count;
     queue->Pop();
@@ -1752,8 +1753,8 @@ class TestSoftwareRasterBufferProvider : public FakeRasterBufferProviderImpl {
       auto backing = std::make_unique<TestSoftwareBacking>();
       backing->shared_bitmap_id = viz::SharedBitmap::GenerateId();
       backing->pixels = std::make_unique<uint32_t[]>(
-          viz::ResourceSizes::CheckedSizeInBytes<size_t>(
-              resource.size(), kSharedImageFormat.resource_format()));
+          viz::ResourceSizes::CheckedSizeInBytes<size_t>(resource.size(),
+                                                         kSharedImageFormat));
       resource.set_software_backing(std::move(backing));
     }
     auto* backing =
@@ -2555,9 +2556,9 @@ TEST_F(InvalidResourceTileManagerTest, InvalidResource) {
 class MockReadyToDrawRasterBufferProviderImpl
     : public FakeRasterBufferProviderImpl {
  public:
-  MOCK_CONST_METHOD1(IsResourceReadyToDraw,
-                     bool(const ResourcePool::InUsePoolResource& resource));
-  MOCK_CONST_METHOD3(
+  MOCK_METHOD1(IsResourceReadyToDraw,
+               bool(const ResourcePool::InUsePoolResource& resource));
+  MOCK_METHOD3(
       SetReadyToDrawCallback,
       uint64_t(
           const std::vector<const ResourcePool::InUsePoolResource*>& resources,
@@ -2872,6 +2873,157 @@ TEST_F(TileManagerReadyToDrawTest, TilePrioritiesUpdated) {
   EXPECT_TRUE(found_one_prepaint_to_required_transition);
 }
 
+TEST_F(TileManagerReadyToDrawTest, PrepaintTilesAreDroppedWhenIdle) {
+  auto count_prepaint_tiles = [](const std::vector<Tile*>& tiles) {
+    int count = 0;
+    for (auto* tile : tiles) {
+      if (tile->draw_info().has_resource() && tile->is_prepaint()) {
+        count++;
+      }
+    }
+    return count;
+  };
+
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kReclaimPrepaintTilesWhenIdle};
+
+  auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  host_impl()->tile_manager()->SetOverridesForTesting(
+      task_runner, task_runner->GetMockTickClock());
+
+  gfx::Size very_small(1, 1);
+  host_impl()->active_tree()->SetDeviceViewportRect(gfx::Rect(very_small));
+
+  gfx::Size layer_bounds(1000, 1000);
+  SetupDefaultTrees(layer_bounds);
+
+  base::RunLoop run_loop;
+  host_impl()->tile_manager()->PrepareTiles(host_impl()->global_tile_state());
+  EXPECT_CALL(MockHostImpl(), NotifyAllTileTasksCompleted())
+      .WillOnce(Invoke([&run_loop]() { run_loop.Quit(); }));
+  run_loop.Run();
+
+  int prepaint_tiles =
+      count_prepaint_tiles(host_impl()->tile_manager()->AllTilesForTesting());
+  EXPECT_GT(prepaint_tiles, 0);
+  EXPECT_TRUE(task_runner->HasPendingTask());
+
+  // Too soon.
+  task_runner->FastForwardBy(TileManager::kDelayBeforeTimeReclaim / 2);
+  prepaint_tiles =
+      count_prepaint_tiles(host_impl()->tile_manager()->AllTilesForTesting());
+  EXPECT_GT(prepaint_tiles, 0);
+  EXPECT_TRUE(task_runner->HasPendingTask());
+
+  task_runner->FastForwardBy(TileManager::kDelayBeforeTimeReclaim / 2);
+
+  // Prepaint tiles are dropped.
+  prepaint_tiles =
+      count_prepaint_tiles(host_impl()->tile_manager()->AllTilesForTesting());
+  EXPECT_EQ(prepaint_tiles, 0);
+  // Don't repost a task.
+  EXPECT_FALSE(task_runner->HasPendingTask());
+  host_impl()->tile_manager()->SetOverridesForTesting(nullptr, nullptr);
+}
+
+TEST_F(TileManagerReadyToDrawTest, PrepaintTilesAreNotDropped) {
+  auto count_prepaint_tiles = [](const std::vector<Tile*>& tiles) {
+    int count = 0;
+    for (auto* tile : tiles) {
+      if (tile->draw_info().has_resource() && tile->is_prepaint()) {
+        count++;
+      }
+    }
+    return count;
+  };
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kReclaimPrepaintTilesWhenIdle);
+
+  auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  host_impl()->tile_manager()->SetOverridesForTesting(
+      task_runner, task_runner->GetMockTickClock());
+
+  gfx::Size very_small(1, 1);
+  host_impl()->active_tree()->SetDeviceViewportRect(gfx::Rect(very_small));
+
+  gfx::Size layer_bounds(1000, 1000);
+  SetupDefaultTrees(layer_bounds);
+
+  base::RunLoop run_loop;
+  host_impl()->tile_manager()->PrepareTiles(host_impl()->global_tile_state());
+  EXPECT_CALL(MockHostImpl(), NotifyAllTileTasksCompleted())
+      .WillOnce(Invoke([&run_loop]() { run_loop.Quit(); }));
+  run_loop.Run();
+
+  int before_prepaint_tiles =
+      count_prepaint_tiles(host_impl()->tile_manager()->AllTilesForTesting());
+  ASSERT_GT(before_prepaint_tiles, 0);
+
+  // No release task.
+  EXPECT_FALSE(task_runner->HasPendingTask());
+  host_impl()->tile_manager()->SetOverridesForTesting(nullptr, nullptr);
+}
+
+TEST_F(TileManagerReadyToDrawTest, PrepaintTilesContinuousIdleTime) {
+  auto count_prepaint_tiles = [](const std::vector<Tile*>& tiles) {
+    int count = 0;
+    for (auto* tile : tiles) {
+      if (tile->draw_info().has_resource() && tile->is_prepaint()) {
+        count++;
+      }
+    }
+    return count;
+  };
+
+  auto prepare_tiles = [this]() {
+    base::RunLoop run_loop;
+    host_impl()->tile_manager()->PrepareTiles(host_impl()->global_tile_state());
+    EXPECT_CALL(MockHostImpl(), NotifyAllTileTasksCompleted())
+        .WillOnce(Invoke([&run_loop]() { run_loop.Quit(); }));
+    run_loop.Run();
+  };
+
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kReclaimPrepaintTilesWhenIdle};
+
+  auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  host_impl()->tile_manager()->SetOverridesForTesting(
+      task_runner, task_runner->GetMockTickClock());
+
+  gfx::Size very_small(1, 1);
+  host_impl()->active_tree()->SetDeviceViewportRect(gfx::Rect(very_small));
+
+  gfx::Size layer_bounds(1000, 1000);
+  SetupDefaultTrees(layer_bounds);
+
+  prepare_tiles();
+  int before_prepaint_tiles =
+      count_prepaint_tiles(host_impl()->tile_manager()->AllTilesForTesting());
+  ASSERT_GT(before_prepaint_tiles, 0);
+
+  EXPECT_TRUE(task_runner->HasPendingTask());
+  // Not enough continuous idle time.
+  task_runner->FastForwardBy(TileManager::kDelayBeforeTimeReclaim / 2);
+  prepare_tiles();
+  task_runner->FastForwardBy(TileManager::kDelayBeforeTimeReclaim / 2);
+  // A task has been re-posted.
+  EXPECT_TRUE(task_runner->HasPendingTask());
+
+  int after_prepaint_tiles =
+      count_prepaint_tiles(host_impl()->tile_manager()->AllTilesForTesting());
+  EXPECT_EQ(after_prepaint_tiles, before_prepaint_tiles);
+
+  task_runner->FastForwardBy(TileManager::kDelayBeforeTimeReclaim / 2);
+  EXPECT_EQ(0, count_prepaint_tiles(
+                   host_impl()->tile_manager()->AllTilesForTesting()));
+  // No task is posted when there is nothing to do.
+  EXPECT_FALSE(task_runner->HasPendingTask());
+
+  host_impl()->tile_manager()->SetOverridesForTesting(nullptr, nullptr);
+}
+
 void UpdateVisibleRect(FakePictureLayerImpl* layer,
                        const gfx::Rect visible_rect) {
   PictureLayerTilingSet* tiling_set = layer->tilings();
@@ -2953,6 +3105,38 @@ TEST_F(TileManagerReadyToDrawTest, ReadyToDrawRespectsRequirementChange) {
 
   EXPECT_TRUE(host_impl()->tile_manager()->IsReadyToDraw());
   EXPECT_TRUE(host_impl()->tile_manager()->IsReadyToActivate());
+}
+
+TEST_F(TileManagerReadyToDrawTest, SetBackIsLikelyToRequireADrawToFalse) {
+  const gfx::Size layer_bounds(1000, 1000);
+  host_impl()->active_tree()->SetDeviceViewportRect(gfx::Rect(layer_bounds));
+  SetupDefaultTrees(layer_bounds);
+
+  // Verify that the queue has a required for draw tile
+  std::unique_ptr<RasterTilePriorityQueue> queue(host_impl()->BuildRasterQueue(
+      SAME_PRIORITY_FOR_BOTH_TREES, RasterTilePriorityQueue::Type::ALL));
+  EXPECT_FALSE(queue->IsEmpty());
+  EXPECT_TRUE(queue->Top().tile()->required_for_draw());
+  EXPECT_FALSE(host_impl()->is_likely_to_require_a_draw());
+
+  // Mark all these tiles as ready to draw.
+  {
+    base::RunLoop run_loop;
+    host_impl()->tile_manager()->DidModifyTilePriorities();
+    host_impl()->tile_manager()->PrepareTiles(host_impl()->global_tile_state());
+    EXPECT_CALL(MockHostImpl(), NotifyReadyToActivate())
+        .WillOnce(Invoke([&run_loop]() { run_loop.Quit(); }));
+    EXPECT_CALL(*mock_raster_buffer_provider(), IsResourceReadyToDraw(_))
+        .WillRepeatedly(Return(true));
+    run_loop.Run();
+  }
+
+  EXPECT_TRUE(host_impl()->is_likely_to_require_a_draw());
+
+  // Check is_likely_to_require_a_draw returns FALSE after PrepareToDraw.
+  EXPECT_TRUE(host_impl()->tile_manager()->IsReadyToDraw());
+  host_impl()->tile_manager()->PrepareToDraw();
+  EXPECT_FALSE(host_impl()->is_likely_to_require_a_draw());
 }
 
 PaintImage MakeCheckerablePaintImage(const gfx::Size& size) {
@@ -3855,6 +4039,236 @@ TEST_F(TileManagerCheckRasterQueriesTest,
   host_impl()->tile_manager()->PrepareTiles(host_impl()->global_tile_state());
   EXPECT_TRUE(host_impl()->tile_manager()->HasScheduledTileTasksForTesting());
   run_loop.Run();
+}
+
+class TileManagerTileReclaimTest : public TileManagerTest {
+ public:
+  ~TileManagerTileReclaimTest() override { TakeHostImpl(); }
+
+  void SetUp() override {
+    TileManagerTest::SetUp();
+    task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+    host_impl()->tile_manager()->SetOverridesForTesting(
+        task_runner_, task_runner_->GetMockTickClock());
+
+    host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
+    gfx::Size layer_bounds(1000, 1000);
+    SetupDefaultTrees(layer_bounds);
+
+    // Create a pending child layer.
+    scoped_refptr<FakeRasterSource> pending_raster_source =
+        FakeRasterSource::CreateFilled(layer_bounds);
+    auto* pending_child = AddLayer<FakePictureLayerImpl>(
+        host_impl()->pending_tree(), pending_raster_source);
+    pending_child->SetDrawsContent(true);
+    CopyProperties(pending_layer(), pending_child);
+  }
+
+  void TearDown() override {
+    ASSERT_FALSE(task_runner()->HasPendingTask());
+    host_impl()->tile_manager()->SetOverridesForTesting(nullptr, nullptr);
+    TileManagerTest::TearDown();
+  }
+
+  scoped_refptr<base::TestMockTimeTaskRunner> task_runner() const {
+    return task_runner_;
+  }
+
+  void MakeFrame(GlobalStateThatImpactsTilePriority global_tile_state) {
+    host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
+    UpdateDrawProperties(host_impl()->active_tree());
+    UpdateDrawProperties(host_impl()->pending_tree());
+
+    base::RunLoop run_loop;
+    EXPECT_CALL(MockHostImpl(), NotifyAllTileTasksCompleted())
+        .WillOnce(Invoke([&run_loop]() { run_loop.Quit(); }));
+    host_impl()->tile_manager()->PrepareTiles(global_tile_state);
+    run_loop.Run();
+  }
+
+ private:
+  scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
+};
+
+TEST_F(TileManagerTileReclaimTest, ReclaimOldPrepainTilesSimple) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kReclaimOldPrepaintTiles};
+
+  // Set a small viewport, so we have soon and eventually tiles.
+  gfx::Rect viewport{100, 100, 100, 100};
+
+  GlobalStateThatImpactsTilePriority global_tile_state =
+      host_impl()->global_tile_state();
+  ASSERT_EQ(global_tile_state.memory_limit_policy,
+            TileMemoryLimitPolicy::ALLOW_ANYTHING);
+  host_impl()->active_tree()->SetDeviceViewportRect(viewport);
+  MakeFrame(global_tile_state);
+
+  auto eviction_queue = host_impl()->BuildEvictionQueue(
+      host_impl()->global_tile_state().tree_priority);
+  bool has_eventually_tiles = false;
+  size_t tiles_count_before = 0;
+  for (; !eviction_queue->IsEmpty(); eviction_queue->Pop()) {
+    const auto& tile = eviction_queue->Top();
+    has_eventually_tiles |=
+        tile.priority().priority_bin == TilePriority::EVENTUALLY &&
+        tile.tile()->draw_info().IsReadyToDraw();
+    // Tiles are initially marked as "used".
+    EXPECT_TRUE(tile.tile()->used());
+    tiles_count_before++;
+  }
+  ASSERT_TRUE(has_eventually_tiles);
+
+  task_runner()->FastForwardBy(TileManager::GetTrimPrepaintTilesDelay());
+
+  // Since the policy is still ALLOW_ANYTHING, no changes.
+  eviction_queue = host_impl()->BuildEvictionQueue(
+      host_impl()->global_tile_state().tree_priority);
+  size_t tiles_count_after = 0;
+  for (; !eviction_queue->IsEmpty(); eviction_queue->Pop()) {
+    const auto& tile = eviction_queue->Top();
+    has_eventually_tiles |=
+        tile.priority().priority_bin == TilePriority::EVENTUALLY &&
+        tile.tile()->draw_info().IsReadyToDraw();
+    EXPECT_TRUE(tile.tile()->used());
+    tiles_count_after++;
+  }
+  EXPECT_EQ(tiles_count_after, tiles_count_before);
+
+  // No progress can be made, do not repost a task.
+  EXPECT_FALSE(task_runner()->HasPendingTask());
+
+  // Change to a policy where EVENTUALLY tiles can be reclaimed.
+  global_tile_state.memory_limit_policy =
+      TileMemoryLimitPolicy::ALLOW_PREPAINT_ONLY;
+  host_impl()->active_tree()->SetDeviceViewportRect(viewport);
+  MakeFrame(global_tile_state);
+  EXPECT_TRUE(task_runner()->HasPendingTask());
+
+  task_runner()->FastForwardBy(TileManager::GetTrimPrepaintTilesDelay());
+
+  tiles_count_after = 0;
+  eviction_queue = host_impl()->BuildEvictionQueue(
+      host_impl()->global_tile_state().tree_priority);
+  for (; !eviction_queue->IsEmpty(); eviction_queue->Pop()) {
+    const auto& tile = eviction_queue->Top();
+    if (tile.priority().priority_bin == TilePriority::EVENTUALLY) {
+      EXPECT_FALSE(tile.tile()->used());
+    } else {
+      EXPECT_TRUE(tile.tile()->used());
+    }
+    tiles_count_after++;
+  }
+  EXPECT_EQ(tiles_count_after, tiles_count_before);
+
+  // A task is re-posted, since we can make progress (some tiles became "old").
+  EXPECT_TRUE(task_runner()->HasPendingTask());
+  task_runner()->FastForwardBy(TileManager::GetTrimPrepaintTilesDelay());
+
+  // All the EVENTUALLY tiles are gone.
+  tiles_count_after = 0;
+  eviction_queue = host_impl()->BuildEvictionQueue(
+      host_impl()->global_tile_state().tree_priority);
+  for (; !eviction_queue->IsEmpty(); eviction_queue->Pop()) {
+    const auto& tile = eviction_queue->Top();
+    EXPECT_NE(tile.priority().priority_bin, TilePriority::EVENTUALLY);
+    tiles_count_after++;
+  }
+  EXPECT_LT(tiles_count_after, tiles_count_before);
+
+  // And there is nothing left to do.
+  EXPECT_FALSE(task_runner()->HasPendingTask());
+}
+
+TEST_F(TileManagerTileReclaimTest, ReclaimOldPrepainTilesOldYoungTiles) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kReclaimOldPrepaintTiles};
+
+  // Set a small viewport, so we have soon and eventually tiles.
+  gfx::Rect viewport{100, 100, 100, 100};
+
+  GlobalStateThatImpactsTilePriority global_tile_state =
+      host_impl()->global_tile_state();
+  host_impl()->active_tree()->SetDeviceViewportRect(viewport);
+  MakeFrame(global_tile_state);
+
+  auto eviction_queue = host_impl()->BuildEvictionQueue(
+      host_impl()->global_tile_state().tree_priority);
+  bool has_eventually_tiles = false;
+  size_t tiles_count_before = 0;
+  for (; !eviction_queue->IsEmpty(); eviction_queue->Pop()) {
+    const auto& tile = eviction_queue->Top();
+    has_eventually_tiles |=
+        tile.priority().priority_bin == TilePriority::EVENTUALLY &&
+        tile.tile()->draw_info().IsReadyToDraw();
+    // Tiles are initially marked as "used".
+    EXPECT_TRUE(tile.tile()->used());
+    tiles_count_before++;
+  }
+  ASSERT_TRUE(has_eventually_tiles);
+
+  global_tile_state.memory_limit_policy =
+      TileMemoryLimitPolicy::ALLOW_PREPAINT_ONLY;
+  host_impl()->active_tree()->SetDeviceViewportRect(viewport);
+  MakeFrame(global_tile_state);
+  EXPECT_TRUE(task_runner()->HasPendingTask());
+
+  task_runner()->FastForwardBy(TileManager::GetTrimPrepaintTilesDelay());
+
+  size_t tiles_count_after = 0;
+  Tile* first_eventually_tile = nullptr;
+  eviction_queue = host_impl()->BuildEvictionQueue(
+      host_impl()->global_tile_state().tree_priority);
+  for (; !eviction_queue->IsEmpty(); eviction_queue->Pop()) {
+    const auto& tile = eviction_queue->Top();
+    if (tile.priority().priority_bin == TilePriority::EVENTUALLY) {
+      EXPECT_FALSE(tile.tile()->used());
+      if (!first_eventually_tile) {
+        first_eventually_tile = tile.tile();
+      }
+    } else {
+      EXPECT_TRUE(tile.tile()->used());
+    }
+    tiles_count_after++;
+  }
+  EXPECT_EQ(tiles_count_after, tiles_count_before);
+  // A task is re-posted, since we can make progress (some tiles became "old").
+  EXPECT_TRUE(task_runner()->HasPendingTask());
+
+  // Pretend that the tile was used in the meantime.
+  first_eventually_tile->mark_used();
+
+  task_runner()->FastForwardBy(TileManager::GetTrimPrepaintTilesDelay());
+
+  // The tile is there, it's the only remaining EVENTUALLY one.
+  tiles_count_after = 0;
+  bool has_found_tile = false;
+  eviction_queue = host_impl()->BuildEvictionQueue(
+      host_impl()->global_tile_state().tree_priority);
+  for (; !eviction_queue->IsEmpty(); eviction_queue->Pop()) {
+    const auto& tile = eviction_queue->Top();
+    EXPECT_TRUE(tile.priority().priority_bin != TilePriority::EVENTUALLY ||
+                tile.tile() == first_eventually_tile);
+    has_found_tile |= tile.tile() == first_eventually_tile;
+    tiles_count_after++;
+  }
+  EXPECT_LT(tiles_count_after, tiles_count_before);
+  EXPECT_TRUE(has_found_tile);
+  EXPECT_FALSE(first_eventually_tile->used());
+
+  // Progress can be made
+  EXPECT_TRUE(task_runner()->HasPendingTask());
+  task_runner()->FastForwardBy(TileManager::GetTrimPrepaintTilesDelay());
+
+  // The tile is not there anymore.
+  eviction_queue = host_impl()->BuildEvictionQueue(
+      host_impl()->global_tile_state().tree_priority);
+  for (; !eviction_queue->IsEmpty(); eviction_queue->Pop()) {
+    const auto& tile = eviction_queue->Top();
+    EXPECT_NE(tile.tile(), first_eventually_tile);
+  }
+  // No progress can be made, do not repost a task.
+  EXPECT_FALSE(task_runner()->HasPendingTask());
 }
 
 }  // namespace

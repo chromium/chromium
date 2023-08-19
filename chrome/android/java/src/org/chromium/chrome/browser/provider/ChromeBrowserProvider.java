@@ -9,8 +9,7 @@ import org.chromium.chrome.browser.base.SplitCompatContentProvider;
 
 /** See {@link ChromeBrowserProviderImpl}. */
 public class ChromeBrowserProvider extends SplitCompatContentProvider {
-    @IdentifierNameString
-    private static String sImplClassName =
+    private static @IdentifierNameString String sImplClassName =
             "org.chromium.chrome.browser.provider.ChromeBrowserProviderImpl";
 
     public ChromeBrowserProvider() {

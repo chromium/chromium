@@ -292,6 +292,9 @@ void DownloadPrefs::RegisterProfilePrefs(
                                 content::SAVE_PAGE_TYPE_AS_COMPLETE_HTML);
   registry->RegisterIntegerPref(prefs::kDownloadRestrictions, 0);
   registry->RegisterBooleanPref(prefs::kDownloadBubbleEnabled, true);
+  // The following two prefs are ignored on ChromeOS Lacros if SysUI integration
+  // is enabled.
+  // TODO(chlily): Clean them up once SysUI integration is enabled by default.
   registry->RegisterBooleanPref(prefs::kDownloadBubblePartialViewEnabled, true);
   registry->RegisterIntegerPref(prefs::kDownloadBubblePartialViewImpressions,
                                 0);

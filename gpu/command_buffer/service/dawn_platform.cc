@@ -4,8 +4,11 @@
 
 #include "gpu/command_buffer/service/dawn_platform.h"
 
+#include "base/metrics/histogram.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_arguments.h"
 #include "base/trace_event/trace_event.h"
 #include "gpu/command_buffer/service/dawn_caching_interface.h"
@@ -76,6 +79,8 @@ class AsyncWorkerTaskPool : public dawn::platform::WorkerTaskPool {
   }
 };
 
+constexpr const char* kUmaPrefix = "GPU.WebGPU.";
+
 }  // anonymous namespace
 
 DawnPlatform::DawnPlatform(
@@ -125,6 +130,41 @@ uint64_t DawnPlatform::AddTraceEvent(
                 "TraceEventHandle must be memcpy'able");
   memcpy(&result, &handle, sizeof(base::trace_event::TraceEventHandle));
   return result;
+}
+
+void DawnPlatform::HistogramCustomCounts(const char* name,
+                                         int sample,
+                                         int min,
+                                         int max,
+                                         int bucketCount) {
+  base::UmaHistogramCustomCounts(std::string{kUmaPrefix} + name, sample, min,
+                                 max, bucketCount);
+}
+
+void DawnPlatform::HistogramCustomCountsHPC(const char* name,
+                                            int sample,
+                                            int min,
+                                            int max,
+                                            int bucketCount) {
+  if (base::TimeTicks::IsHighResolution()) {
+    base::UmaHistogramCustomCounts(std::string{kUmaPrefix} + name, sample, min,
+                                   max, bucketCount);
+  }
+}
+
+void DawnPlatform::HistogramEnumeration(const char* name,
+                                        int sample,
+                                        int boundaryValue) {
+  base::UmaHistogramExactLinear(std::string{kUmaPrefix} + name, sample,
+                                boundaryValue);
+}
+
+void DawnPlatform::HistogramSparse(const char* name, int sample) {
+  base::UmaHistogramSparse(std::string{kUmaPrefix} + name, sample);
+}
+
+void DawnPlatform::HistogramBoolean(const char* name, bool sample) {
+  base::UmaHistogramBoolean(std::string{kUmaPrefix} + name, sample);
 }
 
 dawn::platform::CachingInterface* DawnPlatform::GetCachingInterface() {

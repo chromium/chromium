@@ -60,7 +60,7 @@ void UpdateProtocolHandlerApprovalCommand::StartWithLock(
   // `update` goes out of scope. If it doesn't then observers will
   // examine stale data.
   {
-    ScopedRegistryUpdate update(&lock_->sync_bridge());
+    ScopedRegistryUpdate update = lock_->sync_bridge().BeginUpdate();
     WebApp* app_to_update = update->UpdateApp(app_id_);
     if (!app_to_update) {
       // If this command is scheduled after an uninstallation, the

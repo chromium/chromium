@@ -34,6 +34,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
+#include "components/feature_engagement/test/test_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace feature_engagement {
@@ -566,6 +567,10 @@ class FailingAvailabilityModelInitTrackerImplTest : public TrackerImplTest {
 };
 
 }  // namespace
+
+TEST_F(TrackerImplTest, TestCreateTestTracker) {
+  EXPECT_NE(feature_engagement::CreateTestTracker(), nullptr);
+}
 
 TEST_F(TrackerImplTest, TestInitialization) {
   EXPECT_FALSE(tracker_->IsInitialized());

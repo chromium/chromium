@@ -11,10 +11,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "services/device/geolocation/wifi_data_provider_common.h"
 #include "services/device/geolocation/wifi_data_provider_handle.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+#include "services/device/public/mojom/geolocation_internals.mojom.h"
 
 namespace device {
 
@@ -57,7 +54,7 @@ bool CoreWlanApi::GetAccessPointData(WifiData::AccessPointDataSet* data) {
 
       for (CWNetwork* network in scan) {
         DCHECK(network);
-        AccessPointData access_point_data;
+        mojom::AccessPointData access_point_data;
         // -[CWNetwork bssid] uses colons to separate the components of the MAC
         // address, but AccessPointData requires they be separated with a dash.
         access_point_data.mac_address = base::SysNSStringToUTF8([network.bssid

@@ -83,7 +83,7 @@ KeyedService* PrivacySandboxServiceFactory::BuildServiceInstanceFor(
   Profile* profile = Profile::FromBrowserContext(context);
   return new PrivacySandboxService(
       PrivacySandboxSettingsFactory::GetForProfile(profile),
-      CookieSettingsFactory::GetForProfile(profile).get(), profile->GetPrefs(),
+      CookieSettingsFactory::GetForProfile(profile), profile->GetPrefs(),
       profile->GetDefaultStoragePartition()->GetInterestGroupManager(),
       GetProfileType(profile),
       (!profile->IsGuestSession() || profile->IsOffTheRecord())

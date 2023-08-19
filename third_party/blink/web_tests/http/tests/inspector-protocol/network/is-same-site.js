@@ -32,7 +32,7 @@
   await gotAllRequestsPromise;
 
   requests.sort((a,b) => (a.url + a.headers.Referer).localeCompare(b.url + b.headers.Referer));
-  testRunner.log(requests, 'requests', ['User-Agent']);
+  testRunner.log(requests.map(r => ({url: r.url, isSameSite: r.isSameSite})), 'requests');
 
   testRunner.completeTest();
 })

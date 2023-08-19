@@ -3,7 +3,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "read_anything_page_handler\.*": [
+  "read_anything_untrusted_page_handler\.*": [
   "+chrome/browser/ui/views/side_panel/read_anything",
   "+chrome/browser/ui/views/frame/browser_view.h",
 ],

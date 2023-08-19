@@ -49,7 +49,7 @@ class ASH_EXPORT FakeNetworkDetailedNetworkView
   NetworkListNetworkItemView* AddNetworkListItem(
       chromeos::network_config::mojom::NetworkType type) override;
   NetworkListWifiHeaderView* AddWifiSectionHeader() override;
-  HoverHighlightView* AddJoinNetworkEntry() override;
+  HoverHighlightView* AddConfigureNetworkEntry(NetworkType type) override;
   NetworkListMobileHeaderView* AddMobileSectionHeader() override;
   void UpdateScanningBarVisibility(bool visible) override;
   void ReorderFirstListView(size_t index) override {}
@@ -67,7 +67,7 @@ class ASH_EXPORT FakeNetworkDetailedNetworkView
   std::unique_ptr<views::View> network_list_;
   size_t notify_network_list_changed_call_count_ = 0;
   bool last_scan_bar_visibility_;
-  raw_ptr<NetworkListItemView, ExperimentalAsh>
+  raw_ptr<NetworkListItemView, DanglingUntriaged | ExperimentalAsh>
       last_clicked_network_list_item_ = nullptr;
 };
 

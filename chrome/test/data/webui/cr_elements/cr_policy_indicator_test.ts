@@ -41,6 +41,7 @@ suite('CrPolicyIndicator', function() {
 
     assertEquals('cr:person', icon.iconClass);
     assertEquals('owner: foo@example.com', icon.tooltipText);
+    // </if>
 
     indicator.indicatorType = CrPolicyIndicatorType.PARENT;
 
@@ -53,6 +54,5 @@ suite('CrPolicyIndicator', function() {
     assertFalse(icon.hidden);
     assertEquals('cr20:kite', icon.iconClass);
     assertEquals('Restricted for child', icon.tooltipText);
-    // </if>
   });
 });

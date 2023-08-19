@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -23,8 +24,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/browsing_data/access_context_audit_service.h"
-#include "chrome/browser/browsing_data/access_context_audit_service_factory.h"
 #include "chrome/browser/browsing_data/browsing_data_file_system_util.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -42,6 +41,8 @@
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/permissions/permissions_client.h"
+#include "components/supervised_user/core/common/buildflags.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_usage_info.h"
@@ -65,7 +66,10 @@
 #include "extensions/common/extension_set.h"
 #endif
 
-
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
+#endif
 namespace {
 
 struct NodeTitleComparator {
@@ -264,7 +268,7 @@ CookieTreeNode::DetailedInfo& CookieTreeNode::DetailedInfo::InitServiceWorker(
 }
 
 CookieTreeNode::DetailedInfo& CookieTreeNode::DetailedInfo::InitSharedWorker(
-    const browsing_data::SharedWorkerHelper::SharedWorkerInfo* shared_worker) {
+    const browsing_data::SharedWorkerInfo* shared_worker) {
   Init(TYPE_SHARED_WORKER);
   shared_worker_info = shared_worker;
   origin = url::Origin::Create(
@@ -315,14 +319,6 @@ void CookieTreeNode::AddChildSortedByTitle(
                                NodeTitleComparator());
   GetModel()->Add(this, std::move(new_child),
                   static_cast<size_t>(iter - children().begin()));
-}
-
-void CookieTreeNode::ReportDeletionToAuditService(
-    const url::Origin& origin,
-    AccessContextAuditDatabase::StorageAPIType type) {
-  auto* audit_service = GetModel()->access_context_audit_service();
-  if (audit_service)
-    audit_service->RemoveAllRecordsForOriginKeyedStorage(origin, type);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -385,10 +381,6 @@ class CookieTreeDatabaseNode : public CookieTreeNode {
     LocalDataContainer* container = GetLocalDataContainerForNode(this);
 
     if (container) {
-      ReportDeletionToAuditService(
-          usage_info_->storage_key.origin(),
-          AccessContextAuditDatabase::StorageAPIType::kWebDatabase);
-
       container->database_helper_->DeleteDatabase(
           usage_info_->storage_key.origin());
       container->database_info_list_.erase(usage_info_);
@@ -433,10 +425,6 @@ class CookieTreeLocalStorageNode : public CookieTreeNode {
     LocalDataContainer* container = GetLocalDataContainerForNode(this);
 
     if (container) {
-      ReportDeletionToAuditService(
-          local_storage_info_->storage_key.origin(),
-          AccessContextAuditDatabase::StorageAPIType::kLocalStorage);
-
       container->local_storage_helper_->DeleteStorageKey(
           local_storage_info_->storage_key, base::DoNothing());
       container->local_storage_info_list_.erase(local_storage_info_);
@@ -520,10 +508,6 @@ class CookieTreeIndexedDBNode : public CookieTreeNode {
     LocalDataContainer* container = GetLocalDataContainerForNode(this);
 
     if (container) {
-      ReportDeletionToAuditService(
-          usage_info_->storage_key.origin(),
-          AccessContextAuditDatabase::StorageAPIType::kIndexedDB);
-
       container->indexed_db_helper_->DeleteIndexedDB(usage_info_->storage_key,
                                                      base::DoNothing());
       container->indexed_db_info_list_.erase(usage_info_);
@@ -568,10 +552,6 @@ class CookieTreeFileSystemNode : public CookieTreeNode {
     LocalDataContainer* container = GetLocalDataContainerForNode(this);
 
     if (container) {
-      ReportDeletionToAuditService(
-          file_system_info_->origin,
-          AccessContextAuditDatabase::StorageAPIType::kFileSystem);
-
       container->file_system_helper_->DeleteFileSystemOrigin(
           file_system_info_->origin);
       container->file_system_info_list_.erase(file_system_info_);
@@ -669,10 +649,6 @@ class CookieTreeServiceWorkerNode : public CookieTreeNode {
     LocalDataContainer* container = GetLocalDataContainerForNode(this);
 
     if (container) {
-      ReportDeletionToAuditService(
-          usage_info_->storage_key.origin(),
-          AccessContextAuditDatabase::StorageAPIType::kServiceWorker);
-
       container->service_worker_helper_->DeleteServiceWorkers(
           usage_info_->storage_key.origin());
       container->service_worker_info_list_.erase(usage_info_);
@@ -701,8 +677,7 @@ class CookieTreeSharedWorkerNode : public CookieTreeNode {
   // |shared_worker_info| should remain valid at least as long as the
   // CookieTreeSharedWorkerNode is valid.
   explicit CookieTreeSharedWorkerNode(
-      std::list<browsing_data::SharedWorkerHelper::SharedWorkerInfo>::iterator
-          shared_worker_info)
+      std::list<browsing_data::SharedWorkerInfo>::iterator shared_worker_info)
       : CookieTreeNode(base::UTF8ToUTF16(shared_worker_info->worker.spec())),
         shared_worker_info_(shared_worker_info) {}
 
@@ -731,8 +706,7 @@ class CookieTreeSharedWorkerNode : public CookieTreeNode {
  private:
   // |shared_worker_info_| is expected to remain valid as long as the
   // CookieTreeSharedWorkerNode is valid.
-  std::list<browsing_data::SharedWorkerHelper::SharedWorkerInfo>::iterator
-      shared_worker_info_;
+  std::list<browsing_data::SharedWorkerInfo>::iterator shared_worker_info_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -759,10 +733,6 @@ class CookieTreeCacheStorageNode : public CookieTreeNode {
     LocalDataContainer* container = GetLocalDataContainerForNode(this);
 
     if (container) {
-      ReportDeletionToAuditService(
-          usage_info_->storage_key.origin(),
-          AccessContextAuditDatabase::StorageAPIType::kCacheStorage);
-
       container->cache_storage_helper_->DeleteCacheStorage(
           usage_info_->storage_key);
       container->cache_storage_info_list_.erase(usage_info_);
@@ -1237,28 +1207,18 @@ std::unique_ptr<CookiesTreeModel> CookiesTreeModel::CreateForProfileDeprecated(
       LocalDataContainer::CreateFromStoragePartition(
           profile->GetDefaultStoragePartition(),
           CookiesTreeModel::GetCookieDeletionDisabledCallback(profile)),
-      profile->GetExtensionSpecialStoragePolicy(),
-      AccessContextAuditServiceFactory::GetForProfile(profile)));
+      profile->GetExtensionSpecialStoragePolicy()));
 }
 
 CookiesTreeModel::CookiesTreeModel(
     std::unique_ptr<LocalDataContainer> data_container,
     ExtensionSpecialStoragePolicy* special_storage_policy)
-    : CookiesTreeModel(std::move(data_container),
-                       special_storage_policy,
-                       nullptr) {}
-
-CookiesTreeModel::CookiesTreeModel(
-    std::unique_ptr<LocalDataContainer> data_container,
-    ExtensionSpecialStoragePolicy* special_storage_policy,
-    AccessContextAuditService* access_context_audit_service)
     : ui::TreeNodeModel<CookieTreeNode>(
           std::make_unique<CookieTreeRootNode>(this)),
 #if BUILDFLAG(ENABLE_EXTENSIONS)
       special_storage_policy_(special_storage_policy),
 #endif
-      data_container_(std::move(data_container)),
-      access_context_audit_service_(access_context_audit_service) {
+      data_container_(std::move(data_container)) {
   data_container_->Init(this);
 }
 
@@ -1736,6 +1696,26 @@ void CookiesTreeModel::MaybeNotifyBatchesEnded() {
 // static
 browsing_data::CookieHelper::IsDeletionDisabledCallback
 CookiesTreeModel::GetCookieDeletionDisabledCallback(Profile* profile) {
+  if (base::FeatureList::IsEnabled(
+          supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn)) {
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+    return base::BindRepeating(
+        [](content::BrowserContext* browser_context, const GURL& url) {
+          supervised_user::SupervisedUserService* supervised_user_service =
+              SupervisedUserServiceFactory::GetForBrowserContext(
+                  browser_context);
+          if (!supervised_user_service) {
+            // For some Profiles (eg. Incognito), SupervisedUserService is not
+            // created.
+            return false;
+          }
+          return supervised_user_service->IsCookieDeletionDisabled(url);
+        },
+        profile);
+#else
+    return base::NullCallback();
+#endif
+  }
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
   if (profile->IsChild()) {
     return base::BindRepeating(

@@ -30,12 +30,15 @@ absl::optional<AuthenticatorGetAssertionResponse>
 AuthenticatorGetAssertionResponse::CreateFromU2fSignResponse(
     base::span<const uint8_t, kRpIdHashLength> relying_party_id_hash,
     base::span<const uint8_t> u2f_data,
-    base::span<const uint8_t> key_handle) {
-  if (u2f_data.size() <= kSignatureIndex)
+    base::span<const uint8_t> key_handle,
+    absl::optional<FidoTransportProtocol> transport_used) {
+  if (u2f_data.size() <= kSignatureIndex) {
     return absl::nullopt;
+  }
 
-  if (key_handle.empty())
+  if (key_handle.empty()) {
     return absl::nullopt;
+  }
 
   auto flags = u2f_data.subspan<kFlagIndex, kFlagLength>()[0];
   if (flags &
@@ -59,8 +62,8 @@ AuthenticatorGetAssertionResponse::CreateFromU2fSignResponse(
     return absl::nullopt;
   }
 
-  AuthenticatorGetAssertionResponse response(std::move(authenticator_data),
-                                             std::move(signature));
+  AuthenticatorGetAssertionResponse response(
+      std::move(authenticator_data), std::move(signature), transport_used);
   response.credential = PublicKeyCredentialDescriptor(
       CredentialType::kPublicKey, fido_parsing_utils::Materialize(key_handle));
   return std::move(response);
@@ -68,9 +71,11 @@ AuthenticatorGetAssertionResponse::CreateFromU2fSignResponse(
 
 AuthenticatorGetAssertionResponse::AuthenticatorGetAssertionResponse(
     AuthenticatorData authenticator_data,
-    std::vector<uint8_t> signature)
+    std::vector<uint8_t> signature,
+    absl::optional<FidoTransportProtocol> transport_used)
     : authenticator_data(std::move(authenticator_data)),
-      signature(std::move(signature)) {}
+      signature(std::move(signature)),
+      transport_used(transport_used) {}
 
 AuthenticatorGetAssertionResponse::AuthenticatorGetAssertionResponse(
     AuthenticatorGetAssertionResponse&& that) = default;

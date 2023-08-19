@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/values.h"
 #include "chromecast/base/cast_features.h"
@@ -135,7 +136,7 @@ void FeatureManager::OnFeatureManagerRequest(
 }
 
 bool FeatureManager::FeatureEnabled(const std::string& feature) const {
-  return features_map_.find(feature) != features_map_.end();
+  return base::Contains(features_map_, feature);
 }
 
 const chromecast::shell::mojom::FeaturePtr& FeatureManager::GetFeature(

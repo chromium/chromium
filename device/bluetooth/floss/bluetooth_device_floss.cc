@@ -1000,4 +1000,14 @@ void BluetoothDeviceFloss::GattConfigureMtu(std::string address,
   DidConnectGatt(absl::nullopt);
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+void BluetoothDeviceFloss::GattServiceChanged(std::string address) {
+  if (address != GetAddress()) {
+    return;
+  }
+
+  adapter()->NotifyGattNeedsDiscovery(this);
+}
+#endif
+
 }  // namespace floss

@@ -12,8 +12,6 @@ example_value: |
 features:
   dynamic_refresh: true
   per_profile: false
-future_on:
-- chrome_os
 owners:
 - slutskii@google.com
 - file://chrome/browser/ash/kerberos/OWNERS
@@ -21,6 +19,8 @@ schema:
   type: string
 supported_chrome_os_management:
 - google_cloud
+supported_on:
+- chrome_os:116-
 tags:
 - website-sharing
 type: string

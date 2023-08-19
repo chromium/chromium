@@ -9,18 +9,24 @@
 #include <algorithm>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -33,15 +39,18 @@
 #include "components/content_settings/core/browser/content_settings_provider.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
+#include "components/content_settings/core/browser/content_settings_uma_util.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/user_modifiable_provider.h"
 #include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_metadata.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -156,7 +165,7 @@ content_settings::PatternPair GetPatternsFromScopingType(
     WebsiteSettingsInfo::ScopingType scoping_type,
     const GURL& primary_url,
     const GURL& secondary_url) {
-  CHECK(!primary_url.is_empty());
+  DCHECK(!primary_url.is_empty());
   content_settings::PatternPair patterns;
 
   switch (scoping_type) {
@@ -176,6 +185,10 @@ content_settings::PatternPair GetPatternsFromScopingType(
       patterns.first = content_settings::URLToSchemefulSitePattern(primary_url);
       patterns.second =
           content_settings::URLToSchemefulSitePattern(secondary_url);
+      break;
+    case WebsiteSettingsInfo::REQUESTING_SCHEMEFUL_SITE_ONLY_SCOPE:
+      patterns.first = content_settings::URLToSchemefulSitePattern(primary_url);
+      patterns.second = ContentSettingsPattern::Wildcard();
       break;
     case WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE:
     case WebsiteSettingsInfo::REQUESTING_ORIGIN_ONLY_SCOPE:
@@ -219,6 +232,19 @@ bool ShouldCollectFineGrainedExceptionHistograms(ContentSettingsType type) {
     case ContentSettingsType::COOKIES:
     case ContentSettingsType::POPUPS:
     case ContentSettingsType::ADS:
+    case ContentSettingsType::STORAGE_ACCESS:
+      return true;
+    default:
+      return false;
+  }
+}
+
+// Returns whether information about the maximum number of exceptions per
+// embedder/requester should be recorded. Only relevant for setting types that
+// are keyed to both requester and embedder.
+bool ShouldCollectRequesterAndEmbedderHistograms(ContentSettingsType type) {
+  switch (type) {
+    case ContentSettingsType::STORAGE_ACCESS:
       return true;
     default:
       return false;
@@ -243,6 +269,12 @@ const char* ContentSettingToString(ContentSetting setting) {
       return nullptr;
   }
 }
+
+struct ContentSettingEntry {
+  ContentSettingsType type;
+  ContentSettingsPattern primary_pattern;
+  ContentSettingsPattern secondary_pattern;
+};
 
 }  // namespace
 
@@ -281,8 +313,18 @@ HostContentSettingsMap::HostContentSettingsMap(PrefService* prefs,
   content_settings_providers_[DEFAULT_PROVIDER] = std::move(default_provider);
 
   MigrateSettingsPrecedingPermissionDelegationActivation();
-  if (should_record_metrics)
+  if (should_record_metrics) {
     RecordExceptionMetrics();
+  }
+
+  if (base::FeatureList::IsEnabled(
+          content_settings::features::kActiveContentSettingExpiry)) {
+    const auto* registry =
+        content_settings::WebsiteSettingsRegistry::GetInstance();
+    for (const auto* info : *registry) {
+      DeleteNearlyExpiredSettingsAndMaybeScheduleNextRun(info->type());
+    }
+  }
 }
 
 // static
@@ -384,11 +426,12 @@ ContentSetting HostContentSettingsMap::GetDefaultContentSetting(
 ContentSetting HostContentSettingsMap::GetContentSetting(
     const GURL& primary_url,
     const GURL& secondary_url,
-    ContentSettingsType content_type) const {
+    ContentSettingsType content_type,
+    content_settings::SettingInfo* info) const {
   DCHECK(content_settings::ContentSettingsRegistry::GetInstance()->Get(
       content_type));
   const base::Value value =
-      GetWebsiteSetting(primary_url, secondary_url, content_type, nullptr);
+      GetWebsiteSetting(primary_url, secondary_url, content_type, info);
   return content_settings::ValueToContentSetting(value);
 }
 
@@ -404,24 +447,23 @@ ContentSetting HostContentSettingsMap::GetUserModifiableContentSetting(
   return content_settings::ValueToContentSetting(value);
 }
 
-void HostContentSettingsMap::GetSettingsForOneType(
+ContentSettingsForOneType HostContentSettingsMap::GetSettingsForOneType(
     ContentSettingsType content_type,
-    ContentSettingsForOneType* settings,
     absl::optional<content_settings::SessionModel> session_model) const {
-  DCHECK(settings);
+  ContentSettingsForOneType settings;
   UsedContentSettingsProviders();
 
-  settings->clear();
   for (const auto& provider_pair : content_settings_providers_) {
     // For each provider, iterate first the incognito-specific rules, then the
     // normal rules.
     if (is_off_the_record_) {
       AddSettingsForOneType(provider_pair.second.get(), provider_pair.first,
-                            content_type, settings, true, session_model);
+                            content_type, &settings, true, session_model);
     }
     AddSettingsForOneType(provider_pair.second.get(), provider_pair.first,
-                          content_type, settings, false, session_model);
+                          content_type, &settings, false, session_model);
   }
+  return settings;
 }
 
 void HostContentSettingsMap::SetDefaultContentSetting(
@@ -463,6 +505,7 @@ void HostContentSettingsMap::SetWebsiteSettingCustomScope(
     ContentSettingsType content_type,
     base::Value value,
     const content_settings::ContentSettingConstraints& constraints) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(IsSecondaryPatternAllowed(primary_pattern, secondary_pattern,
                                    content_type, value));
   // TODO(crbug.com/731126): Verify that assumptions for notification content
@@ -479,8 +522,14 @@ void HostContentSettingsMap::SetWebsiteSettingCustomScope(
     if (provider_pair.second->SetWebsiteSetting(
             primary_pattern, secondary_pattern, content_type, std::move(value),
             constraints)) {
+      if (base::FeatureList::IsEnabled(
+              content_settings::features::kActiveContentSettingExpiry)) {
+        UpdateExpiryEnforcementTimer(content_type, constraints.expiration());
+      }
+
       return;
     }
+
     // Ensure that the value is unmodified until accepted by a provider.
 #if DCHECK_IS_ON()
     DCHECK_EQ(value, clone);
@@ -619,13 +668,12 @@ void HostContentSettingsMap::RecordExceptionMetrics() {
     ContentSettingsType content_type = info->type();
     const std::string type_name = info->name();
 
-    ContentSettingsForOneType settings;
-    GetSettingsForOneType(content_type, &settings);
     size_t num_exceptions = 0;
     size_t num_third_party_cookie_allow_exceptions = 0;
     base::flat_map<ContentSetting, size_t> num_exceptions_with_setting;
     const content_settings::ContentSettingsInfo* content_info =
         content_setting_registry->Get(content_type);
+    ContentSettingsForOneType settings = GetSettingsForOneType(content_type);
     for (const ContentSettingPatternSource& setting_entry : settings) {
       // Skip default settings.
       if (setting_entry.primary_pattern == ContentSettingsPattern::Wildcard() &&
@@ -668,6 +716,30 @@ void HostContentSettingsMap::RecordExceptionMetrics() {
             1, 1000, 30);
       }
     }
+    if (ShouldCollectRequesterAndEmbedderHistograms(content_type)) {
+      std::map<ContentSettingsPattern, int> num_requester;
+      std::map<ContentSettingsPattern, int> num_toplevel;
+      for (const ContentSettingPatternSource& setting : settings) {
+        if (setting.primary_pattern == ContentSettingsPattern::Wildcard() &&
+            setting.secondary_pattern == ContentSettingsPattern::Wildcard()) {
+          continue;
+        }
+        num_requester[setting.primary_pattern]++;
+        num_toplevel[setting.secondary_pattern]++;
+      }
+      auto get_value = [](const std::pair<ContentSettingsPattern, int>& p) {
+        return p.second;
+      };
+      bool empty = num_requester.empty();
+      int max_requester =
+          empty ? 0 : base::ranges::max(num_requester, {}, get_value).second;
+      base::UmaHistogramCounts1000(histogram_name + ".MaxRequester",
+                                   max_requester);
+      int max_toplevel =
+          empty ? 0 : base::ranges::max(num_toplevel, {}, get_value).second;
+      base::UmaHistogramCounts1000(histogram_name + ".MaxTopLevel",
+                                   max_toplevel);
+    }
     if (content_type == ContentSettingsType::COOKIES) {
       base::UmaHistogramCustomCounts(
           "ContentSettings.RegularProfile.Exceptions.cookies.AllowThirdParty",
@@ -689,6 +761,15 @@ void HostContentSettingsMap::FlushLossyWebsiteSettings() {
   prefs_->SchedulePendingLossyWrites();
 }
 
+void HostContentSettingsMap::UpdateLastUsedTime(const GURL& primary_url,
+                                                const GURL& secondary_url,
+                                                ContentSettingsType type,
+                                                const base::Time time) {
+  for (auto* provider : user_modifiable_providers_) {
+    provider->UpdateLastUsedTime(primary_url, secondary_url, type, time);
+  }
+}
+
 void HostContentSettingsMap::ResetLastVisitedTime(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
@@ -705,6 +786,20 @@ void HostContentSettingsMap::UpdateLastVisitedTime(
   for (auto* provider : user_modifiable_providers_) {
     provider->UpdateLastVisitTime(primary_pattern, secondary_pattern, type);
   }
+}
+
+bool HostContentSettingsMap::RenewContentSetting(
+    const GURL& primary_url,
+    const GURL& secondary_url,
+    ContentSettingsType type,
+    absl::optional<ContentSetting> setting_to_match) {
+  bool any_updated = false;
+  for (auto* provider : user_modifiable_providers_) {
+    any_updated = provider->RenewContentSetting(primary_url, secondary_url,
+                                                type, setting_to_match) ||
+                  any_updated;
+  }
+  return any_updated;
 }
 
 void HostContentSettingsMap::ClearSettingsForOneType(
@@ -725,21 +820,30 @@ void HostContentSettingsMap::ClearSettingsForOneTypeWithPredicate(
     ClearSettingsForOneType(content_type);
     return;
   }
-  UsedContentSettingsProviders();
-  ContentSettingsForOneType settings;
-  GetSettingsForOneType(content_type, &settings);
-  for (const ContentSettingPatternSource& setting : settings) {
-    if (pattern_predicate.is_null() ||
-        pattern_predicate.Run(setting.primary_pattern,
-                              setting.secondary_pattern)) {
-      base::Time last_modified = setting.metadata.last_modified;
-      if (last_modified >= begin_time &&
-          (last_modified < end_time || end_time.is_null())) {
-        for (auto* provider : user_modifiable_providers_) {
-          provider->SetWebsiteSetting(setting.primary_pattern,
-                                      setting.secondary_pattern, content_type,
-                                      base::Value(), {});
+  ClearSettingsForOneTypeWithPredicate(
+      content_type, [&](const ContentSettingPatternSource& setting) -> bool {
+        if (!pattern_predicate.is_null() &&
+            !pattern_predicate.Run(setting.primary_pattern,
+                                   setting.secondary_pattern)) {
+          return false;
         }
+        base::Time last_modified = setting.metadata.last_modified();
+        return last_modified >= begin_time &&
+               (last_modified < end_time || end_time.is_null());
+      });
+}
+
+void HostContentSettingsMap::ClearSettingsForOneTypeWithPredicate(
+    ContentSettingsType content_type,
+    base::FunctionRef<bool(const ContentSettingPatternSource&)> predicate) {
+  UsedContentSettingsProviders();
+  for (const ContentSettingPatternSource& setting :
+       GetSettingsForOneType(content_type)) {
+    if (predicate(setting)) {
+      for (auto* provider : user_modifiable_providers_) {
+        provider->SetWebsiteSetting(setting.primary_pattern,
+                                    setting.secondary_pattern, content_type,
+                                    base::Value(), {});
       }
     }
   }
@@ -789,12 +893,23 @@ void HostContentSettingsMap::AddSettingsForOneType(
     base::Value value = rule->TakeValue();
 
     // We may be adding settings for only specific rule types. If that's the
-    // case and this setting isn't a match, don't add it. We will also avoid
-    // adding any expired rules since they are no longer valid.
-    if ((!rule->metadata.expiration.is_null() &&
-         (rule->metadata.expiration < clock_->Now())) ||
-        (session_model && (session_model != rule->metadata.session_model))) {
+    // case and this setting isn't a match, don't add it.
+    if (session_model && (session_model != rule->metadata.session_model())) {
       continue;
+    }
+
+    // Unless settings are actively monitored and removed on expiry, we will
+    // also avoid adding any expired rules. Note, that this may lead to an
+    // inconsistent state, where observers aren't notified of the expiry of the
+    // grant, but the grant is no longer provided. Also refer to the comment
+    // near the definition of `kEagerExpiryBuffer` regarding provisioning and
+    // CPU contention.
+    if (!base::FeatureList::IsEnabled(
+            content_settings::features::kActiveContentSettingExpiry)) {
+      if ((!rule->metadata.expiration().is_null() &&
+           (rule->metadata.expiration() < clock_->Now()))) {
+        continue;
+      }
     }
 
     // Normal rules applied to incognito profiles are subject to inheritance
@@ -970,10 +1085,14 @@ base::Value HostContentSettingsMap::GetContentSettingValueAndPatterns(
   if (rule_iterator) {
     while (rule_iterator->HasNext()) {
       std::unique_ptr<content_settings::Rule> rule = rule_iterator->Next();
+      // Refer to comment near the definition `kEagerExpiryBuffer` regarding
+      // provisioning and CPU contention.
       if (rule->primary_pattern.Matches(primary_url) &&
           rule->secondary_pattern.Matches(secondary_url) &&
-          (rule->metadata.expiration.is_null() ||
-           (rule->metadata.expiration > clock->Now()))) {
+          (base::FeatureList::IsEnabled(
+               content_settings::features::kActiveContentSettingExpiry) ||
+           (rule->metadata.expiration().is_null() ||
+            (rule->metadata.expiration() > clock->Now())))) {
         if (primary_pattern)
           *primary_pattern = rule->primary_pattern;
         if (secondary_pattern)
@@ -1014,9 +1133,7 @@ void HostContentSettingsMap::
 
   ContentSettingsType type = info->type();
 
-  ContentSettingsForOneType host_settings;
-  GetSettingsForOneType(type, &host_settings);
-  for (ContentSettingPatternSource pattern : host_settings) {
+  for (ContentSettingPatternSource pattern : GetSettingsForOneType(type)) {
     if (pattern.source != "preference" ||
         pattern.secondary_pattern == ContentSettingsPattern::Wildcard()) {
       continue;
@@ -1066,4 +1183,103 @@ bool HostContentSettingsMap::IsSecondaryPatternAllowed(
              ->SupportsSecondaryPattern() ||
          content_settings::ValueToContentSetting(value) ==
              CONTENT_SETTING_DEFAULT;
+}
+
+void HostContentSettingsMap::UpdateExpiryEnforcementTimer(
+    ContentSettingsType content_type,
+    base::Time expiration) {
+  if (expiration.is_null()) {
+    return;
+  }
+
+  base::TimeDelta next_run = base::TimeDelta::Max();
+
+  if (!base::Contains(expiration_enforcement_timers_, content_type)) {
+    expiration_enforcement_timers_[content_type] =
+        std::make_unique<base::OneShotTimer>();
+  }
+
+  auto& expiration_enforcement_timer =
+      expiration_enforcement_timers_[content_type];
+
+  if (expiration_enforcement_timer->IsRunning()) {
+    next_run = expiration_enforcement_timer->GetCurrentDelay();
+  }
+
+  next_run =
+      std::min(next_run, (expiration - clock_->Now() - kEagerExpiryBuffer));
+  if (next_run.is_negative()) {
+    next_run = base::Seconds(0);
+  }
+
+  expiration_enforcement_timer->Start(
+      FROM_HERE, next_run,
+      base::BindOnce(&HostContentSettingsMap::
+                         DeleteNearlyExpiredSettingsAndMaybeScheduleNextRun,
+                     base::Unretained(this), content_type));
+}
+
+void HostContentSettingsMap::DeleteNearlyExpiredSettingsAndMaybeScheduleNextRun(
+    ContentSettingsType content_setting_type) {
+  if (!base::FeatureList::IsEnabled(
+          content_settings::features::kActiveContentSettingExpiry)) {
+    return;
+  }
+
+  UsedContentSettingsProviders();
+  base::Time next_expiry = base::Time::Max();
+
+  std::vector<ContentSettingPatternSource> expired_entries;
+  // Get content settings from all providers, so content setting expirations are
+  // enforced at across all providers.
+  auto settings = GetSettingsForOneType(content_setting_type);
+
+  for (const ContentSettingPatternSource& setting : settings) {
+    if (setting.metadata.expiration().is_null()) {
+      continue;
+    }
+
+    if (setting.metadata.expiration() <= (clock_->Now() + kEagerExpiryBuffer)) {
+      expired_entries.emplace_back(setting);
+      content_settings_uma_util::RecordActiveExpiryEvent(
+          GetProviderTypeFromSource(setting.source), content_setting_type);
+    } else {
+      next_expiry = std::min(next_expiry, setting.metadata.expiration());
+    }
+  }
+
+  for (const auto& entry : expired_entries) {
+    const auto provider_type = GetProviderTypeFromSource(entry.source);
+    const bool is_user_modifiable =
+        provider_type > kFirstUserModifiableProvider;
+
+    if (is_user_modifiable) {
+      static_cast<content_settings::UserModifiableProvider*>(
+          content_settings_providers_[provider_type].get())
+          ->ExpireWebsiteSetting(entry.primary_pattern, entry.secondary_pattern,
+                                 content_setting_type);
+    } else {
+      // For non-modifiable providers there exists no expiry method and
+      // SetWebsiteSettingCustomScope cannot work.
+      NOTREACHED();
+    }
+  }
+
+  if (!next_expiry.is_max()) {
+    const base::TimeDelta next_run = std::max(
+        base::Seconds(0), next_expiry - clock_->Now() - kEagerExpiryBuffer);
+
+    if (!base::Contains(expiration_enforcement_timers_, content_setting_type)) {
+      expiration_enforcement_timers_[content_setting_type] =
+          std::make_unique<base::OneShotTimer>();
+    }
+
+    auto& expiration_enforcement_timer =
+        expiration_enforcement_timers_[content_setting_type];
+    expiration_enforcement_timer->Start(
+        FROM_HERE, next_run,
+        base::BindOnce(&HostContentSettingsMap::
+                           DeleteNearlyExpiredSettingsAndMaybeScheduleNextRun,
+                       base::Unretained(this), content_setting_type));
+  }
 }

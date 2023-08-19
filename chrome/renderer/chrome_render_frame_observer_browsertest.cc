@@ -56,15 +56,15 @@ class FakeContentTranslateDriver
   void RegisterPage(
       mojo::PendingRemote<translate::mojom::TranslateAgent> translate_agent,
       const translate::LanguageDetectionDetails& details,
-      bool page_level_translation_critiera_met) override {
+      bool page_level_translation_criteria_met) override {
     called_new_page_ = true;
-    page_level_translation_critiera_met_ = page_level_translation_critiera_met;
+    page_level_translation_criteria_met_ = page_level_translation_criteria_met;
   }
   void GetLanguageDetectionModel(
       GetLanguageDetectionModelCallback callback) override {}
 
   bool called_new_page_ = false;
-  bool page_level_translation_critiera_met_ = false;
+  bool page_level_translation_criteria_met_ = false;
 
  private:
   mojo::ReceiverSet<translate::mojom::ContentTranslateDriver> receivers_;
@@ -140,7 +140,7 @@ TEST_F(ChromeRenderFrameObserverTest, CapturePageTextCalled) {
 
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(fake_translate_driver_.called_new_page_);
-  EXPECT_TRUE(fake_translate_driver_.page_level_translation_critiera_met_);
+  EXPECT_TRUE(fake_translate_driver_.page_level_translation_criteria_met_);
 }
 
 TEST_F(ChromeRenderFrameObserverTest, CapturePageTextNotCalledForSubframe) {
@@ -155,7 +155,7 @@ TEST_F(ChromeRenderFrameObserverTest, CapturePageTextNotCalledForSubframe) {
 
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(fake_translate_driver_.called_new_page_);
-  EXPECT_TRUE(fake_translate_driver_.page_level_translation_critiera_met_);
+  EXPECT_TRUE(fake_translate_driver_.page_level_translation_criteria_met_);
 }
 
 TEST_F(ChromeRenderFrameObserverTest,
@@ -170,7 +170,7 @@ TEST_F(ChromeRenderFrameObserverTest,
 
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(fake_translate_driver_.called_new_page_);
-  EXPECT_FALSE(fake_translate_driver_.page_level_translation_critiera_met_);
+  EXPECT_FALSE(fake_translate_driver_.page_level_translation_criteria_met_);
 }
 
 TEST_F(ChromeRenderFrameObserverTest,
@@ -184,7 +184,7 @@ TEST_F(ChromeRenderFrameObserverTest,
 
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(fake_translate_driver_.called_new_page_);
-  EXPECT_FALSE(fake_translate_driver_.page_level_translation_critiera_met_);
+  EXPECT_FALSE(fake_translate_driver_.page_level_translation_criteria_met_);
 }
 
 TEST_F(ChromeRenderFrameObserverTest,
@@ -200,7 +200,7 @@ TEST_F(ChromeRenderFrameObserverTest,
 
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(fake_translate_driver_.called_new_page_);
-  EXPECT_FALSE(fake_translate_driver_.page_level_translation_critiera_met_);
+  EXPECT_FALSE(fake_translate_driver_.page_level_translation_criteria_met_);
 }
 
 TEST_F(ChromeRenderFrameObserverTest,
@@ -215,7 +215,7 @@ TEST_F(ChromeRenderFrameObserverTest,
 
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(fake_translate_driver_.called_new_page_);
-  EXPECT_FALSE(fake_translate_driver_.page_level_translation_critiera_met_);
+  EXPECT_FALSE(fake_translate_driver_.page_level_translation_criteria_met_);
 }
 
 TEST_F(ChromeRenderFrameObserverTest, OptGuideGetsText) {
@@ -258,131 +258,3 @@ TEST_F(ChromeRenderFrameObserverTest, OptGuideGetsText) {
   EXPECT_EQ(u"foo", consumer.text());
   EXPECT_TRUE(consumer.on_chunks_end_called());
 }
-
-class ChromeRenderFrameObserverNoTranslateNorPhishingTest
-    : public ChromeRenderFrameObserverTest {
- public:
-  ChromeRenderFrameObserverNoTranslateNorPhishingTest() {
-    scoped_feature_list_.InitAndEnableFeature(translate::kTranslateSubFrames);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(ChromeRenderFrameObserverNoTranslateNorPhishingTest,
-       CapturePageTextNotCalled) {
-  base::HistogramTester histogram_tester;
-  LoadHTML("<html><body>foo</body></html>");
-
-  histogram_tester.ExpectTotalCount(kTranslateCaptureText, 0);
-
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(fake_translate_driver_.called_new_page_);
-  EXPECT_FALSE(fake_translate_driver_.page_level_translation_critiera_met_);
-}
-
-TEST_F(ChromeRenderFrameObserverNoTranslateNorPhishingTest, OptGuideGetsText) {
-  optimization_guide::PageTextAgent* agent =
-      optimization_guide::PageTextAgent::Get(render_frame());
-  ASSERT_TRUE(agent);
-  render_frame()->GetRemoteAssociatedInterfaces()->OverrideBinderForTesting(
-      optimization_guide::mojom::PageTextService::Name_,
-      base::BindRepeating(
-          [&](optimization_guide::PageTextAgent* agent,
-              mojo::ScopedInterfaceEndpointHandle handle) {
-            agent->Bind(mojo::PendingAssociatedReceiver<
-                        optimization_guide::mojom::PageTextService>(
-                std::move(handle)));
-          },
-          agent));
-
-  mojo::PendingRemote<optimization_guide::mojom::PageTextConsumer>
-      consumer_remote;
-  TestOptGuideConsumer consumer;
-  consumer.Bind(consumer_remote.InitWithNewPipeAndPassReceiver());
-
-  auto request = optimization_guide::mojom::PageTextDumpRequest::New();
-  request->max_size = 123;
-  request->event = optimization_guide::mojom::TextDumpEvent::kFirstLayout;
-
-  mojo::AssociatedRemote<optimization_guide::mojom::PageTextService>
-      text_service;
-  render_frame()->GetRemoteAssociatedInterfaces()->GetInterface(&text_service);
-  text_service->RequestPageTextDump(std::move(request),
-                                    std::move(consumer_remote));
-  base::RunLoop().RunUntilIdle();
-
-  base::HistogramTester histogram_tester;
-  LoadHTML("<html><body>foo</body></html>");
-  histogram_tester.ExpectTotalCount(kTranslateCaptureText, 1);
-
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_EQ(u"foo", consumer.text());
-  EXPECT_TRUE(consumer.on_chunks_end_called());
-}
-
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-
-class ChromeRenderFrameObserverNoTranslateYesPhishingTest
-    : public ChromeRenderFrameObserverTest {
- public:
-  ChromeRenderFrameObserverNoTranslateYesPhishingTest() {
-    scoped_feature_list_.InitAndEnableFeature(translate::kTranslateSubFrames);
-  }
-
-  void SetUp() override {
-    ChromeRenderFrameObserverTest::SetUp();
-
-    // Provide a valid Safe Browsing client side phishing model to enable
-    // phishing detection.
-    safe_browsing::ClientSideModel model;
-    model.set_max_words_per_term(0);
-    safe_browsing::ScorerStorage::GetInstance()->SetScorer(
-        safe_browsing::ProtobufModelScorer::Create(model.SerializeAsString(),
-                                                   base::File()));
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(ChromeRenderFrameObserverNoTranslateYesPhishingTest,
-       CapturePageTextCalled) {
-  base::HistogramTester histogram_tester;
-  LoadHTML("<html><body>foo</body></html>");
-
-  histogram_tester.ExpectTotalCount(kTranslateCaptureText, 2);
-
-  // Translate should not be called since only the phishing logic ran.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(fake_translate_driver_.called_new_page_);
-  EXPECT_FALSE(fake_translate_driver_.page_level_translation_critiera_met_);
-}
-
-#else
-
-class ChromeRenderFrameObserverNoTranslateTest
-    : public ChromeRenderFrameObserverTest {
- public:
-  ChromeRenderFrameObserverNoTranslateNorPhishingTest() {
-    scoped_feature_list_.InitAndEnableFeature(translate::kTranslateSubFrames);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(ChromeRenderFrameObserverNoTranslateTest, CapturePageTextNotCalled) {
-  base::HistogramTester histogram_tester;
-  LoadHTML("<html><body>foo</body></html>");
-
-  histogram_tester.ExpectTotalCount(kTranslateCaptureText, 0);
-
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(fake_translate_driver_.called_new_page_);
-  EXPECT_FALSE(fake_translate_driver_.page_level_translation_critiera_met_);
-}
-
-#endif

@@ -7,19 +7,17 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/password_manager/core/browser/mock_password_store_interface.h"
 #import "components/password_manager/core/browser/password_form.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/credential_provider/archivable_credential+password_form.h"
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
 #import "ios/chrome/common/credential_provider/user_defaults_credential_store.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "url/gurl.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -34,6 +32,7 @@ ArchivableCredential* TestCredential() {
   NSString* keychainIdentifier = @"keychain_identifier_value";
   NSString* url = @"http://www.alpha.example.com/path/and?args=8";
   NSString* recordIdentifier = @"recordIdentifier";
+  NSString* note = @"note";
   return [[ArchivableCredential alloc] initWithFavicon:nil
                                     keychainIdentifier:keychainIdentifier
                                                   rank:1
@@ -41,7 +40,7 @@ ArchivableCredential* TestCredential() {
                                      serviceIdentifier:url
                                            serviceName:nil
                                                   user:username
-                                                  note:nil];
+                                                  note:note];
 }
 
 class CredentialProviderMigratorTest : public PlatformTest {
@@ -59,11 +58,18 @@ class CredentialProviderMigratorTest : public PlatformTest {
       base::MakeRefCounted<testing::NiceMock<MockPasswordStoreInterface>>();
 
  private:
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  // Mocking time is required for password notes since they are created with the
+  // creation_date metadata, which is compared in AddLogin() call expectations.
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::IO,
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 // Tests basic migration for 1 credential.
 TEST_F(CredentialProviderMigratorTest, Migration) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(syncer::kPasswordNotesWithBackup);
+
   // Create temp store and add 1 credential.
   UserDefaultsCredentialStore* store =
       [[UserDefaultsCredentialStore alloc] initWithUserDefaults:user_defaults_

@@ -9,9 +9,10 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 
-#include "base/containers/span.h"
 #include "net/base/net_export.h"
+#include "third_party/boringssl/src/include/openssl/span.h"
 
 namespace net::der {
 
@@ -30,30 +31,32 @@ class NET_EXPORT_PRIVATE Input {
   // Creates an empty Input, one from which no data can be read.
   constexpr Input() = default;
 
-  // Creates an Input from a constant array |data|.
-  template <size_t N>
-  constexpr explicit Input(const uint8_t (&data)[N]) : data_(data), len_(N) {}
+  // Creates an Input from a span. The constructed Input is only valid as long
+  // as |data| points to live memory. If constructed from, say, a
+  // |std::vector<uint8_t>|, mutating the vector will invalidate the Input.
+  constexpr explicit Input(bssl::Span<const uint8_t> data) : data_(data) {}
 
   // Creates an Input from the given |data| and |len|.
   constexpr explicit Input(const uint8_t* data, size_t len)
-      : data_(data), len_(len) {}
+      : data_(bssl::MakeConstSpan(data, len)) {}
 
-  // Creates an Input from a std::string_view
-  explicit Input(std::string_view sp);
-
-  // Creates an Input from a std::string. The lifetimes are a bit subtle when
-  // using this function: The constructed Input is only valid so long as |s| is
-  // still alive and not mutated.
-  explicit Input(const std::string* s);
+  // Creates an Input from a std::string_view. The constructed Input is only
+  // valid as long as |data| points to live memory. If constructed from, say, a
+  // |std::string|, mutating the vector will invalidate the Input.
+  explicit Input(std::string_view str)
+      : data_(bssl::MakeConstSpan(reinterpret_cast<const uint8_t*>(str.data()),
+                                  str.size())) {}
 
   // Returns the length in bytes of an Input's data.
-  constexpr size_t Length() const { return len_; }
+  constexpr size_t Length() const { return data_.size(); }
 
   // Returns a pointer to the Input's data. This method is marked as "unsafe"
   // because access to the Input's data should be done through ByteReader
   // instead. This method should only be used where using a ByteReader truly
   // is not an option.
-  constexpr const uint8_t* UnsafeData() const { return data_; }
+  constexpr const uint8_t* UnsafeData() const { return data_.data(); }
+
+  constexpr uint8_t operator[](size_t idx) const { return data_[idx]; }
 
   // Returns a copy of the data represented by this object as a std::string.
   std::string AsString() const;
@@ -63,21 +66,13 @@ class NET_EXPORT_PRIVATE Input {
   // this Input.
   std::string_view AsStringView() const;
 
-  // Returns a base::span pointing to the same data as the Input. The resulting
-  // base::span must not outlive the data that was used to construct this
-  // Input.
-  base::span<const uint8_t> AsSpan() const;
+  // Returns a span pointing to the same data as the Input. The resulting span
+  // must not outlive the data that was used to construct this Input.
+  bssl::Span<const uint8_t> AsSpan() const;
 
  private:
-  // This constructor is deleted to prevent constructing an Input from a
-  // std::string r-value. Since the Input points to memory owned by another
-  // object, such an Input would point to invalid memory. Without this deleted
-  // constructor, a std::string could be passed in to the base::StringPiece
-  // constructor because of StringPiece's implicit constructor.
-  Input(std::string) = delete;
-
-  const uint8_t* data_ = nullptr;
-  size_t len_ = 0;
+  // TODO(crbug.com/770501): Replace this type with span altogether.
+  bssl::Span<const uint8_t> data_;
 };
 
 // Return true if |lhs|'s data and |rhs|'s data are byte-wise equal.

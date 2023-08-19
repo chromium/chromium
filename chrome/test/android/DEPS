@@ -8,7 +8,7 @@ include_rules = [
   "+components/infobars/android/java",
   "+components/payments/content/android",
   # This test code needs to depend on sync related classes and test tools.
-  "+components/sync/android/java/src/org/chromium/components/sync/signin",
+  "+components/sync/android/java/src/org/chromium/components/sync",
   "+components/sync/test",
   "+components/translate/content/android/java",
   "+components/webapk/android",

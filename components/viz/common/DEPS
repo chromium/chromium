@@ -45,5 +45,8 @@ specific_include_rules = {
   "bitmap_allocation.cc" : [
     # Only used to pass Mojo handles, not to communicate with the viz service.
     "+mojo/public/cpp/base/shared_memory_utils.h",
+  ],
+  "renderer_settings.h" : [
+    "+ui/display/types/display_constants.h",
   ]
 }

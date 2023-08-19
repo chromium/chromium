@@ -85,8 +85,7 @@ class PLATFORM_EXPORT ResourceLoadObserver
   virtual void DidFinishLoading(uint64_t identifier,
                                 base::TimeTicks finish_time,
                                 int64_t encoded_data_length,
-                                int64_t decoded_body_length,
-                                bool should_report_corb_blocking) = 0;
+                                int64_t decoded_body_length) = 0;
 
   using IsInternalRequest = base::StrongAlias<class IsInternalRequestTag, bool>;
   // Called when a request fails.

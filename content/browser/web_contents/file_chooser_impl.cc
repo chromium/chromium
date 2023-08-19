@@ -179,7 +179,8 @@ void FileChooserImpl::OpenFileChooser(blink::mojom::FileChooserParamsPtr params,
           BackForwardCacheDisable::DisabledReasonId::kFileChooser));
 
   static_cast<WebContentsImpl*>(web_contents())
-      ->RunFileChooser(render_frame_host_, std::move(listener), *params);
+      ->RunFileChooser(GetWeakPtr(), render_frame_host_, std::move(listener),
+                       *params);
 }
 
 void FileChooserImpl::EnumerateChosenDirectory(
@@ -196,8 +197,8 @@ void FileChooserImpl::EnumerateChosenDirectory(
   if (policy->CanReadFile(render_frame_host_->GetProcess()->GetID(),
                           directory_path)) {
     static_cast<WebContentsImpl*>(web_contents())
-        ->EnumerateDirectory(render_frame_host_, std::move(listener),
-                             directory_path);
+        ->EnumerateDirectory(GetWeakPtr(), render_frame_host_,
+                             std::move(listener), directory_path);
   } else {
     listener->FileSelectionCanceled();
   }

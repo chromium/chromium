@@ -1,8 +1,10 @@
 <!doctype html>
-<html dir="$i18n{textdirection}" lang="$i18n{language}">
+<html dir="$i18n{textdirection}" lang="$i18n{language}"
+    $i18n{chromeRefresh2023Attribute}>
 <head>
   <meta charset="utf-8">
   <title>Tab Search</title>
+  <link rel="stylesheet" href="chrome://theme/colors.css?sets=ui,chrome">
   <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
   <style>
     html {
@@ -20,6 +22,10 @@
          the main frame has completed. */
       background-color: var(--mwb-background-color);
       margin: 0;
+    }
+
+    html[chrome-refresh-2023] body {
+      background-color: var(--color-tab-search-background);
     }
   </style>
 </head>

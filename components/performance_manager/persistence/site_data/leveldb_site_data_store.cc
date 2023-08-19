@@ -15,7 +15,6 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
@@ -38,13 +37,14 @@ bool g_use_in_memory_db_for_testing = false;
 // histograms should be removed once it has been confirmed that the data is
 // similar to the one from the other implementation.
 //
-// TODO(sebmarchand): Remove these histograms.
+// TODO(crbug.com/1430905): Remove these histograms when SiteDB is confirmed to
+// be working for BackgroundTabLoadingPolicy.
 const char kInitStatusHistogramLabel[] =
-    "ResourceCoordinator.LocalDB.DatabaseInit";
+    "PerformanceManager.SiteDB.DatabaseInit";
 const char kInitStatusAfterRepairHistogramLabel[] =
-    "ResourceCoordinator.LocalDB.DatabaseInitAfterRepair";
+    "PerformanceManager.SiteDB.DatabaseInitAfterRepair";
 const char kInitStatusAfterDeleteHistogramLabel[] =
-    "ResourceCoordinator.LocalDB.DatabaseInitAfterDelete";
+    "PerformanceManager.SiteDB.DatabaseInitAfterDelete";
 
 enum class InitStatus {
   kInitStatusOk,
@@ -81,8 +81,8 @@ bool RepairDatabase(const std::string& db_path) {
   options.reuse_logs = false;
   options.max_open_files = 0;
   bool repair_succeeded = leveldb::RepairDB(db_path, options).ok();
-  UMA_HISTOGRAM_BOOLEAN("ResourceCoordinator.LocalDB.DatabaseRepair",
-                        repair_succeeded);
+  base::UmaHistogramBoolean("PerformanceManager.SiteDB.DatabaseRepair",
+                            repair_succeeded);
   return repair_succeeded;
 }
 
@@ -389,8 +389,8 @@ LevelDBSiteDataStore::AsyncHelper::OpenOrCreateDatabaseImpl() {
   if (base::DirectoryExists(db_path_)) {
     opening_type = OpeningType::kExistingDb;
     int64_t db_ondisk_size_in_bytes = base::ComputeDirectorySize(db_path_);
-    UMA_HISTOGRAM_MEMORY_KB("ResourceCoordinator.LocalDB.OnDiskSize",
-                            db_ondisk_size_in_bytes / 1024);
+    base::UmaHistogramMemoryKB("PerformanceManager.SiteDB.OnDiskSize",
+                               db_ondisk_size_in_bytes / 1024);
   }
 
   leveldb_env::Options options;

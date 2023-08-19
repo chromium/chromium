@@ -377,11 +377,9 @@ void PaintFragment(const NGPhysicalBoxFragment& fragment,
 
   auto* layout_object = fragment.GetLayoutObject();
   DCHECK(layout_object);
-  if (fragment.IsPaintedAtomically() && fragment.IsLegacyLayoutRoot()) {
+  if (fragment.IsPaintedAtomically() && layout_object->IsLayoutReplaced()) {
     ObjectPainter(*layout_object).PaintAllPhasesAtomically(modified_paint_info);
   } else {
-    // TODO(ikilpatrick): Once FragmentItem ships we should call the
-    // NGBoxFragmentPainter directly for NG objects.
     layout_object->Paint(modified_paint_info);
   }
 }
@@ -572,27 +570,10 @@ void NGBoxFragmentPainter::RecordScrollHitTestData(
 
 bool NGBoxFragmentPainter::ShouldRecordHitTestData(
     const PaintInfo& paint_info) {
-  if (paint_info.IsPaintingBackgroundInContentsSpace() &&
-      PhysicalFragment().EffectiveAllowedTouchAction() == TouchAction::kAuto &&
-      !PhysicalFragment().InsideBlockingWheelEventHandler()) {
-    return false;
-  }
-
-  // Hit test data are only needed for compositing. This flag is used for for
-  // printing and drag images which do not need hit testing.
-  if (paint_info.ShouldOmitCompositingInfo())
-    return false;
-
-  // If an object is not visible, it does not participate in hit testing.
-  if (PhysicalFragment().Style().Visibility() != EVisibility::kVisible)
-    return false;
-
+  // Some conditions are checked in ObjectPainter::RecordHitTestData().
   // Table rows/sections do not participate in hit testing.
-  if (PhysicalFragment().IsTableNGRow() ||
-      PhysicalFragment().IsTableNGSection())
-    return false;
-
-  return true;
+  return !PhysicalFragment().IsTableNGRow() &&
+         !PhysicalFragment().IsTableNGSection();
 }
 
 void NGBoxFragmentPainter::PaintObject(
@@ -1050,7 +1031,7 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackground(
     // The background painting code assumes that the borders are part of the
     // paintRect so we expand the paintRect by the border size when painting the
     // background into the scrolling contents layer.
-    paint_rect.Expand(layout_box.BorderBoxOutsets());
+    paint_rect.Expand(layout_box.BorderOutsets());
 
     background_client = &layout_box.GetScrollableArea()
                              ->GetScrollingBackgroundDisplayItemClient();
@@ -1071,10 +1052,9 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackground(
   }
 
   if (ShouldRecordHitTestData(paint_info)) {
-    paint_info.context.GetPaintController().RecordHitTestData(
-        *background_client, ToPixelSnappedRect(paint_rect),
-        PhysicalFragment().EffectiveAllowedTouchAction(),
-        PhysicalFragment().InsideBlockingWheelEventHandler());
+    ObjectPainter(layout_object)
+        .RecordHitTestData(paint_info, ToPixelSnappedRect(paint_rect),
+                           *background_client);
   }
 
   Element* element = DynamicTo<Element>(layout_object.GetNode());
@@ -1264,7 +1244,7 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackgroundWithRectImpl(
   if (box_decoration_data.ShouldPaintShadow()) {
     if (layout_box.IsTableCell()) {
       PhysicalRect inner_rect = paint_rect;
-      inner_rect.Contract(layout_box.BorderBoxOutsets());
+      inner_rect.Contract(layout_box.BorderOutsets());
       // PaintInsetBoxShadowWithInnerRect doesn't subtract borders before
       // painting. We have to use it here after subtracting collapsed borders
       // above. PaintInsetBoxShadowWithBorderRect below subtracts the borders
@@ -1563,8 +1543,11 @@ void NGBoxFragmentPainter::PaintInlineItems(const PaintInfo& paint_info,
   }
 }
 
-// Paint a line box. This function paints hit tests and backgrounds of
-// `::first-line`. In all other cases, the container box paints background.
+// Paint a line box. This function records hit test data of the line box in
+// case the line box overflows the container or the line box is in a different
+// chunk from the hit test data recorded for the container box's background.
+// It also paints the backgrounds of the `::first-line` line box. Other line
+// boxes don't have their own background.
 inline void NGBoxFragmentPainter::PaintLineBox(
     const NGPhysicalFragment& line_box_fragment,
     const DisplayItemClient& display_item_client,
@@ -1576,15 +1559,14 @@ inline void NGBoxFragmentPainter::PaintLineBox(
 
   PhysicalRect border_box = line_box_fragment.LocalRect();
   border_box.offset += child_offset;
-  absl::optional<ScopedDisplayItemFragment> display_item_fragment;
   const wtf_size_t line_fragment_id = line_box_item.FragmentId();
   DCHECK_GE(line_fragment_id, NGFragmentItem::kInitialLineFragmentId);
+  ScopedDisplayItemFragment display_item_fragment(paint_info.context,
+                                                  line_fragment_id);
   if (ShouldRecordHitTestData(paint_info)) {
-    display_item_fragment.emplace(paint_info.context, line_fragment_id);
-    paint_info.context.GetPaintController().RecordHitTestData(
-        display_item_client, ToPixelSnappedRect(border_box),
-        PhysicalFragment().EffectiveAllowedTouchAction(),
-        PhysicalFragment().InsideBlockingWheelEventHandler());
+    ObjectPainter(*PhysicalFragment().GetLayoutObject())
+        .RecordHitTestData(paint_info, ToPixelSnappedRect(border_box),
+                           display_item_client);
   }
 
   Element* element = DynamicTo<Element>(line_box_fragment.GetNode());
@@ -1596,8 +1578,6 @@ inline void NGBoxFragmentPainter::PaintLineBox(
 
   // Paint the background of the `::first-line` line box.
   if (NGLineBoxFragmentPainter::NeedsPaint(line_box_fragment)) {
-    if (!display_item_fragment)
-      display_item_fragment.emplace(paint_info.context, line_fragment_id);
     NGLineBoxFragmentPainter line_box_painter(line_box_fragment, line_box_item,
                                               PhysicalFragment());
     line_box_painter.PaintBackgroundBorderShadow(paint_info, child_offset);
@@ -2535,16 +2515,6 @@ bool NGBoxFragmentPainter::HitTestFloatingChildren(
     if (child_fragment.IsPaintedAtomically())
       continue;
 
-    // If this is a legacy root, fallback to legacy. It does not have
-    // |HasFloatingDescendantsForPaint()| set, but it may have floating
-    // descendants.
-    if (child_fragment.IsLegacyLayoutRoot()) {
-      if (child_fragment.GetMutableLayoutObject()->NodeAtPoint(
-              *hit_test.result, hit_test.location, child_offset,
-              hit_test.phase))
-        return true;
-      continue;
-    }
     if (!child_fragment.HasFloatingDescendantsForPaint())
       continue;
 

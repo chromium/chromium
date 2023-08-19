@@ -42,9 +42,11 @@ class WMDesksPrivateFeature {
   using RemoveDeskCallback = base::OnceCallback<void(std::string)>;
   // Removes a desk as specified in `desk_uuid`. If `combine_desk` is present or
   // set to true, remove the desk and combine windows to the active desk to the
-  // left. Otherwise close all windows on the desk.
+  // left. Otherwise close all windows on the desk. Provide user with
+  // notification asking to undo removal if `allow_undo` is present or true.
   virtual void RemoveDesk(const base::Uuid& desk_uuid,
                           bool combine_desk,
+                          bool allow_undo,
                           RemoveDeskCallback callback) = 0;
 
   using SetAllDeskPropertyCallback = base::OnceCallback<void(std::string)>;

@@ -24,8 +24,6 @@ class SavedDeskNameView : public DeskTextfield {
   SavedDeskNameView& operator=(const SavedDeskNameView&) = delete;
   ~SavedDeskNameView() override;
 
-  static constexpr int kSavedDeskNameViewHeight = 20;
-
   const absl::optional<std::u16string> temporary_name() const {
     return temporary_name_;
   }
@@ -41,7 +39,6 @@ class SavedDeskNameView : public DeskTextfield {
   void OnContentsChanged();
 
   // DeskTextfield:
-  gfx::Size CalculatePreferredSize() const override;
   void OnGestureEvent(ui::GestureEvent* event) override;
 
  private:

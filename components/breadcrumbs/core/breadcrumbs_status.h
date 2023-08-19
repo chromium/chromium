@@ -7,10 +7,18 @@
 
 namespace breadcrumbs {
 
-// Returns true if breadcrumbs logging is enabled. Note that metrics consent
-// must have been provided for crash reports (including attached breadcrumbs) to
-// be uploaded, and for breadcrumbs to persist on disk.
+// Returns true if breadcrumbs logging is enabled. Note that if metrics consent
+// was not provided, this will return true but breadcrumbs will not actually be
+// uploaded or persisted to disk.
 bool IsEnabled();
+
+// Forces `breadcrumbs::IsEnabled()` to return true while it exists. Returns
+// breadcrumbs to its default state once destroyed.
+class ScopedEnableBreadcrumbsForTesting {
+ public:
+  ScopedEnableBreadcrumbsForTesting();
+  ~ScopedEnableBreadcrumbsForTesting();
+};
 
 }  // namespace breadcrumbs
 

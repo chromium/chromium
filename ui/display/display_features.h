@@ -39,8 +39,13 @@ BASE_DECLARE_FEATURE(kEnableHardwareMirrorMode);
 COMPONENT_EXPORT(DISPLAY_FEATURES) bool IsHardwareMirrorModeEnabled();
 
 COMPONENT_EXPORT(DISPLAY_FEATURES)
+
 BASE_DECLARE_FEATURE(kRequireHdcpKeyProvisioning);
 COMPONENT_EXPORT(DISPLAY_FEATURES) bool IsHdcpKeyProvisioningRequired();
+
+COMPONENT_EXPORT(DISPLAY_FEATURES) BASE_DECLARE_FEATURE(kPanelSelfRefresh2);
+
+COMPONENT_EXPORT(DISPLAY_FEATURES) bool IsPanelSelfRefresh2Enabled();
 
 }  // namespace features
 }  // namespace display

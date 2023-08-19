@@ -248,13 +248,11 @@ class TestURLLoaderClient : public URLLoaderClient {
     NOTREACHED();
   }
 
-  void DidFinishLoading(
-      base::TimeTicks finishTime,
-      int64_t totalEncodedDataLength,
-      uint64_t totalEncodedBodyLength,
-      int64_t totalDecodedBodyLength,
-      bool should_report_corb_blocking,
-      absl::optional<bool> pervasive_payload_requested) override {
+  void DidFinishLoading(base::TimeTicks finishTime,
+                        int64_t totalEncodedDataLength,
+                        uint64_t totalEncodedBodyLength,
+                        int64_t totalDecodedBodyLength,
+                        bool should_report_corb_blocking) override {
     EXPECT_TRUE(loader_);
     EXPECT_TRUE(did_receive_response_);
     EXPECT_FALSE(did_finish_);
@@ -521,11 +519,11 @@ TEST_F(URLLoaderTest, ResponseAddressSpace) {
   KURL url("http://foo.example");
 
   network::mojom::URLResponseHead head;
-  head.response_address_space = network::mojom::IPAddressSpace::kLocal;
+  head.response_address_space = network::mojom::IPAddressSpace::kPrivate;
 
   WebURLResponse response = WebURLResponse::Create(url, head, true, -1);
 
-  EXPECT_EQ(network::mojom::IPAddressSpace::kLocal, response.AddressSpace());
+  EXPECT_EQ(network::mojom::IPAddressSpace::kPrivate, response.AddressSpace());
 }
 
 TEST_F(URLLoaderTest, ClientAddressSpace) {

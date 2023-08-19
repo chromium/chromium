@@ -61,7 +61,7 @@ class HTMLInputElementTest : public PageTestBase {
   }
 
   HTMLInputElement& TestElement() {
-    Element* element = GetDocument().getElementById("test");
+    Element* element = GetDocument().getElementById(AtomicString("test"));
     DCHECK(element);
     return To<HTMLInputElement>(*element);
   }
@@ -188,16 +188,15 @@ TEST_F(HTMLInputElementTest, NoAssertWhenMovedInNewDocument) {
 }
 
 TEST_F(HTMLInputElementTest, DefaultToolTip) {
-  auto* input_without_form = MakeGarbageCollected<HTMLInputElement>(
-      GetDocument(), CreateElementFlags());
+  auto* input_without_form =
+      MakeGarbageCollected<HTMLInputElement>(GetDocument());
   input_without_form->SetBooleanAttribute(html_names::kRequiredAttr, true);
   GetDocument().body()->AppendChild(input_without_form);
   EXPECT_EQ("<<ValidationValueMissing>>", input_without_form->DefaultToolTip());
 
   auto* form = MakeGarbageCollected<HTMLFormElement>(GetDocument());
   GetDocument().body()->AppendChild(form);
-  auto* input_with_form = MakeGarbageCollected<HTMLInputElement>(
-      GetDocument(), CreateElementFlags());
+  auto* input_with_form = MakeGarbageCollected<HTMLInputElement>(GetDocument());
   input_with_form->SetBooleanAttribute(html_names::kRequiredAttr, true);
   form->AppendChild(input_with_form);
   EXPECT_EQ("<<ValidationValueMissing>>", input_with_form->DefaultToolTip());
@@ -208,14 +207,13 @@ TEST_F(HTMLInputElementTest, DefaultToolTip) {
 
 // crbug.com/589838
 TEST_F(HTMLInputElementTest, ImageTypeCrash) {
-  auto* input = MakeGarbageCollected<HTMLInputElement>(GetDocument(),
-                                                       CreateElementFlags());
-  input->setAttribute(html_names::kTypeAttr, "image");
+  auto* input = MakeGarbageCollected<HTMLInputElement>(GetDocument());
+  input->setAttribute(html_names::kTypeAttr, AtomicString("image"));
   input->EnsureFallbackContent();
   // Make sure ensurePrimaryContent() recreates UA shadow tree, and updating
   // |value| doesn't crash.
   input->EnsurePrimaryContent();
-  input->setAttribute(html_names::kValueAttr, "aaa");
+  input->setAttribute(html_names::kValueAttr, AtomicString("aaa"));
 }
 
 TEST_F(HTMLInputElementTest, RadioKeyDownDCHECKFailure) {
@@ -226,11 +224,11 @@ TEST_F(HTMLInputElementTest, RadioKeyDownDCHECKFailure) {
   auto& radio2 = To<HTMLInputElement>(*radio1.nextSibling());
   radio1.Focus();
   // Make layout-dirty.
-  radio2.setAttribute(html_names::kStyleAttr, "position:fixed");
+  radio2.setAttribute(html_names::kStyleAttr, AtomicString("position:fixed"));
   KeyboardEventInit* init = KeyboardEventInit::Create();
   init->setKey("ArrowRight");
   radio1.DefaultEventHandler(
-      *MakeGarbageCollected<KeyboardEvent>("keydown", init));
+      *MakeGarbageCollected<KeyboardEvent>(event_type_names::kKeydown, init));
   EXPECT_EQ(GetDocument().ActiveElement(), &radio2);
 }
 
@@ -250,11 +248,11 @@ TEST_F(HTMLInputElementTest, DateTimeChooserSizeParamRespectsScale) {
 }
 
 TEST_F(HTMLInputElementTest, StepDownOverflow) {
-  auto* input = MakeGarbageCollected<HTMLInputElement>(GetDocument(),
-                                                       CreateElementFlags());
-  input->setAttribute(html_names::kTypeAttr, "date");
-  input->setAttribute(html_names::kMinAttr, "2010-02-10");
-  input->setAttribute(html_names::kStepAttr, "9223372036854775556");
+  auto* input = MakeGarbageCollected<HTMLInputElement>(GetDocument());
+  input->setAttribute(html_names::kTypeAttr, AtomicString("date"));
+  input->setAttribute(html_names::kMinAttr, AtomicString("2010-02-10"));
+  input->setAttribute(html_names::kStepAttr,
+                      AtomicString("9223372036854775556"));
   // InputType::applyStep() should not pass an out-of-range value to
   // setValueAsDecimal, and WTF::msToYear() should not cause a DCHECK failure.
   input->stepDown(1, ASSERT_NO_EXCEPTION);
@@ -270,7 +268,7 @@ TEST_F(HTMLInputElementTest, ChangingInputTypeCausesShadowRootToBeCreated) {
   GetDocument().body()->setInnerHTML("<input type='checkbox' />");
   auto* input = To<HTMLInputElement>(GetDocument().body()->firstChild());
   EXPECT_EQ(nullptr, input->UserAgentShadowRoot());
-  input->setAttribute(html_names::kTypeAttr, "text");
+  input->setAttribute(html_names::kTypeAttr, AtomicString("text"));
   EXPECT_NE(nullptr, input->UserAgentShadowRoot());
 }
 
@@ -342,7 +340,7 @@ TEST_P(HTMLInputElementPasswordFieldResetTest, PasswordFieldReset) {
       "<input id=test type=password>");
   GetDocument().UpdateStyleAndLayoutTree();
 
-  TestElement().setType(GetParam().new_type);
+  TestElement().setType(AtomicString(GetParam().new_type));
   GetDocument().UpdateStyleAndLayoutTree();
 
   TestElement().SetValue(GetParam().temporary_value);

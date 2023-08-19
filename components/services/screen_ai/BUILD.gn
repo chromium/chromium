@@ -49,29 +49,13 @@ if (is_linux || is_chromeos) {
 }
 
 group("test_support_data") {
-  visibility = [ ":test_support" ]
+  visibility = [ ":unit_tests" ]
   testonly = true
 
   data = [ "$root_gen_dir/components/services/screen_ai/proto/view_hierarchy.descriptor" ]
 
   deps = [
     "//components/services/screen_ai/proto:view_hierarchy_proto_descriptor",
-  ]
-}
-
-source_set("test_support") {
-  testonly = true
-
-  sources = [
-    "proto/test_proto_loader.cc",
-    "proto/test_proto_loader.h",
-  ]
-
-  data_deps = [ ":test_support_data" ]
-
-  deps = [
-    "//base",
-    "//third_party/protobuf:protobuf_full",
   ]
 }
 
@@ -102,6 +86,7 @@ source_set("unit_tests") {
   ]
 
   if (!is_win) {
-    deps += [ ":test_support" ]
+    deps += [ "//base/test:proto_test_support" ]
+    data_deps = [ ":test_support_data" ]
   }
 }

@@ -80,36 +80,36 @@ struct RenderFrameMetadata {
 
   viz.mojom.VerticalScrollDirection new_vertical_scroll_direction;
 
-  // Used to position Android bottom bar, whose position is computed by the
+  // Used to position Android/iOS bottom bar, whose position is computed by the
   // renderer compositor.
-  [EnableIf=is_android]
+  [EnableIf=is_android_or_ios]
   float bottom_controls_height;
 
-  [EnableIf=is_android]
+  [EnableIf=is_android_or_ios]
   float bottom_controls_shown_ratio;
 
-  [EnableIf=is_android]
+  [EnableIf=is_android_or_ios]
   float top_controls_min_height_offset;
 
-  [EnableIf=is_android]
+  [EnableIf=is_android_or_ios]
   float bottom_controls_min_height_offset;
 
-  [EnableIf=is_android]
+  [EnableIf=is_android_or_ios]
   float min_page_scale_factor;
 
-  [EnableIf=is_android]
+  [EnableIf=is_android_or_ios]
   float max_page_scale_factor;
 
-  [EnableIf=is_android]
+  [EnableIf=is_android_or_ios]
   bool root_overflow_y_hidden;
 
-  [EnableIf=is_android]
+  [EnableIf=is_android_or_ios]
   gfx.mojom.SizeF scrollable_viewport_size;
 
-  [EnableIf=is_android]
+  [EnableIf=is_android_or_ios]
   gfx.mojom.SizeF root_layer_size;
 
-  [EnableIf=is_android]
+  [EnableIf=is_android_or_ios]
   bool has_transparent_background;
 };
 
@@ -160,7 +160,7 @@ interface RenderFrameMetadataObserver {
 // RenderFrameMetadata. It can be notified of all frame submissions, via
 // RenderFrameMetadataObserver::ReportAllFrameSubmissionsForTesting, or of
 // additional frames with root scroll offset changes via
-// RenderFrameMetadataObserver::ReportAllRootScrolls.
+// RenderFrameMetadataObserver::UpdateRootScrollOffsetUpdateFrequency.
 interface RenderFrameMetadataObserverClient {
   // Notified when RenderFrameMetadata has changed.
   OnRenderFrameMetadataChanged(uint32 frame_token,
@@ -169,8 +169,7 @@ interface RenderFrameMetadataObserverClient {
   // Notified on all frame submissions.
   OnFrameSubmissionForTesting(uint32 frame_token);
 
-  // Only called if ReportAllRootScrolls(true) has been called. See
-  // ReportAllRootScrolls() for details.
+  // Only called if UpdateRootScrollOffsetUpdateFrequency() has been called.
   [EnableIf=is_android]
   OnRootScrollOffsetChanged(gfx.mojom.PointF root_scroll_offset);
 };

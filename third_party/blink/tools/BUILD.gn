@@ -27,7 +27,8 @@ group("wpt_tests_isolate") {
     # Configuration files
     "//third_party/blink/web_tests/wptrunner.blink.ini",
     "//third_party/blink/web_tests/FlagSpecificConfig",
-    "//third_party/blink/web_tests/SmokeTests/",
+    "//third_party/blink/web_tests/VirtualTestSuites",
+    "//third_party/blink/web_tests/TestLists/",
 
     # Include the root vpython spec.
     "//.vpython3",

@@ -25,9 +25,15 @@ found in the LICENSE file.
   .fallback {
     font-family: var(--oobe-button-font-family);
     font-size: var(--oobe-button-font-size);
+    font-weight: var(--oobe-button-font-weight);
   }
   :host([disabled]) {
     pointer-events: none;
+  }
+
+  :host-context(.jelly-enabled) cr-button#button {
+    background-color: transparent;
+    --text-color: var(--cros-sys-primary);
   }
 </style>
 <cr-button id="button" on-click="onClick_" disabled="[[disabled]]"

@@ -6,7 +6,6 @@
 
 #import "chrome/browser/ui/cocoa/window_size_autosaver.h"
 
-#include "base/mac/scoped_nsobject.h"
 #include "chrome/browser/ui/cocoa/test/cocoa_test_helper.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
@@ -18,6 +17,8 @@
 
 namespace {
 
+constexpr char kPath[] = "WindowSizeAutosaverTest";
+
 class WindowSizeAutosaverTest : public BrowserWithTestWindowTest {
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
@@ -26,9 +27,10 @@ class WindowSizeAutosaverTest : public BrowserWithTestWindowTest {
                   styleMask:NSWindowStyleMaskTitled | NSWindowStyleMaskResizable
                     backing:NSBackingStoreBuffered
                       defer:NO];
+    window_.releasedWhenClosed = NO;
     static_cast<user_prefs::PrefRegistrySyncable*>(
         profile()->GetPrefs()->DeprecatedGetPrefRegistry())
-        ->RegisterDictionaryPref(path_);
+        ->RegisterDictionaryPref(kPath);
   }
 
   void TearDown() override {
@@ -38,8 +40,7 @@ class WindowSizeAutosaverTest : public BrowserWithTestWindowTest {
 
  public:
   CocoaTestHelper cocoa_test_helper_;
-  NSWindow* window_;
-  const char* path_ = "WindowSizeAutosaverTest";
+  NSWindow* __strong window_;
 };
 
 TEST_F(WindowSizeAutosaverTest, RestoresAndSavesPos) {
@@ -47,7 +48,7 @@ TEST_F(WindowSizeAutosaverTest, RestoresAndSavesPos) {
   ASSERT_TRUE(pref);
 
   // Check to make sure there is no existing pref for window placement.
-  const base::Value::Dict& placement = pref->GetDict(path_);
+  const base::Value::Dict& placement = pref->GetDict(kPath);
   EXPECT_TRUE(placement.empty());
 
   // Replace the window with one that doesn't have resize controls.
@@ -56,6 +57,7 @@ TEST_F(WindowSizeAutosaverTest, RestoresAndSavesPos) {
                                         styleMask:NSWindowStyleMaskTitled
                                           backing:NSBackingStoreBuffered
                                             defer:NO];
+  window_.releasedWhenClosed = NO;
 
   // Ask the window to save its position, then check that a preference
   // exists.  We're technically passing in a pointer to the user prefs
@@ -65,10 +67,10 @@ TEST_F(WindowSizeAutosaverTest, RestoresAndSavesPos) {
   {
     NSRect frame = [window_ frame];
     // Empty state, shouldn't restore:
-    base::scoped_nsobject<WindowSizeAutosaver> sizeSaver(
+    [[maybe_unused]] WindowSizeAutosaver* sizeSaver =
         [[WindowSizeAutosaver alloc] initWithWindow:window_
                                         prefService:pref
-                                               path:path_]);
+                                               path:kPath];
     EXPECT_EQ(NSMinX(frame), NSMinX([window_ frame]));
     EXPECT_EQ(NSMinY(frame), NSMinY([window_ frame]));
     EXPECT_EQ(NSWidth(frame), NSWidth([window_ frame]));
@@ -83,10 +85,10 @@ TEST_F(WindowSizeAutosaverTest, RestoresAndSavesPos) {
 
   {
     // Should restore last stored position, but not size.
-    base::scoped_nsobject<WindowSizeAutosaver> sizeSaver(
+    [[maybe_unused]] WindowSizeAutosaver* sizeSaver =
         [[WindowSizeAutosaver alloc] initWithWindow:window_
                                         prefService:pref
-                                               path:path_]);
+                                               path:kPath];
     EXPECT_EQ(300, NSMinX([window_ frame]));
     EXPECT_EQ(310, NSMinY([window_ frame]));
     EXPECT_EQ(160, NSWidth([window_ frame]));
@@ -94,7 +96,7 @@ TEST_F(WindowSizeAutosaverTest, RestoresAndSavesPos) {
   }
 
   // ...and it should be in the profile, too.
-  const base::Value::Dict& windowPref = pref->GetDict(path_);
+  const base::Value::Dict& windowPref = pref->GetDict(kPath);
   EXPECT_FALSE(windowPref.FindInt("left").has_value());
   EXPECT_FALSE(windowPref.FindInt("right").has_value());
   EXPECT_FALSE(windowPref.FindInt("top").has_value());
@@ -112,7 +114,7 @@ TEST_F(WindowSizeAutosaverTest, RestoresAndSavesRect) {
   ASSERT_TRUE(pref);
 
   // Check to make sure there is no existing pref for window placement.
-  const base::Value::Dict& placement = pref->GetDict(path_);
+  const base::Value::Dict& placement = pref->GetDict(kPath);
   EXPECT_TRUE(placement.empty());
 
   // Ask the window to save its position, then check that a preference
@@ -123,10 +125,10 @@ TEST_F(WindowSizeAutosaverTest, RestoresAndSavesRect) {
   {
     NSRect frame = [window_ frame];
     // Empty state, shouldn't restore:
-    base::scoped_nsobject<WindowSizeAutosaver> sizeSaver(
+    [[maybe_unused]] WindowSizeAutosaver* sizeSaver =
         [[WindowSizeAutosaver alloc] initWithWindow:window_
                                         prefService:pref
-                                               path:path_]);
+                                               path:kPath];
     EXPECT_EQ(NSMinX(frame), NSMinX([window_ frame]));
     EXPECT_EQ(NSMinY(frame), NSMinY([window_ frame]));
     EXPECT_EQ(NSWidth(frame), NSWidth([window_ frame]));
@@ -141,10 +143,10 @@ TEST_F(WindowSizeAutosaverTest, RestoresAndSavesRect) {
 
   {
     // Should restore last stored size
-    base::scoped_nsobject<WindowSizeAutosaver> sizeSaver(
+    [[maybe_unused]] WindowSizeAutosaver* sizeSaver =
         [[WindowSizeAutosaver alloc] initWithWindow:window_
                                         prefService:pref
-                                               path:path_]);
+                                               path:kPath];
     EXPECT_EQ(300, NSMinX([window_ frame]));
     EXPECT_EQ(310, NSMinY([window_ frame]));
     EXPECT_EQ(250, NSWidth([window_ frame]));
@@ -152,7 +154,7 @@ TEST_F(WindowSizeAutosaverTest, RestoresAndSavesRect) {
   }
 
   // ...and it should be in the profile, too.
-  const base::Value::Dict& windowPref = pref->GetDict(path_);
+  const base::Value::Dict& windowPref = pref->GetDict(kPath);
   EXPECT_FALSE(windowPref.FindInt("x").has_value());
   EXPECT_FALSE(windowPref.FindInt("y").has_value());
   absl::optional<int> x1 = windowPref.FindInt("left");
@@ -174,7 +176,7 @@ TEST_F(WindowSizeAutosaverTest, DoesNotRestoreButClearsEmptyRect) {
   PrefService* pref = profile()->GetPrefs();
   ASSERT_TRUE(pref);
 
-  ScopedDictPrefUpdate update(pref, path_);
+  ScopedDictPrefUpdate update(pref, kPath);
   base::Value::Dict& windowPref = update.Get();
   windowPref.Set("left", 50);
   windowPref.Set("right", 50);
@@ -184,10 +186,10 @@ TEST_F(WindowSizeAutosaverTest, DoesNotRestoreButClearsEmptyRect) {
   {
     // Window rect shouldn't change...
     NSRect frame = [window_ frame];
-    base::scoped_nsobject<WindowSizeAutosaver> sizeSaver(
+    [[maybe_unused]] WindowSizeAutosaver* sizeSaver =
         [[WindowSizeAutosaver alloc] initWithWindow:window_
                                         prefService:pref
-                                               path:path_]);
+                                               path:kPath];
     EXPECT_EQ(NSMinX(frame), NSMinX([window_ frame]));
     EXPECT_EQ(NSMinY(frame), NSMinY([window_ frame]));
     EXPECT_EQ(NSWidth(frame), NSWidth([window_ frame]));

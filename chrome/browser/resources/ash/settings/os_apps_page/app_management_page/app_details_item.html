@@ -1,0 +1,82 @@
+<style include="app-management-cros-shared-style settings-shared">
+  #infoIconTooltip {
+    --paper-tooltip-min-width: max-content;
+  }
+
+  #infoIcon {
+    --iron-icon-fill-color: var(--cros-icon-color-secondary);
+    height: var(--help-icon-size);
+    margin-inline-start: 6px;
+    width: var(--help-icon-size);
+  }
+
+  #launchIcon {
+    --cr-icon-image: url(chrome://resources/images/open_in_new.svg);
+    --cr-icon-button-fill-color: var(--cr-link-color);
+    border-radius: 0;
+    height: var(--help-icon-size);
+    margin-inline-start: 3px;
+    width: var(--help-icon-size);
+  }
+
+  #tooltipText {
+    font-size: 10px;
+    line-height: 12px;
+    white-space: nowrap;
+  }
+
+  #typeAndSource {
+    display: flex;
+  }
+</style>
+<div class="permission-section-header">
+  <localized-link id="heading" class="header-text"
+    localized-string="$i18n{appManagementAppDetailsTitle}">
+  </localized-link>
+</div>
+<div class="indented-app-details" id="typeAndSource">
+  <localized-link
+    id="typeAndSourceText"
+    on-link-clicked="onStoreLinkClicked_"
+    localized-string="[[getTypeAndSourceString_(app)]]">
+    [[getTypeAndSourceString_(app)]] <!-- Do not delete for testing purposes -->
+  </localized-link>
+  <template is="dom-if" if="[[shouldShowLaunchIcon_(app)]]">
+    <cr-icon-button id="launchIcon" on-click="onStoreLinkClicked_">
+    </cr-icon-button>
+  </template>
+  <template is="dom-if" if="[[shouldShowInfoIcon_(app)]]" restamp>
+    <div id="browserLinkInfo">
+      <iron-icon id="infoIcon"
+        icon="app-management:info"
+        aria-label="info icon">
+      </iron-icon>
+      <paper-tooltip id="infoIconTooltip"
+        for="infoIcon">
+        <div id="tooltipText">
+          [[getTooltipText_(app)]]
+        </div>
+      </paper-tooltip>
+    </div>
+  </template>
+</div>
+<template is="dom-if" if="[[shouldShowStorage_(app)]]" restamp>
+  <div class="indented-app-details" id="storageTitle">
+    $i18n{appManagementAppDetailsStorageTitle}
+    <template is="dom-if" if="[[shouldShowAppSize_(app)]]" restamp>
+      <div class="indented-app-details" id="appSize">
+        [[getAppSizeString_(app)]]
+      </div>
+    </template>
+    <template is="dom-if" if="[[shouldShowDataSize_(app)]]" restamp>
+      <div class="indented-app-details" id="dataSize">
+        [[getDataSizeString_(app)]]
+      </div>
+    </template>
+  </div>
+</template>
+<template is="dom-if" if="[[shouldShowVersion_(app)]]" restamp>
+  <div class="indented-app-details" id="version">
+    [[getVersionString_(app)]]
+  </div>
+</template>

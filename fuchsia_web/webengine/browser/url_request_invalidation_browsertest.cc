@@ -84,15 +84,26 @@ IN_PROC_BROWSER_TEST_F(UrlRequestInvalidationTest,
   ExpectInvalidArgsForRewrite(std::move(rewrite));
 }
 
-IN_PROC_BROWSER_TEST_F(UrlRequestInvalidationTest, InvalidReplaceUrlEndsWith) {
+IN_PROC_BROWSER_TEST_F(UrlRequestInvalidationTest,
+                       InvalidReplaceUrlNewUrlWithNullUrlPath) {
   ExpectInvalidArgsForRewrite(
-      CreateRewriteReplaceUrl("some%00thing", "http://site.xyz"));
+      CreateRewriteReplaceUrl("some%00thing", "http:site:xyz"));
 }
 
 IN_PROC_BROWSER_TEST_F(UrlRequestInvalidationTest, InvalidReplaceUrlNewUrl) {
   ExpectInvalidArgsForRewrite(
       CreateRewriteReplaceUrl("/something", "http:site:xyz"));
 }
+
+// TODO(http://crbug.com/4596360): The following cases should succeed, but
+// checking for success requires non-trivial work since this
+// `UrlRequestInvalidationTest` is designed to test only invalid cases. Someone
+// familiar with this code might want to test success cases.
+//
+// - CreateRewriteReplaceUrl("/something", "http://site.xyz/"));
+// - CreateRewriteReplaceUrl("some%00thing", "http://site.xyz/"));
+// - CreateRewriteReplaceUrl("/something", "http://site.xyz/%00"));
+// - CreateRewriteReplaceUrl("some%00thing", "http://site.xyz/%00"));
 
 IN_PROC_BROWSER_TEST_F(UrlRequestInvalidationTest, EmptyReplaceUrl) {
   fuchsia::web::UrlRequestRewrite rewrite;

@@ -110,8 +110,8 @@ class BulkLeakCheckTest : public testing::Test {
   base::test::TaskEnvironment task_env_;
   signin::IdentityTestEnvironment identity_test_env_;
   ::testing::StrictMock<MockBulkLeakCheckDelegateInterface> delegate_;
-  raw_ptr<MockLeakDetectionRequestFactory, DanglingUntriaged> request_factory_;
   BulkLeakCheckImpl bulk_check_;
+  raw_ptr<MockLeakDetectionRequestFactory> request_factory_ = nullptr;
 };
 
 PayloadAndCallback BulkLeakCheckTest::ImitateNetworkRequest(

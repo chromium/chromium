@@ -70,4 +70,25 @@ void FakeDriver::DestroyContext(FakeContext::IdType id) {
   context_.DestroyObject(id);
 }
 
+FakeBuffer::IdType FakeDriver::CreateBuffer(VAContextID context,
+                                            VABufferType type,
+                                            unsigned int size_per_element,
+                                            unsigned int num_elements,
+                                            const void* data) {
+  return buffers_.CreateObject(context, type, size_per_element, num_elements,
+                               data);
+}
+
+bool FakeDriver::BufferExists(FakeBuffer::IdType id) {
+  return buffers_.ObjectExists(id);
+}
+
+const FakeBuffer& FakeDriver::GetBuffer(FakeBuffer::IdType id) {
+  return buffers_.GetObject(id);
+}
+
+void FakeDriver::DestroyBuffer(FakeBuffer::IdType id) {
+  buffers_.DestroyObject(id);
+}
+
 }  // namespace media::internal

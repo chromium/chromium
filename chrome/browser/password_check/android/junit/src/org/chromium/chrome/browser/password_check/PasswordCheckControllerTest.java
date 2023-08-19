@@ -95,7 +95,6 @@ public class PasswordCheckControllerTest {
             "PasswordManager.BulkCheck.UserActionAndroid";
     private static final String PASSWORD_CHECK_COMPROMISED_CREDENTIALS_AFTER_CHECK_HISTOGRAM =
             "PasswordManager.BulkCheck.CompromisedCredentialsCountAfterCheckAndroid";
-    private static final boolean USE_LAST_VALID_AUTH = true;
 
     @Rule
     public Features.JUnitProcessor mFeaturesProcessor = new Features.JUnitProcessor();

@@ -4,21 +4,30 @@
 
 #import "ios/chrome/browser/ui/first_run/first_run_screen_provider.h"
 
+#import "base/feature_list.h"
 #import "base/notreached.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/ui/screen/screen_provider+protected.h"
 #import "ios/chrome/browser/ui/screen/screen_type.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+#import "ios/public/provider/chrome/browser/signin/choice_api.h"
 
 @implementation FirstRunScreenProvider
 
 - (instancetype)init {
   NSMutableArray* screens = [NSMutableArray array];
   [screens addObject:@(kSignIn)];
-  [screens addObject:@(kTangibleSync)];
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    [screens addObject:@(kHistorySync)];
+  } else {
+    [screens addObject:@(kTangibleSync)];
+  }
   [screens addObject:@(kDefaultBrowserPromo)];
+
+  if (ios::provider::IsChoiceEnabled()) {
+    [screens addObject:@(kChoice)];
+  }
+
   [screens addObject:@(kStepsCompleted)];
   return [super initWithScreens:screens];
 }

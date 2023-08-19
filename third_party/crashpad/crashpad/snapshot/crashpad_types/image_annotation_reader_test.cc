@@ -20,6 +20,7 @@
 
 #include <algorithm>
 
+#include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "client/annotation.h"
 #include "client/annotation_list.h"
@@ -28,7 +29,6 @@
 #include "test/multiprocess_exec.h"
 #include "test/process_type.h"
 #include "util/file/file_io.h"
-#include "util/misc/as_underlying_type.h"
 #include "util/misc/from_pointer_cast.h"
 #include "util/process/process_memory_native.h"
 
@@ -54,7 +54,7 @@ void ExpectAnnotationList(const std::vector<AnnotationSnapshot>& list,
   for (const Annotation* expected_annotation : expected_list) {
     const AnnotationSnapshot& annotation = list[index++];
     EXPECT_EQ(annotation.name, expected_annotation->name());
-    EXPECT_EQ(annotation.type, AsUnderlyingType(expected_annotation->type()));
+    EXPECT_EQ(annotation.type, base::to_underlying(expected_annotation->type()));
     EXPECT_EQ(annotation.value.size(), expected_annotation->size());
     EXPECT_EQ(memcmp(annotation.value.data(),
                      expected_annotation->value(),

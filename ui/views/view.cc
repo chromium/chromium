@@ -3209,15 +3209,16 @@ void View::SetLayoutManagerImpl(std::unique_ptr<LayoutManager> layout_manager) {
 void View::SetLayerBounds(const gfx::Size& size,
                           const LayerOffsetData& offset_data) {
   const gfx::Rect bounds = gfx::Rect(size) + offset_data.offset();
-  const bool bounds_changed = (bounds != layer()->GetTargetBounds());
   layer()->SetBounds(bounds);
   for (ui::Layer* layer : GetLayersInOrder(ViewLayer::kExclude)) {
     layer->SetBounds(gfx::Rect(layer->size()) + bounds.OffsetFromOrigin());
   }
   SnapLayerToPixelBoundary(offset_data);
-  if (bounds_changed) {
-    for (ViewObserver& observer : observers_)
-      observer.OnLayerTargetBoundsChanged(this);
+
+  // Observers may need to adjust the bounds of layers in regions, so always
+  // notify observers even if the bounds of `layer()` didn't change.
+  for (ViewObserver& observer : observers_) {
+    observer.OnViewLayerBoundsSet(this);
   }
 }
 
@@ -3315,6 +3316,8 @@ void View::CreateLayer(ui::LayerType layer_type) {
 }
 
 bool View::UpdateParentLayers() {
+  TRACE_EVENT1("views", "View::UpdateParentLayers", "class", GetClassName());
+
   // Attach all top-level un-parented layers.
   if (layer()) {
     if (!layer()->parent()) {

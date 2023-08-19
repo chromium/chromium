@@ -7,10 +7,6 @@
 #import "base/check_op.h"
 #import "ios/web/public/thread/web_thread.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // Prioritizes queued WKHTTPCookieStore completion handlers to run as soon as
 // possible. This function is needed because some of WKHTTPCookieStore methods

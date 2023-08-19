@@ -193,6 +193,7 @@ bool SystemToastStyle::ToggleA11yFocus() {
   }
 
   auto* focus_ring = views::FocusRing::Get(dismiss_button_);
+  focus_ring->SetOutsetFocusRingDisabled(true);
   focus_ring->SetHasFocusPredicate(base::BindRepeating(
       [](const SystemToastStyle* style, const views::View* view) {
         return style->is_dismiss_button_highlighted_;
@@ -218,17 +219,6 @@ void SystemToastStyle::SetText(const std::u16string& text) {
   label_->SetText(text);
 }
 
-void SystemToastStyle::AddSecondButton(
-    base::RepeatingClosure second_button_callback,
-    const std::u16string& second_button_text) {
-  CHECK(dismiss_button_);
-  second_button_ = AddChildView(std::make_unique<PillButton>(
-      std::move(second_button_callback), second_button_text,
-      PillButton::Type::kAccentFloatingWithoutIcon));
-  second_button_->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
-  UpdateInsideBorderInsets();
-}
-
 void SystemToastStyle::AddedToWidget() {
   // Attach the shadow at the bottom of the widget layer.
   auto* shadow_layer = shadow_->GetLayer();
@@ -239,13 +229,16 @@ void SystemToastStyle::AddedToWidget() {
 
   // Update shadow content bounds with the bounds of widget layer.
   shadow_->SetContentBounds(gfx::Rect(widget_layer->bounds().size()));
+
+  // Make shadow observe the theme change of the widget.
+  shadow_->ObserveColorProviderSource(GetWidget());
 }
 
 void SystemToastStyle::UpdateInsideBorderInsets() {
   static_cast<views::BoxLayout*>(GetLayoutManager())
-      ->set_inside_border_insets(ComputeInsets(
-          !!dismiss_button_ || !!second_button_, label_->GetRequiredLines() > 1,
-          !leading_icon_->is_empty()));
+      ->set_inside_border_insets(ComputeInsets(!!dismiss_button_,
+                                               label_->GetRequiredLines() > 1,
+                                               !leading_icon_->is_empty()));
   InvalidateLayout();
 }
 

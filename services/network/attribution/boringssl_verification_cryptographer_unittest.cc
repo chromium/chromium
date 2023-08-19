@@ -15,13 +15,11 @@
 #include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/trust_token.h"
 
+namespace network {
 namespace {
+
 const network::mojom::TrustTokenProtocolVersion kProtocolVersion =
     network::mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb;
-
-}  // namespace
-
-namespace network {
 
 class BoringsslVerificationCryptographerTest : public testing::Test {
  protected:
@@ -75,4 +73,5 @@ TEST_F(BoringsslVerificationCryptographerTest, IssuanceAndRedemption) {
   ASSERT_TRUE(trust_token);
 }
 
+}  // namespace
 }  // namespace network

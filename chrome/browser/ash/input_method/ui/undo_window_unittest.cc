@@ -37,7 +37,7 @@ class UndoWindowTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::TearDown();
   }
 
-  raw_ptr<UndoWindow, ExperimentalAsh> undo_window_;
+  raw_ptr<UndoWindow, DanglingUntriaged | ExperimentalAsh> undo_window_;
   std::unique_ptr<MockAssistiveDelegate> delegate_ =
       std::make_unique<MockAssistiveDelegate>();
   AssistiveWindowButton undo_button_;

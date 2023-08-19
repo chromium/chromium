@@ -306,9 +306,10 @@ TEST_F(FocusControllerTest, FindScopeOwnerSlot) {
       host->AttachShadowRootInternal(ShadowRootType::kOpen);
   shadow_root.setInnerHTML(String::FromUTF8("<slot></slot>"));
 
-  Element* inner1 = GetDocument().QuerySelector("#inner1");
-  Element* inner2 = GetDocument().QuerySelector("#inner2");
-  auto* slot = To<HTMLSlotElement>(shadow_root.QuerySelector("slot"));
+  Element* inner1 = GetDocument().QuerySelector(AtomicString("#inner1"));
+  Element* inner2 = GetDocument().QuerySelector(AtomicString("#inner2"));
+  auto* slot =
+      To<HTMLSlotElement>(shadow_root.QuerySelector(AtomicString("slot")));
 
   EXPECT_EQ(nullptr, FocusController::FindScopeOwnerSlot(*host));
   EXPECT_EQ(nullptr, FocusController::FindScopeOwnerSlot(*slot));
@@ -345,7 +346,7 @@ TEST_F(FocusControllerTestWithIframes,
   ASSERT_TRUE(child_frame);
   Document* child_document = child_frame->GetDocument();
   ASSERT_TRUE(child_document);
-  Element* checkbox = child_document->getElementById("checkbox");
+  Element* checkbox = child_document->getElementById(AtomicString("checkbox"));
   ASSERT_TRUE(checkbox);
 
   // |NextFocusableElementForImeAndAutofill| finds another element that needs

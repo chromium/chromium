@@ -179,17 +179,9 @@ class LoginDisplayHost {
   // user's displayed email value will be updated to `email`.
   virtual void SetDisplayEmail(const std::string& email) = 0;
 
-  // Sets the displayed name and given name for the next login attempt. If it
-  // succeeds, user's displayed name and give name values will be updated to
-  // `display_name` and `given_name`.
-  virtual void SetDisplayAndGivenName(const std::string& display_name,
-                                      const std::string& given_name) = 0;
-
-  // Load wallpaper for given `account_id`.
-  virtual void LoadWallpaper(const AccountId& account_id) = 0;
-
-  // Loads the default sign-in wallpaper.
-  virtual void LoadSigninWallpaper() = 0;
+  // Updates the wallpaper on the login screen for the prefilled
+  // account. If the account is not valid we show a default signin wallpaper.
+  virtual void UpdateWallpaper(const AccountId& prefilled_account) = 0;
 
   // Returns true if user is allowed to log in by domain policy.
   virtual bool IsUserAllowlisted(

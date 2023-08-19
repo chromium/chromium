@@ -19,17 +19,10 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/gfx/ios/uikit_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // The size of symbol icons.
 NSInteger kIconSymbolPointSize = 13;
-
-// Specific symbol image used as a badge for unslected tabs.
-NSString* kCircleSymbol = @"circle";
 
 // Size of activity indicator replacing fav icon when active.
 const CGFloat kIndicatorSize = 16.0;
@@ -253,8 +246,6 @@ void PositionView(UIView* view, CGPoint point) {
   if (_theme == theme)
     return;
 
-  self.iconView.backgroundColor = UIColor.clearColor;
-
   self.overrideUserInterfaceStyle = (theme == GridThemeDark)
                                         ? UIUserInterfaceStyleDark
                                         : UIUserInterfaceStyleUnspecified;
@@ -372,6 +363,8 @@ void PositionView(UIView* view, CGPoint point) {
   iconView.contentMode = UIViewContentModeScaleAspectFill;
   iconView.layer.cornerRadius = kGridCellIconCornerRadius;
   iconView.layer.masksToBounds = YES;
+  iconView.backgroundColor = UIColor.clearColor;
+  iconView.tintColor = [UIColor colorNamed:kGrey400Color];
 
   CGRect indicatorFrame = CGRectMake(0, 0, kIndicatorSize, kIndicatorSize);
   MDCActivityIndicator* activityIndicator =

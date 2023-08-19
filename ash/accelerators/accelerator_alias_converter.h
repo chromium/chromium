@@ -50,13 +50,8 @@ class ASH_EXPORT AcceleratorAliasConverter {
   // Create accelerator alias for |six_pack_key|. Result could be either zero or
   // one alias found. Use a vector to be more consistent and cleaner.
   std::vector<ui::Accelerator> CreateSixPackAliases(
-      const ui::Accelerator& accelerator) const;
-
-  // Create reversed six pack alias for |reversed_six_pack_key|. Result could be
-  // either zero or one alias found. Use a vector to be more consistent and
-  // cleaner.
-  std::vector<ui::Accelerator> CreateReversedSixPackAliases(
-      const ui::Accelerator& accelerator) const;
+      const ui::Accelerator& accelerator,
+      absl::optional<int> device_id) const;
 
   // Given a list of accelerators, filter out those accelerators that have
   // unsupported keys. Return a list of filtered accelerators with supported

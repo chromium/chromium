@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("metrics") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "feed_metrics_constants.h",
     "feed_metrics_constants.mm",
@@ -14,22 +13,20 @@ source_set("metrics") {
     "feed_session_recorder+testing.h",
     "feed_session_recorder.h",
     "feed_session_recorder.mm",
-    "home_metrics.h",
-    "home_metrics.mm",
-    "new_tab_page_metrics_constants.h",
-    "new_tab_page_metrics_constants.mm",
     "new_tab_page_metrics_recorder.h",
     "new_tab_page_metrics_recorder.mm",
   ]
   deps = [
+    ":constants",
     "//base",
     "//components/favicon_base",
     "//components/feed/core/v2/public:common",
+    "//components/metrics",
     "//components/ntp_tiles",
     "//ios/chrome/browser/discover_feed:constants",
     "//ios/chrome/browser/discover_feed:discover_feed_refresher",
     "//ios/chrome/browser/ntp:features",
-    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/ui/content_suggestions:constants",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
     "//ios/chrome/browser/ui/content_suggestions:metrics",
@@ -40,8 +37,31 @@ source_set("metrics") {
   ]
 }
 
+source_set("constants") {
+  sources = [
+    "new_tab_page_metrics_constants.h",
+    "new_tab_page_metrics_constants.mm",
+  ]
+  deps = []
+}
+
+source_set("home_metrics") {
+  sources = [
+    "home_metrics.h",
+    "home_metrics.mm",
+  ]
+  deps = [
+    ":constants",
+    "//base",
+    "//components/prefs",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/ui/content_suggestions:constants",
+    "//ios/chrome/browser/ui/ntp",
+  ]
+}
+
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "feed_metrics_recorder_unittest.mm",

@@ -129,23 +129,6 @@ class AutofillPrivateRemoveEntryFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
-class AutofillPrivateValidatePhoneNumbersFunction : public ExtensionFunction {
- public:
-  AutofillPrivateValidatePhoneNumbersFunction() = default;
-  AutofillPrivateValidatePhoneNumbersFunction(
-      const AutofillPrivateValidatePhoneNumbersFunction&) = delete;
-  AutofillPrivateValidatePhoneNumbersFunction& operator=(
-      const AutofillPrivateValidatePhoneNumbersFunction&) = delete;
-  DECLARE_EXTENSION_FUNCTION("autofillPrivate.validatePhoneNumbers",
-                             AUTOFILLPRIVATE_VALIDATEPHONENUMBERS)
-
- protected:
-  ~AutofillPrivateValidatePhoneNumbersFunction() override = default;
-
-  // ExtensionFunction overrides.
-  ResponseAction Run() override;
-};
-
 class AutofillPrivateMaskCreditCardFunction : public ExtensionFunction {
  public:
   AutofillPrivateMaskCreditCardFunction() = default;
@@ -381,6 +364,24 @@ class AutofillPrivateAuthenticateUserToEditLocalCardFunction
 
  private:
   void CanShowEditDialogForLocalCard(bool can_show);
+};
+
+class AutofillPrivateCheckIfDeviceAuthAvailableFunction
+    : public ExtensionFunction {
+ public:
+  AutofillPrivateCheckIfDeviceAuthAvailableFunction() = default;
+  AutofillPrivateCheckIfDeviceAuthAvailableFunction(
+      const AutofillPrivateCheckIfDeviceAuthAvailableFunction&) = delete;
+  AutofillPrivateCheckIfDeviceAuthAvailableFunction& operator=(
+      const AutofillPrivateCheckIfDeviceAuthAvailableFunction&) = delete;
+  DECLARE_EXTENSION_FUNCTION("autofillPrivate.checkIfDeviceAuthAvailable",
+                             AUTOFILLPRIVATE_CHECKIFDEVICEAUTHAVAILABLE)
+
+ protected:
+  ~AutofillPrivateCheckIfDeviceAuthAvailableFunction() override = default;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
 };
 
 }  // namespace extensions

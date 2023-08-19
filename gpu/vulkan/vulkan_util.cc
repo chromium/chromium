@@ -7,19 +7,21 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "gpu/config/gpu_info.h"  // nogncheck
+#include "gpu/config/gpu_info.h"  //nogncheck
 #include "gpu/config/vulkan_info.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "ui/gl/gl_switches.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
+#include "gpu/config/gpu_finch_features.h"  //nogncheck
 #endif
 
 #define GL_NONE 0x00
@@ -38,6 +40,18 @@ namespace gpu {
 namespace {
 
 #if BUILDFLAG(IS_ANDROID)
+
+bool IsDeviceBlocked(base::StringPiece field, base::StringPiece block_list) {
+  auto disable_patterns = base::SplitString(
+      block_list, "|", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  for (const auto& disable_pattern : disable_patterns) {
+    if (base::MatchPattern(field, disable_pattern)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 int GetEMUIVersion() {
   const auto* build_info = base::android::BuildInfo::GetInstance();
   base::StringPiece manufacturer(build_info->manufacturer());
@@ -54,6 +68,136 @@ int GetEMUIVersion() {
 
   return version;
 }
+
+bool IsBlockedByBuildInfo() {
+  const char* kBlockListByHardware = "mt*";
+  const char* kBlockListByBrand = "HONOR";
+  const char* kBlockListByDevice = "OP4863|OP4883";
+  const char* kBlockListByBoard =
+      "RM67*|RM68*|k68*|mt6*|oppo67*|oppo68*|QM215|rk30sdk";
+
+  const auto* build_info = base::android::BuildInfo::GetInstance();
+  if (IsDeviceBlocked(build_info->hardware(), kBlockListByHardware)) {
+    return true;
+  }
+  if (IsDeviceBlocked(build_info->brand(), kBlockListByBrand)) {
+    return true;
+  }
+  if (IsDeviceBlocked(build_info->device(), kBlockListByDevice)) {
+    return true;
+  }
+  if (IsDeviceBlocked(build_info->board(), kBlockListByBoard)) {
+    return true;
+  }
+
+  return false;
+}
+
+BASE_FEATURE(kVulkanV2, "VulkanV2", base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsVulkanV2Enabled(const GPUInfo& gpu_info,
+                       base::StringPiece experiment_arm) {
+  const auto* build_info = base::android::BuildInfo::GetInstance();
+  // We require at least android T deqp test to pass for v2.
+  constexpr int32_t kVulkanDEQPAndroidT = 0x07E60301;
+  if (build_info->vulkan_deqp_level() < kVulkanDEQPAndroidT) {
+    return false;
+  }
+
+  if (!base::FeatureList::IsEnabled(kVulkanV2)) {
+    return false;
+  }
+
+  const base::FeatureParam<std::string> kBlockListByHardware{
+      &kVulkanV2, "BlockListByHardware", ""};
+
+  const base::FeatureParam<std::string> kBlockListByBrand{
+      &kVulkanV2, "BlockListByBrand", ""};
+
+  const base::FeatureParam<std::string> kBlockListByDevice{
+      &kVulkanV2, "BlockListByDevice", ""};
+
+  const base::FeatureParam<std::string> kBlockListByAndroidBuildId{
+      &kVulkanV2, "BlockListByAndroidBuildId", ""};
+
+  const base::FeatureParam<std::string> kBlockListByManufacturer{
+      &kVulkanV2, "BlockListByManufacturer", ""};
+
+  const base::FeatureParam<std::string> kBlockListByModel{
+      &kVulkanV2, "BlockListByModel", ""};
+
+  const base::FeatureParam<std::string> kBlockListByBoard{
+      &kVulkanV2, "BlockListByBoard", ""};
+
+  const base::FeatureParam<std::string> kBlockListByAndroidBuildFP{
+      &kVulkanV2, "BlockListByAndroidBuildFP", ""};
+
+  const base::FeatureParam<std::string> kBlockListByGLDriver{
+      &kVulkanV2, "BlockListByGLDriver", ""};
+
+  const base::FeatureParam<std::string> kBlockListByGLRenderer{
+      &kVulkanV2, "BlockListByGLRenderer", ""};
+
+  const base::FeatureParam<std::string> kBlockListByExperimentArm{
+      &kVulkanV2, "BlockListByExperimentArm", ""};
+
+  // Check block list against build info.
+  if (IsDeviceBlocked(build_info->hardware(), kBlockListByHardware.Get())) {
+    return false;
+  }
+  if (IsDeviceBlocked(build_info->brand(), kBlockListByBrand.Get())) {
+    return false;
+  }
+  if (IsDeviceBlocked(build_info->device(), kBlockListByDevice.Get())) {
+    return false;
+  }
+  if (IsDeviceBlocked(build_info->android_build_id(),
+                      kBlockListByAndroidBuildId.Get())) {
+    return false;
+  }
+  if (IsDeviceBlocked(build_info->manufacturer(),
+                      kBlockListByManufacturer.Get())) {
+    return false;
+  }
+  if (IsDeviceBlocked(build_info->model(), kBlockListByModel.Get())) {
+    return false;
+  }
+  if (IsDeviceBlocked(build_info->board(), kBlockListByBoard.Get())) {
+    return false;
+  }
+  if (IsDeviceBlocked(build_info->android_build_fp(),
+                      kBlockListByAndroidBuildFP.Get())) {
+    return false;
+  }
+
+  if (IsDeviceBlocked(gpu_info.gl_renderer, kBlockListByGLRenderer.Get())) {
+    return false;
+  }
+
+  if (IsDeviceBlocked(gpu_info.gpu.driver_version,
+                      kBlockListByGLDriver.Get())) {
+    return false;
+  }
+
+  if (IsDeviceBlocked(experiment_arm, kBlockListByExperimentArm.Get())) {
+    return false;
+  }
+
+  return true;
+}
+
+bool ShouldBypassImaginationBlock(const GPUInfo& gpu_info) {
+  return IsVulkanV2Enabled(gpu_info, "Imagination");
+}
+
+bool ShouldBypassAdrenoBlock(const GPUInfo& gpu_info) {
+  return IsVulkanV2Enabled(gpu_info, "Adreno");
+}
+
+bool ShouldBypassMediatekBlock(const GPUInfo& gpu_info) {
+  return IsVulkanV2Enabled(gpu_info, "Mediatek");
+}
+
 #endif
 }
 
@@ -206,6 +350,10 @@ bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
   return true;
 #endif
 #else   // BUILDFLAG(IS_ANDROID)
+  if (IsBlockedByBuildInfo() && !ShouldBypassMediatekBlock(gpu_info)) {
+    return false;
+  }
+
   if (vulkan_info.physical_devices.empty())
     return false;
 
@@ -218,12 +366,32 @@ bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
       return true;
   }
 
+  const base::FeatureParam<std::string> disable_patterns(
+      &features::kVulkan, "disable_by_gl_renderer", "");
+
+  if (IsDeviceBlocked(gpu_info.gl_renderer, disable_patterns.Get())) {
+    return false;
+  }
+
+  const base::FeatureParam<std::string> disable_driver_patterns(
+      &features::kVulkan, "disable_by_gl_driver", "");
+  if (IsDeviceBlocked(gpu_info.gpu.driver_version,
+                      disable_driver_patterns.Get())) {
+    return false;
+  }
+
   if (device_info.properties.vendorID == kVendorARM) {
     int emui_version = GetEMUIVersion();
     // TODO(crbug.com/1096222) Display problem with Huawei EMUI < 11 and Honor
     // devices with Mali GPU. The Mali driver version is < 19.0.0.
     if (device_info.properties.driverVersion < VK_MAKE_VERSION(19, 0, 0) &&
         emui_version < 11) {
+      return false;
+    }
+
+    // https://crbug.com/1183702
+    if (IsDeviceBlocked(gpu_info.gl_renderer, "*Mali-G?? M*") &&
+        !ShouldBypassMediatekBlock(gpu_info)) {
       return false;
     }
 
@@ -248,18 +416,44 @@ bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
     }
   }
 
-  // https:://crbug.com/1165783: Performance is not yet as good as GL.
   if (device_info.properties.vendorID == kVendorQualcomm) {
+    // https://crbug.com/1246857
+    if (IsDeviceBlocked(gpu_info.gpu.driver_version,
+                        "324.0|331.0|334.0|378.0|415.0|420.0|444.0") &&
+        !ShouldBypassAdrenoBlock(gpu_info)) {
+      return false;
+    }
+
+    // https:://crbug.com/1165783: Performance is not yet as good as GL.
     if (device_info.properties.deviceName ==
-        base::StringPiece("Adreno (TM) 630"))
+        base::StringPiece("Adreno (TM) 630")) {
       return true;
-    return false;
+    }
+
+    std::vector<const char*> slow_gpus_for_v2 = {
+        "Adreno (TM) 2??", "Adreno (TM) 3??", "Adreno (TM) 4??",
+        "Adreno (TM) 5??", "Adreno (TM) 61?", "Adreno (TM) 62?",
+    };
+
+    const bool is_slow_gpu_for_v2 =
+        base::ranges::any_of(slow_gpus_for_v2, [&](const char* pattern) {
+          return base::MatchPattern(device_info.properties.deviceName, pattern);
+        });
+
+    // Don't run vulkan for old gpus or if we are not in v2.
+    if (is_slow_gpu_for_v2 || !ShouldBypassAdrenoBlock(gpu_info)) {
+      return false;
+    }
+
+    return true;
   }
 
   // https://crbug.com/1122650: Poor performance and untriaged crashes with
   // Imagination GPUs.
-  if (device_info.properties.vendorID == kVendorImagination)
+  if (device_info.properties.vendorID == kVendorImagination &&
+      !ShouldBypassImaginationBlock(gpu_info)) {
     return false;
+  }
 
   return true;
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -320,6 +514,96 @@ uint32_t VkImageLayoutToGLImageLayout(VkImageLayout layout) {
       NOTREACHED() << "Invalid image layout " << layout;
       return GL_NONE;
   }
+}
+
+bool IsVkExternalSemaphoreHandleTypeSupported(
+    VulkanDeviceQueue* device_queue,
+    VkExternalSemaphoreHandleTypeFlagBits handle_type) {
+  if (!gfx::HasExtension(device_queue->enabled_extensions(),
+#if BUILDFLAG(IS_WIN)
+                         VK_KHR_EXTERNAL_SEMAPHORE_WIN32_EXTENSION_NAME
+#elif BUILDFLAG(IS_POSIX)
+                         VK_KHR_EXTERNAL_SEMAPHORE_FD_EXTENSION_NAME
+#elif BUILDFLAG(IS_FUCHSIA)
+                         VK_FUCHSIA_EXTERNAL_SEMAPHORE_EXTENSION_NAME
+#endif
+                         )) {
+    return false;
+  }
+
+  VkPhysicalDevice physical_device = device_queue->GetVulkanPhysicalDevice();
+
+  VkPhysicalDeviceExternalSemaphoreInfo semaphore_info = {
+      .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_SEMAPHORE_INFO,
+      .handleType = handle_type,
+  };
+
+  VkExternalSemaphoreProperties semaphore_properties = {
+      .sType = VK_STRUCTURE_TYPE_EXTERNAL_SEMAPHORE_PROPERTIES,
+  };
+
+  vkGetPhysicalDeviceExternalSemaphoreProperties(
+      physical_device, &semaphore_info, &semaphore_properties);
+
+  return (semaphore_properties.externalSemaphoreFeatures &
+          VK_EXTERNAL_SEMAPHORE_FEATURE_EXPORTABLE_BIT) &&
+         (semaphore_properties.externalSemaphoreFeatures &
+          VK_EXTERNAL_SEMAPHORE_FEATURE_IMPORTABLE_BIT);
+}
+
+VkResult QueryVkExternalMemoryProperties(
+    VkPhysicalDevice physical_device,
+    VkFormat format,
+    VkImageType type,
+    VkImageTiling tiling,
+    VkImageUsageFlags usage,
+    VkImageCreateFlags flags,
+    VkExternalMemoryHandleTypeFlagBits handle_type,
+    VkExternalMemoryProperties* external_memory_properties) {
+  VkPhysicalDeviceImageFormatInfo2 format_info_2 = {
+      .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_FORMAT_INFO_2,
+      .format = format,
+      .type = type,
+      .tiling = tiling,
+      .usage = usage,
+      .flags = flags,
+  };
+
+  VkPhysicalDeviceExternalImageFormatInfo external_info = {
+      .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_IMAGE_FORMAT_INFO,
+      .handleType = handle_type,
+  };
+  format_info_2.pNext = &external_info;
+
+  // From the Vulkan spec:
+  //   tiling must be VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT if and only if
+  //   the pNext chain includes VkPhysicalDeviceImageDrmFormatModifierInfoEXT
+  VkPhysicalDeviceImageDrmFormatModifierInfoEXT modifier_info = {
+      .sType =
+          VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_DRM_FORMAT_MODIFIER_INFO_EXT,
+      .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
+  };
+  if (tiling == VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT) {
+    external_info.pNext = &modifier_info;
+  }
+
+  VkImageFormatProperties2 image_format_properties_2 = {
+      .sType = VK_STRUCTURE_TYPE_IMAGE_FORMAT_PROPERTIES_2,
+  };
+  VkExternalImageFormatProperties external_image_format_properties = {
+      .sType = VK_STRUCTURE_TYPE_EXTERNAL_IMAGE_FORMAT_PROPERTIES,
+  };
+  image_format_properties_2.pNext = &external_image_format_properties;
+
+  VkResult result = vkGetPhysicalDeviceImageFormatProperties2(
+      physical_device, &format_info_2, &image_format_properties_2);
+  if (result != VK_SUCCESS) {
+    return result;
+  }
+
+  *external_memory_properties =
+      external_image_format_properties.externalMemoryProperties;
+  return VK_SUCCESS;
 }
 
 }  // namespace gpu

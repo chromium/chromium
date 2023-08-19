@@ -54,7 +54,7 @@ class LinkTest : public test::BaseControlTestWidget {
   ui::test::EventGenerator* event_generator() { return event_generator_.get(); }
 
  public:
-  raw_ptr<Link, DanglingUntriaged> link_ = nullptr;
+  raw_ptr<Link, AcrossTasksDanglingUntriaged> link_ = nullptr;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
 };
 

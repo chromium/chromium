@@ -1838,4 +1838,59 @@ TEST(Mutex, SignalExitedThread) {
   for (auto &th : top) th.join();
 }
 
+TEST(Mutex, WriterPriority) {
+  absl::Mutex mu;
+  bool wrote = false;
+  std::atomic<bool> saw_wrote{false};
+  auto readfunc = [&]() {
+    for (size_t i = 0; i < 10; ++i) {
+      absl::ReaderMutexLock lock(&mu);
+      if (wrote) {
+        saw_wrote = true;
+        break;
+      }
+      absl::SleepFor(absl::Seconds(1));
+    }
+  };
+  std::thread t1(readfunc);
+  absl::SleepFor(absl::Milliseconds(500));
+  std::thread t2(readfunc);
+  // Note: this test guards against a bug that was related to an uninit
+  // PerThreadSynch::priority, so the writer intentionally runs on a new thread.
+  std::thread t3([&]() {
+    // The writer should be able squeeze between the two alternating readers.
+    absl::MutexLock lock(&mu);
+    wrote = true;
+  });
+  t1.join();
+  t2.join();
+  t3.join();
+  EXPECT_TRUE(saw_wrote.load());
+}
+
+TEST(Mutex, LockWhenWithTimeoutResult) {
+  // Check various corner cases for Await/LockWhen return value
+  // with always true/always false conditions.
+  absl::Mutex mu;
+  const bool kAlwaysTrue = true, kAlwaysFalse = false;
+  const absl::Condition kTrueCond(&kAlwaysTrue), kFalseCond(&kAlwaysFalse);
+  EXPECT_TRUE(mu.LockWhenWithTimeout(kTrueCond, absl::Milliseconds(1)));
+  mu.Unlock();
+  EXPECT_FALSE(mu.LockWhenWithTimeout(kFalseCond, absl::Milliseconds(1)));
+  EXPECT_TRUE(mu.AwaitWithTimeout(kTrueCond, absl::Milliseconds(1)));
+  EXPECT_FALSE(mu.AwaitWithTimeout(kFalseCond, absl::Milliseconds(1)));
+  std::thread th1([&]() {
+    EXPECT_TRUE(mu.LockWhenWithTimeout(kTrueCond, absl::Milliseconds(1)));
+    mu.Unlock();
+  });
+  std::thread th2([&]() {
+    EXPECT_FALSE(mu.LockWhenWithTimeout(kFalseCond, absl::Milliseconds(1)));
+    mu.Unlock();
+  });
+  absl::SleepFor(absl::Milliseconds(100));
+  mu.Unlock();
+  th1.join();
+  th2.join();
+}
+
 }  // namespace

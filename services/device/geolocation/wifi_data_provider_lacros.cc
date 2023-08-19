@@ -12,6 +12,7 @@
 #include "chromeos/lacros/lacros_service.h"
 #include "services/device/geolocation/wifi_data_provider_handle.h"
 #include "services/device/geolocation/wifi_polling_policy.h"
+#include "services/device/public/mojom/geolocation_internals.mojom.h"
 
 namespace device {
 
@@ -34,12 +35,12 @@ void PopulateWifiData(
     const std::vector<crosapi::mojom::AccessPointDataPtr>& access_points,
     WifiData& wifi_data) {
   for (const auto& access_point : access_points) {
-    AccessPointData ap_data;
+    mojom::AccessPointData ap_data;
     ap_data.mac_address = base::UTF16ToUTF8(access_point->mac_address);
     ap_data.radio_signal_strength = access_point->radio_signal_strength;
     ap_data.channel = access_point->channel;
     ap_data.signal_to_noise = access_point->signal_to_noise;
-    wifi_data.access_point_data.insert(std::move(ap_data));
+    wifi_data.access_point_data.insert(ap_data);
   }
 }
 

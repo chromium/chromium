@@ -196,7 +196,7 @@ static_library("test_support") {
     "//components/devtools/devtools_pipe",
     "//components/memory_system",
     "//components/nacl/common:buildflags",
-    "//components/startup_metric_utils/browser",
+    "//components/startup_metric_utils",
     "//content/public/app",
     "//content/public/common",
     "//extensions/buildflags",
@@ -226,7 +226,6 @@ static_library("test_support") {
   if (is_mac) {
     sources += [ "chrome_main_mac.mm" ]
 
-    configs += [ "//build/config/compiler:enable_arc" ]
     deps += [ "//chrome:chrome_framework" ]
   }
 

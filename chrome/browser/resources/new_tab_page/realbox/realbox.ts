@@ -15,7 +15,7 @@ import {hasKeyModifiers} from 'chrome://resources/js/util_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import {decodeString16, mojoString16, mojoTimeDelta} from '../utils.js';
+import {decodeString16, mojoString16} from '../utils.js';
 
 import {getTemplate} from './realbox.html.js';
 
@@ -151,15 +151,6 @@ export class RealboxElement extends PolymerElement {
         value: {text: '', inline: ''},
       },
 
-      /**
-       * The time at which the input was last focused in milliseconds. Passed to
-       * the browser when navigating to a match.
-       */
-      lastInputFocusTime_: {
-        type: Number,
-        value: null,
-      },
-
       /** The last queried input text. */
       lastQueriedInput_: {
         type: String,
@@ -220,6 +211,12 @@ export class RealboxElement extends PolymerElement {
         value: loadTimeData.getString('realboxWidthBehavior'),
         reflectToAttribute: true,
       },
+
+      isTall_: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('realboxIsTall'),
+        reflectToAttribute: true,
+      },
     };
   }
 
@@ -235,7 +232,6 @@ export class RealboxElement extends PolymerElement {
   private isDeletingInput_: boolean;
   private lastIgnoredEnterEvent_: KeyboardEvent|null;
   private lastInput_: Input;
-  private lastInputFocusTime_: number|null;
   private lastQueriedInput_: string|null;
   private pastedInInput_: boolean;
   private realboxIcon_: string;
@@ -373,7 +369,7 @@ export class RealboxElement extends PolymerElement {
   }
 
   private onInputFocus_() {
-    this.lastInputFocusTime_ = window.performance.now();
+    this.pageHandler_.onFocusChanged(true);
   }
 
   private onInputInput_(e: InputEvent) {
@@ -496,6 +492,7 @@ export class RealboxElement extends PolymerElement {
         // focusing and pressing 'Enter'.
         this.pageHandler_.stopAutocomplete(/*clearResult=*/ false);
       }
+      this.pageHandler_.onFocusChanged(false);
     }
   }
 
@@ -692,11 +689,8 @@ export class RealboxElement extends PolymerElement {
     assert(matchIndex >= 0);
     const match = this.result_!.matches[matchIndex];
     assert(match);
-    assert(this.lastInputFocusTime_);
-    const delta =
-        mojoTimeDelta(window.performance.now() - this.lastInputFocusTime_);
     this.pageHandler_.openAutocompleteMatch(
-        matchIndex, match.destinationUrl, this.dropdownIsVisible, delta,
+        matchIndex, match.destinationUrl, this.dropdownIsVisible,
         (e as MouseEvent).button || 0, e.altKey, e.ctrlKey, e.metaKey,
         e.shiftKey);
     e.preventDefault();

@@ -17,12 +17,14 @@ namespace {
 
 // The conversion map for LacrosAvailability policy data. The values must match
 // the ones from LacrosAvailability.yaml.
+// TODO(crbug.com/1448575): Remove the side_by_side and lacros_primary values
+// from the policy.
 constexpr auto kLacrosAvailabilityMap =
     base::MakeFixedFlatMap<base::StringPiece, LacrosAvailability>({
         {"user_choice", LacrosAvailability::kUserChoice},
         {"lacros_disallowed", LacrosAvailability::kLacrosDisallowed},
-        {"side_by_side", LacrosAvailability::kSideBySide},
-        {"lacros_primary", LacrosAvailability::kLacrosPrimary},
+        {"side_by_side", LacrosAvailability::kLacrosDisallowed},
+        {"lacros_primary", LacrosAvailability::kLacrosDisallowed},
         {"lacros_only", LacrosAvailability::kLacrosOnly},
     });
 

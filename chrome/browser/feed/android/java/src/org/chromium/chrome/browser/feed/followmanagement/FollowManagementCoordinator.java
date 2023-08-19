@@ -25,7 +25,6 @@ import org.chromium.ui.widget.Toast;
  * https://chromium.googlesource.com/chromium/src/+/HEAD/docs/ui/android/mvc_simple_list_tutorial.md
  */
 public class FollowManagementCoordinator {
-    private static final String TAG = "FollowMMCoordinator";
     private FollowManagementMediator mMediator;
     private AppCompatActivity mActivity;
     private final View mView;

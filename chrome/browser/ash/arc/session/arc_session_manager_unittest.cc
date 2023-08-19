@@ -443,6 +443,8 @@ TEST_F(ArcSessionManagerTest, BaseWorkflow) {
 }
 
 TEST_F(ArcSessionManagerTest, SignedInWorkflow) {
+  base::HistogramTester histogram_tester;
+
   PrefService* const prefs = profile()->GetPrefs();
   prefs->SetBoolean(prefs::kArcTermsAccepted, true);
   prefs->SetBoolean(prefs::kArcSignedIn, true);
@@ -455,6 +457,8 @@ TEST_F(ArcSessionManagerTest, SignedInWorkflow) {
 
   // When signed-in, enabling ARC results in the ACTIVE state.
   arc_session_manager()->RequestEnable();
+  histogram_tester.ExpectUniqueSample(
+      "Arc.DelayedActivation.ActivationIsDelayed", false, 1);
   ASSERT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
 }
 

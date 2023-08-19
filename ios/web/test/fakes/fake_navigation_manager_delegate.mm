@@ -6,10 +6,6 @@
 #import "ios/web/web_state/ui/crw_web_view_navigation_proxy.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace web {
 
 void FakeNavigationManagerDelegate::ClearDialogs() {}

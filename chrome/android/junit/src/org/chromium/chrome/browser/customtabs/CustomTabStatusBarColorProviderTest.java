@@ -32,8 +32,6 @@ import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class CustomTabStatusBarColorProviderTest {
-    private static final int DEFAULT_COLOR = 0x11223344;
-    private static final int FALLBACK_COLOR = 0x55667788;
     private static final int USER_PROVIDED_COLOR = 0x99aabbcc;
 
     @Mock public CustomTabIntentDataProvider mCustomTabIntentDataProvider;

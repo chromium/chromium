@@ -55,8 +55,8 @@ import org.chromium.url.Origin;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {CustomTabActivityUrlLoadingTest.ShadowOrigin.class})
-@DisableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS})
-@EnableFeatures({ChromeFeatureList.OPAQUE_ORIGIN_FOR_INCOMING_INTENTS})
+@DisableFeatures(ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS)
+@EnableFeatures(ChromeFeatureList.OPAQUE_ORIGIN_FOR_INCOMING_INTENTS)
 public class CustomTabActivityUrlLoadingTest {
     public static final String PASSWORD_CHANGE_USERNAME = "Peter";
 

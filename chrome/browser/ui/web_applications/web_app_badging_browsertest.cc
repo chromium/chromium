@@ -52,8 +52,8 @@ class WebAppBadgingBrowserTest : public WebAppControllerBrowserTest {
     main_app_id_ = InstallPWA(start_url);
 
     GURL sub_start_url = https_server()->GetURL("/web_app_badging/blank.html");
-    auto sub_app_info = std::make_unique<WebAppInstallInfo>();
-    sub_app_info->start_url = sub_start_url;
+    auto sub_app_info =
+        WebAppInstallInfo::CreateWithStartUrlForTesting(sub_start_url);
     sub_app_info->scope = sub_start_url;
     sub_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
     sub_app_id_ = InstallWebApp(std::move(sub_app_info));
@@ -239,10 +239,10 @@ class WebAppBadgingBrowserTest : public WebAppControllerBrowserTest {
   const AppId& sub_app_id() { return sub_app_id_; }
   const AppId& cross_site_app_id() { return cross_site_app_id_; }
 
-  raw_ptr<RenderFrameHost, DanglingUntriaged> main_frame_;
-  raw_ptr<RenderFrameHost, DanglingUntriaged> sub_app_frame_;
-  raw_ptr<RenderFrameHost, DanglingUntriaged> in_scope_frame_;
-  raw_ptr<RenderFrameHost, DanglingUntriaged> cross_site_frame_;
+  raw_ptr<RenderFrameHost, AcrossTasksDanglingUntriaged> main_frame_;
+  raw_ptr<RenderFrameHost, AcrossTasksDanglingUntriaged> sub_app_frame_;
+  raw_ptr<RenderFrameHost, AcrossTasksDanglingUntriaged> in_scope_frame_;
+  raw_ptr<RenderFrameHost, AcrossTasksDanglingUntriaged> cross_site_frame_;
 
   // Use this script text with EvalJs() on |main_frame_| to register a service
   // worker.  Use ReplaceJs() to replace $1 with the service worker scope URL.
@@ -286,7 +286,8 @@ class WebAppBadgingBrowserTest : public WebAppControllerBrowserTest {
   AppId sub_app_id_;
   AppId cross_site_app_id_;
   std::unique_ptr<base::RunLoop> awaiter_;
-  raw_ptr<badging::TestBadgeManagerDelegate, DanglingUntriaged> delegate_;
+  raw_ptr<badging::TestBadgeManagerDelegate, AcrossTasksDanglingUntriaged>
+      delegate_;
   net::EmbeddedTestServer cross_origin_https_server_;
 };
 

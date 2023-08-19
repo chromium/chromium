@@ -47,16 +47,10 @@ void PrinterInstaller::InstallPrinter(std::string printer_id,
                      weak_factory_.GetWeakPtr(), std::move(cb), *printer));
 }
 
-// TODO(crbug.com/945409): Test whether we need to call
-// CupsPrintersManager::PrinterInstalled here.
 void PrinterInstaller::OnInstallPrinter(InstallPrinterCallback cb,
                                         const chromeos::Printer& printer,
                                         bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (success) {
-    delegate_->PrinterInstalled(printer);
-  }
 
   Finish(std::move(cb),
          success ? InstallPrinterResult::kSuccess

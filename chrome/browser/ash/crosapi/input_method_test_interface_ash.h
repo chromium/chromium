@@ -14,6 +14,7 @@
 #include "base/scoped_observation.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "ui/base/ime/ash/input_method_ash.h"
+#include "ui/base/ime/ash/text_input_method.h"
 
 namespace crosapi {
 
@@ -96,6 +97,9 @@ class InputMethodTestInterfaceAsh : public mojom::InputMethodTestInterface,
   void DeleteSurroundingText(uint32_t length_before_selection,
                              uint32_t length_after_selection,
                              DeleteSurroundingTextCallback callback) override;
+  void InstallAndSwitchToInputMethod(
+      mojom::InputMethodPtr input_method,
+      InstallAndSwitchToInputMethodCallback callback) override;
 
   // FakeTextInputMethod::Observer:
   void OnFocus() override;
@@ -107,8 +111,26 @@ class InputMethodTestInterfaceAsh : public mojom::InputMethodTestInterface,
     std::string text;
     gfx::Range selection_range;
   };
+
+  // This installs a new input method upon instantiation and uninstalls it on
+  // destruction.
+  class ScopedInputMethodInstall {
+   public:
+    explicit ScopedInputMethodInstall(const mojom::InputMethod& input_method,
+                                      ash::TextInputMethod* text_input_method);
+    ~ScopedInputMethodInstall();
+
+    const std::string& extension_id() const;
+    std::string GetInputMethodId() const;
+
+   private:
+    std::string extension_id_;
+  };
+
   raw_ptr<ash::InputMethodAsh, ExperimentalAsh> text_input_target_;
   FakeTextInputMethod fake_text_input_method_;
+  // For testing, only allow one input method to be installed.
+  std::unique_ptr<ScopedInputMethodInstall> installed_input_method_;
   base::ScopedObservation<FakeTextInputMethod, FakeTextInputMethod::Observer>
       text_input_method_observation_{this};
   base::OnceClosureList focus_callbacks_;

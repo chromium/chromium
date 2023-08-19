@@ -536,9 +536,6 @@ struct OneFieldHashTraits : GenericHashTraits<T> {
     static const bool value =
         FieldTraits::template NeedsToForbidGCOnMove<>::value;
   };
-
-  static constexpr bool kCanTraceConcurrently =
-      FieldTraits::kCanTraceConcurrently;
 };
 
 // A HashTraits type for T to delegate all HashTraits API to two fields.
@@ -591,14 +588,6 @@ struct TwoFieldsHashTraits : OneFieldHashTraits<T, first_field, FirstTraits> {
         FirstTraits::template NeedsToForbidGCOnMove<>::value ||
         SecondTraits::template NeedsToForbidGCOnMove<>::value;
   };
-
-  // Even non-traceable keys need to have their trait set. This is because
-  // non-traceable keys still need to be processed concurrently for checking
-  // empty/deleted state.
-  static constexpr bool kCanTraceConcurrently =
-      FirstTraits::kCanTraceConcurrently &&
-      (SecondTraits::kCanTraceConcurrently ||
-       !IsTraceable<typename SecondTraits::TraitType>::value);
 };
 
 template <typename FirstTraitsArg,

@@ -4,6 +4,7 @@
 
 #include "ui/views/win/pen_id_handler.h"
 
+#include "base/test/task_environment.h"
 #include "base/win/scoped_winrt_initializer.h"
 #include "base/win/windows_version.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,16 +30,6 @@ constexpr int kPointerId3 = 3333;
 constexpr int kPointerId4 = 4444;
 constexpr int kPointerId5 = 5555;
 
-class FakePenIdHandler : public PenIdHandler {
- public:
-  FakePenIdHandler(
-      Microsoft::WRL::ComPtr<IPenDeviceStatics> pen_device_statics,
-      Microsoft::WRL::ComPtr<IPointerPointStatics> pointer_point_statics) {
-    pen_device_statics_ = pen_device_statics;
-    pointer_point_statics_ = pointer_point_statics;
-  }
-};
-
 class PenIdHandlerTest : public ::testing::Test {
  public:
   PenIdHandlerTest() = default;
@@ -50,6 +41,7 @@ class PenIdHandlerTest : public ::testing::Test {
 
  private:
   base::win::ScopedWinrtInitializer scoped_winrt_initializer_;
+  base::test::TaskEnvironment task_environment_;
 };
 
 void PenIdHandlerTest::SetUp() {
@@ -71,7 +63,9 @@ void PenIdHandlerTest::TearDown() {
 TEST_F(PenIdHandlerTest, GetGuidMapping) {
   Microsoft::WRL::ComPtr<FakeIPenDeviceStatics> pen_device_statics =
       FakeIPenDeviceStatics::GetInstance();
-  FakePenIdHandler pen_id_handler(pen_device_statics, nullptr);
+  views::PenIdHandler::ScopedPenIdStaticsForTesting scoper(
+      &FakeIPenDeviceStatics::FakeIPenDeviceStaticsComPtr, nullptr);
+  PenIdHandler pen_id_handler;
 
   // Make sure Get GUID works correctly.
   const auto fake_pen_device_1 = Microsoft::WRL::Make<FakeIPenDevice>();
@@ -104,9 +98,13 @@ TEST_F(PenIdHandlerTest, GetGuidMapping) {
 // a transducer id. Makes sure the correct TransducerId is returned given a
 // pointer id.
 TEST_F(PenIdHandlerTest, GetTransducerIdMapping) {
+  views::PenIdHandler::ScopedPenIdStaticsForTesting scoper(
+      nullptr,
+      &views::FakeIPenPointerPointStatics::FakeIPenPointerPointStaticsComPtr);
+  PenIdHandler pen_id_handler;
+
   Microsoft::WRL::ComPtr<FakeIPenPointerPointStatics> pointer_point_statics =
       FakeIPenPointerPointStatics::GetInstance();
-  FakePenIdHandler pen_id_handler(nullptr, pointer_point_statics);
 
   // Make sure Get GUID works correctly.
 
@@ -165,7 +163,8 @@ TEST_F(PenIdHandlerTest, GetTransducerIdMapping) {
 // absl::nullopt and TryGetTransducerId returning an invalid Transducer ID.
 // Ultimately TryGetPenUniqueId should return null.
 TEST_F(PenIdHandlerTest, PenDeviceStaticsFailedToSet) {
-  FakePenIdHandler pen_id_handler(nullptr, nullptr);
+  views::PenIdHandler::ScopedPenIdStaticsForTesting scoper(nullptr, nullptr);
+  PenIdHandler pen_id_handler;
   EXPECT_EQ(pen_id_handler.TryGetGuid(kPointerId1), absl::nullopt);
   EXPECT_EQ(pen_id_handler.TryGetTransducerId(kPointerId1),
             PenIdHandler::TransducerId());
@@ -176,7 +175,10 @@ TEST_F(PenIdHandlerTest, TryGetGuidHandlesBadStatics) {
   // Make sure `TryGetGUID` fails when there is no ID.
   Microsoft::WRL::ComPtr<FakeIPenDeviceStatics> pen_device_statics =
       FakeIPenDeviceStatics::GetInstance();
-  FakePenIdHandler pen_id_handler(pen_device_statics, nullptr);
+  views::PenIdHandler::ScopedPenIdStaticsForTesting scoper(
+      &FakeIPenDeviceStatics::FakeIPenDeviceStaticsComPtr, nullptr);
+  PenIdHandler pen_id_handler;
+
   EXPECT_EQ(pen_id_handler.TryGetGuid(kPointerId1), absl::nullopt);
 
   // When there is a GUID, it should be plumbed.
@@ -188,7 +190,10 @@ TEST_F(PenIdHandlerTest, TryGetGuidHandlesBadStatics) {
 TEST_F(PenIdHandlerTest, TryGetTransducerIdHandlesErrors) {
   Microsoft::WRL::ComPtr<FakeIPenPointerPointStatics> pointer_point_statics =
       FakeIPenPointerPointStatics::GetInstance();
-  FakePenIdHandler pen_id_handler(nullptr, pointer_point_statics);
+  views::PenIdHandler::ScopedPenIdStaticsForTesting scoper(
+      nullptr,
+      &views::FakeIPenPointerPointStatics::FakeIPenPointerPointStaticsComPtr);
+  PenIdHandler pen_id_handler;
 
   // No current point found.
   EXPECT_EQ(pen_id_handler.TryGetTransducerId(kPointerId1),

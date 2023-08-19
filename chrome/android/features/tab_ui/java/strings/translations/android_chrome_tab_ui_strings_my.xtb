@@ -3,8 +3,6 @@
 <translationbundle lang="my">
 <translation id="1075622780330595106">သင်၏တဘ် <ph name="NUMBER_OF_TABS" /> ခုကို နောက်ပိုင်းတွင် အသုံးပြုမထားပါ။ ၎င်းတို့ကို ပိတ်မလား။</translation>
 <translation id="125153950246128346">နောက်တဘ်တစ်ခုကြည့်ရန် တို့ပါ</translation>
-<translation id="1403228085774130835">Chrome ပင်မမီနူးရှိ ‘လတ်တလောတဘ်များ’ တွင် သင်ပိတ်ထားသောတဘ်များကို ရှာတွေ့နိုင်သည်</translation>
-<translation id="1455506303394048917">ဤရုပ်ဖျက်တဘ်များရှိ သင့်လုပ်ဆောင်ချက်ကို ဤစက်မှ ဖယ်ရှားပါမည်</translation>
 <translation id="1499635324672558517">ရုပ်ဖျက်တဘ်အားလုံး ပိတ်မလား။</translation>
 <translation id="1657719826150349398">တဘ်ကို အောက်သို့ ရွှေ့ရန်</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{တဘ် <ph name="TABS_COUNT_ONE" /> ခု}other{တဘ် <ph name="TABS_COUNT_MANY" /> ခု}}</translation>
@@ -47,6 +45,7 @@
 <translation id="5073204694187207510">မျက်နှာပြင်ပြည့် ဇယားကွက်ကို ဝှက်ရန်</translation>
 <translation id="5076161749301278626">ဆိုင်အကြောင်း သုံးသပ်ချက်များ ကြည့်မလား။</translation>
 <translation id="5082793167783849073">အဖွဲ့ဖွဲ့ခြင်းဖြင့် စာမျက်နှာများကို အမြန်နှိုင်းယှဉ်ပါ။ စတင်ရန် လင့်ခ်ကို ထိပြီး ဖိထားပါ။</translation>
+<translation id="5339733443032484186">သင့်နောက်ဆုံးတဘ်</translation>
 <translation id="5490235265819901748">တဘ်အုပ်စုကို ချဲ့ထားသည်</translation>
 <translation id="5494920125229734069">အားလုံး ရွေးရန်</translation>
 <translation id="5556417849629758491">ဆိုင်အချက်အလက် ကြည့်ရန် ရွေးချယ်စရာကို ဖန်သားပြင်ထိပ်ပိုင်းအနီးတွင် ရနိုင်သည်</translation>
@@ -62,10 +61,12 @@
 <translation id="6228793724645064692">(ဆိုင်အဆင့်)</translation>
 <translation id="6333260925957816943">ဤဆိုင်အကြောင်း</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{ရွေးထားသည့်တဘ် <ph name="TABS_COUNT_ONE" /> ခုကို အုပ်စုဖြုတ်ရန်}other{ရွေးထားသည့်တဘ် <ph name="TABS_COUNT_MANY" /> ခုကို အုပ်စုဖြုတ်ရန်}}</translation>
+<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Chrome ပင်မမီနူးရှိ ‘မကြာသေးမီက တဘ်များ’ တွင် သင်ပိတ်ထားသော တဘ်များကို ရှာတွေ့နိုင်သည်။ ‘ရုပ်ဖျက်တဘ်’ ကို မရနိုင်ပါ။}other{Chrome ပင်မမီနူးရှိ ‘မကြာသေးမီက တဘ်များ’ တွင် သင်ပိတ်ထားသော တဘ်များကို ရှာတွေ့နိုင်သည်။ ‘ရုပ်ဖျက်တဘ်’ # ခုကို မရနိုင်ပါ။}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{တဘ် <ph name="TABS_COUNT_ONE" /> ခု}other{တဘ် <ph name="TABS_COUNT_MANY" /> ခု}}</translation>
 <translation id="6549021453810473782">ဆိုင်အချက်အလက် ကြည့်ရန်</translation>
 <translation id="6562820390860419811">တဘ်ကို ဘယ်ဘက်သို့ ရွှေ့ရန်</translation>
 <translation id="6615455863669487791">ပြရန်</translation>
+<translation id="661742612106409204">Chrome ပင်မမီနူးရှိ ‘မကြာသေးမီက တဘ်များ’ တွင် သင်ပိတ်ထားသော တဘ်များကို ရှာတွေ့နိုင်သည်။</translation>
 <translation id="6840760312327750441">တဘ်များကို အုပ်စုဖွဲ့ရန် တဘ်တစ်ခုကို တို့ထိ၍ ဖိထားပါ။ ထို့နောက် ၎င်းကို နောက်တဘ်တစ်ခုပေါ်သို့ ဖိဆွဲပါ။</translation>
 <translation id="6856809498882026482">မျိုးစုံရွေးမုဒ်ကို ဝှက်ရန်</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{တဘ် မျှဝေရန်}other{တဘ်များ မျှဝေရန်}}</translation>

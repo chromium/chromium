@@ -18,8 +18,9 @@ FullRestoreDataHandler::FullRestoreDataHandler(Profile* profile)
     : profile_(profile) {
   DCHECK(
       apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile_));
-  Observe(&apps::AppServiceProxyFactory::GetForProfile(profile_)
-               ->AppRegistryCache());
+  app_registry_cache_observer_.Observe(
+      &apps::AppServiceProxyFactory::GetForProfile(profile_)
+           ->AppRegistryCache());
 }
 
 FullRestoreDataHandler::~FullRestoreDataHandler() = default;
@@ -42,7 +43,7 @@ void FullRestoreDataHandler::OnAppUpdate(const apps::AppUpdate& update) {
 
 void FullRestoreDataHandler::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {
-  apps::AppRegistryCache::Observer::Observe(nullptr);
+  app_registry_cache_observer_.Reset();
 }
 
 }  // namespace ash::full_restore

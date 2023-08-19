@@ -9,10 +9,6 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/system_alert_handler.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation SystemAlertHandlerImpl
 
 - (void)handleSystemAlertIfVisible {

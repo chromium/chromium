@@ -42,7 +42,7 @@ struct VirtualCardEnrollmentFields {
   // GetDetailsForEnrollResponse. The |card_art_image| object is owned by
   // PersonalDataManager if it is the card art, or by the resource bundle if it
   // is the network icon.
-  raw_ptr<const gfx::ImageSkia, DanglingUntriaged> card_art_image = nullptr;
+  raw_ptr<const gfx::ImageSkia> card_art_image = nullptr;
   // The Google-specific legal messages that the user must accept before
   // opting-in to virtual card enrollment.
   LegalMessageLines google_legal_message;
@@ -251,6 +251,9 @@ class VirtualCardEnrollmentManager {
   absl::optional<VirtualCardEnrollmentUpdateResponseCallback>
       virtual_card_enrollment_update_response_callback_;
 
+  // Cancels the entire Virtual Card enrollment process.
+  void OnVirtualCardEnrollmentBubbleCancelled();
+
  private:
   friend class VirtualCardEnrollmentManagerTest;
   FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest,
@@ -273,10 +276,6 @@ class VirtualCardEnrollmentManager {
                            StrikeDatabase_SettingsPageNotBlocked);
   FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest,
                            VirtualCardEnrollmentFields_LastShow);
-  FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest,
-                           RequiredDelaySinceLastStrike_ExpOn);
-  FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest,
-                           RequiredDelaySinceLastStrike_ExpOff);
 
   // Called once the risk data is loaded. The |risk_data| will be used with
   // |state_|'s |virtual_card_enrollment_fields|'s |credit_card|'s
@@ -330,9 +329,6 @@ class VirtualCardEnrollmentManager {
       const payments::PaymentsClient::GetDetailsForEnrollmentResponseDetails&
           get_details_for_enrollment_response_details);
 
-  // Cancels the entire Virtual Card Enrollment process.
-  void OnVirtualCardEnrollmentBubbleCancelled();
-
   FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest, Enroll);
   FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest,
                            OnDidGetDetailsForEnrollResponse);
@@ -348,13 +344,12 @@ class VirtualCardEnrollmentManager {
                            UpstreamAnimationSync_ResponseFirst);
 
   // The associated personal data manager, used to save and load personal data
-  // to/from the web database. Weak reference. May be nullptr, which indicates
-  // OTR.
-  raw_ptr<PersonalDataManager, DanglingUntriaged> personal_data_manager_;
+  // to/from the web database.
+  const raw_ptr<PersonalDataManager> personal_data_manager_;
 
   // The associated |payments_client_| that is used for all requests to the
   // server.
-  raw_ptr<payments::PaymentsClient, DanglingUntriaged> payments_client_;
+  const raw_ptr<payments::PaymentsClient> payments_client_;
 
   // The database that is used to count instrument_id-keyed strikes to suppress
   // prompting users to enroll in virtual cards.

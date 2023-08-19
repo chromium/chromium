@@ -6,6 +6,7 @@
 
 #import <AppKit/AppKit.h>
 
+#include "components/remote_cocoa/app_shim/immersive_mode_controller.h"
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #include "components/remote_cocoa/common/native_widget_ns_window_host.mojom.h"
 
@@ -31,7 +32,7 @@
   bool overrideTitlebarHeight = false;
   float titlebarHeight = 0;
 
-  auto* window = base::mac::ObjCCast<NativeWidgetMacNSWindow>([self window]);
+  auto* window = base::apple::ObjCCast<NativeWidgetMacNSWindow>([self window]);
   remote_cocoa::NativeWidgetNSWindowBridge* bridge = [window bridge];
   if (!bridge) {
     return [super _titlebarHeight];
@@ -78,6 +79,38 @@
   if ([BrowserWindowFrame class])
     return [BrowserWindowFrame class];
   return [super frameViewClassForStyleMask:windowStyle];
+}
+
+- (instancetype)initWithContentRect:(NSRect)contentRect
+                          styleMask:(NSUInteger)windowStyle
+                            backing:(NSBackingStoreType)bufferingType
+                              defer:(BOOL)deferCreation {
+  if ((self = [super initWithContentRect:contentRect
+                               styleMask:windowStyle
+                                 backing:bufferingType
+                                   defer:deferCreation])) {
+    [NSNotificationCenter.defaultCenter
+        addObserver:self
+           selector:@selector(windowDidBecomeKey:)
+               name:NSWindowDidBecomeKeyNotification
+             object:nil];
+  }
+  return self;
+}
+
+- (void)dealloc {
+  [NSNotificationCenter.defaultCenter removeObserver:self];
+}
+
+- (void)windowDidBecomeKey:(NSNotification*)notify {
+  // NSToolbarFullScreenWindow should never become the key window, otherwise
+  // the browser window will appear inactive. Activate the browser window
+  // when this happens.
+  if (remote_cocoa::IsNSToolbarFullScreenWindow(notify.object)) {
+    if ([self isOnActiveSpace]) {
+      [self makeKeyAndOrderFront:nil];
+    }
+  }
 }
 
 // The base implementation returns YES if the window's frame view is a custom

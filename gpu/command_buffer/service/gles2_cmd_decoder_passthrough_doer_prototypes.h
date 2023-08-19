@@ -473,18 +473,21 @@ error::Error DoPauseTransformFeedback();
 error::Error DoPixelStorei(GLenum pname, GLint param);
 error::Error DoPolygonOffset(GLfloat factor, GLfloat units);
 error::Error DoReadBuffer(GLenum src);
-error::Error DoWritePixelsINTERNAL(GLint x_offset,
-                                   GLint y_offset,
-                                   GLint plane_index,
-                                   GLuint src_width,
-                                   GLuint src_height,
-                                   GLuint src_row_bytes,
-                                   GLuint src_sk_color_type,
-                                   GLuint src_sk_alpha_type,
-                                   GLint shm_id,
-                                   GLuint shm_offset,
-                                   GLuint pixels_offset,
-                                   GLuint mailbox_offset);
+error::Error DoWritePixelsYUVINTERNAL(GLuint src_width,
+                                      GLuint src_height,
+                                      GLuint src_row_bytes_plane1,
+                                      GLuint src_row_bytes_plane2,
+                                      GLuint src_row_bytes_plane3,
+                                      GLuint src_row_bytes_plane4,
+                                      GLuint src_yuv_plane_config,
+                                      GLuint src_yuv_subsampling,
+                                      GLuint src_yuv_datatype,
+                                      GLint shm_id,
+                                      GLuint shm_offset,
+                                      GLuint pixels_offset_plane1,
+                                      GLuint pixels_offset_plane2,
+                                      GLuint pixels_offset_plane3,
+                                      GLuint pixels_offset_plane4);
 error::Error DoReadbackARGBImagePixelsINTERNAL(GLint src_x,
                                                GLint src_y,
                                                GLint plane_index,

@@ -8,7 +8,6 @@ import("//ios/web/public/js_messaging/optimize_ts.gni")
 assert(use_blink, "Content is only supported in Blink builds.")
 
 source_set("content") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "content_browser_context.h",
     "content_browser_context.mm",
@@ -34,6 +33,8 @@ source_set("content") {
     "web_state/content_web_state_builder.mm",
     "web_state/crc_web_view_proxy_impl.h",
     "web_state/crc_web_view_proxy_impl.mm",
+    "web_state/crc_web_viewport_container_view.h",
+    "web_state/crc_web_viewport_container_view.mm",
   ]
   deps = [
     ":send_webkit_message_js",
@@ -54,13 +55,13 @@ source_set("content") {
     "//ios/web/public/js_messaging",
     "//ios/web/public/security:security",
     "//ios/web/public/session:session",
+    "//ios/web/public/session/proto",
     "//ios/web/text_fragments:text_fragments",
     "//ios/web/webui",
   ]
 }
 
 source_set("threads") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "content_thread_impl.cc",
     "content_thread_impl.h",

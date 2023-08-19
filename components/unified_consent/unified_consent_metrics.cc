@@ -8,7 +8,6 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
-#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -48,8 +47,7 @@ void RecordSyncDataTypeSample(SyncDataType data_type) {
 
 // Checks states of sync data types and records corresponding histogram.
 // Returns true if a sample was recorded.
-bool RecordSyncSetupDataTypesImpl(syncer::SyncUserSettings* sync_settings,
-                                  PrefService* pref_service) {
+bool RecordSyncSetupDataTypesImpl(syncer::SyncUserSettings* sync_settings) {
   bool metric_recorded = false;
 
   std::vector<std::pair<SyncDataType, syncer::UserSelectableType>> sync_types;
@@ -65,6 +63,8 @@ bool RecordSyncSetupDataTypesImpl(syncer::SyncUserSettings* sync_settings,
                           syncer::UserSelectableType::kPasswords);
   sync_types.emplace_back(SyncDataType::kAutofill,
                           syncer::UserSelectableType::kAutofill);
+  sync_types.emplace_back(SyncDataType::kPayments,
+                          syncer::UserSelectableType::kPayments);
 #if !BUILDFLAG(IS_ANDROID)
   sync_types.emplace_back(SyncDataType::kApps,
                           syncer::UserSelectableType::kApps);
@@ -81,10 +81,6 @@ bool RecordSyncSetupDataTypesImpl(syncer::SyncUserSettings* sync_settings,
     }
   }
 
-  if (!autofill::prefs::IsPaymentsIntegrationEnabled(pref_service)) {
-    RecordSyncDataTypeSample(SyncDataType::kPayments);
-    metric_recorded = true;
-  }
   return metric_recorded;
 }
 
@@ -97,10 +93,11 @@ void RecordSettingsHistogram(PrefService* pref_service) {
       "UnifiedConsent.MakeSearchesAndBrowsingBetter.OnProfileLoad", is_enabled);
 }
 
-void RecordSyncSetupDataTypesHistrogam(syncer::SyncUserSettings* sync_settings,
-                                       PrefService* pref_service) {
-  if (!RecordSyncSetupDataTypesImpl(sync_settings, pref_service))
+void RecordSyncSetupDataTypesHistrogam(
+    syncer::SyncUserSettings* sync_settings) {
+  if (!RecordSyncSetupDataTypesImpl(sync_settings)) {
     RecordSyncDataTypeSample(SyncDataType::kNone);
+  }
 }
 
 }  // namespace metrics

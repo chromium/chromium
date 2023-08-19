@@ -41,7 +41,8 @@ class PasswordStoreProxyBackend : public PasswordStoreBackend {
       base::StrongAlias<struct CallbackOriginatesFromAndroidBackendTag, bool>;
 
   // Implements PasswordStoreBackend interface.
-  void InitBackend(RemoteChangesReceived remote_form_changes_received,
+  void InitBackend(AffiliatedMatchHelper* affiliated_match_helper,
+                   RemoteChangesReceived remote_form_changes_received,
                    base::RepeatingClosure sync_enabled_or_disabled_cb,
                    base::OnceCallback<void(bool)> completion) override;
   void Shutdown(base::OnceClosure shutdown_completed) override;
@@ -53,6 +54,8 @@ class PasswordStoreProxyBackend : public PasswordStoreBackend {
       LoginsOrErrorReply callback,
       bool include_psl,
       const std::vector<PasswordFormDigest>& forms) override;
+  void GetGroupedMatchingLoginsAsync(const PasswordFormDigest& form_digest,
+                                     LoginsOrErrorReply callback) override;
   void AddLoginAsync(const PasswordForm& form,
                      PasswordChangesOrErrorReply callback) override;
   void UpdateLoginAsync(const PasswordForm& form,
@@ -73,7 +76,6 @@ class PasswordStoreProxyBackend : public PasswordStoreBackend {
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
       base::OnceClosure completion) override;
   SmartBubbleStatsStore* GetSmartBubbleStatsStore() override;
-  FieldInfoStore* GetFieldInfoStore() override;
   std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
   CreateSyncControllerDelegate() override;
   void ClearAllLocalPasswords() override;

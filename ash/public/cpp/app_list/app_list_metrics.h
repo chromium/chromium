@@ -189,6 +189,10 @@ enum SearchResultType {
   SEARCH_RESULT_TYPE_BOUNDARY
 };
 
+// Returns true if the `show_source` is one that a user directly triggers.
+ASH_PUBLIC_EXPORT bool IsAppListShowSourceUserTriggered(
+    AppListShowSource show_source);
+
 ASH_PUBLIC_EXPORT void RecordSearchResultOpenTypeHistogram(
     AppListLaunchedFrom launch_location,
     SearchResultType type,

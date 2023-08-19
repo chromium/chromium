@@ -70,10 +70,10 @@ bool ExternalInstallOptions::operator==(
         options.force_reinstall_for_milestone,
         options.wait_for_windows_closed,
         options.install_placeholder,
-        options.reinstall_placeholder,
         options.launch_query_params,
         options.load_and_await_service_worker_registration,
         options.service_worker_registration_url,
+        options.service_worker_registration_timeout,
         options.uninstall_and_replace,
         options.additional_search_terms,
         options.only_use_app_info_factory,
@@ -142,23 +142,23 @@ base::Value ExternalInstallOptions::AsDebugValue() const {
   root.Set("only_use_app_info_factory", only_use_app_info_factory);
   root.Set("override_previous_user_uninstall",
            override_previous_user_uninstall);
-  root.Set("reinstall_placeholder", reinstall_placeholder);
   root.Set("require_manifest", require_manifest);
   root.Set("install_as_shortcut", install_as_shortcut);
   root.Set("service_worker_registration_url",
            service_worker_registration_url
                ? base::Value(service_worker_registration_url->spec())
                : base::Value());
+  root.Set("service_worker_registration_timeout_in_seconds",
+           service_worker_registration_timeout.InSecondsF());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   root.Set("system_app_type",
            system_app_type ? base::Value(static_cast<int>(*system_app_type))
                            : base::Value());
 #endif
   root.Set("uninstall_and_replace", ConvertStringList(uninstall_and_replace));
-  root.Set("user_display_mode",
-           user_display_mode.has_value()
-               ? ConvertUserDisplayModeToString(*user_display_mode)
-               : "");
+  root.Set("user_display_mode", user_display_mode.has_value()
+                                    ? base::ToString(*user_display_mode)
+                                    : "");
   root.Set("user_type_allowlist", ConvertStringList(user_type_allowlist));
   root.Set("wait_for_windows_closed", wait_for_windows_closed);
 

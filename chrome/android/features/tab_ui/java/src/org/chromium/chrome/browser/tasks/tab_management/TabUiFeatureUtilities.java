@@ -10,12 +10,13 @@ import static org.chromium.chrome.browser.device.DeviceClassManager.GTS_LOW_END_
 import android.content.Context;
 
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.DoubleCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
+import org.chromium.chrome.browser.flags.MutableFlagWithSafeDefault;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -32,38 +33,17 @@ public class TabUiFeatureUtilities {
             new BooleanCachedFieldTrialParameter(
                     ChromeFeatureList.TAB_TO_GTS_ANIMATION, SKIP_SLOW_ZOOMING_PARAM, true);
 
+    // TODO(crbug/1466158): Remove and keep in false state.
     private static final String GTS_ACCESSIBILITY_LIST_MODE_PARAM = "gts-accessibility-list-mode";
     public static final BooleanCachedFieldTrialParameter GTS_ACCESSIBILITY_LIST_MODE =
             new BooleanCachedFieldTrialParameter(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
                     GTS_ACCESSIBILITY_LIST_MODE_PARAM, false);
-
-    public static final String THUMBNAIL_ASPECT_RATIO_PARAM = "thumbnail_aspect_ratio";
-    public static final DoubleCachedFieldTrialParameter THUMBNAIL_ASPECT_RATIO =
-            new DoubleCachedFieldTrialParameter(
-                    ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, THUMBNAIL_ASPECT_RATIO_PARAM, 0.85);
 
     // Field trial parameter for the minimum physical memory size to enable zooming animation.
     private static final String MIN_MEMORY_MB_PARAM = "zooming-min-memory-mb";
     public static final IntCachedFieldTrialParameter ZOOMING_MIN_MEMORY =
             new IntCachedFieldTrialParameter(
                     ChromeFeatureList.TAB_TO_GTS_ANIMATION, MIN_MEMORY_MB_PARAM, 2048);
-
-    // Field trial parameter for removing tab group auto creation from target-blank links and adding
-    // both "Open in new tab" and "Open in new tab in group" as context menu items.
-    private static final String TAB_GROUP_AUTO_CREATION_PARAM = "enable_tab_group_auto_creation";
-
-    public static final BooleanCachedFieldTrialParameter ENABLE_TAB_GROUP_AUTO_CREATION =
-            new BooleanCachedFieldTrialParameter(ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
-                    TAB_GROUP_AUTO_CREATION_PARAM, false);
-
-    // Field trial parameter for configuring the "Open in new tab" and "Open in new tab in group"
-    // item order in the context menu.
-    private static final String SHOW_OPEN_IN_TAB_GROUP_MENU_ITEM_FIRST_PARAM =
-            "show_open_in_tab_group_menu_item_first";
-
-    public static final BooleanCachedFieldTrialParameter SHOW_OPEN_IN_TAB_GROUP_MENU_ITEM_FIRST =
-            new BooleanCachedFieldTrialParameter(ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
-                    SHOW_OPEN_IN_TAB_GROUP_MENU_ITEM_FIRST_PARAM, true);
 
     // Field trial parameter for disabling new tab button anchor for tab strip redesign.
     private static final String TAB_STRIP_REDESIGN_DISABLE_NTB_ANCHOR_PARAM = "disable_ntb_anchor";
@@ -80,11 +60,16 @@ public class TabUiFeatureUtilities {
 
     private static boolean sTabSelectionEditorLongPressEntryEnabled;
 
+    public static final MutableFlagWithSafeDefault sThumbnailPlaceholder =
+            new MutableFlagWithSafeDefault(ChromeFeatureList.THUMBNAIL_PLACEHOLDER, false);
+
     /**
      * Set whether the longpress entry for TabSelectionEditor is enabled. Currently only in tests.
      */
     public static void setTabSelectionEditorLongPressEntryEnabledForTesting(boolean enabled) {
+        var oldValue = sTabSelectionEditorLongPressEntryEnabled;
         sTabSelectionEditorLongPressEntryEnabled = enabled;
+        ResettersForTesting.register(() -> sTabSelectionEditorLongPressEntryEnabled = oldValue);
     }
 
     /**
@@ -151,27 +136,16 @@ public class TabUiFeatureUtilities {
     }
 
     /**
-     * @return Whether tab groups are enabled for tablet.
-     * @param context The activity context.
-     */
-    public static boolean isTabletTabGroupsEnabled(Context context) {
-        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
-                && ChromeFeatureList.sTabGroupsForTablets.isEnabled()
-                && !DeviceClassManager.enableAccessibilityLayout(context);
-    }
-
-    /**
      * @return Whether the tab group feature is enabled and available for use.
      * @param context The activity context.
      */
     public static boolean isTabGroupsAndroidEnabled(Context context) {
-        // Disable tab group for tablet.
+        // Enable tab group for tablet.
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
-            return isTabletTabGroupsEnabled(context);
+            return true;
         }
 
-        return !DeviceClassManager.enableAccessibilityLayout(context)
-                && ChromeFeatureList.sTabGroupsAndroid.isEnabled();
+        return !DeviceClassManager.enableAccessibilityLayout(context);
     }
 
     /**
@@ -181,13 +155,6 @@ public class TabUiFeatureUtilities {
     public static boolean isTabGroupsAndroidContinuationEnabled(Context context) {
         return isTabGroupsAndroidEnabled(context)
                 && ChromeFeatureList.sTabGroupsContinuationAndroid.isEnabled();
-    }
-
-    /**
-     * @return Whether the thumbnail_aspect_ratio field trail is set.
-     */
-    public static boolean isTabThumbnailAspectRatioNotOne() {
-        return Double.compare(1.0, THUMBNAIL_ASPECT_RATIO.getValue()) != 0;
     }
 
     /**
@@ -207,17 +174,5 @@ public class TabUiFeatureUtilities {
         return !DeviceClassManager.enableAccessibilityLayout(context)
                 && ChromeFeatureList.sInstantStart.isEnabled() && !isTablet
                 && !SysUtils.isLowEndDevice();
-    }
-
-    public static Float sTabMinWidthForTesting;
-
-    /**
-     * @return Whether the "Open in new tab in group" context menu item should show before the
-     * "Open in new tab" item.
-     */
-    public static boolean showContextMenuOpenNewTabInGroupItemFirst() {
-        assert !ENABLE_TAB_GROUP_AUTO_CREATION.getValue();
-
-        return SHOW_OPEN_IN_TAB_GROUP_MENU_ITEM_FIRST.getValue();
     }
 }

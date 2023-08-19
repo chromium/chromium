@@ -130,4 +130,4 @@ def _milestone_details(*, project, ref):
 ACTIVE_MILESTONES = {
     m["name"]: _milestone_details(project = m["project"], ref = m["ref"])
     for m in json.decode(io.read_file("./milestones.json")).values()
-}
+} if settings.is_main else {}

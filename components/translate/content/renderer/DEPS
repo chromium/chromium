@@ -1,7 +1,6 @@
 include_rules = [
   "+content/public/renderer",
   "+services/service_manager/public",
-  "+third_party/blink/public/common",
   "+third_party/blink/public/platform",
   "+third_party/blink/public/common/browser_interface_broker_proxy.h",
   "+third_party/blink/public/web",

@@ -15,7 +15,7 @@ namespace mojo {
 
 template <>
 struct StructTraits<url::mojom::UrlDataView, ::blink::KURL> {
-  static WTF::String url(const ::blink::KURL& blinkUrl) {
+  static const WTF::String& url(const ::blink::KURL& blinkUrl) {
     if (!blinkUrl.IsValid() ||
         blinkUrl.GetString().length() > url::kMaxURLChars) {
       return g_empty_string;

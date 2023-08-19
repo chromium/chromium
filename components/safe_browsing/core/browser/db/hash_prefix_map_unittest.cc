@@ -11,6 +11,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/platform_test.h"
@@ -48,11 +49,12 @@ class HashPrefixMapTest : public PlatformTest {
 
   base::Time time_ = base::Time::Now();
   base::ScopedTempDir temp_dir_;
+  base::test::SingleThreadTaskEnvironment task_env_;
 };
 
 TEST_F(HashPrefixMapTest, WriteFile) {
   MmapHashPrefixMap map(GetBasePath());
-  map.Append(4, "foo");
+  map.Append(4, "fooo");
 
   V4StoreFileFormat file_format;
   EXPECT_TRUE(map.WriteToDisk(&file_format));
@@ -61,11 +63,11 @@ TEST_F(HashPrefixMapTest, WriteFile) {
   EXPECT_EQ(file_format.hash_files().size(), 1);
   const auto& hash_file = file_format.hash_files(0);
   EXPECT_EQ(hash_file.prefix_size(), 4);
-  EXPECT_EQ(GetContents(hash_file.extension()), "foo");
+  EXPECT_EQ(GetContents(hash_file.extension()), "fooo");
 
   HashPrefixMapView view = map.view();
   EXPECT_EQ(view.size(), 1u);
-  EXPECT_EQ(view[4], "foo");
+  EXPECT_EQ(view[4], "fooo");
 }
 
 TEST_F(HashPrefixMapTest, FailedWrite) {
@@ -80,8 +82,8 @@ TEST_F(HashPrefixMapTest, FailedWrite) {
 
 TEST_F(HashPrefixMapTest, WriteMultipleFiles) {
   MmapHashPrefixMap map(GetBasePath());
-  map.Append(4, "foo");
-  map.Append(2, "bar");
+  map.Append(4, "fooo");
+  map.Append(2, "ba");
 
   V4StoreFileFormat file_format;
   EXPECT_TRUE(map.WriteToDisk(&file_format));
@@ -93,29 +95,31 @@ TEST_F(HashPrefixMapTest, WriteMultipleFiles) {
 
   const auto& file1 = file_format.hash_files(0);
   EXPECT_EQ(file1.prefix_size(), 2);
-  EXPECT_EQ(GetContents(file1.extension()), "bar");
+  EXPECT_EQ(GetContents(file1.extension()), "ba");
 
   const auto& file2 = file_format.hash_files(1);
   EXPECT_EQ(file2.prefix_size(), 4);
-  EXPECT_EQ(GetContents(file2.extension()), "foo");
+  EXPECT_EQ(GetContents(file2.extension()), "fooo");
 
   HashPrefixMapView view = map.view();
   EXPECT_EQ(view.size(), 2u);
-  EXPECT_EQ(view[4], "foo");
-  EXPECT_EQ(view[2], "bar");
+  EXPECT_EQ(view[4], "fooo");
+  EXPECT_EQ(view[2], "ba");
 }
 
 TEST_F(HashPrefixMapTest, BuffersWrites) {
-  MmapHashPrefixMap map(GetBasePath(), /*buffer_size=*/4);
+  MmapHashPrefixMap map(GetBasePath(),
+                        base::SequencedTaskRunner::GetCurrentDefault(),
+                        /*buffer_size=*/4);
 
-  map.Append(4, "foo");
+  map.Append(4, "fooo");
   EXPECT_EQ(GetContents(map.GetExtensionForTesting(4)), "");
 
-  map.Append(4, "bar");
-  EXPECT_EQ(GetContents(map.GetExtensionForTesting(4)), "foo");
+  map.Append(4, "barr");
+  EXPECT_EQ(GetContents(map.GetExtensionForTesting(4)), "fooo");
 
   map.Append(4, "somemore");
-  EXPECT_EQ(GetContents(map.GetExtensionForTesting(4)), "foobarsomemore");
+  EXPECT_EQ(GetContents(map.GetExtensionForTesting(4)), "fooobarrsomemore");
 
   V4StoreFileFormat file_format;
   EXPECT_TRUE(map.WriteToDisk(&file_format));
@@ -123,7 +127,7 @@ TEST_F(HashPrefixMapTest, BuffersWrites) {
   EXPECT_EQ(file_format.hash_files().size(), 1);
   const auto& hash_file = file_format.hash_files(0);
   EXPECT_EQ(hash_file.prefix_size(), 4);
-  EXPECT_EQ(GetContents(hash_file.extension()), "foobarsomemore");
+  EXPECT_EQ(GetContents(hash_file.extension()), "fooobarrsomemore");
 }
 
 TEST_F(HashPrefixMapTest, ReadFile) {
@@ -133,6 +137,7 @@ TEST_F(HashPrefixMapTest, ReadFile) {
   auto* hash_file = file_format.add_hash_files();
   hash_file->set_prefix_size(4);
   hash_file->set_extension("foo");
+  hash_file->set_file_size(3);
 
   MmapHashPrefixMap map(GetBasePath());
   EXPECT_EQ(map.ReadFromDisk(file_format), APPLY_UPDATE_SUCCESS);
@@ -143,6 +148,19 @@ TEST_F(HashPrefixMapTest, ReadFile) {
   EXPECT_EQ(view[4], "foo");
 }
 
+TEST_F(HashPrefixMapTest, ReadFileNotSorted) {
+  base::WriteFile(GetPath("foo"), "zzzzaaaa");
+
+  V4StoreFileFormat file_format;
+  auto* hash_file = file_format.add_hash_files();
+  hash_file->set_prefix_size(4);
+  hash_file->set_extension("foo");
+  hash_file->set_file_size(8);
+
+  MmapHashPrefixMap map(GetBasePath());
+  EXPECT_EQ(map.ReadFromDisk(file_format), MMAP_FAILURE);
+}
+
 TEST_F(HashPrefixMapTest, ReadMultipleFiles) {
   base::WriteFile(GetPath("foo"), "foo");
   base::WriteFile(GetPath("bar"), "bar");
@@ -151,10 +169,12 @@ TEST_F(HashPrefixMapTest, ReadMultipleFiles) {
   auto* hash_file = file_format.add_hash_files();
   hash_file->set_prefix_size(4);
   hash_file->set_extension("foo");
+  hash_file->set_file_size(3);
 
   hash_file = file_format.add_hash_files();
   hash_file->set_prefix_size(2);
   hash_file->set_extension("bar");
+  hash_file->set_file_size(3);
 
   MmapHashPrefixMap map(GetBasePath());
   EXPECT_EQ(map.ReadFromDisk(file_format), APPLY_UPDATE_SUCCESS);
@@ -172,15 +192,29 @@ TEST_F(HashPrefixMapTest, ReadFileInvalid) {
   auto* hash_file = file_format.add_hash_files();
   hash_file->set_prefix_size(4);
   hash_file->set_extension("foo");
+  hash_file->set_file_size(3);
 
   MmapHashPrefixMap map(GetBasePath());
   EXPECT_EQ(map.ReadFromDisk(file_format), MMAP_FAILURE);
   EXPECT_EQ(map.IsValid(), MMAP_FAILURE);
 }
 
+TEST_F(HashPrefixMapTest, ReadFileWrongSize) {
+  base::WriteFile(GetPath("foo"), "");
+
+  V4StoreFileFormat file_format;
+  auto* hash_file = file_format.add_hash_files();
+  hash_file->set_prefix_size(4);
+  hash_file->set_extension("foo");
+  hash_file->set_file_size(4);
+
+  MmapHashPrefixMap map(GetBasePath());
+  EXPECT_EQ(map.ReadFromDisk(file_format), MMAP_FAILURE);
+}
+
 TEST_F(HashPrefixMapTest, WriteAndReadFile) {
   MmapHashPrefixMap map(GetBasePath());
-  map.Append(4, "foo");
+  map.Append(4, "fooo");
 
   V4StoreFileFormat file_format;
   EXPECT_TRUE(map.WriteToDisk(&file_format));
@@ -192,17 +226,19 @@ TEST_F(HashPrefixMapTest, WriteAndReadFile) {
 
   HashPrefixMapView view = map_read.view();
   EXPECT_EQ(view.size(), 1u);
-  EXPECT_EQ(view[4], "foo");
+  EXPECT_EQ(view[4], "fooo");
 }
 
 TEST_F(HashPrefixMapTest, ClearingMapBeforeWriteDeletesFile) {
-  MmapHashPrefixMap map(GetBasePath(), /*buffer_size=*/1);
+  MmapHashPrefixMap map(GetBasePath(),
+                        base::SequencedTaskRunner::GetCurrentDefault(),
+                        /*buffer_size=*/1);
   map.Append(4, "foo");
 
   std::string extension = map.GetExtensionForTesting(4);
   EXPECT_EQ(GetContents(extension), "foo");
 
-  map.Clear();
+  map.ClearAndWaitForTesting();
   EXPECT_FALSE(base::PathExists(GetPath(extension)));
 }
 
@@ -295,7 +331,7 @@ TEST_F(HashPrefixMapTest, UsesFileOffsets) {
   V4StoreFileFormat file_format;
   EXPECT_TRUE(map.WriteToDisk(&file_format));
   EXPECT_EQ(map.IsValid(), APPLY_UPDATE_SUCCESS);
-  map.Clear();
+  map.ClearAndWaitForTesting();
 
   EXPECT_EQ(file_format.hash_files().size(), 1);
   const auto& hash_file = file_format.hash_files(0);
@@ -307,8 +343,12 @@ TEST_F(HashPrefixMapTest, UsesFileOffsets) {
   uint32_t keep_end = hash_file.offsets()[2] * 4;
   // Null out all data outside of the two offsets.
   for (size_t i = 0; i < contents.size(); i++) {
-    if (i < keep_start || i >= keep_end)
+    if (i < keep_start) {
       contents[i] = '\0';
+    }
+    if (i >= keep_end) {
+      contents[i] = '\xff';
+    }
   }
 
   // Rewrite the hash file with only a partial set of hashes.
@@ -408,6 +448,7 @@ class HashPrefixMapTypedTest : public ::testing::Test {
 
   absl::optional<base::ScopedTempDir> temp_dir_;
   std::unique_ptr<HashPrefixMap> hash_prefix_map_;
+  base::test::SingleThreadTaskEnvironment task_env_;
 };
 
 template <>
@@ -453,14 +494,14 @@ TYPED_TEST_SUITE(HashPrefixMapTypedTest,
 // Tests that the data in a map is still valid after writing it.
 TYPED_TEST(HashPrefixMapTypedTest, ValidAfterWrite) {
   auto& hash_prefix_map = this->hash_prefix_map();
-  hash_prefix_map.Append(4, "foo");
+  hash_prefix_map.Append(4, "fooo");
 
   V4StoreFileFormat file_format;
   ASSERT_TRUE(hash_prefix_map.WriteToDisk(&file_format));
 
   HashPrefixMapView view = hash_prefix_map.view();
   EXPECT_EQ(view.size(), 1u);
-  EXPECT_EQ(view[4], "foo");
+  EXPECT_EQ(view[4], "fooo");
 }
 
 }  // namespace

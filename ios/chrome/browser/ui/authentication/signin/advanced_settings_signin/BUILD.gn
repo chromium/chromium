@@ -5,7 +5,6 @@
 import("//build/config/chrome_build.gni")
 
 source_set("advanced_settings_signin") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "advanced_settings_signin_coordinator.h",
     "advanced_settings_signin_coordinator.mm",
@@ -40,7 +39,6 @@ source_set("advanced_settings_signin") {
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "advanced_settings_signin_constants.h",
     "advanced_settings_signin_constants.mm",
@@ -48,13 +46,11 @@ source_set("constants") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "advanced_settings_signin_mediator_unittest.mm" ]
   deps = [
     ":advanced_settings_signin",
     "//base/test:test_support",
-    "//components/autofill/core/common",
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/signin/public/base",
@@ -79,16 +75,15 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "advanced_settings_signin_egtest.mm" ]
   deps = [
     "//base",
     "//base/test:test_support",
+    "//components/bookmarks/common",
     "//components/strings",
+    "//components/sync/base:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/signin:fake_system_identity",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
@@ -97,9 +92,11 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/ui/bookmarks:eg_test_support+eg2",
     "//ios/chrome/browser/ui/content_suggestions:feature_flags",
     "//ios/chrome/browser/ui/recent_tabs:recent_tabs_ui_constants",
+    "//ios/chrome/browser/ui/settings:eg_test_support+eg2",
     "//ios/chrome/browser/ui/settings/google_services:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:app_framework_shared_headers",
     "//net:test_support",
     "//ui/base",
   ]

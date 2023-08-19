@@ -14,4 +14,4 @@ UNKNOWN focusable has_input_focus
 ++++++++++++UNKNOWN focusable label='Year' actions='{SET_VALUE}'
 ++++++++++++++STATIC_TEXT label='----'
 ++++++++++++++++UNKNOWN label='----'
-++++++++UNKNOWN focusable label='Show week picker' actions='{DEFAULT}'
+++++++++UNKNOWN focusable label='Show week picker' actions='{DEFAULT}' secondary_label='Show week picker'

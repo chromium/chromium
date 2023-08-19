@@ -127,8 +127,6 @@ by a child template that "extends" this file.
     <permission android:name="{{ manifest_package }}.permission.DEBUG"
                 android:label="Debug web pages"
                 android:protectionLevel="signature" />
-    <permission android:name="{{ manifest_package }}.permission.TRANSLATE"
-        android:protectionLevel="signature" />
 
     <uses-permission android:name="{{ manifest_package }}.permission.C2D_MESSAGE" />
     <uses-permission android:name="{{ manifest_package }}.permission.READ_WRITE_BOOKMARK_FOLDERS" />
@@ -351,17 +349,6 @@ by a child template that "extends" this file.
             </intent-filter>
             <meta-data android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
-        </activity-alias>
-        <activity-alias android:name="com.google.android.apps.chrome.TranslateDispatcher"
-            android:targetActivity="org.chromium.chrome.browser.document.ChromeLauncherActivity"
-            android:exported="true"
-            {% if channel == 'stable' %}
-            android:permission="{{ manifest_package }}.permission.TRANSLATE"
-            {% endif %} >
-            <intent-filter>
-                <action android:name="org.chromium.chrome.browser.translate.TRANSLATE_TAB" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
         </activity-alias>
 
         <activity android:name="org.chromium.chrome.browser.media.MediaLauncherActivity"
@@ -661,6 +648,13 @@ by a child template that "extends" this file.
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize">
         </activity>
         <activity android:name="org.chromium.chrome.browser.app.bookmarks.BookmarkFolderSelectActivity"
+            android:theme="@style/Theme.Chromium.DialogWhenLarge"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:label="@string/bookmark_choose_folder"
+            android:exported="false"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize">
+        </activity>
+        <activity android:name="org.chromium.chrome.browser.app.bookmarks.BookmarkFolderPickerActivity"
             android:theme="@style/Theme.Chromium.DialogWhenLarge"
             android:windowSoftInputMode="stateAlwaysHidden"
             android:label="@string/bookmark_choose_folder"
@@ -1201,6 +1195,28 @@ by a child template that "extends" this file.
 
         <property android:name="android.adservices.AD_SERVICES_CONFIG"
             android:resource="@xml/ad_services_config" />
+
+        {% set enable_openxr = enable_openxr|default(0) %}
+        {% if enable_openxr == "true" %}
+          <!-- launchMode is set to singleTask because there should never be multiple copies of the app running. -->
+          <!-- Theme.Black.NoTitleBar.Fullscreen gives solid black instead of a (bad stereoscopic) gradient on app transition. -->
+          <activity
+            android:name="org.chromium.components.webxr.XrHostActivity"
+            {{ self.chrome_activity_common() }}
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:launchMode="singleTask"
+            android:exported="false"
+            android:resizeableActivity="false"
+            android:screenOrientation="landscape"
+            android:label="WebXR"
+            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
+            tools:ignore="NonResizeableActivity">
+            <intent-filter>
+              <category android:name="android.intent.category.XR" />
+            </intent-filter>
+          </activity>
+        {% endif %}
 
         {% block extra_application_definitions %}
         {% endblock %}

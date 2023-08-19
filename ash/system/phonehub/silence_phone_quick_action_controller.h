@@ -34,6 +34,7 @@ class ASH_EXPORT SilencePhoneQuickActionController
   // QuickActionControllerBase:
   QuickActionItem* CreateItem() override;
   void OnButtonPressed(bool is_now_enabled) override;
+  void UpdateQuickActionItemUi() override;
 
   // phonehub::DoNotDisturbController::Observer:
   void OnDndStateChanged() override;
@@ -57,7 +58,7 @@ class ASH_EXPORT SilencePhoneQuickActionController
 
   raw_ptr<phonehub::DoNotDisturbController, ExperimentalAsh> dnd_controller_ =
       nullptr;
-  raw_ptr<QuickActionItem, ExperimentalAsh> item_ = nullptr;
+  raw_ptr<QuickActionItem, DanglingUntriaged | ExperimentalAsh> item_ = nullptr;
 
   // Keep track the current state of the item.
   ActionState state_;

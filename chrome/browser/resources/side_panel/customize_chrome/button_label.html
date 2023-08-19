@@ -10,6 +10,11 @@
   #labelDescription {
     color: var(--cr-secondary-text-color)
   }
+
+  :host-context([chrome-refresh-2023]) #labelDescription {
+    font-weight: 400;
+    margin-block-start: 4px;
+  }
 </style>
 <div id="label">[[label]]</div>
 <div id="labelDescription" hidden="[[!labelDescription]]">

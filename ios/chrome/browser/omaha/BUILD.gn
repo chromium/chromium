@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("omaha") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "omaha_service.h",
     "omaha_service.mm",
@@ -32,7 +31,6 @@ source_set("omaha") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "omaha_service_unittest.mm" ]
   deps = [

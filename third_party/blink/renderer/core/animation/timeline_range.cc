@@ -25,7 +25,7 @@ double TimelineRange::ToFractionalOffset(
 
   ScrollOffsets range(0, 0);
 
-  if (subject_size_ == 0) {
+  if (view_offsets_ == ViewOffsets()) {
     // This is a non-view ScrollTimeline, or it can also be a ViewTimeline
     // that happens have subject with size=0.
     range = {offsets_.start, offsets_.end};
@@ -47,9 +47,9 @@ TimelineRange::ScrollOffsets TimelineRange::ConvertNamedRange(
   double align_subject_start_view_end = offsets_.start;
   double align_subject_end_view_start = offsets_.end;
   double align_subject_start_view_start =
-      align_subject_end_view_start - subject_size_;
+      align_subject_end_view_start - view_offsets_.exit_crossing_distance;
   double align_subject_end_view_end =
-      align_subject_start_view_end + subject_size_;
+      align_subject_start_view_end + view_offsets_.entry_crossing_distance;
 
   // TODO(crbug.com/1448294): This needs to account for when the subject (or an
   // ancestor) is position: sticky and stuck to the viewport during entry/exit

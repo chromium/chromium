@@ -8,10 +8,6 @@
 
 #import "base/check.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 NSString* const kPrefObserverInit = @"PrefObserverInit";
 
 // An object encapsulating the deferred execution of a block of initialization

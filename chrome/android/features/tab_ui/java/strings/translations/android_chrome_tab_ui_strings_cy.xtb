@@ -3,8 +3,6 @@
 <translationbundle lang="cy">
 <translation id="1075622780330595106">Nid yw <ph name="NUMBER_OF_TABS" /> o'ch tabiau wedi'u defnyddio'n ddiweddar. Cau'r tabiau?</translation>
 <translation id="125153950246128346">Tapiwch i weld tab arall</translation>
-<translation id="1403228085774130835">Gallwch ddod o hyd i'ch tabiau sydd wedi'u cau yn Tabiau diweddar o dan brif ddewislen Chrome</translation>
-<translation id="1455506303394048917">Bydd eich gweithgarwch yn y tabiau Anhysbys hyn yn cael ei glirio o'r ddyfais hon</translation>
 <translation id="1499635324672558517">Cau pob tab Anhysbys</translation>
 <translation id="1657719826150349398">Symud tab i lawr</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}zero{<ph name="TABS_COUNT_MANY" /> tab}two{<ph name="TABS_COUNT_MANY" /> dab}few{<ph name="TABS_COUNT_MANY" /> thab}many{<ph name="TABS_COUNT_MANY" /> thab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
@@ -47,6 +45,7 @@
 <translation id="5073204694187207510">Cuddio'r grid sgrîn lawn</translation>
 <translation id="5076161749301278626">Gweld adolygiadau'r siop?</translation>
 <translation id="5082793167783849073">Cymharwch dudalennau'n gyflym drwy wneud grŵp. I ddechrau, cyffyrddwch a daliwch ddolen.</translation>
+<translation id="5339733443032484186">Eich tab diwethaf</translation>
 <translation id="5490235265819901748">Mae'r grŵp tabiau wedi'i ehangu</translation>
 <translation id="5494920125229734069">Dewis pob un</translation>
 <translation id="5556417849629758491">Gweld gwybodaeth siop, opsiwn ar gael yn agos at frig y sgrîn</translation>
@@ -62,10 +61,12 @@
 <translation id="6228793724645064692">(sgôr siop)</translation>
 <translation id="6333260925957816943">Gwybodaeth am y siop hon</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Dadgrwpio'r <ph name="TABS_COUNT_ONE" /> tab a ddewiswyd}zero{Dadgrwpio'r <ph name="TABS_COUNT_MANY" /> tab a ddewiswyd}two{Dadgrwpio'r <ph name="TABS_COUNT_MANY" /> dab a ddewiswyd}few{Dadgrwpio'r <ph name="TABS_COUNT_MANY" /> tab a ddewiswyd}many{Dadgrwpio'r <ph name="TABS_COUNT_MANY" /> tab a ddewiswyd}other{Dadgrwpio'r <ph name="TABS_COUNT_MANY" /> tab a ddewiswyd}}</translation>
+<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Gallwch ddod o hyd i'ch tabiau sydd wedi'u cau yn Nhabiau diweddar o dan brif ddewislen Chrome. Ni fydd eich tab Anhysbys ar gael.}zero{Gallwch ddod o hyd i'ch tabiau sydd wedi'u cau yn Nhabiau diweddar o dan brif ddewislen Chrome. Ni fydd eich # tab Anhysbys ar gael.}two{Gallwch ddod o hyd i'ch tabiau sydd wedi'u cau yn Nhabiau diweddar o dan brif ddewislen Chrome. Ni fydd eich # dab Anhysbys ar gael.}few{Gallwch ddod o hyd i'ch tabiau sydd wedi'u cau yn Nhabiau diweddar o dan brif ddewislen Chrome. Ni fydd eich # thab Anhysbys ar gael.}many{Gallwch ddod o hyd i'ch tabiau sydd wedi'u cau yn Nhabiau diweddar o dan brif ddewislen Chrome. Ni fydd eich # thab Anhysbys ar gael.}other{Gallwch ddod o hyd i'ch tabiau sydd wedi'u cau yn Nhabiau diweddar o dan brif ddewislen Chrome. Ni fydd eich # tab Anhysbys ar gael.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}zero{<ph name="TABS_COUNT_MANY" /> tab}two{<ph name="TABS_COUNT_MANY" /> dab}few{<ph name="TABS_COUNT_MANY" /> tab}many{<ph name="TABS_COUNT_MANY" /> tab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
 <translation id="6549021453810473782">Gweld gwybodaeth siop</translation>
 <translation id="6562820390860419811">Symud tab i'r chwith</translation>
 <translation id="6615455863669487791">Dangos i fi</translation>
+<translation id="661742612106409204">Gallwch ddod o hyd i'ch tabiau sydd wedi'u cau yn Nhabiau diweddar o dan brif ddewislen Chrome.</translation>
 <translation id="6840760312327750441">I grwpio tabiau, cyffyrddwch a daliwch dab. Llusgwch ef i dab arall.</translation>
 <translation id="6856809498882026482">Cuddio'r modd dewis mwy nag un</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Rhannu tab}zero{Rhannu tabiau}two{Rhannu tabiau}few{Rhannu tabiau}many{Rhannu tabiau}other{Rhannu tabiau}}</translation>

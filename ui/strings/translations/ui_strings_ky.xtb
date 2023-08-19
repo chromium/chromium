@@ -105,7 +105,6 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 ай мурун}other{# ай мурун}}</translation>
 <translation id="4289300219472526559">Сүйлөп баштаңыз</translation>
 <translation id="4289540628985791613">Сереп салуу</translation>
-<translation id="4306392492252714209">Алмашуу буферинен өчүрүү.</translation>
 <translation id="4491109536499578614">Сүрөт</translation>
 <translation id="4565377596337484307">Сырсөздү жашыруу</translation>
 <translation id="4588090240171750605">Оңго сыдырып кароо</translation>
@@ -148,6 +147,7 @@
 <translation id="6142413573757616983"><ph name="QUANTITY" /> Б/сек</translation>
 <translation id="6237461503717005873"><ph name="ROW_NAME" /> тили тандалды.</translation>
 <translation id="6264365405983206840">&amp;Баарын тандоо</translation>
+<translation id="6346952829206698721">Алмашуу буферинен чаптоо</translation>
 <translation id="6364916375976753737">Солго сыдырып кароо</translation>
 <translation id="6394627529324717982">Үтүр</translation>
 <translation id="6397363302884558537">Сүйлөөнү токтот</translation>
@@ -174,6 +174,7 @@
 <translation id="7170202025028120564">Колдонмонун экран параметрлери, аны өчүрүп күйгүзгөндө иштеп баштайт.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1 мүн. калды}other{# мүн. калды}}</translation>
+<translation id="7363164521834647158">Жооп жөнөтүү</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{1 мүн. мурун}other{# мүн. мурун}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{1 мүнөт калды}other{# мүнөт калды}}</translation>

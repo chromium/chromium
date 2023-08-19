@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.autofill;
 
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.widget.Button;
@@ -95,8 +93,8 @@ public class AutofillSnackbarControllerTest {
 
         clickSnackbarAction();
 
-        verify(mNativeMock, times(1)).onActionClicked(NATIVE_AUTOFILL_SNACKBAR_VIEW);
-        verify(mNativeMock, never()).onDismissed(NATIVE_AUTOFILL_SNACKBAR_VIEW);
+        verify(mNativeMock).onActionClicked(NATIVE_AUTOFILL_SNACKBAR_VIEW);
+        verify(mNativeMock).onDismissed(NATIVE_AUTOFILL_SNACKBAR_VIEW);
     }
 
     @Test
@@ -106,7 +104,7 @@ public class AutofillSnackbarControllerTest {
 
         timeoutSnackbar();
 
-        verify(mNativeMock, times(1)).onDismissed(NATIVE_AUTOFILL_SNACKBAR_VIEW);
+        verify(mNativeMock).onDismissed(NATIVE_AUTOFILL_SNACKBAR_VIEW);
     }
 
     private void showSnackbar() {

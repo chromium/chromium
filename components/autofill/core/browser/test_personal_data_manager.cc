@@ -10,7 +10,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/strike_databases/autofill_profile_migration_strike_database.h"
-#include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
 
@@ -41,14 +40,6 @@ void TestPersonalDataManager::RecordUseOf(
     if (profile)
       profile->RecordAndLogUse();
   }
-}
-
-std::string TestPersonalDataManager::SaveImportedProfile(
-    const AutofillProfile& imported_profile) {
-  num_times_save_imported_profile_called_++;
-  last_save_imported_profile_ =
-      std::make_unique<AutofillProfile>(imported_profile);
-  return PersonalDataManager::SaveImportedProfile(imported_profile);
 }
 
 std::string TestPersonalDataManager::SaveImportedCreditCard(
@@ -107,8 +98,8 @@ void TestPersonalDataManager::AddCreditCard(const CreditCard& credit_card) {
   NotifyPersonalDataObserver();
 }
 
-std::string TestPersonalDataManager::AddIBAN(const IBAN& iban) {
-  std::unique_ptr<IBAN> local_iban = std::make_unique<IBAN>(iban);
+std::string TestPersonalDataManager::AddIban(const Iban& iban) {
+  std::unique_ptr<Iban> local_iban = std::make_unique<Iban>(iban);
   local_ibans_.push_back(std::move(local_iban));
   NotifyPersonalDataObserver();
   return iban.guid();
@@ -179,8 +170,7 @@ void TestPersonalDataManager::LoadProfiles() {
     OnWebDataServiceRequestDone(pending_synced_local_profiles_query_,
                                 std::move(result));
   }
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillAccountProfilesUnionView)) {
+  {
     std::vector<std::unique_ptr<AutofillProfile>> profiles;
     account_profiles_.swap(profiles);
     auto result = std::make_unique<
@@ -236,13 +226,13 @@ void TestPersonalDataManager::LoadCreditCardCloudTokenData() {
   }
 }
 
-void TestPersonalDataManager::LoadIBANs() {
+void TestPersonalDataManager::LoadIbans() {
   pending_ibans_query_ = 128;
   {
-    std::vector<std::unique_ptr<IBAN>> ibans;
+    std::vector<std::unique_ptr<Iban>> ibans;
     local_ibans_.swap(ibans);
     std::unique_ptr<WDTypedResult> result =
-        std::make_unique<WDResult<std::vector<std::unique_ptr<IBAN>>>>(
+        std::make_unique<WDResult<std::vector<std::unique_ptr<Iban>>>>(
             AUTOFILL_IBANS_RESULT, std::move(ibans));
     OnWebDataServiceRequestDone(pending_ibans_query_, std::move(result));
   }
@@ -300,8 +290,9 @@ bool TestPersonalDataManager::IsDataLoaded() const {
   return true;
 }
 
-bool TestPersonalDataManager::IsSyncFeatureEnabled() const {
-  return sync_feature_enabled_;
+bool TestPersonalDataManager::IsSyncFeatureEnabledForPaymentsServerMetrics()
+    const {
+  return false;
 }
 
 CoreAccountInfo TestPersonalDataManager::GetAccountInfoForPaymentsServer()
@@ -324,11 +315,17 @@ TestPersonalDataManager::GetProfileUpdateStrikeDatabase() const {
   return &inmemory_profile_update_strike_database_;
 }
 
-bool TestPersonalDataManager::IsAutofillPaymentMethodsMandatoryReauthEnabled() {
-  if (autofill_payment_methods_mandatory_reauth_enabled_) {
-    return true;
+bool TestPersonalDataManager::IsPaymentMethodsMandatoryReauthEnabled() {
+  if (payment_methods_mandatory_reauth_enabled_.has_value()) {
+    return payment_methods_mandatory_reauth_enabled_.value();
   }
-  return PersonalDataManager::IsAutofillPaymentMethodsMandatoryReauthEnabled();
+  return PersonalDataManager::IsPaymentMethodsMandatoryReauthEnabled();
+}
+
+void TestPersonalDataManager::SetPaymentMethodsMandatoryReauthEnabled(
+    bool enabled) {
+  payment_methods_mandatory_reauth_enabled_ = enabled;
+  PersonalDataManager::SetPaymentMethodsMandatoryReauthEnabled(enabled);
 }
 
 void TestPersonalDataManager::ClearProfiles() {
@@ -379,9 +376,16 @@ void TestPersonalDataManager::AddCardArtImage(const GURL& url,
   NotifyPersonalDataObserver();
 }
 
+void TestPersonalDataManager::AddVirtualCardUsageData(
+    const VirtualCardUsageData& usage_data) {
+  autofill_virtual_card_usage_data_.push_back(
+      std::make_unique<VirtualCardUsageData>(usage_data));
+  NotifyPersonalDataObserver();
+}
+
 void TestPersonalDataManager::SetNicknameForCardWithGUID(
-    const char* guid,
-    const std::string& nickname) {
+    std::string_view guid,
+    std::string_view nickname) {
   for (auto& card : local_credit_cards_) {
     if (card->guid() == guid) {
       card->SetNickname(base::ASCIIToUTF16(nickname));

@@ -226,8 +226,10 @@ void WaylandPopup::OnSequencePoint(int64_t seq) {
 
 void WaylandPopup::UpdateWindowMask() {
   // Popup doesn't have a shape. Update the opaqueness.
-  std::vector<gfx::Rect> region{gfx::Rect{latched_state().size_px}};
-  root_surface()->set_opaque_region(IsOpaqueWindow() ? &region : nullptr);
+  auto region = IsOpaqueWindow() ? absl::optional<std::vector<gfx::Rect>>(
+                                       {gfx::Rect(latched_state().size_px)})
+                                 : absl::nullopt;
+  root_surface()->set_opaque_region(region);
 }
 
 void WaylandPopup::PropagateBufferScale(float new_scale) {

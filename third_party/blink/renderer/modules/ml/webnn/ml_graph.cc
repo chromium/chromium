@@ -245,7 +245,26 @@ bool MLGraph::ValidateAndInitializeResourcesInfo(
                             .byte_length = operand->ByteLength()}));
           break;
         case MLOperand::OperandKind::kConstant:
-          // If the operand is a constant operand, there is no check needed.
+          // If the operand has been validated, it doesn't need to be verified
+          // multiple times.
+          if (visited_input_operands.Contains(operand)) {
+            continue;
+          }
+          visited_input_operands.insert(operand);
+          // If the operand is a constant operand, validate its ArrayBufferView
+          // is not detached, because the backends may access its content in
+          // `BuildAsyncImpl()` or `BuildSyncImpl()`. A constant operand may
+          // carries a detached ArrayBufferView if the JS code first calls
+          // `MLGraphBuilder.constant()` to build a constant operand with a
+          // valid ArrayBufferView, then detaches the ArrayBufferView and calls
+          // `MLGraphBuilder.build()` to build the graph with this constant
+          // operand.
+          CHECK(operand->ArrayBufferView());
+          if (operand->ArrayBufferView()->IsDetached()) {
+            error_message =
+                "The array buffer view of the constant operand is detached.";
+            return false;
+          }
           break;
       }
     }

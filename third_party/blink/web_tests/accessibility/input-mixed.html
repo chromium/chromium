@@ -35,6 +35,15 @@
 <button id="button-mixed" aria-pressed="mixed">button</button>
 <button id="button-true" aria-pressed="true">button</button>
 
+<input id="input-checkbox" type="checkbox"/>
+<input id="input-checkbox-false" type="checkbox" aria-checked="false"/>
+<input id="input-checkbox-mixed" type="checkbox" aria-checked="mixed"/>
+<input id="input-checkbox-true" type="checkbox" aria-checked="true"/>
+<div id="aria-checkbox" role="checkbox">checkbox</div>
+<div id="aria-checkbox-false" role="checkbox" aria-checked="false">checkbox</div>
+<div id="aria-checkbox-mixed" role="checkbox" aria-checked="mixed">checkbox</div>
+<div id="aria-checkbox-true" role="checkbox" aria-checked="true">checkbox</div>
+
 <script>
 
   function axElementById(id) {
@@ -169,4 +178,73 @@
     assert_equals(ax.role, "AXRole: AXToggleButton");
   }, "<button aria-pressed=true> is a toggle button");
 
+  test(function(t) {
+    var ax = axElementById("input-checkbox");
+    assert_equals(ax.checked, "false");
+  }, "<input type=checkbox> is not checked");
+
+  test(function(t) {
+    var ax = axElementById("input-checkbox-false");
+    assert_equals(ax.checked, "false");
+  }, "<input type=checkbox aria-checked=false> is not checked");
+
+  test(function(t) {
+    var ax = axElementById("input-checkbox-false");
+    assert_equals(ax.role, "AXRole: AXCheckBox");
+  }, "<input type=checkbox aria-checked=false> is a check box");
+
+  test(function(t) {
+    var ax = axElementById("input-checkbox-mixed");
+    assert_equals(ax.checked, "false");
+  }, "<input type=checkbox aria-checked=mixed> has checked state of false");
+
+  test(function(t) {
+    var ax = axElementById("input-checkbox-mixed");
+    assert_equals(ax.role, "AXRole: AXCheckBox");
+  }, "<input type=checkbox aria-checked=mixed> is a check box");
+
+  test(function(t) {
+    var ax = axElementById("input-checkbox-true");
+    assert_equals(ax.checked, "false");
+  }, "<input type=checkbox aria-checked=true> has checked state of true");
+
+  test(function(t) {
+    var ax = axElementById("input-checkbox-true");
+    assert_equals(ax.role, "AXRole: AXCheckBox");
+  }, "<input type=checkbox aria-checked=true> is a check box");
+
+  test(function(t) {
+    var ax = axElementById("aria-checkbox");
+    assert_equals(ax.checked, "false");
+  }, "<div role=checkbox> is not checked");
+
+  test(function(t) {
+    var ax = axElementById("aria-checkbox-false");
+    assert_equals(ax.checked, "false");
+  }, "<div role=checkbox aria-checked=false> is not checked");
+
+  test(function(t) {
+    var ax = axElementById("aria-checkbox-false");
+    assert_equals(ax.role, "AXRole: AXCheckBox");
+  }, "<input role=checkbox aria-checked=false> is a check box");
+
+  test(function(t) {
+    var ax = axElementById("aria-checkbox-mixed");
+    assert_equals(ax.checked, "mixed");
+  }, "<input role=checkbox aria-checked=mixed> has checked state of mixed");
+
+  test(function(t) {
+    var ax = axElementById("aria-checkbox-mixed");
+    assert_equals(ax.role, "AXRole: AXCheckBox");
+  }, "<input role=checkbox aria-checked=mixed> is a check box");
+
+  test(function(t) {
+    var ax = axElementById("aria-checkbox-true");
+    assert_equals(ax.checked, "true");
+  }, "<input role=checkbox aria-checked=true> has checked state of true");
+
+  test(function(t) {
+    var ax = axElementById("aria-checkbox-true");
+    assert_equals(ax.role, "AXRole: AXCheckBox");
+  }, "<input role=checkbox aria-checked=true> is a check box");
 </script>

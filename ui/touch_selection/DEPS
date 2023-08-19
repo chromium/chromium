@@ -1,9 +1,11 @@
 include_rules = [
+  "+third_party/skia/include/core",
   "+ui/aura",
-  "+ui/aura_extra",
   "+ui/base",
+  "+ui/color",
   "+ui/compositor",
   "+ui/events",
   "+ui/gfx",
+  "+ui/native_theme",
   "+ui/resources"
 ]

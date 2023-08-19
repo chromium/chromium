@@ -35,11 +35,6 @@ HitTestManager::HitTestManager(SurfaceManager* surface_manager)
 
 HitTestManager::~HitTestManager() = default;
 
-bool HitTestManager::OnSurfaceDamaged(const SurfaceId& surface_id,
-                                      const BeginFrameAck& ack) {
-  return false;
-}
-
 void HitTestManager::OnSurfaceDestroyed(const SurfaceId& surface_id) {
   hit_test_region_lists_.erase(surface_id);
 }

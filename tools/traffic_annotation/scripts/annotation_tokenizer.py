@@ -9,6 +9,7 @@ A tokenizer for traffic annotation definitions.
 from typing import NamedTuple, Optional
 
 import re
+import textwrap
 
 # Regexen that match a token inside the annotation definition arguments. Stored
 # as a list instead of a dict, to preserve order.
@@ -19,6 +20,8 @@ import re
 TOKEN_REGEXEN = [
     # Comma for separating args.
     ('comma', re.compile(r'(,)')),
+    # Java text blocks (must come before string_literal).
+    ('text_block', re.compile(r'"""\n(.*?)"""', re.DOTALL)),
     # String literal. "string" or R"(string)". In Java, this will incorrectly
     # accept R-strings, which aren't part of the language's syntax. But since
     # that wouldn't compile anyways, we can just ignore this issue.
@@ -47,6 +50,11 @@ class Token(NamedTuple):
   type: str
   value: str
   pos: int
+
+
+def _process_backslashes(string):
+  # https://stackoverflow.com/questions/4020539
+  return bytes(string, 'utf-8').decode('unicode_escape')
 
 
 class SourceCodeParsingError(Exception):
@@ -102,8 +110,10 @@ class Tokenizer:
         if token_type == 'string_literal' and not raw_token.startswith('R"'):
           # Remove the extra backslash in backslash sequences, but only in
           # non-R strings. R-strings don't need escaping.
-          backslash_regex = re.compile(r'\\(\\|")')
-          token_content = backslash_regex.sub(r'\1', token_content)
+          token_content = _process_backslashes(token_content)
+        elif token_type == 'text_block':
+          token_type = 'string_literal'
+          token_content = _process_backslashes(textwrap.dedent(token_content))
         token = Token(token_type, token_content, re_match.end())
         break
 

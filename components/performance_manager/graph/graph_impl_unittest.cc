@@ -22,6 +22,8 @@ namespace performance_manager {
 
 using GraphImplTest = GraphTestHarness;
 
+using ::testing::UnorderedElementsAreArray;
+
 TEST_F(GraphImplTest, SafeCasting) {
   const Graph* graph_base = graph();
   EXPECT_EQ(graph(), GraphImpl::FromGraph(graph_base));
@@ -103,6 +105,120 @@ TEST_F(GraphImplTest, GetAllCUsByType) {
   EXPECT_NE(nullptr, pages[1]);
 }
 
+TEST_F(GraphImplTest, Visitors) {
+  MockMultiplePagesInSingleProcessGraph mock_graph(graph());
+
+  std::vector<const FrameNode*> visited_frame_nodes;
+  EXPECT_EQ(true, graph()->VisitAllFrameNodes([&](const FrameNode* node) {
+    visited_frame_nodes.push_back(node);
+    return true;
+  }));
+  EXPECT_THAT(visited_frame_nodes,
+              UnorderedElementsAreArray(graph()->GetAllFrameNodes()));
+
+  std::vector<const PageNode*> visited_page_nodes;
+  EXPECT_EQ(true, graph()->VisitAllPageNodes([&](const PageNode* node) {
+    visited_page_nodes.push_back(node);
+    return true;
+  }));
+  EXPECT_THAT(visited_page_nodes,
+              UnorderedElementsAreArray(graph()->GetAllPageNodes()));
+
+  std::vector<const ProcessNode*> visited_process_nodes;
+  EXPECT_EQ(true, graph()->VisitAllProcessNodes([&](const ProcessNode* node) {
+    visited_process_nodes.push_back(node);
+    return true;
+  }));
+  EXPECT_THAT(visited_process_nodes,
+              UnorderedElementsAreArray(graph()->GetAllProcessNodes()));
+
+  std::vector<const WorkerNode*> visited_worker_nodes;
+  EXPECT_EQ(true, graph()->VisitAllWorkerNodes([&](const WorkerNode* node) {
+    visited_worker_nodes.push_back(node);
+    return true;
+  }));
+  EXPECT_THAT(visited_worker_nodes,
+              UnorderedElementsAreArray(graph()->GetAllWorkerNodes()));
+
+  size_t visited_nodes = 0;
+  EXPECT_EQ(false, graph()->VisitAllFrameNodes([&](const FrameNode*) {
+    ++visited_nodes;
+    return false;
+  }));
+  EXPECT_EQ(false, graph()->VisitAllPageNodes([&](const PageNode*) {
+    ++visited_nodes;
+    return false;
+  }));
+  EXPECT_EQ(false, graph()->VisitAllProcessNodes([&](const ProcessNode*) {
+    ++visited_nodes;
+    return false;
+  }));
+  // There are no worker nodes, so the visitor never runs.
+  EXPECT_EQ(true, graph()->VisitAllWorkerNodes([&](const WorkerNode*) {
+    ++visited_nodes;
+    return false;
+  }));
+  // Visited one node of each type except workers.
+  EXPECT_EQ(visited_nodes, 3u);
+}
+
+TEST_F(GraphImplTest, ImplVisitors) {
+  MockMultiplePagesInSingleProcessGraph mock_graph(graph());
+
+  std::vector<FrameNodeImpl*> visited_frame_nodes;
+  EXPECT_EQ(true, graph()->VisitAllFrameNodeImpls([&](FrameNodeImpl* node) {
+    visited_frame_nodes.push_back(node);
+    return true;
+  }));
+  EXPECT_THAT(visited_frame_nodes,
+              UnorderedElementsAreArray(graph()->GetAllFrameNodeImpls()));
+
+  std::vector<PageNodeImpl*> visited_page_nodes;
+  EXPECT_EQ(true, graph()->VisitAllPageNodeImpls([&](PageNodeImpl* node) {
+    visited_page_nodes.push_back(node);
+    return true;
+  }));
+  EXPECT_THAT(visited_page_nodes,
+              UnorderedElementsAreArray(graph()->GetAllPageNodeImpls()));
+
+  std::vector<ProcessNodeImpl*> visited_process_nodes;
+  EXPECT_EQ(true, graph()->VisitAllProcessNodeImpls([&](ProcessNodeImpl* node) {
+    visited_process_nodes.push_back(node);
+    return true;
+  }));
+  EXPECT_THAT(visited_process_nodes,
+              UnorderedElementsAreArray(graph()->GetAllProcessNodeImpls()));
+
+  std::vector<WorkerNodeImpl*> visited_worker_nodes;
+  EXPECT_EQ(true, graph()->VisitAllWorkerNodeImpls([&](WorkerNodeImpl* node) {
+    visited_worker_nodes.push_back(node);
+    return true;
+  }));
+  EXPECT_THAT(visited_worker_nodes,
+              UnorderedElementsAreArray(graph()->GetAllWorkerNodeImpls()));
+
+  size_t visited_nodes = 0;
+  EXPECT_EQ(false, graph()->VisitAllFrameNodeImpls([&](FrameNodeImpl*) {
+    ++visited_nodes;
+    return false;
+  }));
+  EXPECT_EQ(false, graph()->VisitAllPageNodeImpls([&](PageNodeImpl*) {
+    ++visited_nodes;
+    return false;
+  }));
+  EXPECT_EQ(false, graph()->VisitAllProcessNodeImpls([&](ProcessNodeImpl*) {
+    ++visited_nodes;
+    return false;
+  }));
+  // There are no worker nodes, so the visitor never runs.
+  EXPECT_EQ(true, graph()->VisitAllWorkerNodeImpls([&](WorkerNodeImpl*) {
+    ++visited_nodes;
+    return false;
+  }));
+  // Visited one node of each type except workers.
+  EXPECT_EQ(visited_nodes, 3u);
+}
+
 namespace {
 
 class LenientMockObserver : public GraphObserver {
@@ -122,6 +238,7 @@ using testing::Invoke;
 
 TEST_F(GraphImplTest, ObserverWorks) {
   std::unique_ptr<GraphImpl> graph = std::make_unique<GraphImpl>();
+  graph->SetUp();
   Graph* raw_graph = graph.get();
 
   MockObserver obs;
@@ -171,6 +288,7 @@ TEST_F(GraphImplTest, GraphOwned) {
 
   // Pass both objects to the graph.
   std::unique_ptr<GraphImpl> graph = std::make_unique<GraphImpl>();
+  graph->SetUp();
   EXPECT_EQ(0u, graph->GraphOwnedCountForTesting());
   EXPECT_FALSE(raw1->passed_to_called());
   graph->PassToGraph(std::move(foo1));

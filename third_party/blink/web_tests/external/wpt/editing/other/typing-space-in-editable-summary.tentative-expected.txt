@@ -1,7 +1,7 @@
 This is a testharness.js-based test.
-FAIL Type space key in editable <summary> should be handled by the <summary> when it's focused promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
-FAIL Type space key in editable <summary> shouldn't be handled by the <summary> when it's not focused promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
-FAIL Type space key in <summary contenteditable> should be handled by the <summary> promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
-FAIL Type space key in editable element in <summary> shouldn't be handled by the <summary> promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
+PASS Type space key in editable <summary> should be handled by the <summary> when it's focused
+PASS Type space key in editable <summary> shouldn't be handled by the <summary> when it's not focused
+PASS Type space key in <summary contenteditable> should be handled by the <summary>
+FAIL Type space key in editable element in <summary> shouldn't be handled by the <summary> assert_false: <details> should keep collapsed expected false got true
 Harness: the test ran to completion.
 

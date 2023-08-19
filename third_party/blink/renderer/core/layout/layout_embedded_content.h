@@ -66,8 +66,7 @@ class CORE_EXPORT LayoutEmbeddedContent : public LayoutReplaced {
   gfx::Rect BorderBoxFromEmbeddedContent(const gfx::Rect&) const;
 
   PhysicalRect ReplacedContentRectFrom(
-      const LayoutSize size,
-      const NGPhysicalBoxStrut& border_padding) const final;
+      const PhysicalRect& base_content_rect) const final;
 
   void UpdateOnEmbeddedContentViewChange();
   void UpdateGeometry(EmbeddedContentView&);

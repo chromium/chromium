@@ -22,6 +22,4 @@ source_set("cookies") {
     "wk_http_system_cookie_store.h",
     "wk_http_system_cookie_store.mm",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

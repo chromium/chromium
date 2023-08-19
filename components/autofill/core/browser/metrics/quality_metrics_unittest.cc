@@ -9,6 +9,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/browser/metrics/ukm_metrics_test_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -558,7 +559,7 @@ TEST_P(PredictionQualityMetricsTest, Classification) {
   ExpectedUkmMetrics expected_ukm_metrics;
   AppendFieldTypeUkm(form, heuristic_types, server_types, actual_types,
                      &expected_ukm_metrics);
-  VerifyUkm(test_ukm_recorder_, form, UkmFieldTypeValidationType::kEntryName,
+  VerifyUkm(&test_ukm_recorder(), form, UkmFieldTypeValidationType::kEntryName,
             expected_ukm_metrics);
 
   // Validate the total samples and the crossed (predicted-to-actual) samples.
@@ -778,8 +779,8 @@ TEST_F(QualityMetricsTest, BasedOnAutocomplete) {
   FormStructure* form_structure_ptr = form_structure.get();
   form_structure->DetermineHeuristicTypes(nullptr, nullptr);
   ASSERT_TRUE(
-      autofill_manager()
-          .mutable_form_structures_for_test()
+      test_api(autofill_manager())
+          .mutable_form_structures()
           ->emplace(form_structure_ptr->global_id(), std::move(form_structure))
           .second);
 
@@ -796,8 +797,9 @@ TEST_F(QualityMetricsTest, BasedOnAutocomplete) {
 
   std::string response_string = SerializeAndEncode(response);
   base::HistogramTester histogram_tester;
-  autofill_manager().OnLoadedServerPredictionsForTest(
-      response_string, test::GetEncodedSignatures(*form_structure_ptr));
+  test_api(autofill_manager())
+      .OnLoadedServerPredictions(
+          response_string, test::GetEncodedSignatures(*form_structure_ptr));
 
   // Verify that FormStructure::ParseApiQueryResponse was called (here and
   // below).
@@ -855,6 +857,42 @@ TEST_F(QualityMetricsTest, BasedOnAutocomplete) {
     histogram_tester.ExpectTotalCount(aggregate_histogram, 3);
     histogram_tester.ExpectTotalCount(by_field_type_histogram, 4);
   }
+}
+
+// Tests that the Autofill.LabelInference.InferredLabelSource.AtSubmission
+// metric is emitted correctly.
+TEST_F(QualityMetricsTest, InferredLabelSourceAtSubmissionMetric) {
+  const AutofillProfile& profile =
+      *personal_data().GetProfileByGUID(kTestProfileId);
+
+  // Create a form and fill the `name_field` and `country_field` with values
+  // from the `profile`, ensuring that they have a possible type. The
+  // `street_field` is filled with an unknown value, which makes sure that it
+  // doesn't have a possible type.
+  // The `FormFieldData::label_source` of the fields is set manually, since
+  // this test doesn't run label inference.
+  FormFieldData name_field;
+  name_field.value = profile.GetInfo(NAME_FULL, personal_data().app_locale());
+  name_field.label_source = FormFieldData::LabelSource::kUnknown;
+  FormFieldData street_field;
+  street_field.value = u"unknown";
+  street_field.label_source = FormFieldData::LabelSource::kFor;
+  FormFieldData country_field;
+  country_field.value =
+      profile.GetInfo(ADDRESS_HOME_COUNTRY, personal_data().app_locale());
+  country_field.label_source = FormFieldData::LabelSource::kLabelTag;
+  const FormData form = CreateForm({name_field, street_field, country_field});
+  autofill_manager().AddSeenForm(
+      form, {NAME_FIRST, ADDRESS_HOME_LINE1, ADDRESS_HOME_COUNTRY});
+
+  // Expect that the label source of all fields with a possible type is logged
+  // on form submission.
+  base::HistogramTester histogram_tester;
+  SubmitForm(form);
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.LabelInference.InferredLabelSource.AtSubmission"),
+              BucketsAre(Bucket(name_field.label_source, 1),
+                         Bucket(country_field.label_source, 1)));
 }
 
 }  // namespace autofill_metrics

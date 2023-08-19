@@ -4,13 +4,13 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<style include="oobe-dialog-host-styles">
+<style include="oobe-dialog-host-styles cros-color-overrides">
   #termsDescriptionTitle {
     color: var(--oobe-header-text-color);
-    font-family: var(--oobe-header-font-family);
-    font-size: 18px;
-    font-weight: var(--oobe-header-font-weight);
-    line-height: 24px;
+    font-family: var(--oobe-consolidated-consent-terms-title-font-family);
+    font-size: var(--oobe-consolidated-consent-terms-title-font-size);
+    font-weight: var(--oobe-consolidated-consent-terms-title-font-weight);
+    line-height: var(--oobe-consolidated-consent-terms-title-line-height);
     margin-bottom: 4px;
   }
 
@@ -32,6 +32,10 @@ found in the LICENSE file.
     --iron-icon-fill-color: var(--cros-icon-color-secondary);
     height: 20px;
     margin-inline-end: 6px;
+  }
+
+  :host-context(.jelly-enabled) .managed-icon {
+    --iron-icon-fill-color: var(--cros-sys-on_surface);
   }
 
   #usageStats.first-optin-no-tos {
@@ -57,7 +61,8 @@ found in the LICENSE file.
     [[i18nDynamic(locale, 'consolidatedConsentErrorMessage')]]
   </p>
   <div slot="content" class="flex layout vertical center center-justified">
-    <img src="images/error.svg" class="oobe-illustration">
+    <iron-icon icon="oobe-illos:error-illo" class="illustration-jelly">
+    </iron-icon>
   </div>
   <div slot="bottom-buttons">
     <oobe-text-button id="retryButton"

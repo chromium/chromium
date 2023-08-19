@@ -9,7 +9,6 @@ import android.os.Handler;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
@@ -294,7 +293,6 @@ public class StartupPaintPreview implements PlayerManager.Listener {
         remove(ExitCause.ACCESSIBILITY_NOT_SUPPORTED);
     }
 
-    @VisibleForTesting
     TabObserver getTabObserverForTesting() {
         return mStartupTabObserver;
     }

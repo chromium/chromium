@@ -122,6 +122,27 @@ void RRectF::SetCornerRadii(Corner corner, float x_rad, float y_rad) {
   skrrect_.setRectRadii(skrrect_.rect(), radii);
 }
 
+gfx::RectF RRectF::CornerBoundingRect(Corner corner) const {
+  auto radii = GetCornerRadii(corner);
+  gfx::RectF bounding_box(radii.x(), radii.y());
+  switch (corner) {
+    case Corner::kUpperLeft:
+      bounding_box.Offset(rect().x(), rect().y());
+      break;
+    case Corner::kUpperRight:
+      bounding_box.Offset(rect().right() - radii.x(), rect().y());
+      break;
+    case Corner::kLowerRight:
+      bounding_box.Offset(rect().right() - radii.x(),
+                          rect().bottom() - radii.y());
+      break;
+    case Corner::kLowerLeft:
+      bounding_box.Offset(rect().x(), rect().bottom() - radii.y());
+      break;
+  }
+  return bounding_box;
+}
+
 void RRectF::Scale(float x_scale, float y_scale) {
   if (IsEmpty()) {
     // SkRRect doesn't support scaling of empty rects.

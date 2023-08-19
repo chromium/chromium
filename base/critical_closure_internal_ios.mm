@@ -6,8 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 ImmediateCriticalClosure::ImmediateCriticalClosure(StringPiece task_name,
                                                    OnceClosure closure)
@@ -36,5 +35,4 @@ void PendingCriticalClosure::Run() {
   std::move(closure_).Run();
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

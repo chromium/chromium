@@ -12,7 +12,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
-#include "components/sync/base/model_type.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
@@ -89,17 +88,6 @@ void RecordRequestStatus(SubscriptionStatus status,
     // Log a histogram to track response success vs. failure rates.
     base::UmaHistogramSparse("FCMInvalidations.SubscriptionResponseCode",
                              response_code);
-    // If the topic corresponds to a Sync ModelType, use that as the histogram
-    // suffix. Otherwise (e.g. Drive or Policy), just use "OTHER" for now.
-    // TODO(crbug.com/1029698): Depending on sync is a layering violation.
-    // Eventually the "whitelisted for metrics" bit should be part of a Topic.
-    syncer::ModelType model_type;  // Unused.
-    std::string suffix =
-        syncer::NotificationTypeToRealModelType(topic, &model_type) ? topic
-                                                                    : "OTHER";
-    base::UmaHistogramSparse(
-        "FCMInvalidations.SubscriptionResponseCodeForTopic." + suffix,
-        response_code);
   }
 }
 
@@ -333,6 +321,8 @@ PerUserTopicSubscriptionRequest::Builder::BuildURLFetcher(
     const HttpRequestHeaders& headers,
     const std::string& body,
     const GURL& url) const {
+  // TODO(crbug.com/1404927): Chrome Sync does not use topics anymore, update
+  // the description.
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("per_user_topic_registration_request",
                                           R"(

@@ -7,6 +7,7 @@ Revision: 375be83109e10b32441483dbd0f1ac493488d197
 License: Apache 2.0
 License File: src/LICENSE
 Security Critical: yes
+Shipped: yes
 
 Description:
 The package contains a communicative cipher. It's used to communicate with the leak detection Google server.

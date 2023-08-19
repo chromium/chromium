@@ -19,7 +19,8 @@ namespace webapps {
 FakeInstallableManager::FakeInstallableManager(
     content::WebContents* web_contents)
     : InstallableManager(web_contents),
-      manifest_(blink::mojom::Manifest::New()) {}
+      manifest_(blink::mojom::Manifest::New()),
+      web_page_metadata_(mojom::WebPageMetadata::New()) {}
 
 FakeInstallableManager::~FakeInstallableManager() {}
 
@@ -59,7 +60,6 @@ FakeInstallableManager::CreateForWebContentsWithManifest(
   installable_manager->manifest_url_ = manifest_url;
   installable_manager->manifest_ = std::move(manifest);
 
-  const bool has_worker = true;
   std::vector<InstallableStatusCode> errors;
 
   // Not used:
@@ -70,9 +70,9 @@ FakeInstallableManager::CreateForWebContentsWithManifest(
 
   auto installable_data = std::make_unique<InstallableData>(
       std::move(errors), installable_manager->manifest_url_,
-      *installable_manager->manifest_, GURL::EmptyGURL(), icon.get(), false,
+      *installable_manager->manifest_, *installable_manager->web_page_metadata_,
       GURL::EmptyGURL(), icon.get(), false, std::vector<Screenshot>(),
-      valid_manifest, has_worker);
+      valid_manifest);
 
   installable_manager->data_ = std::move(installable_data);
 

@@ -9,7 +9,8 @@ android_library("java") {
     "//base:jni_java",
     "//chrome/android/modules/stack_unwinder/public:java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
+  srcjar_deps = [ ":jni_headers" ]
   sources = [ "java/src/org/chromium/chrome/modules/stack_unwinder/StackUnwinderModuleProvider.java" ]
 }
 

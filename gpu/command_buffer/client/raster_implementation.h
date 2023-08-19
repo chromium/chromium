@@ -133,6 +133,9 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
                    GLenum texture_target,
                    const SkPixmap& src_sk_pixmap) override;
 
+  void WritePixelsYUV(const gpu::Mailbox& dest_mailbox,
+                      const SkYUVAPixmaps& src_yuv_pixmap) override;
+
   void ConvertYUVAMailboxesToRGB(
       const gpu::Mailbox& dest_mailbox,
       SkYUVColorSpace planes_yuv_color_space,
@@ -407,7 +410,7 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
   ClientFontManager font_manager_;
 
   mutable base::Lock lost_lock_;
-  bool lost_;
+  bool lost_ GUARDED_BY(lost_lock_);
 
   // To avoid repeated allocations when searching the rtrees, hold onto this
   // vector between RasterCHROMIUM calls.  It is not valid outside of that

@@ -68,7 +68,8 @@ class ASH_EXPORT AppsGridContextMenu : public ui::SimpleMenuModel::Delegate,
   std::unique_ptr<views::MenuRunner> menu_runner_;
 
   // The root menu item view of `context_menu_model_`. Cached for testing.
-  raw_ptr<views::MenuItemView, ExperimentalAsh> root_menu_item_view_ = nullptr;
+  raw_ptr<views::MenuItemView, DanglingUntriaged | ExperimentalAsh>
+      root_menu_item_view_ = nullptr;
 
   // Whether the owner view is currently touch dragging, in which case touch
   // events will be forwarded from the context menu to the owner view (so the

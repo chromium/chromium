@@ -4,6 +4,8 @@
 <translation id="2513892053093488070">음성 검색</translation>
 <translation id="2535710892645968259">잠금 화면에서 Chrome 공룡 게임을 바로 시작합니다.</translation>
 <translation id="2542770169955243077">Chrome 공룡 게임</translation>
+<translation id="2803429804752388720">비밀번호 검색</translation>
+<translation id="2922313168575194078">Google 비밀번호 관리자에서 저장된 비밀번호를 안전하게 검색하세요.</translation>
 <translation id="302608144225178783">홈 화면에서 Chrome 공룡 게임을 바로 시작하세요.</translation>
 <translation id="3296938369177810197">음성 검색</translation>
 <translation id="3464120926993669599">시크릿 검색</translation>
@@ -19,12 +21,13 @@
 <translation id="5277852985315196237">검색 또는 URL 입력</translation>
 <translation id="529497070985873480">Chrome 공룡 게임</translation>
 <translation id="5683557219437283801">음성 검색</translation>
-<translation id="5771998661623826608">사용 가능한 단축키 없음</translation>
 <translation id="6179961764474023795">빠른 작업</translation>
 <translation id="6330929932864892436">검색 또는 URL 입력</translation>
 <translation id="6336802729091778259">Chrome 공룡 게임</translation>
+<translation id="6400175403219850910">비밀번호 관리자</translation>
 <translation id="6663288906398689853">검색</translation>
 <translation id="6691821786147477657">iPad 홈페이지에서 새로운 검색을 시작하거나 가장 자주 방문한 사이트를 엽니다.</translation>
+<translation id="6721566127904256183">자주 방문한 사이트가 여기에 표시됩니다.</translation>
 <translation id="6855322554930231468">검색</translation>
 <translation id="7010831364920321713">시크릿 검색</translation>
 <translation id="7048549665319929185">검색 또는
@@ -36,4 +39,6 @@ URL 입력</translation>
 <translation id="8150601371542319992">렌즈</translation>
 <translation id="8171952085734471362">시크릿 검색</translation>
 <translation id="8564942608461410346">Chrome에서 내가 좋아하는 검색엔진을 이용하여 검색하세요.</translation>
+<translation id="9175676375569833962">비밀번호
+검색</translation>
 </translationbundle>

@@ -108,7 +108,7 @@ export function getPermissionCrToggleByType(view, permissionType) {
 }
 
 /**
- * @param {Element} element
+ * @param {?Element} element
  * @return {boolean}
  */
 export function isHiddenByDomIf(element) {

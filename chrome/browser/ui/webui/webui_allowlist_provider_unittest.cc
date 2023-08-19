@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/webui/webui_allowlist_provider.h"
-#include "components/content_settings/core/browser/content_settings_observer.h"
-#include "ui/webui/webui_allowlist.h"
-
 #include <map>
 #include <memory>
 
@@ -15,10 +11,14 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "net/cookies/site_for_cookies.h"
+#include "ui/webui/webui_allowlist.h"
+#include "ui/webui/webui_allowlist_provider.h"
 
 class WebUIAllowlistProviderTest : public ChromeRenderViewHostTestHarness {
  public:

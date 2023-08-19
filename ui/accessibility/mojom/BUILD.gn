@@ -156,43 +156,45 @@ mojom("mojom") {
   blink_cpp_typemaps = common_typemaps
 }
 
-mojom("ax_assistant_mojom") {
-  sources = [ "ax_assistant_structure.mojom" ]
+if (is_android || is_chromeos_ash) {
+  mojom("ax_assistant_mojom") {
+    sources = [ "ax_assistant_structure.mojom" ]
 
-  cpp_typemaps = [
-    {
-      types = [
-        {
-          mojom = "ax.mojom.AssistantTree"
-          cpp = "::std::unique_ptr<::ui::AssistantTree>"
-          move_only = true
-          nullable_is_same_type = true
-        },
-        {
-          mojom = "ax.mojom.AssistantNode"
-          cpp = "::std::unique_ptr<::ui::AssistantNode>"
-          move_only = true
-        },
-      ]
-      traits_sources = [ "ax_assistant_structure_mojom_traits.cc" ]
-      traits_headers = [ "ax_assistant_structure_mojom_traits.h" ]
-      traits_public_deps = [
-        "//ui/accessibility:ax_assistant",
-        "//ui/gfx",
-        "//ui/gfx/geometry/mojom",
-        "//ui/gfx/geometry/mojom:mojom_traits",
-        "//ui/gfx/range/mojom",
-      ]
-    },
-  ]
+    cpp_typemaps = [
+      {
+        types = [
+          {
+            mojom = "ax.mojom.AssistantTree"
+            cpp = "::std::unique_ptr<::ui::AssistantTree>"
+            move_only = true
+            nullable_is_same_type = true
+          },
+          {
+            mojom = "ax.mojom.AssistantNode"
+            cpp = "::std::unique_ptr<::ui::AssistantNode>"
+            move_only = true
+          },
+        ]
+        traits_sources = [ "ax_assistant_structure_mojom_traits.cc" ]
+        traits_headers = [ "ax_assistant_structure_mojom_traits.h" ]
+        traits_public_deps = [
+          "//ui/accessibility:ax_assistant",
+          "//ui/gfx",
+          "//ui/gfx/geometry/mojom",
+          "//ui/gfx/geometry/mojom:mojom_traits",
+          "//ui/gfx/range/mojom",
+        ]
+      },
+    ]
 
-  public_deps = [
-    "//mojo/public/mojom/base",
-    "//ui/gfx/geometry/mojom",
-    "//ui/gfx/mojom",
-    "//ui/gfx/range/mojom",
-    "//url/mojom:url_mojom_gurl",
-  ]
+    public_deps = [
+      "//mojo/public/mojom/base",
+      "//ui/gfx/geometry/mojom",
+      "//ui/gfx/mojom",
+      "//ui/gfx/range/mojom",
+      "//url/mojom:url_mojom_gurl",
+    ]
+  }
 }
 
 source_set("mojom_traits") {

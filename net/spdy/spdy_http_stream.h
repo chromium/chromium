@@ -39,9 +39,7 @@ class NET_EXPORT_PRIVATE SpdyHttpStream : public SpdyStream::Delegate,
  public:
   static const size_t kRequestBodyBufferSize;
   // |spdy_session| must not be NULL.
-  // TODO(https://crbug.com/1426477): Remove `pushed_stream_id` argument.
   SpdyHttpStream(const base::WeakPtr<SpdySession>& spdy_session,
-                 spdy::SpdyStreamId pushed_stream_id,
                  NetLogSource source_dependency,
                  std::set<std::string> dns_aliases);
 
@@ -98,8 +96,7 @@ class NET_EXPORT_PRIVATE SpdyHttpStream : public SpdyStream::Delegate,
   void OnHeadersSent() override;
   void OnEarlyHintsReceived(const spdy::Http2HeaderBlock& headers) override;
   void OnHeadersReceived(
-      const spdy::Http2HeaderBlock& response_headers,
-      const spdy::Http2HeaderBlock* pushed_request_headers) override;
+      const spdy::Http2HeaderBlock& response_headers) override;
   void OnDataReceived(std::unique_ptr<SpdyBuffer> buffer) override;
   void OnDataSent() override;
   void OnTrailers(const spdy::Http2HeaderBlock& trailers) override;
@@ -155,12 +152,6 @@ class NET_EXPORT_PRIVATE SpdyHttpStream : public SpdyStream::Delegate,
 
   const base::WeakPtr<SpdySession> spdy_session_;
 
-  // The ID of the pushed stream if one is claimed by this request.
-  // In this case, the request fails if it cannot use that pushed stream.
-  // Otherwise set to kNoPushedStreamFound.
-  // TODO(https://crbug.com/1426477): Remove.
-  const spdy::SpdyStreamId pushed_stream_id_;
-
   bool is_reused_;
   SpdyStreamRequest stream_request_;
   const NetLogSource source_dependency_;
@@ -196,10 +187,8 @@ class NET_EXPORT_PRIVATE SpdyHttpStream : public SpdyStream::Delegate,
 
   // |response_info_| is the HTTP response data object which is filled in
   // when a response HEADERS comes in for the stream.
-  // It is not owned by this stream object, or point to |push_response_info_|.
+  // It is not owned by this stream object.
   raw_ptr<HttpResponseInfo> response_info_ = nullptr;
-
-  std::unique_ptr<HttpResponseInfo> push_response_info_;
 
   bool response_headers_complete_ = false;
 

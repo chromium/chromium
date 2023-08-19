@@ -54,7 +54,7 @@ class BASE_EXPORT UncheckedObserverAdapter {
 #endif  // DCHECK_IS_ON()
 
  private:
-  raw_ptr<void, DanglingUntriaged> ptr_;
+  raw_ptr<void, AcrossTasksDanglingUntriaged> ptr_;
 #if DCHECK_IS_ON()
   base::debug::StackTrace stack_;
 #endif  // DCHECK_IS_ON()

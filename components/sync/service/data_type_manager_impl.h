@@ -185,7 +185,7 @@ class DataTypeManagerImpl : public DataTypeManager,
 
   // The encryption handler lets the DataTypeManager know the state of sync
   // datatype encryption.
-  raw_ptr<const DataTypeEncryptionHandler> encryption_handler_;
+  const raw_ptr<const DataTypeEncryptionHandler> encryption_handler_;
 
   base::WeakPtrFactory<DataTypeManagerImpl> weak_ptr_factory_{this};
 };

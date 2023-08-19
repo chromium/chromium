@@ -397,13 +397,6 @@ void BrowserDesktopWindowTreeHostWin::HandleDestroying() {
   DesktopWindowTreeHostWin::HandleDestroying();
 }
 
-void BrowserDesktopWindowTreeHostWin::HandleFrameChanged() {
-  // Reinitialize the status bubble, since it needs to be initialized
-  // differently depending on whether or not DWM composition is enabled
-  browser_view_->InitStatusBubble();
-  DesktopWindowTreeHostWin::HandleFrameChanged();
-}
-
 void BrowserDesktopWindowTreeHostWin::HandleWindowScaleFactorChanged(
     float window_scale_factor) {
   DesktopWindowTreeHostWin::HandleWindowScaleFactorChanged(window_scale_factor);

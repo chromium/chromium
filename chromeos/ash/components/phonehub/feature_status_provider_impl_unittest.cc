@@ -7,6 +7,8 @@
 #include <memory>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "chromeos/ash/services/device_sync/public/cpp/fake_device_sync_client.h"
@@ -68,18 +70,47 @@ multidevice::RemoteDeviceRef CreatePhoneDevice(
   return builder.Build();
 }
 
+multidevice::RemoteDeviceRef CreatePhoneDeviceWithUniqueInstanceId(
+    bool supports_better_together_host,
+    bool supports_phone_hub_host,
+    bool has_bluetooth_address,
+    std::string instance_id) {
+  multidevice::RemoteDeviceRefBuilder builder;
+
+  builder.SetSoftwareFeatureState(
+      multidevice::SoftwareFeature::kBetterTogetherHost,
+      supports_better_together_host
+          ? multidevice::SoftwareFeatureState::kSupported
+          : multidevice::SoftwareFeatureState::kNotSupported);
+  builder.SetSoftwareFeatureState(
+      multidevice::SoftwareFeature::kPhoneHubHost,
+      supports_phone_hub_host
+          ? multidevice::SoftwareFeatureState::kSupported
+          : multidevice::SoftwareFeatureState::kNotSupported);
+  builder.SetBluetoothPublicAddress(
+      has_bluetooth_address ? kPhoneBluetoothAddress : std::string());
+  builder.SetInstanceId(instance_id);
+  return builder.Build();
+}
+
 class FakeObserver : public FeatureStatusProvider::Observer {
  public:
   FakeObserver() = default;
   ~FakeObserver() override = default;
 
   size_t num_calls() const { return num_calls_; }
+  size_t eligible_host_calls() const { return eligible_host_calls_; }
 
   // FeatureStatusProvider::Observer:
   void OnFeatureStatusChanged() override { ++num_calls_; }
+  void OnEligiblePhoneHubHostFound(
+      const multidevice::RemoteDeviceRefList device) override {
+    ++eligible_host_calls_;
+  }
 
  private:
   size_t num_calls_ = 0;
+  size_t eligible_host_calls_ = 0;
 };
 
 }  // namespace
@@ -196,6 +227,9 @@ class FeatureStatusProviderImplTest : public testing::Test {
   FeatureStatus GetStatus() const { return provider_->GetStatus(); }
 
   size_t GetNumObserverCalls() const { return fake_observer_.num_calls(); }
+  size_t GetNumEligibleHostObserverCalls() const {
+    return fake_observer_.eligible_host_calls();
+  }
 
   session_manager::SessionManager* session_manager() {
     return session_manager_.get();
@@ -618,6 +652,47 @@ TEST_F(FeatureStatusProviderImplTest, HandlePowerSuspend) {
   chromeos::FakePowerManagerClient::Get()->SendSuspendDone();
   EXPECT_EQ(FeatureStatus::kEnabledButDisconnected, GetStatus());
   EXPECT_EQ(3u, GetNumObserverCalls());
+}
+
+TEST_F(FeatureStatusProviderImplTest, EligiblePhoneHubHostsFound) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kPhoneHubOnboardingNotifierRevamp,
+                            features::kSystemNudgeV2},
+      /*disabled_features=*/{});
+  SetMultiDeviceState(
+      HostStatus::kEligibleHostExistsButNoHostSet,
+      FeatureState::kUnavailableNoVerifiedHost_HostExistsButNotSetAndVerified,
+      /*supports_better_together_host=*/true,
+      /*supports_phone_hub=*/true,
+      /*has_bluetooth_address=*/true);
+
+  // Create devices with different instance Id's.
+  multidevice::RemoteDeviceRef device_1 = CreatePhoneDeviceWithUniqueInstanceId(
+      /*supports_better_together_host=*/true,
+      /*supports_phone_hub_host=*/true,
+      /*has_bluetooth_address=*/true, "AAA");
+  multidevice::RemoteDeviceRef device_2 = CreatePhoneDeviceWithUniqueInstanceId(
+      /*supports_better_together_host=*/true,
+      /*supports_phone_hub_host=*/true,
+      /*has_bluetooth_address=*/true, "AAB");
+
+  SetSyncedDevices(CreateLocalDevice(/*supports_phone_hub_client=*/true,
+                                     /*has_bluetooth_address=*/true),
+                   {device_1, device_2});
+  EXPECT_EQ(FeatureStatus::kEligiblePhoneButNotSetUp, GetStatus());
+  EXPECT_EQ(GetNumEligibleHostObserverCalls(), 1u);
+
+  multidevice::RemoteDeviceRef device_3 = CreatePhoneDeviceWithUniqueInstanceId(
+      /*supports_better_together_host=*/true,
+      /*supports_phone_hub_host=*/true,
+      /*has_bluetooth_address=*/true, "AAC");
+  SetSyncedDevices(CreateLocalDevice(/*supports_phone_hub_client=*/true,
+                                     /*has_bluetooth_address=*/true),
+                   {device_1, device_2, device_3});
+
+  EXPECT_EQ(FeatureStatus::kEligiblePhoneButNotSetUp, GetStatus());
+  EXPECT_EQ(GetNumEligibleHostObserverCalls(), 2u);
 }
 
 }  // namespace ash::phonehub

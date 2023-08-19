@@ -127,6 +127,7 @@ public class KeyboardVisibilityDelegate {
      * @return Whether the keyboard was visible before.
      */
     protected boolean hideAndroidSoftKeyboard(View view) {
+        if (!view.isAttachedToWindow()) return false;
         InputMethodManager imm = (InputMethodManager) view.getContext().getSystemService(
                 Context.INPUT_METHOD_SERVICE);
         return imm.hideSoftInputFromWindow(view.getWindowToken(), 0);

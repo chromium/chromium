@@ -1067,6 +1067,8 @@ TEST_P(SingleRulesetTest, LargeRegexIgnored) {
 
   tester.ExpectBucketCount(kIsLargeRegexHistogram, true, kNumLargeRegex);
   tester.ExpectBucketCount(kIsLargeRegexHistogram, false, kNumSmallRegex);
+  tester.ExpectTotalCount(kRegexRuleSizeHistogram,
+                          kNumSmallRegex + kNumLargeRegex);
 
   // TODO(crbug.com/879355): CrxInstaller reloads the extension after moving it,
   // which causes it to lose the install warning. This should be fixed.

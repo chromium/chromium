@@ -14,6 +14,9 @@ enum PrefPath {
   kMetricsReportingEnabled = 1,
   // M89: ash::prefs::kAccessibilitySpokenFeedbackEnabled (profile).
   // Note this writes to a different prefstore than the extension version below.
+  // Note that turning this pref on will install a helper component
+  // extension in Lacros as well as turning on the accessibility feature
+  // in Ash.
   kAccessibilitySpokenFeedbackEnabled = 2,
   // M90: ash::prefs::kDeviceSystemWideTracingEnabled (local state).
   [MinVersion=1] kDeviceSystemWideTracingEnabled = 3,
@@ -52,6 +55,9 @@ enum PrefPath {
   [MinVersion=3]
   kAccessibilityScreenMagnifierEnabled = 15,
   // M98: prefs::kAccessibilitySelectToSpeakEnabled (extension).
+  // Note that turning this pref on will install a helper component
+  // extension in Lacros as well as turning on the accessibility feature
+  // in Ash.
   [MinVersion=3]
   kAccessibilitySelectToSpeakEnabled = 16,
   // M98: prefs::kAccessibilitySpokenFeedbackEnabled (extension).
@@ -62,6 +68,9 @@ enum PrefPath {
   [MinVersion=3]
   kAccessibilityStickyKeysEnabled = 18,
   // M98: prefs::kAccessibilitySwitchAccessEnabled (extension).
+  // Note that turning this pref on will install a helper component
+  // extension in Lacros as well as turning on the accessibility feature
+  // in Ash.
   [MinVersion=3]
   kAccessibilitySwitchAccessEnabled = 19,
   // M98: prefs::kAccessibilityVirtualKeyboardEnabled (extension).
@@ -101,6 +110,15 @@ enum PrefPath {
   [MinVersion=9] kMultitaskMenuNudgeClamshellLastShown = 36,
   // M115: ash::kAttestationForContentProtectionEnabled
   [MinVersion=10] kAttestationForContentProtectionEnabled = 37,
+  // M116: prefs::kAccessCodeCastDevices (profile)
+  [MinVersion=11] kAccessCodeCastDevices= 38,
+  // M116: prefs::kAccessCodeCastDeviceAdditionTime (profile)
+  [MinVersion=11] kAccessCodeCastDeviceAdditionTime = 39,
+  [MinVersion=12] kAccessToGetAllScreensMediaInSessionAllowedForUrls = 40,
+  // M117: pref::kAccessibilityPdfOcrAlwaysActive (local_state)
+  [MinVersion=13] kAccessibilityPdfOcrAlwaysActive = 41,
+  // M117 proxy_config::prefs::kProxy (profile)
+  [MinVersion=14] kProxy = 42,
 };
 
 // Information about who or what is controlling a particular pref. This is used
@@ -136,7 +154,7 @@ interface PrefObserver {
 };
 
 // Interface for prefs. Implemented by ash-chrome.
-// Next version: 4
+// Next version: 5
 // Next method id: 5
 [Stable, Uuid="815df607-0596-46f7-9ed9-14683b4826a3"]
 interface Prefs {
@@ -146,7 +164,7 @@ interface Prefs {
 
   // Gets the specified ash pref. Additionally returns the control state of the
   // pref.
-  [MinVersion=3]
+  [MinVersion=4]
   GetExtensionPrefWithControl@3(PrefPath path) => (
     mojo_base.mojom.Value? value, PrefControlState control);
 

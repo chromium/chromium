@@ -79,9 +79,11 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) IMEBridge {
   IMEBridge();
 
   // TODO(b/245020074): Rename this member.
-  raw_ptr<TextInputTarget, ExperimentalAsh> input_context_handler_ = nullptr;
+  raw_ptr<TextInputTarget, DanglingUntriaged | ExperimentalAsh>
+      input_context_handler_ = nullptr;
   // TODO(b/245020074): Rename this member.
-  raw_ptr<TextInputMethod, ExperimentalAsh> engine_handler_ = nullptr;
+  raw_ptr<TextInputMethod, DanglingUntriaged | ExperimentalAsh>
+      engine_handler_ = nullptr;
   base::ObserverList<IMEBridgeObserver> observers_;
   TextInputMethod::InputContext current_input_context_;
 

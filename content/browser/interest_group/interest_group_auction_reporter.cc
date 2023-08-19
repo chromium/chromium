@@ -15,6 +15,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/cxx20_erase_vector.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
@@ -39,6 +40,9 @@
 #include "content/browser/interest_group/noiser_and_bucketer.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/privacy_sandbox_invoking_api.h"
+#include "content/public/common/content_client.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
@@ -129,7 +133,7 @@ InterestGroupAuctionReporter::WinningBidInfo::~WinningBidInfo() = default;
 InterestGroupAuctionReporter::InterestGroupAuctionReporter(
     InterestGroupManagerImpl* interest_group_manager,
     AuctionWorkletManager* auction_worklet_manager,
-    AttributionManager* attribution_manager,
+    BrowserContext* browser_context,
     PrivateAggregationManager* private_aggregation_manager,
     LogPrivateAggregationRequestsCallback
         log_private_aggregation_requests_callback,
@@ -139,6 +143,7 @@ InterestGroupAuctionReporter::InterestGroupAuctionReporter(
     network::mojom::ClientSecurityStatePtr client_security_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     auction_worklet::mojom::KAnonymityBidMode kanon_mode,
+    bool bid_is_kanon,
     WinningBidInfo winning_bid_info,
     SellerWinningBidInfo top_level_seller_winning_bid_info,
     absl::optional<SellerWinningBidInfo> component_seller_winning_bid_info,
@@ -161,6 +166,7 @@ InterestGroupAuctionReporter::InterestGroupAuctionReporter(
       client_security_state_(std::move(client_security_state)),
       url_loader_factory_(std::move(url_loader_factory)),
       kanon_mode_(kanon_mode),
+      bid_is_kanon_(bid_is_kanon),
       winning_bid_info_(std::move(winning_bid_info)),
       top_level_seller_winning_bid_info_(
           std::move(top_level_seller_winning_bid_info)),
@@ -176,17 +182,21 @@ InterestGroupAuctionReporter::InterestGroupAuctionReporter(
           std::move(private_aggregation_requests_non_reserved)),
       fenced_frame_reporter_(FencedFrameReporter::CreateForFledge(
           url_loader_factory_,
-          attribution_manager,
+          browser_context,
           /*direct_seller_is_seller=*/
           !component_seller_winning_bid_info.has_value(),
           private_aggregation_manager_,
           main_frame_origin_,
-          winning_bid_info_.storage_interest_group->interest_group.owner)) {
+          winning_bid_info_.storage_interest_group->interest_group.owner,
+          winning_bid_info_.allowed_reporting_origins)),
+      browser_context_(browser_context) {
   DCHECK(interest_group_manager_);
   DCHECK(auction_worklet_manager_);
   DCHECK(url_loader_factory_);
   DCHECK(client_security_state_);
   DCHECK(!interest_groups_that_bid_.empty());
+  EnforceAttestationsReportUrls(debug_win_report_urls_);
+  EnforceAttestationsReportUrls(debug_loss_report_urls_);
 }
 
 InterestGroupAuctionReporter ::~InterestGroupAuctionReporter() {
@@ -211,8 +221,36 @@ void InterestGroupAuctionReporter::Start(base::OnceClosure callback) {
   }
   callback_ = std::move(callback);
 
+  if (reporter_worklet_state_ == ReporterState::kAllWorkletsCompleted) {
+    OnReportingComplete();
+    return;
+  }
   RequestSellerWorklet(&top_level_seller_winning_bid_info_,
                        /*top_seller_signals=*/absl::nullopt);
+}
+
+void InterestGroupAuctionReporter::InitializeFromServerResponse(
+    const BiddingAndAuctionResponse& response) {
+  reporter_worklet_state_ = ReporterState::kAllWorkletsCompleted;
+
+  if (response.seller_reporting) {
+    const BiddingAndAuctionResponse::ReportingURLs& seller_reporting =
+        *response.seller_reporting;
+    // Ignore return value - there's nothing we can do at this point if the
+    // server did something wrong beyond logging the error.
+    AddReportResultResult(
+        seller_reporting.reporting_url, seller_reporting.beacon_urls,
+        blink::FencedFrame::ReportingDestination::kSeller, errors_);
+  }
+  if (response.buyer_reporting) {
+    const BiddingAndAuctionResponse::ReportingURLs& buyer_reporting =
+        *response.buyer_reporting;
+    // Ignore return value - there's nothing we can do at this point if the
+    // server did something wrong beyond logging the error.
+    AddReportWinResult(buyer_reporting.reporting_url,
+                       buyer_reporting.beacon_urls,
+                       /*bidder_ad_macro_map=*/absl::nullopt, errors_);
+  }
 }
 
 base::RepeatingClosure
@@ -264,6 +302,7 @@ double InterestGroupAuctionReporter::RoundStochasticallyToKBits(double value,
   }
 
   double norm_value = std::frexp(value, &value_exp);
+  // frexp() returns numbers in the range +-[0.5, 1)
 
   if (value_exp < std::numeric_limits<int8_t>::min()) {
     return std::copysign(0, value);
@@ -272,11 +311,32 @@ double InterestGroupAuctionReporter::RoundStochasticallyToKBits(double value,
     return std::copysign(std::numeric_limits<double>::infinity(), value);
   }
 
+  // Shift so we get k integer bits. Since we are in the range +-[0.5, 1) we
+  // multiply by 2**k to get to the range +-[2**(k-1), 2**k).
   double precision_scaled_value = std::ldexp(norm_value, k);
-  double noisy_scaled_value = precision_scaled_value + 0.5 * base::RandDouble();
-  double truncated_scaled_value = std::floor(noisy_scaled_value);
 
-  return std::ldexp(truncated_scaled_value, value_exp - k);
+  // Remove the fractional part.
+  double truncated_scaled_value = std::trunc(precision_scaled_value);
+
+  // Apply random noise based on truncated portion such that we increment with
+  // probability equal to the truncated portion.
+  double noised_truncated_scaled_value = truncated_scaled_value;
+  if (std::abs(precision_scaled_value - truncated_scaled_value) >
+      base::RandDouble()) {
+    noised_truncated_scaled_value =
+        truncated_scaled_value + std::copysign(1, precision_scaled_value);
+
+    // Handle overflow caused by the increment. Incrementing can only
+    // increase the absolute value, so only worry about the mantissa
+    // overflowing.
+    if (value_exp == std::numeric_limits<int8_t>::max() &&
+        std::abs(std::ldexp(noised_truncated_scaled_value, -k)) >= 1.0) {
+      DCHECK_EQ(1.0, std::abs(std::ldexp(noised_truncated_scaled_value, -k)));
+      return std::copysign(std::numeric_limits<double>::infinity(), value);
+    }
+  }
+
+  return std::ldexp(noised_truncated_scaled_value, value_exp - k);
 }
 
 void InterestGroupAuctionReporter::RequestSellerWorklet(
@@ -292,7 +352,7 @@ void InterestGroupAuctionReporter::RequestSellerWorklet(
   // `seller_worklet_handle_` will prevent the callbacks from being invoked, if
   // `this` is destroyed while still waiting on the callbacks.
   auction_worklet_manager_->RequestSellerWorklet(
-      seller_info->auction_config->decision_logic_url,
+      *seller_info->auction_config->decision_logic_url,
       seller_info->auction_config->trusted_scoring_signals_url,
       seller_info->auction_config->seller_experiment_group_id,
       base::BindOnce(&InterestGroupAuctionReporter::OnSellerWorkletReceived,
@@ -467,42 +527,21 @@ void InterestGroupAuctionReporter::OnSellerReportResultComplete(
     }
   }
 
-  // This will be cleared if any beacons are invalid.
-  base::flat_map<std::string, GURL> validated_seller_ad_beacon_map =
-      seller_ad_beacon_map;
-  for (const auto& element : seller_ad_beacon_map) {
-    if (!IsEventLevelReportingUrlValid(element.second)) {
-      mojo::ReportBadMessage(base::StrCat(
-          {"Invalid seller beacon URL for '", element.first, "'"}));
-      // Drop the entire beacon map if part of it is invalid. No need to treat
-      // the rest of the data received from the worklet as invalid - all fields
-      // are validated and consumed independently, and it's not worth the
-      // complexity to make sure everything is dropped when a field is invalid.
-      validated_seller_ad_beacon_map.clear();
-      break;
-    }
-  }
+  blink::FencedFrame::ReportingDestination reporting_destination;
   if (seller_info == &top_level_seller_winning_bid_info_) {
-    fenced_frame_reporter_->OnUrlMappingReady(
-        blink::FencedFrame::ReportingDestination::kSeller,
-        std::move(validated_seller_ad_beacon_map));
+    reporting_destination = blink::FencedFrame::ReportingDestination::kSeller;
   } else {
-    fenced_frame_reporter_->OnUrlMappingReady(
-        blink::FencedFrame::ReportingDestination::kComponentSeller,
-        std::move(validated_seller_ad_beacon_map));
+    reporting_destination =
+        blink::FencedFrame::ReportingDestination::kComponentSeller;
   }
 
-  if (seller_report_url) {
-    if (!IsEventLevelReportingUrlValid(*seller_report_url)) {
-      mojo::ReportBadMessage("Invalid seller report URL");
-      // No need to skip rest of work on failure - all fields are validated and
-      // consumed independently, and it's not worth the complexity to make sure
-      // everything is dropped when a field is invalid.
-    } else {
-      AddPendingReportUrl(*seller_report_url);
+  std::vector<std::string> validation_errors;
+  if (!AddReportResultResult(seller_report_url, seller_ad_beacon_map,
+                             reporting_destination, validation_errors)) {
+    for (const auto& error : validation_errors) {
+      mojo::ReportBadMessage(error);
     }
   }
-
   // If any reports were queued (event-level or aggregated), send them now, if
   // the winning ad has been navigated to.
   SendPendingReportsIfNavigated();
@@ -526,6 +565,43 @@ void InterestGroupAuctionReporter::OnSellerReportResultComplete(
   }
 
   RequestBidderWorklet(fixed_up_signals_for_winner);
+}
+
+bool InterestGroupAuctionReporter::AddReportResultResult(
+    const absl::optional<GURL>& seller_report_url,
+    const base::flat_map<std::string, GURL>& seller_ad_beacon_map,
+    blink::FencedFrame::ReportingDestination destination,
+    std::vector<std::string>& errors_out) {
+  // This will be cleared if any beacons are invalid.
+  base::flat_map<std::string, GURL> validated_seller_ad_beacon_map =
+      seller_ad_beacon_map;
+  for (const auto& element : seller_ad_beacon_map) {
+    if (!IsEventLevelReportingUrlValid(element.second)) {
+      errors_out.push_back(base::StrCat(
+          {"Invalid seller beacon URL for '", element.first, "'"}));
+      // Drop the entire beacon map if part of it is invalid. No need to treat
+      // the rest of the data received from the worklet as invalid - all fields
+      // are validated and consumed independently, and it's not worth the
+      // complexity to make sure everything is dropped when a field is invalid.
+      validated_seller_ad_beacon_map.clear();
+      break;
+    }
+  }
+  fenced_frame_reporter_->OnUrlMappingReady(
+      destination, std::move(validated_seller_ad_beacon_map));
+
+  if (seller_report_url) {
+    if (!IsEventLevelReportingUrlValid(*seller_report_url)) {
+      errors_out.push_back("Invalid seller report URL");
+      // No need to skip rest of work on failure - all fields are validated and
+      // consumed independently, and it's not worth the complexity to make sure
+      // everything is dropped when a field is invalid.
+    } else {
+      AddPendingReportUrl(*seller_report_url);
+    }
+  }
+
+  return errors_out.empty();
 }
 
 void InterestGroupAuctionReporter::RequestBidderWorklet(
@@ -644,7 +720,8 @@ void InterestGroupAuctionReporter::OnBidderWorkletReceived(
           winning_bid_info_.storage_interest_group->interest_group.owner),
       InterestGroupAuction::GetDirectFromSellerAuctionSignals(
           seller_info.subresource_url_builder.get()),
-      signals_for_winner, kanon_mode_, winning_bid_info_.render_url,
+      signals_for_winner, kanon_mode_, bid_is_kanon_,
+      winning_bid_info_.render_url,
       RoundStochasticallyToKBits(winning_bid_info_.bid,
                                  kFledgeBidReportingBits.Get()),
       winning_bid_info_.bid_currency,
@@ -684,6 +761,7 @@ void InterestGroupAuctionReporter::OnBidderWorkletFatalError(
                             /*highest_scoring_other_bid=*/0.0,
                             /*bidder_report_url=*/absl::nullopt,
                             /*bidder_ad_beacon_map=*/{},
+                            /*bidder_ad_macro_map=*/{},
                             /*pa_requests=*/{},
                             /*reporting_latency=*/base::TimeDelta(), errors);
 }
@@ -693,6 +771,7 @@ void InterestGroupAuctionReporter::OnBidderReportWinComplete(
     double highest_scoring_other_bid,
     const absl::optional<GURL>& bidder_report_url,
     const base::flat_map<std::string, GURL>& bidder_ad_beacon_map,
+    const base::flat_map<std::string, std::string>& bidder_ad_macro_map,
     PrivateAggregationRequests pa_requests,
     base::TimeDelta reporting_latency,
     const std::vector<std::string>& errors) {
@@ -744,12 +823,33 @@ void InterestGroupAuctionReporter::OnBidderReportWinComplete(
     }
   }
 
+  std::vector<std::string> validation_errors;
+  if (!AddReportWinResult(bidder_report_url, bidder_ad_beacon_map,
+                          bidder_ad_macro_map, validation_errors)) {
+    for (const auto& error : validation_errors) {
+      mojo::ReportBadMessage(error);
+    }
+  }
+
+  // If any event-level reports were queued, send them now, if the winning ad
+  // has been navigated to.
+  SendPendingReportsIfNavigated();
+
+  OnReportingComplete(errors);
+}
+
+bool InterestGroupAuctionReporter::AddReportWinResult(
+    const absl::optional<GURL>& bidder_report_url,
+    const base::flat_map<std::string, GURL>& bidder_ad_beacon_map,
+    const absl::optional<base::flat_map<std::string, std::string>>&
+        bidder_ad_macro_map,
+    std::vector<std::string>& errors_out) {
   // This will be cleared if any beacons are invalid.
   base::flat_map<std::string, GURL> validated_bidder_ad_beacon_map =
       bidder_ad_beacon_map;
   for (const auto& element : bidder_ad_beacon_map) {
     if (!IsEventLevelReportingUrlValid(element.second)) {
-      mojo::ReportBadMessage(base::StrCat(
+      errors_out.push_back(base::StrCat(
           {"Invalid bidder beacon URL for '", element.first, "'"}));
       // Drop the entire beacon map if part of it is invalid. No need to treat
       // the rest of the data received from the worklet as invalid - all fields
@@ -761,11 +861,12 @@ void InterestGroupAuctionReporter::OnBidderReportWinComplete(
   }
   fenced_frame_reporter_->OnUrlMappingReady(
       blink::FencedFrame::ReportingDestination::kBuyer,
-      std::move(validated_bidder_ad_beacon_map));
+      std::move(validated_bidder_ad_beacon_map),
+      std::move(bidder_ad_macro_map));
 
   if (bidder_report_url) {
     if (!IsEventLevelReportingUrlValid(*bidder_report_url)) {
-      mojo::ReportBadMessage("Invalid bidder report URL");
+      errors_out.push_back("Invalid bidder report URL");
       // No need to skip rest of work on failure - all fields are validated and
       // consumed independently, and it's not worth the complexity to make sure
       // everything is dropped when a field is invalid.
@@ -773,12 +874,7 @@ void InterestGroupAuctionReporter::OnBidderReportWinComplete(
       AddPendingReportUrl(*bidder_report_url);
     }
   }
-
-  // If any event-level reports were queued, send them now, if the winning ad
-  // has been navigated to.
-  SendPendingReportsIfNavigated();
-
-  OnReportingComplete(errors);
+  return errors_out.empty();
 }
 
 void InterestGroupAuctionReporter::OnReportingComplete(
@@ -850,6 +946,9 @@ InterestGroupAuctionReporter::GetBidderAuction() {
 }
 
 void InterestGroupAuctionReporter::AddPendingReportUrl(const GURL& report_url) {
+  if (!CheckReportUrl(report_url)) {
+    return;
+  }
   pending_report_urls_.push_back(report_url);
 }
 
@@ -874,8 +973,9 @@ void InterestGroupAuctionReporter::MaybeSendPrivateAggregationReports() {
   private_aggregation_requests_reserved_.clear();
 
   if (base::FeatureList::IsEnabled(blink::features::kPrivateAggregationApi) &&
-      blink::features::kPrivateAggregationApiEnabledInFledge.Get() &&
-      blink::features::kPrivateAggregationApiFledgeExtensionsEnabled.Get()) {
+      blink::features::kPrivateAggregationApiEnabledInProtectedAudience.Get() &&
+      blink::features::kPrivateAggregationApiProtectedAudienceExtensionsEnabled
+          .Get()) {
     fenced_frame_reporter_->OnForEventPrivateAggregationRequestsReceived(
         std::move(private_aggregation_requests_non_reserved_));
   }
@@ -884,6 +984,26 @@ void InterestGroupAuctionReporter::MaybeSendPrivateAggregationReports() {
   // the feature flags are disabled. Then CHECK that
   // `private_aggregation_requests_non_reserved_` is empty here.
   private_aggregation_requests_non_reserved_.clear();
+}
+
+bool InterestGroupAuctionReporter::CheckReportUrl(const GURL& url) {
+  if (!GetContentClient()
+           ->browser()
+           ->IsPrivacySandboxReportingDestinationAttested(
+               browser_context_, url::Origin::Create(url),
+               PrivacySandboxInvokingAPI::kProtectedAudience)) {
+    errors_.push_back(base::StringPrintf(
+        "The reporting destination %s is not attested for Protected Audience.",
+        url.spec().c_str()));
+    return false;
+  }
+
+  return true;
+}
+
+void InterestGroupAuctionReporter::EnforceAttestationsReportUrls(
+    std::vector<GURL>& urls) {
+  base::EraseIf(urls, [this](const GURL& url) { return !CheckReportUrl(url); });
 }
 
 }  // namespace content

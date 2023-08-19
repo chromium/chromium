@@ -28,6 +28,18 @@
 namespace audio {
 
 namespace {
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+std::unique_ptr<OutputDeviceMixerManager> MaybeCreateOutputDeviceMixerManager(
+    media::AudioManager* audio_manager) {
+  if (!media::IsChromeWideEchoCancellationEnabled()) {
+    return nullptr;
+  }
+
+  return std::make_unique<OutputDeviceMixerManager>(
+      audio_manager, base::BindRepeating(&OutputDeviceMixer::Create));
+}
+#endif  // BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+
 // Ideally, this would be based on the incoming audio's buffer durations.
 // However, we might deal with multiple streams, with multiple buffer durations.
 // Using a 10ms constant instead is acceptable (and better than the default)
@@ -38,17 +50,12 @@ constexpr base::TimeDelta kReatimeThreadPeriod = base::Milliseconds(10);
 
 StreamFactory::StreamFactory(
     media::AudioManager* audio_manager,
-    media::AecdumpRecordingManager* aecdump_recording_manager,
-    bool run_audio_processing)
+    media::AecdumpRecordingManager* aecdump_recording_manager)
     : audio_manager_(audio_manager),
       aecdump_recording_manager_(aecdump_recording_manager),
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
       output_device_mixer_manager_(
-          run_audio_processing
-              ? std::make_unique<OutputDeviceMixerManager>(
-                    audio_manager,
-                    base::BindRepeating(&OutputDeviceMixer::Create))
-              : nullptr),
+          MaybeCreateOutputDeviceMixerManager(audio_manager)),
 #endif
       loopback_worker_thread_("Loopback Worker", kReatimeThreadPeriod) {
 }
@@ -213,7 +220,6 @@ void StreamFactory::CreateLoopbackStream(
   } else {
     TRACE_EVENT_BEGIN0("audio", "Start Loopback Worker");
     base::Thread::Options options;
-    options.timer_slack = base::TIMER_SLACK_NONE;
     options.thread_type = base::ThreadType::kRealtimeAudio;
     if (loopback_worker_thread_.StartWithOptions(std::move(options))) {
       task_runner = loopback_worker_thread_.task_runner();

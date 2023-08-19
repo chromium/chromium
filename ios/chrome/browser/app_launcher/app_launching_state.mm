@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/app_launcher/app_launching_state.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 const double kDefaultMaxSecondsBetweenConsecutiveExternalAppLaunches = 30.0;
 
 @implementation AppLaunchingState {

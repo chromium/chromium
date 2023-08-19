@@ -65,7 +65,7 @@ class AmbientUiLauncher {
   void SetReadyState(bool is_ready);
 
  private:
-  base::raw_ptr<Observer> observer_ = nullptr;
+  raw_ptr<Observer> observer_ = nullptr;
 
   // The ready state of the launcher, indicates whether the launcher is ready to
   // be shown or not.

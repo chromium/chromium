@@ -31,7 +31,6 @@ XML_NAME = xml2
 XML_BASENAME = lib$(XML_NAME)
 XML_SO = $(XML_BASENAME).dll
 XML_IMP = $(XML_BASENAME).lib
-XML_DEF = $(XML_BASENAME).def
 XML_A = $(XML_BASENAME)_a.lib
 DUMMY = dir.exists
 
@@ -292,17 +291,12 @@ $(XML_OBJS_A) : $(XML_INTDIR_A)\$(DUMMY)
 
 #def4bcb.exe : def4bcb.c
 
-# Creates the export definition file (DEF) for libxml.
-#$(XML_INTDIR)\$(XML_DEF) : $(XML_INTDIR)\$(DUMMY) $(XML_DEF).src def4bcb.exe
-#	$(CPP) $(CPPFLAGS) -o $(XML_INTDIR)\$(XML_DEF).tmp $(XML_DEF).src
-#	def4bcb -msnames < $(XML_INTDIR)\$(XML_DEF).tmp > $(XML_INTDIR)\$(XML_DEF)
-
 # Creates the libxml shared object.
 $(BINDIR)\$(XML_SO) : $(BINDIR)\$(DUMMY) $(XML_OBJS)
 	$(LD) $(LDFLAGS) -Tpd -Gi c0d32.obj $(XML_OBJS),$(BINDIR)\$(XML_SO),,$(LIBS)
 
-#$(BINDIR)\$(XML_SO) : $(BINDIR)\$(DUMMY) $(XML_OBJS) $(XML_INTDIR)\$(XML_DEF)
-#	$(LD) $(LDFLAGS) -Tpd -Gi c0d32.obj $(XML_OBJS),$(BINDIR)\$(XML_SO),,$(LIBS),$(XML_INTDIR)\$(XML_DEF)
+#$(BINDIR)\$(XML_SO) : $(BINDIR)\$(DUMMY) $(XML_OBJS)
+#	$(LD) $(LDFLAGS) -Tpd -Gi c0d32.obj $(XML_OBJS),$(BINDIR)\$(XML_SO),,$(LIBS)
 
 # Creates the libxml archive.
 $(BINDIR)\$(XML_A) : $(BINDIR)\$(DUMMY) $(XML_OBJS_A)

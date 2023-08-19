@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/webui/common/chrome_os_webui_config.h"
 #include "ash/webui/demo_mode_app_ui/demo_mode_untrusted_page_handler.h"
 #include "ash/webui/demo_mode_app_ui/url_constants.h"
 #include "ash/webui/grit/ash_demo_mode_app_resources.h"
@@ -26,19 +27,12 @@
 namespace ash {
 
 DemoModeAppUntrustedUIConfig::DemoModeAppUntrustedUIConfig(
-    base::RepeatingCallback<base::FilePath()> component_path_producer)
-    : content::WebUIConfig(content::kChromeUIUntrustedScheme,
-                           kChromeUntrustedUIDemoModeAppHost),
-      component_path_producer_(std::move(component_path_producer)) {}
+    CreateWebUIControllerFunc create_controller_func)
+    : ChromeOSWebUIConfig(content::kChromeUIUntrustedScheme,
+                          kChromeUntrustedUIDemoModeAppHost,
+                          create_controller_func) {}
 
 DemoModeAppUntrustedUIConfig::~DemoModeAppUntrustedUIConfig() = default;
-
-std::unique_ptr<content::WebUIController>
-DemoModeAppUntrustedUIConfig::CreateWebUIController(content::WebUI* web_ui,
-                                                    const GURL& url) {
-  return std::make_unique<DemoModeAppUntrustedUI>(
-      web_ui, component_path_producer_.Run());
-}
 
 // This is a paired down version of DemoSession::IsDeviceInDemoMode that doesn't
 // rely on DemoSession::DemoModeConfig, reimplemented to temporarily avoid the
@@ -60,7 +54,7 @@ bool IsDeviceInDemoMode() {
 
 bool DemoModeAppUntrustedUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return chromeos::features::IsDemoModeSWAEnabled() && IsDeviceInDemoMode();
+  return IsDeviceInDemoMode();
 }
 
 scoped_refptr<base::RefCountedMemory> ReadFile(
@@ -101,9 +95,11 @@ void DemoModeAppUntrustedUI::SourceDataFromComponent(
       base::BindOnce(&ReadFile, absolute_resource_path), std::move(callback));
 }
 
-DemoModeAppUntrustedUI::DemoModeAppUntrustedUI(content::WebUI* web_ui,
-                                               base::FilePath component_path)
-    : ui::UntrustedWebUIController(web_ui) {
+DemoModeAppUntrustedUI::DemoModeAppUntrustedUI(
+    content::WebUI* web_ui,
+    base::FilePath component_path,
+    std::unique_ptr<DemoModeAppDelegate> delegate)
+    : ui::UntrustedWebUIController(web_ui), delegate_(std::move(delegate)) {
   // We tack the resource path onto this component path, so CHECK that it's
   // absolute so ".." parent references can't be used as an exploit
   DCHECK(component_path.IsAbsolute());
@@ -147,7 +143,7 @@ void DemoModeAppUntrustedUI::CreatePageHandler(
   views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
       web_ui()->GetWebContents()->GetTopLevelNativeWindow());
   demo_mode_page_handler_ = std::make_unique<DemoModeUntrustedPageHandler>(
-      std::move(handler), widget);
+      std::move(handler), widget, this);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(DemoModeAppUntrustedUI)

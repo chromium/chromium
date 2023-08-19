@@ -11,6 +11,9 @@ include_rules = [
   "+net/base",
   "+net/cookies/site_for_cookies.h",
   "+content/public/test",
+  "+content/public/browser/interest_group_api_operation.h",
+  "+content/public/browser/render_frame_host.h",
   "+ui/base",
   "+third_party/blink/public/common/features.h",
+  "+third_party/blink/public/mojom/devtools/console_message.mojom.h"
 ]

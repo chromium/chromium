@@ -5,8 +5,10 @@
 #include "chrome/browser/ui/webui/settings/ash/privacy_hub_handler.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/synchronization/condition_variable.h"
 #include "chrome/browser/ash/privacy_hub/privacy_hub_hats_trigger.h"
 #include "chrome/browser/ash/privacy_hub/privacy_hub_util.h"
 #include "chrome/common/chrome_features.h"
@@ -28,10 +30,15 @@ void PrivacyHubHandler::RegisterMessages() {
         base::BindRepeating(
             &PrivacyHubHandler::HandleInitialMicrophoneSwitchState,
             base::Unretained(this)));
+    web_ui()->RegisterMessageCallback(
+        "getCameraLedFallbackState",
+        base::BindRepeating(
+            &PrivacyHubHandler::HandleInitialCameraLedFallbackState,
+            base::Unretained(this)));
   }
 
   if (base::FeatureList::IsEnabled(
-          ::features::kHappinessTrackingPrivacyHubBaseline)) {
+          ::features::kHappinessTrackingPrivacyHubPostLaunch)) {
     web_ui()->RegisterMessageCallback(
         "osPrivacyPageWasOpened",
         base::BindRepeating(&PrivacyHubHandler::HandlePrivacyPageOpened,
@@ -53,47 +60,69 @@ void PrivacyHubHandler::NotifyJS(const std::string& event_name,
   }
 }
 
-void PrivacyHubHandler::HandleInitialMicrophoneSwitchState(
-    const base::Value::List& args) {
-  DCHECK(ash::features::IsCrosPrivacyHubEnabled());
-  AllowJavascript();
-
-  DCHECK_GE(1U, args.size()) << ": Did not expect arguments";
-  DCHECK_EQ(1U, args.size()) << ": Callback ID is required";
-  const auto& callback_id = args[0];
-  const base::Value value =
-      base::Value(privacy_hub_util::MicrophoneSwitchState());
-
-  ResolveJavascriptCallback(callback_id, value);
-}
-
 void PrivacyHubHandler::MicrophoneHardwareToggleChanged(bool muted) {
   DCHECK(ash::features::IsCrosPrivacyHubEnabled());
   NotifyJS("microphone-hardware-toggle-changed", base::Value(muted));
 }
 
+void PrivacyHubHandler::SetPrivacyPageOpenedTimeStampForTesting(
+    base::TimeTicks time_stamp) {
+  privacy_page_opened_timestamp_ = time_stamp;
+}
+
 void PrivacyHubHandler::HandlePrivacyPageOpened(const base::Value::List& args) {
   DCHECK(args.empty());
   DCHECK(base::FeatureList::IsEnabled(
-      ::features::kHappinessTrackingPrivacyHubBaseline));
+      ::features::kHappinessTrackingPrivacyHubPostLaunch));
 
+  // TODO(b/290646585): Replace with a CHECK().
   AllowJavascript();
 
-  privacy_page_was_opened_ = true;
+  privacy_page_opened_timestamp_ = base::TimeTicks::Now();
 }
 
 void PrivacyHubHandler::HandlePrivacyPageClosed(const base::Value::List& args) {
   DCHECK(args.empty());
   DCHECK(base::FeatureList::IsEnabled(
-      ::features::kHappinessTrackingPrivacyHubBaseline));
+      ::features::kHappinessTrackingPrivacyHubPostLaunch));
 
+  // TODO(b/290646585): Replace with a CHECK().
   AllowJavascript();
 
   TriggerHatsIfPageWasOpened();
 }
 
+void PrivacyHubHandler::HandleInitialMicrophoneSwitchState(
+    const base::Value::List& args) {
+  const auto callback_id = ValidateArgs(args);
+  const auto value = base::Value(privacy_hub_util::MicrophoneSwitchState());
+  ResolveJavascriptCallback(callback_id, value);
+}
+
+void PrivacyHubHandler::HandleInitialCameraLedFallbackState(
+    const base::Value::List& args) {
+  const auto callback_id = ValidateArgs(args);
+  const auto value = base::Value(privacy_hub_util::UsingCameraLEDFallback());
+  ResolveJavascriptCallback(callback_id, value);
+}
+
+const base::ValueView PrivacyHubHandler::ValidateArgs(
+    const base::Value::List& args) {
+  CHECK(ash::features::IsCrosPrivacyHubEnabled());
+  // TODO(b/290646585): Replace with a CHECK().
+  AllowJavascript();
+
+  DCHECK_GE(1U, args.size()) << ": Did not expect arguments";
+  DCHECK_EQ(1U, args.size()) << ": Callback ID is required";
+
+  return args[0];
+}
+
 void PrivacyHubHandler::TriggerHatsIfPageWasOpened() {
-  if (privacy_page_was_opened_) {
+  if (const base::TimeTicks now = base::TimeTicks::Now();
+      (now - privacy_page_opened_timestamp_.value_or(now)) >=
+      base::Seconds(5)) {
+    privacy_page_opened_timestamp_.reset();
     PrivacyHubHatsTrigger::Get().ShowSurveyAfterDelayElapsed();
   }
 }

@@ -200,10 +200,6 @@ target(link_target_type, "renderer") {
     ]
   }
 
-  if (is_apple) {
-    configs += [ "//build/config/compiler:enable_arc" ]
-  }
-
   if (is_mac) {
     sources += [
       "renderer_main_platform_delegate_mac.mm",
@@ -334,8 +330,6 @@ target(link_target_type, "renderer") {
 
   if (is_android) {
     deps += [
-      "//components/power_scheduler",
-
       # Used by Android WebView only.
       "//components/viz/service",
       "//third_party/ashmem",

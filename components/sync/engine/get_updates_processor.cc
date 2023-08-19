@@ -162,10 +162,6 @@ void InitDownloadUpdatesContext(SyncCycle* cycle,
   // (e.g. Bookmark URLs but not their containing folders).
   get_updates->set_fetch_folders(true);
 
-  // This is a deprecated field that should be cleaned up after server's
-  // behavior is updated.
-  get_updates->set_create_mobile_bookmarks_folder(true);
-
   bool need_encryption_key = ShouldRequestEncryptionKey(cycle->context());
   get_updates->set_need_encryption_key(need_encryption_key);
 

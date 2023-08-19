@@ -109,8 +109,7 @@ public class UserEducationHelper {
         assert (!accessibilityString.isEmpty());
 
         textBubble = new TextBubble(mActivity, anchorView, contentString, accessibilityString,
-                iphCommand.removeArrow ? false : true,
-                viewRectProvider != null ? viewRectProvider : rectProvider,
+                !iphCommand.removeArrow, viewRectProvider != null ? viewRectProvider : rectProvider,
                 ChromeAccessibilityUtil.get().isAccessibilityEnabled());
         textBubble.setPreferredVerticalOrientation(iphCommand.preferredVerticalOrientation);
         textBubble.setDismissOnTouchInteraction(iphCommand.dismissOnTouch);

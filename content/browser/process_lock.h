@@ -9,6 +9,7 @@
 #include "content/browser/url_info.h"
 #include "content/browser/web_exposed_isolation_info.h"
 #include "content/public/browser/storage_partition_config.h"
+#include "content/public/browser/web_exposed_isolation_level.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
@@ -157,13 +158,24 @@ class CONTENT_EXPORT ProcessLock {
   // lock is used with.
   StoragePartitionConfig GetStoragePartitionConfig() const;
 
-  // Returns the exposed isolation state (e.g., cross-origin-isolated) of all
-  // agent clusters allowed in this ProcessLock. See
-  // https://html.spec.whatwg.org/multipage/webappapis.html#dom-crossoriginisolated
+  // Returns the cross-origin isolation mode of the BrowsingInstance that all
+  // agents allowed in this ProcessLock belong to. See
+  // https://html.spec.whatwg.org/multipage/document-sequences.html#cross-origin-isolation-mode
   // This is tracked on ProcessLock because a RenderProcessHost can host only
   // cross-origin isolated agents or only non-cross-origin isolated agents, not
   // both.
   WebExposedIsolationInfo GetWebExposedIsolationInfo() const;
+
+  // Returns the cross-origin isolated capability of all agents allowed in this
+  // ProcessLock, without taking into account the 'cross-origin-isolated'
+  // permissions policy. This ignores permissions policy because it's currently
+  // possible for agents with the same ProcessLock to have different
+  // 'cross-origin-isolated' permission policies. This can return a lower
+  // isolation level than `GetWebExposedIsolationInfo()` if this ProcessLock
+  // hosts agents that are cross-origin to a top-level document with the
+  // 'isolated application' isolation level. See
+  // https://html.spec.whatwg.org/multipage/webappapis.html#dom-crossoriginisolated
+  WebExposedIsolationLevel GetWebExposedIsolationLevel() const;
 
   // Returns whether lock_url() is at least at the granularity of a site (i.e.,
   // a scheme plus eTLD+1, like https://google.com).  Also returns true if the

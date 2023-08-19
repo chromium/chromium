@@ -25,6 +25,7 @@ include_rules = [
   "+components/services/storage/public",
   "+components/services/storage/shared_storage",
   "+components/startup_metric_utils/browser",
+  "+components/startup_metric_utils/common",
   "+components/ukm/test_ukm_recorder.h",
   "+components/viz/client",
   "+components/viz/common",
@@ -42,9 +43,9 @@ include_rules = [
   "+ui/base/resource/resource_bundle.h",
   "+ui/base/resource/resource_bundle_android.h",
   "+ui/ozone/public",
+  "+ui/platform_window/common/platform_window_defaults.h",
   "+ui/views",
   "+v8/include/v8.h",
-  "+ui/platform_window/common/platform_window_defaults.h",
 ]
 
 specific_include_rules = {
@@ -75,5 +76,8 @@ specific_include_rules = {
   ],
   "test_shared_storage_header_observer.h": [
     "+content/browser/shared_storage/shared_storage_header_observer.h"
+  ],
+  "shared_storage_test_utils.h": [
+    "+content/browser/private_aggregation/private_aggregation_host.h"
   ]
 }

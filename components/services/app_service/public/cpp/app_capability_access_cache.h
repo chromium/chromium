@@ -20,53 +20,40 @@
 
 namespace apps {
 
-// Caches all of the apps::CapabilityAccessPtr. AppServiceProxy sees a stream of
-// "deltas", or changes in access state. This cache also keeps the "sum" of
-// those previous deltas, so that observers of this object are presented with
-// CapabilityAccessUpdate's, i.e. "state-and-delta"s.
+// An in-memory cache of app capability accesses, recording which apps are using
+// sensitive capabilities like camera or microphone. Can be queried
+// synchronously for information about current capability usage, and can be
+// observed to receive updates about changes to capability usage.
 //
-// It can also be queried synchronously, providing answers from its in-memory
-// cache. Synchronous APIs can be more suitable for e.g. UI programming that
-// should not block an event loop on I/O.
+// AppServiceProxy sees a stream of `apps::CapabilityAccessPtr` "deltas", or
+// changes in capability access, received from publishers. This cache stores the
+// "sum" of those previous deltas. When a new delta is received, observers are
+// presented with an `apps:::CapabilityAccessUpdate` containing information
+// about what has changed, and then the new delta is "added" to the stored
+// state.
 //
 // This class is not thread-safe.
-//
-// See components/services/app_service/README.md for more details.
 class COMPONENT_EXPORT(APP_UPDATE) AppCapabilityAccessCache {
  public:
   class COMPONENT_EXPORT(APP_UPDATE) Observer : public base::CheckedObserver {
    public:
-    // The apps::CapabilityAccessUpdate argument shouldn't be accessed after
-    // OnCapabilityAccessUpdate returns.
+    // Called whenever AppCapabilityAccessCache receives a capability access
+    // update for any app. `update` exposes the latest capability usage and
+    // what has changed in this update (as per the docs on
+    // `apps::CapabilityAccessUpdate`). The `update` argument shouldn't be
+    // accessed after OnCapabilityAccessUpdate returns.
     virtual void OnCapabilityAccessUpdate(
         const CapabilityAccessUpdate& update) = 0;
 
     // Called when the AppCapabilityAccessCache object (the thing that this
     // observer observes) will be destroyed. In response, the observer, |this|,
     // should call "cache->RemoveObserver(this)", whether directly or indirectly
-    // (e.g. via base::ScopedObservation::Remove or via Observe(nullptr)).
+    // (e.g. via base::ScopedObservation::Reset).
     virtual void OnAppCapabilityAccessCacheWillBeDestroyed(
         AppCapabilityAccessCache* cache) = 0;
 
    protected:
-    // Use this constructor when the observer |this| is tied to a single
-    // AppCapabilityAccessCache for its entire lifetime, or until the observee
-    // (the AppCapabilityAccessCache) is destroyed, whichever comes first.
-    explicit Observer(AppCapabilityAccessCache* cache);
-
-    // Use this constructor when the observer |this| wants to observe a
-    // AppCapabilityAccessCache for part of its lifetime. It can then call
-    // Observe() to start and stop observing.
-    Observer();
-
     ~Observer() override;
-
-    // Start observing a different AppCapabilityAccessCache. |cache| may be
-    // nullptr, meaning to stop observing.
-    void Observe(AppCapabilityAccessCache* cache);
-
-   private:
-    raw_ptr<AppCapabilityAccessCache> cache_ = nullptr;
   };
 
   AppCapabilityAccessCache();
@@ -82,6 +69,9 @@ class COMPONENT_EXPORT(APP_UPDATE) AppCapabilityAccessCache {
 
   // Returns app ids which are accessing the microphone.
   std::set<std::string> GetAppsAccessingMicrophone();
+
+  // Returns app ids which are accessing any capability.
+  std::set<std::string> GetAppsAccessingCapabilities();
 
   // Notifies all observers of state-and-delta CapabilityAccessUpdate's (the
   // state comes from the internal cache, the delta comes from the argument) and

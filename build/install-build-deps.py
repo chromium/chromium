@@ -217,6 +217,7 @@ def dev_list():
       "libelf-dev",
       "libevdev-dev",
       "libffi-dev",
+      "libfuse2",
       "libgbm-dev",
       "libglib2.0-dev",
       "libglu1-mesa-dev",
@@ -743,15 +744,16 @@ def missing_packages(packages):
         ["dpkg-query", "-W", "-f", " "] + packages,
         check=True,
         capture_output=True,
-    ).decode()
+    )
     return []
   except subprocess.CalledProcessError as e:
-    return [line.split(" ")[-1] for line in e.stderr.strip().splitlines()]
+    return [
+        line.split(" ")[-1] for line in e.stderr.decode().strip().splitlines()
+    ]
 
 
 def package_is_installable(package):
-  result = subprocess.run(["apt-cache", "show", package],
-                          capture_output=True).decode()
+  result = subprocess.run(["apt-cache", "show", package], capture_output=True)
   return result.returncode == 0
 
 

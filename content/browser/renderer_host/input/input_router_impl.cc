@@ -390,8 +390,9 @@ void InputRouterImpl::ImeCancelComposition() {
 
 void InputRouterImpl::ImeCompositionRangeChanged(
     const gfx::Range& range,
-    const std::vector<gfx::Rect>& bounds) {
-  client_->OnImeCompositionRangeChanged(range, bounds);
+    const absl::optional<std::vector<gfx::Rect>>& character_bounds,
+    const absl::optional<std::vector<gfx::Rect>>& line_bounds) {
+  client_->OnImeCompositionRangeChanged(range, character_bounds, line_bounds);
 }
 
 void InputRouterImpl::SetMouseCapture(bool capture) {
@@ -425,11 +426,15 @@ void InputRouterImpl::SetMovementXYForTouchPoints(blink::WebTouchEvent* event) {
         global_touch_position_.erase(touch_point->id);
       } else if (touch_point->state ==
                  blink::WebTouchPoint::State::kStatePressed) {
-        DCHECK(global_touch_position_.find(touch_point->id) ==
-               global_touch_position_.end());
         global_touch_position_[touch_point->id] =
             gfx::Point(touch_point->PositionInScreen().x(),
                        touch_point->PositionInScreen().y());
+        // Note that the line above saves the latest position in case a
+        // kStatePressed is encountered for a touch_point that is still active.
+        // We consistently but infrequently encountered real-world systems
+        // apparently sending two touch-points with a common id without sending
+        // a kStateReleased or kStateCancelled in-between, see
+        // https://crbug.com/1432337.
       }
     }
   }
@@ -465,7 +470,7 @@ void InputRouterImpl::OnTouchEventAck(
     const TouchEventWithLatencyInfo& event,
     blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result) {
-  if (WebTouchEventTraits::IsTouchSequenceStart(event.event)) {
+  if (event.event.IsTouchSequenceStart()) {
     touch_action_filter_.AppendToGestureSequenceForDebugging("T");
     touch_action_filter_.AppendToGestureSequenceForDebugging(
         base::NumberToString(static_cast<uint32_t>(ack_result)).c_str());
@@ -475,7 +480,7 @@ void InputRouterImpl::OnTouchEventAck(
   }
   disposition_handler_->OnTouchEventAck(event, ack_source, ack_result);
 
-  if (WebTouchEventTraits::IsTouchSequenceEnd(event.event)) {
+  if (event.event.IsTouchSequenceEnd()) {
     touch_action_filter_.AppendToGestureSequenceForDebugging("E");
     touch_action_filter_.AppendToGestureSequenceForDebugging(
         base::NumberToString(event.event.unique_touch_event_id).c_str());

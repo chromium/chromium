@@ -34,13 +34,14 @@ ChromeVoxBluetoothBrailleDisplayManagerWebUITest =
   async setUpDeferred() {
     await super.setUpDeferred();
 
-    // Alphabetical based on file path.
-    await importModule(
-        'BluetoothBrailleDisplayManager',
-        '/chromevox/options/bluetooth_braille_display_manager.js');
-    await importModule('LocalStorage', '/common/local_storage.js');
-    await importModule(
-        'SettingsManager', '/chromevox/common/settings_manager.js');
+    await Promise.all([
+      // Alphabetical based on file path.
+      importModule(
+          'BluetoothBrailleDisplayManager',
+          '/chromevox/options/bluetooth_braille_display_manager.js'),
+      importModule('LocalStorage', '/common/local_storage.js'),
+      importModule('SettingsManager', '/chromevox/common/settings_manager.js'),
+    ]);
   }
 };
 

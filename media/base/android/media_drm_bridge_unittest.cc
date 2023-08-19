@@ -11,9 +11,12 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "media/base/android/media_drm_bridge.h"
+#include "media/base/media_switches.h"
 #include "media/base/provision_fetcher.h"
+#include "media/cdm/clear_key_cdm_common.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/widevine/cdm/widevine_cdm_common.h"
@@ -23,14 +26,14 @@ using ::testing::StrictMock;
 
 namespace media {
 
-#define EXPECT_TRUE_IF_WIDEVINE_AVAILABLE(a)                         \
-  do {                                                               \
-    if (!MediaDrmBridge::IsKeySystemSupported(kWidevineKeySystem)) { \
-      VLOG(0) << "Widevine not supported on device.";                \
-      EXPECT_FALSE(a);                                               \
-    } else {                                                         \
-      EXPECT_TRUE(a);                                                \
-    }                                                                \
+#define EXPECT_TRUE_IF_KEY_SYSTEM_AVAILABLE(a, b)                   \
+  do {                                                              \
+    if (!MediaDrmBridge::IsKeySystemSupported(b)) {                 \
+      VLOG(0) << "Key System " << b << " not supported on device."; \
+      EXPECT_FALSE(a);                                              \
+    } else {                                                        \
+      EXPECT_TRUE(a);                                               \
+    }                                                               \
   } while (0)
 
 const char kAudioMp4[] = "audio/mp4";
@@ -113,6 +116,8 @@ class MediaDrmBridgeTest : public ProvisionFetcher, public testing::Test {
  protected:
   scoped_refptr<MediaDrmBridge> media_drm_bridge_;
 
+  base::test::ScopedFeatureList scoped_feature_list_;
+
  private:
   std::unique_ptr<ProvisionFetcher> CreateProvisionFetcher() {
     return std::make_unique<ProvisionFetcherWrapper>(this);
@@ -125,17 +130,32 @@ TEST_F(MediaDrmBridgeTest, IsKeySystemSupported_Widevine) {
   // TODO(xhwang): Enable when b/13564917 is fixed.
   // EXPECT_TRUE_IF_AVAILABLE(
   //     IsKeySystemSupportedWithType(kWidevineKeySystem, kAudioMp4));
-  EXPECT_TRUE_IF_WIDEVINE_AVAILABLE(
-      IsKeySystemSupportedWithType(kWidevineKeySystem, kVideoMp4));
+  EXPECT_TRUE_IF_KEY_SYSTEM_AVAILABLE(
+      IsKeySystemSupportedWithType(kWidevineKeySystem, kVideoMp4),
+      kWidevineKeySystem);
 
-  EXPECT_TRUE_IF_WIDEVINE_AVAILABLE(
-      IsKeySystemSupportedWithType(kWidevineKeySystem, kAudioWebM));
-  EXPECT_TRUE_IF_WIDEVINE_AVAILABLE(
-      IsKeySystemSupportedWithType(kWidevineKeySystem, kVideoWebM));
+  EXPECT_TRUE_IF_KEY_SYSTEM_AVAILABLE(
+      IsKeySystemSupportedWithType(kWidevineKeySystem, kAudioWebM),
+      kWidevineKeySystem);
+  EXPECT_TRUE_IF_KEY_SYSTEM_AVAILABLE(
+      IsKeySystemSupportedWithType(kWidevineKeySystem, kVideoWebM),
+      kWidevineKeySystem);
 
   EXPECT_FALSE(IsKeySystemSupportedWithType(kWidevineKeySystem, "unknown"));
   EXPECT_FALSE(IsKeySystemSupportedWithType(kWidevineKeySystem, "video/avi"));
   EXPECT_FALSE(IsKeySystemSupportedWithType(kWidevineKeySystem, "audio/mp3"));
+}
+
+TEST_F(MediaDrmBridgeTest, IsKeySystemSupported_ExternalClearKey) {
+  // Testing that 'kExternalClearKeyForTesting' is disabled by default.
+  EXPECT_FALSE(
+      base::FeatureList::IsEnabled(media::kExternalClearKeyForTesting));
+  scoped_feature_list_.InitWithFeatures({media::kExternalClearKeyForTesting},
+                                        {});
+  EXPECT_TRUE(base::FeatureList::IsEnabled(media::kExternalClearKeyForTesting));
+  EXPECT_TRUE_IF_KEY_SYSTEM_AVAILABLE(
+      IsKeySystemSupportedWithType(kExternalClearKeyKeySystem, kVideoMp4),
+      kExternalClearKeyKeySystem);
 }
 
 // Invalid key system is NOT supported regardless whether MediaDrm is available.
@@ -152,7 +172,19 @@ TEST_F(MediaDrmBridgeTest, IsKeySystemSupported_InvalidKeySystem) {
 
 TEST_F(MediaDrmBridgeTest, CreateWithoutSessionSupport_Widevine) {
   CreateWithoutSessionSupport(kWidevineKeySystem, kTestOrigin, kDefault);
-  EXPECT_TRUE_IF_WIDEVINE_AVAILABLE(media_drm_bridge_);
+  EXPECT_TRUE_IF_KEY_SYSTEM_AVAILABLE(media_drm_bridge_, kWidevineKeySystem);
+}
+
+TEST_F(MediaDrmBridgeTest, CreateWithoutSessionSupport_ExternalClearKey) {
+  CreateWithoutSessionSupport(kExternalClearKeyKeySystem, kTestOrigin,
+                              kDefault);
+  EXPECT_FALSE(media_drm_bridge_);
+  scoped_feature_list_.InitWithFeatures({media::kExternalClearKeyForTesting},
+                                        {});
+  CreateWithoutSessionSupport(kExternalClearKeyKeySystem, kTestOrigin,
+                              kDefault);
+  EXPECT_TRUE_IF_KEY_SYSTEM_AVAILABLE(media_drm_bridge_,
+                                      kExternalClearKeyKeySystem);
 }
 
 // Invalid key system is NOT supported regardless whether MediaDrm is available.
@@ -165,9 +197,20 @@ TEST_F(MediaDrmBridgeTest, CreateWithSecurityLevel_Widevine) {
   // We test "L3" fully. But for "L1" we don't check the result as it depends on
   // whether the test device supports "L1".
   CreateWithoutSessionSupport(kWidevineKeySystem, kTestOrigin, kL3);
-  EXPECT_TRUE_IF_WIDEVINE_AVAILABLE(media_drm_bridge_);
+  EXPECT_TRUE_IF_KEY_SYSTEM_AVAILABLE(media_drm_bridge_, kWidevineKeySystem);
 
   CreateWithoutSessionSupport(kWidevineKeySystem, kTestOrigin, kL1);
+}
+
+TEST_F(MediaDrmBridgeTest, CreateWithSecurityLevel_ExternalClearKey) {
+  scoped_feature_list_.InitWithFeatures({media::kExternalClearKeyForTesting},
+                                        {});
+
+  // ExternalClearKey only initialized with 'kDefault' security level.
+  CreateWithoutSessionSupport(kExternalClearKeyKeySystem, kTestOrigin,
+                              kDefault);
+  EXPECT_TRUE_IF_KEY_SYSTEM_AVAILABLE(media_drm_bridge_,
+                                      kExternalClearKeyKeySystem);
 }
 
 // See https://crbug.com/1370782.

@@ -11,6 +11,7 @@
 
 #include "base/component_export.h"
 #include "base/strings/string_piece.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/resource/resource_scale_factor.h"
 
 namespace base {
@@ -36,8 +37,8 @@ class COMPONENT_EXPORT(UI_DATA_PACK) ResourceHandle {
   // Get resource by id |resource_id|, filling in |data|.
   // The data is owned by the DataPack object and should not be modified.
   // Returns false if the resource id isn't found.
-  virtual bool GetStringPiece(uint16_t resource_id,
-                              base::StringPiece* data) const = 0;
+  virtual absl::optional<base::StringPiece> GetStringPiece(
+      uint16_t resource_id) const = 0;
 
   // Like GetStringPiece(), but returns a reference to memory.
   // Caller owns the returned object.

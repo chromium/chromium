@@ -10,10 +10,6 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/common/channel_info.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 IOSChromeUpdateQueryParamsDelegate::IOSChromeUpdateQueryParamsDelegate() {}
 
 IOSChromeUpdateQueryParamsDelegate::~IOSChromeUpdateQueryParamsDelegate() {}

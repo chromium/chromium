@@ -1,15 +1,15 @@
 <histogram-configuration>
 
-  <!-- Enum types -->
+<!-- Enum types -->
 
 <enums>
 
-<enum name="Enum1">
+<enum name="Enum_A">
   <int value="0" label="Value0"/>
   <int value="1" label="Value1"/>
 </enum>
 
-<enum name="TestEnum">
+<enum name="Enum_X">
   <int value="0" label="Value0"/>
   <int value="1" label="Value1"/>
 </enum>

@@ -195,7 +195,7 @@ void MagnifierSurfaceControl::CreateDisplayAndFrameSink() {
   gfx::DisplayColorSpaces display_color_spaces =
       display::Screen::GetScreen()
           ->GetDisplayNearestWindow(window_android)
-          .color_spaces();
+          .GetColorSpaces();
 
   viz::RendererSettings renderer_settings;
   renderer_settings.partial_swap_enabled = true;

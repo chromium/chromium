@@ -43,7 +43,6 @@ js_library("confirmation_page_test") {
 js_library("fake_help_content_provider_test") {
   deps = [
     "..:chai_assert",
-    "//ash/webui/common/resources:mojo_utils",
     "//ash/webui/os_feedback_ui/resources:fake_data",
     "//ash/webui/os_feedback_ui/resources:fake_help_content_provider",
     "//ash/webui/os_feedback_ui/resources:feedback_types",
@@ -65,7 +64,6 @@ js_library("feedback_flow_test") {
 js_library("file_attachment_test") {
   deps = [
     "..:chai_assert",
-    "//ash/webui/common/resources:mojo_utils",
     "//ash/webui/os_feedback_ui/resources:file_attachment",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]

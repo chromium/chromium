@@ -12,8 +12,10 @@
 #include <vector>
 
 #include "base/time/time.h"
+#include "base/types/strong_alias.h"
 #include "components/sync/base/model_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace sync_pb {
 enum SharingSpecificFields_EnabledFeatures : int;
@@ -64,6 +66,14 @@ class DeviceInfo {
   };
 
   struct PhoneAsASecurityKeyInfo {
+    // NotReady indicates that more time is needed to calculate the
+    // PhoneAsASecurityKeyInfo.
+    using NotReady = base::StrongAlias<class NotReadyTag, absl::monostate>;
+    // NoSupport indicates that phone-as-a-security-key cannot be supported.
+    using NoSupport = base::StrongAlias<class NoSupportTag, absl::monostate>;
+    using StatusOrInfo =
+        absl::variant<NotReady, NoSupport, PhoneAsASecurityKeyInfo>;
+
     PhoneAsASecurityKeyInfo();
     PhoneAsASecurityKeyInfo(const PhoneAsASecurityKeyInfo& other);
     PhoneAsASecurityKeyInfo(PhoneAsASecurityKeyInfo&& other);
@@ -215,7 +225,7 @@ class DeviceInfo {
 
   void set_sharing_info(const absl::optional<SharingInfo>& sharing_info);
 
-  void set_paask_info(PhoneAsASecurityKeyInfo&& paask_info);
+  void set_paask_info(absl::optional<PhoneAsASecurityKeyInfo>&& paask_info);
 
   void set_client_name(const std::string& client_name);
 

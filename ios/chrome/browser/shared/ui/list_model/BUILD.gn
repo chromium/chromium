@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("list_model") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "list_item+Controller.h",
     "list_item.h",
@@ -15,7 +14,6 @@ source_set("list_model") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "list_item_unittest.mm",

@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_container_view.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation OmniboxPopupContainerView
 
 /// Ignore user interaction with itself or PopupEmptySpaceView.

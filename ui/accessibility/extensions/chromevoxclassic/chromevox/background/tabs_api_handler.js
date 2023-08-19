@@ -118,7 +118,6 @@ cvox.TabsApiHandler.prototype = {
       }
       cvox.ChromeVox.earcons.playEarcon(cvox.Earcon.OBJECT_SELECT);
       this.refreshAutomationHandler_(tab.id);
-      this.focusTab_(tab.id);
     }.bind(this));
   },
 
@@ -208,19 +207,6 @@ cvox.TabsApiHandler.prototype = {
    * @private
    */
   refreshAutomationHandler_: function(tabId) {
-  },
-
-  /**
-   * @param {number} id Tab id to focus.
-   * @private
-   */
-  focusTab_: function(id) {
-    chrome.automation.getTree(id, function(tab) {
-      if (!tab)
-        return;
-
-      ChromeVoxState.instance.setCurrentRange(cursors.Range.fromNode(tab));
-    });
   },
 
   /**

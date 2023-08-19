@@ -40,10 +40,10 @@ class ConsentDialogCoordinator : public ConsentRequester {
   std::unique_ptr<ui::DialogModel> CreateDeviceSignalsConsentDialogModel();
 
   void Show();
-  void Hide();
 
   void OnConsentDialogAccept();
   void OnConsentDialogCancel();
+  void OnConsentDialogClose();
 
   void OnConsentPreferenceUpdated(RequestConsentCallback callback);
 

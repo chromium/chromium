@@ -17,10 +17,9 @@ static_library("file_manager_untrusted_ui") {
   sources = [
     "file_manager_untrusted_ui.cc",
     "file_manager_untrusted_ui.h",
-    "url_constants.cc",
-    "url_constants.h",
   ]
   deps = [
+    ":constants",
     "//ash/webui/file_manager/untrusted_resources:file_manager_untrusted_resources",
     "//base",
     "//content/public/browser",
@@ -39,19 +38,19 @@ static_library("file_manager_ui") {
     "file_manager_ui_delegate.h",
     "resource_loader.cc",
     "resource_loader.h",
-    "url_constants.cc",
-    "url_constants.h",
   ]
 
   deps = [
-    ":constants",
     ":file_manager_untrusted_ui",
+    "//ash",
     "//ash/constants:constants",
+    "//ash/webui/common:trusted_types_util",
     "//ash/webui/file_manager/mojom",
     "//ash/webui/file_manager/resources:file_manager_swa_resources",
     "//ash/webui/system_apps/public:system_web_app_config",
     "//ash/webui/system_apps/public:system_web_app_type",
     "//base",
+    "//components/user_manager",
     "//content/public/browser",
     "//ui/file_manager:file_manager_gen_resources",
     "//ui/file_manager:resources",
@@ -59,6 +58,8 @@ static_library("file_manager_ui") {
     "//ui/webui:webui",
     "//ui/webui/resources/cr_components/color_change_listener:mojom",
   ]
+
+  public_deps = [ ":constants" ]
 }
 
 source_set("unit_tests") {

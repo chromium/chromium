@@ -31,7 +31,7 @@ class AutofillWebDataService;
 
 namespace base {
 class FilePath;
-class SingleThreadTaskRunner;
+class SequencedTaskRunner;
 }  // namespace base
 
 // WebDataServiceWrapper is a KeyedService that owns multiple WebDataServices
@@ -64,7 +64,7 @@ class WebDataServiceWrapper : public KeyedService {
   WebDataServiceWrapper(
       const base::FilePath& context_path,
       const std::string& application_locale,
-      const scoped_refptr<base::SingleThreadTaskRunner>& ui_task_runner,
+      const scoped_refptr<base::SequencedTaskRunner>& ui_task_runner,
       const ShowErrorCallback& show_error_callback);
 
   WebDataServiceWrapper(const WebDataServiceWrapper&) = delete;

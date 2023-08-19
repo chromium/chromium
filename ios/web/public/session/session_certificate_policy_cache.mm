@@ -8,10 +8,6 @@
 #import "ios/web/public/security/certificate_policy_cache.h"
 #import "ios/web/public/thread/web_thread.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace web {
 
 SessionCertificatePolicyCache::SessionCertificatePolicyCache(

@@ -89,7 +89,8 @@ class ASH_EXPORT UnifiedMediaControlsController
       media_controls_ = nullptr;
 
   // Delegate for show/hide media controls.
-  const raw_ptr<Delegate, ExperimentalAsh> delegate_ = nullptr;
+  const raw_ptr<Delegate, DanglingUntriaged | ExperimentalAsh> delegate_ =
+      nullptr;
 
   mojo::Remote<media_session::mojom::MediaController> media_controller_remote_;
 

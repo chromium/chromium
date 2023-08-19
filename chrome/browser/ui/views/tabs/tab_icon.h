@@ -9,9 +9,11 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/tabs/tab_network_state.h"
 #include "components/performance_manager/public/features.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/animation/linear_animation.h"
+#include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_throbber.h"
 #include "ui/views/animation/animation_delegate_views.h"
@@ -22,6 +24,8 @@ class TickClock;
 }
 
 struct TabRendererData;
+
+DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kDiscardAnimationFinishes);
 
 // View that displays the favicon, sad tab, throbber, and attention indicator
 // in a tab.
@@ -73,7 +77,6 @@ class TabIcon : public views::View, public views::AnimationDelegateViews {
   // strip in order to keep the throbbers in sync.
   void StepLoadingAnimation(const base::TimeDelta& elapsed_time);
 
-  gfx::LinearAnimation* GetTabDiscardAnimationForTesting();
   gfx::ImageSkia GetThemedIconForTesting() { return themed_favicon_; }
   bool GetActiveStateForTesting() { return is_active_tab_; }
 
@@ -172,9 +175,11 @@ class TabIcon : public views::View, public views::AnimationDelegateViews {
   // it will be drawn off the bottom.
   double hiding_fraction_ = 0.0;
 
-  // Animation used when the favicon fades in after being shown inside the
-  // loading-state spinner.
-  gfx::LinearAnimation favicon_fade_in_animation_;
+  // Animation used when the favicon grows or shrinks in size. `Show` will
+  // represent the favicon growing to full size, while `Hide` will represent the
+  // favicon shrinking which happens when the loading spinner or discard
+  // indicator is present.
+  gfx::SlideAnimation favicon_size_animation_;
 
   // Animation used when a tab is discarded so the favicon will partially
   // fade out

@@ -1,0 +1,62 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ax.mojom;
+
+import "services/accessibility/public/mojom/assistive_technology_type.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "skia/public/mojom/skcolor.mojom";
+
+// The type of visual appearance for the focus ring.
+enum FocusType {
+  kGlow,
+  kSolid,
+  kDashed,
+};
+
+// Whether to stack focus rings above or below accessibility bubble panels.
+// Note: focus rings will be stacked above most other UI in either case.
+enum FocusRingStackingOrder {
+  kAboveAccessibilityBubbles,
+  kBelowAccessibilityBubbles,
+};
+
+// Information needed to draw a focus ring for accessibility.
+struct FocusRingInfo {
+    // Array of rectangles to draw the accessibility focus ring around,
+    // in screen coordinates.
+    array<gfx.mojom.Rect> rects;
+
+    // The FocusType for the ring.
+    FocusType type;
+
+    // A RGB color that describes the primary color of the focus ring.
+    skia.mojom.SkColor? color;
+
+    // A RGB color that describes the secondary color of the focus
+    // ring, if there is one.
+    skia.mojom.SkColor? secondary_color;
+
+    // A RGB color that describes the color drawn outside of the focus
+    // ring and over the rest of the display, if there is one.
+    skia.mojom.SkColor? background_color;
+
+    // The FocusType for the ring.
+    FocusRingStackingOrder? stacking_order;
+
+    // An identifier for this focus ring, unique within the extension.
+    string? id;
+};
+
+// Provides control over the user interface. Implemented in the main OS
+// browser process and called from Accessibility Service javascript in V8.
+interface UserInterface {
+    // Sets the given accessibility focus rings for the given `at_type`
+    // or clears them if the list is empty.
+    // TODO(b/293348920): Cleanup after migration: pass a map of id to
+    // FocusRingInfo instead of adding an optional ID with the array of
+    // FocusRingInfo.
+    SetFocusRings(array<FocusRingInfo> focus_rings,
+        AssistiveTechnologyType at_type);
+};

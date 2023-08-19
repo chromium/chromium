@@ -53,6 +53,12 @@ class GuestOsTerminalProviderRegistry {
   // the newly-registered provider.
   Id Register(std::unique_ptr<GuestOsTerminalProvider> provider);
 
+  // The terminal reads configuration data from prefs, which means changes to
+  // provider properties at runtime aren't automatically reflected in the
+  // terminal window. This method updates prefs to match the current provider
+  // state.
+  void SyncPrefs(Id provider);
+
   // Removes a provider from the registry, returning the provider. The specified
   // provider must be in the registry.
   std::unique_ptr<GuestOsTerminalProvider> Unregister(Id provider);

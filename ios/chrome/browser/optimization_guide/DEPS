@@ -1,5 +1,8 @@
 include_rules = [
   "+components/optimization_guide/core",
   "+components/optimization_guide/proto",
+  "+ios/chrome/browser/push_notification",
+  "+ios/chrome/browser/download/background_service",
+  "+ios/chrome/browser/metrics",
   "+ios/web/public",
 ]

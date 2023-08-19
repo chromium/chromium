@@ -5,94 +5,16 @@
 module ax.mojom;
 
 import "sandbox/policy/mojom/sandbox.mojom";
-import "ui/accessibility/mojom/ax_action_data.mojom";
-import "ui/accessibility/mojom/ax_event.mojom";
-import "ui/accessibility/mojom/ax_relative_bounds.mojom";
-import "ui/accessibility/mojom/ax_tree_id.mojom";
-import "ui/accessibility/mojom/ax_tree_update.mojom";
-import "ui/gfx/geometry/mojom/geometry.mojom";
+import "services/accessibility/public/mojom/automation.mojom";
 
 [EnableIf=supports_os_accessibility_service]
 import "services/accessibility/public/mojom/tts.mojom";
-
-// Main interface a client uses to send accessibility tree updates and
-// results, implemented in the Accessibility service. Clients may
-// be the main OS browser process, renderers, or other accessibility tree
-// sources or aggregators.
-interface Automation {
-  // // Forwards an accessibility tree destroyed event from any accessibility
-  // // tree from client to the accessibility service.
-  // DispatchTreeDestroyedEvent(ax.mojom.AXTreeID tree_id);
-
-  // // Forwards an action result from any accessibility tree from client
-  // // (e.g. Chrome OS Ash, Chrome browser process) to the service.
-  // DispatchActionResult(
-  //   ax.mojom.AXActionData data, bool result);
-
-  // Forwards an event from any accessibility tree to the service.
-  DispatchAccessibilityEvents(
-    ax.mojom.AXTreeID tree_id,
-    array<ax.mojom.AXTreeUpdate> updates,
-    gfx.mojom.Point mouse_location,
-    array<ax.mojom.AXEvent> events);
-
-  // Dispatches a location change for a specific |node_id| in the tree
-  // with ID |tree_id|. Currently used by Blink in
-  // RenderAccessibilityHost::HandleAXLocationChanges.
-  DispatchAccessibilityLocationChange(
-    ax.mojom.AXTreeID tree_id,
-    int32 node_id,
-    ax.mojom.AXRelativeBounds bounds);
-
-  // // Dispatches the result of a query for text location.
-  // // Currently supported by ARC++ in response to
-  // // ax::mojom::Action::kGetTextLocation.
-  //  DispatchGetTextLocationResult(
-  //    ax.mojom.ActionData data,
-  //    gfx.mojom.Rect rect);
-};
-
-// Implemented outside of the service, e.g. Chrome OS Ash, Chrome browser
-// process, renderers, or other tree sources.
-// Called by the accessibility service to enable accessibility and perform
-// actions. For example the accessibility service might want to do a
-// 'click' because a screen reader requested the default action. Then the
-// accessibility service would use AutomationClient::PerformAction to pass
-// that back to the client.
-interface AutomationClient {
-  // // Enables automation for the client. This will result in the client
-  // // repeatedly calling DispatchAccessibilityEvents() on the Automation
-  // // interface.
-  // // Runs the callback with tree ID for the desktop tree.
-  // Enable() => (ax.mojom.AXTreeID desktop_id);
-
-  // // Disables automation in the client. This has the effect of turning off
-  // // accessibility tree creation within the client. Calling this method
-  // // without calling Enable or calling it multiple times has no adverse
-  // // effects.
-  // Disable();
-
-  // // Enables accessibility for a particular subtree of the client. This will
-  // // result in the client repeatedly calling DispatchAccessibilityEvents()
-  // // on the Automation interface.
-  // EnableTree(ax.mojom.AXTreeID tree_id);
-
-  // // Forwards the action described by AXActionData to all clients. Actions
-  // // are resolved by each client based on tree id, action type and other
-  // // action data fields.
-  // PerformAction(ax.mojom.AXActionData action_data);
-};
-
-// All the features which are implemented by the accessibility service.
 [EnableIf=supports_os_accessibility_service]
-enum AssistiveTechnologyType {
-  kChromeVox,
-  kSelectToSpeak,
-  kSwitchAccess,
-  kAutoClick,
-  kMagnifier,
-  kDictation,
-};
+import "third_party/blink/public/mojom/devtools/devtools_agent.mojom";
+[EnableIf=supports_os_accessibility_service]
+import "services/accessibility/public/mojom/user_interface.mojom";
+[EnableIf=supports_os_accessibility_service]
+import "services/accessibility/public/mojom/assistive_technology_type.mojom";
 
 // Implemented by the accessibility service. Turns on and off features.
 // The caller is the client OS, for example, Chrome OS Ash.
@@ -125,6 +47,14 @@ interface AccessibilityService {
   BindAssistiveTechnologyController(
     pending_receiver<AssistiveTechnologyController> at_controller,
     array<AssistiveTechnologyType> enabled_features);
+
+  // Establishes a debugger connection to the specific AT. The remote is held by
+  // in the browser process by a MojomDevToolsAgentHost. This function is called
+  // when the agent host is created.
+  [EnableIf=supports_os_accessibility_service]
+  ConnectDevToolsAgent(
+    pending_associated_receiver<blink.mojom.DevToolsAgent> agent,
+    AssistiveTechnologyType type);
 };
 
 // Implemented by the main OS process, e.g. Chrome OS Ash on Chrome OS. Allows
@@ -141,11 +71,16 @@ interface AccessibilityServiceClient {
   // In Chrome OS this may be called once per feature to provide
   // automation connections to each V8 isolate.
   BindAutomation(
-    pending_remote<Automation> automation,
+    pending_associated_remote<Automation> automation,
     pending_receiver<AutomationClient> automation_client);
 
   // Binds to a Text-to-Speech client implemented in the main OS process,
   // called by the service.
   [EnableIf=supports_os_accessibility_service]
   BindTts(pending_receiver<Tts> tts_receiver);
+
+  // Binds to a User Interface client implemented in the main OS process,
+  // called by the service.
+  [EnableIf=supports_os_accessibility_service]
+  BindUserInterface(pending_receiver<UserInterface> user_interface_receiver);
 };

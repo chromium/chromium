@@ -12,9 +12,11 @@
 #include "base/memory/ptr_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/trace_event/trace_event.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/cdm_context.h"
 #include "media/base/decoder_buffer.h"
+#include "media/base/media_util.h"
 #include "media/mojo/common/media_type_converters.h"
 #include "media/mojo/common/mojo_pipe_read_write_util.h"
 
@@ -117,6 +119,66 @@ MojoDecoderBufferReader::~MojoDecoderBufferReader() {
     std::move(flush_cb_).Run();
 }
 
+void MojoDecoderBufferReader::ReadDecoderBuffer(
+    mojom::DecoderBufferPtr mojo_buffer,
+    ReadCB read_cb) {
+  DVLOG(3) << __func__;
+  DCHECK(!flush_cb_);
+
+  if (!consumer_handle_.is_valid()) {
+    DCHECK(pending_read_cbs_.empty());
+    CancelReadCB(std::move(read_cb));
+    return;
+  }
+
+  scoped_refptr<DecoderBuffer> media_buffer(
+      mojo_buffer.To<scoped_refptr<DecoderBuffer>>());
+  DCHECK(media_buffer);
+
+  if (MediaTraceIsEnabled() && !media_buffer->end_of_stream()) {
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
+        "media,gpu", "MojoDecoderBufferReader::Read",
+        media_buffer->timestamp().InMicroseconds());
+    read_cb = base::BindOnce(
+        [](ReadCB read_cb, scoped_refptr<DecoderBuffer> buffer) {
+          TRACE_EVENT_NESTABLE_ASYNC_END2(
+              "media,gpu", "MojoDecoderBufferReader::Read",
+              buffer->timestamp().InMicroseconds(), "timestamp",
+              buffer->timestamp().InMicroseconds(), "read_bytes",
+              buffer->data_size());
+          std::move(read_cb).Run(std::move(buffer));
+        },
+        std::move(read_cb));
+  }
+  // We don't want reads to complete out of order, so we queue them even if they
+  // are zero-sized.
+  pending_read_cbs_.push_back(std::move(read_cb));
+  pending_buffers_.push_back(std::move(media_buffer));
+
+  // Do nothing if a read is already scheduled.
+  if (armed_)
+    return;
+
+  // To reduce latency, always process pending reads immediately.
+  ProcessPendingReads();
+}
+
+void MojoDecoderBufferReader::Flush(base::OnceClosure flush_cb) {
+  DVLOG(2) << __func__;
+  DCHECK(!flush_cb_);
+
+  if (pending_read_cbs_.empty()) {
+    std::move(flush_cb).Run();
+    return;
+  }
+
+  flush_cb_ = std::move(flush_cb);
+}
+
+bool MojoDecoderBufferReader::HasPendingReads() const {
+  return !pending_read_cbs_.empty();
+}
+
 void MojoDecoderBufferReader::CancelReadCB(ReadCB read_cb) {
   DVLOG(1) << "Failed to read DecoderBuffer because the pipe is already closed";
   std::move(read_cb).Run(nullptr);
@@ -149,8 +211,9 @@ void MojoDecoderBufferReader::CompleteCurrentRead() {
 
   std::move(read_cb).Run(std::move(buffer));
 
-  if (pending_read_cbs_.empty() && flush_cb_)
+  if (pending_read_cbs_.empty() && flush_cb_) {
     std::move(flush_cb_).Run();
+  }
 }
 
 void MojoDecoderBufferReader::ScheduleNextRead() {
@@ -160,52 +223,6 @@ void MojoDecoderBufferReader::ScheduleNextRead() {
 
   armed_ = true;
   pipe_watcher_.ArmOrNotify();
-}
-
-// TODO(xhwang): Move this up to match declaration order.
-void MojoDecoderBufferReader::ReadDecoderBuffer(
-    mojom::DecoderBufferPtr mojo_buffer,
-    ReadCB read_cb) {
-  DVLOG(3) << __func__;
-  DCHECK(!flush_cb_);
-
-  if (!consumer_handle_.is_valid()) {
-    DCHECK(pending_read_cbs_.empty());
-    CancelReadCB(std::move(read_cb));
-    return;
-  }
-
-  scoped_refptr<DecoderBuffer> media_buffer(
-      mojo_buffer.To<scoped_refptr<DecoderBuffer>>());
-  DCHECK(media_buffer);
-
-  // We don't want reads to complete out of order, so we queue them even if they
-  // are zero-sized.
-  pending_read_cbs_.push_back(std::move(read_cb));
-  pending_buffers_.push_back(std::move(media_buffer));
-
-  // Do nothing if a read is already scheduled.
-  if (armed_)
-    return;
-
-  // To reduce latency, always process pending reads immediately.
-  ProcessPendingReads();
-}
-
-void MojoDecoderBufferReader::Flush(base::OnceClosure flush_cb) {
-  DVLOG(2) << __func__;
-  DCHECK(!flush_cb_);
-
-  if (pending_read_cbs_.empty()) {
-    std::move(flush_cb).Run();
-    return;
-  }
-
-  flush_cb_ = std::move(flush_cb);
-}
-
-bool MojoDecoderBufferReader::HasPendingReads() const {
-  return !pending_read_cbs_.empty();
 }
 
 void MojoDecoderBufferReader::OnPipeReadable(
@@ -275,8 +292,9 @@ void MojoDecoderBufferReader::ProcessPendingReads() {
 
     // TODO(sandersd): Make sure there are no possible re-entrancy issues
     // here.
-    if (bytes_read_ == buffer_size)
+    if (bytes_read_ == buffer_size) {
       CompleteCurrentRead();
+    }
 
     // Since we can still read, try to read more.
   }
@@ -374,6 +392,9 @@ mojom::DecoderBufferPtr MojoDecoderBufferWriter::WriteDecoderBuffer(
   if (media_buffer->end_of_stream() || media_buffer->data_size() == 0)
     return mojo_buffer;
 
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("media,gpu",
+                                    "MojoDecoderBufferWriter::Write",
+                                    media_buffer->timestamp().InMicroseconds());
   // Queue writing the buffer's data into our DataPipe.
   pending_buffers_.push_back(std::move(media_buffer));
 
@@ -439,6 +460,10 @@ void MojoDecoderBufferWriter::ProcessPendingWrites() {
     DCHECK_GT(num_bytes, 0u);
     bytes_written_ += num_bytes;
     if (bytes_written_ == buffer_size) {
+      TRACE_EVENT_NESTABLE_ASYNC_END2(
+          "media,gpu", "MojoDecoderBufferWriter::Write",
+          buffer->timestamp().InMicroseconds(), "timestamp",
+          buffer->timestamp().InMicroseconds(), "write_bytes", bytes_written_);
       pending_buffers_.pop_front();
       bytes_written_ = 0;
     }
@@ -457,6 +482,15 @@ void MojoDecoderBufferWriter::OnPipeError(MojoResult result) {
     DVLOG(1) << __func__ << ": writing to data pipe failed. result=" << result
              << ", buffer size=" << pending_buffers_.front()->data_size()
              << ", num_bytes(written)=" << bytes_written_;
+    if (MediaTraceIsEnabled()) {
+      for (const auto& buffer : pending_buffers_) {
+        TRACE_EVENT_NESTABLE_ASYNC_END2(
+            "media,gpu", "MojoDecoderBufferWriter::Write",
+            buffer->timestamp().InMicroseconds(), "timestamp",
+            buffer->timestamp().InMicroseconds(), "write_bytes",
+            bytes_written_);
+      }
+    }
     pending_buffers_.clear();
     bytes_written_ = 0;
   }

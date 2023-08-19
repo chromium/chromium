@@ -38,6 +38,7 @@ type GetPageBoundingBoxCallback = (page: number) => Promise<Rect>;
 export class OpenPdfParamsParser {
   private getNamedDestinationCallback_: GetNamedDestinationCallback;
   private getPageBoundingBoxCallback_: GetPageBoundingBoxCallback;
+  private pageCount_?: number;
   private viewportDimensions_?: Size;
 
   /**
@@ -107,11 +108,17 @@ export class OpenPdfParamsParser {
    * the specified fitting type mode and position.
    * @param paramValue Params to parse.
    * @param pageNumber Page number for bounding box, if there is a fit bounding
-   *     box param.
+   *     box param. `pageNumber` is 1-indexed and must be bounded by 1 and the
+   *     number of pages in the PDF, inclusive.
    * @return Map with view parameters (view and viewPosition).
    */
   private async parseViewParam_(paramValue: string, pageNumber: number):
       Promise<OpenPdfParams> {
+    assert(pageNumber > 0);
+    if (this.pageCount_) {
+      assert(pageNumber <= this.pageCount_);
+    }
+
     const viewModeComponents = paramValue.toLowerCase().split(',');
     if (viewModeComponents.length === 0) {
       return {};
@@ -121,7 +128,7 @@ export class OpenPdfParamsParser {
     const viewMode = viewModeComponents[0];
     let acceptsPositionParam = false;
 
-    // Note that pageNumber is 1-indexed, but PDF Viewer is 0-indexed.
+    // Note that `pageNumber` is 1-indexed, but PDF Viewer is 0-indexed.
     switch (viewMode) {
       case ViewMode.FIT:
         params['view'] = FittingType.FIT_TO_PAGE;
@@ -135,21 +142,27 @@ export class OpenPdfParamsParser {
         acceptsPositionParam = true;
         break;
       case ViewMode.FIT_B:
-        params['view'] = FittingType.FIT_TO_BOUNDING_BOX;
-        params['boundingBox'] =
-            await this.getPageBoundingBoxCallback_(pageNumber - 1);
+        if (this.pageCount_) {
+          params['view'] = FittingType.FIT_TO_BOUNDING_BOX;
+          params['boundingBox'] =
+              await this.getPageBoundingBoxCallback_(pageNumber - 1);
+        }
         break;
       case ViewMode.FIT_BH:
-        params['view'] = FittingType.FIT_TO_BOUNDING_BOX_WIDTH;
-        params['boundingBox'] =
-            await this.getPageBoundingBoxCallback_(pageNumber - 1);
-        acceptsPositionParam = true;
+        if (this.pageCount_) {
+          params['view'] = FittingType.FIT_TO_BOUNDING_BOX_WIDTH;
+          params['boundingBox'] =
+              await this.getPageBoundingBoxCallback_(pageNumber - 1);
+          acceptsPositionParam = true;
+        }
         break;
       case ViewMode.FIT_BV:
-        params['view'] = FittingType.FIT_TO_BOUNDING_BOX_HEIGHT;
-        params['boundingBox'] =
-            await this.getPageBoundingBoxCallback_(pageNumber - 1);
-        acceptsPositionParam = true;
+        if (this.pageCount_) {
+          params['view'] = FittingType.FIT_TO_BOUNDING_BOX_HEIGHT;
+          params['boundingBox'] =
+              await this.getPageBoundingBoxCallback_(pageNumber - 1);
+          acceptsPositionParam = true;
+        }
         break;
       case ViewMode.FIT_R:
       case ViewMode.XYZ:
@@ -248,6 +261,11 @@ export class OpenPdfParamsParser {
     return params;
   }
 
+  /** Store the number of pages. */
+  setPageCount(pageCount: number) {
+    this.pageCount_ = pageCount;
+  }
+
   /** Store current viewport's dimensions. */
   setViewportDimensions(dimensions: Size) {
     this.viewportDimensions_ = dimensions;
@@ -298,23 +316,26 @@ export class OpenPdfParamsParser {
 
     const urlParams = this.parseUrlParams_(url);
 
-    let pageNumber;
+    // `pageNumber` is 1-based.
+    let pageNumber = 1;
     if (urlParams.has('page')) {
-      // |pageNumber| is 1-based, but goToPage() take a zero-based page index.
       pageNumber = parseInt(urlParams.get('page')!, 10);
-      if (!Number.isNaN(pageNumber) && pageNumber > 0) {
+      if (!Number.isNaN(pageNumber) && this.pageCount_) {
+        // If necessary, clip `pageNumber` to stay within bounds.
+        if (pageNumber < 1) {
+          pageNumber = 1;
+        } else if (pageNumber > this.pageCount_) {
+          pageNumber = this.pageCount_;
+        }
+        // goToPage() takes a zero-based page index.
         params['page'] = pageNumber - 1;
       }
-    }
-
-    if (!pageNumber || pageNumber < 1) {
-      pageNumber = 1;
     }
 
     if (urlParams.has('view')) {
       Object.assign(
           params,
-          await this.parseViewParam_(urlParams.get('view')!, pageNumber!));
+          await this.parseViewParam_(urlParams.get('view')!, pageNumber));
     }
 
     if (urlParams.has('zoom')) {

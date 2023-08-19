@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/ash_element_identifiers.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/bluetooth_config_service.h"
@@ -25,6 +26,7 @@
 #include "chromeos/ash/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/view_class_properties.h"
 
 namespace ash {
 namespace {
@@ -81,6 +83,8 @@ std::unique_ptr<FeatureTile> BluetoothFeaturePodController::CreateTile(
   tile_->SetIconClickCallback(
       base::BindRepeating(&BluetoothFeaturePodController::OnIconPressed,
                           weak_factory_.GetWeakPtr()));
+  tile_->icon_button()->SetProperty(views::kElementIdentifierKey,
+                                    kBluetoothFeatureTileToggleElementId);
   tile_->CreateDecorativeDrillInArrow();
   // UpdateTileStateIfExists() will update visibility.
   tile_->SetVisible(false);
@@ -99,18 +103,11 @@ void BluetoothFeaturePodController::OnIconPressed() {
 
   const bool is_toggled = IsButtonToggled();
   remote_cros_bluetooth_config_->SetBluetoothEnabledState(!is_toggled);
+  TrackToggleUMA(/*target_toggle_state=*/!is_toggled);
 
   if (auto* hats_bluetooth_revamp_trigger = HatsBluetoothRevampTrigger::Get()) {
     hats_bluetooth_revamp_trigger->TryToShowSurvey();
   }
-
-  if (is_toggled) {
-    TrackToggleUMA(/*target_toggle_state=*/false);
-    return;
-  }
-
-  TrackDiveInUMA();
-  tray_controller_->ShowBluetoothDetailedView();
 }
 
 void BluetoothFeaturePodController::OnLabelPressed() {
@@ -119,9 +116,6 @@ void BluetoothFeaturePodController::OnLabelPressed() {
   }
 
   TrackDiveInUMA();
-  if (!IsButtonToggled()) {
-    remote_cros_bluetooth_config_->SetBluetoothEnabledState(true);
-  }
 
   if (auto* hats_bluetooth_revamp_trigger = HatsBluetoothRevampTrigger::Get()) {
     hats_bluetooth_revamp_trigger->TryToShowSurvey();

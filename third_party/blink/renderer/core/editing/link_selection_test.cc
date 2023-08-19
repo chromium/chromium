@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-blink.h"
+#include "ui/events/event_constants.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 
 using testing::_;
@@ -121,12 +122,15 @@ class TestFrameClient : public frame_test_helpers::TestWebFrameClient {
   void BeginNavigation(
       std::unique_ptr<blink::WebNavigationInfo> info) override {
     last_policy_ = info->navigation_policy;
+    ++num_navigations_;
   }
 
   WebNavigationPolicy GetLastNavigationPolicy() const { return last_policy_; }
+  size_t GetNumNavigations() const { return num_navigations_; }
 
  private:
   WebNavigationPolicy last_policy_ = kWebNavigationPolicyCurrentTab;
+  size_t num_navigations_ = 0;
 };
 
 class LinkSelectionTest : public LinkSelectionTestBase {
@@ -147,7 +151,8 @@ class LinkSelectionTest : public LinkSelectionTestBase {
 
     auto* document = main_frame_->GetFrame()->GetDocument();
     ASSERT_NE(nullptr, document);
-    auto* link_to_select = document->getElementById("link")->firstChild();
+    auto* link_to_select =
+        document->getElementById(AtomicString("link"))->firstChild();
     ASSERT_NE(nullptr, link_to_select);
     // We get larger range that we actually want to select, because we need a
     // slightly larger rect to include the last character to the selection.
@@ -246,13 +251,43 @@ TEST_F(LinkSelectionTest, HandCursorOverLinkAfterContextMenu) {
 TEST_F(LinkSelectionTest, SingleClickWithAltStartsDownload) {
   EmulateMouseClick(left_point_in_link_, WebMouseEvent::Button::kLeft,
                     WebInputEvent::kAltKey);
+  test::RunDelayedTasks(base::Milliseconds(ui::kDoubleClickTimeMs));
   EXPECT_EQ(kWebNavigationPolicyDownload,
             test_frame_client_.GetLastNavigationPolicy());
 }
 
+TEST_F(LinkSelectionTest, DoubleAltClickNotDownloadAndSelectWord) {
+  for (int click_count = 1; click_count <= 2; ++click_count) {
+    EXPECT_TRUE(GetSelectionText().empty());
+    EXPECT_EQ(0u, test_frame_client_.GetNumNavigations());
+    EmulateMouseClick(left_point_in_link_, WebMouseEvent::Button::kLeft,
+                      WebInputEvent::kAltKey, click_count);
+  }
+  test::RunDelayedTasks(base::Milliseconds(ui::kDoubleClickTimeMs));
+  EXPECT_EQ(0u, test_frame_client_.GetNumNavigations());
+  EXPECT_TRUE("to" == GetSelectionText() || "to " == GetSelectionText());
+}
+
+// Two successive but non-double-click alt-clicks are treated as two
+// separate download requests
+TEST_F(LinkSelectionTest, TwoSingleAltClicksDoubleDownloadAndNotSelectWord) {
+  for (size_t clicks = 0; clicks < 2; ++clicks) {
+    EXPECT_TRUE(GetSelectionText().empty());
+    EXPECT_EQ(clicks, test_frame_client_.GetNumNavigations());
+    EmulateMouseClick(left_point_in_link_, WebMouseEvent::Button::kLeft,
+                      WebInputEvent::kAltKey);
+    test::RunDelayedTasks(base::Milliseconds(ui::kDoubleClickTimeMs));
+    EXPECT_EQ(kWebNavigationPolicyDownload,
+              test_frame_client_.GetLastNavigationPolicy());
+    EXPECT_EQ(clicks + 1, test_frame_client_.GetNumNavigations());
+    EXPECT_TRUE(GetSelectionText().empty());
+  }
+}
+
 TEST_F(LinkSelectionTest, SingleClickWithAltStartsDownloadWhenTextSelected) {
   auto* document = main_frame_->GetFrame()->GetDocument();
-  auto* text_to_select = document->getElementById("page_text")->firstChild();
+  auto* text_to_select =
+      document->getElementById(AtomicString("page_text"))->firstChild();
   ASSERT_NE(nullptr, text_to_select);
 
   // Select some page text outside the link element.
@@ -265,6 +300,7 @@ TEST_F(LinkSelectionTest, SingleClickWithAltStartsDownloadWhenTextSelected) {
 
   EmulateMouseClick(left_point_in_link_, WebMouseEvent::Button::kLeft,
                     WebInputEvent::kAltKey);
+  test::RunDelayedTasks(base::Milliseconds(ui::kDoubleClickTimeMs));
   EXPECT_EQ(kWebNavigationPolicyDownload,
             test_frame_client_.GetLastNavigationPolicy());
 }
@@ -292,8 +328,8 @@ class LinkSelectionClickEventsTest : public LinkSelectionTestBase {
     auto* document = main_frame_->GetFrame()->GetDocument();
     ASSERT_NE(nullptr, document);
 
-    auto* empty_div = document->getElementById("empty_div");
-    auto* text_div = document->getElementById("text_div");
+    auto* empty_div = document->getElementById(AtomicString("empty_div"));
+    auto* text_div = document->getElementById(AtomicString("text_div"));
     ASSERT_NE(nullptr, empty_div);
     ASSERT_NE(nullptr, text_div);
   }
@@ -328,7 +364,7 @@ class LinkSelectionClickEventsTest : public LinkSelectionTestBase {
 
 TEST_F(LinkSelectionClickEventsTest, SingleAndDoubleClickWillBeHandled) {
   auto* document = main_frame_->GetFrame()->GetDocument();
-  auto* element = document->getElementById("empty_div");
+  auto* element = document->getElementById(AtomicString("empty_div"));
 
   {
     SCOPED_TRACE("Empty div, single click");
@@ -340,7 +376,7 @@ TEST_F(LinkSelectionClickEventsTest, SingleAndDoubleClickWillBeHandled) {
     CheckMouseClicks(*element, true);
   }
 
-  element = document->getElementById("text_div");
+  element = document->getElementById(AtomicString("text_div"));
 
   {
     SCOPED_TRACE("Text div, single click");

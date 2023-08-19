@@ -30,9 +30,6 @@ class FullscreenControllerImpl : public FullscreenController {
 
   // FullscreenController:
   ChromeBroadcaster* broadcaster() override;
-  void SetWebStateList(WebStateList* web_state_list) override;
-  const WebStateList* GetWebStateList() const override;
-  WebStateList* GetWebStateList() override;
   void AddObserver(FullscreenControllerObserver* observer) override;
   void RemoveObserver(FullscreenControllerObserver* observer) override;
   bool IsEnabled() const override;
@@ -47,6 +44,8 @@ class FullscreenControllerImpl : public FullscreenController {
   UIEdgeInsets GetCurrentViewportInsets() const override;
   void EnterFullscreen() override;
   void ExitFullscreen() override;
+  void ForceEnterFullscreen() override;
+  void ExitFullscreenWithoutAnimation() override;
   void ResizeHorizontalViewport() override;
   void FreezeToolbarHeight(bool freeze_toolbar_height) override;
 

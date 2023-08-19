@@ -122,7 +122,7 @@ message ModelInfo {
 
 // The scenarios for which the optimization guide has models for.
 enum OptimizationTarget {
-  reserved 14, 30;
+  reserved 14;
 
   OPTIMIZATION_TARGET_UNKNOWN = 0;
   // Should only be applied when the page load is predicted to be painful.
@@ -183,6 +183,8 @@ enum OptimizationTarget {
   OPTIMIZATION_TARGET_SEGMENTATION_ADAPTIVE_TOOLBAR = 28;
   // Target for segmentation: Determine users who are tabletproductivity users.
   OPTIMIZATION_TARGET_SEGMENTATION_TABLET_PRODUCTIVITY_USER = 29;
+  // Target for client side phishing image embedding model.
+  OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING_IMAGE_EMBEDDER = 30;
   // Target for ranking clusters that have passed minimal filtering for the New
   // Tab Page History Clusters module.
   OPTIMIZATION_TARGET_NEW_TAB_PAGE_HISTORY_CLUSTERS_MODULE_RANKING = 31;
@@ -192,6 +194,18 @@ enum OptimizationTarget {
   OPTIMIZATION_TARGET_TEXT_EMBEDDER = 33;
   // Target for classifying and extracting search images on web page.
   OPTIMIZATION_TARGET_VISUAL_SEARCH_CLASSIFICATION = 34;
+  // Target for classifying users to target bottom toolbar.
+  OPTIMIZATION_TARGET_SEGMENTATION_BOTTOM_TOOLBAR = 35;
+  // Target for Autofill field type classification model.
+  OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION = 36;
+  // Target for ranking ios start page modules.
+  OPTIMIZATION_TARGET_SEGMENTATION_IOS_MODULE_RANKER = 37;
+  // Target for segmentation: Determine what modules a user should see on their
+  // Desktop New Tab Page.
+  OPTIMIZATION_TARGET_SEGMENTATION_DESKTOP_NTP_MODULE = 38;
+  // Target for predicting candidate links for speculation-rule based
+  // preloading.
+  OPTIMIZATION_TARGET_PRELOADING_HEURISTICS = 39;
 }
 
 // The model engine versions that can be used to do model inference.
@@ -220,7 +234,7 @@ enum ModelEngineVersion {
   // A model using only operations that are supported by TensorflowLite 2.9.0.
   MODEL_ENGINE_VERSION_TFLITE_2_9 = 7;
   // A model using only operations that are supported by TensorflowLite 2.9.0.
-  // This adds GELU to the supported ops in Optimiziation Guide.
+  // This adds GELU to the supported ops in Optimization Guide.
   MODEL_ENGINE_VERSION_TFLITE_2_9_0_1 = 8;
   // A model using only operations that are supported by TensorflowLite 2.10.0.
   MODEL_ENGINE_VERSION_TFLITE_2_10 = 9;
@@ -232,6 +246,10 @@ enum ModelEngineVersion {
   MODEL_ENGINE_VERSION_TFLITE_2_13 = 12;
   // A model using only operations that are supported by TensorflowLite 2.14.0.
   MODEL_ENGINE_VERSION_TFLITE_2_14 = 13;
+  // A model using only operations that are supported by TensorflowLite 2.14.0.
+  // This adds RANDOM_UNIFORM and RANDOM_STANDARD_NORMAL to the supported opts
+  // in Optimization Guide.
+  MODEL_ENGINE_VERSION_TFLITE_2_14_1 = 14;
 }
 
 // The set of parameters that the server can use to vary the served model for

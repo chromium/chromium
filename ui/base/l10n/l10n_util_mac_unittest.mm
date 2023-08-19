@@ -11,7 +11,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
-typedef PlatformTest L10nUtilMacTest;
+using L10nUtilMacTest = PlatformTest;
 
 TEST_F(L10nUtilMacTest, FixUpWindowsStyleLabel) {
   struct TestData {

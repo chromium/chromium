@@ -20,7 +20,7 @@ namespace test {
 TestEncryptionModuleStrict::TestEncryptionModuleStrict() {
   ON_CALL(*this, EncryptRecordImpl)
       .WillByDefault(
-          Invoke([](base::StringPiece record,
+          Invoke([](std::string_view record,
                     base::OnceCallback<void(StatusOr<EncryptedRecord>)> cb) {
             EncryptedRecord encrypted_record;
             encrypted_record.set_encrypted_wrapped_record(std::string(record));
@@ -30,7 +30,7 @@ TestEncryptionModuleStrict::TestEncryptionModuleStrict() {
 }
 
 void TestEncryptionModuleStrict::UpdateAsymmetricKeyImpl(
-    base::StringPiece new_public_key,
+    std::string_view new_public_key,
     PublicKeyId new_public_key_id,
     base::OnceCallback<void(Status)> response_cb) {
   // Ignore keys but return success.

@@ -35,7 +35,7 @@ import org.chromium.ui.permissions.AndroidPermissionDelegate;
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR,
         ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR})
-@EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
+@EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
 public class AdaptiveToolbarStatePredictorTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
@@ -53,12 +53,11 @@ public class AdaptiveToolbarStatePredictorTest {
     @After
     public void tearDown() {
         AdaptiveToolbarFeatures.clearParsedParamsForTesting();
-        VoiceRecognitionUtil.setIsVoiceSearchEnabledForTesting(null);
     }
 
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
+    @DisableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
     public void testDisableFeature() {
         AdaptiveToolbarFeatures.setDefaultSegmentForTesting(AdaptiveToolbarFeatures.SHARE);
         AdaptiveToolbarFeatures.setIgnoreSegmentationResultsForTesting(false);

@@ -8,8 +8,8 @@
 #import <string>
 #import <vector>
 
+#import "base/apple/foundation_util.h"
 #import "base/functional/callback.h"
-#import "base/mac/foundation_util.h"
 #import "base/notreached.h"
 #import "base/ranges/algorithm.h"
 #import "base/strings/sys_string_conversions.h"
@@ -53,12 +53,9 @@
 #import "ios/web_view/public/cwv_autofill_controller_delegate.h"
 #import "net/base/mac/url_conversions.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
-using autofill::FormRendererId;
 using autofill::FieldRendererId;
+using autofill::FormData;
+using autofill::FormRendererId;
 using UserDecision =
     autofill::AutofillClient::SaveAddressProfileOfferUserDecision;
 
@@ -323,11 +320,13 @@ using UserDecision =
                     delegate {
   // We only want Autofill suggestions.
   std::vector<autofill::Suggestion> filtered_suggestions;
-  base::ranges::copy_if(
-      suggestions, std::back_inserter(filtered_suggestions),
-      [](const autofill::Suggestion& suggestion) {
-        return suggestion.frontend_id.is_an_address_or_card_popup_item_id();
-      });
+  base::ranges::copy_if(suggestions, std::back_inserter(filtered_suggestions),
+                        [](const autofill::Suggestion& suggestion) {
+                          return suggestion.popup_item_id ==
+                                     autofill::PopupItemId::kAddressEntry ||
+                                 suggestion.popup_item_id ==
+                                     autofill::PopupItemId::kCreditCardEntry;
+                        });
   [_autofillAgent showAutofillPopup:filtered_suggestions
                       popupDelegate:delegate];
 }
@@ -410,7 +409,17 @@ using UserDecision =
   if (!driver) {
     return;
   }
-  _passwordManager->ProcessAutofillPredictions(driver, forms);
+  // TODO(crbug.com/1466435): Remove this interim mapping once AutofillManager
+  // transitions to events that will already have this signature.
+  autofill::FormDataAndServerPredictions args =
+      autofill::GetFormDataAndServerPredictions(forms);
+  std::vector<const FormData*> form_pointers;
+  form_pointers.reserve(args.form_datas.size());
+  for (const FormData& form : args.form_datas) {
+    form_pointers.push_back(&form);
+  }
+  _passwordManager->ProcessAutofillPredictions(driver, form_pointers,
+                                               args.predictions);
 }
 
 - (void)
@@ -727,7 +736,11 @@ using UserDecision =
 
 - (void)attachListenersForBottomSheet:
             (const std::vector<autofill::FieldRendererId>&)rendererIds
-                              inFrame:(web::WebFrame*)frame {
+                           forFrameId:(const std::string&)frameId {
+  // No op.
+}
+
+- (void)detachListenersForBottomSheet:(const std::string&)frameId {
   // No op.
 }
 

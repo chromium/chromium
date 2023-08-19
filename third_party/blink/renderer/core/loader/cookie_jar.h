@@ -39,7 +39,13 @@ class CookieJar : public GarbageCollected<CookieJar> {
   void InvalidateCache();
 
  private:
-  bool RequestRestrictedCookieManagerIfNeeded();
+  void RequestRestrictedCookieManagerIfNeeded();
+  void OnBackendDisconnect();
+  uint64_t GetSharedCookieVersion();
+
+  // Returns true if last_cookies_ is not guaranteed to be up to date and an IPC
+  // is needed to get the current cookie string.
+  bool IPCNeeded();
 
   // Updates the fake cookie cache after a
   // RestrictedCookieManager::GetCookiesString request returns.
@@ -49,7 +55,8 @@ class CookieJar : public GarbageCollected<CookieJar> {
   // to determine if the current request could have been served from a real
   // cache.
   void UpdateCacheAfterGetRequest(const KURL& cookie_url,
-                                  const String& cookie_string);
+                                  const String& cookie_string,
+                                  uint64_t new_version);
 
   HeapMojoRemote<network::mojom::blink::RestrictedCookieManager> backend_;
   Member<blink::Document> document_;
@@ -69,6 +76,16 @@ class CookieJar : public GarbageCollected<CookieJar> {
   // along with `last_cookies_hash_` when updating the histogram that tracks
   // cookie access results.
   bool last_operation_was_set_{false};
+
+  bool shared_memory_initialized_ = false;
+  base::ReadOnlySharedMemoryRegion mapped_region_;
+  base::ReadOnlySharedMemoryMapping mapping_;
+
+  uint64_t last_version_ = network::mojom::blink::kInvalidCookieVersion;
+
+  // Last received cookie string. Null if there is no last cached-version. Can
+  // be empty since that is a valid cookie string.
+  String last_cookies_;
 };
 
 }  // namespace blink

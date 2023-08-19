@@ -83,6 +83,10 @@ class APIBindingJSUtil final : public gin::Wrappable<APIBindingJSUtil> {
   // Returns true if there is a set lastError in the given context.
   void HasLastError(gin::Arguments* arguments);
 
+  // Returns the lastError message for the given context, without marking it
+  // accessed.
+  void GetLastErrorMessage(gin::Arguments* arguments);
+
   // Sets the lastError in the given context, runs the provided callback, and
   // then clears the last error.
   void RunCallbackWithLastError(gin::Arguments* arguments,

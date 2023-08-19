@@ -18,6 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/filesystem_api_util.h"
+#include "chrome/browser/ash/fileapi/file_system_backend.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -28,7 +29,6 @@
 #include "content/public/common/url_utils.h"
 #include "extensions/browser/extension_util.h"
 #include "google_apis/common/task_util.h"
-#include "storage/browser/file_system/file_system_backend.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/isolated_context.h"
 #include "storage/browser/file_system/open_file_system_mode.h"
@@ -242,7 +242,8 @@ void OnConvertFileDefinitionDone(
 bool IsUnderNonNativeLocalPath(const storage::FileSystemContext& context,
                                const base::FilePath& file_path) {
   base::FilePath virtual_path;
-  if (!context.external_backend()->GetVirtualPath(file_path, &virtual_path)) {
+  if (!ash::FileSystemBackend::Get(context)->GetVirtualPath(file_path,
+                                                            &virtual_path)) {
     return false;
   }
 
@@ -298,7 +299,7 @@ class ConvertSelectedFileInfoListToFileChooserFileInfoListImpl {
 
       // Non-native file without a snapshot file.
       base::FilePath virtual_path;
-      if (!context->external_backend()->GetVirtualPath(
+      if (!ash::FileSystemBackend::Get(*context)->GetVirtualPath(
               selected_info_list[i].file_path, &virtual_path)) {
         NotifyError(std::move(lifetime));
         return;
@@ -554,8 +555,8 @@ bool ConvertAbsoluteFilePathToRelativeFileSystemPath(
     const GURL& source_url,
     const base::FilePath& absolute_path,
     base::FilePath* virtual_path) {
-  storage::ExternalFileSystemBackend* backend =
-      GetFileSystemContextForSourceURL(profile, source_url)->external_backend();
+  auto* backend = ash::FileSystemBackend::Get(
+      *GetFileSystemContextForSourceURL(profile, source_url));
   if (!backend) {
     return false;
   }
@@ -631,8 +632,7 @@ void CheckIfDirectoryExists(
     storage::FileSystemOperationRunner::StatusCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  storage::ExternalFileSystemBackend* const backend =
-      file_system_context->external_backend();
+  auto* const backend = ash::FileSystemBackend::Get(*file_system_context);
   DCHECK(backend);
   const storage::FileSystemURL internal_url =
       backend->CreateInternalURL(file_system_context.get(), directory_path);
@@ -651,8 +651,7 @@ void GetMetadataForPath(
     storage::FileSystemOperationRunner::GetMetadataCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  storage::ExternalFileSystemBackend* const backend =
-      file_system_context->external_backend();
+  auto* const backend = ash::FileSystemBackend::Get(*file_system_context);
   DCHECK(backend);
   const storage::FileSystemURL internal_url =
       backend->CreateInternalURL(file_system_context.get(), entry_path);

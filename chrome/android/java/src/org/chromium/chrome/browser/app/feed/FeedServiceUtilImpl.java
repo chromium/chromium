@@ -23,11 +23,7 @@ public class FeedServiceUtilImpl implements FeedServiceUtil {
             return TabGroupEnabledState.NONE;
         }
         if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(context)) {
-            if (TabUiFeatureUtilities.ENABLE_TAB_GROUP_AUTO_CREATION.getValue()) {
-                return TabGroupEnabledState.REPLACED;
-            } else {
-                return TabGroupEnabledState.BOTH;
-            }
+            return TabGroupEnabledState.BOTH;
         }
         return TabGroupEnabledState.NONE;
     }

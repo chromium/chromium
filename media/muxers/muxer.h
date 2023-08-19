@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/time/time.h"
+#include "media/base/audio_encoder.h"
 #include "media/base/media_export.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
@@ -60,14 +61,18 @@ class MEDIA_EXPORT Muxer {
   // `encoded_alpha` represents the encode output of alpha channel when
   // available, can be empty otherwise.
   // Returns true if the data is accepted by the muxer, false otherwise.
-  virtual bool OnEncodedVideo(const VideoParameters& params,
-                              std::string encoded_data,
-                              std::string encoded_alpha,
-                              base::TimeTicks timestamp,
-                              bool is_key_frame) = 0;
-  virtual bool OnEncodedAudio(const AudioParameters& params,
-                              std::string encoded_data,
-                              base::TimeTicks timestamp) = 0;
+  virtual bool OnEncodedVideo(
+      const VideoParameters& params,
+      std::string encoded_data,
+      std::string encoded_alpha,
+      absl::optional<media::AudioEncoder::CodecDescription> codec_description,
+      base::TimeTicks timestamp,
+      bool is_key_frame) = 0;
+  virtual bool OnEncodedAudio(
+      const AudioParameters& params,
+      std::string encoded_data,
+      absl::optional<media::AudioEncoder::CodecDescription> codec_description,
+      base::TimeTicks timestamp) = 0;
 
   // Call to handle mute and tracks getting disabled. If the track is not live
   // and enabled, input data will be ignored and black frames or silence will

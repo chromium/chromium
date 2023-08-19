@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_BROWSING_TOPICS_BROWSING_TOPICS_SITE_DATA_STORAGE_H_
 #define CONTENT_BROWSER_BROWSING_TOPICS_BROWSING_TOPICS_SITE_DATA_STORAGE_H_
 
+#include <map>
+#include <set>
 #include <string>
 
 #include "base/containers/flat_set.h"
@@ -57,12 +59,19 @@ class CONTENT_EXPORT BrowsingTopicsSiteDataStorage {
       base::Time begin_time,
       base::Time end_time);
 
+  // For each hashed context domain, get the stored unhashed version. Only
+  // hashed domains for which there is a corresponding unhashed domain will be
+  // included in the output.
+  std::map<browsing_topics::HashedDomain, std::string>
+  GetContextDomainsFromHashedContextDomains(
+      const std::set<browsing_topics::HashedDomain>& hashed_context_domains);
+
   // Persist the browsing topics api usage context to storage. Called when the
   // usage is detected in a context on a page.
   void OnBrowsingTopicsApiUsed(
       const browsing_topics::HashedHost& hashed_main_frame_host,
-      const base::flat_set<browsing_topics::HashedDomain>&
-          hashed_context_domains,
+      const browsing_topics::HashedDomain& hashed_context_domain,
+      const std::string& context_domain,
       base::Time time);
 
  private:

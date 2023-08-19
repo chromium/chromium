@@ -16,16 +16,12 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace chrome {
 
 MessageBoxResult ShowMessageBoxCocoa(const std::u16string& message,
                                      MessageBoxType type,
                                      const std::u16string& checkbox_text) {
-  startup_metric_utils::SetNonBrowserUIDisplayed();
+  startup_metric_utils::GetBrowser().SetNonBrowserUIDisplayed();
   if (internal::g_should_skip_message_box_for_test)
     return MESSAGE_BOX_RESULT_YES;
 

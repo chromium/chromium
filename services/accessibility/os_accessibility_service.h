@@ -38,6 +38,10 @@ class OSAccessibilityService : public mojom::AccessibilityService {
       const std::vector<mojom::AssistiveTechnologyType>& enabled_features)
       override;
 
+  void ConnectDevToolsAgent(
+      ::mojo::PendingAssociatedReceiver<::blink::mojom::DevToolsAgent> agent,
+      mojom::AssistiveTechnologyType type) override;
+
   std::unique_ptr<AssistiveTechnologyControllerImpl> at_controller_;
 
   mojo::Receiver<mojom::AccessibilityService> receiver_;

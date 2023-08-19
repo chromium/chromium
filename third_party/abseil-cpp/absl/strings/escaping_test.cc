@@ -15,17 +15,20 @@
 #include "absl/strings/escaping.h"
 
 #include <array>
+#include <cstddef>
 #include <cstdio>
 #include <cstring>
+#include <initializer_list>
 #include <memory>
+#include <string>
 #include <vector>
 
-#include "gmock/gmock.h"
 #include "gtest/gtest.h"
-#include "absl/container/fixed_array.h"
+#include "absl/log/check.h"
 #include "absl/strings/str_cat.h"
 
 #include "absl/strings/internal/escaping_test_common.h"
+#include "absl/strings/string_view.h"
 
 namespace {
 

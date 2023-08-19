@@ -10,6 +10,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/extension_icon_loader.h"
+#include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_extensions_manager.h"
 #include "chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
@@ -181,8 +182,8 @@ void SupervisedUserExtensionsDelegateImpl::RequestExtensionApproval(
     web_contents = contents_weak_ptr.get();
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (supervised_user::IsLocalExtensionApprovalsV2Enabled()) {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (ParentAccessExtensionApprovalsManager::ShouldShowExtensionApprovalsV2()) {
     // Parent Access Dialog handles blocked use case in V2.
     extension_approvals_manager_ =
         std::make_unique<ParentAccessExtensionApprovalsManager>();

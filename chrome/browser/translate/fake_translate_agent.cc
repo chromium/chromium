@@ -49,11 +49,6 @@ FakeTranslateAgent::BindToNewPageRemote() {
 }
 
 // translate::mojom::TranslateAgent implementation.
-void FakeTranslateAgent::GetWebLanguageDetectionDetails(
-    GetWebLanguageDetectionDetailsCallback callback) {
-  std::move(callback).Run("", "", GURL(), false);
-}
-
 void FakeTranslateAgent::TranslateFrame(const std::string& translate_script,
                                         const std::string& source_lang,
                                         const std::string& target_lang,
@@ -81,11 +76,4 @@ void FakeTranslateAgent::PageTranslated(bool cancelled,
                                         translate::TranslateErrors error) {
   std::move(translate_callback_pending_)
       .Run(cancelled, source_lang, target_lang, error);
-}
-
-void FakeTranslateAgent::BindRequest(
-    mojo::ScopedInterfaceEndpointHandle handle) {
-  per_frame_translate_agent_receivers_.Add(
-      this, mojo::PendingAssociatedReceiver<translate::mojom::TranslateAgent>(
-                std::move(handle)));
 }

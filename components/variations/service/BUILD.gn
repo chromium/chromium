@@ -38,10 +38,13 @@ static_library("service") {
     "google_groups_updater_service.h",
     "safe_seed_manager.cc",
     "safe_seed_manager.h",
+    "safe_seed_manager_interface.h",
     "ui_string_overrider.cc",
     "ui_string_overrider.h",
     "variations_field_trial_creator.cc",
     "variations_field_trial_creator.h",
+    "variations_field_trial_creator_base.cc",
+    "variations_field_trial_creator_base.h",
     "variations_service.cc",
     "variations_service.h",
     "variations_service_client.cc",
@@ -76,7 +79,7 @@ static_library("service") {
   if (is_chromeos_ash) {
     deps += [
       "//chromeos/ash/components/dbus/featured",
-      "//components/variations/cros:proto",
+      "//chromeos/ash/components/dbus/featured:proto",
     ]
   }
 }
@@ -118,7 +121,7 @@ source_set("unit_tests") {
   if (is_chromeos_ash) {
     deps += [
       "//chromeos/ash/components/dbus/featured",
-      "//components/variations/cros:proto",
+      "//chromeos/ash/components/dbus/featured:proto",
     ]
   }
 }

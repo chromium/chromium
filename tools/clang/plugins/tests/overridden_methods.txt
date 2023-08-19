@@ -5,84 +5,84 @@ In file included from overridden_methods.cpp:5:
                              override
 ./overridden_methods.h:25:3: warning: [chromium-style] 'virtual' will be redundant; 'override' implies 'virtual'.
   virtual void SomeMethod() = 0;
-  ^~~~~~~~
+  ^~~~~~~
 ./overridden_methods.h:38:42: warning: [chromium-style] Overriding method must be marked with 'override' or 'final'.
   virtual void WebKitModifiedSomething() {}
                                          ^
                                           override
 ./overridden_methods.h:38:3: warning: [chromium-style] 'virtual' will be redundant; 'override' implies 'virtual'.
   virtual void WebKitModifiedSomething() {}
-  ^~~~~~~~
+  ^~~~~~~
 ./overridden_methods.h:46:27: warning: [chromium-style] Overriding method must be marked with 'override' or 'final'.
   virtual ~DerivedClass() {}
                           ^
                            override
 ./overridden_methods.h:46:3: warning: [chromium-style] 'virtual' will be redundant; 'override' implies 'virtual'.
   virtual ~DerivedClass() {}
-  ^~~~~~~~
+  ^~~~~~~
 ./overridden_methods.h:48:28: warning: [chromium-style] Overriding method must be marked with 'override' or 'final'.
   virtual void SomeMethod();
                            ^
                             override
 ./overridden_methods.h:48:3: warning: [chromium-style] 'virtual' will be redundant; 'override' implies 'virtual'.
   virtual void SomeMethod();
-  ^~~~~~~~
+  ^~~~~~~
 ./overridden_methods.h:52:35: warning: [chromium-style] Overriding method must be marked with 'override' or 'final'.
   virtual void SomeInlineMethod() {}
                                   ^
                                    override
 ./overridden_methods.h:52:3: warning: [chromium-style] 'virtual' will be redundant; 'override' implies 'virtual'.
   virtual void SomeInlineMethod() {}
-  ^~~~~~~~
+  ^~~~~~~
 ./overridden_methods.h:54:41: warning: [chromium-style] Overriding method must be marked with 'override' or 'final'.
   virtual void WebKitModifiedSomething();
                                         ^
                                          override
 ./overridden_methods.h:54:3: warning: [chromium-style] 'virtual' will be redundant; 'override' implies 'virtual'.
   virtual void WebKitModifiedSomething();
-  ^~~~~~~~
+  ^~~~~~~
 ./overridden_methods.h:56:40: warning: [chromium-style] Overriding method must be marked with 'override' or 'final'.
   virtual void SomeConstMethod() const {}
                                        ^
                                         override
 ./overridden_methods.h:56:3: warning: [chromium-style] 'virtual' will be redundant; 'override' implies 'virtual'.
   virtual void SomeConstMethod() const {}
-  ^~~~~~~~
+  ^~~~~~~
 ./overridden_methods.h:58:54: warning: [chromium-style] Overriding method must be marked with 'override' or 'final'.
   virtual void SomeMethodWithExceptionSpec() throw() {}
                                                      ^
                                                       override
 ./overridden_methods.h:58:3: warning: [chromium-style] 'virtual' will be redundant; 'override' implies 'virtual'.
   virtual void SomeMethodWithExceptionSpec() throw() {}
-  ^~~~~~~~
+  ^~~~~~~
 ./overridden_methods.h:61:68: warning: [chromium-style] Overriding method must be marked with 'override' or 'final'.
   virtual void SomeConstMethodWithExceptionSpec() const throw(int) {}
                                                                    ^
                                                                     override
 ./overridden_methods.h:61:3: warning: [chromium-style] 'virtual' will be redundant; 'override' implies 'virtual'.
   virtual void SomeConstMethodWithExceptionSpec() const throw(int) {}
-  ^~~~~~~~
+  ^~~~~~~
 ./overridden_methods.h:63:40: warning: [chromium-style] Overriding method must be marked with 'override' or 'final'.
   virtual void SomeNonPureBaseMethod() {}
                                        ^
                                         override
 ./overridden_methods.h:63:3: warning: [chromium-style] 'virtual' will be redundant; 'override' implies 'virtual'.
   virtual void SomeNonPureBaseMethod() {}
-  ^~~~~~~~
+  ^~~~~~~
 ./overridden_methods.h:65:39: warning: [chromium-style] Overriding method must be marked with 'override' or 'final'.
   virtual void SomeMethodWithComment();  // This is a comment.
                                       ^
                                        override
 ./overridden_methods.h:65:3: warning: [chromium-style] 'virtual' will be redundant; 'override' implies 'virtual'.
   virtual void SomeMethodWithComment();  // This is a comment.
-  ^~~~~~~~
+  ^~~~~~~
 ./overridden_methods.h:67:47: warning: [chromium-style] Overriding method must be marked with 'override' or 'final'.
   virtual void SomeMethodWithCommentAndBody() {}  // This is a comment.
                                               ^
                                                override
 ./overridden_methods.h:67:3: warning: [chromium-style] 'virtual' will be redundant; 'override' implies 'virtual'.
   virtual void SomeMethodWithCommentAndBody() {}  // This is a comment.
-  ^~~~~~~~
+  ^~~~~~~
 ./overridden_methods.h:78:36: warning: [chromium-style] Overriding method must be marked with 'override' or 'final'.
   ~DerivedClassWithDefaultedDtor() = default;
                                    ^
@@ -93,75 +93,75 @@ overridden_methods.cpp:17:29: warning: [chromium-style] Overriding method must b
                              override
 overridden_methods.cpp:17:3: warning: [chromium-style] 'virtual' will be redundant; 'override' implies 'virtual'.
   virtual void SomeMethod() = 0;
-  ^~~~~~~~
+  ^~~~~~~
 overridden_methods.cpp:24:41: warning: [chromium-style] Overriding method must be marked with 'override' or 'final'.
   virtual ~ImplementationDerivedClass() {}
                                         ^
                                          override
 overridden_methods.cpp:24:3: warning: [chromium-style] 'virtual' will be redundant; 'override' implies 'virtual'.
   virtual ~ImplementationDerivedClass() {}
-  ^~~~~~~~
+  ^~~~~~~
 overridden_methods.cpp:26:28: warning: [chromium-style] Overriding method must be marked with 'override' or 'final'.
   virtual void SomeMethod();
                            ^
                             override
 overridden_methods.cpp:26:3: warning: [chromium-style] 'virtual' will be redundant; 'override' implies 'virtual'.
   virtual void SomeMethod();
-  ^~~~~~~~
+  ^~~~~~~
 overridden_methods.cpp:30:35: warning: [chromium-style] Overriding method must be marked with 'override' or 'final'.
   virtual void SomeInlineMethod() {}
                                   ^
                                    override
 overridden_methods.cpp:30:3: warning: [chromium-style] 'virtual' will be redundant; 'override' implies 'virtual'.
   virtual void SomeInlineMethod() {}
-  ^~~~~~~~
+  ^~~~~~~
 overridden_methods.cpp:32:41: warning: [chromium-style] Overriding method must be marked with 'override' or 'final'.
   virtual void WebKitModifiedSomething();
                                         ^
                                          override
 overridden_methods.cpp:32:3: warning: [chromium-style] 'virtual' will be redundant; 'override' implies 'virtual'.
   virtual void WebKitModifiedSomething();
-  ^~~~~~~~
+  ^~~~~~~
 overridden_methods.cpp:34:40: warning: [chromium-style] Overriding method must be marked with 'override' or 'final'.
   virtual void SomeConstMethod() const {}
                                        ^
                                         override
 overridden_methods.cpp:34:3: warning: [chromium-style] 'virtual' will be redundant; 'override' implies 'virtual'.
   virtual void SomeConstMethod() const {}
-  ^~~~~~~~
+  ^~~~~~~
 overridden_methods.cpp:36:54: warning: [chromium-style] Overriding method must be marked with 'override' or 'final'.
   virtual void SomeMethodWithExceptionSpec() throw() {}
                                                      ^
                                                       override
 overridden_methods.cpp:36:3: warning: [chromium-style] 'virtual' will be redundant; 'override' implies 'virtual'.
   virtual void SomeMethodWithExceptionSpec() throw() {}
-  ^~~~~~~~
+  ^~~~~~~
 overridden_methods.cpp:39:68: warning: [chromium-style] Overriding method must be marked with 'override' or 'final'.
   virtual void SomeConstMethodWithExceptionSpec() const throw(int) {}
                                                                    ^
                                                                     override
 overridden_methods.cpp:39:3: warning: [chromium-style] 'virtual' will be redundant; 'override' implies 'virtual'.
   virtual void SomeConstMethodWithExceptionSpec() const throw(int) {}
-  ^~~~~~~~
+  ^~~~~~~
 overridden_methods.cpp:41:40: warning: [chromium-style] Overriding method must be marked with 'override' or 'final'.
   virtual void SomeNonPureBaseMethod() {}
                                        ^
                                         override
 overridden_methods.cpp:41:3: warning: [chromium-style] 'virtual' will be redundant; 'override' implies 'virtual'.
   virtual void SomeNonPureBaseMethod() {}
-  ^~~~~~~~
+  ^~~~~~~
 overridden_methods.cpp:43:39: warning: [chromium-style] Overriding method must be marked with 'override' or 'final'.
   virtual void SomeMethodWithComment();  // This is a comment.
                                       ^
                                        override
 overridden_methods.cpp:43:3: warning: [chromium-style] 'virtual' will be redundant; 'override' implies 'virtual'.
   virtual void SomeMethodWithComment();  // This is a comment.
-  ^~~~~~~~
+  ^~~~~~~
 overridden_methods.cpp:45:47: warning: [chromium-style] Overriding method must be marked with 'override' or 'final'.
   virtual void SomeMethodWithCommentAndBody() {}  // This is a comment.
                                               ^
                                                override
 overridden_methods.cpp:45:3: warning: [chromium-style] 'virtual' will be redundant; 'override' implies 'virtual'.
   virtual void SomeMethodWithCommentAndBody() {}  // This is a comment.
-  ^~~~~~~~
+  ^~~~~~~
 47 warnings generated.

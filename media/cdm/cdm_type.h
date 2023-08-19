@@ -12,7 +12,9 @@ namespace media {
 // A token to uniquely identify the type of the CDM. Used for per-CDM-type
 // isolation, e.g. for running different CDMs in different child processes,
 // and per-CDM-type storage. A zero token indicates that this CdmType should
-// not have a corresponding CdmStorage.
+// not have a corresponding CdmStorage. Note that the 'CdmType' has no external
+// dependencies (e.g specs), and are chosen to be unique for the reasons stated
+// above.
 using CdmType = base::Token;
 
 }  // namespace media

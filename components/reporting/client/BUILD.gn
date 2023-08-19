@@ -33,6 +33,7 @@ static_library("report_queue_factory") {
     ":report_queue_provider",
     "//base",
     "//components/reporting/proto:record_constants",
+    "//components/reporting/proto:record_proto",
     "//components/reporting/util:backoff_settings",
     "//components/reporting/util:rate_limiter_interface",
     "//components/reporting/util:status",

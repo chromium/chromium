@@ -7,13 +7,23 @@
     padding-bottom: var(--cluster-padding-vertical);
   }
 
-  :host([in-side-panel_]) {
+  :host-context([chrome-refresh-2023]):host([in-side-panel]) {
+    --search-query-margin: 4px;
+  }
+
+  :host([in-side-panel]) {
     --cr-icon-button-margin-start: 8px;
     padding-bottom: 0;
     padding-top: 8px;
   }
 
-  :host([in-side-panel_][is-first]) {
+  :host-context([chrome-refresh-2023]):host([in-side-panel]) #container {
+    background: var(--color-side-panel-card-background);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  :host([in-side-panel][is-first]) {
     padding-top: 0;
   }
 
@@ -27,13 +37,13 @@
     margin-bottom: var(--cluster-padding-vertical);
   }
 
-  :host([in-side-panel_]) #container url-visit:last-of-type {
+  :host([in-side-panel]) #container url-visit:last-of-type {
     margin-bottom: 8px;
   }
 
   /* We need an inner container div to apply spacing between clusters. This is
      because iron-list ignores the margin on the host element. */
-  :host(:not([in-side-panel_])) #container {
+  :host(:not([in-side-panel])) #container {
     background-color: var(--cr-card-background-color);
     border-radius: var(--cr-card-border-radius);
     box-shadow: var(--cr-card-shadow);
@@ -50,7 +60,7 @@
     padding-inline-start: var(--cluster-padding-horizontal);
   }
 
-  :host([in-side-panel_]) .label-row {
+  :host([in-side-panel]) .label-row {
     min-height: 44px;
     padding-inline-start: 16px;
   }
@@ -61,40 +71,72 @@
     font-weight: 500;
   }
 
-  :host([in-side-panel_]) #label {
+  :host([in-side-panel]) #label {
     font-size: .875rem;  /* 14px */
     line-height: calc(10/7); /* 20px */
     margin-inline-end: 16px;
   }
 
-  :host([in-side-panel_]) .timestamp {
+  :host([in-side-panel]) .timestamp {
     font-size: .75rem;  /* 12px */
     line-height: calc(5/3); /* 20px */
+  }
+
+  :host-context([chrome-refresh-2023]):host([in-side-panel_]) .timestamp {
+    font-size: .6875rem; /* 11px */
   }
 
   .debug-info {
     color: var(--cr-secondary-text-color);
   }
 
-  #related-searches {
-    display: flex;
-    flex-wrap: wrap;
-    min-width: 0;
+  #related-searches-divider {
+    display: none;
+  }
+
+  :host-context([chrome-refresh-2023]):host([in-side-panel]) #related-searches-divider {
+    display: block;
+    background-color: var(--color-history-clusters-side-panel-divider);
+    height: 1px;
+    margin: 8px 16px;
+  }
+
+  :host-context(html:not([chrome-refresh-2023])) #related-searches {
     /* Top is a special 8px value. */
-    padding: 8px var(--cluster-padding-horizontal) var(--cluster-padding-vertical);
+    margin: 0 var(--cluster-padding-horizontal) 0;
   }
 
-  :host([in-side-panel_]) #related-searches {
-    margin-top: -8px;
-    padding: 0 16px var(--cluster-padding-vertical);
+  :host-context(html:not([chrome-refresh-2023])):host([in-side-panel]) #related-searches {
+    margin: -8px 16px var(--cluster-padding-vertical);
   }
 
-  search-query {
-    margin-top: var(--search-query-margin);
+  :host-context([chrome-refresh-2023]) #related-searches {
+    margin: 16px var(--cluster-padding-horizontal) 0px;
+  }
+
+  :host-context([chrome-refresh-2023]):host([in-side-panel]) #related-searches {
+    /* 2px left and right margin so related searches don't overlap container
+     * focus indicator. */
+    margin: 16px 2px;
+  }
+
+  /*TODO(mfacey): Figure out appropriate non side panel color to show carousel
+      buttons. */
+  :host-context([chrome-refresh-2023]):host([in-side-panel]) search-query {
+    flex-shrink: 0;
+    margin-top: 0;
   }
 
   search-query:not(:last-of-type) {
     margin-inline-end: var(--search-query-margin);
+  }
+
+  :host-context([chrome-refresh-2023]):host([in-side-panel]) search-query:first-of-type {
+    margin-inline-start: 16px;
+  }
+
+  :host-context(html:not([chrome-refresh-2023])) search-query {
+    margin-top: 8px;
   }
 </style>
 <div id="container" on-visit-clicked="onVisitClicked_"
@@ -116,12 +158,14 @@
     <url-visit visit="[[item]]" query="[[query]]" from-persistence="[[cluster.fromPersistence]]">
     </url-visit>
   </template>
-  <div id="related-searches" hidden="[[!cluster.relatedSearches.length]]"
+  <div id="related-searches-divider" hidden="[[!cluster.relatedSearches.length]]"></div>
+  <horizontal-carousel id="related-searches" hidden="[[!cluster.relatedSearches.length]]"
       role="list" aria-label$="[[i18n('relatedSearchesHeader')]]"
-      on-related-search-clicked="onRelatedSearchClicked_" on-mousedown="clearSelection_">
+      on-related-search-clicked="onRelatedSearchClicked_" on-pointerdown="clearSelection_"
+      in-side-panel$="[[inSidePanel]]">
     <template is="dom-repeat" items="[[relatedSearches_]]">
       <search-query search-query="[[item]]" index="[[index]]" role="listitem">
       </search-query>
     </template>
-  </div>
+  </horizontal-carousel>
 </div>

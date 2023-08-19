@@ -13,6 +13,9 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/test/test_file_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/events/devices/device_data_manager.h"
+#include "ui/events/devices/device_data_manager_test_api.h"
+#include "ui/events/devices/touchscreen_device.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/arc/arc_util.h"
@@ -26,6 +29,18 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace web_app {
+
+namespace {
+
+ui::TouchscreenDevice CreateTouchDevice(ui::InputDeviceType type,
+                                        bool stylus_support) {
+  ui::TouchscreenDevice touch_device = ui::TouchscreenDevice();
+  touch_device.type = type;
+  touch_device.has_stylus = stylus_support;
+  return touch_device;
+}
+
+}  // namespace
 
 class PreinstalledWebAppUtilsTest : public testing::Test {
  public:
@@ -652,6 +667,64 @@ TEST_F(PreinstalledWebAppUtilsTest, GateOnFeatureNameOrInstalled) {
         }
     )");
   EXPECT_FALSE(non_string_feature->gate_on_feature_or_installed.has_value());
+}
+
+class PreinstalledWebAppUtilsDeviceManagerTest
+    : public PreinstalledWebAppUtilsTest {
+ public:
+  void SetUp() override {
+    if (!ui::DeviceDataManager::HasInstance()) {
+      GTEST_SKIP() << "No DeviceDataManager available";
+    }
+
+    ui::DeviceDataManager::GetInstance()->ResetDeviceListsForTest();
+  }
+};
+
+TEST_F(PreinstalledWebAppUtilsDeviceManagerTest,
+       HasStylusEnabledTouchscreen_Uninitialized) {
+  // Do not initialize DeviceDataManager.
+
+  ASSERT_FALSE(DeviceHasStylusEnabledTouchscreen().has_value());
+}
+
+TEST_F(PreinstalledWebAppUtilsDeviceManagerTest,
+       HasStylusEnabledTouchscreen_NoTouchscreen) {
+  ui::DeviceDataManagerTestApi().SetTouchscreenDevices({});
+  ui::DeviceDataManagerTestApi().OnDeviceListsComplete();
+
+  ASSERT_TRUE(DeviceHasStylusEnabledTouchscreen().has_value());
+  ASSERT_FALSE(DeviceHasStylusEnabledTouchscreen().value());
+}
+
+TEST_F(PreinstalledWebAppUtilsDeviceManagerTest,
+       HasStylusEnabledTouchscreen_NonStylusTouchscreen) {
+  ui::DeviceDataManagerTestApi().SetTouchscreenDevices({CreateTouchDevice(
+      ui::InputDeviceType::INPUT_DEVICE_INTERNAL, /* stylus_support =*/false)});
+  ui::DeviceDataManagerTestApi().OnDeviceListsComplete();
+
+  ASSERT_TRUE(DeviceHasStylusEnabledTouchscreen().has_value());
+  ASSERT_FALSE(DeviceHasStylusEnabledTouchscreen().value());
+}
+
+TEST_F(PreinstalledWebAppUtilsDeviceManagerTest,
+       HasStylusEnabledTouchscreen_ExternalStylusTouchscreen) {
+  ui::DeviceDataManagerTestApi().SetTouchscreenDevices({CreateTouchDevice(
+      ui::InputDeviceType::INPUT_DEVICE_USB, /* stylus_support =*/true)});
+  ui::DeviceDataManagerTestApi().OnDeviceListsComplete();
+
+  ASSERT_TRUE(DeviceHasStylusEnabledTouchscreen().has_value());
+  ASSERT_FALSE(DeviceHasStylusEnabledTouchscreen().value());
+}
+
+TEST_F(PreinstalledWebAppUtilsDeviceManagerTest,
+       HasStylusEnabledTouchscreen_InternalStylusTouchscreen) {
+  ui::DeviceDataManagerTestApi().SetTouchscreenDevices({CreateTouchDevice(
+      ui::InputDeviceType::INPUT_DEVICE_INTERNAL, /* stylus_support =*/true)});
+  ui::DeviceDataManagerTestApi().OnDeviceListsComplete();
+
+  ASSERT_TRUE(DeviceHasStylusEnabledTouchscreen().has_value());
+  ASSERT_TRUE(DeviceHasStylusEnabledTouchscreen().value());
 }
 
 }  // namespace web_app

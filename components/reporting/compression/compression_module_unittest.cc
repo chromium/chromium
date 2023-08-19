@@ -83,7 +83,7 @@ TEST_F(CompressionModuleTest, CompressRecordSnappy) {
   const std::tuple<std::string, absl::optional<CompressionInformation>>
       compressed_record_tuple = compressed_record_event.result();
 
-  const base::StringPiece compressed_string_callback =
+  const std::string_view compressed_string_callback =
       std::get<0>(compressed_record_tuple);
 
   // Expect that benchmark compression is the same as compression module
@@ -118,7 +118,7 @@ TEST_F(CompressionModuleTest, CompressPoorlyCompressibleRecordSnappy) {
   const std::tuple<std::string, absl::optional<CompressionInformation>>
       compressed_record_tuple = compressed_record_event.result();
 
-  const base::StringPiece compressed_string_callback =
+  const std::string_view compressed_string_callback =
       std::get<0>(compressed_record_tuple);
 
   // Expect that benchmark compression is the same as compression module
@@ -149,7 +149,7 @@ TEST_F(CompressionModuleTest, CompressRecordBelowThreshold) {
   const std::tuple<std::string, absl::optional<CompressionInformation>>
       compressed_record_tuple = compressed_record_event.result();
 
-  const base::StringPiece compressed_string_callback =
+  const std::string_view compressed_string_callback =
       std::get<0>(compressed_record_tuple);
 
   // Expect that record is not compressed since size is smaller than 512 bytes
@@ -182,7 +182,7 @@ TEST_F(CompressionModuleTest, CompressRecordCompressionDisabled) {
   const std::tuple<std::string, absl::optional<CompressionInformation>>
       compressed_record_tuple = compressed_record_event.result();
 
-  const base::StringPiece compressed_string_callback =
+  const std::string_view compressed_string_callback =
       std::get<0>(compressed_record_tuple);
 
   // Expect that record is not compressed since compression is not enabled
@@ -209,7 +209,7 @@ TEST_F(CompressionModuleTest, CompressRecordCompressionNone) {
   const std::tuple<std::string, absl::optional<CompressionInformation>>
       compressed_record_tuple = compressed_record_event.result();
 
-  const base::StringPiece compressed_string_callback =
+  const std::string_view compressed_string_callback =
       std::get<0>(compressed_record_tuple);
 
   // Expect that record is not compressed since COMPRESSION_NONE was chosen as

@@ -15,8 +15,8 @@
 #include "chrome/browser/sharing/sharing_sync_preference.h"
 #include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chrome/browser/sync/sync_invalidations_service_factory.h"
-#include "components/sync/base/sync_prefs.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
+#include "components/sync/service/sync_prefs.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/webauthn/android/cable_module_android.h"
@@ -59,7 +59,7 @@ bool DeviceInfoSyncClientImpl::GetSendTabToSelfReceivingEnabled() const {
   // for Lacros-Primary. Once Lacros-Only is the only available option, this
   // should simply check whether SendTabToSelf datatype is enabled.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return !crosapi::browser_util::IsLacrosPrimaryBrowser();
+  return !crosapi::browser_util::IsLacrosEnabled();
 #else
   return true;
 #endif
@@ -86,12 +86,12 @@ DeviceInfoSyncClientImpl::GetInterestedDataTypes() const {
       ->GetInterestedDataTypes();
 }
 
-absl::optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo>
+syncer::DeviceInfo::PhoneAsASecurityKeyInfo::StatusOrInfo
 DeviceInfoSyncClientImpl::GetPhoneAsASecurityKeyInfo() const {
 #if BUILDFLAG(IS_ANDROID)
   return webauthn::authenticator::GetSyncDataIfRegistered();
 #else
-  return absl::nullopt;
+  return syncer::DeviceInfo::PhoneAsASecurityKeyInfo::NoSupport();
 #endif
 }
 

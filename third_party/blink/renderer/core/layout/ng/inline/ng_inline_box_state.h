@@ -58,8 +58,8 @@ struct NGInlineBoxState {
   // 'vertical-align'.
   FontHeight metrics = FontHeight::Empty();
 
-  // The metrics of the font for this box. This includes leadings as specified
-  // by the 'line-height' property.
+  // The metrics of the font for this box. This includes leadings determined by
+  // by the `text-box-trim` and 'line-height' properties.
   FontHeight text_metrics = FontHeight::Empty();
 
   // The distance between the text-top and the baseline for this box. The

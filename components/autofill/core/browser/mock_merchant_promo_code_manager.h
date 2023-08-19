@@ -19,7 +19,7 @@ class MockMerchantPromoCodeManager : public MerchantPromoCodeManager {
   MOCK_METHOD(
       bool,
       OnGetSingleFieldSuggestions,
-      (AutoselectFirstSuggestion autoselect_first_suggestion,
+      (AutofillSuggestionTriggerSource trigger_source,
        const FormFieldData& field,
        const AutofillClient& client,
        base::WeakPtr<MerchantPromoCodeManager::SuggestionsHandler> handler,
@@ -36,13 +36,11 @@ class MockMerchantPromoCodeManager : public MerchantPromoCodeManager {
               (override));
   MOCK_METHOD(void,
               OnRemoveCurrentSingleFieldSuggestion,
-              (const std::u16string&,
-               const std::u16string&,
-               Suggestion::FrontendId),
+              (const std::u16string&, const std::u16string&, PopupItemId),
               (override));
   MOCK_METHOD(void,
               OnSingleFieldSuggestionSelected,
-              (const std::u16string&, Suggestion::FrontendId),
+              (const std::u16string&, PopupItemId),
               (override));
 };
 

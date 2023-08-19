@@ -104,7 +104,7 @@ void SigninHelper::OnClientOAuthFailure(const GoogleServiceAuthError& error) {
   LOG(ERROR) << "SigninHelper::OnClientOAuthFailure: couldn't fetch OAuth2 "
                 "token, the error was "
              << error.ToString();
-  // TODO(sinhak): Display an error.
+  // TODO(http://b/279733142): Display an error.
 
   // Notify `AccountManagerMojoService` about account addition failure and send
   // `error`.

@@ -10,10 +10,6 @@
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace sync_bookmarks {
 
 #pragma mark - SyncedBookmarksObserverBridge
@@ -30,10 +26,6 @@ SyncedBookmarksObserverBridge::SyncedBookmarksObserverBridge(
 SyncedBookmarksObserverBridge::~SyncedBookmarksObserverBridge() {}
 
 #pragma mark - Signin and syncing status
-
-bool SyncedBookmarksObserverBridge::HasSyncConsent() {
-  return identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync);
-}
 
 bool SyncedBookmarksObserverBridge::IsPerformingInitialSync() {
   syncer::SyncService* sync_service =

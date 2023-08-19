@@ -97,12 +97,13 @@ std::unique_ptr<PrefService> PrefServiceHelper::CreatePrefService(
   DVLOG(1) << "Loading config from " << config_path.value();
 
   registry->RegisterBooleanPref(prefs::kMetricsIsNewClientID, false);
+  registry->RegisterBooleanPref(prefs::kTosAccepted, false);
   // Opt-in stats default to true to handle two different cases:
-  //  1) Any crashes or UMA logs are recorded prior to setup completing
-  //     successfully (even though we can't send them yet).  Unless the user
-  //     ends up actually opting out, we don't want to lose this data once
-  //     we get network connectivity and are able to send it.  If the user
-  //     opts out, nothing further will be sent (honoring the user's setting).
+  //  1) Any crashes or UMA logs recorded after accepting Terms of Service.
+  //     Unless the user ends up actually opting out, we don't want to lose
+  //     this data once we get network connectivity and are able to send it.
+  //     If the user opts out, nothing further will be sent (honoring the
+  //     user's setting).
   //  2) Dogfood users (see dogfood agreement).
   registry->RegisterBooleanPref(prefs::kOptInStats, true);
   registry->RegisterListPref(prefs::kActiveDCSExperiments);

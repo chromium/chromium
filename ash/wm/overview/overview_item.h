@@ -165,11 +165,10 @@ class ASH_EXPORT OverviewItem : public aura::WindowObserver,
   // windows is the same as when entering overview.
   void Restack();
 
-  // Updates |phantoms_for_dragging_|. If |phantoms_for_dragging_| is null, then
-  // a new object is created for it.
-  void UpdatePhantomsForDragging(bool is_touch_dragging);
+  // Updates and maybe creates the mirrors needed for multi display dragging.
+  void UpdateMirrorsForDragging(bool is_touch_dragging);
 
-  void DestroyPhantomsForDragging();
+  void DestroyMirrorsForDragging();
 
   // Sets the bounds of the window shadow. If |bounds_in_screen| is nullopt,
   // the shadow is hidden.
@@ -380,15 +379,20 @@ class ASH_EXPORT OverviewItem : public aura::WindowObserver,
 
   // The view associated with |item_widget_|. Contains a title, close button and
   // maybe a backdrop. Forwards certain events to |this|.
-  raw_ptr<OverviewItemView, ExperimentalAsh> overview_item_view_ = nullptr;
+  raw_ptr<OverviewItemView, DanglingUntriaged | ExperimentalAsh>
+      overview_item_view_ = nullptr;
 
   // A widget with text that may show up on top of |transform_window_| to notify
   // users this window cannot be snapped.
   std::unique_ptr<RoundedLabelWidget> cannot_snap_widget_;
 
-  // Responsible for phantoms that look like the window on all displays during
+  // Responsible for mirrors that look like the window on all displays during
   // dragging.
-  std::unique_ptr<DragWindowController> phantoms_for_dragging_;
+  // TODO(sammiequon): We need two, one for the `item_widget_` and one for the
+  // source window (if not minimized). If DragWindowController supports multiple
+  // windows in the future, combine these.
+  std::unique_ptr<DragWindowController> item_mirror_for_dragging_;
+  std::unique_ptr<DragWindowController> window_mirror_for_dragging_;
 
   // Pointer to the Overview that owns the OverviewGrid containing |this|.
   // Guaranteed to be non-null for the lifetime of |this|.

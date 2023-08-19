@@ -15,32 +15,30 @@
 #import "ios/chrome/browser/ui/browser_view/tab_consumer.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_coordinator.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_consumer.h"
+#import "ios/chrome/browser/ui/lens/lens_coordinator.h"
 #import "ios/chrome/browser/ui/ntp/logo_animation_controller.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_focus_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_presenter.h"
-#import "ios/chrome/browser/ui/thumb_strip/thumb_strip_supporting.h"
+#import "ios/chrome/browser/ui/toolbar/public/toolbar_height_delegate.h"
 #import "ios/chrome/browser/web/web_state_container_view_provider.h"
 
 @protocol ApplicationCommands;
 @class BookmarksCoordinator;
 @class BrowserContainerViewController;
-@protocol BrowserCoordinatorCommands;
 @class BubblePresenter;
 @protocol CRWResponderInputView;
-@class NonModalDefaultBrowserPromoSchedulerSceneAgent;
 @protocol DefaultPromoNonModalPresentationDelegate;
 @protocol FindInPageCommands;
 class FullscreenController;
 @protocol HelpCommands;
 @class KeyCommandsProvider;
 @class NewTabPageCoordinator;
-@class LensCoordinator;
 @protocol OmniboxCommands;
 class PagePlaceholderBrowserAgent;
 @protocol PopupMenuCommands;
 @class PopupMenuCoordinator;
 @class SafeAreaProvider;
-@class SideSwipeController;
+@class SideSwipeMediator;
 @class TabStripCoordinator;
 @class TabStripLegacyCoordinator;
 class TabUsageRecorderBrowserAgent;
@@ -53,7 +51,6 @@ class TabUsageRecorderBrowserAgent;
 class UrlLoadingBrowserAgent;
 class UrlLoadingNotifierBrowserAgent;
 @protocol VoiceSearchController;
-class WebNavigationBrowserAgent;
 class WebStateUpdateBrowserAgent;
 
 typedef struct {
@@ -61,18 +58,16 @@ typedef struct {
   ToolbarAccessoryPresenter* toolbarAccessoryPresenter;
   PopupMenuCoordinator* popupMenuCoordinator;
   NewTabPageCoordinator* ntpCoordinator;
-  LensCoordinator* lensCoordinator;
   ToolbarCoordinator* toolbarCoordinator;
   TabStripCoordinator* tabStripCoordinator;
   TabStripLegacyCoordinator* legacyTabStripCoordinator;
-  SideSwipeController* sideSwipeController;
+  SideSwipeMediator* sideSwipeMediator;
   BookmarksCoordinator* bookmarksCoordinator;
   FullscreenController* fullscreenController;
   id<TextZoomCommands> textZoomHandler;
   id<HelpCommands> helpHandler;
   id<PopupMenuCommands> popupMenuCommandsHandler;
   id<ApplicationCommands> applicationCommandsHandler;
-  id<BrowserCoordinatorCommands> browserCoordinatorCommandsHandler;
   id<FindInPageCommands> findInPageCommandsHandler;
   LayoutGuideCenter* layoutGuideCenter;
   BOOL isOffTheRecord;
@@ -81,7 +76,6 @@ typedef struct {
   UrlLoadingNotifierBrowserAgent* urlLoadingNotifierBrowserAgent;
   id<VoiceSearchController> voiceSearchController;
   TabUsageRecorderBrowserAgent* tabUsageRecorderBrowserAgent;
-  WebNavigationBrowserAgent* webNavigationBrowserAgent;
   base::WeakPtr<WebStateList> webStateList;
   SafeAreaProvider* safeAreaProvider;
   WebStateUpdateBrowserAgent* webStateUpdateBrowserAgent;
@@ -92,11 +86,12 @@ typedef struct {
 @interface BrowserViewController
     : UIViewController <FindBarPresentationDelegate,
                         IncognitoReauthConsumer,
+                        LensPresentationDelegate,
                         LogoAnimationControllerOwnerOwner,
                         TabConsumer,
                         OmniboxFocusDelegate,
                         OmniboxPopupPresenterDelegate,
-                        ThumbStripSupporting,
+                        ToolbarHeightDelegate,
                         WebStateContainerViewProvider,
                         BrowserCommands>
 
@@ -131,11 +126,6 @@ typedef struct {
 // The container used for infobar modal overlays.
 @property(nonatomic, strong)
     UIViewController* infobarModalOverlayContainerViewController;
-
-// Scheduler for the non-modal default browser promo.
-// TODO(crbug.com/1204120): The BVC should not need this model-level object.
-@property(nonatomic, weak)
-    NonModalDefaultBrowserPromoSchedulerSceneAgent* nonModalPromoScheduler;
 
 // Presentation delegate for the non-modal default browser promo.
 @property(nonatomic, weak) id<DefaultPromoNonModalPresentationDelegate>

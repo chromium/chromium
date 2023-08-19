@@ -433,8 +433,10 @@ void NetworkingPrivateLinux::ConnectToNetwork(const std::string& guid,
   builder.AppendObjectPath(access_point_path);
 
   std::unique_ptr<dbus::Response> response(
-      network_manager_proxy_->CallMethodAndBlock(
-          &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT));
+      network_manager_proxy_
+          ->CallMethodAndBlock(&method_call,
+                               dbus::ObjectProxy::TIMEOUT_USE_DEFAULT)
+          .value_or(nullptr));
   if (!response) {
     LOG(ERROR) << "Failed to add a new connection";
     *error = "Failed to connect.";
@@ -516,8 +518,11 @@ void NetworkingPrivateLinux::DisconnectFromNetwork(const std::string& guid,
   dbus::MethodCall method_call(
       networking_private::kNetworkManagerDeviceNamespace,
       networking_private::kNetworkManagerDisconnectMethod);
-  std::unique_ptr<dbus::Response> response(device_proxy->CallMethodAndBlock(
-      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT));
+  std::unique_ptr<dbus::Response> response(
+      device_proxy
+          ->CallMethodAndBlock(&method_call,
+                               dbus::ObjectProxy::TIMEOUT_USE_DEFAULT)
+          .value_or(nullptr));
 
   if (!response) {
     LOG(WARNING) << "Failed to disconnect network on device "
@@ -697,8 +702,10 @@ bool NetworkingPrivateLinux::GetNetworkDevices(
       networking_private::kNetworkManagerGetDevicesMethod);
 
   std::unique_ptr<dbus::Response> device_response(
-      network_manager_proxy_->CallMethodAndBlock(
-          &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT));
+      network_manager_proxy_
+          ->CallMethodAndBlock(&method_call,
+                               dbus::ObjectProxy::TIMEOUT_USE_DEFAULT)
+          .value_or(nullptr));
 
   if (!device_response) {
     return false;
@@ -724,8 +731,11 @@ NetworkingPrivateLinux::DeviceType NetworkingPrivateLinux::GetDeviceType(
   builder.AppendString(networking_private::kNetworkManagerDeviceNamespace);
   builder.AppendString(networking_private::kNetworkManagerDeviceType);
 
-  std::unique_ptr<dbus::Response> response(device_proxy->CallMethodAndBlock(
-      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT));
+  std::unique_ptr<dbus::Response> response(
+      device_proxy
+          ->CallMethodAndBlock(&method_call,
+                               dbus::ObjectProxy::TIMEOUT_USE_DEFAULT)
+          .value_or(nullptr));
 
   if (!response) {
     LOG(ERROR) << "Failed to get the device type for device "
@@ -784,8 +794,10 @@ std::unique_ptr<dbus::Response> NetworkingPrivateLinux::GetAccessPointProperty(
   builder.AppendString(networking_private::kNetworkManagerAccessPointNamespace);
   builder.AppendString(property_name);
   std::unique_ptr<dbus::Response> response =
-      access_point_proxy->CallMethodAndBlock(
-          &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT);
+      access_point_proxy
+          ->CallMethodAndBlock(&method_call,
+                               dbus::ObjectProxy::TIMEOUT_USE_DEFAULT)
+          .value_or(nullptr);
   if (!response) {
     LOG(ERROR) << "Failed to get property for " << property_name;
   }
@@ -915,8 +927,11 @@ bool NetworkingPrivateLinux::AddAccessPointsFromDevice(
   dbus::MethodCall method_call(
       networking_private::kNetworkManagerWirelessDeviceNamespace,
       networking_private::kNetworkManagerGetAccessPointsMethod);
-  std::unique_ptr<dbus::Response> response(device_proxy->CallMethodAndBlock(
-      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT));
+  std::unique_ptr<dbus::Response> response(
+      device_proxy
+          ->CallMethodAndBlock(&method_call,
+                               dbus::ObjectProxy::TIMEOUT_USE_DEFAULT)
+          .value_or(nullptr));
 
   if (!response) {
     LOG(WARNING) << "Failed to get access points data for "
@@ -1031,8 +1046,10 @@ bool NetworkingPrivateLinux::GetConnectedAccessPoint(
   builder.AppendString(networking_private::kNetworkManagerActiveConnections);
 
   std::unique_ptr<dbus::Response> response(
-      network_manager_proxy_->CallMethodAndBlock(
-          &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT));
+      network_manager_proxy_
+          ->CallMethodAndBlock(&method_call,
+                               dbus::ObjectProxy::TIMEOUT_USE_DEFAULT)
+          .value_or(nullptr));
 
   if (!response) {
     LOG(WARNING) << "Failed to get a list of active connections";
@@ -1088,8 +1105,11 @@ bool NetworkingPrivateLinux::GetDeviceOfConnection(
       networking_private::kNetworkManagerActiveConnectionNamespace);
   builder.AppendString("Devices");
 
-  std::unique_ptr<dbus::Response> response(connection_proxy->CallMethodAndBlock(
-      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT));
+  std::unique_ptr<dbus::Response> response(
+      connection_proxy
+          ->CallMethodAndBlock(&method_call,
+                               dbus::ObjectProxy::TIMEOUT_USE_DEFAULT)
+          .value_or(nullptr));
 
   if (!response) {
     LOG(ERROR) << "Failed to get devices";
@@ -1136,8 +1156,11 @@ bool NetworkingPrivateLinux::GetAccessPointForConnection(
       networking_private::kNetworkManagerActiveConnectionNamespace);
   builder.AppendString(networking_private::kNetworkManagerSpecificObject);
 
-  std::unique_ptr<dbus::Response> response(connection_proxy->CallMethodAndBlock(
-      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT));
+  std::unique_ptr<dbus::Response> response(
+      connection_proxy
+          ->CallMethodAndBlock(&method_call,
+                               dbus::ObjectProxy::TIMEOUT_USE_DEFAULT)
+          .value_or(nullptr));
 
   if (!response) {
     LOG(WARNING) << "Failed to get access point from active connection";

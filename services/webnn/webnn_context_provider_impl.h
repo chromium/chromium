@@ -33,6 +33,19 @@ class WebNNContextProviderImpl : public mojom::WebNNContextProvider {
   // is no longer safe to access |impl|.
   void OnConnectionError(WebNNContextImpl* impl);
 
+  // The test cases can override the context creating behavior by implementing
+  // this class and setting its instance by SetBackendForTesting().
+  class BackendForTesting {
+   public:
+    virtual void CreateWebNNContext(
+        std::vector<std::unique_ptr<WebNNContextImpl>>& context_impls,
+        WebNNContextProviderImpl* context_provider_impl,
+        mojom::CreateContextOptionsPtr options,
+        CreateWebNNContextCallback callback) = 0;
+  };
+
+  static void SetBackendForTesting(BackendForTesting* backend_for_testing);
+
  private:
   // mojom::WebNNContextProvider
   void CreateWebNNContext(mojom::CreateContextOptionsPtr options,

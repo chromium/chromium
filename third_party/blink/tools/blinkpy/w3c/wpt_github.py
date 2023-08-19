@@ -15,7 +15,13 @@ from requests.exceptions import InvalidURL
 from six.moves.urllib.parse import quote
 
 from blinkpy.common.memoized import memoized
-from blinkpy.w3c.common import WPT_GH_ORG, WPT_GH_REPO_NAME, EXPORT_PR_LABEL, PROVISIONAL_PR_LABEL
+from blinkpy.w3c.common import (
+    WPT_GH_ORG,
+    WPT_GH_REPO_NAME,
+    EXPORT_PR_LABEL,
+    PROVISIONAL_PR_LABEL,
+    LEGACY_MAIN_BRANCH_NAME,
+)
 
 _log = logging.getLogger(__name__)
 API_BASE = 'https://api.github.com'
@@ -23,27 +29,33 @@ MAX_PER_PAGE = 100
 MAX_PR_HISTORY_WINDOW = 1000
 
 
-class WPTGitHub(object):
-    """An interface to GitHub for interacting with the web-platform-tests repo.
+class GitHubRepo(object):
+    """An interface to GitHub for interacting with a github repo.
 
     This class contains methods for sending requests to the GitHub API.
     Unless mentioned otherwise, API calls are expected to succeed, and
     GitHubError will be raised if an API call fails.
     """
-
-    def __init__(self,
-                 host,
-                 user=None,
-                 token=None,
-                 pr_history_window=MAX_PR_HISTORY_WINDOW):
+    def __init__(self, gh_org, gh_repo_name, export_pr_label,
+                 provisional_pr_label, host, user, token, pr_history_window,
+                 main_branch, min_expected_prs):
         if pr_history_window > MAX_PR_HISTORY_WINDOW:
             raise ValueError("GitHub only provides up to %d results per search"
                              % MAX_PR_HISTORY_WINDOW)
+        self.gh_org = gh_org
+        self.gh_repo_name = gh_repo_name
+        self.export_pr_label = export_pr_label
+        self.provisional_pr_label = provisional_pr_label
         self.host = host
         self.user = user
         self.token = token
-
         self._pr_history_window = pr_history_window
+        self._main_branch = main_branch
+        self.min_expected_prs = min_expected_prs
+
+    @property
+    def url(self):
+        return f'https://github.com/{self.gh_org}/{self.gh_repo_name}/'
 
     def has_credentials(self):
         return self.user and self.token
@@ -126,13 +138,12 @@ class WPTGitHub(object):
         assert remote_branch_name
         assert desc_title
         assert body
-
-        path = '/repos/%s/%s/pulls' % (WPT_GH_ORG, WPT_GH_REPO_NAME)
+        path = '/repos/%s/%s/pulls' % (self.gh_org, self.gh_repo_name)
         body = {
             'title': desc_title,
             'body': body,
             'head': remote_branch_name,
-            'base': 'master',
+            'base': self._main_branch,
         }
         try:
             response = self.request(path, method='POST', body=body)
@@ -159,7 +170,7 @@ class WPTGitHub(object):
 
         API doc: https://developer.github.com/v3/pulls/#update-a-pull-request
         """
-        path = '/repos/{}/{}/pulls/{}'.format(WPT_GH_ORG, WPT_GH_REPO_NAME,
+        path = '/repos/{}/{}/pulls/{}'.format(self.gh_org, self.gh_repo_name,
                                               pr_number)
         payload = {}
         if desc_title:
@@ -179,8 +190,8 @@ class WPTGitHub(object):
 
         API doc: https://developer.github.com/v3/issues/labels/#add-labels-to-an-issue
         """
-        path = '/repos/%s/%s/issues/%d/labels' % (WPT_GH_ORG, WPT_GH_REPO_NAME,
-                                                  number)
+        path = '/repos/%s/%s/issues/%d/labels' % (self.gh_org,
+                                                  self.gh_repo_name, number)
         body = [label]
         response = self.request(path, method='POST', body=body)
 
@@ -194,8 +205,8 @@ class WPTGitHub(object):
         API doc: https://developer.github.com/v3/issues/labels/#remove-a-label-from-an-issue
         """
         path = '/repos/%s/%s/issues/%d/labels/%s' % (
-            WPT_GH_ORG,
-            WPT_GH_REPO_NAME,
+            self.gh_org,
+            self.gh_repo_name,
             number,
             quote(label),
         )
@@ -213,8 +224,8 @@ class WPTGitHub(object):
 
         API doc: https://developer.github.com/v3/issues/comments/#create-a-comment
         """
-        path = '/repos/%s/%s/issues/%d/comments' % (WPT_GH_ORG,
-                                                    WPT_GH_REPO_NAME, number)
+        path = '/repos/%s/%s/issues/%d/comments' % (self.gh_org,
+                                                    self.gh_repo_name, number)
         body = {'body': comment_body}
         response = self.request(path, method='POST', body=body)
 
@@ -247,8 +258,8 @@ class WPTGitHub(object):
             '?q=repo:{}/{}%20type:pr+is:open%20label:{}%20status:failure%20updated:>{}'
             '&sort=updated'
             '&page=1'
-            '&per_page={}').format(WPT_GH_ORG,
-                                   WPT_GH_REPO_NAME, EXPORT_PR_LABEL,
+            '&per_page={}').format(self.gh_org, self.gh_repo_name,
+                                   self.export_pr_label,
                                    one_month_ago.isoformat(), MAX_PER_PAGE)
 
         failing_prs = []
@@ -282,17 +293,17 @@ class WPTGitHub(object):
         """
         # label name in query param with space require character escape and quotation
         escaped_provisional_pr_label = "\"{}\"".format(
-            PROVISIONAL_PR_LABEL.replace(" ", "+"))
+            self.provisional_pr_label.replace(" ", "+"))
         path = ('/search/issues'
                 '?q=repo:{}/{}%20type:pr%20label:{}%20label:{}'
                 '&status:open'
                 '&sort=updated'
                 '&page=1'
                 '&per_page={}').format(
-                    WPT_GH_ORG, WPT_GH_REPO_NAME, EXPORT_PR_LABEL,
+                    self.gh_org, self.gh_repo_name, self.export_pr_label,
                     escaped_provisional_pr_label,
                     min(MAX_PER_PAGE, self._pr_history_window))
-        return self.fetch_pull_requests_from_path(path, min_expected_prs=200)
+        return self.fetch_pull_requests_from_path(path)
 
     @memoized
     def all_pull_requests(self):
@@ -306,11 +317,11 @@ class WPTGitHub(object):
                 '&sort=updated'
                 '&page=1'
                 '&per_page={}').format(
-                    WPT_GH_ORG, WPT_GH_REPO_NAME, EXPORT_PR_LABEL,
+                    self.gh_org, self.gh_repo_name, self.export_pr_label,
                     min(MAX_PER_PAGE, self._pr_history_window))
         return self.fetch_pull_requests_from_path(path)
 
-    def fetch_pull_requests_from_path(self, path, min_expected_prs=1000):
+    def fetch_pull_requests_from_path(self, path):
         """Fetches PRs from url path.
 
         The maximum number of PRs is pr_history_window. Search endpoint is used
@@ -343,7 +354,7 @@ class WPTGitHub(object):
 
         # Doing this check to mitigate Github API issues (crbug.com/814617).
         # Use a minimum based on which path it comes from
-        min_prs = min(self._pr_history_window, min_expected_prs)
+        min_prs = min(self._pr_history_window, self.min_expected_prs)
         if len(all_prs) < min_prs:
             raise GitHubError('at least %d commits' % min_prs, len(all_prs),
                               'fetch all pull requests')
@@ -359,7 +370,7 @@ class WPTGitHub(object):
         Returns:
             The remote branch name.
         """
-        path = '/repos/{}/{}/pulls/{}'.format(WPT_GH_ORG, WPT_GH_REPO_NAME,
+        path = '/repos/{}/{}/pulls/{}'.format(self.gh_org, self.gh_repo_name,
                                               pr_number)
         response = self.request(path, method='GET')
 
@@ -378,7 +389,7 @@ class WPTGitHub(object):
             The list of check runs from the HEAD of the branch.
         """
         path = '/repos/%s/%s/commits/%s/check-runs?page=1&per_page=%d' % (
-            WPT_GH_ORG, WPT_GH_REPO_NAME, remote_branch_name, MAX_PER_PAGE)
+            self.gh_org, self.gh_repo_name, remote_branch_name, MAX_PER_PAGE)
         accept_header = 'application/vnd.github.antiope-preview+json'
 
         check_runs = []
@@ -404,7 +415,7 @@ class WPTGitHub(object):
         Returns:
             True if merged, False if not.
         """
-        path = '/repos/%s/%s/pulls/%d/merge' % (WPT_GH_ORG, WPT_GH_REPO_NAME,
+        path = '/repos/%s/%s/pulls/%d/merge' % (self.gh_org, self.gh_repo_name,
                                                 pr_number)
         cached_error = None
         for i in range(5):
@@ -436,7 +447,7 @@ class WPTGitHub(object):
 
         API doc: https://developer.github.com/v3/pulls/#merge-a-pull-request-merge-button
         """
-        path = '/repos/%s/%s/pulls/%d/merge' % (WPT_GH_ORG, WPT_GH_REPO_NAME,
+        path = '/repos/%s/%s/pulls/%d/merge' % (self.gh_org, self.gh_repo_name,
                                                 pr_number)
         body = {
             'merge_method': 'rebase',
@@ -460,7 +471,7 @@ class WPTGitHub(object):
         API doc: https://developer.github.com/v3/git/refs/#delete-a-reference
         """
         path = '/repos/%s/%s/git/refs/heads/%s' % (
-            WPT_GH_ORG, WPT_GH_REPO_NAME, remote_branch_name)
+            self.gh_org, self.gh_repo_name, remote_branch_name)
         response = self.request(path, method='DELETE')
 
         if response.status_code != 204:
@@ -474,7 +485,8 @@ class WPTGitHub(object):
         return self.pr_with_change_id(chromium_commit.change_id())
 
     def pr_with_change_id(self, target_change_id):
-        for pull_request in self.all_pull_requests():
+        all_prs = self.all_pull_requests()
+        for pull_request in all_prs:
             # Note: Search all 'Change-Id's so that we can manually put multiple
             # CLs in one PR. (The exporter always creates one PR for each CL.)
             change_ids = self.extract_metadata(
@@ -495,6 +507,35 @@ class WPTGitHub(object):
             else:
                 return value
         return values if all_matches else None
+
+
+class WPTGitHub(GitHubRepo):
+    """An interface to GitHub for interacting with the web-platform-tests repo.
+    """
+    def __init__(self,
+                 host,
+                 user=None,
+                 token=None,
+                 pr_history_window=MAX_PR_HISTORY_WINDOW):
+        super().__init__(
+            gh_org=WPT_GH_ORG,
+            gh_repo_name=WPT_GH_REPO_NAME,
+            export_pr_label=EXPORT_PR_LABEL,
+            provisional_pr_label=PROVISIONAL_PR_LABEL,
+            host=host,
+            user=user,
+            token=token,
+            pr_history_window=pr_history_window,
+            main_branch=LEGACY_MAIN_BRANCH_NAME,
+            min_expected_prs=200,
+        )
+
+    @property
+    def skipped_revisions(self):
+        return [
+            # The great blink mv: https://crbug.com/843412#c13
+            '77578ccb4082ae20a9326d9e673225f1189ebb63',
+        ]
 
 
 class JSONResponse(object):

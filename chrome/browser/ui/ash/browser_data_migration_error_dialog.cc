@@ -16,7 +16,7 @@ namespace ash {
 
 void OpenBrowserDataMigrationErrorDialog(uint64_t required_size) {
   chrome::ShowWarningMessageBox(
-      gfx::kNullNativeWindow, std::u16string(),
+      gfx::NativeWindow(), std::u16string(),
       l10n_util::GetStringFUTF16(
           IDS_LACROS_DATA_MIGRATION_OUT_OF_DISK_ERROR_TEXT,
           ui::FormatBytes(static_cast<int64_t>(required_size))));

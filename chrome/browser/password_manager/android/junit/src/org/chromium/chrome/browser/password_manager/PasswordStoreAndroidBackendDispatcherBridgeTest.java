@@ -36,6 +36,8 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.password_manager.core.browser.proto.ListAffiliatedPasswordsResult;
+import org.chromium.components.password_manager.core.browser.proto.ListAffiliatedPasswordsResult.AffiliatedPassword;
 import org.chromium.components.password_manager.core.browser.proto.ListPasswordsResult;
 import org.chromium.components.password_manager.core.browser.proto.PasswordWithLocalData;
 import org.chromium.components.signin.AccountUtils;
@@ -235,6 +237,50 @@ public class PasswordStoreAndroidBackendDispatcherBridgeTest {
                 ArgumentCaptor.forClass(Callback.class);
         verify(mBackendMock)
                 .getLoginsForSignonRealm(any(), eq(sTestAccount), any(), failureCallback.capture());
+        assertNotNull(failureCallback.getValue());
+
+        Exception kExpectedException = new Exception("Sample failure");
+        failureCallback.getValue().onResult(kExpectedException);
+        verify(mBackendReceiverBridgeMock)
+                .handleAndroidBackendException(kTestTaskId, kExpectedException);
+    }
+
+    @Test
+    public void testGetAffiliatedLoginsForSignonRealmOnSuccess() {
+        final int kTestTaskId = 1337;
+
+        // Ensure the backend is called with a valid success callback.
+        mBackendDispatcherBridge.getAffiliatedLoginsForSignonRealm(
+                kTestTaskId, "https://test_signon_realm.com", sTestAccountEmail);
+        ArgumentCaptor<Callback<byte[]>> successCallback = ArgumentCaptor.forClass(Callback.class);
+        verify(mBackendMock)
+                .getAffiliatedLoginsForSignonRealm(
+                        any(), eq(sTestAccount), successCallback.capture(), any());
+        assertNotNull(successCallback.getValue());
+
+        AffiliatedPassword affiliatedPassword =
+                AffiliatedPassword.newBuilder().setPasswordData(sTestPwdWithLocalData).build();
+        ListAffiliatedPasswordsResult.Builder affiliatedPasswordsResult =
+                ListAffiliatedPasswordsResult.newBuilder().addAffiliatedPasswords(
+                        affiliatedPassword);
+        byte[] kExpectedList = affiliatedPasswordsResult.build().toByteArray();
+        successCallback.getValue().onResult(kExpectedList);
+        verify(mBackendReceiverBridgeMock)
+                .onCompleteWithAffiliatedLogins(kTestTaskId, kExpectedList);
+    }
+
+    @Test
+    public void testGetAffiliatedLoginsForSignonRealmOnFailure() {
+        final int kTestTaskId = 42069;
+
+        // Ensure the backend is called with a valid failure callback.
+        mBackendDispatcherBridge.getAffiliatedLoginsForSignonRealm(
+                kTestTaskId, "https://test_signon_realm.com", sTestAccountEmail);
+        ArgumentCaptor<Callback<Exception>> failureCallback =
+                ArgumentCaptor.forClass(Callback.class);
+        verify(mBackendMock)
+                .getAffiliatedLoginsForSignonRealm(
+                        any(), eq(sTestAccount), any(), failureCallback.capture());
         assertNotNull(failureCallback.getValue());
 
         Exception kExpectedException = new Exception("Sample failure");

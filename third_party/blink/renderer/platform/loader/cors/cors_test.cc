@@ -17,9 +17,15 @@ class CorsExposedHeadersTest : public testing::Test {
   using CredentialsMode = network::mojom::CredentialsMode;
 
   HTTPHeaderSet Parse(CredentialsMode credentials_mode,
+                      const char* header) const {
+    return Parse(credentials_mode, AtomicString(header));
+  }
+
+  HTTPHeaderSet Parse(CredentialsMode credentials_mode,
                       const AtomicString& header) const {
     ResourceResponse response;
-    response.AddHttpHeaderField("access-control-expose-headers", header);
+    response.AddHttpHeaderField(http_names::kAccessControlExposeHeaders,
+                                header);
 
     return cors::ExtractCorsExposedHeaderNamesList(credentials_mode, response);
   }
@@ -80,29 +86,31 @@ TEST_F(CorsExposedHeadersTest, WithEmptyElements) {
 
 TEST_F(CorsExposedHeadersTest, Wildcard) {
   ResourceResponse response;
-  response.AddHttpHeaderField("access-control-expose-headers", "a, b, *");
-  response.AddHttpHeaderField("b", "-");
-  response.AddHttpHeaderField("c", "-");
-  response.AddHttpHeaderField("d", "-");
-  response.AddHttpHeaderField("*", "-");
+  response.AddHttpHeaderField(http_names::kAccessControlExposeHeaders,
+                              AtomicString("a, b, *"));
+  response.AddHttpHeaderField(AtomicString("b"), AtomicString("-"));
+  response.AddHttpHeaderField(AtomicString("c"), AtomicString("-"));
+  response.AddHttpHeaderField(AtomicString("d"), AtomicString("-"));
+  response.AddHttpHeaderField(AtomicString("*"), AtomicString("-"));
 
   EXPECT_EQ(
       cors::ExtractCorsExposedHeaderNamesList(CredentialsMode::kOmit, response),
-      HTTPHeaderSet({"access-control-expose-headers", "b", "c", "d", "*"}));
+      HTTPHeaderSet({"Access-Control-Expose-Headers", "b", "c", "d", "*"}));
 
   EXPECT_EQ(
       cors::ExtractCorsExposedHeaderNamesList(CredentialsMode::kSameOrigin,
                                               response),
-      HTTPHeaderSet({"access-control-expose-headers", "b", "c", "d", "*"}));
+      HTTPHeaderSet({"Access-Control-Expose-Headers", "b", "c", "d", "*"}));
 }
 
 TEST_F(CorsExposedHeadersTest, Asterisk) {
   ResourceResponse response;
-  response.AddHttpHeaderField("access-control-expose-headers", "a, b, *");
-  response.AddHttpHeaderField("b", "-");
-  response.AddHttpHeaderField("c", "-");
-  response.AddHttpHeaderField("d", "-");
-  response.AddHttpHeaderField("*", "-");
+  response.AddHttpHeaderField(http_names::kAccessControlExposeHeaders,
+                              AtomicString("a, b, *"));
+  response.AddHttpHeaderField(AtomicString("b"), AtomicString("-"));
+  response.AddHttpHeaderField(AtomicString("c"), AtomicString("-"));
+  response.AddHttpHeaderField(AtomicString("d"), AtomicString("-"));
+  response.AddHttpHeaderField(AtomicString("*"), AtomicString("-"));
 
   EXPECT_EQ(cors::ExtractCorsExposedHeaderNamesList(CredentialsMode::kInclude,
                                                     response),

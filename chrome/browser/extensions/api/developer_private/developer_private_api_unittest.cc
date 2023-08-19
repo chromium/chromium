@@ -82,6 +82,7 @@ namespace extensions {
 namespace {
 
 const char kGoodCrx[] = "ldnnhddmnhbkjipkidpdiheffobcpfmf";
+const char kGoogleOnlyCrx[] = "jjlcocfpfbknlbgijblaapbcpbdglkhf";
 constexpr char kInvalidHost[] = "invalid host";
 constexpr char kInvalidHostError[] = "Invalid host.";
 
@@ -226,13 +227,17 @@ void GetMatchingExtensionsForSite(
 
 auto MatchMatchingExtensionInfo(
     const std::string& extension_id,
-    const api::developer_private::HostAccess& host_access) {
+    const api::developer_private::HostAccess& host_access,
+    bool can_request_all_sites) {
   return testing::AllOf(
       testing::Field(&api::developer_private::MatchingExtensionInfo::id,
                      extension_id),
       testing::Field(
           &api::developer_private::MatchingExtensionInfo::site_access,
-          host_access));
+          host_access),
+      testing::Field(
+          &api::developer_private::MatchingExtensionInfo::can_request_all_sites,
+          can_request_all_sites));
 }
 
 api::developer_private::ExtensionSiteAccessUpdate CreateSiteAccessUpdate(
@@ -2012,8 +2017,16 @@ TEST_P(DeveloperPrivateApiZipFileUnitTest, InstallDroppedFileZip) {
 
   // Expect extension install directory to be immediate subdir of expected
   // unpacked install directory. E.g. /a/b/c/d == /a/b/c + /d.
-  EXPECT_EQ(extension->path(), expected_extension_install_directory_.Append(
-                                   extension->path().BaseName()));
+  //
+  // Make sure we're comparing absolute paths to avoid failures like
+  // https://crbug.com/1453671 on macOS 14.
+  base::FilePath absolute_extension_path =
+      base::MakeAbsoluteFilePath(extension->path());
+  base::FilePath absolute_expected_extension_install_directory =
+      base::MakeAbsoluteFilePath(expected_extension_install_directory_.Append(
+          extension->path().BaseName()));
+  EXPECT_EQ(absolute_extension_path,
+            absolute_expected_extension_install_directory);
 
   // Expect extension install directory to exist and be named with the right
   // prefix.
@@ -2481,6 +2494,50 @@ TEST_F(DeveloperPrivateApiUnitTest,
   }])");
 }
 
+// Test that host permissions from policy installed extensions are included in
+// `getUserAndExtensionSitesByEtld` calls.
+TEST_F(
+    DeveloperPrivateApiUnitTest,
+    DeveloperPrivateGetUserAndExtensionSitesByEtld_PolicyControlledExtensions) {
+  std::string extension_id(kGoogleOnlyCrx);
+
+  // Set up a mock provider with a policy extension.
+  std::unique_ptr<MockExternalProvider> mock_provider =
+      std::make_unique<MockExternalProvider>(
+          service(), mojom::ManifestLocation::kExternalPolicyDownload);
+  MockExternalProvider* mock_provider_ptr = mock_provider.get();
+  AddMockExternalProvider(std::move(mock_provider));
+
+  // google_only.crx contains only a manifest.json file that requests
+  // *://www.google.com/* as a permission.
+  mock_provider_ptr->UpdateOrAddExtension(
+      extension_id, "1", data_dir().AppendASCII("google_only.crx"));
+  // Reloading extensions should find our externally registered extension
+  // and install it.
+  {
+    TestExtensionRegistryObserver observer(registry());
+    service()->CheckForExternalUpdates();
+    EXPECT_EQ(extension_id, observer.WaitForExtensionLoaded()->id());
+  }
+
+  auto function = base::MakeRefCounted<
+      api::DeveloperPrivateGetUserAndExtensionSitesByEtldFunction>();
+  EXPECT_TRUE(RunFunction(function, base::Value::List()))
+      << function->GetError();
+  const base::Value::List* results = function->GetResultListForTest();
+  ASSERT_EQ(1u, results->size());
+
+  EXPECT_THAT((*results)[0], base::test::IsJson(R"([{
+    "etldPlusOne": "google.com",
+    "numExtensions": 1,
+    "sites": [{
+      "siteSet": "EXTENSION_SPECIFIED",
+      "numExtensions": 1,
+      "site": "www.google.com",
+    }]
+  }])"));
+}
+
 TEST_F(DeveloperPrivateApiUnitTest,
        DeveloperPrivateGetMatchingExtensionsForSite) {
   namespace developer = api::developer_private;
@@ -2504,21 +2561,19 @@ TEST_F(DeveloperPrivateApiUnitTest,
   // "http://images.google.com/" should only match with `extension_2`.
   EXPECT_THAT(infos, testing::UnorderedElementsAre(MatchMatchingExtensionInfo(
                          extension_2->id(),
-                         developer::HostAccess::HOST_ACCESS_ON_ALL_SITES)));
+                         developer::HostAccess::HOST_ACCESS_ON_SPECIFIC_SITES,
+                         /*can_request_all_sites=*/false)));
 
   service()->DisableExtension(extension_2->id(),
                               disable_reason::DISABLE_USER_ACTION);
   GetMatchingExtensionsForSite(profile(), "*://*.google.com/", &infos);
 
-  // "*://*.google.com/" should only match with both `extension_1` and
-  // `extension_2`.
-  EXPECT_THAT(infos, testing::UnorderedElementsAre(
-                         MatchMatchingExtensionInfo(
-                             extension_1->id(),
-                             developer::HostAccess::HOST_ACCESS_ON_ALL_SITES),
-                         MatchMatchingExtensionInfo(
-                             extension_2->id(),
-                             developer::HostAccess::HOST_ACCESS_ON_ALL_SITES)));
+  // "*://*.google.com/" should match with `extension_1` but not `extension_2`
+  // since it is disabled.
+  EXPECT_THAT(infos, testing::UnorderedElementsAre(MatchMatchingExtensionInfo(
+                         extension_1->id(),
+                         developer::HostAccess::HOST_ACCESS_ON_SPECIFIC_SITES,
+                         /*can_request_all_sites=*/false)));
 }
 
 // Test that the host access returned by GetMatchingExtensionsForSite reflects
@@ -2537,7 +2592,8 @@ TEST_F(DeveloperPrivateApiUnitTest,
 
   EXPECT_THAT(infos, testing::UnorderedElementsAre(MatchMatchingExtensionInfo(
                          extension->id(),
-                         developer::HostAccess::HOST_ACCESS_ON_ALL_SITES)));
+                         developer::HostAccess::HOST_ACCESS_ON_ALL_SITES,
+                         /*can_request_all_sites=*/true)));
   EXPECT_FALSE(PermissionsManager::Get(browser()->profile())
                    ->HasWithheldHostPermissions(*extension));
 
@@ -2545,23 +2601,25 @@ TEST_F(DeveloperPrivateApiUnitTest,
   modifier.SetWithholdHostPermissions(true);
 
   GetMatchingExtensionsForSite(profile(), "http://example.com/", &infos);
-  EXPECT_THAT(infos, testing::UnorderedElementsAre(MatchMatchingExtensionInfo(
-                         extension->id(),
-                         developer::HostAccess::HOST_ACCESS_ON_CLICK)));
+  EXPECT_THAT(infos,
+              testing::UnorderedElementsAre(MatchMatchingExtensionInfo(
+                  extension->id(), developer::HostAccess::HOST_ACCESS_ON_CLICK,
+                  /*can_request_all_sites=*/true)));
 
   RunAddHostPermission(profile(), *extension, "*://*.google.com/*",
                        /*should_succeed=*/true, nullptr);
 
   GetMatchingExtensionsForSite(profile(), "http://google.com/", &infos);
-  EXPECT_THAT(infos,
-              testing::UnorderedElementsAre(MatchMatchingExtensionInfo(
-                  extension->id(),
-                  developer::HostAccess::HOST_ACCESS_ON_SPECIFIC_SITES)));
-
-  GetMatchingExtensionsForSite(profile(), "http://example.com/", &infos);
   EXPECT_THAT(infos, testing::UnorderedElementsAre(MatchMatchingExtensionInfo(
                          extension->id(),
-                         developer::HostAccess::HOST_ACCESS_ON_CLICK)));
+                         developer::HostAccess::HOST_ACCESS_ON_SPECIFIC_SITES,
+                         /*can_request_all_sites=*/true)));
+
+  GetMatchingExtensionsForSite(profile(), "http://example.com/", &infos);
+  EXPECT_THAT(infos,
+              testing::UnorderedElementsAre(MatchMatchingExtensionInfo(
+                  extension->id(), developer::HostAccess::HOST_ACCESS_ON_CLICK,
+                  /*can_request_all_sites=*/true)));
 }
 
 // Tests the UpdateSiteAccess function when called on an extension with no
@@ -2739,6 +2797,122 @@ TEST_F(DeveloperPrivateApiUnitTest,
       permissions_manager->HasGrantedHostPermission(*extension_1, kGoogleCom));
   EXPECT_FALSE(
       permissions_manager->HasGrantedHostPermission(*extension_2, kGoogleCom));
+}
+
+// Test uninstalling multiple extensions.
+TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateRemoveMultipleExtensions) {
+  scoped_refptr<const Extension> extension_1 =
+      ExtensionBuilder("test_1").Build();
+  scoped_refptr<const Extension> extension_2 =
+      ExtensionBuilder("test_2").Build();
+  service()->AddExtension(extension_1.get());
+  service()->AddExtension(extension_2.get());
+  EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_1->id()));
+  EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_2->id()));
+
+  base::Value::List extension_ids_entries;
+  extension_ids_entries.reserve(2u);
+  extension_ids_entries.Append(extension_1->id());
+  extension_ids_entries.Append(extension_2->id());
+  std::string extension_ids_arg;
+  EXPECT_TRUE(
+      base::JSONWriter::Write(extension_ids_entries, &extension_ids_arg));
+  std::string args = base::StringPrintf(R"([%s])", extension_ids_arg.c_str());
+
+  auto function = base::MakeRefCounted<
+      api::DeveloperPrivateRemoveMultipleExtensionsFunction>();
+
+  // Accept the multiple extension uninstallation bubble by default in unit
+  // tests.
+  function->accept_bubble_for_testing(true);
+
+  // Run the private api to remove the installed extensions.
+  api_test_utils::RunFunction(function.get(), args, profile());
+
+  EXPECT_FALSE(registry()->enabled_extensions().Contains(extension_1->id()));
+  EXPECT_FALSE(registry()->enabled_extensions().Contains(extension_2->id()));
+  EXPECT_EQ(registry()->enabled_extensions().size(), 0u);
+}
+
+TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateRemoveComponentExtensions) {
+  // Create a component extension and a regular extension, then try to remove
+  // them.
+  scoped_refptr<const Extension> component_extension =
+      ExtensionBuilder("component_extension")
+          .SetLocation(mojom::ManifestLocation::kComponent)
+          .Build();
+  scoped_refptr<const Extension> test_extension =
+      ExtensionBuilder("test_extension").Build();
+  service()->AddExtension(component_extension.get());
+  service()->AddExtension(test_extension.get());
+
+  EXPECT_EQ(registry()->enabled_extensions().size(), 2u);
+
+  // Create a list of extensions with a component extension in it.
+  base::Value::List extensions_list;
+  extensions_list.reserve(2u);
+  extensions_list.Append(component_extension->id());
+  extensions_list.Append(test_extension->id());
+  std::string args;
+  EXPECT_TRUE(base::JSONWriter::Write(extensions_list, &args));
+  std::string component_args = base::StringPrintf(R"([%s])", args.c_str());
+  auto function = base::MakeRefCounted<
+      api::DeveloperPrivateRemoveMultipleExtensionsFunction>();
+
+  // Accept the multiple extension uninstallation bubble by default in unit
+  // tests.
+  function->accept_bubble_for_testing(true);
+  // Verify the error message for uninstalling component and enterprise
+  // extensions.
+  EXPECT_EQ(
+      "Cannot uninstall the enterprise or component extensions in your list.",
+      api_test_utils::RunFunctionAndReturnError(function.get(), component_args,
+                                                profile()));
+
+  // Because there is a component extension in the list, the uninstallation is
+  // canceled. The number of extensions remains the same.
+  EXPECT_EQ(registry()->enabled_extensions().size(), 2u);
+}
+
+TEST_F(DeveloperPrivateApiUnitTest,
+       DeveloperPrivateRemoveEnterpriseExtensions) {
+  // Create an enterprise extension and a regular extension, then try to remove
+  // them.
+  scoped_refptr<const Extension> enterprise_extension =
+      ExtensionBuilder("enterprise_extension")
+          .SetLocation(mojom::ManifestLocation::kExternalPolicy)
+          .Build();
+  scoped_refptr<const Extension> test_extension =
+      ExtensionBuilder("test_extension").Build();
+  service()->AddExtension(enterprise_extension.get());
+  service()->AddExtension(test_extension.get());
+
+  EXPECT_EQ(registry()->enabled_extensions().size(), 2u);
+
+  // Create a list of extensions with an enterprise extension in it.
+  base::Value::List extensions_list;
+  extensions_list.reserve(2u);
+  extensions_list.Append(enterprise_extension->id());
+  extensions_list.Append(test_extension->id());
+  std::string args;
+  EXPECT_TRUE(base::JSONWriter::Write(extensions_list, &args));
+  std::string enterprise_args = base::StringPrintf(R"([%s])", args.c_str());
+  auto function = base::MakeRefCounted<
+      api::DeveloperPrivateRemoveMultipleExtensionsFunction>();
+
+  // Accept the multiple extension uninstallation bubble by default in unit
+  // tests.
+  function->accept_bubble_for_testing(true);
+  // Verify the error message for uninstalling component and enterprise
+  // extensions.
+  EXPECT_EQ(
+      "Cannot uninstall the enterprise or component extensions in your list.",
+      api_test_utils::RunFunctionAndReturnError(function.get(), enterprise_args,
+                                                profile()));
+
+  // Because there is an enterprise extension in the list, the uninstallation is
+  // canceled. The number of extensions remains the same.
+  EXPECT_EQ(registry()->enabled_extensions().size(), 2u);
 }
 
 class DeveloperPrivateApiAllowlistUnitTest

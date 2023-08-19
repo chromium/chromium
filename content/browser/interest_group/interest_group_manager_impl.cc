@@ -12,6 +12,8 @@
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/json/json_string_value_serializer.h"
+#include "base/json/values_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
@@ -21,6 +23,8 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
+#include "components/cbor/diagnostic_writer.h"
+#include "components/cbor/writer.h"
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/browser/interest_group/interest_group_update.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
@@ -28,6 +32,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
+
 #include "url/gurl.h"
 
 namespace content {
@@ -100,11 +105,17 @@ ConvertOwnerJoinerPairsToDataKeys(
   }
   return data_keys;
 }
-
 }  // namespace
 
 InterestGroupManagerImpl::ReportRequest::ReportRequest() = default;
 InterestGroupManagerImpl::ReportRequest::~ReportRequest() = default;
+
+InterestGroupManagerImpl::AdAuctionDataLoaderState::AdAuctionDataLoaderState() =
+    default;
+InterestGroupManagerImpl::AdAuctionDataLoaderState::AdAuctionDataLoaderState(
+    AdAuctionDataLoaderState&& state) = default;
+InterestGroupManagerImpl::AdAuctionDataLoaderState::
+    ~AdAuctionDataLoaderState() = default;
 
 InterestGroupManagerImpl::InterestGroupManagerImpl(
     const base::FilePath& path,
@@ -162,6 +173,7 @@ void InterestGroupManagerImpl::CheckPermissionsAndJoinInterestGroup(
     const net::NetworkIsolationKey& network_isolation_key,
     bool report_result_only,
     network::mojom::URLLoaderFactory& url_loader_factory,
+    AreReportingOriginsAttestedCallback attestation_callback,
     blink::mojom::AdAuctionService::JoinInterestGroupCallback callback) {
   url::Origin interest_group_owner = group.owner;
   permissions_checker_.CheckPermissions(
@@ -170,7 +182,8 @@ void InterestGroupManagerImpl::CheckPermissionsAndJoinInterestGroup(
       base::BindOnce(
           &InterestGroupManagerImpl::OnJoinInterestGroupPermissionsChecked,
           base::Unretained(this), std::move(group), joining_url,
-          report_result_only, std::move(callback)));
+          report_result_only, std::move(attestation_callback),
+          std::move(callback)));
 }
 
 void InterestGroupManagerImpl::CheckPermissionsAndLeaveInterestGroup(
@@ -217,16 +230,18 @@ void InterestGroupManagerImpl::LeaveInterestGroup(
 
 void InterestGroupManagerImpl::UpdateInterestGroupsOfOwner(
     const url::Origin& owner,
-    network::mojom::ClientSecurityStatePtr client_security_state) {
-  update_manager_.UpdateInterestGroupsOfOwner(owner,
-                                              std::move(client_security_state));
+    network::mojom::ClientSecurityStatePtr client_security_state,
+    AreReportingOriginsAttestedCallback callback) {
+  update_manager_.UpdateInterestGroupsOfOwner(
+      owner, std::move(client_security_state), std::move(callback));
 }
 
 void InterestGroupManagerImpl::UpdateInterestGroupsOfOwners(
     base::span<url::Origin> owners,
-    network::mojom::ClientSecurityStatePtr client_security_state) {
+    network::mojom::ClientSecurityStatePtr client_security_state,
+    AreReportingOriginsAttestedCallback callback) {
   update_manager_.UpdateInterestGroupsOfOwners(
-      owners, std::move(client_security_state));
+      owners, std::move(client_security_state), std::move(callback));
 }
 
 void InterestGroupManagerImpl::RecordInterestGroupBids(
@@ -398,10 +413,63 @@ void InterestGroupManagerImpl::UpdateLastKAnonymityReported(
       .WithArgs(key);
 }
 
+void InterestGroupManagerImpl::GetInterestGroupAdAuctionData(
+    url::Origin top_level_origin,
+    base::Uuid generation_id,
+    base::OnceCallback<void(BiddingAndAuctionData)> callback) {
+  AdAuctionDataLoaderState state;
+  state.serializer.SetPublisher(top_level_origin.Serialize());
+  state.serializer.SetGenerationId(std::move(generation_id));
+  state.callback = std::move(callback);
+  GetAllInterestGroupOwners(base::BindOnce(
+      &InterestGroupManagerImpl::LoadNextInterestGroupAdAuctionData,
+      weak_factory_.GetWeakPtr(), std::move(state)));
+}
+
+void InterestGroupManagerImpl::LoadNextInterestGroupAdAuctionData(
+    AdAuctionDataLoaderState state,
+    std::vector<url::Origin> owners) {
+  if (!owners.empty()) {
+    url::Origin next_owner = std::move(owners.back());
+    owners.pop_back();
+    GetInterestGroupsForOwner(
+        next_owner,
+        base::BindOnce(
+            &InterestGroupManagerImpl::OnLoadedNextInterestGroupAdAuctionData,
+            weak_factory_.GetWeakPtr(), std::move(state), std::move(owners),
+            next_owner));
+    return;
+  }
+  // Loading is finished.
+  OnAdAuctionDataLoadComplete(std::move(state));
+}
+
+void InterestGroupManagerImpl::OnLoadedNextInterestGroupAdAuctionData(
+    AdAuctionDataLoaderState state,
+    std::vector<url::Origin> owners,
+    url::Origin owner,
+    std::vector<StorageInterestGroup> groups) {
+  state.serializer.AddGroups(std::move(owner), std::move(groups));
+  LoadNextInterestGroupAdAuctionData(std::move(state), std::move(owners));
+}
+
+void InterestGroupManagerImpl::OnAdAuctionDataLoadComplete(
+    AdAuctionDataLoaderState state) {
+  std::move(state.callback).Run(state.serializer.Build());
+}
+
+void InterestGroupManagerImpl::GetBiddingAndAuctionServerKey(
+    network::mojom::URLLoaderFactory* loader,
+    base::OnceCallback<void(absl::optional<BiddingAndAuctionServerKey>)>
+        callback) {
+  ba_key_fetcher_.GetOrFetchKey(loader, std::move(callback));
+}
+
 void InterestGroupManagerImpl::OnJoinInterestGroupPermissionsChecked(
     blink::InterestGroup group,
     const GURL& joining_url,
     bool report_result_only,
+    AreReportingOriginsAttestedCallback attestation_callback,
     blink::mojom::AdAuctionService::JoinInterestGroupCallback callback,
     bool can_join) {
   // Invoke callback before calling JoinInterestGroup(), which posts a task to
@@ -412,8 +480,26 @@ void InterestGroupManagerImpl::OnJoinInterestGroupPermissionsChecked(
   // invoking the callback may potentially leak whether the user was previously
   // in the InterestGroup through timing differences.
   std::move(callback).Run(/*failed_well_known_check=*/!can_join);
-  if (!report_result_only && can_join)
+
+  if (!report_result_only && can_join) {
+    // All ads' allowed reporting origins must be attested. Otherwise don't
+    // join.
+    if (group.ads) {
+      for (auto& ad : *group.ads) {
+        if (ad.allowed_reporting_origins) {
+          // Sort and de-duplicate by passing it through a flat_set.
+          ad.allowed_reporting_origins =
+              base::flat_set<url::Origin>(
+                  std::move(ad.allowed_reporting_origins.value()))
+                  .extract();
+          if (!attestation_callback.Run(ad.allowed_reporting_origins.value())) {
+            return;
+          }
+        }
+      }
+    }
     JoinInterestGroup(std::move(group), joining_url);
+  }
 }
 
 void InterestGroupManagerImpl::OnLeaveInterestGroupPermissionsChecked(

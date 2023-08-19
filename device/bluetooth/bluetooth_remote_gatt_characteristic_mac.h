@@ -5,15 +5,15 @@
 #ifndef DEVICE_BLUETOOTH_BLUETOOTH_REMOTE_GATT_CHARACTERISTIC_MAC_H_
 #define DEVICE_BLUETOOTH_BLUETOOTH_REMOTE_GATT_CHARACTERISTIC_MAC_H_
 
-#include "base/memory/raw_ptr.h"
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic.h"
 
 #import <CoreBluetooth/CoreBluetooth.h>
+
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "base/mac/scoped_nsobject.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 
 namespace device {
@@ -122,7 +122,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicMac
   // gatt_service_ owns instances of this class.
   raw_ptr<BluetoothRemoteGattServiceMac> gatt_service_;
   // A characteristic from CBPeripheral.services.characteristics.
-  base::scoped_nsobject<CBCharacteristic> cb_characteristic_;
+  CBCharacteristic* __strong cb_characteristic_;
   // Characteristic identifier.
   std::string identifier_;
   // Service UUID.

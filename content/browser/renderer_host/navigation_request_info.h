@@ -49,7 +49,8 @@ struct CONTENT_EXPORT NavigationRequestInfo {
       bool is_pdf,
       WeakDocumentPtr initiator_document,
       const GlobalRenderFrameHostId& previous_render_frame_host_id,
-      bool allow_cookies_from_browser);
+      bool allow_cookies_from_browser,
+      int64_t navigation_id);
   NavigationRequestInfo(const NavigationRequestInfo& other) = delete;
   ~NavigationRequestInfo();
 
@@ -141,6 +142,9 @@ struct CONTENT_EXPORT NavigationRequestInfo {
   // Whether a Cookie header added to this request should not be overwritten by
   // the network service.
   const bool allow_cookies_from_browser;
+
+  // Unique id that identifies the navigation.
+  const int64_t navigation_id;
 };
 
 }  // namespace content

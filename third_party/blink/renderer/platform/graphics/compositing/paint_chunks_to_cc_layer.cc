@@ -450,7 +450,7 @@ template <typename Result>
 void ConversionContext<Result>::StartClip(
     const FloatRoundedRect& combined_clip_rect,
     const ClipPaintPropertyNode& lowest_combined_clip_node) {
-  if (combined_clip_rect.Rect() == gfx::RectF(LayoutRect::InfiniteIntRect())) {
+  if (combined_clip_rect.Rect() == gfx::RectF(InfiniteIntRect())) {
     PushState(StateEntry::kClipOmitted);
   } else {
     const auto& local_transform =
@@ -603,12 +603,11 @@ void ConversionContext<Result>::StartEffect(
     }
   } else {
     // Handle filter effect.
-    // The size parameter is only used to computed the origin of zoom
-    // operation, which we never generate.
-    gfx::SizeF empty;
+    // The `layer_bounds` parameter is only used to compute the ZOOM lens
+    // bounds, which we never generate.
     cc::PaintFlags filter_flags;
     filter_flags.setImageFilter(cc::RenderSurfaceFilters::BuildImageFilter(
-        effect.Filter().AsCcFilterOperations(), empty));
+        effect.Filter().AsCcFilterOperations()));
     save_layer_id = push<cc::SaveLayerOp>(filter_flags);
   }
   result_.EndPaintOfPairedBegin();

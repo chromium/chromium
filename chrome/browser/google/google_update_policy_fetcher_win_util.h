@@ -10,8 +10,8 @@
 
 #include "base/functional/callback.h"
 #include "base/values.h"
+#include "chrome/updater/app/server/win/updater_legacy_idl.h"
 #include "components/policy/core/common/policy_map.h"
-#include "google_update/google_update_idl.h"
 
 using PolicyValueOverrideFunction = base::RepeatingCallback<base::Value(BSTR)>;
 

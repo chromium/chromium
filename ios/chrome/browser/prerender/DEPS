@@ -1,3 +1,18 @@
+include_rules = [
+  "+ios/chrome/browser/net",
+  "+ios/chrome/browser/app_launcher",
+  "+ios/chrome/browser/crash_report",
+  "+ios/chrome/browser/download",
+  "+ios/chrome/browser/history",
+  "+ios/chrome/browser/itunes_urls",
+  "+ios/chrome/browser/signin",
+  "+ios/chrome/browser/supervised_user",
+  "+ios/chrome/browser/tabs",
+  "+ios/chrome/browser/ntp",
+  "+ios/chrome/browser/sessions",
+  "+ios/chrome/browser/web",
+]
+
 specific_include_rules = {
   # TODO(crbug.com/1294160): Remove this dependency.
   "^prerender_service_impl.mm": [

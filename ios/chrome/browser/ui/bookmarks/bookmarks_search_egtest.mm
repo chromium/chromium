@@ -6,6 +6,7 @@
 #import <XCTest/XCTest.h>
 
 #import "base/strings/sys_string_conversions.h"
+#import "components/bookmarks/common/storage_type.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
@@ -18,10 +19,6 @@
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using chrome_test_util::BookmarksDeleteSwipeButton;
 using chrome_test_util::BookmarksNavigationBarBackButton;
@@ -44,14 +41,14 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 - (void)setUp {
   [super setUp];
 
-  [ChromeEarlGrey waitForBookmarksToFinishLoading];
-  [ChromeEarlGrey clearBookmarks];
+  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
+  [BookmarkEarlGrey clearBookmarks];
 }
 
 // Tear down called once per test.
 - (void)tearDown {
   [super tearDown];
-  [ChromeEarlGrey clearBookmarks];
+  [BookmarkEarlGrey clearBookmarks];
   [BookmarkEarlGrey clearBookmarksPositionCache];
 }
 
@@ -59,7 +56,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Tests that the search bar is shown on root.
 - (void)testSearchBarShownOnRoot {
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
 
   // Verify the search bar is shown.
@@ -70,7 +68,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Tests that the search bar is shown on mobile list.
 - (void)testSearchBarShownOnMobileBookmarks {
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -82,7 +81,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Tests the search.
 - (void)testSearchResults {
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -97,9 +97,11 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"French URL")]
       assertWithMatcher:grey_notNil()];
 
-  // Search 'o'.
+  // Search 'o', tapping first to provide focus.
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
-      performAction:grey_typeText(@"o")];
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:SearchIconButton()]
+      performAction:grey_replaceText(@"o")];
 
   // Verify that folders are not filtered out.
   [[EarlGrey
@@ -107,8 +109,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       assertWithMatcher:grey_notNil()];
 
   // Search 'on'.
-  [[EarlGrey selectElementWithMatcher:SearchIconButton()]
-      performAction:grey_typeText(@"n")];
+  // TODO(crbug.com/1454516): This should use grey_typeText when fixed.
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"n" flags:0];
 
   // Verify we are left only with the "First" and "Second" one.
   // 'on' matches 'pony.html' and 'Second'
@@ -127,8 +129,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       assertWithMatcher:grey_nil()];
 
   // Search again for 'ony'.
-  [[EarlGrey selectElementWithMatcher:SearchIconButton()]
-      performAction:grey_typeText(@"y")];
+  // TODO(crbug.com/1454516): This should use grey_typeText when fixed.
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"y" flags:0];
 
   // Verify we are left only with the "First" one for 'pony.html'.
   [[EarlGrey
@@ -144,13 +146,19 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Tests that you get 'No Results' when no matching bookmarks are found.
 - (void)testSearchWithNoResults {
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
-  // Search 'zz'.
+  // Search 'zz', tapping first to provide focus.
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
-      performAction:grey_typeText(@"zz\n")];
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:SearchIconButton()]
+      performAction:grey_replaceText(@"zz")];
+  // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
+  // replaceText can properly handle \n.
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 
   // Verify that we have a 'No Results' label somewhere.
   [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
@@ -167,7 +175,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Tests that scrim is shown while search box is enabled with no queries.
 - (void)testSearchScrimShownWhenSearchBoxEnabled {
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -181,7 +190,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Searching.
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
-      performAction:grey_typeText(@"i")];
+      performAction:grey_replaceText(@"i")];
 
   // Verify that scrim is not visible.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
@@ -189,8 +198,10 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       assertWithMatcher:grey_nil()];
 
   // Go back to original folder content.
+  // TODO(crbug.com/1454514): Revert to grey_clearText when fixed in EG.
+  // (grey_replaceText(@""))
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
-      performAction:grey_clearText()];
+      performAction:grey_replaceText(@"")];
 
   // Verify that scrim is visible again.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
@@ -209,7 +220,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 // Tests that tapping scrim while search box is enabled dismisses the search
 // controller.
 - (void)testSearchTapOnScrimCancelsSearchController {
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -241,7 +253,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 // Tests that long press on scrim while search box is enabled dismisses the
 // search controller.
 - (void)testSearchLongPressOnScrimCancelsSearchController {
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -277,13 +290,16 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Tests cancelling search restores the node's bookmarks.
 - (void)testSearchCancelRestoresNodeBookmarks {
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
-  // Search.
+  // Search, tapping first to provide focus.
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
-      performAction:grey_typeText(@"X")];
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:SearchIconButton()]
+      performAction:grey_replaceText(@"X")];
 
   // Verify we have no items.
   [[EarlGrey
@@ -313,7 +329,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Tests that the navigation bar isn't shown when search is focused and empty.
 - (void)testSearchHidesNavigationBar {
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -328,7 +345,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Search.
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
-      performAction:grey_typeText(@"First")];
+      performAction:grey_replaceText(@"First")];
 
   // Verify we now have a navigation bar.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
@@ -339,13 +356,14 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 // Tests that you can long press and edit a bookmark and see edits when going
 // back to search.
 - (void)testSearchLongPressEditOnURL {
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
   // Search.
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
-      performAction:grey_typeText(@"First")];
+      performAction:grey_replaceText(@"First")];
 
   // Invoke Edit through context menu.
   [BookmarkEarlGreyUI
@@ -376,7 +394,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 // Tests that you can long press and edit a bookmark folder and see edits
 // when going back to search.
 - (void)testSearchLongPressEditOnFolder {
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -384,7 +403,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Search.
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
-      performAction:grey_typeText(existingFolderTitle)];
+      performAction:grey_replaceText(existingFolderTitle)];
 
   // Invoke Edit through long press.
   [[EarlGrey selectElementWithMatcher:TappableBookmarkNodeWithLabel(
@@ -423,13 +442,14 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Tests that you can swipe URL items in search mode.
 - (void)testSearchUrlCanBeSwipedToDelete {
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
   // Search.
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
-      performAction:grey_typeText(@"First URL")];
+      performAction:grey_replaceText(@"First URL")];
 
   [[EarlGrey
       selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"First URL")]
@@ -442,13 +462,14 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Tests that you can swipe folders in search mode.
 - (void)testSearchFolderCanBeSwipedToDelete {
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
   // Search.
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
-      performAction:grey_typeText(@"Folder 1")];
+      performAction:grey_replaceText(@"Folder 1")];
 
   [[EarlGrey
       selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 1")]
@@ -461,7 +482,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Tests that you can't search while in edit mode.
 - (void)testDisablesSearchOnEditMode {
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -489,13 +511,17 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Tests that new Folder is disabled when search results are shown.
 - (void)testSearchDisablesNewFolderButtonOnNavigationBar {
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
   // Search and hide keyboard.
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
-      performAction:grey_typeText(@"First\n")];
+      performAction:grey_replaceText(@"First")];
+  // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
+  // replaceText can properly handle \n.
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 
   // Verify we now have a navigation bar.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
@@ -512,13 +538,17 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 // Tests that a single edit is possible when searching and selecting a single
 // URL in edit mode.
 - (void)testSearchEditModeEditOnSingleURL {
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
   // Search and hide keyboard.
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
-      performAction:grey_typeText(@"First\n")];
+      performAction:grey_replaceText(@"First")];
+  // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
+  // replaceText can properly handle \n.
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 
   // Change to edit mode
   [[EarlGrey
@@ -563,13 +593,17 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Tests that multiple deletes on search results works.
 - (void)testSearchEditModeDeleteOnMultipleURL {
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
   // Search and hide keyboard.
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
-      performAction:grey_typeText(@"URL\n")];
+      performAction:grey_replaceText(@"URL")];
+  // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
+  // replaceText can properly handle \n.
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 
   // Change to edit mode
   [[EarlGrey
@@ -622,13 +656,19 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Tests that multiple moves on search results works.
 - (void)testMoveFunctionalityOnMultipleUrlSelection {
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
   // Search and hide keyboard.
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
-      performAction:grey_typeText(@"URL\n")];
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:SearchIconButton()]
+      performAction:grey_replaceText(@"URL")];
+  // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
+  // replaceText can properly handle \n.
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 
   // Change to edit mode, using context menu.
   [[EarlGrey
@@ -678,7 +718,9 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   [[EarlGrey selectElementWithMatcher:CancelButton()] performAction:grey_tap()];
 
   // Verify Folder 1 has three bookmark nodes.
-  [BookmarkEarlGrey verifyChildCount:3 inFolderWithName:@"Folder 1"];
+  [BookmarkEarlGrey verifyChildCount:3
+                    inFolderWithName:@"Folder 1"
+                           inStorage:bookmarks::StorageType::kLocalOrSyncable];
 
   // Drill down to where "Second URL" and "First URL" have been moved and assert
   // it's presence.
@@ -693,12 +735,18 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Tests that a search and single edit is possible when searching over root.
 - (void)testSearchEditPossibleOnRoot {
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
 
   // Search and hide keyboard.
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
-      performAction:grey_typeText(@"First\n")];
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:SearchIconButton()]
+      performAction:grey_replaceText(@"First")];
+  // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
+  // replaceText can properly handle \n.
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 
   // Change to edit mode
   [[EarlGrey
@@ -751,7 +799,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Tests that you can search folders.
 - (void)testSearchFolders {
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -768,7 +817,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Search and go to folder 1.1.
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
-      performAction:grey_typeText(@"Folder 1.1")];
+      performAction:grey_replaceText(@"Folder 1.1")];
   [[EarlGrey
       selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 1.1")]
       performAction:grey_tap()];
@@ -779,7 +828,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Search and go to Folder 2.
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
-      performAction:grey_typeText(@"Folder 2")];
+      performAction:grey_replaceText(@"Folder 2")];
   [[EarlGrey
       selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 2")]
       performAction:grey_tap()];

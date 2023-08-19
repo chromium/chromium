@@ -9,15 +9,15 @@
 
 namespace password_manager::constants {
 
-constexpr char kAutocompleteUsername[] = "username";
-constexpr char kAutocompleteCurrentPassword[] = "current-password";
-constexpr char kAutocompleteNewPassword[] = "new-password";
-constexpr char kAutocompleteCreditCardPrefix[] = "cc-";
-constexpr char kAutocompleteOneTimePassword[] = "one-time-code";
-constexpr char kAutocompleteWebAuthn[] = "webauthn";
+inline constexpr char kAutocompleteUsername[] = "username";
+inline constexpr char kAutocompleteCurrentPassword[] = "current-password";
+inline constexpr char kAutocompleteNewPassword[] = "new-password";
+inline constexpr char kAutocompleteCreditCardPrefix[] = "cc-";
+inline constexpr char kAutocompleteOneTimePassword[] = "one-time-code";
+inline constexpr char kAutocompleteWebAuthn[] = "webauthn";
 
-constexpr int kMaxPasswordNoteLength = 1000;
-constexpr int kMaxPasswordsPerCSVFile = 3000;
+inline constexpr int kMaxPasswordNoteLength = 1000;
+inline constexpr int kMaxPasswordsPerCSVFile = 3000;
 
 }  // namespace password_manager::constants
 

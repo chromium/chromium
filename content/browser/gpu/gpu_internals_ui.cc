@@ -392,11 +392,12 @@ base::Value::List GetDisplayInfo() {
   for (const auto& display : displays) {
     display_info.Append(
         display::BuildGpuInfoEntry("Info ", display.ToString()));
+    auto& display_color_spaces = display.GetColorSpaces();
     {
       std::vector<std::string> names;
       std::vector<gfx::ColorSpace> color_spaces;
       std::vector<gfx::BufferFormat> buffer_formats;
-      display.color_spaces().ToStrings(&names, &color_spaces, &buffer_formats);
+      display_color_spaces.ToStrings(&names, &color_spaces, &buffer_formats);
       for (size_t i = 0; i < names.size(); ++i) {
         display_info.Append(display::BuildGpuInfoEntry(
             base::StringPrintf("Color space (%s)", names[i].c_str()),
@@ -408,14 +409,14 @@ base::Value::List GetDisplayInfo() {
     }
     display_info.Append(display::BuildGpuInfoEntry(
         "Color volume", skia::SkColorSpacePrimariesToString(
-                            display.color_spaces().GetPrimaries())));
+                            display_color_spaces.GetPrimaries())));
     display_info.Append(display::BuildGpuInfoEntry(
         "SDR white level in nits",
-        base::NumberToString(display.color_spaces().GetSDRMaxLuminanceNits())));
+        base::NumberToString(display_color_spaces.GetSDRMaxLuminanceNits())));
     display_info.Append(display::BuildGpuInfoEntry(
         "HDR relative maximum luminance",
         base::NumberToString(
-            display.color_spaces().GetHDRMaxLuminanceRelative())));
+            display_color_spaces.GetHDRMaxLuminanceRelative())));
     display_info.Append(display::BuildGpuInfoEntry(
         "Bits per color component",
         base::NumberToString(display.depth_per_component())));
@@ -601,6 +602,36 @@ const char* GetProfileName(gpu::VideoCodecProfile profile) {
       return "av1 profile high";
     case gpu::AV1PROFILE_PROFILE_PRO:
       return "av1 profile pro";
+    case gpu::VVCPROFILE_MAIN10:
+      return "vvc profile main10";
+    case gpu::VVCPROFILE_MAIN12:
+      return "vvc profile main12";
+    case gpu::VVCPROFILE_MAIN12_INTRA:
+      return "vvc profile main12 intra";
+    case gpu::VVCPROIFLE_MULTILAYER_MAIN10:
+      return "vvc profile multilayer main10";
+    case gpu::VVCPROFILE_MAIN10_444:
+      return "vvc profile main10 444";
+    case gpu::VVCPROFILE_MAIN12_444:
+      return "vvc profile main12 444";
+    case gpu::VVCPROFILE_MAIN16_444:
+      return "vvc profile main16 444";
+    case gpu::VVCPROFILE_MAIN12_444_INTRA:
+      return "vvc profile main12 444 intra";
+    case gpu::VVCPROFILE_MAIN16_444_INTRA:
+      return "vvc profile main16 444 intra";
+    case gpu::VVCPROFILE_MULTILAYER_MAIN10_444:
+      return "vvc profile multilayer main10 444";
+    case gpu::VVCPROFILE_MAIN10_STILL_PICTURE:
+      return "vvc profile main10 stillpicture";
+    case gpu::VVCPROFILE_MAIN12_STILL_PICTURE:
+      return "vvc profile main12 stillpicture";
+    case gpu::VVCPROFILE_MAIN10_444_STILL_PICTURE:
+      return "vvc profile main10 444 stillpicture";
+    case gpu::VVCPROFILE_MAIN12_444_STILL_PICTURE:
+      return "vvc profile main12 444 stillpicture";
+    case gpu::VVCPROFILE_MAIN16_444_STILL_PICTURE:
+      return "vvc profile main16 444 stillpicture";
   }
   NOTREACHED();
   return "";

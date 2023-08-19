@@ -28,6 +28,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/views/controls/label.h"
 
 namespace ash {
 namespace {

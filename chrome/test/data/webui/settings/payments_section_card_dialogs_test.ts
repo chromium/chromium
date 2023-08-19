@@ -11,7 +11,7 @@ import {CrButtonElement, loadTimeData} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, whenAttributeIs} from 'chrome://webui-test/test_util.js';
 
-import {createCreditCardEntry, createEmptyCreditCardEntry, TestPaymentsManager} from './passwords_and_autofill_fake_data.js';
+import {createCreditCardEntry, createEmptyCreditCardEntry, TestPaymentsManager} from './autofill_fake_data.js';
 import {createPaymentsSection, getDefaultExpectations, getLocalAndServerCreditCardListItems, getCardRowShadowRoot} from './payments_section_utils.js';
 
 // clang-format on
@@ -21,7 +21,6 @@ suite('PaymentsSectionCardDialogs', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({
       migrationEnabled: true,
-      removeCardExpirationAndTypeTitles: true,
       virtualCardEnrollmentEnabled: true,
       showIbansSettings: true,
     });

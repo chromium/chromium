@@ -7,6 +7,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/passwords/password_breach_app_interface.h"
 #import "ios/chrome/browser/ui/passwords/password_constants.h"
+#import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -15,10 +16,6 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "ui/base/l10n/l10n_util.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -59,11 +56,19 @@ id<GREYMatcher> CheckPasswordButton() {
   [[EarlGrey selectElementWithMatcher:PasswordBreachMatcher()]
       assertWithMatcher:grey_notNil()];
 
+  // Mock successful auth for opening the password manager.
+  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
+
   [[EarlGrey selectElementWithMatcher:CheckPasswordButton()]
       performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:PasswordListMatcher()]
       assertWithMatcher:grey_notNil()];
+
+  // Cleanup mock reauth module.
+  [PasswordSettingsAppInterface removeMockReauthenticationModule];
 }
 
 @end

@@ -60,12 +60,20 @@ std::u16string AXPlatformNodeDelegate::GetTextContentUTF16() const {
   if (!value.empty())
     return value;
 
+  // The name of a leaf node in Views is displayed inside the View, i.e.
+  // `GetNameFrom` == `ax::mojom::NameFrom::kContents`, except in text fields,
+  // where the name attribute is the field's label and the value attribute is
+  // the field's text contents. For maximum compatibility with the Web code, we
+  // compute the text of a non-leaf text field from the text contents of its
+  // children, even though we currently know of no such text field in Views.
+  //
   // TODO(https://crbug.com/1030703): The check for `IsInvisibleOrIgnored()`
   // should not be needed. `ChildAtIndex()` and `GetChildCount()` are already
   // supposed to skip over nodes that are invisible or ignored, but
   // `ViewAXPlatformNodeDelegate` does not currently implement this behavior.
-  if (IsLeaf() && !IsInvisibleOrIgnored())
+  if (IsLeaf() && !GetData().IsTextField() && !IsInvisibleOrIgnored()) {
     return GetString16Attribute(ax::mojom::StringAttribute::kName);
+  }
 
   std::u16string text_content;
   for (size_t i = 0; i < GetChildCount(); ++i) {
@@ -479,18 +487,12 @@ AXPlatformNode* AXPlatformNodeDelegate::GetTargetNodeForRelation(
   if (!GetIntAttribute(attr, &target_id))
     return nullptr;
 
-  return GetFromNodeID(target_id);
-}
-
-std::set<AXPlatformNode*> AXPlatformNodeDelegate::GetNodesForNodeIds(
-    const std::set<int32_t>& ids) {
-  std::set<AXPlatformNode*> nodes;
-  for (int32_t node_id : ids) {
-    if (AXPlatformNode* node = GetFromNodeID(node_id)) {
-      nodes.insert(node);
-    }
+  AXPlatformNode* node = GetFromNodeID(target_id);
+  if (!IsValidRelationTarget(node)) {
+    return nullptr;
   }
-  return nodes;
+
+  return node;
 }
 
 std::vector<AXPlatformNode*> AXPlatformNodeDelegate::GetTargetNodesForRelation(
@@ -506,29 +508,54 @@ std::vector<AXPlatformNode*> AXPlatformNodeDelegate::GetTargetNodesForRelation(
 
   std::vector<ui::AXPlatformNode*> nodes;
   for (int32_t target_id : target_ids) {
-    if (ui::AXPlatformNode* node = GetFromNodeID(target_id)) {
-      if (!base::Contains(nodes, node))
-        nodes.push_back(node);
+    ui::AXPlatformNode* target = GetFromNodeID(target_id);
+    if (target && IsValidRelationTarget(target) &&
+        !base::Contains(nodes, target)) {
+      nodes.push_back(target);
     }
   }
 
   return nodes;
 }
 
-std::set<AXPlatformNode*> AXPlatformNodeDelegate::GetSourceNodesForReverseRelations(
+std::vector<AXPlatformNode*>
+AXPlatformNodeDelegate::GetSourceNodesForReverseRelations(
     ax::mojom::IntAttribute attr) {
   // TODO(accessibility) Implement these if views ever use relations more
   // widely. The use so far has been for the Omnibox to the suggestion
   // popup. If this is ever implemented, then the "popup for" to "controlled
   // by" mapping in AXPlatformRelationWin can be removed, as it would be
   // redundant with setting the controls relationship.
-  return std::set<AXPlatformNode*>();
+  return std::vector<AXPlatformNode*>();
 }
 
-std::set<AXPlatformNode*>
+std::vector<AXPlatformNode*>
 AXPlatformNodeDelegate::GetSourceNodesForReverseRelations(
     ax::mojom::IntListAttribute attr) {
-  return std::set<AXPlatformNode*>();
+  return std::vector<AXPlatformNode*>();
+}
+
+std::vector<ui::AXPlatformNode*>
+AXPlatformNodeDelegate::GetNodesFromRelationIdSet(
+    const std::set<AXNodeID>& ids) {
+  std::vector<ui::AXPlatformNode*> nodes;
+
+  for (AXNodeID node_id : ids) {
+    ui::AXPlatformNode* node = GetFromNodeID(node_id);
+    if (node && IsValidRelationTarget(node)) {
+      nodes.push_back(node);
+    }
+  }
+  return nodes;
+}
+
+bool AXPlatformNodeDelegate::IsValidRelationTarget(
+    AXPlatformNode* target) const {
+  DCHECK_GT(GetUniqueId(), kInvalidAXUniqueId);
+  DCHECK(target);
+  DCHECK_GT(target->GetUniqueId(), kInvalidAXUniqueId);
+  // We should ignore reflexive relations.
+  return GetUniqueId() != target->GetUniqueId();
 }
 
 std::u16string AXPlatformNodeDelegate::GetAuthorUniqueId() const {
@@ -1161,6 +1188,12 @@ std::u16string AXPlatformNodeDelegate::GetLocalizedStringForRoleDescription()
 std::u16string AXPlatformNodeDelegate::GetStyleNameAttributeAsLocalizedString()
     const {
   return std::u16string();
+}
+
+void AXPlatformNodeDelegate::SetIsPrimaryWebContentsForWindow() {}
+
+bool AXPlatformNodeDelegate::IsPrimaryWebContentsForWindow() const {
+  return false;
 }
 
 bool AXPlatformNodeDelegate::ShouldIgnoreHoveredStateForTesting() {

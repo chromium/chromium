@@ -22,6 +22,7 @@ enum class RunState {
   kRunning = 0,
   kStopped,
   kSystemPermissionsError,
+  kCameraBusyError,
 };
 
 // VideoCapturerSource is an interface representing the source for captured

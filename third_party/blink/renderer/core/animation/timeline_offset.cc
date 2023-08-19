@@ -222,7 +222,8 @@ Length TimelineOffset::ResolveLength(Element* element, const CSSValue* value) {
   CSSToLengthConversionData::Flags ignored_flags = 0;
   CSSToLengthConversionData length_conversion_data(
       element->ComputedStyleRef(), element_resolve_context.ParentStyle(),
-      element_resolve_context.RootElementStyle(), document.GetLayoutView(),
+      element_resolve_context.RootElementStyle(),
+      CSSToLengthConversionData::ViewportSize(document.GetLayoutView()),
       CSSToLengthConversionData::ContainerSizes(element),
       element->GetComputedStyle()->EffectiveZoom(), ignored_flags);
 

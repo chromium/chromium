@@ -7,10 +7,6 @@
 #import "base/notreached.h"
 #import "ios/showcase/common/coordinator.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace showcase {
 
 NSString* const kClassForDisplayKey = @"classForDisplay";
@@ -89,6 +85,9 @@ NSString* const kUseCaseKey = @"useCase";
 
   // Resets the current coordinator whenever the navigation controller pops
   // back to this view controller.
+  if ([self.activeCoordinator respondsToSelector:@selector(stop)]) {
+    [self.activeCoordinator stop];
+  }
   self.activeCoordinator = nil;
 }
 

@@ -7,7 +7,7 @@
  * pure function that returns a new state object if anything has changed.
  * @see [redux tutorial]{@link https://redux.js.org/tutorials/fundamentals/part-3-state-actions-reducers}
  */
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {ambientReducers} from './ambient/ambient_reducers.js';
 import {AmbientState} from './ambient/ambient_state.js';

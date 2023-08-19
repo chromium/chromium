@@ -192,13 +192,17 @@ class MediatorTest : public AshTestBase {
   scoped_refptr<Device> subsequent_device_;
   scoped_refptr<Device> retroactive_device_;
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> adapter_;
-  raw_ptr<FakeFeatureStatusTracker, ExperimentalAsh> feature_status_tracker_;
-  raw_ptr<MockScannerBroker, ExperimentalAsh> mock_scanner_broker_;
-  raw_ptr<FakeRetroactivePairingDetector, ExperimentalAsh>
+  raw_ptr<FakeFeatureStatusTracker, DanglingUntriaged | ExperimentalAsh>
+      feature_status_tracker_;
+  raw_ptr<MockScannerBroker, DanglingUntriaged | ExperimentalAsh>
+      mock_scanner_broker_;
+  raw_ptr<FakeRetroactivePairingDetector, DanglingUntriaged | ExperimentalAsh>
       fake_retroactive_pairing_detector_;
-  raw_ptr<MockPairerBroker, ExperimentalAsh> mock_pairer_broker_;
-  raw_ptr<MockUIBroker, ExperimentalAsh> mock_ui_broker_;
-  raw_ptr<MockFastPairRepository, ExperimentalAsh> mock_fast_pair_repository_;
+  raw_ptr<MockPairerBroker, DanglingUntriaged | ExperimentalAsh>
+      mock_pairer_broker_;
+  raw_ptr<MockUIBroker, DanglingUntriaged | ExperimentalAsh> mock_ui_broker_;
+  raw_ptr<MockFastPairRepository, DanglingUntriaged | ExperimentalAsh>
+      mock_fast_pair_repository_;
   bluetooth_config::FakeAdapterStateController fake_adapter_state_controller_;
   std::unique_ptr<Mediator> mediator_;
 };
@@ -766,11 +770,22 @@ TEST_F(MediatorTest, DiscoveryBanLogic_InitialParing) {
   EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(0);
   mock_scanner_broker_->NotifyDeviceFound(initial_device_);
 
-  // We only expect the notification to be shown again when the Fast Pair
+  // We expect the notification to be shown again when the Fast Pair
   // state is reset. Simulate the Fast Pair toggle being turned off then on
   // again.
   feature_status_tracker_->SetIsFastPairEnabled(false);
   feature_status_tracker_->SetIsFastPairEnabled(true);
+  EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(1);
+  mock_scanner_broker_->NotifyDeviceFound(initial_device_);
+
+  // We also expect the notification to be shown again after a successful
+  // pairing. Trigger the ban logic.
+  mock_ui_broker_->NotifyDiscoveryAction(initial_device_,
+                                         DiscoveryAction::kDismissedByUser);
+  EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(0);
+  mock_scanner_broker_->NotifyDeviceFound(initial_device_);
+  // Trigger a successful pairing
+  mock_pairer_broker_->NotifyDevicePaired(initial_device_);
   EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(1);
   mock_scanner_broker_->NotifyDeviceFound(initial_device_);
 }
@@ -821,11 +836,22 @@ TEST_F(MediatorTest, DiscoveryBan_SubsequentParing) {
   EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(0);
   mock_scanner_broker_->NotifyDeviceFound(subsequent_device_);
 
-  // We only expect the notification to be shown again when the Fast Pair
+  // We expect the notification to be shown again when the Fast Pair
   // state is reset. Simulate the Fast Pair toggle being turned off then on
   // again.
   feature_status_tracker_->SetIsFastPairEnabled(false);
   feature_status_tracker_->SetIsFastPairEnabled(true);
+  EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(1);
+  mock_scanner_broker_->NotifyDeviceFound(subsequent_device_);
+
+  // We also expect the notification to be shown again after a successful
+  // pairing. Trigger the ban logic.
+  mock_ui_broker_->NotifyDiscoveryAction(subsequent_device_,
+                                         DiscoveryAction::kDismissedByUser);
+  EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(0);
+  mock_scanner_broker_->NotifyDeviceFound(subsequent_device_);
+  // Trigger a successful pairing
+  mock_pairer_broker_->NotifyDevicePaired(subsequent_device_);
   EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(1);
   mock_scanner_broker_->NotifyDeviceFound(subsequent_device_);
 }

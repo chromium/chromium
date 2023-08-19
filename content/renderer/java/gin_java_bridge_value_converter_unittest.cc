@@ -107,7 +107,7 @@ TEST_F(GinJavaBridgeValueConverterTest, TypedArrays) {
       v8::Local<v8::Context>::New(isolate_, context_);
   v8::Context::Scope context_scope(context);
   v8::MicrotasksScope microtasks_scope(
-      isolate_, v8::MicrotasksScope::kDoNotRunMicrotasks);
+      context, v8::MicrotasksScope::kDoNotRunMicrotasks);
 
   std::unique_ptr<GinJavaBridgeValueConverter> converter(
       new GinJavaBridgeValueConverter());

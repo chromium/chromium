@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/autofill/autofill_credit_card_table_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/uuid.h"
@@ -20,10 +20,6 @@
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -53,7 +49,7 @@ class AutofillCreditCardTableViewControllerTest
   }
 
   void TearDown() override {
-    [base::mac::ObjCCastStrict<AutofillCreditCardTableViewController>(
+    [base::apple::ObjCCastStrict<AutofillCreditCardTableViewController>(
         controller()) settingsWillBeDismissed];
     ChromeTableViewControllerTest::TearDown();
   }
@@ -86,7 +82,7 @@ class AutofillCreditCardTableViewControllerTest
   // timeout.
   bool deleteItemAndWait(int section, int row, ConditionBlock condition) {
     AutofillCreditCardTableViewController* view_controller =
-        base::mac::ObjCCastStrict<AutofillCreditCardTableViewController>(
+        base::apple::ObjCCastStrict<AutofillCreditCardTableViewController>(
             controller());
     [view_controller deleteItems:@[ [NSIndexPath indexPathForRow:row
                                                        inSection:section] ]];

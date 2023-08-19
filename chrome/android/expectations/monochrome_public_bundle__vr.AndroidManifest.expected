@@ -4,8 +4,8 @@
     xmlns:dist="http://schemas.android.com/apk/distribution"
     featureSplit="vr"
     package="org.chromium.chrome.stable"
-    platformBuildVersionCode="33"
-    platformBuildVersionName="13"
+    platformBuildVersionCode="34"
+    platformBuildVersionName="14"
     android:versionCode="OFFSET=20"
     android:versionName="#.#.#.#">
   <dist:module dist:instant="false" dist:title="@string/vr_module_title">  # DIFF-ANCHOR: aac219ae
@@ -19,7 +19,7 @@
     </dist:delivery>  # DIFF-ANCHOR: ea157ece
     <dist:fusing dist:include="true"/>
   </dist:module>  # DIFF-ANCHOR: aac219ae
-  <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="33"/>
+  <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="34"/>
   <uses-split android:name="chrome"/>
   <application/>
 </manifest>

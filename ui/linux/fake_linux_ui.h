@@ -23,7 +23,6 @@ class FakeLinuxUi : public LinuxUiAndTheme {
   gfx::Image GetIconForContentType(const std::string& content_type,
                                    int size,
                                    float scale) const override;
-  float GetDeviceScaleFactor() const override;
   base::flat_map<std::string, std::string> GetKeyboardLayoutMap() override;
 #if BUILDFLAG(ENABLE_PRINTING)
   printing::PrintDialogLinuxInterface* CreatePrintDialog(
@@ -65,6 +64,7 @@ class FakeLinuxUi : public LinuxUiAndTheme {
   void GetInactiveSelectionBgColor(SkColor* color) const override;
   void GetInactiveSelectionFgColor(SkColor* color) const override;
   bool PreferDarkTheme() const override;
+  void SetDarkTheme(bool dark) override;
   std::unique_ptr<ui::NavButtonProvider> CreateNavButtonProvider() override;
   ui::WindowFrameProvider* GetWindowFrameProvider(bool solid_frame) override;
 };

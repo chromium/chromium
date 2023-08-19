@@ -4,16 +4,20 @@
 
 #include "components/pdf/browser/pdf_web_contents_helper.h"
 
+#include "base/test/metrics/user_action_tester.h"
+#include "build/build_config.h"
 #include "components/pdf/browser/pdf_web_contents_helper_client.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/touch_selection_controller_client_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "pdf/mojom/pdf.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/pointer/touch_editing_controller.h"
 #include "ui/gfx/selection_bound.h"
 
 namespace pdf {
@@ -37,9 +41,6 @@ class FakePdfListener : public pdf::mojom::PdfListener {
               (override));
 };
 
-}  // namespace
-
-// A mock PDFWebContentsHelperClient.
 class TestPDFWebContentsHelperClient : public PDFWebContentsHelperClient {
  public:
   TestPDFWebContentsHelperClient() = default;
@@ -48,6 +49,9 @@ class TestPDFWebContentsHelperClient : public PDFWebContentsHelperClient {
       delete;
   TestPDFWebContentsHelperClient& operator=(
       const TestPDFWebContentsHelperClient&) = delete;
+
+  const gfx::SelectionBound& GetSelectionBoundStart() const { return start_; }
+  const gfx::SelectionBound& GetSelectionBoundEnd() const { return end_; }
 
  private:
   // PDFWebContentsHelperClient:
@@ -62,55 +66,19 @@ class TestPDFWebContentsHelperClient : public PDFWebContentsHelperClient {
   void OnSaveURL(content::WebContents* contents) override {}
   void SetPluginCanSave(content::RenderFrameHost* render_frame_host,
                         bool can_save) override {}
-};
-
-// A mock content::TouchSelectionControllerClientManager.
-class TestTouchSelectionControllerClientManager
-    : public content::TouchSelectionControllerClientManager {
- public:
-  TestTouchSelectionControllerClientManager() = default;
-  ~TestTouchSelectionControllerClientManager() override = default;
-  TestTouchSelectionControllerClientManager(
-      const TestTouchSelectionControllerClientManager&) = delete;
-  TestTouchSelectionControllerClientManager& operator=(
-      const TestTouchSelectionControllerClientManager&) = delete;
-
-  const gfx::SelectionBound& GetSelectionBoundStart() { return start_; }
-
-  const gfx::SelectionBound& GetSelectionBoundEnd() { return end_; }
-
- private:
-  // content::TouchSelectionControllerClientManager:
-  void DidStopFlinging() override {}
-
-  void OnSwipeToMoveCursorBegin() override {}
-
-  void OnSwipeToMoveCursorEnd() override {}
-
-  void UpdateClientSelectionBounds(
-      const gfx::SelectionBound& start,
-      const gfx::SelectionBound& end,
-      ui::TouchSelectionControllerClient* client,
-      ui::TouchSelectionMenuClient* menu_client) override {
+  void OnDidScroll(const gfx::SelectionBound& start,
+                   const gfx::SelectionBound& end) override {
     start_ = start;
     end_ = end;
   }
 
-  void InvalidateClient(ui::TouchSelectionControllerClient* client) override {}
-
-  ui::TouchSelectionController* GetTouchSelectionController() override {
-    return nullptr;
-  }
-
-  void AddObserver(content::TouchSelectionControllerClientManager::Observer*
-                       observer) override {}
-
-  void RemoveObserver(content::TouchSelectionControllerClientManager::Observer*
-                          observer) override {}
-
+ private:
+  // The last bounds reported by PDFWebContentsHelper.
   gfx::SelectionBound start_;
   gfx::SelectionBound end_;
 };
+
+}  // namespace
 
 class PDFWebContentsHelperTest : public content::ContentBrowserTest {
  public:
@@ -130,30 +98,28 @@ class PDFWebContentsHelperTest : public content::ContentBrowserTest {
     return PDFWebContentsHelper::FromWebContents(shell()->web_contents());
   }
 
-  TestTouchSelectionControllerClientManager*
-  touch_selection_controller_client_manager() {
-    return touch_selection_controller_client_manager_.get();
-  }
-
   content::RenderWidgetHostView* GetRenderWidgetHostView() {
     return shell()->web_contents()->GetRenderWidgetHostView();
   }
 
+  TestPDFWebContentsHelperClient* client() { return client_; }
+
   // content::ContentBrowserTest:
   void SetUpOnMainThread() override {
     content::ContentBrowserTest::SetUpOnMainThread();
+
+    auto client = std::make_unique<TestPDFWebContentsHelperClient>();
+    client_ = client.get();
     PDFWebContentsHelper::CreateForWebContentsWithClient(
-        shell()->web_contents(),
-        std::make_unique<TestPDFWebContentsHelperClient>());
-    touch_selection_controller_client_manager_ =
-        std::make_unique<TestTouchSelectionControllerClientManager>();
-    pdf_web_contents_helper()->touch_selection_controller_client_manager_ =
-        touch_selection_controller_client_manager_.get();
+        shell()->web_contents(), std::move(client));
+  }
+  void TearDownOnMainThread() override {
+    client_ = nullptr;
+    content::ContentBrowserTest::TearDownOnMainThread();
   }
 
  private:
-  std::unique_ptr<TestTouchSelectionControllerClientManager>
-      touch_selection_controller_client_manager_;
+  raw_ptr<TestPDFWebContentsHelperClient> client_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(PDFWebContentsHelperTest, SetListenerTwice) {
@@ -173,51 +139,63 @@ IN_PROC_BROWSER_TEST_F(PDFWebContentsHelperTest, SetListenerTwice) {
 // Tests that select-changed on a pdf text brings up selection handles and the
 // quick menu in the reasonable position.
 IN_PROC_BROWSER_TEST_F(PDFWebContentsHelperTest, SelectionChanged) {
-  TestTouchSelectionControllerClientManager* manager =
-      touch_selection_controller_client_manager();
-  gfx::SelectionBound start = manager->GetSelectionBoundStart();
-  gfx::SelectionBound end = manager->GetSelectionBoundEnd();
+  content::NavigateToURL(shell(), GURL());
 
-  EXPECT_EQ(gfx::RectF(), gfx::RectFBetweenSelectionBounds(start, end));
-  EXPECT_EQ(gfx::RectF(), gfx::RectFBetweenVisibleSelectionBounds(start, end));
+  gfx::SelectionBound initial_start = client()->GetSelectionBoundStart();
+  gfx::SelectionBound initial_end = client()->GetSelectionBoundEnd();
 
-  gfx::PointF left(1.0f, 1.0f);
-  gfx::PointF right(5.0f, 5.0f);
-  int32_t left_height = 2;
-  int32_t right_height = 2;
-  SelectionChanged(left, left_height, right, right_height);
+  EXPECT_EQ(gfx::RectF(),
+            gfx::RectFBetweenSelectionBounds(initial_start, initial_end));
+  EXPECT_EQ(gfx::RectF(), gfx::RectFBetweenVisibleSelectionBounds(initial_start,
+                                                                  initial_end));
 
-  start = manager->GetSelectionBoundStart();
-  end = manager->GetSelectionBoundEnd();
+  constexpr gfx::PointF kLeft(1.0f, 1.0f);
+  constexpr gfx::PointF kRight(5.0f, 5.0f);
+  constexpr int32_t kLeftHeight = 2;
+  constexpr int32_t kRightHeight = 2;
+  SelectionChanged(kLeft, kLeftHeight, kRight, kRightHeight);
 
+  gfx::SelectionBound start = client()->GetSelectionBoundStart();
+  gfx::SelectionBound end = client()->GetSelectionBoundEnd();
+
+#if BUILDFLAG(IS_MAC)
+  // Since macOS does not support Touch Selection Editing, the
+  // SelectionChanged() call does not affect the selection bounds.
+  EXPECT_EQ(start, initial_start);
+  EXPECT_EQ(end, initial_end);
+#else
   gfx::PointF origin_f;
   content::RenderWidgetHostView* view = GetRenderWidgetHostView();
   if (view)
     origin_f = view->TransformPointToRootCoordSpaceF(gfx::PointF());
 
-  gfx::PointF edge_start(left.x() + origin_f.x(), left.y() + origin_f.y());
-  gfx::PointF edge_end(left.x() + origin_f.x(),
-                       left.y() + origin_f.y() + left_height);
   gfx::SelectionBound expected_start;
-  expected_start.SetEdge(edge_start, edge_end);
-  expected_start.SetVisibleEdge(edge_start, edge_end);
+  {
+    gfx::PointF edge_start(kLeft.x() + origin_f.x(), kLeft.y() + origin_f.y());
+    gfx::PointF edge_end(kLeft.x() + origin_f.x(),
+                         kLeft.y() + origin_f.y() + kLeftHeight);
+    expected_start.SetEdge(edge_start, edge_end);
+    expected_start.SetVisibleEdge(edge_start, edge_end);
+  }
 
-  edge_start = gfx::PointF(right.x() + origin_f.x(), right.y() + origin_f.y());
-  edge_end = gfx::PointF(right.x() + origin_f.x(),
-                         right.y() + origin_f.y() + right_height);
   gfx::SelectionBound expected_end;
-  expected_end.SetEdge(edge_start, edge_end);
-  expected_end.SetVisibleEdge(edge_start, edge_end);
+  {
+    gfx::PointF edge_start(kRight.x() + origin_f.x(),
+                           kRight.y() + origin_f.y());
+    gfx::PointF edge_end(kRight.x() + origin_f.x(),
+                         kRight.y() + origin_f.y() + kRightHeight);
+    expected_end.SetEdge(edge_start, edge_end);
+    expected_end.SetVisibleEdge(edge_start, edge_end);
+  }
 
-  bool has_selection = expected_start != expected_end;
-  expected_start.set_visible(has_selection);
-  expected_end.set_visible(has_selection);
-  expected_start.set_type(has_selection ? gfx::SelectionBound::LEFT
-                                        : gfx::SelectionBound::EMPTY);
-  expected_end.set_type(has_selection ? gfx::SelectionBound::RIGHT
-                                      : gfx::SelectionBound::EMPTY);
+  ASSERT_NE(expected_start, expected_end);
 
+  expected_start.set_visible(true);
+  expected_start.set_type(gfx::SelectionBound::LEFT);
   EXPECT_EQ(expected_start, start);
+
+  expected_end.set_visible(true);
+  expected_end.set_type(gfx::SelectionBound::RIGHT);
   EXPECT_EQ(expected_end, end);
 
   gfx::RectF expected_rect(
@@ -229,6 +207,56 @@ IN_PROC_BROWSER_TEST_F(PDFWebContentsHelperTest, SelectionChanged) {
   // the quick menu.
   EXPECT_EQ(expected_rect, gfx::RectFBetweenSelectionBounds(start, end));
   EXPECT_EQ(expected_rect, gfx::RectFBetweenVisibleSelectionBounds(start, end));
+#endif  // BUILDFLAG(IS_MAC)
+}
+
+// When selecting something, only the copy command id should be enabled.
+IN_PROC_BROWSER_TEST_F(PDFWebContentsHelperTest,
+                       IsCommandIdEnabledCopyEnabled) {
+  content::NavigateToURL(shell(), GURL());
+
+  EXPECT_FALSE(
+      pdf_web_contents_helper()->IsCommandIdEnabled(ui::TouchEditable::kCut));
+  EXPECT_FALSE(
+      pdf_web_contents_helper()->IsCommandIdEnabled(ui::TouchEditable::kCopy));
+
+  constexpr gfx::PointF kLeft(1.0f, 1.0f);
+  constexpr gfx::PointF kRight(5.0f, 5.0f);
+  constexpr int32_t kLeftHeight = 2;
+  constexpr int32_t kRightHeight = 2;
+  SelectionChanged(kLeft, kLeftHeight, kRight, kRightHeight);
+
+  EXPECT_FALSE(
+      pdf_web_contents_helper()->IsCommandIdEnabled(ui::TouchEditable::kCut));
+
+#if BUILDFLAG(IS_MAC)
+  // Since macOS does not support Touch Selection Editing, the copy command is
+  // not enabled.
+  EXPECT_FALSE(
+      pdf_web_contents_helper()->IsCommandIdEnabled(ui::TouchEditable::kCopy));
+#else
+  EXPECT_TRUE(
+      pdf_web_contents_helper()->IsCommandIdEnabled(ui::TouchEditable::kCopy));
+#endif  // BUILDFLAG(IS_MAC)
+}
+
+// Test that the copy command executes.
+IN_PROC_BROWSER_TEST_F(PDFWebContentsHelperTest, ExecuteCommandCopy) {
+  content::NavigateToURL(shell(), GURL());
+
+  base::UserActionTester action_tester;
+  EXPECT_EQ(0, action_tester.GetActionCount("Copy"));
+
+  pdf_web_contents_helper()->ExecuteCommand(ui::TouchEditable::kCopy, 0);
+
+  EXPECT_EQ(1, action_tester.GetActionCount("Copy"));
+}
+
+IN_PROC_BROWSER_TEST_F(PDFWebContentsHelperTest, DefaultImplementation) {
+  EXPECT_FALSE(pdf_web_contents_helper()->SupportsAnimation());
+  EXPECT_FALSE(pdf_web_contents_helper()->CreateDrawable());
+  EXPECT_FALSE(pdf_web_contents_helper()->ShouldShowQuickMenu());
+  EXPECT_TRUE(pdf_web_contents_helper()->GetSelectedText().empty());
 }
 
 }  // namespace pdf

@@ -154,6 +154,7 @@ class MockClientSideDetectionService : public ClientSideDetectionService {
   MOCK_METHOD0(GetModelStr, std::string&());
   MOCK_METHOD0(GetModelSharedMemoryRegion, base::ReadOnlySharedMemoryRegion());
   MOCK_METHOD0(GetModelType, CSDModelType());
+  MOCK_METHOD0(IsModelAvailable, bool());
 };
 
 class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {

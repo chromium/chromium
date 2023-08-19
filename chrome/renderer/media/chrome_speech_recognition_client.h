@@ -70,6 +70,8 @@ class ChromeSpeechRecognitionClient
   void SpeechRecognitionAvailabilityChanged(
       bool is_speech_recognition_available) override;
   void SpeechRecognitionLanguageChanged(const std::string& language) override;
+  void SpeechRecognitionMaskOffensiveWordsChanged(
+      bool mask_offensive_words) override;
 
  private:
   using AddAudioCallback = base::RepeatingCallback<

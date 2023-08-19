@@ -26,7 +26,6 @@
 <translation id="2060505056492490888">'<ph name="DOT" />' નો ઉપયોગ '<ph name="INVALIDDOMAIN" />' માં ખોટી જગ્યાએ થયો છે.</translation>
 <translation id="2148716181193084225">આજે</translation>
 <translation id="2226276347425096477">કૃપા કરીને આ ટેક્સ્ટને <ph name="MAX_CHARACTERS" /> અક્ષર અથવા તેથી ઓછા સુધી નાનો કરો (તમે હાલમાં <ph name="CURRENT_LENGTH" /> અક્ષરોનો ઉપયોગ કરી રહ્યા છો).</translation>
-<translation id="2246498165605549352">સ્થાનિક ફાઇલ</translation>
 <translation id="2247351761944213033">અઠવાડિયું <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ટ્રૅક <ph name="NUMBER" /></translation>
 <translation id="2393030564806080191">રંગનું હેક્ઝાડેસિમલ મૂલ્ય</translation>
@@ -89,6 +88,7 @@
 <translation id="5425179576310518467">વર્તમાન તારીખ</translation>
 <translation id="5466621249238537318">કૃપા કરીને એક અથવા વધુ ફાઇલ પસંદ કરો. </translation>
 <translation id="5468998798572797635">પૂર્ણ સ્ક્રીનથી બહાર નીકળો</translation>
+<translation id="5514612371225420585">તમારા ડિવાઇસ પરની ફાઇલ</translation>
 <translation id="5516235301412634559">0.75</translation>
 <translation id="5537725057119320332">કાસ્ટ કરો</translation>
 <translation id="5546461542133609677">અનમ્યૂટ કરો</translation>
@@ -113,6 +113,7 @@
 <translation id="6398862346408813489">મહિના પસંદગી પેનલ દર્શાવો</translation>
 <translation id="6404546809543547843">ઑડિઓ સમય સ્ક્રબર</translation>
 <translation id="6443871981718447451">બંધ કરેલું ઉપશીર્ષક મેનૂ દર્શાવો</translation>
+<translation id="6484738902856791350">પ્રિટી-પ્રિન્ટ</translation>
 <translation id="6550675742724504774">વિકલ્પો</translation>
 <translation id="6572309429103589720">અમાન્ય વ્યાકરણ</translation>
 <translation id="658823671542763450">પૂર્ણ સ્ક્રીનમાં દાખલ થાઓ</translation>

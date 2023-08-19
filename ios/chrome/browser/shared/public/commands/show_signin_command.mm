@@ -6,10 +6,6 @@
 
 #import "base/check.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation ShowSigninCommand
 
 @synthesize operation = _operation;
@@ -25,7 +21,10 @@
                          callback:
                              (ShowSigninCommandCompletionCallback)callback {
   if ((self = [super init])) {
-    DCHECK(operation == AuthenticationOperationSigninAndSync || !identity);
+    // Only `SigninAndSync` and `InstantSignin` can be opened with an identity
+    // selected.
+    DCHECK(operation == AuthenticationOperation::kSigninAndSync ||
+           operation == AuthenticationOperation::kInstantSignin || !identity);
     _operation = operation;
     _identity = identity;
     _accessPoint = accessPoint;

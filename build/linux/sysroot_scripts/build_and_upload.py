@@ -17,6 +17,9 @@ import sys
 
 ARCHES = ("amd64", "i386", "armhf", "arm64", "armel", "mipsel", "mips64el")
 
+DEFAULT_URL_PREFIX = "https://commondatastorage.googleapis.com/" \
+                     "chrome-linux-sysroot/toolchain"
+
 
 def sha1sumfile(filename):
   sha1 = hashlib.sha1()
@@ -50,6 +53,7 @@ def build_and_upload(script_path, distro, release, key, arch, lock):
       "Sha1Sum": sha1sum,
       "SysrootDir": sysroot_dir,
       "Tarball": tarball,
+      "URL": DEFAULT_URL_PREFIX,
   }
   with lock:
     fname = os.path.join(script_dir, "sysroots.json")

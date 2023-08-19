@@ -174,7 +174,13 @@ bool MakePepperPluginInfo(const WebPluginInfo& webplugin_info,
 
 void ComputePepperPluginList(std::vector<ContentPluginInfo>* plugins) {
   GetContentClient()->AddPlugins(plugins);
-  ComputePluginsFromCommandLine(plugins);
+  // It would be nice to gate this behind a field trial but this happens too
+  // early in the startup process. We allow loading from command line for
+  // testing but don't allow for general use cases.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kAllowCommandLinePlugins)) {
+    ComputePluginsFromCommandLine(plugins);
+  }
 }
 
 }  // namespace content

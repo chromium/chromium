@@ -1,0 +1,80 @@
+<style>
+  .tick {
+    fill: var(--cr-secondary-text-color);
+    font-size: 11px;
+    line-height: 20px;
+  }
+
+  .axis,
+  .circle,
+  .path {
+    stroke-width: 2px;
+  }
+
+  .divider,
+  .dash-line {
+    stroke-width: 1px;
+  }
+
+  .axis,
+  .divider {
+    stroke: var(--google-grey-300);
+    stroke-linecap: round;
+  }
+
+  .path {
+    fill: none;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+  }
+
+  .dash-line {
+    stroke-dasharray: 3,3;
+    stroke-linecap: square;
+  }
+
+  .circle {
+    fill: white;
+  }
+
+  .bubble {
+    fill: var(--google-grey-100);
+    stroke: none;
+  }
+
+  .tooltip-text {
+    fill: var(--cr-primary-text-color);
+    font-size: 11px;
+    line-height: 20px;
+    text-anchor: middle;
+  }
+
+  .path,
+  .dash-line,
+  .circle {
+    stroke: var(--google-blue-700);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .axis,
+    .divider {
+      stroke: var(--google-grey-800);
+    }
+
+    .path,
+    .dash-line,
+    .circle {
+      stroke: var(--google-blue-300);
+    }
+
+    .circle {
+      fill: var(--google-grey-900);
+    }
+
+    .bubble {
+      fill: var(--google-grey-700);
+    }
+  }
+</style>
+
+<div id="historyGraph" tabindex="0" aria-live="polite"></div>

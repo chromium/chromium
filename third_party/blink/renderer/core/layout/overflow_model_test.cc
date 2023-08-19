@@ -59,25 +59,6 @@ TEST_F(BoxOverflowModelTest, InitialOverflowRects) {
   EXPECT_TRUE(visual_overflow_.ContentsVisualOverflowRect().IsEmpty());
 }
 
-TEST_F(BoxOverflowModelTest, AddLayoutOverflowOutsideExpandsRect) {
-  layout_overflow_.AddLayoutOverflow(LayoutRect(0, 10, 30, 10));
-  EXPECT_EQ(LayoutRect(0, 10, 90, 80), layout_overflow_.LayoutOverflowRect());
-}
-
-TEST_F(BoxOverflowModelTest, AddLayoutOverflowInsideDoesNotAffectRect) {
-  layout_overflow_.AddLayoutOverflow(LayoutRect(50, 50, 10, 20));
-  EXPECT_EQ(InitialLayoutOverflow(), layout_overflow_.LayoutOverflowRect());
-}
-
-TEST_F(BoxOverflowModelTest, AddLayoutOverflowEmpty) {
-  // This test documents the existing behavior so that we are aware when/if
-  // it changes. It would also be reasonable for addLayoutOverflow to be
-  // a no-op in this situation.
-  layout_overflow_.AddLayoutOverflow(LayoutRect(200, 200, 0, 0));
-  EXPECT_EQ(LayoutRect(10, 10, 190, 190),
-            layout_overflow_.LayoutOverflowRect());
-}
-
 TEST_F(BoxOverflowModelTest, AddSelfVisualOverflowOutsideExpandsRect) {
   visual_overflow_.AddSelfVisualOverflow(LayoutRect(150, -50, 10, 10));
   EXPECT_EQ(LayoutRect(0, -50, 160, 150),

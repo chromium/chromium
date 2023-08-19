@@ -1,0 +1,14 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "services/network/public/mojom/shared_dictionary_isolation_key.mojom";
+
+// Mapped to `net::SharedDictionaryUsageInfo`.
+struct SharedDictionaryUsageInfo {
+  SharedDictionaryIsolationKey isolation_key;
+  uint64 total_size_bytes;
+};

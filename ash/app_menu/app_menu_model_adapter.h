@@ -107,7 +107,8 @@ class APP_MENU_EXPORT AppMenuModelAdapter : public views::MenuModelAdapter {
 
   // The root MenuItemView which contains all child MenuItemViews. Owned by
   // |menu_runner_|.
-  raw_ptr<views::MenuItemView, ExperimentalAsh> root_ = nullptr;
+  raw_ptr<views::MenuItemView, DanglingUntriaged | ExperimentalAsh> root_ =
+      nullptr;
 
   // Used to show the menu.
   std::unique_ptr<views::MenuRunner> menu_runner_;

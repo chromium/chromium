@@ -53,7 +53,7 @@ class FolderUploadConfirmationViewTest : public DialogBrowserTest {
  protected:
   std::vector<ui::SelectedFileInfo> test_files_;
 
-  raw_ptr<views::Widget, DanglingUntriaged> widget_ = nullptr;
+  raw_ptr<views::Widget, AcrossTasksDanglingUntriaged> widget_ = nullptr;
 
   bool callback_called_ = false;
   std::vector<ui::SelectedFileInfo> callback_files_;
@@ -62,8 +62,12 @@ class FolderUploadConfirmationViewTest : public DialogBrowserTest {
 IN_PROC_BROWSER_TEST_F(FolderUploadConfirmationViewTest,
                        InitiallyFocusesCancel) {
   ShowUi(std::string());
+  // Use GetStoredFocusView() instead of GetFocusedView() because the containing
+  // window may not be focused in the test (otherwise this will need to be an
+  // interactive_ui_test). For this test, it's enough to know that the cancel
+  // button is the one that will get focus when it comes.
   EXPECT_EQ(widget_->widget_delegate()->AsDialogDelegate()->GetCancelButton(),
-            widget_->GetFocusManager()->GetFocusedView());
+            widget_->GetFocusManager()->GetStoredFocusView());
   widget_->Close();
   content::RunAllPendingInMessageLoop();
 }

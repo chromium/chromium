@@ -1,0 +1,178 @@
+<style>
+  :host {
+    --cr-theme-color-padding: 8px;
+    --cr-theme-color-picker-column-width: 1fr;
+    --cr-theme-color-picker-grid-gap: 8px;
+    --cr-theme-color-picker-grid-padding: 0 16px;
+  }
+
+  cr-grid {
+    --cr-column-width: var(--cr-theme-color-picker-column-width);
+    --cr-grid-gap: var(--cr-theme-color-picker-grid-gap);
+    box-sizing: border-box;
+    display: block;
+    padding: var(--cr-theme-color-picker-grid-padding);
+    width: 100%;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #defaultColor {
+      --cr-theme-color-border-color: #323639;
+    }
+  }
+
+  #customColorContainer {
+    position: relative;
+  }
+
+  /* colorPicker is placed on top of the theme icon to work around
+     https://crbug.com/1162053. */
+  #colorPicker {
+    border: 0;
+    height: 50px;
+    left: 0;
+    margin: 0;
+    opacity: 0;
+    padding: 0;
+    pointer-events: none;
+    position: absolute;
+    top: 0;
+    width: 50px;
+  }
+
+  #colorPickerIcon {
+    -webkit-mask-image: url(chrome://resources/cr_components/customize_themes/colorize.svg);
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 100%;
+    background-color: var(--google-grey-700);
+    height: 20px;
+    left: calc(50% - 10px);
+    pointer-events: none;
+    position: absolute;
+    top: calc(50% - 10px);
+    width: 20px;
+  }
+
+  :host-context([chrome-refresh-2023]) #colorPickerIcon {
+    background-color: var(
+        --color-theme-color-picker-custom-color-icon-background,
+        var(--cr-fallback-color-on-surface-subtle));
+  }
+
+  managed-dialog {
+    --cr-dialog-width: min(calc(100% - 32px), 512px);
+  }
+
+  :host-context([chrome-refresh-2023]) cr-theme-color {
+    background-color: var(
+        --color-theme-color-picker-option-background,
+        var(--cr-fallback-color-neutral-container));
+    border-radius: 12px;
+    padding: var(--cr-theme-color-padding);
+  }
+</style>
+<!-- TODO(crbug.com/1395210): Make grid adaptive. -->
+<cr-grid columns="[[columns]]" role="radiogroup"
+    aria-label="[[i18n('colorsContainerLabel')]]">
+  <template is="dom-if" if="[[!showMainColor_]]" restamp>
+    <cr-theme-color
+        id="defaultColor"
+        background-color="[[defaultColor_.background]]"
+        base-color="[[defaultColor_.base]]"
+        foreground-color="[[defaultColor_.foreground]]"
+        background-color-hidden="[[!showBackgroundColor_]]"
+        title="[[i18n('defaultColorName')]]"
+        aria-label="[[i18n('defaultColorName')]]"
+        role="radio"
+        checked="[[isDefaultColorSelected_]]"
+        checkmark-border-hidden="[[isChromeRefresh2023_]]"
+        aria-checked$="[[boolToString_(isDefaultColorSelected_)]]"
+        tabindex$="[[tabIndex_(isDefaultColorSelected_)]]"
+        on-click="onDefaultColorClick_"
+        basic-color>
+    </cr-theme-color>
+  </template>
+  <template is="dom-if" if="[[isChromeRefresh2023_]]" restamp>
+    <cr-theme-color
+        id="greyDefaultColor"
+        background-color="[[greyDefaultColor_.background]]"
+        base-color="[[greyDefaultColor_.base]]"
+        foreground-color="[[greyDefaultColor_.foreground]]"
+        title="[[i18n('greyDefaultColorName')]]"
+        aria-label="[[i18n('greyDefaultColorName')]]"
+        role="radio"
+        checked="[[isGreyDefaultColorSelected_]]"
+        checkmark-border-hidden="[[isChromeRefresh2023_]]"
+        aria-checked$="[[boolToString_(isGreyDefaultColorSelected_)]]"
+        tabindex$="[[tabIndex_(isGreyDefaultColorSelected_)]]"
+        on-click="onGreyDefaultColorClick_"
+        basic-color>
+    </cr-theme-color>
+  </template>
+  <template is="dom-if" if="[[showMainColor_]]" restamp>
+    <cr-theme-color
+        id="mainColor"
+        foreground-color="[[mainColor_]]"
+        background-color-hidden
+        title="[[i18n('mainColorName')]]"
+        aria-label="[[i18n('mainColorName')]]"
+        role="radio"
+        checked="[[isMainColorSelected_]]"
+        checkmark-border-hidden="[[isChromeRefresh2023_]]"
+        aria-checked$="[[boolToString_(isMainColorSelected_)]]"
+        tabindex$="[[tabIndex_(isMainColorSelected_)]]"
+        on-click="onMainColorClick_"
+        basic-color>
+    </cr-theme-color>
+  </template>
+  <template id="chromeColors" is="dom-repeat" items="[[colors_]]">
+    <cr-theme-color
+        class="chrome-color"
+        background-color="[[item.background]]"
+        base-color="[[item.base]]"
+        foreground-color="[[item.foreground]]"
+        background-color-hidden="[[!showBackgroundColor_]]"
+        title="[[item.name]]"
+        aria-label$="[[item.name]]"
+        role="radio"
+        checked="[[isChromeColorSelected_(item.seed, item.variant, selectedColor_)]]"
+        checkmark-border-hidden="[[isChromeRefresh2023_]]"
+        aria-checked$=
+            "[[getChromeColorCheckedStatus_(item.seed, item.variant, selectedColor_)]]"
+        tabindex$="[[chromeColorTabIndex_(item.seed, item.variant, selectedColor_)]]"
+        on-click="onChromeColorClick_"
+        basic-color>
+    </cr-theme-color>
+  </template>
+  <div id="customColorContainer"
+      title="[[i18n('colorPickerLabel')]]"
+      aria-label="[[i18n('colorPickerLabel')]]"
+      role="radio"
+      aria-checked$="[[boolToString_(isCustomColorSelected_)]]"
+      tabindex$="[[tabIndex_(isCustomColorSelected_)]]"
+      on-click="onCustomColorClick_">
+    <cr-theme-color
+        id="customColor"
+        background-color="[[customColor_.background]]"
+        foreground-color="[[customColor_.foreground]]"
+        background-color-hidden="[[!showCustomColorBackgroundColor_]]"
+        checked="[[isCustomColorSelected_]]"
+        checkmark-border-hidden="[[isChromeRefresh2023_]]"
+        basic-color>
+    </cr-theme-color>
+    <div id="colorPickerIcon"></div>
+    <input id="colorPicker" type="color" tabindex="-1" aria-hidden="true"
+        on-change="onCustomColorChange_">
+  </div>
+</cr-grid>
+
+<cr-theme-hue-slider-dialog id="hueSlider"
+    on-selected-hue-changed="onSelectedHueChanged_">
+</cr-theme-hue-slider-dialog>
+
+<template is="dom-if" if="[[showManagedDialog_]]" restamp>
+  <managed-dialog on-close="onManagedDialogClosed_"
+      title="[[i18n('managedColorsTitle')]]"
+      body="[[i18n('managedColorsBody')]]">
+  </managed-dialog>
+</template>

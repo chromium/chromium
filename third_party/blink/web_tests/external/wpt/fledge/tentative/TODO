@@ -9,7 +9,8 @@ Need tests for (likely not a complete list):
 * Updates (both after auction and triggered).
 * All auctionConfig parameters (including invalid auctionConfigs, and ones
     with no buyers).
-* Interest group expiration.
+* Joining interest group with duration of 0 should just leave the IG (not
+    currently guaranteed to work, due to potential time skew between processes).
 * Multiple buyers.
 * Multiple interest group with same owner.
 * Multiple origin auctions (buyer != publisher != seller).
@@ -17,8 +18,7 @@ Need tests for (likely not a complete list):
     loading URNs in fencedframes in other frames, loading component
     ad URNs in fenced frames of other frames, etc)
 * adAuctionConfig passed to reportResult().
-* trusted scoring signals.
-* Component ads.
+* Component ads (including scoring signals fetches).
 * Component auctions.
 * browserSignals fields in scoring/bidding methods.
 * In reporting methods, browserSignals fields: dataVersion, topLevelSeller,

@@ -83,6 +83,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketTcpBase : public P2PSocket {
   void WriteOrQueue(SendBuffer& send_buffer);
   [[nodiscard]] bool OnPacket(base::span<const uint8_t> data);
 
+  bool SendPacket(base::span<const uint8_t> data,
+                  const P2PPacketInfo& packet_info);
+
  private:
   friend class P2PSocketTcpTestBase;
   friend class P2PSocketTcpServerTest;

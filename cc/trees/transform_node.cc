@@ -17,7 +17,7 @@ TransformNode::TransformNode()
       parent_id(kInvalidPropertyNodeId),
       parent_frame_id(kInvalidPropertyNodeId),
       sticky_position_constraint_id(-1),
-      anchor_scroll_containers_data_id(-1),
+      anchor_position_scrollers_data_id(-1),
       sorting_context_id(0),
       needs_local_transform_update(true),
       node_and_ancestors_are_animated_or_invertible(true),

@@ -153,6 +153,9 @@
   <message name="IDS_ENABLE_DESKTOP_SITE_EXTERNAL_DISPLAY_SUMMARY" translateable="false" desc="Summary for the preference to enable display setting for request desktop site">
     Always request desktop site if a monitor is connected
   </message>
+  <message name="IDS_ENABLE_DESKTOP_SITE_WINDOW_SETTING_TITLE" desc="Title for the preference to enable window setting for request desktop site">
+    When the window is narrow, request mobile view
+  </message>
 
   <!-- Site settings: general category strings -->
 
@@ -236,6 +239,15 @@
   <message name="IDS_WEBSITE_SETTINGS_DOMAIN_EXCEPTION_LABEL" desc="The label for site exceptions that apply to the entire domain.">
     All sites under <ph name="DOMAIN">%1$s<ex>google.com</ex></ph>
   </message>
+  <message name="IDS_SITE_SETTINGS_EXPIRES_TODAY_LABEL" desc="Third party cookies exception label, shown in the Third-Party cookies site settings exceptions list. Shown when an exceptions expires today.">
+    Expires today
+  </message>
+  <message name="IDS_SITE_SETTINGS_EXPIRES_LABEL" desc="Third party cookies exception label, shown in the Third-Party cookies site settings exception list.">
+    {COUNT, plural, 
+      =1 {Expires in 1 day} 
+      other {Expires in # days}
+    }
+  </message>
 
   <!-- Site settings Add Exception dialog -->
 
@@ -310,6 +322,10 @@
   </message>
   <message name="IDS_STORAGE_CLEAR_SITE_STORAGE_TITLE" desc="Title of clear storage dialogs used in a couple different places to confirm clearing site storage data. [CHAR_LIMIT=24]">
     Clear site data?
+  </message>
+  <!-- TODO(crbug.com/1459631): Add proper strings and make them translateable. -->
+  <message name="IDS_ZOOM_CLEAR_ALL_ZOOMS_DIALOG_TITLE" translateable="false" desc="Title of clear all zoom dialog used when a user decides to clear all zooms. [CHAR_LIMIT=24]">
+    Clear all zoom levels?
   </message>
   <message name="IDS_STORAGE_CLEAR_DIALOG_CLEAR_STORAGE_OPTION" desc="Text of the button that will clear website storage.">
     Clear
@@ -779,6 +795,19 @@
   </message>
   <message name="IDS_STORAGE_CLEAR_BUTTON_TITLE" desc="Title of a button in the storage UI used to clear all storage data. [CHAR_LIMIT=24]">
     Clear all data
+  </message>
+
+  <!-- ZOOM -->
+
+  <!-- TODO(crbug.com/1459631): Add proper strings and make them translateable. -->
+  <message name="IDS_SITE_SETTINGS_EMPTY_ZOOM_LEVELS_MESSAGE" translateable="false" desc="Text to display when there are no saved zooms">
+    Websites with a saved zoom appear here
+  </message>
+  <message name="IDS_SITE_SETTINGS_CLEAR_ALL_ZOOM_LEVELS_BUTTON_TEXT" translateable="false" desc="Title of a button in the storage UI used to clear all zoom data. [CHAR_LIMIT=24]">
+    Clear all zooms
+  </message>
+  <message name="IDS_SITE_SETTINGS_CLEAR_ALL_ZOOM_LEVELS_WARNING" translateable="false" desc="Explanation of the sites that zoom is being cleared for">
+    This will clear all the zoom levels listed on this page.
   </message>
 
   <!-- USB -->

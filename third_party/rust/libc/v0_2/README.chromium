@@ -4,5 +4,6 @@ Description: Raw FFI bindings to platform libraries like libc.
 
 Version: 0.2.144
 Security Critical: yes
+Shipped: yes
 License: Apache 2.0
 Revision: e06d9052aac1185201ef0f46f15d745e412388d0

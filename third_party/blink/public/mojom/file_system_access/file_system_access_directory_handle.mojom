@@ -4,8 +4,9 @@
 
 module blink.mojom;
 
-import "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom";
+import "third_party/blink/public/mojom/file_system_access/file_system_access_cloud_identifier.mojom";
 import "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom";
+import "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom";
 import "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom";
 import "third_party/blink/public/mojom/permissions/permission_status.mojom";
 
@@ -35,12 +36,11 @@ interface FileSystemAccessDirectoryEntriesListener {
 // This interface represents a handle to a directory in the File System Access
 // API.
 //
-// TODO(mek): Using something similar to (but probably not the same as)
-// mojo_base.mojom.Basename (https://crbug.com/779196) to represent names of
-// children could help us defend against directory traversal bugs at the IPC
-// layer (not the same type though because of https://crbug.com/956231 and the
-// fact that our paths really aren't base::FilePath, but instead are virtual
-// paths).
+// TODO(https://crbug.com/1248065): Using something similar to (but probably not
+// the same as) mojo_base.mojom.SafeBasename to represent names of children
+// could help us defend against directory traversal bugs at the IPC layer (not
+// the same type though because of https://crbug.com/956231 and the fact that
+// our paths really aren't base::FilePath, but instead are virtual paths).
 interface FileSystemAccessDirectoryHandle {
   // Queries the current permission status for this handle.
   GetPermissionStatus(bool writable) => (PermissionStatus status);
@@ -117,4 +117,12 @@ interface FileSystemAccessDirectoryHandle {
   // TODO(https://crbug.com/1327821): Replace this with expected<T, E> if/when
   // it becomes available for mojom.
   GetUniqueId() => (FileSystemAccessError result, string id);
+
+  // Returns a list of cloud identifiers (`provider_name` and `id`) if the
+  // directory is synced to the cloud and its syncing client has registered to
+  // the browser.
+  // TODO(https://crbug.com/1327821): Replace this with expected<T, E> if/when
+  // it becomes available for mojom.
+  GetCloudIdentifiers() =>
+      (FileSystemAccessError result, array<FileSystemAccessCloudIdentifier> cloud_identifiers);
 };

@@ -100,10 +100,7 @@ bool BaseTextInputType::PatternMismatch(const String& value) const {
 bool BaseTextInputType::PatternMismatchPerValue(const String& value) const {
   const AtomicString& raw_pattern =
       GetElement().FastGetAttribute(html_names::kPatternAttr);
-  UnicodeMode unicode_mode =
-      RuntimeEnabledFeatures::HTMLPatternRegExpUnicodeSetsEnabled()
-          ? UnicodeMode::kUnicodeSets
-          : UnicodeMode::kUnicode;
+  UnicodeMode unicode_mode = UnicodeMode::kUnicodeSets;
   // Empty values can't be mismatched.
   if (raw_pattern.IsNull() || value.empty())
     return false;

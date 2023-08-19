@@ -73,17 +73,11 @@ TARGET_DEVICES = {
             'Speedometer2': 20,
         },
     },
-    'android-pixel4a_power-perf': {
-        'power.mobile': {
-            'browse:media:flickr_infinite_scroll:2019': 10,
-            'browse:media:tiktok_infinite_scroll:2021': 10,
-            'browse:social:pinterest_infinite_scroll:2021': 10,
-            'browse:social:tumblr_infinite_scroll:2018': 10,
-            'browse:tech:discourse_infinite_scroll:2018': 10,
-        }
-    },
     'linux-perf': {
         'jetstream2': {
+            'JetStream2': 5,
+        },
+        'jetstream2-minormc': {
             'JetStream2': 5,
         },
         'system_health.common_desktop': {
@@ -140,6 +134,9 @@ TARGET_DEVICES = {
     },
     'mac-m1_mini_2020-perf': {
         'jetstream2': {
+            'JetStream2': 5,
+        },
+        'jetstream2-minormc': {
             'JetStream2': 5,
         },
         'speedometer2': {

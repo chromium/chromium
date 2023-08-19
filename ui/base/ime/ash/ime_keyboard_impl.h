@@ -29,13 +29,10 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) ImeKeyboardImpl : public ImeKeyboard {
   // ImeKeyboard:
   bool SetCurrentKeyboardLayoutByName(const std::string& layout_name) override;
   bool SetAutoRepeatRate(const AutoRepeatRate& rate) override;
-  bool SetAutoRepeatEnabled(bool enabled) override;
+  void SetAutoRepeatEnabled(bool enabled) override;
   bool GetAutoRepeatEnabled() override;
-  bool ReapplyCurrentKeyboardLayout() override;
-  void ReapplyCurrentModifierLockStatus() override;
-  void DisableNumLock() override;
   void SetCapsLockEnabled(bool enable_caps_lock) override;
-  bool CapsLockIsEnabled() override;
+  bool IsCapsLockEnabled() override;
 
  private:
   const raw_ptr<ui::InputController, ExperimentalAsh> input_controller_;

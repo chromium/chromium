@@ -115,6 +115,12 @@ AudioManagerWin::AudioManagerWin(std::unique_ptr<AudioThread> audio_thread,
 AudioManagerWin::~AudioManagerWin() = default;
 
 void AudioManagerWin::ShutdownOnAudioThread() {
+  // Prevent pending callbacks from `output_device_listener_` from being run.
+  // TODO(crbug.com/1458623): Remove this call when kAudioServiceOutOfProcess is
+  // removed on Windows; `weak_factory_on_audio_thread_` will be guaranteed to
+  // be destroyed/invalidated on the right thread then.
+  weak_factory_on_audio_thread_.InvalidateWeakPtrs();
+
   AudioManagerBase::ShutdownOnAudioThread();
 
   // Destroy AudioDeviceListenerWin instance on the audio thread because it
@@ -139,11 +145,22 @@ bool AudioManagerWin::HasAudioInputDevices() {
 void AudioManagerWin::InitializeOnAudioThread() {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
 
+  // Initialize should only be called once.
+  CHECK(!output_device_listener_);
+
+  // Create a WeakPtr bound to the Audio thread, which will be invalidated
+  // in ShutdownOnAudioThread().
+  weak_this_on_audio_thread_ = weak_factory_on_audio_thread_.GetWeakPtr();
+
   // AudioDeviceListenerWin must be initialized on a COM thread.
+  // Despite `this` owning `output_device_listener_`, we need to bind the
+  // callback to a WeakPtr: NotifyAllOutputDeviceChangeListeners() will be
+  // posted to the audio thread instead of being run synchronously, since we use
+  // BindPostTaskToCurrentDefault().
   output_device_listener_ = std::make_unique<AudioDeviceListenerWin>(
       base::BindPostTaskToCurrentDefault(base::BindRepeating(
           &AudioManagerWin::NotifyAllOutputDeviceChangeListeners,
-          base::Unretained(this))));
+          weak_this_on_audio_thread_)));
 }
 
 void AudioManagerWin::GetAudioDeviceNamesImpl(bool input,

@@ -58,6 +58,9 @@ struct COMPONENT_EXPORT(EVDEV) InProgressTouchEvdev {
   bool touching = false;
   float x = 0;
   float y = 0;
+  // Center of the touch
+  float tool_x = 0;
+  float tool_y = 0;
   int tracking_id = -1;
   size_t slot = 0;
   float radius_x = 0;

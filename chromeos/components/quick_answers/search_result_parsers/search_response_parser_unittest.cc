@@ -45,7 +45,7 @@ class SearchResponseParserTest : public testing::Test {
  protected:
   std::unique_ptr<SearchResponseParser> search_result_parser_;
   std::unique_ptr<QuickAnswer> quick_answer_;
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   std::unique_ptr<base::RunLoop> run_loop_;
 };

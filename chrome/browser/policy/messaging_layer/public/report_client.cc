@@ -5,6 +5,7 @@
 #include "chrome/browser/policy/messaging_layer/public/report_client.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -54,14 +55,13 @@ const base::FilePath::CharType kReportingDirectory[] =
 // static
 void ReportingClient::CreateLocalStorageModule(
     const base::FilePath& local_reporting_path,
-    base::StringPiece verification_key,
+    std::string_view verification_key,
     CompressionInformation::CompressionAlgorithm compression_algorithm,
     UploaderInterface::AsyncStartUploaderCb async_start_upload_cb,
     base::OnceCallback<void(StatusOr<scoped_refptr<StorageModuleInterface>>)>
         cb) {
   LOG(WARNING) << "Store reporting data locally";
-  DCHECK(!StorageSelector::is_use_missive())
-      << "Can only be used in local mode";
+  CHECK(!StorageSelector::is_use_missive()) << "Can only be used in local mode";
   StorageModule::Create(
       StorageOptions()
           .set_directory(local_reporting_path)
@@ -85,8 +85,7 @@ void ReportingClient::CreateLocalStorageModule(
 
 // static
 StorageModule* ReportingClient::GetLocalStorageModule() {
-  DCHECK(!StorageSelector::is_use_missive())
-      << "Can only be used in local mode";
+  CHECK(!StorageSelector::is_use_missive()) << "Can only be used in local mode";
   return static_cast<StorageModule*>(GetInstance()->storage().get());
 }
 
@@ -213,7 +212,7 @@ void ReportingClient::Uploader::Helper::Completed(Status final_status) {
   if (encrypted_records_.empty() && !need_encryption_key_) {
     return;
   }
-  DCHECK(upload_callback_);
+  CHECK(upload_callback_);
   Status upload_status =
       std::move(upload_callback_)
           .Run(need_encryption_key_, std::move(encrypted_records_),
@@ -242,7 +241,7 @@ ReportingClient::ReportingClient()
                 base::FilePath reporting_path;
                 const auto res = base::PathService::Get(chrome::DIR_USER_DATA,
                                                         &reporting_path);
-                DCHECK(res) << "Could not retrieve base path";
+                CHECK(res) << "Could not retrieve base path";
 #if BUILDFLAG(IS_CHROMEOS_ASH)
                 reporting_path = reporting_path.Append("user");
 #endif

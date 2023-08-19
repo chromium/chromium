@@ -105,19 +105,16 @@ class ScopedChildrenLock;
 // View::ViewHierarchyChanged.
 // TODO(pbos): Move to a separate view_hierarchy_changed_details.h header.
 struct VIEWS_EXPORT ViewHierarchyChangedDetails {
-  ViewHierarchyChangedDetails() = default;
-
   ViewHierarchyChangedDetails(bool is_add,
                               View* parent,
                               View* child,
                               View* move_view)
       : is_add(is_add), parent(parent), child(child), move_view(move_view) {}
-
-  bool is_add = false;
+  const bool is_add;
   // New parent if |is_add| is true, old parent if |is_add| is false.
-  raw_ptr<View, DanglingUntriaged> parent = nullptr;
+  const raw_ptr<View> parent;
   // The view being added or removed.
-  raw_ptr<View> child = nullptr;
+  const raw_ptr<View> child;
   // If this is a move (reparent), meaning AddChildViewAt() is invoked with an
   // existing parent, then a notification for the remove is sent first,
   // followed by one for the add.  This case can be distinguished by a
@@ -126,7 +123,7 @@ struct VIEWS_EXPORT ViewHierarchyChangedDetails {
   // being removed.
   // For the add part of move, |move_view| is the old parent of the View being
   // added.
-  raw_ptr<View, DanglingUntriaged> move_view = nullptr;
+  const raw_ptr<View> move_view;
 };
 
 using PropertyChangedCallback = ui::metadata::PropertyChangedCallback;
@@ -2191,7 +2188,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Tree operations -----------------------------------------------------------
 
   // This view's parent.
-  raw_ptr<View, DanglingUntriaged> parent_ = nullptr;
+  raw_ptr<View, AcrossTasksDanglingUntriaged> parent_ = nullptr;
 
   // This view's children.
   Views children_;
@@ -2281,7 +2278,8 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // A native theme for this view and its descendants. Typically null, in which
   // case the native theme is drawn from the parent view (eventually the
   // widget).
-  raw_ptr<ui::NativeTheme, DanglingUntriaged> native_theme_ = nullptr;
+  raw_ptr<ui::NativeTheme, AcrossTasksDanglingUntriaged> native_theme_ =
+      nullptr;
 
   // RTL painting --------------------------------------------------------------
 
@@ -2318,7 +2316,8 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Accelerators --------------------------------------------------------------
 
   // Focus manager accelerators registered on.
-  raw_ptr<FocusManager, DanglingUntriaged> accelerator_focus_manager_ = nullptr;
+  raw_ptr<FocusManager, AcrossTasksDanglingUntriaged>
+      accelerator_focus_manager_ = nullptr;
 
   // The list of accelerators. List elements in the range
   // [0, registered_accelerator_count_) are already registered to FocusManager,
@@ -2329,10 +2328,11 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Focus ---------------------------------------------------------------------
 
   // Next view to be focused when the Tab key is pressed.
-  raw_ptr<View, DanglingUntriaged> next_focusable_view_ = nullptr;
+  raw_ptr<View, AcrossTasksDanglingUntriaged> next_focusable_view_ = nullptr;
 
   // Next view to be focused when the Shift-Tab key combination is pressed.
-  raw_ptr<View, DanglingUntriaged> previous_focusable_view_ = nullptr;
+  raw_ptr<View, AcrossTasksDanglingUntriaged> previous_focusable_view_ =
+      nullptr;
 
   // The focus behavior of the view in regular and accessibility mode.
   FocusBehavior focus_behavior_ = FocusBehavior::NEVER;
@@ -2344,12 +2344,13 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Context menus -------------------------------------------------------------
 
   // The menu controller.
-  raw_ptr<ContextMenuController, DanglingUntriaged> context_menu_controller_ =
-      nullptr;
+  raw_ptr<ContextMenuController, AcrossTasksDanglingUntriaged>
+      context_menu_controller_ = nullptr;
 
   // Drag and drop -------------------------------------------------------------
 
-  raw_ptr<DragController, DanglingUntriaged> drag_controller_ = nullptr;
+  raw_ptr<DragController, AcrossTasksDanglingUntriaged> drag_controller_ =
+      nullptr;
 
   // Input  --------------------------------------------------------------------
 

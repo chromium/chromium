@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {ChooserException, ChooserType, ContentSetting, ContentSettingProvider, ContentSettingsTypes, DefaultContentSetting, OriginInfo, PaperTooltipElement, RawChooserException, RawSiteException, SiteException, SiteGroup, SiteSettingSource} from 'chrome://settings/lazy_load.js';
+import {StorageAccessEmbeddingException, StorageAccessSiteException, ChooserException, ChooserType, ContentSetting, ContentSettingProvider, ContentSettingsTypes, DefaultContentSetting, OriginInfo, PaperTooltipElement, RawChooserException, RawSiteException, SiteException, SiteGroup, SiteSettingSource} from 'chrome://settings/lazy_load.js';
 import {Route, Router} from 'chrome://settings/settings.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 // clang-format on
@@ -277,6 +277,52 @@ export function createSiteException(
         enforcement: null,
         controlledBy: chrome.settingsPrivate.ControlledBy.PRIMARY_USER,
         isEmbargoed: false,
+      },
+      override || {});
+}
+
+/**
+ * Helper to create a mock of a group of Storage Access Site Exceptions.
+ * @param origin The origin to use for this group.
+ * @param override An object with a subset of the properties of
+ *     StorageAccessSiteException. Properties defined in |override| will
+ * overwrite the defaults in this function's return value.
+ */
+export function createStorageAccessSiteException(
+    origin: string,
+    override?: Partial<StorageAccessSiteException>,
+    embeddingOrigin?: string,
+    ): StorageAccessSiteException {
+  return Object.assign(
+      {
+        origin: origin,
+        displayName: origin,
+        setting: ContentSetting.ALLOW,
+        openDescription: '',
+        closeDescription: '',
+        exceptions: [createStorageAccessEmbeddingException(
+            embeddingOrigin || 'google.com')],
+      },
+      override || {});
+}
+
+/**
+ * Helper to create a mock of an Storage Access embedding site exception.
+ * @param embeddingOrigin The embedding origin to use for this SiteException.
+ * @param override An object with a subset of the properties of
+ *     StorageAccessEmbeddingException. Properties defined in |override| will
+ * overwrite the defaults in this function's return value.
+ */
+export function createStorageAccessEmbeddingException(
+    embeddingOrigin: string,
+    override?: Partial<StorageAccessEmbeddingException>):
+    StorageAccessEmbeddingException {
+  return Object.assign(
+      {
+        embeddingOrigin: embeddingOrigin,
+        embeddingDisplayName: embeddingOrigin,
+        description: '',
+        incognito: false,
       },
       override || {});
 }

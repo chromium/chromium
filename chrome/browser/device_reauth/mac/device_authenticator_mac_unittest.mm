@@ -13,8 +13,8 @@
 #include "chrome/browser/device_reauth/mac/authenticator_mac.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_access_authenticator.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "device/fido/mac/scoped_touch_id_test_environment.h"
 #include "device/fido/mac/touch_id_context.h"
@@ -33,14 +33,17 @@ using password_manager::PasswordAccessAuthenticator;
 class MockSystemAuthenticator : public AuthenticatorMacInterface {
  public:
   MOCK_METHOD(bool, CheckIfBiometricsAvailable, (), (override));
+  MOCK_METHOD(bool, CheckIfBiometricsOrScreenLockAvailable, (), (override));
   MOCK_METHOD(bool,
               AuthenticateUserWithNonBiometrics,
               (const std::u16string&),
               (override));
 };
 
-// Test params decides whether biometric authentication is available.
-class DeviceAuthenticatorMacTest : public ::testing::TestWithParam<bool> {
+// Test params decides whether biometric authentication and screen lock are
+// available.
+class DeviceAuthenticatorMacTest
+    : public ::testing::TestWithParam<std::tuple<bool, bool>> {
  public:
   DeviceAuthenticatorMacTest()
       : testing_local_state_(TestingBrowserProcess::GetGlobal()) {
@@ -51,13 +54,17 @@ class DeviceAuthenticatorMacTest : public ::testing::TestWithParam<bool> {
         std::move(system_authenticator));
     ON_CALL(*system_authenticator_, CheckIfBiometricsAvailable)
         .WillByDefault(testing::Return(is_biometric_available()));
+    ON_CALL(*system_authenticator_, CheckIfBiometricsOrScreenLockAvailable)
+        .WillByDefault(testing::Return(is_biometric_available() ||
+                                       is_screen_lock_available()));
   }
 
-  bool is_biometric_available() { return GetParam(); }
+  bool is_biometric_available() { return std::get<0>(GetParam()); }
+  bool is_screen_lock_available() { return std::get<1>(GetParam()); }
 
   void SimulateReauthSuccess() {
     if (is_biometric_available()) {
-      touch_id_enviroment()->SimulateTouchIdPromptSuccess();
+      touch_id_environment()->SimulateTouchIdPromptSuccess();
     } else {
       EXPECT_CALL(system_authenticator(), AuthenticateUserWithNonBiometrics)
           .WillOnce(testing::Return(true));
@@ -66,7 +73,7 @@ class DeviceAuthenticatorMacTest : public ::testing::TestWithParam<bool> {
 
   void SimulateReauthFailure() {
     if (is_biometric_available()) {
-      touch_id_enviroment()->SimulateTouchIdPromptFailure();
+      touch_id_environment()->SimulateTouchIdPromptFailure();
     } else {
       EXPECT_CALL(system_authenticator(), AuthenticateUserWithNonBiometrics)
           .WillOnce(testing::Return(false));
@@ -85,7 +92,7 @@ class DeviceAuthenticatorMacTest : public ::testing::TestWithParam<bool> {
 
   base::test::TaskEnvironment& task_environment() { return task_environment_; }
 
-  device::fido::mac::ScopedTouchIdTestEnvironment* touch_id_enviroment() {
+  device::fido::mac::ScopedTouchIdTestEnvironment* touch_id_environment() {
     return &touch_id_test_environment_;
   }
 
@@ -126,8 +133,8 @@ TEST_P(DeviceAuthenticatorMacTest, NoReauthenticationIfLessThan60Seconds) {
 
   // Since the delay is smaller than kAuthValidityPeriod there shouldn't be
   // another prompt, so the auth should be reported as successful. If there is a
-  // call to touchIdContext test will fail as TouchIdEnviroment will crash since
-  // there is no prompt expected.
+  // call to touchIdContext test will fail as TouchIdEnvironment will crash
+  // since there is no prompt expected.
   task_environment().FastForwardBy(
       PasswordAccessAuthenticator::kAuthValidityPeriod / 2);
 
@@ -161,19 +168,19 @@ TEST_P(DeviceAuthenticatorMacTest, ReauthenticationIfMoreThan60Seconds) {
       result_callback().Get());
 }
 
-// If prevoius authentication failed kAuthValidityPeriod isn't started and
+// If previous authentication failed kAuthValidityPeriod isn't started and
 // reauthentication will be needed.
 TEST_P(DeviceAuthenticatorMacTest, ReauthenticationIfPreviousFailed) {
   SimulateReauthFailure();
 
-  // First authetication fails, no last_good_auth_timestamp_ should be
+  // First authentication fails, no last_good_auth_timestamp_ should be
   // recorded, which fill force reauthentication.
   EXPECT_CALL(result_callback(), Run(/*success=*/false));
   authenticator()->AuthenticateWithMessage(
       /*message=*/u"Chrome is trying to show passwords.",
       result_callback().Get());
 
-  // Although it passed less than kAuthValidityPeriod no valid authenticaion
+  // Although it passed less than kAuthValidityPeriod no valid authentication
   // should be recorded as reauth will fail.
   SimulateReauthFailure();
   task_environment().FastForwardBy(
@@ -186,25 +193,25 @@ TEST_P(DeviceAuthenticatorMacTest, ReauthenticationIfPreviousFailed) {
 }
 
 // If pending authentication can be canceled.
-TEST_P(DeviceAuthenticatorMacTest, CancelPendngAuthentication) {
+TEST_P(DeviceAuthenticatorMacTest, CancelPendingAuthentication) {
   // Non-biometric reauth is modal, and hence cannot be requested twice.
   if (!is_biometric_available()) {
     return;
   }
-  touch_id_enviroment()->SimulateTouchIdPromptSuccess();
-  touch_id_enviroment()->DoNotResolveNextPrompt();
+  touch_id_environment()->SimulateTouchIdPromptSuccess();
+  touch_id_environment()->DoNotResolveNextPrompt();
 
   authenticator()->AuthenticateWithMessage(
       /*message=*/u"Chrome is trying to show passwords.",
       result_callback().Get());
 
   // Authentication should fail as it will take 10 seconds to authenticate, and
-  // there will be a cancelation in the meantime.
+  // there will be a cancellation in the meantime.
   EXPECT_CALL(result_callback(), Run(/*success=*/false));
   authenticator()->Cancel(DeviceAuthRequester::kPasswordsInSettings);
 }
 
-TEST_P(DeviceAuthenticatorMacTest, BiometricAuthenticationAvailablity) {
+TEST_P(DeviceAuthenticatorMacTest, BiometricAuthenticationAvailability) {
   EXPECT_CALL(system_authenticator(), CheckIfBiometricsAvailable);
   EXPECT_EQ(authenticator()->CanAuthenticateWithBiometrics(),
             is_biometric_available());
@@ -213,4 +220,22 @@ TEST_P(DeviceAuthenticatorMacTest, BiometricAuthenticationAvailablity) {
                 password_manager::prefs::kHadBiometricsAvailable));
 }
 
-INSTANTIATE_TEST_SUITE_P(, DeviceAuthenticatorMacTest, ::testing::Bool());
+TEST_P(DeviceAuthenticatorMacTest,
+       BiometricAndScreenLockAuthenticationAvailablity) {
+  if (is_biometric_available()) {
+    EXPECT_CALL(system_authenticator(), CheckIfBiometricsAvailable);
+  } else {
+    EXPECT_CALL(system_authenticator(), CheckIfBiometricsOrScreenLockAvailable);
+  }
+
+  EXPECT_EQ(authenticator()->CanAuthenticateWithBiometricOrScreenLock(),
+            is_biometric_available() || is_screen_lock_available());
+  EXPECT_EQ(is_biometric_available(),
+            local_state().Get()->GetBoolean(
+                password_manager::prefs::kHadBiometricsAvailable));
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         DeviceAuthenticatorMacTest,
+                         ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool()));

@@ -32,23 +32,23 @@ class Status;
 
 Status LaunchChrome(network::mojom::URLLoaderFactory* factory,
                     const SyncWebSocketFactory& socket_factory,
-                    DeviceManager* device_manager,
+                    DeviceManager& device_manager,
                     const Capabilities& capabilities,
                     std::vector<std::unique_ptr<DevToolsEventListener>>
                         devtools_event_listeners,
-                    std::unique_ptr<Chrome>* chrome,
-                    bool w3c_compliant);
+                    bool w3c_compliant,
+                    std::unique_ptr<Chrome>& chrome);
 
 namespace internal {
 Status ProcessExtensions(const std::vector<std::string>& extensions,
                          const base::FilePath& temp_dir,
-                         Switches* switches,
-                         std::vector<std::string>* bg_pages);
+                         Switches& switches,
+                         std::vector<std::string>& bg_pages);
 Status PrepareUserDataDir(const base::FilePath& user_data_dir,
                           const base::Value::Dict* custom_prefs,
                           const base::Value::Dict* custom_local_state);
 Status ParseDevToolsActivePortFile(const base::FilePath& user_data_dir,
-                                   int* port);
+                                   int& port);
 Status RemoveOldDevToolsActivePortFile(const base::FilePath& user_data_dir);
 std::string GetTerminationReason(base::TerminationStatus status);
 }  // namespace internal

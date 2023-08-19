@@ -125,6 +125,15 @@ void SurfaceFactoryOzone::SetGetProtectedNativePixmapDelegate(
     const GetProtectedNativePixmapCallback&
         get_protected_native_pixmap_callback) {}
 
+bool SurfaceFactoryOzone::SupportsDrmModifiersFilter() const {
+  return false;
+}
+
+void SurfaceFactoryOzone::SetDrmModifiersFilter(
+    std::unique_ptr<DrmModifiersFilter> filter) {
+  NOTIMPLEMENTED();
+}
+
 std::vector<gfx::BufferFormat>
 SurfaceFactoryOzone::GetSupportedFormatsForTexturing() const {
   return std::vector<gfx::BufferFormat>();

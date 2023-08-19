@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<style>
+.container {
+  font-size: 10px;
+}
+.wrapper {
+  display: inline-block;
+  vertical-align: top;
+}
+.phrase {
+  word-break: auto-phrase;
+  border-right: 1px solid blue;
+}
+.overflow {
+  overflow-wrap: anywhere;
+}
+</style>
+<div class="container" lang="ja">
+  <div class="phrase">今日はよい天気です。</div>
+  <div class="phrase overflow">今日はよい天気です。</div>
+  <div class="phrase">あなたに寄り添う最先端のテクノロジー。</div>
+  <div class="phrase">優れた性能をうれしい価格で。</div>
+</div>
+<script>
+const min = 10;
+const step = 10;
+const elements = Array.from(document.getElementsByClassName('phrase'));
+for (const element of elements) {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'wrapper';
+  const parent = element.parentNode;
+  parent.replaceChild(wrapper, element);
+  element.style.width = 'fit-content';
+  wrapper.appendChild(element);
+  let width = element.offsetWidth;
+  for (width -= step; width >= min; width -= step) {
+    const clone = element.cloneNode(true);
+    clone.style.width = `${width}px`;
+    wrapper.appendChild(clone);
+  }
+}
+</script>

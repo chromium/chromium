@@ -65,7 +65,8 @@ class LoginScreenAccessibilityPolicyBrowsertest
 
   base::Value GetPrefValue(const char* pref_name) const;
 
-  raw_ptr<Profile, ExperimentalAsh> login_profile_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> login_profile_ =
+      nullptr;
 };
 
 LoginScreenAccessibilityPolicyBrowsertest::

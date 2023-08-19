@@ -68,6 +68,13 @@ class PLATFORM_EXPORT ResourceLoadSchedulerClient
 //    be throttleable when there are more active throttleable requests loading
 //    activities more than its internal threshold (i.e., what
 //    GetOutstandingLimit() returns)".
+//  - Resource loading requests are not throttled when the frame is in the
+//    foreground tab.
+//  - Resource loading requests are throttled when the frame is in a
+//    background tab. It has different thresholds for the main frame
+//    and sub frames. When the frame has been background for more than five
+//    minutes, all throttleable resource loading requests are throttled
+//    indefinitely (i.e., threshold is zero in such a circumstance).
 //
 //  ResourceLoadScheduler has two modes each of which has its own threshold.
 //   - Tight mode (used until the frame sees a <body> element):
@@ -77,20 +84,21 @@ class PLATFORM_EXPORT ResourceLoadSchedulerClient
 //     ResourceLoadScheduler considers a request throttleable if its priority
 //     is less than |kMedium|.
 //
-// Here are running experiments (as of M65):
-//  - "ResourceLoadScheduler"
-//   - Resource loading requests are not at throttled when the frame is in
-//     the foreground tab.
-//   - Resource loading requests are throttled when the frame is in a
-//     background tab. It has different thresholds for the main frame
-//     and sub frames. When the frame has been background for more than five
-//     minutes, all throttleable resource loading requests are throttled
-//     indefinitely (i.e., threshold is zero in such a circumstance).
+// Here is an running experiment:
 //   - (As of M86): Low-priority requests are delayed behind "important"
 //     requests before some general loading milestone has been reached.
 //     "Important", for the experiment means either kHigh or kMedium priority,
 //     and the milestones being experimented with are first paint and first
 //     contentful paint so far.
+//
+// Here is a planned experiment (not started yet):
+//   - network::VisibilityAwareResourceScheduler
+//     An experimental feature with the goal of integrating
+//     blink::ResourceLoadScheduler into network::ResourceScheduler for better
+//     resource scheduling across multiple frames.
+//     TODO(https://crbug.com/1457817): Disable or relax throttling/stopping
+//     requests in this class once network::ResoureceScheduler implements
+//     similar capabilities.
 class PLATFORM_EXPORT ResourceLoadScheduler final
     : public GarbageCollected<ResourceLoadScheduler> {
  public:

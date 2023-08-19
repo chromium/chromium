@@ -18,6 +18,7 @@ export class StoreObserver {
 }
 
 /**
+ * @deprecated prefer store_ts.ts unless closure compiler is required.
  * A generic datastore for the state of a page, where the state is publicly
  * readable but can only be modified by dispatching an Action.
  * The Store should be extended by specifying T, the page state type

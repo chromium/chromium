@@ -103,30 +103,14 @@ VulkanImplementationAndroid::ExportVkFenceToGpuFence(VkDevice vk_device,
   return nullptr;
 }
 
-VkSemaphore VulkanImplementationAndroid::CreateExternalSemaphore(
-    VkDevice vk_device) {
-  return CreateExternalVkSemaphore(
-      vk_device, VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT);
-}
-
-VkSemaphore VulkanImplementationAndroid::ImportSemaphoreHandle(
-    VkDevice vk_device,
-    SemaphoreHandle sync_handle) {
-  return ImportVkSemaphoreHandle(vk_device, std::move(sync_handle));
-}
-
-SemaphoreHandle VulkanImplementationAndroid::GetSemaphoreHandle(
-    VkDevice vk_device,
-    VkSemaphore vk_semaphore) {
-  // VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT specifies a POSIX file
-  // descriptor handle to a Linux Sync File or Android Fence object.
-  return GetVkSemaphoreHandle(vk_device, vk_semaphore,
-                              VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT);
-}
-
 VkExternalMemoryHandleTypeFlagBits
 VulkanImplementationAndroid::GetExternalImageHandleType() {
   return VK_EXTERNAL_MEMORY_HANDLE_TYPE_ANDROID_HARDWARE_BUFFER_BIT_ANDROID;
+}
+
+VkExternalSemaphoreHandleTypeFlagBits
+VulkanImplementationAndroid::GetExternalSemaphoreHandleType() {
+  return VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT;
 }
 
 bool VulkanImplementationAndroid::CanImportGpuMemoryBuffer(

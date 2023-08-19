@@ -13,10 +13,6 @@
 #include "testing/platform_test.h"
 #include "third_party/crashpad/crashpad/client/crash_report_database.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // A class to temporarily set a crash reporter client.

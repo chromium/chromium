@@ -15,6 +15,7 @@
 #include <windows.devices.enumeration.h>
 #include <wrl.h>
 
+#include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -23,6 +24,8 @@
 #include "media/capture/video/video_capture_device_factory.h"
 
 namespace media {
+
+CAPTURE_EXPORT BASE_DECLARE_FEATURE(kMediaFoundationD3D11VideoCaptureBlocklist);
 
 using ABI::Windows::Foundation::IAsyncOperation;
 using ABI::Windows::Devices::Enumeration::DeviceInformationCollection;

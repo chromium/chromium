@@ -4,7 +4,6 @@
 
 module blink.mojom;
 
-import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/file_info.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 
@@ -13,32 +12,4 @@ interface FileUtilitiesHost {
   [Sync]
   GetFileInfo(mojo_base.mojom.FilePath path) => (
       mojo_base.mojom.FileInfo? result);
-
-  // Extends or truncates a previously opened file on macOS < 10.15.
-  //
-  // `result` is true if base::File::SetLength() succeeded, otherwise false.
-  //
-  // Calls ReportBadMessage() on macOS 10.15+. Disabled on other OSes.
-  //
-  // This call is a workaround for a sandboxing limitation in macOS < 10.15 that
-  // results in ftruncate() to fail when called from (sandboxed) renderers.
-  // On modern macOS versions, the renderer calls ftruncate() directly instead
-  // of using this call. The sandboxing issue is discussed at
-  // https://crbug.com/1084565.
-  //
-  // The rendererer passes the file handle to the backend. This could have been
-  // avoided by having the host always store a dup()ed handle for the
-  // file. This alternative was rejected in order to avoid reasoning about the
-  // effects of having multiple file handles pointing to the same file.
-  //
-  // A compromised renderer may use this call with an arbitrary file handle.
-  // This is not considered a significant attack surface because renderers on
-  // macOS 10.15+ and all other OSes are able to call ftruncate() on any file
-  // handle they have.
-  //
-  // By the same reasoning above (renderers on most OSes can call ftruncate()
-  // directly), this call returns unsanitized base::File::Error information.
-  [EnableIf=is_mac, Sync]
-  SetLength(mojo_base.mojom.File backing_file, int64 length) =>
-  (mojo_base.mojom.File backing_file, bool result);
 };

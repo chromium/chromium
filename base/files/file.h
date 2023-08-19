@@ -34,6 +34,9 @@ using stat_wrapper_t = struct stat;
 // obvious non-modifying way are marked as const. Any method that forward calls
 // to the OS is not considered const, even if there is no apparent change to
 // member variables.
+//
+// On POSIX, if the given file is a symbolic link, most of the methods apply to
+// the file that the symbolic link resolves to.
 class BASE_EXPORT File {
  public:
   // FLAG_(OPEN|CREATE).* are mutually exclusive. You should specify exactly one
@@ -369,9 +372,11 @@ class BASE_EXPORT File {
   static std::string ErrorToString(Error error);
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-  // Wrapper for stat() or stat64().
+  // Wrapper for stat().
   static int Stat(const char* path, stat_wrapper_t* sb);
+  // Wrapper for fstat().
   static int Fstat(int fd, stat_wrapper_t* sb);
+  // Wrapper for lstat().
   static int Lstat(const char* path, stat_wrapper_t* sb);
 #endif
 

@@ -4,16 +4,40 @@
 
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/volume.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
 #include "chrome/common/extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h"
+#include "chrome/common/extensions/extension_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_thread.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace ash::cloud_upload {
+namespace {
+
+using file_system_provider::Action;
+using file_system_provider::Actions;
+using file_system_provider::ProvidedFileSystemInfo;
+using file_system_provider::ProvidedFileSystemInterface;
+using file_system_provider::ProviderId;
+using file_system_provider::Service;
+
+}  // namespace
+
+std::string GetGenericErrorMessage() {
+  return l10n_util::GetStringUTF8(IDS_OFFICE_UPLOAD_ERROR_GENERIC);
+}
+
+std::string GetReauthenticationRequiredMessage() {
+  return l10n_util::GetStringUTF8(
+      IDS_OFFICE_UPLOAD_ERROR_REAUTHENTICATION_REQUIRED);
+}
 
 storage::FileSystemURL FilePathToFileSystemURL(
     Profile* profile,
@@ -75,13 +99,85 @@ SourceType GetSourceType(Profile* profile,
   return SourceType::LOCAL;
 }
 
-file_manager::io_task::OperationType GetOperationTypeForUpload(
-    Profile* profile,
-    const storage::FileSystemURL& source_url) {
+UploadType GetUploadType(Profile* profile,
+                         const storage::FileSystemURL& source_url) {
   SourceType source_type = GetSourceType(profile, source_url);
-  return source_type == SourceType::LOCAL
-             ? file_manager::io_task::OperationType::kMove
-             : file_manager::io_task::OperationType::kCopy;
+  return source_type == SourceType::LOCAL ? UploadType::kMove
+                                          : UploadType::kCopy;
+}
+
+absl::optional<ProvidedFileSystemInfo> GetODFSInfo(Profile* profile) {
+  Service* service = Service::Get(profile);
+  ProviderId provider_id =
+      ProviderId::CreateFromExtensionId(extension_misc::kODFSExtensionId);
+  auto odfs_infos = service->GetProvidedFileSystemInfoList(provider_id);
+
+  if (odfs_infos.size() == 0) {
+    LOG(ERROR) << "ODFS is not mounted";
+    return absl::nullopt;
+  }
+  if (odfs_infos.size() > 1u) {
+    LOG(ERROR) << "One and only one filesystem should be mounted for the ODFS "
+                  "extension";
+    return absl::nullopt;
+  }
+
+  return odfs_infos[0];
+}
+
+ProvidedFileSystemInterface* GetODFS(Profile* profile) {
+  Service* service = Service::Get(profile);
+  ProviderId provider_id =
+      ProviderId::CreateFromExtensionId(extension_misc::kODFSExtensionId);
+  auto odfs_info = GetODFSInfo(profile);
+  if (!odfs_info) {
+    return nullptr;
+  }
+  return service->GetProvidedFileSystem(provider_id,
+                                        odfs_info->file_system_id());
+}
+
+// Convert |actions| to |ODFSMetadata| and pass the result to |callback|.
+// The action id's for the metadata are HIDDEN_ONEDRIVE_USER_EMAIL and
+// HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED.
+void OnODFSMetadataActions(GetODFSMetadataCallback callback,
+                           const Actions& actions,
+                           base::File::Error result) {
+  if (result != base::File::Error::FILE_OK) {
+    LOG(ERROR) << "Unexpectedly failed to get ODFS metadata actions as these "
+                  "should always be returned: "
+               << result;
+    std::move(callback).Run(base::unexpected(result));
+    return;
+  }
+  ODFSMetadata metadata;
+  for (const Action& action : actions) {
+    if (action.id == kReauthenticationRequiredId) {
+      metadata.reauthentication_required = action.title == "true";
+    } else if (action.id == kUserEmailActionId) {
+      metadata.user_email = action.title;
+    }
+  }
+  std::move(callback).Run(metadata);
+}
+
+void GetODFSMetadata(ProvidedFileSystemInterface* file_system,
+                     GetODFSMetadataCallback callback) {
+  file_system->GetActions(
+      {base::FilePath(cloud_upload::kODFSMetadataQueryPath)},
+      base::BindOnce(&OnODFSMetadataActions, std::move(callback)));
+}
+
+absl::optional<base::File::Error> GetFirstTaskError(
+    const ::file_manager::io_task::ProgressStatus& status) {
+  for (const auto* entries : {&status.sources, &status.outputs}) {
+    for (const ::file_manager::io_task::EntryStatus& entry : *entries) {
+      if (entry.error && *entry.error != base::File::Error::FILE_OK) {
+        return entry.error;
+      }
+    }
+  }
+  return absl::nullopt;
 }
 
 }  // namespace ash::cloud_upload

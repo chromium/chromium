@@ -36,7 +36,6 @@ import os
 import signal
 import subprocess
 import sys
-import threading
 import time
 
 import six
@@ -384,16 +383,15 @@ class Executive(object):
             env=env,
             close_fds=self._should_close_fds())
 
-        def on_command_timeout():
+        output = b''
+        try:
+            output, _ = process.communicate(string_to_communicate,
+                                            timeout_seconds)
+        except subprocess.TimeoutExpired:
             _log.error('Error: Command timed out after %s seconds',
                        timeout_seconds)
+        finally:
             process.kill()
-
-        if timeout_seconds:
-            timer = threading.Timer(timeout_seconds, on_command_timeout)
-            timer.start()
-
-        output = process.communicate(string_to_communicate)[0]
 
         # run_command automatically decodes to unicode() unless explicitly told not to.
         if decode_output:
@@ -403,9 +401,6 @@ class Executive(object):
         # wait() is not threadsafe and can throw OSError due to:
         # http://bugs.python.org/issue1731717
         exit_code = process.wait()
-
-        if timeout_seconds:
-            timer.cancel()
 
         if debug_logging:
             _log.debug('"%s" took %.2fs', self.command_for_printing(args),

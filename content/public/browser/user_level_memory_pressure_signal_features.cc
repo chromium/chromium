@@ -20,9 +20,15 @@ constexpr uint64_t k1MB = 1024ull * 1024;
 constexpr uint64_t k1GB = 1024ull * k1MB;
 constexpr base::TimeDelta kDefaultMinimumInterval = base::Minutes(10);
 
+// Each renderer does not generate memory pressure signals until the interval
+// has passed after page loading is finished. This parameter must be larger
+// than or equal to the time from navigation start to the time the
+// DOMContentLoaded event is finished. 5min is much larger than
+// the 99p of PageLoad.DocumentTiming.NavigationToDOMContentLoadedEventFired
+// (14sec) and we expect the DOMContentLoaded events will finish in 5min.
 // Negative inert interval disables delayed memory pressure signals
 // This is intended to keep the old behavior.
-constexpr base::TimeDelta kDefaultInertInterval = base::TimeDelta::Min();
+constexpr base::TimeDelta kDefaultInertInterval = base::Minutes(5);
 
 }  // namespace
 
@@ -30,11 +36,11 @@ constexpr base::TimeDelta kDefaultInertInterval = base::TimeDelta::Min();
 // if the value exceeds the pre-defined threshold. (for Android 4GB devices)
 BASE_FEATURE(kUserLevelMemoryPressureSignalOn4GbDevices,
              "UserLevelMemoryPressureSignalOn4GbDevices",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 // (for Android 6GB devices)
 BASE_FEATURE(kUserLevelMemoryPressureSignalOn6GbDevices,
              "UserLevelMemoryPressureSignalOn6GbDevices",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsUserLevelMemoryPressureSignalEnabledOn4GbDevices() {
   // Because of Android carveouts, AmountOfPhysicalMemory() returns smaller

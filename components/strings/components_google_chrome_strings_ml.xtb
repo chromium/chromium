@@ -3,13 +3,16 @@
 <translationbundle lang="ml">
 <translation id="1016765312371154165">Chrome ശരിയായി ഷട്ട്‌ഡൗൺ ചെയ്‌തിട്ടില്ല.</translation>
 <translation id="130631256467250065">നിങ്ങൾ അടുത്ത തവണ ഉപകരണം റീസ്റ്റാർട്ട് ചെയ്യുമ്പോൾ മാറ്റങ്ങൾ പ്രാബല്യത്തിൽ വരും.</translation>
+<translation id="1555506416658437797">പേയ്‌മെന്റ് രീതികൾ എഡിറ്റ് ചെയ്യുക.</translation>
 <translation id="1635457557763038537">അടുത്ത തവണ Chrome വീണ്ടും ആരംഭിക്കുമ്പോൾ നിങ്ങളുടെ മാറ്റങ്ങൾ പ്രാബല്യത്തിൽ വരും.</translation>
+<translation id="2399868464369312507">പേയ്‌മെന്റ് രീതികൾ എഡിറ്റ് ചെയ്യാൻ Google Chrome ശ്രമിക്കുന്നു.</translation>
 <translation id="2447485272386224171"><ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ഓപ്പണ്‍ സോഴ്സ് പ്രോജക്‌ടും മറ്റ് <ph name="BEGIN_LINK_OSS" />ഓപ്പൺ സോഴ്സ് സോഫ്റ്റ്‌വെയറും<ph name="END_LINK_OSS" /> ഉപയോഗിച്ചാണ് Chrome സാധ്യമാക്കിയത്.</translation>
 <translation id="2588322182880276190">Chrome ലോഗോ</translation>
 <translation id="3444832043240812445">നിങ്ങള്‍ <ph name="BEGIN_LINK" />ക്രാഷ് റിപ്പോര്‍ട്ടിംഗ് പ്രവർത്തനക്ഷമമാക്കുകയാണെങ്കിൽ<ph name="END_LINK" /> നിങ്ങളുടെ സമീപകാല ക്രാഷുകളിലെ വിവരങ്ങള്‍ മാത്രം ഈ പേജ് കാണിക്കുന്നു.</translation>
 <translation id="3875312571075912821">നിങ്ങളുടെ ഫയർവാളിലെയോ ആന്റിവൈറസ് ക്രമീകരണത്തിലെയോ നെറ്റ്‌വർക്ക് ആക്‌സസ്
           ചെയ്യാൻ Chrome-നെ അനുവദിക്കുക.</translation>
 <translation id="5005121315113832363">Chrome ഈ പേജ് ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
+<translation id="585620188971323280">പേയ്‌മെന്റ് രീതികൾ പൂരിപ്പിക്കുന്നതിനുള്ള ക്രമീകരണം പരിഷ്‌ക്കരിക്കുക.</translation>
 <translation id="6011049234605203654">Chrome മെനുവിലേക്ക്
           പോകുക &gt;
           <ph name="SETTINGS_TITLE" />
@@ -40,4 +43,5 @@
           എന്നതിൽ പോയി തിരഞ്ഞെടുത്ത പ്രോക്‌സികളുടെ തിരഞ്ഞെടുത്തത് മാറ്റുക.</translation>
 <translation id="8232971017369963250">Chrome സാധ്യമാക്കിയത് <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ഓപ്പൺ സോഴ്‌സ് പ്രോജക്റ്റ് ഉപയോഗിച്ചാണ്.</translation>
 <translation id="8279509328145658601">Chrome സാധ്യമാക്കിയത് മറ്റ് <ph name="BEGIN_LINK_OSS" />ഓപ്പൺ സോഴ്‌സ് സോഫ്റ്റ്‌വെയറുകൾ<ph name="END_LINK_OSS" /> കൂടി ഉപയോഗിച്ചാണ്.</translation>
+<translation id="8544217240017914508">പേയ്‌മെന്റ് രീതികൾ പൂരിപ്പിക്കുന്നതിനുള്ള ക്രമീകരണം പരിഷ്‌കരിക്കാൻ ശ്രമിക്കുകയാണ് Google Chrome.</translation>
 </translationbundle>

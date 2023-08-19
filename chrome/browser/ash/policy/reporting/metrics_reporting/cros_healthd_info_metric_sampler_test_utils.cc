@@ -171,4 +171,58 @@ cros_healthd::ExternalDisplayInfoPtr CreateExternalDisplay(
       /*input_type*/ cros_healthd::DisplayInputType::kDigital, display_name);
 }
 
+cros_healthd::TelemetryInfoPtr CreateSystemResult(
+    cros_healthd::SystemInfoPtr system_info) {
+  auto telemetry_info = cros_healthd::TelemetryInfo::New();
+  telemetry_info->system_result =
+      cros_healthd::SystemResult::NewSystemInfo(std::move(system_info));
+  return telemetry_info;
+}
+
+cros_healthd::TelemetryInfoPtr CreateSystemResultWithError() {
+  auto telemetry_info = cros_healthd::TelemetryInfo::New();
+  telemetry_info->system_result =
+      cros_healthd::SystemResult::NewError(cros_healthd::ProbeError::New());
+  return telemetry_info;
+}
+
+cros_healthd::SystemInfoPtr CreateSystemInfoWithPsr(
+    cros_healthd::PsrInfoPtr psr_info) {
+  // Set up the required field with minimal information.
+  auto os_info = cros_healthd::OsInfo::New();
+  os_info->os_version = cros_healthd::OsVersion::New();
+
+  return cros_healthd::SystemInfo::New(std::move(os_info), /*vpd_info=*/nullptr,
+                                       /*dmi_info=*/nullptr,
+                                       std::move(psr_info));
+}
+
+cros_healthd::SystemInfoPtr CreateSystemInfoWithPsrUnsupported() {
+  auto psr_info = cros_healthd::PsrInfo::New();
+  psr_info->is_supported = false;
+  return CreateSystemInfoWithPsr(std::move(psr_info));
+}
+
+cros_healthd::SystemInfoPtr CreateSystemInfoWithPsrLogState(
+    cros_healthd::PsrInfo::LogState log_state) {
+  auto psr_info = cros_healthd::PsrInfo::New();
+  psr_info->is_supported = true;
+  psr_info->log_state = log_state;
+  return CreateSystemInfoWithPsr(std::move(psr_info));
+}
+
+cros_healthd::SystemInfoPtr CreateSystemInfoWithPsrSupportedRunning(
+    uint32_t uptime_seconds,
+    uint32_t s5_counter,
+    uint32_t s4_counter,
+    uint32_t s3_counter) {
+  auto psr_info = cros_healthd::PsrInfo::New();
+  psr_info->is_supported = true;
+  psr_info->log_state = cros_healthd::PsrInfo::LogState::kStarted;
+  psr_info->uptime_seconds = uptime_seconds;
+  psr_info->s5_counter = s5_counter;
+  psr_info->s4_counter = s4_counter;
+  psr_info->s3_counter = s3_counter;
+  return CreateSystemInfoWithPsr(std::move(psr_info));
+}
 }  // namespace reporting::test

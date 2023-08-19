@@ -21,10 +21,6 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/vector2d.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace ui {
 
 EventType EventTypeFromNative(const PlatformEvent& platform_event) {
@@ -191,7 +187,7 @@ PlatformEvent CreateInvalidPlatformEvent() {
 }
 
 bool IsPlatformEventValid(const PlatformEvent& event) {
-  return event.IsValid();
+  return !!event;
 }
 
 void ClearTouchIdIfReleased(const PlatformEvent& platform_event) {

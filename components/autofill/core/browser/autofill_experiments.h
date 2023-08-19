@@ -29,8 +29,7 @@ class PersonalDataManager;
 // Returns true if uploading credit cards to Wallet servers is enabled. This
 // requires the appropriate flags and user settings to be true and the user to
 // be a member of a supported domain.
-bool IsCreditCardUploadEnabled(const PrefService* pref_service,
-                               const syncer::SyncService* sync_service,
+bool IsCreditCardUploadEnabled(const syncer::SyncService* sync_service,
                                const std::string& user_email,
                                const std::string& user_country,
                                const AutofillSyncSigninState sync_state,
@@ -38,7 +37,6 @@ bool IsCreditCardUploadEnabled(const PrefService* pref_service,
 
 // Returns true if autofill local card migration flow is enabled.
 bool IsCreditCardMigrationEnabled(PersonalDataManager* personal_data_manager,
-                                  PrefService* pref_service,
                                   syncer::SyncService* sync_service,
                                   bool is_test_mode,
                                   LogManager* log_manager);
@@ -51,7 +49,7 @@ bool IsInAutofillSuggestionsDisabledExperiment();
 
 // Returns true if the feature is explicitly enabled by the corresponding Finch
 // flag, or if launched in general for this platform, which is true for Windows,
-// Android, and Mac OS X >= 10.13.
+// Android, and macOS.
 bool IsCreditCardFidoAuthenticationEnabled();
 
 // Returns true if IBAN is enabled and at least one of the two conditions below

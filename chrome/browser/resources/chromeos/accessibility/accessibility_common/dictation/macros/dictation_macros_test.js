@@ -10,19 +10,22 @@ DictationMacrosTest = class extends DictationE2ETestBase {
   async setUpDeferred() {
     await super.setUpDeferred();
 
-    await importModule(
-        'MacroError', '/accessibility_common/dictation/macros/macro.js');
-    await importModule(
-        'StopListeningMacro',
-        '/accessibility_common/dictation/macros/stop_listening_macro.js');
-    await importModule(
-        'InputController',
-        '/accessibility_common/dictation/input_controller.js');
-    await importModule(
-        'UnselectTextMacro',
-        '/accessibility_common/dictation/macros/repeatable_key_press_macro.js');
-    await importModule(
-        'Context', '/accessibility_common/dictation/context_checker.js');
+    await Promise.all([
+      importModule(
+          'MacroError', '/accessibility_common/dictation/macros/macro.js'),
+      importModule(
+          'StopListeningMacro',
+          '/accessibility_common/dictation/macros/stop_listening_macro.js'),
+      importModule(
+          'InputController',
+          '/accessibility_common/dictation/input_controller.js'),
+      importModule(
+          'UnselectTextMacro',
+          '/accessibility_common/dictation/macros/repeatable_key_press_macro.js'),
+      importModule(
+          'Context', '/accessibility_common/dictation/context_checker.js'),
+    ]);
+
     this.mockAccessibilityPrivate.enableFeatureForTest(
         'dictationContextChecking', true);
   }

@@ -18,15 +18,13 @@ namespace openscreen_platform {
 using openscreen::Error;
 
 TlsClientConnection::TlsClientConnection(
-    openscreen::TaskRunner* task_runner,
     openscreen::IPEndpoint local_address,
     openscreen::IPEndpoint remote_address,
     mojo::ScopedDataPipeConsumerHandle receive_stream,
     mojo::ScopedDataPipeProducerHandle send_stream,
     mojo::Remote<network::mojom::TCPConnectedSocket> tcp_socket,
     mojo::Remote<network::mojom::TLSClientSocket> tls_socket)
-    : task_runner_(task_runner),
-      local_address_(std::move(local_address)),
+    : local_address_(std::move(local_address)),
       remote_address_(std::move(remote_address)),
       receive_stream_(std::move(receive_stream)),
       send_stream_(std::move(send_stream)),
@@ -34,7 +32,6 @@ TlsClientConnection::TlsClientConnection(
       tls_socket_(std::move(tls_socket)),
       receive_stream_watcher_(FROM_HERE,
                               mojo::SimpleWatcher::ArmingPolicy::MANUAL) {
-  DCHECK(task_runner_);
   if (receive_stream_.is_valid()) {
     receive_stream_watcher_.Watch(
         receive_stream_.get(),

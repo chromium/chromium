@@ -80,6 +80,20 @@ class PLATFORM_EXPORT ScriptCachedMetadataHandler
   const WTF::TextEncoding encoding_;
 };
 
+// The serialized header format for cached metadata which includes a hash of the
+// script text. This header is followed by a second header in the format defined
+// by CachedMetadataHeader, which is in turn followed by the data.
+struct CachedMetadataHeaderWithHash {
+  static constexpr uint32_t kSha256Bytes = 256 / 8;
+  uint32_t
+      marker;  // Must be CachedMetadataHandler::kSingleEntryWithHashAndPadding.
+  uint32_t padding;  // Always zero. Ensures 8-byte alignment of subsequent data
+                     // so that reading the tag is defined behavior and V8
+                     // doesn't copy the data again for better alignment (see
+                     // AlignedCachedData).
+  uint8_t hash[kSha256Bytes];
+};
+
 class PLATFORM_EXPORT ScriptCachedMetadataHandlerWithHashing final
     : public ScriptCachedMetadataHandler {
  public:

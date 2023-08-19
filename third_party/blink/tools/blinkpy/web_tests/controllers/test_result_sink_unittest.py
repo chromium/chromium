@@ -141,10 +141,6 @@ class TestResultSinkMessage(TestResultSinkTestBase):
             },
             {
                 'key': 'web_tests_used_expectations_file',
-                'value': 'WebDriverExpectations',
-            },
-            {
-                'key': 'web_tests_used_expectations_file',
                 'value': 'NeverFixTests',
             },
             {
@@ -198,10 +194,6 @@ class TestResultSinkMessage(TestResultSinkTestBase):
             {
                 'key': 'web_tests_used_expectations_file',
                 'value': 'TestExpectations',
-            },
-            {
-                'key': 'web_tests_used_expectations_file',
-                'value': 'WebDriverExpectations',
             },
             {
                 'key': 'web_tests_used_expectations_file',
@@ -267,10 +259,6 @@ class TestResultSinkMessage(TestResultSinkTestBase):
             },
             {
                 'key': 'web_tests_used_expectations_file',
-                'value': 'WebDriverExpectations',
-            },
-            {
-                'key': 'web_tests_used_expectations_file',
                 'value': 'NeverFixTests',
             },
             {
@@ -322,10 +310,6 @@ class TestResultSinkMessage(TestResultSinkTestBase):
             {
                 'key': 'web_tests_used_expectations_file',
                 'value': 'TestExpectations',
-            },
-            {
-                'key': 'web_tests_used_expectations_file',
-                'value': 'WebDriverExpectations',
             },
             {
                 'key': 'web_tests_used_expectations_file',

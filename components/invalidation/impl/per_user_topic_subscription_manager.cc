@@ -33,6 +33,8 @@ namespace invalidation {
 
 namespace {
 
+constexpr char kDeprecatedSyncInvalidationGCMSenderId[] = "8181035976";
+
 const char kTypeSubscribedForInvalidations[] =
     "invalidation.per_sender_registered_for_invalidation";
 
@@ -111,6 +113,18 @@ void PerUserTopicSubscriptionManager::RegisterPrefs(
     PrefRegistrySimple* registry) {
   // Same as RegisterProfilePrefs; see comment in the header.
   RegisterProfilePrefs(registry);
+}
+
+// static
+void PerUserTopicSubscriptionManager::ClearDeprecatedPrefs(PrefService* prefs) {
+  if (prefs->HasPrefPath(kTypeSubscribedForInvalidations)) {
+    ScopedDictPrefUpdate update(prefs, kTypeSubscribedForInvalidations);
+    update->Remove(kDeprecatedSyncInvalidationGCMSenderId);
+  }
+  if (prefs->HasPrefPath(kActiveRegistrationTokens)) {
+    ScopedDictPrefUpdate update(prefs, kActiveRegistrationTokens);
+    update->Remove(kDeprecatedSyncInvalidationGCMSenderId);
+  }
 }
 
 // State of the instance ID token when subscription is requested.
@@ -348,6 +362,7 @@ void PerUserTopicSubscriptionManager::StartPendingSubscriptionRequest(
                          SubscriptionFinished,
                      base::Unretained(it->second.get())),
       url_loader_factory_);
+  NotifySubscriptionRequestStarted(topic);
 }
 
 void PerUserTopicSubscriptionManager::ActOnSuccessfulSubscription(
@@ -403,6 +418,7 @@ void PerUserTopicSubscriptionManager::SubscriptionFinishedForTopic(
     Status code,
     std::string private_topic_name,
     PerUserTopicSubscriptionRequest::RequestType type) {
+  NotifySubscriptionRequestFinished(topic, code);
   if (code.IsSuccess()) {
     ActOnSuccessfulSubscription(topic, private_topic_name, type);
     return;
@@ -572,6 +588,21 @@ void PerUserTopicSubscriptionManager::NotifySubscriptionChannelStateChange(
   last_issued_state_ = state;
   for (auto& observer : observers_) {
     observer.OnSubscriptionChannelStateChanged(state);
+  }
+}
+
+void PerUserTopicSubscriptionManager::NotifySubscriptionRequestStarted(
+    Topic topic) {
+  for (auto& observer : observers_) {
+    observer.OnSubscriptionRequestStarted(topic);
+  }
+}
+
+void PerUserTopicSubscriptionManager::NotifySubscriptionRequestFinished(
+    Topic topic,
+    Status code) {
+  for (auto& observer : observers_) {
+    observer.OnSubscriptionRequestFinished(topic, code);
   }
 }
 

@@ -7,9 +7,16 @@ import("//build/config/chromeos/ui_mode.gni")
 assert(is_chromeos_ash)
 
 source_set("ash") {
-  sources = [ "ash_attestation_service.cc" ]
+  sources = [
+    "ash_attestation_cleanup_manager.cc",
+    "ash_attestation_service_impl.cc",
+  ]
 
-  public = [ "ash_attestation_service.h" ]
+  public = [
+    "ash_attestation_cleanup_manager.h",
+    "ash_attestation_service.h",
+    "ash_attestation_service_impl.h",
+  ]
 
   deps = [
     "//chrome/browser/ash",

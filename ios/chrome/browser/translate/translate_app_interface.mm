@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/translate/translate_app_interface.h"
 
 #import "base/command_line.h"
+#import "base/containers/contains.h"
 #import "base/memory/singleton.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -23,10 +24,6 @@
 #import "ios/chrome/test/fakes/fake_language_detection_tab_helper_observer.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "net/base/network_change_notifier.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -161,7 +158,7 @@ class FakeJSTranslateWebFrameManagerFactory
   }
 
   JSTranslateWebFrameManager* FromWebFrame(web::WebFrame* web_frame) override {
-    if (managers_.find(web_frame->GetFrameId()) == managers_.end()) {
+    if (!base::Contains(managers_, web_frame->GetFrameId())) {
       managers_[web_frame->GetFrameId()] =
           std::make_unique<FakeJSTranslateWebFrameManager>(web_frame);
     }

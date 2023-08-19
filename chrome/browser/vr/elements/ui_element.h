@@ -12,7 +12,6 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/vr/audio_delegate.h"
 #include "chrome/browser/vr/databinding/binding_base.h"
 #include "chrome/browser/vr/elements/corner_radii.h"
 #include "chrome/browser/vr/elements/draw_phase.h"
@@ -20,8 +19,6 @@
 #include "chrome/browser/vr/elements/ui_element_type.h"
 #include "chrome/browser/vr/frame_lifecycle.h"
 #include "chrome/browser/vr/model/camera_model.h"
-#include "chrome/browser/vr/model/reticle_model.h"
-#include "chrome/browser/vr/model/sounds.h"
 #include "chrome/browser/vr/target_property.h"
 #include "chrome/browser/vr/vr_ui_export.h"
 #include "ui/gfx/animation/keyframe/animation_curve.h"
@@ -43,7 +40,6 @@ namespace vr {
 class KeyframeModel;
 class SkiaSurfaceProvider;
 class UiElementRenderer;
-class InputEvent;
 struct CameraModel;
 struct EditedText;
 
@@ -158,22 +154,6 @@ class VR_UI_EXPORT UiElement : public gfx::FloatAnimationCurve::Target,
   virtual void OnHoverEnter(const gfx::PointF& position,
                             base::TimeTicks timestamp);
   virtual void OnHoverLeave(base::TimeTicks timestamp);
-  virtual void OnHoverMove(const gfx::PointF& position,
-                           base::TimeTicks timestamp);
-  virtual void OnButtonDown(const gfx::PointF& position,
-                            base::TimeTicks timestamp);
-  virtual void OnButtonUp(const gfx::PointF& position,
-                          base::TimeTicks timestamp);
-  virtual void OnTouchMove(const gfx::PointF& position,
-                           base::TimeTicks timestamp);
-  virtual void OnFlingCancel(std::unique_ptr<InputEvent> gesture,
-                             const gfx::PointF& position);
-  virtual void OnScrollBegin(std::unique_ptr<InputEvent> gesture,
-                             const gfx::PointF& position);
-  virtual void OnScrollUpdate(std::unique_ptr<InputEvent> gesture,
-                              const gfx::PointF& position);
-  virtual void OnScrollEnd(std::unique_ptr<InputEvent> gesture,
-                           const gfx::PointF& position);
 
   // Whether the point (relative to the origin of the element), should be
   // considered on the element. All elements are considered rectangular by
@@ -462,9 +442,6 @@ class VR_UI_EXPORT UiElement : public gfx::FloatAnimationCurve::Target,
     return updated_visibility_this_frame_;
   }
 
-  void set_cursor_type(CursorType cursor_type) { cursor_type_ = cursor_type; }
-  CursorType cursor_type() const { return cursor_type_; }
-
   std::string DebugName() const;
 
 #ifndef NDEBUG
@@ -481,10 +458,6 @@ class VR_UI_EXPORT UiElement : public gfx::FloatAnimationCurve::Target,
                      bool include_bindings) const;
   virtual void DumpGeometry(std::ostringstream* os) const;
 #endif
-
-  // Set the sounds that play when an applicable handler is executed.  Elements
-  // that override element hover and click methods must manage their own sounds.
-  void SetSounds(Sounds sounds, AudioDelegate* delegate);
 
   bool clips_descendants() const { return clips_descendants_; }
   void set_clip_descendants(bool clips) { clips_descendants_ = clips; }
@@ -510,8 +483,6 @@ class VR_UI_EXPORT UiElement : public gfx::FloatAnimationCurve::Target,
   gfx::RectF GetAbsoluteClipRect() const;
 
   gfx::KeyframeEffect& animator() { return animator_; }
-
-  virtual const Sounds& GetSounds() const;
 
   virtual bool ShouldUpdateWorldSpaceTransform(
       bool parent_transform_changed) const;
@@ -670,13 +641,8 @@ class VR_UI_EXPORT UiElement : public gfx::FloatAnimationCurve::Target,
 
   UpdatePhase update_phase_ = kClean;
 
-  raw_ptr<AudioDelegate> audio_delegate_ = nullptr;
-  Sounds sounds_;
-
   // Indicates that this element may be resized by parent layout elements.
   bool resizable_by_layout_ = false;
-
-  CursorType cursor_type_ = kCursorDefault;
 };
 
 }  // namespace vr

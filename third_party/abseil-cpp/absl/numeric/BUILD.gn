@@ -39,6 +39,7 @@ absl_test("int128_test") {
     "//third_party/abseil-cpp/absl/base",
     "//third_party/abseil-cpp/absl/hash:hash_testing",
     "//third_party/abseil-cpp/absl/meta:type_traits",
+    "//third_party/abseil-cpp/absl/strings",
   ]
 }
 

@@ -24,7 +24,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.android_webview.common.SafeModeController;
 import org.chromium.android_webview.common.services.ISafeModeService;
-import org.chromium.android_webview.services.SafeModeService.TrustedPackage;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -220,6 +219,12 @@ public final class SafeModeService extends Service {
 
             SafeModeService.setSafeMode(actions);
         }
+
+        // This used by the Dev UI SafeMode Fragment to display the activation time.
+        @Override
+        public long getSafeModeActivationTimestamp() {
+            return getLastModifiedTime();
+        }
     };
 
     @Override
@@ -305,7 +310,6 @@ public final class SafeModeService extends Service {
         return timeSinceLastSafeModeConfig >= SAFE_MODE_ENABLED_TIME_LIMIT_MS;
     }
 
-    @VisibleForTesting
     public static void setClockForTesting(Clock clock) {
         synchronized (sLock) {
             sClock = clock;
@@ -336,14 +340,16 @@ public final class SafeModeService extends Service {
         }
     }
 
-    @VisibleForTesting
+    public static long getLastModifiedTime() {
+        return getSharedPreferences().getLong(LAST_MODIFIED_TIME_KEY, 0L);
+    }
+
     public static void clearSharedPrefsForTesting() {
         synchronized (sLock) {
             getSharedPreferences().edit().clear().apply();
         }
     }
 
-    @VisibleForTesting
     public static void removeSharedPrefKeyForTesting(String key) {
         synchronized (sLock) {
             getSharedPreferences().edit().remove(key).apply();

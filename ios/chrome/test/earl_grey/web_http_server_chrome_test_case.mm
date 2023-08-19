@@ -4,12 +4,9 @@
 
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 
-#import "base/strings/sys_string_conversions.h"
+#import "base/base_paths.h"
+#import "base/path_service.h"
 #import "ios/web/public/test/http_server/http_server.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 @implementation WebHttpServerChromeTestCase
 
@@ -21,8 +18,7 @@
     return;
   }
 
-  NSString* bundlePath = [NSBundle bundleForClass:[self class]].resourcePath;
-  server.StartOrDie(base::FilePath(base::SysNSStringToUTF8(bundlePath)));
+  server.StartOrDie(base::PathService::CheckedGet(base::DIR_ASSETS));
 }
 
 - (void)tearDown {

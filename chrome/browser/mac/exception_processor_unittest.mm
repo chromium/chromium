@@ -22,7 +22,7 @@ NSException* ExceptionNamed(NSString* name) {
                                userInfo:nil];
 }
 
-// Helper to keep binning expectations readible.
+// Helper to keep binning expectations readable.
 size_t BinForExceptionNamed(NSString* name) {
   return BinForException(ExceptionNamed(name));
 }

@@ -52,6 +52,10 @@
         {
           "builder": "linux-chromeos-rel-rts",
           "group": "tryserver.chromium.chromiumos"
+        },
+        {
+          "builder": "linux-chromeos-siso-rel",
+          "group": "tryserver.chromium.chromiumos"
         }
       ]
     }
@@ -59,7 +63,8 @@
   "$build/reclient": {
     "instance": "rbe-chromium-trusted",
     "jobs": 500,
-    "metrics_project": "chromium-reclient-metrics"
+    "metrics_project": "chromium-reclient-metrics",
+    "scandeps_server": true
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],

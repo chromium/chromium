@@ -15,6 +15,7 @@
 #include "base/strings/string_piece.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/data_pack.h"
+#include "ui/base/resource/resource_scale_factor.h"
 
 namespace ui {
 
@@ -67,13 +68,9 @@ TEST_P(DataPackWithResourceSharingTest, LoadFromPathWithAshResource) {
   DataPackWithResourceSharing pack(k100Percent);
   ASSERT_TRUE(pack.LoadFromPathWithAshResource(shared_resource_file, ash_file));
 
-  base::StringPiece data;
-  ASSERT_TRUE(pack.GetStringPiece(1, &data));
-  EXPECT_EQ(one, data);
-  ASSERT_TRUE(pack.GetStringPiece(2, &data));
-  EXPECT_EQ(two, data);
-  ASSERT_TRUE(pack.GetStringPiece(3, &data));
-  EXPECT_EQ(three, data);
+  ASSERT_EQ(pack.GetStringPiece(1), absl::optional<base::StringPiece>(one));
+  ASSERT_EQ(pack.GetStringPiece(2), absl::optional<base::StringPiece>(two));
+  ASSERT_EQ(pack.GetStringPiece(3), absl::optional<base::StringPiece>(three));
 
   EXPECT_EQ(2U, pack.GetMappingTableSizeForTesting());
   EXPECT_EQ(pack.GetMappingByMappingTableIndexForTesting(0)->lacros_resource_id,
@@ -123,19 +120,12 @@ TEST_P(DataPackWithResourceSharingTest, LoadFromPathWithAshResourceWithAlias) {
   DataPackWithResourceSharing pack(k100Percent);
   ASSERT_TRUE(pack.LoadFromPathWithAshResource(shared_resource_file, ash_file));
 
-  base::StringPiece data;
-  ASSERT_TRUE(pack.GetStringPiece(1, &data));
-  EXPECT_EQ(one, data);
-  ASSERT_TRUE(pack.GetStringPiece(2, &data));
-  EXPECT_EQ(two, data);
-  ASSERT_TRUE(pack.GetStringPiece(3, &data));
-  EXPECT_EQ(three, data);
-  ASSERT_TRUE(pack.GetStringPiece(11, &data));
-  EXPECT_EQ(one, data);
-  ASSERT_TRUE(pack.GetStringPiece(12, &data));
-  EXPECT_EQ(two, data);
-  ASSERT_TRUE(pack.GetStringPiece(13, &data));
-  EXPECT_EQ(three, data);
+  ASSERT_EQ(pack.GetStringPiece(1), absl::optional<base::StringPiece>(one));
+  ASSERT_EQ(pack.GetStringPiece(2), absl::optional<base::StringPiece>(two));
+  ASSERT_EQ(pack.GetStringPiece(3), absl::optional<base::StringPiece>(three));
+  ASSERT_EQ(pack.GetStringPiece(11), absl::optional<base::StringPiece>(one));
+  ASSERT_EQ(pack.GetStringPiece(12), absl::optional<base::StringPiece>(two));
+  ASSERT_EQ(pack.GetStringPiece(13), absl::optional<base::StringPiece>(three));
 
   EXPECT_EQ(4U, pack.GetMappingTableSizeForTesting());
   EXPECT_EQ(pack.GetMappingByMappingTableIndexForTesting(0)->lacros_resource_id,

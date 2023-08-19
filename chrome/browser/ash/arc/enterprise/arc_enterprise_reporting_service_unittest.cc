@@ -95,29 +95,15 @@ class ArcEnterpriseReportingServiceTest : public testing::Test {
   ArcEnterpriseReportingService* service() { return service_; }
 
  private:
-  raw_ptr<ArcEnterpriseReportingService, ExperimentalAsh> service_ = nullptr;
+  raw_ptr<ArcEnterpriseReportingService, DanglingUntriaged | ExperimentalAsh>
+      service_ = nullptr;
   content::BrowserTaskEnvironment task_environment_;
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
+  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh> profile_;
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<arc::ArcSessionManager> arc_session_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 };
-
-TEST_F(ArcEnterpriseReportingServiceTest, ReportManagementState_RemoveData) {
-  arc_session_manager()->Initialize();
-  service()->ReportManagementState(mojom::ManagementState::MANAGED_DO_LOST);
-  ASSERT_TRUE(
-      profile()->GetPrefs()->GetBoolean(prefs::kArcDataRemoveRequested));
-}
-
-TEST_F(ArcEnterpriseReportingServiceTest,
-       ReportManagementState_DoNotRemoveData) {
-  arc_session_manager()->Initialize();
-  service()->ReportManagementState(mojom::ManagementState::UNMANAGED);
-  ASSERT_FALSE(
-      profile()->GetPrefs()->GetBoolean(prefs::kArcDataRemoveRequested));
-}
 
 TEST_F(ArcEnterpriseReportingServiceTest, ReportCloudDpcOperationTime_Success) {
   base::HistogramTester tester;

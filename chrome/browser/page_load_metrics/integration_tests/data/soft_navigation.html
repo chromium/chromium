@@ -1,0 +1,252 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width,minimum-scale=1">
+  <title>Test soft navigation UKM collection</title>
+  <script src="resources/util.js"></script>
+</head>
+
+<body>
+  <style>
+    #shifter {
+      position: relative;
+      width: 300px;
+      height: 200px;
+      background: blue;
+    }
+  </style>
+  <div id="shifter">shifter</div>
+  <main id=main>
+    <div>
+      <a id=link><img src="/images/lcp-256x256.png"></a>
+    </div>
+  </main>
+  <div id="div">content</div>
+  <script>
+    const addImage = async (element) => {
+      const img = new Image();
+      img.src = '/images/lcp-133x106.png' + "?" + Math.random();
+      await img.decode();
+      element.appendChild(img);
+    };
+
+    const addImageToMain = async () => {
+      await addImage(document.body);
+    };
+    const waitOnPaintEntriesPromise = () => {
+      return new Promise((resolve, reject) => {
+        if (!performance.softNavPaintMetricsSupported) {
+          // If we don't have paint entries, fall back to a timer instead.
+          setTimeout(resolve, 200);
+        }
+        const paint_entries = []
+        new PerformanceObserver(list => {
+          paint_entries.push(...list.getEntries());
+          if (paint_entries.length == 2) {
+            resolve();
+          } else if (paint_entries.length > 2) {
+            reject();
+          }
+        }).observe({ type: 'paint', includeSoftNavigationObservations: true });
+      });
+    };
+
+    const waitForRegularLcpEntries = () => {
+      return new Promise(resolve => {
+        new PerformanceObserver(resolve).observe(
+          {
+            type: 'largest-contentful-paint', buffered: true
+          });
+      })
+    }
+
+
+    const waitForSoftNavigationLcpEntries = () => {
+      return new Promise(resolve => {
+        new PerformanceObserver(resolve).observe(
+          {
+            type: 'largest-contentful-paint', buffered: true,
+            includeSoftNavigationObservations: true
+          });
+      })
+    }
+
+    const GetSoftNavigationLCPEntries = async () => {
+      const soft_nav_entry_navigation_ids = await new Promise(resolve => {
+        (new PerformanceObserver(list => {
+          if (list.getEntries().length >= 2) {
+            resolve(list.getEntries().map(e => e.navigationId));
+          }
+        })).observe({
+          type: 'soft-navigation', buffered: true
+        });
+      });
+
+      const soft_nav_lcp_entries = await new Promise(resolve => {
+        (new PerformanceObserver(list => {
+          let soft_nav_entries = list.getEntries().filter(
+            e => soft_nav_entry_navigation_ids.includes(e.navigationId));
+          if (soft_nav_entries.length >= 2) {
+            resolve(soft_nav_entries);
+          }
+        })).observe({
+          type: 'largest-contentful-paint', buffered: true,
+          includeSoftNavigationObservations: true
+        });
+      });
+
+      return soft_nav_lcp_entries.map(e => JSON.stringify(e.toJSON()));
+    }
+
+    let counter = 0;
+    const setEvent = (button, pushState, addContent, pushUrl, eventType) => {
+      const URL = "foobar.html";
+      button.addEventListener(eventType, async e => {
+        // Jump through a task, to ensure task tracking is working properly.
+        await new Promise(r => setTimeout(r, 0));
+        const url = URL + "?" + counter;
+        if (pushState) {
+          if (pushUrl) {
+            pushState(url);
+          } else {
+            pushState();
+          }
+        }
+        await new Promise(r => setTimeout(r, 10));
+        await addContent(url);
+        ++counter;
+      });
+    };
+
+    const setEventAndWait = async () => {
+      await waitForRegularLcpEntries();
+      const link = document.getElementById("link");
+      setEvent(link, /*pushState=*/url => history.pushState({}, '', url),
+        /*addContent=*/async () => await addImageToMain(), /*pushUrl=*/true,
+        /*eventType=*/"click");
+    }
+
+    const waitForSoftNavigationEntry = async () => {
+      await new Promise(resolve => {
+        (new PerformanceObserver(resolve)).observe({
+          type: 'soft-navigation', buffered: true
+        });
+      });
+      await waitOnPaintEntriesPromise();;
+      await waitForSoftNavigationLcpEntries();
+    }
+
+    const waitForSoftNavigationEntry2 = async () => {
+      await new Promise(resolve => {
+        (new PerformanceObserver(() => resolve())).observe({
+          type: 'soft-navigation'
+        });
+      });
+      await waitOnPaintEntriesPromise();
+      await waitForSoftNavigationLcpEntries();
+    }
+
+    let eventPromises = [];
+    const registerEventListeners = () => {
+      eventPromises = [];
+      const element = document.getElementById('div');
+      for (const event of ['mouseup', 'pointerup', 'click']) {
+        eventPromises.push(new Promise(resolve => {
+          element.addEventListener(event, resolve, { once: true });
+        }));
+      }
+    }
+
+    const waitForClick = async () => {
+      await Promise.all(eventPromises);
+    }
+
+    const addChangeColorEventListener = () => {
+      const element = document.getElementById('div');
+      element.addEventListener("pointerdown", () => {
+        element.style = "color:red";
+      });
+    }
+
+
+    if (PerformanceObserver.supportedEntryTypes.indexOf("layout-shift") == -1)
+      throw new Error("Layout Instability API not supported");
+
+    // An list to record all the entries with startTime and score.
+    let element = document.querySelector("#shifter");
+
+    (async () => {
+      await waitUntilAfterNextLayout();
+      document.querySelector("#shifter").style = "top: 160px";
+    })();
+
+    const triggerLayoutShift = async (multiplier = 1) => {
+      // Wait for 50 milliseconds that the click simulation that caused the
+      // soft navigation would not be counted as recent input.
+      await new Promise(resolve => setTimeout(resolve, 500));
+      let element = document.querySelector("#shifter")
+      let val = parseInt(getComputedStyle(element).top, 10);
+      element.style.top = (val + 40) * multiplier + "px";
+    }
+
+    const GetLayoutShift = async (expected_soft_nav_count = 0) => {
+      let soft_nav_entry_navigation_id;
+      if (expected_soft_nav_count > 0) {
+        soft_nav_entry_navigation_id = await new Promise(resolve => {
+          const observer = new PerformanceObserver(list => {
+            let soft_nav_entries = list.getEntries();
+            if (soft_nav_entries.length >= expected_soft_nav_count) {
+              observer.disconnect();
+
+              resolve(list.getEntries()[soft_nav_entries.length - 1].navigationId);
+            }
+          });
+          observer.observe({
+            type: 'soft-navigation', buffered: true
+          });
+        });
+      }
+
+      return await new Promise((resolve) => {
+        const layout_shifts = [];
+        const observer = new PerformanceObserver((list) => {
+          for (const entry of list.getEntries()) {
+            layout_shifts.push(entry);
+          }
+
+          if (expected_soft_nav_count > 0) {
+            let soft_nav_layout_shifts = layout_shifts.filter(
+              e => soft_nav_entry_navigation_id == e.navigationId);
+
+            if (soft_nav_layout_shifts.length >= 1) {
+              observer.disconnect();
+
+              resolve(soft_nav_layout_shifts.map((entry) => ({
+                startTime: entry.startTime,
+                score: entry.value,
+                hadRecentInput: entry.hadRecentInput,
+              })));
+            }
+          } else {
+            if (layout_shifts.length >= 1) {
+              observer.disconnect();
+
+              resolve(layout_shifts.map((entry) => ({
+                startTime: entry.startTime,
+                score: entry.value,
+                hadRecentInput: entry.hadRecentInput,
+              })));
+            }
+          }
+        });
+
+        observer.observe({
+          type: 'layout-shift', buffered: true
+        });
+      });
+    }
+  </script>
+</body>
+
+</html>

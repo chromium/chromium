@@ -16,19 +16,19 @@
 
 #include <assert.h>
 
-#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <initializer_list>
 #include <string>
 
-#include "absl/strings/ascii.h"
+#include "absl/base/config.h"
 #include "absl/strings/internal/resize_uninitialized.h"
-#include "absl/strings/numbers.h"
 #include "absl/strings/string_view.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
+
 
 // ----------------------------------------------------------------------
 // StrCat()
@@ -37,9 +37,10 @@ ABSL_NAMESPACE_BEGIN
 //    of a mix of raw C strings, string_views, strings, and integer values.
 // ----------------------------------------------------------------------
 
+namespace {
 // Append is merely a version of memcpy that returns the address of the byte
 // after the area just overwritten.
-static char* Append(char* out, const AlphaNum& x) {
+inline char* Append(char* out, const AlphaNum& x) {
   // memcpy is allowed to overwrite arbitrary memory, so doing this after the
   // call would force an extra fetch of x.size().
   char* after = out + x.size();
@@ -48,6 +49,13 @@ static char* Append(char* out, const AlphaNum& x) {
   }
   return after;
 }
+
+inline void STLStringAppendUninitializedAmortized(std::string* dest,
+                                                  size_t to_append) {
+  strings_internal::AppendUninitializedTraits<std::string>::Append(dest,
+                                                                   to_append);
+}
+}  // namespace
 
 std::string StrCat(const AlphaNum& a, const AlphaNum& b) {
   std::string result;
@@ -123,12 +131,12 @@ std::string CatPieces(std::initializer_list<absl::string_view> pieces) {
 void AppendPieces(std::string* dest,
                   std::initializer_list<absl::string_view> pieces) {
   size_t old_size = dest->size();
-  size_t total_size = old_size;
+  size_t to_append = 0;
   for (absl::string_view piece : pieces) {
     ASSERT_NO_OVERLAP(*dest, piece);
-    total_size += piece.size();
+    to_append += piece.size();
   }
-  strings_internal::STLStringResizeUninitializedAmortized(dest, total_size);
+  STLStringAppendUninitializedAmortized(dest, to_append);
 
   char* const begin = &(*dest)[0];
   char* out = begin + old_size;
@@ -146,15 +154,19 @@ void AppendPieces(std::string* dest,
 
 void StrAppend(std::string* dest, const AlphaNum& a) {
   ASSERT_NO_OVERLAP(*dest, a);
-  dest->append(a.data(), a.size());
+  std::string::size_type old_size = dest->size();
+  STLStringAppendUninitializedAmortized(dest, a.size());
+  char* const begin = &(*dest)[0];
+  char* out = begin + old_size;
+  out = Append(out, a);
+  assert(out == begin + dest->size());
 }
 
 void StrAppend(std::string* dest, const AlphaNum& a, const AlphaNum& b) {
   ASSERT_NO_OVERLAP(*dest, a);
   ASSERT_NO_OVERLAP(*dest, b);
   std::string::size_type old_size = dest->size();
-  strings_internal::STLStringResizeUninitializedAmortized(
-      dest, old_size + a.size() + b.size());
+  STLStringAppendUninitializedAmortized(dest, a.size() + b.size());
   char* const begin = &(*dest)[0];
   char* out = begin + old_size;
   out = Append(out, a);
@@ -168,8 +180,7 @@ void StrAppend(std::string* dest, const AlphaNum& a, const AlphaNum& b,
   ASSERT_NO_OVERLAP(*dest, b);
   ASSERT_NO_OVERLAP(*dest, c);
   std::string::size_type old_size = dest->size();
-  strings_internal::STLStringResizeUninitializedAmortized(
-      dest, old_size + a.size() + b.size() + c.size());
+  STLStringAppendUninitializedAmortized(dest, a.size() + b.size() + c.size());
   char* const begin = &(*dest)[0];
   char* out = begin + old_size;
   out = Append(out, a);
@@ -185,8 +196,8 @@ void StrAppend(std::string* dest, const AlphaNum& a, const AlphaNum& b,
   ASSERT_NO_OVERLAP(*dest, c);
   ASSERT_NO_OVERLAP(*dest, d);
   std::string::size_type old_size = dest->size();
-  strings_internal::STLStringResizeUninitializedAmortized(
-      dest, old_size + a.size() + b.size() + c.size() + d.size());
+  STLStringAppendUninitializedAmortized(
+      dest, a.size() + b.size() + c.size() + d.size());
   char* const begin = &(*dest)[0];
   char* out = begin + old_size;
   out = Append(out, a);

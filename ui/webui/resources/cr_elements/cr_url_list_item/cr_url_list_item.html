@@ -123,6 +123,10 @@
     border-radius: 8px;
   }
 
+  #folder-icon {
+    display: flex;
+  }
+
   .favicon {
     background-position: center center;
     background-repeat: no-repeat;
@@ -200,9 +204,14 @@
   }
 
   :host-context([chrome-refresh-2023]) .folder {
+    --cr-icon-color: currentColor;
     --cr-icon-size: 20px;
-    height: 20px;
-    width: 20px;
+    height: var(--cr-icon-size);
+    width: var(--cr-icon-size);
+  }
+
+  :host-context([chrome-refresh-2023]):host([size=compact]) .folder {
+    --cr-icon-size: 16px;
   }
 
   .count {
@@ -249,6 +258,9 @@
   :host-context([chrome-refresh-2023]):host([size=large]) .count {
     background: var(--color-list-item-folder-icon-background,
         var(--cr-fallback-color-primary-container));
+    color: var(--color-list-item-folder-icon-foreground,
+        var(--cr-fallback-color-on-primary-container));
+    font-weight: 500;
   }
 
   .image-container {
@@ -354,8 +366,8 @@
     max-width: 100%;
   }
 
-  .description-text:has(+ .timestamp:not([hidden])) {
-    /* Prioritize timestamp and let description shrink. */
+  .description-text:has(+ .description-meta:not([hidden])) {
+    /* Prioritize description meta and let description shrink. */
     flex-shrink: 1;
   }
 
@@ -369,16 +381,20 @@
     font-weight: 400;
   }
 
+  :host-context([chrome-refresh-2023]):host([size=compact]) .description {
+    font-size: 12px;
+  }
+
   .title,
   .description-text,
-  .timestamp {
+  .description-meta {
     max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  .timestamp {
+  .description-meta {
     flex-shrink: 0;
     padding-inline-start: 4px;
   }
@@ -394,8 +410,13 @@
     display: none;
   }
 
+  :host-context([chrome-refresh-2023]):host([has-badges_]) .badges {
+    margin-inline-start: 4px;
+  }
+
   .suffix-icons {
     align-items: center;
+    color: var(--cr-secondary-text-color);
     display: flex;
     flex-shrink: 0;
     margin-inline-end: -4px;
@@ -435,7 +456,8 @@
   <div class="image-container"
       hidden$="[[!shouldShowUrlImage_(
           url, size, imageUrls, firstImageLoaded_)]]">
-    <img class="url-image" is="cr-auto-img" auto-src="[[imageUrls.0]]">
+    <img class="url-image" is="cr-auto-img" auto-src="[[imageUrls.0]]"
+        draggable="false">
   </div>
   <div class="folder-and-count"
       hidden$="[[!shouldShowFolderCount_(url, count)]]">
@@ -443,7 +465,8 @@
       <template is="dom-repeat" items="[[imageUrls]]"
           filter="shouldShowImageUrl_">
         <div class="image-container" hidden$="[[!firstImageLoaded_]]">
-          <img class="folder-image" is="cr-auto-img" auto-src="[[item]]">
+          <img class="folder-image" is="cr-auto-img" auto-src="[[item]]"
+              draggable="false">
         </div>
       </template>
     </template>
@@ -465,7 +488,9 @@
   <div class="descriptions">
     <div class="description" hidden$="[[!description]]">
       <span class="description-text">[[description]]</span>
-      <span class="timestamp" hidden$="[[!timestamp]]">- [[timestamp]]</span>
+      <span class="description-meta" hidden$="[[!descriptionMeta]]">
+        &middot; [[descriptionMeta]]
+      </span>
     </div>
     <div class="badges">
       <slot id="badges" name="badges" on-slotchange="onBadgesSlotChange_">

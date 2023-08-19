@@ -39,13 +39,9 @@ class PuffinPatcherTest : public testing::Test {
 };
 
 TEST_F(PuffinPatcherTest, CheckPuffPatch) {
-// TODO(crbug/1446751): once this bug is confirmed fixed, we can remove this
-// android-specific if.
-#if !BUILDFLAG(IS_ANDROID)
   if (!base::FeatureList::IsEnabled(features::kPuffinPatches)) {
     GTEST_SKIP() << "only works when PuffinPatches are enabled.";
   }
-#endif
   // The operation needs a Patcher to access the PatchService.
   scoped_refptr<Patcher> patcher =
       base::MakeRefCounted<PatchChromiumFactory>(

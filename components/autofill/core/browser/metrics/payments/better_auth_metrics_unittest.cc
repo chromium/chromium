@@ -79,10 +79,10 @@ TEST_P(BetterAuthMetricsTest, CreditCardUnmaskingPreflightCall_FidoEligible) {
 
   // Check that the correct metrics are logged even if suggestions are shown
   // multiple times in a row.
-  autofill_manager().DidShowSuggestions(/*has_autofill_suggestions=*/true, form,
-                                        form.fields[0]);
-  autofill_manager().DidShowSuggestions(/*has_autofill_suggestions=*/true, form,
-                                        form.fields[0]);
+  autofill_manager().DidShowSuggestions(
+      /*has_autofill_suggestions=*/true, form, form.fields[0]);
+  autofill_manager().DidShowSuggestions(
+      /*has_autofill_suggestions=*/true, form, form.fields[0]);
 
   // If a server card is available, and a previous request was not made, then a
   // preflight flow is initiated and a preflight call is made.
@@ -112,8 +112,8 @@ TEST_P(BetterAuthMetricsTest,
        CreditCardUnmaskingPreflightCall_NotFidoEligible) {
   base::HistogramTester histogram_tester;
   const FormData& form = SetUpCreditCardUnmaskingPreflightCallTest();
-  autofill_manager().DidShowSuggestions(/*has_autofill_suggestions=*/true, form,
-                                        form.fields[0]);
+  autofill_manager().DidShowSuggestions(
+      /*has_autofill_suggestions=*/true, form, form.fields[0]);
 
   // If the preflight flow is initiated, we will always log it.
   if (HasServerCard() && !IsUnmaskDetailsRequestInProgress()) {

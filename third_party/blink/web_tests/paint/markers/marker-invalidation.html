@@ -1,5 +1,10 @@
 <!DOCTYPE html>
 <script src="../../resources/run-after-layout-and-paint.js"></script>
+<script>
+if (window.testRunner) {
+  testRunner.waitUntilDone();
+}
+</script>
 <style>
   @font-face {
     font-family: 'testFont';
@@ -35,10 +40,13 @@ function removeSpellingMarker(elem, start, end) {
         internals.removeMarker(document, range, 'spelling');
 };
 
-addSpellingMarker(markAllSpelling, 0, 10);
-addSpellingMarker(markNoSpelling, 0, 10);
-
 onload = runAfterLayoutAndPaint(function() {
-    removeSpellingMarker(markNoSpelling, 0, 10);
-  }, true);
+    addSpellingMarker(markAllSpelling, 0, 10);
+    addSpellingMarker(markNoSpelling, 0, 10);
+
+    runAfterLayoutAndPaint(function() {
+        removeSpellingMarker(markNoSpelling, 0, 10);
+    }, true);
+
+  }, false);
 </script>

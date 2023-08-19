@@ -8,8 +8,6 @@ import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.BundleUtils;
 
 /**
@@ -38,7 +36,6 @@ public class SplitCompatIntentService extends IntentService {
         mImpl.onHandleIntent(intent);
     }
 
-    @VisibleForTesting
     public void attachBaseContextForTesting(Context context, Impl impl) {
         mImpl = impl;
         super.attachBaseContext(context);

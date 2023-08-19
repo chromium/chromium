@@ -44,11 +44,21 @@ class RouteEdge {
   ~RouteEdge();
 
   const Ref<RouterLink>& primary_link() const { return primary_link_; }
-  const Ref<RouterLink>& decaying_link() const { return decaying_link_; }
+
+  RouterLink* decaying_link() const {
+    return decaying_link_ ? decaying_link_->link.get() : nullptr;
+  }
 
   // Indicates whether this edge is stable, meaning it has no decaying link and
   // it is not set to decay the next primary link it adopts.
-  bool is_stable() const { return !decaying_link_ && !is_decay_deferred_; }
+  bool is_stable() const { return !decaying_link_; }
+
+  // Indicates whether this edge has been marked for decay before being assigned
+  // a primary link. When this is true, any assigned primary link will
+  // immediately begin to decay.
+  bool is_decay_deferred() const {
+    return decaying_link_ && !decaying_link_->link;
+  }
 
   // These accessors set the limits on the current (or deferred) decaying link.
   // Once both of these values are set, the decaying link will be dropped from
@@ -58,22 +68,22 @@ class RouteEdge {
   // `length_from_decaying_link_`.
   void set_length_to_decaying_link(SequenceNumber length) {
     ABSL_ASSERT(!is_stable());
-    ABSL_ASSERT(!length_to_decaying_link_);
-    length_to_decaying_link_ = length;
+    ABSL_ASSERT(!decaying_link_->outgoing_length);
+    decaying_link_->outgoing_length = length;
   }
 
   void set_length_from_decaying_link(SequenceNumber length) {
     ABSL_ASSERT(!is_stable());
-    ABSL_ASSERT(!length_from_decaying_link_);
-    length_from_decaying_link_ = length;
+    ABSL_ASSERT(!decaying_link_->incoming_length);
+    decaying_link_->incoming_length = length;
   }
 
   absl::optional<SequenceNumber> length_to_decaying_link() const {
-    return length_to_decaying_link_;
+    return decaying_link_ ? decaying_link_->outgoing_length : absl::nullopt;
   }
 
   absl::optional<SequenceNumber> length_from_decaying_link() const {
-    return length_from_decaying_link_;
+    return decaying_link_ ? decaying_link_->incoming_length : absl::nullopt;
   }
 
   // Sets the primary link for this edge. Only valid to call if the edge does
@@ -113,44 +123,49 @@ class RouteEdge {
                         SequenceNumber length_received);
 
  private:
+  struct DecayingLink {
+    // A link which used to be the edge's primary link but which is being
+    // phased out. The decaying link may continue to receive parcels, but once
+    // `length_from_decaying_link` is set, it will only expect to receive
+    // parcels with a SequenceNumber up to (but not including) that value.
+    // Similarly, the decaying link will be preferred for message transmission
+    // as long as `length_to_decaying_link_` remains unknown, but as soon as
+    // that value is set, only parcels with a SequenceNumber up to(but not
+    // including) that value will be transmitted over this link. Once both
+    // sequence lengths are known and surpassed, the edge will drop this link.
+    //
+    // This field may be null, indicating that the edge was marked for link
+    // decay but hasn't yet been assigned a primary link. When a primary link
+    // is assigned in this case, it will immediately begin to decay.
+    Ref<RouterLink> link;
+
+    // If present, the length of the parcel sequence after which this edge must
+    // stop using `decaying_link_` to transmit parcels. If this is 5, then the
+    // decaying link must be used to transmit any new parcels with a
+    // SequenceNumber in the range [0, 4] inclusive. Beyond that point the
+    // primary link must be used.
+    absl::optional<SequenceNumber> outgoing_length;
+
+    // If present, the length of the parcel sequence after which this edge can
+    // stop expecting to receive parcels over `decaying_link_`. If this is 7,
+    // then the Router using this edge should still expect to receive parcels
+    // from the decaying link as long as it is missing any parcel in the range
+    // [0, 6] inclusive. Beyond that point parcels should only be expected from
+    // the primary link.
+    absl::optional<SequenceNumber> incoming_length;
+  };
+
   // The primary link over which this edge transmits and accepts parcels and
   // other messages. If a decaying link is also present, then the decaying link
   // is preferred for transmission of all parcels with a SequenceNumber up to
-  // (but not including) `length_to_decaying_link_`. If that value is not set,
-  // the decaying link is always preferred when set.
+  // (but not including) `decaying_link_->outgoing_length`. If that value is not
+  // set, the decaying link is always preferred when not null.
   Ref<RouterLink> primary_link_;
 
-  // If true, this edge was marked to decay its primary link before it actually
-  // acquired a primary link. In that case the next primary link adopted by
-  // this edge will be demoted immediately to a decaying link.
-  bool is_decay_deferred_ = false;
-
-  // If non-null, this is a link which used to be the edge's primary link but
-  // which is being phased out. The decaying link may continue to receive
-  // parcels, but once `length_from_decaying_link_` is set, it will only expect
-  // to receive parcels with a SequenceNumber up to (but not including) that
-  // value. Similarly, the decaying link will be preferred for message
-  // transmission as long as `length_to_decaying_link_` remains unknown, but as
-  // soon as that value is set, only parcels with a SequenceNumber up to
-  // (but not including) that value will be transmitted over this link. Once
-  // both sequence lengths are known and surpassed, the edge will drop this
-  // link.
-  Ref<RouterLink> decaying_link_;
-
-  // If present, the length of the parcel sequence after which this edge must
-  // stop using `decaying_link_` to transmit parcels. If this is 5, then the
-  // decaying link must be used to transmit any new parcels with a
-  // SequenceNumber in the range [0, 4] inclusive. Beyond that point the primary
-  // link must be used.
-  absl::optional<SequenceNumber> length_to_decaying_link_;
-
-  // If present, the length of the parcel sequence after which this edge can
-  // stop expecting to receive parcels over `decaying_link_`. If this is 7, then
-  // the Router using this edge should still expect to receive parcels from the
-  // decaying link as long as it is missing any parcel in the range [0, 6]
-  // inclusive. Beyond that point parcels should only be expected from the
-  // primary link.
-  absl::optional<SequenceNumber> length_from_decaying_link_;
+  // State regarding the edge's previous primary link which is currently
+  // decaying. Only non-null when the edge starts to decay (or will decay ASAP)
+  // its primary link.
+  std::unique_ptr<DecayingLink> decaying_link_;
 };
 
 }  // namespace ipcz

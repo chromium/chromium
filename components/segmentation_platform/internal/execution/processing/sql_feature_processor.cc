@@ -12,6 +12,7 @@
 #include "components/segmentation_platform/internal/execution/processing/feature_processor_state.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
+#include "components/segmentation_platform/public/types/processed_value.h"
 
 namespace segmentation_platform::processing {
 
@@ -123,7 +124,7 @@ void SqlFeatureProcessor::OnCustomInputProcessed(
       }
 
       // Append query params to the list.
-      const auto& custom_input_tensors =
+      const Tensor& custom_input_tensors =
           result[std::make_pair(sql_feature_index, bind_value_index)];
       current.bind_values.insert(current.bind_values.end(),
                                  custom_input_tensors.begin(),

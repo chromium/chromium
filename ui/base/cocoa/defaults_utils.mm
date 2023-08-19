@@ -13,7 +13,7 @@ namespace {
 
 bool& BlinkPeriodNeedsRefresh() {
   static bool blink_period_needs_refresh = []() {
-    [[NSNotificationCenter defaultCenter]
+    [NSNotificationCenter.defaultCenter
         addObserverForName:NSApplicationWillBecomeActiveNotification
                     object:nil
                      queue:nil

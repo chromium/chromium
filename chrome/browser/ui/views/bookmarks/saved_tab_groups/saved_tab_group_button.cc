@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/views/bookmarks/bookmark_button_util.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_drag_data.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_util.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
@@ -45,6 +46,7 @@
 #include "ui/base/models/dialog_model_menu_model_adapter.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/theme_provider.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/animation/slide_animation.h"
@@ -52,6 +54,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/label_button_border.h"
@@ -68,15 +71,21 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SavedTabGroupButton,
 
 namespace {
 // The max height of the button and the max width of a button with no title.
-constexpr int kButtonSize = 24;
+constexpr int kButtonSize = 20;
 // The corner radius for the button.
-constexpr float kButtonRadius = 4.0f;
-// The amount of insets from the buttons border.
-constexpr float kInsets = 5.0f;
+constexpr float kButtonRadius = 6.0f;
+// The amount of insets above and below the text.
+constexpr float kVerticalInsets = 2.0f;
+// The amount of insets before and after the text.
+constexpr float kHorizontalInsets = 6.0f;
 // The width of the outline of the button when open in the Tab Strip.
 constexpr float kBorderThickness = 1.0f;
-// The radius for the circle that is displayed for buttons with no title.
-constexpr float kCircleRadius = 7.0f;
+// The size of the squircle (rounded rect) in a button with no text.
+constexpr float kEmptyChipSize = 12.0f;
+// The amount of padding around the squircle (rounded rect).
+constexpr float kEmptyChipInsets = 4.0f;
+// The radius of the squircle (rounded rect).
+constexpr float kEmptyChipCornerRadius = 2.0f;
 }  // namespace
 
 SavedTabGroupButton::SavedTabGroupButton(
@@ -109,6 +118,7 @@ SavedTabGroupButton::SavedTabGroupButton(
   SetID(VIEW_ID_BOOKMARK_BAR_ELEMENT);
   SetProperty(views::kElementIdentifierKey, kSavedTabGroupButtonElementId);
   SetMaxSize(gfx::Size(bookmark_button_util::kMaxButtonWidth, kButtonSize));
+  label()->SetTextStyle(views::style::STYLE_BODY_4_EMPHASIS);
 
   show_animation_ = std::make_unique<gfx::SlideAnimation>(this);
   if (!animations_enabled) {
@@ -162,8 +172,6 @@ bool SavedTabGroupButton::OnKeyPressed(const ui::KeyEvent& event) {
   return false;
 }
 
-void SavedTabGroupButton::OnFocus() {}
-
 void SavedTabGroupButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   views::MenuButton::GetAccessibleNodeData(node_data);
   node_data->SetNameChecked(GetAccessibleNameForButton());
@@ -181,14 +189,15 @@ void SavedTabGroupButton::PaintButtonContents(gfx::Canvas* canvas) {
   SkColor text_and_outline_color =
       cp->GetColor(GetTabGroupDialogColorId(tab_group_color_id_));
 
-  // Draw circle.
+  // Draw squircle (rounded rect).
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
   flags.setStyle(cc::PaintFlags::kFill_Style);
   flags.setColor(text_and_outline_color);
 
-  const gfx::PointF center_point_f = gfx::PointF(width() / 2, height() / 2);
-  canvas->DrawCircle(center_point_f, kCircleRadius, flags);
+  canvas->DrawRoundRect(gfx::RectF(kEmptyChipInsets, kEmptyChipInsets,
+                                   kEmptyChipSize, kEmptyChipSize),
+                        kEmptyChipCornerRadius, flags);
 }
 
 std::u16string SavedTabGroupButton::GetAccessibleNameForButton() {
@@ -214,13 +223,6 @@ void SavedTabGroupButton::SetTextProperties(const SavedTabGroup& group) {
 }
 
 void SavedTabGroupButton::UpdateButtonLayout() {
-  if (GetText().empty()) {
-    // When the text is empty force the button to have square dimensions.
-    SetPreferredSize(gfx::Size(kButtonSize, kButtonSize));
-  } else {
-    SetPreferredSize(CalculatePreferredSize());
-  }
-
   // Relies on logic in theme_helper.cc to determine dark/light palette.
   ui::ColorId text_and_outline_color =
       GetTabGroupDialogColorId(tab_group_color_id_);
@@ -231,23 +233,30 @@ void SavedTabGroupButton::UpdateButtonLayout() {
   SetBackground(views::CreateThemedRoundedRectBackground(background_color,
                                                          kButtonRadius));
 
+  const gfx::Insets& insets =
+      gfx::Insets::VH(kVerticalInsets, kHorizontalInsets);
+
   // Only draw a border if the group is open in the tab strip.
   if (!local_group_id_.has_value()) {
-    SetBorder(views::CreateEmptyBorder(gfx::Insets(kInsets)));
+    SetBorder(views::CreateEmptyBorder(insets));
   } else {
     std::unique_ptr<views::Border> border =
         views::CreateThemedRoundedRectBorder(kBorderThickness, kButtonRadius,
                                              text_and_outline_color);
-    SetBorder(
-        views::CreatePaddedBorder(std::move(border), gfx::Insets(kInsets)));
+    SetBorder(views::CreatePaddedBorder(std::move(border), insets));
+  }
+
+  if (GetText().empty()) {
+    // When the text is empty force the button to have square dimensions.
+    SetPreferredSize(gfx::Size(kButtonSize, kButtonSize));
+  } else {
+    SetPreferredSize(CalculatePreferredSize());
   }
 }
 
 std::unique_ptr<views::LabelButtonBorder>
 SavedTabGroupButton::CreateDefaultBorder() const {
   auto border = std::make_unique<views::LabelButtonBorder>();
-  border->set_insets(ChromeLayoutProvider::Get()->GetInsetsMetric(
-      INSETS_BOOKMARKS_BAR_BUTTON));
   return border;
 }
 

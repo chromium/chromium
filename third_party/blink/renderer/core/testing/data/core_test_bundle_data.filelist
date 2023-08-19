@@ -447,6 +447,8 @@ testing/data/smartclip_user_select_none.html
 testing/data/sometext.html
 testing/data/specify_size.html
 testing/data/speculation_rules/single_url_prefetch.json
+testing/data/speculation_rules/single_url_prefetch_invalid_no_vary_search_hint.json
+testing/data/speculation_rules/single_url_prefetch_not_a_string_no_vary_search_hint.json
 testing/data/speedometer_saved_output.json
 testing/data/spell.html
 testing/data/sticky-position.html

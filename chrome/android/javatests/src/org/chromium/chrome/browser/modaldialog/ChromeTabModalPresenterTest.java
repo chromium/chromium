@@ -536,7 +536,6 @@ public class ChromeTabModalPresenterTest {
         mTestObserver.onDialogDismissedCallback.waitForCallback(callCount);
 
         mExpectedDismissalCause = null;
-        server.stopAndDestroyServer();
     }
 
     @Test
@@ -572,8 +571,7 @@ public class ChromeTabModalPresenterTest {
         });
     }
 
-    @BrowserControlsState
-    private int getBrowserControlsConstraints() {
+    private @BrowserControlsState int getBrowserControlsConstraints() {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> mTabModalPresenter.getBrowserControlsVisibilityDelegate().get());
     }

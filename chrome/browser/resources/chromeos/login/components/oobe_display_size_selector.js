@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
 import '//resources/cr_elements/cr_slider/cr_slider.js';
 import '//resources/cr_elements/icons.html.js';
 
@@ -132,6 +133,20 @@ export class OobeDisplaySizeSelector extends OobeDisplaySizeSelectorBase {
 
   onTickedSizeChanged_() {
     this.tickedSizeIndex_ = this.$.sizeSlider.value;
+  }
+
+  onPositiveClicked_() {
+    if (this.$.sizeSlider.value + 1 < this.markerCounts_) {
+      this.$.sizeSlider.value += 1;
+      this.tickedSizeIndex_ += 1;
+    }
+  }
+
+  onNegativeClicked_() {
+    if (this.$.sizeSlider.value >= 1) {
+      this.$.sizeSlider.value -= 1;
+      this.tickedSizeIndex_ -= 1;
+    }
   }
 }
 

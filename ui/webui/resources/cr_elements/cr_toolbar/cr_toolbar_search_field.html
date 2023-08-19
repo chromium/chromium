@@ -1,9 +1,14 @@
     <style include="cr-shared-style cr-icons">
       :host {
+        display: block;
         height: 40px;
         transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
             width 150ms cubic-bezier(0.4, 0, 0.2, 1);
         width: 44px;
+      }
+
+      :host-context([chrome-refresh-2023]):host {
+        isolation: isolate;
       }
 
       :host([disabled]) {
@@ -93,6 +98,11 @@
           --paper-spinner-color: var(
               --cr-toolbar-search-field-input-icon-color, white);
         }
+      }
+
+      :host-context([chrome-refresh-2023]) paper-spinner-lite {
+        margin: 0;
+        padding: 2px;
       }
 
       paper-spinner-lite[active] {
@@ -212,7 +222,6 @@
         background: var(--cr-toolbar-search-field-background,
             var(--color-toolbar-search-field-background,
             var(--cr-fallback-color-base-container)));
-        border: 2px solid transparent;
         border-radius: inherit;
         display: block;
         inset: 0;
@@ -221,24 +230,22 @@
         z-index: 0;
       }
 
-      :host-context([chrome-refresh-2023].focus-outline-visible):host(
-            [search-focused_]:not([narrow])) {
+      :host-context([chrome-refresh-2023]):host(
+          [search-focused_]:not([narrow])) {
         outline: 2px solid var(--cr-focus-outline-color);
+        outline-offset: 2px;
       }
 
-      :host-context([chrome-refresh-2023].focus-outline-visible):host(
-            [search-focused_]:not([narrow])) #background {
-        background-clip: padding-box;
-      }
-
-      :host-context([chrome-refresh-2023]) #stateBackground {
+      :host-context([chrome-refresh-2023]):host(:not([narrow]))
+          #stateBackground {
         display: block;
         inset: 0;
         pointer-events: none;
         position: absolute;
       }
 
-      :host-context([chrome-refresh-2023]):host(:hover) #stateBackground {
+      :host-context([chrome-refresh-2023]):host(
+          :hover:not([search-focused_], [narrow])) #stateBackground {
         background: var(--color-toolbar-search-field-background-hover,
             var(--cr-hover-background-color));
         z-index: 1;
@@ -279,17 +286,6 @@
         /* 18px to line up with the Menu icon by default. */
         margin-inline-start:
             var(--cr-toolbar-search-icon-margin-inline-start, 18px);
-      }
-
-      paper-ripple {
-        display: none;
-      }
-
-      :host-context([chrome-refresh-2023]):host paper-ripple {
-        color: var(--color-toolbar-search-field-background-pressed,
-            var(--cr-active-background-color));
-        display: block;
-        --paper-ripple-opacity: 1;
       }
 
       #content {

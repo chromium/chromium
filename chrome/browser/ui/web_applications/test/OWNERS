@@ -1,1 +1,2 @@
 per-file system_web_app_interactive_uitest.cc=file://ash/webui/PLATFORM_OWNERS
+per-file isolated_web_app_*=file://chrome/browser/web_applications/isolated_web_apps/OWNERS

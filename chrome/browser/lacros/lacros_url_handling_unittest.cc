@@ -13,20 +13,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-TEST(LacrosUrlHandlingTest, IsURLAcceptedByAshOldVersion) {
-  base::test::TaskEnvironment task_environment;
-
-  auto params = crosapi::mojom::BrowserInitParams::New();
-  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params));
-  EXPECT_TRUE(lacros_url_handling::IsUrlAcceptedByAsh(
-      GURL(chrome::kChromeUIOSSettingsURL)));
-  EXPECT_TRUE(
-      lacros_url_handling::IsUrlAcceptedByAsh(GURL(chrome::kChromeUIFlagsURL)));
-  EXPECT_FALSE(lacros_url_handling::IsUrlAcceptedByAsh(GURL("")));
-  EXPECT_FALSE(
-      lacros_url_handling::IsUrlAcceptedByAsh(GURL("chrome://flags2")));
-}
-
 TEST(LacrosUrlHandlingTest, IsURLAcceptedByAsh) {
   base::test::TaskEnvironment task_environment;
 

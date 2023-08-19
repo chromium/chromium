@@ -9,10 +9,6 @@
 #import "ios/chrome/browser/web_state_list/web_state_list_serialization.h"
 #import "ios/web/public/web_state.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface SessionIOSFactory ()
 // Returns YES if the current session can be saved.
 - (BOOL)canSaveCurrentSession;

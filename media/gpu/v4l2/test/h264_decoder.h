@@ -4,17 +4,10 @@
 #ifndef MEDIA_GPU_V4L2_TEST_H264_DECODER_H_
 #define MEDIA_GPU_V4L2_TEST_H264_DECODER_H_
 
-// build_config.h must come before BUILDFLAG()
-#include "build/build_config.h"
-
-// ChromeOS specific header; does not exist upstream
-#if BUILDFLAG(IS_CHROMEOS)
-#include <linux/media/h264-ctrls-upstream.h>
-#endif
-
 #include <queue>
 
 #include "base/files/memory_mapped_file.h"
+#include "base/memory/raw_ref.h"
 #include "media/gpu/v4l2/test/h264_dpb.h"
 #include "media/gpu/v4l2/test/v4l2_ioctl_shim.h"
 #include "media/gpu/v4l2/test/video_decoder.h"
@@ -40,14 +33,14 @@ class H264Decoder : public VideoDecoder {
   static std::unique_ptr<H264Decoder> Create(
       const base::MemoryMappedFile& stream);
 
-  // Parses next frame from IVF stream and decodes the frame.  This method will
+  // Parses next frame from the input and decodes the frame. This method will
   // place the Y, U, and V values into the respective vectors and update the
   // size with the display area size of the decoded frame.
-  VideoDecoder::Result DecodeNextFrame(std::vector<uint8_t>& y_plane,
+  VideoDecoder::Result DecodeNextFrame(const int frame_number,
+                                       std::vector<uint8_t>& y_plane,
                                        std::vector<uint8_t>& u_plane,
                                        std::vector<uint8_t>& v_plane,
-                                       gfx::Size& size,
-                                       const int frame_number) override;
+                                       gfx::Size& size) override;
 
  private:
   H264Decoder(std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
@@ -64,10 +57,8 @@ class H264Decoder : public VideoDecoder {
   // Sends IOCTL call to device with the frame's SPS, PPS, and Scaling Matrix
   // data which indicates the beginning of a new frame. Additionally
   // this initializes the decode parameter's dpb parameter from the DPB.
-  VideoDecoder::Result StartNewFrame(
-      H264SliceMetadata* slice_metadata,
-      v4l2_ctrl_h264_decode_params* v4l2_decode_param,
-      bool is_OUTPUT_queue_new);
+  VideoDecoder::Result StartNewFrame(bool is_OUTPUT_queue_new,
+                                     H264SliceMetadata* slice_metadata);
 
   // Finishes frame processing for the current decoded frame. Performs decoded
   // ref picture marking process as defined in section 8.2.5. Finally, using
@@ -128,7 +119,7 @@ class H264Decoder : public VideoDecoder {
 
   bool stream_finished_;
 
-  const base::MemoryMappedFile& data_stream_;
+  const raw_ref<const base::MemoryMappedFile> data_stream_;
 
   int prev_frame_num_ = -1;
   int prev_frame_num_offset_ = -1;

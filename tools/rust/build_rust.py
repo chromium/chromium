@@ -54,14 +54,14 @@ sys.path.append(
                  'scripts'))
 
 from build import (AddCMakeToPath, AddZlibToPath, CheckoutGitRepo,
-                   GetLibXml2Dirs, LLVM_BUILD_TOOLS_DIR, MaybeDownloadHostGcc,
+                   DownloadDebianSysroot, GetLibXml2Dirs, LLVM_BUILD_TOOLS_DIR,
                    RunCommand)
 from update import (CHROMIUM_DIR, DownloadAndUnpack, EnsureDirExists,
                     GetDefaultHostOs, RmTree, UpdatePackage)
 
 from update_rust import (RUST_REVISION, RUST_TOOLCHAIN_OUT_DIR,
-                         STAGE0_JSON_SHA256, THIRD_PARTY_DIR, THIS_DIR,
-                         VERSION_STAMP_PATH, GetLatestRevision)
+                         STAGE0_JSON_SHA256, THIRD_PARTY_DIR, VERSION_SRC_PATH,
+                         GetRustClangRevision)
 
 EXCLUDED_TESTS = [
     # https://github.com/rust-lang/rust/issues/45222 which appears to have
@@ -70,10 +70,6 @@ EXCLUDED_TESTS = [
     os.path.join('tests', 'codegen', 'issue-45222.rs'),
     # https://github.com/rust-lang/rust/issues/96497
     os.path.join('tests', 'codegen', 'issue-96497-slice-size-nowrap.rs'),
-    # TODO(crbug.com/1347563): Re-enable when fixed.
-    os.path.join('tests', 'codegen', 'sanitizer-cfi-emit-type-checks.rs'),
-    os.path.join('tests', 'codegen',
-                 'sanitizer-cfi-emit-type-metadata-itanium-cxx-abi.rs'),
     # https://github.com/rust-lang/rust/issues/109671 the test is being
     # optimized in newer LLVM which breaks its expectations.
     os.path.join('tests', 'ui', 'abi', 'stack-protector.rs'),
@@ -89,12 +85,12 @@ EXCLUDED_TESTS_WINDOWS = [
     os.path.join('tests', 'codegen', 'vec-shrink-panik.rs'),
 ]
 
-CLANG_SCRIPTS_DIR = os.path.join(THIS_DIR, '..', 'clang', 'scripts')
+CLANG_SCRIPTS_DIR = os.path.join(CHROMIUM_DIR, 'tools', 'clang', 'scripts')
 
 RUST_GIT_URL = ('https://chromium.googlesource.com/external/' +
                 'github.com/rust-lang/rust')
 
-RUST_SRC_DIR = os.path.join(THIRD_PARTY_DIR, 'rust_src', 'src')
+RUST_SRC_DIR = os.path.join(THIRD_PARTY_DIR, 'rust-src')
 RUST_BOOTSTRAP_DIST_RS = os.path.join(RUST_SRC_DIR, 'src', 'bootstrap',
                                       'dist.rs')
 STAGE0_JSON_PATH = os.path.join(RUST_SRC_DIR, 'src', 'stage0.json')
@@ -225,7 +221,7 @@ def FetchBetaPackage(name, rust_git_hash, triple=None):
 
     Unpacks the package and returns the path to root of the package.
     '''
-    triple = triple if triple else RustTargetTriple(False)
+    triple = triple if triple else RustTargetTriple()
     filename = f'{name}-beta-{triple}'
 
     # Pull the stage0 JSON to find the package intended to be used to
@@ -248,101 +244,61 @@ def FetchBetaPackage(name, rust_git_hash, triple=None):
 
 
 def InstallBetaPackage(package_dir, install_dir):
-    RunCommand([
-        os.path.join(package_dir, 'install.sh'), f'--destdir={install_dir}',
-        f'--prefix='
-    ])
+    args = [
+        f'--destdir={install_dir}',
+        f'--prefix=',
+    ]
+    if sys.platform.startswith('linux'):
+        # Avoid warnings due to not running as root.
+        args += ['--disable-ldconfig']
+    RunCommand([os.path.join(package_dir, 'install.sh')] + args)
 
 
 def CargoVendor(cargo_bin):
     '''Runs `cargo vendor` to pull down dependencies.'''
-    # From https://github.com/rust-lang/rust/blob/4a18324a4df6bc98bec0b54d35908d7a9cdc7c32/src/bootstrap/dist.rs#L1008-L1015:
-    # The additional `--sync` Cargo.toml files are not part of the top level
-    # workspace.
-    SYNC_TARGETS = [
-        './src/tools/cargo/Cargo.toml',
-        './src/tools/rust-analyzer/Cargo.toml',
-        './compiler/rustc_codegen_cranelift/Cargo.toml',
-        './src/bootstrap/Cargo.toml',
-    ]
-
-    # Try to verify our sync targets match the upstream nightly tarball
-    # builder's.
-    BUILDER_REGEX = (r'(?:'
-                     r'\s*\.arg\("--sync"\)'
-                     r'\s*\.arg\(builder.src.join\("(?P<target>[^"]+)"\)\)'
-                     r')')
-    content = ''
-    with open(RUST_BOOTSTRAP_DIST_RS) as f:
-        content = ''.join([line.strip() for line in f])
-    upstream_sync_targets = re.compile(BUILDER_REGEX).findall(content)
-    error = False
-    for s in SYNC_TARGETS:
-        if not s in upstream_sync_targets:
-            print(f'Upstream bootstrap/dist.rs removed "--sync {s}", '
-                  'so it should be removed from SYNC_TARGETS in '
-                  '//tools/rust/build_rust.py.')
-            error = True
-    for s in upstream_sync_targets:
-        if not s in SYNC_TARGETS:
-            print(f'Upstream bootstrap/dist.rs added "--sync {s}", '
-                  'so it should be added to SYNC_TARGETS in '
-                  '//tools/rust/build_rust.py.')
-            error = True
-    if error:
-        sys.exit(1)
-
     os.chdir(RUST_SRC_DIR)
 
-    for i in range(0, 3):
-        # Some Submodules are part of the workspace and need to exist (so we can
-        # read their Cargo.toml files) before we can vendor their deps.
-        submod_cmd = [
-            'git', 'submodule', 'update', '--init', '--recursive', '--depth',
-            '1'
-        ]
-        if RunCommand(submod_cmd, fail_hard=False):
-            pass  # Move on to vendoring.
-        elif i < 2:
-            print('Failed git submodule, retrying...')
-            continue
-        else:
-            sys.exit(1)
+    # Some Submodules are part of the workspace and need to exist (so we can
+    # read their Cargo.toml files) before we can vendor their deps.
+    submod_cmd = [
+        'git', 'submodule', 'update', '--init', '--recursive', '--depth', '1'
+    ]
+    RunWithRetry(submod_cmd, 'git submodule')
 
-        vendor_cmd = [
-            cargo_bin,
-            'vendor',
-            '--locked',
-            '--versioned-dirs',
-        ]
-        for s in SYNC_TARGETS:
-            vendor_cmd.extend(['--sync', s])
-        if RunCommand(vendor_cmd, fail_hard=False):
-            break  # Success, break out of the retry loop.
-        elif i < 2:
-            print('Failed cargo vendor, retrying...')
-            continue
-        else:
-            sys.exit(1)
+    vendor_env = os.environ
+    # The Cargo.toml files in the Rust toolchain may use nightly Cargo
+    # features, but the cargo binary is beta. This env var enables the
+    # beta cargo binary to allow nightly features anyway.
+    # https://github.com/rust-lang/rust/commit/2e52f4deb0544480b6aefe2c0cc1e6f3c893b081
+    vendor_env['RUSTC_BOOTSTRAP'] = '1'
 
-    # Make a `.cargo/config.toml` the points to the `vendor` directory for all
-    # dependency crates.
-    try:
-        os.mkdir(os.path.join(RUST_SRC_DIR, '.cargo'))
-    except FileExistsError:
-        pass
-    shutil.copyfile(RUST_CARGO_CONFIG_TEMPLATE_PATH,
-                    os.path.join(RUST_SRC_DIR, '.cargo', 'config.toml'))
+    vendor_cmd = [
+        cargo_bin,
+        'vendor',
+        '--locked',
+        '--versioned-dirs',
+    ]
+    RunWithRetry(vendor_cmd, 'cargo vendor')
 
     os.chdir(CHROMIUM_DIR)
 
+
+def RunWithRetry(command, name):
+    '''Run a command, retrying a few times then aborting if it fails.'''
+    for i in range(0, 3):
+        if RunCommand(command, fail_hard=False):
+            return
+        elif i < 2:
+            print(f'failed {name}, retrying...')
+        else:
+            sys.exit(1)
 
 class XPy:
     ''' Runner for x.py, Rust's build script. Holds shared state between x.py
     runs. '''
 
-    def __init__(self, zlib_path, libxml2_dirs, build_mac_arm,
-                 gcc_toolchain_path, verbose):
+    def __init__(self, zlib_path, libxml2_dirs, build_mac_arm, debian_sysroot,
+                 verbose):
         self._env = collections.defaultdict(str, os.environ)
         self._build_mac_arm = build_mac_arm
         self._verbose = verbose
@@ -418,21 +374,23 @@ class XPy:
             self._env['RUSTFLAGS_NOT_BOOTSTRAP'] += (
                 f' -Clink-arg={LD_PATH_FLAG}{libxml2_dirs.lib_dir}')
 
-        if gcc_toolchain_path:
-            # We use these flags to avoid linking with the system libstdc++.
-            gcc_toolchain_flag = f'--gcc-toolchain={gcc_toolchain_path}'
-            self._env['CFLAGS'] += f' {gcc_toolchain_flag}'
-            self._env['CXXFLAGS'] += f' {gcc_toolchain_flag}'
-            self._env['LDFLAGS'] += f' {gcc_toolchain_flag}'
-            # A `-Clink-arg=<foo>` arg passes `foo`` to the linker invovation.
-            self._env['RUSTFLAGS_BOOTSTRAP'] += (
-                f' -Clink-arg={gcc_toolchain_flag}')
-            self._env['RUSTFLAGS_NOT_BOOTSTRAP'] += (
-                f' -Clink-arg={gcc_toolchain_flag}')
-            self._env['RUSTFLAGS_BOOTSTRAP'] += (
-                f' -L native={gcc_toolchain_path}/lib64')
-            self._env['RUSTFLAGS_NOT_BOOTSTRAP'] += (
-                f' -L native={gcc_toolchain_path}/lib64')
+        if debian_sysroot:
+            # This mainly influences the glibc version that rustc itself needs.
+            sysroot_cflag = f'--sysroot={debian_sysroot}'
+
+            self._env['CFLAGS'] += f' {sysroot_cflag}'
+            self._env['CXXFLAGS'] += f' {sysroot_cflag}'
+            self._env['LDFLAGS'] += f' {sysroot_cflag}'
+
+            self._env['RUSTFLAGS'] += f' -Clink-arg={sysroot_cflag}'
+
+            # pkg-config will by default look for system-wide libs. This tells
+            # it to look exclusively in the sysroot instead.
+            self._env['PKG_CONFIG_SYSROOT_DIR'] = debian_sysroot
+
+            # Due to an interaction with the above flags, we must tell lzma-sys
+            # explicitly to build it from source.
+            self._env['LZMA_API_STATIC'] = '1'
 
         # TODO(danakj): On windows we point the to lld-link in config.toml so
         # we don't (and can't) specify -fuse-ld=lld, as lld-link doesn't know
@@ -480,7 +438,7 @@ class XPy:
         subs = {}
         subs['INSTALL_DIR'] = quote_string(str(RUST_TOOLCHAIN_OUT_DIR))
         subs['LLVM_BIN'] = quote_string(str(self._llvm_bins_path))
-        subs['PACKAGE_VERSION'] = GetLatestRevision()
+        subs['PACKAGE_VERSION'] = GetRustClangRevision()
 
         subs["LLVM_CONFIG_WINDOWS_x86_64"] = quote_string(
             str(x86_64_llvm_config))
@@ -501,8 +459,12 @@ class XPy:
         cmd = [sys.executable, 'x.py', sub]
         if self._verbose and self._verbose > 0:
             cmd.append('-' + self._verbose * 'v')
-        RunCommand(cmd + args, msvc_arch='x64', env=self._env)
+        RunCommand(cmd + args, setenv=True, env=self._env)
         os.chdir(CHROMIUM_DIR)
+
+    def get_env(self):
+        ''' The environment variables set for x.py invocations, as a dict. '''
+        return self._env
 
 
 # Get arguments to run desired test suites, minus disabled tests.
@@ -528,7 +490,7 @@ def MakeVersionStamp(git_hash):
     with open(RUST_SRC_VERSION_FILE_PATH) as version_file:
         rust_version = version_file.readline().rstrip()
     return (f'rustc {rust_version} {git_hash}'
-            f' ({GetLatestRevision()} chromium)\n')
+            f' ({GetRustClangRevision()} chromium)\n')
 
 
 def GetLatestRustCommit():
@@ -542,7 +504,7 @@ def GetLatestRustCommit():
     return main['commit']
 
 
-def RustTargetTriple(build_mac_arm):
+def RustTargetTriple(build_mac_arm=False):
     if sys.platform == 'darwin':
         if platform.machine() == 'arm64' or build_mac_arm:
             return 'aarch64-apple-darwin'
@@ -558,7 +520,7 @@ def RustTargetTriple(build_mac_arm):
 # cross-compiling for the target machine.
 #
 # Returns the path to llvm-config for x86_64 and aarch64 targets.
-def BuildLLVMLibraries(skip_build, build_mac_arm, gcc_toolchain):
+def BuildLLVMLibraries(skip_build, build_mac_arm):
     # LLVM libraries for the target machine. Usually the same as the host,
     # unless we are cross-compiling.
     if build_mac_arm:
@@ -584,8 +546,6 @@ def BuildLLVMLibraries(skip_build, build_mac_arm, gcc_toolchain):
             build_cmd.append('--without-fuchsia')
         if sys.platform == 'darwin':
             build_cmd.append('--without-fuchsia')
-        if gcc_toolchain:
-            build_cmd.extend(['--gcc-toolchain', gcc_toolchain])
         RunCommand(build_cmd + [
             '--build-dir', RUST_HOST_LLVM_BUILD_DIR, '--install-dir',
             RUST_HOST_LLVM_INSTALL_DIR
@@ -647,12 +607,18 @@ def main():
         help=
         'checkout Rust, verify the stage0 hash, then quit without building. '
         'Will print the actual hash if different than expected.')
+    parser.add_argument(
+        '--dump-env',
+        action='store_true',
+        help=
+        'dump all environment variables set for x.py to a file `rust-build-env`'
+    )
     parser.add_argument('--skip-checkout',
                         action='store_true',
                         help='do not create or update any checkouts')
-    parser.add_argument('--update-deps',
+    parser.add_argument('--sync-for-gnrt',
                         action='store_true',
-                        help='update dependencies and exit.')
+                        help='sync checkout and deps for gnrt run then quit.')
     parser.add_argument('--skip-clean',
                         action='store_true',
                         help='skip x.py clean step')
@@ -671,6 +637,11 @@ def main():
                         action='store_true',
                         help='build the latest revision')
     parser.add_argument(
+        '--prepare-run-xpy',
+        action='store_true',
+        help='set up the build directory to use --run-xpy subsequently. For '
+        'debugging.')
+    parser.add_argument(
         '--run-xpy',
         action='store_true',
         help='run x.py command in configured Rust checkout. Quits after '
@@ -686,43 +657,12 @@ def main():
         print('--build-mac-arm only valid on intel to cross-build arm')
         return 1
 
-    if args.update_deps:
-        args.skip_checkout = True
-        args.skip_llvm_build = True
-
-    if sys.platform == 'win32':
-        # Use curl to prime Windows's root cert store (crbug.com/1448442).
-        RunCommand(['curl', '-I', 'https://static.rust-lang.org'])
-
-    if args.rust_force_head_revision:
-        assert not args.skip_checkout
-        checkout_revision = GetLatestRustCommit()
-    else:
-        checkout_revision = RUST_REVISION
-
-    args.gcc_toolchain = None
-    if sys.platform.startswith('linux') and not args.update_deps:
-        # Fetch GCC package here and pass it to build.py to avoid it doing the
-        # same again. Used for the LLVM build and for any C/C++ targets inside
-        # the Rust toolchain build.
-        MaybeDownloadHostGcc(args)
-
-    if not args.skip_checkout:
-        CheckoutGitRepo('Rust', RUST_GIT_URL, checkout_revision, RUST_SRC_DIR)
-
-    VerifyStage0JsonHash()
-    if args.verify_stage0_hash:
-        # The above function exits and prints the actual hash if verification
-        # failed so we just quit here; if we reach this point, the hash is
-        # valid.
-        return 0
-
-    (x86_64_llvm_config, aarch64_llvm_config,
-     target_llvm_dir) = BuildLLVMLibraries(args.skip_llvm_build,
-                                           args.build_mac_arm,
-                                           args.gcc_toolchain)
-
-    AddCMakeToPath()
+    debian_sysroot = None
+    if sys.platform.startswith('linux') and not args.sync_for_gnrt:
+        # Fetch sysroot we build rustc against. This ensures a minimum supported
+        # host (not Chromium target). Since the rustc linux package is for
+        # x86_64 only, that is the sole needed sysroot.
+        debian_sysroot = DownloadDebianSysroot('amd64')
 
     # Require zlib compression.
     if sys.platform == 'win32':
@@ -740,28 +680,26 @@ def main():
     # builder, but we should change to using a package from 3pp when it is
     # available.
     if (sys.platform != 'win32' and not args.build_mac_arm
-            and not args.update_deps):
+            and not args.sync_for_gnrt):
         # Building cargo depends on OpenSSL.
         AddOpenSSLToEnv(args.build_mac_arm)
 
-    xpy = XPy(zlib_path, libxml2_dirs, args.build_mac_arm, args.gcc_toolchain,
+    xpy = XPy(zlib_path, libxml2_dirs, args.build_mac_arm, debian_sysroot,
               args.verbose)
 
-    # Set up config.toml in Rust source tree.
-    xpy.configure(args.build_mac_arm, x86_64_llvm_config, aarch64_llvm_config)
+    if args.dump_env:
+        with open('rust-build-env', 'w') as f:
+            for name, val in xpy.get_env().items():
+                print(f'{name}={val}', file=f)
 
-    path = FetchBetaPackage('cargo', checkout_revision)
-    if sys.platform == 'win32':
-        cargo_bin = os.path.join(path, 'cargo', 'bin', 'cargo.exe')
-    else:
-        cargo_bin = os.path.join(path, 'cargo', 'bin', 'cargo')
-    CargoVendor(cargo_bin)
-
-    # Deps are updated, so we're done now.
-    if args.update_deps:
-        return 0
-
+    # Assume the checkout has already been prepared. A full build or a
+    # --prepare-run-xpy run will set it up.
     if args.run_xpy:
+        # Ensure the config.toml was previously generated.
+        config_path = os.path.join(RUST_SRC_DIR, 'config.toml')
+        assert os.path.exists(config_path)
+        assert os.path.isfile(config_path)
+
         if rest[0] == '--':
             rest = rest[1:]
         xpy.run(rest[0], rest[1:])
@@ -769,13 +707,63 @@ def main():
     else:
         assert not rest
 
-    building_on_host_triple = RustTargetTriple(False)
-    building_for_host_triple = RustTargetTriple(args.build_mac_arm)
+    if sys.platform == 'win32':
+        # Use curl to prime Windows's root cert store (crbug.com/1448442).
+        RunCommand(['curl', '-I', 'https://static.rust-lang.org'])
 
+    if args.rust_force_head_revision:
+        assert not args.skip_checkout
+        checkout_revision = GetLatestRustCommit()
+    else:
+        checkout_revision = RUST_REVISION
+
+    if not args.skip_checkout:
+        CheckoutGitRepo('Rust', RUST_GIT_URL, checkout_revision, RUST_SRC_DIR)
+
+        path = FetchBetaPackage('cargo', checkout_revision)
+        if sys.platform == 'win32':
+            cargo_bin = os.path.join(path, 'cargo', 'bin', 'cargo.exe')
+        else:
+            cargo_bin = os.path.join(path, 'cargo', 'bin', 'cargo')
+        CargoVendor(cargo_bin)
+
+    # Gnrt needs the checkout to be up-to-date, workspace submodules to be
+    # synced for cargo to work, and the cargo binary itself. All this is done,
+    # so quit.
+    if args.sync_for_gnrt:
+        return 0
+
+    VerifyStage0JsonHash()
+    if args.verify_stage0_hash:
+        # The above function exits and prints the actual hash if
+        # verification failed so we just quit here; if we reach this point,
+        # the hash is valid.
+        return 0
+
+    (x86_64_llvm_config, aarch64_llvm_config,
+     target_llvm_dir) = BuildLLVMLibraries(args.skip_llvm_build,
+                                           args.build_mac_arm)
+
+    AddCMakeToPath()
+
+    # Set up config.toml in Rust source tree.
+    xpy.configure(args.build_mac_arm, x86_64_llvm_config, aarch64_llvm_config)
+
+    # Deps are updated, so we're done now. All steps needed for --run-xpy to
+    # work should be above this.
+    if args.prepare_run_xpy:
+        return 0
+
+    building_on_host_triple = RustTargetTriple()
     xpy_args = ['--build', building_on_host_triple]
     if args.build_mac_arm:
+        building_for_host_triple = RustTargetTriple(build_mac_arm=True)
         xpy_args.extend([
-            '--host', building_for_host_triple, '--target',
+            # The compiler will run on ARM.
+            '--host',
+            building_for_host_triple,
+            # The compiler will build stuff for ARM.
+            '--target',
             building_for_host_triple
         ])
 
@@ -816,7 +804,7 @@ def main():
     print(f'Copying vendored dependencies to {RUST_TOOLCHAIN_OUT_DIR} ...')
     shutil.copytree(RUST_SRC_VENDOR_DIR, RUST_TOOLCHAIN_SRC_DIST_VENDOR_DIR)
 
-    with open(VERSION_STAMP_PATH, 'w') as stamp:
+    with open(VERSION_SRC_PATH, 'w') as stamp:
         stamp.write(MakeVersionStamp(checkout_revision))
 
     return 0

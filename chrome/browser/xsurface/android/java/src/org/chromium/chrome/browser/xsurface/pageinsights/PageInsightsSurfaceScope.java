@@ -17,8 +17,7 @@ public interface PageInsightsSurfaceScope {
      * dependencies (hence "Scope") but each call will return a new renderer, so that a single
      * surface can support multiple rendered views.
      */
-    @Nullable
-    default PageInsightsSurfaceRenderer provideSurfaceRenderer() {
+    default @Nullable PageInsightsSurfaceRenderer provideSurfaceRenderer() {
         return null;
     }
 }

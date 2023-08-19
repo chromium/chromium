@@ -9,7 +9,7 @@
 #import <utility>
 
 #import "base/apple/bundle_locations.h"
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
@@ -31,10 +31,6 @@
 #import "ui/base/models/image_model.h"
 #import "ui/gfx/image/image.h"
 #import "url/gurl.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 @interface UpgradeCenter ()
 // Creates infobars on all tabs.
@@ -268,7 +264,7 @@ class UpgradeInfoBarDismissObserver
 
 - (BOOL)infoBarShownRecently {
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  NSDate* lastDisplayDate = base::mac::ObjCCast<NSDate>(
+  NSDate* lastDisplayDate = base::apple::ObjCCast<NSDate>(
       [defaults objectForKey:kLastInfobarDisplayTimeKey]);
   if (!lastDisplayDate) {
     return NO;

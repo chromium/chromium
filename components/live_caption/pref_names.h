@@ -20,11 +20,31 @@ namespace prefs {
 // Live Caption is not available on Android, so exclude these unneeded
 // kLiveCaption*  prefs.
 #if !defined(ANDROID)
-extern const char kLiveCaptionBubbleExpanded[];
-extern const char kLiveCaptionBubblePinned[];
-extern const char kLiveCaptionEnabled[];
-extern const char kLiveCaptionLanguageCode[];
-extern const char kLiveCaptionMediaFoundationRendererErrorSilenced[];
+// Whether the Live Caption bubble is expanded.
+inline constexpr char kLiveCaptionBubbleExpanded[] =
+    "accessibility.captions.live_caption_bubble_expanded";
+
+// Whether the Live Caption bubble is pinned.
+inline constexpr char kLiveCaptionBubblePinned[] =
+    "accessibility.captions.live_caption_bubble_pinned";
+
+// Whether the Live Caption feature is enabled.
+inline constexpr char kLiveCaptionEnabled[] =
+    "accessibility.captions.live_caption_enabled";
+
+// The language to use with the Live Caption feature.
+inline constexpr char kLiveCaptionLanguageCode[] =
+    "accessibility.captions.live_caption_language";
+
+// Whether offensive words are masked.
+inline constexpr char kLiveCaptionMaskOffensiveWords[] =
+    "accessibility.captions.live_caption_mask_offensive_words";
+
+// The list of origins that should not display an error message when using the
+// Media Foundation renderer.
+inline constexpr char kLiveCaptionMediaFoundationRendererErrorSilenced[] =
+    "accessibility.captions.live_caption_media_foundation_renderer_error_"
+    "silenced";
 
 const std::string GetLiveCaptionLanguageCode(PrefService* profile_prefs);
 bool IsLanguageCodeForLiveCaption(speech::LanguageCode language_code,
@@ -35,17 +55,44 @@ bool IsLanguageCodeForLiveCaption(speech::LanguageCode language_code,
 // These kAccessibilityCaptions* caption style prefs are used on Android
 // (though their primary use is for Live Caption, which is why they are housed
 // within this live_caption component instead of somewhere more generic).
-extern const char kAccessibilityCaptionsTextSize[];
-extern const char kAccessibilityCaptionsTextFont[];
-extern const char kAccessibilityCaptionsTextColor[];
-extern const char kAccessibilityCaptionsTextOpacity[];
-extern const char kAccessibilityCaptionsBackgroundColor[];
-extern const char kAccessibilityCaptionsTextShadow[];
-extern const char kAccessibilityCaptionsBackgroundOpacity[];
+
+// String indicating the size of the captions text as a percentage.
+inline constexpr char kAccessibilityCaptionsTextSize[] =
+    "accessibility.captions.text_size";
+
+// String indicating the font of the captions text.
+inline constexpr char kAccessibilityCaptionsTextFont[] =
+    "accessibility.captions.text_font";
+
+// Comma-separated string indicating the RGB values of the captions text color.
+inline constexpr char kAccessibilityCaptionsTextColor[] =
+    "accessibility.captions.text_color";
+
+// Integer indicating the opacity of the captions text from 0 - 100.
+inline constexpr char kAccessibilityCaptionsTextOpacity[] =
+    "accessibility.captions.text_opacity";
+
+// Comma-separated string indicating the RGB values of the background color.
+inline constexpr char kAccessibilityCaptionsBackgroundColor[] =
+    "accessibility.captions.background_color";
+
+// CSS string indicating the shadow of the captions text.
+inline constexpr char kAccessibilityCaptionsTextShadow[] =
+    "accessibility.captions.text_shadow";
+
+// Integer indicating the opacity of the captions text background from 0 - 100.
+inline constexpr char kAccessibilityCaptionsBackgroundOpacity[] =
+    "accessibility.captions.background_opacity";
 
 // Live Translate prefs.
-extern const char kLiveTranslateEnabled[];
-extern const char kLiveTranslateTargetLanguageCode[];
+
+// Whether the Live Translate feature is enabled.
+inline constexpr char kLiveTranslateEnabled[] =
+    "accessibility.captions.live_translate_enabled";
+
+// The target language to translate the captions to.
+inline constexpr char kLiveTranslateTargetLanguageCode[] =
+    "accessibility.captions.live_translate_target_language";
 
 }  // namespace prefs
 

@@ -78,7 +78,7 @@ class HatsUnlockSurveyTriggerTest : public BrowserWithTestWindowTest {
   }
 
   AccountId account_id_;
-  raw_ptr<FakeImpl, ExperimentalAsh> fake_impl_;
+  raw_ptr<FakeImpl, DanglingUntriaged | ExperimentalAsh> fake_impl_;
   std::unique_ptr<HatsUnlockSurveyTrigger> unlock_survey_trigger_;
 };
 

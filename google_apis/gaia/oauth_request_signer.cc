@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <cctype>
 #include <cstdlib>
 #include <cstring>
 #include <ctime>

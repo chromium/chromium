@@ -6,7 +6,7 @@ import("//build/config/android/rules.gni")
 
 source_set("android") {
   sources = [
-    "contacts_picker_feature_list.cc",
+    "contacts_picker_feature_map.cc",
     "features.cc",
     "features.h",
   ]
@@ -25,13 +25,14 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/contacts_picker/ContactsFetcherWorkerTask.java",
     "java/src/org/chromium/components/browser_ui/contacts_picker/ContactsPickerDialog.java",
     "java/src/org/chromium/components/browser_ui/contacts_picker/ContactsPickerFeatureList.java",
+    "java/src/org/chromium/components/browser_ui/contacts_picker/ContactsPickerFeatureMap.java",
     "java/src/org/chromium/components/browser_ui/contacts_picker/ContactsPickerToolbar.java",
     "java/src/org/chromium/components/browser_ui/contacts_picker/FetchIconWorkerTask.java",
     "java/src/org/chromium/components/browser_ui/contacts_picker/PickerAdapter.java",
     "java/src/org/chromium/components/browser_ui/contacts_picker/PickerCategoryView.java",
     "java/src/org/chromium/components/browser_ui/contacts_picker/TopView.java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
   resources_package = "org.chromium.components.browser_ui.contacts_picker"
   deps = [
     ":java_resources",
@@ -50,12 +51,13 @@ android_library("java") {
     "//ui/android:ui_java",
   ]
   srcjar_deps = [
+    ":contacts_picker_jni_headers",
     "//content/public/browser:contacts_picker_properties_requested_javagen",
   ]
 }
 
 generate_jni("contacts_picker_jni_headers") {
-  sources = [ "java/src/org/chromium/components/browser_ui/contacts_picker/ContactsPickerFeatureList.java" ]
+  sources = [ "java/src/org/chromium/components/browser_ui/contacts_picker/ContactsPickerFeatureMap.java" ]
 }
 
 android_resources("java_resources") {

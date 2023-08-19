@@ -9,11 +9,6 @@
     position: relative;
   }
 
-  :host([modules-redesigned-enabled_]) {
-    background-color: transparent;
-    border: none;
-  }
-
   #impressionProbe {
     height: 27px;
     pointer-events: none;
@@ -29,8 +24,10 @@
     justify-content: center;
   }
 
-  :host([modules-redesigned-enabled_]) #moduleElement {
-    background: none;
+  :host([modules-redesigned-enabled_]) {
+    background-color: var(--color-new-tab-page-module-background);
+    border: none;
+    height: fit-content;
   }
 </style>
 <div id="impressionProbe"></div>

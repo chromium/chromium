@@ -16,7 +16,7 @@ export declare const TemplateResultType: {
     readonly HTML: 1;
     readonly SVG: 2;
 };
-export declare type TemplateResultType = typeof TemplateResultType[keyof typeof TemplateResultType];
+export declare type TemplateResultType = (typeof TemplateResultType)[keyof typeof TemplateResultType];
 /**
  * Tests if a value is a TemplateResult.
  */
@@ -85,7 +85,7 @@ export declare const setCommittedValue: (part: Part, value?: unknown) => unknown
  *
  * The committed value is used for change detection and efficient updates of
  * the part. It can differ from the value set by the template or directive in
- * cases where the template value is transformed before being commited.
+ * cases where the template value is transformed before being committed.
  *
  * - `TemplateResult`s are committed as a `TemplateInstance`
  * - Iterables are committed as `Array<ChildPart>`

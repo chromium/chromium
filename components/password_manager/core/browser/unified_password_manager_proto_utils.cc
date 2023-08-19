@@ -9,6 +9,7 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "components/password_manager/core/browser/protos/list_affiliated_passwords_result.pb.h"
 #include "components/password_manager/core/browser/protos/list_passwords_result.pb.h"
 #include "components/password_manager/core/browser/protos/password_with_local_data.pb.h"
 #include "components/password_manager/core/browser/sync/password_proto_utils.h"
@@ -156,6 +157,25 @@ std::vector<PasswordForm> PasswordVectorFromListResult(
   std::vector<PasswordForm> forms;
   for (const PasswordWithLocalData& password : list_result.password_data()) {
     forms.push_back(PasswordFromProtoWithLocalData(password));
+  }
+  return forms;
+}
+
+std::vector<PasswordForm> PasswordVectorFromListResult(
+    const ListAffiliatedPasswordsResult& list_result) {
+  std::vector<PasswordForm> forms;
+  for (const auto& password : list_result.affiliated_passwords()) {
+    PasswordForm form =
+        PasswordFromProtoWithLocalData(password.password_data());
+    form.app_display_name = password.password_branding_info().display_name();
+    form.app_icon_url = GURL(password.password_branding_info().icon_url());
+    if (password.is_credential_sharing_affiliation_match()) {
+      form.match_type |= PasswordForm::MatchType::kAffiliated;
+    }
+    if (password.is_grouping_affiliation_match()) {
+      form.match_type |= PasswordForm::MatchType::kGrouped;
+    }
+    forms.push_back(std::move(form));
   }
   return forms;
 }

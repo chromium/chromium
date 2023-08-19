@@ -5,7 +5,7 @@ header("Pragma: no-cache");
 
 // Parent document has Windows-1251 encoding. This test verifies that worker script gets decoded using
 // parent document encoding or the one in http header, if specified.
-$charset=$_GET['charset'];
+$charset=$_GET['charset'] ?? null;
 if ($charset == "koi8-r") {
     header("Content-Type: text/javascript;charset=koi8-r");
     print("postMessage('Has http header with charset=koi8-r');");

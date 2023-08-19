@@ -33,7 +33,8 @@ class FileStreamWriter : public storage::FileStreamWriter {
             int buf_len,
             net::CompletionOnceCallback callback) override;
   int Cancel(net::CompletionOnceCallback callback) override;
-  int Flush(net::CompletionOnceCallback callback) override;
+  int Flush(storage::FlushMode flush_mode,
+            net::CompletionOnceCallback callback) override;
 
  private:
   // Helper class for executing operations on the provided file system. All
@@ -48,7 +49,8 @@ class FileStreamWriter : public storage::FileStreamWriter {
     INITIALIZED,
     EXECUTING,
     FAILED,
-    CANCELLING
+    CANCELLING,
+    FINALIZED,
   };
 
   // Called when OperationRunner::WriteOnUIThread is completed.
@@ -59,6 +61,9 @@ class FileStreamWriter : public storage::FileStreamWriter {
   // Called when Write() operation is completed with either a success or an
   // error.
   void OnWriteCompleted(int result);
+
+  void OnFlushFileCompleted(net::CompletionOnceCallback callback,
+                            base::File::Error result);
 
   // Initializes the writer by opening the file. When completed with success,
   // runs the |pending_closure|. Otherwise, calls the |error_callback|.

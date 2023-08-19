@@ -267,7 +267,7 @@ class ComboboxTest : public ViewsTestBase {
   UniqueWidgetPtr widget_;
 
   // |combobox_| will be allocated InitCombobox() and then owned by |widget_|.
-  raw_ptr<TestCombobox, DanglingUntriaged> combobox_ = nullptr;
+  raw_ptr<TestCombobox, AcrossTasksDanglingUntriaged> combobox_ = nullptr;
   std::unique_ptr<ComboboxTestApi> test_api_;
 
   // Combobox does not take ownership of the model, hence it needs to be scoped.

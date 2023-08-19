@@ -15,11 +15,12 @@ void WebKioskLacrosBaseTest::SetUpInProcessBrowserTestFixture() {
   WebKioskBaseTest::SetUpInProcessBrowserTestFixture();
 }
 
-void WebKioskLacrosBaseTest::SetUpOnMainThread() {
-  WebKioskBaseTest::SetUpOnMainThread();
+void WebKioskLacrosBaseTest::PreRunTestOnMainThread() {
   if (kiosk_ash_starter_.HasLacrosArgument()) {
     kiosk_ash_starter_.SetLacrosAvailabilityPolicy();
+    kiosk_ash_starter_.SetUpBrowserManager();
   }
+  WebKioskBaseTest::PreRunTestOnMainThread();
 }
 
 }  // namespace ash

@@ -25,7 +25,7 @@ namespace ash {
 // manages DLC (Downloadable Content) modules. DlcserviceClient will allow for
 // CrOS features to be installed and uninstalled at runtime of the system. If
 // more details about dlcservice are required, please consult
-// https://chromium.git.corp.google.com/chromiumos/platform2/+/HEAD/dlcservice
+// https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/dlcservice
 class COMPONENT_EXPORT(DLCSERVICE_CLIENT) DlcserviceClient {
  public:
   // Observer class for objects that need to know the change in the state of

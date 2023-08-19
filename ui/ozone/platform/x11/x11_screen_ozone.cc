@@ -8,16 +8,15 @@
 
 #include "base/containers/flat_set.h"
 #include "ui/base/linux/linux_desktop.h"
+#include "ui/base/x/x11_display_util.h"
 #include "ui/base/x/x11_idle_query.h"
 #include "ui/base/x/x11_screensaver.h"
 #include "ui/base/x/x11_util.h"
+#include "ui/display/display.h"
 #include "ui/display/display_finder.h"
-#include "ui/display/util/display_util.h"
 #include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/gfx/font_render_params.h"
-#include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/point_conversions.h"
-#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/x/window_cache.h"
 #include "ui/ozone/platform/x11/x11_window.h"
@@ -25,10 +24,57 @@
 
 namespace ui {
 
+namespace {
+
+using DisplayList = std::vector<display::Display>;
+
+gfx::Rect DisplayBoundsInPixels(const display::Display& display) {
+  return {display.native_origin(), display.GetSizeInPixel()};
+}
+
+const display::Display& GetDisplayForRect(const DisplayList& displays,
+                                          const gfx::Rect& rect,
+                                          bool rect_in_px) {
+  DCHECK(!displays.empty());
+  constexpr auto kMaxDist = std::make_pair(INT_MAX, INT_MAX);
+  auto min_dist_display = std::make_pair(kMaxDist, displays.data());
+  for (const auto& display : displays) {
+    auto bounds =
+        rect_in_px ? DisplayBoundsInPixels(display) : display.bounds();
+    min_dist_display = std::min(
+        min_dist_display, std::make_pair(RectDistance(bounds, rect), &display));
+  }
+  return *min_dist_display.second;
+}
+
+gfx::PointF PointPxToDip(const DisplayList& displays, gfx::Point point_px) {
+  const auto& display =
+      GetDisplayForRect(displays, gfx::Rect(point_px, gfx::Size(1, 1)), true);
+  gfx::Vector2d delta_px = point_px - display.native_origin();
+  gfx::Vector2dF delta_dip =
+      gfx::ScaleVector2d(delta_px, 1.0 / display.device_scale_factor());
+  return gfx::PointF(display.bounds().origin()) + delta_dip;
+}
+
+gfx::PointF PointDipToPx(const DisplayList& displays, gfx::Point point_dip) {
+  const auto& display =
+      GetDisplayForRect(displays, gfx::Rect(point_dip, gfx::Size(1, 1)), false);
+  gfx::Rect bounds_dip = display.bounds();
+  gfx::Vector2d delta_dip = point_dip - bounds_dip.origin();
+  gfx::Vector2dF delta_px =
+      gfx::ScaleVector2d(delta_dip, display.device_scale_factor());
+  return gfx::PointF(display.native_origin()) + delta_px;
+}
+
+}  // namespace
+
 X11ScreenOzone::X11ScreenOzone()
     : connection_(x11::Connection::Get()),
       window_manager_(X11WindowManager::GetInstance()),
-      x11_display_manager_(std::make_unique<XDisplayManager>(this)) {
+      x11_display_manager_(std::make_unique<XDisplayManager>(this)),
+      empty_display_config_(display::Display::HasForceDeviceScaleFactor()
+                                ? display::Display::GetForcedDeviceScaleFactor()
+                                : 1.0f) {
   DCHECK(window_manager_);
 }
 
@@ -59,10 +105,8 @@ display::Display X11ScreenOzone::GetDisplayForAcceleratedWidget(
 
   X11Window* window = window_manager_->GetWindow(widget);
   if (window) {
-    // TODO(crbug.com/1306688): Change to use GetBoundsInDIP();
-    gfx::Rect bounds_dip = gfx::ToEnclosingRect(gfx::ConvertRectToDips(
-        window->GetBoundsInPixels(), GetXDisplayScaleFactor()));
-    return GetDisplayMatching(bounds_dip);
+    return GetDisplayForRect(GetAllDisplays(), window->GetBoundsInPixels(),
+                             true);
   }
   return GetPrimaryDisplay();
 }
@@ -80,8 +124,7 @@ gfx::Point X11ScreenOzone::GetCursorScreenPoint() const {
     point_in_pixels = GetCursorLocation();
   }
   // TODO(danakj): Should this be rounded? Or kept as a floating point?
-  return gfx::ToFlooredPoint(
-      gfx::ConvertPointToDips(*point_in_pixels, GetXDisplayScaleFactor()));
+  return gfx::ToFlooredPoint(PointPxToDip(GetAllDisplays(), *point_in_pixels));
 }
 
 bool X11ScreenOzone::IsAcceleratedWidgetUnderCursor(
@@ -89,16 +132,17 @@ bool X11ScreenOzone::IsAcceleratedWidgetUnderCursor(
   // Only ask the X11Window for its pointer state when some other window does
   // not have mouse capture because capture disrupts pointer event tracking.
   if (!window_manager_->located_events_grabber()) {
-    if (X11Window* window = window_manager_->GetWindow(widget))
+    if (X11Window* window = window_manager_->GetWindow(widget)) {
       return window->has_pointer();
+    }
   }
   return GetAcceleratedWidgetAtScreenPoint(GetCursorScreenPoint()) == widget;
 }
 
 gfx::AcceleratedWidget X11ScreenOzone::GetAcceleratedWidgetAtScreenPoint(
     const gfx::Point& point) const {
-  gfx::Point point_in_pixels = gfx::ToFlooredPoint(
-      gfx::ConvertPointToPixels(point, GetXDisplayScaleFactor()));
+  gfx::Point point_in_pixels =
+      gfx::ToFlooredPoint(PointDipToPx(GetAllDisplays(), point));
   return static_cast<gfx::AcceleratedWidget>(
       x11::GetWindowAtPoint(point_in_pixels));
 }
@@ -110,8 +154,8 @@ gfx::AcceleratedWidget X11ScreenOzone::GetLocalProcessWidgetAtPoint(
   if (ignore.empty()) {
     widget = GetAcceleratedWidgetAtScreenPoint(point);
   } else {
-    gfx::Point point_in_pixels = gfx::ToFlooredPoint(
-        gfx::ConvertPointToPixels(point, GetXDisplayScaleFactor()));
+    gfx::Point point_in_pixels =
+        gfx::ToFlooredPoint(PointDipToPx(GetAllDisplays(), point));
     base::flat_set<x11::Window> ignore_windows;
     for (auto ignore_widget : ignore)
       ignore_windows.insert(static_cast<x11::Window>(ignore_widget));
@@ -191,16 +235,15 @@ base::Value::List X11ScreenOzone::GetGpuExtraInfo(
   return result;
 }
 
-void X11ScreenOzone::SetDeviceScaleFactor(float scale) {
-  if (device_scale_factor_ == scale)
-    return;
-
-  device_scale_factor_ = scale;
+#if BUILDFLAG(IS_LINUX)
+void X11ScreenOzone::SetDisplayConfig(const DisplayConfig& display_config) {
+  display_config_ = &display_config;
   // See DesktopScreenLinux, which sets the |device_scale_factor| before |this|
   // is initialized.
   if (initialized_)
     x11_display_manager_->DispatchDelayedDisplayListUpdate();
 }
+#endif
 
 void X11ScreenOzone::OnEvent(const x11::Event& xev) {
   x11_display_manager_->OnEvent(xev);
@@ -216,10 +259,10 @@ void X11ScreenOzone::OnXDisplayListUpdated() {
   gfx::SetFontRenderParamsDeviceScaleFactor(scale_factor);
 }
 
-float X11ScreenOzone::GetXDisplayScaleFactor() const {
-  return display::Display::HasForceDeviceScaleFactor()
-             ? display::Display::GetForcedDeviceScaleFactor()
-             : device_scale_factor_;
+const DisplayConfig& X11ScreenOzone::GetDisplayConfig() const {
+  return display_config_ && !display::Display::HasForceDeviceScaleFactor()
+             ? *display_config_
+             : empty_display_config_;
 }
 
 }  // namespace ui

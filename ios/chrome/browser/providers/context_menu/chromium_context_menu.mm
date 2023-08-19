@@ -4,10 +4,6 @@
 
 #import "ios/public/provider/chrome/browser/context_menu/context_menu_api.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace ios {
 namespace provider {
 
@@ -15,7 +11,8 @@ ElementsToAddToContextMenu* GetContextMenuElementsToAdd(
     ChromeBrowserState* browser_state,
     web::WebState* web_state,
     web::ContextMenuParams params,
-    UIViewController* presenting_view_controller) {
+    UIViewController* presenting_view_controller,
+    id<MiniMapCommands> mini_map_handler) {
   return nil;
 }
 
@@ -29,7 +26,9 @@ NSTextCheckingType GetHandledIntentTypesForOneTap(web::WebState* web_state) {
 
 BOOL HandleIntentTypesForOneTap(web::WebState* web_state,
                                 NSTextCheckingResult* match,
-                                UIViewController* presenting_view_controller) {
+                                NSString* text,
+                                UIViewController* presenting_view_controller,
+                                id<MiniMapCommands> mini_map_handler) {
   return NO;
 }
 
@@ -37,6 +36,16 @@ NSArray<CRWContextMenuItem*>* GetContextMenuElementsToAdd(
     web::WebState* web_state,
     NSTextCheckingResult* match,
     NSString* text,
+    UIViewController* presenting_view_controller,
+    id<MiniMapCommands> mini_map_handler) {
+  return @[];
+}
+
+NSArray<CRWContextMenuItem*>* GetContextMenuElementsToAdd(
+    web::WebState* web_state,
+    NSTextCheckingResult* match,
+    NSString* text,
+    CGPoint location,
     UIViewController* presenting_view_controller) {
   return @[];
 }

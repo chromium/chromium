@@ -58,12 +58,11 @@ std::unique_ptr<ImageProcessorClient> ImageProcessorClient::Create(
     const ImageProcessor::PortConfig& input_config,
     const ImageProcessor::PortConfig& output_config,
     size_t num_buffers,
-    VideoRotation relative_rotation,
     std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors) {
   auto ip_client =
       base::WrapUnique(new ImageProcessorClient(std::move(frame_processors)));
-  if (!ip_client->CreateImageProcessor(input_config, output_config, num_buffers,
-                                       relative_rotation)) {
+  if (!ip_client->CreateImageProcessor(input_config, output_config,
+                                       num_buffers)) {
     LOG(ERROR) << "Failed to create ImageProcessor";
     return nullptr;
   }
@@ -95,8 +94,7 @@ ImageProcessorClient::~ImageProcessorClient() {
 bool ImageProcessorClient::CreateImageProcessor(
     const ImageProcessor::PortConfig& input_config,
     const ImageProcessor::PortConfig& output_config,
-    size_t num_buffers,
-    VideoRotation relative_rotation) {
+    size_t num_buffers) {
   DCHECK_CALLED_ON_VALID_THREAD(test_main_thread_checker_);
   base::WaitableEvent done(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                            base::WaitableEvent::InitialState::NOT_SIGNALED);
@@ -106,8 +104,7 @@ bool ImageProcessorClient::CreateImageProcessor(
   image_processor_client_thread_.task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&ImageProcessorClient::CreateImageProcessorTask,
                                 base::Unretained(this), std::cref(input_config),
-                                std::cref(output_config), num_buffers,
-                                relative_rotation, &done));
+                                std::cref(output_config), num_buffers, &done));
   done.Wait();
   if (!image_processor_) {
     LOG(ERROR) << "Failed to create ImageProcessor";
@@ -120,15 +117,13 @@ void ImageProcessorClient::CreateImageProcessorTask(
     const ImageProcessor::PortConfig& input_config,
     const ImageProcessor::PortConfig& output_config,
     size_t num_buffers,
-    VideoRotation relative_rotation,
     base::WaitableEvent* done) {
   DCHECK_CALLED_ON_VALID_THREAD(image_processor_client_thread_checker_);
   // base::Unretained(this) for ErrorCB is safe here because the callback is
   // executed on |image_processor_client_thread_| which is owned by this class.
   image_processor_ = ImageProcessorFactory::Create(
       input_config, output_config, ImageProcessor::OutputMode::IMPORT,
-      num_buffers, relative_rotation,
-      image_processor_client_thread_.task_runner(),
+      num_buffers, image_processor_client_thread_.task_runner(),
       base::BindRepeating(&ImageProcessorClient::NotifyError,
                           base::Unretained(this)));
   done->Signal();

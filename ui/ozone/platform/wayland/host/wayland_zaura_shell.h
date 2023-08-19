@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/version.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/display/tablet_state.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
@@ -39,18 +40,28 @@ class WaylandZAuraShell : public wl::GlobalObjectRegistrar<WaylandZAuraShell> {
   ~WaylandZAuraShell();
 
   zaura_shell* wl_object() const { return obj_.get(); }
+
+  // Returns the Wayland compositor version. If the bound zaura_shell is not
+  // recent enough (ie: < v58), the returned version is not valid. This can be
+  // used in conjunction with ozone platform's RuntimeProperties + (optional)
+  // HasBugFix() calls in order to determine if Exo supports a given feature.
+  // See https://crbug.com/1457008.
+  const base::Version& compositor_version() const {
+    return compositor_version_;
+  }
   // Due to version skew between Lacros and Ash, there may be certain bug
   // fixes in one but not in the other (crbug.com/1151508). Lacros can use
   // |HasBugFix| to provide a temporary workaround to an exo bug until Ash
   // uprevs and starts reporting that a given bug ID has been fixed.
   bool HasBugFix(uint32_t id);
+
   std::string GetDeskName(int index) const;
   int GetNumberOfDesks();
   int GetActiveDeskIndex() const;
   display::TabletState GetTabletState() const;
 
  private:
-  // zaura_shell_listeners
+  // zaura_shell_listener handler functions:
   static void OnLayoutMode(void* data,
                            struct zaura_shell* zaura_shell,
                            uint32_t layout_mode);
@@ -67,9 +78,15 @@ class WaylandZAuraShell : public wl::GlobalObjectRegistrar<WaylandZAuraShell> {
                           struct zaura_shell* zaura_shell,
                           struct wl_surface* gained_active,
                           struct wl_surface* lost_active);
+  static void OnSetOverviewMode(void* data, struct zaura_shell* zaura_shell);
+  static void OnUnsetOverviewMode(void* data, struct zaura_shell* zaura_shell);
+  static void OnCompositorVersion(void* data,
+                                  struct zaura_shell* zaura_shell,
+                                  const char* version_label);
 
   wl::Object<zaura_shell> obj_;
   const raw_ptr<WaylandConnection> connection_;
+  base::Version compositor_version_;
   base::flat_set<uint32_t> bug_fix_ids_;
   std::vector<std::string> desks_;
   int active_desk_index_ = 0;

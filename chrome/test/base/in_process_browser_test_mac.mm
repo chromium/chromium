@@ -84,7 +84,8 @@ Browser* InProcessBrowserTest::CreateBrowserForApp(const std::string& app_name,
   // autorelease pool. Flush the pool when this function returns.
   @autoreleasepool {
     Browser* browser = Browser::Create(Browser::CreateParams::CreateForApp(
-        app_name, false /* trusted_source */, gfx::Rect(), profile, true));
+        app_name, /*trusted_source=*/false, gfx::Rect(), profile,
+        /*user_gesture=*/true));
     AddBlankTabAndShow(browser);
     return browser;
   }

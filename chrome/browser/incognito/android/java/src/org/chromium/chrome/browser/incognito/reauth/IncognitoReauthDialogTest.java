@@ -74,10 +74,9 @@ public class IncognitoReauthDialogTest {
                 mIncognitoReauthViewMock, model.get(ModalDialogProperties.CUSTOM_VIEW));
         assertFalse("Interactions done outside the re-auth dialog must be ignored.",
                 model.get(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE));
-        assertTrue("Re-auth dialog must be full-screen.",
-                model.get(ModalDialogProperties.FULLSCREEN_DIALOG));
-        assertTrue("re-auth dialog must exceed the default height constraint.",
-                model.get(ModalDialogProperties.EXCEED_MAX_HEIGHT));
+        assertTrue("re-auth dialog must be dark full-screen style.",
+                model.get(ModalDialogProperties.DIALOG_STYLES)
+                        == ModalDialogProperties.DialogStyles.FULLSCREEN_DARK_DIALOG);
     }
 
     @Test

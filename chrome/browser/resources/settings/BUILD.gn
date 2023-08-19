@@ -44,6 +44,8 @@ build_webui("build") {
     "images/privacy_guide/horizon_graphic.svg",
     "images/privacy_guide/msbb_graphic_dark_v2.svg",
     "images/privacy_guide/msbb_graphic_v2.svg",
+    "images/privacy_guide/search_suggestions_graphic.svg",
+    "images/privacy_guide/search_suggestions_graphic_dark.svg",
     "images/privacy_guide/privacy_sandbox_graphic_dark.svg",
     "images/privacy_guide/privacy_sandbox_graphic.svg",
     "images/privacy_guide/promo_banner_dark.svg",
@@ -77,26 +79,10 @@ build_webui("build") {
     "autofill_page/address_remove_confirmation_dialog.ts",
     "autofill_page/autofill_page.ts",
     "autofill_page/autofill_section.ts",
-    "autofill_page/avatar_icon.ts",
     "autofill_page/credit_card_edit_dialog.ts",
     "autofill_page/credit_card_list_entry.ts",
     "autofill_page/iban_edit_dialog.ts",
     "autofill_page/iban_list_entry.ts",
-    "autofill_page/password_check_edit_disclaimer_dialog.ts",
-    "autofill_page/password_check_list_item.ts",
-    "autofill_page/password_check.ts",
-    "autofill_page/password_edit_dialog.ts",
-    "autofill_page/password_list_item.ts",
-    "autofill_page/password_preview_item.ts",
-    "autofill_page/password_move_multiple_passwords_to_account_dialog.ts",
-    "autofill_page/password_remove_confirmation_dialog.ts",
-    "autofill_page/password_remove_dialog.ts",
-    "autofill_page/password_view.ts",
-    "autofill_page/passwords_device_section.ts",
-    "autofill_page/passwords_export_dialog.ts",
-    "autofill_page/passwords_import_dialog.ts",
-    "autofill_page/passwords_list_handler.ts",
-    "autofill_page/passwords_section.ts",
     "autofill_page/payments_list.ts",
     "autofill_page/payments_section.ts",
     "autofill_page/upi_id_list_entry.ts",
@@ -115,6 +101,7 @@ build_webui("build") {
     "performance_page/performance_page.ts",
     "performance_page/tab_discard_exception_add_dialog.ts",
     "performance_page/tab_discard_exception_add_input.ts",
+    "performance_page/tab_discard_exception_current_sites_entry.ts",
     "performance_page/tab_discard_exception_current_sites_list.ts",
     "performance_page/tab_discard_exception_edit_dialog.ts",
     "performance_page/tab_discard_exception_edit_input.ts",
@@ -143,6 +130,7 @@ build_webui("build") {
     "privacy_page/privacy_guide/privacy_guide_page.ts",
     "privacy_page/privacy_guide/privacy_guide_promo.ts",
     "privacy_page/privacy_guide/privacy_guide_safe_browsing_fragment.ts",
+    "privacy_page/privacy_guide/privacy_guide_search_suggestions_fragment.ts",
     "privacy_page/privacy_guide/privacy_guide_welcome_fragment.ts",
     "privacy_page/privacy_guide/step_indicator.ts",
     "privacy_page/privacy_page.ts",
@@ -175,6 +163,11 @@ build_webui("build") {
     "safety_check_page/safety_check_safe_browsing_child.ts",
     "safety_check_page/safety_check_unused_site_permissions.ts",
     "safety_check_page/safety_check_updates_child.ts",
+    "safety_hub/safety_hub_card.ts",
+    "safety_hub/safety_hub_entry_point.ts",
+    "safety_hub/safety_hub_module.ts",
+    "safety_hub/safety_hub_page.ts",
+    "safety_hub/unused_site_permissions_module.ts",
     "search_engines_page/omnibox_extension_entry.ts",
     "search_engines_page/search_engine_edit_dialog.ts",
     "search_engines_page/search_engine_entry.ts",
@@ -214,6 +207,9 @@ build_webui("build") {
     "site_settings/site_entry.ts",
     "site_settings/site_list_entry.ts",
     "site_settings/site_list.ts",
+    "site_settings/storage_access_static_site_list_entry.ts",
+    "site_settings/storage_access_site_list_entry.ts",
+    "site_settings/storage_access_site_list.ts",
     "site_settings/zoom_levels.ts",
   ]
 
@@ -272,14 +268,8 @@ build_webui("build") {
     "appearance_page/appearance_browser_proxy.ts",
     "autofill_page/address_edit_dialog_components.ts",
     "autofill_page/autofill_manager_proxy.ts",
-    "autofill_page/merge_passwords_store_copies_mixin.ts",
-    "autofill_page/user_util_mixin.ts",
-    "autofill_page/password_check_mixin.ts",
     "autofill_page/password_manager_proxy.ts",
-    "autofill_page/password_removal_mixin.ts",
-    "autofill_page/password_requestor_mixin.ts",
     "autofill_page/payments_manager_proxy.ts",
-    "autofill_page/show_password_mixin.ts",
     "base_mixin.ts",
     "clear_browsing_data_dialog/clear_browsing_data_browser_proxy.ts",
     "controls/settings_idle_load.ts",
@@ -294,6 +284,7 @@ build_webui("build") {
     "on_startup_page/on_startup_browser_proxy.ts",
     "on_startup_page/startup_urls_page_browser_proxy.ts",
     "page_visibility.ts",
+    "performance_page/constants.ts",
     "performance_page/discard_timer_options.ts",
     "performance_page/performance_browser_proxy.ts",
     "performance_page/performance_metrics_proxy.ts",
@@ -322,10 +313,6 @@ build_webui("build") {
     "site_settings_page/site_settings_page_util.ts",
     "tooltip_mixin.ts",
   ]
-
-  if (is_chromeos) {
-    non_web_component_files += [ "autofill_page/blocking_request_manager.ts" ]
-  }
 
   if (is_chromeos_ash) {
     non_web_component_files += [
@@ -395,6 +382,7 @@ build_webui("build") {
   ts_deps = [
     "//chrome/browser/resources/settings_shared:build_ts",
     "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/cr_components/customize_color_scheme_mode:build_ts",
     "//ui/webui/resources/cr_components/help_bubble:build_ts",
     "//ui/webui/resources/cr_components/localized_link:build_ts",
     "//ui/webui/resources/cr_components/managed_dialog:build_ts",
@@ -405,8 +393,10 @@ build_webui("build") {
   ]
 
   if (!is_chromeos_ash) {
-    ts_deps +=
-        [ "//ui/webui/resources/cr_components/customize_themes:build_ts" ]
+    ts_deps += [
+      "//ui/webui/resources/cr_components/customize_themes:build_ts",
+      "//ui/webui/resources/cr_components/theme_color_picker:build_ts",
+    ]
   } else {
     ts_deps += [ "//ash/webui/common/resources:build_ts" ]
   }

@@ -895,23 +895,23 @@ class ExtensionsToolbarContainerFeatureUITest
   }
 
   void NavigateToUrl(const GURL& url) {
-    content::TestNavigationObserver observer(web_contents_);
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-    EXPECT_TRUE(observer.last_navigation_succeeded());
+    NavigateTo(url);
     WaitForAnimation();
+    GetExtensionsToolbarContainer()->GetWidget()->LayoutRootViewIfNecessary();
   }
 
   ExtensionsRequestAccessButton* request_access_button() {
     return GetExtensionsToolbarContainer()
         ->GetExtensionsToolbarControls()
-        ->request_access_button_for_testing();
+        ->request_access_button();
   }
   content::WebContents* web_contents() { return web_contents_; }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 
-  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_ = nullptr;
+  raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> web_contents_ =
+      nullptr;
 };
 
 class ExtensionsToolbarContainerFeatureUIReloadBubbleAcceptanceTest
@@ -976,6 +976,10 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(permissions_manager->GetUserSiteAccess(*extensionC, url),
             UserSiteAccess::kOnAllSites);
 
+  // Don't show the confirmation since it's dependent on time, and we have other
+  // tests for it.
+  request_access_button()->remove_confirmation_for_testing(true);
+
   // Click the request access button to grant one-time access. A reload page
   // dialog will appear since extension A needs a page reload to run its action.
   auto* action_runner =
@@ -993,10 +997,11 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_TRUE(script_injection_listener.WaitUntilSatisfied());
     EXPECT_FALSE(request_access_button()->GetVisible());
   } else {
-    // Site interaction should change but script should not be injected
-    // since permission was granted but page was reloaded. The request access
-    // button should remain visible since we didn't reload.
-    EXPECT_TRUE(request_access_button()->GetVisible());
+    // Site interaction should change but script should not be injected since
+    // permission was granted but page was not reloaded. The request access
+    // button should be hidden, even without a reload, because the user granted
+    // access to the extensions.
+    EXPECT_FALSE(request_access_button()->GetVisible());
     // TODO(crbug.com/1400812): Is there a way to confirm we didn't inject the
     // script besides reusing the
     // chrome/test/data/extensions/blocked_actions/content_scripts/ test
@@ -1090,6 +1095,10 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(permissions_manager->GetUserSiteAccess(*extensionC, url),
             UserSiteAccess::kOnAllSites);
 
+  // Don't show the confirmation since it's dependent on time, and we have other
+  // tests for it.
+  request_access_button()->remove_confirmation_for_testing(true);
+
   // Click the request access button to grant one-time access. Since no
   // extensions need page refresh to run their actions, it immediately grants
   // access and the script is injected.
@@ -1132,4 +1141,64 @@ IN_PROC_BROWSER_TEST_F(
             SiteInteraction::kWithheld);
   EXPECT_EQ(permissions_helper.GetSiteInteraction(*extensionC, web_contents()),
             SiteInteraction::kGranted);
+}
+
+// Tests that when the user clicks on the request access button and immediately
+// navigates to a different site, the confirmation text is collapsed and the
+// button displays the extensions requesting access to the new site (if any).
+// TODO(crbug.com/1457026): Flaky on mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ClickingRequestAccessButton_ConfirmationCollapsedOnNavigation \
+  DISABLED_ClickingRequestAccessButton_ConfirmationCollapsedOnNavigation
+#else
+#define MAYBE_ClickingRequestAccessButton_ConfirmationCollapsedOnNavigation \
+  ClickingRequestAccessButton_ConfirmationCollapsedOnNavigation
+#endif
+IN_PROC_BROWSER_TEST_F(
+    ExtensionsToolbarContainerFeatureUITest,
+    MAYBE_ClickingRequestAccessButton_ConfirmationCollapsedOnNavigation) {
+  auto extension = InstallExtensionWithHostPermissions(
+      "Extension", "<all_urls>", "document_idle");
+  extensions::ScriptingPermissionsModifier(profile(), extension)
+      .SetWithholdHostPermissions(true);
+
+  // Navigate to a site where the extension has withheld access.
+  GURL url = embedded_test_server()->GetURL("example.com", "/title1.html");
+  NavigateToUrl(url);
+
+  // Verify request access button is visible because extension is requesting
+  // site access.
+  EXPECT_TRUE(request_access_button()->GetVisible());
+  EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
+              testing::ElementsAre(extension->id()));
+
+  // Click the button to grant one-time access on example.com. Verify
+  // confirmation message appears on the request access button.
+  ClickButton(request_access_button());
+  EXPECT_TRUE(request_access_button()->GetVisible());
+  EXPECT_EQ(request_access_button()->GetText(),
+            l10n_util::GetStringUTF16(
+                IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_DISMISSED_TEXT));
+
+  // While the confirmation message is still visible, navigate to a site where
+  // the extension has withheld access. Verify the confirmation is not longer
+  // shown, and the button shows the extension requesting access.
+  NavigateToUrl(embedded_test_server()->GetURL("other.com", "/title1.html"));
+  EXPECT_TRUE(request_access_button()->GetVisible());
+  EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
+              testing::ElementsAre(extension->id()));
+
+  // Click the button to grant one-time access on example.com. Verify
+  // confirmation message appears on the request access button.
+  ClickButton(request_access_button());
+  EXPECT_TRUE(request_access_button()->GetVisible());
+  EXPECT_EQ(request_access_button()->GetText(),
+            l10n_util::GetStringUTF16(
+                IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_DISMISSED_TEXT));
+
+  // While the confirmation message is still visible, navigate to a site where
+  // no extensions are allowed while the confirmation message is still visible.
+  // Verify the confirmation is not longer shown and the button is hidden.
+  NavigateToUrl(GURL("chrome://extensions"));
+  EXPECT_FALSE(request_access_button()->GetVisible());
 }

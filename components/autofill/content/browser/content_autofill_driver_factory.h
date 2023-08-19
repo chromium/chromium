@@ -6,10 +6,12 @@
 #define COMPONENTS_AUTOFILL_CONTENT_BROWSER_CONTENT_AUTOFILL_DRIVER_FACTORY_H_
 
 #include <string>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
+#include "base/types/pass_key.h"
 #include "components/autofill/content/browser/content_autofill_router.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/core/browser/autofill_manager.h"
@@ -24,6 +26,7 @@ class RenderFrameHost;
 namespace autofill {
 
 class ContentAutofillDriver;
+class ScopedAutofillManagersObservation;
 
 // Creates an BrowserAutofillManager and attaches it to the `driver`.
 //
@@ -110,6 +113,12 @@ class ContentAutofillDriverFactory : public content::WebContentsObserver {
   void RemoveObserver(Observer* observer) {
     observers_.RemoveObserver(observer);
   }
+
+  size_t num_drivers() const { return driver_map_.size(); }
+
+  // Returns raw pointers to all drivers that the factory currently owns.
+  std::vector<ContentAutofillDriver*> GetExistingDrivers(
+      base::PassKey<ScopedAutofillManagersObservation>);
 
  private:
   friend class ContentAutofillDriverFactoryTestApi;

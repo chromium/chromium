@@ -1,0 +1,166 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/readaloud/PlayerController.java",
+    "java/src/org/chromium/chrome/browser/readaloud/ReadAloudController.java",
+    "java/src/org/chromium/chrome/browser/readaloud/ReadAloudFeatures.java",
+    "java/src/org/chromium/chrome/browser/readaloud/ReadAloudToolbarButtonController.java",
+    "java/src/org/chromium/chrome/browser/readaloud/miniplayer/MiniPlayerCoordinator.java",
+    "java/src/org/chromium/chrome/browser/readaloud/miniplayer/MiniPlayerMediator.java",
+    "java/src/org/chromium/chrome/browser/readaloud/miniplayer/MiniPlayerProperties.java",
+    "java/src/org/chromium/chrome/browser/readaloud/miniplayer/MiniPlayerViewBinder.java",
+  ]
+  deps = [
+    ":expanded_player_java",
+    ":hooks_java",
+    ":java_resources",
+    ":player_state_java",
+    "//base:base_java",
+    "//chrome/android:chrome_app_java_resources",
+    "//chrome/android/modules/readaloud/public:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/language/android:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/signin/services/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//chrome/browser/ui/android/toolbar:java",
+    "//chrome/browser/user_education:java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/embedder_support/android:util_java",
+    "//components/feature_engagement/public:public_java",
+    "//third_party/android_deps:guava_android_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_java",
+    "//ui/android:ui_java_resources",
+    "//url:gurl_java",
+  ]
+  resources_package = "org.chromium.chrome.browser.readaloud"
+}
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/drawable/baseline_close_24.xml",
+    "java/res/drawable/baseline_forward_30_24.xml",
+    "java/res/drawable/baseline_more_horiz_24.xml",
+    "java/res/drawable/baseline_replay_10_24.xml",
+    "java/res/drawable/forward_30_button.xml",
+    "java/res/drawable/mini_play_button.xml",
+    "java/res/drawable/pause_button.xml",
+    "java/res/drawable/play_button.xml",
+    "java/res/drawable/primary_gray_rounded.xml",
+    "java/res/drawable/replay_10_button.xml",
+    "java/res/drawable/secondary_gray_rounded.xml",
+    "java/res/layout/readaloud_expanded_player_layout.xml",
+    "java/res/layout/readaloud_mini_player_layout.xml",
+    "java/res/values/colors.xml",
+    "java/res/values/dimens.xml",
+  ]
+  deps = [
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/widget/android:java_resources",
+    "//ui/android:ui_java_resources",
+  ]
+}
+
+android_library("hooks_java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/readaloud/ReadAloudReadabilityHooks.java",
+    "java/src/org/chromium/chrome/browser/readaloud/ReadAloudReadabilityHooksImpl.java",
+  ]
+  deps = [
+    "//base:base_java",
+    "//third_party/android_deps:guava_android_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//url:gurl_java",
+  ]
+  jar_excluded_patterns = [ "*/ReadAloudReadabilityHooksImpl*.class" ]
+}
+
+android_library("hooks_public_impl_java") {
+  sources = [ "java/src/org/chromium/chrome/browser/readaloud/ReadAloudReadabilityHooksImpl.java" ]
+
+  deps = [
+    ":hooks_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+}
+
+robolectric_library("junit") {
+  testonly = true
+  sources = [
+    "java/src/org/chromium/chrome/browser/readaloud/PlayerControllerUnitTest.java",
+    "java/src/org/chromium/chrome/browser/readaloud/ReadAloudControllerUnitTest.java",
+    "java/src/org/chromium/chrome/browser/readaloud/ReadAloudToolbarButtonControllerUnitTest.java",
+    "java/src/org/chromium/chrome/browser/readaloud/expandedplayer/ExpandedPlayerCoordinatorUnitTest.java",
+    "java/src/org/chromium/chrome/browser/readaloud/expandedplayer/ExpandedPlayerMediatorUnitTest.java",
+    "java/src/org/chromium/chrome/browser/readaloud/expandedplayer/ExpandedPlayerSheetContentUnitTest.java",
+    "java/src/org/chromium/chrome/browser/readaloud/miniplayer/MiniPlayerCoordinatorUnitTest.java",
+    "java/src/org/chromium/chrome/browser/readaloud/miniplayer/MiniPlayerMediatorUnitTest.java",
+  ]
+  deps = [
+    ":expanded_player_java",
+    ":hooks_java",
+    ":java",
+    ":java_resources",
+    ":player_state_java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/android/modules/readaloud/public:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/signin/services/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/android/toolbar:java",
+    "//chrome/test/android:chrome_java_unit_test_support",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/feature_engagement/public:public_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_ext_junit_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
+    "//ui/android:ui_java_test_support",
+    "//url:gurl_java",
+    "//url:gurl_junit_test_support",
+  ]
+}
+
+android_library("expanded_player_java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/readaloud/expandedplayer/ExpandedPlayerCoordinator.java",
+    "java/src/org/chromium/chrome/browser/readaloud/expandedplayer/ExpandedPlayerMediator.java",
+    "java/src/org/chromium/chrome/browser/readaloud/expandedplayer/ExpandedPlayerProperties.java",
+    "java/src/org/chromium/chrome/browser/readaloud/expandedplayer/ExpandedPlayerSheetContent.java",
+    "java/src/org/chromium/chrome/browser/readaloud/expandedplayer/ExpandedPlayerViewBinder.java",
+  ]
+  deps = [
+    ":player_state_java",
+    "//base:base_java",
+    "//chrome/android:chrome_app_java_resources",
+    "//chrome/android/modules/readaloud/public:java",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_java",
+    "//ui/android:ui_java_resources",
+  ]
+  resources_package = "org.chromium.chrome.browser.readaloud.expandedplayer"
+}
+
+android_library("player_state_java") {
+  sources =
+      [ "java/src/org/chromium/chrome/browser/readaloud/PlayerState.java" ]
+  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+}

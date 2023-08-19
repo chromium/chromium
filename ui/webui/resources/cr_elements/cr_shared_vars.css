@@ -87,6 +87,8 @@ html {
 
   --google-yellow-50-rgb: 254, 247, 224;  /* #fef7e0 */
   --google-yellow-50: rgb(var(--google-yellow-50-rgb));
+  --google-yellow-100-rgb: 254, 239, 195; /*feefc3*/
+  --google-yellow-100: rgb(var(--google-yellow-100-rgb));
   --google-yellow-200-rgb: 253, 226, 147;  /* #fde293 */
   --google-yellow-200: rgb(var(--google-yellow-200-rgb));
   --google-yellow-300-rgb: 253, 214, 51;  /* #fdd633 */
@@ -270,6 +272,10 @@ html[chrome-refresh-2023] {
 
   --cr-fallback-color-on-surface-subtle: rgb(71, 71, 71);
 
+  --cr-fallback-color-inverse-primary: rgb(168, 199, 250);
+  --cr-fallback-color-inverse-surface: rgb(48, 48, 48);
+  --cr-fallback-color-inverse-on-surface: rgb(242, 242, 242);
+
   --cr-fallback-color-tonal-container: rgb(211, 227, 253);
   --cr-fallback-color-on-tonal-container: rgb(4, 30, 73);
 
@@ -277,19 +283,39 @@ html[chrome-refresh-2023] {
 
   --cr-fallback-color-error: rgb(179, 38, 30);
 
-  --cr-fallback-color-state-on-subtle-rgb: 31, 31, 31;
-  --cr-fallback-color-state-hover-on-subtle: rgba(
-      var(--cr-fallback-color-state-on-subtle-rgb), .06);
-  --cr-fallback-color-state-ripple-neutral-on-subtle: rgba(
-      var(--cr-fallback-color-state-on-subtle-rgb), .08);
+  --cr-fallback-color-divider: rgb(211, 227, 253);
+
+  --cr-fallback-color-state-hover-on-prominent_: rgba(253, 252, 251, .1);
+
+  --cr-fallback-color-state-on-subtle-rgb_: 31, 31, 31;
+  --cr-fallback-color-state-hover-on-subtle_: rgba(
+      var(--cr-fallback-color-state-on-subtle-rgb_), .06);
+  --cr-fallback-color-state-ripple-neutral-on-subtle_: rgba(
+      var(--cr-fallback-color-state-on-subtle-rgb_), .08);
 
   --cr-fallback-color-base-container: rgba(105, 145, 214, .12);
+
+  --cr-fallback-color-disabled-background: rgba(
+      var(--cr-fallback-color-on-surface-rgb), .12);
+  --cr-fallback-color-disabled-foreground: rgba(
+      var(--cr-fallback-color-on-surface-rgb), var(--cr-disabled-opacity));
 
   /* States */
   --cr-hover-background-color: var(--color-sys-state-hover,
       rgba(var(--cr-fallback-color-on-surface-rgb), .08));
+  --cr-hover-on-prominent-background-color: var(
+      --color-sys-state-hover-on-prominent,
+      var(--cr-fallback-color-state-hover-on-prominent_));
+  --cr-hover-on-subtle-background-color: var(
+      --color-sys-state-hover-on-subtle,
+      var(--cr-fallback-color-state-hover-on-subtle_));
+
   --cr-active-background-color: var(--color-sys-state-pressed,
       rgba(var(--cr-fallback-color-on-surface-rgb), .12));
+  --cr-active-neutral-on-subtle-background-color: var(
+      --color-sys-state-ripple-neutral-on-subtle,
+      var(--cr-fallback-color-state-ripple-neutral-on-subtle_));
+
   --cr-focus-outline-color: var(--color-sys-state-focus-ring,
       var(--cr-fallback-color-primary));
 
@@ -322,15 +348,28 @@ html[chrome-refresh-2023] {
     --cr-fallback-color-surface-variant: rgb(68, 71, 70);
     --cr-fallback-color-on-surface-variant: rgb(196, 199, 197);
     --cr-fallback-color-on-surface-subtle: rgb(199, 199, 199);
+    --cr-fallback-color-inverse-primary: rgb(11, 87, 208);
+    --cr-fallback-color-inverse-surface: rgb(227, 227, 227);
+    --cr-fallback-color-inverse-on-surface: rgb(31, 31, 31);
     --cr-fallback-color-tonal-container: rgb(0, 74, 119);
     --cr-fallback-color-on-tonal-container: rgb(194, 231, 255);
     --cr-fallback-color-tonal-outline: rgb(0, 99, 155);
     --cr-fallback-color-error: rgb(242, 184, 181);
-    --cr-fallback-color-state-on-subtle-rgb: 253, 252, 251;
-    --cr-fallback-color-state-hover-on-subtle: rgba(
-        var(--cr-fallback-color-state-on-subtle-rgb), .10);
-    --cr-fallback-color-state-ripple-neutral-on-subtle: rgba(
-        var(--cr-fallback-color-state-on-subtle-rgb), .16);
+    --cr-fallback-color-divider: rgb(71, 71, 71);
+    --cr-fallback-color-state-hover-on-prominent_: rgba(31, 31, 31, .06);
+    --cr-fallback-color-state-on-subtle-rgb_: 253, 252, 251;
+    --cr-fallback-color-state-hover-on-subtle_: rgba(
+        var(--cr-fallback-color-state-on-subtle-rgb_), .10);
+    --cr-fallback-color-state-ripple-neutral-on-subtle_: rgba(
+        var(--cr-fallback-color-state-on-subtle-rgb_), .16);
     --cr-fallback-color-base-container: rgba(40, 40, 40, 1);
+  }
+}
+
+/* Overrides to ensure disabled elements show up disabled. */
+@media (forced-colors: active) {
+  html[chrome-refresh-2023] {
+    --cr-fallback-color-disabled-background: Canvas;
+    --cr-fallback-color-disabled-foreground: GrayText;
   }
 }

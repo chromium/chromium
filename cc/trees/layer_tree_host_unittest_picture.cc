@@ -13,7 +13,6 @@
 #include "cc/test/property_tree_test_utils.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "components/viz/test/test_context_provider.h"
-#include "components/viz/test/test_gles2_interface.h"
 #include "components/viz/test/test_raster_interface.h"
 
 namespace cc {
@@ -154,7 +153,7 @@ class LayerTreeHostPictureTestResizeViewportWithGpuRaster
   void SetUpUnboundContextProviders(
       viz::TestContextProvider* context_provider,
       viz::TestContextProvider* worker_provider) override {
-    context_provider->UnboundTestContextGL()->set_gpu_rasterization(true);
+    context_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
     worker_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
   }
 

@@ -8,6 +8,12 @@
 namespace permissions {
 namespace features {
 
+// Enables or disables whether pages with pending permission requests will
+// go into back/forward cache.
+BASE_FEATURE(kBackForwardCacheUnblockPermissionRequest,
+             "BackForwardCacheUnblockPermissionRequest",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables whether permission prompts are automatically blocked
 // after the user has explicitly dismissed them too many times.
 BASE_FEATURE(kBlockPromptsIfDismissedOften,
@@ -40,6 +46,10 @@ BASE_FEATURE(kConfirmationChip,
 BASE_FEATURE(kChipLocationBarIconOverride,
              "ChipLocationIconOverride",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPermissionElement,
+             "PermissionElement",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNotificationInteractionHistory,
              "NotificationInteractionHistory",
@@ -92,6 +102,10 @@ BASE_FEATURE(kPermissionOnDeviceNotificationPredictions,
 BASE_FEATURE(kPermissionOnDeviceGeolocationPredictions,
              "PermissionOnDeviceGeolocationPredictions",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPermissionDedicatedCpssSetting,
+             "PermissionDedicatedCpssSettings",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
 

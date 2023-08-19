@@ -23,6 +23,10 @@ class MediaRouterDebugger {
         const base::Value::Dict& json_logs) = 0;
   };
 
+  // Gets the mirroring stats in a Dict, only for the purposes of printing to
+  // logs. The Dict has no guaranteed structure.
+  virtual base::Value::Dict GetMirroringStats() = 0;
+
   virtual void AddObserver(MirroringStatsObserver& obs) = 0;
   virtual void RemoveObserver(MirroringStatsObserver& obs) = 0;
 

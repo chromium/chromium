@@ -12,7 +12,6 @@ import "ui/gfx/mojom/color_space.mojom";
 const int64 kInvalidDisplayId = -1;
 
 struct RendererSettings {
-  bool apply_simple_frame_rate_throttling;
   bool allow_antialiasing;
   bool force_antialiasing;
   bool force_blending_with_shaders;

@@ -75,12 +75,6 @@ no_check_targets = [
   "//v8:cppgc_base",  # 1 error
   "//v8:v8_internal_headers",  # 11 errors
   "//v8:v8_libplatform",  # 2 errors
-
-  # After making partition_alloc a standalone library, remove partition_alloc
-  # target from the skip list, because partition_aloc will depend on its own
-  # base.
-  # partition alloc standalone library bug is https://crbug.com/1151236.
-  "//base/allocator/partition_allocator:partition_alloc",  # 292 errors
 ]
 
 # These are the list of GN files that run exec_script. This whitelist exists

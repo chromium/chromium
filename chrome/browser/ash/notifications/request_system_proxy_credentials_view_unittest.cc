@@ -67,12 +67,14 @@ class RequestSystemProxyCredentialsViewTest : public BrowserWithTestWindowTest {
   bool accepted_ = false;
   bool canceled_ = false;
   // Owned by |active_widget_|.
-  raw_ptr<RequestSystemProxyCredentialsView, ExperimentalAsh>
+  raw_ptr<RequestSystemProxyCredentialsView,
+          DanglingUntriaged | ExperimentalAsh>
       system_proxy_dialog_ = nullptr;
 
  private:
   // Owned by the UI code (NativeWidget).
-  raw_ptr<views::Widget, ExperimentalAsh> active_widget_ = nullptr;
+  raw_ptr<views::Widget, DanglingUntriaged | ExperimentalAsh> active_widget_ =
+      nullptr;
 };
 
 // Tests that clicking "OK" in the UI will result in calling the

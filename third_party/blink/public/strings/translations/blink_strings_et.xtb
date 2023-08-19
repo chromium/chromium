@@ -26,7 +26,6 @@
 <translation id="2060505056492490888">Tähist „<ph name="DOT" />” on aadressis „<ph name="INVALIDDOMAIN" />” valesti kasutatud.</translation>
 <translation id="2148716181193084225">Täna</translation>
 <translation id="2226276347425096477">Lühendage seda teksti <ph name="MAX_CHARACTERS" /> tähemärgini või rohkem (praegu kasutate <ph name="CURRENT_LENGTH" /> tähemärki).</translation>
-<translation id="2246498165605549352">Kohalik fail</translation>
 <translation id="2247351761944213033">Nädal <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904"><ph name="NUMBER" />. lugu</translation>
 <translation id="2393030564806080191">Värvi väärtus kuueteistkümnendsüsteemis</translation>
@@ -89,6 +88,7 @@
 <translation id="5425179576310518467">praegune kuupäev</translation>
 <translation id="5466621249238537318">Valige üks või mitu faili.</translation>
 <translation id="5468998798572797635">täisekraanilt väljumine</translation>
+<translation id="5514612371225420585">Teie seadmes olev fail</translation>
 <translation id="5516235301412634559">0,75</translation>
 <translation id="5537725057119320332">Ülekanne</translation>
 <translation id="5546461542133609677">vaigistuse tühistamine</translation>
@@ -113,6 +113,7 @@
 <translation id="6398862346408813489">Kuu valikupaneeli kuvamine</translation>
 <translation id="6404546809543547843">heli ajamõõdik</translation>
 <translation id="6443871981718447451">kuva subtiitrite menüü</translation>
+<translation id="6484738902856791350">Paranda loetavust</translation>
 <translation id="6550675742724504774">Valikud</translation>
 <translation id="6572309429103589720">Grammatikavead</translation>
 <translation id="658823671542763450">kuvamine täisekraanil</translation>

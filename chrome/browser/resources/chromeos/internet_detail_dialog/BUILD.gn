@@ -4,6 +4,7 @@
 
 import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
@@ -111,4 +112,21 @@ js_library("internet_detail_dialog_browser_proxy") {
 
 html_to_js("web_components") {
   js_files = [ "internet_detail_dialog.js" ]
+}
+
+grit("resources") {
+  defines = chrome_grit_defines
+
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+  source = "$target_gen_dir/internet_detail_dialog_resources.grd"
+  deps = [ ":build_grd" ]
+
+  outputs = [
+    "grit/internet_detail_dialog_resources.h",
+    "grit/internet_detail_dialog_resources_map.cc",
+    "grit/internet_detail_dialog_resources_map.h",
+    "internet_detail_dialog_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
 }

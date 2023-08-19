@@ -20,11 +20,6 @@ class FontPreferencesBrowserTest : public DevToolsProtocolTest {
   FontPreferencesBrowserTest() = default;
   ~FontPreferencesBrowserTest() override = default;
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "CSSFontFamilyMath");
-  }
-
  protected:
   std::string GetFirstPlatformFontForBody() {
     base::Value::Dict params1;

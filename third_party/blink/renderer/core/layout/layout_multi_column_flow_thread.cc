@@ -344,8 +344,8 @@ void LayoutMultiColumnFlowThread::EvacuateAndDestroy() {
   Destroy();
 }
 
-LayoutSize LayoutMultiColumnFlowThread::ColumnOffset(
-    const LayoutPoint& point) const {
+PhysicalOffset LayoutMultiColumnFlowThread::ColumnOffset(
+    const PhysicalOffset& point) const {
   NOT_DESTROYED();
   return FlowThreadTranslationAtPoint(point,
                                       CoordinateSpaceConversion::kContaining);
@@ -356,28 +356,28 @@ bool LayoutMultiColumnFlowThread::IsPageLogicalHeightKnown() const {
   return all_columns_have_known_height_;
 }
 
-LayoutSize LayoutMultiColumnFlowThread::FlowThreadTranslationAtOffset(
+PhysicalOffset LayoutMultiColumnFlowThread::FlowThreadTranslationAtOffset(
     LayoutUnit offset_in_flow_thread,
     PageBoundaryRule rule,
     CoordinateSpaceConversion mode) const {
   NOT_DESTROYED();
   if (!HasValidColumnSetInfo())
-    return LayoutSize(0, 0);
+    return PhysicalOffset();
   LayoutMultiColumnSet* column_set =
       ColumnSetAtBlockOffset(offset_in_flow_thread, rule);
   if (!column_set)
-    return LayoutSize(0, 0);
+    return PhysicalOffset();
   return column_set->FlowThreadTranslationAtOffset(offset_in_flow_thread, rule,
                                                    mode);
 }
 
-LayoutSize LayoutMultiColumnFlowThread::FlowThreadTranslationAtPoint(
-    const LayoutPoint& flow_thread_point,
+PhysicalOffset LayoutMultiColumnFlowThread::FlowThreadTranslationAtPoint(
+    const PhysicalOffset& flow_thread_point,
     CoordinateSpaceConversion mode) const {
   NOT_DESTROYED();
-  LayoutPoint flipped_point = DeprecatedFlipForWritingMode(flow_thread_point);
-  LayoutUnit block_offset =
-      IsHorizontalWritingMode() ? flipped_point.Y() : flipped_point.X();
+  LayoutUnit block_offset = CreateWritingModeConverter()
+                                .ToLogical(flow_thread_point, {})
+                                .block_offset;
 
   // If block direction is flipped, points at a column boundary belong in the
   // former column, not the latter.
@@ -388,19 +388,18 @@ LayoutSize LayoutMultiColumnFlowThread::FlowThreadTranslationAtPoint(
   return FlowThreadTranslationAtOffset(block_offset, rule, mode);
 }
 
-LayoutPoint LayoutMultiColumnFlowThread::FlowThreadPointToVisualPoint(
-    const LayoutPoint& flow_thread_point) const {
-  NOT_DESTROYED();
-  return flow_thread_point +
-         FlowThreadTranslationAtPoint(flow_thread_point,
-                                      CoordinateSpaceConversion::kVisual);
-}
-
-LayoutPoint LayoutMultiColumnFlowThread::VisualPointToFlowThreadPoint(
-    const LayoutPoint& visual_point) const {
+PhysicalOffset LayoutMultiColumnFlowThread::VisualPointToFlowThreadPoint(
+    const PhysicalOffset& visual_point) const {
   NOT_DESTROYED();
   LayoutUnit block_offset =
-      IsHorizontalWritingMode() ? visual_point.Y() : visual_point.X();
+      IsHorizontalWritingMode() ? visual_point.top : visual_point.left;
+  if (RuntimeEnabledFeatures::FixOffsetInMultiColVerticalRlEnabled()) {
+    block_offset = visual_point
+                       .ConvertToLogical(
+                           {StyleRef().GetWritingMode(), TextDirection::kLtr},
+                           PhysicalSize(Size()), {})
+                       .block_offset;
+  }
   const LayoutMultiColumnSet* column_set = nullptr;
   for (const LayoutMultiColumnSet* candidate = FirstMultiColumnSet(); candidate;
        candidate = candidate->NextSiblingMultiColumnSet()) {
@@ -408,9 +407,33 @@ LayoutPoint LayoutMultiColumnFlowThread::VisualPointToFlowThreadPoint(
     if (candidate->LogicalBottom() > block_offset)
       break;
   }
-  return column_set ? column_set->VisualPointToFlowThreadPoint(ToLayoutPoint(
-                          visual_point + Location() - column_set->Location()))
-                    : visual_point;
+  if (!column_set) {
+    return visual_point;
+  }
+  const PhysicalOffset flow_thread_offset = PhysicalLocation();
+  const PhysicalOffset column_set_offset = column_set->PhysicalLocation();
+  const PhysicalOffset point_in_set =
+      visual_point + flow_thread_offset - column_set_offset;
+  if (RuntimeEnabledFeatures::FixOffsetInMultiColVerticalRlEnabled() &&
+      HasFlippedBlocksWritingMode()) {
+    // Pass a block-flipped physical offset to LayoutMultiColumnSet::
+    // VisualPointToFlowThreadPoint().
+    // TODO(layout-dev): Pass a logical offset.
+    const LayoutBlockFlow& container = *MultiColumnBlockFlow();
+    const LayoutUnit flow_thread_block_offset =
+        container.FlipForWritingMode(flow_thread_offset.left, LogicalHeight());
+    const LayoutUnit column_set_block_offset = container.FlipForWritingMode(
+        column_set_offset.left, column_set->LogicalHeight());
+    const LayoutPoint flipped_result =
+        column_set->VisualPointToFlowThreadPoint(LayoutPoint(
+            block_offset - flow_thread_block_offset - column_set_block_offset,
+            point_in_set.top));
+    return PhysicalOffset(
+        column_set->LogicalHeightInFlowThread() - flipped_result.X(),
+        flipped_result.Y());
+  }
+  return PhysicalOffset(
+      column_set->VisualPointToFlowThreadPoint(point_in_set.ToLayoutPoint()));
 }
 
 LayoutMultiColumnSet* LayoutMultiColumnFlowThread::ColumnSetAtBlockOffset(
@@ -1220,24 +1243,6 @@ void LayoutMultiColumnFlowThread::ToggleSpannersInSubtree(
   }
 }
 
-MinMaxSizes LayoutMultiColumnFlowThread::PreferredLogicalWidths() const {
-  NOT_DESTROYED();
-  NOTREACHED_NORETURN();
-}
-
-MinMaxSizes LayoutMultiColumnFlowThread::ComputeIntrinsicLogicalWidths() const {
-  NOT_DESTROYED();
-  NOTREACHED_NORETURN();
-}
-
-void LayoutMultiColumnFlowThread::ComputeLogicalHeight(
-    LayoutUnit logical_height,
-    LayoutUnit logical_top,
-    LogicalExtentComputedValues& computed_values) const {
-  NOT_DESTROYED();
-  NOTREACHED_NORETURN();
-}
-
 void LayoutMultiColumnFlowThread::UpdateLogicalWidth() {
   NOT_DESTROYED();
   DCHECK(!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled());
@@ -1246,7 +1251,7 @@ void LayoutMultiColumnFlowThread::UpdateLogicalWidth() {
   SetLogicalWidth(column_width);
 }
 
-LayoutPoint LayoutMultiColumnFlowThread::Location() const {
+LayoutPoint LayoutMultiColumnFlowThread::LocationInternal() const {
   NOT_DESTROYED();
   if (RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled() &&
       !HasValidCachedGeometry() && EverHadLayout()) {
@@ -1256,7 +1261,7 @@ LayoutPoint LayoutMultiColumnFlowThread::Location() const {
   return frame_location_;
 }
 
-LayoutSize LayoutMultiColumnFlowThread::Size() const {
+PhysicalSize LayoutMultiColumnFlowThread::Size() const {
   NOT_DESTROYED();
   if (RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled() &&
       !HasValidCachedGeometry() && EverHadLayout()) {
@@ -1274,7 +1279,7 @@ void LayoutMultiColumnFlowThread::UpdateGeometry() {
   LogicalSize thread_size;
   const LayoutBlockFlow* container = MultiColumnBlockFlow();
   if (container->PhysicalFragmentCount() == 0u) {
-    frame_size_ = LayoutSize();
+    frame_size_ = PhysicalSize();
     return;
   }
   const auto* first_fragment = container->GetPhysicalFragment(0);
@@ -1305,7 +1310,7 @@ void LayoutMultiColumnFlowThread::UpdateGeometry() {
       break;
     }
   }
-  frame_size_ = converter.ToPhysical(thread_size).ToLayoutSize();
+  frame_size_ = converter.ToPhysical(thread_size);
 }
 
 }  // namespace blink

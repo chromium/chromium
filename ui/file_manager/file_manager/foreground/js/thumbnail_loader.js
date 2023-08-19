@@ -264,10 +264,10 @@ export class ThumbnailLoader {
       }
 
       ImageLoaderClient.getInstance().load(request, result => {
-        if (result.status === LoadImageResponseStatus.SUCCESS) {
-          resolve(result);
-        } else {
+        if (!result || result.status !== LoadImageResponseStatus.SUCCESS) {
           reject(result);
+        } else {
+          resolve(result);
         }
       });
     });

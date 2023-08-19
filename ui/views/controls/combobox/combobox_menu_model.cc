@@ -15,14 +15,6 @@ bool ComboboxMenuModel::UseCheckmarks() const {
 }
 
 // Overridden from MenuModel:
-bool ComboboxMenuModel::HasIcons() const {
-  for (size_t i = 0; i < GetItemCount(); ++i) {
-    if (!GetIconAt(i).IsEmpty())
-      return true;
-  }
-  return false;
-}
-
 size_t ComboboxMenuModel::GetItemCount() const {
   return model_->GetItemCount();
 }

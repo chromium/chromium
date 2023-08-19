@@ -19,10 +19,7 @@ DeskAnimationBase::DeskAnimationBase(DesksController* controller,
                                      bool is_continuous_gesture_animation)
     : controller_(controller),
       ending_desk_index_(ending_desk_index),
-      is_continuous_gesture_animation_(is_continuous_gesture_animation),
-      throughput_tracker_(
-          desks_util::GetSelectedCompositorForPerformanceMetrics()
-              ->RequestNewThroughputTracker()) {
+      is_continuous_gesture_animation_(is_continuous_gesture_animation) {
   DCHECK(controller_);
   DCHECK_LE(ending_desk_index_, static_cast<int>(controller_->desks().size()));
   DCHECK_GE(ending_desk_index_, 0);
@@ -44,8 +41,13 @@ void DeskAnimationBase::Launch() {
 
   // The throughput tracker measures the animation when the user lifts their
   // fingers off the trackpad, which is done in EndSwipeAnimation.
-  if (!is_continuous_gesture_animation_)
-    throughput_tracker_.Start(GetSmoothnessReportCallback());
+  if (!is_continuous_gesture_animation_) {
+    // Request a new sequence tracker so the tracking number can't be reused.
+    throughput_tracker_ =
+        desks_util::GetSelectedCompositorForPerformanceMetrics()
+            ->RequestNewThroughputTracker();
+    throughput_tracker_->Start(GetSmoothnessReportCallback());
+  }
 
   // This step makes sure that the containers of the target desk are shown at
   // the beginning of the animation (but not actually visible to the user yet,
@@ -152,9 +154,9 @@ void DeskAnimationBase::OnDeskSwitchAnimationFinished() {
   OnDeskSwitchAnimationFinishedInternal();
 
   desk_switch_animators_.clear();
-
-  throughput_tracker_.Stop();
-
+  if (throughput_tracker_.has_value()) {
+    throughput_tracker_->Stop();
+  }
   if (skip_notify_controller_on_animation_finished_for_testing_)
     return;
 

@@ -11,10 +11,13 @@
 #import "components/policy/policy_constants.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/ios/browser/features.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
@@ -25,10 +28,6 @@
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/user_signin_constants.h"
 #import "net/base/network_change_notifier.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -120,8 +119,12 @@ bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browser_state,
 
   AuthenticationService* auth_service =
       AuthenticationServiceFactory::GetForBrowserState(browser_state);
-  // Do not show the SSO promo if the user is already syncing.
-  if (auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSync)) {
+  // Do not show the SSO promo if the user is already signed-in.
+  signin::ConsentLevel upgradeLevel =
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+          ? signin::ConsentLevel::kSignin
+          : signin::ConsentLevel::kSync;
+  if (auth_service->HasPrimaryIdentity(upgradeLevel)) {
     return false;
   }
 
@@ -136,8 +139,10 @@ bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browser_state,
     return false;
 
   // Used for testing purposes only.
-  if (signin::ForceStartupSigninPromo())
+  if (signin::ForceStartupSigninPromo() ||
+      experimental_flags::AlwaysDisplayUpgradePromo()) {
     return true;
+  }
 
   // Show the promo at most every two major versions.
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
@@ -170,6 +175,53 @@ bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browser_state,
   return IsStrictSubset(last_known_gaia_id_list, identities);
 }
 
+bool ShouldPresentWebSignin(ChromeBrowserState* browser_state) {
+  AuthenticationService* authentication_service =
+      AuthenticationServiceFactory::GetForBrowserState(browser_state);
+  if (authentication_service->HasPrimaryIdentity(
+          signin::ConsentLevel::kSignin)) {
+    // For some reasons, Gaia might ask for the web sign-in while the user is
+    // already signed in. It might be a race conditions with a token already
+    // disabled on Gaia, and Chrome not aware of it yet?
+    // To avoid a crash (hitting CHECK() to sign-in while already being signed
+    // in), we need to skip the web sign-in dialog.
+    // Related to crbug.com/1308448.
+    RecordConsistencyPromoUserAction(
+        signin_metrics::AccountConsistencyPromoAction::
+            SUPPRESSED_ALREADY_SIGNED_IN,
+        signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
+    return false;
+  }
+  signin_metrics::AccessPoint web_signin_access_point =
+      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN;
+  // Skip the bottom sheet sign-in dialog if the user cannot sign-in.
+  switch (authentication_service->GetServiceStatus()) {
+    case AuthenticationService::ServiceStatus::SigninForcedByPolicy:
+    case AuthenticationService::ServiceStatus::SigninDisabledByUser:
+    case AuthenticationService::ServiceStatus::SigninDisabledByPolicy:
+    case AuthenticationService::ServiceStatus::SigninDisabledByInternal:
+      RecordConsistencyPromoUserAction(
+          signin_metrics::AccountConsistencyPromoAction::
+              SUPPRESSED_SIGNIN_NOT_ALLOWED,
+          web_signin_access_point);
+      return false;
+    case AuthenticationService::ServiceStatus::SigninAllowed:
+      break;
+  }
+  // Show the sign-in dialog less than `kSigninWebSignDismissalCount` times.
+  PrefService* user_pref_service = browser_state->GetPrefs();
+  const int current_dismissal_count =
+      user_pref_service->GetInteger(prefs::kSigninWebSignDismissalCount);
+  if (current_dismissal_count >= kDefaultWebSignInDismissalCount) {
+    RecordConsistencyPromoUserAction(
+        signin_metrics::AccountConsistencyPromoAction::
+            SUPPRESSED_CONSECUTIVE_DISMISSALS,
+        web_signin_access_point);
+    return false;
+  }
+  return true;
+}
+
 void RecordUpgradePromoSigninStarted(
     ChromeAccountManagerService* account_manager_service,
     const base::Version& current_version) {
@@ -196,6 +248,8 @@ IdentitySigninState GetPrimaryIdentitySigninState(
       AuthenticationServiceFactory::GetForBrowserState(browser_state);
   SyncSetupService* syncSetupService =
       SyncSetupServiceFactory::GetForBrowserState(browser_state);
+  // TODO(crbug.com/1462552): After phase 3 migration of kSync users, Remove
+  // this usage.
   if (auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSync) &&
       syncSetupService->IsInitialSyncFeatureSetupComplete()) {
     return IdentitySigninStateSignedInWithSyncEnabled;

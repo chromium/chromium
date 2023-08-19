@@ -44,7 +44,7 @@ class GuestViewMessageHandler : public mojom::GuestViewHost {
   GuestViewManager* GetGuestViewManagerOrKill();
 
   virtual std::unique_ptr<GuestViewManagerDelegate>
-  CreateGuestViewManagerDelegate(content::BrowserContext* context) const;
+  CreateGuestViewManagerDelegate() const;
 
   content::BrowserContext* GetBrowserContext() const;
 

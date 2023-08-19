@@ -26,7 +26,6 @@
 <translation id="2060505056492490888">Il segno "<ph name="DOT" />" è utilizzato in una posizione errata in "<ph name="INVALIDDOMAIN" />".</translation>
 <translation id="2148716181193084225">Oggi</translation>
 <translation id="2226276347425096477">Riduci questo testo a <ph name="MAX_CHARACTERS" /> caratteri o meno (attualmente stai utilizzando <ph name="CURRENT_LENGTH" /> caratteri).</translation>
-<translation id="2246498165605549352">File locale</translation>
 <translation id="2247351761944213033">Settimana <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Traccia <ph name="NUMBER" /></translation>
 <translation id="2393030564806080191">Valore del colore esadecimale</translation>
@@ -89,6 +88,7 @@
 <translation id="5425179576310518467">data attuale</translation>
 <translation id="5466621249238537318">Seleziona uno o più file.</translation>
 <translation id="5468998798572797635">esci da schermo intero</translation>
+<translation id="5514612371225420585">File sul dispositivo</translation>
 <translation id="5516235301412634559">0,75</translation>
 <translation id="5537725057119320332">Trasmetti</translation>
 <translation id="5546461542133609677">riattiva audio</translation>
@@ -113,6 +113,7 @@
 <translation id="6398862346408813489">Mostra il riquadro di selezione del mese</translation>
 <translation id="6404546809543547843">cursore durata audio</translation>
 <translation id="6443871981718447451">mostra menu sottotitoli codificati</translation>
+<translation id="6484738902856791350">Formatta il codice</translation>
 <translation id="6550675742724504774">Opzioni</translation>
 <translation id="6572309429103589720">Grammatica non valida</translation>
 <translation id="658823671542763450">passa a schermo intero</translation>

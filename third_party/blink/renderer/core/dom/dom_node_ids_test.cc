@@ -17,8 +17,8 @@ using DOMNodeIdsTest = EditingTestBase;
 
 TEST_F(DOMNodeIdsTest, NonNull) {
   SetBodyContent("<div id='a'></div><div id='b'></div>");
-  Node* a = GetDocument().getElementById("a");
-  Node* b = GetDocument().getElementById("b");
+  Node* a = GetDocument().getElementById(AtomicString("a"));
+  Node* b = GetDocument().getElementById(AtomicString("b"));
 
   DOMNodeId id_a = DOMNodeIds::IdForNode(a);
   EXPECT_NE(kInvalidDOMNodeId, id_a);
@@ -37,7 +37,7 @@ TEST_F(DOMNodeIdsTest, NonNull) {
 
 TEST_F(DOMNodeIdsTest, DeletedNode) {
   SetBodyContent("<div id='a'></div>");
-  Node* a = GetDocument().getElementById("a");
+  Node* a = GetDocument().getElementById(AtomicString("a"));
   DOMNodeId id_a = DOMNodeIds::IdForNode(a);
 
   a->remove();
@@ -48,7 +48,7 @@ TEST_F(DOMNodeIdsTest, DeletedNode) {
 
 TEST_F(DOMNodeIdsTest, UnusedID) {
   SetBodyContent("<div id='a'></div>");
-  Node* a = GetDocument().getElementById("a");
+  Node* a = GetDocument().getElementById(AtomicString("a"));
   DOMNodeId id_a = DOMNodeIds::IdForNode(a);
   EXPECT_EQ(nullptr, DOMNodeIds::NodeForId(id_a + 1));
 }
@@ -60,7 +60,7 @@ TEST_F(DOMNodeIdsTest, Null) {
 
 TEST_F(DOMNodeIdsTest, ExistingIdForNode) {
   SetBodyContent("<div id='a'></div>");
-  Node* a = GetDocument().getElementById("a");
+  Node* a = GetDocument().getElementById(AtomicString("a"));
 
   // Node a does not yet have an ID.
   EXPECT_EQ(kInvalidDOMNodeId, DOMNodeIds::ExistingIdForNode(a));

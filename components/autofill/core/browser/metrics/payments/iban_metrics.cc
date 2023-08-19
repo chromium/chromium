@@ -10,7 +10,7 @@
 
 namespace autofill::autofill_metrics {
 
-void LogStoredIbanMetrics(const std::vector<std::unique_ptr<IBAN>>& local_ibans,
+void LogStoredIbanMetrics(const std::vector<std::unique_ptr<Iban>>& local_ibans,
                           const base::TimeDelta& disused_data_threshold) {
   // Iterate over all of the IBANs and gather metrics.
   size_t num_local_ibans_with_nickname = 0;
@@ -37,12 +37,12 @@ void LogStoredIbanMetrics(const std::vector<std::unique_ptr<IBAN>>& local_ibans,
                               num_disused_local_ibans);
 }
 
-void LogStrikesPresentWhenIBANSaved(const int num_strikes) {
+void LogStrikesPresentWhenIbanSaved(const int num_strikes) {
   base::UmaHistogramCounts100(
       "Autofill.StrikeDatabase.StrikesPresentWhenIbanSaved.Local", num_strikes);
 }
 
-void LogIBANSaveNotOfferedDueToMaxStrikesMetric(
+void LogIbanSaveNotOfferedDueToMaxStrikesMetric(
     AutofillMetrics::SaveTypeMetric metric) {
   base::UmaHistogramEnumeration(
       "Autofill.StrikeDatabase.IbanSaveNotOfferedDueToMaxStrikes", metric);
@@ -69,6 +69,12 @@ void LogSaveIbanBubbleResultSavedWithNicknameMetric(bool save_with_nickname) {
 
 void LogIndividualIbanSuggestionsEvent(IbanSuggestionsEvent event) {
   base::UmaHistogramEnumeration("Autofill.Iban.Suggestions", event);
+}
+
+void LogIbanSuggestionBlockListStatusMetric(
+    IbanSuggestionBlockListStatus event) {
+  base::UmaHistogramEnumeration(
+      "Autofill.Iban.ShowSuggestionsBlocklistDecision", event);
 }
 
 }  // namespace autofill::autofill_metrics

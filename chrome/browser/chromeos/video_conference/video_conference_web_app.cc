@@ -5,14 +5,19 @@
 #include "chrome/browser/chromeos/video_conference/video_conference_web_app.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/check.h"
+#include "base/logging.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_manager_client_common.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_ukm_helper.h"
+#include "chromeos/crosapi/mojom/video_conference.mojom-shared.h"
+#include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/render_widget_host.h"
@@ -37,8 +42,7 @@ void VideoConferenceWebApp::ActivateApp() {
 
 void VideoConferenceWebApp::SetCapturingStatus(VideoConferenceMediaType device,
                                                bool is_capturing) {
-  // This needs to be called first.
-  vc_ukm_helper_->RegisterCapturingUpdate(device, is_capturing, state_);
+  vc_ukm_helper_->RegisterCapturingUpdate(device, is_capturing);
 
   switch (device) {
     case VideoConferenceMediaType::kCamera:
@@ -67,20 +71,27 @@ VideoConferencePermissions VideoConferenceWebApp::GetPermissions() {
       web_contents.GetBrowserContext()->GetPermissionController();
   CHECK(permission_controller);
 
-  auto* rfh = web_contents.GetPrimaryMainFrame();
-  CHECK(rfh);
+  bool has_camera_permission = false;
+  bool has_microphone_permission = false;
 
-  auto camera_status =
-      permission_controller->GetPermissionStatusForCurrentDocument(
-          blink::PermissionType::VIDEO_CAPTURE, rfh);
-  auto microphone_status =
-      permission_controller->GetPermissionStatusForCurrentDocument(
-          blink::PermissionType::AUDIO_CAPTURE, rfh);
+  // Get permission from each render frame host.
+  web_contents.GetPrimaryMainFrame()->ForEachRenderFrameHost(
+      [&](content::RenderFrameHost* rfh) {
+        auto camera_status =
+            permission_controller->GetPermissionStatusForCurrentDocument(
+                blink::PermissionType::VIDEO_CAPTURE, rfh);
+        auto microphone_status =
+            permission_controller->GetPermissionStatusForCurrentDocument(
+                blink::PermissionType::AUDIO_CAPTURE, rfh);
 
-  return {.has_camera_permission =
-              (camera_status == blink::mojom::PermissionStatus::GRANTED),
-          .has_microphone_permission =
-              (microphone_status == blink::mojom::PermissionStatus::GRANTED)};
+        has_camera_permission |=
+            camera_status == blink::mojom::PermissionStatus::GRANTED;
+
+        has_microphone_permission |=
+            microphone_status == blink::mojom::PermissionStatus::GRANTED;
+      });
+
+  return {has_camera_permission, has_microphone_permission};
 }
 
 bool VideoConferenceWebApp::IsInactiveExtension() {
@@ -102,14 +113,27 @@ void VideoConferenceWebApp::PrimaryPageChanged(content::Page& page) {
   remove_media_app_callback_.Run(state_.id);
 }
 
+void VideoConferenceWebApp::TitleWasSet(content::NavigationEntry* entry) {
+  std::u16string new_title = std::u16string{entry->GetTitle()};
+
+  auto title_change_info = crosapi::mojom::TitleChangeInfo::New(
+      /*id=*/state_.id, /*new_title=*/std::move(new_title));
+  client_update_callback_.Run(crosapi::mojom::VideoConferenceClientUpdate::New(
+      /*added_or_removed_app=*/crosapi::mojom::VideoConferenceAppUpdate::kNone,
+      /*title_change_info=*/std::move(title_change_info)));
+}
+
 VideoConferenceWebApp::VideoConferenceWebApp(
     content::WebContents* web_contents,
     base::UnguessableToken id,
     base::RepeatingCallback<void(const base::UnguessableToken&)>
-        remove_media_app_callback)
+        remove_media_app_callback,
+    base::RepeatingCallback<void(
+        crosapi::mojom::VideoConferenceClientUpdatePtr)> client_update_callback)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<VideoConferenceWebApp>(*web_contents),
       remove_media_app_callback_(std::move(remove_media_app_callback)),
+      client_update_callback_(std::move(client_update_callback)),
       state_{.id = std::move(id),
              .last_activity_time = base::Time::Now(),
              .is_capturing_microphone = false,

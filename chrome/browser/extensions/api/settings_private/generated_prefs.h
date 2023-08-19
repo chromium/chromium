@@ -7,8 +7,8 @@
 
 #include <memory>
 #include <string>
-#include <unordered_map>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/api/settings_private/generated_pref.h"
 #include "chrome/browser/extensions/api/settings_private/prefs_util_enums.h"
@@ -22,11 +22,10 @@ class Value;
 }
 
 namespace extensions {
-namespace api {
-namespace settings_private {
+
+namespace api::settings_private {
 struct PrefObject;
-}  // namespace settings_private
-}  // namespace api
+}  // namespace api::settings_private
 
 namespace settings_private {
 
@@ -36,8 +35,7 @@ namespace settings_private {
 class GeneratedPrefs : public KeyedService {
  public:
   // Preference name to implementation map.
-  using PrefsMap =
-      std::unordered_map<std::string, std::unique_ptr<GeneratedPref>>;
+  using PrefsMap = base::flat_map<std::string, std::unique_ptr<GeneratedPref>>;
 
   explicit GeneratedPrefs(Profile* profile);
 

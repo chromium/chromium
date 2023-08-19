@@ -6,10 +6,12 @@
 #define CHROME_BROWSER_ASH_SCANNING_SCAN_SERVICE_H_
 
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "ash/webui/scanning/mojom/scanning.mojom.h"
+#include "base/cancelable_callback.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
@@ -24,6 +26,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/device/wake_lock/power_save_blocker/power_save_blocker.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -226,6 +229,16 @@ class ScanService : public scanning::mojom::ScanService,
   // Helper class for for file path manipulation and verification.
   ScanningFilePathHelper file_path_helper_;
 
+  // Wake lock to ensure system does not suspend during a scan job.
+  std::unique_ptr<device::PowerSaveBlocker> wake_lock_;
+
+  // Called if there is no response from the scanner after a timeout. Used to
+  // ensure the wake lock will be released if there is an error from the
+  // scanner or backend.
+  base::CancelableOnceCallback<void(ScanService*, bool,
+                               lorgnette::ScanFailureMode)> timeout_callback_;
+
+  // Needs to be last member variable.
   base::WeakPtrFactory<ScanService> weak_ptr_factory_{this};
 };
 

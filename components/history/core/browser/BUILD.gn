@@ -155,10 +155,6 @@ static_library("browser") {
       "android/visit_sql_handler.h",
     ]
   }
-
-  if (is_ios) {
-    deps += [ "//base/ios" ]
-  }
 }
 
 source_set("unit_tests") {

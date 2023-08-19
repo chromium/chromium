@@ -138,14 +138,20 @@ class ASH_EXPORT HoverHighlightView : public ActionableView {
   // be called before re-populating the view.
   bool is_populated_ = false;
 
-  const raw_ptr<ViewClickListener, ExperimentalAsh> listener_ = nullptr;
-  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> text_label_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> sub_text_label_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> left_view_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> right_view_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> sub_row_ = nullptr;
-  raw_ptr<TriView, ExperimentalAsh> tri_view_ = nullptr;
+  const raw_ptr<ViewClickListener, DanglingUntriaged | ExperimentalAsh>
+      listener_ = nullptr;
+  raw_ptr<views::ImageView, DanglingUntriaged | ExperimentalAsh> icon_ =
+      nullptr;
+  raw_ptr<views::Label, DanglingUntriaged | ExperimentalAsh> text_label_ =
+      nullptr;
+  raw_ptr<views::Label, DanglingUntriaged | ExperimentalAsh> sub_text_label_ =
+      nullptr;
+  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> left_view_ =
+      nullptr;
+  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> right_view_ =
+      nullptr;
+  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> sub_row_ = nullptr;
+  raw_ptr<TriView, DanglingUntriaged | ExperimentalAsh> tri_view_ = nullptr;
   bool expandable_ = false;
   AccessibilityState accessibility_state_ = AccessibilityState::DEFAULT;
   base::CallbackListSubscription enabled_changed_subscription_ =

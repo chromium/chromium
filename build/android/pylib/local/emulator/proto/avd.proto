@@ -37,6 +37,7 @@ message SdcardSettings {
   string size = 1;
 }
 
+// settings only used during AVD creation.
 message AvdSettings {
   // Settings pertaining to the AVD's screen.
   ScreenSettings screen = 1;
@@ -60,6 +61,13 @@ message AvdSettings {
   // Note the screen, sdcard, ram_size above are ultimately translated to
   // AVD properties and they won't be overwritten by values here.
   map<string, string> avd_properties = 5;
+}
+
+// settings used during AVD launch. Needed in both creation and deploy textpb.
+message AvdLaunchSettings {
+  // The mode of hardware OpenGL ES emulation.
+  // See "emulator -help-gpu" for a full list of modes.
+  string gpu_mode = 1;
 }
 
 message Avd {
@@ -91,4 +99,7 @@ message Avd {
   // Needed for gmscore/phonesky support.
   repeated CIPDPackage privileged_apk = 9;
   repeated CIPDPackage additional_apk = 10;
+
+  // AVD settings used during AVD launch.
+  AvdLaunchSettings avd_launch_settings = 11;
 }

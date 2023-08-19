@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item_result.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item_text_index.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_leading_floats.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_break_point.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_spacing.h"
@@ -44,8 +45,7 @@ class CORE_EXPORT NGLineBreaker {
                 NGLineBreakerMode,
                 const NGConstraintSpace&,
                 const NGLineLayoutOpportunity&,
-                const NGPositionedFloatVector& leading_floats,
-                unsigned handled_leading_floats_index,
+                const NGLeadingFloats& leading_floats,
                 const NGInlineBreakToken*,
                 const NGColumnSpannerPath*,
                 NGExclusionSpace*);
@@ -69,6 +69,7 @@ class CORE_EXPORT NGLineBreaker {
   // withoiut `CollectInlines`. They are determined by this.
   bool ShouldDisableScoreLineBreak() const { return disable_score_line_break_; }
 
+  void SetLineOpportunity(const NGLineLayoutOpportunity& line_opportunity);
   // Override the available width to compute line breaks. This is reset after
   // each `NextLine`.
   void OverrideAvailableWidth(LayoutUnit available_width);
@@ -108,6 +109,10 @@ class CORE_EXPORT NGLineBreaker {
   void AppendCandidates(const NGInlineItemResult& item_result,
                         const NGLineInfo& line_info,
                         NGLineBreakCandidateContext& context);
+
+  // True if the argument can break; i.e. has at least one break opportunity.
+  bool CanBreakInside(const NGLineInfo& line_info);
+  bool CanBreakInside(const NGInlineItemResult& item_result);
 
  private:
   const String& Text() const { return text_content_; }
@@ -220,6 +225,7 @@ class CORE_EXPORT NGLineBreaker {
 
   bool HandleOverflowIfNeeded(NGLineInfo*);
   void HandleOverflow(NGLineInfo*);
+  void RetryAfterOverflow(NGLineInfo*, NGInlineItemResults*);
   void RewindOverflow(unsigned new_end, NGLineInfo*);
   void Rewind(unsigned new_end, NGLineInfo*);
   void ResetRewindLoopDetector() { last_rewind_.reset(); }
@@ -299,7 +305,7 @@ class CORE_EXPORT NGLineBreaker {
   // True when current box allows line wrapping.
   bool auto_wrap_ = false;
 
-  // True when current box has 'word-break/word-wrap: break-word'.
+  // True when current box should fallback to break anywhere if it overflows.
   bool break_anywhere_if_overflow_ = false;
 
   // Force LineBreakType::kBreakCharacter by ignoring the current style if
@@ -307,8 +313,8 @@ class CORE_EXPORT NGLineBreaker {
   // boundaries for 'break-word' after overflow.
   bool override_break_anywhere_ = false;
 
-  // True when breaking at soft hyphens (U+00AD) is allowed.
-  bool enable_soft_hyphen_ = true;
+  // Disable `LineBreakType::kPhrase` even if specified by the CSS.
+  bool disable_phrase_ = false;
 
   bool disable_score_line_break_ = false;
 
@@ -371,9 +377,8 @@ class CORE_EXPORT NGLineBreaker {
   LayoutUnit override_available_width_;
 
   // Keep track of handled float items. See HandleFloat().
-  const NGPositionedFloatVector& leading_floats_;
+  const NGLeadingFloats& leading_floats_;
   unsigned leading_floats_index_ = 0u;
-  unsigned handled_leading_floats_index_;
 
   // Cache for computing |MinMaxSize|. See |MaxSizeCache|.
   MaxSizeCache* max_size_cache_ = nullptr;

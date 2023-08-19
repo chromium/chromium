@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/webui/app_settings/web_app_settings_navigation_throttle.h"
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
@@ -44,18 +46,53 @@ WebAppSettingsNavigationThrottle::~WebAppSettingsNavigationThrottle() = default;
 
 content::NavigationThrottle::ThrottleCheckResult
 WebAppSettingsNavigationThrottle::WillStartRequest() {
-  if (g_disable_throttle_for_testing_)
+  if (g_disable_throttle_for_testing_) {
     return content::NavigationThrottle::PROCEED;
+  }
+
+  const web_app::AppId app_id =
+      web_app::GetAppIdFromAppSettingsUrl(navigation_handle()->GetURL());
+  if (app_id.empty()) {
+    return content::NavigationThrottle::BLOCK_REQUEST;
+  }
 
   content::WebContents* web_contents = navigation_handle()->GetWebContents();
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  if (!web_app::HasAppSettingsPage(profile, navigation_handle()->GetURL())) {
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
+  if (!provider) {
     return content::NavigationThrottle::BLOCK_REQUEST;
   }
+
+  if (!provider->on_registry_ready().is_signaled()) {
+    provider->on_registry_ready().Post(
+        FROM_HERE,
+        base::BindOnce(&WebAppSettingsNavigationThrottle::ContinueCheckForApp,
+                       weak_factory_.GetWeakPtr(), app_id));
+    return content::NavigationThrottle::DEFER;
+  }
+
+  if (!provider->registrar_unsafe().IsLocallyInstalled(app_id)) {
+    return content::NavigationThrottle::BLOCK_REQUEST;
+  }
+
   return content::NavigationThrottle::PROCEED;
 }
 
 const char* WebAppSettingsNavigationThrottle::GetNameForLogging() {
   return "WebAppSettingsNavigationThrottle";
+}
+
+void WebAppSettingsNavigationThrottle::ContinueCheckForApp(
+    const web_app::AppId& app_id) {
+  content::WebContents* web_contents = navigation_handle()->GetWebContents();
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
+  CHECK(provider);
+  if (provider->registrar_unsafe().IsLocallyInstalled(app_id)) {
+    Resume();
+  } else {
+    CancelDeferredNavigation(content::NavigationThrottle::BLOCK_REQUEST);
+  }
 }

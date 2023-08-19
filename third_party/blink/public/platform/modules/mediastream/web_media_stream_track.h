@@ -73,7 +73,7 @@ class BLINK_PLATFORM_EXPORT WebMediaStreamTrack {
 #endif
 
  private:
-  WebPrivatePtr<MediaStreamComponent> private_;
+  WebPrivatePtrForGC<MediaStreamComponent> private_;
 };
 
 }  // namespace blink

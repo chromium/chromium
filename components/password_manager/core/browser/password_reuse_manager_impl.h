@@ -10,9 +10,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_reuse_manager.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace password_manager {
 
@@ -23,6 +25,13 @@ class PasswordReuseManagerImpl : public PasswordReuseManager,
   PasswordReuseManagerImpl();
   ~PasswordReuseManagerImpl() override;
 
+  // Immediately called after |Init()| to retrieve password hash data for
+  // reuse detection.
+  // TODO(crbug.com/1469280): This might need to be called from all platforms,
+  // including ios.
+  void PreparePasswordHashData(
+      metrics_util::SignInState sign_in_state_for_metrics);
+
   // Implements KeyedService interface.
   void Shutdown() override;
 
@@ -32,19 +41,19 @@ class PasswordReuseManagerImpl : public PasswordReuseManager,
             PasswordStoreInterface* account_store) override;
   void ReportMetrics(const std::string& username,
                      bool is_under_advanced_protection) override;
-  void PreparePasswordHashData(const std::string& sync_username,
-                               bool is_signed_in) override;
   void CheckReuse(const std::u16string& input,
                   const std::string& domain,
                   PasswordReuseDetectorConsumer* consumer) override;
-  void SaveGaiaPasswordHash(const std::string& username,
-                            const std::u16string& password,
-                            bool is_primary_account,
-                            GaiaPasswordHashChange event) override;
+  void SaveGaiaPasswordHash(
+      const std::string& username,
+      const std::u16string& password,
+      bool is_sync_password_for_metrics,
+      metrics_util::GaiaPasswordHashChange event) override;
   void SaveEnterprisePasswordHash(const std::string& username,
                                   const std::u16string& password) override;
-  void SaveSyncPasswordHash(const PasswordHashData& sync_password_data,
-                            GaiaPasswordHashChange event) override;
+  void SaveSyncPasswordHash(
+      const PasswordHashData& sync_password_data,
+      metrics_util::GaiaPasswordHashChange event) override;
   void ClearGaiaPasswordHash(const std::string& username) override;
   void ClearAllGaiaPasswordHash() override;
   void ClearAllEnterprisePasswordHash() override;
@@ -54,12 +63,14 @@ class PasswordReuseManagerImpl : public PasswordReuseManager,
           callback) override;
   void SetPasswordStoreSigninNotifier(
       std::unique_ptr<PasswordStoreSigninNotifier> notifier) override;
-  void SchedulePasswordHashUpdate(bool should_log_metrics,
-                                  bool does_primary_account_exists,
-                                  bool is_signed_in) override;
   void ScheduleEnterprisePasswordURLUpdate() override;
 
  private:
+  // Schedules the update of password hashes used by reuse detector.
+  // |sign_in_state_for_metrics|, if not nullopt, is used for metrics only.
+  void SchedulePasswordHashUpdate(
+      absl::optional<metrics_util::SignInState> sign_in_state_for_metrics);
+
   // Executed deferred on Android in order avoid high startup latencies.
   void RequestLoginsFromStores();
 
@@ -77,13 +88,13 @@ class PasswordReuseManagerImpl : public PasswordReuseManager,
 
   // Saves |username| and a hash of |password| for password reuse checking.
   // |is_gaia_password| indicates if it is a Gaia account. |event| is used for
-  // metric logging. |is_primary_account| is whether account belong to the
-  // password is a primary account.
+  // metric logging. |is_sync_password_for_metrics| is whether account belong to
+  // the password is a primary account with sync the feature turned on.
   void SaveProtectedPasswordHash(const std::string& username,
                                  const std::u16string& password,
-                                 bool is_primary_account,
+                                 bool is_sync_password_for_metrics,
                                  bool is_gaia_password,
-                                 GaiaPasswordHashChange event);
+                                 metrics_util::GaiaPasswordHashChange event);
 
   // Schedules the given |task| to be run on the 'background_task_runner_'.
   bool ScheduleTask(base::OnceClosure task);
@@ -107,11 +118,11 @@ class PasswordReuseManagerImpl : public PasswordReuseManager,
   // Return value of PasswordStoreInterface::AddSyncEnabledOrDisabledCallback().
   base::CallbackListSubscription account_store_cb_list_subscription_;
 
-  // The 'reuse_detector_', owned by this PasswordReuseManager instance, but
+  // The `reuse_detector_`, owned by this PasswordReuseManager instance, but
   // living on the background thread. It will be deleted asynchronously during
-  // shutdown on the background thread, so it will outlive |this| along with all
+  // shutdown on the background thread, so it will outlive `this` along with all
   // its in-flight tasks.
-  raw_ptr<PasswordReuseDetector, DanglingUntriaged> reuse_detector_ = nullptr;
+  std::unique_ptr<PasswordReuseDetector> reuse_detector_;
 
   // Notifies PasswordReuseManager about sign-in events.
   std::unique_ptr<PasswordStoreSigninNotifier> notifier_;

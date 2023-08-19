@@ -35,6 +35,7 @@
 #include "third_party/tflite/src/tensorflow/lite/op_resolver.h"
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/task_api_factory.h"
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/image_classifier.h"
+#include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/image_embedder.h"
 #endif
 
 namespace safe_browsing {
@@ -49,6 +50,10 @@ std::unique_ptr<tflite::MutableOpResolver> CreateOpResolver() {
                       tflite::ops::builtin::Register_ADD(),
                       /* min_version = */ 1,
                       /* max_version = */ 2);
+  resolver.AddBuiltin(tflite::BuiltinOperator_AVERAGE_POOL_2D,
+                      tflite::ops::builtin::Register_AVERAGE_POOL_2D(),
+                      /* min_version */ 1,
+                      /* max_version */ 3);
   resolver.AddBuiltin(tflite::BuiltinOperator_CONV_2D,
                       tflite::ops::builtin::Register_CONV_2D(),
                       /* min_version = */ 1,
@@ -61,14 +66,28 @@ std::unique_ptr<tflite::MutableOpResolver> CreateOpResolver() {
                       tflite::ops::builtin::Register_FULLY_CONNECTED(),
                       /* min_version = */ 1,
                       /* max_version = */ 9);
+  resolver.AddBuiltin(tflite::BuiltinOperator_LOGISTIC,
+                      tflite::ops::builtin::Register_LOGISTIC(),
+                      /* min_version = */ 1,
+                      /* max_version = */ 3);
+  resolver.AddBuiltin(tflite::BuiltinOperator_L2_NORMALIZATION,
+                      tflite::ops::builtin::Register_L2_NORMALIZATION(), 1, 2);
   resolver.AddBuiltin(tflite::BuiltinOperator_MEAN,
                       tflite::ops::builtin::Register_MEAN(),
                       /* min_version = */ 1,
                       /* max_version = */ 2);
+  resolver.AddBuiltin(tflite::BuiltinOperator_MUL,
+                      tflite::ops::builtin::Register_MUL(),
+                      /* min_version = */ 1,
+                      /* max_version = */ 4);
+  resolver.AddBuiltin(tflite::BuiltinOperator_RESHAPE,
+                      tflite::ops::builtin::Register_RESHAPE());
   resolver.AddBuiltin(tflite::BuiltinOperator_SOFTMAX,
                       tflite::ops::builtin::Register_SOFTMAX(),
                       /* min_version = */ 1,
                       /* max_version = */ 3);
+  resolver.AddBuiltin(tflite::BuiltinOperator_SUB,
+                      tflite::ops::builtin::Register_SUB(), 1, 2);
   resolver.AddBuiltin(tflite::BuiltinOperator_DEQUANTIZE,
                       tflite::ops::builtin::Register_DEQUANTIZE(),
                       /* min_version = */ 1,
@@ -102,6 +121,23 @@ std::unique_ptr<tflite::task::vision::ImageClassifier> CreateClassifier(
   return std::move(*statusor_classifier);
 }
 
+std::unique_ptr<tflite::task::vision::ImageEmbedder> CreateImageEmbedder(
+    std::string model_data) {
+  TRACE_EVENT0("safe_browsing", "CreateTfLiteImageEmbedder");
+  tflite::task::vision::ImageEmbedderOptions embedder_options;
+  embedder_options.mutable_model_file_with_metadata()->set_file_content(
+      model_data);
+  auto embedder = tflite::task::vision::ImageEmbedder::CreateFromOptions(
+      embedder_options, CreateOpResolver());
+  if (!embedder.ok()) {
+    VLOG(1) << "Failed to create the embedder. Embedder status is: "
+            << embedder.status().ToString();
+    return nullptr;
+  }
+
+  return std::move(*embedder);
+}
+
 std::string GetModelInput(const SkBitmap& bitmap, int width, int height) {
   TRACE_EVENT0("safe_browsing", "GetTfLiteModelInput");
   // Use the Rec. 2020 color space, in case the user input is wide-gamut.
@@ -127,7 +163,19 @@ std::string GetModelInput(const SkBitmap& bitmap, int width, int height) {
   return data;
 }
 
-void OnModelInputCreated(
+auto CreateFrameBuffer(const std::string& model_input,
+                       int input_width,
+                       int input_height) {
+  tflite::task::vision::FrameBuffer::Plane plane{
+      reinterpret_cast<const tflite::uint8*>(model_input.data()),
+      {3 * input_width, 3}};
+  return tflite::task::vision::FrameBuffer::Create(
+      {plane}, {input_width, input_height},
+      tflite::task::vision::FrameBuffer::Format::kRGB,
+      tflite::task::vision::FrameBuffer::Orientation::kTopLeft);
+}
+
+void OnModelInputCreatedForClassifier(
     const std::string& model_input,
     int input_width,
     int input_height,
@@ -135,13 +183,7 @@ void OnModelInputCreated(
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::OnceCallback<void(std::vector<double>)> callback) {
   base::Time before_operation = base::Time::Now();
-  tflite::task::vision::FrameBuffer::Plane plane{
-      reinterpret_cast<const tflite::uint8*>(model_input.data()),
-      {3 * input_width, 3}};
-  auto frame_buffer = tflite::task::vision::FrameBuffer::Create(
-      {plane}, {input_width, input_height},
-      tflite::task::vision::FrameBuffer::Format::kRGB,
-      tflite::task::vision::FrameBuffer::Orientation::kTopLeft);
+  auto frame_buffer = CreateFrameBuffer(model_input, input_width, input_height);
   auto statusor_result = classifier->Classify(*frame_buffer);
   base::UmaHistogramTimes("SBClientPhishing.ApplyTfliteTime.Classify",
                           base::Time::Now() - before_operation);
@@ -163,6 +205,41 @@ void OnModelInputCreated(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(scores)));
 }
 
+void OnModelInputCreatedForImageEmbedding(
+    const std::string& model_input,
+    int input_width,
+    int input_height,
+    std::unique_ptr<tflite::task::vision::ImageEmbedder> image_embedder,
+    scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+    base::OnceCallback<void(ImageFeatureEmbedding)> callback) {
+  auto frame_buffer = CreateFrameBuffer(model_input, input_width, input_height);
+  tflite::support::StatusOr<tflite::task::vision::EmbeddingResult>
+      statusor_result = image_embedder->Embed(*frame_buffer);
+
+  ImageFeatureEmbedding image_feature_embedding;
+
+  if (!statusor_result.ok()) {
+    VLOG(1) << "Embedding failed with the status "
+            << statusor_result.status().ToString();
+    callback_task_runner->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), image_feature_embedding));
+    return;
+  }
+
+  auto feature_vector = statusor_result->embeddings(0).feature_vector();
+
+  std::vector<float> value_floats = std::vector<float>(
+      feature_vector.value_float().begin(), feature_vector.value_float().end());
+  for (float value : value_floats) {
+    image_feature_embedding.add_embedding_value(value);
+  }
+
+  callback_task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), std::move(image_feature_embedding)));
+}
+
 void OnClassifierCreated(
     const SkBitmap& bitmap,
     int input_width,
@@ -180,9 +257,32 @@ void OnClassifierCreated(
   // Break up the task to avoid blocking too long.
   base::ThreadPool::PostTask(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&OnModelInputCreated, std::move(model_input), input_width,
-                     input_height, std::move(classifier),
+      base::BindOnce(&OnModelInputCreatedForClassifier, std::move(model_input),
+                     input_width, input_height, std::move(classifier),
                      std::move(callback_task_runner), std::move(callback)));
+}
+
+void OnImageEmbedderCreated(
+    const SkBitmap& bitmap,
+    int input_width,
+    int input_height,
+    std::unique_ptr<tflite::task::vision::ImageEmbedder> image_embedder,
+    scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+    base::OnceCallback<void(ImageFeatureEmbedding)> callback) {
+  std::string model_input = GetModelInput(bitmap, input_width, input_height);
+  if (model_input.empty()) {
+    callback_task_runner->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), ImageFeatureEmbedding()));
+    return;
+  }
+
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&OnModelInputCreatedForImageEmbedding,
+                     std::move(model_input), input_width, input_height,
+                     std::move(image_embedder), std::move(callback_task_runner),
+                     std::move(callback)));
 }
 #endif
 
@@ -210,6 +310,30 @@ void Scorer::ApplyVisualTfLiteModelHelper(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&OnClassifierCreated, bitmap, input_width, input_height,
                      std::move(classifier), std::move(callback_task_runner),
+                     std::move(callback)));
+}
+
+void Scorer::ApplyImageEmbeddingTfLiteModelHelper(
+    const SkBitmap& bitmap,
+    int input_width,
+    int input_height,
+    const std::string& model_data,
+    scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+    base::OnceCallback<void(ImageFeatureEmbedding)> callback) {
+  TRACE_EVENT0("safe_browsing", "ApplyImageEmbeddingTfLiteModel");
+  std::unique_ptr<tflite::task::vision::ImageEmbedder> image_embedder =
+      CreateImageEmbedder(std::move(model_data));
+
+  if (!image_embedder) {
+    callback_task_runner->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), ImageFeatureEmbedding()));
+    return;
+  }
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&OnImageEmbedderCreated, bitmap, input_width, input_height,
+                     std::move(image_embedder), std::move(callback_task_runner),
                      std::move(callback)));
 }
 #endif

@@ -6,6 +6,7 @@ default	rel
 %define XMMWORD
 %define YMMWORD
 %define ZMMWORD
+%define _CET_ENDBR
 
 %ifdef BORINGSSL_PREFIX
 %include "boringssl_prefix_symbols_nasm.inc"
@@ -27,6 +28,7 @@ $L$SEH_begin_md5_block_asm_data_order:
 
 
 
+_CET_ENDBR
 	push	rbp
 
 	push	rbx

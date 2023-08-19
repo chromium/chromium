@@ -510,7 +510,7 @@ public class TabUiTestHelper {
      *            be saved.
      * @param isIncognito Whether the tab is incognito tab.
      */
-    private static void createTabsWithThumbnail(ChromeTabbedActivityTestRule rule, int numTabs,
+    public static void createTabsWithThumbnail(ChromeTabbedActivityTestRule rule, int numTabs,
             @Nullable String url, boolean isIncognito) {
         assertTrue(numTabs >= 1);
 
@@ -589,7 +589,7 @@ public class TabUiTestHelper {
                 // Some items may not be cards or may not have thumbnails.
                 if (thumbnail == null) continue;
 
-                if (thumbnail.isPlaceHolder()
+                if (thumbnail.isPlaceholder()
                         || !(thumbnail.getDrawable() instanceof BitmapDrawable)
                         || ((BitmapDrawable) thumbnail.getDrawable()).getBitmap() == null) {
                     allFetched = false;

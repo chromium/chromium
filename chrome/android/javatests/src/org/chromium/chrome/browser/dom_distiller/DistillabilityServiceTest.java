@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -60,7 +61,8 @@ public class DistillabilityServiceTest {
     @Feature({"Distillability-Service"})
     @MediumTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @DisableFeatures({ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE})
+    @DisableFeatures(ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE)
+    @DisabledTest(message = "Flaky - crbug/1455454")
     public void testServiceAliveAfterNativePage() throws TimeoutException, ExecutionException {
         EmbeddedTestServer testServer = EmbeddedTestServer.createAndStartServer(
                 ApplicationProvider.getApplicationContext());

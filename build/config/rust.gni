@@ -13,19 +13,18 @@ if (is_android) {
 
 if (is_ios) {
   import("//build/config/ios/config.gni")  # For `target_environment`
+  import("//build/config/ios/ios_sdk.gni")  # For `xcode_version_int`
 }
 
 declare_args() {
-  # Whether to allow Rust code to be part of the Chromium *build process*.
-  # This can be used to create Rust test binaries, even if the flag below
-  # is false.
-  # This only applies to Chromium itself, so the build_with_chromium check
-  # should not be removed.
-  # TODO(crbug.com/1386212): Mac
-  # TODO(crbug.com/1271215): Windows
-  enable_rust =
-      !is_mac && !is_ios && !is_win &&
-      !(is_official_build && (is_mac || is_win)) && build_with_chromium
+  # Rust is available in the Chromium build but 3p repos that use //build may
+  # not use Rust and thus won't want to depend on having the Rust toolchain
+  # present, so this defaults to off in those cases.
+  #
+  # Chromium-based projects that are built for for architectures Chrome does not
+  # support may need to disable this as well, though they may need to replace
+  # code with C/C++ to get a functional product.
+  enable_rust = build_with_chromium
 
   # As we incrementally enable Rust on mainstream builders, we want to enable
   # the toolchain (by switching 'enable_rust' to true) while still disabling
@@ -80,25 +79,35 @@ declare_args() {
   # Individual Rust components.
 
   # Conversions between Rust types and C++ types.
-  enable_rust_base_conversions = enable_all_rust_features
+  #
+  # TODO(crbug.com/1463749): Enable on ChromeOS.
+  enable_rust_base_conversions =
+      enable_rust && (!(is_chromeos || is_ios) || enable_all_rust_features)
 
   # The base::JSONReader implementation. Requires base conversions.
-  enable_rust_json = enable_all_rust_features
+  enable_rust_json = enable_rust && enable_all_rust_features
 
   # Support for chrome://crash-rust to check crash dump collection works.
-  enable_rust_crash = enable_all_rust_features
+  enable_rust_crash = enable_rust
+
+  # Support for QR code generation - see https://crbug.com/1431991.
+  #
+  # Per go/rusty-qr-code-generator the feature is not actually used on iOS, but
+  # `is_ios` below is checked for parity with `enable_rust_base_conversions`
+  # (which is a dependency of `enable_rust_qr`).
+  #
+  # TODO(crbug.com/1463749): Enable on ChromeOS.
+  enable_rust_qr =
+      enable_rust && (!(is_chromeos || is_ios) || enable_all_rust_features)
 
   # Support for Rust mojo bindings.
-  enable_rust_mojo = enable_all_rust_features
+  enable_rust_mojo = enable_rust && enable_all_rust_features
 
-  # Support for the 'gnrt' Rust tool.
-  enable_rust_gnrt = host_toolchain == current_toolchain
-
-  # Rust gtest interop
-  enable_rust_gtest_interop = enable_all_rust_features
+  # Rust gtest interop.
+  enable_rust_gtest_interop = enable_rust
 
   # Enable Boringssl Rust bindings generation
-  enable_rust_boringssl = enable_all_rust_features
+  enable_rust_boringssl = enable_rust && enable_all_rust_features
 }
 
 # Use the Rust toolchain built in-tree. When false, we use the prebuilt Rust
@@ -127,6 +136,9 @@ if (enable_rust) {
                                    update_rust_args,
                                    "trim string")
     }
+
+    # The same as written in `config.toml.template`.
+    rust_channel = "dev"
   } else {
     toolchain_has_rust = custom_toolchain_supports_platform
     rustc_revision = rustc_version
@@ -137,9 +149,6 @@ if (enable_rust) {
 # them as a dylib and put them into an APK. We should reuse all the same logic
 # for gtests from the `//testing/test:test` template.
 can_build_rust_unit_tests = toolchain_has_rust && !is_android
-
-# Whether to build chrome://crash/rust support.
-build_rust_crash = toolchain_has_rust && enable_rust_crash
 
 # We want to store rust_sysroot as a source-relative variable for ninja
 # portability. In practice if an external toolchain was specified, it might
@@ -212,6 +221,8 @@ if (is_linux || is_chromeos) {
   if (current_cpu == "arm64") {
     if (target_environment == "simulator") {
       rust_abi_target = "aarch64-apple-ios-sim"
+    } else if (target_environment == "catalyst") {
+      rust_abi_target = "aarch64-apple-ios-macabi"
     } else {
       rust_abi_target = "aarch64-apple-ios"
     }
@@ -222,7 +233,11 @@ if (is_linux || is_chromeos) {
     # with Rust, we might want to be more precise here.
     rust_abi_target = "armv7-apple-ios"
   } else if (current_cpu == "x64") {
-    rust_abi_target = "x86_64-apple-ios"
+    if (target_environment == "catalyst") {
+      rust_abi_target = "x86_64-apple-ios-macabi"
+    } else {
+      rust_abi_target = "x86_64-apple-ios"
+    }
   } else if (current_cpu == "x86") {
     rust_abi_target = "i386-apple-ios"
   } else {

@@ -316,6 +316,7 @@ class PolicyWatcherTest : public testing::Test {
 #if BUILDFLAG(IS_CHROMEOS)
     dict.Set(key::kRemoteAccessHostAllowEnterpriseRemoteSupportConnections,
              true);
+    dict.Set(key::kRemoteAccessHostAllowEnterpriseFileTransfer, false);
 #endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
     dict.Set(key::kRemoteAccessHostMatchUsername, false);

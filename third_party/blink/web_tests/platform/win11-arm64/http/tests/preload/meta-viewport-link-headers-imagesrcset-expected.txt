@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Makes sure that Link headers support the imagesrcset and imagesizes attributes and respond to <meta content=viewport> assert_array_equals: expected property 0 to be "300" but got "301" (expected array ["300", "small"] got ["301", "large"])
+Harness: the test ran to completion.
+

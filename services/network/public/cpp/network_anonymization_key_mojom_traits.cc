@@ -10,38 +10,60 @@
 
 namespace mojo {
 
-bool StructTraits<network::mojom::NetworkAnonymizationKeyDataView,
+// static
+bool StructTraits<network::mojom::EmptyNetworkAnonymizationKeyDataView,
                   net::NetworkAnonymizationKey>::
-    Read(network::mojom::NetworkAnonymizationKeyDataView data,
+    Read(network::mojom::EmptyNetworkAnonymizationKeyDataView data,
          net::NetworkAnonymizationKey* out) {
-  absl::optional<net::SchemefulSite> top_frame_site;
+  *out = net::NetworkAnonymizationKey();
+  return true;
+}
 
-  // If we fail to parse sites that we expect to be populated return false.
-  if (!data.ReadTopFrameSite(&top_frame_site)) {
-    return false;
-  }
-
+// static
+bool StructTraits<network::mojom::NonEmptyNetworkAnonymizationKeyDataView,
+                  net::NetworkAnonymizationKey>::
+    Read(network::mojom::NonEmptyNetworkAnonymizationKeyDataView data,
+         net::NetworkAnonymizationKey* out) {
+  net::SchemefulSite top_frame_site;
   // Read is_cross_site boolean flag value.
   bool is_cross_site = data.is_cross_site();
-
-  // Read nonce value.
   absl::optional<base::UnguessableToken> nonce;
-  if (!data.ReadNonce(&nonce)) {
+
+  if (!data.ReadTopFrameSite(&top_frame_site) || !data.ReadNonce(&nonce)) {
     return false;
   }
 
-  // If top_frame_site is not populated, the entire key must be empty.
-  if (!top_frame_site.has_value()) {
-    if (is_cross_site || nonce.has_value()) {
-      return false;
-    }
-    *out = net::NetworkAnonymizationKey();
-  } else {
-    *out = net::NetworkAnonymizationKey::CreateFromParts(top_frame_site.value(),
-                                                         is_cross_site, nonce);
+  *out = net::NetworkAnonymizationKey::CreateFromParts(
+      std::move(top_frame_site), is_cross_site, std::move(nonce));
+  return true;
+}
+
+// static
+bool UnionTraits<network::mojom::NetworkAnonymizationKeyDataView,
+                 net::NetworkAnonymizationKey>::
+    Read(network::mojom::NetworkAnonymizationKeyDataView data,
+         net::NetworkAnonymizationKey* out) {
+  if (data.is_empty()) {
+    return data.ReadEmpty(out);
   }
 
-  return true;
+  if (!data.is_non_empty()) {
+    return false;
+  }
+
+  return data.ReadNonEmpty(out);
+}
+
+// static
+network::mojom::NetworkAnonymizationKeyDataView::Tag UnionTraits<
+    network::mojom::NetworkAnonymizationKeyDataView,
+    net::NetworkAnonymizationKey>::GetTag(const net::NetworkAnonymizationKey&
+                                              network_anonymization_key) {
+  if (network_anonymization_key.IsEmpty()) {
+    return network::mojom::NetworkAnonymizationKeyDataView::Tag::kEmpty;
+  }
+
+  return network::mojom::NetworkAnonymizationKeyDataView::Tag::kNonEmpty;
 }
 
 }  // namespace mojo

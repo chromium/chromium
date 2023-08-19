@@ -45,7 +45,6 @@
 #include "net/socket/socket_performance_watcher.h"
 #include "net/spdy/http2_priority_dependencies.h"
 #include "net/spdy/multiplexed_session.h"
-#include "net/spdy/server_push_delegate.h"
 #include "net/third_party/quiche/src/quiche/quic/core/http/quic_client_push_promise_index.h"
 #include "net/third_party/quiche/src/quiche/quic/core/http/quic_spdy_client_session_base.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_crypto_client_stream.h"
@@ -196,9 +195,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // Wrapper for interacting with the session in a restricted fashion which
   // hides the details of the underlying session's lifetime. All methods of
   // the Handle are safe to use even after the underlying session is destroyed.
-  class NET_EXPORT_PRIVATE Handle
-      : public MultiplexedSessionHandle,
-        public quic::QuicClientPushPromiseIndex::Delegate {
+  class NET_EXPORT_PRIVATE Handle : public MultiplexedSessionHandle {
    public:
     // Constructs a handle to |session| which was created via the alternative
     // server |destination|.
@@ -213,13 +210,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
     // Returns true if the handshake has been confirmed.
     bool OneRttKeysAvailable() const;
 
-    // Starts a request to rendezvous with a promised a stream.  If OK is
-    // returned, then |push_stream_| will be updated with the promised
-    // stream.  If ERR_IO_PENDING is returned, then when the rendezvous is
-    // eventually completed |callback| will be called.
-    int RendezvousWithPromised(const spdy::Http2HeaderBlock& headers,
-                               CompletionOnceCallback callback);
-
     // Starts a request to create a stream.  If OK is returned, then
     // |stream_| will be updated with the newly created stream.  If
     // ERR_IO_PENDING is returned, then when the request is eventuallly
@@ -231,16 +221,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
     // Releases |stream_| to the caller. Returns nullptr if the underlying
     // QuicChromiumClientSession is closed.
     std::unique_ptr<QuicChromiumClientStream::Handle> ReleaseStream();
-
-    // Releases |push_stream_| to the caller.
-    std::unique_ptr<QuicChromiumClientStream::Handle> ReleasePromisedStream();
-
-    // Sends Rst for the stream, and makes sure that future calls to
-    // IsClosedStream(id) return true, which ensures that any subsequent
-    // frames related to this stream will be ignored (modulo flow
-    // control accounting).
-    void ResetPromised(quic::QuicStreamId id,
-                       quic::QuicRstStreamErrorCode error_code);
 
     // Returns a new packet bundler while will cause writes to be batched up
     // until a packet is full, or the last bundler is destroyed.
@@ -267,9 +247,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
     // code.
     int GetSelfAddress(IPEndPoint* address) const;
 
-    // Returns the push promise index associated with the session.
-    quic::QuicClientPushPromiseIndex* GetPushPromiseIndex();
-
     // Returns the session's server ID.
     quic::QuicServerId server_id() const { return server_id_; }
 
@@ -283,12 +260,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
     ConnectionMigrationMode connection_migration_mode() const {
       return session_->connection_migration_mode();
     }
-
-    // quic::QuicClientPushPromiseIndex::Delegate implementation
-    bool CheckVary(const spdy::Http2HeaderBlock& client_request,
-                   const spdy::Http2HeaderBlock& promise_request,
-                   const spdy::Http2HeaderBlock& promise_response) override;
-    void OnRendezvousResult(quic::QuicSpdyStream* stream) override;
 
     // Returns true if the session's connection has sent or received any bytes.
     bool WasEverUsed() const;
@@ -362,17 +333,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
     quic::ParsedQuicVersion quic_version_;
     LoadTimingInfo::ConnectTiming connect_timing_;
     raw_ptr<quic::QuicClientPushPromiseIndex> push_promise_index_;
-
-    // |quic::QuicClientPromisedInfo| owns this. It will be set when |Try()|
-    // is asynchronous, i.e. it returned quic::QUIC_PENDING, and remains valid
-    // until |OnRendezvouResult()| fires or |push_handle_->Cancel()| is
-    // invoked.
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #addr-of
-    RAW_PTR_EXCLUSION quic::QuicClientPushPromiseIndex::TryHandle*
-        push_handle_ = nullptr;
-    CompletionOnceCallback push_callback_;
-    std::unique_ptr<QuicChromiumClientStream::Handle> push_stream_;
 
     bool was_ever_used_ = false;
   };
@@ -623,7 +583,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
       base::TimeTicks dns_resolution_start_time,
       base::TimeTicks dns_resolution_end_time,
       std::unique_ptr<quic::QuicClientPushPromiseIndex> push_promise_index,
-      ServerPushDelegate* push_delegate,
       const base::TickClock* tick_clock,
       base::SequencedTaskRunner* task_runner,
       std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
@@ -910,30 +869,14 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
 
   bool IsAuthorized(const std::string& hostname) override;
 
-  bool HandlePromised(quic::QuicStreamId associated_id,
-                      quic::QuicStreamId promised_id,
-                      const spdy::Http2HeaderBlock& headers) override;
-
-  void DeletePromised(quic::QuicClientPromisedInfo* promised) override;
-
-  void OnPushStreamTimedOut(quic::QuicStreamId stream_id) override;
-
   // Override to validate |server_preferred_address| on a different socket.
   // Migrates to this address on validation succeeds.
   void OnServerPreferredAddressAvailable(
       const quic::QuicSocketAddress& server_preferred_address) override;
 
-  // Cancels the push if the push stream for |url| has not been claimed and is
-  // still active. Otherwise, no-op.
-  void CancelPush(const GURL& url);
-
   const LoadTimingInfo::ConnectTiming& GetConnectTiming();
 
   quic::ParsedQuicVersion GetQuicVersion() const;
-
-  // Looks for a push that matches the provided parameters.
-  quic::QuicClientPromisedInfo* GetPromised(const GURL& url,
-                                            const QuicSessionKey& session_key);
 
   bool require_confirmation() const { return require_confirmation_; }
 
@@ -1143,14 +1086,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   bool port_migration_detected_ = false;
   bool quic_connection_migration_attempted_ = false;
   bool quic_connection_migration_successful_ = false;
-  // Not owned. |push_delegate_| outlives the session and handles server pushes
-  // received by session.
-  raw_ptr<ServerPushDelegate> push_delegate_;
-  // UMA histogram counters for streams pushed to this session.
-  int streams_pushed_count_ = 0;
-  int streams_pushed_and_claimed_count_ = 0;
-  uint64_t bytes_pushed_count_ = 0;
-  uint64_t bytes_pushed_and_unclaimed_count_ = 0;
   // Stores the packet that witnesses socket write error. This packet will be
   // written to an alternate socket when the migration completes and the
   // alternate socket is unblocked.

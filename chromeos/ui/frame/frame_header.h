@@ -129,12 +129,16 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader {
 
   // True to instruct the frame header to paint the header as an active
   // state.
-  void SetPaintAsActive(bool paint_as_active);
+  virtual void SetPaintAsActive(bool paint_as_active);
 
   // Called when frame show state is changed.
   void OnShowStateChanged(ui::WindowShowState show_state);
 
   void OnFloatStateChanged();
+
+  // Set/Get the radius of top-left and top-right corners of the header.
+  int header_corner_radius() const { return corner_radius_; }
+  void SetHeaderCornerRadius(int radius);
 
   void SetLeftHeaderView(views::View* view);
   void SetBackButton(views::FrameCaptionButton* view);
@@ -143,7 +147,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader {
   chromeos::FrameCenterButton* GetCenterButton() const;
   const chromeos::CaptionButtonModel* GetCaptionButtonModel() const;
 
-  // Updates the frame header painting to reflect a change in frame colors.
+  // Updates the frame header painting to reflect a change in frame colors and a
+  // change in mode.
   virtual void UpdateFrameColors() = 0;
 
   // Returns window mask for the rounded corner of the frame header.
@@ -172,7 +177,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader {
   // and to have the same width as |view_|.
   gfx::Rect GetPaintedBounds() const;
 
-  void UpdateCaptionButtonColors();
+  void UpdateCaptionButtonColors(absl::optional<ui::ColorId> icon_color_id);
 
   void PaintTitleBar(gfx::Canvas* canvas);
 
@@ -226,6 +231,9 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader {
 
   // Whether the header should be painted as active.
   Mode mode_ = MODE_INACTIVE;
+
+  // The radius of the top-left and top-right corners of the header.
+  int corner_radius_ = 0;
 
   std::u16string frame_text_override_;
 };

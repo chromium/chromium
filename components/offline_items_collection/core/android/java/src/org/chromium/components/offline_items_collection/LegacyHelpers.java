@@ -17,7 +17,6 @@ public class LegacyHelpers {
     public static final String LEGACY_CONTENT_INDEX_NAMESPACE = "content_index";
     public static final String LEGACY_DOWNLOAD_NAMESPACE = "LEGACY_DOWNLOAD";
     public static final String LEGACY_ANDROID_DOWNLOAD_NAMESPACE = "LEGACY_ANDROID_DOWNLOAD";
-    private static final String LEGACY_DOWNLOAD_NAMESPACE_PREFIX = "LEGACY_DOWNLOAD";
 
     /**
      * Helper to build a {@link ContentId} based on a single GUID for old offline content sources

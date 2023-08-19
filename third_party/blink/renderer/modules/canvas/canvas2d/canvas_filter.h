@@ -13,8 +13,8 @@
 
 namespace blink {
 
-class ExecutionContext;
 class ExceptionState;
+class ScriptState;
 
 // This class stores an unresolved filter on CanvasRenderingContext2DState that
 // has been created from the CanvasFilter javascript object. It will be parsed
@@ -23,7 +23,7 @@ class MODULES_EXPORT CanvasFilter final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static CanvasFilter* Create(ExecutionContext* execution_context,
+  static CanvasFilter* Create(ScriptState* script_state,
                               const V8CanvasFilterInput* init,
                               ExceptionState& exception_state);
 

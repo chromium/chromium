@@ -22,6 +22,7 @@ from .item import (ConformanceCheckerTest,
                    ManualTest,
                    PrintRefTest,
                    RefTest,
+                   SpecItem,
                    SupportFile,
                    TestharnessTest,
                    VisualTest,
@@ -1016,18 +1017,23 @@ class SourceFile:
                 ))
 
         elif self.content_is_ref_node:
-            rv = RefTest.item_type, [
-                RefTest(
+            rv = RefTest.item_type, []
+            for variant in self.test_variants:
+                url = self.rel_url + variant
+                rv[1].append(RefTest(
                     self.tests_root,
                     self.rel_path,
                     self.url_base,
-                    self.rel_url,
-                    references=self.references,
+                    url,
+                    references=[
+                        (ref[0] + variant, ref[1])
+                        for ref in self.references
+                    ],
                     timeout=self.timeout,
                     viewport_size=self.viewport_size,
                     dpi=self.dpi,
                     fuzzy=self.fuzzy
-                )]
+                ))
 
         elif self.content_is_css_visual and not self.name_is_reference:
             rv = VisualTest.item_type, [
@@ -1057,4 +1063,16 @@ class SourceFile:
                     del self.__dict__[prop]
             del self.__dict__["__cached_properties__"]
 
+        return rv
+
+    def manifest_spec_items(self) -> Optional[Tuple[Text, List[ManifestItem]]]:
+        specs = list(self.spec_links)
+        if not specs:
+            return None
+        rv: Tuple[Text, List[ManifestItem]] = (SpecItem.item_type, [
+            SpecItem(
+                self.tests_root,
+                self.rel_path,
+                specs
+            )])
         return rv

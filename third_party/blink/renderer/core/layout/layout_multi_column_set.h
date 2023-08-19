@@ -169,8 +169,6 @@ class CORE_EXPORT LayoutMultiColumnSet final : public LayoutBlockFlow {
     return group.ColumnLogicalHeight() * UsedColumnCount();
   }
 
-  LayoutRect FlowThreadPortionRect() const;
-
   // The used CSS value of column-count, i.e. how many columns there are room
   // for without overflowing.
   unsigned UsedColumnCount() const {
@@ -181,9 +179,9 @@ class CORE_EXPORT LayoutMultiColumnSet final : public LayoutBlockFlow {
   // Find the column that contains the given block offset, and return the
   // translation needed to get from flow thread coordinates to visual
   // coordinates.
-  LayoutSize FlowThreadTranslationAtOffset(LayoutUnit,
-                                           PageBoundaryRule,
-                                           CoordinateSpaceConversion) const;
+  PhysicalOffset FlowThreadTranslationAtOffset(LayoutUnit,
+                                               PageBoundaryRule,
+                                               CoordinateSpaceConversion) const;
 
   LayoutPoint VisualPointToFlowThreadPoint(
       const LayoutPoint& visual_point) const;
@@ -204,17 +202,11 @@ class CORE_EXPORT LayoutMultiColumnSet final : public LayoutBlockFlow {
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
   void UpdateLayout() override;
 
-  MinMaxSizes ComputeIntrinsicLogicalWidths() const final;
-
   void AttachToFlowThread();
   void DetachFromFlowThread();
 
-  // The top of the page nearest to the specified block offset. All in
-  // flowthread coordinates.
-  LayoutUnit PageLogicalTopForOffset(LayoutUnit offset) const;
-
-  LayoutRect FragmentsBoundingBox(
-      const LayoutRect& bounding_box_in_flow_thread) const;
+  PhysicalRect FragmentsBoundingBox(
+      const PhysicalRect& bounding_box_in_flow_thread) const;
 
   LayoutUnit ColumnGap() const;
 
@@ -226,13 +218,13 @@ class CORE_EXPORT LayoutMultiColumnSet final : public LayoutBlockFlow {
     NOT_DESTROYED();
     return "LayoutMultiColumnSet";
   }
-  LayoutPoint Location() const override;
+  LayoutPoint LocationInternal() const override;
 
-  // Sets |columnRuleBounds| to the bounds of each column rule rect's painted
+  // Sets |column_rule_bounds| to the bounds of each column rule rect's painted
   // extent, adjusted by paint offset, before pixel snapping. Returns true if
   // column rules should be painted at all.
-  bool ComputeColumnRuleBounds(const LayoutPoint& paint_offset,
-                               Vector<LayoutRect>& column_rule_bounds) const;
+  bool ComputeColumnRuleBounds(const PhysicalOffset& paint_offset,
+                               Vector<PhysicalRect>& column_rule_bounds) const;
 
   void FinishLayoutFromNG();
 
@@ -248,19 +240,7 @@ class CORE_EXPORT LayoutMultiColumnSet final : public LayoutBlockFlow {
 
   void InsertedIntoTree() final;
   void WillBeRemovedFromTree() final;
-  LayoutSize Size() const override;
-
-  void ComputeLogicalHeight(LayoutUnit logical_height,
-                            LayoutUnit logical_top,
-                            LogicalExtentComputedValues&) const override;
-  PositionWithAffinity PositionForPoint(const PhysicalOffset&) const override;
-
-  void PaintObject(const PaintInfo&,
-                   const PhysicalOffset& paint_offset) const override;
-
-  void ComputeVisualOverflow() final;
-
-  void AddVisualOverflowFromChildren();
+  PhysicalSize Size() const override;
 
   // This function updates frame_location_, frame_size_, and build
   // fragmentainer_groups_.

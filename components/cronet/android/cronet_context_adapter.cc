@@ -244,9 +244,8 @@ static jlong JNI_CronetUrlRequestContext_CreateRequestContextConfig(
 
   std::unique_ptr<URLRequestContextConfig> url_request_context_config =
       URLRequestContextConfig::CreateURLRequestContextConfig(
-          configOptions.quic_enabled(),
-          configOptions.quic_default_user_agent_id(),
-          configOptions.http2_enabled(), configOptions.brotli_enabled(),
+          configOptions.quic_enabled(), configOptions.http2_enabled(),
+          configOptions.brotli_enabled(),
           static_cast<URLRequestContextConfig::HttpCacheType>(
               configOptions.http_cache_mode()),
           configOptions.http_cache_max_size(), configOptions.disable_cache(),

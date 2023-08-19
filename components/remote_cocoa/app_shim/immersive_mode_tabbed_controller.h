@@ -7,7 +7,6 @@
 
 #include "components/remote_cocoa/app_shim/immersive_mode_controller.h"
 
-#include "base/mac/scoped_nsobject.h"
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
 
 @class TabTitlebarViewController;
@@ -17,9 +16,10 @@ namespace remote_cocoa {
 class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeTabbedController
     : public ImmersiveModeController {
  public:
-  explicit ImmersiveModeTabbedController(NSWindow* browser_window,
-                                         NSWindow* overlay_window,
-                                         NSWindow* tab_window);
+  explicit ImmersiveModeTabbedController(
+      NativeWidgetMacNSWindow* browser_window,
+      NativeWidgetMacNSWindow* overlay_window,
+      NativeWidgetMacNSWindow* tab_window);
   ImmersiveModeTabbedController(const ImmersiveModeTabbedController&) = delete;
   ImmersiveModeTabbedController& operator=(
       const ImmersiveModeTabbedController&) = delete;
@@ -51,10 +51,9 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeTabbedController
   // parented to overlay window regardless of the current parent.
   void OrderTabWindowZOrderOnTop();
 
-  NSWindow* const tab_window_;
-  BridgedContentView* tab_content_view_;
-  base::scoped_nsobject<NSTitlebarAccessoryViewController>
-      tab_titlebar_view_controller_;
+  NSWindow* __weak tab_window_;
+  BridgedContentView* __weak tab_content_view_;
+  NSTitlebarAccessoryViewController* __strong tab_titlebar_view_controller_;
 };
 
 }  // namespace remote_cocoa

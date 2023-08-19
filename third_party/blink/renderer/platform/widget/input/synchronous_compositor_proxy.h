@@ -23,10 +23,6 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size_f.h"
 
-namespace power_scheduler {
-class PowerModeVoter;
-}  // namespace power_scheduler
-
 namespace viz {
 class CompositorFrame;
 }  // namespace viz
@@ -131,8 +127,6 @@ class SynchronousCompositorProxy : public blink::SynchronousInputHandler,
   mojo::AssociatedRemote<mojom::blink::SynchronousCompositorHost> host_;
   mojo::AssociatedReceiver<mojom::blink::SynchronousCompositor> receiver_{this};
   bool use_in_process_zero_copy_software_draw_ = false;
-
-  std::unique_ptr<power_scheduler::PowerModeVoter> animation_power_mode_voter_;
 
   const bool viz_frame_submission_enabled_;
 

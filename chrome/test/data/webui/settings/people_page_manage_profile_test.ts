@@ -7,6 +7,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {ManageProfileBrowserProxy, ManageProfileBrowserProxyImpl, ProfileShortcutStatus, SettingsManageProfileElement} from 'chrome://settings/lazy_load.js';
 import {CrToggleElement, loadTimeData, Router, routes, StatusAction} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 // clang-format on
@@ -169,8 +170,24 @@ suite('ManageProfileTests', function() {
   });
 
   // Tests that the theme selector is visible.
-  test('ProfileThemeSelector', function() {
+  test('ProfileThemeSelector', async function() {
+    // cr-customize-themes should be visible and cr-theme-color-picker should
+    // not be visible when ChromeWebuiRefresh2023 is disabled.
+    document.documentElement.toggleAttribute('chrome-refresh-2023', false);
+    manageProfile = createManageProfileElement();
+    await waitAfterNextRender(manageProfile);
+    assertFalse(
+        !!manageProfile.shadowRoot!.querySelector('cr-theme-color-picker'));
     assertTrue(!!manageProfile.shadowRoot!.querySelector('#themeSelector'));
+
+    // cr-customize-themes should not be visible and cr-theme-color-picker
+    // should be visible when ChromeWebuiRefresh2023 is disabled.
+    document.documentElement.toggleAttribute('chrome-refresh-2023', true);
+    manageProfile = createManageProfileElement();
+    await waitAfterNextRender(manageProfile);
+    assertTrue(
+        !!manageProfile.shadowRoot!.querySelector('cr-theme-color-picker'));
+    assertFalse(!!manageProfile.shadowRoot!.querySelector('#themeSelector'));
   });
 
   // Tests profile shortcut toggle is hidden if profile shortcuts feature is

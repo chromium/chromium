@@ -310,11 +310,8 @@ ResourceLoadTiming* PerformanceTiming::GetResourceLoadTiming() const {
   return loader->GetResponse().GetResourceLoadTiming();
 }
 
-std::unique_ptr<TracedValue> PerformanceTiming::GetNavigationTracingData() {
-  auto data = std::make_unique<TracedValue>();
-  data->SetString("navigationId",
-                  IdentifiersFactory::LoaderId(GetDocumentLoader()));
-  return data;
+void PerformanceTiming::WriteInto(perfetto::TracedDictionary& dict) const {
+  dict.Add("navigationId", IdentifiersFactory::LoaderId(GetDocumentLoader()));
 }
 
 // static

@@ -15,7 +15,6 @@
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "ash/public/cpp/locale_update_controller.h"
-#include "ash/public/cpp/system_tray_observer.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shelf/drag_handle.h"
@@ -34,8 +33,10 @@
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/tray/status_area_overflow_button_tray.h"
 #include "ash/system/tray/system_tray_notifier.h"
+#include "ash/system/tray/system_tray_observer.h"
 #include "ash/system/unified/date_tray.h"
 #include "ash/system/unified/unified_system_tray.h"
+#include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/virtual_keyboard/virtual_keyboard_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_ash_web_view_factory.h"
@@ -152,6 +153,27 @@ TEST_F(StatusAreaWidgetTest, HandleOnLocaleChange) {
             dictation_button->layer()->bounds().x());
 
   base::i18n::SetRTLForTesting(false);
+}
+
+TEST_F(StatusAreaWidgetTest, OpenTrayBubble) {
+  Shell::Get()->ime_controller()->ShowImeMenuOnShelf(true);
+
+  StatusAreaWidget* status_area = GetPrimaryShelf()->GetStatusAreaWidget();
+  TrayBackgroundView* ime_menu = status_area->ime_menu_tray();
+  UnifiedSystemTray* system_tray = status_area->unified_system_tray();
+
+  // Clicking on the system tray should set the open tray bubble in
+  // `status_area`.
+  LeftClickOn(system_tray);
+
+  EXPECT_EQ(status_area->open_shelf_pod_bubble(),
+            system_tray->bubble()->GetBubbleView());
+
+  // Clicking on the ime menu should set the open tray bubble in
+  // `status_area`.
+  LeftClickOn(ime_menu);
+
+  EXPECT_EQ(status_area->open_shelf_pod_bubble(), ime_menu->GetBubbleView());
 }
 
 class SystemTrayFocusTestObserver : public SystemTrayObserver {
@@ -484,13 +506,17 @@ class StatusAreaWidgetCollapseStateTest : public AshTestBase {
     return status_area_->collapse_state();
   }
 
-  raw_ptr<StatusAreaWidget, ExperimentalAsh> status_area_;
-  raw_ptr<StatusAreaOverflowButtonTray, ExperimentalAsh> overflow_button_;
-  raw_ptr<TrayBackgroundView, ExperimentalAsh> virtual_keyboard_;
-  raw_ptr<TrayBackgroundView, ExperimentalAsh> ime_menu_;
-  raw_ptr<TrayBackgroundView, ExperimentalAsh> palette_;
-  raw_ptr<TrayBackgroundView, ExperimentalAsh> dictation_button_;
-  raw_ptr<TrayBackgroundView, ExperimentalAsh> select_to_speak_;
+  raw_ptr<StatusAreaWidget, DanglingUntriaged | ExperimentalAsh> status_area_;
+  raw_ptr<StatusAreaOverflowButtonTray, DanglingUntriaged | ExperimentalAsh>
+      overflow_button_;
+  raw_ptr<TrayBackgroundView, DanglingUntriaged | ExperimentalAsh>
+      virtual_keyboard_;
+  raw_ptr<TrayBackgroundView, DanglingUntriaged | ExperimentalAsh> ime_menu_;
+  raw_ptr<TrayBackgroundView, DanglingUntriaged | ExperimentalAsh> palette_;
+  raw_ptr<TrayBackgroundView, DanglingUntriaged | ExperimentalAsh>
+      dictation_button_;
+  raw_ptr<TrayBackgroundView, DanglingUntriaged | ExperimentalAsh>
+      select_to_speak_;
 };
 
 TEST_F(StatusAreaWidgetCollapseStateTest, TrayVisibility) {
@@ -782,6 +808,30 @@ TEST_F(StatusAreaWidgetEcheTest, EcheTrayShowHide) {
 
   // Auto-hidden shelf would not be forced to be visible.
   EXPECT_FALSE(status_area->ShouldShowShelf());
+}
+
+// Tests that `StatusAreaWidget` keep track of its `open_shelf_pod_bubble()`
+// when eche is showing/hiding its bubble.
+TEST_F(StatusAreaWidgetEcheTest, StatusAreaOpenTrayBubble) {
+  StatusAreaWidget* status_area =
+      StatusAreaWidgetTestHelper::GetStatusAreaWidget();
+  auto* eche_tray = status_area->eche_tray();
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(30, 30);
+  gfx::ImageSkia image_skia = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+  image_skia.MakeThreadSafe();
+  eche_tray->LoadBubble(
+      GURL("http://google.com"), gfx::Image(image_skia), u"app 1",
+      u"your phone",
+      eche_app::mojom::ConnectionStatus::kConnectionStatusDisconnected,
+      eche_app::mojom::AppStreamLaunchEntryPoint::APPS_LIST);
+  eche_tray->ShowBubble();
+
+  EXPECT_EQ(eche_tray->GetBubbleView(), status_area->open_shelf_pod_bubble());
+
+  eche_tray->HideBubble();
+
+  EXPECT_EQ(nullptr, status_area->open_shelf_pod_bubble());
 }
 
 }  // namespace ash

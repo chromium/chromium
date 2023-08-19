@@ -16,7 +16,9 @@ namespace ui {
 enum {
   PATH_START = 3000,
 
+#if !BUILDFLAG(IS_IOS)
   DIR_LOCALES,  // Directory where locale resources are stored.
+#endif
 
   // Valid only in development environment; TODO(darin): move this
   UI_DIR_TEST_DATA,  // Directory where unit test data resides.

@@ -34,7 +34,7 @@
 #import <Cocoa/Cocoa.h>
 
 #include "base/apple/bridging.h"
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -58,10 +58,6 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/mac/color_mac.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace blink {
 
@@ -123,12 +119,7 @@ NSAttributedString* AttributedSubstringFromRange(LocalFrame* frame,
 
     NSFont* font = nil;
     if (original_font) {
-      if (@available(macos 10.15, *)) {
-        font = [original_font fontWithSize:desired_size];
-      } else {
-        font = [NSFontManager.sharedFontManager convertFont:original_font
-                                                     toSize:desired_size];
-      }
+      font = [original_font fontWithSize:desired_size];
     }
 
     // If the platform font can't be loaded, or the size is incorrect comparing

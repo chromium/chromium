@@ -21,10 +21,6 @@
 #import "net/test/embedded_test_server/http_response.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 constexpr char kInputPage[] = "Input";
@@ -100,22 +96,10 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kInputElement)];
 
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"P")]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"a")]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"s")]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"s")]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"w")]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"o")]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"r")]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"d")]
-      performAction:grey_tap()];
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"P" flags:UIKeyModifierShift];
+  for (NSString* character in @[ @"a", @"s", @"s", @"w", @"o", @"r", @"d" ]) {
+    [ChromeEarlGrey simulatePhysicalKeyboardEvent:character flags:0];
+  }
 }
 
 // Tests that password protection UI is shown when saved password is reused on

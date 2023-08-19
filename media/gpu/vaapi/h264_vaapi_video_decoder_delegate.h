@@ -70,6 +70,8 @@ class H264VaapiVideoDecoderDelegate : public H264Decoder::H264Accelerator,
   Status SetStream(base::span<const uint8_t> stream,
                    const DecryptConfig* decrypt_config) override;
 
+  bool RequiresRefLists() override;
+
  private:
   void FillVAPicture(VAPictureH264* va_pic, scoped_refptr<H264Picture> pic);
 

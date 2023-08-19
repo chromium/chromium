@@ -137,7 +137,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {
       mojom::ClientSecurityStatePtr client_security_state,
       base::WeakPtr<mojo::Remote<mojom::DevToolsObserver>> devtools_observer,
       const net::NetLogWithSource& net_log,
-      bool acam_preflight_spec_conformant);
+      bool acam_preflight_spec_conformant,
+      mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
+          url_loader_network_service_observer);
 
   // Clears the CORS preflight cache. The time range is always "all time" as
   // the preflight cache max age is capped to 2hrs. in Chrome.

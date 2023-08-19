@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/ui/authentication/signin/add_account_signin/add_account_signin_coordinator.h"
 
+#import "base/strings/sys_string_conversions.h"
+#import "components/prefs/pref_service.h"
+#import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
@@ -22,10 +25,6 @@
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using signin_metrics::AccessPoint;
 using signin_metrics::PromoAction;
@@ -70,7 +69,7 @@ using signin_metrics::PromoAction;
 
 #pragma mark - SigninCoordinator
 
-- (void)interruptWithAction:(SigninCoordinatorInterruptAction)action
+- (void)interruptWithAction:(SigninCoordinatorInterrupt)action
                  completion:(ProceduralBlock)completion {
   if (self.userSigninCoordinator) {
     DCHECK(!self.addAccountSigninManager);
@@ -84,17 +83,8 @@ using signin_metrics::PromoAction;
   }
 
   DCHECK(self.addAccountSigninManager);
-  switch (action) {
-    case SigninCoordinatorInterruptActionNoDismiss:
-    case SigninCoordinatorInterruptActionDismissWithoutAnimation:
-      [self.addAccountSigninManager interruptAddAccountAnimated:NO
-                                                     completion:completion];
-      break;
-    case SigninCoordinatorInterruptActionDismissWithAnimation:
-      [self.addAccountSigninManager interruptAddAccountAnimated:YES
-                                                     completion:completion];
-      break;
-  }
+  [self.addAccountSigninManager interruptWithAction:action
+                                         completion:completion];
 }
 
 #pragma mark - ChromeCoordinator
@@ -104,22 +94,43 @@ using signin_metrics::PromoAction;
   self.accountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
-
   id<SystemIdentityInteractionManager> identityInteractionManager =
       GetApplicationContext()
           ->GetSystemIdentityManager()
           ->CreateInteractionManager();
-
+  PrefService* browserPrefService = self.browser->GetBrowserState()->GetPrefs();
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForBrowserState(
           self.browser->GetBrowserState());
+  CoreAccountInfo primaryAccount =
+      identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  NSString* userEmail = nil;
+  switch (self.signinIntent) {
+    case AddAccountSigninIntent::kPrimaryAccountReauth:
+      DUMP_WILL_BE_CHECK(!primaryAccount.IsEmpty())
+          << base::SysNSStringToUTF8([self description]);
+      userEmail = base::SysUTF8ToNSString(primaryAccount.email);
+      break;
+    case AddAccountSigninIntent::kAddAccount:
+      // The user wants to add a new account, don't pre-fill any email.
+      break;
+    case AddAccountSigninIntent::kSigninAndSyncReauth:
+      DUMP_WILL_BE_CHECK(primaryAccount.IsEmpty())
+          << base::SysNSStringToUTF8([self description]);
+      std::string userEmailString =
+          browserPrefService->GetString(prefs::kGoogleServicesLastUsername);
+      // Note(crbug/1443096): Gracefully handle an empty `userEmailString` by
+      // showing the sign-in screen without a prefilled email.
+      if (!userEmailString.empty()) {
+        userEmail = base::SysUTF8ToNSString(userEmailString);
+      }
+      break;
+  }
   self.addAccountSigninManager = [[AddAccountSigninManager alloc]
       initWithBaseViewController:self.baseViewController
-      identityInteractionManager:identityInteractionManager
-                     prefService:self.browser->GetBrowserState()->GetPrefs()
-                 identityManager:identityManager];
+      identityInteractionManager:identityInteractionManager];
   self.addAccountSigninManager.delegate = self;
-  [self.addAccountSigninManager showSigninWithIntent:self.signinIntent];
+  [self.addAccountSigninManager showSigninWithDefaultUserEmail:userEmail];
 }
 
 - (void)stop {
@@ -189,14 +200,13 @@ using signin_metrics::PromoAction;
             (SigninCoordinatorResult)signinResult
                                       identity:(id<SystemIdentity>)identity {
   switch (self.signinIntent) {
-    case AddAccountSigninIntentReauthPrimaryAccount: {
+    case AddAccountSigninIntent::kSigninAndSyncReauth:
       [self presentUserConsentWithIdentity:identity];
       break;
-    }
-    case AddAccountSigninIntentAddSecondaryAccount: {
+    case AddAccountSigninIntent::kAddAccount:
+    case AddAccountSigninIntent::kPrimaryAccountReauth:
       [self addAccountDoneWithSigninResult:signinResult identity:identity];
       break;
-    }
   }
 }
 
@@ -267,12 +277,14 @@ using signin_metrics::PromoAction;
 
 - (NSString*)description {
   return [NSString
-      stringWithFormat:@"<%@: %p, signinIntent: %lu, accessPoint: %d, "
+      stringWithFormat:@"<%@: %p, signinIntent: %d, accessPoint: %d, "
                        @"userSigninCoordinator: %p, addAccountSigninManager: "
                        @"%p, alertCoordinator: %p>",
-                       self.class.description, self, self.signinIntent,
-                       self.accessPoint, self.userSigninCoordinator,
-                       self.addAccountSigninManager, self.alertCoordinator];
+                       self.class.description, self,
+                       static_cast<int>(self.signinIntent),
+                       static_cast<int>(self.accessPoint),
+                       self.userSigninCoordinator, self.addAccountSigninManager,
+                       self.alertCoordinator];
 }
 
 @end

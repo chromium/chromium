@@ -5,8 +5,11 @@
 #include "chrome/common/profiler/thread_profiler_platform_configuration.h"
 
 #include "base/command_line.h"
+#include "base/containers/flat_map.h"
+#include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "base/profiler/stack_sampling_profiler.h"
+#include "base/rand_util.h"
 #include "build/build_config.h"
 #include "chrome/common/profiler/process_type.h"
 
@@ -22,12 +25,16 @@ class DefaultPlatformConfiguration
   RelativePopulations GetEnableRates(
       absl::optional<version_info::Channel> release_channel) const override;
 
-  double GetChildProcessEnableFraction(
+  double GetChildProcessPerExecutionEnableFraction(
       metrics::CallStackProfileParams::Process process) const override;
+
+  absl::optional<metrics::CallStackProfileParams::Process>
+  ChooseEnabledProcess() const override;
 
   bool IsEnabledForThread(
       metrics::CallStackProfileParams::Process process,
-      metrics::CallStackProfileParams::Thread thread) const override;
+      metrics::CallStackProfileParams::Thread thread,
+      absl::optional<version_info::Channel> release_channel) const override;
 
  protected:
   bool IsSupportedForChannel(
@@ -67,7 +74,7 @@ DefaultPlatformConfiguration::GetEnableRates(
   return RelativePopulations{80, 20};
 }
 
-double DefaultPlatformConfiguration::GetChildProcessEnableFraction(
+double DefaultPlatformConfiguration::GetChildProcessPerExecutionEnableFraction(
     metrics::CallStackProfileParams::Process process) const {
   DCHECK_NE(metrics::CallStackProfileParams::Process::kBrowser, process);
 
@@ -91,9 +98,16 @@ double DefaultPlatformConfiguration::GetChildProcessEnableFraction(
   }
 }
 
+absl::optional<metrics::CallStackProfileParams::Process>
+DefaultPlatformConfiguration::ChooseEnabledProcess() const {
+  // Ignore the setting, sampling more than one process.
+  return absl::nullopt;
+}
+
 bool DefaultPlatformConfiguration::IsEnabledForThread(
     metrics::CallStackProfileParams::Process process,
-    metrics::CallStackProfileParams::Thread thread) const {
+    metrics::CallStackProfileParams::Thread thread,
+    absl::optional<version_info::Channel> release_channel) const {
   // Enable for all supported threads.
   return true;
 }
@@ -125,18 +139,55 @@ bool DefaultPlatformConfiguration::IsSupportedForChannel(
 // differ from the default case.
 class AndroidPlatformConfiguration : public DefaultPlatformConfiguration {
  public:
-  explicit AndroidPlatformConfiguration(bool browser_test_mode_enabled);
+  explicit AndroidPlatformConfiguration(
+      bool browser_test_mode_enabled,
+      base::RepeatingCallback<bool(double)> is_enabled_on_dev_callback);
 
   RelativePopulations GetEnableRates(
       absl::optional<version_info::Channel> release_channel) const override;
 
-  double GetChildProcessEnableFraction(
+  double GetChildProcessPerExecutionEnableFraction(
       metrics::CallStackProfileParams::Process process) const override;
+
+  absl::optional<metrics::CallStackProfileParams::Process>
+  ChooseEnabledProcess() const override;
+
+  bool IsEnabledForThread(
+      metrics::CallStackProfileParams::Process process,
+      metrics::CallStackProfileParams::Thread thread,
+      absl::optional<version_info::Channel> release_channel) const override;
+
+ private:
+  // Whether profiling is enabled on a thread type for Android DEV channel.
+  const base::flat_map<metrics::CallStackProfileParams::Thread, bool>
+      thread_enabled_on_dev_;
 };
 
 AndroidPlatformConfiguration::AndroidPlatformConfiguration(
-    bool browser_test_mode_enabled)
-    : DefaultPlatformConfiguration(browser_test_mode_enabled) {}
+    bool browser_test_mode_enabled,
+    base::RepeatingCallback<bool(double)> is_enabled_on_dev_callback)
+    : DefaultPlatformConfiguration(browser_test_mode_enabled),
+      thread_enabled_on_dev_(
+          base::MakeFlatMap<metrics::CallStackProfileParams::Thread, bool>(
+              []() {
+                std::vector<metrics::CallStackProfileParams::Thread> threads;
+                for (int i = 0;
+                     i <= static_cast<int>(
+                              metrics::CallStackProfileParams::Thread::kMax);
+                     ++i) {
+                  threads.push_back(
+                      static_cast<metrics::CallStackProfileParams::Thread>(i));
+                }
+                return threads;
+              }(),
+              {},
+              [&](metrics::CallStackProfileParams::Thread thread) {
+                // Only enable 25% of threads on Dev channel as analysis
+                // shows 25% thread enable rate will give us sufficient
+                // resolution (100us).
+                return std::make_pair(thread,
+                                      is_enabled_on_dev_callback.Run(0.25));
+              })) {}
 
 ThreadProfilerPlatformConfiguration::RelativePopulations
 AndroidPlatformConfiguration::GetEnableRates(
@@ -148,38 +199,91 @@ AndroidPlatformConfiguration::GetEnableRates(
 
   DCHECK(*release_channel == version_info::Channel::CANARY ||
          *release_channel == version_info::Channel::DEV);
-  // TODO(crbug.com/1430519): Change the relative population to {80, 20} after
-  // the DAU shift has been mitigated.
-  // Set all the population in experiment group. Because we have 3 experiment
-  // groups, set population of experiment group to 99, the largest integer
-  // < 100 and divisible by 3.
-  return RelativePopulations{1, 99, /* add_periodic_only_group=*/true};
+
+  // For 80% of population always enable profiling.
+  // For 20% of population
+  // - 50% within the subgroup, i.e. 10% of total population, enable profiling.
+  // - 50% within the subgroup, disable profiling.
+  // This results a total of 90% enable rate.
+  return RelativePopulations{80, 20};
 }
 
-double AndroidPlatformConfiguration::GetChildProcessEnableFraction(
+double AndroidPlatformConfiguration::GetChildProcessPerExecutionEnableFraction(
     metrics::CallStackProfileParams::Process process) const {
-  if (process == metrics::CallStackProfileParams::Process::kRenderer) {
-    // There are empirically, on average, 1.3 renderer processes per browser
-    // process. This samples the renderer process at roughly the same
-    // frequency overall as the browser process.
-    // http://uma/p/chrome/timeline_v2?sid=39bc30a43a01d045204d0add05ad120a
-    return browser_test_mode_enabled() ? 1.0 : 0.75;
-  }
-  return DefaultPlatformConfiguration::GetChildProcessEnableFraction(process);
+  // Unconditionally profile child processes that match ChooseEnabledProcess().
+  return 1.0;
 }
+
+absl::optional<metrics::CallStackProfileParams::Process>
+AndroidPlatformConfiguration::ChooseEnabledProcess() const {
+  // Weights are set such that we will receive similar amount of data from
+  // each process type. The value is calculated based on Canary/Dev channel
+  // data collected when all process are sampled.
+  const struct {
+    metrics::CallStackProfileParams::Process process;
+    int weight;
+  } process_enable_weights[] = {
+      {metrics::CallStackProfileParams::Process::kBrowser, 50},
+      {metrics::CallStackProfileParams::Process::kGpu, 40},
+      {metrics::CallStackProfileParams::Process::kRenderer, 10},
+  };
+
+  int total_weight = 0;
+  for (const auto& process_enable_weight : process_enable_weights) {
+    total_weight += process_enable_weight.weight;
+  }
+  DCHECK_EQ(100, total_weight);
+
+  int chosen = base::RandInt(0, total_weight - 1);  // Max is inclusive.
+  int cumulative_weight = 0;
+  for (const auto& process_enable_weight : process_enable_weights) {
+    if (chosen >= cumulative_weight &&
+        chosen < cumulative_weight + process_enable_weight.weight) {
+      return process_enable_weight.process;
+    }
+    cumulative_weight += process_enable_weight.weight;
+  }
+  NOTREACHED();
+  return absl::nullopt;
+}
+
+bool AndroidPlatformConfiguration::IsEnabledForThread(
+    metrics::CallStackProfileParams::Process process,
+    metrics::CallStackProfileParams::Thread thread,
+    absl::optional<version_info::Channel> release_channel) const {
+  if (!release_channel.has_value() || browser_test_mode_enabled()) {
+    return true;
+  }
+
+  switch (*release_channel) {
+    case version_info::Channel::DEV: {
+      const auto entry = thread_enabled_on_dev_.find(thread);
+      CHECK(entry != thread_enabled_on_dev_.end());
+      return entry->second;
+    }
+    case version_info::Channel::CANARY:
+      return true;
+    default:
+      return false;
+  }
+}
+
 #endif  // BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL)
 
 }  // namespace
 
 // static
 std::unique_ptr<ThreadProfilerPlatformConfiguration>
-ThreadProfilerPlatformConfiguration::Create(bool browser_test_mode_enabled) {
+ThreadProfilerPlatformConfiguration::Create(
+    bool browser_test_mode_enabled,
+    base::RepeatingCallback<bool(double)> is_enabled_on_dev_callback) {
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL)
-  using PlatformConfiguration = AndroidPlatformConfiguration;
+  return std::make_unique<AndroidPlatformConfiguration>(
+      browser_test_mode_enabled, is_enabled_on_dev_callback);
 #else
-  using PlatformConfiguration = DefaultPlatformConfiguration;
+  return std::make_unique<DefaultPlatformConfiguration>(
+      browser_test_mode_enabled);
 #endif
-  return std::make_unique<PlatformConfiguration>(browser_test_mode_enabled);
 }
 
 bool ThreadProfilerPlatformConfiguration::IsSupported(
@@ -194,4 +298,12 @@ bool ThreadProfilerPlatformConfiguration::IsSupported(
   return base::StackSamplingProfiler::IsSupportedForCurrentPlatform() &&
          IsSupportedForChannel(release_channel);
 #endif
+}
+
+// static
+bool ThreadProfilerPlatformConfiguration::IsEnabled(
+    double enabled_probability) {
+  DCHECK_GE(enabled_probability, 0.0);
+  DCHECK_LE(enabled_probability, 1.0);
+  return base::RandDouble() < enabled_probability;
 }

@@ -28,10 +28,6 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "third_party/abseil-cpp/absl/types/optional.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using promos_manager::Promo;
 
 namespace {
@@ -52,13 +48,19 @@ void ConditionallyAppendPromoToPrefList(promos_manager::Promo promo,
 
   ScopedListPrefUpdate update(local_state, pref_path);
 
-  base::StringPiece promo_name = promos_manager::NameForPromo(promo);
+  std::string promo_name = promos_manager::NameForPromo(promo);
 
   // Erase `promo_name` if it already exists in `active_promos`; avoid polluting
   // `active_promos` with duplicate `promo_name` entries.
   update->EraseValue(base::Value(promo_name));
 
   update->Append(promo_name);
+}
+
+// Returns true if the first impression is more recent and false otherwise.
+bool CompareImpressions(promos_manager::Impression impression1,
+                        promos_manager::Impression impression2) {
+  return impression1.day > impression2.day;
 }
 
 }  // namespace
@@ -86,6 +88,14 @@ PromosManagerImpl::PromosManagerImpl(PrefService* local_state,
 
 PromosManagerImpl::~PromosManagerImpl() = default;
 
+void PromosManagerImpl::RefreshImpressionHistoryFromPrefs() {
+  impression_history_ = ImpressionHistory(
+      local_state_->GetList(prefs::kIosPromosManagerImpressions));
+  // Sort impressions from most recent to least recent.
+  std::sort(impression_history_.begin(), impression_history_.end(),
+            CompareImpressions);
+}
+
 #pragma mark - Public
 
 void PromosManagerImpl::Init() {
@@ -97,9 +107,7 @@ void PromosManagerImpl::Init() {
       local_state_->GetList(prefs::kIosPromosManagerSingleDisplayActivePromos));
 
   InitializePendingPromos();
-
-  impression_history_ = ImpressionHistory(
-      local_state_->GetList(prefs::kIosPromosManagerImpressions));
+  RefreshImpressionHistoryFromPrefs();
 }
 
 // Impression history should grow in sorted order. Given this happens on the
@@ -121,8 +129,7 @@ void PromosManagerImpl::RecordImpression(promos_manager::Promo promo) {
 
   update->Append(std::move(impression));
 
-  impression_history_ = ImpressionHistory(
-      local_state_->GetList(prefs::kIosPromosManagerImpressions));
+  RefreshImpressionHistoryFromPrefs();
 
   // Auto-deregister `promo`.
   // Edge case: Possible to remove two instances of promo in
@@ -139,8 +146,7 @@ void PromosManagerImpl::OnFeatureEngagementTrackerInitialized(bool success) {
   if (success) {
     // Loading the tracker may cause event migration to take place, so re-load
     // the impressions in case they have changed.
-    impression_history_ = ImpressionHistory(
-        local_state_->GetList(prefs::kIosPromosManagerImpressions));
+    RefreshImpressionHistoryFromPrefs();
   }
 }
 
@@ -170,7 +176,7 @@ void PromosManagerImpl::RegisterPromoForSingleDisplay(
   // update the pending promos saved in pref.
   ScopedDictPrefUpdate pending_promos_update(
       local_state_, prefs::kIosPromosManagerSingleDisplayPendingPromos);
-  base::StringPiece promo_name = promos_manager::NameForPromo(promo);
+  std::string promo_name = promos_manager::NameForPromo(promo);
   base::Time becomes_active_time = clock_->Now() + becomes_active_after_period;
   pending_promos_update->Set(promo_name,
                              base::TimeToValue(becomes_active_time));
@@ -190,7 +196,7 @@ void PromosManagerImpl::DeregisterPromo(promos_manager::Promo promo) {
   ScopedDictPrefUpdate pending_promos_update(
       local_state_, prefs::kIosPromosManagerSingleDisplayPendingPromos);
 
-  base::StringPiece promo_name = promos_manager::NameForPromo(promo);
+  std::string promo_name = promos_manager::NameForPromo(promo);
 
   // Erase `promo_name` from the single-display and continuous-display active
   // promos lists.
@@ -440,8 +446,6 @@ bool PromosManagerImpl::CanShowPromo(
 
     int window_days = window_start - curr_day;
     int promo_impression_count = promo_impression_counts[promo];
-    int most_seen_promo_impression_count =
-        MaxImpressionCount(promo_impression_counts);
     int total_impression_count = TotalImpressionCount(promo_impression_counts);
 
     if (AnyImpressionLimitTriggered(promo_impression_count, window_days,
@@ -454,8 +458,7 @@ bool PromosManagerImpl::CanShowPromo(
       return false;
     }
 
-    if (AnyImpressionLimitTriggered(most_seen_promo_impression_count,
-                                    window_days,
+    if (AnyImpressionLimitTriggered(promo_impression_count, window_days,
                                     global_per_promo_impression_limits)) {
       base::UmaHistogramEnumeration(
           "IOS.PromosManager.Promo.ImpressionLimitEvaluation",
@@ -508,17 +511,6 @@ std::vector<int> PromosManagerImpl::ImpressionCounts(
   return counts;
 }
 
-int PromosManagerImpl::MaxImpressionCount(
-    std::map<promos_manager::Promo, int>& promo_impression_counts) const {
-  std::vector<int> counts = ImpressionCounts(promo_impression_counts);
-  std::vector<int>::iterator max_count_iter =
-      std::max_element(counts.begin(), counts.end());
-  size_t index = std::distance(counts.begin(), max_count_iter);
-  if (index < counts.size())
-    return counts[index];
-  return 0;
-}
-
 int PromosManagerImpl::TotalImpressionCount(
     std::map<promos_manager::Promo, int>& promo_impression_counts) const {
   std::vector<int> counts = ImpressionCounts(promo_impression_counts);
@@ -548,7 +540,21 @@ std::vector<promos_manager::Promo> PromosManagerImpl::SortPromos(
   auto compare_promo = [&impression_history](
                            std::pair<promos_manager::Promo, PromoContext> lhs,
                            std::pair<promos_manager::Promo, PromoContext> rhs) {
-    // PostRestoreSignIn types are to be displayed first.
+    // Choice types are to be displayed first.
+    if (lhs.first == Promo::Choice) {
+      return true;
+    }
+    if (rhs.first == Promo::Choice) {
+      return false;
+    }
+    // PostRestoreDefaultBrowser comes next.
+    if (lhs.first == Promo::PostRestoreDefaultBrowserAlert) {
+      return true;
+    }
+    if (rhs.first == Promo::PostRestoreDefaultBrowserAlert) {
+      return false;
+    }
+    // PostRestoreSignIn types come next.
     if (lhs.first == Promo::PostRestoreSignInFullscreen ||
         lhs.first == Promo::PostRestoreSignInAlert) {
       return true;

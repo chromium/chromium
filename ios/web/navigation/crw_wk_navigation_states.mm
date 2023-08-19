@@ -11,10 +11,6 @@
 #import "ios/web/navigation/navigation_context_impl.h"
 #import "ios/web/public/web_client.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Holds a pair of state and creation order index.
 @interface CRWWKNavigationsStateRecord : NSObject {
   // Backs up `context` property.
@@ -55,7 +51,8 @@
 #ifndef NDEBUG
 - (NSString*)description {
   return [NSString stringWithFormat:@"state: %d, index: %ld, context: %@",
-                                    _state, static_cast<long>(_index),
+                                    static_cast<int>(_state),
+                                    static_cast<long>(_index),
                                     _context->GetDescription()];
 }
 #endif  // NDEBUG

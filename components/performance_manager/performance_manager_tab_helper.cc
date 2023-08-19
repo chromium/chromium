@@ -480,6 +480,22 @@ void PerformanceManagerTabHelper::DidUpdateFaviconURL(
                                 base::Unretained(primary_page_node())));
 }
 
+void PerformanceManagerTabHelper::OnWebContentsFocused(
+    content::RenderWidgetHost* render_widget_host) {
+  PerformanceManagerImpl::CallOnGraphImpl(
+      FROM_HERE, base::BindOnce(&PageNodeImpl::SetIsFocused,
+                                base::Unretained(primary_page_node()),
+                                /*is_focused=*/true));
+}
+
+void PerformanceManagerTabHelper::OnWebContentsLostFocus(
+    content::RenderWidgetHost* render_widget_host) {
+  PerformanceManagerImpl::CallOnGraphImpl(
+      FROM_HERE, base::BindOnce(&PageNodeImpl::SetIsFocused,
+                                base::Unretained(primary_page_node()),
+                                /*is_focused=*/false));
+}
+
 void PerformanceManagerTabHelper::AboutToBeDiscarded(
     content::WebContents* new_contents) {
   DCHECK(primary_page_);

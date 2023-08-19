@@ -34,9 +34,10 @@ using ::testing::ElementsAre;
 
 namespace {
 
-constexpr gfx::Size kUSLetterSize = {612, 792};
-constexpr gfx::Rect kUSLetterRect = {{0, 0}, kUSLetterSize};
-constexpr gfx::Rect kPrintableAreaRect = {{18, 18}, {576, 733}};
+// blink::WebPrintParams takes values in CSS pixels, not points.
+constexpr gfx::SizeF kUSLetterSize = {816, 1056};
+constexpr gfx::RectF kUSLetterRect = {{0, 0}, kUSLetterSize};
+constexpr gfx::RectF kPrintableAreaRect = {{24, 24}, {768, 977.33333}};
 
 using ExpectedDimensions = std::vector<gfx::SizeF>;
 
@@ -53,9 +54,9 @@ base::FilePath GetReferenceFilePath(base::StringPiece test_filename) {
 
 blink::WebPrintParams GetDefaultPrintParams() {
   blink::WebPrintParams params;
-  params.print_content_area = kUSLetterRect;
-  params.printable_area = kUSLetterRect;
-  params.paper_size = kUSLetterSize;
+  params.print_content_area_in_css_pixels = kUSLetterRect;
+  params.printable_area_in_css_pixels = kUSLetterRect;
+  params.paper_size_in_css_pixels = kUSLetterSize;
   params.print_scaling_option = printing::mojom::PrintScalingOption::kNone;
   return params;
 }
@@ -168,7 +169,7 @@ TEST_P(PDFiumPrintTest, AlterScalingDefault) {
   const std::vector<int> pages = {0};
 
   blink::WebPrintParams print_params = GetDefaultPrintParams();
-  print_params.printable_area = kPrintableAreaRect;
+  print_params.printable_area_in_css_pixels = kPrintableAreaRect;
   std::vector<uint8_t> pdf_data = print.PrintPagesAsPdf(pages, print_params);
   CheckPdfDimensions(pdf_data, kExpectedDimensions);
   CheckPdfRendering(
@@ -196,7 +197,7 @@ TEST_P(PDFiumPrintTest, AlterScalingFitPaper) {
   const std::vector<int> pages = {0};
 
   blink::WebPrintParams print_params = GetDefaultPrintParams();
-  print_params.printable_area = kPrintableAreaRect;
+  print_params.printable_area_in_css_pixels = kPrintableAreaRect;
   print_params.print_scaling_option =
       printing::mojom::PrintScalingOption::kFitToPaper;
   std::vector<uint8_t> pdf_data = print.PrintPagesAsPdf(pages, print_params);
@@ -226,7 +227,7 @@ TEST_P(PDFiumPrintTest, AlterScalingFitPrintable) {
   const std::vector<int> pages = {0};
 
   blink::WebPrintParams print_params = GetDefaultPrintParams();
-  print_params.printable_area = kPrintableAreaRect;
+  print_params.printable_area_in_css_pixels = kPrintableAreaRect;
   print_params.print_scaling_option =
       printing::mojom::PrintScalingOption::kFitToPrintableArea;
   std::vector<uint8_t> pdf_data = print.PrintPagesAsPdf(pages, print_params);

@@ -8,7 +8,6 @@ import './google_photos_photos_by_album_id_element.js';
 import './google_photos_photos_element.js';
 import './google_photos_zero_state_element.js';
 import './local_images_element.js';
-import './time_of_day_wallpaper_dialog_element.js';
 import './wallpaper_grid_item_element.js';
 import './wallpaper_collections_element.js';
 import './wallpaper_error_element.js';

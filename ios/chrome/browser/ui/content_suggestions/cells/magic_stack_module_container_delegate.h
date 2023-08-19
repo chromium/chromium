@@ -14,6 +14,14 @@ enum class ContentSuggestionsModuleType;
 // Stack.
 - (BOOL)doesMagicStackShowOnlyOneModule:(ContentSuggestionsModuleType)type;
 
+// Indicates to the receiver that the "See More" button was tapped in the
+// module.
+- (void)seeMoreWasTappedForModuleType:(ContentSuggestionsModuleType)type;
+
+// Indicates to the receiver that the module of `type` should be never shown
+// anymore.
+- (void)neverShowModuleType:(ContentSuggestionsModuleType)type;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CELLS_MAGIC_STACK_MODULE_CONTAINER_DELEGATE_H_

@@ -67,17 +67,17 @@ void InheritClientPriorityVoter::OnBeforeFrameNodeRemoved(
 void InheritClientPriorityVoter::OnPriorityAndReasonChanged(
     const FrameNode* frame_node,
     const PriorityAndReason& previous_value) {
+  if (frame_node->GetPriorityAndReason().priority() ==
+      previous_value.priority()) {
+    // The priority is the same, meaning only the reason changed. Ignore.
+    return;
+  }
+
   // The priority of a frame changed. All its children must inherit the new
   // priority.
 
   auto it = voting_channels_.find(GetExecutionContext(frame_node));
-
-  // Unknown |frame_node|. Just ignore it until we get notified of its existence
-  // via OnFrameNodeAdded(). This can happen because another voter received the
-  // OnFrameNodeAdded() call first and thus was able to change its priority very
-  // early.
-  if (it == voting_channels_.end())
-    return;
+  DCHECK(it != voting_channels_.end());
 
   auto& voting_channel = it->second;
 
@@ -173,16 +173,17 @@ void InheritClientPriorityVoter::OnBeforeClientWorkerRemoved(
 void InheritClientPriorityVoter::OnPriorityAndReasonChanged(
     const WorkerNode* worker_node,
     const PriorityAndReason& previous_value) {
+  if (worker_node->GetPriorityAndReason().priority() ==
+      previous_value.priority()) {
+    // The priority is the same, meaning only the reason changed. Ignore.
+    return;
+  }
+
   // The priority of a worker changed. All its children must inherit the new
   // priority.
 
   auto it = voting_channels_.find(GetExecutionContext(worker_node));
-
-  // Unknown |worker_node|. Just ignore it until we get notified of its
-  // existence via OnWorkerNodeAdded().
-  if (it == voting_channels_.end())
-    return;
-
+  DCHECK(it != voting_channels_.end());
   auto& voting_channel = it->second;
 
   const Vote inherited_vote(worker_node->GetPriorityAndReason().priority(),

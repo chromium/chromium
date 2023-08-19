@@ -5,15 +5,12 @@
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_web_state_list_observer.h"
 
 #import "base/check_op.h"
+#import "base/containers/contains.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_content_adjustment_util.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_model.h"
 #import "ios/web/public/web_state.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 FullscreenWebStateListObserver::FullscreenWebStateListObserver(
     FullscreenController* controller,
@@ -58,57 +55,74 @@ void FullscreenWebStateListObserver::Disconnect() {
   SetWebStateList(nullptr);
 }
 
-void FullscreenWebStateListObserver::WebStateInsertedAt(
-    WebStateList* web_state_list,
-    web::WebState* web_state,
-    int index,
-    bool activating) {
-  DCHECK_EQ(web_state_list_, web_state_list);
-  if (activating)
-    controller_->ExitFullscreen();
-}
+#pragma mark - WebStateListObserver
 
-void FullscreenWebStateListObserver::WebStateReplacedAt(
+void FullscreenWebStateListObserver::WebStateListWillChange(
     WebStateList* web_state_list,
-    web::WebState* old_web_state,
-    web::WebState* new_web_state,
-    int index) {
-  WebStateWasRemoved(old_web_state);
-  if (new_web_state == web_state_list->GetActiveWebState()) {
-    // Reset the model if the active WebState is replaced.
-    model_->ResetForNavigation();
-    WebStateWasActivated(new_web_state);
+    const WebStateListChangeDetach& detach_change,
+    const WebStateListStatus& status) {
+  if (!detach_change.is_closing()) {
+    return;
   }
+
+  WebStateWasRemoved(detach_change.detached_web_state());
 }
 
-void FullscreenWebStateListObserver::WebStateActivatedAt(
+void FullscreenWebStateListObserver::WebStateListDidChange(
     WebStateList* web_state_list,
-    web::WebState* old_web_state,
-    web::WebState* new_web_state,
-    int active_index,
-    ActiveWebStateChangeReason reason) {
-  WebStateWasActivated(new_web_state);
-}
+    const WebStateListChange& change,
+    const WebStateListStatus& status) {
+  switch (change.type()) {
+    case WebStateListChange::Type::kStatusOnly:
+      // The activation is handled after this switch statement.
+      break;
+    case WebStateListChange::Type::kDetach: {
+      const WebStateListChangeDetach& detach_change =
+          change.As<WebStateListChangeDetach>();
+      WebStateWasRemoved(detach_change.detached_web_state());
+      break;
+    }
+    case WebStateListChange::Type::kMove:
+      // Do nothing when a WebState is moved.
+      break;
+    case WebStateListChange::Type::kReplace: {
+      const WebStateListChangeReplace& replace_change =
+          change.As<WebStateListChangeReplace>();
+      WebStateWasRemoved(replace_change.replaced_web_state());
+      web::WebState* inserted_web_state = replace_change.inserted_web_state();
+      if (inserted_web_state == web_state_list->GetActiveWebState()) {
+        // Reset the model if the active WebState is replaced.
+        model_->ResetForNavigation();
+        WebStateWasActivated(inserted_web_state);
+      }
+      break;
+    }
+    case WebStateListChange::Type::kInsert: {
+      DCHECK_EQ(web_state_list_, web_state_list);
+      if (status.active_web_state_change()) {
+        controller_->ExitFullscreen();
+      }
+      break;
+    }
+  }
 
-void FullscreenWebStateListObserver::WebStateDetachedAt(
-    WebStateList* web_state_list,
-    web::WebState* web_state,
-    int index) {
-  WebStateWasRemoved(web_state);
-}
-
-void FullscreenWebStateListObserver::WillCloseWebStateAt(
-    WebStateList* web_state_list,
-    web::WebState* web_state,
-    int index,
-    bool user_action) {
-  WebStateWasRemoved(web_state);
+  if (status.active_web_state_change()) {
+    WebStateWasActivated(status.new_active_web_state);
+  }
 }
 
 void FullscreenWebStateListObserver::WebStateWasActivated(
     web::WebState* web_state) {
   web_state_observer_.SetWebState(web_state);
-  if (web_state && !HasWebStateBeenActivated(web_state)) {
+  if (!web_state) {
+    return;
+  }
+  if (!web_state->IsRealized() || !web_state->GetWebViewProxy()) {
+    // TODO(crbug.com/1473942): This should not be reached. Investigate when/why
+    // an active WebState doesn't have WebViewProxy.
+    return;
+  }
+  if (!HasWebStateBeenActivated(web_state)) {
     MoveContentBelowHeader(web_state->GetWebViewProxy(), model_);
     activated_web_states_.insert(web_state);
   }
@@ -116,11 +130,12 @@ void FullscreenWebStateListObserver::WebStateWasActivated(
 
 void FullscreenWebStateListObserver::WebStateWasRemoved(
     web::WebState* web_state) {
-  if (HasWebStateBeenActivated(web_state))
+  if (HasWebStateBeenActivated(web_state)) {
     activated_web_states_.erase(web_state);
+  }
 }
 
 bool FullscreenWebStateListObserver::HasWebStateBeenActivated(
     web::WebState* web_state) {
-  return activated_web_states_.find(web_state) != activated_web_states_.end();
+  return base::Contains(activated_web_states_, web_state);
 }

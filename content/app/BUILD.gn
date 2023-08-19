@@ -75,7 +75,6 @@ source_set("content_main_runner_app") {
   deps = content_app_deps + [
            "//components/optimization_guide:machine_learning_tflite_buildflags",
            "//components/power_monitor",
-           "//components/power_scheduler",
            "//content/browser",
            "//content/gpu:gpu_sources",
            "//content/public/browser:browser_sources",
@@ -92,9 +91,6 @@ source_set("content_main_runner_app") {
       "//chromeos/startup",
       "//chromeos/startup:constants",
     ]
-  }
-  if (is_chromeos_ash) {
-    deps += [ "//chromeos/startup:constants" ]
   }
   if (build_tflite_with_xnnpack) {
     deps += [ "//third_party/cpuinfo" ]
@@ -148,7 +144,6 @@ source_set("app") {
       "mac_init.mm",
     ]
 
-    configs += [ "//build/config/compiler:enable_arc" ]
     frameworks = [ "Foundation.framework" ]
   }
 }

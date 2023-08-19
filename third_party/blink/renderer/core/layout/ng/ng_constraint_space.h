@@ -28,7 +28,6 @@
 
 namespace blink {
 
-class LayoutBlock;
 class NGConstraintSpaceBuilder;
 
 enum NGFragmentationType {
@@ -165,11 +164,6 @@ class CORE_EXPORT NGConstraintSpace final {
     if (HasRareData())
       delete rare_data_;
   }
-
-  // Creates NGConstraintSpace representing LayoutObject's containing block.
-  // This should live on NGBlockNode or another layout bridge and probably take
-  // a root NGConstraintSpace.
-  static NGConstraintSpace CreateFromLayoutObject(const LayoutBlock&);
 
   const NGExclusionSpace& ExclusionSpace() const { return exclusion_space_; }
 

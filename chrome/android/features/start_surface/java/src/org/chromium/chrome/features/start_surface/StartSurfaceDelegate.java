@@ -16,6 +16,7 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.back_press.BackPressManager;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
@@ -60,6 +61,8 @@ public class StartSurfaceDelegate {
      * @param context The current Android's context.
      * @param updateHost The parent {@link LayoutUpdateHost}.
      * @param renderHost The parent {@link LayoutRenderHost}.
+     * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} of the top
+     *         controls.
      * @param startSurface The {@link StartSurface} the layout should own.
      * @param tabSwitcherScrimAnchor {@link ViewGroup} used by tab switcher layout to show scrim
      *         when overview is visible.
@@ -67,10 +70,12 @@ public class StartSurfaceDelegate {
      * @return The {@link TabSwitcherAndStartSurfaceLayout}.
      */
     public static Layout createTabSwitcherAndStartSurfaceLayout(Context context,
-            LayoutUpdateHost updateHost, LayoutRenderHost renderHost, StartSurface startSurface,
+            LayoutUpdateHost updateHost, LayoutRenderHost renderHost,
+            BrowserControlsStateProvider browserControlsStateProvider, StartSurface startSurface,
             ViewGroup tabSwitcherScrimAnchor, ScrimCoordinator scrimCoordinator) {
-        return new TabSwitcherAndStartSurfaceLayout(context, updateHost, renderHost, startSurface,
-                tabSwitcherScrimAnchor, scrimCoordinator);
+        return new TabSwitcherAndStartSurfaceLayout(context, updateHost, renderHost,
+                browserControlsStateProvider, startSurface, tabSwitcherScrimAnchor,
+                scrimCoordinator);
     }
 
     /**

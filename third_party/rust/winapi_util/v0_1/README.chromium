@@ -3,4 +3,5 @@ URL: https://crates.io/crates/winapi-util
 Description: A dumping ground for high level safe wrappers over winapi.
 Version: 0.1.5
 Security Critical: no
+Shipped: yes
 License: MIT

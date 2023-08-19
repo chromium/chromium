@@ -4,9 +4,9 @@
 
 #import "ios/chrome/test/app/chrome_test_util.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/ios/ios_util.h"
-#import "base/mac/foundation_util.h"
 #import "base/test/ios/wait_util.h"
 #import "components/crash/core/common/reporter_running_ios.h"
 #import "components/metrics/metrics_pref_names.h"
@@ -40,10 +40,6 @@
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state_observer.h"
 #import "net/base/mac/url_conversions.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 // A subclass to pass instances of UIOpenURLContext to scene delegate during
 // testing. UIOpenURLContext has no init available, so this can only be
@@ -128,7 +124,7 @@ UIViewController* GetActiveViewController() {
   if ([active_view_controller
           isKindOfClass:[BVCContainerViewController class]]) {
     active_view_controller =
-        base::mac::ObjCCastStrict<BVCContainerViewController>(
+        base::apple::ObjCCastStrict<BVCContainerViewController>(
             active_view_controller)
             .currentBVC;
   }

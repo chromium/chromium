@@ -4,6 +4,7 @@
 
 #include "content/browser/screenlock_monitor/screenlock_monitor_device_source.h"
 
+#include "base/trace_event/trace_event.h"
 #include "components/session_manager/core/session_manager.h"
 
 namespace content {
@@ -22,6 +23,8 @@ ScreenlockMonitorDeviceSource::ScreenLockListener::~ScreenLockListener() {
 
 void ScreenlockMonitorDeviceSource::ScreenLockListener::
     OnSessionStateChanged() {
+  TRACE_EVENT0("login,screenlock_monitor",
+               "ScreenlockMonitorDeviceSource::OnSessionStateChanged");
   ScreenlockEvent screenlock_event;
   if (session_manager::SessionManager::Get()->IsScreenLocked()) {
     screenlock_event = SCREEN_LOCK_EVENT;

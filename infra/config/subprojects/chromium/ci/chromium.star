@@ -5,11 +5,11 @@
 
 load("//lib/args.star", "args")
 load("//lib/builder_config.star", "builder_config")
+load("//lib/builder_health_indicators.star", "health_spec")
 load("//lib/builders.star", "os", "reclient", "sheriff_rotations")
 load("//lib/branches.star", "branches")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
-load("//lib/builder_health_indicators.star", "health_spec")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
@@ -19,9 +19,11 @@ ci.defaults.set(
     sheriff_rotations = sheriff_rotations.CHROMIUM,
     main_console_view = "main",
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
+    health_spec = health_spec.DEFAULT,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.DEFAULT,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
+    shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
 )
 
 consoles.console_view(
@@ -504,11 +506,9 @@ ci.builder(
         short_name = "off",
     ),
     execution_timeout = 7 * time.hour,
-    health_spec = health_spec(
+    health_spec = health_spec.modified_default(
         build_time = struct(
             p50_mins = 240,
-            p95_mins = 300,
-            p99_mins = 360,
         ),
     ),
 )
@@ -661,7 +661,7 @@ ci.builder(
     ),
     # TODO(crbug.com/1279290) builds with PGO change take long time.
     # Keep in sync with mac-official in try/chromium.star.
-    execution_timeout = 9 * time.hour,
+    execution_timeout = 15 * time.hour,
 )
 
 ci.builder(

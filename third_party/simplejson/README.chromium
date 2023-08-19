@@ -5,6 +5,7 @@ CPEPrefix: cpe:/a:simplejson_project:simplejson:2.6.2::~~~python~~
 License: MIT
 License File: LICENSE.txt
 Security Critical: no
+Shipped: yes
 
 Description:
 simplejson is a JSON encoder and decoder for Python.

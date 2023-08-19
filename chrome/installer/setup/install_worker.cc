@@ -488,9 +488,9 @@ void AddUninstallShortcutWorkItems(const InstallParams& install_params,
                                          KEY_WOW64_32KEY, L"InstallLocation",
                                          install_path.value(), true);
 
-    std::wstring chrome_icon =
-        ShellUtil::FormatIconLocation(install_path.Append(kChromeExe),
-                                      install_static::GetIconResourceIndex());
+    std::wstring chrome_icon = ShellUtil::FormatIconLocation(
+        install_path.Append(kChromeExe),
+        install_static::GetAppIconResourceIndex());
     install_list->AddSetRegValueWorkItem(reg_root, uninstall_reg,
                                          KEY_WOW64_32KEY, L"DisplayIcon",
                                          chrome_icon, true);

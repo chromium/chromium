@@ -57,14 +57,14 @@
     'cros-textfield-background-color' : '$cros.sys.input-field-on-shaded',
     'cros-textfield-label-color' : '$cros.sys.on-surface',
     'cros-slider-color-active' : '$cros.sys.primary',
-    'cros-slider-track-color-active': '$cros.sys.primary-container',
+    'cros-slider-track-color-active': '$cros.sys.highlight-shape',
     /** cros.sys.primary-container @ 30% */
     'cros-slider-track-color-inactive': 'rgba($cros.sys.disabled.rgb,.3)',
     'cros-slider-label-text-color' : '$cros.sys.on-primary',
     'cros-slider-color-inactive' : '$cros.sys.disabled',
-    'cros-switch-knob-color-active' : '$cros.sys.on-primary',
-    'cros-switch-knob-color-inactive' : '$cros.sys.on-secondary',
-    'cros-switch-track-color-active' : '$cros.sys.primary',
+    'cros-switch-knob-color-active' : '$cros.sys.primary',
+    'cros-switch-knob-color-inactive' : '$cros.sys.surface-variant',
+    'cros-switch-track-color-active' : '$cros.sys.primary-container',
     'cros-switch-track-color-inactive' : '$cros.sys.secondary',
     'cros-tooltip-label-color' : '$cros.sys.inverse-on-surface',
     'cros-tooltip-background-color' : '$cros.sys.on-surface',
@@ -161,6 +161,10 @@
       light: '$cros.ref.error10',
       dark:  '$cros.ref.error90',
     },
+    'error-highlight': {
+      light: 'rgba($cros.ref.error40.rgb, 0.30)',
+      dark: 'rgba($cros.ref.error80.rgb, 0.30)',
+    },
 
     /* Neutral */
     'surface-variant': {
@@ -184,19 +188,19 @@
     /* Bases */
     header: {
       light: '$cros.ref.secondary90',
-      dark:  '$cros.ref.secondary15',
+      dark:  '$cros.ref.secondary12',
     },
     'header-unfocused': {
       light: 'blend(rgba($cros.ref.secondary90.rgb, 0.28), $cros.ref.neutralvariant90)',
-      dark: 'blend(rgba($cros.ref.secondary15.rgb, 0.4), $cros.ref.neutral10)',
+      dark: 'blend(rgba($cros.ref.secondary12.rgb, 0.6), $cros.ref.neutral25)',
     },
     'app-base-shaded': {
       light: '$cros.ref.neutralvariant95',
-      dark:  'blend(rgba($black.rgb, 0.4), $cros.ref.neutral10)'
+      dark:  '$cros.ref.neutral0',
     },
     'app-base': {
       light: '$cros.ref.neutral99',
-      dark:  '$cros.ref.neutral10',
+      dark:  '$cros.ref.neutral8',
     },
     'base-elevated': {
       light: '$cros.ref.neutralvariant100',
@@ -317,8 +321,16 @@
       light: '$cros.ref.yellow90',
       dark: 'blend(rgba($cros.ref.yellow90.rgb, 0.20), $black)',
     },
+    'system-on-warning-container': {
+      light: '$cros.ref.yellow10',
+      dark: '$cros.ref.yellow10',
+    },
+    'system-warning-container': {
+      light: '$cros.ref.yellow80',
+      dark: '$cros.ref.yellow80',
+    },
     'warning': {
-      light: '$cros.ref.yellow30',
+      light: '$cros.ref.yellow50',
       dark: '$cros.ref.yellow80',
     },
 
@@ -398,6 +410,10 @@
       light: 'rgba($cros.ref.neutral10.rgb, 0.06)',
       dark: 'rgba($cros.ref.neutral99.rgb, 0.1)',
     },
+    'inverse-hover-on-subtle': {
+      light: 'rgba($cros.ref.neutral99.rgb, 0.1)',
+      dark: 'rgba($cros.ref.neutral10.rgb, 0.06)',
+    },
     'ripple-primary': {
       light: 'rgba($cros.ref.primary70.rgb, 0.32)',
       dark: 'rgba($cros.ref.primary60.rgb, 0.32)',
@@ -434,6 +450,10 @@
     'focus-ring': {
       light: '$cros.ref.primary40',
       dark: '$cros.ref.primary80',
+    },
+    'inverse-focus-ring': {
+      light: '$cros.ref.primary80',
+      dark: '$cros.ref.primary40',
     },
     'focus-ring-on-primary-container': {
       light: '$cros.ref.primary40',
@@ -556,7 +576,7 @@
      * elevated colors when the kJelly flag is OFF but with sys illo tokens when
      * the jelly flag is ON. To support this we map sys illo references for
      * assets on elevated surfaces to the following elevated sys token set.
-     * These colors are identical to their non elevated counterparts when the 
+     * These colors are identical to their non elevated counterparts when the
      * jelly flag is ON but when the flag is off they get remapped to the
      * correct GM2 eleavted token.
      */

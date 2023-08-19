@@ -4,9 +4,31 @@
 
 #include "chrome/browser/ash/crosapi/native_theme_service_ash.h"
 
+#include "chromeos/constants/chromeos_features.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/color/color_provider_key.h"
+#include "ui/color/scheme_variant.mojom.h"
 #include "ui/native_theme/native_theme.h"
 
 namespace crosapi {
+namespace {
+
+color::mojom::SchemeVariant VariantToScheme(
+    ui::ColorProviderKey::SchemeVariant scheme) {
+  switch (scheme) {
+    case ui::ColorProviderKey::SchemeVariant::kTonalSpot:
+      return color::mojom::SchemeVariant::kTonalSpot;
+    case ui::ColorProviderKey::SchemeVariant::kNeutral:
+      return color::mojom::SchemeVariant::kNeutral;
+    case ui::ColorProviderKey::SchemeVariant::kVibrant:
+      return color::mojom::SchemeVariant::kVibrant;
+    case ui::ColorProviderKey::SchemeVariant::kExpressive:
+      return color::mojom::SchemeVariant::kExpressive;
+  }
+  // not reached
+}
+
+}  // namespace
 
 /******** NativeThemeServiceAsh::Dispatcher ********/
 
@@ -34,8 +56,26 @@ void NativeThemeServiceAsh::Dispatcher::OnNativeThemeUpdated(
 // static
 mojom::NativeThemeInfoPtr NativeThemeServiceAsh::GetNativeThemeInfo() {
   auto info = mojom::NativeThemeInfo::New();
-  info->dark_mode =
-      ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors();
+  const ui::NativeTheme* theme = ui::NativeTheme::GetInstanceForNativeUi();
+  info->dark_mode = theme->ShouldUseDarkColors();
+
+  if (!chromeos::features::IsJellyEnabled()) {
+    return info;
+  }
+
+  absl::optional<ui::ColorProviderKey::SchemeVariant> scheme =
+      theme->scheme_variant();
+  if (scheme) {
+    info->scheme_variant = VariantToScheme(*scheme);
+
+    // Only set seed color if we also have a `scheme`. Color palette generation
+    // is more predictable this way.
+    absl::optional<SkColor> user_color = theme->user_color();
+    if (user_color.has_value()) {
+      info->seed_color = *user_color;
+    }
+  }
+
   return info;
 }
 

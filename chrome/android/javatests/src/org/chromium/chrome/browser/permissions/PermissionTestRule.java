@@ -4,7 +4,11 @@
 
 package org.chromium.chrome.browser.permissions;
 
-import android.view.View;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+
+import static org.hamcrest.CoreMatchers.allOf;
 
 import androidx.annotation.IdRes;
 
@@ -25,13 +29,13 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.InfoBarTestAnimationListener;
 import org.chromium.chrome.test.util.InfoBarUtil;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils;
-import org.chromium.components.browser_ui.modaldialog.TabModalPresenter;
 import org.chromium.components.infobars.InfoBar;
 import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
+import org.chromium.ui.test.util.ViewUtils;
 
 /**
  * TestRule for permissions UI testing on Android.
@@ -86,6 +90,8 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
          * @throws Exception
          */
         public void waitForNumUpdates(int numUpdates) throws Exception {
+            int callbackCountBefore = mCallbackHelper.getCallCount();
+
             // Update might have already happened, check before waiting for title udpdates.
             mExpectedTitle = mPrefix;
             if (numUpdates != 0) mExpectedTitle += numUpdates;
@@ -94,7 +100,7 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
                 return;
             }
 
-            mCallbackHelper.waitForCallback(0);
+            mCallbackHelper.waitForCallback(callbackCountBefore);
         }
     }
 
@@ -293,16 +299,7 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
         // only then add modal dialog view into the container.
         @IdRes
         int buttonId = allow ? R.id.positive_button : R.id.negative_button;
-        CriteriaHelper.pollUiThread(() -> {
-            TabModalPresenter presenter = (TabModalPresenter) activity.getModalDialogManager()
-                                                  .getCurrentPresenterForTest();
-            View buttonView = presenter.getDialogContainerForTest().findViewById(buttonId);
-            if (buttonView == null) {
-                return false;
-            }
-            TouchCommon.singleClickView(buttonView);
-            return true;
-        });
+        ViewUtils.onViewWaiting(allOf(withId(buttonId), isDisplayed())).perform(click());
     }
 
     /**

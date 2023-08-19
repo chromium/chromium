@@ -4,9 +4,14 @@
 
 #import "components/storage_monitor/image_capture_device.h"
 
+#include <ImageCaptureCore/ImageCaptureCore.h>
+
+#include "base/apple/bridging.h"
+#include "base/apple/foundation_util.h"
 #include "base/containers/adapters.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "content/public/browser/browser_thread.h"
@@ -33,13 +38,13 @@ void ReturnRenameResultToListener(
 }
 
 base::FilePath PathForCameraItem(ICCameraItem* item) {
-  std::string name = base::SysNSStringToUTF8([item name]);
+  std::string name = base::SysNSStringToUTF8(item.name);
 
   std::vector<std::string> components;
-  ICCameraFolder* folder = [item parentFolder];
+  ICCameraFolder* folder = item.parentFolder;
   while (folder != nil) {
-    components.push_back(base::SysNSStringToUTF8([folder name]));
-    folder = [folder parentFolder];
+    components.push_back(base::SysNSStringToUTF8(folder.name));
+    folder = folder.parentFolder;
   }
   base::FilePath path;
   for (const std::string& component : base::Reversed(components)) {
@@ -54,13 +59,16 @@ base::FilePath PathForCameraItem(ICCameraItem* item) {
 
 }  // namespace storage_monitor
 
-@implementation ImageCaptureDevice
+@implementation ImageCaptureDevice {
+  ICCameraDevice* __strong _camera;
+  base::WeakPtr<storage_monitor::ImageCaptureDeviceListener> _listener;
+  bool _closing;
+}
 
 - (instancetype)initWithCameraDevice:(ICCameraDevice*)cameraDevice {
   if ((self = [super init])) {
-    _camera.reset([cameraDevice retain]);
-    [_camera setDelegate:self];
-    _closing = false;
+    _camera = cameraDevice;
+    _camera.delegate = self;
   }
   return self;
 }
@@ -68,9 +76,8 @@ base::FilePath PathForCameraItem(ICCameraItem* item) {
 - (void)dealloc {
   // Make sure the session was closed and listener set to null
   // before destruction.
-  DCHECK(![_camera delegate]);
+  DCHECK(!_camera.delegate);
   DCHECK(!_listener);
-  [super dealloc];
 }
 
 - (void)setListener:(base::WeakPtr<storage_monitor::ImageCaptureDeviceListener>)
@@ -90,7 +97,7 @@ base::FilePath PathForCameraItem(ICCameraItem* item) {
   _closing = true;
   [_camera cancelDownload];
   [_camera requestCloseSession];
-  [_camera setDelegate:nil];
+  _camera.delegate = nil;
   _listener.reset();
 }
 
@@ -103,30 +110,28 @@ base::FilePath PathForCameraItem(ICCameraItem* item) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Find the file with that name and start download.
-  for (ICCameraItem* item in [_camera mediaFiles]) {
+  for (ICCameraItem* item in _camera.mediaFiles) {
     std::string itemName = storage_monitor::PathForCameraItem(item).value();
     if (itemName == name) {
-      // To create save options for ImageCapture, we need to
-      // split the target filename into directory/name
-      // and encode the directory as a URL.
-      NSString* saveDirectory =
-          base::mac::FilePathToNSString(localPath.DirName());
+      // To create save options for ImageCapture, we need to split the target
+      // filename into directory/name and encode the directory as a URL.
+      NSURL* saveDirectory = base::apple::FilePathToNSURL(localPath.DirName());
       NSString* saveFilename =
-          base::mac::FilePathToNSString(localPath.BaseName());
+          base::apple::FilePathToNSString(localPath.BaseName());
 
-      NSMutableDictionary* options =
-          [NSMutableDictionary dictionaryWithCapacity:3];
-      options[ICDownloadsDirectoryURL] =
-          [NSURL fileURLWithPath:saveDirectory isDirectory:YES];
-      options[ICSaveAsFilename] = saveFilename;
-      options[ICOverwrite] = @YES;
+      NSDictionary* options = @{
+        ICDownloadsDirectoryURL : saveDirectory,
+        ICSaveAsFilename : saveFilename,
+        ICOverwrite : @YES,
+      };
 
-      [_camera requestDownloadFile:base::mac::ObjCCastStrict<ICCameraFile>(item)
-                           options:options
-                  downloadDelegate:self
-               didDownloadSelector:@selector
-               (didDownloadFile:error:options:contextInfo:)
-                       contextInfo:nullptr];
+      [_camera
+          requestDownloadFile:base::apple::ObjCCastStrict<ICCameraFile>(item)
+                      options:options
+             downloadDelegate:self
+          didDownloadSelector:@selector(didDownloadFile:
+                                                  error:options:contextInfo:)
+                  contextInfo:nullptr];
       return;
     }
   }
@@ -171,16 +176,16 @@ base::FilePath PathForCameraItem(ICCameraItem* item) {
          didAddItems:(NSArray<ICCameraItem*>*)items {
   for (ICCameraItem* item in items) {
     base::File::Info info;
-    if ([[item UTI] isEqualToString:base::mac::CFToNSCast(kUTTypeFolder)]) {
+    if ([item.UTI isEqualToString:base::apple::CFToNSPtrCast(kUTTypeFolder)]) {
       info.is_directory = true;
     } else {
-      info.size = [base::mac::ObjCCastStrict<ICCameraFile>(item) fileSize];
+      info.size = base::apple::ObjCCastStrict<ICCameraFile>(item).fileSize;
     }
 
     base::FilePath path = storage_monitor::PathForCameraItem(item);
 
-    info.last_modified = base::Time::FromNSDate([item modificationDate]);
-    info.creation_time = base::Time::FromNSDate([item creationDate]);
+    info.last_modified = base::Time::FromNSDate(item.modificationDate);
+    info.creation_time = base::Time::FromNSDate(item.creationDate);
     info.last_accessed = info.last_modified;
 
     if (_listener) {
@@ -245,7 +250,7 @@ base::FilePath PathForCameraItem(ICCameraItem* item) {
 
   if (error) {
     DVLOG(1) << "error..."
-             << base::SysNSStringToUTF8([error localizedDescription]);
+             << base::SysNSStringToUTF8(error.localizedDescription);
     if (_listener) {
       _listener->DownloadedFile(name, base::File::FILE_ERROR_FAILED);
     }

@@ -15,7 +15,6 @@
 #include "base/test/test_timeouts.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
-#include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -33,10 +32,10 @@
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkColorType.h"
 #include "third_party/skia/include/core/SkImage.h"
-#include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
+#include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/gpu_memory_buffer.h"
@@ -152,7 +151,10 @@ class D3DImageBackingFactoryTestBase : public testing::Test {
     shared_image_factory_ = std::make_unique<D3DImageBackingFactory>(
         gl::QueryD3D11DeviceObjectFromANGLE(),
         shared_image_manager_.dxgi_shared_handle_manager());
+    dawnProcSetProcs(&dawn::native::GetProcs());
   }
+
+  void TearDown() override { dawnProcSetProcs(nullptr); }
 
  protected:
   scoped_refptr<gl::GLSurface> surface_;
@@ -464,7 +466,8 @@ class D3DImageBackingFactoryTest : public D3DImageBackingFactoryTestBase {
     scoped_refptr<gl::GLShareGroup> share_group = new gl::GLShareGroup();
     context_state_ = base::MakeRefCounted<SharedContextState>(
         std::move(share_group), surface_, context_,
-        /*use_virtualized_gl_contexts=*/false, base::DoNothing());
+        /*use_virtualized_gl_contexts=*/false, base::DoNothing(),
+        GrContextType::kGL);
     context_state_->InitializeSkia(GpuPreferences(), workarounds);
     auto feature_info =
         base::MakeRefCounted<gles2::FeatureInfo>(workarounds, GpuFeatureInfo());
@@ -640,13 +643,15 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_SkiaGL) {
   // internal methods that would need specific usages.
   wgpu::FeatureName dawn_internal_usage = wgpu::FeatureName::DawnInternalUsages;
   wgpu::DeviceDescriptor device_descriptor;
+#ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
+  device_descriptor.requiredFeatureCount = 1;
+#else
   device_descriptor.requiredFeaturesCount = 1;
+#endif
   device_descriptor.requiredFeatures = &dawn_internal_usage;
 
   wgpu::Device device =
       wgpu::Device::Acquire(adapter_it->CreateDevice(&device_descriptor));
-  DawnProcTable procs = dawn::native::GetProcs();
-  dawnProcSetProcs(&procs);
 
   // Create a backing using mailbox.
   const auto mailbox = Mailbox::GenerateForSharedImage();
@@ -671,11 +676,11 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_SkiaGL) {
     // Create a DawnImageRepresentation.
     auto dawn_representation =
         shared_image_representation_factory_->ProduceDawn(
-            mailbox, device.Get(), WGPUBackendType_D3D12, {});
+            mailbox, device, wgpu::BackendType::D3D12, {});
     ASSERT_TRUE(dawn_representation);
 
     auto scoped_access = dawn_representation->BeginScopedAccess(
-        WGPUTextureUsage_RenderAttachment,
+        wgpu::TextureUsage::RenderAttachment,
         SharedImageRepresentation::AllowUnclearedAccess::kYes);
     ASSERT_TRUE(scoped_access);
 
@@ -703,11 +708,6 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_SkiaGL) {
   }
 
   CheckSkiaPixels(mailbox, size, {0, 255, 0, 255});
-
-  // Shut down Dawn
-  device = wgpu::Device();
-  dawnProcSetProcs(nullptr);
-
   factory_ref.reset();
 }
 
@@ -773,20 +773,20 @@ void D3DImageBackingFactoryTest::DawnConcurrentReadTestHelper(
     const gfx::Size& size,
     const std::vector<uint8_t>& expected_color) {
   auto dawn_representation1 = shared_image_representation_factory_->ProduceDawn(
-      mailbox, device.Get(), WGPUBackendType_D3D12, {});
+      mailbox, device, wgpu::BackendType::D3D12, {});
   ASSERT_TRUE(dawn_representation1);
 
   auto dawn_access1 = dawn_representation1->BeginScopedAccess(
-      WGPUTextureUsage_CopySrc,
+      wgpu::TextureUsage::CopySrc,
       SharedImageRepresentation::AllowUnclearedAccess::kNo);
   ASSERT_TRUE(dawn_access1);
 
   auto dawn_representation2 = shared_image_representation_factory_->ProduceDawn(
-      mailbox, device.Get(), WGPUBackendType_D3D12, {});
+      mailbox, device, wgpu::BackendType::D3D12, {});
   ASSERT_TRUE(dawn_representation2);
 
   auto dawn_access2 = dawn_representation2->BeginScopedAccess(
-      WGPUTextureUsage_CopySrc,
+      wgpu::TextureUsage::CopySrc,
       SharedImageRepresentation::AllowUnclearedAccess::kNo);
   ASSERT_TRUE(dawn_access2);
 
@@ -836,13 +836,15 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_ConcurrentReads) {
   // internal methods that would need specific usages.
   wgpu::FeatureName dawn_internal_usage = wgpu::FeatureName::DawnInternalUsages;
   wgpu::DeviceDescriptor device_descriptor;
+#ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
+  device_descriptor.requiredFeatureCount = 1;
+#else
   device_descriptor.requiredFeaturesCount = 1;
+#endif
   device_descriptor.requiredFeatures = &dawn_internal_usage;
 
   wgpu::Device device =
       wgpu::Device::Acquire(adapter_it->CreateDevice(&device_descriptor));
-  DawnProcTable procs = dawn::native::GetProcs();
-  dawnProcSetProcs(&procs);
 
   // Create a backing using mailbox.
   const auto mailbox = Mailbox::GenerateForSharedImage();
@@ -889,11 +891,11 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_ConcurrentReads) {
   {
     auto dawn_representation =
         shared_image_representation_factory_->ProduceDawn(
-            mailbox, device.Get(), WGPUBackendType_D3D12, {});
+            mailbox, device, wgpu::BackendType::D3D12, {});
     ASSERT_TRUE(dawn_representation);
 
     auto scoped_access = dawn_representation->BeginScopedAccess(
-        WGPUTextureUsage_RenderAttachment,
+        wgpu::TextureUsage::RenderAttachment,
         SharedImageRepresentation::AllowUnclearedAccess::kNo);
     ASSERT_TRUE(scoped_access);
 
@@ -999,21 +1001,24 @@ TEST_F(D3DImageBackingFactoryTest, GL_Dawn_Skia_UnclearTexture) {
   // internal methods that would need specific usages.
   wgpu::FeatureName dawn_internal_usage = wgpu::FeatureName::DawnInternalUsages;
   wgpu::DeviceDescriptor device_descriptor;
+#ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
+  device_descriptor.requiredFeatureCount = 1;
+#else
   device_descriptor.requiredFeaturesCount = 1;
+#endif
   device_descriptor.requiredFeatures = &dawn_internal_usage;
 
   wgpu::Device device =
       wgpu::Device::Acquire(adapter_it->CreateDevice(&device_descriptor));
-  DawnProcTable procs = dawn::native::GetProcs();
-  dawnProcSetProcs(&procs);
+
   {
     auto dawn_representation =
         shared_image_representation_factory_->ProduceDawn(
-            mailbox, device.Get(), WGPUBackendType_D3D12, {});
+            mailbox, device, wgpu::BackendType::D3D12, {});
     ASSERT_TRUE(dawn_representation);
 
     auto dawn_scoped_access = dawn_representation->BeginScopedAccess(
-        WGPUTextureUsage_RenderAttachment,
+        wgpu::TextureUsage::RenderAttachment,
         SharedImageRepresentation::AllowUnclearedAccess::kYes);
     ASSERT_TRUE(dawn_scoped_access);
 
@@ -1041,11 +1046,6 @@ TEST_F(D3DImageBackingFactoryTest, GL_Dawn_Skia_UnclearTexture) {
   // Check skia pixels returns black since texture was lazy cleared in Dawn
   EXPECT_TRUE(factory_ref->IsCleared());
   CheckSkiaPixels(mailbox, size, {0, 0, 0, 0});
-
-  // Shut down Dawn
-  device = wgpu::Device();
-  dawnProcSetProcs(nullptr);
-
   factory_ref.reset();
 }
 
@@ -1091,21 +1091,23 @@ TEST_F(D3DImageBackingFactoryTest, UnclearDawn_SkiaFails) {
   // internal methods that would need specific usages.
   wgpu::FeatureName dawn_internal_usage = wgpu::FeatureName::DawnInternalUsages;
   wgpu::DeviceDescriptor device_descriptor;
+#ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
+  device_descriptor.requiredFeatureCount = 1;
+#else
   device_descriptor.requiredFeaturesCount = 1;
+#endif
   device_descriptor.requiredFeatures = &dawn_internal_usage;
 
   wgpu::Device device =
       wgpu::Device::Acquire(adapter_it->CreateDevice(&device_descriptor));
-  DawnProcTable procs = dawn::native::GetProcs();
-  dawnProcSetProcs(&procs);
   {
     auto dawn_representation =
         shared_image_representation_factory_->ProduceDawn(
-            mailbox, device.Get(), WGPUBackendType_D3D12, {});
+            mailbox, device, wgpu::BackendType::D3D12, {});
     ASSERT_TRUE(dawn_representation);
 
     auto dawn_scoped_access = dawn_representation->BeginScopedAccess(
-        WGPUTextureUsage_RenderAttachment,
+        wgpu::TextureUsage::RenderAttachment,
         SharedImageRepresentation::AllowUnclearedAccess::kYes);
     ASSERT_TRUE(dawn_scoped_access);
 
@@ -1130,10 +1132,6 @@ TEST_F(D3DImageBackingFactoryTest, UnclearDawn_SkiaFails) {
     wgpu::Queue queue = device.GetQueue();
     queue.Submit(1, &commands);
   }
-
-  // Shut down Dawn
-  device = wgpu::Device();
-  dawnProcSetProcs(nullptr);
 
   EXPECT_FALSE(factory_ref->IsCleared());
 
@@ -1187,7 +1185,7 @@ void D3DImageBackingFactoryTest::RunCreateSharedImageFromHandleTest(
     DXGI_FORMAT dxgi_format) {
   auto mailbox = Mailbox::GenerateForSharedImage();
   const auto buffer_format = gfx::BufferFormat::RGBA_8888;
-  const auto format = viz::GetSharedImageFormat(buffer_format);
+  const auto format = viz::GetSinglePlaneSharedImageFormat(buffer_format);
   const gfx::Size size(1, 1);
   const auto plane = gfx::BufferPlane::DEFAULT;
   const auto color_space = gfx::ColorSpace::CreateSRGB();
@@ -1358,21 +1356,23 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_ReuseExternalImage) {
   // internal methods that would need specific usages.
   wgpu::FeatureName dawn_internal_usage = wgpu::FeatureName::DawnInternalUsages;
   wgpu::DeviceDescriptor device_descriptor;
+#ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
+  device_descriptor.requiredFeatureCount = 1;
+#else
   device_descriptor.requiredFeaturesCount = 1;
+#endif
   device_descriptor.requiredFeatures = &dawn_internal_usage;
 
   wgpu::Device device =
       wgpu::Device::Acquire(adapter_it->CreateDevice(&device_descriptor));
-  DawnProcTable procs = dawn::native::GetProcs();
-  dawnProcSetProcs(&procs);
 
-  const WGPUTextureUsage texture_usage = WGPUTextureUsage_RenderAttachment;
+  const wgpu::TextureUsage texture_usage = wgpu::TextureUsage::RenderAttachment;
 
   // Create the first Dawn texture then clear it to green.
   {
     auto dawn_representation =
         shared_image_representation_factory_->ProduceDawn(
-            mailbox, device.Get(), WGPUBackendType_D3D12, {});
+            mailbox, device, wgpu::BackendType::D3D12, {});
     ASSERT_TRUE(dawn_representation);
 
     auto scoped_access = dawn_representation->BeginScopedAccess(
@@ -1408,7 +1408,7 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_ReuseExternalImage) {
   {
     auto dawn_representation =
         shared_image_representation_factory_->ProduceDawn(
-            mailbox, device.Get(), WGPUBackendType_D3D12, {});
+            mailbox, device, wgpu::BackendType::D3D12, {});
     ASSERT_TRUE(dawn_representation);
 
     // Check again that the texture is still green
@@ -1442,10 +1442,6 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_ReuseExternalImage) {
   }
 
   CheckSkiaPixels(mailbox, size, {255, 0, 0, 255});
-
-  // Shut down Dawn
-  device = wgpu::Device();
-  dawnProcSetProcs(nullptr);
 
   factory_ref.reset();
 }
@@ -1488,16 +1484,17 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_HasLastRef) {
   // internal methods that would need specific usages.
   wgpu::FeatureName dawn_internal_usage = wgpu::FeatureName::DawnInternalUsages;
   wgpu::DeviceDescriptor device_descriptor;
+#ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
+  device_descriptor.requiredFeatureCount = 1;
+#else
   device_descriptor.requiredFeaturesCount = 1;
+#endif
   device_descriptor.requiredFeatures = &dawn_internal_usage;
 
   wgpu::Device device =
       wgpu::Device::Acquire(adapter_it->CreateDevice(&device_descriptor));
-  DawnProcTable procs = dawn::native::GetProcs();
-  dawnProcSetProcs(&procs);
-
   auto dawn_representation = shared_image_representation_factory_->ProduceDawn(
-      mailbox, device.Get(), WGPUBackendType_D3D12, {});
+      mailbox, device, wgpu::BackendType::D3D12, {});
   ASSERT_NE(dawn_representation, nullptr);
 
   // Creating the Skia representation will also create a temporary GL texture.
@@ -1515,10 +1512,6 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_HasLastRef) {
 
   // This shouldn't crash due to no GL context being current.
   dawn_representation.reset();
-
-  // Shut down Dawn
-  device = wgpu::Device();
-  dawnProcSetProcs(nullptr);
 
   // Make context current so that it can be destroyed.
   context_->MakeCurrent(surface_.get());

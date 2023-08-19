@@ -93,6 +93,7 @@ enum GpuControlListTestingEntryEnum {
   kGpuControlListEntryTest_DeviceRevisionUnspecifiedEntry = 77,
   kGpuControlListEntryTest_AnyDriverVersion = 78,
   kGpuControlListEntryTest_ActiveDriverVersion = 79,
+  kGpuControlListEntryTest_NativeAngleRenderer = 80,
 };
 }  // namespace gpu
 

@@ -5,6 +5,7 @@
 #include "chrome/test/ppapi/ppapi_test_select_file_dialog_factory.h"
 
 #include "base/functional/bind.h"
+#include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
@@ -92,8 +93,10 @@ PPAPITestSelectFileDialogFactory::PPAPITestSelectFileDialogFactory(
     Mode mode,
     const SelectedFileInfoList& selected_file_info)
     : selected_file_info_(selected_file_info), mode_(mode) {
-  // Only safe because this class is 'final'
-  ui::SelectFileDialog::SetFactory(this);
+  // Can't possibly be safe, esp. when PPAPITestSelectFileDialogFactory is
+  // stack-allocated as in tests, unless a complete process tear-down occurs
+  // before another one of these is constructed or any other factory is set.
+  ui::SelectFileDialog::SetFactory(base::WrapUnique(this));
 }
 
 // SelectFileDialogFactory

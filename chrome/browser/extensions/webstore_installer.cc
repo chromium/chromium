@@ -210,14 +210,6 @@ GURL WebstoreInstaller::GetWebstoreInstallURL(
   return url;
 }
 
-void WebstoreInstaller::Delegate::OnExtensionDownloadStarted(
-    const std::string& id,
-    download::DownloadItem* item) {}
-
-void WebstoreInstaller::Delegate::OnExtensionDownloadProgress(
-    const std::string& id,
-    download::DownloadItem* item) {}
-
 WebstoreInstaller::Approval::Approval() = default;
 
 std::unique_ptr<WebstoreInstaller::Approval>
@@ -263,19 +255,23 @@ const WebstoreInstaller::Approval* WebstoreInstaller::GetAssociatedApproval(
 }
 
 WebstoreInstaller::WebstoreInstaller(Profile* profile,
-                                     Delegate* delegate,
+                                     SuccessCallback success_callback,
+                                     FailureCallback failure_callback,
                                      content::WebContents* web_contents,
                                      const std::string& id,
                                      std::unique_ptr<Approval> approval,
                                      InstallSource source)
     : web_contents_(web_contents->GetWeakPtr()),
       profile_(profile),
-      delegate_(delegate),
+      success_callback_(std::move(success_callback)),
+      failure_callback_(std::move(failure_callback)),
       id_(id),
       install_source_(source),
       approval_(approval.release()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(web_contents);
+  CHECK(success_callback_);
+  CHECK(failure_callback_);
 
   extension_registry_observation_.Observe(ExtensionRegistry::Get(profile));
 }
@@ -389,10 +385,6 @@ void WebstoreInstaller::OnExtensionInstalled(
   }
 }
 
-void WebstoreInstaller::InvalidateDelegate() {
-  delegate_ = nullptr;
-}
-
 void WebstoreInstaller::SetDownloadDirectoryForTests(
     base::FilePath* directory) {
   g_download_directory_for_tests = directory;
@@ -460,8 +452,6 @@ void WebstoreInstaller::OnDownloadStarted(
   }
 
   if (!download_started_) {
-    if (delegate_)
-      delegate_->OnExtensionDownloadStarted(id_, download_item_);
     download_started_ = true;
   }
 }
@@ -496,18 +486,12 @@ void WebstoreInstaller::OnDownloadUpdated(DownloadItem* download) {
 
       if (pending_modules_.size() == 1) {
         // The download is the last module - the extension main module.
-        if (delegate_)
-          delegate_->OnExtensionDownloadProgress(id_, download);
         extensions::InstallTracker* tracker =
             extensions::InstallTrackerFactory::GetForBrowserContext(profile_);
         tracker->OnDownloadProgress(id_, 100);
       }
       break;
     case DownloadItem::IN_PROGRESS: {
-      if (delegate_ && pending_modules_.size() == 1) {
-        // Only report download progress for the main module to |delegrate_|.
-        delegate_->OnExtensionDownloadProgress(id_, download);
-      }
       UpdateDownloadProgress();
       break;
     }
@@ -716,10 +700,10 @@ void WebstoreInstaller::StartCrxInstaller(const DownloadItem& download) {
 
 void WebstoreInstaller::ReportFailure(const std::string& error,
                                       FailureReason reason) {
-  if (delegate_) {
-    delegate_->OnExtensionInstallFailure(id_, error, reason);
-    delegate_ = nullptr;
-  }
+  CHECK(failure_callback_);
+  std::move(failure_callback_).Run(id_, error, reason);
+  success_callback_ = base::NullCallback();
+  extension_registry_observation_.Reset();
 
   extensions::InstallTracker* tracker =
       extensions::InstallTrackerFactory::GetForBrowserContext(profile_);
@@ -729,10 +713,10 @@ void WebstoreInstaller::ReportFailure(const std::string& error,
 }
 
 void WebstoreInstaller::ReportSuccess() {
-  if (delegate_) {
-    delegate_->OnExtensionInstallSuccess(id_);
-    delegate_ = nullptr;
-  }
+  CHECK(success_callback_);
+  std::move(success_callback_).Run(id_);
+  failure_callback_ = base::NullCallback();
+  extension_registry_observation_.Reset();
 
   Release();  // Balanced in Start().
 }

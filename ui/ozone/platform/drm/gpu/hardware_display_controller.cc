@@ -22,6 +22,7 @@
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImage.h"
+#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_fence_handle.h"
@@ -84,8 +85,9 @@ bool IsRockchipAfbc(uint64_t modifier) {
 
 HardwareDisplayController::HardwareDisplayController(
     std::unique_ptr<CrtcController> controller,
-    const gfx::Point& origin)
-    : origin_(origin) {
+    const gfx::Point& origin,
+    raw_ptr<DrmModifiersFilter> drm_modifiers_filter)
+    : origin_(origin), drm_modifiers_filter_(drm_modifiers_filter) {
   AddCrtc(std::move(controller));
   AllocateCursorBuffers();
 }
@@ -279,6 +281,12 @@ std::vector<uint64_t> HardwareDisplayController::GetFormatModifiers(
 
   std::vector<uint64_t> modifiers =
       crtc_controllers_[0]->GetFormatModifiers(fourcc_format);
+
+  if (drm_modifiers_filter_) {
+    gfx::BufferFormat buffer_format =
+        GetBufferFormatFromFourCCFormat(fourcc_format);
+    modifiers = drm_modifiers_filter_->Filter(buffer_format, modifiers);
+  }
 
   for (size_t i = 1; i < crtc_controllers_.size(); ++i) {
     std::vector<uint64_t> other =

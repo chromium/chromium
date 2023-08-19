@@ -41,6 +41,9 @@ class JourneyLoggerAndroid {
       jboolean jvalue);
   void SetOptOutOffered(JNIEnv* env,
                         const base::android::JavaParamRef<jobject>& jcaller);
+  void SetActivationlessShow(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jcaller);
   void SetSkippedShow(JNIEnv* env,
                       const base::android::JavaParamRef<jobject>& jcaller);
   void SetShown(JNIEnv* env,

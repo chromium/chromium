@@ -115,29 +115,30 @@ class TestLayerAnimationObserver : public LayerAnimationObserver {
  private:
   int next_epoch_;
 
-  raw_ptr<const LayerAnimationSequence, DanglingUntriaged>
+  raw_ptr<const LayerAnimationSequence, AcrossTasksDanglingUntriaged>
       last_attached_sequence_;
   int last_attached_sequence_epoch_;
 
-  raw_ptr<const LayerAnimationSequence, DanglingUntriaged>
+  raw_ptr<const LayerAnimationSequence, AcrossTasksDanglingUntriaged>
       last_scheduled_sequence_;
   int last_scheduled_sequence_epoch_;
 
-  raw_ptr<const LayerAnimationSequence, DanglingUntriaged>
+  raw_ptr<const LayerAnimationSequence, AcrossTasksDanglingUntriaged>
       last_started_sequence_;
   int last_started_sequence_epoch_;
 
-  raw_ptr<const LayerAnimationSequence, DanglingUntriaged>
+  raw_ptr<const LayerAnimationSequence, AcrossTasksDanglingUntriaged>
       last_aborted_sequence_;
   int last_aborted_sequence_epoch_;
 
-  raw_ptr<const LayerAnimationSequence, DanglingUntriaged> last_ended_sequence_;
+  raw_ptr<const LayerAnimationSequence, AcrossTasksDanglingUntriaged>
+      last_ended_sequence_;
   int last_ended_sequence_epoch_;
 
   raw_ptr<const LayerAnimationSequence> last_repetition_ended_sequence_;
   int last_repetition_ended_sequence_epoch_;
 
-  raw_ptr<const LayerAnimationSequence, DanglingUntriaged>
+  raw_ptr<const LayerAnimationSequence, AcrossTasksDanglingUntriaged>
       last_detached_sequence_;
   int last_detached_sequence_epoch_;
 

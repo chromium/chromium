@@ -556,6 +556,7 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   // The task runner on the main thread used for compositor tasks.
   scoped_refptr<base::SingleThreadTaskRunner>
       main_thread_compositor_task_runner_;
+  base::PlatformThreadId main_thread_id_ = base::kInvalidThreadId;
 
   // The maximum bounds for buffers allocated for rasterization and compositing.
   // Set when the compositor is initialized.

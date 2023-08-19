@@ -88,7 +88,12 @@ class OverflowGradientBackground : public views::Background {
 
 int PaddingBetweenTrayItems(const bool is_in_primary_tray_set) {
   if (is_in_primary_tray_set) {
-    return kPaddingBetweenPrimaryTraySetItems;
+    return (ShelfConfig::Get()->in_tablet_mode() &&
+            ShelfConfig::Get()->is_in_app())
+               ? kPaddingBetweenTrayItemsTabletMode -
+                     2 * ShelfConfig::Get()
+                             ->in_app_control_button_height_inset()
+               : kPaddingBetweenPrimaryTraySetItems;
   }
 
   if (ShelfConfig::Get()->in_tablet_mode()) {

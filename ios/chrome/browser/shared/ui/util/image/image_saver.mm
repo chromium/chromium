@@ -24,10 +24,6 @@
 #import "net/base/mime_util.h"
 #import "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface ImageSaver ()
 // Base view controller for the alerts.
 @property(nonatomic, weak) UIViewController* baseViewController;
@@ -44,6 +40,13 @@
     _browser = browser;
   }
   return self;
+}
+
+- (void)stop {
+  [self.alertCoordinator stop];
+  self.alertCoordinator = nil;
+  self.baseViewController = nil;
+  _browser = nullptr;
 }
 
 - (void)saveImageAtURL:(const GURL&)URL
@@ -136,8 +139,11 @@
                            title:title
                          message:message];
 
+  __weak ImageSaver* weakSelf = self;
   [self.alertCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
-                                   action:nil
+                                   action:^{
+                                     [weakSelf stopAlertCoordinator];
+                                   }
                                     style:UIAlertActionStyleCancel];
 
   [_alertCoordinator
@@ -147,6 +153,7 @@
                   [[UIApplication sharedApplication] openURL:settingURL
                                                      options:@{}
                                            completionHandler:nil];
+                  [weakSelf stopAlertCoordinator];
                 }
                  style:UIAlertActionStyleDefault];
 
@@ -176,8 +183,11 @@
                          browser:_browser
                            title:title
                          message:errorContent];
+  __weak ImageSaver* weakSelf = self;
   [self.alertCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_OK)
-                                   action:nil
+                                   action:^{
+                                     [weakSelf stopAlertCoordinator];
+                                   }
                                     style:UIAlertActionStyleDefault];
   [self.alertCoordinator start];
 }
@@ -197,6 +207,13 @@
     // TODO(crbug.com/797277): Provide a way for the user to easily reach the
     // photos app.
   }
+}
+
+// Stops the alert coordinator.
+- (void)stopAlertCoordinator {
+  CHECK(self.alertCoordinator);
+  [self.alertCoordinator stop];
+  self.alertCoordinator = nil;
 }
 
 @end

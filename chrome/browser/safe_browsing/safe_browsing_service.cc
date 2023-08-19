@@ -519,6 +519,42 @@ bool SafeBrowsingService::SendDownloadReport(
              ->ReportThreatDetails(std::move(report)) ==
          PingManager::ReportThreatDetailsResult::SUCCESS;
 }
+
+bool SafeBrowsingService::SendPhishyInteractionsReport(
+    Profile* profile,
+    const GURL& url,
+    const GURL& page_url,
+    const PhishySiteInteractionMap& phishy_interaction_data) {
+  if (!base::FeatureList::IsEnabled(kAntiPhishingTelemetry) || !profile ||
+      !IsExtendedReportingEnabled(*profile->GetPrefs())) {
+    return false;
+  }
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  auto report = std::make_unique<ClientSafeBrowsingReportRequest>();
+  report->set_type(ClientSafeBrowsingReportRequest::PHISHY_SITE_INTERACTIONS);
+  report->set_url(url.spec());
+  report->set_page_url(page_url.spec());
+  for (auto const& interaction_type : phishy_interaction_data) {
+    if (interaction_type.second.occurrence_count > 0) {
+      // Create PhishySiteInteraction object and add to report.
+      ClientSafeBrowsingReportRequest::PhishySiteInteraction
+          new_phishy_site_interaction;
+      new_phishy_site_interaction.set_phishy_site_interaction_type(
+          interaction_type.first);
+      new_phishy_site_interaction.set_occurrence_count(
+          interaction_type.second.occurrence_count);
+      new_phishy_site_interaction.set_first_interaction_timestamp_msec(
+          interaction_type.second.first_timestamp);
+      new_phishy_site_interaction.set_last_interaction_timestamp_msec(
+          interaction_type.second.last_timestamp);
+      report->mutable_phishy_site_interactions()->Add()->Swap(
+          &new_phishy_site_interaction);
+    }
+  }
+  return ChromePingManagerFactory::GetForBrowserContext(profile)
+             ->ReportThreatDetails(std::move(report)) ==
+         PingManager::ReportThreatDetailsResult::SUCCESS;
+}
 #endif
 
 void SafeBrowsingService::CreateTriggerManager() {

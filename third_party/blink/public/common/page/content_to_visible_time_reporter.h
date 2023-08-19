@@ -52,6 +52,11 @@ class BLINK_COMMON_EXPORT ContentToVisibleTimeReporter {
       bool show_reason_tab_switching,
       bool show_reason_bfcache_restore);
 
+  // Called when the device is unfolded and the activity is recreated. Returns
+  // a callback to invoke the next time a frame is presented.
+  SuccessfulPresentationTimeCallback GetCallbackForNextFrameAfterUnfold(
+      base::TimeTicks begin_timestamp);
+
   // Indicates that the tab associated with this recorder was hidden. If no
   // frame was presented since the last tab switch, failure is reported to UMA.
   void TabWasHidden();

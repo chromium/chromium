@@ -20,6 +20,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/standalone_browser/lacros_availability.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
@@ -113,8 +114,11 @@ class LacrosAvailabilityPolicyObserverTest : public testing::Test {
       std::make_unique<user_manager::FakeUserManager>()};
   std::unique_ptr<TestingProfileManager> profile_manager_;
   raw_ptr<user_manager::User, ExperimentalAsh> test_user_ = nullptr;
-  raw_ptr<TestingProfile, ExperimentalAsh> primary_profile_ = nullptr;
+  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh>
+      primary_profile_ = nullptr;
 };
+
+using ash::standalone_browser::LacrosAvailability;
 
 TEST_F(LacrosAvailabilityPolicyObserverTest, OnPolicyUpdate) {
   LacrosAvailabilityPolicyObserver observer;
@@ -125,24 +129,26 @@ TEST_F(LacrosAvailabilityPolicyObserverTest, OnPolicyUpdate) {
     EXPECT_TRUE(feature_flags.empty());
   }
 
-  local_state()->SetManagedPref(prefs::kLacrosLaunchSwitch, base::Value(2));
+  local_state()->SetManagedPref(
+      prefs::kLacrosLaunchSwitch,
+      base::Value(static_cast<int>(LacrosAvailability::kUserChoice)));
+  {
+    auto feature_flags = GetFeatureFlagsForPrimaryUser();
+    ASSERT_EQ(1u, feature_flags.size());
+    // Please find about_flags.cc for actual mapping of the enum value
+    // to the index.
+    EXPECT_EQ("lacros-availability-policy@1", feature_flags[0]);
+  }
 
+  local_state()->SetManagedPref(
+      prefs::kLacrosLaunchSwitch,
+      base::Value(static_cast<int>(LacrosAvailability::kLacrosOnly)));
   {
     auto feature_flags = GetFeatureFlagsForPrimaryUser();
     ASSERT_EQ(1u, feature_flags.size());
     // Please find about_flags.cc for actual mapping of the enum value
     // to the index.
     EXPECT_EQ("lacros-availability-policy@3", feature_flags[0]);
-  }
-
-  local_state()->SetManagedPref(prefs::kLacrosLaunchSwitch, base::Value(3));
-
-  {
-    auto feature_flags = GetFeatureFlagsForPrimaryUser();
-    ASSERT_EQ(1u, feature_flags.size());
-    // Please find about_flags.cc for actual mapping of the enum value
-    // to the index.
-    EXPECT_EQ("lacros-availability-policy@4", feature_flags[0]);
   }
 }
 
@@ -153,7 +159,9 @@ TEST_F(LacrosAvailabilityPolicyObserverTest, AroundPrimaryProfileCreation) {
     EXPECT_TRUE(feature_flags.empty());
   }
 
-  local_state()->SetManagedPref(prefs::kLacrosLaunchSwitch, base::Value(2));
+  local_state()->SetManagedPref(
+      prefs::kLacrosLaunchSwitch,
+      base::Value(static_cast<int>(LacrosAvailability::kLacrosOnly)));
   // Do not update the feature_flags in session_manger, until primary profile
   // is created.
   {

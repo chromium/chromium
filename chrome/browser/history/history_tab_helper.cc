@@ -260,8 +260,9 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
   history::HistoryAddPageArgs add_page_args(
       navigation_handle->GetURL(), timestamp,
       history::ContextIDForWebContents(web_contents()), nav_entry_id,
-      referrer_url, navigation_handle->GetRedirectChain(), page_transition,
-      hidden, history::SOURCE_BROWSED, navigation_handle->DidReplaceEntry(),
+      navigation_handle->GetNavigationId(), referrer_url,
+      navigation_handle->GetRedirectChain(), page_transition, hidden,
+      history::SOURCE_BROWSED, navigation_handle->DidReplaceEntry(),
       ShouldConsiderForNtpMostVisited(*web_contents(), navigation_handle),
       // Reloads do not result in calling TitleWasSet() (which normally sets
       // the title), so a reload needs to set the title. This is important for
@@ -397,6 +398,7 @@ void HistoryTabHelper::DidActivatePortal(
       last_committed_entry->GetTimestamp(),
       history::ContextIDForWebContents(web_contents()),
       last_committed_entry->GetUniqueID(),
+      /*local_navigation_id=*/absl::nullopt,
       last_committed_entry->GetReferrer().url,
       /* redirects */ {}, ui::PAGE_TRANSITION_LINK,
       /* hidden */ false, history::SOURCE_BROWSED, did_replace_entry,

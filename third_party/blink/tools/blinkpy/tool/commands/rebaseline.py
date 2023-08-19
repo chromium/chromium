@@ -51,7 +51,11 @@ from blinkpy.common.path_finder import WEB_TESTS_LAST_COMPONENT
 from blinkpy.common.memoized import memoized
 from blinkpy.common.net.results_fetcher import Build
 from blinkpy.common.net.web_test_results import Artifact, WebTestResult
-from blinkpy.tool.commands.command import Command, check_dir_option
+from blinkpy.tool.commands.command import (
+    Command,
+    check_dir_option,
+    check_file_option,
+)
 from blinkpy.web_tests.models import test_failures
 from blinkpy.web_tests.models.test_expectations import SystemConfigurationEditor, TestExpectations
 from blinkpy.web_tests.models.typ_types import RESULT_TAGS, ResultType
@@ -108,6 +112,13 @@ class AbstractRebaseliningCommand(Command):
         help=('Fully-qualified name of the port that new baselines belong to, '
               'e.g. "mac-mac11". If not given, this is determined based on '
               '--builder.'))
+    test_name_file_option = optparse.make_option(
+        '--test-name-file',
+        action='callback',
+        callback=check_file_option,
+        type='string',
+        help=('Read names of tests to update from this file, '
+              'one test per line.'))
 
     def __init__(self, options=None):
         super(AbstractRebaseliningCommand, self).__init__(options=options)
@@ -257,7 +268,7 @@ class TestBaselineSet(collections.abc.Set):
 
 class RebaselineFailureReason(enum.Enum):
     TIMEOUT_OR_CRASH = 'May not run to completion'
-    REFTEST_FAILURE = 'Reftest failure'
+    REFTEST_IMAGE_FAILURE = 'Reftest image failure'
     FLAKY_OUTPUT = 'Flaky output'
     LOCAL_BASELINE_NOT_FOUND = 'Missing from local results directory'
 
@@ -302,12 +313,8 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
             if (build.builder_name,
                     step_name) not in build_steps_to_fetch_from:
                 continue
-            if self._host_port.reference_files(test):
-                self._rebaseline_failures[task] = (
-                    RebaselineFailureReason.REFTEST_FAILURE)
-                continue
-            suffixes = list(
-                self._suffixes_for_actual_failures(test, build, step_name))
+            suffixes = self._suffixes_for_actual_failures(
+                test, build, step_name)
             if suffixes:
                 rebaselinable_set.add(test, build, step_name, port_name)
         return rebaselinable_set
@@ -678,8 +685,8 @@ class Rebaseline(AbstractParallelRebaselineCommand):
         tests = self._host_port.tests(args)
         for builder in builders_to_check:
             build = Build(builder)
-            step_names = self._tool.results_fetcher.get_layout_test_step_names(
-                build)
+            step_names = self._tool.builders.step_names_for_builder(
+                build.builder_name)
             for step_name in step_names:
                 for test in tests:
                     test_baseline_set.add(test, build, step_name)
@@ -793,6 +800,9 @@ class BaselineLoader:
             RebaselineFailure: If a test cannot be rebaselined (e.g., flakiness
                 outside fuzzy parameters).
         """
+        if suffix == 'png' and self._default_port.reference_files(test_name):
+            raise RebaselineFailure(
+                RebaselineFailureReason.REFTEST_IMAGE_FAILURE)
         assert artifacts
         contents_by_run = {
             artifact: self.load(artifact)

@@ -18,6 +18,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/extend.h"
 #include "base/feature_list.h"
+#include "base/files/safe_base_name.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_macros.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/extension_apps_utils.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
+#include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
@@ -50,6 +52,7 @@
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/launch_util.h"
+#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/profiles/profile.h"
@@ -57,6 +60,7 @@
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/ash/session_controller_client_impl.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/api/file_browser_handlers/file_browser_handler.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -164,6 +168,17 @@ ash::ShelfLaunchSource ConvertLaunchSource(apps::LaunchSource launch_source) {
       return ash::LAUNCH_FROM_UNKNOWN;
   }
 }
+
+void MaybeAssociateWebContentsWithArcContext(
+    apps::LaunchSource launch_source,
+    content::WebContents* web_contents) {
+  if (launch_source == apps::LaunchSource::kFromArc && web_contents) {
+    // Add a flag to remember this web_contents originated in the ARC context.
+    web_contents->SetUserData(
+        &arc::ArcWebContentsData::kArcTransitionFlag,
+        std::make_unique<arc::ArcWebContentsData>(web_contents));
+  }
+}
 }  // namespace
 
 namespace apps {
@@ -171,7 +186,10 @@ namespace apps {
 ExtensionAppsChromeOs::ExtensionAppsChromeOs(AppServiceProxy* proxy,
                                              AppType app_type)
     : ExtensionAppsBase(proxy, app_type),
-      instance_registry_(&proxy->InstanceRegistry()) {
+      instance_registry_(&proxy->InstanceRegistry()),
+      web_file_handlers_permission_handler_(
+          std::make_unique<extensions::WebFileHandlersPermissionHandler>(
+              profile())) {
   DCHECK(instance_registry_);
 }
 
@@ -215,7 +233,9 @@ void ExtensionAppsChromeOs::Initialize() {
     return;
   }
 
-  media_dispatcher_.Observe(MediaCaptureDevicesDispatcher::GetInstance());
+  media_dispatcher_.Observe(MediaCaptureDevicesDispatcher::GetInstance()
+                                ->GetMediaStreamCaptureIndicator()
+                                .get());
 
   notification_display_service_.Observe(
       NotificationDisplayServiceFactory::GetForProfile(profile()));
@@ -265,13 +285,7 @@ void ExtensionAppsChromeOs::LaunchAppWithParamsImpl(AppLaunchParams&& params,
   if (extension->is_app() || is_quickoffice) {
     auto launch_source = params.launch_source;
     content::WebContents* web_contents = LaunchImpl(std::move(params));
-
-    if (launch_source == apps::LaunchSource::kFromArc && web_contents) {
-      // Add a flag to remember this web_contents originated in the ARC context.
-      web_contents->SetUserData(
-          &arc::ArcWebContentsData::kArcTransitionFlag,
-          std::make_unique<arc::ArcWebContentsData>(web_contents));
-    }
+    MaybeAssociateWebContentsWithArcContext(launch_source, web_contents);
   } else {
     DCHECK(extension->is_extension());
     // TODO(petermarshall): Set Arc flag as above?
@@ -282,6 +296,26 @@ void ExtensionAppsChromeOs::LaunchAppWithParamsImpl(AppLaunchParams&& params,
                     std::make_unique<WindowInfo>(params.display_id),
                     base::DoNothing());
   }
+}
+
+void ExtensionAppsChromeOs::LaunchAppWithIntentCallback(
+    LaunchSource launch_source,
+    const std::string& app_id,
+    int32_t event_flags,
+    IntentPtr intent,
+    WindowInfoPtr window_info,
+    LaunchCallback callback,
+    bool should_open) {
+  // Exit early, while notifying, in case `Don't open` was chosen.
+  if (!should_open) {
+    std::move(callback).Run(LaunchResult(State::FAILED));
+    return;
+  }
+
+  content::WebContents* web_contents = LaunchAppWithIntentImpl(
+      app_id, event_flags, std::move(intent), launch_source,
+      std::move(window_info), std::move(callback));
+  MaybeAssociateWebContentsWithArcContext(launch_source, web_contents);
 }
 
 void ExtensionAppsChromeOs::LaunchAppWithIntent(const std::string& app_id,
@@ -295,27 +329,61 @@ void ExtensionAppsChromeOs::LaunchAppWithIntent(const std::string& app_id,
     std::move(callback).Run(LaunchResult(State::FAILED));
     return;
   }
-  bool is_quickoffice = extension_misc::IsQuickOfficeExtension(extension->id());
+
   bool supports_web_file_handlers =
       extensions::WebFileHandlers::SupportsWebFileHandlers(
           extension->manifest_version());
-  if (extension->is_app() || is_quickoffice || supports_web_file_handlers) {
+
+  // Launch Web File Handlers.
+  if (supports_web_file_handlers) {
+    // Get all names that were selected when the intent to open was initiated.
+    std::vector<base::SafeBaseName> base_names;
+    for (const auto& file : intent->files) {
+      auto optional_base_name = base::SafeBaseName::Create(file->url.path());
+      // Launch requires that every file have a base name.
+      if (!optional_base_name.has_value()) {
+        base_names.clear();
+        break;
+      }
+
+      base_names.emplace_back(optional_base_name.value());
+    }
+
+    // This vector cannot be empty because this is reached after explicitly
+    // opening one or more files.
+    if (base_names.empty()) {
+      std::move(callback).Run(LaunchResult(State::FAILED));
+      return;
+    }
+
+    // Confirm that the extension can open the file and then call the callback.
+    web_file_handlers_permission_handler_->Confirm(
+        *extension, base_names,
+        base::BindOnce(&ExtensionAppsChromeOs::LaunchAppWithIntentCallback,
+                       weak_factory_.GetWeakPtr(), launch_source, app_id,
+                       event_flags, std::move(intent), std::move(window_info),
+                       std::move(callback)));
+
+    return;
+  }
+
+  bool is_quickoffice = extension_misc::IsQuickOfficeExtension(extension->id());
+
+  // Launch legacy app.
+  if (extension->is_app() || is_quickoffice) {
     content::WebContents* web_contents = LaunchAppWithIntentImpl(
         app_id, event_flags, std::move(intent), launch_source,
         std::move(window_info), std::move(callback));
 
-    if (launch_source == LaunchSource::kFromArc && web_contents) {
-      // Add a flag to remember this web_contents originated in the ARC context.
-      web_contents->SetUserData(
-          &arc::ArcWebContentsData::kArcTransitionFlag,
-          std::make_unique<arc::ArcWebContentsData>(web_contents));
-    }
-  } else {
-    DCHECK(extension->is_extension());
-    // TODO(petermarshall): Set Arc flag as above?
-    LaunchExtension(app_id, event_flags, std::move(intent), launch_source,
-                    std::move(window_info), std::move(callback));
+    MaybeAssociateWebContentsWithArcContext(launch_source, web_contents);
+    return;
   }
+
+  // Launch extension.
+  DCHECK(extension->is_extension());
+  // TODO(petermarshall): Set Arc flag as above?
+  LaunchExtension(app_id, event_flags, std::move(intent), launch_source,
+                  std::move(window_info), std::move(callback));
 }
 
 void ExtensionAppsChromeOs::GetMenuModel(
@@ -544,31 +612,13 @@ void ExtensionAppsChromeOs::OnArcAppListPrefsDestroyed() {
   arc_prefs_ = nullptr;
 }
 
-void ExtensionAppsChromeOs::OnRequestUpdate(
-    int render_process_id,
-    int render_frame_id,
-    blink::mojom::MediaStreamType stream_type,
-    const content::MediaRequestState state) {
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(
-          content::RenderFrameHost::FromID(render_process_id, render_frame_id));
-
-  if (!web_contents) {
-    return;
-  }
-
-  Profile* web_profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  if (web_profile != profile()) {
-    return;
-  }
-
-  absl::optional<web_app::AppId> web_app_id =
-      web_app::FindInstalledAppWithUrlInScope(profile(),
-                                              web_contents->GetVisibleURL(),
-                                              /*window_only=*/false);
-  if (web_app_id.has_value()) {
-    // WebAppsChromeOs is responsible for |app_id|.
+void ExtensionAppsChromeOs::OnIsCapturingVideoChanged(
+    content::WebContents* web_contents,
+    bool is_capturing_video) {
+  const web_app::AppId* web_app_id =
+      web_app::WebAppTabHelper::GetAppId(web_contents);
+  if (web_app_id) {
+    // This media access is coming from a web app.
     return;
   }
 
@@ -583,21 +633,21 @@ void ExtensionAppsChromeOs::OnRequestUpdate(
     app_id = extension->id();
   }
 
-  if (media_requests_.IsNewRequest(app_id, web_contents, state)) {
-    content::WebContentsUserData<AppWebContentsData>::CreateForWebContents(
-        web_contents, this);
-  }
-
-  auto result =
-      media_requests_.UpdateRequests(app_id, web_contents, stream_type, state);
-
+  auto result = media_requests_.UpdateCameraState(app_id, web_contents,
+                                                  is_capturing_video);
   apps::AppPublisher::ModifyCapabilityAccess(app_id, result.camera,
                                              result.microphone);
 }
 
-void ExtensionAppsChromeOs::OnWebContentsDestroyed(
-    content::WebContents* web_contents) {
-  DCHECK(web_contents);
+void ExtensionAppsChromeOs::OnIsCapturingAudioChanged(
+    content::WebContents* web_contents,
+    bool is_capturing_audio) {
+  const web_app::AppId* web_app_id =
+      web_app::WebAppTabHelper::GetAppId(web_contents);
+  if (web_app_id) {
+    // This media access is coming from a web app.
+    return;
+  }
 
   std::string app_id = app_constants::kChromeAppId;
   extensions::ExtensionRegistry* registry =
@@ -605,12 +655,13 @@ void ExtensionAppsChromeOs::OnWebContentsDestroyed(
   DCHECK(registry);
   const extensions::ExtensionSet& extensions = registry->enabled_extensions();
   const extensions::Extension* extension =
-      extensions.GetAppByURL(web_contents->GetLastCommittedURL());
+      extensions.GetAppByURL(web_contents->GetVisibleURL());
   if (extension && Accepts(extension)) {
     app_id = extension->id();
   }
 
-  auto result = media_requests_.OnWebContentsDestroyed(app_id, web_contents);
+  auto result = media_requests_.UpdateMicrophoneState(app_id, web_contents,
+                                                      is_capturing_audio);
   apps::AppPublisher::ModifyCapabilityAccess(app_id, result.camera,
                                              result.microphone);
 }
@@ -793,7 +844,7 @@ bool ExtensionAppsChromeOs::Accepts(const extensions::Extension* extension) {
     }
 
     // Do not publish extensions in Ash if it should run in Lacros instead.
-    if (!apps::ShouldMuxExtensionIds()) {
+    if (crosapi::browser_util::ShouldEnforceAshExtensionKeepList()) {
       return false;
     }
 
@@ -813,7 +864,7 @@ bool ExtensionAppsChromeOs::Accepts(const extensions::Extension* extension) {
   // Do not publish legacy packaged apps in Ash if Lacros is user's primary
   // browser. Legacy packaged apps are deprecated and not supported by Lacros.
   if (extension->is_legacy_packaged_app() &&
-      crosapi::browser_util::IsLacrosPrimaryBrowser()) {
+      crosapi::browser_util::IsLacrosEnabled()) {
     return false;
   }
 

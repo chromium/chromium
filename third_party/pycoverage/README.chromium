@@ -2,8 +2,9 @@ Name: coverage
 URL: https://pypi.python.org/pypi/coverage
 Version: 3.7.1
 Security Critical: no
+Shipped: no
 License: BSD
-License File: NOT_SHIPPED
+License File: LICENSE
 
 Description:
 Code coverage measurement for Python. Initially imported for testing

@@ -384,8 +384,7 @@ TEST_F(DisplayItemListTest, FilterPairedRange) {
     list->push<TranslateOp>(filter_bounds.x(), filter_bounds.y());
 
     PaintFlags flags;
-    flags.setImageFilter(
-        RenderSurfaceFilters::BuildImageFilter(filters, filter_bounds.size()));
+    flags.setImageFilter(RenderSurfaceFilters::BuildImageFilter(filters));
 
     SkRect layer_bounds = gfx::RectFToSkRect(filter_bounds);
     layer_bounds.offset(-filter_bounds.x(), -filter_bounds.y());

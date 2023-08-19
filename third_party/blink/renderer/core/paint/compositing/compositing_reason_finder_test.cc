@@ -6,11 +6,13 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/core/animation/animation_clock.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
+#include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
@@ -29,6 +31,12 @@ class CompositingReasonFinderTest : public RenderingTest,
   void SetUp() override {
     EnableCompositing();
     RenderingTest::SetUp();
+  }
+
+  void SimulateFrame() {
+    // Advance time by 100 ms.
+    auto new_time = GetAnimationClock().CurrentTime() + base::Milliseconds(100);
+    GetPage().Animator().ServiceScriptedAnimations(new_time);
   }
 
   void CheckCompositingReasonsForAnimation(bool supports_transform_animation);
@@ -110,6 +118,82 @@ TEST_P(CompositingReasonFinderTest, UndoOverscroll) {
       DirectReasonsForPaintProperties(*GetLayoutObjectByElementId("fixedDiv")));
 }
 
+// Tests that an anchored-positioned fixpos element should overscroll if the
+// anchor cab be overscrolled, so that it keeps "attached" to the anchor.
+TEST_P(CompositingReasonFinderTest, FixedPosAnchorPosOverscroll) {
+  ScopedCSSAnchorPositioningForTest enabled(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { height: 200vh; }
+      div { width: 100px; height: 100px; }
+      #anchor { anchor-name: --a; position: absolute; background: orange; }
+      #target { anchor-default: --a; top: anchor(top);
+                position: fixed; background: lime; }
+    </style>
+    <div id="anchor"></div>
+    <div id="target"></div>
+  )HTML");
+
+  // Need frame update to update `AnchorPositionScrollData`.
+  SimulateFrame();
+  UpdateAllLifecyclePhasesForTest();
+
+  auto& visual_viewport = GetDocument().GetPage()->GetVisualViewport();
+  visual_viewport.SetOverscrollTypeForTesting(OverscrollType::kNone);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_REASONS(
+      CompositingReason::kFixedPosition | CompositingReason::kAnchorPosition,
+      DirectReasonsForPaintProperties(*GetLayoutObjectByElementId("target")));
+
+  visual_viewport.SetOverscrollTypeForTesting(OverscrollType::kTransform);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_REASONS(
+      CompositingReason::kFixedPosition | CompositingReason::kAnchorPosition,
+      DirectReasonsForPaintProperties(*GetLayoutObjectByElementId("target")));
+}
+
+// Tests that an anchored-positioned fixpos element should not overscroll if
+// the anchor does not overscroll.
+TEST_P(CompositingReasonFinderTest, FixedPosAnchorPosUndoOverscroll) {
+  ScopedCSSAnchorPositioningForTest enabled(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { height: 200vh; }
+      #scroller {
+        position: fixed; overflow: scroll; width: 200px; height: 200px;
+      }
+      #anchor, #target { width: 100px; height: 100px; }
+      #anchor { anchor-name: --a; position: absolute;
+                top: 300px; background: orange; }
+      #target { anchor-default: --a; top: anchor(top);
+                position: fixed; background: lime; }
+    </style>
+    <div id="scroller">
+      <div id="anchor"></div>
+    </div>
+    <div id="target"></div>
+  )HTML");
+
+  // Need frame update to update `AnchorPositionScrollData`.
+  SimulateFrame();
+  UpdateAllLifecyclePhasesForTest();
+
+  auto& visual_viewport = GetDocument().GetPage()->GetVisualViewport();
+  visual_viewport.SetOverscrollTypeForTesting(OverscrollType::kNone);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_REASONS(
+      CompositingReason::kFixedPosition | CompositingReason::kAnchorPosition,
+      DirectReasonsForPaintProperties(*GetLayoutObjectByElementId("target")));
+
+  visual_viewport.SetOverscrollTypeForTesting(OverscrollType::kTransform);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_REASONS(
+      CompositingReason::kFixedPosition | CompositingReason::kAnchorPosition |
+          CompositingReason::kUndoOverscroll,
+      DirectReasonsForPaintProperties(*GetLayoutObjectByElementId("target")));
+}
 TEST_P(CompositingReasonFinderTest, OnlyAnchoredStickyPositionPromoted) {
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -303,8 +387,8 @@ TEST_P(CompositingReasonFinderTest, PromoteCrossOriginIframe) {
     <iframe id=iframe></iframe>
   )HTML");
 
-  HTMLFrameOwnerElement* iframe =
-      To<HTMLFrameOwnerElement>(GetDocument().getElementById("iframe"));
+  HTMLFrameOwnerElement* iframe = To<HTMLFrameOwnerElement>(
+      GetDocument().getElementById(AtomicString("iframe")));
   ASSERT_TRUE(iframe);
   iframe->contentDocument()->OverrideIsInitialEmptyDocument();
   To<LocalFrame>(iframe->ContentFrame())->View()->BeginLifecycleUpdates();
@@ -323,7 +407,8 @@ TEST_P(CompositingReasonFinderTest, PromoteCrossOriginIframe) {
     <!DOCTYPE html>
     <iframe id=iframe sandbox></iframe>
   )HTML");
-  iframe = To<HTMLFrameOwnerElement>(GetDocument().getElementById("iframe"));
+  iframe = To<HTMLFrameOwnerElement>(
+      GetDocument().getElementById(AtomicString("iframe")));
   iframe->contentDocument()->OverrideIsInitialEmptyDocument();
   To<LocalFrame>(iframe->ContentFrame())->View()->BeginLifecycleUpdates();
   UpdateAllLifecyclePhasesForTest();
@@ -337,8 +422,8 @@ TEST_P(CompositingReasonFinderTest, PromoteCrossOriginIframe) {
                  DirectReasonsForPaintProperties(*iframe_layout_view));
 
   // Make the iframe contents scrollable.
-  iframe->contentDocument()->body()->setAttribute(html_names::kStyleAttr,
-                                                  "height: 2000px");
+  iframe->contentDocument()->body()->setAttribute(
+      html_names::kStyleAttr, AtomicString("height: 2000px"));
   UpdateAllLifecyclePhasesForTest();
   if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
     EXPECT_REASONS(CompositingReason::kIFrame,
@@ -554,8 +639,9 @@ TEST_P(CompositingReasonFinderTest, WillChangeScrollPosition) {
                      : CompositingReason::kOverflowScrolling,
                  DirectReasonsForPaintProperties(*target));
 
-  GetDocument().getElementById("target")->RemoveInlineStyleProperty(
-      CSSPropertyID::kWillChange);
+  GetDocument()
+      .getElementById(AtomicString("target"))
+      ->RemoveInlineStyleProperty(CSSPropertyID::kWillChange);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(CompositingReasonFinder::ShouldForcePreferCompositingToLCDText(
       *target, CompositingReason::kNone));

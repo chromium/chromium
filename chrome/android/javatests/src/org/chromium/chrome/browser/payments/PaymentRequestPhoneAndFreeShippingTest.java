@@ -14,16 +14,15 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
-import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
-import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppPresence;
+import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
+import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.payments.Event;
-import org.chromium.ui.modaldialog.ModalDialogProperties;
 
 import java.util.concurrent.TimeoutException;
 
@@ -42,38 +41,35 @@ public class PaymentRequestPhoneAndFreeShippingTest {
     public void setUp() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
         // The user has a shipping address with a valid phone number on disk.
-        String billingAddressId = helper.setProfile(AutofillProfile.builder()
-                                                            .setFullName("Jon Doe")
-                                                            .setCompanyName("Google")
-                                                            .setStreetAddress("340 Main St")
-                                                            .setRegion("CA")
-                                                            .setLocality("Los Angeles")
-                                                            .setPostalCode("90291")
-                                                            .setCountryCode("US")
-                                                            .setPhoneNumber("555-555-5555")
-                                                            .setLanguageCode("en-US")
-                                                            .build());
-        helper.setCreditCard(new CreditCard("", "https://example.test", true, true, "Jon Doe",
-                "4111111111111111", "1111", "12", "2050", "visa", R.drawable.visa_card,
-                billingAddressId, "" /* serverId */));
+        helper.setProfile(AutofillProfile.builder()
+                                  .setFullName("Jon Doe")
+                                  .setCompanyName("Google")
+                                  .setStreetAddress("340 Main St")
+                                  .setRegion("CA")
+                                  .setLocality("Los Angeles")
+                                  .setPostalCode("90291")
+                                  .setCountryCode("US")
+                                  .setPhoneNumber("555-555-5555")
+                                  .setLanguageCode("en-US")
+                                  .build());
+
+        mPaymentRequestTestRule.addPaymentAppFactory(
+                "https://bobpay.test", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
     }
 
     /** Submit the phone number and shipping address to the merchant when the user clicks "Pay." */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testPay() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+                "buyWithMethods([{supportedMethods: 'https://bobpay.test'}]);",
+                mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickAndWait(
-                R.id.button_primary, mPaymentRequestTestRule.getReadyForUnmaskInput());
-        mPaymentRequestTestRule.setTextInCardUnmaskDialogAndWait(
-                R.id.card_unmask_input, "123", mPaymentRequestTestRule.getReadyToUnmask());
-        mPaymentRequestTestRule.clickCardUnmaskButtonAndWait(
-                ModalDialogProperties.ButtonType.POSITIVE, mPaymentRequestTestRule.getDismissed());
+                R.id.button_primary, mPaymentRequestTestRule.getDismissed());
         mPaymentRequestTestRule.expectResultContains(new String[] {"+15555555555", "Jon Doe",
-                "4111111111111111", "12", "2050", "basic-card", "123", "Google", "340 Main St",
-                "CA", "Los Angeles", "90291", "US", "en", "freeShippingOption"});
+                "https://bobpay.test", "Google", "340 Main St", "CA", "Los Angeles", "90291", "US",
+                "en", "freeShippingOption"});
     }
 
     /**
@@ -82,26 +78,23 @@ public class PaymentRequestPhoneAndFreeShippingTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testPaymentRequestEventsMetric() throws TimeoutException {
         // Start and complete the Payment Request.
-        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+                "buyWithMethods([{supportedMethods: 'https://bobpay.test'}]);",
+                mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickAndWait(
-                R.id.button_primary, mPaymentRequestTestRule.getReadyForUnmaskInput());
-        mPaymentRequestTestRule.setTextInCardUnmaskDialogAndWait(
-                R.id.card_unmask_input, "123", mPaymentRequestTestRule.getReadyToUnmask());
-        mPaymentRequestTestRule.clickCardUnmaskButtonAndWait(
-                ModalDialogProperties.ButtonType.POSITIVE, mPaymentRequestTestRule.getDismissed());
+                R.id.button_primary, mPaymentRequestTestRule.getDismissed());
         mPaymentRequestTestRule.expectResultContains(new String[] {"+15555555555", "Jon Doe",
-                "4111111111111111", "12", "2050", "basic-card", "123", "Google", "340 Main St",
-                "CA", "Los Angeles", "90291", "US", "en", "freeShippingOption"});
+                "https://bobpay.test", "Google", "340 Main St", "CA", "Los Angeles", "90291", "US",
+                "en", "freeShippingOption"});
 
         int expectedSample = Event.SHOWN | Event.PAY_CLICKED | Event.RECEIVED_INSTRUMENT_DETAILS
                 | Event.COMPLETED | Event.HAD_INITIAL_FORM_OF_PAYMENT
                 | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS | Event.REQUEST_PAYER_PHONE
-                | Event.REQUEST_SHIPPING | Event.REQUEST_METHOD_BASIC_CARD
-                | Event.AVAILABLE_METHOD_BASIC_CARD | Event.SELECTED_CREDIT_CARD;
+                | Event.REQUEST_SHIPPING | Event.REQUEST_METHOD_OTHER | Event.AVAILABLE_METHOD_OTHER
+                | Event.SELECTED_OTHER;
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "PaymentRequest.Events", expectedSample));

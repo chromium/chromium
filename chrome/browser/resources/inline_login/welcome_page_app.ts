@@ -102,21 +102,52 @@ export class WelcomePageAppElement extends PolymerElement {
      this.shadowRoot!.querySelector('#newPersonLink')]
         .filter(link => !!link)
         .forEach(link => {
+          const handleClick = () =>
+              this.dispatchEvent(new CustomEvent('opened-new-window'));
+          link!.addEventListener('click', handleClick as EventListener);
           link!.addEventListener(
-              'click',
-              () => this.dispatchEvent(new CustomEvent('opened-new-window')));
+              'auxclick',
+              // For middle-click, do the same things as Ctrl+click
+              ((event: MouseEvent) => {
+                if (event.button === 1) {
+                  handleClick();
+                }
+              }) as EventListener);
         });
 
     if (this.isArcAccountRestrictionsEnabled_) {
       const guestModeLink = this.shadowRoot!.querySelector('#guestModeLink');
       if (guestModeLink) {
-        guestModeLink.addEventListener('click', () => this.openGuestLink_());
+        const handleClick = (event: MouseEvent) => {
+          event.preventDefault();
+          this.openGuestLink_();
+        };
+        guestModeLink.addEventListener('click', handleClick as EventListener);
+        guestModeLink.addEventListener(
+            'auxclick',
+            // For middle-click, do the same things as Ctrl+click
+            ((event: MouseEvent) => {
+              if (event.button === 1) {
+                handleClick(event);
+              }
+            }) as EventListener);
       }
     } else {
       const incognitoLink = this.shadowRoot!.querySelector('#incognitoLink');
       if (incognitoLink) {
+        const handleClick = (event: MouseEvent) => {
+          event.preventDefault();
+          this.openIncognitoLink_();
+        };
+        incognitoLink.addEventListener('click', handleClick as EventListener);
         incognitoLink.addEventListener(
-            'click', () => this.openIncognitoLink_());
+            'auxclick',
+            // For middle-click, do the same things as Ctrl+click
+            ((event: MouseEvent) => {
+              if (event.button === 1) {
+                handleClick(event);
+              }
+            }) as EventListener);
       }
     }
   }

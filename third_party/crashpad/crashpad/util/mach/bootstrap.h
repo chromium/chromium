@@ -17,7 +17,7 @@
 
 #include <string>
 
-#include "base/mac/scoped_mach_port.h"
+#include "base/apple/scoped_mach_port.h"
 
 namespace crashpad {
 
@@ -30,7 +30,7 @@ namespace crashpad {
 //!
 //! \return On success, a receive right to the service port. On failure,
 //!     `MACH_PORT_NULL` with a message logged.
-base::mac::ScopedMachReceiveRight BootstrapCheckIn(
+base::apple::ScopedMachReceiveRight BootstrapCheckIn(
     const std::string& service_name);
 
 //! \brief Makes a `boostrap_look_up()` call to the process’ bootstrap server.
@@ -42,7 +42,8 @@ base::mac::ScopedMachReceiveRight BootstrapCheckIn(
 //!
 //! \return On success, a send right to the service port. On failure,
 //!     `MACH_PORT_NULL` with a message logged.
-base::mac::ScopedMachSendRight BootstrapLookUp(const std::string& service_name);
+base::apple::ScopedMachSendRight BootstrapLookUp(
+    const std::string& service_name);
 
 //! \brief Obtains the system’s default Mach exception handler for crash-type
 //!     exceptions.
@@ -56,7 +57,7 @@ base::mac::ScopedMachSendRight BootstrapLookUp(const std::string& service_name);
 //! \return On success, a send right to an `exception_handler_t` corresponding
 //!     to the system’s default crash reporter. On failure, `MACH_PORT_NULL`,
 //!     with a message logged.
-base::mac::ScopedMachSendRight SystemCrashReporterHandler();
+base::apple::ScopedMachSendRight SystemCrashReporterHandler();
 
 }  // namespace crashpad
 

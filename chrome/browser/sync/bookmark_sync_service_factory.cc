@@ -6,6 +6,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/undo/bookmark_undo_service_factory.h"
+#include "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"
 
 // static
@@ -40,5 +41,5 @@ KeyedService* BookmarkSyncServiceFactory::BuildServiceInstanceFor(
   Profile* profile = Profile::FromBrowserContext(context);
   return new sync_bookmarks::BookmarkSyncService(
       BookmarkUndoServiceFactory::GetForProfileIfExists(profile),
-      /*wipe_model_on_stopping_sync_with_clear_data=*/false);
+      syncer::WipeModelUponSyncDisabledBehavior::kNever);
 }

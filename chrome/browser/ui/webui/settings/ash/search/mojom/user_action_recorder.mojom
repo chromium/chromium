@@ -1,0 +1,45 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.settings.mojom;
+
+import "ash/webui/settings/public/constants/setting.mojom";
+
+// Value for the setting change; can be a bool, int, or string.
+union SettingChangeValue {
+  bool bool_value;
+  int32 int_value;
+  string string_value;
+};
+
+// Records user actions within OS settings. Implemented in the browser process;
+// intended to be called from settings JS.
+interface UserActionRecorder {
+  // Records that the settings window has been focused.
+  RecordPageFocus();
+
+  // Records that the settings window has been blurred (i.e., no longer
+  // focused).
+  RecordPageBlur();
+
+  // Records that the user has clicked within the settings page.
+  RecordClick();
+
+  // Records that the user has navigated to a settings subpage.
+  RecordNavigation();
+
+  // Records that the user has completed a search attempt.
+  RecordSearch();
+
+  // Deprecated; all new usages should use the other RecordSettingChangeValue.
+  // TODO(https://crbug.com/1133553): remove once migration is complete.
+  RecordSettingChange();
+
+  // Records that the user has changed a |setting| and the |value| that the
+  // setting was changed to. |value| can be null when the corresponding
+  // setting doesn't actually change a value, such as the open wallpaper
+  // setting.
+  RecordSettingChangeWithDetails(chromeos.settings.mojom.Setting setting,
+                                 SettingChangeValue? value);
+};

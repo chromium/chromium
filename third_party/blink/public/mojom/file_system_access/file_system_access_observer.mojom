@@ -1,0 +1,60 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom";
+
+// Each of the below types represents a type of file system change. Each type
+// may provide extra information specific to that type.
+struct FileSystemAccessChangeTypeCreated {};
+struct FileSystemAccessChangeTypeDeleted {};
+struct FileSystemAccessChangeTypeErrored {};
+struct FileSystemAccessChangeTypeModified {};
+struct FileSystemAccessChangeTypeMoved {
+  // The path components (i.e. the path split by directory separator) of
+  // `FileSystemAccessChangeMetadata`'s `changed_entry` relative to `root`,
+  // if the former path is known; otherwise null.
+  array<string>? former_relative_path;
+};
+struct FileSystemAccessChangeTypeUnsupported {};
+
+// Union of the above file system changes. This list of types must be kept in
+// sync with the `FileSystemChangeType` enum in
+// t/b/r/m/file_system_access/file_system_change_record.idl
+union FileSystemAccessChangeType {
+  FileSystemAccessChangeTypeCreated created;
+  FileSystemAccessChangeTypeDeleted deleted;
+  FileSystemAccessChangeTypeErrored errored;
+  FileSystemAccessChangeTypeModified modified;
+  FileSystemAccessChangeTypeMoved moved;
+  FileSystemAccessChangeTypeUnsupported unsupported;
+};
+
+// Common details of all file system changes.
+// TODO(https://crbug.com/1248065): Use something similar to (but probably not
+// the same as) mojo_base.mojom.SafeBasename to represent relative path
+// components. Note that our paths really aren't base::FilePath, but instead are
+// virtual paths (see https://crbug.com/956231).
+struct FileSystemAccessChangeMetadata {
+  // The entry being observed.
+  FileSystemAccessEntry root;
+  // The entry affected by the file system change.
+  FileSystemAccessEntry changed_entry;
+  // The path components (i.e. the path split by directory separator) of
+  // `changed_entry` relative to `root`.
+  array<string> relative_path;
+};
+
+// Details of a file system change on a watched file or directory.
+struct FileSystemAccessChange {
+  FileSystemAccessChangeMetadata metadata;
+  FileSystemAccessChangeType type;
+};
+
+// Notified of changes to the file system.
+interface FileSystemAccessObserver {
+  // Called when (a batch of) changes are observed to a watched file.
+  OnFileChanges(array<FileSystemAccessChange> changes);
+};

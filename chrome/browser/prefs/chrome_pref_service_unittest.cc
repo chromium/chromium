@@ -6,12 +6,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/prefs/chrome_command_line_pref_store.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/test_renderer_host.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
@@ -20,11 +20,11 @@ using content::RenderViewHostTester;
 
 TEST(ChromePrefServiceTest, UpdateCommandLinePrefStore) {
   TestingPrefServiceSimple prefs;
-  prefs.registry()->RegisterBooleanPref(prefs::kCloudPrintProxyEnabled, false);
+  prefs.registry()->RegisterBooleanPref(prefs::kDisable3DAPIs, false);
 
   // Check to make sure the value is as expected.
   const PrefService::Preference* pref =
-      prefs.FindPreference(prefs::kCloudPrintProxyEnabled);
+      prefs.FindPreference(prefs::kDisable3DAPIs);
   ASSERT_TRUE(pref);
   const base::Value* value = pref->GetValue();
   ASSERT_TRUE(value);
@@ -34,11 +34,11 @@ TEST(ChromePrefServiceTest, UpdateCommandLinePrefStore) {
 
   // Change the command line.
   base::CommandLine cmd_line(base::CommandLine::NO_PROGRAM);
-  cmd_line.AppendSwitch(switches::kEnableCloudPrintProxy);
+  cmd_line.AppendSwitch(switches::kDisable3DAPIs);
 
   // Call UpdateCommandLinePrefStore and check to see if the value has changed.
   prefs.UpdateCommandLinePrefStore(new ChromeCommandLinePrefStore(&cmd_line));
-  pref = prefs.FindPreference(prefs::kCloudPrintProxyEnabled);
+  pref = prefs.FindPreference(prefs::kDisable3DAPIs);
   ASSERT_TRUE(pref);
   value = pref->GetValue();
   ASSERT_TRUE(value);

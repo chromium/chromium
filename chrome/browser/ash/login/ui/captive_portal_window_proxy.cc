@@ -34,7 +34,7 @@ class CaptivePortalWidget : public views::Widget {
 
   // views::Widget:
   const ui::ThemeProvider* GetThemeProvider() const override;
-  ui::ColorProviderManager::ThemeInitializerSupplier* GetCustomTheme()
+  ui::ColorProviderKey::ThemeInitializerSupplier* GetCustomTheme()
       const override;
 
  private:
@@ -48,7 +48,7 @@ const ui::ThemeProvider* CaptivePortalWidget::GetThemeProvider() const {
   return &ThemeService::GetThemeProviderForProfile(profile_);
 }
 
-ui::ColorProviderManager::ThemeInitializerSupplier*
+ui::ColorProviderKey::ThemeInitializerSupplier*
 CaptivePortalWidget::GetCustomTheme() const {
   return ThemeService::GetThemeSupplierForProfile(profile_);
 }

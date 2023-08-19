@@ -89,7 +89,7 @@ class ShareTabInsteadButton
   }
 
  private:
-  const raw_ptr<TabSharingUI, DanglingUntriaged> ui_;
+  const raw_ptr<TabSharingUI, AcrossTasksDanglingUntriaged> ui_;
   const TabSharingInfoBarDelegate::ButtonState button_state_;
   const TabSharingInfoBarDelegate::TabShareType capture_type_;
 };

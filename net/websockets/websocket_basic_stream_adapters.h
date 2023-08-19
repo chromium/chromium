@@ -98,8 +98,7 @@ class NET_EXPORT_PRIVATE WebSocketSpdyStreamAdapter
   void OnHeadersSent() override;
   void OnEarlyHintsReceived(const spdy::Http2HeaderBlock& headers) override;
   void OnHeadersReceived(
-      const spdy::Http2HeaderBlock& response_headers,
-      const spdy::Http2HeaderBlock* pushed_request_headers) override;
+      const spdy::Http2HeaderBlock& response_headers) override;
   void OnDataReceived(std::unique_ptr<SpdyBuffer> buffer) override;
   void OnDataSent() override;
   void OnTrailers(const spdy::Http2HeaderBlock& trailers) override;

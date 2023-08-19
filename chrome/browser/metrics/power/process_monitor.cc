@@ -17,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "chrome/browser/metrics/power/power_metrics_constants.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
@@ -113,9 +114,14 @@ MonitoredProcessType GetMonitoredProcessTypeForRenderProcess(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   content::BrowserContext* browser_context = host->GetBrowserContext();
+  if (extensions::ChromeContentBrowserClientExtensionsPart::
+          AreExtensionsDisabledForProfile(browser_context)) {
+    return MonitoredProcessType::kRenderer;
+  }
+
   extensions::ProcessMap* extension_process_map =
       extensions::ProcessMap::Get(browser_context);
-
+  DCHECK(extension_process_map);
   std::set<std::string> extension_ids =
       extension_process_map->GetExtensionsInProcess(host->GetID());
 

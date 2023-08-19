@@ -8,13 +8,14 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/sensor_disabled_notification_delegate.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/privacy_hub/microphone_privacy_switch_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_metrics.h"
+#include "ash/system/privacy_hub/sensor_disabled_notification_delegate.h"
 #include "ash/system/system_notification_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -30,14 +31,6 @@
 
 namespace ash {
 namespace {
-
-class FakeSensorDisabledNotificationDelegate
-    : public SensorDisabledNotificationDelegate {
- public:
-  std::vector<std::u16string> GetAppsAccessingSensor(Sensor sensor) override {
-    return {};
-  }
-};
 
 class MockNewWindowDelegate
     : public testing::NiceMock<ash::TestNewWindowDelegate> {
@@ -97,11 +90,8 @@ class PrivacyHubNotificationControllerTest : public AshTestBase {
 
   void ShowNotification(Sensor sensor) {
     if (sensor == Sensor::kMicrophone) {
-      Shell::Get()
-          ->privacy_hub_controller()
-          ->microphone_controller()
-          .OnInputMuteChanged(true,
-                              CrasAudioHandler::InputMuteChangeMethod::kOther);
+      MicrophonePrivacySwitchController::Get()->OnInputMuteChanged(
+          true, CrasAudioHandler::InputMuteChangeMethod::kOther);
       FakeCrasAudioClient::Get()->SetActiveInputStreamsWithPermission(
           {{"CRAS_CLIENT_TYPE_CHROME", 1}});
     } else {
@@ -111,11 +101,8 @@ class PrivacyHubNotificationControllerTest : public AshTestBase {
 
   void RemoveNotification(Sensor sensor) {
     if (sensor == Sensor::kMicrophone) {
-      Shell::Get()
-          ->privacy_hub_controller()
-          ->microphone_controller()
-          .OnInputMuteChanged(false,
-                              CrasAudioHandler::InputMuteChangeMethod::kOther);
+      MicrophonePrivacySwitchController::Get()->OnInputMuteChanged(
+          false, CrasAudioHandler::InputMuteChangeMethod::kOther);
       FakeCrasAudioClient::Get()->SetActiveInputStreamsWithPermission(
           {{"CRAS_CLIENT_TYPE_CHROME", 0}});
     } else {
@@ -152,11 +139,11 @@ class PrivacyHubNotificationControllerTest : public AshTestBase {
     return nullptr;
   }
 
-  raw_ptr<PrivacyHubNotificationController> controller_;
-  const FakeSensorDisabledNotificationDelegate delegate_;
+  raw_ptr<PrivacyHubNotificationController, DanglingUntriaged> controller_;
   const base::HistogramTester histogram_tester_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<MockNewWindowDelegate> new_window_delegate_ = nullptr;
+  raw_ptr<MockNewWindowDelegate, DanglingUntriaged> new_window_delegate_ =
+      nullptr;
   std::unique_ptr<ash::TestNewWindowDelegateProvider> window_delegate_provider_;
 };
 
@@ -171,6 +158,7 @@ TEST_F(PrivacyHubNotificationControllerTest, CameraNotificationShowAndHide) {
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_TITLE),
       notification_ptr->title());
+  EXPECT_EQ(1u, notification_ptr->buttons().size());
 
   RemoveNotification(Sensor::kCamera);
 
@@ -189,6 +177,7 @@ TEST_F(PrivacyHubNotificationControllerTest,
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_MICROPHONE_MUTED_BY_SW_SWITCH_NOTIFICATION_TITLE),
             notification_ptr->title());
+  EXPECT_EQ(1u, notification_ptr->buttons().size());
 
   RemoveNotification(Sensor::kMicrophone);
 
@@ -206,6 +195,7 @@ TEST_F(PrivacyHubNotificationControllerTest,
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_PRIVACY_HUB_GEOLOCATION_OFF_NOTIFICATION_TITLE),
             notification_ptr->title());
+  EXPECT_EQ(2u, notification_ptr->buttons().size());
 
   RemoveNotification(Sensor::kLocation);
   EXPECT_FALSE(GetGeolocationNotification());
@@ -285,6 +275,7 @@ TEST_F(PrivacyHubNotificationControllerTest, CombinedNotificationShowAndHide) {
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_TITLE),
             notification_ptr->title());
+  EXPECT_EQ(2u, notification_ptr->buttons().size());
 
   RemoveCombinedNotification();
 

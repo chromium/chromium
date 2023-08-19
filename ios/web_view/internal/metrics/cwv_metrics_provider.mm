@@ -6,10 +6,6 @@
 
 #include "components/metrics/library_support/histogram_manager.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation CWVMetricsProvider {
   std::unique_ptr<metrics::HistogramManager> _histogramManager;
 }

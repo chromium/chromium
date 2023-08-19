@@ -13,6 +13,7 @@
 #include "components/sync/base/storage_type.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_sync_bridge.h"
+#include "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
 
 namespace base {
 class Clock;
@@ -33,6 +34,8 @@ class ReadingListSyncBridge : public syncer::ModelTypeSyncBridge {
  public:
   ReadingListSyncBridge(
       syncer::StorageType storage_type,
+      syncer::WipeModelUponSyncDisabledBehavior
+          wipe_model_upon_sync_disabled_behavior,
       base::Clock* clock,
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
 
@@ -51,6 +54,17 @@ class ReadingListSyncBridge : public syncer::ModelTypeSyncBridge {
                            syncer::MetadataChangeList* metadata_change_list);
   void DidRemoveEntry(const ReadingListEntry& entry,
                       syncer::MetadataChangeList* metadata_change_list);
+
+  // Exposes whether the underlying ModelTypeChangeProcessor is tracking
+  // metadata. This means sync is enabled and the initial download of data is
+  // completed, which implies that the relevant ReadingListModel already
+  // reflects remote data. Note however that this doesn't mean reading list
+  // entries are actively sync-ing at the moment, for example sync could be
+  // paused due to an auth error.
+  bool IsTrackingMetadata() const;
+
+  // Returns the StorageType, as passed to the constructor.
+  syncer::StorageType GetStorageTypeForUma() const;
 
   // Creates an object used to communicate changes in the sync metadata to the
   // model type store.
@@ -149,9 +163,12 @@ class ReadingListSyncBridge : public syncer::ModelTypeSyncBridge {
   void AddEntryToBatch(syncer::MutableDataBatch* batch,
                        const ReadingListEntry& entry);
 
-  const syncer::StorageType storage_type_;
+  const syncer::StorageType storage_type_for_uma_;
   const raw_ptr<base::Clock> clock_;
   raw_ptr<ReadingListModelImpl> model_ = nullptr;
+  syncer::WipeModelUponSyncDisabledBehavior
+      wipe_model_upon_sync_disabled_behavior_ =
+          syncer::WipeModelUponSyncDisabledBehavior::kNever;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

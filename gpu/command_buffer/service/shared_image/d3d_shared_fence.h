@@ -44,6 +44,9 @@ class GPU_GLES2_EXPORT D3DSharedFence
   // and should be used for waiting.
   uint64_t GetFenceValue() const;
 
+  // Returns the D3D11 device if this fence was created using CreateForD3D11.
+  Microsoft::WRL::ComPtr<ID3D11Device> GetD3D11Device() const;
+
   // Returns true if the underlying fence object is the same as |shared_handle|.
   bool IsSameFenceAsHandle(HANDLE shared_handle) const;
 

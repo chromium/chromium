@@ -24,7 +24,6 @@
 #include "base/logging.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/ptr_util.h"
-#include "base/message_loop/timer_slack.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/power_monitor/power_monitor.h"
@@ -41,7 +40,6 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "components/power_scheduler/power_mode_arbiter.h"
 #include "content/child/browser_exposed_child_interfaces.h"
 #include "content/child/child_process.h"
 #include "content/common/child_process.mojom.h"
@@ -304,7 +302,7 @@ class ChildThreadImpl::IOThreadState
 #if BUILDFLAG(IS_APPLE)
   void GetTaskPort(GetTaskPortCallback callback) override {
     mojo::PlatformHandle task_port(
-        (base::mac::ScopedMachSendRight(task_self_trap())));
+        (base::apple::ScopedMachSendRight(task_self_trap())));
     std::move(callback).Run(std::move(task_port));
   }
 #endif
@@ -687,9 +685,6 @@ void ChildThreadImpl::Init(const Options& options) {
     BindHostReceiver(remote_power_monitor.InitWithNewPipeAndPassReceiver());
     source_ptr->Init(std::move(remote_power_monitor));
   }
-
-  // Requires base::PowerMonitor to be initialized first.
-  power_scheduler::PowerModeArbiter::GetInstance()->OnThreadPoolAvailable();
 
 #if BUILDFLAG(IS_POSIX)
   // Check that --process-type is specified so we don't do this in unit tests

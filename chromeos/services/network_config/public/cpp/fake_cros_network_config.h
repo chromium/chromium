@@ -99,7 +99,9 @@ class FakeCrosNetworkConfig : public mojom::CrosNetworkConfig {
   // Sets the a value for the `allow_only_policy_cellular_networks` field of
   // `global_policy_`and calls `OnPoliciesApplied` with the value of
   // `global_policy_` for all observers in `observers_`.
-  void SetGlobalPolicy(bool allow_only_policy_cellular_networks);
+  void SetGlobalPolicy(bool allow_only_policy_cellular_networks,
+                       bool dns_queries_monitored,
+                       bool report_xdr_events_enabled);
 
   // Sets the connection state for the network in `visible_networks_` with the
   // specified guid and calls `OnActiveNetworksChanged` for all observers in
@@ -125,6 +127,10 @@ class FakeCrosNetworkConfig : public mojom::CrosNetworkConfig {
   // Clears all the networks and devices and calls `OnDeviceStateListChanged`
   // and `OnActiveNetworksChanged` for all observers in `observers_`.
   void ClearNetworksAndDevices();
+
+  // Removes the passed in `index` of the current networks from the list and
+  // calls `OnDeviceStateListChanged` for all observer in `observers_`.
+  void RemoveNthNetworks(size_t index);
 
   // Returns how many times `RequestNetworkScan` was requested for the specified
   // network type.

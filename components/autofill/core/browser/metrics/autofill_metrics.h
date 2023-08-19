@@ -35,6 +35,7 @@
 #include "components/security_state/core/security_state.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 class GURL;
 
@@ -649,11 +650,20 @@ class AutofillMetrics {
     kFilledValueWasModified = 9,
     kHadValueBeforeFilling = 10,
     kHadTypedOrFilledValueAtSubmission = 11,
-    kMaxValue = kHadTypedOrFilledValueAtSubmission
+    kIsInSubFrame = 12,
+    kMaxValue = kIsInSubFrame
+  };
+
+  struct FormEventSetTraits {
+    static constexpr autofill_metrics::FormEvent kMinValue =
+        autofill_metrics::FormEvent(0);
+    static constexpr autofill_metrics::FormEvent kMaxValue =
+        autofill_metrics::NUM_FORM_EVENTS;
+    static constexpr bool kPacked = false;
   };
 
   using FormEventSet =
-      DenseSet<autofill_metrics::FormEvent, autofill_metrics::NUM_FORM_EVENTS>;
+      DenseSet<autofill_metrics::FormEvent, FormEventSetTraits>;
 
   // Utility class for determining the seamlessness of a credit card fill.
   class CreditCardSeamlessness {
@@ -731,8 +741,8 @@ class AutofillMetrics {
                              const AutofillField& field,
                              const base::TimeTicks& form_parsed_timestamp,
                              bool off_the_record);
-    void LogDidFillSuggestion(int record_type,
-                              bool is_for_credit_card,
+    void LogDidFillSuggestion(absl::variant<AutofillProfile::RecordType,
+                                            CreditCard::RecordType> record_type,
                               const FormStructure& form,
                               const AutofillField& field);
     void LogTextFieldDidChange(const FormStructure& form,
@@ -756,7 +766,6 @@ class AutofillMetrics {
     void LogAutofillFormSummaryAtFormRemove(
         const FormStructure& form_structure,
         FormEventSet form_events,
-        bool is_in_any_main_frame,
         const base::TimeTicks& initial_interaction_timestamp,
         const base::TimeTicks& form_submitted_timestamp);
     void LogFormSubmitted(bool is_for_credit_card,

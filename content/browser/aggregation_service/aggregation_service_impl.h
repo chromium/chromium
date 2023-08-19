@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <set>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -34,6 +35,10 @@ class Clock;
 class FilePath;
 class UpdateableSequencedTaskRunner;
 }  // namespace base
+
+namespace url {
+class Origin;
+}  // namespace url
 
 namespace content {
 
@@ -91,6 +96,8 @@ class CONTENT_EXPORT AggregationServiceImpl
   void SendReportsForWebUI(
       const std::vector<AggregationServiceStorage::RequestId>& ids,
       base::OnceClosure reports_sent_callback) override;
+  void GetPendingReportReportingOrigins(
+      base::OnceCallback<void(std::set<url::Origin>)> callback) override;
   void AddObserver(AggregationServiceObserver* observer) override;
   void RemoveObserver(AggregationServiceObserver* observer) override;
 
@@ -137,6 +144,8 @@ class CONTENT_EXPORT AggregationServiceImpl
       absl::optional<AggregationServiceStorage::RequestId> request_id,
       AggregatableReport report,
       AggregatableReportSender::RequestStatus status);
+  void OnUserVisibleTaskStarted();
+  void OnUserVisibleTaskComplete();
   void OnClearDataComplete();
 
   void OnGetRequestsToSendFromWebUI(
@@ -156,9 +165,9 @@ class CONTENT_EXPORT AggregationServiceImpl
   // clear data task is queued or running. Otherwise `BEST_EFFORT` is used.
   scoped_refptr<base::UpdateableSequencedTaskRunner> storage_task_runner_;
 
-  // How many clear data storage tasks are queued or running currently, i.e.
+  // How many user visible storage tasks are queued or running currently, i.e.
   // have been posted but the reply has not been run.
-  int num_pending_clear_data_tasks_ = 0;
+  int num_pending_user_visible_tasks_ = 0;
 
   base::SequenceBound<AggregationServiceStorage> storage_;
   std::unique_ptr<AggregatableReportScheduler> scheduler_;

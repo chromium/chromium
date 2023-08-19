@@ -1,4 +1,4 @@
-# tags: [ Android Fuchsia Linux Mac Mac10.13 Mac11 Mac12 Mac13 Mac13-arm64 Win Win10.20h2 Win11 ]
+# tags: [ Android Fuchsia Linux Mac Mac11 Mac12 Mac13 Mac13-arm64 Win Win10.20h2 Win11 Win11-arm64 ]
 # tags: [ Release Debug ]
 # results: [ Timeout Crash Pass Failure Slow Skip ]
 
@@ -52,7 +52,6 @@ crbug.com/1117266 editing/caret/bidi_hit_test_caret_consistency.html [ Failure ]
 crbug.com/1117266 editing/input/editable-container-with-word-wrap-normal.html [ Failure ]
 crbug.com/1117266 editing/input/reveal-edit-on-input-vertically.html [ Failure ]
 crbug.com/1117266 editing/inserting/caret-position.html [ Failure ]
-crbug.com/1117266 editing/selection/caret-at-bidi-boundary.html [ Failure ]
 crbug.com/1117266 editing/selection/caret-in-empty-inline-1.html [ Failure ]
 crbug.com/1117266 editing/selection/caret-in-empty-inline-2.html [ Failure ]
 crbug.com/1117266 editing/selection/internal-caret-rect.html [ Failure ]
@@ -65,8 +64,6 @@ crbug.com/1117211 css3/filters/composited-layer-promotion-after-outset-overlap-c
 # ref tests that fail in highdpi
 crbug.com/1179572 animations/cross-fade-webkit-mask-box-image.html [ Failure ]
 
-crbug.com/1353771 virtual/view-transition/external/wpt/css/css-view-transitions/new-content-with-overflow-zoomed.html [ Failure ]
-crbug.com/1353771 virtual/view-transition/external/wpt/css/css-view-transitions/old-content-with-overflow-zoomed.html [ Failure ]
 crbug.com/1353771 virtual/view-transition/external/wpt/css/css-view-transitions/element-with-overflow.html [ Failure ]
 crbug.com/1412910 virtual/view-transition/external/wpt/css/css-view-transitions/fractional-translation-from-position.html [ Failure ]
 crbug.com/1414855 virtual/view-transition/external/wpt/css/css-view-transitions/new-content-captures-spans.html [ Failure ]
@@ -226,8 +223,6 @@ crbug.com/1179556 paint/transforms/subpixel-scale-align.html [ Failure ]
 crbug.com/1179570 printing/block-width-relayout-shrink.html [ Failure ]
 crbug.com/1287552 printing/multicol-2-pages.html [ Crash Failure ]
 crbug.com/1179570 printing/thead-repeats-with-translucent-text-and-borders.html [ Failure ]
-crbug.com/1286601 printing/vertical-lr.html [ Crash Failure ]
-crbug.com/1286601 printing/vertical-rl.html [ Crash Failure ]
 
 crbug.com/1179565 svg/animations/no-attr-lineargradient-spreadmethod.svg [ Failure ]
 crbug.com/1179565 svg/animations/mozilla/animateMotion-indefinite-to-1.svg [ Failure ]
@@ -285,7 +280,6 @@ crbug.com/1179570 virtual/text-antialias/incorrect-fixed-pitch-font.html [ Failu
 
 # Text failures. these did not produce any output in highdpi runs but there were expected files.
 crbug.com/1179554 http/tests/images/document-policy-oversized-images-forced-layout.php [ Failure ]
-crbug.com/1179554 http/tests/images/document-policy-oversized-images-resize.php [ Failure ]
 crbug.com/1179554 http/tests/images/document-policy-oversized-images-responsive-image.php [ Failure ]
 crbug.com/1179554 http/tests/images/document-policy-oversized-images-styles.php [ Failure ]
 
@@ -451,3 +445,6 @@ crbug.com/1324618 external/wpt/css/css-images/object-view-box-fit-fill* [ Pass ]
 
 # crbug.com/1339051: some ref tests generate output with minor differences.
 crbug.com/1339051 fast/forms/suggestion-picker/month-suggestion-picker-appearance-rtl.html [ Failure ]
+
+# ====== New tests from wpt-importer added here ======
+crbug.com/626703 virtual/view-transition/external/wpt/css/css-view-transitions/capture-with-opacity-zero-child.html [ Failure ]

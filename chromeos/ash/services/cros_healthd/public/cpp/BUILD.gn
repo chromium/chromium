@@ -29,6 +29,7 @@ source_set("cpp") {
     "//base",
     "//chromeos/ash/components/mojo_service_manager",
     "//chromeos/ash/services/cros_healthd/public/mojom",
+    "//third_party/abseil-cpp:absl",
     "//ui/events/ozone/evdev:event_device_info",
   ]
   if (!use_real_chromeos_services) {
@@ -37,6 +38,8 @@ source_set("cpp") {
       "fake_ash_event_reporter.h",
       "fake_cros_healthd.cc",
       "fake_cros_healthd.h",
+      "fake_routine_control.cc",
+      "fake_routine_control.h",
     ]
     public_deps += [
       "//ash/system/diagnostics/mojom",

@@ -372,12 +372,20 @@ const wchar_t* GetBaseAppId() {
   return InstallDetails::Get().base_app_id();
 }
 
-const wchar_t* GetProgIdPrefix() {
-  return InstallDetails::Get().mode().prog_id_prefix;
+const wchar_t* GetBrowserProgIdPrefix() {
+  return InstallDetails::Get().mode().browser_prog_id_prefix;
 }
 
-const wchar_t* GetProgIdDescription() {
-  return InstallDetails::Get().mode().prog_id_description;
+const wchar_t* GetBrowserProgIdDescription() {
+  return InstallDetails::Get().mode().browser_prog_id_description;
+}
+
+const wchar_t* GetPDFProgIdPrefix() {
+  return InstallDetails::Get().mode().pdf_prog_id_prefix;
+}
+
+const wchar_t* GetPDFProgIdDescription() {
+  return InstallDetails::Get().mode().pdf_prog_id_description;
 }
 
 std::wstring GetActiveSetupPath() {
@@ -398,7 +406,20 @@ bool SupportsRetentionExperiments() {
   return InstallDetails::Get().mode().supports_retention_experiments;
 }
 
-int GetIconResourceIndex() {
+int GetAppIconResourceIndex() {
+  return InstallDetails::Get().mode().app_icon_resource_index;
+}
+
+int GetHTMLIconResourceIndex() {
+  // TODO(https://crbug.com/414141): Return HTML specific resource index
+  // once we've added support for it. This will be used for all doc types
+  // Chrome registers itself as a default handler for, except for .pdf.
+  return InstallDetails::Get().mode().app_icon_resource_index;
+}
+
+int GetPDFIconResourceIndex() {
+  // TODO(https://crbug.com/414141): Return PDF specific resource index
+  // once we've added support for it.
   return InstallDetails::Get().mode().app_icon_resource_index;
 }
 

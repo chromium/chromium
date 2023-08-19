@@ -19,6 +19,9 @@
         {"pathname": "/web_apps/tab_strip_customizations.html"},
         {"pathname": "/web_apps/title_appname_prefix.html"}
       ]
+    },
+    "new_tab_button": {
+      "url": "/web_apps/favicon_only.html"
     }
   }
 }

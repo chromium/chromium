@@ -12,6 +12,7 @@
 #include "net/der/parse_values.h"
 #include "net/der/parser.h"
 #include "net/der/tag.h"
+#include "third_party/boringssl/src/include/openssl/base.h"
 
 namespace net {
 
@@ -43,7 +44,7 @@ bool ParsePolicyQualifiers(bool restrict_to_known_qualifiers,
                            der::Parser* policy_qualifiers_sequence_parser,
                            std::vector<PolicyQualifierInfo>* policy_qualifiers,
                            CertErrors* errors) {
-  DCHECK(errors);
+  BSSL_CHECK(errors);
 
   // If it is present, the policyQualifiers sequence should have at least 1
   // element.
@@ -132,8 +133,8 @@ bool ParseCertificatePoliciesExtensionImpl(
     std::vector<der::Input>* policy_oids,
     std::vector<PolicyInformation>* policy_informations,
     CertErrors* errors) {
-  DCHECK(policy_oids);
-  DCHECK(errors);
+  BSSL_CHECK(policy_oids);
+  BSSL_CHECK(errors);
   // certificatePolicies ::= SEQUENCE SIZE (1..MAX) OF PolicyInformation
   der::Parser extension_parser(extension_value);
   der::Parser policies_sequence_parser;

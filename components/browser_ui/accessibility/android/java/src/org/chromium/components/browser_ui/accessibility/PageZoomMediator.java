@@ -7,7 +7,7 @@ package org.chromium.components.browser_ui.accessibility;
 import static org.chromium.components.browser_ui.accessibility.PageZoomUtils.PAGE_ZOOM_MAXIMUM_SEEKBAR_VALUE;
 import static org.chromium.components.browser_ui.accessibility.PageZoomUtils.convertZoomFactorToSeekBarValue;
 import static org.chromium.content_public.browser.HostZoomMap.AVAILABLE_ZOOM_FACTORS;
-import static org.chromium.content_public.browser.HostZoomMap.SYSTEM_FONT_SCALE;
+import static org.chromium.content_public.browser.HostZoomMap.setSystemFontScale;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -32,13 +32,14 @@ public class PageZoomMediator {
 
         mModel.set(PageZoomProperties.DECREASE_ZOOM_CALLBACK, this::handleDecreaseClicked);
         mModel.set(PageZoomProperties.INCREASE_ZOOM_CALLBACK, this::handleIncreaseClicked);
+        mModel.set(PageZoomProperties.RESET_ZOOM_CALLBACK, this::handleResetClicked);
         mModel.set(PageZoomProperties.SEEKBAR_CHANGE_CALLBACK, this::handleSeekBarValueChanged);
         mModel.set(PageZoomProperties.MAXIMUM_SEEK_VALUE, PAGE_ZOOM_MAXIMUM_SEEKBAR_VALUE);
 
         // Update the stored system font scale based on OS-level configuration. |this| will be
         // re-constructed after configuration changes, so this will be up-to-date for this session.
-        SYSTEM_FONT_SCALE =
-                ContextUtils.getApplicationContext().getResources().getConfiguration().fontScale;
+        setSystemFontScale(
+                ContextUtils.getApplicationContext().getResources().getConfiguration().fontScale);
     }
 
     /**
@@ -89,6 +90,12 @@ public class PageZoomMediator {
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    void handleResetClicked(Void unused) {
+        // Reset as if the user moved the seekbar to the default zoom value
+        handleSeekBarValueChanged(
+                PageZoomUtils.convertZoomFactorToSeekBarValue(mDefaultZoomFactor));
+    }
+
     void handleSeekBarValueChanged(int newValue) {
         if (PageZoomUtils.shouldSnapSeekBarValueToDefaultZoom(newValue, mDefaultZoomFactor)) {
             newValue = PageZoomUtils.convertZoomFactorToSeekBarValue(mDefaultZoomFactor);

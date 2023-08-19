@@ -15,6 +15,8 @@
 #include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace qr_code_generator {
+
 struct QRVersionInfo;
 
 // QRCodeGenerator generates class M QR codes of various versions.
@@ -235,5 +237,7 @@ class QRCodeGenerator {
   // QR code.
   uint8_t clip_dump_;
 };
+
+}  // namespace qr_code_generator
 
 #endif  // COMPONENTS_QR_CODE_GENERATOR_QR_CODE_GENERATOR_H_

@@ -84,7 +84,7 @@ TEST(DestinationSetTest, Parse) {
   }
 }
 
-TEST(SourceRegistrationTest, ToJson) {
+TEST(DestinationSetTest, ToJson) {
   const DestinationSet destination = *DestinationSet::Create(
       {net::SchemefulSite::Deserialize("https://d.example")});
   const DestinationSet destinations = *DestinationSet::Create(

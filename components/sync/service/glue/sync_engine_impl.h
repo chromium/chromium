@@ -12,14 +12,11 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/invalidation/public/invalidation_handler.h"
-#include "components/sync/base/extensions_activity.h"
+#include "components/invalidation/public/invalidator_state.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/engine/configure_reason.h"
 #include "components/sync/engine/connection_status.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/engine/model_type_configurer.h"
@@ -28,10 +25,6 @@
 #include "components/sync/engine/sync_status.h"
 #include "components/sync/invalidations/fcm_registration_token_observer.h"
 #include "components/sync/invalidations/invalidations_listener.h"
-
-namespace invalidation {
-class InvalidationService;
-}  // namespace invalidation
 
 namespace syncer {
 
@@ -46,15 +39,14 @@ class SyncTransportDataPrefs;
 // The only real implementation of the SyncEngine. See that interface's
 // definition for documentation of public methods.
 class SyncEngineImpl : public SyncEngine,
-                       public invalidation::InvalidationHandler,
                        public InvalidationsListener,
                        public FCMRegistrationTokenObserver {
  public:
   using Status = SyncStatus;
 
   // |sync_invalidations_service| must not be null.
+  // TODO(crbug.com/1404927): remove old invalidations.
   SyncEngineImpl(const std::string& name,
-                 invalidation::InvalidationService* invalidator,
                  SyncInvalidationsService* sync_invalidations_service,
                  std::unique_ptr<ActiveDevicesProvider> active_devices_provider,
                  std::unique_ptr<SyncTransportDataPrefs> prefs,
@@ -94,6 +86,8 @@ class SyncEngineImpl : public SyncEngine,
   void DisconnectDataType(ModelType type) override;
   void SetProxyTabsDatatypeEnabled(bool enabled) override;
   const Status& GetDetailedStatus() const override;
+  void GetTypesWithUnsyncedData(
+      base::OnceCallback<void(ModelTypeSet)> cb) const override;
   void HasUnsyncedItemsForTest(
       base::OnceCallback<void(bool)> cb) const override;
   void GetThrottledDataTypesForTest(
@@ -102,16 +96,8 @@ class SyncEngineImpl : public SyncEngine,
   void DisableProtocolEventForwarding() override;
   void OnCookieJarChanged(bool account_mismatch,
                           base::OnceClosure callback) override;
-  void SetInvalidationsForSessionsEnabled(bool enabled) override;
   bool IsNextPollTimeInThePast() const override;
   void GetNigoriNodeForDebugging(AllNodesCallback callback) override;
-
-  // InvalidationHandler implementation.
-  void OnInvalidatorStateChange(invalidation::InvalidatorState state) override;
-  void OnIncomingInvalidation(
-      const invalidation::TopicInvalidationMap& invalidation_map) override;
-  std::string GetOwnerName() const override;
-  void OnInvalidatorClientIdChange(const std::string& client_id) override;
 
   // InvalidationsListener implementation.
   void OnInvalidationReceived(const std::string& payload) override;
@@ -166,8 +152,6 @@ class SyncEngineImpl : public SyncEngine,
 
   void OnCookieJarChangedDoneOnFrontendLoop(base::OnceClosure callback);
 
-  void SendInterestedTopicsToInvalidator();
-
   // Called on each device infos change and might be called more than once with
   // the same |active_devices|.
   void OnActiveDevicesChanged();
@@ -179,8 +163,13 @@ class SyncEngineImpl : public SyncEngine,
   // upper layers via |sync_transport_data_cleared_cb_|.
   void ClearLocalTransportDataAndNotify();
 
-  // Updates the current state of standalone invalidations.
+  // Updates the current state of standalone invalidations. Note that the
+  // invalidations can be handled even if the invalidation service is not fully
+  // initialized yet (e.g. while processing the incoming queue of messages
+  // received during browser startup).
   void UpdateStandaloneInvalidationsState();
+
+  void OnInvalidatorStateChange(invalidation::InvalidatorState state);
 
   // The task runner where all the sync engine operations happen.
   scoped_refptr<base::SequencedTaskRunner> sync_task_runner_;
@@ -205,20 +194,26 @@ class SyncEngineImpl : public SyncEngine,
 
   // The host which we serve (and are owned by). Set in Initialize() and nulled
   // out in StopSyncingForShutdown().
-  // DanglingUntriaged because it is assigned a DanglingUntriaged pointer.
-  raw_ptr<SyncEngineHost, DanglingUntriaged> host_ = nullptr;
-
-  raw_ptr<invalidation::InvalidationService> invalidator_ = nullptr;
-  bool invalidation_handler_registered_ = false;
+  // AcrossTasksDanglingUntriaged because it is assigned a
+  // AcrossTasksDanglingUntriaged pointer.
+  raw_ptr<SyncEngineHost, AcrossTasksDanglingUntriaged> host_ = nullptr;
 
   raw_ptr<SyncInvalidationsService> sync_invalidations_service_ = nullptr;
 
   ModelTypeSet last_enabled_types_;
-  bool sessions_invalidation_enabled_;
 
   SyncStatus cached_status_;
 
   std::unique_ptr<ActiveDevicesProvider> active_devices_provider_;
+
+  // Time when current object has been created. Used for metrics only.
+  const base::TimeTicks engine_created_time_for_metrics_;
+
+  // Whether the histogram for enabled invalidations has been already recorded.
+  // This is used to record only the first "invalidatons enabled" event,
+  // otherwise the metrics would be skewed by invalidations disabling and
+  // re-enabling.
+  bool invalidations_enabled_reported_ = false;
 
   // Checks that we're on the same thread this was constructed on (UI thread).
   SEQUENCE_CHECKER(sequence_checker_);

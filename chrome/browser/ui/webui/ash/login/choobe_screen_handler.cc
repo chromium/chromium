@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/webui/ash/login/theme_selection_screen_handler.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
+#include "ui/chromeos/devicetype_utils.h"
 
 namespace ash {
 
@@ -23,7 +24,8 @@ ChoobeScreenHandler::~ChoobeScreenHandler() = default;
 void ChoobeScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
   builder->Add("choobeScreenTitle", IDS_OOBE_CHOOBE_TITLE);
-  builder->Add("choobeScreenDescription", IDS_OOBE_CHOOBE_DESCRIPTION);
+  builder->AddF("choobeScreenDescription", IDS_OOBE_CHOOBE_DESCRIPTION,
+                ui::GetChromeOSDeviceTypeResourceId());
   builder->Add("choobeScreenSkip", IDS_OOBE_CHOOBE_SKIP_BUTTON);
   builder->Add("choobeReturnButton", IDS_OOBE_CHOOBE_RETURN_BUTTON);
 

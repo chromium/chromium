@@ -28,7 +28,7 @@ namespace blink {
 
 BASE_FEATURE(kDelayParkingImages,
              "DelayParkingImages",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
@@ -37,10 +37,7 @@ void RecordReadStatistics(size_t size,
                           base::TimeDelta time_since_freeze) {
   int throughput_mb_s =
       static_cast<int>(size / duration.InSecondsF() / (1024 * 1024));
-  int size_kb = static_cast<int>(size / 1024);  // in KiB
 
-  // Size should be <1MiB in most cases.
-  base::UmaHistogramCounts10000("Memory.ParkableImage.Read.Size", size_kb);
   // Size is usually >1KiB, and at most ~10MiB, and throughput ranges from
   // single-digit MB/s to ~1000MiB/s depending on the CPU/disk, hence the
   // ranges.
@@ -49,13 +46,9 @@ void RecordReadStatistics(size_t size,
                                             base::Seconds(1), 100);
   base::UmaHistogramCounts1000("Memory.ParkableImage.Read.Throughput",
                                throughput_mb_s);
-  base::UmaHistogramLongTimes("Memory.ParkableImage.Read.TimeSinceFreeze",
-                              time_since_freeze);
 }
 
 void RecordWriteStatistics(size_t size, base::TimeDelta duration) {
-  int throughput_mb_s =
-      static_cast<int>(size / duration.InSecondsF() / (1024 * 1024));
   int size_kb = static_cast<int>(size / 1024);  // in KiB
 
   // Size should be <1MiB in most cases.
@@ -66,8 +59,6 @@ void RecordWriteStatistics(size_t size, base::TimeDelta duration) {
   base::UmaHistogramCustomMicrosecondsTimes(
       "Memory.ParkableImage.Write.Latency", duration, base::Microseconds(500),
       base::Seconds(1), 100);
-  base::UmaHistogramCounts1000("Memory.ParkableImage.Write.Throughput",
-                               throughput_mb_s);
 }
 
 void AsanPoisonBuffer(RWBuffer* rw_buffer) {
@@ -96,11 +87,18 @@ void AsanUnpoisonBuffer(RWBuffer* rw_buffer) {
 #endif
 }
 
+// This should be used to make sure that the last reference to the |this| is
+// decremented on the main thread (since that's where the destructor must
+// run), for example by posting a task with this to the main thread.
+void NotifyWriteToDiskFinished(scoped_refptr<ParkableImageImpl>) {
+  DCHECK(IsMainThread());
+}
+
 }  // namespace
 
 BASE_FEATURE(kUseParkableImageSegmentReader,
              "UseParkableImageSegmentReader",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr base::TimeDelta ParkableImageImpl::kParkingDelay;
 
@@ -228,6 +226,7 @@ void ParkableImageImpl::WriteToDiskInBackground(
 
   DCHECK(ParkableImageManager::IsParkableImagesToDiskEnabled());
   DCHECK(parkable_image);
+  DCHECK(parkable_image->reserved_chunk_);
   DCHECK(!parkable_image->on_disk_metadata_);
 
   AsanUnpoisonBuffer(parkable_image->rw_buffer_.get());
@@ -245,12 +244,14 @@ void ParkableImageImpl::WriteToDiskInBackground(
                   base::checked_cast<wtf_size_t>(it.size()));
   } while (it.Next());
 
+  auto reserved_chunk = std::move(parkable_image->reserved_chunk_);
+
   // Release the lock while writing, so we don't block for too long.
   parkable_image->lock_.Release();
 
   base::ElapsedTimer timer;
   auto metadata = ParkableImageManager::Instance().data_allocator().Write(
-      vector.data(), vector.size());
+      std::move(reserved_chunk), vector.data());
   base::TimeDelta elapsed = timer.Elapsed();
 
   // Acquire the lock again after writing.
@@ -262,6 +263,16 @@ void ParkableImageImpl::WriteToDiskInBackground(
   // keep around the data for the ParkableImageImpl in this case.
   if (!parkable_image->on_disk_metadata_) {
     parkable_image->background_task_in_progress_ = false;
+    // This ensures that we don't destroy |this| on the background thread at
+    // the end of this function, if we happen to have the last reference to
+    // |this|.
+    //
+    // We cannot simply check the reference count here, since it may be
+    // changed racily on another thread, so posting a task is the only safe
+    // way to proceed.
+    PostCrossThreadTask(*callback_task_runner, FROM_HERE,
+                        CrossThreadBindOnce(&NotifyWriteToDiskFinished,
+                                            std::move(parkable_image)));
   } else {
     RecordWriteStatistics(parkable_image->on_disk_metadata_->size(), elapsed);
     ParkableImageManager::Instance().RecordDiskWriteTime(elapsed);
@@ -315,6 +326,7 @@ bool ParkableImageImpl::TransientlyUnableToPark() const {
 bool ParkableImageImpl::MaybePark(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   DCHECK(ParkableImageManager::IsParkableImagesToDiskEnabled());
+  DCHECK(IsMainThread());
 
   base::AutoLock lock(lock_);
 
@@ -328,6 +340,13 @@ bool ParkableImageImpl::MaybePark(
     DiscardData();
     return true;
   }
+
+  auto reserved_chunk =
+      ParkableImageManager::Instance().data_allocator().TryReserveChunk(size());
+  if (!reserved_chunk) {
+    return false;
+  }
+  reserved_chunk_ = std::move(reserved_chunk);
 
   background_task_in_progress_ = true;
 

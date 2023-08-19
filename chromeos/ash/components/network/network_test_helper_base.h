@@ -116,16 +116,28 @@ class NetworkTestHelperBase {
   std::string last_created_service_path_;
   int wifi_index_ = 0;
 
-  raw_ptr<ShillManagerClient::TestInterface, ExperimentalAsh> manager_test_;
-  raw_ptr<ShillProfileClient::TestInterface, ExperimentalAsh> profile_test_;
-  raw_ptr<ShillDeviceClient::TestInterface, ExperimentalAsh> device_test_;
-  raw_ptr<ShillServiceClient::TestInterface, ExperimentalAsh> service_test_;
-  raw_ptr<ShillIPConfigClient::TestInterface, ExperimentalAsh> ip_config_test_;
+  raw_ptr<ShillManagerClient::TestInterface,
+          DanglingUntriaged | ExperimentalAsh>
+      manager_test_;
+  raw_ptr<ShillProfileClient::TestInterface,
+          DanglingUntriaged | ExperimentalAsh>
+      profile_test_;
+  raw_ptr<ShillDeviceClient::TestInterface, DanglingUntriaged | ExperimentalAsh>
+      device_test_;
+  raw_ptr<ShillServiceClient::TestInterface,
+          DanglingUntriaged | ExperimentalAsh>
+      service_test_;
+  raw_ptr<ShillIPConfigClient::TestInterface,
+          DanglingUntriaged | ExperimentalAsh>
+      ip_config_test_;
 
-  raw_ptr<HermesEuiccClient::TestInterface, ExperimentalAsh> hermes_euicc_test_;
-  raw_ptr<HermesManagerClient::TestInterface, ExperimentalAsh>
+  raw_ptr<HermesEuiccClient::TestInterface, DanglingUntriaged | ExperimentalAsh>
+      hermes_euicc_test_;
+  raw_ptr<HermesManagerClient::TestInterface,
+          DanglingUntriaged | ExperimentalAsh>
       hermes_manager_test_;
-  raw_ptr<HermesProfileClient::TestInterface, ExperimentalAsh>
+  raw_ptr<HermesProfileClient::TestInterface,
+          DanglingUntriaged | ExperimentalAsh>
       hermes_profile_test_;
 
   base::WeakPtrFactory<NetworkTestHelperBase> weak_ptr_factory_{this};

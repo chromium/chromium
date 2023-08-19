@@ -38,6 +38,10 @@ constexpr base::FeatureParam<std::string> kPreloadingConfigParam{
   "sampling_likelihood": 1.000000
 }, {
   "preloading_type": "Prerender",
+  "preloading_predictor": "SpeculationRulesFromIsolatedWorld",
+  "sampling_likelihood": 1.000000
+}, {
+  "preloading_type": "Prerender",
   "preloading_predictor": "DefaultSearchEngine",
   "sampling_likelihood": 1.000000
 }, {
@@ -45,40 +49,77 @@ constexpr base::FeatureParam<std::string> kPreloadingConfigParam{
   "preloading_predictor": "SpeculationRules",
   "sampling_likelihood": 1.000000
 }, {
-  "preloading_type": "Prefetch",
-  "preloading_predictor": "DefaultSearchEngine",
-  "sampling_likelihood": 0.074620
+  "preloading_type": "Prerender",
+  "preloading_predictor": "PointerDownOnBookmarkBar",
+  "sampling_likelihood": 1.000000
 }, {
   "preloading_type": "NoStatePrefetch",
-  "preloading_predictor": "DirectURLInput",
-  "sampling_likelihood": 0.065070
+  "preloading_predictor": "OmniboxDirectURLInput",
+  "sampling_likelihood": 1.000000
 }, {
   "preloading_type": "Prerender",
-  "preloading_predictor": "DirectURLInput",
-  "sampling_likelihood": 0.036904
+  "preloading_predictor": "MouseHoverOnBookmarkBar",
+  "sampling_likelihood": 1.000000
+}, {
+  "preloading_type": "Prerender",
+  "preloading_predictor": "BackGestureNavigation",
+  "sampling_likelihood": 0.611862
+}, {
+  "preloading_type": "Prerender",
+  "preloading_predictor": "MouseBackButton",
+  "sampling_likelihood": 0.127634
+}, {
+  "preloading_type": "Prefetch",
+  "preloading_predictor": "DefaultSearchEngine",
+  "sampling_likelihood": 0.035817
+}, {
+  "preloading_type": "Prerender",
+  "preloading_predictor": "OmniboxDirectURLInput",
+  "sampling_likelihood": 0.016164
+}, {
+  "preloading_type": "Prerender",
+  "preloading_predictor": "BackButtonHover",
+  "sampling_likelihood": 0.013062
 }, {
   "preloading_type": "NoStatePrefetch",
   "preloading_predictor": "LinkRel",
-  "sampling_likelihood": 0.016354
+  "sampling_likelihood": 0.013000
 }, {
   "preloading_type": "Prefetch",
   "preloading_predictor": "SpeculationRules",
-  "sampling_likelihood": 0.007387
+  "sampling_likelihood": 0.005527
 }, {
   "preloading_type": "Preconnect",
   "preloading_predictor": "PointerDownOnAnchor",
-  "sampling_likelihood": 0.000345
+  "sampling_likelihood": 0.000157
 }]
 )"};
+
+static PreloadingConfig* g_config_override = nullptr;
+
 }  // namespace
 
 PreloadingConfig& PreloadingConfig::GetInstance() {
   static base::NoDestructor<PreloadingConfig> config;
+  static bool initialized = false;
+  if (!initialized) {
+    config->ParseConfig();
+    initialized = true;
+  }
+
+  if (g_config_override) {
+    return *g_config_override;
+  }
   return *config;
 }
 
-PreloadingConfig::PreloadingConfig() {
-  ParseConfig();
+PreloadingConfig::PreloadingConfig() = default;
+
+PreloadingConfig* PreloadingConfig::OverrideForTesting(
+    PreloadingConfig* config_override) {
+  raw_ptr<PreloadingConfig> old_override = g_config_override;
+  g_config_override = config_override;
+  return old_override;
 }
 
 void PreloadingConfig::ParseConfig() {
@@ -131,6 +172,23 @@ bool PreloadingConfig::ShouldHoldback(PreloadingType preloading_type,
                                       PreloadingPredictor predictor) {
   Entry entry = entries_[Key::FromEnums(preloading_type, predictor)];
   return entry.holdback_;
+}
+
+void PreloadingConfig::SetHoldbackForTesting(PreloadingType preloading_type,
+                                             PreloadingPredictor predictor,
+                                             bool holdback) {
+  Entry entry;
+  entry.holdback_ = holdback;
+  entries_.emplace(
+      Key(PreloadingTypeToString(preloading_type), predictor.name()), entry);
+}
+
+void PreloadingConfig::SetHoldbackForTesting(base::StringPiece preloading_type,
+                                             base::StringPiece predictor,
+                                             bool holdback) {
+  Entry entry;
+  entry.holdback_ = holdback;
+  entries_.emplace(Key(preloading_type, predictor), entry);
 }
 
 double PreloadingConfig::SamplingLikelihood(PreloadingType preloading_type,

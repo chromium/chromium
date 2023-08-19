@@ -33,6 +33,7 @@ extern const char kSignedInWithCredentialProvider[];
 extern const char kSigninAllowed[];
 extern const char kGaiaCookieLastListAccountsData[];
 extern const char kSigninAllowedOnNextStartup[];
+extern const char kSigninInterceptionIDPCookiesUrl[];
 
 }  // namespace prefs
 

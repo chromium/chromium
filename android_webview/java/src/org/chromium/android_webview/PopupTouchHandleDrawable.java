@@ -23,6 +23,7 @@ import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.widget.PopupWindow;
 
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.ObserverList;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -45,9 +46,9 @@ import java.util.Collections;
  * hierarchy.
  *
  */
+@Lifetime.Temporary
 @JNINamespace("android_webview")
 public class PopupTouchHandleDrawable extends View implements DisplayAndroidObserver {
-
     private final PopupWindow mContainer;
     private final ViewPositionObserver.Listener mParentPositionListener;
     private WebContents mWebContents;

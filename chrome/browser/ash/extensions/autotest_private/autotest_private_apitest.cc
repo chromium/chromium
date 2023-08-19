@@ -12,6 +12,7 @@
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/session/connection_holder.h"
+#include "ash/components/arc/test/arc_task_window_builder.h"
 #include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_app_instance.h"
@@ -38,12 +39,14 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing.h"
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_session.h"
-#include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_test_helper.h"
+#include "chrome/browser/ash/arc/tracing/test/arc_app_performance_tracing_test_helper.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -299,8 +302,9 @@ IN_PROC_BROWSER_TEST_P(AutotestPrivateHoldingSpaceApiTest,
             absl::nullopt);
   ASSERT_EQ(ash::holding_space_prefs::GetTimeOfFirstPin(prefs), absl::nullopt);
 
-  if (timeOfFirstAdd)
+  if (timeOfFirstAdd) {
     ASSERT_GT(timeOfFirstAdd, timeOfFirstAvailability);
+  }
 }
 
 class AutotestPrivateApiOverviewTest : public AutotestPrivateApiTest {
@@ -319,8 +323,9 @@ class AutotestPrivateApiOverviewTest : public AutotestPrivateApiTest {
     base::RunLoop run_loop;
     ash::OverviewTestApi().SetOverviewMode(
         /*start=*/true, base::BindLambdaForTesting([&run_loop](bool finished) {
-          if (!finished)
+          if (!finished) {
             ADD_FAILURE() << "Failed to enter overview.";
+          }
           run_loop.Quit();
         }));
     run_loop.Run();
@@ -469,15 +474,21 @@ class AutotestPrivateArcPerformanceTracing : public AutotestPrivateApiTest {
 };
 
 IN_PROC_BROWSER_TEST_F(AutotestPrivateArcPerformanceTracing, Basic) {
-  views::Widget* const arc_widget =
-      arc::ArcAppPerformanceTracingTestHelper::CreateArcWindow(
-          "org.chromium.arc.1");
+  exo::Surface root_surface;
+  const auto arc_widget = arc::ArcTaskWindowBuilder()
+                              .SetShellRootSurface(&root_surface)
+                              .BuildOwnsNativeWidget();
+
   performance_tracing()->OnWindowActivated(
       wm::ActivationChangeObserver::ActivationReason::ACTIVATION_CLIENT,
-      arc_widget->GetNativeWindow(), arc_widget->GetNativeWindow());
+      arc_widget->GetNativeWindow(), nullptr);
 
   ASSERT_TRUE(RunAutotestPrivateExtensionTest("arcPerformanceTracing"))
       << message_;
+
+  performance_tracing()->OnWindowActivated(
+      wm::ActivationChangeObserver::ActivationReason::ACTIVATION_CLIENT,
+      nullptr, arc_widget->GetNativeWindow());
 }
 
 class AutotestPrivateSystemWebAppsTest : public AutotestPrivateApiTest {
@@ -492,7 +503,6 @@ class AutotestPrivateSystemWebAppsTest : public AutotestPrivateApiTest {
   std::unique_ptr<ash::TestSystemWebAppInstallation> installation_;
 };
 
-// TODO(crbug.com/1201545): Fix flakiness.
 IN_PROC_BROWSER_TEST_F(AutotestPrivateSystemWebAppsTest, SystemWebApps) {
   ASSERT_TRUE(RunAutotestPrivateExtensionTest("systemWebApps")) << message_;
 }
@@ -505,11 +515,24 @@ class AutotestPrivateLacrosTest : public AutotestPrivateApiTest {
 
  protected:
   AutotestPrivateLacrosTest() {
-    feature_list_.InitAndEnableFeature(ash::features::kLacrosSupport);
+    feature_list_.InitWithFeatures(
+        ash::standalone_browser::GetFeatureRefs(),
+        // Disable ash extension keeplist so that the test extension will not
+        // be blocked in Ash.
+        {ash::features::kEnforceAshExtensionKeeplist});
     crosapi::BrowserManager::DisableForTesting();
   }
   ~AutotestPrivateLacrosTest() override {
     crosapi::BrowserManager::EnableForTesting();
+  }
+
+  void SetUpOnMainThread() override {
+    // For testing APIs, we need web browser instance as JS runtime.
+    Browser::CreateParams params(ProfileManager::GetLastUsedProfile(), false);
+    Browser::Create(params);
+    SelectFirstBrowser();
+
+    AutotestPrivateApiTest::SetUpOnMainThread();
   }
 
  private:
@@ -610,8 +633,9 @@ IN_PROC_BROWSER_TEST_P(AutotestPrivateSearchTest,
   for (auto* result : PublishedResults()) {
     // There may be zero state results that are also published, but not visible
     // in the UI. This test should only check search list results.
-    if (result->display_type() != ash::SearchResultDisplayType::kList)
+    if (result->display_type() != ash::SearchResultDisplayType::kList) {
       continue;
+    }
 
     results.push_back(result);
   }

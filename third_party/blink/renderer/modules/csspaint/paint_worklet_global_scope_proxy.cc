@@ -38,16 +38,9 @@ PaintWorkletGlobalScopeProxy::PaintWorkletGlobalScopeProxy(
       StringView("PaintWorklet #") + String::Number(global_scope_number);
 
   LocalFrameClient* frame_client = frame->Client();
-  const String user_agent =
-      RuntimeEnabledFeatures::SendFullUserAgentAfterReductionEnabled(window)
-          ? frame_client->FullUserAgent()
-      : RuntimeEnabledFeatures::UserAgentReductionEnabled(window)
-          ? frame_client->ReducedUserAgent()
-          : frame_client->UserAgent();
-
   auto creation_params = std::make_unique<GlobalScopeCreationParams>(
       window->Url(), mojom::blink::ScriptType::kModule, global_scope_name,
-      user_agent, frame_client->UserAgentMetadata(),
+      frame_client->UserAgent(), frame_client->UserAgentMetadata(),
       frame_client->CreateWorkerFetchContext(),
       mojo::Clone(window->GetContentSecurityPolicy()->GetParsedPolicies()),
       Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),

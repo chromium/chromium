@@ -25,8 +25,8 @@
 #import "components/profile_metrics/browser_profile_type.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/sync/base/pref_names.h"
-#import "components/sync/base/sync_prefs.h"
 #import "components/sync/service/glue/sync_transport_data_prefs.h"
+#import "components/sync/service/sync_prefs.h"
 #import "components/sync_device_info/device_info_prefs.h"
 #import "components/translate/core/browser/translate_pref_names.h"
 #import "components/translate/core/browser/translate_prefs.h"
@@ -58,10 +58,6 @@
 #import "ios/web_view/internal/webdata_services/web_view_web_data_service_wrapper_factory.h"
 #import "ios/web_view/internal/webui/web_view_web_ui_ios_controller_factory.h"
 #import "ui/base/l10n/l10n_util_mac.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 const char kPreferencesFilename[] =

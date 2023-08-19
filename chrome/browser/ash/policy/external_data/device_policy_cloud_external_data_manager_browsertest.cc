@@ -81,7 +81,7 @@ class DevicePolicyCloudExternalDataManagerTest
     policy_change_registrar_ = std::make_unique<PolicyChangeRegistrar>(
         policy_service_, PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
     policy_change_registrar_->Observe(
-        kPolicyName, policy_changed_repeating_future_.GetCallback());
+        kPolicyName, policy_changed_repeating_future_.GetRepeatingCallback());
   }
 
   void TearDownOnMainThread() override {
@@ -148,9 +148,10 @@ class DevicePolicyCloudExternalDataManagerTest
   }
 
  private:
-  raw_ptr<PolicyService, ExperimentalAsh> policy_service_ = nullptr;
+  raw_ptr<PolicyService, DanglingUntriaged | ExperimentalAsh> policy_service_ =
+      nullptr;
   std::unique_ptr<PolicyChangeRegistrar> policy_change_registrar_;
-  base::test::RepeatingTestFuture<const base::Value*, const base::Value*>
+  base::test::TestFuture<const base::Value*, const base::Value*>
       policy_changed_repeating_future_;
 };
 

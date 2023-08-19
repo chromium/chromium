@@ -3,8 +3,6 @@
 <translationbundle lang="af">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> van jou oortjies is nie onlangs gebruik nie. Maak hulle toe?</translation>
 <translation id="125153950246128346">Tik om nog 'n oortjie te sien</translation>
-<translation id="1403228085774130835">Jy kan jou geslote oortjies in Onlangse oortjies op die Chrome-hoofkieslys kry</translation>
-<translation id="1455506303394048917">Jou aktiwiteit in hierdie Incognito-oortjies sal van hierdie toestel af uitgevee word</translation>
 <translation id="1499635324672558517">Maak alle Incognito-oortjies toe?</translation>
 <translation id="1657719826150349398">Skuif oortjie ondertoe</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> oortjie}other{<ph name="TABS_COUNT_MANY" /> oortjies}}</translation>
@@ -47,6 +45,7 @@
 <translation id="5073204694187207510">Versteek volskermrooster</translation>
 <translation id="5076161749301278626">Sien winkelresensies?</translation>
 <translation id="5082793167783849073">Vergelyk bladsye vinnig deur 'n groep te maak. Raak en hou 'n skakel om te begin.</translation>
+<translation id="5339733443032484186">Jou jongste oortjie</translation>
 <translation id="5490235265819901748">Oortjiegroep is uitgevou</translation>
 <translation id="5494920125229734069">Kies almal</translation>
 <translation id="5556417849629758491">Bekyk winkelinligting; opsie beskikbaar naby bokant van die skerm</translation>
@@ -62,10 +61,12 @@
 <translation id="6228793724645064692">(winkelgradering)</translation>
 <translation id="6333260925957816943">Inligting oor hierdie winkel</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Ongroepeer <ph name="TABS_COUNT_ONE" /> geselekteerde oortjie}other{Ongroepeer <ph name="TABS_COUNT_MANY" /> geselekteerde oortjies}}</translation>
+<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Jy kan jou geslote oortjies in Onlangse oortjies op die Chrome-hoofkieslys kry. Jou Incognito-oortjie sal nie beskikbaar wees nie.}other{Jy kan jou geslote oortjies in Onlangse oortjies op die Chrome-hoofkieslys kry. Jou # Incognito-oortjies sal nie beskikbaar wees nie.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> oortjie}other{<ph name="TABS_COUNT_MANY" /> oortjies}}</translation>
 <translation id="6549021453810473782">Bekyk winkelinligting</translation>
 <translation id="6562820390860419811">Skuif oortjie na links</translation>
 <translation id="6615455863669487791">Wys my</translation>
+<translation id="661742612106409204">Jy kan jou geslote oortjies in Onlangse oortjies op die Chrome-hoofkieslys kry.</translation>
 <translation id="6840760312327750441">Raak en hou 'n oortjie om oortjies te groepeer. Sleep dit dan op 'n ander oortjie.</translation>
 <translation id="6856809498882026482">Versteek multikeusemodus</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Deel oortjie}other{Deel oortjies}}</translation>

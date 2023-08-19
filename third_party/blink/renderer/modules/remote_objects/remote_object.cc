@@ -6,7 +6,6 @@
 
 #include <tuple>
 
-#include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "gin/converter.h"
 #include "third_party/blink/public/web/blink.h"
@@ -18,21 +17,6 @@ namespace blink {
 gin::WrapperInfo RemoteObject::kWrapperInfo = {gin::kEmbedderNativeGin};
 
 namespace {
-
-// Used to specify what kind of error was encountered during Java bridge method
-// invocation.
-// Note: these values are logged to UMA. Entries should not be renumbered and
-// numeric values should never be reused. Please keep in sync with
-// "JavaJsBridgeMethodInvocationError" in
-// src/tools/metrics/histograms/enums.xml.
-enum class JavaJsBridgeMethodInvocationError {
-  kAsConstructorDisallowed,
-  kNonexistentMethod,
-  kOnNonInjectedObjectDisallowed,
-  kErrorMessage,
-  // Magic constant used by the histogram macros.
-  kMaxValue = kErrorMessage,
-};
 
 const char kMethodInvocationAsConstructorDisallowed[] =
     "Java bridge method can't be invoked as a constructor";
@@ -55,7 +39,8 @@ String RemoteInvocationErrorToString(
     case mojom::blink::RemoteInvocationError::NON_ASSIGNABLE_TYPES:
       return "an incompatible object type passed to method parameter";
     default:
-      return String::Format("unknown RemoteInvocationError value: %d", value);
+      return String::Format("unknown RemoteInvocationError value: %d",
+                            static_cast<int>(value));
   }
 }
 
@@ -336,9 +321,6 @@ void RemoteObject::RemoteObjectInvokeCallback(
     // This is not a constructor. Throw and return.
     isolate->ThrowException(v8::Exception::Error(
         V8String(isolate, kMethodInvocationAsConstructorDisallowed)));
-    UMA_HISTOGRAM_ENUMERATION(
-        "Blink.JavaJsBridge.MethodInvocationError",
-        JavaJsBridgeMethodInvocationError::kAsConstructorDisallowed);
     return;
   }
 
@@ -347,9 +329,6 @@ void RemoteObject::RemoteObjectInvokeCallback(
     // Someone messed with the |this| pointer. Throw and return.
     isolate->ThrowException(v8::Exception::Error(
         V8String(isolate, kMethodInvocationOnNonInjectedObjectDisallowed)));
-    UMA_HISTOGRAM_ENUMERATION(
-        "Blink.JavaJsBridge.MethodInvocationError",
-        JavaJsBridgeMethodInvocationError::kOnNonInjectedObjectDisallowed);
     return;
   }
 
@@ -368,9 +347,6 @@ void RemoteObject::RemoteObjectInvokeCallback(
   if (cached_method->IsUndefined()) {
     isolate->ThrowException(v8::Exception::Error(
         V8String(isolate, kMethodInvocationNonexistentMethod)));
-    UMA_HISTOGRAM_ENUMERATION(
-        "Blink.JavaJsBridge.MethodInvocationError",
-        JavaJsBridgeMethodInvocationError::kNonexistentMethod);
     return;
   }
 
@@ -394,8 +370,6 @@ void RemoteObject::RemoteObjectInvokeCallback(
     String message = String::Format("%s : ", kMethodInvocationErrorMessage) +
                      RemoteInvocationErrorToString(result->error);
     isolate->ThrowException(v8::Exception::Error(V8String(isolate, message)));
-    UMA_HISTOGRAM_ENUMERATION("Blink.JavaJsBridge.MethodInvocationError",
-                              JavaJsBridgeMethodInvocationError::kErrorMessage);
     return;
   }
 

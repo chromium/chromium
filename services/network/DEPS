@@ -9,6 +9,7 @@ include_rules = [
   # store for networking-related data (Like which servers support QUIC), rather
   # than to store user preferences.
   "+components/prefs",
+  "+components/privacy_sandbox/masked_domain_list",
   "+components/url_matcher",
   "+components/version_info",
   "+components/web_package",

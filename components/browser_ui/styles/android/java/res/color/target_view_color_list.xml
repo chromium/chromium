@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+  <item android:alpha="@dimen/target_view_unfocused_alpha"
+      android:color="@macro/default_control_color_normal"
+      android:state_activated="false" />
+  <item android:alpha="@dimen/target_view_focused_alpha"
+      android:color="@macro/default_control_color_active"
+      android:state_activated="true" />
+</selector>

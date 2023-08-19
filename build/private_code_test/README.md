@@ -15,8 +15,8 @@ simple.
 The main alternative I found was to use `gclient flatten`. Example output:
 
 ```
-  # src -> src-internal
-  "src-internal": {
+  # src -> src/internal
+  "src/internal": {
     "url": "https://chrome-internal.googlesource.com/chrome/src-internal.git@c649c6a155fe65c3730e2d663d7d2058d33bf1f9",
     "condition": 'checkout_src_internal',
   },

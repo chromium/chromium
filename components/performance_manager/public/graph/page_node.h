@@ -127,6 +127,9 @@ class PageNode : public Node {
   // Returns the type of the page.
   virtual PageType GetType() const = 0;
 
+  // Returns true if this page has the focus.
+  virtual bool IsFocused() const = 0;
+
   // Returns true if this page is currently visible, false otherwise.
   // See PageNodeObserver::OnIsVisibleChanged.
   virtual bool IsVisible() const = 0;
@@ -138,6 +141,13 @@ class PageNode : public Node {
   // Returns true if this page is currently audible, false otherwise.
   // See PageNodeObserver::OnIsAudibleChanged.
   virtual bool IsAudible() const = 0;
+
+  // Returns the time since the last audible change. Unlike
+  // GetTimeSinceLastVisibilityChange(), this returns nullopt for a node which
+  // has never been audible. If a node is audible when created, it is considered
+  // to change from inaudible to audible at that point.
+  virtual absl::optional<base::TimeDelta> GetTimeSinceLastAudibleChange()
+      const = 0;
 
   // Returns the page's loading state.
   virtual LoadingState GetLoadingState() const = 0;
@@ -194,6 +204,11 @@ class PageNode : public Node {
   // by a zero navigation ID.
   // See PageNodeObserver::OnMainFrameNavigationCommitted.
   virtual const GURL& GetMainFrameUrl() const = 0;
+
+  // Returns the private memory footprint size of the main frame and its
+  // children. This differs from EstimatePrivateFootprintSize which includes
+  // all the frames under the page node.
+  virtual uint64_t EstimateMainFramePrivateFootprintSize() const = 0;
 
   // Indicates if at least one of the frames in the page has received some form
   // interactions.
@@ -275,10 +290,21 @@ class PageNodeObserver {
   virtual void OnTypeChanged(const PageNode* page_node,
                              PageType previous_type) = 0;
 
+  // Invoked when the IsFocused property changes.
+  virtual void OnIsFocusedChanged(const PageNode* page_node) = 0;
+
   // Invoked when the IsVisible property changes.
+  //
+  // GetTimeSinceLastVisibilityChange() will return the time since the previous
+  // IsVisible change. After all observers have fired it will return the time of
+  // this property change.
   virtual void OnIsVisibleChanged(const PageNode* page_node) = 0;
 
   // Invoked when the IsAudible property changes.
+  //
+  // GetTimeSinceLastAudibleChange() will return the time since the previous
+  // IsAudible change. After all observers have fired it will return the time of
+  // this property change.
   virtual void OnIsAudibleChanged(const PageNode* page_node) = 0;
 
   // Invoked when the GetLoadingState property changes.
@@ -364,6 +390,7 @@ class PageNode::ObserverDefaultImpl : public PageNodeObserver {
       EmbeddingType previous_embedding_type) override {}
   void OnTypeChanged(const PageNode* page_node,
                      PageType previous_type) override {}
+  void OnIsFocusedChanged(const PageNode* page_node) override {}
   void OnIsVisibleChanged(const PageNode* page_node) override {}
   void OnIsAudibleChanged(const PageNode* page_node) override {}
   void OnLoadingStateChanged(const PageNode* page_node,

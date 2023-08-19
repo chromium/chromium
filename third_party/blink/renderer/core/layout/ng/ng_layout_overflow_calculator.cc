@@ -24,10 +24,10 @@ namespace blink {
 PhysicalRect NGLayoutOverflowCalculator::RecalculateLayoutOverflowForFragment(
     const NGPhysicalBoxFragment& fragment,
     bool has_block_fragmentation) {
-  DCHECK(!fragment.IsLegacyLayoutRoot() ||
-         fragment.GetLayoutObject()->IsMedia());
   const NGBlockNode node(const_cast<LayoutBox*>(
       To<LayoutBox>(fragment.GetSelfOrContainerLayoutObject())));
+  DCHECK(!node.IsReplaced() || node.IsMedia());
+
   const WritingDirectionMode writing_direction =
       node.Style().GetWritingDirection();
 

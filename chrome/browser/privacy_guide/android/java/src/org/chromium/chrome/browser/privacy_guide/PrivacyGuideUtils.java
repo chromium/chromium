@@ -12,7 +12,7 @@ import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
-import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.content_settings.PrefNames;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -33,7 +33,7 @@ class PrivacyGuideUtils {
     }
 
     static boolean isHistorySyncEnabled() {
-        Set<Integer> syncTypes = SyncService.get().getSelectedTypes();
+        Set<Integer> syncTypes = SyncServiceFactory.get().getSelectedTypes();
         return syncTypes.contains(UserSelectableType.HISTORY);
     }
 

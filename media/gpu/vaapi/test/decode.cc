@@ -172,7 +172,7 @@ absl::optional<SharedVASurface::FetchPolicy> GetFetchPolicy(
   const std::string va_vendor_string = vaQueryVendorString(va_device.display());
   if (base::StartsWith(va_vendor_string, "Mesa Gallium driver",
                        base::CompareCase::SENSITIVE)) {
-    LOG(INFO) << "AMD driver detected, forcing vaGetImage";
+    LOG(WARNING) << "AMD driver detected, forcing vaGetImage";
     return SharedVASurface::FetchPolicy::kGetImage;
   }
 

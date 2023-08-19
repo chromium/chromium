@@ -4,9 +4,10 @@
 
 #include "components/memory_system/memory_system.h"
 
-#include "base/allocator/buildflags.h"
 #include "base/allocator/dispatcher/dispatcher.h"
 #include "base/allocator/dispatcher/initializer.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#include "base/debug/debugging_buildflags.h"
 #include "build/build_config.h"
 #include "components/gwp_asan/buildflags/buildflags.h"
 #include "components/memory_system/parameters.h"
@@ -19,7 +20,7 @@
 #endif
 
 #if BUILDFLAG(IS_IOS) && BUILDFLAG(USE_ALLOCATOR_SHIM)
-#include "base/allocator/partition_allocator/shim/allocator_interception_mac.h"
+#include "base/allocator/partition_allocator/shim/allocator_interception_apple.h"
 #include "base/allocator/partition_allocator/shim/allocator_shim.h"
 #include "base/ios/ios_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -49,6 +50,9 @@
 #include "base/cpu.h"
 #include "base/debug/allocation_trace.h"
 #include "components/allocation_recorder/crash_client/client.h"
+#if BUILDFLAG(ENABLE_ALLOCATION_TRACE_RECORDER_FULL_REPORTING)
+#include "base/debug/allocation_trace_reporting.h"
+#endif
 #endif  // BUILDFLAG(ENABLE_ALLOCATION_STACK_TRACE_RECORDER)
 
 namespace memory_system {
@@ -124,6 +128,11 @@ struct MemorySystem::Impl {
 
 #if BUILDFLAG(IS_IOS) && BUILDFLAG(USE_ALLOCATOR_SHIM)
   const bool should_install_allocator_shim_ = ShouldInstallAllocatorShim();
+#endif
+
+#if BUILDFLAG(ENABLE_ALLOCATION_TRACE_RECORDER_FULL_REPORTING)
+  base::debug::tracer::AllocationTraceRecorderReporter
+      allocation_trace_recorder_reporting_;
 #endif
 };
 
@@ -275,8 +284,17 @@ void MemorySystem::Impl::InitializeDispatcher(
   const bool include_allocation_recorder =
       DispatcherIncludesAllocationTraceRecorder(dispatcher_parameters);
 
-  auto* const allocation_recorder_to_include =
-      include_allocation_recorder ? &allocation_recorder : nullptr;
+  base::debug::tracer::AllocationTraceRecorder* allocation_recorder_to_include =
+      nullptr;
+
+  if (include_allocation_recorder) {
+    allocation_recorder_to_include = &allocation_recorder;
+#if BUILDFLAG(ENABLE_ALLOCATION_TRACE_RECORDER_FULL_REPORTING)
+    allocation_trace_recorder_reporting_.Start(
+        allocation_recorder, dispatcher_parameters.process_type,
+        base::Seconds(15), logging::LOGGING_ERROR);
+#endif
+  }
 #endif
 
   base::allocator::dispatcher::CreateInitializer()

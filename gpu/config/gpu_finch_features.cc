@@ -129,6 +129,12 @@ const base::FeatureParam<std::string>
         "DisableIncreaseBufferCountForHighFrameRate", ""};
 #endif
 
+// Use shorter timeout when performDeferredCleanup, and enable
+// performDeferredCleanup for Android WebView.
+BASE_FEATURE(kAggressiveSkiaGpuResourcePurge,
+             "AggressiveSkiaGpuResourcePurge",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable GPU Rasterization by default. This can still be overridden by
 // --enable-gpu-rasterization or --disable-gpu-rasterization.
 // DefaultEnableGpuRasterization has launched on Mac, Windows, ChromeOS,
@@ -147,12 +153,20 @@ BASE_FEATURE(kDefaultEnableGpuRasterization,
 BASE_FEATURE(kCanvasOopRasterization,
              "CanvasOopRasterization",
 #if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_WIN) || \
-    (BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64))
+    (BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)) || BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
+
+#if BUILDFLAG(IS_OZONE)
+// Detect front buffering condition and set buffer usage as such.
+// This is a killswitch to be removed once launched.
+BASE_FEATURE(kOzoneFrontBufferUsage,
+             "OzoneFrontBufferUsage",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_OZONE)
 
 // Enables the use of MSAA in skia on Ice Lake and later intel architectures.
 BASE_FEATURE(kEnableMSAAOnNewIntelGPUs,
@@ -162,6 +176,11 @@ BASE_FEATURE(kEnableMSAAOnNewIntelGPUs,
 // Enables the use of ANGLE validation for non-WebGL contexts.
 BASE_FEATURE(kDefaultEnableANGLEValidation,
              "DefaultEnableANGLEValidation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Disables MSAA in Graphite if MSAA is reported as being slow for the device.
+BASE_FEATURE(kDisableSlowMSAAInGraphite,
+             "DisableSlowMSAAInGraphite",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables canvas to free its resources by default when it's running in
@@ -259,25 +278,25 @@ BASE_FEATURE(kEnableDrDcVulkan,
 
 // Enable WebGPU on gpu service side only. This is used with origin trial and
 // enabled by default on supported platforms.
-BASE_FEATURE(kWebGPUService,
-             "WebGPUService",
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
-             base::FEATURE_ENABLED_BY_DEFAULT
+#define WEBGPU_ENABLED base::FEATURE_ENABLED_BY_DEFAULT
 #else
-             base::FEATURE_DISABLED_BY_DEFAULT
+#define WEBGPU_ENABLED base::FEATURE_DISABLED_BY_DEFAULT
 #endif
-);
+BASE_FEATURE(kWebGPUService, "WebGPUService", WEBGPU_ENABLED);
+BASE_FEATURE(kWebGPUBlobCache, "WebGPUBlobCache", WEBGPU_ENABLED);
+#undef WEBGPU_ENABLED
 
 #if BUILDFLAG(IS_ANDROID)
 
 const base::FeatureParam<std::string> kVulkanBlockListByHardware{
-    &kVulkan, "BlockListByHardware", "mt*"};
+    &kVulkan, "BlockListByHardware", ""};
 
 const base::FeatureParam<std::string> kVulkanBlockListByBrand{
-    &kVulkan, "BlockListByBrand", "HONOR"};
+    &kVulkan, "BlockListByBrand", ""};
 
 const base::FeatureParam<std::string> kVulkanBlockListByDevice{
-    &kVulkan, "BlockListByDevice", "OP4863|OP4883"};
+    &kVulkan, "BlockListByDevice", ""};
 
 const base::FeatureParam<std::string> kVulkanBlockListByAndroidBuildId{
     &kVulkan, "BlockListByAndroidBuildId", ""};
@@ -289,8 +308,7 @@ const base::FeatureParam<std::string> kVulkanBlockListByModel{
     &kVulkan, "BlockListByModel", ""};
 
 const base::FeatureParam<std::string> kVulkanBlockListByBoard{
-    &kVulkan, "BlockListByBoard",
-    "RM67*|RM68*|k68*|mt6*|oppo67*|oppo68*|QM215|rk30sdk"};
+    &kVulkan, "BlockListByBoard", ""};
 
 const base::FeatureParam<std::string> kVulkanBlockListByAndroidBuildFP{
     &kVulkan, "BlockListByAndroidBuildFP", ""};
@@ -330,7 +348,20 @@ const base::FeatureParam<std::string> kDrDcBlockListByAndroidBuildFP{
 // Enable Skia Graphite. This will use the Dawn backend by default, but can be
 // overridden with command line flags for testing on non-official developer
 // builds. See --skia-graphite-backend flag in gpu_switches.h.
-BASE_FEATURE(kSkiaGraphite, "SkiaGraphite", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSkiaGraphite,
+             "SkiaGraphite",
+#if BUILDFLAG(IS_IOS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+
+#if BUILDFLAG(IS_WIN)
+BASE_FEATURE(kSkiaGraphiteDawnUseD3D12,
+             "SkiaGraphiteDawnUseD3D12",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 // Enable GrShaderCache to use with Vulkan backend.
 BASE_FEATURE(kEnableGrShaderCacheForVulkan,
@@ -374,7 +405,12 @@ BASE_FEATURE(kForceRestartGpuKillSwitch,
 // Using the new SchedulerDfs GPU scheduler.
 BASE_FEATURE(kUseGpuSchedulerDfs,
              "UseGpuSchedulerDfs",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 // Use the ClientGmb interface to create GpuMemoryBuffers. This is supposed to
 // reduce number of IPCs happening while creating GpuMemoryBuffers by allowing
@@ -394,6 +430,14 @@ BASE_FEATURE(kPassthroughYuvRgbConversion,
 BASE_FEATURE(kGpuCleanupInBackground,
              "GpuCleanupInBackground",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_ANDROID)
+// When enabled, the validating command decoder always returns true
+// from IsGL_REDSupportedOnFBOs in feature_info.cc on Android.
+BASE_FEATURE(kCmdDecoderSkipGLRedMesaWorkaroundOnAndroid,
+             "CmdDecoderSkipGLRedMesaWorkaroundOnAndroid",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 bool UseGles2ForOopR() {
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86_FAMILY)
@@ -553,6 +597,8 @@ bool IsAImageReaderEnabled() {
   // Device Hammer_Energy_2 seems to be very crash with image reader during
   // gl::GLImageEGL::BindTexImage(). Disable image reader on that device for
   // now. crbug.com/1323921
+  // TODO(crbug.com/1323921): Can we revisit this now that GLImage no longer
+  // exists?
   if (IsDeviceBlocked(base::android::BuildInfo::GetInstance()->device(),
                       "Hammer_Energy_2")) {
     return false;

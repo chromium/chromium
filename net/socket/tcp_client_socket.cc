@@ -61,11 +61,12 @@ TCPClientSocket::TCPClientSocket(std::unique_ptr<TCPSocket> connected_socket,
 TCPClientSocket::TCPClientSocket(
     std::unique_ptr<TCPSocket> unconnected_socket,
     const AddressList& addresses,
+    std::unique_ptr<IPEndPoint> bound_address,
     NetworkQualityEstimator* network_quality_estimator)
     : TCPClientSocket(std::move(unconnected_socket),
                       addresses,
                       -1 /* current_address_index */,
-                      nullptr /* bind_address */,
+                      std::move(bound_address),
                       network_quality_estimator,
                       handles::kInvalidNetworkHandle) {}
 

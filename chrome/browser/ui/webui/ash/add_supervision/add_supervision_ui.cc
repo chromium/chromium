@@ -208,10 +208,14 @@ void AddSupervisionUI::SetUpResources() {
                           IDR_ADD_SUPERVISION_API_SERVER_JS);
   source->AddResourcePath("add_supervision_ui.js", IDR_ADD_SUPERVISION_UI_JS);
   source->AddResourcePath("add_supervision_app.js", IDR_ADD_SUPERVISION_APP_JS);
+  source->AddResourcePath("add_supervision.mojom-webui.js",
+                          IDR_ADD_SUPERVISION_MOJOM_WEBUI_JS);
   source->AddResourcePaths(
       base::make_span(kSupervisionResources, kSupervisionResourcesSize));
 
   source->AddLocalizedString("pageTitle", IDS_ADD_SUPERVISION_PAGE_TITLE);
+  source->AddLocalizedString("webviewLoadingMessage",
+                             IDS_ADD_SUPERVISION_WEBVIEW_LOADING_MESSAGE);
   source->AddLocalizedString("supervisedUserErrorDescription",
                              IDS_SUPERVISED_USER_ERROR_DESCRIPTION);
   source->AddLocalizedString("supervisedUserErrorTitle",
@@ -220,12 +224,6 @@ void AddSupervisionUI::SetUpResources() {
                              IDS_SUPERVISED_USER_OFFLINE_DESCRIPTION);
   source->AddLocalizedString("supervisedUserOfflineTitle",
                              IDS_SUPERVISED_USER_OFFLINE_TITLE);
-
-  // Full paths (relative to src) are important for Mojom generated files.
-  source->AddResourcePath(
-      "chrome/browser/ui/webui/ash/add_supervision/"
-      "add_supervision.mojom-lite.js",
-      IDR_ADD_SUPERVISION_MOJOM_LITE_JS);
 
   source->UseStringsJs();
   source->SetDefaultResource(IDR_ADD_SUPERVISION_HTML);

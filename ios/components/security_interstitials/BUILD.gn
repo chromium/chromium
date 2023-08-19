@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("security_interstitials") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "ios_blocking_page_controller_client.h",
     "ios_blocking_page_controller_client.mm",
@@ -35,7 +34,6 @@ source_set("security_interstitials") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "ios_blocking_page_tab_helper_unittest.mm" ]
   deps = [

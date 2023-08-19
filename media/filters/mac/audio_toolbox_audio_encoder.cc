@@ -4,9 +4,9 @@
 
 #include "media/filters/mac/audio_toolbox_audio_encoder.h"
 
+#include "base/apple/osstatus_logging.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/mac/mac_logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/audio_buffer.h"
@@ -274,6 +274,22 @@ bool AudioToolboxAudioEncoder::CreateEncoder(
                                        sizeof(rate), &rate);
     if (result != noErr) {
       OSSTATUS_DLOG(ERROR, result) << "Failed to set encoder bitrate";
+      return false;
+    }
+  }
+
+  if (options.bitrate_mode) {
+    const bool use_vbr =
+        *options.bitrate_mode == AudioEncoder::BitrateMode::kVariable;
+
+    UInt32 bitrate_mode = use_vbr ? kAudioCodecBitRateControlMode_Variable
+                                  : kAudioCodecBitRateControlMode_Constant;
+
+    result = AudioConverterSetProperty(encoder_,
+                                       kAudioCodecPropertyBitRateControlMode,
+                                       sizeof(bitrate_mode), &bitrate_mode);
+    if (result != noErr) {
+      OSSTATUS_DLOG(ERROR, result) << "Failed to set encoder bitrate mode";
       return false;
     }
   }

@@ -51,6 +51,8 @@ class OpenXrViewConfiguration {
   const std::vector<XrCompositionLayerProjectionView>& ProjectionViews() const;
   XrCompositionLayerProjectionView& GetProjectionView(uint32_t view_index);
 
+  bool CanEnableAntiAliasing() const;
+
  private:
   XrViewConfigurationType type_ = XR_VIEW_CONFIGURATION_TYPE_MAX_ENUM;
   bool active_ = false;

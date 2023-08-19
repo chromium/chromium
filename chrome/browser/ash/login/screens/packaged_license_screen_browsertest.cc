@@ -105,7 +105,7 @@ IN_PROC_BROWSER_TEST_F(PackagedLicenseScreenTest, DontEnroll) {
   EXPECT_THAT(
       histogram_tester_.GetAllSamples("OOBE.StepShownStatus.Packaged-license"),
       ElementsAre(base::Bucket(
-          static_cast<int>(WizardController::ScreenShownStatus::kShown), 1)));
+          static_cast<int>(OobeMetricsHelper::ScreenShownStatus::kShown), 1)));
 }
 
 IN_PROC_BROWSER_TEST_F(PackagedLicenseScreenTest, Enroll) {
@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(PackagedLicenseScreenTest, Enroll) {
   EXPECT_THAT(
       histogram_tester_.GetAllSamples("OOBE.StepShownStatus.Packaged-license"),
       ElementsAre(base::Bucket(
-          static_cast<int>(WizardController::ScreenShownStatus::kShown), 1)));
+          static_cast<int>(OobeMetricsHelper::ScreenShownStatus::kShown), 1)));
 }
 
 IN_PROC_BROWSER_TEST_F(PackagedLicenseScreenTest, NoLicense) {
@@ -144,7 +144,8 @@ IN_PROC_BROWSER_TEST_F(PackagedLicenseScreenTest, NoLicense) {
   EXPECT_THAT(
       histogram_tester_.GetAllSamples("OOBE.StepShownStatus.Packaged-license"),
       ElementsAre(base::Bucket(
-          static_cast<int>(WizardController::ScreenShownStatus::kSkipped), 1)));
+          static_cast<int>(OobeMetricsHelper::ScreenShownStatus::kSkipped),
+          1)));
 }
 
 }  // namespace ash

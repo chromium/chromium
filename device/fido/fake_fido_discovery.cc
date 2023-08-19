@@ -79,6 +79,11 @@ FakeFidoDiscovery* FakeFidoDiscoveryFactory::ForgeNextPlatformDiscovery(
   return next_platform_discovery_.get();
 }
 
+void FakeFidoDiscoveryFactory::set_discover_win_webauthn_api_authenticator(
+    bool on) {
+  discover_win_webauthn_api_authenticator_ = on;
+}
+
 std::vector<std::unique_ptr<FidoDiscoveryBase>>
 FakeFidoDiscoveryFactory::Create(FidoTransportProtocol transport) {
   switch (transport) {
@@ -97,6 +102,17 @@ FakeFidoDiscoveryFactory::Create(FidoTransportProtocol transport) {
   NOTREACHED();
   return {};
 }
+
+#if BUILDFLAG(IS_WIN)
+std::unique_ptr<device::FidoDiscoveryBase>
+FakeFidoDiscoveryFactory::MaybeCreateWinWebAuthnApiDiscovery() {
+  if (!discover_win_webauthn_api_authenticator_) {
+    return nullptr;
+  }
+
+  return FidoDiscoveryFactory::MaybeCreateWinWebAuthnApiDiscovery();
+}
+#endif
 
 }  // namespace test
 

@@ -22,10 +22,6 @@
 #import "ios/chrome/credential_provider_extension/ui/feature_flags.h"
 #import "ios/chrome/credential_provider_extension/ui/new_password_coordinator.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface CredentialListCoordinator () <ConfirmationAlertActionHandler,
                                          CredentialListUIHandler,
                                          CredentialDetailsConsumerDelegate,

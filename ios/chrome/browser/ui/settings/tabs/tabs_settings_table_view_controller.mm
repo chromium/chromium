@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
+#import "ios/chrome/browser/tabs/tab_pickup/features.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/tabs/inactive_tabs/inactive_tabs_settings_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/tabs/tabs_settings_constants.h"
@@ -19,33 +20,35 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // List of sections.
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
-  SectionIdentifierActions = kSectionIdentifierEnumZero,
+  SectionIdentifierInactiveTabs = kSectionIdentifierEnumZero,
+  SectionIdentifierTabPickup,
 };
 
 // List of item types.
 typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeInactiveTabs = kItemTypeEnumZero,
+  ItemTypeTabPickup,
 };
 
 }  // namespace
 
 @implementation TabsSettingsTableViewController {
-  // Updatable inactive tabs items.
+  // Updatable inactive tabs item.
   TableViewDetailIconItem* _inactiveTabsDetailItem;
+  // Updatable tab pickup item.
+  TableViewDetailIconItem* _tabPickupDetailItem;
   // Current inactive tab days threshold.
   int _inactiveDaysThreshold;
+  // State of the tab pickup feature.
+  bool _tabPickupEnabled;
 }
 
 - (instancetype)init {
-  CHECK(IsInactiveTabsAvailable());
+  CHECK(IsInactiveTabsAvailable() || IsTabPickupEnabled());
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
     self.title = l10n_util::GetNSString(IDS_IOS_TABS_MANAGEMENT_SETTINGS);
@@ -67,13 +70,21 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)loadModel {
   [super loadModel];
-
   TableViewModel* model = self.tableViewModel;
-  [model addSectionWithIdentifier:SectionIdentifierActions];
-  [model addItem:[self moveInactiveTabsItem]
-      toSectionWithIdentifier:SectionIdentifierActions];
 
-  [self updateInactiveTabsItemWithDaysThreshold:_inactiveDaysThreshold];
+  if (IsInactiveTabsAvailable()) {
+    [model addSectionWithIdentifier:SectionIdentifierInactiveTabs];
+    [model addItem:[self moveInactiveTabsItem]
+        toSectionWithIdentifier:SectionIdentifierInactiveTabs];
+    [self updateInactiveTabsItemWithDaysThreshold:_inactiveDaysThreshold];
+  }
+
+  if (IsTabPickupEnabled()) {
+    [model addSectionWithIdentifier:SectionIdentifierTabPickup];
+    [model addItem:[self tabPickupItem]
+        toSectionWithIdentifier:SectionIdentifierTabPickup];
+    [self updateTabPickupState:_tabPickupEnabled];
+  }
 }
 
 #pragma mark - SettingsControllerProtocol
@@ -93,30 +104,41 @@ typedef NS_ENUM(NSInteger, ItemType) {
   if (@available(iOS 16.0, *)) {
     return;
   }
-
-  NSInteger type = [self.tableViewModel itemTypeForIndexPath:indexPath];
-  if (type == ItemTypeInactiveTabs) {
-    [self.delegate
-        tabsSettingsTableViewControllerDidSelectInactiveTabsSettings:self];
-  }
+  [self performPrimaryActionForRowAtIndexPath:indexPath];
 }
 
 - (void)tableView:(UITableView*)tableView
     performPrimaryActionForRowAtIndexPath:(NSIndexPath*)indexPath {
-  NSInteger type = [self.tableViewModel itemTypeForIndexPath:indexPath];
-  if (type == ItemTypeInactiveTabs) {
-    [self.delegate
-        tabsSettingsTableViewControllerDidSelectInactiveTabsSettings:self];
-  }
+  [self performPrimaryActionForRowAtIndexPath:indexPath];
 }
 
 #pragma mark - TabsSettingsConsumer
 
-- (void)inactiveTabsTimeThresholdChanged:(int)threshold {
+- (void)setInactiveTabsTimeThreshold:(int)threshold {
   [self updateInactiveTabsItemWithDaysThreshold:threshold];
 }
 
+- (void)setTabPickupEnabled:(bool)enabled {
+  [self updateTabPickupState:enabled];
+}
+
 #pragma mark - Private
+
+// Called when a row is selected at `indexPath`.
+- (void)performPrimaryActionForRowAtIndexPath:(NSIndexPath*)indexPath {
+  ItemType type = static_cast<ItemType>(
+      [self.tableViewModel itemTypeForIndexPath:indexPath]);
+  switch (type) {
+    case ItemTypeInactiveTabs:
+      [self.delegate
+          tabsSettingsTableViewControllerDidSelectInactiveTabsSettings:self];
+      break;
+    case ItemTypeTabPickup:
+      [self.delegate
+          tabsSettingsTableViewControllerDidSelectTabPickupSettings:self];
+      break;
+  }
+}
 
 // Returns a newly created TableViewDetailIconItem for the inactive tabs
 // settings menu.
@@ -131,6 +153,20 @@ typedef NS_ENUM(NSInteger, ItemType) {
   _inactiveTabsDetailItem.accessibilityIdentifier =
       kSettingsMoveInactiveTabsCellId;
   return _inactiveTabsDetailItem;
+}
+
+// Returns a newly created TableViewDetailIconItem for the tab pickup
+// settings menu.
+- (TableViewDetailIconItem*)tabPickupItem {
+  _tabPickupDetailItem =
+      [[TableViewDetailIconItem alloc] initWithType:ItemTypeTabPickup];
+  _tabPickupDetailItem.text =
+      l10n_util::GetNSString(IDS_IOS_OPTIONS_TAB_PICKUP);
+  _tabPickupDetailItem.accessoryType =
+      UITableViewCellAccessoryDisclosureIndicator;
+  _tabPickupDetailItem.accessibilityTraits |= UIAccessibilityTraitButton;
+  _tabPickupDetailItem.accessibilityIdentifier = kSettingsTabPickupCellId;
+  return _tabPickupDetailItem;
 }
 
 // Updates the detail text for the Inactive tabs item.
@@ -149,6 +185,18 @@ typedef NS_ENUM(NSInteger, ItemType) {
             _inactiveDaysThreshold));
   }
   [self reconfigureCellsForItems:@[ _inactiveTabsDetailItem ]];
+}
+
+// Updates the detail text for the tab pickup item.
+- (void)updateTabPickupState:(bool)enabled {
+  _tabPickupEnabled = enabled;
+  if (!_tabPickupDetailItem) {
+    return;
+  }
+
+  _tabPickupDetailItem.detailText = l10n_util::GetNSString(
+      _tabPickupEnabled ? IDS_IOS_SETTING_ON : IDS_IOS_SETTING_OFF);
+  [self reconfigureCellsForItems:@[ _tabPickupDetailItem ]];
 }
 
 @end

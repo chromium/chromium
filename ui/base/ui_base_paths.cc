@@ -23,11 +23,13 @@ bool PathProvider(int key, base::FilePath* result) {
 
   base::FilePath cur;
   switch (key) {
+#if !BUILDFLAG(IS_IOS)
+    // DIR_LOCALES is unsupported on iOS.
     case DIR_LOCALES:
 #if BUILDFLAG(IS_ANDROID)
       if (!base::PathService::Get(DIR_RESOURCE_PAKS_ANDROID, &cur))
         return false;
-#elif BUILDFLAG(IS_APPLE)
+#elif BUILDFLAG(IS_MAC)
       if (!base::PathService::Get(base::DIR_MODULE, &cur))
         return false;
       // On Mac, locale files are in Contents/Resources, a sibling of the
@@ -41,6 +43,7 @@ bool PathProvider(int key, base::FilePath* result) {
 #endif
       create_dir = true;
       break;
+#endif  // !BUILDFLAG(IS_IOS)
     // The following are only valid in the development environment, and
     // will fail if executed from an installed executable (because the
     // generated path won't exist).

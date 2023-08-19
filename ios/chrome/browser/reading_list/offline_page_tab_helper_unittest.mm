@@ -15,6 +15,7 @@
 #import "components/reading_list/core/reading_list_entry.h"
 #import "components/reading_list/core/reading_list_model_impl.h"
 #import "components/sync/base/storage_type.h"
+#import "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
 #import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/browser/reading_list/reading_list_test_utils.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -24,10 +25,6 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 const char kTestURL[] = "http://foo.test";
@@ -91,6 +88,7 @@ class OfflinePageTabHelperDelayedModelTest : public PlatformTest {
               DCHECK(storage.get());
               return std::make_unique<ReadingListModelImpl>(
                   std::move(storage), syncer::StorageType::kUnspecified,
+                  syncer::WipeModelUponSyncDisabledBehavior::kNever,
                   base::DefaultClock::GetInstance());
             },
             base::OwnedRef(std::move(storage))));

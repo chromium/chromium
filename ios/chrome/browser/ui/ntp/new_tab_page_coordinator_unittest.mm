@@ -7,11 +7,14 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
+#import "components/variations/service/variations_service.h"
+#import "components/variations/service/variations_service_client.h"
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
@@ -20,8 +23,11 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/signin/fake_system_identity_manager.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_coordinator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
@@ -43,20 +49,87 @@
 #import "ios/chrome/browser/url_loading/fake_url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_state_manager.h"
+#import "ios/chrome/test/testing_application_context.h"
 #import "ios/testing/scoped_block_swizzler.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "services/network/test/test_network_connection_tracker.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+using variations::UIStringOverrider;
+using variations::VariationsService;
+using variations::VariationsServiceClient;
+
+namespace {
+
+// TODO(crbug.com/1167566): Remove when fake VariationsServiceClient created.
+class TestVariationsServiceClient : public VariationsServiceClient {
+ public:
+  TestVariationsServiceClient() = default;
+  TestVariationsServiceClient(const TestVariationsServiceClient&) = delete;
+  TestVariationsServiceClient& operator=(const TestVariationsServiceClient&) =
+      delete;
+  ~TestVariationsServiceClient() override = default;
+
+  // VariationsServiceClient:
+  base::Version GetVersionForSimulation() override { return base::Version(); }
+  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
+      override {
+    return nullptr;
+  }
+  network_time::NetworkTimeTracker* GetNetworkTimeTracker() override {
+    return nullptr;
+  }
+  bool OverridesRestrictParameter(std::string* parameter) override {
+    return false;
+  }
+  bool IsEnterprise() override { return false; }
+  void RemoveGoogleGroupsFromPrefsForDeletedProfiles(
+      PrefService* local_state) override {}
+
+ private:
+  // VariationsServiceClient:
+  version_info::Channel GetChannel() override {
+    return version_info::Channel::UNKNOWN;
+  }
+};
+
+// Creates a VariationsService and sets it as the TestingApplicationContext's
+// VariationService for the life of the instance.
+class ScopedVariationsService {
+ public:
+  ScopedVariationsService() {
+    EXPECT_EQ(nullptr,
+              TestingApplicationContext::GetGlobal()->GetVariationsService());
+    variations_service_ = VariationsService::Create(
+        std::make_unique<TestVariationsServiceClient>(),
+        TestingApplicationContext::GetGlobal()->GetLocalState(),
+        /*state_manager=*/nullptr, "dummy-disable-background-switch",
+        UIStringOverrider(),
+        network::TestNetworkConnectionTracker::CreateGetter());
+    TestingApplicationContext::GetGlobal()->SetVariationsService(
+        variations_service_.get());
+  }
+
+  ~ScopedVariationsService() {
+    EXPECT_EQ(variations_service_.get(),
+              TestingApplicationContext::GetGlobal()->GetVariationsService());
+    TestingApplicationContext::GetGlobal()->SetVariationsService(nullptr);
+    variations_service_.reset();
+  }
+
+  VariationsService* Get() { return variations_service_.get(); }
+
+  std::unique_ptr<VariationsService> variations_service_;
+};
+
+}  // namespace
 
 // Test fixture for testing NewTabPageCoordinator class.
 class NewTabPageCoordinatorTest : public PlatformTest {
@@ -108,18 +181,19 @@ class NewTabPageCoordinatorTest : public PlatformTest {
     // FakeNewTabPageComponentFactory implementation.
     component_factory_mock_ =
         OCMPartialMock([[NewTabPageComponentFactory alloc] init]);
-    UIViewController* fakeFeedViewController = [[UIViewController alloc] init];
+    fake_feed_view_controller_ = [[UIViewController alloc] init];
     UICollectionView* fakeFeedCollectionView = [[UICollectionView alloc]
                initWithFrame:CGRectZero
         collectionViewLayout:[[UICollectionViewFlowLayout alloc] init]];
-    [fakeFeedViewController.view addSubview:fakeFeedCollectionView];
+    fakeFeedCollectionView.translatesAutoresizingMaskIntoConstraints = NO;
+    [fake_feed_view_controller_.view addSubview:fakeFeedCollectionView];
     FeedWrapperViewController* feedWrapperViewController =
         [[FeedWrapperViewController alloc]
               initWithDelegate:coordinator_
-            feedViewController:fakeFeedViewController];
-    OCMStub([component_factory_mock_ discoverFeedForBrowser:browser_.get()
-                                viewControllerConfiguration:[OCMArg any]])
-        .andReturn(fakeFeedViewController);
+            feedViewController:fake_feed_view_controller_];
+    OCMExpect([component_factory_mock_ discoverFeedForBrowser:browser_.get()
+                                  viewControllerConfiguration:[OCMArg any]])
+        .andReturn(fake_feed_view_controller_);
     OCMStub([component_factory_mock_
                 feedWrapperViewControllerWithDelegate:[OCMArg any]
                                    feedViewController:[OCMArg any]])
@@ -222,6 +296,18 @@ class NewTabPageCoordinatorTest : public PlatformTest {
     coordinator_.NTPViewController = original_vc;
   }
 
+  // Signs in a fake identity.
+  void SignIn() {
+    FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
+    FakeSystemIdentityManager* system_identity_manager =
+        FakeSystemIdentityManager::FromSystemIdentityManager(
+            GetApplicationContext()->GetSystemIdentityManager());
+    system_identity_manager->AddIdentity(fake_identity);
+    AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
+        ->SignIn(fake_identity,
+                 signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  }
+
   web::WebTaskEnvironment task_environment_;
   web::WebState* web_state_;
   id toolbar_delegate_;
@@ -230,9 +316,10 @@ class NewTabPageCoordinatorTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<Browser> browser_;
   id scene_state_;
+  UIViewController* fake_feed_view_controller_;
   NewTabPageCoordinator* coordinator_;
   NewTabPageMetricsRecorder* NTPMetricsRecorder_;
-  NewTabPageComponentFactory* component_factory_mock_;
+  id component_factory_mock_;
   UIViewController* base_view_controller_;
   id omnibox_commands_handler_mock;
   id snackbar_commands_handler_mock;
@@ -267,15 +354,20 @@ TEST_F(NewTabPageCoordinatorTest, StartOffTheRecord) {
 TEST_F(NewTabPageCoordinatorTest, StartIsStartShowing) {
   CreateCoordinator(/*off_the_record=*/false);
   SetupCommandHandlerMocks();
-  // Swizzle out `-configureNTPViewController` since it leaves a dangling
-  // pointer somewhere, and UI code does not need to be spun up for this test.
   void (^swizzle_block)() = ^void() {
     // no-op
   };
-  std::unique_ptr<ScopedBlockSwizzler> service_swizzler =
+  // Swizzle out `-configureNTPViewController` since UI code does not need to be
+  // spun up for this test.
+  std::unique_ptr<ScopedBlockSwizzler> configureNTPVCSwizzler =
       std::make_unique<ScopedBlockSwizzler>(
           [NewTabPageCoordinator class], @selector(configureNTPViewController),
           swizzle_block);
+  // Swizzle out `-restoreNTPState` to prevent NTP VC's view from being loaded.
+  std::unique_ptr<ScopedBlockSwizzler> restoreNTPStateSwizzler =
+      std::make_unique<ScopedBlockSwizzler>([NewTabPageCoordinator class],
+                                            @selector(restoreNTPState),
+                                            swizzle_block);
 
   id coordinator_mock = OCMClassMock([ContentSuggestionsCoordinator class]);
   ContentSuggestionsCoordinator* mockContentSuggestionsCoordinator =
@@ -313,7 +405,7 @@ TEST_F(NewTabPageCoordinatorTest, StartIsStartShowing) {
       NewTabPageTabHelper::FromWebState(web_state_)->ShouldShowStartSurface());
   [coordinator_ stop];
 
-  // Test `-didChangeActiveWebState:` updates NTP Start state to false if it
+  // Test the active WebState updates NTP Start state to false if it
   // began as true.
   // NewTabPageTabHelper::FromWebState(web_state_)->SetShowStartSurface(true);
   OCMExpect([coordinator_mock alloc]).andReturn(coordinator_mock);
@@ -327,7 +419,7 @@ TEST_F(NewTabPageCoordinatorTest, StartIsStartShowing) {
   EXPECT_OCMOCK_VERIFY(coordinator_mock);
   // Save reference before `web_state_` is set to new active WebState.
   web::WebState* start_web_state = web_state_;
-  // Simulate didChangeActiveWebState: callback.
+  // Simulate the active WebState change callback.
   InsertWebState(CreateWebStateWithURL(GURL("chrome://version")));
   [coordinator_ didNavigateAwayFromNTP];
   // Moved away from Start surface to a different WebState, Start config for
@@ -575,4 +667,81 @@ TEST_F(NewTabPageCoordinatorTest, IsNTPCleanOnStop) {
   EXPECT_EQ(nil, coordinator_.feedTopSectionCoordinator);
   EXPECT_EQ(nil, coordinator_.feedHeaderViewController);
   EXPECT_FALSE(coordinator_.started);
+}
+
+// Tests that the state of an NTP is saved and restored when leaving an NTP and
+// navigating back to it in the same web state.
+TEST_F(NewTabPageCoordinatorTest, TestSaveNTPState) {
+  CreateCoordinator(/*off_the_record=*/false);
+  SetupCommandHandlerMocks();
+  [coordinator_ start];
+  [coordinator_ didNavigateToNTPInWebState:web_state_];
+
+  // Check that initial NTP is scrolled to top.
+  EXPECT_NEAR(coordinator_.NTPViewController.scrollPosition,
+              -[coordinator_.NTPViewController heightAboveFeed], 1);
+
+  // Change the selected feed and set some scroll position.
+  [coordinator_ selectFeedType:FeedTypeFollowing];
+  [coordinator_.NTPViewController setContentOffsetToTopOfFeed:500];
+
+  FeedType selectedFeed = coordinator_.selectedFeed;
+  CGFloat scrollPosition = coordinator_.NTPViewController.scrollPosition;
+
+  // Navigate away from the NTP and stop the coordinator.
+  [coordinator_ didNavigateAwayFromNTP];
+  [coordinator_ stop];
+
+  // Navigate to another NTP in the same web state.
+  [coordinator_ start];
+  [coordinator_ didNavigateToNTPInWebState:web_state_];
+
+  // Check that newly opened NTP restores saved state.
+  EXPECT_EQ(coordinator_.selectedFeed, selectedFeed);
+  EXPECT_NEAR(coordinator_.NTPViewController.scrollPosition, scrollPosition, 1);
+
+  [coordinator_ stop];
+}
+
+// Tests that following feed and discover feed can be selected.
+TEST_F(NewTabPageCoordinatorTest, SelectFeedType) {
+  // Following feed is only available in the US, so we need to override the
+  // VariationsService's stored permenant country to test.
+  ScopedVariationsService scoped_variations_service;
+  scoped_variations_service.Get()->OverrideStoredPermanentCountry("us");
+
+  CreateCoordinator(/*off_the_record=*/false);
+  [coordinator_ start];
+  // Simulate the view appearing.
+  [coordinator_.NTPViewController beginAppearanceTransition:YES animated:NO];
+  [coordinator_.NTPViewController endAppearanceTransition];
+  SignIn();
+  // Scroll down slightly.
+  CGFloat scrollPosition =
+      round(coordinator_.NTPViewController.scrollPosition + 100);
+  [coordinator_.NTPViewController setContentOffsetToTopOfFeed:scrollPosition];
+
+  // Expect the Following feed to be loaded, and scroll position to be
+  // maintained.
+  OCMExpect([component_factory_mock_
+                    followingFeedForBrowser:browser_.get()
+                viewControllerConfiguration:[OCMArg any]
+                                   sortType:FollowingFeedSortTypeByLatest])
+      .andReturn(fake_feed_view_controller_);
+  [coordinator_ selectFeedType:FeedTypeFollowing];
+  EXPECT_OCMOCK_VERIFY(component_factory_mock_);
+  EXPECT_EQ(coordinator_.selectedFeed, FeedTypeFollowing);
+  EXPECT_EQ(coordinator_.NTPViewController.scrollPosition, scrollPosition);
+
+  // Expect the Discover feed to be loaded, and scroll position to be
+  // maintained.
+  OCMExpect([component_factory_mock_ discoverFeedForBrowser:browser_.get()
+                                viewControllerConfiguration:[OCMArg any]])
+      .andReturn(fake_feed_view_controller_);
+  [coordinator_ selectFeedType:FeedTypeDiscover];
+  EXPECT_OCMOCK_VERIFY(component_factory_mock_);
+  EXPECT_EQ(coordinator_.selectedFeed, FeedTypeDiscover);
+  EXPECT_EQ(coordinator_.NTPViewController.scrollPosition, scrollPosition);
+
+  [coordinator_ stop];
 }

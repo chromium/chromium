@@ -23,11 +23,13 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.view.MarginLayoutParamsCompat;
 import androidx.core.widget.ImageViewCompat;
 
+import org.chromium.base.MathUtils;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.status.StatusView;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.components.browser_ui.widget.CompositeTouchDelegate;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.ArrayList;
@@ -53,11 +55,15 @@ public class LocationBarLayout extends FrameLayout {
     protected StatusCoordinator mStatusCoordinator;
 
     protected boolean mNativeInitialized;
+    protected boolean mHidingActionContainerForNarrowWindow;
+    protected int mMinimumUrlBarWidthPx;
 
     protected LinearLayout mUrlActionContainer;
 
     protected CompositeTouchDelegate mCompositeTouchDelegate;
     protected SearchEngineLogoUtils mSearchEngineLogoUtils;
+    private float mUrlFocusPercentage;
+    private boolean mUrlBarLaidOutAtFocusedWidth;
 
     public LocationBarLayout(Context context, AttributeSet attrs) {
         this(context, attrs, R.layout.location_bar);
@@ -78,6 +84,8 @@ public class LocationBarLayout extends FrameLayout {
         mUrlActionContainer = (LinearLayout) findViewById(R.id.url_action_container);
         mStatusViewLeftSpace = findViewById(R.id.location_bar_status_view_left_space);
         mStatusViewRightSpace = findViewById(R.id.location_bar_status_view_right_space);
+        mMinimumUrlBarWidthPx =
+                context.getResources().getDimensionPixelSize(R.dimen.location_bar_min_url_width);
     }
 
     /**
@@ -104,7 +112,7 @@ public class LocationBarLayout extends FrameLayout {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        updateLayoutParams();
+        updateLayoutParams(widthMeasureSpec);
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
@@ -173,19 +181,20 @@ public class LocationBarLayout extends FrameLayout {
     }
 
     /**
-     * @return The margin to be applied to the URL bar based on the buttons currently visible next
-     *         to it, used to avoid text overlapping the buttons and vice versa.
+     * Returns the width of the url actions container, including its internal and external margins.
      */
-    private int getUrlContainerMarginEnd() {
+    private int getUrlActionContainerWidth() {
         int urlContainerMarginEnd = 0;
-        for (View childView : getUrlContainerViewsForMargin()) {
-            ViewGroup.MarginLayoutParams childLayoutParams =
-                    (ViewGroup.MarginLayoutParams) childView.getLayoutParams();
-            urlContainerMarginEnd += childLayoutParams.width
-                    + MarginLayoutParamsCompat.getMarginStart(childLayoutParams)
-                    + MarginLayoutParamsCompat.getMarginEnd(childLayoutParams);
-        }
-        if (mUrlActionContainer != null && mUrlActionContainer.getVisibility() == View.VISIBLE) {
+        // INVISIBLE views still take up space for the purpose of layout, so we consider the url
+        // action container's width unless it's GONE.
+        if (mUrlActionContainer != null && mUrlActionContainer.getVisibility() != View.GONE) {
+            for (View childView : getUrlContainerViewsForMargin()) {
+                ViewGroup.MarginLayoutParams childLayoutParams =
+                        (ViewGroup.MarginLayoutParams) childView.getLayoutParams();
+                urlContainerMarginEnd += childLayoutParams.width
+                        + MarginLayoutParamsCompat.getMarginStart(childLayoutParams)
+                        + MarginLayoutParamsCompat.getMarginEnd(childLayoutParams);
+            }
             ViewGroup.MarginLayoutParams urlActionContainerLayoutParams =
                     (ViewGroup.MarginLayoutParams) mUrlActionContainer.getLayoutParams();
             urlContainerMarginEnd +=
@@ -208,17 +217,32 @@ public class LocationBarLayout extends FrameLayout {
      * Updates the layout params for the location bar start aligned views.
      */
     @VisibleForTesting
-    void updateLayoutParams() {
+    void updateLayoutParams(int parentWidthMeasureSpec) {
         int startMargin = 0;
         for (int i = 0; i < getChildCount(); i++) {
             View childView = getChildAt(i);
             if (childView.getVisibility() != GONE) {
                 LayoutParams childLayoutParams = (LayoutParams) childView.getLayoutParams();
+                if (childView == mUrlBar) {
+                    if (OmniboxFeatures.shouldAvoidRelayoutDuringFocusAnimation()
+                            && mUrlFocusPercentage > 0.0f) {
+                        // Set a margin that places the url bar in its final, focused position.
+                        // During animation this will be compensated against using translation of
+                        // decreasing magnitude to avoid a jump.
+                        startMargin += getFocusedStatusViewSpacingDelta();
+                        mUrlBarLaidOutAtFocusedWidth = true;
+                    } else {
+                        mUrlBarLaidOutAtFocusedWidth = false;
+                    }
+
+                    MarginLayoutParamsCompat.setMarginStart(childLayoutParams, startMargin);
+                    childView.setLayoutParams(childLayoutParams);
+                    break;
+                }
                 if (MarginLayoutParamsCompat.getMarginStart(childLayoutParams) != startMargin) {
                     MarginLayoutParamsCompat.setMarginStart(childLayoutParams, startMargin);
                     childView.setLayoutParams(childLayoutParams);
                 }
-                if (childView == mUrlBar) break;
 
                 int widthMeasureSpec;
                 int heightMeasureSpec;
@@ -247,10 +271,24 @@ public class LocationBarLayout extends FrameLayout {
             }
         }
 
-        int urlContainerMarginEnd = getUrlContainerMarginEnd();
+        int urlActionContainerWidth = getUrlActionContainerWidth();
+        int allocatedWidth = MeasureSpec.getSize(parentWidthMeasureSpec);
+        int availableWidth = allocatedWidth - startMargin - urlActionContainerWidth;
+        if (!mHidingActionContainerForNarrowWindow && availableWidth < mMinimumUrlBarWidthPx) {
+            mHidingActionContainerForNarrowWindow = true;
+            mUrlActionContainer.setVisibility(INVISIBLE);
+        } else if (mHidingActionContainerForNarrowWindow
+                && mUrlActionContainer.getVisibility() != VISIBLE
+                && availableWidth >= mMinimumUrlBarWidthPx) {
+            mHidingActionContainerForNarrowWindow = false;
+            mUrlActionContainer.setVisibility(VISIBLE);
+        }
+
+        int urlBarMarginEnd = mHidingActionContainerForNarrowWindow ? 0 : urlActionContainerWidth;
+
         LayoutParams urlLayoutParams = (LayoutParams) mUrlBar.getLayoutParams();
-        if (MarginLayoutParamsCompat.getMarginEnd(urlLayoutParams) != urlContainerMarginEnd) {
-            MarginLayoutParamsCompat.setMarginEnd(urlLayoutParams, urlContainerMarginEnd);
+        if (MarginLayoutParamsCompat.getMarginEnd(urlLayoutParams) != urlBarMarginEnd) {
+            MarginLayoutParamsCompat.setMarginEnd(urlLayoutParams, urlBarMarginEnd);
             mUrlBar.setLayoutParams(urlLayoutParams);
         }
     }
@@ -292,28 +330,32 @@ public class LocationBarLayout extends FrameLayout {
         mStatusCoordinator.setUnfocusedLocationBarWidth(unfocusedWidth);
     }
 
-    @VisibleForTesting
     public StatusCoordinator getStatusCoordinatorForTesting() {
         return mStatusCoordinator;
     }
 
-    @VisibleForTesting
     public void setStatusCoordinatorForTesting(StatusCoordinator statusCoordinator) {
         mStatusCoordinator = statusCoordinator;
     }
 
     /* package */ void setUrlActionContainerVisibility(int visibility) {
+        if (mHidingActionContainerForNarrowWindow && visibility == VISIBLE) return;
         mUrlActionContainer.setVisibility(visibility);
     }
 
     /** Returns the increase in StatusView end padding, when the Url bar is focused. */
     public int getEndPaddingPixelSizeOnFocusDelta() {
-        int focusedPaddingDimen = OmniboxFeatures.shouldShowModernizeVisualUpdate(getContext())
-                        && OmniboxFeatures.shouldShowSmallBottomMargin()
+        boolean modernizeVisualUpdate =
+                OmniboxFeatures.shouldShowModernizeVisualUpdate(getContext());
+        int focusedPaddingDimen =
+                modernizeVisualUpdate && OmniboxFeatures.shouldShowSmallBottomMargin()
                 ? R.dimen.location_bar_icon_end_padding_focused_smaller
                 : R.dimen.location_bar_icon_end_padding_focused;
-        return getResources().getDimensionPixelSize(focusedPaddingDimen)
-                - getResources().getDimensionPixelSize(R.dimen.location_bar_icon_end_padding);
+        if (modernizeVisualUpdate && mLocationBarDataProvider.isIncognito()) {
+            focusedPaddingDimen = R.dimen.location_bar_icon_end_padding_focused_incognito;
+        }
+
+        return getResources().getDimensionPixelSize(focusedPaddingDimen);
     }
 
     /**
@@ -323,12 +365,15 @@ public class LocationBarLayout extends FrameLayout {
      * @param percent The current animation progress percent.
      */
     protected void setUrlFocusChangePercent(float percent) {
+        mUrlFocusPercentage = percent;
         setStatusViewLeftSpacePercent(percent);
         setStatusViewRightSpacePercent(percent);
     }
 
     /**
-     * Set the status view's left space's width based on current animation progress percent.
+     * Set the "left space width" based on current animation progress percent. This can either
+     * mutate the width of a Space view to the left of the status view or use translation to
+     * accomplish the same thing without triggering a relayout.
      *
      * @param percent The animation progress percent.
      */
@@ -337,16 +382,24 @@ public class LocationBarLayout extends FrameLayout {
             return;
         }
 
-        // Set the left space expansion width.
-        ViewGroup.LayoutParams leftSpacingParams = mStatusViewLeftSpace.getLayoutParams();
-        int fullSpacing = OmniboxResourceProvider.getFocusedStatusViewLeftSpacing(getContext());
+        if (OmniboxFeatures.shouldAvoidRelayoutDuringFocusAnimation()) {
+            mStatusCoordinator.setTranslationX(MathUtils.flipSignIf(
+                    OmniboxResourceProvider.getFocusedStatusViewLeftSpacing(getContext()) * percent,
+                    getLayoutDirection() == LAYOUT_DIRECTION_RTL));
+        } else {
+            // Set the left space expansion width.
+            ViewGroup.LayoutParams leftSpacingParams = mStatusViewLeftSpace.getLayoutParams();
+            int fullSpacing = OmniboxResourceProvider.getFocusedStatusViewLeftSpacing(getContext());
 
-        leftSpacingParams.width = (int) (fullSpacing * percent);
-        mStatusViewLeftSpace.setLayoutParams(leftSpacingParams);
+            leftSpacingParams.width = (int) (fullSpacing * percent);
+            mStatusViewLeftSpace.setLayoutParams(leftSpacingParams);
+        }
     }
 
     /**
-     * Set the status view's right space's width based on current animation progress percent.
+     * Set the "right space width" based on current animation progress percent. This can either
+     * mutate the width of a Space view to the right of the status view or use translation to
+     * accomplish the same thing without triggering a relayout.
      *
      * @param percent The animation progress percent.
      */
@@ -356,10 +409,51 @@ public class LocationBarLayout extends FrameLayout {
             return;
         }
 
-        // Set the right space expansion width.
-        ViewGroup.LayoutParams rightSpacingParams = mStatusViewRightSpace.getLayoutParams();
-        rightSpacingParams.width = (int) (getEndPaddingPixelSizeOnFocusDelta() * percent);
-        mStatusViewRightSpace.setLayoutParams(rightSpacingParams);
+        if (OmniboxFeatures.shouldAvoidRelayoutDuringFocusAnimation()) {
+            // If the url bar is laid out at its smaller, focused width, translate back towards
+            // start to compensate for the increased start margin set in #updateLayoutParams. The
+            // magnitude of the compensation decreases as % increases and is 0 at full focus %.
+            float translationX;
+            if (mUrlBarLaidOutAtFocusedWidth) {
+                translationX = getFocusedStatusViewSpacingDelta() * (-1.0f + percent);
+                boolean scrollingOnNtp = !mUrlBar.hasFocus()
+                        && mStatusCoordinator.isSearchEngineStatusIconVisible()
+                        && UrlUtilities.isNTPUrl(mLocationBarDataProvider.getCurrentGurl());
+                if (scrollingOnNtp) {
+                    translationX -= (1.0f - percent)
+                            * (mStatusCoordinator.getStatusIconWidth()
+                                    - getResources().getDimensionPixelSize(
+                                            R.dimen.location_bar_status_icon_holding_space_size));
+                }
+            } else {
+                // No compensation is needed at 0% because the margin is reset to normal.
+                translationX = 0.0f;
+            }
+
+            mUrlBar.setTranslationX(MathUtils.flipSignIf(
+                    translationX, getLayoutDirection() == LAYOUT_DIRECTION_RTL));
+        } else {
+            // Set the right space expansion width.
+            ViewGroup.LayoutParams rightSpacingParams = mStatusViewRightSpace.getLayoutParams();
+            rightSpacingParams.width = (int) (getEndPaddingPixelSizeOnFocusDelta() * percent);
+            mStatusViewRightSpace.setLayoutParams(rightSpacingParams);
+        }
+    }
+
+    /**
+     * The delta between the total status view spacing (left + right) when unfocused vs focused.
+     * The status view has additional spacing applied when focused to visually align it and the
+     * UrlBar with omnibox suggestions. See below diagram; the additional spacing is denoted with _
+     * Unfocused:
+     * [ (i)  www.example.com]
+     * Focused:
+     * [ _(G)_  Search or type web address]
+     * [  🔍    Foobar                  ↖ ]
+     * [  🔍    Barbaz                  ↖ ]
+     */
+    private int getFocusedStatusViewSpacingDelta() {
+        return getEndPaddingPixelSizeOnFocusDelta()
+                + OmniboxResourceProvider.getFocusedStatusViewLeftSpacing(getContext());
     }
 
     public void notifyVoiceRecognitionCanceled() {}

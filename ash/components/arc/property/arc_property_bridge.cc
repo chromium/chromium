@@ -64,34 +64,6 @@ void ArcPropertyBridge::OnConnectionReady() {
     property_instance->GetGcaMigrationProperty(std::move(pending_request));
   }
   pending_requests_.clear();
-
-  SyncMinimizeOnBackButton();
-}
-
-void ArcPropertyBridge::GetGcaMigrationProperty(
-    mojom::PropertyInstance::GetGcaMigrationPropertyCallback callback) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  mojom::PropertyInstance* property_instance = ARC_GET_INSTANCE_FOR_METHOD(
-      arc_bridge_service_->property(), GetGcaMigrationProperty);
-  if (!property_instance) {
-    pending_requests_.emplace_back(std::move(callback));
-    return;
-  }
-
-  property_instance->GetGcaMigrationProperty(std::move(callback));
-}
-
-void ArcPropertyBridge::SyncMinimizeOnBackButton() {
-  mojom::PropertyInstance* property_instance = ARC_GET_INSTANCE_FOR_METHOD(
-      arc_bridge_service_->property(), SetMinimizeOnBackButton);
-  if (!property_instance)
-    return;
-  const std::string group =
-      base::FieldTrialList::FindFullName(kMinimizeOnBackButtonTrialName);
-  if (group == kMinimizeOnBackButtonEnabled)
-    property_instance->SetMinimizeOnBackButton(true);
-  else if (group == kMinimizeOnBackButtonDisabled)
-    property_instance->SetMinimizeOnBackButton(false);
 }
 
 // static

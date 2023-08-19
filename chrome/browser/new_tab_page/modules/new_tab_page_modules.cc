@@ -72,11 +72,6 @@ const std::vector<std::pair<const std::string, int>> MakeModuleIdNames(
 #if !defined(OFFICIAL_BUILD)
   if (base::FeatureList::IsEnabled(ntp_features::kNtpDummyModules)) {
     details.emplace_back("dummy", IDS_NTP_MODULES_DUMMY_TITLE);
-
-    for (int i = 2; i <= 12; i++) {
-      details.emplace_back(base::StringPrintf("dummy%d", i),
-                           IDS_NTP_MODULES_DUMMY2_TITLE);
-    }
   }
 #endif
 

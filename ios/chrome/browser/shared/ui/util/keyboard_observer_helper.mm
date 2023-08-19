@@ -10,10 +10,6 @@
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ui/base/device_form_factor.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface KeyboardObserverHelper ()
 
 // Flag that indicates if the keyboard is on screen.

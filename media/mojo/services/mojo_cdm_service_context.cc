@@ -32,6 +32,7 @@ base::UnguessableToken MojoCdmServiceContext::RegisterCdm(
     MojoCdmService* cdm_service) {
   DCHECK(cdm_service);
   base::UnguessableToken cdm_id = GetNextCdmId();
+  base::AutoLock guard(cdm_services_lock_);
   cdm_services_[cdm_id] = cdm_service;
   DVLOG(1) << __func__ << ": CdmService registered with CDM ID " << cdm_id;
   return cdm_id;
@@ -40,6 +41,7 @@ base::UnguessableToken MojoCdmServiceContext::RegisterCdm(
 void MojoCdmServiceContext::UnregisterCdm(
     const base::UnguessableToken& cdm_id) {
   DVLOG(1) << __func__ << ": cdm_id = " << cdm_id;
+  base::AutoLock guard(cdm_services_lock_);
   DCHECK(cdm_services_.count(cdm_id));
   cdm_services_.erase(cdm_id);
 }
@@ -68,13 +70,16 @@ std::unique_ptr<CdmContextRef> MojoCdmServiceContext::GetCdmContextRef(
   DVLOG(1) << __func__ << ": cdm_id = " << cdm_id;
 
   // Check all CDMs first.
-  auto cdm_service = cdm_services_.find(cdm_id);
-  if (cdm_service != cdm_services_.end()) {
-    if (!cdm_service->second->GetCdm()->GetCdmContext()) {
-      NOTREACHED() << "All CDMs should support CdmContext.";
-      return nullptr;
+  {
+    base::AutoLock guard(cdm_services_lock_);
+    auto cdm_service = cdm_services_.find(cdm_id);
+    if (cdm_service != cdm_services_.end()) {
+      if (!cdm_service->second->GetCdm()->GetCdmContext()) {
+        NOTREACHED() << "All CDMs should support CdmContext.";
+        return nullptr;
+      }
+      return std::make_unique<CdmContextRefImpl>(cdm_service->second->GetCdm());
     }
-    return std::make_unique<CdmContextRefImpl>(cdm_service->second->GetCdm());
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -10,16 +10,19 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_htmlcanvaselement_htmlvideoelement_imagebitmap_offscreencanvas.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_command_buffer_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_external_image.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_image_bitmap.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_texture.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_texture_tagged.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_imagedata_offscreencanvas_videoframe.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_host.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
+#include "third_party/blink/renderer/core/html/canvas/image_data.h"
 #include "third_party/blink/renderer/core/html/canvas/predefined_color_space.h"
+#include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
@@ -33,6 +36,8 @@
 #include "third_party/blink/renderer/modules/webgpu/texture_utils.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
+#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
+#include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -84,23 +89,41 @@ uint64_t AlignBytesPerRow(uint64_t bytesPerRow) {
 
 struct ExternalSource {
   ExternalTextureSource external_texture_source;
-  scoped_refptr<Image> image = nullptr;
+  scoped_refptr<StaticBitmapImage> image = nullptr;
   uint32_t width = 0;
   uint32_t height = 0;
   bool valid = false;
 };
 
+// TODO(crbug.com/1471372): Avoid extra copy.
+scoped_refptr<StaticBitmapImage> GetImageFromImageData(
+    const ImageData* image_data) {
+  SkPixmap image_data_pixmap = image_data->GetSkPixmap();
+  SkImageInfo info = image_data_pixmap.info().makeColorType(kN32_SkColorType);
+  size_t image_pixels_size = info.computeMinByteSize();
+  if (SkImageInfo::ByteSizeOverflowed(image_pixels_size)) {
+    return nullptr;
+  }
+  sk_sp<SkData> image_pixels = TryAllocateSkData(image_pixels_size);
+  if (!image_pixels) {
+    return nullptr;
+  }
+  if (!image_data_pixmap.readPixels(info, image_pixels->writable_data(),
+                                    info.minRowBytes(), 0, 0)) {
+    return nullptr;
+  }
+  return StaticBitmapImage::Create(std::move(image_pixels), info);
+}
+
 ExternalSource GetExternalSourceFromExternalImage(
-    const V8UnionHTMLCanvasElementOrHTMLVideoElementOrImageBitmapOrOffscreenCanvas*
-        external_image,
+    const V8GPUImageCopyExternalImageSource* external_image,
     ExceptionState& exception_state) {
   ExternalSource external_source;
   ExternalTextureSource external_texture_source;
   CanvasImageSource* canvas_image_source = nullptr;
   CanvasRenderingContextHost* canvas = nullptr;
   switch (external_image->GetContentType()) {
-    case V8UnionHTMLCanvasElementOrHTMLVideoElementOrImageBitmapOrOffscreenCanvas::
-        ContentType::kHTMLVideoElement:
+    case V8GPUImageCopyExternalImageSource::ContentType::kHTMLVideoElement:
       external_texture_source = GetExternalTextureSourceFromVideoElement(
           external_image->GetAsHTMLVideoElement(), exception_state);
       if (external_texture_source.valid) {
@@ -113,17 +136,43 @@ ExternalSource GetExternalSourceFromExternalImage(
         external_source.valid = true;
       }
       return external_source;
-    case V8UnionHTMLCanvasElementOrHTMLVideoElementOrImageBitmapOrOffscreenCanvas::
-        ContentType::kHTMLCanvasElement:
+    case V8GPUImageCopyExternalImageSource::ContentType::kVideoFrame:
+      external_texture_source = GetExternalTextureSourceFromVideoFrame(
+          external_image->GetAsVideoFrame(), exception_state);
+      if (external_texture_source.valid) {
+        external_source.external_texture_source = external_texture_source;
+        DCHECK(external_texture_source.media_video_frame);
+        external_source.width = static_cast<uint32_t>(
+            external_texture_source.media_video_frame->coded_size().width());
+        external_source.height = static_cast<uint32_t>(
+            external_texture_source.media_video_frame->coded_size().height());
+        external_source.valid = true;
+      }
+      return external_source;
+    case V8GPUImageCopyExternalImageSource::ContentType::kHTMLCanvasElement:
       canvas_image_source = external_image->GetAsHTMLCanvasElement();
       canvas = external_image->GetAsHTMLCanvasElement();
       break;
-    case V8UnionHTMLCanvasElementOrHTMLVideoElementOrImageBitmapOrOffscreenCanvas::
-        ContentType::kImageBitmap:
+    case V8GPUImageCopyExternalImageSource::ContentType::kImageBitmap:
       canvas_image_source = external_image->GetAsImageBitmap();
       break;
-    case V8UnionHTMLCanvasElementOrHTMLVideoElementOrImageBitmapOrOffscreenCanvas::
-        ContentType::kOffscreenCanvas:
+    case V8GPUImageCopyExternalImageSource::ContentType::kImageData: {
+      auto image = GetImageFromImageData(external_image->GetAsImageData());
+      if (!image) {
+        exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                          "Cannot get image.");
+        return external_source;
+      }
+      external_source.image = image;
+      external_source.width = static_cast<uint32_t>(image->width());
+      external_source.height = static_cast<uint32_t>(image->height());
+      external_source.valid = true;
+      return external_source;
+    }
+    case V8GPUImageCopyExternalImageSource::ContentType::kHTMLImageElement:
+      canvas_image_source = external_image->GetAsHTMLImageElement();
+      break;
+    case V8GPUImageCopyExternalImageSource::ContentType::kOffscreenCanvas:
       canvas_image_source = external_image->GetAsOffscreenCanvas();
       canvas = external_image->GetAsOffscreenCanvas();
       break;
@@ -178,7 +227,7 @@ ExternalSource GetExternalSourceFromExternalImage(
   // This will help combine more transforms (e.g. flipY, color-space)
   // into a single blit.
   SourceImageStatus source_image_status = kInvalidSourceImageStatus;
-  auto image = canvas_image_source->GetSourceImageForCanvas(
+  auto image_for_canvas = canvas_image_source->GetSourceImageForCanvas(
       CanvasResourceProvider::FlushReason::kWebGPUExternalImage,
       &source_image_status, image_size, kDontChangeAlpha);
   if (source_image_status != kNormalSourceImageStatus) {
@@ -187,9 +236,20 @@ ExternalSource GetExternalSourceFromExternalImage(
     return external_source;
   }
 
-  external_source.image = image;
-  external_source.width = static_cast<uint32_t>(image->width());
-  external_source.height = static_cast<uint32_t>(image->height());
+  // TODO(crbug.com/1471372): It would be better if GetSourceImageForCanvas()
+  // would always return a StaticBitmapImage.
+  if (auto* image = DynamicTo<StaticBitmapImage>(image_for_canvas.get())) {
+    external_source.image = image;
+  } else {
+    PaintImage paint_image = image_for_canvas->PaintImageForCurrentFrame();
+    if (!paint_image) {
+      return external_source;
+    }
+    external_source.image = StaticBitmapImage::Create(std::move(paint_image));
+  }
+  external_source.width = static_cast<uint32_t>(external_source.image->width());
+  external_source.height =
+      static_cast<uint32_t>(external_source.image->height());
   external_source.valid = true;
 
   return external_source;
@@ -240,7 +300,11 @@ WGPUCopyTextureForBrowserOptions CreateCopyTextureForBrowserOptions(
     options.conversionMatrix =
         color_space_conversion_constants->gamut_conversion_matrix.data();
   }
-  options.flipY = image->IsOriginTopLeft() == flipY;
+  // The source texture, which is either a WebGPUMailboxTexture for
+  // accelerated images or an intermediate texture created for unaccelerated
+  // images, is always origin top left, so no additional flip is needed apart
+  // from the client specified flip in GPUImageCopyExternalImage i.e. |flipY|.
+  options.flipY = flipY;
 
   return options;
 }
@@ -270,7 +334,8 @@ gfx::Rect GetSourceImageSubrect(StaticBitmapImage* image,
 GPUQueue::GPUQueue(GPUDevice* device, WGPUQueue queue)
     : DawnObject<WGPUQueue>(device, queue) {}
 
-void GPUQueue::submit(const HeapVector<Member<GPUCommandBuffer>>& buffers) {
+void GPUQueue::submit(ScriptState* script_state,
+                      const HeapVector<Member<GPUCommandBuffer>>& buffers) {
   std::unique_ptr<WGPUCommandBuffer[]> commandBuffers = AsDawnType(buffers);
 
   GetProcs().queueSubmit(GetHandle(), buffers.size(), commandBuffers.get());
@@ -278,6 +343,9 @@ void GPUQueue::submit(const HeapVector<Member<GPUCommandBuffer>>& buffers) {
   // need to ensure commands are flushed. Flush immediately so the GPU process
   // eagerly processes commands to maximize throughput.
   FlushNow();
+
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  UseCounter::Count(execution_context, WebFeature::kWebGPUQueueSubmit);
 }
 
 void GPUQueue::OnWorkDoneCallback(ScriptPromiseResolver* resolver,
@@ -587,13 +655,10 @@ void GPUQueue::copyExternalImageToTexture(
     return;
   }
 
-  scoped_refptr<StaticBitmapImage> static_bitmap_image =
-      DynamicTo<StaticBitmapImage>(source.image.get());
-  DCHECK(static_bitmap_image);
-  if (!CopyFromCanvasSourceImage(
-          static_bitmap_image.get(), origin_in_external_image, dawn_copy_size,
-          dawn_destination, destination->premultipliedAlpha(), color_space,
-          copyImage->flipY())) {
+  if (!CopyFromCanvasSourceImage(source.image.get(), origin_in_external_image,
+                                 dawn_copy_size, dawn_destination,
+                                 destination->premultipliedAlpha(), color_space,
+                                 copyImage->flipY())) {
     exception_state.ThrowTypeError(
         "Failed to copy content from external image.");
     return;
@@ -679,18 +744,20 @@ bool GPUQueue::CopyFromCanvasSourceImage(
 // platform requires interop supported. According to the bug, this change will
 // be a long time task. So disable using webgpu mailbox texture uploading path
 // on linux platform.
+// TODO(crbug.com/1424119): using a webgpu mailbox texture on the OpenGLES
+// backend is failing for unknown reasons.
 #if BUILDFLAG(IS_LINUX)
-  use_webgpu_mailbox_texture = false;
-  unaccelerated_image = image->MakeUnaccelerated();
-  image = unaccelerated_image.get();
-#endif  // BUILDFLAG(IS_LINUX)
-
-  // TODO(crbug.com/1424119):
-  // Using a webgpu mailbox texture to upload a cpu-backed resource on OpenGLES uploads all
-  // zeros. Disable that upload path if the image is not texture-backed.
-  auto backendType = device()->adapter()->backendType();
-  if (backendType == WGPUBackendType_OpenGLES && !image->IsTextureBacked()) {
+  bool forceReadback = true;
+#elif BUILDFLAG(IS_WIN)
+  bool forceReadback =
+      device()->adapter()->backendType() == WGPUBackendType_OpenGLES;
+#else
+  bool forceReadback = false;
+#endif
+  if (forceReadback) {
     use_webgpu_mailbox_texture = false;
+    unaccelerated_image = image->MakeUnaccelerated();
+    image = unaccelerated_image.get();
   }
 
   // TODO(crbug.com/1426666): If disable OOP-R, using webgpu mailbox to upload
@@ -716,6 +783,14 @@ bool GPUQueue::CopyFromCanvasSourceImage(
   // Get source image info.
   PaintImage paint_image = image->PaintImageForCurrentFrame();
   SkImageInfo source_image_info = paint_image.GetSkImageInfo();
+
+  // TODO(crbug.com/1457649): If CPU backed source input discard the color
+  // space info(e.g. ImageBitmap created with flag colorSpaceConversion: none).
+  // disable using use_webgpu_mailbox_texture to fix alpha premultiplied isseu.
+  if (!image->IsTextureBacked() && !image->IsPremultiplied() &&
+      source_image_info.refColorSpace() == nullptr) {
+    use_webgpu_mailbox_texture = false;
+  }
 
   // Source and dst might have different constants
   ColorSpaceConversionConstants color_space_conversion_constants = {};

@@ -7,6 +7,8 @@
 
 #include "components/metrics/metrics_provider.h"
 
+class PrefService;
+
 namespace ash::settings {
 
 class OsSettingsMetricsProvider : public metrics::MetricsProvider {
@@ -22,6 +24,13 @@ class OsSettingsMetricsProvider : public metrics::MetricsProvider {
   // metrics::MetricsProvider:
   void ProvideCurrentSessionData(
       metrics::ChromeUserMetricsExtension* uma_proto) override;
+
+ private:
+  void LogVerifiedAccessEnabled();
+  void MaybeLogTotalUniqueSettingsChanged();
+  bool HasUserMetricsConsent();
+  bool ShouldRecordMetrics(PrefService* profile_pref_service);
+  bool IsTodayInFirst7Days(PrefService* profile_pref_service);
 };
 
 }  // namespace ash::settings

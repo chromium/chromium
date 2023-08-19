@@ -42,7 +42,7 @@ void RecordKioskSecondaryAppsInstallResult(bool success) {
 
 }  // namespace
 
-namespace ash {
+namespace chromeos {
 
 ChromeKioskAppLauncher::ChromeKioskAppLauncher(Profile* profile,
                                                const std::string& app_id,
@@ -51,7 +51,7 @@ ChromeKioskAppLauncher::ChromeKioskAppLauncher(Profile* profile,
       app_id_(app_id),
       network_available_(network_available) {}
 
-ChromeKioskAppLauncher::~ChromeKioskAppLauncher() {}
+ChromeKioskAppLauncher::~ChromeKioskAppLauncher() = default;
 
 void ChromeKioskAppLauncher::LaunchApp(LaunchCallback callback) {
   on_ready_callback_ = std::move(callback);
@@ -151,8 +151,9 @@ void ChromeKioskAppLauncher::MaybeUpdateAppData() {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  KioskAppManager::Get()->ClearAppData(app_id_);
-  KioskAppManager::Get()->UpdateAppDataFromProfile(app_id_, profile_, nullptr);
+  ash::KioskAppManager::Get()->ClearAppData(app_id_);
+  ash::KioskAppManager::Get()->UpdateAppDataFromProfile(app_id_, profile_,
+                                                        nullptr);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -243,4 +244,4 @@ void ChromeKioskAppLauncher::SetAppEnabledState(
   }
 }
 
-}  // namespace ash
+}  // namespace chromeos

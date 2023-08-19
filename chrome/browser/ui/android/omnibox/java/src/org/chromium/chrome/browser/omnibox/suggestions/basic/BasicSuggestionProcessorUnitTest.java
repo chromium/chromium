@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.omnibox.suggestions.basic;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
@@ -30,16 +29,15 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.ShadowUrlBarData;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
-import org.chromium.chrome.browser.omnibox.suggestions.FaviconFetcher;
-import org.chromium.chrome.browser.omnibox.suggestions.FaviconFetcher.FaviconFetchCompleteListener;
-import org.chromium.chrome.browser.omnibox.suggestions.FaviconFetcher.FaviconType;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
-import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionDrawableState;
 import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.omnibox.AutocompleteMatch;
@@ -60,8 +58,6 @@ import java.util.Map;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowGURL.class, ShadowUrlBarData.class})
 public class BasicSuggestionProcessorUnitTest {
-    private static final GURL EXTERNAL_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
-    private static final GURL INTERNAL_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL);
     private static final @DrawableRes int ICON_BOOKMARK = R.drawable.btn_star;
     private static final @DrawableRes int ICON_GLOBE = R.drawable.ic_globe_24dp;
     private static final @DrawableRes int ICON_HISTORY = R.drawable.ic_history_googblue_24dp;
@@ -114,7 +110,7 @@ public class BasicSuggestionProcessorUnitTest {
     private @Mock SuggestionHost mSuggestionHost;
     private @Mock UrlBarEditingTextStateProvider mUrlBarText;
     private @Mock Bitmap mBitmap;
-    private @Mock FaviconFetcher mIconFetcher;
+    private @Mock OmniboxImageSupplier mImageSupplier;
 
     private BasicSuggestionProcessor mProcessor;
     private AutocompleteMatch mSuggestion;
@@ -135,7 +131,7 @@ public class BasicSuggestionProcessorUnitTest {
     public void setUp() {
         doReturn("").when(mUrlBarText).getTextWithoutAutocomplete();
         mProcessor = new BasicSuggestionProcessor(ContextUtils.getApplicationContext(),
-                mSuggestionHost, mUrlBarText, mIconFetcher, mIsBookmarked);
+                mSuggestionHost, mUrlBarText, mImageSupplier, mIsBookmarked);
     }
 
     /**
@@ -174,7 +170,7 @@ public class BasicSuggestionProcessorUnitTest {
 
     private void assertSuggestionTypeAndIcon(
             @OmniboxSuggestionType int expectedType, @DrawableRes int expectedIconRes) {
-        SuggestionDrawableState sds = mModel.get(BaseSuggestionViewProperties.ICON);
+        OmniboxDrawableState sds = mModel.get(BaseSuggestionViewProperties.ICON);
         @DrawableRes
         int actualIconRes = shadowOf(sds.drawable).getCreatedFromResId();
         Assert.assertEquals(
@@ -333,8 +329,9 @@ public class BasicSuggestionProcessorUnitTest {
         final List<BaseSuggestionViewProperties.Action> actions =
                 mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
         Assert.assertEquals(actions.size(), 1);
-        final SuggestionDrawableState iconState = actions.get(0).icon;
-        Assert.assertEquals(iconState.resourceId, R.drawable.btn_suggestion_refine);
+        final OmniboxDrawableState iconState = actions.get(0).icon;
+        Assert.assertEquals(R.drawable.btn_suggestion_refine,
+                shadowOf(iconState.drawable).getCreatedFromResId());
     }
 
     @Test
@@ -349,24 +346,23 @@ public class BasicSuggestionProcessorUnitTest {
         final List<BaseSuggestionViewProperties.Action> actions =
                 mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
         Assert.assertEquals(actions.size(), 1);
-        final SuggestionDrawableState iconState = actions.get(0).icon;
-        Assert.assertEquals(iconState.resourceId, R.drawable.switch_to_tab);
+        final OmniboxDrawableState iconState = actions.get(0).icon;
+        Assert.assertEquals(
+                R.drawable.switch_to_tab, shadowOf(iconState.drawable).getCreatedFromResId());
     }
 
     @Test
     @SmallTest
     public void suggestionFavicons_showFaviconWhenAvailable() {
-        final ArgumentCaptor<FaviconFetchCompleteListener> callback =
-                ArgumentCaptor.forClass(FaviconFetchCompleteListener.class);
+        final ArgumentCaptor<Callback<Bitmap>> callback = ArgumentCaptor.forClass(Callback.class);
         mProcessor.onNativeInitialized();
         createUrlSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, "");
-        SuggestionDrawableState icon1 = mModel.get(BaseSuggestionViewProperties.ICON);
+        OmniboxDrawableState icon1 = mModel.get(BaseSuggestionViewProperties.ICON);
         Assert.assertNotNull(icon1);
 
-        verify(mIconFetcher)
-                .fetchFaviconWithBackoff(eq(mSuggestion.getUrl()), eq(false), callback.capture());
-        callback.getValue().onFaviconFetchComplete(mBitmap, FaviconType.REGULAR);
-        SuggestionDrawableState icon2 = mModel.get(BaseSuggestionViewProperties.ICON);
+        verify(mImageSupplier).fetchFavicon(eq(mSuggestion.getUrl()), callback.capture());
+        callback.getValue().onResult(mBitmap);
+        OmniboxDrawableState icon2 = mModel.get(BaseSuggestionViewProperties.ICON);
         Assert.assertNotNull(icon2);
 
         Assert.assertNotEquals(icon1, icon2);
@@ -379,7 +375,7 @@ public class BasicSuggestionProcessorUnitTest {
         mProcessor.onNativeInitialized();
         createSearchSuggestion(OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED, "");
 
-        verify(mIconFetcher, never()).fetchFaviconWithBackoff(any(), anyBoolean(), any());
+        verify(mImageSupplier, never()).fetchFavicon(any(), any());
     }
 
     @Test
@@ -389,23 +385,21 @@ public class BasicSuggestionProcessorUnitTest {
         mIsBookmarked.mState = true;
         createUrlSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, "");
 
-        verify(mIconFetcher, never()).fetchFaviconWithBackoff(any(), anyBoolean(), any());
+        verify(mImageSupplier, never()).fetchFavicon(any(), any());
     }
 
     @Test
     @SmallTest
     public void suggestionFavicons_doNotReplaceFallbackIconWhenNoFaviconIsAvailable() {
-        final ArgumentCaptor<FaviconFetchCompleteListener> callback =
-                ArgumentCaptor.forClass(FaviconFetchCompleteListener.class);
+        final ArgumentCaptor<Callback<Bitmap>> callback = ArgumentCaptor.forClass(Callback.class);
         mProcessor.onNativeInitialized();
         createUrlSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, "");
-        SuggestionDrawableState icon1 = mModel.get(BaseSuggestionViewProperties.ICON);
+        OmniboxDrawableState icon1 = mModel.get(BaseSuggestionViewProperties.ICON);
         Assert.assertNotNull(icon1);
 
-        verify(mIconFetcher)
-                .fetchFaviconWithBackoff(eq(mSuggestion.getUrl()), eq(false), callback.capture());
-        callback.getValue().onFaviconFetchComplete(null, FaviconType.NONE);
-        SuggestionDrawableState icon2 = mModel.get(BaseSuggestionViewProperties.ICON);
+        verify(mImageSupplier).fetchFavicon(eq(mSuggestion.getUrl()), callback.capture());
+        callback.getValue().onResult(null);
+        OmniboxDrawableState icon2 = mModel.get(BaseSuggestionViewProperties.ICON);
         Assert.assertNotNull(icon2);
 
         Assert.assertEquals(icon1, icon2);

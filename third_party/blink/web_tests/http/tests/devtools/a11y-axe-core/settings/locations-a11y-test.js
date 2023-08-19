@@ -30,7 +30,7 @@ import {AxeCoreTestRunner} from 'axe_core_test_runner';
     let errorMessage;
 
     TestRunner.addResult(`Invalidating the ${nameInput.getAttribute('aria-label')} input`);
-    nameInput.blur();
+    nameInput.dispatchEvent(new Event('input'));
     errorMessage = locationsEditor.errorMessageContainer.textContent;
     TestRunner.addResult(`Error message: ${errorMessage}`);
 

@@ -4,59 +4,57 @@
 
 #include "components/remote_cocoa/app_shim/immersive_mode_tabbed_controller.h"
 
+#include "base/apple/foundation_util.h"
 #include "base/functional/callback_forward.h"
-#include "base/mac/foundation_util.h"
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
 #include "components/remote_cocoa/app_shim/immersive_mode_controller.h"
 
 namespace remote_cocoa {
 
 ImmersiveModeTabbedController::ImmersiveModeTabbedController(
-    NSWindow* browser_window,
-    NSWindow* overlay_window,
-    NSWindow* tab_window)
-    : ImmersiveModeController(browser_window, overlay_window),
-      tab_window_(tab_window) {
+    NativeWidgetMacNSWindow* browser_window,
+    NativeWidgetMacNSWindow* overlay_window,
+    NativeWidgetMacNSWindow* tab_window)
+    : ImmersiveModeController(browser_window, overlay_window) {
+  tab_window_ = tab_window;
+
   browser_window.titleVisibility = NSWindowTitleHidden;
 
-  tab_titlebar_view_controller_.reset(
-      [[NSTitlebarAccessoryViewController alloc] init]);
-  tab_titlebar_view_controller_.get().view =
-      [[[NSView alloc] init] autorelease];
+  tab_titlebar_view_controller_ =
+      [[NSTitlebarAccessoryViewController alloc] init];
+  tab_titlebar_view_controller_.view = [[NSView alloc] init];
 
   // The view is pinned to the opposite side of the traffic lights. A view long
   // enough is able to paint underneath the traffic lights. This also works with
   // RTL setups.
-  tab_titlebar_view_controller_.get().layoutAttribute =
-      NSLayoutAttributeTrailing;
+  tab_titlebar_view_controller_.layoutAttribute = NSLayoutAttributeTrailing;
 }
 
 ImmersiveModeTabbedController::~ImmersiveModeTabbedController() {
   StopObservingChildWindows(tab_window_);
   browser_window().toolbar = nil;
-  [tab_content_view_ retain];
-  [tab_content_view_ removeFromSuperview];
-  tab_window_.contentView = tab_content_view_;
-  [tab_content_view_ release];
+  BridgedContentView* tab_content_view = tab_content_view_;
+  [tab_content_view removeFromSuperview];
+  tab_window_.contentView = tab_content_view;
   [tab_titlebar_view_controller_ removeFromParentViewController];
-  tab_titlebar_view_controller_.reset();
+  tab_titlebar_view_controller_ = nil;
 }
 
 void ImmersiveModeTabbedController::Enable() {
   ImmersiveModeController::Enable();
-  tab_content_view_ =
-      base::mac::ObjCCastStrict<BridgedContentView>(tab_window_.contentView);
-  [tab_content_view_ retain];
-  [tab_content_view_ removeFromSuperview];
+  BridgedContentView* tab_content_view =
+      base::apple::ObjCCastStrict<BridgedContentView>(tab_window_.contentView);
+  [tab_content_view removeFromSuperview];
+  tab_content_view_ = tab_content_view;
 
   // The ordering of resetting the `contentView` is important for macOS 12 and
   // below. `tab_content_view_` needs to be removed from the
-  // `tab_window_.contentView` property before adding `tab_content_view_` to a
-  // new NSView tree. We will be left with a blank view if this ordering is not
-  // maintained.
+  // `tab_window_.contentView` property before adding
+  // `tab_content_view_` to a new NSView tree. We will be left
+  // with a blank view if this ordering is not maintained.
   tab_window_.contentView =
-      [[[BridgedContentView alloc] initWithBridge:tab_content_view_.bridge
-                                           bounds:gfx::Rect()] autorelease];
+      [[BridgedContentView alloc] initWithBridge:tab_content_view_.bridge
+                                          bounds:gfx::Rect()];
 
   // This will allow the NSToolbarFullScreenWindow to become key when
   // interacting with the tab strip.
@@ -64,11 +62,9 @@ void ImmersiveModeTabbedController::Enable() {
   // See the comment there for more details.
   tab_window_.ignoresMouseEvents = YES;
 
-  [tab_titlebar_view_controller_.get().view addSubview:tab_content_view_];
-  [tab_content_view_ release];
-  [tab_titlebar_view_controller_.get().view
-      setFrameSize:tab_window_.frame.size];
-  tab_titlebar_view_controller_.get().fullScreenMinHeight =
+  [tab_titlebar_view_controller_.view addSubview:tab_content_view];
+  [tab_titlebar_view_controller_.view setFrameSize:tab_window_.frame.size];
+  tab_titlebar_view_controller_.fullScreenMinHeight =
       tab_window_.frame.size.height;
 
   // Keep the tab content view's size in sync with its parent view.
@@ -89,7 +85,7 @@ void ImmersiveModeTabbedController::Enable() {
   ObserveChildWindows(tab_window_);
 
   // The presence of a visible NSToolbar causes the titlebar to be revealed.
-  NSToolbar* toolbar = [[[NSToolbar alloc] init] autorelease];
+  NSToolbar* toolbar = [[NSToolbar alloc] init];
 
   // Remove the baseline separator for macOS 10.15 and earlier. This has no
   // effect on macOS 11 and above. See
@@ -164,10 +160,10 @@ void ImmersiveModeTabbedController::OnTopViewBoundsChanged(
     const gfx::Rect& bounds) {
   ImmersiveModeController::OnTopViewBoundsChanged(bounds);
   NSRect frame = NSRectFromCGRect(bounds.ToCGRect());
-  [tab_titlebar_view_controller_.get().view
-      setFrameSize:NSMakeSize(frame.size.width,
-                              tab_titlebar_view_controller_.get()
-                                  .view.frame.size.height)];
+  [tab_titlebar_view_controller_.view
+      setFrameSize:NSMakeSize(
+                       frame.size.width,
+                       tab_titlebar_view_controller_.view.frame.size.height)];
 }
 
 void ImmersiveModeTabbedController::RevealLock() {
@@ -205,8 +201,8 @@ void ImmersiveModeTabbedController::OnTitlebarFrameDidChange(NSRect frame) {
 }
 
 void ImmersiveModeTabbedController::OnChildWindowAdded(NSWindow* child) {
-  // The `tab_window_` is a child of the `overlay_window_`. Ignore the
-  // `tab_window_`.
+  // The `tab_window_` is a child of the `overlay_window_`. Ignore
+  // the `tab_window_`.
   if (child == tab_window_) {
     return;
   }
@@ -216,8 +212,8 @@ void ImmersiveModeTabbedController::OnChildWindowAdded(NSWindow* child) {
 }
 
 void ImmersiveModeTabbedController::OnChildWindowRemoved(NSWindow* child) {
-  // The `tab_window_` is a child of the `overlay_window_`. Ignore the
-  // `tab_window_`.
+  // The `tab_window_` is a child of the `overlay_window_`. Ignore
+  // the `tab_window_`.
   if (child == tab_window_) {
     return;
   }

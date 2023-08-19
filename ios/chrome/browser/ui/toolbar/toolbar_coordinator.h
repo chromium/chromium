@@ -7,39 +7,38 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_ui_updating.h"
+#import "ios/chrome/browser/ui/toolbar/public/fakebox_focuser.h"
+#import "ios/chrome/browser/ui/toolbar/public/side_swipe_toolbar_snapshot_providing.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_coordinating.h"
+#import "ios/chrome/browser/ui/toolbar/public/toolbar_height_delegate.h"
 
 @protocol OmniboxPopupPresenterDelegate;
 @protocol OmniboxFocusDelegate;
-@class PrimaryToolbarCoordinator;
-@class PrimaryToolbarViewController;
 @protocol SharingPositioner;
-@class SecondaryToolbarViewController;
-@protocol SideSwipeToolbarSnapshotProviding;
-@protocol ViewRevealingAnimatee;
-@class ViewRevealingVerticalPanHandler;
 
 /// Coordinator above primary and secondary toolbars. It does not have a
 /// view controller. This object is also an interface between multiple toolbars
 /// and the objects which want to interact with them without having to know to
 /// which one specifically send the call.
 @interface ToolbarCoordinator
-    : ChromeCoordinator <PopupMenuUIUpdating, ToolbarCoordinating>
+    : ChromeCoordinator <FakeboxFocuser,
+                         PopupMenuUIUpdating,
+                         SideSwipeToolbarSnapshotProviding,
+                         ToolbarCoordinating>
 
 /// Delegate for focusing omnibox in `locationBarCoordinator`.
 @property(nonatomic, weak) id<OmniboxFocusDelegate> omniboxFocusDelegate;
 /// Delegate for presenting the popup in `locationBarCoordinator`.
 @property(nonatomic, weak) id<OmniboxPopupPresenterDelegate>
     popupPresenterDelegate;
+/// Delegate that handles the toolbars height.
+@property(nonatomic, weak) id<ToolbarHeightDelegate> toolbarHeightDelegate;
 
 /// Initializes this coordinator with its `browser` and a nil base view
 /// controller.
 - (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
-
-/// Returns `primaryToolbarCoordinator`.
-- (PrimaryToolbarCoordinator*)primaryToolbarCoordinator;
 
 /// Returns `primaryToolbarViewController`.
 - (UIViewController*)primaryToolbarViewController;
@@ -49,22 +48,34 @@
 /// Returns the sharing positioner for the current toolbar configuration.
 - (id<SharingPositioner>)sharingPositioner;
 
-#pragma mark ViewRevealing
+/// Updates the toolbar's appearance.
+/// TODO(crbug.com/1329087): Remove this once toolbar coordinator owns focus
+/// orchestrator.
+- (void)updateToolbar;
 
-/// A reference to the view controller that implements the view revealing
-/// vertical pan handler delegate methods.
-- (id<ViewRevealingAnimatee>)viewRevealingAnimatee;
-/// Sets the pan gesture handler for the view controller that implements the
-/// view revealing.
-- (void)setPanGestureHandler:
-    (ViewRevealingVerticalPanHandler*)panGestureHandler;
+/// YES when a prerendered webstate is being inserted into a webStateList.
+- (BOOL)isLoadingPrerenderer;
 
-#pragma mark SnapshotProviding
+#pragma mark Omnibox and LocationBar
 
-/// Returns the snapshop provider of primary toolbar.
-- (id<SideSwipeToolbarSnapshotProviding>)primaryToolbarSnapshotProvider;
-/// Returns the snapshop provider of secondary toolbar.
-- (id<SideSwipeToolbarSnapshotProviding>)secondaryToolbarSnapshotProvider;
+/// Coordinates the location bar focusing/defocusing. For example, initiates
+/// transition to the expanded location bar state of the view controller.
+- (void)transitionToLocationBarFocusedState:(BOOL)focused;
+/// Whether the omnibox is currently the first responder.
+- (BOOL)isOmniboxFirstResponder;
+/// Whether the omnibox popup is currently presented.
+- (BOOL)showingOmniboxPopup;
+
+#pragma mark ToolbarHeightProviding
+
+/// The minimum height of the primary toolbar.
+- (CGFloat)collapsedPrimaryToolbarHeight;
+/// The maximum height of the primary toolbar.
+- (CGFloat)expandedPrimaryToolbarHeight;
+/// The minimum height of the secondary toolbar.
+- (CGFloat)collapsedSecondaryToolbarHeight;
+/// The maximum height of the secondary toolbar.
+- (CGFloat)expandedSecondaryToolbarHeight;
 
 @end
 

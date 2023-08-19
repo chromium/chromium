@@ -5,8 +5,9 @@
 #ifndef UI_VIEWS_COCOA_TOOLTIP_MANAGER_MAC_H_
 #define UI_VIEWS_COCOA_TOOLTIP_MANAGER_MAC_H_
 
-#include "base/memory/raw_ptr.h"
 #include "ui/views/widget/tooltip_manager.h"
+
+#include "base/memory/raw_ptr.h"
 
 namespace remote_cocoa::mojom {
 class NativeWidgetNSWindow;

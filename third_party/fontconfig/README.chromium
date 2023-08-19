@@ -1,10 +1,11 @@
 Name: fontconfig
 URL: http://www.freedesktop.org/wiki/Software/fontconfig/
-Version: 06929a556fdc39c8fe12965b69070c8df520a33e
+Version: 2fb3419a92156569bc1ec707401258c922cd0d99
 CPEPrefix: cpe:/a:fontconfig_project:fontconfig:2.14.2
 License: MIT
 License File: src/COPYING
 Security Critical: yes
+Shipped: yes
 
 Description:
 Fontconfig is a library for configuring and customizing font access.

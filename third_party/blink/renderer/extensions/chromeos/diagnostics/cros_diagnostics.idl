@@ -1,0 +1,8 @@
+// Copyright 2023 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Prototype API used to retrieve diagnostics information from the system, e.g.
+// CPU/memory usage statistics and OS information.
+// Available to window and service worker LaCrOS main frames when enabled.
+interface CrosDiagnostics {};

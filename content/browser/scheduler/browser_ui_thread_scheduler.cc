@@ -234,6 +234,7 @@ bool BrowserUIThreadScheduler::Policy::IsQueueEnabled(
     case BrowserTaskQueues::QueueType::kUserInput:
     case BrowserTaskQueues::QueueType::kNavigationNetworkResponse:
     case BrowserTaskQueues::QueueType::kServiceWorkerStorageControlResponse:
+    case BrowserTaskQueues::QueueType::kBeforeUnloadBrowserResponse:
       return true;
   }
   NOTREACHED();

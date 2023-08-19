@@ -58,6 +58,8 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "content/public/browser/notification_service.h"
+#include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/page_zoom.h"
@@ -77,6 +79,7 @@
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view.h"
+#include "ui/views/widget/any_widget_observer.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -99,8 +102,9 @@ template <typename T>
 T* GetLastVisible(const std::vector<T*>& views) {
   T* visible = nullptr;
   for (auto* view : views) {
-    if (view->GetVisible())
+    if (view->GetVisible()) {
       visible = view;
+    }
   }
   return visible;
 }
@@ -185,8 +189,9 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, SpaceConstrained) {
           ->web_app_frame_toolbar()
           ->GetPageActionIconControllerForTesting()
           ->GetPageActionIconViewsForTesting();
-  for (const PageActionIconView* action : page_actions)
+  for (const PageActionIconView* action : page_actions) {
     EXPECT_EQ(action->parent(), toolbar_right_container);
+  }
 
   views::View* const menu_button =
       helper()->browser_view()->toolbar_button_provider()->GetAppMenuButton();
@@ -358,6 +363,20 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, TitleHover) {
       helper()->frame_view()->GetTooltipHandlerForPoint(origin_in_frame_view),
       window_title);
 #endif
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest,
+                       MenuButtonAccessibleName) {
+  const GURL app_url("https://test.org");
+  helper()->InstallAndLaunchWebApp(browser(), app_url);
+
+  views::View* const menu_button =
+      helper()->browser_view()->toolbar_button_provider()->GetAppMenuButton();
+
+  EXPECT_EQ(menu_button->GetAccessibleName(),
+            u"Customize and control A minimal-ui app");
+  EXPECT_EQ(menu_button->GetTooltipText(gfx::Point()),
+            u"Customize and control A minimal-ui app");
 }
 
 class WebAppFrameToolbarBrowserTest_ElidedExtensionsMenu
@@ -581,9 +600,9 @@ class BorderlessIsolatedWebAppBrowserTest
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server_;
-  raw_ptr<Browser, DanglingUntriaged> browser_;
-  raw_ptr<BrowserView, DanglingUntriaged> browser_view_;
-  raw_ptr<BrowserNonClientFrameView, DanglingUntriaged> frame_view_;
+  raw_ptr<Browser, AcrossTasksDanglingUntriaged> browser_;
+  raw_ptr<BrowserView, AcrossTasksDanglingUntriaged> browser_view_;
+  raw_ptr<BrowserNonClientFrameView, AcrossTasksDanglingUntriaged> frame_view_;
 };
 
 IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
@@ -825,18 +844,14 @@ class WebAppFrameToolbarBrowserTest_WindowControlsOverlay
     WebAppFrameToolbarBrowserTest::SetUp();
   }
 
-  web_app::AppId InstallAndLaunchWebApp() {
-    EXPECT_TRUE(https_server()->Start());
-    GURL start_url =
-        helper()->LoadWindowControlsOverlayTestPageWithDataAndGetURL(
-            embedded_test_server(), &temp_dir_);
-
+  web_app::AppId InstallAndLaunchWCOWebApp(GURL start_url,
+                                           std::u16string app_title) {
     std::vector<blink::mojom::DisplayMode> display_overrides;
     display_overrides.push_back(web_app::DisplayMode::kWindowControlsOverlay);
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
+    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
     web_app_info->start_url = start_url;
     web_app_info->scope = start_url.GetWithoutFilename();
-    web_app_info->title = u"A window-controls-overlay app";
+    web_app_info->title = std::move(app_title);
     web_app_info->display_mode = web_app::DisplayMode::kStandalone;
     web_app_info->user_display_mode =
         web_app::mojom::UserDisplayMode::kStandalone;
@@ -844,6 +859,22 @@ class WebAppFrameToolbarBrowserTest_WindowControlsOverlay
 
     return helper()->InstallAndLaunchCustomWebApp(
         browser(), std::move(web_app_info), start_url);
+  }
+
+  web_app::AppId InstallAndLaunchWebApp() {
+    EXPECT_TRUE(https_server()->Start());
+    return InstallAndLaunchWCOWebApp(
+        helper()->LoadWindowControlsOverlayTestPageWithDataAndGetURL(
+            embedded_test_server(), &temp_dir_),
+        u"A window-controls-overlay app");
+  }
+
+  web_app::AppId InstallAndLaunchFullyDraggableWebApp() {
+    EXPECT_TRUE(https_server()->Start());
+    return InstallAndLaunchWCOWebApp(
+        helper()->LoadWholeAppIsDraggableTestPageWithDataAndGetURL(
+            embedded_test_server(), &temp_dir_),
+        u"Full page draggable window-controls-overlay app");
   }
 
   void ToggleWindowControlsOverlayAndWaitHelper(
@@ -1248,6 +1279,68 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   InstallAndLaunchWebApp();
   ToggleWindowControlsOverlayAndWait();
   helper()->TestDraggableRegions();
+}
+
+// Regression test for https://crbug.com/1448878.
+IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
+                       DraggableRegionsIgnoredForOwnedWidgets) {
+  auto app_id = InstallAndLaunchFullyDraggableWebApp();
+  ToggleWindowControlsOverlayAndWait();
+
+  BrowserView* browser_view = helper()->browser_view();
+  views::NonClientFrameView* frame_view =
+      browser_view->GetWidget()->non_client_view()->frame_view();
+
+  // A widget owned by BrowserView is triggered to ensure that a click inside
+  // the widget overlaying a draggable region correctly returns `HTCLIENT` and
+  // not `HTCAPTION`. The widget ownership varies between platforms so using
+  // different widgets based on platform.
+
+#if BUILDFLAG(IS_WIN)
+  views::NamedWidgetShownWaiter widget_waiter(
+      views::test::AnyWidgetTestPasskey{}, "DropdownBarHost");
+  // Press Ctrl+F to open find bar.
+  content::NativeWebKeyboardEvent event(
+      blink::WebKeyboardEvent::Type::kRawKeyDown,
+      blink::WebInputEvent::kControlKey,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  event.windows_key_code = ui::VKEY_F;
+  event.skip_if_unhandled = false;
+  browser_view->GetActiveWebContents()
+      ->GetPrimaryMainFrame()
+      ->GetRenderViewHost()
+      ->GetWidget()
+      ->ForwardKeyboardEvent(event);
+#else
+  views::NamedWidgetShownWaiter widget_waiter(
+      views::test::AnyWidgetTestPasskey{}, "PermissionPromptBubbleBaseView");
+  content::ExecuteScriptAsyncWithoutUserGesture(
+      browser_view->GetActiveWebContents(),
+      "navigator.geolocation.getCurrentPosition(() => {});");
+#endif  // BUILDFLAG(IS_WIN)
+
+  views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
+
+  // A point inside the widget is not draggable and returns `HTCLIENT` and not
+  // e.g. `HTCAPTION`.
+  auto widget_in_screen_bounds = widget->GetWindowBoundsInScreen();
+  gfx::Point point_in_widget = widget_in_screen_bounds.CenterPoint();
+  views::View::ConvertPointToTarget(
+      browser_view, browser_view->contents_web_view(), &point_in_widget);
+  EXPECT_TRUE(browser_view->ShouldDescendIntoChildForEventHandling(
+      browser_view->GetWidget()->GetNativeView(), point_in_widget));
+  EXPECT_EQ(frame_view->NonClientHitTest(point_in_widget), HTCLIENT);
+
+  // A point inside a draggable region (but outside the widget) is draggable
+  // and returns `HTCAPTION` as expected. This is to make sure having the widget
+  // open doesn't interfere with the way the draggable regions work beyond the
+  // area of the widget.
+  gfx::Point point_below_widget =
+      gfx::Point(widget_in_screen_bounds.bottom_center().x(),
+                 widget_in_screen_bounds.bottom_center().y() + 5);
+  EXPECT_FALSE(browser_view->ShouldDescendIntoChildForEventHandling(
+      browser_view->GetWidget()->GetNativeView(), point_below_widget));
+  EXPECT_EQ(frame_view->NonClientHitTest(point_below_widget), HTCAPTION);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,

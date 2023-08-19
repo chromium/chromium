@@ -79,8 +79,10 @@ class MergeProfilesTest(unittest.TestCase):
             mock.call(input_dir, output_file, '.profdata', 'llvm-profdata',
                 '.*', sparse=False, merge_timeout=3600))
 
+  @mock.patch('builtins.open', new_callable=mock.mock_open())
   @mock.patch.object(merger, '_validate_and_convert_profraws')
-  def test_merge_profraw(self, mock_validate_and_convert_profraws):
+  def test_merge_profraw(self, mock_validate_and_convert_profraws,
+                        mock_file_open):
     mock_input_dir_walk = [
         ('/b/some/path', ['0', '1', '2', '3'], ['summary.json']),
         ('/b/some/path/0', [],
@@ -112,19 +114,27 @@ class MergeProfilesTest(unittest.TestCase):
                       'merge',
                       '-o',
                       'output/dir/default.profdata',
-                      '/b/some/path/0/default-1.profdata',
-                      '/b/some/path/1/default-2.profdata',
+                      '-f',
+                      'output/dir/input-profdata-files.txt',
                   ],
                   capture_output=True,
                   check=True,
                   text=True,
                   timeout=3600
               ), mock_exec_cmd.call_args)
+          context = mock_file_open()
+          self.assertEqual(context.__enter__().write.call_count, 2)
+          context.__enter__().write.assert_any_call(
+              '/b/some/path/0/default-1.profdata\n')
+          context.__enter__().write.assert_any_call(
+              '/b/some/path/1/default-2.profdata\n')
 
     self.assertTrue(mock_validate_and_convert_profraws.called)
 
+  @mock.patch('builtins.open', new_callable=mock.mock_open())
   @mock.patch.object(merger, '_validate_and_convert_profraws')
-  def test_profraw_skip_validation(self, mock_validate_and_convert_profraws):
+  def test_profraw_skip_validation(self, mock_validate_and_convert_profraws,
+                                  mock_file_open):
     mock_input_dir_walk = [
         ('/b/some/path', ['0', '1', '2', '3'], ['summary.json']),
         ('/b/some/path/0', [],
@@ -149,16 +159,24 @@ class MergeProfilesTest(unittest.TestCase):
                       'merge',
                       '-o',
                       'output/dir/default.profdata',
-                      '/b/some/path/0/default-1.profraw',
-                      '/b/some/path/0/default-2.profraw',
-                      '/b/some/path/1/default-1.profraw',
-                      '/b/some/path/1/default-2.profraw'
+                      '-f',
+                      'output/dir/input-profdata-files.txt',
                   ],
                   capture_output=True,
                   check=True,
                   text=True,
                   timeout=3600
               ), mock_exec_cmd.call_args)
+          context = mock_file_open()
+          self.assertEqual(context.__enter__().write.call_count, 4)
+          context.__enter__().write.assert_any_call(
+            '/b/some/path/0/default-1.profraw\n')
+          context.__enter__().write.assert_any_call(
+            '/b/some/path/0/default-2.profraw\n')
+          context.__enter__().write.assert_any_call(
+            '/b/some/path/1/default-1.profraw\n')
+          context.__enter__().write.assert_any_call(
+            '/b/some/path/1/default-2.profraw\n')
 
     # Skip validation should've passed all profraw files directly, and
     # this validate call should not have been invoked.
@@ -178,8 +196,10 @@ class MergeProfilesTest(unittest.TestCase):
         self.assertFalse(mock_exec_cmd.called)
 
 
+  @mock.patch('builtins.open', new_callable=mock.mock_open())
   @mock.patch.object(merger, '_validate_and_convert_profraws')
-  def test_merge_profdata(self, mock_validate_and_convert_profraws):
+  def test_merge_profdata(self, mock_validate_and_convert_profraws,
+                          mock_file_open):
     mock_input_dir_walk = [
         ('/b/some/path', ['base_unittests', 'url_unittests'], ['summary.json']),
         ('/b/some/path/base_unittests', [], ['output.json',
@@ -199,20 +219,28 @@ class MergeProfilesTest(unittest.TestCase):
                       'merge',
                       '-o',
                       'output/dir/default.profdata',
-                      '/b/some/path/base_unittests/default.profdata',
-                      '/b/some/path/url_unittests/default.profdata',
+                      '-f',
+                      'output/dir/input-profdata-files.txt',
                   ],
                   capture_output=True,
                   check=True,
                   text=True,
                   timeout=3600
               ), mock_exec_cmd.call_args)
+          context = mock_file_open()
+          self.assertEqual(context.__enter__().write.call_count, 2)
+          context.__enter__().write.assert_any_call(
+              '/b/some/path/base_unittests/default.profdata\n')
+          context.__enter__().write.assert_any_call(
+              '/b/some/path/url_unittests/default.profdata\n')
 
     # The mock method should only apply when merging .profraw files.
     self.assertFalse(mock_validate_and_convert_profraws.called)
 
+  @mock.patch('builtins.open', new_callable=mock.mock_open())
   @mock.patch.object(merger, '_validate_and_convert_profraws')
-  def test_merge_profdata_pattern(self, mock_validate_and_convert_profraws):
+  def test_merge_profdata_pattern(self, mock_validate_and_convert_profraws,
+                                  mock_file_open):
     mock_input_dir_walk = [
         ('/b/some/path', ['base_unittests', 'url_unittests'], ['summary.json']),
         ('/b/some/path/base_unittests', [], ['output.json',
@@ -239,14 +267,20 @@ class MergeProfilesTest(unittest.TestCase):
                       'merge',
                       '-o',
                       'output/dir/default.profdata',
-                      '/b/some/path/base_unittests/base_unittests.profdata',
-                      '/b/some/path/url_unittests/url_unittests.profdata',
+                      '-f',
+                      'output/dir/input-profdata-files.txt',
                   ],
                   capture_output=True,
                   check=True,
                   text=True,
                   timeout=3600
               ), mock_exec_cmd.call_args)
+          context = mock_file_open()
+          self.assertEqual(context.__enter__().write.call_count, 2)
+          context.__enter__().write.assert_any_call(
+              '/b/some/path/base_unittests/base_unittests.profdata\n')
+          context.__enter__().write.assert_any_call(
+              '/b/some/path/url_unittests/url_unittests.profdata\n')
 
     # The mock method should only apply when merging .profraw files.
     self.assertFalse(mock_validate_and_convert_profraws.called)

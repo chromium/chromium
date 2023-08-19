@@ -33,7 +33,6 @@
 #include "media/gpu/gpu_video_decode_accelerator_factory.h"
 #include "media/video/picture.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gl/gl_image.h"
 
 namespace media {
 
@@ -58,26 +57,6 @@ scoped_refptr<CommandBufferHelper> CreateCommandBufferHelper(
   return CommandBufferHelper::Create(stub);
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
-bool BindDecoderManagedImage(
-    scoped_refptr<CommandBufferHelper> command_buffer_helper,
-    uint32_t client_texture_id,
-    uint32_t texture_target,
-    const scoped_refptr<gl::GLImage>& image) {
-  return command_buffer_helper->BindDecoderManagedImage(client_texture_id,
-                                                        image.get());
-}
-#else
-bool BindClientManagedImage(
-    scoped_refptr<CommandBufferHelper> command_buffer_helper,
-    uint32_t client_texture_id,
-    uint32_t texture_target,
-    const scoped_refptr<gl::GLImage>& image) {
-  return command_buffer_helper->BindClientManagedImage(client_texture_id,
-                                                       image.get());
-}
-#endif
-
 std::unique_ptr<VideoDecodeAccelerator> CreateAndInitializeVda(
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
@@ -93,16 +72,6 @@ std::unique_ptr<VideoDecodeAccelerator> CreateAndInitializeVda(
         &CommandBufferHelper::GetGLContext, command_buffer_helper);
     gl_client.make_context_current = base::BindRepeating(
         &CommandBufferHelper::MakeContextCurrent, command_buffer_helper);
-    // The semantics of |bind_image| vary per-platform: On Windows and Mac it
-    // must mark the image as needing binding by the decoder, while on other
-    // platforms it must mark the image as *not* needing binding by the decoder.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
-    gl_client.bind_image =
-        base::BindRepeating(&BindDecoderManagedImage, command_buffer_helper);
-#else
-    gl_client.bind_image =
-        base::BindRepeating(&BindClientManagedImage, command_buffer_helper);
-#endif
     gl_client.is_passthrough = command_buffer_helper->IsPassthrough();
     gl_client.supports_arb_texture_rectangle =
         command_buffer_helper->SupportsTextureRectangle();

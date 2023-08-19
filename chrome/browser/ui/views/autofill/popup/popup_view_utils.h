@@ -150,10 +150,14 @@ bool BoundsOverlapWithPictureInPictureWindow(const gfx::Rect& screen_bounds);
 // extension popup) and stays within the bounds of the browser window.
 bool PopupMayExceedContentAreaBounds(content::WebContents* web_contents);
 
-// Returns whether the suggestion with this `frontend_id` belongs into the
+// Returns whether the suggestion with this `popup_item_id` belongs into the
 // footer section of the popup. Returns `false` for separators, which may belong
 // either to the main or the footer section.
-bool IsFooterFrontendId(PopupItemId frontend_id);
+bool IsFooterPopupItemId(PopupItemId popup_item_id);
+
+// Returns whether the suggestion with this `popup_item_id` is a group filling
+// suggestion. Those have a different style from regular suggestions.
+bool IsGroupFillingPopupItemId(PopupItemId popup_item_id);
 
 }  // namespace autofill
 

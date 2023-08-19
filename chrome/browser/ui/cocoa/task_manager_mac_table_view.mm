@@ -10,12 +10,12 @@
 @implementation TaskManagerMacTableView : NSTableView
 
 - (void)keyDown:(NSEvent*)event {
-  ui::KeyboardCode keyCode = ui::KeyboardCodeFromKeyCode([event keyCode]);
+  ui::KeyboardCode keyCode = ui::KeyboardCodeFromKeyCode(event.keyCode);
   NSMutableIndexSet* indexSet = [NSMutableIndexSet indexSet];
-  NSIndexSet* selectedRows = [self selectedRowIndexes];
-  size_t firstSelectedRow = [selectedRows firstIndex];
-  size_t lastSelectedRow = [selectedRows lastIndex];
-  size_t totalRows = [self numberOfRows];
+  NSIndexSet* selectedRows = self.selectedRowIndexes;
+  size_t firstSelectedRow = selectedRows.firstIndex;
+  size_t lastSelectedRow = selectedRows.lastIndex;
+  size_t totalRows = self.numberOfRows;
 
   if (keyCode == ui::VKEY_UP && firstSelectedRow > 0) {
     [indexSet addIndex:firstSelectedRow - 1];

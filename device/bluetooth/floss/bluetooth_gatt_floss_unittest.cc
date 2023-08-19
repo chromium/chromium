@@ -72,8 +72,7 @@ class BluetoothGattFlossTest : public testing::Test {
   void InitializeAdapter() {
     adapter_ = BluetoothAdapterFloss::CreateAdapter();
 
-    GetFakeManagerClient()->SetAdapterPowered(/*adapter=*/kUseThisAdapter,
-                                              /*powered=*/true);
+    GetFakeManagerClient()->SetDefaultEnabled(true);
 
     base::RunLoop run_loop;
     adapter_->Initialize(run_loop.QuitClosure());
@@ -93,6 +92,7 @@ class BluetoothGattFlossTest : public testing::Test {
           observer->AdapterEnabledChanged(kUseThisAdapter,
                                           /*enabled=*/true);
         }));
+    GetFakeAdapterClient()->SetAddress1Connected(true);
     base::RunLoop().RunUntilIdle();
   }
 

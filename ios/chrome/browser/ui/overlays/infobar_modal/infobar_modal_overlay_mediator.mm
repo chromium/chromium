@@ -13,10 +13,6 @@
 #import "ios/chrome/browser/ui/infobars/modals/infobar_modal_constants.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_mediator+subclassing.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation InfobarModalOverlayMediator
 
 #pragma mark - InfobarModalDelegate

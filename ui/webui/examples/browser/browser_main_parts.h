@@ -8,7 +8,12 @@
 #include <string>
 
 #include "base/files/scoped_temp_dir.h"
+#include "build/build_config.h"
 #include "content/public/browser/browser_main_parts.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "ui/display/screen.h"
+#endif  // BUILDFLAG(IS_MAC)
 
 class GURL;
 
@@ -21,14 +26,13 @@ class WebContentsViewDelegate;
 
 namespace webui_examples {
 
-class AuraContext;
 class BrowserContext;
-class ContentWindow;
 class WebUIControllerFactory;
 
 class BrowserMainParts : public content::BrowserMainParts {
  public:
-  BrowserMainParts();
+  static std::unique_ptr<BrowserMainParts> Create();
+
   BrowserMainParts(const BrowserMainParts&) = delete;
   BrowserMainParts& operator=(const BrowserMainParts&) = delete;
   ~BrowserMainParts() override;
@@ -38,6 +42,18 @@ class BrowserMainParts : public content::BrowserMainParts {
   std::unique_ptr<content::DevToolsManagerDelegate>
   CreateDevToolsManagerDelegate();
 
+ protected:
+  BrowserMainParts();
+  virtual void InitializeUiToolkit();
+  virtual void ShutdownUiToolkit();
+  virtual void CreateAndShowWindowForWebContents(
+      std::unique_ptr<content::WebContents> web_contents,
+      const std::u16string& title) = 0;
+
+  content::BrowserContext* browser_context() { return browser_context_.get(); }
+
+  void OnWindowClosed();
+
  private:
   // content::BrowserMainParts:
   int PreMainMessageLoopRun() override;
@@ -45,17 +61,18 @@ class BrowserMainParts : public content::BrowserMainParts {
       std::unique_ptr<base::RunLoop>& run_loop) override;
   void PostMainMessageLoopRun() override;
 
-  // content::WebContents is associated and bound to the lifetime of the window.
-  content::WebContents* CreateAndShowContentWindow(GURL url,
-                                                   const std::u16string& title);
-  void OnWindowClosed(std::unique_ptr<ContentWindow> content_window);
+  content::WebContents* CreateAndShowWindow(GURL url,
+                                            const std::u16string& title);
+
   void QuitMessageLoop();
 
   base::ScopedTempDir temp_dir_;
+#if BUILDFLAG(IS_MAC)
+  display::ScopedNativeScreen native_screen_;
+#endif
   std::unique_ptr<WebUIControllerFactory> web_ui_controller_factory_;
   std::unique_ptr<content::BrowserContext> browser_context_;
 
-  std::unique_ptr<AuraContext> aura_context_;
   int content_windows_outstanding_ = 0;
 
   base::RepeatingClosure quit_run_loop_;

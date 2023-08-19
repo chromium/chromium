@@ -3,8 +3,6 @@
 <translationbundle lang="gl">
 <translation id="1075622780330595106">Ultimamente non se utilizaron <ph name="NUMBER_OF_TABS" /> das túas pestanas. Queres pechalas?</translation>
 <translation id="125153950246128346">Toca para ver outra pestana</translation>
-<translation id="1403228085774130835">Podes atopar as pestanas pechadas nas pestanas recentes, dispoñibles no menú principal de Chrome</translation>
-<translation id="1455506303394048917">A túa actividade nestas pestanas do modo de incógnito borrarase deste dispositivo</translation>
 <translation id="1499635324672558517">Queres pechar todas as pestanas do modo de incógnito?</translation>
 <translation id="1657719826150349398">Mover pestana cara abaixo</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> pestana}other{<ph name="TABS_COUNT_MANY" /> pestanas}}</translation>
@@ -47,6 +45,7 @@
 <translation id="5073204694187207510">Ocultar grade en pantalla completa</translation>
 <translation id="5076161749301278626">Queres ver recensións da tenda?</translation>
 <translation id="5082793167783849073">Crea un grupo para comparar rapidamente varias páxinas. Para comezar, mantén premida unha ligazón.</translation>
+<translation id="5339733443032484186">A túa última pestana</translation>
 <translation id="5490235265819901748">Grupo de pestanas despregado</translation>
 <translation id="5494920125229734069">Seleccionar todo</translation>
 <translation id="5556417849629758491">Ver información sobre a tenda, opción dispoñible preto da parte superior da pantalla</translation>
@@ -62,10 +61,12 @@
 <translation id="6228793724645064692">(valoración da tenda)</translation>
 <translation id="6333260925957816943">Información sobre esta tenda</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Desagrupar <ph name="TABS_COUNT_ONE" /> pestana seleccionada}other{Desagrupar <ph name="TABS_COUNT_MANY" /> pestanas seleccionadas}}</translation>
+<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Na opción Pestanas recentes (no menú principal de Chrome) poderás atopar as pestanas que peches. A pestana do modo de incógnito non estará dispoñible.}other{Na opción Pestanas recentes (no menú principal de Chrome) poderás atopar as pestanas que peches. As # pestanas do modo de incógnito non estarán dispoñibles.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> pestana}other{<ph name="TABS_COUNT_MANY" /> pestanas}}</translation>
 <translation id="6549021453810473782">Ver información da tenda</translation>
 <translation id="6562820390860419811">Mover pestana cara á esquerda</translation>
 <translation id="6615455863669487791">Mostrar</translation>
+<translation id="661742612106409204">Na opción Pestanas recentes (no menú principal de Chrome) poderás atopar as pestanas que peches.</translation>
 <translation id="6840760312327750441">Para agrupar varias pestanas, mantén premida unha delas e despois arrástraa ata outra.</translation>
 <translation id="6856809498882026482">Ocultar modo de selección múltiple</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Compartir pestana}other{Compartir pestanas}}</translation>

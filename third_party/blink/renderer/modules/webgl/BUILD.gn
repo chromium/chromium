@@ -131,6 +131,8 @@ blink_modules_sources("webgl") {
     "webgl_sampler.h",
     "webgl_shader.cc",
     "webgl_shader.h",
+    "webgl_shader_pixel_local_storage.cc",
+    "webgl_shader_pixel_local_storage.h",
     "webgl_shader_precision_format.cc",
     "webgl_shader_precision_format.h",
     "webgl_shared_object.cc",
@@ -158,8 +160,6 @@ blink_modules_sources("webgl") {
     "webgl_video_texture.cc",
     "webgl_video_texture.h",
     "webgl_video_texture_enum.h",
-    "webgl_webcodecs_video_frame.cc",
-    "webgl_webcodecs_video_frame.h",
   ]
 
   # The modules/webgl/ directly is a larger module, and

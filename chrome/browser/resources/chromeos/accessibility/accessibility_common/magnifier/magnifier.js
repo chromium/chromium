@@ -156,11 +156,13 @@ export class Magnifier {
    */
   onMagnifierBoundsChanged_(bounds) {
     if (this.drawDebugRect_()) {
-      chrome.accessibilityPrivate.setFocusRings([{
-        rects: [bounds],
-        type: chrome.accessibilityPrivate.FocusType.GLOW,
-        color: '#22d',
-      }]);
+      chrome.accessibilityPrivate.setFocusRings(
+          [{
+            rects: [bounds],
+            type: chrome.accessibilityPrivate.FocusType.GLOW,
+            color: '#22d',
+          }],
+          chrome.accessibilityPrivate.AssistiveTechnologyType.MAGNIFIER);
     }
   }
 

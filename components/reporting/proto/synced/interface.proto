@@ -8,6 +8,7 @@ option optimize_for = LITE_RUNTIME;
 
 package reporting;
 
+import "components/reporting/proto/synced/health.proto";
 import "components/reporting/proto/synced/record_constants.proto";
 import "components/reporting/proto/synced/record.proto";
 import "components/reporting/proto/synced/status.proto";
@@ -23,6 +24,10 @@ message EnqueueRecordRequest {
   // //chrome/cros/reporting/api/proto/synced/record_constants.proto
   // indicates what priority queue the record should be included in.
   optional Priority priority = 2;
+
+  // Flag indicating health data logging state (`true` means "enable logging").
+  // Can also be set by upload response.
+  optional bool health_data_logging_enabled = 3 [default = false];
 }
 
 // EnqueueRecordResponse indicates the enqueue success or
@@ -95,6 +100,9 @@ message UploadEncryptedRecordRequest {
 
   // The rate (bytes/sec) at which new events are added to the storage.
   optional uint64 new_events_rate = 4;
+
+  // Portion of debug logging (if enabled).
+  optional ERPHealthData health_data = 5;
 }
 
 message UploadEncryptedRecordResponse {
@@ -111,6 +119,10 @@ message UploadEncryptedRecordResponse {
   // Flag indicating that missived should be disabled, if set to `true`:
   // for example, because Chrome got a bad (dummy) API key - see b/239253702.
   optional bool disable = 2 [default = false];
+
+  // Flag indicating health data logging state (`true` means "enable logging").
+  // Can also be set by enqueue request.
+  optional bool health_data_logging_enabled = 3 [default = false];
 }
 
 // ConfirmRecordUploadRequest is expected to only come from

@@ -225,7 +225,8 @@ class MEDIA_GPU_EXPORT H265Decoder final : public AcceleratedVideoDecoder {
   H265Accelerator::Status FinishPrevFrameIfPresent();
 
   // Called after we are done processing |pic|.
-  void FinishPicture(scoped_refptr<H265Picture> pic);
+  bool FinishPicture(scoped_refptr<H265Picture> pic,
+                     std::unique_ptr<H265SliceHeader> slice_hdr);
 
   // Commits all pending data for HW decoder and starts HW decoder.
   H265Accelerator::Status DecodePicture();

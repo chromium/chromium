@@ -13,44 +13,7 @@ import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_
 import {TestBrowserService} from './test_browser_service.js';
 import {createHistoryEntry, createHistoryInfo, shiftClick, waitForEvent} from './test_util.js';
 
-const history_list_test = {
-  suiteName: 'HistoryListTest',
-  TestNames: {
-    DeletingSingleItem: 'deleting single item',
-    CancellingSelectionOfMultipleItems:
-        'cancelling selection of multiple items',
-    SelectionOfMultipleItemsUsingShiftClick:
-        'selection of multiple items using shift click',
-    DisablingCtrlAOnSyncedTabsPage:
-        'disabling ctrl + a command on syncedTabs page',
-    SettingFirstAndLastItems: 'setting first and last items',
-    UpdatingHistoryResults: 'updating history results',
-    DeletingMultipleItemsFromView: 'deleting multiple items from view',
-    SearchResultsDisplayWithCorrectItemTitle:
-        'search results display with correct item title',
-    CorrectDisplayMessageWhenNoHistoryAvailable:
-        'correct display message when no history available',
-    MoreFromThisSiteSendsAndSetsCorrectData:
-        'more from this site sends and sets correct data',
-    ScrollingHistoryListCausesToolbarShadowToAppear:
-        'scrolling history list causes toolbar shadow to appear',
-    ChangingSearchDeselectsItems: 'changing search deselects items',
-    DeleteItemsEndToEnd: 'delete items end to end',
-    DeleteViaMenuButton: 'delete via menu button',
-    DeleteDisabledWhilePending: 'delete disabled while pending',
-    DeletingItemsUsingShortcuts: 'deleting items using shortcuts',
-    DeleteDialogClosedOnBackNavigation:
-        'delete dialog closed on back navigation',
-    ClickingFileUrlSendsMessageToChrome:
-        'clicking file:// url sends message to chrome',
-    DeleteHistoryResultsInQueryHistoryEvent:
-        'deleteHistory results in query-history event',
-  },
-};
-
-Object.assign(window, {history_list_test});
-
-suite(history_list_test.suiteName, function() {
+suite('HistoryListTest', function() {
   let app: HistoryAppElement;
   let element: HistoryListElement;
   let toolbar: HistoryToolbarElement;
@@ -107,7 +70,7 @@ suite(history_list_test.suiteName, function() {
     return element.$['infinite-list'].items! as HistoryEntry[];
   }
 
-  test(history_list_test.TestNames.DeletingSingleItem, function() {
+  test('DeletingSingleItem', function() {
     return finishSetup([createHistoryEntry('2015-01-01', 'http://example.com')])
         .then(flushTasks)
         .then(function() {
@@ -145,8 +108,7 @@ suite(history_list_test.suiteName, function() {
   });
 
   test(
-      history_list_test.TestNames.CancellingSelectionOfMultipleItems,
-      function() {
+      'CancellingSelectionOfMultipleItems', function() {
         return finishSetup(TEST_HISTORY_RESULTS)
             .then(flushTasks)
             .then(function() {
@@ -183,8 +145,7 @@ suite(history_list_test.suiteName, function() {
       });
 
   test(
-      history_list_test.TestNames.SelectionOfMultipleItemsUsingShiftClick,
-      function() {
+      'SelectionOfMultipleItemsUsingShiftClick', function() {
         return finishSetup(TEST_HISTORY_RESULTS)
             .then(flushTasks)
             .then(function() {
@@ -258,7 +219,7 @@ suite(history_list_test.suiteName, function() {
       });
 
   // See http://crbug.com/845802.
-  test(history_list_test.TestNames.DisablingCtrlAOnSyncedTabsPage, function() {
+  test('DisablingCtrlAOnSyncedTabsPage', function() {
     return finishSetup(TEST_HISTORY_RESULTS)
         .then(function() {
           app.shadowRoot!.querySelector('history-router')!.selectedPage =
@@ -279,7 +240,7 @@ suite(history_list_test.suiteName, function() {
         });
   });
 
-  test(history_list_test.TestNames.SettingFirstAndLastItems, function() {
+  test('SettingFirstAndLastItems', function() {
     return finishSetup(TEST_HISTORY_RESULTS)
         .then(flushTasks)
         .then(function() {
@@ -312,7 +273,7 @@ suite(history_list_test.suiteName, function() {
         .then(flushTasks);
   }
 
-  test(history_list_test.TestNames.UpdatingHistoryResults, function() {
+  test('UpdatingHistoryResults', function() {
     return loadWithAdditionalResults()
         .then(function() {
           element.shadowRoot!.querySelector('iron-list')!.fire('iron-resize');
@@ -332,7 +293,7 @@ suite(history_list_test.suiteName, function() {
         });
   });
 
-  test(history_list_test.TestNames.DeletingMultipleItemsFromView, function() {
+  test('DeletingMultipleItemsFromView', function() {
     return loadWithAdditionalResults()
         .then(function() {
           element.removeItemsForTest([2, 5, 7]);
@@ -361,8 +322,7 @@ suite(history_list_test.suiteName, function() {
   });
 
   test(
-      history_list_test.TestNames.SearchResultsDisplayWithCorrectItemTitle,
-      function() {
+      'SearchResultsDisplayWithCorrectItemTitle', function() {
         return finishSetup(
                    [createHistoryEntry('2016-03-15', 'https://www.google.com')])
             .then(function() {
@@ -390,8 +350,7 @@ suite(history_list_test.suiteName, function() {
       });
 
   test(
-      history_list_test.TestNames.CorrectDisplayMessageWhenNoHistoryAvailable,
-      function() {
+      'CorrectDisplayMessageWhenNoHistoryAvailable', function() {
         return finishSetup([])
             .then(flushTasks)
             .then(function() {
@@ -414,8 +373,7 @@ suite(history_list_test.suiteName, function() {
       });
 
   test(
-      history_list_test.TestNames.MoreFromThisSiteSendsAndSetsCorrectData,
-      function() {
+      'MoreFromThisSiteSendsAndSetsCorrectData', function() {
         let items: NodeListOf<HistoryItemElement>;
         return finishSetup(TEST_HISTORY_RESULTS)
             .then(flushTasks)
@@ -462,50 +420,7 @@ suite(history_list_test.suiteName, function() {
             });
       });
 
-  // TODO(calamity): Reenable this test after fixing flakiness.
-  // See http://crbug.com/640862.
-  test.skip(
-      history_list_test.TestNames
-          .ScrollingHistoryListCausesToolbarShadowToAppear,
-      () => {
-        function loadMoreResults(numReloads: number): Promise<any> {
-          testService.resetResolver('queryHistory');
-          testService.setQueryResult(
-              {info: createHistoryInfo(), value: TEST_HISTORY_RESULTS});
-          element.dispatchEvent(new CustomEvent(
-              'query-history', {bubbles: true, composed: true, detail: true}));
-          const promise = testService.whenCalled('queryHistoryContinuation');
-          return numReloads === 1 ? promise : promise.then(() => {
-            return loadMoreResults(numReloads - 1);
-          });
-        }
-        return finishSetup(TEST_HISTORY_RESULTS)
-            .then(() => {
-              return loadMoreResults(9);
-            })
-            .then(flushTasks)
-            .then(function() {
-              element.shadowRoot!.querySelector('iron-list')!.dispatchEvent(
-                  new CustomEvent(
-                      'iron-resize', {bubbles: true, composed: true}));
-              return waitAfterNextRender(element);
-            })
-            .then(() => {
-              assertFalse(app.hasAttribute('toolbar-shadow_'));
-              element.$['infinite-list'].scrollToIndex(20);
-              return waitForEvent(app, 'toolbar-shadow_-changed');
-            })
-            .then(() => {
-              assertTrue(app.hasAttribute('toolbar-shadow_'));
-              element.$['infinite-list'].scrollToIndex(0);
-              return waitForEvent(app, 'toolbar-shadow_-changed');
-            })
-            .then(() => {
-              assertFalse(app.hasAttribute('toolbar-shadow_'));
-            });
-      });
-
-  test(history_list_test.TestNames.ChangingSearchDeselectsItems, function() {
+  test('ChangingSearchDeselectsItems', function() {
     return finishSetup(
                [createHistoryEntry('2016-06-9', 'https://www.example.com')],
                'ex')
@@ -536,7 +451,7 @@ suite(history_list_test.suiteName, function() {
         });
   });
 
-  test(history_list_test.TestNames.DeleteItemsEndToEnd, function() {
+  test('DeleteItemsEndToEnd', function() {
     let dialog: CrDialogElement;
     return loadWithAdditionalResults()
         .then(function() {
@@ -607,7 +522,7 @@ suite(history_list_test.suiteName, function() {
         });
   });
 
-  test(history_list_test.TestNames.DeleteViaMenuButton, function() {
+  test('DeleteViaMenuButton', function() {
     let items: NodeListOf<HistoryItemElement>;
     return finishSetup(TEST_HISTORY_RESULTS)
         .then(flushTasks)
@@ -652,7 +567,7 @@ suite(history_list_test.suiteName, function() {
         });
   });
 
-  test(history_list_test.TestNames.DeleteDisabledWhilePending, function() {
+  test('DeleteDisabledWhilePending', function() {
     let items: NodeListOf<HistoryItemElement>;
     return finishSetup(TEST_HISTORY_RESULTS)
         .then(function() {
@@ -725,7 +640,7 @@ suite(history_list_test.suiteName, function() {
         });
   });
 
-  test(history_list_test.TestNames.DeletingItemsUsingShortcuts, function() {
+  test('DeletingItemsUsingShortcuts', function() {
     let dialog: CrDialogElement;
     let items: NodeListOf<HistoryItemElement>;
     return finishSetup(TEST_HISTORY_RESULTS)
@@ -783,8 +698,7 @@ suite(history_list_test.suiteName, function() {
   });
 
   test(
-      history_list_test.TestNames.DeleteDialogClosedOnBackNavigation,
-      function() {
+      'DeleteDialogClosedOnBackNavigation', function() {
         // Ensure that state changes are always mirrored to the URL.
         return finishSetup([])
             .then(function() {
@@ -845,8 +759,7 @@ suite(history_list_test.suiteName, function() {
       });
 
   test(
-      history_list_test.TestNames.ClickingFileUrlSendsMessageToChrome,
-      function() {
+      'ClickingFileUrlSendsMessageToChrome', function() {
         const fileURL = 'file:///home/myfile';
         return finishSetup([createHistoryEntry('2016-03-15', fileURL)])
             .then(flushTasks)
@@ -863,8 +776,7 @@ suite(history_list_test.suiteName, function() {
       });
 
   test(
-      history_list_test.TestNames.DeleteHistoryResultsInQueryHistoryEvent,
-      function() {
+      'DeleteHistoryResultsInQueryHistoryEvent', function() {
         return finishSetup(TEST_HISTORY_RESULTS)
             .then(function() {
               testService.resetResolver('queryHistory');

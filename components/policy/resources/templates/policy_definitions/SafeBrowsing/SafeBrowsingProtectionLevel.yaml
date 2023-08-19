@@ -47,5 +47,6 @@ supported_on:
 - android:87-
 - ios:88-
 tags:
+- google-sharing
 - system-security
 type: int-enum

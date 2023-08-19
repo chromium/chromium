@@ -45,16 +45,24 @@ class ArcNotificationItem {
   // Called when the notification is clicked by user. This is called from
   // ArcNotificationDelegate.
   virtual void Click() = 0;
-
+  // Called when the notification button is clicked by user. This is called
+  // from ArcNotificationDelegate.
+  virtual void ClickButton(const int button_index,
+                           const std::string& input) = 0;
   // Called when the user wants to open an intrinsic setting of notification.
   // This is called from ArcNotificationContentView.
   virtual void OpenSettings() = 0;
   // Called when the user wants to open an intrinsic snooze setting of
   // notification. This is called from ArcNotificationContentView.
   virtual void OpenSnooze() = 0;
-  // Called when the user wants to toggle expansio of notification. This is
+  // Called when the user wants to toggle expansion of notification. This is
   // called from ArcNotificationContentView.
   virtual void ToggleExpansion() = 0;
+
+  // Called when the user wants to set expand state of the notification. This
+  // is called from ArcNotificationDelegate.
+  virtual void SetExpandState(bool expanded) = 0;
+
   // Called when the notification is activated i.e. starts accepting input for
   // inline reply. Called from ArcNotificationContentView.
   virtual void OnWindowActivated(bool activated) = 0;
@@ -78,7 +86,7 @@ class ArcNotificationItem {
 
   // Returns the current snapshot.
   virtual const gfx::ImageSkia& GetSnapshot() const = 0;
-  // Returns the current expand state.
+  // Returns the notification type.
   virtual arc::mojom::ArcNotificationType GetNotificationType() const = 0;
   // Returns the current expand state.
   virtual arc::mojom::ArcNotificationExpandState GetExpandState() const = 0;

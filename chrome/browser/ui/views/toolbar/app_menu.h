@@ -162,6 +162,9 @@ class AppMenu : public views::MenuDelegate,
       nullptr;
   size_t selected_index_ = 0;
 
+  std::vector<base::CallbackListSubscription>
+      profile_menu_item_selected_subscription_list_;
+
   // Used for managing the bookmark menu items.
   std::unique_ptr<BookmarkMenuDelegate> bookmark_menu_delegate_;
 

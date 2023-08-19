@@ -830,8 +830,8 @@ void TransportClientSocketPool::OnSSLConfigChanged(
 }
 
 // TODO(crbug.com/1206799): Get `server` as SchemeHostPort?
-void TransportClientSocketPool::OnSSLConfigForServerChanged(
-    const HostPortPair& server) {
+void TransportClientSocketPool::OnSSLConfigForServersChanged(
+    const base::flat_set<HostPortPair>& servers) {
   // Current time value. Retrieving it once at the function start rather than
   // inside the inner loop, since it shouldn't change by any meaningful amount.
   //
@@ -844,12 +844,13 @@ void TransportClientSocketPool::OnSSLConfigForServerChanged(
   // every group.
   bool proxy_matches = proxy_server_.is_http_like() &&
                        !proxy_server_.is_http() &&
-                       proxy_server_.host_port_pair() == server;
+                       servers.contains(proxy_server_.host_port_pair());
   bool refreshed_any = false;
   for (auto it = group_map_.begin(); it != group_map_.end();) {
     if (proxy_matches ||
         (GURL::SchemeIsCryptographic(it->first.destination().scheme()) &&
-         HostPortPair::FromSchemeHostPort(it->first.destination()) == server)) {
+         servers.contains(
+             HostPortPair::FromSchemeHostPort(it->first.destination())))) {
       refreshed_any = true;
       // Note this call may destroy the group and invalidate |to_refresh|.
       it = RefreshGroup(it, now, kSslConfigChanged);

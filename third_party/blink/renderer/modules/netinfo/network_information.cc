@@ -216,8 +216,7 @@ ExecutionContext* NetworkInformation::GetExecutionContext() const {
 void NetworkInformation::AddedEventListener(
     const AtomicString& event_type,
     RegisteredEventListener& registered_listener) {
-  EventTargetWithInlineData::AddedEventListener(event_type,
-                                                registered_listener);
+  EventTarget::AddedEventListener(event_type, registered_listener);
   MaybeShowWebHoldbackConsoleMsg();
   StartObserving();
 }
@@ -225,14 +224,13 @@ void NetworkInformation::AddedEventListener(
 void NetworkInformation::RemovedEventListener(
     const AtomicString& event_type,
     const RegisteredEventListener& registered_listener) {
-  EventTargetWithInlineData::RemovedEventListener(event_type,
-                                                  registered_listener);
+  EventTarget::RemovedEventListener(event_type, registered_listener);
   if (!HasEventListeners())
     StopObserving();
 }
 
 void NetworkInformation::RemoveAllEventListeners() {
-  EventTargetWithInlineData::RemoveAllEventListeners();
+  EventTarget::RemoveAllEventListeners();
   DCHECK(!HasEventListeners());
   StopObserving();
 }
@@ -301,7 +299,7 @@ NetworkInformation::NetworkInformation(NavigatorBase& navigator)
 }
 
 void NetworkInformation::Trace(Visitor* visitor) const {
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   Supplement<NavigatorBase>::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }

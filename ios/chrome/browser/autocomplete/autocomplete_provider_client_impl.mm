@@ -43,10 +43,6 @@
 #import "ios/components/webui/web_ui_url_constants.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 AutocompleteProviderClientImpl::AutocompleteProviderClientImpl(
     ChromeBrowserState* browser_state)
     : browser_state_(browser_state),
@@ -135,12 +131,6 @@ AutocompleteProviderClientImpl::GetRemoteSuggestionsService(
     bool create_if_necessary) const {
   return RemoteSuggestionsServiceFactory::GetForBrowserState(
       browser_state_, create_if_necessary);
-}
-
-DocumentSuggestionsService*
-AutocompleteProviderClientImpl::GetDocumentSuggestionsService(
-    bool create_if_necessary) const {
-  return nullptr;
 }
 
 ZeroSuggestCacheService*

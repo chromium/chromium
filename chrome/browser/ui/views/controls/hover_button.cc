@@ -235,8 +235,19 @@ void HoverButton::OnViewBoundsChanged(View* observed_view) {
     SetTooltipAndAccessibleName();
 }
 
+void HoverButton::SetTitleText(const std::u16string& text) {
+  title_->SetText(text);
+  // Allow the styled label to assume its preferred size since the text size may
+  // have changed.
+  PreferredSizeChanged();
+}
+
 void HoverButton::SetTitleTextStyle(views::style::TextStyle text_style,
                                     SkColor background_color) {
+  if (!title()) {
+    return;
+  }
+
   title_->SetDisplayedOnBackgroundColor(background_color);
   title_->SetDefaultTextStyle(text_style);
 }

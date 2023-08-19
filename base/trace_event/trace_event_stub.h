@@ -157,11 +157,16 @@ class BASE_EXPORT MemoryDumpManager {
       TRACE_DISABLED_BY_DEFAULT("memory-infra");
 };
 
+inline uint64_t GetNextGlobalTraceId() {
+  return 0;
+}
+
 }  // namespace trace_event
 }  // namespace base
 
 // Stub implementation for
-// perfetto::StaticString/ThreadTrack/TracedValue/TracedDictionary/TracedArray.
+// perfetto::StaticString/ThreadTrack/TracedValue/TracedDictionary/TracedArray/
+// Track.
 namespace perfetto {
 
 class TracedArray;
@@ -224,6 +229,10 @@ class TracedArray {
 
 template <class T>
 void WriteIntoTracedValue(TracedValue, T&&) {}
+
+struct Track {
+  explicit Track(uint64_t id) {}
+};
 
 namespace protos::pbzero {
 namespace SequenceManagerTask {

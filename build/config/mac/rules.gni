@@ -407,13 +407,6 @@ set_defaults("mac_framework_bundle") {
 #         (optional) string, name of the generated app without the
 #         .app suffix. If omitted, defaults to target_name.
 #
-#     extra_configs:
-#         (optional) list of label, additional configs to apply to the
-#         executable target.
-#
-#     remove_configs:
-#         (optional) list of label, default configs to remove from the target.
-#
 #     extra_substitutions:
 #         (optional) string array, 'key=value' pairs for extra fields which are
 #         specified in a source Info.plist template.
@@ -487,12 +480,6 @@ template("mac_app_bundle") {
                              "output_name",
                              "visibility",
                            ])
-    if (defined(extra_configs)) {
-      configs += extra_configs
-    }
-    if (defined(remove_configs)) {
-      configs -= remove_configs
-    }
     output_name = _output_name
     output_dir = "$target_out_dir/$_executable_target"
   }
@@ -559,6 +546,10 @@ template("mac_app_bundle") {
     bundle_resources_dir = "$bundle_contents_dir/Resources"
     bundle_executable_dir = "$bundle_contents_dir/MacOS"
   }
+}
+
+set_defaults("mac_app_bundle") {
+  configs = default_executable_configs
 }
 
 # Template to package a loadable_module into a .plugin bundle.

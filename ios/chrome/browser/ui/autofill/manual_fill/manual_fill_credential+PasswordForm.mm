@@ -10,10 +10,6 @@
 #import "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation ManualFillCredential (PasswordForm)
 
 - (instancetype)initWithPasswordForm:

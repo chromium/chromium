@@ -12,7 +12,6 @@
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "content/public/browser/web_contents.h"
 
-struct WebAppInstallInfo;
 class Browser;
 class BrowserNonClientFrameView;
 class BrowserView;
@@ -31,6 +30,10 @@ namespace views {
 class View;
 }  // namespace views
 
+namespace web_app {
+struct WebAppInstallInfo;
+}  // namespace web_app
+
 // Mixin for setting up and launching a web app in a browser test.
 class WebAppFrameToolbarTestHelper {
  public:
@@ -44,10 +47,15 @@ class WebAppFrameToolbarTestHelper {
                                         const GURL& start_url);
   web_app::AppId InstallAndLaunchCustomWebApp(
       Browser* browser,
-      std::unique_ptr<WebAppInstallInfo> web_app_info,
+      std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
       const GURL& start_url);
 
   GURL LoadWindowControlsOverlayTestPageWithDataAndGetURL(
+      net::test_server::EmbeddedTestServer* embedded_test_server,
+      base::ScopedTempDir* temp_dir);
+
+  // Loads a page where the whole WebContents is a draggable region.
+  GURL LoadWholeAppIsDraggableTestPageWithDataAndGetURL(
       net::test_server::EmbeddedTestServer* embedded_test_server,
       base::ScopedTempDir* temp_dir);
 
@@ -81,12 +89,13 @@ class WebAppFrameToolbarTestHelper {
   }
 
  private:
-  raw_ptr<Browser, DanglingUntriaged> app_browser_ = nullptr;
-  raw_ptr<BrowserView, DanglingUntriaged> browser_view_ = nullptr;
-  raw_ptr<BrowserNonClientFrameView, DanglingUntriaged> frame_view_ = nullptr;
-  raw_ptr<views::View, DanglingUntriaged> root_view_ = nullptr;
-  raw_ptr<WebAppFrameToolbarView, DanglingUntriaged> web_app_frame_toolbar_ =
+  raw_ptr<Browser, AcrossTasksDanglingUntriaged> app_browser_ = nullptr;
+  raw_ptr<BrowserView, AcrossTasksDanglingUntriaged> browser_view_ = nullptr;
+  raw_ptr<BrowserNonClientFrameView, AcrossTasksDanglingUntriaged> frame_view_ =
       nullptr;
+  raw_ptr<views::View, AcrossTasksDanglingUntriaged> root_view_ = nullptr;
+  raw_ptr<WebAppFrameToolbarView, AcrossTasksDanglingUntriaged>
+      web_app_frame_toolbar_ = nullptr;
 
   GURL LoadTestPageWithDataAndGetURL(
       net::test_server::EmbeddedTestServer* embedded_test_server,

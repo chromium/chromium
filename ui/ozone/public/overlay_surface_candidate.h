@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
@@ -16,6 +17,7 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gfx/overlay_priority_hint.h"
 #include "ui/gfx/overlay_transform.h"
@@ -36,12 +38,16 @@ class COMPONENT_EXPORT(OZONE_BASE) OverlaySurfaceCandidate {
   ~OverlaySurfaceCandidate();
   OverlaySurfaceCandidate& operator=(const OverlaySurfaceCandidate& other);
 
-  // Note that |clip_rect|, |overlay_handled| and |native_pixmap| are *not* used
-  // as part of the comparison.
+  // Note that |clip_rect|, |overlay_handled|, |native_pixmap|, and
+  // gfx::Transform variants of |transform| are *not* used as part of the
+  // comparison.
   bool operator<(const OverlaySurfaceCandidate& other) const;
 
   // Transformation to apply to layer during composition.
-  gfx::OverlayTransform transform = gfx::OVERLAY_TRANSFORM_NONE;
+  // Note: A |gfx::OverlayTransform| transforms the buffer within its bounds and
+  // does not affect |display_rect|.
+  absl::variant<gfx::OverlayTransform, gfx::Transform> transform =
+      gfx::OVERLAY_TRANSFORM_NONE;
   // Format of the buffer to composite.
   gfx::BufferFormat format = gfx::BufferFormat::BGRA_8888;
   // Color space of the buffer

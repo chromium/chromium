@@ -8,100 +8,158 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/dlcservice/dbus-constants.h"
 
+using ::dlcservice::DlcState;
+using ::dlcservice::DlcState_State_INSTALLED;
+using ::dlcservice::DlcState_State_INSTALLING;
+using ::dlcservice::DlcState_State_NOT_INSTALLED;
+
 namespace ash::language_packs {
 
 TEST(LanguagePacksUtil, ConvertDlcState_EmptyInput) {
-  dlcservice::DlcState input;
+  DlcState input;
   PackResult output = ConvertDlcStateToPackResult(input);
 
   // The default value in the input is 'NOT_INSTALLED'.
-  EXPECT_EQ(output.pack_state, PackResult::NOT_INSTALLED);
+  EXPECT_EQ(output.pack_state, PackResult::StatusCode::kNotInstalled);
+  EXPECT_EQ(output.operation_error, PackResult::ErrorCode::kNone);
 }
 
 TEST(LanguagePacksUtil, ConvertDlcState_NotInstalled) {
-  dlcservice::DlcState input;
-  input.set_state(dlcservice::DlcState_State_NOT_INSTALLED);
+  DlcState input;
+  input.set_state(DlcState_State_NOT_INSTALLED);
   PackResult output = ConvertDlcStateToPackResult(input);
 
-  EXPECT_EQ(output.pack_state, PackResult::NOT_INSTALLED);
+  EXPECT_EQ(output.pack_state, PackResult::StatusCode::kNotInstalled);
+  EXPECT_EQ(output.operation_error, PackResult::ErrorCode::kNone);
 
   // Even if the path is set (by mistake) in the input, we should not return it.
   input.set_root_path("/var/somepath");
   output = ConvertDlcStateToPackResult(input);
 
-  EXPECT_EQ(output.pack_state, PackResult::NOT_INSTALLED);
+  EXPECT_EQ(output.pack_state, PackResult::StatusCode::kNotInstalled);
   EXPECT_TRUE(output.path.empty());
 }
 
 TEST(LanguagePacksUtil, ConvertDlcState_Installing) {
-  dlcservice::DlcState input;
-  input.set_state(dlcservice::DlcState_State_INSTALLING);
+  DlcState input;
+  input.set_state(DlcState_State_INSTALLING);
   PackResult output = ConvertDlcStateToPackResult(input);
 
-  EXPECT_EQ(output.pack_state, PackResult::IN_PROGRESS);
+  EXPECT_EQ(output.pack_state, PackResult::StatusCode::kInProgress);
+  EXPECT_EQ(output.operation_error, PackResult::ErrorCode::kNone);
 
   // Even if the path is set (by mistake) in the input, we should not return it.
   input.set_root_path("/var/somepath");
   output = ConvertDlcStateToPackResult(input);
 
-  EXPECT_EQ(output.pack_state, PackResult::IN_PROGRESS);
+  EXPECT_EQ(output.pack_state, PackResult::StatusCode::kInProgress);
   EXPECT_TRUE(output.path.empty());
 }
 
 TEST(LanguagePacksUtil, ConvertDlcState_Installed) {
-  dlcservice::DlcState input;
-  input.set_state(dlcservice::DlcState_State_INSTALLED);
+  DlcState input;
+  input.set_state(DlcState_State_INSTALLED);
   input.set_root_path("/var/somepath");
   PackResult output = ConvertDlcStateToPackResult(input);
 
-  EXPECT_EQ(output.pack_state, PackResult::INSTALLED);
+  EXPECT_EQ(output.pack_state, PackResult::StatusCode::kInstalled);
+  EXPECT_EQ(output.operation_error, PackResult::ErrorCode::kNone);
   EXPECT_EQ(output.path, "/var/somepath");
 }
 
 // Tests the behaviour in case the state received from the input in not a valid
 // value. This could happen for example if the proto changes without notice.
 TEST(LanguagePacksUtil, ConvertDlcState_MalformedProto) {
-  dlcservice::DlcState input;
+  DlcState input;
   // Enum value '3' is beyond currently defined values.
   input.set_state(static_cast<dlcservice::DlcState_State>(3));
   input.set_root_path("/var/somepath");
   PackResult output = ConvertDlcStateToPackResult(input);
 
-  EXPECT_EQ(output.pack_state, PackResult::UNKNOWN);
+  EXPECT_EQ(output.pack_state, PackResult::StatusCode::kUnknown);
+  EXPECT_EQ(output.operation_error, PackResult::ErrorCode::kNone);
   EXPECT_TRUE(output.path.empty());
+}
+
+TEST(LanguagePacksUtil, ConvertDlcState_ErrorSet) {
+  DlcState input;
+  input.set_last_error_code(dlcservice::kErrorNeedReboot);
+  PackResult output = ConvertDlcStateToPackResult(input);
+
+  EXPECT_EQ(output.pack_state, PackResult::StatusCode::kNotInstalled);
+  EXPECT_EQ(output.operation_error, PackResult::ErrorCode::kNeedReboot);
+  EXPECT_TRUE(output.path.empty());
+}
+
+TEST(LanguagePacksUtil, ConvertDlcInstallResult_Success) {
+  DlcserviceClient::InstallResult input;
+  input.error = "";
+  input.root_path = "/var/somepath";
+  PackResult output = ConvertDlcInstallResultToPackResult(input);
+
+  EXPECT_EQ(output.pack_state, PackResult::StatusCode::kInstalled);
+  EXPECT_EQ(output.operation_error, PackResult::ErrorCode::kNone);
+  EXPECT_EQ(output.path, "/var/somepath");
+}
+
+TEST(LanguagePacksUtil, ConvertDlcInstallResult_Error) {
+  DlcserviceClient::InstallResult input;
+  input.error = dlcservice::kErrorInternal;
+  PackResult output = ConvertDlcInstallResultToPackResult(input);
+
+  EXPECT_EQ(output.pack_state, PackResult::StatusCode::kUnknown);
+  EXPECT_EQ(output.operation_error, PackResult::ErrorCode::kOther);
+  EXPECT_TRUE(output.path.empty());
+}
+
+// Tests the conversion of all error types returned by DlcserviceClient.
+TEST(LanguagePacksUtil, ConvertDlcError_AllErrorsTypes) {
+  EXPECT_EQ(ConvertDlcErrorToErrorCode(""), PackResult::ErrorCode::kNone);
+  EXPECT_EQ(ConvertDlcErrorToErrorCode(dlcservice::kErrorNone),
+            PackResult::ErrorCode::kNone);
+  EXPECT_EQ(ConvertDlcErrorToErrorCode(dlcservice::kErrorAllocation),
+            PackResult::ErrorCode::kAllocation);
+  EXPECT_EQ(ConvertDlcErrorToErrorCode(dlcservice::kErrorInvalidDlc),
+            PackResult::ErrorCode::kWrongId);
+  EXPECT_EQ(ConvertDlcErrorToErrorCode(dlcservice::kErrorNeedReboot),
+            PackResult::ErrorCode::kNeedReboot);
+  EXPECT_EQ(ConvertDlcErrorToErrorCode(dlcservice::kErrorNoImageFound),
+            PackResult::ErrorCode::kOther);
+  EXPECT_EQ(ConvertDlcErrorToErrorCode(dlcservice::kErrorInternal),
+            PackResult::ErrorCode::kOther);
 }
 
 // For Handwriting we only keep the language part, not the country/region.
 TEST(LanguagePacksUtil, ResolveLocaleHandwriting) {
-  EXPECT_EQ(ResolveLocaleForHandwriting("en-US"), "en");
-  EXPECT_EQ(ResolveLocaleForHandwriting("en-us"), "en");
-  EXPECT_EQ(ResolveLocaleForHandwriting("fr"), "fr");
-  EXPECT_EQ(ResolveLocaleForHandwriting("it-IT"), "it");
-  EXPECT_EQ(ResolveLocaleForHandwriting("zh"), "zh");
-  EXPECT_EQ(ResolveLocaleForHandwriting("zh-TW"), "zh");
+  EXPECT_EQ(ResolveLocale(kHandwritingFeatureId, "en-US"), "en");
+  EXPECT_EQ(ResolveLocale(kHandwritingFeatureId, "en-us"), "en");
+  EXPECT_EQ(ResolveLocale(kHandwritingFeatureId, "fr"), "fr");
+  EXPECT_EQ(ResolveLocale(kHandwritingFeatureId, "it-IT"), "it");
+  EXPECT_EQ(ResolveLocale(kHandwritingFeatureId, "zh"), "zh");
+  EXPECT_EQ(ResolveLocale(kHandwritingFeatureId, "zh-TW"), "zh");
 
   // Chinese HongKong is an exception.
-  EXPECT_EQ(ResolveLocaleForHandwriting("zh-HK"), "zh-HK");
+  EXPECT_EQ(ResolveLocale(kHandwritingFeatureId, "zh-HK"), "zh-HK");
 }
 
 TEST(LanguagePacksUtil, ResolveLocaleTts) {
   // For these locales we keep the region.
-  EXPECT_EQ(ResolveLocaleForTts("en-AU"), "en-au");
-  EXPECT_EQ(ResolveLocaleForTts("en-au"), "en-au");
-  EXPECT_EQ(ResolveLocaleForTts("en-GB"), "en-gb");
-  EXPECT_EQ(ResolveLocaleForTts("en-gb"), "en-gb");
-  EXPECT_EQ(ResolveLocaleForTts("en-US"), "en-us");
-  EXPECT_EQ(ResolveLocaleForTts("en-us"), "en-us");
-  EXPECT_EQ(ResolveLocaleForTts("es-ES"), "es-es");
-  EXPECT_EQ(ResolveLocaleForTts("es-es"), "es-es");
-  EXPECT_EQ(ResolveLocaleForTts("es-US"), "es-us");
-  EXPECT_EQ(ResolveLocaleForTts("es-us"), "es-us");
+  EXPECT_EQ(ResolveLocale(kTtsFeatureId, "en-AU"), "en-au");
+  EXPECT_EQ(ResolveLocale(kTtsFeatureId, "en-au"), "en-au");
+  EXPECT_EQ(ResolveLocale(kTtsFeatureId, "en-GB"), "en-gb");
+  EXPECT_EQ(ResolveLocale(kTtsFeatureId, "en-gb"), "en-gb");
+  EXPECT_EQ(ResolveLocale(kTtsFeatureId, "en-US"), "en-us");
+  EXPECT_EQ(ResolveLocale(kTtsFeatureId, "en-us"), "en-us");
+  EXPECT_EQ(ResolveLocale(kTtsFeatureId, "es-ES"), "es-es");
+  EXPECT_EQ(ResolveLocale(kTtsFeatureId, "es-es"), "es-es");
+  EXPECT_EQ(ResolveLocale(kTtsFeatureId, "es-US"), "es-us");
+  EXPECT_EQ(ResolveLocale(kTtsFeatureId, "es-us"), "es-us");
 
   // For all other locales we only keep the language.
-  EXPECT_EQ(ResolveLocaleForTts("bn-bd"), "bn");
-  EXPECT_EQ(ResolveLocaleForTts("fil-ph"), "fil");
-  EXPECT_EQ(ResolveLocaleForTts("it-it"), "it");
-  EXPECT_EQ(ResolveLocaleForTts("ja-jp"), "ja");
+  EXPECT_EQ(ResolveLocale(kTtsFeatureId, "bn-bd"), "bn");
+  EXPECT_EQ(ResolveLocale(kTtsFeatureId, "fil-ph"), "fil");
+  EXPECT_EQ(ResolveLocale(kTtsFeatureId, "it-it"), "it");
+  EXPECT_EQ(ResolveLocale(kTtsFeatureId, "ja-jp"), "ja");
 }
 
 }  // namespace ash::language_packs

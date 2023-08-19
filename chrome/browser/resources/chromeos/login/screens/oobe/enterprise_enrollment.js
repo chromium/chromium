@@ -6,6 +6,7 @@
  * @fileoverview Polymer element for Enterprise Enrollment screen.
  */
 
+import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
 import '//resources/cr_elements/cr_input/cr_input.js';
 import '//resources/js/action_link.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
@@ -33,9 +34,9 @@ import {InjectedKeyboardUtils} from '../../components/keyboard_utils.js';
 import {globalOobeKeyboard, KEYBOARD_UTILS_FOR_INJECTION} from '../../components/keyboard_utils_oobe.js';
 import {OobeTypes} from '../../components/oobe_types.js';
 import {Oobe} from '../../cr_ui.js';
+import * as OobeDebugger from '../../debug/debug.js';
 import {DisplayManager, invokePolymerMethod} from '../../display_manager.js';
 import {ActiveDirectoryErrorState, ADLoginStep, JoinConfigType} from '../common/offline_ad_login.js';
-
 
 /**
  * @constructor
@@ -249,7 +250,7 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
       }
     });
 
-    this.$['step-ad-join'].addEventListener('authCompleted', (e) => {
+    this.$['step-ad-join'].addEventListener('authCompletedAd', (e) => {
       this.$['step-ad-join'].disabled = true;
       this.$['step-ad-join'].loading = true;
       chrome.send('oauthEnrollAdCompleteLogin', [
@@ -332,6 +333,12 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
       }
       gaiaParams.flow = data.flow;
       gaiaParams.enableGaiaActionButtons = true;
+      if (data.email) {
+        // TODO(b/292087570): we have to set `readOnlyEmail` even though email
+        // will in fact be modifiable.
+        gaiaParams.readOnlyEmail = true;
+        gaiaParams.email = data.email;
+      }
 
       this.authenticator_.setWebviewPartition(
           'webviewPartitionName' in data ? data.webviewPartitionName : '');
@@ -348,9 +355,11 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
     }
 
     invokePolymerMethod(this.$['step-ad-join'], 'onBeforeShow');
-    this.showStep(
-        this.isAutoEnroll_ ? OobeTypes.EnrollmentStep.WORKING :
-                             OobeTypes.EnrollmentStep.LOADING);
+    if (!this.uiStep) {
+      this.showStep(
+          this.isAutoEnroll_ ? OobeTypes.EnrollmentStep.WORKING :
+                               OobeTypes.EnrollmentStep.LOADING);
+    }
   }
 
   /**
@@ -564,7 +573,24 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
       return;
     }
     this.isCancelDisabled = false;
+
+    if (this.openedFromDebugOverlay()) {
+      return;
+    }
     chrome.send('frameLoadingCompleted');
+  }
+
+  /** @suppress {missingProperties} */
+  openedFromDebugOverlay() {
+    if (OobeDebugger.DebuggerUI &&
+        OobeDebugger.DebuggerUI.getInstance().currentScreenId ===
+            'enterprise-enrollment') {
+      console.warn(
+          'Enrollment screen was opened using debug overlay: ' +
+          'omit chrome.send() to prevent calls on C++ side.');
+      return true;
+    }
+    return false;
   }
 
   onLicenseTypeSelected(e) {

@@ -39,7 +39,8 @@
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager_impl.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/nearby_share_feature_status.h"
-#include "chrome/browser/nearby_sharing/nearby_share_metrics_logger.h"
+#include "chrome/browser/nearby_sharing/nearby_share_metrics.h"
+#include "chrome/browser/nearby_sharing/nearby_share_transfer_profiler.h"
 #include "chrome/browser/nearby_sharing/paired_key_verification_runner.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
 #include "chrome/browser/nearby_sharing/share_target.h"
@@ -277,6 +278,15 @@ class TransferUpdateDecorator : public TransferUpdateCallback {
   Callback callback_;
 };
 
+bool isVisibleForAdvertising(Visibility visibility) {
+  if (visibility == Visibility::kYourDevices &&
+      features::IsSelfShareEnabled()) {
+    return true;
+  }
+  return visibility == Visibility::kAllContacts ||
+         visibility == Visibility::kSelectedContacts;
+}
+
 }  // namespace
 
 NearbySharingServiceImpl::NearbySharingServiceImpl(
@@ -317,6 +327,7 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
           profile->GetDefaultStoragePartition()->GetProtoDatabaseProvider(),
           profile->GetPath(),
           http_client_factory_.get())),
+      transfer_profiler_(std::make_unique<NearbyShareTransferProfiler>()),
       settings_(prefs, local_device_data_manager_.get()),
       feature_usage_metrics_(prefs),
       on_network_changed_delay_timer_(
@@ -329,6 +340,9 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
   DCHECK(profile_);
   DCHECK(nearby_connections_manager_);
   DCHECK(power_client_);
+
+  nearby_connections_manager_->RegisterBandwidthUpgradeListener(
+      weak_ptr_factory_.GetWeakPtr());
 
   fast_initiation_scanning_metrics_ =
       std::make_unique<FastInitiationScannerFeatureUsageMetrics>(prefs_);
@@ -360,6 +374,7 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
     BindToNearbyProcess();
   }
   UpdateVisibilityReminderTimer(/*reset_timestamp=*/false);
+  user_visibility_ = settings_.GetVisibility();
 }
 
 NearbySharingServiceImpl::~NearbySharingServiceImpl() {
@@ -779,6 +794,10 @@ NearbySharingService::StatusCodes NearbySharingServiceImpl::SendAttachments(
                           weak_ptr_factory_.GetWeakPtr())));
   send_attachments_timestamp_ = base::TimeTicks::Now();
   OnTransferStarted(/*is_incoming=*/false);
+
+  CHECK(info->endpoint_id().has_value());
+  transfer_profiler_->OnShareTargetSelected(info->endpoint_id().value());
+
   is_connecting_ = true;
   InvalidateSendSurfaceState();
 
@@ -820,6 +839,10 @@ void NearbySharingServiceImpl::Accept(
       share_target.is_incoming;
   if (share_target.is_incoming) {
     incoming_share_accepted_timestamp_ = base::TimeTicks::Now();
+
+    CHECK(info->endpoint_id().has_value());
+    transfer_profiler_->OnTransferAccepted(info->endpoint_id().value());
+
     ReceivePayloads(share_target, std::move(status_codes_callback));
     return;
   }
@@ -1016,6 +1039,10 @@ NearbyShareContactManager* NearbySharingServiceImpl::GetContactManager() {
 NearbyShareCertificateManager*
 NearbySharingServiceImpl::GetCertificateManager() {
   return certificate_manager_.get();
+}
+
+NearbyNotificationManager* NearbySharingServiceImpl::GetNotificationManager() {
+  return nearby_notification_manager_.get();
 }
 
 void NearbySharingServiceImpl::OnNearbyProcessStopped(
@@ -1336,10 +1363,27 @@ void NearbySharingServiceImpl::OnEndpointLost(const std::string& endpoint_id) {
                      base::Unretained(this), endpoint_id));
 }
 
+void NearbySharingServiceImpl::OnBandwidthUpgrade(
+    const std::string& endpoint_id,
+    const Medium medium) {
+  transfer_profiler_->OnBandwidthUpgrade(endpoint_id, medium);
+}
+
 void NearbySharingServiceImpl::OnLockStateChanged(bool locked) {
   NS_LOG(VERBOSE) << __func__ << ": Screen lock state changed. (" << locked
                   << ")";
   is_screen_locked_ = locked;
+
+  // Set visibility to 'Your Devices' if the screen is locked.
+  if (features::IsSelfShareEnabled()) {
+    if (locked) {
+      user_visibility_ = settings_.GetVisibility();
+      settings_.SetVisibility(nearby_share::mojom::Visibility::kYourDevices);
+    } else {
+      settings_.SetVisibility(user_visibility_);
+    }
+  }
+
   InvalidateSurfaceState();
 }
 
@@ -1396,8 +1440,7 @@ NearbySharingServiceImpl::GetReceiveCallbacksFromState(
 }
 
 bool NearbySharingServiceImpl::IsVisibleInBackground(Visibility visibility) {
-  return visibility == Visibility::kAllContacts ||
-         visibility == Visibility::kSelectedContacts;
+  return isVisibleForAdvertising(visibility);
 }
 
 const absl::optional<std::vector<uint8_t>>
@@ -1407,8 +1450,7 @@ NearbySharingServiceImpl::CreateEndpointInfo(
   std::vector<uint8_t> encrypted_key;
 
   nearby_share::mojom::Visibility visibility = settings_.GetVisibility();
-  if (visibility == Visibility::kAllContacts ||
-      visibility == Visibility::kSelectedContacts) {
+  if (isVisibleForAdvertising(visibility)) {
     absl::optional<NearbyShareEncryptedMetadataKey> encrypted_metadata_key =
         certificate_manager_->EncryptPrivateCertificateMetadataKey(visibility);
     if (encrypted_metadata_key) {
@@ -1549,6 +1591,8 @@ void NearbySharingServiceImpl::HandleEndpointDiscovered(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NS_LOG(VERBOSE) << __func__ << ": endpoint_id=" << endpoint_id
                   << ", endpoint_info=" << base::HexEncode(endpoint_info);
+  transfer_profiler_->OnEndpointDiscovered(endpoint_id);
+
   if (!is_scanning_) {
     NS_LOG(VERBOSE)
         << __func__
@@ -1574,6 +1618,7 @@ void NearbySharingServiceImpl::HandleEndpointLost(
     const std::string& endpoint_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NS_LOG(VERBOSE) << __func__ << ": endpoint_id=" << endpoint_id;
+  transfer_profiler_->OnEndpointLost(endpoint_id);
 
   if (!is_scanning_) {
     NS_LOG(VERBOSE)
@@ -1611,6 +1656,8 @@ void NearbySharingServiceImpl::OnOutgoingAdvertisementDecoded(
     FinishEndpointDiscoveryEvent();
     return;
   }
+
+  transfer_profiler_->OnOutgoingEndpointDecoded(endpoint_id);
 
   // Now we will report endpoints met before in NearbyConnectionsManager.
   // Check outgoingShareTargetInfoMap first and pass the same shareTarget if we
@@ -2660,6 +2707,9 @@ void NearbySharingServiceImpl::OnOutgoingConnection(
 
   info->set_connection(connection);
 
+  CHECK(info->endpoint_id().has_value());
+  transfer_profiler_->OnConnectionEstablished(info->endpoint_id().value());
+
   connection->SetDisconnectionListener(base::BindOnce(
       &NearbySharingServiceImpl::OnOutgoingConnectionDisconnected,
       weak_ptr_factory_.GetWeakPtr(), share_target));
@@ -2769,6 +2819,9 @@ void NearbySharingServiceImpl::SendIntroduction(
   RecordNearbyShareTimeFromInitiateSendToRemoteDeviceNotificationMetric(
       base::TimeTicks::Now() - send_attachments_timestamp_);
   NS_LOG(VERBOSE) << __func__ << ": Successfully wrote the introduction frame";
+
+  CHECK(info->endpoint_id().has_value());
+  transfer_profiler_->OnIntroductionFrameSent(info->endpoint_id().value());
 
   mutual_acceptance_timeout_alarm_.Reset(base::BindOnce(
       &NearbySharingServiceImpl::OnOutgoingMutualAcceptanceTimeout,
@@ -3012,6 +3065,9 @@ void NearbySharingServiceImpl::OnIncomingAdvertisementDecoded(
     return;
   }
 
+  transfer_profiler_->OnIncomingEndpointDecoded(endpoint_id,
+                                                IsInHighVisibility());
+
   NearbyShareEncryptedMetadataKey encrypted_metadata_key(
       advertisement->salt, advertisement->encrypted_metadata_key);
   GetCertificateManager()->GetDecryptedPublicCertificate(
@@ -3047,6 +3103,12 @@ void NearbySharingServiceImpl::OnIncomingTransferUpdate(
         &feature_usage_metrics_,
         /*is_incoming=*/true, share_target.type, metadata.status(),
         share_target.is_known);
+
+    ShareTargetInfo* info = GetShareTargetInfo(share_target);
+    CHECK(info->endpoint_id().has_value());
+    transfer_profiler_->OnReceiveComplete(info->endpoint_id().value(),
+                                          metadata.status());
+
     OnTransferComplete();
     if (metadata.status() != TransferMetadata::Status::kComplete) {
       // For any type of failure, lets make sure any pending files get cleaned
@@ -3084,6 +3146,12 @@ void NearbySharingServiceImpl::OnOutgoingTransferUpdate(
         &feature_usage_metrics_,
         /*is_incoming=*/false, share_target.type, metadata.status(),
         share_target.is_known);
+
+    ShareTargetInfo* info = GetShareTargetInfo(share_target);
+    CHECK(info->endpoint_id().has_value());
+    transfer_profiler_->OnSendComplete(info->endpoint_id().value(),
+                                       metadata.status());
+
     OnTransferComplete();
   } else if (metadata.status() == TransferMetadata::Status::kMediaDownloading ||
              metadata.status() ==
@@ -3236,6 +3304,11 @@ void NearbySharingServiceImpl::OnIncomingConnectionKeyVerificationDone(
       NS_LOG(VERBOSE) << __func__
                       << ": Paired key handshake succeeded for target - "
                       << share_target.id;
+
+      CHECK(info->endpoint_id().has_value());
+      transfer_profiler_->OnPairedKeyHandshakeComplete(
+          info->endpoint_id().value());
+
       // Upgrade bandwidth regardless of advertising visibility because the
       // sender's identity has been confirmed; the stable identifiers
       // potentially exposed by performing a bandwidth upgrade are no longer a
@@ -3249,6 +3322,11 @@ void NearbySharingServiceImpl::OnIncomingConnectionKeyVerificationDone(
                       << ": Unable to verify paired key encryption when "
                          "receiving connection from target - "
                       << share_target.id;
+
+      CHECK(info->endpoint_id().has_value());
+      transfer_profiler_->OnPairedKeyHandshakeComplete(
+          info->endpoint_id().value());
+
       if (advertising_power_level_ == PowerLevel::kHighPower) {
         // Upgrade bandwidth if advertising at high-visibility. Bandwidth
         // upgrades may expose stable identifiers, but this isn't a concern
@@ -3362,8 +3440,12 @@ void NearbySharingServiceImpl::ReceiveIntroduction(
     absl::optional<std::string> four_digit_token) {
   NS_LOG(INFO) << __func__ << ": Receiving introduction from "
                << share_target.id;
+
   ShareTargetInfo* info = GetShareTargetInfo(share_target);
   DCHECK(info && info->connection());
+
+  CHECK(info->endpoint_id().has_value());
+  transfer_profiler_->OnIntroductionFrameReceived(info->endpoint_id().value());
 
   info->frames_reader()->ReadFrame(
       sharing::mojom::V1Frame::Tag::kIntroduction,
@@ -3578,6 +3660,9 @@ void NearbySharingServiceImpl::OnReceiveConnectionResponse(
       NS_LOG(VERBOSE)
           << __func__
           << ": The connection was accepted. Payloads are now being sent.";
+
+      CHECK(info->endpoint_id().has_value());
+      transfer_profiler_->OnSendStart(info->endpoint_id().value());
       break;
     }
     case sharing::mojom::ConnectionResponseFrame::Status::kReject:

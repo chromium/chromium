@@ -4,24 +4,27 @@
 
 #include <stddef.h>
 #include <sys/types.h>
+#include <memory>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/input_method/input_method_manager_impl.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
-#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
-#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/ash/system/fake_input_device_settings.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -36,9 +39,6 @@ class PreferencesTest : public LoginManagerTest {
   PreferencesTest()
       : LoginManagerTest(), input_settings_(nullptr), keyboard_(nullptr) {
     login_mixin_.AppendRegularUsers(2);
-    scoped_testing_cros_settings_.device_settings()->Set(
-        kDeviceOwner,
-        base::Value(login_mixin_.users()[0].account_id.GetUserEmail()));
 
     feature_list_.InitAndEnableFeature(features::kAllowScrollSettings);
   }
@@ -46,14 +46,25 @@ class PreferencesTest : public LoginManagerTest {
   PreferencesTest(const PreferencesTest&) = delete;
   PreferencesTest& operator=(const PreferencesTest&) = delete;
 
+  void SetUp() override {
+    LoginManagerTest::SetUp();
+
+    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
+    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+        std::move(user_manager));
+  }
+
   void SetUpOnMainThread() override {
     LoginManagerTest::SetUpOnMainThread();
     input_settings_ = system::InputDeviceSettings::Get()->GetFakeInterface();
     EXPECT_NE(nullptr, input_settings_);
-    keyboard_ = new input_method::FakeImeKeyboard();
-    static_cast<input_method::InputMethodManagerImpl*>(
-        input_method::InputMethodManager::Get())
-        ->SetImeKeyboardForTesting(keyboard_);
+
+    GetFakeUserManager().SetOwnerId(login_mixin_.users()[0].account_id);
+
+    // In browser_test environment, FakeImeKeyboard is used by
+    // InputMethodManager.
+    keyboard_ = static_cast<input_method::FakeImeKeyboard*>(
+        input_method::InputMethodManager::Get()->GetImeKeyboard());
   }
 
   // Sets set of preferences in given |prefs|. Value of preference depends on
@@ -84,6 +95,11 @@ class PreferencesTest : public LoginManagerTest {
     prefs->SetString(
         ::prefs::kLanguagePreloadEngines,
         variant ? "xkb:us::eng,xkb:us:dvorak:eng" : "xkb:us::eng,xkb:ru::rus");
+  }
+
+  ash::FakeChromeUserManager& GetFakeUserManager() {
+    return CHECK_DEREF(static_cast<ash::FakeChromeUserManager*>(
+        user_manager::UserManager::Get()));
   }
 
   void CheckSettingsCorrespondToPrefs(PrefService* prefs) {
@@ -131,12 +147,12 @@ class PreferencesTest : public LoginManagerTest {
         prefs->GetInteger(prefs::kTouchpadScrollSensitivity),
         input_settings_->current_touchpad_settings().GetScrollSensitivity());
     EXPECT_EQ(prefs->GetBoolean(prefs::kXkbAutoRepeatEnabled),
-              keyboard_->auto_repeat_is_enabled_);
+              keyboard_->GetAutoRepeatEnabled());
     input_method::AutoRepeatRate rate = keyboard_->last_auto_repeat_rate_;
     EXPECT_EQ(prefs->GetInteger(prefs::kXkbAutoRepeatDelay),
-              (int)rate.initial_delay_in_ms);
+              rate.initial_delay.InMilliseconds());
     EXPECT_EQ(prefs->GetInteger(prefs::kXkbAutoRepeatInterval),
-              (int)rate.repeat_interval_in_ms);
+              rate.repeat_interval.InMilliseconds());
     EXPECT_EQ(prefs->GetString(::prefs::kLanguageCurrentInputMethod),
               input_method::InputMethodManager::Get()
                   ->GetActiveIMEState()
@@ -156,13 +172,14 @@ class PreferencesTest : public LoginManagerTest {
   }
 
   LoginManagerMixin login_mixin_{&mixin_host_};
-  ScopedTestingCrosSettings scoped_testing_cros_settings_;
 
  private:
   base::test::ScopedFeatureList feature_list_;
   raw_ptr<system::InputDeviceSettings::FakeInterface, ExperimentalAsh>
       input_settings_;
-  raw_ptr<input_method::FakeImeKeyboard, ExperimentalAsh> keyboard_;
+  raw_ptr<input_method::FakeImeKeyboard, DanglingUntriaged | ExperimentalAsh>
+      keyboard_;
+  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 };
 
 IN_PROC_BROWSER_TEST_F(PreferencesTest, MultiProfiles) {

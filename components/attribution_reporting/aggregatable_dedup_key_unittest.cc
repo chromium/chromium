@@ -6,6 +6,7 @@
 
 #include "base/functional/function_ref.h"
 #include "base/test/values_test_util.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/attribution_reporting/filters.h"
@@ -56,9 +57,10 @@ TEST(AggregatableDedupKeyTest, FromJSON) {
       },
       {
           "filters_valid",
-          R"json({"filters":{"a":["b"]}})json",
+          R"json({"filters":{"a":["b"], "_lookback_window": 1}})json",
           AggregatableDedupKeyWith([](AggregatableDedupKey& key) {
-            key.filters.positive = FiltersDisjunction({{{"a", {"b"}}}});
+            key.filters.positive = {*FilterConfig::Create(
+                {{{"a", {"b"}}}}, /*lookback_window=*/base::Seconds(1))};
           }),
       },
       {
@@ -68,9 +70,10 @@ TEST(AggregatableDedupKeyTest, FromJSON) {
       },
       {
           "not_filters_valid",
-          R"json({"not_filters":{"a":["b"]}})json",
+          R"json({"not_filters":{"a":["b"], "_lookback_window": 1}})json",
           AggregatableDedupKeyWith([](AggregatableDedupKey& key) {
-            key.filters.negative = FiltersDisjunction({{{"a", {"b"}}}});
+            key.filters.negative = {*FilterConfig::Create(
+                {{{"a", {"b"}}}}, /*lookback_window=*/base::Seconds(1))};
           }),
       },
       {
@@ -98,8 +101,9 @@ TEST(AggregatableDedupKeyTest, ToJson) {
       },
       {
           AggregatableDedupKey(
-              /*dedup_key=*/3, FilterPair(/*positive=*/{{{"a", {}}}},
-                                          /*negative=*/{{{"b", {}}}})),
+              /*dedup_key=*/3,
+              FilterPair(/*positive=*/{*FilterConfig::Create({{"a", {}}})},
+                         /*negative=*/{*FilterConfig::Create({{"b", {}}})})),
           R"json({
             "deduplication_key": "3",
             "filters": [{"a": []}],

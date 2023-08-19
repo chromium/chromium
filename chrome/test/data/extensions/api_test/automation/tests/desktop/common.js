@@ -32,7 +32,24 @@ function runWithDocument(docString, callback) {
     url: url
   };
   createTabAndWaitUntilLoaded(url, function(tab) {
-    chrome.automation.getTree(tab.id, callback);
+    chrome.automation.getDesktop(desktop => {
+      const url = tab.url || tab.pendingUrl;
+      let rootNode = desktop.find({attributes: {docUrl: url}});
+      if (rootNode && rootNode.docLoaded) {
+        callback(rootNode);
+        return;
+      }
+
+      let listener = () => {
+        rootNode = desktop.find({attributes: {docUrl: url}});
+        if (rootNode && rootNode.docLoaded) {
+          desktop.removeEventListener('loadComplete', listener);
+          desktop.addEventListener('focus', () => {});
+          callback(rootNode);
+        }
+      };
+      desktop.addEventListener('loadComplete', listener);
+    });
   });
 }
 
@@ -51,19 +68,27 @@ function setUpAndRunTests(allTests) {
   });
 }
 
-function setUpAndRunTestsInPage(allTests, opt_path) {
+function setUpAndRunTestsInPage(allTests, opt_path, opt_ensurePersists = true) {
   var path = opt_path || 'index.html';
   getUrlFromConfig(path, function(url) {
     createTabAndWaitUntilLoaded(url, function(unused_tab) {
-      chrome.automation.getTree(function (returnedRootNode) {
-        rootNode = returnedRootNode;
-        if (rootNode.docLoaded) {
+      chrome.automation.getDesktop(function(desktop) {
+        rootNode = desktop.find({attributes: {docUrl: url}});
+        if (rootNode && rootNode.docLoaded) {
           chrome.test.runTests(allTests);
           return;
         }
-        rootNode.addEventListener('loadComplete', function() {
-          chrome.test.runTests(allTests);
-        });
+        function listener() {
+          rootNode = desktop.find({attributes: {docUrl: url}});
+          if (rootNode && rootNode.docLoaded) {
+            desktop.removeEventListener('loadComplete', listener);
+            if (opt_ensurePersists) {
+              desktop.addEventListener('focus', () => {});
+            }
+            chrome.test.runTests(allTests);
+          }
+        }
+        desktop.addEventListener('loadComplete', listener);
       });
     });
   });

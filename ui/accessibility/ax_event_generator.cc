@@ -415,6 +415,10 @@ void AXEventGenerator::OnStateChanged(AXTree* tree,
     case ax::mojom::State::kAutofillAvailable:
       AddEvent(node, Event::AUTOFILL_AVAILABILITY_CHANGED);
       break;
+    case ax::mojom::State::kHorizontal:
+    case ax::mojom::State::kVertical:
+      AddEvent(node, Event::ORIENTATION_CHANGED);
+      break;
     default:
       break;
   }
@@ -1319,6 +1323,8 @@ const char* ToString(AXEventGenerator::Event event) {
       return "nameChanged";
     case AXEventGenerator::Event::OBJECT_ATTRIBUTE_CHANGED:
       return "objectAttributeChanged";
+    case AXEventGenerator::Event::ORIENTATION_CHANGED:
+      return "orientationChanged";
     case AXEventGenerator::Event::OTHER_ATTRIBUTE_CHANGED:
       return "otherAttributeChanged";
     case AXEventGenerator::Event::PARENT_CHANGED:

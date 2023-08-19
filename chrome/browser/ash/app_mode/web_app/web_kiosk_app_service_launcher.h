@@ -9,18 +9,17 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observation.h"
+#include "base/types/expected.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_service_launcher.h"
+#include "chrome/browser/chromeos/app_mode/web_kiosk_app_installer.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom-forward.h"
+#include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom-shared.h"
 #include "components/account_id/account_id.h"
-#include "components/services/app_service/public/cpp/app_registry_cache.h"
-#include "components/services/app_service/public/cpp/app_types.h"
-#include "components/services/app_service/public/cpp/app_update.h"
-#include "components/services/app_service/public/cpp/instance_registry.h"
-#include "url/gurl.h"
 
 class Profile;
 
@@ -57,16 +56,20 @@ class WebKioskAppServiceLauncher : public KioskAppLauncher {
   void LaunchApp() override;
 
  private:
-  // |KioskAppServiceLauncher| callbacks.
-  void OnWebAppInitializled();
+  // `KioskAppServiceLauncher` callbacks.
+  void OnWebAppInitialized();
+  void NotifyAppPrepared(const absl::optional<web_app::AppId>& app_id);
   void OnAppLaunched(bool success);
   void OnAppBecomesVisible();
 
-  void InstallApp();
-
-  void OnExternalInstallCompleted(
-      const GURL& app_url,
-      web_app::ExternallyManagedAppManager::InstallResult result);
+  void GetInstallState(
+      const GURL& url,
+      chromeos::WebKioskAppInstaller::InstallStateCallback callback);
+  void CheckWhetherNetworkIsRequired(crosapi::mojom::WebKioskInstallState state,
+                                     const absl::optional<web_app::AppId>& id);
+  void InstallAppInAsh();
+  void InstallAppInLacros();
+  void OnInstallComplete(const absl::optional<web_app::AppId>& app_id);
 
   // Get the current web application to be launched in the session.
   const WebKioskAppData* GetCurrentApp() const;
@@ -76,10 +79,8 @@ class WebKioskAppServiceLauncher : public KioskAppLauncher {
   std::string app_id_;
   KioskAppLauncher::ObserverList observers_;
 
-  // Not owned. A keyed service bound to the profile.
-  raw_ptr<web_app::WebAppProvider> web_app_provider_;
-
-  std::unique_ptr<KioskAppServiceLauncher> app_service_launcher_;
+  std::unique_ptr<chromeos::WebKioskAppInstaller> app_installer_;
+  std::unique_ptr<chromeos::KioskAppServiceLauncher> app_service_launcher_;
 
   base::WeakPtrFactory<WebKioskAppServiceLauncher> weak_ptr_factory_{this};
 };

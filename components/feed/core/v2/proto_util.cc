@@ -146,15 +146,14 @@ feedwire::Request CreateFeedQueryRequest(
   for (auto capability : GetFeedConfig().experimental_capabilities)
     feed_request.add_client_capability(capability);
 
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(kFeedBottomSyncStringRemoval)) {
+    feed_request.add_client_capability(Capability::SYNC_STRING_REMOVAL);
+  }
+#endif
+
   if (base::FeatureList::IsEnabled(kInterestFeedV2Hearts)) {
     feed_request.add_client_capability(Capability::HEART);
-  }
-  if (request_metadata.autoplay_enabled) {
-    feed_request.add_client_capability(Capability::INLINE_VIDEO_AUTOPLAY);
-  }
-  if (request_metadata.autoplay_enabled ||
-      base::FeatureList::IsEnabled(kFeedVideoInlinePlayback)) {
-    feed_request.add_client_capability(Capability::OPEN_VIDEO_COMMAND);
   }
 
   if (base::FeatureList::IsEnabled(kFeedStamp)) {
@@ -313,6 +312,16 @@ void SetChromeSignInStatus(feedwire::Request* request,
       ->set_sign_in_status(request_metadata.sign_in_status);
 }
 
+// Set the default search engine currently set in Chrome.
+void SetDefaultSearchEngine(feedwire::Request* request,
+                            const RequestMetadata& request_metadata) {
+  request->mutable_feed_request()
+      ->mutable_feed_query()
+      ->mutable_chrome_fulfillment_info()
+      ->mutable_default_search_engine()
+      ->set_search_engine(request_metadata.default_search_engine);
+}
+
 void WriteDocIdsTable(const std::vector<DocViewCount> doc_view_counts,
                       feedwire::Table& table) {
   table.set_name("url_all_ondevice");
@@ -442,6 +451,7 @@ feedwire::Request CreateFeedQueryRefreshRequest(
   SetInfoCardTrackingStates(&request, request_metadata);
   SetTimesFollowedFromWebPageMenu(&request, request_metadata);
   SetChromeSignInStatus(&request, request_metadata);
+  SetDefaultSearchEngine(&request, request_metadata);
 
   if (!doc_view_counts.empty()) {
     WriteDocIdsTable(doc_view_counts, *request.mutable_feed_request()

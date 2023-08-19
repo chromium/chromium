@@ -45,7 +45,18 @@ CanvasRenderingContext::CanvasRenderingContext(
       host_(host),
       color_params_(attrs.color_space, attrs.pixel_format, attrs.alpha),
       creation_attributes_(attrs),
-      canvas_rendering_type_(canvas_rendering_API) {}
+      canvas_rendering_type_(canvas_rendering_API) {
+  // The following check is for investigating crbug.com/1470622
+  // If the crash stops happening in CanvasRenderingContext2D::
+  // GetOrCreatePaintCanvas(), and starts happening here instead,
+  // then we'll know that the bug is related to creation and the
+  // new crash reports pointing to this location will provide more
+  // actionable feedback on how to fix the issue. If the crash
+  // continues to happen at the old location, then we'll know that
+  // the problem has to do with a pre-finalizer being called
+  // prematurely.
+  CHECK(host_);
+}
 
 SkColorInfo CanvasRenderingContext::CanvasRenderingContextSkColorInfo() const {
   return SkColorInfo(kN32_SkColorType, kPremul_SkAlphaType,
@@ -191,39 +202,26 @@ void CanvasRenderingContext::RecordUKMCanvasDrawnToRenderingAPI() {
 }
 
 CanvasRenderingContext::CanvasRenderingAPI
-CanvasRenderingContext::RenderingAPIFromId(
-    const String& id,
-    const ExecutionContext* execution_context) {
-  if (id == "2d")
+CanvasRenderingContext::RenderingAPIFromId(const String& id) {
+  if (id == "2d") {
     return CanvasRenderingAPI::k2D;
-  if (id == "experimental-webgl")
+  }
+  if (id == "experimental-webgl") {
     return CanvasRenderingAPI::kWebgl;
-  if (id == "webgl")
+  }
+  if (id == "webgl") {
     return CanvasRenderingAPI::kWebgl;
-  if (id == "webgl2")
+  }
+  if (id == "webgl2") {
     return CanvasRenderingAPI::kWebgl2;
-  if (id == "bitmaprenderer")
+  }
+  if (id == "bitmaprenderer") {
     return CanvasRenderingAPI::kBitmaprenderer;
-  if ((id == "webgpu") &&
-      RuntimeEnabledFeatures::WebGPUEnabled(execution_context))
+  }
+  if (id == "webgpu") {
     return CanvasRenderingAPI::kWebgpu;
+  }
   return CanvasRenderingAPI::kUnknown;
-}
-
-bool CanvasRenderingContext::WouldTaintOrigin(CanvasImageSource* image_source) {
-  // Don't taint the canvas on data URLs. This special case is needed here
-  // because CanvasImageSource::WouldTaintOrigin() can return false for data
-  // URLs due to restrictions on SVG foreignObject nodes as described in
-  // https://crbug.com/294129.
-  // TODO(crbug.com/294129): Remove the restriction on foreignObject nodes, then
-  // this logic isn't needed, CanvasImageSource::SourceURL() isn't needed, and
-  // this function can just be image_source->WouldTaintOrigin().
-  const KURL& source_url = image_source->SourceURL();
-  const bool has_url = (source_url.IsValid() && !source_url.IsAboutBlankURL());
-  if (has_url && source_url.ProtocolIsData())
-    return false;
-
-  return image_source->WouldTaintOrigin();
 }
 
 void CanvasRenderingContext::Trace(Visitor* visitor) const {

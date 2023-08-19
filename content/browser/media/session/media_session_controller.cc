@@ -106,14 +106,6 @@ void MediaSessionController::OnEnterPictureInPicture(int player_id) {
       ->RequestEnterPictureInPicture();
 }
 
-void MediaSessionController::OnExitPictureInPicture(int player_id) {
-  DCHECK_EQ(player_id_, player_id);
-
-  web_contents_->media_web_contents_observer()
-      ->GetMediaPlayerRemote(id_)
-      ->RequestExitPictureInPicture();
-}
-
 void MediaSessionController::OnSetAudioSinkId(
     int player_id,
     const std::string& raw_device_id) {
@@ -123,18 +115,22 @@ void MediaSessionController::OnSetAudioSinkId(
   if (!render_frame_host)
     return;
 
-  // The sink id needs to be hashed before it is suitable for use in the
-  // renderer process.
-  auto salt_and_origin = content::GetMediaDeviceSaltAndOrigin(
-      render_frame_host->GetProcess()->GetID(),
-      render_frame_host->GetRoutingID());
+  GetHMACFromRawDeviceId(
+      render_frame_host->GetGlobalId(), raw_device_id,
+      base::BindOnce(&MediaSessionController::OnHashedSinkIdReceived,
+                     weak_factory_.GetWeakPtr()));
+}
 
-  std::string hashed_sink_id = GetHMACForMediaDeviceID(
-      salt_and_origin.device_id_salt, salt_and_origin.origin, raw_device_id);
-
+void MediaSessionController::OnHashedSinkIdReceived(
+    const std::string& hashed_sink_id) {
   // Grant the renderer the permission to use this audio output device.
-  static_cast<RenderFrameHostImpl*>(render_frame_host)
-      ->SetAudioOutputDeviceIdForGlobalMediaControls(hashed_sink_id);
+  auto* render_frame_host_impl =
+      RenderFrameHostImpl::FromID(id_.frame_routing_id);
+  if (!render_frame_host_impl) {
+    return;
+  }
+  render_frame_host_impl->SetAudioOutputDeviceIdForGlobalMediaControls(
+      hashed_sink_id);
 
   web_contents_->media_web_contents_observer()
       ->GetMediaPlayerRemote(id_)

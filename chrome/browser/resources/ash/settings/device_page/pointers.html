@@ -1,0 +1,199 @@
+<style include="settings-shared">
+  h2 {
+    padding-inline-start: var(--cr-section-padding);
+  }
+
+  .subsection {
+    padding-inline-end: var(--cr-section-padding);
+    padding-inline-start: var(--cr-section-indent-padding);
+  }
+
+  .subsection > settings-toggle-button,
+  .subsection > .settings-box  {
+    padding-inline-end: 0;
+    padding-inline-start: 0;
+  }
+
+  #enableReverseScrollingToggle {
+    border-top: none;
+    padding-inline-end: 0;
+  }
+</style>
+<div id="mouse" hidden$="[[!hasMouse]]">
+  <!-- Subsection title only appears if multiple sections are visible. -->
+  <h2 hidden$="[[!showHeadings_]]">$i18n{mouseTitle}</h2>
+  <div class$="[[subsectionClass_]]">
+    <div class="settings-box">
+      <div class="start settings-box-text" id="mouseSwapButtonLabel">
+        $i18n{mouseSwapButtonsLabel}
+      </div>
+      <settings-dropdown-menu id="mouseSwapButtonDropdown"
+          aria-labeledby="mouseSwapButtonLabel"
+          pref="{{prefs.settings.mouse.primary_right}}"
+          menu-options="[[swapPrimaryOptions]]"
+          deep-link-focus-id$="[[Setting.kMouseSwapPrimaryButtons]]">
+      </settings-dropdown-menu>
+    </div>
+    <settings-toggle-button id="mouseAcceleration"
+        class="hr"
+        pref="{{prefs.settings.mouse.acceleration}}"
+        label="[[getCursorAccelerationString()]]"
+        deep-link-focus-id$="[[Setting.kMouseAcceleration]]">
+    </settings-toggle-button>
+    <div class="settings-box">
+      <div class="start" id="mouseSpeedLabel" aria-hidden="true">
+        [[getCursorSpeedString()]]
+      </div>
+      <settings-slider id="mouseSpeedSlider"
+          pref="{{prefs.settings.mouse.sensitivity2}}"
+          ticks="[[sensitivityValues_]]"
+          label-aria="[[getCursorSpeedString()]]"
+          label-min="$i18n{pointerSlow}"
+          label-max="$i18n{pointerFast}"
+          deep-link-focus-id$="[[Setting.kMouseSpeed]]">
+      </settings-slider>
+    </div>
+    <div class="settings-box" id="mouseReverseScrollRow"
+         on-click="onMouseReverseScrollRowClicked_">
+      <div class="start settings-box-text">
+        <localized-link
+            on-click="onLearnMoreLinkClicked_"
+            id="enableMouseReverseScrollingLabel"
+            localized-string="$i18n{mouseReverseScrollLabel}"
+            link-url="$i18n{naturalScrollLearnMoreLink}">
+        </localized-link>
+      </div>
+      <cr-toggle id="mouseReverseScroll"
+          checked="{{prefs.settings.mouse.reverse_scroll.value}}"
+          aria-labelledby="enableMouseReverseScrollingLabel"
+          deep-link-focus-id$="[[Setting.kMouseReverseScrolling]]">
+      </cr-toggle>
+    </div>
+  </div>
+</div>
+<div id="pointingStick" hidden$="[[!hasPointingStick]]">
+  <!-- Subsection title only appears if multiple sections are visible. -->
+  <h2 hidden$="[[!showHeadings_]]">$i18n{pointingStickTitle}</h2>
+  <div class$="[[subsectionClass_]]">
+    <div class="settings-box">
+      <div class="start settings-box-text"
+          id="pointingStickSwapButtonLabel">
+        $i18n{pointingStickPrimaryButton}
+      </div>
+      <settings-dropdown-menu id="pointingStickSwapButtonDropdown"
+          aria-labeledby="pointingStickSwapButtonLabel"
+          pref="{{prefs.settings.pointing_stick.primary_right}}"
+          menu-options="[[swapPrimaryOptions]]"
+          deep-link-focus-id$=
+              "[[Setting.kPointingStickSwapPrimaryButtons]]">
+      </settings-dropdown-menu>
+    </div>
+    <settings-toggle-button id="pointingStickAcceleration"
+        class="hr"
+        pref="{{prefs.settings.pointing_stick.acceleration}}"
+        label="$i18n{pointingStickAccelerationLabel}"
+        deep-link-focus-id$="[[Setting.kPointingStickAcceleration]]">
+    </settings-toggle-button>
+    <div class="settings-box">
+      <div class="start" id="pointingStickSpeedLabel" aria-hidden="true">
+        $i18n{pointingStickSpeed}
+      </div>
+      <settings-slider id="pointingStickSpeedSlider"
+          pref="{{prefs.settings.pointing_stick.sensitivity}}"
+          ticks="[[sensitivityValues_]]"
+          label-aria="$i18n{pointingStickSpeed}"
+          label-min="$i18n{pointerSlow}"
+          label-max="$i18n{pointerFast}"
+          deep-link-focus-id$="[[Setting.kPointingStickSpeed]]">
+      </settings-slider>
+    </div>
+  </div>
+</div>
+<div id="touchpad" hidden$="[[!hasTouchpad]]">
+  <!-- Subsection title only appears if multiple sections are visible. -->
+  <h2 hidden$="[[!showHeadings_]]">$i18n{touchpadTitle}</h2>
+  <div class$="[[subsectionClass_]]">
+    <settings-toggle-button id="enableTapToClick"
+        pref="{{prefs.settings.touchpad.enable_tap_to_click}}"
+        label="$i18n{touchpadTapToClickEnabledLabel}"
+        deep-link-focus-id$="[[Setting.kTouchpadTapToClick]]">
+    </settings-toggle-button>
+    <settings-toggle-button id="enableTapDragging"
+        class="hr"
+        pref="{{prefs.settings.touchpad.enable_tap_dragging}}"
+        label="$i18n{tapDraggingLabel}"
+        deep-link-focus-id$="[[Setting.kTouchpadTapDragging]]">
+    </settings-toggle-button>
+    <settings-toggle-button id="touchpadAcceleration"
+        class="hr"
+        pref="{{prefs.settings.touchpad.acceleration}}"
+        label="$i18n{touchpadAccelerationLabel}"
+        deep-link-focus-id$="[[Setting.kTouchpadAcceleration]]">
+    </settings-toggle-button>
+    <div class="settings-box">
+      <div class="start" id="touchpadSpeedLabel" aria-hidden="true">
+        $i18n{touchpadSpeed}
+      </div>
+        <settings-slider id="touchpadSensitivity"
+            pref="{{prefs.settings.touchpad.sensitivity2}}"
+            ticks="[[sensitivityValues_]]"
+            label-aria="$i18n{touchpadSpeed}"
+            label-min="$i18n{pointerSlow}"
+            label-max="$i18n{pointerFast}"
+            deep-link-focus-id$="[[Setting.kTouchpadSpeed]]">
+        </settings-slider>
+    </div>
+    <template is="dom-if" if="[[hasHapticTouchpad]]">
+      <div class="settings-box">
+        <div class="start" id="touchpadHapticClickSensitivityLabel"
+            aria-hidden="true">
+          $i18n{touchpadHapticClickSensitivityLabel}
+        </div>
+        <settings-slider id="touchpadHapticClickSensitivity"
+            pref="{{prefs.settings.touchpad.haptic_click_sensitivity}}"
+            ticks="[[hapticClickSensitivityValues_]]"
+            label-aria="$i18n{touchpadHapticClickSensitivityLabel}"
+            label-min="$i18n{touchpadHapticLightClickLabel}"
+            label-max="$i18n{touchpadHapticFirmClickLabel}"
+            deep-link-focus-id$=
+              "[[Setting.kTouchpadHapticClickSensitivity]]">
+        </settings-slider>
+      </div>
+      <div class="settings-box two-line" id="touchpadHapticFeedbackRow"
+          on-click="onTouchpadHapticFeedbackRowClicked_">
+        <div class="start settings-box-text">
+          <div>$i18n{touchpadHapticFeedbackTitle}</div>
+          <div class="secondary">
+            <localized-link
+              on-click="onLearnMoreLinkClicked_"
+              id="touchpadHapticFeedbackSecondary"
+              localized-string="$i18n{touchpadHapticFeedbackSecondaryText}"
+              link-url="$i18n{hapticFeedbackLearnMoreLink}">
+            </localized-link>
+          </div>
+        </div>
+        <cr-toggle id="touchpadHapticFeedbackToggle"
+            checked="{{prefs.settings.touchpad.haptic_feedback.value}}"
+            aria-labelledby="touchpadHapticFeedbackRow"
+            deep-link-focus-id$="[[Setting.kTouchpadHapticFeedback]]">
+        </cr-toggle>
+      </div>
+    </template>
+    <div class="settings-box" id="reverseScrollRow"
+         on-click="onTouchpadReverseScrollRowClicked_">
+      <div class="start settings-box-text">
+        <localized-link
+            on-click="onLearnMoreLinkClicked_"
+            id="enableReverseScrollingLabel"
+            localized-string="$i18n{touchpadScrollLabel}"
+            link-url="$i18n{naturalScrollLearnMoreLink}">
+        </localized-link>
+      </div>
+      <cr-toggle id="enableReverseScrollingToggle"
+          checked="{{prefs.settings.touchpad.natural_scroll.value}}"
+          aria-labelledby="enableReverseScrollingLabel"
+          deep-link-focus-id$="[[Setting.kTouchpadReverseScrolling]]">
+      </cr-toggle>
+    </div>
+  </div>
+</div>

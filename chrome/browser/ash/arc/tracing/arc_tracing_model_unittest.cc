@@ -10,10 +10,10 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
-#include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "chrome/browser/ash/arc/tracing/arc_tracing_event.h"
 #include "chrome/browser/ash/arc/tracing/arc_tracing_event_matcher.h"
@@ -65,8 +65,9 @@ constexpr char kSurfaceAttachBad[] = "_Surface::Attach";
 // Validates that events have increasing timestamp, and all events have allowed
 // transitions from the previous state.
 bool ValidateCpuEvents(const CpuEvents& cpu_events) {
-  if (cpu_events.empty())
+  if (cpu_events.empty()) {
     return false;
+  }
 
   CpuEvents cpu_events_reconstructed;
   for (const auto& cpu_event : cpu_events) {
@@ -83,8 +84,9 @@ bool ValidateCpuEvents(const CpuEvents& cpu_events) {
 // each type is found at least once.
 bool ValidateGrahpicsEvents(const GraphicsEvents& events,
                             const std::set<GraphicsEventType>& allowed_types) {
-  if (events.empty())
+  if (events.empty()) {
     return false;
+  }
   uint64_t previous_timestamp = 0;
   std::set<GraphicsEventType> used_types;
   for (const auto& event : events) {
@@ -102,9 +104,10 @@ bool ValidateGrahpicsEvents(const GraphicsEvents& events,
   }
   if (used_types.size() != allowed_types.size()) {
     for (const auto& allowed_type : allowed_types) {
-      if (!used_types.count(allowed_type))
+      if (!used_types.count(allowed_type)) {
         LOG(ERROR) << "Required event type " << allowed_type
                    << " << is not found.";
+      }
     }
     return false;
   }
@@ -122,8 +125,9 @@ std::unique_ptr<ArcTracingGraphicsModel> LoadGraphicsModel(
   DCHECK(!json_data.empty());
   std::unique_ptr<ArcTracingGraphicsModel> model =
       std::make_unique<ArcTracingGraphicsModel>();
-  if (!model->LoadFromJson(json_data))
+  if (!model->LoadFromJson(json_data)) {
     return nullptr;
+  }
   return model;
 }
 
@@ -173,8 +177,9 @@ TEST_F(ArcTracingModelTest, TopLevel) {
 
   // 4 CPU cores.
   EXPECT_EQ(4U, model.system_model().all_cpu_events().size());
-  for (const auto& cpu_events : model.system_model().all_cpu_events())
+  for (const auto& cpu_events : model.system_model().all_cpu_events()) {
     EXPECT_TRUE(ValidateCpuEvents(cpu_events));
+  }
 
   // Perform several well-known queries.
   EXPECT_FALSE(model.Select(kAcquireBufferQuery).empty());
@@ -319,6 +324,49 @@ TEST_F(ArcTracingModelTest, SystemTraceEventTimestampParsing) {
     ArcTracingModel model;
     EXPECT_FALSE(model.Build(bad_tracing_data_2));
   }
+}
+
+namespace {
+bool TestSystemTraceEventExtraFlags(const char* flag_field) {
+  std::string tracing_data =
+      base::StrCat({"{\"traceEvents\":[],\"systemTraceEvents\":\""
+                    // clang-format off
+      "  surfaceflinger-9772  [000] ", flag_field, " 987.123456: tracing_mark_write: B|51|acquireBuffer\n"
+                    // clang-format on
+                    "\"}"});
+  ArcTracingModel model;
+  if (!model.Build(tracing_data)) {
+    return false;
+  }
+
+  const ArcTracingModel::TracingEventPtrs events =
+      model.Select("android:acquireBuffer");
+  CHECK_EQ(1u, events.size());
+  EXPECT_EQ(51, events[0]->GetPid());
+  EXPECT_EQ("android", events[0]->GetCategory());
+  EXPECT_EQ("acquireBuffer", events[0]->GetName());
+  EXPECT_EQ('X', events[0]->GetPhase());
+  EXPECT_EQ(987123456UL, events[0]->GetTimestamp());
+  EXPECT_EQ(0U, events[0]->GetDuration());
+
+  return true;
+}
+}  // namespace
+
+TEST_F(ArcTracingModelTest, SystemTraceEventMoreFlags) {
+  // Kernel v5.15 has 5 flags after the CPU#, whereas v5.10 has only 4. Verify
+  // we don't fail for 5 flags, or more in case future kernels get them.
+
+  // Empty flags field - two spaces between CPU# and timestamp fields.
+  EXPECT_FALSE(TestSystemTraceEventExtraFlags(""));
+
+  EXPECT_FALSE(TestSystemTraceEventExtraFlags("0"));
+  EXPECT_FALSE(TestSystemTraceEventExtraFlags(".0"));
+  EXPECT_FALSE(TestSystemTraceEventExtraFlags("..0"));
+  EXPECT_TRUE(TestSystemTraceEventExtraFlags("...0"));
+  EXPECT_TRUE(TestSystemTraceEventExtraFlags("....0"));
+  EXPECT_TRUE(TestSystemTraceEventExtraFlags(".....0"));
+  EXPECT_TRUE(TestSystemTraceEventExtraFlags("......0"));
 }
 
 TEST_F(ArcTracingModelTest, SystemTraceEventCpuEventProcessing) {

@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://customize-chrome-side-panel.top-chrome/theme_snapshot.js';
 
 import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote, CustomizeChromePageRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
 import {CustomizeThemeType, ThemeSnapshotElement} from 'chrome://customize-chrome-side-panel.top-chrome/theme_snapshot.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
 import {$$, assertStyle, createBackgroundImage, createTheme, installMock} from './test_support.js';
@@ -104,7 +103,7 @@ suite('ThemeSnapshotTest', () => {
             '#classicChromeBackground img')!.getAttribute('aria-labelledby'),
         'classicChromeThemeTitle');
     assertEquals(
-        'Classic Chrome',
+        'Default Chrome',
         $$(themeSnapshotElement,
            '.snapshot-container #classicChromeThemeTitle')!.textContent!
             .trim());
@@ -112,32 +111,6 @@ suite('ThemeSnapshotTest', () => {
         $$(themeSnapshotElement,
            '.snapshot-container #classicChromeBackground')!,
         'background-color', 'rgb(20, 83, 154)');
-  });
-
-  test('gm3 classic chrome preview shows correct image', async () => {
-    // Arrange.
-    document.documentElement.toggleAttribute('chrome-refresh-2023', true);
-    createThemeSnapshotElement();
-    const theme = createTheme();
-
-    // Act.
-    callbackRouterRemote.setTheme(theme);
-    await callbackRouterRemote.$.flushForTesting();
-
-    // Assert.
-    assertEquals(1, handler.getCallCount('updateTheme'));
-    const shownPages =
-        themeSnapshotElement.shadowRoot!.querySelectorAll('.iron-selected');
-    assertTrue(!!shownPages);
-    assertEquals(shownPages.length, 1);
-    assertEquals(
-        shownPages[0]!.getAttribute('theme-type'),
-        CustomizeThemeType.CLASSIC_CHROME);
-    assertEquals(
-        $$<HTMLImageElement>(
-            themeSnapshotElement, '#classicChromeBackground img')!.src,
-        'chrome://customize-chrome-side-panel.top-chrome/icons/' +
-            'gm3_mini_new_tab_page.svg');
   });
 
   test('uploading a background updates theme snapshot', async () => {
@@ -168,5 +141,102 @@ suite('ThemeSnapshotTest', () => {
         'Uploaded image',
         $$(themeSnapshotElement,
            '.snapshot-container #uploadedThemeTitle')!.textContent!.trim());
+  });
+
+  test(
+      'clicking snapshot with chrome-refresh-2023 toggled off ' +
+          'does not create an edit-theme-click event',
+      async () => {
+        // Arrange.
+        document.documentElement.toggleAttribute('chrome-refresh-2023', false);
+        createThemeSnapshotElement();
+        let clicked = false;
+        themeSnapshotElement.addEventListener(
+            'edit-theme-click', () => clicked = true);
+        // Act
+        $$<HTMLElement>(
+            themeSnapshotElement,
+            '.snapshot-container #classicChromeBackground')!.click();
+        // Assert
+        assertFalse(clicked);
+      });
+
+  suite('chrome refresh 2023', () => {
+    suiteSetup(() => {
+      document.documentElement.toggleAttribute('chrome-refresh-2023', true);
+    });
+
+    test('classic chrome snapshot shows correct image', async () => {
+      // Arrange.
+      createThemeSnapshotElement();
+      const theme = createTheme();
+
+      // Act.
+      callbackRouterRemote.setTheme(theme);
+      await callbackRouterRemote.$.flushForTesting();
+
+      // Assert.
+      assertEquals(1, handler.getCallCount('updateTheme'));
+      const shownPages =
+          themeSnapshotElement.shadowRoot!.querySelectorAll('.iron-selected');
+      assertTrue(!!shownPages);
+      assertEquals(shownPages.length, 1);
+      assertEquals(
+          shownPages[0]!.getAttribute('theme-type'),
+          CustomizeThemeType.CLASSIC_CHROME);
+      assertEquals(
+          $$<SVGUseElement>(
+              themeSnapshotElement,
+              '#classicChromeBackground svg use')!.href.baseVal,
+          'icons/gm3_mini_new_tab_page.svg#miniNewTabPage');
+    });
+
+    test(
+        'clicking classic chrome snapshot creates edit-theme-click event',
+        async () => {
+          // Arrange.
+          createThemeSnapshotElement();
+          let clicked = false;
+          themeSnapshotElement.addEventListener(
+              'edit-theme-click', () => clicked = true);
+          // Act
+          $$<HTMLElement>(
+              themeSnapshotElement,
+              '.snapshot-container #classicChromeBackground')!.click();
+          // Assert
+          assertTrue(clicked);
+        });
+
+    test(
+        'clicking custom theme snapshot creates edit-theme-click event',
+        async () => {
+          // Arrange.
+          createThemeSnapshotElement();
+          let clicked = false;
+          themeSnapshotElement.addEventListener(
+              'edit-theme-click', () => clicked = true);
+          // Act
+          $$<HTMLElement>(
+              themeSnapshotElement,
+              '.snapshot-container #customThemeImageBackground')!.click();
+          // Assert
+          assertTrue(clicked);
+        });
+
+    test(
+        'clicking uploaded snapshot creates edit-theme-click event',
+        async () => {
+          // Arrange.
+          createThemeSnapshotElement();
+          let clicked = false;
+          themeSnapshotElement.addEventListener(
+              'edit-theme-click', () => clicked = true);
+          // Act
+          $$<HTMLElement>(
+              themeSnapshotElement,
+              '.snapshot-container #uploadedThemeImageBackground')!.click();
+          // Assert
+          assertTrue(clicked);
+        });
   });
 });

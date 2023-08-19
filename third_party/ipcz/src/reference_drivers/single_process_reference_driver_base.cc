@@ -76,7 +76,7 @@ IpczResult IPCZ_API Serialize(IpczDriverHandle handle,
                               IpczDriverHandle transport,
                               uint32_t flags,
                               const void* options,
-                              void* data,
+                              volatile void* data,
                               size_t* num_bytes,
                               IpczDriverHandle* handles,
                               size_t* num_handles) {
@@ -102,7 +102,7 @@ IpczResult IPCZ_API Serialize(IpczDriverHandle handle,
   return IPCZ_RESULT_OK;
 }
 
-IpczResult IPCZ_API Deserialize(const void* data,
+IpczResult IPCZ_API Deserialize(const volatile void* data,
                                 size_t num_bytes,
                                 const IpczDriverHandle* handles,
                                 size_t num_handles,
@@ -166,7 +166,7 @@ IpczResult IPCZ_API DuplicateSharedMemory(IpczDriverHandle driver_memory,
 IpczResult IPCZ_API MapSharedMemory(IpczDriverHandle driver_memory,
                                     uint32_t flags,
                                     const void* options,
-                                    void** address,
+                                    volatile void** address,
                                     IpczDriverHandle* driver_mapping) {
   Ref<InProcessMemory> memory(InProcessMemory::FromHandle(driver_memory));
   auto mapping = MakeRefCounted<InProcessMapping>(std::move(memory));

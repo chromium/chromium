@@ -4,14 +4,10 @@
 
 #import "ios/chrome/browser/browsing_data/sessions_storage_util.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/files/file_path.h"
 #import "base/path_service.h"
-#import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/paths/paths.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+#import "ios/chrome/browser/shared/model/paths/paths.h"
 
 namespace {
 
@@ -19,10 +15,8 @@ namespace {
 NSString* GetDiscardedSessionsFilePath() {
   base::FilePath directory_path;
   base::PathService::Get(ios::DIR_USER_DATA, &directory_path);
-  NSString* file_path = base::SysUTF8ToNSString(
-      directory_path.Append(FILE_PATH_LITERAL("DiscardedSessions"))
-          .AsUTF8Unsafe());
-  return file_path;
+  return base::apple::FilePathToNSString(
+      directory_path.Append(FILE_PATH_LITERAL("DiscardedSessions")));
 }
 
 }  // namespace

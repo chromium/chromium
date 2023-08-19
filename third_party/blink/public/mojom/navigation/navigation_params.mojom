@@ -22,6 +22,7 @@ import "third_party/blink/public/mojom/navigation/navigation_initiator_activatio
 import "third_party/blink/public/mojom/frame/view_transition_state.mojom";
 import "third_party/blink/public/mojom/fenced_frame/fenced_frame_config.mojom";
 import "third_party/blink/public/mojom/frame/frame_policy.mojom";
+import "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom";
 import "third_party/blink/public/mojom/loader/mixed_content.mojom";
 import "third_party/blink/public/mojom/loader/referrer.mojom";
 import "third_party/blink/public/mojom/messaging/task_attribution_id.mojom";
@@ -30,6 +31,7 @@ import "third_party/blink/public/mojom/navigation/navigation_policy.mojom";
 import "third_party/blink/public/mojom/navigation/prefetched_signed_exchange_info.mojom";
 import "third_party/blink/public/mojom/navigation/system_entropy.mojom";
 import "third_party/blink/public/mojom/navigation/was_activated_option.mojom";
+import "third_party/blink/public/mojom/page/browsing_context_group_info.mojom";
 import "third_party/blink/public/mojom/page/page.mojom";
 import "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom";
 import "third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state.mojom";
@@ -45,9 +47,6 @@ enum NavigationType {
 
   // Reload the page, bypassing any cache entries.
   RELOAD_BYPASSING_CACHE,
-
-  // Reload the page using the original request URL.
-  RELOAD_ORIGINAL_REQUEST_URL,
 
   // The navigation is the result of session restore and should honor the
   // page's cache policy while restoring form state. This is set to true if
@@ -269,7 +268,8 @@ struct CommonNavigationParams {
   // Whether this is a history navigation in a newly created child frame, in
   // which case the browser process is instructing the renderer process to load
   // a URL from a session history item.  Defaults to false.
-  // TODO(ahemery): Move this to BeginNavigationParams.
+  // TODO(https://crbug.com/962518, https://crbug.com/1467502): Move this to
+  // BeginNavigationParams.
   bool is_history_navigation_in_new_child_frame = false;
 
   // The time the input event leading to the navigation occurred. This will
@@ -594,4 +594,14 @@ struct CommitNavigationParams {
   // Indicates whether the target document of this navigation should load with
   // the `has_storage_access` bit set.
   bool load_with_storage_access = false;
+
+  // Indicates which browsing context group this frame belongs to. This starts
+  // as nullopt and is only set when we commit a main frame in another browsing
+  // context group. Same browsing context group navigations never set this
+  // because no update is required. Subframes navigations never set this,
+  // because they cannot change browsing context group.
+  blink.mojom.BrowsingContextGroupInfo? browsing_context_group_info;
+
+  // LCP Critical Path Predictor hint data available at navigation timing.
+  blink.mojom.LCPCriticalPathPredictorNavigationTimeHint? lcpp_hint;
 };

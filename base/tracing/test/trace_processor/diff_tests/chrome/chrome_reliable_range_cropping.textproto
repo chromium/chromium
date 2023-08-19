@@ -1,0 +1,113 @@
+# This test is similar to chrome_reliable_range.textproto, but it has a cropping
+# packet, which takes precedence.
+
+packet {
+  timestamp: 0
+  trusted_packet_sequence_id: 1
+  incremental_state_cleared: true
+  track_event_range_of_interest {
+    start_us: 10
+  }
+}
+
+# Track descriptors for each thread.
+packet {
+  timestamp: 1
+  trusted_packet_sequence_id: 1
+  track_descriptor {
+    uuid: 1
+    thread {
+      pid: 1
+      tid: 1
+    }
+    parent_uuid: 0
+  }
+}
+packet {
+  timestamp: 2
+  incremental_state_cleared: true
+  trusted_packet_sequence_id: 2
+  track_descriptor {
+    uuid: 2
+    thread {
+      pid: 2
+      tid: 2
+    }
+    parent_uuid: 0
+  }
+}
+packet {
+  timestamp: 3
+  incremental_state_cleared: true
+  first_packet_on_sequence: true
+  trusted_packet_sequence_id: 3
+  track_descriptor {
+    uuid: 3
+    thread {
+      pid: 3
+      tid: 3
+    }
+    parent_uuid: 0
+  }
+}
+
+# Slice begin events
+packet {
+  trusted_packet_sequence_id: 1
+  timestamp: 11000
+  track_event {
+    track_uuid: 1
+    categories: "cat"
+    type: 1
+    name: "slice1"
+  }
+}
+packet {
+  trusted_packet_sequence_id: 2
+  timestamp: 12000
+  track_event {
+    track_uuid: 2
+    categories: "cat"
+    type: 1
+    name: "slice1"
+  }
+}
+packet {
+  trusted_packet_sequence_id: 3
+  timestamp: 13000
+  track_event {
+    track_uuid: 3
+    categories: "cat"
+    type: 1
+    name: "slice3"
+  }
+}
+
+# Slice end events
+packet {
+  trusted_packet_sequence_id: 1
+  timestamp: 1011000
+  track_event {
+    track_uuid: 1
+    categories: "cat"
+    type: 2
+  }
+}
+packet {
+  trusted_packet_sequence_id: 2
+  timestamp: 1012000
+  track_event {
+    track_uuid: 2
+    categories: "cat"
+    type: 2
+  }
+}
+packet {
+  trusted_packet_sequence_id: 3
+  timestamp: 1013000
+  track_event {
+    track_uuid: 3
+    categories: "cat"
+    type: 2
+  }
+}

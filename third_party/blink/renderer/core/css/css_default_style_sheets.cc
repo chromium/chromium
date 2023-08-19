@@ -37,9 +37,14 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/forms/html_button_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
+#include "third_party/blink/renderer/core/html/html_meter_element.h"
+#include "third_party/blink/renderer/core/html/html_progress_element.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/mathml_names.h"
 #include "third_party/blink/renderer/platform/data_resource_helper.h"
@@ -49,29 +54,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
-namespace {
-String OverflowForReplacedElementRules() {
-  return RuntimeEnabledFeatures::CSSOverflowForReplacedElementsEnabled()
-             ? UncompressResourceAsASCIIString(
-                   IDR_UASTYLE_OVERFLOW_REPLACED_CSS)
-             : "";
-}
-
-String OverflowForSVGRules() {
-  if (!RuntimeEnabledFeatures::CSSOverflowForReplacedElementsEnabled()) {
-    return "";
-  }
-
-  // SVG uses an overflow value of 'hidden' for backwards compatibility with
-  // flex layout. 'overflow-clip-margin' below still applies because the used
-  // value of overflow at paint time is 'clip'.
-  // See https://github.com/w3c/csswg-drafts/issues/7714 for context.
-  return String(R"CSS(svg:not(:root) {
-    overflow-clip-margin: content-box;
-        })CSS");
-}
-
-}  // namespace
 
 CSSDefaultStyleSheets& CSSDefaultStyleSheets::Instance() {
   DEFINE_STATIC_LOCAL(Persistent<CSSDefaultStyleSheets>,
@@ -124,7 +106,6 @@ CSSDefaultStyleSheets::CSSDefaultStyleSheets()
     : media_controls_style_sheet_loader_(nullptr) {
   // Strict-mode rules.
   String default_rules = UncompressResourceAsASCIIString(IDR_UASTYLE_HTML_CSS) +
-                         OverflowForReplacedElementRules() +
                          LayoutTheme::GetTheme().ExtraDefaultStyleSheet();
 
   default_style_sheet_ = ParseUASheet(default_rules);
@@ -144,13 +125,11 @@ void CSSDefaultStyleSheets::PrepareForLeakDetection() {
   text_track_style_sheet_.Clear();
   forced_colors_style_sheet_.Clear();
   fullscreen_style_sheet_.Clear();
-  popover_style_sheet_.Clear();
-  selectmenu_style_sheet_.Clear();
+  selectlist_style_sheet_.Clear();
   marker_style_sheet_.Clear();
   form_controls_not_vertical_style_sheet_.Clear();
   // Recreate the default style sheet to clean up possible SVG resources.
   String default_rules = UncompressResourceAsASCIIString(IDR_UASTYLE_HTML_CSS) +
-                         OverflowForReplacedElementRules() +
                          LayoutTheme::GetTheme().ExtraDefaultStyleSheet();
   default_style_sheet_ = ParseUASheet(default_rules);
 
@@ -173,8 +152,7 @@ void CSSDefaultStyleSheets::VerifyUniversalRuleCount() {
   // consciously add more universal bucket rules.
   if (mathml_style_sheet_) {
     default_mathml_style_->CompactRulesIfNeeded();
-    DCHECK_EQ(default_mathml_style_->UniversalRules().size(),
-              RuntimeEnabledFeatures::MathMLCoreEnabled() ? 24u : 0u);
+    DCHECK_EQ(default_mathml_style_->UniversalRules().size(), 24u);
   }
 
   if (svg_style_sheet_) {
@@ -274,8 +252,7 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
   // FIXME: We should assert that the sheet only styles SVG elements.
   if (element.IsSVGElement() && !svg_style_sheet_) {
     svg_style_sheet_ =
-        ParseUASheet(UncompressResourceAsASCIIString(IDR_UASTYLE_SVG_CSS) +
-                     OverflowForSVGRules());
+        ParseUASheet(UncompressResourceAsASCIIString(IDR_UASTYLE_SVG_CSS));
     AddRulesToDefaultStyleSheets(svg_style_sheet_, NamespaceType::kSVG);
     changed_default_style = true;
   }
@@ -283,10 +260,8 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
   // FIXME: We should assert that the sheet only styles MathML elements.
   if (element.namespaceURI() == mathml_names::kNamespaceURI &&
       !mathml_style_sheet_) {
-    mathml_style_sheet_ = ParseUASheet(
-        RuntimeEnabledFeatures::MathMLCoreEnabled()
-            ? UncompressResourceAsASCIIString(IDR_UASTYLE_MATHML_CSS)
-            : UncompressResourceAsASCIIString(IDR_UASTYLE_MATHML_FALLBACK_CSS));
+    mathml_style_sheet_ =
+        ParseUASheet(UncompressResourceAsASCIIString(IDR_UASTYLE_MATHML_CSS));
     AddRulesToDefaultStyleSheets(mathml_style_sheet_, NamespaceType::kMathML);
     changed_default_style = true;
   }
@@ -334,24 +309,13 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
     }
   }
 
-  if (!popover_style_sheet_ && IsA<HTMLElement>(element) &&
-      To<HTMLElement>(element).HasPopoverAttribute()) {
-    // TODO: We should assert that this sheet only contains rules for popovers.
-    DCHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
-        element.GetDocument().GetExecutionContext()));
-    popover_style_sheet_ =
-        ParseUASheet(UncompressResourceAsASCIIString(IDR_UASTYLE_POPOVER_CSS));
-    AddRulesToDefaultStyleSheets(popover_style_sheet_, NamespaceType::kHTML);
-    changed_default_style = true;
-  }
-
-  if (!selectmenu_style_sheet_ && IsA<HTMLSelectMenuElement>(element)) {
+  if (!selectlist_style_sheet_ && IsA<HTMLSelectListElement>(element)) {
     // TODO: We should assert that this sheet only contains rules for
-    // <selectmenu>.
-    DCHECK(RuntimeEnabledFeatures::HTMLSelectMenuElementEnabled());
-    selectmenu_style_sheet_ = ParseUASheet(
-        UncompressResourceAsASCIIString(IDR_UASTYLE_SELECTMENU_CSS));
-    AddRulesToDefaultStyleSheets(selectmenu_style_sheet_, NamespaceType::kHTML);
+    // <selectlist>.
+    CHECK(RuntimeEnabledFeatures::HTMLSelectListElementEnabled());
+    selectlist_style_sheet_ = ParseUASheet(
+        UncompressResourceAsASCIIString(IDR_UASTYLE_SELECTLIST_CSS));
+    AddRulesToDefaultStyleSheets(selectlist_style_sheet_, NamespaceType::kHTML);
     changed_default_style = true;
   }
 
@@ -362,7 +326,8 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
           FormControlsVerticalWritingModeSupportEnabled() &&
       !form_controls_not_vertical_style_sheet_ &&
       (IsA<HTMLProgressElement>(element) || IsA<HTMLMeterElement>(element) ||
-       IsA<HTMLInputElement>(element) || IsA<HTMLTextAreaElement>(element))) {
+       IsA<HTMLInputElement>(element) || IsA<HTMLTextAreaElement>(element) ||
+       IsA<HTMLButtonElement>(element) || IsA<HTMLSelectElement>(element))) {
     form_controls_not_vertical_style_sheet_ =
         ParseUASheet(UncompressResourceAsASCIIString(
             IDR_UASTYLE_FORM_CONTROLS_NOT_VERTICAL_CSS));
@@ -482,8 +447,7 @@ void CSSDefaultStyleSheets::Trace(Visitor* visitor) const {
   visitor->Trace(text_track_style_sheet_);
   visitor->Trace(forced_colors_style_sheet_);
   visitor->Trace(fullscreen_style_sheet_);
-  visitor->Trace(popover_style_sheet_);
-  visitor->Trace(selectmenu_style_sheet_);
+  visitor->Trace(selectlist_style_sheet_);
   visitor->Trace(marker_style_sheet_);
   visitor->Trace(form_controls_not_vertical_style_sheet_);
 }

@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/network/cellular_esim_installer.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
@@ -143,12 +144,25 @@ void CellularESimInstaller::InstallProfileFromActivationCode(
     base::Value::Dict new_shill_properties,
     InstallProfileFromActivationCodeCallback callback,
     bool is_initial_install,
+    bool is_install_via_qr_code,
+    std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
+  DCHECK(inhibit_lock);
+  PerformInstallProfileFromActivationCode(
+      activation_code, confirmation_code, euicc_path,
+      std::move(new_shill_properties), is_initial_install,
+      is_install_via_qr_code,
+      CreateTimedInstallProfileCallback(std::move(callback)),
+      std::move(inhibit_lock));
+}
+
+void CellularESimInstaller::LockAndInstallProfileFromActivationCode(
+    const std::string& activation_code,
+    const std::string& confirmation_code,
+    const dbus::ObjectPath& euicc_path,
+    base::Value::Dict new_shill_properties,
+    InstallProfileFromActivationCodeCallback callback,
+    bool is_initial_install,
     bool is_install_via_qr_code) {
-  // Try installing directly with activation code.
-  // TODO(crbug.com/1186682) Add a check for activation codes that are
-  // currently being installed to prevent multiple attempts for the same
-  // activation code.
-  NET_LOG(USER) << "Attempting installation with code " << activation_code;
   cellular_inhibitor_->InhibitCellularScanning(
       CellularInhibitor::InhibitReason::kInstallingProfile,
       base::BindOnce(
@@ -179,6 +193,10 @@ void CellularESimInstaller::PerformInstallProfileFromActivationCode(
     return;
   }
 
+  // TODO(crbug.com/1186682) Add a check for activation codes that are currently
+  // being installed to prevent multiple attempts for the same activation code.
+  NET_LOG(USER) << "Attempting installation with code " << activation_code;
+
   HermesEuiccClient::Get()->InstallProfileFromActivationCode(
       euicc_path, activation_code, confirmation_code,
       base::BindOnce(&CellularESimInstaller::OnProfileInstallResult,
@@ -196,8 +214,9 @@ void CellularESimInstaller::OnProfileInstallResult(
     bool is_initial_install,
     bool is_install_via_qr_code,
     HermesResponseStatus status,
+    dbus::DBusResult dbusResult,
     const dbus::ObjectPath* profile_path) {
-  hermes_metrics::LogInstallViaQrCodeResult(status);
+  hermes_metrics::LogInstallViaQrCodeResult(status, dbusResult);
 
   bool is_managed = IsManagedNetwork(new_shill_properties);
   if (status != HermesResponseStatus::kSuccess) {
@@ -226,8 +245,8 @@ void CellularESimInstaller::ConfigureESimService(
     const dbus::ObjectPath& profile_path,
     ConfigureESimServiceCallback callback) {
   const NetworkProfile* profile =
-      network_profile_handler_->GetProfileForUserhash(
-          /*userhash=*/std::string());
+      cellular_utils::GetCellularProfile(network_profile_handler_);
+
   if (!profile) {
     NET_LOG(ERROR)
         << "Error configuring eSIM profile. Default profile not initialized.";
@@ -342,10 +361,19 @@ void CellularESimInstaller::HandleNewProfileEnableFailure(
   NET_LOG(ERROR) << "Error enabling newly created profile path="
                  << profile_path.value() << ", service path=" << service_path
                  << ", error_name=" << error_name;
-
-  std::move(callback).Run(HermesResponseStatus::kErrorWrongState,
-                          /*profile_path=*/absl::nullopt,
-                          /*service_path=*/absl::nullopt);
+  if (ash::features::IsSmdsSupportEuiccUploadEnabled()) {
+    // Propagate |profile_path| and |service_path| so that the code that
+    // initiated the installation can handle the case where the profile was
+    // successfully installed, but the installation process failed for some
+    // other reason e.g. failed to enable the profile.
+    std::move(callback).Run(HermesResponseStatus::kErrorWrongState,
+                            /*profile_path=*/profile_path,
+                            /*service_path=*/service_path);
+  } else {
+    std::move(callback).Run(HermesResponseStatus::kErrorWrongState,
+                            /*profile_path=*/absl::nullopt,
+                            /*service_path=*/absl::nullopt);
+  }
 }
 
 }  // namespace ash

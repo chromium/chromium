@@ -160,6 +160,7 @@
   #contactList {
     border-top: var(--cr-separator-line);
     padding-block-start: 8px;
+    padding-right: 12px;
   }
 
   #contactsHeading {
@@ -223,14 +224,46 @@
     flex: 1;
     justify-content: space-between;
   }
+
+  #nearbyVisibilityAllContactsToggle {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    justify-content: space-between;
+    margin-block-end: 8px;
+    margin-block-start: 8px;
+  }
 </style>
 <div id="main">
 
   <cr-radio-group id="visibilityRadioGroup"
       disabled="[[disableRadioGroup_(contactsState)]]"
       selected="{{selectedVisibility}}">
+    <template is="dom-if" if="[[showSelfShareUi_(isSelfShareEnabled_)]]">
+    <cr-card-radio-button id="contacts" class="flex" name="contacts"
+        aria-labelledby="contactsLabel" aria-describedby="explanation">
+      <div class="card-contents">
+        <iron-icon icon="nearby20:contact-all" class="card-icon">
+        </iron-icon>
+        <div id="contactsLabel" class="card-label" aria-hidden="true">
+          $i18n{nearbyShareContactVisiblityContactsButton}
+        </div>
+      </div>
+    </cr-card-radio-button>
+    <cr-card-radio-button id="yourDevices" class="flex" name="yourDevices"
+        aria-labelledby="yourDevicesLabel" aria-describedby="explanation">
+      <div class="card-contents">
+        <iron-icon icon="nearby20:your-devices" class="card-icon">
+        </iron-icon>
+        <div id="yourDevicesLabel" class="card-label" aria-hidden="true">
+          $i18n{nearbyShareContactVisibilityYourDevices}
+        </div>
+      </div>
+    </cr-card-radio-button>
+  </template>
+  <template is="dom-if" if="[[!showSelfShareUi_(isSelfShareEnabled_)]]">
     <cr-card-radio-button id="allContacts" class="flex" name="all"
-        aria-labelledby="allContactsLabel">
+        aria-labelledby="allContactsLabel" aria-describedby="explanation">
       <div class="card-contents">
         <iron-icon icon="nearby20:contact-all" class="card-icon">
         </iron-icon>
@@ -240,7 +273,7 @@
       </div>
     </cr-card-radio-button>
     <cr-card-radio-button id="someContacts" class="flex" name="some"
-        aria-labelledby="someContactsLabel">
+        aria-labelledby="someContactsLabel" aria-describedby="explanation">
       <div class="card-contents">
         <iron-icon icon="nearby20:contact-group" class="card-icon">
         </iron-icon>
@@ -249,8 +282,9 @@
         </div>
       </div>
     </cr-card-radio-button>
+  </template>
     <cr-card-radio-button id="noContacts" class="flex" name="none"
-        aria-labelledby="noContactsLabel">
+        aria-labelledby="noContactsLabel" aria-describedby="explanation">
       <div class="card-contents">
         <iron-icon icon="nearby20:visibility-off" class="card-icon">
         </iron-icon>
@@ -327,7 +361,7 @@
               contactsState)]]">
         <div id="explanation">
           <div class="cr-secondary-text"
-              inner-h-t-m-l="[[getVisibilityDescription_(selectedVisibility)]]">
+              inner-h-t-m-l="[[getVisibilityDescription_(selectedVisibility, isSelectedContactsToggledOn_, profileEmail)]]">
           </div>
         </div>
       </template>
@@ -337,6 +371,19 @@
           if="[[showContactList_(selectedVisibility,
               contactsState)]]">
         <div id="contactList">
+          <!-- All Contacts toggle is shown only if the Contacts tab is selected and Self Share is enabled -->
+          <template is="dom-if" if="[[showAllContactsToggle_(selectedVisibility, contactsState)]]">
+            <div id="nearbyVisibilityAllContactsToggle">
+              <div id="nearbyVisibilityAllContactsToggleTitle">
+                Visible to all contacts
+              </div>
+              <cr-toggle id="AllContactsToggle"
+                checked="[[isAllContactsToggledOn_]]"
+                on-change="toggleAllContacts_"
+                aria-describedby="nearbyVisibilityAllContactsToggleTitle">
+              </cr-toggle>
+            </div>
+          </template>
           <template is="dom-if"
               if="[[showUnreachableContactsMessage_(
                   numUnreachable_)]]">
@@ -372,13 +419,11 @@
                   </div>
                 </div>
                 <template is="dom-if"
-                    if="[[showContactCheckBoxes_(selectedVisibility)]]">
+                    if="[[showContactCheckBoxes_(isAllContactsToggledOn_, selectedVisibility)]]">
                   <cr-toggle class="contact-toggle"
                       checked="{{item.checked}}"
                       aria-labelledby$="contact-name-[[itemsIndex]]"
-                      aria-describedby$="contact-description-[[itemsIndex]]"
-                      disabled="[[!isVisibility_(
-                                selectedVisibility,'some')]]">
+                      aria-describedby$="contact-description-[[itemsIndex]]">
                   </cr-toggle>
                 </template>
               </div>

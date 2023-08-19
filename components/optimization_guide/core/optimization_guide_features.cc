@@ -4,6 +4,8 @@
 
 #include "components/optimization_guide/core/optimization_guide_features.h"
 
+#include <cstring>
+
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -18,6 +20,7 @@
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
+#include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/variations/hashing.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/url_util.h"
@@ -138,6 +141,10 @@ BASE_FEATURE(kPageEntitiesPageContentAnnotations,
 BASE_FEATURE(kPageVisibilityPageContentAnnotations,
              "PageVisibilityPageContentAnnotations",
              base::FEATURE_ENABLED_BY_DEFAULT);
+// Enables the text embedding model to be annotated on every page load.
+BASE_FEATURE(kTextEmbeddingPageContentAnnotations,
+             "TextEmbeddingPageContentAnnotations",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // This feature flag does not allow for the entities model to load the name and
 // prefix filters.
@@ -169,6 +176,10 @@ BASE_FEATURE(kOptimizationGuideMetadataValidation,
 BASE_FEATURE(kPageVisibilityBatchAnnotations,
              "PageVisibilityBatchAnnotations",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTextEmbeddingBatchAnnotations,
+             "TextEmbeddingBatchAnnotations",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPageContentAnnotationsValidation,
              "PageContentAnnotationsValidation",
@@ -208,6 +219,12 @@ BASE_FEATURE(kPageContentAnnotationsPersistSalientImageMetadata,
              "PageContentAnnotationsPersistSalientImageMetadata",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Killswitch for fetching on search results from a remote Optimization Guide
+// Service.
+BASE_FEATURE(kOptimizationGuideFetchingForSRP,
+             "OptimizationHintsFetchingSRP",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables the model store to save relative paths computed from the base model
 // store dir. Storing as relative path in the model store is needed for IOS,
 // since the directories could change after Chrome upgrade. This feature is
@@ -220,6 +237,29 @@ BASE_FEATURE(kModelStoreUseRelativePath,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
+
+// Enables fetching personalized metadata from Optimization Guide Service.
+BASE_FEATURE(kOptimizationGuidePersonalizedFetching,
+             "OptimizationPersonalizedHintsFetching",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Whether to resolve all URLs (minus fragments) to the same URL.
+BASE_FEATURE(kOptimizationGuideHintsURLKeyedCacheDropFragments,
+             "OptimizationGuideHintsURLKeyedCacheDropFragments",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables text embeddings to annotated on every page visit and later queried.
+BASE_FEATURE(kQueryInMemoryTextEmbeddings,
+             "QueryInMemoryTextEmbeddings",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// An emergency kill switch feature to stop serving certain model versions per
+// optimization target. This is useful in exceptional situations when a bad
+// model version got served that lead to crashes or critical failures, and an
+// immediate remedy is needed to stop serving those versions.
+BASE_FEATURE(kOptimizationGuidePredictionModelKillswitch,
+             "OptimizationGuidePredictionModelKillswitch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // The default value here is a bit of a guess.
 // TODO(crbug/1163244): This should be tuned once metrics are available.
@@ -236,6 +276,14 @@ bool ShouldBatchUpdateHintsForActiveTabsAndTopHosts() {
                                              enabled_by_default_mobile_only);
   }
   return false;
+}
+
+size_t MaxResultsForSRPFetch() {
+  static int max_urls = GetFieldTrialParamByFeatureAsInt(
+      kOptimizationGuideFetchingForSRP, "max_urls_for_srp_fetch",
+      // Default to match overall max.
+      MaxUrlsForOptimizationGuideServiceHintsFetch());
+  return max_urls;
 }
 
 size_t MaxHostsForOptimizationGuideServiceHintsFetch() {
@@ -320,6 +368,10 @@ bool IsOptimizationHintsEnabled() {
 
 bool IsRemoteFetchingEnabled() {
   return base::FeatureList::IsEnabled(kRemoteOptimizationGuideFetching);
+}
+
+bool IsSRPFetchingEnabled() {
+  return base::FeatureList::IsEnabled(kOptimizationGuideFetchingForSRP);
 }
 
 bool IsPushNotificationsEnabled() {
@@ -411,6 +463,12 @@ base::TimeDelta URLKeyedHintValidCacheDuration() {
       60 * 60 /* 1 hour */));
 }
 
+base::TimeDelta PCAServiceWaitForTitleDelayDuration() {
+  return base::Milliseconds(GetFieldTrialParamByFeatureAsInt(
+      kPageContentAnnotations,
+      "pca_service_wait_for_title_delay_in_milliseconds", 5000));
+}
+
 size_t MaxHostsForOptimizationGuideServiceModelsFetch() {
   return GetFieldTrialParamByFeatureAsInt(
       kOptimizationTargetPrediction,
@@ -439,6 +497,38 @@ size_t MaxURLKeyedHintCacheSize() {
 bool ShouldPersistHintsToDisk() {
   return GetFieldTrialParamByFeatureAsBool(kOptimizationHints,
                                            "persist_hints_to_disk", true);
+}
+
+bool EnabledPersonalizedMetadata(proto::RequestContext request_context) {
+  if (!base::FeatureList::IsEnabled(kOptimizationGuidePersonalizedFetching)) {
+    return false;
+  }
+
+  static const base::flat_set<std::string> contexts =
+      []() -> base::flat_set<std::string> {
+    if (base::FeatureList::IsEnabled(kOptimizationGuidePersonalizedFetching)) {
+      std::string param = base::GetFieldTrialParamValueByFeature(
+          kOptimizationGuidePersonalizedFetching, "allowed_contexts");
+      std::vector<std::string> allowed_contexts = base::SplitString(
+          param, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+      return base::flat_set<std::string>(allowed_contexts);
+    }
+    return {};
+  }();
+
+  return base::Contains(contexts, proto::RequestContext_Name(request_context));
+}
+
+base::flat_set<std::string> OAuthScopesForPersonalizedMetadata() {
+  if (base::FeatureList::IsEnabled(kOptimizationGuidePersonalizedFetching)) {
+    std::string param = base::GetFieldTrialParamValueByFeature(
+        kOptimizationGuidePersonalizedFetching, "oauth_scopes");
+    std::vector<std::string> scopes = base::SplitString(
+        param, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    return base::flat_set<std::string>(scopes);
+  };
+
+  return {};
 }
 
 bool ShouldOverrideOptimizationTargetDecisionForMetricsPurposes(
@@ -473,6 +563,18 @@ base::TimeDelta PredictionModelFetchStartupDelay() {
 base::TimeDelta PredictionModelFetchInterval() {
   return base::Hours(GetFieldTrialParamByFeatureAsInt(
       kOptimizationTargetPrediction, "fetch_interval_hours", 24));
+}
+
+bool IsPredictionModelNewRegistrationFetchEnabled() {
+  return GetFieldTrialParamByFeatureAsBool(
+      kOptimizationGuideInstallWideModelStore, "new_registration_fetch_enabled",
+      true);
+}
+
+base::TimeDelta PredictionModelNewRegistrationFetchDelay() {
+  return base::Seconds(GetFieldTrialParamByFeatureAsInt(
+      kOptimizationGuideInstallWideModelStore,
+      "new_registration_fetch_delay_secs", 30));
 }
 
 bool IsModelExecutionWatchdogEnabled() {
@@ -535,6 +637,13 @@ bool ShouldExecutePageVisibilityModelOnPageContent(const std::string& locale) {
                                      /*default_value=*/"en");
 }
 
+bool ShouldExecuteTextEmbeddingModelOnPageContent(const std::string& locale) {
+  return (base::FeatureList::IsEnabled(kTextEmbeddingPageContentAnnotations) ||
+          TextEmbeddingBatchAnnotationsEnabled()) &&
+         IsSupportedLocaleForFeature(locale,
+                                     kTextEmbeddingPageContentAnnotations);
+}
+
 bool RemotePageMetadataEnabled() {
   return base::FeatureList::IsEnabled(kRemotePageMetadata);
 }
@@ -585,6 +694,10 @@ bool PageVisibilityBatchAnnotationsEnabled() {
   return base::FeatureList::IsEnabled(kPageVisibilityBatchAnnotations);
 }
 
+bool TextEmbeddingBatchAnnotationsEnabled() {
+  return base::FeatureList::IsEnabled(kTextEmbeddingBatchAnnotations);
+}
+
 size_t AnnotateVisitBatchSize() {
   return std::max(
       1, GetFieldTrialParamByFeatureAsInt(kPageContentAnnotations,
@@ -608,6 +721,9 @@ bool PageContentAnnotationValidationEnabledForType(AnnotationType type) {
     case AnnotationType::kContentVisibility:
       return cmd->HasSwitch(
           switches::kPageContentAnnotationsValidationContentVisibility);
+    case AnnotationType::kTextEmbedding:
+      return cmd->HasSwitch(
+          switches::kPageContentAnnotationsValidationTextEmbedding);
     default:
       NOTREACHED();
       break;
@@ -671,6 +787,47 @@ bool IsInstallWideModelStoreEnabled() {
 bool ShouldPersistSalientImageMetadata() {
   return base::FeatureList::IsEnabled(
       kPageContentAnnotationsPersistSalientImageMetadata);
+}
+
+bool ShouldDropFragmentsForURLKeyedHintCacheKey() {
+  return base::FeatureList::IsEnabled(
+      kOptimizationGuideHintsURLKeyedCacheDropFragments);
+}
+
+bool ShouldQueryEmbeddings() {
+  return (base::FeatureList::IsEnabled(kQueryInMemoryTextEmbeddings));
+}
+
+std::map<proto::OptimizationTarget, std::set<int64_t>>
+GetPredictionModelVersionsInKillSwitch() {
+  if (!base::FeatureList::IsEnabled(
+          kOptimizationGuidePredictionModelKillswitch)) {
+    return {};
+  }
+  base::FieldTrialParams killswitch_params;
+  if (!GetFieldTrialParamsByFeature(kOptimizationGuidePredictionModelKillswitch,
+                                    &killswitch_params)) {
+    return {};
+  }
+  std::map<proto::OptimizationTarget, std::set<int64_t>>
+      killswitch_model_versions;
+  for (const auto& killswitch_param : killswitch_params) {
+    proto::OptimizationTarget opt_target;
+    if (!proto::OptimizationTarget_Parse(killswitch_param.first, &opt_target)) {
+      continue;
+    }
+    for (const std::string& opt_taget_killswitch_version :
+         base::SplitString(killswitch_param.second, ",", base::TRIM_WHITESPACE,
+                           base::SPLIT_WANT_NONEMPTY)) {
+      int64_t opt_taget_killswitch_version_num;
+      if (base::StringToInt64(opt_taget_killswitch_version,
+                              &opt_taget_killswitch_version_num)) {
+        killswitch_model_versions[opt_target].insert(
+            opt_taget_killswitch_version_num);
+      }
+    }
+  }
+  return killswitch_model_versions;
 }
 
 }  // namespace features

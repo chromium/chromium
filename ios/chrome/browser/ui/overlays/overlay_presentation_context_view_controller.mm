@@ -4,12 +4,8 @@
 
 #import "ios/chrome/browser/ui/overlays/overlay_presentation_context_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/ui/overlays/overlay_presentation_controller.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 @interface OverlayPresentationContextViewController ()
 // The view used to lay out the presentation context.  The presentation context
@@ -48,7 +44,7 @@
   // The non-strict cast returns nil if the presented UIViewController does not
   // use an OverlayPresentationController.  This results in this selector
   // returning NO for these UIViewControllers.
-  return base::mac::ObjCCast<OverlayPresentationController>(
+  return base::apple::ObjCCast<OverlayPresentationController>(
              self.presentedViewController.presentationController)
       .resizesPresentationContainer;
 }

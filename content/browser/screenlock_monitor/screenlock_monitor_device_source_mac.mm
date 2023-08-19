@@ -35,13 +35,13 @@ void OnScreenlockNotificationReceived(CFNotificationCenterRef center,
 void ScreenlockMonitorDeviceSource::StartListeningForScreenlock() {
   CFNotificationCenterAddObserver(
       CFNotificationCenterGetDistributedCenter(), this,
-      &OnScreenlockNotificationReceived, kScreenLockedEvent, nullptr,
+      &OnScreenlockNotificationReceived, kScreenLockedEvent, /*object=*/nullptr,
       CFNotificationSuspensionBehaviorDeliverImmediately);
 
   CFNotificationCenterAddObserver(
       CFNotificationCenterGetDistributedCenter(), this,
-      &OnScreenlockNotificationReceived, kScreenUnlockedEvent, nullptr,
-      CFNotificationSuspensionBehaviorDeliverImmediately);
+      &OnScreenlockNotificationReceived, kScreenUnlockedEvent,
+      /*object=*/nullptr, CFNotificationSuspensionBehaviorDeliverImmediately);
 }
 
 void ScreenlockMonitorDeviceSource::StopListeningForScreenlock() {

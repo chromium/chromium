@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.suggestions;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -28,7 +26,6 @@ public class SuggestionsDependencyFactory {
         return sInstance;
     }
 
-    @VisibleForTesting
     public static void setInstanceForTesting(SuggestionsDependencyFactory testInstance) {
         if (sInstance != null && testInstance != null) {
             throw new IllegalStateException("A real instance already exists.");

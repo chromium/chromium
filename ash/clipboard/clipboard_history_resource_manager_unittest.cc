@@ -9,7 +9,9 @@
 #include "ash/clipboard/clipboard_history.h"
 #include "ash/clipboard/clipboard_history_controller_impl.h"
 #include "ash/clipboard/clipboard_history_item.h"
+#include "ash/clipboard/clipboard_history_url_title_fetcher.h"
 #include "ash/clipboard/clipboard_history_util.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/clipboard_image_model_factory.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -18,7 +20,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/test/repeating_test_future.h"
+#include "base/test/gmock_callback_support.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -28,6 +33,37 @@
 namespace ash {
 
 namespace {
+
+using ::testing::_;
+using ::testing::Bool;
+using ::testing::StrictMock;
+using ::testing::WithArg;
+using ::testing::WithParamInterface;
+
+class MockClipboardImageModelFactory : public ClipboardImageModelFactory {
+ public:
+  MOCK_METHOD(void,
+              Render,
+              (const base::UnguessableToken&,
+               const std::string&,
+               const gfx::Size&,
+               ImageModelCallback),
+              (override));
+  MOCK_METHOD(void, CancelRequest, (const base::UnguessableToken&), (override));
+  MOCK_METHOD(void, Activate, (), (override));
+  MOCK_METHOD(void, Deactivate, (), (override));
+  MOCK_METHOD(void, RenderCurrentPendingRequests, (), (override));
+  void OnShutdown() override {}
+};
+
+class MockClipboardHistoryUrlTitleFetcher
+    : public ClipboardHistoryUrlTitleFetcher {
+ public:
+  MOCK_METHOD(void,
+              QueryHistory,
+              (const GURL& url, OnHistoryQueryCompleteCallback callback),
+              (override));
+};
 
 void FlushMessageLoop() {
   base::RunLoop run_loop;
@@ -55,29 +91,6 @@ ui::ImageModel GetRandomImageModel() {
 
 // Tests -----------------------------------------------------------------------
 
-class MockClipboardImageModelFactory : public ClipboardImageModelFactory {
- public:
-  MockClipboardImageModelFactory() = default;
-  MockClipboardImageModelFactory(const MockClipboardImageModelFactory&) =
-      delete;
-  MockClipboardImageModelFactory& operator=(
-      const MockClipboardImageModelFactory&) = delete;
-  ~MockClipboardImageModelFactory() override = default;
-
-  MOCK_METHOD(void,
-              Render,
-              (const base::UnguessableToken&,
-               const std::string&,
-               const gfx::Size&,
-               ImageModelCallback),
-              (override));
-  MOCK_METHOD(void, CancelRequest, (const base::UnguessableToken&), (override));
-  MOCK_METHOD(void, Activate, (), (override));
-  MOCK_METHOD(void, Deactivate, (), (override));
-  MOCK_METHOD(void, RenderCurrentPendingRequests, (), (override));
-  void OnShutdown() override {}
-};
-
 class ClipboardHistoryResourceManagerTest : public AshTestBase {
  public:
   ClipboardHistoryResourceManagerTest()
@@ -88,6 +101,7 @@ class ClipboardHistoryResourceManagerTest : public AshTestBase {
       const ClipboardHistoryResourceManagerTest&) = delete;
   ~ClipboardHistoryResourceManagerTest() override = default;
 
+  // AshTestBase::
   void SetUp() override {
     AshTestBase::SetUp();
     clipboard_history_ =
@@ -95,7 +109,7 @@ class ClipboardHistoryResourceManagerTest : public AshTestBase {
     resource_manager_ =
         Shell::Get()->clipboard_history_controller()->resource_manager();
     mock_image_factory_ =
-        std::make_unique<testing::StrictMock<MockClipboardImageModelFactory>>();
+        std::make_unique<StrictMock<MockClipboardImageModelFactory>>();
   }
 
   const ClipboardHistory* clipboard_history() const {
@@ -111,8 +125,10 @@ class ClipboardHistoryResourceManagerTest : public AshTestBase {
   }
 
  private:
-  raw_ptr<const ClipboardHistory, ExperimentalAsh> clipboard_history_;
-  raw_ptr<const ClipboardHistoryResourceManager, ExperimentalAsh>
+  raw_ptr<const ClipboardHistory, DanglingUntriaged | ExperimentalAsh>
+      clipboard_history_;
+  raw_ptr<const ClipboardHistoryResourceManager,
+          DanglingUntriaged | ExperimentalAsh>
       resource_manager_;
   std::unique_ptr<MockClipboardImageModelFactory> mock_image_factory_;
 };
@@ -121,7 +137,7 @@ class ClipboardHistoryResourceManagerTest : public AshTestBase {
 TEST_F(ClipboardHistoryResourceManagerTest, BasicImgCachedImageModel) {
   ui::ImageModel expected_image_model = GetRandomImageModel();
   ON_CALL(*mock_image_factory(), Render)
-      .WillByDefault(testing::WithArg<3>(
+      .WillByDefault(WithArg<3>(
           [&](ClipboardImageModelFactory::ImageModelCallback callback) {
             std::move(callback).Run(expected_image_model);
           }));
@@ -145,7 +161,7 @@ TEST_F(ClipboardHistoryResourceManagerTest, BasicImgCachedImageModel) {
 TEST_F(ClipboardHistoryResourceManagerTest, BasicTableCachedImageModel) {
   ui::ImageModel expected_image_model = GetRandomImageModel();
   ON_CALL(*mock_image_factory(), Render)
-      .WillByDefault(testing::WithArg<3>(
+      .WillByDefault(WithArg<3>(
           [&](ClipboardImageModelFactory::ImageModelCallback callback) {
             std::move(callback).Run(expected_image_model);
           }));
@@ -170,7 +186,7 @@ TEST_F(ClipboardHistoryResourceManagerTest, BasicTableCachedImageModel) {
 TEST_F(ClipboardHistoryResourceManagerTest, BasicIneligibleCachedImageModel) {
   ui::ImageModel expected_image_model = GetRandomImageModel();
   ON_CALL(*mock_image_factory(), Render)
-      .WillByDefault(testing::WithArg<3>(
+      .WillByDefault(WithArg<3>(
           [&](ClipboardImageModelFactory::ImageModelCallback callback) {
             std::move(callback).Run(expected_image_model);
           }));
@@ -194,7 +210,7 @@ TEST_F(ClipboardHistoryResourceManagerTest, BasicIneligibleCachedImageModel) {
 TEST_F(ClipboardHistoryResourceManagerTest, DuplicateHTML) {
   ui::ImageModel expected_image_model = GetRandomImageModel();
   ON_CALL(*mock_image_factory(), Render)
-      .WillByDefault(testing::WithArg<3>(
+      .WillByDefault(WithArg<3>(
           [&](ClipboardImageModelFactory::ImageModelCallback callback) {
             std::move(callback).Run(expected_image_model);
           }));
@@ -234,7 +250,7 @@ TEST_F(ClipboardHistoryResourceManagerTest, DifferentHTML) {
   std::deque<ui::ImageModel> expected_image_models{first_expected_image_model,
                                                    second_expected_image_model};
   ON_CALL(*mock_image_factory(), Render)
-      .WillByDefault(testing::WithArg<3>(
+      .WillByDefault(WithArg<3>(
           [&](ClipboardImageModelFactory::ImageModelCallback callback) {
             std::move(callback).Run(expected_image_models.front());
             expected_image_models.pop_front();
@@ -309,7 +325,7 @@ TEST_F(ClipboardHistoryResourceManagerTest, PlaceholderDuringRender) {
   constexpr const auto kRenderDelay = base::Seconds(1);
   ui::ImageModel expected_image_model = GetRandomImageModel();
   ON_CALL(*mock_image_factory(), Render)
-      .WillByDefault(testing::WithArg<3>(
+      .WillByDefault(WithArg<3>(
           [&](ClipboardImageModelFactory::ImageModelCallback callback) {
             // Delay the processing of the rendered image until after the
             // clipboard history item has been created.
@@ -321,11 +337,11 @@ TEST_F(ClipboardHistoryResourceManagerTest, PlaceholderDuringRender) {
   EXPECT_CALL(*mock_image_factory(), CancelRequest).Times(0);
   EXPECT_CALL(*mock_image_factory(), Render).Times(1);
 
-  base::test::RepeatingTestFuture<bool> operation_confirmed_future_;
+  base::test::TestFuture<bool> operation_confirmed_future_;
   Shell::Get()
       ->clipboard_history_controller()
       ->set_confirmed_operation_callback_for_test(
-          operation_confirmed_future_.GetCallback());
+          operation_confirmed_future_.GetRepeatingCallback());
 
   {
     ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
@@ -354,6 +370,100 @@ TEST_F(ClipboardHistoryResourceManagerTest, PlaceholderDuringRender) {
   // cached in the clipboard history item.
   ASSERT_TRUE(item.display_image().has_value());
   EXPECT_EQ(item.display_image().value(), expected_image_model);
+}
+
+// Base class for `ClipboardHistoryMenuResourceManager` tests parameterized by
+// whether the clipboard history URL titles feature is enabled.
+class ClipboardHistoryResourceManagerUrlTitlesTest
+    : public ClipboardHistoryResourceManagerTest,
+      public WithParamInterface</*enable_url_titles=*/bool> {
+ public:
+  ClipboardHistoryResourceManagerUrlTitlesTest() {
+    scoped_feature_list_.InitWithFeatureStates(
+        {{chromeos::features::kClipboardHistoryRefresh,
+          IsClipboardHistoryUrlTitlesEnabled()},
+         {features::kClipboardHistoryUrlTitles,
+          IsClipboardHistoryUrlTitlesEnabled()},
+         {chromeos::features::kJelly, IsClipboardHistoryUrlTitlesEnabled()}});
+  }
+
+  // ClipboardHistoryResourceManagerTest:
+  void SetUp() override {
+    ClipboardHistoryResourceManagerTest::SetUp();
+    Shell::Get()
+        ->clipboard_history_controller()
+        ->set_confirmed_operation_callback_for_test(
+            operation_confirmed_future_.GetRepeatingCallback());
+  }
+
+  void WriteTextToClipboardAndConfirm(const std::u16string& str) {
+    EXPECT_FALSE(operation_confirmed_future_.IsReady());
+    {
+      ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
+      scw.WriteText(str);
+    }
+    EXPECT_TRUE(operation_confirmed_future_.Take());
+  }
+
+  bool IsClipboardHistoryUrlTitlesEnabled() const { return GetParam(); }
+
+  StrictMock<MockClipboardHistoryUrlTitleFetcher>& mock_url_title_fetcher() {
+    return mock_url_title_fetcher_;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  StrictMock<MockClipboardHistoryUrlTitleFetcher> mock_url_title_fetcher_;
+  base::test::TestFuture<bool> operation_confirmed_future_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ClipboardHistoryResourceManagerUrlTitlesTest,
+                         /*enable_url_titles=*/Bool());
+
+// Verifies the value of clipboard history text items' secondary display text
+// based on whether their display text is a URL, whether the URL title fetcher
+// finds a title for the URL, and what that title is.
+TEST_P(ClipboardHistoryResourceManagerUrlTitlesTest, SecondaryDisplayText) {
+  struct {
+    const std::u16string text;
+    const absl::optional<std::u16string> returned_title;
+    const absl::optional<std::u16string> expected_secondary_display_text;
+  } test_cases[]{
+      // Test that copying a visited URL sets the item's secondary display text
+      // with the page's title.
+      {u"https://visited.com", u"Title", u"Title"},
+      // Test that a visited URL's page title has its whitespace trimmed before
+      // being set as an item's secondary display text.
+      {u"https://visited.com", u" Title ", u"Title"},
+      // Test that a whitespace-only title is not treated as text an item should
+      // display.
+      {u"https://visited.com", u" ", absl::nullopt},
+      // Test that copying an unvisited URL triggers a history query but does
+      // not set the item's secondary display text.
+      {u"https://unvisited.com", absl::nullopt, absl::nullopt},
+      // Test that copying non-URL text does not trigger a history query or set
+      // the item's secondary display text.
+      {u"Not a URL", absl::nullopt, absl::nullopt},
+  };
+
+  for (const auto& [text, returned_title, expected_secondary_display_text] :
+       test_cases) {
+    const GURL url(text);
+    const bool should_fetch_title =
+        IsClipboardHistoryUrlTitlesEnabled() && url.is_valid();
+
+    EXPECT_CALL(mock_url_title_fetcher(), QueryHistory(url, _))
+        .Times(should_fetch_title ? 1 : 0)
+        .WillOnce(base::test::RunOnceCallback<1>(returned_title));
+
+    WriteTextToClipboardAndConfirm(text);
+    ASSERT_FALSE(clipboard_history()->IsEmpty());
+    const auto& item = clipboard_history()->GetItems().front();
+    EXPECT_EQ(
+        item.secondary_display_text(),
+        should_fetch_title ? expected_secondary_display_text : absl::nullopt);
+  }
 }
 
 }  // namespace ash

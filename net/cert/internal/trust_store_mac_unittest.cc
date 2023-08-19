@@ -379,16 +379,7 @@ TEST_P(TrustStoreMacImplTest, SystemCerts) {
         // Cert is only in the system domain. It should be untrusted.
         EXPECT_FALSE(is_trusted);
       } else {
-        bool trusted;
-        if (__builtin_available(macOS 10.14, *)) {
-          trusted = SecTrustEvaluateWithError(trust, nullptr);
-        } else {
-          SecTrustResultType trust_result;
-          ASSERT_EQ(noErr, SecTrustEvaluate(trust, &trust_result));
-          trusted = (trust_result == kSecTrustResultProceed) ||
-                    (trust_result == kSecTrustResultUnspecified);
-        }
-
+        bool trusted = SecTrustEvaluateWithError(trust, nullptr);
         bool expected_trust_anchor =
             trusted && (SecTrustGetCertificateCount(trust) == 1);
         EXPECT_EQ(expected_trust_anchor, is_trusted);

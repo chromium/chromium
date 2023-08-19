@@ -153,12 +153,17 @@ union GetDeskByIDResult {
 };
 
 // Implemented by lacros-chrome for consuming events.
+
+// next version: 2
+// next method id: 3
 [Stable]
 interface DeskEventObserver {
   // Fired when desk switch event dispatched.
   OnDeskSwitched@0(GUID new_desk_id, GUID previous_desk_id);
-  // Fired when desk add event dispatched.
-  OnDeskAdded@1(GUID new_desk_id);
+  // Fired when desk add event dispatched. If from_undo is true, sends event
+  // stating that desk is from removal retrieval. If false, sends event that
+  // desk is very newly being launched.
+  OnDeskAdded@1(GUID new_desk_id, [MinVersion=1] bool from_undo);
   // Fired when desk removal event dispatched.
   OnDeskRemoved@2(GUID removed_desk_id);
 };
@@ -166,6 +171,9 @@ interface DeskEventObserver {
 // Interface for desk operations. Implemented by ash-chrome. Used by
 // lacros-chrome to forward the desk operation to support wmDesksPrivate private
 // API.
+//
+// next version: 6
+// next method id: 13
 [Stable, Uuid="5fbc1ef6-3fb5-4553-a161-9f113370daf7"]
 interface Desk {
   // Launch an empty desk from ash. Returns the `desk_id` if the operation
@@ -173,10 +181,12 @@ interface Desk {
   LaunchEmptyDesk@0(string desk_name)
       => (LaunchEmptyDeskResult result);
 
-  // Remove a desk from ash, close all windows if `close_all` set to true,
-  // otherwise combine the windows to the active desk to the left. Returns
-  // `error` if the operation failed.
-  RemoveDesk@1(GUID desk_uuid, bool close_all) => (RemoveDeskResult result);
+  // Remove a desk from ash, close all windows if `combine_desk` set to false,
+  // otherwise combine the windows to the active desk to the left. Prompt
+  // user with notification to undo removal if `allow_undo` is set to true.
+  // Returns `error` if the operation failed.
+  RemoveDesk@1(GUID desk_uuid, bool combine_desk,
+      [MinVersion=5] bool? allow_undo) => (RemoveDeskResult result);
 
   // Gets the template associated with the templateUuid and returns its JSON
   // representation. Returns an error if either the template could not be

@@ -7,9 +7,9 @@
 #include <mach/port.h>
 #include <servers/bootstrap.h>
 
-#include "base/mac/foundation_util.h"
-#include "base/mac/mach_logging.h"
-#include "base/mac/scoped_mach_port.h"
+#include "base/apple/foundation_util.h"
+#include "base/apple/mach_logging.h"
+#include "base/apple/scoped_mach_port.h"
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
@@ -20,7 +20,7 @@ namespace {
 
 std::string GetBootstrapName(const std::string& name) {
   if (name.empty()) {
-    return base::StringPrintf("%s.mojo.%llu", base::mac::BaseBundleID(),
+    return base::StringPrintf("%s.mojo.%llu", base::apple::BaseBundleID(),
                               base::RandUint64());
   }
   return name;
@@ -36,10 +36,10 @@ PlatformChannelServerEndpoint NamedPlatformChannel::CreateServerEndpoint(
   DCHECK_LT(bootstrap_name.length(),
             static_cast<size_t>(BOOTSTRAP_MAX_NAME_LEN));
 
-  base::mac::ScopedMachReceiveRight receive_right;
+  base::apple::ScopedMachReceiveRight receive_right;
   kern_return_t kr = bootstrap_check_in(
       bootstrap_port, bootstrap_name.c_str(),
-      base::mac::ScopedMachReceiveRight::Receiver(receive_right).get());
+      base::apple::ScopedMachReceiveRight::Receiver(receive_right).get());
   if (kr != KERN_SUCCESS) {
     BOOTSTRAP_LOG(ERROR, kr) << "bootstrap_check_in " << bootstrap_name;
     return PlatformChannelServerEndpoint();
@@ -61,10 +61,10 @@ PlatformChannelServerEndpoint NamedPlatformChannel::CreateServerEndpoint(
 // static
 PlatformChannelEndpoint NamedPlatformChannel::CreateClientEndpoint(
     const Options& options) {
-  base::mac::ScopedMachSendRight send_right;
+  base::apple::ScopedMachSendRight send_right;
   kern_return_t kr = bootstrap_look_up(
       bootstrap_port, options.server_name.c_str(),
-      base::mac::ScopedMachSendRight::Receiver(send_right).get());
+      base::apple::ScopedMachSendRight::Receiver(send_right).get());
   if (kr != KERN_SUCCESS) {
     BOOTSTRAP_VLOG(1, kr) << "bootstrap_look_up " << options.server_name;
     return PlatformChannelEndpoint();

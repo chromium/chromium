@@ -54,9 +54,9 @@ namespace {
 constexpr base::TimeDelta kAutomaticRebootManagerInitTimeout =
     base::Seconds(60);
 
-// Blocks until |manager| is initialized and then sets |success_out| to true and
-// runs |quit_closure|. If initialization does not occur within |timeout|, sets
-// |success_out| to false and runs |quit_closure|.
+// Blocks until `manager` is initialized and then sets `success_out` to true and
+// runs `quit_closure`. If initialization does not occur within `timeout`, sets
+// `success_out` to false and runs `quit_closure`.
 void WaitForAutomaticRebootManagerInit(system::AutomaticRebootManager* manager,
                                        const base::TimeDelta& timeout,
                                        base::OnceClosure quit_closure,
@@ -90,8 +90,8 @@ class KioskAppUpdateServiceTest
         base::NumberToString(uptime.InSecondsF());
     const base::FilePath uptime_file = temp_dir.Append("uptime");
     ASSERT_TRUE(base::WriteFile(uptime_file, uptime_seconds));
-    uptime_file_override_ =
-        std::make_unique<base::ScopedPathOverride>(FILE_UPTIME, uptime_file);
+    uptime_file_override_ = std::make_unique<base::ScopedPathOverride>(
+        FILE_UPTIME, uptime_file, /*is_absolute=*/false, /*create=*/false);
   }
 
   void SetUpOnMainThread() override {
@@ -108,7 +108,7 @@ class KioskAppUpdateServiceTest
     automatic_reboot_manager_ =
         g_browser_process->platform_part()->automatic_reboot_manager();
 
-    // Wait for |automatic_reboot_manager_| to finish initializing.
+    // Wait for `automatic_reboot_manager_` to finish initializing.
     bool initialized = false;
     base::RunLoop run_loop;
     base::ThreadPool::PostTask(
@@ -165,9 +165,9 @@ class KioskAppUpdateServiceTest
   std::unique_ptr<base::ScopedPathOverride> uptime_file_override_;
   raw_ptr<const extensions::Extension, ExperimentalAsh> app_ =
       nullptr;  // Not owned.
-  raw_ptr<KioskAppUpdateService, ExperimentalAsh> update_service_ =
-      nullptr;  // Not owned.
-  raw_ptr<system::AutomaticRebootManager, ExperimentalAsh>
+  raw_ptr<KioskAppUpdateService, DanglingUntriaged | ExperimentalAsh>
+      update_service_ = nullptr;  // Not owned.
+  raw_ptr<system::AutomaticRebootManager, DanglingUntriaged | ExperimentalAsh>
       automatic_reboot_manager_ = nullptr;  // Not owned.
   std::unique_ptr<TestFuture<void>> test_waiter_;
 };

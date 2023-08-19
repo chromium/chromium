@@ -19,9 +19,9 @@ blink_python_runner("make_generated_permissions_policy_features") {
   inputs = scripts_for_json5_files + [
              "../renderer/build/scripts/make_permissions_policy_features.py",
              "../renderer/core/permissions_policy/permissions_policy_features.json5",
-             "../renderer/build/scripts/templates/permissions_policy_features.cc.tmpl",
+             "../renderer/build/scripts/templates/permissions_policy_features_generated.cc.tmpl",
            ]
-  outputs = [ "$root_gen_dir/third_party/blink/common/permissions_policy/permissions_policy_features.cc" ]
+  outputs = [ "$root_gen_dir/third_party/blink/common/permissions_policy/permissions_policy_features_generated.cc" ]
 
   args = [
     rebase_path(
@@ -261,10 +261,14 @@ source_set("common") {
     "permissions_policy/origin_with_possible_wildcards.cc",
     "permissions_policy/permissions_policy.cc",
     "permissions_policy/permissions_policy_declaration.cc",
+    "permissions_policy/permissions_policy_features.cc",
+    "permissions_policy/permissions_policy_features_generated.h",
     "permissions_policy/permissions_policy_mojom_traits.cc",
     "permissions_policy/policy_value.cc",
     "renderer_preferences/renderer_preferences.cc",
     "renderer_preferences/renderer_preferences_mojom_traits.cc",
+    "safe_url_pattern.cc",
+    "safe_url_pattern_mojom_traits.cc",
     "scheduler/web_scheduler_tracked_feature.cc",
     "scheme_registry.cc",
     "security/address_space_feature.cc",
@@ -282,8 +286,6 @@ source_set("common") {
     "switches.cc",
     "thread_safe_browser_interface_broker_proxy.cc",
     "unique_name/unique_name_helper.cc",
-    "url_pattern.cc",
-    "url_pattern_mojom_traits.cc",
     "use_counter/use_counter_feature.cc",
     "use_counter/use_counter_feature_tracker.cc",
     "user_agent/user_agent_metadata.cc",
@@ -337,7 +339,7 @@ source_set("common") {
     "//ui/latency/mojom:shared_mojom_traits",
   ]
 
-  if (build_rust_crash) {
+  if (enable_rust_crash) {
     deps += [ "//third_party/blink/common/rust_crash" ]
   }
 
@@ -382,11 +384,9 @@ test("blink_common_unittests") {
   if (is_ios) {
     bundle_deps = [ ":blink_common_unittests_pak_bundle_data" ]
   }
-
   if (is_fuchsia) {
-    # TODO(https://crbug.com/1185811): Investigate removing the requirement for
-    # job_policy_ambient_mark_vmo_exec for the sake of V8's allocator in tests.
-    test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
+    additional_manifest_fragments =
+        [ "//build/config/fuchsia/test/mark_vmo_executable.shard.test-cml" ]
   }
 
   data_deps = [ ":common_unittests_data" ]
@@ -441,6 +441,7 @@ source_set("common_unittests_sources") {
     "permissions_policy/policy_value_unittest.cc",
     "scheduler/web_scheduler_tracked_feature_unittest.cc",
     "security/address_space_feature_unittest.cc",
+    "service_worker/service_worker_router_rule_mojom_traits_unittest.cc",
     "service_worker/service_worker_scope_match_unittest.cc",
     "shared_storage/module_script_downloader_unittest.cc",
     "shared_storage/shared_storage_mojom_traits_unittest.cc",

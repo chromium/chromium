@@ -11,14 +11,15 @@ import {str, strf, util} from '../../../common/js/util.js';
 import {AllowedPaths} from '../../../common/js/volume_manager_types.js';
 import {BreadcrumbContainer} from '../../../containers/breadcrumb_container.js';
 import {CloudPanelContainer} from '../../../containers/cloud_panel_container.js';
+import {DirectoryTreeContainer} from '../../../containers/directory_tree_container.js';
 import {NudgeContainer} from '../../../containers/nudge_container.js';
 import {SearchContainer} from '../../../containers/search_container.js';
 import {VolumeManager} from '../../../externs/volume_manager.js';
 import {XfConflictDialog} from '../../../widgets/xf_conflict_dialog.js';
 import {XfDlpRestrictionDetailsDialog} from '../../../widgets/xf_dlp_restriction_details_dialog.js';
 import {XfSplitter} from '../../../widgets/xf_splitter.js';
+import {XfTree} from '../../../widgets/xf_tree.js';
 import {FilesPasswordDialog} from '../../elements/files_password_dialog.js';
-import {FilesTooltip} from '../../elements/files_tooltip.js';
 import {BannerController} from '../banner_controller.js';
 import {LaunchParam} from '../launch_param.js';
 import {ProvidersModel} from '../providers_model.js';
@@ -205,6 +206,9 @@ export class FileManagerUI {
      */
     this.breadcrumbContainer_ = null;
 
+    /** @type {?DirectoryTreeContainer} */
+    this.directoryTreeContainer = null;
+
     /**
      * The toolbar which contains controls.
      * @type {!HTMLElement}
@@ -217,7 +221,7 @@ export class FileManagerUI {
      * @type {!FilesTooltip}
      */
     this.filesTooltip =
-        assertInstanceof(document.querySelector('files-tooltip'), FilesTooltip);
+        /** @type {!FilesTooltip} */ (document.querySelector('files-tooltip'));
 
     /**
      * The actionbar which contains buttons to perform actions on selected
@@ -272,7 +276,7 @@ export class FileManagerUI {
 
     /**
      * Directory tree.
-     * @type {DirectoryTree}
+     * @type {DirectoryTree|XfTree}
      */
     this.directoryTree = null;
 
@@ -609,35 +613,52 @@ export class FileManagerUI {
 
   /**
    * TODO(hirono): Merge the method into initAdditionalUI.
-   * @param {!DirectoryTree} directoryTree
+   * @param {!(DirectoryTree|DirectoryTreeContainer)} directoryTree
+   *
+   * @suppress {checkTypes} closure can't cast Element to XfTree.
    */
   initDirectoryTree(directoryTree) {
-    this.directoryTree = directoryTree;
+    if (util.isFilesAppExperimental()) {
+      this.directoryTreeContainer =
+          /** @type {!DirectoryTreeContainer} */ (directoryTree);
+      this.directoryTree =
+          /** @type {!XfTree} */ (this.directoryTreeContainer.tree);
 
-    // Set up the context menu for the volume/shortcut items in directory tree.
-    this.directoryTree.contextMenuForRootItems =
-        queryDecoratedElement('#roots-context-menu', Menu);
-    this.directoryTree.contextMenuForSubitems =
-        queryDecoratedElement('#directory-tree-context-menu', Menu);
-    this.directoryTree.disabledContextMenu =
-        queryDecoratedElement('#disabled-context-menu', Menu);
+      this.directoryTreeContainer.contextMenuForRootItems =
+          queryDecoratedElement('#roots-context-menu', Menu);
+      this.directoryTreeContainer.contextMenuForSubitems =
+          queryDecoratedElement('#directory-tree-context-menu', Menu);
+      this.directoryTreeContainer.contextMenuForDisabledItems =
+          queryDecoratedElement('#disabled-context-menu', Menu);
+    } else {
+      this.directoryTree = /** @type {!DirectoryTree} */ (directoryTree);
 
-    // The context menu event that is created via keyboard navigation is
-    // dispatched to the `directoryTree` however the tree items actually have
-    // the context menu handlers. To ensure they receive the event, recompute
-    // their location and re-dispatch the "contextmenu" event to the item that
-    // is selected.
-    this.directoryTree.addEventListener('contextmenu', e => {
-      const selectedItem = this.directoryTree?.selectedItem?.rowElement;
-      if (!selectedItem) {
-        return;
-      }
-      const domRect = selectedItem.getBoundingClientRect();
-      const x = domRect.x + (domRect.width / 2);
-      const y = domRect.y + (domRect.height / 2);
-      this.directoryTree.selectedItem.dispatchEvent(
-          new PointerEvent(e.type, {...e, clientX: x, clientY: y}));
-    });
+      // Set up the context menu for the volume/shortcut items in directory
+      // tree.
+      this.directoryTree.contextMenuForRootItems =
+          queryDecoratedElement('#roots-context-menu', Menu);
+      this.directoryTree.contextMenuForSubitems =
+          queryDecoratedElement('#directory-tree-context-menu', Menu);
+      this.directoryTree.disabledContextMenu =
+          queryDecoratedElement('#disabled-context-menu', Menu);
+
+      // The context menu event that is created via keyboard navigation is
+      // dispatched to the `directoryTree` however the tree items actually have
+      // the context menu handlers. To ensure they receive the event, recompute
+      // their location and re-dispatch the "contextmenu" event to the item that
+      // is selected.
+      this.directoryTree.addEventListener('contextmenu', e => {
+        const selectedItem = this.directoryTree?.selectedItem?.rowElement;
+        if (!selectedItem) {
+          return;
+        }
+        const domRect = selectedItem.getBoundingClientRect();
+        const x = domRect.x + (domRect.width / 2);
+        const y = domRect.y + (domRect.height / 2);
+        this.directoryTree.selectedItem.dispatchEvent(
+            new PointerEvent(e.type, {...e, clientX: x, clientY: y}));
+      });
+    }
   }
 
   /**
@@ -680,7 +701,7 @@ export class FileManagerUI {
         ListContainer.ListType.UNINITIALIZED) {
       this.listContainer.currentView.relayout();
     }
-    if (this.directoryTree) {
+    if (!util.isFilesAppExperimental() && this.directoryTree) {
       this.directoryTree.relayout();
     }
   }

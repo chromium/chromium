@@ -8,10 +8,12 @@ import android.app.Activity;
 import android.content.Context;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+
+import java.util.Map;
 
 /**
  * Class that controls retrieving and displaying surveys. Clients should call #downloadSurvey() and
@@ -19,21 +21,22 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
  * {@link showSurveyIfAvailable()} to display the survey.
  */
 public class SurveyController {
-    private static SurveyController sInstance;
+    private static SurveyController sTestInstance;
 
     /**
      * @return The SurveyController to use during the lifetime of the browser process.
      */
-    public static SurveyController getInstance() {
-        if (sInstance == null) {
-            sInstance = AppHooks.get().createSurveyController();
+    public static SurveyController create() {
+        if (sTestInstance != null) {
+            return sTestInstance;
         }
-        return sInstance;
+        return AppHooks.get().createSurveyController();
     }
 
-    @VisibleForTesting
-    static void setInstanceForTesting(SurveyController testInstance) {
-        sInstance = testInstance;
+    /** Set the instance to use for survey related tests. Reset back to null after tests. */
+    public static void setInstanceForTesting(SurveyController testInstance) {
+        sTestInstance = testInstance;
+        ResettersForTesting.register(() -> sTestInstance = null);
     }
 
     /**
@@ -44,7 +47,7 @@ public class SurveyController {
      * @param onFailureRunnable The runnable to notify when downloading the survey failed, or the
      *                          survey does not exist.
      */
-    public void downloadSurvey(Context context, String triggerId, Runnable onSuccessRunnable,
+    protected void downloadSurvey(Context context, String triggerId, Runnable onSuccessRunnable,
             Runnable onFailureRunnable) {}
 
     /**
@@ -55,16 +58,36 @@ public class SurveyController {
      * @param displayLogoResId Optional resource id of the logo to be displayed on the survey.
      *                         Pass 0 for no logo.
      * @param lifecycleDispatcher LifecycleDispatcher that will dispatch different activity signals.
+     *
+     * @deprecated Use {@link #showSurveyIfAvailable(Activity, String, int,
+     *         ActivityLifecycleDispatcher, Map)} instead.
      */
-    public void showSurveyIfAvailable(Activity activity, String siteId, boolean showAsBottomSheet,
-            int displayLogoResId, @Nullable ActivityLifecycleDispatcher lifecycleDispatcher) {}
+    @Deprecated
+    protected void showSurveyIfAvailable(Activity activity, String siteId,
+            boolean showAsBottomSheet, int displayLogoResId,
+            @Nullable ActivityLifecycleDispatcher lifecycleDispatcher) {}
+
+    /**
+     * Show the survey.
+     * @param activity The client activity for the survey request.
+     * @param triggerId Id used to trigger the survey.
+     * @param displayLogoResId Optional resource id of the logo to be displayed on the survey.
+     *                         Pass 0 for no logo.
+     * @param lifecycleDispatcher LifecycleDispatcher that will dispatch different activity signals.
+     * @param psd key-value set of list of PSD attaching to the survey.
+     */
+    protected void showSurveyIfAvailable(Activity activity, String triggerId, int displayLogoResId,
+            @Nullable ActivityLifecycleDispatcher lifecycleDispatcher,
+            @Nullable Map<String, String> psd) {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Check if a survey is valid or expired.
      * @param triggerId  The ID used to fetch the data for the surveys.
      * @return true if the survey has expired, false if the survey is valid.
      */
-    public boolean isSurveyExpired(String triggerId) {
+    protected boolean isSurveyExpired(String triggerId) {
         return false;
     }
 }

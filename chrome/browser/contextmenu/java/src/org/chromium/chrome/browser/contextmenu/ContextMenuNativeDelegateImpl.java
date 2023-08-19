@@ -38,7 +38,6 @@ class ContextMenuNativeDelegateImpl implements ContextMenuNativeDelegate {
      *         faked.
      * @param hardcodedImageExtension The hard coded image extension.
      */
-    @VisibleForTesting
     public static void setHardcodedImageBytesForTesting(
             byte[] hardcodedImageBytes, String hardcodedImageExtension) {
         sHardcodedImageBytesForTesting = hardcodedImageBytes;

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "content/public/common/content_features.h"
 #include "content/shell/common/shell_switches.h"
@@ -25,6 +26,10 @@ ShellFederatedPermissionContext::GetApiPermissionStatus(
 
   if (embargoed_origins_.count(relying_party_embedder)) {
     return PermissionStatus::BLOCKED_EMBARGO;
+  }
+
+  if (third_party_cookies_blocked_) {
+    return PermissionStatus::BLOCKED_THIRD_PARTY_COOKIES_BLOCKED;
   }
 
   return PermissionStatus::GRANTED;
@@ -91,9 +96,10 @@ bool ShellFederatedPermissionContext::HasActiveSession(
     const url::Origin& relying_party_requester,
     const url::Origin& identity_provider,
     const std::string& account_identifier) {
-  return active_sessions_.find(std::tuple(
-             relying_party_requester.Serialize(), identity_provider.Serialize(),
-             account_identifier)) != active_sessions_.end();
+  return base::Contains(
+      active_sessions_,
+      std::tuple(relying_party_requester.Serialize(),
+                 identity_provider.Serialize(), account_identifier));
 }
 
 void ShellFederatedPermissionContext::GrantActiveSession(

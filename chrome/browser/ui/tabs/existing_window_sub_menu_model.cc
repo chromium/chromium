@@ -53,7 +53,7 @@ ExistingWindowSubMenuModel::ExistingWindowSubMenuModel(
                                TabStripModel::CommandMoveTabsToNewWindow) {
   Build(IDS_TAB_CXMENU_MOVETOANOTHERNEWWINDOW,
         BuildMenuItemInfoVectorForBrowsers(
-            tab_menu_model_delegate->GetExistingWindowsForMoveMenu()));
+            tab_menu_model_delegate->GetOtherTabbedBrowserWindows()));
 }
 
 ExistingWindowSubMenuModel::~ExistingWindowSubMenuModel() = default;

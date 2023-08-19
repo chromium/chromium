@@ -13,10 +13,7 @@
 #include "chrome/browser/mac/keystone_glue.h"
 #include "chrome/browser/updater/browser_updater_client_util.h"
 #include "chrome/common/chrome_features.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+#include "components/version_info/version_info.h"
 
 namespace {
 
@@ -24,6 +21,9 @@ InstalledAndCriticalVersion GetInstalledVersionSynchronous() {
   if (base::FeatureList::IsEnabled(features::kUseChromiumUpdater)) {
     return InstalledAndCriticalVersion(
         base::Version(CurrentlyInstalledVersion()));
+  }
+  if (!keystone_glue::KeystoneEnabled()) {
+    return InstalledAndCriticalVersion(version_info::GetVersion());
   }
   return InstalledAndCriticalVersion(base::Version(
       base::UTF16ToASCII(keystone_glue::CurrentlyInstalledVersion())));

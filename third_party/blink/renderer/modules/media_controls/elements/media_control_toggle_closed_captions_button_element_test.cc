@@ -71,7 +71,8 @@ TEST_F(MediaControlToggleClosedCaptionsButtonElementTest,
   EXPECT_EQ(String(), GetOverflowMenuSubtitleString());
 
   // After adding a text track, the subtitle string should be off.
-  MediaElement()->addTextTrack("subtitles", kEnglishLabel, "en",
+  MediaElement()->addTextTrack(AtomicString("subtitles"),
+                               AtomicString(kEnglishLabel), AtomicString("en"),
                                ASSERT_NO_EXCEPTION);
   EXPECT_EQ(kTextTracksOffString, GetOverflowMenuSubtitleString());
 

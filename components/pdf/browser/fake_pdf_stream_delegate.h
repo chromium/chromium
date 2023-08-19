@@ -22,10 +22,10 @@ class FakePdfStreamDelegate : public PdfStreamDelegate {
   ~FakePdfStreamDelegate() override;
 
   // `PdfStreamDelegate`:
-  absl::optional<GURL> MapToOriginalUrl(content::WebContents* contents,
-                                        const GURL& stream_url) override;
+  absl::optional<GURL> MapToOriginalUrl(
+      content::NavigationHandle& navigation_handle) override;
   absl::optional<StreamInfo> GetStreamInfo(
-      content::WebContents* contents) override;
+      content::RenderFrameHost* embedder_frame) override;
 
   void clear_stream_info() { stream_info_.reset(); }
 

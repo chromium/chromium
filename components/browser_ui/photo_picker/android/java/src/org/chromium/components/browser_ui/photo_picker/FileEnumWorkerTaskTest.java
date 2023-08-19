@@ -185,7 +185,6 @@ public class FileEnumWorkerTaskTest implements FileEnumWorkerTask.FilesEnumerate
 
     @After
     public void tearDown() {
-        ThreadUtils.setThreadAssertsDisabledForTesting(false);
         Assert.assertTrue(mRoboExecutorService.shutdownNow().isEmpty());
     }
 

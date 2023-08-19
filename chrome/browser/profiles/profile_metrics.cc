@@ -7,13 +7,11 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/files/file_path.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -22,12 +20,6 @@
 #include "components/keyed_service/core/keyed_service_factory.h"
 #include "components/keyed_service/core/refcounted_keyed_service_factory.h"
 #include "components/profile_metrics/counts.h"
-#include "components/signin/core/browser/signin_header_helper.h"
-#include "content/public/browser/browser_thread.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/browser_finder.h"
-#endif
 
 namespace {
 
@@ -36,33 +28,12 @@ constexpr base::TimeDelta kProfileActivityThreshold =
     base::Days(28);  // Should be integral number of weeks.
 #endif
 
-enum class ProfileType {
-  ORIGINAL = 0,  // Refers to the original/default profile
-  SECONDARY,     // Refers to a user-created profile
-  kMaxValue = SECONDARY
-};
-
 // Enum for getting net counts for adding and deleting users.
 enum class ProfileNetUserCounts {
   ADD_NEW_USER = 0,  // Total count of add new user
   PROFILE_DELETED,   // User deleted a profile
   kMaxValue = PROFILE_DELETED
 };
-
-ProfileType GetProfileType(const base::FilePath& profile_path) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  ProfileType metric = ProfileType::SECONDARY;
-  ProfileManager* manager = g_browser_process->profile_manager();
-  base::FilePath user_data_dir;
-  // In unittests, we do not always have a profile_manager so check.
-  if (manager) {
-    user_data_dir = manager->user_data_dir();
-  }
-  if (profile_path == user_data_dir.AppendASCII(chrome::kInitialProfile)) {
-    metric = ProfileType::ORIGINAL;
-  }
-  return metric;
-}
 
 int GetTotalKeyedServiceCount(Profile* profile) {
   return KeyedServiceFactory::GetServicesCount(profile) +
@@ -392,70 +363,11 @@ void ProfileMetrics::LogProfileDeleteUser(ProfileDelete metric) {
   }
 }
 
-void ProfileMetrics::LogProfileSwitchGaia(ProfileGaia metric) {
-  if (metric == GAIA_OPT_IN)
-    LogProfileAvatarSelection(SIZE_MAX);
-  base::UmaHistogramEnumeration("Profile.SwitchGaiaPhotoSettings", metric,
-                                NUM_PROFILE_GAIA_METRICS);
-}
-
-void ProfileMetrics::LogProfileSyncInfo(ProfileSync metric) {
-  DCHECK(metric < NUM_PROFILE_SYNC_METRICS);
-  base::UmaHistogramEnumeration("Profile.SyncCustomize", metric,
-                                NUM_PROFILE_SYNC_METRICS);
-}
-
-#if BUILDFLAG(IS_ANDROID)
-void ProfileMetrics::LogProfileAndroidAccountManagementMenu(
-    ProfileAndroidAccountManagementMenu metric,
-    signin::GAIAServiceType gaia_service) {
-  // The first parameter to the histogram needs to be literal, because of the
-  // optimized implementation of |base::UmaHistogramEnumeration|. Do not attempt
-  // to refactor.
-  switch (gaia_service) {
-    case signin::GAIA_SERVICE_TYPE_NONE:
-      base::UmaHistogramEnumeration(
-          "Profile.AndroidAccountManagementMenu.NonGAIA", metric,
-          NUM_PROFILE_ANDROID_ACCOUNT_MANAGEMENT_MENU_METRICS);
-      break;
-    case signin::GAIA_SERVICE_TYPE_SIGNOUT:
-      base::UmaHistogramEnumeration(
-          "Profile.AndroidAccountManagementMenu.GAIASignout", metric,
-          NUM_PROFILE_ANDROID_ACCOUNT_MANAGEMENT_MENU_METRICS);
-      break;
-    case signin::GAIA_SERVICE_TYPE_INCOGNITO:
-      base::UmaHistogramEnumeration(
-          "Profile.AndroidAccountManagementMenu.GAIASignoutIncognito", metric,
-          NUM_PROFILE_ANDROID_ACCOUNT_MANAGEMENT_MENU_METRICS);
-      break;
-    case signin::GAIA_SERVICE_TYPE_ADDSESSION:
-      base::UmaHistogramEnumeration(
-          "Profile.AndroidAccountManagementMenu.GAIAAddSession", metric,
-          NUM_PROFILE_ANDROID_ACCOUNT_MANAGEMENT_MENU_METRICS);
-      break;
-    case signin::GAIA_SERVICE_TYPE_SIGNUP:
-      base::UmaHistogramEnumeration(
-          "Profile.AndroidAccountManagementMenu.GAIASignup", metric,
-          NUM_PROFILE_ANDROID_ACCOUNT_MANAGEMENT_MENU_METRICS);
-      break;
-    case signin::GAIA_SERVICE_TYPE_DEFAULT:
-      base::UmaHistogramEnumeration(
-          "Profile.AndroidAccountManagementMenu.GAIADefault", metric,
-          NUM_PROFILE_ANDROID_ACCOUNT_MANAGEMENT_MENU_METRICS);
-      break;
-  }
-}
-#endif  // BUILDFLAG(IS_ANDROID)
-
 void ProfileMetrics::LogProfileLaunch(Profile* profile) {
   if (profile->IsChild()) {
     base::RecordAction(
         base::UserMetricsAction("ManagedMode_NewManagedUserWindow"));
   }
-}
-
-void ProfileMetrics::LogProfileUpdate(const base::FilePath& profile_path) {
-  base::UmaHistogramEnumeration("Profile.Update", GetProfileType(profile_path));
 }
 
 void ProfileMetrics::LogSystemProfileKeyedServicesCount(Profile* profile) {

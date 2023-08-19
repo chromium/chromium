@@ -73,7 +73,7 @@ struct SwapResponse {
   SwapTimings timings;
 };
 
-// Sent by GLImages to their GLImage::SwapCompletionCallbacks.
+// Sent as part of finishing a swap.
 struct GFX_EXPORT SwapCompletionResult {
   explicit SwapCompletionResult(gfx::SwapResult swap_result);
   SwapCompletionResult(gfx::SwapResult swap_result,

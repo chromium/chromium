@@ -38,6 +38,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
+#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
@@ -45,20 +46,20 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_database.h"
+#include "third_party/blink/renderer/modules/indexeddb/idb_factory_client.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key_path.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_metadata.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_object_store.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_open_db_request.h"
+#include "third_party/blink/renderer/modules/indexeddb/idb_request_queue_item.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_test_helper.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_transaction.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_value.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_value_wrapping.h"
 #include "third_party/blink/renderer/modules/indexeddb/mock_idb_database.h"
 #include "third_party/blink/renderer/modules/indexeddb/mock_idb_transaction.h"
-#include "third_party/blink/renderer/modules/indexeddb/web_idb_callbacks.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_database.h"
-#include "third_party/blink/renderer/modules/indexeddb/web_idb_transaction.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
@@ -128,8 +129,7 @@ class BackendDatabaseWithMockedClose
              int64_t object_store_id,
              int64_t index_id,
              mojom::blink::IDBKeyRangePtr key_range,
-             mojo::PendingAssociatedRemote<mojom::blink::IDBCallbacks>
-                 pending_callbacks) override {}
+             CountCallback callback) override {}
   void DeleteRange(int64_t transaction_id,
                    int64_t object_store_id,
                    mojom::blink::IDBKeyRangePtr key_range,
@@ -137,8 +137,7 @@ class BackendDatabaseWithMockedClose
   void GetKeyGeneratorCurrentNumber(
       int64_t transaction_id,
       int64_t object_store_id,
-      mojo::PendingAssociatedRemote<mojom::blink::IDBCallbacks>
-          pending_callbacks) override {}
+      GetKeyGeneratorCurrentNumberCallback callback) override {}
   void Clear(int64_t transaction_id,
              int64_t object_store_id,
              ClearCallback callback) override {}
@@ -181,23 +180,25 @@ class IDBRequestTest : public testing::Test {
 
   void BuildTransaction(V8TestingScope& scope,
                         MockIDBDatabase& mock_database,
-                        MockIDBTransaction& mock_transaction) {
+                        MockIDBTransaction& mock_transaction_remote) {
     auto database_backend = std::make_unique<WebIDBDatabase>(
         mock_database.BindNewEndpointAndPassDedicatedRemote(),
-        /*task_runner=*/nullptr);
+        blink::scheduler::GetSingleThreadTaskRunnerForTesting());
     db_ = MakeGarbageCollected<IDBDatabase>(
         scope.GetExecutionContext(), std::move(database_backend),
         mojo::NullAssociatedReceiver(), mojo::NullRemote());
 
-    auto transaction_backend = std::make_unique<WebIDBTransaction>(
-        /*task_runner=*/nullptr, kTransactionId);
-    auto transaction_receiver = transaction_backend->CreateReceiver();
-    transaction_receiver.EnableUnassociatedUsage();
-    mock_transaction.Bind(std::move(transaction_receiver));
+    auto* execution_context = scope.GetExecutionContext();
+    IDBTransaction::TransactionMojoRemote transaction_remote(execution_context);
+    mojo::PendingAssociatedReceiver<mojom::blink::IDBTransaction> receiver =
+        transaction_remote.BindNewEndpointAndPassReceiver(
+            blink::scheduler::GetSingleThreadTaskRunnerForTesting());
+    receiver.EnableUnassociatedUsage();
+    mock_transaction_remote.Bind(std::move(receiver));
 
     HashSet<String> transaction_scope = {"store"};
     transaction_ = IDBTransaction::CreateNonVersionChange(
-        scope.GetScriptState(), std::move(transaction_backend), kTransactionId,
+        scope.GetScriptState(), std::move(transaction_remote), kTransactionId,
         transaction_scope, mojom::IDBTransactionMode::ReadOnly,
         mojom::IDBTransactionDurability::Relaxed, db_.Get());
 
@@ -207,24 +208,28 @@ class IDBRequestTest : public testing::Test {
     store_ = MakeGarbageCollected<IDBObjectStore>(store_metadata, transaction_);
   }
 
-  void EnsureIDBCallbacksDontThrow(IDBRequest* request,
-                                   ExceptionState& exception_state) {
+  void EnsureRequestResponsesDontThrow(IDBRequest* request,
+                                       ExceptionState& exception_state) {
     ASSERT_TRUE(request->transaction());
     V8TestingScope scope;
 
-    request->HandleResponse(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kAbortError, "Description goes here."));
-    request->HandleResponse(nullptr, IDBKey::CreateInvalid(),
-                            IDBKey::CreateInvalid(),
-                            CreateNullIDBValueForTesting(scope.GetIsolate()));
     request->HandleResponse(IDBKey::CreateInvalid());
     request->HandleResponse(CreateNullIDBValueForTesting(scope.GetIsolate()));
     request->HandleResponse(static_cast<int64_t>(0));
     request->HandleResponse();
-    request->HandleResponse(IDBKey::CreateInvalid(), IDBKey::CreateInvalid(),
-                            CreateNullIDBValueForTesting(scope.GetIsolate()));
+    request->HandleResponseAdvanceCursor(
+        IDBKey::CreateInvalid(), IDBKey::CreateInvalid(),
+        CreateNullIDBValueForTesting(scope.GetIsolate()));
 
     EXPECT_TRUE(!exception_state.HadException());
+  }
+
+  void SimulateErrorResult(IDBRequest* request) {
+    request->HandleError(nullptr);
+  }
+
+  void FinishLoadingResult(IDBRequest* request) {
+    request->queue_item_->OnResultLoadComplete();
   }
 
   URLLoaderMockFactory* url_loader_mock_factory_;
@@ -259,8 +264,8 @@ TEST_F(IDBRequestTest, EventsAfterEarlyDeathStop) {
   ASSERT_TRUE(request->transaction());
   scope.GetExecutionContext()->NotifyContextDestroyed();
 
-  EnsureIDBCallbacksDontThrow(request, scope.GetExceptionState());
-  transaction_->transaction_backend()->FlushForTesting();
+  EnsureRequestResponsesDontThrow(request, scope.GetExceptionState());
+  transaction_->FlushForTesting();
   database_backend.Flush();
 }
 
@@ -278,13 +283,16 @@ TEST_F(IDBRequestTest, EventsAfterDoneStop) {
   IDBRequest* request =
       IDBRequest::Create(scope.GetScriptState(), store_.Get(),
                          transaction_.Get(), IDBRequest::AsyncTraceState());
+  // The transaction won't be ready until it sets itself to inactive.
+  scope.PerformMicrotaskCheckpoint();
+
   ASSERT_TRUE(!scope.GetExceptionState().HadException());
   ASSERT_TRUE(request->transaction());
   request->HandleResponse(CreateIDBValueForTesting(scope.GetIsolate(), false));
   scope.GetExecutionContext()->NotifyContextDestroyed();
 
-  EnsureIDBCallbacksDontThrow(request, scope.GetExceptionState());
-  transaction_->transaction_backend()->FlushForTesting();
+  EnsureRequestResponsesDontThrow(request, scope.GetExceptionState());
+  transaction_->FlushForTesting();
   database_backend.Flush();
 }
 
@@ -308,10 +316,10 @@ TEST_F(IDBRequestTest, EventsAfterEarlyDeathStopWithQueuedResult) {
   request->HandleResponse(CreateIDBValueForTesting(scope.GetIsolate(), true));
   scope.GetExecutionContext()->NotifyContextDestroyed();
 
-  EnsureIDBCallbacksDontThrow(request, scope.GetExceptionState());
+  EnsureRequestResponsesDontThrow(request, scope.GetExceptionState());
   url_loader_mock_factory_->ServeAsynchronousRequests();
-  EnsureIDBCallbacksDontThrow(request, scope.GetExceptionState());
-  transaction_->transaction_backend()->FlushForTesting();
+  EnsureRequestResponsesDontThrow(request, scope.GetExceptionState());
+  transaction_->FlushForTesting();
   database_backend.Flush();
 }
 
@@ -351,45 +359,72 @@ TEST_F(IDBRequestTest, MAYBE_EventsAfterEarlyDeathStopWithTwoQueuedResults) {
   request2->HandleResponse(CreateIDBValueForTesting(scope.GetIsolate(), true));
   scope.GetExecutionContext()->NotifyContextDestroyed();
 
-  EnsureIDBCallbacksDontThrow(request1, scope.GetExceptionState());
-  EnsureIDBCallbacksDontThrow(request2, scope.GetExceptionState());
+  EnsureRequestResponsesDontThrow(request1, scope.GetExceptionState());
+  EnsureRequestResponsesDontThrow(request2, scope.GetExceptionState());
   url_loader_mock_factory_->ServeAsynchronousRequests();
-  EnsureIDBCallbacksDontThrow(request1, scope.GetExceptionState());
-  EnsureIDBCallbacksDontThrow(request2, scope.GetExceptionState());
-  transaction_->transaction_backend()->FlushForTesting();
+  EnsureRequestResponsesDontThrow(request1, scope.GetExceptionState());
+  EnsureRequestResponsesDontThrow(request2, scope.GetExceptionState());
+  transaction_->FlushForTesting();
   database_backend.Flush();
 }
 
-// This test is flaky on Marshmallow 64 bit Tester because the test is
-// crashing. See <http://crbug.com/1068057>.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_AbortErrorAfterAbort \
-  DISABLED_AbortErrorAfterAbort
-#else
-#define MAYBE_AbortErrorAfterAbort \
-  AbortErrorAfterAbort
-#endif
-
-TEST_F(IDBRequestTest, MAYBE_AbortErrorAfterAbort) {
+// Regression test for crbug.com/1470485
+TEST_F(IDBRequestTest, ErrorWithQueuedLoadingResult) {
   V8TestingScope scope;
-  IDBTransaction* transaction = nullptr;
-  IDBRequest* request =
-      IDBRequest::Create(scope.GetScriptState(), store_.Get(), transaction,
-                         IDBRequest::AsyncTraceState());
-  EXPECT_EQ(request->readyState(), "pending");
+  MockIDBDatabase database_backend;
+  MockIDBTransaction transaction_backend;
+  BuildTransaction(scope, database_backend, transaction_backend);
 
-  // Simulate the IDBTransaction having received OnAbort from back end and
-  // aborting the request:
-  request->Abort();
+  IDBRequest* request1 =
+      IDBRequest::Create(scope.GetScriptState(), store_.Get(),
+                         transaction_.Get(), IDBRequest::AsyncTraceState());
+  IDBRequest* request2 =
+      IDBRequest::Create(scope.GetScriptState(), store_.Get(),
+                         transaction_.Get(), IDBRequest::AsyncTraceState());
+  IDBRequest* request3 =
+      IDBRequest::Create(scope.GetScriptState(), store_.Get(),
+                         transaction_.Get(), IDBRequest::AsyncTraceState());
+  // The transaction won't be ready until it sets itself to inactive.
+  scope.PerformMicrotaskCheckpoint();
 
-  // Now simulate the back end having fired an abort error at the request to
-  // clear up any intermediaries.  Ensure an assertion is not raised.
-  request->HandleResponse(MakeGarbageCollected<DOMException>(
-      DOMExceptionCode::kAbortError, "Description goes here."));
+  // Three requests:
+  // * the first is just there to block the queue so the error result doesn't
+  // dispatch right away.
+  // * the second is an error result which will cause the transaction to abort
+  // since the result event isn't preventDefault()ed.
+  // * the third is another result which is still in the loading state when the
+  // transaction starts aborting its requests.
+  request1->HandleResponse(CreateIDBValueForTesting(
+      scope.GetIsolate(), /*create_wrapped_value=*/true));
+  SimulateErrorResult(request2);
+  request3->HandleResponse(CreateIDBValueForTesting(
+      scope.GetIsolate(), /*create_wrapped_value=*/true));
 
-  // Stop the request lest it be GCed and its destructor
-  // finds the object in a pending state (and asserts.)
-  scope.GetExecutionContext()->NotifyContextDestroyed();
+  FinishLoadingResult(request1);
+}
+
+TEST_F(IDBRequestTest, ContextDestroyedWithQueuedErrorResult) {
+  V8TestingScope scope;
+  MockIDBDatabase database_backend;
+  MockIDBTransaction transaction_backend;
+  BuildTransaction(scope, database_backend, transaction_backend);
+
+  IDBRequest* request1 =
+      IDBRequest::Create(scope.GetScriptState(), store_.Get(),
+                         transaction_.Get(), IDBRequest::AsyncTraceState());
+  IDBRequest* request2 =
+      IDBRequest::Create(scope.GetScriptState(), store_.Get(),
+                         transaction_.Get(), IDBRequest::AsyncTraceState());
+  // The transaction won't be ready until it sets itself to inactive.
+  scope.PerformMicrotaskCheckpoint();
+
+  request1->HandleResponse(CreateIDBValueForTesting(
+      scope.GetIsolate(), /*create_wrapped_value=*/true));
+  SimulateErrorResult(request2);
+
+  // No crash at the end of this test as the context is destroyed indicates
+  // success. This test is potentially flaky when failing because the order of
+  // `ContextDestroyed` calls matters to the test, but is not predictable.
 }
 
 TEST_F(IDBRequestTest, ConnectionsAfterStopping) {
@@ -404,21 +439,25 @@ TEST_F(IDBRequestTest, ConnectionsAfterStopping) {
     mock_database.Bind(remote.BindNewEndpointAndPassDedicatedReceiver());
     EXPECT_CALL(mock_database, Close()).Times(1);
 
-    auto transaction_backend = std::make_unique<WebIDBTransaction>(
-        /*task_runner=*/nullptr, kTransactionId);
-    auto transaction_receiver = transaction_backend->CreateReceiver();
+    auto* execution_context = scope.GetExecutionContext();
+    IDBTransaction::TransactionMojoRemote transaction_remote(execution_context);
+    mojo::PendingAssociatedReceiver<mojom::blink::IDBTransaction>
+        transaction_receiver =
+            transaction_remote.BindNewEndpointAndPassReceiver(
+                blink::scheduler::GetSingleThreadTaskRunnerForTesting());
     transaction_receiver.EnableUnassociatedUsage();
 
     auto* request = MakeGarbageCollected<IDBOpenDBRequest>(
         scope.GetScriptState(), mojo::NullAssociatedReceiver(),
-        std::move(transaction_backend), kTransactionId, kVersion,
+        std::move(transaction_remote), kTransactionId, kVersion,
         IDBRequest::AsyncTraceState(), mojo::NullRemote());
     EXPECT_EQ(request->readyState(), "pending");
-    std::unique_ptr<WebIDBCallbacks> callbacks = request->CreateWebCallbacks();
+    std::unique_ptr<IDBFactoryClient> factory_client =
+        request->CreateFactoryClient();
 
     scope.GetExecutionContext()->NotifyContextDestroyed();
-    callbacks->UpgradeNeeded(remote.Unbind(), kOldVersion,
-                             mojom::IDBDataLoss::None, String(), metadata);
+    factory_client->UpgradeNeeded(remote.Unbind(), kOldVersion,
+                                  mojom::IDBDataLoss::None, String(), metadata);
     platform_->RunUntilIdle();
   }
 
@@ -428,20 +467,24 @@ TEST_F(IDBRequestTest, ConnectionsAfterStopping) {
     mock_database.Bind(remote.BindNewEndpointAndPassDedicatedReceiver());
     EXPECT_CALL(mock_database, Close()).Times(1);
 
-    auto transaction_backend = std::make_unique<WebIDBTransaction>(
-        /*task_runner=*/nullptr, kTransactionId);
-    auto transaction_receiver = transaction_backend->CreateReceiver();
+    auto* execution_context = scope.GetExecutionContext();
+    IDBTransaction::TransactionMojoRemote transaction_remote(execution_context);
+    mojo::PendingAssociatedReceiver<mojom::blink::IDBTransaction>
+        transaction_receiver =
+            transaction_remote.BindNewEndpointAndPassReceiver(
+                blink::scheduler::GetSingleThreadTaskRunnerForTesting());
     transaction_receiver.EnableUnassociatedUsage();
 
     auto* request = MakeGarbageCollected<IDBOpenDBRequest>(
         scope.GetScriptState(), mojo::NullAssociatedReceiver(),
-        std::move(transaction_backend), kTransactionId, kVersion,
+        std::move(transaction_remote), kTransactionId, kVersion,
         IDBRequest::AsyncTraceState(), mojo::NullRemote());
     EXPECT_EQ(request->readyState(), "pending");
-    std::unique_ptr<WebIDBCallbacks> callbacks = request->CreateWebCallbacks();
+    std::unique_ptr<IDBFactoryClient> factory_client =
+        request->CreateFactoryClient();
 
     scope.GetExecutionContext()->NotifyContextDestroyed();
-    callbacks->SuccessDatabase(remote.Unbind(), metadata);
+    factory_client->OpenSuccess(remote.Unbind(), metadata);
     platform_->RunUntilIdle();
   }
 }
@@ -449,7 +492,9 @@ TEST_F(IDBRequestTest, ConnectionsAfterStopping) {
 // Expose private state for testing.
 class AsyncTraceStateForTesting : public IDBRequest::AsyncTraceState {
  public:
-  AsyncTraceStateForTesting() : IDBRequest::AsyncTraceState() {}
+  explicit AsyncTraceStateForTesting(IDBRequest::TypeForMetrics type)
+      : IDBRequest::AsyncTraceState(type) {}
+  AsyncTraceStateForTesting() = default;
   AsyncTraceStateForTesting(AsyncTraceStateForTesting&& other)
       : IDBRequest::AsyncTraceState(std::move(other)) {}
   AsyncTraceStateForTesting& operator=(AsyncTraceStateForTesting&& rhs) {
@@ -457,71 +502,50 @@ class AsyncTraceStateForTesting : public IDBRequest::AsyncTraceState {
     return *this;
   }
 
-  const char* trace_event_name() const {
-    return IDBRequest::AsyncTraceState::trace_event_name();
+  absl::optional<IDBRequest::TypeForMetrics> type() const {
+    return IDBRequest::AsyncTraceState::type();
+  }
+  const base::TimeTicks& start_time() const {
+    return IDBRequest::AsyncTraceState::start_time();
   }
   size_t id() const { return IDBRequest::AsyncTraceState::id(); }
-
-  size_t PopulateForNewEvent(const char* trace_event_name) {
-    return IDBRequest::AsyncTraceState::PopulateForNewEvent(trace_event_name);
-  }
 };
 
 TEST(IDBRequestAsyncTraceStateTest, EmptyConstructor) {
   AsyncTraceStateForTesting state;
 
-  EXPECT_EQ(nullptr, state.trace_event_name());
+  EXPECT_FALSE(state.type());
   EXPECT_TRUE(state.IsEmpty());
 }
 
-TEST(IDBRequestAsyncTraceStateTest, PopulateForNewEvent) {
-  AsyncTraceStateForTesting state1, state2, state3;
-
-  const char* name1 = "event1";
-  size_t id1 = state1.PopulateForNewEvent(name1);
-  const char* name2 = "event2";
-  size_t id2 = state2.PopulateForNewEvent(name2);
-  const char* name3 = "event3";
-  size_t id3 = state3.PopulateForNewEvent(name3);
-
-  EXPECT_EQ(name1, state1.trace_event_name());
-  EXPECT_EQ(name2, state2.trace_event_name());
-  EXPECT_EQ(name3, state3.trace_event_name());
-  EXPECT_EQ(id1, state1.id());
-  EXPECT_EQ(id2, state2.id());
-  EXPECT_EQ(id3, state3.id());
-
-  EXPECT_NE(id1, id2);
-  EXPECT_NE(id1, id3);
-  EXPECT_NE(id2, id3);
-
-  EXPECT_TRUE(!state1.IsEmpty());
-  EXPECT_TRUE(!state2.IsEmpty());
-  EXPECT_TRUE(!state3.IsEmpty());
-}
-
 TEST(IDBRequestAsyncTraceStateTest, MoveConstructor) {
-  AsyncTraceStateForTesting source_state;
-  const char* event_name = "event_name";
-  size_t id = source_state.PopulateForNewEvent(event_name);
+  IDBRequest::TypeForMetrics type =
+      IDBRequest::TypeForMetrics::kObjectStoreGetAllKeys;
+  AsyncTraceStateForTesting source_state(type);
+  size_t id = source_state.id();
+  base::TimeTicks start_time = source_state.start_time();
 
   AsyncTraceStateForTesting state(std::move(source_state));
-  EXPECT_EQ(event_name, state.trace_event_name());
+  EXPECT_EQ(type, *state.type());
   EXPECT_EQ(id, state.id());
+  EXPECT_EQ(start_time, state.start_time());
   EXPECT_TRUE(source_state.IsEmpty());
 }
 
 TEST(IDBRequestAsyncTraceStateTest, MoveAssignment) {
-  AsyncTraceStateForTesting source_state;
-  const char* event_name = "event_name";
-  size_t id = source_state.PopulateForNewEvent(event_name);
+  IDBRequest::TypeForMetrics type =
+      IDBRequest::TypeForMetrics::kObjectStoreGetAllKeys;
+  AsyncTraceStateForTesting source_state(type);
+  size_t id = source_state.id();
+  base::TimeTicks start_time = source_state.start_time();
 
   AsyncTraceStateForTesting state;
-
   EXPECT_TRUE(state.IsEmpty());
+
   state = std::move(source_state);
-  EXPECT_EQ(event_name, state.trace_event_name());
+  EXPECT_EQ(type, *state.type());
   EXPECT_EQ(id, state.id());
+  EXPECT_EQ(start_time, state.start_time());
   EXPECT_TRUE(source_state.IsEmpty());
 }
 

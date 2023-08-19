@@ -10,10 +10,6 @@
 #import "chrome/browser/ui/cocoa/applescript/bookmark_folder_applescript.h"
 #include "chrome/test/base/in_process_browser_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Used to emulate an active running script, useful for testing purposes.
 @interface FakeScriptCommand : NSScriptCommand
 @end

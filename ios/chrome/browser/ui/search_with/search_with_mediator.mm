@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/search_with/search_with_mediator.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
-#import "base/mac/foundation_util.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/metrics/histogram_functions.h"
@@ -16,14 +16,11 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/web_selection/web_selection_response.h"
 #import "ios/chrome/browser/web_selection/web_selection_tab_helper.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 typedef void (^ProceduralBlockWithItemArray)(NSArray<UIMenuElement*>*);
@@ -175,12 +172,14 @@ void LogTrigger(bool incognito, bool search_engine_google) {
 
   NSString* searchWithMenuId = @"chromeAction.searchWith";
   __weak __typeof(self) weakSelf = self;
-  UIAction* action = [UIAction actionWithTitle:searchWithMenuTitle
-                                         image:nil
-                                    identifier:searchWithMenuId
-                                       handler:^(UIAction* a) {
-                                         [weakSelf triggerSearchForText:text];
-                                       }];
+  UIAction* action = [UIAction
+      actionWithTitle:searchWithMenuTitle
+                image:DefaultSymbolWithPointSize(kMagnifyingglassCircleSymbol,
+                                                 kSymbolActionPointSize)
+           identifier:searchWithMenuId
+              handler:^(UIAction* a) {
+                [weakSelf triggerSearchForText:text];
+              }];
   completion(@[ action ]);
 }
 
@@ -210,13 +209,12 @@ void LogTrigger(bool incognito, bool search_engine_google) {
   [self.applicationCommandHandler openURLInNewTab:command];
 }
 
-#pragma mark - SearchWithDelegate
+#pragma mark - EditMenuProvider
 
 - (void)buildMenuWithBuilder:(id<UIMenuBuilder>)builder {
   if (![self canPerformSearch]) {
     return;
   }
-  NSString* searchWithMenuTitle = [self buttonTitle];
   NSString* searchWithMenuId = @"chromeMenu.searchWith";
 
   __weak __typeof(self) weakSelf = self;
@@ -227,7 +225,7 @@ void LogTrigger(bool incognito, bool search_engine_google) {
   UIDeferredMenuElement* deferredMenuElement =
       [UIDeferredMenuElement elementWithProvider:provider];
 
-  UIMenu* searchWithMenu = [UIMenu menuWithTitle:searchWithMenuTitle
+  UIMenu* searchWithMenu = [UIMenu menuWithTitle:@""
                                            image:nil
                                       identifier:searchWithMenuId
                                          options:UIMenuOptionsDisplayInline

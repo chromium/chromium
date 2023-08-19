@@ -17,8 +17,8 @@ const char* ToString(ax::mojom::Event event) {
       return "activedescendantchanged";
     case ax::mojom::Event::kAlert:
       return "alert";
-    case ax::mojom::Event::kAriaAttributeChanged:
-      return "ariaAttributeChanged";
+    case ax::mojom::Event::kAriaAttributeChangedDeprecated:
+      return "ariaAttributeChangedDeprecated";
     case ax::mojom::Event::kAutocorrectionOccured:
       return "autocorrectionOccured";
     case ax::mojom::Event::kBlur:
@@ -1475,7 +1475,7 @@ const char* ToString(ax::mojom::IntAttribute int_attribute) {
       return "descriptionFrom";
     case ax::mojom::IntAttribute::kActivedescendantId:
       return "activedescendantId";
-    case ax::mojom::IntAttribute::kErrormessageId:
+    case ax::mojom::IntAttribute::kErrormessageIdDeprecated:
       return "errormessageId";
     case ax::mojom::IntAttribute::kInPageLinkTargetId:
       return "inPageLinkTargetId";
@@ -1610,7 +1610,7 @@ ax::mojom::IntAttribute StringToIntAttribute(const std::string& int_attribute) {
   } else if (int_attribute == "kActivedescendantId") {
     return ax::mojom::IntAttribute::kActivedescendantId;
   } else if (int_attribute == "kErrormessageId") {
-    return ax::mojom::IntAttribute::kErrormessageId;
+    return ax::mojom::IntAttribute::kErrormessageIdDeprecated;
   } else if (int_attribute == "kInPageLinkTargetId") {
     return ax::mojom::IntAttribute::kInPageLinkTargetId;
   } else if (int_attribute == "kMemberOfId") {
@@ -1819,6 +1819,8 @@ const char* ToString(ax::mojom::IntListAttribute int_list_attribute) {
       return "detailsIds";
     case ax::mojom::IntListAttribute::kDescribedbyIds:
       return "describedbyIds";
+    case ax::mojom::IntListAttribute::kErrormessageIds:
+      return "errorMessageIds";
     case ax::mojom::IntListAttribute::kFlowtoIds:
       return "flowtoIds";
     case ax::mojom::IntListAttribute::kLabelledbyIds:
@@ -1851,6 +1853,16 @@ const char* ToString(ax::mojom::IntListAttribute int_list_attribute) {
       return "wordEnds";
     case ax::mojom::IntListAttribute::kCustomActionIds:
       return "customActionIds";
+    case ax::mojom::IntListAttribute::kTextOperationStartOffsets:
+      return "textOperationStartOffsets";
+    case ax::mojom::IntListAttribute::kTextOperationEndOffsets:
+      return "textOperationEndOffsets";
+    case ax::mojom::IntListAttribute::kTextOperationStartAnchorIds:
+      return "textOperationStartAnchorIds";
+    case ax::mojom::IntListAttribute::kTextOperationEndAnchorIds:
+      return "textOperationEndAnchorIds";
+    case ax::mojom::IntListAttribute::kTextOperations:
+      return "textOperations";
   }
 
   return "";

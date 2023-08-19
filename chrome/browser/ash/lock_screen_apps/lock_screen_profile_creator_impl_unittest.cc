@@ -384,9 +384,11 @@ class LockScreenProfileCreatorImplTest : public testing::Test {
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 
-  raw_ptr<UnittestProfileManager, ExperimentalAsh> profile_manager_;
+  raw_ptr<UnittestProfileManager, DanglingUntriaged | ExperimentalAsh>
+      profile_manager_;
 
-  raw_ptr<TestingProfile, ExperimentalAsh> primary_profile_ = nullptr;
+  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh>
+      primary_profile_ = nullptr;
 
   base::SimpleTestTickClock tick_clock_;
 
@@ -654,12 +656,6 @@ TEST_F(LockScreenProfileCreatorImplTest, MetricsOnSuccess) {
                   ->WaitForCreationAndOverrideResponse(true));
 
   EXPECT_TRUE(callback_run);
-
-  histogram_tester->ExpectTimeBucketCount(
-      "Apps.LockScreen.AppsProfile.Creation.Duration", base::Milliseconds(20),
-      1);
-  histogram_tester->ExpectUniqueSample(
-      "Apps.LockScreen.AppsProfile.Creation.Success", 1, 1);
 }
 
 TEST_F(LockScreenProfileCreatorImplTest, MetricsOnFailure) {
@@ -689,9 +685,4 @@ TEST_F(LockScreenProfileCreatorImplTest, MetricsOnFailure) {
                   ->WaitForCreationAndOverrideResponse(false));
 
   EXPECT_TRUE(callback_run);
-
-  histogram_tester->ExpectTotalCount(
-      "Apps.LockScreen.AppsProfile.Creation.Duration", 0);
-  histogram_tester->ExpectUniqueSample(
-      "Apps.LockScreen.AppsProfile.Creation.Success", 0, 1);
 }

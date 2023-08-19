@@ -18,6 +18,7 @@
 #if BUILDFLAG(USE_IIOSERVICE)
 #include "chrome/browser/ash/power/auto_screen_brightness/light_provider_mojo.h"
 #else  // !BUILDFLAG(USE_IIOSERVICE)
+#include "base/system/sys_info.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/als_file_reader.h"
 #endif  // BUILDFLAG(USE_IIOSERVICE)
 #include "content/public/browser/browser_thread.h"
@@ -33,6 +34,10 @@ namespace {
 // another thread to be non-blocking to the main thread.
 int GetNumAls() {
   DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  if (!base::SysInfo::IsRunningOnChromeOS()) {
+    return 0;
+  }
+
   base::CommandLine command_line{
       base::FilePath(FILE_PATH_LITERAL("check_powerd_config"))};
   command_line.AppendArg("--ambient_light_sensor");

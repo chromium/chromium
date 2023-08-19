@@ -5,26 +5,14 @@
 #include "base/json/json_reader.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/browser/net/profile_network_context_service.h"
-#include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
-#include "net/ssl/client_cert_store.h"
-#include "services/network/public/cpp/features.h"
 #include "url/gurl.h"
 
 namespace extensions {
-
-namespace {
-
-std::unique_ptr<net::ClientCertStore> CreateNullCertStore() {
-  return nullptr;
-}
-
-}  // namespace
 
 class BackgroundHeaderTest : public ExtensionBrowserTest {
  public:
@@ -56,10 +44,6 @@ class BackgroundHeaderTest : public ExtensionBrowserTest {
     https_test_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
     https_test_server_.AddDefaultHandlers(GetTestDataFilePath());
     ASSERT_TRUE(https_test_server_.Start());
-
-    ProfileNetworkContextServiceFactory::GetForContext(browser()->profile())
-        ->set_client_cert_store_factory_for_testing(
-            base::BindRepeating(&CreateNullCertStore));
   }
 
   std::string ExecuteFetch(const Extension* extension, const GURL& url) {
@@ -120,7 +104,6 @@ class BackgroundHeaderTest : public ExtensionBrowserTest {
 
  private:
   net::EmbeddedTestServer https_test_server_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Test the response headers of fetch a HTTPS request in extension background

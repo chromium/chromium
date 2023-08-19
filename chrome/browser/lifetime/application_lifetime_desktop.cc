@@ -40,7 +40,7 @@
 #include "chrome/browser/ash/boot_times_recorder.h"
 #include "chrome/browser/lifetime/application_lifetime_chromeos.h"
 #else  // !BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/profile_picker.h"
+#include "chrome/browser/ui/profiles/profile_picker.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -239,6 +239,10 @@ void SessionEnding() {
 
   // Write important data first.
   g_browser_process->EndSession();
+
+  // Emit the shutdown metric for the end-session case. The process will exit
+  // after this point.
+  browser_shutdown::RecordShutdownMetrics();
 
 #if BUILDFLAG(IS_WIN)
   base::win::SetShouldCrashOnProcessDetach(false);

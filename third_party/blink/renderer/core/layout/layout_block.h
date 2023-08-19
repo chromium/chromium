@@ -41,10 +41,6 @@ typedef HeapLinkedHashSet<Member<LayoutBox>> TrackedLayoutBoxLinkedHashSet;
 typedef HeapHashMap<WeakMember<const LayoutBlock>,
                     Member<TrackedLayoutBoxLinkedHashSet>>
     TrackedDescendantsMap;
-typedef HeapHashMap<WeakMember<const LayoutBox>, Member<LayoutBlock>>
-    TrackedContainerMap;
-
-enum ContainingBlockState { kNewContainingBlock, kSameContainingBlock };
 
 // LayoutBlock is the class that is used by any LayoutObject
 // that is a containing block.
@@ -154,25 +150,7 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   void AddChild(LayoutObject* new_child,
                 LayoutObject* before_child = nullptr) override;
 
-  virtual void UpdateBlockLayout();
-
-  void InsertPositionedObject(LayoutBox*);
-  static void RemovePositionedObject(LayoutBox*);
-  void RemovePositionedObjects(LayoutObject*,
-                               ContainingBlockState = kSameContainingBlock);
-
-  TrackedLayoutBoxLinkedHashSet* PositionedObjects() const {
-    NOT_DESTROYED();
-    return UNLIKELY(HasPositionedObjects()) ? PositionedObjectsInternal()
-                                            : nullptr;
-  }
-  bool HasPositionedObjects() const {
-    NOT_DESTROYED();
-    DCHECK(has_positioned_objects_ ? (PositionedObjectsInternal() &&
-                                      !PositionedObjectsInternal()->empty())
-                                   : !PositionedObjectsInternal());
-    return has_positioned_objects_;
-  }
+  void RemovePositionedObjects(LayoutObject*);
 
   void AddSvgTextDescendant(LayoutBox& svg_text);
   void RemoveSvgTextDescendant(LayoutBox& svg_text);
@@ -191,23 +169,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
 
   LayoutBox* CreateAnonymousBoxWithSameTypeAs(
       const LayoutObject* parent) const override;
-
-#if DCHECK_IS_ON()
-  void CheckPositionedObjectsNeedLayout();
-#endif
-
-  // This method returns the size that percentage logical heights should
-  // resolve against *if* this LayoutBlock is the containing block for the
-  // percentage calculation.
-  //
-  // A version of this function without the above restriction, (that will walk
-  // the ancestor chain in quirks mode), see:
-  // LayoutBox::ContainingBlockLogicalHeightForPercentageResolution
-  LayoutUnit AvailableLogicalHeightForPercentageComputation() const;
-  bool HasDefiniteLogicalHeight() const;
-
- protected:
-  void RecalcSelfVisualOverflow();
 
  public:
   void RecalcChildVisualOverflow();
@@ -236,15 +197,13 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
  protected:
   void WillBeDestroyed() override;
 
-  void UpdateLayout() override;
+  void UpdateLayout() override {
+    NOT_DESTROYED();
+    NOTREACHED_NORETURN();
+  }
 
  public:
   void Paint(const PaintInfo&) const override;
-  virtual void PaintObject(const PaintInfo&,
-                           const PhysicalOffset& paint_offset) const;
-  virtual void PaintChildren(const PaintInfo&,
-                             const PhysicalOffset& paint_offset) const;
-  MinMaxSizes PreferredLogicalWidths() const override;
 
   virtual bool HasLineIfEmpty() const;
   // Returns baseline offset if we can get |SimpleFontData| from primary font.
@@ -303,8 +262,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
 
   virtual void RemoveLeftoverAnonymousBlock(LayoutBlock* child);
 
-  TrackedLayoutBoxLinkedHashSet* PositionedObjectsInternal() const;
-
  protected:
   void InvalidatePaint(const PaintInvalidatorContext&) const override;
 
@@ -326,7 +283,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
 
   LayoutObjectChildList children_;
 
-  unsigned has_positioned_objects_ : 1;
   unsigned has_svg_text_descendants_ : 1;
 
   // FIXME: This is temporary as we move code that accesses block flow

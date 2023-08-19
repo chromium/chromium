@@ -157,6 +157,11 @@ message CustomInput {
     // Output type: float
     // Output length: `TabSessionSource::kNumInputs`
     FILL_TAB_METRICS = 9;
+
+    // Fills a random number between [0, 1).
+    // Output type: float
+    // Output length: 1
+    FILL_RANDOM = 10;
   }
 
   // The fill type of the custom input.

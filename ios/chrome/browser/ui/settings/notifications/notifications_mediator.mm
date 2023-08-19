@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/notifications/notifications_mediator.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/notreached.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/push_notification/push_notification_client_id.h"
@@ -19,10 +19,6 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 // List of items.
 typedef NS_ENUM(NSInteger, ItemType) {
@@ -118,7 +114,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
                    withClientID:(PushNotificationClientId)clientID {
   DCHECK(item);
   TableViewDetailIconItem* iconItem =
-      base::mac::ObjCCastStrict<TableViewDetailIconItem>(item);
+      base::apple::ObjCCastStrict<TableViewDetailIconItem>(item);
   notifications_settings::ClientPermissionState permissionState =
       notifications_settings::GetClientPermissionState(clientID, _gaiaID,
                                                        _prefService);

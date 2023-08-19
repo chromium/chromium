@@ -19,6 +19,7 @@
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "components/translate/core/browser/translate_pref_names.h"
 #import "components/translate/core/browser/translate_prefs.h"
+#import "ios/chrome/browser/language/language_model_manager_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
@@ -29,10 +30,6 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "ui/base/l10n/l10n_util_collator.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using base::test::ios::WaitUntilConditionOrTimeout;
 using language::prefs::kAcceptLanguages;
@@ -112,9 +109,13 @@ class LanguageSettingsMediatorTest : public PlatformTest {
     }
 
     consumer_ = [[FakeLanguageSettingsConsumer alloc] init];
+    language::LanguageModelManager* language_model_manager =
+        LanguageModelManagerFactory::GetForBrowserState(
+            chrome_browser_state_.get());
 
     mediator_ = [[LanguageSettingsMediator alloc]
-        initWithBrowserState:chrome_browser_state_.get()];
+        initWithLanguageModelManager:language_model_manager
+                         prefService:GetPrefs()];
     mediator_.consumer = consumer_;
   }
 

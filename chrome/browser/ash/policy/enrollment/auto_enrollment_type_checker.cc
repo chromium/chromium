@@ -454,8 +454,8 @@ AutoEnrollmentTypeChecker::GetInitialStateDeterminationRequirement(
         return InitialStateDeterminationRequirement::
             kUnknownDueToMissingSystemClockSync;
       }
-      LOG(WARNING)
-          << "Skip Initial State Determination due to invalid embargo date.";
+      LOG(WARNING) << "Skip Initial State Determination because the device is "
+                      "in the embargo period.";
       return InitialStateDeterminationRequirement::kNotRequired;
     case ash::system::FactoryPingEmbargoState::kInvalid:
       if (!is_system_clock_synchronized) {
@@ -464,8 +464,7 @@ AutoEnrollmentTypeChecker::GetInitialStateDeterminationRequirement(
         return InitialStateDeterminationRequirement::
             kUnknownDueToMissingSystemClockSync;
       }
-      LOG(WARNING) << "Skip Initial State Determination because the device is "
-                      "in the embargo period.";
+      LOG(WARNING) << "Skip Initial State Determination due to invalid embargo date.";
       return InitialStateDeterminationRequirement::kNotRequired;
   }
 }

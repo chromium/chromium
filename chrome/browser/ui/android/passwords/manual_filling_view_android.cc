@@ -19,8 +19,8 @@
 #include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/android/features/keyboard_accessory/jni_headers/ManualFillingComponentBridge_jni.h"
-#include "chrome/android/features/keyboard_accessory/jni_headers/UserInfoField_jni.h"
+#include "chrome/android/features/keyboard_accessory/internal/jni/ManualFillingComponentBridge_jni.h"
+#include "chrome/android/features/keyboard_accessory/public/jni/UserInfoField_jni.h"
 #include "chrome/browser/autofill/manual_filling_controller.h"
 #include "chrome/browser/autofill/manual_filling_controller_impl.h"
 #include "chrome/browser/password_manager/android/password_accessory_metrics_util.h"
@@ -157,20 +157,12 @@ ManualFillingViewAndroid::~ManualFillingViewAndroid() {
 void ManualFillingViewAndroid::OnItemsAvailable(AccessorySheetData data) {
   TRACE_EVENT0("passwords", "ManualFillingViewAndroid::OnItemsAvailable");
   if (auto obj = GetOrCreateJavaObject()) {
-    if (base::FeatureList::IsEnabled(
-            autofill::features::kAutofillKeyboardAccessory)) {
-      background_task_runner_->PostTaskAndReplyWithResult(
-          FROM_HERE,
-          base::BindOnce(&ConvertAccessorySheetDataToJavaObject, obj,
-                         std::move(data)),
-          base::BindOnce(&Java_ManualFillingComponentBridge_onItemsAvailable,
-                         base::android::AttachCurrentThread(), obj));
-    } else {
-      // Preserve legacy behavior for validation and to guard threading changes.
-      Java_ManualFillingComponentBridge_onItemsAvailable(
-          base::android::AttachCurrentThread(), obj,
-          ConvertAccessorySheetDataToJavaObject(obj, std::move(data)));
-    }
+    background_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&ConvertAccessorySheetDataToJavaObject, obj,
+                       std::move(data)),
+        base::BindOnce(&Java_ManualFillingComponentBridge_onItemsAvailable,
+                       base::android::AttachCurrentThread(), obj));
   }
 }
 
@@ -307,6 +299,8 @@ void JNI_ManualFillingComponentBridge_CachePasswordSheetDataForTesting(
     password_forms[i].url = origin.GetURL();
     password_forms[i].username_value = base::ASCIIToUTF16(usernames[i]);
     password_forms[i].password_value = base::ASCIIToUTF16(passwords[i]);
+    password_forms[i].match_type =
+        password_manager::PasswordForm::MatchType::kExact;
     credentials.push_back(&password_forms[i]);
   }
   return ChromePasswordManagerClient::FromWebContents(web_contents)

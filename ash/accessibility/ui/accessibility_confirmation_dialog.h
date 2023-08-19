@@ -19,6 +19,7 @@ class AccessibilityConfirmationDialog : public views::DialogDelegateView {
  public:
   AccessibilityConfirmationDialog(const std::u16string& window_title_text,
                                   const std::u16string& dialog_text,
+                                  const std::u16string& cancel_text,
                                   base::OnceClosure on_accept_callback,
                                   base::OnceClosure on_cancel_callback,
                                   base::OnceClosure on_close_callback);

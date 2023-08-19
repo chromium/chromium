@@ -1,5 +1,0 @@
-Tests the instrumentation of PrePaint event
-
-Got PrePaint event, phase: X
-Done
-

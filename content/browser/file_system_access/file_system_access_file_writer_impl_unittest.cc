@@ -20,7 +20,10 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "content/browser/file_system_access/file_system_access_write_lock_manager.h"
+#include "base/types/expected.h"
+#include "components/services/storage/public/cpp/buckets/bucket_info.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
+#include "content/browser/file_system_access/file_system_access_lock_manager.h"
 #include "content/browser/file_system_access/fixed_file_system_access_permission_grant.h"
 #include "content/browser/file_system_access/mock_file_system_access_permission_context.h"
 #include "content/public/test/browser_task_environment.h"
@@ -32,10 +35,17 @@
 #include "storage/browser/file_system/file_stream_reader.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/async_file_test_helper.h"
+#include "storage/browser/test/mock_quota_manager.h"
+#include "storage/browser/test/mock_quota_manager_proxy.h"
+#include "storage/browser/test/mock_special_storage_policy.h"
+#include "storage/browser/test/quota_manager_proxy_sync.h"
 #include "storage/browser/test/test_file_system_backend.h"
 #include "storage/browser/test/test_file_system_context.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom.h"
 #include "url/gurl.h"
 
 using blink::mojom::FileSystemAccessStatus;
@@ -76,13 +86,15 @@ class TestFileSystemBackend : public storage::TestFileSystemBackend {
       : storage::TestFileSystemBackend(task_runner, base_path) {}
 
   std::unique_ptr<storage::FileSystemOperation> CreateFileSystemOperation(
+      storage::OperationType type,
       const storage::FileSystemURL& url,
       storage::FileSystemContext* context,
       base::File::Error* error_code) const override {
-    if (operation_created_callback_)
+    if (operation_created_callback_) {
       std::move(operation_created_callback_).Run(url);
+    }
     return storage::TestFileSystemBackend::CreateFileSystemOperation(
-        url, context, error_code);
+        type, url, context, error_code);
   }
 
   void SetOperationCreatedCallback(
@@ -107,78 +119,40 @@ class FileSystemAccessFileWriterImplTest : public testing::Test {
   }
 
   void SetUp() override {
-    ASSERT_TRUE(dir_.CreateUniqueTempDir());
-    std::vector<std::unique_ptr<storage::FileSystemBackend>>
-        additional_providers;
-    additional_providers.push_back(std::make_unique<TestFileSystemBackend>(
-        base::SingleThreadTaskRunner::GetCurrentDefault().get(),
-        dir_.GetPath()));
-    test_file_system_backend_ =
-        static_cast<TestFileSystemBackend*>(additional_providers[0].get());
-
-    file_system_context_ =
-        storage::CreateFileSystemContextWithAdditionalProvidersForTesting(
-            base::SingleThreadTaskRunner::GetCurrentDefault(),
-            base::SingleThreadTaskRunner::GetCurrentDefault(),
-            /*quota_manager_proxy=*/nullptr, std::move(additional_providers),
-            dir_.GetPath());
-
-    test_file_url_ = file_system_context_->CreateCrackedFileSystemURL(
-        kTestStorageKey, storage::kFileSystemTypeLocal,
-        dir_.GetPath().AppendASCII("test"));
-
-    test_swap_url_ = file_system_context_->CreateCrackedFileSystemURL(
-        kTestStorageKey, storage::kFileSystemTypeLocal,
-        dir_.GetPath().AppendASCII("test.crswap"));
-
-    ASSERT_EQ(base::File::FILE_OK,
-              storage::AsyncFileTestHelper::CreateFile(
-                  file_system_context_.get(), test_file_url_));
-
-    ASSERT_EQ(base::File::FILE_OK,
-              storage::AsyncFileTestHelper::CreateFile(
-                  file_system_context_.get(), test_swap_url_));
-
-    chrome_blob_context_ = base::MakeRefCounted<ChromeBlobStorageContext>();
-    chrome_blob_context_->InitializeOnIOThread(base::FilePath(),
-                                               base::FilePath(), nullptr);
-    blob_context_ = chrome_blob_context_->context();
-
-    manager_ = base::MakeRefCounted<FileSystemAccessManagerImpl>(
-        file_system_context_, chrome_blob_context_,
-        /*permission_context=*/permission_context(),
-        /*off_the_record=*/false);
-
-    quarantine_callback_ = base::BindLambdaForTesting(
-        [&](mojo::PendingReceiver<quarantine::mojom::Quarantine> receiver) {
-          quarantine_receivers_.Add(&quarantine_, std::move(receiver));
-        });
-
-    auto lock = manager_->TakeWriteLock(
-        test_file_url_,
-        FileSystemAccessWriteLockManager::WriteLockType::kShared);
-    ASSERT_TRUE(lock);
-    auto swap_lock = manager_->TakeWriteLock(
-        test_swap_url_,
-        FileSystemAccessWriteLockManager::WriteLockType::kExclusive);
-    ASSERT_TRUE(swap_lock);
-
-    handle_ = manager_->CreateFileWriter(
-        FileSystemAccessManagerImpl::BindingContext(kTestStorageKey, kTestURL,
-                                                    kFrameId),
-        test_file_url_, test_swap_url_, std::move(lock), std::move(swap_lock),
-        FileSystemAccessManagerImpl::SharedHandleState(permission_grant_,
-                                                       permission_grant_),
-        remote_.InitWithNewPipeAndPassReceiver(),
-        /*has_transient_user_activation=*/false,
-        /*auto_close=*/false, quarantine_callback_);
+    SetupHelper(storage::FileSystemType::kFileSystemTypeLocal);
   }
 
   void TearDown() override {
     manager_.reset();
 
     task_environment_.RunUntilIdle();
-    EXPECT_TRUE(dir_.Delete());
+    // TODO(https://crbug.com/1441636): Figure out what code is leaking open
+    // files, and uncomment this to prevent further regressions.
+    // ASSERT_TRUE(dir_.Delete());
+  }
+
+  base::WeakPtr<FileSystemAccessFileWriterImpl> CreateWritable(
+      const FileSystemURL& file_url,
+      const FileSystemURL& swap_url,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter>& remote) {
+    auto lock = manager_->TakeLock(file_url, writable_shared_lock_type_);
+    if (!lock) {
+      return nullptr;
+    }
+    auto swap_lock =
+        manager_->TakeLock(swap_url, manager_->GetExclusiveLockType());
+    if (!swap_lock) {
+      return nullptr;
+    }
+
+    return manager_->CreateFileWriter(
+        kBindingContext, file_url, swap_url, std::move(lock),
+        std::move(swap_lock),
+        FileSystemAccessManagerImpl::SharedHandleState(permission_grant_,
+                                                       permission_grant_),
+        remote.InitWithNewPipeAndPassReceiver(),
+        /*has_transient_user_activation=*/false,
+        /*auto_close=*/false, quarantine_callback_);
   }
 
   mojo::ScopedDataPipeConsumerHandle CreateStream(const std::string& contents) {
@@ -215,13 +189,16 @@ class FileSystemAccessFileWriterImplTest : public testing::Test {
       auto buf = base::MakeRefCounted<net::IOBufferWithSize>(4096);
       net::TestCompletionCallback callback;
       int rv = reader->Read(buf.get(), buf->size(), callback.callback());
-      if (rv == net::ERR_IO_PENDING)
+      if (rv == net::ERR_IO_PENDING) {
         rv = callback.WaitForResult();
+      }
       EXPECT_GE(rv, 0);
-      if (rv < 0)
+      if (rv < 0) {
         return "(read failure)";
-      if (rv == 0)
+      }
+      if (rv == 0) {
         return result;
+      }
       result.append(buf->data(), rv);
     }
   }
@@ -263,20 +240,137 @@ class FileSystemAccessFileWriterImplTest : public testing::Test {
   }
 
  protected:
+  void SetupHelper(storage::FileSystemType type) {
+    ASSERT_TRUE(dir_.CreateUniqueTempDir());
+    std::vector<std::unique_ptr<storage::FileSystemBackend>>
+        additional_providers;
+    additional_providers.push_back(std::make_unique<TestFileSystemBackend>(
+        base::SingleThreadTaskRunner::GetCurrentDefault().get(),
+        dir_.GetPath()));
+    test_file_system_backend_ =
+        static_cast<TestFileSystemBackend*>(additional_providers[0].get());
+
+    if (type == storage::FileSystemType::kFileSystemTypeTemporary) {
+      quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
+          /*is_incognito=*/false, dir_.GetPath(),
+          base::SingleThreadTaskRunner::GetCurrentDefault(),
+          base::MakeRefCounted<storage::MockSpecialStoragePolicy>());
+      quota_manager_proxy_ =
+          base::MakeRefCounted<storage::MockQuotaManagerProxy>(
+              quota_manager_.get(),
+              base::SingleThreadTaskRunner::GetCurrentDefault());
+    }
+    file_system_context_ =
+        storage::CreateFileSystemContextWithAdditionalProvidersForTesting(
+            base::SingleThreadTaskRunner::GetCurrentDefault(),
+            base::SingleThreadTaskRunner::GetCurrentDefault(),
+            quota_manager_proxy_ ? quota_manager_proxy_.get() : nullptr,
+            std::move(additional_providers), dir_.GetPath());
+
+    chrome_blob_context_ = base::MakeRefCounted<ChromeBlobStorageContext>();
+    chrome_blob_context_->InitializeOnIOThread(base::FilePath(),
+                                               base::FilePath(), nullptr);
+    blob_context_ = chrome_blob_context_->context();
+
+    manager_ = base::MakeRefCounted<FileSystemAccessManagerImpl>(
+        file_system_context_, chrome_blob_context_,
+        /*permission_context=*/permission_context(),
+        /*off_the_record=*/false);
+    manager_->BindReceiver(kBindingContext,
+                           manager_remote_.BindNewPipeAndPassReceiver());
+
+    // Use an absolute path for local files, or a relative path otherwise,
+    auto test_file_path = type == storage::kFileSystemTypeLocal
+                              ? dir_.GetPath().AppendASCII("test")
+                              : base::FilePath::FromUTF8Unsafe("test");
+    auto test_swap_path = type == storage::kFileSystemTypeLocal
+                              ? dir_.GetPath().AppendASCII("test.crswap")
+                              : base::FilePath::FromUTF8Unsafe("test.crswap");
+
+    test_file_url_ = file_system_context_->CreateCrackedFileSystemURL(
+        kTestStorageKey, type, test_file_path);
+    test_swap_url_ = file_system_context_->CreateCrackedFileSystemURL(
+        kTestStorageKey, type, test_swap_path);
+
+    if (type == storage::kFileSystemTypeTemporary) {
+      const auto bucket = CreateSandboxFileSystemAndGetDefaultBucket();
+      ASSERT_TRUE(bucket.has_value());
+      test_file_url_.SetBucket(bucket.value());
+      test_swap_url_.SetBucket(bucket.value());
+    }
+
+    ASSERT_EQ(base::File::FILE_OK,
+              storage::AsyncFileTestHelper::CreateFile(
+                  file_system_context_.get(), test_file_url_));
+
+    ASSERT_EQ(base::File::FILE_OK,
+              storage::AsyncFileTestHelper::CreateFile(
+                  file_system_context_.get(), test_swap_url_));
+
+    writable_shared_lock_type_ = manager_->CreateSharedLockType();
+
+    quarantine_callback_ = base::BindLambdaForTesting(
+        [&](mojo::PendingReceiver<quarantine::mojom::Quarantine> receiver) {
+          quarantine_receivers_.Add(&quarantine_, std::move(receiver));
+        });
+
+    auto lock = manager_->TakeLock(test_file_url_, writable_shared_lock_type_);
+    ASSERT_TRUE(lock);
+
+    handle_ = CreateWritable(test_file_url_, test_swap_url_, remote_);
+    ASSERT_TRUE(handle_);
+  }
+
+  storage::QuotaErrorOr<storage::BucketLocator>
+  CreateSandboxFileSystemAndGetDefaultBucket() {
+    base::test::TestFuture<
+        blink::mojom::FileSystemAccessErrorPtr,
+        mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle>>
+        future;
+    manager_remote_->GetSandboxedFileSystem(future.GetCallback());
+    blink::mojom::FileSystemAccessErrorPtr get_fs_result;
+    mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle>
+        directory_remote;
+    std::tie(get_fs_result, directory_remote) = future.Take();
+    EXPECT_EQ(get_fs_result->status, blink::mojom::FileSystemAccessStatus::kOk);
+    mojo::Remote<blink::mojom::FileSystemAccessDirectoryHandle> root(
+        std::move(directory_remote));
+    EXPECT_TRUE(root);
+
+    storage::QuotaManagerProxySync quota_manager_proxy_sync(
+        quota_manager_proxy_.get());
+
+    // Check default bucket exists.
+    return quota_manager_proxy_sync
+        .GetBucket(kTestStorageKey, storage::kDefaultBucketName,
+                   blink::mojom::StorageType::kTemporary)
+        .transform([&](storage::BucketInfo result) {
+          EXPECT_EQ(result.name, storage::kDefaultBucketName);
+          EXPECT_EQ(result.storage_key, kTestStorageKey);
+          EXPECT_GT(result.id.value(), 0);
+          return result.ToBucketLocator();
+        });
+  }
+
   const GURL kTestURL = GURL("https://example.com/test");
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFromStringForTesting("https://example.com/test");
   const int kProcessId = 1;
   const int kFrameRoutingId = 2;
   const GlobalRenderFrameHostId kFrameId{kProcessId, kFrameRoutingId};
+  const FileSystemAccessManagerImpl::BindingContext kBindingContext = {
+      kTestStorageKey, kTestURL, kFrameId};
   BrowserTaskEnvironment task_environment_;
 
   base::ScopedTempDir dir_;
+  scoped_refptr<storage::MockQuotaManager> quota_manager_;
+  scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
   raw_ptr<TestFileSystemBackend> test_file_system_backend_;
   scoped_refptr<ChromeBlobStorageContext> chrome_blob_context_;
   raw_ptr<storage::BlobStorageContext> blob_context_;
   scoped_refptr<FileSystemAccessManagerImpl> manager_;
+  mojo::Remote<blink::mojom::FileSystemAccessManager> manager_remote_;
 
   FileSystemURL test_file_url_;
   FileSystemURL test_swap_url_;
@@ -292,6 +386,8 @@ class FileSystemAccessFileWriterImplTest : public testing::Test {
 
   mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter> remote_;
   base::WeakPtr<FileSystemAccessFileWriterImpl> handle_;
+
+  FileSystemAccessLockManager::LockType writable_shared_lock_type_;
 };
 
 TEST_F(FileSystemAccessFileWriterImplTest, WriteValidEmptyString) {
@@ -417,7 +513,61 @@ TEST_F(FileSystemAccessFileWriterImplTest, WriterDestroyedAfterAbort) {
       storage::AsyncFileTestHelper::kDontCheckSize));
 }
 
-// TODO(mek): More tests, particularly for error conditions.
+// TODO(https://crbug.com/1441636): Add more tests, particularly for error
+// conditions.
+
+class FileSystemAccessSandboxedFileWriterImplTest
+    : public FileSystemAccessFileWriterImplTest {
+ public:
+  void SetUp() override {
+    SetupHelper(storage::FileSystemType::kFileSystemTypeTemporary);
+  }
+};
+
+TEST_F(FileSystemAccessSandboxedFileWriterImplTest, SkipQuarantine) {
+  std::string test_data("abcdefghijklmnopqrstuvwxyz");
+  uint64_t bytes_written;
+  FileSystemAccessStatus result = WriteSync(0, test_data, &bytes_written);
+  EXPECT_EQ(result, FileSystemAccessStatus::kOk);
+  EXPECT_EQ(bytes_written, test_data.size());
+
+  result = CloseSync();
+  EXPECT_EQ(result, FileSystemAccessStatus::kOk);
+  // Files in the sandboxed file system should skip quarantine.
+  EXPECT_THAT(quarantine_.paths, testing::IsEmpty());
+
+  EXPECT_EQ(test_data, ReadFile(test_file_url_));
+}
+
+TEST_F(FileSystemAccessSandboxedFileWriterImplTest, QuotaError) {
+  ASSERT_TRUE(quota_manager_);
+  quota_manager_->SetQuota(kTestStorageKey,
+                           blink::mojom::StorageType::kTemporary,
+                           /*quota=*/1);
+
+  uint64_t bytes_written;
+  FileSystemAccessStatus result = WriteSync(0, "abc", &bytes_written);
+  LOG(ERROR) << "after WriteSync";
+  // TODO(https://crbug.com/1441636): Refactor WriteSync to return a
+  // base::expected<uint64_t, FileSystemAccessErrorPtr>. For now, it seems safe
+  // to assume that this file error is a quota error.
+  EXPECT_EQ(result, FileSystemAccessStatus::kFileError);
+  EXPECT_EQ(bytes_written, 0u);
+
+  // In practice, the renderer should disconnect the mojo pipe to the writer on
+  // receiving the quota error from the write call above. For the purpose of
+  // this test, we'll confirm that the above write never made it to the swap
+  // file, then abort.
+  EXPECT_EQ("", ReadFile(test_swap_url_));
+
+  result = CloseSync();
+  EXPECT_EQ(result, FileSystemAccessStatus::kOk);
+  EXPECT_EQ("", ReadFile(test_file_url_));
+  EXPECT_TRUE(handle_.WasInvalidated());
+  EXPECT_FALSE(storage::AsyncFileTestHelper::FileExists(
+      file_system_context_.get(), test_swap_url_,
+      storage::AsyncFileTestHelper::kDontCheckSize));
+}
 
 class FileSystemAccessFileWriterAfterWriteChecksTest
     : public FileSystemAccessFileWriterImplTest {
@@ -594,24 +744,9 @@ TEST_F(FileSystemAccessFileWriterAfterWriteChecksTest,
             storage::AsyncFileTestHelper::CreateFile(file_system_context_.get(),
                                                      test_swap_url_));
 
-  auto lock = manager_->TakeWriteLock(
-      test_file_url_, FileSystemAccessWriteLockManager::WriteLockType::kShared);
-  ASSERT_TRUE(lock);
-  auto swap_lock = manager_->TakeWriteLock(
-      test_swap_url_,
-      FileSystemAccessWriteLockManager::WriteLockType::kExclusive);
-  ASSERT_TRUE(swap_lock);
-
   mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter> remote;
-  handle_ = manager_->CreateFileWriter(
-      FileSystemAccessManagerImpl::BindingContext(kTestStorageKey, kTestURL,
-                                                  kFrameId),
-      test_file_url_, test_swap_url_, std::move(lock), std::move(swap_lock),
-      FileSystemAccessManagerImpl::SharedHandleState(permission_grant_,
-                                                     permission_grant_),
-      remote.InitWithNewPipeAndPassReceiver(),
-      /*has_transient_user_activation=*/false,
-      /*auto_close=*/false, quarantine_callback_);
+  handle_ = CreateWritable(test_file_url_, test_swap_url_, remote);
+  ASSERT_TRUE(handle_);
 
   uint64_t bytes_written;
   FileSystemAccessStatus result = WriteSync(0, "foo", &bytes_written);

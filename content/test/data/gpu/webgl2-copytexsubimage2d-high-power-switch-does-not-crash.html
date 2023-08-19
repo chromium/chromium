@@ -1,0 +1,72 @@
+<html>
+<head>
+<script type="text/javascript">
+let canvas;
+let gl;
+let tex;
+let msrb;
+let contextLost = false;
+const sz = 16;  // Match the canvas' sizes below.
+
+function send(str) {
+  if (window.domAutomationController) {
+    window.domAutomationController.send(str);
+  } else {
+    console.log(str);
+  }
+}
+
+function initTexture() {
+  tex = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, sz, sz, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+}
+
+function animate() {
+  // Copy from the framebuffer to the texture regardless of whether the context was lost.
+  gl.copyTexSubImage2D(gl.TEXTURE_2D, 0, 0, 0, 0, 0, sz, sz);
+  requestAnimationFrame(animate);
+}
+
+function onLoad() {
+  canvas = document.getElementById("canvas1");
+  canvas.addEventListener('webglcontextlost', function(e) {
+    console.log('Context lost');
+    e.preventDefault();
+    contextLost = true;
+  }, false);
+  canvas.addEventListener('webglcontextrestored', function(e) {
+    contextLost = false;
+
+    // Wait a second before telling the harness that the test succeeded.
+    setTimeout(() => { send("SUCCESS"); }, 1000);
+  }, false);
+  gl = canvas.getContext('webgl2', {powerPreference: "low-power"});
+  initTexture();
+  msrb = gl.createRenderbuffer();
+  gl.bindRenderbuffer(gl.RENDERBUFFER, msrb);
+  gl.renderbufferStorageMultisample(gl.RENDERBUFFER, 2, gl.RGBA8, 16, 16);
+  gl.bindRenderbuffer(gl.RENDERBUFFER, null);
+  let err = gl.getError();
+  if (err != 0) {
+    console.log("Error " + err + " allocating multisampled renderbuffer");
+    send("FAILED");
+    return;
+  }
+  requestAnimationFrame(animate);
+  // Wait a second before telling the harness to switch to the high-performance GPU.
+  setTimeout(() => { send("LOADED"); }, 1000);
+}
+
+function runTest() {
+  let c2 = document.getElementById("canvas2");
+  let gl = c2.getContext('webgl2', {powerPreference: "high-performance"});
+}
+</script>
+</head>
+<body onload="onLoad()">
+<canvas id="canvas1" width="16px" height="16px"></canvas>
+<canvas id="canvas2" width="16px" height="16px"></canvas>
+<canvas id="canvas2d" width="16px" height="16px"></canvas>
+</body>
+</html>

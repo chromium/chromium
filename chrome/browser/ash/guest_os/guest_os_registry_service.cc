@@ -50,7 +50,7 @@
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "extensions/browser/api/file_handlers/mime_util.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/layout.h"
+#include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/image/image_skia_operations.h"
 
 using vm_tools::apps::App;
@@ -435,6 +435,10 @@ bool GuestOsRegistryService::Registration::CanUninstall() const {
     return !package_id->empty();
   }
   return false;
+}
+
+guest_os::GuestId GuestOsRegistryService::Registration::ToGuestId() const {
+  return guest_os::GuestId(VmType(), VmName(), ContainerName());
 }
 
 base::Time GuestOsRegistryService::Registration::InstallTime() const {
@@ -926,7 +930,7 @@ void GuestOsRegistryService::ClearApplicationList(
 void GuestOsRegistryService::UpdateApplicationList(
     const vm_tools::apps::ApplicationList& app_list) {
   VLOG(3) << "Received ApplicationList : " << ToString(app_list);
-  // TODO(b/247636749): Special-case Bruschetta VMs until cicerone is updated to
+  // TODO(b/294316866): Special-case Bruschetta VMs until cicerone is updated to
   // use the correct vm_type.
   vm_tools::apps::VmType vm_type = app_list.vm_type();
   if (app_list.vm_name() == bruschetta::kBruschettaVmName) {

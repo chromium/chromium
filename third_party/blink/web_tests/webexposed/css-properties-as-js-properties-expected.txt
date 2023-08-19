@@ -10,7 +10,6 @@ alignmentBaseline
 all
 anchorDefault
 anchorName
-anchorScroll
 animation
 animationComposition
 animationDelay
@@ -162,6 +161,7 @@ descentOverride
 direction
 display
 dominantBaseline
+dynamicRangeLimit
 emptyCells
 fallback
 fill
@@ -348,6 +348,7 @@ popoverHideDelay
 popoverShowDelay
 position
 positionFallback
+positionFallbackBounds
 prefix
 quotes
 r
@@ -467,6 +468,7 @@ transformBox
 transformOrigin
 transformStyle
 transition
+transitionBehavior
 transitionDelay
 transitionDuration
 transitionProperty
@@ -558,7 +560,6 @@ webkitFlexShrink
 webkitFlexWrap
 webkitFontFeatureSettings
 webkitFontSmoothing
-webkitHighlight
 webkitHyphenateCharacter
 webkitJustifyContent
 webkitLineBreak

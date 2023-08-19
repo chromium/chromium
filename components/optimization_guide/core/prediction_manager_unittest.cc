@@ -65,13 +65,13 @@ constexpr char kTestLocale[] = "en-US";
 
 namespace optimization_guide {
 
-proto::PredictionModel CreatePredictionModel() {
+proto::PredictionModel CreatePredictionModelForGetModelsResponse(
+    proto::OptimizationTarget optimization_target) {
   proto::PredictionModel prediction_model;
 
   proto::ModelInfo* model_info = prediction_model.mutable_model_info();
   model_info->set_version(1);
-  model_info->set_optimization_target(
-      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
+  model_info->set_optimization_target(optimization_target);
   model_info->add_supported_model_engine_versions(
       proto::ModelEngineVersion::MODEL_ENGINE_VERSION_TFLITE_2_8);
   prediction_model.mutable_model()->set_download_url(
@@ -79,13 +79,16 @@ proto::PredictionModel CreatePredictionModel() {
   return prediction_model;
 }
 
-std::unique_ptr<proto::GetModelsResponse> BuildGetModelsResponse() {
+std::unique_ptr<proto::GetModelsResponse> BuildGetModelsResponse(
+    std::set<proto::OptimizationTarget> optimization_targets) {
   std::unique_ptr<proto::GetModelsResponse> get_models_response =
       std::make_unique<proto::GetModelsResponse>();
 
-  proto::PredictionModel prediction_model = CreatePredictionModel();
-  prediction_model.mutable_model_info()->set_version(2);
-  *get_models_response->add_models() = std::move(prediction_model);
+  for (const auto& optimization_target : optimization_targets) {
+    proto::PredictionModel prediction_model =
+        CreatePredictionModelForGetModelsResponse(optimization_target);
+    *get_models_response->add_models() = std::move(prediction_model);
+  }
 
   return get_models_response;
 }
@@ -100,10 +103,22 @@ class FakeOptimizationTargetModelObserver
     : public OptimizationTargetModelObserver {
  public:
   void OnModelUpdated(proto::OptimizationTarget optimization_target,
-                      const ModelInfo& model_info) override {
-    last_received_models_.insert_or_assign(optimization_target, model_info);
+                      base::optional_ref<const ModelInfo> model_info) override {
+    if (!model_info.has_value()) {
+      last_received_models_.insert_or_assign(optimization_target,
+                                             absl::nullopt);
+      return;
+    }
+    last_received_models_.insert_or_assign(optimization_target, *model_info);
   }
 
+  bool WasNullModelReceived(proto::OptimizationTarget optimization_target) {
+    auto model_it = last_received_models_.find(optimization_target);
+    return (model_it != last_received_models_.end()) && !model_it->second;
+  }
+
+  // Returns the last received ModelInfo for |optimization_target|. Does not
+  // differentiate whether a null model was received, or no model was received.
   absl::optional<ModelInfo> last_received_model_for_target(
       proto::OptimizationTarget optimization_target) const {
     auto model_it = last_received_models_.find(optimization_target);
@@ -116,7 +131,12 @@ class FakeOptimizationTargetModelObserver
   void Reset() { last_received_models_.clear(); }
 
  private:
-  base::flat_map<proto::OptimizationTarget, ModelInfo> last_received_models_;
+  // Contains the ModelInfo received per opt target. Three cases possible: Valid
+  // ModelInfo received. Null ModelInfo received is indicated by the presence of
+  // an entry with nullopt. No ModelInfo received is indicated by not having an
+  // entry for the opt target.
+  base::flat_map<proto::OptimizationTarget, absl::optional<ModelInfo>>
+      last_received_models_;
 };
 
 class FakePredictionModelDownloadManager
@@ -184,7 +204,10 @@ class TestPredictionModelFetcher : public PredictionModelFetcherImpl {
       PredictionModelFetcherEndState fetch_state)
       : PredictionModelFetcherImpl(url_loader_factory,
                                    optimization_guide_service_get_models_url),
-        fetch_state_(fetch_state) {}
+        fetch_state_(fetch_state) {
+    success_fetch_optimization_targets_.emplace(
+        proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
+  }
 
   bool FetchOptimizationGuideServiceModels(
       const std::vector<proto::ModelInfo>& models_request_info,
@@ -204,7 +227,8 @@ class TestPredictionModelFetcher : public PredictionModelFetcherImpl {
         break;
       case PredictionModelFetcherEndState::kFetchSuccessWithModels:
         models_fetched_ = true;
-        get_models_response = BuildGetModelsResponse();
+        get_models_response =
+            BuildGetModelsResponse(success_fetch_optimization_targets_);
         break;
       case PredictionModelFetcherEndState::kFetchSuccessWithEmptyResponse:
         models_fetched_ = true;
@@ -275,7 +299,15 @@ class TestPredictionModelFetcher : public PredictionModelFetcherImpl {
 
   void SetCheckExpectedVersion() { check_expected_version_ = true; }
 
-  void Reset() { models_fetched_ = false; }
+  void AddOptimizationTargetToSuccessFetch(
+      proto::OptimizationTarget optimization_target) {
+    success_fetch_optimization_targets_.emplace(optimization_target);
+  }
+
+  void Reset() {
+    models_fetched_ = false;
+    success_fetch_optimization_targets_.clear();
+  }
 
   bool models_fetched() const { return models_fetched_; }
 
@@ -285,8 +317,13 @@ class TestPredictionModelFetcher : public PredictionModelFetcherImpl {
   bool models_fetched_ = false;
   bool check_expected_version_ = false;
   std::string locale_requested_;
-  // The desired behavior of the TestPredictionModelFetcher.
   PredictionModelFetcherEndState fetch_state_;
+
+  // Optimization targets for which models should be returned, in case of a
+  // successful fetch.
+  std::set<proto::OptimizationTarget> success_fetch_optimization_targets_;
+
+  // The desired behavior of the TestPredictionModelFetcher.
   base::flat_map<proto::OptimizationTarget, proto::Any> expected_metadata_;
   base::flat_map<proto::OptimizationTarget, int64_t> expected_version_;
 };
@@ -322,8 +359,9 @@ class TestOptimizationGuideStore : public OptimizationGuideStore {
                            PredictionModelLoadedCallback callback) override {
     model_loaded_ = true;
     if (load_models_) {
-      std::move(callback).Run(
-          std::make_unique<proto::PredictionModel>(CreatePredictionModel()));
+      std::move(callback).Run(std::make_unique<proto::PredictionModel>(
+          CreatePredictionModelForGetModelsResponse(
+              proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)));
     } else {
       std::move(callback).Run(nullptr);
     }
@@ -625,7 +663,24 @@ class PredictionManagerTest : public testing::WithParamInterface<bool>,
     }
   }
 
-  void CreateTestModelFiles(const proto::ModelInfo model_info,
+  proto::PredictionModel CreatePredictionModelForModelStore(
+      proto::OptimizationTarget optimization_target) {
+    auto base_model_dir = GetBaseModelDir(optimization_target);
+    proto::PredictionModel prediction_model;
+    proto::ModelInfo* model_info = prediction_model.mutable_model_info();
+    model_info->set_optimization_target(optimization_target);
+    model_info->set_version(1);
+    model_info->add_supported_model_engine_versions(
+        proto::ModelEngineVersion::MODEL_ENGINE_VERSION_TFLITE_2_8);
+    prediction_model.mutable_model()->set_download_url(
+        FilePathToString(base_model_dir.Append(GetBaseFileNameForModels())));
+    if (ShouldEnableInstallWideModelStore()) {
+      CreateTestModelFiles(*model_info, base_model_dir);
+    }
+    return prediction_model;
+  }
+
+  void CreateTestModelFiles(const proto::ModelInfo& model_info,
                             const base::FilePath& base_model_dir) {
     CreateDirectory(base_model_dir);
     WriteFile(base_model_dir.Append(GetBaseFileNameForModels()), "");
@@ -634,6 +689,12 @@ class PredictionManagerTest : public testing::WithParamInterface<bool>,
     WriteFile(base_model_dir.Append(GetBaseFileNameForModelInfo()),
               model_info_str);
     RunUntilIdle();
+  }
+
+  base::FilePath GetBaseModelDir(
+      proto::OptimizationTarget optimization_target) const {
+    return temp_dir().AppendASCII(
+        proto::OptimizationTarget_Name(optimization_target));
   }
 
   PredictionModelStore* prediction_model_store() {
@@ -666,6 +727,49 @@ TEST_P(PredictionManagerTest, RemoteFetchingPrefDisabled) {
   SetStoreInitialized();
 
   EXPECT_FALSE(prediction_model_fetcher()->models_fetched());
+}
+
+TEST_P(PredictionManagerTest, RemoteFetchingPrefEnabledAndThenDisabled) {
+  SetComponentUpdatesPrefEnabled(true);
+  CreatePredictionManager();
+  prediction_manager()->SetPredictionModelFetcherForTesting(
+      BuildTestPredictionModelFetcher(
+          PredictionModelFetcherEndState::kFetchSuccessWithModels));
+  CreatePredictionModelDownloadManager();
+
+  FakeOptimizationTargetModelObserver observer;
+  prediction_manager()->AddObserverForOptimizationTargetModel(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt, &observer);
+  SetStoreInitialized();
+
+  EXPECT_TRUE(prediction_model_fetcher()->models_fetched());
+  proto::PredictionModel model;
+  model.mutable_model_info()->set_optimization_target(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
+  model.mutable_model_info()->set_version(3);
+  model.mutable_model()->set_download_url(FilePathToString(
+      temp_dir().AppendASCII("foo").Append(GetBaseFileNameForModels())));
+  prediction_manager()->OnModelReady(temp_dir().AppendASCII("foo"), model);
+  RunUntilIdle();
+  EXPECT_TRUE(observer.last_received_model_for_target(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));
+  prediction_model_fetcher()->Reset();
+  observer.Reset();
+
+  // No fetch should happen with the pref disabled. But model is still
+  // delivered.
+  SetComponentUpdatesPrefEnabled(false);
+  prediction_manager()->RemoveObserverForOptimizationTargetModel(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, &observer);
+  MoveClockForwardBy(base::Seconds(kUpdateFetchModelAndFeaturesTimeSecs));
+  prediction_manager()->AddObserverForOptimizationTargetModel(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt, &observer);
+  RunUntilIdle();
+  EXPECT_FALSE(prediction_model_fetcher()->models_fetched());
+  EXPECT_TRUE(observer.last_received_model_for_target(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));
+  prediction_model_fetcher()->Reset();
+  observer.Reset();
 }
 
 TEST_P(PredictionManagerTest, AddObserverForOptimizationTargetModel) {
@@ -719,34 +823,30 @@ TEST_P(PredictionManagerTest, AddObserverForOptimizationTargetModel) {
                        proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)
                    .has_value());
 
-  base::FilePath additional_file_path =
-      temp_dir().AppendASCII("foo").AppendASCII("additional_file.txt");
-  proto::ModelInfo model_info;
-  model_info.set_optimization_target(
-      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
-  model_info.set_version(1);
-  model_info.mutable_model_metadata()->set_type_url("sometypeurl");
-  model_info.add_additional_files()->set_file_path(
-      FilePathToString(additional_file_path));
-  // An empty file path should be be ignored.
-  model_info.add_additional_files()->set_file_path("");
-
   // Ensure observer is hooked up.
   {
     base::HistogramTester model_ready_histogram_tester;
+    auto base_model_dir =
+        GetBaseModelDir(proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
+    proto::PredictionModel model1 = CreatePredictionModelForModelStore(
+        proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
+    auto additional_file_path =
+        base_model_dir.AppendASCII("additional_file.txt");
+    model1.mutable_model_info()->add_additional_files()->set_file_path(
+        FilePathToString(additional_file_path));
+    // An empty file path should be be ignored.
+    model1.mutable_model_info()->add_additional_files()->set_file_path("");
+    model1.mutable_model_info()->mutable_model_metadata()->set_type_url(
+        "sometypeurl");
 
-    proto::PredictionModel model1;
-    *model1.mutable_model_info() = model_info;
-    model1.mutable_model()->set_download_url(FilePathToString(
-        temp_dir().AppendASCII("foo").Append(GetBaseFileNameForModels())));
-    prediction_manager()->OnModelReady(temp_dir().AppendASCII("foo"), model1);
+    prediction_manager()->OnModelReady(base_model_dir, model1);
     RunUntilIdle();
 
     absl::optional<ModelInfo> received_model =
         observer.last_received_model_for_target(
             proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
     EXPECT_EQ(received_model->GetModelMetadata()->type_url(), "sometypeurl");
-    EXPECT_EQ(temp_dir().AppendASCII("foo").Append(GetBaseFileNameForModels()),
+    EXPECT_EQ(base_model_dir.Append(GetBaseFileNameForModels()),
               received_model->GetModelFilePath());
     EXPECT_EQ(received_model->GetAdditionalFiles(),
               base::flat_set<base::FilePath>{additional_file_path});
@@ -781,13 +881,15 @@ TEST_P(PredictionManagerTest, AddObserverForOptimizationTargetModel) {
   prediction_manager()->RemoveObserverForOptimizationTargetModel(
       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, &observer);
   observer.Reset();
-  proto::PredictionModel model2;
-  model_info.clear_additional_files();
-  *model2.mutable_model_info() = model_info;
+  auto base_model_dir = temp_dir().AppendASCII("bar");
+  proto::PredictionModel model2 = CreatePredictionModelForModelStore(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
   model2.mutable_model_info()->set_version(2);
-  model2.mutable_model()->set_download_url(FilePathToString(
-      temp_dir().AppendASCII("bar").AppendASCII("bar_model.tflite")));
-  prediction_manager()->OnModelReady(temp_dir().AppendASCII("bar"), model2);
+  model2.mutable_model()->set_download_url(
+      FilePathToString(base_model_dir.AppendASCII("bar_model.tflite")));
+  model2.mutable_model_info()->mutable_model_metadata()->set_type_url(
+      "sometypeurl");
+  prediction_manager()->OnModelReady(base_model_dir, model2);
   RunUntilIdle();
 
   // Last received path should not have been updated since the observer was
@@ -812,20 +914,15 @@ TEST_P(PredictionManagerTest,
   SetStoreInitialized(/* load_models= */ false,
                       /* have_models_in_store= */ false);
 
-  proto::ModelInfo model_info;
-  model_info.set_optimization_target(
-      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
-  model_info.set_version(1);
-
   // Ensure observer is hooked up.
-  proto::PredictionModel model1;
-  *model1.mutable_model_info() = model_info;
-  model1.mutable_model()->set_download_url(FilePathToString(
-      temp_dir().AppendASCII("foo").Append(GetBaseFileNameForModels())));
-  prediction_manager()->OnModelReady(temp_dir().AppendASCII("foo"), model1);
+  auto base_model_dir =
+      GetBaseModelDir(proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
+  prediction_manager()->OnModelReady(
+      base_model_dir, CreatePredictionModelForModelStore(
+                          proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));
   RunUntilIdle();
 
-  EXPECT_EQ(temp_dir().AppendASCII("foo").Append(GetBaseFileNameForModels()),
+  EXPECT_EQ(base_model_dir.Append(GetBaseFileNameForModels()),
             observer1
                 .last_received_model_for_target(
                     proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)
@@ -908,13 +1005,10 @@ TEST_P(PredictionManagerTest,
 
   // Now reset observer. New model downloads should not update the observer.
   observer.Reset();
-  proto::PredictionModel model;
-  model.mutable_model_info()->set_optimization_target(
-      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
-  model.mutable_model_info()->set_version(1);
-  model.mutable_model()->set_download_url(FilePathToString(
-      temp_dir().AppendASCII("foo").Append(GetBaseFileNameForModels())));
-  prediction_manager()->OnModelReady(temp_dir().AppendASCII("foo"), model);
+  prediction_manager()->OnModelReady(
+      GetBaseModelDir(proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
+      CreatePredictionModelForModelStore(
+          proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));
   RunUntilIdle();
 
   // Last received path should not have been updated since the observer was
@@ -942,6 +1036,45 @@ TEST_P(PredictionManagerTest,
       false, 1);
 }
 
+// Tests the opt target observer valid re-registrations, i.e., adding, removing
+// and then re-adding an observer for the same opt target.
+TEST_P(PredictionManagerTest, OptimizationTargetModelObserverReRegistrations) {
+  CreatePredictionManager();
+  prediction_manager()->SetPredictionModelFetcherForTesting(
+      BuildTestPredictionModelFetcher(
+          PredictionModelFetcherEndState::kFetchSuccessWithModels));
+  CreatePredictionModelDownloadManager();
+
+  FakeOptimizationTargetModelObserver observer;
+  prediction_manager()->AddObserverForOptimizationTargetModel(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt, &observer);
+  SetStoreInitialized();
+
+  EXPECT_TRUE(prediction_model_fetcher()->models_fetched());
+  proto::PredictionModel model;
+  model.mutable_model_info()->set_optimization_target(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
+  model.mutable_model_info()->set_version(3);
+  model.mutable_model()->set_download_url(FilePathToString(
+      temp_dir().AppendASCII("foo").Append(GetBaseFileNameForModels())));
+  prediction_manager()->OnModelReady(temp_dir().AppendASCII("foo"), model);
+  RunUntilIdle();
+  EXPECT_TRUE(observer.last_received_model_for_target(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));
+  prediction_model_fetcher()->Reset();
+  observer.Reset();
+
+  // Re-registering should also deliver the model.
+  prediction_manager()->RemoveObserverForOptimizationTargetModel(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, &observer);
+  prediction_manager()->AddObserverForOptimizationTargetModel(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt, &observer);
+  EXPECT_TRUE(observer.last_received_model_for_target(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));
+  // Model is delivered from store. No fetch happens.
+  EXPECT_FALSE(prediction_model_fetcher()->models_fetched());
+}
+
 TEST_P(PredictionManagerTest, UpdatePredictionModelsWithInvalidModel) {
   base::HistogramTester histogram_tester;
 
@@ -953,12 +1086,11 @@ TEST_P(PredictionManagerTest, UpdatePredictionModelsWithInvalidModel) {
       /*model_metadata=*/absl::nullopt, &observer);
 
   // Set invalid model with no download url.
-  proto::PredictionModel model;
-  model.mutable_model_info()->set_optimization_target(
+  proto::PredictionModel model = CreatePredictionModelForModelStore(
       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
-  model.mutable_model_info()->set_version(3);
-  model.mutable_model();
-  prediction_manager()->OnModelReady(temp_dir().AppendASCII("foo"), model);
+  model.mutable_model()->clear_download_url();
+  prediction_manager()->OnModelReady(
+      GetBaseModelDir(proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD), model);
   RunUntilIdle();
 
   histogram_tester.ExpectBucketCount(
@@ -986,13 +1118,11 @@ TEST_P(PredictionManagerTest, UpdateModelFileWithSameVersion) {
       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
       /*model_metadata=*/absl::nullopt, &observer);
 
-  proto::PredictionModel model;
-  model.mutable_model_info()->set_optimization_target(
+  auto base_model_dir =
+      GetBaseModelDir(proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
+  proto::PredictionModel model = CreatePredictionModelForModelStore(
       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
-  model.mutable_model_info()->set_version(3);
-  model.mutable_model()->set_download_url(FilePathToString(
-      temp_dir().AppendASCII("foo").Append(GetBaseFileNameForModels())));
-  prediction_manager()->OnModelReady(temp_dir().AppendASCII("foo"), model);
+  prediction_manager()->OnModelReady(base_model_dir, model);
   RunUntilIdle();
 
   EXPECT_TRUE(observer
@@ -1004,7 +1134,7 @@ TEST_P(PredictionManagerTest, UpdateModelFileWithSameVersion) {
   observer.Reset();
 
   // Send the same model again.
-  prediction_manager()->OnModelReady(temp_dir().AppendASCII("foo"), model);
+  prediction_manager()->OnModelReady(base_model_dir, model);
 
   // The observer should not have received an update.
   EXPECT_FALSE(observer
@@ -1079,17 +1209,10 @@ TEST_P(PredictionManagerTest, UpdateModelForUnregisteredTargetOnModelReady) {
 
   SetStoreInitialized();
 
-  auto base_model_dir = temp_dir().AppendASCII("foo");
-  proto::PredictionModel model;
-  model.mutable_model_info()->set_optimization_target(
-      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
-  model.mutable_model_info()->set_version(3);
-  model.mutable_model()->set_download_url(
-      FilePathToString(base_model_dir.Append(GetBaseFileNameForModels())));
-  if (ShouldEnableInstallWideModelStore()) {
-    CreateTestModelFiles(model.model_info(), base_model_dir);
-  }
-  prediction_manager()->OnModelReady(base_model_dir, model);
+  prediction_manager()->OnModelReady(
+      GetBaseModelDir(proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
+      CreatePredictionModelForModelStore(
+          proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));
   RunUntilIdle();
 
   histogram_tester.ExpectTotalCount(
@@ -1125,15 +1248,13 @@ TEST_P(PredictionManagerTest,
   base::HistogramTester histogram_tester;
   CreatePredictionManager();
   if (ShouldEnableInstallWideModelStore()) {
-    proto::ModelInfo model_info;
-    model_info.set_optimization_target(
+    auto model = CreatePredictionModelForModelStore(
         proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
-    model_info.set_version(1);
-    auto base_model_dir = temp_dir().AppendASCII("foo");
-    CreateTestModelFiles(model_info, base_model_dir);
     prediction_model_store()->UpdateModel(
         proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, GetTestModelCacheKey(),
-        model_info, base_model_dir, base::DoNothing());
+        model.model_info(),
+        GetBaseModelDir(proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
+        base::DoNothing());
     RunUntilIdle();
   }
 
@@ -1165,15 +1286,13 @@ TEST_P(PredictionManagerTest,
   base::HistogramTester histogram_tester;
   CreatePredictionManager();
   if (ShouldEnableInstallWideModelStore()) {
-    proto::ModelInfo model_info;
-    model_info.set_optimization_target(
+    auto model = CreatePredictionModelForModelStore(
         proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
-    model_info.set_version(1);
-    auto base_model_dir = temp_dir().AppendASCII("foo");
-    CreateTestModelFiles(model_info, base_model_dir);
     prediction_model_store()->UpdateModel(
         proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, GetTestModelCacheKey(),
-        model_info, base_model_dir, base::DoNothing());
+        model.model_info(),
+        GetBaseModelDir(proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
+        base::DoNothing());
     RunUntilIdle();
   }
 
@@ -1250,6 +1369,60 @@ TEST_P(PredictionManagerTest, ModelFetcherTimerFetchSucceeds) {
   EXPECT_FALSE(prediction_model_fetcher()->models_fetched());
   MoveClockForwardBy(base::Seconds(kUpdateFetchModelAndFeaturesTimeSecs));
   EXPECT_TRUE(prediction_model_fetcher()->models_fetched());
+}
+
+TEST_P(PredictionManagerTest, ModelRemovedWhenMissingInGetModelsResponse) {
+  FakeOptimizationTargetModelObserver observer;
+
+  CreatePredictionManager();
+  prediction_manager()->SetPredictionModelFetcherForTesting(
+      BuildTestPredictionModelFetcher(
+          PredictionModelFetcherEndState::kFetchSuccessWithModels));
+  CreatePredictionModelDownloadManager();
+  prediction_model_fetcher()->AddOptimizationTargetToSuccessFetch(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
+  prediction_manager()->AddObserverForOptimizationTargetModel(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt, &observer);
+
+  // Load the model and let it be saved in the store.
+  SetStoreInitialized(/* load_models= */ false,
+                      /* have_models_in_store= */ true);
+  EXPECT_TRUE(prediction_model_fetcher()->models_fetched());
+  prediction_manager()->OnModelReady(
+      GetBaseModelDir(proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
+      CreatePredictionModelForModelStore(
+          proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));
+  RunUntilIdle();
+  if (ShouldEnableInstallWideModelStore()) {
+    EXPECT_TRUE(prediction_model_store()->HasModel(
+        proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, GetTestModelCacheKey()));
+  }
+  EXPECT_TRUE(observer.last_received_model_for_target(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));
+
+  {
+    // Let no model be sent in GetModelsResponse, and that triggers the model
+    // to be removed from the store.
+    base::HistogramTester histogram_tester;
+    prediction_model_fetcher()->Reset();
+    observer.Reset();
+    MoveClockForwardBy(base::Seconds(kUpdateFetchModelAndFeaturesTimeSecs));
+    EXPECT_TRUE(prediction_model_fetcher()->models_fetched());
+    if (ShouldEnableInstallWideModelStore()) {
+      histogram_tester.ExpectUniqueSample(
+          "OptimizationGuide.PredictionModelStore.ModelRemovalReason",
+          PredictionModelStoreModelRemovalReason::kNoModelInGetModelsResponse,
+          1);
+      EXPECT_FALSE(prediction_model_store()->HasModel(
+          proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+          GetTestModelCacheKey()));
+    } else {
+      histogram_tester.ExpectUniqueSample(
+          "OptimizationGuide.PredictionModelRemoved.PainfulPageLoad", true, 1);
+    }
+    EXPECT_TRUE(observer.WasNullModelReceived(
+        proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));
+  }
 }
 
 }  // namespace optimization_guide

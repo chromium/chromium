@@ -79,6 +79,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
   FRIEND_TEST_ALL_PREFIXES(HotspotMetricsHelperTest,
                            HotspotDisableReasonHistogram);
   FRIEND_TEST_ALL_PREFIXES(HotspotControllerTest, EnableTetheringSuccess);
+  FRIEND_TEST_ALL_PREFIXES(HotspotControllerTest, AbortEnableTethering);
   FRIEND_TEST_ALL_PREFIXES(HotspotControllerTest,
                            EnableTetheringReadinessCheckFailure);
   FRIEND_TEST_ALL_PREFIXES(HotspotControllerTest,
@@ -168,12 +169,14 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
     kInvalidConfiguration = 4,
     kUpstreamNotAvailable = 5,
     kNetworkSetupFailure = 6,
-    kWifiDriverFailure = 7,
-    kCellularAttachFailure = 8,
+    kDownstreamWifiFailure = 7,
+    kUpstreamFailure = 8,
     kShillOperationFailure = 9,
     kUnknownFailure = 10,
     kAlreadyFulfilled = 11,
-    kMaxValue = kAlreadyFulfilled,
+    kAborted = 12,
+    kInvalid = 13,
+    kMaxValue = kInvalid,
   };
 
   // Represents the upstream status when hotspot is enabled. These values are
@@ -234,7 +237,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
       nullptr;
   raw_ptr<HotspotConfigurationHandler, ExperimentalAsh>
       hotspot_configuration_handler_ = nullptr;
-  raw_ptr<HotspotEnabledStateNotifier, ExperimentalAsh>
+  raw_ptr<HotspotEnabledStateNotifier, DanglingUntriaged | ExperimentalAsh>
       hotspot_enabled_state_notifier_ = nullptr;
   raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_ =
       nullptr;

@@ -24,6 +24,9 @@
 
 namespace ash {
 
+// The step change of volume level if the volume up/down key is pressed.
+constexpr float kVolumeStepChange = 0.04;
+
 class UnifiedVolumeViewTest : public AshTestBase {
  public:
   UnifiedVolumeViewTest() = default;
@@ -174,9 +177,11 @@ TEST_F(UnifiedVolumeViewTest, VolumeMuteThenVolumeUp) {
   CheckSliderIcon(level);
 
   PressAndReleaseKey(ui::KeyboardCode::VKEY_VOLUME_UP);
-  // The slider level and icon should be restored.
-  EXPECT_EQ(slider()->GetValue(), level);
-  CheckSliderIcon(level);
+  // The slider level should increase by `kVolumeStepChange` and the icon should
+  // change accordingly.
+  const float new_level = level + kVolumeStepChange;
+  EXPECT_FLOAT_EQ(slider()->GetValue(), new_level);
+  CheckSliderIcon(new_level);
 }
 
 // Tests that pressing the keyboard volume mute key will mute the slider, and
@@ -197,9 +202,11 @@ TEST_F(UnifiedVolumeViewTest, VolumeMuteThenVolumeDown) {
   CheckSliderIcon(level);
 
   PressAndReleaseKey(ui::KeyboardCode::VKEY_VOLUME_DOWN);
-  // The slider level and icon should remain muted.
-  EXPECT_EQ(slider()->GetValue(), 0);
-  CheckSliderIcon(/*level=*/0);
+  // The slider level should decrease by `kVolumeStepChange` and the icon should
+  // change accordingly.
+  const float new_level = level - kVolumeStepChange;
+  EXPECT_FLOAT_EQ(slider()->GetValue(), new_level);
+  CheckSliderIcon(new_level);
 }
 
 // Tests when the slider is focused, press enter will toggle the mute state.

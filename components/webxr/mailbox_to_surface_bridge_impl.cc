@@ -250,10 +250,6 @@ void MailboxToSurfaceBridgeImpl::CreateAndBindContextProvider(
                        attributes.red_size = 8;
                        attributes.green_size = 8;
                        attributes.blue_size = 8;
-                       attributes.stencil_size = 0;
-                       attributes.depth_size = 0;
-                       attributes.samples = 0;
-                       attributes.sample_buffers = 0;
                        attributes.bind_generates_resource = false;
                        if (base::SysInfo::IsLowEndDevice()) {
                          attributes.alpha_size = 0;
@@ -287,11 +283,6 @@ void MailboxToSurfaceBridgeImpl::ResizeSurface(int width, int height) {
   gl_->ResizeCHROMIUM(surface_width_, surface_height_, 1.f,
                       color_space.AsGLColorSpace(), false);
   gl_->Viewport(0, 0, surface_width_, surface_height_);
-}
-
-bool MailboxToSurfaceBridgeImpl::CopyMailboxToSurfaceAndSwap(
-    const gpu::MailboxHolder& mailbox) {
-  return CopyMailboxToSurfaceAndSwap(mailbox, gfx::Transform());
 }
 
 bool MailboxToSurfaceBridgeImpl::CopyMailboxToSurfaceAndSwap(

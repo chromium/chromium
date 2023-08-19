@@ -49,7 +49,42 @@ public class QuickDeleteMetricsDelegateTest {
                     new ParameterSet()
                             .value(QuickDeleteMetricsDelegate.QuickDeleteAction
                                             .DIALOG_DISMISSED_IMPLICITLY)
-                            .name("Dismissed"));
+                            .name("Dismissed"),
+                    new ParameterSet()
+                            .value(QuickDeleteMetricsDelegate.QuickDeleteAction
+                                            .TAB_SWITCHER_MENU_ITEM_CLICKED)
+                            .name("TabSwitcherMenuItem"),
+                    new ParameterSet()
+                            .value(QuickDeleteMetricsDelegate.QuickDeleteAction
+                                            .MORE_OPTIONS_CLICKED)
+                            .name("MoreOptions"),
+                    new ParameterSet()
+                            .value(QuickDeleteMetricsDelegate.QuickDeleteAction
+                                            .MY_ACTIVITY_LINK_CLICKED)
+                            .name("MyActivity"),
+                    new ParameterSet()
+                            .value(QuickDeleteMetricsDelegate.QuickDeleteAction
+                                            .SEARCH_HISTORY_LINK_CLICKED)
+                            .name("SearchHistory"),
+                    new ParameterSet()
+                            .value(QuickDeleteMetricsDelegate.QuickDeleteAction
+                                            .LAST_15_MINUTES_SELECTED)
+                            .name("Last15Minutes"),
+                    new ParameterSet()
+                            .value(QuickDeleteMetricsDelegate.QuickDeleteAction.LAST_HOUR_SELECTED)
+                            .name("LastHour"),
+                    new ParameterSet()
+                            .value(QuickDeleteMetricsDelegate.QuickDeleteAction.LAST_DAY_SELECTED)
+                            .name("LastDay"),
+                    new ParameterSet()
+                            .value(QuickDeleteMetricsDelegate.QuickDeleteAction.LAST_WEEK_SELECTED)
+                            .name("LastWeek"),
+                    new ParameterSet()
+                            .value(QuickDeleteMetricsDelegate.QuickDeleteAction.FOUR_WEEKS_SELECTED)
+                            .name("FourWeeks"),
+                    new ParameterSet()
+                            .value(QuickDeleteMetricsDelegate.QuickDeleteAction.ALL_TIME_SELECTED)
+                            .name("AllTime"));
         }
     }
 
@@ -58,8 +93,8 @@ public class QuickDeleteMetricsDelegateTest {
     @UseMethodParameter(MethodParams.class)
     public void testRecordHistogram(
             @QuickDeleteMetricsDelegate.QuickDeleteAction int quickDeleteAction) {
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher("Privacy.QuickDelete", quickDeleteAction);
+        HistogramWatcher histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
+                QuickDeleteMetricsDelegate.HISTOGRAM_NAME, quickDeleteAction);
 
         QuickDeleteMetricsDelegate.recordHistogram(quickDeleteAction);
 
@@ -69,9 +104,8 @@ public class QuickDeleteMetricsDelegateTest {
     @Test
     @SmallTest
     public void testRecordDeleteBrowsingDataActionHistogram() {
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher("Privacy.DeleteBrowsingData.Action",
-                        DeleteBrowsingDataAction.QUICK_DELETE_LAST15_MINUTES);
+        HistogramWatcher histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
+                "Privacy.DeleteBrowsingData.Action", DeleteBrowsingDataAction.QUICK_DELETE);
         QuickDeleteMetricsDelegate.recordHistogram(
                 QuickDeleteMetricsDelegate.QuickDeleteAction.DELETE_CLICKED);
 

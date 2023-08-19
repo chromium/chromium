@@ -24,7 +24,6 @@
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_with_source.h"
 #include "net/spdy/spdy_http_utils.h"
-#include "net/spdy/spdy_log_util.h"
 #include "net/spdy/spdy_session.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
@@ -32,70 +31,16 @@
 
 namespace net {
 
-namespace {
-
-// TODO(https://crbug.com/1426477): Remove.
-bool ValidatePushedHeaders(
-    const HttpRequestInfo& request_info,
-    const spdy::Http2HeaderBlock& pushed_request_headers,
-    const spdy::Http2HeaderBlock& pushed_response_headers,
-    const HttpResponseInfo& pushed_response_info) {
-  spdy::Http2HeaderBlock::const_iterator status_it =
-      pushed_response_headers.find(spdy::kHttp2StatusHeader);
-  DCHECK(status_it != pushed_response_headers.end());
-  // 206 Partial Content and 416 Requested Range Not Satisfiable are range
-  // responses.
-  if (status_it->second == "206" || status_it->second == "416") {
-    std::string client_request_range;
-    if (!request_info.extra_headers.GetHeader(HttpRequestHeaders::kRange,
-                                              &client_request_range)) {
-      // Client initiated request is not a range request.
-      return false;
-    }
-    spdy::Http2HeaderBlock::const_iterator pushed_request_range_it =
-        pushed_request_headers.find("range");
-    if (pushed_request_range_it == pushed_request_headers.end()) {
-      // Pushed request is not a range request.
-      return false;
-    }
-    if (client_request_range != pushed_request_range_it->second) {
-      // Client and pushed request ranges do not match.
-      return false;
-    }
-  }
-
-  HttpRequestInfo pushed_request_info;
-  ConvertHeaderBlockToHttpRequestHeaders(pushed_request_headers,
-                                         &pushed_request_info.extra_headers);
-  HttpVaryData vary_data;
-  if (!vary_data.Init(pushed_request_info,
-                      *pushed_response_info.headers.get())) {
-    // Pushed response did not contain non-empty Vary header.
-    return true;
-  }
-
-  if (vary_data.MatchesRequest(request_info,
-                               *pushed_response_info.headers.get())) {
-    return true;
-  }
-
-  return false;
-}
-
-}  // anonymous namespace
-
 // Align our request body with |kMaxSpdyFrameChunkSize| to prevent unexpected
 // buffer chunking. This is 16KB - frame header size.
 const size_t SpdyHttpStream::kRequestBodyBufferSize = kMaxSpdyFrameChunkSize;
 
 SpdyHttpStream::SpdyHttpStream(const base::WeakPtr<SpdySession>& spdy_session,
-                               spdy::SpdyStreamId pushed_stream_id,
                                NetLogSource source_dependency,
                                std::set<std::string> dns_aliases)
     : MultiplexedHttpStream(
           std::make_unique<MultiplexedSessionHandle>(spdy_session)),
       spdy_session_(spdy_session),
-      pushed_stream_id_(pushed_stream_id),
       is_reused_(spdy_session_->IsReused()),
       source_dependency_(source_dependency),
       dns_aliases_(std::move(dns_aliases)) {
@@ -122,20 +67,6 @@ int SpdyHttpStream::InitializeStream(bool can_send_early,
   DCHECK(request_info_);
   if (!spdy_session_)
     return ERR_CONNECTION_CLOSED;
-
-  if (pushed_stream_id_ != kNoPushedStreamFound) {
-    int error = spdy_session_->GetPushedStream(
-        request_info_->url, pushed_stream_id_, priority, &stream_);
-    if (error != OK)
-      return error;
-
-    // |stream_| may be NULL even if OK was returned.
-    if (stream_) {
-      DCHECK_EQ(stream_->type(), SPDY_PUSH_STREAM);
-      InitializeStreamHelper();
-      return OK;
-    }
-  }
 
   int rv = stream_request_.StartRequest(
       SPDY_REQUEST_RESPONSE_STREAM, spdy_session_, request_info_->url,
@@ -295,19 +226,7 @@ int SpdyHttpStream::SendRequest(const HttpRequestHeaders& request_headers,
 
   CHECK(!callback.is_null());
   CHECK(response);
-
-  // SendRequest can be called in two cases.
-  //
-  // a) A client initiated request. In this case, |response_info_| should be
-  //    NULL to start with.
-  // b) A client request which matches a response that the server has already
-  //    pushed.
-  if (push_response_info_.get()) {
-    *response = *(push_response_info_.get());
-    push_response_info_.reset();
-  } else {
-    DCHECK_EQ(static_cast<HttpResponseInfo*>(nullptr), response_info_);
-  }
+  DCHECK(!response_info_);
 
   response_info_ = response;
 
@@ -318,23 +237,8 @@ int SpdyHttpStream::SendRequest(const HttpRequestHeaders& request_headers,
     return result;
   response_info_->remote_endpoint = address;
 
-  if (stream_->type() == SPDY_PUSH_STREAM) {
-    // Pushed streams do not send any data, and should always be
-    // idle. However, we still want to return ERR_IO_PENDING to mimic
-    // non-push behavior. The callback will be called when the
-    // response is received.
-    CHECK(response_callback_.is_null());
-    response_callback_ = std::move(callback);
-    return ERR_IO_PENDING;
-  }
-
   spdy::Http2HeaderBlock headers;
   CreateSpdyHeadersFromHttpRequest(*request_info_, request_headers, &headers);
-  stream_->net_log().AddEvent(
-      NetLogEventType::HTTP_TRANSACTION_HTTP2_SEND_REQUEST_HEADERS,
-      [&](NetLogCaptureMode capture_mode) {
-        return Http2HeaderBlockNetLogParams(&headers, capture_mode);
-      });
   DispatchRequestHeadersCallback(headers);
 
   bool will_send_data =
@@ -384,16 +288,10 @@ void SpdyHttpStream::OnEarlyHintsReceived(
 }
 
 void SpdyHttpStream::OnHeadersReceived(
-    const spdy::Http2HeaderBlock& response_headers,
-    const spdy::Http2HeaderBlock* pushed_request_headers) {
+    const spdy::Http2HeaderBlock& response_headers) {
   DCHECK(!response_headers_complete_);
+  DCHECK(response_info_);
   response_headers_complete_ = true;
-
-  if (!response_info_) {
-    DCHECK_EQ(stream_->type(), SPDY_PUSH_STREAM);
-    push_response_info_ = std::make_unique<HttpResponseInfo>();
-    response_info_ = push_response_info_.get();
-  }
 
   const int rv = SpdyHeadersToHttpResponse(response_headers, response_info_);
   DCHECK_NE(rv, ERR_INCOMPLETE_HTTP2_HEADERS);
@@ -402,16 +300,6 @@ void SpdyHttpStream::OnHeadersReceived(
     // Cancel will call OnClose, which might call callbacks and might destroy
     // `this`.
     stream_->Cancel(rv);
-    return;
-  }
-
-  if (pushed_request_headers &&
-      !ValidatePushedHeaders(*request_info_, *pushed_request_headers,
-                             response_headers, *response_info_)) {
-    // Cancel will call OnClose, which might call callbacks and might destroy
-    // `this`.
-    stream_->Cancel(ERR_HTTP2_PUSHED_RESPONSE_DOES_NOT_MATCH);
-
     return;
   }
 
@@ -442,7 +330,7 @@ void SpdyHttpStream::OnDataReceived(std::unique_ptr<SpdyBuffer> buffer) {
   // ReadResponseBody(), therefore user_buffer_ may be NULL.  This may often
   // happen for server initiated streams.
   DCHECK(stream_);
-  DCHECK(!stream_->IsClosed() || stream_->type() == SPDY_PUSH_STREAM);
+  DCHECK(!stream_->IsClosed());
   if (buffer) {
     response_body_queue_.Enqueue(std::move(buffer));
     MaybeScheduleBufferedReadCallback();

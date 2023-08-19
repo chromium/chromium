@@ -85,7 +85,7 @@ std::vector<Section> GetSections(
 class FormStructureSectioningTest : public testing::Test {
  public:
   void AssignSectionsAndLogMetrics(
-      const std::vector<std::unique_ptr<AutofillField>>& fields) {
+      base::span<const std::unique_ptr<AutofillField>> fields) {
     AssignSections(fields);
     // Since only the UMA metrics are tested, the form signature and UKM logger
     // are irrelevant.
@@ -140,10 +140,11 @@ TEST_F(FormStructureSectioningTest, ExampleFormNoSectioningMode) {
                   Section::FromFieldIdentifier(*fields[6], frame_token_ids),
                   Section::FromFieldIdentifier(*fields[6], frame_token_ids),
                   Section::FromFieldIdentifier(*fields[4], frame_token_ids)));
-  EXPECT_EQ(ComputeSectioningSignature(fields), StrToHash32Bit("001022332"));
+  // The metrics ignore the section of field #5 because it's unfocusable.
+  EXPECT_EQ(ComputeSectioningSignature(fields), StrToHash32Bit("00102332"));
   histogram_tester.ExpectUniqueSample(kNumberOfSectionsHistogram, 4, 1);
   EXPECT_THAT(histogram_tester.GetAllSamples(kFieldsPerSectionHistogram),
-              BucketsAre(Bucket(1, 1), Bucket(2, 1), Bucket(3, 2)));
+              BucketsAre(Bucket(1, 1), Bucket(2, 2), Bucket(3, 1)));
 }
 
 TEST_F(FormStructureSectioningTest,
@@ -175,10 +176,11 @@ TEST_F(FormStructureSectioningTest,
                   Section::FromFieldIdentifier(*fields[6], frame_token_ids),
                   Section::FromFieldIdentifier(*fields[6], frame_token_ids),
                   Section::FromFieldIdentifier(*fields[4], frame_token_ids)));
-  EXPECT_EQ(ComputeSectioningSignature(fields), StrToHash32Bit("001122332"));
+  // The metrics ignore the section of field #5 because it's unfocusable.
+  EXPECT_EQ(ComputeSectioningSignature(fields), StrToHash32Bit("00112332"));
   histogram_tester.ExpectUniqueSample(kNumberOfSectionsHistogram, 4, 1);
   EXPECT_THAT(histogram_tester.GetAllSamples(kFieldsPerSectionHistogram),
-              BucketsAre(Bucket(2, 3), Bucket(3, 1)));
+              BucketsAre(Bucket(2, 4), Bucket(3, 0)));
 }
 
 TEST_F(FormStructureSectioningTest, ExampleFormSectioningModeCreateGaps) {
@@ -210,10 +212,11 @@ TEST_F(FormStructureSectioningTest, ExampleFormSectioningModeCreateGaps) {
                   Section::FromFieldIdentifier(*fields[6], frame_token_ids),
                   Section::FromFieldIdentifier(*fields[6], frame_token_ids),
                   Section::FromFieldIdentifier(*fields[4], frame_token_ids)));
-  EXPECT_EQ(ComputeSectioningSignature(fields), StrToHash32Bit("001233443"));
+  // The metrics ignore the section of field #5 because it's unfocusable.
+  EXPECT_EQ(ComputeSectioningSignature(fields), StrToHash32Bit("00123443"));
   histogram_tester.ExpectUniqueSample(kNumberOfSectionsHistogram, 5, 1);
   EXPECT_THAT(histogram_tester.GetAllSamples(kFieldsPerSectionHistogram),
-              BucketsAre(Bucket(1, 2), Bucket(2, 2), Bucket(3, 1)));
+              BucketsAre(Bucket(1, 2), Bucket(2, 3), Bucket(3, 0)));
 }
 
 TEST_F(FormStructureSectioningTest, ExampleFormSectioningModeExpand) {
@@ -245,10 +248,11 @@ TEST_F(FormStructureSectioningTest, ExampleFormSectioningModeExpand) {
                   Section::FromFieldIdentifier(*fields[4], frame_token_ids),
                   Section::FromFieldIdentifier(*fields[4], frame_token_ids),
                   Section::FromFieldIdentifier(*fields[4], frame_token_ids)));
-  EXPECT_EQ(ComputeSectioningSignature(fields), StrToHash32Bit("001022222"));
+  // The metrics ignore the section of field #5 because it's unfocusable.
+  EXPECT_EQ(ComputeSectioningSignature(fields), StrToHash32Bit("00102222"));
   histogram_tester.ExpectUniqueSample(kNumberOfSectionsHistogram, 3, 1);
   EXPECT_THAT(histogram_tester.GetAllSamples(kFieldsPerSectionHistogram),
-              BucketsAre(Bucket(1, 1), Bucket(3, 1), Bucket(5, 1)));
+              BucketsAre(Bucket(1, 1), Bucket(3, 1), Bucket(4, 1)));
 }
 
 // Tests that an invisible <select> does not start a new section. Consider the
@@ -300,34 +304,10 @@ TEST_F(FormStructureSectioningTest,
                   Section::FromFieldIdentifier(*fields[4], frame_token_ids),
                   Section::FromFieldIdentifier(*fields[4], frame_token_ids),
                   Section::FromFieldIdentifier(*fields[4], frame_token_ids)));
-  EXPECT_EQ(ComputeSectioningSignature(fields), StrToHash32Bit("00001111"));
+  EXPECT_EQ(ComputeSectioningSignature(fields), StrToHash32Bit("01111"));
   histogram_tester.ExpectUniqueSample(kNumberOfSectionsHistogram, 2, 1);
   EXPECT_THAT(histogram_tester.GetAllSamples(kFieldsPerSectionHistogram),
-              BucketsAre(Bucket(4, 2)));
-}
-
-TEST_F(FormStructureSectioningTest, ExpandOverUnfocusableFields) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      features::kAutofillUseParameterizedSectioning,
-      {{features::kAutofillSectioningModeExpandOverUnfocusableFields.name,
-        "true"}});
-
-  std::vector<std::unique_ptr<AutofillField>> fields =
-      CreateFields({{.field_type = NAME_FULL},
-                    {.field_type = ADDRESS_HOME_COUNTRY, .is_focusable = false},
-                    {.field_type = ADDRESS_HOME_STREET_NAME}});
-  base::HistogramTester histogram_tester;
-  AssignSectionsAndLogMetrics(fields);
-
-  base::flat_map<LocalFrameToken, size_t> frame_token_ids;
-  const Section expected_section =
-      Section::FromFieldIdentifier(*fields[0], frame_token_ids);
-  EXPECT_EQ(GetSections(fields), std::vector<Section>(3, expected_section));
-  EXPECT_EQ(ComputeSectioningSignature(fields), StrToHash32Bit("000"));
-  histogram_tester.ExpectUniqueSample(kNumberOfSectionsHistogram, 1, 1);
-  EXPECT_THAT(histogram_tester.GetAllSamples(kFieldsPerSectionHistogram),
-              BucketsAre(Bucket(3, 1)));
+              BucketsAre(Bucket(1, 1), Bucket(4, 1)));
 }
 
 }  // namespace

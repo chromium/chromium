@@ -6,9 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+#import "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
 
 namespace tests_hook {
 
@@ -42,6 +40,11 @@ bool DisablePromoManagerFullScreenPromos() {
   // Always disable full-screen promos for perf tests.
   return true;
 }
+std::unique_ptr<ProfileOAuth2TokenService> GetOverriddenTokenService(
+    PrefService* user_prefs,
+    std::unique_ptr<ProfileOAuth2TokenServiceDelegate> delegate) {
+  return nullptr;
+}
 bool DisableUpgradeSigninPromo() {
   // Always disable upgrade sign-in promo for perf tests.
   return true;
@@ -59,6 +62,10 @@ policy::ConfigurationPolicyProvider* GetOverriddenPlatformPolicyProvider() {
   return nullptr;
 }
 std::unique_ptr<SystemIdentityManager> CreateSystemIdentityManager() {
+  return nullptr;
+}
+std::unique_ptr<password_manager::BulkLeakCheckServiceInterface>
+GetOverriddenBulkLeakCheckService() {
   return nullptr;
 }
 void SetUpTestsIfPresent() {}

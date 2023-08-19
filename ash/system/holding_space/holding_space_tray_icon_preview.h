@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/views/view.h"
@@ -124,6 +125,9 @@ class ASH_EXPORT HoldingSpaceTrayIconPreview
   // The given `vector_2df` should specify the desired value for horizontal
   // alignment in LTR and will be adjusted for vertical alignment and/or RTL.
   void AdjustForShelfAlignmentAndTextDirection(gfx::Vector2dF* vector_2df);
+
+  // Returns the color resolved for the specified `color_id`.
+  SkColor GetColor(ui::ColorId color_id) const;
 
   // The shelf whose holding space tray icon this preview belongs.
   const raw_ptr<Shelf, ExperimentalAsh> shelf_;

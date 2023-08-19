@@ -100,12 +100,20 @@ bool CaptureModeTestApi::IsPendingDlpCheck() const {
 
 bool CaptureModeTestApi::IsSessionWaitingForDlpConfirmation() const {
   return controller_->IsActive() &&
-         controller_->capture_mode_session_->is_waiting_for_dlp_confirmation_;
+         controller_->capture_mode_session_->session_type() ==
+             SessionType::kReal &&
+         static_cast<CaptureModeSession*>(
+             controller_->capture_mode_session_.get())
+             ->is_waiting_for_dlp_confirmation_;
 }
 
 bool CaptureModeTestApi::IsInCountDownAnimation() const {
   return controller_->IsActive() &&
-         controller_->capture_mode_session_->IsInCountDownAnimation();
+         controller_->capture_mode_session_->session_type() ==
+             SessionType::kReal &&
+         static_cast<CaptureModeSession*>(
+             controller_->capture_mode_session_.get())
+             ->IsInCountDownAnimation();
 }
 
 void CaptureModeTestApi::StopVideoRecording() {
@@ -168,7 +176,9 @@ CaptureModeTestApi::GetRecordingOverlayController() {
 
 void CaptureModeTestApi::SimulateOpeningFolderSelectionDialog() {
   DCHECK(controller_->IsActive());
-  auto* session = controller_->capture_mode_session();
+  auto* session =
+      static_cast<CaptureModeSession*>(controller_->capture_mode_session());
+  CHECK_EQ(session->session_type(), SessionType::kReal);
   DCHECK(!session->capture_mode_settings_widget_);
   session->SetSettingsMenuShown(true);
   DCHECK(session->capture_mode_settings_widget_);
@@ -187,7 +197,9 @@ void CaptureModeTestApi::SimulateOpeningFolderSelectionDialog() {
 
 aura::Window* CaptureModeTestApi::GetFolderSelectionDialogWindow() {
   DCHECK(controller_->IsActive());
-  auto* session = controller_->capture_mode_session();
+  auto* session =
+      static_cast<CaptureModeSession*>(controller_->capture_mode_session());
+  CHECK_EQ(session->session_type(), SessionType::kReal);
   auto* dialog_controller = session->folder_selection_dialog_controller_.get();
   return dialog_controller ? dialog_controller->dialog_window() : nullptr;
 }

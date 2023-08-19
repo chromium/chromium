@@ -20,12 +20,10 @@
 #include "base/check.h"
 #include "base/containers/adapters.h"
 #include "base/containers/flat_map.h"
-#include "base/files/file_path.h"
-#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -37,6 +35,26 @@
 namespace ash {
 
 namespace {
+
+constexpr bool IsAllowedInPrefs(WallpaperType type) {
+  switch (type) {
+    case WallpaperType::kOobe:
+    case WallpaperType::kOneShot:
+    case WallpaperType::kDevice:
+    // `kThirdParty` is actually saved to `WallpaperInfo` pref as `kCustomized`.
+    case WallpaperType::kThirdParty:
+    case WallpaperType::kCount:
+      return false;
+    case WallpaperType::kDaily:
+    case WallpaperType::kCustomized:
+    case WallpaperType::kDefault:
+    case WallpaperType::kOnline:
+    case WallpaperType::kPolicy:
+    case WallpaperType::kDailyGooglePhotos:
+    case WallpaperType::kOnceGooglePhotos:
+      return true;
+  }
+}
 
 constexpr bool IsWallpaperTypeSyncable(WallpaperType type) {
   switch (type) {
@@ -139,10 +157,22 @@ bool GetWallpaperInfo(const AccountId& account_id,
   if (!location || !layout || !type || !date_string)
     return false;
 
-  if (type.value() >= static_cast<int>(WallpaperType::kCount))
+  // Perform special handling of pref values >= kCount before hitting the DCHECK
+  // below. This can happen in normal operation when syncing from a newer
+  // release to an older one, so should not DCHECK.
+  if (type.value() >= base::to_underlying(WallpaperType::kCount)) {
+    LOG(WARNING) << "Skipping wallpaper sync due to unrecognized WallpaperType="
+                 << type.value()
+                 << ". This likely happened due to sync from a newer version "
+                    "of ChromeOS.";
     return false;
+  }
 
   WallpaperType wallpaper_type = static_cast<WallpaperType>(type.value());
+  DCHECK(IsAllowedInPrefs(wallpaper_type))
+      << "Invalid WallpaperType=" << base::to_underlying(wallpaper_type)
+      << " in prefs";
+
   info->type = wallpaper_type;
 
   int64_t date_val;
@@ -169,6 +199,10 @@ bool SetWallpaperInfo(const AccountId& account_id,
                       const std::string& pref_name) {
   if (!pref_service)
     return false;
+
+  DCHECK(IsAllowedInPrefs(info.type))
+      << "Cannot save WallpaperType=" << base::to_underlying(info.type)
+      << " to prefs";
 
   ScopedDictPrefUpdate wallpaper_update(pref_service, pref_name);
   base::Value::Dict wallpaper_info_dict;
@@ -626,7 +660,8 @@ bool WallpaperPrefManager::ShouldSyncOut(const WallpaperInfo& local_info) {
 
 // static
 bool WallpaperPrefManager::ShouldSyncIn(const WallpaperInfo& synced_info,
-                                        const WallpaperInfo& local_info) {
+                                        const WallpaperInfo& local_info,
+                                        const bool is_oobe) {
   if (!IsWallpaperTypeSyncable(synced_info.type)) {
     LOG(ERROR) << " wallpaper type " << static_cast<int>(synced_info.type)
                << " from remote prefs is not syncable.";
@@ -634,6 +669,12 @@ bool WallpaperPrefManager::ShouldSyncIn(const WallpaperInfo& synced_info,
   }
   if (synced_info.MatchesSelection(local_info)) {
     return false;
+  }
+  if (is_oobe) {
+    // synced-in wallpaper during OOBE should always be honored. The user is
+    // setting up a new device and should see the wallpaper they last set on
+    // their account if it exists.
+    return true;
   }
   if (synced_info.date < local_info.date) {
     return false;

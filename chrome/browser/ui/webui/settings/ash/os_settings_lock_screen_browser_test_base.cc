@@ -6,7 +6,9 @@
 
 namespace ash::settings {
 
-OSSettingsLockScreenBrowserTestBase::OSSettingsLockScreenBrowserTestBase() {
+OSSettingsLockScreenBrowserTestBase::OSSettingsLockScreenBrowserTestBase(
+    PasswordType password_type)
+    : password_type_(password_type) {
   // We configure FakeUserDataAuthClient (via `cryptohome_`) here and not
   // later because the global PinBackend object reads whether or not
   // cryptohome PINs are supported on startup. If we set up
@@ -16,7 +18,14 @@ OSSettingsLockScreenBrowserTestBase::OSSettingsLockScreenBrowserTestBase() {
   cryptohome_.set_enable_auth_check(true);
   cryptohome_.set_supports_low_entropy_credentials(true);
   cryptohome_.MarkUserAsExisting(GetAccountId());
-  cryptohome_.AddGaiaPassword(GetAccountId(), kPassword);
+  switch (password_type) {
+    case PasswordType::kGaia:
+      cryptohome_.AddGaiaPassword(GetAccountId(), kPassword);
+      break;
+    case PasswordType::kLocal:
+      cryptohome_.AddLocalPassword(GetAccountId(), kPassword);
+      break;
+  }
 }
 
 OSSettingsLockScreenBrowserTestBase::~OSSettingsLockScreenBrowserTestBase() =

@@ -40,16 +40,17 @@ from typing import Dict, Callable, Iterator, List, Tuple, Optional
 USE_PYTHON_3 = f'{__file__} will only run under python3.'
 
 _SRC_ROOT = pathlib.Path(__file__).resolve().parents[3]
-sys.path.append(str(_SRC_ROOT / 'build/android'))
+sys.path.insert(1, str(_SRC_ROOT / 'build'))
+import gn_helpers
+
+sys.path.insert(1, str(_SRC_ROOT / 'build/android'))
 from pylib import constants
 import devil_chromium
 
-sys.path.append(str(_SRC_ROOT / 'third_party/catapult/devil'))
+sys.path.insert(1, str(_SRC_ROOT / 'third_party/catapult/devil'))
 from devil.android.sdk import adb_wrapper
 from devil.android import device_utils
 
-_AUTONINJA_PATH = _SRC_ROOT / 'third_party/depot_tools/autoninja'
-_NINJA_PATH = _SRC_ROOT / 'third_party/ninja/ninja'
 _GN_PATH = _SRC_ROOT / 'third_party/depot_tools/gn'
 
 _EMULATOR_AVD_DIR = _SRC_ROOT / 'tools/android/avd'
@@ -322,16 +323,11 @@ def _run_gn_gen(out_dir: pathlib.Path) -> float:
     return _run_and_time_cmd([str(_GN_PATH), 'gen', '-C', str(out_dir)])
 
 
-def _run_autoninja(out_dir: pathlib.Path, target: str) -> float:
-    return _run_and_time_cmd(
-        [str(_AUTONINJA_PATH), '-C',
-         str(out_dir), target])
-
-
-def _run_ninja(out_dir: pathlib.Path, target: str, j: str) -> float:
-    return _run_and_time_cmd(
-        [str(_NINJA_PATH), '-j', j, '-C',
-         str(out_dir), target])
+def _compile(out_dir: pathlib.Path, target: str, j: Optional[str]) -> float:
+    cmd = gn_helpers.CreateBuildCommand(str(out_dir))
+    if j is not None:
+        cmd += ['-j', j]
+    return _run_and_time_cmd(cmd + [target])
 
 
 def _run_install(out_dir: pathlib.Path, target: str,
@@ -352,10 +348,7 @@ def _run_install(out_dir: pathlib.Path, target: str,
 def _run_and_maybe_install(out_dir: pathlib.Path, target: str,
                            emulator: Optional[device_utils.DeviceUtils],
                            j: Optional[str]) -> float:
-    if j is None:
-        total_time = _run_autoninja(out_dir, target)
-    else:
-        total_time = _run_ninja(out_dir, target, j)
+    total_time = _compile(out_dir, target, j)
     if emulator:
         total_time += _run_install(out_dir, target, emulator.serial)
     return total_time

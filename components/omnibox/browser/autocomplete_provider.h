@@ -173,6 +173,7 @@ class AutocompleteProvider
     TYPE_HISTORY_FUZZY = 1 << 16,
     TYPE_OPEN_TAB = 1 << 17,
     TYPE_HISTORY_CLUSTER_PROVIDER = 1 << 18,
+    TYPE_CALCULATOR = 1 << 19,
   };
 
   explicit AutocompleteProvider(Type type);

@@ -52,9 +52,6 @@ _NAMED_TYPE_INFO = {
       'GL_COMMANDS_ISSUED_TIMESTAMP_CHROMIUM',
       'GL_COMMANDS_COMPLETED_CHROMIUM',
     ],
-    'invalid': [
-      'GL_LATENCY_QUERY_CHROMIUM',
-    ],
   },
   'TextureParameter': {
     'type': 'GLenum',
@@ -116,34 +113,6 @@ _NAMED_TYPE_INFO = {
       'gfx::BufferUsage::CAMERA_AND_CPU_READ_WRITE',
     ],
   },
-  'viz::ResourceFormat': {
-    'type': 'viz::ResourceFormat',
-    'valid': [
-      'viz::ResourceFormat::RGBA_8888',
-      'viz::ResourceFormat::RGBA_4444',
-      'viz::ResourceFormat::BGRA_8888',
-      'viz::ResourceFormat::ALPHA_8',
-      'viz::ResourceFormat::LUMINANCE_8',
-      'viz::ResourceFormat::RGB_565',
-      'viz::ResourceFormat::BGR_565',
-      'viz::ResourceFormat::RED_8',
-      'viz::ResourceFormat::RG_88',
-      'viz::ResourceFormat::LUMINANCE_F16',
-      'viz::ResourceFormat::RGBA_F16',
-      'viz::ResourceFormat::R16_EXT',
-      'viz::ResourceFormat::RGBX_8888',
-      'viz::ResourceFormat::BGRX_8888',
-      'viz::ResourceFormat::RGBA_1010102',
-      'viz::ResourceFormat::BGRA_1010102',
-      'viz::ResourceFormat::YVU_420',
-      'viz::ResourceFormat::YUV_420_BIPLANAR',
-      'viz::ResourceFormat::YUVA_420_TRIPLANAR',
-      'viz::ResourceFormat::P010',
-    ],
-    'invalid': [
-      'viz::ResourceFormat::ETC1',
-    ],
-  },
   'gpu::raster::MsaaMode': {
     'type': 'gpu::raster::MsaaMode',
     'is_complete': True,
@@ -203,6 +172,14 @@ _FUNCTION_INFO = {
   },
   'WritePixelsINTERNAL': {
     'decoder_func': 'DoWritePixelsINTERNAL',
+    'internal': True,
+    'type': 'PUT',
+    'count': 16,  # GL_MAILBOX_SIZE_CHROMIUM
+    'unit_test': False,
+    'trace_level': 2,
+  },
+  'WritePixelsYUVINTERNAL': {
+    'decoder_func': 'DoWritePixelsYUVINTERNAL',
     'internal': True,
     'type': 'PUT',
     'count': 16,  # GL_MAILBOX_SIZE_CHROMIUM

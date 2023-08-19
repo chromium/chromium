@@ -6,20 +6,18 @@
 
 #import <Cocoa/Cocoa.h>
 
-#import "base/mac/scoped_nsobject.h"
 #import "components/remote_cocoa/app_shim/mouse_capture_delegate.h"
 #import "ui/base/test/cocoa_helper.h"
 #import "ui/events/test/cocoa_test_event_utils.h"
 
 // Simple test view that counts calls to -[NSView mouseDown:].
-@interface CocoaMouseCaptureTestView : NSView {
- @private
-  int _mouseDownCount;
-}
+@interface CocoaMouseCaptureTestView : NSView
 @property(readonly, nonatomic) int mouseDownCount;
 @end
 
-@implementation CocoaMouseCaptureTestView
+@implementation CocoaMouseCaptureTestView {
+  int _mouseDownCount;
+}
 
 @synthesize mouseDownCount = _mouseDownCount;
 
@@ -63,7 +61,7 @@ class TestCaptureDelegate : public CocoaMouseCaptureDelegate {
   bool should_claim_event_ = true;
   int event_count_ = 0;
   int capture_lost_count_ = 0;
-  NSWindow* window_;
+  NSWindow* __strong window_;
 };
 
 }  // namespace
@@ -107,15 +105,15 @@ TEST_F(CocoaMouseCaptureTest, OnCaptureLost) {
 
 // Test event capture.
 TEST_F(CocoaMouseCaptureTest, CaptureEvents) {
-  base::scoped_nsobject<CocoaMouseCaptureTestView> view(
-      [[CocoaMouseCaptureTestView alloc] initWithFrame:NSZeroRect]);
-  [test_window() setContentView:view];
+  CocoaMouseCaptureTestView* view =
+      [[CocoaMouseCaptureTestView alloc] initWithFrame:NSZeroRect];
+  test_window().contentView = view;
   NSArray<NSEvent*>* click = cocoa_test_event_utils::MouseClickInView(view, 1);
 
   // First check that the view receives events normally.
-  EXPECT_EQ(0, [view mouseDownCount]);
+  EXPECT_EQ(0, view.mouseDownCount);
   [NSApp sendEvent:click[0]];
-  EXPECT_EQ(1, [view mouseDownCount]);
+  EXPECT_EQ(1, view.mouseDownCount);
 
   {
     TestCaptureDelegate capture(test_window());
@@ -124,26 +122,26 @@ TEST_F(CocoaMouseCaptureTest, CaptureEvents) {
     // Now check that the capture captures events.
     EXPECT_EQ(0, capture.event_count());
     [NSApp sendEvent:click[0]];
-    EXPECT_EQ(1, [view mouseDownCount]);
+    EXPECT_EQ(1, view.mouseDownCount);
     EXPECT_EQ(1, capture.event_count());
   }
 
   // After the capture goes away, events should be received again.
   [NSApp sendEvent:click[0]];
-  EXPECT_EQ(2, [view mouseDownCount]);
+  EXPECT_EQ(2, view.mouseDownCount);
 }
 
 // Test local events properly swallowed / propagated.
 TEST_F(CocoaMouseCaptureTest, SwallowOrPropagateEvents) {
-  base::scoped_nsobject<CocoaMouseCaptureTestView> view(
-      [[CocoaMouseCaptureTestView alloc] initWithFrame:NSZeroRect]);
-  [test_window() setContentView:view];
+  CocoaMouseCaptureTestView* view =
+      [[CocoaMouseCaptureTestView alloc] initWithFrame:NSZeroRect];
+  test_window().contentView = view;
   NSArray<NSEvent*>* click = cocoa_test_event_utils::MouseClickInView(view, 1);
 
   // First check that the view receives events normally.
-  EXPECT_EQ(0, [view mouseDownCount]);
+  EXPECT_EQ(0, view.mouseDownCount);
   [NSApp sendEvent:click[0]];
-  EXPECT_EQ(1, [view mouseDownCount]);
+  EXPECT_EQ(1, view.mouseDownCount);
 
   {
     TestCaptureDelegate capture(test_window());
@@ -152,19 +150,19 @@ TEST_F(CocoaMouseCaptureTest, SwallowOrPropagateEvents) {
     // By default, the delegate should claim events.
     EXPECT_EQ(0, capture.event_count());
     [NSApp sendEvent:click[0]];
-    EXPECT_EQ(1, [view mouseDownCount]);
+    EXPECT_EQ(1, view.mouseDownCount);
     EXPECT_EQ(1, capture.event_count());
 
     // Set the delegate not to claim events.
     capture.set_should_claim_event(false);
     [NSApp sendEvent:click[0]];
-    EXPECT_EQ(2, [view mouseDownCount]);
+    EXPECT_EQ(2, view.mouseDownCount);
     EXPECT_EQ(2, capture.event_count());
 
     // Setting it back should restart the claiming of events.
     capture.set_should_claim_event(true);
     [NSApp sendEvent:click[0]];
-    EXPECT_EQ(2, [view mouseDownCount]);
+    EXPECT_EQ(2, view.mouseDownCount);
     EXPECT_EQ(3, capture.event_count());
   }
 }

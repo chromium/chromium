@@ -46,13 +46,21 @@ struct BLINK_COMMON_EXPORT
     return r.paint_order;
   }
 
-  static bool is_root(const blink::ViewTransitionElement& r) {
-    return r.is_root;
-  }
-
   static const absl::optional<gfx::RectF>& captured_rect_in_layout_space(
       const blink::ViewTransitionElement& r) {
     return r.captured_rect_in_layout_space;
+  }
+
+  static uint8_t container_writing_mode(const blink::ViewTransitionElement& r) {
+    return r.container_writing_mode;
+  }
+
+  static uint8_t mix_blend_mode(const blink::ViewTransitionElement& r) {
+    return r.mix_blend_mode;
+  }
+
+  static uint8_t text_orientation(const blink::ViewTransitionElement& r) {
+    return r.text_orientation;
   }
 
   static bool Read(blink::mojom::ViewTransitionElementDataView r,

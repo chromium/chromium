@@ -15,8 +15,6 @@ import {BrowserProxy, BrowserProxyImpl, IssueDetails} from './browser_proxy.js';
 import {getTemplate} from './issue_details.html.js';
 import {SupportToolPageMixin} from './support_tool_page_mixin.js';
 
-const DONT_INCLUDE_EMAIL: string = 'Do not include email address';
-
 const IssueDetailsElementBase = SupportToolPageMixin(PolymerElement);
 
 export class IssueDetailsElement extends IssueDetailsElementBase {
@@ -36,7 +34,7 @@ export class IssueDetailsElement extends IssueDetailsElementBase {
       },
       emails_: {
         type: Array,
-        value: () => [DONT_INCLUDE_EMAIL],
+        value: () => [],
       },
       issueDescription_: {
         type: String,
@@ -50,10 +48,11 @@ export class IssueDetailsElement extends IssueDetailsElementBase {
   }
 
   private caseId_: string;
-  private emails_: string[];
+  private emails_: string[] = [this.i18n('dontIncludeEmailAddress')];
   private issueDescription_: string;
   private selectedEmail_: string;
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
+
 
   override connectedCallback() {
     super.connectedCallback();
@@ -62,7 +61,7 @@ export class IssueDetailsElement extends IssueDetailsElementBase {
       this.emails_ = emails;
       // Add default email at the end of emails list for user to be able to
       // choose to not include email address.
-      this.emails_.push(DONT_INCLUDE_EMAIL);
+      this.emails_.push(this.i18n('dontIncludeEmailAddress'));
     });
   }
 
@@ -71,7 +70,8 @@ export class IssueDetailsElement extends IssueDetailsElementBase {
       caseId: this.caseId_,
       // Set emailAddress field to empty string if user selected to not include
       // email address.
-      emailAddress: (this.selectedEmail_ === DONT_INCLUDE_EMAIL) ?
+      emailAddress:
+          (this.selectedEmail_ === this.i18n('dontIncludeEmailAddress')) ?
           '' :
           this.selectedEmail_,
       issueDescription: this.issueDescription_,

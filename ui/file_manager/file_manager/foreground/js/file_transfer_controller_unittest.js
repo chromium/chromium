@@ -4,13 +4,14 @@
 
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
-import {decorate} from '../../common/js/ui.js';
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {DialogType} from '../../common/js/dialog_type.js';
 import {queryRequiredElement} from '../../common/js/dom_utils.js';
 import {MockDirectoryEntry, MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
+import {decorate} from '../../common/js/ui.js';
 import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
@@ -56,36 +57,36 @@ let mockChrome;
 
 export function setUp() {
   // Setup page DOM.
-  document.body.innerHTML = [
-    '<style>',
-    '  .hide {',
-    '    display: none;',
-    '  }',
-    '</style>',
-    '<command id="cut">',
-    '<command id="copy">',
-    '<div class="dialog-container">',
-    '  <div tabindex="0" id="directory-tree">',
-    '  </div>',
-    '  <div id="list-container">',
-    '    <files-spinner class="loading-indicator" hidden></files-spinner>',
-    '    <div id="detail-table">',
-    '      <list id="file-list" contextmenu="#file-context-menu" tabindex="0">',
-    '      </list>',
-    '    </div>',
-    '    <grid id="file-grid" contextmenu="#file-context-menu" ',
-    '          tabindex="0" hidden>',
-    '    </grid>',
-    '    <paper-progress class="loading-indicator" hidden></paper-progress>',
-    '  </div>',
-    '  <div id="dialog">',
-    '  </div>',
-    '  <div id="test-elements">',
-    '    <input type="text" id="free-text">',
-    '    <cr-input id="test-input"></cr-input>',
-    '    <input type="button" id="button">',
-    '</div>',
-  ].join('');
+  document.body.innerHTML = getTrustedHTML`
+    <style>
+    .hide {
+      display: none;
+    }
+    </style>
+    <command id="cut">
+    <command id="copy">
+    <div class="dialog-container">
+      <div tabindex="0" id="directory-tree">
+      </div>
+      <div id="list-container">
+        <files-spinner class="loading-indicator" hidden></files-spinner>
+        <div id="detail-table">
+          <list id="file-list" contextmenu="#file-context-menu" tabindex="0">
+          </list>
+        </div>
+        <grid id="file-grid" contextmenu="#file-context-menu"
+          tabindex="0" hidden>
+        </grid>
+        <paper-progress class="loading-indicator" hidden></paper-progress>
+      </div>
+      <div id="dialog">
+      </div>
+      <div id="test-elements">
+        <input type="text" id="free-text">
+        <cr-input id="test-input"></cr-input>
+        <input type="button" id="button">
+    </div>
+  `;
 
   // Initialize Command with the <command>s.
   decorate('command', Command);

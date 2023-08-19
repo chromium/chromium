@@ -31,7 +31,7 @@ class PrintingContextTest : public PrintingTest<testing::Test>,
   void PrintSettingsCallback(mojom::ResultCode result) { result_ = result; }
 
   // PrintingContext::Delegate methods.
-  gfx::NativeView GetParentView() override { return nullptr; }
+  gfx::NativeView GetParentView() override { return gfx::NativeView(); }
   std::string GetAppLocale() override { return std::string(); }
 
  protected:

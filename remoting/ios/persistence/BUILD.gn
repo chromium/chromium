@@ -22,8 +22,6 @@ source_set("persistence") {
     "//base",
     "//remoting/ios/domain",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("test_support") {
@@ -40,8 +38,6 @@ source_set("test_support") {
     ":persistence",
     "//base",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("unit_tests") {
@@ -59,6 +55,4 @@ source_set("unit_tests") {
   ]
 
   frameworks = [ "Security.framework" ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

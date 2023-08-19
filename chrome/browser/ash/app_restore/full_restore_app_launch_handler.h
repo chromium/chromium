@@ -15,12 +15,12 @@
 #include "components/app_restore/restore_data.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 
+class Profile;
+
 namespace apps {
 class AppUpdate;
 enum class AppTypeName;
 }  // namespace apps
-
-class Profile;
 
 namespace ash::full_restore {
 
@@ -165,7 +165,7 @@ class FullRestoreAppLaunchHandler : public AppLaunchHandler,
   // Specifies whether init FullRestoreService.
   bool should_init_service_ = false;
 
-  // Restored browser window count. This is used for debug only.
+  // Restored browser window count. This is used for debugging and metrics.
   int browser_app_window_count_ = 0;
   int browser_window_count_ = 0;
 

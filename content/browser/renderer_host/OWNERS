@@ -3,7 +3,6 @@
 kenrb@chromium.org
 
 # Touch input and gesture relatated code.
-rjkroege@chromium.org
 jonross@chromium.org
 
 # Surface ID propagation and synchronization, and compositing embedding
@@ -19,7 +18,6 @@ nasko@chromium.org
 rakina@chromium.org
 
 # Aura platform code.
-per-file *aura*=rjkroege@chromium.org
 per-file *aura*=jonross@chromium.org
 
 # Mac platform GPU-related code.
@@ -41,6 +39,7 @@ per-file back_forward_cache*=file://content/browser/BACK_FORWARD_CACHE_OWNERS
 per-file *clipboard_host_impl*=asully@chromium.org
 per-file *clipboard_host_impl*=ayui@chromium.org
 per-file *clipboard_host_impl*=dcheng@chromium.org
+per-file *clipboard_host_impl*=estade@chromium.org
 
 # AgentSchedulingGroup (MBI)
 per-file agent_scheduling_group*=dom@chromium.org

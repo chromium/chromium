@@ -196,7 +196,7 @@ bool IsRequestApproved(content::WebContents* web_contents,
   gfx::NativeWindow parent_window =
       FindParentWindowForWebContents(web_contents);
 #else
-  gfx::NativeWindow parent_window = nullptr;
+  gfx::NativeWindow parent_window = gfx::NativeWindow();
 #endif
   const std::u16string application_name = base::UTF8ToUTF16(
       extension ? extension->name() : request.security_origin.spec());

@@ -1,0 +1,102 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/crx_file/crx3.gni")
+
+executable("test_meta_installer") {
+  testonly = true
+
+  sources = [
+    "main.cc",
+    "test_installer.rc",
+  ]
+  deps = [
+    "//base",
+    "//chrome/updater:constants_test",
+    "//chrome/updater/win/installer:lib",
+  ]
+}
+
+copy("test_installer") {
+  testonly = true
+
+  sources = [
+    "$root_build_dir/test_meta_installer.exe",
+    "//chrome/tools/build/win/resedit.py",
+    "create_test_installer_gn_wrapper.py",
+    "embed_install_scripts.py",
+  ]
+
+  deps = [ ":test_meta_installer" ]
+
+  outputs = [ "$root_build_dir/test_installer/{{source_file_part}}" ]
+}
+
+action("test_app1_installer") {
+  testonly = true
+  script = "$root_build_dir/test_installer/create_test_installer_gn_wrapper.py"
+
+  inputs = [
+    script,
+    "test_app1_setup.py",
+  ]
+
+  output_installer = "$root_build_dir/test_installer/TestApp1Setup.exe"
+  outputs = [ output_installer ]
+
+  args = [
+    "--installer",
+    rebase_path("$root_build_dir/test_installer/test_meta_installer.exe",
+                root_build_dir),
+    "--output",
+    rebase_path(output_installer, root_build_dir),
+    "--script",
+    rebase_path("test_app1_setup.py"),
+  ]
+  deps = [ ":test_installer" ]
+}
+
+crx3("test_app1_installer_crx") {
+  base_dir = "$root_build_dir/test_installer"
+  key = "//chrome/updater/test/data/selfupdate_test_key.der"
+  output = "$root_build_dir/test_installer/TestApp1Setup.crx3"
+  testonly = true
+
+  inputs = [ "$root_build_dir/test_installer/TestApp1Setup.exe" ]
+  deps = [ ":test_app1_installer" ]
+}
+
+action("test_app2_installer") {
+  testonly = true
+  script = "$root_build_dir/test_installer/create_test_installer_gn_wrapper.py"
+
+  inputs = [
+    script,
+    "test_app2_setup.cmd",
+  ]
+
+  output_installer = "$root_build_dir/test_installer/TestApp2Setup.exe"
+  outputs = [ output_installer ]
+
+  args = [
+    "--installer",
+    rebase_path("$root_build_dir/test_installer/test_meta_installer.exe",
+                root_build_dir),
+    "--output",
+    rebase_path(output_installer, root_build_dir),
+    "--script",
+    rebase_path("test_app2_setup.cmd"),
+  ]
+  deps = [ ":test_installer" ]
+}
+
+crx3("test_app2_installer_crx") {
+  base_dir = "$root_build_dir/test_installer"
+  key = "//chrome/updater/test/data/selfupdate_test_key.der"
+  output = "$root_build_dir/test_installer/TestApp2Setup.crx3"
+  testonly = true
+
+  inputs = [ "$root_build_dir/test_installer/TestApp2Setup.exe" ]
+  deps = [ ":test_app2_installer" ]
+}

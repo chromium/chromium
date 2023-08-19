@@ -12,8 +12,6 @@ source_set("browser_container") {
     "browser_container_mediator.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     ":edit_menu_alert_delegate",
     ":ui",
@@ -60,8 +58,6 @@ source_set("ui") {
     "browser_edit_menu_handler.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//base",
     "//ios/chrome/app/strings",
@@ -82,7 +78,6 @@ source_set("edit_menu_alert_delegate") {
     "edit_menu_alert_delegate.mm",
   ]
   deps = [ "//base" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("unit_tests") {
@@ -95,13 +90,12 @@ source_set("unit_tests") {
     "browser_edit_menu_handler_unittest.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     ":browser_container",
     ":edit_menu_alert_delegate",
     ":ui",
     "//base/test:test_support",
+    "//components/sync_preferences:test_support",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/link_to_text",
     "//ios/chrome/browser/overlays",
@@ -110,12 +104,14 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/link_to_text",
     "//ios/chrome/browser/ui/partial_translate",
     "//ios/chrome/browser/web:web_internal",
     "//ios/chrome/test:test_support",
+    "//ios/chrome/test/providers/partial_translate",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
@@ -125,31 +121,8 @@ source_set("unit_tests") {
   ]
 }
 
-source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
-  testonly = true
-  sources = [ "browser_edit_menu_handler_egtest.mm" ]
-  deps = [
-    ":eg_test_support+eg2",
-    "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/ui/partial_translate:eg_test_support+eg2",
-    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
-    "//ios/testing/earl_grey:eg_test_support+eg2",
-    "//ios/web/public/test:element_selector",
-    "//ios/web/public/test/http_server:http_server",
-    "//net:test_support",
-  ]
-  frameworks = [ "UIKit.framework" ]
-}
-
 source_set("eg_test_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
 
   sources = [
@@ -160,10 +133,7 @@ source_set("eg_test_support+eg2") {
 }
 
 source_set("eg_app_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "edit_menu_app_interface.h",

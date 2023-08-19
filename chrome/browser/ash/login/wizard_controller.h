@@ -15,17 +15,19 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
-#include "base/time/time.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/login/choobe_flow_controller.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_check_screen.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen.h"
+#include "chrome/browser/ash/login/oobe_metrics_helper.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screen_manager.h"
+#include "chrome/browser/ash/login/screens/add_child_screen.h"
 #include "chrome/browser/ash/login/screens/assistant_optin_flow_screen.h"
 #include "chrome/browser/ash/login/screens/choobe_screen.h"
 #include "chrome/browser/ash/login/screens/consolidated_consent_screen.h"
+#include "chrome/browser/ash/login/screens/consumer_update_screen.h"
 #include "chrome/browser/ash/login/screens/cryptohome_recovery_screen.h"
 #include "chrome/browser/ash/login/screens/cryptohome_recovery_setup_screen.h"
 #include "chrome/browser/ash/login/screens/demo_preferences_screen.h"
@@ -55,6 +57,7 @@
 #include "chrome/browser/ash/login/screens/os_trial_screen.h"
 #include "chrome/browser/ash/login/screens/packaged_license_screen.h"
 #include "chrome/browser/ash/login/screens/parental_handoff_screen.h"
+#include "chrome/browser/ash/login/screens/password_selection_screen.h"
 #include "chrome/browser/ash/login/screens/pin_setup_screen.h"
 #include "chrome/browser/ash/login/screens/quick_start_screen.h"
 #include "chrome/browser/ash/login/screens/recommend_apps_screen.h"
@@ -97,12 +100,6 @@ class WizardController : public OobeUI::Observer {
     virtual void OnCurrentScreenChanged(BaseScreen* new_screen) = 0;
     virtual void OnShutdown() = 0;
   };
-
-  // This enum is tied directly to a UMA enum defined in
-  // //tools/metrics/histograms/enums.xml, and should always reflect it (do not
-  // change one without changing the other). Entries should be never modified
-  // or deleted. Only additions possible.
-  enum class ScreenShownStatus { kSkipped = 0, kShown = 1, kMaxValue = kShown };
 
   explicit WizardController(WizardContext* wizard_context);
 
@@ -284,7 +281,8 @@ class WizardController : public OobeUI::Observer {
 
   // Show specific screen.
   void ShowWelcomeScreen();
-  void ShowQuickStartScreen();
+  void ShowQuickStartScreen(
+      QuickStartScreen::EntryPoint quick_start_entry_point);
   void ShowNetworkScreen();
   void ShowEnrollmentScreen();
   void ShowDemoModeSetupScreen();
@@ -330,12 +328,19 @@ class WizardController : public OobeUI::Observer {
   void ShowGaiaPasswordChangedScreen(std::unique_ptr<UserContext> user_context);
   void ShowDrivePinningScreen();
   void ShowGaiaInfoScreen();
+  void ShowAddChildScreen();
+  void ShowConsumerUpdateScreen();
+  void ShowPasswordSelectionScreen();
 
   // Shows images login screen.
   void ShowLoginScreen();
 
-  // Check if advancing to `screen` is allowed using screen priorities. Return
-  // true if the priority of `screen` is higher or equal to current screen.
+  // Show OOBE screen: resume if pending screen otherwise show welcome screen.
+  void ContinueOobeFlow();
+
+  // Check if advancing to `screen` is allowed using screen priorities.
+  // Return true if the priority of `screen` is higher or equal to current
+  // screen.
   bool CanNavigateTo(OobeScreenId screen_id);
 
   // Shows default screen depending on device ownership.
@@ -416,6 +421,9 @@ class WizardController : public OobeUI::Observer {
   void OnDisplaySizeScreenExit(DisplaySizeScreen::Result result);
   void OnDrivePinningScreenExit(DrivePinningScreen::Result result);
   void OnGaiaInfoScreenExit(GaiaInfoScreen::Result result);
+  void OnAddChildScreenExit(AddChildScreen::Result result);
+  void OnConsumerUpdateScreenExit(ConsumerUpdateScreen::Result result);
+  void OnPasswordSelectionScreenExit(PasswordSelectionScreen::Result result);
 
   // Callback invoked once it has been determined whether the device is disabled
   // or not.
@@ -435,8 +443,11 @@ class WizardController : public OobeUI::Observer {
   // the update check.
   void PerformPostNetworkScreenActions();
 
-  // Actions that should be done right after update stage is finished.
-  void PerformOOBECompletedActions();
+  // Actions that should be done after OOBE flow is finished.
+  // If this is called, future boots before the device is owned will start in
+  // the first sign-in screen.
+  void PerformOOBECompletedActions(
+      OobeMetricsHelper::CompletedPreLoginOobeFlowType flow_type);
 
   ErrorScreen* GetErrorScreen();
 
@@ -534,10 +545,6 @@ class WizardController : public OobeUI::Observer {
   // The prescribed enrollment configuration for the device.
   policy::EnrollmentConfig prescribed_enrollment_config_;
 
-  // Whether the auto-enrollment check should be retried or the cached result
-  // returned if present.
-  bool retry_auto_enrollment_check_ = false;
-
   // Whether OOBE has yet been marked as completed.
   bool oobe_marked_completed_ = false;
 
@@ -570,9 +577,6 @@ class WizardController : public OobeUI::Observer {
   // mode setup flow.
   std::unique_ptr<DemoSetupController> demo_setup_controller_;
 
-  // Maps screen names to last time of their shows.
-  std::map<OobeScreenId, base::TimeTicks> screen_show_times_;
-
   // Tests check result of timezone resolve.
   bool timezone_resolved_ = false;
   base::OnceClosure on_timezone_resolved_for_testing_;
@@ -585,6 +589,8 @@ class WizardController : public OobeUI::Observer {
 
   // Shared factory for outgoing network requests.
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
+
+  OobeMetricsHelper oobe_metrics_helper_;
 
   base::WeakPtrFactory<WizardController> weak_factory_{this};
 };

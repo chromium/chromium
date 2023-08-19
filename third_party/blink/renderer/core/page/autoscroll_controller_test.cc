@@ -55,7 +55,7 @@ TEST_F(AutoscrollControllerTest,
   AutoscrollController& controller = GetAutoscrollController();
   Document& document = GetDocument();
 
-  Element* scrollable = document.getElementById("scrollable");
+  Element* scrollable = document.getElementById(AtomicString("scrollable"));
   DCHECK(scrollable);
   DCHECK(scrollable->GetLayoutObject());
 
@@ -221,7 +221,7 @@ TEST_F(AutoscrollControllerTest, AutoscrollIsNotPropagated) {
 
   LocalFrame* frame = GetDocument().GetFrame();
   LayoutBox* scrollable =
-      GetDocument().getElementById("scrollable")->GetLayoutBox();
+      GetDocument().getElementById(AtomicString("scrollable"))->GetLayoutBox();
 
   controller.StartMiddleClickAutoscroll(
       frame, scrollable, gfx::PointF(15.0, 15.0), gfx::PointF(15.0, 15.0));
@@ -270,7 +270,7 @@ TEST_F(AutoscrollControllerTest, AutoscrollIsPropagatedInYDirection) {
 
   LocalFrame* frame = GetDocument().GetFrame();
   LayoutBox* scrollable =
-      GetDocument().getElementById("scrollable")->GetLayoutBox();
+      GetDocument().getElementById(AtomicString("scrollable"))->GetLayoutBox();
 
   controller.StartMiddleClickAutoscroll(
       frame, scrollable, gfx::PointF(15.0, 15.0), gfx::PointF(15.0, 15.0));

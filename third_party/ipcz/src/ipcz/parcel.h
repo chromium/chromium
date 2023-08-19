@@ -16,6 +16,8 @@
 #include "ipcz/fragment.h"
 #include "ipcz/ipcz.h"
 #include "ipcz/message.h"
+#include "ipcz/node_link.h"
+#include "ipcz/node_link_memory.h"
 #include "ipcz/sequence_number.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
@@ -38,8 +40,8 @@ class Parcel {
 
   Parcel();
   explicit Parcel(SequenceNumber sequence_number);
-  Parcel(Parcel&& other);
-  Parcel& operator=(Parcel&& other);
+  Parcel(const Parcel& other) = delete;
+  Parcel& operator=(const Parcel& other) = delete;
   ~Parcel();
 
   void set_sequence_number(SequenceNumber n) { sequence_number_ = n; }
@@ -56,10 +58,6 @@ class Parcel {
   // Indicates whether this Parcel is empty, meaning its data and objects have
   // been fully consumed.
   bool empty() const { return data_view().empty() && objects_view().empty(); }
-
-  // Sets this Parcel's data to the contents of `data`. Any prior data in the
-  // Parcel is discarded.
-  void SetInlinedData(std::vector<uint8_t> data);
 
   // Sets this Parcel's data to the contents of `data_view`, backed by a subset
   // of the memory within `buffer`. Any prior data in the Parcel is discarded.
@@ -135,15 +133,13 @@ class Parcel {
   // prevents the fragment from being freed upon Parcel destruction.
   void ReleaseDataFragment();
 
-  // Partially consumes the contents of this Parcel, advancing the front of
-  // data_view() by `num_bytes` and filling `out_handles` (of size N) with
-  // handles to the first N APIObjects in objects_view(). The front of
-  // objects_view() is also advanced by N.
+  // Filling `out_handles` (of size N) with handles to the first N APIObjects in
+  // objects_view(). The front of objects_view() is also advanced by N,
+  // effectively removing the objects from this parcel.
   //
-  // Note that `num_bytes` must not be larger than the size of data_view(), and
-  // the size of `out_handles` must not be larger than the size of
+  // Note that the size of `out_handles` must not be larger than the size of
   // objects_view().
-  void Consume(size_t num_bytes, absl::Span<IpczHandle> out_handles);
+  void ConsumeHandles(absl::Span<IpczHandle> out_handles);
 
   // Produces a log-friendly description of the Parcel, useful for various
   // debugging log messages.
@@ -163,7 +159,7 @@ class Parcel {
     std::atomic<uint32_t> size;
 
     // Reserved padding for 8-byte parcel data alignment.
-    uint32_t reserved;
+    std::atomic<uint32_t> reserved;
   };
 
   // Holds a Fragment and a reference to its backing memory. Used when a
@@ -178,8 +174,8 @@ class Parcel {
       // Parcels can only be given data fragments which are already addressable.
       ABSL_ASSERT(is_valid());
     }
-    DataFragment(DataFragment&& other);
-    DataFragment& operator=(DataFragment&& other);
+    DataFragment(const DataFragment& other) = delete;
+    DataFragment& operator=(const DataFragment& other) = delete;
     ~DataFragment();
 
     bool is_valid() const { return memory_ && fragment_.is_addressable(); }
@@ -209,8 +205,8 @@ class Parcel {
   // the DataStorage. This subset is considered the Parcel's data.
   struct DataStorageWithView {
     DataStorageWithView() = default;
-    DataStorageWithView(DataStorageWithView&& other);
-    DataStorageWithView& operator=(DataStorageWithView&& other);
+    DataStorageWithView(const DataStorageWithView& other) = delete;
+    DataStorageWithView& operator=(const DataStorageWithView& other) = delete;
     ~DataStorageWithView() = default;
 
     DataStorage storage;

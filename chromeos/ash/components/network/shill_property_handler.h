@@ -260,7 +260,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ShillPropertyHandler
   raw_ptr<Listener> listener_;
 
   // Convenience pointer for ShillManagerClient
-  raw_ptr<ShillManagerClient> shill_manager_;
+  raw_ptr<ShillManagerClient, LeakedDanglingUntriaged> shill_manager_;
 
   // Pending update list for each managed state type
   TypeRequestMap pending_updates_;

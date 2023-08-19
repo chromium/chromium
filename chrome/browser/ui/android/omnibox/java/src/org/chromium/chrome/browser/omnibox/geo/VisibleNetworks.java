@@ -17,8 +17,6 @@ import java.util.Set;
  * Visible networks. Stores the data of connected and visible networks.
  */
 class VisibleNetworks {
-    private static final String TAG = "VisibleNetworks";
-
     @Nullable
     private final VisibleWifi mConnectedWifi;
     @Nullable

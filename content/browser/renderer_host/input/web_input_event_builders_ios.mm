@@ -16,11 +16,11 @@ namespace content {
 namespace {
 
 constexpr size_t MAX_POINTERS = blink::WebTouchEvent::kTouchesLengthCap;
-static UITouch* g_active_touches_map[MAX_POINTERS] = {};
+static UITouch* g_active_touches[MAX_POINTERS] = {};
 
 size_t GetTouchPointerId(UITouch* touch) {
   for (size_t i = 0; i < MAX_POINTERS; ++i) {
-    if (g_active_touches_map[i] == touch) {
+    if (g_active_touches[i] == touch) {
       return i + 1;
     }
   }
@@ -30,8 +30,8 @@ size_t GetTouchPointerId(UITouch* touch) {
 void AddUITouch(UITouch* touch) {
   CHECK(GetTouchPointerId(touch) == 0);
   for (size_t i = 0; i < MAX_POINTERS; ++i) {
-    if (!g_active_touches_map[i]) {
-      g_active_touches_map[i] = [touch retain];
+    if (!g_active_touches[i]) {
+      g_active_touches[i] = touch;
       return;
     }
   }
@@ -39,9 +39,8 @@ void AddUITouch(UITouch* touch) {
 
 void RemoveUITouch(UITouch* touch) {
   for (size_t i = 0; i < MAX_POINTERS; ++i) {
-    if (g_active_touches_map[i] == touch) {
-      g_active_touches_map[i] = nullptr;
-      [touch release];
+    if (g_active_touches[i] == touch) {
+      g_active_touches[i] = nil;
       return;
     }
   }
@@ -112,9 +111,11 @@ void SetWebPointerPropertiesFromMotionEventData(
   // TODO(dtapuska): Support stylus.
 }
 
-blink::WebTouchPoint CreateWebTouchPoint(UIView* view,
-                                         UITouch* event,
-                                         bool was_changed) {
+blink::WebTouchPoint CreateWebTouchPoint(
+    UIView* view,
+    UITouch* event,
+    bool was_changed,
+    const absl::optional<gfx::Vector2dF>& view_offset) {
   blink::WebTouchPoint touch;
 
   size_t pointer_index = GetTouchPointerId(event);
@@ -124,10 +125,17 @@ blink::WebTouchPoint CreateWebTouchPoint(UIView* view,
                                              [event force]);
 
   touch.state = ToWebTouchPointState(event, was_changed);
-  CGPoint view_location = [event locationInView:view];
-  touch.SetPositionInWidget(view_location.x, view_location.y);
-  CGPoint window_location = [event locationInView:nil];
-  touch.SetPositionInScreen(window_location.x, window_location.y);
+  gfx::PointF window_location = gfx::PointF([event locationInView:nil]);
+  touch.SetPositionInScreen(window_location);
+
+  gfx::PointF view_location;
+  if (view_offset) {
+    view_location = gfx::PointF(window_location);
+    view_location += view_offset.value();
+  } else {
+    view_location = gfx::PointF([event locationInView:view]);
+  }
+  touch.SetPositionInWidget(view_location);
 
   float major_radius = event.majorRadius;
   float minor_radius = event.majorRadius;
@@ -181,7 +189,8 @@ blink::WebTouchEvent WebTouchEventBuilder::Build(
     blink::WebInputEvent::Type type,
     UITouch* touch,
     UIEvent* event,
-    UIView* view) {
+    UIView* view,
+    const absl::optional<gfx::Vector2dF>& view_offset) {
   blink::WebTouchEvent result(type, ModifiersFromEvent(event),
                               ui::EventTimeStampFromSeconds([event timestamp]));
   // TODO(dtapuska): Enable
@@ -198,7 +207,7 @@ blink::WebTouchEvent WebTouchEventBuilder::Build(
     AddUITouch(touch);
   }
   result.touches[touch_index] =
-      CreateWebTouchPoint(view, touch, /*was_changed=*/true);
+      CreateWebTouchPoint(view, touch, /*was_changed=*/true, view_offset);
   ++touch_index;
   if (type == blink::WebInputEvent::Type::kTouchCancel ||
       type == blink::WebInputEvent::Type::kTouchEnd) {
@@ -209,11 +218,11 @@ blink::WebTouchEvent WebTouchEventBuilder::Build(
   // WebTouchEvent for each touch point changing. But event.allTouches will have
   // it all already.
   for (size_t i = 0; i < MAX_POINTERS; ++i) {
-    if (!g_active_touches_map[i] || g_active_touches_map[i] == touch) {
+    if (!g_active_touches[i] || g_active_touches[i] == touch) {
       continue;
     }
     result.touches[touch_index] = CreateWebTouchPoint(
-        view, g_active_touches_map[i], /*was_changed=*/false);
+        view, g_active_touches[i], /*was_changed=*/false, view_offset);
     ++touch_index;
   }
   result.touches_length = touch_index;

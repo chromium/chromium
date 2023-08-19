@@ -80,7 +80,7 @@ class POLICY_EXPORT PolicyStatisticsCollector {
   GetChromePolicyDetailsCallback get_details_;
   Schema chrome_schema_;
   raw_ptr<PolicyService> policy_service_;
-  raw_ptr<PrefService, DanglingUntriaged> prefs_;
+  raw_ptr<PrefService, AcrossTasksDanglingUntriaged> prefs_;
 
   base::CancelableOnceClosure update_callback_;
 

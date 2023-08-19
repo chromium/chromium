@@ -35,32 +35,9 @@
 #include "media/gpu/v4l2/v4l2_utils.h"
 #include "ui/gl/egl_util.h"
 
-// Auto-generated for dlopen libv4l2 libraries
-#include "media/gpu/v4l2/v4l2_stubs.h"
-#include "third_party/v4l-utils/lib/include/libv4l2.h"
-
-using media_gpu_v4l2::InitializeStubs;
-using media_gpu_v4l2::kModuleV4l2;
-using media_gpu_v4l2::StubPathMap;
-
 namespace media {
 
 namespace {
-
-bool LibV4L2Exists() {
-#if BUILDFLAG(USE_LIBV4L2)
-  return true;
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (access(V4L2Device::kLibV4l2Path, F_OK) == 0) {
-    return true;
-  }
-  PLOG_IF(FATAL, errno != ENOENT)
-      << "access() failed for a reason other than ENOENT";
-  return false;
-#else
-  return false;
-#endif
-}
 
 uint32_t V4L2PixFmtToDrmFormat(uint32_t format) {
   switch (format) {
@@ -93,7 +70,10 @@ class V4L2QueueFactory {
   static scoped_refptr<V4L2Queue> CreateQueue(scoped_refptr<V4L2Device> dev,
                                               enum v4l2_buf_type type,
                                               base::OnceClosure destroy_cb) {
-    return new V4L2Queue(std::move(dev), type, std::move(destroy_cb));
+    return new V4L2Queue(base::BindRepeating(&V4L2Device::Ioctl, dev),
+                         base::BindRepeating(&V4L2Device::SchedulePoll, dev),
+                         base::BindRepeating(&V4L2Device::Mmap, dev), type,
+                         std::move(destroy_cb));
   }
 };
 
@@ -139,18 +119,6 @@ void V4L2Device::OnQueueDestroyed(v4l2_buf_type buf_type) {
   queues_.erase(it);
 }
 
-// static
-scoped_refptr<V4L2Device> V4L2Device::Create() {
-  DVLOGF(3);
-
-  scoped_refptr<V4L2Device> device = new V4L2Device();
-  if (device->Initialize())
-    return device;
-
-  VLOGF(1) << "Failed to create a V4L2Device";
-  return nullptr;
-}
-
 bool V4L2Device::Open(Type type, uint32_t v4l2_pixfmt) {
   DVLOGF(3);
   std::string path = GetDevicePathFor(type, v4l2_pixfmt);
@@ -185,43 +153,6 @@ std::string V4L2Device::GetDriverName() {
   }
 
   return std::string(reinterpret_cast<const char*>(caps.driver));
-}
-
-// static
-uint32_t V4L2Device::VideoCodecProfileToV4L2PixFmt(VideoCodecProfile profile,
-                                                   bool slice_based) {
-  if (profile >= H264PROFILE_MIN && profile <= H264PROFILE_MAX) {
-    if (slice_based)
-      return V4L2_PIX_FMT_H264_SLICE;
-    else
-      return V4L2_PIX_FMT_H264;
-#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-  } else if (profile >= HEVCPROFILE_MIN && profile <= HEVCPROFILE_MAX) {
-    if (slice_based) {
-      return V4L2_PIX_FMT_HEVC_SLICE;
-    } else {
-      return V4L2_PIX_FMT_HEVC;
-    }
-#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-  } else if (profile >= VP8PROFILE_MIN && profile <= VP8PROFILE_MAX) {
-    if (slice_based)
-      return V4L2_PIX_FMT_VP8_FRAME;
-    else
-      return V4L2_PIX_FMT_VP8;
-  } else if (profile >= VP9PROFILE_MIN && profile <= VP9PROFILE_MAX) {
-    if (slice_based)
-      return V4L2_PIX_FMT_VP9_FRAME;
-    else
-      return V4L2_PIX_FMT_VP9;
-  } else if (profile >= AV1PROFILE_MIN && profile <= AV1PROFILE_MAX) {
-    if (slice_based)
-      return V4L2_PIX_FMT_AV1_FRAME;
-    else
-      return V4L2_PIX_FMT_AV1;
-  } else {
-    DVLOGF(1) << "Unsupported profile: " << GetProfileName(profile);
-    return V4L2_PIX_FMT_INVALID;
-  }
 }
 
 // static
@@ -385,123 +316,8 @@ gfx::Size V4L2Device::AllocatedSizeFromV4L2Format(
   return coded_size;
 }
 
-// static
-absl::optional<VideoFrameLayout> V4L2Device::V4L2FormatToVideoFrameLayout(
-    const struct v4l2_format& format) {
-  if (!V4L2_TYPE_IS_MULTIPLANAR(format.type)) {
-    VLOGF(1) << "v4l2_buf_type is not multiplanar: " << std::hex << "0x"
-             << format.type;
-    return absl::nullopt;
-  }
-  const v4l2_pix_format_mplane& pix_mp = format.fmt.pix_mp;
-  const uint32_t& pix_fmt = pix_mp.pixelformat;
-  const auto video_fourcc = Fourcc::FromV4L2PixFmt(pix_fmt);
-  if (!video_fourcc) {
-    VLOGF(1) << "Failed to convert pixel format to VideoPixelFormat: "
-             << FourccToString(pix_fmt);
-    return absl::nullopt;
-  }
-  const VideoPixelFormat video_format = video_fourcc->ToVideoPixelFormat();
-  const size_t num_buffers = pix_mp.num_planes;
-  const size_t num_color_planes = VideoFrame::NumPlanes(video_format);
-  if (num_color_planes == 0) {
-    VLOGF(1) << "Unsupported video format for NumPlanes(): "
-             << VideoPixelFormatToString(video_format);
-    return absl::nullopt;
-  }
-  if (num_buffers > num_color_planes) {
-    VLOGF(1) << "pix_mp.num_planes: " << num_buffers
-             << " should not be larger than NumPlanes("
-             << VideoPixelFormatToString(video_format)
-             << "): " << num_color_planes;
-    return absl::nullopt;
-  }
-  // Reserve capacity in advance to prevent unnecessary vector reallocation.
-  std::vector<ColorPlaneLayout> planes;
-  planes.reserve(num_color_planes);
-  for (size_t i = 0; i < num_buffers; ++i) {
-    const v4l2_plane_pix_format& plane_format = pix_mp.plane_fmt[i];
-    planes.emplace_back(static_cast<int32_t>(plane_format.bytesperline), 0u,
-                        plane_format.sizeimage);
-  }
-  // For the case that #color planes > #buffers, it fills stride of color
-  // plane which does not map to buffer.
-  // Right now only some pixel formats are supported: NV12, YUV420, YVU420.
-  if (num_color_planes > num_buffers) {
-    const int32_t y_stride = planes[0].stride;
-    // Note that y_stride is from v4l2 bytesperline and its type is uint32_t.
-    // It is safe to cast to size_t.
-    const size_t y_stride_abs = static_cast<size_t>(y_stride);
-    switch (pix_fmt) {
-      case V4L2_PIX_FMT_NV12:
-        // The stride of UV is the same as Y in NV12.
-        // The height is half of Y plane.
-        planes.emplace_back(y_stride, y_stride_abs * pix_mp.height,
-                            y_stride_abs * pix_mp.height / 2);
-        DCHECK_EQ(2u, planes.size());
-        break;
-      case V4L2_PIX_FMT_YUV420:
-      case V4L2_PIX_FMT_YVU420: {
-        // The spec claims that two Cx rows (including padding) is exactly as
-        // long as one Y row (including padding). So stride of Y must be even
-        // number.
-        if (y_stride % 2 != 0 || pix_mp.height % 2 != 0) {
-          VLOGF(1) << "Plane-Y stride and height should be even; stride: "
-                   << y_stride << ", height: " << pix_mp.height;
-          return absl::nullopt;
-        }
-        const int32_t half_stride = y_stride / 2;
-        const size_t plane_0_area = y_stride_abs * pix_mp.height;
-        const size_t plane_1_area = plane_0_area / 4;
-        planes.emplace_back(half_stride, plane_0_area, plane_1_area);
-        planes.emplace_back(half_stride, plane_0_area + plane_1_area,
-                            plane_1_area);
-        DCHECK_EQ(3u, planes.size());
-        break;
-      }
-      default:
-        VLOGF(1) << "Cannot derive stride for each plane for pixel format "
-                 << FourccToString(pix_fmt);
-        return absl::nullopt;
-    }
-  }
-
-  // Some V4L2 devices expect buffers to be page-aligned. We cannot detect
-  // such devices individually, so set this as a video frame layout property.
-  constexpr size_t buffer_alignment = 0x1000;
-  if (num_buffers == 1) {
-    return VideoFrameLayout::CreateWithPlanes(
-        video_format, gfx::Size(pix_mp.width, pix_mp.height), std::move(planes),
-        buffer_alignment);
-  } else {
-    return VideoFrameLayout::CreateMultiPlanar(
-        video_format, gfx::Size(pix_mp.width, pix_mp.height), std::move(planes),
-        buffer_alignment);
-  }
-}
-
-// static
-size_t V4L2Device::GetNumPlanesOfV4L2PixFmt(uint32_t pix_fmt) {
-  absl::optional<Fourcc> fourcc = Fourcc::FromV4L2PixFmt(pix_fmt);
-  if (fourcc && fourcc->IsMultiPlanar()) {
-    return VideoFrame::NumPlanes(fourcc->ToVideoPixelFormat());
-  }
-  return 1u;
-}
-
-// static
-bool V4L2Device::UseLibV4L2() {
-  static const bool use_libv4l2 = LibV4L2Exists();
-  return use_libv4l2;
-}
-
 int V4L2Device::Ioctl(int request, void* arg) {
   DCHECK(device_fd_.is_valid());
-
-  if (use_libv4l2_) {
-    return HANDLE_EINTR(v4l2_ioctl(device_fd_.get(), request, arg));
-  }
-
   return HANDLE_EINTR(ioctl(device_fd_.get(), request, arg));
 }
 
@@ -570,43 +386,6 @@ bool V4L2Device::ClearDevicePollInterrupt() {
     }
   }
   return true;
-}
-
-bool V4L2Device::Initialize() {
-  DVLOGF(3);
-  static bool v4l2_functions_initialized = PostSandboxInitialization();
-  if (!v4l2_functions_initialized) {
-    VLOGF(1) << "Failed to initialize LIBV4L2 libs";
-    return false;
-  }
-
-  return true;
-}
-
-std::vector<base::ScopedFD> V4L2Device::GetDmabufsForV4L2Buffer(
-    int index,
-    size_t num_planes,
-    enum v4l2_buf_type buf_type) {
-  DVLOGF(3);
-  DCHECK(V4L2_TYPE_IS_MULTIPLANAR(buf_type));
-
-  std::vector<base::ScopedFD> dmabuf_fds;
-  for (size_t i = 0; i < num_planes; ++i) {
-    struct v4l2_exportbuffer expbuf;
-    memset(&expbuf, 0, sizeof(expbuf));
-    expbuf.type = buf_type;
-    expbuf.index = index;
-    expbuf.plane = i;
-    expbuf.flags = O_CLOEXEC;
-    if (Ioctl(VIDIOC_EXPBUF, &expbuf) != 0) {
-      dmabuf_fds.clear();
-      break;
-    }
-
-    dmabuf_fds.push_back(base::ScopedFD(expbuf.fd));
-  }
-
-  return dmabuf_fds;
 }
 
 bool V4L2Device::CanCreateEGLImageFrom(const Fourcc fourcc) const {
@@ -981,6 +760,7 @@ V4L2RequestsQueue* V4L2Device::GetRequestsQueue() {
     struct media_device_info media_info;
     if (HANDLE_EINTR(ioctl(candidate_media_fd.get(), MEDIA_IOC_DEVICE_INFO,
                            &media_info)) < 0) {
+      RecordMediaIoctlUMA(MediaIoctlRequests::kMediaIocDeviceInfo);
       VPLOGF(2) << "Failed to Query media device info.";
       continue;
     }
@@ -1113,43 +893,16 @@ bool V4L2Device::SetGOPLength(uint32_t gop_length) {
   return true;
 }
 
-// static
-bool V4L2Device::PostSandboxInitialization() {
-  if (V4L2Device::UseLibV4L2()) {
-    StubPathMap paths;
-    paths[kModuleV4l2].push_back(V4L2Device::kLibV4l2Path);
-
-    return InitializeStubs(paths);
-  } else {
-    return true;
-  }
-}
-
 bool V4L2Device::OpenDevicePath(const std::string& path, Type type) {
   DCHECK(!device_fd_.is_valid());
 
   device_fd_.reset(
       HANDLE_EINTR(open(path.c_str(), O_RDWR | O_NONBLOCK | O_CLOEXEC)));
-  if (!device_fd_.is_valid()) {
-    return false;
-  }
-
-  if (V4L2Device::UseLibV4L2()) {
-    if (type == Type::kEncoder &&
-        HANDLE_EINTR(v4l2_fd_open(device_fd_.get(), V4L2_DISABLE_CONVERSION)) !=
-            -1) {
-      DVLOGF(3) << "Using libv4l2 for " << path;
-      use_libv4l2_ = true;
-    }
-  }
-  return true;
+  return device_fd_.is_valid();
 }
 
 void V4L2Device::CloseDevice() {
   DVLOGF(3);
-  if (use_libv4l2_ && device_fd_.is_valid()) {
-    v4l2_close(device_fd_.release());
-  }
   device_fd_.reset();
 }
 

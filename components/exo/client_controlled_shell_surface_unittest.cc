@@ -864,25 +864,6 @@ TEST_P(ClientControlledShellSurfaceTest, ToggleFullscreen) {
 }
 
 TEST_P(ClientControlledShellSurfaceTest,
-       DefaultDeviceScaleFactorForcedScaleFactor) {
-  double scale = 1.5;
-  display::Display::SetForceDeviceScaleFactor(scale);
-
-  int64_t display_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
-  display::SetInternalDisplayIds({display_id});
-
-  auto shell_surface = exo::test::ShellSurfaceBuilder({64, 64})
-                           .EnableDefaultScaleCancellation()
-                           .BuildClientControlledShellSurface();
-  gfx::Transform transform;
-  transform.Scale(1.0 / scale, 1.0 / scale);
-
-  EXPECT_EQ(
-      transform.ToString(),
-      shell_surface->host_window()->layer()->GetTargetTransform().ToString());
-}
-
-TEST_P(ClientControlledShellSurfaceTest,
        DefaultDeviceScaleFactorFromDisplayManager) {
   int64_t display_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
   display::SetInternalDisplayIds({display_id});
@@ -916,9 +897,8 @@ TEST_P(ClientControlledShellSurfaceTest,
   gfx::Transform transform;
   transform.Scale(1.0 / scale, 1.0 / scale);
 
-  EXPECT_EQ(
-      transform.ToString(),
-      shell_surface->host_window()->layer()->GetTargetTransform().ToString());
+  EXPECT_EQ(transform.ToString(),
+            shell_surface->root_surface()->window()->transform().ToString());
 }
 
 TEST_P(ClientControlledShellSurfaceTest, MouseAndTouchTarget) {
@@ -1344,6 +1324,7 @@ TEST_F(ClientControlledShellSurfaceDisplayTest,
   EXPECT_EQ(secondary_display.id(), delegate->requested_display_ids()[0]);
 
   gfx::Rect secondary_position(700, 10, 200, 200);
+  shell_surface->SetScaleFactor(2.f);
   shell_surface->SetBounds(secondary_display.id(), secondary_position);
   surface->Commit();
   // Should be scaled by half when converted from pixels to DP.
@@ -1733,8 +1714,6 @@ TEST_P(ClientControlledShellSurfaceTest,
 
   const auto primary_display_id =
       display::Screen::GetScreen()->GetPrimaryDisplay().id();
-  const auto secondary_display_id =
-      display::Screen::GetScreen()->GetAllDisplays().back().id();
 
   const gfx::Size buffer_size(64, 64);
   std::unique_ptr<Buffer> buffer(
@@ -1742,7 +1721,6 @@ TEST_P(ClientControlledShellSurfaceTest,
 
   constexpr double kOriginalScale = 4.f;
   const gfx::Rect bounds_dp(64, 64, 128, 128);
-  const gfx::Rect bounds_px_for_2x = gfx::ScaleToRoundedRect(bounds_dp, 2.f);
   const gfx::Rect bounds_px_for_4x =
       gfx::ScaleToRoundedRect(bounds_dp, kOriginalScale);
 
@@ -1761,7 +1739,9 @@ TEST_P(ClientControlledShellSurfaceTest,
       auto* surface = shell_surface->root_surface();
 
       // When display doesn't change, scale stays the same
-      shell_surface->SetScale(kOriginalScale);
+      if (!default_scale_cancellation) {
+        shell_surface->SetScaleFactor(kOriginalScale);
+      }
       shell_surface->SetDisplay(primary_display_id);
       shell_surface->SetBounds(primary_display_id, default_scale_cancellation
                                                        ? bounds_dp
@@ -1771,19 +1751,6 @@ TEST_P(ClientControlledShellSurfaceTest,
 
       EXPECT_EQ(bounds_dp,
                 shell_surface->GetWidget()->GetWindowBoundsInScreen());
-
-      // When display changes, scale gets updated by the display dsf
-      shell_surface->SetScale(kOriginalScale);
-      shell_surface->SetBounds(secondary_display_id, default_scale_cancellation
-                                                         ? bounds_dp
-                                                         : bounds_px_for_2x);
-      surface->Attach(buffer.get());
-      surface->Commit();
-
-      EXPECT_EQ(bounds_dp.width(),
-                shell_surface->GetWidget()->GetWindowBoundsInScreen().width());
-      EXPECT_EQ(bounds_dp.height(),
-                shell_surface->GetWidget()->GetWindowBoundsInScreen().height());
     }
     {
       // Set display id and bounds origin at the same time via SetBoundsOrigin
@@ -1798,7 +1765,9 @@ TEST_P(ClientControlledShellSurfaceTest,
           builder.SetNoCommit().BuildClientControlledShellSurface();
       auto* surface = shell_surface->root_surface();
 
-      shell_surface->SetScale(kOriginalScale);
+      if (!default_scale_cancellation) {
+        shell_surface->SetScaleFactor(kOriginalScale);
+      }
       shell_surface->SetBoundsOrigin(primary_display_id,
                                      bounds_to_set.origin());
       shell_surface->SetBoundsSize(bounds_to_set.size());
@@ -2301,7 +2270,7 @@ TEST_F(ClientControlledShellSurfaceScaleTest, ScaleSetOnInitialCommit) {
 }
 
 TEST_F(ClientControlledShellSurfaceScaleTest,
-       DeferScaleCommitForRestoredWindow) {
+       ScaleFactorIsCommittedInNextCommit) {
   UpdateDisplay("1200x800*2.0");
 
   gfx::Rect initial_native_bounds(100, 100, 100, 100);
@@ -2314,6 +2283,7 @@ TEST_F(ClientControlledShellSurfaceScaleTest,
 
   display::Display primary_display =
       display::Screen::GetScreen()->GetPrimaryDisplay();
+  shell_surface->SetScaleFactor(2.f);
   shell_surface->SetBounds(primary_display.id(), initial_native_bounds);
   auto* surface = shell_surface->root_surface();
   surface->Commit();
@@ -2327,7 +2297,7 @@ TEST_F(ClientControlledShellSurfaceScaleTest,
 
   UpdateDisplay("2400x1600*1.0");
 
-  // The surface's scale should not be committed until the buffer size changes.
+  // The new scale factor should not be in active until the next commit.
   EXPECT_EQ(2.f, 1.f / shell_surface->GetClientToDpScale());
   EXPECT_EQ(0, delegate->bounds_change_count());
 
@@ -2335,80 +2305,11 @@ TEST_F(ClientControlledShellSurfaceScaleTest,
   std::unique_ptr<Buffer> new_buffer(
       new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(new_buffer_size)));
   surface->Attach(new_buffer.get());
+  shell_surface->SetScaleFactor(1.f);
   surface->Commit();
 
   EXPECT_EQ(1.f, shell_surface->GetClientToDpScale());
   EXPECT_EQ(0, delegate->bounds_change_count());
-}
-
-TEST_F(ClientControlledShellSurfaceScaleTest,
-       CommitScaleChangeImmediatelyForMaximizedWindow) {
-  UpdateDisplay("1200x800*2.0");
-
-  gfx::Rect initial_native_bounds(100, 100, 100, 100);
-  auto shell_surface =
-      exo::test::ShellSurfaceBuilder({20, 20})
-          .SetWindowState(chromeos::WindowStateType::kMaximized)
-          .SetNoCommit()
-          .BuildClientControlledShellSurface();
-  auto* surface = shell_surface->root_surface();
-  auto* delegate =
-      TestClientControlledShellSurfaceDelegate::SetUp(shell_surface.get());
-
-  display::Display primary_display =
-      display::Screen::GetScreen()->GetPrimaryDisplay();
-  shell_surface->SetBounds(primary_display.id(), initial_native_bounds);
-  surface->Commit();
-
-  EXPECT_EQ(2.f, 1.f / shell_surface->GetClientToDpScale());
-  EXPECT_EQ(1, delegate->geometry_change_count());
-  EXPECT_EQ(gfx::ScaleToRoundedRect(initial_native_bounds,
-                                    shell_surface->GetClientToDpScale()),
-            delegate->geometry_bounds()[0]);
-
-  UpdateDisplay("2400x1600*1.0");
-
-  EXPECT_EQ(1.f, shell_surface->GetClientToDpScale());
-  EXPECT_EQ(0, delegate->bounds_change_count());
-}
-
-TEST_F(ClientControlledShellSurfaceScaleTest,
-       CommitScaleChangeImmediatelyInTabletMode) {
-  EnableTabletMode(true);
-  UpdateDisplay("1200x800*2.0");
-
-  gfx::Rect initial_native_bounds(100, 100, 100, 100);
-  auto shell_surface =
-      exo::test::ShellSurfaceBuilder({20, 20})
-          .SetWindowState(chromeos::WindowStateType::kSecondarySnapped)
-          .SetNoCommit()
-          .BuildClientControlledShellSurface();
-  auto* surface = shell_surface->root_surface();
-  auto* delegate =
-      TestClientControlledShellSurfaceDelegate::SetUp(shell_surface.get());
-  display::Display primary_display =
-      display::Screen::GetScreen()->GetPrimaryDisplay();
-  shell_surface->SetBounds(primary_display.id(), initial_native_bounds);
-  surface->Commit();
-
-  EXPECT_EQ(2.f, 1.f / shell_surface->GetClientToDpScale());
-  EXPECT_EQ(1, delegate->geometry_change_count());
-  EXPECT_EQ(gfx::ScaleToRoundedRect(initial_native_bounds,
-                                    shell_surface->GetClientToDpScale()),
-            delegate->geometry_bounds()[0]);
-
-  // A bounds change is requested because the window is snapped.
-  EXPECT_EQ(1, delegate->bounds_change_count());
-
-  delegate->Reset();
-  UpdateDisplay("2400x1600*1.0");
-
-  EXPECT_EQ(1.f, shell_surface->GetClientToDpScale());
-
-  // Updating the scale in tablet mode should request a bounds change, because
-  // the window is snapped. Changing the scale will change its bounds in DP,
-  // even if the position of the window as visible to the user does not change.
-  EXPECT_GE(delegate->bounds_change_count(), 1);
 }
 
 TEST_P(ClientControlledShellSurfaceTest, SnappedClientBounds) {

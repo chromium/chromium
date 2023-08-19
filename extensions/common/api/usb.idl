@@ -241,8 +241,8 @@ namespace usb {
   interface Functions {
     // Enumerates connected USB devices.
     // |options|: The properties to search for on target devices.
-    static void getDevices(EnumerateDevicesOptions options,
-                           GetDevicesCallback callback);
+    [supportsPromises] static void getDevices(EnumerateDevicesOptions options,
+                                              GetDevicesCallback callback);
 
     // Presents a device picker to the user and returns the $(ref:Device)s
     // selected.
@@ -251,13 +251,15 @@ namespace usb {
     // callback will run as though the user cancelled.
     // |options|: Configuration of the device picker dialog box.
     // |callback|: Invoked with a list of chosen $(ref:Device)s.
-    static void getUserSelectedDevices(DevicePromptOptions options,
-                                       GetDevicesCallback callback);
+    [supportsPromises] static void getUserSelectedDevices(
+        DevicePromptOptions options,
+        GetDevicesCallback callback);
 
     // Returns the full set of device configuration descriptors.
     // |device|: The $(ref:Device) to fetch descriptors from.
-    static void getConfigurations(Device device,
-                                  GetConfigurationsCallback callback);
+    [supportsPromises] static void getConfigurations(
+        Device device,
+        GetConfigurationsCallback callback);
 
     // Requests access from the permission broker to a device claimed by
     // Chrome OS if the given interface on the device is not claimed.
@@ -267,14 +269,15 @@ namespace usb {
     [deprecated="This function was Chrome OS specific and calling it on other
     platforms would fail. This operation is now implicitly performed as part of
     $(ref:openDevice) and this function will return <code>true</code> on all
-    platforms."]
+    platforms.", supportsPromises]
     static void requestAccess(Device device,
                               long interfaceId,
                               RequestAccessCallback callback);
 
     // Opens a USB device returned by $(ref:getDevices).
     // |device|: The $(ref:Device) to open.
-    static void openDevice(Device device, OpenDeviceCallback callback);
+    [supportsPromises] static void openDevice(Device device,
+                                              OpenDeviceCallback callback);
 
     // Finds USB devices specified by the vendor, product and (optionally)
     // interface IDs and if permissions allow opens them for use.
@@ -286,14 +289,16 @@ namespace usb {
     // by $(ref:openDevice) for each device.
     //
     // |options|: The properties to search for on target devices.
-    static void findDevices(EnumerateDevicesAndRequestAccessOptions options,
-                            FindDevicesCallback callback);
+    [supportsPromises] static void findDevices(
+        EnumerateDevicesAndRequestAccessOptions options,
+        FindDevicesCallback callback);
 
     // Closes a connection handle. Invoking operations on a handle after it
     // has been closed is a safe operation but causes no action to be taken.
     // |handle|: The $(ref:ConnectionHandle) to close.
-    static void closeDevice(ConnectionHandle handle,
-                            optional CloseDeviceCallback callback);
+    [supportsPromises] static void closeDevice(
+        ConnectionHandle handle,
+        optional CloseDeviceCallback callback);
 
     // Select a device configuration.
     //
@@ -302,20 +307,22 @@ namespace usb {
     // than <code>0</code> are valid however some buggy devices have a working
     // configuration <code>0</code> and so this value is allowed.
     // |handle|: An open connection to the device.
-    static void setConfiguration(ConnectionHandle handle,
-                                 long configurationValue,
-                                 VoidCallback callback);
+    [supportsPromises] static void setConfiguration(ConnectionHandle handle,
+                                                    long configurationValue,
+                                                    VoidCallback callback);
 
     // Gets the configuration descriptor for the currently selected
     // configuration.
     // |handle|: An open connection to the device.
-    static void getConfiguration(ConnectionHandle handle,
-                                 GetConfigurationCallback callback);
+    [supportsPromises] static void getConfiguration(
+        ConnectionHandle handle,
+        GetConfigurationCallback callback);
 
     // Lists all interfaces on a USB device.
     // |handle|: An open connection to the device.
-    static void listInterfaces(ConnectionHandle handle,
-                               ListInterfacesCallback callback);
+    [supportsPromises] static void listInterfaces(
+        ConnectionHandle handle,
+        ListInterfacesCallback callback);
 
     // Claims an interface on a USB device.
     // Before data can be transfered to an interface or associated endpoints the
@@ -328,24 +335,27 @@ namespace usb {
     //
     // |handle|: An open connection to the device.
     // |interfaceNumber|: The interface to be claimed.
-    static void claimInterface(ConnectionHandle handle, long interfaceNumber,
-                               VoidCallback callback);
+    [supportsPromises] static void claimInterface(ConnectionHandle handle,
+                                                  long interfaceNumber,
+                                                  VoidCallback callback);
 
     // Releases a claimed interface.
     // |handle|: An open connection to the device.
     // |interfaceNumber|: The interface to be released.
-    static void releaseInterface(ConnectionHandle handle, long interfaceNumber,
-                                 VoidCallback callback);
+    [supportsPromises] static void releaseInterface(ConnectionHandle handle,
+                                                    long interfaceNumber,
+                                                    VoidCallback callback);
 
     // Selects an alternate setting on a previously claimed interface.
     // |handle|: An open connection to the device where this interface has been
     //     claimed.
     // |interfaceNumber|: The interface to configure.
     // |alternateSetting|: The alternate setting to configure.
-    static void setInterfaceAlternateSetting(ConnectionHandle handle,
-                                             long interfaceNumber,
-                                             long alternateSetting,
-                                             VoidCallback callback);
+    [supportsPromises] static void setInterfaceAlternateSetting(
+        ConnectionHandle handle,
+        long interfaceNumber,
+        long alternateSetting,
+        VoidCallback callback);
 
     // Performs a control transfer on the specified device.
     //
@@ -354,29 +364,33 @@ namespace usb {
     // be claimed.
     //
     // |handle|: An open connection to the device.
-    static void controlTransfer(ConnectionHandle handle,
-                                ControlTransferInfo transferInfo,
-                                TransferCallback callback);
+    [supportsPromises] static void controlTransfer(
+        ConnectionHandle handle,
+        ControlTransferInfo transferInfo,
+        TransferCallback callback);
 
     // Performs a bulk transfer on the specified device.
     // |handle|: An open connection to the device.
     // |transferInfo|: The transfer parameters.
-    static void bulkTransfer(ConnectionHandle handle,
-                             GenericTransferInfo transferInfo,
-                             TransferCallback callback);
+    [supportsPromises] static void bulkTransfer(
+        ConnectionHandle handle,
+        GenericTransferInfo transferInfo,
+        TransferCallback callback);
 
     // Performs an interrupt transfer on the specified device.
     // |handle|: An open connection to the device.
     // |transferInfo|: The transfer parameters.
-    static void interruptTransfer(ConnectionHandle handle,
-                                  GenericTransferInfo transferInfo,
-                                  TransferCallback callback);
+    [supportsPromises] static void interruptTransfer(
+        ConnectionHandle handle,
+        GenericTransferInfo transferInfo,
+        TransferCallback callback);
 
     // Performs an isochronous transfer on the specific device.
     // |handle|: An open connection to the device.
-    static void isochronousTransfer(ConnectionHandle handle,
-                                    IsochronousTransferInfo transferInfo,
-                                    TransferCallback callback);
+    [supportsPromises] static void isochronousTransfer(
+        ConnectionHandle handle,
+        IsochronousTransferInfo transferInfo,
+        TransferCallback callback);
 
     // Tries to reset the USB device.
     // If the reset fails, the given connection handle will be closed and the
@@ -385,8 +399,8 @@ namespace usb {
     // to acquire the device.
     //
     // |handle|: A connection handle to reset.
-    static void resetDevice(ConnectionHandle handle,
-                            ResetDeviceCallback callback);
+    [supportsPromises] static void resetDevice(ConnectionHandle handle,
+                                               ResetDeviceCallback callback);
   };
 
   interface Events {

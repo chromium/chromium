@@ -103,6 +103,9 @@ void CommitContributionImpl::AddToCommitMessage(
     // sending password in plain text.
     CHECK(
         !sync_entity->specifics().password().has_client_only_encrypted_data());
+    CHECK(!sync_entity->specifics()
+               .outgoing_password_sharing_invitation()
+               .has_client_only_unencrypted_data());
 
     // Purposefully crash since no metadata should be uploaded if a custom
     // passphrase is set.
@@ -233,6 +236,7 @@ void CommitContributionImpl::PopulateCommitProto(
   commit_proto->set_version(commit_entity.base_version);
   commit_proto->set_deleted(entity_data.is_deleted());
   commit_proto->set_name(entity_data.name);
+  commit_proto->set_mtime(TimeToProtoTime(entity_data.modification_time));
 
   if (!entity_data.is_deleted()) {
     // Handle bookmarks separately.
@@ -259,7 +263,6 @@ void CommitContributionImpl::PopulateCommitProto(
       }
     }
     commit_proto->set_ctime(TimeToProtoTime(entity_data.creation_time));
-    commit_proto->set_mtime(TimeToProtoTime(entity_data.modification_time));
     commit_proto->mutable_specifics()->CopyFrom(entity_data.specifics);
   }
 }

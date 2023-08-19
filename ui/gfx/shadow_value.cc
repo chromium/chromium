@@ -19,6 +19,11 @@ namespace gfx {
 
 namespace {
 
+// To match the CSS notion of blur (spread outside the bounding box) to the
+// Skia notion of blur (spread outside and inside the bounding box), we have
+// to double the designer-provided blur values.
+constexpr int kBlurCorrection = 2;
+
 Insets GetInsets(const ShadowValues& shadows, bool include_inner_blur) {
   int left = 0;
   int top = 0;
@@ -79,11 +84,6 @@ ShadowValues ShadowValue::MakeShadowValues(int elevation,
   // elevations. Use the Refresh spec and designer input to add missing shadow
   // values.
 
-  // To match the CSS notion of blur (spread outside the bounding box) to the
-  // Skia notion of blur (spread outside and inside the bounding box), we have
-  // to double the designer-provided blur values.
-  const int kBlurCorrection = 2;
-
   switch (elevation) {
     case 3: {
       ShadowValue key = {Vector2d(0, 1), 12, key_shadow_color};
@@ -107,44 +107,50 @@ ShadowValues ShadowValue::MakeShadowValues(int elevation,
 
 // static
 ShadowValues ShadowValue::MakeMdShadowValues(int elevation, SkColor color) {
-  ShadowValues shadow_values;
-  // To match the CSS notion of blur (spread outside the bounding box) to the
-  // Skia notion of blur (spread outside and inside the bounding box), we have
-  // to double the designer-provided blur values.
-  const int kBlurCorrection = 2;
-  // "Key shadow": y offset is elevation and blur is twice the elevation.
-  shadow_values.emplace_back(Vector2d(0, elevation),
-                             kBlurCorrection * elevation * 2,
-                             SkColorSetA(color, 0x3d));
-  // "Ambient shadow": no offset and blur matches the elevation.
-  shadow_values.emplace_back(Vector2d(), kBlurCorrection * elevation,
-                             SkColorSetA(color, 0x1f));
   // To see what this looks like for elevation 24, try this CSS:
   //   box-shadow: 0 24px 48px rgba(0, 0, 0, .24),
   //               0 0 24px rgba(0, 0, 0, .12);
+  return MakeMdShadowValues(elevation, SkColorSetA(color, 0x3d),
+                            SkColorSetA(color, 0x1f));
+}
+
+// static
+ShadowValues ShadowValue::MakeMdShadowValues(int elevation,
+                                             SkColor key_shadow_color,
+                                             SkColor ambient_shadow_color) {
+  ShadowValues shadow_values;
+  // "Key shadow": y offset is elevation and blur is twice the elevation.
+  shadow_values.emplace_back(Vector2d(0, elevation),
+                             kBlurCorrection * elevation * 2, key_shadow_color);
+  // "Ambient shadow": no offset and blur matches the elevation.
+  shadow_values.emplace_back(Vector2d(), kBlurCorrection * elevation,
+                             ambient_shadow_color);
   return shadow_values;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // static
 ShadowValues ShadowValue::MakeChromeOSSystemUIShadowValues(int elevation,
                                                            SkColor color) {
-  ShadowValues shadow_values;
-  // To match the CSS notion of blur (spread outside the bounding box) to the
-  // Skia notion of blur (spread outside and inside the bounding box), we have
-  // to double the designer-provided blur values.
-  const int kBlurCorrection = 2;
-  // "Key shadow": y offset is elevation and blur value is equal to the
-  // elevation.
-  shadow_values.emplace_back(Vector2d(0, elevation),
-                             kBlurCorrection * elevation,
-                             SkColorSetA(color, 0x3d));
-  // "Ambient shadow": no offset and blur matches the elevation.
-  shadow_values.emplace_back(Vector2d(), kBlurCorrection * elevation,
-                             SkColorSetA(color, 0x1a));
   // To see what this looks like for elevation 24, try this CSS:
   //   box-shadow: 0 24px 24px rgba(0, 0, 0, .24),
   //               0 0 24px rgba(0, 0, 0, .10);
+  return MakeChromeOSSystemUIShadowValues(elevation, SkColorSetA(color, 0x3d),
+                                          SkColorSetA(color, 0x1a));
+}
+
+// static
+ShadowValues ShadowValue::MakeChromeOSSystemUIShadowValues(
+    int elevation,
+    SkColor key_shadow_color,
+    SkColor ambient_shadow_color) {
+  ShadowValues shadow_values;
+  // "Key shadow": y offset is elevation and blur equals to the elevation.
+  shadow_values.emplace_back(Vector2d(0, elevation),
+                             kBlurCorrection * elevation, key_shadow_color);
+  // "Ambient shadow": no offset and blur matches the elevation.
+  shadow_values.emplace_back(Vector2d(), kBlurCorrection * elevation,
+                             ambient_shadow_color);
   return shadow_values;
 }
 #endif

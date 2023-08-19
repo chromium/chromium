@@ -41,7 +41,6 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileAccountManagementMetrics;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -56,11 +55,11 @@ import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.externalauth.ExternalAuthUtils;
-import org.chromium.components.signin.GAIAServiceType;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.GURL;
 
 /**
@@ -199,13 +198,7 @@ public class SigninSignoutIntegrationTest {
         onView(withText(R.string.sign_out_and_turn_off_sync)).perform(click());
         onView(withText(R.string.continue_button)).inRoot(isDialog()).perform(click());
         assertSignedOut();
-        verify(mSignInStateObserverMock).onSignedOut();
-        verify(mSigninMetricsUtilsNativeMock)
-                .logProfileAccountManagementMenu(ProfileAccountManagementMetrics.TOGGLE_SIGNOUT,
-                        GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
-        verify(mSigninMetricsUtilsNativeMock)
-                .logProfileAccountManagementMenu(ProfileAccountManagementMetrics.SIGNOUT_SIGNOUT,
-                        GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
+        MockitoHelper.waitForEvent(mSignInStateObserverMock).onSignedOut();
     }
 
     @Test
@@ -217,12 +210,6 @@ public class SigninSignoutIntegrationTest {
         onView(isRoot()).perform(pressBack());
         verify(mSignInStateObserverMock, never()).onSignedOut();
         assertSignedIn();
-        verify(mSigninMetricsUtilsNativeMock)
-                .logProfileAccountManagementMenu(ProfileAccountManagementMetrics.TOGGLE_SIGNOUT,
-                        GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
-        verify(mSigninMetricsUtilsNativeMock)
-                .logProfileAccountManagementMenu(ProfileAccountManagementMetrics.SIGNOUT_CANCEL,
-                        GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
     }
 
     @Test
@@ -234,12 +221,6 @@ public class SigninSignoutIntegrationTest {
         onView(withText(R.string.cancel)).inRoot(isDialog()).perform(click());
         verify(mSignInStateObserverMock, never()).onSignedOut();
         assertSignedIn();
-        verify(mSigninMetricsUtilsNativeMock)
-                .logProfileAccountManagementMenu(ProfileAccountManagementMetrics.TOGGLE_SIGNOUT,
-                        GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
-        verify(mSigninMetricsUtilsNativeMock)
-                .logProfileAccountManagementMenu(ProfileAccountManagementMetrics.SIGNOUT_CANCEL,
-                        GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
     }
 
     @Test
@@ -328,7 +309,7 @@ public class SigninSignoutIntegrationTest {
 
     private void assertSignedOut() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertFalse("Account should be signed in!",
+            Assert.assertFalse("Account should be signed out!",
                     mSigninManager.getIdentityManager().hasPrimaryAccount(ConsentLevel.SIGNIN));
         });
     }

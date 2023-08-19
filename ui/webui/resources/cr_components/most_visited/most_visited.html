@@ -50,9 +50,20 @@
     width: 24px;
   }
 
+  #addShortcutIconContainer {
+    background-color:
+        var(--add-shortcut-background-color, var(--tile-background-color));
+  }
+
+  :host-context([chrome-refresh-2023]) #addShortcutIconContainer {
+    margin-inline-start: auto;
+    margin-inline-end: auto;
+  }
+
   #addShortcutIcon {
     -webkit-mask-image: url(chrome://resources/images/add.svg);
-    background-color: var(--google-grey-900);
+    background-color:
+        var(--add-shortcut-foreground-color, var(--google-grey-900));
   }
 
   .query-tile-icon {
@@ -96,17 +107,23 @@
     width: var(--tile-size);
   }
 
-  .tile {
+  .tile a {
+    border-radius: 4px;
+    display: inline-block;
+    height: 100%;
+    outline: none;
+    position: absolute;
     touch-action: none;
+    width: 100%;
   }
 
-  :host-context(.focus-outline-visible) .tile:focus,
+  :host-context(.focus-outline-visible) .tile a:focus,
   :host-context(.focus-outline-visible) #addShortcut:focus {
     box-shadow: var(--most-visited-focus-shadow);
   }
 
   @media (forced-colors: active) {
-    :host-context(.focus-outline-visible) .tile:focus,
+    :host-context(.focus-outline-visible) .tile a:focus,
     :host-context(.focus-outline-visible) #addShortcut:focus {
       /* Use outline instead of box-shadow (which does not work) in Windows
          HCM. */
@@ -228,19 +245,28 @@
     opacity: 1;
     transition-delay: 0s;
   }
+
+  :host-context([chrome-refresh-2023]) #dialogContent {
+    height: 160px;
+  }
 </style>
 <div id="container" hidden$="[[!visible_]]"
     style="--tile-background-color: [[rgbaOrInherit_(theme.backgroundColor)]];
            --column-count: [[columnCount_]]; --row-count: [[rowCount_]];">
   <dom-repeat id="tiles" items="[[tiles_]]" on-dom-change="onTilesRendered_">
     <template>
-      <a class="tile" href$="[[item.url.url]]" title$="[[item.title]]"
-          aria-label="[[item.title]]" on-dragstart="onDragStart_"
-          on-touchstart="onTouchStart_" hidden$="[[isHidden_(index, maxVisibleTiles_)]]"
-          on-click="onTileClick_" on-keydown="onTileKeyDown_"
-          query-tile$="[[item.isQueryTile]]">
+      <div class="tile" query-tile$="[[item.isQueryTile]]"
+          hidden$="[[isHidden_(index, maxVisibleTiles_)]]"
+          title$="[[item.title]]" on-dragstart="onDragStart_"
+          on-touchstart="onTouchStart_" on-click="onTileClick_"
+          on-mouseenter="onTileHover_" on-mouseleave="onTileExit_"
+          on-mousedown="onTileMouseDown_" on-keydown="onTileKeyDown_"
+          draggable="true">
+        <a href$="[[item.url.url]]" aria-label="[[item.title]]"
+            draggable="false">
+        </a>
         <cr-icon-button id="actionMenuButton" class="icon-more-vert"
-            title="[[i18n('moreActions')]]" on-click="onTileActionButtonClick_"
+            title="[[getMoreActionText_(item.title)]]" on-click="onTileActionButtonClick_"
             tabindex="0" hidden$="[[!customLinksEnabled_]]"></cr-icon-button>
         <cr-icon-button id="removeButton" class="icon-clear"
             title="[[i18n('linkRemove')]]" on-click="onTileRemoveButtonClick_"
@@ -254,13 +280,13 @@
         <div class$="tile-title [[getTileTitleDirectionClass_(item)]]">
           <span>[[item.title]]</span>
         </div>
-      </a>
+      </div>
     </template>
   </dom-repeat>
   <cr-button id="addShortcut" tabindex="0" on-click="onAdd_"
       hidden$="[[!showAdd_]]" on-keydown="onAddShortcutKeyDown_"
       aria-label="[[i18n('addLinkTitle')]]" title="[[i18n('addLinkTitle')]]" noink>
-    <div class="tile-icon">
+    <div id="addShortcutIconContainer" class="tile-icon">
       <div id="addShortcutIcon" draggable="false"></div>
     </div>
     <div class="tile-title">
@@ -269,7 +295,7 @@
   </cr-button>
   <cr-dialog id="dialog" on-close="onDialogClose_">
     <div slot="title">[[dialogTitle_]]</div>
-    <div slot="body">
+    <div slot="body" id="dialogContent">
       <cr-input id="dialogInputName" label="[[i18n('nameField')]]"
           value="{{dialogTileTitle_}}" spellcheck="false" autofocus></cr-input>
       <cr-input id="dialogInputUrl" label="[[i18n('urlField')]]"

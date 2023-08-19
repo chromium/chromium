@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/overlays/web_content_area/alerts/alert_overlay_coordinator.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/overlays/public/web_content_area/alert_overlay.h"
 #import "ios/chrome/browser/ui/alert_view/alert_view_controller.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_coordinator+subclassing.h"
@@ -12,10 +12,6 @@
 #import "ios/chrome/browser/ui/overlays/web_content_area/alerts/alert_overlay_mediator.h"
 #import "ios/chrome/browser/ui/presenters/contained_presenter_delegate.h"
 #import "ios/chrome/browser/ui/presenters/non_modal_view_controller_presenter.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using alert_overlays::AlertRequest;
 
@@ -39,7 +35,7 @@ using alert_overlays::AlertRequest;
 }
 
 - (AlertOverlayMediator*)alertMediator {
-  return base::mac::ObjCCastStrict<AlertOverlayMediator>(self.mediator);
+  return base::apple::ObjCCastStrict<AlertOverlayMediator>(self.mediator);
 }
 
 #pragma mark - AlertOverlayMediatorDataSource

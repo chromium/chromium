@@ -11,13 +11,3 @@ imageset("fullcolor_branding_icon") {
     "fullcolor_branding_icon.imageset/fullcolor_branding_icon@3x.png",
   ]
 }
-
-imageset("monotone_branding_icon") {
-  sources = [
-    "monotone_branding_icon.imageset/Contents.json",
-    "monotone_branding_icon.imageset/monotone_branding_icon_dark@2x.png",
-    "monotone_branding_icon.imageset/monotone_branding_icon_dark@3x.png",
-    "monotone_branding_icon.imageset/monotone_branding_icon_light@2x.png",
-    "monotone_branding_icon.imageset/monotone_branding_icon_light@3x.png",
-  ]
-}

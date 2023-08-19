@@ -100,7 +100,7 @@ bool WMEvent::IsSnapEvent() const {
   return false;
 }
 
-const WindowSnapWMEvent* WMEvent::AsSnapEvent() const {
+const SetBoundsWMEvent* WMEvent::AsSetBoundsWMEvent() const {
   return nullptr;
 }
 
@@ -108,6 +108,14 @@ const DisplayMetricsChangedWMEvent* WMEvent::AsDisplayMetricsChangedWMEvent()
     const {
   DCHECK_EQ(type(), WM_EVENT_DISPLAY_BOUNDS_CHANGED);
   return static_cast<const DisplayMetricsChangedWMEvent*>(this);
+}
+
+const WindowFloatWMEvent* WMEvent::AsFloatEvent() const {
+  return nullptr;
+}
+
+const WindowSnapWMEvent* WMEvent::AsSnapEvent() const {
+  return nullptr;
 }
 
 SetBoundsWMEvent::SetBoundsWMEvent(const gfx::Rect& bounds,
@@ -126,6 +134,26 @@ SetBoundsWMEvent::SetBoundsWMEvent(const gfx::Rect& requested_bounds,
       animate_(false) {}
 
 SetBoundsWMEvent::~SetBoundsWMEvent() = default;
+
+const SetBoundsWMEvent* SetBoundsWMEvent::AsSetBoundsWMEvent() const {
+  return this;
+}
+
+DisplayMetricsChangedWMEvent::DisplayMetricsChangedWMEvent(int changed_metrics)
+    : WMEvent(WM_EVENT_DISPLAY_BOUNDS_CHANGED),
+      changed_metrics_(changed_metrics) {}
+
+DisplayMetricsChangedWMEvent::~DisplayMetricsChangedWMEvent() = default;
+
+WindowFloatWMEvent::WindowFloatWMEvent(
+    chromeos::FloatStartLocation float_start_location)
+    : WMEvent(WM_EVENT_FLOAT), float_start_location_(float_start_location) {}
+
+WindowFloatWMEvent::~WindowFloatWMEvent() = default;
+
+const WindowFloatWMEvent* WindowFloatWMEvent::AsFloatEvent() const {
+  return this;
+}
 
 WindowSnapWMEvent::WindowSnapWMEvent(WMEventType type) : WMEvent(type) {
   CHECK(IsSnapEvent());
@@ -156,11 +184,5 @@ WindowSnapWMEvent::~WindowSnapWMEvent() = default;
 const WindowSnapWMEvent* WindowSnapWMEvent::AsSnapEvent() const {
   return this;
 }
-
-DisplayMetricsChangedWMEvent::DisplayMetricsChangedWMEvent(int changed_metrics)
-    : WMEvent(WM_EVENT_DISPLAY_BOUNDS_CHANGED),
-      changed_metrics_(changed_metrics) {}
-
-DisplayMetricsChangedWMEvent::~DisplayMetricsChangedWMEvent() = default;
 
 }  // namespace ash

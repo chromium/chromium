@@ -38,16 +38,14 @@
 #include "cc/trees/layer_tree_host_impl.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
-#include "components/viz/common/gpu/context_provider.h"
+#include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/common/resources/platform_color.h"
-#include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/context_support.h"
-#include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
@@ -55,8 +53,6 @@
 #include "gpu/config/gpu_feature_info.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/khronos/GLES2/gl2.h"
-#include "third_party/khronos/GLES2/gl2ext.h"
 #include "third_party/skia/include/core/SkFont.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -235,7 +231,7 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
     DrawMode draw_mode,
     LayerTreeFrameSink* layer_tree_frame_sink,
     viz::ClientResourceProvider* resource_provider,
-    bool gpu_raster,
+    const RasterCapabilities& raster_caps,
     const viz::CompositorRenderPassList& list) {
   viz::DrawQuad* hud_quad = placeholder_quad_;
   // The `placeholder_quad_` is only valid for the currently drawing RenderPass,
@@ -258,8 +254,6 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
     raster_context_provider = layer_tree_frame_sink->worker_context_provider();
     CHECK(raster_context_provider);
     lock.emplace(raster_context_provider);
-    DCHECK(!gpu_raster ||
-           raster_context_provider->ContextCapabilities().supports_oop_raster);
   }
 
   if (!pool_) {
@@ -285,26 +279,19 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
   ResourcePool::InUsePoolResource pool_resource;
   bool needs_clear = false;
   if (draw_mode == DRAW_MODE_HARDWARE) {
-    const auto& caps = raster_context_provider->ContextCapabilities();
-    viz::SharedImageFormat format =
-        gpu_raster ? viz::PlatformColor::BestSupportedRenderBufferFormat(caps)
-                   : viz::PlatformColor::BestSupportedTextureFormat(caps);
-    pool_resource = pool_->AcquireResource(internal_content_bounds_, format,
-                                           gfx::ColorSpace());
+    pool_resource = pool_->AcquireResource(
+        internal_content_bounds_, raster_caps.tile_format, gfx::ColorSpace());
 
     if (!pool_resource.gpu_backing()) {
       auto backing = std::make_unique<HudGpuBacking>();
       auto* sii = raster_context_provider->SharedImageInterface();
       backing->shared_image_interface = sii;
-      backing->InitOverlayCandidateAndTextureTarget(
-          pool_resource.format(), caps,
-          layer_tree_impl()
-              ->settings()
-              .resource_settings.use_gpu_memory_buffer_resources);
+      backing->overlay_candidate = raster_caps.tile_overlay_candidate;
+      backing->texture_target = raster_caps.tile_texture_target;
 
       uint32_t flags =
           gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_RASTER;
-      if (gpu_raster) {
+      if (raster_caps.use_gpu_rasterization) {
         flags |= gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
       }
       if (backing->overlay_candidate) {
@@ -353,7 +340,7 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
     auto* backing = static_cast<HudGpuBacking*>(pool_resource.gpu_backing());
     auto* ri = raster_context_provider->RasterInterface();
 
-    if (gpu_raster) {
+    if (raster_caps.use_gpu_rasterization) {
       // If using |gpu_raster|, DrawHudContents() directly to a gpu texture
       // which is wrapped in an SkSurface.
       const auto& size = pool_resource.size();
@@ -743,7 +730,7 @@ SkRect HeadsUpDisplayLayerImpl::DrawFrameThroughputDisplay(
   SkPath good_path;
   SkPath dropped_path;
   SkPath partial_path;
-  for (auto it = --dropped_frame_counter->end(); it; --it) {
+  for (auto it = dropped_frame_counter->End(); it; --it) {
     const auto state = **it;
     int x = graph_bounds.left() + it.index();
     SkPath& path = state == DroppedFrameCounter::kFrameStateDropped
@@ -862,19 +849,12 @@ SkRect HeadsUpDisplayLayerImpl::DrawGpuRasterizationStatus(PaintCanvas* canvas,
                                                            int width) const {
   std::string status;
   SkColor color = SK_ColorRED;
-  switch (layer_tree_impl()->GetGpuRasterizationStatus()) {
-    case GpuRasterizationStatus::ON:
-      status = "on";
-      color = SK_ColorGREEN;
-      break;
-    case GpuRasterizationStatus::OFF_FORCED:
-      status = "off (forced)";
-      color = SK_ColorRED;
-      break;
-    case GpuRasterizationStatus::OFF_DEVICE:
-      status = "off (device)";
-      color = SK_ColorRED;
-      break;
+  if (layer_tree_impl()->use_gpu_rasterization()) {
+    status = "on";
+    color = SK_ColorGREEN;
+  } else {
+    status = "off";
+    color = SK_ColorRED;
   }
 
   if (status.empty())

@@ -9,6 +9,9 @@ import {Router, routes} from 'chrome://os-settings/os_settings.js';
 import {CellularSetupPageName} from 'chrome://resources/ash/common/cellular_setup/cellular_types.js';
 import {setESimManagerRemoteForTesting} from 'chrome://resources/ash/common/cellular_setup/mojo_interface_provider.js';
 import {MojoConnectivityProvider} from 'chrome://resources/ash/common/connectivity/mojo_connectivity_provider.js';
+import {setHotspotConfigForTesting} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.js';
+import {HotspotAllowStatus, HotspotState} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.mojom-webui.js';
+import {FakeHotspotConfig} from 'chrome://resources/ash/common/hotspot/fake_hotspot_config.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
@@ -37,6 +40,9 @@ suite('InternetPage', function() {
 
   /** @type {PasspointServiceInterface} */
   let passpointService_ = null;
+
+  /** @type {?CrosHotspotConfigInterface} */
+  let hotspotConfig = null;
 
   suiteSetup(function() {
     // Disable animations so sub-pages open within one event loop.
@@ -182,6 +188,8 @@ suite('InternetPage', function() {
     passpointService_ = new FakePasspointService();
     MojoConnectivityProvider.getInstance().setPasspointServiceForTest(
         passpointService_);
+    hotspotConfig = new FakeHotspotConfig();
+    setHotspotConfigForTesting(hotspotConfig);
 
     PolymerTest.clearBody();
   });
@@ -905,6 +913,43 @@ suite('InternetPage', function() {
         internetPage.shadowRoot.querySelector('settings-passpoint-subpage');
     assertTrue(!!passpointDetailPage);
   });
+
+  test('Show spinner on hotspot subpage when enabling', async () => {
+    loadTimeData.overrideValues({isHotspotEnabled: true});
+
+    const hotspotInfo = {
+      state: HotspotState.kDisabled,
+      allowStatus: HotspotAllowStatus.kAllowed,
+      clientCount: 0,
+      config: {
+        ssid: 'test_ssid',
+        passphrase: 'test_passphrase',
+      },
+    };
+    hotspotConfig.setFakeHotspotInfo(hotspotInfo);
+    await init();
+
+    Router.getInstance().navigateTo(routes.HOTSPOT_DETAIL);
+    await flushAsync();
+
+    const hotspotDetailPage =
+        internetPage.shadowRoot.querySelector('settings-hotspot-subpage');
+    assertTrue(!!hotspotDetailPage);
+
+    const hotspotSubpage =
+        internetPage.shadowRoot.querySelector('#hotspotSubpage');
+    assertTrue(!!hotspotSubpage);
+    assertFalse(hotspotSubpage.showSpinner);
+
+    hotspotConfig.setFakeHotspotState(HotspotState.kEnabling);
+    await flushAsync();
+    assertTrue(hotspotSubpage.showSpinner);
+
+    hotspotConfig.setFakeHotspotState(HotspotState.kDisabling);
+    await flushAsync();
+    assertTrue(hotspotSubpage.showSpinner);
+  });
+
   // TODO(stevenjb): Figure out a way to reliably test navigation. Currently
   // such tests are flaky.
 });

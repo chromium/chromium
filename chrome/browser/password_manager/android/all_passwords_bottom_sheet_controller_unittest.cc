@@ -12,13 +12,16 @@
 #include "base/types/pass_key.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/ui/android/passwords/all_passwords_bottom_sheet_view.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-forward.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/device_reauth/mock_device_authenticator.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
 #include "components/password_manager/core/browser/test_password_store.h"
@@ -47,9 +50,6 @@ using password_manager::UiCredential;
 using CallbackFunctionMock = testing::MockFunction<void()>;
 
 using DismissCallback = base::MockCallback<base::OnceCallback<void()>>;
-
-using IsPublicSuffixMatch = UiCredential::IsPublicSuffixMatch;
-using IsAffiliationBasedMatch = UiCredential::IsAffiliationBasedMatch;
 
 using RequestsToFillPassword =
     AllPasswordsBottomSheetController::RequestsToFillPassword;
@@ -98,13 +98,6 @@ class MockPasswordReuseDetectionManagerClient
 
 }  // namespace
 
-UiCredential MakeUiCredential(const std::u16string& username,
-                              const std::u16string& password) {
-  return UiCredential(
-      username, password, url::Origin::Create(GURL(kExampleCom)),
-      IsPublicSuffixMatch(false), IsAffiliationBasedMatch(false), base::Time());
-}
-
 PasswordForm MakeSavedPassword(const std::string& signon_realm,
                                const std::u16string& username) {
   PasswordForm form;
@@ -125,13 +118,19 @@ PasswordForm MakePasswordException(const std::string& signon_realm) {
   return form;
 }
 
-class AllPasswordsBottomSheetControllerTest : public testing::Test {
+class AllPasswordsBottomSheetControllerTest
+    : public ChromeRenderViewHostTestHarness {
  protected:
   AllPasswordsBottomSheetControllerTest() {
-    createAllPasswordsController(FocusedFieldType::kFillablePasswordField);
-
     scoped_feature_list_.InitAndEnableFeature(
         password_manager::features::kBiometricTouchToFill);
+  }
+
+  void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
+    store_ = CreateAndUseTestPasswordStore(profile());
+    store_->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+    createAllPasswordsController(FocusedFieldType::kFillablePasswordField);
   }
 
   void createAllPasswordsController(
@@ -142,10 +141,16 @@ class AllPasswordsBottomSheetControllerTest : public testing::Test {
     all_passwords_controller_ =
         std::make_unique<AllPasswordsBottomSheetController>(
             base::PassKey<AllPasswordsBottomSheetControllerTest>(),
-            std::move(mock_view_unique_ptr), driver_.AsWeakPtr(), store_.get(),
-            dissmissal_callback_.Get(), focused_field_type,
-            mock_pwd_manager_client_.get(),
-            mock_pwd_reuse_detection_manager_client_.get());
+            web_contents(), std::move(mock_view_unique_ptr),
+            driver_.AsWeakPtr(), store_.get(), dissmissal_callback_.Get(),
+            focused_field_type, mock_pwd_manager_client_.get(),
+            mock_pwd_reuse_detection_manager_client_.get(),
+            show_migration_warning_callback_.Get());
+  }
+
+  void TearDown() override {
+    store_->ShutdownOnUIThread();
+    ChromeRenderViewHostTestHarness::TearDown();
   }
 
   MockPasswordManagerDriver& driver() { return driver_; }
@@ -160,7 +165,7 @@ class AllPasswordsBottomSheetControllerTest : public testing::Test {
 
   DismissCallback& dismissal_callback() { return dissmissal_callback_; }
 
-  void RunUntilIdle() { task_env_.RunUntilIdle(); }
+  void RunUntilIdle() { task_environment()->RunUntilIdle(); }
 
   MockPasswordManagerClient& client() {
     return *mock_pwd_manager_client_.get();
@@ -175,12 +180,16 @@ class AllPasswordsBottomSheetControllerTest : public testing::Test {
     return *mock_pwd_reuse_detection_manager_client_.get();
   }
 
+  base::MockCallback<
+      AllPasswordsBottomSheetController::ShowMigrationWarningCallback>&
+  show_migration_warning_callback() {
+    return show_migration_warning_callback_;
+  }
+
  private:
-  content::BrowserTaskEnvironment task_env_;
   MockPasswordManagerDriver driver_;
-  TestingProfile profile_;
-  scoped_refptr<TestPasswordStore> store_ =
-      CreateAndUseTestPasswordStore(&profile_);
+  scoped_refptr<TestPasswordStore> store_;
+
   raw_ptr<MockAllPasswordsBottomSheetView> mock_view_;
   DismissCallback dissmissal_callback_;
   std::unique_ptr<AllPasswordsBottomSheetController> all_passwords_controller_;
@@ -191,6 +200,9 @@ class AllPasswordsBottomSheetControllerTest : public testing::Test {
   std::unique_ptr<MockPasswordReuseDetectionManagerClient>
       mock_pwd_reuse_detection_manager_client_ =
           std::make_unique<MockPasswordReuseDetectionManagerClient>();
+  base::MockCallback<
+      AllPasswordsBottomSheetController::ShowMigrationWarningCallback>
+      show_migration_warning_callback_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -221,8 +233,6 @@ TEST_F(AllPasswordsBottomSheetControllerTest, Show) {
 TEST_F(AllPasswordsBottomSheetControllerTest, FillsUsernameWithoutAuth) {
   createAllPasswordsController(FocusedFieldType::kFillableUsernameField);
 
-  UiCredential credential = MakeUiCredential(kUsername1, kPassword);
-
   EXPECT_CALL(client(), GetDeviceAuthenticator).Times(0);
   EXPECT_CALL(driver(),
               FillIntoFocusedField(false, std::u16string(kUsername1)));
@@ -234,8 +244,6 @@ TEST_F(AllPasswordsBottomSheetControllerTest, FillsUsernameWithoutAuth) {
 
 TEST_F(AllPasswordsBottomSheetControllerTest,
        FillsOnlyUsernameIfNotPasswordFillRequested) {
-  UiCredential credential = MakeUiCredential(kUsername1, kPassword);
-
   EXPECT_CALL(client(), GetDeviceAuthenticator).Times(0);
 
   EXPECT_CALL(driver(), FillIntoFocusedField(true, std::u16string(kUsername1)));
@@ -245,8 +253,6 @@ TEST_F(AllPasswordsBottomSheetControllerTest,
 }
 
 TEST_F(AllPasswordsBottomSheetControllerTest, FillsPasswordIfNoAuth) {
-  UiCredential credential = MakeUiCredential(kUsername1, kPassword);
-
   EXPECT_CALL(driver(), FillIntoFocusedField(true, std::u16string(kPassword)));
   EXPECT_CALL(dismissal_callback(), Run());
 
@@ -255,8 +261,6 @@ TEST_F(AllPasswordsBottomSheetControllerTest, FillsPasswordIfNoAuth) {
 }
 
 TEST_F(AllPasswordsBottomSheetControllerTest, FillsPasswordIfAuthNotAvailable) {
-  UiCredential credential = MakeUiCredential(kUsername1, kPassword);
-
   EXPECT_CALL(client(), GetDeviceAuthenticator)
       .WillOnce(Return(authenticator()));
   EXPECT_CALL(*authenticator().get(), CanAuthenticateWithBiometrics)
@@ -269,8 +273,6 @@ TEST_F(AllPasswordsBottomSheetControllerTest, FillsPasswordIfAuthNotAvailable) {
 }
 
 TEST_F(AllPasswordsBottomSheetControllerTest, FillsPasswordIfAuthSuccessful) {
-  UiCredential credential = MakeUiCredential(kUsername1, kPassword);
-
   EXPECT_CALL(client(), GetDeviceAuthenticator)
       .WillOnce(Return(authenticator()));
   EXPECT_CALL(*authenticator().get(), CanAuthenticateWithBiometrics)
@@ -288,8 +290,6 @@ TEST_F(AllPasswordsBottomSheetControllerTest, FillsPasswordIfAuthSuccessful) {
 }
 
 TEST_F(AllPasswordsBottomSheetControllerTest, DoesntFillPasswordIfAuthFailed) {
-  UiCredential credential = MakeUiCredential(kUsername1, kPassword);
-
   EXPECT_CALL(client(), GetDeviceAuthenticator)
       .WillOnce(Return(authenticator()));
   EXPECT_CALL(*authenticator().get(), CanAuthenticateWithBiometrics)
@@ -308,8 +308,6 @@ TEST_F(AllPasswordsBottomSheetControllerTest, DoesntFillPasswordIfAuthFailed) {
 }
 
 TEST_F(AllPasswordsBottomSheetControllerTest, CancelsAuthIfDestroyed) {
-  UiCredential credential = MakeUiCredential(kUsername1, kPassword);
-
   EXPECT_CALL(client(), GetDeviceAuthenticator)
       .WillOnce(Return(authenticator()));
   EXPECT_CALL(*authenticator().get(), CanAuthenticateWithBiometrics)
@@ -368,4 +366,41 @@ TEST_F(AllPasswordsBottomSheetControllerTest,
 
   all_passwords_controller()->OnCredentialSelected(
       kUsername1, kPassword, RequestsToFillPassword(true));
+}
+
+TEST_F(AllPasswordsBottomSheetControllerTest,
+       ShowMigrationWarningOnUsernameFillIfEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      password_manager::features::
+          kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
+  createAllPasswordsController(FocusedFieldType::kFillableUsernameField);
+  EXPECT_CALL(show_migration_warning_callback(), Run);
+  all_passwords_controller()->OnCredentialSelected(
+      kUsername1, kPassword, RequestsToFillPassword(false));
+}
+
+TEST_F(AllPasswordsBottomSheetControllerTest,
+       ShowMigrationWarningOnPasswordFillIfEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      password_manager::features::
+          kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
+  createAllPasswordsController(FocusedFieldType::kFillablePasswordField);
+  EXPECT_CALL(show_migration_warning_callback(),
+              Run(_, _,
+                  password_manager::metrics_util::
+                      PasswordMigrationWarningTriggers::kAllPasswords));
+  all_passwords_controller()->OnCredentialSelected(
+      kUsername1, kPassword, RequestsToFillPassword(true));
+}
+
+TEST_F(AllPasswordsBottomSheetControllerTest,
+       DoesntTriggersMigrationWarningIfDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      password_manager::features::
+          kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
+  createAllPasswordsController(FocusedFieldType::kFillableUsernameField);
+  EXPECT_CALL(show_migration_warning_callback(), Run).Times(0);
+  all_passwords_controller()->OnCredentialSelected(
+      kUsername1, kPassword, RequestsToFillPassword(false));
 }

@@ -189,6 +189,10 @@ ProtoEnum::BackForwardCacheNotRestoredReason NotRestoredReasonToTraceEnum(
       return ProtoEnum::FENCED_FRAMES_EMBEDDER;
     case Reason::kCookieDisabled:
       return ProtoEnum::COOKIE_DISABLED;
+    case Reason::kHTTPAuthRequired:
+      return ProtoEnum::HTTP_AUTH_REQUIRED;
+    case Reason::kCookieFlushed:
+      return ProtoEnum::COOKIE_FLUSHED;
     case Reason::kBlocklistedFeatures:
       return ProtoEnum::BLOCKLISTED_FEATURES;
     case Reason::kUnknown:
@@ -270,6 +274,15 @@ bool BackForwardCacheCanStoreDocumentResult::CanRestore() const {
   return not_restored_reasons_.Empty();
 }
 
+const BlockListedFeatures
+BackForwardCacheCanStoreDocumentResult::blocklisted_features() const {
+  BlockListedFeatures features;
+  for (const auto& [key, value] : blocking_details_map_) {
+    features.Put(key);
+  }
+  return features;
+}
+
 namespace {
 std::string DisabledReasonsToString(
     const BackForwardCacheCanStoreDocumentResult::DisabledReasonsMap& reasons,
@@ -283,9 +296,9 @@ std::string DisabledReasonsToString(
       // extension related reasons saying "Extensions".
       string_to_add = reason.report_string;
     } else {
-      string_to_add = base::StringPrintf("%d:%d:%s:%s", reason.source,
-                                         reason.id, reason.description.c_str(),
-                                         reason.context.c_str());
+      string_to_add = base::StringPrintf(
+          "%d:%d:%s:%s", static_cast<int>(reason.source), reason.id,
+          reason.description.c_str(), reason.context.c_str());
     }
     descriptions.push_back(string_to_add);
   }
@@ -320,7 +333,7 @@ BackForwardCacheCanStoreDocumentResult::GetStringReasons() const {
        not_restored_reasons_) {
     switch (reason) {
       case Reason::kBlocklistedFeatures:
-        reason_strs = FeaturesToStringVector(blocklisted_features_);
+        reason_strs = FeaturesToStringVector(blocklisted_features());
         break;
       default:
         reason_strs.push_back(NotRestoredReasonToReportString(reason));
@@ -349,7 +362,8 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
     case Reason::kWasGrantedMediaAccess:
       return "frame was granted microphone or camera access";
     case Reason::kBlocklistedFeatures:
-      return "blocklisted features: " + DescribeFeatures(blocklisted_features_);
+      return "blocklisted features: " +
+             DescribeFeatures(blocklisted_features());
     case Reason::kDisableForRenderFrameHostCalled:
       return "BackForwardCache::DisableForRenderFrameHost() was called: " +
              DisabledReasonsToString(disabled_reasons_);
@@ -448,6 +462,10 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
       return "Pages using FencedFrames cannot be stored in bfcache.";
     case Reason::kCookieDisabled:
       return "Cookie is disabled for the page.";
+    case Reason::kHTTPAuthRequired:
+      return "Same-origin HTTP authentication is required in another tab.";
+    case Reason::kCookieFlushed:
+      return "Cookie is flushed.";
   }
 }
 
@@ -532,6 +550,10 @@ BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToReportString(
       return "Cache-control:no-store";
     case Reason::kCookieDisabled:
       return "Cookie is disabled";
+    case Reason::kHTTPAuthRequired:
+      return "Same-origin HTTP authentication is required in another tab";
+    case Reason::kCookieFlushed:
+      return "Cookie is flushed";
     case Reason::kDisableForRenderFrameHostCalled:
       return DisabledReasonsToString(disabled_reasons_,
                                      /*for_not_restored_reasons=*/true);
@@ -561,10 +583,18 @@ void BackForwardCacheCanStoreDocumentResult::No(
 }
 
 void BackForwardCacheCanStoreDocumentResult::NoDueToFeatures(
-    BlockListedFeatures features) {
+    BlockingDetailsMap map) {
   AddNotRestoredReason(
       BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures);
-  blocklisted_features_.PutAll(features);
+  for (const auto& [k, v] : map) {
+    if (blocking_details_map_.contains(k)) {
+      for (auto& details : map[k]) {
+        blocking_details_map_[k].push_back(std::move(details));
+      }
+    } else {
+      blocking_details_map_[k] = std::move(map[k]);
+    }
+  }
 }
 
 void BackForwardCacheCanStoreDocumentResult::
@@ -610,7 +640,11 @@ void BackForwardCacheCanStoreDocumentResult::NoDueToAXEvents(
 void BackForwardCacheCanStoreDocumentResult::AddReasonsFrom(
     const BackForwardCacheCanStoreDocumentResult& other) {
   not_restored_reasons_.PutAll(other.not_restored_reasons_);
-  blocklisted_features_.PutAll(other.blocklisted_features());
+  for (const auto& [k, v] : other.blocking_details_map()) {
+    for (const auto& details : v) {
+      blocking_details_map_[k].push_back(details.Clone());
+    }
+  }
   for (const auto& reason : other.disabled_reasons()) {
     disabled_reasons_.insert(reason);
   }
@@ -627,7 +661,19 @@ void BackForwardCacheCanStoreDocumentResult::AddReasonsFrom(
 BackForwardCacheCanStoreDocumentResult::
     BackForwardCacheCanStoreDocumentResult() = default;
 BackForwardCacheCanStoreDocumentResult::BackForwardCacheCanStoreDocumentResult(
-    BackForwardCacheCanStoreDocumentResult&) = default;
+    BackForwardCacheCanStoreDocumentResult& other)
+    : not_restored_reasons_(other.not_restored_reasons_),
+      disabled_reasons_(other.disabled_reasons_),
+      browsing_instance_swap_result_(other.browsing_instance_swap_result_),
+      disallow_activation_reasons_(other.disallow_activation_reasons_),
+      ax_events_(other.ax_events_) {
+  // Manually copy `blocking_details_map_`.
+  for (const auto& [k, v] : other.blocking_details_map()) {
+    for (const auto& details : v) {
+      blocking_details_map_[k].push_back(details.Clone());
+    }
+  }
+}
 BackForwardCacheCanStoreDocumentResult::BackForwardCacheCanStoreDocumentResult(
     BackForwardCacheCanStoreDocumentResult&&) = default;
 BackForwardCacheCanStoreDocumentResult::

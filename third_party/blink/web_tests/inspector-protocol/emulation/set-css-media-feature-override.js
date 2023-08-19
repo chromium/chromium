@@ -64,6 +64,13 @@
   await setEmulatedMediaFeature('prefers-reduced-data', 'reduce');
   await setEmulatedMediaFeature('prefers-reduced-data', '__invalid__');
 
+  // Test `prefers-reduced-transparency`.
+  // https://drafts.csswg.org/mediaqueries-5/#prefers-reduced-transparency
+  await setEmulatedMediaFeature('prefers-reduced-transparency', '__invalid__');
+  await setEmulatedMediaFeature('prefers-reduced-transparency', 'no-preference');
+  await setEmulatedMediaFeature('prefers-reduced-transparency', 'reduce');
+  await setEmulatedMediaFeature('prefers-reduced-transparency', '__invalid__');
+
   // Test `prefers-contrast`.
   // https://drafts.csswg.org/mediaqueries-5/#prefers-contrast
   await setEmulatedMediaFeature('prefers-contrast', '__invalid__');

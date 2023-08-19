@@ -33,8 +33,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using ::testing::Eq;
-using ::testing::Ne;
+using ::testing::StrEq;
 
 namespace reporting {
 namespace {
@@ -51,7 +50,7 @@ class EncryptionModuleTest : public ::testing::Test {
     decryptor_ = std::move(decryptor_result.ValueOrDie());
   }
 
-  StatusOr<EncryptedRecord> EncryptSync(base::StringPiece data) {
+  StatusOr<EncryptedRecord> EncryptSync(std::string_view data) {
     test::TestEvent<StatusOr<EncryptedRecord>> encrypt_record;
     encryption_module_->EncryptRecord(data, encrypt_record.cb());
     return encrypt_record.result();
@@ -76,7 +75,7 @@ class EncryptionModuleTest : public ::testing::Test {
     dec_handle->CloseRecord(base::BindOnce(
         [](std::string* decrypted_string,
            base::OnceCallback<void(Status)> close_cb,
-           StatusOr<base::StringPiece> result) {
+           StatusOr<std::string_view> result) {
           if (!result.ok()) {
             std::move(close_cb).Run(result.status());
             return;
@@ -91,7 +90,7 @@ class EncryptionModuleTest : public ::testing::Test {
 
   StatusOr<std::string> DecryptMatchingSecret(
       Encryptor::PublicKeyId public_key_id,
-      base::StringPiece encrypted_key) {
+      std::string_view encrypted_key) {
     // Retrieve private key that matches public key hash.
     test::TestEvent<StatusOr<std::string>> retrieve_private_key;
     decryptor_->RetrieveMatchingPrivateKey(public_key_id,
@@ -153,7 +152,7 @@ TEST_F(EncryptionModuleTest, EncryptAndDecrypt) {
                      encrypted_result.ValueOrDie().encrypted_wrapped_record()));
   ASSERT_OK(decrypted_result.status()) << decrypted_result.status();
 
-  EXPECT_THAT(decrypted_result.ValueOrDie(), ::testing::StrEq(kTestString));
+  EXPECT_THAT(decrypted_result.ValueOrDie(), StrEq(kTestString));
 }
 
 TEST_F(EncryptionModuleTest, EncryptionDisabled) {
@@ -266,8 +265,7 @@ TEST_F(EncryptionModuleTest, EncryptAndDecryptMultiple) {
     ASSERT_OK(decrypted_result.status()) << decrypted_result.status();
 
     // Verify match.
-    EXPECT_THAT(decrypted_result.ValueOrDie(),
-                ::testing::StrEq(kTestStrings[i]));
+    EXPECT_THAT(decrypted_result.ValueOrDie(), StrEq(kTestStrings[i]));
   }
 }
 
@@ -276,8 +274,8 @@ TEST_F(EncryptionModuleTest, EncryptAndDecryptMultipleParallel) {
   class SingleEncryptionContext {
    public:
     SingleEncryptionContext(
-        base::StringPiece test_string,
-        base::StringPiece public_key,
+        std::string_view test_string,
+        std::string_view public_key,
         Encryptor::PublicKeyId public_key_id,
         scoped_refptr<EncryptionModuleInterface> encryption_module,
         base::OnceCallback<void(StatusOr<EncryptedRecord>)> response)
@@ -292,7 +290,7 @@ TEST_F(EncryptionModuleTest, EncryptAndDecryptMultipleParallel) {
         delete;
 
     ~SingleEncryptionContext() {
-      DCHECK(!response_) << "Self-destruct without prior response";
+      CHECK(!response_) << "Self-destruct without prior response";
     }
 
     void Start() {
@@ -350,7 +348,7 @@ TEST_F(EncryptionModuleTest, EncryptAndDecryptMultipleParallel) {
     SingleDecryptionContext(
         const EncryptedRecord& encrypted_record,
         scoped_refptr<test::Decryptor> decryptor,
-        base::OnceCallback<void(StatusOr<base::StringPiece>)> response)
+        base::OnceCallback<void(StatusOr<std::string_view>)> response)
         : encrypted_record_(encrypted_record),
           decryptor_(decryptor),
           response_(std::move(response)) {}
@@ -360,7 +358,7 @@ TEST_F(EncryptionModuleTest, EncryptAndDecryptMultipleParallel) {
         delete;
 
     ~SingleDecryptionContext() {
-      DCHECK(!response_) << "Self-destruct without prior response";
+      CHECK(!response_) << "Self-destruct without prior response";
     }
 
     void Start() {
@@ -371,7 +369,7 @@ TEST_F(EncryptionModuleTest, EncryptAndDecryptMultipleParallel) {
     }
 
    private:
-    void Respond(StatusOr<base::StringPiece> result) {
+    void Respond(StatusOr<std::string_view> result) {
       std::move(response_).Run(result);
       delete this;
     }
@@ -397,7 +395,7 @@ TEST_F(EncryptionModuleTest, EncryptAndDecryptMultipleParallel) {
               base::Unretained(this)));
     }
 
-    void DecryptSharedSecret(base::StringPiece private_key) {
+    void DecryptSharedSecret(std::string_view private_key) {
       // Decrypt shared secret from private key and peer public key.
       auto shared_secret_result = decryptor_->DecryptSecret(
           private_key, encrypted_record_.encryption_info().encryption_key());
@@ -411,7 +409,7 @@ TEST_F(EncryptionModuleTest, EncryptAndDecryptMultipleParallel) {
                                     shared_secret_result.ValueOrDie()));
     }
 
-    void OpenRecord(base::StringPiece shared_secret) {
+    void OpenRecord(std::string_view shared_secret) {
       decryptor_->OpenRecord(
           shared_secret,
           base::BindOnce(
@@ -453,7 +451,7 @@ TEST_F(EncryptionModuleTest, EncryptAndDecryptMultipleParallel) {
     void CloseRecord(test::Decryptor::Handle* handle) {
       handle->CloseRecord(base::BindOnce(
           [](SingleDecryptionContext* self,
-             StatusOr<base::StringPiece> decryption_result) {
+             StatusOr<std::string_view> decryption_result) {
             self->Respond(decryption_result);
           },
           base::Unretained(this)));
@@ -462,7 +460,7 @@ TEST_F(EncryptionModuleTest, EncryptAndDecryptMultipleParallel) {
    private:
     const EncryptedRecord encrypted_record_;
     const scoped_refptr<test::Decryptor> decryptor_;
-    base::OnceCallback<void(StatusOr<base::StringPiece>)> response_;
+    base::OnceCallback<void(StatusOr<std::string_view>)> response_;
   };
 
   constexpr std::array<const char*, 6> kTestStrings = {
@@ -490,8 +488,8 @@ TEST_F(EncryptionModuleTest, EncryptAndDecryptMultipleParallel) {
     base::ThreadPool::PostTask(
         FROM_HERE,
         base::BindOnce(
-            [](base::StringPiece private_key_string,
-               base::StringPiece public_key_string,
+            [](std::string_view private_key_string,
+               std::string_view public_key_string,
                scoped_refptr<test::Decryptor> decryptor,
                base::OnceCallback<void(StatusOr<Encryptor::PublicKeyId>)>
                    done_cb) {
@@ -533,7 +531,7 @@ TEST_F(EncryptionModuleTest, EncryptAndDecryptMultipleParallel) {
          base::BindOnce(
              [](base::OnceCallback<void(StatusOr<std::string>)>
                     decryption_result,
-                StatusOr<base::StringPiece> result) {
+                StatusOr<std::string_view> result) {
                if (!result.ok()) {
                  std::move(decryption_result).Run(result.status());
                  return;
@@ -550,8 +548,7 @@ TEST_F(EncryptionModuleTest, EncryptAndDecryptMultipleParallel) {
     const auto decryption_result = decryption_results[i].result();
     ASSERT_OK(decryption_result.status()) << decryption_result.status();
     // Verify data match.
-    EXPECT_THAT(decryption_result.ValueOrDie(),
-                ::testing::StrEq(kTestStrings[i]));
+    EXPECT_THAT(decryption_result.ValueOrDie(), StrEq(kTestStrings[i]));
   }
 }
 }  // namespace

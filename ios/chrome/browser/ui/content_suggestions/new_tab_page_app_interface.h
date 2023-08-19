@@ -29,6 +29,18 @@
 // Returns the Discover header label.
 + (UILabel*)discoverHeaderLabel;
 
+// Resets SetUpList prefs to clear any completed items.
++ (void)resetSetUpListPrefs;
+
+// Returns YES if the SetUpListItemView for SignInSync is complete.
++ (BOOL)setUpListItemSignInSyncIsComplete;
+
+// Returns YES if the SetUpListItemView for DefaultBrowser is complete.
++ (BOOL)setUpListItemDefaultBrowserIsComplete;
+
+// Returns YES if the SetUpListItemView for Autofill is complete.
++ (BOOL)setUpListItemAutofillIsComplete;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_NEW_TAB_PAGE_APP_INTERFACE_H_

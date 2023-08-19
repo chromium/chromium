@@ -7,7 +7,6 @@
 #include "base/time/time.h"
 #include "ui/base/ime/linux/linux_input_method_context.h"
 #include "ui/events/keycodes/dom/dom_keyboard_layout_map.h"
-#include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/platform_font.h"
@@ -23,7 +22,7 @@ FallbackLinuxUi::FallbackLinuxUi() {
   query.pixel_size = gfx::PlatformFont::kDefaultBaseFontSize;
   query.style = gfx::Font::NORMAL;
   query.weight = gfx::Font::Weight::NORMAL;
-  query.device_scale_factor = GetDeviceScaleFactor();
+  query.device_scale_factor = display_config().primary_scale;
   default_font_render_params_ =
       gfx::GetFontRenderParams(query, &default_font_family_);
 }
@@ -112,12 +111,12 @@ LinuxUi::WindowFrameAction FallbackLinuxUi::GetWindowFrameAction(
   }
 }
 
-float FallbackLinuxUi::GetDeviceScaleFactor() const {
-  return 1.0f;
+bool FallbackLinuxUi::PreferDarkTheme() const {
+  return theme_is_dark_;
 }
 
-bool FallbackLinuxUi::PreferDarkTheme() const {
-  return false;
+void FallbackLinuxUi::SetDarkTheme(bool dark) {
+  theme_is_dark_ = dark;
 }
 
 bool FallbackLinuxUi::AnimationsEnabled() const {

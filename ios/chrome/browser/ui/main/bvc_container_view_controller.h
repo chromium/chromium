@@ -7,16 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/gestures/view_revealing_animatee.h"
-#import "ios/chrome/browser/ui/thumb_strip/thumb_strip_supporting.h"
-
 // A UIViewController instance designed to contain an instance of
 // BrowserViewController ("BVC") as a child. Since the BVC itself often
 // implements a great deal of custom logic around handling view controller
 // presentation and other features, this containing view controller handles
 // forwarding calls to the BVC instance where needed.
-@interface BVCContainerViewController
-    : UIViewController <ThumbStripSupporting, ViewRevealingAnimatee>
+@interface BVCContainerViewController : UIViewController
 
 // The BVC instance being contained. If this is set, the current BVC (if any)
 // will be removed as a child view controller, and the new `currentBVC` will

@@ -6,12 +6,17 @@
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_COOKIES_CONTENT_VIEW_H_
 
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
+#include "chrome/browser/ui/views/controls/rich_controls_container_view.h"
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
-#include "chrome/browser/ui/views/page_info/page_info_row_view.h"
 #include "components/page_info/page_info_ui.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/view.h"
+
+namespace views {
+class BoxLayoutView;
+class Label;
+}  // namespace views
 
 // The view that is used as a content view of the Cookies subpage in page info.
 // It contains information about cookies (short description, how many sites
@@ -39,6 +44,8 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   void SetInitializedCallbackForTesting(base::OnceClosure initialized_callback);
 
  private:
+  friend class PageInfoCookiesContentViewTest;
+
   // Ensures the allowed sites information UI is present, with placeholder
   // information if necessary.
   void InitCookiesDialogButton();
@@ -46,6 +53,9 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   //  Checks if |blocking_third_party_cookies_row_| should be initiated and if
   //  so does it  and sets its info.
   void SetBlockingThirdPartyCookiesInfo(const CookiesNewInfo& cookie_info);
+
+  // Updates the new third-party cookies section using |cookie_info|.
+  void SetThirdPartyCookiesInfo(const CookiesNewInfo& cookie_info);
 
   // Updates toggles state according to info.
   void UpdateBlockingThirdPartyCookiesToggle(bool are_cookies_blocked);
@@ -68,9 +78,14 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   // placeholder information if necessary.
   void InitFpsButton(bool is_managed);
 
+  // Initializes the new third-party cookies section. The section starts out
+  // hidden and is only shown when third-party cookies are blocked or there is
+  // an active exception.
+  void AddThirdPartyCookiesContainer();
+
   base::OnceClosure initialized_callback_ = base::NullCallback();
 
-  raw_ptr<PageInfo, DanglingUntriaged> presenter_;
+  raw_ptr<PageInfo, DanglingUntriaged> presenter_ = nullptr;
 
   // The view that contains the fps_button and cookies_dialog_button.
   raw_ptr<views::View> cookies_buttons_container_view_ = nullptr;
@@ -81,7 +96,8 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   // The view that contains toggle for blocking third party cookies
   // and displays information with a number of blocked sites.
   // Only displayed when third party cookies are blocked in settings.
-  raw_ptr<PageInfoRowView> blocking_third_party_cookies_row_ = nullptr;
+  raw_ptr<RichControlsContainerView> blocking_third_party_cookies_row_ =
+      nullptr;
 
   // The Label which is a subtitle of |blocking_third_party_cookies_row|.
   raw_ptr<views::Label> blocking_third_party_cookies_subtitle_label_ = nullptr;
@@ -101,6 +117,17 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   // FPS info histogram. Needed to not record the histogram each time page info
   // status changed.
   bool fps_histogram_recorded_ = false;
+
+  // Third-party cookies section which contains a title, a description and a
+  // toggle row view.
+  raw_ptr<views::BoxLayoutView> third_party_cookies_container_ = nullptr;
+  raw_ptr<views::BoxLayoutView> third_party_cookies_label_wrapper_ = nullptr;
+  raw_ptr<views::Label> third_party_cookies_title_ = nullptr;
+  raw_ptr<views::Label> third_party_cookies_description_ = nullptr;
+  raw_ptr<RichControlsContainerView> third_party_cookies_row_ = nullptr;
+  raw_ptr<views::ToggleButton> third_party_cookies_toggle_ = nullptr;
+  raw_ptr<views::ImageView> third_party_cookies_enforced_icon_ = nullptr;
+  raw_ptr<views::Label> third_party_cookies_toggle_subtitle_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_COOKIES_CONTENT_VIEW_H_

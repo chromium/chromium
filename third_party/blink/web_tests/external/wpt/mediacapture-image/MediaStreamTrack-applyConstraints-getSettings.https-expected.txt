@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+PASS exercises an applyConstraints() - getSettings() cycle with PTZ permission granted
+PASS exercises an applyConstraints() with required constraints with PTZ permission denied
+PASS exercises an applyConstraints() with ideal constraints with PTZ permission denied
+FAIL exercises an applyConstraints() with advances constraints with PTZ permission denied assert_unreached: applyConstraints should not throw an OverconstrainedError for {"advanced":[{"pan":8}]} Reached unreachable code
+Harness: the test ran to completion.
+

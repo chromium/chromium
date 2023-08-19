@@ -71,12 +71,6 @@ class StandaloneBrowserExtensionApps : public KeyedService,
                            StandaloneBrowserExtensionAppsUpdated);
 
   // apps::AppPublisher overrides.
-  void LoadIcon(const std::string& app_id,
-                const IconKey& icon_key,
-                IconType icon_type,
-                int32_t size_hint_in_dip,
-                bool allow_placeholder_icon,
-                apps::LoadIconCallback callback) override;
   void GetCompressedIconData(const std::string& app_id,
                              int32_t size_in_dip,
                              ui::ResourceScaleFactor scale_factor,
@@ -125,13 +119,6 @@ class StandaloneBrowserExtensionApps : public KeyedService,
   // to be functional.
   void OnReceiverDisconnected();
   void OnControllerDisconnected();
-
-  // When Lacros returns an icon for an app, ash must then apply icon effects.
-  // This function does that.
-  void OnLoadIcon(uint32_t icon_effects,
-                  int size_hint_in_dip,
-                  apps::LoadIconCallback callback,
-                  IconValuePtr icon_value);
 
   const AppType app_type_;
 

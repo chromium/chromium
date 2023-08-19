@@ -36,11 +36,11 @@
 #include <text-input-extension-unstable-v1-client-protocol.h>
 #include <text-input-unstable-v1-client-protocol.h>
 #include <touchpad-haptics-unstable-v1-client-protocol.h>
+#include <ui-controls-unstable-v1-client-protocol.h>
 #include <viewporter-client-protocol.h>
 #include <vsync-feedback-unstable-v1-client-protocol.h>
 #include <wayland-client-core.h>
 #include <wayland-client-protocol.h>
-#include <weston-test-client-protocol.h>
 #include <xdg-decoration-unstable-v1-client-protocol.h>
 #include <xdg-output-unstable-v1-client-protocol.h>
 #include <xdg-shell-client-protocol.h>
@@ -87,6 +87,7 @@ DEFAULT_DELETER_FDECL(struct wp_presentation_feedback)
 DEFAULT_DELETER_FDECL(zaura_output_manager)
 DEFAULT_DELETER_FDECL(zaura_shell)
 DEFAULT_DELETER_FDECL(zaura_surface)
+DEFAULT_DELETER_FDECL(zaura_toplevel)
 DEFAULT_DELETER_FDECL(zaura_output)
 DEFAULT_DELETER_FDECL(zcr_color_manager_v1)
 DEFAULT_DELETER_FDECL(zcr_color_management_output_v1)
@@ -133,10 +134,10 @@ DEFAULT_DELETER_FDECL(zcr_extended_drag_v1)
 DEFAULT_DELETER_FDECL(xdg_surface)
 DEFAULT_DELETER_FDECL(xdg_toplevel)
 DEFAULT_DELETER_FDECL(zxdg_output_manager_v1)
-DEFAULT_DELETER_FDECL(weston_test)
 DEFAULT_DELETER_FDECL(zwp_idle_inhibit_manager_v1)
 DEFAULT_DELETER_FDECL(zcr_remote_surface_v1)
 DEFAULT_DELETER_FDECL(zcr_remote_surface_v2)
+DEFAULT_DELETER_FDECL(zcr_ui_controls_v1)
 
 #if defined(USE_GBM)
 DEFAULT_DELETER_FDECL(gbm_bo)

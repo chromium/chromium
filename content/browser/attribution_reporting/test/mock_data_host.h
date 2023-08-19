@@ -15,9 +15,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
 
-class GURL;
-
 namespace attribution_reporting {
+struct OsRegistrationItem;
 struct SourceRegistration;
 struct TriggerRegistration;
 }  // namespace attribution_reporting
@@ -52,10 +51,12 @@ class MockDataHost : public blink::mojom::AttributionDataHost {
     return trigger_data_;
   }
 
-  const std::vector<std::vector<GURL>>& os_sources() const {
+  const std::vector<std::vector<attribution_reporting::OsRegistrationItem>>&
+  os_sources() const {
     return os_sources_;
   }
-  const std::vector<std::vector<GURL>>& os_triggers() const {
+  const std::vector<std::vector<attribution_reporting::OsRegistrationItem>>&
+  os_triggers() const {
     return os_triggers_;
   }
   void WaitForOsSources(size_t);
@@ -73,9 +74,11 @@ class MockDataHost : public blink::mojom::AttributionDataHost {
   void TriggerDataAvailable(
       attribution_reporting::SuitableOrigin reporting_origin,
       attribution_reporting::TriggerRegistration,
-      absl::optional<network::TriggerVerification>) override;
-  void OsSourceDataAvailable(std::vector<GURL> registration_urls) override;
-  void OsTriggerDataAvailable(std::vector<GURL> registration_urls) override;
+      std::vector<network::TriggerVerification>) override;
+  void OsSourceDataAvailable(
+      std::vector<attribution_reporting::OsRegistrationItem>) override;
+  void OsTriggerDataAvailable(
+      std::vector<attribution_reporting::OsRegistrationItem>) override;
 
   size_t min_source_data_count_ = 0;
   std::vector<attribution_reporting::SourceRegistration> source_data_;
@@ -84,10 +87,12 @@ class MockDataHost : public blink::mojom::AttributionDataHost {
   std::vector<attribution_reporting::TriggerRegistration> trigger_data_;
 
   size_t min_os_sources_count_ = 0;
-  std::vector<std::vector<GURL>> os_sources_;
+  std::vector<std::vector<attribution_reporting::OsRegistrationItem>>
+      os_sources_;
 
   size_t min_os_triggers_count_ = 0;
-  std::vector<std::vector<GURL>> os_triggers_;
+  std::vector<std::vector<attribution_reporting::OsRegistrationItem>>
+      os_triggers_;
 
   base::RunLoop wait_loop_;
   mojo::Receiver<blink::mojom::AttributionDataHost> receiver_{this};

@@ -34,34 +34,6 @@ constexpr float kDisabledColorOpacity = 0.38f;
 // Color of second tone is always 30% opacity of the color of first tone.
 constexpr float kSecondToneOpacity = 0.3f;
 
-// Get a color extracted from the user's wallpaper.
-// Returns `kInvalidWallpaperColor` on failure.
-// If `use_dark_color`, may attempt to extract a dark color from the wallpaper.
-SkColor GetUserWallpaperColor(bool use_dark_color) {
-  // May be null in unit tests.
-  if (!Shell::HasInstance())
-    return kInvalidWallpaperColor;
-
-  WallpaperControllerImpl* wallpaper_controller =
-      Shell::Get()->wallpaper_controller();
-
-  if (!wallpaper_controller)
-    return kInvalidWallpaperColor;
-
-  const auto& calculated_colors = wallpaper_controller->calculated_colors();
-  if (!calculated_colors) {
-    return kInvalidWallpaperColor;
-  }
-
-  if (chromeos::features::IsJellyEnabled()) {
-    return calculated_colors->celebi_color;
-  }
-
-  // Always use k mean color. Mixing with black/white
-  // will handle adapting it to dark or light mode.
-  return wallpaper_controller->GetKMeanColor();
-}
-
 SkColor ClampLightness(bool use_dark_color, SkColor color) {
   color_utils::HSL hsl;
   color_utils::SkColorToHSL(color, &hsl);
@@ -87,20 +59,10 @@ ui::ColorProviderSource* ColorUtil::GetColorProviderSourceForWindow(
 }
 
 // static
-SkColor ColorUtil::GetBackgroundThemedColor(SkColor default_color,
-                                            bool use_dark_color) {
-  const SkColor wallpaper_color = GetUserWallpaperColor(use_dark_color);
-  if (wallpaper_color == kInvalidWallpaperColor) {
-    DVLOG(1) << "Failed to get wallpaper color";
-    return default_color;
-  }
-
-  if (chromeos::features::IsJellyEnabled()) {
-    return wallpaper_color;
-  }
-
-  const SkColor clamped_wallpaper_color =
-      ClampLightness(use_dark_color, wallpaper_color);
+SkColor ColorUtil::AdjustKMeansColor(SkColor k_means_color,
+                                     bool use_dark_color) {
+  const SkColor clamped_k_means_color =
+      ClampLightness(use_dark_color, k_means_color);
 
   const SkColor foreground_color =
       use_dark_color ? SK_ColorBLACK : SK_ColorWHITE;
@@ -112,7 +74,7 @@ SkColor ColorUtil::GetBackgroundThemedColor(SkColor default_color,
   // Put a slightly transparent screen of white/black on top of the user's
   // wallpaper color.
   return color_utils::GetResultingPaintColor(
-      SkColorSetA(foreground_color, foreground_alpha), clamped_wallpaper_color);
+      SkColorSetA(foreground_color, foreground_alpha), clamped_k_means_color);
 }
 
 // static

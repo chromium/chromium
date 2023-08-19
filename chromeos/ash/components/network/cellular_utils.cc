@@ -16,6 +16,9 @@
 #include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_profile_client.h"
 #include "chromeos/ash/components/network/cellular_esim_profile.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_profile.h"
+#include "chromeos/ash/components/network/network_profile_handler.h"
 
 namespace ash {
 
@@ -162,6 +165,13 @@ bool IsSimPrimary(const std::string& iccid, const DeviceState* device) {
 
 std::string GenerateStubCellularServicePath(const std::string& iccid) {
   return base::StrCat({kNonShillCellularNetworkPathPrefix, iccid});
+}
+
+const NetworkProfile* GetCellularProfile(
+    const NetworkProfileHandler* network_profile_handler) {
+  DCHECK(network_profile_handler);
+  return network_profile_handler->GetProfileForUserhash(
+      /*userhash=*/std::string());
 }
 
 bool IsStubCellularServicePath(const std::string& service_path) {

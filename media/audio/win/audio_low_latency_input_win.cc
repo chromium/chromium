@@ -887,12 +887,13 @@ void WASAPIAudioInputStream::PullCaptureDataAndPushToSink() {
       base::TimeDelta delta_time =
           base::TimeTicks::Now() -
           base::TimeTicks::FromQPCValue(capture_time_100ns);
-      use_fake_audio_capture_timestamps_ =
-          (delta_time.magnitude() >
-           kMaxAbsTimeDiffBeforeSwithingToFakeTimestamps);
-      if (use_fake_audio_capture_timestamps_) {
+      if (delta_time.magnitude() >
+          kMaxAbsTimeDiffBeforeSwithingToFakeTimestamps) {
+        use_fake_audio_capture_timestamps_ = true;
         LOG(WARNING) << "WAIS::" << __func__
                      << " => (WARNING: capture timestamps will be fake)";
+      } else {
+        use_fake_audio_capture_timestamps_ = false;
       }
       LogFakeAudioCaptureTimestamps(use_fake_audio_capture_timestamps_.value(),
                                     delta_time.magnitude());
@@ -948,7 +949,8 @@ void WASAPIAudioInputStream::PullCaptureDataAndPushToSink() {
         }
         glitch_reporter_.UpdateStats(glitch_duration);
         if (glitch_duration.is_positive()) {
-          glitch_accumulator_.Add({.duration = glitch_duration, .count = 1});
+          glitch_accumulator_.Add(AudioGlitchInfo::SingleBoundedGlitch(
+              glitch_duration, AudioGlitchInfo::Direction::kCapture));
         }
       }
 
@@ -959,7 +961,8 @@ void WASAPIAudioInputStream::PullCaptureDataAndPushToSink() {
     }
 
     base::TimeTicks capture_time;
-    if (use_fake_audio_capture_timestamps_) {
+    if (use_fake_audio_capture_timestamps_.has_value() &&
+        *use_fake_audio_capture_timestamps_) {
       capture_time = base::TimeTicks::Now();
     } else if (!timestamp_error_was_detected) {
       // Use the latest |capture_time_100ns| since it is marked as valid.

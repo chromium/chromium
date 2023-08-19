@@ -115,6 +115,11 @@ class SegmentSelectorImpl : public SegmentSelector {
   std::pair<SegmentId, float> FindBestSegment(
       const SegmentRanks& segment_scores);
 
+  // Wrapped result callback for recording metrics.
+  void CallbackWrapper(base::Time start_time,
+                       SegmentSelectionCallback callback,
+                       const SegmentSelectionResult& result);
+
   std::unique_ptr<SegmentResultProvider> segment_result_provider_;
 
   // Helper class to read/write results to the prefs.
@@ -154,7 +159,8 @@ class SegmentSelectorImpl : public SegmentSelector {
   bool used_result_in_current_session_ = false;
 
   // Pointer to the training data collector.
-  raw_ptr<TrainingDataCollector, DanglingUntriaged> training_data_collector_{};
+  raw_ptr<TrainingDataCollector, DanglingUntriaged> training_data_collector_ =
+      nullptr;
 
   base::WeakPtrFactory<SegmentSelectorImpl> weak_ptr_factory_{this};
 };

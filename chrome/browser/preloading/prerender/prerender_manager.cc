@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
@@ -30,15 +31,14 @@
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/preloading.h"
 #include "content/public/browser/preloading_data.h"
 #include "content/public/browser/prerender_handle.h"
 #include "content/public/browser/replaced_navigation_entry_data.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "content/public/common/content_features.h"
 #include "net/base/url_util.h"
-#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 namespace internal {
@@ -90,16 +90,11 @@ GURL RemoveParameterFromUrl(const GURL& url) {
   return url.ReplaceComponents(replacements);
 }
 
-void CheckAndSetPrerenderHoldbackStatus(
+void MarkPreloadingAttemptAsDuplicate(
     content::PreloadingAttempt* preloading_attempt) {
-  // In addition to the globally-controlled preloading config, check for the
-  // feature-specific holdback. We disable the feature if the user is in either
-  // of those holdbacks.
-  if (base::FeatureList::IsEnabled(features::kPrerender2Holdback)) {
-    preloading_attempt->SetHoldbackStatus(
-        content::PreloadingHoldbackStatus::kHoldback);
-  }
-  preloading_attempt->ShouldHoldback();
+  CHECK(!preloading_attempt->ShouldHoldback());
+  preloading_attempt->SetTriggeringOutcome(
+      PreloadingTriggeringOutcome::kDuplicate);
 }
 
 content::PreloadingFailureReason ToPreloadingFailureReason(
@@ -356,9 +351,7 @@ PrerenderManager::StartPrerenderBookmark(
       preloading_attempt->SetEligibility(
           content::PreloadingEligibility::kEligible);
 
-      CheckAndSetPrerenderHoldbackStatus(preloading_attempt);
-      preloading_attempt->SetTriggeringOutcome(
-          PreloadingTriggeringOutcome::kDuplicate);
+      MarkPreloadingAttemptAsDuplicate(preloading_attempt);
       return bookmark_prerender_handle_->GetWeakPtr();
     }
     bookmark_prerender_handle_.reset();
@@ -368,10 +361,57 @@ PrerenderManager::StartPrerenderBookmark(
       prerendering_url, content::PrerenderTriggerType::kEmbedder,
       prerender_utils::kBookmarkBarMetricSuffix,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_BOOKMARK),
-      preloading_attempt);
+      content::PreloadingHoldbackStatus::kUnspecified, preloading_attempt);
 
   return bookmark_prerender_handle_ ? bookmark_prerender_handle_->GetWeakPtr()
                                     : nullptr;
+}
+
+base::WeakPtr<content::PrerenderHandle>
+PrerenderManager::StartPrerenderNewTabPage(
+    const GURL& prerendering_url,
+    content::PreloadingPredictor predictor) {
+  // Helpers to create content::PreloadingAttempt.
+  auto* preloading_data =
+      content::PreloadingData::GetOrCreateForWebContents(web_contents());
+  content::PreloadingURLMatchCallback same_url_matcher =
+      content::PreloadingData::GetSameURLMatcher(prerendering_url);
+
+  content::PreloadingAttempt* preloading_attempt =
+      preloading_data->AddPreloadingAttempt(predictor,
+                                            content::PreloadingType::kPrerender,
+                                            std::move(same_url_matcher));
+
+  // New Tab Page only allow https protocol.
+  if (!prerendering_url.SchemeIs("https")) {
+    preloading_attempt->SetEligibility(
+        content::PreloadingEligibility::kHttpsOnly);
+    return nullptr;
+  }
+
+  if (new_tab_page_prerender_handle_) {
+    if (new_tab_page_prerender_handle_->GetInitialPrerenderingUrl() ==
+        prerendering_url) {
+      // In case a prerender is already present for the URL, prerendering is
+      // eligible but mark triggering outcome as a duplicate.
+      preloading_attempt->SetEligibility(
+          content::PreloadingEligibility::kEligible);
+
+      MarkPreloadingAttemptAsDuplicate(preloading_attempt);
+      return new_tab_page_prerender_handle_->GetWeakPtr();
+    }
+    new_tab_page_prerender_handle_.reset();
+  }
+
+  new_tab_page_prerender_handle_ = web_contents()->StartPrerendering(
+      prerendering_url, content::PrerenderTriggerType::kEmbedder,
+      prerender_utils::kNewTabPageMetricSuffix,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK),
+      content::PreloadingHoldbackStatus::kUnspecified, preloading_attempt);
+
+  return new_tab_page_prerender_handle_
+             ? new_tab_page_prerender_handle_->GetWeakPtr()
+             : nullptr;
 }
 
 void PrerenderManager::StopPrerenderBookmark(
@@ -396,11 +436,7 @@ PrerenderManager::StartPrerenderDirectUrlInput(
       preloading_attempt.SetEligibility(
           content::PreloadingEligibility::kEligible);
 
-      // Check and set the PreloadingHoldbackStatus before setting the
-      // TriggeringOutcome.
-      CheckAndSetPrerenderHoldbackStatus(&preloading_attempt);
-      preloading_attempt.SetTriggeringOutcome(
-          PreloadingTriggeringOutcome::kDuplicate);
+      MarkPreloadingAttemptAsDuplicate(&preloading_attempt);
       return direct_url_input_prerender_handle_->GetWeakPtr();
     }
 
@@ -418,7 +454,7 @@ PrerenderManager::StartPrerenderDirectUrlInput(
       prerender_utils::kDirectUrlInputMetricSuffix,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                 ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-      &preloading_attempt);
+      content::PreloadingHoldbackStatus::kUnspecified, &preloading_attempt);
 
   if (direct_url_input_prerender_handle_) {
     return direct_url_input_prerender_handle_->GetWeakPtr();
@@ -614,11 +650,7 @@ bool PrerenderManager::ResetSearchPrerenderTaskIfNecessary(
       preloading_attempt->SetEligibility(
           content::PreloadingEligibility::kEligible);
 
-      // Check and set the PreloadingHoldbackStatus before setting the
-      // TriggeringOutcome.
-      CheckAndSetPrerenderHoldbackStatus(preloading_attempt.get());
-      preloading_attempt->SetTriggeringOutcome(
-          PreloadingTriggeringOutcome::kDuplicate);
+      MarkPreloadingAttemptAsDuplicate(preloading_attempt.get());
     }
     return false;
   }
@@ -638,12 +670,19 @@ void PrerenderManager::StartPrerenderSearchResultInternal(
       base::BindRepeating(&IsSearchDestinationMatch, canonical_search_url,
                           web_contents()->GetBrowserContext());
 
+  content::PreloadingHoldbackStatus holdback_status_override =
+      content::PreloadingHoldbackStatus::kUnspecified;
+  if (base::FeatureList::IsEnabled(features::kPrerenderDSEHoldback)) {
+    holdback_status_override = content::PreloadingHoldbackStatus::kHoldback;
+  }
+
   std::unique_ptr<content::PrerenderHandle> prerender_handle =
       web_contents()->StartPrerendering(
           prerendering_url, content::PrerenderTriggerType::kEmbedder,
           prerender_utils::kDefaultSearchEngineMetricSuffix,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+          holdback_status_override,
           /*preloading_attempt=*/attempt.get(), std::move(url_match_predicate));
 
   if (prerender_handle) {

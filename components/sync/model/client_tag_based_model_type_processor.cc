@@ -57,7 +57,7 @@ size_t CountDuplicateClientTags(const EntityMetadataMap& metadata_map) {
 ClientTagBasedModelTypeProcessor::ClientTagBasedModelTypeProcessor(
     ModelType type,
     const base::RepeatingClosure& dump_stack)
-    : type_(type), bridge_(nullptr), dump_stack_(dump_stack) {
+    : type_(type), dump_stack_(dump_stack) {
   ResetState(CLEAR_METADATA);
 }
 
@@ -833,8 +833,13 @@ void ClientTagBasedModelTypeProcessor::OnUpdateReceived(
 void ClientTagBasedModelTypeProcessor::StorePendingInvalidations(
     std::vector<sync_pb::ModelTypeState::Invalidation> invalidations_to_store) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(IsConnected());
-  DCHECK(!model_error_);
+  CHECK(IsConnected());
+  CHECK(bridge_);
+  if (model_error_ || !entity_tracker_) {
+    // It's possible to have incoming invalidations while the data type is not
+    // fully initialized (e.g. before the initial sync).
+    return;
+  }
 
   std::unique_ptr<MetadataChangeList> metadata_changes =
       bridge_->CreateMetadataChangeList();
@@ -1240,16 +1245,17 @@ void ClientTagBasedModelTypeProcessor::MergeDataWithMetadataForDebugging(
   // Create a permanent folder for this data type. Since sync server no longer
   // creates root folders, and USS won't migrate root folders from the
   // Directory, we create root folders for each data type here.
-  base::Value::Dict rootnode;
+
   // Function isTypeRootNode in sync_node_browser.js use PARENT_ID and
   // UNIQUE_SERVER_TAG to check if the node is root node. isChildOf in
   // sync_node_browser.js uses modelType to check if root node is parent of real
   // data node. NON_UNIQUE_NAME will be the name of node to display.
-  rootnode.Set("PARENT_ID", "r");
-  rootnode.Set("UNIQUE_SERVER_TAG", type_string);
-  rootnode.Set("IS_DIR", true);
-  rootnode.Set("modelType", type_string);
-  rootnode.Set("NON_UNIQUE_NAME", type_string);
+  auto rootnode = base::Value::Dict()
+                      .Set("PARENT_ID", "r")
+                      .Set("UNIQUE_SERVER_TAG", type_string)
+                      .Set("IS_DIR", true)
+                      .Set("modelType", type_string)
+                      .Set("NON_UNIQUE_NAME", type_string);
   all_nodes.Append(std::move(rootnode));
 
   std::move(callback).Run(type_, std::move(all_nodes));
@@ -1382,10 +1388,7 @@ ClientTagBasedModelTypeProcessor::GetPossiblyTrimmedRemoteSpecifics(
     const std::string& storage_key) const {
   DCHECK(entity_tracker_);
   DCHECK(!storage_key.empty());
-  if (!base::FeatureList::IsEnabled(
-          syncer::kCacheBaseEntitySpecificsInMetadata)) {
-    return sync_pb::EntitySpecifics::default_instance();
-  }
+
   ProcessorEntity* entity =
       entity_tracker_->GetEntityForStorageKey(storage_key);
   if (entity == nullptr) {

@@ -37,13 +37,31 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
+#include "third_party/blink/renderer/core/loader/render_blocking_resource_manager.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
 HTMLHtmlElement::HTMLHtmlElement(Document& document)
-    : HTMLElement(html_names::kHTMLTag, document) {}
+    : HTMLElement(html_names::kHTMLTag, document),
+      blocking_attribute_(MakeGarbageCollected<BlockingAttribute>(this)) {}
+
+void HTMLHtmlElement::ParseAttribute(
+    const AttributeModificationParams& params) {
+  if (params.name == html_names::kBlockingAttr &&
+      RuntimeEnabledFeatures::DocumentRenderBlockingEnabled()) {
+    blocking_attribute_->OnAttributeValueChanged(params.old_value,
+                                                 params.new_value);
+    if (auto* render_blocking_resource_manager =
+            GetDocument().GetRenderBlockingResourceManager()) {
+      render_blocking_resource_manager->SetMainDocumentParsingIsRenderBlocking(
+          blocking_attribute_->HasRenderToken());
+    }
+  } else {
+    HTMLElement::ParseAttribute(params);
+  }
+}
 
 bool HTMLHtmlElement::IsURLAttribute(const Attribute& attribute) const {
   return attribute.GetName() == html_names::kManifestAttr ||
@@ -62,6 +80,11 @@ void HTMLHtmlElement::InsertedByParser() {
     // RunScriptsAtDocumentElementAvailable might have invalidated
     // GetDocument().
   }
+}
+
+void HTMLHtmlElement::Trace(Visitor* visitor) const {
+  visitor->Trace(blocking_attribute_);
+  HTMLElement::Trace(visitor);
 }
 
 namespace {

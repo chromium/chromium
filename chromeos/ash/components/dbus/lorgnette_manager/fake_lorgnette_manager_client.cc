@@ -68,6 +68,22 @@ void FakeLorgnetteManagerClient::CancelScan(
       FROM_HERE, base::BindOnce(std::move(completion_callback), true));
 }
 
+void FakeLorgnetteManagerClient::StartScannerDiscovery(
+    const lorgnette::StartScannerDiscoveryRequest& request,
+    base::RepeatingCallback<void(lorgnette::ScannerListChangedSignal)>
+        signal_callback,
+    chromeos::DBusMethodCallback<lorgnette::StartScannerDiscoveryResponse>
+        callback) {
+  NOTIMPLEMENTED();
+}
+
+void FakeLorgnetteManagerClient::StopScannerDiscovery(
+    const lorgnette::StopScannerDiscoveryRequest& request,
+    chromeos::DBusMethodCallback<lorgnette::StopScannerDiscoveryResponse>
+        callback) {
+  NOTIMPLEMENTED();
+}
+
 void FakeLorgnetteManagerClient::SetListScannersResponse(
     const absl::optional<lorgnette::ListScannersResponse>&
         list_scanners_response) {

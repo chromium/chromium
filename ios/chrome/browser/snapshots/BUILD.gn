@@ -8,27 +8,21 @@ source_set("snapshots") {
     "snapshot_cache.h",
     "snapshot_cache_internal.h",
     "snapshot_cache_observer.h",
-    "snapshot_cache_web_state_list_observer.h",
     "snapshot_generator_delegate.h",
     "snapshot_lru_cache.h",
     "snapshot_tab_helper.h",
-    "snapshots_util.h",
   ]
   sources = [
     "snapshot_browser_agent.mm",
     "snapshot_cache.mm",
-    "snapshot_cache_web_state_list_observer.mm",
     "snapshot_generator.h",
     "snapshot_generator.mm",
     "snapshot_lru_cache.mm",
     "snapshot_tab_helper.mm",
-    "snapshots_util.mm",
   ]
   deps = [
     "//base",
-    "//base/ios",
     "//build:blink_buildflags",
-    "//ios/chrome/browser/sessions:scene_util",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/web_state_list",
@@ -44,12 +38,10 @@ source_set("snapshots") {
     "QuartzCore.framework",
     "UIKit.framework",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("test_utils") {
   testonly = true
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "fake_snapshot_generator_delegate.h",
     "fake_snapshot_generator_delegate.mm",
@@ -58,14 +50,12 @@ source_set("test_utils") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "snapshot_browser_agent_unittest.mm",
     "snapshot_cache_unittest.mm",
     "snapshot_lru_cache_unittest.mm",
     "snapshot_tab_helper_unittest.mm",
-    "snapshots_util_unittest.mm",
   ]
   deps = [
     ":snapshots",

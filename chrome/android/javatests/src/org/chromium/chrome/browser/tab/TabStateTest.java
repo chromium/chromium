@@ -40,7 +40,6 @@ public class TabStateTest {
 
     @After
     public void tearDown() {
-        TabStateFileManager.setChannelNameOverrideForTest(null);
         mTestTabModelDirectory.tearDown();
     }
 
@@ -66,7 +65,6 @@ public class TabStateTest {
     @Test
     @SmallTest
     public void testLoadV1Tabs() throws Exception {
-        TabStateFileManager.setChannelNameOverrideForTest(null);
         loadAndCheckTabState(TestTabModelDirectory.M26_GOOGLE_COM);
         loadAndCheckTabState(TestTabModelDirectory.M26_GOOGLE_CA);
     }
@@ -74,8 +72,6 @@ public class TabStateTest {
     @Test
     @SmallTest
     public void testLoadV2Tabs() throws Exception {
-        TabStateFileManager.setChannelNameOverrideForTest(null);
-
         // Standard English tabs.
         loadAndCheckTabState(TestTabModelDirectory.V2_DUCK_DUCK_GO);
         loadAndCheckTabState(TestTabModelDirectory.V2_TEXTAREA);
@@ -86,5 +82,4 @@ public class TabStateTest {
         // Hebrew, RTL.
         loadAndCheckTabState(TestTabModelDirectory.V2_HAARETZ);
     }
-
 }

@@ -14,8 +14,8 @@
 #include <vector>
 
 #include "base/base_export.h"
-#include "base/containers/stack_container.h"
 #include "base/memory/raw_ptr.h"
+#include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 
 namespace base {
 namespace internal {
@@ -47,7 +47,7 @@ class UnretainedRefWrapper;
 class BASE_EXPORT RawPtrAsanBoundArgTracker {
  public:
   static constexpr size_t kInlineArgsCount = 3;
-  using ProtectedArgsVector = base::StackVector<uintptr_t, kInlineArgsCount>;
+  using ProtectedArgsVector = absl::InlinedVector<uintptr_t, kInlineArgsCount>;
 
   // Check whether ptr is an address inside an allocation pointed to by one of
   // the currently protected callback arguments. If it is, then this function

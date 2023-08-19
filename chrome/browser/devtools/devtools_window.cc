@@ -61,7 +61,6 @@
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
-#include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -72,7 +71,9 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/input/native_web_keyboard_event.h"
 #include "content/public/common/url_constants.h"
+#include "net/cert/x509_certificate.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
@@ -450,6 +451,8 @@ DevToolsWindow::~DevToolsWindow() {
 
   life_stage_ = kClosing;
 
+  base::RecordAction(base::UserMetricsAction("DevTools_Close"));
+
   UpdateBrowserWindow();
   UpdateBrowserToolbar();
 
@@ -714,6 +717,13 @@ void DevToolsWindow::OpenExternalFrontend(
     std::string effective_frontend_url =
         use_bundled_frontend ? kFallbackFrontendURL
                              : DevToolsUI::GetProxyURL(frontend_url).spec();
+    if (type == "tab") {
+      if (effective_frontend_url.find("?") == std::string::npos) {
+        effective_frontend_url += "?targetType=tab";
+      } else {
+        effective_frontend_url += "&targetType=tab";
+      }
+    }
     window =
         Create(profile, nullptr, frontend_type, effective_frontend_url, false,
                std::string(), std::string(), agent_host->IsAttached(),

@@ -29,6 +29,7 @@ class IconButton;
 class PillButton;
 class SavedDeskIconContainer;
 class SavedDeskNameView;
+class SystemShadow;
 
 // A view that represents each individual saved desk item in the saved desk
 // grid. The view has different shown contents depending on whether the mouse is
@@ -164,15 +165,18 @@ class ASH_EXPORT SavedDeskItemView : public views::Button,
   std::unique_ptr<DeskTemplate> saved_desk_;
 
   // Owned by the views hierarchy.
-  SavedDeskNameView* name_view_ = nullptr;
+  raw_ptr<SavedDeskNameView, ExperimentalAsh> name_view_ = nullptr;
   // When template is managed by admin, `time_view_` will display management
   // description instead.
-  views::Label* time_view_ = nullptr;
-  SavedDeskIconContainer* icon_container_view_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> time_view_ = nullptr;
+  raw_ptr<SavedDeskIconContainer, ExperimentalAsh> icon_container_view_ =
+      nullptr;
   raw_ptr<IconButton, ExperimentalAsh> delete_button_ = nullptr;
   raw_ptr<PillButton, ExperimentalAsh> launch_button_ = nullptr;
   // Container used for holding all the views that appear on hover.
-  views::View* hover_container_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> hover_container_ = nullptr;
+
+  std::unique_ptr<SystemShadow> shadow_;
 
   // When the `name_view_` is focused, we select all its text. However, if it is
   // focused via a mouse press event, on mouse release will clear the selection.

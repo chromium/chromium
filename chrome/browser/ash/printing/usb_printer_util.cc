@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/printing/usb_printer_util.h"
 
-#include <ctype.h>
 #include <stdint.h>
 
 #include <algorithm>
@@ -16,6 +15,7 @@
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/hash/md5.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -161,8 +161,8 @@ std::string CreateUsbPrinterId(const UsbDeviceInfo& device_info) {
   MD5UpdateBigEndian(&ctx, device_info.vendor_id);
   MD5UpdateBigEndian(&ctx, device_info.product_id);
   MD5UpdateBigEndian(&ctx, device::GetDeviceVersion(device_info));
-  MD5UpdateString16(&ctx, GetManufacturerName(device_info));
-  MD5UpdateString16(&ctx, GetProductName(device_info));
+  base::MD5Update(&ctx, GetManufacturerName(device_info));
+  base::MD5Update(&ctx, GetProductName(device_info));
   MD5UpdateString16(&ctx, GetSerialNumber(device_info));
   base::MD5Digest digest;
   base::MD5Final(&digest, &ctx);
@@ -207,8 +207,8 @@ std::string UsbPrinterDeviceDetailsAsString(const UsbDeviceInfo& device_info) {
       device_info.class_code, device_info.subclass_code,
       device_info.protocol_code, device_info.vendor_id, device_info.product_id,
       device::GetDeviceVersion(device_info),
-      base::UTF16ToUTF8(GetManufacturerName(device_info)).c_str(),
-      base::UTF16ToUTF8(GetProductName(device_info)).c_str(),
+      GetManufacturerName(device_info).c_str(),
+      GetProductName(device_info).c_str(),
       base::UTF16ToUTF8(GetSerialNumber(device_info)).c_str());
 }
 
@@ -234,12 +234,31 @@ chromeos::Uri UsbPrinterUri(const UsbDeviceInfo& device_info) {
 
 }  // namespace
 
-std::u16string GetManufacturerName(const UsbDeviceInfo& device_info) {
-  return device_info.manufacturer_name.value_or(std::u16string());
+std::string GuessEffectiveMakeAndModel(
+    const device::mojom::UsbDeviceInfo& device_info) {
+  return base::StrCat({GetManufacturerName(device_info), " ",
+                      GetProductName(device_info)});
 }
 
-std::u16string GetProductName(const UsbDeviceInfo& device_info) {
-  return device_info.product_name.value_or(std::u16string());
+std::string GetManufacturerName(const UsbDeviceInfo& device_info) {
+  return base::UTF16ToUTF8(
+      device_info.manufacturer_name.value_or(std::u16string()));
+}
+
+std::string GetProductName(const UsbDeviceInfo& device_info) {
+  const std::string manufacturer =
+      base::StrCat({GetManufacturerName(device_info), " "});
+  std::string model =
+      base::UTF16ToUTF8(device_info.product_name.value_or(std::u16string()));
+
+  // Some devices have the manufacturer duplicated in the product
+  // string. This needs to be removed to remain consistent with the make
+  // and model strings in the ppd index.
+  if (base::StartsWith(model, manufacturer,
+                       base::CompareCase::INSENSITIVE_ASCII)) {
+    model.erase(0, manufacturer.size());
+  }
+  return model;
 }
 
 std::u16string GetSerialNumber(const UsbDeviceInfo& device_info) {
@@ -273,16 +292,14 @@ bool UsbDeviceToPrinter(const UsbDeviceInfo& device_info,
     return false;
   }
 
-  entry->ppd_search_data.usb_manufacturer =
-      base::UTF16ToUTF8(GetManufacturerName(device_info));
-  entry->ppd_search_data.usb_model =
-      base::UTF16ToUTF8(GetProductName(device_info));
+  entry->ppd_search_data.usb_manufacturer = GetManufacturerName(device_info);
+  entry->ppd_search_data.usb_model = GetProductName(device_info);
 
   const std::string& make = entry->ppd_search_data.usb_manufacturer;
   const std::string& model = entry->ppd_search_data.usb_model;
 
   // Synthesize make-and-model string for printer identification.
-  entry->printer.set_make_and_model(base::JoinString({make, model}, " "));
+  entry->printer.set_make_and_model(GuessEffectiveMakeAndModel(device_info));
 
   // Construct the display name by however much of the manufacturer/model
   // information that we have available.

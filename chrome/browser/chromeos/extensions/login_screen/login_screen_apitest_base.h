@@ -10,6 +10,7 @@
 
 #include "chrome/browser/ash/policy/login/signin_profile_extensions_policy_test_base.h"
 #include "components/version_info/version_info.h"
+#include "extensions/common/extension_id.h"
 
 class ExtensionTestMessageListener;
 
@@ -49,12 +50,12 @@ class LoginScreenApitestBase
   void SetUpLoginScreenExtensionAndRunTest(const std::string& test_name,
                                            bool assert_test_succeed);
 
-  std::string extension_id() { return extension_id_; }
+  extensions::ExtensionId extension_id() { return extension_id_; }
 
   std::string listener_message() { return listener_message_; }
 
  protected:
-  const std::string extension_id_;
+  const extensions::ExtensionId extension_id_;
   const std::string extension_update_manifest_path_;
   // The message |listener_| is listening for.
   const std::string listener_message_;

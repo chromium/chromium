@@ -1,5 +1,4 @@
 monorail {
-  component: "Blink>DOM"
+  component: "Blink>HTML>Dialog"
 }
 team_email: "dom-dev@chromium.org"
-

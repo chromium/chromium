@@ -83,7 +83,7 @@ class FontFamilyCache : public base::SupportsUserData::Data {
   // Weak reference.
   // Note: The lifetime of this object is tied to the lifetime of the
   // PrefService, so there is no worry about an invalid pointer.
-  raw_ptr<const PrefService, DanglingUntriaged> prefs_;
+  raw_ptr<const PrefService, AcrossTasksDanglingUntriaged> prefs_;
 
   // Reacts to profile font changes. |font_change_registrar_| will be
   // automatically unregistered when the FontPrefChangeNotifier is destroyed as

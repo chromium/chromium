@@ -11,10 +11,9 @@ import './edu_coexistence_ui.js';
 import './arc_account_picker/arc_account_picker_app.js';
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 
-import {assert} from 'chrome://resources/ash/common/assert.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getAccountAdditionOptionsFromJSON} from './arc_account_picker/arc_util.js';
 import {EduCoexistenceBrowserProxyImpl} from './edu_coexistence_browser_proxy.js';
@@ -27,116 +26,65 @@ export const Screens = {
   ARC_ACCOUNT_PICKER: 'arc-account-picker',
 };
 
-Polymer({
-  is: 'edu-coexistence-app',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const EduCoexistenceAppBase =
+    mixinBehaviors([WebUIListenerBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/**
+ * @polymer
+ */
+class EduCoexistenceApp extends EduCoexistenceAppBase {
+  static get is() {
+    return 'edu-coexistence-app';
+  }
 
-  behaviors: [WebUIListenerBehavior],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /**
-     * Whether the error screen should be shown.
-     * @private {boolean}
-     */
-    isErrorShown_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /*
-     * True if `kArcAccountRestrictions` feature is enabled.
-     * @private
-     */
-    isArcAccountRestrictionsEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('isArcAccountRestrictionsEnabled');
+  static get properties() {
+    return {
+      /**
+       * Whether the error screen should be shown.
+       * @private
+       */
+      isErrorShown_: {
+        type: Boolean,
+        value: false,
       },
-      readOnly: true,
-    },
 
-    /**
-     * Specifies what the current screen is.
-     * @private {Screens}
-     */
-    currentScreen_: {type: Screens},
-  },
+      /*
+       * True if `kArcAccountRestrictions` feature is enabled.
+       * @private
+       */
+      isArcAccountRestrictionsEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isArcAccountRestrictionsEnabled');
+        },
+        readOnly: true,
+      },
 
-  listeners: {
-    'go-error': 'onError_',
-  },
-
-  /**
-   * Displays the error screen.
-   * @private
-   */
-  onError_() {
-    this.switchToScreen_(Screens.ERROR);
-  },
-
-  /**
-   * Switches to the specified screen.
-   * @private
-   * @param {Screens} screen
-   */
-  switchToScreen_(screen) {
-    if (this.currentScreen_ === screen) {
-      return;
-    }
-    this.currentScreen_ = screen;
-    /** @type {CrViewManagerElement} */ (this.$.viewManager)
-        .switchView(this.currentScreen_);
-    this.dispatchEvent(new CustomEvent('switch-view-notify-for-testing'));
-  },
-
-  /**
-   * @param {boolean} isOnline Whether or not the browser is online.
-   * @private
-   */
-  setInitialScreen_(isOnline) {
-    const initialScreen = isOnline ? Screens.ONLINE_FLOW : Screens.OFFLINE;
-    if (this.isArcAccountRestrictionsEnabled_) {
-      const options = getAccountAdditionOptionsFromJSON(
-          EduCoexistenceBrowserProxyImpl.getInstance().getDialogArguments());
-      if (!!options && options.showArcAvailabilityPicker) {
-        this.$$('arc-account-picker-app')
-            .loadAccounts()
-            .then(
-                accountsFound => {
-                  this.switchToScreen_(
-                      accountsFound ? Screens.ARC_ACCOUNT_PICKER :
-                                      initialScreen);
-                },
-                reject => {
-                  this.switchToScreen_(initialScreen);
-                });
-        return;
-      }
-    }
-    this.switchToScreen_(initialScreen);
-  },
-
-  /**
-   * Switches to 'Add account' flow.
-   * @private
-   */
-  showAddAccount_() {
-    this.switchToScreen_(
-        navigator.onLine ? Screens.ONLINE_FLOW : Screens.OFFLINE);
-  },
-
-  /**
-   * Attempts to close the dialog.
-   * @private
-   */
-  closeDialog_() {
-    EduCoexistenceBrowserProxyImpl.getInstance().dialogClose();
-  },
+      /**
+       * Specifies what the current screen is.
+       * @private
+       */
+      currentScreen_: {type: String},
+    };
+  }
 
   /** @override */
   ready() {
+    super.ready();
     this.addWebUIListener('show-error-screen', () => {
+      this.onError_();
+    });
+
+    this.addEventListener('go-error', () => {
       this.onError_();
     });
 
@@ -154,6 +102,74 @@ Polymer({
       }
     });
     this.setInitialScreen_(navigator.onLine);
-  },
+  }
 
-});
+  /**
+   * Displays the error screen.
+   * @private
+   */
+  onError_() {
+    this.switchToScreen_(Screens.ERROR);
+  }
+
+  /**
+   * Switches to the specified screen.
+   * @private
+   * @param {Screens} screen
+   */
+  switchToScreen_(screen) {
+    if (this.currentScreen_ === screen) {
+      return;
+    }
+    this.currentScreen_ = screen;
+    /** @type {CrViewManagerElement} */ (this.$.viewManager)
+        .switchView(this.currentScreen_);
+    this.dispatchEvent(new CustomEvent('switch-view-notify-for-testing'));
+  }
+
+  /**
+   * @param {boolean} isOnline Whether or not the browser is online.
+   * @private
+   */
+  setInitialScreen_(isOnline) {
+    const initialScreen = isOnline ? Screens.ONLINE_FLOW : Screens.OFFLINE;
+    if (this.isArcAccountRestrictionsEnabled_) {
+      const options = getAccountAdditionOptionsFromJSON(
+          EduCoexistenceBrowserProxyImpl.getInstance().getDialogArguments());
+      if (!!options && options.showArcAvailabilityPicker) {
+        this.shadowRoot.querySelector('arc-account-picker-app')
+            .loadAccounts()
+            .then(
+                accountsFound => {
+                  this.switchToScreen_(
+                      accountsFound ? Screens.ARC_ACCOUNT_PICKER :
+                                      initialScreen);
+                },
+                reject => {
+                  this.switchToScreen_(initialScreen);
+                });
+        return;
+      }
+    }
+    this.switchToScreen_(initialScreen);
+  }
+
+  /**
+   * Switches to 'Add account' flow.
+   * @private
+   */
+  showAddAccount_() {
+    this.switchToScreen_(
+        navigator.onLine ? Screens.ONLINE_FLOW : Screens.OFFLINE);
+  }
+
+  /**
+   * Attempts to close the dialog.
+   * @private
+   */
+  closeDialog_() {
+    EduCoexistenceBrowserProxyImpl.getInstance().dialogClose();
+  }
+}
+
+customElements.define(EduCoexistenceApp.is, EduCoexistenceApp);

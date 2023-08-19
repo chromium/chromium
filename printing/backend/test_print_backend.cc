@@ -127,11 +127,11 @@ mojom::ResultCode TestPrintBackend::GetPrinterSemanticCapsAndDefaults(
 #if BUILDFLAG(IS_WIN)
   // The Windows implementation does not load the printable area for all
   // paper sizes, only for the default size.  Mimic this behavior by
-  // defaulting the printable area to the physical size any other paper
+  // defaulting the printable area to the physical size for all other paper
   // sizes.
   for (auto& paper : printer_caps->papers) {
     if (paper != printer_caps->default_paper) {
-      paper.printable_area_um = gfx::Rect(paper.size_um);
+      paper.set_printable_area_to_paper_size();
     }
   }
 #endif
@@ -169,8 +169,8 @@ absl::optional<gfx::Rect> TestPrintBackend::GetPaperPrintableArea(
   if (base::StringToUint(paper_vendor_id, &id) && id) {
     PrinterSemanticCapsAndDefaults::Papers& papers = data->caps->papers;
     for (auto paper = papers.begin(); paper != papers.end(); ++paper) {
-      if (paper->vendor_id == paper_vendor_id) {
-        return paper->printable_area_um;
+      if (paper->vendor_id() == paper_vendor_id) {
+        return paper->printable_area_um();
       }
     }
 
@@ -183,10 +183,10 @@ absl::optional<gfx::Rect> TestPrintBackend::GetPaperPrintableArea(
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-std::string TestPrintBackend::GetPrinterDriverInfo(
+std::vector<std::string> TestPrintBackend::GetPrinterDriverInfo(
     const std::string& printer_name) {
   // not implemented
-  return "";
+  return std::vector<std::string>();
 }
 
 bool TestPrintBackend::IsValidPrinter(const std::string& printer_name) {

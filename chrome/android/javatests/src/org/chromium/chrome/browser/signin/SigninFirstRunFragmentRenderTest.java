@@ -36,6 +36,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.firstrun.FirstRunPageDelegate;
 import org.chromium.chrome.browser.firstrun.PolicyLoadListener;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -55,6 +56,7 @@ import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.RenderTestRule;
 import org.chromium.ui.test.util.ViewUtils;
 
@@ -66,6 +68,7 @@ import java.util.List;
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
 @DoNotBatch(reason = "Relies on global state")
 public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCase {
     /** Parameter provider for night mode state and device orientation. */
@@ -140,16 +143,21 @@ public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCas
 
     @Before
     public void setUp() {
-        Profile.setLastUsedProfileForTesting(mProfileMock);
+        OneshotSupplierImpl<Profile> profileSupplier =
+                TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+                    OneshotSupplierImpl<Profile> supplier = new OneshotSupplierImpl<>();
+                    supplier.set(mProfileMock);
+                    return supplier;
+                });
+        when(mFirstRunPageDelegateMock.getProfileSupplier()).thenReturn(profileSupplier);
+
         when(mExternalAuthUtilsMock.canUseGooglePlayServices()).thenReturn(true);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            when(IdentityServicesProvider.get().getSigninManager(
-                         Profile.getLastUsedRegularProfile()))
+            when(IdentityServicesProvider.get().getSigninManager(mProfileMock))
                     .thenReturn(mSigninManagerMock);
-            when(IdentityServicesProvider.get().getIdentityManager(
-                         Profile.getLastUsedRegularProfile()))
+            when(IdentityServicesProvider.get().getIdentityManager(mProfileMock))
                     .thenReturn(mIdentityManagerMock);
         });
         SigninCheckerProvider.setForTests(mSigninCheckerMock);
@@ -524,7 +532,7 @@ public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCas
         ApplicationTestUtils.waitForActivityState(getActivity(), Stage.RESUMED);
         // Parts of SigninFirstRunFragment are initialized asynchronously, so ensure the load
         // spinner is not displayed before grabbing a screenshot.
-        ViewUtils.waitForView(withId(R.id.signin_fre_continue_button), ViewUtils.VIEW_VISIBLE);
+        ViewUtils.waitForVisibleView(withId(R.id.signin_fre_continue_button));
         onView(withId(R.id.fre_native_and_policy_load_progress_spinner))
                 .check(matches(not(isDisplayed())));
     }

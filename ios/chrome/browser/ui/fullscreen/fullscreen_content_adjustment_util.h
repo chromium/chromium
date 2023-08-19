@@ -11,7 +11,7 @@
 class FullscreenModel;
 
 // Updates `proxy`'s content offset and top padding to ensure that the content
-// is fully visible under the hdeader.
+// is fully visible under the header.
 void MoveContentBelowHeader(id<CRWWebViewProxy> proxy, FullscreenModel* model);
 
 #endif  // IOS_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_CONTENT_ADJUSTMENT_UTIL_H_

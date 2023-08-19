@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("alert") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "action_sheet_coordinator.h",
     "action_sheet_coordinator.mm",
@@ -11,6 +10,7 @@ source_set("alert") {
     "alert_coordinator.mm",
     "repost_form_coordinator.h",
     "repost_form_coordinator.mm",
+    "repost_form_coordinator_delegate.h",
   ]
   deps = [
     "//base",
@@ -26,7 +26,6 @@ source_set("alert") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "action_sheet_coordinator_unittest.mm",

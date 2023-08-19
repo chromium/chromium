@@ -7,13 +7,16 @@
 #include <set>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/memory/ptr_util.h"
 #include "base/time/clock.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/services/multidevice_setup/host_device_timestamp_manager.h"
 #include "chromeos/ash/services/multidevice_setup/host_status_provider_impl.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session_manager.h"
 
 namespace ash {
 
@@ -73,12 +76,16 @@ void AccountStatusChangeDelegateNotifierImpl::RegisterPrefs(
                               kTimestampNotSet);
   registry->RegisterStringPref(
       kVerifiedHostDeviceIdFromMostRecentHostStatusUpdatePrefName, kNoHost);
+
+  registry->RegisterInt64Pref(kMultiDeviceLastSessionStartTime,
+                              kTimestampNotSet);
 }
 
 AccountStatusChangeDelegateNotifierImpl::
     ~AccountStatusChangeDelegateNotifierImpl() {
   host_status_provider_->RemoveObserver(this);
   oobe_completion_tracker_->RemoveObserver(this);
+  session_manager::SessionManager::Get()->RemoveObserver(this);
 }
 
 void AccountStatusChangeDelegateNotifierImpl::OnDelegateSet() {
@@ -116,6 +123,11 @@ const char
     AccountStatusChangeDelegateNotifierImpl::kOobeSetupFlowTimestampPrefName[] =
         "multidevice_setup.oobe_setup_flow_timestamp ";
 
+// Used to verify if multi device setup notification should be shown.
+const char AccountStatusChangeDelegateNotifierImpl::
+    kMultiDeviceLastSessionStartTime[] =
+        "multidevice_setup.last_session_start_time";
+
 AccountStatusChangeDelegateNotifierImpl::
     AccountStatusChangeDelegateNotifierImpl(
         HostStatusProvider* host_status_provider,
@@ -132,6 +144,12 @@ AccountStatusChangeDelegateNotifierImpl::
       LoadHostDeviceIdFromEndOfPreviousSession();
   host_status_provider_->AddObserver(this);
   oobe_completion_tracker_->AddObserver(this);
+  session_manager::SessionManager::Get()->AddObserver(this);
+  if (IsInPhoneHubNotificationExperimentGroup()) {
+    // In the object is created after OnSessionStateChanged() is already called,
+    // manually update the timestamp.
+    UpdateSessionStartTimeIfEligible();
+  }
 }
 
 void AccountStatusChangeDelegateNotifierImpl::OnHostStatusChange(
@@ -144,6 +162,29 @@ void AccountStatusChangeDelegateNotifierImpl::OnOobeCompleted() {
                           clock_->Now().ToJavaTime());
   if (delegate())
     delegate()->OnNoLongerNewUser();
+}
+
+void AccountStatusChangeDelegateNotifierImpl::OnSessionStateChanged() {
+  UpdateSessionStartTimeIfEligible();
+}
+
+void AccountStatusChangeDelegateNotifierImpl::
+    UpdateSessionStartTimeIfEligible() {
+  if (session_manager::SessionManager::Get()->IsUserSessionBlocked()) {
+    return;
+  }
+  if (IsInPhoneHubNotificationExperimentGroup()) {
+    pref_service_->SetInt64(kMultiDeviceLastSessionStartTime,
+                            clock_->Now().ToJavaTime());
+    CheckForNewUserPotentialHostExistsEvent(
+        host_status_provider_->GetHostWithStatus());
+  }
+}
+
+bool AccountStatusChangeDelegateNotifierImpl::
+    IsInPhoneHubNotificationExperimentGroup() {
+  return features::IsPhoneHubOnboardingNotifierRevampEnabled() &&
+         !features::kPhoneHubOnboardingNotifierUseNudge.Get();
 }
 
 void AccountStatusChangeDelegateNotifierImpl::CheckForMultiDeviceEvents(
@@ -193,11 +234,18 @@ void AccountStatusChangeDelegateNotifierImpl::
     CheckForNewUserPotentialHostExistsEvent(
         const HostStatusProvider::HostStatusWithDevice&
             host_status_with_device) {
-  // We do not notify the user if they already had a chance to go through setup
-  // flow in OOBE.
-  if (pref_service_->GetInt64(kOobeSetupFlowTimestampPrefName) !=
-      kTimestampNotSet) {
-    return;
+  if (!features::IsPhoneHubOnboardingNotifierRevampEnabled()) {
+    // We do not notify the user if they already had a chance to go through
+    // setup flow in OOBE.
+    if (pref_service_->GetInt64(kOobeSetupFlowTimestampPrefName) !=
+        kTimestampNotSet) {
+      return;
+    }
+  } else {
+    if (!IsInPhoneHubNotificationExperimentGroup()) {
+      // The user is in group for nudge. Do not show notification.
+      return;
+    }
   }
 
   // We only check for new user events if there is no enabled host.
@@ -220,9 +268,21 @@ void AccountStatusChangeDelegateNotifierImpl::
     return;
   }
 
-  delegate()->OnPotentialHostExistsForNewUser();
-  pref_service_->SetInt64(kNewUserPotentialHostExistsPrefName,
-                          clock_->Now().ToJavaTime());
+  if (IsInPhoneHubNotificationExperimentGroup()) {
+    if (pref_service_->GetInt64(kMultiDeviceLastSessionStartTime) !=
+            kTimestampNotSet &&
+        clock_->Now() - base::Time::FromJavaTime(pref_service_->GetInt64(
+                            kMultiDeviceLastSessionStartTime)) >
+            features::kMultiDeviceSetupNotificationTimeLimit.Get()) {
+      return;
+    }
+  }
+
+  if (delegate()) {
+    delegate()->OnPotentialHostExistsForNewUser();
+    pref_service_->SetInt64(kNewUserPotentialHostExistsPrefName,
+                            clock_->Now().ToJavaTime());
+  }
 }
 
 void AccountStatusChangeDelegateNotifierImpl::CheckForNoLongerNewUserEvent(

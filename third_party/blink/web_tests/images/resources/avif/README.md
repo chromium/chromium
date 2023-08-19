@@ -73,6 +73,22 @@ avifenc command line:
 avifenc -r f -d  8 -y 420 -s 0 --nclx 1/13/1 silver.png silver-full-range-srgb-420-8bpc.avif
 ```
 
+### silver-400-matrix-6.avif
+This is generated from silver.png (3x3 rgb(192, 192, 192)) with the appropriate
+avifenc command line:
+
+```
+avifenc -s 0 -q 99 -y 400 silver.png silver-400-matrix-6.avif
+```
+
+### silver-400-matrix-0.avif
+This is generated from silver.png (3x3 rgb(192, 192, 192)) with the appropriate
+avifenc command line:
+
+```
+avifenc -s 0 -q 99 -y 400 --cicp 1/13/0 silver.png silver-400-matrix-0.avif
+```
+
 ### red-full-range-angle-(0|1|2|3)-mode-(0|1)-420-8bpc.avif
 These are all generated from red.png with the appropriate avifenc command line:
 
@@ -130,5 +146,53 @@ line:
 ```
 avifenc -r f -d 8 -y 420 -s 0 --nclx 1/11/1 red.png red-unsupported-transfer.avif
 ```
+
+### blue-and-magenta-crop.avif
+This image uses a 'clap' (clean aperture) image property to crop the image to
+contain the blue rectangle only (with a magenta rectangle inside).
+
+### blue-and-magenta-crop-invalid.avif
+This image is the same as blue-and-magenta-crop.avif except that the fractions
+horizOff and vertOff have positive numerators and negative denominators (30/-1
+and 10/-1 instead of -30/1 and -10/1). Changed with a hex editor.
+
+### red-and-purple-crop.avif
+The input PNG image (300x100) has a red, purple, and blue square (100x100
+each). It was created with ImageMagick's 'convert' command:
+
+  convert -size 3x1 xc:red -matte -fill '#0000FF80' \
+          -draw 'point 1,0' \
+          -draw 'color 2,0 point' -scale 300x300 draw_points_300x100.png
+
+This image (200x50) uses a 'clap' (clean aperture) image property to crop the
+input image to contain half of the red and purple squares.
+
+  avifenc -l --crop 0,0,200,50 draw_points_300x100.png red-and-purple-crop.avif
+
+Note that the origin of the crop rectangle is at (0, 0).
+
+### red-and-purple-and-blue.avif
+The uncropped version (300x100) of red-and-purple-crop.avif:
+
+  avifenc -l draw_points_300x100.png red-and-purple-and-blue.avif
+
+### red-with-alpha-8bpc.avif
+3x3, 8-bit, YUV 4:2:0.
+
+Y: all 63. U: all 102. V: all 240. This is red in YUV, limited range, with
+MatrixCoefficients=1.
+
+A:   0,   0, 127
+     0, 127, 255
+   127, 255, 255
+
+### small-with-gainmap.avif
+A small image with a gainmap as an auxiliary item and XMP metadata, as in the
+spec from Adobe https://helpx.adobe.com/camera-raw/using/gain-map.html
+
+Source: the image was first created as a png with alpha, then encoded with a
+tweaked avifenc that stores the alpha aux image with the gainmap identifier.
+Then the file was edited with a hex editor to associate the xmp to the aux
+image.
 
 ### TODO(crbug.com/960620): Figure out how the rest of files were generated.

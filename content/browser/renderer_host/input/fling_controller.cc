@@ -249,7 +249,9 @@ void FlingController::ProgressFling(base::TimeTicks current_time) {
 
   // As long as the fling curve is active, the fling progress must get
   // scheduled even when the last delta to scroll was zero.
-  ScheduleFlingProgress();
+  if (fling_curve_) {
+    ScheduleFlingProgress();
+  }
 }
 
 void FlingController::StopFling() {

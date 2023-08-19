@@ -18,6 +18,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/safe_browsing/core/browser/db/hit_report.h"
 #include "components/safe_browsing/core/browser/db/util.h"
+#include "components/safe_browsing/core/browser/safe_browsing_hats_delegate.h"
 #include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -69,7 +70,8 @@ class PingManager : public KeyedService {
       base::RepeatingCallback<ChromeUserPopulation()>
           get_user_population_callback,
       base::RepeatingCallback<ChromeUserPopulation::PageLoadToken(GURL)>
-          get_page_load_token_callback);
+          get_page_load_token_callback,
+      std::unique_ptr<SafeBrowsingHatsDelegate> hats_delegate);
 
   void OnURLLoaderComplete(network::SimpleURLLoader* source,
                            std::unique_ptr<std::string> response_body);
@@ -99,11 +101,17 @@ class PingManager : public KeyedService {
       std::unique_ptr<ClientSafeBrowsingReportRequest> report,
       bool attach_default_data = true);
 
+  // Launches a survey and attaches ThreatDetails to the survey response.
+  virtual void AttachThreatDetailsAndLaunchSurvey(
+      std::unique_ptr<ClientSafeBrowsingReportRequest> report);
+
   // Only used for tests
   void SetURLLoaderFactoryForTesting(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   void SetTokenFetcherForTesting(
       std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher);
+  void SetHatsDelegateForTesting(
+      std::unique_ptr<SafeBrowsingHatsDelegate> hats_delegate);
 
   // Helper function to return a weak pointer.
   base::WeakPtr<PingManager> GetWeakPtr();
@@ -120,7 +128,8 @@ class PingManager : public KeyedService {
       base::RepeatingCallback<ChromeUserPopulation()>
           get_user_population_callback,
       base::RepeatingCallback<ChromeUserPopulation::PageLoadToken(GURL)>
-          get_page_load_token_callback);
+          get_page_load_token_callback,
+      std::unique_ptr<SafeBrowsingHatsDelegate> hats_delegate);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(PingManagerTest, TestSafeBrowsingHitUrl);
@@ -181,6 +190,9 @@ class PingManager : public KeyedService {
   // Pulls the page load token.
   base::RepeatingCallback<ChromeUserPopulation::PageLoadToken(GURL)>
       get_page_load_token_callback_;
+
+  // Launches HaTS surveys.
+  std::unique_ptr<SafeBrowsingHatsDelegate> hats_delegate_;
 
   base::WeakPtrFactory<PingManager> weak_factory_{this};
 };

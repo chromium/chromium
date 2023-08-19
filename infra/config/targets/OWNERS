@@ -1,0 +1,6 @@
+# Presently, these files only generate .pyl files in
+# //infra/config/generated/testing which are synced to //testing/buildbot, see
+# comment for *.pyl owner in //testing/buildbot/OWNERS for reasoning here. In
+# the future, when targets spec .json files are generated (which use definitions
+# in these files), the output files will have owners established.
+*

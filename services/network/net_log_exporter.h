@@ -10,8 +10,10 @@
 #include "base/files/file.h"
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
+#include "base/types/pass_key.h"
 #include "base/values.h"
 #include "net/log/net_log.h"
+#include "services/network/network_service.h"
 #include "services/network/public/mojom/net_log.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
@@ -43,6 +45,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetLogExporter
              uint64_t max_file_size,
              StartCallback callback) override;
   void Stop(base::Value::Dict polled_data, StopCallback callback) override;
+
+  // Run off-thread by task scheduler, as does disk I/O.
+  static base::FilePath CreateScratchDirForNetworkService(
+      base::PassKey<NetworkService>);
 
   // Sets a callback that will be used to create a scratch directory instead
   // of the normal codepath. For test use only.

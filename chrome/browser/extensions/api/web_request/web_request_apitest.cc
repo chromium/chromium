@@ -98,6 +98,7 @@
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/public/test/url_loader_monitor.h"
 #include "content/public/test/web_transport_simple_test_server.h"
+#include "extensions/browser/api/web_request/extension_web_request_event_router.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/blocked_action_type.h"
@@ -959,14 +960,10 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
 // Slower and flaky tests should be isolated in the "slow" group of tests in
 // the JS file. This prevents losing test coverage for those tests that are
 // not causing timeouts and flakes.
-#if BUILDFLAG(IS_WIN) || !defined(NDEBUG) || defined(ADDRESS_SANITIZER) || \
-    defined(MEMORY_SANITIZER)
-#define MAYBE_WebRequestBlockingSlow DISABLED_WebRequestBlockingSlow
-#else
-#define MAYBE_WebRequestBlockingSlow WebRequestBlockingSlow
-#endif
+// TODO(https://crbug.com/1453477): Investigate the flakiness across all
+// platforms and re-enable.
 IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
-                       MAYBE_WebRequestBlockingSlow) {
+                       DISABLED_WebRequestBlockingSlow) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("webrequest/test_blocking",
                                {.custom_arg = R"({"testSuite": "slow"})"}))
@@ -1002,8 +999,15 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
       << message_;
 }
 
+// TODO(crbug.com/1450976): test is flaky on Mac11.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_WebRequestCORSWithExtraHeaders \
+  DISABLED_WebRequestCORSWithExtraHeaders
+#else
+#define MAYBE_WebRequestCORSWithExtraHeaders WebRequestCORSWithExtraHeaders
+#endif
 IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
-                       WebRequestCORSWithExtraHeaders) {
+                       MAYBE_WebRequestCORSWithExtraHeaders) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("webrequest/test_cors")) << message_;
 }
@@ -1080,15 +1084,30 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
       << message_;
 }
 
+// TODO(crbug.com/1453477): test is flaky on linux, mac and chromeos.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_WebRequestSubresourceRedirects \
+  DISABLED_WebRequestSubresourceRedirects
+#else
+#define MAYBE_WebRequestSubresourceRedirects WebRequestSubresourceRedirects
+#endif
 IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
-                       WebRequestSubresourceRedirects) {
+                       MAYBE_WebRequestSubresourceRedirects) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("webrequest/test_subresource_redirects"))
       << message_;
 }
 
+// TODO(crbug.com/1453477): test is flaky on linux, mac and chromeos.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+#define MAYBE_WebRequestSubresourceRedirectsWithExtraHeaders \
+  DISABLED_WebRequestSubresourceRedirectsWithExtraHeaders
+#else
+#define MAYBE_WebRequestSubresourceRedirectsWithExtraHeaders \
+  WebRequestSubresourceRedirectsWithExtraHeaders
+#endif
 IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
-                       WebRequestSubresourceRedirectsWithExtraHeaders) {
+                       MAYBE_WebRequestSubresourceRedirectsWithExtraHeaders) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("webrequest/test_subresource_redirects",
                                {.custom_arg = R"({"useExtraHeaders": true})"}))
@@ -1272,8 +1291,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
 // Check that reloading an extension that runs in incognito split mode and
 // has two active background pages with registered events does not crash the
 // browser. Regression test for http://crbug.com/224094
-// Flaky on linux-lacros. See http://crbug.com/1423252
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// Flaky on linux-lacros and Linux. See http://crbug.com/1423252
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_IncognitoSplitModeReload DISABLED_IncognitoSplitModeReload
 #else
 #define MAYBE_IncognitoSplitModeReload IncognitoSplitModeReload
@@ -2819,7 +2838,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestMockedClockTest,
       LoadExtension(test_dir.AppendASCII("extension_1"));
   ASSERT_TRUE(extension_1);
   ASSERT_TRUE(ready_1_listener.WaitUntilSatisfied());
-  const std::string extension_id_1 = extension_1->id();
+  const ExtensionId extension_id_1 = extension_1->id();
 
   // Load the second extension.
   ExtensionTestMessageListener ready_2_listener("ready_2");
@@ -2827,7 +2846,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestMockedClockTest,
       LoadExtension(test_dir.AppendASCII("extension_2"));
   ASSERT_TRUE(extension_2);
   ASSERT_TRUE(ready_2_listener.WaitUntilSatisfied());
-  const std::string extension_id_2 = extension_2->id();
+  const ExtensionId extension_id_2 = extension_2->id();
 
   const ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
   EXPECT_LT(prefs->GetLastUpdateTime(extension_id_1),
@@ -3649,8 +3668,14 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
 // Ensure we don't strip off initiator incorrectly in web request events when
 // both the normal and incognito contexts are active. Regression test for
 // crbug.com/934398.
+// Flaky on Linux. See http://crbug.com/1423252
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_Initiator_SplitIncognito DISABLED_Initiator_SplitIncognito
+#else
+#define MAYBE_Initiator_SplitIncognito Initiator_SplitIncognito
+#endif
 IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
-                       Initiator_SplitIncognito) {
+                       MAYBE_Initiator_SplitIncognito) {
   embedded_test_server()->ServeFilesFromSourceDirectory("chrome/test/data");
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -5584,6 +5609,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest, WebRequestBlocking) {
     EXPECT_EQ(net::OK, nav_observer.last_net_error_code());
   }
 
+  base::HistogramTester histogram_tester;
   // Now, navigate to block.example. This navigation should be blocked.
   {
     content::TestNavigationObserver nav_observer(web_contents);
@@ -5592,6 +5618,16 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest, WebRequestBlocking) {
         embedded_test_server()->GetURL("block.example", "/simple.html")));
     EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, nav_observer.last_net_error_code());
   }
+
+  // TODO(crbug.com/1441221): Create more targeted tests to confirm when metrics
+  // should be firing or not.
+  // Web request API events should not have metrics emitted for SW/MV3.
+  histogram_tester.ExpectTotalCount(
+      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2",
+      /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.Events.DispatchToAckLongTime.ExtensionServiceWorker2",
+      /*expected_count=*/0);
 }
 
 // Tests a service worker-based extension registering multiple webRequest events

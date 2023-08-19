@@ -117,8 +117,21 @@ const SkBitmap& CopyOutputResultSkiaRGBA::AsSkBitmap() const {
   } else if (!bitmap_created_) {
     const auto* data = result_->data(0);
     auto row_bytes = result_->rowBytes(0);
-    auto info = SkImageInfo::MakeN32Premul(size().width(), size().height(),
-                                           color_space_);
+
+    // TODO(https://bugs.chromium.org/p/skia/issues/detail?id=14389):
+    // BGRA is not supported on iOS, so explicitly request RGBA here. This
+    // should not prevent readback, however, so once that is fixed, this code
+    // could be removed.
+    auto info =
+#if BUILDFLAG(IS_IOS)
+        SkImageInfo::Make(size().width(), size().height(),
+                          kRGBA_8888_SkColorType, kPremul_SkAlphaType,
+                          color_space_);
+#else
+        SkImageInfo::MakeN32Premul(size().width(), size().height(),
+                                   color_space_);
+#endif  // BUILDFLAG(IS_IOS)
+
     SkBitmap bitmap;
     bitmap.installPixels(info, const_cast<void*>(data), row_bytes);
 

@@ -1,0 +1,6 @@
+Tests that Page.lifecycleEvent is issued order correctly for iframes with explicit about:blank.
+Frame 2: DOMContentLoaded
+Frame 2: load
+Frame 1: DOMContentLoaded
+Frame 1: load
+

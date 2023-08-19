@@ -176,6 +176,10 @@ void Context::SignalQuery(uint32_t query, base::OnceClosure callback) {
   NOTREACHED();
 }
 
+void Context::CancelAllQueries() {
+  NOTREACHED();
+}
+
 void Context::CreateGpuFence(uint32_t gpu_fence_id, ClientGpuFence source) {
   NOTREACHED();
 }
@@ -287,12 +291,11 @@ bool Context::CreateService(gl::GLSurface* gl_surface) {
   CHECK_EQ(stencil_size, 0);
 
   gpu::ContextCreationAttribs helper;
-  helper.buffer_preserved = false;
   helper.bind_generates_resource = kBindGeneratesResources;
   helper.fail_if_major_perf_caveat = false;
   helper.lose_context_when_out_of_memory = kLoseContextWhenOutOfMemory;
   helper.context_type = gpu::CONTEXT_TYPE_OPENGLES2;
-  helper.offscreen_framebuffer_size = gl_surface->GetSize();
+  helper.offscreen_framebuffer_size_for_testing = gl_surface->GetSize();
 
   auto result = decoder->Initialize(gl_surface, gl_context.get(),
                                     gl_surface->IsOffscreen(),

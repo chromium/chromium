@@ -14,12 +14,13 @@
 #include "ash/user_education/user_education_help_bubble_controller.h"
 #include "ash/user_education/user_education_ping_controller.h"
 #include "ash/user_education/user_education_private_api_key.h"
-#include "base/functional/callback_forward.h"
+#include "ash/user_education/user_education_tutorial_controller.h"
 #include "base/scoped_observation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+class PrefRegistrySimple;
+
 namespace ui {
-class ElementContext;
 class ElementIdentifier;
 }  // namespace ui
 
@@ -29,7 +30,7 @@ class SessionController;
 class UserEducationDelegate;
 class UserEducationFeatureController;
 
-enum class TutorialId;
+enum class SystemWebAppType;
 
 // The controller, owned by `Shell`, for user education features in Ash.
 class ASH_EXPORT UserEducationController : public SessionObserver {
@@ -43,6 +44,9 @@ class ASH_EXPORT UserEducationController : public SessionObserver {
   // NOTE: Exists if and only if user education features are enabled.
   static UserEducationController* Get();
 
+  // Registers user education prefs to the provided `registry`.
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
   // Returns the identifier for an element associated with the specified
   // `app_id`, or an absent value if no such identifier exists. Note that
   // existence of an identifier does not imply the existence of an associated
@@ -50,15 +54,20 @@ class ASH_EXPORT UserEducationController : public SessionObserver {
   absl::optional<ui::ElementIdentifier> GetElementIdentifierForAppId(
       const std::string& app_id) const;
 
-  // Starts the tutorial previously registered with the specified `tutorial_id`.
-  // Any running tutorial is cancelled. One of either `completed_callback` or
-  // `aborted_callback` will be run on tutorial finish.
+  // If present, indicates whether the currently active user is considered new.
+  // A user is considered new if the first app list sync in the session was the
+  // first sync ever across all ChromeOS devices and sessions for the given
+  // user. As such, this value is absent until the first app list sync of the
+  // session is completed.
   // NOTE: Currently only the primary user profile is supported.
-  void StartTutorial(UserEducationPrivateApiKey,
-                     TutorialId tutorial_id,
-                     ui::ElementContext element_context,
-                     base::OnceClosure completed_callback,
-                     base::OnceClosure aborted_callback);
+  const absl::optional<bool>& IsNewUser(UserEducationPrivateApiKey) const;
+
+  // Attempts to launch the system web app associated with the given type on
+  // the display associated with the given ID asynchronously.
+  // NOTE: Currently only the primary user profile is supported.
+  void LaunchSystemWebAppAsync(UserEducationPrivateApiKey,
+                               SystemWebAppType system_web_app_type,
+                               int64_t display_id);
 
  private:
   // SessionObserver:
@@ -74,6 +83,9 @@ class ASH_EXPORT UserEducationController : public SessionObserver {
 
   // The controller responsible for creation/management of pings.
   UserEducationPingController ping_controller_;
+
+  // The controller responsible for creation/management of tutorials.
+  UserEducationTutorialController tutorial_controller_{delegate_.get()};
 
   // The set of controllers responsible for specific user education features.
   std::set<std::unique_ptr<UserEducationFeatureController>>

@@ -5,27 +5,37 @@
 #include "chrome/browser/ui/webui/version/version_handler_chromeos.h"
 
 #include "base/functional/bind.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/version/version_loader.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/web_ui.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
-#include "ui/base/l10n/l10n_util.h"
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/lacros_url_handling.h"
-#endif
+#include "chromeos/startup/browser_params_proxy.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace {
 
 const char kCrosUrlVersionRedirect[] = "crosUrlVersionRedirect";
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+std::string GetOsVersion() {
+  return chromeos::BrowserParamsProxy::Get()->AshChromeVersion().value_or(
+      "0.0.0.0");
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace
 
@@ -42,18 +52,24 @@ void VersionHandlerChromeOS::HandleRequestVersionInfo(
     const base::Value::List& args) {
   VersionHandler::HandleRequestVersionInfo(args);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Start the asynchronous load of the versions.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&GetOsVersion),
+      base::BindOnce(&VersionHandlerChromeOS::OnOsVersion,
+                     weak_factory_.GetWeakPtr()));
+#endif
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&chromeos::version_loader::GetVersion,
                      chromeos::version_loader::VERSION_FULL),
-      base::BindOnce(&VersionHandlerChromeOS::OnVersion,
+      base::BindOnce(&VersionHandlerChromeOS::OnPlatformVersion,
                      weak_factory_.GetWeakPtr()));
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&chromeos::version_loader::GetFirmware),
-      base::BindOnce(&VersionHandlerChromeOS::OnOSFirmware,
+      base::BindOnce(&VersionHandlerChromeOS::OnFirmwareVersion,
                      weak_factory_.GetWeakPtr()));
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
@@ -61,12 +77,13 @@ void VersionHandlerChromeOS::HandleRequestVersionInfo(
       base::BindOnce(&VersionHandlerChromeOS::OnArcAndArcAndroidSdkVersions,
                      weak_factory_.GetWeakPtr()));
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   const bool showSystemFlagsLink = crosapi::browser_util::IsLacrosEnabled();
 #else
   const bool showSystemFlagsLink = true;
 #endif
 
-  FireWebUIListener("return-lacros-primary", base::Value(showSystemFlagsLink));
+  FireWebUIListener("return-lacros-enabled", base::Value(showSystemFlagsLink));
 }
 
 void VersionHandlerChromeOS::RegisterMessages() {
@@ -91,15 +108,20 @@ void VersionHandlerChromeOS::HandleCrosUrlVersionRedirect(
 #endif
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-void VersionHandlerChromeOS::OnVersion(
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void VersionHandlerChromeOS::OnOsVersion(const std::string& version) {
+  FireWebUIListener("return-os-version", base::Value(version));
+}
+#endif
+
+void VersionHandlerChromeOS::OnPlatformVersion(
     const absl::optional<std::string>& version) {
-  FireWebUIListener("return-os-version",
+  FireWebUIListener("return-platform-version",
                     base::Value(version.value_or("0.0.0.0")));
 }
 
-void VersionHandlerChromeOS::OnOSFirmware(const std::string& version) {
-  FireWebUIListener("return-os-firmware-version", base::Value(version));
+void VersionHandlerChromeOS::OnFirmwareVersion(const std::string& version) {
+  FireWebUIListener("return-firmware-version", base::Value(version));
 }
 
 void VersionHandlerChromeOS::OnArcAndArcAndroidSdkVersions(
@@ -124,5 +146,3 @@ std::string VersionHandlerChromeOS::GetArcAndArcAndroidSdkVersions() {
                          arc_android_sdk_version->c_str());
   return labeled_version;
 }
-
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)

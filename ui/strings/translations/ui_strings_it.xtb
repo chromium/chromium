@@ -105,7 +105,6 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 mese fa}other{# mesi fa}}</translation>
 <translation id="4289300219472526559">Avvia comandi vocali</translation>
 <translation id="4289540628985791613">Panoramica</translation>
-<translation id="4306392492252714209">Rimuovi dagli appunti.</translation>
 <translation id="4491109536499578614">Immagine</translation>
 <translation id="4565377596337484307">Nascondi password</translation>
 <translation id="4588090240171750605">Scorri a destra</translation>
@@ -148,6 +147,7 @@
 <translation id="6142413573757616983"><ph name="QUANTITY" /> B/s</translation>
 <translation id="6237461503717005873">Elemento selezionato: <ph name="ROW_NAME" />.</translation>
 <translation id="6264365405983206840">Seleziona &amp;tutto</translation>
+<translation id="6346952829206698721">Incolla dagli appunti</translation>
 <translation id="6364916375976753737">Scorri a sinistra</translation>
 <translation id="6394627529324717982">Virgola</translation>
 <translation id="6397363302884558537">Interrompi comandi vocali</translation>
@@ -174,6 +174,7 @@
 <translation id="7170202025028120564">Le impostazioni di visualizzazione dell'applicazione verranno applicate dopo il prossimo riavvio.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1 min rimanente}other{# min rimanenti}}</translation>
+<translation id="7363164521834647158">Invia risposta</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{1 min fa}other{# min fa}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{1 minuto rimanente}other{# minuti rimanenti}}</translation>

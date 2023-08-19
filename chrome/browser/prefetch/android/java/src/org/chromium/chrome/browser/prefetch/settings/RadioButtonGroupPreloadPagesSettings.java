@@ -8,7 +8,6 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.RadioGroup;
 
-import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
@@ -140,22 +139,18 @@ public class RadioButtonGroupPreloadPagesSettings extends Preference
         mNoPreloading.setChecked(checkedState == PreloadPagesState.NO_PRELOADING);
     }
 
-    @VisibleForTesting
     public @PreloadPagesState int getPreloadPagesStateForTesting() {
         return mPreloadPagesState;
     }
 
-    @VisibleForTesting
     public RadioButtonWithDescriptionAndAuxButton getExtendedPreloadingButtonForTesting() {
         return mExtendedPreloading;
     }
 
-    @VisibleForTesting
     public RadioButtonWithDescriptionAndAuxButton getStandardPreloadingButtonForTesting() {
         return mStandardPreloading;
     }
 
-    @VisibleForTesting
     public RadioButtonWithDescription getNoPreloadingButtonForTesting() {
         return mNoPreloading;
     }

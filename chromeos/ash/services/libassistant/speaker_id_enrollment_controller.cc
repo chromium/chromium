@@ -6,7 +6,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/ash/services/libassistant/grpc/external_services/grpc_services_observer.h"
 #include "chromeos/ash/services/libassistant/public/mojom/audio_input_controller.mojom.h"
@@ -110,20 +109,9 @@ class SpeakerIdEnrollmentController::EnrollmentSession
         VLOG(1) << "Assistant: Speaker id enrollment is listening";
         client_->OnListeningHotword();
         break;
-      case SpeakerIdEnrollmentEvent::kRecognizeState:
-        VLOG(1) << "Assistant: Speaker id enrollment is recognized";
-        // TODO(b/284987346): This is a workaround for LibAssistant V2, the
-        // `kProcessState` event is not received. Here we use `kRecognizeState`
-        // as an indicator.
-        if (assistant::features::IsLibAssistantV2Enabled()) {
-          client_->OnProcessingHotword();
-        }
-        break;
       case SpeakerIdEnrollmentEvent::kProcessState:
         VLOG(1) << "Assistant: Speaker id enrollment is processing";
-        if (!assistant::features::IsLibAssistantV2Enabled()) {
-          client_->OnProcessingHotword();
-        }
+        client_->OnProcessingHotword();
         break;
       case SpeakerIdEnrollmentEvent::kDoneState:
         VLOG(1) << "Assistant: Speaker id enrollment is done";
@@ -137,6 +125,7 @@ class SpeakerIdEnrollmentController::EnrollmentSession
         break;
       case SpeakerIdEnrollmentEvent::kInitState:
       case SpeakerIdEnrollmentEvent::kCheckState:
+      case SpeakerIdEnrollmentEvent::kRecognizeState:
       case SpeakerIdEnrollmentEvent::kUploadState:
       case SpeakerIdEnrollmentEvent::kFetchState:
       case SpeakerIdEnrollmentEvent::TYPE_NOT_SET:

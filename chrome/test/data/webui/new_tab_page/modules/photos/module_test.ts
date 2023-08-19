@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://webui-test/mojo_webui_test_support.js';
-
 import {DisableModuleEvent, DismissModuleEvent, photosDescriptor, PhotosModuleElement, PhotosProxy} from 'chrome://new-tab-page/lazy_load.js';
 import {$$, DomIf} from 'chrome://new-tab-page/new_tab_page.js';
 import {PhotosHandlerRemote} from 'chrome://new-tab-page/photos.mojom-webui.js';

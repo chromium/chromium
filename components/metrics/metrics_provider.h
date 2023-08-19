@@ -82,9 +82,17 @@ class MetricsProvider {
   // |uma_proto| is by default filled with current session id and core system
   // profile information. This function is called on main thread, but the
   // provider can do async work to fill in |uma_proto| and run |done_callback|
-  // on calling thread when complete. Ownership of the passed objects remains
-  // with the caller and those objects will live until the callback is executed.
+  // on calling thread when complete. Calling |serialize_log_callback| will
+  // serialize |uma_proto| so that it is primed to be sent. As an optimization,
+  // the provider should call this on a background thread before posting back
+  // |done_callback| on the calling thread. However, it is fine not to call this
+  // if the thread hopping could introduce data loss (e.g., since the user may
+  // shut down the browser before |done_callback| is called). In this case,
+  // |done_callback| will "manually" call it synchronously. Ownership of the
+  // passed objects remains with the caller and those objects will live until
+  // the callback is executed.
   virtual void ProvideIndependentMetrics(
+      base::OnceClosure serialize_log_callback,
       base::OnceCallback<void(bool)> done_callback,
       ChromeUserMetricsExtension* uma_proto,
       base::HistogramSnapshotManager* snapshot_manager);

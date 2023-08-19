@@ -6,6 +6,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/rule_set.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
@@ -242,35 +243,39 @@ TEST(CSSSelector, FirstInInvalidList) {
 }
 
 TEST(CSSSelector, ImplicitPseudoDescendant) {
-  CSSSelector selector[2] = {CSSSelector(QualifiedName("div"),
-                                         /* is_implicit */ false),
-                             CSSSelector("scope", /* is_implicit */ true)};
+  CSSSelector selector[2] = {
+      CSSSelector(html_names::kDivTag,
+                  /* is_implicit */ false),
+      CSSSelector(AtomicString("scope"), /* is_implicit */ true)};
   selector[0].SetRelation(CSSSelector::kDescendant);
   selector[1].SetLastInComplexSelector(true);
   EXPECT_EQ("div", selector[0].SelectorText());
 }
 
 TEST(CSSSelector, ImplicitPseudoChild) {
-  CSSSelector selector[2] = {CSSSelector(QualifiedName("div"),
-                                         /* is_implicit */ false),
-                             CSSSelector("scope", /* is_implicit */ true)};
+  CSSSelector selector[2] = {
+      CSSSelector(html_names::kDivTag,
+                  /* is_implicit */ false),
+      CSSSelector(AtomicString("scope"), /* is_implicit */ true)};
   selector[0].SetRelation(CSSSelector::kChild);
   selector[1].SetLastInComplexSelector(true);
   EXPECT_EQ("> div", selector[0].SelectorText());
 }
 
 TEST(CSSSelector, NonImplicitPseudoChild) {
-  CSSSelector selector[2] = {CSSSelector(QualifiedName("div"),
-                                         /* is_implicit */ false),
-                             CSSSelector("scope", /* is_implicit */ false)};
+  CSSSelector selector[2] = {
+      CSSSelector(html_names::kDivTag,
+                  /* is_implicit */ false),
+      CSSSelector(AtomicString("scope"), /* is_implicit */ false)};
   selector[0].SetRelation(CSSSelector::kChild);
   selector[1].SetLastInComplexSelector(true);
   EXPECT_EQ(":scope > div", selector[0].SelectorText());
 }
 
 TEST(CSSSelector, PseudoTrueBefore) {
-  CSSSelector selector[2] = {CSSSelector(),
-                             CSSSelector("hover", /* is_implicit */ false)};
+  CSSSelector selector[2] = {
+      CSSSelector(),
+      CSSSelector(AtomicString("hover"), /* is_implicit */ false)};
   selector[0].SetTrue();
   selector[0].SetRelation(CSSSelector::kSubSelector);
   selector[1].SetLastInComplexSelector(true);
@@ -278,8 +283,9 @@ TEST(CSSSelector, PseudoTrueBefore) {
 }
 
 TEST(CSSSelector, PseudoTrueAfter) {
-  CSSSelector selector[2] = {CSSSelector("hover", /* is_implicit */ false),
-                             CSSSelector()};
+  CSSSelector selector[2] = {
+      CSSSelector(AtomicString("hover"), /* is_implicit */ false),
+      CSSSelector()};
   selector[0].SetRelation(CSSSelector::kSubSelector);
   selector[1].SetTrue();
   selector[1].SetLastInComplexSelector(true);
@@ -287,13 +293,43 @@ TEST(CSSSelector, PseudoTrueAfter) {
 }
 
 TEST(CSSSelector, PseudoTrueChild) {
-  CSSSelector selector[2] = {CSSSelector(QualifiedName("div"),
+  CSSSelector selector[2] = {CSSSelector(html_names::kDivTag,
                                          /* is_implicit */ false),
                              CSSSelector()};
   selector[0].SetRelation(CSSSelector::kChild);
   selector[1].SetTrue();
   selector[1].SetLastInComplexSelector(true);
   EXPECT_EQ("> div", selector[0].SelectorText());
+}
+
+TEST(CSSSelector, PseudoTrueSpecificity) {
+  CSSSelector selector;
+  selector.SetTrue();
+  selector.SetLastInComplexSelector(true);
+  EXPECT_EQ(0u, selector.Specificity());
+}
+
+TEST(CSSSelector, ImplicitScopeSpecificity) {
+  CSSSelector selector[2] = {
+      CSSSelector(html_names::kDivTag,
+                  /* is_implicit */ false),
+      CSSSelector(AtomicString("scope"), /* is_implicit */ true)};
+  selector[0].SetRelation(CSSSelector::kChild);
+  selector[1].SetLastInComplexSelector(true);
+  EXPECT_EQ("> div", selector[0].SelectorText());
+  EXPECT_EQ(CSSSelector::kTagSpecificity, selector[0].Specificity());
+}
+
+TEST(CSSSelector, ExplicitScopeSpecificity) {
+  CSSSelector selector[2] = {
+      CSSSelector(html_names::kDivTag,
+                  /* is_implicit */ false),
+      CSSSelector(AtomicString("scope"), /* is_implicit */ false)};
+  selector[0].SetRelation(CSSSelector::kChild);
+  selector[1].SetLastInComplexSelector(true);
+  EXPECT_EQ(":scope > div", selector[0].SelectorText());
+  EXPECT_EQ(CSSSelector::kTagSpecificity | CSSSelector::kClassLikeSpecificity,
+            selector[0].Specificity());
 }
 
 }  // namespace blink

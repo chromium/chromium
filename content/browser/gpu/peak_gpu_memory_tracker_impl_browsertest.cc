@@ -99,6 +99,11 @@ class TestGpuService : public viz::mojom::GpuService {
   void UnregisterDCOMPSurfaceHandle(
       const base::UnguessableToken& token) override {}
 #endif
+
+  void BindClientGmbInterface(
+      mojo::PendingReceiver<gpu::mojom::ClientGmbInterface> receiver,
+      int client_id) override {}
+
   void CreateVideoEncodeAcceleratorProvider(
       mojo::PendingReceiver<media::mojom::VideoEncodeAcceleratorProvider>
           receiver) override {}
@@ -143,7 +148,8 @@ class TestGpuService : public viz::mojom::GpuService {
   void WriteClangProfilingProfile(
       WriteClangProfilingProfileCallback callback) override {}
 #endif
-  void GetDawnInfo(GetDawnInfoCallback callback) override {}
+  void GetDawnInfo(bool collect_metrics,
+                   GetDawnInfoCallback callback) override {}
 
   void Crash() override {}
   void Hang() override {}

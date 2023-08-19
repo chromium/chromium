@@ -9,12 +9,12 @@
 
 #include <memory>
 
+#include "base/apple/dispatch_source_mach.h"
+#include "base/apple/mach_logging.h"
+#include "base/apple/scoped_mach_port.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
-#include "base/mac/dispatch_source_mach.h"
-#include "base/mac/mach_logging.h"
 #include "base/mac/scoped_mach_msg_destroy.h"
-#include "base/mac/scoped_mach_port.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
@@ -93,7 +93,7 @@ void NamedMojoServerEndpointConnectorMac::HandleRequest() {
   info->audit_token = request.trailer.msgh_audit;
 
   mojo::PlatformChannelEndpoint remote_endpoint(mojo::PlatformHandle(
-      base::mac::ScopedMachSendRight(request.header.msgh_remote_port)));
+      base::apple::ScopedMachSendRight(request.header.msgh_remote_port)));
   if (!remote_endpoint.is_valid()) {
     LOG(ERROR) << "Endpoint is invalid.";
     return;

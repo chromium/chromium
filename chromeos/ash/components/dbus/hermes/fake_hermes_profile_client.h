@@ -12,6 +12,7 @@
 #include "chromeos/ash/components/dbus/hermes/hermes_profile_client.h"
 #include "dbus/object_path.h"
 #include "dbus/property.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -42,6 +43,7 @@ class COMPONENT_EXPORT(HERMES_CLIENT) FakeHermesProfileClient
   void ClearProfile(const dbus::ObjectPath& carrier_profile_path) override;
   void SetEnableProfileBehavior(
       EnableProfileBehavior enable_profile_behavior) override;
+  void SetNextEnableCarrierProfileResult(HermesResponseStatus status) override;
 
   // HermesProfileClient:
   void EnableCarrierProfile(const dbus::ObjectPath& object_path,
@@ -70,6 +72,10 @@ class COMPONENT_EXPORT(HERMES_CLIENT) FakeHermesProfileClient
   using PropertiesMap =
       std::map<const dbus::ObjectPath, std::unique_ptr<Properties>>;
   PropertiesMap properties_map_;
+
+  // When set, this will be returned as the result of the next attempt to enable
+  // a carrier profile.
+  absl::optional<HermesResponseStatus> next_enable_carrier_profile_result_;
 };
 
 }  // namespace ash

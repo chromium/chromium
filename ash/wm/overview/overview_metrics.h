@@ -55,6 +55,11 @@ enum class OverviewEndAction {
 };
 void RecordOverviewEndAction(OverviewEndAction type);
 
+inline constexpr char kEnterOverviewPresentationHistogram[] =
+    "Ash.Overview.Enter.PresentationTime";
+inline constexpr char kExitOverviewPresentationHistogram[] =
+    "Ash.Overview.Exit.PresentationTime";
+
 }  // namespace ash
 
 #endif  // ASH_WM_OVERVIEW_OVERVIEW_METRICS_H_

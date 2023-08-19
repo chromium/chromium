@@ -31,18 +31,18 @@ class AboutSection : public OsSettingsSection {
   AboutSection(Profile* profile, SearchTagRegistry* search_tag_registry);
   ~AboutSection() override;
 
- private:
   // OsSettingsSection:
   void AddLoadTimeData(content::WebUIDataSource* html_source) override;
   void AddHandlers(content::WebUI* web_ui) override;
   int GetSectionNameMessageId() const override;
   chromeos::settings::mojom::Section GetSection() const override;
   mojom::SearchResultIcon GetSectionIcon() const override;
-  std::string GetSectionPath() const override;
+  const char* GetSectionPath() const override;
   bool LogMetric(chromeos::settings::mojom::Setting setting,
                  base::Value& value) const override;
   void RegisterHierarchy(HierarchyGenerator* generator) const override;
 
+ private:
   // Returns if the auto update toggle should be shown for the active user.
   bool ShouldShowAUToggle(user_manager::User* active_user);
 

@@ -14,6 +14,7 @@
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/vm_camera_mic_constants.h"
 #include "ash/system/privacy/privacy_indicators_controller.h"
+#include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -26,11 +27,11 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
+#include "chrome/browser/ash/video_conference/video_conference_ash_feature_client.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/ash/app_management/app_management_uma.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -158,11 +159,22 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
   int name_id() const { return name_id_; }
   NotificationType notification_type() const { return notifications_.active; }
 
-  void SetMicActive(bool active) { OnDeviceUpdated(DeviceType::kMic, active); }
+  void SetMicActive(bool active) {
+    OnDeviceUpdated(DeviceType::kMic, active);
+
+    if (features::IsVideoConferenceEnabled()) {
+      VideoConferenceAshFeatureClient::Get()->OnVmDeviceUpdated(
+          vm_type_, DeviceType::kMic, active);
+    }
+  }
 
   void SetCameraAccessing(bool accessing) {
     camera_accessing_ = accessing;
     OnCameraUpdated();
+    if (features::IsVideoConferenceEnabled()) {
+      VideoConferenceAshFeatureClient::Get()->OnVmDeviceUpdated(
+          vm_type_, DeviceType::kCamera, accessing);
+    }
   }
   void SetCameraPrivacyIsOn(bool on) {
     camera_privacy_is_on_ = on;

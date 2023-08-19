@@ -35,7 +35,8 @@ class MockWaylandPlatformWindowDelegate : public MockPlatformWindowDelegate {
   int64_t viz_seq() const { return viz_seq_; }
 
  private:
-  raw_ptr<WaylandWindow, DanglingUntriaged> wayland_window_ = nullptr;
+  raw_ptr<WaylandWindow, AcrossTasksDanglingUntriaged> wayland_window_ =
+      nullptr;
 
   // |viz_seq_| is used to save an incrementing sequence point on each
   // call to InsertSequencePoint. Test code can check this value to know

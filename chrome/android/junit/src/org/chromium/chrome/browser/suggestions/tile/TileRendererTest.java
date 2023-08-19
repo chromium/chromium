@@ -15,12 +15,10 @@ import android.app.Activity;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.widget.LinearLayout;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -61,7 +59,7 @@ import java.util.List;
 /** A simple test for {@link TileRenderer} using real {@link android.view.View} objects. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowPostTask.class})
-@EnableFeatures({ChromeFeatureList.HISTORY_ORGANIC_REPEATABLE_QUERIES})
+@EnableFeatures(ChromeFeatureList.HISTORY_ORGANIC_REPEATABLE_QUERIES)
 public class TileRendererTest {
     /**
      * Backend that substitutes normal PostTask operations. Allow us to coordinate task execution
@@ -119,7 +117,6 @@ public class TileRendererTest {
     private ShadowPostTaskImpl mPostTaskRunner;
     private Activity mActivity;
     private LinearLayout mSharedParent;
-    private final ArgumentCaptor<Drawable> mIconCaptor = ArgumentCaptor.forClass(Drawable.class);
     private final ArgumentCaptor<LargeIconCallback> mImageFetcherCallbackCaptor =
             ArgumentCaptor.forClass(LargeIconCallback.class);
 
@@ -148,12 +145,6 @@ public class TileRendererTest {
                 .when(mTileSetupDelegate)
                 .createInteractionDelegate(any());
         doReturn(mBitmap).when(mIconGenerator).generateIconForUrl(any(GURL.class));
-    }
-
-    @After
-    public void tearDown() {
-        Profile.setLastUsedProfileForTesting(null);
-        TemplateUrlServiceFactory.setInstanceForTesting(null);
     }
 
     private SuggestionsTileView buildTileView(@TileStyle int style, int titleLines) {

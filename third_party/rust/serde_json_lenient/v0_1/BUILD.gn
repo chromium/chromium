@@ -2,6 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# @generated from third_party/rust/BUILD.gn.hbs by tools/crates/gnrt.
+# Do not edit!
+
 import("//build/rust/cargo_crate.gni")
 
 cargo_crate("lib") {
@@ -9,10 +12,55 @@ cargo_crate("lib") {
   epoch = "0.1"
   crate_type = "rlib"
   crate_root = "crate/src/lib.rs"
+  sources = [
+    "//third_party/rust/serde_json_lenient/v0_1/crate/build.rs",
+    "//third_party/rust/serde_json_lenient/v0_1/crate/src/de.rs",
+    "//third_party/rust/serde_json_lenient/v0_1/crate/src/error.rs",
+    "//third_party/rust/serde_json_lenient/v0_1/crate/src/features_check/error.rs",
+    "//third_party/rust/serde_json_lenient/v0_1/crate/src/features_check/mod.rs",
+    "//third_party/rust/serde_json_lenient/v0_1/crate/src/io/core.rs",
+    "//third_party/rust/serde_json_lenient/v0_1/crate/src/io/mod.rs",
+    "//third_party/rust/serde_json_lenient/v0_1/crate/src/iter.rs",
+    "//third_party/rust/serde_json_lenient/v0_1/crate/src/lexical/algorithm.rs",
+    "//third_party/rust/serde_json_lenient/v0_1/crate/src/lexical/bhcomp.rs",
+    "//third_party/rust/serde_json_lenient/v0_1/crate/src/lexical/bignum.rs",
+    "//third_party/rust/serde_json_lenient/v0_1/crate/src/lexical/cached.rs",
+    "//third_party/rust/serde_json_lenient/v0_1/crate/src/lexical/cached_float80.rs",
+    "//third_party/rust/serde_json_lenient/v0_1/crate/src/lexical/digit.rs",
+    "//third_party/rust/serde_json_lenient/v0_1/crate/src/lexical/errors.rs",
+    "//third_party/rust/serde_json_lenient/v0_1/crate/src/lexical/exponent.rs",
+    "//third_party/rust/serde_json_lenient/v0_1/crate/src/lexical/float.rs",
+    "//third_party/rust/serde_json_lenient/v0_1/crate/src/lexical/large_powers.rs",
+    "//third_party/rust/serde_json_lenient/v0_1/crate/src/lexical/large_powers32.rs",
+    "//third_party/rust/serde_json_lenient/v0_1/crate/src/lexical/large_powers64.rs",
+    "//third_party/rust/serde_json_lenient/v0_1/crate/src/lexical/math.rs",
+    "//third_party/rust/serde_json_lenient/v0_1/crate/src/lexical/mod.rs",
+    "//third_party/rust/serde_json_lenient/v0_1/crate/src/lexical/num.rs",
+    "//third_party/rust/serde_json_lenient/v0_1/crate/src/lexical/parse.rs",
+    "//third_party/rust/serde_json_lenient/v0_1/crate/src/lexical/rounding.rs",
+    "//third_party/rust/serde_json_lenient/v0_1/crate/src/lexical/shift.rs",
+    "//third_party/rust/serde_json_lenient/v0_1/crate/src/lexical/small_powers.rs",
+    "//third_party/rust/serde_json_lenient/v0_1/crate/src/lib.rs",
+    "//third_party/rust/serde_json_lenient/v0_1/crate/src/macros.rs",
+    "//third_party/rust/serde_json_lenient/v0_1/crate/src/map.rs",
+    "//third_party/rust/serde_json_lenient/v0_1/crate/src/number.rs",
+    "//third_party/rust/serde_json_lenient/v0_1/crate/src/raw.rs",
+    "//third_party/rust/serde_json_lenient/v0_1/crate/src/read.rs",
+    "//third_party/rust/serde_json_lenient/v0_1/crate/src/ser.rs",
+    "//third_party/rust/serde_json_lenient/v0_1/crate/src/value/de.rs",
+    "//third_party/rust/serde_json_lenient/v0_1/crate/src/value/from.rs",
+    "//third_party/rust/serde_json_lenient/v0_1/crate/src/value/index.rs",
+    "//third_party/rust/serde_json_lenient/v0_1/crate/src/value/mod.rs",
+    "//third_party/rust/serde_json_lenient/v0_1/crate/src/value/partial_eq.rs",
+    "//third_party/rust/serde_json_lenient/v0_1/crate/src/value/ser.rs",
+  ]
+  inputs = [
+    "//third_party/rust/serde_json_lenient/v0_1/crate/README.md",
+    "//third_party/rust/serde_json_lenient/v0_1/crate/tests/README.md",
+  ]
 
   # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
-  sources = [ "crate/src/lib.rs" ]
   edition = "2018"
   cargo_pkg_version = "0.1.4"
   cargo_pkg_authors = "Adrian Taylor <adetaylor@chromium.org>, Michael Bolin <bolinfest@gmail.com>, Erick Tryzelaar <erick.tryzelaar@gmail.com>, David Tolnay <dtolnay@gmail.com>"

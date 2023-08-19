@@ -8,6 +8,7 @@
   "permissions_policy": {
     "clipboard-read": [ "*" ],
     "clipboard-write": [ "*" ],
+    "cross-origin-isolated": [ "*" ],
     "direct-sockets": [ "*" ],
     "usb": [ "*" ]
   },

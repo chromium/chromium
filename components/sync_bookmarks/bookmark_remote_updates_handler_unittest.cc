@@ -16,6 +16,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_uuids.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
@@ -88,16 +89,13 @@ std::string GetFakeServerIdFromGUID(const base::Uuid& guid) {
   // For convenience in tests, |guid| may refer to permanent nodes too,
   // and yet the returned sync ID will honor the sync ID constants for permanent
   // nodes.
-  if (guid.AsLowercaseString() ==
-      bookmarks::BookmarkNode::kBookmarkBarNodeUuid) {
+  if (guid.AsLowercaseString() == bookmarks::kBookmarkBarNodeUuid) {
     return kBookmarkBarId;
   }
-  if (guid.AsLowercaseString() ==
-      bookmarks::BookmarkNode::kOtherBookmarksNodeUuid) {
+  if (guid.AsLowercaseString() == bookmarks::kOtherBookmarksNodeUuid) {
     return kOtherBookmarksId;
   }
-  if (guid.AsLowercaseString() ==
-      bookmarks::BookmarkNode::kMobileBookmarksNodeUuid) {
+  if (guid.AsLowercaseString() == bookmarks::kMobileBookmarksNodeUuid) {
     return kMobileBookmarksId;
   }
   return base::StrCat({"server_id_for_", guid.AsLowercaseString()});
@@ -262,7 +260,7 @@ class BookmarkRemoteUpdatesHandlerWithInitialMergeTest : public testing::Test {
   BookmarkRemoteUpdatesHandler* updates_handler() { return &updates_handler_; }
 
   const base::Uuid kBookmarkBarGuid =
-      base::Uuid::ParseLowercase(bookmarks::BookmarkNode::kBookmarkBarNodeUuid);
+      base::Uuid::ParseLowercase(bookmarks::kBookmarkBarNodeUuid);
 
  private:
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
@@ -294,7 +292,7 @@ TEST(BookmarkRemoteUpdatesHandlerReorderUpdatesTest,
   const std::string kTitle = "title";
   const syncer::UniquePosition kPosition = RandomUniquePosition();
   const base::Uuid kBookmarkBarGuid =
-      base::Uuid::ParseLowercase(bookmarks::BookmarkNode::kBookmarkBarNodeUuid);
+      base::Uuid::ParseLowercase(bookmarks::kBookmarkBarNodeUuid);
 
   syncer::UpdateResponseDataList updates;
 
@@ -322,7 +320,7 @@ TEST(BookmarkRemoteUpdatesHandlerReorderUpdatesTest,
 TEST(BookmarkRemoteUpdatesHandlerReorderUpdatesTest,
      ShouldReorderParentsUpdateBeforeChildrenAndBothBeforeDeletions) {
   const base::Uuid kBookmarkBarGuid =
-      base::Uuid::ParseLowercase(bookmarks::BookmarkNode::kBookmarkBarNodeUuid);
+      base::Uuid::ParseLowercase(bookmarks::kBookmarkBarNodeUuid);
 
   // Prepare creation updates to build this structure:
   // bookmark_bar
@@ -977,8 +975,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   sync_pb::BookmarkSpecifics* bookmark_specifics =
       data.specifics.mutable_bookmark();
   bookmark_specifics->set_guid(kParentGuid.AsLowercaseString());
-  bookmark_specifics->set_parent_guid(
-      bookmarks::BookmarkNode::kBookmarkBarNodeUuid);
+  bookmark_specifics->set_parent_guid(bookmarks::kBookmarkBarNodeUuid);
   bookmark_specifics->set_legacy_canonicalized_title(kTitle);
   bookmark_specifics->set_url(kUrl.spec());
   bookmark_specifics->set_type(sync_pb::BookmarkSpecifics::URL);
@@ -1029,8 +1026,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
       data.specifics.mutable_bookmark();
   bookmark_specifics->set_guid(
       base::Uuid::GenerateRandomV4().AsLowercaseString());
-  bookmark_specifics->set_parent_guid(
-      bookmarks::BookmarkNode::kBookmarkBarNodeUuid);
+  bookmark_specifics->set_parent_guid(bookmarks::kBookmarkBarNodeUuid);
   // Use the server id as the title for simplicity.
   bookmark_specifics->set_legacy_canonicalized_title(kTitle);
   bookmark_specifics->set_url(kUrl.spec());
@@ -1073,8 +1069,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
       data.specifics.mutable_bookmark();
   bookmark_specifics->set_guid(
       base::Uuid::GenerateRandomV4().AsLowercaseString());
-  bookmark_specifics->set_parent_guid(
-      bookmarks::BookmarkNode::kBookmarkBarNodeUuid);
+  bookmark_specifics->set_parent_guid(bookmarks::kBookmarkBarNodeUuid);
   // Use the server id as the title for simplicity.
   bookmark_specifics->set_legacy_canonicalized_title(kTitle);
   bookmark_specifics->set_url(kUrl.spec());
@@ -1119,8 +1114,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   sync_pb::BookmarkSpecifics* bookmark_specifics = specifics.mutable_bookmark();
   bookmark_specifics->set_guid(
       base::Uuid::GenerateRandomV4().AsLowercaseString());
-  bookmark_specifics->set_parent_guid(
-      bookmarks::BookmarkNode::kBookmarkBarNodeUuid);
+  bookmark_specifics->set_parent_guid(bookmarks::kBookmarkBarNodeUuid);
   bookmark_specifics->set_legacy_canonicalized_title("Title");
   bookmark_specifics->set_type(sync_pb::BookmarkSpecifics::FOLDER);
   *bookmark_specifics->mutable_unique_position() =

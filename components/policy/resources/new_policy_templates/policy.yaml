@@ -38,8 +38,9 @@
 # for maintaining the policy and can help answer questions or solve issues with
 # the policy. The entries can be either emails of committers or file://
 # references to OWNERS files in the Chromium repository.
-# There should be at least 2 owners per policies, and ideally a file://
-# references to an OWNERS files.
+# There should be at least 2 owners per policies. At least one entry must be an
+# email of the individual person or the team responsible for the policy.
+# Additionally a file:// reference to an OWNERS file can also be specified.
 owners:
 - your-ldap@chromium.org
 - file://components/policy/OWNERS
@@ -73,9 +74,16 @@ desc: |-
   This is the second line.
   This is a <ph name="PLACEHOLDER">placeholder</ph>
 
-# List of platforms where the policy is planned to be released.
-# The policy has to be listed in the EnableExperimentalPolicies policy to be
-# available in the Dev and Canary channel.
+# If a platform is listed as "future_on", it means that this policy:
+# 1. will be available on that platform if chrome is on
+#    - the Canary channel
+#    - the Dev channel
+#    - an Unknown channel (e.g. locally built chrome)
+# 2. will not be available by default on that platform if chrome is on
+#   - the Beta channel
+#   - the Stable channel
+# 3. will be available (overriding 2.) if this policy's name is listed in the
+#    EnableExperimentalPolicies policy
 # Currently supported platforms:
 #   `chrome.win`, `chrome.win7`, `chrome.mac`, `chrome.linux`, `chrome.*`
 #   `chrome_os`, `android`, `webview_android`, `ios`, `fuchsia`, `chrome_frame`

@@ -5,6 +5,7 @@
 #include "ash/system/unified/unified_system_tray.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/ash_element_identifiers.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/tray_background_view_catalog.h"
 #include "ash/focus_cycler.h"
@@ -46,11 +47,12 @@
 #include "ash/system/unified/notification_icons_controller.h"
 #include "ash/system/unified/screen_capture_tray_item_view.h"
 #include "ash/system/unified/unified_slider_bubble_controller.h"
+#include "ash/system/unified/unified_slider_view.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "ash/user_education/user_education_class_properties.h"
-#include "ash/user_education/user_education_constants.h"
+#include "ash/user_education/welcome_tour/welcome_tour_metrics.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -59,6 +61,7 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "media/capture/video/chromeos/video_capture_features_chromeos.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/presentation_time_recorder.h"
@@ -94,10 +97,6 @@ class UnifiedSystemTray::UiDelegate : public MessageCenterUiDelegate {
   void HideMessageCenter() override;
 
   MessageCenterUiController* ui_controller() { return ui_controller_.get(); }
-
-  void NotifySecondaryBubbleHeight(int height) {
-    message_popup_collection_->SetBaselineOffset(height);
-  }
 
   message_center::MessagePopupView* GetPopupViewForNotificationID(
       const std::string& notification_id) {
@@ -198,8 +197,8 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
     // NOTE: Set `kHelpBubbleContextKey` before `views::kElementIdentifierKey`
     // in case registration causes a help bubble to be created synchronously.
     SetProperty(kHelpBubbleContextKey, HelpBubbleContext::kAsh);
-    SetProperty(views::kElementIdentifierKey, kUnifiedSystemTrayElementId);
   }
+  SetProperty(views::kElementIdentifierKey, kUnifiedSystemTrayElementId);
 
   if (media::ShouldEnableAutoFraming()) {
     autozoom_toast_controller_ = std::make_unique<AutozoomToastController>(
@@ -323,6 +322,12 @@ void UnifiedSystemTray::OnButtonPressed(const ui::Event& event) {
         /*restore_focus=*/true);
   } else {
     CloseBubble();
+    return;
+  }
+
+  if (features::IsWelcomeTourEnabled()) {
+    welcome_tour_metrics::RecordInteraction(
+        welcome_tour_metrics::Interaction::kQuickSettings);
   }
 }
 
@@ -334,8 +339,8 @@ bool UnifiedSystemTray::IsSliderBubbleShown() const {
   return slider_bubble_controller_->IsBubbleShown();
 }
 
-int UnifiedSystemTray::GetSliderBubbleHeight() const {
-  return slider_bubble_controller_->GetBubbleHeight();
+UnifiedSliderView* UnifiedSystemTray::GetSliderView() const {
+  return slider_bubble_controller_->slider_view();
 }
 
 bool UnifiedSystemTray::IsMessageCenterBubbleShown() const {
@@ -415,7 +420,6 @@ void UnifiedSystemTray::ShowNetworkDetailedViewBubble() {
 }
 
 void UnifiedSystemTray::NotifySecondaryBubbleHeight(int height) {
-  ui_delegate_->NotifySecondaryBubbleHeight(height);
   for (auto& observer : observers_) {
     observer.OnSliderBubbleHeightChanged();
   }
@@ -661,8 +665,12 @@ std::u16string UnifiedSystemTray::GetAccessibleNameForQuickSettingsBubble() {
 }
 
 void UnifiedSystemTray::HandleLocaleChange() {
+  // Re-adds the child views to force the layer's bounds to be updated
+  // (`SetLayerBounds`) for text direction (if needed).
+  tray_container()->RemoveAllChildViewsWithoutDeleting();
   for (TrayItemView* item : tray_items_) {
     item->HandleLocaleChange();
+    tray_container()->AddChildView(item);
   }
 }
 
@@ -856,6 +864,13 @@ void UnifiedSystemTray::DestroyBubbles() {
     bubble_->unified_system_tray_controller()->RemoveObserver(this);
   }
   bubble_.reset();
+}
+
+void UnifiedSystemTray::UpdateTrayItemColor(bool is_active) {
+  DCHECK(chromeos::features::IsJellyEnabled());
+  for (auto* tray_item : tray_items_) {
+    tray_item->UpdateLabelOrImageViewColor(is_active);
+  }
 }
 
 }  // namespace ash

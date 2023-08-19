@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/autofill/autofill_app_interface.h"
 
+#import "base/check.h"
 #import "base/memory/singleton.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -31,10 +32,6 @@
 #import "ios/web/public/web_state.h"
 #import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #import "services/network/test/test_url_loader_factory.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -169,8 +166,8 @@ void AddAutofillProfile(autofill::PersonalDataManager* personalDataManager,
   ConditionBlock conditionBlock = ^bool {
     return profileCount < personalDataManager->GetProfiles().size();
   };
-  base::test::ios::TimeUntilCondition(nil, conditionBlock, false,
-                                      base::test::ios::kWaitForActionTimeout);
+  CHECK(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForActionTimeout, conditionBlock));
 }
 
 }  // namespace
@@ -203,7 +200,7 @@ class SaveCardInfobarEGTestHelper
     return AutofillDriverIOS::FromWebStateAndWebFrame(web_state, main_frame)
         ->autofill_manager()
         ->client()
-        ->GetFormDataImporter()
+        .GetFormDataImporter()
         ->credit_card_save_manager_.get();
   }
 
@@ -218,7 +215,7 @@ class SaveCardInfobarEGTestHelper
     return AutofillDriverIOS::FromWebStateAndWebFrame(web_state, main_frame)
         ->autofill_manager()
         ->client()
-        ->GetPaymentsClient();
+        .GetPaymentsClient();
   }
 
   // Delete all failed attempds registered on every cards.
@@ -315,6 +312,9 @@ class SaveCardInfobarEGTestHelper
     payments_client->set_url_loader_factory_for_testing(
         shared_url_loader_factory_);
 
+    // Set a fake access token to avoid fetch requests.
+    payments_client->set_access_token_for_testing("fake_access_token");
+
     // Observe actions in CreditCardSaveManager.
     CreditCardSaveManager* credit_card_save_manager =
         SaveCardInfobarEGTestHelper::GetCreditCardSaveManager();
@@ -378,8 +378,8 @@ class SaveCardInfobarEGTestHelper
   ConditionBlock conditionBlock = ^bool {
     return 0 == personalDataManager->GetProfiles().size();
   };
-  base::test::ios::TimeUntilCondition(nil, conditionBlock, false,
-                                      base::test::ios::kWaitForActionTimeout);
+  CHECK(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForActionTimeout, conditionBlock));
 
   autofill::prefs::SetAutofillProfileEnabled(browserState->GetPrefs(), YES);
 }
@@ -421,9 +421,8 @@ class SaveCardInfobarEGTestHelper
   ConditionBlock conditionBlock = ^bool {
     return card_count < personalDataManager->GetCreditCards().size();
   };
-  base::test::ios::TimeUntilCondition(
-      nil, conditionBlock, false,
-      base::test::ios::kWaitForFileOperationTimeout);
+  CHECK(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForFileOperationTimeout, conditionBlock));
   personalDataManager->NotifyPersonalDataObserver();
   return base::SysUTF16ToNSString(card.NetworkAndLastFourDigits());
 }
@@ -432,15 +431,16 @@ class SaveCardInfobarEGTestHelper
   return [self personalDataManager] -> GetCreditCards().size();
 }
 
-+ (void)saveMaskedCreditCard {
++ (NSString*)saveMaskedCreditCard {
   autofill::PersonalDataManager* personalDataManager =
       [self personalDataManager];
   autofill::CreditCard card = autofill::test::GetMaskedServerCard();
-  DCHECK(card.record_type() != autofill::CreditCard::LOCAL_CARD);
+  DCHECK(card.record_type() != autofill::CreditCard::RecordType::kLocalCard);
 
   personalDataManager->AddServerCreditCardForTest(
       std::make_unique<autofill::CreditCard>(card));
   personalDataManager->NotifyPersonalDataObserver();
+  return base::SysUTF16ToNSString(card.NetworkAndLastFourDigits());
 }
 
 + (void)setUpSaveCardInfobarEGTestHelper {

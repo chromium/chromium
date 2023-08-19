@@ -95,12 +95,12 @@ void BluetoothDeviceListItemBatteryView::UpdateBatteryInfo(
 
   last_shown_battery_percentage_ = new_battery_percentage;
 
-  PowerStatus::BatteryImageInfo battery_image_info;
+  PowerStatus::BatteryImageInfo battery_image_info(
+      GetColorProvider()->GetColor(color_id));
   battery_image_info.charge_percent = new_battery_percentage;
 
-  icon_->SetImage(
-      PowerStatus::GetBatteryImage(battery_image_info, kUnifiedTraySubIconSize,
-                                   GetColorProvider()->GetColor(color_id)));
+  icon_->SetImage(PowerStatus::GetBatteryImage(
+      battery_image_info, kUnifiedTraySubIconSize, GetColorProvider()));
 }
 
 bool BluetoothDeviceListItemBatteryView::ApproximatelyEqual(

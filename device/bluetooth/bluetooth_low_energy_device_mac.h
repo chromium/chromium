@@ -10,7 +10,6 @@
 
 #include <set>
 
-#include "base/mac/scoped_nsobject.h"
 #include "build/build_config.h"
 #include "crypto/sha2.h"
 #include "device/bluetooth/bluetooth_device_mac.h"
@@ -89,7 +88,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyDeviceMac
  protected:
   // BluetoothDevice override.
   void CreateGattConnectionImpl(
-      absl::optional<BluetoothUUID> serivce_uuid) override;
+      absl::optional<BluetoothUUID> service_uuid) override;
   void DisconnectGatt() override;
 
   // Methods used by BluetoothLowEnergyPeripheralBridge.
@@ -154,11 +153,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyDeviceMac
   void DidDisconnectPeripheral(NSError* error);
 
   // CoreBluetooth data structure.
-  base::scoped_nsobject<CBPeripheral> peripheral_;
+  CBPeripheral* __strong peripheral_;
 
   // Objective-C delegate for the CBPeripheral.
-  base::scoped_nsobject<BluetoothLowEnergyPeripheralDelegate>
-      peripheral_delegate_;
+  BluetoothLowEnergyPeripheralDelegate* __strong peripheral_delegate_;
 
   // Whether the device is connected.
   bool connected_;

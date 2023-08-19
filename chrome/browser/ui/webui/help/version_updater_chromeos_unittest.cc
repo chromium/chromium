@@ -98,8 +98,9 @@ class VersionUpdaterCrosTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<ash::NetworkHandlerTestHelper> network_handler_test_helper_;
   std::unique_ptr<VersionUpdater> version_updater_;
-  raw_ptr<VersionUpdaterCros, ExperimentalAsh> version_updater_cros_ptr_;
-  raw_ptr<ash::FakeUpdateEngineClient, ExperimentalAsh>
+  raw_ptr<VersionUpdaterCros, DanglingUntriaged | ExperimentalAsh>
+      version_updater_cros_ptr_;
+  raw_ptr<ash::FakeUpdateEngineClient, DanglingUntriaged | ExperimentalAsh>
       fake_update_engine_client_;  // Not owned.
 
   user_manager::ScopedUserManager user_manager_enabler_;

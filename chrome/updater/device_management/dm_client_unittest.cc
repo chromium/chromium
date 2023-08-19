@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <sstream>
 #include <string>
 #include <utility>
 #include <vector>
@@ -25,7 +26,7 @@
 #include "chrome/updater/net/network.h"
 #include "chrome/updater/policy/service.h"
 #include "chrome/updater/protos/omaha_settings.pb.h"
-#include "chrome/updater/util/unittest_util.h"
+#include "chrome/updater/util/unit_test_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/update_client/network.h"
 #include "net/base/url_util.h"
@@ -58,6 +59,8 @@ class TestTokenService : public TokenServiceInterface {
     enrollment_token_ = enrollment_token;
     return true;
   }
+
+  bool DeleteEnrollmentToken() override { return StoreEnrollmentToken(""); }
 
   std::string GetEnrollmentToken() const override { return enrollment_token_; }
 
@@ -802,6 +805,69 @@ TEST_F(DMPolicyValidationReportClientTest, NoPayload) {
       .WillOnce(RunClosure(quit_closure));
   PostRequest(PolicyValidationResult());
   run_loop.Run();
+}
+
+TEST(DMClient, StreamRequestResultEnumValue) {
+  {
+    std::stringstream output;
+    output << DMClient::RequestResult::kSuccess;
+    EXPECT_EQ(output.str(), "DMClient::RequestResult::kSuccess");
+  }
+  {
+    std::stringstream output;
+    output << DMClient::RequestResult::kNoDeviceID;
+    EXPECT_EQ(output.str(), "DMClient::RequestResult::kNoDeviceID");
+  }
+  {
+    std::stringstream output;
+    output << DMClient::RequestResult::kAlreadyRegistered;
+    EXPECT_EQ(output.str(), "DMClient::RequestResult::kAlreadyRegistered");
+  }
+  {
+    std::stringstream output;
+    output << DMClient::RequestResult::kNotManaged;
+    EXPECT_EQ(output.str(), "DMClient::RequestResult::kNotManaged");
+  }
+  {
+    std::stringstream output;
+    output << DMClient::RequestResult::kDeregistered;
+    EXPECT_EQ(output.str(), "DMClient::RequestResult::kDeregistered");
+  }
+  {
+    std::stringstream output;
+    output << DMClient::RequestResult::kNoDMToken;
+    EXPECT_EQ(output.str(), "DMClient::RequestResult::kNoDMToken");
+  }
+  {
+    std::stringstream output;
+    output << DMClient::RequestResult::kFetcherError;
+    EXPECT_EQ(output.str(), "DMClient::RequestResult::kFetcherError");
+  }
+  {
+    std::stringstream output;
+    output << DMClient::RequestResult::kNetworkError;
+    EXPECT_EQ(output.str(), "DMClient::RequestResult::kNetworkError");
+  }
+  {
+    std::stringstream output;
+    output << DMClient::RequestResult::kHttpError;
+    EXPECT_EQ(output.str(), "DMClient::RequestResult::kHttpError");
+  }
+  {
+    std::stringstream output;
+    output << DMClient::RequestResult::kSerializationError;
+    EXPECT_EQ(output.str(), "DMClient::RequestResult::kSerializationError");
+  }
+  {
+    std::stringstream output;
+    output << DMClient::RequestResult::kUnexpectedResponse;
+    EXPECT_EQ(output.str(), "DMClient::RequestResult::kUnexpectedResponse");
+  }
+  {
+    std::stringstream output;
+    output << DMClient::RequestResult::kNoPayload;
+    EXPECT_EQ(output.str(), "DMClient::RequestResult::kNoPayload");
+  }
 }
 
 }  // namespace updater

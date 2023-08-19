@@ -4,30 +4,15 @@
 
 #import "ui/base/test/cocoa_helper.h"
 
+#include <set>
+#include <vector>
+
 #include "base/debug/debugger.h"
 #include "base/logging.h"
 #include "base/stl_util.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/test/mock_chrome_application_mac.h"
 #include "base/test/test_timeouts.h"
-
-namespace {
-
-// Some AppKit function leak intentionally, e.g. for caching purposes.
-// Force those leaks here, so there can be a unique calling path, allowing
-// to flag intentional leaks without having to suppress all calls to
-// potentially leaky functions.
-NOINLINE void ForceSystemLeaks() {
-  // If a test suite hasn't already initialized NSApp, register the mock one
-  // now.
-  if (!NSApp)
-    mock_cr_app::RegisterMockCrApp();
-
-  // First NSCursor push always leaks.
-  [[NSCursor openHandCursor] push];
-  [NSCursor pop];
-}
-
-}  // namespace.
 
 @implementation CocoaTestHelperWindow
 
@@ -45,6 +30,7 @@ NOINLINE void ForceSystemLeaks() {
   if (self) {
     _useDefaultConstraints = YES;
     _pretendIsOnActiveSpace = YES;
+    self.releasedWhenClosed = NO;
   }
   return self;
 }
@@ -56,7 +42,6 @@ NOINLINE void ForceSystemLeaks() {
 - (void)dealloc {
   // Just a good place to put breakpoints when having problems with
   // unittests and CocoaTestHelperWindow.
-  [super dealloc];
 }
 
 - (BOOL)isKeyWindow {
@@ -79,9 +64,9 @@ NOINLINE void ForceSystemLeaks() {
 
 - (void)setPretendIsOnActiveSpace:(BOOL)pretendIsOnActiveSpace {
   _pretendIsOnActiveSpace = pretendIsOnActiveSpace;
-  [[NSWorkspace sharedWorkspace].notificationCenter
+  [NSWorkspace.sharedWorkspace.notificationCenter
       postNotificationName:NSWorkspaceActiveSpaceDidChangeNotification
-                    object:[NSWorkspace sharedWorkspace]];
+                    object:NSWorkspace.sharedWorkspace];
 }
 
 - (void)setPretendFullKeyboardAccessIsEnabled:(BOOL)enabled {
@@ -101,18 +86,21 @@ NOINLINE void ForceSystemLeaks() {
 - (NSArray<NSView*>*)validKeyViews {
   NSMutableArray<NSView*>* validKeyViews = [NSMutableArray array];
   NSView* contentView = self.contentView;
-  if (contentView.canBecomeKeyView)
+  if (contentView.canBecomeKeyView) {
     [validKeyViews addObject:contentView];
+  }
   for (NSView* keyView = contentView.nextValidKeyView;
        keyView != nil && ![validKeyViews containsObject:keyView];
-       keyView = keyView.nextValidKeyView)
+       keyView = keyView.nextValidKeyView) {
     [validKeyViews addObject:keyView];
+  }
   return validKeyViews;
 }
 
 - (NSRect)constrainFrameRect:(NSRect)frameRect toScreen:(NSScreen*)screen {
-  if (!_useDefaultConstraints)
+  if (!_useDefaultConstraints) {
     return frameRect;
+  }
 
   return [super constrainFrameRect:frameRect toScreen:screen];
 }
@@ -122,29 +110,34 @@ NOINLINE void ForceSystemLeaks() {
 namespace ui {
 
 CocoaTestHelper::CocoaTestHelper() {
-  ForceSystemLeaks();
+  // If a test suite hasn't already initialized NSApp, register the mock one
+  // now.
+  if (!NSApp) {
+    mock_cr_app::RegisterMockCrApp();
+  }
+
   // Set the duration of AppKit-evaluated animations (such as frame changes)
   // to zero for testing purposes. That way they take effect immediately.
-  [[NSAnimationContext currentContext] setDuration:0.0];
+  NSAnimationContext.currentContext.duration = 0.0;
 
   // The above does not affect window-resize time, such as for an
   // attached sheet dropping in.  Set that duration for the current
   // process (this is not persisted).  Empirically, the value of 0.0
   // is ignored.
   NSDictionary* dict = @{@"NSWindowResizeTime" : @"0.01"};
-  [[NSUserDefaults standardUserDefaults] registerDefaults:dict];
+  [NSUserDefaults.standardUserDefaults registerDefaults:dict];
 
   MarkCurrentWindowsAsInitial();
 }
 
 CocoaTestHelper::~CocoaTestHelper() {
-  // Call close on our test_window to clean it up if one was opened.
+  // Call close on the test_window to clean it up if one was opened.
   [test_window_ clearPretendKeyWindowAndFirstResponder];
   [test_window_ close];
   test_window_ = nil;
 
   // Recycle the pool to clean up any stuff that was put on the
-  // autorelease pool due to window or windowcontroller closures.
+  // autorelease pool due to window or window controller closures.
   pool_.Recycle();
 
   // Some controls (NSTextFields, NSComboboxes etc) use
@@ -160,7 +153,7 @@ CocoaTestHelper::~CocoaTestHelper() {
 
   // Get the set of windows which weren't present when the test
   // started.
-  std::set<NSWindow*> windows_left(WindowsLeft());
+  WeakWindowVector windows_left = WindowsLeft();
 
   while (!windows_left.empty()) {
     // Cover delayed actions by spinning the loop at least once after
@@ -174,7 +167,7 @@ CocoaTestHelper::~CocoaTestHelper() {
 
     // Track the set of remaining windows so that everything can be
     // reset if progress is made.
-    std::set<NSWindow*> still_left = windows_left;
+    WeakWindowVector still_left = windows_left;
 
     NSDate* start_date = [NSDate date];
     bool one_more_time = true;
@@ -183,8 +176,7 @@ CocoaTestHelper::~CocoaTestHelper() {
            (spins < kCloseSpins || one_more_time)) {
       // Check the timeout before pumping events, so that we'll spin
       // the loop once after the timeout.
-      one_more_time =
-          ([start_date timeIntervalSinceNow] > -kCloseTimeoutSeconds);
+      one_more_time = start_date.timeIntervalSinceNow > -kCloseTimeoutSeconds;
 
       // Autorelease anything thrown up by the event loop.
       @autoreleasepool {
@@ -208,10 +200,9 @@ CocoaTestHelper::~CocoaTestHelper() {
       // there is a leak, or perhaps one of |kCloseTimeoutSeconds| or
       // |kCloseSpins| needs adjustment.
       EXPECT_EQ(0U, windows_left.size());
-      for (std::set<NSWindow*>::iterator iter = windows_left.begin();
-           iter != windows_left.end(); ++iter) {
+      for (NSWindow* __weak window : windows_left) {
         LOG(WARNING) << "Didn't close window "
-                     << base::SysNSStringToUTF8([*iter description]);
+                     << base::SysNSStringToUTF8(window.description);
       }
       break;
     }
@@ -227,28 +218,6 @@ void CocoaTestHelper::MarkCurrentWindowsAsInitial() {
   initial_windows_ = ApplicationWindows();
 }
 
-std::set<NSWindow*> CocoaTestHelper::ApplicationWindows() {
-  // This must NOT retain the windows it is returning.
-  std::set<NSWindow*> windows;
-
-  // Must create a pool here because [NSApp windows] has created an array
-  // with retains on all the windows in it.
-  @autoreleasepool {
-    NSArray* appWindows = [NSApp windows];
-    for (NSWindow* window in appWindows) {
-      windows.insert(window);
-    }
-    return windows;
-  }
-}
-
-std::set<NSWindow*> CocoaTestHelper::WindowsLeft() {
-  const std::set<NSWindow*> windows(ApplicationWindows());
-  std::set<NSWindow*> windows_left =
-      base::STLSetDifference<std::set<NSWindow*>>(windows, initial_windows_);
-  return windows_left;
-}
-
 CocoaTestHelperWindow* CocoaTestHelper::test_window() {
   if (!test_window_) {
     test_window_ = [[CocoaTestHelperWindow alloc] init];
@@ -259,6 +228,39 @@ CocoaTestHelperWindow* CocoaTestHelper::test_window() {
     }
   }
   return test_window_;
+}
+
+// Returns a vector of currently open windows.
+CocoaTestHelper::WeakWindowVector CocoaTestHelper::ApplicationWindows() {
+  WeakWindowVector windows;
+
+  // Must create a pool here because [NSApp windows] has created an array which
+  // retains all the windows in it.
+  @autoreleasepool {
+    for (NSWindow* window in NSApp.windows) {
+      windows.push_back(window);
+    }
+    return windows;
+  }
+}
+
+CocoaTestHelper::WeakWindowVector CocoaTestHelper::WindowsLeft() {
+  // Window pointers can go nil only when the run loop is going, so it's safe to
+  // use sets within this function, just not outside it.
+  using WeakWindowSet = std::set<NSWindow * __weak>;
+
+  WeakWindowVector windows = ApplicationWindows();
+  WeakWindowSet windows_set(windows.begin(), windows.end());
+
+  // Subtract away the initial windows. The current window set will not have any
+  // nil values, as it was just obtained, so subtracting away the nil from any
+  // initial windows that have been closed is safe.
+  WeakWindowSet initial_windows_set(initial_windows_.begin(),
+                                    initial_windows_.end());
+
+  WeakWindowSet windows_left_set =
+      base::STLSetDifference<WeakWindowSet>(windows_set, initial_windows_set);
+  return std::vector(windows_left_set.begin(), windows_left_set.end());
 }
 
 CocoaTest::CocoaTest() : helper_(std::make_unique<CocoaTestHelper>()) {}

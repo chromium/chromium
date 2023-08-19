@@ -15,24 +15,12 @@
         margin-top: 8px;
       }
 
-      #creditCardExpiration {
-        flex: 1;
-      }
-
       .sub-label {
         color: var(--cr-secondary-text-color);
       }
 
-      #paymentsLabel {
-        margin-inline-start: 16px;
-      }
-
       #paymentsIcon {
         vertical-align: middle;
-      }
-
-      #virtualCardLabel {
-        margin-inline-start: 8px;
       }
 
       #cardImage {
@@ -52,9 +40,7 @@
     </style>
     <div class="list-item" role="row">
       <div class="type-column" role="cell">
-        <template is="dom-if" if="[[showExpirationAsSecondaryLabelEnabled_]]">
-          <img id="cardImage" src="[[creditCard.imageSrc]]" alt="">
-        </template>
+        <img id="cardImage" src="[[creditCard.imageSrc]]" alt="">
         <div class="summary-column screen-reader-only-substituted-parent">
           <div class="screen-reader-only-visually-hidden">
             [[getSummaryAriaLabel_(creditCard)]],
@@ -64,25 +50,12 @@
             [[creditCard.metadata.summaryLabel]]
           </div>
           <div id="summarySublabel"
-              hidden$="[[!showExpirationAsSecondaryLabelEnabled_]]"
               class="ellipses sub-label" aria-hidden="true">
             [[getSummarySublabel_(creditCard, virtualCardEnrollmentEnabled_)]]
           </div>
         </div>
-        <span id="virtualCardLabel"
-            hidden$="[[!shouldShowVirtualCardLabel_(creditCard.metadata)]]">
-          $i18n{virtualCardEnabled}
-        </span>
-        <span id="paymentsLabel" class="sub-label"
-            hidden$="[[!shouldShowPaymentsLabel_(creditCard.metadata)]]">
-            [[getPaymentsLabel_(creditCard.metadata)]]
-        </span>
       </div>
       <div class="expiration-column">
-        <div id="creditCardExpiration" role="cell"
-            hidden$="[[showExpirationAsSecondaryLabelEnabled_]]">
-          [[creditCard.expirationMonth]]/[[creditCard.expirationYear]]
-        </div>
         <div role="cell" class="misc-column">
           <div id="paymentsIndicator"
               hidden$="[[!shouldShowPaymentsIndicator_(creditCard.metadata)]]">

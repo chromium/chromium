@@ -17,8 +17,8 @@ class Profile;
 
 namespace web_app {
 
-class WebAppRegistrar;
-class WebAppSyncBridge;
+class WebAppProvider;
+class OsIntegrationManager;
 
 class WebAppFileHandlerManager {
  public:
@@ -27,7 +27,8 @@ class WebAppFileHandlerManager {
   WebAppFileHandlerManager& operator=(const WebAppFileHandlerManager&) = delete;
   virtual ~WebAppFileHandlerManager();
 
-  void SetSubsystems(WebAppSyncBridge* sync_bridge);
+  void SetProvider(base::PassKey<OsIntegrationManager>,
+                   WebAppProvider& provider);
   void Start();
 
   // Called by tests to enable file handling icon infrastructure on a platform
@@ -88,12 +89,10 @@ class WebAppFileHandlerManager {
   // registry.
   bool ShouldOsIntegrationBeEnabled(const AppId& app_id) const;
 
-  const WebAppRegistrar* GetRegistrar() const;
-
   static bool disable_automatic_file_handler_cleanup_for_testing_;
 
   [[maybe_unused]] const raw_ptr<Profile, DanglingUntriaged> profile_;
-  raw_ptr<WebAppSyncBridge, DanglingUntriaged> sync_bridge_;
+  raw_ptr<WebAppProvider> provider_ = nullptr;
 
   base::WeakPtrFactory<WebAppFileHandlerManager> weak_ptr_factory_{this};
 };

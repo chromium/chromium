@@ -9,7 +9,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
-#include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 
 namespace syncer {
 
@@ -17,7 +16,7 @@ namespace {
 
 base::TimeDelta SubtractInactiveTime(base::TimeDelta total_length,
                                      base::TimeDelta inactive_time) {
-  // Substract any time the user was inactive from our session length. If this
+  // Subtract any time the user was inactive from our session length. If this
   // ends up giving the session negative length, which can happen if the feature
   // state changed after the user became inactive, log the length as 0.
   base::TimeDelta session_length = total_length - inactive_time;
@@ -48,7 +47,9 @@ void LogDuration(const std::string& histogram_suffix,
 SyncSessionDurationsMetricsRecorder::SyncSessionDurationsMetricsRecorder(
     SyncService* sync_service,
     signin::IdentityManager* identity_manager)
-    : sync_service_(sync_service), identity_manager_(identity_manager) {
+    : sync_service_(sync_service),
+      identity_manager_(identity_manager),
+      history_sync_recorder_(sync_service) {
   // |sync_service| can be null if sync is disabled by a command line flag.
   if (sync_service_) {
     sync_observation_.Observe(sync_service_.get());
@@ -95,11 +96,15 @@ void SyncSessionDurationsMetricsRecorder::OnSessionStarted(
   total_session_timer_ = std::make_unique<base::ElapsedTimer>();
   signin_session_timer_ = std::make_unique<base::ElapsedTimer>();
   sync_account_session_timer_ = std::make_unique<base::ElapsedTimer>();
+
+  history_sync_recorder_.OnSessionStarted(session_start);
 }
 
 void SyncSessionDurationsMetricsRecorder::OnSessionEnded(
     base::TimeDelta session_length) {
   DVLOG(1) << "Session end";
+
+  history_sync_recorder_.OnSessionEnded(session_length);
 
   if (!total_session_timer_) {
     // If there was no active session, just ignore this call.
@@ -303,6 +308,9 @@ SyncSessionDurationsMetricsRecorder::DeterminePrimaryAccountStatus() const {
 
 SyncSessionDurationsMetricsRecorder::FeatureState
 SyncSessionDurationsMetricsRecorder::DetermineSyncStatus() const {
+  // TODO(crbug.com/1462552): Simplify once kSync becomes unreachable or is
+  // deleted from the codebase. See ConsentLevel::kSync documentation for
+  // details.
   if (!sync_service_ || !sync_service_->CanSyncFeatureStart()) {
     return FeatureState::OFF;
   }

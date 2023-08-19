@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/bookmarks/browser/bookmark_uuids.h"
 #include "components/sync/base/hash_util.h"
 #include "components/sync/base/time.h"
 #include "components/sync/base/unique_position.h"
@@ -119,8 +120,7 @@ sync_pb::EntitySpecifics BookmarkEntityBuilder::CreateBaseEntitySpecifics(
   if (parent_id_.empty()) {
     parent_id_ =
         LoopbackServerEntity::CreateId(syncer::BOOKMARKS, "bookmark_bar");
-    parent_guid_ = base::Uuid::ParseLowercase(
-        bookmarks::BookmarkNode::kBookmarkBarNodeUuid);
+    parent_guid_ = base::Uuid::ParseLowercase(bookmarks::kBookmarkBarNodeUuid);
   }
 
   if (bookmark_generation_ >= BookmarkGeneration::kValidGuidAndLegacyTitle) {

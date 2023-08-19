@@ -91,11 +91,12 @@ void OffscreenCanvasTest::SetUp() {
       String::FromUTF8("<body><canvas id='c'></canvas></body>"));
 
   auto* canvas_element =
-      To<HTMLCanvasElement>(GetDocument().getElementById("c"));
+      To<HTMLCanvasElement>(GetDocument().getElementById(AtomicString("c")));
 
   DummyExceptionStateForTesting exception_state;
   offscreen_canvas_ = HTMLCanvasElementModule::transferControlToOffscreen(
-      GetWindow(), *canvas_element, exception_state);
+      ToScriptStateForMainWorld(GetWindow()->GetFrame()), *canvas_element,
+      exception_state);
   // |offscreen_canvas_| should inherit the FrameSinkId from |canvas_element|s
   // SurfaceLayerBridge, but in tests this id is zero; fill it up by hand.
   offscreen_canvas_->SetFrameSinkId(kClientId, kSinkId);

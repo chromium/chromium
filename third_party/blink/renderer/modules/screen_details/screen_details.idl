@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Interface exposing multi-screen information.
-// https://w3c.github.io/window-placement/
+// https://w3c.github.io/window-management/
 [
   Exposed=Window,
   SecureContext

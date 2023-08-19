@@ -54,8 +54,16 @@ export class Page {
 
     this.mainSection = getRequiredElement('main-section');
 
-    // Place the initial focus on the filter input field.
-    const filterElement = getRequiredElement('filter') as HTMLInputElement;
+    const policyElement = getRequiredElement('policy-ui');
+    // Add or remove header shadow based on scroll position.
+    policyElement.addEventListener('scroll', () => {
+      document.getElementsByTagName('header')[0]!.classList.toggle(
+          'header-shadow', policyElement.scrollTop > 0);
+    });
+
+    // Place the initial focus on the search input field.
+    const filterElement =
+        getRequiredElement('search-field-input') as HTMLInputElement;
     filterElement.focus();
 
     filterElement.addEventListener('search', () => {
@@ -170,8 +178,9 @@ export class Page {
 
     // <if expr="not is_chromeos">
     this.updateReportButton(
-        (policyValues['chrome']?.policies['CloudReportingEnabled']?.value) ===
-        true);
+      !!policyValues['chrome']?.policies['CloudReportingEnabled']?.value ||
+      !!policyValues['chrome']?.policies['CloudProfileReportingEnabled']?.value,
+    );
     // </if>
     this.reloadPoliciesDone();
   }

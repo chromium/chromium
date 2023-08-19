@@ -8,7 +8,7 @@
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/memory/singleton.h"
 #include "chrome/browser/ash/arc/keymint/cert_store_bridge_keymint.h"
-#include "chromeos/ash/components/dbus/arc/arc_keymaster_client.h"  // XXX
+#include "chromeos/ash/components/dbus/arc/arc_keymint_client.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 
@@ -113,9 +113,9 @@ void ArcKeyMintBridge::OnBootstrapMojoConnection(
     BootstrapMojoConnectionCallback callback,
     bool result) {
   if (result) {
-    DVLOG(1) << "Success bootstrapping Mojo in arc-keymasterd.";
+    DVLOG(1) << "Success bootstrapping Mojo in arc-keymintd.";
   } else {
-    LOG(ERROR) << "Error bootstrapping Mojo in arc-keymasterd.";
+    LOG(ERROR) << "Error bootstrapping Mojo in arc-keymintd.";
     keymint_server_proxy_.reset();
   }
   std::move(callback).Run(result);
@@ -123,7 +123,7 @@ void ArcKeyMintBridge::OnBootstrapMojoConnection(
 
 void ArcKeyMintBridge::BootstrapMojoConnection(
     BootstrapMojoConnectionCallback callback) {
-  DVLOG(1) << "Bootstrapping arc-keymasterd Mojo connection via D-Bus.";
+  DVLOG(1) << "Bootstrapping arc-keymintd Mojo connection via D-Bus.";
 
   mojo::OutgoingInvitation invitation;
   mojo::PlatformChannel channel;
@@ -153,11 +153,15 @@ void ArcKeyMintBridge::BootstrapMojoConnection(
   keymint_server_proxy_.set_disconnect_handler(
       base::BindOnce(&mojo::Remote<mojom::keymint::KeyMintServer>::reset,
                      base::Unretained(&keymint_server_proxy_)));
-  // TODO(b/247941366): Create ArcKeyMintClient.
-  ash::ArcKeymasterClient::Get()->BootstrapMojoConnection(
+  ash::ArcKeyMintClient::Get()->BootstrapMojoConnection(
       channel.TakeRemoteEndpoint().TakePlatformHandle().TakeFD(),
       base::BindOnce(&ArcKeyMintBridge::OnBootstrapMojoConnection,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+// static
+void ArcKeyMintBridge::EnsureFactoryBuilt() {
+  ArcKeyMintBridgeFactory::GetInstance();
 }
 
 }  // namespace arc

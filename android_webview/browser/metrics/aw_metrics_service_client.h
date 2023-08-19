@@ -209,6 +209,14 @@ class AwMetricsServiceClient : public ::metrics::AndroidMetricsServiceClient,
   base::Time GetAppPackageNameLoggingRuleLastUpdateTime() const;
   void SetAppPackageNameLoggingRuleLastUpdateTime(base::Time update_time);
 
+  // If `android_webview::features::kWebViewMetricsFiltering` is
+  // enabled:
+  // - return `true` if client used to be sampled out.
+  // - return `false` if client used to be in-sampled.
+  //
+  // If the feature isn't enabled, return false.
+  virtual bool ShouldApplyMetricsFiltering() const;
+
  protected:
   // Restrict usage of the inherited AndroidMetricsServiceClient::RegisterPrefs,
   // RegisterMetricsPrefs should be used instead.

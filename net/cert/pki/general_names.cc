@@ -4,6 +4,9 @@
 
 #include "net/cert/pki/general_names.h"
 
+#include "third_party/boringssl/src/include/openssl/base.h"
+
+#include <climits>
 #include <cstring>
 
 #include "net/cert/pki/cert_error_params.h"
@@ -38,9 +41,13 @@ DEFINE_CERT_ERROR_ID(kFailedReadingGeneralName,
 bool IsSuffixZero(const IPAddressBytes& mask, unsigned prefix_length) {
   size_t zero_bits = mask.size() * CHAR_BIT - prefix_length;
   size_t zero_bytes = zero_bits / CHAR_BIT;
-  std::vector<uint8_t> zeros(zero_bytes, 0);
-  if (memcmp(zeros.data(), mask.data() + mask.size() - zero_bytes, zero_bytes))
+  // We allocate the vector one byte bigger than needed to ensure there is a
+  // valid pointer to pass to memcmp for a zero length comparison.
+  std::vector<uint8_t> zeros(zero_bytes + 1, 0);
+  if (memcmp(zeros.data(), mask.data() + mask.size() - zero_bytes,
+             zero_bytes)) {
     return false;
+  }
   size_t leftover_bits = zero_bits % CHAR_BIT;
   if (leftover_bits) {
     uint8_t b = mask[mask.size() - zero_bytes - 1];
@@ -62,7 +69,7 @@ GeneralNames::~GeneralNames() = default;
 std::unique_ptr<GeneralNames> GeneralNames::Create(
     const der::Input& general_names_tlv,
     CertErrors* errors) {
-  DCHECK(errors);
+  BSSL_CHECK(errors);
 
   // RFC 5280 section 4.2.1.6:
   // GeneralNames ::= SEQUENCE SIZE (1..MAX) OF GeneralName
@@ -84,7 +91,7 @@ std::unique_ptr<GeneralNames> GeneralNames::Create(
 std::unique_ptr<GeneralNames> GeneralNames::CreateFromValue(
     const der::Input& general_names_value,
     CertErrors* errors) {
-  DCHECK(errors);
+  BSSL_CHECK(errors);
 
   auto general_names = std::make_unique<GeneralNames>();
 
@@ -117,7 +124,7 @@ std::unique_ptr<GeneralNames> GeneralNames::CreateFromValue(
     GeneralNames::ParseGeneralNameIPAddressType ip_address_type,
     GeneralNames* subtrees,
     CertErrors* errors) {
-  DCHECK(errors);
+  BSSL_CHECK(errors);
   der::Parser parser(input);
   der::Tag tag;
   der::Input value;
@@ -193,7 +200,7 @@ std::unique_ptr<GeneralNames> GeneralNames::CreateFromValue(
       }
       subtrees->ip_addresses.emplace_back(value.UnsafeData(), value.Length());
     } else {
-      DCHECK_EQ(ip_address_type, GeneralNames::IP_ADDRESS_AND_NETMASK);
+      BSSL_CHECK(ip_address_type == GeneralNames::IP_ADDRESS_AND_NETMASK);
       // RFC 5280 section 4.2.1.10:
       // The syntax of iPAddress MUST be as described in Section 4.2.1.6 with
       // the following additions specifically for name constraints. For IPv4
@@ -229,7 +236,7 @@ std::unique_ptr<GeneralNames> GeneralNames::CreateFromValue(
                      CreateCertErrorParams1SizeT("tag", tag));
     return false;
   }
-  DCHECK_NE(GENERAL_NAME_NONE, name_type);
+  BSSL_CHECK(GENERAL_NAME_NONE != name_type);
   subtrees->present_name_types |= name_type;
   return true;
 }

@@ -9,10 +9,10 @@
 
 namespace chrome {
 
-// Presses Ctrl + W using |browser|'s view as the accelerator target.
+// Presses Ctrl + W using `browser`'s view as the accelerator target.
 [[nodiscard]] bool PressCloseTabAccelerator(Browser* browser);
 
-// Presses Ctrl + Shift + W using |browser|'s view as the accelerator target.
+// Presses Ctrl + Shift + W using `browser`'s view as the accelerator target.
 [[nodiscard]] bool PressCloseWindowAccelerator(Browser* browser);
 
 }  // namespace chrome

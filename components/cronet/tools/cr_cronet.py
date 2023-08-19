@@ -9,14 +9,14 @@ cr_cronet.py - cr - like helper tool for cronet developers
 
 import argparse
 import os
-import pipes
 import re
+import shlex
 import subprocess
 import sys
 
 
 def quoted_args(args):
-  return ' '.join([pipes.quote(arg) for arg in args])
+  return ' '.join([shlex.quote(arg) for arg in args])
 
 
 def run(command, **kwargs):
@@ -84,9 +84,9 @@ def debug(extra_options):
 
 
 def stack(out_dir):
-  return run_shell(
-      'adb logcat -d | CHROMIUM_OUTPUT_DIR=' + pipes.quote(out_dir) +
-      ' third_party/android_platform/development/scripts/stack')
+  return run_shell('adb logcat -d | CHROMIUM_OUTPUT_DIR=' +
+                   shlex.quote(out_dir) +
+                   ' third_party/android_platform/development/scripts/stack')
 
 
 def use_goma():
@@ -181,7 +181,7 @@ def android_gn_gen(is_release, target_cpu, out_dir):
   # Ideally we would call `mb_py gen` directly, but we need to filter out the
   # use_remoteexec arg, as that cannot be used in a local environment.
   gn_args = subprocess.check_output([
-      'python', mb_script, 'lookup', '-m', group_name, '-b', builder_name
+      'python3', mb_script, 'lookup', '-m', group_name, '-b', builder_name
   ]).decode('utf-8').strip()
   gn_args = filter_gn_args(gn_args.split("\n"))
   return gn(out_dir, ' '.join(gn_args))

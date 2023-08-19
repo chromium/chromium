@@ -46,6 +46,12 @@ enum OptionalBoolean {
   kTrue,
 };
 
+[Stable]
+struct AppListItemAttributes {
+  string item_position@0;
+  string pin_position@1;
+};
+
 // Implemented in lacros-chrome.
 // Lets the Ash browser tests that require Lacros to send commands to this
 // lacros-chrome instance.
@@ -168,10 +174,19 @@ struct KeyEvent {
   [MinVersion=1] int32 flags@4;
 };
 
+// Next version: 2
+// Next id: 1
+[Stable]
+struct InputMethod {
+  string xkb_layout@0;
+};
+
 // This interface is implemented by Ash-Chrome.
 // It enables tests in Lacros-Chrome to send commands as an input method.
-// Next version: 8
-// Next method id: 9
+// By default, this changes Ash to use a US keyboard layout, but this can be
+// changed with `InstallAndSwitchToInputMethod` during a test.
+// Next version: 9
+// Next method id: 10
 [Stable, Uuid="c214f4f5-c583-44d1-9547-bb2456d9e70b"]
 interface InputMethodTestInterface {
   // Calls the callback when the input method has focused on some input field.
@@ -236,13 +251,27 @@ interface InputMethodTestInterface {
   // Calls `ash::InputMethodAsh::DeleteSurroundingText`.
   [MinVersion=7] DeleteSurroundingText@8(uint32 length_before_selection,
                                          uint32 length_after_selection) => ();
+
+  // Installs a new input method `input_method` in Ash and switches to it.
+  [MinVersion=8] InstallAndSwitchToInputMethod@9(InputMethod input_method)
+      => ();
+};
+
+// Types of accessibility features in Ash that Lacros needs to be able
+// to set for testing.
+[Stable, Extensible]
+enum AssistiveTechnologyType {
+  [Default] kUnknown = 0,
+  kChromeVox = 1,
+  kSelectToSpeak = 2,
+  kSwitchAccess = 3,
 };
 
 // This interface is implemented by Ash-Chrome.
 // This interface provides tests a mechanism to mutate or query ash.
 // In the future, this interface may merge with an automation or a11y interface.
-// Next version: 25
-// Next method id: 37
+// Next version: 28
+// Next method id: 41
 [Stable, Uuid="1f93f9d7-e466-466c-a675-c21b48cf30d3"]
 interface TestController {
   // Clicks the middle of the views element identified by |element_name|.
@@ -447,4 +476,18 @@ interface TestController {
   [MinVersion=25]
   IsSavedDeskStorageReady@37() =>(bool is_saved_desk_storage_ready);
 
+  // Sets enabled state for the given Accessibility feature.
+  [MinVersion=26]
+  SetAssistiveTechnologyEnabled@38(AssistiveTechnologyType at_type,
+      bool enabled);
+
+  // Gets an app's shelf attributes.
+  [MinVersion=27]
+  GetAppListItemAttributes@39(string item_id)
+      => (AppListItemAttributes attributes);
+
+  // Sets an app's shelf attributes.
+  [MinVersion=27]
+  SetAppListItemAttributes@40(string item_id,
+                              AppListItemAttributes attributes) => ();
 };

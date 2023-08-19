@@ -12,21 +12,7 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestKioskBrowserProxy} from './test_kiosk_browser_proxy.js';
 
-const extension_kiosk_mode_tests = {
-  suiteName: 'kioskModeTests',
-  TestNames: {
-    AddButton: 'AddButton',
-    AddError: 'AddError',
-    AutoLaunch: 'AutoLaunch',
-    Bailout: 'Bailout',
-    Layout: 'Layout',
-    Updated: 'Updated',
-  },
-};
-
-Object.assign(window, {extension_kiosk_mode_tests});
-
-suite(extension_kiosk_mode_tests.suiteName, function() {
+suite('KioskModeTests', function() {
   let browserProxy: TestKioskBrowserProxy;
 
   let dialog: ExtensionsKioskDialogElement;
@@ -85,7 +71,7 @@ suite(extension_kiosk_mode_tests.suiteName, function() {
     return initPage();
   });
 
-  test(extension_kiosk_mode_tests.TestNames.Layout, async function() {
+  test('Layout', async function() {
     const apps = basicApps.slice(0);
     apps[1]!.autoLaunch = true;
     apps[1]!.isLoading = true;
@@ -114,32 +100,31 @@ suite(extension_kiosk_mode_tests.suiteName, function() {
     assertEquals(appId, basicApps[0]!.id);
   });
 
-  test(
-      extension_kiosk_mode_tests.TestNames.AutoLaunch, async function() {
-        const apps = basicApps.slice(0);
-        apps[1]!.autoLaunch = true;
-        setAppSettings({apps: apps, hasAutoLaunchApp: true});
-        setInitialSettings({autoLaunchEnabled: true});
+  test('AutoLaunch', async function() {
+    const apps = basicApps.slice(0);
+    apps[1]!.autoLaunch = true;
+    setAppSettings({apps: apps, hasAutoLaunchApp: true});
+    setInitialSettings({autoLaunchEnabled: true});
 
-        await initPage();
+    await initPage();
 
-        const buttons: NodeListOf<HTMLElement> =
-            dialog.shadowRoot!.querySelectorAll<HTMLElement>(
-                '.list-item cr-button');
-        // Has permission to edit auto-launch so buttons should be seen.
-        assertFalse(buttons[0]!.hidden);
-        assertFalse(buttons[1]!.hidden);
+    const buttons: NodeListOf<HTMLElement> =
+        dialog.shadowRoot!.querySelectorAll<HTMLElement>(
+            '.list-item cr-button');
+    // Has permission to edit auto-launch so buttons should be seen.
+    assertFalse(buttons[0]!.hidden);
+    assertFalse(buttons[1]!.hidden);
 
-        buttons[0]!.click();
-        let appId = await browserProxy.whenCalled('enableKioskAutoLaunch');
-        assertEquals(appId, basicApps[0]!.id);
+    buttons[0]!.click();
+    let appId = await browserProxy.whenCalled('enableKioskAutoLaunch');
+    assertEquals(appId, basicApps[0]!.id);
 
-        buttons[1]!.click();
-        appId = await browserProxy.whenCalled('disableKioskAutoLaunch');
-        assertEquals(appId, basicApps[1]!.id);
-      });
+    buttons[1]!.click();
+    appId = await browserProxy.whenCalled('disableKioskAutoLaunch');
+    assertEquals(appId, basicApps[1]!.id);
+  });
 
-  test(extension_kiosk_mode_tests.TestNames.Bailout, async function() {
+  test('Bailout', async function() {
     const apps = basicApps.slice(0);
     apps[1]!.autoLaunch = true;
     setAppSettings({apps: apps, hasAutoLaunchApp: true});
@@ -191,7 +176,7 @@ suite(extension_kiosk_mode_tests.suiteName, function() {
     assertFalse(disabled);
   });
 
-  test(extension_kiosk_mode_tests.TestNames.AddButton, async function() {
+  test('AddButton', async function() {
     const addButton = dialog.$.addButton;
     assertTrue(!!addButton);
     assertTrue(addButton.disabled);
@@ -205,7 +190,7 @@ suite(extension_kiosk_mode_tests.suiteName, function() {
     assertEquals(appId, 'blah');
   });
 
-  test(extension_kiosk_mode_tests.TestNames.Updated, function() {
+  test('Updated', function() {
     const items =
         dialog.shadowRoot!.querySelectorAll<HTMLElement>('.list-item');
     assertTrue(items[0]!.textContent!.includes(basicApps[0]!.name));
@@ -224,7 +209,7 @@ suite(extension_kiosk_mode_tests.suiteName, function() {
     assertTrue(items[0]!.textContent!.includes(newName));
   });
 
-  test(extension_kiosk_mode_tests.TestNames.AddError, function() {
+  test('AddError', function() {
     const addInput = dialog.$.addInput;
 
     assertFalse(!!addInput.invalid);

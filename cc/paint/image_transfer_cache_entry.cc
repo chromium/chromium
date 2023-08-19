@@ -29,6 +29,7 @@
 #include "third_party/skia/include/gpu/graphite/Recorder.h"
 #include "ui/gfx/color_conversion_sk_filter_cache.h"
 #include "ui/gfx/hdr_metadata.h"
+#include "ui/gfx/mojom/hdr_metadata.mojom.h"
 
 namespace cc {
 namespace {
@@ -82,9 +83,14 @@ sk_sp<SkImage> MakeYUVImageFromUploadedPlanes(
   DCHECK_LE(plane_images.size(),
             base::checked_cast<size_t>(SkYUVAInfo::kMaxPlanes));
 
-  // TODO(crbug.com/1443065): Implement YUV image support.
   if (graphite_recorder) {
-    return plane_images[0];
+    sk_sp<SkImage> image = SkImages::TextureFromYUVAImages(
+        graphite_recorder, yuva_info, plane_images, image_color_space);
+    if (!image) {
+      DLOG(ERROR) << "Could not create YUV image";
+      return nullptr;
+    }
+    return image;
   }
 
   std::array<GrBackendTexture, SkYUVAInfo::kMaxPlanes> plane_backend_textures;
@@ -263,19 +269,8 @@ size_t SafeSizeForTargetColorParams(
     // bool for whether or not there is HDR metadata.
     target_color_params_size += PaintOpWriter::SerializedSize<bool>();
     if (auto& hdr_metadata = target_color_params->hdr_metadata) {
-      // The minimum and maximum luminance.
-      target_color_params_size += PaintOpWriter::SerializedSize(
-          hdr_metadata->cta_861_3.max_content_light_level);
-      target_color_params_size += PaintOpWriter::SerializedSize(
-          hdr_metadata->cta_861_3.max_frame_average_light_level);
-      // The x and y coordinates for primaries and white point.
-      target_color_params_size += PaintOpWriter::SerializedSizeOfElements(
-          &hdr_metadata->smpte_st_2086.primaries.fRX, 4 * 2);
-      // The CLL and FALL
-      target_color_params_size += PaintOpWriter::SerializedSize(
-          hdr_metadata->smpte_st_2086.luminance_max);
-      target_color_params_size += PaintOpWriter::SerializedSize(
-          hdr_metadata->smpte_st_2086.luminance_min);
+      target_color_params_size +=
+          PaintOpWriter::SerializedSize(hdr_metadata.value());
     }
   }
   return target_color_params_size;
@@ -295,23 +290,7 @@ void WriteTargetColorParams(
     const bool has_hdr_metadata = !!target_color_params->hdr_metadata;
     writer.Write(has_hdr_metadata);
     if (target_color_params->hdr_metadata) {
-      const auto& hdr_metadata = target_color_params->hdr_metadata;
-
-      const auto& cta_861_3 = hdr_metadata->cta_861_3;
-      writer.Write(cta_861_3.max_content_light_level);
-      writer.Write(cta_861_3.max_frame_average_light_level);
-
-      const auto& smpte_st_2086 = hdr_metadata->smpte_st_2086;
-      writer.Write(smpte_st_2086.primaries.fRX);
-      writer.Write(smpte_st_2086.primaries.fRY);
-      writer.Write(smpte_st_2086.primaries.fGX);
-      writer.Write(smpte_st_2086.primaries.fGY);
-      writer.Write(smpte_st_2086.primaries.fBX);
-      writer.Write(smpte_st_2086.primaries.fBY);
-      writer.Write(smpte_st_2086.primaries.fWX);
-      writer.Write(smpte_st_2086.primaries.fWY);
-      writer.Write(smpte_st_2086.luminance_max);
-      writer.Write(smpte_st_2086.luminance_min);
+      writer.Write(target_color_params->hdr_metadata.value());
     }
   }
 }
@@ -341,29 +320,8 @@ bool ReadTargetColorParams(
   reader.Read(&has_hdr_metadata);
   if (has_hdr_metadata) {
     gfx::HDRMetadata hdr_metadata;
-    unsigned max_content_light_level = 0;
-    unsigned max_frame_average_light_level = 0;
-    reader.Read(&max_content_light_level);
-    reader.Read(&max_frame_average_light_level);
-
-    SkColorSpacePrimaries primaries = SkNamedPrimariesExt::kInvalid;
-    float luminance_max = 0;
-    float luminance_min = 0;
-    reader.Read(&primaries.fRX);
-    reader.Read(&primaries.fRY);
-    reader.Read(&primaries.fGX);
-    reader.Read(&primaries.fGY);
-    reader.Read(&primaries.fBX);
-    reader.Read(&primaries.fBY);
-    reader.Read(&primaries.fWX);
-    reader.Read(&primaries.fWY);
-    reader.Read(&luminance_max);
-    reader.Read(&luminance_min);
-
-    target_color_params->hdr_metadata = gfx::HDRMetadata(
-        gfx::HdrMetadataSmpteSt2086(primaries, luminance_max, luminance_min),
-        gfx::HdrMetadataCta861_3(max_content_light_level,
-                                 max_frame_average_light_level));
+    reader.Read(&hdr_metadata);
+    target_color_params->hdr_metadata = hdr_metadata;
   }
   return true;
 }
@@ -490,14 +448,21 @@ sk_sp<SkImage> ReadImage(
             gr_context, plane,
             mip_mapped_for_upload ? GrMipMapped::kYes : GrMipMapped::kNo,
             skgpu::Budgeted::kNo);
-        // Flush the pending upload (no-op if image is null).
+        // Uploading pixels is a heavy operation that might take long and lead
+        // to yields to higher priority scheduler sequences. To ensure upload is
+        // done, perform flush for Ganesh in DDL mode (no-op if image is null).
         SkImages::GetBackendTextureFromImage(plane, /*outTexture=*/nullptr,
                                              /*flushPendingGrContextIO=*/true);
       } else {
         CHECK(graphite_recorder);
         SkImage::RequiredProperties props{.fMipmapped = mip_mapped_for_upload};
+        // Graphite is like Ganesh in DDL mode but Graphite has lower CPU
+        // overhead with modern APIs leading to lesser scheduling concerns.
+        // Also, eventually we want to move tile raster off the GPU main thread.
+        // Based on these reasons, its okay to not flush for Graphite here.
+        // TODO(crbug.com/1463790): Revisit flushes for Graphite here if yield
+        // to scheduler is needed.
         plane = SkImages::TextureFromImage(graphite_recorder, plane, props);
-        // TODO(crbug.com/1434141): Should we flush the graphite recorder here?
       }
       if (!plane) {
         DLOG(ERROR) << "Failed to upload plane pixmap to texture image";
@@ -797,24 +762,21 @@ bool ServiceImageTransferCacheEntry::Deserialize(
 
     // TODO(https://crbug.com/1286088): Pass a shared cache as a parameter.
     gfx::ColorConversionSkFilterCache cache;
-    if (graphite_recorder_) {
-      // TODO(crbug.com/1443068): Add color conversion support for graphite.
-      NOTIMPLEMENTED_LOG_ONCE();
+    // Allow a nullptr context for testing using the software renderer.
+    if (has_gainmap) {
+      image_ = cache.ApplyGainmap(
+          image_, gainmap_image, gainmap_info,
+          target_color_params->hdr_max_luminance_relative,
+          image_->isTextureBacked() ? gr_context_ : nullptr,
+          image_->isTextureBacked() ? graphite_recorder_ : nullptr);
     } else {
-      // Allow a nullptr context for testing using the software renderer.
-      if (has_gainmap) {
-        image_ = cache.ApplyGainmap(
-            image_, gainmap_image, gainmap_info,
-            target_color_params->hdr_max_luminance_relative,
-            image_->isTextureBacked() ? gr_context_ : nullptr);
-      } else {
-        image_ = cache.ConvertImage(
-            image_, target_color_space, target_color_params->hdr_metadata,
-            target_color_params->sdr_max_luminance_nits,
-            target_color_params->hdr_max_luminance_relative,
-            target_color_params->enable_tone_mapping,
-            image_->isTextureBacked() ? gr_context_ : nullptr);
-      }
+      image_ = cache.ConvertImage(
+          image_, target_color_space, target_color_params->hdr_metadata,
+          target_color_params->sdr_max_luminance_nits,
+          target_color_params->hdr_max_luminance_relative,
+          target_color_params->enable_tone_mapping,
+          image_->isTextureBacked() ? gr_context_ : nullptr,
+          image_->isTextureBacked() ? graphite_recorder_ : nullptr);
     }
 
     if (!image_) {

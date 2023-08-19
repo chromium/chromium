@@ -49,9 +49,37 @@ absl_cc_library(
   SRCS
     "log_severity.cc"
   DEPS
+    absl::config
     absl::core_headers
   COPTS
     ${ABSL_DEFAULT_COPTS}
+)
+
+absl_cc_library(
+  NAME
+    nullability
+  HDRS
+    "nullability.h"
+  SRCS
+    "internal/nullability_impl.h"
+  DEPS
+    absl::core_headers
+    absl::type_traits
+  COPTS
+    ${ABSL_DEFAULT_COPTS}
+)
+
+absl_cc_test(
+  NAME
+    nullability_test
+  SRCS
+    "nullability_test.cc"
+  COPTS
+    ${ABSL_TEST_COPTS}
+  DEPS
+    absl::core_headers
+    absl::nullability
+    GTest::gtest_main
 )
 
 # Internal-only target, do not depend on directly.

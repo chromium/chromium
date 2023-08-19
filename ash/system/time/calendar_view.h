@@ -14,7 +14,7 @@
 #include "ash/system/time/calendar_model.h"
 #include "ash/system/time/calendar_up_next_view.h"
 #include "ash/system/time/calendar_view_controller.h"
-#include "ash/system/tray/tray_detailed_view.h"
+#include "ash/system/unified/glanceable_tray_child_bubble.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
@@ -75,13 +75,12 @@ class CalendarHeaderView : public views::View {
 // This view displays a scrollable calendar.
 class ASH_EXPORT CalendarView : public CalendarModel::Observer,
                                 public CalendarViewController::Observer,
-                                public TrayDetailedView,
+                                public GlanceableTrayChildBubble,
                                 public views::ViewObserver {
  public:
   METADATA_HEADER(CalendarView);
 
-  CalendarView(DetailedViewDelegate* delegate,
-               UnifiedSystemTrayController* controller);
+  explicit CalendarView(DetailedViewDelegate* delegate);
   CalendarView(const CalendarView& other) = delete;
   CalendarView& operator=(const CalendarView& other) = delete;
   ~CalendarView() override;
@@ -116,6 +115,15 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   }
 
   CalendarUpNextView* up_next_view() { return up_next_view_; }
+  CalendarEventListView* event_list_view() { return event_list_view_; }
+
+  // Sets the bounds of the container of the `up_next_view_` and
+  // `event_list_view_` to be flush with the bottom of the scroll view. Only the
+  // position will be animated, so give the view its final bounds. The
+  // `event_list_view_open` need to be passed in, because under some cases, the
+  // `event_list_view_` is still there but we want to use the `up_next_view_`'s
+  // bounds.
+  void SetCalendarSlidingSurfaceBounds(bool event_list_view_open);
 
  private:
   // The header of each month view which shows the month's name. If the year of
@@ -157,7 +165,8 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
       raw_ptr<ScrollContentsView, ExperimentalAsh> content_view_;
     };
 
-    const raw_ptr<CalendarViewController, ExperimentalAsh> controller_;
+    const raw_ptr<CalendarViewController, DanglingUntriaged | ExperimentalAsh>
+        controller_;
     StylusEventHandler stylus_event_handler_;
 
     // Since we only record metrics once when we scroll through a particular
@@ -172,6 +181,7 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   enum LabelType { PREVIOUS, CURRENT, NEXT, NEXTNEXT };
 
   friend class CalendarViewTest;
+  friend class CalendarViewPixelTest;
   friend class CalendarViewAnimationTest;
 
   // Assigns month views and labels based on the current date on screen.
@@ -330,11 +340,6 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   // shown in `scroll_view_`'s visible window.
   int CalculateFirstFullyVisibleRow();
 
-  // Sets the bounds of the container of the `up_next_view_` and
-  // `event_list_view_` to be flush with the bottom of the scroll view. Only the
-  // position will be animated, so give the view its final bounds.
-  void SetCalendarSlidingSurfaceBounds(bool event_list_view_open);
-
   // Conditionally displays the `up_next_view_`.
   void MaybeShowUpNextView();
 
@@ -364,6 +369,9 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   // that the calendar view can be in.
   void ClipScrollViewHeight(ScrollViewState state_to_change_to);
 
+  // Returns the calculated height of a single visible row.
+  int GetSingleVisibleRowHeight();
+
   // Setters for animation flags.
   void set_should_header_animate(bool should_animate) {
     should_header_animate_ = should_animate;
@@ -371,9 +379,6 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   void set_should_months_animate(bool should_animate) {
     should_months_animate_ = should_animate;
   }
-
-  // Unowned.
-  raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> controller_;
 
   std::unique_ptr<CalendarViewController> calendar_view_controller_;
 
@@ -386,14 +391,22 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
 
   // The following is owned by `CalendarView`.
   raw_ptr<views::ScrollView, ExperimentalAsh> scroll_view_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> current_label_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> previous_label_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> next_label_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> next_next_label_ = nullptr;
-  raw_ptr<CalendarMonthView, ExperimentalAsh> previous_month_ = nullptr;
-  raw_ptr<CalendarMonthView, ExperimentalAsh> current_month_ = nullptr;
-  raw_ptr<CalendarMonthView, ExperimentalAsh> next_month_ = nullptr;
-  raw_ptr<CalendarMonthView, ExperimentalAsh> next_next_month_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> current_label_ =
+      nullptr;
+  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> previous_label_ =
+      nullptr;
+  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> next_label_ =
+      nullptr;
+  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> next_next_label_ =
+      nullptr;
+  raw_ptr<CalendarMonthView, DanglingUntriaged | ExperimentalAsh>
+      previous_month_ = nullptr;
+  raw_ptr<CalendarMonthView, DanglingUntriaged | ExperimentalAsh>
+      current_month_ = nullptr;
+  raw_ptr<CalendarMonthView, DanglingUntriaged | ExperimentalAsh> next_month_ =
+      nullptr;
+  raw_ptr<CalendarMonthView, DanglingUntriaged | ExperimentalAsh>
+      next_next_month_ = nullptr;
   raw_ptr<CalendarHeaderView, ExperimentalAsh> header_ = nullptr;
   // Temporary header, used for animations.
   raw_ptr<CalendarHeaderView, ExperimentalAsh> temp_header_ = nullptr;
@@ -403,9 +416,11 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   raw_ptr<IconButton, ExperimentalAsh> up_button_ = nullptr;
   raw_ptr<IconButton, ExperimentalAsh> down_button_ = nullptr;
   raw_ptr<views::View, ExperimentalAsh> calendar_sliding_surface_ = nullptr;
-  raw_ptr<CalendarEventListView, ExperimentalAsh> event_list_view_ = nullptr;
+  raw_ptr<CalendarEventListView, DanglingUntriaged | ExperimentalAsh>
+      event_list_view_ = nullptr;
   // Owned by CalendarView.
-  raw_ptr<CalendarUpNextView, ExperimentalAsh> up_next_view_ = nullptr;
+  raw_ptr<CalendarUpNextView, DanglingUntriaged | ExperimentalAsh>
+      up_next_view_ = nullptr;
   std::map<base::Time, CalendarModel::FetchingStatus> on_screen_month_;
   raw_ptr<CalendarModel, ExperimentalAsh> calendar_model_ =
       Shell::Get()->system_tray_model()->calendar_model();

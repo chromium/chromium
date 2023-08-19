@@ -37,6 +37,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/google/core/common/google_util.h"
 #include "components/navigation_metrics/navigation_metrics.h"
 #include "components/profile_metrics/browser_profile_type.h"
@@ -60,6 +61,7 @@
 #include "extensions/common/constants.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "url/gurl.h"
@@ -189,6 +191,8 @@ void SearchTabHelper::OnTabActivated() {
 
   if (search::IsInstantNTP(web_contents()) && instant_service_)
     instant_service_->OnNewTabPageOpened();
+
+  CloseNTPCustomizeChromeFeaturePromo();
 }
 
 void SearchTabHelper::OnTabDeactivated() {
@@ -218,6 +222,8 @@ void SearchTabHelper::DidStartNavigation(
           entry, l10n_util::GetStringUTF16(IDS_NEW_TAB_TITLE));
     }
   }
+
+  CloseNTPCustomizeChromeFeaturePromo();
 }
 
 void SearchTabHelper::TitleWasSet(content::NavigationEntry* entry) {
@@ -319,6 +325,22 @@ Profile* SearchTabHelper::profile() const {
 
 bool SearchTabHelper::IsInputInProgress() const {
   return search::IsOmniboxInputInProgress(web_contents());
+}
+
+void SearchTabHelper::CloseNTPCustomizeChromeFeaturePromo() {
+  const base::Feature& customize_chrome_feature =
+      features::IsChromeRefresh2023() && features::IsChromeWebuiRefresh2023()
+          ? feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature
+          : feature_engagement::kIPHDesktopCustomizeChromeFeature;
+  if (web_contents()->GetController().GetVisibleEntry()->GetURL() ==
+      GURL(chrome::kChromeUINewTabPageURL)) {
+    return;
+  }
+  auto* browser_window =
+      BrowserWindow::FindBrowserWindowWithWebContents(web_contents());
+  if (browser_window) {
+    browser_window->CloseFeaturePromo(customize_chrome_feature);
+  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SearchTabHelper);

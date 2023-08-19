@@ -18,7 +18,6 @@ import android.widget.LinearLayout;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -41,6 +40,8 @@ import org.chromium.chrome.browser.night_mode.ThemeType;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.settings.BlankUiTestActivitySettingsTestRule;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
@@ -55,7 +56,7 @@ import org.chromium.ui.test.util.DisableAnimationsTestRule;
  * Tests for ThemeSettingsFragment.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
-@Features.DisableFeatures(DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING)
+@DisableFeatures(DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING)
 public class ThemeSettingsFragmentTest {
     @ClassRule
     public static final DisableAnimationsTestRule disableAnimationsRule =
@@ -108,14 +109,6 @@ public class ThemeSettingsFragmentTest {
                         any(), eq(ContentSettingsType.AUTO_DARK_WEB_CONTENT), anyBoolean());
     }
 
-    @After
-    public void tearDown() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            SharedPreferencesManager.getInstance().removeKey(UI_THEME_SETTING);
-            TrackerFactory.setTrackerForTests(null);
-        });
-    }
-
     @Test
     @SmallTest
     @Feature({"Themes"})
@@ -162,7 +155,7 @@ public class ThemeSettingsFragmentTest {
     @Test
     @SmallTest
     @Feature({"Themes"})
-    @Features.EnableFeatures(DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING)
+    @EnableFeatures(DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING)
     public void testDarkenWebsiteButton() {
         launchThemeSettings(ThemeSettingsEntry.SETTINGS);
         TestThreadUtils.runOnUiThreadBlocking(() -> {

@@ -52,7 +52,7 @@ class OpenTabsUIDelegateImpl : public OpenTabsUIDelegate {
 
  private:
   const raw_ptr<const SyncSessionsClient> sessions_client_;
-  raw_ptr<const SyncedSessionTracker> session_tracker_;
+  const raw_ptr<const SyncedSessionTracker> session_tracker_;
   DeleteForeignSessionCallback delete_foreign_session_cb_;
 };
 

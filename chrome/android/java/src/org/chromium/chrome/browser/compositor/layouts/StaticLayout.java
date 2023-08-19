@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.scene_layer.StaticTabSceneLayer;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.CompositorModelChangeProcessor;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -40,7 +41,6 @@ import org.chromium.ui.resources.ResourceManager;
 import org.chromium.url.GURL;
 
 import java.util.Collections;
-import java.util.List;
 
 // TODO(meiliang): Rename to StaticLayoutMediator.
 /**
@@ -70,7 +70,8 @@ public class StaticLayout extends Layout {
             animator.addListener(new CancelAwareAnimatorListener() {
                 @Override
                 public void onEnd(Animator animation) {
-                    updateVisibleIdsLiveLayerOnly();
+                    updateVisibleIdsCheckingLiveLayer(mModel.get(LayoutTab.TAB_ID),
+                            mModel.get(LayoutTab.CAN_USE_LIVE_TEXTURE));
                 }
             });
             animator.start();
@@ -90,14 +91,11 @@ public class StaticLayout extends Layout {
     private final Handler mHandler;
     private boolean mUnstalling;
 
-    private TabModelSelector mTabModelSelector;
     private TabModelSelectorTabModelObserver mTabModelSelectorTabModelObserver;
     private TabModelSelectorTabObserver mTabModelSelectorTabObserver;
 
     private BrowserControlsStateProvider mBrowserControlsStateProvider;
     private BrowserControlsStateProvider.Observer mBrowserControlsStateProviderObserver;
-
-    private TabContentManager mTabContentManager;
 
     private final CompositorAnimationHandler mAnimationHandler;
     private final Supplier<TopUiThemeColorProvider> mTopUiThemeColorProvider;
@@ -145,11 +143,8 @@ public class StaticLayout extends Layout {
         mHandlesTabLifecycles = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
         mViewHost = viewHost;
         mRequestSupplier = requestSupplier;
-        assert tabContentManager != null;
-        mTabContentManager = tabContentManager;
 
-        assert tabModelSelector != null;
-        setTabModelSelector(tabModelSelector);
+        setTabModelSelector(tabModelSelector, tabContentManager);
 
         mModel = new PropertyModel.Builder(LayoutTab.ALL_KEYS)
                          .with(LayoutTab.TAB_ID, Tab.INVALID_TAB_ID)
@@ -160,6 +155,7 @@ public class StaticLayout extends Layout {
                          .with(LayoutTab.RENDER_Y, 0.0f)
                          .with(LayoutTab.SATURATION, 1.0f)
                          .with(LayoutTab.STATIC_TO_VIEW_BLEND, 0.0f)
+                         .with(LayoutTab.IS_ACTIVE_LAYOUT_SUPPLIER, this::isActive)
                          .build();
 
         mAnimationHandler = updateHost.getAnimationHandler();
@@ -190,17 +186,20 @@ public class StaticLayout extends Layout {
         } else {
             mSceneLayer = new StaticTabSceneLayer();
         }
-        mSceneLayer.setTabContentManager(mTabContentManager);
+        mSceneLayer.setTabContentManager(tabContentManager);
 
         mMcp = CompositorModelChangeProcessor.create(
                 mModel, mSceneLayer, StaticTabSceneLayer::bind, mRequestSupplier);
     }
 
-    private void setTabModelSelector(TabModelSelector tabModelSelector) {
+    @Override
+    public void setTabModelSelector(
+            TabModelSelector tabModelSelector, TabContentManager tabContentManager) {
         assert tabModelSelector != null;
+        assert tabContentManager != null;
         assert mTabModelSelector == null : "The TabModelSelector should set at most once";
+        super.setTabModelSelector(tabModelSelector, tabContentManager);
 
-        mTabModelSelector = tabModelSelector;
         // TODO(crbug.com/1070281): Investigating to use ActivityTabProvider instead.
         mTabModelSelectorTabModelObserver = new TabModelSelectorTabModelObserver(tabModelSelector) {
             @Override
@@ -223,23 +222,37 @@ public class StaticLayout extends Layout {
                 if (mModel.get(LayoutTab.TAB_ID) != tab.getId()) {
                     setStaticTab(tab);
                 } else {
-                    updateStaticTab(tab);
+                    updateStaticTab(tab, /*skipUpdateVisibleIds=*/false);
                 }
             }
 
             @Override
+            public void onDestroyed(Tab tab) {
+                if (mModel.get(LayoutTab.TAB_ID) != tab.getId()) return;
+
+                mModel.set(LayoutTab.TAB_ID, Tab.INVALID_TAB_ID);
+            }
+
+            @Override
+            public void onTabUnregistered(Tab tab) {
+                if (mModel.get(LayoutTab.TAB_ID) != tab.getId()) return;
+
+                mModel.set(LayoutTab.TAB_ID, Tab.INVALID_TAB_ID);
+            }
+
+            @Override
             public void onContentChanged(Tab tab) {
-                updateStaticTab(tab);
+                updateStaticTab(tab, /*skipUpdateVisibleIds=*/false);
             }
 
             @Override
             public void onBackgroundColorChanged(Tab tab, int color) {
-                updateStaticTab(tab);
+                updateStaticTab(tab, /*skipUpdateVisibleIds=*/false);
             }
 
             @Override
             public void onDidChangeThemeColor(Tab tab, int color) {
-                updateStaticTab(tab);
+                updateStaticTab(tab, /*skipUpdateVisibleIds=*/false);
             }
         };
     }
@@ -280,17 +293,17 @@ public class StaticLayout extends Layout {
 
     @Override
     public void doneHiding() {
-        super.doneHiding();
         mIsActive = false;
+        mModel.set(LayoutTab.TAB_ID, Tab.INVALID_TAB_ID);
+
+        // Call super last because it might re-show this layout. If we do any work after
+        // super.doneHiding() the layout might become unexpectedly inactive or have an
+        // incorrect tab id. See crbug/1468214.
+        super.doneHiding();
     }
 
     @Override
     public void onTabSelecting(long time, int id) {
-        // Intentional no-op.
-    }
-
-    @Override
-    public void setTabModelSelector(TabModelSelector modelSelector, TabContentManager manager) {
         // Intentional no-op.
     }
 
@@ -309,27 +322,37 @@ public class StaticLayout extends Layout {
     }
 
     private void requestFocus(Tab tab) {
-        // TODO(crbug/1395495): Investigate removing this behavior. It may no longer be relevant.
+        // TODO(crbug/1395495): Investigating guarded removal of this behavior (requesting focus on
+        // a tab) since it may no longer be relevant.
+        if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.AVOID_SELECTED_TAB_FOCUS_ON_LAYOUT_DONE_SHOWING)) {
+            return;
+        }
+
         if (mIsActive && tab.getView() != null) tab.getView().requestFocus();
     }
 
-    private void updateVisibleIdsLiveLayerOnly() {
+    private void updateVisibleIdsCheckingLiveLayer(int tabId, boolean useLiveTexture) {
+        // May be called when inactive. Prevent this from updating until the layout is shown.
+        if (!isActive()) return;
+
         // Check if we can use the live texture as frozen or native pages don't support live layer.
-        if (mModel.get(LayoutTab.CAN_USE_LIVE_TEXTURE)) {
-            updateVisibleIds(Collections.emptyList(), mModel.get(LayoutTab.TAB_ID));
+        if (useLiveTexture) {
+            updateCacheVisibleIdsAndPrimary(Collections.emptyList(), tabId);
         } else {
-            updateVisibleIds();
+            updateCacheVisibleIdsAndPrimary(Collections.singletonList(tabId), tabId);
         }
     }
 
-    private void updateVisibleIds() {
-        final int tabId = mModel.get(LayoutTab.TAB_ID);
-        updateVisibleIds(Collections.singletonList(tabId), tabId);
-    }
+    private void updateVisibleIdsFromTab(Tab tab) {
+        // May be called when inactive. Prevent this from updating until the layout is shown.
+        if (!isActive()) return;
 
-    private void updateVisibleIds(List<Integer> tabIds, int primaryTabId) {
-        if (mTabContentManager != null) {
-            mTabContentManager.updateVisibleIds(tabIds, primaryTabId);
+        final int tabId = tab.getId();
+        if (shouldStall(tab)) {
+            updateCacheVisibleIdsAndPrimary(Collections.singletonList(tabId), tabId);
+        } else {
+            updateVisibleIdsCheckingLiveLayer(tabId, canUseLiveTexture(tab));
         }
     }
 
@@ -337,10 +360,12 @@ public class StaticLayout extends Layout {
         assert tab != null;
 
         if (mModel.get(LayoutTab.TAB_ID) == tab.getId() && !mModel.get(LayoutTab.SHOULD_STALL)) {
+            updateVisibleIdsCheckingLiveLayer(tab.getId(), canUseLiveTexture(tab));
             setPostHideState();
-            updateVisibleIdsLiveLayerOnly();
             return;
         }
+
+        updateVisibleIdsFromTab(tab);
 
         mModel.set(LayoutTab.TAB_ID, tab.getId());
         mModel.set(LayoutTab.IS_INCOGNITO, tab.isIncognito());
@@ -349,7 +374,7 @@ public class StaticLayout extends Layout {
         mModel.set(LayoutTab.MAX_CONTENT_WIDTH, mViewHost.getWidth() * mPxToDp);
         mModel.set(LayoutTab.MAX_CONTENT_HEIGHT, mViewHost.getHeight() * mPxToDp);
 
-        updateStaticTab(tab);
+        updateStaticTab(tab, /*skipUpdateVisibleIds=*/true);
 
         if (mModel.get(LayoutTab.SHOULD_STALL)) {
             setPreHideState();
@@ -359,31 +384,19 @@ public class StaticLayout extends Layout {
         }
     }
 
-    private void updateStaticTab(Tab tab) {
+    private void updateStaticTab(Tab tab, boolean skipUpdateVisibleIds) {
         if (mModel.get(LayoutTab.TAB_ID) != tab.getId()) return;
+
+        if (!skipUpdateVisibleIds) {
+            updateVisibleIdsFromTab(tab);
+        }
 
         TopUiThemeColorProvider topUiTheme = mTopUiThemeColorProvider.get();
         mModel.set(LayoutTab.BACKGROUND_COLOR, topUiTheme.getBackgroundColor(tab));
         mModel.set(LayoutTab.TOOLBAR_BACKGROUND_COLOR, topUiTheme.getSceneLayerBackground(tab));
         mModel.set(LayoutTab.SHOULD_STALL, shouldStall(tab));
         mModel.set(LayoutTab.TEXT_BOX_BACKGROUND_COLOR, getToolbarTextBoxBackgroundColor(tab));
-
-        GURL url = tab.getUrl();
-        boolean isNativePage =
-                tab.isNativePage() || url.getScheme().equals(UrlConstants.CHROME_NATIVE_SCHEME);
-        boolean canUseLiveTexture =
-                tab.getWebContents() != null && !SadTab.isShowing(tab) && !isNativePage;
-        mModel.set(LayoutTab.CAN_USE_LIVE_TEXTURE, canUseLiveTexture);
-
-        // TODO(crbug/1402843): Move SHOULD_STALL checks inside the updateVisibleId* methods.
-        if (mModel.get(LayoutTab.SHOULD_STALL)) {
-            // TODO(crbug/1402843): if canUseLiveTexture is true it should be possible to use
-            // updateVisibleIdsLiveLayerOnly(). However, this was causing previous content
-            // to show when undoing a tab closure originating from the tab group bottom bar.
-            updateVisibleIds();
-        } else {
-            updateVisibleIdsLiveLayerOnly();
-        }
+        mModel.set(LayoutTab.CAN_USE_LIVE_TEXTURE, canUseLiveTexture(tab));
     }
 
     private int getToolbarTextBoxBackgroundColor(Tab tab) {
@@ -395,7 +408,6 @@ public class StaticLayout extends Layout {
                 mTopUiThemeColorProvider.get().calculateColor(tab, tab.getThemeColor()));
     }
 
-    @VisibleForTesting
     void setTextBoxBackgroundColorForTesting(Integer color) {
         sToolbarTextBoxBackgroundColorForTesting = color;
     }
@@ -404,6 +416,13 @@ public class StaticLayout extends Layout {
     private boolean shouldStall(Tab tab) {
         return (tab.isFrozen() || tab.needsReload())
                 && !NativePage.isNativePageUrl(tab.getUrl(), tab.isIncognito());
+    }
+
+    private boolean canUseLiveTexture(Tab tab) {
+        final GURL url = tab.getUrl();
+        final boolean isNativePage =
+                tab.isNativePage() || url.getScheme().equals(UrlConstants.CHROME_NATIVE_SCHEME);
+        return tab.getWebContents() != null && !SadTab.isShowing(tab) && !isNativePage;
     }
 
     @Override
@@ -477,27 +496,22 @@ public class StaticLayout extends Layout {
         }
     }
 
-    @VisibleForTesting
     PropertyModel getModelForTesting() {
         return mModel;
     }
 
-    @VisibleForTesting
     TabModelSelector getTabModelSelectorForTesting() {
         return mTabModelSelector;
     }
 
-    @VisibleForTesting
     TabContentManager getTabContentManagerForTesting() {
         return mTabContentManager;
     }
 
-    @VisibleForTesting
     BrowserControlsStateProvider getBrowserControlsStateProviderForTesting() {
         return mBrowserControlsStateProvider;
     }
 
-    @VisibleForTesting
     public int getCurrentTabIdForTesting() {
         return mModel.get(LayoutTab.TAB_ID);
     }

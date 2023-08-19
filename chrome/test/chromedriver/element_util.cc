@@ -373,11 +373,10 @@ Status FindElementCommon(int interval_ms,
     Status status = web_view->CallFunction(
         session->GetCurrentFrameId(), script, arguments, &temp);
 
-    // A "Cannot find context" error can occur due to transition from in-process
-    // iFrame to OOPIF. Retry a couple of times.
+    // A NoSuchExecutionContext error can occur due to transition from
+    // in-process iFrame to OOPIF. Retry a couple of times.
     if (status.IsError() &&
-        (status.message().find("Cannot find context") == std::string::npos ||
-         ++context_retry > 2)) {
+        (status.code() != kNoSuchExecutionContext || ++context_retry > 2)) {
       return status;
     }
 

@@ -124,17 +124,20 @@ void SVGAElement::DefaultEventHandler(Event& event) {
         }
       }
 
-      AtomicString target(svg_target_->CurrentValue()->Value());
-      if (target.empty() && FastGetAttribute(xlink_names::kShowAttr) == "new")
-        target = AtomicString("_blank");
-      event.SetDefaultHandled();
-
       if (!GetDocument().GetFrame())
         return;
 
       FrameLoadRequest frame_request(
           GetDocument().domWindow(),
           ResourceRequest(GetDocument().CompleteURL(url)));
+
+      AtomicString target = frame_request.CleanNavigationTarget(
+          AtomicString(svg_target_->CurrentValue()->Value()));
+      if (target.empty() && FastGetAttribute(xlink_names::kShowAttr) == "new") {
+        target = AtomicString("_blank");
+      }
+      event.SetDefaultHandled();
+
       frame_request.SetNavigationPolicy(NavigationPolicyFromEvent(&event));
       frame_request.SetClientRedirectReason(
           ClientNavigationReason::kAnchorClick);
@@ -226,13 +229,11 @@ SVGAnimatedPropertyBase* SVGAElement::PropertyFromAttribute(
   }
 }
 
-void SVGAElement::SynchronizeSVGAttribute(const QualifiedName& name) const {
-  if (name == AnyQName()) {
-    SVGAnimatedPropertyBase* attrs[]{svg_target_.Get()};
-    SynchronizeAllSVGAttributes(attrs);
-  }
-  SVGURIReference::SynchronizeSVGAttribute(name);
-  SVGGraphicsElement::SynchronizeSVGAttribute(name);
+void SVGAElement::SynchronizeAllSVGAttributes() const {
+  SVGAnimatedPropertyBase* attrs[]{svg_target_.Get()};
+  SynchronizeListOfSVGAttributes(attrs);
+  SVGURIReference::SynchronizeAllSVGAttributes();
+  SVGGraphicsElement::SynchronizeAllSVGAttributes();
 }
 
 }  // namespace blink

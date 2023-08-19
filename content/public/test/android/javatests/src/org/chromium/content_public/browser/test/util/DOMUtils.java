@@ -4,6 +4,8 @@
 
 package org.chromium.content_public.browser.test.util;
 
+import static org.hamcrest.CoreMatchers.is;
+
 import android.app.Activity;
 import android.graphics.Rect;
 import android.util.JsonReader;
@@ -20,6 +22,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.content.browser.RenderCoordinatesImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
+import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.WebContents;
 
 import java.io.IOException;
@@ -683,6 +686,48 @@ public class DOMUtils {
     private static String createScriptToClickNode(String nodeId) {
         String script = "document.getElementById('" + nodeId + "').click();";
         return script;
+    }
+
+    /**
+     * Prints the text into the text field node simulating the keyboard input. The node needs to be
+     * focused at first to bring up the keyboard.
+     *
+     * @param webContents The WebContents in which the node lives.
+     * @param inputMethodManagerWrapper The test input method manager wrapper, that will be used for
+     *         inputting.
+     * @param nodeId The id of the text input node.
+     * @param input The text to be entered into the text field.
+     */
+    public static void enterInputIntoTextField(WebContents webContents,
+            TestInputMethodManagerWrapper inputMethodManagerWrapper, String nodeId, String input)
+            throws TimeoutException {
+        Assert.assertTrue(
+                "Input should be a non-empty string", input != null && input.length() > 0);
+        // Click the text field node, so that it would get focus.
+        DOMUtils.clickNode(webContents, nodeId);
+
+        // Wait for the text field to get focused and the virtual keyboard to be activated.
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            try {
+                Criteria.checkThat(DOMUtils.getFocusedNode(webContents), is(nodeId));
+            } catch (TimeoutException e) {
+                throw new CriteriaNotSatisfiedException(e);
+            }
+            Criteria.checkThat(
+                    inputMethodManagerWrapper.isActive(DOMUtils.getContainerView(webContents)),
+                    is(true));
+        });
+
+        int updateSelectionListSize = inputMethodManagerWrapper.getUpdateSelectionList().size();
+        ImeAdapter imeAdapter = WebContentsUtils.getImeAdapter(webContents);
+        // Enter the text.
+        imeAdapter.setComposingTextForTest(input, 1);
+        // Wait for the input to finish. After finishing the input, it will update the selection to
+        // move the cursor to the right position. This indicated that the input has finished.
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            Criteria.checkThat(inputMethodManagerWrapper.getUpdateSelectionList().size(),
+                    is(updateSelectionListSize + 1));
+        });
     }
 
     @NativeMethods

@@ -11,18 +11,20 @@
 #include "base/functional/callback_forward.h"
 #include "base/scoped_multi_source_observation.h"
 #include "chromeos/ash/components/metrics/login_event_recorder.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_observer.h"
 
 class PrefService;
 
+namespace content {
+class RenderFrameHost;
+class WebContents;
+}  // namespace content
+
 namespace ash {
 
 // BootTimesRecorder is used to record times of boot, login, and logout.
-class BootTimesRecorder : public content::NotificationObserver,
-                          public content::RenderWidgetHostObserver {
+class BootTimesRecorder : public content::RenderWidgetHostObserver {
  public:
   BootTimesRecorder();
   BootTimesRecorder(const BootTimesRecorder&) = delete;
@@ -30,6 +32,9 @@ class BootTimesRecorder : public content::NotificationObserver,
   ~BootTimesRecorder() override;
 
   static BootTimesRecorder* Get();
+
+  // Like Get(), but does not create an instance if it doesn't yet exist.
+  static BootTimesRecorder* GetIfCreated();
 
   // TODO(oshima): Deprecate following 3 methods and just use
   // LoginEventRecorder.
@@ -50,13 +55,22 @@ class BootTimesRecorder : public content::NotificationObserver,
   // previous login attempt times.
   void RecordLoginAttempted();
 
-  // content::NotificationObserver implementation.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
   // Records "LoginDone" event.
   void LoginDone(bool is_user_new);
+
+  // Returns whether `LoginDone` has already been called.
+  bool is_login_done() const { return login_done_; }
+
+  // Records "TabLoad-Start" event.
+  void TabLoadStart(content::WebContents* web_contents);
+
+  // Records "TabLoad-End" event.
+  void TabLoadEnd(content::WebContents* web_contents);
+
+  // If needed, updates an observed RenderWidgetHost in response to a
+  // RenderFrameHost swap.
+  void RenderFrameHostChanged(content::RenderFrameHost* old_host,
+                              content::RenderFrameHost* new_host);
 
   // Writes the logout times to a /tmp/logout-times-sent. Unlike login
   // times, we manually call this function for logout times, as we cannot
@@ -90,14 +104,11 @@ class BootTimesRecorder : public content::NotificationObserver,
   // Used to hold the stats at mai().
   LoginEventRecorder::Stats chrome_main_stats_;
 
-  // Used to track notifications for login.
-  content::NotificationRegistrar registrar_;
-  base::AtomicSequenceNumber num_tabs_;
-  bool have_registered_;
-
   base::ScopedMultiSourceObservation<content::RenderWidgetHost,
                                      content::RenderWidgetHostObserver>
       render_widget_host_observations_{this};
+
+  bool login_started_;
 
   bool login_done_;
 

@@ -22,6 +22,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "base/win/win_util.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/win_util.h"
@@ -39,18 +40,12 @@ template <typename Derived,
 class ProxyImplBase {
  public:
   // Releases `impl` on `task_runner_`.
-  static void Destroy(scoped_refptr<Derived>& impl) {
-    scoped_refptr<Derived> this_impl;
-    this_impl.swap(impl);
+  static void Destroy(scoped_refptr<Derived> impl) {
     scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-        this_impl->task_runner_;
-    task_runner->PostTask(FROM_HERE, base::BindOnce(
-                                         [](scoped_refptr<Derived> impl) {
-                                           CHECK(impl);
-                                           impl = nullptr;
-                                         },
-                                         std::move(this_impl)));
-    CHECK(!this_impl);
+        impl->task_runner_;
+    task_runner->PostTask(FROM_HERE,
+                          base::BindOnce([](scoped_refptr<Derived> /*impl*/) {},
+                                         std::move(impl)));
   }
 
  protected:
@@ -58,10 +53,16 @@ class ProxyImplBase {
     DETACH_FROM_SEQUENCE(sequence_checker_);
   }
 
-  ~ProxyImplBase() { VLOG(2) << __func__; }
+  ~ProxyImplBase() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    VLOG(2) << __func__;
+  }
 
   void PostRPCTask(base::OnceClosure task) {
-    task_runner_->PostTask(FROM_HERE, std::move(task));
+    // TODO(crbug.com/1473487): replace with CHECK.
+    task_runner_->PostTask(FROM_HERE, base::BindOnce([] {
+                                        DUMP_WILL_BE_CHECK(IsSTA());
+                                      }).Then(std::move(task)));
   }
 
   HResultOr<Microsoft::WRL::ComPtr<Interface>> CreateInterface() const {
@@ -70,8 +71,8 @@ class ProxyImplBase {
     // Retry creating the object if the call fails. Don't retry if
     // the error is `REGDB_E_CLASSNOTREG` because the error can occur during
     // normal operation and retrying on registration issues does not help.
-    HResultOr<Microsoft::WRL::ComPtr<IUnknown>> server =
-        [](REFCLSID clsid) -> decltype(server) {
+    const auto create_server =
+        [](REFCLSID clsid) -> HResultOr<Microsoft::WRL::ComPtr<IUnknown>> {
       constexpr int kNumTries = 2;
       HRESULT hr = E_FAIL;
       for (int i = 0; i != kNumTries; ++i) {
@@ -83,11 +84,6 @@ class ProxyImplBase {
         }
         VLOG(2) << "::CoCreateInstance failed: "
                 << base::win::WStringFromGUID(clsid) << ": " << std::hex << hr;
-
-        // TODO(crbug.com/1425609) - revert the CL that introduced this logging
-        // after the bug is resolved.
-        LogClsidEntries(clsid);
-
         if (hr == REGDB_E_CLASSNOTREG) {
           return base::unexpected(hr);
         }
@@ -96,15 +92,13 @@ class ProxyImplBase {
         base::PlatformThread::Sleep(kCreateUpdaterInstanceDelay);
       }
       return base::unexpected(hr);
-    }(Derived::GetClassGuid(scope_));
-
-    if (!server.has_value()) {
-      return base::unexpected(server.error());
-    }
+    };
+    ASSIGN_OR_RETURN(Microsoft::WRL::ComPtr<IUnknown> server,
+                     create_server(Derived::GetClassGuid(scope_)));
 
     Microsoft::WRL::ComPtr<Interface> server_interface;
     REFIID iid = IsSystemInstall(scope_) ? iid_system : iid_user;
-    HRESULT hr = server->CopyTo(iid, IID_PPV_ARGS_Helper(&server_interface));
+    HRESULT hr = server.CopyTo(iid, IID_PPV_ARGS_Helper(&server_interface));
     if (FAILED(hr)) {
       VLOG(2) << "Failed to query the interface: "
               << base::win::WStringFromGUID(iid) << ": " << std::hex << hr;
@@ -126,13 +120,13 @@ class ProxyImplBase {
     return interface_.value();
   }
 
-  bool ConnectToServer() {
+  HRESULT ConnectToServer() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (interface_.has_value()) {
-      return true;
+      return S_OK;
     }
     interface_ = CreateInterface();
-    return interface_.has_value();
+    return interface_.has_value() ? S_OK : interface_.error();
   }
 
   // Bound to the `task_runner_` sequence.

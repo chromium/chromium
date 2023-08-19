@@ -93,7 +93,7 @@ class DnsResolutionRoutineTest : public ::testing::Test {
   session_manager::SessionManager session_manager_;
   std::unique_ptr<FakeNetworkContext> fake_network_context_;
   // Unowned
-  raw_ptr<Profile, ExperimentalAsh> test_profile_;
+  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> test_profile_;
   TestingProfileManager profile_manager_;
   std::unique_ptr<DnsResolutionRoutine> dns_resolution_routine_;
   base::WeakPtrFactory<DnsResolutionRoutineTest> weak_factory_{this};

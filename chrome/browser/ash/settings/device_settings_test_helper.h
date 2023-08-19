@@ -25,7 +25,7 @@ class TestingProfile;
 namespace ash {
 
 // Wraps the singleton device settings and initializes it to the point where it
-// reports OWNERSHIP_NONE for the ownership status.
+// reports OwnershipStatus::kOwnershipNone for the ownership status.
 class ScopedDeviceSettingsTestHelper {
  public:
   ScopedDeviceSettingsTestHelper();
@@ -78,7 +78,8 @@ class DeviceSettingsTestBase : public testing::Test {
   FakeSessionManagerClient session_manager_client_;
   // Note that FakeUserManager is used by ProfileHelper, which some of the
   // tested classes depend on implicitly.
-  raw_ptr<FakeChromeUserManager, ExperimentalAsh> user_manager_;
+  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   scoped_refptr<ownership::MockOwnerKeyUtil> owner_key_util_;
   // Local DeviceSettingsService instance for tests. Avoid using in combination

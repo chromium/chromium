@@ -53,7 +53,7 @@ class LocationBarModelImpl : public LocationBarModel {
   std::u16string GetFormattedURL(
       url_formatter::FormatUrlTypes format_types) const;
 
-  raw_ptr<LocationBarModelDelegate, DanglingUntriaged> delegate_;
+  raw_ptr<LocationBarModelDelegate, AcrossTasksDanglingUntriaged> delegate_;
   const size_t max_url_display_chars_;
 };
 

@@ -7,6 +7,7 @@ Version: 3.20.3
 CPEPrefix: cpe:/a:google:protobuf:3.20.3
 Revision: fe271ab76f2ad2b2b28c10443865d2af21e27e0e
 Security Critical: yes
+Shipped: yes
 
 Steps used to create the current version:
 1. Pull the release from https://github.com/google/protobuf/releases (Source

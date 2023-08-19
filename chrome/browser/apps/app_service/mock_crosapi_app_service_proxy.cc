@@ -47,12 +47,6 @@ void MockCrosapiAppServiceProxy::LoadIcon(const std::string& app_id,
   // TODO(crbug.com/1309024): Implement this.
   NOTIMPLEMENTED();
 }
-void MockCrosapiAppServiceProxy::AddPreferredApp(
-    const std::string& app_id,
-    crosapi::mojom::IntentPtr intent) {
-  // TODO(crbug.com/1309024): Implement this.
-  NOTIMPLEMENTED();
-}
 void MockCrosapiAppServiceProxy::ShowAppManagementPage(
     const std::string& app_id) {
   // TODO(crbug.com/1309024): Implement this.

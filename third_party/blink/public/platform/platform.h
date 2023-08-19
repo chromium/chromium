@@ -63,6 +63,7 @@
 #include "third_party/blink/public/platform/websocket_handshake_throttle_provider.h"
 #include "third_party/webrtc/api/video/video_codec_type.h"
 #include "ui/base/resource/resource_scale_factor.h"
+#include "v8/include/v8-local-handle.h"
 
 class SkCanvas;
 class SkBitmap;
@@ -106,8 +107,6 @@ class Origin;
 
 namespace v8 {
 class Context;
-template <class T>
-class Local;
 }  // namespace v8
 
 namespace viz {
@@ -258,10 +257,6 @@ class BLINK_PLATFORM_EXPORT Platform {
   // Returns the default User-Agent string, it can either full User-Agent string
   // or reduced User-Agent string based on policy setting.
   virtual WebString UserAgent() { return WebString(); }
-  // Returns the full User-Agent string.
-  virtual WebString FullUserAgent() { return WebString(); }
-  // Returns the reduced User-Agent string.
-  virtual WebString ReducedUserAgent() { return WebString(); }
 
   // Returns the User Agent metadata. This will replace `UserAgent()` if we
   // end up shipping https://github.com/WICG/ua-client-hints.
@@ -573,9 +568,9 @@ class BLINK_PLATFORM_EXPORT Platform {
       const media::AudioSinkParameters& params) {
     return nullptr;
   }
-  virtual media::AudioLatency::LatencyType GetAudioSourceLatencyType(
+  virtual media::AudioLatency::Type GetAudioSourceLatencyType(
       blink::WebAudioDeviceSourceType source_type) {
-    return media::AudioLatency::LATENCY_PLAYBACK;
+    return media::AudioLatency::Type::kPlayback;
   }
 
   virtual bool ShouldEnforceWebRTCRoutingPreferences() { return true; }

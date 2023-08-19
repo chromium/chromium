@@ -16,6 +16,7 @@ js_library("reporting_protos") {
     "//components/reporting/proto:metric_data_proto",
     "//components/reporting/proto:record_constants",
     "//components/reporting/proto:record_proto",
+    "//components/reporting/proto:session_affiliated_user_proto",
     "//components/reporting/proto:status_proto",
   ]
 
@@ -27,6 +28,7 @@ js_library("reporting_protos") {
     "${reporting_proto_js_dir}/metric_data.js",
     "${reporting_proto_js_dir}/record.js",
     "${reporting_proto_js_dir}/record_constants.js",
+    "${reporting_proto_js_dir}/session_affiliated_user.js",
     "${reporting_proto_js_dir}/status.js",
   ]
 }

@@ -77,6 +77,10 @@ struct ServiceWorkerRegistrationData {
   blink.mojom.AncestorFrameType ancestor_frame_type;
 
   blink.mojom.ServiceWorkerRouterRules? router_rules;
+
+  // Set to true if the service worker had hid event handlers on initial script
+  // execution.
+  bool has_hid_event_handlers;
 };
 
 // Represents a service worker script data which is stored in database.

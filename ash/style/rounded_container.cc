@@ -14,16 +14,13 @@
 #include "ui/views/view.h"
 
 namespace ash {
-namespace {
 
-// Rounded radius.
-constexpr int kNonRoundedSideRadius = 4;
-constexpr int kRoundedSideRadius = 16;
-
-}  // namespace
-
-RoundedContainer::RoundedContainer(Behavior corner_behavior)
-    : corner_behavior_(corner_behavior) {
+RoundedContainer::RoundedContainer(Behavior corner_behavior,
+                                   int non_rounded_radius,
+                                   int rounded_radius)
+    : corner_behavior_(corner_behavior),
+      non_rounded_radius_(non_rounded_radius),
+      rounded_radius_(rounded_radius) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   SetBackground(
@@ -51,17 +48,17 @@ void RoundedContainer::SetBorderInsets(const gfx::Insets& insets) {
 gfx::RoundedCornersF RoundedContainer::GetRoundedCorners() {
   switch (corner_behavior_) {
     case Behavior::kNotRounded:
-      return {kNonRoundedSideRadius, kNonRoundedSideRadius,
-              kNonRoundedSideRadius, kNonRoundedSideRadius};
+      return {non_rounded_radius_, non_rounded_radius_, non_rounded_radius_,
+              non_rounded_radius_};
     case Behavior::kAllRounded:
-      return {kRoundedSideRadius, kRoundedSideRadius, kRoundedSideRadius,
-              kRoundedSideRadius};
+      return {rounded_radius_, rounded_radius_, rounded_radius_,
+              rounded_radius_};
     case Behavior::kTopRounded:
-      return {kRoundedSideRadius, kRoundedSideRadius, kNonRoundedSideRadius,
-              kNonRoundedSideRadius};
+      return {rounded_radius_, rounded_radius_, non_rounded_radius_,
+              non_rounded_radius_};
     case Behavior::kBottomRounded:
-      return {kNonRoundedSideRadius, kNonRoundedSideRadius, kRoundedSideRadius,
-              kRoundedSideRadius};
+      return {non_rounded_radius_, non_rounded_radius_, rounded_radius_,
+              rounded_radius_};
   }
 }
 

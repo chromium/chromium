@@ -15,10 +15,6 @@
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/js_messaging/script_message.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 const char kPerformanceMetricsScript[] = "web_performance_metrics";
 const char kWebPerformanceMetricsScriptName[] = "WebPerformanceMetricsHandler";

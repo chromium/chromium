@@ -11,6 +11,7 @@ import os
 import unittest
 import sys
 
+import mac_util
 import iossim_util
 import result_sink_util
 import test_apps
@@ -18,6 +19,7 @@ from test_result_util import ResultCollection, TestResult, TestStatus
 import test_runner
 import test_runner_test
 import xcode_log_parser
+import xcode_util
 import xcodebuild_runner
 
 # if the current directory is in scripts, then we need to add plugin
@@ -196,6 +198,8 @@ class DeviceXcodeTestRunnerTest(test_runner_test.TestCase):
         test_apps.GTestsApp,
         'get_all_tests', lambda _: ['Class1/passedTest1', 'Class1/passedTest2'])
     self.mock(iossim_util, 'is_device_with_udid_simulator', lambda _: False)
+    self.mock(xcode_util, 'using_xcode_15_or_higher', lambda: True)
+    self.mock(mac_util, 'stop_usbmuxd', lambda: None)
 
   @mock.patch('xcode_log_parser.Xcode11LogParser.collect_test_results')
   def test_launch(self, mock_result):

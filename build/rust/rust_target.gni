@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/rust.gni")
-import("//build/rust/analyze.gni")
 import("//build/rust/rust_unit_test.gni")
 
 # The //build directory is re-used for non-Chromium products. We do not support
@@ -33,16 +32,17 @@ if (build_with_chromium) {
 # be provided.
 
 template("rust_target") {
-  # Only one of `crate_root` or `generate_crate_root` can be specified, or
-  # neither.
-  assert(!defined(invoker.crate_root) ||
-         !(defined(invoker.generate_crate_root) && invoker.generate_crate_root))
-
   _target_name = target_name
   _crate_name = target_name
   if (defined(invoker.crate_name)) {
     _crate_name = invoker.crate_name
   }
+  _generate_crate_root =
+      defined(invoker.generate_crate_root) && invoker.generate_crate_root
+
+  # Only one of `crate_root` or `generate_crate_root` can be specified, or
+  # neither.
+  assert(!defined(invoker.crate_root) || !_generate_crate_root)
 
   if (defined(invoker.output_dir) && invoker.output_dir != "") {
     # This is where the build target (.exe, .rlib, etc) goes.
@@ -59,7 +59,7 @@ template("rust_target") {
     _allow_unsafe = invoker.allow_unsafe
   }
 
-  if (defined(invoker.generate_crate_root) && invoker.generate_crate_root) {
+  if (_generate_crate_root) {
     generated_file("${_target_name}_crate_root") {
       outputs = [ "${target_gen_dir}/${target_name}.rs" ]
       contents = [
@@ -86,8 +86,8 @@ template("rust_target") {
         ]
       }
     }
-    _crate_root =
-        string_join("", get_target_outputs(":${_target_name}_crate_root"))
+    _generated_crate_root = get_target_outputs(":${_target_name}_crate_root")
+    _crate_root = _generated_crate_root[0]
   } else if (defined(invoker.crate_root)) {
     _crate_root = invoker.crate_root
   } else if (invoker.target_type == "executable") {
@@ -172,7 +172,8 @@ template("rust_target") {
                "outside the Chromium build.")
     _cxx_bindings = invoker.cxx_bindings
   }
-  _rustenv = [ "OUT_DIR=" + rebase_path(_env_out_dir) ]
+  _rustenv = [ "OUT_DIR=" +
+               rebase_path(_env_out_dir, get_path_info(_crate_root, "dir")) ]
   if (defined(invoker.rustenv)) {
     _rustenv += invoker.rustenv
   }
@@ -290,9 +291,9 @@ template("rust_target") {
       }
 
       rust_unit_test(_unit_test_target) {
-        forward_variables_from(invoker, [ "sources" ])
         testonly = true
         crate_root = _crate_root
+        sources = invoker.sources + [ crate_root ]
         rustflags = _rustflags
         env_out_dir = _env_out_dir
         if (defined(invoker.unit_test_output_dir)) {
@@ -363,6 +364,11 @@ template("rust_target") {
       }
       rustenv = _rustenv
 
+      if (_generate_crate_root) {
+        deps += [ ":${_target_name}_crate_root" ]
+        sources += [ _crate_root ]
+      }
+
       # The Rust tool() declarations, like C++ ones, use the output_name and
       # output_dir, so that GN targets can override these if needed. Here we
       # give them their default values, or allow them to be overridden.
@@ -373,21 +379,8 @@ template("rust_target") {
         output_name = "${crate_name}${_output_suffix}"
       }
 
-      if (compute_inputs_for_analyze) {
-        deps += [ ":${_target_name}_analyze" ]
-      }
-
       if (!_allow_unsafe) {
         configs += [ "//build/rust:forbid_unsafe" ]
-      }
-    }
-
-    if (compute_inputs_for_analyze) {
-      # Find and depend on all rust files in the crate for the purpose of `gn
-      # analyze`.
-      analyze_rust("${_target_name}_analyze") {
-        forward_variables_from(invoker, "*", [ "crate_root" ])
-        crate_root = _crate_root
       }
     }
 

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 352 tests; 281 PASS, 71 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 352 tests; 289 PASS, 63 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS aa-- (using URL)
 PASS aa-- (using URL.host)
@@ -121,10 +121,10 @@ FAIL xn--a.xn--zca (using <area>.hostname) assert_equals: expected "x" but got "
 PASS xn--a.ß (using URL)
 PASS xn--a.ß (using URL.host)
 PASS xn--a.ß (using URL.hostname)
-FAIL xn--a.ß (using <a>) assert_equals: expected "https://xn--a.ß/x" but got "https://xn--a.%C3%9F/x"
+PASS xn--a.ß (using <a>)
 PASS xn--a.ß (using <a>.host)
 PASS xn--a.ß (using <a>.hostname)
-FAIL xn--a.ß (using <area>) assert_equals: expected "https://xn--a.ß/x" but got "https://xn--a.%C3%9F/x"
+PASS xn--a.ß (using <area>)
 PASS xn--a.ß (using <area>.host)
 PASS xn--a.ß (using <area>.hostname)
 FAIL xn--ls8h= (using URL) assert_throws_js: function "() => makeURL("url", hostTest.input)" did not throw
@@ -139,10 +139,10 @@ FAIL xn--ls8h= (using <area>.hostname) assert_equals: expected "x" but got "xn--
 PASS xn--tešla (using URL)
 PASS xn--tešla (using URL.host)
 PASS xn--tešla (using URL.hostname)
-FAIL xn--tešla (using <a>) assert_equals: expected "https://xn--tešla/x" but got "https://xn--te%C5%A1la/x"
+PASS xn--tešla (using <a>)
 PASS xn--tešla (using <a>.host)
 PASS xn--tešla (using <a>.hostname)
-FAIL xn--tešla (using <area>) assert_equals: expected "https://xn--tešla/x" but got "https://xn--te%C5%A1la/x"
+PASS xn--tešla (using <area>)
 PASS xn--tešla (using <area>.host)
 PASS xn--tešla (using <area>.hostname)
 PASS xn--zca.xn--zca (using URL)
@@ -202,10 +202,10 @@ FAIL xn--1ug.example (using <area>.hostname) assert_equals: expected "x" but got
 PASS يa (using URL)
 PASS يa (using URL.host)
 PASS يa (using URL.hostname)
-FAIL يa (using <a>) assert_equals: expected "https://يa/x" but got "https://%D9%8Aa/x"
+PASS يa (using <a>)
 PASS يa (using <a>.host)
 PASS يa (using <a>.hostname)
-FAIL يa (using <area>) assert_equals: expected "https://يa/x" but got "https://%D9%8Aa/x"
+PASS يa (using <area>)
 PASS يa (using <area>.host)
 PASS يa (using <area>.hostname)
 FAIL xn--a-yoc (using URL) assert_throws_js: function "() => makeURL("url", hostTest.input)" did not throw
@@ -238,10 +238,10 @@ PASS نامه‌ای (using <area>.hostname)
 PASS �.com (using URL)
 PASS �.com (using URL.host)
 PASS �.com (using URL.hostname)
-FAIL �.com (using <a>) assert_equals: expected "https://\ufffd.com/x" but got "https://%EF%BF%BD.com/x"
+PASS �.com (using <a>)
 PASS �.com (using <a>.host)
 PASS �.com (using <a>.hostname)
-FAIL �.com (using <area>) assert_equals: expected "https://\ufffd.com/x" but got "https://%EF%BF%BD.com/x"
+PASS �.com (using <area>)
 PASS �.com (using <area>.host)
 PASS �.com (using <area>.hostname)
 FAIL xn--zn7c.com (using URL) assert_throws_js: function "() => makeURL("url", hostTest.input)" did not throw

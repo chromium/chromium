@@ -660,6 +660,7 @@ html element iframe
     property marginHeight
     property marginWidth
     property name
+    property privateToken
     property referrerPolicy
     property sandbox
     property scrolling

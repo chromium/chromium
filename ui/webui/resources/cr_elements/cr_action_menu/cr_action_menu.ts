@@ -19,8 +19,8 @@ interface ShowAtConfig {
   left?: number;
   width?: number;
   height?: number;
-  anchorAlignmentX?: number;
-  anchorAlignmentY?: number;
+  anchorAlignmentX?: AnchorAlignment;
+  anchorAlignmentY?: AnchorAlignment;
   minX?: number;
   minY?: number;
   maxX?: number;
@@ -33,8 +33,8 @@ export interface ShowAtPositionConfig {
   left: number;
   width?: number;
   height?: number;
-  anchorAlignmentX?: number;
-  anchorAlignmentY?: number;
+  anchorAlignmentX?: AnchorAlignment;
+  anchorAlignmentY?: AnchorAlignment;
   minX?: number;
   minY?: number;
   maxX?: number;
@@ -68,7 +68,7 @@ function getStartPointWithAnchor(
   let startPoint = 0;
   switch (anchorAlignment) {
     case AnchorAlignment.BEFORE_START:
-      startPoint = -menuLength;
+      startPoint = start - menuLength;
       break;
     case AnchorAlignment.AFTER_START:
       startPoint = start;

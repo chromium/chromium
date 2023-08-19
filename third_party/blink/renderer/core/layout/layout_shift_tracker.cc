@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
 
@@ -49,16 +50,16 @@ const float kMovementThreshold = 3.0;  // CSS pixels.
 // See https://wicg.github.io/layout-instability/#starting-point.
 gfx::PointF StartingPoint(const PhysicalOffset& paint_offset,
                           const LayoutBox& box,
-                          const LayoutSize& size) {
+                          const PhysicalSize& size) {
   PhysicalOffset starting_point = paint_offset;
   auto writing_direction = box.StyleRef().GetWritingDirection();
   if (UNLIKELY(writing_direction.IsFlippedBlocks()))
-    starting_point.left += size.Width();
+    starting_point.left += size.width;
   if (UNLIKELY(writing_direction.IsRtl())) {
     if (writing_direction.IsHorizontal())
-      starting_point.left += size.Width();
+      starting_point.left += size.width;
     else
-      starting_point.top += size.Height();
+      starting_point.top += size.height;
   }
   return gfx::PointF(starting_point);
 }
@@ -95,7 +96,7 @@ bool EqualWithinMovementThreshold(const gfx::PointF& a,
          fabs(a.y() - b.y()) < threshold_physical_px;
 }
 
-bool SmallerThanRegionGranularity(const LayoutRect& rect) {
+bool SmallerThanRegionGranularity(const PhysicalRect& rect) {
   // Normally we paint by snapping to whole pixels, so rects smaller than half
   // a pixel may be invisible.
   return rect.Width() < 0.5 || rect.Height() < 0.5;
@@ -187,7 +188,8 @@ bool LayoutShiftTracker::NeedsToTrack(const LayoutObject& object) const {
     return false;
   }
 
-  if (SmallerThanRegionGranularity(box->VisualOverflowRectAllowingUnset())) {
+  if (SmallerThanRegionGranularity(
+          box->PhysicalVisualOverflowRectAllowingUnset())) {
     return false;
   }
 
@@ -269,12 +271,12 @@ void LayoutShiftTracker::ObjectShifted(
                                    new_starting_point, threshold_physical_px))
     return;
 
-  if (RuntimeEnabledFeatures::CLSScrollAnchoringEnabled() &&
-      !scroll_anchor_adjustment.IsZero() &&
+  if (!scroll_anchor_adjustment.IsZero() &&
       EqualWithinMovementThreshold(
           old_starting_point + scroll_delta + scroll_anchor_adjustment,
-          new_starting_point, threshold_physical_px))
+          new_starting_point, threshold_physical_px)) {
     return;
+  }
 
   // Check shift of 2d-translation-and-scroll-indifferent starting point.
   gfx::Vector2dF translation_and_scroll_delta =

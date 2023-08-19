@@ -160,7 +160,7 @@ class NetworkListMobileHeaderViewTest
   network_config::CrosNetworkConfigTestHelper network_config_helper_;
   FakeNetworkListNetworkHeaderViewDelegate
       fake_network_list_network_header_delegate_;
-  raw_ptr<NetworkListMobileHeaderViewImpl, ExperimentalAsh>
+  raw_ptr<NetworkListMobileHeaderViewImpl, DanglingUntriaged | ExperimentalAsh>
       network_list_mobile_header_view_;
 };
 
@@ -181,6 +181,10 @@ TEST_P(NetworkListMobileHeaderViewTest, HeaderLabel) {
 }
 
 TEST_P(NetworkListMobileHeaderViewTest, AddEsimButtonStates) {
+  // QsRevamped `NetworkListHeaderView` doesn't have a `add_esim_button`.
+  if (IsQsRevampEnabled()) {
+    return;
+  }
   Init();
   IconButton* add_esim_button = GetAddEsimButton();
   ASSERT_NE(nullptr, add_esim_button);
@@ -199,6 +203,10 @@ TEST_P(NetworkListMobileHeaderViewTest, AddEsimButtonStates) {
 }
 
 TEST_P(NetworkListMobileHeaderViewTest, CellularInhibitState) {
+  // QsRevamped `NetworkListHeaderView` doesn't have a `add_esim_button`.
+  if (IsQsRevampEnabled()) {
+    return;
+  }
   Init();
 
   IconButton* add_esim_button = GetAddEsimButton();
@@ -254,6 +262,11 @@ TEST_P(NetworkListMobileHeaderViewTest, CellularInhibitState) {
 }
 
 TEST_P(NetworkListMobileHeaderViewTest, EnabledButtonNotAdded) {
+  // QsRevamped `NetworkListHeaderView` doesn't have a `add_esim_button`.
+  if (IsQsRevampEnabled()) {
+    return;
+  }
+
   // Add eSim button should not be added if the screen is locked.
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::LOCKED);

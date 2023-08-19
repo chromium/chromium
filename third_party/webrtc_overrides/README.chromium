@@ -5,6 +5,7 @@ Revision: 0
 License: BSD
 License File: ../webrtc/LICENSE
 Security Critical: yes
+Shipped: yes
 
 Description:
 This folder contains WebRTC files (third_party/webrtc) that should be

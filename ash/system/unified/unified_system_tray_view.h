@@ -183,7 +183,9 @@ class ASH_EXPORT UnifiedSystemTrayView : public views::View,
   double expanded_amount_;
 
   // Unowned.
-  const raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> controller_;
+  const raw_ptr<UnifiedSystemTrayController,
+                DanglingUntriaged | ExperimentalAsh>
+      controller_;
 
   // Owned by views hierarchy.
   const raw_ptr<NotificationHiddenView, ExperimentalAsh>

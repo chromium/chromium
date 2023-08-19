@@ -40,17 +40,6 @@ void BlockFlowPaintInvalidator::InvalidateDisplayItemClients(
         break;
     }
   }
-
-  if (block_flow_.MultiColumnFlowThread()) {
-    // Invalidate child LayoutMultiColumnSets which may need to repaint column
-    // rules after m_blockFlow's column rule style and/or layout changed.
-    for (LayoutObject* child = block_flow_.FirstChild(); child;
-         child = child->NextSibling()) {
-      if (child->IsLayoutMultiColumnSet() &&
-          !child->ShouldDoFullPaintInvalidation())
-        object_paint_invalidator.InvalidateDisplayItemClient(*child, reason);
-    }
-  }
 }
 
 }  // namespace blink

@@ -142,17 +142,33 @@ class UkmXmlTest(unittest.TestCase):
     self.assertMultiLineEqual(PRETTY_XML, result.strip())
 
   def testHasBadEventName(self):
+    # Name containing illegal character.
     bad_xml = PRETTY_XML.replace('Event1', 'Event:1')
     with self.assertRaises(ValueError) as context:
       ukm_model.PrettifyXML(bad_xml)
     self.assertIn('Event:1', str(context.exception))
     self.assertIn('does not match regex', str(context.exception))
 
+    # Name starting with a digit.
+    bad_event_name_xml = PRETTY_XML.replace('Event1', '1Event')
+    with self.assertRaises(ValueError) as context:
+      ukm_model.PrettifyXML(bad_event_name_xml)
+    self.assertIn('1Event', str(context.exception))
+    self.assertIn('does not match regex', str(context.exception))
+
   def testHasBadMetricName(self):
+    # Name containing illegal character.
     bad_xml = PRETTY_XML.replace('Metric1', 'Metric:1')
     with self.assertRaises(ValueError) as context:
       ukm_model.PrettifyXML(bad_xml)
     self.assertIn('Metric:1', str(context.exception))
+    self.assertIn('does not match regex', str(context.exception))
+
+    # Name starting with a digit.
+    bad_metric_name_xml = PRETTY_XML.replace('Metric3', '3rdPartyCookie')
+    with self.assertRaises(ValueError) as context:
+      ukm_model.PrettifyXML(bad_metric_name_xml)
+    self.assertIn('3rdPartyCookie', str(context.exception))
     self.assertIn('does not match regex', str(context.exception))
 
   def testSortByEventName(self):

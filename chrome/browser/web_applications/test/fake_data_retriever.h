@@ -41,6 +41,7 @@ class FakeDataRetriever : public WebAppDataRetriever {
   void GetIcons(content::WebContents* web_contents,
                 const base::flat_set<GURL>& icon_urls,
                 bool skip_page_favicons,
+                bool fail_all_if_any_fail,
                 GetIconsCallback callback) override;
 
   // Set info to respond on |GetWebAppInstallInfo|.
@@ -53,11 +54,6 @@ class FakeDataRetriever : public WebAppDataRetriever {
                    GURL manifest_url = GURL());
   // Set icons to respond on |GetIcons|.
   void SetIcons(IconsMap icons_map);
-  using GetIconsDelegate =
-      base::RepeatingCallback<IconsMap(content::WebContents* web_contents,
-                                       const base::flat_set<GURL>& icon_urls,
-                                       bool skip_page_favicons)>;
-  void SetGetIconsDelegate(GetIconsDelegate get_icons_delegate);
 
   // Sets `IconsDownloadedResult` to respond on `GetIcons`.
   void SetIconsDownloadedResult(IconsDownloadedResult result);
@@ -87,7 +83,6 @@ class FakeDataRetriever : public WebAppDataRetriever {
       webapps::InstallableStatusCode::NO_MANIFEST;
 
   IconsMap icons_map_;
-  GetIconsDelegate get_icons_delegate_;
 
   IconsDownloadedResult icons_downloaded_result_ =
       IconsDownloadedResult::kCompleted;

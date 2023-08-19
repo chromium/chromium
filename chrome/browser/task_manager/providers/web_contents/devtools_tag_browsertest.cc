@@ -58,7 +58,7 @@ class DevToolsTagTest : public InProcessBrowserTest {
   }
 
  private:
-  raw_ptr<DevToolsWindow, DanglingUntriaged> devtools_window_;
+  raw_ptr<DevToolsWindow, AcrossTasksDanglingUntriaged> devtools_window_;
 };
 
 // Tests that opening a DevToolsWindow will result in tagging its main

@@ -9,18 +9,14 @@
 
 #import <string>
 
+#import "base/apple/foundation_util.h"
 #import "base/files/file.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
-#import "base/mac/foundation_util.h"
 #import "base/strings/string_piece.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/tools/strings/grit_header_parsing.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -79,17 +75,17 @@ NSArray* ConvertArray(NSArray* array, const ResourceMap& resource_map) {
 
 NSObject* ConvertValue(NSObject* value, const ResourceMap& resource_map) {
   if ([value isKindOfClass:[NSString class]]) {
-    NSString* string = base::mac::ObjCCastStrict<NSString>(value);
+    NSString* string = base::apple::ObjCCastStrict<NSString>(value);
     return ConvertString(string, resource_map);
   }
 
   if ([value isKindOfClass:[NSArray class]]) {
-    NSArray<NSObject*>* array = base::mac::ObjCCastStrict<NSArray>(value);
+    NSArray<NSObject*>* array = base::apple::ObjCCastStrict<NSArray>(value);
     return ConvertArray(array, resource_map);
   }
 
   if ([value isKindOfClass:[NSDictionary class]]) {
-    PList* plist = base::mac::ObjCCastStrict<NSDictionary>(value);
+    PList* plist = base::apple::ObjCCastStrict<NSDictionary>(value);
     return ConvertPlist(plist, resource_map);
   }
 
@@ -99,12 +95,8 @@ NSObject* ConvertValue(NSObject* value, const ResourceMap& resource_map) {
 bool ConvertFile(const base::FilePath& source_path,
                  const base::FilePath& output_path,
                  const ResourceMap& resource_map) {
-  NSURL* source_url =
-      [NSURL fileURLWithPath:base::SysUTF8ToNSString(source_path.AsUTF8Unsafe())
-                 isDirectory:NO];
-  NSURL* output_url =
-      [NSURL fileURLWithPath:base::SysUTF8ToNSString(output_path.AsUTF8Unsafe())
-                 isDirectory:NO];
+  NSURL* source_url = base::apple::FilePathToNSURL(source_path);
+  NSURL* output_url = base::apple::FilePathToNSURL(output_path);
 
   NSError* error = nil;
   PList* source_plist = [NSDictionary dictionaryWithContentsOfURL:source_url

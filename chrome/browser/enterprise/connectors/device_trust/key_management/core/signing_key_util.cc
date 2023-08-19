@@ -10,7 +10,7 @@
 
 namespace enterprise_connectors {
 
-std::unique_ptr<SigningKeyPair> LoadPersistedKey() {
+scoped_refptr<SigningKeyPair> LoadPersistedKey() {
   auto* factory = KeyPersistenceDelegateFactory::GetInstance();
   DCHECK(factory);
   return factory->CreateKeyPersistenceDelegate()->LoadKeyPair();

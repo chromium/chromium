@@ -5,7 +5,6 @@
 /**
  * @fileoverview A drop-down menu in the ChromeVox panel.
  */
-import {BackgroundBridge} from '../common/background_bridge.js';
 import {BridgeCallbackManager} from '../common/bridge_callback_manager.js';
 import {Msgs} from '../common/msgs.js';
 import {PanelNodeMenuItemData} from '../common/panel_menu_data.js';
@@ -72,10 +71,11 @@ export class PanelMenu {
 
   /**
    * @param {string} menuItemTitle The title of the menu item.
-   * @param {string} menuItemShortcut The keystrokes to select this item.
-   * @param {string} menuItemBraille
-   * @param {string} gesture
-   * @param {function() : !Promise} callback The function to call if this item
+   * @param {string|undefined} menuItemShortcut The keystrokes to select this
+   *     item.
+   * @param {string|undefined} menuItemBraille
+   * @param {string|undefined} gesture
+   * @param {function(): !Promise} callback The function to call if this item
    *     is selected.
    * @param {string=} opt_id An optional id for the menu item element.
    * @return {!PanelMenuItem} The menu item just created.

@@ -99,6 +99,16 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
 
   // TODO(hta): Make method pure virtual when all tracks have the method.
   virtual void GetSettings(Settings& settings) const {}
+
+  // Retrieves a snapshot of the deliverable frames counter (via a round-trip to
+  // the video task runner). The callback with the result is invoked on the main
+  // task runner.
+  virtual void AsyncGetDeliverableVideoFramesCount(
+      base::OnceCallback<void(size_t)> deliverable_video_frames_callback) {
+    // This method is only callable on video tracks.
+    NOTREACHED();
+  }
+
   virtual CaptureHandle GetCaptureHandle();
 
   // Adds a one off callback that will be invoked when observing the first frame

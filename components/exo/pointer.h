@@ -56,7 +56,9 @@ class Pointer : public SurfaceTreeHost,
                 public aura::client::FocusChangeObserver,
                 public ash::ShellObserver {
  public:
-  Pointer(PointerDelegate* delegate, Seat* seat);
+  Pointer(PointerDelegate* delegate,
+          Seat* seat,
+          std::unique_ptr<aura::Window> host_window = nullptr);
 
   Pointer(const Pointer&) = delete;
   Pointer& operator=(const Pointer&) = delete;
@@ -180,7 +182,13 @@ class Pointer : public SurfaceTreeHost,
   void OnCursorCaptured(const gfx::Point& hotspot,
                         std::unique_ptr<viz::CopyOutputResult> result);
 
-  // Update |cursor_| to |cursor_bitmap_| transformed for the current display.
+  // Called when cursor bitmap has been obtained either from viz copy output
+  // results or directly from the buffer.
+  void OnCursorBitmapObtained(const gfx::Point& hotspot,
+                              const SkBitmap& cursor_bitmap,
+                              float cursor_scale);
+
+  // Update |cursor_| to |cursor_bitmap_| transformed with |cursor_scale_|.
   void UpdateCursor();
 
   // Called to check if cursor should be moved to the center of the window when
@@ -211,7 +219,7 @@ class Pointer : public SurfaceTreeHost,
                            const gfx::PointF& location_in_target);
 
   // The delegate instance that all events are dispatched to.
-  const raw_ptr<PointerDelegate, ExperimentalAsh> delegate_;
+  const raw_ptr<PointerDelegate, DanglingUntriaged | ExperimentalAsh> delegate_;
 
   const raw_ptr<Seat, ExperimentalAsh> seat_;
 
@@ -265,6 +273,9 @@ class Pointer : public SurfaceTreeHost,
 
   // Latest cursor snapshot.
   SkBitmap cursor_bitmap_;
+
+  // Latest cursor image scale;
+  float cursor_scale_ = 1.0f;
 
   // The current cursor.
   ui::Cursor cursor_;

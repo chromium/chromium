@@ -4,6 +4,7 @@
 
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/lacros/desk_template_client_lacros.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/crosapi/mojom/desk_template.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/desk_template.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/tab_groups/tab_group_color.h"
@@ -578,17 +578,16 @@ IN_PROC_BROWSER_TEST_F(DeskTemplateClientLacrosBrowserTest,
                        CapturesBrowserCorrectly) {
   MakeTestBrowser();
   DeskTemplateClientLacros client;
-  crosapi::mojom::DeskTemplateClientAsyncWaiter waiter(&client);
   std::string window_id = views::DesktopWindowTreeHostLacros::From(
                               browser()->window()->GetNativeWindow()->GetHost())
                               ->platform_window()
                               ->GetWindowUniqueId();
 
-  uint32_t out_serial;
-  std::string out_window_id;
-  crosapi::mojom::DeskTemplateStatePtr out_state;
-  waiter.GetBrowserInformation(/*serial=*/0, window_id, &out_serial,
-                               &out_window_id, &out_state);
+  base::test::TestFuture<uint32_t, const std::string&,
+                         crosapi::mojom::DeskTemplateStatePtr>
+      future;
+  client.GetBrowserInformation(/*serial=*/0, window_id, future.GetCallback());
+  auto [serial, out_window_id, out_state] = future.Take();
 
   crosapi::mojom::DeskTemplateStatePtr test_mojom = MakeTestMojom();
   EXPECT_EQ(out_state->urls, test_mojom->urls);
@@ -607,17 +606,16 @@ IN_PROC_BROWSER_TEST_F(DeskTemplateClientLacrosBrowserTest,
                        CapturesBrowserWithTabGroupAtEndOfStripCorrectly) {
   MakeTestBrowserWithTabGroupAtEndOfStrip();
   DeskTemplateClientLacros client;
-  crosapi::mojom::DeskTemplateClientAsyncWaiter waiter(&client);
   std::string window_id = views::DesktopWindowTreeHostLacros::From(
                               browser()->window()->GetNativeWindow()->GetHost())
                               ->platform_window()
                               ->GetWindowUniqueId();
 
-  uint32_t out_serial;
-  std::string out_window_id;
-  crosapi::mojom::DeskTemplateStatePtr out_state;
-  waiter.GetBrowserInformation(/*serial=*/0, window_id, &out_serial,
-                               &out_window_id, &out_state);
+  base::test::TestFuture<uint32_t, const std::string&,
+                         crosapi::mojom::DeskTemplateStatePtr>
+      future;
+  client.GetBrowserInformation(/*serial=*/0, window_id, future.GetCallback());
+  auto [serial, out_window_id, out_state] = future.Take();
 
   crosapi::mojom::DeskTemplateStatePtr test_mojom =
       MakeTestMojomWithTabGroupAtEndOfStrip();
@@ -637,17 +635,16 @@ IN_PROC_BROWSER_TEST_F(DeskTemplateClientLacrosBrowserTest,
                        CapturesBrowserWithoutPinnedTabsOrTabGroupsCorrectly) {
   MakeBrowserWithoutTabgroupsOrPinnedTabs();
   DeskTemplateClientLacros client;
-  crosapi::mojom::DeskTemplateClientAsyncWaiter waiter(&client);
   std::string window_id = views::DesktopWindowTreeHostLacros::From(
                               browser()->window()->GetNativeWindow()->GetHost())
                               ->platform_window()
                               ->GetWindowUniqueId();
 
-  uint32_t out_serial;
-  std::string out_window_id;
-  crosapi::mojom::DeskTemplateStatePtr out_state;
-  waiter.GetBrowserInformation(/*serial=*/0, window_id, &out_serial,
-                               &out_window_id, &out_state);
+  base::test::TestFuture<uint32_t, const std::string&,
+                         crosapi::mojom::DeskTemplateStatePtr>
+      future;
+  client.GetBrowserInformation(/*serial=*/0, window_id, future.GetCallback());
+  auto [serial, out_window_id, out_state] = future.Take();
 
   crosapi::mojom::DeskTemplateStatePtr test_mojom =
       MakeTestStateWithoutPinnedTabsOrTabGroup();
@@ -666,17 +663,16 @@ IN_PROC_BROWSER_TEST_F(DeskTemplateClientLacrosBrowserTest,
                        CapturesBrowserAppCorrectly) {
   MakeTestAppBrowser();
   DeskTemplateClientLacros client;
-  crosapi::mojom::DeskTemplateClientAsyncWaiter waiter(&client);
   std::string window_id = views::DesktopWindowTreeHostLacros::From(
                               browser()->window()->GetNativeWindow()->GetHost())
                               ->platform_window()
                               ->GetWindowUniqueId();
 
-  uint32_t out_serial;
-  std::string out_window_id;
-  crosapi::mojom::DeskTemplateStatePtr out_state;
-  waiter.GetBrowserInformation(/*serial=*/0, window_id, &out_serial,
-                               &out_window_id, &out_state);
+  base::test::TestFuture<uint32_t, const std::string&,
+                         crosapi::mojom::DeskTemplateStatePtr>
+      future;
+  client.GetBrowserInformation(/*serial=*/0, window_id, future.GetCallback());
+  auto [serial, out_window_id, out_state] = future.Take();
 
   crosapi::mojom::DeskTemplateStatePtr test_mojom = MakeAppTestMojom();
   EXPECT_EQ(out_state->urls, test_mojom->urls);

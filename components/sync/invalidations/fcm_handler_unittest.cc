@@ -9,13 +9,11 @@
 #include <utility>
 
 #include "base/files/file_path.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/gcm_driver/fake_gcm_driver.h"
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
-#include "components/sync/base/features.h"
 #include "components/sync/invalidations/fcm_registration_token_observer.h"
 #include "components/sync/invalidations/invalidations_listener.h"
 #include "google_apis/gcm/engine/account_mapping.h"
@@ -110,15 +108,11 @@ class FCMHandlerTest : public testing::Test {
     // This is called in the FCMHandler.
     ON_CALL(mock_instance_id_driver_, GetInstanceID(kSyncInvalidationsAppId))
         .WillByDefault(Return(&mock_instance_id_));
-    override_features_.InitWithFeatures(
-        /*enabled_features=*/{kUseSyncInvalidations},
-        /*disabled_features=*/{});
   }
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::ScopedFeatureList override_features_;
 
   gcm::FakeGCMDriver fake_gcm_driver_;
   NiceMock<MockInstanceIDDriver> mock_instance_id_driver_;

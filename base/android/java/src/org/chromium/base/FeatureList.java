@@ -116,7 +116,6 @@ public class FeatureList {
      * Unit tests and Robolectric tests must not invoke this and should rely on the {@link Features}
      * annotations to enable or disable any feature flags.
      */
-    @VisibleForTesting
     public static void setTestCanUseDefaultsForTesting() {
         sTestCanUseDefaults = true;
         ResettersForTesting.register(() -> sTestCanUseDefaults = false);
@@ -126,7 +125,6 @@ public class FeatureList {
      * We reset the value to false after the instrumentation test to avoid any unwanted
      * persistence of the state. This is invoked by Features#reset().
      */
-    @VisibleForTesting
     public static void resetTestCanUseDefaultsForTesting() {
         sTestCanUseDefaults = false;
     }

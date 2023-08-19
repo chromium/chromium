@@ -22,9 +22,9 @@
 #include "chrome/browser/ui/exclusive_access/mouse_lock_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
-#include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/input/native_web_keyboard_event.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/common/extension.h"
@@ -95,6 +95,12 @@ void ExclusiveAccessTest::TearDownOnMainThread() {
       ->keyboard_lock_controller()
       ->bubble_hide_callback_for_test_ =
       base::RepeatingCallback<void(ExclusiveAccessBubbleHideReason)>();
+}
+
+// static
+bool ExclusiveAccessTest::IsBubbleDownloadNotification(
+    ExclusiveAccessBubble* bubble) {
+  return bubble->notify_download_;
 }
 
 bool ExclusiveAccessTest::RequestKeyboardLock(bool esc_key_locked) {

@@ -3,7 +3,11 @@
 # found in the LICENSE file.
 
 source_set("signals") {
-  public = [ "signals_service.h" ]
+  public = [
+    "dependency_factory.h",
+    "signals_filterer.h",
+    "signals_service.h",
+  ]
 
   public_deps = [
     "//base",
@@ -14,6 +18,10 @@ source_set("signals") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "mock_dependency_factory.cc",
+    "mock_dependency_factory.h",
+    "mock_signals_filterer.cc",
+    "mock_signals_filterer.h",
     "mock_signals_service.cc",
     "mock_signals_service.h",
   ]

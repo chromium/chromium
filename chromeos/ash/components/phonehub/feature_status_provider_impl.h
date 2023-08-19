@@ -78,6 +78,8 @@ class FeatureStatusProviderImpl
   void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
   void SuspendDone(base::TimeDelta sleep_duration) override;
 
+  void CheckEligibleDevicesForNudge();
+
   raw_ptr<device_sync::DeviceSyncClient, ExperimentalAsh> device_sync_client_;
   raw_ptr<multidevice_setup::MultiDeviceSetupClient, ExperimentalAsh>
       multidevice_setup_client_;

@@ -10,6 +10,8 @@ source_set("heatmap") {
   sources = [
     "heatmap_ml_agent.cc",
     "heatmap_ml_agent.h",
+    "heatmap_palm_detector.cc",
+    "heatmap_palm_detector.h",
   ]
 
   deps = [
@@ -17,13 +19,17 @@ source_set("heatmap") {
     "//chromeos/services/machine_learning/public/cpp",
     "//chromeos/services/machine_learning/public/mojom",
     "//mojo/public/cpp/bindings",
+    "//ui/ozone",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "heatmap_ml_agent_unittest.cc" ]
+  sources = [
+    "heatmap_ml_agent_unittest.cc",
+    "heatmap_palm_detector_unittest.cc",
+  ]
 
   deps = [
     ":heatmap",

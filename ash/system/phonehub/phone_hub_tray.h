@@ -10,7 +10,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/system/phonehub/onboarding_view.h"
 #include "ash/system/phonehub/phone_hub_content_view.h"
-#include "ash/system/phonehub/phone_hub_nudge_controller.h"
 #include "ash/system/phonehub/phone_hub_ui_controller.h"
 #include "ash/system/phonehub/phone_status_view.h"
 #include "ash/system/status_area_widget.h"
@@ -34,6 +33,7 @@ class ImageButton;
 namespace ash {
 
 class EcheIconLoadingIndicatorView;
+class OnboardingNudgeController;
 class PhoneHubContentView;
 class TrayBubbleWrapper;
 class SessionControllerImpl;
@@ -65,6 +65,7 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
 
   // TrayBackgroundView:
   void ClickedOutsideBubble() override;
+  void UpdateTrayItemColor(bool is_active) override;
   std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
@@ -82,6 +83,7 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
 
   // OnboardingView::Delegate:
   void HideStatusHeaderView() override;
+  bool IsPhoneHubIconClickedWhenNudgeVisible() override;
 
   // WindowTreeHostManager::Observer
   void OnDisplayConfigurationChanged() override;
@@ -111,13 +113,16 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
 
   views::View* content_view_for_testing() { return content_view_; }
 
-  PhoneHubUiController* ui_controller_for_testing() {
-    return ui_controller_.get();
+  PhoneHubUiController* ui_controller() { return ui_controller_.get(); }
+
+  OnboardingNudgeController* onboarding_nudge_controller_for_testing() {
+    return onboarding_nudge_controller_.get();
   }
 
-  PhoneHubNudgeController* phone_hub_nudge_controller_for_testing() {
-    return phone_hub_nudge_controller_.get();
-  }
+ protected:
+  // TrayBackgroundView:
+  void OnVisibilityAnimationFinished(bool should_log_visible_pod_count,
+                                     bool aborted) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(PhoneHubTrayTest, SafeAccessToHeaderView);
@@ -153,6 +158,15 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
 
   views::View* GetPhoneStatusView();
 
+  // Checks if nudge should be shown based on user login time.
+  bool IsInsideUnlockWindow();
+
+  bool IsInPhoneHubNudgeExperimentGroup();
+
+  bool is_icon_clicked_when_setup_notification_visible_ = false;
+
+  bool is_icon_clicked_when_nudge_visible_ = false;
+
   // Icon of the tray. Unowned.
   raw_ptr<views::ImageButton, ExperimentalAsh> icon_;
 
@@ -172,7 +186,7 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
   std::unique_ptr<PhoneHubUiController> ui_controller_;
 
   // Controls the behavior of a nudge shown to eligible users.
-  std::unique_ptr<PhoneHubNudgeController> phone_hub_nudge_controller_;
+  std::unique_ptr<OnboardingNudgeController> onboarding_nudge_controller_;
 
   // The bubble that appears after clicking the tray button.
   std::unique_ptr<TrayBubbleWrapper> bubble_;
@@ -188,6 +202,8 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
 
   raw_ptr<phonehub::PhoneHubManager, ExperimentalAsh> phone_hub_manager_ =
       nullptr;
+
+  base::Time last_unlocked_timestamp_;
 
   base::ScopedObservation<PhoneHubUiController, PhoneHubUiController::Observer>
       observed_phone_hub_ui_controller_{this};

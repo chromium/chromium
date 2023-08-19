@@ -116,7 +116,7 @@ class PolicyTestGoogle : public SafeSearchPolicyTest,
   net::EmbeddedTestServer https_server_;
   base::Lock lock_;
   std::map<std::string, net::HttpRequestHeaders> urls_requested_;
-  raw_ptr<Browser, DanglingUntriaged> incognito_browser_ = nullptr;
+  raw_ptr<Browser, AcrossTasksDanglingUntriaged> incognito_browser_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(, PolicyTestGoogle, ::testing::Bool());

@@ -23,6 +23,7 @@
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
 #include "chrome/browser/media/webrtc/webrtc_log_uploader.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
@@ -30,6 +31,7 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/media_device_salt/media_device_salt_service.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/public/browser/audio_service.h"
 #include "content/public/browser/browser_thread.h"
@@ -49,6 +51,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
@@ -123,6 +126,16 @@ class WebrtcAudioPrivateTest : public AudioWaitingExtensionTest {
     return RunFunctionAndReturnSingleResult(function.get(), "[]", profile());
   }
 
+  std::string GetMediaDeviceIDSalt(const url::Origin& origin) {
+    media_device_salt::MediaDeviceSaltService* salt_service =
+        MediaDeviceSaltServiceFactory::GetInstance()->GetForBrowserContext(
+            profile());
+    base::test::TestFuture<const std::string&> future;
+    salt_service->GetSalt(blink::StorageKey::CreateFirstParty(origin),
+                          future.GetCallback());
+    return future.Get();
+  }
+
   GURL source_url_;
 };
 
@@ -152,13 +165,12 @@ IN_PROC_BROWSER_TEST_F(WebrtcAudioPrivateTest, GetSinks) {
     const std::string* sink_id = dict.FindString("sinkId");
     EXPECT_TRUE(sink_id);
 
+    url::Origin origin = url::Origin::Create(source_url_);
     std::string expected_id =
         media::AudioDeviceDescription::IsDefaultDevice(it->unique_id)
             ? media::AudioDeviceDescription::kDefaultDeviceId
-            : content::GetHMACForMediaDeviceID(
-                  profile()->GetMediaDeviceIDSalt(),
-                  url::Origin::Create(source_url_.DeprecatedGetOriginAsURL()),
-                  it->unique_id);
+            : content::GetHMACForMediaDeviceID(GetMediaDeviceIDSalt(origin),
+                                               origin, it->unique_id);
 
     EXPECT_EQ(expected_id, *sink_id);
     const std::string* sink_label = dict.FindString("sinkLabel");
@@ -189,13 +201,13 @@ IN_PROC_BROWSER_TEST_F(WebrtcAudioPrivateTest, GetAssociatedSink) {
 
     std::string raw_device_id = device.unique_id;
     VLOG(2) << "Trying to find associated sink for device " << raw_device_id;
-    GURL origin(GURL("http://www.google.com/").DeprecatedGetOriginAsURL());
+    GURL gurl("http://www.google.com/");
+    url::Origin origin = url::Origin::Create(gurl);
     std::string source_id_in_origin = content::GetHMACForMediaDeviceID(
-        profile()->GetMediaDeviceIDSalt(), url::Origin::Create(origin),
-        raw_device_id);
+        GetMediaDeviceIDSalt(origin), origin, raw_device_id);
 
     base::Value::List parameters;
-    parameters.Append(origin.spec());
+    parameters.Append(gurl.spec());
     parameters.Append(source_id_in_origin);
     std::string parameter_string;
     JSONWriter::Write(parameters, &parameter_string);

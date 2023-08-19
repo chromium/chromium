@@ -272,7 +272,10 @@ std::vector<Section> SectionTestCases() {
   base::flat_map<LocalFrameToken, size_t> frame_token_ids;
   FormFieldData field;
   field.name = u"from_field_name";
-  field.host_frame = test::MakeLocalFrameToken();
+  // Randomizing the LocalFrameToken requires an AutofillTestEnvironment, which
+  // doesn't exist yet because SectionTestCases() is called by
+  // INSTANTIATE_TEST_SUITE_P().
+  field.host_frame = test::MakeLocalFrameToken(test::RandomizeFrame(false));
   field.unique_renderer_id = FieldRendererId(123);
   s = Section::FromFieldIdentifier(field, frame_token_ids);
   test_cases.push_back(s);
@@ -285,9 +288,8 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::ValuesIn(SectionTestCases()));
 
 TEST_F(AutofillTypeTraitsTestImpl, PassFormFieldData) {
-  FormFieldData input;
-  test::CreateTestSelectField("TestLabel", "TestName", "TestValue", kOptions,
-                              kOptions, &input);
+  FormFieldData input = test::CreateTestSelectField(
+      "TestLabel", "TestName", "TestValue", kOptions, kOptions);
   // Set other attributes to check if they are passed correctly.
   input.host_frame = test::MakeLocalFrameToken();
   input.unique_renderer_id = FieldRendererId(1234);
@@ -325,9 +327,8 @@ TEST_F(AutofillTypeTraitsTestImpl, PassFormFieldData) {
 
 TEST_F(AutofillTypeTraitsTestImpl, PassDataListFormFieldData) {
   // Basically copied from PassFormFieldData and replaced Select with Datalist.
-  FormFieldData input;
-  test::CreateTestDatalistField("DatalistLabel", "DatalistName",
-                                "DatalistValue", kOptions, kOptions, &input);
+  FormFieldData input = test::CreateTestDatalistField(
+      "DatalistLabel", "DatalistName", "DatalistValue", kOptions, kOptions);
   // Set other attributes to check if they are passed correctly.
   input.host_frame = test::MakeLocalFrameToken();
   input.unique_renderer_id = FieldRendererId(1234);

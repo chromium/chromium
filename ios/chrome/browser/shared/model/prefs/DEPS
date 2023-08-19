@@ -1,3 +1,16 @@
+include_rules = [
+  "+ios/chrome/browser/first_run/first_run.h",
+  "+ios/chrome/browser/memory/memory_debugger_manager.h",
+  "+ios/chrome/browser/metrics/ios_chrome_metrics_service_client.h",
+  "+ios/chrome/browser/ntp/set_up_list_prefs.h",
+  "+ios/chrome/browser/policy/policy_util.h",
+  "+ios/chrome/browser/prerender/prerender_pref.h",
+  "+ios/chrome/browser/push_notification/push_notification_service.h",
+  "+ios/chrome/browser/safety_check/ios_chrome_safety_check_manager_constants.h",
+  "+ios/chrome/browser/voice/voice_search_prefs_registration.h",
+  "+ios/chrome/browser/web/font_size/font_size_tab_helper.h",
+]
+
 specific_include_rules = {
   # TODO(crbug.com/1294160): Remove this dependency.
   "^browser_prefs.mm": [

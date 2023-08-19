@@ -17,10 +17,6 @@
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/ctap_make_credential_request.h"
 
-#if !defined(__OBJC__) || !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @class NSWindow;
 
 namespace device::fido::icloud_keychain {
@@ -63,14 +59,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) API_AVAILABLE(macos(13.3)) SystemInterface
   virtual void MakeCredential(
       NSWindow* window,
       CtapMakeCredentialRequest request,
-      base::OnceCallback<void(ASAuthorization* __strong, NSError* __strong)>
-          callback) = 0;
+      base::OnceCallback<void(ASAuthorization*, NSError*)> callback) = 0;
 
   virtual void GetAssertion(
       NSWindow* window,
       CtapGetAssertionRequest request,
-      base::OnceCallback<void(ASAuthorization* __strong, NSError* __strong)>
-          callback) = 0;
+      base::OnceCallback<void(ASAuthorization*, NSError*)> callback) = 0;
 
  protected:
   friend class base::RefCounted<SystemInterface>;

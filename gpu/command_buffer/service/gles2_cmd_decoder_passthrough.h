@@ -44,7 +44,6 @@
 
 namespace gl {
 class GLFence;
-class GLImage;
 class ProgressReporter;
 }
 
@@ -216,9 +215,6 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
                                         bool needs_depth,
                                         bool needs_stencil) override;
 
-  // Resize an offscreen frame buffer.
-  bool ResizeOffscreenFramebuffer(const gfx::Size& size) override;
-
   // Make this decoder's GL context current.
   bool MakeCurrent() override;
 
@@ -270,6 +266,8 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   // Set a callback to be called when a query is complete.
   void SetQueryCallback(unsigned int query_client_id,
                         base::OnceClosure callback) override;
+
+  void CancelAllQueries() override;
 
   // Gets the GpuFenceManager for this context.
   GpuFenceManager* GetGpuFenceManager() override;
@@ -390,16 +388,6 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   const ContextState* GetContextState() override;
   scoped_refptr<ShaderTranslatorInterface> GetTranslator(GLenum type) override;
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
-  void AttachImageToTextureWithDecoderBinding(uint32_t client_texture_id,
-                                              uint32_t texture_target,
-                                              gl::GLImage* image) override;
-#elif !BUILDFLAG(IS_ANDROID)
-  void AttachImageToTextureWithClientBinding(uint32_t client_texture_id,
-                                             uint32_t texture_target,
-                                             gl::GLImage* image) override;
-#endif
-
   void OnDebugMessage(GLenum source,
                       GLenum type,
                       GLuint id,
@@ -434,18 +422,6 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
  private:
   // Allow unittests to inspect internal state tracking
   friend class GLES2DecoderPassthroughTestBase;
-
-#if !BUILDFLAG(IS_ANDROID)
-  // Attaches |image| to the texture referred to by |client_texture_id|, marking
-  // the image as needing on-demand binding by the decoder if
-  // |can_bind_to_sampler| is false and as not needing on-demand binding by the
-  // decoder otherwise. |can_bind_to_sampler| is always false on Mac/Win and
-  // always true on all other platforms.
-  void BindImageInternal(uint32_t client_texture_id,
-                         uint32_t texture_target,
-                         gl::GLImage* image,
-                         bool can_bind_to_sampler);
-#endif
 
   const char* GetCommandName(unsigned int command_id) const;
 
@@ -542,53 +518,6 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
                                    gfx::SwapCompletionResult result);
   error::Error CheckSwapBuffersResult(gfx::SwapResult result,
                                       const char* function_name);
-
-  // Textures can be marked as needing binding only on Windows/Mac, so all
-  // functionality related to binding textures is relevant only on those
-  // platforms.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
-  // Issue BindTexImage calls for |passthrough_texture|, if
-  // they're pending.
-  void BindOnePendingImage(GLenum target, TexturePassthrough* texture);
-
-  // Issue BindTexImage calls for any GLImages that
-  // requested it in BindImage, and are currently bound to textures that
-  // are bound to samplers (i.e., are in |textures_pending_binding_|).
-  void BindPendingImagesForSamplers();
-
-  // Fail-fast inline version of BindPendingImagesForSamplers.
-  inline void BindPendingImagesForSamplersIfNeeded() {
-    if (!textures_pending_binding_.empty())
-      BindPendingImagesForSamplers();
-  }
-
-  // Fail-fast version of BindPendingImages that operates on a single texture
-  // that's specified by |client_id|.
-  inline void BindPendingImageForClientIDIfNeeded(int client_id) {
-    scoped_refptr<TexturePassthrough> texture;
-
-    // We could keep track of the number of |is_bind_pending| textures in
-    // |resources_|, and elide all of this if it's zero.
-    if (!resources_->texture_object_map.GetServiceID(client_id, &texture))
-      return;
-
-    if (texture && texture->is_bind_pending())
-      BindOnePendingImage(texture->target(), texture.get());
-  }
-
-  inline void RemovePendingBindingTexture(GLenum target, GLuint unit) {
-    // Note that this code was found to be faster than running base::EraseIf.
-    size_t num_pending = textures_pending_binding_.size();
-    for (size_t index = 0; index < num_pending; ++index) {
-      TexturePendingBinding& pending = textures_pending_binding_[index];
-      if (pending.target == target && pending.unit == unit) {
-        textures_pending_binding_.erase(textures_pending_binding_.begin() +
-                                        index);
-        return;
-      }
-    }
-  }
-#endif
 
   bool OnlyHasPendingProgramCompletionQueries();
 
@@ -729,27 +658,6 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   std::array<std::array<BoundTexture, kMaxTextureUnits>, kNumTextureTypes>
       bound_textures_;
 
-  // [target, texture unit, texture] where texture has a bound GLImage that
-  // requires binding before draw.
-  struct TexturePendingBinding {
-    TexturePendingBinding(GLenum target,
-                          GLuint unit,
-                          base::WeakPtr<TexturePassthrough> texture);
-    TexturePendingBinding(const TexturePendingBinding& other);
-    TexturePendingBinding(TexturePendingBinding&& other);
-    ~TexturePendingBinding();
-
-    TexturePendingBinding& operator=(const TexturePendingBinding& other);
-    TexturePendingBinding& operator=(TexturePendingBinding&& other);
-
-    GLenum target;
-    GLuint unit;
-    base::WeakPtr<TexturePassthrough> texture;
-  };
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
-  std::vector<TexturePendingBinding> textures_pending_binding_;
-#endif
-
   // State tracking of currently bound buffers
   base::flat_map<GLenum, GLuint> bound_buffers_;
   // Lazy tracking of the bound element array buffer when changing VAOs.
@@ -860,38 +768,6 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   bool CheckErrorCallbackState();
   bool had_error_callback_ = false;
 
-  // Default framebuffer emulation
-  struct EmulatedDefaultFramebufferFormat {
-    GLenum color_renderbuffer_internal_format = GL_NONE;
-    GLenum color_texture_internal_format = GL_NONE;
-    GLenum color_texture_format = GL_NONE;
-    GLenum color_texture_type = GL_NONE;
-    GLenum depth_stencil_internal_format = GL_NONE;
-    GLenum depth_internal_format = GL_NONE;
-    GLenum stencil_internal_format = GL_NONE;
-    GLint samples = 0;
-  };
-
-  struct EmulatedColorBuffer {
-    explicit EmulatedColorBuffer(const GLES2DecoderPassthroughImpl*);
-
-    EmulatedColorBuffer(const EmulatedColorBuffer&) = delete;
-    EmulatedColorBuffer& operator=(const EmulatedColorBuffer&) = delete;
-
-    ~EmulatedColorBuffer();
-
-    gl::GLApi* api() const { return impl_->api(); }
-
-    void Resize(const gfx::Size& new_size);
-    void Destroy(bool have_context);
-
-    raw_ptr<const GLES2DecoderPassthroughImpl> impl_;
-
-    scoped_refptr<TexturePassthrough> texture;
-
-    gfx::Size size;
-  };
-
   struct EmulatedDefaultFramebuffer {
     EmulatedDefaultFramebuffer(const GLES2DecoderPassthroughImpl*);
 
@@ -903,14 +779,7 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
 
     gl::GLApi* api() const { return impl_->api(); }
 
-    // Set a new color buffer, return the old one
-    std::unique_ptr<EmulatedColorBuffer> SetColorBuffer(
-        std::unique_ptr<EmulatedColorBuffer> new_color_buffer);
-
-    // Blit this framebuffer into another same-sized color buffer
-    void Blit(EmulatedColorBuffer* target);
-
-    bool Resize(const gfx::Size& new_size);
+    bool Initialize(const gfx::Size& size);
     void Destroy(bool have_context);
 
     raw_ptr<const GLES2DecoderPassthroughImpl> impl_;
@@ -918,24 +787,11 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
     // Service ID of the framebuffer
     GLuint framebuffer_service_id = 0;
 
-    // Service ID of the color renderbuffer (if multisampled)
-    GLuint color_buffer_service_id = 0;
-
-    // Color buffer texture (if not multisampled)
-    std::unique_ptr<EmulatedColorBuffer> color_texture;
-
-    // Service ID of the depth stencil renderbuffer
-    GLuint depth_stencil_buffer_service_id = 0;
-
-    // Service ID of the depth renderbuffer
-    GLuint depth_buffer_service_id = 0;
-
-    // Service ID of the stencil renderbuffer (
-    GLuint stencil_buffer_service_id = 0;
-
-    gfx::Size size;
+    // Color buffer texture
+    scoped_refptr<TexturePassthrough> texture;
   };
-  EmulatedDefaultFramebufferFormat emulated_default_framebuffer_format_;
+
+  GLenum emulated_default_framebuffer_format_;
   std::unique_ptr<EmulatedDefaultFramebuffer> emulated_back_buffer_;
   std::unique_ptr<GLES2ExternalFramebuffer> external_default_framebuffer_;
 

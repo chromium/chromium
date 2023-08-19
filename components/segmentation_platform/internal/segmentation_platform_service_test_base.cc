@@ -66,7 +66,7 @@ std::vector<std::unique_ptr<Config>> CreateTestConfigs() {
     config->segment_selection_ttl = base::Days(14);
     config->AddSegmentId(
         SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER);
-    config->on_demand_execution = true;
+    config->auto_execute_and_cache = false;
     configs.push_back(std::move(config));
   }
   {
@@ -125,12 +125,12 @@ void SegmentationPlatformServiceTestBase::InitPlatform(
   auto storage_service = std::make_unique<StorageService>(
       std::move(segment_db), std::move(signal_db),
       std::move(segment_storage_config_db), &test_clock_, ukm_data_manager,
-      std::move(configs), model_provider_factory.get(), &pref_service_);
+      std::move(configs), model_provider_factory.get(), &pref_service_,
+      base::DoNothing());
 
   auto params = std::make_unique<SegmentationPlatformServiceImpl::InitParams>();
   params->storage_service = std::move(storage_service);
-  params->model_provider =
-      std::make_unique<TestModelProviderFactory>(&model_provider_data_);
+  params->model_provider = std::move(model_provider_factory);
   params->profile_prefs = &pref_service_;
   params->history_service = history_service;
   params->task_runner = task_runner_;

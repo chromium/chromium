@@ -8,7 +8,6 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 class FollowManagementItemViewBinder {
-    private static final String TAG = "FMItemViewBinder";
     public static void bind(
             PropertyModel model, FollowManagementItemView view, PropertyKey propertyKey) {
         if (FollowManagementItemProperties.TITLE_KEY == propertyKey) {

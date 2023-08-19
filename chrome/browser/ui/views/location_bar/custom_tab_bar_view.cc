@@ -447,6 +447,10 @@ bool CustomTabBarView::IsShowingOriginForTesting() const {
   return title_origin_view_ && title_origin_view_->IsShowingOriginForTesting();
 }
 
+bool CustomTabBarView::IsShowingCloseButtonForTesting() const {
+  return close_button_->GetVisible();
+}
+
 void CustomTabBarView::GoBackToApp() {
   content::WebContents* web_contents = GetWebContents();
   content::NavigationController& controller = web_contents->GetController();

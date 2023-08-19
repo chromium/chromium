@@ -48,15 +48,15 @@ class TCPClientSocketBrokeredTest : public testing::Test,
 
   void SetUp() override {
     // Open a server socket on an ephemeral port.
-    listen_socket =
+    listen_socket_ =
         std::make_unique<net::TCPServerSocket>(nullptr, net::NetLogSource());
     net::IPEndPoint local_address(net::IPAddress::IPv4Localhost(), 0);
     ASSERT_THAT(
-        listen_socket->Listen(local_address, 1, /*ipv6_only=*/absl::nullopt),
+        listen_socket_->Listen(local_address, 1, /*ipv6_only=*/absl::nullopt),
         IsOk());
     // Get the server's address (including the actual port number).
-    ASSERT_THAT(listen_socket->GetLocalAddress(&local_address), IsOk());
-    listen_socket->Accept(&server_socket_, server_callback_.callback());
+    ASSERT_THAT(listen_socket_->GetLocalAddress(&local_address), IsOk());
+    listen_socket_->Accept(&server_socket_, server_callback_.callback());
     net::AddressList addr = net::AddressList::CreateFromIPAddress(
         net::IPAddress::IPv4Localhost(), local_address.port());
 
@@ -96,7 +96,7 @@ class TCPClientSocketBrokeredTest : public testing::Test,
 
  protected:
   std::unique_ptr<net::TransportClientSocket> socket_;
-  std::unique_ptr<net::TCPServerSocket> listen_socket;
+  std::unique_ptr<net::TCPServerSocket> listen_socket_;
   std::unique_ptr<net::StreamSocket> server_socket_;
   mojo::Receiver<mojom::SocketBroker> receiver_;
   BrokeredClientSocketFactory client_socket_factory_;
@@ -121,6 +121,61 @@ TEST_F(TCPClientSocketBrokeredTest, FailedConnect) {
   ASSERT_EQ(result, net::ERR_IO_PENDING);
   result = callback.WaitForResult();
   EXPECT_EQ(result, net::ERR_CONNECTION_FAILED);
+}
+
+TEST_F(TCPClientSocketBrokeredTest, Bind) {
+  net::TestCompletionCallback callback;
+
+  EXPECT_THAT(
+      socket_->Bind(net::IPEndPoint(net::IPAddress::IPv4Localhost(), 0)),
+      IsOk());
+  EXPECT_EQ(socket_->IsConnected(), false);
+
+  int result = socket_->Connect(callback.callback());
+
+  ASSERT_EQ(result, net::ERR_IO_PENDING);
+  result = callback.WaitForResult();
+  EXPECT_EQ(result, net::OK);
+}
+
+#if BUILDFLAG(IS_FUCHSIA)
+// TODO(crbug.com/1456795): Re-enable on Fuchsia once cause for failure is
+// determined.
+#define MAYBE_FailedBind DISABLED_FailedBind
+#else
+#define MAYBE_FailedBind FailedBind
+#endif
+TEST_F(TCPClientSocketBrokeredTest, MAYBE_FailedBind) {
+  net::TestCompletionCallback callback;
+
+  net::TCPServerSocket ipv6_server_socket(nullptr, net::NetLogSource());
+  net::IPEndPoint local_address(net::IPAddress::IPv6Localhost(), 0);
+  int listen_result =
+      ipv6_server_socket.Listen(local_address, 1, /*ipv6_only=*/absl::nullopt);
+  if (listen_result != net::OK) {
+    LOG(ERROR) << "Failed to listen on ::1 - probably because IPv6 is disabled."
+                  " Skipping the test";
+    return;
+  }
+  ASSERT_THAT(ipv6_server_socket.GetLocalAddress(&local_address), IsOk());
+
+  net::AddressList addr = net::AddressList::CreateFromIPAddress(
+      net::IPAddress::IPv6Localhost(), local_address.port());
+
+  socket_ = client_socket_factory_.CreateTransportClientSocket(
+      addr, nullptr, nullptr, net::NetLog::Get(), net::NetLogSource());
+
+  // Bind to an ipv4 address
+  EXPECT_THAT(
+      socket_->Bind(net::IPEndPoint(net::IPAddress::IPv4Localhost(), 0)),
+      IsOk());
+  EXPECT_EQ(socket_->IsConnected(), false);
+
+  // Attempt to connect to an ipv6 address after binding to an ipv4 address.
+  int result = socket_->Connect(callback.callback());
+
+  ASSERT_EQ(result, net::ERR_IO_PENDING);
+  EXPECT_THAT(callback.GetResult(result), Not(IsOk()));
 }
 
 TEST_F(TCPClientSocketBrokeredTest, WasEverUsed) {

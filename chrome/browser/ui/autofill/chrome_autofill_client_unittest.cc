@@ -10,6 +10,7 @@
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/fast_checkout/fast_checkout_client_impl.h"
 #include "chrome/browser/fast_checkout/fast_checkout_features.h"
+#include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/content/browser/content_autofill_router.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
@@ -21,13 +22,32 @@
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/ui/mock_fast_checkout_client.h"
 #include "components/autofill/core/common/form_interactions_flow.h"
+#include "components/plus_addresses/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/unified_consent/pref_names.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/android/autofill/autofill_save_card_bottom_sheet_bridge.h"
+#endif
+
 namespace autofill {
 namespace {
+
+using ::testing::InSequence;
+
+#if BUILDFLAG(IS_ANDROID)
+class MockAutofillSaveCardBottomSheetBridge
+    : public AutofillSaveCardBottomSheetBridge {
+ public:
+  MockAutofillSaveCardBottomSheetBridge()
+      : AutofillSaveCardBottomSheetBridge(
+            base::android::ScopedJavaGlobalRef<jobject>(nullptr)) {}
+
+  MOCK_METHOD(bool, RequestShowContent, (), (override));
+};
+#endif
 
 // Exposes the protected constructor.
 class TestChromeAutofillClient : public ChromeAutofillClient {
@@ -40,7 +60,18 @@ class TestChromeAutofillClient : public ChromeAutofillClient {
     return &fast_checkout_client_;
   }
 
+  // Inject a new MockAutofillSaveCardBottomSheetBridge.
+  // Returns a pointer to the mock.
+  MockAutofillSaveCardBottomSheetBridge*
+  InjectMockAutofillSaveCardBottomSheetBridge() {
+    auto mock = std::make_unique<MockAutofillSaveCardBottomSheetBridge>();
+    auto* pointer = mock.get();
+    SetAutofillSaveCardBottomSheetBridgeForTesting(std::move(mock));
+    return pointer;
+  }
+
   MockFastCheckoutClient fast_checkout_client_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 #endif
 };
 
@@ -53,8 +84,14 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
     NavigateAndCommit(GURL("about:blank"));
   }
 
+  void TearDown() override {
+    // Avoid that the raw pointer becomes dangling.
+    personal_data_manager_ = nullptr;
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
+
  protected:
-  ChromeAutofillClient* client() {
+  TestChromeAutofillClient* client() {
     return test_autofill_client_injector_[web_contents()];
   }
 
@@ -89,14 +126,15 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
   }
 
-  raw_ptr<TestPersonalDataManager, DanglingUntriaged> personal_data_manager_ =
-      nullptr;
+  raw_ptr<TestPersonalDataManager> personal_data_manager_ = nullptr;
   TestAutofillClientInjector<TestChromeAutofillClient>
       test_autofill_client_injector_;
   TestAutofillDriverInjector<TestContentAutofillDriver>
       test_autofill_driver_injector_;
   TestAutofillManagerInjector<TestBrowserAutofillManager>
       test_autofill_manager_injector_;
+
+  base::OnceCallback<void()> setup_flags_;
 };
 
 TEST_F(ChromeAutofillClientTest, GetFormInteractionsFlowId_BelowMaxFlowTime) {
@@ -152,6 +190,40 @@ TEST_F(ChromeAutofillClientTest, GetFormInteractionsFlowId_AdvancedTwice) {
   EXPECT_NE(first_interaction_flow_id,
             client()->GetCurrentFormInteractionsFlowId());
 }
+
+// Ensure that, by default, the plus address service is not available.
+// The positive case (feature enabled) will be tested in plus_addresses browser
+// tests; this test is intended to ensure the default state does not behave
+// unexpectedly.
+TEST_F(ChromeAutofillClientTest,
+       PlusAddressesDefaultFeatureStateMeansNullPlusAddressService) {
+  PlusAddressServiceFactory::GetForBrowserContext(
+      web_contents()->GetBrowserContext());
+  EXPECT_EQ(client()->GetPlusAddressService(), nullptr);
+}
+
+#if BUILDFLAG(IS_ANDROID)
+class ChromeAutofillClientTestWithPaymentsAndroidBottomSheetFeature
+    : public ChromeAutofillClientTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAutofillEnablePaymentsAndroidBottomSheet};
+};
+
+TEST_F(ChromeAutofillClientTestWithPaymentsAndroidBottomSheetFeature,
+       ConfirmSaveCreditCardToCloud_RequestsBottomSheet) {
+  TestChromeAutofillClient* autofill_client = client();
+  auto* bottom_sheet_bridge =
+      autofill_client->InjectMockAutofillSaveCardBottomSheetBridge();
+
+  EXPECT_CALL(*bottom_sheet_bridge, RequestShowContent());
+
+  autofill_client->ConfirmSaveCreditCardToCloud(
+      CreditCard(), LegalMessageLines(),
+      ChromeAutofillClient::SaveCreditCardOptions().with_show_prompt(true),
+      base::DoNothing());
+}
+#endif
 
 }  // namespace
 }  // namespace autofill

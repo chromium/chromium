@@ -28,8 +28,8 @@ TEST_F(LayoutTreeBuilderTraversalTest, emptySubTree) {
   const char* const kHtml = "<div id='top'></div>";
   SetupSampleHTML(kHtml);
 
-  Element* top = GetDocument().QuerySelector("#top");
-  Element* body = GetDocument().QuerySelector("body");
+  Element* top = GetDocument().QuerySelector(AtomicString("#top"));
+  Element* body = GetDocument().QuerySelector(AtomicString("body"));
   EXPECT_EQ(nullptr, LayoutTreeBuilderTraversal::FirstChild(*top));
   EXPECT_EQ(nullptr, LayoutTreeBuilderTraversal::NextSibling(*top));
   EXPECT_EQ(nullptr, LayoutTreeBuilderTraversal::PreviousSibling(*top));
@@ -47,7 +47,7 @@ TEST_F(LayoutTreeBuilderTraversalTest, pseudos) {
       "<div id='top'></div>";
   SetupSampleHTML(kHtml);
 
-  Element* top = GetDocument().QuerySelector("#top");
+  Element* top = GetDocument().QuerySelector(AtomicString("#top"));
   Element* marker = top->GetPseudoElement(kPseudoIdMarker);
   Element* before = top->GetPseudoElement(kPseudoIdBefore);
   Element* after = top->GetPseudoElement(kPseudoIdAfter);
@@ -69,8 +69,8 @@ TEST_F(LayoutTreeBuilderTraversalTest, emptyDisplayContents) {
       "<div id='last'></div>";
   SetupSampleHTML(kHtml);
 
-  Element* first = GetDocument().QuerySelector("div");
-  Element* last = GetDocument().QuerySelector("#last");
+  Element* first = GetDocument().QuerySelector(AtomicString("div"));
+  Element* last = GetDocument().QuerySelector(AtomicString("#last"));
 
   EXPECT_TRUE(last->GetLayoutObject());
   EXPECT_EQ(last->GetLayoutObject(),
@@ -85,10 +85,10 @@ TEST_F(LayoutTreeBuilderTraversalTest, displayContentsChildren) {
       "<div id='last'></div>";
   SetupSampleHTML(kHtml);
 
-  Element* first = GetDocument().QuerySelector("div");
-  Element* inner = GetDocument().QuerySelector("#inner");
-  Element* contents = GetDocument().QuerySelector("#contents");
-  Element* last = GetDocument().QuerySelector("#last");
+  Element* first = GetDocument().QuerySelector(AtomicString("div"));
+  Element* inner = GetDocument().QuerySelector(AtomicString("#inner"));
+  Element* contents = GetDocument().QuerySelector(AtomicString("#contents"));
+  Element* last = GetDocument().QuerySelector(AtomicString("#last"));
 
   EXPECT_TRUE(inner->GetLayoutObject());
   EXPECT_TRUE(last->GetLayoutObject());
@@ -118,10 +118,11 @@ TEST_F(LayoutTreeBuilderTraversalTest, displayContentsChildrenNested) {
       "<div id='last'></div>";
   SetupSampleHTML(kHtml);
 
-  Element* first = GetDocument().QuerySelector("div");
-  Element* inner = GetDocument().QuerySelector("#inner");
-  Element* sibling = GetDocument().QuerySelector("#inner-sibling");
-  Element* last = GetDocument().QuerySelector("#last");
+  Element* first = GetDocument().QuerySelector(AtomicString("div"));
+  Element* inner = GetDocument().QuerySelector(AtomicString("#inner"));
+  Element* sibling =
+      GetDocument().QuerySelector(AtomicString("#inner-sibling"));
+  Element* last = GetDocument().QuerySelector(AtomicString("#last"));
 
   EXPECT_TRUE(first->GetLayoutObject());
   EXPECT_TRUE(inner->GetLayoutObject());
@@ -156,7 +157,7 @@ TEST_F(LayoutTreeBuilderTraversalTest, limits) {
 
   SetupSampleHTML(kHtml);
 
-  Element* first = GetDocument().QuerySelector("div");
+  Element* first = GetDocument().QuerySelector(AtomicString("div"));
 
   EXPECT_TRUE(first->GetLayoutObject());
   LayoutObject* next_sibling =

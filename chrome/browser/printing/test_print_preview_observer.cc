@@ -54,10 +54,6 @@ void TestPrintPreviewObserver::WaitUntilPreviewIsReady() {
   std::ignore = WaitUntilPreviewIsReadyAndReturnPreviewDialog();
 }
 
-void TestPrintPreviewObserver::ResetForAnotherPreview() {
-  rendered_page_count_ = 0;
-}
-
 void TestPrintPreviewObserver::EnsureWaitForLoaded() {
   if (queue_.has_value()) {
     // Have already added event listener.

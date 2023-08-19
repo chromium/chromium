@@ -54,8 +54,8 @@ class FakeServiceContext : public ServiceContext {
  private:
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   raw_ptr<AssistantStateBase, ExperimentalAsh> assistant_state_ = nullptr;
-  raw_ptr<chromeos::PowerManagerClient, ExperimentalAsh> power_manager_client_ =
-      nullptr;
+  raw_ptr<chromeos::PowerManagerClient, DanglingUntriaged | ExperimentalAsh>
+      power_manager_client_ = nullptr;
   std::string gaia_id_ = kGaiaId;
   raw_ptr<AssistantAlarmTimerController, ExperimentalAsh>
       assistant_alarm_timer_controller_ = nullptr;

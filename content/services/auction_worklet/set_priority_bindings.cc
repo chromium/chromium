@@ -11,7 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
-#include "gin/converter.h"
+#include "content/services/auction_worklet/webidl_compat.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 #include "v8/include/v8-exception.h"
@@ -40,7 +40,7 @@ void SetPriorityBindings::AttachToContext(v8::Local<v8::Context> context) {
 
 void SetPriorityBindings::Reset() {
   set_priority_ = absl::nullopt;
-  exception_thrown_ = false;
+  already_called_ = false;
 }
 
 void SetPriorityBindings::SetPriority(
@@ -49,35 +49,27 @@ void SetPriorityBindings::SetPriority(
       v8::External::Cast(*args.Data())->Value());
   AuctionV8Helper* v8_helper = bindings->v8_helper_;
 
+  AuctionV8Helper::TimeLimitScope time_limit_scope(v8_helper->GetTimeLimit());
+  ArgsConverter args_converter(v8_helper, time_limit_scope,
+                               "setPriority(): ", &args,
+                               /*min_required_args=*/1);
+
   double set_priority;
-  if (args.Length() < 1 || args[0].IsEmpty() ||
-      !gin::ConvertFromV8(v8_helper->isolate(), args[0], &set_priority)) {
-    bindings->exception_thrown_ = true;
-    bindings->set_priority_.reset();
-    args.GetIsolate()->ThrowException(
-        v8::Exception::TypeError(v8_helper->CreateStringFromLiteral(
-            "setPriority requires 1 double parameter")));
+  if (!args_converter.ConvertArg(0, "priority", set_priority)) {
+    args_converter.TakeStatus().PropagateErrorsToV8(v8_helper);
+    // Note that we do not set `already_called_` here since in spec-land the
+    // call did not actually happen.
     return;
   }
 
-  if (!std::isfinite(set_priority)) {
-    bindings->exception_thrown_ = true;
-    bindings->set_priority_.reset();
-    args.GetIsolate()->ThrowException(
-        v8::Exception::TypeError(v8_helper->CreateStringFromLiteral(
-            "setPriority requires 1 finite double parameter")));
-    return;
-  }
-
-  if (bindings->exception_thrown_ || bindings->set_priority_) {
-    bindings->exception_thrown_ = true;
+  if (bindings->already_called_) {
     bindings->set_priority_.reset();
     args.GetIsolate()->ThrowException(
         v8::Exception::TypeError(v8_helper->CreateStringFromLiteral(
             "setPriority may be called at most once")));
     return;
   }
-
+  bindings->already_called_ = true;
   bindings->set_priority_ = set_priority;
 }
 

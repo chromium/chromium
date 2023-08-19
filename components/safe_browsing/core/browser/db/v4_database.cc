@@ -124,8 +124,15 @@ void V4Database::CreateOnTaskRunner(
   base::UmaHistogramExactLinear(
       "SafeBrowsing.V4Database.DirectoryCreationResult", -error,
       -base::File::FILE_ERROR_MAX);
+  if (error == base::File::FILE_ERROR_NOT_A_DIRECTORY) {
+    base::DeleteFile(base_path);
+    success = base::CreateDirectoryAndGetError(base_path, &error);
+    base::UmaHistogramExactLinear(
+        "SafeBrowsing.V4Database.DirectoryCreationResultAfterRetry", -error,
+        -base::File::FILE_ERROR_MAX);
+  }
   if (!success) {
-    NOTREACHED();
+    return;
   }
 
 #if BUILDFLAG(IS_APPLE)
@@ -140,8 +147,8 @@ void V4Database::CreateOnTaskRunner(
     }
 
     const base::FilePath store_path = base_path.AppendASCII(it.filename());
-    (*store_map)[it.list_id()] =
-        g_store_factory.Get()->CreateV4Store(db_task_runner, store_path);
+    store_map->insert({it.list_id(), g_store_factory.Get()->CreateV4Store(
+                                         db_task_runner, store_path)});
   }
 
   if (!g_db_factory.Get())
@@ -217,7 +224,7 @@ void V4Database::ApplyUpdate(
     ListIdentifier identifier(*response);
     StoreMap::const_iterator iter = store_map_->find(identifier);
     if (iter != store_map_->end()) {
-      const std::unique_ptr<V4Store>& old_store = iter->second;
+      const V4StorePtr& old_store = iter->second;
       if (old_store->state() != response->new_client_state()) {
         // A different state implies there are updates to process.
         pending_store_updates_++;
@@ -244,13 +251,13 @@ void V4Database::ApplyUpdate(
 }
 
 void V4Database::UpdatedStoreReady(ListIdentifier identifier,
-                                   std::unique_ptr<V4Store> new_store) {
+                                   V4StorePtr new_store) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sb_sequence_checker_);
   DCHECK(pending_store_updates_);
   if (new_store) {
-    (*store_map_)[identifier].swap(new_store);
-    // |new_store| now is the store that needs to be destroyed on task runner.
-    V4Store::Destroy(std::move(new_store));
+    if (auto it = store_map_->find(identifier); it != store_map_->end()) {
+      it->second.swap(new_store);
+    }
   }
 
   pending_store_updates_--;
@@ -386,6 +393,24 @@ void V4Database::RecordFileSizeHistograms() {
       static_cast<int64_t>(db_size_kilobytes / 1024);
   UMA_HISTOGRAM_EXACT_LINEAR(kV4DatabaseSizeLinearMetric, db_size_megabytes,
                              50);
+}
+
+HashPrefixMap::MigrateResult V4Database::GetMigrateResult() {
+  HashPrefixMap::MigrateResult final_result =
+      HashPrefixMap::MigrateResult::kUnknown;
+  for (const auto& store_map_iter : *store_map_) {
+    auto result = store_map_iter.second->migrate_result();
+    if (result == HashPrefixMap::MigrateResult::kFailure) {
+      return result;
+    }
+
+    if (final_result == HashPrefixMap::MigrateResult::kUnknown) {
+      final_result = result;
+    } else if (result != final_result) {
+      return HashPrefixMap::MigrateResult::kUnknown;
+    }
+  }
+  return final_result;
 }
 
 void V4Database::RecordDatabaseUpdateLatency() {

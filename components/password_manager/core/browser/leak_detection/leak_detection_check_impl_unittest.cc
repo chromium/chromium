@@ -112,10 +112,10 @@ class LeakDetectionCheckImplTest : public testing::TestWithParam<bool> {
   base::test::TaskEnvironment task_env_;
   signin::IdentityTestEnvironment identity_test_env_;
   StrictMock<MockLeakDetectionDelegateInterface> delegate_;
-  raw_ptr<MockLeakDetectionRequestFactory, DanglingUntriaged> request_factory_;
   base::HistogramTester histogram_tester_;
   base::ScopedMockElapsedTimersForTest mock_elapsed_timers_;
   std::unique_ptr<LeakDetectionCheckImpl> leak_check_;
+  raw_ptr<MockLeakDetectionRequestFactory> request_factory_ = nullptr;
 };
 
 PayloadAndCallback LeakDetectionCheckImplTest::ImitateNetworkRequest(

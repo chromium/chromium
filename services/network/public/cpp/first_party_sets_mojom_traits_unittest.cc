@@ -61,38 +61,6 @@ TEST(FirstPartySetsTraitsTest, Roundtrips_FirstPartySetEntry) {
   EXPECT_EQ(round_tripped.primary(), primary);
 }
 
-TEST(FirstPartySetsTraitsTest, Roundtrips_SamePartyCookieContextType) {
-  using ContextType = net::SamePartyContext::Type;
-  for (ContextType context_type :
-       {ContextType::kCrossParty, ContextType::kSameParty}) {
-    ContextType roundtrip;
-    ASSERT_TRUE(
-        mojo::test::SerializeAndDeserialize<mojom::SamePartyCookieContextType>(
-            context_type, roundtrip));
-    EXPECT_EQ(context_type, roundtrip);
-  }
-}
-
-TEST(FirstPartySetsTraitsTest, RoundTrips_SamePartyContext) {
-  {
-    net::SamePartyContext same_party(net::SamePartyContext::Type::kSameParty);
-    net::SamePartyContext copy;
-
-    EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::SamePartyContext>(
-        same_party, copy));
-    EXPECT_EQ(copy.context_type(), net::SamePartyContext::Type::kSameParty);
-  }
-
-  {
-    net::SamePartyContext cross_party(net::SamePartyContext::Type::kCrossParty);
-    net::SamePartyContext copy;
-
-    EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::SamePartyContext>(
-        cross_party, copy));
-    EXPECT_EQ(copy.context_type(), net::SamePartyContext::Type::kCrossParty);
-  }
-}
-
 TEST(FirstPartySetsTraitsTest, Roundtrips_FirstPartySetMetadata) {
   net::SchemefulSite frame_owner(GURL("https://frame.test"));
   net::SchemefulSite top_frame_owner(GURL("https://top_frame.test"));
@@ -105,9 +73,7 @@ TEST(FirstPartySetsTraitsTest, Roundtrips_FirstPartySetMetadata) {
   auto make_metadata = [&]() {
     // Use non-default values to ensure serialization/deserialization works
     // properly.
-    return net::FirstPartySetMetadata(
-        net::SamePartyContext(net::SamePartyContext::Type::kSameParty),
-        &frame_entry, &top_frame_entry);
+    return net::FirstPartySetMetadata(&frame_entry, &top_frame_entry);
   };
 
   net::FirstPartySetMetadata original = make_metadata();
@@ -116,8 +82,6 @@ TEST(FirstPartySetsTraitsTest, Roundtrips_FirstPartySetMetadata) {
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
               network::mojom::FirstPartySetMetadata>(original, round_tripped));
 
-  EXPECT_EQ(round_tripped.context(),
-            net::SamePartyContext(net::SamePartyContext::Type::kSameParty));
   EXPECT_EQ(round_tripped.frame_entry(), frame_entry);
   EXPECT_EQ(round_tripped.top_frame_entry(), top_frame_entry);
 

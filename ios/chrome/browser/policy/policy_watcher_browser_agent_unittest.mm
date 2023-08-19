@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/policy/policy_watcher_browser_agent.h"
 
 #import "base/apple/backup_util.h"
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/path_service.h"
 #import "base/test/ios/wait_util.h"
 #import "build/build_config.h"
@@ -37,10 +37,6 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using sync_preferences::PrefServiceMockFactory;
 using sync_preferences::PrefServiceSyncable;
@@ -465,7 +461,7 @@ TEST_F(PolicyWatcherBrowserAgentTest, AlertIfSyncDisabledChangedAtColdStart) {
 TEST_F(PolicyWatcherBrowserAgentTest, BackupPreventionChanged) {
   id mockHandler = OCMProtocolMock(@protocol(PolicyChangeCommands));
   agent_->Initialize(mockHandler);
-  base::FilePath storage_dir = base::mac::GetUserLibraryPath();
+  base::FilePath storage_dir = base::apple::GetUserLibraryPath();
 
   // Ensure that backups are allowed initially.
   ASSERT_TRUE(base::apple::ClearBackupExclusion(storage_dir));
@@ -486,7 +482,7 @@ TEST_F(PolicyWatcherBrowserAgentTest, BackupPreventionChanged) {
 // Tests that disabling the backup-allowed preference marks the app container
 // as excluded from backup at startup.
 TEST_F(PolicyWatcherBrowserAgentTest, BackupDisallowedAtColdStart) {
-  base::FilePath storage_dir = base::mac::GetUserLibraryPath();
+  base::FilePath storage_dir = base::apple::GetUserLibraryPath();
 
   // Ensure that backups are allowed initially.
   ASSERT_TRUE(base::apple::ClearBackupExclusion(storage_dir));
@@ -504,7 +500,7 @@ TEST_F(PolicyWatcherBrowserAgentTest, BackupDisallowedAtColdStart) {
 // Tests that enabling the backup-allowed preference marks the app container
 // as no longer excluded from backup at startup.
 TEST_F(PolicyWatcherBrowserAgentTest, BackupAllowedAtColdStart) {
-  base::FilePath storage_dir = base::mac::GetUserLibraryPath();
+  base::FilePath storage_dir = base::apple::GetUserLibraryPath();
 
   // Ensure that backups are disallowed initially.
   ASSERT_TRUE(base::apple::SetBackupExclusion(storage_dir));

@@ -20,6 +20,7 @@
 #include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_fence.h"
@@ -278,6 +279,14 @@ bool IsGL_REDSupportedOnFBOs() {
   // really needed to workaround a Mesa issue. See https://crbug.com/1158744.
   return true;
 #else
+
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          features::kCmdDecoderSkipGLRedMesaWorkaroundOnAndroid)) {
+    return true;
+  }
+#endif
+
   DCHECK(glGetError() == GL_NO_ERROR);
   // Skia uses GL_RED with frame buffers, unfortunately, Mesa claims to support
   // GL_EXT_texture_rg, but it doesn't support it on frame buffers.  To fix
@@ -500,7 +509,6 @@ void FeatureInfo::InitializeFeatures() {
   AddExtensionString("GL_CHROMIUM_async_pixel_transfers");
   AddExtensionString("GL_CHROMIUM_bind_uniform_location");
   AddExtensionString("GL_CHROMIUM_command_buffer_query");
-  AddExtensionString("GL_CHROMIUM_command_buffer_latency_query");
   AddExtensionString("GL_CHROMIUM_copy_texture");
   AddExtensionString("GL_CHROMIUM_deschedule");
   AddExtensionString("GL_CHROMIUM_get_error_query");
@@ -1249,8 +1257,8 @@ void FeatureInfo::InitializeFeatures() {
   }
 
 #if BUILDFLAG(IS_APPLE)
-  // Mac can create GLImages out of AR30 IOSurfaces only after 10.13 which is
-  // required for Chromium. iOS based devices seem to handle well also.
+  // Macs can create SharedImages out of AR30 IOSurfaces. iOS based devices seem
+  // to handle well also.
   feature_flags_.chromium_image_ar30 = true;
 #elif !BUILDFLAG(IS_WIN)
   // TODO(mcasas): connect in Windows, https://crbug.com/803451

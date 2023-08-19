@@ -9,15 +9,11 @@
 #include <simd/simd.h>
 #include <vector>
 
-#include "base/mac/foundation_util.h"
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/foundation_util.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/memory/scoped_policy.h"
 #include "base/no_destructor.h"
 #include "third_party/skia/modules/skcms/skcms.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace media {
 
@@ -30,7 +26,7 @@ template <typename IdType, typename StringIdPair>
 bool GetImageBufferProperty(CFTypeRef value_untyped,
                             const std::vector<StringIdPair>& cfstr_id_pairs,
                             IdType* value_as_id) {
-  CFStringRef value_as_string = base::mac::CFCast<CFStringRef>(value_untyped);
+  CFStringRef value_as_string = base::apple::CFCast<CFStringRef>(value_untyped);
   if (!value_as_string)
     return false;
 
@@ -71,6 +67,14 @@ const std::vector<CVImagePrimary>& GetSupportedImagePrimaries() {
             {kCVImageBufferColorPrimaries_ITU_R_2020,
              kCMFormatDescriptionColorPrimaries_ITU_R_2020,
              gfx::ColorSpace::PrimaryID::BT2020});
+        supported_primaries.push_back(
+            {kCVImageBufferColorPrimaries_DCI_P3,
+             kCMFormatDescriptionColorPrimaries_DCI_P3,
+             gfx::ColorSpace::PrimaryID::SMPTEST431_2});
+        supported_primaries.push_back(
+            {kCVImageBufferColorPrimaries_P3_D65,
+             kCMFormatDescriptionColorPrimaries_P3_D65,
+             gfx::ColorSpace::PrimaryID::P3});
         return supported_primaries;
       }());
   return *kSupportedPrimaries;
@@ -134,18 +138,14 @@ const std::vector<CVImageTransferFn>& GetSupportedImageTransferFn() {
         supported_transfer_funcs.push_back({kCVImageBufferTransferFunction_sRGB,
                                             nullptr,
                                             gfx::ColorSpace::TransferID::SRGB});
-        if (@available(macos 10.14, *)) {
-          supported_transfer_funcs.push_back(
-              {kCVImageBufferTransferFunction_Linear,
-               kCMFormatDescriptionTransferFunction_Linear,
-               gfx::ColorSpace::TransferID::LINEAR});
-        }
-        if (@available(macos 10.15, *)) {
-          supported_transfer_funcs.push_back(
-              {kCVImageBufferTransferFunction_sRGB,
-               kCMFormatDescriptionTransferFunction_sRGB,
-               gfx::ColorSpace::TransferID::SRGB});
-        }
+        supported_transfer_funcs.push_back(
+            {kCVImageBufferTransferFunction_Linear,
+             kCMFormatDescriptionTransferFunction_Linear,
+             gfx::ColorSpace::TransferID::LINEAR});
+        supported_transfer_funcs.push_back(
+            {kCVImageBufferTransferFunction_sRGB,
+             kCMFormatDescriptionTransferFunction_sRGB,
+             gfx::ColorSpace::TransferID::SRGB});
 
         return supported_transfer_funcs;
       }());
@@ -166,7 +166,7 @@ gfx::ColorSpace::TransferID GetCoreVideoTransferFn(CFTypeRef transfer_untyped,
   if (transfer_id != gfx::ColorSpace::TransferID::CUSTOM)
     return transfer_id;
 
-  CFNumberRef gamma_number = base::mac::CFCast<CFNumberRef>(gamma_untyped);
+  CFNumberRef gamma_number = base::apple::CFCast<CFNumberRef>(gamma_untyped);
   if (!gamma_number) {
     DLOG(ERROR) << "Failed to get gamma level.";
     return gfx::ColorSpace::TransferID::INVALID;

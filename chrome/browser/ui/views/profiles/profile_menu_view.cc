@@ -40,9 +40,11 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
-#include "chrome/browser/ui/profile_picker.h"
-#include "chrome/browser/ui/signin/profile_colors_util.h"
+#include "chrome/browser/ui/profiles/profile_colors_util.h"
+#include "chrome/browser/ui/profiles/profile_picker.h"
+#include "chrome/browser/ui/profiles/profile_view_utils.h"
 #include "chrome/browser/ui/sync/sync_promo_ui.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
@@ -111,37 +113,6 @@ std::u16string GetSyncErrorButtonText(AvatarSyncErrorType error) {
           IDS_SYNC_ERROR_USER_MENU_CONFIRM_SYNC_SETTINGS_BUTTON);
   }
 }
-
-void NavigateToGoogleAccountPage(Profile* profile, const std::string& email) {
-  // Create a URL so that the account chooser is shown if the account with
-  // |email| is not signed into the web. Include a UTM parameter to signal the
-  // source of the navigation.
-  GURL google_account = net::AppendQueryParameter(
-      GURL(chrome::kGoogleAccountURL), "utm_source", "chrome-profile-chooser");
-
-  GURL url(chrome::kGoogleAccountChooserURL);
-  url = net::AppendQueryParameter(url, "Email", email);
-  url = net::AppendQueryParameter(url, "continue", google_account.spec());
-
-  NavigateParams params(profile, url, ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  Navigate(&params);
-}
-
-// Returns the number of browsers associated with |profile|.
-// Note: For regular profiles this includes incognito sessions.
-int CountBrowsersFor(Profile* profile) {
-  int browser_count = chrome::GetBrowserCount(profile);
-  if (!profile->IsOffTheRecord() && profile->HasPrimaryOTRProfile())
-    browser_count += chrome::GetBrowserCount(
-        profile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
-  return browser_count;
-}
-
-bool IsSyncPaused(Profile* profile) {
-  return GetAvatarSyncErrorType(profile) == AvatarSyncErrorType::kSyncPaused;
-}
-
 }  // namespace
 
 // ProfileMenuView ---------------------------------------------------------
@@ -208,17 +179,31 @@ gfx::ImageSkia ProfileMenuView::GetSyncIcon() const {
     // This is done regardless of GetAvatarSyncErrorType() because the icon
     // should reflect that sync-the-feature is off. The error will still be
     // highlighted by other parts of the UI.
-    return ColoredImageForMenu(kSyncPausedCircleIcon, ui::kColorIcon);
+    return features::IsChromeRefresh2023()
+               ? ColoredImageForMenu(kSyncDisabledChromeRefreshIcon,
+                                     kColorProfileMenuSyncOffIcon)
+               : ColoredImageForMenu(kSyncPausedCircleIcon, ui::kColorIcon);
   }
 
   absl::optional<AvatarSyncErrorType> error = GetAvatarSyncErrorType(profile);
-  if (!error)
-    return ColoredImageForMenu(kSyncCircleIcon, ui::kColorAlertLowSeverity);
+  if (!error) {
+    return features::IsChromeRefresh2023()
+               ? ColoredImageForMenu(kSyncChromeRefreshIcon,
+                                     kColorProfileMenuSyncIcon)
+               : ColoredImageForMenu(kSyncCircleIcon,
+                                     ui::kColorAlertLowSeverity);
+  }
 
   ui::ColorId color_id = error == AvatarSyncErrorType::kSyncPaused
                              ? ui::kColorButtonBackgroundProminent
                              : ui::kColorAlertHighSeverity;
-  return ColoredImageForMenu(kSyncPausedCircleIcon, color_id);
+  ui::ColorId refreshed_color_id = error == AvatarSyncErrorType::kSyncPaused
+                                       ? kColorProfileMenuSyncPausedIcon
+                                       : kColorProfileMenuSyncErrorIcon;
+  return features::IsChromeRefresh2023()
+             ? ColoredImageForMenu(kSyncDisabledChromeRefreshIcon,
+                                   refreshed_color_id)
+             : ColoredImageForMenu(kSyncPausedCircleIcon, color_id);
 }
 
 std::u16string ProfileMenuView::GetAccessibleWindowTitle() const {
@@ -551,7 +536,7 @@ void ProfileMenuView::BuildGuestIdentity() {
 
 void ProfileMenuView::BuildAutofillButtons() {
   AddShortcutFeatureButton(
-      features::IsChromeRefresh2023() ? kKeyChromeRefreshIcon : kKeyIcon,
+      features::IsChromeRefresh2023() ? kKeyOpenChromeRefreshIcon : kKeyIcon,
       l10n_util::GetStringUTF16(
           IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SAVING_ON_DEVICE),
       base::BindRepeating(&ProfileMenuView::OnPasswordsButtonClicked,
@@ -644,12 +629,7 @@ void ProfileMenuView::BuildSyncInfo() {
 
 void ProfileMenuView::BuildFeatureButtons() {
   Profile* profile = browser()->profile();
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  const bool has_unconsented_account =
-      !profile->IsGuestSession() &&
-      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
-
+  bool has_unconsented_account = HasUnconstentedProfile(profile);
   if (has_unconsented_account && !IsSyncPaused(profile)) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     // The Google G icon needs to be shrunk, so it won't look too big compared
@@ -677,19 +657,21 @@ void ProfileMenuView::BuildFeatureButtons() {
                                          window_count),
         base::BindRepeating(&ProfileMenuView::OnExitProfileButtonClicked,
                             base::Unretained(this)),
-        vector_icons::kCloseIcon);
-  } else {
-    if (window_count > 1) {
-      AddFeatureButton(
-          l10n_util::GetPluralStringFUTF16(IDS_PROFILES_CLOSE_X_WINDOWS_BUTTON,
-                                           window_count),
-          base::BindRepeating(&ProfileMenuView::OnExitProfileButtonClicked,
-                              base::Unretained(this)),
-          vector_icons::kCloseIcon);
-    }
+        features::IsChromeRefresh2023() ? vector_icons::kCloseChromeRefreshIcon
+                                        : vector_icons::kCloseIcon);
+  } else if (window_count > 1) {
+    AddFeatureButton(
+        l10n_util::GetPluralStringFUTF16(IDS_PROFILES_CLOSE_X_WINDOWS_BUTTON,
+                                         window_count),
+        base::BindRepeating(&ProfileMenuView::OnExitProfileButtonClicked,
+                            base::Unretained(this)),
+        features::IsChromeRefresh2023() ? vector_icons::kCloseChromeRefreshIcon
+                                        : vector_icons::kCloseIcon);
   }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
   const bool has_primary_account =
       !profile->IsGuestSession() &&
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
@@ -779,7 +761,9 @@ void ProfileMenuView::BuildProfileManagementFeatureButtons() {
   }
   if (profiles::IsProfileCreationAllowed()) {
     AddProfileManagementFeatureButton(
-        kAddIcon, l10n_util::GetStringUTF16(IDS_ADD),
+        features::IsChromeRefresh2023() ? vector_icons::kAddChromeRefreshIcon
+                                        : kAddIcon,
+        l10n_util::GetStringUTF16(IDS_ADD),
         base::BindRepeating(&ProfileMenuView::OnAddNewProfileButtonClicked,
                             base::Unretained(this)));
   }

@@ -20,10 +20,6 @@
 #import "net/base/url_util.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 bool IsURLAllowedInIncognito(const GURL& url) {
   // Most URLs are allowed in incognito; the following is an exception.
   return !(url.SchemeIs(kChromeUIScheme) && url.host() == kChromeUIHistoryHost);

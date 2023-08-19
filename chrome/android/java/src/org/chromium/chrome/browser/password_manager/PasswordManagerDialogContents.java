@@ -99,8 +99,7 @@ public class PasswordManagerDialogContents {
     /**
      * Returns the text displayed in the secondary button or null if the dialog has only one button.
      */
-    @Nullable
-    public String getSecondaryButtonText() {
+    public @Nullable String getSecondaryButtonText() {
         return mSecondaryButtonText;
     }
 
@@ -131,8 +130,7 @@ public class PasswordManagerDialogContents {
      * Returns the callback handling the click on the help icon or null if no help icon should be
      * displayed.
      */
-    @Nullable
-    public Runnable getHelpButtonCallback() {
+    public @Nullable Runnable getHelpButtonCallback() {
         return mHelpButtonCallback;
     }
 

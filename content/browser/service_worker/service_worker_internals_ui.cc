@@ -140,6 +140,10 @@ base::Value::Dict UpdateVersionInfo(const ServiceWorkerVersionInfo& version) {
     info.Set("fetch_handler_type", "UNKNOWN");
   }
 
+  if (version.router_rules) {
+    info.Set("router_rules", *version.router_rules);
+  }
+
   info.Set("script_url", version.script_url.spec());
   info.Set("version_id", base::NumberToString(version.version_id));
   info.Set("process_id",

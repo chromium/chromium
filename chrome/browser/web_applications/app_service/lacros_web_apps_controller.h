@@ -15,7 +15,6 @@
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
@@ -60,15 +59,6 @@ class LacrosWebAppsController : public crosapi::mojom::AppController,
   void SetPublisherForTesting(crosapi::mojom::AppPublisher* publisher);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(LacrosWebAppsControllerBrowserTest,
-                           ExecuteContextMenuCommand);
-  FRIEND_TEST_ALL_PREFIXES(LacrosWebAppsControllerBrowserTest, PauseUnpause);
-  FRIEND_TEST_ALL_PREFIXES(LacrosWebAppsControllerBrowserTest,
-                           OpenNativeSettings);
-  FRIEND_TEST_ALL_PREFIXES(LacrosWebAppsControllerBrowserTest, WindowMode);
-  FRIEND_TEST_ALL_PREFIXES(LacrosWebAppsControllerBrowserTest, Launch);
-  FRIEND_TEST_ALL_PREFIXES(LacrosWebAppsControllerBrowserTest, LaunchWithFiles);
-
   void OnReady();
   void ExecuteContextMenuCommandInternal(
       const std::string& app_id,

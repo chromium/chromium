@@ -4,13 +4,11 @@ caption: Allow access to a list of URLs
 desc: |-
   Setting the policy provides access to the listed URLs, as exceptions to <ph name="URL_BLOCKLIST_POLICY_NAME">URLBlocklist</ph>. See that policy's description for the format of entries of this list. For example, setting <ph name="URL_BLOCKLIST_POLICY_NAME">URLBlocklist</ph> to * will block all requests, and you can use this policy to allow access to a limited list of URLs. Use it to open exceptions to certain schemes, subdomains of other domains, ports, or specific paths, using the format specified at ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ). The most specific filter determines if a URL is blocked or allowed. The <ph name="URL_ALLOWLIST_POLICY_NAME">URLAllowlist</ph> policy takes precedence over <ph name="URL_BLOCKLIST_POLICY_NAME">URLBlocklist</ph>. This policy is limited to 1,000 entries.
 
-        This policy also allows enabling the automatic invocation by the browser of external application registered as protocol handlers for the listed protocols like "tel:" or "ssh:".
+  This policy also allows enabling the automatic invocation by the browser of external application registered as protocol handlers for the listed protocols like "tel:" or "ssh:".
 
-        Leaving the policy unset allows no exceptions to <ph name="URL_BLOCKLIST_POLICY_NAME">URLBlocklist</ph>.
+  Leaving the policy unset allows no exceptions to <ph name="URL_BLOCKLIST_POLICY_NAME">URLBlocklist</ph>.
 
-        From <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 92, this policy is also supported in the headless mode.
-
-        On <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>, this functionality is only available on instances that are joined to a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain, running on Windows 10 Pro, or enrolled in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME">Chrome Browser Cloud Management</ph>. On <ph name="MAC_OS_NAME">macOS</ph>, this functionality is only available on instances that are managed via MDM, or joined to a domain via MCX.
+  From <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 92, this policy is also supported in the headless mode.
 example_value:
 - example.com
 - https://ssl.server.com

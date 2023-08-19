@@ -85,9 +85,14 @@ sync_pb::SyncEnums::DeviceType GetLocalDeviceType() {
 #elif BUILDFLAG(IS_LINUX)
   return sync_pb::SyncEnums_DeviceType_TYPE_LINUX;
 #elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET
-             ? sync_pb::SyncEnums_DeviceType_TYPE_TABLET
-             : sync_pb::SyncEnums_DeviceType_TYPE_PHONE;
+  switch (ui::GetDeviceFormFactor()) {
+    case ui::DEVICE_FORM_FACTOR_TABLET:
+      return sync_pb::SyncEnums_DeviceType_TYPE_TABLET;
+    case ui::DEVICE_FORM_FACTOR_PHONE:
+      return sync_pb::SyncEnums_DeviceType_TYPE_PHONE;
+    default:
+      return sync_pb::SyncEnums_DeviceType_TYPE_OTHER;
+  }
 #elif BUILDFLAG(IS_MAC)
   return sync_pb::SyncEnums_DeviceType_TYPE_MAC;
 #elif BUILDFLAG(IS_WIN)

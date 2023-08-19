@@ -36,7 +36,6 @@
 #include "extensions/common/api/automation_internal.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/manifest_handlers/automation.h"
-#include "extensions/common/mojom/automation_query.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -59,62 +58,6 @@ namespace {
 
 const char kCannotRequestAutomationOnPage[] =
     "Failed request of automation on a page";
-const char kRendererDestroyed[] = "The tab was closed.";
-const char kNoDocument[] = "No document.";
-const char kNodeDestroyed[] =
-    "domQuerySelector sent on node which is no longer in the tree.";
-
-// Handles sending and receiving IPCs for a single querySelector request. On
-// creation, sends the request IPC, and is destroyed either when the response is
-// received or the renderer is destroyed.
-class QuerySelectorHandler {
- public:
-  QuerySelectorHandler(
-      blink::AssociatedInterfaceProvider* interface_provider,
-      int acc_obj_id,
-      const std::string& query,
-      extensions::AutomationInternalQuerySelectorFunction::Callback callback)
-      : callback_(std::move(callback)) {
-    interface_provider->GetInterface(&automation_query_);
-    automation_query_->QuerySelector(
-        acc_obj_id, query,
-        base::BindOnce(&QuerySelectorHandler::OnQueryResponse,
-                       base::Unretained(this)));
-    automation_query_.set_disconnect_handler(
-        base::BindOnce(&QuerySelectorHandler::HandleAutomationQueryRemoteError,
-                       base::Unretained(this)));
-  }
-
-  ~QuerySelectorHandler() = default;
-
- private:
-  void OnQueryResponse(int32_t result_acc_obj_id,
-                       extensions::mojom::AutomationQueryError error) {
-    std::string error_string;
-    switch (error) {
-      case extensions::mojom::AutomationQueryError::kNone:
-        break;
-      case extensions::mojom::AutomationQueryError::kNoDocument:
-        error_string = kNoDocument;
-        break;
-      case extensions::mojom::AutomationQueryError::kNodeDestroyed:
-        error_string = kNodeDestroyed;
-        break;
-    }
-    std::move(callback_).Run(error_string, result_acc_obj_id);
-    delete this;
-  }
-
-  void HandleAutomationQueryRemoteError() {
-    std::move(callback_).Run(kRendererDestroyed, 0);
-    delete this;
-  }
-
-  extensions::AutomationInternalQuerySelectorFunction::Callback callback_;
-
-  // Handles sending IPCs for a single querySelector request.
-  mojo::AssociatedRemote<extensions::mojom::AutomationQuery> automation_query_;
-};
 
 // Helper function to convert extension action to ax action.
 // |extension_id| can be the empty string.
@@ -397,13 +340,9 @@ class AutomationWebContentsObserver
   void AccessibilityLocationChangesReceived(
       const std::vector<content::AXLocationChangeNotificationDetails>& details)
       override {
+    AutomationEventRouter* router = AutomationEventRouter::GetInstance();
     for (const auto& src : details) {
-      ExtensionMsg_AccessibilityLocationChangeParams dst;
-      dst.id = src.id;
-      dst.tree_id = src.ax_tree_id;
-      dst.new_location = src.new_location;
-      AutomationEventRouter* router = AutomationEventRouter::GetInstance();
-      router->DispatchAccessibilityLocationChange(dst);
+      router->DispatchAccessibilityLocationChange(src);
     }
   }
 
@@ -500,12 +439,14 @@ class AutomationWebContentsObserver
             *web_contents),
         browser_context_(web_contents->GetBrowserContext()) {
     if (web_contents->IsCurrentlyAudible()) {
-      content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
-      if (!rfh)
+      content::RenderFrameHost* render_frame_host =
+          web_contents->GetPrimaryMainFrame();
+      if (!render_frame_host) {
         return;
+      }
 
       content::AXEventNotificationDetails content_event_bundle;
-      content_event_bundle.ax_tree_id = rfh->GetAXTreeID();
+      content_event_bundle.ax_tree_id = render_frame_host->GetAXTreeID();
       content_event_bundle.events.resize(1);
       content_event_bundle.events[0].event_type =
           ax::mojom::Event::kMediaStartedPlaying;
@@ -527,61 +468,6 @@ class AutomationWebContentsObserver
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AutomationWebContentsObserver);
 
-ExtensionFunction::ResponseAction AutomationInternalEnableTabFunction::Run() {
-  const AutomationInfo* automation_info = AutomationInfo::Get(extension());
-  EXTENSION_FUNCTION_VALIDATE(automation_info);
-
-  using api::automation_internal::EnableTab::Params;
-  absl::optional<Params> params = Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  content::WebContents* contents = nullptr;
-  AutomationInternalApiDelegate* automation_api_delegate =
-      ExtensionsAPIClient::Get()->GetAutomationInternalApiDelegate();
-  int tab_id = -1;
-  if (params->args.tab_id) {
-    tab_id = *params->args.tab_id;
-    std::string error_string;
-    if (!automation_api_delegate->GetTabById(tab_id, browser_context(),
-                                             include_incognito_information(),
-                                             &contents, &error_string)) {
-      return RespondNow(Error(error_string, base::NumberToString(tab_id)));
-    }
-  } else {
-    contents = automation_api_delegate->GetActiveWebContents(this);
-    if (!contents)
-      return RespondNow(Error("No active tab"));
-
-    tab_id = automation_api_delegate->GetTabId(contents);
-  }
-
-  content::RenderFrameHost* rfh = contents->GetPrimaryMainFrame();
-  if (!rfh)
-    return RespondNow(Error("Could not enable accessibility for active tab"));
-
-  if (!automation_api_delegate->CanRequestAutomation(
-          extension(), automation_info, contents)) {
-    return RespondNow(Error(kCannotRequestAutomationOnPage));
-  }
-
-  AutomationWebContentsObserver::CreateForWebContents(contents);
-
-  ui::AXTreeID ax_tree_id = rfh->GetAXTreeID();
-
-  // The AXTreeID is not yet ready/set.
-  if (ax_tree_id == ui::AXTreeIDUnknown())
-    return RespondNow(Error("Tab is not ready."));
-
-  // This gets removed when the extension process dies.
-  AutomationEventRouter::GetInstance()->RegisterListenerForOneTree(
-      extension_id(), source_process_id(), GetSenderWebContents(), ax_tree_id);
-
-  api::automation_internal::EnableTabCallbackInfo info;
-  info.tab_id = tab_id;
-  info.tree_id = ax_tree_id.ToString();
-  return RespondNow(
-      ArgumentList(api::automation_internal::EnableTab::Results::Create(info)));
-}
-
 absl::optional<std::string> AutomationInternalEnableTreeFunction::EnableTree(
     const ui::AXTreeID& ax_tree_id,
     const ExtensionId& extension_id) {
@@ -590,19 +476,21 @@ absl::optional<std::string> AutomationInternalEnableTreeFunction::EnableTree(
   if (automation_api_delegate->EnableTree(ax_tree_id))
     return absl::nullopt;
 
-  content::RenderFrameHost* rfh =
+  content::RenderFrameHost* render_frame_host =
       content::RenderFrameHost::FromAXTreeID(ax_tree_id);
-  if (!rfh)
+  if (!render_frame_host) {
     return absl::nullopt;
+  }
 
   content::WebContents* contents =
-      content::WebContents::FromRenderFrameHost(rfh);
+      content::WebContents::FromRenderFrameHost(render_frame_host);
   AutomationWebContentsObserver::CreateForWebContents(contents);
 
   // Only call this if this is the root of a frame tree, to avoid resetting
   // the accessibility state multiple times.
-  if (rfh->IsInPrimaryMainFrame())
+  if (render_frame_host->IsInPrimaryMainFrame()) {
     contents->EnableWebContentsOnlyAccessibilityMode();
+  }
 
   return absl::nullopt;
 }
@@ -645,14 +533,14 @@ AutomationInternalPerformActionFunction::PerformAction(
   ui::AXActionHandlerBase* action_handler =
       registry->GetActionHandler(data.target_tree_id);
   if (action_handler) {
-    // Handle an AXActionHandler with a rfh first. Some actions require a rfh ->
-    // web contents and this api requires web contents to perform a permissions
-    // check.
-    content::RenderFrameHost* rfh =
+    // Handle an AXActionHandler with a render frame host first. Some actions
+    // require a render frame host -> web contents and this api requires web
+    // contents to perform a permissions check.
+    content::RenderFrameHost* render_frame_host =
         content::RenderFrameHost::FromAXTreeID(data.target_tree_id);
-    if (rfh) {
+    if (render_frame_host) {
       content::WebContents* contents =
-          content::WebContents::FromRenderFrameHost(rfh);
+          content::WebContents::FromRenderFrameHost(render_frame_host);
       if (extension && automation_info) {
         if (!ExtensionsAPIClient::Get()
                  ->GetAutomationInternalApiDelegate()
@@ -766,46 +654,6 @@ AutomationInternalDisableDesktopFunction::Run() {
 #else
   return RespondNow(Error("getDesktop is unsupported by this platform"));
 #endif  // defined(USE_AURA)
-}
-
-// static
-int AutomationInternalQuerySelectorFunction::query_request_id_counter_ = 0;
-
-ExtensionFunction::ResponseAction
-AutomationInternalQuerySelectorFunction::Run() {
-  const AutomationInfo* automation_info = AutomationInfo::Get(extension());
-  EXTENSION_FUNCTION_VALIDATE(automation_info);
-
-  using api::automation_internal::QuerySelector::Params;
-  absl::optional<Params> params = Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  content::RenderFrameHost* rfh = content::RenderFrameHost::FromAXTreeID(
-      ui::AXTreeID::FromString(params->args.tree_id));
-  if (!rfh) {
-    return RespondNow(
-        Error("domQuerySelector query sent on non-web or destroyed tree."));
-  }
-
-  // QuerySelectorHandler handles IPCs and deletes itself on completion.
-  new QuerySelectorHandler(
-      rfh->GetRemoteAssociatedInterfaces(), params->args.automation_node_id,
-      params->args.selector,
-      base::BindOnce(&AutomationInternalQuerySelectorFunction::OnResponse,
-                     this));
-
-  return RespondLater();
-}
-
-void AutomationInternalQuerySelectorFunction::OnResponse(
-    const std::string& error,
-    int result_acc_obj_id) {
-  if (!error.empty()) {
-    Respond(Error(error));
-    return;
-  }
-
-  Respond(WithArguments(result_acc_obj_id));
 }
 
 }  // namespace extensions

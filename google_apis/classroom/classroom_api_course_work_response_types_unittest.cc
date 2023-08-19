@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/json/json_reader.h"
+#include "google_apis/common/time_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace google_apis::classroom {
@@ -38,13 +39,17 @@ TEST(ClassroomApiCourseWorkResponseTypesTest, ConvertsCourseWork) {
             "id": "course-work-item-1",
             "title": "Math assignment",
             "state": "PUBLISHED",
-            "alternateLink": "https://classroom.google.com/c/abc/a/def/details"
+            "alternateLink": "https://classroom.google.com/c/abc/a/def/details",
+            "creationTime": "2023-07-03T06:55:54.456Z",
+            "updateTime": "2023-07-09T06:55:54.456Z"
           },
           {
             "id": "course-work-item-2",
             "title": "Math multiple choice question",
             "state": "DRAFT",
-            "alternateLink": "https://classroom.google.com/c/ghi/a/jkl/details"
+            "alternateLink": "https://classroom.google.com/c/ghi/a/jkl/details",
+            "creationTime": "2023-04-03T00:10:55.000Z",
+            "updateTime": "2023-04-04T00:10:55.000Z"
           }
         ]
       })");
@@ -63,6 +68,11 @@ TEST(ClassroomApiCourseWorkResponseTypesTest, ConvertsCourseWork) {
             "https://classroom.google.com/c/abc/a/def/details");
   EXPECT_FALSE(course_work->items().at(0)->due_date_time());
   EXPECT_FALSE(course_work->items().at(0)->due_date_time());
+  EXPECT_EQ(
+      util::FormatTimeAsString(course_work->items().at(0)->creation_time()),
+      "2023-07-03T06:55:54.456Z");
+  EXPECT_EQ(util::FormatTimeAsString(course_work->items().at(0)->last_update()),
+            "2023-07-09T06:55:54.456Z");
 
   EXPECT_EQ(course_work->items().at(1)->id(), "course-work-item-2");
   EXPECT_EQ(course_work->items().at(1)->title(),
@@ -72,6 +82,11 @@ TEST(ClassroomApiCourseWorkResponseTypesTest, ConvertsCourseWork) {
             "https://classroom.google.com/c/ghi/a/jkl/details");
   EXPECT_FALSE(course_work->items().at(1)->due_date_time());
   EXPECT_FALSE(course_work->items().at(1)->due_date_time());
+  EXPECT_EQ(
+      util::FormatTimeAsString(course_work->items().at(1)->creation_time()),
+      "2023-04-03T00:10:55.000Z");
+  EXPECT_EQ(util::FormatTimeAsString(course_work->items().at(1)->last_update()),
+            "2023-04-04T00:10:55.000Z");
 }
 
 TEST(ClassroomApiCourseWorkResponseTypesTest, ConvertsNextPageToken) {

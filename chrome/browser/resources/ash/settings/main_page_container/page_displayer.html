@@ -1,0 +1,16 @@
+<style>
+  :host {
+    /* Do not show outline when focused. */
+    outline: none;
+  }
+
+  /* When infinite scroll is removed, only active pages should be visible. */
+  :host-context(body.revamp-wayfinding-enabled):host(:not([active])) {
+    display: none;
+  }
+</style>
+<!-- This element should be focusable (e.g. After this page's respective menu
+  item is selected). Set tabindex="-1" so this element is focusable, but not
+  reachable via sequential keyboard navigation. -->
+<div id="focusHost" tabindex="-1"></div>
+<slot></slot>

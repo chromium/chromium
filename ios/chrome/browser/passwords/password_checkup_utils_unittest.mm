@@ -24,10 +24,6 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using password_manager::CredentialUIEntry;
 using password_manager::InsecureType;
 using password_manager::PasswordForm;
@@ -91,8 +87,6 @@ void AddIssueToForm(PasswordForm* form,
 class PasswordCheckupUtilsTest : public PlatformTest {
  protected:
   PasswordCheckupUtilsTest() {
-    feature_list_.InitAndEnableFeature(
-        password_manager::features::kPasswordsGrouping);
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(
         IOSChromePasswordStoreFactory::GetInstance(),
@@ -414,61 +408,32 @@ TEST_F(PasswordCheckupUtilsTest, CheckPasswordsForWarningType) {
 // Tests that `CountInsecurePasswordsPerInsecureType` doesn't take into account
 // a password marked as reused if there is no other credential with the same
 // password.
-// TODO(crbug.com/1434343): Update or delete this test once a fix has landed.
-TEST_F(PasswordCheckupUtilsTest, CheckInsecurePasswordWhenOneReusedPassword) {
-  // Add a reused password.
-  PasswordForm reused_form = MakeSavedPassword(kExampleCom1, kUsername116);
-  AddIssueToForm(&reused_form, InsecureType::kReused, base::Minutes(1));
-  store().AddLogin(reused_form);
+TEST_F(PasswordCheckupUtilsTest,
+       CheckInsecurePasswordCountWhenOneReusedPassword) {
+  // Enable Password Checkup feature.
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kIOSPasswordCheckup);
+
+  // Add reused passwords.
+  PasswordForm reused_form1 = MakeSavedPassword(kExampleCom1, kUsername116);
+  PasswordForm reused_form2 = MakeSavedPassword(kExampleCom2, kUsername116);
+  store().AddLogin(reused_form1);
+  store().AddLogin(reused_form2);
+  RunUntilIdle();
+
+  // Run password check.
+  manager().StartPasswordCheck();
+  RunUntilIdle();
+
+  // Remove one of the reused passwords.
+  store().RemoveLogin(reused_form1);
   RunUntilIdle();
 
   std::vector<CredentialUIEntry> insecure_credentials =
       manager().GetInsecureCredentials();
+  EXPECT_EQ(insecure_credentials.size(), 1u);
 
   EXPECT_EQ(
       CountInsecurePasswordsPerInsecureType(insecure_credentials).reused_count,
       0);
-}
-
-// Tests that `GetPasswordCountForWarningType` doesn't take into account a
-// password marked as reused if there is no other credential with the same
-// password.
-// TODO(crbug.com/1434343): Update or delete this test once a fix has landed.
-TEST_F(PasswordCheckupUtilsTest,
-       CheckPasswordsForWarningTypeWhenOneReusedPassword) {
-  // Add a reused password.
-  PasswordForm reused_form = MakeSavedPassword(kExampleCom1, kUsername116);
-  AddIssueToForm(&reused_form, InsecureType::kReused, base::Minutes(1));
-  store().AddLogin(reused_form);
-  RunUntilIdle();
-
-  std::vector<CredentialUIEntry> insecure_credentials =
-      manager().GetInsecureCredentials();
-
-  std::vector<CredentialUIEntry> filtered_credentials;
-
-  // Verify Reused Passwords.
-  filtered_credentials = GetPasswordsForWarningType(
-      WarningType::kReusedPasswordsWarning, insecure_credentials);
-  EXPECT_TRUE(filtered_credentials.empty());
-}
-
-// Tests that `GetWarningOfHighestPriority` doesn't return the "reused
-// passwords" warning if a password is flagged as reused when there is no other
-// credential with that same password.
-// TODO(crbug.com/1434343): Update or delete this test once a fix has landed.
-TEST_F(PasswordCheckupUtilsTest,
-       CheckWarningOfHighestPriorityWhenOneReusedPassword) {
-  // Add a reused password.
-  PasswordForm reused_form = MakeSavedPassword(kExampleCom1, kUsername116);
-  AddIssueToForm(&reused_form, InsecureType::kReused, base::Minutes(1));
-  store().AddLogin(reused_form);
-  RunUntilIdle();
-
-  std::vector<CredentialUIEntry> insecure_credentials =
-      manager().GetInsecureCredentials();
-
-  // The "no insecure passwords" warning is the highest priority warning.
-  EXPECT_THAT(GetWarningOfHighestPriority(insecure_credentials),
-              WarningType::kNoInsecurePasswordsWarning);
 }

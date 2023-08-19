@@ -54,7 +54,7 @@ interface CrosHealthdServiceFactory {
 
 // Diagnostics interface exposed by the cros_healthd daemon.
 //
-// NextMinVersion: 10, NextIndex: 45
+// NextMinVersion: 14, NextIndex: 48
 [Stable]
 interface CrosHealthdDiagnosticsService {
   // Returns an array of all diagnostic routines that the platform supports.
@@ -350,10 +350,17 @@ interface CrosHealthdDiagnosticsService {
   // The availability of this routine can be determined by checking that
   // kMemory is returned by GetAvailableRoutines.
   //
+  // The request:
+  // * |max_testing_mem_kib| - An optional uint32 to specify at most how much of
+  //                           the memory should be tested. If the value is
+  //                           null, memory test will run with as much memory as
+  //                           possible.
+  //
   // The response:
   // * |response| - contains a unique identifier and status for the created
   //                routine.
-  RunMemoryRoutine@16() => (RunRoutineResponse response);
+  RunMemoryRoutine@16([MinVersion=10] uint32? max_testing_mem_kib)
+      => (RunRoutineResponse response);
 
   // Requests that the LanConnectivity routine is created and started on the
   // platform. This routine checks whether the device is connected to a LAN.
@@ -610,8 +617,9 @@ interface CrosHealthdDiagnosticsService {
   // The response:
   // * |response| - contains a unique identifier and status for the created
   //                routine.
-  [MinVersion=5] RunLedLitUpRoutine@37(LedName name, LedColor color,
-    pending_remote<LedLitUpRoutineReplier> replier)
+  [MinVersion=5] DEPRECATED_RunLedLitUpRoutine@37(DEPRECATED_LedName name,
+    DEPRECATED_LedColor color,
+    pending_remote<DEPRECATED_LedLitUpRoutineReplier> replier)
         => (RunRoutineResponse response);
 
   // Requests that the EmmcLifetime routine is created and started on the
@@ -721,6 +729,44 @@ interface CrosHealthdDiagnosticsService {
   //                routine.
   [MinVersion=9] RunBluetoothPairingRoutine@44(string peripheral_id)
       => (RunRoutineResponse response);
+
+  // Requests that the PowerButton routine is created and started on the
+  // platform. This routine checks the functionality of the power button. The
+  // routine passes if a power button event is received before the timeout.
+  // Otherwise, the routine fails.
+  // The availability of this routine can be determined by checking that
+  // kPowerButton is returned by GetAvailableRoutines.
+  //
+  // The request:
+  // * |timeout_seconds| - length of time, in seconds, to listen to the power
+  //                       button events. Range: [1, 600].
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  [MinVersion=11] RunPowerButtonRoutine@45(uint32 timeout_seconds)
+      => (RunRoutineResponse response);
+
+  // Requests that the AudioDriver routine is created and started on the
+  // platform. This routine checks whether there is any errors about the audio
+  // driver.
+  // The availability of this routine can be determined by checking that
+  // kAudioDriver is returned by GetAvailableRoutines.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  [MinVersion=12] RunAudioDriverRoutine@46() => (RunRoutineResponse response);
+
+  // Requests that the UfsLifetime routine is created and started on the
+  // platform. This routine checks the UFS drive's life time.
+  // The availability of this routine can be determined by checking that
+  // kUfsLifetime is returned by GetAvailableRoutines.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  [MinVersion=13] RunUfsLifetimeRoutine@47() => (RunRoutineResponse response);
 };
 
 // Event interface exposed by the cros_healthd daemon.

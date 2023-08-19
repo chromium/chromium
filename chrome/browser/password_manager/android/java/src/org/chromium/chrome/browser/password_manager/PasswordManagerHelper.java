@@ -34,11 +34,12 @@ import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.Cr
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordCheckBackendException;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -203,8 +204,9 @@ public class PasswordManagerHelper {
      * @return True if Unified Password Manager can be used, false otherwise.
      */
     public static boolean canUseUpm() {
-        SyncService syncService = SyncService.get();
-        PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+        Profile profile = Profile.getLastUsedRegularProfile();
+        SyncService syncService = SyncServiceFactory.getForProfile(profile);
+        PrefService prefService = UserPrefs.get(profile);
         return PasswordManagerHelper.usesUnifiedPasswordManagerUI() && syncService != null
                 && hasChosenToSyncPasswords(syncService)
                 && !prefService.getBoolean(

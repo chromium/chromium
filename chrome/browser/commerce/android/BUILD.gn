@@ -6,6 +6,7 @@ import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 
 android_library("java") {
+  srcjar_deps = [ ":shopping_service_jni" ]
   sources = [
     "java/src/org/chromium/chrome/browser/commerce/PriceNotificationPreferenceFragment.java",
     "java/src/org/chromium/chrome/browser/commerce/PriceTrackingUtils.java",
@@ -33,12 +34,11 @@ android_library("java") {
     "//components/prefs/android:java",
     "//components/signin/public/android:java",
     "//components/user_prefs/android:java",
+    "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_preference_preference_java",
     "//ui/android:ui_java",
   ]
-
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
   resources_package = "org.chromium.chrome.browser.commerce"
 }
@@ -64,6 +64,7 @@ android_library("javatests") {
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//chrome/android:chrome_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
@@ -75,6 +76,8 @@ android_library("javatests") {
     "//components/prefs/android:java",
     "//components/signin/public/android:java",
     "//content/public/android:content_full_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",

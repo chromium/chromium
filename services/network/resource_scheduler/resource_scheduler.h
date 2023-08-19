@@ -23,11 +23,13 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/unguessable_token.h"
 #include "net/base/priority_queue.h"
 #include "net/base/request_priority.h"
 #include "net/nqe/effective_connection_type.h"
 #include "services/network/is_browser_initiated.h"
 #include "services/network/resource_scheduler/resource_scheduler_params_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -55,7 +57,7 @@ namespace network {
 // has been deleted.
 //
 // The ResourceScheduler tracks many Clients, which should correlate with tabs.
-// A client is uniquely identified by its child_id and route_id.
+// A client is uniquely identified by an opaque identifier.
 //
 // Each Client may have many Requests in flight. Requests are uniquely
 // identified within a Client by its ScheduledResourceRequest.
@@ -67,23 +69,36 @@ namespace network {
 // The scheduler may defer issuing the request via the ResourceThrottle
 // interface or it may alter the request's priority by calling set_priority() on
 // the URLRequest.
-class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceScheduler {
+class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceScheduler final {
  public:
-  class ClientId final {
+  class COMPONENT_EXPORT(NETWORK_SERVICE) ClientId final {
    public:
-    explicit constexpr ClientId(uint64_t id) : id_(id) {}
+    // Creates a new client id. Optional `token` is used to identify the client
+    // associated to the created id.
+    static ClientId Create(
+        const absl::optional<base::UnguessableToken>& token = absl::nullopt);
+
+    ClientId(const ClientId& that) = default;
+    ClientId& operator=(const ClientId& that) = default;
+
     ~ClientId() = default;
 
-    void Increment() { ++id_; }
     bool operator<(const ClientId& that) const { return id_ < that.id_; }
-    bool operator==(const ClientId& that) const { return id_ == that.id_; }
-
-    constexpr ClientId AddForTesting(uint64_t n) const {
-      return ClientId(id_ + n);
+    bool operator==(const ClientId& that) const {
+      return id_ == that.id_ && token_ == that.token_;
     }
 
+    const base::UnguessableToken& token() const { return token_; }
+
+    static ClientId CreateForTest(uint64_t id) { return ClientId(id); }
+
    private:
+    explicit ClientId(
+        uint64_t id,
+        const absl::optional<base::UnguessableToken>& token = absl::nullopt)
+        : id_(id), token_(token.value_or(base::UnguessableToken::Create())) {}
     uint64_t id_;
+    base::UnguessableToken token_;
   };
 
   class ScheduledResourceRequest {
@@ -106,12 +121,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceScheduler {
   ResourceScheduler(const ResourceScheduler&) = delete;
   ResourceScheduler& operator=(const ResourceScheduler&) = delete;
 
-  virtual ~ResourceScheduler();
+  ~ResourceScheduler();
 
   // Requests that this ResourceScheduler schedule, and eventually loads, the
   // specified |url_request|. Caller should delete the returned ResourceThrottle
   // when the load completes or is canceled, before |url_request| is deleted.
-  virtual std::unique_ptr<ScheduledResourceRequest> ScheduleRequest(
+  std::unique_ptr<ScheduledResourceRequest> ScheduleRequest(
       ClientId client_id,
       bool is_async,
       net::URLRequest* url_request);
@@ -120,13 +135,17 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceScheduler {
 
   // Called when a renderer is created. |network_quality_estimator| is allowed
   // to be null.
-  virtual void OnClientCreated(
-      ClientId client_id,
-      IsBrowserInitiated is_browser_initiated,
-      net::NetworkQualityEstimator* network_quality_estimator);
+  void OnClientCreated(ClientId client_id,
+                       IsBrowserInitiated is_browser_initiated,
+                       net::NetworkQualityEstimator* network_quality_estimator);
 
   // Called when a renderer is destroyed.
-  virtual void OnClientDeleted(ClientId client_id);
+  void OnClientDeleted(ClientId client_id);
+
+  // Called when a client has changed its visibility.
+  virtual void OnClientVisibilityChanged(
+      const base::UnguessableToken& client_token,
+      bool visible);
 
   // Client functions:
 
@@ -134,17 +153,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceScheduler {
   // start the request loading if it wasn't already started.
   // If the scheduler does not know about the request, |new_priority| is set but
   // |intra_priority_value| is ignored.
-  virtual void ReprioritizeRequest(net::URLRequest* request,
-                                   net::RequestPriority new_priority,
-                                   int intra_priority_value);
-  // Same as above, but keeps the existing intra priority value.
-  virtual void ReprioritizeRequest(net::URLRequest* request,
-                                   net::RequestPriority new_priority);
+  void ReprioritizeRequest(net::URLRequest* request,
+                           net::RequestPriority new_priority,
+                           int intra_priority_value);
 
   // Returns true if the timer that dispatches long queued requests is running.
-  virtual bool IsLongQueuedRequestsDispatchTimerRunning() const;
+  bool IsLongQueuedRequestsDispatchTimerRunning() const;
 
-  virtual base::SequencedTaskRunner* task_runner();
+  base::SequencedTaskRunner* task_runner();
 
   // Testing setters
   void SetTaskRunnerForTesting(

@@ -294,8 +294,10 @@ IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest,
     run_loop.Run();
 
     // The UKM isn't recorded until the page is destroyed.
-    ASSERT_TRUE(browser()->tab_strip_model()->CloseWebContentsAt(
-        1, TabCloseTypes::CLOSE_NONE));
+    int previous_tab_count = browser()->tab_strip_model()->count();
+    browser()->tab_strip_model()->CloseWebContentsAt(1,
+                                                     TabCloseTypes::CLOSE_NONE);
+    ASSERT_EQ(previous_tab_count - 1, browser()->tab_strip_model()->count());
 
     histogram_tester.ExpectTotalCount(
         kSiteEngagementHistogramPrefix + (test_case.expect_safety_tip

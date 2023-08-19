@@ -77,9 +77,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) UIProxyConfigService {
   raw_ptr<PrefService, ExperimentalAsh> local_state_prefs_;  // unowned
   PrefChangeRegistrar local_state_registrar_;
 
-  raw_ptr<NetworkStateHandler, ExperimentalAsh>
+  raw_ptr<NetworkStateHandler, DanglingUntriaged | ExperimentalAsh>
       network_state_handler_;  // unowned
-  raw_ptr<NetworkProfileHandler, ExperimentalAsh>
+  raw_ptr<NetworkProfileHandler, DanglingUntriaged | ExperimentalAsh>
       network_profile_handler_;  // unowned
 };
 

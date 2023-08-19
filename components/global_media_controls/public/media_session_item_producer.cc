@@ -68,13 +68,6 @@ MediaSessionItemProducer::Session::~Session() {
 
 void MediaSessionItemProducer::Session::MediaSessionInfoChanged(
     media_session::mojom::MediaSessionInfoPtr session_info) {
-  if (session_info && session_info->has_presentation) {
-    // The presentation gets its own item, so this item has become redundant.
-    // |this| gets deleted here.
-    owner_->RemoveItem(id_);
-    return;
-  }
-
   is_playing_ =
       session_info && session_info->playback_state ==
                           media_session::mojom::MediaPlaybackState::kPlaying;

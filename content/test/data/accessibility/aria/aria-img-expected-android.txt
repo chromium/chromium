@@ -1,2 +1,3 @@
 android.webkit.WebView focusable focused scrollable
 ++android.widget.Image role_description='graphic'
+++android.widget.Image role_description='graphic'

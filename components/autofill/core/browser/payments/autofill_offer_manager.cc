@@ -26,13 +26,11 @@ AutofillOfferManager::AutofillOfferManager(
     CouponServiceDelegate* coupon_service_delegate)
     : personal_data_(personal_data),
       coupon_service_delegate_(coupon_service_delegate) {
-  personal_data_->AddObserver(this);
+  personal_data_manager_observation.Observe(personal_data_);
   UpdateEligibleMerchantDomains();
 }
 
-AutofillOfferManager::~AutofillOfferManager() {
-  personal_data_->RemoveObserver(this);
-}
+AutofillOfferManager::~AutofillOfferManager() = default;
 
 void AutofillOfferManager::OnPersonalDataChanged() {
   UpdateEligibleMerchantDomains();

@@ -124,13 +124,25 @@ constants.FSP_ACTION_HIDDEN_ONEDRIVE_URL = 'HIDDEN_ONEDRIVE_URL';
 constants.FSP_ACTION_HIDDEN_ONEDRIVE_USER_EMAIL = 'HIDDEN_ONEDRIVE_USER_EMAIL';
 
 /**
+ * ID of the fake fileSystemProvider custom action containing OneDrive document
+ * Reauthentication Required state.
+ * @const {string}
+ */
+constants.FSP_ACTION_HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED =
+    'HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED';
+
+/**
  * All icon types.
  */
 constants.ICON_TYPES = {
   ANDROID_FILES: 'android_files',
   ARCHIVE: 'archive',
   AUDIO: 'audio',
+  // Explicitly request the icon to be 0x0. Used to avoid the scenario where a
+  // `type` is not specifically supplied vs. actually wanting a blank icon.
+  BLANK: 'blank',
   BRUSCHETTA: 'bruschetta',
+  BULK_PINNING_BATTERY_SAVER: 'bulk_pinning_battery_saver',
   BULK_PINNING_DONE: 'bulk_pinning_done',
   BULK_PINNING_OFFLINE: 'bulk_pinning_offline',
   CAMERA_FOLDER: 'camera-folder',
@@ -151,7 +163,6 @@ constants.ICON_TYPES = {
   DRIVE_RECENT: 'drive_recent',
   DRIVE_SHARED_WITH_ME: 'drive_shared_with_me',
   DRIVE: 'drive',
-  ENCRYPTED: 'encrypted',
   ERROR: 'error',
   ERROR_BANNER: 'error_banner',
   EXCEL: 'excel',

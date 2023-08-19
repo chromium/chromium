@@ -28,7 +28,6 @@ import java.lang.annotation.RetentionPolicy;
 public class UpdateConfigs {
     // VariationsAssociatedData configs
     private static final String FIELD_TRIAL_NAME = "UpdateMenuItem";
-    private static final String ENABLED_VALUE = "true";
     private static final String CUSTOM_SUMMARY = "custom_summary";
     private static final String MIN_REQUIRED_STORAGE_MB = "min_required_storage_for_update_mb";
 
@@ -131,8 +130,7 @@ public class UpdateConfigs {
      * @return The command-line flag value if present, or the param is value if present.
      */
 
-    @Nullable
-    private static String getStringParamValue(String paramName) {
+    private static @Nullable String getStringParamValue(String paramName) {
         String value = CommandLine.getInstance().getSwitchValue(paramName);
         if (TextUtils.isEmpty(value)) {
             value = VariationsAssociatedData.getVariationParamValue(FIELD_TRIAL_NAME, paramName);

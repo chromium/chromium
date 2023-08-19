@@ -34,9 +34,7 @@ class PartitionAllocFreeSlotBitmapTest : public ::testing::Test {
     // Allocates memory and creates a pseudo superpage in it. We need to
     // allocate |2 * kSuperPageSize| so that a whole superpage is contained in
     // the allocated region.
-    allocator_.init(PartitionOptions{
-        .cookie = PartitionOptions::Cookie::kAllowed,
-    });
+    allocator_.init(PartitionOptions{});
     allocated_ptr_ = reinterpret_cast<uintptr_t>(
         allocator_.root()->Alloc(2 * kSuperPageSize, ""));
     super_page_ = (allocated_ptr_ + kSuperPageSize) & kSuperPageBaseMask;
@@ -67,7 +65,7 @@ class PartitionAllocFreeSlotBitmapTest : public ::testing::Test {
  private:
   uintptr_t allocated_ptr_;
   uintptr_t super_page_;
-  PartitionAllocator<ThreadSafe> allocator_;
+  PartitionAllocator allocator_;
 };
 
 }  // namespace

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://customize-chrome-side-panel.top-chrome/appearance.js';
 
 import {AppearanceElement} from 'chrome://customize-chrome-side-panel.top-chrome/appearance.js';
 import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote, CustomizeChromePageRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
 import {ManagedDialogElement} from 'chrome://resources/cr_components/managed_dialog/managed_dialog.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -30,13 +30,8 @@ suite('AppearanceTest', () => {
                 mock, new CustomizeChromePageCallbackRouter()));
     callbackRouterRemote = CustomizeChromeApiProxy.getInstance()
                                .callbackRouter.$.bindNewPipeAndPassRemote();
-    // Set result for getOverviewChromeColors for the mock handler. Otherwise,
-    // it crashes since colors is a child of appearance and needs a Promise from
-    // getOverviewChromeColors.
-    handler.setResultFor('getOverviewChromeColors', Promise.resolve({}));
     appearanceElement = document.createElement('customize-chrome-appearance');
     document.body.appendChild(appearanceElement);
-    await handler.whenCalled('getOverviewChromeColors');
   });
 
   test('appearance edit button creates event', async () => {
@@ -119,6 +114,83 @@ suite('AppearanceTest', () => {
     assertTrue(managedDialog.$.dialog.open);
     assertEquals(0, handler.getCallCount('setDefaultColor'));
     assertEquals(0, handler.getCallCount('removeBackgroundImage'));
+  });
+
+  suite('DisableDeviceTheme', () => {
+    suiteSetup(() => {
+      loadTimeData.overrideValues({
+        'showDeviceThemeToggle': false,
+      });
+    });
+
+    test(
+        'follow theme toggle is hidden when showDeviceThemeToggle is false',
+        async () => {
+          const theme = createTheme();
+
+          callbackRouterRemote.setTheme(theme);
+          await callbackRouterRemote.$.flushForTesting();
+
+          assertTrue(appearanceElement.$.followThemeToggle.hidden);
+        });
+  });
+
+  suite('ShowDeviceTheme', () => {
+    suiteSetup(() => {
+      loadTimeData.overrideValues({
+        'showDeviceThemeToggle': true,
+      });
+    });
+
+    test('follow theme toggle responds to theme value', async () => {
+      const theme = createTheme();
+      theme.followDeviceTheme = true;
+
+      callbackRouterRemote.setTheme(theme);
+      await callbackRouterRemote.$.flushForTesting();
+
+      assertTrue(appearanceElement.$.followThemeToggleControl.checked);
+    });
+
+    test('follow theme toggle triggers setFollowDeviceTheme', async () => {
+      const theme = createTheme();
+      theme.followDeviceTheme = false;
+
+      callbackRouterRemote.setTheme(theme);
+      await callbackRouterRemote.$.flushForTesting();
+
+      assertTrue(!appearanceElement.$.followThemeToggleControl.checked);
+
+      const setFollowDeviceTheme = handler.whenCalled('setFollowDeviceTheme');
+      appearanceElement.$.followThemeToggleControl.click();
+      const followDevice = await setFollowDeviceTheme;
+
+      // Clicking on the toggle should result in a request to stop following the
+      // theme.
+      assertEquals(1, handler.getCallCount('setFollowDeviceTheme'));
+      assertTrue(followDevice);
+    });
+
+    test(
+        'follow theme toggle is shown when showDeviceThemeToggle is true',
+        async () => {
+          const theme = createTheme();
+
+          callbackRouterRemote.setTheme(theme);
+          await callbackRouterRemote.$.flushForTesting();
+
+          assertTrue(!appearanceElement.$.followThemeToggle.hidden);
+        });
+
+    test('follow theme toggle is hidden with third party theme', async () => {
+      const theme = createTheme();
+      theme.thirdPartyThemeInfo = createThirdPartyThemeInfo('foo', 'bar');
+
+      callbackRouterRemote.setTheme(theme);
+      await callbackRouterRemote.$.flushForTesting();
+
+      assertTrue(appearanceElement.$.followThemeToggle.hidden);
+    });
   });
 
   suite('third party theme', () => {

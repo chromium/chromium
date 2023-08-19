@@ -17,6 +17,7 @@
 #include "components/page_load_metrics/browser/page_load_metrics_test_content_browser_client.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "components/page_load_metrics/browser/test_metrics_web_contents_observer_embedder.h"
+#include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -32,6 +33,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/utility/utility.h"
+#include "third_party/blink/public/common/performance/performance_timeline_constants.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/use_counter_feature.mojom-shared.h"
@@ -125,7 +127,10 @@ class MetricsWebContentsObserverTest
         std::vector<blink::UseCounterFeature>(),
         std::vector<mojom::ResourceDataUpdatePtr>(),
         mojom::FrameRenderDataUpdatePtr(absl::in_place), timing.Clone(),
-        mojom::InputTimingPtr(absl::in_place), absl::nullopt, 0);
+        mojom::InputTimingPtr(absl::in_place), absl::nullopt,
+        mojom::SoftNavigationMetrics::New(
+            blink::kSoftNavigationCountDefaultValue, base::Milliseconds(0),
+            base::EmptyString(), mojom::LargestContentfulPaintTiming::New()));
   }
 
   void SimulateTimingUpdate(const mojom::PageLoadTiming& timing,
@@ -143,14 +148,17 @@ class MetricsWebContentsObserverTest
       const mojom::PageLoadTiming& timing,
       content::RenderFrameHost* render_frame_host) {
     previous_timing_ = timing.Clone();
-    observer()->OnTimingUpdated(render_frame_host, timing.Clone(),
-                                mojom::FrameMetadataPtr(absl::in_place),
-                                std::vector<blink::UseCounterFeature>(),
-                                std::vector<mojom::ResourceDataUpdatePtr>(),
-                                mojom::FrameRenderDataUpdatePtr(absl::in_place),
-                                mojom::CpuTimingPtr(absl::in_place),
-                                mojom::InputTimingPtr(absl::in_place),
-                                absl::nullopt, 0);
+    observer()->OnTimingUpdated(
+        render_frame_host, timing.Clone(),
+        mojom::FrameMetadataPtr(absl::in_place),
+        std::vector<blink::UseCounterFeature>(),
+        std::vector<mojom::ResourceDataUpdatePtr>(),
+        mojom::FrameRenderDataUpdatePtr(absl::in_place),
+        mojom::CpuTimingPtr(absl::in_place),
+        mojom::InputTimingPtr(absl::in_place), absl::nullopt,
+        mojom::SoftNavigationMetrics::New(
+            blink::kSoftNavigationCountDefaultValue, base::Milliseconds(0),
+            base::EmptyString(), mojom::LargestContentfulPaintTiming::New()));
   }
 
   virtual std::unique_ptr<TestMetricsWebContentsObserverEmbedder>
@@ -250,7 +258,8 @@ class MetricsWebContentsObserverTest
   }
 
   base::HistogramTester histogram_tester_;
-  raw_ptr<TestMetricsWebContentsObserverEmbedder> embedder_interface_;
+  raw_ptr<TestMetricsWebContentsObserverEmbedder, DanglingUntriaged>
+      embedder_interface_;
 
  private:
   int num_errors_ = 0;

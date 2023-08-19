@@ -52,6 +52,7 @@ class TestFileSystemBackend : public FileSystemBackend {
       FileSystemType type,
       base::File::Error* error_code) override;
   std::unique_ptr<FileSystemOperation> CreateFileSystemOperation(
+      OperationType type,
       const FileSystemURL& url,
       FileSystemContext* context,
       base::File::Error* error_code) const override;

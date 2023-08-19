@@ -113,6 +113,14 @@ void AXRelationCache::UpdateReverseTextRelations(
                          target_ids);
 }
 
+void AXRelationCache::UpdateReverseActiveDescendantRelations(
+    Node* relation_source,
+    const String& id) {
+  Vector<String> ids = {id};
+  UpdateReverseRelations(id_attr_to_active_descendant_mapping_, relation_source,
+                         ids);
+}
+
 // ContainsCycle() should:
 // * Return true when a cycle is an authoring error, but not an error in Blink.
 // * CHECK(false) when Blink should have caught this error earlier ... we should
@@ -253,6 +261,10 @@ void AXRelationCache::UnmapOwnedChildrenWithCleanLayout(
     aria_owned_child_to_owner_mapping_.erase(removed_child_id);
 
     if (removed_child) {
+      // Invalidating ensures that cached "included in tree" state is recomputed
+      // on objects with changed ownership -- owned children must always be
+      // included in the tree.
+      removed_child->InvalidateCachedValues();
       // If the child still exists, find its "real" parent, and reparent it
       // back to its real parent in the tree by detaching it from its current
       // parent and calling childrenChanged on its real parent.
@@ -281,6 +293,11 @@ void AXRelationCache::MapOwnedChildrenWithCleanLayout(
     AXObject* added_child = ObjectFromAXID(added_child_id);
     DCHECK(added_child);
     DCHECK(!added_child->IsDetached());
+
+    // Invalidating ensures that cached "included in tree" state is recomputed
+    // on objects with changed ownership -- owned children must always be
+    // included in the tree.
+    added_child->InvalidateCachedValues();
 
     // Add this child to the mapping from child to owner.
     aria_owned_child_to_owner_mapping_.Set(added_child_id, owner->AXObjectID());
@@ -441,8 +458,9 @@ void AXRelationCache::UpdateAriaOwnerToChildrenMappingWithCleanLayout(
     return;
 
   Vector<AXID> validated_owned_child_axids;
-  for (auto& child : validated_owned_children_result)
+  for (auto& child : validated_owned_children_result) {
     validated_owned_child_axids.push_back(child->AXObjectID());
+  }
 
   // Compare this to the current list of owned children, and exit early if
   // there are no changes.
@@ -458,11 +476,6 @@ void AXRelationCache::UpdateAriaOwnerToChildrenMappingWithCleanLayout(
       (!force || previously_owned_child_ids.empty())) {
     return;
   }
-
-  // Incrementing the modification count ensures that cached "included in tree"
-  // state is recomputed on objects with changed ownership -- owned children
-  // must always be included in the tree.
-  object_cache_->IncrementModificationCount();
 
   // The list of owned children has changed. Even if they were just reordered,
   // to be safe and handle all cases we remove all of the current owned
@@ -562,6 +575,8 @@ void AXRelationCache::UpdateRelatedTree(Node* node, AXObject* obj) {
   }
 
   UpdateRelatedText(node);
+
+  UpdateRelatedActiveDescendant(node);
 }
 
 void AXRelationCache::UpdateRelatedText(Node* node) {
@@ -580,8 +595,10 @@ void AXRelationCache::UpdateRelatedText(Node* node) {
     GetReverseRelated(current_node, id_attr_to_text_relation_mapping_,
                       related_sources);
     for (AXObject* related : related_sources) {
-      if (related && related->AccessibilityIsIncludedInTree())
+      if (related && related->AccessibilityIsIncludedInTree() &&
+          !related->NeedsToUpdateChildren()) {
         object_cache_->MarkAXObjectDirtyWithCleanLayout(related);
+      }
     }
 
     // Ancestors that may derive their accessible name from descendant content
@@ -589,7 +606,8 @@ void AXRelationCache::UpdateRelatedText(Node* node) {
     if (current_node != node) {
       AXObject* obj = Get(current_node);
       if (obj && obj->AccessibilityIsIncludedInTree() &&
-          obj->SupportsNameFromContents(/*recursive=*/false)) {
+          obj->SupportsNameFromContents(/*recursive=*/false) &&
+          !obj->NeedsToUpdateChildren()) {
         object_cache_->MarkAXObjectDirtyWithCleanLayout(obj);
         break;  // Unlikely/unusual to need multiple name/description changes.
       }
@@ -600,6 +618,15 @@ void AXRelationCache::UpdateRelatedText(Node* node) {
       LabelChanged(current_node);
       break;  // Unlikely/unusual to need multiple name/description changes.
     }
+  }
+}
+
+void AXRelationCache::UpdateRelatedActiveDescendant(Node* node) {
+  HeapVector<Member<AXObject>> related_sources;
+  GetReverseRelated(node, id_attr_to_active_descendant_mapping_,
+                    related_sources);
+  for (AXObject* related : related_sources) {
+    object_cache_->MarkAXObjectDirtyWithCleanLayout(related);
   }
 }
 
@@ -688,6 +715,69 @@ void AXRelationCache::MaybeRestoreParentOfOwnedChild(AXObject* child) {
   if (AXObject* new_parent = object_cache_->RestoreParentOrPrune(child)) {
     object_cache_->ChildrenChanged(new_parent);
   }
+}
+
+void AXRelationCache::RegisterIncompleteRelation(
+    AXObject* source,
+    const QualifiedName& relation_attr) {
+  DCHECK(source);
+  Element* source_element = source->GetElement();
+  if (!source_element) {
+    return;
+  }
+
+  AtomicString relation_value = source_element->getAttribute(relation_attr);
+  if (relation_value.IsNull()) {
+    return;
+  }
+  String relation_value_as_string =
+      relation_value.GetString().SimplifyWhiteSpace();
+  Vector<String> tokens;
+  relation_value_as_string.Split(' ', tokens);
+
+  // Lookup each id within the same tree scope.
+  for (auto id : tokens) {
+    if (!source_element->GetTreeScope().getElementById(AtomicString(id))) {
+      // Missing id: store source AXID so that it can be marked dirty once
+      // the target node becomes available in the DOM.
+      auto entry = incomplete_relations_.insert(id, Vector<AXID>());
+      entry.stored_value->value.push_back(source->AXObjectID());
+    }
+  }
+}
+
+void AXRelationCache::RegisterIncompleteRelations(AXObject* source) {
+  // When a new relation is discovered to have a target id that's missing from
+  // the tree, record the incomplete relation so that when the id appears in the
+  // tree, the source node can be reserialized with completed relation. Note:
+  // aria-owns, aria-labelledy, aria-describedby affect more than just the
+  // serialized relation property itself, and thus handled separately.
+  DCHECK(source);
+  const QualifiedName relation_attrs[] = {
+      html_names::kAriaControlsAttr, html_names::kAriaDetailsAttr,
+      html_names::kAriaErrormessageAttr, html_names::kAriaFlowtoAttr};
+
+  for (const QualifiedName& relation_attr : relation_attrs) {
+    RegisterIncompleteRelation(source, relation_attr);
+  }
+}
+
+void AXRelationCache::ProcessCompletedRelationsForNewId(
+    const AtomicString& id) {
+  // When a new ID becomes available in the tree, we need to reserialize all
+  // of the nodes that pointed to it with a relation attribute.
+  auto iter = incomplete_relations_.find(id);
+  if (iter == incomplete_relations_.end()) {
+    return;
+  }
+
+  for (AXID source_axid : iter->value) {
+    if (AXObject* obj = object_cache_->ObjectFromAXID(source_axid)) {
+      object_cache_->MarkAXObjectDirtyWithCleanLayout(obj);
+    }
+  }
+
+  incomplete_relations_.erase(iter);
 }
 
 }  // namespace blink

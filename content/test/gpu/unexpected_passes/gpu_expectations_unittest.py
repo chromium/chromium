@@ -5,6 +5,8 @@
 
 from __future__ import print_function
 
+import datetime
+from typing import Dict
 import unittest
 from unittest import mock
 
@@ -18,7 +20,7 @@ class CreateTestExpectationMapUnittest(unittest.TestCase):
   def setUp(self) -> None:
     self.instance = gpu_expectations.GpuExpectations()
 
-    self._expectation_content = {}
+    self._expectation_content: Dict[str, str] = {}
     self._content_patcher = mock.patch.object(
         self.instance, '_GetNonRecentExpectationContent')
     self._content_mock = self._content_patcher.start()
@@ -42,7 +44,8 @@ class CreateTestExpectationMapUnittest(unittest.TestCase):
 [ linux nvidia ] foo/test [ Slow ]
 [ linux intel ] foo/test [ Failure ]
 """
-    expectation_map = self.instance.CreateTestExpectationMap(filename, None, 0)
+    expectation_map = self.instance.CreateTestExpectationMap(
+        filename, None, datetime.timedelta(days=0))
     # The Slow expectations should be omitted.
     expected_expectation_map = {
         filename: {

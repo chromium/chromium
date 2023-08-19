@@ -7,7 +7,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #include "components/remote_cocoa/app_shim/remote_cocoa_app_shim_export.h"
 #import "ui/base/cocoa/command_dispatcher.h"
 
@@ -42,11 +42,6 @@ REMOTE_COCOA_APP_SHIM_EXPORT
 // Set a CommandDispatcherDelegate, i.e. to implement key event handling.
 - (void)setCommandDispatcherDelegate:(id<CommandDispatcherDelegate>)delegate;
 
-// Selector passed to [NSApp beginSheet:]. Forwards to [self delegate], if set.
-- (void)sheetDidEnd:(NSWindow*)sheet
-         returnCode:(NSInteger)returnCode
-        contextInfo:(void*)contextInfo;
-
 // Set a WindowTouchBarDelegate to allow creation of a custom TouchBar when
 // AppKit follows the responder chain and reaches the NSWindow when trying to
 // create one.
@@ -71,6 +66,21 @@ REMOTE_COCOA_APP_SHIM_EXPORT
 // screen bounds.
 - (NSRect)constrainFrameRect:(NSRect)frameRect toScreen:(NSScreen*)screen;
 
+// Returns YES if the window is in fullscreen mode.
+- (BOOL)isFullScreen;
+
+// Defers the removal of `childWindow` until the window is the active window
+// or ordered out, to avoid triggering a space change.
+- (void)removeChildWindowOnActivation:(NSWindow*)childWindow;
+
+// Returns YES if `aWindow` is a child window that will be removed when the
+// window activates or orders out.
+- (BOOL)willRemoveChildWindowOnActivation:(NSWindow*)aWindow;
+
+- (BOOL)hasDeferredChildWindowRemovalsForTesting;
+
+- (BOOL)hasDeferredChildWindowOrderingCommandsForTesting;
+
 // Identifier for the NativeWidgetMac from which this window was created. This
 // may be used to look up the NativeWidgetMacNSWindowHost in the browser process
 // or the NativeWidgetNSWindowBridge in a display process.
@@ -88,8 +98,15 @@ REMOTE_COCOA_APP_SHIM_EXPORT
 // Called whenever a child window is added to the receiver.
 @property(nonatomic, copy) void (^childWindowAddedHandler)(NSWindow* child);
 
-// Called whenever a child window is removed to the receiver.
+// Called whenever a child window is removed from the receiver.
 @property(nonatomic, copy) void (^childWindowRemovedHandler)(NSWindow* child);
+
+// Window to dispatch commands to. Needed for situations where the window that
+// needs to handle events is not the target's immediate parent; for example
+// alerts in immersive fullscreen.
+@property(nonatomic, weak)
+    NSWindow<CommandDispatchingWindow>* commandDispatchParentOverride;
+
 @end
 
 #endif  // COMPONENTS_REMOTE_COCOA_APP_SHIM_NATIVE_WIDGET_MAC_NSWINDOW_H_

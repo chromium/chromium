@@ -109,7 +109,13 @@ public class AutofillProviderUMA {
     private static final int AUTOFILL_PROVIDER_SAMSUNG_PASS = 2;
     private static final String LASTPASS_PACKAGE_NAME = "com.lastpass.lpandroid";
     private static final int AUTOFILL_PROVIDER_LAST_PASS = 3;
-    private static final int AUTOFILL_PROVIDER_MAX = 4;
+    private static final String DASHLANE_PACKAGE_NAME = "com.dashlane";
+    private static final int AUTOFILL_PROVIDER_DASHLANE = 4;
+    private static final String ONE_PASSWORD_PACKAGE_NAME = "com.onepassword.android";
+    private static final int AUTOFILL_PROVIDER_1PASSWORD = 5;
+    private static final String BITWARDEN_PACKAGE_NAME = "com.x8bit.bitwarden";
+    private static final int AUTOFILL_PROVIDER_BITWARDEN = 6;
+    private static final int AUTOFILL_PROVIDER_MAX = 7;
 
     private static void recordTimesHistogram(String name, long durationMillis) {
         RecordHistogram.recordCustomTimesHistogram(
@@ -360,6 +366,15 @@ public class AutofillProviderUMA {
                 break;
             case LASTPASS_PACKAGE_NAME:
                 recordUmaAutofillProvider(AUTOFILL_PROVIDER_LAST_PASS);
+                break;
+            case DASHLANE_PACKAGE_NAME:
+                recordUmaAutofillProvider(AUTOFILL_PROVIDER_DASHLANE);
+                break;
+            case ONE_PASSWORD_PACKAGE_NAME:
+                recordUmaAutofillProvider(AUTOFILL_PROVIDER_1PASSWORD);
+                break;
+            case BITWARDEN_PACKAGE_NAME:
+                recordUmaAutofillProvider(AUTOFILL_PROVIDER_BITWARDEN);
                 break;
             default:
                 recordUmaAutofillProvider(AUTOFILL_PROVIDER_UNKNOWN);

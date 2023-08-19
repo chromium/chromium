@@ -11,6 +11,9 @@
 
 #include "base/functional/callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "content/public/browser/storage_partition_config.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_deletion_info.h"
 #include "services/network/cookie_manager.h"
@@ -73,12 +76,11 @@ void RunTestCase(TestCase test_case,
   EXPECT_TRUE(cookie) << cookie_line << " from " << test_case.url
                       << " is not a valid cookie";
   if (cookie) {
-    EXPECT_EQ(test_case.should_match,
-              delete_info.Matches(
-                  *cookie,
-                  net::CookieAccessParams{
-                      net::CookieAccessSemantics::NONLEGACY, false,
-                      net::CookieSamePartyStatus::kNoSamePartyEnforcement}))
+    EXPECT_EQ(
+        test_case.should_match,
+        delete_info.Matches(*cookie,
+                            net::CookieAccessParams{
+                                net::CookieAccessSemantics::NONLEGACY, false}))
         << cookie->DebugString();
   }
 
@@ -87,12 +89,11 @@ void RunTestCase(TestCase test_case,
       test_url, cookie_line, base::Time::Now(), absl::nullopt /* server_time */,
       absl::nullopt /* cookie_partition_key */);
   if (cookie) {
-    EXPECT_EQ(test_case.should_match,
-              delete_info.Matches(
-                  *cookie,
-                  net::CookieAccessParams{
-                      net::CookieAccessSemantics::NONLEGACY, false,
-                      net::CookieSamePartyStatus::kNoSamePartyEnforcement}))
+    EXPECT_EQ(
+        test_case.should_match,
+        delete_info.Matches(*cookie,
+                            net::CookieAccessParams{
+                                net::CookieAccessSemantics::NONLEGACY, false}))
         << cookie->DebugString();
   }
 
@@ -101,12 +102,11 @@ void RunTestCase(TestCase test_case,
       test_url, cookie_line, base::Time::Now(), absl::nullopt /* server_time */,
       absl::nullopt /* cookie_partition_key */);
   if (cookie) {
-    EXPECT_EQ(test_case.should_match,
-              delete_info.Matches(
-                  *cookie,
-                  net::CookieAccessParams{
-                      net::CookieAccessSemantics::NONLEGACY, false,
-                      net::CookieSamePartyStatus::kNoSamePartyEnforcement}))
+    EXPECT_EQ(
+        test_case.should_match,
+        delete_info.Matches(*cookie,
+                            net::CookieAccessParams{
+                                net::CookieAccessSemantics::NONLEGACY, false}))
         << cookie->DebugString();
   }
 
@@ -115,12 +115,11 @@ void RunTestCase(TestCase test_case,
       test_url, cookie_line, base::Time::Now(), absl::nullopt /* server_time */,
       absl::nullopt /* cookie_partition_key */);
   if (cookie) {
-    EXPECT_EQ(test_case.should_match,
-              delete_info.Matches(
-                  *cookie,
-                  net::CookieAccessParams{
-                      net::CookieAccessSemantics::NONLEGACY, false,
-                      net::CookieSamePartyStatus::kNoSamePartyEnforcement}))
+    EXPECT_EQ(
+        test_case.should_match,
+        delete_info.Matches(*cookie,
+                            net::CookieAccessParams{
+                                net::CookieAccessSemantics::NONLEGACY, false}))
         << cookie->DebugString();
   }
 }
@@ -170,6 +169,38 @@ TEST(BrowsingDataFilterBuilderImplTest, Noop) {
 
   for (TestCase test_case : test_cases)
     RunTestCase(test_case, filter);
+}
+
+TEST(BrowsingDataFilterBuilderImplTest, EmptyDelete) {
+  BrowsingDataFilterBuilderImpl builder(
+      BrowsingDataFilterBuilderImpl::Mode::kDelete);
+  // An empty kDelete filter matches nothing.
+  ASSERT_TRUE(builder.MatchesNothing());
+  base::RepeatingCallback<bool(const GURL&)> filter = builder.BuildUrlFilter();
+
+  TestCase test_cases[] = {
+      {"https://www.google.com", false},
+      {"https://www.chrome.com", false},
+      {"http://www.google.com/foo/bar", false},
+      {"https://website.sp.nom.br", false},
+      {"http://192.168.1.1", false},
+      {"http://192.168.1.1:80", false},
+  };
+
+  for (TestCase test_case : test_cases) {
+    RunTestCase(test_case, filter);
+  }
+}
+
+TEST(BrowsingDataFilterBuilderImplTest, MatchesNothing) {
+  BrowsingDataFilterBuilderImpl builder(
+      BrowsingDataFilterBuilderImpl::Mode::kDelete);
+  // An empty kDelete filter matches nothing.
+  ASSERT_TRUE(builder.MatchesNothing());
+
+  // With a domain added to the builder, it should no longer match nothing.
+  builder.AddRegisterableDomain(std::string(kGoogleDomain));
+  ASSERT_FALSE(builder.MatchesNothing());
 }
 
 TEST(BrowsingDataFilterBuilderImplTest, RegistrableDomainGURLDeleteList) {
@@ -310,6 +341,14 @@ TEST(BrowsingDataFilterBuilderImplTest,
     RunTestCase(test_case, builder.BuildCookieDeletionFilter());
 }
 
+TEST(BrowsingDataFilterBuilderImplTest, EmptyCookieDeletionFilter) {
+  BrowsingDataFilterBuilderImpl builder(
+      BrowsingDataFilterBuilderImpl::Mode::kDelete);
+  auto cookie_filter = builder.BuildCookieDeletionFilter();
+  EXPECT_TRUE(cookie_filter->including_domains.has_value());
+  EXPECT_FALSE(cookie_filter->excluding_domains.has_value());
+}
+
 TEST(BrowsingDataFilterBuilderImplTest,
      RegistrableDomainMatchesCookiesPreserveList) {
   BrowsingDataFilterBuilderImpl builder(
@@ -412,12 +451,10 @@ TEST(BrowsingDataFilterBuilderImplTest, PartitionedCookies) {
         "__Host-A=B; Secure; SameSite=None; Path=/; Partitioned;",
         base::Time::Now(), absl::nullopt, test_case.cookie_partition_key);
     EXPECT_TRUE(cookie);
-    EXPECT_EQ(
-        test_case.should_match,
-        delete_info.Matches(
-            *cookie, net::CookieAccessParams{
-                         net::CookieAccessSemantics::NONLEGACY, false,
-                         net::CookieSamePartyStatus::kNoSamePartyEnforcement}));
+    EXPECT_EQ(test_case.should_match,
+              delete_info.Matches(
+                  *cookie, net::CookieAccessParams{
+                               net::CookieAccessSemantics::NONLEGACY, false}));
   }
 }
 
@@ -871,7 +908,7 @@ TEST(BrowsingDataFilterBuilderImplTest, GetRegisterableDomains) {
 
 TEST(BrowsingDataFilterBuilderImplTest, ExcludeUnpartitionedCookies) {
   BrowsingDataFilterBuilderImpl builder(
-      BrowsingDataFilterBuilderImpl::Mode::kDelete);
+      BrowsingDataFilterBuilderImpl::Mode::kPreserve);
 
   builder.SetPartitionedStateAllowedOnly(true);
 
@@ -885,9 +922,8 @@ TEST(BrowsingDataFilterBuilderImplTest, ExcludeUnpartitionedCookies) {
       absl::nullopt, absl::nullopt);
   EXPECT_TRUE(cookie);
   EXPECT_FALSE(delete_info.Matches(
-      *cookie, net::CookieAccessParams{
-                   net::CookieAccessSemantics::NONLEGACY, false,
-                   net::CookieSamePartyStatus::kNoSamePartyEnforcement}));
+      *cookie,
+      net::CookieAccessParams{net::CookieAccessSemantics::NONLEGACY, false}));
 
   // Partitioned cookie should match.
   cookie = net::CanonicalCookie::Create(
@@ -898,9 +934,8 @@ TEST(BrowsingDataFilterBuilderImplTest, ExcludeUnpartitionedCookies) {
           GURL("https://toplevelsite.com")));
   EXPECT_TRUE(cookie);
   EXPECT_TRUE(delete_info.Matches(
-      *cookie, net::CookieAccessParams{
-                   net::CookieAccessSemantics::NONLEGACY, false,
-                   net::CookieSamePartyStatus::kNoSamePartyEnforcement}));
+      *cookie,
+      net::CookieAccessParams{net::CookieAccessSemantics::NONLEGACY, false}));
 
   // Nonced partitioned cookie should match.
   cookie = net::CanonicalCookie::Create(
@@ -911,9 +946,26 @@ TEST(BrowsingDataFilterBuilderImplTest, ExcludeUnpartitionedCookies) {
           GURL("https://toplevelsite.com"), base::UnguessableToken::Create()));
   EXPECT_TRUE(cookie);
   EXPECT_TRUE(delete_info.Matches(
-      *cookie, net::CookieAccessParams{
-                   net::CookieAccessSemantics::NONLEGACY, false,
-                   net::CookieSamePartyStatus::kNoSamePartyEnforcement}));
+      *cookie,
+      net::CookieAccessParams{net::CookieAccessSemantics::NONLEGACY, false}));
+}
+
+TEST(BrowsingDataFilterBuilderImplTest, CopyAndEquality) {
+  BrowserTaskEnvironment task_environment;
+  TestBrowserContext browser_context;
+
+  BrowsingDataFilterBuilderImpl builder(
+      BrowsingDataFilterBuilderImpl::Mode::kPreserve);
+  builder.AddOrigin(url::Origin::Create(GURL("https://example.com")));
+  builder.AddRegisterableDomain(kGoogleDomain);
+  builder.SetStorageKey(
+      blink::StorageKey::CreateFromStringForTesting("https://foo.com"));
+  builder.SetCookiePartitionKeyCollection(net::CookiePartitionKeyCollection(
+      net::CookiePartitionKey::FromURLForTesting(GURL("https://www.foo.com"))));
+  builder.SetStoragePartitionConfig(StoragePartitionConfig::Create(
+      &browser_context, "domain", "name", /*in_memory=*/false));
+
+  EXPECT_EQ(builder, *builder.Copy());
 }
 
 }  // namespace content

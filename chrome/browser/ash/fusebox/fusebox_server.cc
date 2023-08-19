@@ -20,6 +20,7 @@
 #include "base/types/expected.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/fileapi/file_system_backend.h"
 #include "chrome/browser/ash/fusebox/fusebox_copy_to_fd.h"
 #include "chrome/browser/ash/fusebox/fusebox_errno.h"
 #include "chrome/browser/ash/fusebox/fusebox_read_writer.h"
@@ -30,7 +31,6 @@
 #include "storage/browser/file_system/async_file_util.h"
 #include "storage/browser/file_system/copy_or_move_hook_delegate.h"
 #include "storage/browser/file_system/external_mount_points.h"
-#include "storage/browser/file_system/file_system_backend.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "third_party/cros_system_api/dbus/fusebox/dbus-constants.h"
@@ -177,7 +177,7 @@ base::expected<Parsed, ParseError> ParseFileSystemURL(
       return base::unexpected(ParseError(ENOENT));
   }
 
-  if (!fs_context->external_backend()->CanHandleType(fs_url.type())) {
+  if (!ash::FileSystemBackend::Get(*fs_context)->CanHandleType(fs_url.type())) {
     LOG(ERROR) << "Backend cannot handle "
                << storage::GetFileSystemTypeString(fs_url.type());
     return base::unexpected(ParseError(EINVAL));
@@ -812,7 +812,9 @@ base::FilePath Server::InverseResolveFSURL(
   return base::FilePath();
 }
 
-base::Value Server::GetDebugJSON() {
+void Server::GetDebugJSONForKey(
+    std::string_view key,
+    base::OnceCallback<void(JSONKeyValuePair)> callback) {
   base::Value::Dict subdirs;
   subdirs.Set(kMonikerSubdir, base::Value("[special]"));
   for (const auto& i : prefix_map_) {
@@ -825,7 +827,7 @@ base::Value Server::GetDebugJSON() {
   base::Value::Dict dict;
   dict.Set("monikers", moniker_map_.GetDebugJSON());
   dict.Set("subdirs", std::move(subdirs));
-  return base::Value(std::move(dict));
+  std::move(callback).Run(std::make_pair(key, base::Value(std::move(dict))));
 }
 
 void Server::Close2(const Close2RequestProto& request_proto,
@@ -1437,8 +1439,9 @@ void Server::ReplyToMakeTempDir(base::ScopedTempDir scoped_temp_dir,
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting(
           "http://fusebox-server.example.com");
-  fs_context->external_backend()->GrantFileAccessToOrigin(
-      storage_key.origin(), base::FilePath(mount_name));
+  ash::FileSystemBackend::Get(*fs_context)
+      ->GrantFileAccessToOrigin(storage_key.origin(),
+                                base::FilePath(mount_name));
 
   storage::FileSystemURL fs_url =
       mount_points->CreateExternalFileSystemURL(storage_key, mount_name, {});

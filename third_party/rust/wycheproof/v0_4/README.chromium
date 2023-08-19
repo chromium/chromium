@@ -3,5 +3,6 @@ URL: https://crates.io/crates/wycheproof
 Description: Wycheproof test vectors
 Version: 0.4.0
 Security Critical: yes
+Shipped: no
 License: Apache 2.0
 Revision: be067ecfc83ab2630c16081a1aa454a0135c86f5

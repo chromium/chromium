@@ -6,6 +6,7 @@
 #define CONTENT_PUBLIC_BROWSER_DESKTOP_STREAMS_REGISTRY_H_
 
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace url {
 class Origin;
@@ -33,12 +34,15 @@ class CONTENT_EXPORT DesktopStreamsRegistry {
   // desktopCapture API or tabCapture API, differentiated by |type|, after user
   // has approved access to |source| for the |origin|. Returns identifier of
   // the new stream.
-  // |render_frame_id| refers to the RenderFrame requesting the stream.
-  virtual std::string RegisterStream(int render_process_id,
-                                     int render_frame_id,
-                                     const url::Origin& origin,
-                                     const DesktopMediaID& source,
-                                     const DesktopStreamRegistryType type) = 0;
+  // If |restrict_to_render_frame_id| has a value, access to the stream will
+  // be restricted to that render frame. If it has no value, any frame in the
+  // same origin and process may use the stream.
+  virtual std::string RegisterStream(
+      int render_process_id,
+      absl::optional<int> restrict_to_render_frame_id,
+      const url::Origin& origin,
+      const DesktopMediaID& source,
+      const DesktopStreamRegistryType type) = 0;
 
   // Validates stream identifier specified in getUserMedia(). Returns null
   // DesktopMediaID if the specified |id| is invalid, i.e. wasn't generated

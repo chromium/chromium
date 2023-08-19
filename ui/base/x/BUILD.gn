@@ -71,6 +71,7 @@ component("x") {
     "//base",
     "//base:i18n",
     "//build:chromeos_buildflags",
+    "//components/device_event_log",
     "//net",
     "//skia",
     "//ui/base:data_exchange",
@@ -161,6 +162,7 @@ source_set("unittests") {
     "selection_requestor_unittest.cc",
     "x11_cursor_factory_unittest.cc",
     "x11_cursor_loader_unittest.cc",
+    "x11_display_util_unittest.cc",
   ]
   deps = [
     ":x",

@@ -54,7 +54,7 @@ class SchedulerImpl : public Scheduler {
       const DeviceStatus& device_status);
 
   // Used to create platform dependent background tasks.
-  raw_ptr<TaskScheduler, DanglingUntriaged> task_scheduler_;
+  raw_ptr<TaskScheduler, AcrossTasksDanglingUntriaged> task_scheduler_;
 
   // Download service configuration.
   raw_ptr<Configuration, DanglingUntriaged> config_;

@@ -45,6 +45,7 @@
 #include "url/origin.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "third_party/blink/public/mojom/direct_sockets/direct_sockets.mojom-forward.h"
 #include "third_party/blink/public/mojom/serial/serial.mojom-forward.h"
 #endif
 
@@ -125,6 +126,10 @@ class DedicatedWorkerHost final
       mojo::PendingReceiver<blink::mojom::IdleManager> receiver);
   void CreateNestedDedicatedWorker(
       mojo::PendingReceiver<blink::mojom::DedicatedWorkerHostFactory> receiver);
+#if !BUILDFLAG(IS_ANDROID)
+  void CreateDirectSocketsService(
+      mojo::PendingReceiver<blink::mojom::DirectSocketsService> receiver);
+#endif
   void CreateWebUsbService(
       mojo::PendingReceiver<blink::mojom::WebUsbService> receiver);
   void CreateWebSocketConnector(
@@ -244,6 +249,7 @@ class DedicatedWorkerHost final
   // RenderProcessHostObserver:
   void RenderProcessExited(RenderProcessHost* render_process_host,
                            const ChildProcessTerminationInfo& info) override;
+  void InProcessRendererExiting(RenderProcessHost* host) override;
   void RenderProcessHostDestroyed(RenderProcessHost* host) override;
 
   // Called from `WorkerScriptFetcher`. Continues starting the dedicated worker

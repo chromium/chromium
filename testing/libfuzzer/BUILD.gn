@@ -37,12 +37,10 @@ source_set("libfuzzer_main") {
 if (fuzzing_engine_supports_custom_main) {
   # Depend on this if you want to use LLVMFuzzerRunDriver from within an existing
   # executable
-  source_set("fuzzing_engine_no_main") {
+  group("fuzzing_engine_no_main") {
     deps = [ ":fuzzing_engine" ]
-    sources = []
     if (use_libfuzzer) {
       deps += [ "//third_party/libFuzzer:libfuzzer" ]
-      sources += [ "expose_fuzzer_run_driver.cc" ]
     } else if (use_centipede) {
       deps += [ "//third_party/fuzztest:centipede_runner_no_main" ]
     }

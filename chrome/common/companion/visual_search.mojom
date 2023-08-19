@@ -1,0 +1,58 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module companion.visual_search.mojom;
+
+import "mojo/public/mojom/base/read_only_file.mojom";
+import "skia/public/mojom/bitmap.mojom";
+
+// Structure used to capture metrics for classification in renderer.
+struct ClassificationStats {
+  // Stat for the number of eligible images on page.
+  uint32 eligible_count;
+
+  // Stat for the number of sensitive images on page.
+  uint32 sensitive_count;
+
+  // Stat for the number of shoppy images on page.
+  uint32 shoppy_count;
+
+  // Stat for the number of shoppy/nonsensitive images on page.
+  uint32 shoppy_nonsensitive_count;
+
+  // Stat for number of visual suggestions on page.
+  uint32 results_count;
+};
+
+// Encapsulates a visual search suggestion result.
+struct VisualSearchSuggestion {
+  // raw skbitmap version of image.
+  skia.mojom.BitmapN32 image;
+};
+
+// Browser-side interface handling responses for visual search suggestions.
+interface VisualSuggestionsResultHandler {
+  // Called when the renderer is ready to send visual search suggestions back
+  // to the browser.
+  // `results` is a list of visual search suggestions.
+  // `stats` contains statistics about the classification (typically used for
+  // logging).
+  HandleClassification(array<VisualSearchSuggestion> results,
+    ClassificationStats stats);
+};
+
+// Renderer-side interface listening for visual search suggestions requests.
+// We make this IPC call once per page load to the main render frame.
+interface VisualSuggestionsRequestHandler {
+  // Called to kick off the visual classification request and passes all of
+  // the necessary dependencies needed on the renderer side to complete task.
+  // `tflite_model` is the file pointer to the model used for classification.
+  // `config_proto` is a base64 protobuf to configure params and thresholds
+  // for the classifier.
+  // `result_handler` is a mojom interface necessary to send back the results.
+  StartVisualClassification(
+    mojo_base.mojom.ReadOnlyFile? visual_model_file,
+    string config_proto,
+    pending_remote<VisualSuggestionsResultHandler> result_handler);
+};

@@ -79,14 +79,6 @@ extern const CGFloat kTabGridSearchBarHeight;
 // The Search bar width ratio modifier for non-compact orientation.
 extern const CGFloat kTabGridSearchBarNonCompactWidthRatioModifier;
 
-// The distance travelled by the thumb strip thumbnails during the slide-in
-// animation of the thumb strip reveal transition.
-extern const CGFloat kThumbStripSlideInHeight;
-
-// The distance travelled by the thumb strip's plus sign button during the
-// slide-out animation of the transition from Peeked to Revealed state.
-extern const CGFloat kThumbStripPlusSignButtonSlideOutDistance;
-
 // Alpha of the background color of the toolbar.
 extern const CGFloat kToolbarBackgroundAlpha;
 

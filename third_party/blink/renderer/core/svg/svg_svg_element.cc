@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/svg/svg_animated_preserve_aspect_ratio.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_rect.h"
 #include "third_party/blink/renderer/core/svg/svg_document_extensions.h"
+#include "third_party/blink/renderer/core/svg/svg_length_context.h"
 #include "third_party/blink/renderer/core/svg/svg_length_tear_off.h"
 #include "third_party/blink/renderer/core/svg/svg_matrix_tear_off.h"
 #include "third_party/blink/renderer/core/svg/svg_number_tear_off.h"
@@ -209,10 +210,10 @@ void SVGSVGElement::CollectStyleForPresentationAttribute(
     MutableCSSPropertyValueSet* style) {
   SVGAnimatedPropertyBase* property = PropertyFromAttribute(name);
   if (property == x_) {
-    AddPropertyToPresentationAttributeStyle(style, property->CssPropertyId(),
+    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kX,
                                             x_->CssValue());
   } else if (property == y_) {
-    AddPropertyToPresentationAttributeStyle(style, property->CssPropertyId(),
+    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kY,
                                             y_->CssValue());
   } else if (IsOutermostSVGSVGElement() &&
              (property == width_ || property == height_)) {
@@ -221,13 +222,13 @@ void SVGSVGElement::CollectStyleForPresentationAttribute(
     // negative values here.
     if (property == width_) {
       if (const CSSValue* width = width_->NonNegativeCssValue()) {
-        AddPropertyToPresentationAttributeStyle(
-            style, property->CssPropertyId(), *width);
+        AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kWidth,
+                                                *width);
       }
     } else if (property == height_) {
       if (const CSSValue* height = height_->NonNegativeCssValue()) {
-        AddPropertyToPresentationAttributeStyle(
-            style, property->CssPropertyId(), *height);
+        AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kHeight,
+                                                *height);
       }
     }
   } else {
@@ -459,13 +460,19 @@ SVGTransformTearOff* SVGSVGElement::createSVGTransformFromMatrix(
 
 AffineTransform SVGSVGElement::LocalCoordinateSpaceTransform(
     CTMScope mode) const {
+  const LayoutObject* layout_object = GetLayoutObject();
+  gfx::SizeF viewport_size;
   AffineTransform transform;
   if (!IsOutermostSVGSVGElement()) {
     SVGLengthContext length_context(this);
     transform.Translate(x_->CurrentValue()->Value(length_context),
                         y_->CurrentValue()->Value(length_context));
-  } else if (mode == kScreenScope) {
-    if (LayoutObject* layout_object = GetLayoutObject()) {
+    if (layout_object) {
+      viewport_size =
+          To<LayoutSVGViewportContainer>(*layout_object).Viewport().size();
+    }
+  } else if (layout_object) {
+    if (mode == kScreenScope) {
       gfx::Transform matrix;
       // Adjust for the zoom level factored into CSS coordinates (WK bug
       // #96361).
@@ -486,9 +493,11 @@ AffineTransform SVGSVGElement::LocalCoordinateSpaceTransform(
       // (4x4 matrix.)
       return AffineTransform::FromTransform(matrix);
     }
+    viewport_size = To<LayoutSVGRoot>(*layout_object).ViewportSize();
   }
-  if (!HasEmptyViewBox())
-    transform.PreConcat(ViewBoxToViewTransform(CurrentViewportSize()));
+  if (!HasEmptyViewBox()) {
+    transform.PreConcat(ViewBoxToViewTransform(viewport_size));
+  }
   return transform;
 }
 
@@ -579,7 +588,8 @@ bool SVGSVGElement::SelfHasRelativeLengths() const {
 }
 
 bool SVGSVGElement::HasEmptyViewBox() const {
-  return HasValidViewBox() && viewBox()->CurrentValue()->Rect().IsEmpty();
+  const SVGRect& view_box = CurrentViewBox();
+  return HasValidViewBox(view_box) && view_box.Rect().IsEmpty();
 }
 
 bool SVGSVGElement::ShouldSynthesizeViewBox() const {
@@ -589,11 +599,15 @@ bool SVGSVGElement::ShouldSynthesizeViewBox() const {
   return svg_root && svg_root->IsEmbeddedThroughSVGImage();
 }
 
-gfx::RectF SVGSVGElement::CurrentViewBoxRect() const {
-  if (view_spec_ && view_spec_->ViewBox())
-    return view_spec_->ViewBox()->Rect();
+const SVGRect& SVGSVGElement::CurrentViewBox() const {
+  if (view_spec_ && view_spec_->ViewBox()) {
+    return *view_spec_->ViewBox();
+  }
+  return *viewBox()->CurrentValue();
+}
 
-  gfx::RectF use_view_box = viewBox()->CurrentValue()->Rect();
+gfx::RectF SVGSVGElement::CurrentViewBoxRect() const {
+  gfx::RectF use_view_box = CurrentViewBox().Rect();
   if (!use_view_box.IsEmpty())
     return use_view_box;
   if (!ShouldSynthesizeViewBox())
@@ -613,7 +627,7 @@ const SVGPreserveAspectRatio* SVGSVGElement::CurrentPreserveAspectRatio()
   if (view_spec_ && view_spec_->PreserveAspectRatio())
     return view_spec_->PreserveAspectRatio();
 
-  if (!HasValidViewBox() && ShouldSynthesizeViewBox()) {
+  if (!HasValidViewBox(CurrentViewBox()) && ShouldSynthesizeViewBox()) {
     // If no (valid) viewBox is specified and we're embedded through SVGImage,
     // then synthesize a pAR with the value 'none'.
     auto* synthesized_par = MakeGarbageCollected<SVGPreserveAspectRatio>();
@@ -622,24 +636,6 @@ const SVGPreserveAspectRatio* SVGSVGElement::CurrentPreserveAspectRatio()
     return synthesized_par;
   }
   return preserveAspectRatio()->CurrentValue();
-}
-
-gfx::SizeF SVGSVGElement::CurrentViewportSize() const {
-  const LayoutObject* layout_object = GetLayoutObject();
-  if (!layout_object)
-    return gfx::SizeF();
-
-  if (layout_object->IsSVGRoot()) {
-    PhysicalRect content_rect =
-        To<LayoutSVGRoot>(layout_object)->PhysicalContentBoxRectFromNG();
-    float zoom = layout_object->StyleRef().EffectiveZoom();
-    return gfx::SizeF(content_rect.size.width / zoom,
-                      content_rect.size.height / zoom);
-  }
-
-  gfx::RectF viewport_rect =
-      To<LayoutSVGViewportContainer>(GetLayoutObject())->Viewport();
-  return viewport_rect.size();
 }
 
 absl::optional<float> SVGSVGElement::IntrinsicWidth() const {
@@ -762,22 +758,20 @@ SVGAnimatedPropertyBase* SVGSVGElement::PropertyFromAttribute(
   }
 }
 
-void SVGSVGElement::SynchronizeSVGAttribute(const QualifiedName& name) const {
-  if (name == AnyQName()) {
-    SVGAnimatedPropertyBase* attrs[]{x_.Get(), y_.Get(), width_.Get(),
-                                     height_.Get()};
-    SynchronizeAllSVGAttributes(attrs);
-  }
-  SVGFitToViewBox::SynchronizeSVGAttribute(name);
-  SVGGraphicsElement::SynchronizeSVGAttribute(name);
+void SVGSVGElement::SynchronizeAllSVGAttributes() const {
+  SVGAnimatedPropertyBase* attrs[]{x_.Get(), y_.Get(), width_.Get(),
+                                   height_.Get()};
+  SynchronizeListOfSVGAttributes(attrs);
+  SVGFitToViewBox::SynchronizeAllSVGAttributes();
+  SVGGraphicsElement::SynchronizeAllSVGAttributes();
 }
 
 void SVGSVGElement::CollectExtraStyleForPresentationAttribute(
     MutableCSSPropertyValueSet* style) {
   for (auto* property : (SVGAnimatedPropertyBase*[]){
            x_.Get(), y_.Get(), width_.Get(), height_.Get()}) {
-    if (property->HasPresentationAttributeMapping() &&
-        property->IsAnimating()) {
+    DCHECK(property->HasPresentationAttributeMapping());
+    if (property->IsAnimating()) {
       CollectStyleForPresentationAttribute(property->AttributeName(),
                                            g_empty_atom, style);
     }

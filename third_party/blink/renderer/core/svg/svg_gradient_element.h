@@ -21,7 +21,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_GRADIENT_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_GRADIENT_ELEMENT_H_
 
-#include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_enumeration.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_unit_types.h"
@@ -59,7 +58,7 @@ class SVGGradientElement : public SVGElement, public SVGURIReference {
     return gradient_units_.Get();
   }
 
-  void InvalidateGradient(LayoutInvalidationReasonForTracing);
+  void InvalidateGradient();
   void InvalidateDependentGradients();
 
   const SVGGradientElement* ReferencedElement() const;
@@ -81,7 +80,7 @@ class SVGGradientElement : public SVGElement, public SVGURIReference {
 
   SVGAnimatedPropertyBase* PropertyFromAttribute(
       const QualifiedName& attribute_name) const override;
-  void SynchronizeSVGAttribute(const QualifiedName& name) const override;
+  void SynchronizeAllSVGAttributes() const override;
   void CollectExtraStyleForPresentationAttribute(
       MutableCSSPropertyValueSet* style) override;
 

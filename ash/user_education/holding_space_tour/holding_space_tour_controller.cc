@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/ash_element_identifiers.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/drag_drop/scoped_drag_drop_observer.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
@@ -20,14 +21,13 @@
 #include "ash/shell.h"
 #include "ash/system/holding_space/holding_space_tray.h"
 #include "ash/system/status_area_widget.h"
-#include "ash/user_education/user_education_constants.h"
 #include "ash/user_education/user_education_help_bubble_controller.h"
 #include "ash/user_education/user_education_ping_controller.h"
 #include "ash/user_education/user_education_types.h"
 #include "ash/user_education/user_education_util.h"
+#include "ash/wallpaper/views/wallpaper_view.h"
+#include "ash/wallpaper/views/wallpaper_widget_controller.h"
 #include "ash/wallpaper/wallpaper_drag_drop_delegate.h"
-#include "ash/wallpaper/wallpaper_view.h"
-#include "ash/wallpaper/wallpaper_widget_controller.h"
 #include "base/check_op.h"
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/files/file_path.h"

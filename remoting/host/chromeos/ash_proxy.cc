@@ -52,6 +52,11 @@ class DefaultAshProxy : public AshProxy {
     return &display_manager().GetDisplayForId(display_id);
   }
 
+  aura::Window* GetSelectFileContainer() override {
+    return shell().GetPrimaryRootWindow()->GetChildById(
+        ash::kShellWindowId_AlwaysOnTopContainer);
+  }
+
   void CreateVideoCapturer(
       mojo::PendingReceiver<viz::mojom::FrameSinkVideoCapturer> video_capturer)
       override {

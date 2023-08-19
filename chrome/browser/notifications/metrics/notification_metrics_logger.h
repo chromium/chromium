@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_NOTIFICATIONS_METRICS_NOTIFICATION_METRICS_LOGGER_H_
 #define CHROME_BROWSER_NOTIFICATIONS_METRICS_NOTIFICATION_METRICS_LOGGER_H_
 
+#include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/common/persistent_notification_status.h"
+#include "third_party/blink/public/common/notifications/platform_notification_data.h"
+#include "url/gurl.h"
 
 // Logs when various notification-related events have occurred.
 // Methods are virtual so they can be mocked in tests.
@@ -32,6 +35,12 @@ class NotificationMetricsLogger : public KeyedService {
 
   // Logs that a persistent notification has been displayed.
   virtual void LogPersistentNotificationShown();
+
+  // Logs the size of variable-sized attributes in a persistent notification.
+  virtual void LogPersistentNotificationSize(
+      const Profile* profile,
+      const blink::PlatformNotificationData& notification_data,
+      const GURL& origin);
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_METRICS_NOTIFICATION_METRICS_LOGGER_H_"

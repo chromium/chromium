@@ -1,0 +1,2 @@
+CONSOLE ERROR: EventSource's response has a MIME type ("text/html") that is not "text/event-stream". Aborting the connection.
+PASS

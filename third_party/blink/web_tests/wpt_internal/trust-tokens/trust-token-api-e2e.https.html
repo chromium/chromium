@@ -51,4 +51,15 @@
                                          }}),
                        'Throws a TypeError due to invalid version number');
   }, 'Creating a request with invalid token version number throws');
+
+  promise_test(function () {
+      return fetch('https://unknown-issuer.test/wpt_internal/trust-tokens/resources/trust_token_issuance.py', {
+          privateToken: { version: 1, operation: 'token-request' }
+      }).then(function (response) {
+          assert_unreached();
+      }).catch(function (error) {
+          assert_equals(error.message, 'No keys currently available for PST issuer. Issuer may need to register their key commitments.');
+      });
+  }, 'Token issuance fails with missing issuer keys.');
+
 </script>

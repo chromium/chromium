@@ -14,7 +14,21 @@ namespace ash {
 class COMPONENT_EXPORT(UPSTART_CLIENT) FakeUpstartClient
     : public UpstartClient {
  public:
-  using StartStopJobCallback = base::RepeatingCallback<bool(
+  struct StartJobResult {
+    StartJobResult(bool success,
+                   absl::optional<std::string> error_name = absl::nullopt,
+                   absl::optional<std::string> error_message = absl::nullopt);
+    ~StartJobResult();
+
+    bool success;
+    absl::optional<std::string> error_name;
+    absl::optional<std::string> error_message;
+  };
+
+  using StartJobCallback = base::RepeatingCallback<StartJobResult(
+      const std::string& job,
+      const std::vector<std::string>& upstart_env)>;
+  using StopJobCallback = base::RepeatingCallback<bool(
       const std::string& job,
       const std::vector<std::string>& upstart_env)>;
 
@@ -48,14 +62,15 @@ class COMPONENT_EXPORT(UPSTART_CLIENT) FakeUpstartClient
   void StartWilcoDtcService(chromeos::VoidDBusMethodCallback callback) override;
   void StopWilcoDtcService(chromeos::VoidDBusMethodCallback callback) override;
 
-  void set_start_job_cb(const StartStopJobCallback& cb) { start_job_cb_ = cb; }
-  void set_stop_job_cb(const StartStopJobCallback& cb) { stop_job_cb_ = cb; }
+  void set_start_job_cb(const StartJobCallback& cb) { start_job_cb_ = cb; }
+  void set_stop_job_cb(const StopJobCallback& cb) { stop_job_cb_ = cb; }
 
  private:
-  // Callbacks that are called in StartJob() and StopJob() respectively. These
-  // callbacks decide the result StartJob() or StopJob() returns.
-  StartStopJobCallback start_job_cb_;
-  StartStopJobCallback stop_job_cb_;
+  // Callback to decide the result of StartJob() / StartJobWithErrorDetails().
+  StartJobCallback start_job_cb_;
+
+  // Callback to decide the result of StopJob().
+  StopJobCallback stop_job_cb_;
 };
 
 }  // namespace ash

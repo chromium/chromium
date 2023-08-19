@@ -22,9 +22,9 @@ RateLimiterSlideWindow::RateLimiterSlideWindow(size_t total_size,
       time_bucket_(time_window / bucket_count),
       bucket_count_(bucket_count),
       start_timestamp_(base::Time::Min()) {
-  DCHECK_GT(total_size, 0u);
-  DCHECK_GT(time_window, base::TimeDelta());
-  DCHECK_GT(bucket_count, 0u);
+  CHECK_GT(total_size, 0u);
+  CHECK_GT(time_window, base::TimeDelta());
+  CHECK_GT(bucket_count, 0u);
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
@@ -34,12 +34,12 @@ RateLimiterSlideWindow::~RateLimiterSlideWindow() {
 
 void RateLimiterSlideWindow::BucketsShift() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!bucket_events_size_.empty());
+  CHECK(!bucket_events_size_.empty());
   const auto now = base::Time::Now();
   const auto earliest_time = now - bucket_count_ * time_bucket_;
   // If the earliet bucket is obsolete, drop it.
   if (start_timestamp_ <= earliest_time) {
-    DCHECK_GE(current_size_, bucket_events_size_.front());
+    CHECK_GE(current_size_, bucket_events_size_.front());
     current_size_ -= bucket_events_size_.front();
     bucket_events_size_.pop();
     start_timestamp_ += time_bucket_;
@@ -82,7 +82,7 @@ bool RateLimiterSlideWindow::Acquire(size_t event_size) {
       bucket_events_size_.push(0u);
     }
     // Add the new event to the last bucket (which could be empty).
-    DCHECK_LE(bucket_events_size_.size(), bucket_count_);
+    CHECK_LE(bucket_events_size_.size(), bucket_count_);
     bucket_events_size_.back() += event_size;
     current_size_ += event_size;
     // No need to initiate bucket purging - it is already scheduled.

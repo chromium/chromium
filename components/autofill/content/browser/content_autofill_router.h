@@ -17,7 +17,6 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_predictions.h"
 #include "components/autofill/core/common/form_field_data.h"
-#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -172,13 +171,6 @@ class ContentAutofillRouter {
   void UnsetKeyPressHandler(ContentAutofillDriver* source,
                             void (*callback)(ContentAutofillDriver* target));
 
-  // Sets the suppress state in the driver that last called
-  // AskForValuesToFill(), that is, |last_queried_source_|.
-  void SetShouldSuppressKeyboard(ContentAutofillDriver* source,
-                                 bool suppress,
-                                 void (*callback)(ContentAutofillDriver* target,
-                                                  bool suppress));
-
   // Routing of events called by the renderer:
   void SetFormToBeProbablySubmitted(
       ContentAutofillDriver* source,
@@ -232,14 +224,12 @@ class ContentAutofillRouter {
       FormData form,
       const FormFieldData& field,
       const gfx::RectF& bounding_box,
-      AutoselectFirstSuggestion autoselect_first_suggestion,
-      FormElementWasClicked form_element_was_clicked,
+      AutofillSuggestionTriggerSource trigger_source,
       void (*callback)(ContentAutofillDriver* target,
                        const FormData& form,
                        const FormFieldData& field,
                        const gfx::RectF& bounding_box,
-                       AutoselectFirstSuggestion autoselect_first_suggestion,
-                       FormElementWasClicked form_element_was_clicked));
+                       AutofillSuggestionTriggerSource trigger_source));
   void HidePopup(ContentAutofillDriver* source,
                  void (*callback)(ContentAutofillDriver* target));
   void FocusNoLongerOnForm(ContentAutofillDriver* source,
@@ -265,7 +255,7 @@ class ContentAutofillRouter {
       void (*callback)(ContentAutofillDriver* target));
   void DidEndTextFieldEditing(ContentAutofillDriver* source,
                               void (*callback)(ContentAutofillDriver* target));
-  void SelectFieldOptionsDidChange(
+  void SelectOrSelectListFieldOptionsDidChange(
       ContentAutofillDriver* source,
       FormData form,
       void (*callback)(ContentAutofillDriver* target, const FormData& form));
@@ -291,13 +281,22 @@ class ContentAutofillRouter {
   // Routing of events called by the browser:
   std::vector<FieldGlobalId> FillOrPreviewForm(
       ContentAutofillDriver* source,
-      mojom::RendererFormDataAction action,
+      mojom::AutofillActionPersistence action_persistence,
       const FormData& data,
       const url::Origin& triggered_origin,
       const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map,
       void (*callback)(ContentAutofillDriver* target,
-                       mojom::RendererFormDataAction action,
+                       mojom::AutofillActionPersistence action_persistence,
                        const FormData& form));
+  void UndoAutofill(
+      ContentAutofillDriver* source,
+      mojom::AutofillActionPersistence action_persistence,
+      const FormData& data,
+      const url::Origin& triggered_origin,
+      const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map,
+      void (*callback)(ContentAutofillDriver* target,
+                       const FormData& form,
+                       mojom::AutofillActionPersistence action_persistence));
   void SendAutofillTypePredictionsToRenderer(
       ContentAutofillDriver* source,
       const std::vector<FormDataPredictions>& type_predictions,
@@ -321,6 +320,13 @@ class ContentAutofillRouter {
   void RendererShouldClearPreviewedForm(
       ContentAutofillDriver* source,
       void (*callback)(ContentAutofillDriver* target));
+  void RendererShouldTriggerSuggestions(
+      ContentAutofillDriver* source,
+      const FieldGlobalId& field,
+      AutofillSuggestionTriggerSource trigger_source,
+      void (*callback)(ContentAutofillDriver* target,
+                       const FieldRendererId& field,
+                       AutofillSuggestionTriggerSource trigger_source));
   void RendererShouldFillFieldWithValue(
       ContentAutofillDriver* source,
       const FieldGlobalId& field,
@@ -343,10 +349,18 @@ class ContentAutofillRouter {
                        const FieldRendererId& field,
                        const mojom::AutofillState state));
 
+  // Returns the underlying renderer forms of `browser_form`.
+  // Note that this function is intended for use outside of the `autofill`
+  // component to ensure compatibility with callers whose concept of a form
+  // does not include frame-transcending forms. It returns the constituent
+  // renderer forms regardless of their frames' origins and the field types.
+  std::vector<FormData> GetRendererForms(const FormData& browser_form) const;
+
  private:
   friend class ContentAutofillRouterTestApi;
 
   // Returns the driver of |frame| stored in |form_forest_|.
+  // Does not invalidate any forms in the FormForest.
   ContentAutofillDriver* DriverOfFrame(LocalFrameToken frame);
 
   // Calls ContentAutofillDriver::TriggerFormExtraction() for all drivers in
@@ -357,22 +371,12 @@ class ContentAutofillRouter {
   void SetLastQueriedSource(ContentAutofillDriver* source);
   void SetLastQueriedTarget(ContentAutofillDriver* target);
 
-  // The URL of a main frame managed by the ContentAutofillRouter.
-  // TODO(crbug.com/1240247): Remove.
-  std::string MainUrlForDebugging() const;
-
-  // The frame managed by the ContentAutofillRouter that was last passed to
-  // an event.
-  // TODO(crbug.com/1240247): Remove.
-  content::GlobalRenderFrameHostId some_rfh_for_debugging_;
-
   // The forest of forms. See its documentation for the usage protocol.
   internal::FormForest form_forest_;
 
   // The driver that triggered the last AskForValuesToFill() call.
   // Update with SetLastQueriedSource().
-  raw_ptr<ContentAutofillDriver, DanglingUntriaged> last_queried_source_ =
-      nullptr;
+  raw_ptr<ContentAutofillDriver> last_queried_source_ = nullptr;
   // The driver to which the last AskForValuesToFill() call was routed.
   // Update with SetLastQueriedTarget().
   raw_ptr<ContentAutofillDriver> last_queried_target_ = nullptr;

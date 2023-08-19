@@ -2,43 +2,15 @@
 <html>
 <head>
 <script src="../../../resources/js-test.js"></script>
+<script src="../resources/common.js"></script>
+<script src="../resources/common-number-keyoperation.js"></script>
 </head>
 <body>
 <script>
 description('Test for keyboard operations for &lt;input type=number>');
-var parent = document.createElement('div');
-document.body.appendChild(parent);
-parent.innerHTML = '<input type=number id=number>';
-
-var input = document.getElementById('number');
-input.focus();
-debug('Inserting "ab123cd":');
-document.execCommand('InsertText', false, 'ab123cd');
-shouldBeEqualToString('input.value', '123');
-
-debug('Press the up arrow key:');
-input.valueAsNumber = 123;
-eventSender.keyDown('ArrowUp');
-shouldBe('input.value', '"124"');
-
-debug('Press the down arrow key:');
-eventSender.keyDown('ArrowDown');
-shouldBe('input.value', '"123"');
-
-debug('Press the down and alt arrow key, should not decrement value:');
-eventSender.keyDown('ArrowDown', ['altKey']);
-shouldBeEqualToString('input.value', '123');
-
-debug('Disable input element:');
-input.disabled = true;
-eventSender.keyDown('ArrowUp');
-shouldBe('input.value', '"123"');
-input.removeAttribute('disabled');
-
-debug('Read-only input element:');
-input.readOnly = true;
-eventSender.keyDown('ArrowUp');
-shouldBe('input.value', '"123"');
+testNumberKeyoperations('horizontal-tb', 123);
+testNumberKeyoperations('vertical-lr', 1000);
+testNumberKeyoperations('vertical-rl', 5);
 </script>
 </body>
 </html>

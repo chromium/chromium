@@ -151,8 +151,18 @@ std::unique_ptr<TaskAttributionTracker::TaskScope>
 TaskAttributionTrackerImpl::CreateTaskScope(
     ScriptState* script_state,
     absl::optional<TaskAttributionId> parent_task_id,
+    TaskScopeType type) {
+  return CreateTaskScope(script_state, parent_task_id, type,
+                         /*abort_source=*/nullptr, /*priority_source=*/nullptr);
+}
+
+std::unique_ptr<TaskAttributionTracker::TaskScope>
+TaskAttributionTrackerImpl::CreateTaskScope(
+    ScriptState* script_state,
+    absl::optional<TaskAttributionId> parent_task_id,
     TaskScopeType type,
-    DOMTaskSignal* signal) {
+    AbortSignal* abort_source,
+    DOMTaskSignal* priority_source) {
   absl::optional<TaskAttributionId> running_task_id_to_be_restored =
       running_task_id_;
   ScriptWrappableTaskState* continuation_task_state_to_be_restored =
@@ -170,8 +180,8 @@ TaskAttributionTrackerImpl::CreateTaskScope(
   }
 
   SetCurrentTaskContinuationData(
-      script_state,
-      MakeGarbageCollected<ScriptWrappableTaskState>(next_task_id_, signal));
+      script_state, MakeGarbageCollected<ScriptWrappableTaskState>(
+                        next_task_id_, abort_source, priority_source));
 
   return std::make_unique<TaskScopeImpl>(
       script_state, this, next_task_id_, running_task_id_to_be_restored,

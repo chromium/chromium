@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("ssl") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "captive_portal_metrics.cc",
     "captive_portal_metrics.h",
@@ -46,7 +45,6 @@ source_set("ssl") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "ios_ssl_error_handler_unittest.mm" ]
   deps = [

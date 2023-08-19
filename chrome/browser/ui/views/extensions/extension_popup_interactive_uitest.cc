@@ -21,10 +21,6 @@
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/widget_test.h"
 
-#if BUILDFLAG(IS_MAC)
-#include "base/mac/mac_util.h"
-#endif
-
 using ExtensionPopupInteractiveUiTest = extensions::ExtensionApiTest;
 
 // Tests unloading an extension while its popup is actively under inspection.
@@ -151,10 +147,5 @@ IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
   const bool is_stacked_above = views::test::WidgetTest::IsWindowStackedAbove(
       extension_popup->GetWidget(), permissions_api.GetPromptWindow());
 
-#if BUILDFLAG(IS_MAC)
-  // Child window re-ordering is not reliable on macOS <= 10.13.
-  if (base::mac::IsAtMostOS10_13())
-    return;
-#endif
   EXPECT_FALSE(is_stacked_above);
 }

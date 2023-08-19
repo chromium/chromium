@@ -158,7 +158,7 @@ if (is_android) {
   ]
 
   generate_jni("jni_headers") {
-    visibility = [ ":generic_sensor" ]
+    visibility = [ ":*" ]
 
     sources = device_sensors_jni_sources
   }
@@ -169,6 +169,7 @@ if (is_android) {
       "//services/device:*",
     ]
 
+    srcjar_deps = [ ":jni_headers" ]
     sources = device_sensors_jni_sources
     deps = [
       "//base:base_java",
@@ -177,6 +178,5 @@ if (is_android) {
       "//services/device/public/mojom:generic_sensor_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 }

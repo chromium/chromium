@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("external_files") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "external_file_remover.h",
     "external_file_remover_factory.h",

@@ -15,11 +15,12 @@
 
 namespace blink {
 
-template <class Callback>
+template <class CustomPropertyCallback, class RegularPropertyCallback>
 void ExpandCascade(const MatchedProperties& matched_properties,
                    const Document& document,
                    wtf_size_t matched_properties_index,
-                   Callback&& callback) {
+                   CustomPropertyCallback&& custom_property_callback,
+                   RegularPropertyCallback&& regular_property_callback) {
   CascadeFilter filter = CreateExpansionFilter(matched_properties);
 
   // We can't handle a MatchResult with more than 0xFFFF MatchedProperties,
@@ -47,9 +48,7 @@ void ExpandCascade(const MatchedProperties& matched_properties,
     if (id == CSSPropertyID::kVariable) {
       CustomProperty custom(reference.Name().ToAtomicString(), document);
       if (!filter.Rejects(custom)) {
-        callback(priority, custom,
-                 CSSPropertyName(reference.Name().ToAtomicString()),
-                 reference.Value(), matched_properties.types_.tree_order);
+        custom_property_callback(priority, reference.Name().ToAtomicString());
       }
       // Custom properties never have visited counterparts,
       // so no need to check for expand_visited here.
@@ -61,22 +60,18 @@ void ExpandCascade(const MatchedProperties& matched_properties,
         }
         const CSSProperty& property = CSSProperty::Get(expanded_id);
         if (!filter.Rejects(property)) {
-          callback(priority, property, CSSPropertyName(expanded_id),
-                   reference.Value(), matched_properties.types_.tree_order);
+          regular_property_callback(priority, expanded_id);
         }
       }
     } else {
       const CSSProperty& property = CSSProperty::Get(id);
       if (!filter.Rejects(property)) {
-        callback(priority, property, CSSPropertyName(id), reference.Value(),
-                 matched_properties.types_.tree_order);
+        regular_property_callback(priority, id);
       }
-      if (expand_visited && kPropertiesWithVisited.Has(id)) {
+      if (expand_visited) {
         const CSSProperty* visited_property = property.GetVisitedProperty();
         if (visited_property && !filter.Rejects(*visited_property)) {
-          callback(priority, *visited_property,
-                   visited_property->GetCSSPropertyName(), reference.Value(),
-                   matched_properties.types_.tree_order);
+          regular_property_callback(priority, visited_property->PropertyID());
         }
       }
     }

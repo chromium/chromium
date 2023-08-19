@@ -37,24 +37,25 @@ enum FontFaceLoadStatus {
     "error"
 };
 
+typedef (ArrayBuffer or ArrayBufferView) BinaryData;
+
 [
     ActiveScriptWrappable,
     Exposed=(Window,Worker)
 ] interface FontFace {
-    // FIXME: This should be (DOMString or BinaryData), where BinaryData is typedef of (ArrayBuffer or ArrayBufferView)
-    [CallWith=ExecutionContext, MeasureAs=FontFaceConstructor] constructor(DOMString family, (DOMString or ArrayBuffer or ArrayBufferView) source, optional FontFaceDescriptors descriptors = {});
-    [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute DOMString family;
-    [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute DOMString style;
-    [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute DOMString weight;
-    [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute DOMString stretch;
-    [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute DOMString unicodeRange;
-    [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute DOMString variant;
-    [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute DOMString featureSettings;
-    [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute DOMString display;
-    [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute DOMString ascentOverride;
-    [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute DOMString descentOverride;
-    [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute DOMString lineGapOverride;
-    [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute DOMString sizeAdjust;
+    [CallWith=ExecutionContext, MeasureAs=FontFaceConstructor] constructor(CSSOMString family, (CSSOMString or BinaryData) source, optional FontFaceDescriptors descriptors = {});
+    [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute CSSOMString family;
+    [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute CSSOMString style;
+    [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute CSSOMString weight;
+    [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute CSSOMString stretch;
+    [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute CSSOMString unicodeRange;
+    [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute CSSOMString variant;
+    [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute CSSOMString featureSettings;
+    [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute CSSOMString display;
+    [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute CSSOMString ascentOverride;
+    [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute CSSOMString descentOverride;
+    [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute CSSOMString lineGapOverride;
+    [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute CSSOMString sizeAdjust;
 
     readonly attribute FontFaceLoadStatus status;
 

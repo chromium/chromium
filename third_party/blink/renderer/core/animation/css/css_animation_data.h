@@ -85,6 +85,19 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
     return composition_list_;
   }
 
+  bool HasSingleInitialTimeline() const {
+    return timeline_list_.size() == 1u &&
+           timeline_list_.front() == InitialTimeline();
+  }
+  bool HasSingleInitialRangeStart() const {
+    return range_start_list_.size() == 1u &&
+           range_start_list_.front() == InitialRangeStart();
+  }
+  bool HasSingleInitialRangeEnd() const {
+    return range_end_list_.size() == 1u &&
+           range_end_list_.front() == InitialRangeEnd();
+  }
+
   static absl::optional<double> InitialDuration();
   static const AtomicString& InitialName();
   static const StyleTimeline& InitialTimeline();

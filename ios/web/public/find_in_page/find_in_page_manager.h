@@ -20,7 +20,7 @@ class FindInPageManager : public AbstractFindInPageManager,
   // WebStateUserData<FindInPageManager> would create a
   // FindInPageManager which is a pure abstract class. Should only be called if
   // the web state is realized.
-  static void CreateForWebState(WebState* web_state, bool use_find_interaction);
+  static void CreateForWebState(WebState* web_state);
 
   FindInPageManager() = default;
 

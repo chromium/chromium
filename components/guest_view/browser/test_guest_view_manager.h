@@ -119,7 +119,6 @@ class TestGuestViewManager : public GuestViewManager {
   size_t num_guests_created_ = 0;
   size_t expected_num_guests_created_ = 0;
   int num_views_garbage_collected_ = 0;
-  bool waiting_for_guests_created_ = false;
 
   // Tracks the life time of the GuestView's main FrameTreeNode. The main FTN
   // has the same lifesspan as the GuestView.
@@ -143,6 +142,10 @@ class TestGuestViewManagerFactory : public GuestViewManagerFactory {
       delete;
 
   ~TestGuestViewManagerFactory() override;
+
+  TestGuestViewManager* GetOrCreateTestGuestViewManager(
+      content::BrowserContext* context,
+      std::unique_ptr<GuestViewManagerDelegate> delegate);
 
   std::unique_ptr<GuestViewManager> CreateGuestViewManager(
       content::BrowserContext* context,

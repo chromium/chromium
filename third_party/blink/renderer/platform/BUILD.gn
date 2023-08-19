@@ -10,7 +10,6 @@ import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//build/nocompile.gni")
 import("//media/media_options.gni")
-import("//skia/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 import("//third_party/blink/public/public_features.gni")
@@ -149,6 +148,7 @@ group("make_platform_generated") {
     ":font_family_names",
     ":runtime_enabled_features",
     ":runtime_feature_state_override_context",
+    "//third_party/blink/public/common:buildflags",
     "//third_party/blink/renderer/platform/network:make_generated",
   ]
 }
@@ -199,7 +199,6 @@ group("blink_platform_public_deps") {
     "//third_party/blink/renderer/platform/network:make_generated",
     "//third_party/blink/renderer/platform/wtf",
     "//third_party/boringssl",
-    "//third_party/iccjpeg",
     "//third_party/libpng",
     "//third_party/libwebp",
     "//third_party/ots",
@@ -399,6 +398,9 @@ component("platform") {
     "bindings/active_script_wrappable_base.h",
     "bindings/active_script_wrappable_manager.cc",
     "bindings/active_script_wrappable_manager.h",
+    "bindings/async_iterator_base.cc",
+    "bindings/async_iterator_base.h",
+    "bindings/bigint.cc",
     "bindings/bigint.h",
     "bindings/binding_security_for_platform.cc",
     "bindings/binding_security_for_platform.h",
@@ -463,8 +465,6 @@ component("platform") {
     "bindings/to_blink_string.h",
     "bindings/to_v8.h",
     "bindings/trace_wrapper_v8_reference.h",
-    "bindings/trace_wrapper_v8_string.cc",
-    "bindings/trace_wrapper_v8_string.h",
     "bindings/union_base.cc",
     "bindings/union_base.h",
     "bindings/v8_binding.cc",
@@ -515,6 +515,7 @@ component("platform") {
     "data_resource_helper.h",
     "disk_data_allocator.cc",
     "disk_data_allocator.h",
+    "disk_data_metadata.cc",
     "disk_data_metadata.h",
     "exported/file_path_conversion.cc",
     "exported/interface_registry.cc",
@@ -659,6 +660,8 @@ component("platform") {
     "fonts/opentype/font_format_check.h",
     "fonts/opentype/font_settings.cc",
     "fonts/opentype/font_settings.h",
+    "fonts/opentype/open_type_baseline_metrics.cc",
+    "fonts/opentype/open_type_baseline_metrics.h",
     "fonts/opentype/open_type_caps_support.cc",
     "fonts/opentype/open_type_caps_support.h",
     "fonts/opentype/open_type_caps_support_mpl.cc",
@@ -765,6 +768,7 @@ component("platform") {
     "geometry/float_rounded_rect.h",
     "geometry/geometry_as_json.h",
     "geometry/geometry_hash_traits.h",
+    "geometry/infinite_int_rect.h",
     "geometry/layout_point.cc",
     "geometry/layout_point.h",
     "geometry/layout_rect.cc",
@@ -812,7 +816,6 @@ component("platform") {
     "graphics/canvas_resource_provider.h",
     "graphics/color.cc",
     "graphics/color.h",
-    "graphics/color_behavior.cc",
     "graphics/color_behavior.h",
     "graphics/color_space_gamut.cc",
     "graphics/color_space_gamut.h",
@@ -1589,18 +1592,12 @@ component("platform") {
     ]
   }
 
-  if (is_apple) {
-    configs += [ "//build/config/compiler:enable_arc" ]
-  }
-
   if (is_mac) {
     sources += [
       "audio/mac/fft_frame_mac.cc",
       "audio/mac/vector_math_mac.h",
       "fonts/mac/attributed_string_type_converter.h",
       "fonts/mac/attributed_string_type_converter.mm",
-      "fonts/mac/core_text_font_format_support.cc",
-      "fonts/mac/core_text_font_format_support.h",
       "fonts/mac/font_cache_mac.mm",
       "fonts/mac/font_matcher_mac.h",
       "fonts/mac/font_matcher_mac.mm",
@@ -1693,7 +1690,6 @@ component("platform") {
     "//cc/ipc",
     "//cc/mojo_embedder",
     "//components/paint_preview/common",
-    "//components/power_scheduler",
     "//components/search_engines:search_engine_utils",
     "//components/viz/client",
     "//components/viz/common",
@@ -1817,7 +1813,10 @@ component("platform") {
       "image-decoders/avif/avif_image_decoder.h",
     ]
 
-    deps += [ "//third_party/libavif" ]
+    deps += [
+      "//third_party/libavif",
+      "//third_party/libavifinfo",
+    ]
   }
 
   if (current_cpu == "x86" || current_cpu == "x64") {
@@ -1988,10 +1987,6 @@ test("blink_platform_unittests") {
       "//build/config/fuchsia/test/test_fonts.shard.test-cml",
       "//build/config/fuchsia/test/mark_vmo_executable.shard.test-cml",
     ]
-
-    # Oilpan reuses V8's v8::PageAllocator which generally requires JIT
-    # permissions.
-    test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
   }
 
   if (is_android) {
@@ -2035,6 +2030,7 @@ source_set("blink_platform_unittests_sources") {
     "exported/web_vector_test.cc",
     "fonts/bitmap_glyphs_block_list_test.cc",
     "fonts/cursor_position_test.cc",
+    "fonts/fallback_list_composite_key_test.cc",
     "fonts/font_cache_test.cc",
     "fonts/font_description_test.cc",
     "fonts/font_family_test.cc",
@@ -2042,11 +2038,13 @@ source_set("blink_platform_unittests_sources") {
     "fonts/font_palette_test.cc",
     "fonts/font_platform_data_test.cc",
     "fonts/font_selection_types_test.cc",
+    "fonts/font_size_adjust_test.cc",
     "fonts/font_test.cc",
     "fonts/font_test_utilities.cc",
     "fonts/generic_font_family_settings_test.cc",
     "fonts/opentype/font_format_check_test.cc",
     "fonts/opentype/font_settings_test.cc",
+    "fonts/opentype/open_type_baseline_metrics_test.cc",
     "fonts/opentype/open_type_cpal_lookup_test.cc",
     "fonts/opentype/open_type_math_support_test.cc",
     "fonts/opentype/open_type_vertical_data_test.cc",
@@ -2237,10 +2235,6 @@ source_set("blink_platform_unittests_sources") {
     "widget/input/prediction/filter_factory_unittests.cc",
     "widget/input/scroll_predictor_unittest.cc",
   ]
-
-  if (is_apple) {
-    configs += [ "//build/config/compiler:enable_arc" ]
-  }
 
   if (is_android) {
     sources += [ "fonts/android/font_cache_android_test.cc" ]
@@ -2483,7 +2477,6 @@ test("blink_fuzzer_unittests") {
   }
 
   if (is_fuchsia) {
-    test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
     additional_manifest_fragments = [
       "//build/config/fuchsia/test/test_fonts.shard.test-cml",
       "//build/config/fuchsia/test/mark_vmo_executable.shard.test-cml",

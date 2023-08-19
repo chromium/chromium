@@ -17,9 +17,7 @@ import android.view.Window;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.google.android.material.tabs.TabLayout;
-import com.google.android.material.tabs.TabLayout.Tab;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -31,7 +29,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.IntegrationTest;
 import org.chromium.base.test.util.Matchers;
@@ -39,6 +36,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
+import org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryButtonGroupView;
 import org.chromium.chrome.browser.password_manager.FakePasswordStoreAndroidBackend;
 import org.chromium.chrome.browser.password_manager.FakePasswordStoreAndroidBackendFactoryImpl;
 import org.chromium.chrome.browser.password_manager.FakePasswordSyncControllerDelegateFactoryImpl;
@@ -59,6 +57,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.widget.ButtonCompat;
+import org.chromium.ui.widget.ChromeImageButton;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
@@ -70,9 +69,15 @@ import java.util.concurrent.atomic.AtomicReference;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "TODO(crbug.com/1346583): add resetting logic for"
                 + "FakePasswordStoreAndroidBackend to allow batching")
-@EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID})
+@EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "show-autofill-signatures"})
 public class PasswordGenerationIntegrationTest {
+    /**
+     * The number of buttons currently available in the keyboard accessory bar.
+     * The offered options are: passwords, addresses and payments.
+     * */
+    public static final int KEYBOARD_ACCESSORY_BAR_ITEM_COUNT = 3;
+
     @Rule
     public SyncTestRule mSyncTestRule = new SyncTestRule();
 
@@ -145,7 +150,6 @@ public class PasswordGenerationIntegrationTest {
 
     @Test
     @IntegrationTest
-    @DisabledTest(message = "crbug.com/1353701")
     public void testManualGenerationCancel() throws InterruptedException, TimeoutException {
         waitForGenerationLabel();
         focusField(PASSWORD_NODE_ID_MANUAL);
@@ -193,7 +197,6 @@ public class PasswordGenerationIntegrationTest {
 
     @Test
     @IntegrationTest
-    @DisabledTest(message = "This test is flaky.")
     public void testManualGenerationUsePassword() throws InterruptedException, TimeoutException {
         waitForGenerationLabel();
         focusField(PASSWORD_NODE_ID_MANUAL);
@@ -231,14 +234,25 @@ public class PasswordGenerationIntegrationTest {
     }
 
     private void toggleAccessorySheet() {
-        CriteriaHelper.pollInstrumentationThread(() -> {
+        CriteriaHelper.pollUiThread(() -> {
             mKeyboardAccessoryBarItems = (RecyclerView) mActivity.findViewById(R.id.bar_items_view);
             return mKeyboardAccessoryBarItems != null;
         });
-        TabLayout keyboardAccessoryView =
-                (TabLayout) mKeyboardAccessoryBarItems.findViewHolderForLayoutPosition(0).itemView;
-        Tab tab = keyboardAccessoryView.getTabAt(0);
-        runOnUiThreadBlocking(tab::select);
+        CriteriaHelper.pollUiThread(() -> {
+            return mKeyboardAccessoryBarItems.findViewHolderForLayoutPosition(0) != null;
+        });
+        KeyboardAccessoryButtonGroupView keyboardAccessoryView =
+                (KeyboardAccessoryButtonGroupView) mKeyboardAccessoryBarItems
+                        .findViewHolderForLayoutPosition(0)
+                        .itemView;
+        CriteriaHelper.pollUiThread(() -> {
+            return keyboardAccessoryView.getButtons().size() == KEYBOARD_ACCESSORY_BAR_ITEM_COUNT;
+        });
+        ArrayList<ChromeImageButton> buttons = keyboardAccessoryView.getButtons();
+        ChromeImageButton keyButton = buttons.get(0);
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        runOnUiThreadBlocking(() -> { keyButton.callOnClick(); });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
     private void focusField(String node) throws TimeoutException, InterruptedException {

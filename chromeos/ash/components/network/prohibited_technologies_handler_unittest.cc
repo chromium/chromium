@@ -62,7 +62,7 @@ class ProhibitedTechnologiesHandlerTest : public testing::Test {
         /*managed_cellular_pref_handler=*/nullptr,
         helper_.network_state_handler(), network_profile_handler_.get(),
         network_config_handler_.get(), nullptr /* network_device_handler */,
-        prohibited_technologies_handler_.get());
+        prohibited_technologies_handler_.get(), /*hotspot_controller=*/nullptr);
 
     prohibited_technologies_handler_->Init(managed_config_handler_.get(),
                                            helper_.network_state_handler(),
@@ -74,18 +74,11 @@ class ProhibitedTechnologiesHandlerTest : public testing::Test {
   }
 
   void PreparePolicies() {
-    {
-      base::Value::List val;
-      val.Append("WiFi");
-      global_config_disable_wifi.Set("DisableNetworkTypes", std::move(val));
-    }
-    {
-      base::Value::List val;
-      val.Append("WiFi");
-      val.Append("Cellular");
-      global_config_disable_wifi_and_cell.Set("DisableNetworkTypes",
-                                              std::move(val));
-    }
+    global_config_disable_wifi.Set("DisableNetworkTypes",
+                                   base::Value::List().Append("WiFi"));
+    global_config_disable_wifi_and_cell.Set(
+        "DisableNetworkTypes",
+        base::Value::List().Append("WiFi").Append("Cellular"));
   }
 
   void TearDown() override {

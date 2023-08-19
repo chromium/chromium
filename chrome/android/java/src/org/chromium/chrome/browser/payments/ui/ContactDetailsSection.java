@@ -9,10 +9,10 @@ import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
-import org.chromium.chrome.browser.payments.AutofillAddress;
+import org.chromium.chrome.browser.autofill.AutofillAddress;
 import org.chromium.chrome.browser.payments.AutofillContact;
 import org.chromium.chrome.browser.payments.ContactEditor;
+import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.payments.JourneyLogger;
 import org.chromium.components.payments.Section;
 
@@ -151,8 +151,7 @@ public class ContactDetailsSection extends SectionInformation {
         updateItemsWithCollection(firstCompleteContactIndex, uniqueContacts);
     }
 
-    @Nullable
-    private AutofillContact createAutofillContactFromProfile(AutofillProfile profile) {
+    private @Nullable AutofillContact createAutofillContactFromProfile(AutofillProfile profile) {
         boolean requestPayerName = mContactEditor.getRequestPayerName();
         boolean requestPayerPhone = mContactEditor.getRequestPayerPhone();
         boolean requestPayerEmail = mContactEditor.getRequestPayerEmail();

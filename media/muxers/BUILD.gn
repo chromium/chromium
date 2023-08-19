@@ -23,8 +23,12 @@ source_set("muxers") {
     "mp4_fragment_box_writer.h",
     "mp4_movie_box_writer.cc",
     "mp4_movie_box_writer.h",
+    "mp4_muxer.cc",
+    "mp4_muxer.h",
     "mp4_muxer_context.cc",
     "mp4_muxer_context.h",
+    "mp4_muxer_delegate.cc",
+    "mp4_muxer_delegate.h",
     "mp4_type_conversion.cc",
     "mp4_type_conversion.h",
     "muxer.cc",
@@ -37,6 +41,7 @@ source_set("muxers") {
 
   deps = [
     "//base",
+    "//components/version_info:version_info",
     "//media/base",
     "//media/formats",
     "//third_party/libwebm",
@@ -52,6 +57,7 @@ source_set("unit_tests") {
     "box_byte_stream_unittest.cc",
     "mp4_muxer_box_writer_unittest.cc",
     "mp4_muxer_context_unittest.cc",
+    "mp4_muxer_delegate_unittest.cc",
     "mp4_type_conversion_unittest.cc",
     "output_position_tracker_unittest.cc",
     "webm_muxer_unittest.cc",

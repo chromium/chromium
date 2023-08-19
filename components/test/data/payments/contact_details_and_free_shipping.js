@@ -7,20 +7,6 @@
 /**
  * Launches the PaymentRequest UI that requests an email address and a phone
  * number and offers free shipping worldwide.
- */
-function buy() {
-  buyWithMethods([
-    {
-      supportedMethods: 'basic-card',
-      data: {supportedNetworks: ['visa']},
-    },
-    {supportedMethods: 'https://bobpay.test'},
-  ]);
-}
-
-/**
- * Launches the PaymentRequest UI that requests an email address and a phone
- * number and offers free shipping worldwide.
  * @param {Array<Object>} methodData An array of payment method objects.
  */
 function buyWithMethods(methodData) {

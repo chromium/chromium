@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/task/single_thread_task_runner.h"
-#include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/abstract_texture_android.h"
@@ -19,7 +18,6 @@
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "gpu/command_buffer/service/texture_owner.h"
-#include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "ui/gl/gl_utils.h"
@@ -289,7 +287,7 @@ VideoSurfaceTextureImageBacking::ProduceSkiaGanesh(
 
 void VideoSurfaceTextureImageBacking::BeginGLReadAccess(
     const GLuint service_id) {
-  stream_texture_sii_->UpdateAndBindTexImage(service_id);
+  stream_texture_sii_->UpdateAndBindTexImage();
 }
 
 // Representation of VideoSurfaceTextureImageBacking as an overlay plane.

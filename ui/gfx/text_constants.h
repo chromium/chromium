@@ -105,12 +105,12 @@ enum TextStyle {
 //   |        |--------+------------+-----------|             |
 //   |        | descent                         | SUBSCRIPT   |
 //   +--------+---------------------------------+-------------+
-enum BaselineStyle {
-  NORMAL_BASELINE = 0,
-  SUPERSCRIPT,  // e.g. a mathematical exponent would be superscript.
-  SUPERIOR,     // e.g. 8th, the "th" would be superior script.
-  INFERIOR,     // e.g. 1/2, the "2" would be inferior ("1" is superior).
-  SUBSCRIPT,    // e.g. H2O, the "2" would be subscript.
+enum class BaselineStyle {
+  kNormalBaseline = 0,
+  kSuperscript,  // e.g. a mathematical exponent would be superscript.
+  kSuperior,     // e.g. 8th, the "th" would be superior script.
+  kInferior,     // e.g. 1/2, the "2" would be inferior ("1" is superior).
+  kSubscript,    // e.g. H2O, the "2" would be subscript.
 };
 
 // Elision behaviors of text that exceeds constrained dimensions.

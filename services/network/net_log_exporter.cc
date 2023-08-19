@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/types/pass_key.h"
 #include "base/values.h"
 #include "net/log/file_net_log_observer.h"
 #include "net/log/net_log_util.h"
@@ -98,6 +99,12 @@ void NetLogExporter::Stop(base::Value::Dict polled_data,
                      std::move(callback)));
   file_net_observer_ = nullptr;
   state_ = STATE_IDLE;
+}
+
+// static
+base::FilePath NetLogExporter::CreateScratchDirForNetworkService(
+    base::PassKey<NetworkService>) {
+  return CreateScratchDir(base::RepeatingCallback<base::FilePath()>());
 }
 
 void NetLogExporter::SetCreateScratchDirHandlerForTesting(

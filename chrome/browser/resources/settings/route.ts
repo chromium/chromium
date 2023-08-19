@@ -17,7 +17,11 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
   r.CLEAR_BROWSER_DATA = r.PRIVACY.createChild('/clearBrowserData');
   r.CLEAR_BROWSER_DATA.isNavigableDialog = true;
 
-  r.SAFETY_CHECK = r.PRIVACY.createSection('/safetyCheck', 'safetyCheck');
+  if (loadTimeData.getBoolean('enableSafetyHub')) {
+    r.SAFETY_HUB = r.PRIVACY.createChild('/safetyHub');
+  } else {
+    r.SAFETY_CHECK = r.PRIVACY.createSection('/safetyCheck', 'safetyCheck');
+  }
 
   if (loadTimeData.getBoolean('showPrivacyGuide')) {
     r.PRIVACY_GUIDE = r.PRIVACY.createChild('guide');
@@ -58,7 +62,8 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
     // </if>
   }
 
-  if (loadTimeData.getBoolean('showPreloadingSubPage')) {
+  if (!loadTimeData.getBoolean(
+          'isPerformanceSettingsPreloadingSubpageEnabled')) {
     r.PRELOADING = r.COOKIES.createChild('/preloading');
   }
 
@@ -177,16 +182,6 @@ function createBrowserSettingsRoutes(): SettingsRoutes {
   if (visibility.autofill !== false) {
     r.AUTOFILL = r.BASIC.createSection(
         '/autofill', 'autofill', loadTimeData.getString('autofillPageTitle'));
-    if (!loadTimeData.getBoolean('enableNewPasswordManagerPage')) {
-      r.PASSWORDS = r.AUTOFILL.createChild('/passwords');
-      if (loadTimeData.getBoolean('enablePasswordViewPage')) {
-        r.PASSWORD_VIEW = r.PASSWORDS.createChild('view');
-      }
-      r.CHECK_PASSWORDS = r.PASSWORDS.createChild('check');
-
-      r.DEVICE_PASSWORDS = r.PASSWORDS.createChild('device');
-    }
-
     r.PAYMENTS = r.AUTOFILL.createChild('/payments');
     r.ADDRESSES = r.AUTOFILL.createChild('/addresses');
 
@@ -273,6 +268,10 @@ function createBrowserSettingsRoutes(): SettingsRoutes {
       r.PERFORMANCE = r.BASIC.createSection(
           '/performance', 'performance',
           loadTimeData.getString('performancePageTitle'));
+      if (loadTimeData.getBoolean(
+              'isPerformanceSettingsPreloadingSubpageEnabled')) {
+        r.PRELOADING = r.PERFORMANCE.createChild('/preloading');
+      }
     }
 
     // <if expr="_google_chrome">

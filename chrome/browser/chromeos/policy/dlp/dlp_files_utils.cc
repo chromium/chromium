@@ -4,8 +4,15 @@
 
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
 
-namespace policy {
-namespace dlp {
+#include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/public/cpp/new_window_delegate.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+namespace policy::dlp {
 
 ::dlp::DlpComponent MapPolicyComponentToProto(
     data_controls::Component component) {
@@ -27,5 +34,42 @@ namespace dlp {
   }
 }
 
-}  // namespace dlp
-}  // namespace policy
+bool IsFilesTransferBlocked(const std::vector<std::string>& sources,
+                            data_controls::Component component) {
+  // Primary profile restrictions are enforced across all profiles.
+  policy::DlpRulesManager* rules_manager =
+      policy::DlpRulesManagerFactory::GetForPrimaryProfile();
+  if (!rules_manager) {
+    return false;
+  }
+
+  for (const auto& src : sources) {
+    // Non managed files have an empty source URL.
+    if (src.empty()) {
+      continue;
+    }
+
+    std::string out_src_pattern;
+    policy::DlpRulesManager::RuleMetadata out_rule_metadata;
+    if (rules_manager->IsRestrictedComponent(
+            GURL(src), component,
+            policy::DlpRulesManagerBase::Restriction::kFiles, &out_src_pattern,
+            &out_rule_metadata) == policy::DlpRulesManager::Level::kBlock) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+void OpenLearnMore() {
+  // TODO(b/291896216): Open page based on policy.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+      GURL(dlp::kDlpLearnMoreUrl),
+      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      ash::NewWindowDelegate::Disposition::kNewForegroundTab);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
+}  // namespace policy::dlp

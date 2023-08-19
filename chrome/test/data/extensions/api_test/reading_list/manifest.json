@@ -1,0 +1,9 @@
+{
+    "name": "Extension Reading List API Test",
+    "version": "1.0",
+    "manifest_version": 3,
+    "background": {
+      "service_worker": "background.js"
+    },
+    "permissions": ["readingList"]
+  }

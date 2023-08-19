@@ -8,10 +8,6 @@
 #import "components/policy/core/common/schema_registry.h"
 #import "ios/chrome/browser/policy/browser_policy_connector_ios.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 BrowserStatePolicyConnector::BrowserStatePolicyConnector() = default;
 BrowserStatePolicyConnector::~BrowserStatePolicyConnector() = default;
 

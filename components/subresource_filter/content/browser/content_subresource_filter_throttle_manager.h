@@ -405,7 +405,8 @@ class ContentSubresourceFilterThrottleManager
   bool current_committed_load_has_notified_disallowed_load_ = false;
 
   // This member outlives this class.
-  raw_ptr<VerifiedRulesetDealer::Handle, DanglingUntriaged> dealer_handle_;
+  raw_ptr<VerifiedRulesetDealer::Handle, AcrossTasksDanglingUntriaged>
+      dealer_handle_;
 
   scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager_;
 

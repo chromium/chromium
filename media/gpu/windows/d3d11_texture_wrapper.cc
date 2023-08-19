@@ -11,7 +11,6 @@
 
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
-#include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
@@ -245,7 +244,7 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
   texture->GetDesc(&desc);
   // Create shared handle for shareable output texture.
   if (desc.MiscFlags & D3D11_RESOURCE_MISC_SHARED_NTHANDLE) {
-    Microsoft::WRL::ComPtr<IDXGIResource1> dxgi_resource;
+    ComDXGIResource1 dxgi_resource;
     HRESULT hr = texture.As(&dxgi_resource);
     if (FAILED(hr)) {
       DLOG(ERROR) << "QueryInterface for IDXGIResource failed with error "
@@ -276,8 +275,10 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
   std::vector<std::unique_ptr<gpu::SharedImageBacking>> shared_image_backings;
   if (IsMultiPlaneFormatForHardwareVideoEnabled()) {
     DCHECK_EQ(mailboxes.size(), 1u);
-    // TODO(crbug.com/1430349): Switch |texture_target| to GL_TEXTURE_2D since
-    // it's now supported by ANGLE.
+    // The target must be GL_TEXTURE_EXTERNAL_OES as the texture is not created
+    // with D3D11_BIND_RENDER_TARGET bind flag and so it cannot be bound to the
+    // framebuffer. To prevent Skia trying to bind it for read pixels, we need
+    // it to be GL_TEXTURE_EXTERNAL_OES.
     std::unique_ptr<gpu::SharedImageBacking> backing =
         gpu::D3DImageBacking::Create(
             mailboxes[0], DXGIFormatToMultiPlanarSharedImageFormat(dxgi_format),

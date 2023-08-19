@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("ios") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "favicon_web_state_dispatcher.h",
     "reading_list_model_bridge_observer.h",

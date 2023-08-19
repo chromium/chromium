@@ -12,7 +12,7 @@
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -301,44 +301,6 @@ class PreinstalledWebAppManagerBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-class PreinstalledWebAppManagerTestWithExternalPrefRead
-    : public PreinstalledWebAppManagerBrowserTestBase,
-      public testing::WithParamInterface<test::ExternalPrefMigrationTestCases> {
- public:
-  PreinstalledWebAppManagerTestWithExternalPrefRead() {
-    std::vector<base::test::FeatureRef> enabled_features{
-        features::kRecordWebAppDebugInfo};
-    std::vector<base::test::FeatureRef> disabled_features;
-
-    switch (GetParam()) {
-      case test::ExternalPrefMigrationTestCases::kDisableMigrationReadPref:
-        disabled_features.push_back(features::kMigrateExternalPrefsToWebAppDB);
-        disabled_features.push_back(
-            features::kUseWebAppDBInsteadOfExternalPrefs);
-        break;
-      case test::ExternalPrefMigrationTestCases::kDisableMigrationReadDB:
-        disabled_features.push_back(features::kMigrateExternalPrefsToWebAppDB);
-        enabled_features.push_back(
-            features::kUseWebAppDBInsteadOfExternalPrefs);
-        break;
-      case test::ExternalPrefMigrationTestCases::kEnableMigrationReadPref:
-        enabled_features.push_back(features::kMigrateExternalPrefsToWebAppDB);
-        disabled_features.push_back(
-            features::kUseWebAppDBInsteadOfExternalPrefs);
-        break;
-      case test::ExternalPrefMigrationTestCases::kEnableMigrationReadDB:
-        enabled_features.push_back(features::kMigrateExternalPrefsToWebAppDB);
-        enabled_features.push_back(
-            features::kUseWebAppDBInsteadOfExternalPrefs);
-        break;
-    }
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
                        LaunchQueryParamsBasic) {
   PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
@@ -590,7 +552,7 @@ const char kOnlyIfPreviouslyPreinstalled_NextConfig[] = R"({
   "only_if_previously_preinstalled": true
 })";
 
-IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerTestWithExternalPrefRead,
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
                        PRE_OnlyIfPreviouslyPreinstalled_AppPreserved) {
   PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
   InitUrlLoaderInterceptor();
@@ -609,7 +571,7 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerTestWithExternalPrefRead,
   EXPECT_TRUE(registrar().IsInstalled(app_id));
 }
 
-IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerTestWithExternalPrefRead,
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
                        OnlyIfPreviouslyPreinstalled_AppPreserved) {
   PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
   InitUrlLoaderInterceptor();
@@ -628,7 +590,7 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerTestWithExternalPrefRead,
   EXPECT_TRUE(registrar().IsInstalled(app_id));
 }
 
-IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerTestWithExternalPrefRead,
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
                        PRE_OnlyIfPreviouslyPreinstalled_NoAppPreinstalled) {
   PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
   InitUrlLoaderInterceptor();
@@ -646,7 +608,7 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerTestWithExternalPrefRead,
   EXPECT_FALSE(registrar().IsInstalled(app_id));
 }
 
-IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerTestWithExternalPrefRead,
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
                        OnlyIfPreviouslyPreinstalled_NoAppPreinstalled) {
   PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
   InitUrlLoaderInterceptor();
@@ -694,7 +656,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
 
 // When the "feature_name_or_installed" feature is disabled, the app should not
 // be installed.
-IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerTestWithExternalPrefRead,
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
                        GateOnFeatureNameOrInstalled_IgnoreWhenDisabled) {
   PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -710,9 +672,8 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerTestWithExternalPrefRead,
 
 // When the "feature_name_or_installed" feature is disabled, any existing
 // preinstalled app should not be uninstalled.
-IN_PROC_BROWSER_TEST_P(
-    PreinstalledWebAppManagerTestWithExternalPrefRead,
-    GateOnFeatureNameOrInstalled_DoNotUninstallWhenDisabled) {
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
+                       Installed_DoNotUninstallWhenDisabled) {
   PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -739,7 +700,7 @@ IN_PROC_BROWSER_TEST_P(
 
 // Preinstalled apps which are user uninstalled are not included
 // in the config passed to the ExternallyManagedAppInstallManager.
-IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerTestWithExternalPrefRead,
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
                        DisableForPreinstalledAppsInConfig) {
   PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
   base::HistogramTester tester;
@@ -785,7 +746,7 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerTestWithExternalPrefRead,
 // Preinstalled apps which are user uninstalled are included
 // in the config passed to the ExternallyManagedAppInstallManager if
 // |override_previous_user_uninstall| is true.
-IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerTestWithExternalPrefRead,
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
                        PreinstalledAppsUninstallOverride) {
   PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
   PreinstalledWebAppManager::OverridePreviousUserUninstallConfigForTesting();
@@ -1064,7 +1025,7 @@ const char kOnlyForNewUsersConfig[] = R"({
     }
   })";
 
-IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerTestWithExternalPrefRead,
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
                        PRE_OnlyForNewUsersWithNewUser) {
   // Install a policy app first to check that it doesn't interfere.
   {
@@ -1088,7 +1049,7 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerTestWithExternalPrefRead,
             webapps::InstallResultCode::kSuccessOfflineOnlyInstall);
 }
 
-IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerTestWithExternalPrefRead,
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
                        OnlyForNewUsersWithNewUser) {
   // App should persist after user stops being a new user.
   EXPECT_EQ(SyncPreinstalledAppConfig(GURL(kOnlyForNewUsersInstallUrl),
@@ -1096,12 +1057,12 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerTestWithExternalPrefRead,
             webapps::InstallResultCode::kSuccessAlreadyInstalled);
 }
 
-IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerTestWithExternalPrefRead,
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
                        PRE_OnlyForNewUsersWithOldUser) {
   // Simulate running Chrome without the configs present.
   SyncEmptyConfigs();
 }
-IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerTestWithExternalPrefRead,
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
                        OnlyForNewUsersWithOldUser) {
   // This instance of Chrome should be considered not a new user after the
   // previous PRE_ launch and sync.
@@ -1152,12 +1113,22 @@ ui::TouchscreenDevice CreateTouchDevice(ui::InputDeviceType type,
 }
 }  // namespace
 
-// Note that SetTouchscreenDevices() does not update the device list
-// if the number of displays don't change.
-IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
-                       DisableIfTouchscreenWithStylusNotSupported) {
+IN_PROC_BROWSER_TEST_F(
+    PreinstalledWebAppManagerBrowserTest,
+    DisableIfTouchscreenWithStylusNotSupported_NoStylusSupport) {
   PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
   ASSERT_TRUE(embedded_test_server()->Start());
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  auto init_params = crosapi::mojom::BrowserInitParams::New();
+  init_params->device_properties = crosapi::mojom::DeviceProperties::New();
+  init_params->device_properties->has_stylus_enabled_touchscreen = false;
+  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
+#else
+  ui::DeviceDataManagerTestApi().SetTouchscreenDevices(
+      {CreateTouchDevice(ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+                         /*stylus_support=*/false)});
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   const auto manifest = base::ReplaceStringPlaceholders(
       R"({
@@ -1173,46 +1144,57 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
       " disabled because the device does not have a built-in touchscreen with "
       "stylus support.";
 
-  // Test Case: No touchscreen installed on device.
   EXPECT_EQ(SyncPreinstalledAppConfig(GetAppUrl(), manifest), absl::nullopt);
   EXPECT_FALSE(registrar().IsInstalled(app_id));
   EXPECT_EQ(disabled_configs.size(), 1u);
   EXPECT_EQ(disabled_configs.back().second, GetAppUrl().spec() + kErrorMessage);
+}
 
-  // Test Case: Built-in touchscreen without stylus support installed on device.
-  ui::DeviceDataManagerTestApi().SetTouchscreenDevices({CreateTouchDevice(
-      ui::InputDeviceType::INPUT_DEVICE_INTERNAL, /* stylus_support =*/false)});
-  EXPECT_EQ(SyncPreinstalledAppConfig(GetAppUrl(), manifest), absl::nullopt);
-  EXPECT_FALSE(registrar().IsInstalled(app_id));
-  EXPECT_EQ(disabled_configs.size(), 2u);
-  EXPECT_EQ(disabled_configs.back().second, GetAppUrl().spec() + kErrorMessage);
+IN_PROC_BROWSER_TEST_F(
+    PreinstalledWebAppManagerBrowserTest,
+    DisableIfTouchscreenWithStylusNotSupported_HasStylusSupport) {
+  PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
+  ASSERT_TRUE(embedded_test_server()->Start());
 
-  // Test Case: Connected external touchscreen with stylus support connected to
-  // device.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  auto init_params = crosapi::mojom::BrowserInitParams::New();
+  init_params->device_properties = crosapi::mojom::DeviceProperties::New();
+  init_params->device_properties->has_stylus_enabled_touchscreen = true;
+  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
+#else
   ui::DeviceDataManagerTestApi().SetTouchscreenDevices(
       {CreateTouchDevice(ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
-                         /* stylus_support =*/false),
-       CreateTouchDevice(ui::InputDeviceType::INPUT_DEVICE_USB,
-                         /* stylus_support =*/true)});
-  EXPECT_EQ(SyncPreinstalledAppConfig(GetAppUrl(), manifest), absl::nullopt);
-  EXPECT_FALSE(registrar().IsInstalled(app_id));
-  EXPECT_EQ(disabled_configs.size(), 3u);
-  EXPECT_EQ(disabled_configs.back().second, GetAppUrl().spec() + kErrorMessage);
+                         /*stylus_support=*/true)});
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-  // Test Case: Create a built-in touchscreen device with stylus support and add
-  // it to the device.
-  ui::DeviceDataManagerTestApi().SetTouchscreenDevices(
-      {CreateTouchDevice(ui::InputDeviceType::INPUT_DEVICE_INTERNAL, true)});
+  const auto manifest = base::ReplaceStringPlaceholders(
+      R"({
+        "app_url": "$1",
+        "launch_container": "window",
+        "disable_if_touchscreen_with_stylus_not_supported": true,
+        "user_type": ["unmanaged"]
+      })",
+      {GetAppUrl().spec()}, nullptr);
+  AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, GetAppUrl());
+
   EXPECT_EQ(SyncPreinstalledAppConfig(GetAppUrl(), manifest),
             webapps::InstallResultCode::kSuccessNewInstall);
   EXPECT_TRUE(registrar().IsInstalled(app_id));
-  EXPECT_EQ(disabled_configs.size(), 3u);
 }
 
+// Verify that stylus detection works even if DeviceDataManager is slow to
+// initialize.
 IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
                        DisableIfTouchscreenWithStylusStartupDelay) {
   PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
   ASSERT_TRUE(embedded_test_server()->Start());
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  auto init_params = crosapi::mojom::BrowserInitParams::New();
+  init_params->device_properties = crosapi::mojom::DeviceProperties::New();
+  init_params->device_properties->has_stylus_enabled_touchscreen = true;
+  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   const auto manifest = base::ReplaceStringPlaceholders(
       R"({
@@ -1227,12 +1209,16 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   // Clear out the device list and re-initialize it after a delay. Web app
   // installation should wait for this to be ready.
   ui::DeviceDataManager::GetInstance()->ResetDeviceListsForTest();
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindLambdaForTesting([]() {
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
         // Create a built-in touchscreen device with stylus support
-        // and add it to the device.
+        // and add it to the device. Lacros does not use DeviceDataManager to
+        // determine whether stylus is supported, but still needs device lists
+        // to be complete before continuing.
         ui::DeviceDataManagerTestApi().SetTouchscreenDevices({CreateTouchDevice(
             ui::InputDeviceType::INPUT_DEVICE_INTERNAL, true)});
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
         ui::DeviceDataManagerTestApi().OnDeviceListsComplete();
       }),
       base::Milliseconds(500));
@@ -1410,15 +1396,5 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerWithCloudGamingBrowserTest,
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    PreinstalledWebAppManagerTestWithExternalPrefRead,
-    ::testing::Values(
-        test::ExternalPrefMigrationTestCases::kDisableMigrationReadPref,
-        test::ExternalPrefMigrationTestCases::kDisableMigrationReadDB,
-        test::ExternalPrefMigrationTestCases::kEnableMigrationReadPref,
-        test::ExternalPrefMigrationTestCases::kEnableMigrationReadDB),
-    test::GetExternalPrefMigrationTestName);
 
 }  // namespace web_app

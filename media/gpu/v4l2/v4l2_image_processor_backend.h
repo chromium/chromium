@@ -54,7 +54,6 @@ class MEDIA_GPU_EXPORT V4L2ImageProcessorBackend
       const PortConfig& input_config,
       const PortConfig& output_config,
       OutputMode output_mode,
-      VideoRotation relative_rotation,
       ErrorCB error_cb);
 
   V4L2ImageProcessorBackend(const V4L2ImageProcessorBackend&) = delete;
@@ -122,7 +121,6 @@ class MEDIA_GPU_EXPORT V4L2ImageProcessorBackend
                             v4l2_memory input_memory_type,
                             v4l2_memory output_memory_type,
                             OutputMode output_mode,
-                            VideoRotation relative_rotation,
                             size_t num_buffers,
                             ErrorCB error_cb);
   ~V4L2ImageProcessorBackend() override;

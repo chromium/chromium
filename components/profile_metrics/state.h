@@ -23,20 +23,6 @@ enum class AvatarState {
   kMaxValue = kSignedOutOld
 };
 
-// State for a profile name, documenting what Chrome UI exactly shows.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class NameState {
-  kGaiaName = 0,            // The name of the user from Gaia.
-  kGaiaAndCustomName = 1,   // The name of the user from Gaia and the custom
-                            // local name specified by the user.
-  kGaiaAndDefaultName = 2,  // Chrome shows "Person X" alongside the Gaia name
-                            // because it is needed to resolve ambiguity.
-  kCustomName = 3,   // Only a custom name of the profile specified by the user.
-  kDefaultName = 4,  // Only "Person X" since there's nothing better.
-  kMaxValue = kDefaultName
-};
-
 // Type of the unconsented primary account in a profile.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -83,9 +69,6 @@ enum class StateSuffix {
 
 // Records the state of profile's avatar.
 void LogProfileAvatar(AvatarState avatar_state, StateSuffix suffix);
-
-// Records the state of profile's name.
-void LogProfileName(NameState name_state, StateSuffix suffix);
 
 // Records the state of profile's UPA.
 void LogProfileAccountType(UnconsentedPrimaryAccountType account_type,

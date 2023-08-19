@@ -68,9 +68,6 @@ class NetworkStateInformer : public NetworkStateHandlerObserver,
   std::string network_path() const { return network_path_; }
 
   static std::string GetNetworkName(const std::string& service_path);
-  static bool IsOnline(State state, NetworkError::ErrorReason reason);
-  static bool IsBehindCaptivePortal(State state,
-                                    NetworkError::ErrorReason reason);
   static bool IsProxyError(State state, NetworkError::ErrorReason reason);
 
  private:

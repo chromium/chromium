@@ -50,6 +50,13 @@ bool TestHistoryBackendForSync::UpdateVisit(VisitRow row) {
   return false;
 }
 
+void TestHistoryBackendForSync::AddOrReplaceContentAnnotation(
+    VisitID visit_id,
+    const VisitContentAnnotations& content_annotation) {
+  DCHECK_NE(visit_id, 0);
+  content_annotations_[visit_id] = content_annotation;
+}
+
 void TestHistoryBackendForSync::RemoveURLAndVisits(URLID url_id) {
   base::EraseIf(visits_, [url_id](const VisitRow& visit) {
     return visit.url_id == url_id;
@@ -170,7 +177,8 @@ bool TestHistoryBackendForSync::GetForeignVisit(
 }
 
 std::vector<AnnotatedVisit> TestHistoryBackendForSync::ToAnnotatedVisits(
-    const VisitVector& visit_rows) {
+    const VisitVector& visit_rows,
+    bool compute_redirect_chain_start_properties) {
   std::vector<AnnotatedVisit> annotated_visits;
   for (const VisitRow& visit_row : visit_rows) {
     URLRow url_row;

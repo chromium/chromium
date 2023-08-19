@@ -10,6 +10,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_inputs.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_inputs.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_values.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_credential_instrument.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_secure_payment_confirmation_request.h"
 #include "third_party/blink/renderer/modules/payments/payment_test_helper.h"
@@ -21,11 +24,32 @@ namespace blink {
 
 namespace {
 
+static const uint8_t kPrfInputData[] = {1, 2, 3, 4, 5, 6};
+
 WTF::Vector<uint8_t> CreateVector(const uint8_t* buffer,
                                   const unsigned length) {
   WTF::Vector<uint8_t> vector;
   vector.Append(buffer, length);
   return vector;
+}
+
+static V8UnionArrayBufferOrArrayBufferView* ArrayBufferOrView(
+    const uint8_t* data,
+    size_t size) {
+  DOMArrayBuffer* dom_array = DOMArrayBuffer::Create(data, size);
+  return MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
+      std::move(dom_array));
+}
+
+static AuthenticationExtensionsPRFInputs* CreatePrfInputs(
+    v8::Isolate* isolate) {
+  AuthenticationExtensionsPRFValues* prf_values =
+      AuthenticationExtensionsPRFValues::Create(isolate);
+  prf_values->setFirst(ArrayBufferOrView(kPrfInputData, sizeof(kPrfInputData)));
+  AuthenticationExtensionsPRFInputs* prf_inputs =
+      AuthenticationExtensionsPRFInputs::Create(isolate);
+  prf_inputs->setEval(prf_values);
+  return prf_inputs;
 }
 
 }  // namespace
@@ -57,6 +81,7 @@ TEST(SecurePaymentConfirmationHelperTest, Parse_Success) {
             "https://bank.example/icon.png");
   EXPECT_EQ(parsed_request->payee_name, "Merchant Shop");
   EXPECT_EQ(parsed_request->rp_id, "bank.example");
+  EXPECT_TRUE(parsed_request->extensions.is_null());
 }
 
 // Test that optional fields are correctly copied to the mojo output.
@@ -344,6 +369,31 @@ TEST(SecurePaymentConfirmationHelperTest, Parse_NotHttpsPayeeOrigin) {
   EXPECT_TRUE(scope.GetExceptionState().HadException());
   EXPECT_EQ(ESErrorType::kTypeError,
             scope.GetExceptionState().CodeAs<ESErrorType>());
+}
+
+// Test that extensions are converted while parsing a
+// SecurePaymentConfirmationRequest.
+TEST(SecurePaymentConfirmationHelperTest, Parse_Extensions) {
+  V8TestingScope scope;
+  SecurePaymentConfirmationRequest* request =
+      CreateSecurePaymentConfirmationRequest(scope);
+  AuthenticationExtensionsClientInputs* extensions =
+      AuthenticationExtensionsClientInputs::Create(scope.GetIsolate());
+  extensions->setPrf(CreatePrfInputs(scope.GetIsolate()));
+  request->setExtensions(extensions);
+  ScriptValue script_value(scope.GetIsolate(),
+                           ToV8Traits<SecurePaymentConfirmationRequest>::ToV8(
+                               scope.GetScriptState(), request));
+
+  ::payments::mojom::blink::SecurePaymentConfirmationRequestPtr parsed_request =
+      SecurePaymentConfirmationHelper::ParseSecurePaymentConfirmationData(
+          script_value, *scope.GetExecutionContext(),
+          scope.GetExceptionState());
+
+  ASSERT_FALSE(parsed_request->extensions.is_null());
+  WTF::Vector<uint8_t> prf_expected =
+      CreateVector(kPrfInputData, sizeof(kPrfInputData));
+  ASSERT_EQ(parsed_request->extensions->prf_inputs[0]->first, prf_expected);
 }
 
 }  // namespace blink

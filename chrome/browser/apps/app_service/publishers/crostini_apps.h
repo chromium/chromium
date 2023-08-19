@@ -20,8 +20,6 @@
 
 namespace apps {
 
-struct AppLaunchParams;
-
 // An app publisher (in the App Service sense) of Crostini apps,
 // See components/services/app_service/README.md.
 class CrostiniApps : public GuestOSApps {
@@ -37,12 +35,7 @@ class CrostiniApps : public GuestOSApps {
   guest_os::VmType VmType() const override;
 
   // apps::AppPublisher overrides.
-  void LoadIcon(const std::string& app_id,
-                const IconKey& icon_key,
-                IconType icon_type,
-                int32_t size_hint_in_dip,
-                bool allow_placeholder_icon,
-                apps::LoadIconCallback callback) override;
+  int DefaultIconResourceId() const override;
   void Launch(const std::string& app_id,
               int32_t event_flags,
               LaunchSource launch_source,
@@ -52,8 +45,6 @@ class CrostiniApps : public GuestOSApps {
                            IntentPtr intent,
                            LaunchSource launch_source,
                            WindowInfoPtr window_info,
-                           LaunchCallback callback) override;
-  void LaunchAppWithParams(AppLaunchParams&& params,
                            LaunchCallback callback) override;
   void Uninstall(const std::string& app_id,
                  UninstallSource uninstall_source,

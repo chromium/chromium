@@ -201,7 +201,7 @@ TEST_F(BadSharedGpuContextTest, AccelerateImageBufferSurfaceCreationFails) {
           cc::PaintFlags::FilterQuality::kLow,
           CanvasResourceProvider::ShouldInitialize::kNo,
           SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
-          true /*is_origin_top_left*/, 0u /*shared_image_usage_flags*/);
+          /*shared_image_usage_flags=*/0u);
   EXPECT_FALSE(resource_provider);
 }
 
@@ -228,7 +228,7 @@ TEST_F(SharedGpuContextTestViz, AccelerateImageBufferSurfaceAutoRecovery) {
           cc::PaintFlags::FilterQuality::kLow,
           CanvasResourceProvider::ShouldInitialize::kNo,
           SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
-          true /*is_origin_top_left*/, 0u /*shared_image_usage_flags*/);
+          /*shared_image_usage_flags=*/0u);
   EXPECT_TRUE(resource_provider && resource_provider->IsValid());
   EXPECT_TRUE(resource_provider->IsAccelerated());
   EXPECT_TRUE(SharedGpuContext::IsValidWithoutRestoring());

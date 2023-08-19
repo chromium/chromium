@@ -2,6 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# @generated from third_party/rust/BUILD.gn.hbs by tools/crates/gnrt.
+# Do not edit!
+
 import("//build/rust/cargo_crate.gni")
 
 cargo_crate("lib") {
@@ -13,10 +16,31 @@ cargo_crate("lib") {
   # third_party.toml to use it from first-party code.
   visibility = [ "//third_party/rust/*" ]
   crate_root = "crate/src/lib.rs"
+  sources = [
+    "//third_party/rust/rstest_reuse/v0_5/crate/build.rs",
+    "//third_party/rust/rstest_reuse/v0_5/crate/src/lib.rs",
+    "//third_party/rust/rstest_reuse/v0_5/crate/tests/acceptance.rs",
+    "//third_party/rust/rstest_reuse/v0_5/crate/tests/resources/copy_args_attributes_from_template.rs",
+    "//third_party/rust/rstest_reuse/v0_5/crate/tests/resources/deny_docs.rs",
+    "//third_party/rust/rstest_reuse/v0_5/crate/tests/resources/export_not_used.rs",
+    "//third_party/rust/rstest_reuse/v0_5/crate/tests/resources/export_template.rs",
+    "//third_party/rust/rstest_reuse/v0_5/crate/tests/resources/export_template_root.rs",
+    "//third_party/rust/rstest_reuse/v0_5/crate/tests/resources/import_template.rs",
+    "//third_party/rust/rstest_reuse/v0_5/crate/tests/resources/in_mod.rs",
+    "//third_party/rust/rstest_reuse/v0_5/crate/tests/resources/no_local_macro_should_not_compile.rs",
+    "//third_party/rust/rstest_reuse/v0_5/crate/tests/resources/not_used.rs",
+    "//third_party/rust/rstest_reuse/v0_5/crate/tests/resources/qualify_template_use.rs",
+    "//third_party/rust/rstest_reuse/v0_5/crate/tests/resources/simple_example.rs",
+    "//third_party/rust/rstest_reuse/v0_5/crate/tests/resources/templates_with_same_name.rs",
+    "//third_party/rust/rstest_reuse/v0_5/crate/tests/resources/use_before_define.rs",
+  ]
+  inputs = [
+    "//third_party/rust/rstest_reuse/v0_5/crate/README.md",
+    "//third_party/rust/rstest_reuse/v0_5/crate/checkoutlist.md",
+  ]
 
   # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
-  sources = [ "crate/src/lib.rs" ]
   edition = "2018"
   cargo_pkg_version = "0.5.0"
   cargo_pkg_authors = "Michele d'Amico <michele.damico@gmail.com>"

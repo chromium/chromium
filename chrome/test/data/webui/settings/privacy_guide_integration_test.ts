@@ -89,7 +89,7 @@ async function getPromiseArguments(
       'recordPrivacyGuideStepsEligibleAndReachedHistogram'));
 }
 
-suite('PrivacyGuideEligibleReachedMetricsTests', function() {
+suite('PrivacyGuideEligibleReachedMetrics', function() {
   let page: SettingsPrivacyGuidePageElement;
   let settingsPrefs: SettingsPrefsElement;
   let syncBrowserProxy: TestSyncBrowserProxy;
@@ -130,8 +130,8 @@ suite('PrivacyGuideEligibleReachedMetricsTests', function() {
   test('recordStepsAreEligibleReached', async function() {
     const optionalSteps: PrivacyGuideStep[] = [
       PrivacyGuideStep.HISTORY_SYNC,
-      PrivacyGuideStep.SAFE_BROWSING,
       PrivacyGuideStep.COOKIES,
+      PrivacyGuideStep.SAFE_BROWSING,
     ];
 
     const masks: number[] = [];
@@ -160,6 +160,8 @@ suite('PrivacyGuideEligibleReachedMetricsTests', function() {
         }
       });
 
+      expectedArguments.add(
+          PrivacyGuideStepsEligibleAndReached.SEARCH_SUGGESTIONS_ELIGIBLE);
       expectedArguments.add(
           PrivacyGuideStepsEligibleAndReached.COMPLETION_ELIGIBLE);
 
@@ -196,6 +198,20 @@ suite('PrivacyGuideEligibleReachedMetricsTests', function() {
         assertTrue(!!nextButtonElementOnStep);
         nextButtonElementOnStep.click();
       }
+
+      expectedArguments.add(
+          PrivacyGuideStepsEligibleAndReached.SEARCH_SUGGESTIONS_REACHED);
+
+      assertTrue(
+          isSetEqual(
+              expectedArguments,
+              await getPromiseArguments(testMetricsBrowserProxy)),
+          'Sets differ for the step: SEARCH_SUGGESTIONS_REACHED');
+
+      const nextButtonElementOnSearchSuggestionsStep =
+          page.shadowRoot!.querySelector<HTMLElement>('#nextButton');
+      assertTrue(!!nextButtonElementOnSearchSuggestionsStep);
+      nextButtonElementOnSearchSuggestionsStep.click();
 
       expectedArguments.add(
           PrivacyGuideStepsEligibleAndReached.COMPLETION_REACHED);

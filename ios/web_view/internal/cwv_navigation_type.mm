@@ -9,10 +9,6 @@
 #include "base/notreached.h"
 #import "ios/web_view/internal/cwv_navigation_type_internal.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 CWVNavigationType CWVNavigationTypeFromPageTransition(
     ui::PageTransition ui_page_transition) {
   CWVNavigationType cwv_navigation_type = 0;

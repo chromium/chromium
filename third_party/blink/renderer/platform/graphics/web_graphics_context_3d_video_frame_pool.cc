@@ -5,8 +5,6 @@
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_video_frame_pool.h"
 
 #include "base/feature_list.h"
-#include "base/system/sys_info.h"
-#include "build/build_config.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/context_support.h"
@@ -40,6 +38,25 @@ class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
                ? gmb_manager_->CreateGpuMemoryBuffer(
                      size, format, usage, gpu::kNullSurfaceHandle, nullptr)
                : nullptr;
+  }
+
+  void CreateSharedImage(gfx::GpuMemoryBuffer* gpu_memory_buffer,
+                         const viz::SharedImageFormat& si_format,
+                         const gfx::ColorSpace& color_space,
+                         GrSurfaceOrigin surface_origin,
+                         SkAlphaType alpha_type,
+                         uint32_t usage,
+                         gpu::Mailbox& mailbox,
+                         gpu::SyncToken& sync_token) override {
+    auto* sii = SharedImageInterface();
+    if (!sii) {
+      return;
+    }
+    mailbox = sii->CreateSharedImage(
+        si_format, gpu_memory_buffer->GetSize(), color_space, surface_origin,
+        alpha_type, usage, "WebGraphicsContext3DVideoFramePool",
+        gpu_memory_buffer->CloneHandle());
+    sync_token = sii->GenVerifiedSyncToken();
   }
 
   void CreateSharedImage(gfx::GpuMemoryBuffer* gpu_memory_buffer,
@@ -225,23 +242,6 @@ BASE_FEATURE(kGpuMemoryBufferReadbackFromTexture,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
-
-#if BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_ARM_FAMILY)
-bool IsRK3399Board() {
-  const std::string board = base::SysInfo::GetLsbReleaseBoard();
-  const char* kRK3399Boards[] = {
-      "bob",
-      "kevin",
-      "rainier",
-      "scarlet",
-  };
-  for (const char* b : kRK3399Boards) {
-    if (board.find(b) == 0u)  // if |board| starts with |b|.
-      return true;
-  }
-  return false;
-}
-#endif  // BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_ARM_FAMILY)
 }  // namespace
 
 bool WebGraphicsContext3DVideoFramePool::ConvertVideoFrame(
@@ -288,14 +288,6 @@ bool WebGraphicsContext3DVideoFramePool::ConvertVideoFrame(
 // static
 bool WebGraphicsContext3DVideoFramePool::
     IsGpuMemoryBufferReadbackFromTextureEnabled() {
-#if BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_ARM_FAMILY)
-  // The GL driver used on RK3399 has a problem to enable One copy canvas
-  // capture. See b/238144592.
-  // TODO(b/239503724): Remove this code when RK3399 reaches EOL.
-  if (IsRK3399Board())
-    return false;
-#endif  // BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_ARM_FAMILY)
-
   return base::FeatureList::IsEnabled(kGpuMemoryBufferReadbackFromTexture);
 }
 

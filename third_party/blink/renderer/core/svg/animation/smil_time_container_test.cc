@@ -76,9 +76,10 @@ TEST_F(SMILTimeContainerTest, ServiceAnimationsFlushesPendingSynchronizations) {
 
   // Insert an animation: <set attributeName="height" to="100"/> of the <rect>.
   auto* animation = MakeGarbageCollected<SVGSetElement>(GetDocument());
-  animation->setAttribute(svg_names::kAttributeTypeAttr, "XML");
-  animation->setAttribute(svg_names::kAttributeNameAttr, "height");
-  animation->setAttribute(svg_names::kToAttr, "100");
+  animation->setAttribute(svg_names::kAttributeTypeAttr, AtomicString("XML"));
+  animation->setAttribute(svg_names::kAttributeNameAttr,
+                          AtomicString("height"));
+  animation->setAttribute(svg_names::kToAttr, AtomicString("100"));
   rect->appendChild(animation);
 
   // Frame callback before the synchronization timer fires.
@@ -224,7 +225,8 @@ TEST_F(SMILTimeContainerAnimationPolicyOnceTest, SetElapsedBeforeStart) {
     </svg>
   )HTML");
   OnContentLoaded(WTF::BindOnce([](Document& document) {
-    auto* svg_root = To<SVGSVGElement>(document.getElementById("container"));
+    auto* svg_root =
+        To<SVGSVGElement>(document.getElementById(AtomicString("container")));
     ASSERT_TRUE(svg_root);
     auto* rect = Traversal<SVGRectElement>::FirstChild(*svg_root);
     ASSERT_TRUE(rect);
@@ -309,7 +311,8 @@ TEST_F(SMILTimeContainerAnimationPolicyOnceTest, PauseBeforeStart) {
     </svg>
   )HTML");
   OnContentLoaded(WTF::BindOnce([](Document& document) {
-    auto* svg_root = To<SVGSVGElement>(document.getElementById("container"));
+    auto* svg_root =
+        To<SVGSVGElement>(document.getElementById(AtomicString("container")));
     ASSERT_TRUE(svg_root);
     auto* rect = Traversal<SVGRectElement>::FirstChild(*svg_root);
     ASSERT_TRUE(rect);
@@ -403,7 +406,8 @@ TEST_F(SMILTimeContainerAnimationPolicyOnceTest,
     </svg>
   )HTML");
   OnContentLoaded(WTF::BindOnce([](Document& document) {
-    auto* svg_root = To<SVGSVGElement>(document.getElementById("container"));
+    auto* svg_root =
+        To<SVGSVGElement>(document.getElementById(AtomicString("container")));
     ASSERT_TRUE(svg_root);
     auto* rect = Traversal<SVGRectElement>::FirstChild(*svg_root);
     ASSERT_TRUE(rect);
@@ -458,7 +462,8 @@ TEST_F(SMILTimeContainerAnimationPolicyOnceTest, PauseAndResumeBeforeStart) {
     </svg>
   )HTML");
   OnContentLoaded(WTF::BindOnce([](Document& document) {
-    auto* svg_root = To<SVGSVGElement>(document.getElementById("container"));
+    auto* svg_root =
+        To<SVGSVGElement>(document.getElementById(AtomicString("container")));
     ASSERT_TRUE(svg_root);
     auto* rect = Traversal<SVGRectElement>::FirstChild(*svg_root);
     ASSERT_TRUE(rect);

@@ -1028,6 +1028,7 @@ def generate_union(union_identifier):
     ])
     header_node.accumulator.add_include_headers([
         component_export_header(api_component, for_testing),
+        "base/check_op.h",
         "third_party/blink/renderer/platform/bindings/union_base.h",
     ])
     source_node.accumulator.add_include_headers([

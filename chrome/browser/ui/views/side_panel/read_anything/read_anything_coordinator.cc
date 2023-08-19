@@ -7,7 +7,9 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
+#include "base/metrics/field_trial_params.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -19,23 +21,40 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
-#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_ui.h"
+#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/language/core/browser/language_model.h"
 #include "components/language/core/browser/language_model_manager.h"
 #include "components/language/core/common/locale_util.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/combobox_model.h"
 
+namespace {
+
+// Get the list of distillable URLs defined by the Finch experiment parameter.
+std::vector<std::string> GetDistillableURLs() {
+  return base::SplitString(base::GetFieldTrialParamValueByFeature(
+                               features::kReadAnything, "distillable_urls"),
+                           ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+}
+
+}  // namespace
+
 ReadAnythingCoordinator::ReadAnythingCoordinator(Browser* browser)
-    : BrowserUserData<ReadAnythingCoordinator>(*browser) {
+    : BrowserUserData<ReadAnythingCoordinator>(*browser),
+      distillable_urls_(GetDistillableURLs()) {
   // Create the model and initialize it with user prefs (if present).
   model_ = std::make_unique<ReadAnythingModel>();
   InitModelWithUserPrefs();
 
   // Create the controller.
   controller_ = std::make_unique<ReadAnythingController>(model_.get(), browser);
+
+  browser->tab_strip_model()->AddObserver(this);
+  Observe(GetActiveWebContents());
 }
 
 void ReadAnythingCoordinator::InitModelWithUserPrefs() {
@@ -98,6 +117,9 @@ ReadAnythingCoordinator::~ReadAnythingCoordinator() {
       SidePanelCoordinator::GetGlobalSidePanelRegistry(browser);
   global_registry->Deregister(
       SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
+
+  browser->tab_strip_model()->RemoveObserver(this);
+  Observe(nullptr);
 }
 
 void ReadAnythingCoordinator::CreateAndRegisterEntry(
@@ -155,32 +177,73 @@ void ReadAnythingCoordinator::OnEntryHidden(SidePanelEntry* entry) {
 }
 
 std::unique_ptr<views::View> ReadAnythingCoordinator::CreateContainerView() {
+  Browser* browser = &GetBrowser();
+  auto web_view =
+      std::make_unique<SidePanelWebUIViewT<ReadAnythingUntrustedUI>>(
+          /* on_show_cb= */ base::RepeatingClosure(),
+          /* close_cb= */ base::RepeatingClosure(),
+          /* contents_wrapper= */
+          std::make_unique<BubbleContentsWrapperT<ReadAnythingUntrustedUI>>(
+              /* webui_url= */ GURL(
+                  chrome::kChromeUIUntrustedReadAnythingSidePanelURL),
+              /* browser_context= */ browser->profile(),
+              /* task_manager_string_id= */ IDS_READING_MODE_TITLE,
+              /* webui_resizes_host= */ false,
+              /* esc_closes_ui= */ false));
+
+  if (features::IsReadAnythingWebUIToolbarEnabled()) {
+    return std::move(web_view);
+  }
+
   // Create the views.
   auto toolbar = std::make_unique<ReadAnythingToolbarView>(
       this,
       /* ReadAnythingToolbarView::Delegate* = */ controller_.get(),
       /* ReadAnythingFontCombobox::Delegate* = */ controller_.get());
 
-  Browser* browser = &GetBrowser();
-  auto content_web_view = std::make_unique<SidePanelWebUIViewT<ReadAnythingUI>>(
-      /* on_show_cb= */ base::RepeatingClosure(),
-      /* close_cb= */ base::RepeatingClosure(),
-      /* contents_wrapper= */
-      std::make_unique<BubbleContentsWrapperT<ReadAnythingUI>>(
-          /* webui_url= */ GURL(
-              chrome::kChromeUIUntrustedReadAnythingSidePanelURL),
-          /* browser_context= */ browser->profile(),
-          /* task_manager_string_id= */ IDS_READING_MODE_TITLE,
-          /* webui_resizes_host= */ false,
-          /* esc_closes_ui= */ false));
-
   // Create the component.
   // Note that a coordinator would normally maintain ownership of these objects,
   // but objects extending {ui/views/view.h} prefer ownership over raw pointers.
   auto container_view = std::make_unique<ReadAnythingContainerView>(
-      this, std::move(toolbar), std::move(content_web_view));
+      this, std::move(toolbar), std::move(web_view));
 
   return std::move(container_view);
+}
+
+void ReadAnythingCoordinator::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  if (!selection.active_tab_changed()) {
+    return;
+  }
+  Observe(GetActiveWebContents());
+  MaybeShowReadingModeSidePanelIPH();
+}
+
+void ReadAnythingCoordinator::DidStopLoading() {
+  MaybeShowReadingModeSidePanelIPH();
+}
+
+content::WebContents* ReadAnythingCoordinator::GetActiveWebContents() const {
+  return GetBrowser().tab_strip_model()->GetActiveWebContents();
+}
+
+void ReadAnythingCoordinator::MaybeShowReadingModeSidePanelIPH() {
+  auto* web_contents = GetActiveWebContents();
+  if (!web_contents) {
+    return;
+  }
+  auto url = web_contents->GetLastCommittedURL();
+  for (auto distillable : distillable_urls_) {
+    // If the url's domain is found in distillable urls AND the url has a
+    // filename (i.e. it is not a home page or sub-home page), show the promo.
+    if (url.DomainIs(distillable) && !url.ExtractFileName().empty()) {
+      GetBrowser().window()->MaybeShowFeaturePromo(
+          feature_engagement::kIPHReadingModeSidePanelFeature);
+      return;
+    }
+  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ReadAnythingCoordinator);

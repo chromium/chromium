@@ -19,6 +19,7 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "content/browser/media/cdm_storage_common.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/media_service.h"
@@ -175,10 +176,9 @@ class FrameInterfaceFactoryImpl : public media::mojom::FrameInterfaceFactory,
     DCHECK(media_license_manager);
 
     auto storage_key =
-        static_cast<RenderFrameHostImpl*>(render_frame_host_)->storage_key();
+        static_cast<RenderFrameHostImpl*>(render_frame_host_)->GetStorageKey();
     media_license_manager->OpenCdmStorage(
-        MediaLicenseManager::BindingContext(storage_key, cdm_type_),
-        std::move(receiver));
+        CdmStorageBindingContext(storage_key, cdm_type_), std::move(receiver));
 #endif
   }
 

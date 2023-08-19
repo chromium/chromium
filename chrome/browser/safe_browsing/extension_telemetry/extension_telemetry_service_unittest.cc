@@ -141,8 +141,7 @@ ExtensionTelemetryServiceTest::ExtensionTelemetryServiceTest()
 
   // Create telemetry service instance.
   telemetry_service_ = std::make_unique<ExtensionTelemetryService>(
-      &profile_, test_url_loader_factory_.GetSafeWeakWrapper(),
-      extension_registry_, extension_prefs_);
+      &profile_, test_url_loader_factory_.GetSafeWeakWrapper());
 
   // Create fake extension service instance.
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
@@ -220,8 +219,7 @@ TEST_F(ExtensionTelemetryServiceTest, IsEnabledOnlyWhenESBIsEnabled) {
 
   // Destruct and restart service and verify that it starts disabled.
   telemetry_service_ = std::make_unique<ExtensionTelemetryService>(
-      &profile_, test_url_loader_factory_.GetSafeWeakWrapper(),
-      extension_registry_, extension_prefs_);
+      &profile_, test_url_loader_factory_.GetSafeWeakWrapper());
   EXPECT_FALSE(IsTelemetryServiceEnabled());
 
   // Re-enable ESB, service should become enabled.
@@ -668,8 +666,7 @@ TEST_F(ExtensionTelemetryServiceTest, PersisterThreadSafetyCheck) {
   scoped_feature_list.InitAndEnableFeature(kExtensionTelemetryPersistence);
   std::unique_ptr<ExtensionTelemetryService> telemetry_service_2 =
       std::make_unique<ExtensionTelemetryService>(
-          &profile_, test_url_loader_factory_.GetSafeWeakWrapper(),
-          extension_registry_, extension_prefs_);
+          &profile_, test_url_loader_factory_.GetSafeWeakWrapper());
   telemetry_service_2->SetEnabled(true);
   telemetry_service_2.reset();
 }

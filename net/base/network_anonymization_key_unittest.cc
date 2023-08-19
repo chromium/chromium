@@ -32,13 +32,25 @@ class NetworkAnonymizationKeyTestWithNikMode
  public:
   NetworkAnonymizationKeyTestWithNikMode() {
     switch (GetParam()) {
-      case NetworkIsolationKey::Mode::kFrameSiteEnabled:
-        scoped_feature_list_.InitAndDisableFeature(
-            net::features::kEnableCrossSiteFlagNetworkIsolationKey);
+      case net::NetworkIsolationKey::Mode::kFrameSiteEnabled:
+        scoped_feature_list_.InitWithFeatures(
+            {},
+            {net::features::kEnableCrossSiteFlagNetworkIsolationKey,
+             net::features::kEnableFrameSiteSharedOpaqueNetworkIsolationKey});
         break;
-      case NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:
-        scoped_feature_list_.InitAndEnableFeature(
-            net::features::kEnableCrossSiteFlagNetworkIsolationKey);
+
+      case net::NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
+        scoped_feature_list_.InitWithFeatures(
+            {net::features::kEnableFrameSiteSharedOpaqueNetworkIsolationKey},
+            {
+                net::features::kEnableCrossSiteFlagNetworkIsolationKey,
+            });
+        break;
+
+      case net::NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:
+        scoped_feature_list_.InitWithFeatures(
+            {net::features::kEnableCrossSiteFlagNetworkIsolationKey},
+            {net::features::kEnableFrameSiteSharedOpaqueNetworkIsolationKey});
         break;
     }
   }
@@ -50,12 +62,19 @@ class NetworkAnonymizationKeyTestWithNikMode
 INSTANTIATE_TEST_SUITE_P(
     Tests,
     NetworkAnonymizationKeyTestWithNikMode,
-    testing::ValuesIn({NetworkIsolationKey::Mode::kFrameSiteEnabled,
-                       NetworkIsolationKey::Mode::kCrossSiteFlagEnabled}),
+    testing::ValuesIn(
+        {NetworkIsolationKey::Mode::kFrameSiteEnabled,
+         NetworkIsolationKey::Mode::kCrossSiteFlagEnabled,
+         NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled}),
     [](const testing::TestParamInfo<NetworkIsolationKey::Mode>& info) {
-      return info.param == NetworkIsolationKey::Mode::kFrameSiteEnabled
-                 ? "NikFrameSiteEnabled"
-                 : "NikCrossSiteFlagEnabled";
+      switch (info.param) {
+        case NetworkIsolationKey::Mode::kFrameSiteEnabled:
+          return "FrameSiteEnabled";
+        case NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:
+          return "CrossSiteFlagEnabled";
+        case NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
+          return "FrameSiteSharedOpaqueEnabled";
+      }
     });
 
 TEST_P(NetworkAnonymizationKeyTestWithNikMode, CreateFromNetworkIsolationKey) {

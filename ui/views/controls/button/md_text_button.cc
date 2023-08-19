@@ -317,7 +317,9 @@ void MdTextButton::UpdateBackgroundColor() {
 
   SetBackground(
       CreateBackgroundFromPainter(Painter::CreateRoundRectWith1PxBorderPainter(
-          bg_color, stroke_color, GetCornerRadiusValue())));
+          bg_color, stroke_color, GetCornerRadiusValue(), SkBlendMode::kSrcOver,
+          true /* antialias */,
+          features::IsChromeRefresh2023() /* should_border_scale */)));
 }
 
 void MdTextButton::UpdateColors() {

@@ -38,8 +38,6 @@ class ReadAnythingFontCombobox : public views::Combobox {
   void SetFocusRingColorId(ui::ColorId focus_ring_color);
 
  private:
-  class MenuModel;
-
   void FontNameChangedCallback();
 
   // views::View:

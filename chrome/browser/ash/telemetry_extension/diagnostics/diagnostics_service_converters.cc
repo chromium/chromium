@@ -12,8 +12,7 @@
 #include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
-namespace converters {
+namespace ash::converters::diagnostics {
 
 namespace unchecked {
 
@@ -126,6 +125,20 @@ absl::optional<crosapi::mojom::DiagnosticsRoutineEnum> Convert(
           kSmartctlCheckWithPercentageUsed;
     case cros_healthd::mojom::DiagnosticRoutineEnum::kEmmcLifetime:
       return crosapi::mojom::DiagnosticsRoutineEnum::kEmmcLifetime;
+    case cros_healthd::mojom::DiagnosticRoutineEnum::kBluetoothPower:
+      return crosapi::mojom::DiagnosticsRoutineEnum::kBluetoothPower;
+    case cros_healthd::mojom::DiagnosticRoutineEnum::kUfsLifetime:
+      return crosapi::mojom::DiagnosticsRoutineEnum::kUfsLifetime;
+    case cros_healthd::mojom::DiagnosticRoutineEnum::kPowerButton:
+      return crosapi::mojom::DiagnosticsRoutineEnum::kPowerButton;
+    case cros_healthd::mojom::DiagnosticRoutineEnum::kAudioDriver:
+      return crosapi::mojom::DiagnosticsRoutineEnum::kAudioDriver;
+    case cros_healthd::mojom::DiagnosticRoutineEnum::kBluetoothDiscovery:
+      return crosapi::mojom::DiagnosticsRoutineEnum::kBluetoothDiscovery;
+    case cros_healthd::mojom::DiagnosticRoutineEnum::kBluetoothScanning:
+      return crosapi::mojom::DiagnosticsRoutineEnum::kBluetoothScanning;
+    case cros_healthd::mojom::DiagnosticRoutineEnum::kBluetoothPairing:
+      return crosapi::mojom::DiagnosticsRoutineEnum::kBluetoothPairing;
     default:
       return absl::nullopt;
   }
@@ -156,12 +169,12 @@ crosapi::mojom::DiagnosticsRoutineUserMessageEnum Convert(
     case cros_healthd::mojom::DiagnosticRoutineUserMessageEnum::kCheckLedColor:
       NOTIMPLEMENTED();
       return crosapi::mojom::DiagnosticsRoutineUserMessageEnum::kUnknown;
+    case cros_healthd::mojom::DiagnosticRoutineUserMessageEnum::
+        kPressPowerButton:
+      return crosapi::mojom::DiagnosticsRoutineUserMessageEnum::
+          kPressPowerButton;
   }
-  NOTREACHED();
-  return static_cast<crosapi::mojom::DiagnosticsRoutineUserMessageEnum>(
-      static_cast<int>(
-          crosapi::mojom::DiagnosticsRoutineUserMessageEnum::kMaxValue) +
-      1);
+  NOTREACHED_NORETURN();
 }
 
 crosapi::mojom::DiagnosticsRoutineStatusEnum Convert(
@@ -194,11 +207,7 @@ crosapi::mojom::DiagnosticsRoutineStatusEnum Convert(
     case cros_healthd::mojom::DiagnosticRoutineStatusEnum::kNotRun:
       return crosapi::mojom::DiagnosticsRoutineStatusEnum::kNotRun;
   }
-  NOTREACHED();
-  return static_cast<crosapi::mojom::DiagnosticsRoutineStatusEnum>(
-      static_cast<int>(
-          crosapi::mojom::DiagnosticsRoutineStatusEnum::kMaxValue) +
-      1);
+  NOTREACHED_NORETURN();
 }
 
 cros_healthd::mojom::DiagnosticRoutineCommandEnum Convert(
@@ -215,11 +224,7 @@ cros_healthd::mojom::DiagnosticRoutineCommandEnum Convert(
     case crosapi::mojom::DiagnosticsRoutineCommandEnum::kRemove:
       return cros_healthd::mojom::DiagnosticRoutineCommandEnum::kRemove;
   }
-  NOTREACHED();
-  return static_cast<cros_healthd::mojom::DiagnosticRoutineCommandEnum>(
-      static_cast<int>(
-          cros_healthd::mojom::DiagnosticRoutineCommandEnum::kMaxValue) +
-      1);
+  NOTREACHED_NORETURN();
 }
 
 cros_healthd::mojom::AcPowerStatusEnum Convert(
@@ -232,9 +237,7 @@ cros_healthd::mojom::AcPowerStatusEnum Convert(
     case crosapi::mojom::DiagnosticsAcPowerStatusEnum::kDisconnected:
       return cros_healthd::mojom::AcPowerStatusEnum::kDisconnected;
   }
-  NOTREACHED();
-  return static_cast<cros_healthd::mojom::AcPowerStatusEnum>(
-      static_cast<int>(cros_healthd::mojom::AcPowerStatusEnum::kMaxValue) + 1);
+  NOTREACHED_NORETURN();
 }
 
 cros_healthd::mojom::NvmeSelfTestTypeEnum Convert(
@@ -247,10 +250,7 @@ cros_healthd::mojom::NvmeSelfTestTypeEnum Convert(
     case crosapi::mojom::DiagnosticsNvmeSelfTestTypeEnum::kLongSelfTest:
       return cros_healthd::mojom::NvmeSelfTestTypeEnum::kLongSelfTest;
   }
-  NOTREACHED();
-  return static_cast<cros_healthd::mojom::NvmeSelfTestTypeEnum>(
-      static_cast<int>(cros_healthd::mojom::NvmeSelfTestTypeEnum::kMaxValue) +
-      1);
+  NOTREACHED_NORETURN();
 }
 
 cros_healthd::mojom::DiskReadRoutineTypeEnum Convert(
@@ -264,12 +264,7 @@ cros_healthd::mojom::DiskReadRoutineTypeEnum Convert(
       // Fall-through to not-supported case.
       break;
   }
-  NOTREACHED();
-  return static_cast<cros_healthd::mojom::DiskReadRoutineTypeEnum>(
-      static_cast<int>(
-          cros_healthd::mojom::DiskReadRoutineTypeEnum::kMaxValue) +
-      1);
+  NOTREACHED_NORETURN();
 }
 
-}  // namespace converters
-}  // namespace ash
+}  // namespace ash::converters::diagnostics

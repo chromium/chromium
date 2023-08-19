@@ -24,6 +24,10 @@ class IOSChromeFieldTrials : public variations::PlatformFieldTrials {
       bool has_seed,
       const variations::EntropyProviders& entropy_providers,
       base::FeatureList* feature_list) override;
+
+ private:
+  // Tracks whether a seed has been used to set up field trials.
+  bool used_seed_ = false;
 };
 
 #endif  // IOS_CHROME_BROWSER_FLAGS_IOS_CHROME_FIELD_TRIALS_H_

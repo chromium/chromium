@@ -256,6 +256,10 @@ std::unique_ptr<WebSocketStream> WebSocketHttp3HandshakeStream::Upgrade() {
       std::make_unique<WebSocketDeflatePredictorImpl>());
 }
 
+bool WebSocketHttp3HandshakeStream::CanReadFromStream() const {
+  return stream_adapter_ && stream_adapter_->is_initialized();
+}
+
 base::WeakPtr<WebSocketHandshakeStreamBase>
 WebSocketHttp3HandshakeStream::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();

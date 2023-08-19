@@ -61,8 +61,7 @@ public class InstalledWebappGeolocationBridge {
     }
 
     @CalledByNative
-    @Nullable
-    public static InstalledWebappGeolocationBridge create(long nativePtr, GURL url) {
+    public static @Nullable InstalledWebappGeolocationBridge create(long nativePtr, GURL url) {
         if (url == null) return null;
 
         return new InstalledWebappGeolocationBridge(nativePtr, url,

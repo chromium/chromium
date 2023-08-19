@@ -23,10 +23,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
-namespace base {
-class Value;
-}
-
 namespace gpu {
 struct GPUInfo;
 }
@@ -127,22 +123,6 @@ class RecommendAppsFetcherImpl : public RecommendAppsFetcher {
 
   // Callback function called when SimpleURLLoader completes.
   void OnDownloaded(std::unique_ptr<std::string> response_body);
-
-  // If the response is not a valid JSON, return absl::nullopt.
-  // If the response contains no app, return absl::nullopt;
-  // Value output, in true, is a list containing:
-  // 1. name: the title of the app.
-  // 2. package_name
-  // 3. Possibly an Icon URL.
-  // Parses an input string that looks somewhat like this:
-  // [{"title_" : {"name_" : {title of app"}},
-  //   "id_" : {"id_" : {com.package.name"}},
-  //  "icon_": {"url_": {"privateDoNotAccessOrElseSafeUrlWrappedValue_":
-  //  "http://icon_url.com/url"}}},
-  //  {"title_" : "title of second app",
-  //   "packageName_": "second package name.",
-  //  }]
-  absl::optional<base::Value> ParseResponse(const base::Value& parsed_json);
 
   void OnJsonParsed(data_decoder::DataDecoder::ValueOrError result);
 

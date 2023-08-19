@@ -16,6 +16,7 @@
 #include "third_party/iaccessible2/ia2_api_all.h"
 #include "ui/accessibility/ax_text_utils.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
+#include "ui/accessibility/platform/sequence_affine_com_object_root_win.h"
 
 namespace ui {
 
@@ -27,7 +28,7 @@ namespace ui {
 // potentially multiple target nodes. Also contains a utility function
 // to compute all of the possible IAccessible2 relations and reverse
 // relations given the internal relation id attributes.
-class AXPlatformRelationWin : public CComObjectRootEx<CComMultiThreadModel>,
+class AXPlatformRelationWin : public SequenceAffineComObjectRoot,
                               public IAccessibleRelation {
  public:
   BEGIN_COM_MAP(AXPlatformRelationWin)
@@ -55,7 +56,7 @@ class AXPlatformRelationWin : public CComObjectRootEx<CComMultiThreadModel>,
                                     int desired_index,
                                     const std::wstring& desired_ia2_relation,
                                     std::wstring* out_ia2_relation,
-                                    std::set<AXPlatformNode*>* out_targets);
+                                    std::vector<AXPlatformNode*>* out_targets);
 
   void Initialize(const std::wstring& type);
   void Invalidate();

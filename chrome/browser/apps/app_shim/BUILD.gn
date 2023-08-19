@@ -22,10 +22,7 @@ source_set("app_shim") {
     "web_app_shim_manager_delegate_mac.h",
   ]
 
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/compiler:wexit_time_destructors",
-  ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
     "//apps",

@@ -133,11 +133,11 @@ class BrowsingTopicsCalculatorTest : public testing::Test {
           main_frame_hosts_with_context_domains) {
     for (auto& [main_frame_host, context_domains] :
          main_frame_hosts_with_context_domains) {
-      topics_site_data_manager_->OnBrowsingTopicsApiUsed(
-          HashMainFrameHostForStorage(main_frame_host),
-          base::flat_set<HashedDomain>(context_domains.begin(),
-                                       context_domains.end()),
-          base::Time::Now());
+      for (const HashedDomain& context_domain : context_domains) {
+        topics_site_data_manager_->OnBrowsingTopicsApiUsed(
+            HashMainFrameHostForStorage(main_frame_host), context_domain,
+            base::NumberToString(context_domain.value()), base::Time::Now());
+      }
     }
 
     task_environment_.RunUntilIdle();
@@ -218,7 +218,8 @@ class BrowsingTopicsCalculatorUnsupporedTaxonomyVersionTest
  public:
   BrowsingTopicsCalculatorUnsupporedTaxonomyVersionTest() {
     feature_list_.InitAndEnableFeatureWithParameters(
-        blink::features::kBrowsingTopics, {{"taxonomy_version", "999"}});
+        blink::features::kBrowsingTopicsParameters,
+        {{"taxonomy_version", "999"}});
   }
 
  private:
@@ -878,8 +879,8 @@ TEST_F(BrowsingTopicsCalculatorTest, TopicBlockedByFinch) {
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      blink::features::kBrowsingTopics,
-      {{"browsing_topics_disabled_topics_list", "6,4"}});
+      blink::features::kBrowsingTopicsParameters,
+      {{"disabled_topics_list", "6,4"}});
 
   EpochTopics result = CalculateTopics();
   ExpectResultTopicsEqual(

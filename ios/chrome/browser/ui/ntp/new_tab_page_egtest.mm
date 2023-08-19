@@ -25,10 +25,6 @@
 #import "net/test/embedded_test_server/http_response.h"
 #import "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 const char kPageLoadedString[] = "Page loaded!";
@@ -368,7 +364,7 @@ BOOL WaitForHistoryToDisappear() {
 
   id<GREYMatcher> menuNewTabButtonMatcher;
   menuNewTabButtonMatcher =
-      grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
+      grey_allOf(chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
                      IDS_IOS_TOOLS_MENU_NEW_TAB),
                  grey_ancestor(grey_kindOfClassName(@"UICollectionView")), nil);
   [[EarlGrey selectElementWithMatcher:menuNewTabButtonMatcher]

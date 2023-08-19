@@ -26,6 +26,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
+#include "components/content_settings/core/common/content_settings_metadata.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/search_engines/template_url.h"
@@ -130,12 +131,14 @@ class ChannelsRuleIterator : public content_settings::RuleIterator {
     DCHECK(HasNext());
     auto& channel = channels_[index_];
     DCHECK_NE(channels_[index_].status, NotificationChannelStatus::UNAVAILABLE);
+    content_settings::RuleMetaData metadata;
+    metadata.set_last_modified(channel.timestamp);
     std::unique_ptr<content_settings::Rule> rule =
         std::make_unique<content_settings::OwnedRule>(
             ContentSettingsPattern::FromURLNoWildcard(GURL(channel.origin)),
             ContentSettingsPattern::Wildcard(),
             base::Value(ChannelStatusToContentSetting(channel.status)),
-            content_settings::RuleMetaData{.last_modified = channel.timestamp});
+            metadata);
     index_++;
     return rule;
   }
@@ -316,9 +319,10 @@ bool NotificationChannelsProviderAndroid::SetWebsiteSetting(
   }
 
   // These constraints are not supported for notifications on Android.
-  DCHECK_EQ(constraints.expiration, base::Time());
-  DCHECK_EQ(constraints.session_model, content_settings::SessionModel::Durable);
-  DCHECK_EQ(constraints.track_last_visit_for_autoexpiration, false);
+  DCHECK_EQ(constraints.expiration(), base::Time());
+  DCHECK_EQ(constraints.session_model(),
+            content_settings::SessionModel::Durable);
+  DCHECK_EQ(constraints.track_last_visit_for_autoexpiration(), false);
 
   InitCachedChannels();
 
@@ -374,6 +378,15 @@ void NotificationChannelsProviderAndroid::ShutdownOnUIThread() {
   RemoveAllObservers();
 }
 
+bool NotificationChannelsProviderAndroid::UpdateLastUsedTime(
+    const GURL& primary_url,
+    const GURL& secondary_url,
+    ContentSettingsType content_type,
+    const base::Time time) {
+  // Last used tracking is not implemented for this type.
+  return false;
+}
+
 bool NotificationChannelsProviderAndroid::ResetLastVisitTime(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
@@ -387,6 +400,15 @@ bool NotificationChannelsProviderAndroid::UpdateLastVisitTime(
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type) {
   // Last visited tracking is not implemented for this type.
+  return false;
+}
+
+bool NotificationChannelsProviderAndroid::RenewContentSetting(
+    const GURL& primary_url,
+    const GURL& secondary_url,
+    ContentSettingsType content_type,
+    absl::optional<ContentSetting> setting_to_match) {
+  // Setting renewal is not implemented for this type.
   return false;
 }
 

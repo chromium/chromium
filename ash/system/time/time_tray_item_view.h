@@ -27,6 +27,7 @@ class ASH_EXPORT TimeTrayItemView : public TrayItemView {
 
   // TrayItemView:
   void HandleLocaleChange() override;
+  void UpdateLabelOrImageViewColor(bool active) override;
 
   // views::View:
   const char* GetClassName() const override;

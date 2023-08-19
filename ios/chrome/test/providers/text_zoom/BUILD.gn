@@ -4,7 +4,6 @@
 
 source_set("text_zoom") {
   testonly = true
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "test_text_zoom.mm" ]
   deps = [
     "//ios/chrome/browser/web/font_size",

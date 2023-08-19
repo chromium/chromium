@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <ostream>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -15,7 +16,6 @@
 #include "base/observer_list.h"
 #include "base/threading/sequence_bound.h"
 #include "base/types/expected.h"
-#include "components/aggregation_service/aggregation_service.mojom.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/aggregation_service/aggregation_service_observer.h"
@@ -33,6 +33,10 @@ class Clock;
 class FilePath;
 class Time;
 }  // namespace base
+
+namespace url {
+class Origin;
+}  // namespace url
 
 namespace content {
 
@@ -71,18 +75,14 @@ AggregatableReportRequest CreateExampleRequest(
     blink::mojom::AggregationServiceMode aggregation_mode =
         blink::mojom::AggregationServiceMode::kDefault,
     int failed_send_attempts = 0,
-    ::aggregation_service::mojom::AggregationCoordinator
-        aggregation_coordinator =
-            ::aggregation_service::mojom::AggregationCoordinator::kDefault);
+    absl::optional<url::Origin> aggregation_coordinator_origin = absl::nullopt);
 
 AggregatableReportRequest CreateExampleRequestWithReportTime(
     base::Time report_time,
     blink::mojom::AggregationServiceMode aggregation_mode =
         blink::mojom::AggregationServiceMode::kDefault,
     int failed_send_attempts = 0,
-    ::aggregation_service::mojom::AggregationCoordinator
-        aggregation_coordinator =
-            ::aggregation_service::mojom::AggregationCoordinator::kDefault);
+    absl::optional<url::Origin> aggregation_coordinator_origin = absl::nullopt);
 
 AggregatableReportRequest CloneReportRequest(
     const AggregatableReportRequest& request);
@@ -186,6 +186,11 @@ class MockAggregationService : public AggregationService {
               SendReportsForWebUI,
               (const std::vector<AggregationServiceStorage::RequestId>& ids,
                base::OnceClosure reports_sent_callback),
+              (override));
+
+  MOCK_METHOD(void,
+              GetPendingReportReportingOrigins,
+              (base::OnceCallback<void(std::set<url::Origin>)> callback),
               (override));
 
   void AddObserver(AggregationServiceObserver* observer) override;

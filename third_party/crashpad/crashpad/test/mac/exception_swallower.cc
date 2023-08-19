@@ -21,8 +21,8 @@
 #include <ostream>
 #include <string>
 
+#include "base/apple/scoped_mach_port.h"
 #include "base/check_op.h"
-#include "base/mac/scoped_mach_port.h"
 #include "base/strings/stringprintf.h"
 #include "handler/mac/exception_handler_server.h"
 #include "util/mach/bootstrap.h"
@@ -59,7 +59,7 @@ class ExceptionSwallower::ExceptionSwallowerThread
       public UniversalMachExcServer::Interface {
  public:
   explicit ExceptionSwallowerThread(
-      base::mac::ScopedMachReceiveRight receive_right)
+      base::apple::ScopedMachReceiveRight receive_right)
       : Thread(),
         UniversalMachExcServer::Interface(),
         exception_handler_server_(std::move(receive_right), true),
@@ -130,7 +130,7 @@ ExceptionSwallower::ExceptionSwallower() : exception_swallower_thread_() {
       base::StringPrintf("org.chromium.crashpad.test.exception_swallower.%d.%s",
                          getpid(),
                          RandomString().c_str());
-  base::mac::ScopedMachReceiveRight receive_right(
+  base::apple::ScopedMachReceiveRight receive_right(
       BootstrapCheckIn(service_name));
   CHECK(receive_right.is_valid());
 
@@ -165,7 +165,7 @@ void ExceptionSwallower::SwallowExceptions() {
   const char* service_name = CheckedGetenv(kServiceEnvironmentVariable);
   CHECK(service_name);
 
-  base::mac::ScopedMachSendRight exception_swallower_port(
+  base::apple::ScopedMachSendRight exception_swallower_port(
       BootstrapLookUp(service_name));
   CHECK(exception_swallower_port.is_valid());
 

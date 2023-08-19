@@ -11,10 +11,6 @@
 #import "content/public/browser/render_frame_host.h"
 #import "ios/web/content/web_state/content_web_state.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace web {
 
 namespace {
@@ -74,7 +70,7 @@ bool ContentWebFrame::IsMainFrame() const {
 GURL ContentWebFrame::GetSecurityOrigin() const {
   // TODO(crbug.com/1423501):  Once GetSecurityOrigin is changed to return an
   // Origin instead of a URL, this should use GetLastCommittedOrigin().
-  return render_frame_host_->GetLastCommittedURL();
+  return render_frame_host_->GetLastCommittedURL().DeprecatedGetOriginAsURL();
 }
 
 BrowserState* ContentWebFrame::GetBrowserState() {

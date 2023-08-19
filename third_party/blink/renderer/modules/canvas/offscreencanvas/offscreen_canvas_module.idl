@@ -14,5 +14,5 @@ enum OffscreenRenderingContextType { "2d", "webgl", "webgl2", "bitmaprenderer", 
 [
     ImplementedAs=OffscreenCanvasModule
 ] partial interface OffscreenCanvas {
-    [CallWith=ExecutionContext, RaisesException] OffscreenRenderingContext? getContext(OffscreenRenderingContextType contextType, optional CanvasContextCreationAttributesModule attributes = {});
+    [CallWith=ScriptState, RaisesException] OffscreenRenderingContext? getContext(OffscreenRenderingContextType contextType, optional CanvasContextCreationAttributesModule attributes = {});
 };

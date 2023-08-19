@@ -4,12 +4,8 @@
 
 #include "components/power_metrics/mach_time_mac.h"
 
+#include "base/apple/mach_logging.h"
 #include "base/check.h"
-#include "base/mac/mach_logging.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace power_metrics {
 

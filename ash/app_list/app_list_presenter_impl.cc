@@ -164,7 +164,7 @@ class CallbackRunnerLayerAnimationObserver
 
 }  // namespace
 
-constexpr std::array<int, 7>
+constexpr std::array<int, 8>
     AppListPresenterImpl::kIdsOfContainersThatWontHideAppList;
 
 AppListPresenterImpl::AppListPresenterImpl(AppListControllerImpl* controller)

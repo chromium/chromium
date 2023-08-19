@@ -6,10 +6,10 @@
 #include <unordered_map>
 
 #include "base/lazy_instance.h"
-#include "base/memory/raw_ptr.h"
 #include "components/os_crypt/sync/key_storage_libsecret.h"
 #include "components/os_crypt/sync/libsecret_util_linux.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/glib/scoped_gobject.h"
 
 namespace {
 
@@ -36,33 +36,32 @@ class MockPasswordStore {
     ClearPassword();
     for (GObject* o : objects_returned_to_caller_) {
       ASSERT_EQ(o->ref_count, 1u);
-      g_object_unref(o);
     }
     objects_returned_to_caller_.clear();
   }
 
   void ClearPassword() {
     if (password_) {
-      ASSERT_EQ(password_->ref_count, 1u);
-      g_object_unref(password_);
-      password_ = nullptr;
+      ASSERT_EQ((*password_).ref_count, 1u);
+      password_ = ScopedGObject<GObject>();  // Reset
     }
   }
 
   void SetPassword(const std::string& password) {
     ASSERT_FALSE(password_);
-    password_ = static_cast<GObject*>(g_object_new(G_TYPE_OBJECT, nullptr));
-    mapping_[password_] = password;
+    password_ = TakeGObject(
+        static_cast<GObject*>(g_object_new(G_TYPE_OBJECT, nullptr)));
+    mapping_[password_.get()] = password;
   }
 
+  // The returned object has a ref count of 2. This way, after the client
+  // deletes the object, it isn't destroyed, and we can check that all these
+  // objects have ref count of 1 at the end of the test.
   GObject* MakeTempObject(const std::string& value) {
-    GObject* temp = static_cast<GObject*>(g_object_new(G_TYPE_OBJECT, nullptr));
-    // The returned object has a ref count of 2. This way, after the client
-    // deletes the object, it isn't destroyed, and we can check that all these
-    // objects have ref count of 1 at the end of the test.
-    g_object_ref(temp);
+    ScopedGObject temp = WrapGObject(
+        static_cast<GObject*>(g_object_new(G_TYPE_OBJECT, nullptr)));
     objects_returned_to_caller_.push_back(temp);
-    mapping_[temp] = value;
+    mapping_[temp.get()] = value;
     return temp;
   }
 
@@ -72,9 +71,11 @@ class MockPasswordStore {
 
   GObject* password() { return password_; }
 
+  // The keys in `mapping_` refer to objects in `objects_returned_to_caller_` or
+  // `password_`, which manage their lifetime.
   std::unordered_map<GObject*, std::string> mapping_;
-  std::vector<GObject*> objects_returned_to_caller_;
-  raw_ptr<GObject> password_ = nullptr;
+  std::vector<ScopedGObject<GObject>> objects_returned_to_caller_;
+  ScopedGObject<GObject> password_;
 };
 base::LazyInstance<MockPasswordStore>::Leaky g_password_store =
     LAZY_INSTANCE_INITIALIZER;
@@ -135,8 +136,9 @@ gboolean MockLibsecretLoader::mock_secret_password_store_sync(
     GError** error,
     ...) {
   // TODO(crbug.com/660005) We don't read the dummy we store to unlock keyring.
-  if (strcmp("_chrome_dummy_schema_for_unlocking", schema->name) == 0)
+  if (strcmp("_chrome_dummy_schema_for_unlocking", schema->name) == 0) {
     return true;
+  }
 
   EXPECT_STREQ(kKeystoreSchemaV2.name, schema->name);
   g_password_store.Pointer()->SetPassword(password);
@@ -164,8 +166,9 @@ GList* MockLibsecretLoader::mock_secret_service_search_sync(
   GObject* item = nullptr;
   MockPasswordStore* store = g_password_store.Pointer();
   GObject* password = store->password();
-  if (password)
+  if (password) {
     item = store->MakeTempObject(store->GetString(password));
+  }
 
   if (!item) {
     return nullptr;

@@ -42,8 +42,6 @@ namespace embedder_support {
 
 namespace {
 
-constexpr char kVersion99[] = "99";
-
 #if BUILDFLAG(IS_WIN)
 
 // The registry key where the UniversalApiContract version value can be read
@@ -141,19 +139,6 @@ const std::string& GetWindowsPlatformVersion() {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-// Returns true if the user agent string should force the major version into
-// the minor position.
-// TODO(crbug.com/1290820): Remove this method along with policy.
-bool ShouldForceMajorVersionToMinorPosition(
-    ForceMajorVersionToMinorPosition force_major_to_minor) {
-  return (
-      (force_major_to_minor !=
-           ForceMajorVersionToMinorPosition::kForceDisabled &&
-       base::FeatureList::IsEnabled(
-           blink::features::kForceMajorVersionInMinorPositionInUserAgent)) ||
-      force_major_to_minor == ForceMajorVersionToMinorPosition::kForceEnabled);
-}
-
 // Returns true if the user agent reduction should be forced (or prevented).
 // TODO(crbug.com/1330890): Remove this method along with policy.
 bool ShouldReduceUserAgentMinorVersion(
@@ -193,49 +178,6 @@ bool ShouldSendUserAgentUnifiedPlatform(
 #endif
 }
 
-const std::string& GetMajorInMinorVersionNumber() {
-  static const base::NoDestructor<std::string> version_number([] {
-    base::Version version(version_info::GetVersionNumber());
-    std::string version_str;
-    const std::vector<uint32_t>& components = version.components();
-    for (size_t i = 0; i < components.size(); ++i) {
-      if (i > 0) {
-        version_str.append(".");
-      }
-      if (i == 0) {
-        // Hardcode major version to 99
-        version_str.append(kVersion99);
-      } else if (i == 1) {
-        // Force major into minor version
-        version_str.append(base::NumberToString(components[0]));
-      } else {
-        // build and patch stay the same
-        version_str.append(base::NumberToString(components[i]));
-      }
-    }
-    return version_str;
-  }());
-  return *version_number;
-}
-
-const std::string& GetReducedMajorInMinorVersionNumber() {
-  static const base::NoDestructor<std::string> version_number([] {
-    std::string version_str(kVersion99);
-    version_str.append(".");
-    version_str.append(version_info::GetMajorVersionNumber());
-    version_str.append(".0.0");
-    return version_str;
-  }());
-  return *version_number;
-}
-
-std::string GetVersionNumber(const UserAgentOptions& options) {
-  // Force major version to 99.
-  return ShouldForceMajorVersionToMinorPosition(options.force_major_to_minor)
-             ? GetMajorInMinorVersionNumber()
-             : std::string(version_info::GetVersionNumber());
-}
-
 const blink::UserAgentBrandList GetUserAgentBrandList(
     const std::string& major_version,
     bool enable_updated_grease_by_policy,
@@ -270,6 +212,10 @@ const blink::UserAgentBrandList GetUserAgentBrandList(
                                   output_version_type);
 }
 
+// Return UserAgentBrandList with the major version populated in the brand
+// `version` value.
+// TODO(crbug.com/1291612): Consolidate *MajorVersionList() methods by using
+// GetVersionNumber()
 const blink::UserAgentBrandList GetUserAgentBrandMajorVersionList(
     bool enable_updated_grease_by_policy) {
   return GetUserAgentBrandList(version_info::GetMajorVersionNumber(),
@@ -278,14 +224,8 @@ const blink::UserAgentBrandList GetUserAgentBrandMajorVersionList(
                                blink::UserAgentBrandVersionType::kMajorVersion);
 }
 
-// TODO(crbug.com/1290820): Remove this method along with policy.
-blink::UserAgentBrandList GetMajorInMinorUserAgentBrandMajorVersionList(
-    bool enable_updated_grease_by_policy) {
-  return GetUserAgentBrandList(kVersion99, enable_updated_grease_by_policy,
-                               GetMajorInMinorVersionNumber(),
-                               blink::UserAgentBrandVersionType::kMajorVersion);
-}
-
+// Return UserAgentBrandList with the full version populated in the brand
+// `version` value.
 // TODO(crbug.com/1291612): Consolidate *FullVersionList() methods by using
 // GetVersionNumber()
 blink::UserAgentBrandList GetUserAgentBrandFullVersionList(
@@ -296,66 +236,10 @@ blink::UserAgentBrandList GetUserAgentBrandFullVersionList(
                                blink::UserAgentBrandVersionType::kFullVersion);
 }
 
-// TODO(crbug.com/1290820): Remove this method along with policy.
-blink::UserAgentBrandList GetMajorInMinorUserAgentBrandFullVersionList(
-    bool enable_updated_grease_by_policy) {
-  return GetUserAgentBrandList(kVersion99, enable_updated_grease_by_policy,
-                               GetMajorInMinorVersionNumber(),
-                               blink::UserAgentBrandVersionType::kFullVersion);
-}
-
-// Return UserAgentBrandList with the major version populated in the brand
-// `version` value.
-// TODO(crbug.com/1291612): Consolidate *MajorVersionList() methods by using
-// GetVersionNumber()
-blink::UserAgentBrandList GetBrandMajorVersionList(
-    bool enable_updated_grease_by_policy,
-    ForceMajorVersionToMinorPosition force_major_to_minor) {
-  // Force major version to 99.
-  if (ShouldForceMajorVersionToMinorPosition(force_major_to_minor))
-    return GetMajorInMinorUserAgentBrandMajorVersionList(
-        enable_updated_grease_by_policy);
-
-  return GetUserAgentBrandMajorVersionList(enable_updated_grease_by_policy);
-}
-
-// Return UserAgentBrandList with the full version populated in the brand
-// `version` value.
-// TODO(crbug.com/1291612): Consolidate *FullVersionList() methods by using
-// GetVersionNumber()
-blink::UserAgentBrandList GetBrandFullVersionList(
-    bool enable_updated_grease_by_policy,
-    ForceMajorVersionToMinorPosition force_major_to_minor) {
-  // Force major version to 99.
-  if (ShouldForceMajorVersionToMinorPosition(force_major_to_minor))
-    return GetMajorInMinorUserAgentBrandFullVersionList(
-        enable_updated_grease_by_policy);
-
-  return GetUserAgentBrandFullVersionList(enable_updated_grease_by_policy);
-}
-
-// Returns a string representing the major version number of the user agent
-// string for Chrome, potentially overridden by policy.
-std::string GetMajorVersionForUserAgentString(
-    ForceMajorVersionToMinorPosition force_major_to_minor) {
-  // Force major version to 99.
-  if (ShouldForceMajorVersionToMinorPosition(force_major_to_minor))
-    return kVersion99;
-
-  return version_info::GetMajorVersionNumber();
-}
-
 }  // namespace
 
 std::string GetProductAndVersion(
-    ForceMajorVersionToMinorPosition force_major_to_minor,
     UserAgentReductionEnterprisePolicyState user_agent_reduction) {
-  if (ShouldForceMajorVersionToMinorPosition(force_major_to_minor)) {
-    // Force major version to 99 and major version to minor version position.
-    return "Chrome/" + (ShouldReduceUserAgentMinorVersion(user_agent_reduction)
-                            ? GetReducedMajorInMinorVersionNumber()
-                            : GetMajorInMinorVersionNumber());
-  }
   return ShouldReduceUserAgentMinorVersion(user_agent_reduction)
              ? version_info::GetProductNameAndVersionForReducedUserAgent(
                    blink::features::kUserAgentFrozenBuildVersion.Get())
@@ -366,10 +250,12 @@ std::string GetProductAndVersion(
 // Internal function to handle return the full or "reduced" user agent string,
 // depending on the UserAgentReduction enterprise policy.
 std::string GetUserAgentInternal(
-    ForceMajorVersionToMinorPosition force_major_to_minor,
     UserAgentReductionEnterprisePolicyState user_agent_reduction) {
-  std::string product =
-      GetProductAndVersion(force_major_to_minor, user_agent_reduction);
+  std::string product = GetProductAndVersion(user_agent_reduction);
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(kHeadless)) {
+    product.insert(0, "Headless");
+  }
+
 #if BUILDFLAG(IS_ANDROID)
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kUseMobileUserAgent))
@@ -398,45 +284,13 @@ absl::optional<std::string> GetUserAgentFromCommandLine() {
 }
 
 std::string GetUserAgent(
-    ForceMajorVersionToMinorPosition force_major_to_minor,
     UserAgentReductionEnterprisePolicyState user_agent_reduction) {
   absl::optional<std::string> custom_ua = GetUserAgentFromCommandLine();
   if (custom_ua.has_value()) {
     return custom_ua.value();
   }
 
-  if (base::FeatureList::IsEnabled(blink::features::kFullUserAgent))
-    return GetFullUserAgent(force_major_to_minor);
-
-  if (base::FeatureList::IsEnabled(blink::features::kReduceUserAgent))
-    return GetReducedUserAgent(force_major_to_minor);
-
-  return GetUserAgentInternal(force_major_to_minor, user_agent_reduction);
-}
-
-std::string GetReducedUserAgent(
-    ForceMajorVersionToMinorPosition force_major_to_minor) {
-  absl::optional<std::string> custom_ua = GetUserAgentFromCommandLine();
-  if (custom_ua.has_value()) {
-    return custom_ua.value();
-  }
-
-  return content::GetReducedUserAgent(
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kUseMobileUserAgent),
-      GetMajorVersionForUserAgentString(force_major_to_minor));
-}
-
-std::string GetFullUserAgent(
-    ForceMajorVersionToMinorPosition force_major_to_minor) {
-  absl::optional<std::string> custom_ua = GetUserAgentFromCommandLine();
-  if (custom_ua.has_value()) {
-    return custom_ua.value();
-  }
-
-  return GetUserAgentInternal(
-      force_major_to_minor,
-      UserAgentReductionEnterprisePolicyState::kForceDisabled);
+  return GetUserAgentInternal(user_agent_reduction);
 }
 
 // Generate a pseudo-random permutation of the following brand/version pairs:
@@ -589,35 +443,47 @@ blink::UserAgentMetadata GetUserAgentMetadata() {
 
 blink::UserAgentMetadata GetUserAgentMetadata(const PrefService* pref_service) {
   blink::UserAgentMetadata metadata;
-  // If users provide valid user-agent in the command line, return an default
-  // blank UserAgentMetadata values.
-  absl::optional<std::string> custom_ua = GetUserAgentFromCommandLine();
-  if (custom_ua.has_value()) {
-    return metadata;
-  }
 
   bool enable_updated_grease_by_policy = true;
-  UserAgentOptions ua_options;
   if (pref_service) {
     if (pref_service->HasPrefPath(
             policy::policy_prefs::kUserAgentClientHintsGREASEUpdateEnabled))
       enable_updated_grease_by_policy = pref_service->GetBoolean(
           policy::policy_prefs::kUserAgentClientHintsGREASEUpdateEnabled);
-    ua_options.force_major_to_minor = GetMajorToMinorFromPrefs(pref_service);
   }
-  metadata.brand_version_list = GetBrandMajorVersionList(
-      enable_updated_grease_by_policy, ua_options.force_major_to_minor);
-  metadata.brand_full_version_list = GetBrandFullVersionList(
-      enable_updated_grease_by_policy, ua_options.force_major_to_minor);
-  metadata.full_version = GetVersionNumber(ua_options);
-  metadata.platform = GetPlatformForUAMetadata();
-  metadata.architecture = content::GetCpuArchitecture();
-  metadata.model = content::BuildModelInfo();
+
+  // Low entropy client hints.
+  metadata.brand_version_list =
+      GetUserAgentBrandMajorVersionList(enable_updated_grease_by_policy);
   metadata.mobile = false;
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   metadata.mobile = base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kUseMobileUserAgent);
 #endif
+  metadata.platform = GetPlatformForUAMetadata();
+
+  // For users providing a valid user-agent override via the command line:
+  // If kUACHOverrideBlank is enabled, set user-agent metadata with the
+  // default blank values, otherwise return the default UserAgentMetadata values
+  // to populate and send only the low entropy client hints.
+  // Notes: Sending low entropy hints with empty values may cause requests being
+  // blocked by web application firewall software, etc.
+  absl::optional<std::string> custom_ua = GetUserAgentFromCommandLine();
+  if (custom_ua.has_value()) {
+    return base::FeatureList::IsEnabled(blink::features::kUACHOverrideBlank)
+               ? blink::UserAgentMetadata()
+               : metadata;
+  }
+
+  // High entropy client hints.
+  metadata.brand_full_version_list =
+      GetUserAgentBrandFullVersionList(enable_updated_grease_by_policy);
+  metadata.full_version = std::string(version_info::GetVersionNumber());
+  metadata.architecture = content::GetCpuArchitecture();
+  metadata.model = content::BuildModelInfo();
+
+  // TODO(https://crbug.com/1442283): Support a broader range of form-factors.
+  metadata.form_factor = metadata.mobile ? kMobileFormFactor : "";
 
 #if BUILDFLAG(IS_WIN)
   metadata.platform_version = GetWindowsPlatformVersion();
@@ -649,6 +515,7 @@ void SetDesktopUserAgentOverride(content::WebContents* web_contents,
       std::string();  // match content::GetOSVersion(false) on Linux
   spoofed_ua.ua_metadata_override->model = std::string();
   spoofed_ua.ua_metadata_override->mobile = false;
+  spoofed_ua.ua_metadata_override->form_factor = "";
   // Match the above "CpuInfo" string, which is also the most common Linux
   // CPU architecture and bitness.`
   spoofed_ua.ua_metadata_override->architecture = "x86";
@@ -664,22 +531,6 @@ int GetHighestKnownUniversalApiContractVersionForTesting() {
   return kHighestKnownUniversalApiContractVersion;
 }
 #endif  // BUILDFLAG(IS_WIN)
-
-// TODO(crbug.com/1290820): Remove this function with policy.
-embedder_support::ForceMajorVersionToMinorPosition GetMajorToMinorFromPrefs(
-    const PrefService* pref_service) {
-  if (!pref_service->HasPrefPath(kForceMajorVersionToMinorPosition))
-    return ForceMajorVersionToMinorPosition::kDefault;
-  switch (pref_service->GetInteger(kForceMajorVersionToMinorPosition)) {
-    case 1:
-      return ForceMajorVersionToMinorPosition::kForceDisabled;
-    case 2:
-      return ForceMajorVersionToMinorPosition::kForceEnabled;
-    case 0:
-    default:
-      return ForceMajorVersionToMinorPosition::kDefault;
-  }
-}
 
 embedder_support::UserAgentReductionEnterprisePolicyState
 GetUserAgentReductionFromPrefs(const PrefService* pref_service) {

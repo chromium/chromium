@@ -71,20 +71,20 @@ void WaylandZcrColorSpace::OnCompleteNames(void* data,
       static_cast<WaylandZcrColorSpace*>(data);
   DCHECK(zcr_color_space);
   auto primaryID = ui::wayland::kChromaticityMap.contains(chromaticity)
-                       ? ui::wayland::kChromaticityMap.at(chromaticity)
+                       ? ui::wayland::kChromaticityMap.at(chromaticity).primary
                        : gfx::ColorSpace::PrimaryID::INVALID;
   auto matrixID = ui::wayland::kMatrixMap.contains(matrix)
-                      ? ui::wayland::kMatrixMap.at(matrix)
+                      ? ui::wayland::kMatrixMap.at(matrix).matrix
                       : gfx::ColorSpace::MatrixID::INVALID;
   auto rangeID = ui::wayland::kRangeMap.contains(range)
-                     ? ui::wayland::kRangeMap.at(range)
+                     ? ui::wayland::kRangeMap.at(range).range
                      : gfx::ColorSpace::RangeID::INVALID;
   auto transferID = ui::wayland::kEotfMap.contains(eotf)
-                        ? ui::wayland::kEotfMap.at(eotf)
+                        ? ui::wayland::kEotfMap.at(eotf).transfer
                         : gfx::ColorSpace::TransferID::INVALID;
   if (transferID == gfx::ColorSpace::TransferID::INVALID &&
       wayland::kHDRTransferMap.contains(eotf)) {
-    auto transfer_fn = ui::wayland::kHDRTransferMap.at(eotf);
+    auto transfer_fn = ui::wayland::kHDRTransferMap.at(eotf).transfer_fn;
     zcr_color_space
         ->gathered_information[static_cast<uint8_t>(InformationType::kNames)] =
         gfx::ColorSpace(primaryID, gfx::ColorSpace::TransferID::CUSTOM_HDR,
@@ -148,17 +148,17 @@ void WaylandZcrColorSpace::OnCompleteParams(void* data,
   }
 
   auto matrixID = ui::wayland::kMatrixMap.contains(matrix)
-                      ? ui::wayland::kMatrixMap.at(matrix)
+                      ? ui::wayland::kMatrixMap.at(matrix).matrix
                       : gfx::ColorSpace::MatrixID::INVALID;
   auto rangeID = ui::wayland::kRangeMap.contains(range)
-                     ? ui::wayland::kRangeMap.at(range)
+                     ? ui::wayland::kRangeMap.at(range).range
                      : gfx::ColorSpace::RangeID::INVALID;
   auto transferID = ui::wayland::kEotfMap.contains(eotf)
-                        ? ui::wayland::kEotfMap.at(eotf)
+                        ? ui::wayland::kEotfMap.at(eotf).transfer
                         : gfx::ColorSpace::TransferID::INVALID;
   if (transferID == gfx::ColorSpace::TransferID::INVALID &&
       ui::wayland::kHDRTransferMap.contains(eotf)) {
-    auto transfer_fn = ui::wayland::kHDRTransferMap.at(eotf);
+    auto transfer_fn = ui::wayland::kHDRTransferMap.at(eotf).transfer_fn;
     zcr_color_space
         ->gathered_information[static_cast<uint8_t>(InformationType::kParams)] =
         gfx::ColorSpace(gfx::ColorSpace::PrimaryID::CUSTOM,

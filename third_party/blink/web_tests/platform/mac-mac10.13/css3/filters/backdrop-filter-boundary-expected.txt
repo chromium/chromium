@@ -1,7 +1,0 @@
-Content-Type: text/plain
-#EOF
-
-ActualHash: b60418c8cba75e1821a6f33627fea103
-
-ExpectedHash: b60418c8cba75e1821a6f33627fea103
-#EOF

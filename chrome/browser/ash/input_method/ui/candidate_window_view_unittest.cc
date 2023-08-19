@@ -113,7 +113,7 @@ class CandidateWindowViewTest : public views::ViewsTestBase {
   }
 
  private:
-  raw_ptr<CandidateWindowView, ExperimentalAsh>
+  raw_ptr<CandidateWindowView, DanglingUntriaged | ExperimentalAsh>
       candidate_window_view_;  // Owned by its Widget.
 };
 

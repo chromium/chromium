@@ -82,32 +82,6 @@ IN_PROC_BROWSER_TEST_F(HeadlessOriginTrialsBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(HeadlessOriginTrialsBrowserTest,
-                       DelegateNotAvailableOnContext) {
-  // Delete this test when |::features::kPersistentOriginTrials| is enabled by
-  // default or fully removed.
-  HeadlessBrowserContext* browser_context =
-      browser()->CreateBrowserContextBuilder().Build();
-  HeadlessBrowserContextImpl* context_impl =
-      HeadlessBrowserContextImpl::From(browser_context);
-  EXPECT_FALSE(context_impl->GetOriginTrialsControllerDelegate())
-      << "Headless browser should not have an OriginTrialsControllerDelegate "
-         "if ::features::kPersistentOriginTrials is not enabled";
-}
-
-// This class can be replaced with |HeadlessOriginTrialsBrowserTest| when
-// |::features::kPersistentOriginTrials| is enabled by default or fully removed.
-class HeadlessPersistentOriginTrialsBrowserTest : public HeadlessBrowserTest {
- public:
-  HeadlessPersistentOriginTrialsBrowserTest() {
-    test_features_.InitAndEnableFeature(::features::kPersistentOriginTrials);
-  }
-  ~HeadlessPersistentOriginTrialsBrowserTest() override = default;
-
- private:
-  base::test::ScopedFeatureList test_features_;
-};
-
-IN_PROC_BROWSER_TEST_F(HeadlessPersistentOriginTrialsBrowserTest,
                        DelegateAvailableOnContext) {
   HeadlessBrowserContext* browser_context =
       browser()->CreateBrowserContextBuilder().Build();

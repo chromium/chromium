@@ -27,7 +27,7 @@ class GPUUncapturedErrorEvent : public Event {
   void Trace(Visitor*) const override;
 
   // gpu_uncaptured_error_event.idl
-  const GPUError* error() const;
+  GPUError* error();
 
  private:
   Member<GPUError> error_;

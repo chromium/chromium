@@ -22,7 +22,6 @@ import android.widget.TextView;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordUserAction;
@@ -137,17 +136,14 @@ public class SearchEngineAdapter extends BaseAdapter
         TemplateUrlServiceFactory.getForProfile(mProfile).removeObserver(this);
     }
 
-    @VisibleForTesting
     String getValueForTesting() {
         return Integer.toString(mSelectedSearchEnginePosition);
     }
 
-    @VisibleForTesting
     String setValueForTesting(String value) {
         return searchEngineSelected(Integer.parseInt(value));
     }
 
-    @VisibleForTesting
     String getKeywordForTesting(int index) {
         return toKeyword(index);
     }

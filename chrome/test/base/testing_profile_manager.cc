@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_file_util.h"
@@ -27,6 +28,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "components/sync_preferences/pref_service_syncable.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -91,7 +93,8 @@ TestingProfile* TestingProfileManager::CreateTestingProfile(
     bool is_supervised_profile,
     absl::optional<bool> is_new_profile,
     absl::optional<std::unique_ptr<policy::PolicyService>> policy_service,
-    bool is_main_profile) {
+    bool is_main_profile,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory) {
   DCHECK(called_set_up_);
 
   // Create a path for the profile based on the name.
@@ -133,6 +136,8 @@ TestingProfile* TestingProfileManager::CreateTestingProfile(
     builder.AddTestingFactory(pair.first, std::move(pair.second));
   testing_factories.clear();
 
+  builder.SetSharedURLLoaderFactory(shared_url_loader_factory);
+
   std::unique_ptr<TestingProfile> profile = builder.Build();
   TestingProfile* profile_ptr = profile.get();
   profile_manager_->AddProfile(std::move(profile));
@@ -158,21 +163,25 @@ TestingProfile* TestingProfileManager::CreateTestingProfile(
 
 TestingProfile* TestingProfileManager::CreateTestingProfile(
     const std::string& name,
-    bool is_main_profile) {
+    bool is_main_profile,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory) {
   DCHECK(called_set_up_);
-  return CreateTestingProfile(name, /*testing_factories=*/{}, is_main_profile);
+  return CreateTestingProfile(name, /*testing_factories=*/{}, is_main_profile,
+                              shared_url_loader_factory);
 }
 
 TestingProfile* TestingProfileManager::CreateTestingProfile(
     const std::string& name,
     TestingProfile::TestingFactories testing_factories,
-    bool is_main_profile) {
+    bool is_main_profile,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory) {
   DCHECK(called_set_up_);
   return CreateTestingProfile(
       name, std::unique_ptr<sync_preferences::PrefServiceSyncable>(),
-      base::UTF8ToUTF16(name), 0, std::move(testing_factories),
+      base::UTF8ToUTF16(name), /*avatar_id=*/0, std::move(testing_factories),
       /*is_supervised_profile=*/false, /*is_new_profile=*/absl::nullopt,
-      /*policy_service=*/absl::nullopt, is_main_profile);
+      /*policy_service=*/absl::nullopt, is_main_profile,
+      shared_url_loader_factory);
 }
 
 TestingProfile* TestingProfileManager::CreateGuestProfile() {

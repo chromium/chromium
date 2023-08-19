@@ -9,7 +9,6 @@ import android.graphics.Canvas;
 import android.os.Build;
 import android.view.LayoutInflater;
 
-import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.chrome.R;
@@ -122,7 +121,6 @@ public class IncognitoNewTabPage
     /**
      * @return Whether the NTP has finished loaded.
      */
-    @VisibleForTesting
     public boolean isLoadedForTests() {
         return mIsLoaded;
     }

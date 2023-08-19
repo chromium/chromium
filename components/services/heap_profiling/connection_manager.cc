@@ -4,7 +4,10 @@
 
 #include "components/services/heap_profiling/connection_manager.h"
 
+#include <utility>
+
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/json/string_escape.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/services/heap_profiling/json_exporter.h"
@@ -83,7 +86,8 @@ void ConnectionManager::OnNewConnection(
     base::ProcessId pid,
     mojo::PendingRemote<mojom::ProfilingClient> client,
     mojom::ProcessType process_type,
-    mojom::ProfilingParamsPtr params) {
+    mojom::ProfilingParamsPtr params,
+    base::OnceClosure started_profiling_closure) {
   base::AutoLock lock(connections_lock_);
 
   // Attempting to start profiling on an already profiled processs should have
@@ -109,7 +113,8 @@ void ConnectionManager::OnNewConnection(
       params->sampling_rate, params->stack_mode);
   connection->client->StartProfiling(
       std::move(params), base::BindOnce(&ConnectionManager::OnProfilingStarted,
-                                        weak_factory_.GetWeakPtr(), pid));
+                                        weak_factory_.GetWeakPtr(), pid)
+                             .Then(std::move(started_profiling_closure)));
   connections_[pid] = std::move(connection);
 }
 

@@ -10,15 +10,15 @@
 #include <utility>
 
 #include "base/apple/bundle_locations.h"
+#include "base/apple/foundation_util.h"
+#include "base/apple/mach_logging.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/hash/md5.h"
-#include "base/mac/foundation_util.h"
 #include "base/mac/launch_application.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/mach_logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -35,6 +35,7 @@
 #include "chrome/common/mac/app_mode_common.h"
 #include "chrome/common/process_singleton_lock_posix.h"
 #include "chrome/grit/generated_resources.h"
+#import "chrome/services/mac_notifications/mac_notification_service_ns.h"
 #include "components/remote_cocoa/app_shim/application_bridge.h"
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #include "components/remote_cocoa/common/application.mojom.h"
@@ -46,10 +47,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/image/image.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 // The ProfileMenuTarget bridges between Objective C (as the target for the
 // profile menu NSMenuItems) and C++ (the mojo methods called by
@@ -317,7 +314,7 @@ void AppShimController::PollForChromeReady(
   {
     mojo::PlatformChannelEndpoint endpoint;
     NSString* browser_bundle_id =
-        base::mac::ObjCCast<NSString>([NSBundle.mainBundle
+        base::apple::ObjCCast<NSString>([NSBundle.mainBundle
             objectForInfoDictionaryKey:app_mode::kBrowserBundleIDKey]);
     CHECK(browser_bundle_id);
     const std::string server_name = base::StringPrintf(
@@ -575,6 +572,30 @@ void AppShimController::UpdateApplicationDockMenu(
   dock_menu_items_ = std::move(dock_menu_items);
 }
 
+void AppShimController::BindNotificationProvider(
+    mojo::PendingReceiver<mac_notifications::mojom::MacNotificationProvider>
+        provider) {
+  if (notifications_receiver_.is_bound()) {
+    notifications_receiver_.reset();
+    notification_service_.reset();
+  }
+  notifications_receiver_.Bind(std::move(provider));
+}
+
+void AppShimController::BindNotificationService(
+    mojo::PendingReceiver<mac_notifications::mojom::MacNotificationService>
+        service,
+    mojo::PendingRemote<mac_notifications::mojom::MacNotificationActionHandler>
+        handler) {
+  DCHECK(!notification_service_);
+  // TODO(mek): When app shims switch to being ad-hoc signed, switch this to use
+  // the UNUserNotification API rather than the NSUserNotification API.
+  notification_service_ =
+      std::make_unique<mac_notifications::MacNotificationServiceNS>(
+          std::move(service), std::move(handler),
+          [NSUserNotificationCenter defaultUserNotificationCenter]);
+}
+
 void AppShimController::SetUserAttention(
     chrome::mojom::AppShimAttentionType attention_type) {
   switch (attention_type) {
@@ -619,6 +640,17 @@ void AppShimController::CommandFromDock(uint32_t index) {
 
   [NSApp activateIgnoringOtherApps:YES];
   host_->OpenAppWithOverrideUrl(dock_menu_items_[index]->url);
+}
+
+void AppShimController::CommandDispatch(int command_id) {
+  switch (command_id) {
+    case IDC_WEB_APP_SETTINGS:
+      host_->OpenAppSettings();
+      break;
+    case IDC_NEW_WINDOW:
+      host_->ReopenApp();
+      break;
+  }
 }
 
 NSMenu* AppShimController::GetApplicationDockMenu() {

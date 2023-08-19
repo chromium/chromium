@@ -21,8 +21,7 @@ GPURenderBundleEncoder* GPURenderBundleEncoder::Create(
     GPUDevice* device,
     const GPURenderBundleEncoderDescriptor* webgpu_desc,
     ExceptionState& exception_state) {
-  uint32_t color_formats_count =
-      static_cast<uint32_t>(webgpu_desc->colorFormats().size());
+  size_t color_formats_count = webgpu_desc->colorFormats().size();
 
   for (const auto& color_format : webgpu_desc->colorFormats()) {
     if (color_format.has_value() &&
@@ -48,7 +47,11 @@ GPURenderBundleEncoder* GPURenderBundleEncoder::Create(
   std::string label;
   WGPURenderBundleEncoderDescriptor dawn_desc = {};
   dawn_desc.nextInChain = nullptr;
+#ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
+  dawn_desc.colorFormatCount = color_formats_count;
+#else
   dawn_desc.colorFormatsCount = color_formats_count;
+#endif
   dawn_desc.colorFormats = color_formats.get();
   dawn_desc.depthStencilFormat = depth_stencil_format;
   dawn_desc.sampleCount = webgpu_desc->sampleCount();
@@ -77,9 +80,9 @@ void GPURenderBundleEncoder::setBindGroup(
     uint32_t index,
     GPUBindGroup* bindGroup,
     const Vector<uint32_t>& dynamicOffsets) {
+  WGPUBindGroupImpl* bgImpl = bindGroup ? bindGroup->GetHandle() : nullptr;
   GetProcs().renderBundleEncoderSetBindGroup(
-      GetHandle(), index, bindGroup->GetHandle(), dynamicOffsets.size(),
-      dynamicOffsets.data());
+      GetHandle(), index, bgImpl, dynamicOffsets.size(), dynamicOffsets.data());
 }
 
 void GPURenderBundleEncoder::setBindGroup(
@@ -98,8 +101,8 @@ void GPURenderBundleEncoder::setBindGroup(
   const uint32_t* data =
       dynamic_offsets_data.DataMaybeOnStack() + dynamic_offsets_data_start;
 
-  GetProcs().renderBundleEncoderSetBindGroup(GetHandle(), index,
-                                             bind_group->GetHandle(),
+  WGPUBindGroupImpl* bgImpl = bind_group ? bind_group->GetHandle() : nullptr;
+  GetProcs().renderBundleEncoderSetBindGroup(GetHandle(), index, bgImpl,
                                              dynamic_offsets_data_length, data);
 }
 

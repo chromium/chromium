@@ -24,10 +24,6 @@
 #import "net/base/mac/url_conversions.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 BROWSER_USER_DATA_KEY_IMPL(AppLauncherBrowserAgent)
 
 using app_launcher_overlays::AppLaunchConfirmationRequest;
@@ -66,12 +62,11 @@ void LaunchExternalApp(const GURL url,
     std::move(completion).Run();
     return;
   }
-  __block base::OnceClosure block_completion = std::move(completion);
-  [[UIApplication sharedApplication] openURL:net::NSURLWithGURL(url)
-      options:@{}
-      completionHandler:^(BOOL _success) {
-        std::move(block_completion).Run();
-      }];
+  auto callback = base::IgnoreArgs<BOOL>(std::move(completion));
+  [[UIApplication sharedApplication]
+                openURL:net::NSURLWithGURL(url)
+                options:@{}
+      completionHandler:base::CallbackToBlock(std::move(callback))];
 }
 
 }  // namespace
@@ -111,10 +106,7 @@ void AppLauncherBrowserAgent::TabHelperDelegate::LaunchAppForTabHelper(
   // Uses a Mailto Handler to open the appropriate app.
   if (url.SchemeIs(url::kMailToScheme)) {
     MailtoHandlerServiceFactory::GetForBrowserState(browser_->GetBrowserState())
-        ->HandleMailtoURL(net::NSURLWithGURL(url));
-    // TODO(crbug.com/1443722): Call the completion asynchronously through
-    // `HandleMailtoURL()`.
-    std::move(completion).Run();
+        ->HandleMailtoURL(net::NSURLWithGURL(url), std::move(completion));
     return;
   }
 

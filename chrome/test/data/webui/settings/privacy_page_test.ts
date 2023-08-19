@@ -6,7 +6,7 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ClearBrowsingDataBrowserProxyImpl, ContentSettingsTypes, CookieControlsMode, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {ClearBrowsingDataBrowserProxyImpl, ContentSetting, ContentSettingsTypes, CookieControlsMode, SafetyHubBrowserProxyImpl, SafetyHubEvent, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {CrLinkRowElement, CrSettingsPrefs, HatsBrowserProxyImpl, MetricsBrowserProxyImpl, PrivacyGuideInteractions, PrivacyPageBrowserProxyImpl, Route, Router, routes, SettingsPrefsElement, SettingsPrivacyPageElement, StatusAction, SyncStatus, TrustSafetyInteraction} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue, assertThrows} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
@@ -16,6 +16,7 @@ import {TestClearBrowsingDataBrowserProxy} from './test_clear_browsing_data_brow
 import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestPrivacyPageBrowserProxy} from './test_privacy_page_browser_proxy.js';
+import {TestSafetyHubBrowserProxy} from './test_safety_hub_browser_proxy.js';
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
 
 // clang-format on
@@ -65,7 +66,6 @@ suite('PrivacyPage', function() {
   let page: SettingsPrivacyPageElement;
   let settingsPrefs: SettingsPrefsElement;
   let testClearBrowsingDataBrowserProxy: TestClearBrowsingDataBrowserProxy;
-  let siteSettingsBrowserProxy: TestSiteSettingsPrefsBrowserProxy;
   let metricsBrowserProxy: TestMetricsBrowserProxy;
 
   suiteSetup(function() {
@@ -83,8 +83,6 @@ suite('PrivacyPage', function() {
         testClearBrowsingDataBrowserProxy);
     const testBrowserProxy = new TestPrivacyPageBrowserProxy();
     PrivacyPageBrowserProxyImpl.setInstance(testBrowserProxy);
-    siteSettingsBrowserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
 
@@ -224,6 +222,23 @@ suite('PrivacyPage', function() {
     assertEquals(
         settingsSubpage.learnMoreUrl,
         'https://support.google.com/chrome?p=webusb&hl=en-US');
+  });
+
+  test('StorageAccessPage', async function() {
+    Router.getInstance().navigateTo(routes.SITE_SETTINGS_STORAGE_ACCESS);
+    await flushTasks();
+
+    const categorySettingExceptions =
+        page.shadowRoot!.querySelectorAll('storage-access-site-list')!;
+
+    assertEquals(2, categorySettingExceptions.length);
+    assertTrue(isVisible(categorySettingExceptions[0]!));
+    assertEquals(
+        ContentSetting.BLOCK, categorySettingExceptions[0]!.categorySubtype);
+
+    assertTrue(isVisible(categorySettingExceptions[1]!));
+    assertEquals(
+        ContentSetting.ALLOW, categorySettingExceptions[1]!.categorySubtype);
   });
 });
 
@@ -555,7 +570,7 @@ suite(`PrivacySandbox4EnabledButRestrictedWithNotice`, function() {
   });
 });
 
-suite('PrivacyGuideRowTests', function() {
+suite('PrivacyGuideRow', function() {
   let page: SettingsPrivacyPageElement;
   let settingsPrefs: SettingsPrefsElement;
   let metricsBrowserProxy: TestMetricsBrowserProxy;
@@ -799,7 +814,7 @@ suite('HappinessTrackingSurveys', function() {
 
 suite('NotificationPermissionReview', function() {
   let page: SettingsPrivacyPageElement;
-  let siteSettingsBrowserProxy: TestSiteSettingsPrefsBrowserProxy;
+  let siteSettingsBrowserProxy: TestSafetyHubBrowserProxy;
 
   const oneElementMockData = [{
     origin: 'www.example.com',
@@ -808,8 +823,8 @@ suite('NotificationPermissionReview', function() {
 
   setup(function() {
     Router.getInstance().navigateTo(routes.SITE_SETTINGS_NOTIFICATIONS);
-    siteSettingsBrowserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
+    siteSettingsBrowserProxy = new TestSafetyHubBrowserProxy();
+    SafetyHubBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
@@ -857,25 +872,25 @@ suite('NotificationPermissionReview', function() {
     // The element becomes visible if the list of permissions is no longer
     // empty.
     webUIListenerCallback(
-        'notification-permission-review-list-maybe-changed',
+        SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED,
         oneElementMockData);
     await flushTasks();
     assertTrue(isChildVisible(page, 'review-notification-permissions'));
 
     // Once visible, it remains visible regardless of list length.
     webUIListenerCallback(
-        'notification-permission-review-list-maybe-changed', []);
+        SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED, []);
     await flushTasks();
     assertTrue(isChildVisible(page, 'review-notification-permissions'));
     webUIListenerCallback(
-        'notification-permission-review-list-maybe-changed',
+        SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED,
         oneElementMockData);
     await flushTasks();
     assertTrue(isChildVisible(page, 'review-notification-permissions'));
   });
 });
 
-suite('enableWebBluetoothNewPermissionsBackend', function() {
+suite('EnableWebBluetoothNewPermissionsBackend', function() {
   let page: SettingsPrivacyPageElement;
   let settingsPrefs: SettingsPrefsElement;
   let testClearBrowsingDataBrowserProxy: TestClearBrowsingDataBrowserProxy;

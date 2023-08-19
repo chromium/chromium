@@ -66,7 +66,7 @@ class WebFormControlElementTest
 
   WebFormControlElement TestElement() {
     HTMLFormControlElement* control_element = DynamicTo<HTMLFormControlElement>(
-        GetDocument().getElementById("testElement"));
+        GetDocument().getElementById(AtomicString("testElement")));
     DCHECK(control_element);
     return WebFormControlElement(control_element);
   }
@@ -74,6 +74,47 @@ class WebFormControlElementTest
  private:
   base::test::ScopedFeatureList feature_list_;
 };
+
+// Tests that resetting a form clears the `user_has_edited_the_field_` state.
+TEST_F(WebFormControlElementTest, ResetDocumentClearsEditedState) {
+  GetDocument().documentElement()->setInnerHTML(R"(
+    <body>
+      <form id="f">
+        <input id="text_id">
+        <select id="select_id">
+          <option value="Bar">Bar</option>
+          <option value="Foo">Foo</option>
+        </select>
+        <selectlist id="selectlist_id">
+          <option value="Bar">Bar</option>
+          <option value="Foo">Foo</option>
+        </selectlist>
+        <input id="reset" type="reset">
+      </form>
+    </body>
+  )");
+
+  WebFormControlElement text(
+      DynamicTo<HTMLFormControlElement>(GetElementById("text_id")));
+  WebFormControlElement select(
+      DynamicTo<HTMLFormControlElement>(GetElementById("select_id")));
+  WebFormControlElement selectlist(
+      DynamicTo<HTMLFormControlElement>(GetElementById("selectlist_id")));
+
+  text.SetUserHasEditedTheField(true);
+  select.SetUserHasEditedTheField(true);
+  selectlist.SetUserHasEditedTheField(true);
+
+  EXPECT_TRUE(text.UserHasEditedTheField());
+  EXPECT_TRUE(select.UserHasEditedTheField());
+  EXPECT_TRUE(selectlist.UserHasEditedTheField());
+
+  To<HTMLFormControlElement>(GetElementById("reset"))->click();
+
+  EXPECT_FALSE(text.UserHasEditedTheField());
+  EXPECT_FALSE(select.UserHasEditedTheField());
+  EXPECT_FALSE(selectlist.UserHasEditedTheField());
+}
 
 TEST_P(WebFormControlElementTest, SetAutofillValue) {
   InsertHTML();

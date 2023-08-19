@@ -34,8 +34,6 @@ public class ChromeNightModeTestUtils {
      * destroyed.
      */
     public static void tearDownNightModeAfterChromeActivityDestroyed() {
-        NightModeUtils.setNightModeSupportedForTesting(null);
-        GlobalNightModeStateProviderHolder.setInstanceForTesting(null);
         SharedPreferencesManager.getInstance().removeKey(ChromePreferenceKeys.UI_THEME_SETTING);
     }
 }

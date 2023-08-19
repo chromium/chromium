@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/safe_browsing/buildflags.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -115,6 +116,7 @@ bool IsDownloadAllowedBySafeBrowsing(
     case Result::DEEP_SCANNED_SAFE:
     case Result::PROMPT_FOR_SCANNING:
     case Result::BLOCKED_UNSUPPORTED_FILE_TYPE:
+    case Result::DEEP_SCANNED_FAILED:
       NOTREACHED();
       return true;
   }
@@ -180,7 +182,7 @@ void FileSelectHelper::FileSelectedWithExtraInfo(
 
   const base::FilePath& path = file.local_path;
   if (dialog_type_ == ui::SelectFileDialog::SELECT_UPLOAD_FOLDER) {
-    PerformContentAnalysisForFolderUploadIfNeeded(path);
+    StartNewEnumeration(path);
     return;
   }
 
@@ -334,7 +336,7 @@ void FileSelectHelper::PerformContentAnalysisIfNeeded(
   if (AbortIfWebContentsDestroyed())
     return;
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   enterprise_connectors::ContentAnalysisDelegate::Data data;
   if (enterprise_connectors::ContentAnalysisDelegate::IsEnabled(
           profile_, web_contents_->GetLastCommittedURL(), &data,
@@ -359,10 +361,10 @@ void FileSelectHelper::PerformContentAnalysisIfNeeded(
   }
 #else
   NotifyListenerAndEnd(std::move(list));
-#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 }
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 void FileSelectHelper::ContentAnalysisCompletionCallback(
     std::vector<blink::mojom::FileChooserFileInfoPtr> list,
     const enterprise_connectors::ContentAnalysisDelegate::Data& data,
@@ -375,9 +377,23 @@ void FileSelectHelper::ContentAnalysisCompletionCallback(
   DCHECK_EQ(data.paths.size(), result.paths_results.size());
   DCHECK_GE(list.size(), result.paths_results.size());
 
-  // Remove any files that did not pass the deep scan. Non-native files are
-  // skipped. There is no need to update `result` since the logic here doesn't
-  // change verdicts.
+  // If the user chooses to upload a folder and the folder contains sensitive
+  // files, block the entire folder and update `result` to reflect the block
+  // verdict for all files scanned.
+  if (dialog_type_ == ui::SelectFileDialog::SELECT_UPLOAD_FOLDER) {
+    if (base::Contains(result.paths_results, false)) {
+      list.clear();
+      for (size_t index = 0; index < data.paths.size(); ++index) {
+        result.paths_results[index] = false;
+      }
+    }
+    // Early return for folder upload, regardless of list being empty or not.
+    NotifyListenerAndEnd(std::move(list));
+    return;
+  }
+
+  // For single or multiple file uploads, remove any files that did not pass the
+  // deep scan. Non-native files are skipped.
   size_t i = 0;
   for (auto it = list.begin(); it != list.end();) {
     if ((*it)->is_native_file()) {
@@ -396,77 +412,7 @@ void FileSelectHelper::ContentAnalysisCompletionCallback(
 
   NotifyListenerAndEnd(std::move(list));
 }
-#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
-
-void FileSelectHelper::PerformContentAnalysisForFolderUploadIfNeeded(
-    const base::FilePath& path) {
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-  auto files_scan_data =
-      std::make_unique<enterprise_connectors::FilesScanData>(std::vector{path});
-  auto* files_scan_data_raw = files_scan_data.get();
-  files_scan_data_raw->ExpandPaths(
-      base::BindOnce(&FileSelectHelper::ScanDataCallback, this, path,
-                     std::move(files_scan_data)));
-#else
-  StartNewEnumeration(path);
-#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
-}
-
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-
-void FileSelectHelper::ScanDataCallback(
-    const base::FilePath& path,
-    std::unique_ptr<enterprise_connectors::FilesScanData> files_scan_data) {
-  if (AbortIfWebContentsDestroyed()) {
-    return;
-  }
-
-  enterprise_connectors::ContentAnalysisDelegate::Data data;
-  if (enterprise_connectors::ContentAnalysisDelegate::IsEnabled(
-          profile_, web_contents_->GetLastCommittedURL(), &data,
-          enterprise_connectors::AnalysisConnector::FILE_ATTACHED)) {
-    for (const auto& epath : files_scan_data->expanded_paths()) {
-      data.paths.push_back(epath);
-    }
-  }
-
-  if (data.paths.empty()) {
-    StartNewEnumeration(path);
-  } else {
-    enterprise_connectors::ContentAnalysisDelegate::CreateForWebContents(
-        web_contents_, std::move(data),
-        base::BindOnce(
-            &FileSelectHelper::FolderUploadContentAnalysisCompletionCallback,
-            this, path),
-        safe_browsing::DeepScanAccessPoint::UPLOAD);
-  }
-}
-
-void FileSelectHelper::FolderUploadContentAnalysisCompletionCallback(
-    const base::FilePath& path,
-    const enterprise_connectors::ContentAnalysisDelegate::Data& data,
-    enterprise_connectors::ContentAnalysisDelegate::Result& result) {
-  if (AbortIfWebContentsDestroyed()) {
-    return;
-  }
-
-  DCHECK_EQ(data.text.size(), 0u);
-  DCHECK_EQ(result.text_results.size(), 0u);
-  DCHECK_EQ(data.paths.size(), result.paths_results.size());
-
-  bool all_file_results_allowed = !base::Contains(result.paths_results, false);
-
-  if (all_file_results_allowed) {
-    StartNewEnumeration(path);
-  } else {
-    for (size_t i = 0; i < data.paths.size(); ++i) {
-      result.paths_results[i] = false;
-    }
-    RunFileChooserEnd();
-  }
-}
-
-#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
 void FileSelectHelper::NotifyListenerAndEnd(
     std::vector<blink::mojom::FileChooserFileInfoPtr> list) {
@@ -514,10 +460,6 @@ void FileSelectHelper::SetFileSelectListenerForTesting(
 
 void FileSelectHelper::DontAbortOnMissingWebContentsForTesting() {
   abort_on_missing_web_contents_in_tests_ = false;
-}
-
-bool FileSelectHelper::IsDirectoryEnumerationStartedForTesting() {
-  return directory_enumeration_.get() != nullptr;
 }
 
 std::unique_ptr<ui::SelectFileDialog::FileTypeInfo>

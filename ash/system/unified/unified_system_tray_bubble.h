@@ -183,8 +183,10 @@ class ASH_EXPORT UnifiedSystemTrayBubble
   absl::optional<base::TimeTicks> time_opened_;
 
   raw_ptr<TrayBubbleView, ExperimentalAsh> bubble_view_ = nullptr;
-  raw_ptr<UnifiedSystemTrayView, ExperimentalAsh> unified_view_ = nullptr;
-  raw_ptr<QuickSettingsView, ExperimentalAsh> quick_settings_view_ = nullptr;
+  raw_ptr<UnifiedSystemTrayView, DanglingUntriaged | ExperimentalAsh>
+      unified_view_ = nullptr;
+  raw_ptr<QuickSettingsView, DanglingUntriaged | ExperimentalAsh>
+      quick_settings_view_ = nullptr;
 
   base::WeakPtrFactory<UnifiedSystemTrayBubble> weak_factory_{this};
 };

@@ -41,7 +41,7 @@ class CONTENT_EXPORT BrowserIOThreadDelegate : public base::Thread::Delegate {
   }
 
   scoped_refptr<base::SingleThreadTaskRunner> GetDefaultTaskRunner() override;
-  void BindToCurrentThread(base::TimerSlack timer_slack) override;
+  void BindToCurrentThread() override;
 
   bool allow_blocking_for_testing() const {
     return allow_blocking_for_testing_;

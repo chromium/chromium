@@ -49,7 +49,7 @@ class ProfileKey : public SimpleFactoryKey {
 
  private:
   raw_ptr<PrefService> prefs_ = nullptr;
-  raw_ptr<leveldb_proto::ProtoDatabaseProvider, DanglingUntriaged>
+  raw_ptr<leveldb_proto::ProtoDatabaseProvider, AcrossTasksDanglingUntriaged>
       db_provider_ = nullptr;
 
   // Points to the original (non off-the-record) ProfileKey.

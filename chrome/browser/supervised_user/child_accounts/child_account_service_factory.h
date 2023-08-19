@@ -7,13 +7,13 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
-#include "chrome/browser/supervised_user/child_accounts/child_account_service.h"
+#include "components/supervised_user/core/browser/child_account_service.h"
 
 class Profile;
 
 class ChildAccountServiceFactory : public ProfileKeyedServiceFactory {
  public:
-  static ChildAccountService* GetForProfile(Profile* profile);
+  static supervised_user::ChildAccountService* GetForProfile(Profile* profile);
 
   static ChildAccountServiceFactory* GetInstance();
 

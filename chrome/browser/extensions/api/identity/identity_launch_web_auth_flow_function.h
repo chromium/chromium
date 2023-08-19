@@ -37,7 +37,9 @@ class IdentityLaunchWebAuthFlowFunction : public ExtensionFunction,
     kPageLoadFailure = 4,
     kUnexpectedError = 5,
     kPageLoadTimedOut = 6,
-    kMaxValue = kPageLoadTimedOut,
+    kCannotCreateWindow = 7,
+    kInvalidURLScheme = 8,
+    kMaxValue = kInvalidURLScheme,
   };
 
   IdentityLaunchWebAuthFlowFunction();
@@ -48,8 +50,10 @@ class IdentityLaunchWebAuthFlowFunction : public ExtensionFunction,
   WebAuthFlow* GetWebAuthFlowForTesting();
 
  private:
+  // ExtensionFunction:
   ~IdentityLaunchWebAuthFlowFunction() override;
   ResponseAction Run() override;
+  bool ShouldKeepWorkerAliveIndefinitely() override;
 
   // WebAuthFlow::Delegate implementation.
   void OnAuthFlowFailure(WebAuthFlow::Failure failure) override;

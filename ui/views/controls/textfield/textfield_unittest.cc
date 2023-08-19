@@ -18,6 +18,7 @@
 #include "base/pickle.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -47,6 +48,7 @@
 #include "ui/gfx/render_text.h"
 #include "ui/gfx/render_text_test_api.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/touch_selection/touch_selection_metrics.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/textfield/textfield_model.h"
@@ -584,7 +586,8 @@ void TextfieldTest::SendKeyEvent(char16_t ch, int flags, bool from_vk) {
     // keyboard. So they are dispatched directly to the input method. But on
     // Mac, key events don't pass through InputMethod. Hence they are
     // dispatched regularly.
-    ui::KeyEvent event(ch, ui::VKEY_UNKNOWN, ui::DomCode::NONE, flags);
+    ui::KeyEvent event = ui::KeyEvent::FromCharacter(ch, ui::VKEY_UNKNOWN,
+                                                     ui::DomCode::NONE, flags);
     if (from_vk) {
       ui::Event::Properties properties;
       properties[ui::kPropertyFromVK] =
@@ -3819,9 +3822,9 @@ TEST_F(TextfieldTest, TwoFingerScrollUpdate) {
   EXPECT_LT(test_api_->GetDisplayOffsetX(), 0);
 }
 
-// TODO(b/271058426): Rewrite these long press drag selection tests using
-// ui::test::EventGenerator.
-TEST_F(TextfieldTest, LongPressDragLTR_Forward) {
+// TODO(crbug.com/1465767): Rewrite these long press tests when EventGenerator
+// can generate long press gestures.
+TEST_F(TextfieldTest, LongPressSelection) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{::features::kTouchTextEditingRedesign},
@@ -3829,32 +3832,32 @@ TEST_F(TextfieldTest, LongPressDragLTR_Forward) {
 
   InitTextfield();
   textfield_->SetText(u"Hello string world");
-  gfx::Range range;
 
-  // Long press should select the word at the pressed location.
+  // Perform a long press.
+  const gfx::Point kLongPressPoint = views::View::ConvertPointToScreen(
+      textfield_, {GetCursorPositionX(2), GetCursorYForTesting()});
   ui::GestureEvent long_press = CreateTestGestureEvent(
-      GetCursorPositionX(9), GetCursorYForTesting(),
+      kLongPressPoint.x(), kLongPressPoint.y(),
       ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
-  textfield_->OnGestureEvent(&long_press);
-  textfield_->GetEditableSelectionRange(&range);
-  EXPECT_EQ(range, gfx::Range(6, 12));
+  event_generator_->Dispatch(&long_press);
 
-  // Dragging right while long pressing should expand the selection forwards.
-  ui::GestureEvent scroll_begin = CreateTestGestureEvent(
-      GetCursorPositionX(9), GetCursorYForTesting(),
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_BEGIN, 1, 0));
-  textfield_->OnGestureEvent(&scroll_begin);
-  EXPECT_EQ(range, gfx::Range(6, 12));
-
-  ui::GestureEvent scroll_update = CreateTestGestureEvent(
-      GetCursorPositionX(16), GetCursorYForTesting(),
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_UPDATE));
-  textfield_->OnGestureEvent(&scroll_update);
+  // Check that the nearest word is selected, but that the touch selection
+  // controller is not activated yet.
+  gfx::Range range;
   textfield_->GetEditableSelectionRange(&range);
-  EXPECT_EQ(range, gfx::Range(6, 18));
+  EXPECT_EQ(range, gfx::Range(0, 5));
+  EXPECT_EQ(textfield_->GetSelectedText(), u"Hello");
+  EXPECT_FALSE(test_api_->touch_selection_controller());
+
+  // Check that touch selection is activated after the long press is released.
+  ui::GestureEvent long_tap =
+      CreateTestGestureEvent(kLongPressPoint.x(), kLongPressPoint.y(),
+                             ui::GestureEventDetails(ui::ET_GESTURE_LONG_TAP));
+  event_generator_->Dispatch(&long_tap);
+  EXPECT_TRUE(test_api_->touch_selection_controller());
 }
 
-TEST_F(TextfieldTest, LongPressDragLTR_Backward) {
+TEST_F(TextfieldTest, LongPressDragSelectionLTRForward) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{::features::kTouchTextEditingRedesign},
@@ -3862,35 +3865,56 @@ TEST_F(TextfieldTest, LongPressDragLTR_Backward) {
 
   InitTextfield();
   textfield_->SetText(u"Hello string world");
-  gfx::Range range;
 
-  // Long press should select the word at the pressed location.
+  // Perform a forwards long press and drag movement.
+  const gfx::Point kLongPressPoint = views::View::ConvertPointToScreen(
+      textfield_, {GetCursorPositionX(2), GetCursorYForTesting()});
+  event_generator_->PressTouch(kLongPressPoint);
   ui::GestureEvent long_press = CreateTestGestureEvent(
-      GetCursorPositionX(9), GetCursorYForTesting(),
+      kLongPressPoint.x(), kLongPressPoint.y(),
       ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
-  textfield_->OnGestureEvent(&long_press);
-  textfield_->GetEditableSelectionRange(&range);
-  EXPECT_EQ(range, gfx::Range(6, 12));
+  event_generator_->Dispatch(&long_press);
+  event_generator_->MoveTouchBy(25, 0);
+  event_generator_->ReleaseTouch();
 
-  // Dragging left while long pressing should expand the selection backwards.
-  ui::GestureEvent scroll_begin = CreateTestGestureEvent(
-      GetCursorPositionX(9), GetCursorYForTesting(),
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_BEGIN, -1, 0));
-  textfield_->OnGestureEvent(&scroll_begin);
+  // Check that text is selected between the word boundaries around the start
+  // and end of the drag movement.
+  gfx::Range range;
   textfield_->GetEditableSelectionRange(&range);
-  // Selection range is reversed since the left endpoint should move while the
-  // right endpoint should stay fixed.
-  EXPECT_EQ(range, gfx::Range(12, 6));
+  EXPECT_EQ(range, gfx::Range(0, 12));
+  EXPECT_EQ(textfield_->GetSelectedText(), u"Hello string");
+}
 
-  ui::GestureEvent scroll_update = CreateTestGestureEvent(
-      GetCursorPositionX(3), GetCursorYForTesting(),
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_UPDATE));
-  textfield_->OnGestureEvent(&scroll_update);
+TEST_F(TextfieldTest, LongPressDragSelectionLTRBackward) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{::features::kTouchTextEditingRedesign},
+      /*disabled_features=*/{});
+
+  InitTextfield();
+  textfield_->SetText(u"Hello string world");
+
+  // Perform a backwards long press and drag movement.
+  const gfx::Point kLongPressPoint = views::View::ConvertPointToScreen(
+      textfield_, {GetCursorPositionX(9), GetCursorYForTesting()});
+  event_generator_->PressTouch(kLongPressPoint);
+  ui::GestureEvent long_press = CreateTestGestureEvent(
+      kLongPressPoint.x(), kLongPressPoint.y(),
+      ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
+  event_generator_->Dispatch(&long_press);
+  event_generator_->MoveTouchBy(-25, 0);
+  event_generator_->ReleaseTouch();
+
+  // Check that text is selected between the word boundaries around the start
+  // and end of the drag movement. The selection range is reversed since the
+  // left endpoint moved while the right endpoint was fixed.
+  gfx::Range range;
   textfield_->GetEditableSelectionRange(&range);
   EXPECT_EQ(range, gfx::Range(12, 0));
+  EXPECT_EQ(textfield_->GetSelectedText(), u"Hello string");
 }
 
-TEST_F(TextfieldTest, LongPressDragRTL_Forward) {
+TEST_F(TextfieldTest, LongPressDragSelectionRTLForward) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{::features::kTouchTextEditingRedesign},
@@ -3898,32 +3922,27 @@ TEST_F(TextfieldTest, LongPressDragRTL_Forward) {
 
   InitTextfield();
   textfield_->SetText(u"مرحبا بالعالم مرحبا");
-  gfx::Range range;
 
-  // Long press should select the word at the pressed location.
+  // Perform a forwards long press and drag movement.
+  const gfx::Point kLongPressPoint = views::View::ConvertPointToScreen(
+      textfield_, {GetCursorPositionX(9), GetCursorYForTesting()});
+  event_generator_->PressTouch(kLongPressPoint);
   ui::GestureEvent long_press = CreateTestGestureEvent(
-      GetCursorPositionX(9), GetCursorYForTesting(),
+      kLongPressPoint.x(), kLongPressPoint.y(),
       ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
-  textfield_->OnGestureEvent(&long_press);
-  textfield_->GetEditableSelectionRange(&range);
-  EXPECT_EQ(range, gfx::Range(6, 13));
+  event_generator_->Dispatch(&long_press);
+  event_generator_->MoveTouchBy(-25, 0);
+  event_generator_->ReleaseTouch();
 
-  // Dragging left while long pressing should expand the selection forwards.
-  ui::GestureEvent scroll_begin = CreateTestGestureEvent(
-      GetCursorPositionX(9), GetCursorYForTesting(),
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_BEGIN, -1, 0));
-  textfield_->OnGestureEvent(&scroll_begin);
-  EXPECT_EQ(range, gfx::Range(6, 13));
-
-  ui::GestureEvent scroll_update = CreateTestGestureEvent(
-      GetCursorPositionX(18), GetCursorYForTesting(),
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_UPDATE));
-  textfield_->OnGestureEvent(&scroll_update);
+  // Check that text is selected between the word boundaries around the start
+  // and end of the drag movement.
+  gfx::Range range;
   textfield_->GetEditableSelectionRange(&range);
   EXPECT_EQ(range, gfx::Range(6, 19));
+  EXPECT_EQ(textfield_->GetSelectedText(), u"بالعالم مرحبا");
 }
 
-TEST_F(TextfieldTest, LongPressDragRTL_Backward) {
+TEST_F(TextfieldTest, LongPressDragSelectionRTLBackward) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{::features::kTouchTextEditingRedesign},
@@ -3931,32 +3950,25 @@ TEST_F(TextfieldTest, LongPressDragRTL_Backward) {
 
   InitTextfield();
   textfield_->SetText(u"مرحبا بالعالم مرحبا");
-  gfx::Range range;
 
-  // Long press should select the word at the pressed location.
+  // Perform a backwards long press and drag movement.
+  const gfx::Point kLongPressPoint = views::View::ConvertPointToScreen(
+      textfield_, {GetCursorPositionX(9), GetCursorYForTesting()});
+  event_generator_->PressTouch(kLongPressPoint);
   ui::GestureEvent long_press = CreateTestGestureEvent(
-      GetCursorPositionX(9), GetCursorYForTesting(),
+      kLongPressPoint.x(), kLongPressPoint.y(),
       ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
-  textfield_->OnGestureEvent(&long_press);
-  textfield_->GetEditableSelectionRange(&range);
-  EXPECT_EQ(range, gfx::Range(6, 13));
+  event_generator_->Dispatch(&long_press);
+  event_generator_->MoveTouchBy(25, 0);
+  event_generator_->ReleaseTouch();
 
-  // Dragging right while long pressing should expand the selection backwards.
-  ui::GestureEvent scroll_begin = CreateTestGestureEvent(
-      GetCursorPositionX(9), GetCursorYForTesting(),
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_BEGIN, 1, 0));
-  textfield_->OnGestureEvent(&scroll_begin);
-  textfield_->GetEditableSelectionRange(&range);
-  // Selection range is reversed since the right endpoint should move while the
-  // left endpoint should stay fixed.
-  EXPECT_EQ(range, gfx::Range(13, 6));
-
-  ui::GestureEvent scroll_update = CreateTestGestureEvent(
-      GetCursorPositionX(3), GetCursorYForTesting(),
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_UPDATE));
-  textfield_->OnGestureEvent(&scroll_update);
+  // Check that text is selected between the word boundaries around the start
+  // and end of the drag movement. The selection range is reversed since the
+  // right endpoint moved while the left endpoint was fixed.
+  gfx::Range range;
   textfield_->GetEditableSelectionRange(&range);
   EXPECT_EQ(range, gfx::Range(13, 0));
+  EXPECT_EQ(textfield_->GetSelectedText(), u"مرحبا بالعالم");
 }
 
 TEST_F(TextfieldTest, DoubleTapSelection) {
@@ -4024,7 +4036,57 @@ TEST_F(TextfieldTest, DoublePressDragSelection) {
   EXPECT_EQ(range, gfx::Range(0, 12));
   EXPECT_EQ(textfield_->GetSelectedText(), u"Hello string");
 }
-#endif
+
+TEST_F(TextfieldTest, TouchSelectionDraggingMetrics) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{::features::kTouchTextEditingRedesign},
+      /*disabled_features=*/{});
+
+  InitTextfield();
+  textfield_->SetText(u"Text in a textfield");
+  const gfx::Point kDragStart = views::View::ConvertPointToScreen(
+      textfield_, {GetCursorPositionX(2), GetCursorYForTesting()});
+  const gfx::Point kDragEnd = views::View::ConvertPointToScreen(
+      textfield_, {GetCursorPositionX(10), GetCursorYForTesting()});
+
+  // Double press drag selection.
+  event_generator_->GestureTapAt(kDragStart);
+  event_generator_->GestureScrollSequence(kDragStart, kDragEnd,
+                                          /*duration=*/base::Milliseconds(50),
+                                          /*steps=*/5);
+  histogram_tester.ExpectBucketCount(
+      ui::kTouchSelectionDragTypeHistogramName,
+      ui::TouchSelectionDragType::kDoublePressDrag, 1);
+  histogram_tester.ExpectTotalCount(ui::kTouchSelectionDragTypeHistogramName,
+                                    1);
+
+  // Swipe to move cursor.
+  event_generator_->GestureScrollSequence(kDragStart, kDragEnd,
+                                          /*duration=*/base::Milliseconds(50),
+                                          /*steps=*/5);
+  histogram_tester.ExpectBucketCount(ui::kTouchSelectionDragTypeHistogramName,
+                                     ui::TouchSelectionDragType::kCursorDrag,
+                                     1);
+  histogram_tester.ExpectTotalCount(ui::kTouchSelectionDragTypeHistogramName,
+                                    2);
+
+  // Long press drag selection.
+  event_generator_->PressTouch(kDragStart);
+  ui::GestureEvent long_press = CreateTestGestureEvent(
+      kDragStart.x(), kDragStart.y(),
+      ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
+  event_generator_->Dispatch(&long_press);
+  event_generator_->MoveTouchBy(25, 0);
+  event_generator_->ReleaseTouch();
+  histogram_tester.ExpectBucketCount(ui::kTouchSelectionDragTypeHistogramName,
+                                     ui::TouchSelectionDragType::kLongPressDrag,
+                                     1);
+  histogram_tester.ExpectTotalCount(ui::kTouchSelectionDragTypeHistogramName,
+                                    3);
+}
+#endif  // !BUILDFLAG(IS_MAC)
 
 TEST_F(TextfieldTest, GetTextfieldBaseline_FontFallbackTest) {
   InitTextfield();
@@ -4148,61 +4210,36 @@ TEST_F(TextfieldTest, VirtualKeyboardFocusEnsureCaretNotInRect) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// Touch selection and dragging currently only works for chromeos.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-TEST_F(TextfieldTest, TouchSelectionAndDraggingTest) {
+// No touch on desktop Mac. Tracked in http://crbug.com/445520.
+#if !BUILDFLAG(IS_MAC)
+TEST_F(TextfieldTest, TapActivatesTouchSelection) {
   InitTextfield();
   textfield_->SetText(u"hello world");
   EXPECT_FALSE(test_api_->touch_selection_controller());
-  const int x = GetCursorPositionX(2);
 
-  // Tapping on the textfield should turn on the TouchSelectionController.
-  ui::GestureEventDetails tap_details(ui::ET_GESTURE_TAP);
-  tap_details.set_tap_count(1);
-  ui::GestureEvent tap = CreateTestGestureEvent(x, 0, tap_details);
-  textfield_->OnGestureEvent(&tap);
+  // Tapping in the textfield should activate touch selection.
+  const gfx::Point kPointInTextfield = views::View::ConvertPointToScreen(
+      textfield_, {GetCursorPositionX(2), GetCursorYForTesting()});
+  event_generator_->GestureTapAt(kPointInTextfield);
+  EXPECT_TRUE(test_api_->touch_selection_controller());
+}
+
+TEST_F(TextfieldTest, ClearingFocusDeactivatesTouchSelection) {
+  InitTextfield();
+  textfield_->SetText(u"hello world");
+  EXPECT_FALSE(test_api_->touch_selection_controller());
+
+  // Tap textfield to activate touch selection.
+  const gfx::Point kPointInTextfield = views::View::ConvertPointToScreen(
+      textfield_, {GetCursorPositionX(2), GetCursorYForTesting()});
+  event_generator_->GestureTapAt(kPointInTextfield);
   EXPECT_TRUE(test_api_->touch_selection_controller());
 
-  // Un-focusing the textfield should reset the TouchSelectionController
+  // Clearing focus should deactivate touch selection.
   textfield_->GetFocusManager()->ClearFocus();
   EXPECT_FALSE(test_api_->touch_selection_controller());
-  textfield_->RequestFocus();
-
-  // With touch editing enabled, long press should not show context menu.
-  // Instead, select word and invoke TouchSelectionController.
-  ui::GestureEvent long_press_1 = CreateTestGestureEvent(
-      x, 0, ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
-  textfield_->OnGestureEvent(&long_press_1);
-  EXPECT_EQ(u"hello", textfield_->GetSelectedText());
-  EXPECT_TRUE(test_api_->touch_selection_controller());
-  EXPECT_TRUE(long_press_1.handled());
-
-  // With touch drag drop enabled, long pressing in the selected region should
-  // start a drag and remove TouchSelectionController.
-  ASSERT_TRUE(switches::IsTouchDragDropEnabled());
-  ui::GestureEvent long_press_2 = CreateTestGestureEvent(
-      x, 0, ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
-  textfield_->OnGestureEvent(&long_press_2);
-  EXPECT_EQ(u"hello", textfield_->GetSelectedText());
-  EXPECT_FALSE(test_api_->touch_selection_controller());
-  EXPECT_FALSE(long_press_2.handled());
-
-  // After disabling touch drag drop, long pressing again in the selection
-  // region should not do anything.
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableTouchDragDrop);
-  ASSERT_FALSE(switches::IsTouchDragDropEnabled());
-  ui::GestureEvent long_press_3 = CreateTestGestureEvent(
-      x, 0, ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
-  textfield_->OnGestureEvent(&long_press_3);
-  EXPECT_EQ(u"hello", textfield_->GetSelectedText());
-  EXPECT_FALSE(test_api_->touch_selection_controller());
-  EXPECT_FALSE(long_press_3.handled());
 }
-#endif
 
-// No touch on desktop Mac. Tracked in http://crbug.com/445520.
-#if !BUILDFLAG(IS_MAC)
 TEST_F(TextfieldTest, TapOnSelection) {
   InitTextfield();
   textfield_->SetText(u"hello world");
@@ -4237,6 +4274,35 @@ TEST_F(TextfieldTest, TapOnSelection) {
   textfield_->GetEditableSelectionRange(&range);
   EXPECT_TRUE(test_api_->touch_selection_controller());
   EXPECT_EQ(range, kTapRange);
+}
+
+// When touch drag drop is enabled, long pressing on selected text initiates
+// drag-drop behaviour. So, long pressing on selected text should preserve the
+// selection rather than selecting the nearest word and activating touch
+// selection.
+TEST_F(TextfieldTest, LongPressOnSelection) {
+  InitTextfield();
+  textfield_->SetText(u"Hello string world");
+  constexpr gfx::Range kSelectionRange(2, 7);
+  textfield_->SetEditableSelectionRange(kSelectionRange);
+  EXPECT_EQ(textfield_->GetSelectedText(), u"llo s");
+
+  // Long press on the selected text.
+  const gfx::Point kLongPressPoint = views::View::ConvertPointToScreen(
+      textfield_, {GetCursorPositionX(3), GetCursorYForTesting()});
+  event_generator_->PressTouch(kLongPressPoint);
+  ui::GestureEvent long_press = CreateTestGestureEvent(
+      kLongPressPoint.x(), kLongPressPoint.y(),
+      ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
+  event_generator_->Dispatch(&long_press);
+
+  // Check that the selection has not changed and that touch selection is not
+  // activated.
+  gfx::Range range;
+  textfield_->GetEditableSelectionRange(&range);
+  EXPECT_EQ(range, kSelectionRange);
+  EXPECT_EQ(textfield_->GetSelectedText(), u"llo s");
+  EXPECT_FALSE(test_api_->touch_selection_controller());
 }
 
 TEST_F(TextfieldTest, TouchSelectionInUnfocusableTextfield) {
@@ -4441,6 +4507,40 @@ TEST_F(TextfieldTest, MoveRangeSelectionExtentOffset) {
   textfield_->GetEditableSelectionRange(&range);
   EXPECT_EQ(range, gfx::Range(2, 13));
   EXPECT_EQ(textfield_->GetSelectedText(), u"me textfiel");
+}
+
+TEST_F(TextfieldTest, MoveRangeSelectionExtentNonEmptySelection) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{::features::kTouchTextEditingRedesign},
+      /*disabled_features=*/{});
+
+  InitTextfield();
+  textfield_->SetText(u"some textfield text");
+  const int cursor_y = GetCursorYForTesting();
+  textfield_->SelectBetweenCoordinates(
+      gfx::Point(GetCursorPositionX(2), cursor_y),
+      gfx::Point(GetCursorPositionX(12), cursor_y));
+
+  // Shrink the selection. Selection should not become empty.
+  textfield_->MoveRangeSelectionExtent(
+      gfx::Point(GetCursorPositionX(3), cursor_y));
+  gfx::Range range;
+  textfield_->GetEditableSelectionRange(&range);
+  EXPECT_EQ(range, gfx::Range(2, 3));
+  EXPECT_EQ(textfield_->GetSelectedText(), u"m");
+
+  textfield_->MoveRangeSelectionExtent(
+      gfx::Point(GetCursorPositionX(2), cursor_y));
+  textfield_->GetEditableSelectionRange(&range);
+  EXPECT_EQ(range, gfx::Range(2, 3));
+  EXPECT_EQ(textfield_->GetSelectedText(), u"m");
+
+  textfield_->MoveRangeSelectionExtent(
+      gfx::Point(GetCursorPositionX(1), cursor_y));
+  textfield_->GetEditableSelectionRange(&range);
+  EXPECT_EQ(range, gfx::Range(2, 1));
+  EXPECT_EQ(textfield_->GetSelectedText(), u"o");
 }
 
 TEST_F(TextfieldTest, SelectBetweenCoordinates) {

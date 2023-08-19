@@ -236,7 +236,8 @@ class PLATFORM_EXPORT ParkableStringImpl
       std::unique_ptr<Vector<uint8_t>> compressed,
       base::TimeDelta parking_thread_time);
 
-  void PostBackgroundWritingTask() EXCLUSIVE_LOCKS_REQUIRED(metadata_->lock_);
+  void PostBackgroundWritingTask(std::unique_ptr<ReservedChunk> reserved_chunk)
+      EXCLUSIVE_LOCKS_REQUIRED(metadata_->lock_);
   static void WriteToDiskInBackground(std::unique_ptr<BackgroundTaskParams>,
                                       DiskDataAllocator* data_allocator);
   // Called on the main thread after writing is done.
@@ -261,6 +262,9 @@ class PLATFORM_EXPORT ParkableStringImpl
   bool is_parked_no_lock() const EXCLUSIVE_LOCKS_REQUIRED(metadata_->lock_);
   bool is_on_disk_no_lock() const EXCLUSIVE_LOCKS_REQUIRED(metadata_->lock_);
 
+  bool is_compression_failed_no_lock() const
+      EXCLUSIVE_LOCKS_REQUIRED(metadata_->lock_);
+
   // Metadata only used for parkable ParkableStrings.
   struct ParkableMetadata {
     ParkableMetadata(String string, std::unique_ptr<SecureDigest> digest);
@@ -274,6 +278,7 @@ class PLATFORM_EXPORT ParkableStringImpl
 
     State state_ GUARDED_BY(lock_);
     bool background_task_in_progress_{false};
+    bool compression_failed_ GUARDED_BY(lock_);
     std::unique_ptr<Vector<uint8_t>> compressed_;
     std::unique_ptr<DiskDataMetadata> on_disk_metadata_;
     const SecureDigest digest_;

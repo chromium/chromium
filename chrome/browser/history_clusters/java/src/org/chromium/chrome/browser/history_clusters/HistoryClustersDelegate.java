@@ -51,8 +51,7 @@ public interface HistoryClustersDelegate {
     ViewGroup getToggleView(ViewGroup parent);
 
     /** Returns an object that can create new tabs. */
-    @Nullable
-    default TabCreator getTabCreator(boolean isIncognito) {
+    default @Nullable TabCreator getTabCreator(boolean isIncognito) {
         return null;
     }
 
@@ -60,8 +59,7 @@ public interface HistoryClustersDelegate {
      * Returns a view containing a disclaimer about the presence of other forms of browsing
      * history.
      */
-    @Nullable
-    default ViewGroup getPrivacyDisclaimerView(ViewGroup parent) {
+    default @Nullable ViewGroup getPrivacyDisclaimerView(ViewGroup parent) {
         return null;
     }
 
@@ -82,8 +80,7 @@ public interface HistoryClustersDelegate {
     }
 
     /** Returns a view containing a link to a UI where the user can clear their browsing data. */
-    @Nullable
-    default ViewGroup getClearBrowsingDataView(ViewGroup parent) {
+    default @Nullable ViewGroup getClearBrowsingDataView(ViewGroup parent) {
         return null;
     }
 

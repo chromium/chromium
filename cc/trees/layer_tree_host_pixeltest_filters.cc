@@ -454,8 +454,7 @@ class LayerTreeHostFiltersScaledPixelTest
     FilterOperation::ShapeRects alpha_shape;
     alpha_shape.emplace_back(half_content, half_content, content_size,
                              content_size);
-    filters.Append(
-        FilterOperation::CreateAlphaThresholdFilter(alpha_shape, 1.f, 0.f));
+    filters.Append(FilterOperation::CreateAlphaThresholdFilter(alpha_shape));
     foreground->SetFilters(filters);
 
     device_scale_factor_ = device_scale_factor;
@@ -756,6 +755,10 @@ TEST_P(LayerTreeHostFiltersPixelTest, MAYBE_ImageRenderSurfaceScaled) {
 #define MAYBE_ZoomFilter ZoomFilter
 #endif  // BUILDFLAG(IS_IOS)
 TEST_P(LayerTreeHostFiltersPixelTest, MAYBE_ZoomFilter) {
+  // ZOOM_FILTER is unsupported by software_renderer (crbug.com/1451898)
+  if (use_software_renderer()) {
+    return;
+  }
   scoped_refptr<SolidColorLayer> root =
       CreateSolidColorLayer(gfx::Rect(300, 300), SK_ColorWHITE);
 
@@ -948,9 +951,16 @@ TEST_P(LayerTreeHostFiltersPixelTest, RotatedDropShadowFilter) {
     defined(ARCH_CPU_ARM64) || BUILDFLAG(IS_OZONE)
 #if defined(ARCH_CPU_ARM64) && \
     (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_APPLE))
+
   // Windows, macOS, and Fuchsia on ARM64 has some pixels difference.
   // crbug.com/1029728, crbug.com/1128443
+#if !BUILDFLAG(IS_IOS)
   float percentage_pixels_error = 0.89f;
+#else
+  // iOS on ARM64 has some more differing pixels.
+  float percentage_pixels_error = 0.96f;
+#endif
+
   float average_error_allowed_in_bad_pixels = 5.f;
   int error_allowed = 17;
 #elif BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OZONE)
@@ -1052,8 +1062,7 @@ TEST_P(LayerTreeHostFiltersPixelTest, EnlargedTextureWithAlphaThresholdFilter) {
   rect2.Inset(-5);
   FilterOperation::ShapeRects alpha_shape = {rect1, rect2};
   FilterOperations filters;
-  filters.Append(
-      FilterOperation::CreateAlphaThresholdFilter(alpha_shape, 0.f, 0.f));
+  filters.Append(FilterOperation::CreateAlphaThresholdFilter(alpha_shape));
   filter_layer->SetFilters(filters);
 
   background->AddChild(filter_layer);

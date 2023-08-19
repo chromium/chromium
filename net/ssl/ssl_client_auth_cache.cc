@@ -45,4 +45,20 @@ void SSLClientAuthCache::Clear() {
   cache_.clear();
 }
 
+base::flat_set<HostPortPair> SSLClientAuthCache::GetCachedServers() const {
+  // TODO(mattm): in c++20 maybe could avoid the intermediate vector by using:
+  // auto keys = std::views::keys(m);
+  // base::flat_set<HostPortPair>(base::sorted_unique, keys.begin(),
+  //                              keys.end());
+
+  std::vector<HostPortPair> keys;
+  keys.reserve(cache_.size());
+  for (const auto& [key, _] : cache_) {
+    keys.push_back(key);
+  }
+  // `cache_` is a std::map, so the keys are already sorted.
+  return base::flat_set<HostPortPair>(base::sorted_unique, keys.begin(),
+                                      keys.end());
+}
+
 }  // namespace net

@@ -18,6 +18,7 @@
 #include "media/base/audio_decoder.h"
 #include "media/base/audio_encoder.h"
 #include "media/base/cdm_factory.h"
+#include "media/base/media_log.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/base/video_decoder.h"
@@ -25,7 +26,6 @@
 #include "media/gpu/gpu_video_decode_accelerator_factory.h"
 #include "media/gpu/gpu_video_decode_accelerator_helpers.h"
 #include "media/gpu/ipc/service/media_gpu_channel_manager.h"
-#include "media/gpu/ipc/service/vda_video_decoder.h"
 #include "media/mojo/mojom/video_decoder.mojom.h"
 #include "media/video/video_decode_accelerator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -152,7 +152,8 @@ SupportedVideoDecoderConfigs
 GpuMojoMediaClient::GetSupportedVideoDecoderConfigs() {
   if (!supported_config_cache_) {
     supported_config_cache_ = GetSupportedVideoDecoderConfigsStatic(
-        gpu_preferences_, gpu_workarounds_, gpu_info_);
+        media_gpu_channel_manager_, gpu_preferences_, gpu_workarounds_,
+        gpu_info_);
 
     // Once per GPU process record accelerator information. Profile support is
     // often just manufactured and not tested, so just record the base codec.
@@ -194,11 +195,12 @@ GpuMojoMediaClient::GetSupportedVideoDecoderConfigs() {
 
 absl::optional<SupportedVideoDecoderConfigs>
 GpuMojoMediaClient::GetSupportedVideoDecoderConfigsStatic(
+    base::WeakPtr<MediaGpuChannelManager> manager,
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     const gpu::GPUInfo& gpu_info) {
   return GetPlatformSupportedVideoDecoderConfigs(
-      gpu_workarounds, gpu_preferences, gpu_info,
+      manager, gpu_workarounds, gpu_preferences, gpu_info,
       base::BindOnce(&GetVDAVideoDecoderConfigs, gpu_preferences,
                      gpu_workarounds));
 }
@@ -235,6 +237,9 @@ std::unique_ptr<VideoDecoder> GpuMojoMediaClient::CreateVideoDecoder(
     return nullptr;
   std::unique_ptr<MediaLog> log =
       media_log ? media_log->Clone() : std::make_unique<media::NullMediaLog>();
+  auto get_stub_cb = base::BindRepeating(
+      &GetCommandBufferStub, gpu_task_runner_, media_gpu_channel_manager_,
+      command_buffer_id->channel_token, command_buffer_id->route_id);
   VideoDecoderTraits traits(
       task_runner, gpu_task_runner_, std::move(log),
       std::move(request_overlay_info_cb), &target_color_space, gpu_preferences_,
@@ -244,10 +249,7 @@ std::unique_ptr<VideoDecoder> GpuMojoMediaClient::CreateVideoDecoder(
       // so this bound method will not outlive |this|
       base::BindRepeating(&GpuMojoMediaClient::GetSupportedVideoDecoderConfigs,
                           base::Unretained(this)),
-      base::BindRepeating(
-          &GetCommandBufferStub, gpu_task_runner_, media_gpu_channel_manager_,
-          command_buffer_id->channel_token, command_buffer_id->route_id),
-      android_overlay_factory_cb_, std::move(oop_video_decoder));
+      get_stub_cb, android_overlay_factory_cb_, std::move(oop_video_decoder));
 
   return CreatePlatformVideoDecoder(traits);
 }

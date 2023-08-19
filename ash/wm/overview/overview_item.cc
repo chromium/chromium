@@ -15,6 +15,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/rounded_label_widget.h"
 #include "ash/style/system_shadow.h"
+#include "ash/wm/desks/desk_bar_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/templates/saved_desk_animations.h"
 #include "ash/wm/drag_window_controller.h"
@@ -295,6 +296,7 @@ void OverviewItem::EnsureVisible() {
 }
 
 void OverviewItem::Shutdown() {
+  TRACE_EVENT0("ui", "OverviewItem::Shutdown");
   // If `hide_windows` still manages the visibility of this overview item
   // window, remove it from the list without showing.
   ScopedOverviewHideWindows* hide_windows =
@@ -305,6 +307,7 @@ void OverviewItem::Shutdown() {
                                /*show_window=*/false);
   }
 
+  DestroyMirrorsForDragging();
   item_widget_.reset();
   overview_item_view_ = nullptr;
 }
@@ -570,7 +573,6 @@ void OverviewItem::UpdateCannotSnapWarningVisibility(bool animate) {
     params.preferred_height = kSplitviewLabelPreferredHeightDp;
     params.message_id = IDS_ASH_SPLIT_VIEW_CANNOT_SNAP;
     params.parent = GetWindow()->parent();
-    params.hide_in_mini_view = true;
     cannot_snap_widget_ = std::make_unique<RoundedLabelWidget>();
     cannot_snap_widget_->Init(std::move(params));
     GetWindow()->parent()->StackChildAbove(
@@ -681,6 +683,7 @@ void OverviewItem::Restack() {
   aura::Window* window = GetWindow();
   aura::Window* parent_window = window->parent();
   aura::Window* stacking_target = nullptr;
+
   // Stack |window| below the split view window if split view is active.
   SplitViewController* split_view_controller =
       SplitViewController::Get(root_window_);
@@ -718,22 +721,35 @@ void OverviewItem::Restack() {
   }
 }
 
-void OverviewItem::UpdatePhantomsForDragging(bool is_touch_dragging) {
+void OverviewItem::UpdateMirrorsForDragging(bool is_touch_dragging) {
   DCHECK_GT(Shell::GetAllRootWindows().size(), 1u);
-  if (!phantoms_for_dragging_) {
-    phantoms_for_dragging_ =
-        transform_window_.IsMinimized()
-            ? std::make_unique<DragWindowController>(
-                  item_widget_->GetNativeWindow(), is_touch_dragging,
-                  absl::make_optional(shadow_->GetContentBounds()))
-            : std::make_unique<DragWindowController>(GetWindow(),
-                                                     is_touch_dragging);
+  const bool is_minimized = transform_window_.IsMinimized();
+
+  // With Jellyroll, header is visible while dragging.
+  if (is_minimized || chromeos::features::IsJellyrollEnabled()) {
+    if (!item_mirror_for_dragging_) {
+      item_mirror_for_dragging_ = std::make_unique<DragWindowController>(
+          item_widget_->GetNativeWindow(), is_touch_dragging);
+    }
+    item_mirror_for_dragging_->Update();
   }
-  phantoms_for_dragging_->Update();
+
+  // Minimized windows don't need to mirror the source as its already in
+  // `item_widget_`.
+  if (is_minimized) {
+    return;
+  }
+
+  if (!window_mirror_for_dragging_) {
+    window_mirror_for_dragging_ =
+        std::make_unique<DragWindowController>(GetWindow(), is_touch_dragging);
+  }
+  window_mirror_for_dragging_->Update();
 }
 
-void OverviewItem::DestroyPhantomsForDragging() {
-  phantoms_for_dragging_.reset();
+void OverviewItem::DestroyMirrorsForDragging() {
+  item_mirror_for_dragging_.reset();
+  window_mirror_for_dragging_.reset();
 }
 
 void OverviewItem::SetShadowBounds(
@@ -755,14 +771,19 @@ void OverviewItem::SetShadowBounds(
       gfx::Rect(item_widget_->GetNativeWindow()->GetTargetBounds().size());
 
   const bool is_jellyroll_enabled = chromeos::features::IsJellyrollEnabled();
-  if (!is_jellyroll_enabled) {
+  const bool continuous_scroll =
+      features::IsContinuousOverviewScrollAnimationEnabled() &&
+      Shell::Get()->overview_controller()->is_continuous_scroll_in_progress();
+  if (!is_jellyroll_enabled || continuous_scroll) {
     bounds_in_item.Inset(gfx::Insets::TLBR(kHeaderHeightDp, 0, 0, 0));
   }
 
   bounds_in_item.ClampToCenteredSize(
       gfx::ToRoundedSize(bounds_in_screen->size()));
   shadow_->SetContentBounds(bounds_in_item);
-  if (is_jellyroll_enabled) {
+  if (continuous_scroll) {
+    shadow_->SetRoundedCornerRadius(/*radius=*/0.f);
+  } else if (is_jellyroll_enabled) {
     shadow_->SetRoundedCornerRadius(kOverviewItemCornerRadius);
   }
 }
@@ -770,13 +791,28 @@ void OverviewItem::SetShadowBounds(
 void OverviewItem::UpdateRoundedCornersAndShadow() {
   // Do not show the rounded corners and the shadow if overview is shutting
   // down or we're currently in entering overview animation. Also don't update
-  // or animate the window's frame header clip under these conditions.
+  // or animate the window's frame header clip under these conditions. If the
+  // feature ContinuousOverviewScrollAnimation is enabled, always show rounded
+  // corners for minimized windows, and show rounded corners for non-minimized
+  // windows after the continuous scroll has ended.
   OverviewController* overview_controller = Shell::Get()->overview_controller();
   const bool is_shutting_down =
       !overview_controller || !overview_controller->InOverviewSession();
-  const bool should_show_rounded_corners =
-      !is_shutting_down && !overview_controller->IsInStartAnimation();
+  const bool continuous_scroll_in_progress =
+      features::IsContinuousOverviewScrollAnimationEnabled() &&
+      Shell::Get()->overview_controller()->is_continuous_scroll_in_progress();
+  bool show_rounded_corners_for_start_animation = false;
+  if (features::IsContinuousOverviewScrollAnimationEnabled() &&
+      !Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+    show_rounded_corners_for_start_animation =
+        transform_window_.IsMinimized() || !continuous_scroll_in_progress;
+  } else {
+    show_rounded_corners_for_start_animation =
+        !overview_controller->IsInStartAnimation();
+  }
 
+  const bool should_show_rounded_corners =
+      !is_shutting_down && show_rounded_corners_for_start_animation;
   if (transform_window_.IsMinimized()) {
     overview_item_view_->UpdatePreviewRoundedCorners(
         should_show_rounded_corners);
@@ -787,13 +823,25 @@ void OverviewItem::UpdateRoundedCornersAndShadow() {
   // In addition, the shadow should be hidden if
   // 1) this overview item is the drop target window or
   // 2) this overview item is in animation.
+  // If a continuous scroll is in progress, minimized windows have rounded
+  // corners but no shadows.
+  bool should_show_shadow_for_rounded_corners = false;
+  if (features::IsContinuousOverviewScrollAnimationEnabled()) {
+    should_show_shadow_for_rounded_corners =
+        !continuous_scroll_in_progress ||
+        (continuous_scroll_in_progress && !transform_window_.IsMinimized());
+  } else {
+    should_show_shadow_for_rounded_corners = should_show_rounded_corners;
+  }
+
   const bool should_show_shadow =
-      should_show_rounded_corners &&
+      should_show_shadow_for_rounded_corners &&
       !overview_grid_->IsDropTargetWindow(GetWindow()) &&
       !transform_window_.GetOverviewWindow()
            ->layer()
            ->GetAnimator()
            ->is_animating();
+
   if (should_show_shadow) {
     // The shadow should always match the size of the item minus the border
     // instead of the transformed window or preview view, since for the window
@@ -828,6 +876,12 @@ void OverviewItem::OnStartingAnimationComplete() {
     FadeInWidgetToOverview(item_widget_.get(),
                            OVERVIEW_ANIMATION_ENTER_OVERVIEW_MODE_FADE_IN,
                            /*observe=*/false);
+    // If a continuous scroll has ended, make the header visible again.
+    if (!Shell::Get()
+             ->overview_controller()
+             ->is_continuous_scroll_in_progress()) {
+      overview_item_view()->layer()->SetOpacity(1.f);
+    }
   }
   const bool show_backdrop =
       GetWindowDimensionsType() != OverviewGridWindowFillMode::kNormal;
@@ -922,10 +976,18 @@ void OverviewItem::HandleGestureEventForTabletModeLayout(
 }
 
 void OverviewItem::HandleMouseEvent(const ui::MouseEvent& event) {
-  if (!overview_session_->CanProcessEvent(this, /*from_touch_gesture=*/false))
+  if (!overview_session_->CanProcessEvent(this, /*from_touch_gesture=*/false)) {
     return;
+  }
 
-  const gfx::PointF screen_location = event.target()->GetScreenLocationF(event);
+  // `event.target()` will be null if we use search+space on this item with
+  // chromevox on. Accessibility API will synthesize a mouse event in that case
+  // without a target. We just use the centerpoint of the item so that
+  // search+space will select the item, leaving overview.
+  const gfx::PointF screen_location =
+      event.target()
+          ? event.target()->GetScreenLocationF(event)
+          : gfx::PointF(overview_item_view_->GetBoundsInScreen().CenterPoint());
   switch (event.type()) {
     case ui::ET_MOUSE_PRESSED:
       HandlePressEvent(screen_location, /*from_touch_gesture=*/false);
@@ -1200,7 +1262,9 @@ void OverviewItem::SetItemBounds(const gfx::RectF& target_bounds,
   // Do not set transform for drop target, set bounds instead.
   if (overview_grid_->IsDropTargetWindow(window)) {
     const gfx::Rect drop_target_bounds =
-        ToStableSizeRoundedRect(GetWindowTargetBoundsWithInsets());
+        ToStableSizeRoundedRect(chromeos::features::IsJellyrollEnabled()
+                                    ? target_bounds_
+                                    : GetWindowTargetBoundsWithInsets());
     SetWidgetBoundsAndMaybeAnimateTransform(
         overview_grid_->drop_target_widget(), drop_target_bounds,
         animation_type, /*observer=*/nullptr);
@@ -1289,6 +1353,8 @@ void OverviewItem::SetItemBounds(const gfx::RectF& target_bounds,
 }
 
 void OverviewItem::CreateItemWidget() {
+  TRACE_EVENT0("ui", "OverviewItem::CreateItemWidget");
+
   views::Widget::InitParams params;
   params.type = views::Widget::InitParams::TYPE_POPUP;
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
@@ -1312,6 +1378,7 @@ void OverviewItem::CreateItemWidget() {
   auto* widget_layer = item_widget_->GetLayer();
   widget_layer->Add(shadow_layer);
   widget_layer->StackAtBottom(shadow_layer);
+  shadow_->ObserveColorProviderSource(item_widget_.get());
 
   overview_item_view_ =
       item_widget_->SetContentsView(std::make_unique<OverviewItemView>(
@@ -1361,6 +1428,8 @@ void OverviewItem::UpdateHeaderLayoutCrOSNext(
     OverviewAnimationType animation_type) {
   gfx::RectF current_item_bounds(item_widget_->GetWindowBoundsInScreen());
   gfx::RectF target_item_bounds = target_bounds_;
+
+  wm::TranslateRectFromScreen(root_window_, &current_item_bounds);
   wm::TranslateRectFromScreen(root_window_, &target_item_bounds);
 
   aura::Window* widget_window = item_widget_->GetNativeWindow();

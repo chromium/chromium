@@ -10,10 +10,11 @@ import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.view.LayoutInflater;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -35,7 +36,6 @@ import org.chromium.components.feature_engagement.Tracker;
 /** Test for the WebFeedFollowIntroView class. */
 @RunWith(BaseRobolectricTestRunner.class)
 public final class SectionHeaderViewTest {
-    private static final String TAG = "SectionHeaderViewTst";
     private SectionHeaderView mSectionHeaderView;
     private Activity mActivity;
 
@@ -52,19 +52,18 @@ public final class SectionHeaderViewTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mActivity = Robolectric.setupActivity(Activity.class);
-        mActivity.setTheme(R.style.Theme_MaterialComponents);
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         TrackerFactory.setTrackerForTests(mTracker);
 
         // Build the class under test, and set up the fake UI.
         mSectionHeaderView = (SectionHeaderView) LayoutInflater.from(mActivity).inflate(
                 R.layout.new_tab_page_multi_feed_header, null, false);
-        mSectionHeaderView.addTab();
-        mSectionHeaderView.addTab();
-    }
+        ViewGroup contentView = new LinearLayout(mActivity);
+        mActivity.setContentView(contentView);
+        contentView.addView(mSectionHeaderView);
 
-    @After
-    public void tearDown() {
-        TrackerFactory.setTrackerForTests(null);
+        mSectionHeaderView.addTab();
+        mSectionHeaderView.addTab();
     }
 
     private void setFeatureOverridesForIPH() {

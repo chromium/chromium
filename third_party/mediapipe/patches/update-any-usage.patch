@@ -1,0 +1,42 @@
+diff --git a/third_party/mediapipe/src/mediapipe/framework/calculator.proto b/third_party/mediapipe/src/mediapipe/framework/calculator.proto
+index 9984ee25056a9..26c0cd85f96c2 100644
+--- a/third_party/mediapipe/src/mediapipe/framework/calculator.proto
++++ b/third_party/mediapipe/src/mediapipe/framework/calculator.proto
+@@ -21,7 +21,7 @@ package mediapipe;
+ 
+ import public "mediapipe/framework/calculator_options.proto";
+ 
+-import "google/protobuf/any.proto";
++import "google/protobuf/any_lite.proto";
+ import "mediapipe/framework/mediapipe_options.proto";
+ import "mediapipe/framework/packet_factory.proto";
+ import "mediapipe/framework/packet_generator.proto";
+@@ -273,7 +273,7 @@ message CalculatorGraphConfig {
+     // Each node_options message must have a different message type.
+     // If the same message type is specified in |options| and |node_options|,
+     // only the message in |options| is used.
+-    repeated google.protobuf.Any node_options = 8;
++    repeated google.protobuf.AnyLite node_options = 8;
+ 
+     // Note: the following fields are only applicable to calculators, not
+     // subgraphs.
+@@ -432,5 +432,5 @@ message CalculatorGraphConfig {
+   MediaPipeOptions options = 1001;
+ 
+   // The types and default values for graph options, in proto3 syntax.
+-  repeated google.protobuf.Any graph_options = 1002;
++  repeated google.protobuf.AnyLite graph_options = 1002;
+ }
+diff --git a/third_party/mediapipe/src/mediapipe/framework/port/any_proto.h b/third_party/mediapipe/src/mediapipe/framework/port/any_proto.h
+index 979585b26534e..a77907b6cd1cf 100644
+--- a/third_party/mediapipe/src/mediapipe/framework/port/any_proto.h
++++ b/third_party/mediapipe/src/mediapipe/framework/port/any_proto.h
+@@ -22,7 +22,7 @@ namespace protobuf {
+ 
+ #if !defined(MEDIAPIPE_PROTO_LITE) || !defined(MEDIAPIPE_PROTO_THIRD_PARTY)
+ // The full definition of protobuf::Any for most platforms.
+-using Any = google::protobuf::Any;
++using Any = google::protobuf::AnyLite;
+ #else
+ // A dummy definition of protobuf::Any for third_party/protobuf:protobuf-lite.
+ class Any {

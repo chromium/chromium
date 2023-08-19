@@ -93,6 +93,7 @@ void KeyboardBacklightColorNudgeController::MaybeShowEducationNudge(
   layer->SetRoundedCornerRadius(
       gfx::RoundedCornersF{static_cast<float>(kBubbleCornerRadius)});
   layer->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+  layer->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
 
   gfx::Rect anchor_rect =
       keyboard_brightness_slider_view->GetAnchorBoundsInScreen();

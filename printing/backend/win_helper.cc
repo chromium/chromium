@@ -164,6 +164,17 @@ std::wstring GetPrinterDriverPort(const std::string& printer_name) {
   return port_value;
 }
 
+std::string GetDriverVersionString(DWORDLONG version_number) {
+  // A Windows driver version number is four 16-bit unsigned integers
+  // concatenated together as w.x.y.z in a 64 bit unsigned int.
+  // https://learn.microsoft.com/en-us/windows-hardware/drivers/install/inf-driverver-directive
+  return base::StringPrintf(
+      "%u.%u.%u.%u", static_cast<uint16_t>((version_number >> 48) & 0xFFFF),
+      static_cast<uint16_t>((version_number >> 32) & 0xFFFF),
+      static_cast<uint16_t>((version_number >> 16) & 0xFFFF),
+      static_cast<uint16_t>(version_number & 0xFFFF));
+}
+
 }  // namespace
 
 namespace printing {
@@ -417,44 +428,46 @@ bool InitBasicPrinterInfo(HANDLE printer, PrinterBasicInfo* printer_info) {
   }
   printer_info->printer_status = info_2.get()->Status;
 
-  std::string driver_info = GetDriverInfo(printer);
-  if (!driver_info.empty())
-    printer_info->options[kDriverInfoTagName] = driver_info;
+  std::vector<std::string> driver_info = GetDriverInfo(printer);
+  if (!driver_info.empty()) {
+    printer_info->options[kDriverInfoTagName] =
+        base::JoinString(driver_info, ";");
+  }
   return true;
 }
 
-std::string GetDriverInfo(HANDLE printer) {
+std::vector<std::string> GetDriverInfo(HANDLE printer) {
   DCHECK(printer);
-  std::string driver_info;
+  std::vector<std::string> driver_info;
 
-  if (!printer)
+  if (!printer) {
     return driver_info;
+  }
 
   DriverInfo6 info_6;
-  if (!info_6.Init(printer))
+  if (!info_6.Init(printer)) {
     return driver_info;
+  }
 
-  std::string info[4];
-  if (info_6.get()->pName)
-    info[0] = base::WideToUTF8(info_6.get()->pName);
+  driver_info.emplace_back(info_6.get()->pName
+                               ? base::WideToUTF8(info_6.get()->pName)
+                               : std::string());
+
+  driver_info.emplace_back(
+      info_6.get()->dwlDriverVersion
+          ? GetDriverVersionString(info_6.get()->dwlDriverVersion)
+          : std::string());
 
   if (info_6.get()->pDriverPath) {
     std::unique_ptr<FileVersionInfo> version_info(
         FileVersionInfo::CreateFileVersionInfo(
             base::FilePath(info_6.get()->pDriverPath)));
     if (version_info.get()) {
-      info[1] = base::UTF16ToUTF8(version_info->file_version());
-      info[2] = base::UTF16ToUTF8(version_info->product_name());
-      info[3] = base::UTF16ToUTF8(version_info->product_version());
+      driver_info.emplace_back(base::UTF16ToUTF8(version_info->file_version()));
+      driver_info.emplace_back(base::UTF16ToUTF8(version_info->product_name()));
     }
   }
 
-  for (size_t i = 0; i < std::size(info); ++i) {
-    std::replace(info[i].begin(), info[i].end(), ';', ',');
-    driver_info.append(info[i]);
-    if (i < std::size(info) - 1)
-      driver_info.append(";");
-  }
   return driver_info;
 }
 
@@ -653,6 +666,10 @@ std::unique_ptr<DEVMODE, base::FreeDeleter> PromptDevMode(
   int extra_size = out->dmDriverExtra;
   CHECK_GE(buffer_size, size + extra_size);
   return out;
+}
+
+std::string GetDriverVersionStringForTesting(DWORDLONG version_number) {
+  return GetDriverVersionString(version_number);
 }
 
 }  // namespace printing

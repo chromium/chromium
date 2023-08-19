@@ -26,9 +26,9 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/test_future.h"
 #include "base/version.h"
-#include "chrome/browser/ash/app_mode/app_session_ash.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include "chrome/browser/ash/app_mode/test_kiosk_extension_builder.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/chrome_app_kiosk_service_ash.h"
@@ -55,6 +55,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom-forward.h"
 #include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom-shared.h"
 #include "components/account_id/account_id.h"
@@ -245,8 +246,9 @@ class TestKioskLoaderVisitor
     extension_service_->OnExtensionInstalled(
         extension, syncer::StringOrdinal::CreateInitialOrdinal(),
         extensions::kInstallFlagInstallImmediately);
+    auto installer = extensions::CrxInstaller::CreateSilent(extension_service_);
     extensions::InstallTracker::Get(browser_context_)
-        ->OnFinishCrxInstall(extension->id(), true);
+        ->OnFinishCrxInstall(*installer, extension->id(), true);
     return true;
   }
 
@@ -263,8 +265,9 @@ class TestKioskLoaderVisitor
 
     pending_crx_files_.erase(extension_id);
     pending_update_urls_.erase(extension_id);
+    auto installer = extensions::CrxInstaller::CreateSilent(extension_service_);
     extensions::InstallTracker::Get(browser_context_)
-        ->OnFinishCrxInstall(extension_id, false);
+        ->OnFinishCrxInstall(*installer, extension_id, false);
     extension_service_->pending_extension_manager()->Remove(extension_id);
     return true;
   }
@@ -287,8 +290,9 @@ class TestKioskLoaderVisitor
     }
 
     pending_crx_files_.insert(info.extension_id);
+    auto installer = extensions::CrxInstaller::CreateSilent(extension_service_);
     extensions::InstallTracker::Get(browser_context_)
-        ->OnBeginCrxInstall(info.extension_id);
+        ->OnBeginCrxInstall(*installer, info.extension_id);
     return true;
   }
   bool OnExternalExtensionUpdateUrlFound(
@@ -308,8 +312,9 @@ class TestKioskLoaderVisitor
     }
 
     pending_update_urls_.insert(info.extension_id);
+    auto installer = extensions::CrxInstaller::CreateSilent(extension_service_);
     extensions::InstallTracker::Get(browser_context_)
-        ->OnBeginCrxInstall(info.extension_id);
+        ->OnBeginCrxInstall(*installer, info.extension_id);
     return true;
   }
   void OnExternalProviderReady(
@@ -380,7 +385,7 @@ extensions::AppWindow* CreateAppWindow(Profile* profile,
 // This class overrides some of the behaviour of `KioskAppManager`, which is the
 // `KioskAppManagerBase` implementation for ChromeApp kiosk.
 // Notably it injects its own `ExternalCache` implementation and overrides the
-// construction on an `AppSession` object.
+// construction on an `KioskBrowserSession` object.
 class ScopedKioskAppManagerOverrides : public KioskAppManager::Overrides {
  public:
   ScopedKioskAppManagerOverrides() {
@@ -473,9 +478,9 @@ class ScopedKioskAppManagerOverrides : public KioskAppManager::Overrides {
     return cache;
   }
 
-  std::unique_ptr<AppSessionAsh> CreateAppSession() override {
-    EXPECT_FALSE(kiosk_app_session_initialized_);
-    kiosk_app_session_initialized_ = true;
+  std::unique_ptr<KioskSystemSession> CreateKioskSystemSession() override {
+    EXPECT_FALSE(kiosk_system_session_initialized_);
+    kiosk_system_session_initialized_ = true;
     return nullptr;
   }
 
@@ -494,8 +499,9 @@ class ScopedKioskAppManagerOverrides : public KioskAppManager::Overrides {
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<ScopedCrosSettingsTestHelper> accounts_settings_helper_;
 
-  raw_ptr<chromeos::TestExternalCache, ExperimentalAsh> external_cache_;
-  bool kiosk_app_session_initialized_ = false;
+  raw_ptr<chromeos::TestExternalCache, DanglingUntriaged | ExperimentalAsh>
+      external_cache_;
+  bool kiosk_system_session_initialized_ = false;
 };
 
 TestKioskExtensionBuilder PrimaryAppBuilder() {
@@ -632,8 +638,8 @@ class StartupAppLauncherNoCreateTest
   void CreateAndInitializeKioskAppsProviders(TestKioskLoaderVisitor* visitor) {
     primary_app_provider_ = std::make_unique<extensions::ExternalProviderImpl>(
         visitor,
-        base::MakeRefCounted<KioskAppExternalLoader>(
-            KioskAppExternalLoader::AppClass::kPrimary),
+        base::MakeRefCounted<chromeos::KioskAppExternalLoader>(
+            chromeos::KioskAppExternalLoader::AppClass::kPrimary),
         profile(), ManifestLocation::kExternalPolicy,
         ManifestLocation::kInvalidLocation, extensions::Extension::NO_FLAGS);
     InitializeKioskAppsProvider(primary_app_provider_.get());
@@ -641,8 +647,8 @@ class StartupAppLauncherNoCreateTest
     secondary_apps_provider_ =
         std::make_unique<extensions::ExternalProviderImpl>(
             visitor,
-            base::MakeRefCounted<KioskAppExternalLoader>(
-                KioskAppExternalLoader::AppClass::kSecondary),
+            base::MakeRefCounted<chromeos::KioskAppExternalLoader>(
+                chromeos::KioskAppExternalLoader::AppClass::kSecondary),
             profile(), ManifestLocation::kExternalPref,
             ManifestLocation::kExternalPrefDownload,
             extensions::Extension::NO_FLAGS);
@@ -1507,10 +1513,10 @@ class StartupAppLauncherUsingLacrosTest : public testing::Test {
   StartupAppLauncherUsingLacrosTest()
       : fake_user_manager_(new FakeChromeUserManager()),
         scoped_user_manager_(base::WrapUnique(fake_user_manager_.get())) {
-    scoped_feature_list_.InitWithFeatures(
-        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
-         ::features::kChromeKioskEnableLacros},
-        {});
+    std::vector<base::test::FeatureRef> enabled =
+        ash::standalone_browser::GetFeatureRefs();
+    enabled.push_back(::features::kChromeKioskEnableLacros);
+    scoped_feature_list_.InitWithFeatures(enabled, {});
   }
 
   void SetUp() override {
@@ -1609,7 +1615,8 @@ class StartupAppLauncherUsingLacrosTest : public testing::Test {
   TestingProfileManager testing_profile_manager_{
       TestingBrowserProcess::GetGlobal()};
   raw_ptr<Profile, ExperimentalAsh> profile_;
-  raw_ptr<FakeChromeUserManager, ExperimentalAsh> fake_user_manager_;
+  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      fake_user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_;
   FakeChromeKioskLaunchController launch_controller_;
   crosapi::FakeBrowserManager browser_manager_;

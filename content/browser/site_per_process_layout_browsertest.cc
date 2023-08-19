@@ -6,10 +6,12 @@
 
 #include "base/json/json_reader.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/gmock_expected_support.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/base/math_util.h"
 #include "content/browser/renderer_host/cross_process_frame_connector.h"
+#include "content/browser/renderer_host/input/synthetic_pointer_action.h"
 #include "content/browser/renderer_host/input/synthetic_touchscreen_pinch_gesture.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
@@ -628,14 +630,16 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // Explanation of terms:
   //   5000 = offset from top of nested iframe to top of containing div, due to
-  //          scroll offset of div
+  //          scroll offset of div. This needs to be scaled by DSF or the test
+  //          will fail on HighDPI devices.
   //   child_div_offset_top = offset of containing div from top of child frame
   //   50 = offset of child frame's intersection with the top document viewport
   //       from the top of the child frame (i.e, clipped amount at top of child)
   //   view_height * 0.15 = padding added to the top of the compositing rect
   //                        (half the the 30% total padding)
-  int expected_offset =
-      5000 - ((child_div_offset_top - 50) * scale_factor) - expansion;
+  int expected_offset = (5000 * scale_factor) -
+                        ((child_div_offset_top - 50) * scale_factor) -
+                        expansion;
 
   // Allow a small amount for rounding differences from applying page and
   // device scale factors at different times.
@@ -2424,14 +2428,14 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       actions_template.c_str(), scroll_start_location_in_screen.x(),
       scroll_start_location_in_screen.y(), scroll_end_location_in_screen.x(),
       scroll_end_location_in_screen.y());
-  auto parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(touch_move_sequence_json);
-  ASSERT_TRUE(parsed_json.has_value()) << parsed_json.error().message;
-  ActionsParser actions_parser(std::move(*parsed_json));
+  ASSERT_OK_AND_ASSIGN(
+      auto parsed_json,
+      base::JSONReader::ReadAndReturnValueWithError(touch_move_sequence_json));
+  ActionsParser actions_parser(std::move(parsed_json));
 
   ASSERT_TRUE(actions_parser.Parse());
-  auto synthetic_scroll_gesture =
-      SyntheticGesture::Create(actions_parser.gesture_params());
+  auto synthetic_scroll_gesture = std::make_unique<SyntheticPointerAction>(
+      actions_parser.pointer_action_params());
 
   {
     auto* child_host = static_cast<RenderWidgetHostImpl*>(

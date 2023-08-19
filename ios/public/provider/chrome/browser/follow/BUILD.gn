@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("follow_api") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "follow_api.h" ]
   deps = [ "//ios/chrome/browser/follow:service" ]
 }

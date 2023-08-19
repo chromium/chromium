@@ -7,7 +7,6 @@
 
 #import <Cocoa/Cocoa.h>
 
-#import "base/mac/scoped_nsobject.h"
 #include "components/remote_cocoa/app_shim/color_panel_bridge.h"
 #include "components/remote_cocoa/common/color_panel.mojom.h"
 #include "content/public/browser/color_chooser.h"
@@ -27,7 +26,7 @@ class ColorChooserMac : public content::ColorChooser,
   // this by making calls to the passed in web_contents.
   // Open() returns a new instance after freeing the previous one (i.e. it does
   // not reuse the previous instance even if it still exists).
-  // TODO(crbug.com/1294002): Refactor ColorChooserMac and WebContents
+  // TODO(https://crbug.com/1294002): Refactor ColorChooserMac and WebContents
   // interactions
   static std::unique_ptr<ColorChooserMac> Create(
       content::WebContents* web_contents,

@@ -8,16 +8,11 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
-#include "base/notreached.h"
-#include "base/run_loop.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_attributes_entry.h"
-#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
@@ -26,14 +21,10 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/supervised_user/core/common/buildflags.h"
-#include "content/public/browser/network_service_instance.h"
-#include "content/public/test/browser_task_environment.h"
-#include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -41,107 +32,7 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #endif
 
-// ChromeOS has its own network delay logic.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-
-namespace {
-
-class CallbackTester {
- public:
-  CallbackTester() : called_(0) {}
-
-  void Increment();
-  void IncrementAndUnblock(base::RunLoop* run_loop);
-  bool WasCalledExactlyOnce();
-
- private:
-  int called_;
-};
-
-void CallbackTester::Increment() {
-  called_++;
-}
-
-void CallbackTester::IncrementAndUnblock(base::RunLoop* run_loop) {
-  Increment();
-  run_loop->QuitWhenIdle();
-}
-
-bool CallbackTester::WasCalledExactlyOnce() {
-  return called_ == 1;
-}
-
-}  // namespace
-
-class ChromeSigninClientTest : public testing::Test {
- public:
-  ChromeSigninClientTest() {
-    // Create a signed-in profile.
-    TestingProfile::Builder builder;
-    profile_ = builder.Build();
-
-    signin_client_ = ChromeSigninClientFactory::GetForProfile(profile());
-  }
-
- protected:
-  void SetUpNetworkConnection(bool respond_synchronously,
-                              network::mojom::ConnectionType connection_type) {
-    auto* tracker = network::TestNetworkConnectionTracker::GetInstance();
-    tracker->SetRespondSynchronously(respond_synchronously);
-    tracker->SetConnectionType(connection_type);
-  }
-
-  void SetConnectionType(network::mojom::ConnectionType connection_type) {
-    network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
-        connection_type);
-  }
-
-  Profile* profile() { return profile_.get(); }
-  SigninClient* signin_client() { return signin_client_; }
-
- private:
-  content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<Profile> profile_;
-  raw_ptr<SigninClient> signin_client_;
-};
-
-TEST_F(ChromeSigninClientTest, DelayNetworkCallRunsImmediatelyWithNetwork) {
-  SetUpNetworkConnection(true, network::mojom::ConnectionType::CONNECTION_3G);
-  CallbackTester tester;
-  signin_client()->DelayNetworkCall(
-      base::BindOnce(&CallbackTester::Increment, base::Unretained(&tester)));
-  ASSERT_TRUE(tester.WasCalledExactlyOnce());
-}
-
-TEST_F(ChromeSigninClientTest, DelayNetworkCallRunsAfterGetConnectionType) {
-  SetUpNetworkConnection(false, network::mojom::ConnectionType::CONNECTION_3G);
-
-  base::RunLoop run_loop;
-  CallbackTester tester;
-  signin_client()->DelayNetworkCall(
-      base::BindOnce(&CallbackTester::IncrementAndUnblock,
-                     base::Unretained(&tester), &run_loop));
-  ASSERT_FALSE(tester.WasCalledExactlyOnce());
-  run_loop.Run();  // Wait for IncrementAndUnblock().
-  ASSERT_TRUE(tester.WasCalledExactlyOnce());
-}
-
-TEST_F(ChromeSigninClientTest, DelayNetworkCallRunsAfterNetworkChange) {
-  SetUpNetworkConnection(true, network::mojom::ConnectionType::CONNECTION_NONE);
-
-  base::RunLoop run_loop;
-  CallbackTester tester;
-  signin_client()->DelayNetworkCall(
-      base::BindOnce(&CallbackTester::IncrementAndUnblock,
-                     base::Unretained(&tester), &run_loop));
-
-  ASSERT_FALSE(tester.WasCalledExactlyOnce());
-  SetConnectionType(network::mojom::ConnectionType::CONNECTION_3G);
-  run_loop.Run();  // Wait for IncrementAndUnblock().
-  ASSERT_TRUE(tester.WasCalledExactlyOnce());
-}
-
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 
 class MockChromeSigninClient : public ChromeSigninClient {
  public:
@@ -306,6 +197,8 @@ bool IsAlwaysAllowedSignoutSources(
     case signin_metrics::ProfileSignout::kAccountEmailUpdated:
     case signin_metrics::ProfileSignout::kSigninManagerUpdateUPA:
     case signin_metrics::ProfileSignout::kUserTappedUndoRightAfterSignIn:
+    case signin_metrics::ProfileSignout::
+        kUserDeclinedHistorySyncAfterDedicatedSignIn:
       return false;
 
     case signin_metrics::ProfileSignout::kAccountRemovedFromDevice:
@@ -455,6 +348,8 @@ const signin_metrics::ProfileSignout kSignoutSources[] = {
     signin_metrics::ProfileSignout::kAccountReconcilorReconcile,
     signin_metrics::ProfileSignout::kSigninManagerUpdateUPA,
     signin_metrics::ProfileSignout::kUserTappedUndoRightAfterSignIn,
+    signin_metrics::ProfileSignout::
+        kUserDeclinedHistorySyncAfterDedicatedSignIn,
 };
 // kNumberOfObsoleteSignoutSources should be updated when a ProfileSignout
 // value is deprecated.
@@ -469,5 +364,4 @@ INSTANTIATE_TEST_SUITE_P(AllSignoutSources,
                          ChromeSigninClientSignoutSourceTest,
                          testing::ValuesIn(kSignoutSources));
 
-#endif  // !BUILDFLAG(IS_ANDROID)
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)

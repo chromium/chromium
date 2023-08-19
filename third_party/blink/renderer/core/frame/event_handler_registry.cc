@@ -188,9 +188,10 @@ void EventHandlerRegistry::DidMoveIntoPage(EventTarget& target) {
       continue;
     for (wtf_size_t count = listeners->size(); count > 0; --count) {
       EventHandlerClass handler_class;
-      if (!EventTypeToClass(event_types[i], (*listeners)[count - 1].Options(),
-                            &handler_class))
+      if (!EventTypeToClass(event_types[i], (*listeners)[count - 1]->Options(),
+                            &handler_class)) {
         continue;
+      }
 
       DidAddEventHandler(target, handler_class);
     }

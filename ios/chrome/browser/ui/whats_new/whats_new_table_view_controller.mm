@@ -8,7 +8,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
-#import "ios/chrome/browser/ui/whats_new/cells/whats_new_table_view_banner_item.h"
 #import "ios/chrome/browser/ui/whats_new/cells/whats_new_table_view_fake_header_item.h"
 #import "ios/chrome/browser/ui/whats_new/cells/whats_new_table_view_item.h"
 #import "ios/chrome/browser/ui/whats_new/data_source/whats_new_item.h"
@@ -19,10 +18,6 @@
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -42,7 +37,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionFeaturesIdentifier = kSectionIdentifierEnumZero,
   SectionChromeTipIdenfitier,
-  SectionFeatureBannerIdentifier,
 };
 
 }  // namespace
@@ -54,15 +48,8 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 // Array of `WhatsNewItem` features.
 @property(nonatomic, strong) NSArray<WhatsNewItem*>* featureItems;
 
-// `WhatsNewItem` representing the highlighted feature.
-@property(nonatomic, strong) WhatsNewItem* highlightedFeatureItem;
-
 // `WhatsNewItem` representing the chrome tip.
 @property(nonatomic, strong) WhatsNewItem* chromeTipItem;
-
-// Indicates that What's New table view should module based instead of cell
-// based.
-@property(nonatomic, assign) BOOL isModuleTableView;
 
 // Indicates whether a scroll happened.
 @property(nonatomic, assign) BOOL viewDidScroll;
@@ -102,6 +89,8 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
   self.viewDidScroll = NO;
+  self.navigationItem.backButtonTitle =
+      l10n_util::GetNSString(IDS_IOS_WHATS_NEW_NAVIGATION_BACK_BUTTON_TITLE);
 }
 
 - (void)viewDidLoad {
@@ -112,9 +101,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
       [[self class] accessibilityIdentifier];
   self.tableView.estimatedRowHeight = kEstimatedTableViewRowHeight;
   self.tableView.rowHeight = UITableViewAutomaticDimension;
-  if (!self.isModuleTableView) {
-    self.tableView.estimatedSectionHeaderHeight = kEstimatedSectionHeaderHeight;
-  }
+  self.tableView.estimatedSectionHeaderHeight = kEstimatedSectionHeaderHeight;
   self.tableView.allowsMultipleSelection = YES;
   self.tableView.sectionFooterHeight = kEstimatedsectionFooterHeight;
 }
@@ -144,13 +131,6 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
     return nil;
   }
 
-  NSInteger sectionID =
-      [self.tableViewModel sectionIdentifierForSectionIndex:indexPath.section];
-  if (self.isModuleTableView && sectionID == SectionFeaturesIdentifier &&
-      indexPath.row == 0) {
-    return nil;
-  }
-
   return indexPath;
 }
 
@@ -159,18 +139,8 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   NSInteger sectionID =
       [self.tableViewModel sectionIdentifierForSectionIndex:indexPath.section];
   switch (sectionID) {
-    case SectionFeatureBannerIdentifier: {
-      [self.actionHandler
-          recordWhatsNewInteraction:self.highlightedFeatureItem];
-      [self.delegate detailViewController:self
-          openDetailViewControllerForItem:self.highlightedFeatureItem];
-      break;
-    }
     case SectionFeaturesIdentifier: {
       NSInteger index = indexPath.row;
-      if (self.isModuleTableView) {
-        index--;
-      }
       [self.actionHandler recordWhatsNewInteraction:self.featureItems[index]];
       [self.delegate detailViewController:self
           openDetailViewControllerForItem:self.featureItems[index]];
@@ -205,44 +175,13 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 #pragma mark - WhatsNewMediatorConsumer
 
-- (void)setWhatsNewProperties:(WhatsNewItem*)highlightedFeatureItem
-                    chromeTip:(WhatsNewItem*)chromeTip
-                 featureItems:(NSArray<WhatsNewItem*>*)featureItems
-                isModuleBased:(BOOL)isModuleBased {
-  self.highlightedFeatureItem = highlightedFeatureItem;
+- (void)setWhatsNewProperties:(WhatsNewItem*)chromeTip
+                 featureItems:(NSArray<WhatsNewItem*>*)featureItems {
   self.featureItems = featureItems;
   self.chromeTipItem = chromeTip;
-  self.isModuleTableView = isModuleBased;
 }
 
 #pragma mark Private
-
-- (TableViewItem*)whatsNewChromeTipCell:(WhatsNewItem*)item {
-  if (self.isModuleTableView) {
-    WhatsNewTableViewBannerItem* cell =
-        [[WhatsNewTableViewBannerItem alloc] initWithType:ItemTypeItem];
-    cell.title = item.title;
-    cell.detailText = item.subtitle;
-    cell.sectionTitle =
-        l10n_util::GetNSString(IDS_IOS_WHATS_NEW_SECTION_CHROME_TIP_TITLE);
-    cell.bannerImage = item.heroBannerImage;
-    cell.isBannerAtBottom = YES;
-    return cell;
-  }
-  return [self whatsNewCell:item];
-}
-
-- (TableViewItem*)whatsNewBannerFeaturesCell:(WhatsNewItem*)item {
-  WhatsNewTableViewBannerItem* cell =
-      [[WhatsNewTableViewBannerItem alloc] initWithType:ItemTypeItem];
-  cell.title = item.title;
-  cell.detailText = item.subtitle;
-  cell.sectionTitle =
-      l10n_util::GetNSString(IDS_IOS_WHATS_NEW_SECTION_FEATURED_TITLE);
-  cell.bannerImage = item.heroBannerImage;
-  cell.isBannerAtBottom = NO;
-  return cell;
-}
 
 - (TableViewItem*)whatsNewCell:(WhatsNewItem*)item {
   WhatsNewTableViewItem* cell =
@@ -264,29 +203,14 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 - (void)loadItems {
   TableViewModel* model = self.tableViewModel;
 
-  if (self.isModuleTableView) {
-    [self loadBannerFeatures:model];
-  }
-
   [self loadFeatures:model];
   [self loadChromeTip:model];
 }
 
-- (void)loadBannerFeatures:(TableViewModel*)model {
-  [model addSectionWithIdentifier:SectionFeatureBannerIdentifier];
-  [model addItem:[self whatsNewBannerFeaturesCell:self.highlightedFeatureItem]
-      toSectionWithIdentifier:SectionFeatureBannerIdentifier];
-}
-
 - (void)loadFeatures:(TableViewModel*)model {
   [model addSectionWithIdentifier:SectionFeaturesIdentifier];
-  if (self.isModuleTableView) {
-    [model addItem:[self defaultSectionCell]
-        toSectionWithIdentifier:SectionFeaturesIdentifier];
-  } else {
-    [model setHeader:[self headerForSectionIndex:SectionFeaturesIdentifier]
-        forSectionWithIdentifier:SectionFeaturesIdentifier];
-  }
+  [model setHeader:[self headerForSectionIndex:SectionFeaturesIdentifier]
+      forSectionWithIdentifier:SectionFeaturesIdentifier];
 
   for (WhatsNewItem* item in self.featureItems) {
     [model addItem:[self whatsNewCell:item]
@@ -296,11 +220,9 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 - (void)loadChromeTip:(TableViewModel*)model {
   [model addSectionWithIdentifier:SectionChromeTipIdenfitier];
-  if (!self.isModuleTableView) {
-    [model setHeader:[self headerForSectionIndex:SectionChromeTipIdenfitier]
-        forSectionWithIdentifier:SectionChromeTipIdenfitier];
-  }
-  [model addItem:[self whatsNewChromeTipCell:self.chromeTipItem]
+  [model setHeader:[self headerForSectionIndex:SectionChromeTipIdenfitier]
+      forSectionWithIdentifier:SectionChromeTipIdenfitier];
+  [model addItem:[self whatsNewCell:self.chromeTipItem]
       toSectionWithIdentifier:SectionChromeTipIdenfitier];
 }
 
@@ -311,18 +233,11 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
   switch (sectionID) {
     case SectionFeaturesIdentifier:
-      header.text =
-          self.isModuleTableView
-              ? l10n_util::GetNSString(IDS_IOS_WHATS_NEW_SECTION_FEATURED_TITLE)
-              : l10n_util::GetNSString(IDS_IOS_WHATS_NEW_SECTION_NEW_TITLE);
+      header.text = l10n_util::GetNSString(IDS_IOS_WHATS_NEW_SECTION_NEW_TITLE);
       break;
     case SectionChromeTipIdenfitier:
       header.text =
           l10n_util::GetNSString(IDS_IOS_WHATS_NEW_SECTION_CHROME_TIP_TITLE);
-      break;
-    case SectionFeatureBannerIdentifier:
-      header.text =
-          l10n_util::GetNSString(IDS_IOS_WHATS_NEW_SECTION_FEATURED_TITLE);
       break;
   }
   return header;

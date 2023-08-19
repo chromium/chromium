@@ -29,6 +29,11 @@ void LocationProviderAndroid::NotifyNewGeoposition(
     callback_.Run(this, last_result_.Clone());
 }
 
+void LocationProviderAndroid::FillDiagnostics(
+    mojom::GeolocationDiagnostics& diagnostics) {
+  diagnostics.provider_state = state_;
+}
+
 void LocationProviderAndroid::SetUpdateCallback(
     const LocationProviderUpdateCallback& callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -37,6 +42,9 @@ void LocationProviderAndroid::SetUpdateCallback(
 
 void LocationProviderAndroid::StartProvider(bool high_accuracy) {
   DCHECK(thread_checker_.CalledOnValidThread());
+  state_ = high_accuracy
+               ? mojom::GeolocationDiagnostics::ProviderState::kHighAccuracy
+               : mojom::GeolocationDiagnostics::ProviderState::kLowAccuracy;
   LocationApiAdapterAndroid::GetInstance()->Start(
       base::BindRepeating(&LocationProviderAndroid::NotifyNewGeoposition,
                           weak_ptr_factory_.GetWeakPtr()),
@@ -45,6 +53,7 @@ void LocationProviderAndroid::StartProvider(bool high_accuracy) {
 
 void LocationProviderAndroid::StopProvider() {
   DCHECK(thread_checker_.CalledOnValidThread());
+  state_ = mojom::GeolocationDiagnostics::ProviderState::kStopped;
   LocationApiAdapterAndroid::GetInstance()->Stop();
 }
 

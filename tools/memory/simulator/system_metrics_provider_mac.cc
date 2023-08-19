@@ -7,8 +7,8 @@
 #include <mach/mach.h>
 #include <mach/mach_time.h>
 
-#include "base/mac/mach_logging.h"
-#include "base/mac/scoped_mach_port.h"
+#include "base/apple/mach_logging.h"
+#include "base/apple/scoped_mach_port.h"
 #include "base/time/time.h"
 #include "tools/memory/simulator/utils.h"
 
@@ -50,7 +50,7 @@ std::map<std::string, double> SystemMetricsProviderMac::GetMetricValues(
 
   struct host_basic_info hostinfo;
   mach_msg_type_number_t count = HOST_BASIC_INFO_COUNT;
-  base::mac::ScopedMachSendRight host(mach_host_self());
+  base::apple::ScopedMachSendRight host(mach_host_self());
   int result = host_info(host.get(), HOST_BASIC_INFO,
                          reinterpret_cast<host_info_t>(&hostinfo), &count);
   CHECK_EQ(result, KERN_SUCCESS);

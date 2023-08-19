@@ -67,6 +67,11 @@ public class EventOffsetHandler {
         setContentViewMotionEventOffsets(e, true);
     }
 
+    /** See {@link ViewGroup#onHoverEvent(MotionEvent)}. */
+    public void onHoverEvent(MotionEvent e) {
+        setContentViewMotionEventOffsets(e, true);
+    }
+
     private void setContentViewMotionEventOffsets(MotionEvent e, boolean canClear) {
         int actionMasked = SPenSupport.convertSPenEventAction(e.getActionMasked());
         if (actionMasked == MotionEvent.ACTION_DOWN

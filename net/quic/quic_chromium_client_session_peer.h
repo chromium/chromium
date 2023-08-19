@@ -27,11 +27,6 @@ class QuicChromiumClientSessionPeer {
   static void SetHostname(QuicChromiumClientSession* session,
                           const std::string& hostname);
 
-  static uint64_t GetPushedBytesCount(QuicChromiumClientSession* session);
-
-  static uint64_t GetPushedAndUnclaimedBytesCount(
-      QuicChromiumClientSession* session);
-
   static QuicChromiumClientStream* CreateOutgoingStream(
       QuicChromiumClientSession* session);
 

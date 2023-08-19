@@ -20,7 +20,53 @@ const base::FeatureParam<int> kMaxReportingOriginsPerSiteParam{
     AttributionConfig::RateLimitConfig::
         kDefaultMaxReportingOriginsPerSourceReportingSite};
 
+const base::FeatureParam<int> kMaxAttributionsPerEventSourceParam{
+    &blink::features::kConversionMeasurement,
+    "max_attributions_per_event_source",
+    AttributionConfig::EventLevelLimit::kDefaultMaxAttributionsPerEventSource};
+
+const base::FeatureParam<base::TimeDelta> kFirstNavigationReportWindowDeadline{
+    &blink::features::kConversionMeasurement, "first_report_window_deadline",
+    AttributionConfig::EventLevelLimit::kDefaultFirstReportWindowDeadline};
+
+const base::FeatureParam<base::TimeDelta> kSecondNavigationReportWindowDeadline{
+    &blink::features::kConversionMeasurement, "second_report_window_deadline",
+    AttributionConfig::EventLevelLimit::kDefaultSecondReportWindowDeadline};
+
+const base::FeatureParam<base::TimeDelta> kFirstEventReportWindowDeadline{
+    &blink::features::kConversionMeasurement,
+    "first_event_report_window_deadline",
+    AttributionConfig::EventLevelLimit::kDefaultFirstReportWindowDeadline};
+
+const base::FeatureParam<base::TimeDelta> kSecondEventReportWindowDeadline{
+    &blink::features::kConversionMeasurement,
+    "second_event_report_window_deadline",
+    AttributionConfig::EventLevelLimit::kDefaultSecondReportWindowDeadline};
+
+const base::FeatureParam<base::TimeDelta> kAggregateReportMinDelay{
+    &blink::features::kConversionMeasurement, "aggregate_report_min_delay",
+    AttributionConfig::AggregateLimit::kDefaultMinDelay};
+
+const base::FeatureParam<base::TimeDelta> kAggregateReportDelaySpan{
+    &blink::features::kConversionMeasurement, "aggregate_report_delay_span",
+    AttributionConfig::AggregateLimit::kDefaultDelaySpan};
+
+const base::FeatureParam<double> kNavigationMaxInfoGain{
+    &blink::features::kConversionMeasurement, "navigation_max_info_gain",
+    AttributionConfig::EventLevelLimit::kDefaultMaxNavigationInfoGain};
+
+const base::FeatureParam<double> kEventMaxInfoGain{
+    &blink::features::kConversionMeasurement, "event_max_info_gain",
+    AttributionConfig::EventLevelLimit::kDefaultMaxEventInfoGain};
+
+bool AreReportWindowDeadlinesValid(
+    base::TimeDelta first_report_window_deadline,
+    base::TimeDelta second_report_window_deadline) {
+  return !first_report_window_deadline.is_negative() &&
+         first_report_window_deadline < second_report_window_deadline;
 }
+
+}  // namespace
 
 bool AttributionConfig::Validate() const {
   if (max_sources_per_origin <= 0) {
@@ -40,6 +86,10 @@ bool AttributionConfig::Validate() const {
   }
 
   if (!aggregate_limit.Validate()) {
+    return false;
+  }
+
+  if (!destination_rate_limit.Validate()) {
     return false;
   }
 
@@ -78,6 +128,10 @@ bool AttributionConfig::RateLimitConfig::Validate() const {
     return false;
   }
 
+  if (!origins_per_site_window.is_positive()) {
+    return false;
+  }
+
   return true;
 }
 
@@ -107,15 +161,14 @@ bool AttributionConfig::EventLevelLimit::Validate() const {
     return false;
   }
 
-  if (first_navigation_report_window_deadline < base::TimeDelta() ||
-      second_navigation_report_window_deadline <=
-          first_navigation_report_window_deadline) {
+  if (!AreReportWindowDeadlinesValid(
+          first_navigation_report_window_deadline,
+          second_navigation_report_window_deadline)) {
     return false;
   }
 
-  if (first_event_report_window_deadline < base::TimeDelta() ||
-      second_event_report_window_deadline <=
-          first_event_report_window_deadline) {
+  if (!AreReportWindowDeadlinesValid(first_event_report_window_deadline,
+                                     second_event_report_window_deadline)) {
     return false;
   }
 
@@ -156,7 +209,46 @@ bool AttributionConfig::AggregateLimit::Validate() const {
   return true;
 }
 
-AttributionConfig::EventLevelLimit::EventLevelLimit() = default;
+AttributionConfig::AttributionConfig() = default;
+AttributionConfig::AttributionConfig(const AttributionConfig&) = default;
+AttributionConfig::AttributionConfig(AttributionConfig&&) = default;
+AttributionConfig::~AttributionConfig() = default;
+
+AttributionConfig& AttributionConfig::operator=(const AttributionConfig&) =
+    default;
+AttributionConfig& AttributionConfig::operator=(AttributionConfig&&) = default;
+
+AttributionConfig::EventLevelLimit::EventLevelLimit()
+    : max_attributions_per_event_source(
+          kMaxAttributionsPerEventSourceParam.Get()),
+      first_navigation_report_window_deadline(
+          kFirstNavigationReportWindowDeadline.Get()),
+      second_navigation_report_window_deadline(
+          kSecondNavigationReportWindowDeadline.Get()),
+      first_event_report_window_deadline(kFirstEventReportWindowDeadline.Get()),
+      second_event_report_window_deadline(
+          kSecondEventReportWindowDeadline.Get()),
+      max_navigation_info_gain(kNavigationMaxInfoGain.Get()),
+      max_event_info_gain(kEventMaxInfoGain.Get()) {
+  if (max_attributions_per_event_source <= 0) {
+    max_attributions_per_event_source = kDefaultMaxAttributionsPerEventSource;
+  }
+
+  if (!AreReportWindowDeadlinesValid(
+          first_navigation_report_window_deadline,
+          second_navigation_report_window_deadline)) {
+    first_navigation_report_window_deadline = kDefaultFirstReportWindowDeadline;
+    second_navigation_report_window_deadline =
+        kDefaultSecondReportWindowDeadline;
+  }
+
+  if (!AreReportWindowDeadlinesValid(first_event_report_window_deadline,
+                                     second_event_report_window_deadline)) {
+    first_event_report_window_deadline = kDefaultFirstReportWindowDeadline;
+    second_event_report_window_deadline = kDefaultSecondReportWindowDeadline;
+  }
+}
+
 AttributionConfig::EventLevelLimit::EventLevelLimit(const EventLevelLimit&) =
     default;
 AttributionConfig::EventLevelLimit::EventLevelLimit(EventLevelLimit&&) =
@@ -167,5 +259,32 @@ AttributionConfig::EventLevelLimit&
 AttributionConfig::EventLevelLimit::operator=(const EventLevelLimit&) = default;
 AttributionConfig::EventLevelLimit&
 AttributionConfig::EventLevelLimit::operator=(EventLevelLimit&&) = default;
+
+AttributionConfig::AggregateLimit::AggregateLimit()
+    : min_delay(kAggregateReportMinDelay.Get()),
+      delay_span(kAggregateReportDelaySpan.Get()) {
+  if (min_delay.is_negative()) {
+    min_delay = kDefaultMinDelay;
+  }
+  if (delay_span.is_negative()) {
+    delay_span = kDefaultDelaySpan;
+  }
+}
+
+bool AttributionConfig::DestinationRateLimit::Validate() const {
+  if (max_per_reporting_site <= 0) {
+    return false;
+  }
+
+  if (max_total < max_per_reporting_site) {
+    return false;
+  }
+
+  if (!rate_limit_window.is_positive()) {
+    return false;
+  }
+
+  return true;
+}
 
 }  // namespace content

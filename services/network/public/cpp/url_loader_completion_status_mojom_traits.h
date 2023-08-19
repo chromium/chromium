@@ -124,11 +124,6 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE)
     return status.should_collapse_initiator;
   }
 
-  static bool pervasive_payload_requested(
-      const network::URLLoaderCompletionStatus& status) {
-    return status.pervasive_payload_requested;
-  }
-
   static bool Read(network::mojom::URLLoaderCompletionStatusDataView data,
                    network::URLLoaderCompletionStatus* out);
 };

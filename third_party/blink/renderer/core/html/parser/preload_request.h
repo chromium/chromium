@@ -63,7 +63,6 @@ class CORE_EXPORT PreloadRequest {
 
   static std::unique_ptr<PreloadRequest> CreateIfNeeded(
       const String& initiator_name,
-      const TextPosition& initiator_position,
       const String& resource_url,
       const KURL& base_url,
       ResourceType resource_type,
@@ -75,6 +74,10 @@ class CORE_EXPORT PreloadRequest {
       RequestType request_type = kRequestTypePreload);
 
   Resource* Start(Document*);
+
+  void SetInitiatorPosition(const TextPosition& position) {
+    initiator_position_ = position;
+  }
 
   void SetDefer(FetchParameters::DeferOption defer) { defer_ = defer; }
   FetchParameters::DeferOption DeferOption() const { return defer_; }
@@ -140,12 +143,21 @@ class CORE_EXPORT PreloadRequest {
     is_attribution_reporting_eligible_img_or_script_ = eligible;
   }
 
+  void SetIsPotentiallyLCPElement(bool flag) {
+    is_potentially_lcp_element_ = flag;
+  }
+
+  void SetSharedStorageWritable(bool eligible) {
+    shared_storage_writable_ = eligible;
+  }
+
+  bool IsPotentiallyLCPElement() const { return is_potentially_lcp_element_; }
+
   absl::optional<float> GetResourceWidth() const { return resource_width_; }
   absl::optional<float> GetResourceHeight() const { return resource_height_; }
 
  private:
   PreloadRequest(const String& initiator_name,
-                 const TextPosition& initiator_position,
                  const String& resource_url,
                  const KURL& base_url,
                  ResourceType resource_type,
@@ -155,7 +167,6 @@ class CORE_EXPORT PreloadRequest {
                  const network::mojom::ReferrerPolicy referrer_policy,
                  ResourceFetcher::IsImageSet is_image_set)
       : initiator_name_(initiator_name),
-        initiator_position_(initiator_position),
         resource_url_(resource_url),
         base_url_(base_url),
         resource_type_(resource_type),
@@ -168,7 +179,7 @@ class CORE_EXPORT PreloadRequest {
   KURL CompleteURL(Document*);
 
   const String initiator_name_;
-  const TextPosition initiator_position_;
+  TextPosition initiator_position_{TextPosition::MinimumPosition()};
   const String resource_url_;
   const KURL base_url_;
   String charset_;
@@ -191,6 +202,8 @@ class CORE_EXPORT PreloadRequest {
   bool is_lazy_load_image_enabled_ = false;
   base::TimeTicks creation_time_ = base::TimeTicks::Now();
   bool is_attribution_reporting_eligible_img_or_script_ = false;
+  bool is_potentially_lcp_element_ = false;
+  bool shared_storage_writable_ = false;
 };
 
 typedef Vector<std::unique_ptr<PreloadRequest>> PreloadRequestStream;

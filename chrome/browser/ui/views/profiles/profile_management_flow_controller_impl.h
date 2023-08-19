@@ -6,10 +6,12 @@
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_MANAGEMENT_FLOW_CONTROLLER_IMPL_H_
 
 #include <memory>
+
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "google_apis/gaia/core_account_id.h"
 
+struct CoreAccountId;
 class Profile;
 class ProfilePickerWebContentsHost;
 class ProfileManagementStepController;
@@ -35,13 +37,15 @@ class ProfileManagementFlowControllerImpl
  protected:
   void SwitchToIdentityStepsFromPostSignIn(
       Profile* signed_in_profile,
+      const CoreAccountId& account_id,
       std::unique_ptr<content::WebContents> contents,
       StepSwitchFinishedCallback step_switch_finished_callback);
 
   virtual std::unique_ptr<ProfilePickerSignedInFlowController>
-  CreateSignedInFlowController(Profile* signed_in_profile,
-                               std::unique_ptr<content::WebContents> contents,
-                               FinishFlowCallback finish_flow_callback) = 0;
+  CreateSignedInFlowController(
+      Profile* signed_in_profile,
+      const CoreAccountId& account_id,
+      std::unique_ptr<content::WebContents> contents) = 0;
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Creates, registers and switches to steps to implement the identity flow
@@ -56,6 +60,7 @@ class ProfileManagementFlowControllerImpl
  private:
   std::unique_ptr<ProfileManagementStepController> CreatePostSignInStep(
       Profile* signed_in_profile,
+      const CoreAccountId& account_id,
       std::unique_ptr<content::WebContents> contents);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -63,8 +68,10 @@ class ProfileManagementFlowControllerImpl
       Profile* signed_in_profile,
       std::unique_ptr<content::WebContents> contents);
 
+  // `account_id` is empty is empty if the signin could not complete and must
+  // continue in a browser (e.g. for SAML).
   void HandleSignInCompleted(Profile* signed_in_profile,
-                             bool is_saml,
+                             const CoreAccountId& account_id,
                              std::unique_ptr<content::WebContents> contents);
 #endif
 };

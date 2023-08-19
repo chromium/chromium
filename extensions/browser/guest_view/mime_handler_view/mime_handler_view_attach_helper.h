@@ -89,13 +89,14 @@ class MimeHandlerViewAttachHelper : content::RenderProcessHostObserver {
 
  private:
   // Called after the content layer finishes preparing a frame for attaching to
-  // the embedder WebContents. If |plugin_rfh| is nullptr then attaching is not
-  // possible and the guest should be destroyed; otherwise it is safe to proceed
-  // to attaching the WebContentses.
-  void ResumeAttachOrDestroy(std::unique_ptr<MimeHandlerViewGuest> guest_view,
-                             int32_t element_instance_id,
-                             bool is_full_page_plugin,
-                             content::RenderFrameHost* plugin_rfh);
+  // the embedder WebContents. If |plugin_render_frame_host| is nullptr then
+  // attaching is not possible and the guest should be destroyed; otherwise it
+  // is safe to proceed to attaching the WebContentses.
+  void ResumeAttachOrDestroy(
+      std::unique_ptr<MimeHandlerViewGuest> guest_view,
+      int32_t element_instance_id,
+      bool is_full_page_plugin,
+      content::RenderFrameHost* plugin_render_frame_host);
 
   // Called on UI thread to start observing the frame associated with
   // |frame_tree_node_id| and have the renderer create a

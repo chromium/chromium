@@ -91,6 +91,9 @@ class MEDIA_GPU_EXPORT VP9Decoder : public AcceleratedVideoDecoder {
 
     // Schedule output (display) of |pic|.
     //
+    // If `show_existing_hdr` is not nullptr, then it contains the header of
+    // a show_existing_frame frame that requests the output of `pic`.
+    //
     // Note that returning from this method does not mean that |pic| has already
     // been outputted (displayed), but guarantees that all pictures will be
     // outputted in the same order as this method was called for them, and that

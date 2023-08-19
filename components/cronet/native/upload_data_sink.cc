@@ -53,7 +53,7 @@ class Cronet_UploadDataSinkImpl::NetworkTasks
 
   // The upload data sink that is owned by url request and always accessed on
   // the client thread. It always outlives |this| callback.
-  const raw_ptr<Cronet_UploadDataSinkImpl, DanglingUntriaged>
+  const raw_ptr<Cronet_UploadDataSinkImpl, AcrossTasksDanglingUntriaged>
       upload_data_sink_ = nullptr;
 
   // Executor for provider callback, used, but not owned, by |this|. Always

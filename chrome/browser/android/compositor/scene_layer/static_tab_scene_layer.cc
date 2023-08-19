@@ -19,6 +19,27 @@ using base::android::JavaParamRef;
 using base::android::JavaRef;
 
 namespace android {
+namespace {
+
+static bool LayerDraws(scoped_refptr<cc::slim::Layer> layer) {
+  if (!layer.get() || layer->opacity() == 0.0f ||
+      layer->hide_layer_and_subtree()) {
+    return false;
+  }
+
+  if (layer->draws_content()) {
+    return true;
+  }
+
+  for (const auto& child : layer->children()) {
+    if (LayerDraws(child)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+}  // namespace
 
 StaticTabSceneLayer::StaticTabSceneLayer(JNIEnv* env,
                                          const JavaRef<jobject>& jobj)
@@ -53,6 +74,18 @@ void StaticTabSceneLayer::UpdateTabLayer(JNIEnv* env,
   if (!content_layer_.get()) {
     content_layer_ = android::ContentLayer::Create(tab_content_manager_);
     layer_->AddChild(content_layer_->layer());
+  }
+  if (id != -1 && can_use_live_layer) {
+    // StaticLayout may not know that the live layer cannot draw. Ensure it gets
+    // a thumbnail if needed.
+    auto live_layer = tab_content_manager_->GetLiveLayer(id);
+    if (live_layer) {
+      live_layer->SetHideLayerAndSubtree(!can_use_live_layer);
+      if (!LayerDraws(live_layer)) {
+        std::vector<int> tab_ids = {id};
+        tab_content_manager_->UpdateVisibleIds(tab_ids, id);
+      }
+    }
   }
 
   content_layer_->SetProperties(id, can_use_live_layer, static_to_view_blend,

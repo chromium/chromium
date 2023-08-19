@@ -26,10 +26,8 @@ import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsStatics;
 import org.chromium.android_webview.AwCookieManager;
 import org.chromium.android_webview.AwDarkMode;
-import org.chromium.android_webview.AwFeatureMap;
 import org.chromium.android_webview.AwLocaleConfig;
 import org.chromium.android_webview.AwNetworkChangeNotifierRegistrationPolicy;
-import org.chromium.android_webview.AwOriginVerificationScheduler;
 import org.chromium.android_webview.AwProxyController;
 import org.chromium.android_webview.AwServiceWorkerController;
 import org.chromium.android_webview.AwThreadUtils;
@@ -38,7 +36,6 @@ import org.chromium.android_webview.HttpAuthDatabase;
 import org.chromium.android_webview.ProductConfig;
 import org.chromium.android_webview.R;
 import org.chromium.android_webview.WebViewChromiumRunQueue;
-import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.AwResource;
 import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.gfx.AwDrawFnImpl;
@@ -234,10 +231,6 @@ public class WebViewChromiumAwInit {
                         mFactory, awBrowserContext.getGeolocationPermissions());
                 mWebStorage =
                         new WebStorageAdapter(mFactory, mBrowserContext.getQuotaManagerBridge());
-                if (AwFeatureMap.getInstance().isEnabled(
-                            AwFeatures.WEBVIEW_RESTRICT_SENSITIVE_CONTENT)) {
-                    AwOriginVerificationScheduler.initAndScheduleAll(null);
-                }
                 mAwTracingController = getTracingController();
                 mServiceWorkerController = awBrowserContext.getServiceWorkerController();
                 mAwProxyController = new AwProxyController();

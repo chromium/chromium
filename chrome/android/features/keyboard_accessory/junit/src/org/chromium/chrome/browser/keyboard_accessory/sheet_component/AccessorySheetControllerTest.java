@@ -8,7 +8,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -34,13 +33,12 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.keyboard_accessory.AccessorySheetTrigger;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingMetricsRecorder;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Tab;
@@ -52,13 +50,10 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyObservable;
 import org.chromium.ui.test.util.modelutil.FakeViewProvider;
 
-import java.util.Arrays;
-import java.util.Collection;
-
 /**
  * Controller tests for the keyboard accessory bottom sheet component.
  */
-@RunWith(ParameterizedRobolectricTestRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {CustomShadowAsyncTask.class})
 public class AccessorySheetControllerTest {
     @Mock
@@ -83,19 +78,6 @@ public class AccessorySheetControllerTest {
 
     @Rule
     public TestRule mFeaturesProcessor = new Features.JUnitProcessor();
-
-    @ParameterizedRobolectricTestRunner.Parameters
-    public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][] {{false}, {true}});
-    }
-
-    public AccessorySheetControllerTest(boolean isKeyboardAccessoryEnabled) {
-        if (isKeyboardAccessoryEnabled) {
-            Features.getInstance().enable(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY);
-        } else {
-            Features.getInstance().disable(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY);
-        }
-    }
 
     @Before
     public void setUp() {
@@ -225,11 +207,6 @@ public class AccessorySheetControllerTest {
         mCoordinator.setTabs(mTabs);
         mModel.set(ACTIVE_TAB_INDEX, NO_ACTIVE_TAB);
         Runnable keyboardCallback = mModel.get(SHOW_KEYBOARD_CALLBACK);
-
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)) {
-            assertThat(keyboardCallback, is(nullValue()));
-            return;
-        }
 
         assertThat(keyboardCallback, is(notNullValue()));
         verifyNoMoreInteractions(mSheetVisibilityDelegate);

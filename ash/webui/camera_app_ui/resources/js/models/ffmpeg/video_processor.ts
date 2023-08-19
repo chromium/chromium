@@ -330,10 +330,18 @@ class FFMpegVideoProcessor {
       arguments: args,
       locateFile: (file: string) => {
         assert(file === 'ffmpeg.wasm');
-        return '/js/lib/ffmpeg.wasm';
+        // util.expandPath can't be used here since util includes
+        // load_time_data, which includes file under chrome://, but this file
+        // is in chrome-untrusted://.
+        // TODO(pihsun): Separate util into multiple files so we can include
+        // expandPath here.
+        // TODO(b/213408699): Separate files included in different scope
+        // (chrome://, chrome-untrusted://, worker) into different folder /
+        // tsconfig.json, so this can be caught at compile time.
+        return '../../../js/lib/ffmpeg.wasm';
       },
       noFSInit: true,  // It would be setup in preRun().
-      preRun: () => {
+      preRun: [() => {
         // The FS property are injected by emscripten at runtime.
         /* eslint-disable-next-line
              @typescript-eslint/naming-convention,
@@ -360,7 +368,7 @@ class FFMpegVideoProcessor {
         assert(stdin.fd === 0);
         assert(stdout.fd === 1);
         assert(stderr.fd === 2);
-      },
+      }],
       waitReadable: (callback: ReadableCallback) => {
         this.inputDevice.setReadableCallback(callback);
       },

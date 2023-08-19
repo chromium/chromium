@@ -112,10 +112,15 @@ void FocusController::FocusWindow(aura::Window* window) {
 
 void FocusController::ResetFocusWithinActiveWindow(aura::Window* window) {
   DCHECK(window);
-  if (!active_window_)
+  if (!active_window_) {
     return;
-  if (!active_window_->Contains(window))
+  }
+  if (!active_window_->Contains(window)) {
     return;
+  }
+  if (!rules_->CanFocusWindow(window, nullptr)) {
+    return;
+  }
   SetFocusedWindow(window);
 }
 

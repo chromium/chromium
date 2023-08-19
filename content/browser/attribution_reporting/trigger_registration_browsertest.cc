@@ -6,7 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "components/attribution_reporting/event_trigger_data.h"
-#include "components/attribution_reporting/registration_type.mojom.h"
+#include "components/attribution_reporting/registration_eligibility.mojom.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
@@ -32,7 +32,7 @@ namespace content {
 
 namespace {
 
-using ::attribution_reporting::mojom::RegistrationType;
+using ::attribution_reporting::mojom::RegistrationEligibility;
 using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::Pointee;
@@ -94,7 +94,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
       .WillRepeatedly(
           [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host,
-              RegistrationType) {
+              RegistrationEligibility) {
             data_hosts.push_back(GetRegisteredDataHost(std::move(host)));
             if (data_hosts.size() == 2) {
               loop.Quit();

@@ -16,6 +16,7 @@
 #include "dbus/mock_object_proxy.h"
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
+#include "services/device/public/mojom/geolocation_internals.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -211,7 +212,7 @@ TEST_F(GeolocationWifiDataProviderLinuxTest, GetAccessPointData) {
   ASSERT_TRUE(wlan_api_->GetAccessPointData(&access_point_data_set));
 
   ASSERT_EQ(1U, access_point_data_set.size());
-  const AccessPointData& access_point_data = *access_point_data_set.begin();
+  const auto& access_point_data = *access_point_data_set.begin();
 
   // Check the contents of the access point data.
   // The expected values come from CreateAccessPointProxyResponse() above.

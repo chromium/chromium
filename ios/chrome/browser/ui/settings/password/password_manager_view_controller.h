@@ -12,21 +12,26 @@
 #import "ios/chrome/browser/ui/settings/settings_root_table_view_controller.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 
-class Browser;
+class ChromeAccountManagerService;
 @protocol PasswordsSettingsCommands;
 @protocol PasswordManagerViewControllerDelegate;
 @protocol PasswordManagerViewControllerPresentationDelegate;
+class PrefService;
 
 namespace password_manager {
 struct CredentialUIEntry;
-}
+}  // namespace password_manager
 
 @interface PasswordManagerViewController
     : SettingsRootTableViewController <PasswordsConsumer,
                                        SettingsControllerProtocol>
 
-// The designated initializer. `browser` must not be nil.
-- (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
+// The designated initializer.
+- (instancetype)initWithChromeAccountManagerService:
+                    (ChromeAccountManagerService*)accountManagerService
+                                        prefService:(PrefService*)prefService
+                             shouldOpenInSearchMode:(BOOL)shouldOpenInSearchMode
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 

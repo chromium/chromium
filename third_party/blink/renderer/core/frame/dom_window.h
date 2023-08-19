@@ -42,7 +42,7 @@ struct BlinkTransferableMessage;
 // TODO(tkent): Rename DOMWindow to Window. The class was named as 'DOMWindow'
 // because WebKit already had KJS::Window.  We have no reasons to avoid
 // blink::Window now.
-class CORE_EXPORT DOMWindow : public EventTargetWithInlineData {
+class CORE_EXPORT DOMWindow : public EventTarget {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -117,8 +117,11 @@ class CORE_EXPORT DOMWindow : public EventTargetWithInlineData {
   // Indexed properties
   DOMWindow* AnonymousIndexedGetter(uint32_t index);
 
+  v8::Local<v8::Value> AnonymousNamedGetter(const AtomicString&);
+
   // Returns the opener and collects cross-origin access metrics.
-  DOMWindow* OpenerWithMetrics() const;
+  ScriptValue openerForBindings(v8::Isolate*) const;
+  void setOpenerForBindings(v8::Isolate*, ScriptValue, ExceptionState&);
 
   String SanitizedCrossDomainAccessErrorMessage(
       const LocalDOMWindow* accessing_window,
@@ -148,7 +151,8 @@ class CORE_EXPORT DOMWindow : public EventTargetWithInlineData {
   void InstallCoopAccessMonitor(
       LocalFrame* accessing_frame,
       network::mojom::blink::CrossOriginOpenerPolicyReporterParamsPtr
-          coop_reporter_params);
+          coop_reporter_params,
+      bool is_in_same_virtual_coop_related_group);
   // Whenever we detect that the enforcement of a report-only COOP policy would
   // have resulted in preventing access to this window, a report is potentially
   // sent when calling this function.
@@ -161,6 +165,13 @@ class CORE_EXPORT DOMWindow : public EventTargetWithInlineData {
   void RecordWindowProxyAccessMetrics(
       mojom::blink::WebFeature property_access,
       mojom::blink::WebFeature property_access_from_other_page) const;
+
+  // Returns whether access should be limited by Cross-Origin-Opener-Policy:
+  // restrict-properties. This is the case for pages in the same
+  // CoopRelatedGroup that can reach each other WindowProxies but do not belong
+  // to the same browsing context group. `isolate` represents the isolate in
+  // which the Window access is taking place.
+  bool IsAccessBlockedByCoopRestrictProperties(v8::Isolate* isolate) const;
 
  protected:
   explicit DOMWindow(Frame&);
@@ -219,6 +230,7 @@ class CORE_EXPORT DOMWindow : public EventTargetWithInlineData {
         reporter;
     bool endpoint_defined;
     WTF::String reported_window_url;
+    bool is_in_same_virtual_coop_related_group = false;
   };
   GC_PLUGIN_IGNORE("https://crbug.com/1381979")
   WTF::Vector<CoopAccessMonitor> coop_access_monitor_;

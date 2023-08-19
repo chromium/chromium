@@ -107,12 +107,9 @@ class ToolbarIconContainerView : public views::View,
   // Determine whether the container shows its highlight border.
   const bool uses_highlight_;
 
-  // Hacky; see comments in UpdateHighlight().
-  bool ever_painted_highlight_ = false;
-
   // The main view is nominally always present and is last child in the view
   // hierarchy.
-  raw_ptr<views::View, DanglingUntriaged> main_item_ = nullptr;
+  raw_ptr<views::View, AcrossTasksDanglingUntriaged> main_item_ = nullptr;
 
   // Override for the icon color. If not set, |kColorToolbarButtonIcon| is used.
   absl::optional<SkColor> icon_color_;

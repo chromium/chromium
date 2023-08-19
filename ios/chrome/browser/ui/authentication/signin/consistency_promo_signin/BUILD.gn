@@ -5,7 +5,6 @@
 import("//build/config/chrome_build.gni")
 
 source_set("consistency_promo_signin") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "consistency_promo_signin_coordinator.h",
     "consistency_promo_signin_coordinator.mm",
@@ -42,13 +41,11 @@ source_set("consistency_promo_signin") {
 }
 
 source_set("layout") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "consistency_layout_delegate.h" ]
   deps = [ "//ui/base" ]
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "consistency_promo_signin_mediator_unittest.mm" ]
   deps = [
@@ -74,17 +71,16 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "consistency_promo_signin_coordinator_egtest.mm" ]
   deps = [
     "//base",
     "//base/test:test_support",
+    "//components/sync/base:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin:fake_system_identity",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
     "//ios/chrome/browser/ui/authentication/signin:constants",

@@ -6,10 +6,6 @@
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
 #import "ios/showcase/first_run/sc_first_run_default_screen_view_controller.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface SCFirstRunDefaultScreenCoordinator () <
     PromoStyleViewControllerDelegate>
 

@@ -53,6 +53,8 @@ source_set("clients") {
     "mojo_video_decoder.h",
     "mojo_video_encode_accelerator.cc",
     "mojo_video_encode_accelerator.h",
+    "mojo_video_encoder_metrics_provider.cc",
+    "mojo_video_encoder_metrics_provider.h",
   ]
 
   if (is_android) {
@@ -114,6 +116,7 @@ source_set("unit_tests") {
     "mojo_decryptor_unittest.cc",
     "mojo_renderer_unittest.cc",
     "mojo_video_encode_accelerator_unittest.cc",
+    "mojo_video_encoder_metrics_provider_unittest.cc",
   ]
 
   deps = [

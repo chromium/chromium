@@ -64,6 +64,7 @@ class MediaController : public mojom::MediaController,
   void Raise() override;
   void SetMute(bool mute) override;
   void RequestMediaRemoting() override;
+  void EnterAutoPictureInPicture() override;
 
   // mojom::MediaSessionObserver overrides.
   void MediaSessionInfoChanged(

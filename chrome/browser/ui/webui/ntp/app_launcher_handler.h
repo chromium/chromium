@@ -17,13 +17,13 @@
 #include "chrome/browser/extensions/install_observer.h"
 #include "chrome/browser/extensions/install_tracker.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow_delegate.h"
-#include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registrar_observer.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -32,6 +32,7 @@
 #include "content/public/browser/web_ui_message_handler.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class ExtensionEnableFlow;
@@ -62,7 +63,7 @@ class AppLauncherHandler
       public extensions::ExtensionUninstallDialog::Delegate,
       public ExtensionEnableFlowDelegate,
       public extensions::InstallObserver,
-      public web_app::AppRegistrarObserver,
+      public web_app::WebAppRegistrarObserver,
       public web_app::WebAppInstallManagerObserver,
       public extensions::ExtensionRegistryObserver {
  public:
@@ -111,7 +112,7 @@ class AppLauncherHandler
       webapps::WebappUninstallSource uninstall_source) override;
   void OnWebAppInstallManagerDestroyed() override;
 
-  // web_app::AppRegistrarObserver:
+  // web_app::WebAppRegistrarObserver:
   void OnWebAppInstallTimeChanged(const web_app::AppId& app_id,
                                   const base::Time& time) override;
   void OnAppRegistrarDestroyed() override;
@@ -244,7 +245,7 @@ class AppLauncherHandler
   const raw_ptr<web_app::WebAppProvider> web_app_provider_;
 
   base::ScopedObservation<web_app::WebAppRegistrar,
-                          web_app::AppRegistrarObserver>
+                          web_app::WebAppRegistrarObserver>
       web_apps_observation_{this};
 
   base::ScopedObservation<web_app::WebAppInstallManager,
@@ -276,7 +277,7 @@ class AppLauncherHandler
 
   // The id of the extension we are prompting the user about (either enable or
   // uninstall).
-  std::string extension_id_prompting_;
+  extensions::ExtensionId extension_id_prompting_;
 
   // When true, we ignore changes to the underlying data rather than immediately
   // refreshing. This is useful when making many batch updates to avoid flicker.

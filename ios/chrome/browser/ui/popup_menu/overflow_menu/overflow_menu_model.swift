@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import SwiftUI
+import Combine
 
 /// Holds all the data necessary to create the views for the overflow menu.
 @objcMembers public class OverflowMenuModel: NSObject, ObservableObject {
   /// The destinations for the overflow menu.
-  public var destinations: [OverflowMenuDestination]
+  @Published public var destinations: [OverflowMenuDestination]
 
   /// The action groups for the overflow menu.
   public var actionGroups: [OverflowMenuActionGroup]

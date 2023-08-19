@@ -42,6 +42,11 @@ class MockVideoSourceProvider
       bool raise_event_if_virtual_devices_already_present) override {
     NOTIMPLEMENTED();
   }
+  void RegisterDevicesChangedObserver(
+      mojo::PendingRemote<video_capture::mojom::DevicesChangedObserver>
+          observer) override {
+    NOTIMPLEMENTED();
+  }
 
   void Close(CloseCallback callback) override;
 

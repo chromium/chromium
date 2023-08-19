@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
 
+#include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/css/resolver/scoped_style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -41,8 +42,9 @@
 #include "third_party/blink/renderer/core/editing/dom_selection.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/frame/picture_in_picture_controller.h"
+#include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
-#include "third_party/blink/renderer/core/html/html_details_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_map_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -180,20 +182,15 @@ Node* TreeScope::AncestorInThisScope(Node* node) const {
 void TreeScope::AddImageMap(HTMLMapElement& image_map) {
   const AtomicString& name = image_map.GetName();
   const AtomicString& id = image_map.GetIdAttribute();
-  if (RuntimeEnabledFeatures::HTMLMapToImgMatchingByNameAndIdEnabled()) {
-    if (!name && !id)
-      return;
-  } else {
-    if (!name)
-      return;
+  if (!name && !id) {
+    return;
   }
   if (!image_maps_by_name_)
     image_maps_by_name_ = MakeGarbageCollected<TreeOrderedMap>();
   if (name)
     image_maps_by_name_->Add(name, image_map);
-  if (RuntimeEnabledFeatures::HTMLMapToImgMatchingByNameAndIdEnabled()) {
-    if (id)
-      image_maps_by_name_->Add(id, image_map);
+  if (id) {
+    image_maps_by_name_->Add(id, image_map);
   }
 }
 
@@ -202,9 +199,8 @@ void TreeScope::RemoveImageMap(HTMLMapElement& image_map) {
     return;
   if (const AtomicString& name = image_map.GetName())
     image_maps_by_name_->Remove(name, image_map);
-  if (RuntimeEnabledFeatures::HTMLMapToImgMatchingByNameAndIdEnabled()) {
-    if (const AtomicString& id = image_map.GetIdAttribute())
-      image_maps_by_name_->Remove(id, image_map);
+  if (const AtomicString& id = image_map.GetIdAttribute()) {
+    image_maps_by_name_->Remove(id, image_map);
   }
 }
 
@@ -217,9 +213,9 @@ HTMLMapElement* TreeScope::GetImageMap(const String& url) const {
   if (hash_pos == kNotFound)
     return nullptr;
   String name = url.Substring(hash_pos + 1);
-  if (RuntimeEnabledFeatures::HTMLMapToImgMatchingByNameAndIdEnabled() &&
-      name.empty())
+  if (name.empty()) {
     return nullptr;
+  }
   return To<HTMLMapElement>(
       image_maps_by_name_->GetElementByMapName(AtomicString(name), *this));
 }
@@ -495,12 +491,15 @@ Node* TreeScope::FindAnchor(const String& fragment) {
 }
 
 void TreeScope::AdoptIfNeeded(Node& node) {
+  DCHECK(!node.IsDocumentNode());
+  if (LIKELY(&node.GetTreeScope() == this)) {
+    return;
+  }
+
   // Script is forbidden to protect against event handlers firing in the middle
   // of rescoping in |didMoveToNewDocument| callbacks. See
   // https://crbug.com/605766 and https://crbug.com/606651.
   ScriptForbiddenScope forbid_script;
-  DCHECK(this);
-  DCHECK(!node.IsDocumentNode());
   TreeScopeAdopter adopter(node, *this);
   if (adopter.NeedsScopeChange())
     adopter.Execute();
@@ -591,6 +590,39 @@ Element* TreeScope::AdjustedElement(const Element& target) const {
       return const_cast<Element*>(adjusted_target);
   }
   return nullptr;
+}
+
+StyleSheetList& TreeScope::StyleSheets() {
+  if (!style_sheet_list_) {
+    style_sheet_list_ = MakeGarbageCollected<StyleSheetList>(this);
+  }
+  return *style_sheet_list_;
+}
+
+Element* TreeScope::activeElement() const {
+  if (Element* element = AdjustedFocusedElement()) {
+    return element;
+  }
+  return document_ == this ? document_->body() : nullptr;
+}
+
+HeapVector<Member<Animation>> TreeScope::getAnimations() {
+  return GetDocument().GetDocumentAnimations().getAnimations(*this);
+}
+
+Element* TreeScope::pointerLockElement() {
+  UseCounter::Count(GetDocument(), WebFeature::kShadowRootPointerLockElement);
+  const Element* target = GetDocument().PointerLockElement();
+  return target ? AdjustedElement(*target) : nullptr;
+}
+
+Element* TreeScope::fullscreenElement() {
+  return Fullscreen::FullscreenElementForBindingFrom(*this);
+}
+
+Element* TreeScope::pictureInPictureElement() {
+  return PictureInPictureController::From(GetDocument())
+      .PictureInPictureElement(*this);
 }
 
 uint16_t TreeScope::ComparePosition(const TreeScope& other_scope) const {
@@ -694,10 +726,10 @@ void TreeScope::Trace(Visitor* visitor) const {
   visitor->Trace(selection_);
   visitor->Trace(elements_by_id_);
   visitor->Trace(image_maps_by_name_);
-  visitor->Trace(details_name_map_);
   visitor->Trace(scoped_style_resolver_);
   visitor->Trace(radio_button_group_scope_);
   visitor->Trace(svg_tree_scoped_resources_);
+  visitor->Trace(style_sheet_list_);
   visitor->Trace(adopted_style_sheets_);
 }
 

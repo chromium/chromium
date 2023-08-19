@@ -10,7 +10,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
-#include "chrome/browser/vr/gl_texture_location.h"
 #include "chrome/browser/vr/graphics_delegate.h"
 #include "chrome/browser/vr/scheduler_browser_renderer_interface.h"
 #include "chrome/browser/vr/vr_export.h"
@@ -27,7 +26,6 @@ namespace vr {
 enum class UiTestOperationResult;
 class BrowserUiInterface;
 class InputDelegate;
-class PlatformUiInputDelegate;
 class BrowserRendererBrowserInterface;
 class SchedulerDelegate;
 class UiInterface;
@@ -100,8 +98,6 @@ class VR_EXPORT BrowserRenderer : public SchedulerBrowserRendererInterface {
   std::unique_ptr<GraphicsDelegate> graphics_delegate_;
   std::unique_ptr<InputDelegate> input_delegate_;
   std::unique_ptr<InputDelegate> input_delegate_for_testing_;
-
-  std::unique_ptr<PlatformUiInputDelegate> vr_dialog_input_delegate_;
 
   raw_ptr<BrowserRendererBrowserInterface, DanglingUntriaged> browser_;
 

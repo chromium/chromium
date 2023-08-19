@@ -83,6 +83,10 @@ class StatefulSSLHostStateDelegate : public content::SSLHostStateDelegate,
   void RevokeUserAllowExceptions(const std::string& host) override;
   bool HasAllowException(const std::string& host,
                          content::StoragePartition* storage_partition) override;
+  // Returns true if the user has allowed a certificate error exception or HTTP
+  // exception for any host.
+  bool HasAllowExceptionForAnyHost(
+      content::StoragePartition* storage_partition) override;
 
   void SetHttpsEnforcementForHost(
       const std::string& host,
@@ -158,6 +162,10 @@ class StatefulSSLHostStateDelegate : public content::SSLHostStateDelegate,
   base::Value::Dict* GetValidCertDecisionsDict(
       CreateDictionaryEntriesDisposition create_entries,
       base::Value::Dict& dict);
+
+  bool HasCertAllowExceptionForAnyHost(
+      content::StoragePartition* storage_partition);
+  bool IsHttpAllowedForAnyHost(content::StoragePartition* storage_partition);
 
   std::unique_ptr<base::Clock> clock_;
   raw_ptr<content::BrowserContext> browser_context_;

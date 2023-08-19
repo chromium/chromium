@@ -76,8 +76,8 @@ void ParamTraits<net::HashValue>::Write(base::Pickle* m, const param_type& p) {
 bool ParamTraits<net::HashValue>::Read(const base::Pickle* m,
                                        base::PickleIterator* iter,
                                        param_type* r) {
-  std::string str;
-  return ReadParam(m, iter, &str) && r->FromString(str);
+  base::StringPiece encoded;
+  return iter->ReadStringPiece(&encoded) && r->FromString(encoded);
 }
 
 void ParamTraits<net::HashValue>::Log(const param_type& p, std::string* l) {
@@ -106,21 +106,22 @@ void ParamTraits<net::IPEndPoint>::Log(const param_type& p, std::string* l) {
 }
 
 void ParamTraits<net::IPAddress>::Write(base::Pickle* m, const param_type& p) {
-  base::StackVector<uint8_t, 16> bytes;
+  absl::InlinedVector<uint8_t, 16> bytes;
   for (uint8_t byte : p.bytes())
-    bytes->push_back(byte);
+    bytes.push_back(byte);
   WriteParam(m, bytes);
 }
 
 bool ParamTraits<net::IPAddress>::Read(const base::Pickle* m,
                                        base::PickleIterator* iter,
                                        param_type* p) {
-  base::StackVector<uint8_t, 16> bytes;
+  absl::InlinedVector<uint8_t, 16> bytes;
   if (!ReadParam(m, iter, &bytes))
     return false;
-  if (bytes->size() > 16)
+  if (bytes.size() > 16) {
     return false;
-  *p = net::IPAddress(bytes->data(), bytes->size());
+  }
+  *p = net::IPAddress(bytes.data(), bytes.size());
   return true;
 }
 

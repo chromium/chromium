@@ -66,6 +66,9 @@ ChromeHintsManager::ChromeHintsManager(
                    std::move(push_notification_manager),
                    optimization_guide_logger),
       profile_(profile) {
+  if (!optimization_guide::features::IsSRPFetchingEnabled()) {
+    return;
+  }
   NavigationPredictorKeyedService* navigation_predictor_service =
       NavigationPredictorKeyedServiceFactory::GetForProfile(profile);
   if (navigation_predictor_service)

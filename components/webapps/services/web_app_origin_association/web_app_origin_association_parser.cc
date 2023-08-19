@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/json/json_reader.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/webapps/services/web_app_origin_association/web_app_origin_association_uma_util.h"
 #include "url/gurl.h"
@@ -29,19 +30,19 @@ mojom::WebAppOriginAssociationPtr WebAppOriginAssociationParser::Parse(
   using Result = webapps::WebAppOriginAssociationMetrics::ParseResult;
   auto result =
       [&]() -> base::expected<mojom::WebAppOriginAssociationPtr, Result> {
-    auto parsed_data = base::JSONReader::ReadAndReturnValueWithError(data);
-    if (!parsed_data.has_value()) {
-      AddErrorInfo(parsed_data.error().message, parsed_data.error().line,
-                   parsed_data.error().column);
-      return base::unexpected(Result::kParseFailedInvalidJson);
-    };
-    if (!parsed_data->is_dict()) {
+    ASSIGN_OR_RETURN(auto parsed_data,
+                     base::JSONReader::ReadAndReturnValueWithError(data),
+                     [&](base::JSONReader::Error error) {
+                       AddErrorInfo(error.message, error.line, error.column);
+                       return Result::kParseFailedInvalidJson;
+                     });
+    if (!parsed_data.is_dict()) {
       AddErrorInfo("No valid JSON object found.");
       return base::unexpected(Result::kParseFailedNotADictionary);
     }
 
     auto association = mojom::WebAppOriginAssociation::New();
-    association->apps = ParseAssociatedWebApps(parsed_data->GetDict());
+    association->apps = ParseAssociatedWebApps(parsed_data.GetDict());
     return association;
   }();
   webapps::WebAppOriginAssociationMetrics::RecordParseResult(

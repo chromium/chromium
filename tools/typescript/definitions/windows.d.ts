@@ -58,6 +58,13 @@ declare namespace chrome {
       setSelfAsOpener?: boolean;
     }
 
+    interface QueryOptions {
+      populate?: boolean;
+      windowTypes?: WindowType[];
+    }
+
     export function create(createData?: CreateData): Promise<Window>;
+
+    export function getAll(queryOptions?: QueryOptions): Promise<Window[]>;
   }
 }

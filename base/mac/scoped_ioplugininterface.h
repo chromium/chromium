@@ -7,7 +7,7 @@
 
 #include <IOKit/IOKitLib.h>
 
-#include "base/mac/scoped_typeref.h"
+#include "base/apple/scoped_typeref.h"
 
 namespace base::mac {
 

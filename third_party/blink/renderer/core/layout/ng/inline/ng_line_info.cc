@@ -182,6 +182,15 @@ bool NGLineInfo::ShouldHangTrailingSpaces() const {
   NOTREACHED();
 }
 
+bool NGLineInfo::IsHyphenated() const {
+  for (const NGInlineItemResult& item_result : base::Reversed(Results())) {
+    if (item_result.Length()) {
+      return item_result.is_hyphenated;
+    }
+  }
+  return false;
+}
+
 void NGLineInfo::UpdateTextAlign() {
   text_align_ = GetTextAlign(IsLastLine());
   allow_hang_for_alignment_ = false;

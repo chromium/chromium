@@ -29,6 +29,7 @@ class CORE_EXPORT MediaValuesDynamic : public MediaValues {
   bool DeviceSupportsHDR() const override;
   int ColorBitsPerComponent() const override;
   int MonochromeBitsPerComponent() const override;
+  bool InvertedColors() const override;
   mojom::blink::PointerType PrimaryPointerType() const override;
   int AvailablePointerTypes() const override;
   mojom::blink::HoverType PrimaryHoverType() const override;
@@ -44,6 +45,7 @@ class CORE_EXPORT MediaValuesDynamic : public MediaValues {
   mojom::blink::PreferredContrast GetPreferredContrast() const override;
   bool PrefersReducedMotion() const override;
   bool PrefersReducedData() const override;
+  bool PrefersReducedTransparency() const override;
   ForcedColors GetForcedColors() const override;
   NavigationControls GetNavigationControls() const override;
   int GetHorizontalViewportSegments() const override;
@@ -66,6 +68,8 @@ class CORE_EXPORT MediaValuesDynamic : public MediaValues {
   float RicFontSize(float zoom) const override;
   float LineHeight(float zoom) const override;
   float RootLineHeight(float zoom) const override;
+  float CapFontSize(float zoom) const override;
+  float RcapFontSize(float zoom) const override;
   double ViewportWidth() const override;
   double ViewportHeight() const override;
   double SmallViewportWidth() const override;

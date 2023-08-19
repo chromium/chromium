@@ -339,7 +339,7 @@ void PushMessagingManager::Register(PushMessagingManager::RegisterData data) {
           bool user_gesture = data.user_gesture;
 
           DCHECK_EQ(data.requesting_storage_key,
-                    render_frame_host_impl->storage_key());
+                    render_frame_host_impl->GetStorageKey());
 
           render_frame_host_impl->GetBrowserContext()
               ->GetPermissionController()

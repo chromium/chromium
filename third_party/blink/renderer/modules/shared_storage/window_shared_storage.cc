@@ -54,7 +54,15 @@ const char WindowSharedStorageImpl::kSupplementName[] =
 
 }  // namespace
 
-SharedStorage* WindowSharedStorage::sharedStorage(LocalDOMWindow& window) {
+SharedStorage* WindowSharedStorage::sharedStorage(
+    LocalDOMWindow& window,
+    ExceptionState& exception_state) {
+  if (window.GetSecurityOrigin()->IsOpaque()) {
+    exception_state.ThrowSecurityError(
+        "sharedStorage is not allowed in an opaque origin context");
+    return nullptr;
+  }
+
   return WindowSharedStorageImpl::From(window).GetOrCreate(window);
 }
 

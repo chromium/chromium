@@ -4,10 +4,14 @@ Source URL: http://git.tukaani.org/xz.git
 Version: 5.0.5 (git tag v5.0.5, a1bfda3214ed4a39a28fe609364be133c9f0f200,
          2013-06-30 19:55:49 +0300)
 License: Public domain/license grant, LGPL 2.1, GPL 2, GPL 3
+License File: LICENSE
+Shipped: yes
 
 Description:
 XZ Utils is general-purpose data compression software implementing the
-modified Lempel-Ziv-Markov chain algorithm (LZMA2).
+modified Lempel-Ziv-Markov chain algorithm (LZMA2). This is used by the Mac
+diff updaters, not Chrome itself. Still, we have set Shipped to yes to ensure
+the license is included in chrome://credits.
 
 Local Modifications:
  - None.

@@ -11,7 +11,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/ptr_util.h"
 #include "url/android/gurl_android.h"
-#include "url/url_jni_headers/Origin_jni.h"
+#include "url/origin_jni_headers/Origin_jni.h"
 
 namespace url {
 

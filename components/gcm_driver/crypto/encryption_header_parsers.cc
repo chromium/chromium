@@ -86,7 +86,7 @@ bool EncryptionHeaderIterator::GetNext() {
     if (base::EqualsCaseInsensitiveASCII(name, "keyid")) {
       if (found_keyid)
         return false;
-      keyid_.assign(value.data(), value.size());
+      keyid_ = value;
       found_keyid = true;
     } else if (base::EqualsCaseInsensitiveASCII(name, "salt")) {
       if (found_salt || !ValueToDecodedString(value, &salt_))
@@ -135,7 +135,7 @@ bool CryptoKeyHeaderIterator::GetNext() {
     if (base::EqualsCaseInsensitiveASCII(name, "keyid")) {
       if (found_keyid)
         return false;
-      keyid_.assign(value.data(), value.size());
+      keyid_ = value;
       found_keyid = true;
     } else if (base::EqualsCaseInsensitiveASCII(name, "aesgcm128")) {
       if (found_aesgcm128 || !ValueToDecodedString(value, &aesgcm128_))

@@ -132,6 +132,11 @@ class MetricsServiceClient {
   // ownership.
   virtual void OnEnvironmentUpdate(std::string* serialized_environment) {}
 
+  // Collects child process histograms and merges them into StatisticsRecorder.
+  // Called when child process histograms need to be merged ASAP. For example,
+  // on Android, when the browser was backgrounded.
+  virtual void MergeSubprocessHistograms() {}
+
   // Called prior to a metrics log being closed, allowing the client to collect
   // extra histograms that will go in that log. Asynchronous API - the client
   // implementation should call |done_callback| when complete.

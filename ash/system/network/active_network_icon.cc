@@ -35,11 +35,6 @@ namespace {
 
 const int kPurgeDelayMs = 500;
 
-bool IsTrayIcon(network_icon::IconType icon_type) {
-  return icon_type == network_icon::ICON_TYPE_TRAY_REGULAR ||
-         icon_type == network_icon::ICON_TYPE_TRAY_OOBE;
-}
-
 }  // namespace
 
 ActiveNetworkIcon::ActiveNetworkIcon(TrayNetworkStateModel* model)
@@ -234,8 +229,13 @@ gfx::ImageSkia ActiveNetworkIcon::GetDualImageCellular(
   if (!active_cellular) {
     if (animating)
       *animating = false;
+    // For the `kCellular` icon in the `UnifiedSystemTray`: if the tray is
+    // active, the icon type should be used to get the correct color.
+    if (icon_type != network_icon::IconType::ICON_TYPE_TRAY_ACTIVE) {
+      icon_type = network_icon::IconType::ICON_TYPE_LIST;
+    }
     return network_icon::GetDisconnectedImageForNetworkType(
-        color_provider, NetworkType::kCellular);
+        color_provider, NetworkType::kCellular, icon_type);
   }
 
   return network_icon::GetImageForNonVirtualNetwork(
@@ -252,16 +252,8 @@ gfx::ImageSkia ActiveNetworkIcon::GetDefaultImageImpl(
     VLOG(1) << __func__ << ": No network";
     return GetDefaultImageForNoNetwork(color_provider, icon_type, animating);
   }
-  // Don't show connected Ethernet in the tray unless a VPN is present.
-  const NetworkStateProperties* active_vpn = model_->active_vpn();
-  if (network->type == NetworkType::kEthernet && IsTrayIcon(icon_type) &&
-      !active_vpn) {
-    if (animating)
-      *animating = false;
-    VLOG(1) << __func__ << ": Ethernet: No icon";
-    return gfx::ImageSkia();
-  }
 
+  const NetworkStateProperties* active_vpn = model_->active_vpn();
   // Connected network with a connecting VPN.
   if (chromeos::network_config::StateIsConnected(network->connection_state) &&
       active_vpn &&

@@ -44,28 +44,31 @@ export const GOOGLE_SEARCH_BASE_URL = 'https://www.google.com/search';
 // Use Layout 1 as default for tests that do not care which layout.
 export function createSampleVisits(
     numVisits: number = LAYOUT_1_MIN_VISITS,
-    numImageVisits: number = LAYOUT_1_MIN_IMAGE_VISITS): URLVisit[] {
-  const result: URLVisit[] = [];
-
-  // Create SRP visit.
-  result.push(createVisit({
-    visitId: BigInt(0),
-    normalizedUrl: {url: `${GOOGLE_SEARCH_BASE_URL}?q=foo`},
-    urlForDisplay: 'www.google.com',
-    pageTitle: 'SRP',
-  }));
-
-  // Create general visits.
-  for (let i = 1; i <= numVisits; i++) {
-    result.push(createVisit({
-      visitId: BigInt(i),
-      normalizedUrl: {url: `https://www.foo.com/${i}`},
-      urlForDisplay: `www.foo.com/${i}`,
-      pageTitle: `Test Title ${i}`,
-      hasUrlKeyedImage: i <= numImageVisits,
-    }));
+    numImageVisits: number = LAYOUT_1_MIN_IMAGE_VISITS,
+    imageVisitsFirst: boolean = true): URLVisit[] {
+  const nonSrpVisits = Array(numVisits).fill(0).map((_, i) => {
+    const id = i + 1;
+    return createVisit({
+      visitId: BigInt(id),
+      normalizedUrl: {url: `https://www.foo.com/${id}`},
+      urlForDisplay: `www.foo.com/${id}`,
+      pageTitle: `Test Title ${id}`,
+      hasUrlKeyedImage: i < numImageVisits,
+    });
+  });
+  if (!imageVisitsFirst) {
+    nonSrpVisits.reverse();
   }
-  return result;
+
+  return [
+    createVisit({
+      visitId: BigInt(0),
+      normalizedUrl: {url: `${GOOGLE_SEARCH_BASE_URL}?q=foo`},
+      urlForDisplay: 'www.google.com',
+      pageTitle: 'SRP',
+    }),
+    ...nonSrpVisits,
+  ];
 }
 
 export function createRelatedSearches(num: number = MIN_RELATED_SEARCHES):

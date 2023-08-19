@@ -19,6 +19,7 @@
 #include "components/history/core/browser/history_database.h"
 #include "components/history/core/browser/history_db_task.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/history/core/test/history_service_test_util.h"
 #include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 #include "components/optimization_guide/content/browser/test_page_content_annotator.h"
 #include "components/optimization_guide/core/execution_status.h"
@@ -326,10 +327,74 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
     service->Annotate(visit);
   }
 
+  void WaitForHistoryServiceToFinish() {
+    base::RunLoop().RunUntilIdle();
+    history::HistoryService* history_service =
+        HistoryServiceFactory::GetForProfile(
+            browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS);
+    if (!history_service) {
+      return;
+    }
+    history::BlockUntilHistoryProcessesPendingRequests(history_service);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   bool load_model_on_startup_ = true;
 };
+
+IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
+                       ContentGetsAnnotatedWhenPageTitleChanges) {
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  GURL url(embedded_test_server()->GetURL("a.com", "/random_title.html"));
+
+  // Navigate to the page for the first time.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Navigate to the page for the second time. This time the page title changes,
+  // but the url stays the same.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  int expected_count = 2;
+#else
+  int expected_count = 0;
+#endif
+
+  RetryForHistogramUntilCountReached(
+      &histogram_tester,
+      "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated",
+      expected_count);
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  absl::optional<history::VisitContentAnnotations> got_content_annotations =
+      GetContentAnnotationsForURL(url);
+  ASSERT_TRUE(got_content_annotations.has_value());
+  EXPECT_TRUE(got_content_annotations->model_annotations.categories.empty());
+#endif
+
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated",
+      expected_count);
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated", true,
+      2);
+#else
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated", false,
+      2);
+#endif
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  WaitForHistoryServiceToFinish();
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::PageContentAnnotations2::kEntryName);
+  EXPECT_EQ(2u, entries.size());
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+}
 
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
                        ModelExecutes) {
@@ -369,22 +434,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
 #endif
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-
-  RetryForHistogramUntilCountReached(
-      &histogram_tester,
-      "OptimizationGuide.PageContentAnnotationsService."
-      "ContentAnnotationsStorageStatus",
-      1);
-
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PageContentAnnotationsService."
-      "ContentAnnotationsStorageStatus",
-      PageContentAnnotationsStorageStatus::kSuccess, 1);
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PageContentAnnotationsService."
-      "ContentAnnotationsStorageStatus.ModelAnnotations",
-      PageContentAnnotationsStorageStatus::kSuccess, 1);
-
+  WaitForHistoryServiceToFinish();
   absl::optional<history::VisitContentAnnotations> got_content_annotations =
       GetContentAnnotationsForURL(url);
   ASSERT_TRUE(got_content_annotations.has_value());
@@ -551,24 +601,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceRemoteMetadataBrowserTest,
       ->AddHintForTesting(url, proto::PAGE_ENTITIES, metadata);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  RetryForHistogramUntilCountReached(
-      &histogram_tester,
-      "OptimizationGuide.PageContentAnnotationsService."
-      "ContentAnnotationsStorageStatus",
-      2);
-
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PageContentAnnotationsService."
-      "ContentAnnotationsStorageStatus",
-      PageContentAnnotationsStorageStatus::kSuccess, 2);
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PageContentAnnotationsService."
-      "ContentAnnotationsStorageStatus.ModelAnnotations",
-      PageContentAnnotationsStorageStatus::kSuccess, 1);
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PageContentAnnotationsService."
-      "ContentAnnotationsStorageStatus.RemoteMetadata",
-      PageContentAnnotationsStorageStatus::kSuccess, 1);
+  WaitForHistoryServiceToFinish();
 
   absl::optional<history::VisitContentAnnotations> got_content_annotations =
       GetContentAnnotationsForURL(url);
@@ -606,20 +639,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceRemoteMetadataBrowserTest,
       ->AddHintForTesting(url, proto::PAGE_ENTITIES, metadata);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  RetryForHistogramUntilCountReached(
-      &histogram_tester,
-      "OptimizationGuide.PageContentAnnotationsService."
-      "ContentAnnotationsStorageStatus",
-      1);
-
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PageContentAnnotationsService."
-      "ContentAnnotationsStorageStatus",
-      PageContentAnnotationsStorageStatus::kSuccess, 1);
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PageContentAnnotationsService."
-      "ContentAnnotationsStorageStatus.ModelAnnotations",
-      PageContentAnnotationsStorageStatus::kSuccess, 1);
+  WaitForHistoryServiceToFinish();
 
   absl::optional<history::VisitContentAnnotations> got_content_annotations =
       GetContentAnnotationsForURL(url);
@@ -648,20 +668,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceRemoteMetadataBrowserTest,
       ->AddHintForTesting(url, proto::PAGE_ENTITIES, metadata);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  RetryForHistogramUntilCountReached(
-      &histogram_tester,
-      "OptimizationGuide.PageContentAnnotationsService."
-      "ContentAnnotationsStorageStatus",
-      1);
-
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PageContentAnnotationsService."
-      "ContentAnnotationsStorageStatus",
-      PageContentAnnotationsStorageStatus::kSuccess, 1);
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PageContentAnnotationsService."
-      "ContentAnnotationsStorageStatus.RemoteMetadata",
-      PageContentAnnotationsStorageStatus::kSuccess, 1);
+  WaitForHistoryServiceToFinish();
 
   absl::optional<history::VisitContentAnnotations> got_content_annotations =
       GetContentAnnotationsForURL(url);
@@ -684,10 +691,10 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceRemoteMetadataBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   base::RunLoop().RunUntilIdle();
 
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.PageContentAnnotationsService."
-      "ContentAnnotationsStorageStatus.RemoteMetadata",
-      0);
+  history::VisitContentAnnotations got_content_annotations =
+      GetContentAnnotationsForURL(url).value_or(
+          history::VisitContentAnnotations());
+  EXPECT_TRUE(got_content_annotations.alternative_title.empty());
 }
 
 class PageContentAnnotationsServiceSalientImageMetadataBrowserTest
@@ -724,10 +731,10 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   base::RunLoop().RunUntilIdle();
 
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.PageContentAnnotationsService."
-      "ContentAnnotationsStorageStatus.SalientImageMetadata",
-      0);
+  history::VisitContentAnnotations got_content_annotations =
+      GetContentAnnotationsForURL(url).value_or(
+          history::VisitContentAnnotations());
+  ASSERT_FALSE(got_content_annotations.has_url_keyed_image);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -748,10 +755,10 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   base::RunLoop().RunUntilIdle();
 
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.PageContentAnnotationsService."
-      "ContentAnnotationsStorageStatus.SalientImageMetadata",
-      0);
+  history::VisitContentAnnotations got_content_annotations =
+      GetContentAnnotationsForURL(url).value_or(
+          history::VisitContentAnnotations());
+  ASSERT_FALSE(got_content_annotations.has_url_keyed_image);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -771,16 +778,7 @@ IN_PROC_BROWSER_TEST_F(
       ->AddHintForTesting(url, proto::SALIENT_IMAGE, metadata);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  RetryForHistogramUntilCountReached(
-      &histogram_tester,
-      "OptimizationGuide.PageContentAnnotationsService."
-      "ContentAnnotationsStorageStatus.SalientImageMetadata",
-      1);
-
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PageContentAnnotationsService."
-      "ContentAnnotationsStorageStatus.SalientImageMetadata",
-      PageContentAnnotationsStorageStatus::kSuccess, 1);
+  WaitForHistoryServiceToFinish();
 
   absl::optional<history::VisitContentAnnotations> got_content_annotations =
       GetContentAnnotationsForURL(url);
@@ -1000,11 +998,11 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBatchVisitNoAnnotateTest,
 
   base::HistogramTester histogram_tester;
   HistoryVisit history_visit1(base::Time::Now(),
-                              GURL("https://probablynotarealurl1.com/"), 1);
+                              GURL("https://probablynotarealurl1.com/"));
   HistoryVisit history_visit2(base::Time::Now(),
-                              GURL("https://probablynotarealurl2.com/"), 2);
+                              GURL("https://probablynotarealurl2.com/"));
   HistoryVisit history_visit3(base::Time::Now(),
-                              GURL("https://probablynotarealurl3.com/"), 3);
+                              GURL("https://probablynotarealurl3.com/"));
   history_visit1.text_to_annotate = "sometext1";
   history_visit2.text_to_annotate = "sometext2";
   history_visit3.text_to_annotate = "sometext3";

@@ -4,11 +4,7 @@
 
 package org.chromium.components.browser_ui.modaldialog;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-
-import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.app.Activity;
 import android.content.res.Resources;
@@ -25,6 +21,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.test.util.ViewUtils;
 
 import java.util.List;
 
@@ -59,6 +56,30 @@ public class ModalDialogTestUtils {
     public static PropertyModel createDialog(Activity activity, ModalDialogManager manager,
             String title, @Nullable TestDialogDismissedObserver observer,
             @ModalDialogProperties.ButtonStyles int buttonStyles) {
+        return createDialog(activity, manager, title, observer, buttonStyles,
+                ModalDialogProperties.DialogStyles.NORMAL);
+    }
+
+    /**
+     * @return A {@link PropertyModel} of a modal dialog that is used for testing with
+     *         dialog style
+     */
+    public static PropertyModel createDialogWithDialogStyle(Activity activity,
+            ModalDialogManager manager, String title,
+            @Nullable TestDialogDismissedObserver observer,
+            @ModalDialogProperties.DialogStyles int dialogStyles) {
+        return createDialog(activity, manager, title, observer,
+                ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE, dialogStyles);
+    }
+
+    /**
+     * @return A {@link PropertyModel} of a modal dialog that is used for testing with
+     *         primary or negative button filled and dialog style.
+     */
+    public static PropertyModel createDialog(Activity activity, ModalDialogManager manager,
+            String title, @Nullable TestDialogDismissedObserver observer,
+            @ModalDialogProperties.ButtonStyles int buttonStyles,
+            @ModalDialogProperties.DialogStyles int dialogStyles) {
         return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
             ModalDialogProperties.Controller controller = new ModalDialogProperties.Controller() {
                 @Override
@@ -86,6 +107,7 @@ public class ModalDialogTestUtils {
                     .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources, R.string.ok)
                     .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources, R.string.cancel)
                     .with(ModalDialogProperties.BUTTON_STYLES, buttonStyles)
+                    .with(ModalDialogProperties.DIALOG_STYLES, dialogStyles)
                     .build();
         });
     }
@@ -114,7 +136,7 @@ public class ModalDialogTestUtils {
             @ModalDialogType int dialogType, boolean waitForShow) {
         TestThreadUtils.runOnUiThreadBlocking(() -> manager.showDialog(model, dialogType));
         if (waitForShow) {
-            onView(isRoot()).check(waitForView(withId(R.id.modal_dialog_view)));
+            ViewUtils.waitForVisibleView(withId(R.id.modal_dialog_view));
         }
     }
 

@@ -6,7 +6,6 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/task/single_thread_task_runner.h"
 #include "device/bluetooth/bluetooth_advertisement.h"
@@ -15,10 +14,10 @@
 namespace device {
 
 BluetoothLowEnergyAdvertisementManagerMac::
-    BluetoothLowEnergyAdvertisementManagerMac() {}
+    BluetoothLowEnergyAdvertisementManagerMac() = default;
 
 BluetoothLowEnergyAdvertisementManagerMac::
-    ~BluetoothLowEnergyAdvertisementManagerMac() {}
+    ~BluetoothLowEnergyAdvertisementManagerMac() = default;
 
 void BluetoothLowEnergyAdvertisementManagerMac::Init(
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
@@ -87,9 +86,8 @@ void BluetoothLowEnergyAdvertisementManagerMac::
 }
 
 void BluetoothLowEnergyAdvertisementManagerMac::StartAdvertising() {
-  base::scoped_nsobject<NSMutableArray> service_uuid_array(
-      [[NSMutableArray alloc]
-          initWithCapacity:active_advertisement_->service_uuids().size()]);
+  NSMutableArray* service_uuid_array = [[NSMutableArray alloc]
+      initWithCapacity:active_advertisement_->service_uuids().size()];
   for (const std::string& service_uuid :
        active_advertisement_->service_uuids()) {
     NSString* uuid_string = base::SysUTF8ToNSString(service_uuid);

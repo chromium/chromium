@@ -65,7 +65,7 @@ class ClipboardImageWriter final : public ClipboardWriter {
         SegmentReader::CreateFromSkData(
             SkData::MakeWithoutCopy(png_data.Data(), png_data.DataLength())),
         /*data_complete=*/true, ImageDecoder::kAlphaPremultiplied,
-        ImageDecoder::kDefaultBitDepth, ColorBehavior::Tag());
+        ImageDecoder::kDefaultBitDepth, ColorBehavior::kTag);
     sk_sp<SkImage> image = nullptr;
     // `decoder` is nullptr if `png_data` doesn't begin with the PNG signature.
     if (decoder) {

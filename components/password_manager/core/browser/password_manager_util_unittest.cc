@@ -21,16 +21,17 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
+#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/device_reauth/mock_device_authenticator.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/test_password_store.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -42,6 +43,9 @@
 
 using autofill::password_generation::PasswordGenerationType;
 using device_reauth::MockDeviceAuthenticator;
+using password_manager::Facet;
+using password_manager::FacetURI;
+using password_manager::GroupedFacets;
 using password_manager::PasswordForm;
 
 namespace password_manager_util {
@@ -170,8 +174,8 @@ class MockAutofillClient : public autofill::AutofillClient {
                MigrationDeleteCardCallback),
               (override));
   MOCK_METHOD(void,
-              ConfirmSaveIBANLocally,
-              (const autofill::IBAN&, bool, LocalSaveIBANPromptCallback),
+              ConfirmSaveIbanLocally,
+              (const autofill::Iban&, bool, LocalSaveIbanPromptCallback),
               (override));
   MOCK_METHOD(void,
               ShowWebauthnOfferDialog,
@@ -230,6 +234,7 @@ class MockAutofillClient : public autofill::AutofillClient {
                SaveAddressProfilePromptOptions,
                AddressProfileSavePromptCallback),
               (override));
+  MOCK_METHOD(void, ShowDeleteAddressProfileDialog, (), (override));
   MOCK_METHOD(bool, HasCreditCardScanFeature, (), (override));
   MOCK_METHOD(void, ScanCreditCard, (CreditCardScanCallback), (override));
   MOCK_METHOD(bool, IsTouchToFillCreditCardSupported, (), (override));
@@ -250,14 +255,19 @@ class MockAutofillClient : public autofill::AutofillClient {
                const std::vector<std::u16string>&),
               (override));
   MOCK_METHOD(void, PinPopupView, (), (override));
-  MOCK_METHOD(PopupOpenArgs, GetReopenPopupArgs, (), (const, override));
+  MOCK_METHOD(PopupOpenArgs,
+              GetReopenPopupArgs,
+              (autofill::AutofillSuggestionTriggerSource),
+              (const, override));
   MOCK_METHOD(std::vector<autofill::Suggestion>,
               GetPopupSuggestions,
               (),
               (const, override));
   MOCK_METHOD(void,
               UpdatePopup,
-              (const std::vector<autofill::Suggestion>&, autofill::PopupType),
+              (const std::vector<autofill::Suggestion>&,
+               autofill::PopupType,
+               autofill::AutofillSuggestionTriggerSource),
               (override));
   MOCK_METHOD(void,
               HideAutofillPopup,
@@ -266,13 +276,13 @@ class MockAutofillClient : public autofill::AutofillClient {
   MOCK_METHOD(bool, IsAutocompleteEnabled, (), (const, override));
   MOCK_METHOD(bool, IsPasswordManagerEnabled, (), (override));
   MOCK_METHOD(void,
-              PropagateAutofillPredictions,
+              PropagateAutofillPredictionsDeprecated,
               (autofill::AutofillDriver*,
                const std::vector<autofill::FormStructure*>&),
               (override));
   MOCK_METHOD(void,
               DidFillOrPreviewForm,
-              (autofill::mojom::RendererFormDataAction action,
+              (autofill::mojom::AutofillActionPersistence action_persistence,
                autofill::AutofillTriggerSource trigger_source,
                bool is_refill),
               (override));
@@ -281,10 +291,6 @@ class MockAutofillClient : public autofill::AutofillClient {
               (const std::u16string&, const std::u16string&),
               (override));
   MOCK_METHOD(bool, IsContextSecure, (), (const, override));
-  MOCK_METHOD(void,
-              ExecuteCommand,
-              (autofill::Suggestion::FrontendId),
-              (override));
   MOCK_METHOD(autofill::LogManager*, GetLogManager, (), (const, override));
   MOCK_METHOD(const autofill::AutofillAblationStudy&,
               GetAblationStudy,
@@ -437,28 +443,26 @@ TEST(PasswordManagerUtil, GetSignonRealmWithProtocolExcluded) {
 
 TEST(PasswordManagerUtil, GetMatchType_Android) {
   PasswordForm form = GetTestAndroidCredential();
-  form.is_affiliation_based_match = true;
+  form.match_type = PasswordForm::MatchType::kAffiliated;
 
   EXPECT_EQ(GetLoginMatchType::kAffiliated, GetMatchType(form));
 }
 
 TEST(PasswordManagerUtil, GetMatchType_Web) {
   PasswordForm form = GetTestCredential();
-  form.is_public_suffix_match = true;
-  form.is_affiliation_based_match = true;
-  EXPECT_EQ(GetLoginMatchType::kAffiliated, GetMatchType(form));
 
-  form.is_public_suffix_match = false;
-  form.is_affiliation_based_match = true;
-  EXPECT_EQ(GetLoginMatchType::kAffiliated, GetMatchType(form));
-
-  form.is_public_suffix_match = true;
-  form.is_affiliation_based_match = false;
-  EXPECT_EQ(GetLoginMatchType::kPSL, GetMatchType(form));
-
-  form.is_public_suffix_match = false;
-  form.is_affiliation_based_match = false;
+  form.match_type = PasswordForm::MatchType::kExact;
   EXPECT_EQ(GetLoginMatchType::kExact, GetMatchType(form));
+
+  form.match_type =
+      PasswordForm::MatchType::kPSL | PasswordForm::MatchType::kAffiliated;
+  EXPECT_EQ(GetLoginMatchType::kAffiliated, GetMatchType(form));
+
+  form.match_type = PasswordForm::MatchType::kAffiliated;
+  EXPECT_EQ(GetLoginMatchType::kAffiliated, GetMatchType(form));
+
+  form.match_type = PasswordForm::MatchType::kPSL;
+  EXPECT_EQ(GetLoginMatchType::kPSL, GetMatchType(form));
 }
 
 TEST(PasswordManagerUtil, FindBestMatches) {
@@ -467,9 +471,10 @@ TEST(PasswordManagerUtil, FindBestMatches) {
   const base::Time k2DaysAgo = kNow - base::Days(2);
   const int kNotFound = -1;
   struct TestMatch {
-    bool is_psl_match;
+    PasswordForm::MatchType match_type;
     base::Time date_last_used;
     std::u16string username;
+    std::string signon_realm = kTestURL;
   };
   struct TestCase {
     const char* description;
@@ -478,51 +483,93 @@ TEST(PasswordManagerUtil, FindBestMatches) {
     std::map<std::string, size_t> expected_best_matches_indices;
   } test_cases[] = {
       {"Empty matches", {}, kNotFound, {}},
-      {"1 non-psl match",
-       {{.is_psl_match = false, .date_last_used = kNow, .username = u"u"}},
-       0,
+      {"1 exact match",
+       {{.match_type = PasswordForm::MatchType::kExact,
+         .date_last_used = kNow,
+         .username = u"u"}},
+       /*expected_preferred_match_index=*/0,
        {{"u", 0}}},
       {"1 psl match",
-       {{.is_psl_match = true, .date_last_used = kNow, .username = u"u"}},
-       0,
+       {{.match_type = PasswordForm::MatchType::kPSL,
+         .date_last_used = kNow,
+         .username = u"u"}},
+       /*expected_preferred_match_index=*/0,
        {{"u", 0}}},
       {"2 matches with the same username",
-       {{.is_psl_match = false, .date_last_used = kNow, .username = u"u"},
-        {.is_psl_match = false,
+       {{.match_type = PasswordForm::MatchType::kExact,
+         .date_last_used = kNow,
+         .username = u"u"},
+        {.match_type = PasswordForm::MatchType::kExact,
          .date_last_used = kYesterday,
          .username = u"u"}},
-       0,
+       /*expected_preferred_match_index=*/0,
        {{"u", 0}}},
       {"2 matches with different usernames, most recently used taken",
-       {{.is_psl_match = false, .date_last_used = kNow, .username = u"u1"},
-        {.is_psl_match = false,
+       {{.match_type = PasswordForm::MatchType::kExact,
+         .date_last_used = kNow,
+         .username = u"u1"},
+        {.match_type = PasswordForm::MatchType::kExact,
          .date_last_used = kYesterday,
          .username = u"u2"}},
-       0,
+       /*expected_preferred_match_index=*/0,
        {{"u1", 0}, {"u2", 1}}},
-      {"2 matches with different usernames, non-psl much taken",
-       {{.is_psl_match = false,
+      {"2 matches with different usernames, exact match taken",
+       {{.match_type = PasswordForm::MatchType::kExact,
          .date_last_used = kYesterday,
          .username = u"u1"},
-        {.is_psl_match = true, .date_last_used = kNow, .username = u"u2"}},
-       0,
+        {.match_type = PasswordForm::MatchType::kPSL,
+         .date_last_used = kNow,
+         .username = u"u2"}},
+       /*expected_preferred_match_index=*/0,
        {{"u1", 0}, {"u2", 1}}},
       {"8 matches, 3 usernames",
-       {{.is_psl_match = false,
+       {{.match_type = PasswordForm::MatchType::kExact,
          .date_last_used = kYesterday,
          .username = u"u2"},
-        {.is_psl_match = true, .date_last_used = kYesterday, .username = u"u3"},
-        {.is_psl_match = true, .date_last_used = kYesterday, .username = u"u1"},
-        {.is_psl_match = false, .date_last_used = k2DaysAgo, .username = u"u3"},
-        {.is_psl_match = true, .date_last_used = kNow, .username = u"u1"},
-        {.is_psl_match = false, .date_last_used = kNow, .username = u"u2"},
-        {.is_psl_match = true, .date_last_used = kYesterday, .username = u"u3"},
-        {.is_psl_match = false,
+        {.match_type = PasswordForm::MatchType::kPSL,
+         .date_last_used = kYesterday,
+         .username = u"u3"},
+        {.match_type = PasswordForm::MatchType::kPSL,
+         .date_last_used = kYesterday,
+         .username = u"u1"},
+        {.match_type = PasswordForm::MatchType::kExact,
+         .date_last_used = k2DaysAgo,
+         .username = u"u3"},
+        {.match_type = PasswordForm::MatchType::kPSL,
+         .date_last_used = kNow,
+         .username = u"u1"},
+        {.match_type = PasswordForm::MatchType::kExact,
+         .date_last_used = kNow,
+         .username = u"u2"},
+        {.match_type = PasswordForm::MatchType::kPSL,
+         .date_last_used = kYesterday,
+         .username = u"u3"},
+        {.match_type = PasswordForm::MatchType::kExact,
          .date_last_used = k2DaysAgo,
          .username = u"u1"}},
-       5,
+       /*expected_preferred_match_index=*/5,
        {{"u1", 7}, {"u2", 5}, {"u3", 3}}},
-
+      {"Affiliated Android app and exact matches, exact match taken",
+       {{.match_type = PasswordForm::MatchType::kAffiliated,
+         .date_last_used = kNow,
+         .username = u"uAndroid",
+         .signon_realm = kTestAndroidRealm},
+        {.match_type = PasswordForm::MatchType::kExact,
+         .date_last_used = kYesterday,
+         .username = u"uExact"}},
+       /*expected_preferred_match_index=*/1,
+       {{"uExact", 1}, {"uAndroid", 0}}},
+      {"Affiliated Android app and affiliated website matches, most recently "
+       "used taken",
+       {{.match_type = PasswordForm::MatchType::kAffiliated,
+         .date_last_used = kYesterday,
+         .username = u"uAffiliatedAndroid",
+         .signon_realm = kTestAndroidRealm},
+        {.match_type = PasswordForm::MatchType::kAffiliated,
+         .date_last_used = kNow,
+         .username = u"uAffiliatedWebsite"}},
+       /*expected_preferred_match_index=*/1,
+       {{"uAffiliatedWebsite", 1}, {"uAffiliatedAndroid", 0}}},
   };
 
   for (const TestCase& test_case : test_cases) {
@@ -532,7 +579,8 @@ TEST(PasswordManagerUtil, FindBestMatches) {
     std::vector<PasswordForm> owning_matches;
     for (const TestMatch& match : test_case.matches) {
       PasswordForm form;
-      form.is_public_suffix_match = match.is_psl_match;
+      form.match_type = match.match_type;
+      form.signon_realm = match.signon_realm;
       form.date_last_used = match.date_last_used;
       form.username_value = match.username;
       owning_matches.push_back(form);
@@ -584,7 +632,7 @@ TEST(PasswordManagerUtil, FindBestMatchesInProfileAndAccountStores) {
   const std::u16string kPassword2 = u"Password2";
 
   PasswordForm form;
-  form.is_public_suffix_match = false;
+  form.match_type = PasswordForm::MatchType::kExact;
   form.date_last_used = base::Time::Now();
 
   // Add the same credentials in account and profile stores.
@@ -627,6 +675,7 @@ TEST(PasswordManagerUtil, FindBestMatchesInProfileAndAccountStores) {
 
 TEST(PasswordManagerUtil, GetMatchForUpdating_MatchUsername) {
   PasswordForm stored = GetTestCredential();
+  stored.match_type = PasswordForm::MatchType::kExact;
   PasswordForm parsed = GetTestCredential();
   parsed.password_value = u"new_password";
 
@@ -635,6 +684,7 @@ TEST(PasswordManagerUtil, GetMatchForUpdating_MatchUsername) {
 
 TEST(PasswordManagerUtil, GetMatchForUpdating_RejectUnknownUsername) {
   PasswordForm stored = GetTestCredential();
+  stored.match_type = PasswordForm::MatchType::kExact;
   PasswordForm parsed = GetTestCredential();
   parsed.username_value = u"other_username";
 
@@ -643,6 +693,7 @@ TEST(PasswordManagerUtil, GetMatchForUpdating_RejectUnknownUsername) {
 
 TEST(PasswordManagerUtil, GetMatchForUpdating_FederatedCredential) {
   PasswordForm stored = GetTestCredential();
+  stored.match_type = PasswordForm::MatchType::kExact;
   PasswordForm parsed = GetTestCredential();
   parsed.password_value.clear();
   parsed.federation_origin = url::Origin::Create(GURL(kTestFederationURL));
@@ -652,7 +703,7 @@ TEST(PasswordManagerUtil, GetMatchForUpdating_FederatedCredential) {
 
 TEST(PasswordManagerUtil, GetMatchForUpdating_MatchUsernamePSL) {
   PasswordForm stored = GetTestCredential();
-  stored.is_public_suffix_match = true;
+  stored.match_type = PasswordForm::MatchType::kPSL;
   PasswordForm parsed = GetTestCredential();
 
   EXPECT_EQ(&stored, GetMatchForUpdating(parsed, {&stored}));
@@ -660,7 +711,7 @@ TEST(PasswordManagerUtil, GetMatchForUpdating_MatchUsernamePSL) {
 
 TEST(PasswordManagerUtil, GetMatchForUpdating_MatchUsernamePSLAnotherPassword) {
   PasswordForm stored = GetTestCredential();
-  stored.is_public_suffix_match = true;
+  stored.match_type = PasswordForm::MatchType::kPSL;
   PasswordForm parsed = GetTestCredential();
   parsed.password_value = u"new_password";
 
@@ -670,7 +721,7 @@ TEST(PasswordManagerUtil, GetMatchForUpdating_MatchUsernamePSLAnotherPassword) {
 TEST(PasswordManagerUtil,
      GetMatchForUpdating_MatchUsernamePSLNewPasswordKnown) {
   PasswordForm stored = GetTestCredential();
-  stored.is_public_suffix_match = true;
+  stored.match_type = PasswordForm::MatchType::kPSL;
   PasswordForm parsed = GetTestCredential();
   parsed.new_password_value = parsed.password_value;
   parsed.password_value.clear();
@@ -681,7 +732,7 @@ TEST(PasswordManagerUtil,
 TEST(PasswordManagerUtil,
      GetMatchForUpdating_MatchUsernamePSLNewPasswordUnknown) {
   PasswordForm stored = GetTestCredential();
-  stored.is_public_suffix_match = true;
+  stored.match_type = PasswordForm::MatchType::kPSL;
   PasswordForm parsed = GetTestCredential();
   parsed.new_password_value = u"new_password";
   parsed.password_value.clear();
@@ -699,7 +750,7 @@ TEST(PasswordManagerUtil, GetMatchForUpdating_EmptyUsernameFindByPassword) {
 
 TEST(PasswordManagerUtil, GetMatchForUpdating_EmptyUsernameFindByPasswordPSL) {
   PasswordForm stored = GetTestCredential();
-  stored.is_public_suffix_match = true;
+  stored.match_type = PasswordForm::MatchType::kPSL;
   PasswordForm parsed = GetTestCredential();
   parsed.username_value.clear();
 
@@ -1046,4 +1097,92 @@ INSTANTIATE_TEST_SUITE_P(
         TestCase{"http://facebook.com", "facebook.com"},
         TestCase{"http://www.facebook.com", "facebook.com"},
         TestCase{"http://many.many.many.facebook.com", "facebook.com"}));
+
+struct MergeRelatedGroupsTestCase {
+  std::vector<std::vector<std::string>> input_groups;
+  std::vector<std::vector<std::string>> output_groups;
+  std::vector<std::string> psl_extensions;
+};
+
+class PasswordManagerUtilMergeRelatedGroupsTest
+    : public testing::Test,
+      public testing::WithParamInterface<MergeRelatedGroupsTestCase> {
+ protected:
+  std::vector<GroupedFacets> GetGroups(
+      const std::vector<std::vector<std::string>>& groups) {
+    std::vector<password_manager::GroupedFacets> results;
+    for (const auto& group : groups) {
+      GroupedFacets result;
+      for (const auto& facet : group) {
+        result.facets.emplace_back(
+            FacetURI::FromPotentiallyInvalidSpec("https://" + facet));
+      }
+      results.push_back(std::move(result));
+    }
+    return results;
+  }
+
+  void SortFacets(std::vector<GroupedFacets>& groups) {
+    for (auto& group : groups) {
+      std::sort(group.facets.begin(), group.facets.end(),
+                [](const auto& lhs, const auto& rhs) {
+                  return base::CompareCaseInsensitiveASCII(
+                      lhs.uri.potentially_invalid_spec(),
+                      rhs.uri.potentially_invalid_spec());
+                });
+    }
+  }
+
+  base::flat_set<std::string> GetPSLExtensions() {
+    return base::flat_set<std::string>(GetParam().psl_extensions);
+  }
+};
+
+TEST_P(PasswordManagerUtilMergeRelatedGroupsTest, ParamTest) {
+  std::vector<GroupedFacets> expected_groups =
+      GetGroups(GetParam().output_groups);
+  std::vector<GroupedFacets> actual_groups = MergeRelatedGroups(
+      GetPSLExtensions(), GetGroups(GetParam().input_groups));
+
+  // Sort facets to simplify testing as their order doesn'r matter
+  SortFacets(expected_groups);
+  SortFacets(actual_groups);
+
+  EXPECT_THAT(actual_groups,
+              testing::UnorderedElementsAreArray(expected_groups));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PasswordManagerUtilMergeRelatedGroupsTest,
+    ::testing::Values(
+        MergeRelatedGroupsTestCase{{{"a.com"}, {"b.com"}, {"c.com"}},
+                                   {{"a.com"}, {"b.com"}, {"c.com"}},
+                                   {}},
+        MergeRelatedGroupsTestCase{
+            {{"a.com"}, {"test1.a.com"}, {"test2.a.com"}},
+            {{"a.com", "test1.a.com", "test2.a.com"}},
+            {}},
+        // When a.com is extended to be a public suffix the groups no longer
+        // merge together.
+        MergeRelatedGroupsTestCase{
+            {{"a.com"}, {"test1.a.com"}, {"test2.a.com"}},
+            {{"a.com"}, {"test1.a.com"}, {"test2.a.com"}},
+            {"a.com"}},
+        MergeRelatedGroupsTestCase{{{"a.com", "b.com"}, {"www.b.com", "c.com"}},
+                                   {{"a.com", "b.com", "www.b.com", "c.com"}},
+                                   {}},
+        MergeRelatedGroupsTestCase{
+            {{"a.com", "b.com"}, {"www.b.com", "c.com"}, {"d.org"}},
+            {{"a.com", "b.com", "www.b.com", "c.com"}, {"d.org"}},
+            {}},
+        MergeRelatedGroupsTestCase{
+            {{"a.com", "b.com", "c.com"},
+             {"www.b.com"},
+             {"d.org", "www.c.com"}},
+            {{"a.com", "b.com", "c.com", "www.b.com", "d.org", "www.c.com"}},
+            {}}
+
+        ));
+
 }  // namespace password_manager_util

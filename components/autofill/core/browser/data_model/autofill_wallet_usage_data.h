@@ -52,7 +52,7 @@ class VirtualCardUsageData {
     return virtual_card_last_four_;
   }
 
-  url::Origin merchant_origin() const { return merchant_origin_; }
+  const url::Origin& merchant_origin() const { return merchant_origin_; }
 
  private:
   UsageDataId usage_data_id_;

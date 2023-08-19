@@ -221,3 +221,15 @@ test(function(t) {
     assert_equals(axImageInput5.nameFrom, "title");
 }, "Image input with title only");
 </script>
+
+<div class="container">
+    <input id="image-input6" type="image" src="resources/cake.png" alt="" title="image-input-title6">
+</div>
+
+<script>
+test(function(t) {
+    var axImageInput6 = accessibilityController.accessibleElementById("image-input6");
+    assert_equals(axImageInput6.name, "image-input-title6");
+    assert_equals(axImageInput6.nameFrom, "title");
+}, "Image input with empty alt and title");
+</script>

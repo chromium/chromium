@@ -18,12 +18,15 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/unguessable_token.h"
 #include "chromeos/ash/services/recording/public/mojom/recording_service.mojom.h"
+#include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -46,7 +49,7 @@ namespace ash {
 class CaptureModeBehavior;
 class CaptureModeCameraController;
 class CaptureModeObserver;
-class CaptureModeSession;
+class BaseCaptureModeSession;
 
 // Defines a callback type that will be invoked when an attempt to delete the
 // given `path` is completed with the given status `delete_successful`.
@@ -70,7 +73,8 @@ class ASH_EXPORT CaptureModeController
     : public recording::mojom::RecordingServiceClient,
       public recording::mojom::DriveFsQuotaDelegate,
       public SessionObserver,
-      public chromeos::PowerManagerClient::Observer {
+      public chromeos::PowerManagerClient::Observer,
+      public crosapi::mojom::VideoConferenceManagerClient {
  public:
   // Contains info about the folder used for saving the captured images and
   // videos.
@@ -105,7 +109,7 @@ class ASH_EXPORT CaptureModeController
   AudioRecordingMode audio_recording_mode() const {
     return audio_recording_mode_;
   }
-  CaptureModeSession* capture_mode_session() const {
+  BaseCaptureModeSession* capture_mode_session() const {
     return capture_mode_session_.get();
   }
   gfx::Rect user_capture_region() const { return user_capture_region_; }
@@ -118,7 +122,8 @@ class ASH_EXPORT CaptureModeController
 
   // Returns true if a capture mode session is currently active. If you only
   // need to call this method, but don't need the rest of the controller, use
-  // capture_mode_util::IsCaptureModeActive().
+  // capture_mode_util::IsCaptureModeActive(). Note that null sessions can still
+  // return `true`.
   bool IsActive() const;
 
   // Returns the effective audio recording mode, taking into account the
@@ -131,6 +136,9 @@ class ASH_EXPORT CaptureModeController
 
   // Returns true if there's an active video recording that is recording audio.
   bool IsAudioRecordingInProgress() const;
+
+  // Returns true if the camera preview is visible, false otherwise.
+  bool IsShowingCameraPreview() const;
 
   // Sets the capture source/type, and recording type, which will be applied to
   // an ongoing capture session (if any), or to a future capture session when
@@ -161,6 +169,10 @@ class ASH_EXPORT CaptureModeController
   // Starts a new capture session with a pre-selected window which will be
   // observed throughout the session and can't be altered.
   void StartForGameDashboard(aura::Window* game_window);
+
+  // Starts recording a pre-selected game window as soon as possible without
+  // starting a countdown by using a null session.
+  void StartRecordingInstantlyForGameDashboard(aura::Window* game_window);
 
   // Stops an existing capture session.
   void Stop();
@@ -210,12 +222,12 @@ class ASH_EXPORT CaptureModeController
   // individual file. Note: this won't start a capture mode session.
   void CaptureScreenshotsOfAllDisplays();
 
-  // Performs the instantscreen capture for the `given_window` which bypasses
+  // Performs the instant screen capture for the `given_window` which bypasses
   // the capture mode session.
   void CaptureScreenshotOfGivenWindow(aura::Window* given_window);
 
   // Called only while a capture session is in progress to perform the actual
-  // capture depending on the current selected |source_| and |type_|, and ends
+  // capture depending on the current selected `source_` and `type_`, and ends
   // the capture session.
   void PerformCapture();
 
@@ -280,6 +292,10 @@ class ASH_EXPORT CaptureModeController
   // windows such as the PIP window and the automatic click bubble menu.
   std::vector<aura::Window*> GetWindowsForCollisionAvoidance() const;
 
+  // Updates the video conference manager and panel with the current state of
+  // screen recording and whether camera or audio are being recorded.
+  void MaybeUpdateVcPanel();
+
   // recording::mojom::RecordingServiceClient:
   void OnRecordingEnded(recording::mojom::RecordingStatus status,
                         const gfx::ImageSkia& thumbnail) override;
@@ -289,6 +305,7 @@ class ASH_EXPORT CaptureModeController
       GetDriveFsFreeSpaceBytesCallback callback) override;
 
   // SessionObserver:
+  void OnFirstSessionStarted() override;
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
   void OnSessionStateChanged(session_manager::SessionState state) override;
   void OnChromeTerminating() override;
@@ -296,15 +313,19 @@ class ASH_EXPORT CaptureModeController
   // chromeos::PowerManagerClient::Observer:
   void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
 
+  // crosapi::mojom::VideoConferenceManagerClient:
+  void GetMediaApps(GetMediaAppsCallback callback) override;
+  void ReturnToApp(const base::UnguessableToken& token,
+                   ReturnToAppCallback callback) override;
+  void SetSystemMediaDeviceStatus(
+      crosapi::mojom::VideoConferenceMediaDevice device,
+      bool disabled,
+      SetSystemMediaDeviceStatusCallback callback) override;
+  void StopAllScreenShare() override;
+
   // Skips the 3-second count down, and IsCaptureAllowed() checks, and starts
   // video recording right away for testing purposes.
   void StartVideoRecordingImmediatelyForTesting();
-
-  // Called when the "Share to YouTube" button is pressed to
-  // open the YouTube share video page.
-  // TODO(b/276982457): Hook this function with the "Share to YouTube" button to
-  // be shown in the notification area once implemented.
-  void OnShareToYouTubeButtonPressed();
 
   void AddObserver(CaptureModeObserver* observer);
   void RemoveObserver(CaptureModeObserver* observer);
@@ -317,6 +338,13 @@ class ASH_EXPORT CaptureModeController
  private:
   friend class CaptureModeTestApi;
   friend class VideoRecordingWatcher;
+
+  // Performs the necessary setup common to all start methods (excluding
+  // testing-only methods).
+  void StartInternal(
+      SessionType session_type,
+      CaptureModeEntryType entry_type,
+      OnSessionStartAttemptCallback callback = base::DoNothing());
 
   // Called by |video_recording_watcher_| when the display on which recording is
   // happening changes its bounds such as on display rotation or device scale
@@ -355,7 +383,9 @@ class ASH_EXPORT CaptureModeController
   // kWindow source, or no region is selected in a kRegion source), then a
   // absl::nullopt is returned.
   struct CaptureParams {
-    aura::Window* window = nullptr;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #union
+    RAW_PTR_EXCLUSION aura::Window* window = nullptr;
     // The capture bounds, either in root coordinates (in kFullscreen or kRegion
     // capture sources), or window-local coordinates (in a kWindow capture
     // source).
@@ -397,16 +427,17 @@ class ASH_EXPORT CaptureModeController
   // capture parameters they need. They will end the sessions themselves.
   // They should never be called if IsCaptureAllowed() returns false.
   void CaptureImage(const CaptureParams& capture_params,
-                    const base::FilePath& path);
+                    const base::FilePath& path,
+                    const CaptureModeBehavior* behavior);
   void CaptureVideo(const CaptureParams& capture_params);
 
   // Called back when an image has been captured to trigger an attempt to save
-  // the image as a file. |timestamp| is the time at which the capture was
-  // triggered. |was_cursor_originally_blocked| is whether the cursor was
-  // blocked at the time the screenshot capture request was made. |png_bytes| is
-  // the buffer containing the captured image in a PNG format.
+  // the image as a file. `was_cursor_originally_blocked` is whether the cursor
+  // was blocked at the time the screenshot capture request was made.
+  // `png_bytes` is the buffer containing the captured image in a PNG format.
   void OnImageCaptured(const base::FilePath& path,
                        bool was_cursor_originally_blocked,
+                       const CaptureModeBehavior* behavior,
                        scoped_refptr<base::RefCountedMemory> png_bytes);
 
   // Called back when an attempt to save the image file has been completed, with
@@ -417,6 +448,7 @@ class ASH_EXPORT CaptureModeController
   // clipboard. If saving was successful, then the image was saved in
   // `file_saved_path`.
   void OnImageFileSaved(scoped_refptr<base::RefCountedMemory> png_bytes,
+                        const CaptureModeBehavior* behavior,
                         const base::FilePath& file_saved_path);
 
   // Called back when the check for custom folder's availability is done in
@@ -443,6 +475,7 @@ class ASH_EXPORT CaptureModeController
                                const CaptureModeBehavior* behavior);
   void HandleNotificationClicked(const base::FilePath& screen_capture_path,
                                  const CaptureModeType type,
+                                 const BehaviorType behavior_type,
                                  absl::optional<int> button_index);
 
   // Builds a path for a file of an image screenshot, or a video screen
@@ -507,7 +540,8 @@ class ASH_EXPORT CaptureModeController
   // whether a pending session initialization should `proceed` or abort due to
   // some restricted contents on the screen. `at_exit_closure` is passed from
   // `Start()` and will be called on the exit of the function.
-  void OnDlpRestrictionCheckedAtSessionInit(CaptureModeEntryType entry_type,
+  void OnDlpRestrictionCheckedAtSessionInit(SessionType session_type,
+                                            CaptureModeEntryType entry_type,
                                             base::OnceClosure at_exit_closure,
                                             bool proceed);
 
@@ -529,23 +563,26 @@ class ASH_EXPORT CaptureModeController
   // screenshot.
   void CaptureInstantScreenshot(CaptureModeEntryType entry_type,
                                 CaptureModeSource source,
-                                base::OnceClosure instant_screenshot_callback);
+                                base::OnceClosure instant_screenshot_callback,
+                                BehaviorType behavior_type);
   // Bound to a callback that will be called by DLP manager to let the user know
   // whether screen capture should `proceed` or abort due to some restricted
   // contents on the screen. Invokes the `instant_screenshot_callback` and
-  // records the metrics if `proceed` is true and screen capture is allowed by
-  // the enterprise policy.
+  // records the metrics for the given `behavior_type` if `proceed` is true and
+  // screen capture is allowed by the enterprise policy.
   void OnDlpRestrictionCheckedAtCaptureScreenshot(
       CaptureModeEntryType entry_type,
       CaptureModeSource source,
       base::OnceClosure instant_screenshot_callback,
+      BehaviorType behavior_type,
       bool proceed);
 
   // Takes screenshots of all the available displays and saves them to disk.
-  void PerformScreenshotsOfAllDisplays();
+  void PerformScreenshotsOfAllDisplays(BehaviorType behavior_type);
 
   // Takes a screenshot of the `given_window` and save it to disk.
-  void PerformScreenshotOfGivenWindow(aura::Window* given_window);
+  void PerformScreenshotOfGivenWindow(aura::Window* given_window,
+                                      BehaviorType behavior_type);
 
   // Gets the corresponding `SaveLocation` enum value on the given `path`.
   CaptureModeSaveToLocation GetSaveToOption(const base::FilePath& path);
@@ -554,6 +591,14 @@ class ASH_EXPORT CaptureModeController
   // `behavior_type` from the `behaviors_map_` if exits, or creates an instance
   // otherwise.
   CaptureModeBehavior* GetBehavior(BehaviorType behavior_type);
+
+  // The ID of this object as a client of the video conference manager.
+  const base::UnguessableToken vc_client_id_ = base::UnguessableToken::Create();
+
+  // The ID of an ongoing recording as a media app tracked by the video
+  // conference manager.
+  const base::UnguessableToken capture_mode_media_app_id_ =
+      base::UnguessableToken::Create();
 
   std::unique_ptr<CaptureModeDelegate> delegate_;
 
@@ -583,7 +628,7 @@ class ASH_EXPORT CaptureModeController
   // a message to the user instructing them to start selecting a region.
   gfx::Rect user_capture_region_;
 
-  std::unique_ptr<CaptureModeSession> capture_mode_session_;
+  std::unique_ptr<BaseCaptureModeSession> capture_mode_session_;
 
   // Remember the user selected preference for audio recording between sessions.
   // Initially, this value is set to `kOff`, ensuring that this is an opt-in
@@ -607,6 +652,12 @@ class ASH_EXPORT CaptureModeController
   // (initialization or performing the capture).
   bool pending_dlp_check_ = false;
 
+  // These track the state of the camera and microphone (e.g. the camera can be
+  // disabled using a privacy switch, and the microphone can be muted from the
+  // settings).
+  bool is_camera_muted_ = false;
+  bool is_microphone_muted_ = false;
+
   // Watches events that lead to ending video recording.
   std::unique_ptr<VideoRecordingWatcher> video_recording_watcher_;
 
@@ -617,7 +668,8 @@ class ASH_EXPORT CaptureModeController
   base::flat_map<aura::Window*, /*protection_mask*/ uint32_t>
       protected_windows_;
 
-  // If set, it will be called when either an image or video file is saved.
+  // If set, it will be called when either an image or video file is saved and
+  // the file size metric has been recorded.
   base::OnceCallback<void(const base::FilePath&)>
       on_file_saved_callback_for_test_;
 

@@ -9,10 +9,21 @@
 
 @protocol ApplicationSettingsCommands;
 class ChromeBrowserState;
+@class SignedInAccountsViewController;
+
+@protocol SignedInAccountsViewControllerDelegate <NSObject>
+
+// Called when the view controller is dismissed.
+- (void)signedInAccountsViewControllerIsDismissed:
+    (SignedInAccountsViewController*)signedInAccountsViewController;
+
+@end
 
 // View controller that presents the signed in accounts when they have changed
 // while the application was in background.
 @interface SignedInAccountsViewController : UIViewController
+
+@property(nonatomic, weak) id<SignedInAccountsViewControllerDelegate> delegate;
 
 // Returns whether the collection view should be presented for `browserState`,
 // which happens when the accounts have changed while in background.
@@ -26,6 +37,9 @@ class ChromeBrowserState;
                          bundle:(NSBundle*)bundle NS_UNAVAILABLE;
 
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
+
+// Called when the UI will be torn down.
+- (void)teardownUI;
 
 @end
 

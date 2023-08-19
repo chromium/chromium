@@ -18,7 +18,7 @@
 #include "chrome/updater/test/integration_test_commands.h"
 #include "chrome/updater/test_scope.h"
 #include "chrome/updater/updater_scope.h"
-#include "chrome/updater/util/unittest_util.h"
+#include "chrome/updater/util/unit_test_util.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <shlobj.h>
@@ -166,7 +166,7 @@ int main(int argc, char** argv) {
 #if BUILDFLAG(IS_WIN)
   updater::test::MaybeExcludePathsFromWindowsDefender();
 
-  VLOG(0) << "Process priority: " << base::Process::Current().GetPriority();
+  VLOG(0) << "Process priority: " << base::Process::Current().GetOSPriority();
   VLOG(0) << updater::GetUACState();
 
   // The test suite runner expects the swarming task to run with normal priority

@@ -6,7 +6,7 @@
 
 #import <map>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "ios/chrome/browser/infobars/badge_state.h"
 #import "ios/chrome/browser/infobars/infobar_badge_tab_helper.h"
@@ -34,10 +34,6 @@
 #import "ios/chrome/browser/ui/badges/badge_type_util.h"
 #import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/web_state_observer_bridge.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 // Historgram name for when an overflow badge was tapped.
@@ -249,7 +245,7 @@ const char kInfobarOverflowBadgeShownUserAction[] =
 }
 
 - (void)passwordsBadgeButtonTapped:(id)sender {
-  BadgeButton* badgeButton = base::mac::ObjCCastStrict<BadgeButton>(sender);
+  BadgeButton* badgeButton = base::apple::ObjCCastStrict<BadgeButton>(sender);
   DCHECK(badgeButton.badgeType == kBadgeTypePasswordSave ||
          badgeButton.badgeType == kBadgeTypePasswordUpdate);
 
@@ -257,28 +253,28 @@ const char kInfobarOverflowBadgeShownUserAction[] =
 }
 
 - (void)saveAddressProfileBadgeButtonTapped:(id)sender {
-  BadgeButton* badgeButton = base::mac::ObjCCastStrict<BadgeButton>(sender);
+  BadgeButton* badgeButton = base::apple::ObjCCastStrict<BadgeButton>(sender);
   DCHECK_EQ(badgeButton.badgeType, kBadgeTypeSaveAddressProfile);
 
   [self handleTappedBadgeButton:badgeButton];
 }
 
 - (void)saveCardBadgeButtonTapped:(id)sender {
-  BadgeButton* badgeButton = base::mac::ObjCCastStrict<BadgeButton>(sender);
+  BadgeButton* badgeButton = base::apple::ObjCCastStrict<BadgeButton>(sender);
   DCHECK_EQ(badgeButton.badgeType, kBadgeTypeSaveCard);
 
   [self handleTappedBadgeButton:badgeButton];
 }
 
 - (void)translateBadgeButtonTapped:(id)sender {
-  BadgeButton* badgeButton = base::mac::ObjCCastStrict<BadgeButton>(sender);
+  BadgeButton* badgeButton = base::apple::ObjCCastStrict<BadgeButton>(sender);
   DCHECK_EQ(badgeButton.badgeType, kBadgeTypeTranslate);
 
   [self handleTappedBadgeButton:badgeButton];
 }
 
 - (void)permissionsBadgeButtonTapped:(id)sender {
-  BadgeButton* badgeButton = base::mac::ObjCCastStrict<BadgeButton>(sender);
+  BadgeButton* badgeButton = base::apple::ObjCCastStrict<BadgeButton>(sender);
   DCHECK_EQ(InfobarTypeForBadgeType(badgeButton.badgeType),
             InfobarType::kInfobarTypePermissions);
 
@@ -388,24 +384,15 @@ const char kInfobarOverflowBadgeShownUserAction[] =
   [self disconnectOverlayPresenter];
 }
 
-#pragma mark - WebStateListObserver
+#pragma mark - WebStateListObserving
 
-- (void)webStateList:(WebStateList*)webStateList
-    didReplaceWebState:(web::WebState*)oldWebState
-          withWebState:(web::WebState*)newWebState
-               atIndex:(int)atIndex {
+- (void)didChangeWebStateList:(WebStateList*)webStateList
+                       change:(const WebStateListChange&)change
+                       status:(const WebStateListStatus&)status {
   DCHECK_EQ(self.webStateList, webStateList);
-  if (atIndex == webStateList->active_index())
-    self.webState = newWebState;
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-    didChangeActiveWebState:(web::WebState*)newWebState
-                oldWebState:(web::WebState*)oldWebState
-                    atIndex:(int)atIndex
-                     reason:(ActiveWebStateChangeReason)reason {
-  DCHECK_EQ(self.webStateList, webStateList);
-  self.webState = newWebState;
+  if (status.active_web_state_change()) {
+    self.webState = status.new_active_web_state;
+  }
 }
 
 #pragma mark - CRWWebStateObserver

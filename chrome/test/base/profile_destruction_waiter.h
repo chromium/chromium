@@ -13,9 +13,7 @@
 
 class Profile;
 
-// Allows to wait until a new profile is created in tests.
-// This waiter works only for normal (on-the-record) profiles, as it observes
-// the ProfileManager that doesn't own OTR profiles.
+// Allows to wait until a profile is destroyed in tests.
 class ProfileDestructionWaiter : public ProfileObserver {
  public:
   explicit ProfileDestructionWaiter(Profile* profile);

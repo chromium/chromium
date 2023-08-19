@@ -46,5 +46,5 @@ export interface QueryAssignedElementsOptions extends QueryAssignedNodesOptions 
  *
  * @category Decorator
  */
-export declare function queryAssignedElements(options?: QueryAssignedElementsOptions): (protoOrDescriptor: ReactiveElement | import("./base.js").ClassElement, name?: PropertyKey | undefined) => any;
+export declare function queryAssignedElements(options?: QueryAssignedElementsOptions): (protoOrDescriptor: import("./base.js").ClassElement | import("./base.js").Interface<ReactiveElement>, name?: PropertyKey | undefined) => any;
 //# sourceMappingURL=query-assigned-elements.d.ts.map

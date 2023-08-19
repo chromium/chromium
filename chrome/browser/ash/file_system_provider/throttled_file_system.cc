@@ -134,6 +134,12 @@ AbortCallback ThrottledFileSystem::WriteFile(
                                  std::move(callback));
 }
 
+AbortCallback ThrottledFileSystem::FlushFile(
+    int file_handle,
+    storage::AsyncFileUtil::StatusCallback callback) {
+  return file_system_->FlushFile(file_handle, std::move(callback));
+}
+
 AbortCallback ThrottledFileSystem::MoveEntry(
     const base::FilePath& source_path,
     const base::FilePath& target_path,
@@ -211,6 +217,11 @@ void ThrottledFileSystem::Configure(
 
 base::WeakPtr<ProvidedFileSystemInterface> ThrottledFileSystem::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+std::unique_ptr<ScopedUserInteraction>
+ThrottledFileSystem::StartUserInteraction() {
+  return file_system_->StartUserInteraction();
 }
 
 void ThrottledFileSystem::Abort(int queue_token) {

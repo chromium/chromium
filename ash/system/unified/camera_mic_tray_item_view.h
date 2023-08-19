@@ -40,6 +40,7 @@ class ASH_EXPORT CameraMicTrayItemView : public TrayItemView,
 
   // TrayItemView:
   void HandleLocaleChange() override;
+  void UpdateLabelOrImageViewColor(bool active) override;
 
   // MediaCaptureObserver:
   void OnVmMediaNotificationChanged(bool camera,
@@ -49,6 +50,8 @@ class ASH_EXPORT CameraMicTrayItemView : public TrayItemView,
  private:
   void Update();
   void FetchMessage();
+  // Gets the icon based on `type`.
+  const gfx::VectorIcon& GetIcon(Type type);
 
   const Type type_;
   bool active_ = false;

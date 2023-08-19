@@ -105,7 +105,6 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{před 1 měsícem}few{před # měsíci}many{před # měsíce}other{před # měsíci}}</translation>
 <translation id="4289300219472526559">Začít mluvit</translation>
 <translation id="4289540628985791613">Přehled</translation>
-<translation id="4306392492252714209">Odstranit ze schránky.</translation>
 <translation id="4491109536499578614">Obrázek</translation>
 <translation id="4565377596337484307">Skrýt heslo</translation>
 <translation id="4588090240171750605">Posuv doprava</translation>
@@ -148,6 +147,7 @@
 <translation id="6142413573757616983"><ph name="QUANTITY" /> B/s</translation>
 <translation id="6237461503717005873">Je vybrán řádek <ph name="ROW_NAME" />.</translation>
 <translation id="6264365405983206840">Vybr&amp;at vše</translation>
+<translation id="6346952829206698721">Vložit ze schránky</translation>
 <translation id="6364916375976753737">Posuv doleva</translation>
 <translation id="6394627529324717982">Čárka</translation>
 <translation id="6397363302884558537">Přestat mluvit</translation>
@@ -174,6 +174,7 @@
 <translation id="7170202025028120564">Nastavení zobrazení aplikace se projeví poté, co ji restartujete.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{Zbývá 1 min}few{Zbývají # min}many{Zbývá # min}other{Zbývá # min}}</translation>
+<translation id="7363164521834647158">Odeslat odpověď</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{Před 1 min}few{Před # min}many{Před # min}other{Před # min}}</translation>
 <translation id="7389409599945284130">– <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{Zbývá 1 minuta}few{Zbývají # minuty}many{Zbývá # minuty}other{Zbývá # minut}}</translation>

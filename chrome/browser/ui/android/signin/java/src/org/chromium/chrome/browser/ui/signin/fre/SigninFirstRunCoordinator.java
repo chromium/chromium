@@ -15,6 +15,7 @@ import org.chromium.base.Promise;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.firstrun.MobileFreProgress;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -60,6 +61,9 @@ public class SigninFirstRunCoordinator {
          * @param url Resource id for the URL of the web page.
          */
         void showInfoPage(@StringRes int url);
+
+        /** Returns the supplier that provides the Profile (when available). */
+        OneshotSupplier<Profile> getProfileSupplier();
 
         /**
          * The supplier that supplies whether reading policy value is necessary.

@@ -20,8 +20,8 @@
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-
-#include <set>
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 
@@ -106,15 +106,15 @@ Node* GetFrameOwnerNode(const Node* child) {
   return child->GetDocument().GetFrame()->OwnerLayoutObject()->GetNode();
 }
 
-void PopulateAncestorContexts(Node* node,
-                              std::set<DisplayLockContext*>* contexts) {
-  DCHECK(node);
-  for (Node& ancestor : FlatTreeTraversal::InclusiveAncestorsOf(*node)) {
+void PopulateAncestorContexts(
+    Node& node,
+    HeapHashSet<Member<DisplayLockContext>>& contexts) {
+  for (Node& ancestor : FlatTreeTraversal::InclusiveAncestorsOf(node)) {
     auto* ancestor_element = DynamicTo<Element>(ancestor);
     if (!ancestor_element)
       continue;
     if (auto* context = ancestor_element->GetDisplayLockContext())
-      contexts->insert(context);
+      contexts.insert(context);
   }
 }
 
@@ -171,13 +171,11 @@ bool DisplayLockUtilities::ActivateFindInPageMatchRangeIfNeeded(
     const EphemeralRangeInFlatTree& range) {
   DCHECK(!range.IsNull());
   DCHECK(!range.IsCollapsed());
-  if (range.GetDocument()
-          .GetDisplayLockDocumentState()
-          .LockedDisplayLockCount() ==
-      range.GetDocument()
-          .GetDisplayLockDocumentState()
-          .DisplayLockBlockingAllActivationCount())
+  if (!range.GetDocument()
+           .GetDisplayLockDocumentState()
+           .HasActivatableLocks()) {
     return false;
+  }
   // Find-in-page matches can't span multiple block-level elements (because the
   // text will be broken by newlines between blocks), so first we find the
   // block-level element which contains the match.
@@ -194,6 +192,35 @@ bool DisplayLockUtilities::ActivateFindInPageMatchRangeIfNeeded(
   DCHECK(enclosing_block);
   return enclosing_block->ActivateDisplayLockIfNeeded(
       DisplayLockActivationReason::kFindInPage);
+}
+
+bool DisplayLockUtilities::NeedsActivationForFindInPage(
+    const EphemeralRangeInFlatTree& range) {
+  DisplayLockDocumentState& state =
+      range.GetDocument().GetDisplayLockDocumentState();
+  if (!state.HasActivatableLocks()) {
+    return false;
+  }
+
+  Element* enclosing_block =
+      EnclosingBlock(range.StartPosition(), kCanCrossEditingBoundary);
+
+  HeapVector<Member<Element>> activatable_targets;
+  for (Node& ancestor :
+       FlatTreeTraversal::InclusiveAncestorsOf(*enclosing_block)) {
+    auto* ancestor_element = DynamicTo<Element>(ancestor);
+    if (!ancestor_element) {
+      continue;
+    }
+    if (auto* context = ancestor_element->GetDisplayLockContext()) {
+      if (context->ShouldCommitForActivation(
+              DisplayLockActivationReason::kFindInPage)) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 }
 
 const HeapVector<Member<Element>>
@@ -636,62 +663,38 @@ void DisplayLockUtilities::SelectionChanged(
   }
 
   TRACE_EVENT0("blink", "DisplayLockUtilities::SelectionChanged");
-  std::set<Node*> old_nodes;
-  for (Node& node : old_selection.Nodes())
-    old_nodes.insert(&node);
 
-  std::set<Node*> new_nodes;
+  HeapHashSet<Member<Node>> new_nodes;
   for (Node& node : new_selection.Nodes())
     new_nodes.insert(&node);
 
-  std::set<DisplayLockContext*> lost_selection_contexts;
-  std::set<DisplayLockContext*> gained_selection_contexts;
+  HeapHashSet<Member<DisplayLockContext>> lost_selection_contexts;
+  HeapHashSet<Member<DisplayLockContext>> gained_selection_contexts;
 
-  // Skip common nodes and extract contexts from nodes that lost selection and
-  // contexts from nodes that gained selection.
-  // This is similar to std::set_symmetric_difference except that we need to
-  // know which set the resulting item came from. In this version, we simply do
-  // the relevant operation on each of the items instead of storing the
-  // difference.
-  std::set<Node*>::iterator old_it = old_nodes.begin();
-  std::set<Node*>::iterator new_it = new_nodes.begin();
-  while (old_it != old_nodes.end() && new_it != new_nodes.end()) {
-    // Compare the addresses since that's how the nodes are ordered in the set.
-    if (*old_it < *new_it) {
-      PopulateAncestorContexts(*old_it++, &lost_selection_contexts);
-    } else if (*old_it > *new_it) {
-      PopulateAncestorContexts(*new_it++, &gained_selection_contexts);
-    } else {
-      ++old_it;
-      ++new_it;
+  for (Node& node : old_selection.Nodes()) {
+    if (auto it = new_nodes.find(&node); it != new_nodes.end()) {
+      new_nodes.erase(it);
+      continue;
     }
+    PopulateAncestorContexts(node, lost_selection_contexts);
   }
-  while (old_it != old_nodes.end())
-    PopulateAncestorContexts(*old_it++, &lost_selection_contexts);
-  while (new_it != new_nodes.end())
-    PopulateAncestorContexts(*new_it++, &gained_selection_contexts);
 
-  // Now do a similar thing with contexts: skip common ones, and mark the ones
-  // that lost selection or gained selection as such.
-  std::set<DisplayLockContext*>::iterator lost_it =
-      lost_selection_contexts.begin();
-  std::set<DisplayLockContext*>::iterator gained_it =
-      gained_selection_contexts.begin();
-  while (lost_it != lost_selection_contexts.end() &&
-         gained_it != gained_selection_contexts.end()) {
-    if (*lost_it < *gained_it) {
-      (*lost_it++)->NotifySubtreeLostSelection();
-    } else if (*lost_it > *gained_it) {
-      (*gained_it++)->NotifySubtreeGainedSelection();
-    } else {
-      ++lost_it;
-      ++gained_it;
-    }
+  for (Node* node : new_nodes) {
+    PopulateAncestorContexts(*node, gained_selection_contexts);
   }
-  while (lost_it != lost_selection_contexts.end())
-    (*lost_it++)->NotifySubtreeLostSelection();
-  while (gained_it != gained_selection_contexts.end())
-    (*gained_it++)->NotifySubtreeGainedSelection();
+
+  for (DisplayLockContext* context : lost_selection_contexts) {
+    if (auto it = gained_selection_contexts.find(context);
+        it != gained_selection_contexts.end()) {
+      gained_selection_contexts.erase(it);
+      continue;
+    }
+    context->NotifySubtreeLostSelection();
+  }
+
+  for (DisplayLockContext* context : gained_selection_contexts) {
+    context->NotifySubtreeGainedSelection();
+  }
 }
 
 void DisplayLockUtilities::SelectionRemovedFromDocument(Document& document) {

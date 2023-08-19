@@ -197,8 +197,6 @@ class WebSocketStreamCreateTest : public TestWithParam<HandshakeStreamType>,
     // Initial SETTINGS frame.
     spdy::SettingsMap write_settings;
     write_settings[spdy::SETTINGS_HEADER_TABLE_SIZE] = kSpdyMaxHeaderTableSize;
-    write_settings[spdy::SETTINGS_MAX_CONCURRENT_STREAMS] =
-        kSpdyMaxConcurrentPushedStreams;
     write_settings[spdy::SETTINGS_INITIAL_WINDOW_SIZE] = 6 * 1024 * 1024;
     write_settings[spdy::SETTINGS_MAX_HEADER_LIST_SIZE] =
         kSpdyMaxHeaderListSize;

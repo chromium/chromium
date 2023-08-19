@@ -260,12 +260,6 @@ TEST_P(NotificationCenterViewTest, DISABLED_AddAndRemoveNotification) {
 }
 
 TEST_P(NotificationCenterViewTest, ContentsRelayout) {
-  // TODO(b/266996101): Enable this test for QsRevamp after this sizing bug is
-  // fixed.
-  if (IsQsRevampEnabled()) {
-    return;
-  }
-
   std::vector<std::string> ids = AddManyNotifications();
   test_api()->ToggleBubble();
   EXPECT_TRUE(notification_center_view()->GetVisible());
@@ -274,6 +268,7 @@ TEST_P(NotificationCenterViewTest, ContentsRelayout) {
             notification_center_view()->bounds().height());
   const int previous_contents_height = GetScrollerContents()->height();
   const int previous_list_height = GetNotificationListView()->height();
+  EXPECT_EQ(previous_contents_height, previous_list_height);
 
   test_api()->RemoveNotification(ids.back());
   AnimateNotificationListToEnd();
@@ -282,6 +277,8 @@ TEST_P(NotificationCenterViewTest, ContentsRelayout) {
   EXPECT_TRUE(notification_center_view()->GetVisible());
   EXPECT_GT(previous_contents_height, GetScrollerContents()->height());
   EXPECT_GT(previous_list_height, GetNotificationListView()->height());
+  EXPECT_EQ(GetScrollerContents()->height(),
+            GetNotificationListView()->height());
 }
 
 TEST_P(NotificationCenterViewTest, InsufficientHeight) {

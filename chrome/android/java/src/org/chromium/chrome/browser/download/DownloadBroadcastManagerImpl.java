@@ -50,7 +50,6 @@ import org.chromium.content_public.browser.BrowserStartupController;
  * relevant information on to native.
  */
 public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl {
-    private static final String TAG = "DLBroadcastManager";
     private static final int WAIT_TIME_MS = 5000;
 
     private final DownloadSharedPreferenceHelper mDownloadSharedPreferenceHelper =

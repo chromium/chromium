@@ -102,7 +102,9 @@ class NullStreamMaybeFatal final : public NullStream {
   explicit NullStreamMaybeFatal(absl::LogSeverity severity)
       : fatal_(severity == absl::LogSeverity::kFatal) {}
   ~NullStreamMaybeFatal() {
-    if (fatal_) _exit(1);
+    if (fatal_) {
+      _exit(1);
+    }
   }
 
  private:

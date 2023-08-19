@@ -3,12 +3,13 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/device_notifications/device_system_tray_icon.h"
-
+#include "chrome/browser/device_notifications/device_system_tray_icon_renderer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_thread.h"
 
-DeviceSystemTrayIcon::DeviceSystemTrayIcon() = default;
-
+DeviceSystemTrayIcon::DeviceSystemTrayIcon(
+    std::unique_ptr<DeviceSystemTrayIconRenderer> icon_renderer)
+    : icon_renderer_(std::move(icon_renderer)) {}
 DeviceSystemTrayIcon::~DeviceSystemTrayIcon() = default;
 
 void DeviceSystemTrayIcon::StageProfile(Profile* profile) {
@@ -59,6 +60,24 @@ void DeviceSystemTrayIcon::UnstageProfile(Profile* profile, bool immediate) {
   NotifyConnectionCountUpdated(profile);
 }
 
+void DeviceSystemTrayIcon::ProfileAdded(Profile* profile) {
+  if (icon_renderer_) {
+    icon_renderer_->AddProfile(profile);
+  }
+}
+
+void DeviceSystemTrayIcon::ProfileRemoved(Profile* profile) {
+  if (icon_renderer_) {
+    icon_renderer_->RemoveProfile(profile);
+  }
+}
+
+void DeviceSystemTrayIcon::NotifyConnectionCountUpdated(Profile* profile) {
+  if (icon_renderer_) {
+    icon_renderer_->NotifyConnectionUpdated(profile);
+  }
+}
+
 void DeviceSystemTrayIcon::CleanUpProfile(base::WeakPtr<Profile> profile) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (profile) {
@@ -70,7 +89,7 @@ void DeviceSystemTrayIcon::CleanUpProfile(base::WeakPtr<Profile> profile) {
     return;
   }
   // If the |profile| is destroyed, |profiles_| shouldn't have an entry for
-  // |profile|. This is because HidConnectionTracker::CleanUp() is called on
+  // |profile|. This is because DeviceConnectionTracker::CleanUp() is called on
   // browser context (i.e. profile) shutdown and calls UnstageProfile() with
   // immediate set to true so the entry will be removed from |profiles_|
   // immediately.

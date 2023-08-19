@@ -36,6 +36,9 @@ class ASH_EXPORT AppListBubbleSearchPage : public views::View {
   AppListBubbleSearchPage& operator=(const AppListBubbleSearchPage&) = delete;
   ~AppListBubbleSearchPage() override;
 
+  // views::View:
+  void VisibilityChanged(View* starting_from, bool is_visible) override;
+
   // Starts the animation for showing this page, coming from another page.
   void AnimateShowPage();
 

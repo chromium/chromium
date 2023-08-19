@@ -20,10 +20,6 @@
 #import "net/base/filename_util.h"
 #import "net/base/net_errors.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace web {
 namespace download {
 namespace internal {

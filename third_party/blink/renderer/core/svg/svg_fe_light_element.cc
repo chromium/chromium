@@ -206,22 +206,19 @@ SVGAnimatedPropertyBase* SVGFELightElement::PropertyFromAttribute(
   }
 }
 
-void SVGFELightElement::SynchronizeSVGAttribute(
-    const QualifiedName& name) const {
-  if (name == AnyQName()) {
-    SVGAnimatedPropertyBase* attrs[]{azimuth_.Get(),
-                                     elevation_.Get(),
-                                     x_.Get(),
-                                     y_.Get(),
-                                     z_.Get(),
-                                     points_at_x_.Get(),
-                                     points_at_y_.Get(),
-                                     points_at_z_.Get(),
-                                     specular_exponent_.Get(),
-                                     limiting_cone_angle_.Get()};
-    SynchronizeAllSVGAttributes(attrs);
-  }
-  SVGElement::SynchronizeSVGAttribute(name);
+void SVGFELightElement::SynchronizeAllSVGAttributes() const {
+  SVGAnimatedPropertyBase* attrs[]{azimuth_.Get(),
+                                   elevation_.Get(),
+                                   x_.Get(),
+                                   y_.Get(),
+                                   z_.Get(),
+                                   points_at_x_.Get(),
+                                   points_at_y_.Get(),
+                                   points_at_z_.Get(),
+                                   specular_exponent_.Get(),
+                                   limiting_cone_angle_.Get()};
+  SynchronizeListOfSVGAttributes(attrs);
+  SVGElement::SynchronizeAllSVGAttributes();
 }
 
 }  // namespace blink

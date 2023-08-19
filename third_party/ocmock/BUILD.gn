@@ -104,4 +104,8 @@ source_set("ocmock") {
     ":ocmock_warnings",
     "//build/config/compiler:no_chromium_code",
   ]
+
+  # Do not compile with ARC because OCMock code is not compatible with being
+  # compiled with ARC.
+  configs -= [ "//build/config/compiler:enable_arc" ]
 }

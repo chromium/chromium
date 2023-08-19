@@ -17,22 +17,26 @@
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/input.h"
 #include "content/browser/renderer_host/input/synthetic_gesture.h"
-#include "content/browser/renderer_host/input/synthetic_pointer_driver.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/common/input/synthetic_pointer_action_list_params.h"
 #include "content/common/input/synthetic_smooth_scroll_gesture_params.h"
 #include "content/public/browser/render_widget_host.h"
 #include "third_party/blink/public/common/input/pointer_id.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/mojom/page/widget.mojom.h"
 
 namespace content {
 class DevToolsAgentHostImpl;
 class RenderFrameHostImpl;
 class RenderWidgetHostImpl;
+class SyntheticPointerDriver;
 class WebContentsImpl;
 
 namespace protocol {
+
+template <class BackendCallback>
+class FailSafe;
 
 class InputHandler : public DevToolsDomainHandler, public Input::Backend {
  public:
@@ -49,16 +53,23 @@ class InputHandler : public DevToolsDomainHandler, public Input::Backend {
   void SetRenderer(int process_host_id,
                    RenderFrameHostImpl* frame_host) override;
 
-  void StartDragging(const blink::mojom::DragData& drag_data,
+  // StartDragging is used to inform CDP's InputHandler to start dragging. This
+  // gets called whenever the renderer tells the content layer to initiate
+  // dragging (see RenderWidgetHostImpl::StartDragging)
+  void StartDragging(const DropData& drop_data,
+                     const blink::mojom::DragData& drag_data,
                      blink::DragOperationsMask drag_operations_mask,
                      bool* intercepted);
   // DragEnded is used to inform CDP's InputHandler when a drag has ended. This
-  // can occur in two situations:
+  // gets called whenever the Drag n' Drop APIs that end dragging get called
+  // (all of which exist in RenderWidgetHostImpl).
   //
-  //  1. because of CDP (this will be implemented in another CL) and
-  //  2. because of an external source such as an external interaction to the OS
-  //     by a user.
+  // This function ensures the drag state of Chromium is in-sync no matter the
+  // source of the drag end.
   //
+  // In theory, if OS drag gets initiated, then this function gets called when
+  // the OS drag ends. This can happen if some starts and ends a drag with the
+  // OS manually before starting to use CDP. In practice, this doesn't occur.
   void DragEnded();
 
   Response Disable() override;
@@ -126,6 +137,9 @@ class InputHandler : public DevToolsDomainHandler, public Input::Backend {
       protocol::Maybe<double> timestamp,
       std::unique_ptr<DispatchTouchEventCallback> callback) override;
 
+  void CancelDragging(
+      std::unique_ptr<CancelDraggingCallback> callback) override;
+
   Response EmulateTouchFromMouseEvent(const std::string& type,
                                       int x,
                                       int y,
@@ -172,6 +186,88 @@ class InputHandler : public DevToolsDomainHandler, public Input::Backend {
 
  private:
   class InputInjector;
+  class DragController {
+   public:
+    // `handler` must live as long as the drag controller.
+    explicit DragController(InputHandler& handler);
+    ~DragController();
+
+    DragController(const DragController&) = delete;
+    DragController& operator=(const DragController&) = delete;
+
+    // Returns `true` if the drag controller handles the mouse event. All
+    // arguments will be moved in this case.
+    bool HandleMouseEvent(
+        RenderWidgetHostImpl& host,
+        const blink::WebMouseEvent& event,
+        std::unique_ptr<DispatchMouseEventCallback>& callback);
+
+    // You should call this whenever dragging needs to be cancelled (perhaps an
+    // invalid state or desired by the user).
+    void CancelDragging(base::OnceClosure callback);
+
+    // Returns `true` if we are currently dragging.
+    bool IsDragging() { return !!drag_state_; }
+
+   private:
+    struct DragState;
+
+    friend void InputHandler::StartDragging(
+        const DropData& drop_data,
+        const blink::mojom::DragData& drag_data,
+        blink::DragOperationsMask drag_operations_mask,
+        bool* intercepted);
+    friend void InputHandler::DragEnded();
+
+    void EnsureDraggingEntered(RenderWidgetHostImpl& host,
+                               const blink::WebMouseEvent& event);
+
+    // Called by the input handler to start a dragging session.
+    void StartDragging(const content::DropData& drop_data,
+                       blink::DragOperationsMask drag_operations_mask);
+
+    // Updates the drag with the given mouse event.
+    //
+    // `callback` may be null.
+    void UpdateDragging(
+        RenderWidgetHostImpl& host,
+        std::unique_ptr<blink::WebMouseEvent> event,
+        std::unique_ptr<FailSafe<DispatchMouseEventCallback>> callback);
+    void DragUpdated(
+        std::unique_ptr<blink::WebMouseEvent> event,
+        std::unique_ptr<FailSafe<DispatchMouseEventCallback>> callback,
+        ui::mojom::DragOperation operation);
+
+    // Ends the drag with the given event and host.
+    //
+    // Note only the modifiers for the event are really used here, so it's
+    // expected you've updated the drag with the latest info (e.g. position)
+    // excluding modifiers. This ensures the drag event sequence is semantically
+    // correct. The event itself is still needed in case dragging suddenly stops
+    // for external reasons and we need to reschedule it.
+    //
+    // Also note the host is only used if there are no updates ongoing.
+    // Otherwise, it's a nullptr. This is an optimization.
+    void EndDragging(
+        RenderWidgetHostImpl* host,
+        std::unique_ptr<blink::WebMouseEvent> event,
+        std::unique_ptr<FailSafe<DispatchMouseEventCallback>> callback);
+    void EndDraggingWithRenderWidgetHostAtPoint(
+        std::unique_ptr<blink::WebMouseEvent> event,
+        std::unique_ptr<FailSafe<DispatchMouseEventCallback>> callback,
+        base::WeakPtr<RenderWidgetHostViewBase> view,
+        absl::optional<gfx::PointF> maybe_point);
+
+    InputHandler& handler_;
+
+    // These get used for starting a drag.
+    std::unique_ptr<blink::WebMouseEvent> last_mouse_move_ = nullptr;
+    base::WeakPtr<RenderWidgetHostImpl> last_widget_host_ = nullptr;
+
+    std::unique_ptr<DragState> drag_state_;
+
+    base::WeakPtrFactory<DragController> weak_factory_{this};
+  };
 
   void DispatchWebTouchEvent(
       const std::string& type,
@@ -237,6 +333,9 @@ class InputHandler : public DevToolsDomainHandler, public Input::Backend {
       std::unique_ptr<SynthesizeScrollGestureCallback> callback,
       SyntheticGesture::Result result);
 
+  void HandleMouseEvent(std::unique_ptr<blink::WebMouseEvent> event,
+                        std::unique_ptr<DispatchMouseEventCallback> callback);
+
   void ClearInputState();
   bool PointIsWithinContents(gfx::PointF point) const;
   InputInjector* EnsureInjector(RenderWidgetHostImpl* widget_host);
@@ -245,15 +344,16 @@ class InputHandler : public DevToolsDomainHandler, public Input::Backend {
 
   float ScaleFactor();
 
-  RenderFrameHostImpl* host_;
+  RenderFrameHostImpl* host_ = nullptr;
   // WebContents associated with the |host_|.
   WebContentsImpl* web_contents_ = nullptr;
   std::unique_ptr<Input::Frontend> frontend_;
   base::flat_set<std::unique_ptr<InputInjector>, base::UniquePtrComparator>
       injectors_;
-  int last_id_;
+  int last_id_ = 0;
   bool ignore_input_events_ = false;
   bool intercept_drags_ = false;
+  DragController drag_controller_;
   const bool allow_file_access_;
   const bool allow_sending_input_to_browser_ = false;
   std::set<int> pointer_ids_;

@@ -17,6 +17,7 @@ class IMEObserver;
 class NetworkObserver;
 class ScreenSecurityObserver;
 class SystemTrayObserver;
+class TrayBubbleView;
 class VirtualKeyboardObserver;
 
 namespace mojom {
@@ -61,7 +62,11 @@ class ASH_EXPORT SystemTrayNotifier {
   void NotifySystemTrayBubbleShown();
 
   // Status area anchored bubble.
-  void NotifyStatusAreaAnchoredBubbleShown();
+  void NotifyStatusAreaAnchoredBubbleVisibilityChanged(
+      TrayBubbleView* tray_bubble,
+      bool visible);
+
+  void NotifyTrayBubbleBoundsChanged(TrayBubbleView* tray_bubble);
 
   // Virtual keyboard.
   void AddVirtualKeyboardObserver(VirtualKeyboardObserver* observer);

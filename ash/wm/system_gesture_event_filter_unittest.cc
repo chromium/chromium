@@ -9,6 +9,7 @@
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/test/test_non_client_frame_view_ash.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
 #include "base/time/time.h"
@@ -31,7 +32,6 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
-#include "ui/views/window/non_client_view.h"
 #include "ui/views/window/window_button_order_provider.h"
 
 namespace ash {
@@ -40,64 +40,10 @@ namespace {
 
 class ResizableWidgetDelegate : public views::WidgetDelegateView {
  public:
-  ResizableWidgetDelegate() {
-    SetCanMaximize(true);
-    SetCanMinimize(true);
-    SetCanResize(true);
-  }
-
+  ResizableWidgetDelegate() { SetHasWindowSizeControls(true); }
   ResizableWidgetDelegate(const ResizableWidgetDelegate&) = delete;
   ResizableWidgetDelegate& operator=(const ResizableWidgetDelegate&) = delete;
-
   ~ResizableWidgetDelegate() override = default;
-};
-
-// Support class for testing windows with a maximum size.
-class MaxSizeNCFV : public views::NonClientFrameView {
- public:
-  MaxSizeNCFV() = default;
-
-  MaxSizeNCFV(const MaxSizeNCFV&) = delete;
-  MaxSizeNCFV& operator=(const MaxSizeNCFV&) = delete;
-
- private:
-  gfx::Size GetMaximumSize() const override { return gfx::Size(200, 200); }
-  gfx::Rect GetBoundsForClientView() const override { return gfx::Rect(); }
-
-  gfx::Rect GetWindowBoundsForClientBounds(
-      const gfx::Rect& client_bounds) const override {
-    return gfx::Rect();
-  }
-
-  // This function must ask the ClientView to do a hittest.  We don't do this in
-  // the parent NonClientView because that makes it more difficult to calculate
-  // hittests for regions that are partially obscured by the ClientView, e.g.
-  // HTSYSMENU.
-  int NonClientHitTest(const gfx::Point& point) override { return HTNOWHERE; }
-  void GetWindowMask(const gfx::Size& size, SkPath* window_mask) override {}
-  void ResetWindowControls() override {}
-  void UpdateWindowIcon() override {}
-  void UpdateWindowTitle() override {}
-  void SizeConstraintsChanged() override {}
-};
-
-class MaxSizeWidgetDelegate : public views::WidgetDelegateView {
- public:
-  MaxSizeWidgetDelegate() {
-    SetCanMinimize(true);
-    SetCanResize(true);
-  }
-
-  MaxSizeWidgetDelegate(const MaxSizeWidgetDelegate&) = delete;
-  MaxSizeWidgetDelegate& operator=(const MaxSizeWidgetDelegate&) = delete;
-
-  ~MaxSizeWidgetDelegate() override = default;
-
- private:
-  std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
-      views::Widget* widget) override {
-    return std::make_unique<MaxSizeNCFV>();
-  }
 };
 
 }  // namespace
@@ -203,8 +149,15 @@ TEST_F(SystemGestureEventFilterTest, TwoFingerDrag) {
 TEST_F(SystemGestureEventFilterTest, WindowsWithMaxSizeDontSnap) {
   gfx::Rect bounds(250, 150, 100, 100);
   aura::Window* root_window = Shell::GetPrimaryRootWindow();
+  auto* widget_delegate = new TestWidgetDelegateAsh();
+  widget_delegate->SetCanMaximize(false);
   views::Widget* toplevel = views::Widget::CreateWindowWithContext(
-      new MaxSizeWidgetDelegate, root_window, bounds);
+      widget_delegate, root_window, bounds);
+
+  auto* custom_frame = static_cast<TestNonClientFrameViewAsh*>(
+      NonClientFrameViewAsh::Get(toplevel->GetNativeWindow()));
+  custom_frame->SetMaximumSize(gfx::Size(200, 200));
+
   toplevel->Show();
 
   const int kSteps = 15;

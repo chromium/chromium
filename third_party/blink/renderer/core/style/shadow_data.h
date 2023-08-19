@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/css/style_color.h"
 #include "ui/gfx/geometry/outsets_f.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 
@@ -41,26 +42,26 @@ class CORE_EXPORT ShadowData {
   USING_FAST_MALLOC(ShadowData);
 
  public:
-  ShadowData(gfx::PointF location,
+  ShadowData(gfx::Vector2dF offset,
              float blur,
              float spread,
              ShadowStyle style,
              StyleColor color,
              float opacity = 1.0f)
-      : location_(location),
+      : offset_(offset),
         blur_(blur, blur),
         spread_(spread),
         color_(color),
         style_(style),
         opacity_(opacity) {}
 
-  ShadowData(gfx::PointF location,
+  ShadowData(gfx::Vector2dF offset,
              gfx::PointF blur,
              float spread,
              ShadowStyle style,
              StyleColor color,
              float opacity = 1.0f)
-      : location_(location),
+      : offset_(offset),
         blur_(blur),
         spread_(spread),
         color_(color),
@@ -72,9 +73,9 @@ class CORE_EXPORT ShadowData {
 
   static ShadowData NeutralValue();
 
-  float X() const { return location_.x(); }
-  float Y() const { return location_.y(); }
-  gfx::PointF Location() const { return location_; }
+  float X() const { return offset_.x(); }
+  float Y() const { return offset_.y(); }
+  gfx::Vector2dF Offset() const { return offset_; }
   float Blur() const { return blur_.x(); }
   gfx::PointF BlurXY() const { return blur_; }
   float Spread() const { return spread_; }
@@ -89,7 +90,7 @@ class CORE_EXPORT ShadowData {
   gfx::OutsetsF RectOutsets() const;
 
  private:
-  gfx::PointF location_;
+  gfx::Vector2dF offset_;
   gfx::PointF blur_;
   float spread_;
   StyleColor color_;

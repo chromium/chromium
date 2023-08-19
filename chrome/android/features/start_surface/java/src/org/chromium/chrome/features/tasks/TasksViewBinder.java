@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.features.tasks;
 
+import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.BACKGROUND_COLOR;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.FAKE_SEARCH_BOX_CLICK_LISTENER;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.FAKE_SEARCH_BOX_TEXT_WATCHER;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.INCOGNITO_COOKIE_CONTROLS_ICON_CLICK_LISTENER;
@@ -120,6 +121,8 @@ public class TasksViewBinder {
             view.resetScrollPosition();
         } else if (propertyKey == TOP_TOOLBAR_PLACEHOLDER_HEIGHT) {
             view.setTopToolbarPlaceholderHeight(model.get(TOP_TOOLBAR_PLACEHOLDER_HEIGHT));
+        } else if (propertyKey == BACKGROUND_COLOR) {
+            view.setStartSurfaceBackgroundColor(model.get(BACKGROUND_COLOR));
         }
     }
 }

@@ -69,6 +69,8 @@ class ExceptionSnapshotFuchsia final : public ExceptionSnapshot {
   CPUContextX86_64 context_arch_;
 #elif defined(ARCH_CPU_ARM64)
   CPUContextARM64 context_arch_;
+#elif defined(ARCH_CPU_RISCV64)
+  CPUContextRISCV64 context_arch_;
 #endif
   CPUContext context_;
   std::vector<uint64_t> codes_;

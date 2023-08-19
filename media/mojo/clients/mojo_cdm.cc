@@ -37,16 +37,8 @@ void RecordConnectionError(bool connection_error_happened) {
                         connection_error_happened);
 }
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class CallbackTimeoutStatus {
-  kCreate = 0,
-  kTimeout = 1,
-  kDestructedBeforeTimeout = 2,
-  kMaxValue = kDestructedBeforeTimeout,
-};
-
-void OnCallbackTimeout(const std::string uma_name, bool called_on_destruction) {
+void OnCallbackTimeout(const std::string& uma_name,
+                       bool called_on_destruction) {
   DVLOG(1) << "Callback Timeout: " << uma_name
            << ", called_on_destruction=" << called_on_destruction;
   base::UmaHistogramEnumeration(

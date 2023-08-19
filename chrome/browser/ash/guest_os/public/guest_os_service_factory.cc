@@ -12,14 +12,8 @@ namespace guest_os {
 // static
 GuestOsService* guest_os::GuestOsServiceFactory::GetForProfile(
     Profile* profile) {
-  // There's only the one service instance per login, instead of a new one for
-  // off-the-record. This is because users expect their Guest OSs to still work
-  // even when off-the-record, and to work with their existing VM instances. For
-  // example, when downloading files in Chrome they can still save their files
-  // to a Guest OS mount.
   return static_cast<GuestOsService*>(
-      GetInstance()->GetServiceForBrowserContext(profile->GetOriginalProfile(),
-                                                 true));
+      GetInstance()->GetServiceForBrowserContext(profile, true));
 }
 
 // static
@@ -32,10 +26,16 @@ GuestOsServiceFactory::GuestOsServiceFactory()
     : ProfileKeyedServiceFactory(
           "GuestOsService",
           ProfileSelections::Builder()
-              .WithRegular(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/1418376): Check if this service is needed in
-              // Guest mode.
-              .WithGuest(ProfileSelection::kOriginalOnly)
+              // There's only the one service instance per login, instead of a
+              // new one for off-the-record. This is because users expect their
+              // Guest OSs to still work even when off-the-record, and to work
+              // with their existing VM instances. For example, when downloading
+              // files in Chrome they can still save their files to a Guest OS
+              // mount.
+              .WithRegular(ProfileSelection::kRedirectedToOriginal)
+              .WithGuest(ProfileSelection::kNone)
+              .WithAshInternals(ProfileSelection::kNone)
+              .WithSystem(ProfileSelection::kNone)
               .Build()) {}
 
 GuestOsServiceFactory::~GuestOsServiceFactory() = default;

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SECURITY_INTERSTITIALS_CORE_BASE_SAFE_BROWSING_ERROR_UI_H_
 #define COMPONENTS_SECURITY_INTERSTITIALS_CORE_BASE_SAFE_BROWSING_ERROR_UI_H_
 
+#include <map>
+
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -12,6 +14,18 @@
 #include "url/gurl.h"
 
 namespace security_interstitials {
+
+struct InterstitialInteractionDetails {
+  InterstitialInteractionDetails(int occurrence_count,
+                                 int64_t first_timestamp,
+                                 int64_t last_timestamp);
+  int occurrence_count;
+  int64_t first_timestamp;
+  int64_t last_timestamp;
+};
+
+using InterstitialInteractionMap =
+    std::map<SecurityInterstitialCommand, InterstitialInteractionDetails>;
 
 // A base class for quiet vs loud versions of the safe browsing interstitial.
 // This class displays UI for Safe Browsing errors that block page loads. This
@@ -190,12 +204,20 @@ class BaseSafeBrowsingErrorUI {
 
   bool did_user_make_decision() { return user_made_decision_; }
 
+  std::unique_ptr<InterstitialInteractionMap>
+  get_interstitial_interaction_data() {
+    return std::move(interstitial_interaction_data_);
+  }
+
   virtual void PopulateStringsForHtml(base::Value::Dict& load_time_data) = 0;
   virtual void HandleCommand(SecurityInterstitialCommand command) = 0;
 
   virtual int GetHTMLTemplateId() const = 0;
 
  protected:
+  // Records the number of occurrences of different user interactions with a
+  // security interstitial. Used for metrics.
+  std::unique_ptr<InterstitialInteractionMap> interstitial_interaction_data_;
   bool user_made_decision_;
 
  private:

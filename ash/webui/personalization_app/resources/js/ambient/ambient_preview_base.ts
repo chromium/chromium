@@ -102,9 +102,11 @@ export class AmbientPreviewBase extends WithPersonalizationStore {
   }
 
   private computeLoading_(): boolean {
-    return this.isAmbientModeAllowed_ &&
-        (this.ambientModeEnabled_ === null || this.albums_ === null ||
-         this.topicSource_ === null || this.previewImages_ === null);
+    if (!this.isAmbientModeAllowed_ || this.ambientModeEnabled_ === false) {
+      return false;
+    }
+    return this.ambientModeEnabled_ === null || this.albums_ === null ||
+        this.topicSource_ === null || this.previewImages_ === null;
   }
 
   private onLoadingChanged_(value: boolean) {

@@ -58,7 +58,7 @@ while test $# -gt 0; do
       ;;
 
     --version)
-	echo 2.11.0
+	echo 2.12.0
 	exit 0
 	;;
 

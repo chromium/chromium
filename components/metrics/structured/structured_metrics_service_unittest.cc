@@ -18,6 +18,7 @@
 #include "components/metrics/structured/structured_metrics_features.h"
 #include "components/metrics/structured/structured_metrics_prefs.h"
 #include "components/metrics/structured/structured_metrics_recorder.h"
+#include "components/metrics/structured/test/test_key_data_provider.h"
 #include "components/metrics/test/test_metrics_service_client.h"
 #include "components/metrics/unsent_log_store.h"
 #include "components/metrics/unsent_log_store_metrics_impl.h"
@@ -91,8 +92,10 @@ class StructuredMetricsServiceTest : public testing::Test {
 
   void Init() {
     auto recorder = std::unique_ptr<StructuredMetricsRecorder>(
-        new StructuredMetricsRecorder(DeviceKeyFilePath(), base::Seconds(0),
+        new StructuredMetricsRecorder(base::Seconds(0),
                                       system_profile_provider_.get()));
+    recorder->InitializeKeyDataProvider(std::make_unique<TestKeyDataProvider>(
+        DeviceKeyFilePath(), ProfileKeyFilePath()));
     recorder->OnProfileAdded(temp_dir_.GetPath());
     service_ = std::unique_ptr<StructuredMetricsService>(
         new StructuredMetricsService(&client_, &prefs_, std::move(recorder)));

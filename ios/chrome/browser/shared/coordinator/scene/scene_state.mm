@@ -4,20 +4,16 @@
 
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/ios/crb_protocol_observers.h"
 #import "base/ios/ios_util.h"
 #import "base/logging.h"
-#import "base/mac/foundation_util.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/chrome_overlay_window.h"
-#import "ios/chrome/browser/sessions/scene_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+#import "ios/chrome/browser/shared/coordinator/scene/scene_util.h"
 
 namespace {
 
@@ -180,7 +176,7 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
       return YES;
 
     case ContentVisibility::kUnknown: {
-      const BOOL incognitoContentVisible = [base::mac::ObjCCast<NSNumber>(
+      const BOOL incognitoContentVisible = [base::apple::ObjCCast<NSNumber>(
           [self sessionObjectForKey:kIncognitoCurrentKey]) boolValue];
 
       _contentVisibility =
@@ -256,6 +252,11 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
   switch (self.activationLevel) {
     case SceneActivationLevelUnattached: {
       activityString = @"Unattached";
+      break;
+    }
+
+    case SceneActivationLevelDisconnected: {
+      activityString = @"Disconnected";
       break;
     }
 

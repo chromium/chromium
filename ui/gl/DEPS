@@ -1,7 +1,5 @@
 include_rules = [
   "+cc/base",
-  "+components/metal_util/types.h",
-  "+components/viz/common/resources/resource_format.h",
   "+mojo/public/cpp/bindings",
   "+third_party/khronos",
   "+third_party/libsync",
@@ -41,9 +39,6 @@ specific_include_rules = {
   "gl_angle_util_win.cc": [
     "+third_party/angle/include/EGL/egl.h",
     "+third_party/angle/include/EGL/eglext.h",
-  ],
-  "gl_fence_android_native_fence_sync.cc": [
-    "+components/crash/core/common/crash_key.h",
   ],
   "gl_fence_win_unittest.cc": [
     "+media/base/win/d3d11_mocks.h",

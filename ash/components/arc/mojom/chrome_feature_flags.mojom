@@ -2,15 +2,42 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 1
+// Next MinVersion: 5
 
 module arc.mojom;
+
+// The following values must be matched with `kRoundedWindowCompatStrategy_*`
+// constants defined in //ash/components/arc/arc_features.cc.
+[Extensible]
+enum RoundedWindowCompatStrategy {
+  [Default] kDisabled = 0,
+  kBottomOnlyGesture = 1,
+  kLeftRightBottomGesture = 2,
+};
+
+// State of feature flags that ARC++ needs to know from Chrome.
+struct FeatureFlags {
+  // chrome://flags#qs-revamp
+  bool qs_revamp;
+  // chrome://flags#jelly-colors
+  bool jelly_colors;
+  // chrome://flags#arc-trackpad-scroll-touchscreen-emulation
+  [MinVersion=2] bool trackpad_scroll_touchscreen_emulation = true;
+  // chrome://flags#arc-touchscreen-emulation
+  [MinVersion=2] bool touchscreen_emulation = true;
+  // chrome://flags#arc-rounded-window-compat
+  [MinVersion=3] RoundedWindowCompatStrategy rounded_window_compat_strategy;
+  // chrome://flags#rounded-windows
+  [MinVersion=3] int32 rounded_window_radius;
+  // chrome://flags#arc-xdg-mode
+  [MinVersion=4] bool xdg_mode;
+};
 
 // This interface provides methods to propagate the feature flag status to
 // ARC++.
 //
-// Next method ID: 1
+// Next method ID: 2
 interface ChromeFeatureFlagsInstance {
-  // Notifies ARC whether chrome://flags#QsRevamp is enabled.
-  NotifyQsRevamp@0(bool enabled);
+  // Notifies ARC which Chrome feature flag is enabled/disabled.
+  NotifyFeatureFlags@1(FeatureFlags flags);
 };

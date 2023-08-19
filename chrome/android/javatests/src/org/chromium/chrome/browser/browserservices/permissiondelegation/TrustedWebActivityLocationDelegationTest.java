@@ -24,6 +24,7 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityTestUtil;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
@@ -98,6 +99,7 @@ public class TrustedWebActivityLocationDelegationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1454610, setAllowChromeSiteLocation not working")
     public void getLocationFromChrome_noTwaService() throws TimeoutException, Exception {
         String packageName = "other.package.name";
         String testPage = mCustomTabActivityTestRule.getTestServer().getURLWithHostName(
@@ -114,6 +116,7 @@ public class TrustedWebActivityLocationDelegationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1454610, setAllowChromeSiteLocation not working")
     public void getLocationFromChrome_afterNavigateAwayFromTrustedOrigin()
             throws TimeoutException, Exception {
         String other_page = mCustomTabActivityTestRule.getTestServer().getURLWithHostName(

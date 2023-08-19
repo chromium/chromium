@@ -1,3 +1,11 @@
+include_rules = [
+  "+ios/chrome/browser/discover_feed",
+  "+ios/chrome/browser/feature_engagement",
+  "+ios/chrome/browser/history",
+  "+ios/chrome/browser/ntp/features.h",
+  "+ios/chrome/browser/signin",
+]
+
 specific_include_rules = {
   # TODO(crbug.com/1294160): Remove this dependency.
   "follow_browser_agent.mm": [

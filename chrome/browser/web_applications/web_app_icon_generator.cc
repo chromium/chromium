@@ -4,7 +4,6 @@
 
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 
-#include <cctype>
 #include <string>
 #include <utility>
 
@@ -55,7 +54,7 @@ class GeneratedIconImageSource : public gfx::CanvasImageSource {
 
     std::string font_name =
         l10n_util::GetStringUTF8(IDS_SANS_SERIF_FONT_FAMILY);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // With adaptive icons, we generate full size square icons as they will be
     // masked by the OS.
     icon_size = output_size_;

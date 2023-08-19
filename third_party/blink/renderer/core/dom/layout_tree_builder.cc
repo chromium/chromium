@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/layout_view_transition_root.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 
@@ -57,31 +58,23 @@ LayoutObject* LayoutTreeBuilderForElement::NextLayoutObject() const {
   if (node_->IsFirstLetterPseudoElement()) {
     return context_.next_sibling;
   }
-  if (style_->StyleType() == kPseudoIdViewTransition) {
-    // ::view-transition is the last rendered child of LayoutView()
-    return nullptr;
-  }
   if (style_->IsRenderedInTopLayer(*node_)) {
     if (LayoutObject* next_in_top_layer =
             LayoutTreeBuilderTraversal::NextInTopLayer(*node_)) {
       return next_in_top_layer;
     }
-    // We are at the end of the top layer elements. The ::view-transition is
-    // rendered on top of the top layer elements, appended as the last child of
-    // the LayoutView.
-    if (PseudoElement* view_transition_pseudo =
-            node_->GetDocument().documentElement()->GetPseudoElement(
-                kPseudoIdViewTransition)) {
-      return view_transition_pseudo->GetLayoutObject();
-    }
-    return nullptr;
+
+    // We are at the end of the top layer elements. If we're in a transition,
+    // the ::view-transition is rendered on top of the top layer elements and
+    // its "snapshot containing block" is appended as the last child of the
+    // LayoutView. Otherwise, this returns nullptr and we're at the end.
+    return node_->GetDocument().GetLayoutView()->GetViewTransitionRoot();
   }
   return LayoutTreeBuilder::NextLayoutObject();
 }
 
 LayoutObject* LayoutTreeBuilderForElement::ParentLayoutObject() const {
-  if (style_->StyleType() == kPseudoIdViewTransition ||
-      style_->IsRenderedInTopLayer(*node_)) {
+  if (style_->IsRenderedInTopLayer(*node_)) {
     return node_->GetDocument().GetLayoutView();
   }
   return context_.parent;
@@ -127,14 +120,11 @@ void LayoutTreeBuilderForElement::CreateLayoutObject() {
       parent_layout_object->IsInsideFlowThread());
 
   LayoutObject* next_layout_object = NextLayoutObject();
-  // SetStyle() can depend on LayoutObject() already being set.
   node_->SetLayoutObject(new_layout_object);
 
   DCHECK(!new_layout_object->Style());
   new_layout_object->SetStyle(style_);
 
-  // Note: Adding new_layout_object instead of LayoutObject(). LayoutObject()
-  // may be a child of new_layout_object.
   parent_layout_object->AddChild(new_layout_object, next_layout_object);
 }
 

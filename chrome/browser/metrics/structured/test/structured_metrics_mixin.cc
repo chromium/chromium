@@ -9,15 +9,17 @@ namespace metrics::structured {
 
 StructuredMetricsMixin::StructuredMetricsMixin(
     InProcessBrowserTestMixinHost* host)
-    : InProcessBrowserTestMixin(host) {
-  test_structured_metrics_provider_ =
-      std::make_unique<TestStructuredMetricsProvider>();
-}
+    : InProcessBrowserTestMixin(host) {}
 
 StructuredMetricsMixin::~StructuredMetricsMixin() = default;
 
 void StructuredMetricsMixin::SetUpCommandLine(base::CommandLine* command_line) {
   EnableMetricsRecordingOnlyForTesting(command_line);
+}
+
+void StructuredMetricsMixin::SetUpOnMainThread() {
+  test_structured_metrics_provider_ =
+      std::make_unique<TestStructuredMetricsProvider>();
 }
 
 TestStructuredMetricsProvider*

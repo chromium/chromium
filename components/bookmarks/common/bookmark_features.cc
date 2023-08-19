@@ -8,13 +8,6 @@
 
 namespace bookmarks {
 
-// If enabled, there will be two different BookmarkModel instances per profile:
-// one instance for "profile" bookmarks and another instance for "account"
-// bookmarks. See https://crbug.com/1404250 for details.
-BASE_FEATURE(kEnableBookmarksAccountStorage,
-             "EnableBookmarksAccountStorage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // This feature flags enables the logic that wipes the account storage after
 // EnableBookmarksAccountStorage rollback. This logic is not enabled by default
 // to minimize the performance impact.

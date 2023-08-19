@@ -6,10 +6,6 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation TableViewSwitchItem
 
 - (instancetype)initWithType:(NSInteger)type {

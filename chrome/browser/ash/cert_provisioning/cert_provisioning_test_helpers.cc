@@ -151,8 +151,8 @@ void ProfileHelperForTesting::Init(bool user_is_affiliated) {
 
   auto test_account =
       AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestUserGaiaId);
-  user_ = fake_user_manager_.AddUserWithAffiliation(test_account,
-                                                    user_is_affiliated);
+  user_ = fake_user_manager_->AddUserWithAffiliation(test_account,
+                                                     user_is_affiliated);
 }
 
 Profile* ProfileHelperForTesting::GetProfile() const {

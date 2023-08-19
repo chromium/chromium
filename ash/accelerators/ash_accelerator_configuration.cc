@@ -220,7 +220,7 @@ const std::vector<ui::Accelerator>&
 AshAcceleratorConfiguration::GetAcceleratorsForAction(
     AcceleratorActionId action_id) {
   const auto accelerator_iter = id_to_accelerators_.find(action_id);
-  DCHECK(accelerator_iter != id_to_accelerators_.end());
+  CHECK(accelerator_iter != id_to_accelerators_.end());
 
   return accelerator_iter->second;
 }
@@ -267,7 +267,7 @@ AcceleratorConfigResult AshAcceleratorConfiguration::AddUserAccelerator(
 AcceleratorConfigResult AshAcceleratorConfiguration::RemoveAccelerator(
     AcceleratorActionId action_id,
     const ui::Accelerator& accelerator) {
-  DCHECK(::features::IsShortcutCustomizationEnabled());
+  CHECK(::features::IsShortcutCustomizationEnabled());
   AcceleratorConfigResult result =
       DoRemoveAccelerator(action_id, accelerator, /*save_override=*/true);
 
@@ -313,7 +313,7 @@ AcceleratorConfigResult AshAcceleratorConfiguration::RestoreDefault(
   // Clear reverse mapping first.
   for (const auto& accelerator : accelerators_for_id) {
     // There should never be a mismatch between the two maps, `Get()` does an
-    // implicit DCHECK too.
+    // implicit CHECK too.
     auto& found_id = accelerator_to_id_.Get(accelerator);
     if (found_id != action_id) {
       VLOG(1) << "ResetAction called for ActionID: " << action_id
@@ -332,8 +332,9 @@ AcceleratorConfigResult AshAcceleratorConfiguration::RestoreDefault(
   // Users will have to manually re-add the default accelerator if there exists
   // a conflict.
   const auto& defaults = default_id_to_accelerators_cache_.find(action_id);
-  DCHECK(defaults != default_id_to_accelerators_cache_.end());
+  CHECK(defaults != default_id_to_accelerators_cache_.end());
 
+  AcceleratorConfigResult result = AcceleratorConfigResult::kSuccess;
   // Iterate through the default and only add back the default if they're not
   // in use.
   for (const auto& default_accelerator : defaults->second) {
@@ -341,6 +342,10 @@ AcceleratorConfigResult AshAcceleratorConfiguration::RestoreDefault(
       accelerators_for_id.push_back(default_accelerator);
       accelerator_to_id_.InsertNew(
           {default_accelerator, static_cast<AcceleratorAction>(action_id)});
+    } else {
+      // The default accelerator cannot be re-added since it conflicts with
+      // another accelerator.
+      result = AcceleratorConfigResult::kRestoreSuccessWithConflicts;
     }
   }
 
@@ -353,9 +358,9 @@ AcceleratorConfigResult AshAcceleratorConfiguration::RestoreDefault(
 
   UpdateAndNotifyAccelerators();
 
-  VLOG(1) << "ResetAction called for ActionID: " << action_id
-          << " returned successfully.";
-  return AcceleratorConfigResult::kSuccess;
+  VLOG(1) << "ResetAction called for ActionID: " << action_id << " returned "
+          << static_cast<uint32_t>(result);
+  return result;
 }
 
 AcceleratorConfigResult AshAcceleratorConfiguration::RestoreAllDefaults() {
@@ -450,14 +455,26 @@ AcceleratorConfigResult AshAcceleratorConfiguration::DoRemoveAccelerator(
     AcceleratorActionId action_id,
     const ui::Accelerator& accelerator,
     bool save_override) {
-  DCHECK(::features::IsShortcutCustomizationEnabled());
+  CHECK(::features::IsShortcutCustomizationEnabled());
 
   // If the accelerator is deprecated, remove it.
   const AcceleratorAction* deprecated_action_id =
       deprecated_accelerators_to_id_.Find(accelerator);
   if (deprecated_action_id && *deprecated_action_id == action_id) {
     deprecated_accelerators_to_id_.Erase(accelerator);
-    actions_with_deprecations_.erase(action_id);
+    // Check if there are any other accelerators associated with `action_id`.
+    // If not, remove it from `actions_with_deprecations_`.
+    bool has_more_deprecated_accelerators = false;
+    for (const auto& deprecated_iter : deprecated_accelerators_to_id_) {
+      if (deprecated_iter.second == action_id) {
+        has_more_deprecated_accelerators = true;
+        break;
+      }
+    }
+
+    if (!has_more_deprecated_accelerators) {
+      actions_with_deprecations_.erase(action_id);
+    }
     return AcceleratorConfigResult::kSuccess;
   }
 
@@ -467,7 +484,7 @@ AcceleratorConfigResult AshAcceleratorConfiguration::DoRemoveAccelerator(
     return AcceleratorConfigResult::kNotFound;
   }
 
-  DCHECK(*found_id == action_id);
+  CHECK(*found_id == action_id);
 
   // Remove accelerator from lookup map.
   base::Erase(found_accelerators_iter->second, accelerator);
@@ -503,7 +520,7 @@ AcceleratorConfigResult AshAcceleratorConfiguration::DoAddAccelerator(
     // then we should update the override accordingly. Otherwise, we do not
     // save the override as it will be handled implicitly when applying the
     // prefs.
-    bool save_remove_override = false;
+    bool save_remove_override = true;
     absl::optional<AcceleratorAction> conflict_accelerator_default_id =
         GetIdForDefaultAccelerator(accelerator);
     if (conflict_accelerator_default_id.has_value()) {
@@ -589,7 +606,11 @@ std::vector<ui::Accelerator>
 AshAcceleratorConfiguration::GetDefaultAcceleratorsForId(
     AcceleratorActionId id) {
   const auto iter = default_id_to_accelerators_cache_.find(id);
-  DCHECK(iter != default_id_to_accelerators_cache_.end());
+
+  if (iter == default_id_to_accelerators_cache_.end()) {
+    VLOG(1) << "No default accelerators were found for id: " << id;
+    return std::vector<ui::Accelerator>();
+  }
 
   return iter->second;
 }
@@ -629,17 +650,25 @@ void AshAcceleratorConfiguration::SaveOverridePrefChanges() {
 }
 
 void AshAcceleratorConfiguration::ApplyPrefOverrides() {
+  // Stores all actions with prefs to be removed, this gets populated if there
+  // are malformed prefs which results in an empty pref after removal.
+  std::vector<uint32_t> actions_to_be_removed;
+
   for (auto entry : accelerator_overrides_) {
     int action_id;
     base::StringToInt(entry.first, &action_id);
-    CHECK(IsValid(action_id));
+    if (!IsValid(action_id)) {
+      actions_to_be_removed.push_back(action_id);
+      continue;
+    }
 
-    const base::Value::List& override_list = entry.second.GetList();
+    base::Value::List& override_list = entry.second.GetList();
     CHECK(!override_list.empty());
 
-    for (const auto& accelerator_override : override_list) {
-      const base::Value::Dict& override_dict = accelerator_override.GetDict();
-      const AcceleratorModificationData& override_data =
+    auto override_list_iter = override_list.begin();
+    while (override_list_iter != override_list.end()) {
+      base::Value::Dict& override_dict = override_list_iter->GetDict();
+      AcceleratorModificationData override_data =
           ValueToAcceleratorModificationData(override_dict);
       if (override_data.action == AcceleratorModificationAction::kRemove) {
         // Race condition:
@@ -647,7 +676,19 @@ void AshAcceleratorConfiguration::ApplyPrefOverrides() {
         // it to another action, we do not attempt to remove here.
         const auto* found_id =
             accelerator_to_id_.Find(override_data.accelerator);
-        CHECK(found_id);
+
+        // If the pref has an accelerator that is invalid, do not attempt to
+        // apply the pref and remove it.
+        if (!found_id) {
+          override_list_iter = override_list.erase(override_list_iter);
+          // If removing the pref results in an empty pref, remove it and move
+          // onto the next override pref.
+          if (override_list.empty()) {
+            actions_to_be_removed.push_back(action_id);
+            break;
+          }
+          continue;
+        }
         if (*found_id == action_id) {
           DoRemoveAccelerator(action_id, override_data.accelerator,
                               /*save_override=*/false);
@@ -658,12 +699,17 @@ void AshAcceleratorConfiguration::ApplyPrefOverrides() {
         DoAddAccelerator(action_id, override_data.accelerator,
                          /*save_override=*/false);
       }
+      ++override_list_iter;
     }
   }
 
-  // Check if the overriden accelerators are valid, if not then restore all
+  // Remove all empty override prefs.
+  for (uint32_t action : actions_to_be_removed) {
+    accelerator_overrides_.Remove(base::NumberToString(action));
+  }
+
+  // Check if the overridden accelerators are valid, if not then restore all
   // defaults.
-  // TODO(jimmyxgong): Determine if we should also reset the pref.
   if (!AreAcceleratorsValid()) {
     RestoreAllDefaults();
   }

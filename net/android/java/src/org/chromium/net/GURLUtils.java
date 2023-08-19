@@ -26,7 +26,7 @@ public final class GURLUtils {
         return GURLUtilsJni.get().getOrigin(url);
     }
 
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
     public interface Natives {
         String getOrigin(String url);

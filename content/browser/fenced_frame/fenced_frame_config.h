@@ -93,6 +93,15 @@ class FencedFrameURLMapping;
 extern const char kUrnUuidPrefix[];
 GURL CONTENT_EXPORT GenerateUrnUuid();
 
+// Returns a new string based on input where the matching substrings have been
+// replaced with the corresponding substitutions. This function avoids repeated
+// string operations by building the output based on all substitutions, one
+// substitution at a time. This effectively performs all substitutions
+// simultaneously, with the earliest match in the input taking precedence.
+std::string SubstituteMappedStrings(
+    const std::string& input,
+    const std::vector<std::pair<std::string, std::string>>& substitutions);
+
 using AdAuctionData = blink::FencedFrame::AdAuctionData;
 using DeprecatedFencedFrameMode = blink::FencedFrame::DeprecatedFencedFrameMode;
 using SharedStorageBudgetMetadata =
@@ -103,7 +112,8 @@ struct CONTENT_EXPORT AutomaticBeaconInfo {
       const std::string& data,
       const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
       network::AttributionReportingRuntimeFeatures
-          attribution_reporting_runtime_features);
+          attribution_reporting_runtime_features,
+      bool once);
 
   AutomaticBeaconInfo(const AutomaticBeaconInfo&);
   AutomaticBeaconInfo(AutomaticBeaconInfo&&);
@@ -119,6 +129,9 @@ struct CONTENT_EXPORT AutomaticBeaconInfo {
   // enabled and is needed for integration with Attribution Reporting API.
   network::AttributionReportingRuntimeFeatures
       attribution_reporting_runtime_features;
+  // Indicates whether the automatic beacon will only be sent out for one event,
+  // or if it will be sent out every time an event occurs.
+  bool once;
 };
 
 // Different kinds of entities (renderers) that should receive different
@@ -378,7 +391,12 @@ struct CONTENT_EXPORT FencedFrameProperties {
       const std::string& event_data,
       const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
       network::AttributionReportingRuntimeFeatures
-          attribution_reporting_runtime_features);
+          attribution_reporting_runtime_features,
+      bool once);
+
+  // Automatic beacon data is cleared out after one automatic beacon if `once`
+  // was set to true when calling `setReportEventDataForAutomaticBeacons()`.
+  void MaybeResetAutomaticBeaconData();
 
   const absl::optional<AutomaticBeaconInfo>& automatic_beacon_info() const {
     return automatic_beacon_info_;

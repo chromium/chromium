@@ -13,9 +13,10 @@
 #import "base/notreached.h"
 #import "components/autofill/core/browser/webdata/autofill_profile_sync_bridge.h"
 #import "components/autofill/core/common/autofill_features.h"
-#import "components/invalidation/impl/profile_invalidation_provider.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/metrics/demographics/user_demographics.h"
+#import "components/password_manager/core/browser/sharing/password_receiver_service.h"
+#import "components/password_manager/core/browser/sharing/password_sender_service.h"
 #import "components/sync/base/sync_util.h"
 #import "components/sync/service/data_type_controller.h"
 #import "components/sync/service/sync_api_component_factory.h"
@@ -28,14 +29,9 @@
 #import "ios/web_view/internal/signin/web_view_identity_manager_factory.h"
 #import "ios/web_view/internal/sync/web_view_device_info_sync_service_factory.h"
 #import "ios/web_view/internal/sync/web_view_model_type_store_service_factory.h"
-#import "ios/web_view/internal/sync/web_view_profile_invalidation_provider_factory.h"
 #import "ios/web_view/internal/sync/web_view_sync_invalidations_service_factory.h"
 #import "ios/web_view/internal/sync/web_view_trusted_vault_client.h"
 #import "ios/web_view/internal/webdata_services/web_view_web_data_service_wrapper_factory.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace ios_web_view {
 
@@ -71,9 +67,6 @@ std::unique_ptr<WebViewSyncClient> WebViewSyncClient::Create(
       WebViewIdentityManagerFactory::GetForBrowserState(browser_state),
       WebViewModelTypeStoreServiceFactory::GetForBrowserState(browser_state),
       WebViewDeviceInfoSyncServiceFactory::GetForBrowserState(browser_state),
-      WebViewProfileInvalidationProviderFactory::GetForBrowserState(
-          browser_state)
-          ->GetInvalidationService(),
       WebViewSyncInvalidationsServiceFactory::GetForBrowserState(
           browser_state));
 }
@@ -87,7 +80,6 @@ WebViewSyncClient::WebViewSyncClient(
     signin::IdentityManager* identity_manager,
     syncer::ModelTypeStoreService* model_type_store_service,
     syncer::DeviceInfoSyncService* device_info_sync_service,
-    invalidation::InvalidationService* invalidation_service,
     syncer::SyncInvalidationsService* sync_invalidations_service)
     : profile_web_data_service_(profile_web_data_service),
       account_web_data_service_(account_web_data_service),
@@ -97,7 +89,6 @@ WebViewSyncClient::WebViewSyncClient(
       identity_manager_(identity_manager),
       model_type_store_service_(model_type_store_service),
       device_info_sync_service_(device_info_sync_service),
-      invalidation_service_(invalidation_service),
       sync_invalidations_service_(sync_invalidations_service) {
   component_factory_ =
       std::make_unique<browser_sync::SyncApiComponentFactoryImpl>(
@@ -107,7 +98,10 @@ WebViewSyncClient::WebViewSyncClient(
           profile_password_store_, account_password_store_,
           /*local_or_syncable_bookmark_sync_service=*/nullptr,
           /*account_bookmark_sync_service=*/nullptr,
-          /*power_bookmark_service=*/nullptr);
+          /*power_bookmark_service=*/nullptr,
+          /*supervised_user_settings_service=*/nullptr);
+  // TODO(crbug.com/1434661): introduce ios webview version of
+  // TrustedVaultServiceFactory.
   trusted_vault_client_ = std::make_unique<WebViewTrustedVaultClient>();
 }
 
@@ -156,6 +150,16 @@ sync_sessions::SessionSyncService* WebViewSyncClient::GetSessionSyncService() {
   return nullptr;
 }
 
+password_manager::PasswordReceiverService*
+WebViewSyncClient::GetPasswordReceiverService() {
+  return nullptr;
+}
+
+password_manager::PasswordSenderService*
+WebViewSyncClient::GetPasswordSenderService() {
+  return nullptr;
+}
+
 send_tab_to_self::SendTabToSelfSyncService*
 WebViewSyncClient::GetSendTabToSelfSyncService() {
   return nullptr;
@@ -168,16 +172,12 @@ WebViewSyncClient::CreateDataTypeControllers(
                                                              sync_service);
 }
 
-invalidation::InvalidationService* WebViewSyncClient::GetInvalidationService() {
-  return invalidation_service_;
-}
-
 syncer::SyncInvalidationsService*
 WebViewSyncClient::GetSyncInvalidationsService() {
   return sync_invalidations_service_;
 }
 
-syncer::TrustedVaultClient* WebViewSyncClient::GetTrustedVaultClient() {
+trusted_vault::TrustedVaultClient* WebViewSyncClient::GetTrustedVaultClient() {
   return trusted_vault_client_.get();
 }
 

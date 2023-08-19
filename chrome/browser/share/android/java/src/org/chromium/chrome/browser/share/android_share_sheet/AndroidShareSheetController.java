@@ -110,7 +110,10 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
     @Override
     public void showThirdPartyShareSheet(
             ShareParams params, ChromeShareExtras chromeShareExtras, long shareStartTime) {
-        showShareSheetWithCustomAction(params, chromeShareExtras, false);
+        // When using Android share sheet, always have the custom actions available for the share
+        // sheet. This is a workaround of share sheet triggered by share custom actions e.g. long
+        // screenshot.
+        showShareSheetWithCustomAction(params, chromeShareExtras, true);
     }
 
     @Override

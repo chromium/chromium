@@ -19,26 +19,23 @@ class BruteForceParameterOptimizer(
   optimize multiple parameters.
   """
 
-  def _VerifyArgs(self) -> None:
-    # range/xrange(x, y) returns the range in [x, y), so adjust by 1 to make
-    # the range inclusive.
-    # We go from max to min instead of min to max for this parameter, so
-    # decrease the min by 1 instead of increasing the max by 1.
-    self._args.min_edge_threshold -= 1
-    self._args.max_max_diff += 1
-    self._args.max_delta_threshold += 1
-
   def _RunOptimizationImpl(self) -> None:
     # Look for the minimum max_delta that results in a successful comparison
     # for each possible edge_threshold/max_diff combination.
+    #
+    # range/xrange(x, y) returns the range in [x, y), so adjust by 1 to make the
+    # range inclusive.
+    # We go from max to min instead of min to max for edge_threshold, so
+    # decrease the min by 1 instead of increasing the max by 1.
     for edge_threshold in range(self._args.max_edge_threshold,
-                                self._args.min_edge_threshold,
+                                self._args.min_edge_threshold - 1,
                                 -1 * self._args.edge_threshold_step):
       should_continue = True
-      for max_diff in range(self._args.min_max_diff, self._args.max_max_diff,
+      for max_diff in range(self._args.min_max_diff,
+                            self._args.max_max_diff + 1,
                             self._args.max_diff_step):
         for max_delta in range(self._args.min_delta_threshold,
-                               self._args.max_delta_threshold,
+                               self._args.max_delta_threshold + 1,
                                self._args.delta_threshold_step):
           parameters = parameter_set.ParameterSet(max_diff, max_delta,
                                                   edge_threshold)

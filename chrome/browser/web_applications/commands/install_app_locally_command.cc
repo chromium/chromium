@@ -54,7 +54,7 @@ void InstallAppLocallyCommand::StartWithLock(
   // Setting app to be locally installed before calling Synchronize() helps
   // trigger the OS integration.
   if (!app_lock_->registrar().IsLocallyInstalled(app_id_)) {
-    ScopedRegistryUpdate update(&app_lock_->sync_bridge());
+    ScopedRegistryUpdate update = app_lock_->sync_bridge().BeginUpdate();
     WebApp* web_app_to_update = update->UpdateApp(app_id_);
     if (web_app_to_update) {
       web_app_to_update->SetIsLocallyInstalled(/*is_locally_installed=*/true);
@@ -108,7 +108,7 @@ void InstallAppLocallyCommand::OnOsHooksInstalled(
   const base::Time& install_time = base::Time::Now();
   {
     // Updating install time on app.
-    ScopedRegistryUpdate update(&app_lock_->sync_bridge());
+    ScopedRegistryUpdate update = app_lock_->sync_bridge().BeginUpdate();
     WebApp* web_app_to_update = update->UpdateApp(app_id_);
     if (web_app_to_update) {
       web_app_to_update->SetInstallTime(install_time);

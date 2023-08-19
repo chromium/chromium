@@ -5,9 +5,14 @@
 #include "chrome/browser/chromeos/extensions/system_log/system_log_api.h"
 
 #include "base/strings/stringprintf.h"
+#include "base/syslog_logging.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/system_log.h"
 #include "components/device_event_log/device_event_log.h"
+#include "extensions/common/extension.h"
+#include "extensions/common/features/behavior_feature.h"
+#include "extensions/common/features/feature.h"
+#include "extensions/common/features/feature_provider.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/profiles/profile_types_ash.h"
@@ -33,6 +38,12 @@ std::string FormatLogMessage(const std::string& extension_id,
                             message.c_str());
 }
 
+bool IsImprivataExtension(const Extension& extension) {
+  const Feature* imprivata_feature = FeatureProvider::GetBehaviorFeature(
+      behavior_feature::kImprivataExtension);
+  return imprivata_feature->IsAvailableToExtension(&extension).is_available();
+}
+
 }  // namespace
 
 SystemLogAddFunction::SystemLogAddFunction() = default;
@@ -45,8 +56,16 @@ ExtensionFunction::ResponseAction SystemLogAddFunction::Run() {
 
   const Profile* profile = Profile::FromBrowserContext(browser_context());
 
-  EXTENSIONS_LOG(DEBUG) << FormatLogMessage(extension_id(), profile,
-                                            options.message);
+  std::string device_event_log_message =
+      FormatLogMessage(extension_id(), profile, options.message);
+  if (IsImprivataExtension(*extension())) {
+    SYSLOG(INFO) << base::StringPrintf("extensions: %s",
+                                       device_event_log_message.c_str());
+    // Will not be added to feedback reports to avoid duplication.
+    EXTENSIONS_LOG(DEBUG) << device_event_log_message;
+  } else {
+    EXTENSIONS_LOG(EVENT) << device_event_log_message;
+  }
 
   return RespondNow(NoArguments());
 }

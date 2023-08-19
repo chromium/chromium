@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("geolocation") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "geolocation_logger.h",
     "geolocation_logger.mm",

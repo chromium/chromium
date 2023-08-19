@@ -40,13 +40,6 @@
 namespace ash {
 namespace {
 
-// Given a usb device, guesses the make and model for a driver lookup.
-std::string GuessEffectiveMakeAndModel(
-    const device::mojom::UsbDeviceInfo& device) {
-  return base::StrCat({base::UTF16ToUTF8(GetManufacturerName(device)), " ",
-                       base::UTF16ToUTF8(GetProductName(device))});
-}
-
 // The PrinterDetector that drives the flow for setting up a USB printer to use
 // CUPS backend.
 class UsbPrinterDetectorImpl : public UsbPrinterDetector,

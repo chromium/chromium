@@ -40,6 +40,19 @@ void IdlenessDetector::WillCommitLoad() {
 }
 
 void IdlenessDetector::DomContentLoadedEventFired() {
+  Start();
+}
+
+void IdlenessDetector::DidDropNavigation() {
+  // Only process dropped navigation that occurred if we haven't
+  // started yet, that is, not currently active and not finished.
+  if (!task_observer_added_ && network_2_quiet_start_time_.is_null() &&
+      network_0_quiet_start_time_.is_null()) {
+    Start();
+  }
+}
+
+void IdlenessDetector::Start() {
   if (!local_frame_)
     return;
 
@@ -85,8 +98,13 @@ void IdlenessDetector::OnDidLoadResource() {
     return;
 
   // If we already reported quiet time, bail out.
-  if (!in_network_0_quiet_period_ && !in_network_2_quiet_period_)
+  if (HasCompleted()) {
     return;
+  }
+
+  if (local_frame_->Loader().HasProvisionalNavigation()) {
+    return;
+  }
 
   int request_count =
       local_frame_->GetDocument()->Fetcher()->ActiveRequestCount();
@@ -158,8 +176,9 @@ void IdlenessDetector::WillProcessTask(base::TimeTicks start_time) {
     network_0_quiet_ = base::TimeTicks();
   }
 
-  if (!in_network_0_quiet_period_ && !in_network_2_quiet_period_)
+  if (HasCompleted()) {
     Stop();
+  }
 }
 
 void IdlenessDetector::DidProcessTask(base::TimeTicks start_time,

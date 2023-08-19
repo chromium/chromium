@@ -90,11 +90,11 @@ public class AccountCapabilities {
     }
 
     /**
-     * @return canStopParentalSupervision capability value.
+     * @return isOptedInToParentalSupervision capability value.
      */
-    public @Tribool int canStopParentalSupervision() {
+    public @Tribool int isOptedInToParentalSupervision() {
         return getCapabilityByName(
-                AccountCapabilitiesConstants.CAN_STOP_PARENTAL_SUPERVISION_CAPABILITY_NAME);
+                AccountCapabilitiesConstants.IS_OPTED_IN_TO_PARENTAL_SUPERVISION_CAPABILITY_NAME);
     }
 
     /**
@@ -102,6 +102,13 @@ public class AccountCapabilities {
      */
     public @Tribool int canToggleAutoUpdates() {
         return getCapabilityByName(AccountCapabilitiesConstants.CAN_TOGGLE_AUTO_UPDATES_NAME);
+    }
+
+    /**
+     * @return canUseChromeIpProtection capability value.
+     */
+    public @Tribool int canUseChromeIpProtection() {
+        return getCapabilityByName(AccountCapabilitiesConstants.CAN_USE_CHROME_IP_PROTECTION_NAME);
     }
 
     /**

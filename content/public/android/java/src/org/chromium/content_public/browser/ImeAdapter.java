@@ -86,7 +86,6 @@ public interface ImeAdapter {
     /**
      * Get the current input connection for testing purposes.
      */
-    @VisibleForTesting
     InputConnection getInputConnectionForTest();
 
     /**
@@ -94,7 +93,6 @@ public interface ImeAdapter {
      * @param text The composing text.
      * @param newCursorPosition The new cursor position around the text.
      */
-    @VisibleForTesting
     void setComposingTextForTest(final CharSequence text, final int newCursorPosition);
 
     /**

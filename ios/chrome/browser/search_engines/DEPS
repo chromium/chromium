@@ -1,0 +1,6 @@
+include_rules = [
+  "+ios/chrome/browser/history",
+  "+ios/chrome/browser/widget_kit",
+  "+ios/chrome/browser/webdata_services",
+  "+ios/chrome/browser/google",
+]

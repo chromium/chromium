@@ -68,6 +68,7 @@
 #include "media/base/audio_bus.h"
 #include "media/base/fake_single_thread_task_runner.h"
 #include "media/base/media.h"
+#include "media/base/mock_filters.h"
 #include "media/base/video_frame.h"
 #include "media/cast/cast_config.h"
 #include "media/cast/cast_environment.h"
@@ -432,9 +433,10 @@ void RunSimulation(const base::FilePath& source_path,
   // Initializing audio and video senders.
   cast_sender->InitializeAudio(audio_sender_config,
                                base::BindOnce(&LogAudioOperationalStatus));
-  cast_sender->InitializeVideo(media_source.get_video_config(),
-                               base::BindRepeating(&LogVideoOperationalStatus),
-                               base::DoNothing());
+  cast_sender->InitializeVideo(
+      media_source.get_video_config(),
+      std::make_unique<media::MockVideoEncoderMetricsProvider>(),
+      base::BindRepeating(&LogVideoOperationalStatus), base::DoNothing());
   task_runner->RunTasks();
 
   // Truncate YUV files to prepare for writing.
@@ -667,7 +669,7 @@ int main(int argc, char** argv) {
   const base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
   base::FilePath media_path = cmd->GetSwitchValuePath(media::cast::kLibDir);
   if (media_path.empty()) {
-    if (!base::PathService::Get(base::DIR_GEN_TEST_DATA_ROOT, &media_path)) {
+    if (!base::PathService::Get(base::DIR_OUT_TEST_DATA_ROOT, &media_path)) {
       LOG(ERROR) << "Failed to load FFmpeg.";
       return 1;
     }

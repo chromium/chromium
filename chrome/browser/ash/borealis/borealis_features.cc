@@ -80,7 +80,7 @@ class AsyncAllowChecker : public guest_os::CachedCallback<AllowStatus, bool> {
             std::move(callback)));
   }
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
 };
 
 BorealisFeatures::BorealisFeatures(Profile* profile)

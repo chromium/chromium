@@ -24,6 +24,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/containers/span.h"
 #include "base/debug/debugging_buildflags.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
@@ -203,11 +204,11 @@ class BASE_EXPORT CommandLine {
   // prefix and value. If no such switch is present, this has no effect.
   void RemoveSwitch(const base::StringPiece switch_key_without_prefix);
 
-  // Copy a set of switches (and any values) from another command line.
+  // Copies a set of switches (and any values) from another command line.
   // Commonly used when launching a subprocess.
+  // If an entry in `switches` does not exist in `source`, then it is ignored.
   void CopySwitchesFrom(const CommandLine& source,
-                        const char* const switches[],
-                        size_t count);
+                        span<const char* const> switches);
 
   // Get the remaining arguments to the command.
   StringVector GetArgs() const;

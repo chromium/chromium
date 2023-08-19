@@ -6,16 +6,18 @@
 #include <memory>
 
 #include "base/i18n/time_formatting.h"
+#include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/login/oobe_quick_start/logging/logging.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/qr_code.h"
 #include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
-#include "chrome/browser/ash/login/oobe_quick_start/verification_shapes.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ui/webui/ash/login/quick_start_screen_handler.h"
+#include "chromeos/ash/components/quick_start/logging.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace ash {
@@ -30,8 +32,12 @@ constexpr const char kUserActionWifiConnected[] = "wifi_connected";
 // static
 std::string QuickStartScreen::GetResultString(Result result) {
   switch (result) {
-    case Result::CANCEL:
-      return "Cancel";
+    case Result::CANCEL_AND_RETURN_TO_WELCOME:
+      return "CancelAndReturnToWelcome";
+    case Result::CANCEL_AND_RETURN_TO_NETWORK:
+      return "CancelAndReturnToNetwork";
+    case Result::CANCEL_AND_RETURN_TO_SIGNIN:
+      return "CancelAndReturnToSignin";
     case Result::WIFI_CONNECTED:
       return "WifiConnected";
   }
@@ -62,17 +68,38 @@ void QuickStartScreen::ShowImpl() {
     bootstrap_controller_ =
         LoginDisplayHost::default_host()->GetQuickStartBootstrapController();
     bootstrap_controller_->AddObserver(this);
-    bootstrap_controller_->StartAdvertising();
     DetermineDiscoverableName();
+  }
+
+  switch (flow_state_) {
+    case FlowState::INITIAL:
+      bootstrap_controller_->StartAdvertisingAndMaybeGetQRCode();
+      break;
+    case FlowState::CONTINUING_AFTER_ENROLLMENT_CHECKS:
+      view_->ShowTransferringGaiaCredentials();
+      bootstrap_controller_->AttemptGoogleAccountTransfer();
+      break;
+    case FlowState::RESUMING_AFTER_CRITICAL_UPDATE:
+    case FlowState::UNKNOWN:
+      NOTREACHED();
+      break;
   }
 }
 
-void QuickStartScreen::AttemptGoogleAccountTransfer() {
-  CHECK(bootstrap_controller_);
-  bootstrap_controller_->AttemptGoogleAccountTransfer();
+void QuickStartScreen::SetFlowState(FlowState flow_state) {
+  flow_state_ = flow_state;
 }
 
-void QuickStartScreen::HideImpl() {}
+void QuickStartScreen::SetEntryPoint(EntryPoint entry_point) {
+  entry_point_ = entry_point;
+}
+
+void QuickStartScreen::HideImpl() {
+  if (bootstrap_controller_) {
+    bootstrap_controller_->RemoveObserver(this);
+  }
+  bootstrap_controller_.reset();
+}
 
 void QuickStartScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
@@ -81,7 +108,17 @@ void QuickStartScreen::OnUserAction(const base::Value::List& args) {
       bootstrap_controller_->MaybeCloseOpenConnections();
       bootstrap_controller_->StopAdvertising();
     }
-    exit_callback_.Run(Result::CANCEL);
+    switch (entry_point_) {
+      case EntryPoint::WELCOME_SCREEN:
+        exit_callback_.Run(Result::CANCEL_AND_RETURN_TO_WELCOME);
+        return;
+      case EntryPoint::NETWORK_SCREEN:
+        exit_callback_.Run(Result::CANCEL_AND_RETURN_TO_NETWORK);
+        return;
+      case EntryPoint::SIGNIN_SCREEN:
+        exit_callback_.Run(Result::CANCEL_AND_RETURN_TO_SIGNIN);
+        return;
+    }
   } else if (action_id == kUserActionWifiConnected) {
     exit_callback_.Run(Result::WIFI_CONNECTED);
   }
@@ -90,11 +127,10 @@ void QuickStartScreen::OnUserAction(const base::Value::List& args) {
 void QuickStartScreen::OnStatusChanged(
     const quick_start::TargetDeviceBootstrapController::Status& status) {
   using Step = quick_start::TargetDeviceBootstrapController::Step;
-  using QRCodePixelData =
-      quick_start::TargetDeviceBootstrapController::QRCodePixelData;
+  using QRCodePixelData = quick_start::QRCode::PixelData;
 
   switch (status.step) {
-    case Step::QR_CODE_VERIFICATION: {
+    case Step::ADVERTISING_WITH_QR_CODE: {
       CHECK(absl::holds_alternative<QRCodePixelData>(status.payload));
       if (!view_) {
         return;
@@ -105,6 +141,11 @@ void QuickStartScreen::OnStatusChanged(
         qr_code_list.Append(base::Value(static_cast<bool>(it & 1)));
       }
       view_->SetQRCode(std::move(qr_code_list));
+      return;
+    }
+    case Step::PIN_VERIFICATION: {
+      CHECK(status.pin.length() == 4);
+      view_->SetPIN(status.pin);
       return;
     }
     case Step::GAIA_CREDENTIALS: {
@@ -125,19 +166,40 @@ void QuickStartScreen::OnStatusChanged(
       return;
 
     case Step::TRANSFERRING_GOOGLE_ACCOUNT_DETAILS:
-      view_->ShowTransferringGaiaCredentials();
+      // Intermediate state. Nothing to do.
+      CHECK(flow_state_ == FlowState::CONTINUING_AFTER_ENROLLMENT_CHECKS);
       break;
     case Step::TRANSFERRED_GOOGLE_ACCOUNT_DETAILS:
-      view_->ShowFidoAssertionReceived(status.fido_email);
+      CHECK(flow_state_ == FlowState::CONTINUING_AFTER_ENROLLMENT_CHECKS);
+      OnTransferredGoogleAccountDetails(status);
       break;
     case Step::NONE:
-    case Step::ADVERTISING:
+    case Step::ADVERTISING_WITHOUT_QR_CODE:
     case Step::CONNECTED:
-    case Step::PIN_VERIFICATION:
       // TODO(b/282934168): Implement these screens fully
       quick_start::QS_LOG(INFO)
           << "Hit screen which is not implemented. Continuing";
       return;
+  }
+}
+
+void QuickStartScreen::OnTransferredGoogleAccountDetails(
+    const quick_start::TargetDeviceBootstrapController::Status& status) {
+  using FidoAssertionInfo = quick_start::FidoAssertionInfo;
+  using ErrorCode = quick_start::TargetDeviceBootstrapController::ErrorCode;
+
+  if (absl::holds_alternative<FidoAssertionInfo>(status.payload)) {
+    quick_start::QS_LOG(INFO) << "Successfully received FIDO assertion.";
+    auto fido_assertion = absl::get<FidoAssertionInfo>(status.payload);
+    view_->ShowFidoAssertionReceived(fido_assertion.email);
+  } else {
+    CHECK(absl::holds_alternative<ErrorCode>(status.payload));
+    quick_start::QS_LOG(ERROR)
+        << "Error receiving FIDO assertion. Error Code = "
+        << static_cast<int>(absl::get<ErrorCode>(status.payload));
+
+    // TODO(b:286873060) - Implement retry mechanism/graceful exit.
+    NOTIMPLEMENTED();
   }
 }
 
@@ -155,17 +217,6 @@ void QuickStartScreen::UnbindFromBootstrapController() {
   }
   bootstrap_controller_->RemoveObserver(this);
   bootstrap_controller_.reset();
-}
-
-void QuickStartScreen::SendRandomFiguresForTesting() const {
-  if (!view_) {
-    return;
-  }
-
-  std::string token = base::UTF16ToASCII(
-      base::TimeFormatWithPattern(base::Time::Now(), "MMMMdjmmss"));
-  const auto& shapes = quick_start::GenerateShapes(token);
-  view_->SetShapes(shapes);
 }
 
 void QuickStartScreen::SavePhoneInstanceID() {

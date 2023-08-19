@@ -107,6 +107,10 @@ content::WebUIDataSource* CreateAndAddManagementUIHtmlSource(Profile* profile) {
     {"extensionReportingTitle", IDS_MANAGEMENT_EXTENSIONS_INSTALLED},
     {"extensionName", IDS_MANAGEMENT_EXTENSIONS_NAME},
     {"extensionPermissions", IDS_MANAGEMENT_EXTENSIONS_PERMISSIONS},
+    {"applicationReporting", IDS_MANAGEMENT_APPLICATION_REPORTING},
+    {"applicationReportingTitle", IDS_MANAGEMENT_APPLICATIONS_INSTALLED},
+    {"applicationName", IDS_MANAGEMENT_APPLICATIONS_NAME},
+    {"applicationPermissions", IDS_MANAGEMENT_APPLICATIONS_PERMISSIONS},
     {"title", IDS_MANAGEMENT_TITLE},
     {"toolbarTitle", IDS_MANAGEMENT_TOOLBAR_TITLE},
     {"searchPrompt", IDS_SETTINGS_SEARCH_PROMPT},
@@ -149,6 +153,7 @@ content::WebUIDataSource* CreateAndAddManagementUIHtmlSource(Profile* profile) {
     {kManagementOnPageVisitedEvent, IDS_MANAGEMENT_PAGE_VISITED_EVENT},
     {kManagementOnPageVisitedVisibleData,
      IDS_MANAGEMENT_PAGE_VISITED_VISIBLE_DATA},
+    {kManagementLegacyTechReport, IDS_MANAGEMENT_LEGACY_TECH_REPORT},
   };
 
   source->AddLocalizedStrings(kLocalizedStrings);
@@ -218,21 +223,7 @@ std::u16string ManagementUI::GetManagementPageSubtitle(Profile* profile) {
                                     l10n_util::GetStringUTF16(device_type),
                                     base::UTF8ToUTF16(account_manager));
 #else   // BUILDFLAG(IS_CHROMEOS_ASH)
-  const auto account_manager =
-      chrome::GetAccountManagerIdentity(profile).value_or(std::string());
-  const auto managed =
-      profile->GetProfilePolicyConnector()->IsManaged() ||
-      g_browser_process->browser_policy_connector()->HasMachineLevelPolicies();
-  if (account_manager.empty()) {
-    return l10n_util::GetStringUTF16(managed
-                                         ? IDS_MANAGEMENT_SUBTITLE
-                                         : IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE);
-  }
-  if (managed) {
-    return l10n_util::GetStringFUTF16(IDS_MANAGEMENT_SUBTITLE_MANAGED_BY,
-                                      base::UTF8ToUTF16(account_manager));
-  }
-  return l10n_util::GetStringUTF16(IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE);
+  return chrome::GetManagementPageSubtitle(profile);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 

@@ -135,19 +135,6 @@ SkColor TabGroupViews::GetGroupColor() const {
       tab_slot_controller_->GetGroupColorId(group_));
 }
 
-SkColor TabGroupViews::GetTabBackgroundColor() const {
-  return tab_slot_controller_->GetTabBackgroundColor(
-      TabActive::kInactive, BrowserFrameActiveState::kUseCurrent);
-}
-
-SkColor TabGroupViews::GetGroupBackgroundColor() const {
-  const SkColor active_color = tab_slot_controller_->GetTabBackgroundColor(
-      TabActive::kActive, BrowserFrameActiveState::kUseCurrent);
-  return SkColorSetA(active_color, gfx::Tween::IntValueBetween(
-                                       style_->GetSelectedTabOpacity(),
-                                       SK_AlphaTRANSPARENT, SK_AlphaOPAQUE));
-}
-
 bool TabGroupViews::InTearDown() const {
   return !header_ || !header_->GetWidget() || !drag_underline_->GetWidget();
 }

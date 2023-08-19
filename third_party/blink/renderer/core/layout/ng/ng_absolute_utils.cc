@@ -19,27 +19,9 @@ namespace blink {
 
 namespace {
 
-// Dominant side:
-// htb ltr => top left
-// htb rtl => top right
-// vlr ltr => top left
-// vlr rtl => bottom left
-// vrl ltr => top right
-// vrl rtl => bottom right
-bool IsLeftDominant(const WritingDirectionMode writing_direction) {
-  return (writing_direction.GetWritingMode() != WritingMode::kVerticalRl) &&
-         !(writing_direction.IsHorizontal() && writing_direction.IsRtl());
-}
+enum AxisEdge { kStart, kCenter, kEnd };
 
-bool IsTopDominant(const WritingDirectionMode writing_direction) {
-  return writing_direction.IsHorizontal() || writing_direction.IsLtr();
-}
-
-// A direction agnostic version of |NGLogicalStaticPosition::InlineEdge|, and
-// |NGLogicalStaticPosition::BlockEdge|.
-enum StaticPositionEdge { kStart, kCenter, kEnd };
-
-inline StaticPositionEdge GetStaticPositionEdge(
+inline AxisEdge GetStaticPositionEdge(
     NGLogicalStaticPosition::InlineEdge inline_edge) {
   switch (inline_edge) {
     case NGLogicalStaticPosition::InlineEdge::kInlineStart:
@@ -51,7 +33,7 @@ inline StaticPositionEdge GetStaticPositionEdge(
   }
 }
 
-inline StaticPositionEdge GetStaticPositionEdge(
+inline AxisEdge GetStaticPositionEdge(
     NGLogicalStaticPosition::BlockEdge block_edge) {
   switch (block_edge) {
     case NGLogicalStaticPosition::BlockEdge::kBlockStart:
@@ -63,7 +45,7 @@ inline StaticPositionEdge GetStaticPositionEdge(
   }
 }
 
-inline LayoutUnit StaticPositionStartInset(StaticPositionEdge edge,
+inline LayoutUnit StaticPositionStartInset(AxisEdge edge,
                                            LayoutUnit static_position_offset,
                                            LayoutUnit size) {
   switch (edge) {
@@ -76,7 +58,7 @@ inline LayoutUnit StaticPositionStartInset(StaticPositionEdge edge,
   }
 }
 
-inline LayoutUnit StaticPositionEndInset(StaticPositionEdge edge,
+inline LayoutUnit StaticPositionEndInset(AxisEdge edge,
                                          LayoutUnit static_position_offset,
                                          LayoutUnit available_size,
                                          LayoutUnit size) {
@@ -97,7 +79,7 @@ std::pair<LayoutUnit, LayoutUnit> ComputeAvailableSpaceInOneAxis(
     const absl::optional<LayoutUnit>& inset_start,
     const absl::optional<LayoutUnit>& inset_end,
     const LayoutUnit static_position_offset,
-    StaticPositionEdge static_position_edge) {
+    AxisEdge static_position_edge) {
   DCHECK_NE(available_size, kIndefiniteSize);
   LayoutUnit computed_offset;
   LayoutUnit computed_available_size;
@@ -153,7 +135,7 @@ void ComputeInsets(const LayoutUnit margin_percentage_resolution_size,
                    absl::optional<LayoutUnit> inset_start,
                    absl::optional<LayoutUnit> inset_end,
                    const LayoutUnit static_position_offset,
-                   StaticPositionEdge static_position_edge,
+                   AxisEdge static_position_edge,
                    bool is_start_dominant,
                    bool is_block_direction,
                    LayoutUnit size,
@@ -180,36 +162,35 @@ void ComputeInsets(const LayoutUnit margin_percentage_resolution_size,
   if (inset_start && inset_end) {
     // "If left, right, and width are not auto:"
     // Compute margins.
-    LayoutUnit margin_space = computed_available_size - size;
+    LayoutUnit free_space = computed_available_size - size -
+                            margin_start.value_or(LayoutUnit()) -
+                            margin_end.value_or(LayoutUnit());
 
     if (!margin_start && !margin_end) {
       // When both margins are auto.
-      if (margin_space > 0 || is_block_direction) {
-        margin_start = margin_space / 2;
-        margin_end = margin_space - *margin_start;
+      if (free_space > LayoutUnit() || is_block_direction) {
+        margin_start = free_space / 2;
+        margin_end = free_space - *margin_start;
       } else {
         // Margins are negative.
         if (is_start_dominant) {
           margin_start = LayoutUnit();
-          margin_end = margin_space;
+          margin_end = free_space;
         } else {
-          margin_start = margin_space;
+          margin_start = free_space;
           margin_end = LayoutUnit();
         }
       }
     } else if (!margin_start) {
-      margin_start = margin_space - *margin_end;
+      margin_start = free_space;
     } else if (!margin_end) {
-      margin_end = margin_space - *margin_start;
+      margin_end = free_space;
     } else {
-      // Are the values over-constrained?
-      LayoutUnit margin_extra = margin_space - *margin_start - *margin_end;
-      if (margin_extra) {
-        // Relax the end.
-        if (is_start_dominant)
-          inset_end = *inset_end + margin_extra;
-        else
-          inset_start = *inset_start + margin_extra;
+      // Are the values over-constrained? Relax the end.
+      if (is_start_dominant) {
+        inset_end = *inset_end + free_space;
+      } else {
+        inset_start = *inset_start + free_space;
       }
     }
   }
@@ -247,16 +228,27 @@ void ComputeInsets(const LayoutUnit margin_percentage_resolution_size,
 }
 
 bool CanComputeBlockSizeWithoutLayout(const NGBlockNode& node) {
-  if (node.IsTable())
+  // Tables (even with an explicit size) apply a min-content constraint.
+  if (node.IsTable()) {
     return false;
-  if (node.IsReplaced())
+  }
+  // Replaced elements always have their size computed ahead of time.
+  if (node.IsReplaced()) {
     return true;
+  }
   const auto& style = node.Style();
-  return !style.LogicalHeight().IsContentOrIntrinsic() &&
-         !style.LogicalMinHeight().IsContentOrIntrinsic() &&
-         !style.LogicalMaxHeight().IsContentOrIntrinsic() &&
-         (!style.LogicalHeight().IsAuto() ||
-          (!style.LogicalTop().IsAuto() && !style.LogicalBottom().IsAuto()));
+  if (style.LogicalHeight().IsContentOrIntrinsic() ||
+      style.LogicalMinHeight().IsContentOrIntrinsic() ||
+      style.LogicalMaxHeight().IsContentOrIntrinsic()) {
+    return false;
+  }
+  if (style.LogicalHeight().IsAuto()) {
+    // Any 'auto' inset will trigger shink-to-fit sizing.
+    if (style.LogicalTop().IsAuto() || style.LogicalBottom().IsAuto()) {
+      return false;
+    }
+  }
+  return true;
 }
 
 }  // namespace
@@ -404,8 +396,8 @@ bool ComputeOutOfFlowInlineDimensions(
     Length main_inline_length = style.LogicalWidth();
     Length min_inline_length = style.LogicalMinWidth();
 
-    const bool stretch_inline_size =
-        !style.LogicalLeft().IsAuto() && !style.LogicalRight().IsAuto();
+    const bool stretch_inline_size = !style.LogicalInlineStart().IsAuto() &&
+                                     !style.LogicalInlineEnd().IsAuto();
 
     // Determine how "auto" should resolve.
     if (main_inline_length.IsAuto()) {
@@ -445,15 +437,12 @@ bool ComputeOutOfFlowInlineDimensions(
 
   dimensions->size.inline_size = inline_size;
 
-  const auto writing_direction = style.GetWritingDirection();
-  bool is_start_dominant;
-  if (writing_direction.IsHorizontal()) {
-    is_start_dominant = IsLeftDominant(container_writing_direction) ==
-                        IsLeftDominant(writing_direction);
-  } else {
-    is_start_dominant = IsTopDominant(container_writing_direction) ==
-                        IsTopDominant(writing_direction);
-  }
+  // Determines if the "start" sides match.
+  const bool is_start_dominant =
+      LogicalToLogical(container_writing_direction, style.GetWritingDirection(),
+                       /* inline_start */ true, /* inline_end */ false,
+                       /* block_start */ true, /* block_end */ false)
+          .InlineStart();
 
   ComputeInsets(
       space.PercentageResolutionInlineSizeForParentWritingMode(),
@@ -573,15 +562,12 @@ const NGLayoutResult* ComputeOutOfFlowBlockDimensions(
 
   dimensions->size.block_size = block_size;
 
-  const auto writing_direction = style.GetWritingDirection();
-  bool is_start_dominant;
-  if (writing_direction.IsHorizontal()) {
-    is_start_dominant = IsTopDominant(container_writing_direction) ==
-                        IsTopDominant(writing_direction);
-  } else {
-    is_start_dominant = IsLeftDominant(container_writing_direction) ==
-                        IsLeftDominant(writing_direction);
-  }
+  // Determines if the "start" sides match.
+  const bool is_start_dominant =
+      LogicalToLogical(container_writing_direction, style.GetWritingDirection(),
+                       /* inline_start */ true, /* inline_end */ false,
+                       /* block_start */ true, /* block_end */ false)
+          .BlockStart();
 
   ComputeInsets(
       space.PercentageResolutionInlineSizeForParentWritingMode(),
@@ -633,7 +619,10 @@ void AdjustOffsetForSplitInline(const NGBlockNode& node,
   // container, #anonymous2. This is why the code below adjusts the legacy
   // offset from being wrt #container to being wrt #anonymous2.
   const LayoutObject* container = node.GetLayoutBox()->Container();
-  if (container->IsAnonymousBlock()) {
+
+  // The container_builder for LayoutViewTransitionRoot does not have any
+  // children.
+  if (container->IsAnonymousBlock() && !container->IsViewTransitionRoot()) {
     LogicalOffset container_offset =
         container_builder->GetChildOffset(container);
     offset -= container_offset;

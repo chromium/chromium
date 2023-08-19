@@ -175,8 +175,7 @@ public class NotificationSharedPrefManager {
      * @return The Active Notification associated with the passed in GUID. May be null if none
      *         found.
      */
-    @Nullable
-    static ActiveNotification findActiveNotification(@Nullable String guid) {
+    static @Nullable ActiveNotification findActiveNotification(@Nullable String guid) {
         if (guid == null) {
             return null;
         }

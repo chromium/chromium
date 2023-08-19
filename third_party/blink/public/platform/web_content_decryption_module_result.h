@@ -68,8 +68,8 @@ class BLINK_PLATFORM_EXPORT WebContentDecryptionModuleResult {
   void Reset();
   void Assign(const WebContentDecryptionModuleResult&);
 
-  WebPrivatePtr<ContentDecryptionModuleResult,
-                kWebPrivatePtrDestructionCrossThread>
+  WebPrivatePtrForGC<ContentDecryptionModuleResult,
+                     WebPrivatePtrDestruction::kCrossThread>
       impl_;
 };
 

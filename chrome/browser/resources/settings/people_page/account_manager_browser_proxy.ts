@@ -4,7 +4,7 @@
 
 /**
  * @fileoverview Stripped down fork of
- * c/b/r/settings/chromeos/os_people_page/account_manager_browser_proxy.js.
+ * c/b/r/ash/settings/os_people_page/account_manager_browser_proxy.js.
  * Re-uses the same WebUI message handler class.
  */
 

@@ -12,6 +12,7 @@ GEN('#include "chrome/browser/ash/crostini/fake_crostini_features.h"');
 GEN('#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"');
 GEN('#include "chrome/common/buildflags.h"');
 GEN('#include "chrome/common/chrome_features.h"');
+GEN('#include "chromeos/constants/chromeos_features.h"');
 GEN('#include "components/app_restore/features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 GEN('#include "ui/accessibility/accessibility_features.h"');
@@ -46,8 +47,8 @@ var OSSettingsDevicePageTest = class extends OSSettingsBrowserTest {
   get featureList() {
     return {
       enabled: [
-        'ash::features::kAudioSettingsPage',
         'ash::features::kInputDeviceSettingsSplit',
+        'ash::features::kPeripheralCustomization',
       ],
     };
   }
@@ -142,30 +143,10 @@ TEST_F('OSSettingsOsBluetoothSavedDevicesListTest', 'AllJsTests', () => {
   mocha.run();
 });
 
-var OSSettingsAppManagementAppDetailsTest =
-    class extends OSSettingsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/app_management/app_details_item_test.js';
-  }
-
-  /** @override */
-  get featureList() {
-    return {
-      enabled: super.featureList.enabled.concat(
-          ['features::kAppManagementAppDetails']),
-    };
-  }
-};
-
 function crostiniTestGenPreamble() {
   GEN('crostini::FakeCrostiniFeatures fake_crostini_features;');
   GEN('fake_crostini_features.SetAll(true);');
 }
-
-TEST_F('OSSettingsAppManagementAppDetailsTest', 'AllJsTests', () => {
-  mocha.run();
-});
 
 var OSSettingsCrostiniPageTest = class extends OSSettingsBrowserTest {
   /** @override */
@@ -202,44 +183,49 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
 
 [['AboutPage', 'os_about_page_tests.js'],
  ['ApnDetailDialog', 'apn_detail_dialog_tests.js'],
- [
-   'ApnSubpage', 'apn_subpage_tests.js',
-   {enabled: ['ash::features::kApnRevamp']}
- ],
+ // TODO(crbug.com/1455866): Enable the ApnSubpage test.
+ // [
+ //   'ApnSubpage', 'apn_subpage_tests.js',
+ //   {enabled: ['ash::features::kApnRevamp']}
+ // ],
  ['AppsPage', 'apps_page_test.js'],
- ['AppNotificationsSubpage', 'app_notifications_subpage_tests.js'],
- ['AppManagementAppDetailsItem', 'app_management/app_details_item_test.js'],
- ['AppManagementArcDetailView', 'app_management/arc_detail_view_test.js'],
- ['AppManagementDomSwitch', 'app_management/dom_switch_test.js'],
  ['AppManagementFileHandlingItem', 'app_management/file_handling_item_test.js'],
- ['AppManagementManagedApp', 'app_management/managed_apps_test.js'],
- ['AppManagementPage', 'app_management/app_management_page_tests.js'],
- ['AppManagementPinToShelfItem', 'app_management/pin_to_shelf_item_test.js'],
- [
-   'AppManagementPluginVmDetailView',
-   'app_management/plugin_vm_detail_view_test.js',
- ],
- ['AppManagementPwaDetailView', 'app_management/pwa_detail_view_test.js'],
- ['AppManagementReducers', 'app_management/reducers_test.js'],
- ['AppManagementResizeLockItem', 'app_management/resize_lock_item_test.js'],
- [
-   'AppManagementSupportedLinksItem',
-   'app_management/supported_links_item_test.js',
- ],
+ ['AppManagementManagedApps', 'app_management/managed_apps_test.js'],
  ['AppManagementToggleRow', 'app_management/toggle_row_test.js'],
  ['CellularNetworksList', 'cellular_networks_list_test.js'],
  ['CellularRoamingToggleButton', 'cellular_roaming_toggle_button_test.js'],
- [
-   'CupsPrinterLandingPage', 'cups_printer_landing_page_tests.js',
-   {enabled: ['ash::features::kPrinterSettingsPrinterStatus']}
- ],
- [
-   'CupsPrinterPage', 'cups_printer_page_tests.js',
-   {enabled: ['ash::features::kPrinterSettingsRevamp']}
- ],
- ['DateTimePage', 'date_time_page_tests.js'],
+ ['DateTimePage', 'date_time_page/date_time_page_test.js'],
  ['DateTimePageTimezoneSelector', 'date_time_page/timezone_selector_test.js'],
  ['DateTimePageTimezoneSubpage', 'date_time_page/timezone_subpage_test.js'],
+ ['DevicePageAudioPage', 'device_page/audio_page_test.js'],
+ ['DevicePageCustomizeButtonRow', 'device_page/customize_button_row_test.js'],
+ [
+   'DevicePageCustomizeMouseButtonsSubpage',
+   'device_page/customize_mouse_buttons_subpage_test.js', {
+     enabled: [
+       'ash::features::kPeripheralCustomization',
+       'ash::features::kInputDeviceSettingsSplit'
+     ]
+   }
+ ],
+ [
+   'DevicePageCustomizePenButtonsSubpage',
+   'device_page/customize_pen_buttons_subpage_test.js', {
+     enabled: [
+       'ash::features::kPeripheralCustomization',
+       'ash::features::kInputDeviceSettingsSplit'
+     ]
+   }
+ ],
+ [
+   'DevicePageCustomizeTabletButtonsSubpage',
+   'device_page/customize_tablet_buttons_subpage_test.js', {
+     enabled: [
+       'ash::features::kPeripheralCustomization',
+       'ash::features::kInputDeviceSettingsSplit'
+     ]
+   }
+ ],
  [
    'DevicePageFakeCrosAudioConfig', 'device_page/fake_cros_audio_config_test.js'
  ],
@@ -250,6 +236,11 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  [
    'DevicePageInputDeviceMojoInterfaceProvider',
    'device_page/input_device_mojo_interface_provider_test.js',
+   {enabled: ['ash::features::kInputDeviceSettingsSplit']}
+ ],
+ [
+   'DevicePageKeyboardSixPackKeyRow',
+   'device_page/keyboard_six_pack_key_row_test.js',
    {enabled: ['ash::features::kInputDeviceSettingsSplit']}
  ],
  [
@@ -272,8 +263,12 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ],
  [
    'DevicePagePerDeviceMouseSubsection',
-   'device_page/per_device_mouse_subsection_test.js',
-   {enabled: ['ash::features::kInputDeviceSettingsSplit']}
+   'device_page/per_device_mouse_subsection_test.js', {
+     enabled: [
+       'ash::features::kInputDeviceSettingsSplit',
+       'ash::features::kPeripheralCustomization',
+     ]
+   }
  ],
  [
    'DevicePagePerDevicePointingStick',
@@ -300,8 +295,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ['EsimRenameDialog', 'esim_rename_dialog_test.js'],
  ['GuestOsSharedPaths', 'guest_os/guest_os_shared_paths_test.js'],
  ['GuestOsSharedUsbDevices', 'guest_os/guest_os_shared_usb_devices_test.js'],
- ['InputPage', 'input_page_test.js'],
- ['InternetConfig', 'internet_config_test.js'],
  ['InternetDetailMenu', 'internet_detail_menu_test.js'],
  [
    'InternetKnownNetworksSubpage', 'internet_known_networks_subpage_tests.js', {
@@ -314,8 +307,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  [
    'InternetPage', 'internet_page_tests.js', {
      enabled: [
-       'ash::features::kApnRevamp', 'ash::features::kPasspointSettings',
-       'ash::features::kPasspointARCSupport'
+       'ash::features::kApnRevamp',
+       'ash::features::kHotspot',
+       'ash::features::kPasspointSettings',
+       'ash::features::kPasspointARCSupport',
      ]
    }
  ],
@@ -338,6 +333,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'internet_page/hotspot_summary_item_test.js',
    {enabled: ['ash::features::kHotspot']},
  ],
+ ['InternetPageInternetConfig', 'internet_page/internet_config_test.js'],
  [
    'InternetPageInternetDetailSubpage',
    'internet_page/internet_detail_subpage_tests.js', {
@@ -347,6 +343,14 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
        'ash::features::kPasspointSettings',
      ]
    }
+ ],
+ [
+   'InternetPageNetworkAlwaysOnVpn',
+   'internet_page/network_always_on_vpn_test.js'
+ ],
+ [
+   'InternetPageNetworkProxySection',
+   'internet_page/network_proxy_section_test.js'
  ],
  ['InternetPageNetworkSummary', 'internet_page/network_summary_test.js'],
  [
@@ -360,6 +364,19 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
        'ash::features::kPasspointSettings',
      ]
    }
+ ],
+ [
+   'InternetPagePasspointRemoveDialog',
+   'internet_page/passpoint_remove_dialog_test.js', {
+     enabled: [
+       'ash::features::kPasspointARCSupport',
+       'ash::features::kPasspointSettings',
+     ]
+   }
+ ],
+ [
+   'InternetPageSettingsTrafficCounters',
+   'internet_page/settings_traffic_counters_test.js'
  ],
  [
    'InternetPageTetherConnectionDialog',
@@ -382,9 +399,22 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ],
  ['LockScreenSubpage', 'lock_screen_subpage_test.js'],
  ['MainPageContainer', 'main_page_container_test.js'],
- ['ManageUsersSubpage', 'manage_users_subpage_tests.js'],
- // TODO(b/208932892): Re-enable once flakiness is fixed.
- // ['MultideviceFeatureItem', 'multidevice_feature_item_tests.js'],
+ [
+   'MainPageContainerPageDisplayer',
+   'main_page_container/page_displayer_test.js',
+ ],
+ [
+   'MainPageContainerRouteNavigation',
+   'main_page_container/route_navigation_test.js',
+   {
+     enabled: [
+       'ash::features::kOsSettingsRevampWayfinding',
+     ],
+   },
+ ],
+ [
+   'MultideviceFeatureItem', 'multidevice_page/multidevice_feature_item_test.js'
+ ],
  ['MultidevicePage', 'multidevice_page/multidevice_page_tests.js'],
  [
    'MultidevicePageMultideviceFeatureItem',
@@ -444,8 +474,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'nearby_share_subpage_tests.js',
    {enabled: ['features::kNearbySharing']},
  ],
- ['NetworkAlwaysOnVpn', 'network_always_on_vpn_test.js'],
- ['NetworkProxySection', 'network_proxy_section_test.js'],
  ['NetworkDeviceInfoDialog', 'network_device_info_dialog_test.js'],
  ['OncMojoTest', 'onc_mojo_test.js'],
  [
@@ -480,12 +508,23 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'os_a11y_page/keyboard_and_text_input_page_test.js',
  ],
  [
-   'OsA11yPageManageA11ySubpage',
-   'os_a11y_page/manage_a11y_subpage_test.js',
+   'OsA11yPageKioskMode',
+   'os_a11y_page/os_a11y_page_kiosk_mode_test.js',
+ ],
+ [
+   'OsA11yPageSelectToSpeakSubpage',
+   'os_a11y_page/select_to_speak_subpage_test.js',
  ],
  [
    'OsA11yPageSwitchAccessActionAssignmentDialog',
    'os_a11y_page/switch_access_action_assignment_dialog_test.js',
+ ],
+ [
+   'OsA11yPageSwitchAccessSetupGuideDialog',
+   'os_a11y_page/switch_access_setup_guide_dialog_test.js'
+ ],
+ [
+   'OsA11yPageSwitchAccessSubpage', 'os_a11y_page/switch_access_subpage_test.js'
  ],
  [
    'OsA11yPageTextToSpeechSubpage',
@@ -497,12 +536,25 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'os_a11y_page/tts_voice_subpage_test.js',
  ],
  [
+   'OsAppsPageAppManagementPageAppDetailsItem',
+   'os_apps_page/app_management_page/app_details_item_test.js',
+   {enabled: ['features::kAppManagementAppDetails']},
+ ],
+ [
    'OsAppsPageAppManagementPageAppDetailView',
    'os_apps_page/app_management_page/app_detail_view_test.js'
  ],
  [
    'OsAppsPageAppManagementPageAppItem',
    'os_apps_page/app_management_page/app_item_test.js'
+ ],
+ [
+   'OsAppsPageAppManagementPage',
+   'os_apps_page/app_management_page/app_management_page_test.js'
+ ],
+ [
+   'OsAppsPageAppManagementPageArcDetailView',
+   'os_apps_page/app_management_page/arc_detail_view_test.js'
  ],
  [
    'OsAppsPageAppManagementPageBorealisDetailView',
@@ -513,17 +565,50 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'os_apps_page/app_management_page/chrome_app_detail_view_test.js',
  ],
  [
+   'OsAppsPageAppManagementPageDomSwitch',
+   'os_apps_page/app_management_page/dom_switch_test.js'
+ ],
+ [
    'OsAppsPageAppManagementPageMainView',
    'os_apps_page/app_management_page/main_view_test.js'
+ ],
+ [
+   'OsAppsPageAppManagementPagePinToShelfItem',
+   'os_apps_page/app_management_page/pin_to_shelf_item_test.js'
+ ],
+ [
+   'OsAppsPageAppManagementPagePluginVmDetailView',
+   'os_apps_page/app_management_page/plugin_vm_detail_view_test.js',
+ ],
+ [
+   'OsAppsPageAppManagementPagePwaDetailView',
+   'os_apps_page/app_management_page/pwa_detail_view_test.js'
+ ],
+ [
+   'OsAppsPageAppManagementPageReducers',
+   'os_apps_page/app_management_page/reducers_test.js'
+ ],
+ [
+   'OsAppsPageAppManagementPageResizeLockItem',
+   'os_apps_page/app_management_page/resize_lock_item_test.js'
+ ],
+ [
+   'OsAppsPageAppManagementPageSupportedLinksItem',
+   'os_apps_page/app_management_page/supported_links_item_test.js',
+ ],
+ [
+   'OsAppsPageAppNotificationsPageAppNotificationsSubpage',
+   'os_apps_page/app_notifications_page/app_notifications_subpage_test.js'
  ],
  ['OsBluetoothPage', 'os_bluetooth_page/os_bluetooth_page_tests.js'],
  [
    'OsBluetoothPageOsBluetoothChangeDeviceNameDialog',
-   'os_bluetooth_page/os_bluetooth_change_device_name_dialog_tests.js',
+   'os_bluetooth_page/os_bluetooth_change_device_name_dialog_test.js',
  ],
  [
    'OsBluetoothPageOsBluetoothDeviceDetailSubpage',
    'os_bluetooth_page/os_bluetooth_device_detail_subpage_tests.js',
+   {enabled: ['ash::features::kInputDeviceSettingsSplit']}
  ],
  [
    'OsBluetoothPageOsBluetoothPairingDialog',
@@ -537,35 +622,85 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'OsBluetoothPageOsBluetoothTrueWirelessImages',
    'os_bluetooth_page/os_bluetooth_true_wireless_images_tests.js',
  ],
- ['OsEditDictionaryPage', 'os_edit_dictionary_page_test.js'],
  ['OsFilesPage', 'os_files_page/os_files_page_test.js'],
  ['OsFilesPageGoogleDrivePage', 'os_files_page/google_drive_page_test.js'],
  ['OsFilesPageOneDrivePage', 'os_files_page/one_drive_page_test.js'],
  ['OsFilesPageOfficePage', 'os_files_page/office_page_test.js'],
  ['OsFilesPageSmbSharesPage', 'os_files_page/smb_shares_page_test.js'],
  [
+   'OsFilesPageSmbSharesPageJelly',
+   'os_files_page/smb_shares_page_test.js',
+   {
+     enabled:
+         ['chromeos::features::kCrosComponents', 'chromeos::features::kJelly']
+   },
+ ],
+ [
+   'OsLanguagesPage',
+   'os_languages_page/os_languages_page_test.js',
+ ],
+ [
    'OsLanguagesPageInputMethodOptionsPage',
    'os_languages_page/input_method_options_page_test.js'
  ],
+ ['OsLanguagesPageInputPage', 'os_languages_page/input_page_test.js'],
  [
    'OsLanguagesPageOsClearPersonalizationDataPage',
    'os_languages_page/os_clear_personalization_data_page_test.js'
+ ],
+ ['OsLanguagesPageV2', 'os_languages_page/os_languages_page_v2_test.js'],
+ [
+   'OsLanguagesPageOsEditDictionaryPage',
+   'os_languages_page/os_edit_dictionary_page_test.js'
  ],
  [
    'OsLanguagesPageSmartInputsPage',
    'os_languages_page/smart_inputs_page_test.js'
  ],
- ['OsLanguagesPageV2', 'os_languages_page_v2_tests.js'],
  ['OsPairedBluetoothList', 'os_paired_bluetooth_list_tests.js'],
  ['OsPairedBluetoothListItem', 'os_paired_bluetooth_list_item_tests.js'],
- ['OsPageAvailability', 'os_page_availability_test.js'],
+ [
+   'OsPageAvailability',
+   'os_page_availability_test.js',
+   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
+ ],
+ [
+   'OsPageAvailabilityRevamp',
+   'os_page_availability_test.js',
+   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
+ ],
  ['OsPeoplePage', 'os_people_page/os_people_page_test.js'],
  ['OsPeoplePageAddUserDialog', 'os_people_page/add_user_dialog_test.js'],
  [
    'OsPeoplePageFingerprintListSubpage',
    'os_people_page/fingerprint_list_subpage_test.js'
  ],
+ [
+   'OsPeoplePageOsSyncControlsSubpage',
+   'os_people_page/os_sync_controls_subpage_test.js'
+ ],
+ [
+   'OsPeoplePagePersonalizationOptions',
+   'os_people_page/personalization_options_test.js',
+ ],
  ['OsPrintingPage', 'os_printing_page/os_printing_page_test.js'],
+ [
+   'OsPrintingPageCupsPrintServer', 'os_printing_page/cups_print_server_test.js'
+ ],
+ [
+   'OsPrintingPageCupsPrinterDialog',
+   'os_printing_page/cups_printer_dialog_test.js'
+ ],
+ [
+   'OsPrintingPageCupsPrinterLandingPage',
+   'os_printing_page/cups_printer_landing_page_test.js',
+   {enabled: ['ash::features::kPrinterSettingsPrinterStatus']}
+ ],
+ [
+   'OsPrintingPageCupsPrinterPage',
+   'os_printing_page/cups_printer_page_test.js',
+   {enabled: ['ash::features::kPrinterSettingsRevamp']}
+ ],
  [
    'OsPrintingPageCupsPrintersEntry',
    'os_printing_page/cups_printers_entry_test.js', {
@@ -581,6 +716,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ],
  ['OsPrivacyPage', 'os_privacy_page/os_privacy_page_test.js'],
  [
+   'OsPrivacyPageManageUsersSubpage',
+   'os_privacy_page/manage_users_subpage_test.js'
+ ],
+ [
    'OsPrivacyPagePrivacyHubSubpage',
    'os_privacy_page/privacy_hub_subpage_test.js',
    {enabled: ['ash::features::kCrosPrivacyHub']},
@@ -589,24 +728,58 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'OsPrivacyPageSmartPrivacySubpage',
    'os_privacy_page/smart_privacy_subpage_test.js'
  ],
+ [
+   'OsResetPageResetCard',
+   'os_reset_page/reset_card_test.js',
+   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
+ ],
  ['OsSearchPage', 'os_search_page/os_search_page_test.js'],
  [
    'OsSearchPageGoogleAssistantSubpage',
    'os_search_page/google_assistant_subpage_test.js'
  ],
+ [
+   'OsSearchPageSearchAndAssistantCard',
+   'os_search_page/search_and_assistant_card_test.js',
+   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
+ ],
  ['OsSearchPageSearchSubpage', 'os_search_page/search_subpage_test.js'],
  ['OsSettingsHatsUi', 'os_settings_ui/os_settings_hats_ui_test.js'],
- ['OsSettingsMenu', 'os_settings_menu/os_settings_menu_test.js'],
+ [
+   'OsSettingsMenu',
+   'os_settings_menu/os_settings_menu_test.js',
+   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
+ ],
+ [
+   'OsSettingsMenuRevamp',
+   'os_settings_menu/os_settings_menu_revamp_test.js',
+   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
+ ],
  ['OsSettingsUi', 'os_settings_ui/os_settings_ui_test.js'],
- ['OsSettingsUiAboutPage', 'os_settings_ui/os_settings_ui_about_page_test.js'],
+ [
+   'OsSettingsUiAboutPage',
+   'os_settings_ui/os_settings_ui_about_page_test.js',
+   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
+ ],
  ['OsSettingsUiMenu', 'os_settings_ui/os_settings_ui_menu_test.js'],
  [
    'OsSettingsUiPageAvailability',
    'os_settings_ui/os_settings_ui_page_availability_test.js',
+   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
  ],
  [
-   'OsSettingsUiPageVisibility',
-   'os_settings_ui/os_settings_ui_page_visibility_test.js',
+   'OsSettingsUiPageAvailabilityRevamp',
+   'os_settings_ui/os_settings_ui_page_availability_test.js',
+   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
+ ],
+ [
+   'OsSettingsUiPageVisibilityRevamp',
+   'os_settings_ui/os_settings_ui_page_visibility_revamp_test.js',
+   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
+ ],
+ [
+   'OsSettingsUiScrollRestoration',
+   'os_settings_ui/scroll_restoration_test.js',
  ],
  ['OsSettingsUiToolbar', 'os_settings_ui/os_settings_ui_toolbar_test.js'],
  [
@@ -615,7 +788,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ],
  ['OsSettingsMain', 'os_settings_main_test.js'],
  ['OsSettingsSearchBox', 'os_settings_search_box_test.js'],
- ['OsSyncControlsSubpage', 'os_sync_controls_subpage_test.js'],
  [
    'ParentalControlsPage',
    'parental_controls_page/parental_controls_page_test.js'
@@ -623,12 +795,17 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  [
    'PeoplePageAccountManagerSubpage',
    'people_page_account_manager_subpage_test.js',
-   {disabled: ['ash::features::kLacrosSupport']},
+   {disabled: ['ash::features::kLacrosOnly']},
  ],
  [
    'PeoplePageAccountManagerSubpageWithArcAccountRestrictionsEnabled',
    'people_page_account_manager_subpage_test.js',
-   {enabled: ['ash::features::kLacrosSupport']},
+   {
+     enabled: [
+       'ash::features::kLacrosOnly',
+       'ash::features::kLacrosProfileMigrationForceOff'
+     ]
+   },
  ],
  [
    'PersonalizationPageWithPersonalizationHub',
@@ -640,13 +817,24 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'settings_scheduler_slider/settings_scheduler_slider_test.js'
  ],
  [
-   'SelectToSpeakSubpage',
-   'select_to_speak_subpage_tests.js',
-   {enabled: ['features::kAccessibilitySelectToSpeakPageMigration']},
+   'SystemPreferencesPage',
+   'system_preferences_page/system_preferences_page_test.js',
+   {
+     enabled: [
+       'ash::features::kOsSettingsRevampWayfinding',
+     ],
+   },
  ],
- ['SettingsTrafficCounters', 'settings_traffic_counters_test.js'],
- ['SwitchAccessSetupGuideDialog', 'switch_access_setup_guide_dialog_test.js'],
- ['SwitchAccessSubpage', 'switch_access_subpage_tests.js'],
+ [
+   'SystemPreferencesPageResetCard',
+   'os_reset_page/reset_card_test.js',
+   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
+ ],
+ [
+   'SystemPreferencesPageSearchAndAssistantCard',
+   'os_search_page/search_and_assistant_card_test.js',
+   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
+ ],
 ].forEach(test => registerTest(...test));
 
 function registerTest(testName, module, featureList) {

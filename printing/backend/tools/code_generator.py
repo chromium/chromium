@@ -225,10 +225,13 @@ def main():
         if args.localization_map and not handler.startswith('Multivalue'):
           add_l10n(l10n_file, attr_name)
 
-    # media-source is only handled for localization because it's inside of
-    # the media-col collection and we don't handle collections otherwise.
+    # media-source and media-type are only handled for localization because
+    # they're inside of the media-col collection and we don't handle
+    # collections otherwise.
     supported_items.add("media-source")
     add_l10n(l10n_file, "media-source")
+    supported_items.add("media-type")
+    add_l10n(l10n_file, "media-type")
 
     with open(args.keyword_values_file, 'r') as keyword_file:
       keyword_reader = csv.reader(keyword_file)

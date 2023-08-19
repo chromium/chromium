@@ -1,14 +1,10 @@
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "pinned_tabs_context_egtest.mm",
     "pinned_tabs_drag_drop_egtest.mm",
     "pinned_tabs_generic_egtest.mm",
-    "pinned_tabs_overflow_egtest.mm",
   ]
 
   deps = [
@@ -30,7 +26,6 @@ source_set("eg2_tests") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "pinned_tabs_mediator_unittest.mm" ]
   deps = [

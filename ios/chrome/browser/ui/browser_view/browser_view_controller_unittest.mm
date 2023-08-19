@@ -10,9 +10,12 @@
 
 #import <memory>
 
+#import "base/apple/foundation_util.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/open_from_clipboard/fake_clipboard_recent_content.h"
 #import "components/search_engines/template_url_service.h"
+#import "components/supervised_user/core/common/features.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/favicon/favicon_service_factory.h"
@@ -22,6 +25,7 @@
 #import "ios/chrome/browser/history/history_service_factory.h"
 #import "ios/chrome/browser/lens/lens_browser_agent.h"
 #import "ios/chrome/browser/metrics/tab_usage_recorder_browser_agent.h"
+#import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
@@ -45,6 +49,7 @@
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
 #import "ios/chrome/browser/tabs/tab_helper_util.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmarks_coordinator.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
@@ -58,7 +63,7 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_component_factory.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_coordinator.h"
-#import "ios/chrome/browser/ui/side_swipe/side_swipe_controller.h"
+#import "ios/chrome/browser/ui/side_swipe/side_swipe_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_coordinator.h"
 #import "ios/chrome/browser/ui/tabs/foreground_tab_animation_view.h"
 #import "ios/chrome/browser/ui/tabs/tab_strip_legacy_coordinator.h"
@@ -71,6 +76,7 @@
 #import "ios/chrome/browser/web_state_list/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/test/block_cleanup_test.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -80,9 +86,9 @@
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/device_form_factor.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+// To get access to web::features::kEnableSessionSerializationOptimizations.
+// TODO(crbug.com/1383087): remove once the feature is fully launched.
+#import "ios/web/common/features.h"
 
 #pragma mark -
 
@@ -90,11 +96,17 @@ namespace {
 class BrowserViewControllerTest : public BlockCleanupTest {
  public:
  protected:
-  BrowserViewControllerTest()
-      : scene_state_([[SceneState alloc] initWithAppState:nil]) {}
+  BrowserViewControllerTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS},
+        {web::features::kEnableSessionSerializationOptimizations});
+  }
 
   void SetUp() override {
     BlockCleanupTest::SetUp();
+
+    scene_state_ = [[SceneState alloc] initWithAppState:nil];
+
     // Set up a TestChromeBrowserState instance.
     TestChromeBrowserState::Builder test_cbs_builder;
 
@@ -232,10 +244,19 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     HostContentSettingsMap* settings_map =
         ios::HostContentSettingsMapFactory::GetForBrowserState(
             chrome_browser_state_.get());
+    UrlLoadingNotifierBrowserAgent* urlLoadingNotifier_ =
+        UrlLoadingNotifierBrowserAgent::FromBrowser(browser_.get());
+
     bubble_presenter_ = [[BubblePresenter alloc]
-               initWithTracker:(feature_engagement::Tracker*)tracker
-        hostContentSettingsMap:(HostContentSettingsMap*)settings_map
-                  webStateList:browser_->GetWebStateList()];
+        initWithDeviceSwitcherResultDispatcher:nullptr
+                        hostContentSettingsMap:(HostContentSettingsMap*)
+                                                   settings_map
+                               loadingNotifier:urlLoadingNotifier_
+                                    sceneState:scene_state_
+                       tabStripCommandsHandler:nil
+                                       tracker:(feature_engagement::Tracker*)
+                                                   tracker
+                                  webStateList:browser_->GetWebStateList()];
     [dispatcher startDispatchingToTarget:bubble_presenter_
                              forProtocol:@protocol(HelpCommands)];
 
@@ -245,23 +266,29 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     legacy_tab_strip_coordinator_ =
         [[TabStripLegacyCoordinator alloc] initWithBrowser:browser_.get()];
 
-    side_swipe_controller_ =
-        [[SideSwipeController alloc] initWithBrowser:browser_.get()];
+    fullscreen_controller_ = FullscreenController::FromBrowser(browser_.get());
+    SnapshotBrowserAgent* snapshot_browser_agent =
+        SnapshotBrowserAgent::FromBrowser(browser_.get());
+    side_swipe_mediator_ = [[SideSwipeMediator alloc]
+        initWithFullscreenController:fullscreen_controller_
+                snapshotBrowserAgent:snapshot_browser_agent
+                        webStateList:browser_->GetWebStateList()];
 
     bookmarks_coordinator_ =
         [[BookmarksCoordinator alloc] initWithBrowser:browser_.get()];
-
-    fullscreen_controller_ = FullscreenController::FromBrowser(browser_.get());
 
     url_loading_notifier_browser_agent_ =
         UrlLoadingNotifierBrowserAgent::FromBrowser(browser_.get());
 
     tab_usage_recorder_browser_agent_ =
         TabUsageRecorderBrowserAgent::FromBrowser(browser_.get());
-    web_navigation_browser_agent_ =
-        WebNavigationBrowserAgent::FromBrowser(browser_.get());
     page_placeholder_browser_agent_ =
         PagePlaceholderBrowserAgent::FromBrowser(browser_.get());
+    NTPCoordinator_ = [[NewTabPageCoordinator alloc]
+         initWithBrowser:browser_.get()
+        componentFactory:[[NewTabPageComponentFactory alloc] init]];
+    NTPCoordinator_.toolbarDelegate =
+        OCMProtocolMock(@protocol(NewTabPageControllerDelegate));
 
     BrowserViewControllerDependencies dependencies;
     dependencies.bubblePresenter = bubble_presenter_;
@@ -269,22 +296,20 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     dependencies.toolbarCoordinator = toolbar_coordinator_;
     dependencies.tabStripCoordinator = tab_strip_coordinator_;
     dependencies.legacyTabStripCoordinator = legacy_tab_strip_coordinator_;
-    dependencies.sideSwipeController = side_swipe_controller_;
+    dependencies.sideSwipeMediator = side_swipe_mediator_;
     dependencies.bookmarksCoordinator = bookmarks_coordinator_;
     dependencies.fullscreenController = fullscreen_controller_;
     dependencies.urlLoadingNotifierBrowserAgent =
         url_loading_notifier_browser_agent_;
     dependencies.tabUsageRecorderBrowserAgent =
         tab_usage_recorder_browser_agent_;
-    dependencies.webNavigationBrowserAgent = web_navigation_browser_agent_;
     dependencies.layoutGuideCenter =
         LayoutGuideCenterForBrowser(browser_.get());
     dependencies.webStateList = browser_->GetWebStateList()->AsWeakPtr();
     dependencies.safeAreaProvider = safe_area_provider_;
     dependencies.pagePlaceholderBrowserAgent = page_placeholder_browser_agent_;
     dependencies.applicationCommandsHandler = mockApplicationCommandHandler_;
-    dependencies.webStateUpdateBrowserAgent =
-        WebStateUpdateBrowserAgent::FromBrowser(browser_.get());
+    dependencies.ntpCoordinator = NTPCoordinator_;
 
     bvc_ = [[BrowserViewController alloc]
         initWithBrowserContainerViewController:container_
@@ -295,20 +320,9 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     id mockReauthHandler = OCMProtocolMock(@protocol(IncognitoReauthCommands));
     bvc_.reauthHandler = mockReauthHandler;
 
-    id NTPCoordinator_ = [[NewTabPageCoordinator alloc]
-         initWithBrowser:browser_.get()
-        componentFactory:[[NewTabPageComponentFactory alloc] init]];
-
-    SessionRestorationBrowserAgent* sessionRestorationBrowserAgent_ =
-        SessionRestorationBrowserAgent::FromBrowser(browser_.get());
-
-    UrlLoadingNotifierBrowserAgent* urlLoadingNotifier_ =
-        UrlLoadingNotifierBrowserAgent::FromBrowser(browser_.get());
-
     tab_events_mediator_ = [[TabEventsMediator alloc]
         initWithWebStateList:browser_.get()->GetWebStateList()
               ntpCoordinator:NTPCoordinator_
-            restorationAgent:sessionRestorationBrowserAgent_
                 browserState:chrome_browser_state_.get()
              loadingNotifier:urlLoadingNotifier_];
     tab_events_mediator_.consumer = bvc_;
@@ -323,6 +337,12 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     [tab_events_mediator_ disconnect];
     [[bvc_ view] removeFromSuperview];
     [bvc_ shutdown];
+    [bookmarks_coordinator_ stop];
+    [tab_strip_coordinator_ stop];
+    [popup_menu_coordinator_ stop];
+    [NTPCoordinator_ stop];
+    [side_swipe_mediator_ disconnect];
+    [bubble_presenter_ stop];
 
     BlockCleanupTest::TearDown();
   }
@@ -345,6 +365,27 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     return web_state;
   }
 
+  std::unique_ptr<web::WebState> CreateOffTheRecordWebState() {
+    web::WebState::CreateParams params(
+        chrome_browser_state_
+            ->CreateOffTheRecordBrowserStateWithTestingFactories({}));
+    auto web_state = web::WebState::Create(params);
+    AttachTabHelpers(web_state.get(), NO);
+    return web_state;
+  }
+
+  // Fakes loading the NTP for a given `web_state`.
+  void LoadNTP(web::WebState* web_state) {
+    web::FakeWebState fake_web_state;
+    fake_web_state.SetVisibleURL(GURL("chrome://newtab/"));
+    web::WebStateObserver* NTPHelper =
+        (web::WebStateObserver*)NewTabPageTabHelper::FromWebState(web_state);
+    // Use the fake_web_state to fake the NTPHelper into believing that the NTP
+    // has been loaded.
+    NTPHelper->PageLoaded(&fake_web_state,
+                          web::PageLoadCompletionStatus::SUCCESS);
+  }
+
   void ExpectNewTabInsertionAnimation(bool animated, ProceduralBlock block) {
     id mock_animation_view_class =
         OCMClassMock([ForegroundTabAnimationView class]);
@@ -358,6 +399,16 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     block();
 
     [mock_animation_view_class verify];
+  }
+
+  // Used as an OCMArg to check that the argument's `contentView` matches the
+  // return value of the given `expected_view` block.
+  id OCMArgWithContentView(UIView* (^expected_view)()) {
+    return [OCMArg checkWithBlock:^(UIView* view) {
+      UIView* content_view =
+          base::apple::ObjCCast<ForegroundTabAnimationView>(view).contentView;
+      return content_view == expected_view();
+    }];
   }
 
   MOCK_METHOD0(OnCompletionCalled, void());
@@ -379,16 +430,17 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   ToolbarCoordinator* toolbar_coordinator_;
   TabStripCoordinator* tab_strip_coordinator_;
   TabStripLegacyCoordinator* legacy_tab_strip_coordinator_;
-  SideSwipeController* side_swipe_controller_;
+  SideSwipeMediator* side_swipe_mediator_;
   BookmarksCoordinator* bookmarks_coordinator_;
   FullscreenController* fullscreen_controller_;
   TabEventsMediator* tab_events_mediator_;
+  NewTabPageCoordinator* NTPCoordinator_;
   UrlLoadingNotifierBrowserAgent* url_loading_notifier_browser_agent_;
   TabUsageRecorderBrowserAgent* tab_usage_recorder_browser_agent_;
-  WebNavigationBrowserAgent* web_navigation_browser_agent_;
   SafeAreaProvider* safe_area_provider_;
   PagePlaceholderBrowserAgent* page_placeholder_browser_agent_;
   id mockApplicationCommandHandler_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(BrowserViewControllerTest, TestWebStateSelected) {
@@ -454,13 +506,76 @@ TEST_F(BrowserViewControllerTest,
                      animated:NO
                    completion:nil];
 
-  OCMExpect([mockApplicationCommandHandler_ dismissModalDialogs]);
+  OCMExpect(
+      [mockApplicationCommandHandler_ dismissModalDialogsWithCompletion:nil]);
 
   // Present incognito authentication must dismiss presented state.
   [bvc_ setItemsRequireAuthentication:YES];
 
   // Verify that the command was dispatched.
   EXPECT_OCMOCK_VERIFY(mockApplicationCommandHandler_);
+}
+
+// Tests that an off-the-record web state can be created and inserted in the
+// browser view controller.
+TEST_F(BrowserViewControllerTest, didInsertOffTheRecordWebState) {
+  // The animation being tested only runs on the phone form factor.
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    return;
+  }
+  id container_view_mock = OCMPartialMock(container_.view);
+
+  // Add an off-the-record web state with supported tab helpers.
+  std::unique_ptr<web::WebState> web_state = CreateOffTheRecordWebState();
+  UIView* web_state_view = web_state->GetView();
+
+  // Insert in browser web state list.
+  [[container_view_mock expect] addSubview:OCMArgWithContentView(^{
+                                  return web_state_view;
+                                })];
+  InsertWebState(std::move(web_state));
+  EXPECT_OCMOCK_VERIFY(container_view_mock);
+}
+
+// Tests that when a webstate is inserted, the correct view is used during
+// the animation.
+TEST_F(BrowserViewControllerTest, ViewOnInsert) {
+  // The animation being tested only runs on the phone form factor.
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    return;
+  }
+
+  id container_view_mock = OCMPartialMock(container_.view);
+
+  // When inserting a non-ntp WebState, the WebState's view should be animated.
+  std::unique_ptr<web::WebState> web_state = CreateWebState();
+  UIView* web_state_view = web_state->GetView();
+  [[container_view_mock expect] addSubview:OCMArgWithContentView(^{
+                                  return web_state_view;
+                                })];
+  InsertWebState(std::move(web_state));
+  EXPECT_OCMOCK_VERIFY(container_view_mock);
+
+  // When inserting an NTP WebState, the NTP's view should be animated.
+  std::unique_ptr<web::WebState> ntp_web_state = CreateWebState();
+  LoadNTP(ntp_web_state.get());
+  [[container_view_mock expect] addSubview:OCMArgWithContentView(^{
+                                  return NTPCoordinator_.viewController.view;
+                                })];
+  InsertWebState(std::move(ntp_web_state));
+  EXPECT_OCMOCK_VERIFY(container_view_mock);
+
+  // When inserting a second NTP WebState, the NTP's view should be animated.
+  // In this case the NTP is already started, so we want to ensure that the
+  // correct view is used in this case too.
+  std::unique_ptr<web::WebState> ntp_web_state2 = CreateWebState();
+  LoadNTP(ntp_web_state2.get());
+  [[container_view_mock expect] addSubview:OCMArgWithContentView(^{
+                                  return NTPCoordinator_.viewController.view;
+                                })];
+  InsertWebState(std::move(ntp_web_state2));
+  EXPECT_OCMOCK_VERIFY(container_view_mock);
+  [NTPCoordinator_ stop];
 }
 
 }  // namespace

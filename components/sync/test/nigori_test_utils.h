@@ -10,8 +10,11 @@
 #include <vector>
 
 #include "base/time/time.h"
+#include "components/sync/engine/nigori/cross_user_sharing_public_key.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/engine/nigori/nigori.h"
+#include "components/sync/nigori/cross_user_sharing_keys.h"
+
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sync_pb {
@@ -53,17 +56,41 @@ KeyParamsForTesting ScryptPassphraseKeyParamsForTesting(
 
 // Builds NigoriSpecifics with following fields:
 // 1. encryption_keybag contains all keys derived from |keybag_keys_params|
-// and encrypted with a key derived from |keybag_decryptor_params|.
+// and encrypted with a key derived from |keystore_decryptor_params|.
 // 2. keystore_decryptor_token contains the key derived from
-// |keybag_decryptor_params| and encrypted with a key derived from
+// |keystore_decryptor_params| and encrypted with a key derived from
 // |keystore_key_params|.
 // 3. passphrase_type is KEYSTORE_PASSHPRASE.
 // 4. Other fields are default.
 // |keybag_keys_params| must be non-empty.
+// |cross_user_sharing_keys| can be empty and contains cross user sharing keys.
 sync_pb::NigoriSpecifics BuildKeystoreNigoriSpecifics(
     const std::vector<KeyParamsForTesting>& keybag_keys_params,
     const KeyParamsForTesting& keystore_decryptor_params,
-    const KeyParamsForTesting& keystore_key_params);
+    const KeyParamsForTesting& keystore_key_params,
+    const CrossUserSharingKeys& cross_user_sharing_keys =
+        CrossUserSharingKeys::CreateEmpty());
+
+// Builds NigoriSpecifics with following fields:
+// 1. encryption_keybag contains all keys derived from |keybag_keys_params|
+// and encrypted with a key derived from |keystore_decryptor_params|.
+// 2. keystore_decryptor_token contains the key derived from
+// |keystore_decryptor_params| and encrypted with a key derived from
+// |keystore_key_params|.
+// 3. passphrase_type is KEYSTORE_PASSHPRASE.
+// 4. Other fields are default.
+// |keybag_keys_params| must be non-empty.
+// |cross_user_sharing_keys| can be empty and contains cross user sharing keys.
+// |cross_user_sharing_public_key| is the public to register.
+// |cross_user_sharing_public_key_version| is the associated version of the
+// public key to register.
+sync_pb::NigoriSpecifics BuildKeystoreNigoriSpecificsWithCrossUserSharingKeys(
+    const std::vector<KeyParamsForTesting>& keybag_keys_params,
+    const KeyParamsForTesting& keystore_decryptor_params,
+    const KeyParamsForTesting& keystore_key_params,
+    const CrossUserSharingKeys& cross_user_sharing_keys,
+    const CrossUserSharingPublicKey& cross_user_sharing_public_key,
+    const uint32_t cross_user_sharing_public_key_version);
 
 // Builds NigoriSpecifics with following fields:
 // 1. encryption_keybag contains keys derived from |trusted_vault_keys| and

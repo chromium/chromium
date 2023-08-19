@@ -23,6 +23,9 @@ class ASH_EXPORT QuickActionControllerBase : public QuickActionItem::Delegate {
   // The view will be owned by views hierarchy. The view will be always deleted
   // after the controller is destructed.
   virtual QuickActionItem* CreateItem() = 0;
+
+  // Used to update the QuickActionItem UI properties.
+  virtual void UpdateQuickActionItemUi() = 0;
 };
 
 }  // namespace ash

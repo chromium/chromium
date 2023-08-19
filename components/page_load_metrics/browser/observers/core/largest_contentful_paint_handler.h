@@ -50,9 +50,13 @@ class ContentfulPaintTimingInfo {
              blink::LargestContentfulPaintType type,
              double image_bpp,
              const absl::optional<net::RequestPriority>& image_request_priority,
+             const absl::optional<base::TimeDelta>& image_discovery_time,
              const absl::optional<base::TimeDelta>& image_load_start,
              const absl::optional<base::TimeDelta>& image_load_end);
   absl::optional<base::TimeDelta> Time() const { return time_; }
+  absl::optional<base::TimeDelta> ImageDiscoveryTime() const {
+    return image_discovery_time_;
+  }
   absl::optional<base::TimeDelta> ImageLoadStart() const {
     return image_load_start_;
   }
@@ -70,9 +74,16 @@ class ContentfulPaintTimingInfo {
 
   // Returns true iff this object does not represent any paint.
   bool Empty() const {
-    // size_ and time_ should both be set or both be unset.
-    DCHECK((size_ != 0u && time_) || (size_ == 0u && !time_));
-    return !time_;
+    // We set timings at the renderer side only when size is >0. Therefore it
+    // could be either size == 0 and time is not set or size > 0 and time is
+    // set. Note that when time is set, it could be 0.
+    CHECK((size_ != 0u && time_.has_value()) ||
+          (size_ == 0u && !time_.has_value()));
+
+    // Returns if timing is not set because of 0 size.
+    // TODO(crbug.com/1473188) We should revisit if we should check timing being
+    // 0 too.
+    return (size_ == 0u && !time_.has_value());
   }
 
   // Returns true iff this object does not represent any paint OR represents an
@@ -95,6 +106,7 @@ class ContentfulPaintTimingInfo {
   double image_bpp_ = 0.0;
   absl::optional<net::RequestPriority> image_request_priority_;
   bool in_main_frame_;
+  absl::optional<base::TimeDelta> image_discovery_time_;
   absl::optional<base::TimeDelta> image_load_start_;
   absl::optional<base::TimeDelta> image_load_end_;
 };
@@ -177,6 +189,15 @@ class LargestContentfulPaintHandler {
     return main_frame_contentful_paint_.Image();
   }
 
+  void UpdateSoftNavigationLargestContentfulPaint(
+      const page_load_metrics::mojom::LargestContentfulPaintTiming&);
+
+  const ContentfulPaintTimingInfo& GetSoftNavigationLargestContentfulPaint()
+      const {
+    return soft_navigation_contentful_paint_candidate_
+        .MergeTextAndImageTiming();
+  }
+
  private:
   void RecordSubFrameTimingInternal(
       const page_load_metrics::mojom::LargestContentfulPaintTiming&
@@ -208,6 +229,9 @@ class LargestContentfulPaintHandler {
   // `cross_site_subframe_contentful_paint_` keeps track of the most plausible
   // LCP candidate computed from the cross-site subframes.
   ContentfulPaint cross_site_subframe_contentful_paint_;
+
+  // Keeps track of the LCP candidate of a soft navigation.
+  ContentfulPaint soft_navigation_contentful_paint_candidate_;
 
   // Used for Telemetry to distinguish the LCP events from different
   // navigations.

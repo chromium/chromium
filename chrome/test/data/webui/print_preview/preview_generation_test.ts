@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ColorMode, Destination, DestinationOrigin, DestinationState, Margins, MarginsType, NativeInitialSettings, NativeLayerImpl, PluginProxyImpl, PreviewTicket, PrintPreviewAppElement, PrintPreviewDestinationSettingsElement, Range, ScalingType} from 'chrome://print/print_preview.js';
+import {ColorMode, CustomMarginsOrientation, Destination, DestinationOrigin, DestinationState, Margins, MarginsType, NativeInitialSettings, NativeLayerImpl, PluginProxyImpl, PreviewTicket, PrintPreviewAppElement, PrintPreviewDestinationSettingsElement, Range, ScalingType} from 'chrome://print/print_preview.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 // <if expr="is_chromeos">
@@ -33,6 +33,7 @@ const preview_generation_test = {
     ChangeMarginsByPagesPerSheet: 'change margins by pages per sheet',
     ZeroDefaultMarginsClearsHeaderFooter:
         'zero default margins clears header/footer',
+    PageSizeCalculation: 'page size calculation',
   },
 };
 
@@ -703,4 +704,33 @@ suite(preview_generation_test.suiteName, function() {
         assertEquals(MarginsType.DEFAULT, page.getSettingValue('margins'));
         assertEquals(false, page.getSettingValue('headerFooter'));
       });
+
+  /**
+   * Validate that the page size calculation handles floating numbers correctly.
+   */
+  test(preview_generation_test.TestNames.PageSizeCalculation, async () => {
+    nativeLayer.setPageLayoutInfo({
+      marginTop: 28.333,
+      marginLeft: 28.333,
+      marginBottom: 28.333,
+      marginRight: 28.333,
+      contentWidth: 555.333,
+      contentHeight: 735.333,
+      printableAreaX: 0,
+      printableAreaY: 0,
+      printableAreaWidth: 612,
+      printableAreaHeight: 792,
+    });
+
+    await initialize();
+
+    assertEquals(612, page.$.documentInfo.pageSize.width);
+    assertEquals(792, page.$.documentInfo.pageSize.height);
+
+    const o = CustomMarginsOrientation;
+    assertEquals(28, page.$.documentInfo.margins.get(o.TOP));
+    assertEquals(28, page.$.documentInfo.margins.get(o.RIGHT));
+    assertEquals(28, page.$.documentInfo.margins.get(o.BOTTOM));
+    assertEquals(28, page.$.documentInfo.margins.get(o.LEFT));
+  });
 });

@@ -6,7 +6,7 @@
 #define UI_COLOR_COLOR_MIXERS_H_
 
 #include "base/component_export.h"
-#include "ui/color/color_provider_manager.h"
+#include "ui/color/color_provider_key.h"
 
 namespace ui {
 
@@ -14,8 +14,7 @@ class ColorProvider;
 
 // Adds all ui/-side color mixers to `provider`.
 COMPONENT_EXPORT(COLOR)
-void AddColorMixers(ColorProvider* provider,
-                    const ColorProviderManager::Key& key);
+void AddColorMixers(ColorProvider* provider, const ColorProviderKey& key);
 
 }  // namespace ui
 

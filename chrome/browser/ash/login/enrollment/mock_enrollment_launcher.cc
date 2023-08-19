@@ -11,7 +11,13 @@
 namespace ash {
 
 MockEnrollmentLauncher::MockEnrollmentLauncher() = default;
-MockEnrollmentLauncher::~MockEnrollmentLauncher() = default;
+
+MockEnrollmentLauncher::~MockEnrollmentLauncher() {
+  CHECK(!current_fake_launcher_)
+      << "Mock enrollment launcher must outlive all its fake proxies to ensure "
+         "it won't access dangling pointers.";
+  CHECK(!status_consumer_);
+}
 
 void MockEnrollmentLauncher::set_fake_launcher(
     FakeEnrollmentLauncher* fake_launcher,
@@ -26,6 +32,7 @@ void MockEnrollmentLauncher::unset_fake_launcher(
     return;
   }
 
+  current_fake_launcher_ = nullptr;
   status_consumer_ = nullptr;
 }
 

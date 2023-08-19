@@ -88,6 +88,17 @@ static hb_bool_t HarfBuzzGetGlyph(hb_font_t* hb_font,
   if (hb_font_data->range_set_ && !hb_font_data->range_set_->Contains(unicode))
     return false;
 
+  // If the system fonts do not have a glyph coverage for line separator
+  // (0x2028) or paragraph separator (0x2029), missing glyph would be displayed
+  // in Chrome instead. If the system font has l-sep and p-sep symbols for the
+  // 0x2028 and 0x2029 codepoints, they will be displayed, see
+  // https://crbug.com/550275. To prevent that, we are replacing line and
+  // paragraph separators with space, as it is said in unicode specification,
+  // compare: https://www.unicode.org/faq/unsup_char.html#2.
+  if (unicode == kLineSeparator || unicode == kParagraphSeparator) {
+    unicode = kSpaceCharacter;
+  }
+
   hb_bool_t hb_has_glyph = hb_font_get_glyph(
       hb_font_get_parent(hb_font), unicode, variation_selector, glyph);
 // MacOS CoreText API synthesizes GlyphID for several unicode codepoints,

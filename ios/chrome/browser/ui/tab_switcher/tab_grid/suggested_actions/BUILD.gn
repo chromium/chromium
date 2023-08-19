@@ -13,8 +13,6 @@ source_set("suggested_actions") {
     "suggested_actions_view_controller.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "resources",
     "//base",
@@ -31,7 +29,6 @@ source_set("suggested_actions") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "suggested_actions_view_controller_unittest.mm" ]
   deps = [

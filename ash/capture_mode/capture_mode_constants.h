@@ -126,9 +126,17 @@ constexpr float kOuterHightlightBorderThickness =
 // bounds of the bar. See `GetBarAnchorBoundsInScreen` for more details of the
 // bar's anchor bounds.
 constexpr int kCaptureBarBottomPadding = 16;
+constexpr int kGameCaptureBarBottomPadding = 24;
 
 // Height of the capture bar.
 constexpr int kCaptureBarHeight = 64;
+
+// The minimum distance from the top of the screen to the top of the settings
+// menu.
+constexpr int kMinDistanceFromSettingsToScreen = 8;
+
+// The minimum height of the settings menu while constrained and scrollable.
+constexpr int kSettingsMenuMinHeight = 50;
 
 }  // namespace ash::capture_mode
 

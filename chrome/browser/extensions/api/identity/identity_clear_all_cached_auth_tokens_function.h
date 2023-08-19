@@ -21,10 +21,6 @@ class IdentityClearAllCachedAuthTokensFunction : public ExtensionFunction {
 
   // ExtensionFunction:
   ResponseAction Run() override;
-
-  void OnCookiesDeleted(uint32_t num_deleted);
-
-  size_t cleaned_partitions_ = 0;
 };
 
 }  // namespace extensions

@@ -20,7 +20,7 @@ namespace switches {
 // alongside the definition of their values in the .cc file.
 
 #if BUILDFLAG(IS_ANDROID)
-BASE_DECLARE_FEATURE(kGaiaIdCacheInAccountManagerFacade);
+BASE_DECLARE_FEATURE(kIdentityStatusConsistency);
 #endif
 
 extern const char kClearTokenService[];
@@ -28,7 +28,7 @@ extern const char kClearTokenService[];
 extern const char kDisableSigninScopedDeviceId[];
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-BASE_DECLARE_FEATURE(kEnableBoundSessionCrendentials);
+BASE_DECLARE_FEATURE(kEnableBoundSessionCredentials);
 bool IsBoundSessionCredentialsEnabled();
 #endif
 
@@ -38,10 +38,16 @@ BASE_DECLARE_FEATURE(kForceDisableExtendedSyncPromos);
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 BASE_DECLARE_FEATURE(kForceStartupSigninPromo);
-BASE_DECLARE_FEATURE(kIdentityStatusConsistency);
+#endif
+
+#if BUILDFLAG(IS_IOS)
+// Experiment to test whether it's possible to finch FRE screen on iOS.
+BASE_DECLARE_FEATURE(kFinchIosFre);
 #endif
 
 BASE_DECLARE_FEATURE(kTangibleSync);
+
+BASE_DECLARE_FEATURE(kSearchEngineChoice);
 
 }  // namespace switches
 

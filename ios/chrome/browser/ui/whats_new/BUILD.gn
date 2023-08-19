@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("whats_new") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "whats_new_coordinator.h",
     "whats_new_coordinator.mm",
@@ -13,16 +12,23 @@ source_set("whats_new") {
     "whats_new_detail_view_controller.h",
     "whats_new_detail_view_controller.mm",
     "whats_new_detail_view_delegate.h",
+    "whats_new_instructions_coordinator.h",
+    "whats_new_instructions_coordinator.mm",
+    "whats_new_instructions_view_controller.h",
+    "whats_new_instructions_view_controller.mm",
     "whats_new_mediator.h",
     "whats_new_mediator.mm",
     "whats_new_mediator_consumer.h",
+    "whats_new_screenshot_view_controller.h",
+    "whats_new_screenshot_view_controller.mm",
     "whats_new_table_view_action_handler.h",
     "whats_new_table_view_controller.h",
     "whats_new_table_view_controller.mm",
     "whats_new_table_view_delegate.h",
   ]
   deps = [
-    ":feature_flags",
+    ":util",
+    "//base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/default_browser:utils",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
@@ -36,13 +42,16 @@ source_set("whats_new") {
     "//ios/chrome/browser/ui/promos_manager:promos",
     "//ios/chrome/browser/ui/whats_new/cells",
     "//ios/chrome/browser/ui/whats_new/data_source",
+    "//ios/chrome/browser/ui/whats_new/data_source:whats_new_item",
     "//ios/chrome/browser/url_loading",
     "//ios/chrome/browser/url_loading:url_loading",
     "//ios/chrome/common:button_config",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/elements",
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/common/ui/util",
+    "//ios/public/provider/chrome/browser/lottie:lottie_animation_api",
     "//ios/public/provider/chrome/browser/password_auto_fill:password_auto_fill_api",
     "//ui/base",
     "//ui/strings",
@@ -51,35 +60,24 @@ source_set("whats_new") {
   frameworks = [ "UIKit.framework" ]
 }
 
-source_set("feature_flags") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "feature_flags.h",
-    "feature_flags.mm",
-  ]
-  deps = [ "//base" ]
-}
-
 source_set("util") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "whats_new_util.h",
     "whats_new_util.mm",
   ]
   deps = [
     ":constants",
-    ":feature_flags",
     "//base",
     "//ios/chrome/browser/promos_manager",
     "//ios/chrome/browser/promos_manager:constants",
     "//ios/chrome/browser/promos_manager:features",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/ui/whats_new/data_source:whats_new_item",
   ]
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "constants.h",
     "constants.mm",

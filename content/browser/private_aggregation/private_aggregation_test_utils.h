@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_PRIVATE_AGGREGATION_PRIVATE_AGGREGATION_TEST_UTILS_H_
 #define CONTENT_BROWSER_PRIVATE_AGGREGATION_PRIVATE_AGGREGATION_TEST_UTILS_H_
 
+#include <set>
 #include <string>
 #include <vector>
 
@@ -13,7 +14,7 @@
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_budgeter.h"
 #include "content/browser/private_aggregation/private_aggregation_host.h"
-#include "content/browser/private_aggregation/private_aggregation_manager.h"
+#include "content/browser/private_aggregation/private_aggregation_manager_impl.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/test/test_content_browser_client.h"
@@ -33,6 +34,8 @@ class Origin;
 
 namespace content {
 
+class StoragePartitionImpl;
+
 class MockPrivateAggregationBudgeter : public PrivateAggregationBudgeter {
  public:
   MockPrivateAggregationBudgeter();
@@ -51,6 +54,18 @@ class MockPrivateAggregationBudgeter : public PrivateAggregationBudgeter {
                base::Time,
                StoragePartition::StorageKeyMatcherFunction,
                base::OnceClosure),
+              (override));
+
+  MOCK_METHOD(void,
+              GetAllDataKeys,
+              (base::OnceCallback<
+                  void(std::set<PrivateAggregationDataModel::DataKey>)>),
+              (override));
+
+  MOCK_METHOD(void,
+              DeleteByDataKey,
+              (const PrivateAggregationDataModel::DataKey& key,
+               base::OnceClosure callback),
               (override));
 };
 
@@ -82,10 +97,10 @@ class MockPrivateAggregationHost : public PrivateAggregationHost {
   TestBrowserContext test_browser_context_;
 };
 
-class MockPrivateAggregationManager : public PrivateAggregationManager {
+class MockPrivateAggregationManagerImpl : public PrivateAggregationManagerImpl {
  public:
-  MockPrivateAggregationManager();
-  ~MockPrivateAggregationManager() override;
+  explicit MockPrivateAggregationManagerImpl(StoragePartitionImpl* partition);
+  ~MockPrivateAggregationManagerImpl() override;
 
   MOCK_METHOD(bool,
               BindNewReceiver,
@@ -125,6 +140,12 @@ class MockPrivateAggregationContentBrowserClientBase : public SuperClass {
                content::RenderFrameHost* rfh,
                const url::Origin& top_frame_origin,
                const url::Origin& accessing_origin),
+              (override));
+  MOCK_METHOD(bool,
+              IsPrivacySandboxReportingDestinationAttested,
+              (content::BrowserContext * browser_context,
+               const url::Origin& destination_origin,
+               content::PrivacySandboxInvokingAPI invoking_api),
               (override));
 };
 

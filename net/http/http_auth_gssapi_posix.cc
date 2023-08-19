@@ -433,7 +433,7 @@ base::Value::Dict BindFailureParams(base::StringPiece library_name,
 
 void* BindUntypedMethod(base::NativeLibrary lib,
                         base::StringPiece library_name,
-                        base::StringPiece method,
+                        const char* method,
                         const NetLogWithSource& net_log) {
   void* ptr = base::GetFunctionPointerFromNativeLibrary(lib, method);
   if (ptr == nullptr) {
@@ -446,7 +446,7 @@ void* BindUntypedMethod(base::NativeLibrary lib,
 template <typename T>
 bool BindMethod(base::NativeLibrary lib,
                 base::StringPiece library_name,
-                base::StringPiece method,
+                const char* method,
                 T* receiver,
                 const NetLogWithSource& net_log) {
   *receiver = reinterpret_cast<T>(

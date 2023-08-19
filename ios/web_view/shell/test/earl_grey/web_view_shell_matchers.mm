@@ -6,14 +6,10 @@
 
 #import "ios/testing/earl_grey/earl_grey_test.h"
 
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/web_view/shell/shell_view_controller.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace ios_web_view {
 
@@ -26,7 +22,7 @@ id<GREYMatcher> AddressFieldText(const std::string& text) {
             isEqualToString:kWebViewShellAddressFieldAccessibilityLabel]) {
       return NO;
     }
-    UITextField* text_field = base::mac::ObjCCastStrict<UITextField>(view);
+    UITextField* text_field = base::apple::ObjCCastStrict<UITextField>(view);
     NSString* error_message = [NSString
         stringWithFormat:
             @"Address field text did not match. expected: %@, actual: %@",

@@ -12,6 +12,7 @@ import("//ppapi/native_client/nacl_test_data.gni")
 group("nacl") {
   newlib = "//build/toolchain/nacl:clang_newlib_${nacl_target_cpu}"
   pnacl = "//build/toolchain/nacl:newlib_pnacl"
+  test_irt = "//build/toolchain/nacl:test_irt_${nacl_target_cpu}"
   data_deps = [
     ":exit_status_test($newlib)",
     ":exit_status_test($pnacl)",
@@ -41,6 +42,7 @@ group("nacl") {
     ":ppapi_crash_via_check_failure($pnacl)",
     ":ppapi_crash_via_exit_call($newlib)",
     ":ppapi_crash_via_exit_call($pnacl)",
+    ":ppapi_crash_via_libcxx_assert_failure($test_irt)",
     ":ppapi_extension_mime_handler($newlib)",
     ":ppapi_ppb_core($newlib)",
     ":ppapi_ppb_core($pnacl)",
@@ -52,6 +54,7 @@ group("nacl") {
     ":ppapi_progress_events($pnacl)",
     ":shared_test_files($newlib)",
     ":shared_test_files($pnacl)",
+    ":shared_test_files($test_irt)",
     ":simple_test($newlib)",
     ":simple_test($pnacl)",
     ":sysconf_nprocessors_onln_test($newlib)",
@@ -259,6 +262,13 @@ if (is_nacl) {
     sources = [ "crash/ppapi_crash_via_exit_call.cc" ]
     destination_dir = "nacl_test_data"
     deps = [ ":ppapi_test_lib" ]
+  }
+
+  nacl_test_data("ppapi_crash_via_libcxx_assert_failure") {
+    sources = [ "crash/ppapi_crash_via_libcxx_assert_failure.cc" ]
+    destination_dir = "nacl_test_data"
+    deps = [ ":ppapi_test_lib" ]
+    test_files = [ "crash/ppapi_crash_via_libcxx_assert_failure.html" ]
   }
 
   nacl_test_data("ppapi_crash_in_callback") {

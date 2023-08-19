@@ -39,12 +39,10 @@ class KeyRotationLauncherImpl : public KeyRotationLauncher {
   // KeyRotationLauncher:
   void LaunchKeyRotation(const std::string& nonce,
                          KeyRotationCommand::Callback callback) override;
-  void SynchronizePublicKey(const SigningKeyPair& key_pair,
+  void SynchronizePublicKey(scoped_refptr<SigningKeyPair> key_pair,
                             SynchronizationCallback callback) override;
 
  private:
-  absl::optional<std::string> GetDmServerUrl();
-
   void OnUploadRequestCreated(
       SynchronizationCallback callback,
       absl::optional<const KeyUploadRequest> upload_request);

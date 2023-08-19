@@ -4,7 +4,7 @@
 
 #import <XCTest/XCTest.h>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/metrics/field_trial.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -12,6 +12,7 @@
 #import "components/version_info/version_info.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/ui/webui/web_ui_test_utils.h"
+#import "ios/chrome/common/channel_info.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -22,10 +23,6 @@
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using chrome_test_util::BackButton;
 using chrome_test_util::ForwardButton;
@@ -278,6 +275,48 @@ using chrome_test_util::ForwardButton;
   // Validates that some of the expected text on the page exists.
   [ChromeEarlGrey waitForWebStateContainingText:"Variations"];
   [ChromeEarlGrey waitForWebStateContainingText:"Autofill Internals"];
+}
+
+// Test chrome://userdefaults-internals page.
+- (void)testChromeUserdefaultsInternalSite {
+  if (GetChannel() == version_info::Channel::STABLE) {
+    // This page is not supported on STABLE build.
+    return;
+  }
+
+  // Start with NTP and load chrome://userdefaults-internals.
+  GURL URL = WebUIPageUrlWithHost(kChromeUIUserDefaultsInternalsHost);
+  [ChromeEarlGrey loadURL:URL];
+
+  // Autofill-Internals stores the log filter configuration in the URL's
+  // fragment identifier (after the hash).
+  GREYAssert(WaitForOmniboxURLString(URL.spec()),
+             @"Omnibox did not contain URL");
+
+  // Validates that some of the expected text on the page exists.
+  [ChromeEarlGrey waitForWebStateContainingText:"List of user defaults:"];
+}
+
+// Test chrome://userdefaults-internals page in incognito.
+- (void)testChromeUserdefaultsInternalIncognitoSite {
+  if (GetChannel() == version_info::Channel::STABLE) {
+    // This page is not supported on STABLE build.
+    return;
+  }
+
+  // Start with incognito NTP and load chrome://userdefaults-internals.
+  GURL URL = WebUIPageUrlWithHost(kChromeUIUserDefaultsInternalsHost);
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey loadURL:URL];
+
+  // Autofill-Internals stores the log filter configuration in the URL's
+  // fragment identifier (after the hash).
+  GREYAssert(WaitForOmniboxURLString(URL.spec()),
+             @"Omnibox did not contain URL");
+
+  // Validates that some of the expected text on the page exists.
+  [ChromeEarlGrey waitForWebStateContainingText:
+                      "This page is not available in incognito mode."];
 }
 
 @end

@@ -47,7 +47,7 @@ def SetExtraBrowserOptionsForMemoryMeasurement(options):
   options.flush_os_page_caches_on_start = True
 
 
-@benchmark.Info(emails=['erikchen@chromium.org'])
+@benchmark.Info(emails=['lizeb@chromium.org'])
 class MemoryBenchmarkDesktop(perf_benchmark.PerfBenchmark):
   """Measure memory usage on synthetic sites."""
   options = {'pageset_repeat': 5}

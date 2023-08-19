@@ -13,20 +13,14 @@
 namespace invalidation {
 
 ProfileInvalidationProvider::ProfileInvalidationProvider(
-    std::unique_ptr<InvalidationService> invalidation_service,
     std::unique_ptr<IdentityProvider> identity_provider,
     CustomSenderInvalidationServiceFactory
         custom_sender_invalidation_service_factory)
     : identity_provider_(std::move(identity_provider)),
-      invalidation_service_(std::move(invalidation_service)),
       custom_sender_invalidation_service_factory_(
           std::move(custom_sender_invalidation_service_factory)) {}
 
 ProfileInvalidationProvider::~ProfileInvalidationProvider() = default;
-
-InvalidationService* ProfileInvalidationProvider::GetInvalidationService() {
-  return invalidation_service_.get();
-}
 
 IdentityProvider* ProfileInvalidationProvider::GetIdentityProvider() {
   return identity_provider_.get();
@@ -47,7 +41,6 @@ ProfileInvalidationProvider::GetInvalidationServiceForCustomSender(
 }
 
 void ProfileInvalidationProvider::Shutdown() {
-  invalidation_service_.reset();
   custom_sender_invalidation_services_.clear();
   custom_sender_invalidation_service_factory_.Reset();
 }

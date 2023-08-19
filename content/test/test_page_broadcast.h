@@ -43,6 +43,8 @@ class TestPageBroadcast : public blink::mojom::PageBroadcast {
       blink::mojom::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces,
       blink::mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces)
       override;
+  void UpdatePageBrowsingContextGroup(const blink::BrowsingContextGroupInfo&
+                                          browsing_context_group_info) override;
 
   mojo::AssociatedReceiver<blink::mojom::PageBroadcast> receiver_;
 };

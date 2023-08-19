@@ -25,7 +25,7 @@ void SetupAccessibilityDisplayOptionsNotifier() {
   //
   // BrowserAccessibilityStateImpl is a deliberately leaked singleton, so we
   // don't need to record the notification token for later cleanup.
-  [[[NSWorkspace sharedWorkspace] notificationCenter]
+  [NSWorkspace.sharedWorkspace.notificationCenter
       addObserverForName:
           NSWorkspaceAccessibilityDisplayOptionsDidChangeNotification
                   object:nil

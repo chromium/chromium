@@ -31,8 +31,8 @@ import {AxeCoreTestRunner} from 'axe_core_test_runner';
   async function testPatternError() {
     const ignoreListEditor = ignoreListWidget.list.editor;
     const patternInput = ignoreListEditor.controls[0];
-    // Blur patternInput to run validator
-    patternInput.blur();
+    // Send input event to patternInput to run validator
+    patternInput.dispatchEvent(new Event('input'));
 
     const errorMessage = ignoreListEditor.errorMessageContainer.textContent;
     TestRunner.addResult(`Error message: ${errorMessage}`);

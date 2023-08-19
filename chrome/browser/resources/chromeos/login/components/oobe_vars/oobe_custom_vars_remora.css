@@ -40,11 +40,17 @@
 
       --oobe-button-font-family: "Google Sans", Roboto, sans-serif;
       --oobe-button-font-size: 22px;
+      --oobe-button-font-weight: 500;
 
       --oobe-select-font-size: 18px;
       --oobe-select-line-height: 24px;
 
+      --oobe-welcome-header-font-size: 36px;
       --oobe-welcome-header-font-weight: 400; /* regular */
+      --oobe-welcome-header-line-height: 44px;
+
+      --oobe-welcome-subheader-font-size: 24px;
+      --oobe-welcome-subheader-line-height: 32px;
 
       --oobe-content-dialog-font-family: var(--oobe-default-font-family);
       --oobe-content-dialog-font-size: var(--oobe-default-font-size);
@@ -61,6 +67,52 @@
       --oobe-modal-dialog-content-font-size: var(--oobe-default-font-size);
       --oobe-modal-dialog-content-font-weight: var(--oobe-default-font-weight);
       --oobe-modal-dialog-content-line-height: var(--oobe-default-line-height);
+
+      --oobe-sync-consent-list-item-title-font-size: 14px;
+      --oobe-sync-consent-list-item-title-font-weight: 500;
+      --oobe-sync-consent-list-item-title-line-height: 24px;
+
+      --oobe-sync-consent-card-title-font: var(--cros-headline-1-font);
+      --oobe-sync-consent-card-subtitle-font: var(--cros-body-1-font);
+      --oobe-sync-consent-tooltip-text-font: var(--cros-body-2-font);
+
+      --oobe-hw-data-collection-usage-line-height: 18px;
+
+      --oobe-smart-privacy-item-title-font-size: 14px;
+      --oobe-smart-privacy-item-title-font-weight: 500; /* roboto-medium */
+      --oobe-smart-privacy-item-title-line-height: 24px;
+
+      --oobe-enable-debugging-font-size: 12px;
+
+      --oobe-demo-preferences-selection-title-font-size: 13px;
+      --oobe-demo-preferences-number-input-font-size: 10px;
+
+      --oobe-gesture-navigation-list-item-font-size: 15px;
+
+      --oobe-encryption-migration-warning-line-height: 22px;
+
+      --oobe-offline-ad-login-select-title-font-size: 13px;
+
+      --oobe-reset-firmware-update-line-height: 20px;
+
+      --oobe-guest-tos-terms-title-font-family: var(--oobe-header-font-family);
+      --oobe-guest-tos-terms-title-font-size: 18px;
+      --oobe-guest-tos-terms-title-font-weight: var(--oobe-header-font-weight);
+      --oobe-guest-tos-terms-title-line-height: 24px;
+
+      --oobe-consolidated-consent-terms-title-font-family:
+          var(--oobe-header-font-family);
+      --oobe-consolidated-consent-terms-title-font-size: 18px;
+      --oobe-consolidated-consent-terms-title-font-weight:
+          var(--oobe-header-font-weight);
+      --oobe-consolidated-consent-terms-title-line-height: 24px;
+
+      --oobe-optin-row-font-size: 13px;
+
+      --oobe-optin-title-font-family: var(--oobe-default-font-family);
+      --oobe-optin-title-font-weight: var(--oobe-header-font-weight);
+
+      --oobe-autolaunch-app-name-font-size: 22px;
 
       /* Select */
       --oobe-select-height: 44px;

@@ -255,8 +255,6 @@ TEST_F(RotationLockFeaturePodControllerQsRevampTest, CreateTileInTabletMode) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   SetUpController();
   EXPECT_TRUE(feature_tile_->GetVisible());
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
-  EXPECT_FALSE(feature_tile_->GetVisible());
 }
 
 // Tests that enabling tablet mode changes the tile visibility.
@@ -265,8 +263,16 @@ TEST_F(RotationLockFeaturePodControllerQsRevampTest,
   SetUpController();
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   EXPECT_TRUE(feature_tile_->GetVisible());
+
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  // Set up the controller again, this simulates the bubble being closed when
+  // tablet mode changes.
+  SetUpController();
   EXPECT_FALSE(feature_tile_->GetVisible());
+
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  SetUpController();
+  EXPECT_TRUE(feature_tile_->GetVisible());
 }
 
 TEST_F(RotationLockFeaturePodControllerQsRevampTest, OnIconPressed) {

@@ -31,7 +31,6 @@ namespace device {
 class CardboardImageTransport;
 class CardboardImageTransportFactory;
 class CardboardSdk;
-class XrJavaCoordinator;
 
 using CardboardRequestSessionCallback =
     base::OnceCallback<void(mojom::XRRuntimeSessionResultPtr)>;
@@ -51,7 +50,6 @@ class CardboardRenderLoop : public base::android::JavaHandlerThread,
 
   void CreateSession(CardboardRequestSessionCallback session_request_callback,
                      base::OnceClosure session_shutdown_callback,
-                     XrJavaCoordinator* java_coordinator,
                      CardboardSdk* cardboard_sdk,
                      gfx::AcceleratedWidget drawing_widget,
                      const gfx::Size& frame_size,
@@ -61,9 +59,6 @@ class CardboardRenderLoop : public base::android::JavaHandlerThread,
   // mojom::XRFrameDataProvider
   void GetFrameData(mojom::XRFrameDataRequestOptionsPtr options,
                     GetFrameDataCallback callback) override;
-  void SetInputSourceButtonListener(
-      mojo::PendingAssociatedRemote<device::mojom::XRInputSourceButtonListener>
-          input_listener_remote) override;
 
   void GetEnvironmentIntegrationProvider(
       mojo::PendingAssociatedReceiver<

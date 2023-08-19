@@ -15,6 +15,8 @@ namespace ash {
 // key label.
 const char kCryptohomeGaiaKeyLabel[] = "gaia";
 
+const char kCryptohomeLocalPasswordKeyLabel[] = "local-password";
+
 const char kCryptohomeGaiaKeyLegacyLabelPrefix[] = "legacy-";
 
 const char kCryptohomePinLabel[] = "pin";

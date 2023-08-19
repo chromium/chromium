@@ -55,8 +55,8 @@ class WEBDATA_EXPORT WebDatabaseTable {
   // class exists. Since lifetime of WebDatabaseTable objects slightly
   // exceeds that of WebDatabase, they should not be used in
   // ~WebDatabaseTable.
-  raw_ptr<sql::Database, DanglingUntriaged> db_;
-  raw_ptr<sql::MetaTable, DanglingUntriaged> meta_table_;
+  raw_ptr<sql::Database, AcrossTasksDanglingUntriaged> db_;
+  raw_ptr<sql::MetaTable, AcrossTasksDanglingUntriaged> meta_table_;
 };
 
 #endif  // COMPONENTS_WEBDATA_COMMON_WEB_DATABASE_TABLE_H_

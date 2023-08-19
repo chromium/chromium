@@ -36,9 +36,8 @@ class Time;
 
 namespace web_app {
 
-class FileUtilsWrapper;
 class WebAppInstallManager;
-class WebAppRegistrar;
+class WebAppProvider;
 
 using HomeTabIconBitmaps = std::vector<SkBitmap>;
 using SquareSizeDip = int;
@@ -51,13 +50,10 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
   using ReadImageSkiaCallback =
       base::OnceCallback<void(gfx::ImageSkia image_skia)>;
 
-  WebAppIconManager(Profile* profile, scoped_refptr<FileUtilsWrapper> utils);
+  explicit WebAppIconManager(Profile* profile);
   WebAppIconManager(const WebAppIconManager&) = delete;
   WebAppIconManager& operator=(const WebAppIconManager&) = delete;
   ~WebAppIconManager() override;
-
-  void SetSubsystems(WebAppRegistrar* registrar,
-                     WebAppInstallManager* install_manager);
 
   using WriteDataCallback = base::OnceCallback<void(bool success)>;
 
@@ -69,6 +65,7 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
                  WriteDataCallback callback);
   void DeleteData(AppId app_id, WriteDataCallback callback);
 
+  void SetProvider(base::PassKey<WebAppProvider>, WebAppProvider& provider);
   void Start();
   void Shutdown();
 
@@ -191,9 +188,9 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
                          ReadIconsCallback callback);
 
   // Reads multiple densities of the icon for each supported UI scale factor.
-  // See ui/base/layout.h. Returns null image in |callback| if no icons found
-  // for all supported UI scale factors (matches only bigger icons, no
-  // upscaling).
+  // See ui/base/resource/resource_scale_factor.h. Returns null image in
+  // `callback` if no icons found for all supported UI scale factors (matches
+  // only bigger icons, no upscaling).
   void ReadUiScaleFactorsIcons(const AppId& app_id,
                                IconPurpose purpose,
                                SquareSizeDip size_in_dip,
@@ -241,10 +238,9 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
   void OnMonochromeIconConverted(const AppId& app_id,
                                  gfx::ImageSkia converted_image);
 
-  raw_ptr<WebAppRegistrar, DanglingUntriaged> registrar_;
-  raw_ptr<WebAppInstallManager, DanglingUntriaged> install_manager_;
+  raw_ptr<WebAppProvider> provider_ = nullptr;
+
   base::FilePath web_apps_directory_;
-  scoped_refptr<FileUtilsWrapper> utils_;
   scoped_refptr<base::SequencedTaskRunner> icon_task_runner_;
 
   base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>

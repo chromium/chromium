@@ -1,0 +1,35 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+import "services/network/public/mojom/ip_endpoint.mojom";
+
+// DnsConfig stores configuration of the system resolver.
+// Partially type-mapped to net::DnsConfig for DnsConfigServiceAndroid.
+// See DnsConfigServiceAndroid::ConfigReader::WorkItem::DoWork for detail.
+struct DnsConfig {
+  // List of name server addresses.
+  array<IPEndPoint> nameservers;
+
+   // Status of system DNS-over-TLS (DoT).
+  bool dns_over_tls_active;
+  string dns_over_tls_hostname;
+
+  // Suffix search list; used on first lookup when number of dots in given name
+  // is less than `ndots` in net::DnsConfig.
+  array<string> search;
+
+  // True if there are options set in the system configuration that are not yet
+  // supported by DnsClient.
+  bool unhandled_options = false;
+};
+
+// Interface listening for changes to system DNS configuration.
+// TODO(https://crbug.com/1320187): Implement net/dns/dns_config_service_mojo.cc
+interface SystemDnsConfigObserver {
+  // Called on loading new config, including the initial read once the first
+  // valid config has been read.
+  OnConfigChanged(DnsConfig config);
+};

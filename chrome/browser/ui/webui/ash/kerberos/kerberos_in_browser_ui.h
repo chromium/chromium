@@ -38,8 +38,6 @@ class KerberosInBrowserUI : public ui::WebDialogUI {
   ~KerberosInBrowserUI() override;
 
  private:
-  void OnManageTickets(const base::Value::List&);
-
   base::WeakPtrFactory<KerberosInBrowserUI> weak_factory_{this};
 };
 

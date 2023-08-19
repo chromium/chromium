@@ -50,6 +50,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.Promise;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -71,6 +72,8 @@ import org.chromium.chrome.browser.enterprise.util.FakeEnterpriseInfo;
 import org.chromium.chrome.browser.firstrun.FirstRunActivityTestObserver.ScopedObserverData;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
+import org.chromium.chrome.browser.partnercustomizations.BasePartnerBrowserCustomizationIntegrationTestRule;
+import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.DefaultSearchEngineDialogHelperUtils;
@@ -118,6 +121,10 @@ public class FirstRunIntegrationTest {
     @Rule
     public TestRule mCommandLineFlagsRule = CommandLineFlags.getTestRule();
 
+    @Rule
+    public BasePartnerBrowserCustomizationIntegrationTestRule mCustomizationRule =
+            new BasePartnerBrowserCustomizationIntegrationTestRule();
+
     @Mock
     private ExternalAuthUtils mExternalAuthUtilsMock;
     @Mock
@@ -146,7 +153,6 @@ public class FirstRunIntegrationTest {
         FirstRunStatus.setFirstRunSkippedByPolicy(false);
         FirstRunUtils.setDisableDelayOnExitFreForTest(true);
         FirstRunActivity.setObserverForTest(mTestObserver);
-        FirstRunActivityBase.setPolicyLoadListenerFactoryForTesting(null);
 
         mInstrumentation = InstrumentationRegistry.getInstrumentation();
         mContext = mInstrumentation.getTargetContext();
@@ -175,11 +181,7 @@ public class FirstRunIntegrationTest {
         });
 
         FirstRunStatus.setFirstRunSkippedByPolicy(false);
-        FirstRunUtils.setDisableDelayOnExitFreForTest(false);
-        FirstRunAppRestrictionInfo.setInitializedInstanceForTest(null);
-        EnterpriseInfo.setInstanceForTest(null);
         AccountManagerFacadeProvider.resetInstanceForTests();
-        FirstRunFlowSequencer.setDelegateForTesting(null);
     }
 
     private ActivityMonitor getMonitor(Class activityClass) {
@@ -238,6 +240,13 @@ public class FirstRunIntegrationTest {
 
     private void launchViewIntent(String url) {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        intent.setPackage(mContext.getPackageName());
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        mContext.startActivity(intent);
+    }
+
+    private void launchMainIntent() {
+        Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.setPackage(mContext.getPackageName());
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         mContext.startActivity(intent);
@@ -330,6 +339,22 @@ public class FirstRunIntegrationTest {
         Mockito.verify(mAccountManagerFacade, atLeastOnce()).getAccounts();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mAccountsPromise.fulfill(Collections.emptyList()));
+    }
+
+    @Test
+    @MediumTest
+    public void startPartnerCustomizationDuringFRE() {
+        launchFirstRunActivity();
+        CriteriaHelper.pollInstrumentationThread(
+                () -> PartnerBrowserCustomizations.getInstance().isInitialized());
+    }
+
+    @Test
+    @MediumTest
+    public void startPartnerCustomizationFromMainIntent() {
+        launchMainIntent();
+        CriteriaHelper.pollInstrumentationThread(
+                () -> PartnerBrowserCustomizations.getInstance().isInitialized());
     }
 
     @Test
@@ -498,9 +523,9 @@ public class FirstRunIntegrationTest {
     private void initializePreferences(FirstRunPagesTestCase testCase) {
         if (testCase.cctTosDisabled()) skipTosDialogViaPolicy();
 
-        TestFirstRunFlowSequencerDelegate delegate =
-                new TestFirstRunFlowSequencerDelegate(testCase);
-        FirstRunFlowSequencer.setDelegateForTesting(delegate);
+        FirstRunFlowSequencer.setDelegateFactoryForTesting(
+                (profileSupplier)
+                        -> new TestFirstRunFlowSequencerDelegate(testCase, profileSupplier));
 
         setUpLocaleManagerDelegate(testCase.searchPromoType());
     }
@@ -765,7 +790,7 @@ public class FirstRunIntegrationTest {
                     ((SigninFirstRunFragment) firstRunActivity.getCurrentFragmentForTesting())
                             .getView()
                             .findViewById(R.id.fre_native_and_policy_load_progress_spinner);
-            // Replace the progress bar with a dummy to allow other checks. Currently the
+            // Replace the progress bar with a placeholder to allow other checks. Currently the
             // progress bar cannot be stopped otherwise due to some espresso issues (crbug/1115067).
             progressBar.setIndeterminateDrawable(
                     new ColorDrawable(SemanticColorUtils.getDefaultBgColor(firstRunActivity)));
@@ -1229,7 +1254,9 @@ public class FirstRunIntegrationTest {
             extends FirstRunFlowSequencer.FirstRunFlowSequencerDelegate {
         private FirstRunPagesTestCase mTestCase;
 
-        public TestFirstRunFlowSequencerDelegate(FirstRunPagesTestCase testCase) {
+        public TestFirstRunFlowSequencerDelegate(
+                FirstRunPagesTestCase testCase, OneshotSupplier<Profile> profileSupplier) {
+            super(profileSupplier);
             mTestCase = testCase;
         }
 

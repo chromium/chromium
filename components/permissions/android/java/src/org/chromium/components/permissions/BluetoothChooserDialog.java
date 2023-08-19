@@ -478,7 +478,7 @@ public class BluetoothChooserDialog
         }
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
     public interface Natives {
         void onDialogFinished(long nativeBluetoothChooserAndroid, int eventType, String deviceId);

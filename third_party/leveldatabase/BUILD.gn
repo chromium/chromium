@@ -123,8 +123,8 @@ component("leveldatabase") {
     ":leveldb_component_config",
   ]
 
+  public_deps = [ "//base" ]
   deps = [
-    "//base",
     "//build:chromeos_buildflags",
     "//components/services/storage/public/cpp/filesystem",
     "//third_party/crc32c",
@@ -160,8 +160,8 @@ static_library("leveldb_static") {
 
   public_configs = [ ":leveldb_config" ]
 
+  public_deps = [ "//base" ]
   deps = [
-    "//base",
     "//build:chromeos_buildflags",
     "//components/services/storage/public/cpp/filesystem",
     "//third_party/crc32c",

@@ -55,7 +55,7 @@ class DraggedIsolatedFileSystemImpl final
 
   static DraggedIsolatedFileSystemImpl* From(DataObject*);
 
-  DraggedIsolatedFileSystemImpl() : Supplement(nullptr) {}
+  explicit DraggedIsolatedFileSystemImpl(DataObject& data_object);
 
   void Trace(Visitor*) const override;
 

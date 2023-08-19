@@ -225,4 +225,9 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
         // the browser.
         return true;
     }
+
+    @Override
+    public String getSelfScheme() {
+        return IntentHandler.GOOGLECHROME_SCHEME;
+    }
 }

@@ -14,10 +14,14 @@
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/device/geolocation/geolocation_provider.h"
 #include "services/device/public/cpp/geolocation/location_provider.h"
 #include "services/device/public/mojom/geolocation_control.mojom.h"
+#include "services/device/public/mojom/geolocation_internals.mojom.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
 
 namespace base {
@@ -41,6 +45,7 @@ using CustomLocationProviderCallback =
 
 class GeolocationProviderImpl : public GeolocationProvider,
                                 public mojom::GeolocationControl,
+                                public mojom::GeolocationInternals,
                                 public base::Thread {
  public:
   // GeolocationProvider implementation:
@@ -84,6 +89,9 @@ class GeolocationProviderImpl : public GeolocationProvider,
   void BindGeolocationControlReceiver(
       mojo::PendingReceiver<mojom::GeolocationControl> receiver);
 
+  void BindGeolocationInternalsReceiver(
+      mojo::PendingReceiver<mojom::GeolocationInternals> receiver);
+
   // mojom::GeolocationControl implementation:
   void UserDidOptIntoLocationServices() override;
 
@@ -98,6 +106,15 @@ class GeolocationProviderImpl : public GeolocationProvider,
   // Safe to call while there are no GeolocationProviderImpl clients
   // registered.
   void SetArbitratorForTesting(std::unique_ptr<LocationProvider> arbitrator);
+
+  // mojom::GeolocationInternals implementation:
+  void AddInternalsObserver(
+      mojo::PendingRemote<mojom::GeolocationInternalsObserver> observer,
+      AddInternalsObserverCallback callback) override;
+
+  // Calls OnInternalsUpdated on the geolocation thread to simulate updated
+  // diagnostics in tests.
+  void SimulateInternalsUpdatedForTesting();
 
  private:
   friend struct base::DefaultSingletonTraits<GeolocationProviderImpl>;
@@ -115,8 +132,9 @@ class GeolocationProviderImpl : public GeolocationProvider,
   void StopProviders();
 
   // Starts the geolocation providers or updates their options (delegates to
-  // arbitrator).
-  void StartProviders(bool enable_high_accuracy);
+  // arbitrator). If `enable_diagnostics` is true, also enables geolocation
+  // diagnostics.
+  void StartProviders(bool enable_high_accuracy, bool enable_diagnostics);
 
   // Updates the providers on the geolocation thread, which must be running.
   void InformProvidersPermissionGranted();
@@ -127,6 +145,23 @@ class GeolocationProviderImpl : public GeolocationProvider,
   // Thread
   void Init() override;
   void CleanUp() override;
+
+  // Notifies internals observers that new diagnostic data is available. Must be
+  // called on the main thread.
+  void NotifyInternalsUpdated(mojom::GeolocationDiagnosticsPtr diagnostics);
+
+  // Called on the main thread when an internals observer disconnects.
+  void OnInternalsObserverDisconnected(mojo::RemoteSetElementId element_id);
+
+  // Called on the geolocation thread when new diagnostic data is available.
+  void OnInternalsUpdated();
+
+  // Enables geolocation diagnostics and returns the most recent diagnostic
+  // data. Must be called on the geolocation thread.
+  mojom::GeolocationDiagnosticsPtr EnableAndGetDiagnosticsOnGeolocationThread();
+
+  // Disables geolocation diagnostics. Must be called on the geolocation thread.
+  void DisableDiagnosticsOnGeolocationThread();
 
   base::RepeatingCallbackList<void(const mojom::GeopositionResult&)>
       high_accuracy_callbacks_;
@@ -145,7 +180,14 @@ class GeolocationProviderImpl : public GeolocationProvider,
   // Only to be used on the geolocation thread.
   std::unique_ptr<LocationProvider> arbitrator_;
 
-  mojo::Receiver<mojom::GeolocationControl> receiver_{this};
+  mojo::Receiver<mojom::GeolocationControl> control_receiver_{this};
+
+  mojo::ReceiverSet<mojom::GeolocationInternals> internals_receivers_;
+  mojo::RemoteSet<mojom::GeolocationInternalsObserver> internals_observers_;
+
+  // If enabled, calling OnInternalsUpdated collects diagnostic information and
+  // sends it to `internals_observers_`.
+  bool diagnostics_enabled_ = false;
 };
 
 }  // namespace device

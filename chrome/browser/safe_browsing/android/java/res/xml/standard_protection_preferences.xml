@@ -14,12 +14,14 @@ found in the LICENSE file.
         app:allowDividerBelow="false" />
 
     <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="bullet_one"
         android:summary="@string/safe_browsing_standard_protection_bullet_one"
         android:icon="@drawable/ic_security_grey"
         app:iconTint="@color/default_icon_color_tint_list"
         app:allowDividerBelow="false" />
 
     <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="bullet_two"
         android:summary="@string/safe_browsing_standard_protection_bullet_two"
         android:icon="@drawable/ic_data_viz_grey"
         app:iconTint="@color/default_icon_color_tint_list"

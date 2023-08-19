@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/barrier_closure.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -17,15 +18,18 @@
 #include "chrome/browser/notifications/notification_platform_bridge_mac_utils.h"
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_features.h"
 #include "third_party/blink/public/common/notifications/notification_constants.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 
 NotificationPlatformBridgeMac::NotificationPlatformBridgeMac(
     std::unique_ptr<NotificationDispatcherMac> banner_dispatcher,
-    std::unique_ptr<NotificationDispatcherMac> alert_dispatcher)
+    std::unique_ptr<NotificationDispatcherMac> alert_dispatcher,
+    WebAppDispatcherFactory web_app_dispatcher_factory)
     : banner_dispatcher_(std::move(banner_dispatcher)),
-      alert_dispatcher_(std::move(alert_dispatcher)) {}
+      alert_dispatcher_(std::move(alert_dispatcher)),
+      web_app_dispatcher_factory_(std::move(web_app_dispatcher_factory)) {}
 
 NotificationPlatformBridgeMac::~NotificationPlatformBridgeMac() {
   // TODO(miguelg) do not remove banners if possible.
@@ -37,12 +41,22 @@ NotificationPlatformBridgeMac::~NotificationPlatformBridgeMac() {
 std::unique_ptr<NotificationPlatformBridge>
 NotificationPlatformBridge::Create() {
   auto banner_dispatcher = std::make_unique<NotificationDispatcherMojo>(
-      std::make_unique<MacNotificationProviderFactory>(/*in_process=*/true));
+      std::make_unique<MacNotificationProviderFactory>(
+          mac_notifications::NotificationStyle::kBanner));
   auto alert_dispatcher = std::make_unique<NotificationDispatcherMojo>(
-      std::make_unique<MacNotificationProviderFactory>(/*in_process=*/false));
+      std::make_unique<MacNotificationProviderFactory>(
+          mac_notifications::NotificationStyle::kAlert));
+  auto create_dispatcher_for_web_app =
+      base::BindRepeating([](const web_app::AppId& web_app_id)
+                              -> std::unique_ptr<NotificationDispatcherMac> {
+        return std::make_unique<NotificationDispatcherMojo>(
+            std::make_unique<MacNotificationProviderFactory>(
+                mac_notifications::NotificationStyle::kAppShim, web_app_id));
+      });
 
   return std::make_unique<NotificationPlatformBridgeMac>(
-      std::move(banner_dispatcher), std::move(alert_dispatcher));
+      std::move(banner_dispatcher), std::move(alert_dispatcher),
+      std::move(create_dispatcher_for_web_app));
 }
 
 // static
@@ -56,9 +70,23 @@ void NotificationPlatformBridgeMac::Display(
     Profile* profile,
     const message_center::Notification& notification,
     std::unique_ptr<NotificationCommon::Metadata> metadata) {
-  bool is_alert = IsAlertNotificationMac(notification);
-  NotificationDispatcherMac* dispatcher =
-      is_alert ? alert_dispatcher_.get() : banner_dispatcher_.get();
+  NotificationDispatcherMac* dispatcher = nullptr;
+
+  if (base::FeatureList::IsEnabled(features::kAppShimNotificationAttribution) &&
+      notification.notifier_id().web_app_id.has_value()) {
+    auto& owned_dispatcher =
+        app_specific_dispatchers_[*notification.notifier_id().web_app_id];
+    if (!owned_dispatcher) {
+      owned_dispatcher = web_app_dispatcher_factory_.Run(
+          *notification.notifier_id().web_app_id);
+    }
+    dispatcher = owned_dispatcher.get();
+  }
+
+  if (!dispatcher) {
+    bool is_alert = IsAlertNotificationMac(notification);
+    dispatcher = is_alert ? alert_dispatcher_.get() : banner_dispatcher_.get();
+  }
   dispatcher->DisplayNotification(notification_type, profile, notification);
 }
 
@@ -71,6 +99,10 @@ void NotificationPlatformBridgeMac::Close(Profile* profile,
       {notification_id, profile_id, incognito});
   alert_dispatcher_->CloseNotificationWithId(
       {notification_id, profile_id, incognito});
+  for (auto& [app_id, dispatcher] : app_specific_dispatchers_) {
+    dispatcher->CloseNotificationWithId(
+        {notification_id, profile_id, incognito});
+  }
 }
 
 void NotificationPlatformBridgeMac::GetDisplayed(
@@ -102,6 +134,9 @@ void NotificationPlatformBridgeMac::GetDisplayed(
       profile_id, incognito, get_notifications_callback);
   alert_dispatcher_->GetDisplayedNotificationsForProfileId(
       profile_id, incognito, get_notifications_callback);
+
+  // TODO(https://crbug.com/938661): Add support for notifications in app-shim
+  // processes.
 }
 
 void NotificationPlatformBridgeMac::SetReadyCallback(

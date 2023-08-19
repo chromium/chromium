@@ -32,7 +32,7 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 import {CrContainerShadowBehavior} from 'chrome://resources/ash/common/cr_container_shadow_behavior.js';
 import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {startColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {afterNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getScanService} from './mojo_interface_provider.js';
@@ -414,7 +414,10 @@ Polymer({
       typographyLink.rel = 'stylesheet';
       document.head.appendChild(typographyLink);
       document.body.classList.add('jelly-enabled');
-      startColorChangeUpdater();
+      /** @suppress {checkTypes} */
+      (function() {
+        ColorChangeUpdater.forDocument().start();
+      })();
     }
   },
 

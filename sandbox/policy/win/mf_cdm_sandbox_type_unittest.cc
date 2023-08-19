@@ -11,7 +11,7 @@
 
 namespace media {
 
-TEST(SandboxTypeTest, Utility) {
+TEST(MfCdmSandboxTypeTest, Utility) {
   // Setup to have '--type=utility' first (but no valid sandbox).
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII(sandbox::policy::switches::kProcessType,

@@ -65,9 +65,6 @@ class TabStripUI : public ui::MojoWebUIController,
   void ReceivedKeyboardFocus();
 
  private:
-  void HandleThumbnailUpdate(int extension_tab_id,
-                             ThumbnailTracker::CompressedThumbnailData image);
-
   // tab_strip::mojom::PageHandlerFactory
   void CreatePageHandler(
       mojo::PendingRemote<tab_strip::mojom::Page> page,

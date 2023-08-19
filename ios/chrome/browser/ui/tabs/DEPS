@@ -1,6 +1,5 @@
 include_rules = [
   "+ios/chrome/browser/ui/bubble",
   "+ios/chrome/browser/ui/fullscreen",
-  "+ios/chrome/browser/ui/gestures",
   "+ios/chrome/browser/ui/tab_switcher",
 ]

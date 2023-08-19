@@ -126,7 +126,8 @@ class ExtensionEventObserverTest : public ChromeRenderViewHostTestHarness {
   ScopedCrosSettingsTestHelper cros_settings_test_helper_;
 
   // Owned by |scoped_user_manager_enabler_|.
-  raw_ptr<FakeChromeUserManager, ExperimentalAsh> fake_user_manager_;
+  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      fake_user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_enabler_;
 
   std::vector<scoped_refptr<const extensions::Extension>> created_apps_;

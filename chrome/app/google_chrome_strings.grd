@@ -278,10 +278,10 @@ chromium_strings.grd. -->
         <part file="settings_google_chrome_strings.grdp" />
       </if>
 
-      <message name="IDS_PRODUCT_NAME" desc="The Chrome application name">
+      <message name="IDS_PRODUCT_NAME" desc="The Chrome application name" translateable="false">
         Google Chrome
       </message>
-      <message name="IDS_SHORT_PRODUCT_NAME" desc="The Chrome application short name">
+      <message name="IDS_SHORT_PRODUCT_NAME" desc="The Chrome application short name" translateable="false">
         Chrome
       </message>
       <if expr="is_win">
@@ -458,7 +458,7 @@ chromium_strings.grd. -->
           Google Chrome may not function correctly because it is no longer supported on this Linux distribution
         </message>
       </if>
-      <message name="IDS_ACCNAME_APP" desc="The accessible name for the app menu.">
+      <message name="IDS_ACCNAME_APP" desc="The accessible name for the app menu." translateable="false">
         Chrome
       </message>
       <!-- Hung Browser Detector -->
@@ -543,7 +543,7 @@ Permissions you've already given to websites and apps may apply to this account.
         </message>
       </if>
       <!-- Crash Recovery Dialog -->
-      <message name="IDS_CRASH_RECOVERY_TITLE" desc="Title of dialog shown when the browser crashes.">
+      <message name="IDS_CRASH_RECOVERY_TITLE" desc="Title of dialog shown when the browser crashes." translateable="false">
         Google Chrome
       </message>
       <if expr="is_win">
@@ -559,7 +559,7 @@ Permissions you've already given to websites and apps may apply to this account.
       <message name="IDS_PASSWORD_MANAGER_ONBOARDING_DETAILS_C" desc="The explanation text that is shown below the title in the password manager onboarding dialog.">
         Chrome lets you know if your passwords are ever compromised
       </message>
-      <message name="IDS_PASSWORD_MANAGER_TITLE_BRAND" desc="The product name used in the title of the password bubble.">
+      <message name="IDS_PASSWORD_MANAGER_TITLE_BRAND" desc="The product name used in the title of the password bubble." translateable="false">
         Google Chrome
       </message>
       <message name="IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SAVING_ON_DEVICE" desc="The text of the Google Password Manager links displayed on Password Manager bubbles footer when the credentials are stored only locally.">
@@ -687,12 +687,9 @@ Permissions you've already given to websites and apps may apply to this account.
                         desc="Subpage summary of warning for Deep Scanning.">
         Chrome recommends scanning this file because it may be dangerous
       </message>
-
-
-      <!-- Tailored Warning in Download Bubble Items -->
-      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_SUSPICIOUS_ARCHIVE"
-               desc="Subpage summary for suspicious archive warning.">
-        Chrome blocked this archive file because it may hide malware
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_BLOCKED_LEARN_MORE_LINK"
+               desc="Text for the link to the help page about why Chrome blocks some downloaded files. This string will be embedded in a longer sentence that makes up the whole label.">
+        Chrome blocks some downloads
       </message>
 
       <!-- Download Shelf Items -->
@@ -776,11 +773,14 @@ Permissions you've already given to websites and apps may apply to this account.
       <message name="IDS_SAFETY_CHECK_EXTENSIONS_MALWARE" desc="The text explaining the reason for disabling extension. The extension in question contains malware.">
         This extension contains malware and is unsafe. Remove it from Chrome so it can no longer see and change your data on sites you visit, including your personal info.
       </message>
-       <message name="IDS_SAFETY_CHECK_EXTENSIONS_POLICY_VIOLATION" desc="The text explaining the reason for disabling extension. The extension in question violates Chrome Web Store policy.">
-          This extension violates the Chrome Web Store policy, and might be unsafe. Remove it from Chrome so it can no longer see and change your data on sites you visit, including your personal info.
+      <message name="IDS_SAFETY_CHECK_EXTENSIONS_POLICY_VIOLATION" desc="The text explaining the reason for disabling extension. The extension in question violates Chrome Web Store policy.">
+        This extension violates the Chrome Web Store policy, and might be unsafe. Remove it from Chrome so it can no longer see and change your data on sites you visit, including your personal info.
       </message>
       <message name="IDS_SAFETY_CHECK_EXTENSIONS_UNPUBLISHED" desc="The text explaining the reason for disabling extension. The extension in question was unpublished by the developer.">
-          This extension was unpublished by its developer, and might be unsafe. Remove it from Chrome so it can no longer see and change your data on sites you visit, including your personal info.
+        This extension was unpublished by its developer, and might be unsafe. Remove it from Chrome so it can no longer see and change your data on sites you visit, including your personal info.
+      </message>
+      <message name="IDS_EXTENSIONS_SAFETY_CHECK_PRIMARY_LABEL" desc="Alerts the user that the extension should be reviewed.">
+        Chrome recommends you review this extension
       </message>
 
       <!-- chrome://settings/extensions page -->
@@ -869,7 +869,7 @@ Permissions you've already given to websites and apps may apply to this account.
       </if>
 
       <if expr="is_macosx">
-        <message name="IDS_APP_MENU_PRODUCT_NAME" desc="The application's short name, used for the Mac's application menu, activity monitor, etc. This should be less than 16 characters. Example: Chrome, not Google Chrome.">
+        <message name="IDS_APP_MENU_PRODUCT_NAME" desc="The application's short name, used for the Mac's application menu, activity monitor, etc. This should be less than 16 characters. Example: Chrome, not Google Chrome." translateable="false">
           Chrome
         </message>
         <message name="IDS_HELPER_NAME" desc="The helper application's name.  Should contain the Chrome application name (IDS_PRODUCT_NAME). Example: Google Chrome Helper.">
@@ -885,7 +885,7 @@ Permissions you've already given to websites and apps may apply to this account.
       </message>
 
       <!-- Chrome sign-in page -->
-      <message name="IDS_CHROME_SIGNIN_TITLE" desc="Title on the about:chrome-signin page">
+      <message name="IDS_CHROME_SIGNIN_TITLE" desc="Title on the about:chrome-signin page" translateable="false">
         Chrome
       </message>
 
@@ -1082,17 +1082,19 @@ Permissions you've already given to websites and apps may apply to this account.
 
       <if expr="not is_android">
         <!-- WebHID system tray icon -->
-        <message name="IDS_WEBHID_SYSTEM_TRAY_ICON_TITLE_SINGLE_EXTENSION" desc="Title for the WebHID system tray icon when one or more HID devices are being accessed by an extension.">
+        <message name="IDS_WEBHID_SYSTEM_TRAY_ICON_TITLE" desc="Title for the WebHID system tray icon">
             {NUM_DEVICES, plural,
-            =0 {A Google Chrome extension was accessing HID devices}
-            =1 {A Google Chrome extension is accessing 1 HID device}
-            other {A Google Chrome extension is accessing # HID devices}}
+              =0 {1 HID device was being accessed by one or more Chrome extensions}
+              =1 {1 HID device is being accessed by one or more Chrome extensions}
+            other {# HID devices are being accessed by one or more Chrome extensions}}
         </message>
-        <message name="IDS_WEBHID_SYSTEM_TRAY_ICON_TITLE_MULTIPLE_EXTENSIONS" desc="Title for the WebHID system tray icon when HID devices are being accessed by multiple extensions.">
+
+          <!-- WebUSB system tray icon -->
+         <message name="IDS_WEBUSB_SYSTEM_TRAY_ICON_TITLE" desc="Title for the WebUSB system tray icon">
             {NUM_DEVICES, plural,
-            =0 {Google Chrome extensions were accessing HID devices}
-            =1 {Google Chrome extensions are accessing HID devices}
-            other {Google Chrome extensions are accessing # HID devices}}
+              =0 {1 USB device was being accessed by one or more Chrome extensions}
+              =1 {1 USB device is being accessed by one or more Chrome extensions}
+            other {# USB devices are being accessed by one or more Chrome extensions}}
         </message>
       </if>
 
@@ -1141,6 +1143,22 @@ Permissions you've already given to websites and apps may apply to this account.
         </message>
         <message name="IDS_USER_MANAGER_TUTORIAL_SLIDE_OUTRO_ADD_USER" desc="Title text for the button that would add a new user">
           Add yourself to Chrome
+        </message>
+      </if>
+
+      <if expr="not is_android">
+      <!-- Password Manager Tutorial Strings -->
+        <message name="IDS_TUTORIAL_PASSWORD_MANAGER_OPEN_APP_MENU" desc="The description of the 'open add menu' step in password manager tutorial">
+          Click the Chrome menu
+        </message>
+        <message name="IDS_TUTORIAL_PASSWORD_MANAGER_CLICK_PASSWORD_MANAGER" desc="The description of the 'click password manager' step in password manager tutorial">
+          Click “Google Password Manager”
+        </message>
+        <message name="IDS_TUTORIAL_PASSWORD_MANAGER_SUCCESS_BODY" desc="The description of the body text in the 'success' step in password manager tutorial">
+          Use your shortcut to quickly get to the Google Password Manager. You can move your shortcut to your computer's home screen or app launcher.
+        </message>
+        <message name="IDS_PASSWORD_MANAGER_IPH_CREATE_SHORTCUT_BODY" desc="Body of the in Product Help shown after successfully logging into a website telling user about how to create a shortcut">
+          Add a shortcut to Google Password Manager
         </message>
       </if>
 
@@ -1479,8 +1497,8 @@ Permissions you've already given to websites and apps may apply to this account.
       <message name="IDS_DESKTOP_MEDIA_PICKER_TITLE_WEB_CONTENTS_ONLY" desc="Title for the window picker dialog shown when desktop capture of a tab is requested by an app.">
         Share a Chrome tab
       </message>
-      <!-- Idle timeout bubble. -->
-    <if expr="not is_android and not is_chromeos">
+    <!-- Idle timeout bubble. -->
+    <if expr="toolkit_views">
       <message name="IDS_IDLE_BUBBLE_TITLE_CLOSE" desc="Title of a bubble that informs the user that Chrome closed automatically, because they were away from the computer for X minutes.">
         Chrome was automatically closed
       </message>
@@ -1493,7 +1511,9 @@ Permissions you've already given to websites and apps may apply to this account.
       <message name="IDS_IDLE_BUBBLE_BODY_CLOSE" desc="Body of a bubble that informs the user that Chrome closed automatically, because they were away from the computer for X minutes.">
         Your organization closes Chrome when it isn't used for <ph name="TIMEOUT_DURATION">$1<ex>30 minutes</ex></ph>.
       </message>
+    </if>
     <!-- Idle timeout dialog. -->
+    <if expr="not is_android and not is_chromeos">
       <message name="IDS_IDLE_TIMEOUT_CLOSE_TITLE" desc="Title of the Idle Timeout dialog, warning the user that their windows are about to close.">
         Chrome will soon close
       </message>
@@ -1507,18 +1527,18 @@ Permissions you've already given to websites and apps may apply to this account.
            e.g., say "4 hours" instead of "240 minutes". -->
       <message name="IDS_IDLE_TIMEOUT_CLOSE_BODY" desc="First sentence in the Idle Timeout dialog, warning the user that Chrome is going to close automatically.">
         {COUNT, plural,
-          =1 {Your administrator automatically closes Chrome when it isn't used for 1 minute.}
-          other {Your administrator automatically closes Chrome when it isn't used for # minutes.}}
+          =1 {Your organization automatically closes Chrome when it isn't used for 1 minute.}
+          other {Your organization automatically closes Chrome when it isn't used for # minutes.}}
       </message>
       <message name="IDS_IDLE_TIMEOUT_CLEAR_BODY" desc="First sentence in the Idle Timeout dialog, warning the user that Chrome is going to clear data automatically.">
         {COUNT, plural,
-          =1 {Your administrator automatically deletes browsing data when it isn't used for 1 minute. This could include history, autofill, and downloads. Your existing tabs will remain open.}
-          other {Your administrator automatically deletes browsing data when it isn't used for # minutes. This could include history, autofill, and downloads. Your existing tabs will remain open.}}
+          =1 {Your organization automatically deletes browsing data when Chrome isn't used for 1 minute. This could include history, autofill, and downloads. Your tabs will stay open.}
+          other {Your organization automatically deletes browsing data when Chrome isn't used for # minutes. This could include history, autofill, and downloads. Your tabs will stay open.}}
       </message>
       <message name="IDS_IDLE_TIMEOUT_CLOSE_AND_CLEAR_BODY" desc="First sentence in the Idle Timeout dialog, warning the user that Chrome is going to close and clear data automatically.">
         {COUNT, plural,
-          =1 {Your administrator automatically closes Chrome when it isn't used for 1 minute. Browsing data is deleted. This could include history, autofill, and downloads.}
-          other {Your administrator automatically closes Chrome when it isn't used for # minutes. Browsing data is deleted. This could include history, autofill, and downloads.}}
+          =1 {Your organization automatically closes Chrome when it isn't used for 1 minute. Browsing data is deleted. This could include history, autofill, and downloads.}
+          other {Your organization automatically closes Chrome when it isn't used for # minutes. Browsing data is deleted. This could include history, autofill, and downloads.}}
       </message>
       <message name="IDS_IDLE_DISMISS_BUTTON" desc="Button label in the Idle Timeout dialog, this button dismisses the dialog and prevents browsers from closing automatically.">
         Continue using Chrome
@@ -1534,11 +1554,8 @@ Permissions you've already given to websites and apps may apply to this account.
 
       <!-- Chrome parent extension/app install blocking dialog. -->
       <if expr="enable_extensions and enable_supervised_users">
-        <message name="IDS_EXTENSION_INSTALL_BLOCKED_BY_PARENT_PROMPT_MESSAGE" desc="Text for the dialog indicating that a parent has blocked extensions and apps.">
-         Your parent has turned off "Permissions for sites, apps and extensions" for Chrome. Adding this <ph name="EXTENSION_TYPE_PARAMETER">$1<ex>extension</ex></ph> is not allowed.
-        </message>
-        <message name="IDS_EXTENSION_ENABLE_BLOCKED_BY_PARENT_PROMPT_MESSAGE" desc="Text for the dialog indicating that a parent has blocked extensions and apps.">
-         Your parent has turned off "Permissions for sites, apps and extensions" for Chrome. Enabling this <ph name="EXTENSION_TYPE_PARAMETER">$1<ex>extension</ex></ph> is not allowed.
+        <message name="IDS_EXTENSION_PERMISSIONS_BLOCKED_BY_PARENT_PROMPT_MESSAGE" desc="Text for the dialog indicating that a parent has blocked extensions and apps.">
+         Your parent has turned off "Permissions for sites, apps and extensions" for Chrome
         </message>
       </if>
 
@@ -1574,9 +1591,6 @@ Permissions you've already given to websites and apps may apply to this account.
         </if>
         <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_TITLE" desc="Profile picker profile type choice title">
           Set up your new Chrome profile
-        </message>
-        <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_TITLE" desc="Title for the local profile customiztion screen on the picker.">
-          Customize your Chrome profile
         </message>
         <message name="IDS_PROFILE_PICKER_IPH_FOR_PROFILES_TEXT" desc="Text of the IPH bubble for introducing profiles.">
           Each profile holds its own Chrome info like bookmarks, history, passwords, and more
@@ -1620,6 +1634,17 @@ Permissions you've already given to websites and apps may apply to this account.
             Do more with Chrome
           </message>
         </if>
+
+        <!-- Default Browser Promo -->
+        <message name="IDS_FRE_DEFAULT_BROWSER_TITLE" desc="Title for the page that prompts user to set Chrome as their default browser in the first run experience.">
+          Set Chrome as your default browser
+        </message>
+        <message name="IDS_FRE_DEFAULT_BROWSER_SUBTITLE_NEW" desc="Subtitle for the page that prompts user to set Chrome as their default browser in the first run experience.">
+          Use Chrome anytime you click links in messages, documents, and other apps
+        </message>
+        <message name="IDS_FRE_DEFAULT_BROWSER_ILLUSTRATION_ALT_TEXT" desc="Alt text for the illustration in the page that prompts user to set Chrome as their default browser.">
+          Chrome logo inside a computer screen.
+        </message>
 
         <!-- Profile switch IPH -->
         <message name="IDS_PROFILE_SWITCH_PROMO" desc="Text of the In-Product-Help bubble for profile switching.">
@@ -1717,7 +1742,7 @@ Permissions you've already given to websites and apps may apply to this account.
 
       <!-- GoogleUpdater Strings -->
       <if expr="is_win">
-        <message name="IDS_FRIENDLY_COMPANY_NAME" desc="Company name">
+        <message name="IDS_FRIENDLY_COMPANY_NAME" desc="Company name" translateable="false">
           Google
         </message>
         <message name="IDS_NO_UPDATE_RESPONSE" desc="Updater response for no updates when handling install result.">
@@ -1817,6 +1842,9 @@ Permissions you've already given to websites and apps may apply to this account.
             Memory Saver made Chrome faster
           </message>
         </if>
+        <message name="IDS_HIGH_EFFICIENCY_DIALOG_BODY_V2" desc="Body text for a dialog describing that Memory Saver mode will use less memory.">
+          While this tab was inactive, memory was freed up to keep Chrome fast. You can choose to always exclude this site from being inactive.
+        </message>
       </if>
 
       <!-- High Efficiency IPH strings -->
@@ -1831,24 +1859,6 @@ Permissions you've already given to websites and apps may apply to this account.
             Make Chrome faster
           </message>
         </if>
-      </if>
-
-      <!-- Payments settings DeviceAuthentication strings -->
-      <if expr="is_macosx">
-        <message name="IDS_PAYMENTS_AUTOFILL_MANDATORY_REAUTH_PROMPT" desc="Message to be displayed to the user in the device authentication prompt when they click on the mandatory auth toggle on the Payments settings page, irrespective to enable or disable it. When mandatory auth toggle is enabled, we would authenticate the user before autofilling in the payment details. Note: MacOS has the wording 'Google Chrome is trying to' prepended onto the message during user auth.">
-          modify settings for filling payment methods.
-        </message>
-        <message name="IDS_PAYMENTS_AUTOFILL_EDIT_CARD_MANDATORY_REAUTH_PROMPT" desc="Message to be displayed to the user in the device authentication prompt when they try to edit a local card on the Payments settings page if the mandatory auth toggle is enabled. If the user auth was succesful, we would then show the edit card dialog. Note: MacOS has the wording 'Google Chrome is trying to' prepended onto the message during user auth.">
-          edit payment methods.
-        </message>
-      </if>
-      <if expr="is_win">
-        <message name="IDS_PAYMENTS_AUTOFILL_MANDATORY_REAUTH_PROMPT" desc="Message to be displayed to the user in the device authentication prompt when they click on the mandatory auth toggle on the Payments settings page, irrespective to enable or disable it. When mandatory auth toggle is enabled, we would authenticate the user before autofilling in the payment details.">
-          Google Chrome is trying to modify settings for filling payment methods.
-        </message>
-        <message name="IDS_PAYMENTS_AUTOFILL_EDIT_CARD_MANDATORY_REAUTH_PROMPT" desc="Message to be displayed to the user in the device authentication prompt when they try to edit a local card on the Payments settings page if the mandatory auth toggle is enabled. If the user auth was succesful, we would then show the edit card dialog.">
-          Google Chrome is trying to edit payment methods.
-        </message>
       </if>
     </messages>
   </release>

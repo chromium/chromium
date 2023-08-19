@@ -407,9 +407,7 @@ TestDriver::TestDriver()
     : wait_for_ui_thread_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                           base::WaitableEvent::InitialState::NOT_SIGNALED) {
   partition_alloc::PartitionAllocGlobalInit(HandleOOM);
-  partition_allocator_.init(partition_alloc::PartitionOptions{
-      .cookie = partition_alloc::PartitionOptions::Cookie::kAllowed,
-  });
+  partition_allocator_.init(partition_alloc::PartitionOptions{});
 }
 TestDriver::~TestDriver() {
   partition_alloc::PartitionAllocGlobalUninitForTesting();

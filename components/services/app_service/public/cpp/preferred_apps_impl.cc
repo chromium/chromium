@@ -8,20 +8,18 @@
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
+#include "base/sequence_checker.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/preferred_apps_converter.h"
-#include "content/public/browser/browser_thread.h"
 
 namespace {
 
@@ -91,7 +89,9 @@ PreferredAppsImpl::PreferredAppsImpl(
   InitializePreferredApps();
 }
 
-PreferredAppsImpl::~PreferredAppsImpl() = default;
+PreferredAppsImpl::~PreferredAppsImpl() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
 void PreferredAppsImpl::RemovePreferredApp(const std::string& app_id) {
   RunAfterPreferredAppsReady(
@@ -121,7 +121,7 @@ void PreferredAppsImpl::InitializePreferredApps() {
 void PreferredAppsImpl::WriteToJSON(
     const base::FilePath& profile_dir,
     const apps::PreferredAppsList& preferred_apps) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // If currently is writing preferred apps to file, set a flag to write after
   // the current write completed.
   if (writing_preferred_apps_) {
@@ -147,7 +147,7 @@ void PreferredAppsImpl::WriteToJSON(
 }
 
 void PreferredAppsImpl::WriteCompleted() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   writing_preferred_apps_ = false;
   if (!should_write_preferred_apps_to_file_) {
     // Call the testing callback if it is set.
@@ -163,7 +163,7 @@ void PreferredAppsImpl::WriteCompleted() {
 }
 
 void PreferredAppsImpl::ReadFromJSON(const base::FilePath& profile_dir) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&ReadDataBlocking,
@@ -173,7 +173,7 @@ void PreferredAppsImpl::ReadFromJSON(const base::FilePath& profile_dir) {
 }
 
 void PreferredAppsImpl::ReadCompleted(std::string preferred_apps_string) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool preferred_apps_upgraded = false;
   if (preferred_apps_string.empty()) {
     preferred_apps_list_.Init();

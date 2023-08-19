@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_coordinator.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/memory/scoped_refptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
@@ -28,10 +28,6 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 @interface AddPasswordCoordinator () <AddPasswordHandler,
                                       AddPasswordMediatorDelegate,
@@ -102,6 +98,7 @@
 - (void)stop {
   [self.viewController.navigationController dismissViewControllerAnimated:YES
                                                                completion:nil];
+  [self dismissAlertCoordinator];
   self.mediator = nil;
   self.viewController = nil;
 }
@@ -141,7 +138,9 @@
       [OpenNewTabCommand commandWithURLFromChrome:GURL(kPasscodeArticleURL)];
 
   [self.alertCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_OK)
-                                   action:nil
+                                   action:^{
+                                     [weakSelf dismissAlertCoordinator];
+                                   }
                                     style:UIAlertActionStyleCancel];
 
   [self.alertCoordinator
@@ -149,10 +148,18 @@
                            IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_LEARN_HOW)
                 action:^{
                   [weakSelf.dispatcher closeSettingsUIAndOpenURL:command];
+                  [weakSelf dismissAlertCoordinator];
                 }
                  style:UIAlertActionStyleDefault];
 
   [self.alertCoordinator start];
+}
+
+#pragma mark - Private
+
+- (void)dismissAlertCoordinator {
+  [self.alertCoordinator stop];
+  self.alertCoordinator = nil;
 }
 
 @end

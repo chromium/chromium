@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include <stdint.h>
+
 #include <new>
 
 // This file is a no-op if the required LowLevelAlloc support is missing.

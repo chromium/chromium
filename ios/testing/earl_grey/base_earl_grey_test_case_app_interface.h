@@ -18,6 +18,10 @@
 // Adjusts the speed property of CALayer to 100 to speed up XCUITests.
 + (void)enableFastAnimation;
 
+// Force the keyboard to be in process until iOS17 typing is fixed.
+// TODO(crbug.com/1454516): Remove this.
++ (void)swizzleKeyboardOOP;
+
 // Calls _terminateWithStatus and exit. This causes UIKit to call
 // applicationWillTerminate, which is a more realistic termination.
 + (void)gracefulTerminate;

@@ -17,13 +17,14 @@
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "base/command_line.h"
 #include "base/scoped_observation.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/arc/util/arc_window_watcher.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/game_mode/game_mode_controller.h"
 #include "chrome/browser/ash/geolocation/system_geolocation_source.h"
 #include "chrome/browser/ash/login/signin/signin_error_notifier_factory.h"
-#include "chrome/browser/ash/night_light/night_light_client.h"
+#include "chrome/browser/ash/night_light/night_light_client_impl.h"
 #include "chrome/browser/ash/policy/display/display_resolution_handler.h"
 #include "chrome/browser/ash/policy/display/display_rotation_default_handler.h"
 #include "chrome/browser/ash/policy/display/display_settings_handler.h"
@@ -35,6 +36,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/tablet_mode/tablet_mode_page_behavior.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/ash/ash_attestation_cleanup_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/accessibility/accessibility_controller_client.h"
 #include "chrome/browser/ui/ash/ambient/ambient_client_impl.h"
@@ -67,17 +69,19 @@
 #include "chrome/browser/ui/ash/vpn_list_forwarder.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
+#include "chrome/browser/ui/views/editor_menu/editor_menu_controller_impl.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension_factory.h"
 #include "chrome/browser/ui/views/tabs/tab_scrubber_chromeos.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/heatmap/heatmap_palm_detector.h"
 #include "chromeos/ash/components/network/network_connect.h"
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "chromeos/ash/services/bluetooth_config/fast_pair_delegate.h"
 #include "chromeos/ash/services/bluetooth_config/in_process_instance.h"
 #include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_controller.h"
 #include "chromeos/components/quick_answers/quick_answers_client.h"
-#include "components/crash/core/common/crash_key.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
@@ -87,6 +91,7 @@
 #include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/ime/ash/input_method_manager.h"
+#include "ui/ozone/public/ozone_platform.h"
 
 #if BUILDFLAG(ENABLE_WAYLAND_SERVER)
 #include "chrome/browser/exo_parts.h"
@@ -117,6 +122,8 @@ class ChromeShelfControllerInitializer
 
   // session_manager::SessionManagerObserver:
   void OnSessionStateChanged() override {
+    TRACE_EVENT0("ui",
+                 "ChromeShelfControllerInitializer::OnSessionStateChanged");
     DCHECK(!chrome_shelf_controller_);
     DCHECK(!ChromeShelfController::instance());
 
@@ -248,7 +255,8 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   chrome_shelf_controller_initializer_ =
       std::make_unique<internal::ChromeShelfControllerInitializer>();
 
-  ui::SelectFileDialog::SetFactory(new SelectFileDialogExtensionFactory);
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<SelectFileDialogExtensionFactory>());
 
 #if BUILDFLAG(ENABLE_WAYLAND_SERVER)
   exo_parts_ = ExoParts::CreateIfNecessary();
@@ -258,17 +266,18 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   }
 #endif
 
-  night_light_client_ = std::make_unique<ash::NightLightClient>(
+  night_light_client_ = std::make_unique<ash::NightLightClientImpl>(
       g_browser_process->platform_part()->GetTimezoneResolverManager(),
       g_browser_process->shared_url_loader_factory());
   night_light_client_->Start();
 
-  if (ash::features::IsProjectorEnabled()) {
-    projector_app_client_ = std::make_unique<ProjectorAppClientImpl>();
-    projector_client_ = std::make_unique<ProjectorClientImpl>();
-  }
+  projector_app_client_ = std::make_unique<ProjectorAppClientImpl>();
+  projector_client_ = std::make_unique<ProjectorClientImpl>();
 
   desks_client_ = std::make_unique<DesksClient>();
+
+  attestation_cleanup_manager_ =
+      std::make_unique<enterprise_connectors::AshAttestationCleanupManager>();
 
   ash::bluetooth_config::FastPairDelegate* delegate =
       ash::features::IsFastPairEnabled()
@@ -280,6 +289,9 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   // Create geolocation manager
   device::GeolocationManager::SetInstance(
       ash::SystemGeolocationSource::CreateGeolocationManagerOnAsh());
+
+  ui::OzonePlatform::GetInstance()->SetPalmDetector(
+      std::make_unique<ash::HeatmapPalmDetector>());
 }
 
 void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
@@ -299,15 +311,8 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
   // Passes (and continues passing) the current camera count to the PrivacyHub.
   ash::privacy_hub_util::SetUpCameraCountObserver();
 
-  if (ash::features::IsMicMuteNotificationsEnabled()) {
-    app_access_notifier_ = std::make_unique<AppAccessNotifier>();
-  }
-
-  // Check if Lacros is enabled for crash reporting here to give the user
-  // manager a chance to be initialized first.
-  constexpr char kLacrosEnabledDataKey[] = "lacros-enabled";
-  static crash_reporter::CrashKeyString<4> key(kLacrosEnabledDataKey);
-  key.Set(crosapi::browser_util::IsLacrosEnabled() ? "yes" : "no");
+  app_access_notifier_ = std::make_unique<AppAccessNotifier>();
+  ash::privacy_hub_util::SetAppAccessNotifier(app_access_notifier_.get());
 
   // Instantiate DisplaySettingsHandler after CrosSettings has been
   // initialized.
@@ -338,6 +343,11 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
 
   // Initialize TabScrubberChromeOS after the Ash Shell has been initialized.
   TabScrubberChromeOS::GetInstance();
+
+  if (chromeos::features::IsOrcaEnabled()) {
+    editor_menu_controller_ =
+        std::make_unique<chromeos::editor_menu::EditorMenuControllerImpl>();
+  }
 }
 
 void ChromeBrowserMainExtraPartsAsh::PostBrowserStart() {
@@ -360,7 +370,9 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
 
   night_light_client_.reset();
   mobile_data_notifications_.reset();
+  editor_menu_controller_.reset();
   chrome_shelf_controller_initializer_.reset();
+  attestation_cleanup_manager_.reset();
   desks_client_.reset();
 
   projector_client_.reset();
@@ -380,9 +392,8 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   media_client_.reset();
   login_screen_client_.reset();
 
-  if (ash::features::IsMicMuteNotificationsEnabled()) {
-    app_access_notifier_.reset();
-  }
+  ash::privacy_hub_util::SetAppAccessNotifier(nullptr);
+  app_access_notifier_.reset();
 
   // Initialized in PreProfileInit (which may not get called in some tests).
   device::GeolocationManager::SetInstance(nullptr);

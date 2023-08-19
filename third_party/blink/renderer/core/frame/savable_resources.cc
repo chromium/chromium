@@ -103,7 +103,7 @@ bool SavableResources::GetSavableResourceLinksForFrame(
   DCHECK(current_document);
 
   // Go through all descent nodes.
-  HTMLAllCollection* collection = current_document->all();
+  HTMLCollection* collection = current_document->all();
 
   // Go through all elements in this frame.
   for (unsigned i = 0; i < collection->length(); ++i) {

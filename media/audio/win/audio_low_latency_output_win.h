@@ -256,10 +256,10 @@ class MEDIA_EXPORT WASAPIAudioOutputStream
   // Counts the number of audio frames written to the endpoint buffer.
   UINT64 num_written_frames_;
 
-  // The position read during the last call to RenderAudioFromSource
+  // The position read during the last call to RenderAudioFromSource.
   UINT64 last_position_ = 0;
 
-  // The performance counter read during the last call to RenderAudioFromSource
+  // The performance counter read during the last call to RenderAudioFromSource.
   UINT64 last_qpc_position_ = 0;
 
   // Pointer to the client that will deliver audio samples to be played out.

@@ -140,6 +140,13 @@ public class RenderFrameHostImpl implements RenderFrameHost {
     }
 
     @Override
+    public void notifyWebAuthnAssertionRequestSucceeded() {
+        if (mNativeRenderFrameHostAndroid == 0) return;
+        RenderFrameHostImplJni.get().notifyWebAuthnAssertionRequestSucceeded(
+                mNativeRenderFrameHostAndroid, RenderFrameHostImpl.this);
+    }
+
+    @Override
     public boolean signalCloseWatcherIfActive() {
         return RenderFrameHostImplJni.get().signalCloseWatcherIfActive(
                 mNativeRenderFrameHostAndroid, RenderFrameHostImpl.this);
@@ -251,6 +258,8 @@ public class RenderFrameHostImpl implements RenderFrameHost {
         UnguessableToken getAndroidOverlayRoutingToken(
                 long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);
         void notifyUserActivation(long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);
+        void notifyWebAuthnAssertionRequestSucceeded(
+                long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);
         boolean signalCloseWatcherIfActive(
                 long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);
         boolean isRenderFrameLive(long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);

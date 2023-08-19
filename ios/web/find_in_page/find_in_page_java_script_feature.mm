@@ -9,10 +9,6 @@
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 const char kScriptName[] = "find_in_page_native_api";
 const char kEventListenersScriptName[] = "find_in_page_event_listeners";

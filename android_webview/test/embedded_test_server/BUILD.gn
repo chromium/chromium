@@ -8,6 +8,7 @@ import("//build/config/android/rules.gni")
 
 android_library("aw_net_java_test_support") {
   testonly = true
+  srcjar_deps = [ ":aw_net_jni_headers" ]
   sources = [
     "java/src/org/chromium/android_webview/test/AwEmbeddedTestServer.java",
     "java/src/org/chromium/android_webview/test/AwEmbeddedTestServerImpl.java",
@@ -19,9 +20,8 @@ android_library("aw_net_java_test_support") {
     "//net/android:embedded_test_server_aidl_java",
     "//net/android:net_java",
     "//net/android:net_java_test_support",
-    "//net/android:net_java_test_support_provider",
+    "//net/android:net_test_support_provider_java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 generate_jni("aw_net_jni_headers") {
@@ -45,7 +45,7 @@ source_set("aw_java_test_native_support") {
   ]
   public_deps = [
     ":aw_net_jni_headers",
-    "//net:net_test_jni_headers",
+    "//net/android:net_test_support_provider_jni",
   ]
 }
 

@@ -1,4 +1,8 @@
 <style include="destination-dialog-style">
+  :host([is-showing-printer-setup-assistance]) div[slot=button-container] {
+    justify-content: flex-end;
+  }
+
   .form-row {
     align-items: center;
     column-gap: 18px;
@@ -33,21 +37,29 @@
       </div>
     </div>
     <print-preview-search-box id="searchBox"
+        hidden$="[[isShowingPrinterSetupAssistance]]"
         label="$i18n{searchBoxPlaceholder}" search-query="{{searchQuery_}}"
         autofocus>
     </print-preview-search-box>
     <print-preview-destination-list id="printList"
         destinations="[[destinations_]]"
+        hidden$="[[isShowingPrinterSetupAssistance]]"
         loading-destinations="[[loadingAnyDestinations_]]"
         search-query="[[searchQuery_]]"
         on-destination-selected="onDestinationSelected_">
     </print-preview-destination-list>
+    <print-preview-printer-setup-info-cros
+        hidden$="[[!isShowingPrinterSetupAssistance]]"
+        message-type="[[noPrinters_]]"
+        metrics-source="[[destinationDialogCrosSource_]]">
+    </print-preview-printer-setup-info-cros>
     <print-preview-provisional-destination-resolver id="provisionalResolver"
         destination-store="[[destinationStore]]">
     </print-preview-provisional-destination-resolver>
   </div>
   <div slot="button-container">
-    <cr-button on-click="onManageButtonClick_">
+    <cr-button on-click="onManageButtonClick_"
+        hidden$="[[isShowingPrinterSetupAssistance]]">
       $i18n{manage}
       <iron-icon icon="cr:open-in-new" id="manageIcon"></iron-icon>
     </cr-button>

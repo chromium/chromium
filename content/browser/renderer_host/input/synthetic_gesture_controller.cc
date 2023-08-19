@@ -62,6 +62,33 @@ void SyntheticGestureController::UpdateSyntheticGestureTarget(
   delegate_ = delegate;
 }
 
+bool SyntheticGestureController::IsHiddenAndNeedsVisible() const {
+  CHECK(!pending_gesture_queue_.IsEmpty());
+
+  // If the gesture is from DevTools it'll be injected directly to the correct
+  // renderer so it doesn't need to be visible.
+  const SyntheticGesture& gesture = *pending_gesture_queue_.FrontGesture();
+  if (gesture.IsFromDevToolsDebugger()) {
+    return false;
+  }
+
+  // Other gestures inject events at the UI layer so require the source
+  // RenderWidgetHost to be visible to be correctly targeted.
+  return delegate_->IsHidden();
+}
+
+void SyntheticGestureController::StartIfNeeded() {
+  if (!deferred_start_) {
+    return;
+  }
+  deferred_start_ = false;
+
+  CHECK(!pending_gesture_queue_.IsEmpty());
+  CHECK(!dispatch_timer_.IsRunning());
+
+  StartGesture();
+}
+
 void SyntheticGestureController::QueueSyntheticGesture(
     std::unique_ptr<SyntheticGesture> synthetic_gesture,
     OnGestureCompleteCallback completion_callback) {
@@ -90,8 +117,9 @@ void SyntheticGestureController::QueueSyntheticGesture(
 
   raw_gesture->DidQueue(weak_ptr_factory_.GetWeakPtr());
 
-  if (was_empty)
+  if (was_empty) {
     StartGesture();
+  }
 }
 
 void SyntheticGestureController::StartTimer(bool high_frequency) {
@@ -108,8 +136,15 @@ void SyntheticGestureController::StartTimer(bool high_frequency) {
 bool SyntheticGestureController::DispatchNextEvent(base::TimeTicks timestamp) {
   DCHECK(dispatch_timer_.IsRunning());
   TRACE_EVENT0("input", "SyntheticGestureController::Flush");
-  if (pending_gesture_queue_.IsEmpty())
+  if (pending_gesture_queue_.IsEmpty()) {
     return false;
+  }
+
+  if (IsHiddenAndNeedsVisible()) {
+    dispatch_timer_.Stop();
+    GestureCompleted(SyntheticGesture::GESTURE_ABORT);
+    return false;
+  }
 
   if (!pending_gesture_queue_.is_current_gesture_complete()) {
     SyntheticGesture::Result result =
@@ -127,8 +162,9 @@ bool SyntheticGestureController::DispatchNextEvent(base::TimeTicks timestamp) {
   }
 
   if (!pending_gesture_queue_.CompleteCurrentGestureImmediately() &&
-      !delegate_->HasGestureStopped())
+      !delegate_->HasGestureStopped()) {
     return true;
+  }
 
   StopGesture(*pending_gesture_queue_.FrontGesture(),
               pending_gesture_queue_.current_gesture_result(),
@@ -158,6 +194,16 @@ void SyntheticGestureController::StartGesture() {
     EnsureRendererInitialized(std::move(on_initialized));
     return;
   }
+
+  if (IsHiddenAndNeedsVisible()) {
+    // If the gesture is started while the host is hidden, wait until the host
+    // becomes visible.  Once the gesture is running, hiding the host will
+    // abort the gesture but starting one while hidden will queue it so that
+    // tests don't race with the visibility signal.
+    deferred_start_ = true;
+    return;
+  }
+
   dispatch_timer_.SetTaskRunner(
       content::GetUIThreadTaskRunner({BrowserTaskType::kUserInput}));
 

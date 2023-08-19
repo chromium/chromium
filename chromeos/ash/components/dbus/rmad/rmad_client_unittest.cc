@@ -219,11 +219,12 @@ class RmadClientTest : public testing::Test {
   // |client_|.
   std::map<std::string, dbus::ObjectProxy::SignalCallback> signal_callbacks_;
 
-  raw_ptr<RmadClient, ExperimentalAsh> client_ =
+  raw_ptr<RmadClient, DanglingUntriaged | ExperimentalAsh> client_ =
       nullptr;  // Unowned convenience pointer.
   // A message loop to emulate asynchronous behavior.
   base::test::SingleThreadTaskEnvironment task_environment_;
-  raw_ptr<dbus::Response, ExperimentalAsh> response_ = nullptr;
+  raw_ptr<dbus::Response, DanglingUntriaged | ExperimentalAsh> response_ =
+      nullptr;
   // Mock D-Bus objects for |client_| to interact with.
   scoped_refptr<dbus::MockBus> mock_bus_;
   scoped_refptr<dbus::MockObjectProxy> mock_proxy_;

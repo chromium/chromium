@@ -12,6 +12,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
 #include "base/time/time.h"
@@ -51,6 +52,10 @@ const net::SchemefulSite kSite(kUrl);
 const std::string kTestData1 = "Hello world";
 const std::string kTestData2 = "Bonjour le monde";
 
+base::OnceCallback<bool()> DummyAccessAllowedCheckCallback() {
+  return base::BindOnce([]() { return true; });
+}
+
 void WriteDictionary(SharedDictionaryStorage* storage,
                      const GURL& dictionary_url,
                      const std::string& match,
@@ -60,8 +65,9 @@ void WriteDictionary(SharedDictionaryStorage* storage,
           {"HTTP/1.1 200 OK\n", shared_dictionary::kUseAsDictionaryHeaderName,
            ": match=\"/", match, "\"\n\n"}));
   ASSERT_TRUE(headers);
-  scoped_refptr<SharedDictionaryWriter> writer =
-      storage->MaybeCreateWriter(dictionary_url, base::Time::Now(), *headers);
+  scoped_refptr<SharedDictionaryWriter> writer = storage->MaybeCreateWriter(
+      dictionary_url, base::Time::Now(), *headers,
+      /*was_fetched_via_cache=*/false, DummyAccessAllowedCheckCallback());
   ASSERT_TRUE(writer);
   writer->Append(data.c_str(), data.size());
   writer->Finish();
@@ -77,8 +83,9 @@ void WriteDictionaryWithExpiry(SharedDictionaryStorage* storage,
            ": match=\"/", match,
            "\", expires=", base::NumberToString(expires.InSeconds()), "\n\n"}));
   ASSERT_TRUE(headers);
-  scoped_refptr<SharedDictionaryWriter> writer =
-      storage->MaybeCreateWriter(dictionary_url, base::Time::Now(), *headers);
+  scoped_refptr<SharedDictionaryWriter> writer = storage->MaybeCreateWriter(
+      dictionary_url, base::Time::Now(), *headers,
+      /*was_fetched_via_cache=*/false, DummyAccessAllowedCheckCallback());
   ASSERT_TRUE(writer);
   writer->Append(data.c_str(), data.size());
   writer->Finish();
@@ -172,9 +179,11 @@ class SharedDictionaryManagerOnDiskTest : public ::testing::Test {
 
  protected:
   std::unique_ptr<SharedDictionaryManager> CreateSharedDictionaryManager(
-      uint64_t cache_max_size = 0) {
+      uint64_t cache_max_size = 0,
+      uint64_t cache_max_count =
+          shared_dictionary::kDictionaryMaxCountPerNetworkContext) {
     return SharedDictionaryManager::CreateOnDisk(
-        database_path_, cache_directory_path_, cache_max_size,
+        database_path_, cache_directory_path_, cache_max_size, cache_max_count,
 #if BUILDFLAG(IS_ANDROID)
         /*app_status_listener=*/nullptr,
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -220,8 +229,8 @@ class SharedDictionaryManagerOnDiskTest : public ::testing::Test {
 TEST_F(SharedDictionaryManagerOnDiskTest, ReusingRefCountedSharedDictionary) {
   std::unique_ptr<SharedDictionaryManager> manager =
       CreateSharedDictionaryManager();
-  net::SharedDictionaryStorageIsolationKey isolation_key(
-      url::Origin::Create(kUrl), kSite);
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
   scoped_refptr<SharedDictionaryStorage> storage =
       manager->GetStorage(isolation_key);
   ASSERT_TRUE(storage);
@@ -231,9 +240,9 @@ TEST_F(SharedDictionaryManagerOnDiskTest, ReusingRefCountedSharedDictionary) {
 
   FlushCacheTasks();
 
-  // Check the returned dictionary from GetDictionary().
+  // Check the returned dictionary from GetDictionarySync().
   std::unique_ptr<SharedDictionary> dict1 =
-      storage->GetDictionary(GURL("https://origin.test/testfile?1"));
+      storage->GetDictionarySync(GURL("https://origin.test/testfile?1"));
   ASSERT_TRUE(dict1);
   {
     base::RunLoop run_loop;
@@ -245,7 +254,7 @@ TEST_F(SharedDictionaryManagerOnDiskTest, ReusingRefCountedSharedDictionary) {
     run_loop.Run();
   }
   std::unique_ptr<SharedDictionary> dict2 =
-      storage->GetDictionary(GURL("https://origin.test/testfile?2"));
+      storage->GetDictionarySync(GURL("https://origin.test/testfile?2"));
   ASSERT_TRUE(dict2);
   // `dict2` shares the same RefCountedSharedDictionary with `dict1`. So
   // ReadAll() must synchronously return OK.
@@ -264,8 +273,8 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
        MaybeCreateWriterAfterManagerDeleted) {
   std::unique_ptr<SharedDictionaryManager> manager =
       CreateSharedDictionaryManager();
-  net::SharedDictionaryStorageIsolationKey isolation_key(
-      url::Origin::Create(kUrl), kSite);
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
   scoped_refptr<SharedDictionaryStorage> storage =
       manager->GetStorage(isolation_key);
   ASSERT_TRUE(storage);
@@ -280,24 +289,25 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
 
   // MaybeCreateWriter() must return nullptr, after `manager` was deleted.
   scoped_refptr<SharedDictionaryWriter> writer = storage->MaybeCreateWriter(
-      GURL("https://origin.test/dict"), base::Time::Now(), *headers);
+      GURL("https://origin.test/dict"), base::Time::Now(), *headers,
+      /*was_fetched_via_cache=*/false, DummyAccessAllowedCheckCallback());
   EXPECT_FALSE(writer);
 }
 
 TEST_F(SharedDictionaryManagerOnDiskTest, GetDictionaryAfterManagerDeleted) {
   std::unique_ptr<SharedDictionaryManager> manager =
       CreateSharedDictionaryManager();
-  net::SharedDictionaryStorageIsolationKey isolation_key(
-      url::Origin::Create(kUrl), kSite);
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
   scoped_refptr<SharedDictionaryStorage> storage =
       manager->GetStorage(isolation_key);
   ASSERT_TRUE(storage);
 
   manager.reset();
 
-  // GetDictionary() must return nullptr, after `manager` was deleted.
+  // GetDictionarySync() must return nullptr, after `manager` was deleted.
   std::unique_ptr<SharedDictionary> dict =
-      storage->GetDictionary(GURL("https://origin.test/testfile?1"));
+      storage->GetDictionarySync(GURL("https://origin.test/testfile?1"));
   EXPECT_FALSE(dict);
 }
 
@@ -305,8 +315,8 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
        DictionaryWrittenInDiskCacheAfterManagerDeleted) {
   std::unique_ptr<SharedDictionaryManager> manager =
       CreateSharedDictionaryManager();
-  net::SharedDictionaryStorageIsolationKey isolation_key(
-      url::Origin::Create(kUrl), kSite);
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
   scoped_refptr<SharedDictionaryStorage> storage =
       manager->GetStorage(isolation_key);
   ASSERT_TRUE(storage);
@@ -322,8 +332,8 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
 TEST_F(SharedDictionaryManagerOnDiskTest, OverridingDictionary) {
   std::unique_ptr<SharedDictionaryManager> manager =
       CreateSharedDictionaryManager();
-  net::SharedDictionaryStorageIsolationKey isolation_key(
-      url::Origin::Create(kUrl), kSite);
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
   scoped_refptr<SharedDictionaryStorage> storage =
       manager->GetStorage(isolation_key);
   ASSERT_TRUE(storage);
@@ -342,9 +352,9 @@ TEST_F(SharedDictionaryManagerOnDiskTest, OverridingDictionary) {
         dictionary_map.begin()->second.begin()->second.disk_cache_key_token();
   }
 
-  // Check the returned dictionary from GetDictionary().
+  // Check the returned dictionary from GetDictionarySync().
   std::unique_ptr<SharedDictionary> dict1 =
-      storage->GetDictionary(GURL("https://origin.test/testfile"));
+      storage->GetDictionarySync(GURL("https://origin.test/testfile"));
   ASSERT_TRUE(dict1);
 
   // The disk cache entry must exist.
@@ -371,7 +381,7 @@ TEST_F(SharedDictionaryManagerOnDiskTest, OverridingDictionary) {
   EXPECT_FALSE(DiskCacheEntryExists(manager.get(), disk_cache_key_token1));
 
   std::unique_ptr<SharedDictionary> dict2 =
-      storage->GetDictionary(GURL("https://origin.test/testfile"));
+      storage->GetDictionarySync(GURL("https://origin.test/testfile"));
   ASSERT_TRUE(dict2);
 
   // We can read the new dictionary from `dict2`.
@@ -392,8 +402,8 @@ TEST_F(SharedDictionaryManagerOnDiskTest, OverridingDictionary) {
 }
 
 TEST_F(SharedDictionaryManagerOnDiskTest, MultipleDictionaries) {
-  net::SharedDictionaryStorageIsolationKey isolation_key(
-      url::Origin::Create(kUrl), kSite);
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
 
   {
     std::unique_ptr<SharedDictionaryManager> manager =
@@ -412,11 +422,11 @@ TEST_F(SharedDictionaryManagerOnDiskTest, MultipleDictionaries) {
     FlushCacheTasks();
 
     std::unique_ptr<SharedDictionary> dict1 =
-        storage->GetDictionary(GURL("https://origin.test/testfile1"));
+        storage->GetDictionarySync(GURL("https://origin.test/testfile1"));
     ASSERT_TRUE(dict1);
 
     std::unique_ptr<SharedDictionary> dict2 =
-        storage->GetDictionary(GURL("https://origin.test/testfile2"));
+        storage->GetDictionarySync(GURL("https://origin.test/testfile2"));
     ASSERT_TRUE(dict2);
 
     net::TestCompletionCallback read_callback1;
@@ -452,11 +462,11 @@ TEST_F(SharedDictionaryManagerOnDiskTest, MultipleDictionaries) {
   ASSERT_EQ(2u, dictionary_map.begin()->second.size());
 
   std::unique_ptr<SharedDictionary> dict1 =
-      storage->GetDictionary(GURL("https://origin.test/testfile1"));
+      storage->GetDictionarySync(GURL("https://origin.test/testfile1"));
   ASSERT_TRUE(dict1);
 
   std::unique_ptr<SharedDictionary> dict2 =
-      storage->GetDictionary(GURL("https://origin.test/testfile2"));
+      storage->GetDictionarySync(GURL("https://origin.test/testfile2"));
   ASSERT_TRUE(dict2);
 
   net::TestCompletionCallback read_callback1;
@@ -474,13 +484,63 @@ TEST_F(SharedDictionaryManagerOnDiskTest, MultipleDictionaries) {
                         dict2->size()));
 }
 
+TEST_F(SharedDictionaryManagerOnDiskTest, GetDictionary) {
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
+
+  {
+    std::unique_ptr<SharedDictionaryManager> manager =
+        CreateSharedDictionaryManager();
+    scoped_refptr<SharedDictionaryStorage> storage =
+        manager->GetStorage(isolation_key);
+    ASSERT_TRUE(storage);
+
+    // Write the test data to the dictionary.
+    WriteDictionary(storage.get(), GURL("https://origin.test/dict"),
+                    "testfile*", kTestData1);
+
+    FlushCacheTasks();
+    // Releasing `storage` and `manager`.
+  }
+  // FlushCacheTasks() to finish the persistence operation.
+  FlushCacheTasks();
+
+  // The dictionaries must be available after recreating `manager`.
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  ASSERT_TRUE(storage);
+
+  EXPECT_FALSE(
+      storage->GetDictionarySync(GURL("https://origin.test/testfile")));
+  std::unique_ptr<SharedDictionary> dict;
+  storage->GetDictionary(GURL("https://origin.test/testfile"),
+                         base::BindLambdaForTesting(
+                             [&](std::unique_ptr<SharedDictionary> dictionary) {
+                               dict = std::move(dictionary);
+                             }));
+  EXPECT_FALSE(dict);
+
+  // RunUntilIdle() to load from the database.
+  task_environment_.RunUntilIdle();
+
+  ASSERT_TRUE(dict);
+  net::TestCompletionCallback read_callback;
+  EXPECT_EQ(net::OK,
+            read_callback.GetResult(dict->ReadAll(read_callback.callback())));
+  EXPECT_EQ(kTestData1,
+            std::string(reinterpret_cast<const char*>(dict->data()->data()),
+                        dict->size()));
+}
+
 #if !BUILDFLAG(IS_FUCHSIA)
 // Test that corruptted disk cache doesn't cause crash.
 // CorruptDiskCache() doesn't work on Fuchsia. So disabling the following tests
 // on Fuchsia.
-TEST_F(SharedDictionaryManagerOnDiskTest, CorruptedDiskCache) {
-  net::SharedDictionaryStorageIsolationKey isolation_key(
-      url::Origin::Create(kUrl), kSite);
+TEST_F(SharedDictionaryManagerOnDiskTest, CorruptedDiskCacheAndWriteData) {
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
 
   {
     std::unique_ptr<SharedDictionaryManager> manager =
@@ -509,23 +569,67 @@ TEST_F(SharedDictionaryManagerOnDiskTest, CorruptedDiskCache) {
     WriteDictionary(storage.get(), GURL("https://origin.test/dict2"),
                     "testfile2*", kTestData2);
     FlushCacheTasks();
-    // Currently, if the disk cache is corrupted, it just prevents adding new
-    // dictionaries.
-    // TODO(crbug.com/1413922): Implement a garbage collection logic to remove
-    // the entry in the database when its disk cache entry is unavailable.
+
+    // Writing dictionary fails, so MismatchingEntryDeletionTask cleans all
+    // dictionary in the metadata store.
+    EXPECT_TRUE(GetOnDiskDictionaryMap(storage.get()).empty());
+  }
+}
+
+TEST_F(SharedDictionaryManagerOnDiskTest, CorruptedDiskCacheAndGetData) {
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
+
+  {
+    std::unique_ptr<SharedDictionaryManager> manager =
+        CreateSharedDictionaryManager();
+    scoped_refptr<SharedDictionaryStorage> storage =
+        manager->GetStorage(isolation_key);
+    ASSERT_TRUE(storage);
+    // Write the test data to the dictionary.
+    WriteDictionary(storage.get(), GURL("https://origin.test/dict1"),
+                    "testfile1*", kTestData1);
+    FlushCacheTasks();
+  }
+  CorruptDiskCache();
+  {
+    std::unique_ptr<SharedDictionaryManager> manager =
+        CreateSharedDictionaryManager();
+    scoped_refptr<SharedDictionaryStorage> storage =
+        manager->GetStorage(isolation_key);
+    ASSERT_TRUE(storage);
+    FlushCacheTasks();
     {
       const auto& dictionary_map = GetOnDiskDictionaryMap(storage.get());
       ASSERT_EQ(1u, dictionary_map.size());
       ASSERT_EQ(1u, dictionary_map.begin()->second.size());
     }
+
+    std::unique_ptr<SharedDictionary> dict =
+        storage->GetDictionarySync(GURL("https://origin.test/testfile1"));
+    ASSERT_TRUE(dict);
+
+    // Reading the dictionary should fail because the disk cache is broken.
+    net::TestCompletionCallback read_callback;
+    EXPECT_EQ(net::ERR_FAILED,
+              read_callback.GetResult(dict->ReadAll(read_callback.callback())));
+
+    FlushCacheTasks();
+
+    // After failing to read the disk cache entry, MismatchingEntryDeletionTask
+    // cleans all dictionary in the metadata store.
+    EXPECT_FALSE(
+        storage->GetDictionarySync(GURL("https://origin.test/testfile1")));
+    EXPECT_TRUE(GetOnDiskDictionaryMap(storage.get()).empty());
   }
 }
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 
 TEST_F(SharedDictionaryManagerOnDiskTest, CorruptedDatabase) {
-  net::SharedDictionaryStorageIsolationKey isolation_key(
-      url::Origin::Create(kUrl), kSite);
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
 
+  base::UnguessableToken token1, token2;
   {
     std::unique_ptr<SharedDictionaryManager> manager =
         CreateSharedDictionaryManager();
@@ -540,6 +644,8 @@ TEST_F(SharedDictionaryManagerOnDiskTest, CorruptedDatabase) {
       const auto& dictionary_map = GetOnDiskDictionaryMap(storage.get());
       ASSERT_EQ(1u, dictionary_map.size());
       ASSERT_EQ(1u, dictionary_map.begin()->second.size());
+      token1 =
+          dictionary_map.begin()->second.begin()->second.disk_cache_key_token();
     }
   }
   CorruptDatabase();
@@ -572,7 +678,7 @@ TEST_F(SharedDictionaryManagerOnDiskTest, CorruptedDatabase) {
     EXPECT_FALSE(GetOnDiskDictionaryMap(storage.get()).empty());
 
     std::unique_ptr<SharedDictionary> dict =
-        storage->GetDictionary(GURL("https://origin.test/testfile"));
+        storage->GetDictionarySync(GURL("https://origin.test/testfile"));
     ASSERT_TRUE(dict);
 
     // We can read the new dictionary.
@@ -582,16 +688,33 @@ TEST_F(SharedDictionaryManagerOnDiskTest, CorruptedDatabase) {
     EXPECT_EQ(kTestData1,
               std::string(reinterpret_cast<const char*>(dict->data()->data()),
                           dict->size()));
-    // Currently the disk cache entries that were added before the database
-    // corruption will not be removed.
-    // TODO(crbug.com/1413922): Implement a garbage collection logic to remove
-    // the entry in the disk cache when its database entry is unavailable.
+
+    {
+      const auto& dictionary_map = GetOnDiskDictionaryMap(storage.get());
+      ASSERT_EQ(1u, dictionary_map.size());
+      ASSERT_EQ(1u, dictionary_map.begin()->second.size());
+      token2 =
+          dictionary_map.begin()->second.begin()->second.disk_cache_key_token();
+    }
+
+    EXPECT_TRUE(DiskCacheEntryExists(manager.get(), token1));
+    EXPECT_TRUE(DiskCacheEntryExists(manager.get(), token2));
+
+    base::RunLoop run_loop;
+    manager->ClearData(
+        base::Time::Now() - base::Days(2), base::Time::Now() - base::Days(1),
+        base::RepeatingCallback<bool(const GURL&)>(), run_loop.QuitClosure());
+    run_loop.Run();
+    FlushCacheTasks();
+
+    EXPECT_FALSE(DiskCacheEntryExists(manager.get(), token1));
+    EXPECT_TRUE(DiskCacheEntryExists(manager.get(), token2));
   }
 }
 
 TEST_F(SharedDictionaryManagerOnDiskTest, LastUsedTime) {
-  net::SharedDictionaryStorageIsolationKey isolation_key(
-      url::Origin::Create(kUrl), kSite);
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
   base::Time last_used_time_after_second_get_dict;
   {
     std::unique_ptr<SharedDictionaryManager> manager =
@@ -615,7 +738,7 @@ TEST_F(SharedDictionaryManagerOnDiskTest, LastUsedTime) {
     task_environment_.FastForwardBy(base::Seconds(1));
 
     std::unique_ptr<SharedDictionary> dict1 =
-        storage->GetDictionary(GURL("https://origin.test/testfile?1"));
+        storage->GetDictionarySync(GURL("https://origin.test/testfile?1"));
     base::Time last_used_time_after_first_get_dict =
         dictionary_map.begin()->second.begin()->second.last_used_time();
 
@@ -623,7 +746,7 @@ TEST_F(SharedDictionaryManagerOnDiskTest, LastUsedTime) {
     task_environment_.FastForwardBy(base::Seconds(1));
 
     std::unique_ptr<SharedDictionary> dict2 =
-        storage->GetDictionary(GURL("https://origin.test/testfile?2"));
+        storage->GetDictionarySync(GURL("https://origin.test/testfile?2"));
     last_used_time_after_second_get_dict =
         dictionary_map.begin()->second.begin()->second.last_used_time();
     EXPECT_NE(initial_last_used_time, last_used_time_after_first_get_dict);
@@ -662,8 +785,8 @@ MATCHER_P(DictionaryUrlIs,
 }
 
 TEST_F(SharedDictionaryManagerOnDiskTest, ClearData) {
-  net::SharedDictionaryStorageIsolationKey isolation_key(
-      url::Origin::Create(kUrl), kSite);
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
   {
     std::unique_ptr<SharedDictionaryManager> manager =
         CreateSharedDictionaryManager();
@@ -699,7 +822,7 @@ TEST_F(SharedDictionaryManagerOnDiskTest, ClearData) {
 
     // Get a dictionary before calling ClearData().
     std::unique_ptr<SharedDictionary> dict =
-        storage->GetDictionary(GURL("https://target.test/p3?"));
+        storage->GetDictionarySync(GURL("https://target.test/p3?"));
     ASSERT_TRUE(dict);
 
     base::RunLoop run_loop;
@@ -764,8 +887,8 @@ TEST_F(SharedDictionaryManagerOnDiskTest, ClearData) {
 }
 
 TEST_F(SharedDictionaryManagerOnDiskTest, ClearDataSerializedOperation) {
-  net::SharedDictionaryStorageIsolationKey isolation_key(
-      url::Origin::Create(kUrl), kSite);
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
   std::unique_ptr<SharedDictionaryManager> manager =
       CreateSharedDictionaryManager();
   scoped_refptr<SharedDictionaryStorage> storage =
@@ -814,9 +937,81 @@ TEST_F(SharedDictionaryManagerOnDiskTest, ClearDataSerializedOperation) {
   EXPECT_TRUE(GetOnDiskDictionaryMap(storage.get()).empty());
 }
 
+TEST_F(SharedDictionaryManagerOnDiskTest, ClearDataForIsolationKey) {
+  net::SharedDictionaryIsolationKey isolation_key1(url::Origin::Create(kUrl),
+                                                   kSite);
+  net::SharedDictionaryIsolationKey isolation_key2(
+      url::Origin::Create(GURL("https://different-origin.test")), kSite);
+  {
+    std::unique_ptr<SharedDictionaryManager> manager =
+        CreateSharedDictionaryManager();
+    scoped_refptr<SharedDictionaryStorage> storage1 =
+        manager->GetStorage(isolation_key1);
+    ASSERT_TRUE(storage1);
+    WriteDictionary(storage1.get(), GURL("https://origin1.test/d"), "p*",
+                    kTestData1);
+    WriteDictionary(storage1.get(), GURL("https://origin2.test/d"), "p*",
+                    kTestData2);
+
+    scoped_refptr<SharedDictionaryStorage> storage2 =
+        manager->GetStorage(isolation_key2);
+    ASSERT_TRUE(storage2);
+    WriteDictionary(storage2.get(), GURL("https://origin1.test/d"), "p*",
+                    kTestData1);
+    FlushCacheTasks();
+
+    // Get a dictionary before calling ClearDataForIsolationKey().
+    std::unique_ptr<SharedDictionary> dict =
+        storage1->GetDictionarySync(GURL("https://origin1.test/p?"));
+    ASSERT_TRUE(dict);
+
+    base::RunLoop run_loop;
+    manager->ClearDataForIsolationKey(isolation_key1, run_loop.QuitClosure());
+    run_loop.Run();
+
+    // The dictionaries for `isolation_key1` must have been deleted.
+    EXPECT_TRUE(GetOnDiskDictionaryMap(storage1.get()).empty());
+    EXPECT_THAT(GetOnDiskDictionaryMap(storage2.get()),
+                ElementsAre(Pair(
+                    url::SchemeHostPort(GURL("https://origin1.test/")),
+                    ElementsAre(Pair(
+                        "/p*", DictionaryUrlIs("https://origin1.test/d"))))));
+
+    // We can still read the deleted dictionary from `dict`.
+    net::TestCompletionCallback read_callback;
+    EXPECT_EQ(net::OK,
+              read_callback.GetResult(dict->ReadAll(read_callback.callback())));
+    EXPECT_EQ(kTestData1,
+              std::string(reinterpret_cast<const char*>(dict->data()->data()),
+                          dict->size()));
+    // Releasing `dict`, `storage` and `manager`.
+  }
+  // FlushCacheTasks() to finish the persistence operation.
+  FlushCacheTasks();
+
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  scoped_refptr<SharedDictionaryStorage> storage1 =
+      manager->GetStorage(isolation_key1);
+  ASSERT_TRUE(storage1);
+  scoped_refptr<SharedDictionaryStorage> storage2 =
+      manager->GetStorage(isolation_key2);
+  ASSERT_TRUE(storage2);
+
+  // RunUntilIdle() to load from the database.
+  task_environment_.RunUntilIdle();
+
+  EXPECT_TRUE(GetOnDiskDictionaryMap(storage1.get()).empty());
+  EXPECT_THAT(GetOnDiskDictionaryMap(storage2.get()),
+              ElementsAre(Pair(
+                  url::SchemeHostPort(GURL("https://origin1.test/")),
+                  ElementsAre(Pair(
+                      "/p*", DictionaryUrlIs("https://origin1.test/d"))))));
+}
+
 TEST_F(SharedDictionaryManagerOnDiskTest, ExpiredDictionaryDeletionOnReload) {
-  net::SharedDictionaryStorageIsolationKey isolation_key(
-      url::Origin::Create(kUrl), kSite);
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
   base::UnguessableToken token1, token2;
   {
     std::unique_ptr<SharedDictionaryManager> manager =
@@ -863,8 +1058,8 @@ TEST_F(SharedDictionaryManagerOnDiskTest, ExpiredDictionaryDeletionOnReload) {
 
 TEST_F(SharedDictionaryManagerOnDiskTest,
        ExpiredDictionaryDeletionOnNewDictionary) {
-  net::SharedDictionaryStorageIsolationKey isolation_key(
-      url::Origin::Create(kUrl), kSite);
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
   std::unique_ptr<SharedDictionaryManager> manager =
       CreateSharedDictionaryManager();
   scoped_refptr<SharedDictionaryStorage> storage =
@@ -908,8 +1103,8 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
 
 TEST_F(SharedDictionaryManagerOnDiskTest,
        ExpiredDictionaryDeletionOnSetCacheMaxSize) {
-  net::SharedDictionaryStorageIsolationKey isolation_key(
-      url::Origin::Create(kUrl), kSite);
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
   std::unique_ptr<SharedDictionaryManager> manager =
       CreateSharedDictionaryManager();
   scoped_refptr<SharedDictionaryStorage> storage =
@@ -944,8 +1139,8 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
 
 TEST_F(SharedDictionaryManagerOnDiskTest,
        ExpiredDictionaryDeletionOnClearData) {
-  net::SharedDictionaryStorageIsolationKey isolation_key(
-      url::Origin::Create(kUrl), kSite);
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
   std::unique_ptr<SharedDictionaryManager> manager =
       CreateSharedDictionaryManager();
   scoped_refptr<SharedDictionaryStorage> storage =
@@ -981,9 +1176,49 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
   EXPECT_FALSE(DiskCacheEntryExists(manager.get(), token));
 }
 
+TEST_F(SharedDictionaryManagerOnDiskTest,
+       ExpiredDictionaryDeletionOnClearDataForIsolationKey) {
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  ASSERT_TRUE(storage);
+  WriteDictionaryWithExpiry(storage.get(), GURL("https://target1.test/d"), "p*",
+                            base::Seconds(10), kTestData1);
+  // FlushCacheTasks() to finish the persistence operation.
+  FlushCacheTasks();
+  base::UnguessableToken token = GetDiskCacheKeyTokenOfFirstDictionary(
+      GetOnDiskDictionaryMap(storage.get()), "https://target1.test/");
+
+  // Move the clock forward by 10 second.
+  task_environment_.FastForwardBy(base::Seconds(10));
+  // The first dictionary still exists.
+  EXPECT_THAT(GetOnDiskDictionaryMap(storage.get()),
+              ElementsAre(Pair(
+                  url::SchemeHostPort(GURL("https://target1.test/")),
+                  ElementsAre(Pair(
+                      "/p*", DictionaryUrlIs("https://target1.test/d"))))));
+
+  base::RunLoop run_loop;
+  manager->ClearDataForIsolationKey(
+      net::SharedDictionaryIsolationKey(
+          url::Origin::Create(GURL("https://different-origin.test")), kSite),
+      run_loop.QuitClosure());
+  run_loop.Run();
+
+  // FlushCacheTasks() to finish the persistence operation.
+  FlushCacheTasks();
+
+  // The dictionary must be deleted.
+  EXPECT_TRUE(GetOnDiskDictionaryMap(storage.get()).empty());
+  EXPECT_FALSE(DiskCacheEntryExists(manager.get(), token));
+}
+
 TEST_F(SharedDictionaryManagerOnDiskTest, CacheEvictionOnReload) {
-  net::SharedDictionaryStorageIsolationKey isolation_key(
-      url::Origin::Create(kUrl), kSite);
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
   base::UnguessableToken token1, token2, token3;
   {
     std::unique_ptr<SharedDictionaryManager> manager =
@@ -1034,8 +1269,8 @@ TEST_F(SharedDictionaryManagerOnDiskTest, CacheEvictionOnReload) {
 }
 
 TEST_F(SharedDictionaryManagerOnDiskTest, CacheEvictionOnSetCacheMaxSize) {
-  net::SharedDictionaryStorageIsolationKey isolation_key(
-      url::Origin::Create(kUrl), kSite);
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
   std::unique_ptr<SharedDictionaryManager> manager =
       CreateSharedDictionaryManager();
   scoped_refptr<SharedDictionaryStorage> storage =
@@ -1076,66 +1311,267 @@ TEST_F(SharedDictionaryManagerOnDiskTest, CacheEvictionOnSetCacheMaxSize) {
 }
 
 TEST_F(SharedDictionaryManagerOnDiskTest, CacheEvictionOnNewDictionary) {
-  net::SharedDictionaryStorageIsolationKey isolation_key(
-      url::Origin::Create(kUrl), kSite);
+  const net::SchemefulSite site1(GURL("https://site1.test"));
+  const net::SchemefulSite site2(GURL("https://site2.test"));
+  const net::SchemefulSite site3(GURL("https://site3.test"));
+
+  net::SharedDictionaryIsolationKey isolation_key1(
+      url::Origin::Create(GURL("https://origin1.test")), site1);
+  net::SharedDictionaryIsolationKey isolation_key2(
+      url::Origin::Create(GURL("https://origin2.test")), site2);
+  net::SharedDictionaryIsolationKey isolation_key3(
+      url::Origin::Create(GURL("https://origin3.test")), site3);
+
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
+
   std::unique_ptr<SharedDictionaryManager> manager =
       CreateSharedDictionaryManager();
   manager->SetCacheMaxSize(/*cache_max_size=*/kTestData1.size() * 2);
 
-  scoped_refptr<SharedDictionaryStorage> storage =
-      manager->GetStorage(isolation_key);
-  ASSERT_TRUE(storage);
+  scoped_refptr<SharedDictionaryStorage> storage1 =
+      manager->GetStorage(isolation_key1);
+  scoped_refptr<SharedDictionaryStorage> storage2 =
+      manager->GetStorage(isolation_key2);
+  scoped_refptr<SharedDictionaryStorage> storage3 =
+      manager->GetStorage(isolation_key3);
 
-  WriteDictionary(storage.get(), GURL("https://target1.test/d"), "p*",
+  WriteDictionary(storage1.get(), GURL("https://target1.test/d"), "p*",
                   kTestData1);
   FlushCacheTasks();
   base::UnguessableToken token1 = GetDiskCacheKeyTokenOfFirstDictionary(
-      GetOnDiskDictionaryMap(storage.get()), "https://target1.test/");
+      GetOnDiskDictionaryMap(storage1.get()), "https://target1.test/");
 
   task_environment_.FastForwardBy(base::Seconds(1));
 
-  WriteDictionary(storage.get(), GURL("https://target2.test/d"), "p*",
+  WriteDictionary(storage2.get(), GURL("https://target2.test/d"), "p*",
                   kTestData1);
   FlushCacheTasks();
   base::UnguessableToken token2 = GetDiskCacheKeyTokenOfFirstDictionary(
-      GetOnDiskDictionaryMap(storage.get()), "https://target2.test/");
+      GetOnDiskDictionaryMap(storage2.get()), "https://target2.test/");
 
   task_environment_.FastForwardBy(base::Seconds(1));
 
   // Both the dictinaries exist.
-  EXPECT_THAT(
-      GetOnDiskDictionaryMap(storage.get()),
-      ElementsAre(
-          Pair(url::SchemeHostPort(GURL("https://target1.test/")),
-               ElementsAre(
-                   Pair("/p*", DictionaryUrlIs("https://target1.test/d")))),
-          Pair(url::SchemeHostPort(GURL("https://target2.test/")),
-               ElementsAre(
-                   Pair("/p*", DictionaryUrlIs("https://target2.test/d"))))));
+  EXPECT_THAT(GetOnDiskDictionaryMap(storage1.get()),
+              ElementsAre(Pair(
+                  url::SchemeHostPort(GURL("https://target1.test/")),
+                  ElementsAre(Pair(
+                      "/p*", DictionaryUrlIs("https://target1.test/d"))))));
+  EXPECT_THAT(GetOnDiskDictionaryMap(storage2.get()),
+              ElementsAre(Pair(
+                  url::SchemeHostPort(GURL("https://target2.test/")),
+                  ElementsAre(Pair(
+                      "/p*", DictionaryUrlIs("https://target2.test/d"))))));
   EXPECT_TRUE(DiskCacheEntryExists(manager.get(), token1));
   EXPECT_TRUE(DiskCacheEntryExists(manager.get(), token2));
 
-  WriteDictionary(storage.get(), GURL("https://target3.test/d"), "p*",
+  WriteDictionary(storage3.get(), GURL("https://target3.test/d"), "p*",
                   kTestData1);
   FlushCacheTasks();
   base::UnguessableToken token3 = GetDiskCacheKeyTokenOfFirstDictionary(
-      GetOnDiskDictionaryMap(storage.get()), "https://target3.test/");
+      GetOnDiskDictionaryMap(storage3.get()), "https://target3.test/");
 
   // Only the third dictionary exists.
-  EXPECT_THAT(GetOnDiskDictionaryMap(storage.get()),
+  EXPECT_TRUE(GetOnDiskDictionaryMap(storage1.get()).empty());
+  EXPECT_TRUE(GetOnDiskDictionaryMap(storage2.get()).empty());
+  EXPECT_THAT(GetOnDiskDictionaryMap(storage3.get()),
               ElementsAre(Pair(
                   url::SchemeHostPort(GURL("https://target3.test/")),
                   ElementsAre(Pair(
                       "/p*", DictionaryUrlIs("https://target3.test/d"))))));
+
   EXPECT_FALSE(DiskCacheEntryExists(manager.get(), token1));
   EXPECT_FALSE(DiskCacheEntryExists(manager.get(), token2));
   EXPECT_TRUE(DiskCacheEntryExists(manager.get(), token3));
 }
 
 TEST_F(SharedDictionaryManagerOnDiskTest,
+       CacheEvictionPerSiteExceededSizeLimit) {
+  const net::SchemefulSite site1(GURL("https://site1.test"));
+  const net::SchemefulSite site2(GURL("https://site2.test"));
+
+  net::SharedDictionaryIsolationKey isolation_key1(
+      url::Origin::Create(GURL("https://origin1.test")), site1);
+  net::SharedDictionaryIsolationKey isolation_key2(
+      url::Origin::Create(GURL("https://origin1.test")), site2);
+  // The top frame site of `isolation_key3` is same as the top frame site of
+  // `isolation_key2`.
+  net::SharedDictionaryIsolationKey isolation_key3(
+      url::Origin::Create(GURL("https://origin2.test")), site2);
+
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  manager->SetCacheMaxSize(/*cache_max_size=*/kTestData1.size() * 2);
+
+  scoped_refptr<SharedDictionaryStorage> storage1 =
+      manager->GetStorage(isolation_key1);
+  scoped_refptr<SharedDictionaryStorage> storage2 =
+      manager->GetStorage(isolation_key2);
+  scoped_refptr<SharedDictionaryStorage> storage3 =
+      manager->GetStorage(isolation_key3);
+
+  // Register the first dictionary.
+  WriteDictionary(storage1.get(), GURL("https://target1.test/d"), "p*",
+                  kTestData1);
+  FlushCacheTasks();
+  base::UnguessableToken token1 = GetDiskCacheKeyTokenOfFirstDictionary(
+      GetOnDiskDictionaryMap(storage1.get()), "https://target1.test/");
+  EXPECT_THAT(GetOnDiskDictionaryMap(storage1.get()),
+              ElementsAre(Pair(
+                  url::SchemeHostPort(GURL("https://target1.test/")),
+                  ElementsAre(Pair(
+                      "/p*", DictionaryUrlIs("https://target1.test/d"))))));
+  EXPECT_TRUE(DiskCacheEntryExists(manager.get(), token1));
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  // Register the second dictionary.
+  WriteDictionary(storage2.get(), GURL("https://target2.test/d"), "p*",
+                  kTestData1);
+  FlushCacheTasks();
+  base::UnguessableToken token2 = GetDiskCacheKeyTokenOfFirstDictionary(
+      GetOnDiskDictionaryMap(storage2.get()), "https://target2.test/");
+  EXPECT_THAT(GetOnDiskDictionaryMap(storage2.get()),
+              ElementsAre(Pair(
+                  url::SchemeHostPort(GURL("https://target2.test/")),
+                  ElementsAre(Pair(
+                      "/p*", DictionaryUrlIs("https://target2.test/d"))))));
+  EXPECT_TRUE(DiskCacheEntryExists(manager.get(), token2));
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  // Register the third dictionary.
+  WriteDictionary(storage3.get(), GURL("https://target3.test/d"), "p*",
+                  kTestData1);
+  FlushCacheTasks();
+  base::UnguessableToken token3 = GetDiskCacheKeyTokenOfFirstDictionary(
+      GetOnDiskDictionaryMap(storage3.get()), "https://target3.test/");
+  EXPECT_THAT(GetOnDiskDictionaryMap(storage3.get()),
+              ElementsAre(Pair(
+                  url::SchemeHostPort(GURL("https://target3.test/")),
+                  ElementsAre(Pair(
+                      "/p*", DictionaryUrlIs("https://target3.test/d"))))));
+  EXPECT_TRUE(DiskCacheEntryExists(manager.get(), token3));
+
+  // The first dictionary must still exist.
+  EXPECT_THAT(GetOnDiskDictionaryMap(storage1.get()),
+              ElementsAre(Pair(
+                  url::SchemeHostPort(GURL("https://target1.test/")),
+                  ElementsAre(Pair(
+                      "/p*", DictionaryUrlIs("https://target1.test/d"))))));
+  EXPECT_TRUE(DiskCacheEntryExists(manager.get(), token1));
+
+  // The second dictionary must have been deleted because the size limit per
+  // site is kTestData1.size() * 2 / 2.
+  EXPECT_TRUE(GetOnDiskDictionaryMap(storage2.get()).empty());
+  EXPECT_FALSE(DiskCacheEntryExists(manager.get(), token2));
+}
+
+TEST_F(SharedDictionaryManagerOnDiskTest,
+       CacheEvictionPerSiteExceededCountLimit) {
+  const net::SchemefulSite site1(GURL("https://site1.test"));
+  const net::SchemefulSite site2(GURL("https://site2.test"));
+
+  net::SharedDictionaryIsolationKey isolation_key1(
+      url::Origin::Create(GURL("https://origin1.test")), site1);
+  net::SharedDictionaryIsolationKey isolation_key2(
+      url::Origin::Create(GURL("https://origin1.test")), site2);
+  // The top frame site of `isolation_key3` is same as the top frame site of
+  // `isolation_key2`.
+  net::SharedDictionaryIsolationKey isolation_key3(
+      url::Origin::Create(GURL("https://origin2.test")), site2);
+
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager(/*cache_max_size=*/0,
+                                    /*cache_max_count=*/4);
+
+  scoped_refptr<SharedDictionaryStorage> storage1 =
+      manager->GetStorage(isolation_key1);
+  scoped_refptr<SharedDictionaryStorage> storage2 =
+      manager->GetStorage(isolation_key2);
+  scoped_refptr<SharedDictionaryStorage> storage3 =
+      manager->GetStorage(isolation_key3);
+
+  // Register the first dictionary.
+  WriteDictionary(storage1.get(), GURL("https://target1.test/d"), "p*",
+                  kTestData1);
+  FlushCacheTasks();
+  base::UnguessableToken token1 = GetDiskCacheKeyTokenOfFirstDictionary(
+      GetOnDiskDictionaryMap(storage1.get()), "https://target1.test/");
+  EXPECT_THAT(GetOnDiskDictionaryMap(storage1.get()),
+              ElementsAre(Pair(
+                  url::SchemeHostPort(GURL("https://target1.test/")),
+                  ElementsAre(Pair(
+                      "/p*", DictionaryUrlIs("https://target1.test/d"))))));
+  EXPECT_TRUE(DiskCacheEntryExists(manager.get(), token1));
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  // Register the second dictionary.
+  WriteDictionary(storage2.get(), GURL("https://target2.test/d"), "p*",
+                  kTestData1);
+  FlushCacheTasks();
+  base::UnguessableToken token2 = GetDiskCacheKeyTokenOfFirstDictionary(
+      GetOnDiskDictionaryMap(storage2.get()), "https://target2.test/");
+  EXPECT_THAT(GetOnDiskDictionaryMap(storage2.get()),
+              ElementsAre(Pair(
+                  url::SchemeHostPort(GURL("https://target2.test/")),
+                  ElementsAre(Pair(
+                      "/p*", DictionaryUrlIs("https://target2.test/d"))))));
+  EXPECT_TRUE(DiskCacheEntryExists(manager.get(), token2));
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  // Register the third dictionary.
+  WriteDictionary(storage2.get(), GURL("https://target3.test/d"), "p*",
+                  kTestData1);
+  FlushCacheTasks();
+  base::UnguessableToken token3 = GetDiskCacheKeyTokenOfFirstDictionary(
+      GetOnDiskDictionaryMap(storage2.get()), "https://target3.test/");
+  EXPECT_THAT(
+      GetOnDiskDictionaryMap(storage2.get()),
+      ElementsAre(
+          Pair(url::SchemeHostPort(GURL("https://target2.test/")),
+               ElementsAre(
+                   Pair("/p*", DictionaryUrlIs("https://target2.test/d")))),
+          Pair(url::SchemeHostPort(GURL("https://target3.test/")),
+               ElementsAre(
+                   Pair("/p*", DictionaryUrlIs("https://target3.test/d"))))));
+  EXPECT_TRUE(DiskCacheEntryExists(manager.get(), token3));
+
+  // Register the fourth dictionary.
+  WriteDictionary(storage3.get(), GURL("https://target4.test/d"), "p*",
+                  kTestData1);
+  FlushCacheTasks();
+  base::UnguessableToken token4 = GetDiskCacheKeyTokenOfFirstDictionary(
+      GetOnDiskDictionaryMap(storage3.get()), "https://target4.test/");
+  EXPECT_THAT(GetOnDiskDictionaryMap(storage3.get()),
+              ElementsAre(Pair(
+                  url::SchemeHostPort(GURL("https://target4.test/")),
+                  ElementsAre(Pair(
+                      "/p*", DictionaryUrlIs("https://target4.test/d"))))));
+  EXPECT_TRUE(DiskCacheEntryExists(manager.get(), token4));
+
+  // The first dictionary must still exist.
+  EXPECT_THAT(GetOnDiskDictionaryMap(storage1.get()),
+              ElementsAre(Pair(
+                  url::SchemeHostPort(GURL("https://target1.test/")),
+                  ElementsAre(Pair(
+                      "/p*", DictionaryUrlIs("https://target1.test/d"))))));
+  EXPECT_TRUE(DiskCacheEntryExists(manager.get(), token1));
+
+  // The third dictionary must still exist. But the second dictionary must have
+  // been deleted because the count limit per site is 2 (4 / 2).
+  EXPECT_THAT(GetOnDiskDictionaryMap(storage2.get()),
+              ElementsAre(Pair(
+                  url::SchemeHostPort(GURL("https://target3.test/")),
+                  ElementsAre(Pair(
+                      "/p*", DictionaryUrlIs("https://target3.test/d"))))));
+  EXPECT_FALSE(DiskCacheEntryExists(manager.get(), token2));
+  EXPECT_TRUE(DiskCacheEntryExists(manager.get(), token3));
+}
+
+TEST_F(SharedDictionaryManagerOnDiskTest,
        CacheEvictionAfterUpdatingLastUsedTime) {
-  net::SharedDictionaryStorageIsolationKey isolation_key(
-      url::Origin::Create(kUrl), kSite);
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
   std::unique_ptr<SharedDictionaryManager> manager =
       CreateSharedDictionaryManager();
   scoped_refptr<SharedDictionaryStorage> storage =
@@ -1179,7 +1615,7 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
 
   // Call GetDictionary to update the last used time of the dictionary 1.
   std::unique_ptr<SharedDictionary> dict1 =
-      storage->GetDictionary(GURL("https://target1.test/path?"));
+      storage->GetDictionarySync(GURL("https://target1.test/path?"));
   ASSERT_TRUE(dict1);
 
   // Set the max size to kTestData1.size() * 3. The low water mark will be
@@ -1222,8 +1658,16 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
   run_loop.Run();
 
   EXPECT_TRUE(DiskCacheEntryExists(manager.get(), entry_key));
+  base::HistogramTester histogram_tester;
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(DiskCacheEntryExists(manager.get(), entry_key));
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryManagerOnDisk.InvalidDiskCacheEntryCount", 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryManagerOnDisk.MetadataMissingDictionaryCount", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryManagerOnDisk.DiskCacheEntryMissingDictionaryCount",
+      0, 1);
 }
 
 TEST_F(SharedDictionaryManagerOnDiskTest,
@@ -1243,14 +1687,22 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
   run_loop.Run();
 
   EXPECT_TRUE(DiskCacheEntryExists(manager.get(), kTestKey));
+  base::HistogramTester histogram_tester;
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(DiskCacheEntryExists(manager.get(), kTestKey));
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryManagerOnDisk.InvalidDiskCacheEntryCount", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryManagerOnDisk.MetadataMissingDictionaryCount", 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryManagerOnDisk.DiskCacheEntryMissingDictionaryCount",
+      0, 1);
 }
 
 TEST_F(SharedDictionaryManagerOnDiskTest,
        MismatchingEntryDeletionDiskCacheEntryUnavailableDictionary) {
-  net::SharedDictionaryStorageIsolationKey isolation_key(
-      url::Origin::Create(kUrl), kSite);
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
   {
     std::unique_ptr<SharedDictionaryManager> manager =
         CreateSharedDictionaryManager();
@@ -1281,9 +1733,21 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
 
     EXPECT_FALSE(GetOnDiskDictionaryMap(storage.get()).empty());
 
+    base::HistogramTester histogram_tester;
     task_environment_.RunUntilIdle();
 
     EXPECT_TRUE(GetOnDiskDictionaryMap(storage.get()).empty());
+
+    histogram_tester.ExpectUniqueSample(
+        "Net.SharedDictionaryManagerOnDisk.InvalidDiskCacheEntryCount", 0, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Net.SharedDictionaryManagerOnDisk.MetadataMissingDictionaryCount", 0,
+        1);
+    histogram_tester.ExpectUniqueSample(
+        "Net.SharedDictionaryManagerOnDisk."
+        "DiskCacheEntryMissingDictionaryCount",
+        1, 1);
+
     // Releasing `storage` and `manager`.
   }
   // FlushCacheTasks() to finish the persistence operation.
@@ -1312,7 +1776,16 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
       base::Time::Now() - base::Days(2), base::Time::Now() - base::Days(1),
       base::RepeatingCallback<bool(const GURL&)>(), run_loop1.QuitClosure());
   run_loop1.Run();
+
+  base::HistogramTester histogram_tester;
   task_environment_.RunUntilIdle();
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryManagerOnDisk.InvalidDiskCacheEntryCount", 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryManagerOnDisk.MetadataMissingDictionaryCount", 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryManagerOnDisk.DiskCacheEntryMissingDictionaryCount",
+      0, 1);
 
   const base::UnguessableToken token = base::UnguessableToken::Create();
   const std::string entry_key = token.ToString();
@@ -1336,8 +1809,8 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
 
 TEST_F(SharedDictionaryManagerOnDiskTest,
        MismatchingEntryDeletionWritingEntryMustNotBeDeleted) {
-  net::SharedDictionaryStorageIsolationKey isolation_key(
-      url::Origin::Create(kUrl), kSite);
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
   std::unique_ptr<SharedDictionaryManager> manager =
       CreateSharedDictionaryManager();
   scoped_refptr<SharedDictionaryStorage> storage =
@@ -1351,7 +1824,8 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
            ": match=\"/p*\"\n\n"}));
   ASSERT_TRUE(headers);
   scoped_refptr<SharedDictionaryWriter> writer = storage->MaybeCreateWriter(
-      GURL("https://target1.test/d"), base::Time::Now(), *headers);
+      GURL("https://target1.test/d"), base::Time::Now(), *headers,
+      /*was_fetched_via_cache=*/false, DummyAccessAllowedCheckCallback());
   ASSERT_TRUE(writer);
   writer->Append(kTestData1.c_str(), kTestData1.size());
 
@@ -1361,14 +1835,32 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
       base::RepeatingCallback<bool(const GURL&)>(), run_loop.QuitClosure());
   run_loop.Run();
 
+  base::HistogramTester histogram_tester;
   // FlushCacheTasks() to finish the persistence operation.
   FlushCacheTasks();
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryManagerOnDisk.InvalidDiskCacheEntryCount", 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryManagerOnDisk.MetadataMissingDictionaryCount", 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryManagerOnDisk.DiskCacheEntryMissingDictionaryCount",
+      0, 1);
 
   // Finish writing the dictionary.
   writer->Finish();
 
   // FlushCacheTasks() to finish the persistence operation.
   FlushCacheTasks();
+
+  // There should be no change in MismatchingEntryDeletionTask related metrics.
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryManagerOnDisk.InvalidDiskCacheEntryCount", 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryManagerOnDisk.MetadataMissingDictionaryCount", 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryManagerOnDisk.DiskCacheEntryMissingDictionaryCount",
+      0, 1);
 
   const auto& dictionary_map = GetOnDiskDictionaryMap(storage.get());
   EXPECT_THAT(dictionary_map,
@@ -1380,8 +1872,8 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
 
 TEST_F(SharedDictionaryManagerOnDiskTest,
        MismatchingEntryDeletionWritingDiskCacheEntryMustNotBeDeleted) {
-  net::SharedDictionaryStorageIsolationKey isolation_key(
-      url::Origin::Create(kUrl), kSite);
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
   std::unique_ptr<SharedDictionaryManager> manager =
       CreateSharedDictionaryManager();
   scoped_refptr<SharedDictionaryStorage> storage =
@@ -1397,6 +1889,8 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
       base::RepeatingCallback<bool(const GURL&)>(), run_loop.QuitClosure());
   run_loop.Run();
 
+  base::HistogramTester histogram_tester;
+
   // FlushCacheTasks() to finish the persistence operation.
   FlushCacheTasks();
 
@@ -1406,6 +1900,13 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
                   url::SchemeHostPort(GURL("https://target1.test/")),
                   ElementsAre(Pair(
                       "/p*", DictionaryUrlIs("https://target1.test/d"))))));
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryManagerOnDisk.InvalidDiskCacheEntryCount", 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryManagerOnDisk.MetadataMissingDictionaryCount", 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryManagerOnDisk.DiskCacheEntryMissingDictionaryCount",
+      0, 1);
 }
 
 }  // namespace network

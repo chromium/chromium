@@ -37,22 +37,23 @@ class AffiliatedCloudPolicyInvalidator;
 class AffiliatedInvalidationServiceProvider;
 class AffiliatedRemoteCommandsInvalidator;
 class BluetoothPolicyHandler;
+class CrdAdminSessionController;
+class DeviceCloudExternalDataPolicyHandler;
 class DeviceCloudPolicyInitializer;
 class DeviceDockMacAddressHandler;
 class DeviceLocalAccountPolicyService;
 class DeviceNamePolicyHandler;
 class DeviceNetworkConfigurationUpdaterAsh;
+class DeviceScheduledRebootHandler;
+class DeviceScheduledUpdateChecker;
 class DeviceWiFiAllowedHandler;
 class MinimumVersionPolicyHandler;
 class MinimumVersionPolicyHandlerDelegateImpl;
 class ProxyPolicyProvider;
-class ServerBackedStateKeysBroker;
-class TPMAutoUpdateModePolicyHandler;
-class DeviceScheduledUpdateChecker;
-class DeviceCloudExternalDataPolicyHandler;
-class SystemProxyHandler;
-class DeviceScheduledRebootHandler;
 class RebootNotificationsScheduler;
+class ServerBackedStateKeysBroker;
+class SystemProxyHandler;
+class TPMAutoUpdateModePolicyHandler;
 
 // Extends ChromeBrowserPolicyConnector with the setup specific to Chrome OS.
 class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
@@ -236,6 +237,7 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
 
   // Components of the device cloud policy implementation.
   std::unique_ptr<ServerBackedStateKeysBroker> state_keys_broker_;
+  std::unique_ptr<CrdAdminSessionController> crd_admin_session_controller_;
   std::unique_ptr<AffiliatedInvalidationServiceProvider>
       affiliated_invalidation_service_provider_;
   raw_ptr<DeviceCloudPolicyManagerAsh, ExperimentalAsh>
@@ -278,7 +280,7 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
   // after login.
   // The provider is owned by the base class; this field is just a typed weak
   // pointer to get to the ProxyPolicyProvider at SetUserPolicyDelegate().
-  raw_ptr<ProxyPolicyProvider, ExperimentalAsh>
+  raw_ptr<ProxyPolicyProvider, DanglingUntriaged | ExperimentalAsh>
       global_user_cloud_policy_provider_ = nullptr;
 
   std::unique_ptr<DeviceNetworkConfigurationUpdaterAsh>

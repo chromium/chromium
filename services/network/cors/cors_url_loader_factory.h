@@ -21,6 +21,7 @@
 #include "services/network/public/cpp/initiator_lock_compatibility.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/shared_dictionary_access_observer.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -66,6 +67,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
 
   ~CorsURLLoaderFactory() override;
 
+  mojom::URLLoaderNetworkServiceObserver* url_loader_network_service_observer()
+      const;
+
   void OnURLLoaderCreated(std::unique_ptr<URLLoader> loader);
   void OnCorsURLLoaderCreated(std::unique_ptr<CorsURLLoader> loader);
   void DestroyURLLoader(URLLoader* loader);
@@ -85,6 +89,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
   url_loaders() {
     return url_loaders_;
   }
+
+  mojom::SharedDictionaryAccessObserver* GetSharedDictionaryAccessObserver()
+      const;
 
  private:
   class FactoryOverride;
@@ -150,6 +157,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
   const CrossOriginEmbedderPolicy cross_origin_embedder_policy_;
   mojo::Remote<mojom::CrossOriginEmbedderPolicyReporter> coep_reporter_;
   const mojom::ClientSecurityStatePtr client_security_state_;
+  mojo::Remote<mojom::URLLoaderNetworkServiceObserver>
+      url_loader_network_service_observer_;
+  mojo::Remote<mojom::SharedDictionaryAccessObserver>
+      shared_dictionary_observer_;
 
   // Relative order of `network_loader_factory_` and `loaders_` matters -
   // URLLoaderFactory needs to live longer than URLLoaders created using the

@@ -53,7 +53,7 @@ class GpuDiskCacheEntry {
   OpType op_type_ = OPEN_ENTRY;
   std::string key_;
   std::string blob_;
-  raw_ptr<disk_cache::Entry, DanglingUntriaged> entry_;
+  raw_ptr<disk_cache::Entry, AcrossTasksDanglingUntriaged> entry_;
   base::WeakPtr<GpuDiskCacheEntry> weak_ptr_;
   base::WeakPtrFactory<GpuDiskCacheEntry> weak_ptr_factory_{this};
 };
@@ -96,7 +96,7 @@ class GpuDiskCacheReadHelper {
   OpType op_type_ = OPEN_NEXT;
   std::unique_ptr<disk_cache::Backend::Iterator> iter_;
   scoped_refptr<net::IOBufferWithSize> buf_;
-  raw_ptr<disk_cache::Entry, DanglingUntriaged> entry_;
+  raw_ptr<disk_cache::Entry, AcrossTasksDanglingUntriaged> entry_;
   base::WeakPtrFactory<GpuDiskCacheReadHelper> weak_ptr_factory_{this};
 };
 

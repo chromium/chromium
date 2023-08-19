@@ -1,14 +1,15 @@
 <!--
-@WIN-ALLOW:rowcount*
-@WIN-ALLOW:rowindex*
-@WIN-ALLOW:rowspan*
+@WIN-ALLOW:*row*:*
+@WIN-ALLOW:*row*=*
+@WIN-ALLOW:posinset*
+@WIN-ALLOW:setsize*
 @MAC-ALLOW:AXARIARowCount
 @MAC-ALLOW:AXARIARowIndex
 @BLINK-ALLOW:ariaRow*
 @BLINK-ALLOW:ariaCellRow*
-@AURALINUX-ALLOW:rowcount*
-@AURALINUX-ALLOW:rowindex*
-@AURALINUX-ALLOW:rowspan*
+@BLINK-ALLOW:setSize*
+@BLINK-ALLOW:posInSet*
+@AURALINUX-ALLOW:*row*
 -->
 <!-- For compatibility with earlier versions of Jaws, We do not expose
     aria-row/colcount and aria-row/colindex information if they match the

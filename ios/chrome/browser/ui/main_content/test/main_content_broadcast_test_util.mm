@@ -9,10 +9,6 @@
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // The delta by which the content offset is adjusted to verify broadcasting.
 const CGFloat kOffsetDelta = 100.0;

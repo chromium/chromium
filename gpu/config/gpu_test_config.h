@@ -38,10 +38,12 @@ class GPU_EXPORT GPUTestConfig {
     kOsMacBigSur = 1 << 21,
     kOsMacMonterey = 1 << 22,
     kOsMacVentura = 1 << 23,
+    kOsMacSonoma = 1 << 24,
     kOsMac = kOsMacLeopard | kOsMacSnowLeopard | kOsMacLion |
              kOsMacMountainLion | kOsMacMavericks | kOsMacYosemite |
              kOsMacElCapitan | kOsMacSierra | kOsMacHighSierra | kOsMacMojave |
-             kOsMacCatalina | kOsMacBigSur | kOsMacMonterey | kOsMacVentura,
+             kOsMacCatalina | kOsMacBigSur | kOsMacMonterey | kOsMacVentura |
+             kOsMacSonoma,
     // Jump over a few bits for future OSX versions.
     kOsLinux = 1 << 25,
     kOsChromeOS = 1 << 26,

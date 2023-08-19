@@ -66,7 +66,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/libxml/chromium/libxml_utils.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include <fcntl.h>
@@ -75,7 +74,7 @@
 #endif
 
 #if BUILDFLAG(IS_APPLE)
-#include "base/mac/scoped_nsautorelease_pool.h"
+#include "base/apple/scoped_nsautorelease_pool.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -833,10 +832,6 @@ class TestRunner {
   // |done|.
   void CleanupTask(base::ScopedTempDir task_temp_dir, bool done);
 
-  // No-op error function that replaces libxml's default, which writes to
-  // stderr.
-  static void NullXmlErrorFunc(void* context, const char* message, ...) {}
-
   ThreadChecker thread_checker_;
 
   const raw_ptr<TestLauncher> launcher_;
@@ -849,9 +844,6 @@ class TestRunner {
   // Protects member used concurrently by worker tasks.
   base::Lock lock_;
   std::vector<std::string> tests_to_run_ GUARDED_BY(lock_);
-  // Set the global libxml error context and function pointer for the lifetime
-  // of this test runner.
-  ScopedXmlErrorFunc xml_error_func_{nullptr, &NullXmlErrorFunc};
 
   base::WeakPtrFactory<TestRunner> weak_ptr_factory_{this};
 };
@@ -1194,6 +1186,10 @@ void TestLauncher::LaunchChildGTestProcess(
       cmd_line, launcher_delegate_->GetWrapper(), retries_left_));
   LaunchOptions options;
   options.flags = launcher_delegate_->GetLaunchOptions();
+
+  if (BotModeEnabled(CommandLine::ForCurrentProcess())) {
+    LOG(INFO) << "Starting [" << base::JoinString(test_names, ", ") << "]";
+  }
 
   ChildProcessResults process_results = DoLaunchChildTestProcess(
       new_command_line, child_temp_dir, result_file,
@@ -1800,6 +1796,23 @@ bool TestLauncher::InitTests() {
     LOG(ERROR) << "Failed to get list of tests.";
     return false;
   }
+
+  // Check for duplicate test names. These can cause difficult-to-diagnose
+  // crashes in the test runner as well as confusion about exactly what test is
+  // failing. See https://crbug.com/1463355 for details.
+  std::unordered_set<std::string> full_test_names;
+  bool dups_found = false;
+  for (auto& test : tests) {
+    const std::string full_test_name =
+        test.test_case_name + "." + test.test_name;
+    auto [it, inserted] = full_test_names.insert(full_test_name);
+    if (!inserted) {
+      LOG(WARNING) << "Duplicate test name found: " << full_test_name;
+      dups_found = true;
+    }
+  }
+  CHECK(!dups_found);
+
   std::vector<std::string> uninstantiated_tests;
   for (const TestIdentifier& test_id : tests) {
     TestInfo test_info(test_id);
@@ -2239,7 +2252,13 @@ size_t NumParallelJobs(unsigned int cores_per_job) {
       ::GetActiveProcessorCount(ALL_PROCESSOR_GROUPS));
 #else
   size_t cores = base::checked_cast<size_t>(SysInfo::NumberOfProcessors());
-#endif
+#if BUILDFLAG(IS_MAC)
+  // This is necessary to allow tests to call SetCpuSecurityMitigationsEnabled()
+  // despite NumberOfProcessors() having already been called in the process.
+  SysInfo::ResetCpuSecurityMitigationsEnabledForTesting();
+#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_WIN)
+
 #if BUILDFLAG(IS_IOS) && TARGET_OS_SIMULATOR
   // If we are targeting the simulator increase the number of jobs we use by 2x
   // the number of cores. This is necessary because the startup of each

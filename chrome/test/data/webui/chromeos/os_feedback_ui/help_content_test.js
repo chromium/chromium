@@ -24,7 +24,7 @@ export function helpContentTestSuite() {
   const offlineSvgSelector = '#offlineSvg';
 
   setup(() => {
-    document.body.innerHTML = '';
+    document.body.innerHTML = trustedTypes.emptyHTML;
   });
 
   teardown(() => {

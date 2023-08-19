@@ -72,7 +72,7 @@ class BorealisFeatures {
   void OnVmTokenDetermined(base::OnceCallback<void(AllowStatus)> callback,
                            std::string hashed_token);
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
   std::unique_ptr<AsyncAllowChecker> async_checker_;
   // TODO(b/218403711): remove this.
   base::WeakPtrFactory<BorealisFeatures> weak_factory_{this};

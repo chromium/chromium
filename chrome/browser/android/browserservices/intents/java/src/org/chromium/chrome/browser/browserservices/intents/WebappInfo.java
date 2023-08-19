@@ -41,8 +41,7 @@ public class WebappInfo {
         mProvider = provider;
     }
 
-    @NonNull
-    public BrowserServicesIntentDataProvider getProvider() {
+    public @NonNull BrowserServicesIntentDataProvider getProvider() {
         return mProvider;
     }
 
@@ -127,6 +126,38 @@ public class WebappInfo {
     }
 
     /**
+     * Returns the dark toolbar color if it is valid, and
+     * ColorUtils.INVALID_COLOR otherwise.
+     */
+    public long darkToolbarColor() {
+        return hasValidDarkToolbarColor() ? mProvider.getDarkColorProvider().getToolbarColor()
+                                          : ColorUtils.INVALID_COLOR;
+    }
+
+    /**
+     * Returns whether the dark toolbar color specified in the Intent is valid.
+     */
+    public boolean hasValidDarkToolbarColor() {
+        return mProvider.getDarkColorProvider().hasCustomToolbarColor();
+    }
+
+    /**
+     * Dark background color is actually a 32 bit unsigned integer which encodes a color
+     * in ARGB format. Return value is a long because we also need to encode the
+     * error state of ColorUtils.INVALID_COLOR.
+     */
+    public long darkBackgroundColor() {
+        return WebappIntentUtils.colorFromIntegerColor(getWebappExtras().darkBackgroundColor);
+    }
+
+    /**
+     * Returns whether the dark background color specified in the Intent is valid.
+     */
+    public boolean hasValidDarkBackgroundColor() {
+        return getWebappExtras().darkBackgroundColor != null;
+    }
+
+    /**
      * Returns the background color specified by {@link #backgroundColor()} if
      * the value is valid. Returns the webapp's default background color otherwise.
      */
@@ -139,8 +170,7 @@ public class WebappInfo {
     /**
      * Returns the icon.
      */
-    @NonNull
-    public WebappIcon icon() {
+    public @NonNull WebappIcon icon() {
         return getWebappExtras().icon;
     }
 
@@ -169,8 +199,7 @@ public class WebappInfo {
     /**
      * Returns the WebAPK's splash icon.
      */
-    @NonNull
-    public WebappIcon splashIcon() {
+    public @NonNull WebappIcon splashIcon() {
         return getWebApkExtras().splashIcon;
     }
 
@@ -179,8 +208,7 @@ public class WebappInfo {
     }
 
     /** Returns data about the WebAPK's share intent handlers. */
-    @NonNull
-    public WebApkShareTarget shareTarget() {
+    public @NonNull WebApkShareTarget shareTarget() {
         return getWebApkExtras().shareTarget;
     }
 

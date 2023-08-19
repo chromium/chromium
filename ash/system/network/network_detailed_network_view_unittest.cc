@@ -208,7 +208,7 @@ class NetworkDetailedNetworkViewTest : public AshTestBase {
   CrosNetworkConfigTestHelper network_config_helper_;
   FakeNetworkDetailedNetworkViewDelegate fake_network_detailed_network_delagte_;
   std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
-  raw_ptr<NetworkDetailedNetworkViewImpl, ExperimentalAsh>
+  raw_ptr<NetworkDetailedNetworkViewImpl, DanglingUntriaged | ExperimentalAsh>
       network_detailed_network_view_;
   base::HistogramTester histogram_tester_;
 };

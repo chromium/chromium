@@ -65,6 +65,7 @@ void ManagePasswordsTest::SetUpOnMainThread() {
   password_form_.url = test_url;
   password_form_.username_value = kTestUsername;
   password_form_.password_value = u"test_password";
+  password_form_.match_type = password_manager::PasswordForm::MatchType::kExact;
 
   ASSERT_TRUE(AddTabAtIndex(0, test_url, ui::PAGE_TRANSITION_TYPED));
 }
@@ -110,6 +111,7 @@ void ManagePasswordsTest::SetupManagingPasswords() {
   federated_form.federation_origin =
       url::Origin::Create(GURL("https://somelongeroriginurl.com/"));
   federated_form.username_value = u"test_federation_username";
+  federated_form.match_type = password_manager::PasswordForm::MatchType::kExact;
   std::vector<const password_manager::PasswordForm*> forms = {&password_form_,
                                                               &federated_form};
   GetController()->OnPasswordAutofilled(

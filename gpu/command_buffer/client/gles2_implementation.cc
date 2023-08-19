@@ -4618,20 +4618,98 @@ void GLES2Implementation::GetUniformuiv(GLuint program,
   CheckGLError();
 }
 
-void GLES2Implementation::WritePixelsINTERNAL(const GLbyte* mailbox,
-                                              const void* src_color_space,
-                                              GLuint src_color_space_offset,
-                                              GLuint src_size,
-                                              GLuint src_width,
-                                              GLuint src_height,
-                                              GLuint src_sk_color_type,
-                                              GLuint src_sk_alpha_type,
-                                              GLuint src_row_bytes,
-                                              GLint x_offset,
-                                              GLint y_offset,
-                                              GLint plane_index,
-                                              const void* src_pixels) {
-  NOTIMPLEMENTED_LOG_ONCE();
+void GLES2Implementation::WritePixelsYUVINTERNAL(
+    const GLbyte* mailbox,
+    GLuint src_size_plane1,
+    GLuint src_size_plane2,
+    GLuint src_size_plane3,
+    GLuint src_size_plane4,
+    GLuint src_width,
+    GLuint src_height,
+    GLuint src_plane_config,
+    GLuint src_subsampling,
+    GLuint src_datatype,
+    GLuint src_row_bytes_plane1,
+    GLuint src_row_bytes_plane2,
+    GLuint src_row_bytes_plane3,
+    GLuint src_row_bytes_plane4,
+    const void* src_pixels_plane1,
+    const void* src_pixels_plane2,
+    const void* src_pixels_plane3,
+    const void* src_pixels_plane4) {
+  CHECK(mailbox);
+  // We have the following stored at offsets from `shm_address`:
+  // 0: stores the destination mailbox,
+  // pixels_offset_plane1: stores source pixels for plane 1,
+  // pixels_offset_plane2: stores source pixels for plane 2,
+  // pixels_offset_plane3: stores source pixels for plane 3,
+  // pixels_offset_plane4: stores source pixels for plane 4
+
+  const int kMaxPlanes = 4;
+  GLuint src_sizes[kMaxPlanes] = {src_size_plane1, src_size_plane2,
+                                  src_size_plane3, src_size_plane4};
+  const void* src_pixels[kMaxPlanes] = {src_pixels_plane1, src_pixels_plane2,
+                                        src_pixels_plane3, src_pixels_plane4};
+
+  GLuint total_size =
+      base::bits::AlignUp(sizeof(gpu::Mailbox), sizeof(uint64_t));
+  for (int plane = 0; plane < kMaxPlanes; plane++) {
+    if (!src_pixels[plane]) {
+      // If pixels don't exist for a plane, we've copied all planes of src
+      // image.
+      CHECK_EQ(src_sizes[plane], 0u);
+      break;
+    }
+    total_size += base::bits::AlignUp(src_sizes[plane],
+                                      static_cast<GLuint>(sizeof(uint64_t)));
+  }
+
+  ScopedMappedMemoryPtr scoped_shared_memory(total_size, helper(),
+                                             mapped_memory_.get());
+  if (!scoped_shared_memory.valid()) {
+    SetGLError(GL_INVALID_OPERATION, "WritePixelsYUV", "size too big");
+    return;
+  }
+
+  GLint shm_id = scoped_shared_memory.shm_id();
+  GLuint shm_offset = scoped_shared_memory.offset();
+  void* address = scoped_shared_memory.address();
+
+  // Copy the mailbox at `address`.
+  GLuint mailbox_offset = 0;
+  memcpy(static_cast<uint8_t*>(address), mailbox, sizeof(gpu::Mailbox));
+
+  GLuint pixel_offsets[kMaxPlanes] = {};
+  // Calculate first plane offset based on mailbox.
+  pixel_offsets[0] =
+      mailbox_offset + static_cast<GLuint>(base::bits::AlignUp(
+                           sizeof(gpu::Mailbox), sizeof(uint64_t)));
+  CHECK(src_pixels[0]);
+  memcpy(static_cast<uint8_t*>(address) + pixel_offsets[0], src_pixels[0],
+         src_sizes[0]);
+
+  for (int plane = 1; plane < kMaxPlanes; plane++) {
+    if (!src_pixels[plane]) {
+      // If pixels don't exist for a plane, we've copied all planes of src
+      // image.
+      break;
+    }
+    // Calculate the offset based on previous plane offset and previous plane
+    // size, and copy pixels for current plane starting at current plane
+    // offset.
+    pixel_offsets[plane] =
+        pixel_offsets[plane - 1] +
+        base::bits::AlignUp(src_sizes[plane - 1],
+                            static_cast<GLuint>(sizeof(uint64_t)));
+    memcpy(static_cast<uint8_t*>(address) + pixel_offsets[plane],
+           src_pixels[plane], src_sizes[plane]);
+  }
+
+  helper_->WritePixelsYUVINTERNAL(
+      src_width, src_height, src_row_bytes_plane1, src_row_bytes_plane2,
+      src_row_bytes_plane3, src_row_bytes_plane4, src_plane_config,
+      src_subsampling, src_datatype, shm_id, shm_offset, pixel_offsets[0],
+      pixel_offsets[1], pixel_offsets[2], pixel_offsets[3]);
 }
 
 void GLES2Implementation::ReadbackARGBImagePixelsINTERNAL(
@@ -6304,7 +6382,6 @@ void GLES2Implementation::BeginQueryEXT(GLenum target, GLuint id) {
 
   switch (target) {
     case GL_COMMANDS_ISSUED_CHROMIUM:
-    case GL_LATENCY_QUERY_CHROMIUM:
     case GL_ASYNC_PIXEL_PACK_COMPLETED_CHROMIUM:
     case GL_GET_ERROR_QUERY_CHROMIUM:
     case GL_PROGRAM_COMPLETION_QUERY_CHROMIUM:

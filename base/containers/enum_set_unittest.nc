@@ -10,9 +10,9 @@
 namespace base {
 namespace {
 
-#if defined(NCTEST_ALL_METHOD_DISALLOWED_ON_LARGE_SPARSE_ENUM) // [r"fatal error: static assertion failed due to requirement 'kValueCount <= 64': Max number of enum values is 64 for constexpr constructor"]
+#if defined(NCTEST_ALL_METHOD_DISALLOWED_ON_LARGE_SPARSE_ENUM) // [r"fatal error: constexpr variable 'set' must be initialized by a constant expression"]
 
-void WontCompile() {
+size_t WontCompile() {
   enum class TestEnumSparse {
     TEST_1 = 1,
     TEST_MIN = 1,
@@ -23,9 +23,10 @@ void WontCompile() {
   using TestEnumSparseSet = EnumSet<TestEnumSparse, TestEnumSparse::TEST_MIN,
                                     TestEnumSparse::TEST_MAX>;
 
-  // TestEnumSparseSet::All() does not compile because there are more than 64
-  // possible values.
-  TestEnumSparseSet::All();
+  // TestEnumSparseSet::All() does not compile as constexpr because there are
+  // more than 64 possible values.
+  constexpr auto set = TestEnumSparseSet::All();
+  return set.Size();
 }
 
 #endif

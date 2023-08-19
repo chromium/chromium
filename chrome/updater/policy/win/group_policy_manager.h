@@ -8,15 +8,20 @@
 #include <string>
 
 #include "chrome/updater/policy/policy_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
 // The GroupPolicyManager returns policies for domain-joined machines.
 class GroupPolicyManager : public PolicyManager {
  public:
-  explicit GroupPolicyManager(bool should_take_policy_critical_section);
+  GroupPolicyManager(
+      bool should_take_policy_critical_section,
+      const absl::optional<bool>& override_is_managed_device = absl::nullopt);
   GroupPolicyManager(const GroupPolicyManager&) = delete;
   GroupPolicyManager& operator=(const GroupPolicyManager&) = delete;
+
+  bool CloudPolicyOverridesPlatformPolicy() const;
 
   // Overrides for PolicyManagerInterface.
   std::string source() const override;
@@ -24,6 +29,8 @@ class GroupPolicyManager : public PolicyManager {
 
  private:
   ~GroupPolicyManager() override;
+
+  const bool is_managed_device_;
 };
 
 }  // namespace updater

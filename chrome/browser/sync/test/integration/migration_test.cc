@@ -198,7 +198,7 @@ class MigrationTest : public SyncTest {
     }
 
     // Phase 3: Wait for all clients to catch up.
-    AwaitQuiescence();
+    ASSERT_TRUE(AwaitQuiescence());
   }
 
  private:

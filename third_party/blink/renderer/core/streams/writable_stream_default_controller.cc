@@ -105,8 +105,7 @@ void WritableStreamDefaultController::SetUp(
   //  5. Perform ! ResetQueue(controller).
 
   //  6. Set controller.[[abortController]] to a new AbortController.
-  controller->abort_controller_ =
-      AbortController::Create(ExecutionContext::From(script_state));
+  controller->abort_controller_ = AbortController::Create(script_state);
 
   //  7. Set controller.[[started]] to false.
   controller->started_ = false;

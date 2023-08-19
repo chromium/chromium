@@ -9,13 +9,29 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/widget/widget.h"
 
 namespace views {
+
+class TestCheckbox : public Checkbox {
+ public:
+  explicit TestCheckbox(const std::u16string& label = std::u16string(),
+                        int button_context = style::CONTEXT_BUTTON)
+      : Checkbox(label, Button::PressedCallback(), button_context) {}
+
+  TestCheckbox(const TestCheckbox&) = delete;
+  TestCheckbox& operator=(const TestCheckbox&) = delete;
+
+  using Checkbox::GetIconCheckColor;
+  using Checkbox::GetIconImageColor;
+  using Checkbox::GetIconState;
+};
 
 class CheckboxTest : public ViewsTestBase {
  public:
@@ -38,7 +54,7 @@ class CheckboxTest : public ViewsTestBase {
     widget_->Init(std::move(params));
     widget_->Show();
 
-    checkbox_ = widget_->SetContentsView(std::make_unique<Checkbox>());
+    checkbox_ = widget_->SetContentsView(std::make_unique<TestCheckbox>());
   }
 
   void TearDown() override {
@@ -47,11 +63,21 @@ class CheckboxTest : public ViewsTestBase {
   }
 
  protected:
-  Checkbox* checkbox() { return checkbox_; }
+  TestCheckbox* checkbox() { return checkbox_; }
 
  private:
   std::unique_ptr<Widget> widget_;
-  raw_ptr<Checkbox, DanglingUntriaged> checkbox_ = nullptr;
+  raw_ptr<TestCheckbox, DanglingUntriaged> checkbox_ = nullptr;
+};
+
+class CheckboxTestRefreshOnly : public CheckboxTest {
+ public:
+  CheckboxTestRefreshOnly() {
+    scoped_feature_list_.InitWithFeatures({features::kChromeRefresh2023}, {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(CheckboxTest, AccessibilityTest) {
@@ -76,6 +102,40 @@ TEST_F(CheckboxTest, AccessibilityTest) {
                 ax::mojom::IntListAttribute::kLabelledbyIds)[0],
             label_data.id);
   EXPECT_EQ(ax_data.role, ax::mojom::Role::kCheckBox);
+}
+
+TEST_F(CheckboxTest, TestCorrectCheckColor) {
+  // Enabled
+  checkbox()->SetChecked(true);
+  int icon_state = checkbox()->GetIconState(Button::ButtonState::STATE_NORMAL);
+  SkColor actual = checkbox()->GetIconCheckColor(icon_state);
+  SkColor expected =
+      checkbox()->GetColorProvider()->GetColor(ui::kColorCheckboxCheck);
+  EXPECT_EQ(actual, expected);
+
+  // Disabled
+  icon_state = checkbox()->GetIconState(Button::ButtonState::STATE_DISABLED);
+  actual = checkbox()->GetIconCheckColor(icon_state);
+  expected =
+      checkbox()->GetColorProvider()->GetColor(ui::kColorCheckboxCheckDisabled);
+  EXPECT_EQ(actual, expected);
+}
+
+TEST_F(CheckboxTestRefreshOnly, TestCorrectContainerColor) {
+  // Enabled
+  checkbox()->SetChecked(true);
+  int icon_state = checkbox()->GetIconState(Button::ButtonState::STATE_NORMAL);
+  SkColor actual = checkbox()->GetIconImageColor(icon_state);
+  SkColor expected =
+      checkbox()->GetColorProvider()->GetColor(ui::kColorCheckboxContainer);
+  EXPECT_EQ(actual, expected);
+
+  // Disabled
+  icon_state = checkbox()->GetIconState(Button::ButtonState::STATE_DISABLED);
+  actual = checkbox()->GetIconImageColor(icon_state);
+  expected = checkbox()->GetColorProvider()->GetColor(
+      ui::kColorCheckboxContainerDisabled);
+  EXPECT_EQ(actual, expected);
 }
 
 }  // namespace views

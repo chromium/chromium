@@ -130,16 +130,28 @@ void NGLayoutInputNode::IntrinsicSize(
     return;
 
   IntrinsicSizingInfo legacy_sizing_info;
-
   To<LayoutReplaced>(box_.Get())
       ->ComputeIntrinsicSizingInfo(legacy_sizing_info);
-  if (!*computed_inline_size && legacy_sizing_info.has_width) {
-    *computed_inline_size =
-        LayoutUnit::FromFloatRound(legacy_sizing_info.size.width());
+
+  absl::optional<LayoutUnit> intrinsic_inline_size =
+      legacy_sizing_info.has_width
+          ? absl::make_optional(
+                LayoutUnit::FromFloatRound(legacy_sizing_info.size.width()))
+          : absl::nullopt;
+  absl::optional<LayoutUnit> intrinsic_block_size =
+      legacy_sizing_info.has_height
+          ? absl::make_optional(
+                LayoutUnit::FromFloatRound(legacy_sizing_info.size.height()))
+          : absl::nullopt;
+  if (!IsHorizontalWritingMode(Style().GetWritingMode())) {
+    std::swap(intrinsic_inline_size, intrinsic_block_size);
   }
-  if (!*computed_block_size && legacy_sizing_info.has_height) {
-    *computed_block_size =
-        LayoutUnit::FromFloatRound(legacy_sizing_info.size.height());
+
+  if (!*computed_inline_size) {
+    *computed_inline_size = intrinsic_inline_size;
+  }
+  if (!*computed_block_size) {
+    *computed_block_size = intrinsic_block_size;
   }
 }
 

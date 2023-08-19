@@ -118,8 +118,8 @@ BeginFrameSource::BeginFrameArgsGenerator::GenerateBeginFrameArgs(
                                 vsync_interval);
   // This is utilized by ExternalBeginFrameSourceAndroid,
   // GpuVSyncBeginFrameSource, and DelayBasedBeginFrameSource. Which covers the
-  // main Viz use cases. BackToBackBeginFrameSource is not relevenant. We also
-  // are not looking to adjust ExternalBeginFrameSourceMojo which is used in
+  // main Viz use cases. BackToBackBeginFrameSource is not relevant. We also are
+  // not looking to adjust ExternalBeginFrameSourceMojo which is used in
   // headless.
   if (dynamic_begin_frame_deadline_offset_source_) {
     base::TimeDelta deadline_offset =
@@ -216,6 +216,27 @@ void BeginFrameSource::SetDynamicBeginFrameDeadlineOffsetSource(
     DynamicBeginFrameDeadlineOffsetSource*
         dynamic_begin_frame_deadline_offset_source) {}
 
+#if BUILDFLAG(IS_MAC)
+void BeginFrameSource::RecordBeginFrameSourceAccuracy(base::TimeDelta delta) {
+  total_delta_ += delta.magnitude();
+  frames_since_last_recording_++;
+
+  // Emit the histogram every 3600 frames.
+  constexpr int kFramesToEmitHistogram = 3600;
+  if (frames_since_last_recording_ < kFramesToEmitHistogram) {
+    return;
+  }
+
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+      "Viz.BeginFrameSource.Accuracy.AverageDelta",
+      total_delta_ / kFramesToEmitHistogram,
+      /*min=*/base::Microseconds(100),
+      /*max=*/base::Milliseconds(8), /*bucket_count=*/20);
+  frames_since_last_recording_ = 0;
+  total_delta_ = base::TimeDelta();
+}
+#endif
+
 // StubBeginFrameSource ---------------------------------------------------
 StubBeginFrameSource::StubBeginFrameSource()
     : BeginFrameSource(kNotRestartableId) {}
@@ -270,6 +291,15 @@ void BackToBackBeginFrameSource::OnGpuNoLongerBusy() {
   OnTimerTick();
 }
 
+void BackToBackBeginFrameSource::OnUpdateVSyncParameters(
+    base::TimeTicks timebase,
+    base::TimeDelta interval) {
+  if (interval.is_zero()) {
+    interval = BeginFrameArgs::DefaultInterval();
+  }
+  vsync_interval_ = interval;
+}
+
 void BackToBackBeginFrameSource::SetMaxVrrInterval(
     const absl::optional<base::TimeDelta>& max_vrr_interval) {
   DCHECK(!max_vrr_interval.has_value() || !max_vrr_interval->is_zero());
@@ -280,8 +310,7 @@ void BackToBackBeginFrameSource::OnTimerTick() {
   if (RequestCallbackOnGpuAvailable())
     return;
   base::TimeTicks frame_time = time_source_->LastTickTime();
-  base::TimeDelta interval =
-      max_vrr_interval_.value_or(BeginFrameArgs::DefaultInterval());
+  base::TimeDelta interval = max_vrr_interval_.value_or(vsync_interval_);
   BeginFrameArgs args = BeginFrameArgs::Create(
       BEGINFRAME_FROM_HERE, source_id(), next_sequence_number_, frame_time,
       frame_time + interval, interval, BeginFrameArgs::NORMAL);
@@ -494,10 +523,9 @@ void ExternalBeginFrameSource::OnBeginFrame(const BeginFrameArgs& args) {
     return;
   }
 
-  TRACE_EVENT2(
-      "viz", "ExternalBeginFrameSource::OnBeginFrame", "frame_time",
-      last_begin_frame_args_.frame_time.since_origin().InMicroseconds(),
-      "interval", last_begin_frame_args_.interval.InMicroseconds());
+  TRACE_EVENT2("viz", "ExternalBeginFrameSource::OnBeginFrame", "frame_time",
+               args.frame_time.since_origin().InMicroseconds(), "interval",
+               args.interval.InMicroseconds());
 
   last_begin_frame_args_ = args;
   base::flat_set<BeginFrameObserver*> observers(observers_);
@@ -536,6 +564,11 @@ BeginFrameArgs ExternalBeginFrameSource::GetMissedBeginFrameArgs(
 
 base::TimeDelta ExternalBeginFrameSource::GetMaximumRefreshFrameInterval() {
   return BeginFrameArgs::DefaultInterval();
+}
+
+std::vector<base::TimeDelta>
+ExternalBeginFrameSource::GetSupportedFrameIntervals(base::TimeDelta interval) {
+  return {interval, interval * 2};
 }
 
 }  // namespace viz

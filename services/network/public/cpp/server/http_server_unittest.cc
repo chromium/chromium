@@ -200,6 +200,15 @@ class HttpServerTest : public testing::Test, public HttpServer::Delegate {
     server_ = std::make_unique<HttpServer>(std::move(server_socket_), this);
   }
 
+  void TearDown() override {
+    // There might be pending tasks, such as destroying connections, wait until
+    // their completion.
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
   void OnConnect(int connection_id) override {
     DCHECK(connection_map_.find(connection_id) == connection_map_.end());
     connection_map_[connection_id] = true;

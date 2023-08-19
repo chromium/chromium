@@ -21,6 +21,7 @@ import '//resources/cr_elements/cr_toast/cr_toast.js';
 
 // </if>
 
+import {CrLinkRowElement} from '//resources/cr_elements/cr_link_row/cr_link_row.js';
 import {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -42,6 +43,7 @@ export interface SettingsPersonalizationOptionsElement {
     toast: CrToastElement,
     signinAllowedToggle: SettingsToggleButtonElement,
     metricsReportingControl: SettingsToggleButtonElement,
+    metricsReportingLink: CrLinkRowElement,
   };
 }
 
@@ -210,9 +212,17 @@ export class SettingsPersonalizationOptionsElement extends
     return this.pageVisibility.searchPrediction;
   }
 
+  private navigateTo_(url: string): void {
+    window.location.href = url;
+  }
+
   // <if expr="chromeos_ash">
   private onMetricsReportingLinkClick_() {
-    window.location.href = loadTimeData.getString('osSyncSetupSettingsUrl');
+    if (loadTimeData.getBoolean('osDeprecateSyncMetricsToggle')) {
+      this.navigateTo_(loadTimeData.getString('osPrivacySettingsUrl'));
+    } else {
+      this.navigateTo_(loadTimeData.getString('osSyncSetupSettingsUrl'));
+    }
   }
   // </if>
 
@@ -241,14 +251,25 @@ export class SettingsPersonalizationOptionsElement extends
   }
 
   private onUseSpellingServiceLinkClick_() {
-    window.location.href = loadTimeData.getString('osSyncSetupSettingsUrl');
+    this.navigateTo_(loadTimeData.getString('osSyncSetupSettingsUrl'));
   }
   // </if><!-- chromeos -->
   // </if><!-- _google_chrome -->
 
   private shouldShowDriveSuggest_(): boolean {
-    return loadTimeData.getBoolean('driveSuggestAvailable') &&
-        !!this.syncStatus && !!this.syncStatus.signedIn &&
+    if (loadTimeData.getBoolean('driveSuggestNoSetting')) {
+      return false;
+    }
+
+    if (!loadTimeData.getBoolean('driveSuggestAvailable')) {
+      return false;
+    }
+
+    if (loadTimeData.getBoolean('driveSuggestNoSyncRequirement')) {
+      return true;
+    }
+
+    return !!this.syncStatus && !!this.syncStatus.signedIn &&
         this.syncStatus.statusAction !== StatusAction.REAUTHENTICATE;
   }
 

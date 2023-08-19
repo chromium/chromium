@@ -216,13 +216,6 @@ ChromeAutocompleteProviderClient::GetRemoteSuggestionsService(
                                                         create_if_necessary);
 }
 
-DocumentSuggestionsService*
-ChromeAutocompleteProviderClient::GetDocumentSuggestionsService(
-    bool create_if_necessary) const {
-  return DocumentSuggestionsServiceFactory::GetForProfile(profile_,
-                                                          create_if_necessary);
-}
-
 ZeroSuggestCacheService*
 ChromeAutocompleteProviderClient::GetZeroSuggestCacheService() {
   return ZeroSuggestCacheServiceFactory::GetForProfile(profile_);

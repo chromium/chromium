@@ -12,10 +12,6 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 constexpr CGFloat kCustomSpacingBeforeImageIfNoNavigationBar = 24;
 constexpr CGFloat kCustomSpacingAfterImage = 30;
@@ -26,15 +22,15 @@ constexpr CGFloat kCustomSpacingAfterImageIOS15 = 1;
 
 - (instancetype)initWithManagedDomain:(NSString*)managedDomain {
   if (self = [super init]) {
-    self.titleString =
-        l10n_util::GetNSString(IDS_IOS_USER_POLICY_NOTIFICATION_TITLE);
-    self.subtitleString =
-        l10n_util::GetNSStringF(IDS_IOS_USER_POLICY_NOTIFICATION_SUBTITLE,
-                                base::SysNSStringToUTF16(managedDomain));
+    self.titleString = l10n_util::GetNSString(
+        IDS_IOS_USER_POLICY_NOTIFICATION_NO_SIGNOUT_TITLE);
+    self.subtitleString = l10n_util::GetNSStringF(
+        IDS_IOS_USER_POLICY_NOTIFICATION_NO_SIGNOUT_SUBTITLE,
+        base::SysNSStringToUTF16(managedDomain));
     self.primaryActionString =
-        l10n_util::GetNSString(IDS_IOS_USER_POLICY_CONTINUE);
+        l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SIGNED_OUT_CONTINUE);
     self.secondaryActionString =
-        l10n_util::GetNSString(IDS_IOS_USER_POLICY_SIGNOUT_AND_CLEAR_DATA);
+        l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SIGNED_OUT_LEARN_MORE);
   }
   return self;
 }

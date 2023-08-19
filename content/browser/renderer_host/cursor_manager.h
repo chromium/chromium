@@ -66,7 +66,8 @@ class CONTENT_EXPORT CursorManager {
 
   // The view currently underneath the cursor, which corresponds to the cursor
   // currently displayed.
-  raw_ptr<RenderWidgetHostViewBase, DanglingUntriaged> view_under_cursor_;
+  raw_ptr<RenderWidgetHostViewBase, AcrossTasksDanglingUntriaged>
+      view_under_cursor_;
 
   // The root view is the target for DisplayCursor calls whenever the active
   // cursor needs to change.

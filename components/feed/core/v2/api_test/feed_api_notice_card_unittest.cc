@@ -44,15 +44,12 @@ TEST_F(FeedApiNoticeCardTest, LoadStreamSendsNoticeCardAcknowledgement) {
       surface.initial_state->updated_slices(notice_card_index)
           .slice()
           .slice_id();
-  stream_->ReportSliceViewed(surface.GetSurfaceId(), surface.GetStreamType(),
-                             slice_id);
+  stream_->ReportSliceViewed(surface.GetSurfaceId(), slice_id);
   task_environment_.FastForwardBy(base::Hours(1));
-  stream_->ReportSliceViewed(surface.GetSurfaceId(), surface.GetStreamType(),
-                             slice_id);
+  stream_->ReportSliceViewed(surface.GetSurfaceId(), slice_id);
   task_environment_.FastForwardBy(base::Hours(1));
-  stream_->ReportSliceViewed(surface.GetSurfaceId(), surface.GetStreamType(),
-                             slice_id);
-  stream_->ReportOpenAction(GURL(), surface.GetStreamType(), slice_id,
+  stream_->ReportSliceViewed(surface.GetSurfaceId(), slice_id);
+  stream_->ReportOpenAction(GURL(), surface.GetSurfaceId(), slice_id,
                             OpenActionType::kDefault);
 
   response_translator_.InjectResponse(model_generator_.MakeFirstPage());

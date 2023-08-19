@@ -41,9 +41,8 @@ class ReportBindings : public Bindings {
   // This is cleared if an exception is thrown.
   absl::optional<GURL> report_url_;
 
-  // Once an exception has been thrown, `report_url_` will be permanently
-  // cleared.
-  bool exception_thrown_ = false;
+  // sendReportTo() can only be called once.
+  bool already_called_ = false;
 };
 
 }  // namespace auction_worklet

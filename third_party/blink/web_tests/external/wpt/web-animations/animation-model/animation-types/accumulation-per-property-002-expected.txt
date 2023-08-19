@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 298 tests; 286 PASS, 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 305 tests; 288 PASS, 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Setup
 PASS isolation (type: discrete) has testAccumulation function
 PASS isolation: "isolate" onto "auto"
@@ -134,6 +134,13 @@ PASS ruby-position: "under" onto "over"
 PASS scroll-behavior (type: discrete) has testAccumulation function
 PASS scroll-behavior: "smooth" onto "auto"
 PASS scroll-behavior: "auto" onto "smooth"
+PASS scrollbar-color (type: colorPair) has testAccumulation function
+FAIL scrollbar-color supports animating as color pair of rgb() with overflowed  from and to values assert_equals: The value should be rgb(255, 128, 128) rgb(0, 0, 255) at 0ms expected "rgb(255, 128, 128) rgb(0, 0, 255)" but got "rgb(255, 0, 0) rgb(0, 0, 255)"
+FAIL scrollbar-color supports animating as color pair of #RGB assert_equals: The value should be rgb(255, 128, 128) rgb(0, 0, 255) at 0ms expected "rgb(255, 128, 128) rgb(0, 0, 255)" but got "rgb(255, 0, 0) rgb(0, 0, 255)"
+FAIL scrollbar-color supports animating as color pair of hsl() assert_equals: The value should be rgb(255, 128, 128) rgb(255, 0, 0) at 0ms expected "rgb(255, 128, 128) rgb(255, 0, 0)" but got "rgb(255, 0, 0) rgb(255, 0, 0)"
+FAIL scrollbar-color supports animating as color pair of #RGBa assert_equals: The value should be rgb(230, 128, 128) rgb(102, 0, 0) at 0ms expected "rgb(230, 128, 128) rgb(102, 0, 0)" but got "rgba(255, 0, 0, 0.4) rgba(255, 0, 0, 0.4)"
+FAIL scrollbar-color supports animating as color pair of rgba() assert_equals: The value should be rgb(230, 128, 128) rgb(0, 102, 0) at 0ms expected "rgb(230, 128, 128) rgb(0, 102, 0)" but got "rgba(255, 0, 0, 0.4) rgba(0, 255, 0, 0.4)"
+FAIL scrollbar-color supports animating as color pair of hsla() assert_equals: The value should be rgb(230, 128, 128) rgb(102, 0, 0) at 0ms expected "rgb(230, 128, 128) rgb(102, 0, 0)" but got "rgba(255, 0, 0, 0.4) rgba(255, 0, 0, 0.4)"
 PASS scrollbar-gutter (type: discrete) has testAccumulation function
 PASS scrollbar-gutter: "stable" onto "auto"
 PASS scrollbar-gutter: "auto" onto "stable"
@@ -255,7 +262,7 @@ PASS transform: non-invertible matrices in matched transform lists (invertible o
 PASS transform: non-invertible matrices in mismatched transform lists (non-invertible onto invertible)
 PASS transform: non-invertible matrices in mismatched transform lists (invertible onto non-invertible)
 PASS transform-box (type: discrete) has testAccumulation function
-FAIL transform-box: "border-box" onto "fill-box" assert_equals: The value should be border-box at 0ms expected "border-box" but got "fill-box"
+PASS transform-box: "border-box" onto "fill-box"
 PASS transform-box: "fill-box" onto "border-box"
 PASS transform-style (type: discrete) has testAccumulation function
 PASS transform-style: "preserve-3d" onto "flat"

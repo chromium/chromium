@@ -53,6 +53,11 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::InterestGroupAdDataView,
     return ad.ad_render_id;
   }
 
+  static const absl::optional<std::vector<url::Origin>>&
+  allowed_reporting_origins(const blink::InterestGroup::Ad& ad) {
+    return ad.allowed_reporting_origins;
+  }
+
   static bool Read(blink::mojom::InterestGroupAdDataView data,
                    blink::InterestGroup::Ad* out);
 };
@@ -73,6 +78,24 @@ struct BLINK_COMMON_EXPORT
 
   static bool Read(blink::mojom::SellerCapabilitiesDataView data,
                    blink::SellerCapabilitiesType* out);
+};
+
+template <>
+struct BLINK_COMMON_EXPORT
+    StructTraits<blink::mojom::AuctionServerRequestFlagsDataView,
+                 blink::AuctionServerRequestFlags> {
+  static bool omit_ads(const blink::AuctionServerRequestFlags& capabilities) {
+    return capabilities.Has(blink::AuctionServerRequestFlagsEnum::kOmitAds);
+  }
+
+  static bool include_full_ads(
+      const blink::AuctionServerRequestFlags& capabilities) {
+    return capabilities.Has(
+        blink::AuctionServerRequestFlagsEnum::kIncludeFullAds);
+  }
+
+  static bool Read(blink::mojom::AuctionServerRequestFlagsDataView data,
+                   blink::AuctionServerRequestFlags* out);
 };
 
 template <>
@@ -174,6 +197,11 @@ struct BLINK_COMMON_EXPORT
       base::flat_map<std::string, std::vector<std::string>>>&
   size_groups(const blink::InterestGroup& interest_group) {
     return interest_group.size_groups;
+  }
+
+  static blink::AuctionServerRequestFlags auction_server_request_flags(
+      const blink::InterestGroup& interest_group) {
+    return interest_group.auction_server_request_flags;
   }
 
   static bool Read(blink::mojom::InterestGroupDataView data,

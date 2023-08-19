@@ -15,8 +15,6 @@ items:
   value: true
 - caption: Don't change the recommended <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> configuration.
   value: false
-future_on:
-- chrome_os
 owners:
 - slutskii@google.com
 - file://chrome/browser/ash/kerberos/OWNERS
@@ -24,6 +22,8 @@ schema:
   type: boolean
 supported_chrome_os_management:
 - google_cloud
+supported_on:
+- chrome_os:116-
 tags:
 - website-sharing
 type: main

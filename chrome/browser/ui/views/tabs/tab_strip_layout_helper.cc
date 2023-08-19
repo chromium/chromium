@@ -32,10 +32,6 @@ enum class ViewType {
   kGroupHeader,
 };
 
-TabLayoutConstants GetTabLayoutConstants() {
-  return {GetLayoutConstant(TAB_HEIGHT), TabStyle::Get()->GetTabOverlap()};
-}
-
 }  // namespace
 
 struct TabStripLayoutHelper::TabSlot {
@@ -259,7 +255,8 @@ std::vector<gfx::Rect> TabStripLayoutHelper::CalculateIdealBounds(
                                  pinned_tab_count - 1))
                            : absl::nullopt;
 
-  TabLayoutConstants layout_constants = GetTabLayoutConstants();
+  TabLayoutConstants layout_constants = {GetLayoutConstant(TAB_HEIGHT),
+                                         TabStyle::Get()->GetTabOverlap()};
   std::vector<TabWidthConstraints> tab_widths;
   for (int i = 0; i < static_cast<int>(slots_.size()); i++) {
     auto active =

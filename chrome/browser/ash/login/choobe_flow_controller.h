@@ -38,6 +38,10 @@ class ChoobeFlowController {
   // `kChoobeCompletedScreens` prefs are stored.
   static bool ShouldResumeChoobe(const PrefService& prefs);
 
+  // Whether the screen is one of the optional screens that can be shown in
+  // CHOOBE.
+  static bool IsOptionalScreen(OobeScreenId id);
+
   // Resume CHOOBE flow by loading stored prefs.
   // Precondition: `ShouldResumeChoobe()` returns true.
   void ResumeChoobe(const PrefService& prefs);

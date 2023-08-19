@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_WALLPAPER_HANDLERS_MOCK_WALLPAPER_HANDLERS_H_
 #define CHROME_BROWSER_ASH_WALLPAPER_HANDLERS_MOCK_WALLPAPER_HANDLERS_H_
 
+#include <stdint.h>
+
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.h"
@@ -28,6 +30,8 @@ class MockBackdropCollectionInfoFetcher : public BackdropCollectionInfoFetcher {
 
 class MockBackdropImageInfoFetcher : public BackdropImageInfoFetcher {
  public:
+  static constexpr uint64_t kTimeOfDayUnitId = 77;
+
   explicit MockBackdropImageInfoFetcher(const std::string& collection_id);
 
   MockBackdropImageInfoFetcher(const MockBackdropImageInfoFetcher&) = delete;

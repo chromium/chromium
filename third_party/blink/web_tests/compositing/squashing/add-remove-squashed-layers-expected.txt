@@ -135,10 +135,7 @@ CASE 4, overlap1 gets removed:
       "position": [180, 180],
       "bounds": [100, 100],
       "contentsOpaque": true,
-      "backgroundColor": "#FF00FF",
-      "invalidations": [
-        [0, 0, 100, 100]
-      ]
+      "backgroundColor": "#FF00FF"
     }
   ],
   "transforms": [

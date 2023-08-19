@@ -49,9 +49,6 @@ struct IPCZ_ALIGN(8) RouterDescriptor {
   // this router.
   SequenceNumber next_outgoing_sequence_number;
 
-  // The total number of outgoing bytes produced by the router's portal so far.
-  uint64_t num_bytes_produced;
-
   // The SequenceNumber of the next inbound parcel expected by this router.
   SequenceNumber next_incoming_sequence_number;
 
@@ -63,9 +60,6 @@ struct IPCZ_ALIGN(8) RouterDescriptor {
   // then the decaying link should be ignored and `new_decaying_sublink` may
   // not be valid.
   SequenceNumber decaying_incoming_sequence_length;
-
-  // The total number of incoming bytes consumed from router's portal so far.
-  uint64_t num_bytes_consumed;
 
   // Indicates that the other end of the route is already known to be closed.
   // In this case sending any new outbound parcels from this router would be

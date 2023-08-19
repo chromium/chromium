@@ -16,8 +16,10 @@ MockSourceStream::MockSourceStream() : SourceStream(SourceStream::TYPE_NONE) {}
 
 MockSourceStream::~MockSourceStream() {
   DCHECK(!awaiting_completion_);
-  // All data should have been consumed.
-  EXPECT_TRUE(results_.empty());
+  if (expect_all_input_consumed_) {
+    // All data should have been consumed.
+    EXPECT_TRUE(results_.empty());
+  }
 }
 
 int MockSourceStream::Read(IOBuffer* dest_buffer,

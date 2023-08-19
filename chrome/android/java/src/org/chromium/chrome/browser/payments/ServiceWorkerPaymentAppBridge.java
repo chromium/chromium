@@ -26,8 +26,6 @@ import java.util.Map;
  * Native bridge for interacting with service worker based payment apps.
  */
 public class ServiceWorkerPaymentAppBridge {
-    private static final String TAG = "SWPaymentApp";
-
     /** The interface for checking whether there is an installed SW payment app. */
     public static interface HasServiceWorkerPaymentAppsCallback {
         /**

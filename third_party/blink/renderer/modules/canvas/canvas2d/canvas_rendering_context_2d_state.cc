@@ -322,11 +322,44 @@ void CanvasRenderingContext2DState::SetFontKerning(
 }
 
 void CanvasRenderingContext2DState::SetFontStretch(
-    FontSelectionValue font_stretch,
+    V8CanvasFontStretch font_stretch,
     FontSelector* selector) {
   DCHECK(realized_font_);
+  FontSelectionValue stretch_value;
+  switch (font_stretch.AsEnum()) {
+    case (V8CanvasFontStretch::Enum::kUltraCondensed):
+      stretch_value = UltraCondensedWidthValue();
+      break;
+    case (V8CanvasFontStretch::Enum::kExtraCondensed):
+      stretch_value = ExtraCondensedWidthValue();
+      break;
+    case (V8CanvasFontStretch::Enum::kCondensed):
+      stretch_value = CondensedWidthValue();
+      break;
+    case (V8CanvasFontStretch::Enum::kSemiCondensed):
+      stretch_value = SemiCondensedWidthValue();
+      break;
+    case (V8CanvasFontStretch::Enum::kNormal):
+      stretch_value = NormalWidthValue();
+      break;
+    case (V8CanvasFontStretch::Enum::kUltraExpanded):
+      stretch_value = UltraExpandedWidthValue();
+      break;
+    case (V8CanvasFontStretch::Enum::kExtraExpanded):
+      stretch_value = ExtraExpandedWidthValue();
+      break;
+    case (V8CanvasFontStretch::Enum::kExpanded):
+      stretch_value = ExpandedWidthValue();
+      break;
+    case (V8CanvasFontStretch::Enum::kSemiExpanded):
+      stretch_value = SemiExpandedWidthValue();
+      break;
+    default:
+      NOTREACHED();
+  }
+
   FontDescription font_description(GetFontDescription());
-  font_description.SetStretch(font_stretch);
+  font_description.SetStretch(stretch_value);
   font_stretch_ = font_stretch;
   SetFont(font_description, selector);
 }
@@ -770,11 +803,28 @@ void CanvasRenderingContext2DState::SetWordSpacing(const String& word_spacing) {
 }
 
 void CanvasRenderingContext2DState::SetTextRendering(
-    TextRenderingMode text_rendering,
+    V8CanvasTextRendering text_rendering,
     FontSelector* selector) {
+  TextRenderingMode text_rendering_mode;
+  switch (text_rendering.AsEnum()) {
+    case (V8CanvasTextRendering::Enum::kAuto):
+      text_rendering_mode = TextRenderingMode::kAutoTextRendering;
+      break;
+    case (V8CanvasTextRendering::Enum::kOptimizeSpeed):
+      text_rendering_mode = TextRenderingMode::kAutoTextRendering;
+      break;
+    case (V8CanvasTextRendering::Enum::kOptimizeLegibility):
+      text_rendering_mode = TextRenderingMode::kAutoTextRendering;
+      break;
+    case (V8CanvasTextRendering::Enum::kGeometricPrecision):
+      text_rendering_mode = TextRenderingMode::kAutoTextRendering;
+      break;
+    default:
+      NOTREACHED();
+  }
   DCHECK(realized_font_);
   FontDescription font_description(GetFontDescription());
-  font_description.SetTextRendering(text_rendering);
+  font_description.SetTextRendering(text_rendering_mode);
   text_rendering_mode_ = text_rendering;
   SetFont(font_description, selector);
 }

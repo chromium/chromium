@@ -29,6 +29,7 @@ class WMDesksPrivateFeatureAsh : public WMDesksPrivateFeature {
 
   void RemoveDesk(const base::Uuid& desk_uuid,
                   bool close_all,
+                  bool allow_undo,
                   RemoveDeskCallback callback) override;
 
   void SetAllDeskProperty(int32_t window_id,

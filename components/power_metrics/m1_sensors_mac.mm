@@ -12,13 +12,9 @@
 #include <utility>
 
 #include "base/apple/bridging.h"
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #include "base/memory/ptr_util.h"
 #include "components/power_metrics/m1_sensors_internal_types_mac.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 extern "C" {
 
@@ -86,7 +82,7 @@ M1SensorsReader::TemperaturesCelsius M1SensorsReader::ReadTemperatures() {
     IOHIDServiceClientRef service =
         (IOHIDServiceClientRef)CFArrayGetValueAtIndex(services, i);
 
-    base::ScopedCFTypeRef<CFStringRef> product(base::mac::CFCast<CFStringRef>(
+    base::ScopedCFTypeRef<CFStringRef> product(base::apple::CFCast<CFStringRef>(
         IOHIDServiceClientCopyProperty(service, CFSTR(kIOHIDProductKey))));
     if (product == nil) {
       continue;

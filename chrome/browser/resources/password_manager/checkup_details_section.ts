@@ -157,6 +157,16 @@ export class CheckupDetailsSectionElement extends
         cred => cred.compromisedInfo!.compromiseTypes.some(type => {
           return this.getInsecurityType_().includes(type);
         }));
+    const insuecureCredentialsSorter =
+        (lhs: chrome.passwordsPrivate.PasswordUiEntry,
+         rhs: chrome.passwordsPrivate.PasswordUiEntry) => {
+          if ((this.getCurrentGroup_(lhs.id)?.name || '') >
+              (this.getCurrentGroup_(rhs.id)?.name || '')) {
+            return 1;
+          }
+          return -1;
+        };
+
     if (this.isCompromisedType()) {
       // Compromised credentials can be muted. Show muted credentials
       // separately.
@@ -165,6 +175,7 @@ export class CheckupDetailsSectionElement extends
       this.shownInsecureCredentials_ = insecureCredentialsForThisType.filter(
           cred => !cred.compromisedInfo!.isMuted);
     } else {
+      insecureCredentialsForThisType.sort(insuecureCredentialsSorter);
       this.shownInsecureCredentials_ = insecureCredentialsForThisType;
     }
 
@@ -174,7 +185,8 @@ export class CheckupDetailsSectionElement extends
       this.credentialsWithReusedPassword_ =
           await Promise.all(allReusedCredentials.map(
               async(credentials): Promise<ReusedPasswordInfo> => {
-                const reuseInfo = new ReusedPasswordInfo(credentials.entries);
+                const reuseInfo = new ReusedPasswordInfo(
+                    credentials.entries.sort(insuecureCredentialsSorter));
                 await reuseInfo.init();
                 return reuseInfo;
               }));

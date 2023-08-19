@@ -20,8 +20,8 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeSemanticColorUtils;
 import org.chromium.chrome.browser.status_indicator.StatusIndicatorCoordinator;
+import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.content_public.common.ContentSwitches;
 
@@ -262,7 +262,6 @@ public class OfflineIndicatorControllerV2 {
             surfaceState = mCanAnimateBrowserControlsSupplier.get()
                     ? UmaEnum.CAN_ANIMATE_NATIVE_CONTROLS
                     : UmaEnum.CANNOT_ANIMATE_NATIVE_CONTROLS;
-            ;
         }
         RecordHistogram.recordEnumeratedHistogram(
                 "OfflineIndicator.ConnectivityChanged.DeviceState."
@@ -289,7 +288,6 @@ public class OfflineIndicatorControllerV2 {
         sMockElapsedTimeSupplier = supplier;
     }
 
-    @VisibleForTesting
     void setHandlerForTesting(Handler handler) {
         mHandler = handler;
     }

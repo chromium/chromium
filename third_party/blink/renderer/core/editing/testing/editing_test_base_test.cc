@@ -12,7 +12,7 @@ class EditingTestBaseTest : public EditingTestBase {};
 
 TEST_F(EditingTestBaseTest, GetCaretTextFromBody) {
   SetBodyContent("<div>foo</div>");
-  Element* const div = GetDocument().QuerySelector("div");
+  Element* const div = GetDocument().QuerySelector(AtomicString("div"));
   Node* const foo = div->firstChild();
   EXPECT_EQ("|<div>foo</div>",
             GetCaretTextFromBody(Position::BeforeNode(*div)));

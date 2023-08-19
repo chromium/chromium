@@ -18,6 +18,11 @@
 #include "components/prefs/persistent_pref_store.h"
 #include "components/prefs/value_map_pref_store.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/service/sync_service_observer.h"
+
+namespace syncer {
+class SyncService;
+}  // namespace syncer
 
 namespace sync_preferences {
 
@@ -32,7 +37,8 @@ class PrefModelAssociatorClient;
 // * Dual writes: Any changes made to prefs *on this device* are written to both
 //   stores. However, incoming changes made on other devices only go into the
 //   account store.
-class DualLayerUserPrefStore : public PersistentPrefStore {
+class DualLayerUserPrefStore : public PersistentPrefStore,
+                               public syncer::SyncServiceObserver {
  public:
   DualLayerUserPrefStore(
       scoped_refptr<PersistentPrefStore> local_pref_store,
@@ -49,6 +55,20 @@ class DualLayerUserPrefStore : public PersistentPrefStore {
   // corresponding preference entries(belonging to this type) from account
   // storage. This should be called when a data type stops syncing.
   void DisableTypeAndClearAccountStore(syncer::ModelType model_type);
+
+  // Sets value for preference `key` only in the account store. This is meant
+  // for use by sync components (specifically PrefModelAssociator) to insert
+  // value in the account store directly but only leads to notifications for
+  // DualLayerUserPrefStore observers if the effective value changes.
+  // Note: This does not do any merge/unmerge and does not check whether the
+  // pref `key` is syncable.
+  // TODO(crbug.com/1470161): Implement a better way to handle this usage by the
+  // sync components.
+  void SetValueInAccountStoreOnly(const std::string& key,
+                                  base::Value value,
+                                  uint32_t flags);
+
+  void OnSyncServiceInitialized(syncer::SyncService* sync_service);
 
   scoped_refptr<PersistentPrefStore> GetLocalPrefStore();
   scoped_refptr<WriteablePrefStore> GetAccountPrefStore();
@@ -86,8 +106,15 @@ class DualLayerUserPrefStore : public PersistentPrefStore {
   void SchedulePendingLossyWrites() override;
   void OnStoreDeletionFromDisk() override;
 
+  // SyncServiceObserver implementation
+  void OnStateChanged(syncer::SyncService* sync_service) override;
+  void OnSyncShutdown(syncer::SyncService* sync_service) override;
+
   // Return the set of active pref types.
   base::flat_set<syncer::ModelType> GetActiveTypesForTest() const;
+
+  bool IsHistorySyncEnabledForTest() const;
+  void SetIsHistorySyncEnabledForTest(bool is_history_sync_enabled);
 
  protected:
   ~DualLayerUserPrefStore() override;
@@ -120,8 +147,14 @@ class DualLayerUserPrefStore : public PersistentPrefStore {
 
   bool IsInitializationSuccessful() const;
 
-  // Returns whether the pref with the given `key` should be synced.
-  bool ShouldSyncPref(const std::string& key) const;
+  // Returns whether the pref with the given `key` should be inserted into the
+  // account pref store. Note that the account store keeps in sync with the
+  // account.
+  bool ShouldSetValueInAccountStore(const std::string& key) const;
+  // Returns whether the pref with the given `key` should be queried from the
+  // account pref store. Note that the account store keeps in sync with the
+  // account.
+  bool ShouldGetValueFromAccountStore(const std::string& key) const;
 
   // Returns whether the pref with the given `key` is mergeable.
   // TODO(crbug.com/1416479): This does not cover prefs with custom merge logic
@@ -147,6 +180,9 @@ class DualLayerUserPrefStore : public PersistentPrefStore {
 
   // Get all prefs currently present in the account store.
   std::vector<std::string> GetPrefNamesInAccountStore() const;
+
+  // Returns whether the user has history sync turned on.
+  bool IsHistorySyncEnabled() const;
 
   // The two underlying pref stores, scoped to this device/profile and to the
   // user's signed-in account, respectively.
@@ -174,6 +210,8 @@ class DualLayerUserPrefStore : public PersistentPrefStore {
   // Set to true while this store is setting prefs in the underlying stores.
   // Used to avoid self-notifications.
   bool is_setting_prefs_ = false;
+
+  bool is_history_sync_enabled_ = false;
 
   base::ObserverList<PrefStore::Observer, true>::Unchecked observers_;
 

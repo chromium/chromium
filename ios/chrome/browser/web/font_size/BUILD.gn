@@ -5,7 +5,6 @@
 import("//ios/web/public/js_messaging/optimize_ts.gni")
 
 source_set("font_size") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "font_size_java_script_feature.h",
     "font_size_java_script_feature.mm",
@@ -31,7 +30,6 @@ source_set("font_size") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "font_size_js_unittest.mm",

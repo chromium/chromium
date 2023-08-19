@@ -3,12 +3,15 @@
 <translationbundle lang="de">
 <translation id="1016765312371154165">Chrome wurde nicht richtig beendet.</translation>
 <translation id="130631256467250065">Deine Änderungen werden beim nächsten Neustart wirksam.</translation>
+<translation id="1555506416658437797">Zahlungsmethoden zu bearbeiten.</translation>
 <translation id="1635457557763038537">Deine Änderungen werden beim nächsten Neustart von Chrome wirksam.</translation>
+<translation id="2399868464369312507">Google Chrome versucht, Zahlungsmethoden zu bearbeiten.</translation>
 <translation id="2447485272386224171">Chrome wird durch das Open-Source-Projekt <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> und andere <ph name="BEGIN_LINK_OSS" />Open-Source-Software<ph name="END_LINK_OSS" /> ermöglicht.</translation>
 <translation id="2588322182880276190">Chrome-Logo</translation>
 <translation id="3444832043240812445">Diese Seite zeigt nur Informationen zu deinen letzten Abstürzen, wenn du die <ph name="BEGIN_LINK" />Absturzberichtsfunktion aktivierst<ph name="END_LINK" />.</translation>
 <translation id="3875312571075912821">Erlaube Chrome in deinen Firewall- und Virenschutzeinstellungen den Zugriff auf das Netzwerk.</translation>
 <translation id="5005121315113832363">Diese Seite wurde von Chrome blockiert</translation>
+<translation id="585620188971323280">Einstellungen für das Ausfüllen von Zahlungsmethoden zu ändern.</translation>
 <translation id="6011049234605203654">Gehe zum Chrome-Menü &gt; „<ph name="SETTINGS_TITLE" />“ &gt; „<ph name="ADVANCED_TITLE" />“ &gt; „<ph name="PROXIES_TITLE" />“ und vergewissere dich, dass in deiner Konfiguration die Einstellung „Kein Proxy“ oder „Direkt“ verwendet wird.</translation>
 <translation id="6341737370356890233">Öffne
           das Chrome-Menü &gt;
@@ -23,4 +26,5 @@
 <translation id="8187289872471304532">Gehe zu „Programme“ &gt; „Systemeinstellungen“ &gt; „Netzwerk“ &gt; „Erweitert“ &gt; „Proxys“ und deaktiviere alle ausgewählten Proxyserver.</translation>
 <translation id="8232971017369963250">Chrome wird durch das Open-Source-Projekt <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ermöglicht.</translation>
 <translation id="8279509328145658601">Chrome wird auch durch andere <ph name="BEGIN_LINK_OSS" />Open-Source-Software<ph name="END_LINK_OSS" /> ermöglicht.</translation>
+<translation id="8544217240017914508">Google Chrome versucht, die Einstellungen für das Ausfüllen von Zahlungsmethoden zu ändern.</translation>
 </translationbundle>

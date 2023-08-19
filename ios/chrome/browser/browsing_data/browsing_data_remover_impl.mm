@@ -40,6 +40,7 @@
 #import "ios/chrome/browser/browser_state/ios_chrome_io_thread.h"
 #import "ios/chrome/browser/browsing_data/browsing_data_features.h"
 #import "ios/chrome/browser/browsing_data/browsing_data_remove_mask.h"
+#import "ios/chrome/browser/browsing_data/system_snapshots_cleaner.h"
 #import "ios/chrome/browser/crash_report/crash_helper.h"
 #import "ios/chrome/browser/external_files/external_file_remover.h"
 #import "ios/chrome/browser/external_files/external_file_remover_factory.h"
@@ -58,7 +59,6 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/account_consistency_service_factory.h"
-#import "ios/chrome/browser/snapshots/snapshots_util.h"
 #import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
 #import "ios/chrome/browser/webdata_services/web_data_service_factory.h"
 #import "ios/components/security_interstitials/https_only_mode/https_upgrade_service.h"
@@ -74,10 +74,6 @@
 #import "net/url_request/url_request_context.h"
 #import "net/url_request/url_request_context_getter.h"
 #import "url/gurl.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -579,10 +575,11 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
 // Removes directories for sessions with `session_ids`
 void BrowsingDataRemoverImpl::RemoveSessionsData(
     NSArray<NSString*>* session_ids) {
-  [[SessionServiceIOS sharedService]
-      deleteSessions:session_ids
-           directory:browser_state_->GetStatePath()
-          completion:base::DoNothing()];
+  if (session_service_) {
+    [session_service_ deleteSessions:session_ids
+                           directory:browser_state_->GetStatePath()
+                          completion:base::DoNothing()];
+  }
 }
 
 // TODO(crbug.com/619783): removing data from WkWebsiteDataStore should be

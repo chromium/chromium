@@ -51,7 +51,8 @@ class TestHistoryBackendDelegate : public HistoryBackend::Delegate {
   void NotifyFaviconsChanged(const std::set<GURL>& page_urls,
                              const GURL& icon_url) override {}
   void NotifyURLVisited(const URLRow& url_row,
-                        const VisitRow& visit_row) override {}
+                        const VisitRow& visit_row,
+                        absl::optional<int64_t> local_navigation_id) override {}
   void NotifyURLsModified(const URLRows& changed_urls) override {}
   void NotifyURLsDeleted(DeletionInfo deletion_info) override {}
   void NotifyKeywordSearchTermUpdated(const URLRow& row,

@@ -41,7 +41,44 @@ bool IsSameHandle(HANDLE handle, HANDLE other) {
   return true;
 }
 
+Microsoft::WRL::ComPtr<ID3D11Texture2D> OpenSharedHandleTexture(
+    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
+    HANDLE shared_handle) {
+  Microsoft::WRL::ComPtr<ID3D11Device1> d3d11_device1;
+  HRESULT hr = d3d11_device.As(&d3d11_device1);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed to query for ID3D11Device1. Error: "
+               << logging::SystemErrorCodeToString(hr);
+    return nullptr;
+  }
+
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture;
+  hr = d3d11_device1->OpenSharedResource1(shared_handle,
+                                          IID_PPV_ARGS(&d3d11_texture));
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Unable to open shared resource from DXGI handle. Error: "
+               << logging::SystemErrorCodeToString(hr);
+    return nullptr;
+  }
+
+  return d3d11_texture;
+}
+
 }  // namespace
+
+DXGISharedHandleState::D3D11TextureState::D3D11TextureState(
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> texture)
+    : d3d11_texture(std::move(texture)) {
+  d3d11_texture.As(&dxgi_keyed_mutex);
+}
+DXGISharedHandleState::D3D11TextureState::~D3D11TextureState() {
+  CHECK_EQ(keyed_mutex_acquired_count, 0);
+}
+DXGISharedHandleState::D3D11TextureState::D3D11TextureState(
+    D3D11TextureState&&) = default;
+DXGISharedHandleState::D3D11TextureState&
+DXGISharedHandleState::D3D11TextureState::operator=(D3D11TextureState&&) =
+    default;
 
 DXGISharedHandleState::DXGISharedHandleState(
     base::PassKey<DXGISharedHandleManager>,
@@ -53,17 +90,27 @@ DXGISharedHandleState::DXGISharedHandleState(
           base::subtle::GetRefCountPreference<DXGISharedHandleState>()),
       manager_(std::move(manager)),
       token_(std::move(token)),
-      shared_handle_(std::move(shared_handle)),
-      d3d11_texture_(std::move(d3d11_texture)) {
-  d3d11_texture_.As(&dxgi_keyed_mutex_);
+      shared_handle_(std::move(shared_handle)) {
+  CHECK(d3d11_texture);
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device;
+  d3d11_texture->GetDevice(&d3d11_device);
+  CHECK(d3d11_device);
+
+  D3D11TextureState texture_state(std::move(d3d11_texture));
+  has_keyed_mutex_ = !!texture_state.dxgi_keyed_mutex;
+  d3d11_texture_state_map_.emplace(d3d11_device, std::move(texture_state));
 }
 
 DXGISharedHandleState::~DXGISharedHandleState() {
-  if (acquired_for_d3d11_count_ > 0) {
-    EndAccessD3D11();
-  }
-  if (acquired_for_d3d12_) {
-    EndAccessD3D12();
+  for (auto& [_, d3d11_state] : d3d11_texture_state_map_) {
+    if (d3d11_state.keyed_mutex_acquired_count > 0) {
+      CHECK(d3d11_state.dxgi_keyed_mutex);
+      const HRESULT hr =
+          d3d11_state.dxgi_keyed_mutex->ReleaseSync(kDXGIKeyedMutexAcquireKey);
+      if (FAILED(hr)) {
+        LOG(ERROR) << "Unable to release the keyed mutex " << std::hex << hr;
+      }
+    }
   }
 }
 
@@ -88,65 +135,139 @@ void DXGISharedHandleState::Release() const {
   }
 }
 
-bool DXGISharedHandleState::BeginAccessD3D11() {
-  if (!dxgi_keyed_mutex_)
-    return true;
+Microsoft::WRL::ComPtr<ID3D11Texture2D>
+DXGISharedHandleState::GetOrCreateD3D11Texture(
+    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device) {
+  auto it = d3d11_texture_state_map_.find(d3d11_device);
+  if (it == d3d11_texture_state_map_.end()) {
+    auto d3d11_texture =
+        OpenSharedHandleTexture(d3d11_device, shared_handle_.Get());
+    if (!d3d11_texture) {
+      LOG(ERROR) << "Failed to open DXGI shared handle";
+      return nullptr;
+    }
+    // TODO(sunnyps): Consider adding a method to cleanup entries in the map.
+    d3d11_texture_state_map_.emplace(std::move(d3d11_device),
+                                     D3D11TextureState(d3d11_texture));
+    return d3d11_texture;
+  }
+  return it->second.d3d11_texture;
+}
 
-  if (acquired_for_d3d12_) {
-    DLOG(ERROR) << "Recursive BeginAccess not supported";
+bool DXGISharedHandleState::BeginAccessD3D11(
+    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device) {
+  if (!has_keyed_mutex_) {
+    return true;
+  }
+  auto& d3d11_state = d3d11_texture_state_map_.at(d3d11_device);
+  CHECK(d3d11_state.dxgi_keyed_mutex);
+  CHECK_GE(d3d11_state.keyed_mutex_acquired_count, 0);
+
+  // Keyed mutex is acquired on |d3d11_device|. Simply increment acquired count.
+  if (d3d11_state.keyed_mutex_acquired_count > 0) {
+    d3d11_state.keyed_mutex_acquired_count++;
+    return true;
+  }
+
+  // Keyed mutex is acquired on another device which is not permitted.
+  if (keyed_mutex_acquired_) {
+    LOG(ERROR) << "Concurrent keyed mutex access not supported";
     return false;
   }
-  if (acquired_for_d3d11_count_ > 0) {
-    acquired_for_d3d11_count_++;
-    return true;
-  }
-  const HRESULT hr =
-      dxgi_keyed_mutex_->AcquireSync(kDXGIKeyedMutexAcquireKey, INFINITE);
+
+  const HRESULT hr = d3d11_state.dxgi_keyed_mutex->AcquireSync(
+      kDXGIKeyedMutexAcquireKey, INFINITE);
   if (FAILED(hr)) {
-    DLOG(ERROR) << "Unable to acquire the keyed mutex " << std::hex << hr;
+    LOG(ERROR) << "Unable to acquire the keyed mutex " << std::hex << hr;
     return false;
   }
-  acquired_for_d3d11_count_++;
+  d3d11_state.keyed_mutex_acquired_count++;
+  keyed_mutex_acquired_ = true;
   return true;
 }
 
-void DXGISharedHandleState::EndAccessD3D11() {
-  if (!dxgi_keyed_mutex_)
+void DXGISharedHandleState::EndAccessD3D11(
+    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device) {
+  if (!has_keyed_mutex_) {
     return;
+  }
+  CHECK(keyed_mutex_acquired_);
 
-  DCHECK_GT(acquired_for_d3d11_count_, 0);
-  acquired_for_d3d11_count_--;
-  if (acquired_for_d3d11_count_ == 0) {
+  auto& d3d11_state = d3d11_texture_state_map_.at(d3d11_device);
+  CHECK(d3d11_state.dxgi_keyed_mutex);
+  CHECK_GT(d3d11_state.keyed_mutex_acquired_count, 0);
+
+  d3d11_state.keyed_mutex_acquired_count--;
+
+  if (d3d11_state.keyed_mutex_acquired_count == 0) {
     const HRESULT hr =
-        dxgi_keyed_mutex_->ReleaseSync(kDXGIKeyedMutexAcquireKey);
-    if (FAILED(hr))
-      DLOG(ERROR) << "Unable to release the keyed mutex " << std::hex << hr;
+        d3d11_state.dxgi_keyed_mutex->ReleaseSync(kDXGIKeyedMutexAcquireKey);
+    if (SUCCEEDED(hr)) {
+      keyed_mutex_acquired_ = false;
+    } else {
+      LOG(ERROR) << "Unable to release the keyed mutex " << std::hex << hr;
+    }
   }
 }
 
-bool DXGISharedHandleState::BeginAccessD3D12() {
-  if (!dxgi_keyed_mutex_)
-    return true;
+#if BUILDFLAG(USE_DAWN)
+DXGISharedHandleState::DawnExternalImageState::DawnExternalImageState() =
+    default;
+DXGISharedHandleState::DawnExternalImageState::~DawnExternalImageState() =
+    default;
+DXGISharedHandleState::DawnExternalImageState::DawnExternalImageState(
+    DawnExternalImageState&&) = default;
+DXGISharedHandleState::DawnExternalImageState&
+DXGISharedHandleState::DawnExternalImageState::operator=(
+    DawnExternalImageState&&) = default;
 
-  if (acquired_for_d3d12_ || acquired_for_d3d11_count_ > 0) {
-    DLOG(ERROR) << "Recursive BeginAccess not supported";
+bool DXGISharedHandleState::BeginAccessDawn(WGPUDevice device) {
+  auto& dawn_state = dawn_external_image_cache_.at(device);
+  CHECK_GE(dawn_state.access_count, 0);
+  // If a keyed mutex is present it's already acquired on |device| so just
+  // increment the access count.
+  if (dawn_state.access_count > 0) {
+    dawn_state.access_count++;
+    return true;
+  }
+  // Keyed mutex is acquired on another device which is not permitted.
+  if (keyed_mutex_acquired_) {
+    LOG(ERROR) << "Concurrent keyed mutex access not supported";
     return false;
   }
-  acquired_for_d3d12_ = true;
+  dawn_state.access_count++;
+  // The keyed mutex is actually acquired internally in Dawn, but we do extra
+  // tracking here for preventing concurrent access.
+  keyed_mutex_acquired_ = has_keyed_mutex_;
   return true;
 }
 
-void DXGISharedHandleState::EndAccessD3D12() {
-  if (!dxgi_keyed_mutex_)
-    return;
-  acquired_for_d3d12_ = false;
+void DXGISharedHandleState::EndAccessDawn(WGPUDevice device) {
+  auto& dawn_state = dawn_external_image_cache_.at(device);
+  CHECK_GT(dawn_state.access_count, 0);
+  CHECK_EQ(has_keyed_mutex_, keyed_mutex_acquired_);
+
+  dawn_state.access_count--;
+
+  if (dawn_state.access_count == 0) {
+    if (!dawn_state.external_image) {
+      // Clear entry from the map if the backing has already reset the external
+      // image e.g. due to device destruction or loss.
+      dawn_external_image_cache_.erase(device);
+    }
+    // The keyed mutex is actually released internally in Dawn, but we do extra
+    // tracking here for preventing concurrent access.
+    keyed_mutex_acquired_ = false;
+  }
 }
 
-DXGISharedHandleManager::DXGISharedHandleManager(
-    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device)
-    : d3d11_device_(std::move(d3d11_device)) {
-  DCHECK(d3d11_device_);
+std::unique_ptr<ExternalImageDXGI>& DXGISharedHandleState::GetDawnExternalImage(
+    WGPUDevice device) {
+  return dawn_external_image_cache_[device].external_image;
 }
+#endif  // BUILDFLAG(USE_DAWN)
+
+DXGISharedHandleManager::DXGISharedHandleManager() = default;
 
 DXGISharedHandleManager::~DXGISharedHandleManager() {
 #if DCHECK_IS_ON()
@@ -158,7 +279,8 @@ DXGISharedHandleManager::~DXGISharedHandleManager() {
 scoped_refptr<DXGISharedHandleState>
 DXGISharedHandleManager::GetOrCreateSharedHandleState(
     gfx::DXGIHandleToken token,
-    base::win::ScopedHandle shared_handle) {
+    base::win::ScopedHandle shared_handle,
+    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device) {
   DCHECK(shared_handle.IsValid());
 
   base::AutoLock auto_lock(lock_);
@@ -170,26 +292,16 @@ DXGISharedHandleManager::GetOrCreateSharedHandleState(
     // If there's already a shared handle associated with the token, it should
     // refer to the same D3D11 texture (or kernel object).
     if (!IsSameHandle(shared_handle.Get(), state->GetSharedHandle())) {
-      DLOG(ERROR) << "Existing shared handle for token doesn't match";
+      LOG(ERROR) << "Existing shared handle for token doesn't match";
       return nullptr;
     }
     return base::WrapRefCounted(state);
   }
 
-  Microsoft::WRL::ComPtr<ID3D11Device1> d3d11_device1;
-  HRESULT hr = d3d11_device_.As(&d3d11_device1);
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to query for ID3D11Device1. Error: "
-                << logging::SystemErrorCodeToString(hr);
-    return nullptr;
-  }
-
-  Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture;
-  hr = d3d11_device1->OpenSharedResource1(shared_handle.Get(),
-                                          IID_PPV_ARGS(&d3d11_texture));
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "Unable to open shared resource from DXGI handle. Error: "
-                << logging::SystemErrorCodeToString(hr);
+  auto d3d11_texture =
+      OpenSharedHandleTexture(d3d11_device, shared_handle.Get());
+  if (!d3d11_texture) {
+    LOG(ERROR) << "Failed to open DXGI shared handle";
     return nullptr;
   }
 

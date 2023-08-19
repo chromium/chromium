@@ -8,7 +8,6 @@
 #define CHROME_BROWSER_ASH_EXTENSIONS_FILE_MANAGER_PRIVATE_API_UTIL_H_
 
 #include <memory>
-#include <set>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -73,14 +72,10 @@ class SingleEntryPropertiesGetterForDriveFs {
       base::File::Error error)>;
 
   // Creates an instance and starts the process.
-  // To request specific properties, pass the requested_properties set.
-  // Note: Passing an empty set retrieves all available properties.
-  static void Start(
-      const storage::FileSystemURL& file_system_url,
+  static void Start(const storage::FileSystemURL& file_system_url,
       Profile* const profile,
-      const std::set<extensions::api::file_manager_private::EntryPropertyName>
-          requested_properties,
       ResultCallback callback);
+
   ~SingleEntryPropertiesGetterForDriveFs();
 
   SingleEntryPropertiesGetterForDriveFs(
@@ -92,8 +87,6 @@ class SingleEntryPropertiesGetterForDriveFs {
   SingleEntryPropertiesGetterForDriveFs(
       const storage::FileSystemURL& file_system_url,
       Profile* const profile,
-      const std::set<extensions::api::file_manager_private::EntryPropertyName>
-          requested_properties,
       ResultCallback callback);
   void StartProcess();
   void OnGetFileInfo(drive::FileError error,
@@ -105,15 +98,6 @@ class SingleEntryPropertiesGetterForDriveFs {
   const storage::FileSystemURL file_system_url_;
   base::FilePath relative_path_;
   const raw_ptr<Profile, ExperimentalAsh> running_profile_;
-  // Note: when empty, all properties are returned.
-  const std::set<extensions::api::file_manager_private::EntryPropertyName>
-      requested_properties_;
-  // If only some of these properties are being requested, we don't need to get
-  // metadata from DriveFS as they are already cached in the SyncStatusTracker.
-  const std::set<extensions::api::file_manager_private::EntryPropertyName>
-      locally_available_properties_ = {
-          extensions::api::file_manager_private::ENTRY_PROPERTY_NAME_SYNCSTATUS,
-          extensions::api::file_manager_private::ENTRY_PROPERTY_NAME_PROGRESS};
 
   // Values used in the process.
   std::unique_ptr<extensions::api::file_manager_private::EntryProperties>

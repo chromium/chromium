@@ -43,8 +43,7 @@ found in the LICENSE file.
   </h1>
   <div slot="subtitle" id="voice-match-animation">
     <oobe-cr-lottie id="voice-match-lottie"
-        animation-url="[[getVoiceMatchAnimationUrl_(isDarkModeActive_,
-                                                    isTabletMode_)]]">
+        animation-url="[[getVoiceMatchAnimationUrl_(isTabletMode_)]]">
     </oobe-cr-lottie>
   </div>
   <div slot="content" class="landscape-vertical-centered">
@@ -134,11 +133,7 @@ found in the LICENSE file.
         'assistantVoiceMatchAlreadySetupMessageForChild', childName_)]]
   </div>
   <div slot="content" class="flex layout vertical center center-justified">
-    <iron-media-query query="(prefers-color-scheme: dark)"
-                      query-matches="{{isDarkModeActive_}}">
-    </iron-media-query>
-    <cr-lottie id="ready-img" aria-hidden="true"
-        animation-url="[[getReadyImgUrl_(isDarkModeActive_)]]">
-    </cr-lottie>
+    <iron-icon id="ready-img" icon="assistant-illo:ready">
+    </iron-icon>
   </div>
 </oobe-adaptive-dialog>

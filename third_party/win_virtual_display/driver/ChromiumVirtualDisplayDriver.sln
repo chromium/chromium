@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33815.320
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ChromiumVirtualDisplayDriver", "ChromiumVirtualDisplayDriver.vcxproj", "{2D54CB75-8B17-4F11-97DC-847B0244CD46}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2D54CB75-8B17-4F11-97DC-847B0244CD46}.Debug|x64.ActiveCfg = Debug|x64
+		{2D54CB75-8B17-4F11-97DC-847B0244CD46}.Debug|x64.Build.0 = Debug|x64
+		{2D54CB75-8B17-4F11-97DC-847B0244CD46}.Debug|x64.Deploy.0 = Debug|x64
+		{2D54CB75-8B17-4F11-97DC-847B0244CD46}.Release|x64.ActiveCfg = Release|x64
+		{2D54CB75-8B17-4F11-97DC-847B0244CD46}.Release|x64.Build.0 = Release|x64
+		{2D54CB75-8B17-4F11-97DC-847B0244CD46}.Release|x64.Deploy.0 = Release|x64
+		{ED59DFCA-E75B-4DD8-B5C2-6BFF77A225A6}.Debug|x64.ActiveCfg = Debug|x64
+		{ED59DFCA-E75B-4DD8-B5C2-6BFF77A225A6}.Debug|x64.Build.0 = Debug|x64
+		{ED59DFCA-E75B-4DD8-B5C2-6BFF77A225A6}.Release|x64.ActiveCfg = Release|x64
+		{ED59DFCA-E75B-4DD8-B5C2-6BFF77A225A6}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1C92CFF5-AC99-48BC-949B-7E7DD3AA4AD7}
+	EndGlobalSection
+EndGlobal

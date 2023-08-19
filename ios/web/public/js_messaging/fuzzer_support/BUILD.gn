@@ -5,7 +5,6 @@
 import("//third_party/protobuf/proto_library.gni")
 
 source_set("fuzzer_support") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "fuzzer_env_with_java_script_feature.h",

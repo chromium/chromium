@@ -14,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/ash/printing/cups_printers_manager.h"
-#include "chrome/browser/ash/printing/printer_configurer.h"
 #include "chrome/browser/ash/printing/printer_installation_manager.h"
 #include "chromeos/printing/printer_configuration.h"
 
@@ -25,7 +24,6 @@ class UsbPrinterNotificationController;
 class AutomaticUsbPrinterConfigurer : public CupsPrintersManager::Observer {
  public:
   AutomaticUsbPrinterConfigurer(
-      std::unique_ptr<PrinterConfigurer> printer_configurer,
       PrinterInstallationManager* installation_manager,
       UsbPrinterNotificationController* notification_controller);
 
@@ -74,7 +72,6 @@ class AutomaticUsbPrinterConfigurer : public CupsPrintersManager::Observer {
 
   SEQUENCE_CHECKER(sequence_);
 
-  std::unique_ptr<PrinterConfigurer> printer_configurer_;
   raw_ptr<PrinterInstallationManager, ExperimentalAsh>
       installation_manager_;  // Not owned.
   raw_ptr<UsbPrinterNotificationController, ExperimentalAsh>

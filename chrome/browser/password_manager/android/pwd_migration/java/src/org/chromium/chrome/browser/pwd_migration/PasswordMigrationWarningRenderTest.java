@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.pwd_migration;
 
+import static org.junit.Assert.fail;
+
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
 import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.CURRENT_SCREEN;
 import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.VISIBLE;
@@ -66,7 +68,6 @@ public class PasswordMigrationWarningRenderTest {
     private Callback<Integer> mDismissCallback;
     @Mock
     private PasswordMigrationWarningOnClickHandler mOnClickHandler;
-
     private BottomSheetController mBottomSheetController;
     private PasswordMigrationWarningView mView;
     private PropertyModel mModel;
@@ -101,9 +102,9 @@ public class PasswordMigrationWarningRenderTest {
                                          .getBottomSheetController();
         runOnUiThreadBlocking(() -> {
             mModel = PasswordMigrationWarningProperties.createDefaultModel(
-                    mDismissCallback, mOnClickHandler);
-            mView = new PasswordMigrationWarningView(
-                    mActivityTestRule.getActivity(), mBottomSheetController);
+                    () -> {}, mDismissCallback, mOnClickHandler);
+            mView = new PasswordMigrationWarningView(mActivityTestRule.getActivity(),
+                    mBottomSheetController, () -> {}, (Throwable exception) -> fail());
             PropertyModelChangeProcessor.create(mModel, mView,
                     PasswordMigrationWarningViewBinder::bindPasswordMigrationWarningView);
         });

@@ -1,12 +1,4 @@
 include_rules = [
-  "+cc/paint",
-  "+third_party/skia",
-  "+third_party/zlib/google/compression_utils.h",
   "+ui/aura",
-  "+ui/base",
-  "+ui/compositor",
-  "+ui/display",
-  "+ui/events",
   "+ui/gfx",
-  "+ui/platform_window",
 ]

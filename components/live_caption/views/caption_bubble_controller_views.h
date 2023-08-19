@@ -64,6 +64,9 @@ class CaptionBubbleControllerViews : public CaptionBubbleController {
   bool IsWidgetVisibleForTesting() override;
   bool IsGenericErrorMessageVisibleForTesting() override;
   std::string GetBubbleLabelTextForTesting() override;
+  void OnLanguageIdentificationEvent(
+      CaptionBubbleContext* caption_bubble_context,
+      const media::mojom::LanguageIdentificationEventPtr& event) override;
   void CloseActiveModelForTesting() override;
   views::Widget* GetCaptionWidgetForTesting();
   CaptionBubble* GetCaptionBubbleForTesting();

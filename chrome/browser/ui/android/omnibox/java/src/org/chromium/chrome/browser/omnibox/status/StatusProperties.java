@@ -51,6 +51,12 @@ public class StatusProperties {
             mDrawable = drawable;
         }
 
+        /** Constructor for a custom drawable with identifier. */
+        public StatusIconResource(Drawable drawable, String iconIdentifier) {
+            mDrawable = drawable;
+            mIconIdentifier = iconIdentifier;
+        }
+
         /** Constructor for a custom bitmap. */
         public StatusIconResource(String iconIdentifier, Bitmap bitmap, @ColorRes int tint) {
             mIconIdentifier = iconIdentifier;
@@ -161,6 +167,11 @@ public class StatusProperties {
             mIsIncognito = isIncognito;
         }
 
+        PermissionIconResource(Drawable drawable, boolean isIncognito, String iconIdentifier) {
+            super(drawable, iconIdentifier);
+            mIsIncognito = isIncognito;
+        }
+
         /** Returns a {@link Drawable} for this StatusIconResource. */
         @Override
         Drawable getDrawable(Context context, Resources resources) {
@@ -243,6 +254,9 @@ public class StatusProperties {
     static final WritableObjectPropertyKey<StatusIconResource> STATUS_ICON_RESOURCE =
             new WritableObjectPropertyKey<>();
 
+    /** The x translation of the status view. */
+    static final WritableFloatPropertyKey TRANSLATION_X = new WritableFloatPropertyKey();
+
     /** Text color of the verbose status text field. */
     static final WritableIntPropertyKey VERBOSE_STATUS_TEXT_COLOR = new WritableIntPropertyKey();
 
@@ -271,6 +285,7 @@ public class StatusProperties {
             STATUS_ICON_ALPHA,
             STATUS_ICON_DESCRIPTION_RES,
             STATUS_ICON_RESOURCE,
+            TRANSLATION_X,
             VERBOSE_STATUS_TEXT_COLOR,
             VERBOSE_STATUS_TEXT_STRING_RES,
             VERBOSE_STATUS_TEXT_VISIBLE,

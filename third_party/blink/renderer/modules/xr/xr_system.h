@@ -66,7 +66,7 @@ class XRSessionInit;
 //
 // The XRSystem keeps weak references to XRSession objects after they were
 // returned through a successful requestSession promise, but does not own them.
-class XRSystem final : public EventTargetWithInlineData,
+class XRSystem final : public EventTarget,
                        public Supplement<Navigator>,
                        public ExecutionContextLifecycleObserver,
                        public device::mojom::blink::VRServiceClient,

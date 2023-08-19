@@ -176,6 +176,8 @@ bool NetworkState::PropertyChanged(const std::string& key,
     return GetIntegerValue(key, value, &priority_);
   } else if (key == shill::kWifiHiddenSsid) {
     return GetBooleanValue(key, value, &hidden_ssid_);
+  } else if (key == shill::kPasspointIDProperty) {
+    return GetStringValue(key, value, &passpoint_id_);
   } else if (key == shill::kOutOfCreditsProperty) {
     return GetBooleanValue(key, value, &cellular_out_of_credits_);
   } else if (key == shill::kIccidProperty) {
@@ -309,8 +311,8 @@ void NetworkState::GetStateProperties(base::Value::Dict* dictionary) const {
     // Shill sends VPN provider properties in a nested dictionary. |dictionary|
     // must replicate that nested structure.
     std::string provider_type = vpn_provider()->type;
-    base::Value::Dict provider_property;
-    provider_property.Set(shill::kTypeProperty, provider_type);
+    auto provider_property =
+        base::Value::Dict().Set(shill::kTypeProperty, provider_type);
     if (provider_type == shill::kProviderThirdPartyVpn ||
         provider_type == shill::kProviderArcVpn) {
       provider_property.Set(shill::kHostProperty, vpn_provider()->id);

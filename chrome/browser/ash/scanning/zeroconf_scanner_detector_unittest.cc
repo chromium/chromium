@@ -198,9 +198,11 @@ class ZeroconfScannerDetectorTest : public testing::Test {
   // with this class in listers_ when the test starts and is transferred to
   // detector_ when the detector is created. Throughout, the listers remain
   // available to the test via these pointers.
-  raw_ptr<FakeServiceDiscoveryDeviceLister, ExperimentalAsh> escl_lister_;
-  raw_ptr<FakeServiceDiscoveryDeviceLister, ExperimentalAsh> escls_lister_;
-  raw_ptr<FakeServiceDiscoveryDeviceLister, ExperimentalAsh>
+  raw_ptr<FakeServiceDiscoveryDeviceLister, DanglingUntriaged | ExperimentalAsh>
+      escl_lister_;
+  raw_ptr<FakeServiceDiscoveryDeviceLister, DanglingUntriaged | ExperimentalAsh>
+      escls_lister_;
+  raw_ptr<FakeServiceDiscoveryDeviceLister, DanglingUntriaged | ExperimentalAsh>
       generic_scanner_lister_;
 
   // Detector under test.

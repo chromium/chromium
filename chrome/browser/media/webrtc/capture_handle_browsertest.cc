@@ -165,7 +165,7 @@ struct TabInfo {
   }
 
   raw_ptr<Browser> browser;
-  raw_ptr<WebContents, DanglingUntriaged> web_contents;
+  raw_ptr<WebContents, AcrossTasksDanglingUntriaged> web_contents;
   int tab_strip_index;
   std::string capture_handle;  // Expected value for those who may observe.
 };
@@ -319,7 +319,7 @@ class CaptureHandleBrowserTest : public WebRtcTestBase {
 
   // Incognito browser.
   // Note: The regular one is accessible via browser().
-  raw_ptr<Browser, DanglingUntriaged> incognito_browser_ = nullptr;
+  raw_ptr<Browser, AcrossTasksDanglingUntriaged> incognito_browser_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
@@ -786,7 +786,8 @@ class CaptureHandleBrowserTestPrerender : public CaptureHandleBrowserTest {
 
  protected:
   std::unique_ptr<content::test::PrerenderTestHelper> prerender_helper_;
-  raw_ptr<WebContents, DanglingUntriaged> captured_web_contents_ = nullptr;
+  raw_ptr<WebContents, AcrossTasksDanglingUntriaged> captured_web_contents_ =
+      nullptr;
 };
 
 // Verifies that pre-rendered pages don't change the capture handle config.

@@ -32,8 +32,8 @@ namespace {
 
 constexpr char kExampleUrl1[] = "https://example1.com/";
 
-constexpr ino_t kInode1 = 1;
-constexpr ino_t kInode2 = 2;
+constexpr DlpFilesEventStorage::FileId kFileId1 = {1, 1};
+constexpr DlpFilesEventStorage::FileId kFileId2 = {2, 2};
 
 constexpr base::TimeDelta kCooldownTimeout = base::Seconds(5);
 
@@ -67,24 +67,24 @@ TEST_F(DlpFilesEventStorageTest, UpsertEvents) {
       base::MakeRefCounted<base::TestMockTimeTaskRunner>();
   storage.SetTaskRunnerForTesting(task_runner);
 
-  const auto dst1 = DlpFileDestination(kExampleUrl1);
+  const auto dst1 = DlpFileDestination(GURL(kExampleUrl1));
   const auto dst2 = DlpFileDestination(data_controls::Component::kDrive);
 
   // Insertion
-  ASSERT_TRUE(storage.StoreEventAndCheckIfItShouldBeReported(kInode1, dst1));
-  ASSERT_TRUE(storage.StoreEventAndCheckIfItShouldBeReported(kInode1, dst2));
-  ASSERT_TRUE(storage.StoreEventAndCheckIfItShouldBeReported(kInode2, dst1));
-  ASSERT_TRUE(storage.StoreEventAndCheckIfItShouldBeReported(kInode2, dst2));
+  ASSERT_TRUE(storage.StoreEventAndCheckIfItShouldBeReported(kFileId1, dst1));
+  ASSERT_TRUE(storage.StoreEventAndCheckIfItShouldBeReported(kFileId1, dst2));
+  ASSERT_TRUE(storage.StoreEventAndCheckIfItShouldBeReported(kFileId2, dst1));
+  ASSERT_TRUE(storage.StoreEventAndCheckIfItShouldBeReported(kFileId2, dst2));
 
   ASSERT_THAT(storage.GetSizeForTesting(), 4);
 
   task_runner->FastForwardBy(kCooldownTimeout / 2);
 
   // Update
-  ASSERT_FALSE(storage.StoreEventAndCheckIfItShouldBeReported(kInode1, dst1));
-  ASSERT_FALSE(storage.StoreEventAndCheckIfItShouldBeReported(kInode1, dst2));
-  ASSERT_FALSE(storage.StoreEventAndCheckIfItShouldBeReported(kInode2, dst1));
-  ASSERT_FALSE(storage.StoreEventAndCheckIfItShouldBeReported(kInode2, dst2));
+  ASSERT_FALSE(storage.StoreEventAndCheckIfItShouldBeReported(kFileId1, dst1));
+  ASSERT_FALSE(storage.StoreEventAndCheckIfItShouldBeReported(kFileId1, dst2));
+  ASSERT_FALSE(storage.StoreEventAndCheckIfItShouldBeReported(kFileId2, dst1));
+  ASSERT_FALSE(storage.StoreEventAndCheckIfItShouldBeReported(kFileId2, dst2));
 
   ASSERT_THAT(storage.GetSizeForTesting(), 4);
 
@@ -114,14 +114,15 @@ TEST_F(DlpFilesEventStorageTest, LimitEvents) {
   for (size_t inode = 0; inode < max_inode; ++inode) {
     for (size_t dst_index = 0; dst_index < max_dst_index; ++dst_index) {
       count++;
-      auto dst = DlpFileDestination("https://example" +
-                                    base::NumberToString(dst_index) + ".com/");
+      auto dst = DlpFileDestination(
+          GURL("https://example" + base::NumberToString(dst_index) + ".com/"));
       if (count <= kEntriesLimit) {
-        ASSERT_TRUE(storage.StoreEventAndCheckIfItShouldBeReported(inode, dst));
+        ASSERT_TRUE(storage.StoreEventAndCheckIfItShouldBeReported(
+            {inode, /*crtime=*/inode}, dst));
         ASSERT_THAT(storage.GetSizeForTesting(), count);
       } else {
-        ASSERT_FALSE(
-            storage.StoreEventAndCheckIfItShouldBeReported(inode, dst));
+        ASSERT_FALSE(storage.StoreEventAndCheckIfItShouldBeReported(
+            {inode, /*crtime=*/inode}, dst));
         ASSERT_THAT(storage.GetSizeForTesting(), kEntriesLimit);
       }
     }

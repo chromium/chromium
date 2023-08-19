@@ -170,7 +170,9 @@ class CORE_EXPORT FlatTreeTraversal {
 
   static void AssertPrecondition(const Node& node) {
     DCHECK(!node.GetDocument().IsFlatTreeTraversalForbidden());
-    DCHECK(!node.IsShadowRoot());
+    DCHECK(!node.IsShadowRoot())
+        << "Shadow roots don't have layout objects. Their host has one, and "
+           "their children have them, and those two are connected.";
   }
 
   static void AssertPostcondition(const Node* node) {

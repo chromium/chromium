@@ -5,16 +5,15 @@
 package org.chromium.chrome.browser;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.directactions.DirectActionCoordinator;
-import org.chromium.chrome.browser.feedback.FeedbackReporter;
 import org.chromium.chrome.browser.gsa.GSAHelper;
 import org.chromium.chrome.browser.historyreport.AppIndexingReporter;
 import org.chromium.chrome.browser.init.ChromeStartupDelegate;
@@ -59,9 +58,9 @@ public abstract class AppHooks {
     /**
      * Sets a mocked instance for testing.
      */
-    @VisibleForTesting
     public static void setInstanceForTesting(AppHooksImpl instance) {
         sInstanceForTesting = instance;
+        ResettersForTesting.register(() -> sInstanceForTesting = null);
     }
 
     public static AppHooks get() {
@@ -105,8 +104,7 @@ public abstract class AppHooks {
     /**
      * Returns a new {@link DirectActionCoordinator} instance, if available.
      */
-    @Nullable
-    public DirectActionCoordinator createDirectActionCoordinator() {
+    public @Nullable DirectActionCoordinator createDirectActionCoordinator() {
         return null;
     }
 
@@ -116,13 +114,6 @@ public abstract class AppHooks {
      */
     public SurveyController createSurveyController() {
         return new SurveyController();
-    }
-
-    /**
-     * @return An instance of {@link FeedbackReporter} to report feedback.
-     */
-    public FeedbackReporter createFeedbackReporter() {
-        return new FeedbackReporter() {};
     }
 
     /**

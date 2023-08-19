@@ -219,7 +219,7 @@ TEST_F(InputMethodControllerTest, AddImeTextSpansToExistingText) {
 TEST_F(InputMethodControllerTest, AddGrammarCheckSpans) {
   InsertHTMLElement("<div id='sample' contenteditable>hello world</div>",
                     "sample");
-  Element* div = GetDocument().QuerySelector("div");
+  Element* div = GetDocument().QuerySelector(AtomicString("div"));
   Node* text = div->firstChild();
 
   GetDocument().Markers().AddSpellingMarker(
@@ -1628,7 +1628,7 @@ TEST_F(InputMethodControllerTest, FinishCompositionRemovedRange) {
   input_a->setOuterHTML("", ASSERT_NO_EXCEPTION);
   EXPECT_EQ(kWebTextInputTypeNone, Controller().TextInputType());
 
-  GetDocument().getElementById("b")->Focus();
+  GetDocument().getElementById(AtomicString("b"))->Focus();
   EXPECT_EQ(kWebTextInputTypeTelephone, Controller().TextInputType());
 
   Controller().FinishComposingText(InputMethodController::kKeepSelection);
@@ -3571,7 +3571,7 @@ TEST_F(InputMethodControllerTest, SetCompositionAfterNonEditableElement) {
   GetFrame().Selection().SetSelectionAndEndTyping(
       SetSelectionTextToBody("<div id='sample' contenteditable='true'>"
                              "<span contenteditable='false'>a</span>|b</div>"));
-  Element* const div = GetDocument().getElementById("sample");
+  Element* const div = GetDocument().getElementById(AtomicString("sample"));
   div->Focus();
 
   // Open a composition and insert some text.
@@ -3597,13 +3597,13 @@ TEST_F(InputMethodControllerTest, SetCompositionInTableCell) {
           "<table id='sample' contenteditable><tr><td>a</td><td "
           "id='td2'>|</td></tr></table>"),
       SetSelectionOptions());
-  Element* const table = GetDocument().getElementById("sample");
+  Element* const table = GetDocument().getElementById(AtomicString("sample"));
   table->Focus();
 
   Controller().SetComposition(String::FromUTF8("c"), Vector<ImeTextSpan>(), 1,
                               1);
 
-  Element* const td2 = GetDocument().getElementById("td2");
+  Element* const td2 = GetDocument().getElementById(AtomicString("td2"));
   const Node* const text_node = td2->firstChild();
 
   Range* range = GetCompositionRange();
@@ -3653,7 +3653,7 @@ TEST_F(InputMethodControllerTest, VirtualKeyboardPolicyOfFocusedElement) {
 TEST_F(InputMethodControllerTest, SetCompositionInTibetan) {
   GetFrame().Selection().SetSelectionAndEndTyping(
       SetSelectionTextToBody("<div id='sample' contenteditable>|</div>"));
-  Element* const div = GetDocument().getElementById("sample");
+  Element* const div = GetDocument().getElementById(AtomicString("sample"));
   div->Focus();
 
   Vector<ImeTextSpan> ime_text_spans;
@@ -3685,7 +3685,7 @@ TEST_F(InputMethodControllerTest, SetCompositionInTibetan) {
 TEST_F(InputMethodControllerTest, SetCompositionInDevanagari) {
   GetFrame().Selection().SetSelectionAndEndTyping(
       SetSelectionTextToBody("<div id='sample' contenteditable>\u0958|</div>"));
-  Element* const div = GetDocument().getElementById("sample");
+  Element* const div = GetDocument().getElementById(AtomicString("sample"));
   div->Focus();
 
   Vector<ImeTextSpan> ime_text_spans;
@@ -3703,7 +3703,7 @@ TEST_F(InputMethodControllerTest, SetCompositionInDevanagari) {
 TEST_F(InputMethodControllerTest, SetCompositionTamil) {
   GetFrame().Selection().SetSelectionAndEndTyping(
       SetSelectionTextToBody("<div id='sample' contenteditable>|</div>"));
-  Element* const div = GetDocument().getElementById("sample");
+  Element* const div = GetDocument().getElementById(AtomicString("sample"));
   div->Focus();
 
   Vector<ImeTextSpan> ime_text_spans;

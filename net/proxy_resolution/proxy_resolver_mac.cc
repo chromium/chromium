@@ -8,10 +8,10 @@
 
 #include <memory>
 
+#include "base/apple/foundation_util.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/check.h"
 #include "base/lazy_instance.h"
-#include "base/mac/foundation_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/synchronization/lock.h"
@@ -320,15 +320,16 @@ int ProxyResolverMac::GetProxyForURL(
     return ERR_FAILED;
   }
   base::ScopedCFTypeRef<CFArrayRef> proxy_array_ref(
-      base::mac::CFCastStrict<CFArrayRef>(result));
+      base::apple::CFCastStrict<CFArrayRef>(result));
   DCHECK(proxy_array_ref != nullptr);
 
   ProxyList proxy_list;
 
   CFIndex proxy_array_count = CFArrayGetCount(proxy_array_ref.get());
   for (CFIndex i = 0; i < proxy_array_count; ++i) {
-    CFDictionaryRef proxy_dictionary = base::mac::CFCastStrict<CFDictionaryRef>(
-        CFArrayGetValueAtIndex(proxy_array_ref.get(), i));
+    CFDictionaryRef proxy_dictionary =
+        base::apple::CFCastStrict<CFDictionaryRef>(
+            CFArrayGetValueAtIndex(proxy_array_ref.get(), i));
     DCHECK(proxy_dictionary != nullptr);
 
     // The dictionary may have the following keys:
@@ -345,7 +346,7 @@ int ProxyResolverMac::GetProxyForURL(
     // - kCFProxyAutoConfigurationURLKey : If the PAC file specifies another
     //                                     PAC file, I'm going home.
 
-    CFStringRef proxy_type = base::mac::GetValueFromDictionary<CFStringRef>(
+    CFStringRef proxy_type = base::apple::GetValueFromDictionary<CFStringRef>(
         proxy_dictionary, kCFProxyTypeKey);
     ProxyServer proxy_server = ProxyDictionaryToProxyServer(
         GetProxyServerScheme(proxy_type), proxy_dictionary, kCFProxyHostNameKey,

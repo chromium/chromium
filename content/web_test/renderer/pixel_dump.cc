@@ -35,10 +35,12 @@
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_page_popup.h"
+#include "third_party/blink/public/web/web_print_page_description.h"
 #include "third_party/blink/public/web/web_print_params.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/public/web/web_widget.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/size_conversions.h"
 
 namespace content {
 
@@ -48,13 +50,14 @@ SkBitmap PrintFrameToBitmap(blink::WebLocalFrame* web_frame,
   auto* frame_widget = web_frame->LocalRoot()->FrameWidget();
   frame_widget->UpdateAllLifecyclePhases(blink::DocumentUpdateReason::kTest);
 
-  uint32_t page_count =
-      web_frame->PrintBegin(page_size_in_pixels, blink::WebNode());
+  auto print_params = blink::WebPrintParams(gfx::SizeF(page_size_in_pixels));
+
+  uint32_t page_count = web_frame->PrintBegin(print_params, blink::WebNode());
 
   blink::WebVector<uint32_t> pages(
       printing::PageNumber::GetPages(page_ranges, page_count));
   gfx::Size spool_size =
-      web_frame->SpoolSizeInPixelsForTesting(page_size_in_pixels, pages);
+      web_frame->SpoolSizeInPixelsForTesting(print_params, pages);
 
   bool is_opaque = false;
 
@@ -70,8 +73,7 @@ SkBitmap PrintFrameToBitmap(blink::WebLocalFrame* web_frame,
                                   printing::PrintSettings::NewCookie());
   cc::SkiaPaintCanvas canvas(bitmap);
   canvas.SetPrintingMetafile(&metafile);
-  web_frame->PrintPagesForTesting(&canvas, page_size_in_pixels, spool_size,
-                                  &pages);
+  web_frame->PrintPagesForTesting(&canvas, print_params, spool_size, &pages);
   web_frame->PrintEnd();
   return bitmap;
 }

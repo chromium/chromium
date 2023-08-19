@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/bookmarks/cells/table_view_bookmarks_folder_item.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/i18n/rtl.h"
-#import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
@@ -13,10 +13,6 @@
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_table_cell_title_edit_delegate.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 // Width by which to indent folder cell's content. This is multiplied by the
@@ -51,7 +47,7 @@ const CGFloat kFolderCellHorizonalInset = 17.0;
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:cell withStyler:styler];
   TableViewBookmarksFolderCell* folderCell =
-      base::mac::ObjCCastStrict<TableViewBookmarksFolderCell>(cell);
+      base::apple::ObjCCastStrict<TableViewBookmarksFolderCell>(cell);
   switch (self.style) {
     case BookmarksFolderStyleNewFolder: {
       folderCell.folderTitleTextField.text =

@@ -109,7 +109,8 @@ class BluetoothLowEnergyCharacteristicsFinder
   scoped_refptr<device::BluetoothAdapter> adapter_;
 
   // The Bluetooth device to which the connection was established.
-  raw_ptr<device::BluetoothDevice, ExperimentalAsh> bluetooth_device_;
+  raw_ptr<device::BluetoothDevice, DanglingUntriaged | ExperimentalAsh>
+      bluetooth_device_;
 
   // Remote service the |connection_| was established with.
   RemoteAttribute remote_service_;

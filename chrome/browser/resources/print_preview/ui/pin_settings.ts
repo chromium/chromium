@@ -63,10 +63,10 @@ export class PrintPreviewPinSettingsElement extends
         observer: 'onInputChanged_',
       },
 
-      inputValid_: {
+      isPinValid: {
         type: Boolean,
-        value: true,
         reflectToAttribute: true,
+        notify: true,
       },
     };
   }
@@ -80,9 +80,9 @@ export class PrintPreviewPinSettingsElement extends
 
   state: State;
   disabled: boolean;
+  isPinValid: boolean;
   private checkboxDisabled_: boolean;
   private inputString_: string;
-  private inputValid_: boolean;
   private pinEnabled_: boolean;
 
   override ready() {
@@ -121,7 +121,7 @@ export class PrintPreviewPinSettingsElement extends
    * @return Whether to disable the pin value input.
    */
   private inputDisabled_(): boolean {
-    return !this.pinEnabled_ || (this.inputValid_ && this.disabled);
+    return !this.pinEnabled_ || (this.isPinValid && this.disabled);
   }
 
   /**
@@ -142,7 +142,7 @@ export class PrintPreviewPinSettingsElement extends
     // after unchecking the pin and to check the validity again after checking
     // the pin.
     if (!this.$.pin.checked) {
-      this.setSettingValid('pinValue', true);
+      this.isPinValid = true;
     } else {
       this.changePinValueSetting_();
     }
@@ -176,12 +176,11 @@ export class PrintPreviewPinSettingsElement extends
     if (this.state !== State.READY && this.settings.pinValue!.valid) {
       return;
     }
-    this.inputValid_ = this.computeValid_();
-    this.setSettingValid('pinValue', this.inputValid_);
+    this.isPinValid = this.computeValid_();
 
     // We allow to save the empty string as sticky setting value to give users
     // the opportunity to unset their PIN in sticky settings.
-    if ((this.inputValid_ || this.inputString_ === '') &&
+    if ((this.isPinValid || this.inputString_ === '') &&
         this.inputString_ !== this.getSettingValue('pinValue')) {
       this.setSetting('pinValue', this.inputString_);
     }
@@ -199,7 +198,7 @@ export class PrintPreviewPinSettingsElement extends
   }
 
   private getPinErrorMessage_(): string {
-    return this.inputValid_ ? '' : this.i18n('pinErrorMessage');
+    return this.isPinValid ? '' : this.i18n('pinErrorMessage');
   }
 }
 

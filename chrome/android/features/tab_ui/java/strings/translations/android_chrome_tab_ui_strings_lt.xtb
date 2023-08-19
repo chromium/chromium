@@ -3,8 +3,6 @@
 <translationbundle lang="lt">
 <translation id="1075622780330595106">Pastaruoju metu nebuvo naudojama tiek skirtukų: <ph name="NUMBER_OF_TABS" />. Uždaryti juos?</translation>
 <translation id="125153950246128346">Palieskite, kad peržiūrėtumėte kitą skirtuką</translation>
-<translation id="1403228085774130835">Uždarytus skirtukus rasite prie naujausių skirtukų „Chrome“ pagrindiniame meniu</translation>
-<translation id="1455506303394048917">Jūsų veikla šiuose inkognito skirtukuose bus išvalyta iš šio įrenginio</translation>
 <translation id="1499635324672558517">Uždaryti visus inkognito skirtukus?</translation>
 <translation id="1657719826150349398">Perkelti skirtuką į apačią</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> skirtukas}one{<ph name="TABS_COUNT_MANY" /> skirtukas}few{<ph name="TABS_COUNT_MANY" /> skirtukai}many{<ph name="TABS_COUNT_MANY" /> skirtuko}other{<ph name="TABS_COUNT_MANY" /> skirtukų}}</translation>
@@ -47,6 +45,7 @@
 <translation id="5073204694187207510">Slėpti viso ekrano tinklelį</translation>
 <translation id="5076161749301278626">Peržiūrėti parduotuvės apžvalgas?</translation>
 <translation id="5082793167783849073">Sparčiai palyginkite puslapius sukūrę grupę. Jei norite pradėti, palieskite ir palaikykite nuorodą.</translation>
+<translation id="5339733443032484186">Jūsų paskutinis skirtukas</translation>
 <translation id="5490235265819901748">Skirtukų grupė išskleista</translation>
 <translation id="5494920125229734069">Pasirinkti viską</translation>
 <translation id="5556417849629758491">Peržiūrėkite parduotuvės informaciją; parinktis pasiekiama ekrano viršuje</translation>
@@ -62,10 +61,12 @@
 <translation id="6228793724645064692">(parduotuvės įvertinimas)</translation>
 <translation id="6333260925957816943">Informacija apie šią parduotuvę</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Išgrupuoti <ph name="TABS_COUNT_ONE" /> pasirinktą skirtuką}one{Išgrupuoti <ph name="TABS_COUNT_MANY" /> pasirinktą skirtuką}few{Išgrupuoti <ph name="TABS_COUNT_MANY" /> pasirinktus skirtukus}many{Išgrupuoti <ph name="TABS_COUNT_MANY" /> pasirinkto skirtuko}other{Išgrupuoti <ph name="TABS_COUNT_MANY" /> pasirinktų skirtukų}}</translation>
+<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Uždarytus skirtukus rasite prie naujausių skirtukų „Chrome“ pagrindiniame meniu. Inkognito skirtukas nebus pasiekiamas.}one{Uždarytus skirtukus rasite prie naujausių skirtukų „Chrome“ pagrindiniame meniu. # inkognito skirtukas nebus pasiekiamas.}few{Uždarytus skirtukus rasite prie naujausių skirtukų „Chrome“ pagrindiniame meniu. # inkognito skirtukai nebus pasiekiami.}many{Uždarytus skirtukus rasite prie naujausių skirtukų „Chrome“ pagrindiniame meniu. # inkognito skirtuko nebus pasiekiama.}other{Uždarytus skirtukus rasite prie naujausių skirtukų „Chrome“ pagrindiniame meniu. # inkognito skirtukų nebus pasiekiama.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> skirtukas}one{<ph name="TABS_COUNT_MANY" /> skirtukas}few{<ph name="TABS_COUNT_MANY" /> skirtukai}many{<ph name="TABS_COUNT_MANY" /> skirtuko}other{<ph name="TABS_COUNT_MANY" /> skirtukų}}</translation>
 <translation id="6549021453810473782">Peržiūrėti parduotuvės informaciją</translation>
 <translation id="6562820390860419811">Perkelti skirtuką į kairę</translation>
 <translation id="6615455863669487791">Rodyti</translation>
+<translation id="661742612106409204">Uždarytus skirtukus rasite prie naujausių skirtukų „Chrome“ pagrindiniame meniu.</translation>
 <translation id="6840760312327750441">Norėdami grupuoti skirtukus, palieskite ir palaikykite skirtuką. Tada nuvilkite jį į kitą skirtuką.</translation>
 <translation id="6856809498882026482">Slėpti kelių elementų pasirinkimo režimą</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Bendrinti skirtuką}one{Bendrinti skirtukus}few{Bendrinti skirtukus}many{Bendrinti skirtukus}other{Bendrinti skirtukus}}</translation>

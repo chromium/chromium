@@ -36,7 +36,7 @@ class WatchAdvertisementsOptions;
 // "Interface required by CallbackPromiseAdapter" section and the
 // CallbackPromiseAdapter class comments.
 class BluetoothDevice final
-    : public EventTargetWithInlineData,
+    : public EventTarget,
       public ExecutionContextClient,
       public ActiveScriptWrappable<BluetoothDevice>,
       public mojom::blink::WebBluetoothAdvertisementClient {

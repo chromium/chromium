@@ -6,10 +6,6 @@
 
 #import "content/shell/browser/bluetooth/ios/shell_bluetooth_device_list_delegate.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Has device information to display it on a cell of UITableView.
 @interface DeviceInfo : NSObject
 

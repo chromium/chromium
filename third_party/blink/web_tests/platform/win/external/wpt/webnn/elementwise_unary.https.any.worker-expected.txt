@@ -1,15 +1,15 @@
 This is a testharness.js-based test.
-Found 90 tests; 0 PASS, 90 FAIL, 0 TIMEOUT, 0 NOTRUN.
-FAIL abs float32 1D tensor / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (abs) is not supported.
-FAIL abs float32 2D tensor / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (abs) is not supported.
-FAIL abs float32 3D tensor / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (abs) is not supported.
-FAIL abs float32 4D tensor / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (abs) is not supported.
-FAIL abs float32 5D tensor / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (abs) is not supported.
-FAIL ceil float32 1D tensor / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (ceil) is not supported.
-FAIL ceil float32 2D tensor / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (ceil) is not supported.
-FAIL ceil float32 3D tensor / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (ceil) is not supported.
-FAIL ceil float32 4D tensor / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (ceil) is not supported.
-FAIL ceil float32 5D tensor / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (ceil) is not supported.
+Found 90 tests; 20 PASS, 70 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS abs float32 1D tensor / sync
+PASS abs float32 2D tensor / sync
+PASS abs float32 3D tensor / sync
+PASS abs float32 4D tensor / sync
+PASS abs float32 5D tensor / sync
+PASS ceil float32 1D tensor / sync
+PASS ceil float32 2D tensor / sync
+PASS ceil float32 3D tensor / sync
+PASS ceil float32 4D tensor / sync
+PASS ceil float32 5D tensor / sync
 FAIL cos float32 1D tensor / sync builder[operationName] is not a function
 FAIL cos float32 2D tensor / sync builder[operationName] is not a function
 FAIL cos float32 3D tensor / sync builder[operationName] is not a function
@@ -20,21 +20,21 @@ FAIL exp float32 2D tensor / sync builder[operationName] is not a function
 FAIL exp float32 3D tensor / sync builder[operationName] is not a function
 FAIL exp float32 4D tensor / sync builder[operationName] is not a function
 FAIL exp float32 5D tensor / sync builder[operationName] is not a function
-FAIL floor float32 1D tensor / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (floor) is not supported.
-FAIL floor float32 2D tensor / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (floor) is not supported.
-FAIL floor float32 3D tensor / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (floor) is not supported.
-FAIL floor float32 4D tensor / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (floor) is not supported.
-FAIL floor float32 5D tensor / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (floor) is not supported.
+PASS floor float32 1D tensor / sync
+PASS floor float32 2D tensor / sync
+PASS floor float32 3D tensor / sync
+PASS floor float32 4D tensor / sync
+PASS floor float32 5D tensor / sync
 FAIL log float32 positive 1D tensor / sync builder[operationName] is not a function
 FAIL log float32 positive 2D tensor / sync builder[operationName] is not a function
 FAIL log float32 positive 3D tensor / sync builder[operationName] is not a function
 FAIL log float32 positive 4D tensor / sync builder[operationName] is not a function
 FAIL log float32 positive 5D tensor / sync builder[operationName] is not a function
-FAIL neg float32 1D tensor / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (neg) is not supported.
-FAIL neg float32 2D tensor / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (neg) is not supported.
-FAIL neg float32 3D tensor / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (neg) is not supported.
-FAIL neg float32 4D tensor / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (neg) is not supported.
-FAIL neg float32 5D tensor / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (neg) is not supported.
+PASS neg float32 1D tensor / sync
+PASS neg float32 2D tensor / sync
+PASS neg float32 3D tensor / sync
+PASS neg float32 4D tensor / sync
+PASS neg float32 5D tensor / sync
 FAIL sin float32 1D tensor / sync builder[operationName] is not a function
 FAIL sin float32 2D tensor / sync builder[operationName] is not a function
 FAIL sin float32 3D tensor / sync builder[operationName] is not a function

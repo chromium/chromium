@@ -87,7 +87,8 @@ class SyncedBookmarkTrackerEntity {
 
  private:
   // Null for tombstones.
-  raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged> bookmark_node_;
+  raw_ptr<const bookmarks::BookmarkNode, AcrossTasksDanglingUntriaged>
+      bookmark_node_;
 
   // Serializable Sync metadata.
   sync_pb::EntityMetadata metadata_;

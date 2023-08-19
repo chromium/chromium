@@ -21,10 +21,6 @@
 #import "ios/testing/earl_grey/matchers.h"
 #import "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using ::base::test::ios::kWaitForUIElementTimeout;
 using ::base::test::ios::WaitUntilConditionOrTimeout;
 using chrome_test_util::LongPressCellAndDragToOffsetOf;
@@ -271,6 +267,9 @@ void AssertPinnedCellMovedToRegularGrid(unsigned int pinned_index,
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The Pinned Tabs feature is only "
                            @"supported on iPhone.");
   }
+  // TODO(crbug.com/1464519): Failing on iOS17, and iOS15.5 for
+  // ios-simulator-noncq.
+  XCTSkip(@"Failing on iOS17 and iOS15.5");
 
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGreyUI openTabGrid];

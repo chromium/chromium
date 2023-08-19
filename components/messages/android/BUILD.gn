@@ -14,12 +14,13 @@ android_library("java") {
     "java/src/org/chromium/components/messages/MessageDispatcherBridge.java",
     "java/src/org/chromium/components/messages/MessageDispatcherProvider.java",
     "java/src/org/chromium/components/messages/MessageFeatureList.java",
+    "java/src/org/chromium/components/messages/MessageFeatureMap.java",
     "java/src/org/chromium/components/messages/MessageSecondaryMenuItems.java",
     "java/src/org/chromium/components/messages/MessageWrapper.java",
     "java/src/org/chromium/components/messages/MessagesMetrics.java",
   ]
   resources_package = "org.chromium.components.messages"
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
   deps = [
     ":java_resources",
     "//base:base_java",
@@ -34,7 +35,10 @@ android_library("java") {
     "//ui/android:ui_java",
   ]
 
-  srcjar_deps = [ ":message_enums_java" ]
+  srcjar_deps = [
+    ":jni_headers",
+    ":message_enums_java",
+  ]
 }
 
 android_library("unit_device_javatests") {
@@ -67,7 +71,7 @@ android_resources("java_resources") {
 generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/components/messages/MessageDispatcherBridge.java",
-    "java/src/org/chromium/components/messages/MessageFeatureList.java",
+    "java/src/org/chromium/components/messages/MessageFeatureMap.java",
     "java/src/org/chromium/components/messages/MessageWrapper.java",
   ]
 }
@@ -138,6 +142,7 @@ android_library_factory("factory_java") {
   deps = [
     ":java",
     ":manager_java",
+    "//base:base_java",
     "//ui/android:ui_full_java",
   ]
 }
@@ -161,6 +166,7 @@ robolectric_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//base:jni_java",
     "//components/browser_ui/widget/android:java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_core_java",

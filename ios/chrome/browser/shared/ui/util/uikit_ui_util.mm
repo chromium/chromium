@@ -12,14 +12,14 @@
 #import <stdint.h>
 #import <cmath>
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/check_op.h"
 #import "base/ios/ios_util.h"
-#import "base/mac/foundation_util.h"
 #import "base/notreached.h"
 #import "base/numerics/math_constants.h"
-#import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/dynamic_type_util.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
@@ -29,10 +29,6 @@
 #import "ui/base/resource/resource_bundle.h"
 #import "ui/gfx/ios/uikit_util.h"
 #import "ui/gfx/scoped_cg_context_save_gstate_mac.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 void SetA11yLabelAndUiAutomationName(
     NSObject<UIAccessibilityIdentification>* element,
@@ -79,18 +75,18 @@ UIFont* CreateDynamicFont(UIFontTextStyle style, UIFontWeight weight) {
 UIImage* CaptureViewWithOption(UIView* view,
                                CGFloat scale,
                                CaptureViewOption option) {
-  UIGraphicsBeginImageContextWithOptions(view.bounds.size, NO /* not opaque */,
-                                         scale);
-  if (option != kClientSideRendering) {
+  UIGraphicsImageRendererFormat* format =
+      [UIGraphicsImageRendererFormat preferredFormat];
+  format.scale = scale;
+  format.opaque = NO;
+  UIGraphicsImageRenderer* renderer =
+      [[UIGraphicsImageRenderer alloc] initWithSize:view.bounds.size
+                                             format:format];
+
+  return [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
     [view drawViewHierarchyInRect:view.bounds
-               afterScreenUpdates:option == kAfterScreenUpdate];
-  } else {
-    CGContext* context = UIGraphicsGetCurrentContext();
-    [view.layer renderInContext:context];
-  }
-  UIImage* image = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-  return image;
+               afterScreenUpdates:option == kClientSideRendering];
+  }];
 }
 
 UIImage* CaptureView(UIView* view, CGFloat scale) {
@@ -99,13 +95,22 @@ UIImage* CaptureView(UIView* view, CGFloat scale) {
 
 UIImage* GreyImage(UIImage* image) {
   DCHECK(image);
+  UIGraphicsImageRendererFormat* format =
+      [UIGraphicsImageRendererFormat preferredFormat];
   // Grey images are always non-retina to improve memory performance.
-  UIGraphicsBeginImageContextWithOptions(image.size, YES, 1.0);
+  format.scale = 1;
+  format.opaque = YES;
   CGRect greyImageRect = CGRectMake(0, 0, image.size.width, image.size.height);
-  [image drawInRect:greyImageRect blendMode:kCGBlendModeLuminosity alpha:1.0];
-  UIImage* greyImage = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-  return greyImage;
+  UIGraphicsImageRenderer* renderer =
+      [[UIGraphicsImageRenderer alloc] initWithSize:greyImageRect.size
+                                             format:format];
+  return [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
+    UIBezierPath* background = [UIBezierPath bezierPathWithRect:greyImageRect];
+    [UIColor.blackColor set];
+    [background fill];
+
+    [image drawInRect:greyImageRect blendMode:kCGBlendModeLuminosity alpha:1.0];
+  }];
 }
 
 UIImage* NativeReversibleImage(int imageID, BOOL reversible) {
@@ -119,48 +124,6 @@ UIImage* NativeReversibleImage(int imageID, BOOL reversible) {
 
 UIImage* NativeImage(int imageID) {
   return NativeReversibleImage(imageID, NO);
-}
-
-UIImage* TintImage(UIImage* image, UIColor* color) {
-  DCHECK(image);
-  DCHECK(image.CGImage);
-  DCHECK_GE(image.size.width * image.size.height, 1);
-  DCHECK(color);
-
-  CGRect rect = {CGPointZero, image.size};
-
-  UIGraphicsBeginImageContextWithOptions(rect.size /* bitmap size */,
-                                         NO /* opaque? */,
-                                         0.0 /* main screen scale */);
-  CGContextRef imageContext = UIGraphicsGetCurrentContext();
-  CGContextSetShouldAntialias(imageContext, true);
-  CGContextSetInterpolationQuality(imageContext, kCGInterpolationHigh);
-
-  // CoreGraphics and UIKit uses different axis. UIKit's y points downards,
-  // while CoreGraphic's points upwards. To keep the image correctly oriented,
-  // apply a mirror around the X axis by inverting the Y coordinates.
-  CGContextScaleCTM(imageContext, 1, -1);
-  CGContextTranslateCTM(imageContext, 0, -rect.size.height);
-
-  CGContextDrawImage(imageContext, rect, image.CGImage);
-  CGContextSetBlendMode(imageContext, kCGBlendModeSourceIn);
-  CGContextSetFillColorWithColor(imageContext, color.CGColor);
-  CGContextFillRect(imageContext, rect);
-
-  UIImage* outputImage = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-
-  // Port the cap insets to the new image.
-  if (!UIEdgeInsetsEqualToEdgeInsets(image.capInsets, UIEdgeInsetsZero)) {
-    outputImage = [outputImage resizableImageWithCapInsets:image.capInsets];
-  }
-
-  // Port the flipping status to the new image.
-  if (image.flipsForRightToLeftLayoutDirection) {
-    outputImage = [outputImage imageFlippedForRightToLeftLayoutDirection];
-  }
-
-  return outputImage;
 }
 
 UIInterfaceOrientation GetInterfaceOrientation(UIWindow* window) {
@@ -196,25 +159,28 @@ UIImage* CircularImageFromImage(UIImage* image, CGFloat width) {
   CGRect frame =
       CGRectMakeAlignedAndCenteredAt(width / 2.0, width / 2.0, width);
 
-  UIGraphicsBeginImageContextWithOptions(frame.size, NO, 0.0);
-  CGContextRef context = UIGraphicsGetCurrentContext();
+  UIGraphicsImageRendererFormat* format =
+      [UIGraphicsImageRendererFormat preferredFormat];
+  format.opaque = NO;
 
-  CGContextBeginPath(context);
-  CGContextAddEllipseInRect(context, frame);
-  CGContextClosePath(context);
-  CGContextClip(context);
+  UIGraphicsImageRenderer* renderer =
+      [[UIGraphicsImageRenderer alloc] initWithSize:frame.size format:format];
+  return
+      [renderer imageWithActions:^(UIGraphicsImageRendererContext* UIContext) {
+        CGContextRef context = UIContext.CGContext;
+        CGContextBeginPath(context);
+        CGContextAddEllipseInRect(context, frame);
+        CGContextClosePath(context);
+        CGContextClip(context);
 
-  CGFloat scaleX = frame.size.width / image.size.width;
-  CGFloat scaleY = frame.size.height / image.size.height;
-  CGFloat scale = std::max(scaleX, scaleY);
-  CGContextScaleCTM(context, scale, scale);
+        CGFloat scaleX = frame.size.width / image.size.width;
+        CGFloat scaleY = frame.size.height / image.size.height;
+        CGFloat scale = std::max(scaleX, scaleY);
+        CGContextScaleCTM(context, scale, scale);
 
-  [image drawInRect:CGRectMake(0, 0, image.size.width, image.size.height)];
-
-  image = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-
-  return image;
+        [image
+            drawInRect:CGRectMake(0, 0, image.size.width, image.size.height)];
+      }];
 }
 
 bool IsPortrait(UIWindow* window) {

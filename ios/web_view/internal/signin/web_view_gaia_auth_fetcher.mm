@@ -8,10 +8,6 @@
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace ios_web_view {
 
 WebViewGaiaAuthFetcher::WebViewGaiaAuthFetcher(

@@ -31,6 +31,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/content_settings/core/browser/content_settings_uma_util.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -72,7 +73,7 @@ class ToggledNotificationBlocker : public message_center::NotificationBlocker {
   ToggledNotificationBlocker(const ToggledNotificationBlocker&) = delete;
   ToggledNotificationBlocker& operator=(const ToggledNotificationBlocker&) =
       delete;
-  ~ToggledNotificationBlocker() override {}
+  ~ToggledNotificationBlocker() override = default;
 
   void SetNotificationsEnabled(bool enabled) {
     if (notifications_enabled_ != enabled) {
@@ -158,6 +159,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestCreateSimpleNotification) {
 
 IN_PROC_BROWSER_TEST_F(NotificationsTest, NotificationBlockerTest) {
   ToggledNotificationBlocker blocker;
+  blocker.Init();
   TestMessageCenterObserver observer;
 
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -414,9 +416,9 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, InlinePermissionRevokeUkm) {
   EXPECT_EQ(
       *ukm_recorder.GetEntryMetric(entry, "Source"),
       static_cast<int64_t>(permissions::PermissionSourceUI::INLINE_SETTINGS));
-  EXPECT_EQ(
-      *ukm_recorder.GetEntryMetric(entry, "PermissionType"),
-      ContentSettingTypeToHistogramValue(ContentSettingsType::NOTIFICATIONS));
+  EXPECT_EQ(*ukm_recorder.GetEntryMetric(entry, "PermissionType"),
+            content_settings_uma_util::ContentSettingTypeToHistogramValue(
+                ContentSettingsType::NOTIFICATIONS));
   EXPECT_EQ(*ukm_recorder.GetEntryMetric(entry, "Action"),
             static_cast<int64_t>(permissions::PermissionAction::REVOKED));
 }

@@ -105,8 +105,8 @@ class SiteEngagementHelperBrowserTest : public InProcessBrowserTest {
   content::test::PrerenderTestHelper prerender_helper_;
   net::test_server::EmbeddedTestServerHandle test_server_handle_;
   base::HistogramTester histogram_tester_;
-  raw_ptr<TestOneShotTimer, DanglingUntriaged> input_tracker_timer_;
-  raw_ptr<TestOneShotTimer, DanglingUntriaged> media_tracker_timer_;
+  raw_ptr<TestOneShotTimer, AcrossTasksDanglingUntriaged> input_tracker_timer_;
+  raw_ptr<TestOneShotTimer, AcrossTasksDanglingUntriaged> media_tracker_timer_;
 };
 
 // Tests if SiteEngagementHelper checks the primary main frame in the

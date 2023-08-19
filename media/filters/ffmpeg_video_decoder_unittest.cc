@@ -54,6 +54,10 @@ MATCHER(ContainsFailedToSendLog, "") {
   return CONTAINS_STRING(arg, "Failed to send");
 }
 
+MATCHER(ContainsFailedToDecode, "") {
+  return CONTAINS_STRING(arg, "failed to decode");
+}
+
 class FFmpegVideoDecoderTest : public testing::Test {
  public:
   FFmpegVideoDecoderTest()
@@ -291,7 +295,7 @@ TEST_F(FFmpegVideoDecoderTest, DecodeFrame_DecodeError) {
 TEST_F(FFmpegVideoDecoderTest, DecodeFrame_DecodeErrorAtEndOfStream) {
   Initialize();
 
-  EXPECT_MEDIA_LOG(ContainsFailedToSendLog());
+  EXPECT_MEDIA_LOG(ContainsFailedToDecode());
 
   EXPECT_THAT(DecodeSingleFrame(corrupt_i_frame_buffer_),
               IsDecodeErrorStatus());

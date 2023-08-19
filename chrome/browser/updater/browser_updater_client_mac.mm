@@ -7,16 +7,12 @@
 #include <string>
 
 #include "base/apple/bundle_locations.h"
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/updater/browser_updater_client_util.h"
 #include "chrome/common/channel_info.h"
 #include "components/version_info/version_info.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -32,7 +28,7 @@ std::string GetTag() {
 }  // namespace
 
 std::string BrowserUpdaterClient::GetAppId() {
-  return base::mac::BaseBundleID();
+  return base::apple::BaseBundleID();
 }
 
 updater::RegistrationRequest BrowserUpdaterClient::GetRegistrationRequest() {

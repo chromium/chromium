@@ -107,7 +107,7 @@ TEST(CertVerifierMojomTraitsTest, ConfigCRLAndAdditionalCerts) {
   config.additional_trust_anchors.push_back(
       net::ImportCertFromFile(certs_dir, "root_ca_cert.pem"));
   config.additional_trust_anchors.push_back(
-      net::ImportCertFromFile(certs_dir, "2048-rsa-root.pem"));
+      net::ImportCertFromFile(certs_dir, "2029_globalsign_com_cert.pem"));
 
   config.additional_untrusted_authorities.push_back(
       net::ImportCertFromFile(certs_dir, "intermediate_ca_cert.pem"));

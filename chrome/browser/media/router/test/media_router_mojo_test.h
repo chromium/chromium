@@ -10,7 +10,7 @@
 #include <utility>
 #include <vector>
 
-#include "chrome/browser/media/router/mojo/media_router_mojo_impl.h"
+#include "chrome/browser/media/router/mojo/media_router_desktop.h"
 #include "chrome/browser/media/router/test/provider_test_helpers.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/media_router/browser/test/mock_media_router.h"
@@ -26,7 +26,7 @@
 
 namespace media_router {
 
-class MediaRouterMojoImpl;
+class MediaRouterDesktop;
 
 // TODO(takumif): Move MockMediaRouteProvider into its own files.
 class MockMediaRouteProvider : public mojom::MediaRouteProvider {
@@ -180,7 +180,7 @@ class MockMediaController : public mojom::MediaController {
   mojo::Receiver<mojom::MediaController> receiver_{this};
 };
 
-// Tests the API call flow between the MediaRouterMojoImpl and the Media Router
+// Tests the API call flow between the MediaRouterDesktop and the Media Router
 // Mojo service in both directions.
 class MediaRouterMojoTest : public ::testing::Test {
  public:
@@ -193,8 +193,8 @@ class MediaRouterMojoTest : public ::testing::Test {
   void SetUp() override;
   void TearDown() override;
 
-  // Creates a MediaRouterMojoImpl instance to be used for this test.
-  virtual std::unique_ptr<MediaRouterMojoImpl> CreateMediaRouter() = 0;
+  // Creates a MediaRouterDesktop instance to be used for this test.
+  virtual std::unique_ptr<MediaRouterDesktop> CreateMediaRouter() = 0;
 
   // Notify media router that the provider provides a route or a sink.
   // Need to be called after the provider is registered.
@@ -217,7 +217,7 @@ class MediaRouterMojoTest : public ::testing::Test {
   void TestSendRouteBinaryMessage();
   void TestDetachRoute();
 
-  MediaRouterMojoImpl* router() const { return media_router_.get(); }
+  MediaRouterDesktop* router() const { return media_router_.get(); }
 
   Profile* profile() { return &profile_; }
 
@@ -233,7 +233,7 @@ class MediaRouterMojoTest : public ::testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
-  std::unique_ptr<MediaRouterMojoImpl> media_router_;
+  std::unique_ptr<MediaRouterDesktop> media_router_;
   mojo::ReceiverSet<mojom::MediaRouteProvider> provider_receivers_;
   std::unique_ptr<MediaRoutesObserver> routes_observer_;
   std::unique_ptr<MockMediaSinksObserver> sinks_observer_;

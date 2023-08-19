@@ -38,7 +38,7 @@ cases = [
     ["[1:2:192.168.0.1:5:6]", ""],
 
     // IPv4 with last component missing.
-    ["[::ffff:192.1.2]", "[::ffff:c001:2]"],
+    ["[::ffff:192.1.2]", ""],
 
     // IPv4 using hex.
     // FIXME: Should this format be disallowed?

@@ -8,8 +8,8 @@
 #include <string>
 
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
-#include "chromeos/crosapi/mojom/message_center.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
 #include "chromeos/crosapi/mojom/notification.mojom-shared.h"
 #include "chromeos/crosapi/mojom/notification.mojom.h"
@@ -407,12 +407,11 @@ TEST_F(MessageCenterAshTest, GetDisplayedNotifications) {
   message_center->AddNotification(CreateNotificationWithId("id1"));
 
   // Get the list of notifications.
-  mojom::MessageCenterAsyncWaiter waiter(message_center_remote_.get());
-  std::vector<std::string> ids;
-  waiter.GetDisplayedNotifications(&ids);
+  base::test::TestFuture<const std::vector<std::string>&> future;
+  message_center_remote_->GetDisplayedNotifications(future.GetCallback());
 
   // The notifications ids are returned. No particular order is specified.
-  EXPECT_THAT(ids, testing::UnorderedElementsAre("id0", "id1"));
+  EXPECT_THAT(future.Take(), testing::UnorderedElementsAre("id0", "id1"));
 }
 
 TEST_F(MessageCenterAshTest, NotificationsGroupByNotifierId) {

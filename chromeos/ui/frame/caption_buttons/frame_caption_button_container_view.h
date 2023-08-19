@@ -103,6 +103,9 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
   };
 
   views::FrameCaptionButton* size_button() { return size_button_; }
+  bool window_controls_overlay_enabled() const {
+    return window_controls_overlay_enabled_;
+  }
 
   // Sets whether the buttons should be painted as active. Does not schedule
   // a repaint.
@@ -116,7 +119,11 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
 
   // Sets the background frame color that buttons should compute their color
   // respective to.
-  void SetBackgroundColor(SkColor background_color);
+  void SetButtonBackgroundColor(SkColor background_color);
+
+  // Set the color token which should be used to resolve the button's icon color
+  // directly.
+  void SetButtonIconColor(ui::ColorId icon_color_id);
 
   // Tell the window controls to reset themselves to the normal state.
   void ResetWindowControls();

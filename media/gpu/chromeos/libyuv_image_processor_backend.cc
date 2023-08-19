@@ -20,74 +20,11 @@
 #include "third_party/libyuv/include/libyuv/convert.h"
 #include "third_party/libyuv/include/libyuv/convert_from.h"
 #include "third_party/libyuv/include/libyuv/convert_from_argb.h"
-#include "third_party/libyuv/include/libyuv/rotate.h"
 #include "third_party/libyuv/include/libyuv/scale.h"
 
 namespace media {
 
 namespace {
-
-// TODO(https://bugs.chromium.org/p/libyuv/issues/detail?id=840): Remove
-// this once libyuv implements NV12Rotate() and use the libyuv::NV12Rotate().
-int NV12Rotate(uint8_t* tmp_buffer,
-               const uint8_t* src_y,
-               int src_stride_y,
-               const uint8_t* src_uv,
-               int src_stride_uv,
-               uint8_t* dst_y,
-               int dst_stride_y,
-               uint8_t* dst_uv,
-               int dst_stride_uv,
-               int width,
-               int height,
-               VideoRotation relative_rotation) {
-  libyuv::RotationModeEnum rotation = libyuv::kRotate0;
-  int tmp_width = width;
-  int tmp_height = height;
-  switch (relative_rotation) {
-    case VIDEO_ROTATION_0:
-      NOTREACHED() << "Unexpected rotation: " << rotation;
-      return -1;
-    case VIDEO_ROTATION_90:
-      rotation = libyuv::kRotate90;
-      tmp_width = height;
-      tmp_height = width;
-      break;
-    case VIDEO_ROTATION_180:
-      rotation = libyuv::kRotate180;
-      tmp_width = width;
-      tmp_height = height;
-      break;
-    case VIDEO_ROTATION_270:
-      rotation = libyuv::kRotate270;
-      tmp_width = height;
-      tmp_height = width;
-      break;
-  }
-
-  // Rotating.
-  int tmp_uv_width = 0;
-  int tmp_uv_height = 0;
-  if (!(base::CheckAdd<int>(tmp_width, 1) / 2).AssignIfValid(&tmp_uv_width) ||
-      !(base::CheckAdd<int>(tmp_height, 1) / 2).AssignIfValid(&tmp_uv_height)) {
-    VLOGF(1) << "Overflow occurred for " << tmp_width << "x" << tmp_height;
-    return -1;
-  }
-  uint8_t* const tmp_u = tmp_buffer;
-  uint8_t* const tmp_v = tmp_u + tmp_uv_width * tmp_uv_height;
-
-  // Rotate the NV12 planes to I420.
-  int ret = libyuv::NV12ToI420Rotate(
-      src_y, src_stride_y, src_uv, src_stride_uv, dst_y, dst_stride_y, tmp_u,
-      tmp_uv_width, tmp_v, tmp_uv_width, width, height, rotation);
-  if (ret != 0)
-    return ret;
-
-  // Merge the UV planes into the destination.
-  libyuv::MergeUVPlane(tmp_u, tmp_uv_width, tmp_v, tmp_uv_width, dst_uv,
-                       dst_stride_uv, tmp_uv_width, tmp_uv_height);
-  return 0;
-}
 
 enum class SupportResult {
   Supported,
@@ -99,7 +36,6 @@ enum class SupportResult {
 enum class Transform {
   kConversion,
   kScaling,
-  kRotation,
 };
 
 static constexpr struct {
@@ -128,8 +64,6 @@ static constexpr struct {
     CONV(YU12, YU12, kScaling, Supported),
     CONV(YUYV, NV12, kScaling, SupportedWithNV12Pivot),
     CONV(YUYV, YU12, kScaling, SupportedWithI420Pivot),
-    // Rotating.
-    CONV(NV12, NV12, kRotation, SupportedWithI420Pivot),
 #undef CONV
 };
 
@@ -170,10 +104,9 @@ std::unique_ptr<ImageProcessorBackend> LibYUVImageProcessorBackend::Create(
     const PortConfig& input_config,
     const PortConfig& output_config,
     OutputMode output_mode,
-    VideoRotation relative_rotation,
     ErrorCB error_cb) {
   return CreateWithTaskRunner(input_config, output_config, output_mode,
-                              relative_rotation, error_cb,
+                              error_cb,
                               base::ThreadPool::CreateSequencedTaskRunner(
                                   {base::TaskPriority::USER_VISIBLE}));
 }
@@ -184,7 +117,6 @@ LibYUVImageProcessorBackend::CreateWithTaskRunner(
     const PortConfig& input_config,
     const PortConfig& output_config,
     OutputMode output_mode,
-    VideoRotation relative_rotation,
     ErrorCB error_cb,
     scoped_refptr<base::SequencedTaskRunner> backend_task_runner) {
   VLOGF(2);
@@ -251,33 +183,17 @@ LibYUVImageProcessorBackend::CreateWithTaskRunner(
   const gfx::Size& input_size = input_config.visible_rect.size();
   const gfx::Size& output_size = output_config.visible_rect.size();
   Transform transform = Transform::kConversion;
-  if (relative_rotation != VIDEO_ROTATION_0) {
-    transform = Transform::kRotation;
-    bool size_mismatch = false;
-    if (relative_rotation == VIDEO_ROTATION_180) {
-      size_mismatch = input_size.width() != output_size.width() ||
-                      input_size.height() != output_size.height();
-    } else {  // For VIDEO_ROTATION_90 and 270.
-      size_mismatch = input_size.width() != output_size.height() ||
-                      input_size.height() != output_size.width();
-    }
-    if (size_mismatch) {
-      VLOGF(1) << "input and output resolution mismatch: "
-               << "input=" << input_size.ToString()
-               << ", output=" << output_size.ToString();
-      return nullptr;
-    }
-  } else if (input_size.width() != output_size.width() ||
-             input_size.height() != output_size.height()) {
+  if (input_size != output_size) {
     transform = Transform::kScaling;
   }
+
   SupportResult res = IsConversionSupported(input_config.fourcc,
                                             output_config.fourcc, transform);
   if (res == SupportResult::Unsupported) {
     VLOGF(2) << "Conversion from " << input_size.ToString() << "/"
              << input_config.fourcc.ToString() << " to "
              << output_size.ToString() << "/" << output_config.fourcc.ToString()
-             << " with rotation " << relative_rotation << " is not supported";
+             << " is not supported";
     return nullptr;
   }
 
@@ -316,7 +232,7 @@ LibYUVImageProcessorBackend::CreateWithTaskRunner(
           PortConfig(output_config.fourcc, output_config.size,
                      output_config.planes, output_config.visible_rect,
                      {output_storage_type}),
-          OutputMode::IMPORT, relative_rotation, std::move(error_cb),
+          OutputMode::IMPORT, std::move(error_cb),
           std::move(backend_task_runner)));
   VLOGF(2) << "LibYUVImageProcessorBackend created for converting from "
            << input_config.ToString() << " to " << output_config.ToString();
@@ -330,13 +246,11 @@ LibYUVImageProcessorBackend::LibYUVImageProcessorBackend(
     const PortConfig& input_config,
     const PortConfig& output_config,
     OutputMode output_mode,
-    VideoRotation relative_rotation,
     ErrorCB error_cb,
     scoped_refptr<base::SequencedTaskRunner> backend_task_runner)
     : ImageProcessorBackend(input_config,
                             output_config,
                             output_mode,
-                            relative_rotation,
                             std::move(error_cb),
                             std::move(backend_task_runner)),
       input_frame_mapper_(std::move(input_frame_mapper)),
@@ -485,19 +399,6 @@ int LibYUVImageProcessorBackend::DoConversion(const VideoFrame* const input,
               output->visible_rect().width(), output->visible_rect().height());
         }
 
-        // Rotation mode.
-        if (relative_rotation_ != VIDEO_ROTATION_0) {
-          // The size of |tmp_buffer| of NV12Rotate() should be
-          // 2 * ceil(|output_visible_rect_.width()| / 2) *
-          // ceil(|output_visible_rect_.height()| / 2), which used to store
-          // temporary U and V planes for I420 data. Although
-          // |intermediate_frame_->data(0)| is much larger than the required
-          // size, we use the frame to simplify the code.
-          return NV12Rotate(intermediate_frame_->writable_data(0),
-                            Y_UV_DATA(input), Y_UV_DATA_W(output),
-                            input->visible_rect().width(),
-                            input->visible_rect().height(), relative_rotation_);
-        }
         // Scaling mode.
         return libyuv::NV12Scale(
             Y_UV_DATA(input), input->visible_rect().width(),

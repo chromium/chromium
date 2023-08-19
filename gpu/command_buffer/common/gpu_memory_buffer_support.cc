@@ -69,9 +69,9 @@ bool IsImageSizeValidForGpuMemoryBufferFormat(const gfx::Size& size,
 
 GPU_EXPORT bool IsPlaneValidForGpuMemoryBufferFormat(gfx::BufferPlane plane,
                                                      gfx::BufferFormat format) {
-#if BUILDFLAG(IS_APPLE)
-  // On macOS and iOS each plane of a YUV GpuMemoryBuffer must be sampled
-  // separately.
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
+  // On Windows, macOS and iOS each plane of a YUV GpuMemoryBuffer must be
+  // sampled separately.
   switch (format) {
     case gfx::BufferFormat::YUV_420_BIPLANAR:
     case gfx::BufferFormat::P010:
@@ -79,6 +79,14 @@ GPU_EXPORT bool IsPlaneValidForGpuMemoryBufferFormat(gfx::BufferPlane plane,
     case gfx::BufferFormat::YUVA_420_TRIPLANAR:
       return plane == gfx::BufferPlane::Y || plane == gfx::BufferPlane::UV ||
              plane == gfx::BufferPlane::A;
+    case gfx::BufferFormat::YVU_420:
+#if BUILDFLAG(IS_APPLE)
+      // YVU_420 not used on macOS or iOS
+      return false;
+#else
+      return plane == gfx::BufferPlane::Y || plane == gfx::BufferPlane::U ||
+             plane == gfx::BufferPlane::V;
+#endif
     default:
       return plane == gfx::BufferPlane::DEFAULT;
   }

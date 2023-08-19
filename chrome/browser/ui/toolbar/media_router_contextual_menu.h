@@ -76,7 +76,7 @@ class MediaRouterContextualMenu : public ui::SimpleMenuModel::Delegate {
 #endif
 
   const raw_ptr<Browser> browser_;
-  const raw_ptr<Observer, DanglingUntriaged> observer_;
+  const raw_ptr<Observer, AcrossTasksDanglingUntriaged> observer_;
 
   // Whether the Cast toolbar icon this context menu is shown for is shown by
   // the administrator policy.

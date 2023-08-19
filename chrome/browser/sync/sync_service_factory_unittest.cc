@@ -15,11 +15,14 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/trusted_vault/trusted_vault_service_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/web_data_service_factory.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/browser_sync/browser_sync_switches.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/features.h"
@@ -57,6 +60,8 @@ class SyncServiceFactoryTest : public testing::Test {
                               FaviconServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(HistoryServiceFactory::GetInstance(),
                               HistoryServiceFactory::GetDefaultFactory());
+    builder.AddTestingFactory(TrustedVaultServiceFactory::GetInstance(),
+                              TrustedVaultServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               SyncServiceFactory::GetDefaultFactory());
     // Some services will only be created if there is a WebDataService.
@@ -86,7 +91,7 @@ class SyncServiceFactoryTest : public testing::Test {
 
   // Returns the collection of default datatypes.
   syncer::ModelTypeSet DefaultDatatypes() {
-    static_assert(48 == syncer::GetNumModelTypes(),
+    static_assert(49 == syncer::GetNumModelTypes(),
                   "When adding a new type, you probably want to add it here as "
                   "well (assuming it is already enabled).");
 
@@ -121,7 +126,7 @@ class SyncServiceFactoryTest : public testing::Test {
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
-    if (base::FeatureList::IsEnabled(syncer::kTabGroupsSaveSyncIntegration)) {
+    if (base::FeatureList::IsEnabled(features::kTabGroupsSave)) {
       datatypes.Put(syncer::SAVED_TAB_GROUP);
     }
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
@@ -150,13 +155,15 @@ class SyncServiceFactoryTest : public testing::Test {
     // is null for testing and hence no controller gets instantiated.
     datatypes.Put(syncer::AUTOFILL);
     datatypes.Put(syncer::AUTOFILL_PROFILE);
+    if (base::FeatureList::IsEnabled(
+            syncer::kSyncAutofillWalletCredentialData)) {
+      datatypes.Put(syncer::AUTOFILL_WALLET_CREDENTIAL);
+    }
     datatypes.Put(syncer::AUTOFILL_WALLET_DATA);
     datatypes.Put(syncer::AUTOFILL_WALLET_METADATA);
     datatypes.Put(syncer::AUTOFILL_WALLET_OFFER);
     datatypes.Put(syncer::BOOKMARKS);
-    if (base::FeatureList::IsEnabled(syncer::kSyncEnableContactInfoDataType)) {
-      datatypes.Put(syncer::CONTACT_INFO);
-    }
+    datatypes.Put(syncer::CONTACT_INFO);
     datatypes.Put(syncer::DEVICE_INFO);
     if (base::FeatureList::IsEnabled(syncer::kSyncEnableHistoryDataType)) {
       datatypes.Put(syncer::HISTORY);
@@ -174,8 +181,15 @@ class SyncServiceFactoryTest : public testing::Test {
     if (base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials)) {
       datatypes.Put(syncer::WEBAUTHN_CREDENTIAL);
     }
-    // TODO(crbug.com/1445868): Add *_PASSWORD_SHARING_INVITATION types once
-    // implemented.
+    if (base::FeatureList::IsEnabled(
+            password_manager::features::
+                kPasswordManagerEnableReceiverService)) {
+      datatypes.Put(syncer::INCOMING_PASSWORD_SHARING_INVITATION);
+    }
+    if (base::FeatureList::IsEnabled(
+            password_manager::features::kPasswordManagerEnableSenderService)) {
+      datatypes.Put(syncer::OUTGOING_PASSWORD_SHARING_INVITATION);
+    }
     return datatypes;
   }
 

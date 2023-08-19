@@ -13,6 +13,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -57,6 +58,7 @@ extern const char kWebAppTabHistogramName[];
 extern const char kWebAppWindowHistogramName[];
 
 extern const char kUsageTimeAppIdKey[];
+extern const char kUsageTimeAppPublisherIdKey[];
 extern const char kUsageTimeAppTypeKey[];
 extern const char kUsageTimeDurationKey[];
 extern const char kReportingUsageTimeDurationKey[];
@@ -119,11 +121,22 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   // Usage time representation for the data that is persisted in the pref store.
   // Includes helpers for serialization/deserialization.
   struct UsageTime {
-    UsageTime() = default;
+    UsageTime();
     explicit UsageTime(const base::Value& value);
+    UsageTime(const UsageTime&) = delete;
+    UsageTime& operator=(const UsageTime&) = delete;
+    ~UsageTime();
+
     base::TimeDelta running_time;
     ukm::SourceId source_id = ukm::kInvalidSourceId;
     std::string app_id;
+
+    // App publisher id tracked for commercial insights reporting. This
+    // facilitates external components to report the publisher id that includes
+    // the package name for android apps, web app url for web apps, etc. which
+    // are public app identifiers. We use an empty string if there is no
+    // publisher id associated with the app.
+    std::string app_publisher_id;
     AppTypeName app_type_name = AppTypeName::kUnknown;
     bool window_is_closed = false;
 
@@ -346,6 +359,13 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   std::vector<std::unique_ptr<UsageTime>> usage_times_from_pref_;
 
   base::ObserverList<Observer> observers_;
+
+  base::ScopedObservation<apps::AppRegistryCache,
+                          apps::AppRegistryCache::Observer>
+      app_registry_cache_observer_{this};
+
+  base::ScopedObservation<InstanceRegistry, InstanceRegistry::Observer>
+      instance_registry_observation_{this};
 };
 
 }  // namespace apps

@@ -35,8 +35,16 @@ namespace ash {
 //    shortcut_viewer_strings.grdp.
 const AcceleratorData kDeprecatedAccelerators[] = {
     {true, ui::VKEY_ESCAPE, ui::EF_SHIFT_DOWN,
-     AcceleratorAction::kShowTaskManager}};
+     AcceleratorAction::kShowTaskManager},
+    {true, ui::VKEY_OEM_2, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
+     AcceleratorAction::kShowShortcutViewer},
+    {true, ui::VKEY_OEM_2,
+     ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN,
+     AcceleratorAction::kShowShortcutViewer}};
 
+// `kShowShortcutViewer` has two accelerators that are deprecated but use the
+// same message.
+const size_t kNumDeprecatedAcceleratorsDuplicate = 1u;
 const size_t kDeprecatedAcceleratorsLength = std::size(kDeprecatedAccelerators);
 
 const DeprecatedAcceleratorData kDeprecatedAcceleratorsData[] = {
@@ -44,13 +52,18 @@ const DeprecatedAcceleratorData kDeprecatedAcceleratorsData[] = {
     // completely in M94.
     {AcceleratorAction::kShowTaskManager,
      "Ash.Accelerators.Deprecated.ShowTaskManager",
-     IDS_DEPRECATED_SHOW_TASK_MANAGER_MSG, IDS_SHORTCUT_TASK_MANAGER_OLD,
-     IDS_SHORTCUT_TASK_MANAGER_NEW, false}};
+     IDS_DEPRECATED_SHOW_TASK_MANAGER_MSG, IDS_SHORTCUT_TASK_MANAGER_NEW,
+     false},
+    {AcceleratorAction::kShowShortcutViewer,
+     "Ash.Accelerators.Deprecated.ShowShortcutViewer",
+     IDS_DEPRECATED_SHOW_SHORTCUT_VIEWER_MSG,
+     IDS_SHORTCUT_SHOW_SHORTCUT_VIEWER_NEW, false}};
 
 const size_t kDeprecatedAcceleratorsDataLength =
     std::size(kDeprecatedAcceleratorsData);
 
-static_assert(kDeprecatedAcceleratorsLength ==
+static_assert(kDeprecatedAcceleratorsLength -
+                      kNumDeprecatedAcceleratorsDuplicate ==
                   kDeprecatedAcceleratorsDataLength,
               "Deprecated accelerator tables must be kept in sync");
 
@@ -90,15 +103,15 @@ const AcceleratorData kDebugAcceleratorData[] = {
     {true, ui::VKEY_K, kDebugModifier, AcceleratorAction::kDebugTriggerCrash},
     {true, ui::VKEY_G, kDebugModifier,
      AcceleratorAction::kDebugToggleHudDisplay},
+    {true, ui::VKEY_Q, kDebugModifier,
+     AcceleratorAction::kDebugToggleVirtualTrackpad},
     {true, ui::VKEY_D, kDebugModifier, AcceleratorAction::kDebugToggleDarkMode},
-    {true, ui::VKEY_OEM_4, kDebugModifier,
-     AcceleratorAction::kDebugTuckFloatedWindowLeft},
-    {true, ui::VKEY_OEM_6, kDebugModifier,
-     AcceleratorAction::kDebugTuckFloatedWindowRight},
     {true, ui::VKEY_Y, kDebugModifier,
      AcceleratorAction::kDebugToggleDynamicColor},
     {true, ui::VKEY_E, kDebugModifier,
      AcceleratorAction::kDebugTogglePowerButtonMenu},
+    {true, ui::VKEY_C, kDebugModifier,
+     AcceleratorAction::kDebugClearUseKMeansPref},
 };
 
 const size_t kDebugAcceleratorDataLength = std::size(kDebugAcceleratorData);
@@ -177,6 +190,7 @@ const AcceleratorAction kActionsAllowedAtLoginOrLockScreen[] = {
     AcceleratorAction::kDebugToggleTabletMode,
     AcceleratorAction::kDevAddRemoveDisplay,
     AcceleratorAction::kDisableCapsLock,
+    AcceleratorAction::kEnableOrToggleDictation,
     AcceleratorAction::kKeyboardBacklightToggle,
     AcceleratorAction::kKeyboardBrightnessDown,
     AcceleratorAction::kKeyboardBrightnessUp,
@@ -203,7 +217,6 @@ const AcceleratorAction kActionsAllowedAtLoginOrLockScreen[] = {
     AcceleratorAction::kTakeScreenshot,
     AcceleratorAction::kToggleCalendar,
     AcceleratorAction::kToggleCapsLock,
-    AcceleratorAction::kToggleDictation,
     AcceleratorAction::kToggleDockedMagnifier,
     AcceleratorAction::kToggleFullscreenMagnifier,
     AcceleratorAction::kToggleHighContrast,
@@ -253,6 +266,7 @@ const AcceleratorAction kActionsAllowedAtModalWindow[] = {
     AcceleratorAction::kDebugToggleTouchScreen,
     AcceleratorAction::kDevAddRemoveDisplay,
     AcceleratorAction::kDisableCapsLock,
+    AcceleratorAction::kEnableOrToggleDictation,
     AcceleratorAction::kExit,
     AcceleratorAction::kKeyboardBacklightToggle,
     AcceleratorAction::kKeyboardBrightnessDown,
@@ -288,7 +302,6 @@ const AcceleratorAction kActionsAllowedAtModalWindow[] = {
     AcceleratorAction::kTakeScreenshot,
     AcceleratorAction::kTakeWindowScreenshot,
     AcceleratorAction::kToggleCapsLock,
-    AcceleratorAction::kToggleDictation,
     AcceleratorAction::kToggleDockedMagnifier,
     AcceleratorAction::kToggleFullscreenMagnifier,
     AcceleratorAction::kToggleHighContrast,
@@ -338,6 +351,7 @@ const AcceleratorAction kActionsAllowedInAppModeOrPinnedMode[] = {
     AcceleratorAction::kDebugToggleTouchScreen,
     AcceleratorAction::kDevAddRemoveDisplay,
     AcceleratorAction::kDisableCapsLock,
+    AcceleratorAction::kEnableOrToggleDictation,
     AcceleratorAction::kKeyboardBacklightToggle,
     AcceleratorAction::kKeyboardBrightnessDown,
     AcceleratorAction::kKeyboardBrightnessUp,
@@ -366,7 +380,6 @@ const AcceleratorAction kActionsAllowedInAppModeOrPinnedMode[] = {
     AcceleratorAction::kSwitchToNextIme,
     AcceleratorAction::kToggleCapsLock,
     AcceleratorAction::kToggleClipboardHistory,
-    AcceleratorAction::kToggleDictation,
     AcceleratorAction::kToggleDockedMagnifier,
     AcceleratorAction::kToggleFullscreenMagnifier,
     AcceleratorAction::kToggleHighContrast,
@@ -436,6 +449,7 @@ const AcceleratorAction kActionsKeepingMenuOpen[] = {
     AcceleratorAction::kDesksNewDesk,
     AcceleratorAction::kDesksRemoveCurrentDesk,
     AcceleratorAction::kDisableCapsLock,
+    AcceleratorAction::kEnableOrToggleDictation,
     AcceleratorAction::kKeyboardBacklightToggle,
     AcceleratorAction::kKeyboardBrightnessDown,
     AcceleratorAction::kKeyboardBrightnessUp,
@@ -459,7 +473,6 @@ const AcceleratorAction kActionsKeepingMenuOpen[] = {
     AcceleratorAction::kToggleAppList,
     AcceleratorAction::kToggleCapsLock,
     AcceleratorAction::kToggleClipboardHistory,
-    AcceleratorAction::kToggleDictation,
     AcceleratorAction::kToggleDockedMagnifier,
     AcceleratorAction::kToggleFullscreenMagnifier,
     AcceleratorAction::kToggleHighContrast,

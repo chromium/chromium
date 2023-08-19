@@ -13,7 +13,9 @@ FakeTouchToFillPasswordGenerationBridge::
 
 bool FakeTouchToFillPasswordGenerationBridge::Show(
     content::WebContents* web_contents,
-    base::WeakPtr<TouchToFillPasswordGenerationDelegate> delegate) {
+    base::WeakPtr<TouchToFillPasswordGenerationDelegate> delegate,
+    std::u16string password,
+    std::string account) {
   delegate_ = delegate;
   return true;
 }
@@ -25,3 +27,7 @@ void FakeTouchToFillPasswordGenerationBridge::Hide() {
 void FakeTouchToFillPasswordGenerationBridge::OnDismissed(JNIEnv* env) {
   delegate_->OnDismissed();
 }
+
+void FakeTouchToFillPasswordGenerationBridge::OnGeneratedPasswordAccepted(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jstring>& password) {}

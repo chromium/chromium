@@ -16,6 +16,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "net/base/mime_util.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "ui/shell_dialogs/selected_file_info.h"
@@ -244,7 +245,8 @@ void FileSystemChooser::CreateAndShow(
       options.type(), options.title(), options.default_path(),
       &options.file_type_info(), options.default_file_type_index(),
       /*default_extension=*/base::FilePath::StringType(),
-      web_contents ? web_contents->GetTopLevelNativeWindow() : nullptr,
+      web_contents ? web_contents->GetTopLevelNativeWindow()
+                   : gfx::NativeWindow(),
       /*params=*/nullptr,
       /*caller=*/
       web_contents ? &web_contents->GetPrimaryMainFrame()->GetLastCommittedURL()

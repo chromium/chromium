@@ -113,32 +113,53 @@ void SystemLiveCaptionService::OnSpeechRecognitionStopped() {
 
 void SystemLiveCaptionService::SpeechRecognitionAvailabilityChanged(
     bool is_speech_recognition_available) {
-  if (!controller_)
+  if (!controller_) {
     return;
-
+  }
   // The controller handles UI creation / destruction, we just need to start /
   // stop providing captions.
 
-  if (is_speech_recognition_available && !client_) {
-    // Need to wait for the recognizer to be ready before starting.
-    CreateClient();
-    // Inject a fake audio system in tests.
-    if (!create_audio_system_for_testing_.is_null()) {
-      client_->set_audio_system_for_testing(  // IN-TEST
-          create_audio_system_for_testing_.Run());
+  if (is_speech_recognition_available) {
+    if (!client_) {
+      // Need to wait for the recognizer to be ready before starting.
+      CreateClient();
+      // Inject a fake audio system in tests.
+      if (!create_audio_system_for_testing_.is_null()) {
+        client_->set_audio_system_for_testing(  // IN-TEST
+            create_audio_system_for_testing_.Run());
+      }
     }
+    // At startup, when asr becomes available, we need to know whether we are in
+    // speech or not right now, and pretend that speech started at that
+    // moment. This is common when live captions is switched on during audio
+    // playback.
 
-    return;
-  }
-
-  if (!is_speech_recognition_available) {
+    int32_t current_streams =
+        CrasAudioHandler::Get()->NumberOfNonChromeOutputStreams();
+    if (current_streams > 0) {
+      OnNonChromeOutputStarted();
+    } else {
+      OnNonChromeOutputStopped();
+    }
+  } else {
+    // Speech recognition no longer available, super hard stop. This can happen
+    // when a user disables live captions, for instance.
     StopRecognizing();
+    // Hard reset by deleting the client and resetting, hard, output_running_ to
+    // false.
+    client_.reset();
+    output_running_ = false;
   }
 }
 
 void SystemLiveCaptionService::SpeechRecognitionLanguageChanged(
     const std::string& language) {
   // TODO(b:260372471): pipe through language info.
+}
+
+void SystemLiveCaptionService::SpeechRecognitionMaskOffensiveWordsChanged(
+    bool mask_offensive_words) {
+  // TODO(crbug.com/1467525): pipe through offensive word mask.
 }
 
 void SystemLiveCaptionService::StopRecognizing() {
@@ -195,7 +216,8 @@ void SystemLiveCaptionService::CreateClient() {
           /*enable_formatting=*/true,
           prefs::GetLiveCaptionLanguageCode(profile_->GetPrefs()),
           /*is_server_based=*/false,
-          media::mojom::RecognizerClientType::kLiveCaption));
+          media::mojom::RecognizerClientType::kLiveCaption,
+          /*skip_continuously_empty_audio=*/true));
 }
 
 }  // namespace ash

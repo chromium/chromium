@@ -334,6 +334,7 @@ class BrowsingTopicsDisabledInternalsBrowserTest
         /*enabled_features=*/{},
         /*disabled_features=*/{
             blink::features::kBrowsingTopics,
+            blink::features::kBrowsingTopicsParameters,
             features::kPrivacySandboxAdsAPIsOverride,
             privacy_sandbox::kPrivacySandboxSettings3,
             privacy_sandbox::kPrivacySandboxSettings4,
@@ -354,16 +355,21 @@ PrivacySandboxAdsAPIsOverride: disabled
 PrivacySandboxSettings3: disabled
 OverridePrivacySandboxSettingsLocalTesting: disabled
 BrowsingTopicsBypassIPIsPubliclyRoutableCheck: disabled
-BrowsingTopics:number_of_epochs_to_expose: 3
-BrowsingTopics:time_period_per_epoch: 7d-0h-0m-0s
-BrowsingTopics:number_of_top_topics_per_epoch: 5
-BrowsingTopics:use_random_topic_probability_percent: 5
-BrowsingTopics:number_of_epochs_of_observation_data_to_use_for_filtering: 3
-BrowsingTopics:max_number_of_api_usage_context_domains_to_keep_per_topic: 1000
-BrowsingTopics:max_number_of_api_usage_context_entries_to_load_per_epoch: 100000
-BrowsingTopics:max_number_of_api_usage_context_domains_to_store_per_page_load: 30
-BrowsingTopics:config_version: 1
-BrowsingTopics:taxonomy_version: 1
+BrowsingTopicsXHR: disabled
+BrowsingTopicsDocumentAPI: enabled
+Configuration version: 1
+BrowsingTopicsParameters: disabled
+BrowsingTopicsParameters:number_of_epochs_to_expose: 3
+BrowsingTopicsParameters:time_period_per_epoch: 7d-0h-0m-0s
+BrowsingTopicsParameters:number_of_top_topics_per_epoch: 5
+BrowsingTopicsParameters:use_random_topic_probability_percent: 5
+BrowsingTopicsParameters:max_epoch_introduction_delay: 2d-0h-0m-0s
+BrowsingTopicsParameters:number_of_epochs_of_observation_data_to_use_for_filtering: 3
+BrowsingTopicsParameters:max_number_of_api_usage_context_domains_to_keep_per_topic: 1000
+BrowsingTopicsParameters:max_number_of_api_usage_context_entries_to_load_per_epoch: 100000
+BrowsingTopicsParameters:max_number_of_api_usage_context_domains_to_store_per_page_load: 30
+BrowsingTopicsParameters:taxonomy_version: 1
+BrowsingTopicsParameters:disabled_topics_list: 
 )");
 }
 
@@ -406,9 +412,10 @@ class BrowsingTopicsInternalsBrowserTest
  public:
   BrowsingTopicsInternalsBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kBrowsingTopics,
+        {{blink::features::kBrowsingTopicsParameters,
           {{"number_of_top_topics_per_epoch", "2"},
            {"time_period_per_epoch", "15s"}}},
+         {blink::features::kBrowsingTopics, {}},
          {features::kPrivacySandboxAdsAPIsOverride, {}},
          {privacy_sandbox::kPrivacySandboxSettings3, {}},
          {privacy_sandbox::kPrivacySandboxSettings4,
@@ -464,16 +471,21 @@ PrivacySandboxAdsAPIsOverride: enabled
 PrivacySandboxSettings3: enabled
 OverridePrivacySandboxSettingsLocalTesting: disabled
 BrowsingTopicsBypassIPIsPubliclyRoutableCheck: disabled
-BrowsingTopics:number_of_epochs_to_expose: 3
-BrowsingTopics:time_period_per_epoch: 0d-0h-0m-15s
-BrowsingTopics:number_of_top_topics_per_epoch: 2
-BrowsingTopics:use_random_topic_probability_percent: 5
-BrowsingTopics:number_of_epochs_of_observation_data_to_use_for_filtering: 3
-BrowsingTopics:max_number_of_api_usage_context_domains_to_keep_per_topic: 1000
-BrowsingTopics:max_number_of_api_usage_context_entries_to_load_per_epoch: 100000
-BrowsingTopics:max_number_of_api_usage_context_domains_to_store_per_page_load: 30
-BrowsingTopics:config_version: 1
-BrowsingTopics:taxonomy_version: 1
+BrowsingTopicsXHR: disabled
+BrowsingTopicsDocumentAPI: enabled
+Configuration version: 1
+BrowsingTopicsParameters: enabled
+BrowsingTopicsParameters:number_of_epochs_to_expose: 3
+BrowsingTopicsParameters:time_period_per_epoch: 0d-0h-0m-15s
+BrowsingTopicsParameters:number_of_top_topics_per_epoch: 2
+BrowsingTopicsParameters:use_random_topic_probability_percent: 5
+BrowsingTopicsParameters:max_epoch_introduction_delay: 2d-0h-0m-0s
+BrowsingTopicsParameters:number_of_epochs_of_observation_data_to_use_for_filtering: 3
+BrowsingTopicsParameters:max_number_of_api_usage_context_domains_to_keep_per_topic: 1000
+BrowsingTopicsParameters:max_number_of_api_usage_context_entries_to_load_per_epoch: 100000
+BrowsingTopicsParameters:max_number_of_api_usage_context_domains_to_store_per_page_load: 30
+BrowsingTopicsParameters:taxonomy_version: 1
+BrowsingTopicsParameters:disabled_topics_list: 
 )");
 }
 

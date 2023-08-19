@@ -33,7 +33,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -45,7 +45,7 @@ import java.io.IOException;
 @Batch(Batch.PER_CLASS)
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "vmodule=metrics_reporter=2"})
-@Features.EnableFeatures({ChromeFeatureList.INTEREST_FEED_V2, ChromeFeatureList.WEB_FEED})
+@EnableFeatures({ChromeFeatureList.INTEREST_FEED_V2, ChromeFeatureList.WEB_FEED})
 public final class FeedSurfaceCoordinatorIntegrationTest {
     static final String PACKAGE_NAME = "org.chromium.chrome";
 

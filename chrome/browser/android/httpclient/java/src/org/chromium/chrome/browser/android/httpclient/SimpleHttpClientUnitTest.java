@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.android.httpclient;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -63,11 +62,6 @@ public class SimpleHttpClientUnitTest {
         mHttpClient = new SimpleHttpClient(mMockProfile);
 
         Mockito.verify(mNativeMock).init(mMockProfile);
-    }
-
-    @After
-    public void tearDown() {
-        ThreadUtils.setThreadAssertsDisabledForTesting(false);
     }
 
     @Test

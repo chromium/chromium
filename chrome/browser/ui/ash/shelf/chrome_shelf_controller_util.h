@@ -32,6 +32,10 @@ AppListControllerDelegate::Pinnable GetPinnableForAppID(
     const std::string& app_id,
     Profile* profile);
 
+// Helper function to return whether the app with `app_id` should explicitly
+// be hidden from shelf, as indicated by `AppUpdate::ShowInShelf()` app state.
+bool IsAppHiddenFromShelf(Profile* profile, const std::string& app_id);
+
 // Whether the pin state of the app with `app_id` is editable according to its
 // `app_type`.
 bool IsAppPinEditable(apps::AppType app_type,
@@ -54,9 +58,6 @@ void PinAppWithIDToShelf(const std::string& app_id);
 
 // Unpins an app from the shelf, if it is in the shelf. Otherwise does nothing.
 void UnpinAppWithIDFromShelf(const std::string& app_id);
-
-// Returns whether the app with `app_id` has been pinned to the shelf.
-bool IsAppWithIDPinnedToShelf(const std::string& app_id);
 
 apps::LaunchSource ShelfLaunchSourceToAppsLaunchSource(
     ash::ShelfLaunchSource source);

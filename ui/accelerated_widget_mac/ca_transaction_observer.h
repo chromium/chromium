@@ -59,7 +59,7 @@ class ACCELERATED_WIDGET_MAC_EXPORT CATransactionCoordinator {
     virtual bool ShouldWaitInPostCommit() = 0;
 
    protected:
-    virtual ~PostCommitObserver() {}
+    virtual ~PostCommitObserver() = default;
 
    private:
     friend class base::RefCountedThreadSafe<PostCommitObserver>;

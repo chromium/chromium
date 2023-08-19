@@ -154,7 +154,7 @@ public class BookmarkSaveFlowMediator
                     BookmarkUtils.getFolderIcon(
                             mContext, item.getId().getType(), BookmarkRowDisplayPref.COMPACT));
             mPropertyModel.set(BookmarkSaveFlowProperties.FOLDER_SELECT_ICON_ENABLED,
-                    BookmarkUtils.isMovable(item));
+                    BookmarkUtils.isMovable(mBookmarkModel, item));
             mPropertyModel.set(BookmarkSaveFlowProperties.SUBTITLE_TEXT,
                     getFolderDisplayText(wasBookmarkMoved));
         }

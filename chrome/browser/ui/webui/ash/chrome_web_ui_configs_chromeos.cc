@@ -45,26 +45,25 @@
 #include "chrome/browser/ash/printing/print_management/printing_manager_factory.h"
 #include "chrome/browser/ash/scanning/chrome_scanning_app_delegate.h"
 #include "chrome/browser/ash/shimless_rma/chrome_shimless_rma_delegate.h"
-#include "chrome/browser/ash/web_applications/camera_app/chrome_camera_app_ui_delegate.h"
-#include "chrome/browser/ash/web_applications/chrome_file_manager_ui_delegate.h"
-#include "chrome/browser/ash/web_applications/face_ml/chrome_face_ml_user_provider.h"
-#include "chrome/browser/ash/web_applications/files_internals_ui_delegate.h"
-#include "chrome/browser/ash/web_applications/help_app/help_app_ui_delegate.h"
-#include "chrome/browser/ash/web_applications/media_app/chrome_media_app_ui_delegate.h"
-#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_utils.h"
-#include "chrome/browser/ash/web_applications/projector_app/trusted_projector_ui_config.h"
+#include "chrome/browser/ash/system_web_apps/apps/camera_app/chrome_camera_app_ui_delegate.h"
+#include "chrome/browser/ash/system_web_apps/apps/chrome_file_manager_ui_delegate.h"
+#include "chrome/browser/ash/system_web_apps/apps/face_ml/chrome_face_ml_user_provider.h"
+#include "chrome/browser/ash/system_web_apps/apps/files_internals_ui_delegate.h"
+#include "chrome/browser/ash/system_web_apps/apps/help_app/help_app_ui_delegate.h"
+#include "chrome/browser/ash/system_web_apps/apps/media_app/chrome_media_app_ui_delegate.h"
+#include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/webui/ash/account_manager/account_manager_error_ui.h"
 #include "chrome/browser/ui/webui/ash/account_manager/account_migration_welcome_ui.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_ui.h"
-#include "chrome/browser/ui/webui/ash/arc_graphics_tracing/arc_graphics_tracing.h"
 #include "chrome/browser/ui/webui/ash/arc_graphics_tracing/arc_graphics_tracing_ui.h"
 #include "chrome/browser/ui/webui/ash/arc_power_control/arc_power_control_ui.h"
 #include "chrome/browser/ui/webui/ash/assistant_optin/assistant_optin_ui.h"
 #include "chrome/browser/ui/webui/ash/audio/audio_ui.h"
 #include "chrome/browser/ui/webui/ash/bluetooth_pairing_dialog.h"
+#include "chrome/browser/ui/webui/ash/borealis_installer/borealis_installer_ui.h"
 #include "chrome/browser/ui/webui/ash/certificate_manager_dialog_ui.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_ui.h"
 #include "chrome/browser/ui/webui/ash/crostini_installer/crostini_installer_ui.h"
@@ -92,11 +91,13 @@
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.h"
 #include "chrome/browser/ui/webui/ash/power_ui.h"
 #include "chrome/browser/ui/webui/ash/remote_maintenance_curtain_ui.h"
+#include "chrome/browser/ui/webui/ash/sensor_info/sensor_info_ui.h"
 #include "chrome/browser/ui/webui/ash/set_time_ui.h"
 #include "chrome/browser/ui/webui/ash/slow_trace_ui.h"
 #include "chrome/browser/ui/webui/ash/slow_ui.h"
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_credentials_dialog.h"
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_share_dialog.h"
+#include "chrome/browser/ui/webui/ash/status_area_internals/status_area_internals_ui.h"
 #include "chrome/browser/ui/webui/ash/sys_internals/sys_internals_ui.h"
 #include "chrome/browser/ui/webui/ash/vc_tray_tester/vc_tray_tester_ui.h"
 #include "chrome/browser/ui/webui/ash/vm/vm_ui.h"
@@ -222,16 +223,12 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<AccountManagerErrorUIConfig>());
   map.AddWebUIConfig(std::make_unique<AccountMigrationWelcomeUIConfig>());
   map.AddWebUIConfig(std::make_unique<AddSupervisionUIConfig>());
-  map.AddWebUIConfig(
-      std::make_unique<
-          ArcGraphicsTracingUIConfig<ArcGraphicsTracingMode::kFull>>());
-  map.AddWebUIConfig(
-      std::make_unique<
-          ArcGraphicsTracingUIConfig<ArcGraphicsTracingMode::kOverview>>());
+  map.AddWebUIConfig(std::make_unique<ArcGraphicsTracingUIConfig>());
   map.AddWebUIConfig(std::make_unique<ArcPowerControlUIConfig>());
   map.AddWebUIConfig(std::make_unique<AssistantOptInUIConfig>());
   map.AddWebUIConfig(std::make_unique<AudioUIConfig>());
   map.AddWebUIConfig(std::make_unique<BluetoothPairingDialogUIConfig>());
+  map.AddWebUIConfig(std::make_unique<BorealisInstallerUIConfig>());
   map.AddWebUIConfig(std::make_unique<CertificateManagerDialogUIConfig>());
   map.AddWebUIConfig(std::make_unique<cloud_upload::CloudUploadUIConfig>());
   map.AddWebUIConfig(std::make_unique<ColorInternalsUIConfig>());
@@ -243,6 +240,7 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(MakeDiagnosticsUIConfig());
   map.AddWebUIConfig(std::make_unique<DriveInternalsUIConfig>());
   map.AddWebUIConfig(MakeEcheAppUIConfig());
+  map.AddWebUIConfig(std::make_unique<SensorInfoUIConfig>());
   map.AddWebUIConfig(std::make_unique<EmojiUIConfig>());
   map.AddWebUIConfig(
       MakeComponentConfigWithDelegate<FaceMLAppUIConfig, FaceMLAppUI,
@@ -317,13 +315,13 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<smb_dialog::SmbShareDialogUIConfig>());
   map.AddWebUIConfig(std::make_unique<SysInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<SystemExtensionsInternalsUIConfig>());
-  map.AddWebUIConfig(std::make_unique<TrustedProjectorUIConfig>());
   map.AddWebUIConfig(
       std::make_unique<UrgentPasswordExpiryNotificationUIConfig>());
   map.AddWebUIConfig(std::make_unique<VcTrayTesterUIConfig>());
   map.AddWebUIConfig(std::make_unique<VmUIConfig>());
 #if !defined(OFFICIAL_BUILD)
   map.AddWebUIConfig(std::make_unique<SampleSystemWebAppUIConfig>());
+  map.AddWebUIConfig(std::make_unique<StatusAreaInternalsUIConfig>());
 #if !defined(USE_REAL_DBUS_CLIENTS)
   map.AddWebUIConfig(std::make_unique<DeviceEmulatorUIConfig>());
 #endif  // !defined(USE_REAL_DBUS_CLIENTS)

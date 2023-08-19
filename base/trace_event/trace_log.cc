@@ -354,7 +354,7 @@ void OnUpdateLegacyTraceEventDuration(
 
 }  // namespace
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY) && !BUILDFLAG(IS_NACL)
+#if BUILDFLAG(USE_PERFETTO_TRACE_PROCESSOR)
 namespace {
 // Perfetto provides us with a fully formed JSON trace file, while
 // TraceResultBuffer wants individual JSON fragments without a containing
@@ -425,7 +425,7 @@ class JsonStringOutputWriter
   scoped_refptr<RefCountedString> buffer_ = new RefCountedString();
   bool did_strip_prefix_ = false;
 };
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY) && !BUILDFLAG(IS_NACL)
+#endif  // BUILDFLAG(USE_PERFETTO_TRACE_PROCESSOR)
 
 // A helper class that allows the lock to be acquired in the middle of the scope
 // and unlocks at the end of scope if locked.
@@ -597,7 +597,7 @@ void TraceLog::SetAddTraceEventOverrides(
 struct TraceLog::RegisteredAsyncObserver {
   explicit RegisteredAsyncObserver(WeakPtr<AsyncEnabledStateObserver> observer)
       : observer(observer),
-        task_runner(SingleThreadTaskRunner::GetCurrentDefault()) {}
+        task_runner(SequencedTaskRunner::GetCurrentDefault()) {}
   ~RegisteredAsyncObserver() = default;
 
   WeakPtr<AsyncEnabledStateObserver> observer;
@@ -946,7 +946,10 @@ void TraceLog::SetEnabled(const TraceConfig& trace_config,
 perfetto::DataSourceConfig TraceLog::GetCurrentTrackEventDataSourceConfig()
     const {
   AutoLock lock(track_event_lock_);
-  return track_event_config_;
+  if (track_event_sessions_.empty()) {
+    return perfetto::DataSourceConfig();
+  }
+  return track_event_sessions_[0].config;
 }
 
 void TraceLog::InitializePerfettoIfNeeded() {
@@ -966,13 +969,15 @@ void TraceLog::InitializePerfettoIfNeeded() {
   if (perfetto::Tracing::IsInitialized())
     return;
   g_perfetto_initialized_by_tracelog = true;
-  auto* perfetto_platform = GetOrCreatePerfettoPlatform();
   perfetto::TracingInitArgs init_args;
   init_args.backends = perfetto::BackendType::kInProcessBackend;
-  init_args.platform = perfetto_platform;
   init_args.disallow_merging_with_system_tracks = true;
   perfetto::Tracing::Initialize(init_args);
   TrackEvent::Register();
+}
+
+bool TraceLog::IsPerfettoInitializedByTraceLog() const {
+  return g_perfetto_initialized_by_tracelog;
 }
 
 void TraceLog::SetEnabled(const TraceConfig& trace_config,
@@ -1271,7 +1276,7 @@ void TraceLog::FlushInternal(const TraceLog::OutputCallback& cb,
                              bool discard_events) {
   use_worker_thread_ = use_worker_thread;
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY) && !BUILDFLAG(IS_NACL)
+#if BUILDFLAG(USE_PERFETTO_TRACE_PROCESSOR)
   TrackEvent::Flush();
 
   if (!tracing_session_ || discard_events) {
@@ -1313,10 +1318,10 @@ void TraceLog::FlushInternal(const TraceLog::OutputCallback& cb,
     auto data = tracing_session_->ReadTraceBlocking();
     OnTraceData(data.data(), data.size(), /*has_more=*/false);
   }
-#elif BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY) && BUILDFLAG(IS_NACL)
-  // Trace processor isn't built on NaCL, so we can't convert the resulting
-  // trace into JSON.
-  CHECK(false) << "JSON tracing isn't supported on NaCL";
+#elif BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  // Trace processor isn't enabled so we can't convert the resulting trace into
+  // JSON.
+  CHECK(false) << "JSON tracing isn't supported";
 #else
   if (IsEnabled()) {
     // Can't flush when tracing is enabled because otherwise PostTask would
@@ -1366,10 +1371,10 @@ void TraceLog::FlushInternal(const TraceLog::OutputCallback& cb,
   }
 
   FinishFlush(gen, discard_events);
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY) && !BUILDFLAG(IS_NACL)
+#endif  // BUILDFLAG(USE_PERFETTO_TRACE_PROCESSOR)
 }
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY) && !BUILDFLAG(IS_NACL)
+#if BUILDFLAG(USE_PERFETTO_TRACE_PROCESSOR)
 void TraceLog::OnTraceData(const char* data, size_t size, bool has_more) {
   if (proto_output_callback_) {
     scoped_refptr<RefCountedString> chunk = new RefCountedString();
@@ -1399,7 +1404,7 @@ void TraceLog::OnTraceData(const char* data, size_t size, bool has_more) {
   tracing_session_.reset();
   json_output_writer_.reset();
 }
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY) && !BUILDFLAG(IS_NACL)
+#endif  // BUILDFLAG(USE_PERFETTO_TRACE_PROCESSOR)
 
 // Usually it runs on a different thread.
 void TraceLog::ConvertTraceEventsToTraceFormat(
@@ -2180,21 +2185,20 @@ void TraceLog::SetTraceBufferForTesting(
 }
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-tracing::PerfettoPlatform* TraceLog::GetOrCreatePerfettoPlatform() {
-  if (!perfetto_platform_) {
-    perfetto_platform_.reset(new tracing::PerfettoPlatform(
-        tracing::PerfettoPlatform::TaskRunnerType::kBuiltin));
-  }
-  return perfetto_platform_.get();
-}
-
 void TraceLog::OnSetup(const perfetto::DataSourceBase::SetupArgs& args) {
   AutoLock lock(track_event_lock_);
-  track_event_config_ = *args.config;
-  track_event_enabled_ = true;
+  track_event_sessions_.emplace_back(args.internal_instance_index, *args.config,
+                                     args.backend_type);
 }
 
 void TraceLog::OnStart(const perfetto::DataSourceBase::StartArgs&) {
+  ++active_track_event_sessions_;
+  // Legacy observers don't support multiple tracing sessions. So we only
+  // notify them about the first one.
+  if (active_track_event_sessions_ > 1) {
+    return;
+  }
+
   AutoLock lock(observers_lock_);
   for (EnabledStateObserver* observer : enabled_state_observers_)
     observer->OnTraceLogEnabled();
@@ -2205,16 +2209,27 @@ void TraceLog::OnStart(const perfetto::DataSourceBase::StartArgs&) {
   }
 }
 
-void TraceLog::OnStop(const perfetto::DataSourceBase::StopArgs&) {
-  AutoLock lock(observers_lock_);
+void TraceLog::OnStop(const perfetto::DataSourceBase::StopArgs& args) {
   {
     // We can't use |lock_| because OnStop() can be called from within
     // SetDisabled(). We also can't use |observers_lock_|, because observers
     // below can call into IsEnabled(), which needs to access
-    // |track_event_enabled_|. So we use a separate lock.
+    // |track_event_sessions_|. So we use a separate lock.
     AutoLock track_event_lock(track_event_lock_);
-    track_event_enabled_ = false;
+    std::erase_if(track_event_sessions_, [&args](
+                                             const TrackEventSession& session) {
+      return session.internal_instance_index == args.internal_instance_index;
+    });
   }
+
+  --active_track_event_sessions_;
+  // Legacy observers don't support multiple tracing sessions. So we only
+  // notify them when the last one stopped.
+  if (active_track_event_sessions_ > 0) {
+    return;
+  }
+
+  AutoLock lock(observers_lock_);
   for (auto* it : enabled_state_observers_)
     it->OnTraceLogDisabled();
   for (const auto& it : async_observers_) {

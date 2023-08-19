@@ -1,5 +1,4 @@
 source_set("destination_usage_history") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "constants.h",
     "destination_usage_history.h",
@@ -33,14 +32,10 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "destination_usage_history_egtest.mm" ]
   deps = [

@@ -79,14 +79,24 @@ const char MimeHandlerViewGuest::Type[] = "mimehandler";
 
 // static
 std::unique_ptr<GuestViewBase> MimeHandlerViewGuest::Create(
-    WebContents* owner_web_contents) {
-  return base::WrapUnique(new MimeHandlerViewGuest(owner_web_contents));
+    content::RenderFrameHost* owner_rfh) {
+  return base::WrapUnique(new MimeHandlerViewGuest(owner_rfh));
 }
 
-MimeHandlerViewGuest::MimeHandlerViewGuest(WebContents* owner_web_contents)
-    : GuestView<MimeHandlerViewGuest>(owner_web_contents),
+MimeHandlerViewGuest::MimeHandlerViewGuest(content::RenderFrameHost* owner_rfh)
+    : GuestView<MimeHandlerViewGuest>(owner_rfh),
       delegate_(ExtensionsAPIClient::Get()->CreateMimeHandlerViewGuestDelegate(
-          this)) {}
+          this)) {
+  auto owner_type = owner_rfh ? owner_rfh->GetFrameOwnerElementType()
+                              : blink::FrameOwnerElementType::kNone;
+  // If the embedder frame is the ContentFrame() of a plugin element, then there
+  // could be a MimeHandlerViewFrameContainer in the parent frame. Note that
+  // the MHVFC is only created through HTMLPlugInElement::UpdatePlugin (manually
+  // navigating a plugin element's window would create a MHVFC).
+  maybe_has_frame_container_ =
+      owner_type == blink::FrameOwnerElementType::kEmbed ||
+      owner_type == blink::FrameOwnerElementType::kObject;
+}
 
 MimeHandlerViewGuest::~MimeHandlerViewGuest() {
   // Before attaching is complete, the instance ID is not valid.
@@ -106,48 +116,8 @@ MimeHandlerViewGuest::~MimeHandlerViewGuest() {
   }
 }
 
-content::RenderWidgetHost* MimeHandlerViewGuest::GetOwnerRenderWidgetHost() {
-  DCHECK_NE(embedder_widget_routing_id_, MSG_ROUTING_NONE);
-  return content::RenderWidgetHost::FromID(embedder_frame_id_.child_id,
-                                           embedder_widget_routing_id_);
-}
-
-content::SiteInstance* MimeHandlerViewGuest::GetOwnerSiteInstance() {
-  DCHECK_NE(embedder_frame_id_.frame_routing_id, MSG_ROUTING_NONE);
-  content::RenderFrameHost* rfh = GetEmbedderFrame();
-  return rfh ? rfh->GetSiteInstance() : nullptr;
-}
-
 bool MimeHandlerViewGuest::CanBeEmbeddedInsideCrossProcessFrames() const {
   return true;
-}
-
-void MimeHandlerViewGuest::SetEmbedderFrame(
-    content::GlobalRenderFrameHostId frame_id) {
-  DCHECK_NE(MSG_ROUTING_NONE, frame_id.frame_routing_id);
-  DCHECK_EQ(MSG_ROUTING_NONE, embedder_frame_id_.frame_routing_id);
-
-  embedder_frame_id_ = frame_id;
-
-  content::RenderFrameHost* rfh = GetEmbedderFrame();
-
-  if (rfh && rfh->GetView()) {
-    embedder_widget_routing_id_ =
-        rfh->GetView()->GetRenderWidgetHost()->GetRoutingID();
-  }
-  auto owner_type = rfh ? rfh->GetFrameOwnerElementType()
-                        : blink::FrameOwnerElementType::kNone;
-  // If the embedder frame is the ContentFrame() of a plugin element, then there
-  // could be a MimeHandlerViewFrameContainer in the parent frame. Note that
-  // the MHVFC is only created through HTMLPlugInElement::UpdatePlugin (manually
-  // navigating a plugin element's window would create a MHVFC).
-  maybe_has_frame_container_ =
-      owner_type == blink::FrameOwnerElementType::kEmbed ||
-      owner_type == blink::FrameOwnerElementType::kObject;
-  DCHECK_NE(MSG_ROUTING_NONE, embedder_widget_routing_id_);
-  delegate_->RecordLoadMetric(
-      /*is_full_page=*/!GetEmbedderFrame()->GetParentOrOuterDocument(),
-      mime_type_);
 }
 
 void MimeHandlerViewGuest::SetBeforeUnloadController(
@@ -193,6 +163,10 @@ void MimeHandlerViewGuest::CreateWebContents(
     std::move(callback).Run(std::move(owned_this), nullptr);
     return;
   }
+
+  delegate_->RecordLoadMetric(
+      /*is_full_page=*/!GetEmbedderFrame()->GetParentOrOuterDocument(),
+      mime_type_);
 
   // Compute the mime handler extension's `SiteInstance`. This must match the
   // `SiteInstance` for the navigation in `DidAttachToEmbedder()`, otherwise the
@@ -250,7 +224,7 @@ void MimeHandlerViewGuest::DidInitialize(
 }
 
 void MimeHandlerViewGuest::MaybeRecreateGuestContents(
-    content::WebContents* embedder_web_contents) {
+    content::RenderFrameHost* outer_contents_frame) {
   if (AreWebviewMPArchBehaviorsEnabled(browser_context())) {
     // This situation is not possible for MimeHandlerView.
     NOTREACHED();
@@ -367,13 +341,15 @@ bool MimeHandlerViewGuest::GuestSaveFrame(
   return guest_view == this && PluginDoSave();
 }
 
-bool MimeHandlerViewGuest::SaveFrame(const GURL& url,
-                                     const content::Referrer& referrer,
-                                     content::RenderFrameHost* rfh) {
+bool MimeHandlerViewGuest::SaveFrame(
+    const GURL& url,
+    const content::Referrer& referrer,
+    content::RenderFrameHost* render_frame_host) {
   if (!attached())
     return false;
 
-  embedder_web_contents()->SaveFrame(stream_->original_url(), referrer, rfh);
+  embedder_web_contents()->SaveFrame(stream_->original_url(), referrer,
+                                     render_frame_host);
   return true;
 }
 
@@ -453,11 +429,13 @@ void MimeHandlerViewGuest::DocumentOnLoadCompletedInPrimaryMainFrame() {
   // For plugin elements, the embedder should be notified so that the queued
   // messages (postMessage) are forwarded to the guest page. Otherwise we
   // just send the update to the embedder (full page  MHV).
-  auto* rfh = maybe_has_frame_container_ ? GetEmbedderFrame()->GetParent()
-                                         : GetEmbedderFrame();
+  auto* render_frame_host = maybe_has_frame_container_
+                                ? GetEmbedderFrame()->GetParent()
+                                : GetEmbedderFrame();
   mojo::AssociatedRemote<mojom::MimeHandlerViewContainerManager>
       container_manager;
-  rfh->GetRemoteAssociatedInterfaces()->GetInterface(&container_manager);
+  render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
+      &container_manager);
   container_manager->DidLoad(element_instance_id(), original_resource_url_);
 }
 
@@ -507,7 +485,7 @@ void MimeHandlerViewGuest::FuseBeforeUnloadControl(
 }
 
 content::RenderFrameHost* MimeHandlerViewGuest::GetEmbedderFrame() {
-  return content::RenderFrameHost::FromID(embedder_frame_id_);
+  return owner_rfh();
 }
 
 base::WeakPtr<MimeHandlerViewGuest> MimeHandlerViewGuest::GetWeakPtr() {

@@ -199,7 +199,7 @@ In addition to that, you need a different provisioning profile for each
 test application. Those provisioning profile will have a bundle identifier
 matching the following pattern `${prefix}.gtest.${test-suite-name}` where
 `${test-suite-name}` is the name of the test suite with underscores changed
-to dashes (e.g. `base_unittests` app will use `${prefix}.gest.base-unittests`
+to dashes (e.g. `base_unittests` app will use `${prefix}.gtest.base-unittests`
 as bundle identifier).
 
 To be able to run the EarlGrey tests on a device, you'll need two provisioning
@@ -430,7 +430,7 @@ debugging and follow them.
 If you use `xcode-select` to switch between multiple version of Xcode,
 you will have to follow the same steps.
 
-### Improving performance of `git status`
+### Improving performance of git commands
 
 #### Increase the vnode cache size
 
@@ -462,7 +462,7 @@ Or edit the file directly.
 
 #### Configure git to use an untracked cache
 
-If `git --version` reports 2.8 or higher, try running
+Try running
 
 ```shell
 $ git update-index --test-untracked-cache
@@ -475,16 +475,12 @@ If the output ends with `OK`, then the following may also improve performance of
 $ git config core.untrackedCache true
 ```
 
-If `git --version` reports 2.6 or higher, but below 2.8, you can instead run
-
-```shell
-$ git update-index --untracked-cache
-```
-
 #### Configure git to use fsmonitor
 
-If `git --version` reports 2.37 or higher, use fsmonitor, which will
-significantly speed git:
+You can significantly speed up git by using [fsmonitor.](https://github.blog/2022-06-29-improve-git-monorepo-performance-with-a-file-system-monitor/)
+You should enable fsmonitor in large repos, such as Chromium and v8. Enabling
+it globally will launch many processes and probably isn't worthwhile. The
+command to enable fsmonitor in the current repo is:
 
 ```shell
 $ git config core.fsmonitor true

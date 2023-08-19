@@ -92,7 +92,7 @@ struct StructTraits<viz::mojom::TransferableResourceDataView,
     return resource.color_space_when_sampled;
   }
 
-  static const absl::optional<gfx::HDRMetadata>& hdr_metadata(
+  static const gfx::HDRMetadata& hdr_metadata(
       const viz::TransferableResource& resource) {
     return resource.hdr_metadata;
   }

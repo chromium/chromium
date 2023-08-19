@@ -24,9 +24,9 @@ namespace {
   static constexpr char kContextProviderService[] = "context_provider";
   realm_builder.AddChild(kContextProviderService, "#meta/context_provider.cm");
 
-  constexpr char const* kSwitchesToCopy[] = {"ozone-platform"};
+  static constexpr char const* kSwitchesToCopy[] = {"ozone-platform"};
   command_line.CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
-                                kSwitchesToCopy, std::size(kSwitchesToCopy));
+                                kSwitchesToCopy);
 
   test::AppendCommandLineArguments(realm_builder, kContextProviderService,
                                    command_line);

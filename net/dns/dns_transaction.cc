@@ -76,9 +76,11 @@
 #include "net/socket/stream_socket.h"
 #include "net/third_party/uri_template/uri_template.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/url_constants.h"
 
 namespace net {
 
@@ -554,6 +556,15 @@ class DnsHTTPAttempt : public DnsAttempt, public URLRequest::Delegate {
       return;
 
     OnReadCompleted(request_.get(), bytes_read);
+  }
+
+  void OnReceivedRedirect(URLRequest* request,
+                          const RedirectInfo& redirect_info,
+                          bool* defer_redirect) override {
+    // Section 5 of RFC 8484 states that scheme must be https.
+    if (!redirect_info.new_url.SchemeIs(url::kHttpsScheme)) {
+      request->Cancel();
+    }
   }
 
   void OnReadCompleted(net::URLRequest* request, int bytes_read) override {
@@ -1225,7 +1236,7 @@ class DnsTransactionImpl : public DnsTransaction,
         : rv(rv), attempt(attempt) {}
 
     int rv;
-    raw_ptr<const DnsAttempt, DanglingUntriaged> attempt;
+    raw_ptr<const DnsAttempt, AcrossTasksDanglingUntriaged> attempt;
   };
 
   // Used in UMA (DNS.AttemptType). Do not renumber or remove values.

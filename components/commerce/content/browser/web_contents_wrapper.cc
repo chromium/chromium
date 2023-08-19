@@ -41,7 +41,7 @@ bool WebContentsWrapper::IsOffTheRecord() {
 void WebContentsWrapper::RunJavascript(
     const std::u16string& script,
     base::OnceCallback<void(const base::Value)> callback) {
-  if (!web_contents_ && web_contents_->GetPrimaryMainFrame()) {
+  if (!web_contents_ || !web_contents_->GetPrimaryMainFrame()) {
     std::move(callback).Run(base::Value());
     return;
   }

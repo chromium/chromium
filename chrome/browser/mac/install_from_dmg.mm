@@ -21,17 +21,17 @@
 
 #include "base/apple/bridging.h"
 #include "base/apple/bundle_locations.h"
+#include "base/apple/foundation_util.h"
+#include "base/apple/mach_logging.h"
+#include "base/apple/osstatus_logging.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/mac/authorization_util.h"
-#include "base/mac/foundation_util.h"
-#include "base/mac/mac_logging.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/mach_logging.h"
 #include "base/mac/scoped_authorizationref.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_ioobject.h"
 #include "base/memory/scoped_policy.h"
 #include "base/strings/string_util.h"
@@ -47,10 +47,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -140,7 +136,7 @@ bool MediaResidesOnDiskImage(base::mac::ScopedIOObject<io_service_t> media,
         }
 
         CFStringRef disk_image_url_string =
-            base::mac::CFCast<CFStringRef>(disk_image_url_cftyperef.get());
+            base::apple::CFCast<CFStringRef>(disk_image_url_cftyperef.get());
         if (!disk_image_url_string) {
           base::ScopedCFTypeRef<CFStringRef> observed_type_cf(
               CFCopyTypeIDDescription(CFGetTypeID(disk_image_url_cftyperef)));
@@ -187,7 +183,7 @@ bool MediaResidesOnDiskImage(base::mac::ScopedIOObject<io_service_t> media,
         }
 
         CFDataRef image_path_data =
-            base::mac::CFCast<CFDataRef>(image_path_cftyperef.get());
+            base::apple::CFCast<CFDataRef>(image_path_cftyperef.get());
         if (!image_path_data) {
           base::ScopedCFTypeRef<CFStringRef> observed_type_cf(
               CFCopyTypeIDDescription(CFGetTypeID(image_path_cftyperef)));
@@ -392,7 +388,7 @@ bool InstallFromDiskImage(base::mac::ScopedAuthorizationRef authorization,
 // call EjectAndTrashDiskImage on dmg_bsd_device_name.
 bool LaunchInstalledApp(NSString* installed_path,
                         const std::string& dmg_bsd_device_name) {
-  base::FilePath browser_path = base::mac::NSStringToFilePath(installed_path);
+  base::FilePath browser_path = base::apple::NSStringToFilePath(installed_path);
 
   base::FilePath helper_path = browser_path.Append("Contents/Frameworks");
   helper_path = helper_path.Append(chrome::kFrameworkName);

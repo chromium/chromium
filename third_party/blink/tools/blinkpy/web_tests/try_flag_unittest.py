@@ -145,19 +145,9 @@ class TryFlagTest(unittest.TestCase):
         cmd = ['update', '--flag=--foo']
         TryFlag(cmd, host, MockGitCL(host, self.mock_try_results)).run()
 
-        def results_url(build):
-            return '%s/%s/%s/%s/layout-test-results/results.html' % (
-                'https://test-results.appspot.com/data/layout_results',
-                build.builder_name, build.build_number,
-                'blink_web_tests%20%28with%20patch%29')
-
         self.assertEqual(
             host.stdout.getvalue(), '\n'.join([
-                'Fetching results...',
-                '-- Linux: %s' % results_url(self.linux_build),
-                '-- Mac: %s' % results_url(self.mac_build),
-                '-- Win: %s' % results_url(self.win_build), '',
-                '### 1 unexpected passes:', '',
+                'Fetching results...', '', '### 1 unexpected passes:', '',
                 '[ Mac ] something/pass-unexpectedly-mac.html [ Pass ]', '',
                 '### 5 unexpected failures:', '',
                 '[ Linux ] something/fail-everywhere.html [ Failure ]',

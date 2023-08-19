@@ -40,15 +40,17 @@ bool MirrorAccountReconcilorDelegate::ShouldAbortReconcileIfPrimaryHasError()
 
 ConsentLevel MirrorAccountReconcilorDelegate::GetConsentLevelForPrimaryAccount()
     const {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  return ConsentLevel::kSignin;
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // TODO(https://crbug.com/1463887): Migrate away from `ConsentLevel::kSync` on
+  // Ash.
+  return ConsentLevel::kSync;
+#else
+  // For mobile (iOS, Android) and Lacros.
+  //
   // Whenever Mirror is enabled on a Lacros Profile, the Primary Account may or
   // may not have consented to Chrome Sync. But we want to enable
   // `AccountReconcilor` regardless - for minting Gaia cookies.
   return ConsentLevel::kSignin;
-#else
-  return ConsentLevel::kSync;
 #endif
 }
 

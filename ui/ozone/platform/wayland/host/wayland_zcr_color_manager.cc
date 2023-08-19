@@ -22,7 +22,7 @@ namespace ui {
 
 namespace {
 constexpr uint32_t kMinVersion = 1;
-constexpr uint32_t kMaxVersion = 4;
+constexpr uint32_t kMaxVersion = 5;
 }  // namespace
 
 // static
@@ -106,43 +106,35 @@ void WaylandZcrColorManager::OnColorSpaceCreated(
 wl::Object<zcr_color_space_creator_v1>
 WaylandZcrColorManager::CreateZcrColorSpaceCreator(
     const gfx::ColorSpace& color_space) {
-  auto eotf = wayland::ToColorManagerEOTF(color_space);
+  auto eotf = wayland::ToColorManagerEOTF(
+      color_space, zcr_color_manager_v1_get_version(zcr_color_manager_.get()));
   if (eotf == ZCR_COLOR_MANAGER_V1_EOTF_NAMES_UNKNOWN) {
-    LOG(ERROR) << "Attempt to create color space from"
-               << " unsupported or invalid TransferID: "
-               << color_space.ToString() << ".";
-    if (zcr_color_manager_v1_get_version(zcr_color_manager_.get()) <
-        ZCR_COLOR_SPACE_V1_COMPLETE_NAMES_SINCE_VERSION) {
-      return wl::Object<zcr_color_space_creator_v1>(
-          zcr_color_manager_v1_create_color_space_from_names(
-              zcr_color_manager_.get(), ZCR_COLOR_MANAGER_V1_EOTF_NAMES_SRGB,
-              ZCR_COLOR_MANAGER_V1_CHROMATICITY_NAMES_BT709,
-              ZCR_COLOR_MANAGER_V1_WHITEPOINT_NAMES_D65));
-    }
-    return wl::Object<zcr_color_space_creator_v1>(
-        zcr_color_manager_v1_create_color_space_from_complete_names(
-            zcr_color_manager_.get(), ZCR_COLOR_MANAGER_V1_EOTF_NAMES_SRGB,
-            ZCR_COLOR_MANAGER_V1_CHROMATICITY_NAMES_BT709,
-            ZCR_COLOR_MANAGER_V1_WHITEPOINT_NAMES_D65,
-            ZCR_COLOR_MANAGER_V1_MATRIX_NAMES_RGB,
-            ZCR_COLOR_MANAGER_V1_RANGE_NAMES_FULL));
+    LOG(WARNING) << "Attempt to create color space from"
+                 << " unsupported or invalid TransferID: "
+                 << color_space.ToString() << ".";
+    eotf = ZCR_COLOR_MANAGER_V1_EOTF_NAMES_BT709;
   }
-  auto matrix = wayland::ToColorManagerMatrix(color_space.GetMatrixID());
+  auto matrix = wayland::ToColorManagerMatrix(
+      color_space.GetMatrixID(),
+      zcr_color_manager_v1_get_version(zcr_color_manager_.get()));
   if (matrix == ZCR_COLOR_MANAGER_V1_MATRIX_NAMES_UNKNOWN) {
     LOG(WARNING) << "Attempt to create color space from"
                  << " unsupported or invalid MatrixID: "
                  << color_space.ToString();
     matrix = ZCR_COLOR_MANAGER_V1_MATRIX_NAMES_RGB;
   }
-  auto range = wayland::ToColorManagerRange(color_space.GetRangeID());
+  auto range = wayland::ToColorManagerRange(
+      color_space.GetRangeID(),
+      zcr_color_manager_v1_get_version(zcr_color_manager_.get()));
   if (range == ZCR_COLOR_MANAGER_V1_RANGE_NAMES_UNKNOWN) {
     LOG(WARNING) << "Attempt to create color space from"
                  << " unsupported or invalid RangeID: "
                  << color_space.ToString();
     range = ZCR_COLOR_MANAGER_V1_RANGE_NAMES_FULL;
   }
-  auto chromaticity =
-      wayland::ToColorManagerChromaticity(color_space.GetPrimaryID());
+  auto chromaticity = wayland::ToColorManagerChromaticity(
+      color_space.GetPrimaryID(),
+      zcr_color_manager_v1_get_version(zcr_color_manager_.get()));
   if (chromaticity != ZCR_COLOR_MANAGER_V1_CHROMATICITY_NAMES_UNKNOWN) {
     if (zcr_color_manager_v1_get_version(zcr_color_manager_.get()) <
         ZCR_COLOR_SPACE_V1_COMPLETE_NAMES_SINCE_VERSION) {

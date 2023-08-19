@@ -1,0 +1,6 @@
+# Included in is_chromeos_ash blocks in //chrome/test targets.
+specific_include_rules = {
+  "network_bandwidth_sampler_ash_browsertest\.cc": [
+    "+chrome/browser/ash",
+  ],
+}

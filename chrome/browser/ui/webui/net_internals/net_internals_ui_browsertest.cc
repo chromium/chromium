@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -14,9 +15,11 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
+#include "base/test/values_test_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
@@ -38,6 +41,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/address_list.h"
+#include "net/base/hash_value.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
 #include "net/dns/mock_host_resolver.h"
@@ -53,6 +57,12 @@
 using content::WebUIMessageHandler;
 
 namespace {
+
+base::Time ToTime(const char* time_string) {
+  base::Time time;
+  CHECK(base::Time::FromString(time_string, &time));
+  return time;
+}
 
 // Notifies the NetInternalsTest.Task JS object of the DNS lookup result once
 // it's complete. Owns itself.
@@ -99,6 +109,10 @@ class DnsLookupClient : public network::mojom::ResolveHostClient {
 };
 
 class NetworkContextForTesting : public network::TestNetworkContext {
+ public:
+  NetworkContextForTesting() = default;
+  ~NetworkContextForTesting() override = default;
+
   // This is a mock network context for testing.
   // Only "*.com" is registered to this resolver. And especially for
   // http2/http3/multihost.com, results include endpoint_results_with_metadata
@@ -169,6 +183,70 @@ class NetworkContextForTesting : public network::TestNetworkContext {
                                   endpoint_results);
     }
   }
+
+  void ClearSharedDictionaryCache(
+      base::Time start_time,
+      base::Time end_time,
+      network::mojom::ClearDataFilterPtr filter,
+      ClearSharedDictionaryCacheCallback callback) override {
+    // We just cleas all dictionary for testing.
+    dictionaries_.clear();
+    std::move(callback).Run();
+  }
+
+  void ClearSharedDictionaryCacheForIsolationKey(
+      const net::SharedDictionaryIsolationKey& isolation_key,
+      ClearSharedDictionaryCacheForIsolationKeyCallback callback) override {
+    dictionaries_.erase(isolation_key);
+    std::move(callback).Run();
+  }
+
+  void GetSharedDictionaryUsageInfo(
+      GetSharedDictionaryUsageInfoCallback callback) override {
+    std::vector<net::SharedDictionaryUsageInfo> info;
+    for (const auto& it : dictionaries_) {
+      uint64_t total_size_bytes = 0;
+      for (const auto& it2 : it.second) {
+        total_size_bytes += it2->size;
+      }
+      info.emplace_back(net::SharedDictionaryUsageInfo{
+          .isolation_key = it.first, .total_size_bytes = total_size_bytes});
+    }
+    std::move(callback).Run(info);
+  }
+
+  void GetSharedDictionaryInfo(
+      const net::SharedDictionaryIsolationKey& isolation_key,
+      GetSharedDictionaryInfoCallback callback) override {
+    auto it = dictionaries_.find(isolation_key);
+    if (it == dictionaries_.end()) {
+      std::move(callback).Run({});
+      return;
+    }
+    std::vector<network::mojom::SharedDictionaryInfoPtr> dicts;
+    for (const auto& it2 : it->second) {
+      dicts.emplace_back(it2.Clone());
+    }
+    std::move(callback).Run(std::move(dicts));
+  }
+
+  void RegisterTestSharedDictionary(
+      const net::SharedDictionaryIsolationKey& isolation_key,
+      network::mojom::SharedDictionaryInfoPtr dictionary) {
+    auto it = dictionaries_.find(isolation_key);
+    if (it == dictionaries_.end()) {
+      std::vector<network::mojom::SharedDictionaryInfoPtr> dicts;
+      dicts.emplace_back(std::move(dictionary));
+      dictionaries_.insert(std::make_pair(isolation_key, std::move(dicts)));
+      return;
+    }
+    it->second.emplace_back(std::move(dictionary));
+  }
+
+ private:
+  std::map<net::SharedDictionaryIsolationKey,
+           std::vector<network::mojom::SharedDictionaryInfoPtr>>
+      dictionaries_;
 };
 
 }  // namespace
@@ -209,6 +287,9 @@ class NetInternalsTest::MessageHandler : public content::WebUIMessageHandler {
   void SetNetworkContextForTesting(const base::Value::List& list);
   void ResetNetworkContextForTesting(const base::Value::List& list);
 
+  // Register a test shared dictionary for testing.
+  void RgisterTestSharedDictionary(const base::Value::List& list);
+
   Browser* browser() { return net_internals_test_->browser(); }
 
   raw_ptr<NetInternalsTest> net_internals_test_;
@@ -244,6 +325,11 @@ void NetInternalsTest::MessageHandler::RegisterMessages() {
       "resetNetworkContextForTesting",
       base::BindRepeating(
           &NetInternalsTest::MessageHandler::ResetNetworkContextForTesting,
+          weak_factory_.GetWeakPtr()));
+  RegisterMessage(
+      "registerTestSharedDictionary",
+      base::BindRepeating(
+          &NetInternalsTest::MessageHandler::RgisterTestSharedDictionary,
           weak_factory_.GetWeakPtr()));
 }
 
@@ -311,6 +397,25 @@ void NetInternalsTest::MessageHandler::SetNetworkContextForTesting(
 void NetInternalsTest::MessageHandler::ResetNetworkContextForTesting(
     const base::Value::List& list) {
   NetInternalsUI::SetNetworkContextForTesting(nullptr);
+}
+
+void NetInternalsTest::MessageHandler::RgisterTestSharedDictionary(
+    const base::Value::List& list) {
+  const std::string* dictionary_json_string = list[0].GetIfString();
+  CHECK(dictionary_json_string);
+  base::Value::Dict dict = base::test::ParseJsonDict(*dictionary_json_string);
+  net::SHA256HashValue hash_value;
+  base::HexStringToSpan(*dict.FindString("hash"), hash_value.data);
+  network_context_for_testing_.RegisterTestSharedDictionary(
+      net::SharedDictionaryIsolationKey(
+          url::Origin::Create(GURL(*dict.FindString("frame_origin"))),
+          net::SchemefulSite(GURL(*dict.FindString("top_frame_site")))),
+      network::mojom::SharedDictionaryInfo::New(
+          *dict.FindString("match"), GURL(*dict.FindString("dictionary_url")),
+          ToTime(dict.FindString("response_time")->c_str()),
+          base::Seconds(*dict.FindInt("expiration")),
+          ToTime(dict.FindString("last_used_time")->c_str()),
+          *dict.FindInt("size"), hash_value));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -29,10 +29,6 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 using base::test::ios::kWaitForUIElementTimeout;
@@ -65,12 +61,6 @@ id<GREYMatcher> TranslateManualTriggerBadge() {
       grey_ancestor(TranslateManualTriggerButton()), nil);
 }
 
-// Matcher for the New Tab Tip Bubble.
-id<GREYMatcher> NewTabTipBubble() {
-  return grey_accessibilityLabel(
-      l10n_util::GetNSStringWithFixup(IDS_IOS_NEW_TAB_IPH_PROMOTION_TEXT));
-}
-
 // Matcher for the Bottom Toolbar Tip Bubble.
 id<GREYMatcher> BottomToolbarTipBubble() {
   return grey_accessibilityLabel(l10n_util::GetNSStringWithFixup(
@@ -87,20 +77,6 @@ id<GREYMatcher> LongPressTipBubble() {
 id<GREYMatcher> DefaultSiteViewTip() {
   return grey_accessibilityLabel(
       l10n_util::GetNSStringWithFixup(IDS_IOS_DEFAULT_PAGE_MODE_TIP));
-}
-
-// Matcher for the TabPinned tip.
-id<GREYMatcher> TabPinnedTip() {
-  return grey_accessibilityLabel(
-      l10n_util::GetNSString(IDS_IOS_PINNED_TAB_OVERFLOW_ACTION_IPH_TEXT));
-}
-
-// Opens and closes the tab switcher.
-void OpenAndCloseTabSwitcher() {
-  [ChromeEarlGreyUI openTabGrid];
-
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
-      performAction:grey_tap()];
 }
 
 // Opens the tools menu and request the desktop version of the page.
@@ -134,10 +110,6 @@ void RequestDesktopVersion() {
   std::string enable_features = base::StringPrintf(
       "%s:chosen_feature/%s", feature_engagement::kIPHDemoMode.name,
       feature.c_str());
-  if ([self isRunningTest:@selector(testPinTabFromOverflowMenu)]) {
-    enable_features += base::StringPrintf(",%s:%s/true", kEnablePinnedTabs.name,
-                                          kEnablePinnedTabsOverflowParam);
-  }
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.additional_args.push_back("--enable-features=" + enable_features);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
@@ -180,36 +152,6 @@ void RequestDesktopVersion() {
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 150)
       onElementWithMatcher:chrome_test_util::ToolsMenuView()]
       assertWithMatcher:grey_notNil()];
-}
-
-// Verifies that the New Tab Tip appears when all conditions are met.
-// TODO(crbug.com/934248) The test is flaky.
-- (void)DISABLED_testNewTabTipPromoShouldShow {
-  [self enableDemoModeForFeature:"IPH_NewTabTip"];
-
-  // Navigate to a page other than the NTP to allow for the New Tab Tip to
-  // appear.
-  [ChromeEarlGrey loadURL:GURL("chrome://version")];
-
-  // Open and close the tab switcher to trigger the New Tab tip.
-  OpenAndCloseTabSwitcher();
-
-  // Verify that the New Tab Tip appeared.
-  [[EarlGrey selectElementWithMatcher:NewTabTipBubble()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-// Verifies that the New Tab Tip does not appear if all conditions are met,
-// but the NTP is open.
-- (void)testNewTabTipPromoDoesNotAppearOnNTP {
-  [self enableDemoModeForFeature:"IPH_NewTabTip"];
-
-  // Open and close the tab switcher to potentially trigger the New Tab Tip.
-  OpenAndCloseTabSwitcher();
-
-  // Verify that the New Tab Tip did not appear.
-  [[EarlGrey selectElementWithMatcher:NewTabTipBubble()]
-      assertWithMatcher:grey_notVisible()];
 }
 
 // Verifies that the bottom toolbar tip is displayed when the phone is in split
@@ -307,76 +249,6 @@ void RequestDesktopVersion() {
 
   [[EarlGrey selectElementWithMatcher:DefaultSiteViewTip()]
       assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-// Verifies that the IPH for Pinned tab is displayed after pinning a tab from
-// the overflow menu.
-- (void)testPinTabFromOverflowMenu {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The Pinned Tabs feature is only "
-                           @"supported on iPhone.");
-  }
-  if (@available(iOS 15, *)) {
-  } else {
-    // Only available for iOS 15+.
-    return;
-  }
-  [self enableDemoModeForFeature:"IPH_TabPinnedFeature"];
-
-  XCUIApplication* app = [[XCUIApplication alloc] init];
-
-  // Make sure that the pinned tabs feature has never been used from the
-  // overflow menu.
-  [ChromeEarlGrey setUserDefaultObject:@(0) forKey:kPinnedTabsOverflowEntryKey];
-
-  [ChromeEarlGreyUI openToolsMenu];
-
-  // Check that the "N" IPH badge is displayed before tapping on the action.
-  GREYAssert([[app images][@"overflowRowIPHBadgeIdentifier"] exists],
-             @"The 'N' IPH bagde should be displayed.");
-  [ChromeEarlGreyUI
-      tapToolsMenuAction:grey_accessibilityID(kToolsMenuPinTabId)];
-
-  NSString* pinTabSnackbarMessage =
-      l10n_util::GetNSString(IDS_IOS_SNACKBAR_MESSAGE_PINNED_TAB);
-  NSString* unpinTabSnackbarMessage =
-      l10n_util::GetNSString(IDS_IOS_SNACKBAR_MESSAGE_UNPINNED_TAB);
-
-  [[EarlGrey selectElementWithMatcher:TabPinnedTip()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(pinTabSnackbarMessage)]
-      assertWithMatcher:grey_nil()];
-
-  [ChromeEarlGreyUI openToolsMenu];
-
-  // Check that the "N" IPH bagde is not displayed before tapping on the action.
-  GREYAssertFalse([[app images][@"overflowRowIPHBadgeIdentifier"] exists],
-                  @"The 'N' IPH bagde should not be displayed.");
-  [ChromeEarlGreyUI
-      tapToolsMenuAction:grey_accessibilityID(kToolsMenuUnpinTabId)];
-  [[EarlGrey selectElementWithMatcher:TabPinnedTip()]
-      assertWithMatcher:grey_nil()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(unpinTabSnackbarMessage)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  // Tap the snackbar to make it disappear.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(unpinTabSnackbarMessage)]
-      performAction:grey_tap()];
-
-  [ChromeEarlGreyUI openToolsMenu];
-  [ChromeEarlGreyUI
-      tapToolsMenuAction:grey_accessibilityID(kToolsMenuPinTabId)];
-  [[EarlGrey selectElementWithMatcher:TabPinnedTip()]
-      assertWithMatcher:grey_nil()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(pinTabSnackbarMessage)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  // Tap the snackbar to make it disappear.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(pinTabSnackbarMessage)]
-      performAction:grey_tap()];
 }
 
 @end

@@ -17,22 +17,22 @@ class MEDIA_SHMEM_EXPORT AudioLatency {
  public:
   // Categories of expected latencies for input/output audio. Do not change
   // existing values, they are used for UMA histogram reporting.
-  enum LatencyType {
+  enum class Type {
     // Specific latency in milliseconds.
-    LATENCY_EXACT_MS = 0,
+    kExactMS = 0,
     // Lowest possible latency which does not cause glitches.
-    LATENCY_INTERACTIVE = 1,
+    kInteractive = 1,
     // Latency optimized for real time communication.
-    LATENCY_RTC = 2,
+    kRtc = 2,
     // Latency optimized for continuous playback and power saving.
-    LATENCY_PLAYBACK = 3,
-    // For validation only.
-    LATENCY_LAST = LATENCY_PLAYBACK,
-    LATENCY_COUNT = LATENCY_LAST + 1
+    kPlayback = 3,
+    // Default value when the type is unknown.
+    kUnknown = 4,
+    kMaxValue = kUnknown,
   };
 
   // Indicates if the OS does not require resampling for playback.
-  static bool IsResamplingPassthroughSupported(LatencyType type);
+  static bool IsResamplingPassthroughSupported(Type type);
 
   // |preferred_buffer_size| should be set to 0 if a client has no preference.
   static int GetHighLatencyBufferSize(int sample_rate,
@@ -71,6 +71,8 @@ class MEDIA_SHMEM_EXPORT AudioLatency {
                                 int min_hardware_buffer_size,
                                 int max_hardware_buffer_size,
                                 int max_allowed_buffer_size);
+
+  static const char* ToString(Type type);
 };
 
 }  // namespace media

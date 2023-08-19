@@ -2,6 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# @generated from third_party/rust/BUILD.gn.hbs by tools/crates/gnrt.
+# Do not edit!
+
 import("//build/rust/cargo_crate.gni")
 
 cargo_crate("lib") {
@@ -13,10 +16,39 @@ cargo_crate("lib") {
   # third_party.toml to use it from first-party code.
   visibility = [ "//third_party/rust/*" ]
   crate_root = "crate/src/lib.rs"
+  sources = [
+    "//third_party/rust/ryu/v1/crate/benches/bench.rs",
+    "//third_party/rust/ryu/v1/crate/build.rs",
+    "//third_party/rust/ryu/v1/crate/examples/upstream_benchmark.rs",
+    "//third_party/rust/ryu/v1/crate/src/buffer/mod.rs",
+    "//third_party/rust/ryu/v1/crate/src/common.rs",
+    "//third_party/rust/ryu/v1/crate/src/d2s.rs",
+    "//third_party/rust/ryu/v1/crate/src/d2s_full_table.rs",
+    "//third_party/rust/ryu/v1/crate/src/d2s_intrinsics.rs",
+    "//third_party/rust/ryu/v1/crate/src/d2s_small_table.rs",
+    "//third_party/rust/ryu/v1/crate/src/digit_table.rs",
+    "//third_party/rust/ryu/v1/crate/src/f2s.rs",
+    "//third_party/rust/ryu/v1/crate/src/f2s_intrinsics.rs",
+    "//third_party/rust/ryu/v1/crate/src/lib.rs",
+    "//third_party/rust/ryu/v1/crate/src/parse.rs",
+    "//third_party/rust/ryu/v1/crate/src/pretty/exponent.rs",
+    "//third_party/rust/ryu/v1/crate/src/pretty/mantissa.rs",
+    "//third_party/rust/ryu/v1/crate/src/pretty/mod.rs",
+    "//third_party/rust/ryu/v1/crate/src/s2d.rs",
+    "//third_party/rust/ryu/v1/crate/src/s2f.rs",
+    "//third_party/rust/ryu/v1/crate/tests/common_test.rs",
+    "//third_party/rust/ryu/v1/crate/tests/d2s_table_test.rs",
+    "//third_party/rust/ryu/v1/crate/tests/d2s_test.rs",
+    "//third_party/rust/ryu/v1/crate/tests/exhaustive.rs",
+    "//third_party/rust/ryu/v1/crate/tests/f2s_test.rs",
+    "//third_party/rust/ryu/v1/crate/tests/macros/mod.rs",
+    "//third_party/rust/ryu/v1/crate/tests/s2d_test.rs",
+    "//third_party/rust/ryu/v1/crate/tests/s2f_test.rs",
+  ]
+  inputs = [ "//third_party/rust/ryu/v1/crate/README.md" ]
 
   # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
-  sources = [ "crate/src/lib.rs" ]
   edition = "2018"
   cargo_pkg_version = "1.0.5"
   cargo_pkg_authors = "David Tolnay <dtolnay@gmail.com>"

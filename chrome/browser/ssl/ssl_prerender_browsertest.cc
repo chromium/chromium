@@ -181,7 +181,9 @@ IN_PROC_BROWSER_TEST_F(SSLPrerenderTest, TestNoInterstitialInPrerender) {
 // TODO(bokan): In the future, when prerendering supports cross origin
 // triggering, this test can be more straightforward by using one server for
 // the initial page and another, with bad certs, for the prerendering page.
-IN_PROC_BROWSER_TEST_F(SSLPrerenderTest, TestNoInterstitialInPrerenderSW) {
+// TODO(crbug.com/1464656): the test has been flaky across platforms.
+IN_PROC_BROWSER_TEST_F(SSLPrerenderTest,
+                       DISABLED_TestNoInterstitialInPrerenderSW) {
   auto server = CreateExpiredCertServer(GetChromeTestDataDir());
   ASSERT_TRUE(server->Start());
 
@@ -353,7 +355,7 @@ IN_PROC_BROWSER_TEST_F(SSLPrerenderTest,
             prerender_utils::kDirectUrlInputMetricSuffix,
             ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                       ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-            nullptr);
+            content::PreloadingHoldbackStatus::kUnspecified, nullptr);
     ASSERT_TRUE(prerender_handle);
     const int kPrerenderHostId = prerender_helper_.GetHostForUrl(kUrl);
     ASSERT_NE(kPrerenderHostId, content::RenderFrameHost::kNoFrameTreeNodeId);

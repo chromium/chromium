@@ -29,6 +29,7 @@ class ASH_EXPORT AutoclickDragEventRewriter : public ui::EventRewriter {
   ui::EventDispatchDetails RewriteEvent(
       const ui::Event& event,
       const Continuation continuation) override;
+  bool SupportsNonRootLocation() const override;
 
  private:
   bool enabled_ = false;

@@ -4,11 +4,13 @@
 
 #include "chrome/browser/ash/policy/networking/euicc_status_uploader.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
@@ -16,6 +18,7 @@
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/network/network_ui_data.h"
+#include "chromeos/ash/components/network/policy_util.h"
 #include "chromeos/components/onc/onc_utils.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/prefs/testing_pref_service.h"
@@ -71,67 +74,187 @@ const char kFakeEid[] = "12";
 const char kEuiccStatusUploadResultHistogram[] =
     "Network.Cellular.ESim.Policy.EuiccStatusUploadResult";
 
-const char kEmptyEuiccStatus[] =
-    R"(
-{
-  "esim_profiles":[],"euicc_count":0
-})";
-const char kEuiccStatusWithOneProfile[] =
+const char kEuiccStatus_Empty[] =
     R"({
-        "esim_profiles":
-          [
-            {"iccid":"iccid-1","smdp_address":"smdp-1"}
-          ],
-        "euicc_count":2
+        "esim_profiles": [],
+        "euicc_count": 0
        })";
-const char kEuiccStatusWithTwoProfiles[] =
+const char kEuiccStatus_OneProfile_Legacy[] =
     R"({
-        "esim_profiles":
-          [
-            {"iccid":"iccid-1","smdp_address":"smdp-1"},
-            {"iccid":"iccid-2","smdp_address":"smdp-2"}
-          ],
-        "euicc_count":3
+        "esim_profiles": [
+          {
+            "iccid": "iccid-1",
+            "smdp_address": "smdp-1"
+          }
+        ],
+        "euicc_count": 1
        })";
-const char kEuiccStatusAfterReset[] =
-    R"(
-{
-  "esim_profiles":[],"euicc_count":2
-})";
+const char kEuiccStatus_TwoProfiles_Legacy[] =
+    R"({
+        "esim_profiles": [
+          {
+            "iccid": "iccid-1",
+            "smdp_address": "smdp-1"
+          },
+          {
+            "iccid": "iccid-2",
+            "smdp_address": "smdp-2"
+          }
+        ],
+        "euicc_count": 2
+       })";
+const char kEuiccStatus_OneProfileWithMissingName[] =
+    R"({
+        "esim_profiles": [
+          {
+            "iccid": "iccid-1",
+            "smdp_activation_code": "smdp-1"
+          }
+        ],
+        "euicc_count": 1
+       })";
+const char kEuiccStatus_OneProfileWithEmptyActivationCode[] =
+    R"({
+        "esim_profiles": [],
+        "euicc_count": 1
+       })";
+const char kEuiccStatus_OneProfile[] =
+    R"({
+        "esim_profiles": [
+          {
+            "iccid": "iccid-1",
+            "network_name": "name-1",
+            "smdp_activation_code": "smdp-1"
+          }
+        ],
+        "euicc_count": 1
+       })";
+const char kEuiccStatus_TwoProfiles[] =
+    R"({
+        "esim_profiles": [
+          {
+            "iccid": "iccid-1",
+            "network_name": "name-1",
+            "smdp_activation_code": "smdp-1"
+          },
+          {
+            "iccid": "iccid-2",
+            "network_name": "name-2",
+            "smdp_activation_code": "smdp-2"
+          }
+        ],
+        "euicc_count": 2
+       })";
+const char kEuiccStatus_FourProfiles[] =
+    R"({
+        "esim_profiles": [
+          {
+            "iccid": "iccid-1",
+            "network_name": "name-1",
+            "smdp_activation_code": "smdp-1"
+          },
+          {
+            "iccid": "iccid-2",
+            "network_name": "name-2",
+            "smdp_activation_code": "smdp-2"
+          },
+          {
+            "iccid": "iccid-3",
+            "network_name": "name-3",
+            "smds_activation_code": "smds-3"
+          },
+          {
+            "iccid": "iccid-4",
+            "network_name": "name-4",
+            "smds_activation_code": "smds-4"
+          }
+        ],
+        "euicc_count": 3
+       })";
+const char kEuiccStatus_AfterReset[] =
+    R"({
+        "esim_profiles": [],
+        "euicc_count": 4
+      })";
 
-const char kCellularServicePath[] = "/service/cellular1";
+const char kCellularServicePath0[] = "/service/cellular0";
+const char kCellularServicePath1[] = "/service/cellular1";
 const char kCellularServicePath2[] = "/service/cellular2";
-const char kCelluarProfilePath[] = "/org/chromium/Hermes/Profile/1";
-const char kCelluarProfilePath2[] = "/org/chromium/Hermes/Profile/2";
+const char kCellularServicePath3[] = "/service/cellular3";
+const char kCellularProfilePath0[] = "/org/chromium/Hermes/Profile/0";
+const char kCellularProfilePath1[] = "/org/chromium/Hermes/Profile/1";
+const char kCellularProfilePath2[] = "/org/chromium/Hermes/Profile/2";
+const char kCellularProfilePath3[] = "/org/chromium/Hermes/Profile/3";
 
 struct FakeESimProfile {
   std::string profile_path;
   std::string service_path;
   std::string guid;
   std::string iccid;
-  std::string smdp_address;
+  ash::policy_util::SmdxActivationCode::Type activation_code_type;
+  std::string activation_code_value;
+  std::string network_name;
   hermes::profile::State state;
   bool managed = true;
 };
 struct EuiccTestData {
   int euicc_count = 0;
-  // multiple euicc ids.
   std::vector<FakeESimProfile> profiles;
 };
 
-const EuiccTestData kSetupOneEsimProfile = {
+const EuiccTestData kEuiccTestData_OneProfile = {
+    1,
+    {
+        {kCellularProfilePath0, kCellularServicePath0, "guid-1", "iccid-1",
+         ash::policy_util::SmdxActivationCode::Type::SMDP, "smdp-1", "name-1",
+         hermes::profile::State::kActive, true},
+    },
+};
+const EuiccTestData kEuiccTestData_OneProfileWithMissingName = {
+    1,
+    {
+        {kCellularProfilePath0, kCellularServicePath0, "guid-1", "iccid-1",
+         ash::policy_util::SmdxActivationCode::Type::SMDP, "smdp-1", "",
+         hermes::profile::State::kActive, true},
+    },
+};
+const EuiccTestData kEuiccTestData_OneProfileWithEmptyActivationCode = {
+    1,
+    {
+        {kCellularProfilePath0, kCellularServicePath0, "guid-1", "iccid-1",
+         ash::policy_util::SmdxActivationCode::Type::SMDP, "", "name-1",
+         hermes::profile::State::kActive, true},
+    },
+};
+const EuiccTestData kEuiccTestData_TwoProfiles = {
     2,
-    {{kCelluarProfilePath, kCellularServicePath, "guid-1", "iccid-1", "smdp-1",
-      hermes::profile::State::kActive, true}}};
-const EuiccTestData kSetupTwoEsimProfiles = {
+    {
+        {kCellularProfilePath0, kCellularServicePath0, "guid-1", "iccid-1",
+         ash::policy_util::SmdxActivationCode::Type::SMDP, "smdp-1", "name-1",
+         hermes::profile::State::kActive, true},
+        {kCellularProfilePath1, kCellularServicePath1, "guid-2", "iccid-2",
+         ash::policy_util::SmdxActivationCode::Type::SMDP, "smdp-2", "name-2",
+         hermes::profile::State::kInactive, true},
+    },
+};
+const EuiccTestData kEuiccTestData_FourProfiles = {
     3,
     {
-        {kCelluarProfilePath, kCellularServicePath, "guid-1", "iccid-1",
-         "smdp-1", hermes::profile::State::kActive, true},
-        {kCelluarProfilePath2, kCellularServicePath2, "guid-2", "iccid-2",
-         "smdp-2", hermes::profile::State::kInactive, true},
-    }};
-const EuiccTestData kSetupAfterReset = {2, {}};
+        {kCellularProfilePath0, kCellularServicePath0, "guid-1", "iccid-1",
+         ash::policy_util::SmdxActivationCode::Type::SMDP, "smdp-1", "name-1",
+         hermes::profile::State::kActive, true},
+        {kCellularProfilePath1, kCellularServicePath1, "guid-2", "iccid-2",
+         ash::policy_util::SmdxActivationCode::Type::SMDP, "smdp-2", "name-2",
+         hermes::profile::State::kInactive, true},
+        {kCellularProfilePath2, kCellularServicePath2, "guid-3", "iccid-3",
+         ash::policy_util::SmdxActivationCode::Type::SMDS, "smds-3", "name-3",
+         hermes::profile::State::kActive, true},
+        {kCellularProfilePath3, kCellularServicePath3, "guid-4", "iccid-4",
+         ash::policy_util::SmdxActivationCode::Type::SMDS, "smds-4", "name-4",
+         hermes::profile::State::kInactive, true},
+    },
+};
+const EuiccTestData kEuiccTestData_AfterReset = {4, {}};
 
 std::string GetEid(int euicc_id) {
   return base::StringPrintf("%s%d", kFakeObjectPath, euicc_id);
@@ -145,7 +268,11 @@ std::string GetEuiccPath(int euicc_id) {
 
 class EuiccStatusUploaderTest : public testing::Test {
  public:
-  EuiccStatusUploaderTest() {}
+  EuiccStatusUploaderTest(
+      const std::vector<base::test::FeatureRef>& enabled_features,
+      const std::vector<base::test::FeatureRef>& disabled_features) {
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
 
   void SetUp() override {
     helper_ = std::make_unique<ash::NetworkHandlerTestHelper>();
@@ -182,7 +309,9 @@ class EuiccStatusUploaderTest : public testing::Test {
 
   const base::Value& GetStoredPref() {
     return local_state_.GetValue(
-        EuiccStatusUploader::kLastUploadedEuiccStatusPref);
+        ash::features::IsSmdsSupportEuiccUploadEnabled()
+            ? EuiccStatusUploader::kLastUploadedEuiccStatusPref
+            : EuiccStatusUploader::kLastUploadedEuiccStatusPrefLegacy);
   }
 
   std::string GetStoredPrefString() {
@@ -205,7 +334,9 @@ class EuiccStatusUploaderTest : public testing::Test {
         /*is_active=*/true, euicc_id);
   }
 
-  void SetUpDeviceProfiles(const EuiccTestData& data, bool add_to_onc = true) {
+  void SetUpDeviceProfilesLegacy(const EuiccTestData& data) {
+    DCHECK(!ash::features::IsSmdsSupportEnabled());
+
     // Create |data.euicc_count| fake EUICCs.
     ash::HermesManagerClient::Get()->GetTestInterface()->ClearEuiccs();
     for (int euicc_id = 0; euicc_id < data.euicc_count; euicc_id++) {
@@ -216,16 +347,64 @@ class EuiccStatusUploaderTest : public testing::Test {
       ash::HermesEuiccClient::Get()->GetTestInterface()->AddCarrierProfile(
           dbus::ObjectPath(test_profile.profile_path),
           dbus::ObjectPath(GetEuiccPath(/*euicc_id=*/0)), test_profile.iccid,
-          test_profile.guid, "nickname", "service_provider", "activation_code",
-          test_profile.service_path, test_profile.state,
-          hermes::profile::ProfileClass::kOperational,
+          test_profile.guid, "nickname", "service_provider",
+          test_profile.activation_code_value, test_profile.service_path,
+          test_profile.state, hermes::profile::ProfileClass::kOperational,
           ash::HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
               kAddProfileWithService);
 
       if (test_profile.managed) {
         ash::NetworkHandler::Get()
             ->managed_cellular_pref_handler()
-            ->AddIccidSmdpPair(test_profile.iccid, test_profile.smdp_address);
+            ->AddIccidSmdpPair(test_profile.iccid,
+                               test_profile.activation_code_value);
+      }
+    }
+
+    // Wait for Shill device and service change notifications to propagate.
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void SetUpDeviceProfiles(const EuiccTestData& data) {
+    DCHECK(ash::features::IsSmdsSupportEnabled());
+
+    // Create |data.euicc_count| fake EUICCs.
+    ash::HermesManagerClient::Get()->GetTestInterface()->ClearEuiccs();
+    for (int euicc_id = 0; euicc_id < data.euicc_count; euicc_id++) {
+      SetupEuicc(euicc_id);
+    }
+
+    for (const auto& test_profile : data.profiles) {
+      ash::HermesEuiccClient::Get()->GetTestInterface()->AddCarrierProfile(
+          dbus::ObjectPath(test_profile.profile_path),
+          dbus::ObjectPath(GetEuiccPath(/*euicc_id=*/0)), test_profile.iccid,
+          test_profile.guid, "nickname", "service_provider",
+          test_profile.activation_code_value, test_profile.service_path,
+          test_profile.state, hermes::profile::ProfileClass::kOperational,
+          ash::HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
+              kAddProfileWithService);
+
+      if (test_profile.managed) {
+        // We set the prefs directly so that we can force situations that
+        // otherwise would not be acceptable by the API of
+        // ManagedCellularPrefHandler, e.g. an empty name or activation code
+        // value, that we want to protect against uploading.
+        base::Value::Dict esim_metadata;
+        esim_metadata.Set(::onc::network_config::kName,
+                          test_profile.network_name);
+        esim_metadata.Set(
+            test_profile.activation_code_type ==
+                    ash::policy_util::SmdxActivationCode::Type::SMDP
+                ? ::onc::cellular::kSMDPAddress
+                : ::onc::cellular::kSMDSAddress,
+            test_profile.activation_code_value);
+
+        base::Value::Dict existing_prefs =
+            local_state_.GetDict(ash::prefs::kManagedCellularESimMetadata)
+                .Clone();
+        existing_prefs.Set(test_profile.iccid, std::move(esim_metadata));
+        local_state_.Set(ash::prefs::kManagedCellularESimMetadata,
+                         base::Value(std::move(existing_prefs)));
       }
     }
 
@@ -244,13 +423,29 @@ class EuiccStatusUploaderTest : public testing::Test {
                          *cloud_policy_client_.GetLastRequest()));
   }
 
+  void SetLastUploadedValueLegacy(const std::string& last_value) {
+    DCHECK(!ash::features::IsSmdsSupportEnabled());
+    local_state_.Set(EuiccStatusUploader::kLastUploadedEuiccStatusPrefLegacy,
+                     base::test::ParseJson(last_value));
+  }
+
   void SetLastUploadedValue(const std::string& last_value) {
+    DCHECK(ash::features::IsSmdsSupportEnabled());
     local_state_.Set(EuiccStatusUploader::kLastUploadedEuiccStatusPref,
                      base::test::ParseJson(last_value));
   }
 
+  void ExecuteResetCommandLegacy(EuiccStatusUploader* status_uploader) {
+    SetUpDeviceProfilesLegacy(kEuiccTestData_AfterReset);
+
+    // TODO(crbug.com/1269719): Make FakeHermesEuiccClient trigger OnEuiccReset
+    // directly.
+    static_cast<ash::HermesEuiccClient::Observer*>(status_uploader)
+        ->OnEuiccReset(dbus::ObjectPath());
+  }
+
   void ExecuteResetCommand(EuiccStatusUploader* status_uploader) {
-    SetUpDeviceProfiles(kSetupAfterReset);
+    SetUpDeviceProfiles(kEuiccTestData_AfterReset);
 
     // TODO(crbug.com/1269719): Make FakeHermesEuiccClient trigger OnEuiccReset
     // directly.
@@ -280,10 +475,47 @@ class EuiccStatusUploaderTest : public testing::Test {
   FakeCloudPolicyClient cloud_policy_client_;
   TestingPrefServiceSimple local_state_;
   std::unique_ptr<ash::NetworkHandlerTestHelper> helper_;
+  base::test::ScopedFeatureList feature_list_;
   base::HistogramTester histogram_tester_;
 };
 
-TEST_F(EuiccStatusUploaderTest, EmptySetup) {
+class EuiccStatusUploaderTest_SmdsSupportDisabled
+    : public EuiccStatusUploaderTest {
+ public:
+  EuiccStatusUploaderTest_SmdsSupportDisabled(
+      const EuiccStatusUploaderTest_SmdsSupportDisabled&) = delete;
+  EuiccStatusUploaderTest_SmdsSupportDisabled& operator=(
+      const EuiccStatusUploaderTest_SmdsSupportDisabled&) = delete;
+
+ protected:
+  EuiccStatusUploaderTest_SmdsSupportDisabled()
+      : EuiccStatusUploaderTest(
+            /*enabled_features=*/{},
+            /*disabled_features=*/{ash::features::kSmdsDbusMigration,
+                                   ash::features::kSmdsSupport,
+                                   ash::features::kSmdsSupportEuiccUpload}) {}
+  ~EuiccStatusUploaderTest_SmdsSupportDisabled() override = default;
+};
+
+class EuiccStatusUploaderTest_SmdsSupportEnabled
+    : public EuiccStatusUploaderTest {
+ public:
+  EuiccStatusUploaderTest_SmdsSupportEnabled(
+      const EuiccStatusUploaderTest_SmdsSupportEnabled&) = delete;
+  EuiccStatusUploaderTest_SmdsSupportEnabled& operator=(
+      const EuiccStatusUploaderTest_SmdsSupportEnabled&) = delete;
+
+ protected:
+  EuiccStatusUploaderTest_SmdsSupportEnabled()
+      : EuiccStatusUploaderTest(
+            /*enabled_features=*/{ash::features::kSmdsDbusMigration,
+                                  ash::features::kSmdsSupport,
+                                  ash::features::kSmdsSupportEuiccUpload},
+            /*disabled_features=*/{}) {}
+  ~EuiccStatusUploaderTest_SmdsSupportEnabled() override = default;
+};
+
+TEST_F(EuiccStatusUploaderTest_SmdsSupportDisabled, EmptySetup) {
   auto status_uploader = CreateStatusUploader();
   EXPECT_EQ(GetRequestCount(), 0);
   // No value is uploaded yet.
@@ -297,7 +529,7 @@ TEST_F(EuiccStatusUploaderTest, EmptySetup) {
   CheckHistogram(/*total_count=*/0, /*success_count=*/0, /*failed_count=*/0);
 }
 
-TEST_F(EuiccStatusUploaderTest, InactiveDevice) {
+TEST_F(EuiccStatusUploaderTest_SmdsSupportDisabled, InactiveDevice) {
   SetIsDeviceActive(false);
   auto status_uploader = CreateStatusUploader();
   EXPECT_EQ(GetRequestCount(), 0);
@@ -312,7 +544,7 @@ TEST_F(EuiccStatusUploaderTest, InactiveDevice) {
   CheckHistogram(/*total_count=*/0, /*success_count=*/0, /*failed_count=*/0);
 }
 
-TEST_F(EuiccStatusUploaderTest, ClientNotRegistered) {
+TEST_F(EuiccStatusUploaderTest_SmdsSupportDisabled, ClientNotRegistered) {
   SetupEuicc();
   base::RunLoop().RunUntilIdle();
   SetPolicyClientIsRegistered(/*is_registered=*/false);
@@ -329,7 +561,7 @@ TEST_F(EuiccStatusUploaderTest, ClientNotRegistered) {
   CheckHistogram(/*total_count=*/0, /*success_count=*/0, /*failed_count=*/0);
 }
 
-TEST_F(EuiccStatusUploaderTest, ServerError) {
+TEST_F(EuiccStatusUploaderTest_SmdsSupportDisabled, ServerError) {
   SetupEuicc();
   base::RunLoop().RunUntilIdle();
   auto status_uploader = CreateStatusUploader();
@@ -340,8 +572,8 @@ TEST_F(EuiccStatusUploaderTest, ServerError) {
   CheckHistogram(/*total_count=*/2, /*success_count=*/0, /*failed_count=*/2);
 }
 
-TEST_F(EuiccStatusUploaderTest, WaitForPolicyFetch) {
-  SetUpDeviceProfiles(kSetupOneEsimProfile);
+TEST_F(EuiccStatusUploaderTest_SmdsSupportDisabled, WaitForPolicyFetch) {
+  SetUpDeviceProfilesLegacy(kEuiccTestData_OneProfile);
 
   auto status_uploader = CreateStatusUploader(/*is_policy_fetched=*/false);
   EXPECT_EQ(GetRequestCount(), 0);
@@ -355,13 +587,13 @@ TEST_F(EuiccStatusUploaderTest, WaitForPolicyFetch) {
 
   // Verify that status is uploaded correctly when policy is fetched.
   SetPolicyFetched(status_uploader.get());
-  ValidateUploadedStatus(kEuiccStatusWithOneProfile,
+  ValidateUploadedStatus(kEuiccStatus_OneProfile_Legacy,
                          /*clear_profile_list=*/false);
   CheckHistogram(/*total_count=*/1, /*success_count=*/1, /*failed_count=*/0);
 }
 
-TEST_F(EuiccStatusUploaderTest, Basic) {
-  SetUpDeviceProfiles(kSetupOneEsimProfile);
+TEST_F(EuiccStatusUploaderTest_SmdsSupportDisabled, Basic) {
+  SetUpDeviceProfilesLegacy(kEuiccTestData_OneProfile);
 
   auto status_uploader = CreateStatusUploader();
   // Initial upload request.
@@ -375,13 +607,13 @@ TEST_F(EuiccStatusUploaderTest, Basic) {
   UpdateUploader(status_uploader.get());
   EXPECT_EQ(GetRequestCount(), 2);
   // Verify that last uploaded configuration is stored.
-  ValidateUploadedStatus(kEuiccStatusWithOneProfile,
+  ValidateUploadedStatus(kEuiccStatus_OneProfile_Legacy,
                          /*clear_profile_list=*/false);
   CheckHistogram(/*total_count=*/2, /*success_count=*/1, /*failed_count=*/1);
 }
 
-TEST_F(EuiccStatusUploaderTest, MultipleProfiles) {
-  SetUpDeviceProfiles(kSetupTwoEsimProfiles);
+TEST_F(EuiccStatusUploaderTest_SmdsSupportDisabled, TwoProfiles) {
+  SetUpDeviceProfilesLegacy(kEuiccTestData_TwoProfiles);
 
   auto status_uploader = CreateStatusUploader();
   // Initial upload request.
@@ -396,17 +628,17 @@ TEST_F(EuiccStatusUploaderTest, MultipleProfiles) {
   EXPECT_EQ(GetRequestCount(), 2);
 
   // Verify that last uploaded configuration is stored.
-  ValidateUploadedStatus(kEuiccStatusWithTwoProfiles,
+  ValidateUploadedStatus(kEuiccStatus_TwoProfiles_Legacy,
                          /*clear_profile_list=*/false);
   CheckHistogram(/*total_count=*/2, /*success_count=*/1, /*failed_count=*/1);
 }
 
-TEST_F(EuiccStatusUploaderTest, SameValueAsBefore) {
+TEST_F(EuiccStatusUploaderTest_SmdsSupportDisabled, SameValueAsBefore) {
   // Make server accept requests.
   SetServerSuccessStatus(true);
   // Mark the current state as already uploaded.
-  SetUpDeviceProfiles(kSetupOneEsimProfile);
-  SetLastUploadedValue(kEuiccStatusWithOneProfile);
+  SetUpDeviceProfilesLegacy(kEuiccTestData_OneProfile);
+  SetLastUploadedValueLegacy(kEuiccStatus_OneProfile_Legacy);
 
   auto status_uploader = CreateStatusUploader();
   // No value is uploaded since it has been previously sent.
@@ -414,30 +646,291 @@ TEST_F(EuiccStatusUploaderTest, SameValueAsBefore) {
   CheckHistogram(/*total_count=*/0, /*success_count=*/0, /*failed_count=*/0);
 }
 
-TEST_F(EuiccStatusUploaderTest, NewValue) {
+TEST_F(EuiccStatusUploaderTest_SmdsSupportDisabled, NewValue) {
   // Make server accept requests.
   SetServerSuccessStatus(true);
   // Set up a value different from one that was previously uploaded.
-  SetUpDeviceProfiles(kSetupOneEsimProfile);
-  SetLastUploadedValue(kEmptyEuiccStatus);
+  SetUpDeviceProfilesLegacy(kEuiccTestData_OneProfile);
+  SetLastUploadedValueLegacy(kEuiccStatus_Empty);
 
   auto status_uploader = CreateStatusUploader();
   // Verify that last uploaded configuration is stored.
-  ValidateUploadedStatus(kEuiccStatusWithOneProfile,
+  ValidateUploadedStatus(kEuiccStatus_OneProfile_Legacy,
                          /*clear_profile_list=*/false);
   CheckHistogram(/*total_count=*/1, /*success_count=*/1, /*failed_count=*/0);
 }
 
-TEST_F(EuiccStatusUploaderTest, ResetRequest) {
+TEST_F(EuiccStatusUploaderTest_SmdsSupportDisabled, ResetRequest) {
   // Make server accept requests.
   SetServerSuccessStatus(true);
   // Set up a value different from one that was previously uploaded.
-  SetUpDeviceProfiles(kSetupOneEsimProfile);
-  SetLastUploadedValue(kEmptyEuiccStatus);
+  SetUpDeviceProfilesLegacy(kEuiccTestData_OneProfile);
+  SetLastUploadedValueLegacy(kEuiccStatus_Empty);
 
   auto status_uploader = CreateStatusUploader();
   // Verify that last uploaded configuration is stored.
-  ValidateUploadedStatus(kEuiccStatusWithOneProfile,
+  ValidateUploadedStatus(kEuiccStatus_OneProfile_Legacy,
+                         /*clear_profile_list=*/false);
+
+  // Reset remote command was received and executed.
+  ExecuteResetCommandLegacy(status_uploader.get());
+  // Request has been sent.
+  EXPECT_EQ(GetRequestCount(), 3);
+
+  ValidateUploadedStatus(kEuiccStatus_AfterReset,
+                         /*clear_profile_list=*/true);
+
+  // Send the reset command again.
+  ExecuteResetCommandLegacy(status_uploader.get());
+  // Request will be force-sent again because we've received a reset command..
+  EXPECT_EQ(GetRequestCount(), 4);
+
+  ValidateUploadedStatus(kEuiccStatus_AfterReset,
+                         /*clear_profile_list=*/true);
+}
+
+TEST_F(EuiccStatusUploaderTest_SmdsSupportDisabled,
+       UnexpectedNetworkHandlerShutdown) {
+  SetUpDeviceProfilesLegacy(kEuiccTestData_OneProfile);
+  // NetworkHandler has not been initialized.
+  auto status_uploader = CreateStatusUploader();
+
+  // Initial Request
+  EXPECT_EQ(GetRequestCount(), 1);
+
+  // Requests made normally.
+  UpdateUploader(status_uploader.get());
+  EXPECT_EQ(GetRequestCount(), 2);
+
+  // NetworkHandler::Shutdown() has already been called before
+  // EuiccStatusUploader is deleted
+  ash::NetworkHandler::Shutdown();
+
+  // No requests made as NetworkHandler is not available.
+  UpdateUploader(status_uploader.get());
+  EXPECT_EQ(GetRequestCount(), 2);
+
+  // Need to reinitialize before exiting test.
+  ash::NetworkHandler::Initialize();
+}
+
+TEST_F(EuiccStatusUploaderTest_SmdsSupportEnabled, EmptySetup) {
+  auto status_uploader = CreateStatusUploader();
+  EXPECT_EQ(GetRequestCount(), 0);
+  // No value is uploaded yet.
+  EXPECT_EQ("{}", GetStoredPrefString());
+
+  // Make server accept requests.
+  SetServerSuccessStatus(true);
+  UpdateUploader(status_uploader.get());
+  // Verify that no status is uploaded if there is no EUICC.
+  EXPECT_EQ(GetRequestCount(), 0);
+  CheckHistogram(/*total_count=*/0, /*success_count=*/0, /*failed_count=*/0);
+}
+
+TEST_F(EuiccStatusUploaderTest_SmdsSupportEnabled, InactiveDevice) {
+  SetIsDeviceActive(false);
+  auto status_uploader = CreateStatusUploader();
+  EXPECT_EQ(GetRequestCount(), 0);
+  // No value is uploaded yet.
+  EXPECT_EQ("{}", GetStoredPrefString());
+
+  // Make server accept requests.
+  SetServerSuccessStatus(true);
+  UpdateUploader(status_uploader.get());
+  // Verify that no status is uploaded if the device is inactive.
+  EXPECT_EQ(GetRequestCount(), 0);
+  CheckHistogram(/*total_count=*/0, /*success_count=*/0, /*failed_count=*/0);
+}
+
+TEST_F(EuiccStatusUploaderTest_SmdsSupportEnabled, ClientNotRegistered) {
+  SetupEuicc();
+  base::RunLoop().RunUntilIdle();
+  SetPolicyClientIsRegistered(/*is_registered=*/false);
+
+  auto status_uploader = CreateStatusUploader();
+  EXPECT_EQ(GetRequestCount(), 0);
+  // No value is uploaded yet.
+  EXPECT_EQ("{}", GetStoredPrefString());
+
+  UpdateUploader(status_uploader.get());
+  // Verify that no requests are made if client is not registered.
+  EXPECT_EQ(GetRequestCount(), 0);
+  EXPECT_EQ("{}", GetStoredPrefString());
+  CheckHistogram(/*total_count=*/0, /*success_count=*/0, /*failed_count=*/0);
+}
+
+TEST_F(EuiccStatusUploaderTest_SmdsSupportEnabled, ServerError) {
+  SetupEuicc();
+  base::RunLoop().RunUntilIdle();
+  auto status_uploader = CreateStatusUploader();
+  UpdateUploader(status_uploader.get());
+  EXPECT_EQ(GetRequestCount(), 2);
+  // Nothing is stored when requests fail.
+  EXPECT_EQ("{}", GetStoredPrefString());
+  CheckHistogram(/*total_count=*/2, /*success_count=*/0, /*failed_count=*/2);
+}
+
+TEST_F(EuiccStatusUploaderTest_SmdsSupportEnabled, WaitForPolicyFetch) {
+  SetUpDeviceProfiles(kEuiccTestData_OneProfile);
+
+  auto status_uploader = CreateStatusUploader(/*is_policy_fetched=*/false);
+  EXPECT_EQ(GetRequestCount(), 0);
+  // No value is uploaded yet.
+  EXPECT_EQ("{}", GetStoredPrefString());
+
+  // Verify that no requests are made when policy has not been fetched.
+  SetServerSuccessStatus(true);
+  UpdateUploader(status_uploader.get());
+  EXPECT_EQ(GetRequestCount(), 0);
+
+  // Verify that status is uploaded correctly when policy is fetched.
+  SetPolicyFetched(status_uploader.get());
+  ValidateUploadedStatus(kEuiccStatus_OneProfile,
+                         /*clear_profile_list=*/false);
+  CheckHistogram(/*total_count=*/1, /*success_count=*/1, /*failed_count=*/0);
+}
+
+TEST_F(EuiccStatusUploaderTest_SmdsSupportEnabled, Basic) {
+  SetUpDeviceProfiles(kEuiccTestData_OneProfile);
+
+  auto status_uploader = CreateStatusUploader();
+  // Initial upload request.
+  EXPECT_EQ(GetRequestCount(), 1);
+  // No value is uploaded yet.
+  EXPECT_EQ("{}", GetStoredPrefString());
+  CheckHistogram(/*total_count=*/1, /*success_count=*/0, /*failed_count=*/1);
+
+  // Make server accept requests.
+  SetServerSuccessStatus(true);
+  UpdateUploader(status_uploader.get());
+  EXPECT_EQ(GetRequestCount(), 2);
+  // Verify that last uploaded configuration is stored.
+  ValidateUploadedStatus(kEuiccStatus_OneProfile,
+                         /*clear_profile_list=*/false);
+  CheckHistogram(/*total_count=*/2, /*success_count=*/1, /*failed_count=*/1);
+}
+
+TEST_F(EuiccStatusUploaderTest_SmdsSupportEnabled, BasicWithMissingName) {
+  SetUpDeviceProfiles(kEuiccTestData_OneProfileWithMissingName);
+
+  auto status_uploader = CreateStatusUploader();
+  // Initial upload request.
+  EXPECT_EQ(GetRequestCount(), 1);
+  // No value is uploaded yet.
+  EXPECT_EQ("{}", GetStoredPrefString());
+  CheckHistogram(/*total_count=*/1, /*success_count=*/0, /*failed_count=*/1);
+
+  // Make server accept requests.
+  SetServerSuccessStatus(true);
+  UpdateUploader(status_uploader.get());
+  EXPECT_EQ(GetRequestCount(), 2);
+  // Verify that last uploaded configuration is stored.
+  ValidateUploadedStatus(kEuiccStatus_OneProfileWithMissingName,
+                         /*clear_profile_list=*/false);
+  CheckHistogram(/*total_count=*/2, /*success_count=*/1, /*failed_count=*/1);
+}
+
+TEST_F(EuiccStatusUploaderTest_SmdsSupportEnabled,
+       BasicWithEmptyActivationCode) {
+  SetUpDeviceProfiles(kEuiccTestData_OneProfileWithEmptyActivationCode);
+
+  auto status_uploader = CreateStatusUploader();
+  // Initial upload request.
+  EXPECT_EQ(GetRequestCount(), 1);
+  // No value is uploaded yet.
+  EXPECT_EQ("{}", GetStoredPrefString());
+  CheckHistogram(/*total_count=*/1, /*success_count=*/0, /*failed_count=*/1);
+
+  // Make server accept requests.
+  SetServerSuccessStatus(true);
+  UpdateUploader(status_uploader.get());
+  EXPECT_EQ(GetRequestCount(), 2);
+  // Verify that last uploaded configuration is stored.
+  ValidateUploadedStatus(kEuiccStatus_OneProfileWithEmptyActivationCode,
+                         /*clear_profile_list=*/false);
+  CheckHistogram(/*total_count=*/2, /*success_count=*/1, /*failed_count=*/1);
+}
+
+TEST_F(EuiccStatusUploaderTest_SmdsSupportEnabled, TwoProfiles) {
+  SetUpDeviceProfiles(kEuiccTestData_TwoProfiles);
+
+  auto status_uploader = CreateStatusUploader();
+  // Initial upload request.
+  EXPECT_EQ(GetRequestCount(), 1);
+  // No value is uploaded yet.
+  EXPECT_EQ("{}", GetStoredPrefString());
+  CheckHistogram(/*total_count=*/1, /*success_count=*/0, /*failed_count=*/1);
+
+  // Make server accept requests.
+  SetServerSuccessStatus(true);
+  UpdateUploader(status_uploader.get());
+  EXPECT_EQ(GetRequestCount(), 2);
+
+  // Verify that last uploaded configuration is stored.
+  ValidateUploadedStatus(kEuiccStatus_TwoProfiles,
+                         /*clear_profile_list=*/false);
+  CheckHistogram(/*total_count=*/2, /*success_count=*/1, /*failed_count=*/1);
+}
+
+TEST_F(EuiccStatusUploaderTest_SmdsSupportEnabled, FourProfilesWithSmds) {
+  SetUpDeviceProfiles(kEuiccTestData_FourProfiles);
+
+  auto status_uploader = CreateStatusUploader();
+  // Initial upload request.
+  EXPECT_EQ(GetRequestCount(), 1);
+  // No value is uploaded yet.
+  EXPECT_EQ("{}", GetStoredPrefString());
+  CheckHistogram(/*total_count=*/1, /*success_count=*/0, /*failed_count=*/1);
+
+  // Make server accept requests.
+  SetServerSuccessStatus(true);
+  UpdateUploader(status_uploader.get());
+  EXPECT_EQ(GetRequestCount(), 2);
+
+  // Verify that last uploaded configuration is stored.
+  ValidateUploadedStatus(kEuiccStatus_FourProfiles,
+                         /*clear_profile_list=*/false);
+  CheckHistogram(/*total_count=*/2, /*success_count=*/1, /*failed_count=*/1);
+}
+
+TEST_F(EuiccStatusUploaderTest_SmdsSupportEnabled, SameValueAsBefore) {
+  // Make server accept requests.
+  SetServerSuccessStatus(true);
+  // Mark the current state as already uploaded.
+  SetUpDeviceProfiles(kEuiccTestData_OneProfile);
+  SetLastUploadedValue(kEuiccStatus_OneProfile);
+
+  auto status_uploader = CreateStatusUploader();
+  // No value is uploaded since it has been previously sent.
+  EXPECT_EQ(GetRequestCount(), 0);
+  CheckHistogram(/*total_count=*/0, /*success_count=*/0, /*failed_count=*/0);
+}
+
+TEST_F(EuiccStatusUploaderTest_SmdsSupportEnabled, NewValue) {
+  // Make server accept requests.
+  SetServerSuccessStatus(true);
+  // Set up a value different from one that was previously uploaded.
+  SetUpDeviceProfiles(kEuiccTestData_OneProfile);
+  SetLastUploadedValue(kEuiccStatus_Empty);
+
+  auto status_uploader = CreateStatusUploader();
+  // Verify that last uploaded configuration is stored.
+  ValidateUploadedStatus(kEuiccStatus_OneProfile,
+                         /*clear_profile_list=*/false);
+  CheckHistogram(/*total_count=*/1, /*success_count=*/1, /*failed_count=*/0);
+}
+
+TEST_F(EuiccStatusUploaderTest_SmdsSupportEnabled, ResetRequest) {
+  // Make server accept requests.
+  SetServerSuccessStatus(true);
+  // Set up a value different from one that was previously uploaded.
+  SetUpDeviceProfiles(kEuiccTestData_OneProfile);
+  SetLastUploadedValue(kEuiccStatus_Empty);
+
+  auto status_uploader = CreateStatusUploader();
+  // Verify that last uploaded configuration is stored.
+  ValidateUploadedStatus(kEuiccStatus_OneProfile,
                          /*clear_profile_list=*/false);
 
   // Reset remote command was received and executed.
@@ -445,7 +938,7 @@ TEST_F(EuiccStatusUploaderTest, ResetRequest) {
   // Request has been sent.
   EXPECT_EQ(GetRequestCount(), 3);
 
-  ValidateUploadedStatus(kEuiccStatusAfterReset,
+  ValidateUploadedStatus(kEuiccStatus_AfterReset,
                          /*clear_profile_list=*/true);
 
   // Send the reset command again.
@@ -453,12 +946,13 @@ TEST_F(EuiccStatusUploaderTest, ResetRequest) {
   // Request will be force-sent again because we've received a reset command..
   EXPECT_EQ(GetRequestCount(), 4);
 
-  ValidateUploadedStatus(kEuiccStatusAfterReset,
+  ValidateUploadedStatus(kEuiccStatus_AfterReset,
                          /*clear_profile_list=*/true);
 }
 
-TEST_F(EuiccStatusUploaderTest, UnexpectedNetworkHandlerShutdown) {
-  SetUpDeviceProfiles(kSetupOneEsimProfile);
+TEST_F(EuiccStatusUploaderTest_SmdsSupportEnabled,
+       UnexpectedNetworkHandlerShutdown) {
+  SetUpDeviceProfiles(kEuiccTestData_OneProfile);
   // NetworkHandler has not been initialized.
   auto status_uploader = CreateStatusUploader();
 

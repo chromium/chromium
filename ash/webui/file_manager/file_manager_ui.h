@@ -9,7 +9,6 @@
 
 #include "ash/webui/file_manager/file_manager_ui_delegate.h"
 #include "ash/webui/file_manager/mojom/file_manager.mojom.h"
-#include "ash/webui/file_manager/url_constants.h"
 #include "ash/webui/system_apps/public/system_web_app_ui_config.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -33,10 +32,9 @@ class FileManagerUI;
 class FileManagerUIConfig : public SystemWebAppUIConfig<FileManagerUI> {
  public:
   explicit FileManagerUIConfig(
-      SystemWebAppUIConfig::CreateWebUIControllerFunc create_controller_func)
-      : SystemWebAppUIConfig(ash::file_manager::kChromeUIFileManagerHost,
-                             SystemWebAppType::FILE_MANAGER,
-                             create_controller_func) {}
+      SystemWebAppUIConfig::CreateWebUIControllerFunc create_controller_func);
+
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };
 
 // The WebUI for chrome://file-manager.
@@ -58,8 +56,6 @@ class FileManagerUI : public ui::MojoWebDialogUI,
   void BindInterface(
       mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
           receiver);
-
-  const FileManagerUIDelegate* delegate() { return delegate_.get(); }
 
   // Get the number of open File Manager windows.
   // Should be called on UI thread.

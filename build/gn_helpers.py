@@ -23,10 +23,13 @@ file to the build directory.
 import json
 import os
 import re
+import shlex
+import shutil
 import sys
 
 
-_CHROMIUM_ROOT = os.path.join(os.path.dirname(__file__), os.pardir)
+_CHROMIUM_ROOT = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), os.pardir))
 
 BUILD_VARS_FILENAME = 'build_vars.json'
 IMPORT_RE = re.compile(r'^import\("//(\S+)"\)')
@@ -540,3 +543,34 @@ def ReadBuildVars(output_directory):
   """Parses $output_directory/build_vars.json into a dict."""
   with open(os.path.join(output_directory, BUILD_VARS_FILENAME)) as f:
     return json.load(f)
+
+
+def CreateBuildCommand(output_directory):
+  """Returns [cmd, -C, output_directory], where |cmd| is auto{siso,ninja}."""
+  suffix = '.bat' if sys.platform.startswith('win32') else ''
+  # Prefer the version on PATH, but fallback to known version if PATH doesn't
+  # have one (e.g. on bots).
+  if not shutil.which(f'autoninja{suffix}'):
+    third_party_prefix = os.path.join(_CHROMIUM_ROOT, 'third_party')
+    ninja_prefix = os.path.join(third_party_prefix, 'ninja', '')
+    siso_prefix = os.path.join(third_party_prefix, 'siso', '')
+    # Also - bots configure reclient manually, and so do not use the "auto"
+    # wrappers.
+    ninja_cmd = [f'{ninja_prefix}ninja{suffix}']
+    siso_cmd = [f'{siso_prefix}siso{suffix}', 'ninja']
+  else:
+    ninja_cmd = [f'autoninja{suffix}']
+    siso_cmd = [f'autosiso{suffix}']
+
+  if output_directory and os.path.relpath(output_directory) != '.':
+    ninja_cmd += ['-C', output_directory]
+    siso_cmd += ['-C', output_directory]
+  siso_deps = os.path.exists(os.path.join(output_directory, '.siso_deps'))
+  ninja_deps = os.path.exists(os.path.join(output_directory, '.ninja_deps'))
+  if siso_deps and ninja_deps:
+    raise Exception('Found both .siso_deps and .ninja_deps in '
+                    f'{output_directory}. Not sure which build tool to use. '
+                    'Please delete one, or better, run "gn clean".')
+  if siso_deps:
+    return siso_cmd
+  return ninja_cmd

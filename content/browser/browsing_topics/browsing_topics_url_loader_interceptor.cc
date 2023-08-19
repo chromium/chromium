@@ -46,14 +46,14 @@ void BrowsingTopicsURLLoaderInterceptor::WillFollowRedirect(
 
 void BrowsingTopicsURLLoaderInterceptor::OnReceiveRedirect(
     const net::RedirectInfo& redirect_info,
-    const network::mojom::URLResponseHeadPtr& head) {
+    network::mojom::URLResponseHeadPtr& head) {
   ProcessRedirectOrResponseHeaders(head);
 
   url_ = redirect_info.new_url;
 }
 
 void BrowsingTopicsURLLoaderInterceptor::OnReceiveResponse(
-    const network::mojom::URLResponseHeadPtr& head) {
+    network::mojom::URLResponseHeadPtr& head) {
   ProcessRedirectOrResponseHeaders(head);
 }
 

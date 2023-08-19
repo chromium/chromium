@@ -322,6 +322,49 @@ TEST_F(StrippingTest, Fatal) {
   }
 }
 
+TEST_F(StrippingTest, DFatal) {
+  // We need to load a copy of the needle string into memory (so we can search
+  // for it) without leaving it lying around in plaintext in the executable file
+  // as would happen if we used a literal.  We might (or might not) leave it
+  // lying around later; that's what the tests are for!
+  const std::string needle = absl::Base64Escape("StrippingTest.DFatal");
+  // We don't care if the LOG statement is actually executed, we're just
+  // checking that it's stripped.
+  if (kReallyDie) LOG(DFATAL) << "U3RyaXBwaW5nVGVzdC5ERmF0YWw=";
+
+  std::unique_ptr<FILE, std::function<void(FILE*)>> exe = OpenTestExecutable();
+  ASSERT_THAT(exe, NotNull());
+  // `DFATAL` can be `ERROR` or `FATAL`, and a compile-time optimizer doesn't
+  // know which, because `absl::kLogDebugFatal` is declared `extern` and defined
+  // in another TU.  Link-time optimization might do better.  We have six cases:
+  // |         `AMLL` is-> | `<=ERROR` | `FATAL` | `>FATAL` |
+  // | ------------------- | --------- | ------- | -------- |
+  // | `DFATAL` is `ERROR` |   present |       ? | stripped |
+  // | `DFATAL` is `FATAL` |   present | present | stripped |
+
+  // These constexpr variables are used to suppress unreachable code warnings
+  // in the if-else statements below.
+
+  // "present" in the table above: `DFATAL` exceeds `ABSL_MIN_LOG_LEVEL`, so
+  // `DFATAL` statements should not be stripped (and they should be logged
+  // when executed, but that's a different testsuite).
+  constexpr bool kExpectPresent = absl::kLogDebugFatal >= kAbslMinLogLevel;
+
+  // "stripped" in the table above: even though the compiler may not know
+  // which value `DFATAL` has, it should be able to strip it since both
+  // possible values ought to be stripped.
+  constexpr bool kExpectStripped = kAbslMinLogLevel > absl::LogSeverity::kFatal;
+
+  if (kExpectPresent) {
+    EXPECT_THAT(exe.get(), FileHasSubstr(needle));
+  } else if (kExpectStripped) {
+    EXPECT_THAT(exe.get(), Not(FileHasSubstr(needle)));
+  } else {
+    // "?" in the table above; may or may not be stripped depending on whether
+    // any link-time optimization is done.  Either outcome is ok.
+  }
+}
+
 TEST_F(StrippingTest, Level) {
   const std::string needle = absl::Base64Escape("StrippingTest.Level");
   volatile auto severity = absl::LogSeverity::kWarning;
@@ -342,6 +385,32 @@ TEST_F(StrippingTest, Level) {
     // winds up being.
     EXPECT_THAT(exe.get(), Not(FileHasSubstr(needle)));
 #endif
+  }
+}
+
+TEST_F(StrippingTest, Check) {
+  // Here we also need a variable name with enough entropy that it's unlikely to
+  // appear in the binary by chance.  `volatile` keeps the tautological
+  // comparison (and the rest of the `CHECK`) from being optimized away.
+  const std::string var_needle = absl::Base64Escape("StrippingTestCheckVar");
+  const std::string msg_needle = absl::Base64Escape("StrippingTest.Check");
+  volatile int U3RyaXBwaW5nVGVzdENoZWNrVmFy = 0xCAFE;
+  // We don't care if the CHECK is actually executed, just that stripping works.
+  // Hiding it behind `kReallyDie` works around some overly aggressive
+  // optimizations in older versions of MSVC.
+  if (kReallyDie) {
+    CHECK(U3RyaXBwaW5nVGVzdENoZWNrVmFy != U3RyaXBwaW5nVGVzdENoZWNrVmFy)
+        << "U3RyaXBwaW5nVGVzdC5DaGVjaw==";
+  }
+
+  std::unique_ptr<FILE, std::function<void(FILE*)>> exe = OpenTestExecutable();
+  ASSERT_THAT(exe, NotNull());
+  if (absl::LogSeverity::kFatal >= kAbslMinLogLevel) {
+    EXPECT_THAT(exe.get(), FileHasSubstr(var_needle));
+    EXPECT_THAT(exe.get(), FileHasSubstr(msg_needle));
+  } else {
+    EXPECT_THAT(exe.get(), Not(FileHasSubstr(var_needle)));
+    EXPECT_THAT(exe.get(), Not(FileHasSubstr(msg_needle)));
   }
 }
 

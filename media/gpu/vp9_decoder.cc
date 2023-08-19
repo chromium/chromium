@@ -23,10 +23,10 @@ bool GetSpatialLayerFrameSize(const DecoderBuffer& decoder_buffer,
                               std::vector<uint32_t>& frame_sizes) {
   frame_sizes.clear();
 
-  const uint32_t* cue_data =
-      reinterpret_cast<const uint32_t*>(decoder_buffer.side_data());
-  if (!cue_data)
+  if (!decoder_buffer.has_side_data() ||
+      decoder_buffer.side_data()->spatial_layers.empty()) {
     return true;
+  }
 
   bool enable_vp9_ksvc =
 // On windows, currently only d3d11 supports decoding VP9 kSVC stream, we
@@ -46,13 +46,13 @@ bool GetSpatialLayerFrameSize(const DecoderBuffer& decoder_buffer,
     return false;
   }
 
-  size_t num_of_layers = decoder_buffer.side_data_size() / sizeof(uint32_t);
+  size_t num_of_layers = decoder_buffer.side_data()->spatial_layers.size();
   if (num_of_layers > 3u) {
     DLOG(WARNING) << "The maximum number of spatial layers in VP9 is three";
     return false;
   }
 
-  frame_sizes = std::vector<uint32_t>(cue_data, cue_data + num_of_layers);
+  frame_sizes = decoder_buffer.side_data()->spatial_layers;
   return true;
 }
 
@@ -238,18 +238,13 @@ VP9Decoder::DecodeResult VP9Decoder::Decode() {
       // correct timestamp.
       scoped_refptr<VP9Picture> pic =
           ref_frames_.GetFrame(frame_to_show)->Duplicate();
-      if (pic == nullptr) {
-        DVLOG(1) << "Failed to duplicate the VP9Picture.";
-        SetError();
-        return kDecodeError;
-      }
       pic->set_bitstream_id(stream_id_);
+      pic->frame_hdr = std::move(curr_frame_hdr_);
       if (!accelerator_->OutputPicture(std::move(pic))) {
         SetError();
         return kDecodeError;
       }
 
-      curr_frame_hdr_.reset();
       decrypt_config_.reset();
       continue;
     }

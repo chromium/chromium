@@ -4,24 +4,27 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view.h"
 
+#import "base/feature_list.h"
 #import "base/notreached.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
+#import "components/password_manager/core/common/password_manager_features.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/ntp/set_up_list_item_type.h"
 #import "ios/chrome/browser/shared/ui/elements/crossfade_label.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
+#import "ios/chrome/browser/ui/content_suggestions/set_up_list/constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_icon.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view+private.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view_data.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/dynamic_type_util.h"
+#import "ios/chrome/grit/ios_google_chrome_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -41,15 +44,6 @@ constexpr base::TimeDelta kAnimationSparkleDuration = kAnimationDuration * 2;
 // The delay between the crossfade animation and the start of the "sparkle".
 constexpr base::TimeDelta kAnimationSparkleDelay = kAnimationDuration * 0.5;
 
-// Accessibility IDs used for various UI items.
-constexpr NSString* const kSetUpListItemSignInID = @"kSetUpListItemSignInID";
-constexpr NSString* const kSetUpListItemDefaultBrowserID =
-    @"kSetUpListItemDefaultBrowserID";
-constexpr NSString* const kSetUpListItemAutofillID =
-    @"kSetUpListItemAutofillID";
-constexpr NSString* const kSetUpListItemAllSetID = @"kSetUpListItemAllSetID";
-constexpr NSString* const kSetUpListItemFollowID = @"kSetUpListItemFollowID";
-
 // Returns an NSAttributedString with strikethrough.
 NSAttributedString* Strikethrough(NSString* text) {
   NSDictionary<NSAttributedStringKey, id>* attrs =
@@ -60,6 +54,7 @@ NSAttributedString* Strikethrough(NSString* text) {
 // Holds all the configurable attributes of this view.
 struct ViewConfig {
   BOOL compact_layout;
+  BOOL hero_layout;
   int signin_sync_description;
   int default_browser_description;
   int autofill_description;
@@ -72,6 +67,7 @@ struct ViewConfig {
 
 @implementation SetUpListItemView {
   SetUpListItemIcon* _icon;
+  UIView* _iconContainerView;
   CrossfadeLabel* _title;
   CrossfadeLabel* _description;
   UIStackView* _contentStack;
@@ -84,27 +80,54 @@ struct ViewConfig {
   if (self) {
     _type = data.type;
     _complete = data.complete;
-    if (!data.compactLayout) {
-      // Normal ViewConfig.
-      _config = {
-          NO,
-          IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_DESCRIPTION,
-          IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_DESCRIPTION,
-          IDS_IOS_SET_UP_LIST_AUTOFILL_DESCRIPTION,
-          UIFontTextStyleSubheadline,
-          UIFontTextStyleFootnote,
-          kTextSpacing,
-      };
-    } else {
+    if (data.compactLayout) {
       // ViewConfig for a compact layout.
+      int syncString =
+          base::FeatureList::IsEnabled(
+              syncer::kReplaceSyncPromosWithSignInPromos)
+              ? IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_SHORT_DESCRIPTION_NO_SYNC
+              : IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_SHORT_DESCRIPTION;
       _config = {
           YES,
-          IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_SHORT_DESCRIPTION,
+          NO,
+          syncString,
           IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_SHORT_DESCRIPTION,
           IDS_IOS_SET_UP_LIST_AUTOFILL_SHORT_DESCRIPTION,
           UIFontTextStyleFootnote,
           UIFontTextStyleCaption2,
           kCompactTextSpacing,
+      };
+    } else if (data.heroCellMagicStackLayout) {
+      int syncString =
+          base::FeatureList::IsEnabled(
+              syncer::kReplaceSyncPromosWithSignInPromos)
+              ? IDS_IOS_IDENTITY_DISC_SIGN_IN_PROMO_LABEL
+              : IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_MAGIC_STACK_DESCRIPTION;
+      _config = {
+          NO,
+          YES,
+          syncString,
+          IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_MAGIC_STACK_DESCRIPTION,
+          IDS_IOS_SET_UP_LIST_AUTOFILL_MAGIC_STACK_DESCRIPTION,
+          UIFontTextStyleSubheadline,
+          UIFontTextStyleFootnote,
+          kTextSpacing,
+      };
+    } else {
+      // Normal ViewConfig.
+      int syncString = base::FeatureList::IsEnabled(
+                           syncer::kReplaceSyncPromosWithSignInPromos)
+                           ? IDS_IOS_IDENTITY_DISC_SIGN_IN_PROMO_LABEL
+                           : IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_DESCRIPTION;
+      _config = {
+          NO,
+          NO,
+          syncString,
+          IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_DESCRIPTION,
+          IDS_IOS_SET_UP_LIST_AUTOFILL_DESCRIPTION,
+          UIFontTextStyleSubheadline,
+          UIFontTextStyleFootnote,
+          kTextSpacing,
       };
     }
   }
@@ -124,10 +147,22 @@ struct ViewConfig {
       stringWithFormat:@"%@, %@", [self titleText], [self descriptionText]];
 }
 
+#pragma mark - UITraitEnvironment
+
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  if (previousTraitCollection.preferredContentSizeCategory !=
+      self.traitCollection.preferredContentSizeCategory) {
+    // Force a layout since the size of text components may have changed.
+    [self setNeedsLayout];
+    [self layoutIfNeeded];
+  }
+}
+
 #pragma mark - Public methods
 
 - (void)handleTap:(UITapGestureRecognizer*)sender {
-  if (sender.state == UIGestureRecognizerStateEnded) {
+  if (sender.state == UIGestureRecognizerStateEnded && !self.complete) {
     [self.tapDelegate didTapSetUpListItemView:self];
   }
 }
@@ -146,7 +181,7 @@ struct ViewConfig {
   self.accessibilityTraits += UIAccessibilityTraitNotEnabled;
 
   // Set up the label crossfades.
-  UIColor* newTextColor = [UIColor colorNamed:kTextQuaternaryColor];
+  UIColor* newTextColor = [UIColor colorNamed:kTextSecondaryColor];
   [_title setUpCrossfadeWithTextColor:newTextColor
                        attributedText:Strikethrough(_title.text)];
   [_description setUpCrossfadeWithTextColor:newTextColor
@@ -189,9 +224,28 @@ struct ViewConfig {
     self.accessibilityTraits += UIAccessibilityTraitNotEnabled;
   }
 
+  BOOL putIconInSquareBackground =
+      _config.hero_layout && _type != SetUpListItemType::kAllSet;
   _icon = [[SetUpListItemIcon alloc] initWithType:_type
                                          complete:_complete
-                                    compactLayout:_config.compact_layout];
+                                    compactLayout:_config.compact_layout
+                                         inSquare:putIconInSquareBackground];
+  if (putIconInSquareBackground) {
+    _icon.translatesAutoresizingMaskIntoConstraints = NO;
+    _iconContainerView = [[UIView alloc] init];
+    _iconContainerView.backgroundColor = [UIColor colorNamed:kGrey100Color];
+    _iconContainerView.layer.cornerRadius = 12;
+    _iconContainerView.layer.masksToBounds = NO;
+    _iconContainerView.clipsToBounds = YES;
+    [_iconContainerView addSubview:_icon];
+    AddSameCenterConstraints(_icon, _iconContainerView);
+    [NSLayoutConstraint activateConstraints:@[
+      [_iconContainerView.widthAnchor constraintEqualToConstant:56],
+      [_iconContainerView.widthAnchor
+          constraintEqualToAnchor:_iconContainerView.heightAnchor],
+    ]];
+  }
+
   _title = [self createTitle];
   _description = [self createDescription];
 
@@ -203,8 +257,11 @@ struct ViewConfig {
   textStack.spacing = _config.text_spacing;
 
   // Add a horizontal stack to contain the icon(s) and the text stack.
+  NSArray* arrangedSubviews = putIconInSquareBackground
+                                  ? @[ _iconContainerView, textStack ]
+                                  : @[ _icon, textStack ];
   _contentStack =
-      [[UIStackView alloc] initWithArrangedSubviews:@[ _icon, textStack ]];
+      [[UIStackView alloc] initWithArrangedSubviews:arrangedSubviews];
   _contentStack.translatesAutoresizingMaskIntoConstraints = NO;
   _contentStack.alignment = UIStackViewAlignmentCenter;
   _contentStack.spacing = kPadding;
@@ -225,9 +282,15 @@ struct ViewConfig {
   CrossfadeLabel* label = [[CrossfadeLabel alloc] init];
   label.text = [self titleText];
   label.translatesAutoresizingMaskIntoConstraints = NO;
-  label.font = [UIFont preferredFontForTextStyle:_config.title_font];
+  label.numberOfLines = 0;
+  label.lineBreakMode = NSLineBreakByWordWrapping;
+  label.font =
+      _config.hero_layout
+          ? CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightSemibold)
+          : [UIFont preferredFontForTextStyle:_config.title_font];
+  label.adjustsFontForContentSizeCategory = YES;
   if (_complete) {
-    label.textColor = [UIColor colorNamed:kTextQuaternaryColor];
+    label.textColor = [UIColor colorNamed:kTextSecondaryColor];
     label.attributedText = Strikethrough(label.text);
   } else {
     label.textColor = [UIColor colorNamed:kTextPrimaryColor];
@@ -240,15 +303,13 @@ struct ViewConfig {
   CrossfadeLabel* label = [[CrossfadeLabel alloc] init];
   label = [[CrossfadeLabel alloc] init];
   label.text = [self descriptionText];
-  label.numberOfLines = 0;
-  label.lineBreakMode = NSLineBreakByWordWrapping;
-  label.translatesAutoresizingMaskIntoConstraints = NO;
+  label.numberOfLines = IsMagicStackEnabled() ? 2 : 4;
+  label.lineBreakMode = NSLineBreakByTruncatingTail;
   label.font = [UIFont preferredFontForTextStyle:_config.description_font];
+  label.adjustsFontForContentSizeCategory = YES;
+  label.textColor = [UIColor colorNamed:kTextSecondaryColor];
   if (_complete) {
-    label.textColor = [UIColor colorNamed:kTextQuaternaryColor];
     label.attributedText = Strikethrough(label.text);
-  } else {
-    label.textColor = [UIColor colorNamed:kTextSecondaryColor];
   }
   return label;
 }
@@ -257,7 +318,12 @@ struct ViewConfig {
 - (NSString*)titleText {
   switch (_type) {
     case SetUpListItemType::kSignInSync:
-      return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_TITLE);
+      return base::FeatureList::IsEnabled(
+                 syncer::kReplaceSyncPromosWithSignInPromos)
+                 ? l10n_util::GetNSString(
+                       IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_TITLE)
+                 : l10n_util::GetNSString(
+                       IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_TITLE);
     case SetUpListItemType::kDefaultBrowser:
       return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_TITLE);
     case SetUpListItemType::kAutofill:
@@ -290,15 +356,15 @@ struct ViewConfig {
 - (NSString*)itemAccessibilityIdentifier {
   switch (_type) {
     case SetUpListItemType::kSignInSync:
-      return kSetUpListItemSignInID;
+      return set_up_list::kSignInItemID;
     case SetUpListItemType::kDefaultBrowser:
-      return kSetUpListItemDefaultBrowserID;
+      return set_up_list::kDefaultBrowserItemID;
     case SetUpListItemType::kAutofill:
-      return kSetUpListItemAutofillID;
+      return set_up_list::kAutofillItemID;
     case SetUpListItemType::kAllSet:
-      return kSetUpListItemAllSetID;
+      return set_up_list::kAllSetItemID;
     case SetUpListItemType::kFollow:
-      return kSetUpListItemFollowID;
+      return set_up_list::kFollowItemID;
   }
 }
 
@@ -307,6 +373,9 @@ struct ViewConfig {
 // Sets the various subview properties that should be animated.
 - (void)setAnimations {
   [_icon markComplete];
+  if (_iconContainerView) {
+    _iconContainerView.backgroundColor = [UIColor clearColor];
+  }
   [_title crossfade];
   [_description crossfade];
 }

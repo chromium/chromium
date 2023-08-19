@@ -1,0 +1,11 @@
+Verifies that receiving a set-cookie header with a disallowed character sends a Network.ResponseReceivedExtraInfo event with the blocked cookie.
+
+Disallowed character blocked set-cookies:[
+    [0] : {
+        blockedReasons : [
+            [0] : DisallowedCharacter
+        ]
+        cookieLine : name=val	ue
+    }
+]
+

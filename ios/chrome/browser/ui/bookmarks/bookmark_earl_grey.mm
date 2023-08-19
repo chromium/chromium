@@ -7,13 +7,10 @@
 #import <Foundation/Foundation.h>
 
 #import "base/strings/sys_string_conversions.h"
+#import "components/bookmarks/common/storage_type.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey_app_interface.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/http_server/http_server.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 const GURL GetFirstUrl() {
   return web::test::HttpServer::MakeUrl(
@@ -33,11 +30,15 @@ const GURL GetFrenchUrl() {
 
 #pragma mark - Setup and Teardown
 
+- (void)clearBookmarks {
+  EG_TEST_HELPER_ASSERT_NO_ERROR([BookmarkEarlGreyAppInterface clearBookmarks]);
+}
+
 - (void)clearBookmarksPositionCache {
   [BookmarkEarlGreyAppInterface clearBookmarksPositionCache];
 }
 
-- (void)setupStandardBookmarks {
+- (void)setupStandardBookmarksInStorage:(bookmarks::StorageType)storageType {
   const GURL fourthURL = web::test::HttpServer::MakeUrl(
       "http://ios/testing/data/http_server_files/chromium_logo_page.html");
 
@@ -49,66 +50,88 @@ const GURL GetFrenchUrl() {
       setupStandardBookmarksUsingFirstURL:spec1
                                 secondURL:spec2
                                  thirdURL:spec3
-                                fourthURL:spec4]);
+                                fourthURL:spec4
+                                inStorage:storageType]);
 }
 
-- (void)setupBookmarksWhichExceedsScreenHeight {
+- (void)setupBookmarksWhichExceedsScreenHeightInStorage:
+    (bookmarks::StorageType)storageType {
   EG_TEST_HELPER_ASSERT_NO_ERROR([BookmarkEarlGreyAppInterface
-      setupBookmarksWhichExceedsScreenHeightUsingURL:@"http://google.com"]);
+      setupBookmarksWhichExceedsScreenHeightUsingURL:@"http://google.com"
+                                           inStorage:storageType]);
 }
 
-- (void)waitForBookmarkModelLoaded {
-  EG_TEST_HELPER_ASSERT_TRUE(
-      [BookmarkEarlGreyAppInterface waitForBookmarkModelLoaded],
-      @"Bookmark model was not loaded");
+- (void)waitForBookmarkModelsLoaded {
+  EG_TEST_HELPER_ASSERT_NO_ERROR(
+      [BookmarkEarlGreyAppInterface waitForBookmarkModelsLoaded]);
 }
 
 #pragma mark - Common Helpers
 
 - (void)verifyBookmarksWithTitle:(NSString*)title
-                   expectedCount:(NSUInteger)expectedCount {
+                   expectedCount:(NSUInteger)expectedCount
+                       inStorage:(bookmarks::StorageType)storageType {
   EG_TEST_HELPER_ASSERT_NO_ERROR([BookmarkEarlGreyAppInterface
       verifyBookmarksWithTitle:title
-                 expectedCount:expectedCount]);
+                 expectedCount:expectedCount
+                     inStorage:storageType]);
 }
 
-- (void)verifyChildCount:(int)count inFolderWithName:(NSString*)name {
+- (void)verifyChildCount:(int)count
+        inFolderWithName:(NSString*)name
+               inStorage:(bookmarks::StorageType)storageType {
   EG_TEST_HELPER_ASSERT_NO_ERROR([BookmarkEarlGreyAppInterface
       verifyChildCount:count
-      inFolderWithName:name]);
+      inFolderWithName:name
+             inStorage:storageType]);
 }
 
-- (void)addBookmarkWithTitle:(NSString*)title URL:(NSString*)url {
-  EG_TEST_HELPER_ASSERT_NO_ERROR(
-      [BookmarkEarlGreyAppInterface addBookmarkWithTitle:title URL:url]);
+- (void)addBookmarkWithTitle:(NSString*)title
+                         URL:(NSString*)url
+                   inStorage:(bookmarks::StorageType)storageType {
+  EG_TEST_HELPER_ASSERT_NO_ERROR([BookmarkEarlGreyAppInterface
+      addBookmarkWithTitle:title
+                       URL:url
+                 inStorage:storageType]);
 }
 
-- (void)removeBookmarkWithTitle:(NSString*)title {
-  EG_TEST_HELPER_ASSERT_NO_ERROR(
-      [BookmarkEarlGreyAppInterface removeBookmarkWithTitle:title]);
+- (void)removeBookmarkWithTitle:(NSString*)title
+                      inStorage:(bookmarks::StorageType)storageType {
+  EG_TEST_HELPER_ASSERT_NO_ERROR([BookmarkEarlGreyAppInterface
+      removeBookmarkWithTitle:title
+                    inStorage:storageType]);
 }
 
 - (void)moveBookmarkWithTitle:(NSString*)bookmarkTitle
-            toFolderWithTitle:(NSString*)newFolder {
+            toFolderWithTitle:(NSString*)newFolder
+                    inStorage:(bookmarks::StorageType)storageType {
   EG_TEST_HELPER_ASSERT_NO_ERROR([BookmarkEarlGreyAppInterface
       moveBookmarkWithTitle:bookmarkTitle
-          toFolderWithTitle:newFolder]);
+          toFolderWithTitle:newFolder
+                  inStorage:storageType]);
 }
 
-- (void)verifyExistenceOfBookmarkWithURL:(NSString*)URL name:(NSString*)name {
+- (void)verifyExistenceOfBookmarkWithURL:(NSString*)URL
+                                    name:(NSString*)name
+                               inStorage:(bookmarks::StorageType)storageType {
   EG_TEST_HELPER_ASSERT_NO_ERROR([BookmarkEarlGreyAppInterface
       verifyExistenceOfBookmarkWithURL:URL
-                                  name:name]);
+                                  name:name
+                             inStorage:storageType]);
 }
 
-- (void)verifyAbsenceOfBookmarkWithURL:(NSString*)URL {
-  EG_TEST_HELPER_ASSERT_NO_ERROR(
-      [BookmarkEarlGreyAppInterface verifyAbsenceOfBookmarkWithURL:URL]);
+- (void)verifyAbsenceOfBookmarkWithURL:(NSString*)URL
+                             inStorage:(bookmarks::StorageType)storageType {
+  EG_TEST_HELPER_ASSERT_NO_ERROR([BookmarkEarlGreyAppInterface
+      verifyAbsenceOfBookmarkWithURL:URL
+                           inStorage:storageType]);
 }
 
-- (void)verifyExistenceOfFolderWithTitle:(NSString*)title {
-  EG_TEST_HELPER_ASSERT_NO_ERROR(
-      [BookmarkEarlGreyAppInterface verifyExistenceOfFolderWithTitle:title]);
+- (void)verifyExistenceOfFolderWithTitle:(NSString*)title
+                               inStorage:(bookmarks::StorageType)storageType {
+  EG_TEST_HELPER_ASSERT_NO_ERROR([BookmarkEarlGreyAppInterface
+      verifyExistenceOfFolderWithTitle:title
+                             inStorage:storageType]);
 }
 
 #pragma mark - Promo

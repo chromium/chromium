@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "media/base/test_data_util.h"
 #include "media/video/h266_parser.h"
+#include "media/video/h266_poc.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -47,6 +48,7 @@ class H266ParserTest : public ::testing::Test {
     }
   }
   H266Parser parser_;
+  H266POC poc_;
   std::unique_ptr<base::MemoryMappedFile> stream_;
 };
 
@@ -1730,6 +1732,533 @@ TEST_F(H266ParserTest, ParsePUWithMultipleSubpicturesAndSlicesShouldSucceed) {
       EXPECT_TRUE(shdr.sh_dep_quant_used_flag);
     }
   }
+}
+
+// Verify POC calculation for stream without ph_poc_msb_cycle_value set,
+// for stream without multi-slice encoded.
+TEST_F(H266ParserTest, FramesWithoutMsbCycleShouldReturnCorrectPOC) {
+  LoadParserFile("bear_180p.vvc");
+  H266NALU target_nalu;
+  int sps_id;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kSPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParseSPS(target_nalu, &sps_id));
+  const H266SPS* sps = parser_.GetSPS(sps_id);
+  EXPECT_TRUE(!!sps);
+
+  int pps_id;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kPPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParsePPS(target_nalu, &pps_id));
+  const H266PPS* pps = parser_.GetPPS(pps_id);
+  EXPECT_TRUE(!!pps);
+
+  const H266VPS* vps = parser_.GetVPS(0);
+  EXPECT_TRUE(!!vps);
+
+  int aps_id;
+  H266APS::ParamType aps_type;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kPrefixAPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParseAPS(target_nalu, &aps_id, &aps_type));
+  const H266APS* alf_aps = parser_.GetAPS(aps_type, aps_id);
+  EXPECT_TRUE(!!alf_aps);
+
+  H266SliceHeader shdr;
+  int expected_poc_list[29] = {16, 8,  4,  2,  1,  3,  6,  5,  7,  12,
+                               10, 9,  11, 14, 13, 15, 24, 20, 18, 17,
+                               19, 22, 21, 23, 28, 26, 25, 27, 29};
+
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kIDRNoLeadingPicture));
+  EXPECT_EQ(H266Parser::kOk,
+            parser_.ParseSliceHeader(target_nalu, true, nullptr, &shdr));
+  EXPECT_EQ(poc_.ComputePicOrderCnt(sps, pps, vps, &shdr.picture_header, shdr),
+            0);
+
+  for (int i = 0; i < 29; i++) {
+    EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kSTSA));
+    EXPECT_EQ(H266Parser::kOk,
+              parser_.ParseSliceHeader(target_nalu, true, nullptr, &shdr));
+    EXPECT_EQ(
+        poc_.ComputePicOrderCnt(sps, pps, vps, &shdr.picture_header, shdr),
+        expected_poc_list[i]);
+  }
+}
+
+// Verify POC calculation for stream that has IDR frames in the middle of
+// it.
+TEST_F(H266ParserTest, FramesWithMultipleIDRsShouldReturnCorrectPOC) {
+  LoadParserFile("bbb_poc_gop8.vvc");
+  H266NALU target_nalu;
+  int sps_id;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kSPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParseSPS(target_nalu, &sps_id));
+  const H266SPS* sps = parser_.GetSPS(sps_id);
+  EXPECT_TRUE(!!sps);
+
+  int pps_id;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kPPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParsePPS(target_nalu, &pps_id));
+  const H266PPS* pps = parser_.GetPPS(pps_id);
+  EXPECT_TRUE(!!pps);
+
+  const H266VPS* vps = parser_.GetVPS(0);
+  EXPECT_TRUE(!!vps);
+
+  H266SliceHeader shdr;
+  // Verify POC of first IDR_N_LP frame.
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kIDRNoLeadingPicture));
+  EXPECT_EQ(H266Parser::kOk,
+            parser_.ParseSliceHeader(target_nalu, true, nullptr, &shdr));
+  EXPECT_EQ(poc_.ComputePicOrderCnt(sps, pps, vps, &shdr.picture_header, shdr),
+            0);
+
+  // Verify POC of TRAIL_NUT frames #1 - #7
+  for (int i = 1; i < 8; i++) {
+    EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kTrail));
+    EXPECT_EQ(H266Parser::kOk,
+              parser_.ParseSliceHeader(target_nalu, true, nullptr, &shdr));
+    EXPECT_EQ(
+        poc_.ComputePicOrderCnt(sps, pps, vps, &shdr.picture_header, shdr), i);
+  }
+
+  // Verify POC of second IDR_N_LP frame.
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kIDRNoLeadingPicture));
+  EXPECT_EQ(H266Parser::kOk,
+            parser_.ParseSliceHeader(target_nalu, true, nullptr, &shdr));
+  EXPECT_EQ(poc_.ComputePicOrderCnt(sps, pps, vps, &shdr.picture_header, shdr),
+            8);
+
+  // Verify POC of remaining TRAIL frames.
+  for (int i = 9; i < 12; i++) {
+    EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kTrail));
+    EXPECT_EQ(H266Parser::kOk,
+              parser_.ParseSliceHeader(target_nalu, true, nullptr, &shdr));
+    EXPECT_EQ(
+        poc_.ComputePicOrderCnt(sps, pps, vps, &shdr.picture_header, shdr), i);
+  }
+}
+
+// Verify POC calculation for stream that is encoded with POC LSB limited
+// to 16.
+TEST_F(H266ParserTest, FramesWithMaximumPOCLsbSetShouldReturnCorrectPOC) {
+  LoadParserFile("bbb_poc_msb.vvc");
+  H266NALU target_nalu;
+  int sps_id;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kSPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParseSPS(target_nalu, &sps_id));
+  const H266SPS* sps = parser_.GetSPS(sps_id);
+  EXPECT_TRUE(!!sps);
+
+  int pps_id;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kPPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParsePPS(target_nalu, &pps_id));
+  const H266PPS* pps = parser_.GetPPS(pps_id);
+  EXPECT_TRUE(!!pps);
+
+  const H266VPS* vps = parser_.GetVPS(0);
+  EXPECT_TRUE(!!vps);
+
+  H266SliceHeader shdr;
+  // Verify POC of first IDR_N_LP frame.
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kIDRNoLeadingPicture));
+  EXPECT_EQ(H266Parser::kOk,
+            parser_.ParseSliceHeader(target_nalu, true, nullptr, &shdr));
+  EXPECT_EQ(poc_.ComputePicOrderCnt(sps, pps, vps, &shdr.picture_header, shdr),
+            0);
+
+  // Verify POC of TRAIL_NUT frames #1 - #7
+  for (int i = 1; i < 8; i++) {
+    EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kTrail));
+    EXPECT_EQ(H266Parser::kOk,
+              parser_.ParseSliceHeader(target_nalu, true, nullptr, &shdr));
+    EXPECT_EQ(
+        poc_.ComputePicOrderCnt(sps, pps, vps, &shdr.picture_header, shdr), i);
+  }
+
+  // Skip the second group of SPS/PPS, verify POC of second IDR_N_LP frame,
+  // since repeated SPS/PPS is enabled.
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kIDRNoLeadingPicture));
+  EXPECT_EQ(H266Parser::kOk,
+            parser_.ParseSliceHeader(target_nalu, true, nullptr, &shdr));
+  EXPECT_EQ(poc_.ComputePicOrderCnt(sps, pps, vps, &shdr.picture_header, shdr),
+            8);
+
+  // Verify POC of remaining TRAIL frames till before next SPS/PPS.
+  for (int i = 9; i < 16; i++) {
+    EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kTrail));
+    EXPECT_EQ(H266Parser::kOk,
+              parser_.ParseSliceHeader(target_nalu, true, nullptr, &shdr));
+    EXPECT_EQ(
+        poc_.ComputePicOrderCnt(sps, pps, vps, &shdr.picture_header, shdr), i);
+  }
+
+  // Refresh current active SPS/PPS, though not necessary.
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kSPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParseSPS(target_nalu, &sps_id));
+  const H266SPS* sps2 = parser_.GetSPS(sps_id);
+  EXPECT_TRUE(!!sps2);
+
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kPPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParsePPS(target_nalu, &pps_id));
+  const H266PPS* pps2 = parser_.GetPPS(pps_id);
+  EXPECT_TRUE(!!pps2);
+
+  const H266VPS* vps2 = parser_.GetVPS(0);
+  EXPECT_TRUE(!!vps2);
+
+  // For frame #16 and #17, the POC is reset due to LSB is configured to not
+  // exceed 16.
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kIDRNoLeadingPicture));
+  EXPECT_EQ(H266Parser::kOk,
+            parser_.ParseSliceHeader(target_nalu, true, nullptr, &shdr));
+  EXPECT_EQ(
+      poc_.ComputePicOrderCnt(sps2, pps2, vps2, &shdr.picture_header, shdr), 0);
+
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kTrail));
+  EXPECT_EQ(H266Parser::kOk,
+            parser_.ParseSliceHeader(target_nalu, true, nullptr, &shdr));
+  EXPECT_EQ(
+      poc_.ComputePicOrderCnt(sps2, pps2, vps2, &shdr.picture_header, shdr), 1);
+}
+
+// Verify reference picture list construction for frames with only STRP
+TEST_F(H266ParserTest, RefPictListsForFrameWithSTRPShouldSucceed) {
+  LoadParserFile("bbb_rpl_in_slice.vvc");
+  H266NALU target_nalu;
+  int sps_id;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kSPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParseSPS(target_nalu, &sps_id));
+  const H266SPS* sps = parser_.GetSPS(sps_id);
+  EXPECT_TRUE(!!sps);
+  int pps_id;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kPPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParsePPS(target_nalu, &pps_id));
+  const H266PPS* pps = parser_.GetPPS(pps_id);
+  EXPECT_TRUE(!!pps);
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kPrefixAPS));
+  const H266VPS* vps = parser_.GetVPS(0);
+  EXPECT_TRUE(!!vps);
+
+  int aps_id;
+  H266APS::ParamType aps_type;
+  EXPECT_EQ(H266Parser::kOk, parser_.ParseAPS(target_nalu, &aps_id, &aps_type));
+  const H266APS* lmcs_aps = parser_.GetAPS(aps_type, aps_id);
+  EXPECT_TRUE(!!lmcs_aps);
+
+  H266SliceHeader shdr;
+  // Verify POC/ref picture lists of first IDR_N_LP frame.
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kIDRNoLeadingPicture));
+  EXPECT_EQ(H266Parser::kOk,
+            parser_.ParseSliceHeader(target_nalu, true, nullptr, &shdr));
+  EXPECT_EQ(poc_.ComputePicOrderCnt(sps, pps, vps, &shdr.picture_header, shdr),
+            0);
+
+  std::vector<H266RefEntry> ref_list0;
+  std::vector<H266RefEntry> ref_list1;
+  poc_.ComputeRefPicPocList(sps, pps, vps, &shdr.picture_header, shdr, 0,
+                            ref_list0, ref_list1);
+  EXPECT_EQ(ref_list0.size(), 0u);
+  EXPECT_EQ(ref_list1.size(), 0u);
+
+  // Verify next STSA frame.
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kSTSA));
+  EXPECT_EQ(H266Parser::kOk,
+            parser_.ParseSliceHeader(target_nalu, false, nullptr, &shdr));
+  EXPECT_EQ(poc_.ComputePicOrderCnt(sps, pps, vps, &shdr.picture_header, shdr),
+            4);
+  poc_.ComputeRefPicPocList(sps, pps, vps, &shdr.picture_header, shdr, 4,
+                            ref_list0, ref_list1);
+  EXPECT_EQ(ref_list0.size(), 1u);
+  EXPECT_EQ(ref_list1.size(), 1u);
+  EXPECT_EQ(ref_list0[0].entry_type, 0);
+  EXPECT_EQ(ref_list0[0].pic_order_cnt, 0);
+  EXPECT_EQ(ref_list0[0].nuh_layer_id, 0);
+  EXPECT_EQ(ref_list1[0].entry_type, 0);
+  EXPECT_EQ(ref_list1[0].pic_order_cnt, 0);
+  EXPECT_EQ(ref_list1[0].nuh_layer_id, 0);
+
+  // Verify next STSA frame.
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kSTSA));
+  EXPECT_EQ(H266Parser::kOk,
+            parser_.ParseSliceHeader(target_nalu, false, nullptr, &shdr));
+  EXPECT_EQ(poc_.ComputePicOrderCnt(sps, pps, vps, &shdr.picture_header, shdr),
+            2);
+  poc_.ComputeRefPicPocList(sps, pps, vps, &shdr.picture_header, shdr, 2,
+                            ref_list0, ref_list1);
+  EXPECT_EQ(ref_list0.size(), 2u);
+  EXPECT_EQ(ref_list1.size(), 2u);
+  EXPECT_EQ(ref_list0[0].entry_type, 0);
+  EXPECT_EQ(ref_list0[0].pic_order_cnt, 0);
+  EXPECT_EQ(ref_list0[0].nuh_layer_id, 0);
+  EXPECT_EQ(ref_list0[1].entry_type, 0);
+  EXPECT_EQ(ref_list0[1].pic_order_cnt, 4);
+  EXPECT_EQ(ref_list0[1].nuh_layer_id, 0);
+  EXPECT_EQ(ref_list1[0].entry_type, 0);
+  EXPECT_EQ(ref_list1[0].pic_order_cnt, 4);
+  EXPECT_EQ(ref_list1[0].nuh_layer_id, 0);
+  EXPECT_EQ(ref_list1[1].entry_type, 0);
+  EXPECT_EQ(ref_list1[1].pic_order_cnt, 0);
+  EXPECT_EQ(ref_list1[1].nuh_layer_id, 0);
+
+  // Verify the 3rd STSA frame.
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kSTSA));
+  EXPECT_EQ(H266Parser::kOk,
+            parser_.ParseSliceHeader(target_nalu, false, nullptr, &shdr));
+  EXPECT_EQ(poc_.ComputePicOrderCnt(sps, pps, vps, &shdr.picture_header, shdr),
+            1);
+  poc_.ComputeRefPicPocList(sps, pps, vps, &shdr.picture_header, shdr, 1,
+                            ref_list0, ref_list1);
+  EXPECT_EQ(ref_list0.size(), 2u);
+  EXPECT_EQ(ref_list1.size(), 2u);
+  EXPECT_EQ(ref_list0[0].entry_type, 0);
+  EXPECT_EQ(ref_list0[0].pic_order_cnt, 0);
+  EXPECT_EQ(ref_list0[0].nuh_layer_id, 0);
+  EXPECT_EQ(ref_list0[1].entry_type, 0);
+  EXPECT_EQ(ref_list0[1].pic_order_cnt, 2);
+  EXPECT_EQ(ref_list0[1].nuh_layer_id, 0);
+  EXPECT_EQ(ref_list1[0].entry_type, 0);
+  EXPECT_EQ(ref_list1[0].pic_order_cnt, 2);
+  EXPECT_EQ(ref_list1[0].nuh_layer_id, 0);
+  EXPECT_EQ(ref_list1[1].entry_type, 0);
+  EXPECT_EQ(ref_list1[1].pic_order_cnt, 4);
+  EXPECT_EQ(ref_list1[1].nuh_layer_id, 0);
+
+  // Verify the 4th STSA frame.
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kSTSA));
+  EXPECT_EQ(H266Parser::kOk,
+            parser_.ParseSliceHeader(target_nalu, false, nullptr, &shdr));
+  EXPECT_EQ(poc_.ComputePicOrderCnt(sps, pps, vps, &shdr.picture_header, shdr),
+            3);
+  poc_.ComputeRefPicPocList(sps, pps, vps, &shdr.picture_header, shdr, 3,
+                            ref_list0, ref_list1);
+  EXPECT_EQ(ref_list0.size(), 2u);
+  EXPECT_EQ(ref_list1.size(), 2u);
+  EXPECT_EQ(ref_list0[0].entry_type, 0);
+  EXPECT_EQ(ref_list0[0].pic_order_cnt, 2);
+  EXPECT_EQ(ref_list0[0].nuh_layer_id, 0);
+  EXPECT_EQ(ref_list0[1].entry_type, 0);
+  EXPECT_EQ(ref_list0[1].pic_order_cnt, 0);
+  EXPECT_EQ(ref_list0[1].nuh_layer_id, 0);
+  EXPECT_EQ(ref_list1[0].entry_type, 0);
+  EXPECT_EQ(ref_list1[0].pic_order_cnt, 4);
+  EXPECT_EQ(ref_list1[0].nuh_layer_id, 0);
+  EXPECT_EQ(ref_list1[1].entry_type, 0);
+  EXPECT_EQ(ref_list1[1].pic_order_cnt, 2);
+  EXPECT_EQ(ref_list1[1].nuh_layer_id, 0);
+}
+
+// Verify reference picture list construction for frames with LTRP
+TEST_F(H266ParserTest, RefPictListsForFrameWithLTRPShouldSucceed) {
+  LoadParserFile("vvc_frames_with_ltr.vvc");
+  H266NALU target_nalu;
+  int sps_id;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kSPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParseSPS(target_nalu, &sps_id));
+  const H266SPS* sps = parser_.GetSPS(sps_id);
+  EXPECT_TRUE(!!sps);
+  int pps_id;
+  // There are 64 PPSes after SPS in this stream.
+  for (int i = 0; i < 64; i++) {
+    EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kPPS));
+    EXPECT_EQ(H266Parser::kOk, parser_.ParsePPS(target_nalu, &pps_id));
+  }
+
+  for (int i = 0; i < 2; i++) {
+    int aps_id;
+    H266APS::ParamType aps_type;
+    EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kPrefixAPS));
+    EXPECT_EQ(H266Parser::kOk,
+              parser_.ParseAPS(target_nalu, &aps_id, &aps_type));
+  }
+
+  // Since all PUs will have a PH in this stream as it is multi-slice encoded,
+  // we skip directly to the 7th PU.
+  H266PictureHeader ph;
+  for (int i = 0; i < 8; i++) {
+    EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kPH));
+  }
+  EXPECT_EQ(H266Parser::kOk, parser_.ParsePHNut(target_nalu, &ph));
+
+  const H266VPS* vps = parser_.GetVPS(0);
+  EXPECT_TRUE(!!vps);
+
+  const H266PPS* pps = parser_.GetPPS(33);
+  EXPECT_TRUE(!!pps);
+
+  H266SliceHeader shdr;
+  // Verify POC/ref picture lists of the 0-based 7th PU's first slice.
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kTrail));
+  EXPECT_EQ(H266Parser::kOk,
+            parser_.ParseSliceHeader(target_nalu, false, &ph, &shdr));
+  EXPECT_EQ(poc_.ComputePicOrderCnt(sps, pps, vps, &shdr.picture_header, shdr),
+            6);
+
+  std::vector<H266RefEntry> ref_list0;
+  std::vector<H266RefEntry> ref_list1;
+  poc_.ComputeRefPicPocList(sps, pps, vps, &shdr.picture_header, shdr, 6,
+                            ref_list0, ref_list1);
+  EXPECT_EQ(ref_list0.size(), 4u);
+  EXPECT_EQ(ref_list1.size(), 6u);
+
+  int expected_list0_pocs[4] = {0, 2, 8, 3},
+      expected_list1_pocs[6] = {8, 2, 0, 0, 0, 0};
+  for (int i = 0; i < 4; i++) {
+    EXPECT_EQ(ref_list0[i].entry_type, i == 3 ? 0 : 1);
+    EXPECT_EQ(ref_list0[i].pic_order_cnt, expected_list0_pocs[i]);
+    EXPECT_EQ(ref_list0[i].nuh_layer_id, 0);
+  }
+  for (int i = 0; i < 6; i++) {
+    EXPECT_EQ(ref_list1[i].entry_type, 1);
+    EXPECT_EQ(ref_list1[i].pic_order_cnt, expected_list1_pocs[i]);
+    EXPECT_EQ(ref_list1[i].nuh_layer_id, 0);
+  }
+}
+
+// Verify reference picture list construction for frames with ILRP
+TEST_F(H266ParserTest, RefPictListsForFrameWithILRPShouldSucceed) {
+  LoadParserFile("basketball_2_layers.vvc");
+  H266NALU target_nalu;
+  int vps_id;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kVPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParseVPS(&vps_id));
+  const H266VPS* vps = parser_.GetVPS(vps_id);
+
+  int sps_id_l0;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kSPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParseSPS(target_nalu, &sps_id_l0));
+  const H266SPS* sps_l0 = parser_.GetSPS(sps_id_l0);
+  EXPECT_TRUE(!!sps_l0);
+
+  int pps_id_l0;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kPPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParsePPS(target_nalu, &pps_id_l0));
+  const H266PPS* pps_l0 = parser_.GetPPS(pps_id_l0);
+  EXPECT_TRUE(!!pps_l0);
+
+  // Parse the first IDR_N_LP frame for ref_pic_lists. Since this stream
+  // is a multi-layer stream, the H266POC instance will not handle it at
+  // present. For the test we directly provide POC for higher layer PUs.
+  H266SliceHeader shdr;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kIDRNoLeadingPicture));
+  EXPECT_EQ(H266Parser::kOk,
+            parser_.ParseSliceHeader(target_nalu, true, nullptr, &shdr));
+
+  std::vector<H266RefEntry> ref_list0;
+  std::vector<H266RefEntry> ref_list1;
+  poc_.ComputeRefPicPocList(sps_l0, pps_l0, vps, &shdr.picture_header, shdr, 0,
+                            ref_list0, ref_list1);
+  EXPECT_EQ(ref_list0.size(), 0u);
+  EXPECT_EQ(ref_list1.size(), 0u);
+
+  int sps_id_l1;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kSPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParseSPS(target_nalu, &sps_id_l1));
+  const H266SPS* sps_l1 = parser_.GetSPS(sps_id_l1);
+  EXPECT_TRUE(!!sps_l1);
+
+  int pps_id_l1;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kPPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParsePPS(target_nalu, &pps_id_l1));
+  const H266PPS* pps_l1 = parser_.GetPPS(pps_id_l1);
+  EXPECT_TRUE(!!pps_l1);
+
+  // Next IDR_N_LP frame in the same AU but at layer 1.
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kIDRNoLeadingPicture));
+  EXPECT_EQ(H266Parser::kOk,
+            parser_.ParseSliceHeader(target_nalu, true, nullptr, &shdr));
+
+  poc_.ComputeRefPicPocList(sps_l1, pps_l1, vps, &shdr.picture_header, shdr, 0,
+                            ref_list0, ref_list1);
+  EXPECT_EQ(ref_list0.size(), 1u);
+  EXPECT_EQ(ref_list1.size(), 1u);
+  EXPECT_EQ(ref_list0[0].entry_type, 2);
+  EXPECT_EQ(ref_list0[0].pic_order_cnt, 0);
+  EXPECT_EQ(ref_list0[0].nuh_layer_id, 0);
+  EXPECT_EQ(ref_list1[0].entry_type, 2);
+  EXPECT_EQ(ref_list1[0].pic_order_cnt, 0);
+  EXPECT_EQ(ref_list1[0].nuh_layer_id, 0);
+
+  // Next TRAIL frame in next AU at layer 0.
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kTrail));
+  EXPECT_EQ(H266Parser::kOk,
+            parser_.ParseSliceHeader(target_nalu, false, nullptr, &shdr));
+  poc_.ComputeRefPicPocList(sps_l0, pps_l0, vps, &shdr.picture_header, shdr, 1,
+                            ref_list0, ref_list1);
+  EXPECT_EQ(ref_list0.size(), 1u);
+  EXPECT_EQ(ref_list1.size(), 1u);
+  EXPECT_EQ(ref_list0[0].entry_type, 0);
+  EXPECT_EQ(ref_list0[0].pic_order_cnt, 0);
+  EXPECT_EQ(ref_list0[0].nuh_layer_id, 0);
+  EXPECT_EQ(ref_list1[0].entry_type, 0);
+  EXPECT_EQ(ref_list1[0].pic_order_cnt, 0);
+  EXPECT_EQ(ref_list1[0].nuh_layer_id, 0);
+
+  // Next TRAIL frame in current AU at layer 1.
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kTrail));
+  EXPECT_EQ(H266Parser::kOk,
+            parser_.ParseSliceHeader(target_nalu, false, nullptr, &shdr));
+  poc_.ComputeRefPicPocList(sps_l1, pps_l1, vps, &shdr.picture_header, shdr, 1,
+                            ref_list0, ref_list1);
+  EXPECT_EQ(ref_list0.size(), 2u);
+  EXPECT_EQ(ref_list1.size(), 2u);
+  EXPECT_EQ(ref_list0[0].entry_type, 0);
+  EXPECT_EQ(ref_list0[0].pic_order_cnt, 0);
+  EXPECT_EQ(ref_list0[0].nuh_layer_id, 1);
+  EXPECT_EQ(ref_list0[1].entry_type, 2);
+  EXPECT_EQ(ref_list0[1].pic_order_cnt, 1);
+  EXPECT_EQ(ref_list0[1].nuh_layer_id, 0);
+  EXPECT_EQ(ref_list1[0].entry_type, 0);
+  EXPECT_EQ(ref_list1[0].pic_order_cnt, 0);
+  EXPECT_EQ(ref_list1[0].nuh_layer_id, 1);
+  EXPECT_EQ(ref_list1[1].entry_type, 2);
+  EXPECT_EQ(ref_list1[1].pic_order_cnt, 1);
+  EXPECT_EQ(ref_list1[1].nuh_layer_id, 0);
+
+  // Next TRAIL frame in next AU at layer 0.
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kTrail));
+  EXPECT_EQ(H266Parser::kOk,
+            parser_.ParseSliceHeader(target_nalu, false, nullptr, &shdr));
+  poc_.ComputeRefPicPocList(sps_l0, pps_l0, vps, &shdr.picture_header, shdr, 2,
+                            ref_list0, ref_list1);
+  EXPECT_EQ(ref_list0.size(), 2u);
+  EXPECT_EQ(ref_list1.size(), 2u);
+  EXPECT_EQ(ref_list0[0].entry_type, 0);
+  EXPECT_EQ(ref_list0[0].pic_order_cnt, 1);
+  EXPECT_EQ(ref_list0[0].nuh_layer_id, 0);
+  EXPECT_EQ(ref_list0[1].entry_type, 0);
+  EXPECT_EQ(ref_list0[1].pic_order_cnt, 0);
+  EXPECT_EQ(ref_list0[1].nuh_layer_id, 0);
+  EXPECT_EQ(ref_list1[0].entry_type, 0);
+  EXPECT_EQ(ref_list1[0].pic_order_cnt, 1);
+  EXPECT_EQ(ref_list1[0].nuh_layer_id, 0);
+  EXPECT_EQ(ref_list1[1].entry_type, 0);
+  EXPECT_EQ(ref_list1[1].pic_order_cnt, 0);
+  EXPECT_EQ(ref_list1[1].nuh_layer_id, 0);
+
+  // Next TRAIL frame in current AU at layer 1.
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kTrail));
+  EXPECT_EQ(H266Parser::kOk,
+            parser_.ParseSliceHeader(target_nalu, false, nullptr, &shdr));
+  poc_.ComputeRefPicPocList(sps_l1, pps_l1, vps, &shdr.picture_header, shdr, 2,
+                            ref_list0, ref_list1);
+  EXPECT_EQ(ref_list0.size(), 3u);
+  EXPECT_EQ(ref_list1.size(), 3u);
+  EXPECT_EQ(ref_list0[0].entry_type, 0);
+  EXPECT_EQ(ref_list0[0].pic_order_cnt, 1);
+  EXPECT_EQ(ref_list0[0].nuh_layer_id, 1);
+  EXPECT_EQ(ref_list0[1].entry_type, 0);
+  EXPECT_EQ(ref_list0[1].pic_order_cnt, 0);
+  EXPECT_EQ(ref_list0[1].nuh_layer_id, 1);
+  EXPECT_EQ(ref_list0[2].entry_type, 2);
+  EXPECT_EQ(ref_list0[2].pic_order_cnt, 2);
+  EXPECT_EQ(ref_list0[2].nuh_layer_id, 0);
+  EXPECT_EQ(ref_list1[0].entry_type, 0);
+  EXPECT_EQ(ref_list1[0].pic_order_cnt, 1);
+  EXPECT_EQ(ref_list1[0].nuh_layer_id, 1);
+  EXPECT_EQ(ref_list1[1].entry_type, 0);
+  EXPECT_EQ(ref_list1[1].pic_order_cnt, 0);
+  EXPECT_EQ(ref_list1[1].nuh_layer_id, 1);
+  EXPECT_EQ(ref_list1[2].entry_type, 2);
+  EXPECT_EQ(ref_list1[2].pic_order_cnt, 2);
+  EXPECT_EQ(ref_list1[2].nuh_layer_id, 0);
 }
 
 }  // namespace media

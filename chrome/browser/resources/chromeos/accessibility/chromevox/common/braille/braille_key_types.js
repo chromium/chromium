@@ -218,6 +218,6 @@ for (let i = 0; i < 12; ++i) {
  * The state of a braille display as represented in the
  * chrome.brailleDisplayPrivate API.
  * @typedef {{available: boolean, textRowCount: number,
- *     textColumnCount: number}}
+ *     textColumnCount: number, cellSize: number}}
  */
 export let BrailleDisplayState;

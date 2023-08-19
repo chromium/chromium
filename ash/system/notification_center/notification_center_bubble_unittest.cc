@@ -12,6 +12,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/system/message_center/ash_notification_view.h"
+#include "ash/system/message_center/message_center_utils.h"
 #include "ash/system/notification_center/notification_center_bubble.h"
 #include "ash/system/notification_center/notification_center_test_api.h"
 #include "ash/system/notification_center/notification_center_view.h"
@@ -262,6 +263,29 @@ TEST_F(NotificationCenterBubbleTest, LockScreenNotificationVisibility) {
   EXPECT_TRUE(test_api()->GetNotificationViewForId(system_id)->GetVisible());
 }
 
+// Tests that unlocking the device automatically closes the notification bubble.
+// See b/287622547.
+TEST_F(NotificationCenterBubbleTest, UnlockClosesBubble) {
+  // Add a notification so that the notification tray will be visible on the
+  // lock screen.
+  test_api()->AddNotification();
+  ASSERT_GE(1u, test_api()->GetNotificationCount());
+
+  // Show the lock screen.
+  GetSessionControllerClient()->LockScreen();
+  ASSERT_GE(1u, test_api()->GetNotificationCount());
+
+  // Make the notification bubble visible on the lock screen.
+  test_api()->ToggleBubble();
+  ASSERT_TRUE(test_api()->IsBubbleShown());
+
+  // Unlock the device without explicitly closing the notification bubble first.
+  GetSessionControllerClient()->UnlockScreen();
+
+  // Verify that the notification bubble was automatically closed.
+  EXPECT_FALSE(test_api()->IsBubbleShown());
+}
+
 TEST_F(NotificationCenterBubbleTest, LargeNotificationExpand) {
   const std::string url = "http://test-url.com/";
   std::string id0 = test_api()->AddNotificationWithSourceUrl(url);
@@ -275,7 +299,10 @@ TEST_F(NotificationCenterBubbleTest, LargeNotificationExpand) {
   test_api()->ToggleBubble();
 
   std::string parent_id =
-      id0 + message_center::kIdSuffixForGroupContainerNotification;
+      id0 + message_center_utils::GenerateGroupParentNotificationIdSuffix(
+                message_center::MessageCenter::Get()
+                    ->FindNotificationById(id0)
+                    ->notifier_id());
 
   auto* parent_notification_view = static_cast<AshNotificationView*>(
       test_api()->GetNotificationViewForId(parent_id));

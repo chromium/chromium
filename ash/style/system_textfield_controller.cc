@@ -4,6 +4,7 @@
 
 #include "ash/style/system_textfield_controller.h"
 
+#include "ui/events/types/event_type.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/widget/widget.h"
@@ -12,23 +13,9 @@ namespace ash {
 SystemTextfieldController::SystemTextfieldController(SystemTextfield* textfield)
     : textfield_(textfield) {
   textfield_->SetController(this);
-  textfield_->set_delegate(this);
 }
 
 SystemTextfieldController::~SystemTextfieldController() = default;
-
-void SystemTextfieldController::OnTextfieldFocused(SystemTextfield* textfield) {
-  DCHECK_EQ(textfield_, textfield);
-  // Do not activate the textfield immediately on focus but show focus ring.
-  textfield_->SetShowFocusRing(true);
-}
-
-void SystemTextfieldController::OnTextfieldBlurred(SystemTextfield* textfield) {
-  DCHECK_EQ(textfield_, textfield);
-  // Deactivate the textfield on blur and hide focus ring.
-  textfield_->SetActive(false);
-  textfield_->SetShowFocusRing(false);
-}
 
 bool SystemTextfieldController::HandleKeyEvent(views::Textfield* sender,
                                                const ui::KeyEvent& key_event) {
@@ -103,6 +90,25 @@ bool SystemTextfieldController::HandleMouseEvent(
     default:
       break;
   }
+  return false;
+}
+
+bool SystemTextfieldController::HandleGestureEvent(
+    views::Textfield* sender,
+    const ui::GestureEvent& gesture_event) {
+  DCHECK_EQ(sender, textfield_);
+
+  // Activate the textfield when receiving gesture event.
+  if (!textfield_->IsActive()) {
+    textfield_->SetActive(true);
+  }
+
+  // Select all text after tapping once.
+  if (gesture_event.type() == ui::ET_GESTURE_TAP &&
+      gesture_event.details().tap_count() == 1 && !textfield_->HasSelection()) {
+    textfield_->SelectAll(false);
+  }
+
   return false;
 }
 

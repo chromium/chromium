@@ -19,7 +19,7 @@
 #include "chromeos/services/network_health/public/mojom/network_health_types.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos::converters {
+namespace chromeos::converters::telemetry {
 
 namespace {
 
@@ -42,7 +42,7 @@ TEST(TelemetryApiConverters, AudioInputNodeInfo) {
   input->active = crosapi::BoolValue::New(kActive);
   input->node_gain = crosapi::UInt8Value::New(kNodeGain);
 
-  auto result = ConvertPtr<cx_telem::AudioInputNodeInfo>(std::move(input));
+  auto result = ConvertPtr(std::move(input));
 
   ASSERT_TRUE(result.id);
   EXPECT_EQ(kId, static_cast<uint64_t>(*result.id));
@@ -74,7 +74,7 @@ TEST(TelemetryApiConverters, AudioOutputNodeInfo) {
   input->active = crosapi::BoolValue::New(kActive);
   input->node_volume = crosapi::UInt8Value::New(kNodeVolume);
 
-  auto result = ConvertPtr<cx_telem::AudioOutputNodeInfo>(std::move(input));
+  auto result = ConvertPtr(std::move(input));
 
   ASSERT_TRUE(result.id);
   EXPECT_EQ(kId, static_cast<uint64_t>(*result.id));
@@ -136,7 +136,7 @@ TEST(TelemetryApiConverters, AudioInfo) {
   input->output_nodes = std::move(output_node_info);
   input->input_nodes = std::move(input_node_info);
 
-  auto result = ConvertPtr<cx_telem::AudioInfo>(std::move(input));
+  auto result = ConvertPtr(std::move(input));
 
   ASSERT_TRUE(result.output_mute);
   EXPECT_EQ(kOutputMute, *result.output_mute);
@@ -207,7 +207,7 @@ TEST(TelemetryApiConverters, CpuCStateInfo) {
   auto input = crosapi::ProbeCpuCStateInfo::New(
       kName, crosapi::UInt64Value::New(kTimeInStateSinceLastBootUs));
 
-  auto result = ConvertPtr<cx_telem::CpuCStateInfo>(std::move(input));
+  auto result = ConvertPtr(std::move(input));
   ASSERT_TRUE(result.name);
   EXPECT_EQ(kName, *result.name);
 
@@ -237,7 +237,7 @@ TEST(TelemetryApiConverters, LogicalCpuInfo) {
       crosapi::UInt64Value::New(kIdleTime), std::move(expected_c_states),
       crosapi::UInt32Value::New(kCoreId));
 
-  auto result = ConvertPtr<cx_telem::LogicalCpuInfo>(std::move(input));
+  auto result = ConvertPtr(std::move(input));
   ASSERT_TRUE(result.max_clock_speed_khz);
   EXPECT_EQ(kMaxClockSpeedKhz,
             static_cast<uint32_t>(*result.max_clock_speed_khz));
@@ -292,7 +292,7 @@ TEST(TelemetryApiConverters, PhysicalCpuInfo) {
   auto input =
       crosapi::ProbePhysicalCpuInfo::New(kModelName, std::move(logical_cpus));
 
-  auto result = ConvertPtr<cx_telem::PhysicalCpuInfo>(std::move(input));
+  auto result = ConvertPtr(std::move(input));
   ASSERT_TRUE(result.model_name);
   EXPECT_EQ(kModelName, *result.model_name);
 
@@ -355,8 +355,8 @@ TEST(TelemetryApiConverters, BatteryInfoWithoutSerialNumberPermission) {
       crosapi::DoubleValue::New(kCurrentNow), kTechnology, kStatus,
       kManufacturerDate, crosapi::UInt64Value::New(kTemperature));
 
-  auto result = ConvertPtr<cx_telem::BatteryInfo>(
-      std::move(input), /* has_serial_number_permission= */ false);
+  auto result =
+      ConvertPtr(std::move(input), /* has_serial_number_permission= */ false);
   ASSERT_TRUE(result.cycle_count);
   EXPECT_EQ(kCycleCount, static_cast<int64_t>(*result.cycle_count));
 
@@ -407,8 +407,8 @@ TEST(TelemetryApiConverters, BatteryInfoWithSerialNumberPermission) {
   crosapi::ProbeBatteryInfoPtr input = crosapi::ProbeBatteryInfo::New();
   input->serial_number = kSerialNumber;
 
-  auto result = ConvertPtr<cx_telem::BatteryInfo>(
-      std::move(input), /* has_serial_number_permission= */ true);
+  auto result =
+      ConvertPtr(std::move(input), /* has_serial_number_permission= */ true);
 
   ASSERT_TRUE(result.serial_number);
   EXPECT_EQ(kSerialNumber, result.serial_number);
@@ -466,7 +466,7 @@ TEST(TelemetryApiConverters, OsVersion) {
   auto input = crosapi::ProbeOsVersion::New(kReleaseMilestone, kBuildNumber,
                                             kPatchNumber, kReleaseChannel);
 
-  auto result = ConvertPtr<cx_telem::OsVersionInfo>(std::move(input));
+  auto result = ConvertPtr(std::move(input));
   ASSERT_TRUE(result.release_milestone);
   EXPECT_EQ(*result.release_milestone, kReleaseMilestone);
 
@@ -489,7 +489,7 @@ TEST(TelemetryApiConverters, StatefulPartitionInfo) {
           crosapi::UInt64Value::New(kAvailableSpace),
           crosapi::UInt64Value::New(kTotalSpace));
 
-  auto result = ConvertPtr<cx_telem::StatefulPartitionInfo>(std::move(input));
+  auto result = ConvertPtr(std::move(input));
   ASSERT_TRUE(result.available_space);
   EXPECT_EQ(kAvailableSpace, *result.available_space);
 
@@ -503,7 +503,7 @@ TEST(TelemetryApiConverters, StatefulPartitionInfoNullFields) {
                                                crosapi::UInt64ValuePtr>(
           nullptr, nullptr);
 
-  auto result = ConvertPtr<cx_telem::StatefulPartitionInfo>(std::move(input));
+  auto result = ConvertPtr(std::move(input));
   ASSERT_FALSE(result.available_space);
   ASSERT_FALSE(result.total_space);
 }
@@ -567,8 +567,8 @@ TEST(TelemetryApiConverters, NetworkInfoWithoutPermission) {
   input->signal_strength =
       chromeos::network_health::mojom::UInt32Value::New(kSignalStrength);
 
-  auto result = ConvertPtr<cx_telem::NetworkInfo>(
-      std::move(input), /* has_mac_address_permission= */ false);
+  auto result =
+      ConvertPtr(std::move(input), /* has_mac_address_permission= */ false);
   EXPECT_EQ(result.type, cx_telem::NetworkType::kWifi);
   EXPECT_EQ(result.state, cx_telem::NetworkState::kOnline);
 
@@ -591,8 +591,8 @@ TEST(TelemetryApiConverters, NetworkInfoWithPermission) {
   auto input = chromeos::network_health::mojom::Network::New();
   input->mac_address = kMacAddress;
 
-  auto result = ConvertPtr<cx_telem::NetworkInfo>(
-      std::move(input), /* has_mac_address_permission= */ true);
+  auto result =
+      ConvertPtr(std::move(input), /* has_mac_address_permission= */ true);
 
   ASSERT_TRUE(result.mac_address);
   EXPECT_EQ(*result.mac_address, kMacAddress);
@@ -618,8 +618,8 @@ TEST(TelemetryApiConverters, InternetConnectivityInfoWithoutPermission) {
   auto input = chromeos::network_health::mojom::NetworkHealthState::New();
   input->networks.push_back(std::move(network));
 
-  auto result = ConvertPtr<cx_telem::InternetConnectivityInfo>(
-      std::move(input), /* has_mac_address_permission= */ false);
+  auto result =
+      ConvertPtr(std::move(input), /* has_mac_address_permission= */ false);
   ASSERT_EQ(result.networks.size(), 1UL);
 
   auto result_network = std::move(result.networks.front());
@@ -673,8 +673,8 @@ TEST(TelemetryApiConverters, InternetConnectivityInfoWithPermission) {
   input->networks.push_back(std::move(invalid_network));
   input->networks.push_back(std::move(network));
 
-  auto result = ConvertPtr<cx_telem::InternetConnectivityInfo>(
-      std::move(input), /* has_mac_address_permission= */ true);
+  auto result =
+      ConvertPtr(std::move(input), /* has_mac_address_permission= */ true);
   ASSERT_EQ(result.networks.size(), 1UL);
 
   auto result_network = std::move(result.networks.front());
@@ -712,7 +712,7 @@ TEST(TelemetryApiConverters, TpmVersion) {
   input->firmware_version = crosapi::UInt64Value::New(kFirmwareVersion);
   input->vendor_specific = kVendorSpecific;
 
-  auto result = ConvertPtr<cx_telem::TpmVersion>(std::move(input));
+  auto result = ConvertPtr(std::move(input));
   EXPECT_EQ(cx_telem::TpmGSCVersion::kCr50, result.gsc_version);
   ASSERT_TRUE(result.family);
   EXPECT_EQ(kFamily, static_cast<uint32_t>(*result.family));
@@ -739,7 +739,7 @@ TEST(TelemetryApiConverters, TpmStatus) {
   input->owner_password_is_present =
       crosapi::BoolValue::New(kOwnerPasswortIsPresent);
 
-  auto result = ConvertPtr<cx_telem::TpmStatus>(std::move(input));
+  auto result = ConvertPtr(std::move(input));
   ASSERT_TRUE(result.enabled);
   EXPECT_EQ(kEnabled, *result.enabled);
   ASSERT_TRUE(result.owned);
@@ -761,7 +761,7 @@ TEST(TelemetryApiConverters, TpmDictionaryAttack) {
   input->lockout_seconds_remaining =
       crosapi::UInt32Value::New(kLockoutSecondsRemaining);
 
-  auto result = ConvertPtr<cx_telem::TpmDictionaryAttack>(std::move(input));
+  auto result = ConvertPtr(std::move(input));
   ASSERT_TRUE(result.counter);
   EXPECT_EQ(kCounter, static_cast<uint32_t>(*result.counter));
   ASSERT_TRUE(result.threshold);
@@ -821,7 +821,7 @@ TEST(TelemetryApiConverters, TpmInfo) {
   input->status = std::move(tpm_status);
   input->dictionary_attack = std::move(dictionary_attack);
 
-  auto result = ConvertPtr<cx_telem::TpmInfo>(std::move(input));
+  auto result = ConvertPtr(std::move(input));
 
   auto version_result = std::move(result.version);
   EXPECT_EQ(cx_telem::TpmGSCVersion::kCr50, version_result.gsc_version);
@@ -942,8 +942,7 @@ TEST(TelemetryApiConverters, FwupdFirmwareVersionInfo) {
   auto input = crosapi::ProbeFwupdFirmwareVersionInfo::New(
       kVersion, crosapi::ProbeFwupdVersionFormat::kHex);
 
-  auto result =
-      ConvertPtr<cx_telem::FwupdFirmwareVersionInfo>(std::move(input));
+  auto result = ConvertPtr(std::move(input));
 
   EXPECT_EQ(result.version, kVersion);
   EXPECT_EQ(result.version_format, cx_telem::FwupdVersionFormat::kHex);
@@ -961,7 +960,7 @@ TEST(TelemetryApiConverters, UsbBusInterfaceInfo) {
       crosapi::UInt8Value::New(kClassId), crosapi::UInt8Value::New(kSubclassId),
       crosapi::UInt8Value::New(kProtocolId), kDriver);
 
-  auto result = ConvertPtr<cx_telem::UsbBusInterfaceInfo>(std::move(input));
+  auto result = ConvertPtr(std::move(input));
 
   ASSERT_TRUE(result.interface_number);
   EXPECT_EQ(static_cast<uint8_t>(*result.interface_number), kInterfaceNumber);
@@ -1011,7 +1010,7 @@ TEST(TelemetryApiConverters, UsbBusInfo) {
   input->version = crosapi::ProbeUsbVersion::kUsb3;
   input->spec_speed = crosapi::ProbeUsbSpecSpeed::k20Gbps;
 
-  auto result = ConvertPtr<cx_telem::UsbBusInfo>(std::move(input));
+  auto result = ConvertPtr(std::move(input));
 
   ASSERT_TRUE(result.class_id);
   EXPECT_EQ(static_cast<uint8_t>(*result.class_id), kClassId);
@@ -1061,8 +1060,8 @@ TEST(TelemetryApiConverters, VpdInfoWithoutPermission) {
   input->sku_number = kSkuNumber;
   input->serial_number = kSerialNumber;
 
-  auto result = ConvertPtr<cx_telem::VpdInfo>(
-      std::move(input), /* has_serial_number_permission= */ false);
+  auto result =
+      ConvertPtr(std::move(input), /* has_serial_number_permission= */ false);
 
   ASSERT_TRUE(result.activate_date);
   EXPECT_EQ(*result.activate_date, kFirstPowerDate);
@@ -1083,11 +1082,181 @@ TEST(TelemetryApiConverters, VpdInfoWithPermission) {
   auto input = crosapi::ProbeCachedVpdInfo::New();
   input->serial_number = kSerialNumber;
 
-  auto result = ConvertPtr<cx_telem::VpdInfo>(
-      std::move(input), /* has_serial_number_permission= */ true);
+  auto result =
+      ConvertPtr(std::move(input), /* has_serial_number_permission= */ true);
 
   ASSERT_TRUE(result.serial_number);
   EXPECT_EQ(*result.serial_number, kSerialNumber);
 }
 
-}  // namespace chromeos::converters
+TEST(TelemetryApiConverters, DisplayInputType) {
+  EXPECT_EQ(Convert(crosapi::ProbeDisplayInputType::kUnmappedEnumField),
+            cx_telem::DisplayInputType::kUnknown);
+
+  EXPECT_EQ(Convert(crosapi::ProbeDisplayInputType::kDigital),
+            cx_telem::DisplayInputType::kDigital);
+
+  EXPECT_EQ(Convert(crosapi::ProbeDisplayInputType::kAnalog),
+            cx_telem::DisplayInputType::kAnalog);
+}
+
+TEST(TelemetryApiConverters, DisplayInfo) {
+  // Constants for embedded display
+  constexpr bool kPrivacyScreenSupported = true;
+  constexpr bool kPrivacyScreenEnabled = false;
+  constexpr uint32_t kDisplayWidthEmbedded = 0;
+  constexpr uint32_t kDisplayHeightEmbedded = 1;
+  constexpr uint32_t kResolutionHorizontalEmbedded = 2;
+  constexpr uint32_t kResolutionVerticalEmbedded = 3;
+  constexpr double kRefreshRateEmbedded = 4.4;
+  constexpr char kManufacturerEmbedded[] = "manufacturer_1";
+  constexpr uint16_t kModelIdEmbedded = 5;
+  constexpr uint32_t kSerialNumberEmbedded = 6;
+  constexpr uint8_t kManufactureWeekEmbedded = 7;
+  constexpr uint16_t kManufactureYearEmbedded = 8;
+  constexpr char kEdidVersionEmbedded[] = "1.4";
+  constexpr crosapi::ProbeDisplayInputType kInputTypeEmbedded =
+      crosapi::ProbeDisplayInputType::kAnalog;
+  constexpr char kDisplayNameEmbedded[] = "display_1";
+
+  // constants for external display 1
+  constexpr uint32_t kDisplayWidthExternal = 10;
+  constexpr uint32_t kDisplayHeightExternal = 11;
+  constexpr uint32_t kResolutionHorizontalExternal = 12;
+  constexpr uint32_t kResolutionVerticalExternal = 13;
+  constexpr double kRefreshRateExternal = 14.4;
+  constexpr char kManufacturerExternal[] = "manufacturer_2";
+  constexpr uint16_t kModelIdExternal = 15;
+  constexpr uint32_t kSerialNumberExternal = 16;
+  constexpr uint8_t kManufactureWeekExternal = 17;
+  constexpr uint16_t kManufactureYearExternal = 18;
+  constexpr char kEdidVersionExternal[] = "1.4";
+  constexpr crosapi::ProbeDisplayInputType kInputTypeExternal =
+      crosapi::ProbeDisplayInputType::kDigital;
+  constexpr char kDisplayNameExternal[] = "display_2";
+
+  auto input = crosapi::ProbeDisplayInfo::New();
+  {
+    auto embedded_display = crosapi::ProbeEmbeddedDisplayInfo::New(
+        kPrivacyScreenSupported, kPrivacyScreenEnabled, kDisplayWidthEmbedded,
+        kDisplayHeightEmbedded, kResolutionHorizontalEmbedded,
+        kResolutionVerticalEmbedded, kRefreshRateEmbedded,
+        std::string(kManufacturerEmbedded), kModelIdEmbedded,
+        kSerialNumberEmbedded, kManufactureWeekEmbedded,
+        kManufactureYearEmbedded, std::string(kEdidVersionEmbedded),
+        kInputTypeEmbedded, std::string(kDisplayNameEmbedded));
+
+    auto external_display_1 = crosapi::ProbeExternalDisplayInfo::New(
+        kDisplayWidthExternal, kDisplayHeightExternal,
+        kResolutionHorizontalExternal, kResolutionVerticalExternal,
+        kRefreshRateExternal, std::string(kManufacturerExternal),
+        kModelIdExternal, kSerialNumberExternal, kManufactureWeekExternal,
+        kManufactureYearExternal, std::string(kEdidVersionExternal),
+        kInputTypeExternal, std::string(kDisplayNameExternal));
+
+    auto external_display_empty = crosapi::ProbeExternalDisplayInfo::New(
+        absl::nullopt, absl::nullopt, absl::nullopt, absl::nullopt,
+        absl::nullopt, absl::nullopt, absl::nullopt, absl::nullopt,
+        absl::nullopt, absl::nullopt, absl::nullopt,
+        crosapi::ProbeDisplayInputType::kUnmappedEnumField, absl::nullopt);
+
+    std::vector<crosapi::ProbeExternalDisplayInfoPtr> external_displays;
+    external_displays.push_back(std::move(external_display_1));
+    external_displays.push_back(std::move(external_display_empty));
+
+    input->embedded_display = std::move(embedded_display);
+    input->external_displays = std::move(external_displays);
+  }
+
+  auto result = ConvertPtr(std::move(input));
+
+  const auto& embedded_display = result.embedded_display;
+  const auto& external_displays = result.external_displays;
+  EXPECT_EQ(external_displays.size(), static_cast<size_t>(2));
+
+  // Check equality for embedded display
+  EXPECT_EQ(embedded_display.privacy_screen_supported, kPrivacyScreenSupported);
+  EXPECT_EQ(embedded_display.privacy_screen_enabled, kPrivacyScreenEnabled);
+  ASSERT_TRUE(embedded_display.display_width);
+  EXPECT_EQ(static_cast<uint32_t>(*embedded_display.display_width),
+            kDisplayWidthEmbedded);
+  ASSERT_TRUE(embedded_display.display_height);
+  EXPECT_EQ(static_cast<uint32_t>(*embedded_display.display_height),
+            kDisplayHeightEmbedded);
+  ASSERT_TRUE(embedded_display.resolution_horizontal);
+  EXPECT_EQ(static_cast<uint32_t>(*embedded_display.resolution_horizontal),
+            kResolutionHorizontalEmbedded);
+  ASSERT_TRUE(embedded_display.resolution_vertical);
+  EXPECT_EQ(static_cast<uint32_t>(*embedded_display.resolution_vertical),
+            kResolutionVerticalEmbedded);
+  ASSERT_TRUE(embedded_display.refresh_rate);
+  EXPECT_EQ(static_cast<double>(*embedded_display.refresh_rate),
+            kRefreshRateEmbedded);
+  EXPECT_EQ(embedded_display.manufacturer, kManufacturerEmbedded);
+  ASSERT_TRUE(embedded_display.model_id);
+  EXPECT_EQ(static_cast<uint16_t>(*embedded_display.model_id),
+            kModelIdEmbedded);
+  ASSERT_TRUE(embedded_display.serial_number);
+  EXPECT_EQ(static_cast<uint32_t>(*embedded_display.serial_number),
+            kSerialNumberEmbedded);
+  ASSERT_TRUE(embedded_display.manufacture_week);
+  EXPECT_EQ(static_cast<uint8_t>(*embedded_display.manufacture_week),
+            kManufactureWeekEmbedded);
+  ASSERT_TRUE(embedded_display.manufacture_year);
+  EXPECT_EQ(static_cast<uint16_t>(*embedded_display.manufacture_year),
+            kManufactureYearEmbedded);
+  EXPECT_EQ(embedded_display.edid_version, kEdidVersionEmbedded);
+  EXPECT_EQ(embedded_display.input_type, Convert(kInputTypeEmbedded));
+  EXPECT_EQ(embedded_display.display_name, kDisplayNameEmbedded);
+
+  // Check equality for external display 1
+  ASSERT_TRUE(external_displays[0].display_width);
+  EXPECT_EQ(static_cast<uint32_t>(*external_displays[0].display_width),
+            kDisplayWidthExternal);
+  ASSERT_TRUE(external_displays[0].display_height);
+  EXPECT_EQ(static_cast<uint32_t>(*external_displays[0].display_height),
+            kDisplayHeightExternal);
+  ASSERT_TRUE(external_displays[0].resolution_horizontal);
+  EXPECT_EQ(static_cast<uint32_t>(*external_displays[0].resolution_horizontal),
+            kResolutionHorizontalExternal);
+  ASSERT_TRUE(external_displays[0].resolution_vertical);
+  EXPECT_EQ(static_cast<uint32_t>(*external_displays[0].resolution_vertical),
+            kResolutionVerticalExternal);
+  ASSERT_TRUE(external_displays[0].refresh_rate);
+  EXPECT_EQ(static_cast<double>(*external_displays[0].refresh_rate),
+            kRefreshRateExternal);
+  EXPECT_EQ(external_displays[0].manufacturer, kManufacturerExternal);
+  ASSERT_TRUE(external_displays[0].model_id);
+  EXPECT_EQ(static_cast<uint16_t>(*external_displays[0].model_id),
+            kModelIdExternal);
+  ASSERT_TRUE(external_displays[0].serial_number);
+  EXPECT_EQ(static_cast<uint32_t>(*external_displays[0].serial_number),
+            kSerialNumberExternal);
+  ASSERT_TRUE(external_displays[0].manufacture_week);
+  EXPECT_EQ(static_cast<uint8_t>(*external_displays[0].manufacture_week),
+            kManufactureWeekExternal);
+  ASSERT_TRUE(external_displays[0].manufacture_year);
+  EXPECT_EQ(static_cast<uint16_t>(*external_displays[0].manufacture_year),
+            kManufactureYearExternal);
+  EXPECT_EQ(external_displays[0].edid_version, kEdidVersionExternal);
+  EXPECT_EQ(external_displays[0].input_type, Convert(kInputTypeExternal));
+  EXPECT_EQ(external_displays[0].display_name, kDisplayNameExternal);
+
+  // Check equality for empty external display
+  ASSERT_FALSE(external_displays[1].display_width);
+  ASSERT_FALSE(external_displays[1].display_height);
+  ASSERT_FALSE(external_displays[1].resolution_horizontal);
+  ASSERT_FALSE(external_displays[1].resolution_vertical);
+  ASSERT_FALSE(external_displays[1].refresh_rate);
+  EXPECT_EQ(external_displays[1].manufacturer, absl::nullopt);
+  ASSERT_FALSE(external_displays[1].model_id);
+  ASSERT_FALSE(external_displays[1].serial_number);
+  ASSERT_FALSE(external_displays[1].manufacture_week);
+  ASSERT_FALSE(external_displays[1].manufacture_year);
+  EXPECT_EQ(external_displays[1].edid_version, absl::nullopt);
+  EXPECT_EQ(external_displays[1].input_type,
+            Convert(crosapi::ProbeDisplayInputType::kUnmappedEnumField));
+  EXPECT_EQ(external_displays[1].display_name, absl::nullopt);
+}
+
+}  // namespace chromeos::converters::telemetry

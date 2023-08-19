@@ -141,10 +141,7 @@ ImportMap* ImportMap::Parse(const String& input,
 
   // <spec step="1">Let parsed be the result of parsing JSON into Infra values
   // given input.</spec>
-  // TODO(crbug.com/1264024): Deprecate JSON comments here, if possible.
-  bool has_comments = false;
-  std::unique_ptr<JSONValue> parsed = ParseJSONWithCommentsDeprecated(
-      input, /*opt_error=*/nullptr, &has_comments);
+  std::unique_ptr<JSONValue> parsed = ParseJSON(input);
 
   if (!parsed) {
     *error_to_rethrow =
@@ -152,8 +149,6 @@ ImportMap* ImportMap::Parse(const String& input,
                        "Failed to parse import map: invalid JSON");
     return MakeGarbageCollected<ImportMap>();
   }
-
-  UMA_HISTOGRAM_BOOLEAN("Blink.ImportMap.HasJSONComments", has_comments);
 
   // <spec step="2">If parsed is not a map, then throw a TypeError indicating
   // that the top-level value must be a JSON object.</spec>

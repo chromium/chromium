@@ -31,6 +31,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/chained_back_navigation_tracker.h"
+#include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/dom_distiller/tab_utils.h"
 #include "chrome/browser/download/download_prefs.h"
@@ -96,6 +97,8 @@
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
+#include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -111,6 +114,10 @@
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
+#include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/cookie_settings_base.h"
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/favicon/content/content_favicon_driver.h"
@@ -133,6 +140,8 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/translate/core/browser/language_state.h"
+#include "components/translate/core/browser/translate_manager.h"
+#include "components/translate/core/common/translate_constants.h"
 #include "components/user_education/common/feature_promo_controller.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/zoom/page_zoom.h"
@@ -145,13 +154,18 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
 #include "content/public/common/user_agent.h"
 #include "extensions/buildflags/buildflags.h"
+#include "net/cookies/cookie_util.h"
 #include "printing/buildflags/buildflags.h"
 #include "rlz/buildflags/buildflags.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/models/list_selection_model.h"
@@ -182,6 +196,11 @@
 
 #if BUILDFLAG(ENABLE_RLZ)
 #include "components/rlz/rlz_tracker.h"  // nogncheck
+#endif
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#include "chrome/browser/accessibility/ax_screen_ai_annotator.h"
+#include "chrome/browser/accessibility/ax_screen_ai_annotator_factory.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -363,6 +382,39 @@ WebContents* GetTabAndRevertIfNecessary(Browser* browser,
   return GetTabAndRevertIfNecessaryHelper(browser, disposition, activate_tab);
 }
 
+void RecordReloadWithCookieBlocking(const Browser* browser,
+                                    WebContents* web_contents) {
+  // Figure out if 3P cookies are blocked for this page.
+  scoped_refptr<const content_settings::CookieSettings> cookie_settings =
+      CookieSettingsFactory::GetForProfile(browser->profile());
+
+  // For this metric, we define "cookies blocked in settings" based on the
+  // global opt-in to third-party cookie blocking as well as no overriding
+  // content setting on the top-level site.
+  bool cookies_blocked_in_settings =
+      cookie_settings->ShouldBlockThirdPartyCookies() &&
+      !cookie_settings->IsThirdPartyAccessAllowed(
+          web_contents->GetLastCommittedURL(), nullptr);
+
+  // Also measure if 3P cookies were actually blocked on the site.
+  content_settings::PageSpecificContentSettings* pscs =
+      content_settings::PageSpecificContentSettings::GetForFrame(
+          web_contents->GetPrimaryMainFrame());
+  bool cookies_blocked =
+      pscs && (pscs->blocked_local_shared_objects().GetObjectCount() > 0 ||
+               pscs->blocked_browsing_data_model()->size() > 0U);
+
+  ukm::SourceId source_id =
+      web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
+
+  ukm::builders::ThirdPartyCookies_BreakageIndicator(source_id)
+      .SetBreakageIndicatorType(static_cast<int>(
+          net::cookie_util::BreakageIndicatorType::USER_RELOAD))
+      .SetTPCBlocked(cookies_blocked)
+      .SetTPCBlockedInSettings(cookies_blocked_in_settings)
+      .Record(ukm::UkmRecorder::Get());
+}
+
 void ReloadInternal(Browser* browser,
                     WindowOpenDisposition disposition,
                     bool bypass_cache) {
@@ -382,6 +434,9 @@ void ReloadInternal(Browser* browser,
         !new_tab->FocusLocationBarByDefault()) {
       new_tab->Focus();
     }
+
+    // User reloads is a possible breakage indicator from blocking 3P cookies.
+    RecordReloadWithCookieBlocking(browser, selected_tab);
 
     DevToolsWindow* devtools =
         DevToolsWindow::GetInstanceForInspectedWebContents(new_tab);
@@ -757,7 +812,7 @@ base::WeakPtr<content::NavigationHandle> OpenCurrentURL(Browser* browser) {
     return nullptr;
   }
 
-  GURL url(location_bar->GetDestinationURL());
+  GURL url(location_bar->navigation_params().destination_url);
   TRACE_EVENT1("navigation", "chrome::OpenCurrentURL", "url", url);
 
   if (ShouldInterceptChromeURLNavigationInIncognito(browser, url)) {
@@ -765,19 +820,21 @@ base::WeakPtr<content::NavigationHandle> OpenCurrentURL(Browser* browser) {
     return nullptr;
   }
 
-  NavigateParams params(browser, url, location_bar->GetPageTransition());
-  params.disposition = location_bar->GetWindowOpenDisposition();
+  NavigateParams params(browser, url,
+                        location_bar->navigation_params().transition);
+  params.disposition = location_bar->navigation_params().disposition;
   // Use ADD_INHERIT_OPENER so that all pages opened by the omnibox at least
   // inherit the opener. In some cases the tabstrip will determine the group
   // should be inherited, in which case the group is inherited instead of the
   // opener.
   params.tabstrip_add_types =
       AddTabTypes::ADD_FORCE_INDEX | AddTabTypes::ADD_INHERIT_OPENER;
-  params.input_start = location_bar->GetMatchSelectionTimestamp();
+  params.input_start =
+      location_bar->navigation_params().match_selection_timestamp;
   params.is_using_https_as_default_scheme =
-      location_bar->IsInputTypedUrlWithoutScheme();
+      location_bar->navigation_params().url_typed_without_scheme;
   params.url_typed_with_http_scheme =
-      location_bar->IsInputTypedUrlWithHttpScheme();
+      location_bar->navigation_params().url_typed_with_http_scheme;
   auto result = Navigate(&params);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -984,6 +1041,13 @@ void MoveActiveTabToNewWindow(Browser* browser) {
 }
 bool CanMoveTabsToNewWindow(Browser* browser,
                             const std::vector<int>& tab_indices) {
+  if (browser->is_type_app()) {
+    for (int index : tab_indices) {
+      if (web_app::IsPinnedHomeTab(browser->tab_strip_model(), index)) {
+        return false;
+      }
+    }
+  }
   return browser->tab_strip_model()->count() >
          static_cast<int>(tab_indices.size());
 }
@@ -994,8 +1058,17 @@ void MoveTabsToNewWindow(Browser* browser,
   if (tab_indices.empty())
     return;
 
-  Browser* new_browser =
-      Browser::Create(Browser::CreateParams(browser->profile(), true));
+  Browser* new_browser;
+  if (browser->is_type_app() && browser->app_controller()->has_tab_strip()) {
+    new_browser = Browser::Create(Browser::CreateParams::CreateForApp(
+        browser->app_name(), browser->is_trusted_source(), gfx::Rect(),
+        browser->profile(), true));
+    web_app::MaybeAddPinnedHomeTab(new_browser,
+                                   new_browser->app_controller()->app_id());
+  } else {
+    new_browser =
+        Browser::Create(Browser::CreateParams(browser->profile(), true));
+  }
 
   if (group.has_value()) {
     SavedTabGroupKeyedService* const service =
@@ -1355,7 +1428,7 @@ void SaveCreditCard(Browser* browser) {
   controller->ReshowBubble();
 }
 
-void SaveIBAN(Browser* browser) {
+void SaveIban(Browser* browser) {
   WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
   autofill::IbanBubbleControllerImpl* controller =
@@ -1410,28 +1483,45 @@ void ShowVirtualCardEnrollBubble(Browser* browser) {
     controller->ReshowBubble();
 }
 
-void Translate(Browser* browser) {
-  if (!browser->window()->IsActive())
+void ShowTranslateBubble(Browser* browser) {
+  if (!browser->window()->IsActive()) {
     return;
+  }
 
   WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
   ChromeTranslateClient* chrome_translate_client =
       ChromeTranslateClient::FromWebContents(web_contents);
 
+  if (!chrome_translate_client) {
+    return;
+  }
+
+  // The Translate bubble will not show if a text field is focused, so we clear
+  // focus here as the user has intentionally opened the bubble.
+  web_contents->ClearFocusedElement();
+
   std::string source_language;
   std::string target_language;
   chrome_translate_client->GetTranslateLanguages(web_contents, &source_language,
                                                  &target_language);
 
+  // If the source language matches the target language, we change the source
+  // language to unknown, so that we display "Detected Language".
+  if (source_language == target_language) {
+    source_language = translate::kUnknownLanguageCode;
+  }
+
   translate::TranslateStep step = translate::TRANSLATE_STEP_BEFORE_TRANSLATE;
-  if (chrome_translate_client) {
-    if (chrome_translate_client->GetLanguageState().translation_pending())
-      step = translate::TRANSLATE_STEP_TRANSLATING;
-    else if (chrome_translate_client->GetLanguageState().translation_error())
-      step = translate::TRANSLATE_STEP_TRANSLATE_ERROR;
-    else if (chrome_translate_client->GetLanguageState().IsPageTranslated())
-      step = translate::TRANSLATE_STEP_AFTER_TRANSLATE;
+  auto* language_state =
+      chrome_translate_client->GetTranslateManager()->GetLanguageState();
+
+  if (language_state->translation_pending()) {
+    step = translate::TRANSLATE_STEP_TRANSLATING;
+  } else if (language_state->translation_error()) {
+    step = translate::TRANSLATE_STEP_TRANSLATE_ERROR;
+  } else if (language_state->IsPageTranslated()) {
+    step = translate::TRANSLATE_STEP_AFTER_TRANSLATE;
   }
   browser->window()->ShowTranslateBubble(
       web_contents, step, source_language, target_language,
@@ -1443,6 +1533,8 @@ void ManagePasswordsForPage(Browser* browser) {
       feature_engagement::kIPHPasswordsManagementBubbleAfterSaveFeature);
   browser->window()->CloseFeaturePromo(
       feature_engagement::kIPHPasswordsManagementBubbleDuringSigninFeature);
+  browser->window()->CloseFeaturePromo(
+      feature_engagement::kIPHPasswordManagerShortcutFeature);
   WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
   ManagePasswordsUIController* controller =
@@ -1821,7 +1913,7 @@ void ToggleRequestTabletSite(Browser* browser) {
     entry->SetIsOverridingUserAgent(false);
   else
     SetAndroidOsForTabletSite(current_tab);
-  controller.Reload(content::ReloadType::ORIGINAL_REQUEST_URL, true);
+  controller.LoadOriginalRequestURL();
 }
 
 void SetAndroidOsForTabletSite(content::WebContents* current_tab) {
@@ -1836,6 +1928,8 @@ void SetAndroidOsForTabletSite(content::WebContents* current_tab) {
     ua_override.ua_metadata_override = embedder_support::GetUserAgentMetadata(
         g_browser_process->local_state());
     ua_override.ua_metadata_override->mobile = true;
+    ua_override.ua_metadata_override->form_factor =
+        embedder_support::kMobileFormFactor;
     ua_override.ua_metadata_override->platform =
         kChPlatformOverrideForTabletSite;
     ua_override.ua_metadata_override->platform_version = std::string();
@@ -2033,8 +2127,16 @@ void UnfollowSite(content::WebContents* web_contents) {
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-void RunScreenAIVisualAnnotation(Browser* browser) {
-  browser->RunScreenAIAnnotator();
+void RunScreenAILayoutExtraction(Browser* browser) {
+  content::WebContents* web_contents =
+      browser->tab_strip_model()->GetActiveWebContents();
+  if (!web_contents) {
+    return;
+  }
+
+  screen_ai::AXScreenAIAnnotatorFactory::GetForBrowserContext(
+      browser->profile())
+      ->AnnotateScreenshot(web_contents);
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
@@ -2047,13 +2149,19 @@ void ExecLensRegionSearch(Browser* browser) {
   GURL url = contents->GetController().GetLastCommittedEntry()->GetURL();
 
   if (lens::IsRegionSearchEnabled(browser, profile, service, url)) {
+    const bool is_google_dsp = search::DefaultSearchProviderIsGoogle(profile);
+    const lens::AmbientSearchEntryPoint entry_point =
+        is_google_dsp ? lens::AmbientSearchEntryPoint::
+                            CONTEXT_MENU_SEARCH_REGION_WITH_GOOGLE_LENS
+                      : lens::AmbientSearchEntryPoint::
+                            CONTEXT_MENU_SEARCH_REGION_WITH_WEB;
     auto lens_region_search_controller_data =
         std::make_unique<lens::LensRegionSearchControllerData>();
     lens_region_search_controller_data->lens_region_search_controller =
         std::make_unique<lens::LensRegionSearchController>(browser);
     lens_region_search_controller_data->lens_region_search_controller->Start(
         contents, lens::features::IsLensFullscreenSearchEnabled(),
-        search::DefaultSearchProviderIsGoogle(profile));
+        is_google_dsp, entry_point);
     browser->SetUserData(lens::LensRegionSearchControllerData::kDataKey,
                          std::move(lens_region_search_controller_data));
   }

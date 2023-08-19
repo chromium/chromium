@@ -18,6 +18,7 @@ struct ChromeOsEnterpriseParams {
   bool curtain_local_user_session = false;
 
   // Remote machine configuration.
+  bool show_troubleshooting_tools = false;
   bool allow_troubleshooting_tools = false;
   bool allow_reconnections = false;
   bool allow_file_transfer = false;

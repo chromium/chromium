@@ -15,13 +15,12 @@ import android.view.accessibility.AccessibilityEvent;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.LayoutInflaterUtils;
-import org.chromium.ui.interpolators.BakedBezierInterpolator;
+import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -224,7 +223,7 @@ public abstract class TabModalPresenter extends ModalDialogManager.Presenter {
         mDialogContainer.animate()
                 .setDuration(ENTER_EXIT_ANIMATION_DURATION_MS)
                 .alpha(1f)
-                .setInterpolator(BakedBezierInterpolator.FADE_IN_CURVE)
+                .setInterpolator(Interpolators.LINEAR_OUT_SLOW_IN_INTERPOLATOR)
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationStart(Animator animation) {
@@ -247,7 +246,7 @@ public abstract class TabModalPresenter extends ModalDialogManager.Presenter {
         mDialogContainer.animate()
                 .setDuration(ENTER_EXIT_ANIMATION_DURATION_MS)
                 .alpha(0f)
-                .setInterpolator(BakedBezierInterpolator.FADE_OUT_CURVE)
+                .setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR)
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
@@ -258,7 +257,6 @@ public abstract class TabModalPresenter extends ModalDialogManager.Presenter {
                 .start();
     }
 
-    @VisibleForTesting
     public View getDialogContainerForTest() {
         return mDialogContainer;
     }

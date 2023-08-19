@@ -14,6 +14,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -25,6 +26,7 @@ import android.util.DisplayMetrics;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -39,6 +41,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.scene_layer.StaticTabSceneLayer;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.CompositorModelChangeProcessor;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.tab.Tab;
@@ -48,6 +51,8 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.chrome.test.util.browser.Features.JUnitProcessor;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -61,7 +66,11 @@ import java.util.Collections;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@EnableFeatures(ChromeFeatureList.AVOID_SELECTED_TAB_FOCUS_ON_LAYOUT_DONE_SHOWING)
 public class StaticLayoutUnitTest {
+    @Rule
+    public JUnitProcessor mFeaturesProcessor = new JUnitProcessor();
+
     private static final int TAB1_ID = 0;
     private static final int TAB2_ID = 789;
     private static final int POSITION1 = 0;
@@ -165,6 +174,7 @@ public class StaticLayoutUnitTest {
                         mTabModelSelector, mTabContentManager, mBrowserControlsStateProvider,
                         () -> mTopUiThemeColorProvider, mStaticTabSceneLayer);
         mModel = mStaticLayout.getModelForTesting();
+        doReturn(true).when(mUpdateHost).isActiveLayout(mStaticLayout);
 
         doReturn(BACKGROUND_COLOR).when(mTopUiThemeColorProvider).getBackgroundColor(any());
         doReturn(TOOLBAR_BACKGROUND_COLOR)
@@ -251,6 +261,22 @@ public class StaticLayoutUnitTest {
         assertEquals(1.0f, mModel.get(LayoutTab.SATURATION), 0);
         assertTrue(mModel.get(LayoutTab.CAN_USE_LIVE_TEXTURE));
         verify(mTabContentManager).updateVisibleIds(eq(Collections.emptyList()), eq(TAB2_ID));
+    }
+
+    @Test
+    public void testTabSelectionInactive() {
+        doReturn(false).when(mUpdateHost).isActiveLayout(mStaticLayout);
+        assertNotEquals(mTab2.getId(), mModel.get(LayoutTab.TAB_ID));
+
+        getTabModelSelectorTabModelObserverFromCaptor().didSelectTab(
+                mTab2, TabSelectionType.FROM_USER, TAB1_ID);
+
+        assertEquals(mTab2.getId(), mModel.get(LayoutTab.TAB_ID));
+        assertFalse(mModel.get(LayoutTab.SHOULD_STALL));
+        assertEquals(0.0f, mModel.get(LayoutTab.STATIC_TO_VIEW_BLEND), 0);
+        assertEquals(1.0f, mModel.get(LayoutTab.SATURATION), 0);
+        assertTrue(mModel.get(LayoutTab.CAN_USE_LIVE_TEXTURE));
+        verify(mTabContentManager, never()).updateVisibleIds(any(), anyInt());
     }
 
     @Test

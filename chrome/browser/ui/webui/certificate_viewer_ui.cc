@@ -8,14 +8,14 @@
 #include "chrome/browser/ui/webui/certificate_viewer_webui.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/browser_resources.h"
+#include "chrome/grit/certificate_viewer_resources.h"
+#include "chrome/grit/certificate_viewer_resources_map.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 
@@ -49,21 +49,10 @@ void CreateAndAddWebUIDataSource(Profile* profile, const std::string& host) {
   };
   html_source->AddLocalizedStrings(kStrings);
 
-  html_source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::TrustedTypes,
-      "trusted-types static-types certificate-test-script;");
-  html_source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources chrome://webui-test 'self';");
-
-  html_source->UseStringsJs();
-
-  // Add required resources.
-  html_source->AddResourcePath("certificate_viewer.js",
-      IDR_CERTIFICATE_VIEWER_JS);
-  html_source->AddResourcePath("certificate_viewer.css",
-      IDR_CERTIFICATE_VIEWER_CSS);
-  html_source->SetDefaultResource(IDR_CERTIFICATE_VIEWER_HTML);
+  webui::SetupWebUIDataSource(html_source,
+                              base::make_span(kCertificateViewerResources,
+                                              kCertificateViewerResourcesSize),
+                              IDR_CERTIFICATE_VIEWER_CERTIFICATE_VIEWER_HTML);
 }
 
 }  // namespace

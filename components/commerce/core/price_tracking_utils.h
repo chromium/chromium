@@ -113,9 +113,13 @@ bool PopulateOrUpdateBookmarkMetaIfNeeded(
 // a noop.
 void MaybeEnableEmailNotifications(PrefService* pref_service);
 
-// Whether the email notification is explicitly disabled by the user. Return
-// false if we are using the default preference value.
-bool IsEmailDisabledByUser(PrefService* pref_service);
+// Gets the user preference for price drop notifications. If not set, the
+// default value will be returned.
+bool GetEmailNotificationPrefValue(PrefService* pref_service);
+
+// Gets whether the price drop email notification preference has been explicitly
+// set by the user or is still in the default state.
+bool IsEmailNotificationPrefSetByUser(PrefService* pref_service);
 
 // Build a user-tracked price tracking subscription object for the provided
 // cluster ID.
@@ -126,6 +130,21 @@ CommerceSubscription BuildUserSubscriptionForClusterId(uint64_t cluster_id);
 bool CanTrackPrice(const ProductInfo& info);
 bool CanTrackPrice(const absl::optional<ProductInfo>& info);
 bool CanTrackPrice(const power_bookmarks::ShoppingSpecifics& specifics);
+
+// If `url` is bookmarked, returns the name of the parent folder; otherwise
+// returns the name of the Other Bookmarks folder.
+const std::u16string& GetBookmarkParentNameOrDefault(
+    bookmarks::BookmarkModel* model,
+    const GURL& url);
+
+// Gets the explicit "shopping collection" bookmark folder. There can only be
+// one shopping collection per profile.
+const bookmarks::BookmarkNode* GetShoppingCollectionBookmarkFolder(
+    bookmarks::BookmarkModel* model,
+    bool create_if_needed = false);
+
+// Returns whether the provided node is the shopping collection folder.
+bool IsShoppingCollectionBookmarkFolder(const bookmarks::BookmarkNode* node);
 
 }  // namespace commerce
 

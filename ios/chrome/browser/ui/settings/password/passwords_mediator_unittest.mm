@@ -4,12 +4,11 @@
 
 #import "ios/chrome/browser/ui/settings/password/passwords_mediator.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/string_piece.h"
 #import "base/strings/string_util.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/bind.h"
-#import "base/test/scoped_feature_list.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -29,18 +28,13 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/sync/sync_observer_bridge.h"
-#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
-#import "ios/chrome/browser/sync/sync_setup_service_mock.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_consumer.h"
 #import "ios/chrome/browser/ui/settings/utils/password_auto_fill_status_observer.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -111,13 +105,8 @@ PasswordForm CreatePasswordForm() {
 class PasswordsMediatorTest : public BlockCleanupTest {
  protected:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        password_manager::features::kPasswordsGrouping);
     BlockCleanupTest::SetUp();
     TestChromeBrowserState::Builder builder;
-    builder.AddTestingFactory(
-        SyncSetupServiceFactory::GetInstance(),
-        base::BindRepeating(&SyncSetupServiceMock::CreateKeyedService));
     builder.AddTestingFactory(
         IOSChromePasswordStoreFactory::GetInstance(),
         base::BindRepeating(
@@ -143,17 +132,13 @@ class PasswordsMediatorTest : public BlockCleanupTest {
 
     mediator_ = [[PasswordsMediator alloc]
         initWithPasswordCheckManager:password_check_
-                    syncSetupService:syncService()
                        faviconLoader:IOSChromeFaviconLoaderFactory::
                                          GetForBrowserState(
                                              browser_state_.get())
                          syncService:SyncServiceFactory::GetForBrowserState(
-                                         browser_state_.get())];
+                                         browser_state_.get())
+                         prefService:browser_state_->GetPrefs()];
     mediator_.consumer = consumer_;
-  }
-
-  SyncSetupService* syncService() {
-    return SyncSetupServiceFactory::GetForBrowserState(browser_state_.get());
   }
 
   PasswordsMediator* mediator() { return mediator_; }
@@ -167,7 +152,6 @@ class PasswordsMediatorTest : public BlockCleanupTest {
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   scoped_refptr<TestPasswordStore> store_;

@@ -40,10 +40,8 @@ ProfilePickerForceSigninDialogDelegate::ProfilePickerForceSigninDialogDelegate(
 
   web_view_->GetWebContents()->SetDelegate(this);
 
-  ChromePasswordManagerClient::CreateForWebContentsWithAutofillClient(
-      web_view_->GetWebContents(),
-      autofill::ContentAutofillClient::FromWebContents(
-          web_view_->GetWebContents()));
+  ChromePasswordManagerClient::CreateForWebContents(
+      web_view_->GetWebContents());
 
   ChromePasswordReuseDetectionManagerClient::CreateForWebContents(
       web_view_->GetWebContents());

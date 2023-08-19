@@ -33,15 +33,15 @@ build_webui("build") {
       "profile_customization/profile_customization.html",
       "signin_email_confirmation/signin_email_confirmation.html",
       "signin_error/signin_error.html",
+      "signin_reauth/images/account_passwords_reauth_illustration_dark.svg",
+      "signin_reauth/images/account_passwords_reauth_illustration.svg",
+      "signin_reauth/signin_reauth.html",
     ]
   }
   if (enable_dice_support) {
     static_files += [
       "dice_web_signin_intercept/dice_web_signin_intercept.html",
       "dice_web_signin_intercept/images/split_header.svg",
-      "signin_reauth/images/account_passwords_reauth_illustration_dark.svg",
-      "signin_reauth/images/account_passwords_reauth_illustration.svg",
-      "signin_reauth/signin_reauth.html",
     ]
   }
 
@@ -56,13 +56,12 @@ build_webui("build") {
       "profile_customization/profile_customization_app.ts",
       "signin_email_confirmation/signin_email_confirmation_app.ts",
       "signin_error/signin_error_app.ts",
+      "signin_reauth/signin_reauth_app.ts",
     ]
   }
   if (enable_dice_support) {
-    web_component_files += [
-      "dice_web_signin_intercept/dice_web_signin_intercept_app.ts",
-      "signin_reauth/signin_reauth_app.ts",
-    ]
+    web_component_files +=
+        [ "dice_web_signin_intercept/dice_web_signin_intercept_app.ts" ]
   }
 
   non_web_component_files = [
@@ -75,12 +74,12 @@ build_webui("build") {
       "enterprise_profile_welcome/enterprise_profile_welcome_browser_proxy.ts",
       "profile_customization/profile_customization_browser_proxy.ts",
       "signin_error/signin_error.ts",
+      "signin_reauth/signin_reauth_browser_proxy.ts",
     ]
   }
   if (enable_dice_support) {
     non_web_component_files += [
       "dice_web_signin_intercept/dice_web_signin_intercept_browser_proxy.ts",
-      "signin_reauth/signin_reauth_browser_proxy.ts",
     ]
   }
 
@@ -97,6 +96,7 @@ build_webui("build") {
   ts_deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/customize_themes:build_ts",
+    "//ui/webui/resources/cr_components/theme_color_picker:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]

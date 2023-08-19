@@ -131,7 +131,8 @@ TEST_F(ViewTargeterTest, ViewTargeterForKeyEvents) {
       static_cast<internal::RootView*>(widget->GetRootView());
   ui::EventTargeter* targeter = root_view->targeter();
 
-  ui::KeyEvent key_event('a', ui::VKEY_A, ui::DomCode::NONE, ui::EF_NONE);
+  ui::KeyEvent key_event = ui::KeyEvent::FromCharacter(
+      'a', ui::VKEY_A, ui::DomCode::NONE, ui::EF_NONE);
 
   // The focused view should be the initial target of the event.
   ui::EventTarget* current_target =

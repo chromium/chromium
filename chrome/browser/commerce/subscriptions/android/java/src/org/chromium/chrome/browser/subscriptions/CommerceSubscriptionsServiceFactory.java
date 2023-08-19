@@ -4,8 +4,7 @@
 
 package org.chromium.chrome.browser.subscriptions;
 
-import androidx.annotation.VisibleForTesting;
-
+import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
@@ -46,9 +45,9 @@ public class CommerceSubscriptionsServiceFactory {
     }
 
     /** Sets the CommerceSubscriptionsService for testing. */
-    @VisibleForTesting
     public static void setSubscriptionsServiceForTesting(
             CommerceSubscriptionsService subscriptionsService) {
         sSubscriptionsServiceForTesting = subscriptionsService;
+        ResettersForTesting.register(() -> sSubscriptionsServiceForTesting = null);
     }
 }

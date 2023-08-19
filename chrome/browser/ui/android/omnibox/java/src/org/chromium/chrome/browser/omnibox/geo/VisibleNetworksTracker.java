@@ -36,8 +36,7 @@ class VisibleNetworksTracker {
      * computes the simplest possible visibleNetworks fast, and triggers a background asynchronous
      * refresh. Might return null if visible networks cannot be computed.
      */
-    @Nullable
-    static VisibleNetworks getLastKnownVisibleNetworks(final Context context) {
+    static @Nullable VisibleNetworks getLastKnownVisibleNetworks(final Context context) {
         if (sUseVisibleNetworksForTesting) return sVisibleNetworksForTesting;
 
         if (isValidCachedVisibleNetworks()) return getCachedVisibleNetworks();
@@ -88,7 +87,6 @@ class VisibleNetworksTracker {
         sVisibleNetworksTime = Long.MAX_VALUE;
     }
 
-    @VisibleForTesting
     static void setVisibleNetworksForTesting(VisibleNetworks visibleNetworksForTesting) {
         sVisibleNetworksForTesting = visibleNetworksForTesting;
         sUseVisibleNetworksForTesting = true;

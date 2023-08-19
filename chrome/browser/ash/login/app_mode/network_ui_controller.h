@@ -5,18 +5,29 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_APP_MODE_NETWORK_UI_CONTROLLER_H_
 #define CHROME_BROWSER_ASH_LOGIN_APP_MODE_NETWORK_UI_CONTROLLER_H_
 
+#include "base/auto_reset.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
+
+namespace {
+class NetworkMonitor;
+}
 
 namespace ash {
 
 class LoginDisplayHost;
 
-class NetworkUiController : public AppLaunchSplashScreenView::Delegate,
-                            public KioskAppLauncher::NetworkDelegate {
+class NetworkUiController
+    : public AppLaunchSplashScreenView::Delegate,
+      public KioskAppLauncher::NetworkDelegate,
+      public NetworkStateInformer::NetworkStateInformerObserver {
  public:
   enum NetworkUIState {
     kNotShowing = 0,     // Network configure UI is not being shown.
@@ -38,13 +49,31 @@ class NetworkUiController : public AppLaunchSplashScreenView::Delegate,
     virtual void OnNetworkLost() = 0;
   };
 
+  class NetworkMonitor {
+   public:
+    using State = ash::NetworkStateInformer::State;
+    using Observer = ash::NetworkStateInformer::NetworkStateInformerObserver;
+
+    NetworkMonitor() = default;
+    NetworkMonitor(const NetworkMonitor&) = delete;
+    NetworkMonitor& operator=(const NetworkMonitor&) = delete;
+    virtual ~NetworkMonitor() = default;
+
+    virtual void AddObserver(Observer* observer) = 0;
+    virtual void RemoveObserver(Observer* observer) = 0;
+    virtual State GetState() const = 0;
+    virtual std::string GetNetworkName() const = 0;
+  };
+
   NetworkUiController(Observer& observer,
                       LoginDisplayHost* host,
-                      AppLaunchSplashScreenView* splash_screen);
+                      AppLaunchSplashScreenView& splash_screen,
+                      std::unique_ptr<NetworkMonitor> network_monitor);
   NetworkUiController(const NetworkUiController&) = delete;
   NetworkUiController& operator=(const NetworkUiController&) = delete;
   ~NetworkUiController() override;
 
+  void Start();
   void SetProfile(Profile* profile);
   void UserRequestedNetworkConfig();
   bool ShouldShowNetworkConfig();
@@ -53,20 +82,23 @@ class NetworkUiController : public AppLaunchSplashScreenView::Delegate,
   // `AppLaunchSplashScreenView::Delegate`
   void OnConfigureNetwork() override;
   void OnNetworkConfigFinished() override;
-  void OnNetworkStateChanged(bool online) override;
 
   // `KioskAppLauncher::NetworkDelegate`
   void InitializeNetwork() override;
   bool IsNetworkReady() const override;
 
+  // `NetworkStateInformer::NetworkStateInformerObserver`
+  void UpdateState(NetworkError::ErrorReason reason) override;
+
   NetworkUIState GetNetworkUiStateForTesting() const {
     return network_ui_state_;
   }
 
-  static void SetCanConfigureNetworkCallbackForTesting(
-      base::RepeatingCallback<bool()>* callback);
+  static std::unique_ptr<base::AutoReset<absl::optional<bool>>>
+  SetCanConfigureNetworkForTesting(bool can_configure_network);
 
  private:
+  void OnNetworkStateChanged(bool online);
   void MaybeShowNetworkConfigureUI();
   void MaybeShowNetworkConfigureUIForConsumerKiosk();
   void ShowNetworkConfigureUI();
@@ -80,8 +112,9 @@ class NetworkUiController : public AppLaunchSplashScreenView::Delegate,
 
   const raw_ref<Observer> observer_;
   const raw_ptr<LoginDisplayHost> host_;
-  const raw_ptr<AppLaunchSplashScreenView> splash_screen_view_;
+  const raw_ref<AppLaunchSplashScreenView> splash_screen_view_;
   raw_ptr<Profile> profile_ = nullptr;
+  std::unique_ptr<NetworkMonitor> network_monitor_;
 
   NetworkUIState network_ui_state_ = kNotShowing;
   bool network_required_ = false;
@@ -91,6 +124,9 @@ class NetworkUiController : public AppLaunchSplashScreenView::Delegate,
   base::OneShotTimer network_wait_timer_;
   bool network_wait_timeout_ = false;
 
+  base::ScopedObservation<NetworkMonitor,
+                          NetworkStateInformer::NetworkStateInformerObserver>
+      network_observation_{this};
   base::WeakPtrFactory<NetworkUiController> weak_ptr_factory_{this};
 };
 

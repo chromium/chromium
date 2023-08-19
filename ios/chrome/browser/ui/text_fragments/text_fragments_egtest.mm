@@ -17,10 +17,6 @@
 #import "net/test/embedded_test_server/request_handler_util.h"
 #import "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 const char kTestURL[] = "/testPage";
@@ -81,14 +77,8 @@ void ReshareToPasteboard(const GURL& expected) {
                                           IDS_IOS_SHARED_HIGHLIGHT_RESHARE))]
       performAction:grey_tap()];
 
-  // Wait for the Activity View to show up (look for the Copy action).
-  id<GREYMatcher> copyActivityButton = chrome_test_util::CopyActivityButton();
-  [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:copyActivityButton];
-
   // Tap on the Copy action.
-  [[EarlGrey selectElementWithMatcher:copyActivityButton]
-      performAction:grey_tap()];
+  [ChromeEarlGrey tapButtonInActivitySheetWithID:@"Copy"];
 
   // Wait for the value to be in the pasteboard.
   GREYCondition* getPastedURL = [GREYCondition

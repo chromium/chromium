@@ -11,7 +11,7 @@
 namespace ax {
 
 RegisteredWrappable::RegisteredWrappable(v8::Local<v8::Context> context) {
-  observer_.Observe(V8Manager::GetFromContext(context));
+  observer_.Observe(V8Environment::GetFromContext(context));
 }
 
 RegisteredWrappable::~RegisteredWrappable() = default;

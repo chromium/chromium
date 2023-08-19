@@ -256,8 +256,8 @@ float ShapeResult::RunInfo::XPositionForOffset(
     }
   }
 
-  // This is the character position inside the glyph sequence.
-  unsigned pos = offset - glyph_sequence_start;
+  // Determine if the offset is at the beginning of the current glyph sequence.
+  bool is_offset_at_glyph_sequence_start = (offset == glyph_sequence_start);
 
   // We calculate the number of Unicode grapheme clusters (actually cursor
   // position stops) on the subset of characters. We use this to divide
@@ -268,14 +268,23 @@ float ShapeResult::RunInfo::XPositionForOffset(
   unsigned graphemes = NumGraphemes(glyph_sequence_start, glyph_sequence_end);
   if (graphemes > 1) {
     DCHECK_GE(glyph_sequence_end, glyph_sequence_start);
-    unsigned size = glyph_sequence_end - glyph_sequence_start;
-    unsigned place = graphemes * pos / size;
-    pos -= place;
+    unsigned next_offset = offset + (offset == num_characters_ ? 0 : 1);
+    unsigned num_graphemes_to_offset =
+        NumGraphemes(glyph_sequence_start, next_offset) - 1;
+    // |is_offset_at_glyph_sequence_start| bool variable above does not take
+    // into account the case of broken glyphs (with multi graphemes) scenarios,
+    // so make amend here. Check if the offset is at the beginning of the
+    // specific grapheme cluster in the broken glyphs.
+    if (offset > 0) {
+      is_offset_at_glyph_sequence_start =
+          (NumGraphemes(offset - 1, next_offset) != 1);
+    }
     glyph_sequence_advance = glyph_sequence_advance / graphemes;
     if (IsRtl()) {
-      accumulated_position += glyph_sequence_advance * (graphemes - place - 1);
+      accumulated_position +=
+          glyph_sequence_advance * (graphemes - num_graphemes_to_offset - 1);
     } else {
-      accumulated_position += glyph_sequence_advance * place;
+      accumulated_position += glyph_sequence_advance * num_graphemes_to_offset;
     }
   }
 
@@ -283,10 +292,11 @@ float ShapeResult::RunInfo::XPositionForOffset(
   // offset is not at the beginning, we need to jump to the right side of the
   // grapheme. On RTL, if we want AdjustToStart and offset is not at the end, we
   // need to jump to the left side of the grapheme.
-  if (IsLtr() && adjust_mid_cluster == AdjustMidCluster::kToEnd && pos != 0) {
+  if (IsLtr() && adjust_mid_cluster == AdjustMidCluster::kToEnd &&
+      !is_offset_at_glyph_sequence_start) {
     accumulated_position += glyph_sequence_advance;
   } else if (IsRtl() && adjust_mid_cluster == AdjustMidCluster::kToEnd &&
-             pos != 0) {
+             !is_offset_at_glyph_sequence_start) {
     accumulated_position -= glyph_sequence_advance;
   }
 
@@ -654,6 +664,16 @@ float ShapeResult::CaretPositionForOffset(
   return PositionForOffset(offset, adjust_mid_cluster);
 }
 
+bool ShapeResult::HasFallbackFonts() const {
+  const SimpleFontData* primary_font = PrimaryFont();
+  for (const scoped_refptr<RunInfo>& run : runs_) {
+    if (run->font_data_ != primary_font) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void ShapeResult::GetRunFontData(Vector<RunFontData>* font_data) const {
   for (const auto& run : runs_) {
     font_data->push_back(
@@ -933,6 +953,53 @@ scoped_refptr<ShapeResult> ShapeResult::ApplySpacingToCopy(
   if (index_of_sub_run != std::numeric_limits<unsigned>::max())
     result->ApplySpacingImpl(spacing, index_of_sub_run);
   return result;
+}
+
+void ShapeResult::ApplyTextAutoSpacing(
+    const Vector<OffsetWithSpacing, 16>& offsets_with_spacing) {
+  DCHECK(offsets_with_spacing.size());
+  if (LIKELY(IsLtr())) {
+    ApplyTextAutoSpacingCore(offsets_with_spacing.begin(),
+                             offsets_with_spacing.end());
+  } else {
+    ApplyTextAutoSpacingCore(offsets_with_spacing.rbegin(),
+                             offsets_with_spacing.rend());
+  }
+}
+
+template <class Iterator>
+void ShapeResult::ApplyTextAutoSpacingCore(Iterator offset_begin,
+                                           Iterator offset_end) {
+  DCHECK(offset_begin != offset_end);
+  float total_space = 0.0;
+  Iterator current_offset = offset_begin;
+  for (auto& run : runs_) {
+    if (!run) {
+      continue;
+    }
+    float total_space_for_run = 0;
+    for (wtf_size_t i = 0;
+         i < run->glyph_data_.size() && current_offset != offset_end; i++) {
+      HarfBuzzRunGlyphData& glyph_data = run->glyph_data_[i];
+
+      // Skip if it's not a grapheme cluster boundary. Set it to UNLIKELY, since
+      // this method should be executed within ideograph content.
+      if (UNLIKELY(i + 1 < run->glyph_data_.size() &&
+                   glyph_data.character_index ==
+                       run->glyph_data_[i + 1].character_index)) {
+        continue;
+      }
+      if (glyph_data.character_index + run->start_index_ ==
+          current_offset->offset) {
+        glyph_data.advance += current_offset->spacing;
+        total_space_for_run += current_offset->spacing;
+        current_offset++;
+      }
+    }
+    run->width_ += total_space_for_run;
+    total_space += total_space_for_run;
+  }
+  width_ += total_space;
 }
 
 namespace {

@@ -28,6 +28,7 @@
 #include "build/build_config.h"
 #include "media/base/audio_bus.h"
 #include "media/base/fake_single_thread_task_runner.h"
+#include "media/base/mock_filters.h"
 #include "media/base/video_frame.h"
 #include "media/cast/cast_config.h"
 #include "media/cast/cast_environment.h"
@@ -918,6 +919,7 @@ void End2EndTest::Create() {
       audio_sender_config_, base::BindOnce(&ExpectSuccessOperationalStatus));
   cast_sender_->InitializeVideo(
       video_sender_config_,
+      std::make_unique<media::MockVideoEncoderMetricsProvider>(),
       base::BindRepeating(&ExpectSuccessOperationalStatus), base::DoNothing());
   task_runner_->RunTasks();
 

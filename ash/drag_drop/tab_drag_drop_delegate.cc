@@ -197,11 +197,9 @@ void TabDragDropDelegate::OnNewBrowserWindowCreated(
   // It's possible new window is created when the dragged WebContents
   // closes itself during the drag session.
   if (!new_window) {
-    if (is_lacros && !crosapi::lacros_startup_state::IsLacrosPrimaryEnabled()) {
-      LOG(ERROR)
-          << "New browser window creation for tab detaching failed.\n"
-          << "Check whether about:flags#lacros-primary is enabled or "
-          << "--enable-features=LacrosPrimary is passed in when launching Ash";
+    if (is_lacros && !crosapi::lacros_startup_state::IsLacrosEnabled()) {
+      LOG(ERROR) << "New browser window creation for tab detaching failed.\n"
+                 << "Check whether Lacros is enabled";
     }
     return;
   }

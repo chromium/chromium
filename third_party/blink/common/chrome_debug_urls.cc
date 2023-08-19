@@ -22,7 +22,7 @@
 #include <zircon/syscalls.h>
 #endif
 
-#if BUILDFLAG(BUILD_RUST_CRASH)
+#if BUILDFLAG(ENABLE_RUST_CRASH)
 #include "third_party/blink/common/rust_crash/src/lib.rs.h"
 #endif
 
@@ -61,9 +61,9 @@ const char kChromeUIBrowserHeapCorruptionURL[] =
 const char kChromeUICfgViolationCrashURL[] = "chrome://crash/cfg";
 const char kChromeUIHeapCorruptionCrashURL[] = "chrome://heapcorruptioncrash/";
 #endif
-#if BUILDFLAG(BUILD_RUST_CRASH)
+#if BUILDFLAG(ENABLE_RUST_CRASH)
 const char kChromeUICrashRustURL[] = "chrome://crash/rust";
-#endif  // BUILDFLAG(BUILD_RUST_CRASH)
+#endif  // BUILDFLAG(ENABLE_RUST_CRASH)
 
 #if defined(ADDRESS_SANITIZER)
 const char kChromeUICrashHeapOverflowURL[] = "chrome://crash/heap-overflow";
@@ -76,9 +76,9 @@ const char kChromeUICrashCorruptHeapBlockURL[] =
 const char kChromeUICrashCorruptHeapURL[] = "chrome://crash/corrupt-heap";
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(BUILD_RUST_CRASH)
+#if BUILDFLAG(ENABLE_RUST_CRASH)
 const char kChromeUICrashRustOverflowURL[] = "chrome://crash/rust-overflow";
-#endif  // BUILDFLAG(BUILD_RUST_CRASH)
+#endif  // BUILDFLAG(ENABLE_RUST_CRASH)
 
 #endif  // ADDRESS_SANITIZER
 
@@ -106,7 +106,7 @@ bool IsRendererDebugURL(const GURL& url) {
     return true;
   }
 
-#if BUILDFLAG(BUILD_RUST_CRASH)
+#if BUILDFLAG(ENABLE_RUST_CRASH)
   if (url == kChromeUICrashRustURL) {
     return true;
   }
@@ -119,11 +119,11 @@ bool IsRendererDebugURL(const GURL& url) {
     return true;
   }
 
-#if BUILDFLAG(BUILD_RUST_CRASH)
+#if BUILDFLAG(ENABLE_RUST_CRASH)
   if (url == kChromeUICrashRustOverflowURL) {
     return true;
   }
-#endif  // BUILDFLAG(BUILD_RUST_CRASH)
+#endif  // BUILDFLAG(ENABLE_RUST_CRASH)
 #endif  // defined(ADDRESS_SANITIZER)
 
 #if BUILDFLAG(IS_WIN)
@@ -186,7 +186,7 @@ NOINLINE void MaybeTriggerAsanError(const GURL& url) {
                << " because user navigated to " << url.spec();
     base::debug::AsanCorruptHeap();
 #endif  // BUILDFLAG(IS_WIN)
-#if BUILDFLAG(BUILD_RUST_CRASH)
+#if BUILDFLAG(ENABLE_RUST_CRASH)
   } else if (url == kChromeUICrashRustOverflowURL) {
     // Ensure that ASAN works even in Rust code.
     LOG(ERROR) << "Intentionally causing ASAN heap overflow in Rust"
@@ -209,7 +209,7 @@ void HandleChromeDebugURL(const GURL& url) {
     LOG(ERROR) << "Intentionally crashing (with null pointer dereference)"
                << " because user navigated to " << url.spec();
     internal::CrashIntentionally();
-#if BUILDFLAG(BUILD_RUST_CRASH)
+#if BUILDFLAG(ENABLE_RUST_CRASH)
   } else if (url == kChromeUICrashRustURL) {
     // Cause a typical crash in Rust code, so we can test that call stack
     // collection and symbol mangling work across the language boundary.

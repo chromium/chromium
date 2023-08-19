@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "google_apis/gaia/core_account_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -41,6 +42,7 @@ class ProfilePickerSignedInFlowController
   ProfilePickerSignedInFlowController(
       ProfilePickerWebContentsHost* host,
       Profile* profile,
+      const CoreAccountId& account_id,
       std::unique_ptr<content::WebContents> contents,
       signin_metrics::AccessPoint signin_access_point,
       absl::optional<SkColor> profile_color);
@@ -105,6 +107,7 @@ class ProfilePickerSignedInFlowController
   Profile* profile() const { return profile_; }
   content::WebContents* contents() const { return contents_.get(); }
   std::unique_ptr<content::WebContents> ReleaseContents();
+  const CoreAccountId& account_id() const { return account_id_; }
 
  private:
   // content::WebContentsDelegate:
@@ -128,6 +131,10 @@ class ProfilePickerSignedInFlowController
   raw_ptr<ProfilePickerWebContentsHost> host_;
 
   raw_ptr<Profile> profile_ = nullptr;
+
+  // Account ID for the profile. Note that it may not be set as primary account
+  // yet.
+  const CoreAccountId account_id_;
 
   // Prevent |profile_| from being destroyed first.
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;

@@ -186,6 +186,11 @@ class PolicyStorage {
     return error_detail_;
   }
 
+  bool enrollment_required() const { return enrollment_required_; }
+  void set_enrollment_required(bool enrollment_required) {
+    enrollment_required_ = enrollment_required;
+  }
+
  private:
   // Maps policy keys to a serialized proto representing the policies to be
   // applied for the type (e.g. CloudPolicySettings, ChromeDeviceSettingsProto).
@@ -221,6 +226,8 @@ class PolicyStorage {
   bool has_kiosk_license_ = true;
 
   bool has_enterprise_license_ = true;
+
+  bool enrollment_required_ = false;
 
   // Maps brand serial ID to PsmEntry.
   base::flat_map<std::string, PsmEntry> psm_entries_;

@@ -28,7 +28,6 @@ namespace content {
 class ShellBrowserContext;
 class ShellBrowserMainParts;
 
-std::string GetShellUserAgent();
 std::string GetShellLanguage();
 blink::UserAgentMetadata GetShellUserAgentMetadata();
 
@@ -79,6 +78,7 @@ class ShellContentBrowserClient : public ContentBrowserClient {
   GeneratedCodeCacheSettings GetGeneratedCodeCacheSettings(
       content::BrowserContext* context) override;
   base::OnceClosure SelectClientCertificate(
+      BrowserContext* browser_context,
       WebContents* web_contents,
       net::SSLCertRequestInfo* cert_request_info,
       net::ClientCertIdentityList client_certs,
@@ -116,8 +116,6 @@ class ShellContentBrowserClient : public ContentBrowserClient {
   base::FilePath GetSandboxedStorageServiceDataDirectory() override;
   base::FilePath GetFirstPartySetsDirectory() override;
   std::string GetUserAgent() override;
-  std::string GetFullUserAgent() override;
-  std::string GetReducedUserAgent() override;
   blink::UserAgentMetadata GetUserAgentMetadata() override;
   void OverrideURLLoaderFactoryParams(
       BrowserContext* browser_context,

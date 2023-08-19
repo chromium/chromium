@@ -14,8 +14,6 @@ source_set("overscroll_actions") {
     "//ios/chrome/browser/ui/overscroll_actions",
     "//ios/web/public",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("unit_tests") {
@@ -36,5 +34,4 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/ocmock",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

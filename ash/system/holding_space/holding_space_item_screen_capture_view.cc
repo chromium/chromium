@@ -14,6 +14,7 @@
 #include "ash/system/holding_space/holding_space_util.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/functional/bind.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -121,7 +122,10 @@ HoldingSpaceItemScreenCaptureView::HoldingSpaceItemScreenCaptureView(
                       views::MinimumFlexSizeRule::kScaleToZero,
                       views::MaximumFlexSizeRule::kUnbounded)))
               .AddChild(
-                  CreatePrimaryActionBuilder(kPrimaryActionSize)
+                  CreatePrimaryActionBuilder(
+                      /*apply_accent_colors=*/chromeos::features::
+                          IsJellyEnabled(),
+                      /*min_size=*/kPrimaryActionSize)
                       .SetBackground(holding_space_util::CreateCircleBackground(
                           kColorAshShieldAndBase80))))
       .AddChild(views::Builder<views::View>()

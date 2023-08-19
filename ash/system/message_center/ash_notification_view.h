@@ -5,6 +5,8 @@
 #ifndef ASH_SYSTEM_MESSAGE_CENTER_ASH_NOTIFICATION_VIEW_H_
 #define ASH_SYSTEM_MESSAGE_CENTER_ASH_NOTIFICATION_VIEW_H_
 
+#include <vector>
+
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -122,7 +124,7 @@ class ASH_EXPORT AshNotificationView
       const message_center::Notification& notification) override;
   void UpdateControlButtonsVisibility() override;
   bool IsIconViewShown() const override;
-  void SetExpandButtonEnabled(bool enabled) override;
+  void SetExpandButtonVisibility(bool visible) override;
   bool IsExpandable() const override;
   void UpdateCornerRadius(int top_radius, int bottom_radius) override;
   void SetDrawBackgroundAsActive(bool active) override;
@@ -136,9 +138,21 @@ class ASH_EXPORT AshNotificationView
   int GetLargeImageViewMaxWidth() const override;
   void ToggleInlineSettings(const ui::Event& event) override;
   void OnInlineReplyUpdated() override;
+  void SetExpandCollapseEnabled(bool enabled) override;
 
   void set_is_animating(bool is_animating) { is_animating_ = is_animating; }
   bool is_animating() { return is_animating_; }
+
+  AshNotificationExpandButton* expand_button_for_test() {
+    return expand_button_;
+  }
+
+  bool disable_expand_collapse_for_test() { return disable_expand_collapse_; }
+
+  message_center::NotificationControlButtonsView*
+  control_buttons_view_for_test() {
+    return control_buttons_view_;
+  }
 
   // View containing all grouped notifications, propagates size changes
   // to the parent notification view.
@@ -298,26 +312,31 @@ class ASH_EXPORT AshNotificationView
   void AttachBinaryImageAsDropData(ui::OSExchangeData* data);
 
   // Owned by views hierarchy.
-  views::View* main_view_ = nullptr;
-  views::View* main_right_view_ = nullptr;
-  RoundedImageView* app_icon_view_ = nullptr;
-  AshNotificationExpandButton* expand_button_ = nullptr;
-  views::View* left_content_ = nullptr;
-  views::Label* message_label_in_expanded_state_ = nullptr;
-  views::ScrollView* grouped_notifications_scroll_view_ = nullptr;
-  views::View* grouped_notifications_container_ = nullptr;
-  views::View* collapsed_summary_view_ = nullptr;
-  message_center::NotificationControlButtonsView* control_buttons_view_ =
+  raw_ptr<views::View, ExperimentalAsh> main_view_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> main_right_view_ = nullptr;
+  raw_ptr<RoundedImageView, ExperimentalAsh> app_icon_view_ = nullptr;
+  raw_ptr<AshNotificationExpandButton, ExperimentalAsh> expand_button_ =
       nullptr;
+  raw_ptr<views::View, ExperimentalAsh> left_content_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> message_label_in_expanded_state_ =
+      nullptr;
+  raw_ptr<views::ScrollView, ExperimentalAsh>
+      grouped_notifications_scroll_view_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> grouped_notifications_container_ =
+      nullptr;
+  raw_ptr<views::View, ExperimentalAsh> collapsed_summary_view_ = nullptr;
+  raw_ptr<message_center::NotificationControlButtonsView, ExperimentalAsh>
+      control_buttons_view_ = nullptr;
   raw_ptr<views::LabelButton, ExperimentalAsh> turn_off_notifications_button_ =
       nullptr;
   raw_ptr<views::LabelButton, ExperimentalAsh> inline_settings_cancel_button_ =
       nullptr;
-  views::View* snooze_button_spacer_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> snooze_button_spacer_ = nullptr;
   raw_ptr<IconButton, ExperimentalAsh> snooze_button_ = nullptr;
 
   // These views below are dynamically created inside view hierarchy.
-  raw_ptr<NotificationTitleRow, ExperimentalAsh> title_row_ = nullptr;
+  raw_ptr<NotificationTitleRow, DanglingUntriaged | ExperimentalAsh>
+      title_row_ = nullptr;
 
   // Layout manager for the container of header and left content.
   raw_ptr<views::BoxLayout, ExperimentalAsh> header_left_content_layout_ =
@@ -348,6 +367,10 @@ class ASH_EXPORT AshNotificationView
 
   // Whether this view is shown in a notification popup.
   bool shown_in_popup_ = false;
+
+  // We will not do anything when `ToggleExpand()` if `disable_expand_collapse_`
+  // is true.
+  bool disable_expand_collapse_ = false;
 
   base::ScopedObservation<message_center::MessageCenter, MessageCenterObserver>
       message_center_observer_{this};

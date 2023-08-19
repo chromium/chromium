@@ -54,7 +54,7 @@ StyleRule* CreateDummyStyleRule() {
   css_test_helpers::TestStyleSheet sheet;
   sheet.AddCSSRules("#id { color: tomato; }");
   const RuleSet& rule_set = sheet.GetRuleSet();
-  base::span<const RuleData> rules = rule_set.IdRules("id");
+  base::span<const RuleData> rules = rule_set.IdRules(AtomicString("id"));
   DCHECK_EQ(1u, rules.size());
   return rules.front().Rule();
 }
@@ -147,8 +147,8 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_TagThenAttr) {
 
   sheet.AddCSSRules("div[attr] { }");
   RuleSet& rule_set = sheet.GetRuleSet();
-  ASSERT_EQ(1u, rule_set.AttrRules("attr").size());
-  ASSERT_TRUE(rule_set.TagRules("div").empty());
+  ASSERT_EQ(1u, rule_set.AttrRules(AtomicString("attr")).size());
+  ASSERT_TRUE(rule_set.TagRules(AtomicString("div")).empty());
 }
 
 // It's arbitrary which of these we choose, but it needs to match
@@ -158,9 +158,9 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_ThreeClasses) {
 
   sheet.AddCSSRules(".a.b.c { }");
   RuleSet& rule_set = sheet.GetRuleSet();
-  EXPECT_EQ(0u, rule_set.ClassRules("a").size());
-  EXPECT_EQ(0u, rule_set.ClassRules("b").size());
-  EXPECT_EQ(1u, rule_set.ClassRules("c").size());
+  EXPECT_EQ(0u, rule_set.ClassRules(AtomicString("a")).size());
+  EXPECT_EQ(0u, rule_set.ClassRules(AtomicString("b")).size());
+  EXPECT_EQ(1u, rule_set.ClassRules(AtomicString("c")).size());
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_AttrThenClass) {
@@ -168,8 +168,8 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_AttrThenClass) {
 
   sheet.AddCSSRules("[attr].class { }");
   RuleSet& rule_set = sheet.GetRuleSet();
-  ASSERT_TRUE(rule_set.AttrRules("attr").empty());
-  ASSERT_EQ(1u, rule_set.ClassRules("class").size());
+  ASSERT_TRUE(rule_set.AttrRules(AtomicString("attr")).empty());
+  ASSERT_EQ(1u, rule_set.ClassRules(AtomicString("class")).size());
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_Host) {
@@ -214,8 +214,9 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_HostAndHostContextNotInRightmost) {
   sheet.AddCSSRules(":host-context(#x) .y, :host(.a) > #b  { }");
   RuleSet& rule_set = sheet.GetRuleSet();
   const base::span<const RuleData> shadow_rules = rule_set.ShadowHostRules();
-  base::span<const RuleData> id_rules = rule_set.IdRules("b");
-  base::span<const RuleData> class_rules = rule_set.ClassRules("y");
+  base::span<const RuleData> id_rules = rule_set.IdRules(AtomicString("b"));
+  base::span<const RuleData> class_rules =
+      rule_set.ClassRules(AtomicString("y"));
   ASSERT_EQ(0u, shadow_rules.size());
   ASSERT_EQ(1u, id_rules.size());
   ASSERT_EQ(1u, class_rules.size());
@@ -246,7 +247,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_Focus) {
   sheet.AddCSSRules("[attr]:focus { }");
   RuleSet& rule_set = sheet.GetRuleSet();
   ASSERT_EQ(1u, rule_set.FocusPseudoClassRules().size());
-  ASSERT_EQ(1u, rule_set.AttrRules("attr").size());
+  ASSERT_EQ(1u, rule_set.AttrRules(AtomicString("attr")).size());
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_LinkVisited) {
@@ -262,7 +263,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_LinkVisited) {
   // Visited-dependent rules (which include selectors that contain :link)
   // are added twice.
   ASSERT_EQ(5u, rule_set.LinkPseudoClassRules().size());
-  ASSERT_EQ(5u, rule_set.AttrRules("attr").size());
+  ASSERT_EQ(5u, rule_set.AttrRules(AtomicString("attr")).size());
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_Cue) {
@@ -281,8 +282,8 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_PlaceholderPseudo) {
   sheet.AddCSSRules("::placeholder { }");
   sheet.AddCSSRules("input::placeholder { }");
   RuleSet& rule_set = sheet.GetRuleSet();
-  base::span<const RuleData> rules =
-      rule_set.UAShadowPseudoElementRules("-webkit-input-placeholder");
+  base::span<const RuleData> rules = rule_set.UAShadowPseudoElementRules(
+      AtomicString("-webkit-input-placeholder"));
   ASSERT_EQ(2u, rules.size());
 }
 
@@ -300,7 +301,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_IsSingleArg) {
 
   sheet.AddCSSRules(":is(.a) { }");
   RuleSet& rule_set = sheet.GetRuleSet();
-  base::span<const RuleData> rules = rule_set.ClassRules("a");
+  base::span<const RuleData> rules = rule_set.ClassRules(AtomicString("a"));
   ASSERT_FALSE(rules.empty());
   ASSERT_EQ(1u, rules.size());
 }
@@ -310,7 +311,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_WhereSingleArg) {
 
   sheet.AddCSSRules(":where(.a) { }");
   RuleSet& rule_set = sheet.GetRuleSet();
-  base::span<const RuleData> rules = rule_set.ClassRules("a");
+  base::span<const RuleData> rules = rule_set.ClassRules(AtomicString("a"));
   ASSERT_FALSE(rules.empty());
   ASSERT_EQ(1u, rules.size());
 }
@@ -320,7 +321,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_WhereSingleArgNested) {
 
   sheet.AddCSSRules(":where(:is(.a)) { }");
   RuleSet& rule_set = sheet.GetRuleSet();
-  base::span<const RuleData> rules = rule_set.ClassRules("a");
+  base::span<const RuleData> rules = rule_set.ClassRules(AtomicString("a"));
   ASSERT_FALSE(rules.empty());
   ASSERT_EQ(1u, rules.size());
 }
@@ -362,21 +363,27 @@ TEST(RuleSetTest, LargeNumberOfAttributeRules) {
   sheet.AddCSSRules("[otherattr=\"value\"] {}");
 
   RuleSet& rule_set = sheet.GetRuleSet();
-  base::span<const RuleData> list = rule_set.AttrRules("attr");
+  base::span<const RuleData> list = rule_set.AttrRules(AtomicString("attr"));
   ASSERT_FALSE(list.empty());
 
-  EXPECT_TRUE(rule_set.CanIgnoreEntireList(list, "attr", "notfound"));
-  EXPECT_FALSE(rule_set.CanIgnoreEntireList(list, "attr", "value20"));
-  EXPECT_FALSE(rule_set.CanIgnoreEntireList(list, "attr", "VALUE20"));
+  EXPECT_TRUE(rule_set.CanIgnoreEntireList(list, AtomicString("attr"),
+                                           AtomicString("notfound")));
+  EXPECT_FALSE(rule_set.CanIgnoreEntireList(list, AtomicString("attr"),
+                                            AtomicString("value20")));
+  EXPECT_FALSE(rule_set.CanIgnoreEntireList(list, AtomicString("attr"),
+                                            AtomicString("VALUE20")));
 
   // A false positive that we expect (value20 is a substring, even though
   // the rule said = and not =*, so we need to check the entire set).
-  EXPECT_FALSE(rule_set.CanIgnoreEntireList(list, "attr", "--value20--"));
+  EXPECT_FALSE(rule_set.CanIgnoreEntireList(list, AtomicString("attr"),
+                                            AtomicString("--value20--")));
 
   // One rule is not enough to build a tree, so we will not mass-reject
   // anything on otherattr.
-  base::span<const RuleData> list2 = rule_set.AttrRules("otherattr");
-  EXPECT_FALSE(rule_set.CanIgnoreEntireList(list2, "otherattr", "notfound"));
+  base::span<const RuleData> list2 =
+      rule_set.AttrRules(AtomicString("otherattr"));
+  EXPECT_FALSE(rule_set.CanIgnoreEntireList(list2, AtomicString("otherattr"),
+                                            AtomicString("notfound")));
 }
 
 TEST(RuleSetTest, LargeNumberOfAttributeRulesWithEmpty) {
@@ -387,10 +394,12 @@ TEST(RuleSetTest, LargeNumberOfAttributeRulesWithEmpty) {
   sheet.AddCSSRules("[attr=\"\"] {}");
 
   RuleSet& rule_set = sheet.GetRuleSet();
-  base::span<const RuleData> list = rule_set.AttrRules("attr");
+  base::span<const RuleData> list = rule_set.AttrRules(AtomicString("attr"));
   ASSERT_FALSE(list.empty());
-  EXPECT_TRUE(rule_set.CanIgnoreEntireList(list, "attr", "notfound"));
-  EXPECT_FALSE(rule_set.CanIgnoreEntireList(list, "attr", ""));
+  EXPECT_TRUE(rule_set.CanIgnoreEntireList(list, AtomicString("attr"),
+                                           AtomicString("notfound")));
+  EXPECT_FALSE(
+      rule_set.CanIgnoreEntireList(list, AtomicString("attr"), g_empty_atom));
 }
 
 TEST(RuleSetTest, LargeNumberOfAttributeRulesWithCatchAll) {
@@ -403,10 +412,12 @@ TEST(RuleSetTest, LargeNumberOfAttributeRulesWithCatchAll) {
 
   RuleSet& rule_set = sheet.GetRuleSet();
 
-  base::span<const RuleData> list = rule_set.AttrRules("attr");
+  base::span<const RuleData> list = rule_set.AttrRules(AtomicString("attr"));
   ASSERT_FALSE(list.empty());
-  EXPECT_FALSE(rule_set.CanIgnoreEntireList(list, "attr", "notfound"));
-  EXPECT_FALSE(rule_set.CanIgnoreEntireList(list, "attr", ""));
+  EXPECT_FALSE(rule_set.CanIgnoreEntireList(list, AtomicString("attr"),
+                                            AtomicString("notfound")));
+  EXPECT_FALSE(
+      rule_set.CanIgnoreEntireList(list, AtomicString("attr"), g_empty_atom));
 }
 
 TEST(RuleSetTest, LargeNumberOfAttributeRulesWithCatchAll2) {
@@ -419,10 +430,12 @@ TEST(RuleSetTest, LargeNumberOfAttributeRulesWithCatchAll2) {
 
   RuleSet& rule_set = sheet.GetRuleSet();
 
-  base::span<const RuleData> list = rule_set.AttrRules("attr");
+  base::span<const RuleData> list = rule_set.AttrRules(AtomicString("attr"));
   ASSERT_FALSE(list.empty());
-  EXPECT_FALSE(rule_set.CanIgnoreEntireList(list, "attr", "notfound"));
-  EXPECT_FALSE(rule_set.CanIgnoreEntireList(list, "attr", ""));
+  EXPECT_FALSE(rule_set.CanIgnoreEntireList(list, AtomicString("attr"),
+                                            AtomicString("notfound")));
+  EXPECT_FALSE(
+      rule_set.CanIgnoreEntireList(list, AtomicString("attr"), g_empty_atom));
 }
 
 #if DCHECK_IS_ON()  // Requires all_rules_, to find back the rules we add.
@@ -547,10 +560,10 @@ TEST(RuleSetTest, SelectorIndexLimit) {
   css_test_helpers::TestStyleSheet sheet;
   sheet.AddCSSRules(builder.ToString());
   const RuleSet& rule_set = sheet.GetRuleSet();
-  base::span<const RuleData> rules = rule_set.TagRules("b");
+  base::span<const RuleData> rules = rule_set.TagRules(AtomicString("b"));
   ASSERT_EQ(1u, rules.size());
   EXPECT_EQ("b", rules.front().Selector().TagQName().LocalName());
-  EXPECT_TRUE(rule_set.TagRules("span").empty());
+  EXPECT_TRUE(rule_set.TagRules(AtomicString("span")).empty());
 }
 
 TEST(RuleSetTest, RuleDataPositionLimit) {
@@ -593,7 +606,7 @@ TEST(RuleSetTest, NoStyleScope) {
 
   sheet.AddCSSRules("#b {}");
   RuleSet& rule_set = sheet.GetRuleSet();
-  base::span<const RuleData> rules = rule_set.IdRules("b");
+  base::span<const RuleData> rules = rule_set.IdRules(AtomicString("b"));
   ASSERT_EQ(1u, rules.size());
   EXPECT_EQ(0u, rule_set.ScopeIntervals().size());
 }
@@ -603,7 +616,7 @@ TEST(RuleSetTest, StyleScope) {
 
   sheet.AddCSSRules("@scope (.a) { #b {} }");
   RuleSet& rule_set = sheet.GetRuleSet();
-  base::span<const RuleData> rules = rule_set.IdRules("b");
+  base::span<const RuleData> rules = rule_set.IdRules(AtomicString("b"));
   ASSERT_EQ(1u, rules.size());
   EXPECT_EQ(1u, rule_set.ScopeIntervals().size());
 }
@@ -620,8 +633,8 @@ TEST(RuleSetTest, NestedStyleScope) {
     }
   )CSS");
   RuleSet& rule_set = sheet.GetRuleSet();
-  base::span<const RuleData> a_rules = rule_set.IdRules("a");
-  base::span<const RuleData> b_rules = rule_set.IdRules("b");
+  base::span<const RuleData> a_rules = rule_set.IdRules(AtomicString("a"));
+  base::span<const RuleData> b_rules = rule_set.IdRules(AtomicString("b"));
 
   ASSERT_EQ(1u, a_rules.size());
   ASSERT_EQ(1u, b_rules.size());
@@ -653,7 +666,7 @@ class RuleSetCascadeLayerTest : public SimTest {
  protected:
   const RuleSet& GetRuleSet() {
     RuleSet& rule_set =
-        To<HTMLStyleElement>(GetDocument().QuerySelector("style"))
+        To<HTMLStyleElement>(GetDocument().QuerySelector(AtomicString("style")))
             ->sheet()
             ->Contents()
             ->EnsureRuleSet(MediaQueryEvaluator(GetDocument().GetFrame()));
@@ -674,11 +687,11 @@ class RuleSetCascadeLayerTest : public SimTest {
     return GetRuleSet().implicit_outer_layer_;
   }
 
-  const RuleData& GetIdRule(const AtomicString& key) {
-    return GetRuleSet().IdRules(key).front();
+  const RuleData& GetIdRule(const char* key) {
+    return GetRuleSet().IdRules(AtomicString(key)).front();
   }
 
-  const CascadeLayer* GetLayerByIdRule(const AtomicString& key) {
+  const CascadeLayer* GetLayerByIdRule(const char* key) {
     return GetLayerByRule(GetIdRule(key));
   }
 
@@ -724,13 +737,18 @@ TEST_F(RuleSetCascadeLayerTest, Basic) {
   EXPECT_EQ("foo,foo.bar", LayersToString());
 
   EXPECT_EQ(ImplicitOuterLayer(), GetLayerByIdRule("zero"));
-  EXPECT_EQ(GetLayerByName(LayerName({"foo"})), GetLayerByIdRule("one"));
-  EXPECT_EQ(GetLayerByName(LayerName({"foo"})), GetLayerByIdRule("two"));
-  EXPECT_EQ(GetLayerByName(LayerName({"foo", "bar"})),
-            GetLayerByIdRule("three"));
-  EXPECT_EQ(GetLayerByName(LayerName({"foo", "bar"})),
-            GetLayerByIdRule("four"));
-  EXPECT_EQ(GetLayerByName(LayerName({"foo"})), GetLayerByIdRule("five"));
+  EXPECT_EQ(GetLayerByName(LayerName({AtomicString("foo")})),
+            GetLayerByIdRule("one"));
+  EXPECT_EQ(GetLayerByName(LayerName({AtomicString("foo")})),
+            GetLayerByIdRule("two"));
+  EXPECT_EQ(
+      GetLayerByName(LayerName({AtomicString("foo"), AtomicString("bar")})),
+      GetLayerByIdRule("three"));
+  EXPECT_EQ(
+      GetLayerByName(LayerName({AtomicString("foo"), AtomicString("bar")})),
+      GetLayerByIdRule("four"));
+  EXPECT_EQ(GetLayerByName(LayerName({AtomicString("foo")})),
+            GetLayerByIdRule("five"));
   EXPECT_EQ(ImplicitOuterLayer(), GetLayerByIdRule("six"));
 }
 
@@ -755,12 +773,18 @@ TEST_F(RuleSetCascadeLayerTest, NestingAndFlatListName) {
 
   EXPECT_EQ("foo,foo.bar", LayersToString());
 
-  EXPECT_EQ(GetLayerByName(LayerName({"foo", "bar"})),
-            GetLayerByIdRule("zero"));
-  EXPECT_EQ(GetLayerByName(LayerName({"foo", "bar"})), GetLayerByIdRule("one"));
-  EXPECT_EQ(GetLayerByName(LayerName({"foo", "bar"})), GetLayerByIdRule("two"));
-  EXPECT_EQ(GetLayerByName(LayerName({"foo", "bar"})),
-            GetLayerByIdRule("three"));
+  EXPECT_EQ(
+      GetLayerByName(LayerName({AtomicString("foo"), AtomicString("bar")})),
+      GetLayerByIdRule("zero"));
+  EXPECT_EQ(
+      GetLayerByName(LayerName({AtomicString("foo"), AtomicString("bar")})),
+      GetLayerByIdRule("one"));
+  EXPECT_EQ(
+      GetLayerByName(LayerName({AtomicString("foo"), AtomicString("bar")})),
+      GetLayerByIdRule("two"));
+  EXPECT_EQ(
+      GetLayerByName(LayerName({AtomicString("foo"), AtomicString("bar")})),
+      GetLayerByIdRule("three"));
 }
 
 TEST_F(RuleSetCascadeLayerTest, LayerStatementOrdering) {
@@ -784,9 +808,13 @@ TEST_F(RuleSetCascadeLayerTest, LayerStatementOrdering) {
 
   EXPECT_EQ("foo,foo.baz,bar", LayersToString());
 
-  EXPECT_EQ(GetLayerByName(LayerName({"bar"})), GetLayerByIdRule("zero"));
-  EXPECT_EQ(GetLayerByName(LayerName({"foo"})), GetLayerByIdRule("one"));
-  EXPECT_EQ(GetLayerByName(LayerName({"foo", "baz"})), GetLayerByIdRule("two"));
+  EXPECT_EQ(GetLayerByName(LayerName({AtomicString("bar")})),
+            GetLayerByIdRule("zero"));
+  EXPECT_EQ(GetLayerByName(LayerName({AtomicString("foo")})),
+            GetLayerByIdRule("one"));
+  EXPECT_EQ(
+      GetLayerByName(LayerName({AtomicString("foo"), AtomicString("baz")})),
+      GetLayerByIdRule("two"));
 }
 
 TEST_F(RuleSetCascadeLayerTest, LayeredImport) {
@@ -814,11 +842,17 @@ TEST_F(RuleSetCascadeLayerTest, LayeredImport) {
 
   test::RunPendingTasks();
 
-  EXPECT_EQ(GetLayerByName(LayerName({"foo"})), GetLayerByIdRule("zero"));
-  EXPECT_EQ(GetLayerByName(LayerName({"foo", "bar"})), GetLayerByIdRule("one"));
-  EXPECT_EQ(GetLayerByName(LayerName({"foo", "bar"})), GetLayerByIdRule("two"));
-  EXPECT_EQ(GetLayerByName(LayerName({"foo", "bar"})),
-            GetLayerByIdRule("three"));
+  EXPECT_EQ(GetLayerByName(LayerName({AtomicString("foo")})),
+            GetLayerByIdRule("zero"));
+  EXPECT_EQ(
+      GetLayerByName(LayerName({AtomicString("foo"), AtomicString("bar")})),
+      GetLayerByIdRule("one"));
+  EXPECT_EQ(
+      GetLayerByName(LayerName({AtomicString("foo"), AtomicString("bar")})),
+      GetLayerByIdRule("two"));
+  EXPECT_EQ(
+      GetLayerByName(LayerName({AtomicString("foo"), AtomicString("bar")})),
+      GetLayerByIdRule("three"));
 }
 
 TEST_F(RuleSetCascadeLayerTest, LayerStatementsBeforeAndAfterImport) {
@@ -851,11 +885,16 @@ TEST_F(RuleSetCascadeLayerTest, LayerStatementsBeforeAndAfterImport) {
 
   EXPECT_EQ("foo,bar,baz", LayersToString());
 
-  EXPECT_EQ(GetLayerByName(LayerName({"bar"})), GetLayerByIdRule("zero"));
-  EXPECT_EQ(GetLayerByName(LayerName({"bar"})), GetLayerByIdRule("one"));
-  EXPECT_EQ(GetLayerByName(LayerName({"foo"})), GetLayerByIdRule("two"));
-  EXPECT_EQ(GetLayerByName(LayerName({"foo"})), GetLayerByIdRule("three"));
-  EXPECT_EQ(GetLayerByName(LayerName({"baz"})), GetLayerByIdRule("four"));
+  EXPECT_EQ(GetLayerByName(LayerName({AtomicString("bar")})),
+            GetLayerByIdRule("zero"));
+  EXPECT_EQ(GetLayerByName(LayerName({AtomicString("bar")})),
+            GetLayerByIdRule("one"));
+  EXPECT_EQ(GetLayerByName(LayerName({AtomicString("foo")})),
+            GetLayerByIdRule("two"));
+  EXPECT_EQ(GetLayerByName(LayerName({AtomicString("foo")})),
+            GetLayerByIdRule("three"));
+  EXPECT_EQ(GetLayerByName(LayerName({AtomicString("baz")})),
+            GetLayerByIdRule("four"));
 }
 
 }  // namespace blink

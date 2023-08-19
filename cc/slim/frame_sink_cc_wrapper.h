@@ -10,7 +10,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "cc/slim/frame_sink.h"
-#include "components/viz/common/gpu/context_provider.h"
+#include "components/viz/common/gpu/raster_context_provider.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
 
 namespace cc::mojo_embedder {
@@ -35,7 +35,7 @@ class FrameSinkCcWrapper : public FrameSink {
           compositor_frame_sink_associated_remote,
       mojo::PendingReceiver<viz::mojom::CompositorFrameSinkClient>
           client_receiver,
-      scoped_refptr<viz::ContextProvider> context_provider,
+      scoped_refptr<viz::RasterContextProvider> context_provider,
       gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
       base::PlatformThreadId io_thread_id);
 

@@ -555,6 +555,16 @@ public class AccessibilityNodeInfoBuilder {
         // Clip to the viewport bounds, and add unclipped values to the Bundle.
         int viewportRectTop = viewLocation[1] + (int) ac.getContentOffsetYPix();
         int viewportRectBottom = viewportRectTop + ac.getLastFrameViewportHeightPixInt();
+
+        // A cached node will contain Bundle extras values from the last time it was populated. For
+        // unclipped bounds, the extras would be stale and should be removed if present.
+        if (extras.containsKey(EXTRAS_KEY_UNCLIPPED_TOP)) {
+            extras.remove(EXTRAS_KEY_UNCLIPPED_TOP);
+        }
+        if (extras.containsKey(EXTRAS_KEY_UNCLIPPED_BOTTOM)) {
+            extras.remove(EXTRAS_KEY_UNCLIPPED_BOTTOM);
+        }
+
         if (rect.top < viewportRectTop) {
             extras.putInt(EXTRAS_KEY_UNCLIPPED_TOP, rect.top);
             rect.top = viewportRectTop;

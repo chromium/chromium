@@ -144,7 +144,7 @@ ShadowData InterpolableShadow::CreateShadowData(
   DCHECK(shadow_blur.IsFixed());
   DCHECK(shadow_spread.IsFixed());
   return ShadowData(
-      gfx::PointF(shadow_x.Value(), shadow_y.Value()), shadow_blur.Value(),
+      gfx::Vector2dF(shadow_x.Value(), shadow_y.Value()), shadow_blur.Value(),
       shadow_spread.Value(), shadow_style_,
       StyleColor(
           CSSColorInterpolationType::ResolveInterpolableColor(*color_, state)));

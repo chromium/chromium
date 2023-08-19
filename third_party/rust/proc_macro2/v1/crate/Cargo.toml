@@ -10,10 +10,10 @@
 # See Cargo.toml.orig for the original contents.
 
 [package]
-edition = "2018"
-rust-version = "1.31"
+edition = "2021"
+rust-version = "1.56"
 name = "proc-macro2"
-version = "1.0.56"
+version = "1.0.66"
 authors = [
     "David Tolnay <dtolnay@gmail.com>",
     "Alex Crichton <alex@alexcrichton.com>",
@@ -40,6 +40,7 @@ rustdoc-args = [
     "procmacro2_semver_exempt",
     "--cfg",
     "doc_cfg",
+    "--generate-link-to-definition",
 ]
 targets = ["x86_64-unknown-linux-gnu"]
 

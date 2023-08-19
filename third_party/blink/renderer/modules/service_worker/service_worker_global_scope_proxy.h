@@ -106,6 +106,7 @@ class ServiceWorkerGlobalScopeProxy final : public WebServiceWorkerContextProxy,
   void PauseEvaluation() override;
   void ResumeEvaluation() override;
   mojom::blink::ServiceWorkerFetchHandlerType FetchHandlerType() override;
+  bool HasHidEventHandlers() override;
 
   // WorkerReportingProxy overrides:
   void CountFeature(WebFeature) override;
@@ -136,6 +137,9 @@ class ServiceWorkerGlobalScopeProxy final : public WebServiceWorkerContextProxy,
       mojo::PendingReceiver<network::mojom::blink::URLLoaderClient>
           preload_url_loader_client_receiver);
   void RequestTermination(WTF::CrossThreadOnceFunction<void(bool)> callback);
+
+  bool ShouldNotifyServiceWorkerOnWebSocketActivity(
+      v8::Local<v8::Context> context);
 
   // Detaches this proxy object entirely from the outside world, clearing out
   // all references.

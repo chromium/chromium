@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.annotation.VisibleForTesting;
@@ -23,24 +24,34 @@ import org.chromium.chrome.browser.bookmarks.BookmarkImageFetcher;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
 import org.chromium.chrome.browser.bookmarks.BookmarkTextInputLayout;
+import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
-import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkFolderSelectRow;
-import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkFolderSelectRowCoordinator;
+import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRow;
+import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowCoordinator;
+import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties;
+import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.ImageVisibility;
+import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowViewBinder;
+import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
+import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.url.GURL;
 
 /**
  * The activity that enables the user to modify the title, url and parent folder of a bookmark.
  */
 // TODO(crbug.com/1448929): Separate the activity from its view.
+// TODO(crbug.com/1448929): Add a coordinator/mediator for business logic.
 public class BookmarkEditActivity extends SynchronousInitializationActivity {
     /** The intent extra specifying the ID of the bookmark to be edited. */
     public static final String INTENT_BOOKMARK_ID = "BookmarkEditActivity.BookmarkId";
@@ -49,18 +60,30 @@ public class BookmarkEditActivity extends SynchronousInitializationActivity {
 
     private static final String TAG = "BookmarkEdit";
 
-    private ImprovedBookmarkFolderSelectRowCoordinator mFolderSelectCoordinator;
+    private final SelectionDelegate mEmptySelectionDelegate = new SelectionDelegate();
 
+    private ImprovedBookmarkRowCoordinator mFolderSelectRowCoordinator;
     private BookmarkModel mModel;
     private BookmarkId mBookmarkId;
     private boolean mInFolderSelect;
-
     private BookmarkTextInputLayout mTitleEditText;
     private BookmarkTextInputLayout mUrlEditText;
     private TextView mFolderTextView;
     private MenuItem mDeleteButton;
     private View mRegularFolderContainer;
     private View mImprovedFolderContainer;
+    private BookmarkUiPrefs mBookmarkUiPrefs;
+    private FrameLayout mFolderPickerRowContainer;
+    private ImprovedBookmarkRow mFolderSelectRow;
+
+    private BookmarkUiPrefs.Observer mBookmarkUiPrefsObserver = new BookmarkUiPrefs.Observer() {
+        @Override
+        public void onBookmarkRowDisplayPrefChanged(@BookmarkRowDisplayPref int displayPref) {
+            if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
+                updateFolderPickerRow(displayPref);
+            }
+        }
+    };
 
     private BookmarkModelObserver mBookmarkModelObserver = new BookmarkModelObserver() {
         @Override
@@ -68,8 +91,8 @@ public class BookmarkEditActivity extends SynchronousInitializationActivity {
             if (mModel.doesBookmarkExist(mBookmarkId)) {
                 updateViewContent(true);
             } else if (!mInFolderSelect) {
-                // This happens either when the user clicks delete button or partner bookmark is
-                // removed in background.
+                // This happens either when the user clicks delete button or partner
+                // bookmark is removed in background.
                 finish();
             }
         }
@@ -124,23 +147,28 @@ public class BookmarkEditActivity extends SynchronousInitializationActivity {
             mUrlEditText.setVisibility(isFolder ? View.GONE : View.VISIBLE);
             getSupportActionBar().setTitle(
                     isFolder ? R.string.edit_folder : R.string.edit_bookmark);
+            mBookmarkUiPrefs = new BookmarkUiPrefs(SharedPreferencesManager.getInstance());
+            mBookmarkUiPrefs.addObserver(mBookmarkUiPrefsObserver);
+
+            Resources res = getResources();
+            Profile profile = Profile.getLastUsedRegularProfile();
+            mFolderSelectRowCoordinator = new ImprovedBookmarkRowCoordinator(this,
+                    new BookmarkImageFetcher(this, mModel,
+                            ImageFetcherFactory.createImageFetcher(
+                                    ImageFetcherConfig.DISK_CACHE_ONLY, profile.getProfileKey()),
+                            new LargeIconBridge(profile),
+                            BookmarkUtils.getRoundedIconGenerator(
+                                    this, BookmarkRowDisplayPref.VISUAL),
+                            BookmarkUtils.getImageIconSize(res, BookmarkRowDisplayPref.VISUAL),
+                            BookmarkUtils.getFaviconDisplaySize(
+                                    res, BookmarkRowDisplayPref.VISUAL)),
+                    mModel, mBookmarkUiPrefs, ShoppingServiceFactory.getForProfile(profile));
+
+            mFolderPickerRowContainer = findViewById(R.id.improved_folder_row_container);
         } else {
             mRegularFolderContainer.setVisibility(View.VISIBLE);
             mImprovedFolderContainer.setVisibility(View.GONE);
         }
-
-        Resources res = this.getResources();
-        Profile profile = Profile.getLastUsedRegularProfile();
-        mFolderSelectCoordinator = new ImprovedBookmarkFolderSelectRowCoordinator(this,
-                (ImprovedBookmarkFolderSelectRow) findViewById(R.id.improved_folder_row),
-                new BookmarkImageFetcher(this, mModel,
-                        ImageFetcherFactory.createImageFetcher(
-                                ImageFetcherConfig.DISK_CACHE_ONLY, profile.getProfileKey()),
-                        new LargeIconBridge(profile),
-                        BookmarkUtils.getRoundedIconGenerator(this, BookmarkRowDisplayPref.VISUAL),
-                        BookmarkUtils.getImageIconSize(res, BookmarkRowDisplayPref.VISUAL),
-                        BookmarkUtils.getFaviconDisplaySize(res, BookmarkRowDisplayPref.VISUAL)),
-                item.getParentId(), mModel);
 
         updateViewContent(false);
     }
@@ -168,7 +196,10 @@ public class BookmarkEditActivity extends SynchronousInitializationActivity {
         mFolderTextView.setText(mModel.getBookmarkTitle(bookmarkItem.getParentId()));
         mTitleEditText.setEnabled(bookmarkItem.isEditable());
         mUrlEditText.setEnabled(bookmarkItem.isUrlEditable());
-        mFolderTextView.setEnabled(BookmarkUtils.isMovable(bookmarkItem));
+        mFolderTextView.setEnabled(BookmarkUtils.isMovable(mModel, bookmarkItem));
+        if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
+            updateFolderPickerRow(mBookmarkUiPrefs.getBookmarkRowDisplayPref());
+        }
     }
 
     @Override
@@ -222,6 +253,9 @@ public class BookmarkEditActivity extends SynchronousInitializationActivity {
     @Override
     protected void onDestroy() {
         mModel.removeObserver(mBookmarkModelObserver);
+        if (mBookmarkUiPrefs != null) {
+            mBookmarkUiPrefs.removeObserver(mBookmarkUiPrefsObserver);
+        }
         super.onDestroy();
     }
 
@@ -243,5 +277,27 @@ public class BookmarkEditActivity extends SynchronousInitializationActivity {
     @VisibleForTesting
     TextView getFolderTextView() {
         return mFolderTextView;
+    }
+
+    private void updateFolderPickerRow(@BookmarkRowDisplayPref int displayPref) {
+        BookmarkItem bookmarkItem = mModel.getBookmarkById(mBookmarkId);
+        PropertyModel propertyModel =
+                mFolderSelectRowCoordinator.createBasePropertyModel(bookmarkItem.getParentId());
+
+        propertyModel.set(
+                ImprovedBookmarkRowProperties.END_IMAGE_RES, R.drawable.outline_chevron_right_24dp);
+        propertyModel.set(
+                ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY, ImageVisibility.DRAWABLE);
+        propertyModel.set(ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER,
+                (v) -> { BookmarkUtils.startFolderPickerActivity(this, mBookmarkId); });
+
+        mFolderSelectRow =
+                ImprovedBookmarkRow.buildView(this, displayPref == BookmarkRowDisplayPref.VISUAL);
+        mFolderSelectRow.setSelectionDelegate(mEmptySelectionDelegate);
+        PropertyModelChangeProcessor.create(
+                propertyModel, mFolderSelectRow, ImprovedBookmarkRowViewBinder::bind);
+
+        mFolderPickerRowContainer.removeAllViews();
+        mFolderPickerRowContainer.addView(mFolderSelectRow);
     }
 }

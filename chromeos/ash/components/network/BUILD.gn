@@ -41,6 +41,7 @@ component("network") {
     "//net",
     "//services/preferences/public/cpp",
     "//third_party/abseil-cpp:absl",
+    "//third_party/re2",
     "//url",
   ]
 
@@ -199,6 +200,9 @@ component("network") {
     "technology_state_controller.h",
     "tether_constants.cc",
     "tether_constants.h",
+    "text_message_provider.cc",
+    "text_message_provider.h",
+    "text_message_suppression_state.h",
   ]
 }
 
@@ -304,6 +308,7 @@ source_set("unit_tests") {
     "cellular_esim_uninstall_handler_unittest.cc",
     "cellular_inhibitor_unittest.cc",
     "cellular_metrics_logger_unittest.cc",
+    "cellular_policy_handler_legacy_unittest.cc",
     "cellular_policy_handler_unittest.cc",
     "cellular_utils_unittest.cc",
     "certificate_helper_unittest.cc",
@@ -343,5 +348,6 @@ source_set("unit_tests") {
     "stub_cellular_networks_provider_unittest.cc",
     "system_token_cert_db_storage_unittest.cc",
     "technology_state_controller_unittest.cc",
+    "text_message_provider_unittest.cc",
   ]
 }

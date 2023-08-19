@@ -142,10 +142,9 @@ class ContentAnalysisDialog : public views::DialogDelegate,
     return delegate_->BypassRequiresJustification();
   }
 
-  // Cancels the dialog if it was visible, then deletes the object.  Returns
-  // false if the UI was not visible to indicate that the object is simply
-  // deletng itself.
-  bool CancelDialogAndDelete();
+  // Cancels the dialog an schedules it for deletion if visible, otherwise
+  // simply deletes it soon.
+  void CancelDialogAndDelete();
 
   // Returns the side image's logo color depending on `dialog_state_`.
   ui::ColorId GetSideImageLogoColor() const;
@@ -338,6 +337,11 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   // True when performing a cloud-based content analysis, false when performing
   // a locally based content analysis.
   bool is_cloud_ = true;
+
+  // Set to true once `DeleteSoon()` is called in `CancelDialogAndDelete()`.
+  // This is used by other pending tasks, such as `ShowDialogNow()` to do
+  // nothing if the dialog has been scheduled for deletion.
+  bool will_be_deleted_soon_ = false;
 
   // A reference to the top level web contents of the tab whose content is
   // being analyzed.  Input events of this contents are ignored for the life

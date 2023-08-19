@@ -1,7 +1,0 @@
-Checks Ui DevTools performance panel does not use generic tracing.
-
-isGenericTrace: false
-
-Number of frames: 3
-
-

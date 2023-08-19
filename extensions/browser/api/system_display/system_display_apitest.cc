@@ -335,7 +335,7 @@ IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, ResetDisplayIds) {
           var bar_frame = document.createElement('iframe');
           document.body.appendChild(bar_frame);
       )"));
-  content::RenderFrameHostWrapper sub_frame_rfh_wrapper(
+  content::RenderFrameHostWrapper sub_frame_render_frame_host_wrapper(
       ChildFrameAt(host->host_contents()->GetPrimaryMainFrame(), 0));
 
   // By loading the app, calibration is started.
@@ -344,15 +344,17 @@ IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, ResetDisplayIds) {
   EXPECT_TRUE(ExecJs(host->host_contents()->GetPrimaryMainFrame(),
                      "const iframe = document.querySelector('iframe');\
                      iframe.remove();"));
-  ASSERT_TRUE(sub_frame_rfh_wrapper.WaitUntilRenderFrameDeleted());
+  ASSERT_TRUE(
+      sub_frame_render_frame_host_wrapper.WaitUntilRenderFrameDeleted());
 
   // Removing the sub frame doesn't affect calibration.
   ASSERT_TRUE(provider_->calibration_started(id));
 
-  content::RenderFrameHostWrapper main_frame_rfh_wrapper(
+  content::RenderFrameHostWrapper main_frame_render_frame_host_wrapper(
       host->host_contents()->GetPrimaryMainFrame());
   host->host_contents()->ClosePage();
-  ASSERT_TRUE(main_frame_rfh_wrapper.WaitUntilRenderFrameDeleted());
+  ASSERT_TRUE(
+      main_frame_render_frame_host_wrapper.WaitUntilRenderFrameDeleted());
 
   ASSERT_FALSE(provider_->calibration_started(id));
 }

@@ -87,6 +87,8 @@ absl::optional<::attestation::CertificateProfile> ProfileToAttestationProtoEnum(
       return ::attestation::CertificateProfile::SOFT_BIND_CERTIFICATE;
     case PROFILE_DEVICE_SETUP_CERTIFICATE:
       return ::attestation::CertificateProfile::DEVICE_SETUP_CERTIFICATE;
+    case PROFILE_DEVICE_TRUST_USER_CERTIFICATE:
+      return ::attestation::CertificateProfile::DEVICE_TRUST_USER_CERTIFICATE;
     default:
       return {};
   }

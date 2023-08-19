@@ -15,13 +15,6 @@
 
 namespace ui {
 
-namespace {
-// A function to call when focus changes, for testing only.
-base::LazyInstance<base::RepeatingClosure>::DestructorAtExit
-    g_focus_change_callback_for_testing = LAZY_INSTANCE_INITIALIZER;
-
-}  // namespace
-
 // static
 AXTreeManagerMap& AXTreeManager::GetMap() {
   static base::NoDestructor<AXTreeManagerMap> map;
@@ -55,9 +48,15 @@ AXTreeManager* AXTreeManager::ForChildTree(const AXNode& parent_node) {
 }
 
 // static
+base::RepeatingClosure& AXTreeManager::GetFocusChangeCallbackForTesting() {
+  static base::NoDestructor<base::RepeatingClosure>
+      g_focus_change_callback_for_testing;
+  return *g_focus_change_callback_for_testing;
+}
+
 void AXTreeManager::SetFocusChangeCallbackForTesting(
     base::RepeatingClosure callback) {
-  g_focus_change_callback_for_testing.Get() = std::move(callback);
+  GetFocusChangeCallbackForTesting() = std::move(callback);
 }
 
 AXTreeManager::AXTreeManager()
@@ -81,8 +80,9 @@ AXTreeManager::AXTreeManager(std::unique_ptr<AXTree> tree)
 }
 
 void AXTreeManager::FireFocusEvent(AXNode* node) {
-  if (g_focus_change_callback_for_testing.Get())
-    g_focus_change_callback_for_testing.Get().Run();
+  if (GetFocusChangeCallbackForTesting()) {
+    GetFocusChangeCallbackForTesting().Run();
+  }
 }
 
 AXNode* AXTreeManager::RetargetForEvents(AXNode* node,
@@ -141,6 +141,10 @@ const AXTreeData& AXTreeManager::GetTreeData() const {
 
 AXTreeID AXTreeManager::GetParentTreeID() const {
   return ax_tree_ ? ax_tree_->data().parent_tree_id : AXTreeIDUnknown();
+}
+
+bool AXTreeManager::IsPlatformTreeManager() const {
+  return false;
 }
 
 AXNode* AXTreeManager::GetRoot() const {
@@ -226,9 +230,7 @@ AXNode* AXTreeManager::GetLastFocusedNode() {
 }
 
 AXTreeManager::~AXTreeManager() {
-  AXNode* parent = nullptr;
-  if (connected_to_parent_tree_node_)
-    parent = GetParentNodeFromParentTree();
+  AXNode* parent = GetParentNodeFromParentTree();
 
   // Fire any events that need to be fired when tree nodes get deleted. For
   // example, events that fire every time "OnSubtreeWillBeDeleted" is called.
@@ -247,6 +249,7 @@ AXTreeManager::~AXTreeManager() {
     }
   }
 
+  // TODO(accessibility) Consider using AXTreeManagerBase::DetachChildTree().
   ParentConnectionChanged(parent);
 }
 
@@ -367,7 +370,19 @@ void AXTreeManager::ParentConnectionChanged(AXNode* parent) {
   }
   connected_to_parent_tree_node_ = true;
 
+  // Ensure all the correct callbacks are used for a tree update --
+  // OnAtomicUpdateFinished() is particularly important for updating the
+  // parent's hypertext.
+  // ScopedTreeUpdateInProgressStateSetter is not necessary here because there
+  // is no point where the tree structure is incomplete such that calling AXNode
+  // parent/child navigation methods is dangerous.
   parent->tree()->NotifyChildTreeConnectionChanged(parent, ax_tree_.get());
+  for (AXTreeObserver& observer : parent->tree()->observers()) {
+    observer.OnAtomicUpdateFinished(
+        parent->tree(), /* root_changed= */ false,
+        {{parent, AXTreeObserver::ChangeType::NODE_CHANGED}});
+  }
+
   UpdateAttributesOnParent(parent);
   AXTreeManager* parent_manager = parent->GetManager();
   parent = parent_manager->RetargetForEvents(

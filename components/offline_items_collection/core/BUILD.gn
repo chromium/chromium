@@ -106,9 +106,11 @@ if (is_android) {
       "android/java/src/org/chromium/components/offline_items_collection/bridges/OfflineItemShareInfoBridge.java",
       "android/java/src/org/chromium/components/offline_items_collection/bridges/OfflineItemVisualsBridge.java",
     ]
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
-    srcjar_deps = [ ":jni_enums" ]
+    srcjar_deps = [
+      ":jni_enums",
+      ":jni_headers",
+    ]
 
     deps = [
       "//base:base_java",
@@ -152,9 +154,8 @@ if (is_android) {
       "//third_party/junit",
     ]
 
+    srcjar_deps = [ ":native_j_unittests_jni_headers" ]
     sources = [ "android/native_java_unittests/src/org/chromium/components/offline_items_collection/bridges/OfflineItemBridgeUnitTest.java" ]
-
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 
   generate_jni("native_j_unittests_jni_headers") {

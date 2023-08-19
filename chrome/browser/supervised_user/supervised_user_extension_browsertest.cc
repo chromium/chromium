@@ -91,18 +91,15 @@ class SupervisionRemovalExtensionTest : public ExtensionBrowserTest {
  private:
   InProcessBrowserTestMixinHost mixin_host_;
 
-  base::test::ScopedFeatureList feature_list_{
-      supervised_user::kEnableSupervisionOnDesktopAndIOS};
-
   // In order to simulate supervision removal and re-authentication use
   // supervised account in the PRE test and regular account afterwards.
   supervised_user::SupervisionMixin supervision_mixin_{
       mixin_host_,
       this,
-      {.account_type =
+      {.sign_in_mode =
            content::IsPreTest()
-               ? supervised_user::SupervisionMixin::AccountType::kSupervised
-               : supervised_user::SupervisionMixin::AccountType::kRegular}};
+               ? supervised_user::SupervisionMixin::SignInMode::kSupervised
+               : supervised_user::SupervisionMixin::SignInMode::kRegular}};
 };
 
 // Removing supervision should also remove associated disable reasons, such as

@@ -84,7 +84,7 @@ class SVGTextPathElement final : public SVGTextContentElement,
 
   SVGAnimatedPropertyBase* PropertyFromAttribute(
       const QualifiedName& attribute_name) const override;
-  void SynchronizeSVGAttribute(const QualifiedName& name) const override;
+  void SynchronizeAllSVGAttributes() const override;
 
   Member<SVGAnimatedLength> start_offset_;
   Member<SVGAnimatedEnumeration<SVGTextPathMethodType>> method_;

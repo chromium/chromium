@@ -11,6 +11,8 @@ import android.annotation.SuppressLint;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.android_webview.common.Lifetime;
+import org.chromium.base.TraceEvent;
 import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.support_lib_boundary.WebMessageBoundaryInterface;
 import org.chromium.support_lib_boundary.WebMessagePayloadBoundaryInterface;
@@ -23,6 +25,7 @@ import java.lang.reflect.InvocationHandler;
 /**
  * Adapter between WebMessagePayloadBoundaryInterface and MessagePayload in content/.
  */
+@Lifetime.Temporary
 class SupportLibWebMessagePayloadAdapter implements WebMessagePayloadBoundaryInterface {
     private final MessagePayload mMessagePayload;
 
@@ -39,22 +42,31 @@ class SupportLibWebMessagePayloadAdapter implements WebMessagePayloadBoundaryInt
     @SuppressLint("WrongConstant")
     @Override
     public int getType() {
-        recordApiCall(ApiCall.WEB_MESSAGE_PAYLOAD_GET_TYPE);
-        return mMessagePayload.getType();
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.AndroidX.WEB_MESSAGE_PAYLOAD_GET_TYPE")) {
+            recordApiCall(ApiCall.WEB_MESSAGE_PAYLOAD_GET_TYPE);
+            return mMessagePayload.getType();
+        }
     }
 
     @Nullable
     @Override
     public String getAsString() {
-        recordApiCall(ApiCall.WEB_MESSAGE_PAYLOAD_GET_AS_STRING);
-        return mMessagePayload.getAsString();
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.AndroidX.WEB_MESSAGE_PAYLOAD_GET_AS_STRING")) {
+            recordApiCall(ApiCall.WEB_MESSAGE_PAYLOAD_GET_AS_STRING);
+            return mMessagePayload.getAsString();
+        }
     }
 
     @NonNull
     @Override
     public byte[] getAsArrayBuffer() {
-        recordApiCall(ApiCall.WEB_MESSAGE_PAYLOAD_GET_AS_ARRAY_BUFFER);
-        return mMessagePayload.getAsArrayBuffer();
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.AndroidX.WEB_MESSAGE_PAYLOAD_GET_AS_ARRAY_BUFFER")) {
+            recordApiCall(ApiCall.WEB_MESSAGE_PAYLOAD_GET_AS_ARRAY_BUFFER);
+            return mMessagePayload.getAsArrayBuffer();
+        }
     }
 
     public /* MessagePayload */ InvocationHandler getInvocationHandler() {

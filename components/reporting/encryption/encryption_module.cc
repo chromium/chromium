@@ -22,7 +22,7 @@ namespace reporting {
 namespace {
 
 // Helper function for asynchronous encryption.
-void AddToRecord(base::StringPiece record,
+void AddToRecord(std::string_view record,
                  Encryptor::Handle* handle,
                  base::OnceCallback<void(StatusOr<EncryptedRecord>)> cb) {
   handle->AddToRecord(
@@ -50,14 +50,14 @@ EncryptionModule::EncryptionModule(base::TimeDelta renew_encryption_key_period)
   static_assert(std::is_same<PublicKeyId, Encryptor::PublicKeyId>::value,
                 "Public key id types must match");
   auto encryptor_result = Encryptor::Create();
-  DCHECK(encryptor_result.ok());
+  CHECK_OK(encryptor_result) << encryptor_result.status();
   encryptor_ = std::move(encryptor_result.ValueOrDie());
 }
 
 EncryptionModule::~EncryptionModule() = default;
 
 void EncryptionModule::EncryptRecordImpl(
-    base::StringPiece record,
+    std::string_view record,
     base::OnceCallback<void(StatusOr<EncryptedRecord>)> cb) const {
   // Encryption key is available, encrypt.
   encryptor_->OpenRecord(base::BindOnce(
@@ -78,7 +78,7 @@ void EncryptionModule::EncryptRecordImpl(
 }
 
 void EncryptionModule::UpdateAsymmetricKeyImpl(
-    base::StringPiece new_public_key,
+    std::string_view new_public_key,
     PublicKeyId new_public_key_id,
     base::OnceCallback<void(Status)> response_cb) {
   encryptor_->UpdateAsymmetricKey(new_public_key, new_public_key_id,

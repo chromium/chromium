@@ -4,11 +4,9 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.entity;
 
-import android.text.TextUtils;
 import android.view.View;
-import android.widget.TextView;
 
-import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewViewBinder;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -16,18 +14,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class EntitySuggestionViewBinder {
     /** @see PropertyModelChangeProcessor.ViewBinder#bind(Object, Object, Object) */
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
-        if (EntitySuggestionViewProperties.SUBJECT_TEXT == propertyKey) {
-            final TextView tv = view.findViewById(R.id.entity_subject);
-            tv.setText(model.get(EntitySuggestionViewProperties.SUBJECT_TEXT));
-        } else if (EntitySuggestionViewProperties.DESCRIPTION_TEXT == propertyKey) {
-            final TextView tv = view.findViewById(R.id.entity_description);
-            final String text = model.get(EntitySuggestionViewProperties.DESCRIPTION_TEXT);
-            if (TextUtils.isEmpty(text)) {
-                tv.setVisibility(View.GONE);
-            } else {
-                tv.setVisibility(View.VISIBLE);
-                tv.setText(model.get(EntitySuggestionViewProperties.DESCRIPTION_TEXT));
-            }
-        }
+        SuggestionViewViewBinder.bind(model, view, propertyKey);
     }
 }

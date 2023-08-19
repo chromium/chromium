@@ -97,31 +97,29 @@ ChromeVoxOutputE2ETest = class extends ChromeVoxE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
 
-    // Alphabetical based on file path.
-    await importModule('ChromeVox', '/chromevox/background/chromevox.js');
-    await importModule('EventSource', '/chromevox/background/event_source.js');
-    await importModule('FocusBounds', '/chromevox/background/focus_bounds.js');
-    await importModule('Output', '/chromevox/background/output/output.js');
-    await importModule(
-        'OutputRoleInfo', '/chromevox/background/output/output_role_info.js');
-    await importModule(
-        'OutputRule', '/chromevox/background/output/output_rules.js');
-    await importModule(
-        ['OutputEarconAction', 'OutputNodeSpan', 'OutputSelectionSpan'],
-        '/chromevox/background/output/output_types.js');
-    await importModule('EarconId', '/chromevox/common/earcon_id.js');
-    await importModule(
-        'EventSourceType', '/chromevox/common/event_source_type.js');
-    await importModule('Msgs', '/chromevox/common/msgs.js');
-    await importModule('TtsCategory', '/chromevox/common/tts_types.js');
-    await importModule(
-        'AutomationPredicate', '/common/automation_predicate.js');
-    await importModule('AutomationUtil', '/common/automation_util.js');
-    await importModule('Cursor', '/common/cursors/cursor.js');
-    await importModule('CursorRange', '/common/cursors/range.js');
-
-    await importModule(
-        'SettingsManager', '/chromevox/common/settings_manager.js');
+    await Promise.all([
+      // Alphabetical based on file path.
+      importModule('ChromeVox', '/chromevox/background/chromevox.js'),
+      importModule('EventSource', '/chromevox/background/event_source.js'),
+      importModule('FocusBounds', '/chromevox/background/focus_bounds.js'),
+      importModule('Output', '/chromevox/background/output/output.js'),
+      importModule(
+          'OutputRoleInfo', '/chromevox/background/output/output_role_info.js'),
+      importModule(
+          'OutputRule', '/chromevox/background/output/output_rules.js'),
+      importModule(
+          ['OutputEarconAction', 'OutputNodeSpan', 'OutputSelectionSpan'],
+          '/chromevox/background/output/output_types.js'),
+      importModule('EarconId', '/chromevox/common/earcon_id.js'),
+      importModule('EventSourceType', '/chromevox/common/event_source_type.js'),
+      importModule('Msgs', '/chromevox/common/msgs.js'),
+      importModule('SettingsManager', '/chromevox/common/settings_manager.js'),
+      importModule('TtsCategory', '/chromevox/common/tts_types.js'),
+      importModule('AutomationPredicate', '/common/automation_predicate.js'),
+      importModule('AutomationUtil', '/common/automation_util.js'),
+      importModule('Cursor', '/common/cursors/cursor.js'),
+      importModule('CursorRange', '/common/cursors/range.js'),
+    ]);
 
     globalThis.Dir = AutomationUtil.Dir;
     globalThis.RoleType = chrome.automation.RoleType;

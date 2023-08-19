@@ -21,11 +21,9 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
  */
 /* package */ class VrDelegateFallback extends VrDelegate {
     private static final String TAG = "VrDelegateFallback";
-    private static final boolean DEBUG_LOGS = false;
     private static final String DEFAULT_VR_MODE_PACKAGE = "com.google.vr.vrcore";
     private static final String DEFAULT_VR_MODE_CLASS =
             "com.google.vr.vrcore.common.VrCoreListenerService";
-    private static final int WAITING_FOR_MODULE_TIMEOUT_MS = 1500;
 
     @Override
     public void forceExitVrImmediately() {}

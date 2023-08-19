@@ -33,7 +33,7 @@ class TestKeyboardLayoutDelegate : public KeyboardLayoutDelegate {
   void TransferGestureEventToShelf(const ui::GestureEvent& e) override;
 
  private:
-  raw_ptr<aura::Window, ExperimentalAsh> root_window_;
+  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> root_window_;
 };
 
 }  // namespace keyboard

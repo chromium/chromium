@@ -578,6 +578,20 @@ class GLCopyTextureCHROMIUMTest
     glDeleteTextures(2, textures_);
   }
 
+  // If a driver isn't capable of supporting ES3 context, creating
+  // ContextGroup will fail. Just skip the test.
+  bool ShouldSkipTest() const {
+    return (!gl_.decoder() || !gl_.decoder()->GetContextGroup());
+  }
+
+  bool ShouldSkipBGRA() const {
+    DCHECK(!ShouldSkipTest());
+    return !gl_.decoder()
+                ->GetFeatureInfo()
+                ->feature_flags()
+                .ext_texture_format_bgra8888;
+  }
+
   GLManager gl_;
   GLuint textures_[2];
   GLsizei width_;
@@ -597,24 +611,10 @@ class GLCopyTextureCHROMIUMES3Test : public GLCopyTextureCHROMIUMTest {
     height_ = 8;
   }
 
-  // If a driver isn't capable of supporting ES3 context, creating
-  // ContextGroup will fail. Just skip the test.
-  bool ShouldSkipTest() const {
-    return (!gl_.decoder() || !gl_.decoder()->GetContextGroup());
-  }
-
   // If EXT_color_buffer_float isn't available, float format isn't supported.
   bool ShouldSkipFloatFormat() const {
     DCHECK(!ShouldSkipTest());
     return !gl_.decoder()->GetFeatureInfo()->ext_color_buffer_float_available();
-  }
-
-  bool ShouldSkipBGRA() const {
-    DCHECK(!ShouldSkipTest());
-    return !gl_.decoder()
-                ->GetFeatureInfo()
-                ->feature_flags()
-                .ext_texture_format_bgra8888;
   }
 
   bool ShouldSkipSRGBEXT() const {
@@ -833,7 +833,7 @@ TEST_P(GLCopyTextureCHROMIUMTest, Basic) {
 
 TEST_P(GLCopyTextureCHROMIUMES3Test, BigTexture) {
   if (ShouldSkipTest() || ShouldSkipBGRA())
-    return;
+    GTEST_SKIP();
   width_ = 1080;
   height_ = 1080;
   const CopyType copy_type = GetParam();
@@ -892,6 +892,12 @@ TEST_P(GLCopyTextureCHROMIUMTest, ImmutableTexture) {
 
   for (auto src_internal_format : src_internal_formats) {
     for (auto dest_internal_format : dest_internal_formats) {
+      if (src_internal_format == GL_BGRA8_EXT ||
+          dest_internal_format == GL_BGRA8_EXT) {
+        if (ShouldSkipBGRA()) {
+          continue;
+        }
+      }
       CreateAndBindDestinationTextureAndFBO(GL_TEXTURE_2D);
       glBindTexture(GL_TEXTURE_2D, textures_[0]);
       glTexStorage2DEXT(GL_TEXTURE_2D, 1, src_internal_format, 1, 1);
@@ -942,6 +948,11 @@ TEST_P(GLCopyTextureCHROMIUMTest, InternalFormat) {
 
   for (const auto src_format : src_formats) {
     for (const auto dst_format : dest_formats) {
+      if (src_format == GL_BGRA_EXT || dst_format == GL_BGRA_EXT) {
+        if (ShouldSkipBGRA()) {
+          continue;
+        }
+      }
       CreateAndBindDestinationTextureAndFBO(GL_TEXTURE_2D);
       glBindTexture(GL_TEXTURE_2D, textures_[0]);
       glTexImage2D(GL_TEXTURE_2D, 0, src_format, 1, 1, 0, src_format,
@@ -1191,6 +1202,9 @@ TEST_P(GLCopyTextureCHROMIUMES3Test, CopyTextureCubeMap) {
 // Test to ensure that the destination texture is redefined if the properties
 // are different.
 TEST_F(GLCopyTextureCHROMIUMTest, RedefineDestinationTexture) {
+  if (ShouldSkipBGRA()) {
+    GTEST_SKIP();
+  }
   uint8_t pixels[4 * 4] = {255u, 0u, 0u, 255u, 255u, 0u, 0u, 255u,
                            255u, 0u, 0u, 255u, 255u, 0u, 0u, 255u};
 

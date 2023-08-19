@@ -126,6 +126,7 @@ class ASH_EXPORT EcheTray
 
   // TrayBackgroundView:
   void ClickedOutsideBubble() override;
+  void UpdateTrayItemColor(bool is_active) override;
   std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
@@ -313,9 +314,6 @@ class ASH_EXPORT EcheTray
   void OnShelfAlignmentChanged(aura::Window* root_window,
                                ShelfAlignment old_alignment) override;
 
-  // returns the position of the anchor that bubble needs to be anchored to.
-  gfx::Rect GetAnchor();
-
   // Processes the accelerator keys and returns true if the accelerator was
   // processed completely in this method and no further processing is needed.
   bool ProcessAcceleratorKeys(ui::KeyEvent* event);
@@ -362,7 +360,8 @@ class ASH_EXPORT EcheTray
   // The unload timer to force close EcheTray in case unload error.
   std::unique_ptr<base::DelayTimer> unload_timer_;
 
-  raw_ptr<views::View, ExperimentalAsh> header_view_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> header_view_ =
+      nullptr;
   raw_ptr<views::Button, ExperimentalAsh> close_button_ = nullptr;
   raw_ptr<views::Button, ExperimentalAsh> minimize_button_ = nullptr;
   raw_ptr<views::Button, ExperimentalAsh> arrow_back_button_ = nullptr;

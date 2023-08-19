@@ -19,10 +19,17 @@ void FakeDevicePostureProvider::Bind(
 }
 
 void FakeDevicePostureProvider::AddListenerAndGetCurrentPosture(
-    mojo::PendingRemote<mojom::DevicePostureProviderClient> client,
+    mojo::PendingRemote<mojom::DevicePostureClient> client,
     AddListenerAndGetCurrentPostureCallback callback) {
-  clients_.Add(std::move(client));
+  posture_clients_.Add(std::move(client));
   std::move(callback).Run(current_posture_);
+}
+
+void FakeDevicePostureProvider::AddListenerAndGetCurrentViewportSegments(
+    mojo::PendingRemote<mojom::DeviceViewportSegmentsClient> client,
+    AddListenerAndGetCurrentViewportSegmentsCallback callback) {
+  viewport_segment_clients_.Add(std::move(client));
+  std::move(callback).Run(current_viewport_segments_);
 }
 
 void FakeDevicePostureProvider::SetCurrentPostureForTesting(
@@ -32,7 +39,7 @@ void FakeDevicePostureProvider::SetCurrentPostureForTesting(
 }
 
 void FakeDevicePostureProvider::DispatchPostureChanges() {
-  for (auto& client : clients_) {
+  for (auto& client : posture_clients_) {
     client->OnPostureChanged(current_posture_);
   }
 }

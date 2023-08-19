@@ -338,14 +338,19 @@ class VisitDatabase {
   // Called by the derived classes to migrate the older visits table which
   // doesn't have the `consider_for_ntp_most_visited` column.
   bool MigrateVisitsAddConsiderForNewTabPageMostVisitedColumn();
+
+  // Called by the derived classes to migrate the older visits table which
+  // doesn't have the `external_referrer_url` column.
+  bool MigrateVisitsAddExternalReferrerUrlColumn();
 };
 
 // Columns, in order, of the visit table.
-#define HISTORY_VISIT_ROW_FIELDS                                        \
-  " id,url,visit_time,from_visit,transition,segment_id,visit_duration," \
-  "incremented_omnibox_typed_score,opener_visit,originator_cache_guid," \
-  "originator_visit_id,originator_from_visit,originator_opener_visit,"  \
-  "is_known_to_sync,consider_for_ntp_most_visited "
+#define HISTORY_VISIT_ROW_FIELDS                                    \
+  " id,url,visit_time,from_visit,external_referrer_url,transition," \
+  "segment_id,visit_duration,incremented_omnibox_typed_score,"      \
+  "opener_visit,originator_cache_guid,originator_visit_id,"         \
+  "originator_from_visit,originator_opener_visit,is_known_to_sync," \
+  "consider_for_ntp_most_visited "
 
 }  // namespace history
 

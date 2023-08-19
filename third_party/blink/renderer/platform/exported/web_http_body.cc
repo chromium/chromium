@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/platform/network/form_data_encoder.h"
 #include "third_party/blink/renderer/platform/network/wrapped_data_pipe_getter.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
+
 namespace blink {
 
 void WebHTTPBody::Initialize() {
@@ -130,16 +131,6 @@ void WebHTTPBody::AppendFileRange(
 void WebHTTPBody::AppendBlob(const WebString& uuid) {
   EnsureMutable();
   private_->AppendBlob(uuid, nullptr);
-}
-
-void WebHTTPBody::AppendBlob(
-    const WebString& uuid,
-    uint64_t length,
-    CrossVariantMojoRemote<mojom::BlobInterfaceBase> blob) {
-  EnsureMutable();
-  private_->AppendBlob(
-      uuid, BlobDataHandle::Create(uuid, "" /* type is not necessary */, length,
-                                   std::move(blob)));
 }
 
 void WebHTTPBody::AppendDataPipe(

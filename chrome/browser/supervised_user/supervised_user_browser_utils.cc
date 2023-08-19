@@ -22,6 +22,14 @@
 #include "google_apis/gaia/core_account_id.h"
 #include "url/url_constants.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_type.h"
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/startup/browser_params_proxy.h"
+#endif
+
 namespace supervised_user {
 
 bool IsSupportedChromeExtensionURL(const GURL& effective_url) {
@@ -82,15 +90,6 @@ ProfileSelections BuildProfileSelectionsForRegularAndGuest() {
       .Build();
 }
 
-ProfileSelections BuildProfileSelectionsLegacy() {
-  CHECK(!base::FeatureList::IsEnabled(
-      supervised_user::kUpdateSupervisedUserFactoryCreation));
-  return ProfileSelections::Builder()
-      .WithRegular(ProfileSelection::kOriginalOnly)
-      .WithGuest(ProfileSelection::kOriginalOnly)
-      .Build();
-}
-
 std::string GetAccountGivenName(Profile& profile) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(&profile);
@@ -101,6 +100,25 @@ std::string GetAccountGivenName(Profile& profile) {
   const AccountInfo account_info =
       identity_manager->FindExtendedAccountInfo(core_info);
   return account_info.given_name;
+}
+
+void AssertChildStatusOfTheUser(Profile* profile, bool is_child) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  user_manager::User* user =
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
+  if (user && is_child != (user->GetType() == user_manager::USER_TYPE_CHILD)) {
+    LOG(FATAL) << "User child flag has changed: " << is_child;
+  }
+  if (!user && ash::ProfileHelper::IsUserProfile(profile)) {
+    LOG(FATAL) << "User instance not found while setting child account flag.";
+  }
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  bool is_child_session = chromeos::BrowserParamsProxy::Get()->SessionType() ==
+                          crosapi::mojom::SessionType::kChildSession;
+  if (is_child_session != is_child) {
+    LOG(FATAL) << "User child flag has changed: " << is_child;
+  }
+#endif
 }
 
 }  // namespace supervised_user

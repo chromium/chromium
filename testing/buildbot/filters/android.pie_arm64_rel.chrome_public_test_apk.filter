@@ -6,9 +6,6 @@
 -org.chromium.chrome.browser.dom_distiller.DistilledPagePrefsTest.testSingleObserverFontScaling
 -org.chromium.chrome.browser.dom_distiller.DistilledPagePrefsTest.testSingleObserverTheme
 
-# crbug.com/963898
--org.chromium.chrome.browser.download.DownloadMediaParserTest.testParseVideoH264
-
 # crbug.com/1018181
 -org.chromium.chrome.browser.download.home.DownloadActivityV2Test.testLaunchingActivity
 
@@ -77,12 +74,11 @@
 -org.chromium.chrome.browser.translate.TranslateCompactInfoBarTest.testManualInitiationWithBarOpen
 -org.chromium.chrome.browser.translate.TranslateCompactInfoBarTest.testStartTranslateOnManualInitiation
 
-# crbug.com/1128665
--org.chromium.chrome.browser.download.DownloadTest.testDuplicateHttpPostDownload_Cancel__UseDownloadOfflineContentProviderEnabled
-
 # crbug.com/1165459
 -org.chromium.chrome.browser.share.long_screenshots.LongScreenshotsEntryTest.testCaptured
 
 # crbug.com/1169250
 -org.chromium.chrome.browser.omnibox.LocationBarTest.testFocusLogic_keyboardVisibility
 
+# crbug.com/1467211
+-org.chromium.chrome.browser.signin.SigninFirstRunFragmentTest.testSigninWithNonDefaultAccount

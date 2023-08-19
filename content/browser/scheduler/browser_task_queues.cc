@@ -79,6 +79,8 @@ QueueName GetUITaskQueueName(BrowserTaskQueues::QueueType queue_type) {
       return QueueName::UI_NAVIGATION_NETWORK_RESPONSE_TQ;
     case BrowserTaskQueues::QueueType::kServiceWorkerStorageControlResponse:
       return QueueName::UI_SERVICE_WORKER_STORAGE_CONTROL_RESPONSE_TQ;
+    case BrowserTaskQueues::QueueType::kBeforeUnloadBrowserResponse:
+      return QueueName::UI_BEFORE_UNLOAD_BROWSER_RESPONSE_TQ;
   }
 }
 
@@ -100,6 +102,8 @@ QueueName GetIOTaskQueueName(BrowserTaskQueues::QueueType queue_type) {
       return QueueName::IO_NAVIGATION_NETWORK_RESPONSE_TQ;
     case BrowserTaskQueues::QueueType::kServiceWorkerStorageControlResponse:
       return QueueName::IO_SERVICE_WORKER_STORAGE_CONTROL_RESPONSE_TQ;
+    case BrowserTaskQueues::QueueType::kBeforeUnloadBrowserResponse:
+      return QueueName::IO_BEFORE_UNLOAD_BROWSER_RESPONSE_TQ;
   }
 }
 
@@ -184,6 +188,9 @@ BrowserTaskQueues::BrowserTaskQueues(
 
   GetBrowserTaskQueue(QueueType::kServiceWorkerStorageControlResponse)
       ->SetQueuePriority(BrowserTaskPriority::kHighestPriority);
+
+  GetBrowserTaskQueue(QueueType::kBeforeUnloadBrowserResponse)
+      ->SetQueuePriority(BrowserTaskPriority::kHighPriority);
 
   // Control queue
   control_queue_ =

@@ -8,7 +8,6 @@
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_storage_estimate.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_storage_usage_details.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -21,6 +20,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/modules/permissions/permission_utils.h"
 #include "third_party/blink/renderer/modules/quota/quota_utils.h"
+#include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
@@ -36,6 +36,9 @@ namespace {
 
 const char kUniqueOriginErrorMessage[] =
     "The operation is not supported in this context.";
+const char kGenericErrorMessage[] =
+    "Internal error when calculating storage usage.";
+const char kAbortErrorMessage[] = "The operation was aborted due to shutdown.";
 
 void QueryStorageUsageAndQuotaCallback(
     ScriptPromiseResolver* resolver,
@@ -43,13 +46,26 @@ void QueryStorageUsageAndQuotaCallback(
     int64_t usage_in_bytes,
     int64_t quota_in_bytes,
     UsageBreakdownPtr usage_breakdown) {
-  if (status_code != mojom::blink::QuotaStatusCode::kOk) {
-    // TODO(sashab): Replace this with a switch statement, and remove the enum
-    // values from QuotaStatusCode.
-    // TODO(crbug.com/1293949): Add an error message.
-    resolver->Reject(V8ThrowDOMException::CreateOrDie(
-        resolver->GetScriptState()->GetIsolate(),
-        static_cast<DOMExceptionCode>(status_code), ""));
+  const char* error_message = nullptr;
+  switch (status_code) {
+    case mojom::blink::QuotaStatusCode::kOk:
+      break;
+    case mojom::blink::QuotaStatusCode::kErrorNotSupported:
+    case mojom::blink::QuotaStatusCode::kErrorInvalidModification:
+    case mojom::blink::QuotaStatusCode::kErrorInvalidAccess:
+      NOTREACHED();
+      error_message = kGenericErrorMessage;
+      break;
+    case mojom::blink::QuotaStatusCode::kUnknown:
+      error_message = kGenericErrorMessage;
+      break;
+    case mojom::blink::QuotaStatusCode::kErrorAbort:
+      error_message = kAbortErrorMessage;
+      break;
+  }
+  if (error_message) {
+    resolver->Reject(V8ThrowException::CreateTypeError(
+        resolver->GetScriptState()->GetIsolate(), error_message));
     return;
   }
 
@@ -168,7 +184,7 @@ void StorageManager::Trace(Visitor* visitor) const {
   visitor->Trace(change_listener_receiver_);
   visitor->Trace(permission_service_);
   visitor->Trace(quota_host_);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
   ScriptWrappable::Trace(visitor);
 }
@@ -196,16 +212,14 @@ void StorageManager::AddedEventListener(
     // This method will bind quota_host_.
     GetQuotaHost(execution_context);
   }
-  EventTargetWithInlineData::AddedEventListener(event_type,
-                                                registered_listener);
+  EventTarget::AddedEventListener(event_type, registered_listener);
   StartObserving();
 }
 
 void StorageManager::RemovedEventListener(
     const AtomicString& event_type,
     const RegisteredEventListener& registered_listener) {
-  EventTargetWithInlineData::RemovedEventListener(event_type,
-                                                  registered_listener);
+  EventTarget::RemovedEventListener(event_type, registered_listener);
   if (!HasEventListeners())
     StopObserving();
 }
@@ -269,14 +283,5 @@ mojom::blink::QuotaManagerHost* StorageManager::GetQuotaHost(
   }
   return quota_host_.get();
 }
-
-STATIC_ASSERT_ENUM(mojom::blink::QuotaStatusCode::kErrorNotSupported,
-                   DOMExceptionCode::kNotSupportedError);
-STATIC_ASSERT_ENUM(mojom::blink::QuotaStatusCode::kErrorInvalidModification,
-                   DOMExceptionCode::kInvalidModificationError);
-STATIC_ASSERT_ENUM(mojom::blink::QuotaStatusCode::kErrorInvalidAccess,
-                   DOMExceptionCode::kInvalidAccessError);
-STATIC_ASSERT_ENUM(mojom::blink::QuotaStatusCode::kErrorAbort,
-                   DOMExceptionCode::kAbortError);
 
 }  // namespace blink

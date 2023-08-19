@@ -26,7 +26,6 @@
 <translation id="2060505056492490888">„<ph name="DOT" />” występuje w niewłaściwym miejscu w „<ph name="INVALIDDOMAIN" />”.</translation>
 <translation id="2148716181193084225">Dzisiaj</translation>
 <translation id="2226276347425096477">Skróć ten tekst do maksymalnie <ph name="MAX_CHARACTERS" /> znaków (w tej chwili korzystasz z <ph name="CURRENT_LENGTH" /> znaków).</translation>
-<translation id="2246498165605549352">Plik lokalny</translation>
 <translation id="2247351761944213033">Tydzień <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Utwór <ph name="NUMBER" /></translation>
 <translation id="2393030564806080191">Wartość szesnastkowego kodu koloru</translation>
@@ -89,6 +88,7 @@
 <translation id="5425179576310518467">bieżąca data</translation>
 <translation id="5466621249238537318">Wybierz jeden lub kilka plików.</translation>
 <translation id="5468998798572797635">zamknij pełny ekran</translation>
+<translation id="5514612371225420585">Plik na Twoim urządzeniu</translation>
 <translation id="5516235301412634559">0,75</translation>
 <translation id="5537725057119320332">Przesyłaj</translation>
 <translation id="5546461542133609677">wyłącz wyciszenie</translation>
@@ -113,6 +113,7 @@
 <translation id="6398862346408813489">Pokaż panel wyboru miesiąca</translation>
 <translation id="6404546809543547843">pasek czasu odtwarzania dźwięku</translation>
 <translation id="6443871981718447451">wyświetlanie menu napisów</translation>
+<translation id="6484738902856791350">Zastosuj formatowanie stylistyczne</translation>
 <translation id="6550675742724504774">Opcje</translation>
 <translation id="6572309429103589720">Nieprawidłowa gramatyka</translation>
 <translation id="658823671542763450">przejdź do pełnego ekranu</translation>

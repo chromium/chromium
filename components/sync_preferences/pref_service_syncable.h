@@ -23,6 +23,7 @@ class PrefValueStore;
 
 namespace syncer {
 class SyncableService;
+class SyncService;
 }
 
 namespace sync_preferences {
@@ -115,6 +116,8 @@ class PrefServiceSyncable : public PrefService,
   void RemoveSyncedPrefObserver(const std::string& name,
                                 SyncedPrefObserver* observer);
 
+  void OnSyncServiceInitialized(syncer::SyncService* sync_service);
+
  private:
   void ConnectAssociatorsAndRegisterPreferences();
 
@@ -142,6 +145,10 @@ class PrefServiceSyncable : public PrefService,
   const scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry_;
 
   base::ObserverList<PrefServiceSyncableObserver>::Unchecked observer_list_;
+
+  // DualLayerUserPrefStore instance passed to the associators. This is non-null
+  // iff EnablePreferencesAccountStorage feature is enabled.
+  scoped_refptr<DualLayerUserPrefStore> dual_layer_user_prefs_;
 };
 
 }  // namespace sync_preferences

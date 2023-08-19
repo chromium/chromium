@@ -89,6 +89,22 @@ void WaylandZAuraOutputManager::RemoveOutputMetrics(
   output_metrics_map_.erase(output_id);
 }
 
+void WaylandZAuraOutputManager::DumpState(std::ostream& out) const {
+  out << "AuraOutputManager:" << std::endl;
+  int i = 0;
+  for (const auto& pair : pending_output_metrics_map_) {
+    out << "  pending output metrics[" << i++ << "]:";
+    pair.second.DumpState(out);
+    out << std::endl;
+  }
+  i = 0;
+  for (const auto& pair : output_metrics_map_) {
+    out << "  output metrics[" << i++ << "]:";
+    pair.second.DumpState(out);
+    out << std::endl;
+  }
+}
+
 WaylandOutput::Id WaylandZAuraOutputManager::GetId(wl_output* output) const {
   WaylandOutputManager* output_manager = connection_->wayland_output_manager();
   // The WaylandOutputManager should have been instantiated when the first

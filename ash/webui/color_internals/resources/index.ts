@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addColorChangeListener, startColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+import {COLOR_PROVIDER_CHANGED, ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 
 import {getRGBAFromComputedStyle} from './utils.js';
 import {startObservingWallpaperColors} from './wallpaper_colors.js';
@@ -104,8 +104,9 @@ function onColorChange() {
 
 window.onload = () => {
   populateTokenTable();
-  startColorChangeUpdater();
+  ColorChangeUpdater.forDocument().start();
   startObservingWallpaperColors();
-  addColorChangeListener(onColorChange);
+  ColorChangeUpdater.forDocument().eventTarget.addEventListener(
+      COLOR_PROVIDER_CHANGED, onColorChange);
   onColorChange();
 };

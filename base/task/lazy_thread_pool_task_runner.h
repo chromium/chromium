@@ -10,6 +10,7 @@
 
 #include "base/base_export.h"
 #include "base/functional/callback.h"
+#include "base/macros/uniquify.h"
 #include "base/task/common/checked_lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -83,21 +84,15 @@ using LazyThreadPoolCOMSTATaskRunner =
     internal::LazyThreadPoolTaskRunner<SingleThreadTaskRunner, true>;
 #endif
 
-// Helper macros to generate a variable name by concatenation.
-#define LAZY_TASK_RUNNER_CONCATENATE_INTERNAL2(a, b) a##b
-#define LAZY_TASK_RUNNER_CONCATENATE_INTERNAL(a, b) \
-  LAZY_TASK_RUNNER_CONCATENATE_INTERNAL2(a, b)
-
 // Use the macros below to initialize a LazyThreadPoolTaskRunner. These macros
 // verify that their arguments are constexpr, which is important to prevent the
 // generation of a static initializer.
 
 // |traits| are TaskTraits used when creating the SequencedTaskRunner.
-#define LAZY_THREAD_POOL_SEQUENCED_TASK_RUNNER_INITIALIZER(traits)     \
-  base::LazyThreadPoolSequencedTaskRunner::CreateInternal(traits);     \
-  [[maybe_unused]] constexpr base::TaskTraits                          \
-      LAZY_TASK_RUNNER_CONCATENATE_INTERNAL(kVerifyTraitsAreConstexpr, \
-                                            __LINE__) = traits
+#define LAZY_THREAD_POOL_SEQUENCED_TASK_RUNNER_INITIALIZER(traits) \
+  base::LazyThreadPoolSequencedTaskRunner::CreateInternal(traits); \
+  [[maybe_unused]] constexpr base::TaskTraits BASE_UNIQUIFY(       \
+      kVerifyTraitsAreConstexpr) = traits
 
 // |traits| are TaskTraits used when creating the SingleThreadTaskRunner.
 // |thread_mode| specifies whether the SingleThreadTaskRunner can share its
@@ -106,12 +101,10 @@ using LazyThreadPoolCOMSTATaskRunner =
                                                                thread_mode) \
   base::LazyThreadPoolSingleThreadTaskRunner::CreateInternal(traits,        \
                                                              thread_mode);  \
-  [[maybe_unused]] constexpr base::TaskTraits                               \
-      LAZY_TASK_RUNNER_CONCATENATE_INTERNAL(kVerifyTraitsAreConstexpr,      \
-                                            __LINE__) = traits;             \
+  [[maybe_unused]] constexpr base::TaskTraits BASE_UNIQUIFY(                \
+      kVerifyTraitsAreConstexpr) = traits;                                  \
   [[maybe_unused]] constexpr base::SingleThreadTaskRunnerThreadMode         \
-      LAZY_TASK_RUNNER_CONCATENATE_INTERNAL(kVerifyThreadModeIsConstexpr,   \
-                                            __LINE__) = thread_mode
+  BASE_UNIQUIFY(kVerifyThreadModeIsConstexpr) = thread_mode
 
 // |traits| are TaskTraits used when creating the COM STA
 // SingleThreadTaskRunner. |thread_mode| specifies whether the COM STA
@@ -119,12 +112,10 @@ using LazyThreadPoolCOMSTATaskRunner =
 // SingleThreadTaskRunners.
 #define LAZY_COM_STA_TASK_RUNNER_INITIALIZER(traits, thread_mode)            \
   base::LazyThreadPoolCOMSTATaskRunner::CreateInternal(traits, thread_mode); \
-  [[maybe_unused]] constexpr base::TaskTraits                                \
-      LAZY_TASK_RUNNER_CONCATENATE_INTERNAL(kVerifyTraitsAreConstexpr,       \
-                                            __LINE__) = traits;              \
+  [[maybe_unused]] constexpr base::TaskTraits BASE_UNIQUIFY(                 \
+      kVerifyTraitsAreConstexpr) = traits;                                   \
   [[maybe_unused]] constexpr base::SingleThreadTaskRunnerThreadMode          \
-      LAZY_TASK_RUNNER_CONCATENATE_INTERNAL(kVerifyThreadModeIsConstexpr,    \
-                                            __LINE__) = thread_mode
+  BASE_UNIQUIFY(kVerifyThreadModeIsConstexpr) = thread_mode
 
 namespace internal {
 

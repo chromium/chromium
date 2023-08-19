@@ -7,6 +7,7 @@
 
 #include <va/va.h>
 
+#include "media/gpu/vaapi/test/fake_libva_driver/fake_buffer.h"
 #include "media/gpu/vaapi/test/fake_libva_driver/fake_config.h"
 #include "media/gpu/vaapi/test/fake_libva_driver/fake_context.h"
 #include "media/gpu/vaapi/test/fake_libva_driver/fake_surface.h"
@@ -48,10 +49,20 @@ class FakeDriver {
   const FakeContext& GetContext(FakeContext::IdType id);
   void DestroyContext(FakeContext::IdType id);
 
+  FakeBuffer::IdType CreateBuffer(VAContextID context,
+                                  VABufferType type,
+                                  unsigned int size_per_element,
+                                  unsigned int num_elements,
+                                  const void* data);
+  bool BufferExists(FakeBuffer::IdType id);
+  const FakeBuffer& GetBuffer(FakeBuffer::IdType id);
+  void DestroyBuffer(FakeBuffer::IdType id);
+
  private:
   ObjectTracker<FakeConfig> config_;
   ObjectTracker<FakeSurface> surface_;
   ObjectTracker<FakeContext> context_;
+  ObjectTracker<FakeBuffer> buffers_;
 };
 
 }  // namespace media::internal

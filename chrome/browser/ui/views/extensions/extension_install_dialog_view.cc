@@ -417,8 +417,11 @@ void ExtensionInstallDialogView::ResizeWidget() {
 
 void ExtensionInstallDialogView::VisibilityChanged(views::View* starting_from,
                                                    bool is_visible) {
-  if (is_visible) {
-    DCHECK(!install_result_timer_);
+  // VisibilityChanged() might spuriously fire more than once on some platforms,
+  // for example, when Widget::Show() and Widget::Activate() are called
+  // sequentially. Timers should be started only at the first notification of
+  // visibility change.
+  if (is_visible && !install_result_timer_) {
     install_result_timer_ = base::ElapsedTimer();
 
     if (!install_button_enabled_) {

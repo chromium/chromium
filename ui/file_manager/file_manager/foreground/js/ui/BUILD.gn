@@ -223,7 +223,6 @@ js_library("default_task_dialog") {
 js_library("dialog_footer") {
   deps = [
     "//ui/file_manager/file_manager/common/js:dialog_type",
-    "//ui/file_manager/file_manager/common/js:file_type",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/foreground/js:file_list_model",
   ]
@@ -309,7 +308,6 @@ js_library("file_grid") {
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
     "//ui/file_manager/file_manager/externs:volume_manager",
-    "//ui/file_manager/file_manager/foreground/elements:files_tooltip",
     "//ui/file_manager/file_manager/foreground/js:file_list_model",
     "//ui/file_manager/file_manager/foreground/js:list_thumbnail_loader",
     "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
@@ -397,8 +395,6 @@ js_library("file_manager_ui") {
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/file_manager/file_manager/foreground/elements:files_password_dialog",
-    "//ui/file_manager/file_manager/foreground/elements:files_tooltip",
-    "//ui/file_manager/file_manager/foreground/js:banner_controller",
     "//ui/file_manager/file_manager/foreground/js:launch_param",
     "//ui/file_manager/file_manager/foreground/js:providers_model",
   ]
@@ -406,6 +402,7 @@ js_library("file_manager_ui") {
   externs_list = [
     "//ui/webui/resources/cr_elements/cr_action_menu/cr_action_menu_externs.js",
     "//ui/file_manager/file_manager/externs/polymer_elements/files_toast.js",
+    "//ui/file_manager/file_manager/externs/polymer_elements/files_tooltip.js",
   ]
 
   visibility +=
@@ -436,10 +433,12 @@ js_library("file_table") {
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
     "//ui/file_manager/file_manager/externs:volume_manager",
-    "//ui/file_manager/file_manager/foreground/elements:files_tooltip",
     "//ui/file_manager/file_manager/foreground/js:file_list_model",
     "//ui/file_manager/file_manager/foreground/js:list_thumbnail_loader",
     "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
+  ]
+  externs_list = [
+    "//ui/file_manager/file_manager/externs/polymer_elements/files_tooltip.js",
   ]
 }
 
@@ -469,7 +468,6 @@ js_library("file_table_list") {
     "//ui/file_manager/file_manager/externs:entry_location",
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
     "//ui/file_manager/file_manager/externs:volume_manager",
-    "//ui/file_manager/file_manager/foreground/elements:files_tooltip",
     "//ui/file_manager/file_manager/foreground/js:file_list_model",
     "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
   ]

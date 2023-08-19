@@ -71,6 +71,11 @@ class AppUsageObserver : public ::apps::AppPlatformMetrics::Observer {
                                    const base::UnguessableToken& instance_id,
                                    const base::TimeDelta& running_time);
 
+  // Attempts to retrieve and set the app publisher id if one is not being
+  // tracked already.
+  void MaybeSetAppPublisherId(
+      ::apps::AppPlatformMetrics::UsageTime& usage_time);
+
   // Weak pointer to the user profile. Used to save usage data to the user pref
   // store.
   const base::WeakPtr<Profile> profile_;

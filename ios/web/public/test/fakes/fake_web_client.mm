@@ -15,10 +15,6 @@
 #import "ui/base/resource/resource_bundle.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace web {
 
 FakeWebClient::FakeWebClient() = default;
@@ -53,9 +49,14 @@ std::vector<JavaScriptFeature*> FakeWebClient::GetJavaScriptFeatures(
   return java_script_features_;
 }
 
+NSString* FakeWebClient::GetDocumentStartScriptForAllFrames(
+    BrowserState* browser_state) const {
+  return early_page_script_for_all_frames_ ?: @"";
+}
+
 NSString* FakeWebClient::GetDocumentStartScriptForMainFrame(
     BrowserState* browser_state) const {
-  return early_page_script_ ? early_page_script_ : @"";
+  return early_page_script_for_main_frame_ ?: @"";
 }
 
 void FakeWebClient::SetPluginNotSupportedText(const std::u16string& text) {
@@ -67,8 +68,14 @@ void FakeWebClient::SetJavaScriptFeatures(
   java_script_features_ = features;
 }
 
-void FakeWebClient::SetEarlyPageScript(NSString* page_script) {
-  early_page_script_ = [page_script copy];
+void FakeWebClient::SetEarlyPageScriptForAllFrames(
+    NSString* page_script_for_all_frames) {
+  early_page_script_for_all_frames_ = [page_script_for_all_frames copy];
+}
+
+void FakeWebClient::SetEarlyPageScriptForMainFrame(
+    NSString* page_script_for_main_frame) {
+  early_page_script_for_main_frame_ = [page_script_for_main_frame copy];
 }
 
 void FakeWebClient::PrepareErrorPage(
@@ -92,29 +99,6 @@ UIView* FakeWebClient::GetWindowedContainer() {
 UserAgentType FakeWebClient::GetDefaultUserAgent(web::WebState* web_state,
                                                  const GURL& url) const {
   return default_user_agent_;
-}
-
-void FakeWebClient::SetFindSessionPrototype(
-    CRWFakeFindSession* find_session_prototype) API_AVAILABLE(ios(16)) {
-  find_session_prototype_ = find_session_prototype;
-}
-
-id<CRWFindSession> FakeWebClient::CreateFindSessionForWebState(
-    web::WebState* web_state) const API_AVAILABLE(ios(16)) {
-  return find_session_prototype_ ? [find_session_prototype_ copy]
-                                 : [[CRWFakeFindSession alloc] init];
-}
-
-void FakeWebClient::StartTextSearchInWebState(web::WebState* web_state) {
-  text_search_started_ = true;
-}
-
-void FakeWebClient::StopTextSearchInWebState(web::WebState* web_state) {
-  text_search_started_ = false;
-}
-
-bool FakeWebClient::IsTextSearchStarted() const {
-  return text_search_started_;
 }
 
 }  // namespace web

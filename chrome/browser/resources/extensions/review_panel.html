@@ -1,0 +1,161 @@
+<style include="cr-shared-style shared-style">
+  .header-group-wrapper {
+    flex: 1;
+    margin-inline-start: 15px;
+  }
+
+  .header-with-icon {
+    align-items: center;
+    display: flex;
+    padding: 0 30px 15px 0px;
+  }
+
+  .header-with-icon h3 {
+    margin: 5px 0 3px 0;
+    font-weight: 400;
+  }
+
+  /** TODO(crbug.com/1432194): Clean up the CSS with the shared styles added
+   * in https://crrev.com/c/4579629 once its in. */
+  .header-with-icon iron-icon {
+    border-radius: 50%;
+    flex-shrink: 0;
+    height: var(--cr-icon-size);
+    padding: 6px;
+    width: var(--cr-icon-size);
+  }
+
+  iron-icon[icon='cr:check'] {
+    background-color: var(--google-green-50);
+    fill: var(--google-green-700);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    iron-icon[icon='cr:check'] {
+      background-color: var(--google-green-300);
+      fill: var(--grey-900-white-4-percent);
+    }
+  }
+
+  .text-container {
+    padding-left: 20px;
+  }
+
+  .header-icon {
+    align-items: center;
+    background-color: var(--google-blue-50);
+    fill: var(--google-blue-600);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .header-icon {
+      background-color: var(--google-blue-300);
+      fill: var(--review-panel-icon-color);
+    }
+  }
+
+  .header-group-wrapper {
+    flex: 1;
+    margin-inline-start: 15px;
+  }
+
+  .completion-container {
+    margin-top: 20px;
+    font-weight: 500;
+    font-size: 14px;
+  }
+
+  #extension-icon {
+    height: var(--cr-icon-size);
+    width: var(--cr-icon-size);
+  }
+
+  .extension-row {
+    padding-inline-end: 20px;
+    padding-inline-start: 50px;
+  }
+
+  .extension-row.cr-row {
+    border: none;
+  }
+
+  .display-name {
+    flex: 1;
+    margin: 8px 16px;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .bulk-action-button {
+    margin-inline-start: auto;
+  }
+
+  .cr-row.first {
+    padding-top: 5px;
+    padding-left: 0px;
+  }
+</style>
+<cr-expand-button class="cr-row first" no-hover
+    id="expandButton"
+    expanded="{{unsafeExtensionsReviewListExpanded_}}"
+    hidden$="[[!shouldShowUnsafeExtensions_]]">
+  <div class="header-with-icon" id="reviewPanelContainer">
+    <iron-icon aria-hidden="true" icon="cr:extension" class="header-icon">
+      <!-- TODO(crbug.com/1432194):Will replace this
+        info icon with the correct header icon -->
+    </iron-icon>
+    <div class="text-container">
+      <h3 id="headingText">[[headerString_]]</h3>
+      <div
+        class="cr-secondary-text"
+        id="secondaryText">
+          [[subtitleString_]]
+      </div>
+    </div>
+  </div>
+</cr-expand-button>
+<iron-collapse class="extension-list"
+    opened="[[unsafeExtensionsReviewListExpanded_]]"
+    hidden$="[[!shouldShowUnsafeExtensions_]]">
+  <template is="dom-repeat" items="[[unsafeExtensions_]]">
+    <div class="extension-row cr-row">
+      <img id="extension-icon" src="[[item.iconUrl]]" role="presentation">
+      <div class="display-name text-elide">
+        <div class="extension-representation">[[item.name]]</div>
+        <div class="cr-secondary-text">
+          [[item.safetyCheckText.panelString]]
+        </div>
+      </div>
+      <cr-icon-button iron-icon="cr:delete"
+          actionable on-click="onRemoveExtensionClick_"
+          aria-label="[[getRemoveButtonA11yLabel_(item.name)]]">
+      </cr-icon-button>
+      <cr-icon-button class="icon-more-vert header-aligned-button"
+        id="makeExceptionMenuButton"
+        on-click="onMakeExceptionMenuClick_"
+        aria-label="[[getOptionMenuA11yLabel_(item.name)]]"
+        focus-type="makeExceptionMenuButton"></cr-icon-button>
+    </div>
+  </template>
+  <div class="cr-row first">
+    <cr-button
+        class="action-button bulk-action-button"
+        id="removeAllButton"
+        on-click="onRemoveAllClick_">
+          $i18n{safetyCheckRemoveAll}
+    </cr-button>
+  </div>
+</iron-collapse>
+<div class="header-with-icon completion-container"
+    hidden$="[[!shouldShowCompletionInfo_]]">
+  <iron-icon role="img" icon="cr:check"></iron-icon>
+  <span class="header-group-wrapper">$i18n{safetyCheckAllDoneForNow}</span>
+</div>
+<cr-action-menu id="makeExceptionMenu">
+  <button id="menuKeepExtension"
+    class="dropdown-item"
+    on-click="onKeepExtensionClick_">
+      $i18n{safetyCheckKeepExtension}
+  </button>
+</cr-action-menu>

@@ -6,7 +6,7 @@
 
 #import <memory>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
@@ -25,10 +25,6 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "ui/base/l10n/l10n_util_mac.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -174,7 +170,7 @@ class PasswordIssuesTableViewControllerTest
     TableViewModel* model = passwords_controller.tableViewModel;
 
     TableViewLinkHeaderFooterItem* header =
-        base::mac::ObjCCastStrict<TableViewLinkHeaderFooterItem>(
+        base::apple::ObjCCastStrict<TableViewLinkHeaderFooterItem>(
             [model headerForSectionIndex:section]);
 
     EXPECT_NSEQ(header.text, expected_text);
@@ -426,7 +422,7 @@ TEST_F(PasswordIssuesTableViewControllerTest, TestTapHeaderLink) {
       GetPasswordIssuesController();
 
   TableViewLinkHeaderFooterView* header_view =
-      base::mac::ObjCCastStrict<TableViewLinkHeaderFooterView>(
+      base::apple::ObjCCastStrict<TableViewLinkHeaderFooterView>(
           [passwords_controller tableView:passwords_controller.tableView
                    viewForHeaderInSection:0]);
 

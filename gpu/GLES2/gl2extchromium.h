@@ -597,16 +597,6 @@ typedef GLboolean (GL_APIENTRYP PFNGLENABLEFEATURECHROMIUMPROC) (
     const char* feature);
 #endif  /* GL_CHROMIUM_enable_feature */
 
-/* GL_CHROMIUM_command_buffer_latency_query */
-#ifndef GL_CHROMIUM_command_buffer_latency_query
-#define GL_CHROMIUM_command_buffer_latency_query 1
-
-#ifndef GL_LATENCY_QUERY_CHROMIUM
-// TODO(gman): Get official numbers for these constants.
-#define GL_LATENCY_QUERY_CHROMIUM 0x6007
-#endif
-#endif  /* GL_CHROMIUM_command_buffer_latency_query */
-
 /* GL_ARB_robustness */
 #ifndef GL_ARB_robustness
 #define GL_ARB_robustness 1

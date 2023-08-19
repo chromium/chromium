@@ -7,16 +7,12 @@
 #import <Foundation/Foundation.h>
 
 #include "base/apple/bridging.h"
+#include "base/apple/foundation_util.h"
 #include "base/enterprise_util.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/version.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace component_updater {
 
@@ -33,7 +29,7 @@ T* GetUpdaterSettingsValue(NSString* value_name) {
       CFPreferencesCopyAppValue(base::apple::NSToCFPtrCast(value_name),
                                 CFSTR("com.google.Keystone.Agent")));
 
-  return base::mac::ObjCCastStrict<T>(plist_type);
+  return base::apple::ObjCCastStrict<T>(plist_type);
 }
 
 base::Time GetUpdaterSettingsTime(NSString* value_name) {
@@ -47,12 +43,12 @@ base::Time GetUpdaterSettingsTime(NSString* value_name) {
 base::Version GetVersionFromPlist(const base::FilePath& info_plist) {
   @autoreleasepool {
     NSData* data = [NSData
-        dataWithContentsOfFile:base::mac::FilePathToNSString(info_plist)];
+        dataWithContentsOfFile:base::apple::FilePathToNSString(info_plist)];
     if ([data length] == 0) {
       return base::Version();
     }
     NSDictionary* all_keys =
-        base::mac::ObjCCastStrict<NSDictionary>([NSPropertyListSerialization
+        base::apple::ObjCCastStrict<NSDictionary>([NSPropertyListSerialization
             propertyListWithData:data
                          options:NSPropertyListImmutable
                           format:nil
@@ -60,7 +56,7 @@ base::Version GetVersionFromPlist(const base::FilePath& info_plist) {
     if (all_keys == nil) {
       return base::Version();
     }
-    CFStringRef version = base::mac::GetValueFromDictionary<CFStringRef>(
+    CFStringRef version = base::apple::GetValueFromDictionary<CFStringRef>(
         base::apple::NSToCFPtrCast(all_keys), kCFBundleVersionKey);
     if (version == nullptr) {
       return base::Version();
@@ -80,7 +76,7 @@ base::Version UpdaterState::StateReaderKeystone::GetUpdaterVersion(
   // System Keystone trumps user one, so check this one first
   base::FilePath local_library;
   bool success =
-      base::mac::GetLocalDirectory(NSLibraryDirectory, &local_library);
+      base::apple::GetLocalDirectory(NSLibraryDirectory, &local_library);
   DCHECK(success);
   base::FilePath system_bundle_plist = local_library.Append(kKeystonePlist);
   base::Version system_keystone = GetVersionFromPlist(system_bundle_plist);
@@ -89,7 +85,7 @@ base::Version UpdaterState::StateReaderKeystone::GetUpdaterVersion(
   }
 
   base::FilePath user_bundle_plist =
-      base::mac::GetUserLibraryPath().Append(kKeystonePlist);
+      base::apple::GetUserLibraryPath().Append(kKeystonePlist);
   return GetVersionFromPlist(user_bundle_plist);
 }
 
@@ -114,13 +110,10 @@ int UpdaterState::StateReaderKeystone::GetUpdatePolicy() const {
 bool UpdaterState::IsAutoupdateCheckEnabled() {
   // Auto-update check period override (in seconds).
   // Applies only to older versions of Keystone.
-  NSNumber* timeInterval = GetUpdaterSettingsValue<NSNumber>(@"checkInterval");
-  if (!timeInterval) {
-    return true;
-  }
-  int value = [timeInterval intValue];
-
-  return 0 < value && value < (24 * 60 * 60);
+  Boolean foundValue = false;
+  long value = CFPreferencesGetAppIntegerValue(
+      CFSTR("checkInterval"), CFSTR("com.google.Keystone.Agent"), &foundValue);
+  return !foundValue || (0 < value && value < (24 * 60 * 60));
 }
 
 int UpdaterState::GetUpdatePolicy() {

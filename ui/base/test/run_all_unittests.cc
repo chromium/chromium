@@ -87,8 +87,10 @@ void UIBaseTestSuite::Initialize() {
 #if BUILDFLAG(IS_ANDROID)
   result =
       base::PathService::Get(ui::DIR_RESOURCE_PAKS_ANDROID, &dir_resources);
-#elif BUILDFLAG(IS_APPLE)
+#elif BUILDFLAG(IS_MAC)
   result = base::PathService::Get(base::DIR_MODULE, &dir_resources);
+#elif BUILDFLAG(IS_IOS)
+  result = base::PathService::Get(base::DIR_ASSETS, &dir_resources);
 #else
   dir_resources = assets_path;
   result = true;

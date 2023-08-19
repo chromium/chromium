@@ -49,7 +49,9 @@
 #include "media/mojo/mojom/audio_data_pipe.mojom.h"
 #include "media/mojo/mojom/audio_input_stream.mojom.h"
 #include "media/mojo/mojom/audio_processing.mojom.h"
+#include "media/mojo/services/mojo_video_encoder_metrics_provider_service.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/viz/public/mojom/gpu.mojom.h"
@@ -308,6 +310,12 @@ void CastMirroringServiceHost::GetVideoCaptureHost(
       // CastMirroringServiceHost class is handled by the browser thread.
       base::BindOnce(&CastMirroringServiceHost::SetVideoCaptureHost,
                      weak_factory_for_ui_.GetWeakPtr()));
+}
+
+void CastMirroringServiceHost::GetVideoEncoderMetricsProvider(
+    mojo::PendingReceiver<media::mojom::VideoEncoderMetricsProvider> receiver) {
+  media::MojoVideoEncoderMetricsProviderService::Create(ukm::NoURLSourceId(),
+                                                        std::move(receiver));
 }
 
 void CastMirroringServiceHost::SetVideoCaptureHost(

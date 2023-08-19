@@ -17,7 +17,6 @@ CREATE TABLE meta(key LONGVARCHAR NOT NULL UNIQUE PRIMARY KEY, value LONGVARCHAR
 
 INSERT INTO meta VALUES('version','1');
 INSERT INTO meta VALUES('last_compatible_version','1');
-INSERT INTO meta VALUES('run_count','1');
 
 INSERT INTO bounces VALUES('storage.test', 1, 1, 4, 4, 0, 0 ,0, 0),
                           ('stateful-bounce.test', 0, 0, 4, 4, 1, 1, 0, 0),

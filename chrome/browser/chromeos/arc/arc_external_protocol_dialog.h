@@ -46,82 +46,6 @@ enum class GetActionResult {
   ASK_USER,
 };
 
-// These enums are used to define the buckets for an enumerated UMA histogram
-// and need to be synced with enums.xml. This enum class should also be
-// treated as append-only.
-enum class ProtocolAction {
-  OTHER_ACCEPTED_PERSISTED = 0,
-  OTHER_ACCEPTED_NOT_PERSISTED = 1,
-  OTHER_REJECTED = 2,
-  BITCOIN_ACCEPTED_PERSISTED = 3,
-  BITCOIN_ACCEPTED_NOT_PERSISTED = 4,
-  BITCOIN_REJECTED = 5,
-  GEO_ACCEPTED_PERSISTED = 6,
-  GEO_ACCEPTED_NOT_PERSISTED = 7,
-  GEO_REJECTED = 8,
-  IM_ACCEPTED_PERSISTED = 9,
-  IM_ACCEPTED_NOT_PERSISTED = 10,
-  IM_REJECTED = 11,
-  IRC_ACCEPTED_PERSISTED = 12,
-  IRC_ACCEPTED_NOT_PERSISTED = 13,
-  IRC_REJECTED = 14,
-  MAGNET_ACCEPTED_PERSISTED = 15,
-  MAGNET_ACCEPTED_NOT_PERSISTED = 16,
-  MAGNET_REJECTED = 17,
-  MAILTO_ACCEPTED_PERSISTED = 18,
-  MAILTO_ACCEPTED_NOT_PERSISTED = 19,
-  MAILTO_REJECTED = 20,
-  MMS_ACCEPTED_PERSISTED = 21,
-  MMS_ACCEPTED_NOT_PERSISTED = 22,
-  MMS_REJECTED = 23,
-  SIP_ACCEPTED_PERSISTED = 24,
-  SIP_ACCEPTED_NOT_PERSISTED = 25,
-  SIP_REJECTED = 26,
-  SKYPE_ACCEPTED_PERSISTED = 27,
-  SKYPE_ACCEPTED_NOT_PERSISTED = 28,
-  SKYPE_REJECTED = 29,
-  SMS_ACCEPTED_PERSISTED = 30,
-  SMS_ACCEPTED_NOT_PERSISTED = 31,
-  SMS_REJECTED = 32,
-  SPOTIFY_ACCEPTED_PERSISTED = 33,
-  SPOTIFY_ACCEPTED_NOT_PERSISTED = 34,
-  SPOTIFY_REJECTED = 35,
-  SSH_ACCEPTED_PERSISTED = 36,
-  SSH_ACCEPTED_NOT_PERSISTED = 37,
-  SSH_REJECTED = 38,
-  TEL_ACCEPTED_PERSISTED = 39,
-  TEL_ACCEPTED_NOT_PERSISTED = 40,
-  TEL_REJECTED = 41,
-  TELNET_ACCEPTED_PERSISTED = 42,
-  TELNET_ACCEPTED_NOT_PERSISTED = 43,
-  TELNET_REJECTED = 44,
-  WEBCAL_ACCEPTED_PERSISTED = 45,
-  WEBCAL_ACCEPTED_NOT_PERSISTED = 46,
-  WEBCAL_REJECTED = 47,
-  TEL_DEVICE_SELECTED = 48,
-  kMaxValue = TEL_DEVICE_SELECTED
-};
-
-// Possible schemes for recording external protocol dialog metrics
-enum class Scheme {
-  BITCOIN,
-  GEO,
-  IM,
-  IRC,
-  MAGNET,
-  MAILTO,
-  MMS,
-  SIP,
-  SKYPE,
-  SMS,
-  SPOTIFY,
-  SSH,
-  TEL,
-  TELNET,
-  WEBCAL,
-  OTHER
-};
-
 // Checks if ARC is supported, running, and in a context where it is allowed to
 // handle external protocol, then either shows the dialog, or directly launches
 // the app if a user has previously made a choice. Invokes |handled_cb| with
@@ -153,11 +77,6 @@ bool GetAndResetSafeToRedirectToArcWithoutUserConfirmationFlagForTesting(
 bool IsChromeAnAppCandidateForTesting(
     const std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo>&
         handlers);
-
-ProtocolAction GetProtocolAction(Scheme scheme,
-                                 apps::PickerEntryType entry_type,
-                                 bool accepted,
-                                 bool persisted);
 
 void OnIntentPickerClosedForTesting(
     base::WeakPtr<content::WebContents> web_contents,

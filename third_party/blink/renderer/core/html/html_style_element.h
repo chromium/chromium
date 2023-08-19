@@ -37,7 +37,8 @@ class CORE_EXPORT HTMLStyleElement final : public HTMLElement,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  HTMLStyleElement(Document&, const CreateElementFlags);
+  explicit HTMLStyleElement(Document&,
+                            const CreateElementFlags = CreateElementFlags());
   ~HTMLStyleElement() override;
 
   using StyleElement::sheet;

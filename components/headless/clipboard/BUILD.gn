@@ -8,6 +8,8 @@ source_set("clipboard") {
     "headless_clipboard.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base",
     "//ui/base/clipboard",

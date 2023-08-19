@@ -56,33 +56,38 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR) CursorFactory {
   virtual scoped_refptr<PlatformCursor> GetDefaultCursor(
       mojom::CursorType type);
 
+  // Return the default cursor of the specified type. When a default cursor is
+  // not available, nullptr is returned. This is implemented by backends that
+  // manages its own cursor images and therefore needs to know the appropriate
+  // scale to load them at.
+  virtual scoped_refptr<PlatformCursor> GetDefaultCursor(mojom::CursorType type,
+                                                         float scale);
+
   // Return the {bitmaps, hotspot} for the default cursor of the specified
   // `type`. If that cursor is not available or the extraction of the data
   // fails, return `absl::nullopt`.
   virtual absl::optional<CursorData> GetCursorData(mojom::CursorType type);
 
   // Return an image cursor for the specified `type` with a `bitmap` and
-  // `hotspot`.
+  // `hotspot` and `scale`.
   virtual scoped_refptr<PlatformCursor> CreateImageCursor(
       mojom::CursorType type,
       const SkBitmap& bitmap,
-      const gfx::Point& hotspot);
+      const gfx::Point& hotspot,
+      float scale);
 
-  // Return a animated cursor from the specified `bitmaps` and `hotspot`.
-  // `frame_delay` is the delay between frames.
+  // Return a animated cursor from the specified `bitmaps` and `hotspot`
+  // and `scale`. `frame_delay` is the delay between frames.
   virtual scoped_refptr<PlatformCursor> CreateAnimatedCursor(
       mojom::CursorType type,
       const std::vector<SkBitmap>& bitmaps,
       const gfx::Point& hotspot,
+      float scale,
       base::TimeDelta frame_delay);
 
   // Called after CursorThemeManager is initialized, to be able to track
   // cursor theme and size changes.
   virtual void ObserveThemeChanges();
-
-  // Sets the device scale factor that CursorFactory may use when creating
-  // cursors.
-  virtual void SetDeviceScaleFactor(float scale);
 
  private:
   base::ObserverList<CursorFactoryObserver>::Unchecked observers_;

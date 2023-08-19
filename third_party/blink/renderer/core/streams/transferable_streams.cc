@@ -818,15 +818,23 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
       source_->has_finished_reading_stream1_ = true;
       ReadableStreamDefaultController* controller =
           source_->Controller()->GetOriginalController();
-      // TODO(ricea): Remove or demote to DCHECK once
-      // https://crbug.com/1418910 has been fixed.
-      CHECK(controller);
-      resolver_->Resolve(
-          script_state,
-          ToV8(source_->source2_->startWrapper(script_state, controller)
-                   .Then(CreateFunction<PullSource2>(script_state, source_)),
-               script_state->GetContext()->Global(),
-               script_state->GetIsolate()));
+      auto* isolate = script_state->GetIsolate();
+      if (controller) {
+        resolver_->Resolve(
+            script_state,
+            ToV8(source_->source2_->startWrapper(script_state, controller)
+                     .Then(CreateFunction<PullSource2>(script_state, source_)),
+                 script_state->GetContext()->Global(), isolate));
+      } else {
+        // TODO(crbug.com/1418910): Investigate how to handle cases when the
+        // controller is cleared.
+        resolver_->Reject(script_state,
+                          v8::Exception::TypeError(V8String(
+                              isolate,
+                              "The readable stream controller has been cleared "
+                              "and cannot be used to start reading the second "
+                              "stream.")));
+      }
     }
 
     void ErrorSteps(ScriptState* script_state,

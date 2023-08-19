@@ -64,7 +64,8 @@ class CC_ANIMATION_EXPORT AnimationTimeline
   }
   bool TickTimeLinkedAnimations(
       const std::vector<scoped_refptr<Animation>>& ticking_animations,
-      base::TimeTicks monotonic_time);
+      base::TimeTicks monotonic_time,
+      bool tick_finished);
   virtual bool TickScrollLinkedAnimations(
       const std::vector<scoped_refptr<Animation>>& ticking_animations,
       const ScrollTree& scroll_tree,

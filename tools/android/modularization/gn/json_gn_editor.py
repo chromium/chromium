@@ -22,7 +22,7 @@ from typing import Dict, Iterator, List, Optional, Tuple
 
 _TOOLS_ANDROID_PATH = pathlib.Path(__file__).resolve().parents[2]
 if str(_TOOLS_ANDROID_PATH) not in sys.path:
-    sys.path.append(str(_TOOLS_ANDROID_PATH))
+    sys.path.insert(0, str(_TOOLS_ANDROID_PATH))
 from python_utils import git_metadata_utils, subprocess_utils
 
 _SRC_PATH = git_metadata_utils.get_chromium_src_path()
@@ -113,6 +113,7 @@ class DepList:
     target_name: Optional[str]  # The name of the target containing the list.
     variable_name: str  # Left-hand side variable name the list is assigned to.
     child_nodes: List[dict]  # Right-hand side list of nodes.
+    operation: str  # The assignment operation, whether += or =.
 
 
 class BuildFile:
@@ -229,15 +230,16 @@ class BuildFile:
         def match_list_assignments(node):
             r"""Matches and returns the list being assigned.
 
-            Binary node
+            Binary node (with an operation such as = or +=)
              /       \
             /         \
             name      list of nodes
 
-            Returns the pair (name, list of nodes)
+            Returns (name, list of nodes, op)
             """
             if node.get(NODE_TYPE) != 'BINARY':
                 return None
+            operation = node.get(NODE_VALUE)
             children = node.get(NODE_CHILD)
             assert len(children) == 2, (
                 'Binary nodes should have two child nodes, but the node is: '
@@ -249,18 +251,19 @@ class BuildFile:
             if right_child.get(NODE_TYPE) != 'LIST':
                 return None
             list_of_nodes = right_child.get(NODE_CHILD)
-            return name, list_of_nodes
+            return name, list_of_nodes, operation
 
         return self._find_all(match_list_assignments)
 
     def _find_all_deps_lists(self) -> Iterator[DepList]:
         list_tuples = self._find_all_list_assignments()
-        for target_name, (var_name, node_list) in list_tuples:
+        for target_name, (var_name, node_list, operation) in list_tuples:
             if (var_name == 'deps' or var_name.startswith('deps_')
                     or var_name.endswith('_deps') or '_deps_' in var_name):
                 yield DepList(target_name=target_name,
                               variable_name=var_name,
-                              child_nodes=node_list)
+                              child_nodes=node_list,
+                              operation=operation)
 
     def _clone_replacing_value(self, node_to_copy: Dict, new_dep_name: str):
         """Clone the existing node to preserve line numbers and update name.
@@ -295,6 +298,11 @@ class BuildFile:
         for dep_list in self._find_all_deps_lists():
             if dep_list.target_name is None:
                 continue
+            # Only modify the first assignment operation to the deps variable,
+            # otherwise if there are += operations, then the list of deps will
+            # be added multiple times to the same target's deps.
+            if dep_list.operation != '=':
+                continue
             full_target_name = f'{self._gn_rel_path}:{dep_list.target_name}'
             # Support both the exact name and the absolute GN target names
             # starting with //.
@@ -316,6 +324,9 @@ class BuildFile:
                                                       new_dep_name)
                 dep_list.child_nodes.append(new_dep)
                 added_new_dep = True
+        if not added_new_dep:
+            # This should match the string in bytecode_processor.py.
+            print(f'Unable to find {target}')
         return added_new_dep
 
     def search_deps(self, name_query: Optional[str],

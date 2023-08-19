@@ -16,7 +16,7 @@
 #include "base/test/bind.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
-#include "base/unguessable_token.h"
+#include "base/token.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
@@ -1782,8 +1782,7 @@ TEST_F(FrameSinkVideoCapturerTest, ProperlyHandlesCaptureSizeForOverlay) {
 TEST_F(FrameSinkVideoCapturerTest, HandlesSubtreeCaptureId) {
   SwitchToSizeSet(kSizeSets[4]);
   constexpr gfx::Rect kCaptureBounds{1, 2, 1024, 768};
-  constexpr SubtreeCaptureId kCaptureId{1234567u};
-
+  constexpr SubtreeCaptureId kCaptureId(base::Token(0u, 1234567u));
   VideoCaptureTarget target(kVideoCaptureTarget.frame_sink_id, kCaptureId);
   frame_sink_.set_capture_bounds(kCaptureBounds);
   EXPECT_CALL(frame_sink_manager_, FindCapturableFrameSink(target))
@@ -1803,7 +1802,7 @@ TEST_F(FrameSinkVideoCapturerTest, HandlesSubtreeCaptureId) {
 TEST_F(FrameSinkVideoCapturerTest, ProperlyHandlesSubtreeSizeForOverlay) {
   SwitchToSizeSet(kSizeSets[4]);
   constexpr gfx::Rect kCaptureBounds{1, 2, 639, 477};
-  constexpr SubtreeCaptureId kCaptureId{1234567u};
+  constexpr SubtreeCaptureId kCaptureId(base::Token(0u, 1234567u));
 
   // First, create the overlay.
   mojo::Remote<mojom::FrameSinkVideoCaptureOverlay> overlay_remote;

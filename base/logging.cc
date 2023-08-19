@@ -11,20 +11,48 @@
 #include <limits.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <atomic>
+#include <cstring>
+#include <ctime>
+#include <iomanip>
 #include <memory>
+#include <ostream>
+#include <string>
 #include <tuple>
+#include <utility>
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/base_switches.h"
+#include "base/command_line.h"
+#include "base/containers/stack.h"
+#include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
+#include "base/debug/debugger.h"
+#include "base/debug/stack_trace.h"
+#include "base/debug/task_trace.h"
+#include "base/functional/callback.h"
 #include "base/immediate_crash.h"
+#include "base/no_destructor.h"
+#include "base/path_service.h"
 #include "base/pending_task.h"
+#include "base/posix/eintr_wrapper.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
+#include "base/strings/sys_string_conversions.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/synchronization/lock.h"
 #include "base/task/common/task_annotator.h"
+#include "base/test/scoped_logging_settings.h"
+#include "base/threading/platform_thread.h"
 #include "base/trace_event/base_tracing.h"
+#include "base/vlog.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 #if !BUILDFLAG(IS_NACL)
 #include "base/auto_reset.h"
@@ -38,33 +66,23 @@
 #if BUILDFLAG(IS_WIN)
 #include <io.h>
 #include <windows.h>
+
+#include "base/win/win_util.h"
+
 typedef HANDLE FileHandle;
 // Windows warns on using write().  It prefers _write().
 #define write(fd, buf, count) _write(fd, buf, static_cast<unsigned int>(count))
 // Windows doesn't define STDERR_FILENO.  Define it here.
 #define STDERR_FILENO 2
+#endif  // BUILDFLAG(IS_WIN)
 
-#elif BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include <CoreFoundation/CoreFoundation.h>
 #include <mach-o/dyld.h>
 #include <mach/mach.h>
 #include <mach/mach_time.h>
 #include <os/log.h>
-
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-#if BUILDFLAG(IS_NACL)
-#include <sys/time.h>  // timespec doesn't seem to be in <time.h>
-#endif
-#include <time.h>
-#endif
-
-#if BUILDFLAG(IS_FUCHSIA)
-#include "base/fuchsia/scoped_fx_logger.h"
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-#include <android/log.h>
-#endif
+#endif  // BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include <errno.h>
@@ -73,50 +91,28 @@ typedef HANDLE FileHandle;
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <time.h>
+
+#include "base/posix/safe_strerror.h"
+
+#if BUILDFLAG(IS_NACL)
+#include <sys/time.h>  // timespec doesn't seem to be in <time.h>
+#endif
+
 #define MAX_PATH PATH_MAX
 typedef FILE* FileHandle;
-#endif
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
-#include <algorithm>
-#include <cstring>
-#include <ctime>
-#include <iomanip>
-#include <ostream>
-#include <string>
-#include <utility>
-
-#include "base/base_switches.h"
-#include "base/command_line.h"
-#include "base/containers/stack.h"
-#include "base/debug/alias.h"
-#include "base/debug/debugger.h"
-#include "base/debug/stack_trace.h"
-#include "base/debug/task_trace.h"
-#include "base/functional/callback.h"
-#include "base/no_destructor.h"
-#include "base/path_service.h"
-#include "base/posix/eintr_wrapper.h"
-#include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/synchronization/lock.h"
-#include "base/test/scoped_logging_settings.h"
-#include "base/threading/platform_thread.h"
-#include "base/vlog.h"
-#include "build/chromeos_buildflags.h"
-
-#if BUILDFLAG(IS_WIN)
-#include "base/win/win_util.h"
-#endif
-
-#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-#include "base/posix/safe_strerror.h"
+#if BUILDFLAG(IS_ANDROID)
+#include <android/log.h>
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/files/scoped_file.h"
+#endif
+
+#if BUILDFLAG(IS_FUCHSIA)
+#include "base/fuchsia/scoped_fx_logger.h"
 #endif
 
 namespace logging {
@@ -510,7 +506,7 @@ std::string BuildCrashString(const char* file,
 }
 
 // Invokes macro to record trace event when a log message is emitted.
-void traceLogMessage(const char* file, int line, const std::string& message) {
+void TraceLogMessage(const char* file, int line, const std::string& message) {
   TRACE_EVENT_INSTANT("log", "LogMessage", [&](perfetto::EventContext ctx) {
     perfetto::protos::pbzero::LogMessage* log = ctx.event()->set_log_message();
     log->set_source_location_iid(base::trace_event::InternedSourceLocation::Get(
@@ -747,9 +743,7 @@ LogMessage::~LogMessage() {
 #endif
   stream_ << std::endl;
   std::string str_newline(stream_.str());
-  traceLogMessage(
-      file_, line_,
-      std::string(base::StringPiece(str_newline).substr(message_start_)));
+  TraceLogMessage(file_, line_, str_newline.substr(message_start_));
 
   if (severity_ == LOGGING_FATAL)
     SetLogFatalCrashKey(this);
@@ -1272,19 +1266,3 @@ ScopedVmoduleSwitches::~ScopedVmoduleSwitches() = default;
 #endif  // BUILDFLAG(USE_RUNTIME_VLOG)
 
 }  // namespace logging
-
-std::ostream& std::operator<<(std::ostream& out, const wchar_t* wstr) {
-  return out << (wstr ? base::WStringPiece(wstr) : base::WStringPiece());
-}
-
-std::ostream& std::operator<<(std::ostream& out, const std::wstring& wstr) {
-  return out << base::WStringPiece(wstr);
-}
-
-std::ostream& std::operator<<(std::ostream& out, const char16_t* str16) {
-  return out << (str16 ? base::StringPiece16(str16) : base::StringPiece16());
-}
-
-std::ostream& std::operator<<(std::ostream& out, const std::u16string& str16) {
-  return out << base::StringPiece16(str16);
-}

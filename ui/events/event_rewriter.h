@@ -123,6 +123,11 @@ class EVENTS_EXPORT EventRewriter {
   virtual EventDispatchDetails RewriteEvent(const Event& event,
                                             const Continuation continuation);
 
+  // Tells if this rewriter supports processing located events with location !=
+  // root_location as well as honors event target when rewriting an event.
+  // TODO(crbug.com/1459680): Remove once all rewriters honor event target.
+  virtual bool SupportsNonRootLocation() const;
+
   // Potentially rewrites (replaces) an event, or requests it be discarded.
   // or discards an event. If the rewriter wants to rewrite an event, and
   // dispatch another event once the rewritten event is dispatched, it should
@@ -164,6 +169,8 @@ class EVENTS_EXPORT EventRewriter {
   // TODO(kpschoedel): Replace with SendEvent(continuation, event).
   EventDispatchDetails SendEventToEventSource(EventSource* source,
                                               Event* event) const;
+
+  void SetEventTarget(Event& event, EventTarget* target);
 };
 
 }  // namespace ui

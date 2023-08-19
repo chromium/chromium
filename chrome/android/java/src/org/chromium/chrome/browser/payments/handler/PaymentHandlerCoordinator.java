@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.payments.handler;
 
 import android.app.Activity;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.chrome.browser.WebContentsFactory;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.payments.handler.toolbar.PaymentHandlerToolbarCoordinator;
@@ -160,7 +158,6 @@ public class PaymentHandlerCoordinator {
      *
      * @return The WebContents of the Payment Handler.
      */
-    @VisibleForTesting
     public WebContents getWebContentsForTest() {
         return mPaymentHandlerWebContents;
     }
@@ -172,12 +169,10 @@ public class PaymentHandlerCoordinator {
         mHider = null;
     }
 
-    @VisibleForTesting
     public void clickSecurityIconForTest() {
         mToolbarCoordinator.clickSecurityIconForTest();
     }
 
-    @VisibleForTesting
     public void clickCloseButtonForTest() {
         mToolbarCoordinator.clickCloseButtonForTest();
     }

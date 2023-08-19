@@ -16,6 +16,7 @@
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/version_info/version_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -676,8 +677,6 @@ TEST_F(ProcessorEntityTest, LocalCreationConflictsWithServerTombstone) {
 }
 
 TEST_F(ProcessorEntityTest, UpdatesSpecificsCacheOnRemoteUpdates) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kCacheBaseEntitySpecificsInMetadata);
   std::unique_ptr<ProcessorEntity> entity = CreateNew();
   const base::Time mtime = base::Time::Now();
   UpdateResponseData update =
@@ -691,9 +690,6 @@ TEST_F(ProcessorEntityTest, UpdatesSpecificsCacheOnRemoteUpdates) {
 }
 
 TEST_F(ProcessorEntityTest, UpdatesSpecificsCacheOnLocalUpdates) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kCacheBaseEntitySpecificsInMetadata);
-
   std::unique_ptr<ProcessorEntity> entity = CreateNew();
   sync_pb::EntitySpecifics specifics_for_caching =
       GenerateSpecifics(kName, kValue2);
@@ -702,6 +698,29 @@ TEST_F(ProcessorEntityTest, UpdatesSpecificsCacheOnLocalUpdates) {
   EXPECT_EQ(
       specifics_for_caching.SerializeAsString(),
       entity->metadata().possibly_trimmed_base_specifics().SerializeAsString());
+}
+
+TEST_F(ProcessorEntityTest,
+       LocalDeletionDoesNotRecordVersionInfoIfFeatureIsDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {/* enabled_features */},
+      {syncer::kSyncEntityMetadataRecordDeletedByVersionOnLocalDeletion});
+
+  std::unique_ptr<ProcessorEntity> entity = CreateNew();
+  entity->RecordLocalDeletion();
+  EXPECT_FALSE(entity->metadata().has_deleted_by_version());
+}
+
+TEST_F(ProcessorEntityTest, LocalDeletionRecordsVersionInfoIfFeatureIsEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {syncer::kSyncEntityMetadataRecordDeletedByVersionOnLocalDeletion},
+      {/* disabled_features */});
+  std::unique_ptr<ProcessorEntity> entity = CreateNew();
+  entity->RecordLocalDeletion();
+  std::string expected_version = std::string(version_info::GetVersionNumber());
+  EXPECT_EQ(expected_version, entity->metadata().deleted_by_version());
 }
 
 }  // namespace syncer

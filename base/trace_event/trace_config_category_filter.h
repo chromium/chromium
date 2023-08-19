@@ -25,6 +25,8 @@ class BASE_EXPORT TraceConfigCategoryFilter {
 
   TraceConfigCategoryFilter& operator=(const TraceConfigCategoryFilter& rhs);
 
+  bool IsEquivalentTo(const TraceConfigCategoryFilter& other) const;
+
   // Initializes from category filter string. See TraceConfig constructor for
   // description of how to write category filter string.
   void InitializeFromString(const StringPiece& category_filter_string);

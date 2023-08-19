@@ -149,7 +149,8 @@ class ASH_EXPORT ContinueSectionView : public views::View,
   raw_ptr<AppListNudgeController, DanglingUntriaged | ExperimentalAsh>
       nudge_controller_ = nullptr;
 
-  raw_ptr<AppListToastView, ExperimentalAsh> privacy_toast_ = nullptr;
+  raw_ptr<AppListToastView, DanglingUntriaged | ExperimentalAsh>
+      privacy_toast_ = nullptr;
   raw_ptr<ContinueTaskContainerView, ExperimentalAsh> suggestions_container_ =
       nullptr;
 

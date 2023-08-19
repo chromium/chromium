@@ -14,10 +14,6 @@
 #import "base/time/time.h"
 #import "ios/web/public/init/web_main.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 base::TimeTicks* g_start_time;
 }  // namespace

@@ -112,11 +112,6 @@ enum ChromeTextStyle {
 int GetFontSizeDeltaBoundedByAvailableHeight(int available_height,
                                              int desired_font_size);
 
-// Takes a desired font size and returns the size delta to request from
-// ui::ResourceBundle that will result in exactly that font size, canceling
-// out any font size changes made to account for locale or user settings.
-int GetFontSizeDeltaIgnoringUserOrLocaleSettings(int desired_font_size);
-
 // Sets the |details| for text that should not be affected by the Harmony spec.
 void ApplyCommonFontStyles(int context,
                            int style,

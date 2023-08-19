@@ -90,9 +90,6 @@ public class CloseButtonNavigator {
             // See if there's a close button navigation in our current Tab.
             NavigationController navigationController = getNavigationController();
             if (navigationController != null && navigateSingleTab(getNavigationController())) {
-                if (isFromChildTab) {
-                    recordChildTabScopeAlgorithmClosesOneTab(false);
-                }
                 return;
             }
 
@@ -105,9 +102,6 @@ public class CloseButtonNavigator {
             // we would not navigate at all.
             Tab nextTab = mTabProvider.getTab();
             if (nextTab != null && isLandingPage(nextTab.getUrl().getSpec())) {
-                if (isFromChildTab) {
-                    recordChildTabScopeAlgorithmClosesOneTab(numTabsClosed == 1);
-                }
                 return;
             }
         }
@@ -137,18 +131,7 @@ public class CloseButtonNavigator {
         return false;
     }
 
-    /**
-     * Records how often the "navigate to landing page" algorithm for child tabs for Custom Tabs and
-     * Trusted Web Activities produces the same behaviour as the webapp "close current tab"
-     * algorithm.
-     */
-    private void recordChildTabScopeAlgorithmClosesOneTab(boolean closesOneTab) {
-        RecordHistogram.recordBooleanHistogram(
-                "CustomTabs.CloseButton.ChildTab.ScopeAlgorithm.ClosesOneTab", closesOneTab);
-    }
-
-    @Nullable
-    private NavigationController getNavigationController() {
+    private @Nullable NavigationController getNavigationController() {
         Tab tab = mTabProvider.getTab();
         if (tab == null) return null;
         WebContents webContents = tab.getWebContents();

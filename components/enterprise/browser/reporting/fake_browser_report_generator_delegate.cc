@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/strings/string_piece.h"
 #include "components/enterprise/browser/reporting/browser_report_generator.h"
+#include "components/enterprise/browser/reporting/real_time_report_controller.h"
 #include "components/enterprise/browser/reporting/report_util.h"
 #include "components/enterprise/browser/reporting/reporting_delegate_factory.h"
 #include "components/version_info/channel.h"
@@ -88,28 +89,33 @@ FakeReportingDelegateFactory::FakeReportingDelegateFactory(
 FakeReportingDelegateFactory::~FakeReportingDelegateFactory() = default;
 
 std::unique_ptr<BrowserReportGenerator::Delegate>
-FakeReportingDelegateFactory::GetBrowserReportGeneratorDelegate() {
+FakeReportingDelegateFactory::GetBrowserReportGeneratorDelegate() const {
   return std::make_unique<test::FakeBrowserReportGeneratorDelegate>(
       executable_path_);
 }
 
 std::unique_ptr<ProfileReportGenerator::Delegate>
-FakeReportingDelegateFactory::GetProfileReportGeneratorDelegate() {
+FakeReportingDelegateFactory::GetProfileReportGeneratorDelegate() const {
   return std::make_unique<FakeProfileReportGeneratorDelegate>();
 }
 
 std::unique_ptr<ReportGenerator::Delegate>
-FakeReportingDelegateFactory::GetReportGeneratorDelegate() {
+FakeReportingDelegateFactory::GetReportGeneratorDelegate() const {
   return nullptr;
 }
 
 std::unique_ptr<ReportScheduler::Delegate>
-FakeReportingDelegateFactory::GetReportSchedulerDelegate() {
+FakeReportingDelegateFactory::GetReportSchedulerDelegate() const {
   return nullptr;
 }
 
 std::unique_ptr<RealTimeReportGenerator::Delegate>
-FakeReportingDelegateFactory::GetRealTimeReportGeneratorDelegate() {
+FakeReportingDelegateFactory::GetRealTimeReportGeneratorDelegate() const {
+  return nullptr;
+}
+
+std::unique_ptr<RealTimeReportController::Delegate>
+FakeReportingDelegateFactory::GetRealTimeReportControllerDelegate() const {
   return nullptr;
 }
 

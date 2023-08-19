@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://webui-test/mojo_webui_test_support.js';
-
 import {CartHandlerRemote, ConsentStatus} from 'chrome://new-tab-page/chrome_cart.mojom-webui.js';
 import {chromeCartDescriptor, ChromeCartModuleElement, ChromeCartProxy, DiscountConsentCard, DiscountConsentVariation} from 'chrome://new-tab-page/lazy_load.js';
 import {$$, CrAutoImgElement} from 'chrome://new-tab-page/new_tab_page.js';

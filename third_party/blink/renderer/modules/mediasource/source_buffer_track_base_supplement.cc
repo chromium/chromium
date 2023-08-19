@@ -24,7 +24,7 @@ SourceBufferTrackBaseSupplement& SourceBufferTrackBaseSupplement::From(
     TrackBase& track) {
   SourceBufferTrackBaseSupplement* supplement = FromIfExists(track);
   if (!supplement) {
-    supplement = MakeGarbageCollected<SourceBufferTrackBaseSupplement>();
+    supplement = MakeGarbageCollected<SourceBufferTrackBaseSupplement>(track);
     Supplement<TrackBase>::ProvideTo(track, supplement);
   }
   return *supplement;
@@ -38,8 +38,9 @@ SourceBuffer* SourceBufferTrackBaseSupplement::sourceBuffer(TrackBase& track) {
   return nullptr;
 }
 
-SourceBufferTrackBaseSupplement::SourceBufferTrackBaseSupplement()
-    : Supplement(nullptr) {}
+SourceBufferTrackBaseSupplement::SourceBufferTrackBaseSupplement(
+    TrackBase& track)
+    : Supplement(track) {}
 
 void SourceBufferTrackBaseSupplement::SetSourceBuffer(
     TrackBase& track,

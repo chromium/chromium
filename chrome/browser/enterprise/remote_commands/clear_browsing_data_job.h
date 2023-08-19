@@ -7,10 +7,12 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/enterprise/remote_commands/job_profile_picker.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "content/public/browser/browsing_data_remover.h"
 
 class ProfileManager;
+class Profile;
 
 namespace enterprise_commands {
 
@@ -20,6 +22,7 @@ class ClearBrowsingDataJob : public policy::RemoteCommandJob,
                              public content::BrowsingDataRemover::Observer {
  public:
   explicit ClearBrowsingDataJob(ProfileManager* profile_manager);
+  explicit ClearBrowsingDataJob(Profile* profile);
   ~ClearBrowsingDataJob() override;
 
  private:
@@ -31,15 +34,12 @@ class ClearBrowsingDataJob : public policy::RemoteCommandJob,
   // content::BrowsingDataRemover::Observer:
   void OnBrowsingDataRemoverDone(uint64_t failed_data_types) override;
 
-  base::FilePath profile_path_;
   bool clear_cache_;
   bool clear_cookies_;
 
   // RunImpl callback which will be invoked by OnBrowsingDataRemoverDone.
   CallbackWithResult result_callback_;
-
-  // Non-owned pointer to the ProfileManager of the current browser process.
-  raw_ptr<ProfileManager> profile_manager_;
+  JobProfilePicker job_profile_picker_;
 };
 
 }  // namespace enterprise_commands

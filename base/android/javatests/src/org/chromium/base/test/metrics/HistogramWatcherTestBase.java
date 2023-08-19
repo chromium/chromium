@@ -22,8 +22,6 @@ import org.chromium.base.test.util.HistogramWatcher;
  */
 public class HistogramWatcherTestBase {
     protected static final String TIMES_HISTOGRAM_1 = "TimesHistogram1";
-    protected static final String TIMES_HISTOGRAM_2 = "TimesHistogram2";
-    protected static final String TIMES_HISTOGRAM_3 = "TimesHistogram3";
     protected static final String BOOLEAN_HISTOGRAM = "BooleanHistogram";
     protected static final String EXACT_LINEAR_HISTOGRAM_1 = "ExactLinearHistogram"; // max 10
     protected static final String EXACT_LINEAR_HISTOGRAM_2 = "ExactLinearHistogram2"; // max 20

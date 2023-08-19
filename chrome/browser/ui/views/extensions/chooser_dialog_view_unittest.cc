@@ -35,7 +35,7 @@ class ChooserDialogViewTest : public ChromeViewsTestBase {
     controller_->SetBluetoothStatus(
         FakeBluetoothChooserController::BluetoothStatus::IDLE);
 
-    gfx::NativeView parent = gfx::kNullNativeView;
+    gfx::NativeView parent = gfx::NativeView();
 #if BUILDFLAG(IS_MAC)
     // We need a native view parent for the dialog to avoid a DCHECK
     // on Mac.

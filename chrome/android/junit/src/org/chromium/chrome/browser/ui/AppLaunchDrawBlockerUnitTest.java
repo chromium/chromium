@@ -15,10 +15,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.ui.AppLaunchDrawBlocker.APP_LAUNCH_BLOCK_DRAW_ACCURACY_UMA;
-import static org.chromium.chrome.browser.ui.AppLaunchDrawBlocker.APP_LAUNCH_BLOCK_INITIAL_TAB_DRAW_DURATION_UMA;
-import static org.chromium.chrome.browser.ui.AppLaunchDrawBlocker.APP_LAUNCH_BLOCK_OVERVIEW_PAGE_DRAW_DURATION_UMA;
-
 import android.content.Intent;
 import android.net.Uri;
 import android.os.SystemClock;
@@ -29,7 +25,6 @@ import android.view.ViewTreeObserver.OnPreDrawListener;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -63,8 +58,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactoryJni;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.ActiveTabState;
-import org.chromium.chrome.browser.ui.AppLaunchDrawBlocker.BlockDrawForInitialTabAccuracy;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.search_engines.TemplateUrlService;
 
 import java.util.List;
@@ -149,11 +144,6 @@ public class AppLaunchDrawBlockerUnitTest {
         SystemClock.setCurrentTimeMillis(INITIAL_TIME);
     }
 
-    @After
-    public void tearDown() {
-        TemplateUrlServiceFactory.setInstanceForTesting(null);
-    }
-
     @Test
     public void testSearchEngineHadLogoPrefWritten() {
         // Set to false initially.
@@ -187,9 +177,6 @@ public class AppLaunchDrawBlockerUnitTest {
                 "Draw is still blocked.", mOnPreDrawListenerArgumentCaptor.getValue().onPreDraw());
         verify(mViewTreeObserver)
                 .removeOnPreDrawListener(mOnPreDrawListenerArgumentCaptor.getValue());
-
-        assertAccuracyHistogram(true, true);
-        assertDurationHistogram(true, 10);
     }
 
     @Test
@@ -211,9 +198,6 @@ public class AppLaunchDrawBlockerUnitTest {
                 "Draw is still blocked.", mOnPreDrawListenerArgumentCaptor.getValue().onPreDraw());
         verify(mViewTreeObserver)
                 .removeOnPreDrawListener(mOnPreDrawListenerArgumentCaptor.getValue());
-
-        assertAccuracyHistogram(true, true);
-        assertDurationHistogram(true, 20);
     }
 
     @Test
@@ -226,9 +210,6 @@ public class AppLaunchDrawBlockerUnitTest {
         verify(mViewTreeObserver, never())
                 .addOnPreDrawListener(mOnPreDrawListenerArgumentCaptor.capture());
         mAppLaunchDrawBlocker.onActiveTabAvailable(false);
-
-        assertAccuracyHistogram(false, false);
-        assertDurationHistogram(false, 0);
     }
 
     @Test
@@ -244,9 +225,6 @@ public class AppLaunchDrawBlockerUnitTest {
         verify(mViewTreeObserver, never())
                 .addOnPreDrawListener(mOnPreDrawListenerArgumentCaptor.capture());
         mAppLaunchDrawBlocker.onActiveTabAvailable(false);
-
-        assertAccuracyHistogram(false, false);
-        assertDurationHistogram(false, 0);
     }
 
     @Test
@@ -271,9 +249,6 @@ public class AppLaunchDrawBlockerUnitTest {
                 "Draw is still blocked.", mOnPreDrawListenerArgumentCaptor.getValue().onPreDraw());
         verify(mViewTreeObserver)
                 .removeOnPreDrawListener(mOnPreDrawListenerArgumentCaptor.getValue());
-
-        assertAccuracyHistogram(true, true);
-        assertDurationHistogram(true, 16);
     }
 
     @Test
@@ -286,9 +261,6 @@ public class AppLaunchDrawBlockerUnitTest {
         verify(mViewTreeObserver, never())
                 .addOnPreDrawListener(mOnPreDrawListenerArgumentCaptor.capture());
         mAppLaunchDrawBlocker.onActiveTabAvailable(true);
-
-        assertAccuracyHistogram(false, false);
-        assertDurationHistogram(false, 0);
     }
 
     @Test
@@ -302,9 +274,6 @@ public class AppLaunchDrawBlockerUnitTest {
         verify(mViewTreeObserver, never())
                 .addOnPreDrawListener(mOnPreDrawListenerArgumentCaptor.capture());
         mAppLaunchDrawBlocker.onActiveTabAvailable(true);
-
-        assertAccuracyHistogram(false, false);
-        assertDurationHistogram(false, 0);
     }
 
     @Test
@@ -327,11 +296,6 @@ public class AppLaunchDrawBlockerUnitTest {
                 "Draw is still blocked.", mOnPreDrawListenerArgumentCaptor.getValue().onPreDraw());
         verify(mViewTreeObserver)
                 .removeOnPreDrawListener(mOnPreDrawListenerArgumentCaptor.getValue());
-
-        assertAccuracyHistogram(true, true);
-        final String histogram = APP_LAUNCH_BLOCK_OVERVIEW_PAGE_DRAW_DURATION_UMA;
-        assertEquals(histogram + " isn't recorded correctly.", 1,
-                RecordHistogram.getHistogramValueCountForTesting(histogram, 10));
     }
 
     @Test
@@ -347,13 +311,10 @@ public class AppLaunchDrawBlockerUnitTest {
         verify(mViewTreeObserver, never())
                 .addOnPreDrawListener(mOnPreDrawListenerArgumentCaptor.capture());
         mAppLaunchDrawBlocker.onActiveTabAvailable(false);
-
-        assertAccuracyHistogram(false, false);
-        assertDurationHistogram(false, 0);
     }
 
     @Test
-    @Features.EnableFeatures({ChromeFeatureList.FOCUS_OMNIBOX_IN_INCOGNITO_TAB_INTENTS})
+    @EnableFeatures({ChromeFeatureList.FOCUS_OMNIBOX_IN_INCOGNITO_TAB_INTENTS})
     public void testLastTabNtp_phone_searchEngineHasLogo_withIntent_incognito() {
         SharedPreferencesManager.getInstance().writeInt(
                 ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE, ActiveTabState.NTP);
@@ -367,9 +328,6 @@ public class AppLaunchDrawBlockerUnitTest {
         verify(mViewTreeObserver, never())
                 .addOnPreDrawListener(mOnPreDrawListenerArgumentCaptor.capture());
         mAppLaunchDrawBlocker.onActiveTabAvailable(false);
-
-        assertAccuracyHistogram(false, false);
-        assertDurationHistogram(false, 0);
     }
 
     @Test
@@ -382,8 +340,6 @@ public class AppLaunchDrawBlockerUnitTest {
 
         mInflationObserver.onPostInflationStartup();
         mAppLaunchDrawBlocker.onActiveTabAvailable(false);
-
-        assertAccuracyHistogram(false, true);
     }
 
     @Test
@@ -396,8 +352,6 @@ public class AppLaunchDrawBlockerUnitTest {
 
         mInflationObserver.onPostInflationStartup();
         mAppLaunchDrawBlocker.onActiveTabAvailable(true);
-
-        assertAccuracyHistogram(true, false);
     }
 
     @Test
@@ -465,40 +419,5 @@ public class AppLaunchDrawBlockerUnitTest {
         SharedPreferencesManager.getInstance().writeBoolean(
                 ChromePreferenceKeys.APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO, hasLogo);
         when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(hasLogo);
-    }
-
-    /**
-     * Assert that the accuracy histogram is recorded or not recorded correctly.
-     * @param shouldBeBlocked Whether the view draw should've been blocked.
-     * @param blocked Whether the view draw was actually blocked.
-     */
-    private void assertAccuracyHistogram(boolean shouldBeBlocked, boolean blocked) {
-        final String histogram = APP_LAUNCH_BLOCK_DRAW_ACCURACY_UMA;
-        int enumEntry;
-        if (shouldBeBlocked) {
-            enumEntry = blocked ? BlockDrawForInitialTabAccuracy.BLOCKED_CORRECTLY
-                                : BlockDrawForInitialTabAccuracy.DID_NOT_BLOCK_BUT_SHOULD_HAVE;
-        } else {
-            enumEntry = blocked ? BlockDrawForInitialTabAccuracy.BLOCKED_BUT_SHOULD_NOT_HAVE
-                                : BlockDrawForInitialTabAccuracy.CORRECTLY_DID_NOT_BLOCK;
-        }
-        assertEquals(histogram + " isn't recorded correctly.", 1,
-                RecordHistogram.getHistogramValueCountForTesting(histogram, enumEntry));
-    }
-
-    /**
-     * Assert that the duration histogram is recorded or not recorded correctly.
-     * @param shouldBeBlocked Whether the view draw should've been blocked.
-     * @param duration The duration the view was blocked, if it was.
-     */
-    private void assertDurationHistogram(boolean shouldBeBlocked, int duration) {
-        final String histogram = APP_LAUNCH_BLOCK_INITIAL_TAB_DRAW_DURATION_UMA;
-        if (shouldBeBlocked) {
-            assertEquals(histogram + " isn't recorded correctly.", 1,
-                    RecordHistogram.getHistogramValueCountForTesting(histogram, duration));
-        } else {
-            assertEquals(histogram + " shouldn't be recorded since the view isn't blocked.", 0,
-                    RecordHistogram.getHistogramTotalCountForTesting(histogram));
-        }
     }
 }

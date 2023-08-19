@@ -14,6 +14,9 @@ namespace media {
 // Clear Key key system defined in the EME spec.
 inline constexpr char kClearKeyKeySystem[] = "org.w3.clearkey";
 
+// UUID from http://dashif.org/identifiers/content_protection/. UUIDs are used
+// in Android for creating MediaDRM objects that support the DRM scheme required
+// by content.
 #if BUILDFLAG(IS_ANDROID)
 inline const uint8_t kClearKeyUuid[16] = {
     0xE2, 0x71, 0x9D, 0x58, 0xA9, 0x85, 0xB3, 0xC9,  //
@@ -32,12 +35,14 @@ inline constexpr char kExternalClearKeyKeySystem[] =
 // - media/test/data/eme_player_js/player_utils.js
 // - CreateCdmInstance() in clear_key_cdm.cc
 
+#if BUILDFLAG(IS_WIN)
 // MediaFoundation Clear Key key system only for testing.
 inline constexpr char kMediaFoundationClearKeyKeySystem[] =
     "org.chromium.externalclearkey.mediafoundation";
 
 inline constexpr wchar_t kMediaFoundationClearKeyKeySystemWideString[] =
     L"org.chromium.externalclearkey.mediafoundation";
+#endif  // BUILDFLAG(IS_WIN)
 
 // A sub key system that is invalid for testing purpose.
 inline constexpr char kExternalClearKeyInvalidKeySystem[] =

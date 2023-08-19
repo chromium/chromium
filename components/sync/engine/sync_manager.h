@@ -90,21 +90,18 @@ class SyncManager {
     std::unique_ptr<SyncEncryptionHandler::Observer> encryption_observer_proxy;
 
     // Must outlive SyncManager.
-    raw_ptr<ExtensionsActivity> extensions_activity;
-
-    // Unqiuely identifies this client to the invalidation notification server.
-    std::string invalidator_client_id;
+    raw_ptr<ExtensionsActivity> extensions_activity = nullptr;
 
     std::unique_ptr<EngineComponentsFactory> engine_components_factory;
 
     // Must outlive SyncManager.
-    raw_ptr<SyncEncryptionHandler> encryption_handler;
+    raw_ptr<SyncEncryptionHandler> encryption_handler = nullptr;
 
     // Carries shutdown requests across threads and will be used to cut short
     // any network I/O and tell the syncer to exit early.
     //
     // Must outlive SyncManager.
-    raw_ptr<CancelationSignal> cancelation_signal;
+    raw_ptr<CancelationSignal> cancelation_signal = nullptr;
 
     // Define the polling interval. Must not be zero.
     base::TimeDelta poll_interval;
@@ -197,6 +194,9 @@ class SyncManager {
   // Requires that the SyncManager be initialized.
   virtual std::string bag_of_chips() = 0;
 
+  // Returns types that have local changes yet to be synced to the server.
+  virtual ModelTypeSet GetTypesWithUnsyncedData() = 0;
+
   // Returns whether there are remaining unsynced items.
   virtual bool HasUnsyncedItemsForTest() = 0;
 
@@ -214,9 +214,6 @@ class SyncManager {
   // chrome account. See ClientConfigParams proto message for more info.
   // Note: this does not trigger a sync cycle. It just updates the sync context.
   virtual void OnCookieJarChanged(bool account_mismatch) = 0;
-
-  // Updates invalidation client id.
-  virtual void UpdateInvalidationClientId(const std::string& client_id) = 0;
 
   // Updates the invalidation information from known active devices.
   virtual void UpdateActiveDevicesInvalidationInfo(

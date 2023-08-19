@@ -17,6 +17,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "components/autofill/core/browser/autofill_save_update_address_profile_delegate_ios.h"
 #import "components/autofill/core/browser/form_data_importer.h"
+#import "components/autofill/core/browser/form_structure.h"
 #import "components/autofill/core/browser/logging/log_manager.h"
 #import "components/autofill/core/browser/payments/autofill_credit_card_filling_infobar_delegate_mobile.h"
 #import "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
@@ -24,6 +25,7 @@
 #import "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
 #import "components/autofill/core/browser/payments/payments_client.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
+#import "components/autofill/core/browser/ui/popup_item_ids.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
@@ -43,6 +45,7 @@
 #import "ios/chrome/browser/autofill/address_normalizer_factory.h"
 #import "ios/chrome/browser/autofill/autocomplete_history_manager_factory.h"
 #import "ios/chrome/browser/autofill/autofill_log_router_factory.h"
+#import "ios/chrome/browser/autofill/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/strike_database_factory.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
@@ -53,8 +56,6 @@
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
-#import "ios/chrome/browser/sync/sync_setup_service.h"
-#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/ui/autofill/card_expiration_date_fix_flow_view_bridge.h"
 #import "ios/chrome/browser/ui/autofill/card_name_fix_flow_view_bridge.h"
@@ -65,10 +66,6 @@
 #import "ios/web/public/web_state.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace autofill {
 
@@ -295,7 +292,7 @@ void ChromeAutofillClientIOS::ConfirmAccountNameFixFlow(
   std::u16string account_name = base::UTF8ToUTF16(
       identity_manager_
           ->FindExtendedAccountInfo(identity_manager_->GetPrimaryAccountInfo(
-              signin::ConsentLevel::kSync))
+              signin::ConsentLevel::kSignin))
           .full_name);
 
   card_name_fix_flow_controller_.Show(
@@ -384,13 +381,17 @@ void ChromeAutofillClientIOS::ConfirmSaveAddressProfile(
   }
 
   auto delegate = std::make_unique<AutofillSaveUpdateAddressProfileDelegateIOS>(
-      profile, original_profile, SyncingUserEmail(),
+      profile, original_profile, GetUserEmail(),
       GetApplicationContext()->GetApplicationLocale(), options,
       std::move(callback));
 
   infobar_manager_->AddInfoBar(std::make_unique<InfoBarIOS>(
       InfobarType::kInfobarTypeSaveAutofillAddressProfile,
       std::move(delegate)));
+}
+
+void ChromeAutofillClientIOS::ShowDeleteAddressProfileDialog() {
+  NOTREACHED();
 }
 
 bool ChromeAutofillClientIOS::HasCreditCardScanFeature() {
@@ -437,15 +438,16 @@ void ChromeAutofillClientIOS::PinPopupView() {
   NOTIMPLEMENTED();
 }
 
-AutofillClient::PopupOpenArgs ChromeAutofillClientIOS::GetReopenPopupArgs()
-    const {
+AutofillClient::PopupOpenArgs ChromeAutofillClientIOS::GetReopenPopupArgs(
+    AutofillSuggestionTriggerSource trigger_source) const {
   NOTIMPLEMENTED();
   return {};
 }
 
 void ChromeAutofillClientIOS::UpdatePopup(
     const std::vector<Suggestion>& suggestions,
-    PopupType popup_type) {
+    PopupType popup_type,
+    AutofillSuggestionTriggerSource trigger_source) {
   NOTIMPLEMENTED();
 }
 
@@ -462,23 +464,33 @@ bool ChromeAutofillClientIOS::IsPasswordManagerEnabled() {
       password_manager::prefs::kCredentialsEnableService);
 }
 
-void ChromeAutofillClientIOS::PropagateAutofillPredictions(
+void ChromeAutofillClientIOS::PropagateAutofillPredictionsDeprecated(
     AutofillDriver* driver,
     const std::vector<FormStructure*>& forms) {
   web::WebFrame* frame = (static_cast<AutofillDriverIOS*>(driver))->web_frame();
   if (!frame) {
     return;
   }
+
   // If the frame exists, then the driver will exist/be created.
   IOSPasswordManagerDriver* password_manager_driver =
       IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(web_state_,
                                                                frame);
 
-  password_manager_->ProcessAutofillPredictions(password_manager_driver, forms);
+  // TODO(crbug.com/1466435): Remove this interim mapping once AutofillManager
+  // transitions to events that will already have this signature.
+  FormDataAndServerPredictions args = GetFormDataAndServerPredictions(forms);
+  std::vector<const FormData*> form_pointers;
+  form_pointers.reserve(args.form_datas.size());
+  for (const FormData& form : args.form_datas) {
+    form_pointers.push_back(&form);
+  }
+  password_manager_->ProcessAutofillPredictions(
+      password_manager_driver, form_pointers, args.predictions);
 }
 
 void ChromeAutofillClientIOS::DidFillOrPreviewForm(
-    mojom::RendererFormDataAction action,
+    mojom::AutofillActionPersistence action_persistence,
     AutofillTriggerSource trigger_source,
     bool is_refill) {}
 
@@ -488,10 +500,6 @@ void ChromeAutofillClientIOS::DidFillOrPreviewField(
 
 bool ChromeAutofillClientIOS::IsContextSecure() const {
   return IsContextSecureForWebState(web_state_);
-}
-
-void ChromeAutofillClientIOS::ExecuteCommand(Suggestion::FrontendId id) {
-  NOTIMPLEMENTED();
 }
 
 void ChromeAutofillClientIOS::OpenPromoCodeOfferDetailsURL(const GURL& url) {
@@ -522,18 +530,14 @@ void ChromeAutofillClientIOS::LoadRiskData(
       base::SysNSStringToUTF8(ios::provider::GetRiskData()));
 }
 
-absl::optional<std::u16string> ChromeAutofillClientIOS::SyncingUserEmail() {
+absl::optional<std::u16string> ChromeAutofillClientIOS::GetUserEmail() {
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(browser_state_);
   DCHECK(authenticationService);
   id<SystemIdentity> identity =
-      authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSync);
+      authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   if (identity) {
-    SyncSetupService* syncSetupService =
-        SyncSetupServiceFactory::GetForBrowserState(browser_state_);
-    if (syncSetupService->IsDataTypeActive(syncer::AUTOFILL)) {
-      return base::SysNSStringToUTF16(identity.userEmail);
-    }
+    return base::SysNSStringToUTF16(identity.userEmail);
   }
   return absl::nullopt;
 }

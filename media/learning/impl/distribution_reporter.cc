@@ -14,12 +14,6 @@
 namespace media {
 namespace learning {
 
-// UMA histogram base names.
-static const char* kAggregateBase = "Media.Learning.BinaryThreshold.Aggregate.";
-static const char* kByTrainingWeightBase =
-    "Media.Learning.BinaryThreshold.ByTrainingWeight.";
-static const char* kByFeatureBase = "Media.Learning.BinaryThreshold.ByFeature.";
-
 enum /* not class */ Bits {
   // These are meant to be bitwise-or'd together, so both false cases just mean
   // "don't set any bits".
@@ -60,8 +54,6 @@ class UmaRegressionReporter : public DistributionReporter {
     // is the observed / predicted percentage of dropped frames.
     bool observed_smooth = info.observed.value() <= task().smoothness_threshold;
 
-    // See if we made a prediction.
-    int prediction_bit_mask = Bits::PredictedNothing;
     if (predicted.total_counts() != 0) {
       bool predicted_smooth =
           predicted.Average() <= task().smoothness_threshold;
@@ -69,23 +61,12 @@ class UmaRegressionReporter : public DistributionReporter {
                << ": predicted: " << predicted_smooth << " ("
                << predicted.Average() << ") observed: " << observed_smooth
                << " (" << info.observed.value() << ")";
-      prediction_bit_mask =
-          predicted_smooth ? Bits::PredictedTrue : Bits::PredictedFalse;
     } else {
       DVLOG(2) << "Learning: " << task().name
                << ": predicted: N/A observed: " << observed_smooth << " ("
                << info.observed.value() << ")";
     }
 
-    // Figure out the ConfusionMatrix enum value.
-    ConfusionMatrix confusion_matrix_value = static_cast<ConfusionMatrix>(
-        (observed_smooth ? Bits::ObservedTrue : Bits::ObservedFalse) |
-        prediction_bit_mask);
-
-    // |uma_bucket_number| is the bucket number that we'll fill in with this
-    // count.  It ranges from 0 to |max_buckets-1|, inclusive.  Each bucket is
-    // is separated from the start of the previous bucket by |uma_bucket_size|.
-    int uma_bucket_number = 0;
     constexpr int matrix_size =
         static_cast<int>(ConfusionMatrix::kMaxValue) + 1;
 
@@ -105,69 +86,11 @@ class UmaRegressionReporter : public DistributionReporter {
     // each bucket.
     DCHECK_LE(max_buckets * matrix_size, 100);
 
-    // If we're splitting by feature, then record it and stop.  The others
-    // aren't meaningful to record if we're using random feature subsets.
-    if (task().uma_hacky_by_feature_subset_confusion_matrix &&
-        feature_indices() && feature_indices()->size() == 1) {
-      // The bucket number is just the feature number that was selected.
-      uma_bucket_number =
-          std::min(*feature_indices()->begin(), max_buckets - 1);
-
-      std::string base(kByFeatureBase);
-      base::UmaHistogramSparse(base + task().name,
-                               static_cast<int>(confusion_matrix_value) +
-                                   uma_bucket_number * uma_bucket_size);
-
-      // Early return since no other measurements are meaningful when we're
-      // using feature subsets.
-      return;
-    }
-
     // If we're selecting a feature subset that's bigger than one but smaller
     // than all of them, then we don't know how to report that.
     if (feature_indices() &&
         feature_indices()->size() != task().feature_descriptions.size()) {
       return;
-    }
-
-    // Do normal reporting.
-
-    // Record the aggregate confusion matrix.
-    if (task().uma_hacky_aggregate_confusion_matrix) {
-      std::string base(kAggregateBase);
-      base::UmaHistogramEnumeration(base + task().name, confusion_matrix_value);
-    }
-
-    if (task().uma_hacky_by_training_weight_confusion_matrix) {
-      // Adjust |uma_bucket_offset| by the training weight, and store the
-      // results in that bucket in the ByTrainingWeight histogram.
-      //
-      // This will bucket from 0 in even steps, with the last bucket holding
-      // |max_reporting_weight+1| and everything above it.
-
-      const int n_buckets = task().num_reporting_weight_buckets;
-      DCHECK_LE(n_buckets, max_buckets);
-
-      // If the max reporting weight is zero, then default to splitting the
-      // buckets evenly, with the last bucket being "completely full set".
-      const int max_reporting_weight = task().max_reporting_weight
-                                           ? task().max_reporting_weight
-                                           : task().max_data_set_size - 1;
-
-      // We use one fewer buckets, to save one for the overflow.  Buckets are
-      // numbered from 0 to |n_buckets-1|, inclusive.  In other words, when the
-      // training weight is equal to |max_reporting_weight|, we still want to
-      // be in bucket |n_buckets - 2|.  That's why we add one to the max before
-      // we divide; only things over the max go into the last bucket.
-      uma_bucket_number =
-          std::min<int>((n_buckets - 1) * info.total_training_weight /
-                            (max_reporting_weight + 1),
-                        n_buckets - 1);
-
-      std::string base(kByTrainingWeightBase);
-      base::UmaHistogramSparse(base + task().name,
-                               static_cast<int>(confusion_matrix_value) +
-                                   uma_bucket_number * uma_bucket_size);
     }
   }
 };

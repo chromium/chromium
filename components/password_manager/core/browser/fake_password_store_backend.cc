@@ -12,9 +12,12 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
+#include "components/password_manager/core/browser/get_logins_with_affiliations_request_handler.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/psl_matching_helper.h"
 #include "components/sync/model/proxy_model_type_controller_delegate.h"
+#include "password_form.h"
 
 namespace password_manager {
 
@@ -48,14 +51,17 @@ void FakePasswordStoreBackend::Clear() {
 }
 
 void FakePasswordStoreBackend::InitBackend(
+    AffiliatedMatchHelper* affiliated_match_helper,
     RemoteChangesReceived remote_form_changes_received,
     base::RepeatingClosure sync_enabled_or_disabled_cb,
     base::OnceCallback<void(bool)> completion) {
+  match_helper_ = affiliated_match_helper;
   GetTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(std::move(completion), /*success=*/true));
 }
 
 void FakePasswordStoreBackend::Shutdown(base::OnceClosure shutdown_completed) {
+  match_helper_ = nullptr;
   // Ensure that the shutdown is only completed after any other backend task on
   // the same task runner concluded. The backend always uses the same runner.
   GetTaskRunner()->PostTask(FROM_HERE, std::move(shutdown_completed));
@@ -93,6 +99,13 @@ void FakePasswordStoreBackend::FillMatchingLoginsAsync(
       base::BindOnce(&FakePasswordStoreBackend::FillMatchingLoginsInternal,
                      base::Unretained(this), forms, include_psl),
       std::move(callback));
+}
+
+void FakePasswordStoreBackend::GetGroupedMatchingLoginsAsync(
+    const PasswordFormDigest& form_digest,
+    LoginsOrErrorReply callback) {
+  GetLoginsWithAffiliationsRequestHandler(form_digest, this, match_helper_,
+                                          std::move(callback));
 }
 
 void FakePasswordStoreBackend::AddLoginAsync(
@@ -153,10 +166,6 @@ void FakePasswordStoreBackend::DisableAutoSignInForOriginsAsync(
 }
 
 SmartBubbleStatsStore* FakePasswordStoreBackend::GetSmartBubbleStatsStore() {
-  return nullptr;
-}
-
-FieldInfoStore* FakePasswordStoreBackend::GetFieldInfoStore() {
   return nullptr;
 }
 
@@ -224,7 +233,6 @@ LoginsResult FakePasswordStoreBackend::FillMatchingLoginsHelper(
     if (realm_matches || (realm_psl_matches && include_psl) ||
         (form.scheme == PasswordForm::Scheme::kHtml &&
          password_manager::IsFederatedRealm(elements.first, form.url))) {
-      const bool is_psl = !realm_matches && realm_psl_matches;
       for (const auto& stored_form : elements.second) {
         // Repeat the condition above with an additional check for origin.
         if (realm_matches || realm_psl_matches ||
@@ -234,7 +242,6 @@ LoginsResult FakePasswordStoreBackend::FillMatchingLoginsHelper(
              password_manager::IsFederatedRealm(stored_form.signon_realm,
                                                 form.url))) {
           matched_forms.push_back(std::make_unique<PasswordForm>(stored_form));
-          matched_forms.back()->is_public_suffix_match = is_psl;
         }
       }
     }

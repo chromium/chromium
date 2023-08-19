@@ -472,6 +472,22 @@ virtual/virtual_failures/failures/expected/device_failure.html [ Skip ]
 passes/slow.html [ Slow ]
 """)
 
+    if not filesystem.exists(MOCK_WEB_TESTS + 'SingleThreadedTests'):
+        filesystem.write_text_file(
+            MOCK_WEB_TESTS + 'TestLists/SingleThreadedTests', """
+fast/borders/border-image-outset-split-inline-vertical-lr.html
+non/virtual
+passes/text.html
+virtual/non-existing/test.html
+virtual/virtual_passes/passes/text.html
+virtual/virtual_passes/passes/any.html
+virtual/virtual_passes
+virtual/virtual_passes/
+virtual/virtual_passes/passes
+virtual/virtual_passes/passes/
+""")
+
+
     # FIXME: This test was only being ignored because of missing a leading '/'.
     # Fixing the typo causes several tests to assert, so disabling the test entirely.
     # Add in a file should be ignored by port.find_test_files().
@@ -745,7 +761,7 @@ class TestPort(Port):
                 crash_logs[cp[0]] = (b'delayed crash log', '/tmp')
         return crash_logs
 
-    def _path_to_driver(self, target=None):
+    def path_to_driver(self, target=None):
         # This routine shouldn't normally be called, but it is called by
         # the mock_drt Driver. We return something, but make sure it's useless.
         return 'MOCK _path_to_driver'
@@ -913,8 +929,11 @@ class TestDriver(Driver):
         self.pid = 0
 
     def cmd_line(self, per_test_args):
-        return [self._port._path_to_driver()] + \
-            self._port.get_option('additional_driver_flag', []) + per_test_args
+        return [
+            self._port.path_to_driver(),
+            *self._port.get_option('additional_driver_flag', []),
+            *per_test_args,
+        ]
 
     def run_test(self, driver_input):
         if not self.started:

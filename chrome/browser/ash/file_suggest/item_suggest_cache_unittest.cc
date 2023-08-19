@@ -144,7 +144,8 @@ class ItemSuggestCacheTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  raw_ptr<signin::IdentityTestEnvironment, ExperimentalAsh> identity_test_env_;
+  raw_ptr<signin::IdentityTestEnvironment, DanglingUntriaged | ExperimentalAsh>
+      identity_test_env_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
 

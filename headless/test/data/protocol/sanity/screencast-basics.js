@@ -9,6 +9,10 @@
   let seenGreen = 0;
   let seenBlue = 0;
 
+  function setBkgrColor(bkgrColor) {
+    session.evaluate(`document.body.style.backgroundColor = "${bkgrColor}"`);
+  }
+
   async function loadPngAndCountPixelColor(pngBase64) {
     const image = new Image();
 
@@ -27,9 +31,13 @@
     if (rgba[0] === 0 && rgba[3] === 255) {
       if (rgba[1] === 255 && rgba[2] === 0) {
         ++seenGreen;
+        setBkgrColor('#0000ff');
       } else if (rgba[1] === 0 && rgba[2] === 255) {
         ++seenBlue;
+        setBkgrColor('#00ff00');
       }
+    } else {
+      setBkgrColor('#00ff00');
     }
   }
 
@@ -38,7 +46,7 @@
   dp.Page.onScreencastFrame(async (data) => {
     const pngBase64 = data.params.data;
     await loadPngAndCountPixelColor(pngBase64);
-    if (seenGreen > 1 && seenBlue > 1) {
+    if (seenGreen > 2 && seenBlue > 2) {
       await dp.Page.stopScreencast();
       testRunner.log(`Seen both green and blue page backgrounds.`);
       testRunner.completeTest();
@@ -49,8 +57,6 @@
   });
 
   dp.Page.bringToFront();
-
-  dp.Page.navigate({url: testRunner.url('/resources/blue-green-dance.html')});
 
   dp.Page.startScreencast({format: 'png'});
 })

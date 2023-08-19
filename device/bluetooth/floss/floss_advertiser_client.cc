@@ -136,6 +136,25 @@ AdvertiseData::~AdvertiseData() = default;
 FlossAdvertiserClient::FlossAdvertiserClient() = default;
 
 FlossAdvertiserClient::~FlossAdvertiserClient() {
+  for (auto& [_, callbacks] : start_advertising_set_callbacks_) {
+    std::move(callbacks.second)
+        .Run(device::BluetoothAdvertisement::ERROR_STARTING_ADVERTISEMENT);
+  }
+  start_advertising_set_callbacks_.clear();
+  for (auto& [_, callbacks] : stop_advertising_set_callbacks_) {
+    std::move(callbacks.second)
+        .Run(device::BluetoothAdvertisement::ERROR_RESET_ADVERTISING);
+  }
+  stop_advertising_set_callbacks_.clear();
+  for (auto& [_, callbacks] : set_advertising_params_callbacks_) {
+    std::move(callbacks.second)
+        .Run(device::BluetoothAdvertisement::ERROR_STARTING_ADVERTISEMENT);
+  }
+  set_advertising_params_callbacks_.clear();
+  CallAdvertisingMethod<bool>(
+      base::BindOnce(&FlossAdvertiserClient::CompleteUnregisterCallback,
+                     weak_ptr_factory_.GetWeakPtr()),
+      advertiser::kUnregisterCallback, callback_id_);
   if (bus_) {
     exported_callback_manager_.UnexportCallback(
         dbus::ObjectPath(kAdvertisingSetCallbackPath));
@@ -306,6 +325,12 @@ void FlossAdvertiserClient::CompleteRegisterCallback(
     if (on_ready_) {
       std::move(on_ready_).Run();
     }
+  }
+}
+
+void FlossAdvertiserClient::CompleteUnregisterCallback(DBusResult<bool> ret) {
+  if (!ret.has_value() || *ret == false) {
+    LOG(WARNING) << __func__ << "Failed to unregister callback";
   }
 }
 

@@ -66,15 +66,11 @@ void EnsureNoWordBreaks(std::u16string* shortcut_text) {
 
 // Gets the notification message after it formats it in such a way that there
 // are no line breaks in the middle of the shortcut texts.
-std::u16string GetNotificationText(int message_id,
-                                   int old_shortcut_id,
-                                   int new_shortcut_id) {
-  std::u16string old_shortcut = l10n_util::GetStringUTF16(old_shortcut_id);
+std::u16string GetNotificationText(int message_id, int new_shortcut_id) {
   std::u16string new_shortcut = l10n_util::GetStringUTF16(new_shortcut_id);
-  EnsureNoWordBreaks(&old_shortcut);
   EnsureNoWordBreaks(&new_shortcut);
 
-  return l10n_util::GetStringFUTF16(message_id, new_shortcut, old_shortcut);
+  return l10n_util::GetStringFUTF16(message_id, new_shortcut);
 }
 
 std::unique_ptr<Notification> CreateNotification(
@@ -185,12 +181,11 @@ const char kHighContrastToggleAccelNotificationId[] =
 
 void ShowDeprecatedAcceleratorNotification(const char* notification_id,
                                            int message_id,
-                                           int old_shortcut_id,
                                            int new_shortcut_id) {
   const std::u16string title =
       l10n_util::GetStringUTF16(IDS_DEPRECATED_SHORTCUT_TITLE);
   const std::u16string message =
-      GetNotificationText(message_id, old_shortcut_id, new_shortcut_id);
+      GetNotificationText(message_id, new_shortcut_id);
   auto on_click_handler = base::MakeRefCounted<HandleNotificationClickDelegate>(
       base::BindRepeating([]() {
         if (!Shell::Get()->session_controller()->IsUserSessionBlocked())

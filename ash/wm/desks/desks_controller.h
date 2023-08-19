@@ -19,6 +19,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -73,8 +74,10 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
    public:
     // Called when `desk` has been created and added to
     // `DesksController::desks_`. It's important to note that `desk` can be
-    // added at any position in `DesksController::desks_`.
-    virtual void OnDeskAdded(const Desk* desk) {}
+    // added at any position in `DesksController::desks_`.  Is also called
+    // when a desk is added from undoing a desk removal, in which case
+    // `from_undo` is true.
+    virtual void OnDeskAdded(const Desk* desk, bool from_undo) {}
 
     // Called when `desk` has been removed from `DesksController::desks_`.
     // However `desk` is kept alive temporarily and will be destroyed after all
@@ -82,7 +85,7 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
     virtual void OnDeskRemoved(const Desk* desk) {}
 
     // Called when `desk` has been been removed from `DesksController::desks_`
-    // and past the buffer so that it can no longer be revivied.
+    // and past the buffer so that it can no longer be revived.
     virtual void OnDeskRemovalFinalized(const base::Uuid& uuid) {}
 
     // Called when the desk at |old_index| is reordered to |new_index|.
@@ -199,6 +202,9 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
 
   bool HasDesk(const Desk* desk) const;
 
+  // Gives the desk with the specified index.
+  Desk* GetDeskAtIndex(size_t index) const;
+
   // Removes and deletes the given `desk`. `desk` must already exist, and
   // CanRemoveDesks() must be checked before this.
   // This will trigger the `DeskRemovalAnimation` if the active desk is being
@@ -255,6 +261,9 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
 
   // Removes |window| if it is in |visible_on_all_desks_windows_|.
   void MaybeRemoveVisibleOnAllDesksWindow(aura::Window* window);
+
+  // Used to indicate that the all-desk `window` has moved to a new root.
+  void NotifyAllDeskWindowMovedToNewRoot(aura::Window* window);
 
   // Notifies each desk in |desks_| that their contents has changed.
   void NotifyAllDesksForContentChanged();
@@ -425,10 +434,13 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
 
   // Removes `desk` without animation.
   // `close_type` determines how the desk will be closed. See `DeskCloseType`
-  // for more information on what each value does.
+  // for more information on what each value does. `desk_switched` indicates
+  // that the desk switch animation has already moved activation from the
+  // removing desk.
   void RemoveDeskInternal(const Desk* desk,
                           DesksCreationRemovalSource source,
-                          DeskCloseType close_type);
+                          DeskCloseType close_type,
+                          bool desk_switched);
 
   // Inserts the desk contained in `temporary_removed_desk_->desk()` back into
   // its original position of `temporary_removed_desk_->index()`. Activates the
@@ -492,12 +504,13 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
   raw_ptr<Desk, ExperimentalAsh> active_desk_ = nullptr;
 
   // Target desk if in middle of desk activation, `nullptr` otherwise.
-  Desk* desk_to_activate_ = nullptr;
+  raw_ptr<Desk> desk_to_activate_ = nullptr;
 
   // The account ID of the current active user.
   AccountId current_account_id_;
 
   // Stores the per-user last active desk index.
+  // TODO(b/284482035): Clean this up.
   base::flat_map<AccountId, int> user_to_active_desk_index_;
 
   // Stores visible on all desks windows, that is normal type windows with

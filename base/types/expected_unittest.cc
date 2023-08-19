@@ -4,9 +4,13 @@
 
 #include "base/types/expected.h"
 
+#include <string>
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
+#include "base/strings/to_string.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/gtest_util.h"
 #include "base/types/strong_alias.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -414,8 +418,7 @@ TEST(Expected, InPlaceConstructor) {
 
 TEST(Expected, InPlaceListConstructor) {
   expected<std::vector<int>, int> ex(absl::in_place, {1, 2, 3});
-  ASSERT_TRUE(ex.has_value());
-  EXPECT_EQ(ex.value(), std::vector({1, 2, 3}));
+  EXPECT_THAT(ex, test::ValueIs(std::vector({1, 2, 3})));
 }
 
 TEST(Expected, UnexpectConstructor) {
@@ -426,8 +429,7 @@ TEST(Expected, UnexpectConstructor) {
 
 TEST(Expected, UnexpectListConstructor) {
   expected<int, std::vector<int>> ex(unexpect, {1, 2, 3});
-  ASSERT_FALSE(ex.has_value());
-  EXPECT_EQ(ex.error(), std::vector({1, 2, 3}));
+  EXPECT_THAT(ex, test::ErrorIs(std::vector({1, 2, 3})));
 }
 
 TEST(Expected, AssignValue) {
@@ -435,12 +437,10 @@ TEST(Expected, AssignValue) {
   EXPECT_FALSE(ex.has_value());
 
   ex = 42;
-  ASSERT_TRUE(ex.has_value());
-  EXPECT_EQ(ex.value(), 42);
+  EXPECT_THAT(ex, test::ValueIs(42));
 
   ex = 123;
-  ASSERT_TRUE(ex.has_value());
-  EXPECT_EQ(ex.value(), 123);
+  EXPECT_THAT(ex, test::ValueIs(123));
 }
 
 TEST(Expected, CopyAssignOk) {
@@ -448,12 +448,10 @@ TEST(Expected, CopyAssignOk) {
   EXPECT_FALSE(ex.has_value());
 
   ex = ok(42);
-  ASSERT_TRUE(ex.has_value());
-  EXPECT_EQ(ex.value(), 42);
+  EXPECT_THAT(ex, test::ValueIs(42));
 
   ex = ok(123);
-  ASSERT_TRUE(ex.has_value());
-  EXPECT_EQ(ex.value(), 123);
+  EXPECT_THAT(ex, test::ValueIs(123));
 }
 
 TEST(Expected, MoveAssignOk) {
@@ -474,12 +472,10 @@ TEST(Expected, CopyAssignUnexpected) {
   EXPECT_TRUE(ex.has_value());
 
   ex = unexpected(42);
-  ASSERT_FALSE(ex.has_value());
-  EXPECT_EQ(ex.error(), 42);
+  EXPECT_THAT(ex, test::ErrorIs(42));
 
   ex = unexpected(123);
-  ASSERT_FALSE(ex.has_value());
-  EXPECT_EQ(ex.error(), 123);
+  EXPECT_THAT(ex, test::ErrorIs(123));
 }
 
 TEST(Expected, MoveAssignUnexpected) {
@@ -509,8 +505,7 @@ TEST(Expected, EmplaceList) {
   EXPECT_FALSE(ex.has_value());
 
   ex.emplace({1, 2, 3});
-  ASSERT_TRUE(ex.has_value());
-  EXPECT_EQ(ex.value(), std::vector({1, 2, 3}));
+  EXPECT_THAT(ex, test::ValueIs(std::vector({1, 2, 3})));
 }
 
 TEST(Expected, MemberSwap) {
@@ -518,10 +513,8 @@ TEST(Expected, MemberSwap) {
   expected<int, int> ex2 = unexpected(123);
 
   ex1.swap(ex2);
-  ASSERT_FALSE(ex1.has_value());
-  EXPECT_EQ(ex1.error(), 123);
-  ASSERT_TRUE(ex2.has_value());
-  EXPECT_EQ(ex2.value(), 42);
+  EXPECT_THAT(ex1, test::ErrorIs(123));
+  EXPECT_THAT(ex2, test::ValueIs(42));
 }
 
 TEST(Expected, FreeSwap) {
@@ -529,10 +522,8 @@ TEST(Expected, FreeSwap) {
   expected<int, int> ex2 = unexpected(123);
 
   swap(ex1, ex2);
-  ASSERT_FALSE(ex1.has_value());
-  EXPECT_EQ(ex1.error(), 123);
-  ASSERT_TRUE(ex2.has_value());
-  EXPECT_EQ(ex2.value(), 42);
+  EXPECT_THAT(ex1, test::ErrorIs(123));
+  EXPECT_THAT(ex2, test::ValueIs(42));
 }
 
 TEST(Expected, OperatorArrow) {
@@ -601,6 +592,18 @@ TEST(Expected, Error) {
   static_assert(std::is_same_v<decltype(std::declval<Ex&&>().error()), int&&>);
   static_assert(std::is_same_v<decltype(std::declval<const Ex&&>().error()),
                                const int&&>);
+}
+
+TEST(Expected, ToString) {
+  // `expected` should have a custom string representation that prints the
+  // contained value/error.
+  const std::string value_str = ToString(expected<int, int>(123456));
+  EXPECT_FALSE(base::Contains(value_str, "-byte object at "));
+  EXPECT_TRUE(base::Contains(value_str, "123456"));
+  const std::string error_str =
+      ToString(expected<int, int>(unexpected(123456)));
+  EXPECT_FALSE(base::Contains(error_str, "-byte object at "));
+  EXPECT_TRUE(base::Contains(error_str, "123456"));
 }
 
 TEST(Expected, ValueOr) {
@@ -1009,8 +1012,7 @@ TEST(ExpectedVoid, UnexpectConstructor) {
 
 TEST(ExpectedVoid, UnexpectListConstructor) {
   expected<void, std::vector<int>> ex(unexpect, {1, 2, 3});
-  ASSERT_FALSE(ex.has_value());
-  EXPECT_EQ(ex.error(), std::vector({1, 2, 3}));
+  EXPECT_THAT(ex, test::ErrorIs(std::vector({1, 2, 3})));
 }
 
 TEST(ExpectedVoid, CopyAssignUnexpected) {
@@ -1018,12 +1020,10 @@ TEST(ExpectedVoid, CopyAssignUnexpected) {
   EXPECT_TRUE(ex.has_value());
 
   ex = unexpected(42);
-  ASSERT_FALSE(ex.has_value());
-  EXPECT_EQ(ex.error(), 42);
+  EXPECT_THAT(ex, test::ErrorIs(42));
 
   ex = unexpected(123);
-  ASSERT_FALSE(ex.has_value());
-  EXPECT_EQ(ex.error(), 123);
+  EXPECT_THAT(ex, test::ErrorIs(123));
 }
 
 TEST(ExpectedVoid, MoveAssignUnexpected) {
@@ -1052,8 +1052,7 @@ TEST(ExpectedVoid, MemberSwap) {
   expected<void, int> ex2 = unexpected(123);
 
   ex1.swap(ex2);
-  ASSERT_FALSE(ex1.has_value());
-  EXPECT_EQ(ex1.error(), 123);
+  EXPECT_THAT(ex1, test::ErrorIs(123));
   ASSERT_TRUE(ex2.has_value());
 }
 
@@ -1062,8 +1061,7 @@ TEST(ExpectedVoid, FreeSwap) {
   expected<void, int> ex2 = unexpected(123);
 
   swap(ex1, ex2);
-  ASSERT_FALSE(ex1.has_value());
-  EXPECT_EQ(ex1.error(), 123);
+  EXPECT_THAT(ex1, test::ErrorIs(123));
   ASSERT_TRUE(ex2.has_value());
 }
 
@@ -1101,6 +1099,17 @@ TEST(ExpectedVoid, Error) {
   static_assert(std::is_same_v<decltype(std::declval<Ex&&>().error()), int&&>);
   static_assert(std::is_same_v<decltype(std::declval<const Ex&&>().error()),
                                const int&&>);
+}
+
+TEST(ExpectedVoid, ToString) {
+  // `expected<void, ...>` should have a custom string representation (that
+  // prints the contained error, if applicable).
+  const std::string value_str = ToString(expected<void, int>());
+  EXPECT_FALSE(base::Contains(value_str, "-byte object at "));
+  const std::string error_str =
+      ToString(expected<void, int>(unexpected(123456)));
+  EXPECT_FALSE(base::Contains(error_str, "-byte object at "));
+  EXPECT_TRUE(base::Contains(error_str, "123456"));
 }
 
 TEST(ExpectedVoid, ErrorOr) {

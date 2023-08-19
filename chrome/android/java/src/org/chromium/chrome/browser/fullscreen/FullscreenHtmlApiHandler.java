@@ -469,20 +469,27 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
         if (mFullscreenOnLayoutChangeListener != null) {
             contentView.removeOnLayoutChangeListener(mFullscreenOnLayoutChangeListener);
         }
-        mFullscreenOnLayoutChangeListener = new OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View v, int left, int top, int right, int bottom,
-                    int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                if ((bottom - top) <= (oldBottom - oldTop)) {
-                    // At this point, browser controls are hidden. Show browser controls only if
-                    // it's permitted.
-                    TabBrowserControlsConstraintsHelper.update(
-                            mTab, BrowserControlsState.SHOWN, true);
-                    contentView.removeOnLayoutChangeListener(this);
+        // Since automotive devices persist the system bars in full screen mode, onLayoutChange is
+        // not triggered by showing the system bars, and browser controls need to be re-added
+        // directly.
+        if (BuildInfo.getInstance().isAutomotive) {
+            TabBrowserControlsConstraintsHelper.update(mTab, BrowserControlsState.SHOWN, true);
+        } else {
+            mFullscreenOnLayoutChangeListener = new OnLayoutChangeListener() {
+                @Override
+                public void onLayoutChange(View v, int left, int top, int right, int bottom,
+                        int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                    if ((bottom - top) <= (oldBottom - oldTop)) {
+                        // At this point, browser controls are hidden. Show browser controls only if
+                        // it's permitted.
+                        TabBrowserControlsConstraintsHelper.update(
+                                mTab, BrowserControlsState.SHOWN, true);
+                        contentView.removeOnLayoutChangeListener(this);
+                    }
                 }
-            }
-        };
-        contentView.addOnLayoutChangeListener(mFullscreenOnLayoutChangeListener);
+            };
+            contentView.addOnLayoutChangeListener(mFullscreenOnLayoutChangeListener);
+        }
 
         if (webContents != null && !webContents.isDestroyed()) webContents.exitFullscreen();
     }
@@ -579,8 +586,8 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
                 // onLayoutChange would have no effect.
                 mHandler.sendEmptyMessage(MSG_ID_SET_FULLSCREEN_SYSTEM_UI_FLAGS);
 
-                if ((bottom - top) <= (oldBottom - oldTop)
-                        && (right - left) <= (oldRight - oldLeft)) {
+                if ((bottom - top) <= (oldBottom - oldTop) && (right - left) <= (oldRight - oldLeft)
+                        && !BuildInfo.getInstance().isAutomotive) {
                     return;
                 }
 

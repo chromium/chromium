@@ -18,8 +18,6 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {CrSettingsPrefs} from 'chrome://resources/cr_components/settings_prefs/prefs_types.js';
 
-import {loadTimeData} from '../i18n_setup.js';
-
 import {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from './languages_browser_proxy.js';
 import {LanguageHelper, LanguagesModel, LanguageState, SpellCheckLanguageState} from './languages_types.js';
 
@@ -31,22 +29,25 @@ interface SpellCheckLanguages {
 const MoveType = chrome.languageSettingsPrivate.MoveType;
 
 // For some codes translate uses a different version from Chrome.  Some are
-// ISO 639 codes that have been renamed (e.g. "he" to "iw"). Wile others are
+// ISO 639 codes that have been renamed (e.g. "he" to "iw"). While others are
 // languages that Translate considers similar (e.g. "nb" and "no").
 // See also: components/language/core/common/language_util.cc.
 const kChromeToTranslateCode: Map<string, string> = new Map([
-  ['nb', 'no'],
   ['fil', 'tl'],
   ['he', 'iw'],
   ['jv', 'jw'],
+  ['kok', 'gom'],
+  ['nb', 'no'],
 ]);
 
 // Reverse of the map above. Just the languages code that translate uses but
 // Chrome has a different code for.
 const kTranslateToChromeCode: Map<string, string> = new Map([
-  ['tl', 'fil'],
+  ['gom', 'kok'],
   ['iw', 'he'],
   ['jw', 'jv'],
+  ['no', 'nb'],
+  ['tl', 'fil'],
 ]);
 
 // The fake language name used for ARC IMEs. The value must be in sync with the
@@ -786,6 +787,12 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
       // necessary as a language code for the Translate server.
       return true;
     }
+
+    if (language.code === 'mni-Mtei') {
+      // Translate uses the Meitei Mayek script for Manipuri
+      return true;
+    }
+
     const baseLanguage = this.getBaseLanguage(language.code);
     if (baseLanguage === 'nb') {
       // Norwegian Bokmål (nb) is listed as supporting translate but the
@@ -829,30 +836,17 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
     this.languageSettingsPrivate_.disableLanguage(languageCode);
   }
 
-  isOnlyTranslateBlockedLanguage(languageState: LanguageState): boolean {
-    return !languageState.translateEnabled &&
-        this.languages!.enabled.filter(lang => !lang.translateEnabled)
-            .length === 1;
-  }
-
-  canDisableLanguage(languageState: LanguageState): boolean {
+  canDisableLanguage(_languageState: LanguageState): boolean {
     // <if expr="is_win">
     // Cannot disable the prospective UI language.
-    if (languageState.language.code === this.languages!.prospectiveUILanguage) {
+    if (_languageState.language.code ===
+        this.languages!.prospectiveUILanguage) {
       return false;
     }
     // </if>
 
     // Cannot disable the only enabled language.
     if (this.languages!.enabled.length === 1) {
-      return false;
-    }
-
-    // In the Detailed Language Settings the Translate Blocked list should not
-    // affect the disabled status of Preferred Languages.
-    // Cannot disable the last translate blocked language.
-    if (!loadTimeData.getBoolean('enableDesktopDetailedLanguageSettings') &&
-        this.isOnlyTranslateBlockedLanguage(languageState)) {
       return false;
     }
 

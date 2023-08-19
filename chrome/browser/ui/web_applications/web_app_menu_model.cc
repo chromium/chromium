@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -23,10 +24,12 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/vector_icons/vector_icons.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "ui/base/accelerators/menu_label_accelerator_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -119,14 +122,28 @@ void WebAppMenuModel::Build() {
     SetMinorText(app_info_index, display_text);
   }
 
-  SetMinorIcon(app_info_index,
-               ui::ImageModel::FromVectorIcon(
-                   browser()->location_bar_model()->GetVectorIcon()));
+  if (!features::IsChromeRefresh2023()) {
+    SetMinorIcon(app_info_index,
+                 ui::ImageModel::FromVectorIcon(
+                     browser()->location_bar_model()->GetVectorIcon()));
+  } else {
+    SetIcon(app_info_index,
+            ui::ImageModel::FromVectorIcon(
+                browser()->location_bar_model()->GetVectorIcon()));
+  }
 
   AddSeparator(ui::NORMAL_SEPARATOR);
 
-  if (IsCommandIdEnabled(kExtensionsMenuCommandId))
+  if (IsCommandIdEnabled(kExtensionsMenuCommandId)) {
     AddItemWithStringId(kExtensionsMenuCommandId, IDS_SHOW_EXTENSIONS);
+    AddSeparator(ui::NORMAL_SEPARATOR);
+  }
+
+  if (browser()->app_controller() &&
+      browser()->app_controller()->has_tab_strip() &&
+      !browser()->app_controller()->ShouldHideNewTabButton()) {
+    AddItemWithStringId(IDC_NEW_TAB, IDS_NEW_TAB);
+  }
   AddItemWithStringId(IDC_COPY_URL, IDS_COPY_URL);
 
   // Isolated Web Apps shouldn't be opened in Chrome.
@@ -160,14 +177,33 @@ void WebAppMenuModel::Build() {
                     browser()->app_controller()->GetAppShortName())));
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
-  AddSeparator(ui::LOWER_SEPARATOR);
-
+  AddSeparator(features::IsChromeRefresh2023() ? ui::NORMAL_SEPARATOR
+                                               : ui::LOWER_SEPARATOR);
   CreateZoomMenu();
-  AddSeparator(ui::UPPER_SEPARATOR);
+  AddSeparator(features::IsChromeRefresh2023() ? ui::NORMAL_SEPARATOR
+                                               : ui::UPPER_SEPARATOR);
   AddItemWithStringId(IDC_PRINT, IDS_PRINT);
-  AddItemWithStringId(IDC_FIND, IDS_FIND);
+  if (!features::IsChromeRefresh2023()) {
+    AddItemWithStringId(IDC_FIND, IDS_FIND);
+  } else {
+    CreateFindAndEditSubMenu();
+  }
   if (media_router::MediaRouterEnabled(browser()->profile()))
     AddItemWithStringId(IDC_ROUTE_MEDIA, IDS_MEDIA_ROUTER_MENU_ITEM_TITLE);
-  AddSeparator(ui::LOWER_SEPARATOR);
-  CreateCutCopyPasteMenu();
+  if (!features::IsChromeRefresh2023()) {
+    AddSeparator(ui::LOWER_SEPARATOR);
+    CreateCutCopyPasteMenu();
+  }
+  if (features::IsChromeRefresh2023()) {
+    SetCommandIcon(this, kExtensionsMenuCommandId,
+                   vector_icons::kExtensionChromeRefreshIcon);
+    SetCommandIcon(this, kUninstallAppCommandId, kTrashCanRefreshIcon);
+    SetCommandIcon(this, IDC_NEW_TAB, kNewTabRefreshIcon);
+    SetCommandIcon(this, IDC_COPY_URL, kLinkChromeRefreshIcon);
+    SetCommandIcon(this, IDC_OPEN_IN_CHROME, kBrowserLogoIcon);
+    SetCommandIcon(this, IDC_ZOOM_MENU, kZoomInIcon);
+    SetCommandIcon(this, IDC_PRINT, kPrintMenuIcon);
+    SetCommandIcon(this, IDC_FIND_AND_EDIT_MENU, kSearchMenuIcon);
+    SetCommandIcon(this, IDC_ROUTE_MEDIA, kCastChromeRefreshIcon);
+  }
 }

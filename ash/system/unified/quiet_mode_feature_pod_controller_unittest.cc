@@ -51,6 +51,10 @@ class QuietModeFeaturePodControllerTest
   bool IsQsRevampEnabled() { return std::get<1>(GetParam()); }
 
   void SetUpButton() {
+    auto* system_tray = GetPrimaryUnifiedSystemTray();
+    if (!system_tray->IsBubbleShown()) {
+      system_tray->ShowBubble();
+    }
     controller_ =
         std::make_unique<QuietModeFeaturePodController>(tray_controller());
     if (IsQsRevampEnabled()) {

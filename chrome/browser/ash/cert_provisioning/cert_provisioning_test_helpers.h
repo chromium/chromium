@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/platform_keys/mock_platform_keys_service.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -89,7 +90,8 @@ class ProfileHelperForTesting {
   void Init(bool user_is_affiliated);
 
   TestingProfileManager testing_profile_manager_;
-  FakeChromeUserManager fake_user_manager_;
+  user_manager::TypedScopedUserManager<FakeChromeUserManager>
+      fake_user_manager_{std::make_unique<FakeChromeUserManager>()};
   raw_ptr<TestingProfile, ExperimentalAsh> testing_profile_ = nullptr;
   raw_ptr<user_manager::User, ExperimentalAsh> user_ = nullptr;
 };

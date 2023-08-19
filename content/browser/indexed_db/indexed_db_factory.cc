@@ -50,7 +50,6 @@
 #include "content/browser/indexed_db/indexed_db_data_format_version.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_operations.h"
-#include "content/browser/indexed_db/indexed_db_metadata_coding.h"
 #include "content/browser/indexed_db/indexed_db_pre_close_task_queue.h"
 #include "content/browser/indexed_db/indexed_db_reporting.h"
 #include "content/browser/indexed_db/indexed_db_task_helper.h"
@@ -220,11 +219,8 @@ void IndexedDBFactory::GetDatabaseInfo(
     return;
   }
   IndexedDBBucketState* factory = bucket_state_handle.bucket_state();
-
-  IndexedDBMetadataCoding metadata_coding;
-  s = metadata_coding.ReadDatabaseNamesAndVersions(
-      factory->backing_store_->db(),
-      factory->backing_store_->origin_identifier(), &names_and_versions);
+  s = factory->backing_store()->GetDatabaseNamesAndVersions(
+      &names_and_versions);
   if (!s.ok()) {
     error = IndexedDBDatabaseError(blink::mojom::IDBException::kUnknownError,
                                    "Internal error opening backing store for "
@@ -257,7 +253,7 @@ void IndexedDBFactory::Open(
       GetOrOpenBucketFactory(bucket_locator, data_directory,
                              /*create_if_missing=*/true);
   if (!bucket_state_handle.IsHeld() || !bucket_state_handle.bucket_state()) {
-    connection->callbacks->OnError(error);
+    connection->factory_client->OnError(error);
     if (s.IsCorruption()) {
       HandleBackingStoreCorruption(bucket_locator, error);
     }
@@ -271,22 +267,19 @@ void IndexedDBFactory::Open(
                                        std::move(client_state_checker));
     return;
   }
-  std::unique_ptr<IndexedDBDatabase> database;
-  std::tie(database, s) = class_factory_->CreateIndexedDBDatabase(
-      name, factory->backing_store(), this,
-      base::BindRepeating(&IndexedDBFactory::MaybeRunTasksForBucket,
-                          bucket_state_destruction_weak_factory_.GetWeakPtr(),
-                          bucket_locator),
-      std::make_unique<IndexedDBMetadataCoding>(), std::move(unique_identifier),
-      factory->lock_manager());
+  std::unique_ptr<IndexedDBDatabase> database =
+      class_factory_->CreateIndexedDBDatabase(
+          name, factory->backing_store(), this,
+          base::BindRepeating(
+              &IndexedDBFactory::MaybeRunTasksForBucket,
+              bucket_state_destruction_weak_factory_.GetWeakPtr(),
+              bucket_locator),
+          std::move(unique_identifier), factory->lock_manager());
   if (!database.get()) {
     error = IndexedDBDatabaseError(
         blink::mojom::IDBException::kUnknownError,
         u"Internal error creating database backend for indexedDB.open.");
-    connection->callbacks->OnError(error);
-    if (s.IsCorruption()) {
-      HandleBackingStoreCorruption(bucket_locator, error);
-    }
+    connection->factory_client->OnError(error);
     return;
   }
 
@@ -301,7 +294,7 @@ void IndexedDBFactory::Open(
 
 void IndexedDBFactory::DeleteDatabase(
     const std::u16string& name,
-    scoped_refptr<IndexedDBCallbacks> callbacks,
+    std::unique_ptr<IndexedDBFactoryClient> factory_client,
     const storage::BucketLocator& bucket_locator,
     const base::FilePath& data_directory,
     bool force_close) {
@@ -317,7 +310,7 @@ void IndexedDBFactory::DeleteDatabase(
       GetOrOpenBucketFactory(bucket_locator, data_directory,
                              /*create_if_missing=*/true);
   if (!bucket_state_handle.IsHeld() || !bucket_state_handle.bucket_state()) {
-    callbacks->OnError(error);
+    factory_client->OnError(error);
     if (s.IsCorruption()) {
       HandleBackingStoreCorruption(bucket_locator, error);
     }
@@ -329,7 +322,7 @@ void IndexedDBFactory::DeleteDatabase(
   if (it != factory->databases().end()) {
     base::WeakPtr<IndexedDBDatabase> database = it->second->AsWeakPtr();
     database->ScheduleDeleteDatabase(
-        std::move(bucket_state_handle), callbacks,
+        std::move(bucket_state_handle), std::move(factory_client),
         base::BindOnce(&IndexedDBFactory::OnDatabaseDeleted,
                        weak_factory_.GetWeakPtr(), bucket_locator));
     if (force_close) {
@@ -341,18 +334,13 @@ void IndexedDBFactory::DeleteDatabase(
     return;
   }
 
-  // TODO(dmurph): Get rid of on-demand metadata loading, and store metadata
-  // in-memory in the backing store.
-  IndexedDBMetadataCoding metadata_coding;
   std::vector<std::u16string> names;
-  s = metadata_coding.ReadDatabaseNames(
-      factory->backing_store()->db(),
-      factory->backing_store()->origin_identifier(), &names);
+  s = factory->backing_store()->GetDatabaseNames(&names);
   if (!s.ok()) {
     error = IndexedDBDatabaseError(blink::mojom::IDBException::kUnknownError,
                                    "Internal error opening backing store for "
                                    "indexedDB.deleteDatabase.");
-    callbacks->OnError(error);
+    factory_client->OnError(error);
     if (s.IsCorruption()) {
       HandleBackingStoreCorruption(bucket_locator, error);
     }
@@ -361,33 +349,30 @@ void IndexedDBFactory::DeleteDatabase(
 
   if (!base::Contains(names, name)) {
     const int64_t version = 0;
-    callbacks->OnSuccess(version);
+    factory_client->OnDeleteSuccess(version);
     return;
   }
 
-  std::unique_ptr<IndexedDBDatabase> database;
-  std::tie(database, s) = class_factory_->CreateIndexedDBDatabase(
-      name, factory->backing_store(), this,
-      base::BindRepeating(&IndexedDBFactory::MaybeRunTasksForBucket,
-                          bucket_state_destruction_weak_factory_.GetWeakPtr(),
-                          bucket_locator),
-      std::make_unique<IndexedDBMetadataCoding>(), unique_identifier,
-      factory->lock_manager());
+  std::unique_ptr<IndexedDBDatabase> database =
+      class_factory_->CreateIndexedDBDatabase(
+          name, factory->backing_store(), this,
+          base::BindRepeating(
+              &IndexedDBFactory::MaybeRunTasksForBucket,
+              bucket_state_destruction_weak_factory_.GetWeakPtr(),
+              bucket_locator),
+          unique_identifier, factory->lock_manager());
   if (!database.get()) {
     error = IndexedDBDatabaseError(blink::mojom::IDBException::kUnknownError,
                                    u"Internal error creating database backend "
                                    u"for indexedDB.deleteDatabase.");
-    callbacks->OnError(error);
-    if (s.IsCorruption()) {
-      HandleBackingStoreCorruption(bucket_locator, error);
-    }
+    factory_client->OnError(error);
     return;
   }
 
   base::WeakPtr<IndexedDBDatabase> database_ptr =
       factory->AddDatabase(name, std::move(database))->AsWeakPtr();
   database_ptr->ScheduleDeleteDatabase(
-      std::move(bucket_state_handle), std::move(callbacks),
+      std::move(bucket_state_handle), std::move(factory_client),
       base::BindOnce(&IndexedDBFactory::OnDatabaseDeleted,
                      weak_factory_.GetWeakPtr(), bucket_locator));
   if (force_close) {
@@ -741,19 +726,7 @@ IndexedDBFactory::GetOrOpenBucketFactory(
               data_loss_info, /*was_cold_open=*/true};
     }
   }
-  DCHECK(backing_store);
-  // Scopes must be single sequence to keep methods like ForceClose synchronous.
-  // See https://crbug.com/980685
-  s = backing_store->db()->scopes()->StartRecoveryAndCleanupTasks(
-      LevelDBScopes::TaskRunnerMode::kNewCleanupAndRevertSequences);
-
-  if (UNLIKELY(!s.ok())) {
-    ReportOpenStatus(indexed_db::INDEXED_DB_BACKING_STORE_OPEN_NO_RECOVERY,
-                     bucket_locator);
-
-    return {IndexedDBBucketStateHandle(), s, CreateDefaultError(),
-            data_loss_info, /*was_cold_open=*/true};
-  }
+  backing_store->db()->scopes()->StartRecoveryAndCleanupTasks();
 
   if (!is_incognito_and_in_memory) {
     ReportOpenStatus(indexed_db::INDEXED_DB_BACKING_STORE_OPEN_SUCCESS,

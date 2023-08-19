@@ -331,6 +331,21 @@ void SafeBrowsingUIManager::SendThreatDetails(
       ->ReportThreatDetails(std::move(report));
 }
 
+// If HaTS surveys are enabled, then this gets called when the report is ready.
+void SafeBrowsingUIManager::AttachThreatDetailsAndLaunchSurvey(
+    content::BrowserContext* browser_context,
+    std::unique_ptr<ClientSafeBrowsingReportRequest> report) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (shut_down_) {
+    return;
+  }
+
+  DVLOG(1) << "Adding threat details to survey response payload.";
+  delegate_->GetPingManager(browser_context)
+      ->AttachThreatDetailsAndLaunchSurvey(std::move(report));
+}
+
 void SafeBrowsingUIManager::OnBlockingPageDone(
     const std::vector<UnsafeResource>& resources,
     bool proceed,

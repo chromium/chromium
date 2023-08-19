@@ -73,6 +73,9 @@
     <message name="IDS_PRINT_MEDIA_SOURCE" desc="Option presented while a user is printing. The chosen option decides the tray from which the printer sources paper. Specified in PWG5100.7 (5.5.47) media-source-supported">
       Input Tray
     </message>
+    <message name="IDS_PRINT_MEDIA_TYPE" desc="Option presented while a user is printing. The chosen option specifies the type of paper loaded in the printer. Specified in PWG5100.7 (5.5.51) media-type-supported">
+      Paper type
+    </message>
     <message name="IDS_PRINT_MULTIPLE_DOCUMENT_HANDLING" desc="RFC8011 (5.2.4) multiple-document-hand">
       Multiple documents handling
     </message>
@@ -840,6 +843,381 @@
     </message>
     <message name="IDS_PRINT_MEDIA_SOURCE_TRAY_20" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: tray-20">
       Tray 20
+    </message>
+  </if>
+
+  <if expr="is_chromeos or is_macosx">
+    <message name="IDS_PRINT_MEDIA_TYPE_ALUMINUM" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: aluminum">
+      Aluminum
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_AUTO" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: auto">
+      Automatic
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_BACK_PRINT_FILM" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: back-print-film">
+      Back Print Film
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_CARDBOARD" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: cardboard">
+      Cardboard
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_CARDSTOCK" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: cardstock">
+      Card Stock
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_CD" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: cd">
+      Compact Disc
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_CONTINUOUS" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: continuous">
+      Continuous
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_CONTINUOUS_LONG" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: continuous-long">
+      Continuous (Long)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_CONTINUOUS_SHORT" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: continuous-short">
+      Continuous (Short)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_CORRUGATED_BOARD" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: corrugated-board">
+      Cardboard
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_DISC" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: disc">
+      Optical Disc
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_DISC_GLOSSY" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: disc-glossy">
+      Optical Disc (Glossy)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_DISC_HIGH_GLOSS" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: disc-high-gloss">
+      Optical Disc (High-Gloss)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_DISC_MATTE" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: disc-matte">
+      Optical Disc (Matte)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_DISC_SATIN" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: disc-satin">
+      Optical Disc (Satin)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_DISC_SEMI_GLOSS" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: disc-semi-gloss">
+      Optical Disc (Semi-Gloss)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_DOUBLE_WALL" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: double-wall">
+      Cardboard (Double Wall)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_DRY_FILM" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: dry-film">
+      Dry Film
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_DVD" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: dvd">
+      Digital Versatile Disc
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_EMBOSSING_FOIL" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: embossing-foil">
+      Embossing Foil
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_END_BOARD" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: end-board">
+      Cardboard (End)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_ENVELOPE" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: envelope">
+      Envelope
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_ENVELOPE_ARCHIVAL" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: envelope-archival">
+      Envelope (Archival)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_ENVELOPE_BOND" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: envelope-bond">
+      Envelope (Bond)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_ENVELOPE_COATED" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: envelope-coated">
+      Envelope (Coated)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_ENVELOPE_COTTON" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: envelope-cotton">
+      Envelope (Cotton)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_ENVELOPE_FINE" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: envelope-fine">
+      Envelope (Fine)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_ENVELOPE_HEAVYWEIGHT" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: envelope-heavyweight">
+      Envelope (Heavyweight)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_ENVELOPE_INKJET" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: envelope-inkjet">
+      Envelope (Inkjet)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_ENVELOPE_LIGHTWEIGHT" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: envelope-lightweight">
+      Envelope (Lightweight)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_ENVELOPE_PLAIN" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: envelope-plain">
+      Envelope (Plain)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_ENVELOPE_PREPRINTED" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: envelope-preprinted">
+      Envelope (Preprinted)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_ENVELOPE_WINDOW" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: envelope-window">
+      Envelope (Window)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_FABRIC" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: fabric">
+      Fabric
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_FABRIC_ARCHIVAL" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: fabric-archival">
+      Fabric (Archival)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_FABRIC_GLOSSY" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: fabric-glossy">
+      Fabric (Glossy)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_FABRIC_HIGH_GLOSS" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: fabric-high-gloss">
+      Fabric (High-Gloss)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_FABRIC_MATTE" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: fabric-matte">
+      Fabric (Matte)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_FABRIC_SEMI_GLOSS" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: fabric-semi-gloss">
+      Fabric (Semi-Gloss)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_FABRIC_WATERPROOF" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: fabric-waterproof">
+      Fabric (Waterproof)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_FILM" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: film">
+      Film
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_FLEXO_BASE" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: flexo-base">
+      Flexo Base
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_FLEXO_PHOTO_POLYMER" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: flexo-photo-polymer">
+      Flexo Photopolymer
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_FLUTE" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: flute">
+      Flute
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_FOIL" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: foil">
+      Foil
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_FULL_CUT_TABS" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: full-cut-tabs">
+      Full Cut Tabs
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_GLASS" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: glass">
+      Glass
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_GLASS_COLORED" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: glass-colored">
+      Glass (Colored)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_GLASS_OPAQUE" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: glass-opaque">
+      Glass (Opaque)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_GLASS_SURFACED" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: glass-surfaced">
+      Glass (Surfaced)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_GLASS_TEXTURED" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: glass-textured">
+      Glass (Textured)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_GRAVURE_CYLINDER" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: gravure-cylinder">
+      Gravure Cylinder
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_IMAGE_SETTER_PAPER" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: image-setter-paper">
+      Image Setter Paper
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_IMAGING_CYLINDER" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: imaging-cylinder">
+      Imaging Cylinder
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_LABELS" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: labels">
+      Labels
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_LABELS_COLORED" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: labels-colored">
+      Labels (Colored)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_LABELS_GLOSSY" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: labels-glossy">
+      Labels (Glossy)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_LABELS_HIGH_GLOSS" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: labels-high-gloss">
+      Labels (High-Gloss)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_LABELS_INKJET" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: labels-inkjet">
+      Labels (Inkjet)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_LABELS_MATTE" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: labels-matte">
+      Labels (Matte)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_LABELS_PERMANENT" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: labels-permanent">
+      Labels (Permanent)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_LABELS_SATIN" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: labels-satin">
+      Labels (Satin)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_LABELS_SECURITY" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: labels-security">
+      Labels (Security)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_LABELS_SEMI_GLOSS" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: labels-semi-gloss">
+      Labels (Semi-Gloss)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_LAMINATING_FOIL" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: laminating-foil">
+      Laminating Foil
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_LETTERHEAD" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: letterhead">
+      Stationery (Letterhead)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_METAL" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: metal">
+      Metal
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_METAL_GLOSSY" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: metal-glossy">
+      Metal (Glossy)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_METAL_HIGH_GLOSS" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: metal-high-gloss">
+      Metal (High-Gloss)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_METAL_MATTE" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: metal-matte">
+      Metal (Matte)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_METAL_SATIN" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: metal-satin">
+      Metal (Satin)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_METAL_SEMI_GLOSS" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: metal-semi-gloss">
+      Metal (Semi-Gloss)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_MOUNTING_TAPE" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: mounting-tape">
+      Mounting Tape
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_MULTI_LAYER" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: multi-layer">
+      Multi-Layer
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_MULTI_PART_FORM" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: multi-part-form">
+      Multi-Part Form
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_OTHER" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: other">
+      Other
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_PAPER" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: paper">
+      Stationery
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_PHOTOGRAPHIC" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: photographic">
+      Photo
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_PHOTOGRAPHIC_ARCHIVAL" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: photographic-archival">
+      Photo (Archival)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_PHOTOGRAPHIC_FILM" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: photographic-film">
+      Photo (Film)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_PHOTOGRAPHIC_GLOSSY" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: photographic-glossy">
+      Photo (Glossy)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_PHOTOGRAPHIC_HIGH_GLOSS" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: photographic-high-gloss">
+      Photo (High-Gloss)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_PHOTOGRAPHIC_MATTE" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: photographic-matte">
+      Photo (Matte)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_PHOTOGRAPHIC_SATIN" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: photographic-satin">
+      Photo (Satin)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_PHOTOGRAPHIC_SEMI_GLOSS" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: photographic-semi-gloss">
+      Photo (Semi-Gloss)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_PLASTIC" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: plastic">
+      Plastic
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_PLASTIC_ARCHIVAL" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: plastic-archival">
+      Plastic (Archival)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_PLASTIC_COLORED" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: plastic-colored">
+      Plastic (Colored)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_PLASTIC_GLOSSY" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: plastic-glossy">
+      Plastic (Glossy)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_PLASTIC_HIGH_GLOSS" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: plastic-high-gloss">
+      Plastic (High Gloss)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_PLASTIC_MATTE" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: plastic-matte">
+      Plastic (Matte)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_PLASTIC_SATIN" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: plastic-satin">
+      Plastic (Satin)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_PLASTIC_SEMI_GLOSS" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: plastic-semi-gloss">
+      Plastic (Semi-Gloss)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_PLATE" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: plate">
+      Plate
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_POLYESTER" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: polyester">
+      Polyester
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_PRE_CUT_TABS" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: pre-cut-tabs">
+      Pre-Cut Tabs
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_ROLL" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: roll">
+      Roll
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_SCREEN" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: screen">
+      Screen
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_SCREEN_PAGED" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: screen-paged">
+      Screen (Paged)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_SELF_ADHESIVE" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: self-adhesive">
+      Self-Adhesive Paper
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_SELF_ADHESIVE_FILM" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: self-adhesive-film">
+      Self-Adhesive Film
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_SHRINK_FOIL" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: shrink-foil">
+      Shrink Foil
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_SINGLE_FACE" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: single-face">
+      Single Face
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_SINGLE_WALL" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: single-wall">
+      Cardboard (Single Wall)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_SLEEVE" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: sleeve">
+      Sleeve
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_STATIONERY" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: stationery">
+      Paper (Plain)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_STATIONERY_ARCHIVAL" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: stationery-archival">
+      Paper (Archival)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_STATIONERY_BOND" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: stationery-bond">
+      Paper (Bond)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_STATIONERY_COATED" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: stationery-coated">
+      Paper (Coated)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_STATIONERY_COTTON" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: stationery-cotton">
+      Paper (Cotton)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_STATIONERY_FINE" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: stationery-fine">
+      Paper (Vellum)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_STATIONERY_HEAVYWEIGHT" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: stationery-heavyweight">
+      Paper (Heavyweight)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_STATIONERY_HEAVYWEIGHT_COATED" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: stationery-heavyweight-coated">
+      Paper (Heavyweight Coated)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_STATIONERY_INKJET" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: stationery-inkjet">
+      Paper (Inkjet)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_STATIONERY_LETTERHEAD" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: stationery-letterhead">
+      Paper (Letterhead)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_STATIONERY_LIGHTWEIGHT" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: stationery-lightweight">
+      Paper (Lightweight)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_STATIONERY_PREPRINTED" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: stationery-preprinted">
+      Paper (Preprinted)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_STATIONERY_PREPUNCHED" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: stationery-prepunched">
+      Paper (Prepunched)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_TAB_STOCK" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: tab-stock">
+      Tab Stock
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_TRACTOR" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: tractor">
+      Tractor Feed
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_TRANSFER" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: transfer">
+      Transfer
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_TRANSPARENCY" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: transparency">
+      Transparency
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_TRIPLE_WALL" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: triple-wall">
+      Cardboard (Triple Wall)
+    </message>
+    <message name="IDS_PRINT_MEDIA_TYPE_WET_FILM" desc="Options for the media-type printing attribute as specified in PWG 5101.1-2013 media-type: wet-film">
+      Wet Film
     </message>
   </if>
 </grit-part>

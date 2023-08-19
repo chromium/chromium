@@ -150,24 +150,6 @@ TEST(MediaRouterMetricsTest, RecordCloseDialogLatency) {
       MediaRouterMetrics::kHistogramCloseLatency);
 }
 
-TEST(MediaRouterMetricsTest, RecordMediaRouterInitialUserAction) {
-  base::HistogramTester tester;
-  const MediaRouterUserAction action1 = MediaRouterUserAction::START_LOCAL;
-  const MediaRouterUserAction action2 = MediaRouterUserAction::CLOSE;
-  const MediaRouterUserAction action3 = MediaRouterUserAction::STATUS_REMOTE;
-
-  tester.ExpectTotalCount(MediaRouterMetrics::kHistogramUiFirstAction, 0);
-  MediaRouterMetrics::RecordMediaRouterInitialUserAction(action3);
-  MediaRouterMetrics::RecordMediaRouterInitialUserAction(action2);
-  MediaRouterMetrics::RecordMediaRouterInitialUserAction(action3);
-  MediaRouterMetrics::RecordMediaRouterInitialUserAction(action1);
-  tester.ExpectTotalCount(MediaRouterMetrics::kHistogramUiFirstAction, 4);
-  EXPECT_THAT(tester.GetAllSamples(MediaRouterMetrics::kHistogramUiFirstAction),
-              ElementsAre(Bucket(static_cast<int>(action1), 1),
-                          Bucket(static_cast<int>(action2), 1),
-                          Bucket(static_cast<int>(action3), 2)));
-}
-
 TEST(MediaRouterMetricsTest, RecordPresentationUrlType) {
   base::HistogramTester tester;
 
@@ -271,12 +253,6 @@ TEST(MediaRouterMetricsTest, RecordIconStateAtDialogOpen) {
   TestRecordBooleanMetric(
       base::BindRepeating(&MediaRouterMetrics::RecordIconStateAtDialogOpen),
       MediaRouterMetrics::kHistogramUiDialogIconStateAtOpen);
-}
-
-TEST(MediaRouterMetricsTest, RecordIconStateAtInit) {
-  TestRecordBooleanMetric(
-      base::BindRepeating(&MediaRouterMetrics::RecordIconStateAtInit),
-      MediaRouterMetrics::kHistogramUiIconStateAtInit);
 }
 
 TEST(MediaRouterMetricsTest, RecordCreateRouteResultCode) {

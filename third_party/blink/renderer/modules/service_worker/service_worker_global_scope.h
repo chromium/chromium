@@ -116,6 +116,7 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
   bool IsServiceWorkerGlobalScope() const override { return true; }
   bool ShouldInstallV8Extensions() const final;
   bool IsInFencedFrame() const override;
+  void NotifyWebSocketActivity() override;
 
   const blink::BlinkStorageKey& storage_key() const { return storage_key_; }
 
@@ -330,6 +331,8 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
   }
 
   mojom::blink::ServiceWorkerFetchHandlerType FetchHandlerType();
+
+  bool HasHidEventHandlers();
 
   // EventTarget
   bool SetAttributeEventListener(const AtomicString& event_type,

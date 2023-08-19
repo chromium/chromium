@@ -10,10 +10,15 @@ import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.Scre
 import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.ScreenType.UNINITIALIZED;
 
 import android.view.View;
+import android.widget.ScrollView;
 
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.chrome.browser.recent_tabs.RestoreTabsMetricsHelper.RestoreTabsOnFREBackPressType;
+import org.chromium.chrome.browser.recent_tabs.RestoreTabsMetricsHelper.RestoreTabsOnFRERestoredTabsResult;
+import org.chromium.chrome.browser.recent_tabs.RestoreTabsMetricsHelper.RestoreTabsOnFREResultAction;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
@@ -30,12 +35,16 @@ public class RestoreTabsPromoSheetContent implements BottomSheetContent {
     private final BottomSheetObserver mBottomSheetOpenedObserver;
     private final ObservableSupplierImpl<Boolean> mBackPressStateChangedSupplier =
             new ObservableSupplierImpl<>();
+    private ScrollView mScrollView;
+    private RecyclerView mRecyclerView;
 
     public RestoreTabsPromoSheetContent(
             View contentView, PropertyModel model, BottomSheetController bottomSheetController) {
         mContentView = contentView;
         mModel = model;
         mBottomSheetController = bottomSheetController;
+        mScrollView = mContentView.findViewById(R.id.restore_tabs_promo_sheet_scrollview);
+        mRecyclerView = mContentView.findViewById(R.id.restore_tabs_detail_screen_recycler_view);
 
         mBottomSheetOpenedObserver = new EmptyBottomSheetObserver() {
             @Override
@@ -65,8 +74,28 @@ public class RestoreTabsPromoSheetContent implements BottomSheetContent {
         return null;
     }
 
+    /**
+     * The vertical scroll offset of the recycler view's list containing the user's devices
+     * or the currently selected device's tab items. The offset prevents scroll flinging from
+     * dismissing the sheet.
+     */
     @Override
     public int getVerticalScrollOffset() {
+        int currentScreen = mModel.get(RestoreTabsProperties.CURRENT_SCREEN);
+
+        if (currentScreen == HOME_SCREEN) {
+            if (mScrollView != null) {
+                // Calculate the scroll position of the scrollview and make sure it is
+                // non-zero, otherwise allows swipe to dismiss on the bottom sheet.
+                return mScrollView.getScrollY();
+            }
+        } else if (currentScreen == DEVICE_SCREEN || currentScreen == REVIEW_TABS_SCREEN) {
+            // Get the first item in the recycler view to make sure it is scrolled off-screen
+            // (has non-zero value) otherwise allow swipe to dismiss on the bottom sheet.
+            View v = mRecyclerView.getChildAt(0);
+            return v == null ? 0 : -(v.getTop() - mRecyclerView.getPaddingTop());
+        }
+
         return 0;
     }
 
@@ -141,9 +170,28 @@ public class RestoreTabsPromoSheetContent implements BottomSheetContent {
                 break;
             case HOME_SCREEN:
                 mModel.set(RestoreTabsProperties.VISIBLE, false);
+                RestoreTabsMetricsHelper.recordResultActionHistogram(
+                        RestoreTabsOnFREResultAction.DISMISSED_BACKPRESS);
+                RestoreTabsMetricsHelper.recordResultActionMetrics(
+                        RestoreTabsOnFREResultAction.DISMISSED_BACKPRESS);
+                RestoreTabsMetricsHelper.recordRestoredTabsResultHistogram(
+                        RestoreTabsOnFRERestoredTabsResult.NONE);
                 break;
             default:
                 assert currentScreen == UNINITIALIZED : "Backpressing on an unidentified screen.";
         }
+
+        if (currentScreen != UNINITIALIZED) {
+            RestoreTabsMetricsHelper.recordBackPressTypeMetrics(
+                    RestoreTabsOnFREBackPressType.SYSTEM_BACKPRESS);
+        }
+    }
+
+    void setRecyclerViewForTesting(RecyclerView recyclerView) {
+        mRecyclerView = recyclerView;
+    }
+
+    void setScrollViewForTesting(ScrollView scrollView) {
+        mScrollView = scrollView;
     }
 }

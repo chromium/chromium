@@ -9,10 +9,6 @@
 #import "ios/showcase/omnibox_popup/fake_autocomplete_suggestion.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface SCOmniboxPopupMediator ()
 
 @property(nonatomic, readonly, weak) id<AutocompleteResultConsumer> consumer;

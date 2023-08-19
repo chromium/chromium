@@ -89,6 +89,22 @@
 
 namespace blink {
 
+namespace {
+
+bool IsWhitespaceForRebalance(const Text& text_node, UChar character) {
+  if (IsWhitespace(character)) {
+    if (character == kNewlineCharacter &&
+        RuntimeEnabledFeatures::InsertLineBreakIfPhrasingContentEnabled()) {
+      return !text_node.GetLayoutObject() ||
+             text_node.GetLayoutObject()->StyleRef().ShouldCollapseBreaks();
+    }
+    return true;
+  }
+  return false;
+}
+
+}  // namespace
+
 CompositeEditCommand::CompositeEditCommand(Document& document)
     : EditCommand(document) {
   const VisibleSelection& visible_selection =
@@ -738,12 +754,16 @@ void CompositeEditCommand::RebalanceWhitespaceOnTextSubstring(Text* text_node,
   // Set upstream and downstream to define the extent of the whitespace
   // surrounding text[offset].
   int upstream = start_offset;
-  while (upstream > 0 && IsWhitespace(text[upstream - 1]))
+  while (upstream > 0 &&
+         IsWhitespaceForRebalance(*text_node, text[upstream - 1])) {
     upstream--;
+  }
 
   int downstream = end_offset;
-  while ((unsigned)downstream < text.length() && IsWhitespace(text[downstream]))
+  while ((unsigned)downstream < text.length() &&
+         IsWhitespaceForRebalance(*text_node, text[downstream])) {
     downstream++;
+  }
 
   int length = downstream - upstream;
   if (!length)
@@ -971,8 +991,9 @@ HTMLBRElement* CompositeEditCommand::AddBlockPlaceholderIfNeeded(
 
   // append the placeholder to make sure it follows
   // any unrendered blocks
-  if (block->Size().Height() == 0 || IsEmptyListItem(*block))
+  if (block->Size().height == 0 || IsEmptyListItem(*block)) {
     return AppendBlockPlaceholder(container, editing_state);
+  }
 
   return nullptr;
 }

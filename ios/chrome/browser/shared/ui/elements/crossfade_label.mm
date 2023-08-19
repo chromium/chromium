@@ -6,10 +6,6 @@
 
 #import "base/check.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation CrossfadeLabel {
   // The label that will be overlayed on top in order to perform the crossfade.
   UILabel* _overlay;

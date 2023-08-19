@@ -34,7 +34,6 @@ import java.lang.annotation.RetentionPolicy;
  * Generic dialog view for app modal or tab modal alert dialogs.
  */
 public class ModalDialogView extends BoundedLinearLayout implements View.OnClickListener {
-    private static final String TAG = "ModalDialogView";
     private static final String UMA_SECURITY_FILTERED_TOUCH_RESULT =
             "Android.ModalDialog.SecurityFilteredTouchResult";
 
@@ -71,7 +70,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     private Runnable mOnTouchFilteredCallback;
     private ViewGroup mFooterContainer;
     private TextView mFooterMessageView;
-    private long mEnterAnimationMidpointTimestamp = -1;
+    private long mStartProtectingButtonTimestamp = -1;
     // The duration for which dialog buttons should not react to any tap event after this view is
     // displayed to prevent potentially unintentional user interactions. A value of zero turns off
     // this kind of tap-jacking protection.
@@ -145,11 +144,17 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         if (mButtonTapProtectionDurationMs == 0) return false;
 
         // The view has not even started animating yet.
-        if (mEnterAnimationMidpointTimestamp < 0) return true;
+        if (mStartProtectingButtonTimestamp < 0) return true;
+
+        // Calculate whether we are still within the button protection period and reset the timer to
+        // prevent further tapjacking vectors.
+        long timestamp = TimeUtils.elapsedRealtimeMillis();
+        boolean shortEventAfterLastEvent =
+                timestamp <= mStartProtectingButtonTimestamp + mButtonTapProtectionDurationMs;
+        mStartProtectingButtonTimestamp = timestamp;
 
         // True if not showing for sufficient time.
-        return TimeUtils.elapsedRealtimeMillis()
-                <= mEnterAnimationMidpointTimestamp + mButtonTapProtectionDurationMs;
+        return shortEventAfterLastEvent;
     }
 
     /**
@@ -159,8 +164,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     void onEnterAnimationStarted(long animationDuration) {
         // Start button protection as soon as dialog is presented, but timer is kicked off in the
         // middle of the animation.
-        mEnterAnimationMidpointTimestamp =
-                TimeUtils.elapsedRealtimeMillis() + animationDuration / 2;
+        mStartProtectingButtonTimestamp = TimeUtils.elapsedRealtimeMillis() + animationDuration / 2;
     }
 
     /**
@@ -429,9 +433,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     }
 
     private boolean isButtonTapProtectionEnabled() {
-        return sEnableButtonTapProtection
-                && ModalDialogFeatureList.isEnabled(
-                        ModalDialogFeatureList.MODALDIALOG_BUTTON_PROTECTION);
+        return sEnableButtonTapProtection;
     }
 
     public static void overrideEnableButtonTapProtectionForTesting(boolean enable) {

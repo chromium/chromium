@@ -8,9 +8,10 @@
 
 #include "base/check.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
+#include "components/webauthn/android/webauthn_cred_man_delegate_factory.h"
 #include "content/public/browser/web_contents.h"
 
-namespace components {
+namespace webauthn {
 
 // The WebAuthnClientAndroid instance, which is set by the embedder.
 WebAuthnClientAndroid* g_webauthn_client = nullptr;
@@ -35,20 +36,36 @@ void WebAuthnClientAndroid::OnCredManConditionalRequestPending(
     content::RenderFrameHost* render_frame_host,
     bool has_results,
     base::RepeatingCallback<void(bool)> full_assertion_request) {
-  auto* cred_man_delegate = WebAuthnCredManDelegate::GetRequestDelegate(
-      content::WebContents::FromRenderFrameHost(render_frame_host));
-  cred_man_delegate->OnCredManConditionalRequestPending(
-      render_frame_host, has_results, std::move(full_assertion_request));
-  return;
+  if (webauthn::WebAuthnCredManDelegate* cred_man_delegate =
+          webauthn::WebAuthnCredManDelegateFactory::GetFactory(
+              content::WebContents::FromRenderFrameHost(render_frame_host))
+              ->GetRequestDelegate(render_frame_host)) {
+    cred_man_delegate->OnCredManConditionalRequestPending(
+        has_results, std::move(full_assertion_request));
+  }
 }
 
 void WebAuthnClientAndroid::OnCredManUiClosed(
     content::RenderFrameHost* render_frame_host,
     bool success) {
-  auto* cred_man_delegate = WebAuthnCredManDelegate::GetRequestDelegate(
-      content::WebContents::FromRenderFrameHost(render_frame_host));
-  cred_man_delegate->OnCredManUiClosed(success);
-  return;
+  if (webauthn::WebAuthnCredManDelegate* cred_man_delegate =
+          webauthn::WebAuthnCredManDelegateFactory::GetFactory(
+              content::WebContents::FromRenderFrameHost(render_frame_host))
+              ->GetRequestDelegate(render_frame_host)) {
+    cred_man_delegate->OnCredManUiClosed(success);
+  }
 }
 
-}  // namespace components
+void WebAuthnClientAndroid::OnPasswordCredentialReceived(
+    content::RenderFrameHost* render_frame_host,
+    std::u16string username,
+    std::u16string password) {
+  if (webauthn::WebAuthnCredManDelegate* cred_man_delegate =
+          webauthn::WebAuthnCredManDelegateFactory::GetFactory(
+              content::WebContents::FromRenderFrameHost(render_frame_host))
+              ->GetRequestDelegate(render_frame_host)) {
+    cred_man_delegate->FillUsernameAndPassword(username, password);
+  }
+}
+
+}  // namespace webauthn

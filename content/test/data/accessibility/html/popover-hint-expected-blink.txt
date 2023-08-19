@@ -11,17 +11,17 @@ rootWebArea
 ++++++button name=' Test popover with image! test 123' nameFrom=popoverAttribute
 ++++++genericContainer ignored invisible
 ++++++++staticText ignored invisible name='<newline>  Test popover with rich content like a datatable.<newline>  ' nameFrom=contents
-++++++++layoutTable ignored invisible
-++++++++++genericContainer ignored invisible
-++++++++++++layoutTableRow ignored invisible
-++++++++++++++layoutTableCell ignored invisible
+++++++++table ignored invisible
+++++++++++rowGroup ignored invisible
+++++++++++++row ignored invisible
+++++++++++++++cell ignored invisible
 ++++++++++++++++staticText ignored invisible name='1' nameFrom=contents
-++++++++++++++layoutTableCell ignored invisible
+++++++++++++++cell ignored invisible
 ++++++++++++++++staticText ignored invisible name='2' nameFrom=contents
-++++++++++++layoutTableRow ignored invisible
-++++++++++++++layoutTableCell ignored invisible
+++++++++++++row ignored invisible
+++++++++++++++cell ignored invisible
 ++++++++++++++++staticText ignored invisible name='3' nameFrom=contents
-++++++++++++++layoutTableCell ignored invisible
+++++++++++++++cell ignored invisible
 ++++++++++++++++staticText ignored invisible name='4' nameFrom=contents
 ++++++button
 ++++++genericContainer ignored invisible

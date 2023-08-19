@@ -8,11 +8,12 @@
 #include <string>
 
 #include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "base/values.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "remoting/host/chromeos/chromeos_enterprise_params.h"
 #include "remoting/host/mojom/remote_support.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -23,8 +24,10 @@ class NativeMessageHost;
 namespace remoting {
 
 class ChromotingHostContext;
+class It2MeHostFactory;
 class PolicyWatcher;
 struct ChromeOsEnterpriseParams;
+struct ConnectionDetails;
 
 // This class wraps the It2MeNativeMessageHost instance used on other platforms
 // and provides a way to interact with it using Mojo IPC.  This instance
@@ -34,11 +37,14 @@ struct ChromeOsEnterpriseParams;
 // All interactions with it must occur on the sequence it was created on.
 class It2MeNativeMessageHostAsh : public extensions::NativeMessageHost::Client {
  public:
-  It2MeNativeMessageHostAsh();
+  explicit It2MeNativeMessageHostAsh(
+      std::unique_ptr<It2MeHostFactory> host_factory);
   It2MeNativeMessageHostAsh(const It2MeNativeMessageHostAsh&) = delete;
   It2MeNativeMessageHostAsh& operator=(const It2MeNativeMessageHostAsh&) =
       delete;
   ~It2MeNativeMessageHostAsh() override;
+
+  using ClientConnectedCallback = base::OnceCallback<void(ConnectionDetails)>;
 
   // Creates a new NMH instance, creates a new SupportHostObserver remote and
   // returns the pending_remote.  Start() must be called before the first call
@@ -53,10 +59,14 @@ class It2MeNativeMessageHostAsh : public extensions::NativeMessageHost::Client {
 
   // Begins the connection process using the wrapped native message host.
   // |connected_callback| is run after the connection process has completed.
+  // If `reconnect_params` is set then the new connection will allow a
+  // previously connected client to reconnect.
   void Connect(
-      mojom::SupportSessionParamsPtr params,
+      const mojom::SupportSessionParams& params,
       const absl::optional<ChromeOsEnterpriseParams>& enterprise_params,
+      const absl::optional<ConnectionDetails>& reconnect_params,
       base::OnceClosure connected_callback,
+      ClientConnectedCallback client_connected_callback,
       base::OnceClosure disconnected_callback);
   // Disconnects an active session if one exists.
   void Disconnect();
@@ -74,6 +84,9 @@ class It2MeNativeMessageHostAsh : public extensions::NativeMessageHost::Client {
 
   base::OnceClosure connected_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
 
+  ClientConnectedCallback client_connected_callback_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
   base::OnceClosure disconnected_callback_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
@@ -81,6 +94,9 @@ class It2MeNativeMessageHostAsh : public extensions::NativeMessageHost::Client {
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   mojo::Remote<mojom::SupportHostObserver> remote_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  std::unique_ptr<It2MeHostFactory> host_factory_
       GUARDED_BY_CONTEXT(sequence_checker_);
 };
 

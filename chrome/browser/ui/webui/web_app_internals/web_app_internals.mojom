@@ -4,6 +4,13 @@
 
 module mojom;
 
+import "url/mojom/url.mojom";
+
+struct InstallIsolatedWebAppFromDevProxyResult {
+  bool success;  // true if app was installed successfully.
+  string error;  // should only be set if the app failed to install.
+};
+
 // Handles requests from chrome://web-app-internals.
 // This is expected to be hosted in the browser process.
 interface WebAppInternalsHandler {
@@ -12,4 +19,7 @@ interface WebAppInternalsHandler {
   // Returns whether the clearing is successful.
   [EnableIf=is_chromeos_lacros]
   ClearExperimentalWebAppIsolationData() => (bool success);
+  // Returns whether the installation succeeded.
+  InstallIsolatedWebAppFromDevProxy(url.mojom.Url url) =>
+      (InstallIsolatedWebAppFromDevProxyResult result);
 };

@@ -44,27 +44,21 @@ SavedTabGroupModelListener::~SavedTabGroupModelListener() {
 
 void SavedTabGroupModelListener::OnTabGroupChanged(
     const TabGroupChange& change) {
-  const TabStripModel* tab_strip_model = change.model;
-  if (!model_->Contains(change.group)) {
+  if (!local_tab_group_listeners_.contains(change.group)) {
     return;
   }
 
-  const TabGroup* group =
-      tab_strip_model->group_model()->GetTabGroup(change.group);
   switch (change.type) {
     // Called when a group's title or color changes.
     case TabGroupChange::kVisualsChanged: {
-      const tab_groups::TabGroupVisualData* visual_data = group->visual_data();
-      model_->UpdateVisualData(change.group, visual_data);
+      local_tab_group_listeners_.at(change.group)
+          .UpdateVisualDataFromLocal(change.GetVisualsChange());
       return;
     }
 
-    // Called when the last tab in the groups is removed.
-    case TabGroupChange::kClosed: {
-      model_->OnGroupClosedInTabStrip(change.group);
-      return;
-    }
-
+    // Ignored because closing empty groups is handled when the last tab is
+    // removed in TabGroupedStateChanged.
+    case TabGroupChange::kClosed:
     // Ignored because contents changes are handled in TabGroupedStateChanged.
     case TabGroupChange::kContentsChanged:
     // Ignored because we explicitly add the TabGroupId to the saved tab group
@@ -190,6 +184,7 @@ void SavedTabGroupModelListener::ResumeTrackingLocalTabGroup(
 
 void SavedTabGroupModelListener::DisconnectLocalTabGroup(
     tab_groups::TabGroupId tab_group_id) {
+  model_->OnGroupClosedInTabStrip(tab_group_id);
   local_tab_group_listeners_.erase(tab_group_id);
 }
 

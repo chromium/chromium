@@ -37,6 +37,7 @@ generate_grd("build_grd") {
     "index.js",
     "main.css",
     "proxy_view.js",
+    "shared_dictionary_view.js",
     "sockets_view.js",
     "tab_switcher_view.js",
     "util.js",

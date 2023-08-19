@@ -6,12 +6,16 @@
 
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/metrics/user_action_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/mock_shopping_service.h"
+#include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/shopping_bookmark_model_observer.h"
 #include "components/commerce/core/subscriptions/mock_subscriptions_manager.h"
 #include "components/commerce/core/test_utils.h"
@@ -40,6 +44,7 @@ class ShoppingBookmarkModelObserverTest : public testing::Test {
     observer_.reset();
   }
 
+  base::test::ScopedFeatureList test_features_;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<ShoppingBookmarkModelObserver> observer_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
@@ -128,6 +133,80 @@ TEST_F(ShoppingBookmarkModelObserverTest,
   ASSERT_FALSE(
       power_bookmarks::GetNodePowerBookmarkMeta(bookmark_model_.get(), node)
           ->has_shopping_specifics());
+}
+
+// Ensure a subscription is automatically tracked if that flag is enabled.
+TEST_F(ShoppingBookmarkModelObserverTest, TestAutomaticTrackingOnAdd) {
+  test_features_.InitAndEnableFeature(kShoppingListTrackByDefault);
+
+  uint64_t cluster_id = 12345L;
+  ProductInfo info;
+  info.product_cluster_id.emplace(cluster_id);
+
+  shopping_service_->SetResponseForGetProductInfoForUrl(info);
+
+  EXPECT_CALL(
+      *shopping_service_,
+      Subscribe(VectorHasSubscriptionWithId(base::NumberToString(cluster_id)),
+                testing::_))
+      .Times(1);
+
+  AddProductBookmark(bookmark_model_.get(), u"title",
+                     GURL("https://example.com"), cluster_id);
+
+  base::RunLoop().RunUntilIdle();
+}
+
+// Ensure a subscription is automatically tracked if that flag is enabled.
+TEST_F(ShoppingBookmarkModelObserverTest, TestShoppingCollectionChangeMetrics) {
+  test_features_.InitAndEnableFeature(kShoppingCollection);
+
+  base::UserActionTester user_action_tester;
+
+  ASSERT_EQ(user_action_tester.GetActionCount(
+                "Commerce.PriceTracking.ShoppingCollection.Created"),
+            0);
+  ASSERT_EQ(user_action_tester.GetActionCount(
+                "Commerce.PriceTracking.ShoppingCollection.Deleted"),
+            0);
+  ASSERT_EQ(user_action_tester.GetActionCount(
+                "Commerce.PriceTracking.ShoppingCollection.ParentChanged"),
+            0);
+  ASSERT_EQ(user_action_tester.GetActionCount(
+                "Commerce.PriceTracking.ShoppingCollection.NameChanged"),
+            0);
+
+  const bookmarks::BookmarkNode* collection =
+      GetShoppingCollectionBookmarkFolder(bookmark_model_.get(),
+                                          /* create_if_needed = */ true);
+
+  ASSERT_EQ(user_action_tester.GetActionCount(
+                "Commerce.PriceTracking.ShoppingCollection.Created"),
+            1);
+
+  bookmark_model_->SetTitle(collection, u"new name",
+                            bookmarks::metrics::BookmarkEditSource::kUser);
+
+  ASSERT_EQ(user_action_tester.GetActionCount(
+                "Commerce.PriceTracking.ShoppingCollection.NameChanged"),
+            1);
+
+  const bookmarks::BookmarkNode* subfolder = bookmark_model_->AddFolder(
+      bookmark_model_->other_node(),
+      bookmark_model_->other_node()->children().size() - 1, u"subfolder");
+
+  bookmark_model_->Move(collection, subfolder, 0);
+
+  ASSERT_EQ(user_action_tester.GetActionCount(
+                "Commerce.PriceTracking.ShoppingCollection.ParentChanged"),
+            1);
+
+  bookmark_model_->Remove(collection,
+                          bookmarks::metrics::BookmarkEditSource::kUser);
+
+  ASSERT_EQ(user_action_tester.GetActionCount(
+                "Commerce.PriceTracking.ShoppingCollection.Deleted"),
+            1);
 }
 
 }  // namespace

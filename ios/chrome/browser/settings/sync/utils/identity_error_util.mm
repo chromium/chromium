@@ -15,10 +15,6 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Gets the AccountErrorUIInfo data representing the kEnterPassphrase error.
@@ -94,11 +90,6 @@ GetUIInfoForTrustedVaultRecoverabilityDegradedErrorForEverything() {
 }  // namespace
 
 AccountErrorUIInfo* GetAccountErrorUIInfo(syncer::SyncService* sync_service) {
-  if (!base::FeatureList::IsEnabled(
-          syncer::kIndicateAccountStorageErrorInAccountCell)) {
-    return nil;
-  }
-
   DCHECK(sync_service);
 
   if (sync_service->IsSyncFeatureEnabled()) {
@@ -159,10 +150,6 @@ SyncState GetSyncState(syncer::SyncService* sync_service) {
 bool ShouldIndicateIdentityErrorInOverflowMenu(
     syncer::SyncService* sync_service) {
   DCHECK(sync_service);
-
-  if (!IsIndicateSyncErrorInOverflowMenuEnabled()) {
-    return false;
-  }
 
   return GetAccountErrorUIInfo(sync_service) != nil ||
          GetSyncState(sync_service) == SyncState::kSyncEnabledWithError;

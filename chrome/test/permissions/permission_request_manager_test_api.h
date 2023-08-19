@@ -50,7 +50,8 @@ class PermissionRequestManagerTestApi {
   void SimulateWebContentsDestroyed();
 
  private:
-  raw_ptr<permissions::PermissionRequestManager, DanglingUntriaged> manager_;
+  raw_ptr<permissions::PermissionRequestManager, AcrossTasksDanglingUntriaged>
+      manager_;
 };
 
 }  // namespace test

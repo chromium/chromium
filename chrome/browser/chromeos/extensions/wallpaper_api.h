@@ -36,9 +36,6 @@ class WallpaperSetWallpaperFunction : public ExtensionFunction {
   // Called by OnURLFetchComplete().
   void OnWallpaperFetched(bool success, const std::string& response);
 
-  // TODO(b/258819982): Remove in M115.
-  void OnWallpaperSetOnAshDeprecated(const std::vector<uint8_t>& thumbnail);
-
   void OnWallpaperSetOnAsh(const crosapi::mojom::SetWallpaperResultPtr result);
 
   void SetWallpaperOnAsh();

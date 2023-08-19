@@ -32,6 +32,7 @@
 #include <cstring>
 #include <iosfwd>
 #include <limits>
+#include <string>
 #include <utility>
 
 #include "absl/base/config.h"
@@ -217,8 +218,16 @@ class
     return H::combine(std::move(h), Uint128High64(v), Uint128Low64(v));
   }
 
+  // Support for absl::StrCat() etc.
+  template <typename Sink>
+  friend void AbslStringify(Sink& sink, uint128 v) {
+    sink.Append(v.ToString());
+  }
+
  private:
   constexpr uint128(uint64_t high, uint64_t low);
+
+  std::string ToString() const;
 
   // TODO(strel) Update implementation to use __int128 once all users of
   // uint128 are fixed to not depend on alignof(uint128) == 8. Also add
@@ -454,8 +463,16 @@ class int128 {
     return H::combine(std::move(h), Int128High64(v), Int128Low64(v));
   }
 
+  // Support for absl::StrCat() etc.
+  template <typename Sink>
+  friend void AbslStringify(Sink& sink, int128 v) {
+    sink.Append(v.ToString());
+  }
+
  private:
   constexpr int128(int64_t high, uint64_t low);
+
+  std::string ToString() const;
 
 #if defined(ABSL_HAVE_INTRINSIC_INT128)
   __int128 v_;

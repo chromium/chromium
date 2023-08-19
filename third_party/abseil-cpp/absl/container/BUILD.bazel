@@ -710,7 +710,7 @@ cc_test(
     deps = [
         ":raw_hash_set",
         ":tracked",
-        "//absl/base:core_headers",
+        "//absl/base:config",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -741,9 +741,9 @@ cc_test(
     deps = [
         ":layout",
         "//absl/base:config",
-        "//absl/base:core_headers",
         "//absl/log:check",
         "//absl/types:span",
+        "//absl/utility",
         "@com_google_googletest//:gtest_main",
     ],
 )

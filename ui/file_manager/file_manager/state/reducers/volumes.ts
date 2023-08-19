@@ -9,7 +9,7 @@ import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {PropStatus, State, Volume} from '../../externs/ts/state.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
-import {AddVolumeAction, RemoveVolumeAction} from '../actions/volumes.js';
+import {AddVolumeAction, RemoveVolumeAction, UpdateIsInteractiveVolumeAction} from '../actions/volumes.js';
 import {getEntry} from '../store.js';
 
 import {getMyFiles} from './all_entries.js';
@@ -80,6 +80,9 @@ export function convertVolumeInfoAndMetadataToVolume(
     isDisabled: false,
     // FileKey to volume's parent in the Tree.
     prefixKey: undefined,
+    // A volume is by default interactive unless explicitly made
+    // non-interactive.
+    isInteractive: true,
   };
 }
 
@@ -169,5 +172,25 @@ export function removeVolume(
   return {
     ...currentState,
     volumes,
+  };
+}
+
+export function updateIsInteractiveVolume(
+    currentState: State, action: UpdateIsInteractiveVolumeAction): State {
+  const volumes = {
+    ...currentState.volumes,
+  };
+
+  const updatedVolume = {
+    ...volumes[action.payload.volumeId],
+    isInteractive: action.payload.isInteractive,
+  };
+
+  return {
+    ...currentState,
+    volumes: {
+      ...volumes,
+      [action.payload.volumeId]: updatedVolume,
+    },
   };
 }

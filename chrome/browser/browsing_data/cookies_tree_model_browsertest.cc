@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/browsing_data/access_context_audit_service_factory.h"
 #include "chrome/browser/browsing_data/cookies_tree_model.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/profiles/profile.h"
@@ -88,9 +87,6 @@ class CookiesTreeObserver : public CookiesTreeModel::Observer {
   std::unique_ptr<base::RunLoop> run_loop;
 };
 
-// TODO(crbug.com/1271155): This test copies logic from the Access Context Audit
-// Service test. At least this test, and likely the ACA service & test, can be
-// removed when the tree model is deprecated.
 class CookiesTreeModelBrowserTest : public InProcessBrowserTest {
  public:
   void SetUp() override {

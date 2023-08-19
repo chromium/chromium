@@ -133,7 +133,7 @@ void ServiceProxyImpl::SetExecutionService(
     ExecutionService* model_execution_scheduler) {
   execution_service_ = model_execution_scheduler;
   segment_result_provider_ = SegmentResultProvider::Create(
-      segment_db_, signal_storage_config_, default_manager_, execution_service_,
+      segment_db_, signal_storage_config_, execution_service_,
       base::DefaultClock::GetInstance(), /*force_refresh_results=*/true);
 }
 

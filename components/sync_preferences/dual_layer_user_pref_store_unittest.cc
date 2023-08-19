@@ -13,6 +13,7 @@
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "components/prefs/testing_pref_store.h"
+#include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/pref_model_associator_client.h"
 #include "components/sync_preferences/test_syncable_prefs_database.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -28,16 +29,18 @@ constexpr char kPref3[] = "regular.pref3";
 constexpr char kPrefName[] = "regular.pref";
 constexpr char kPriorityPrefName[] = "priority.pref";
 constexpr char kNonExistentPrefName[] = "nonexistent-pref";
-constexpr char kNonSyncablePrefName[] = "nonsyncable-pref";
+constexpr char kNonSyncablePrefName[] = "nonsyncable.pref";
+constexpr char kHistorySensitivePrefName[] = "sensitive.pref";
 
 // Assigning an id of 0 to all the test prefs.
 const std::unordered_map<std::string, SyncablePrefMetadata>
     kSyncablePrefsDatabase = {
-        {kPref1, {0, syncer::PREFERENCES}},
-        {kPref2, {0, syncer::PREFERENCES}},
-        {kPref3, {0, syncer::PREFERENCES}},
-        {kPrefName, {0, syncer::PREFERENCES}},
-        {kPriorityPrefName, {0, syncer::PRIORITY_PREFERENCES}},
+        {kPref1, {0, syncer::PREFERENCES, false}},
+        {kPref2, {0, syncer::PREFERENCES, false}},
+        {kPref3, {0, syncer::PREFERENCES, false}},
+        {kPrefName, {0, syncer::PREFERENCES, false}},
+        {kPriorityPrefName, {0, syncer::PRIORITY_PREFERENCES, false}},
+        {kHistorySensitivePrefName, {0, syncer::PREFERENCES, true}},
 };
 
 base::Value MakeDict(
@@ -437,6 +440,67 @@ TEST_F(DualLayerUserPrefStoreTest, RemovesFromBothStores) {
   EXPECT_TRUE(ValueInStoreIsAbsent(*store()->GetAccountPrefStore(), kPref3));
 }
 
+TEST_F(DualLayerUserPrefStoreTest,
+       RemovesValuesByPrefixSilentlyFromBothStores) {
+  // Three prefs: One is set only in the local store, one only in the account
+  // store, and one is set in both stores.
+  store()->GetLocalPrefStore()->SetValueSilently(
+      kPref1, base::Value("local_value1"), 0);
+  store()->GetAccountPrefStore()->SetValueSilently(
+      kPref2, base::Value("account_value2"), 0);
+  store()->GetLocalPrefStore()->SetValueSilently(
+      kPref3, base::Value("local_value3"), 0);
+  store()->GetAccountPrefStore()->SetValueSilently(
+      kPref3, base::Value("account_value3"), 0);
+
+  // Remove `kPref1` from the local store.
+  store()->RemoveValuesByPrefixSilently(kPref1);
+  EXPECT_TRUE(ValueInStoreIsAbsent(*store(), kPref1));
+  // `kPref2` and `kPref3` are still there.
+  EXPECT_TRUE(ValueInStoreIs(*store(), kPref2, "account_value2"));
+  EXPECT_TRUE(ValueInStoreIs(*store(), kPref3, "account_value3"));
+
+  // Remove `kPref2` from the account store.
+  store()->RemoveValuesByPrefixSilently(kPref2);
+  EXPECT_TRUE(ValueInStoreIsAbsent(*store(), kPref2));
+  // `kPref3` is still there.
+  EXPECT_TRUE(ValueInStoreIs(*store(), kPref3, "account_value3"));
+
+  // Remove `kPref3` using a prefix `kPrefName`.
+  ASSERT_TRUE(base::StartsWith(kPref3, kPrefName));
+  store()->RemoveValuesByPrefixSilently(kPrefName);
+  EXPECT_TRUE(ValueInStoreIsAbsent(*store(), kPref3));
+}
+
+TEST_F(DualLayerUserPrefStoreTest,
+       RemoveValuesByPrefixSilentlyRemovesMultiplePrefs) {
+  // Three prefs: Each set in both the stores.
+  store()->GetLocalPrefStore()->SetValueSilently(
+      kPref1, base::Value("local_value1"), 0);
+  store()->GetAccountPrefStore()->SetValueSilently(
+      kPref1, base::Value("account_value1"), 0);
+  // `kPrefName` is a prefix of `kPref1` and is used to remove `kPref1`.
+  store()->GetLocalPrefStore()->SetValueSilently(
+      kPrefName, base::Value("local_value2"), 0);
+  store()->GetAccountPrefStore()->SetValueSilently(
+      kPrefName, base::Value("account_value2"), 0);
+  // `kPriorityPrefName` does not have `kPref1` as prefix.
+  store()->GetLocalPrefStore()->SetValueSilently(
+      kPriorityPrefName, base::Value("local_value3"), 0);
+  store()->GetAccountPrefStore()->SetValueSilently(
+      kPriorityPrefName, base::Value("account_value3"), 0);
+
+  // Remove `kPref1` using prefix `kPrefName`.
+  ASSERT_TRUE(base::StartsWith(kPref1, kPrefName));
+  ASSERT_FALSE(base::StartsWith(kPriorityPrefName, kPrefName));
+
+  store()->RemoveValuesByPrefixSilently(kPrefName);
+  EXPECT_TRUE(ValueInStoreIsAbsent(*store(), kPref1));
+  EXPECT_TRUE(ValueInStoreIsAbsent(*store(), kPrefName));
+  // `kPriorityPrefName` is still there.
+  EXPECT_TRUE(ValueInStoreIs(*store(), kPriorityPrefName, "account_value3"));
+}
+
 TEST_F(DualLayerUserPrefStoreTest, DoesNotReturnNonexistentPref) {
   store()->SetValueSilently(kPrefName, MakeDict({{"key", "value"}}), 0);
 
@@ -819,6 +883,54 @@ TEST_F(DualLayerUserPrefStoreTest, ShouldCommitPendingWritesForBothStores) {
   EXPECT_TRUE(account_store()->committed());
 }
 
+// Tests that notifications are not sent out if the same value already exists in
+// the local store, i.e. the effective value is unchanged.
+TEST_F(
+    DualLayerUserPrefStoreTest,
+    ShouldNotNotifyIfEffectiveValueIsUnchangedUponSetValueInAccountStoreOnly) {
+  store()->GetLocalPrefStore()->SetValueSilently(kPrefName,
+                                                 base::Value("value"), 0);
+
+  testing::StrictMock<MockPrefStoreObserver> observer;
+  store()->AddObserver(&observer);
+
+  testing::StrictMock<MockPrefStoreObserver> account_store_observer;
+  store()->GetAccountPrefStore()->AddObserver(&account_store_observer);
+
+  // Effective value in the dual pref store is unchanged, so there shouldn't be
+  // any calls to the observer.
+  EXPECT_CALL(observer, OnPrefValueChanged).Times(0);
+  // Since a new pref is added to the account store, its observers are still
+  // notified.
+  EXPECT_CALL(account_store_observer, OnPrefValueChanged);
+
+  store()->SetValueInAccountStoreOnly(kPrefName, base::Value("value"), 0);
+
+  store()->GetAccountPrefStore()->RemoveObserver(&account_store_observer);
+  store()->RemoveObserver(&observer);
+}
+
+TEST_F(DualLayerUserPrefStoreTest,
+       ShouldNotifyIfEffectiveValueChangesUponSetValueInAccountStoreOnly) {
+  store()->GetLocalPrefStore()->SetValueSilently(kPrefName,
+                                                 base::Value("value"), 0);
+
+  testing::StrictMock<MockPrefStoreObserver> observer;
+  store()->AddObserver(&observer);
+
+  testing::StrictMock<MockPrefStoreObserver> account_store_observer;
+  store()->GetAccountPrefStore()->AddObserver(&account_store_observer);
+
+  // Effective value is changing, so observers should be notified.
+  EXPECT_CALL(observer, OnPrefValueChanged);
+  EXPECT_CALL(account_store_observer, OnPrefValueChanged);
+
+  store()->SetValueInAccountStoreOnly(kPrefName, base::Value("new value"), 0);
+
+  store()->GetAccountPrefStore()->RemoveObserver(&account_store_observer);
+  store()->RemoveObserver(&observer);
+}
+
 class DualLayerUserPrefStoreTestForTypes
     : public DualLayerUserPrefStoreTestBase {
  public:
@@ -899,6 +1011,61 @@ TEST_F(DualLayerUserPrefStoreTestForTypes,
 }
 
 TEST_F(DualLayerUserPrefStoreTestForTypes,
+       ShouldNotifyObserversOnDisableIfEffectiveValueChanges) {
+  store()->EnableType(syncer::PREFERENCES);
+
+  testing::StrictMock<MockPrefStoreObserver> observer;
+  store()->AddObserver(&observer);
+
+  account_store()->SetValueSilently(kPrefName, base::Value("account_value"), 0);
+  local_store()->SetValueSilently(kPrefName, base::Value("local_value"), 0);
+
+  EXPECT_CALL(observer, OnPrefValueChanged(kPrefName));
+
+  ASSERT_TRUE(ValueInStoreIs(*store(), kPrefName, "account_value"));
+  store()->DisableTypeAndClearAccountStore(syncer::PREFERENCES);
+  ASSERT_TRUE(ValueInStoreIs(*store(), kPrefName, "local_value"));
+
+  store()->RemoveObserver(&observer);
+}
+
+TEST_F(DualLayerUserPrefStoreTestForTypes,
+       ShouldNotifyObserversOnDisableIfLocalValueDoesNotExist) {
+  store()->EnableType(syncer::PREFERENCES);
+
+  testing::StrictMock<MockPrefStoreObserver> observer;
+  store()->AddObserver(&observer);
+
+  account_store()->SetValueSilently(kPrefName, base::Value("account_value"), 0);
+
+  EXPECT_CALL(observer, OnPrefValueChanged(kPrefName));
+
+  ASSERT_TRUE(ValueInStoreIs(*store(), kPrefName, "account_value"));
+  store()->DisableTypeAndClearAccountStore(syncer::PREFERENCES);
+  ASSERT_TRUE(ValueInStoreIsAbsent(*store(), kPrefName));
+
+  store()->RemoveObserver(&observer);
+}
+
+TEST_F(DualLayerUserPrefStoreTestForTypes,
+       ShouldNotNotifyObserversOnDisableIfEffectiveValueDoesNotChange) {
+  store()->EnableType(syncer::PREFERENCES);
+
+  testing::StrictMock<MockPrefStoreObserver> observer;
+  store()->AddObserver(&observer);
+
+  account_store()->SetValueSilently(kPrefName, base::Value("pref-value"), 0);
+  local_store()->SetValueSilently(kPrefName, base::Value("pref-value"), 0);
+
+  ASSERT_TRUE(ValueInStoreIs(*store(), kPrefName, "pref-value"));
+  store()->DisableTypeAndClearAccountStore(syncer::PREFERENCES);
+  ASSERT_TRUE(ValueInStoreIs(*store(), kPrefName, "pref-value"));
+
+  // `observer` was not notified of any pref change.
+  store()->RemoveObserver(&observer);
+}
+
+TEST_F(DualLayerUserPrefStoreTestForTypes,
        ShouldReturnAccountValueForNotActiveTypes) {
   account_store()->SetValueSilently(kPrefName, base::Value("pref-value"), 0);
   ASSERT_TRUE(ValueInStoreIs(*account_store(), kPrefName, "pref-value"));
@@ -921,57 +1088,88 @@ TEST_F(DualLayerUserPrefStoreTestForTypes,
 }
 
 TEST_F(DualLayerUserPrefStoreTestForTypes,
-       ShouldRemoveValueFromAccountStoreOnSetValueIfTypeNotActive) {
-  // PREFERENCES type is not active.
-  ASSERT_EQ(0u, store()->GetActiveTypesForTest().count(syncer::PREFERENCES));
+       ShouldClearAllPrefsFromAccountStoreOnDisableAllTypes) {
+  store()->EnableType(syncer::PREFERENCES);
 
-  account_store()->SetValueSilently(kPrefName, base::Value("account value"), 0);
-  ASSERT_TRUE(ValueInStoreIs(*account_store(), kPrefName, "account value"));
+  account_store()->SetValue(kPrefName, base::Value("pref-value"), 0);
+  // Garbage value in account store.
+  account_store()->SetValue(kNonSyncablePrefName,
+                            base::Value("non-syncable-pref-value"), 0);
 
-  store()->SetValue(kPrefName, base::Value("new value"), 0);
-  ASSERT_TRUE(ValueInStoreIs(*store(), kPrefName, "new value"));
-  // `kPrefName` is removed from account store.
+  ASSERT_TRUE(ValueInStoreIs(*store(), kPrefName, "pref-value"));
+  // Non-syncable prefs are not returned by the getters.
+  ASSERT_TRUE(ValueInStoreIsAbsent(*store(), kNonSyncablePrefName));
+  ASSERT_TRUE(ValueInStoreIs(*account_store(), kNonSyncablePrefName,
+                             "non-syncable-pref-value"));
+
+  testing::StrictMock<MockPrefStoreObserver> observer;
+  store()->AddObserver(&observer);
+
+  // Notification for syncable prefs.
+  EXPECT_CALL(observer, OnPrefValueChanged(kPrefName));
+  // No notification for garbage values.
+  EXPECT_CALL(observer, OnPrefValueChanged(kNonSyncablePrefName)).Times(0);
+
+  store()->DisableTypeAndClearAccountStore(syncer::PREFERENCES);
+
+  // All values get removed from the account store when all types are disabled.
   EXPECT_TRUE(ValueInStoreIsAbsent(*account_store(), kPrefName));
+  EXPECT_TRUE(ValueInStoreIsAbsent(*account_store(), kNonSyncablePrefName));
+
+  store()->RemoveObserver(&observer);
 }
 
 TEST_F(DualLayerUserPrefStoreTestForTypes,
-       ShouldRemoveValueFromAccountStoreOnSetValueSilentlyIfTypeNotEnabled) {
+       ShouldSetAccountValueForNotActiveTypesIfAlreadyExists) {
+  account_store()->SetValueSilently(kPrefName, base::Value("account_value"), 0);
+  ASSERT_TRUE(ValueInStoreIs(*account_store(), kPrefName, "account_value"));
+
   // PREFERENCES type is not active.
   ASSERT_EQ(0u, store()->GetActiveTypesForTest().count(syncer::PREFERENCES));
 
-  account_store()->SetValueSilently(kPrefName, base::Value("account value"), 0);
-  ASSERT_TRUE(ValueInStoreIs(*account_store(), kPrefName, "account value"));
-
-  store()->SetValueSilently(kPrefName, base::Value("new value"), 0);
-  ASSERT_TRUE(ValueInStoreIs(*store(), kPrefName, "new value"));
-  // `kPrefName` is removed from account store.
-  EXPECT_TRUE(ValueInStoreIsAbsent(*account_store(), kPrefName));
+  // `kPrefName` is set to the account store even if PREFERENCES type is not
+  // active since it already exists in the account store.
+  {
+    store()->SetValue(kPrefName, base::Value("new_value1"), 0);
+    EXPECT_TRUE(ValueInStoreIs(*account_store(), kPrefName, "new_value1"));
+  }
+  {
+    store()->SetValueSilently(kPrefName, base::Value("new_value2"), 0);
+    EXPECT_TRUE(ValueInStoreIs(*account_store(), kPrefName, "new_value2"));
+  }
+  {
+    base::Value* value = nullptr;
+    ASSERT_TRUE(store()->GetMutableValue(kPrefName, &value));
+    *value = base::Value("new_value3");
+    store()->ReportValueChanged(kPrefName, 0);
+    EXPECT_TRUE(ValueInStoreIs(*account_store(), kPrefName, "new_value3"));
+  }
 }
 
 TEST_F(DualLayerUserPrefStoreTestForTypes,
-       ShouldRemoveValueFromAccountStoreOnReportValueChangedIfTypeNotEnabled) {
+       ShouldNotSetAccountValueForNotActiveTypesIfNotAlreadyExists) {
+  ASSERT_TRUE(ValueInStoreIsAbsent(*account_store(), kPrefName));
+
   // PREFERENCES type is not active.
   ASSERT_EQ(0u, store()->GetActiveTypesForTest().count(syncer::PREFERENCES));
 
-  account_store()->SetValueSilently(kPrefName, base::Value("account value"), 0);
-  ASSERT_TRUE(ValueInStoreIs(*account_store(), kPrefName, "account value"));
-
-  store()->ReportValueChanged(kPrefName, 0);
-  // `kPrefName` is removed from account store.
-  EXPECT_TRUE(ValueInStoreIsAbsent(*account_store(), kPrefName));
-}
-
-TEST_F(DualLayerUserPrefStoreTestForTypes,
-       ShouldRemoveValueFromAccountStoreIfTypeNotEnabled) {
-  // PREFERENCES type is not active.
-  ASSERT_EQ(0u, store()->GetActiveTypesForTest().count(syncer::PREFERENCES));
-
-  account_store()->SetValueSilently(kPrefName, base::Value("account value"), 0);
-  ASSERT_TRUE(ValueInStoreIs(*account_store(), kPrefName, "account value"));
-
-  store()->RemoveValue(kPrefName, 0);
-  // `kPrefName` is removed from account store.
-  EXPECT_TRUE(ValueInStoreIsAbsent(*account_store(), kPrefName));
+  // `kPrefName` is not set to the account store since PREFERENCES type is not
+  // active and the pref does not already exist in the account store.
+  {
+    store()->SetValue(kPrefName, base::Value("new_value1"), 0);
+    EXPECT_TRUE(ValueInStoreIsAbsent(*account_store(), kPrefName));
+  }
+  {
+    store()->SetValueSilently(kPrefName, base::Value("new_value2"), 0);
+    EXPECT_TRUE(ValueInStoreIsAbsent(*account_store(), kPrefName));
+  }
+  {
+    base::Value* value = nullptr;
+    ASSERT_TRUE(store()->GetMutableValue(kPrefName, &value));
+    *value = base::Value("new_value3");
+    store()->ReportValueChanged(kPrefName, 0);
+    EXPECT_TRUE(ValueInStoreIsAbsent(*account_store(), kPrefName));
+  }
 }
 
 class MergeTestPrefModelAssociatorClient : public PrefModelAssociatorClient {
@@ -2055,6 +2253,379 @@ TEST_F(DualLayerUserPrefStoreMergeTest,
   EXPECT_TRUE(ValueInStoreIs(*store()->GetLocalPrefStore(), kPref1, new_value));
   EXPECT_TRUE(
       ValueInStoreIs(*store()->GetAccountPrefStore(), kPref1, new_value));
+}
+
+TEST_F(
+    DualLayerUserPrefStoreMergeTest,
+    ShouldClearAccountPrefsOnDisableAndNotifyObserversIfEffectiveValueChanges) {
+  base::Value account_dict(
+      base::Value::Dict().Set("common_key", "account_value"));
+  store()->GetAccountPrefStore()->SetValueSilently(kPref1, account_dict.Clone(),
+                                                   0);
+  base::Value local_dict(base::Value::Dict().Set("common_key", "local_value"));
+  store()->GetLocalPrefStore()->SetValueSilently(kPref1, local_dict.Clone(), 0);
+
+  pref_model_associator_client_.MarkAsMergeableDictPref(kPref1);
+
+  base::Value merged_dict(
+      base::Value::Dict().Set("common_key", "account_value"));
+
+  EXPECT_CALL(observer_, OnPrefValueChanged(kPref1));
+
+  EXPECT_TRUE(ValueInStoreIs(*store(), kPref1, merged_dict));
+  store()->DisableTypeAndClearAccountStore(syncer::PREFERENCES);
+
+  // Removed from account store.
+  EXPECT_TRUE(ValueInStoreIsAbsent(*store()->GetAccountPrefStore(), kPref1));
+  // Local store is not affected.
+  EXPECT_TRUE(
+      ValueInStoreIs(*store()->GetLocalPrefStore(), kPref1, local_dict));
+  // Effective value has changed.
+  EXPECT_TRUE(ValueInStoreIs(*store(), kPref1, local_dict));
+}
+
+TEST_F(
+    DualLayerUserPrefStoreMergeTest,
+    ShouldClearAccountPrefsOnDisableButNotNotifyObserversIfEffectiveValueDoesNotChange) {
+  base::Value dict(base::Value::Dict().Set("common_key", "common_value"));
+
+  store()->GetAccountPrefStore()->SetValueSilently(kPref1, dict.Clone(), 0);
+  store()->GetLocalPrefStore()->SetValueSilently(kPref1, dict.Clone(), 0);
+
+  pref_model_associator_client_.MarkAsMergeableDictPref(kPref1);
+
+  EXPECT_CALL(observer_, OnPrefValueChanged(kPref1)).Times(0);
+
+  EXPECT_TRUE(ValueInStoreIs(*store(), kPref1, dict));
+  store()->DisableTypeAndClearAccountStore(syncer::PREFERENCES);
+  // Removed from account store.
+  EXPECT_TRUE(ValueInStoreIsAbsent(*store()->GetAccountPrefStore(), kPref1));
+  // Local store is not affected.
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetLocalPrefStore(), kPref1, dict));
+  // Effective value has changed as the local value is same as the previous
+  // account value.
+  EXPECT_TRUE(ValueInStoreIs(*store(), kPref1, dict));
+
+  // `observer_` was not notified of any pref change.
+}
+
+using DualLayerUserPrefStoreHistoryOptInTest = DualLayerUserPrefStoreTest;
+
+TEST_F(DualLayerUserPrefStoreHistoryOptInTest,
+       ShouldNotGetHistorySensitivePrefFromAccountStoreIfHistorySyncOff) {
+  store()->SetIsHistorySyncEnabledForTest(false);
+
+  local_store()->SetValueSilently(kHistorySensitivePrefName,
+                                  base::Value("local value"), 0);
+  account_store()->SetValueSilently(kHistorySensitivePrefName,
+                                    base::Value("account value"), 0);
+
+  // Check GetValue().
+  EXPECT_TRUE(
+      ValueInStoreIs(*store(), kHistorySensitivePrefName, "local value"));
+
+  // Check GetMutableValue().
+  base::Value* value = nullptr;
+  ASSERT_TRUE(store()->GetMutableValue(kHistorySensitivePrefName, &value));
+  EXPECT_EQ(*value, base::Value("local value"));
+
+  // Verify that a change in history sync opt-in is reflected.
+  store()->SetIsHistorySyncEnabledForTest(true);
+
+  EXPECT_TRUE(
+      ValueInStoreIs(*store(), kHistorySensitivePrefName, "account value"));
+}
+
+TEST_F(DualLayerUserPrefStoreHistoryOptInTest,
+       ShouldGetHistorySensitivePrefFromAccountStoreIfHistorySyncOn) {
+  store()->SetIsHistorySyncEnabledForTest(true);
+
+  local_store()->SetValueSilently(kHistorySensitivePrefName,
+                                  base::Value("local value"), 0);
+  account_store()->SetValueSilently(kHistorySensitivePrefName,
+                                    base::Value("account value"), 0);
+
+  // Check GetValue().
+  EXPECT_TRUE(
+      ValueInStoreIs(*store(), kHistorySensitivePrefName, "account value"));
+
+  // Check GetMutableValue().
+  base::Value* value = nullptr;
+  ASSERT_TRUE(store()->GetMutableValue(kHistorySensitivePrefName, &value));
+  EXPECT_EQ(*value, base::Value("account value"));
+}
+
+TEST_F(DualLayerUserPrefStoreHistoryOptInTest,
+       ShouldNotSetHistorySensitivePrefInAccountStoreIfHistorySyncIsOff) {
+  store()->SetIsHistorySyncEnabledForTest(false);
+
+  testing::StrictMock<MockPrefStoreObserver> account_store_observer;
+  account_store()->AddObserver(&account_store_observer);
+
+  // No call should be made for `kHistorySensitivePrefName` since history sync
+  // is off.
+  EXPECT_CALL(account_store_observer,
+              OnPrefValueChanged(kHistorySensitivePrefName))
+      .Times(0);
+
+  // Check SetValue().
+  store()->SetValue(kHistorySensitivePrefName, base::Value("sensitive value1"),
+                    0);
+
+  EXPECT_TRUE(
+      ValueInStoreIsAbsent(*account_store(), kHistorySensitivePrefName));
+  ASSERT_TRUE(
+      ValueInStoreIs(*store(), kHistorySensitivePrefName, "sensitive value1"));
+
+  // Check SetValueSilently().
+  store()->SetValueSilently(kHistorySensitivePrefName,
+                            base::Value("sensitive value2"), 0);
+
+  EXPECT_TRUE(
+      ValueInStoreIsAbsent(*account_store(), kHistorySensitivePrefName));
+  ASSERT_TRUE(
+      ValueInStoreIs(*store(), kHistorySensitivePrefName, "sensitive value2"));
+
+  // Check ReportValueChanged(). Observer is not notified.
+  base::Value* value = nullptr;
+  ASSERT_TRUE(store()->GetMutableValue(kHistorySensitivePrefName, &value));
+  *value = base::Value("sensitive value3");
+  store()->ReportValueChanged(kHistorySensitivePrefName, 0);
+
+  EXPECT_TRUE(
+      ValueInStoreIsAbsent(*account_store(), kHistorySensitivePrefName));
+  ASSERT_TRUE(
+      ValueInStoreIs(*store(), kHistorySensitivePrefName, "sensitive value3"));
+
+  account_store()->RemoveObserver(&account_store_observer);
+}
+
+TEST_F(DualLayerUserPrefStoreHistoryOptInTest,
+       ShouldSetHistorySensitivePrefInAccountStoreIfHistorySyncOn) {
+  store()->SetIsHistorySyncEnabledForTest(true);
+
+  testing::StrictMock<MockPrefStoreObserver> account_store_observer;
+  account_store()->AddObserver(&account_store_observer);
+
+  // Check SetValueSilently().
+  store()->SetValueSilently(kHistorySensitivePrefName,
+                            base::Value("sensitive value1"), 0);
+
+  EXPECT_TRUE(ValueInStoreIs(*account_store(), kHistorySensitivePrefName,
+                             "sensitive value1"));
+
+  // Check SetValue().
+  EXPECT_CALL(account_store_observer,
+              OnPrefValueChanged(kHistorySensitivePrefName));
+  store()->SetValue(kHistorySensitivePrefName, base::Value("sensitive value2"),
+                    0);
+
+  EXPECT_TRUE(ValueInStoreIs(*account_store(), kHistorySensitivePrefName,
+                             "sensitive value2"));
+
+  // Check ReportValueChanged().
+  base::Value* value = nullptr;
+  ASSERT_TRUE(store()->GetMutableValue(kHistorySensitivePrefName, &value));
+  *value = base::Value("sensitive value3");
+
+  EXPECT_CALL(account_store_observer,
+              OnPrefValueChanged(kHistorySensitivePrefName));
+  store()->ReportValueChanged(kHistorySensitivePrefName, 0);
+
+  EXPECT_TRUE(ValueInStoreIs(*account_store(), kHistorySensitivePrefName,
+                             "sensitive value3"));
+
+  account_store()->RemoveObserver(&account_store_observer);
+}
+
+TEST_F(DualLayerUserPrefStoreHistoryOptInTest,
+       ShouldNotRemoveFromAccountStoreUponSetIfHistorySyncOff) {
+  store()->SetIsHistorySyncEnabledForTest(false);
+
+  base::Value account_value("account value");
+  account_store()->SetValueSilently(kHistorySensitivePrefName,
+                                    account_value.Clone(), 0);
+
+  testing::StrictMock<MockPrefStoreObserver> account_store_observer;
+  account_store()->AddObserver(&account_store_observer);
+
+  // No call should be made for `kHistorySensitivePrefName` since history sync
+  // is off.
+  EXPECT_CALL(account_store_observer,
+              OnPrefValueChanged(kHistorySensitivePrefName))
+      .Times(0);
+
+  // Check SetValue().
+  store()->SetValue(kHistorySensitivePrefName, base::Value("sensitive value1"),
+                    0);
+
+  EXPECT_TRUE(ValueInStoreIs(*account_store(), kHistorySensitivePrefName,
+                             account_value));
+  ASSERT_TRUE(
+      ValueInStoreIs(*store(), kHistorySensitivePrefName, "sensitive value1"));
+
+  // Check SetValueSilently().
+  store()->SetValueSilently(kHistorySensitivePrefName,
+                            base::Value("sensitive value2"), 0);
+
+  EXPECT_TRUE(ValueInStoreIs(*account_store(), kHistorySensitivePrefName,
+                             account_value));
+  ASSERT_TRUE(
+      ValueInStoreIs(*store(), kHistorySensitivePrefName, "sensitive value2"));
+
+  // Check ReportValueChanged(). Observer is not notified.
+  base::Value* value = nullptr;
+  ASSERT_TRUE(store()->GetMutableValue(kHistorySensitivePrefName, &value));
+  *value = base::Value("sensitive value3");
+  store()->ReportValueChanged(kHistorySensitivePrefName, 0);
+
+  EXPECT_TRUE(ValueInStoreIs(*account_store(), kHistorySensitivePrefName,
+                             account_value));
+  ASSERT_TRUE(
+      ValueInStoreIs(*store(), kHistorySensitivePrefName, "sensitive value3"));
+
+  account_store()->RemoveObserver(&account_store_observer);
+}
+
+TEST_F(DualLayerUserPrefStoreHistoryOptInTest,
+       ShouldNotRemoveFromAccountStoreUponRemoveIfHistorySyncOff) {
+  store()->SetIsHistorySyncEnabledForTest(false);
+
+  base::Value local_value("local value");
+  local_store()->SetValueSilently(kHistorySensitivePrefName,
+                                  local_value.Clone(), 0);
+  base::Value account_value("account value");
+  account_store()->SetValueSilently(kHistorySensitivePrefName,
+                                    account_value.Clone(), 0);
+
+  testing::StrictMock<MockPrefStoreObserver> account_store_observer;
+  account_store()->AddObserver(&account_store_observer);
+
+  // No call should be made for `kHistorySensitivePrefName` since history sync
+  // is off.
+  EXPECT_CALL(account_store_observer,
+              OnPrefValueChanged(kHistorySensitivePrefName))
+      .Times(0);
+
+  // Check RemoveValue().
+  store()->RemoveValue(kHistorySensitivePrefName, 0);
+
+  // Not removed from the account store.
+  EXPECT_TRUE(ValueInStoreIs(*account_store(), kHistorySensitivePrefName,
+                             account_value));
+  // But removed from the local store.
+  EXPECT_TRUE(ValueInStoreIsAbsent(*local_store(), kHistorySensitivePrefName));
+
+  // Repopulate the local store.
+  local_store()->SetValueSilently(kHistorySensitivePrefName,
+                                  local_value.Clone(), 0);
+
+  // Check RemoveValuesByPrefixSilently().
+  store()->RemoveValuesByPrefixSilently(kHistorySensitivePrefName);
+
+  // Not removed from the account store.
+  EXPECT_TRUE(ValueInStoreIs(*account_store(), kHistorySensitivePrefName,
+                             account_value));
+  // But removed from the local store.
+  EXPECT_TRUE(ValueInStoreIsAbsent(*local_store(), kHistorySensitivePrefName));
+
+  account_store()->RemoveObserver(&account_store_observer);
+}
+
+TEST_F(DualLayerUserPrefStoreHistoryOptInTest,
+       ShouldCheckHistoryOptInUponSubscribe) {
+  local_store()->SetValueSilently(kHistorySensitivePrefName,
+                                  base::Value("local value"), 0);
+  account_store()->SetValueSilently(kHistorySensitivePrefName,
+                                    base::Value("account value"), 0);
+
+  syncer::TestSyncService sync_service;
+
+  ASSERT_FALSE(store()->IsHistorySyncEnabledForTest());
+
+  // OnSyncServiceInitialized() should check the history sync opt-in state.
+  store()->OnSyncServiceInitialized(&sync_service);
+  EXPECT_TRUE(store()->IsHistorySyncEnabledForTest());
+}
+
+TEST_F(DualLayerUserPrefStoreHistoryOptInTest,
+       ShouldListenToHistorySyncDisable) {
+  local_store()->SetValueSilently(kHistorySensitivePrefName,
+                                  base::Value("local value"), 0);
+  account_store()->SetValueSilently(kHistorySensitivePrefName,
+                                    base::Value("account value"), 0);
+
+  syncer::TestSyncService sync_service;
+  store()->OnSyncServiceInitialized(&sync_service);
+  ASSERT_TRUE(store()->IsHistorySyncEnabledForTest());
+
+  testing::StrictMock<MockPrefStoreObserver> observer;
+  store()->AddObserver(&observer);
+
+  // Turning history sync off should raise notification since effective value of
+  // `kHistorySensitivePrefName` pref changed.
+  EXPECT_CALL(observer, OnPrefValueChanged(kHistorySensitivePrefName));
+  sync_service.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, syncer::UserSelectableTypeSet());
+  sync_service.FireStateChanged();
+  EXPECT_FALSE(store()->IsHistorySyncEnabledForTest());
+
+  store()->RemoveObserver(&observer);
+}
+
+TEST_F(DualLayerUserPrefStoreHistoryOptInTest,
+       ShouldListenToHistorySyncEnable) {
+  local_store()->SetValueSilently(kHistorySensitivePrefName,
+                                  base::Value("local value"), 0);
+  account_store()->SetValueSilently(kHistorySensitivePrefName,
+                                    base::Value("account value"), 0);
+
+  syncer::TestSyncService sync_service;
+  sync_service.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, syncer::UserSelectableTypeSet());
+  ASSERT_FALSE(sync_service.GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kHistory));
+
+  store()->OnSyncServiceInitialized(&sync_service);
+  ASSERT_FALSE(store()->IsHistorySyncEnabledForTest());
+
+  testing::StrictMock<MockPrefStoreObserver> observer;
+  store()->AddObserver(&observer);
+
+  // Turning history sync on should raise notification since effective value of
+  // `kHistorySensitivePrefName` pref changed.
+  EXPECT_CALL(observer, OnPrefValueChanged(kHistorySensitivePrefName));
+  sync_service.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      syncer::UserSelectableTypeSet({syncer::UserSelectableType::kHistory}));
+  sync_service.FireStateChanged();
+  EXPECT_TRUE(store()->IsHistorySyncEnabledForTest());
+
+  store()->RemoveObserver(&observer);
+}
+
+TEST_F(DualLayerUserPrefStoreHistoryOptInTest,
+       ShouldNotReactIfHistoryOptInIsUnchanged) {
+  local_store()->SetValueSilently(kHistorySensitivePrefName,
+                                  base::Value("local value"), 0);
+  account_store()->SetValueSilently(kHistorySensitivePrefName,
+                                    base::Value("account value"), 0);
+
+  syncer::TestSyncService sync_service;
+
+  ASSERT_FALSE(store()->IsHistorySyncEnabledForTest());
+
+  store()->OnSyncServiceInitialized(&sync_service);
+  ASSERT_TRUE(store()->IsHistorySyncEnabledForTest());
+
+  testing::StrictMock<MockPrefStoreObserver> observer;
+  store()->AddObserver(&observer);
+
+  // Should not lead to notification.
+  sync_service.FireStateChanged();
+  ASSERT_TRUE(store()->IsHistorySyncEnabledForTest());
+
+  store()->RemoveObserver(&observer);
 }
 
 }  // namespace

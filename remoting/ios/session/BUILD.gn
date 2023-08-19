@@ -31,6 +31,4 @@ source_set("session") {
   ]
 
   frameworks = [ "CoreGraphics.framework" ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

@@ -66,11 +66,10 @@ PushMessagingServiceFactory::~PushMessagingServiceFactory() = default;
 
 void PushMessagingServiceFactory::RestoreFactoryForTests(
     content::BrowserContext* context) {
-  SetTestingFactory(context,
-                    base::BindRepeating([](content::BrowserContext* context) {
-                      return base::WrapUnique(
-                          GetInstance()->BuildServiceInstanceFor(context));
-                    }));
+  SetTestingFactory(
+      context, base::BindRepeating([](content::BrowserContext* context) {
+        return GetInstance()->BuildServiceInstanceForBrowserContext(context);
+      }));
 }
 
 KeyedService* PushMessagingServiceFactory::BuildServiceInstanceFor(

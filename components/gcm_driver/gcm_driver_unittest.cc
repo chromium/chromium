@@ -153,8 +153,7 @@ void GCMDriverBaseTest::CreateDriver() {
       std::make_unique<FakeGCMClientFactory>(
           base::SingleThreadTaskRunner::GetCurrentDefault(),
           io_thread_.task_runner()),
-      chrome_build_info, &prefs_, temp_dir_.GetPath(),
-      /*remove_account_mappings_with_email_key=*/true, base::DoNothing(),
+      chrome_build_info, &prefs_, temp_dir_.GetPath(), base::DoNothing(),
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory_),
       network::TestNetworkConnectionTracker::GetInstance(),

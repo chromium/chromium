@@ -9,10 +9,6 @@
 #import "ios/chrome/browser/credential_provider/archivable_credential+password_form.h"
 #import "ios/chrome/common/credential_provider/user_defaults_credential_store.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using password_manager::PasswordStoreInterface;
 
 NSErrorDomain const kCredentialProviderMigratorErrorDomain =

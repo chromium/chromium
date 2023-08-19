@@ -12,6 +12,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
+#include "base/containers/extend.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_base.h"
 #include "base/run_loop.h"
@@ -41,12 +42,14 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/test_browser_window_aura.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
 #include "components/app_constants/constants.h"
 #include "components/metrics/structured/recorder.h"
 #include "components/metrics/structured/structured_events.h"
+#include "components/metrics/structured/structured_metrics_client.h"
 #include "components/metrics/structured/structured_metrics_features.h"
 #include "components/metrics/structured/test/test_structured_metrics_provider.h"
 #include "components/prefs/pref_service.h"
@@ -81,6 +84,8 @@ namespace {
 
 constexpr char kChromeAppId[] = "plfjlfohfjjpmmifkbcmalnmcebkklkh";
 constexpr char kExtensionId[] = "mhjfbmdgcfjbbpaeojofohoefgiehjai";
+constexpr char kAndroidAppId[] = "a";
+constexpr char kAndroidAppPublisherId[] = "com.google.A";
 
 constexpr apps::InstanceState kActiveInstanceState =
     static_cast<apps::InstanceState>(
@@ -215,16 +220,12 @@ class AppPlatformMetricsServiceTest
  public:
   void SetUp() override {
     AppPlatformMetricsServiceTestBase::SetUp();
-    if (IsLacrosPrimary()) {
+    if (IsLacrosEnabled()) {
       feature_list_.InitWithFeatures(
-          /*enabled_features=*/{ash::features::kLacrosSupport,
-                                ash::features::kLacrosPrimary},
-          {});
+          /*enabled_features=*/ash::standalone_browser::GetFeatureRefs(), {});
     } else {
       feature_list_.InitWithFeatures(
-          {},
-          /*disabled_features=*/{ash::features::kLacrosSupport,
-                                 ash::features::kLacrosPrimary});
+          {}, /*disabled_features=*/ash::standalone_browser::GetFeatureRefs());
     }
 
     InstallApps();
@@ -233,16 +234,19 @@ class AppPlatformMetricsServiceTest
     // state (where they have not yet been registered with the WebAppProvider
     // system).
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
+
+    ASSERT_EQ(IsLacrosEnabled(), crosapi::browser_util::IsLacrosEnabled());
   }
 
   void TearDown() override {
     AppPlatformMetricsServiceTestBase::TearDown();
     browser_window1_.reset();
     browser_window2_.reset();
+    metrics::structured::StructuredMetricsClient::Get()->UnsetDelegate();
   }
 
   AppTypeName GetWebAppTypeName() {
-    return IsLacrosPrimary() ? AppTypeName::kStandaloneBrowserWebApp
+    return IsLacrosEnabled() ? AppTypeName::kStandaloneBrowserWebApp
                              : AppTypeName::kWeb;
   }
 
@@ -250,7 +254,7 @@ class AppPlatformMetricsServiceTest
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
     apps::AppRegistryCache& cache = proxy->AppRegistryCache();
 
-    AddApp(cache, /*app_id=*/"a", AppType::kArc, "com.google.A",
+    AddApp(cache, kAndroidAppId, AppType::kArc, kAndroidAppPublisherId,
            Readiness::kReady, InstallReason::kUser, InstallSource::kPlayStore,
            true /* should_notify_initialized */);
 
@@ -291,15 +295,14 @@ class AppPlatformMetricsServiceTest
            true /* should_notify_initialized */);
 
     AddApp(cache,
-           /*app_id=*/MuxId(profile(), kChromeAppId),
-           AppType::kStandaloneBrowserChromeApp, "Vine", Readiness::kReady,
-           InstallReason::kUser, InstallSource::kChromeWebStore,
-           true /* should_notify_initialized */, true /*is_platform_app*/);
+           /*app_id=*/kChromeAppId, AppType::kStandaloneBrowserChromeApp,
+           "Vine", Readiness::kReady, InstallReason::kUser,
+           InstallSource::kChromeWebStore, true /* should_notify_initialized */,
+           true /*is_platform_app*/);
 
     AddApp(cache,
-           /*app_id=*/MuxId(profile(), kExtensionId),
-           AppType::kStandaloneBrowserExtension, "PDF Viewer",
-           Readiness::kReady, InstallReason::kUser,
+           /*app_id=*/kExtensionId, AppType::kStandaloneBrowserExtension,
+           "PDF Viewer", Readiness::kReady, InstallReason::kUser,
            InstallSource::kChromeWebStore,
            true /* should_notify_initialized */);
 
@@ -629,7 +632,7 @@ class AppPlatformMetricsServiceTest
       test_ukm_recorder()->ExpectEntryMetric(entry, "AppType",
                                              (int)app_type_name);
     }
-    ASSERT_EQ(usage_time, duration);
+    ASSERT_EQ(usage_time, duration) << ukm_name;
   }
 
   void VerifyAppUsageTimeUkm(const std::string& app_id,
@@ -751,7 +754,7 @@ class AppPlatformMetricsServiceTest
     ASSERT_EQ(1, count);
   }
 
-  bool IsLacrosPrimary() const { return GetParam(); }
+  bool IsLacrosEnabled() const { return GetParam(); }
 
  protected:
   base::test::ScopedFeatureList feature_list_;
@@ -1174,15 +1177,14 @@ TEST_P(AppPlatformMetricsServiceTest, UsageTime) {
 }
 
 TEST_P(AppPlatformMetricsServiceTest, UsageTimeForLacros) {
-  if (!IsLacrosPrimary()) {
+  if (!IsLacrosEnabled()) {
     return;
   }
 
   // Install Chrome apps (hosted apps) during the running time.
   std::string kChromeAppId1 = "bb";
-  InstallOneApp(MuxId(profile(), kChromeAppId1),
-                AppType::kStandaloneBrowserChromeApp, "BB", Readiness::kReady,
-                InstallSource::kChromeWebStore,
+  InstallOneApp(kChromeAppId1, AppType::kStandaloneBrowserChromeApp, "BB",
+                Readiness::kReady, InstallSource::kChromeWebStore,
                 /*is_platform_app=*/false, WindowMode::kBrowser);
 
   const base::UnguessableToken instance_id0 = base::UnguessableToken::Create();
@@ -1209,7 +1211,7 @@ TEST_P(AppPlatformMetricsServiceTest, UsageTimeForLacros) {
   // don't need to set the Lacros window as inactivated, because the activated
   // chrome app tab can set the Lacros window as inactivated. And when the
   // chrome app tabs are inactivated, the Lacros window can be set as activated.
-  ModifyInstance(instance_id1, MuxId(profile(), kChromeAppId1), window1.get(),
+  ModifyInstance(instance_id1, kChromeAppId1, window1.get(),
                  kActiveInstanceState);
   task_environment_.FastForwardBy(base::Minutes(5));
   // Verify recording 5 minutes for AppTypeName::kStandaloneBrowser and
@@ -1226,7 +1228,7 @@ TEST_P(AppPlatformMetricsServiceTest, UsageTimeForLacros) {
 
   // The chrome app tab is inactivated, so the Lacros window is set as activated
   // in code.
-  ModifyInstance(instance_id1, MuxId(profile(), kChromeAppId1), window1.get(),
+  ModifyInstance(instance_id1, kChromeAppId1, window1.get(),
                  kInactiveInstanceState);
   task_environment_.FastForwardBy(base::Minutes(5));
   // Verify recording 5 minutes for AppTypeName::kStandaloneBrowser and
@@ -1248,7 +1250,7 @@ TEST_P(AppPlatformMetricsServiceTest, UsageTimeForLacros) {
   // Create a new window for `kChromeAppId`, and set it as activated.
   auto window2 = std::make_unique<aura::Window>(nullptr);
   window2->Init(ui::LAYER_NOT_DRAWN);
-  ModifyInstance(instance_id2, MuxId(profile(), kChromeAppId), window2.get(),
+  ModifyInstance(instance_id2, kChromeAppId, window2.get(),
                  kActiveInstanceState);
   task_environment_.FastForwardBy(base::Minutes(5));
   // Verify recording 5 minutes for AppTypeName::kStandaloneBrowserChromeApp and
@@ -1291,6 +1293,8 @@ TEST_P(AppPlatformMetricsServiceTest, UsageTimeUkm) {
 
   // Set sync is allowed by setting an empty disable reason set.
   sync_service()->SetDisableReasons(syncer::SyncService::DisableReasonSet());
+  sync_service()->SetTransportState(
+      syncer::SyncService::TransportState::ACTIVE);
 
   static constexpr base::TimeDelta kAppUsageDuration = base::Hours(1);
   task_environment_.FastForwardBy(kAppUsageDuration);
@@ -1656,22 +1660,18 @@ TEST_P(AppPlatformMetricsServiceTest, UsageTimeUkmForStandaloneBrowserApps) {
   window2->Init(ui::LAYER_NOT_DRAWN);
   ModifyInstance(app_constants::kLacrosAppId, window1.get(),
                  kInactiveInstanceState);
-  ModifyInstance(MuxId(profile(), kChromeAppId), window2.get(),
-                 kActiveInstanceState);
+  ModifyInstance(kChromeAppId, window2.get(), kActiveInstanceState);
   task_environment_.FastForwardBy(base::Minutes(4));
 
   // Create a Extension window, and set it as activated for `kExtensionId`.
   auto window3 = std::make_unique<aura::Window>(nullptr);
   window3->Init(ui::LAYER_NOT_DRAWN);
-  ModifyInstance(MuxId(profile(), kChromeAppId), window2.get(),
-                 kInactiveInstanceState);
-  ModifyInstance(MuxId(profile(), kExtensionId), window3.get(),
-                 kActiveInstanceState);
+  ModifyInstance(kChromeAppId, window2.get(), kInactiveInstanceState);
+  ModifyInstance(kExtensionId, window3.get(), kActiveInstanceState);
   task_environment_.FastForwardBy(base::Minutes(3));
 
   // Set the Extension window as inactived.
-  ModifyInstance(MuxId(profile(), kExtensionId), window3.get(),
-                 kInactiveInstanceState);
+  ModifyInstance(kExtensionId, window3.get(), kInactiveInstanceState);
 
   // Set time passed 2 hours to record the usage time AppKM.
   task_environment_.FastForwardBy(base::Minutes(108));
@@ -1684,7 +1684,7 @@ TEST_P(AppPlatformMetricsServiceTest, UsageTimeUkmForStandaloneBrowserApps) {
 }
 
 TEST_P(AppPlatformMetricsServiceTest, UsageTimeUkmForWebAppsOpenInLacrosTabs) {
-  if (!IsLacrosPrimary()) {
+  if (!IsLacrosEnabled()) {
     return;
   }
 
@@ -1744,15 +1744,14 @@ TEST_P(AppPlatformMetricsServiceTest, UsageTimeUkmForWebAppsOpenInLacrosTabs) {
 }
 
 TEST_P(AppPlatformMetricsServiceTest, UsageTimeUkmForStandaloneChromeApps) {
-  if (!IsLacrosPrimary()) {
+  if (!IsLacrosEnabled()) {
     return;
   }
 
   // Install Chrome apps (hosted apps) during the running time.
   std::string kChromeAppId1 = "bb";
-  InstallOneApp(MuxId(profile(), kChromeAppId1),
-                AppType::kStandaloneBrowserChromeApp, "BB", Readiness::kReady,
-                InstallSource::kChromeWebStore,
+  InstallOneApp(kChromeAppId1, AppType::kStandaloneBrowserChromeApp, "BB",
+                Readiness::kReady, InstallSource::kChromeWebStore,
                 /*is_platform_app=*/false, WindowMode::kBrowser);
 
   const base::UnguessableToken instance_id0 = base::UnguessableToken::Create();
@@ -1771,13 +1770,13 @@ TEST_P(AppPlatformMetricsServiceTest, UsageTimeUkmForStandaloneChromeApps) {
   // don't need to set the Lacros window as inactivated, because the activated
   // chrome app tab can set the Lacros window as inactivated. And when the
   // chrome app tabs are inactivated, the Lacros window can be set as activated.
-  ModifyInstance(instance_id1, MuxId(profile(), kChromeAppId1), window1.get(),
+  ModifyInstance(instance_id1, kChromeAppId1, window1.get(),
                  kActiveInstanceState);
   task_environment_.FastForwardBy(base::Minutes(4));
 
   // The chrome app tab is inactivated, so the Lacros window is set as activated
   // in code.
-  ModifyInstance(instance_id1, MuxId(profile(), kChromeAppId1), window1.get(),
+  ModifyInstance(instance_id1, kChromeAppId1, window1.get(),
                  kInactiveInstanceState);
   task_environment_.FastForwardBy(base::Minutes(5));
 
@@ -1788,12 +1787,12 @@ TEST_P(AppPlatformMetricsServiceTest, UsageTimeUkmForStandaloneChromeApps) {
   // Create a new window for `kChromeAppId`, and set it as activated.
   auto window2 = std::make_unique<aura::Window>(nullptr);
   window2->Init(ui::LAYER_NOT_DRAWN);
-  ModifyInstance(instance_id2, MuxId(profile(), kChromeAppId), window2.get(),
+  ModifyInstance(instance_id2, kChromeAppId, window2.get(),
                  kActiveInstanceState);
   task_environment_.FastForwardBy(base::Minutes(20));
 
   // Set the `kChromeAppId` window as inactivated.
-  ModifyInstance(instance_id2, MuxId(profile(), kChromeAppId), window2.get(),
+  ModifyInstance(instance_id2, kChromeAppId, window2.get(),
                  kInactiveInstanceState);
 
   // Set time passed 2 hours to record the usage time AppKM.
@@ -1812,7 +1811,7 @@ TEST_P(AppPlatformMetricsServiceTest, UsageTimeUkmForStandaloneChromeApps) {
 
 TEST_P(AppPlatformMetricsServiceTest,
        UsageTimeUkmForWebAppWithStandaloneLacrosWindow) {
-  if (!IsLacrosPrimary()) {
+  if (!IsLacrosEnabled()) {
     return;
   }
 
@@ -1875,13 +1874,11 @@ TEST_P(AppPlatformMetricsServiceTest, InstalledAppsUkm) {
   // Install Chrome apps (hosted apps) during the running time.
   std::string kChromeAppId1 = "bb";
   std::string kChromeAppId2 = "cc";
-  InstallOneApp(MuxId(profile(), kChromeAppId1),
-                AppType::kStandaloneBrowserChromeApp, "BB", Readiness::kReady,
-                InstallSource::kChromeWebStore,
+  InstallOneApp(kChromeAppId1, AppType::kStandaloneBrowserChromeApp, "BB",
+                Readiness::kReady, InstallSource::kChromeWebStore,
                 /*is_platform_app=*/false, WindowMode::kBrowser);
-  InstallOneApp(MuxId(profile(), kChromeAppId2),
-                AppType::kStandaloneBrowserChromeApp, "CC", Readiness::kReady,
-                InstallSource::kChromeWebStore,
+  InstallOneApp(kChromeAppId2, AppType::kStandaloneBrowserChromeApp, "CC",
+                Readiness::kReady, InstallSource::kChromeWebStore,
                 /*is_platform_app=*/false, WindowMode::kWindow);
 
   // Verify Chrome apps (hosted apps) installed during the running time.
@@ -1943,11 +1940,11 @@ TEST_P(AppPlatformMetricsServiceTest, LaunchApps) {
   VerifyAppLaunchPerAppTypeHistogram(1, AppTypeName::kCrostini);
   VerifyAppLaunchPerAppTypeV2Histogram(1, AppTypeNameV2::kCrostini);
 
-  EXPECT_CALL(fake_arc_apps, Launch(/*app_id=*/"a", ui::EF_NONE,
+  EXPECT_CALL(fake_arc_apps, Launch(kAndroidAppId, ui::EF_NONE,
                                     LaunchSource::kFromChromeInternal, _))
       .Times(1);
-  proxy->Launch(
-      /*app_id=*/"a", ui::EF_NONE, LaunchSource::kFromChromeInternal, nullptr);
+  proxy->Launch(kAndroidAppId, ui::EF_NONE, LaunchSource::kFromChromeInternal,
+                nullptr);
   VerifyAppsLaunchUkm("app://com.google.A", AppTypeName::kArc,
                       LaunchSource::kFromChromeInternal);
   VerifyAppLaunchPerAppTypeHistogram(1, AppTypeName::kArc);
@@ -1967,12 +1964,12 @@ TEST_P(AppPlatformMetricsServiceTest, LaunchApps) {
   VerifyAppLaunchPerAppTypeV2Histogram(1, AppTypeNameV2::kStandaloneBrowser);
 
   EXPECT_CALL(fake_standalone_browser_chrome_app,
-              Launch(/*app_id=*/MuxId(profile(), kChromeAppId), ui::EF_NONE,
+              Launch(/*app_id=*/kChromeAppId, ui::EF_NONE,
                      LaunchSource::kFromChromeInternal, _))
       .Times(1);
   proxy->Launch(
-      /*app_id=*/MuxId(profile(), kChromeAppId), ui::EF_NONE,
-      LaunchSource::kFromChromeInternal, nullptr);
+      /*app_id=*/kChromeAppId, ui::EF_NONE, LaunchSource::kFromChromeInternal,
+      nullptr);
   VerifyAppsLaunchUkm("app://" + std::string(kChromeAppId),
                       AppTypeName::kStandaloneBrowserChromeApp,
                       LaunchSource::kFromChromeInternal);
@@ -1984,23 +1981,21 @@ TEST_P(AppPlatformMetricsServiceTest, LaunchApps) {
   // Install Chrome apps (hosted apps) during the running time.
   std::string kChromeAppId1 = "bb";
   std::string kChromeAppId2 = "cc";
-  InstallOneApp(MuxId(profile(), kChromeAppId1),
-                AppType::kStandaloneBrowserChromeApp, "BB", Readiness::kReady,
-                InstallSource::kChromeWebStore,
+  InstallOneApp(kChromeAppId1, AppType::kStandaloneBrowserChromeApp, "BB",
+                Readiness::kReady, InstallSource::kChromeWebStore,
                 /*is_platform_app=*/false, WindowMode::kBrowser);
-  InstallOneApp(MuxId(profile(), kChromeAppId2),
-                AppType::kStandaloneBrowserChromeApp, "CC", Readiness::kReady,
-                InstallSource::kChromeWebStore,
+  InstallOneApp(kChromeAppId2, AppType::kStandaloneBrowserChromeApp, "CC",
+                Readiness::kReady, InstallSource::kChromeWebStore,
                 /*is_platform_app=*/false, WindowMode::kWindow);
 
   // Launch `kChromeAppId1`.
   EXPECT_CALL(fake_standalone_browser_chrome_app,
-              Launch(/*app_id=*/MuxId(profile(), kChromeAppId1), ui::EF_NONE,
+              Launch(/*app_id=*/kChromeAppId1, ui::EF_NONE,
                      LaunchSource::kFromChromeInternal, _))
       .Times(1);
   proxy->Launch(
-      /*app_id=*/MuxId(profile(), kChromeAppId1), ui::EF_NONE,
-      LaunchSource::kFromChromeInternal, nullptr);
+      /*app_id=*/kChromeAppId1, ui::EF_NONE, LaunchSource::kFromChromeInternal,
+      nullptr);
   // Verify `kChromeAppId1` launching as kStandaloneBrowser.
   VerifyAppsLaunchUkm("app://" + kChromeAppId1, AppTypeName::kStandaloneBrowser,
                       LaunchSource::kFromChromeInternal);
@@ -2011,12 +2006,12 @@ TEST_P(AppPlatformMetricsServiceTest, LaunchApps) {
 
   // Launch `kChromeAppId2` in a Lacros window tab.
   EXPECT_CALL(fake_standalone_browser_chrome_app,
-              Launch(/*app_id=*/MuxId(profile(), kChromeAppId2), ui::EF_NONE,
+              Launch(/*app_id=*/kChromeAppId2, ui::EF_NONE,
                      LaunchSource::kFromChromeInternal, _))
       .Times(1);
   proxy->Launch(
-      /*app_id=*/MuxId(profile(), kChromeAppId2), ui::EF_NONE,
-      LaunchSource::kFromChromeInternal, nullptr);
+      /*app_id=*/kChromeAppId2, ui::EF_NONE, LaunchSource::kFromChromeInternal,
+      nullptr);
   // Verify `kChromeAppId2` launching as kStandaloneBrowserChromeApp.
   VerifyAppsLaunchUkm("app://" + kChromeAppId2,
                       AppTypeName::kStandaloneBrowserChromeApp,
@@ -2028,12 +2023,12 @@ TEST_P(AppPlatformMetricsServiceTest, LaunchApps) {
       AppTypeNameV2::kStandaloneBrowserChromeAppWindow);
 
   EXPECT_CALL(fake_standalone_browser_extension,
-              Launch(/*app_id=*/MuxId(profile(), kExtensionId), ui::EF_NONE,
+              Launch(/*app_id=*/kExtensionId, ui::EF_NONE,
                      LaunchSource::kFromChromeInternal, _))
       .Times(1);
   proxy->Launch(
-      /*app_id=*/MuxId(profile(), kExtensionId), ui::EF_NONE,
-      LaunchSource::kFromChromeInternal, nullptr);
+      /*app_id=*/kExtensionId, ui::EF_NONE, LaunchSource::kFromChromeInternal,
+      nullptr);
   VerifyAppsLaunchUkm("app://" + std::string(kExtensionId),
                       AppTypeName::kStandaloneBrowserExtension,
                       LaunchSource::kFromChromeInternal);
@@ -2049,7 +2044,7 @@ TEST_P(AppPlatformMetricsServiceTest, LaunchApps) {
                       LaunchSource::kFromFileManager);
   VerifyAppLaunchPerAppTypeHistogram(1, GetWebAppTypeName());
   VerifyAppLaunchPerAppTypeV2Histogram(
-      1, IsLacrosPrimary() ? AppTypeNameV2::kStandaloneBrowserWebAppWindow
+      1, IsLacrosEnabled() ? AppTypeNameV2::kStandaloneBrowserWebAppWindow
                            : AppTypeNameV2::kWebWindow);
 
   // TODO(crbug.com/1253250): Register non-mojom apps and use
@@ -2057,7 +2052,7 @@ TEST_P(AppPlatformMetricsServiceTest, LaunchApps) {
   proxy->BrowserAppLauncher()->LaunchAppWithParamsForTesting(AppLaunchParams(
       "w2", LaunchContainer::kLaunchContainerTab,
       WindowOpenDisposition::NEW_FOREGROUND_TAB, LaunchSource::kFromTest));
-  if (IsLacrosPrimary()) {
+  if (IsLacrosEnabled()) {
     VerifyAppsLaunchUkm("https://foo2.com", AppTypeName::kStandaloneBrowser,
                         LaunchSource::kFromTest);
     VerifyAppLaunchPerAppTypeHistogram(
@@ -2069,7 +2064,7 @@ TEST_P(AppPlatformMetricsServiceTest, LaunchApps) {
     VerifyAppLaunchPerAppTypeHistogram(1, AppTypeName::kChromeBrowser);
   }
   VerifyAppLaunchPerAppTypeV2Histogram(
-      1, IsLacrosPrimary() ? AppTypeNameV2::kStandaloneBrowserWebAppTab
+      1, IsLacrosEnabled() ? AppTypeNameV2::kStandaloneBrowserWebAppTab
                            : AppTypeNameV2::kWebTab);
 
   proxy->BrowserAppLauncher()->LaunchAppWithParamsForTesting(AppLaunchParams(
@@ -2091,19 +2086,18 @@ TEST_P(AppPlatformMetricsServiceTest, UninstallAppUkm) {
   FakePublisher fake_standalone_browser_extension(
       proxy, AppType::kStandaloneBrowserExtension);
 
-  proxy->UninstallSilently(
-      /*app_id=*/"a", UninstallSource::kAppList);
+  proxy->UninstallSilently(kAndroidAppId, UninstallSource::kAppList);
   VerifyAppsUninstallUkm("app://com.google.A", AppTypeName::kArc,
                          UninstallSource::kAppList);
 
   proxy->UninstallSilently(
-      /*app_id=*/MuxId(profile(), kChromeAppId), UninstallSource::kAppList);
+      /*app_id=*/kChromeAppId, UninstallSource::kAppList);
   VerifyAppsUninstallUkm("app://" + std::string(kChromeAppId),
                          AppTypeName::kStandaloneBrowserChromeApp,
                          UninstallSource::kAppList);
 
   proxy->UninstallSilently(
-      /*app_id=*/MuxId(profile(), kExtensionId), UninstallSource::kAppList);
+      /*app_id=*/kExtensionId, UninstallSource::kAppList);
   VerifyAppsUninstallUkm("app://" + std::string(kExtensionId),
                          AppTypeName::kStandaloneBrowserExtension,
                          UninstallSource::kAppList);
@@ -2116,32 +2110,31 @@ TEST_P(AppPlatformMetricsServiceTest,
   window->Init(ui::LAYER_NOT_DRAWN);
 
   // Set the window active state.
-  static constexpr char kAppId[] = "a";
   const base::UnguessableToken& kInstanceId = base::UnguessableToken::Create();
-  ModifyInstance(kInstanceId, kAppId, window.get(),
+  ModifyInstance(kInstanceId, kAndroidAppId, window.get(),
                  ::apps::InstanceState::kActive);
-  static constexpr base::TimeDelta kAppRunningDuration = base::Minutes(5);
-  task_environment_.FastForwardBy(kAppRunningDuration);
+  static constexpr base::TimeDelta kExpectedRunningDuration = base::Minutes(5);
+  task_environment_.FastForwardBy(kExpectedRunningDuration);
 
   // Close app window to stop tracking further usage and verify usage info is
   // persisted in the pref store.
-  ModifyInstance(kInstanceId, kAppId, window.get(),
+  ModifyInstance(kInstanceId, kAndroidAppId, window.get(),
                  ::apps::InstanceState::kDestroyed);
   const auto& usage_dict_pref = GetPrefService()->GetDict(kAppUsageTime);
   ASSERT_THAT(usage_dict_pref.size(), Eq(1UL));
   ASSERT_THAT(usage_dict_pref.Find(kInstanceId.ToString()), NotNull());
   EXPECT_THAT(*usage_dict_pref.FindDict(kInstanceId.ToString())
                    ->FindString(kUsageTimeAppIdKey),
-              StrEq(kAppId));
+              StrEq(kAndroidAppId));
   EXPECT_THAT(
       base::ValueToTimeDelta(usage_dict_pref.FindDict(kInstanceId.ToString())
                                  ->Find(kUsageTimeDurationKey)),
-      Eq(kAppRunningDuration));
+      Eq(kExpectedRunningDuration));
 
   // Fast forward by two hours so it reports usage data and we can verify usage
   // info is cleared from the pref store.
   task_environment_.FastForwardBy(base::Hours(2));
-  VerifyAppRunningDuration(kAppRunningDuration, AppTypeName::kArc);
+  VerifyAppRunningDuration(kExpectedRunningDuration, AppTypeName::kArc);
   ASSERT_TRUE(GetPrefService()->GetDict(kAppUsageTime).empty());
 }
 
@@ -2175,27 +2168,26 @@ TEST_P(AppPlatformMetricsServiceTest,
   window->Init(ui::LAYER_NOT_DRAWN);
 
   // Set the window active state.
-  static constexpr char kAppId[] = "a";
   const base::UnguessableToken& kInstanceId = base::UnguessableToken::Create();
-  ModifyInstance(kInstanceId, kAppId, window.get(),
+  ModifyInstance(kInstanceId, kAndroidAppId, window.get(),
                  ::apps::InstanceState::kActive);
-  static constexpr base::TimeDelta kAppRunningDuration = base::Minutes(5);
-  task_environment_.FastForwardBy(kAppRunningDuration);
+  static constexpr base::TimeDelta kExpectedRunningDuration = base::Minutes(5);
+  task_environment_.FastForwardBy(kExpectedRunningDuration);
 
   // Close app window to stop tracking further usage and verify usage info is
   // persisted in the pref store.
-  ModifyInstance(kInstanceId, kAppId, window.get(),
+  ModifyInstance(kInstanceId, kAndroidAppId, window.get(),
                  ::apps::InstanceState::kDestroyed);
   const auto& usage_dict_pref = GetPrefService()->GetDict(kAppUsageTime);
   ASSERT_THAT(usage_dict_pref.size(), Eq(1UL));
   ASSERT_THAT(usage_dict_pref.Find(kInstanceId.ToString()), NotNull());
   EXPECT_THAT(*usage_dict_pref.FindDict(kInstanceId.ToString())
                    ->FindString(kUsageTimeAppIdKey),
-              StrEq(kAppId));
+              StrEq(kAndroidAppId));
   EXPECT_THAT(
       base::ValueToTimeDelta(usage_dict_pref.FindDict(kInstanceId.ToString())
                                  ->Find(kUsageTimeDurationKey)),
-      Eq(kAppRunningDuration));
+      Eq(kExpectedRunningDuration));
 
   // Set reporting usage time for the current app instance and persist it in the
   // pref store.
@@ -2203,20 +2195,25 @@ TEST_P(AppPlatformMetricsServiceTest,
     ScopedDictPrefUpdate usage_dict(GetPrefService(), kAppUsageTime);
     usage_dict->FindDictByDottedPath(kInstanceId.ToString())
         ->Set(kReportingUsageTimeDurationKey,
-              base::TimeDeltaToValue(kAppRunningDuration));
+              base::TimeDeltaToValue(kExpectedRunningDuration));
+    usage_dict->FindDictByDottedPath(kInstanceId.ToString())
+        ->Set(kUsageTimeAppPublisherIdKey, kAndroidAppPublisherId);
   }
 
   // Fast forward by two hours so it reports usage data and we can verify usage
   // info is not cleared from the pref store.
   task_environment_.FastForwardBy(base::Hours(2));
-  VerifyAppRunningDuration(kAppRunningDuration, AppTypeName::kArc);
+  VerifyAppRunningDuration(kExpectedRunningDuration, AppTypeName::kArc);
   const auto& updated_usage_dict_pref =
       GetPrefService()->GetDict(kAppUsageTime);
   ASSERT_THAT(updated_usage_dict_pref.size(), Eq(1UL));
   EXPECT_THAT(updated_usage_dict_pref.Find(kInstanceId.ToString()), NotNull());
   EXPECT_THAT(*usage_dict_pref.FindDict(kInstanceId.ToString())
                    ->FindString(kUsageTimeAppIdKey),
-              StrEq(kAppId));
+              StrEq(kAndroidAppId));
+  EXPECT_THAT(*usage_dict_pref.FindDict(kInstanceId.ToString())
+                   ->FindString(kUsageTimeAppPublisherIdKey),
+              StrEq(kAndroidAppPublisherId));
   EXPECT_THAT(
       base::ValueToTimeDelta(usage_dict_pref.FindDict(kInstanceId.ToString())
                                  ->Find(kUsageTimeDurationKey)),
@@ -2224,7 +2221,7 @@ TEST_P(AppPlatformMetricsServiceTest,
   EXPECT_THAT(
       base::ValueToTimeDelta(usage_dict_pref.FindDict(kInstanceId.ToString())
                                  ->Find(kReportingUsageTimeDurationKey)),
-      Eq(kAppRunningDuration));
+      Eq(kExpectedRunningDuration));
 }
 
 TEST_P(AppPlatformMetricsServiceTest, ShouldNotPersistUsageDataIfSyncDisabled) {
@@ -2237,23 +2234,22 @@ TEST_P(AppPlatformMetricsServiceTest, ShouldNotPersistUsageDataIfSyncDisabled) {
   window->Init(ui::LAYER_NOT_DRAWN);
 
   // Set the window active state and simulate app usage.
-  static constexpr char kAppId[] = "a";
   const base::UnguessableToken& kInstanceId = base::UnguessableToken::Create();
-  ModifyInstance(kInstanceId, kAppId, window.get(),
+  ModifyInstance(kInstanceId, kAndroidAppId, window.get(),
                  ::apps::InstanceState::kActive);
-  static constexpr base::TimeDelta kAppRunningDuration = base::Minutes(5);
-  task_environment_.FastForwardBy(kAppRunningDuration);
+  static constexpr base::TimeDelta kExpectedRunningDuration = base::Minutes(5);
+  task_environment_.FastForwardBy(kExpectedRunningDuration);
 
   // Close app window to stop tracking further usage and verify usage info is
   // not persisted in the pref store.
-  ModifyInstance(kInstanceId, kAppId, window.get(),
+  ModifyInstance(kInstanceId, kAndroidAppId, window.get(),
                  ::apps::InstanceState::kDestroyed);
   ASSERT_TRUE(GetPrefService()->GetDict(kAppUsageTime).empty());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
                          AppPlatformMetricsServiceTest,
-                         testing::Bool() /* IsLacrosPrimary */);
+                         testing::Bool() /* IsLacrosEnabled */);
 
 // Tests for app platform input metrics.
 class AppPlatformInputMetricsTest : public AppPlatformMetricsServiceTest {
@@ -2378,7 +2374,7 @@ class AppPlatformInputMetricsTest : public AppPlatformMetricsServiceTest {
 
 // Verify no more input event is recorded when the window is destroyed.
 TEST_P(AppPlatformInputMetricsTest, WindowIsDestroyed) {
-  ModifyInstance(/*app_id=*/"a", window(), kActive);
+  ModifyInstance(kAndroidAppId, window(), kActive);
   CreateInputEvent(InputEventSource::kMouse);
   app_platform_input_metrics()->OnFiveMinutes();
   VerifyNoUkm();
@@ -2386,7 +2382,7 @@ TEST_P(AppPlatformInputMetricsTest, WindowIsDestroyed) {
   VerifyUkm("app://com.google.A", AppTypeName::kArc, /*event_count=*/1,
             InputEventSource::kMouse);
 
-  ModifyInstance(/*app_id=*/"a", window(), apps::InstanceState::kDestroyed);
+  ModifyInstance(kAndroidAppId, window(), apps::InstanceState::kDestroyed);
   CreateInputEvent(InputEventSource::kMouse);
   app_platform_input_metrics()->OnTwoHours();
   // Verify no more input event is recorded.
@@ -2395,7 +2391,7 @@ TEST_P(AppPlatformInputMetricsTest, WindowIsDestroyed) {
 }
 
 TEST_P(AppPlatformInputMetricsTest, MouseEvent) {
-  ModifyInstance(/*app_id=*/"a", window(), apps::InstanceState::kActive);
+  ModifyInstance(kAndroidAppId, window(), apps::InstanceState::kActive);
   CreateInputEvent(InputEventSource::kMouse);
   app_platform_input_metrics()->OnFiveMinutes();
   VerifyNoUkm();
@@ -2415,7 +2411,7 @@ TEST_P(AppPlatformInputMetricsTest, StylusEvent) {
 }
 
 TEST_P(AppPlatformInputMetricsTest, TouchEvents) {
-  ModifyInstance(/*app_id=*/"a", window(), apps::InstanceState::kActive);
+  ModifyInstance(kAndroidAppId, window(), apps::InstanceState::kActive);
   CreateInputEvent(InputEventSource::kTouch);
   CreateInputEvent(InputEventSource::kTouch);
   app_platform_input_metrics()->OnFiveMinutes();
@@ -2426,7 +2422,7 @@ TEST_P(AppPlatformInputMetricsTest, TouchEvents) {
 }
 
 TEST_P(AppPlatformInputMetricsTest, KeyEvents) {
-  ModifyInstance(/*app_id=*/"a", window(), apps::InstanceState::kActive);
+  ModifyInstance(kAndroidAppId, window(), apps::InstanceState::kActive);
   CreateInputEvent(InputEventSource::kKeyboard);
   app_platform_input_metrics()->OnFiveMinutes();
   VerifyNoUkm();
@@ -2463,7 +2459,7 @@ TEST_P(AppPlatformInputMetricsTest, KeyEvents) {
 }
 
 TEST_P(AppPlatformInputMetricsTest, MultipleEvents) {
-  ModifyInstance(/*app_id=*/"a", window(), apps::InstanceState::kActive);
+  ModifyInstance(kAndroidAppId, window(), apps::InstanceState::kActive);
   CreateInputEvent(InputEventSource::kMouse);
   CreateInputEvent(InputEventSource::kMouse);
   CreateInputEvent(InputEventSource::kKeyboard);
@@ -2594,13 +2590,13 @@ TEST_P(AppPlatformInputMetricsTest, BrowserWindow) {
 }
 
 TEST_P(AppPlatformInputMetricsTest, InputEventsUkmReportAfterReboot) {
-  ModifyInstance(/*app_id=*/"a", window(), apps::InstanceState::kActive);
+  ModifyInstance(kAndroidAppId, window(), apps::InstanceState::kActive);
   CreateInputEvent(InputEventSource::kKeyboard);
   CreateInputEvent(InputEventSource::kStylus);
   CreateInputEvent(InputEventSource::kStylus);
   app_platform_input_metrics()->OnFiveMinutes();
   VerifyNoUkm();
-  ModifyInstance(/*app_id=*/"a", window(), kInactiveInstanceState);
+  ModifyInstance(kAndroidAppId, window(), kInactiveInstanceState);
 
   // Reset PlatformMetricsService to simulate the system reboot, and verify
   // AppKM is restored from the user pref and reported after 5 minutes after
@@ -2608,7 +2604,7 @@ TEST_P(AppPlatformInputMetricsTest, InputEventsUkmReportAfterReboot) {
   ResetAppPlatformMetricsService();
   VerifyNoUkm();
 
-  ModifyInstance(/*app_id=*/"a", window(), apps::InstanceState::kActive);
+  ModifyInstance(kAndroidAppId, window(), apps::InstanceState::kActive);
   CreateInputEvent(InputEventSource::kStylus);
 
   app_platform_input_metrics()->OnFiveMinutes();
@@ -2644,7 +2640,7 @@ TEST_P(AppPlatformInputMetricsTest, InputEventsUkmReportAfterReboot) {
   entries = test_ukm_recorder()->GetEntriesByName("ChromeOSApp.InputEvent");
   ASSERT_EQ(2U, entries.size());
 
-  ModifyInstance(/*app_id=*/"a", window(), kInactiveInstanceState);
+  ModifyInstance(kAndroidAppId, window(), kInactiveInstanceState);
 
   // Reset PlatformMetricsService to simulate the system reboot, and verify
   // only the new AppKM is reported.
@@ -2677,8 +2673,7 @@ TEST_P(AppPlatformInputMetricsTest, LacrosWindow) {
 }
 
 TEST_P(AppPlatformInputMetricsTest, StandaloneBrowserChromeApp) {
-  ModifyInstance(MuxId(profile(), kChromeAppId), window(),
-                 kActiveInstanceState);
+  ModifyInstance(kChromeAppId, window(), kActiveInstanceState);
   CreateInputEvent(InputEventSource::kKeyboard);
   app_platform_input_metrics()->OnTwoHours();
   VerifyUkm("app://" + std::string(kChromeAppId),
@@ -2687,8 +2682,7 @@ TEST_P(AppPlatformInputMetricsTest, StandaloneBrowserChromeApp) {
 }
 
 TEST_P(AppPlatformInputMetricsTest, StandaloneBrowserExtension) {
-  ModifyInstance(MuxId(profile(), kExtensionId), window(),
-                 kActiveInstanceState);
+  ModifyInstance(kExtensionId, window(), kActiveInstanceState);
   CreateInputEvent(InputEventSource::kMouse);
   app_platform_input_metrics()->OnTwoHours();
   VerifyUkm("app://" + std::string(kExtensionId),
@@ -2697,7 +2691,7 @@ TEST_P(AppPlatformInputMetricsTest, StandaloneBrowserExtension) {
 }
 
 TEST_P(AppPlatformInputMetricsTest, LacrosWindowAndWebAppAndChromeApp) {
-  if (!IsLacrosPrimary()) {
+  if (!IsLacrosEnabled()) {
     return;
   }
 
@@ -2734,13 +2728,11 @@ TEST_P(AppPlatformInputMetricsTest, LacrosWindowAndWebAppAndChromeApp) {
 
   // Install a Chrome app (hosted app) during the running time.
   std::string kChromeAppId1 = "bb";
-  InstallOneApp(MuxId(profile(), kChromeAppId1),
-                AppType::kStandaloneBrowserChromeApp, "BB", Readiness::kReady,
-                InstallSource::kChromeWebStore,
+  InstallOneApp(kChromeAppId1, AppType::kStandaloneBrowserChromeApp, "BB",
+                Readiness::kReady, InstallSource::kChromeWebStore,
                 /*is_platform_app=*/false, WindowMode::kBrowser);
   // Set the Chrome app tab as activated.
-  ModifyInstance(instance_id2, MuxId(profile(), kChromeAppId1), window(),
-                 kActiveInstanceState);
+  ModifyInstance(instance_id2, kChromeAppId1, window(), kActiveInstanceState);
   ModifyInstance(instance_id1, web_app_id1, window(), kInactiveInstanceState);
   CreateInputEvent(InputEventSource::kStylus);
   app_platform_input_metrics()->OnTwoHours();
@@ -2750,8 +2742,7 @@ TEST_P(AppPlatformInputMetricsTest, LacrosWindowAndWebAppAndChromeApp) {
 
   // Set the Chrome app tab as inactivated, then the Lacros window should be set
   // as activated in code.
-  ModifyInstance(instance_id2, MuxId(profile(), kChromeAppId1), window(),
-                 kInactiveInstanceState);
+  ModifyInstance(instance_id2, kChromeAppId1, window(), kInactiveInstanceState);
   CreateInputEvent(InputEventSource::kKeyboard);
   app_platform_input_metrics()->OnTwoHours();
   // Verify 4 input metrics events are recorded.
@@ -2762,7 +2753,7 @@ TEST_P(AppPlatformInputMetricsTest, LacrosWindowAndWebAppAndChromeApp) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          AppPlatformInputMetricsTest,
-                         testing::Bool() /* IsLacrosPrimary */);
+                         testing::Bool() /* IsLacrosEnabled */);
 
 // Tests for app platform metrics observers.
 class AppPlatformMetricsObserverTest : public AppPlatformMetricsServiceTest {
@@ -2788,7 +2779,8 @@ class AppPlatformMetricsObserverTest : public AppPlatformMetricsServiceTest {
   }
 
   MockAppPlatformMetricsObserver observer_;
-  raw_ptr<AppPlatformMetricsService> app_platform_metrics_service_;
+  raw_ptr<AppPlatformMetricsService, DanglingUntriaged>
+      app_platform_metrics_service_;
 };
 
 TEST_P(AppPlatformMetricsObserverTest, ShouldNotifyObserverOnAppInstalled) {
@@ -2813,16 +2805,15 @@ TEST_P(AppPlatformMetricsObserverTest, ShouldNotifyObserverOnAppLaunch) {
       {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
 
   // Launch a pre-installed app and verify the observer is notified.
-  const std::string& app_id = "a";
-  EXPECT_CALL(observer_, OnAppLaunched(app_id, AppType::kArc,
+  EXPECT_CALL(observer_, OnAppLaunched(kAndroidAppId, AppType::kArc,
                                        apps::LaunchSource::kFromChromeInternal))
       .Times(1);
 
   auto* const proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
   proxy->SetAppPlatformMetricsServiceForTesting(GetAppPlatformMetricsService());
   FakePublisher fake_arc_apps(proxy, AppType::kArc);
-  proxy->Launch(app_id, ui::EF_NONE, apps::LaunchSource::kFromChromeInternal,
-                nullptr);
+  proxy->Launch(kAndroidAppId, ui::EF_NONE,
+                apps::LaunchSource::kFromChromeInternal, nullptr);
   task_environment_.RunUntilIdle();
 }
 
@@ -2832,15 +2823,14 @@ TEST_P(AppPlatformMetricsObserverTest, ShouldNotifyObserverOnAppUninstall) {
       {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
 
   // Uninstall a pre-installed app and verify the observer is notified.
-  const std::string& app_id = "a";
-  EXPECT_CALL(observer_, OnAppUninstalled(app_id, AppType::kArc,
+  EXPECT_CALL(observer_, OnAppUninstalled(kAndroidAppId, AppType::kArc,
                                           UninstallSource::kAppList))
       .Times(1);
 
   auto* const proxy = AppServiceProxyFactory::GetForProfile(profile());
   proxy->SetAppPlatformMetricsServiceForTesting(GetAppPlatformMetricsService());
   FakePublisher fake_arc_apps(proxy, AppType::kArc);
-  proxy->UninstallSilently(app_id, UninstallSource::kAppList);
+  proxy->UninstallSilently(kAndroidAppId, UninstallSource::kAppList);
   task_environment_.RunUntilIdle();
 }
 
@@ -2855,20 +2845,20 @@ TEST_P(AppPlatformMetricsObserverTest, ShouldNotifyObserverOnAppUsage) {
 
   // Set the window active state and verify the observer is notified
   // with the appropriate running time with every notification.
-  const std::string& app_id = "a";
   const base::UnguessableToken& instance_id = base::UnguessableToken::Create();
-  ModifyInstance(instance_id, app_id, window.get(), kActiveInstanceState);
+  ModifyInstance(instance_id, kAndroidAppId, window.get(),
+                 kActiveInstanceState);
 
   // Usage metrics are recorded every 5 minutes and on window inactivation, so
   // we can expect two notifications with relevant usage times (5 minutes + 3
   // minutes) across a 8 minute usage window.
   Sequence s;
-  EXPECT_CALL(observer_,
-              OnAppUsage(app_id, AppType::kArc, instance_id, base::Minutes(5)))
+  EXPECT_CALL(observer_, OnAppUsage(kAndroidAppId, AppType::kArc, instance_id,
+                                    base::Minutes(5)))
       .Times(1)
       .InSequence(s);
-  EXPECT_CALL(observer_,
-              OnAppUsage(app_id, AppType::kArc, instance_id, base::Minutes(3)))
+  EXPECT_CALL(observer_, OnAppUsage(kAndroidAppId, AppType::kArc, instance_id,
+                                    base::Minutes(3)))
       .Times(1)
       .InSequence(s);
 
@@ -2877,7 +2867,8 @@ TEST_P(AppPlatformMetricsObserverTest, ShouldNotifyObserverOnAppUsage) {
 
   // Set app inactive. This should also trigger the second notification with
   // usage time delta after the first one.
-  ModifyInstance(instance_id, app_id, window.get(), kInactiveInstanceState);
+  ModifyInstance(instance_id, kAndroidAppId, window.get(),
+                 kInactiveInstanceState);
 }
 
 TEST_P(AppPlatformMetricsObserverTest, ShouldNotNotifyUnregisteredObservers) {
@@ -2887,11 +2878,10 @@ TEST_P(AppPlatformMetricsObserverTest, ShouldNotNotifyUnregisteredObservers) {
 
   // Uninstall a pre-installed app and verify the unregistered observer
   // is not notified.
-  const std::string& app_id = "a";
-  EXPECT_CALL(observer_, OnAppUninstalled(app_id, AppType::kArc,
+  EXPECT_CALL(observer_, OnAppUninstalled(kAndroidAppId, AppType::kArc,
                                           UninstallSource::kAppList))
       .Times(0);
-  proxy->UninstallSilently(app_id, UninstallSource::kAppList);
+  proxy->UninstallSilently(kAndroidAppId, UninstallSource::kAppList);
   task_environment_.RunUntilIdle();
 }
 
@@ -2915,7 +2905,7 @@ TEST_P(AppPlatformMetricsObserverTest, ShouldNotifyObserverOnDestruction) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          AppPlatformMetricsObserverTest,
-                         testing::Bool() /* IsLacrosPrimary */);
+                         testing::Bool() /* IsLacrosEnabled */);
 
 // Tests for app discovery metrics test.
 class AppDiscoveryMetricsTest : public AppPlatformMetricsServiceTest {
@@ -2929,22 +2919,20 @@ class AppDiscoveryMetricsTest : public AppPlatformMetricsServiceTest {
     metrics::structured::Recorder::GetInstance()->SetUiTaskRunner(
         task_environment_.GetMainThreadTaskRunner());
 
-    if (IsLacrosPrimary()) {
-      feature_list_.InitWithFeatures(
-          /*enabled_features=*/{ash::features::kLacrosSupport,
-                                ash::features::kLacrosPrimary,
-                                metrics::structured::kAppDiscoveryLogging,
-                                metrics::structured::kEventSequenceLogging},
-          {});
+    std::vector<base::test::FeatureRef> enabled{
+        metrics::structured::kAppDiscoveryLogging,
+        metrics::structured::kEventSequenceLogging};
+    std::vector<base::test::FeatureRef> disabled;
+    if (IsLacrosEnabled()) {
+      base::Extend(enabled, ash::standalone_browser::GetFeatureRefs());
     } else {
-      feature_list_.InitWithFeatures(
-          /*enabled_features=*/{metrics::structured::kAppDiscoveryLogging,
-                                metrics::structured::kEventSequenceLogging},
-          /*disabled_features=*/{ash::features::kLacrosSupport,
-                                 ash::features::kLacrosPrimary});
+      base::Extend(disabled, ash::standalone_browser::GetFeatureRefs());
     }
+    feature_list_.InitWithFeatures(enabled, disabled);
 
     AppPlatformMetricsServiceTestBase::SetUp();
+
+    ASSERT_EQ(IsLacrosEnabled(), crosapi::browser_util::IsLacrosEnabled());
   }
 
   metrics::structured::TestStructuredMetricsProvider*
@@ -3069,11 +3057,10 @@ TEST_P(AppDiscoveryMetricsTest, AppActivityMetricsRecorded) {
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
   apps::AppRegistryCache& cache = proxy->AppRegistryCache();
   proxy->SetAppPlatformMetricsServiceForTesting(GetAppPlatformMetricsService());
-  const std::string app_id = "a";
 
   // Install an ARC app to test.
-  AddApp(cache, app_id, AppType::kArc, "com.google.A", Readiness::kReady,
-         InstallReason::kUser, InstallSource::kPlayStore,
+  AddApp(cache, kAndroidAppId, AppType::kArc, kAndroidAppPublisherId,
+         Readiness::kReady, InstallReason::kUser, InstallSource::kPlayStore,
          true /* should_notify_initialized */);
 
   // Simulate registering publishers for the launch interface to record metrics.
@@ -3088,25 +3075,25 @@ TEST_P(AppDiscoveryMetricsTest, AppActivityMetricsRecorded) {
   base::RunLoop launch_event_run_loop;
   auto launch_record_callback = base::BindLambdaForTesting(
       [&, this](const metrics::structured::Event& event) {
-        ValidateAppLaunchEvent(event, app_id, AppType::kArc,
+        ValidateAppLaunchEvent(event, kAndroidAppId, AppType::kArc,
                                LaunchSource::kFromChromeInternal);
         launch_event_run_loop.Quit();
       });
   test_structured_metrics_provider()->SetOnEventsRecordClosure(
       launch_record_callback);
 
-  EXPECT_CALL(fake_arc_apps,
-              Launch(app_id, ui::EF_NONE, LaunchSource::kFromChromeInternal, _))
+  EXPECT_CALL(fake_arc_apps, Launch(kAndroidAppId, ui::EF_NONE,
+                                    LaunchSource::kFromChromeInternal, _))
       .Times(1);
-  proxy->Launch(app_id, ui::EF_NONE, LaunchSource::kFromChromeInternal,
+  proxy->Launch(kAndroidAppId, ui::EF_NONE, LaunchSource::kFromChromeInternal,
                 nullptr);
-  ModifyInstance(app_id, window.get(), apps::InstanceState::kStarted);
+  ModifyInstance(kAndroidAppId, window.get(), apps::InstanceState::kStarted);
   launch_event_run_loop.Run();
 
   // Mark app as kRunning otherwise active event will not trigger since the app
   // isn't considered to be running yet.
   ModifyInstance(
-      app_id, window.get(),
+      kAndroidAppId, window.get(),
       static_cast<apps::InstanceState>(apps::InstanceState::kStarted |
                                        apps::InstanceState::kRunning));
 
@@ -3114,14 +3101,14 @@ TEST_P(AppDiscoveryMetricsTest, AppActivityMetricsRecorded) {
   base::RunLoop active_event_run_loop;
   auto active_record_callback = base::BindLambdaForTesting(
       [&, this](const metrics::structured::Event& event) {
-        ValidateAppStateEvent(event, app_id, AppStateChange::kActive);
+        ValidateAppStateEvent(event, kAndroidAppId, AppStateChange::kActive);
         active_event_run_loop.Quit();
       });
   test_structured_metrics_provider()->SetOnEventsRecordClosure(
       active_record_callback);
 
   ModifyInstance(
-      app_id, window.get(),
+      kAndroidAppId, window.get(),
       static_cast<apps::InstanceState>(apps::InstanceState::kActive |
                                        apps::InstanceState::kRunning));
   active_event_run_loop.Run();
@@ -3130,14 +3117,14 @@ TEST_P(AppDiscoveryMetricsTest, AppActivityMetricsRecorded) {
   base::RunLoop hidden_event_run_loop;
   auto hidden_record_callback = base::BindLambdaForTesting(
       [&, this](const metrics::structured::Event& event) {
-        ValidateAppStateEvent(event, app_id, AppStateChange::kInactive);
+        ValidateAppStateEvent(event, kAndroidAppId, AppStateChange::kInactive);
         hidden_event_run_loop.Quit();
       });
   test_structured_metrics_provider()->SetOnEventsRecordClosure(
       hidden_record_callback);
 
   ModifyInstance(
-      app_id, window.get(),
+      kAndroidAppId, window.get(),
       static_cast<apps::InstanceState>(apps::InstanceState::kHidden |
                                        apps::InstanceState::kRunning));
   hidden_event_run_loop.Run();
@@ -3146,14 +3133,14 @@ TEST_P(AppDiscoveryMetricsTest, AppActivityMetricsRecorded) {
   base::RunLoop active_event_run_loop2;
   auto active_record_callback2 = base::BindLambdaForTesting(
       [&, this](const metrics::structured::Event& event) {
-        ValidateAppStateEvent(event, app_id, AppStateChange::kActive);
+        ValidateAppStateEvent(event, kAndroidAppId, AppStateChange::kActive);
         active_event_run_loop2.Quit();
       });
   test_structured_metrics_provider()->SetOnEventsRecordClosure(
       active_record_callback2);
 
   ModifyInstance(
-      app_id, window.get(),
+      kAndroidAppId, window.get(),
       static_cast<apps::InstanceState>(apps::InstanceState::kActive |
                                        apps::InstanceState::kRunning));
   active_event_run_loop2.Run();
@@ -3162,13 +3149,13 @@ TEST_P(AppDiscoveryMetricsTest, AppActivityMetricsRecorded) {
   base::RunLoop closed_event_run_loop;
   auto closed_record_callback = base::BindLambdaForTesting(
       [&, this](const metrics::structured::Event& event) {
-        ValidateAppStateEvent(event, app_id, AppStateChange::kClosed);
+        ValidateAppStateEvent(event, kAndroidAppId, AppStateChange::kClosed);
         closed_event_run_loop.Quit();
       });
   test_structured_metrics_provider()->SetOnEventsRecordClosure(
       closed_record_callback);
 
-  ModifyInstance(app_id, window.get(), apps::InstanceState::kDestroyed);
+  ModifyInstance(kAndroidAppId, window.get(), apps::InstanceState::kDestroyed);
   closed_event_run_loop.Run();
 }
 
@@ -3178,11 +3165,10 @@ TEST_P(AppDiscoveryMetricsTest, AppActivityMetricsRecordedForTwoInstances) {
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
   apps::AppRegistryCache& cache = proxy->AppRegistryCache();
   proxy->SetAppPlatformMetricsServiceForTesting(GetAppPlatformMetricsService());
-  const std::string app_id = "a";
 
   // Install an ARC app to test.
-  AddApp(cache, app_id, AppType::kArc, "com.google.A", Readiness::kReady,
-         InstallReason::kUser, InstallSource::kPlayStore,
+  AddApp(cache, kAndroidAppId, AppType::kArc, kAndroidAppPublisherId,
+         Readiness::kReady, InstallReason::kUser, InstallSource::kPlayStore,
          true /* should_notify_initialized */);
 
   // Simulate registering publishers for the launch interface to record metrics.
@@ -3199,30 +3185,30 @@ TEST_P(AppDiscoveryMetricsTest, AppActivityMetricsRecordedForTwoInstances) {
   base::RunLoop launch_event_run_loop;
   auto launch_record_callback = base::BindLambdaForTesting(
       [&, this](const metrics::structured::Event& event) {
-        ValidateAppLaunchEvent(event, app_id, AppType::kArc,
+        ValidateAppLaunchEvent(event, kAndroidAppId, AppType::kArc,
                                LaunchSource::kFromChromeInternal);
         launch_event_run_loop.Quit();
       });
   test_structured_metrics_provider()->SetOnEventsRecordClosure(
       launch_record_callback);
 
-  EXPECT_CALL(fake_arc_apps,
-              Launch(app_id, ui::EF_NONE, LaunchSource::kFromChromeInternal, _))
+  EXPECT_CALL(fake_arc_apps, Launch(kAndroidAppId, ui::EF_NONE,
+                                    LaunchSource::kFromChromeInternal, _))
       .Times(1);
-  proxy->Launch(app_id, ui::EF_NONE, LaunchSource::kFromChromeInternal,
+  proxy->Launch(kAndroidAppId, ui::EF_NONE, LaunchSource::kFromChromeInternal,
                 nullptr);
-  ModifyInstance(app_id, window1.get(), apps::InstanceState::kStarted);
-  ModifyInstance(app_id, window2.get(), apps::InstanceState::kStarted);
+  ModifyInstance(kAndroidAppId, window1.get(), apps::InstanceState::kStarted);
+  ModifyInstance(kAndroidAppId, window2.get(), apps::InstanceState::kStarted);
   launch_event_run_loop.Run();
 
   // Mark app as kRunning otherwise active event will not trigger since the app
   // isn't considered to be running yet.
   ModifyInstance(
-      app_id, window1.get(),
+      kAndroidAppId, window1.get(),
       static_cast<apps::InstanceState>(apps::InstanceState::kStarted |
                                        apps::InstanceState::kRunning));
   ModifyInstance(
-      app_id, window2.get(),
+      kAndroidAppId, window2.get(),
       static_cast<apps::InstanceState>(apps::InstanceState::kStarted |
                                        apps::InstanceState::kRunning));
 
@@ -3230,14 +3216,14 @@ TEST_P(AppDiscoveryMetricsTest, AppActivityMetricsRecordedForTwoInstances) {
   base::RunLoop active_event_run_loop;
   auto active_record_callback = base::BindLambdaForTesting(
       [&, this](const metrics::structured::Event& event) {
-        ValidateAppStateEvent(event, app_id, AppStateChange::kActive);
+        ValidateAppStateEvent(event, kAndroidAppId, AppStateChange::kActive);
         active_event_run_loop.Quit();
       });
   test_structured_metrics_provider()->SetOnEventsRecordClosure(
       active_record_callback);
 
   ModifyInstance(
-      app_id, window1.get(),
+      kAndroidAppId, window1.get(),
       static_cast<apps::InstanceState>(apps::InstanceState::kActive |
                                        apps::InstanceState::kRunning));
   active_event_run_loop.Run();
@@ -3250,7 +3236,7 @@ TEST_P(AppDiscoveryMetricsTest, AppActivityMetricsRecordedForTwoInstances) {
   test_structured_metrics_provider()->SetOnEventsRecordClosure(
       active_record_callback2);
   ModifyInstance(
-      app_id, window2.get(),
+      kAndroidAppId, window2.get(),
       static_cast<apps::InstanceState>(apps::InstanceState::kActive |
                                        apps::InstanceState::kRunning));
 
@@ -3264,7 +3250,7 @@ TEST_P(AppDiscoveryMetricsTest, AppActivityMetricsRecordedForTwoInstances) {
       hidden_record_callback);
 
   ModifyInstance(
-      app_id, window1.get(),
+      kAndroidAppId, window1.get(),
       static_cast<apps::InstanceState>(apps::InstanceState::kHidden |
                                        apps::InstanceState::kRunning));
 
@@ -3272,14 +3258,14 @@ TEST_P(AppDiscoveryMetricsTest, AppActivityMetricsRecordedForTwoInstances) {
   base::RunLoop inactive_event_run_loop;
   auto inactive_record_callback = base::BindLambdaForTesting(
       [&, this](const metrics::structured::Event& event) {
-        ValidateAppStateEvent(event, app_id, AppStateChange::kInactive);
+        ValidateAppStateEvent(event, kAndroidAppId, AppStateChange::kInactive);
         inactive_event_run_loop.Quit();
       });
   test_structured_metrics_provider()->SetOnEventsRecordClosure(
       inactive_record_callback);
 
   ModifyInstance(
-      app_id, window2.get(),
+      kAndroidAppId, window2.get(),
       static_cast<apps::InstanceState>(apps::InstanceState::kVisible |
                                        apps::InstanceState::kRunning));
   inactive_event_run_loop.Run();
@@ -3291,48 +3277,46 @@ TEST_P(AppDiscoveryMetricsTest, AppActivityMetricsRecordedForTwoInstances) {
       });
   test_structured_metrics_provider()->SetOnEventsRecordClosure(
       closed_record_callback);
-  ModifyInstance(app_id, window1.get(), apps::InstanceState::kDestroyed);
+  ModifyInstance(kAndroidAppId, window1.get(), apps::InstanceState::kDestroyed);
 
   // Validate closed event is recorded when both instances are closed.
   base::RunLoop closed_event_run_loop;
   auto closed_record_callback2 = base::BindLambdaForTesting(
       [&, this](const metrics::structured::Event& event) {
-        ValidateAppStateEvent(event, app_id, AppStateChange::kClosed);
+        ValidateAppStateEvent(event, kAndroidAppId, AppStateChange::kClosed);
         closed_event_run_loop.Quit();
       });
   test_structured_metrics_provider()->SetOnEventsRecordClosure(
       closed_record_callback2);
 
-  ModifyInstance(app_id, window2.get(), apps::InstanceState::kDestroyed);
+  ModifyInstance(kAndroidAppId, window2.get(), apps::InstanceState::kDestroyed);
   closed_event_run_loop.Run();
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
                          AppDiscoveryMetricsTest,
-                         testing::Bool() /* IsLacrosPrimary */);
+                         testing::Bool() /* IsLacrosEnabled */);
 
 class AppPlatformMetricsServiceObserverTest
     : public AppPlatformMetricsServiceTestBase,
       public ::testing::WithParamInterface<bool> {
  protected:
   void SetUp() override {
-    if (IsLacrosPrimary()) {
+    if (IsLacrosEnabled()) {
       feature_list_.InitWithFeatures(
-          /*enabled_features=*/{ash::features::kLacrosSupport,
-                                ash::features::kLacrosPrimary},
-          {});
+          /*enabled_features=*/ash::standalone_browser::GetFeatureRefs(), {});
     } else {
       feature_list_.InitWithFeatures(
-          {},
-          /*disabled_features=*/{ash::features::kLacrosSupport,
-                                 ash::features::kLacrosPrimary});
+          {}, /*disabled_features=*/ash::standalone_browser::GetFeatureRefs());
     }
 
     // Set up test user.
     AddRegularUser("test@test.com");
+
+    ASSERT_EQ(IsLacrosEnabled(), crosapi::browser_util::IsLacrosEnabled());
   }
 
-  bool IsLacrosPrimary() const { return GetParam(); }
+  bool IsLacrosEnabled() const { return GetParam(); }
 
   MockObserver* observer() { return &observer_; }
 
@@ -3387,6 +3371,6 @@ TEST_P(AppPlatformMetricsServiceObserverTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          AppPlatformMetricsServiceObserverTest,
-                         ::testing::Bool() /* IsLacrosPrimary */);
+                         ::testing::Bool() /* IsLacrosEnabled */);
 
 }  // namespace apps

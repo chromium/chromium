@@ -28,20 +28,19 @@ class BitmapCursorFactory : public CursorFactory {
   // CursorFactory:
   scoped_refptr<PlatformCursor> GetDefaultCursor(
       mojom::CursorType type) override;
-  scoped_refptr<PlatformCursor> CreateImageCursor(
-      mojom::CursorType type,
-      const SkBitmap& bitmap,
-      const gfx::Point& hotspot) override;
+  scoped_refptr<PlatformCursor> CreateImageCursor(mojom::CursorType type,
+                                                  const SkBitmap& bitmap,
+                                                  const gfx::Point& hotspot,
+                                                  float scale) override;
   scoped_refptr<PlatformCursor> CreateAnimatedCursor(
       mojom::CursorType type,
       const std::vector<SkBitmap>& bitmaps,
       const gfx::Point& hotspot,
+      float scale,
       base::TimeDelta frame_delay) override;
-  void SetDeviceScaleFactor(float scale) override;
 
  private:
   std::map<mojom::CursorType, scoped_refptr<BitmapCursor>> default_cursors_;
-  float cursor_scale_factor_ = 1.f;
 };
 
 }  // namespace ui

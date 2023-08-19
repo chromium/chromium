@@ -35,8 +35,6 @@ const char* BackingTypeToString(SharedImageBackingType type) {
       return "AHardwareBufferImageBacking";
     case SharedImageBackingType::kAngleVulkan:
       return "AngleVulkanImageBacking";
-    case SharedImageBackingType::kGLImage:
-      return "GLImageBacking";
     case SharedImageBackingType::kGLTexture:
       return "GLTextureImageBacking";
     case SharedImageBackingType::kOzone:
@@ -46,7 +44,7 @@ const char* BackingTypeToString(SharedImageBackingType type) {
     case SharedImageBackingType::kSharedMemory:
       return "SharedMemoryImageBacking";
     case SharedImageBackingType::kVideo:
-      return "SharedImageVideo";
+      return "AndroidVideoImageBacking";
     case SharedImageBackingType::kWrappedSkImage:
       return "WrappedSkImage";
     case SharedImageBackingType::kCompound:
@@ -67,15 +65,17 @@ const char* BackingTypeToString(SharedImageBackingType type) {
 
 }  // namespace
 
-SharedImageBacking::SharedImageBacking(const Mailbox& mailbox,
-                                       viz::SharedImageFormat format,
-                                       const gfx::Size& size,
-                                       const gfx::ColorSpace& color_space,
-                                       GrSurfaceOrigin surface_origin,
-                                       SkAlphaType alpha_type,
-                                       uint32_t usage,
-                                       size_t estimated_size,
-                                       bool is_thread_safe)
+SharedImageBacking::SharedImageBacking(
+    const Mailbox& mailbox,
+    viz::SharedImageFormat format,
+    const gfx::Size& size,
+    const gfx::ColorSpace& color_space,
+    GrSurfaceOrigin surface_origin,
+    SkAlphaType alpha_type,
+    uint32_t usage,
+    size_t estimated_size,
+    bool is_thread_safe,
+    absl::optional<gfx::BufferUsage> buffer_usage)
     : mailbox_(mailbox),
       format_(format),
       size_(size),
@@ -83,7 +83,8 @@ SharedImageBacking::SharedImageBacking(const Mailbox& mailbox,
       surface_origin_(surface_origin),
       alpha_type_(alpha_type),
       usage_(usage),
-      estimated_size_(estimated_size) {
+      estimated_size_(estimated_size),
+      buffer_usage_(std::move(buffer_usage)) {
   DCHECK_CALLED_ON_VALID_THREAD(factory_thread_checker_);
 
   if (is_thread_safe)
@@ -197,9 +198,9 @@ SharedImageBacking::ProduceSkiaGraphite(
 std::unique_ptr<DawnImageRepresentation> SharedImageBacking::ProduceDawn(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
-    WGPUDevice device,
-    WGPUBackendType backend_type,
-    std::vector<WGPUTextureFormat> view_formats) {
+    const wgpu::Device& device,
+    wgpu::BackendType backend_type,
+    std::vector<wgpu::TextureFormat> view_formats) {
   return nullptr;
 }
 
@@ -382,7 +383,8 @@ ClearTrackingSharedImageBacking::ClearTrackingSharedImageBacking(
     SkAlphaType alpha_type,
     uint32_t usage,
     size_t estimated_size,
-    bool is_thread_safe)
+    bool is_thread_safe,
+    absl::optional<gfx::BufferUsage> buffer_usage)
     : SharedImageBacking(mailbox,
                          format,
                          size,
@@ -391,7 +393,8 @@ ClearTrackingSharedImageBacking::ClearTrackingSharedImageBacking(
                          alpha_type,
                          usage,
                          estimated_size,
-                         is_thread_safe) {}
+                         is_thread_safe,
+                         std::move(buffer_usage)) {}
 
 gfx::Rect ClearTrackingSharedImageBacking::ClearedRect() const {
   AutoLock auto_lock(this);
@@ -415,6 +418,14 @@ void ClearTrackingSharedImageBacking::SetClearedRectInternal(
 
 scoped_refptr<gfx::NativePixmap> SharedImageBacking::GetNativePixmap() {
   return nullptr;
+}
+
+gfx::GpuMemoryBufferHandle SharedImageBacking::GetGpuMemoryBufferHandle() {
+  // Reaching here is invalid since this method should be only called for
+  // backings which implements it,i.e., memory buffer handle should only be
+  // retrieved from the backings which supports native buffer or shared memory.
+  NOTREACHED();
+  return gfx::GpuMemoryBufferHandle();
 }
 
 bool SharedImageBacking::IsPurgeable() const {

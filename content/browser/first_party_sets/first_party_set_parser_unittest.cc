@@ -33,11 +33,11 @@ using ParseError = FirstPartySetsHandler::ParseError;
 using ParseWarningType = FirstPartySetsHandler::ParseWarningType;
 using ParseWarning = FirstPartySetsHandler::ParseWarning;
 
-const char kPrimaryField[] = "primary";
-const char kAssociatedSitesField[] = "associatedSites";
-const char kCctldsField[] = "ccTLDs";
-const char kReplacementsField[] = "replacements";
-const char kAdditionsField[] = "additions";
+constexpr char kPrimaryField[] = "primary";
+constexpr char kAssociatedSitesField[] = "associatedSites";
+constexpr char kCctldsField[] = "ccTLDs";
+constexpr char kReplacementsField[] = "replacements";
+constexpr char kAdditionsField[] = "additions";
 constexpr char kParsedSuccessfullyHistogram[] =
     "Cookie.FirstPartySets.ComponentSetsParsedSuccessfully";
 constexpr char kNonfatalErrorsHistogram[] =
@@ -176,14 +176,36 @@ TEST(FirstPartySetParser, RejectsNonHTTPSPrimary) {
               Pair(IsEmpty(), IsEmpty()));
 }
 
-TEST(FirstPartySetParser, RejectsNonOriginPrimary) {
+TEST(FirstPartySetParser, NonOriginPrimary) {
   EXPECT_THAT(
-      ParseSets(
-          R"({"primary": "example", "associatedSites": ["https://aaaa.test"]})"),
+      ParseSets(R"({"primary": "example", "associatedSites": )"
+                R"(["https://associatedsite1.test"]})"
+                "\n"
+                R"({"primary": "https://example2.test", "associatedSites": )"
+                R"(["https://associatedsite2.test"]})"),
       Pair(IsEmpty(), IsEmpty()));
 }
 
-TEST(FirstPartySetParser, SkipsSetOnNonOriginPrimary) {
+TEST(FirstPartySetParser, PrimaryIsTLD) {
+  const net::SchemefulSite example2(GURL("https://example2.test"));
+  const net::SchemefulSite associated2(GURL("https://associatedsite2.test"));
+
+  EXPECT_THAT(
+      ParseSets(R"({"primary": "https://example", "associatedSites": )"
+                R"(["https://associatedsite1.test"]})"
+                "\n"
+                R"({"primary": "https://example2.test", "associatedSites": )"
+                R"(["https://associatedsite2.test"]})"),
+      Pair(UnorderedElementsAre(
+               Pair(example2,
+                    net::FirstPartySetEntry(example2, net::SiteType::kPrimary,
+                                            absl::nullopt)),
+               Pair(associated2, net::FirstPartySetEntry(
+                                     example2, net::SiteType::kAssociated, 0))),
+           IsEmpty()));
+}
+
+TEST(FirstPartySetParser, PrimaryIsIPAddress) {
   base::HistogramTester histogram_tester;
   net::SchemefulSite example2(GURL("https://example2.test"));
   net::SchemefulSite associated2(GURL("https://associatedsite2.test"));
@@ -220,13 +242,26 @@ TEST(FirstPartySetParser, SkipsSetOnNonOriginPrimary) {
                                       /*expected_bucket_count=*/1);
 }
 
-TEST(FirstPartySetParser, RejectsPrimaryWithoutRegisteredDomain) {
+TEST(FirstPartySetParser, PrimaryHasNoTLD) {
+  const net::SchemefulSite example2(GURL("https://example2.test"));
+  const net::SchemefulSite associated2(GURL("https://associatedsite2.test"));
+
   base::HistogramTester histogram_tester;
-  EXPECT_THAT(ParseSets(R"({"primary": "https://example.test..", )"
-                        R"("associatedSites": ["https://aaaa.test"]})"),
-              Pair(IsEmpty(), IsEmpty()));
+  EXPECT_THAT(
+      ParseSets(R"({"primary": "https://example.test..", "associatedSites": )"
+                R"(["https://associatedsite1.test"]})"
+                "\n"
+                R"({"primary": "https://example2.test", "associatedSites": )"
+                R"(["https://associatedsite2.test"]})"),
+      Pair(UnorderedElementsAre(
+               Pair(example2,
+                    net::FirstPartySetEntry(example2, net::SiteType::kPrimary,
+                                            absl::nullopt)),
+               Pair(associated2, net::FirstPartySetEntry(
+                                     example2, net::SiteType::kAssociated, 0))),
+           IsEmpty()));
   histogram_tester.ExpectUniqueSample(
-      kParsedSuccessfullyHistogram, /*sample=*/0, /*expected_bucket_count=*/1);
+      kParsedSuccessfullyHistogram, /*sample=*/1, /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(kNonfatalErrorsHistogram, /*sample=*/1,
                                       /*expected_bucket_count=*/1);
 }
@@ -248,45 +283,102 @@ TEST(FirstPartySetParser, RejectsNonHTTPSAssociatedSite) {
               Pair(IsEmpty(), IsEmpty()));
 }
 
-TEST(FirstPartySetParser, RejectsNonOriginAssociatedSite) {
-  EXPECT_THAT(ParseSets(R"({"primary": "https://example.test",)"
-                        R"("associatedSites": ["aaaa"]})"),
-              Pair(IsEmpty(), IsEmpty()));
+TEST(FirstPartySetParser, NonOriginAssociatedSite) {
+  EXPECT_THAT(
+      ParseSets(R"({"primary": "https://example1.test", "associatedSites": )"
+                R"(["associatedsite1"]})"
+                "\n"
+                R"({"primary": "https://example2.test", "associatedSites": )"
+                R"(["https://associatedsite2.test"]})"),
+      Pair(IsEmpty(), IsEmpty()));
 }
 
-TEST(FirstPartySetParser, SkipsSetOnNonOriginAssociatedSite) {
-  net::SchemefulSite example2(GURL("https://example2.test"));
-  net::SchemefulSite associated2(GURL("https://associatedsite2.test"));
-  net::SchemefulSite example(GURL("https://example.test"));
-  net::SchemefulSite associated3(GURL("https://associatedsite3.test"));
+TEST(FirstPartySetParser, AssociatedSiteIsTLD) {
+  const net::SchemefulSite example(GURL("https://example.test"));
+  const net::SchemefulSite example2(GURL("https://example2.test"));
+  const net::SchemefulSite associated1(GURL("https://associatedsite1.test"));
+  const net::SchemefulSite associated2(GURL("https://associatedsite2.test"));
 
   EXPECT_THAT(
-      ParseSets(
-          R"({"primary": "https://example.test", "associatedSites": ["https://127.0.0.1:1234"]})"
-          "\n"
-          R"({"primary": "https://example2.test", "associatedSites": )"
-          R"(["https://associatedsite2.test"]})"
-          "\n"
-          R"({"primary": "https://example.test", "associatedSites": )"
-          R"(["https://associatedsite3.test"]})"),
+      ParseSets(R"({"primary": "https://example.test", "associatedSites": [)"
+                R"("https://associated", "https://associatedsite1.test"]})"
+                "\n"
+                R"({"primary": "https://example2.test", "associatedSites": )"
+                R"(["https://associatedsite2.test"]})"),
       Pair(UnorderedElementsAre(
+               Pair(example,
+                    net::FirstPartySetEntry(example, net::SiteType::kPrimary,
+                                            absl::nullopt)),
+               Pair(associated1, net::FirstPartySetEntry(
+                                     example, net::SiteType::kAssociated, 1)),
+               Pair(example2,
+                    net::FirstPartySetEntry(example2, net::SiteType::kPrimary,
+                                            absl::nullopt)),
+               Pair(associated2, net::FirstPartySetEntry(
+                                     example2, net::SiteType::kAssociated, 0))),
+           IsEmpty()));
+}
+
+TEST(FirstPartySetParser, AssociatedSiteIsIPAddress) {
+  const net::SchemefulSite example(GURL("https://example.test"));
+  const net::SchemefulSite example2(GURL("https://example2.test"));
+  const net::SchemefulSite associated1(GURL("https://associatedsite1.test"));
+  const net::SchemefulSite associated2(GURL("https://associatedsite2.test"));
+
+  EXPECT_THAT(
+      ParseSets(R"({"primary": "https://example.test", "associatedSites": [)"
+                R"("https://127.0.0.1:1234", "https://associatedsite1.test"]})"
+                "\n"
+                R"({"primary": "https://example2.test", "associatedSites": )"
+                R"(["https://associatedsite2.test"]})"),
+      Pair(UnorderedElementsAre(
+               Pair(example,
+                    net::FirstPartySetEntry(example, net::SiteType::kPrimary,
+                                            absl::nullopt)),
+               Pair(associated1, net::FirstPartySetEntry(
+                                     example, net::SiteType::kAssociated, 1)),
+               Pair(example2,
+                    net::FirstPartySetEntry(example2, net::SiteType::kPrimary,
+                                            absl::nullopt)),
+               Pair(associated2, net::FirstPartySetEntry(
+                                     example2, net::SiteType::kAssociated, 0))),
+           IsEmpty()));
+}
+
+TEST(FirstPartySetParser, AssociatedSiteHasNoTLD) {
+  const net::SchemefulSite example(GURL("https://example.test"));
+  const net::SchemefulSite example2(GURL("https://example2.test"));
+  const net::SchemefulSite example3(GURL("https://example3.test"));
+  const net::SchemefulSite associated1(GURL("https://associatedsite1.test"));
+  const net::SchemefulSite associated2(GURL("https://associatedsite2.test"));
+  const net::SchemefulSite associated3(GURL("https://associatedsite3.test"));
+
+  EXPECT_THAT(
+      ParseSets(R"({"primary": "https://example.test", "associatedSites": [)"
+                R"("https://aaaa.test..", "https://associatedsite1.test"]})"
+                "\n"
+                R"({"primary": "https://example2.test", "associatedSites": )"
+                R"(["https://associatedsite2.test"]})"
+                "\n"
+                R"({"primary": "https://example3.test", "associatedSites": )"
+                R"(["https://associatedsite3.test"]})"),
+      Pair(UnorderedElementsAre(
+               Pair(example,
+                    net::FirstPartySetEntry(example, net::SiteType::kPrimary,
+                                            absl::nullopt)),
+               Pair(associated1, net::FirstPartySetEntry(
+                                     example, net::SiteType::kAssociated, 1)),
                Pair(example2,
                     net::FirstPartySetEntry(example2, net::SiteType::kPrimary,
                                             absl::nullopt)),
                Pair(associated2, net::FirstPartySetEntry(
                                      example2, net::SiteType::kAssociated, 0)),
-               Pair(example,
-                    net::FirstPartySetEntry(example, net::SiteType::kPrimary,
+               Pair(example3,
+                    net::FirstPartySetEntry(example3, net::SiteType::kPrimary,
                                             absl::nullopt)),
                Pair(associated3, net::FirstPartySetEntry(
-                                     example, net::SiteType::kAssociated, 0))),
+                                     example3, net::SiteType::kAssociated, 0))),
            IsEmpty()));
-}
-
-TEST(FirstPartySetParser, RejectsAssociatedSiteWithoutRegisteredDomain) {
-  EXPECT_THAT(ParseSets(R"({"primary": "https://example.test", )"
-                        R"("associatedSites": ["https://aaaa.test.."]})"),
-              Pair(IsEmpty(), IsEmpty()));
 }
 
 TEST(FirstPartySetParser, TruncatesSubdomain_Primary) {
@@ -317,6 +409,137 @@ TEST(FirstPartySetParser, TruncatesSubdomain_AssociatedSite) {
                                             absl::nullopt)),
                Pair(aaaa, net::FirstPartySetEntry(
                               example, net::SiteType::kAssociated, 0))),
+           IsEmpty()));
+}
+
+TEST(FirstPartySetParser, TruncatesSubdomain_RepeatedDomain) {
+  const net::SchemefulSite example(GURL("https://example.test"));
+  const net::SchemefulSite example2(GURL("https://example2.test"));
+  const net::SchemefulSite bbbb(GURL("https://bbbb.test"));
+  const net::SchemefulSite cccc(GURL("https://cccc.test"));
+
+  // The first set is valid iff aaaa.test is on the Public Suffix List. Since
+  // that invariant is not under the control of whatever provides the
+  // First-Party Sets data, the whole list of sets should not be invalidated if
+  // that invariant fails as a result of PSL changes.
+  EXPECT_THAT(
+      ParseSets(R"({"primary": "https://example.test", )"
+                R"("associatedSites": [)"
+                R"("https://subdomain1.aaaa.test", )"
+                R"("https://subdomain2.aaaa.test", )"
+                R"("https://bbbb.test"]})"
+                "\n"
+                R"({"primary": "https://example2.test", )"
+                R"("associatedSites": [)"
+                R"("https://cccc.test"]})"
+                "\n"),
+      Pair(UnorderedElementsAre(
+               Pair(example,
+                    net::FirstPartySetEntry(example, net::SiteType::kPrimary,
+                                            absl::nullopt)),
+               Pair(bbbb, net::FirstPartySetEntry(
+                              example, net::SiteType::kAssociated, 2)),
+               Pair(example2,
+                    net::FirstPartySetEntry(example2, net::SiteType::kPrimary,
+                                            absl::nullopt)),
+               Pair(cccc, net::FirstPartySetEntry(
+                              example2, net::SiteType::kAssociated, 0))),
+           IsEmpty()));
+}
+
+TEST(FirstPartySetParser, TruncatesSubdomain_NondisjointSets) {
+  net::SchemefulSite example(GURL("https://example.test"));
+  net::SchemefulSite example2(GURL("https://example2.test"));
+  net::SchemefulSite example3(GURL("https://example3.test"));
+  net::SchemefulSite example3_cctld(GURL("https://example3.cctld"));
+  net::SchemefulSite aaaa(GURL("https://aaaa.test"));
+  net::SchemefulSite bbbb(GURL("https://bbbb.test"));
+  net::SchemefulSite cccc(GURL("https://cccc.test"));
+
+  // These sets are disjoint iff aaaa.test is on the Public Suffix List. Since
+  // that invariant is not under the control of whatever provides the
+  // First-Party Sets data, the whole list of sets should not be invalidated if
+  // that invariant fails as a result of PSL changes.
+  //
+  // Note that when "invalid" domains are removed from sets, we have to re-scan
+  // to find and delete singleton sets.
+  //
+  // Note also that if the sets are nondisjoint for reasons unrelated to the
+  // PSL, then the whole list should be considered invalid; see other test
+  // cases.
+  EXPECT_THAT(
+      ParseSets(R"({"primary": "https://example3.test", )"
+                R"("associatedSites": [)"
+                R"("https://subdomain3.aaaa.test"]})"
+                "\n"
+                R"({"primary": "https://example.test", )"
+                R"("associatedSites": [)"
+                R"("https://subdomain.aaaa.test", "https://bbbb.test"]})"
+                "\n"
+                R"({"primary": "https://example2.test", )"
+                R"("associatedSites": [)"
+                R"("https://subdomain2.aaaa.test", "https://cccc.test"]})"
+                "\n"),
+      Pair(UnorderedElementsAre(
+               Pair(example,
+                    net::FirstPartySetEntry(example, net::SiteType::kPrimary,
+                                            absl::nullopt)),
+               Pair(bbbb, net::FirstPartySetEntry(
+                              example, net::SiteType::kAssociated, 1)),
+               Pair(example2,
+                    net::FirstPartySetEntry(example2, net::SiteType::kPrimary,
+                                            absl::nullopt)),
+               Pair(cccc, net::FirstPartySetEntry(
+                              example2, net::SiteType::kAssociated, 1))),
+           IsEmpty()));
+
+  // example3.test's set should lose its associated site and alias, but should
+  // not be removed (since it does not become a singleton).
+  EXPECT_THAT(
+      ParseSets(R"({"primary": "https://example3.test", )"
+                R"("associatedSites": [)"
+                R"("https://subdomain3.aaaa.test"],)"
+                R"("ccTLDs": {)"
+                R"("https://aaaa.test": ["https://subdomain3.aaaa.cctld"],)"
+                R"("https://example3.test": ["https://example3.cctld"])"
+                "}"
+                "}"
+                "\n"
+                R"({"primary": "https://example.test", )"
+                R"("associatedSites": [)"
+                R"("https://subdomain.aaaa.test", "https://bbbb.test"]})"
+                "\n"),
+      Pair(UnorderedElementsAre(
+               Pair(example,
+                    net::FirstPartySetEntry(example, net::SiteType::kPrimary,
+                                            absl::nullopt)),
+               Pair(bbbb, net::FirstPartySetEntry(
+                              example, net::SiteType::kAssociated, 1)),
+               Pair(example3,
+                    net::FirstPartySetEntry(example3, net::SiteType::kPrimary,
+                                            absl::nullopt))),
+           UnorderedElementsAre(Pair(example3_cctld, example3))));
+
+  // This is a scenario where an invalid alias in one set gets removed, and that
+  // set becomes a singleton and is removed as a result.
+  EXPECT_THAT(
+      ParseSets(
+          R"({"primary": "https://example3.test", )"
+          R"("ccTLDs": {)"
+          R"("https://example3.test": ["https://subdomain1.example3.cctld"])"
+          "}"
+          "}"
+          "\n"
+          R"({"primary": "https://example.test", )"
+          R"("associatedSites": [)"
+          R"("https://subdomain2.example3.cctld", "https://bbbb.test"]})"
+          "\n"),
+      Pair(UnorderedElementsAre(
+               Pair(example,
+                    net::FirstPartySetEntry(example, net::SiteType::kPrimary,
+                                            absl::nullopt)),
+               Pair(bbbb, net::FirstPartySetEntry(
+                              example, net::SiteType::kAssociated, 1))),
            IsEmpty()));
 }
 
@@ -743,54 +966,123 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
 
 TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
      PrimaryNonRegisteredDomain) {
+  const net::SchemefulSite primary2(GURL("https://primary2.test"));
+  const net::SchemefulSite primary3(GURL("https://primary3.test"));
+  const net::SchemefulSite associated2(GURL("https://associatedsite2.test"));
+  const net::SchemefulSite associated3(GURL("https://associatedsite3.test"));
+
+  // The invalid primary invalidates the set, but other sets are still parsed.
   base::Value policy_value = base::JSONReader::Read(R"(
                 {
                 "replacements": [
                   {
                     "primary": "https://primary1.test..",
                     "associatedSites": ["https://associatedsite1.test"]
+                  },
+                  {
+                    "primary": "https://primary2.test",
+                    "associatedSites": ["https://associatedsite2.test"]
                   }
                 ],
-                "additions": []
+                "additions": [
+                  {
+                    "primary": "https://primary3.test",
+                    "associatedSites": ["https://associatedsite3.test"]
+                  }
+                ]
               }
             )")
                                  .value();
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
-          .first.error(),
-      ParseError(ParseErrorType::kInvalidDomain,
-                 {kReplacementsField, 0, kPrimaryField}));
+          .first.value(),
+      FirstPartySetParser::ParsedPolicySetLists(
+          {
+              FirstPartySetParser::SetsMap({
+                  {primary2,
+                   net::FirstPartySetEntry(primary2, net::SiteType::kPrimary,
+                                           absl::nullopt)},
+                  {associated2,
+                   net::FirstPartySetEntry(primary2, net::SiteType::kAssociated,
+                                           absl::nullopt)},
+              }),
+          },
+          {
+              FirstPartySetParser::SetsMap({
+                  {primary3,
+                   net::FirstPartySetEntry(primary3, net::SiteType::kPrimary,
+                                           absl::nullopt)},
+                  {associated3,
+                   net::FirstPartySetEntry(primary3, net::SiteType::kAssociated,
+                                           absl::nullopt)},
+              }),
+          }));
 }
 
 TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
      AssociatedSiteNonRegisteredDomain) {
+  const net::SchemefulSite primary1(GURL("https://primary1.test"));
+  const net::SchemefulSite primary2(GURL("https://primary2.test"));
+  const net::SchemefulSite associated1(GURL("https://associatedsite1.test"));
+  const net::SchemefulSite associated2(GURL("https://associatedsite2.test"));
+  const net::SchemefulSite associated3(GURL("https://associatedsite3.test"));
+
   base::Value policy_value = base::JSONReader::Read(R"(
               {
                 "replacements": [
                   {
                     "primary": "https://primary1.test",
-                    "associatedSites": ["https://associatedsite1.test.."]
+                    "associatedSites": [
+                      "https://associatedsite1.test..",
+                      "https://associatedsite2.test"
+                    ]
                   }
                 ],
-                "additions": []
+                "additions": [
+                  {
+                    "primary": "https://primary2.test",
+                    "associatedSites": ["https://associatedsite3"]
+                  }
+                ]
               }
             )")
                                  .value();
+
+  // The invalid associated site is ignored, but the rest of the set is still
+  // processed. If the set becomes a singleton as a result of ignoring a member
+  // site, the set is ignored entirely.
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
-          .first.error(),
-      ParseError(ParseErrorType::kInvalidDomain,
-                 {kReplacementsField, 0, kAssociatedSitesField, 0}));
+          .first.value(),
+      FirstPartySetParser::ParsedPolicySetLists(
+          {
+              FirstPartySetParser::SetsMap({
+                  {primary1,
+                   net::FirstPartySetEntry(primary1, net::SiteType::kPrimary,
+                                           absl::nullopt)},
+                  {associated2,
+                   net::FirstPartySetEntry(primary1, net::SiteType::kAssociated,
+                                           absl::nullopt)},
+              }),
+          },
+          {}));
 }
 
 TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
      SingletonSetError_EmptyAssociatedSites) {
+  const net::SchemefulSite primary2(GURL("https://primary2.test"));
+  const net::SchemefulSite associated2(GURL("https://associatedsite2.test"));
+
   base::Value policy_value = base::JSONReader::Read(R"(
              {
                 "replacements": [
                   {
                     "primary": "https://primary1.test",
                     "associatedSites": []
+                  },
+                  {
+                    "primary": "https://primary2.test",
+                    "associatedSites": ["https://associatedsite2.test"]
                   }
                 ],
                 "additions": []
@@ -799,9 +1091,19 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
                                  .value();
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
-          .first.error(),
-      ParseError(ParseErrorType::kSingletonSet,
-                 {kReplacementsField, 0, kAssociatedSitesField}));
+          .first.value(),
+      FirstPartySetParser::ParsedPolicySetLists(
+          {
+              FirstPartySetParser::SetsMap({
+                  {primary2,
+                   net::FirstPartySetEntry(primary2, net::SiteType::kPrimary,
+                                           absl::nullopt)},
+                  {associated2,
+                   net::FirstPartySetEntry(primary2, net::SiteType::kAssociated,
+                                           absl::nullopt)},
+              }),
+          },
+          {}));
 }
 
 TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
@@ -916,7 +1218,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest, WarnsUntilError) {
                 ],
                 "additions": [
                   {
-                    "primary": "https://primary2.",
+                    "primary": "http://primary2.test",
                     "associatedSites": ["https://associatedsite2.test"],
                     "ccTLDs": {
                       "https://associatedsite2.test": ["https://associatedsite2-diff.cctld"]
@@ -929,11 +1231,11 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest, WarnsUntilError) {
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
           .first.error(),
-      ParseError(ParseErrorType::kInvalidDomain,
+      ParseError(ParseErrorType::kNonHttpsScheme,
                  {kAdditionsField, 0, kPrimaryField}));
 
   // The ParseWarning in the ccTLDs field of "additions[0]" isn't added since
-  // the InvalidOrigin error arises first.
+  // the error arises first.
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
           .second,
@@ -1048,6 +1350,79 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
               {primary3, net::FirstPartySetEntry(
                              primary3, net::SiteType::kPrimary, absl::nullopt)},
               {associatedSite3,
+               net::FirstPartySetEntry(primary3, net::SiteType::kAssociated,
+                                       absl::nullopt)},
+          })}));
+  EXPECT_THAT(
+      FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
+          .second,
+      IsEmpty());
+}
+
+TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
+     SuccessfulMapping_CrossList_TruncatesNonDisjoint) {
+  net::SchemefulSite primary1(GURL("https://primary1.test"));
+  net::SchemefulSite associated1(GURL("https://associated1.test"));
+  net::SchemefulSite primary2(GURL("https://primary2.test"));
+  net::SchemefulSite associated2(GURL("https://associated2.test"));
+  net::SchemefulSite primary3(GURL("https://primary3.test"));
+  net::SchemefulSite associated3(GURL("https://associated3.test"));
+
+  // The following sets are disjoint iff aaaa.test is on the Public Suffix List.
+  base::Value policy_value = base::JSONReader::Read(R"(
+                {
+                "replacements": [
+                  {
+                    "primary": "https://primary1.test",
+                    "associatedSites": [
+                      "https://associated1.test",
+                      "https://subdomain1.aaaa.test"
+                    ]
+                  },
+                  {
+                    "primary": "https://primary2.test",
+                    "associatedSites": [
+                      "https://associated2.test",
+                      "https://subdomain2.aaaa.test"
+                    ]
+                  }
+                ],
+                "additions": [
+                  {
+                    "primary": "https://primary3.test",
+                    "associatedSites": [
+                      "https://associated3.test",
+                      "https://subdomain3.aaaa.test"
+                    ]
+                  }
+                ]
+              }
+            )")
+                                 .value();
+  EXPECT_THAT(
+      FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
+          .first.value(),
+      FirstPartySetParser::ParsedPolicySetLists(
+          {FirstPartySetParser::SetsMap({
+               {primary1,
+                net::FirstPartySetEntry(primary1, net::SiteType::kPrimary,
+                                        absl::nullopt)},
+               {associated1,
+                net::FirstPartySetEntry(primary1, net::SiteType::kAssociated,
+                                        absl::nullopt)},
+           }),
+           FirstPartySetParser::SetsMap({
+               {primary2,
+                net::FirstPartySetEntry(primary2, net::SiteType::kPrimary,
+                                        absl::nullopt)},
+               {associated2,
+                net::FirstPartySetEntry(primary2, net::SiteType::kAssociated,
+                                        absl::nullopt)},
+           })},
+          {FirstPartySetParser::SetsMap({
+              {primary3, net::FirstPartySetEntry(
+                             primary3, net::SiteType::kPrimary, absl::nullopt)},
+              {associated3,
                net::FirstPartySetEntry(primary3, net::SiteType::kAssociated,
                                        absl::nullopt)},
           })}));

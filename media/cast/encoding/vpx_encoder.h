@@ -17,6 +17,7 @@
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
+class VideoEncoderMetricsProvider;
 class VideoFrame;
 }
 
@@ -25,7 +26,8 @@ namespace cast {
 
 class VpxEncoder final : public SoftwareVideoEncoder {
  public:
-  explicit VpxEncoder(const FrameSenderConfig& video_config);
+  VpxEncoder(const FrameSenderConfig& video_config,
+             std::unique_ptr<VideoEncoderMetricsProvider> metrics_provider);
 
   ~VpxEncoder() final;
 
@@ -58,6 +60,8 @@ class VpxEncoder final : public SoftwareVideoEncoder {
   const FrameSenderConfig cast_config_;
 
   const double target_encoder_utilization_;
+
+  const std::unique_ptr<VideoEncoderMetricsProvider> metrics_provider_;
 
   // VPX internal objects.  These are valid for use only while is_initialized()
   // returns true.

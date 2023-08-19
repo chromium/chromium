@@ -22,7 +22,9 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/input_overlay_resources_util.h"
+#include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/app_restore/window_properties.h"
 #include "components/exo/shell_surface_base.h"
@@ -33,6 +35,7 @@
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/display/manager/display_manager.h"
+#include "ui/wm/core/window_util.h"
 
 namespace arc::input_overlay {
 namespace {
@@ -62,7 +65,7 @@ bool IsGhostWindowLoading(aura::Window* window) {
     return true;
   }
   // TODO(b/258308970): This is a workaround.
-  // |GetProperty(app_restore::kRealArcTaskWindow)| doesn't give an expected
+  // `GetProperty(app_restore::kRealArcTaskWindow)` doesn't give an expected
   // value. So check if the window is still loading as a ghost window by
   // checking if there is an overlay.
   auto* shell_surface_base = exo::GetShellSurfaceBaseForWindow(window);
@@ -153,10 +156,10 @@ void ArcInputOverlayManager::EnsureFactoryBuilt() {
 }
 
 void ArcInputOverlayManager::OnWindowInitialized(aura::Window* new_window) {
-  // |aura::client::kAppType| property is set in
-  // |AppServiceAppWindowShelfController::OnWindowInitialized()|.
-  // |AppServiceAppWindowShelfController::OnWindowInitialized()| is called
-  // before |ArcInputOverlayManager::OnWindowInitialized()|, so we can filter
+  // `aura::client::kAppType` property is set in
+  // `AppServiceAppWindowShelfController::OnWindowInitialized()`.
+  // `AppServiceAppWindowShelfController::OnWindowInitialized()` is called
+  // before `ArcInputOverlayManager::OnWindowInitialized()`, so we can filter
   // non-ARC apps here.
   if (!new_window || !ash::IsArcWindow(new_window) ||
       new_window != new_window->GetToplevelWindow() ||
@@ -173,7 +176,7 @@ void ArcInputOverlayManager::OnWindowPropertyChanged(aura::Window* window,
   // There are two cases when launching an app.
   // 1) Launch from Launcher: Receive {ash::kArcPackageNameKey, package_name}.
   // 2) Restore the app: Receive {ash::kArcPackageNameKey, package_name} and
-  // {app_restore::kRealArcTaskWindow, true}. When |ash::kArcPackageNameKey| is
+  // {app_restore::kRealArcTaskWindow, true}. When `ash::kArcPackageNameKey` is
   // changed, the ghost window overlay is not destroyed. The ghost window
   // overlay is destroyed right before property
   // {app_restore::kRealArcTaskWindow} is set.
@@ -231,7 +234,7 @@ void ArcInputOverlayManager::OnWindowRemovingFromRootWindow(
 
 void ArcInputOverlayManager::OnWindowParentChanged(aura::Window* window,
                                                    aura::Window* parent) {
-  // Ignore if |parent| is a container.
+  // Ignore if `parent` is a container.
   if (!parent || parent != parent->GetToplevelWindow()) {
     return;
   }
@@ -277,12 +280,53 @@ void ArcInputOverlayManager::OnWindowFocused(aura::Window* gained_focus,
     gained_focus_top_level_window = gained_focus->GetToplevelWindow();
   }
 
-  if (lost_focus_top_level_window == gained_focus_top_level_window) {
-    return;
-  }
+  // For beta, the window is still considered as focused when the focus is on
+  // its transient sibling window or the game dashboard main menu.
+  if (IsBeta()) {
+    // If `gained_window_by_transient` is nullptr, it means
+    // `gained_focus_top_level_window` is nullptr or not a transient window.
+    auto* gained_window_by_transient =
+        gained_focus_top_level_window
+            ? wm::GetTransientParent(gained_focus_top_level_window)
+            : nullptr;
+    // If `lost_window_by_transient` is nullptr, it means
+    // `lost_focus_top_level_window` is nullptr or not a transient window.
+    auto* lost_window_by_transient =
+        lost_focus_top_level_window
+            ? wm::GetTransientParent(lost_focus_top_level_window)
+            : nullptr;
 
-  UnRegisterWindow(lost_focus_top_level_window);
-  RegisterWindow(gained_focus_top_level_window);
+    // Check if the focus is on the GD main menu view.
+    auto* gained_window_by_main_menu =
+        GetGameWindow(gained_focus_top_level_window);
+
+    auto* lost_window_by_main_menu = GetGameWindow(lost_focus_top_level_window);
+
+    auto* real_gained_window =
+        gained_window_by_main_menu
+            ? gained_window_by_main_menu
+            : (gained_window_by_transient ? gained_window_by_transient
+                                          : gained_focus_top_level_window);
+    auto* real_lost_window =
+        lost_window_by_main_menu
+            ? lost_window_by_main_menu
+            : (lost_window_by_transient ? lost_window_by_transient
+                                        : lost_focus_top_level_window);
+
+    if (real_gained_window == real_lost_window) {
+      return;
+    }
+
+    UnRegisterWindow(real_lost_window);
+    RegisterWindow(real_gained_window);
+  } else {
+    if (lost_focus_top_level_window == gained_focus_top_level_window) {
+      return;
+    }
+
+    UnRegisterWindow(lost_focus_top_level_window);
+    RegisterWindow(gained_focus_top_level_window);
+  }
 }
 
 void ArcInputOverlayManager::OnTabletModeStarting() {
@@ -306,14 +350,6 @@ void ArcInputOverlayManager::OnDisplayMetricsChanged(
   }
 
   it->second->UpdatePositionsForRegister();
-}
-
-void ArcInputOverlayManager::ResetForPendingTouchInjector(
-    std::unique_ptr<TouchInjector> touch_injector) {
-  auto* window = touch_injector->window();
-  loading_data_windows_.erase(window);
-  touch_injector.reset();
-  RemoveWindowObservation(window);
 }
 
 void ArcInputOverlayManager::RemoveWindowObservation(aura::Window* window) {
@@ -362,12 +398,12 @@ void ArcInputOverlayManager::OnFinishReadDefaultData(
     std::unique_ptr<TouchInjector> touch_injector) {
   DCHECK(touch_injector);
 
-  // Save |touch_injector->package_name()| first because
-  // |std::move(touch_injector)| is also called in the task runner.
+  // Save `touch_injector->package_name()` first because
+  // `std::move(touch_injector)` is also called in the task runner.
   std::string package_name = touch_injector->package_name();
 
   if (touch_injector->actions().empty()) {
-    if (!beta_) {
+    if (!IsBeta()) {
       ResetForPendingTouchInjector(std::move(touch_injector));
       return;
     }
@@ -423,15 +459,7 @@ void ArcInputOverlayManager::OnDidCheckGioApplicable(
     return;
   }
 
-  auto* window = touch_injector->window();
-  DCHECK(window);
-  if (!loading_data_windows_.contains(window) || window->is_destroying()) {
-    return;
-  }
-
-  input_overlay_enabled_windows_.emplace(window, std::move(touch_injector));
-  loading_data_windows_.erase(window);
-  RegisterFocusedWindow();
+  OnLoadingFinished(std::move(touch_injector));
 }
 
 void ArcInputOverlayManager::OnProtoDataAvailable(
@@ -444,20 +472,7 @@ void ArcInputOverlayManager::OnProtoDataAvailable(
     touch_injector->NotifyFirstTimeLaunch();
   }
 
-  auto* window = touch_injector->window();
-  DCHECK(window);
-  // Check if |window| is destroyed or destroying when calling this function.
-  if (!loading_data_windows_.contains(window) || window->is_destroying()) {
-    ResetForPendingTouchInjector(std::move(touch_injector));
-    return;
-  }
-
-  touch_injector->RecordMenuStateOnLaunch();
-  // Now we can safely add <*window, touch_injector> in
-  // |input_overlay_enabled_windows_|.
-  input_overlay_enabled_windows_.emplace(window, std::move(touch_injector));
-  loading_data_windows_.erase(window);
-  RegisterFocusedWindow();
+  OnLoadingFinished(std::move(touch_injector));
 }
 
 void ArcInputOverlayManager::OnSaveProtoFile(
@@ -507,9 +522,14 @@ void ArcInputOverlayManager::RegisterWindow(aura::Window* window) {
       registered_top_level_window_ == window) {
     return;
   }
-  DCHECK_EQ(ash::window_util::GetFocusedWindow()->GetToplevelWindow(), window);
-  if (ash::window_util::GetFocusedWindow()->GetToplevelWindow() != window) {
-    return;
+
+  // It should always unregister the window first, then register another window.
+  DCHECK(!registered_top_level_window_);
+
+  // For Beta version, it may focus on its transient sibling window.
+  if (!IsBeta()) {
+    DCHECK_EQ(ash::window_util::GetFocusedWindow()->GetToplevelWindow(),
+              window);
   }
 
   auto it = input_overlay_enabled_windows_.find(window);
@@ -576,8 +596,70 @@ void ArcInputOverlayManager::RemoveDisplayOverlayController() {
   if (!registered_top_level_window_) {
     return;
   }
-  DCHECK(display_overlay_controller_);
-  display_overlay_controller_.reset();
+
+  // There is only one `display_overlay_controller_` active at a time. When
+  // window is destroyed, the attached sibling window is destroyed first, which
+  // triggers the window focus change. And then it also triggers the window
+  // unregister and gets `display_overlay_controller_` reset before here.
+  if (!IsBeta()) {
+    DCHECK(display_overlay_controller_);
+  }
+
+  if (display_overlay_controller_) {
+    display_overlay_controller_.reset();
+  }
+}
+
+void ArcInputOverlayManager::ResetForPendingTouchInjector(
+    std::unique_ptr<TouchInjector> touch_injector) {
+  auto* window = touch_injector->window();
+
+  // If `window` is destroyed, it will be removed from `loading_data_window_` by
+  // OnWindowDestroying(). So it is safe to call Window class functions after
+  // checking `loading_data_window_`.
+  if ((IsGameDashboardFlagOn() || IsBeta()) &&
+      loading_data_windows_.contains(window) && !window->is_destroying()) {
+    // GIO status is known here and GIO is not available.
+    window->SetProperty(ash::kArcGameControlsFlagsKey,
+                        ash::ArcGameControlsFlag::kKnown);
+  }
+  loading_data_windows_.erase(window);
+  touch_injector.reset();
+  RemoveWindowObservation(window);
+}
+
+void ArcInputOverlayManager::OnLoadingFinished(
+    std::unique_ptr<TouchInjector> touch_injector) {
+  auto* window = touch_injector->window();
+  DCHECK(window);
+  // Check if `window` is destroyed or destroying when calling this function.
+  if (!loading_data_windows_.contains(window) || window->is_destroying()) {
+    ResetForPendingTouchInjector(std::move(touch_injector));
+    return;
+  }
+
+  touch_injector->UpdateFlags();
+
+  // Record the menu state when there is at least one action.
+  if (!touch_injector->actions().empty()) {
+    touch_injector->RecordMenuStateOnLaunch();
+  }
+
+  input_overlay_enabled_windows_.emplace(window, std::move(touch_injector));
+  loading_data_windows_.erase(window);
+  RegisterFocusedWindow();
+}
+
+aura::Window* ArcInputOverlayManager::GetGameWindow(aura::Window* window) {
+  if (!window || window->GetName() != "GameDashboardMainMenuView") {
+    return nullptr;
+  }
+
+  auto* widget = views::Widget::GetWidgetForNativeWindow(window);
+  DCHECK(widget);
+  DCHECK(widget->parent());
+  DCHECK(widget->parent()->GetNativeWindow());
+  return wm::GetTransientParent(widget->parent()->GetNativeWindow());
 }
 
 }  // namespace arc::input_overlay

@@ -10,8 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioGroup;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.ui.base.ViewUtils;
 
 import java.util.ArrayList;
@@ -157,7 +155,6 @@ public final class RadioButtonWithDescriptionLayout
      *
      * @param childIndex Index of the child to select.
      */
-    @VisibleForTesting
     void selectChildAtIndexForTesting(int childIndex) {
         RadioButtonWithDescription b = (RadioButtonWithDescription) getChildAt(childIndex);
         b.setChecked(true);

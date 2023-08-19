@@ -8,8 +8,8 @@
 #include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display_switches.h"
-#include "ui/display/fake/fake_display_snapshot.h"
 #include "ui/display/manager/display_change_observer.h"
+#include "ui/display/manager/test/fake_display_snapshot.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -157,18 +157,21 @@ TEST_F(DisplayInfoTest, TestToStringFormat) {
       ManagedDisplayInfo::CreateFromSpecWithID("200x100", 10);
 
   EXPECT_EQ(info.ToString(),
-            "ManagedDisplayInfo[10] native bounds=0,0 200x100, size=200x100, "
+            "ManagedDisplayInfo[10] port_display_id=10, edid_display_id=20, "
+            "native bounds=0,0 200x100, size=200x100, "
             "device-scale=1, display-zoom=1, overscan=x:0,0 y:0,0, rotation=0, "
             "touchscreen=unknown, "
             "panel_corners_radii=0.000000,0.000000,0.000000,0.000000, "
-            "panel_orientation=Normal");
+            "panel_orientation=Normal, detected=true");
 
   EXPECT_EQ(info.ToFullString(),
-            "ManagedDisplayInfo[10] native bounds=0,0 200x100, size=200x100, "
+            "ManagedDisplayInfo[10] port_display_id=10, edid_display_id=20, "
+            "native bounds=0,0 200x100, size=200x100, "
             "device-scale=1, display-zoom=1, overscan=x:0,0 y:0,0, rotation=0, "
             "touchscreen=unknown, "
             "panel_corners_radii=0.000000,0.000000,0.000000,0.000000, "
-            "panel_orientation=Normal, display_modes==(200x100@60P(N) 1)");
+            "panel_orientation=Normal, detected=true, "
+            "display_modes==(200x100@60P(N) 1)");
 }
 
 }  // namespace display

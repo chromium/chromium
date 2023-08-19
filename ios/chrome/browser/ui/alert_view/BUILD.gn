@@ -21,11 +21,9 @@ source_set("alert_view") {
     "//ios/chrome/common/ui/util",
   ]
   frameworks = [ "UIKit.framework" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "alert_view_controller_unittest.mm" ]
   deps = [

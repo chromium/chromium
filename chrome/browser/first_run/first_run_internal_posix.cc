@@ -89,7 +89,7 @@ void DoPostImportPlatformSpecificTasks() {
     std::move(GetBeforeShowFirstRunDialogHookForTesting()).Run();
 
   ShowFirstRunDialog();
-  startup_metric_utils::SetNonBrowserUIDisplayed();
+  startup_metric_utils::GetBrowser().SetNonBrowserUIDisplayed();
 }
 
 bool ShowPostInstallEULAIfNeeded(installer::InitialPreferences* install_prefs) {

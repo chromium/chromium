@@ -14,10 +14,6 @@
 #import "ui/base/l10n/time_format.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 NSString* GetReadingListCellAccessibilityLabel(
     NSString* title,
     NSString* subtitle,

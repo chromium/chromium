@@ -349,10 +349,11 @@ absl::optional<CdmCapability> GetCdmCapability(
       video_codec_info.supports_clear_lead = false;
 
 #if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
-      // Dolby Vision on Windows only support profile 4/5/8 now.
+      // Dolby Vision on Windows only support profile 4/5/8 now. But profile 4
+      // is rarely used and being deprecated, so only declare the support for
+      // profile 5/8.
       if (video_codec == VideoCodec::kDolbyVision) {
         video_codec_info.supported_profiles = {
-            VideoCodecProfile::DOLBYVISION_PROFILE4,
             VideoCodecProfile::DOLBYVISION_PROFILE5,
             VideoCodecProfile::DOLBYVISION_PROFILE8};
       }

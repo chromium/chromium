@@ -8,13 +8,12 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "third_party/omnibox_proto/groups.pb.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
-class OmniboxEditModel;
+class OmniboxPopupViewViews;
 class OmniboxResultView;
-class PrefService;
+class OmniboxHeaderView;
 
 // The View that's a direct child of the OmniboxPopupViewViews, one per row.
 // This, in turn, has a child OmniboxResultView and an optional header that is
@@ -26,17 +25,17 @@ class PrefService;
 class OmniboxRowView : public views::View {
  public:
   METADATA_HEADER(OmniboxRowView);
-  OmniboxRowView(size_t line,
-                 OmniboxEditModel* model,
-                 std::unique_ptr<OmniboxResultView> result_view,
-                 PrefService* pref_service);
+  OmniboxRowView(size_t line, OmniboxPopupViewViews* popup_view);
 
   // Sets the header that appears above this row. Also shows the header.
-  void ShowHeader(omnibox::GroupId suggestion_group_id,
-                  const std::u16string& header_text);
+  void ShowHeader(const std::u16string& header_text,
+                  bool suggestion_group_hidden);
 
   // Hides the header.
   void HideHeader();
+
+  // The header view associated with this row.
+  OmniboxHeaderView* header_view() const { return header_view_; }
 
   // The result view associated with this row.
   OmniboxResultView* result_view() const { return result_view_; }
@@ -52,25 +51,19 @@ class OmniboxRowView : public views::View {
   gfx::Insets GetInsets() const override;
 
  private:
-  class HeaderView;
-
   // Line number of this row.
   const size_t line_;
 
-  // Non-owning pointer to the backing model.
-  const raw_ptr<OmniboxEditModel> model_;
+  // Non-owning pointer to the popup view for this row. This is never nullptr.
+  const raw_ptr<OmniboxPopupViewViews> popup_view_;
 
   // Non-owning pointer to the header view for this row. This is initially
   // nullptr, and lazily created when a header is first set for this row.
   // Lazily creating these speeds up browser startup: https://crbug.com/1021323
-  raw_ptr<HeaderView> header_view_ = nullptr;
+  raw_ptr<OmniboxHeaderView> header_view_ = nullptr;
 
   // Non-owning pointer to the result view for this row. This is never nullptr.
   raw_ptr<OmniboxResultView> result_view_;
-
-  // Non-owning pointer to the preference service used for toggling headers.
-  // May be nullptr in tests.
-  const raw_ptr<PrefService> pref_service_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_ROW_VIEW_H_

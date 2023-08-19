@@ -11,6 +11,7 @@
 
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/types_util.h"
@@ -52,8 +53,7 @@ MATCHER_P(HasAppId, app_id, "Has the correct app id") {
 class RemoveObserver : public apps::AppRegistryCache::Observer {
  public:
   explicit RemoveObserver(apps::AppRegistryCache* cache) {
-    cache_ = cache;
-    Observe(cache);
+    app_registry_cache_observer_.Observe(cache);
   }
 
   ~RemoveObserver() override = default;
@@ -66,7 +66,7 @@ class RemoveObserver : public apps::AppRegistryCache::Observer {
 
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override {
-    Observe(nullptr);
+    app_registry_cache_observer_.Reset();
   }
 
   void Clear() {
@@ -80,7 +80,10 @@ class RemoveObserver : public apps::AppRegistryCache::Observer {
  private:
   std::vector<std::string> updated_ids_;
   std::vector<apps::Readiness> readinesses_;
-  raw_ptr<apps::AppRegistryCache> cache_ = nullptr;
+
+  base::ScopedObservation<apps::AppRegistryCache,
+                          apps::AppRegistryCache::Observer>
+      app_registry_cache_observer_{this};
 };
 
 // Responds to a cache's OnAppUpdate to call back into the cache, checking that
@@ -94,7 +97,7 @@ class RemoveObserver : public apps::AppRegistryCache::Observer {
 class RecursiveObserver : public AppRegistryCache::Observer {
  public:
   explicit RecursiveObserver(AppRegistryCache* cache) : cache_(cache) {
-    Observe(cache);
+    app_registry_cache_observer_.Observe(cache);
   }
 
   ~RecursiveObserver() override = default;
@@ -193,7 +196,7 @@ class RecursiveObserver : public AppRegistryCache::Observer {
   void OnAppTypeInitialized(AppType app_type) override { app_type_ = app_type; }
 
   void OnAppRegistryCacheWillBeDestroyed(AppRegistryCache* cache) override {
-    Observe(nullptr);
+    app_registry_cache_observer_.Reset();
   }
 
   static void ExpectEq(const AppUpdate& outer, const AppUpdate& inner) {
@@ -231,15 +234,18 @@ class RecursiveObserver : public AppRegistryCache::Observer {
   // is skipped.
   bool check_names_snapshot_ = false;
   std::map<std::string, std::string> names_snapshot_;
+
+  base::ScopedObservation<apps::AppRegistryCache,
+                          apps::AppRegistryCache::Observer>
+      app_registry_cache_observer_{this};
 };
 
 // InitializedObserver is used to test the OnAppTypeInitialized interface for
 // AppRegistryCache::Observer.
 class InitializedObserver : public apps::AppRegistryCache::Observer {
  public:
-  explicit InitializedObserver(apps::AppRegistryCache* cache) {
-    cache_ = cache;
-    Observe(cache);
+  explicit InitializedObserver(apps::AppRegistryCache* cache) : cache_(cache) {
+    app_registry_cache_observer_.Observe(cache);
   }
 
   ~InitializedObserver() override = default;
@@ -266,7 +272,7 @@ class InitializedObserver : public apps::AppRegistryCache::Observer {
 
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override {
-    Observe(nullptr);
+    app_registry_cache_observer_.Reset();
   }
 
   std::set<apps::AppType> app_types() const { return app_types_; }
@@ -283,6 +289,10 @@ class InitializedObserver : public apps::AppRegistryCache::Observer {
   int initialized_app_type_count_ = 0;
   int app_count_at_initialization_ = 0;
   raw_ptr<apps::AppRegistryCache> cache_ = nullptr;
+
+  base::ScopedObservation<apps::AppRegistryCache,
+                          apps::AppRegistryCache::Observer>
+      app_registry_cache_observer_{this};
 };
 
 }  // namespace
@@ -456,7 +466,10 @@ TEST_F(AppRegistryCacheTest, Removed) {
   AppRegistryCache cache;
   testing::StrictMock<MockRegistryObserver> observer;
   cache.SetAccountId(account_id());
-  cache.AddObserver(&observer);
+
+  base::ScopedObservation<AppRegistryCache, AppRegistryCache::Observer>
+      observation{&observer};
+  observation.Observe(&cache);
 
   // Starting with an empty cache.
   cache.ForEachApp([&observer](const apps::AppUpdate& update) {
@@ -509,7 +522,7 @@ TEST_F(AppRegistryCacheTest, Removed) {
   EXPECT_TRUE(updated_ids_.empty());
   EXPECT_TRUE(updated_names_.empty());
   Clear();
-  cache.RemoveObserver(&observer);
+  observation.Reset();
 
   EXPECT_TRUE(cache.GetAllApps().empty());
 }
@@ -639,7 +652,10 @@ TEST_F(AppRegistryCacheTest, Observer) {
   std::vector<AppPtr> deltas;
   AppRegistryCache cache;
   cache.SetAccountId(account_id());
-  cache.AddObserver(this);
+
+  base::ScopedObservation<AppRegistryCache, AppRegistryCache::Observer>
+      observation{this};
+  observation.Observe(&cache);
 
   num_freshly_installed_ = 0;
   updated_ids_.clear();
@@ -690,7 +706,7 @@ TEST_F(AppRegistryCacheTest, Observer) {
   EXPECT_EQ("c", all_apps[2]->app_id);
   EXPECT_EQ("e", all_apps[3]->app_id);
 
-  cache.RemoveObserver(this);
+  observation.Reset();
 
   num_freshly_installed_ = 0;
   updated_ids_.clear();

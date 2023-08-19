@@ -51,7 +51,7 @@ struct Config {
   struct SegmentMetadata {
     explicit SegmentMetadata(const std::string& uma_name);
     SegmentMetadata(const std::string& uma_name,
-                    std::unique_ptr<ModelProvider> default_provider);
+                    std::unique_ptr<DefaultModelProvider> default_provider);
     SegmentMetadata(SegmentMetadata&&);
 
     ~SegmentMetadata();
@@ -63,14 +63,14 @@ struct Config {
 
     // The default model or score used when server provided model is
     // unavailable.
-    std::unique_ptr<ModelProvider> default_provider;
+    std::unique_ptr<DefaultModelProvider> default_provider;
   };
   base::flat_map<proto::SegmentId, std::unique_ptr<SegmentMetadata>> segments;
 
-  // The selection only supports returning results from on-demand model
-  // executions instead of returning result from previous sessions. The
-  // selection TTLs are ignored in this config.
-  bool on_demand_execution = false;
+  // The service will run models in the background and keep results ready for
+  // use at all times. The TTL settings in the model metadata should be used to
+  // specify how often to refresh results.
+  bool auto_execute_and_cache = false;
 
   // List of custom  inputs provided for running the segments. The delegate will
   // be invoked for input based on the model metadata's input processing config.
@@ -84,7 +84,7 @@ struct Config {
   // Helper methods to add segments to `segments`:
   void AddSegmentId(proto::SegmentId segment_id);
   void AddSegmentId(proto::SegmentId segment_id,
-                    std::unique_ptr<ModelProvider> default_provider);
+                    std::unique_ptr<DefaultModelProvider> default_provider);
 
   // Returns the filter name that will be shown in the metrics for this
   // segmentation config.

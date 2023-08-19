@@ -10,7 +10,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
@@ -51,7 +51,6 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/bruschetta/bruschetta_download_client.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_image_download_client.h"
 #endif
 
@@ -66,11 +65,6 @@ std::unique_ptr<download::Client> CreateBackgroundFetchDownloadClient(
 std::unique_ptr<download::Client> CreatePluginVmImageDownloadClient(
     Profile* profile) {
   return std::make_unique<plugin_vm::PluginVmImageDownloadClient>(profile);
-}
-
-std::unique_ptr<download::Client> CreateBruschettaDownloadClient(
-    Profile* profile) {
-  return std::make_unique<bruschetta::BruschettaDownloadClient>(profile);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -119,7 +113,8 @@ class DownloadBlobContextGetterFactory
 // static
 BackgroundDownloadServiceFactory*
 BackgroundDownloadServiceFactory::GetInstance() {
-  return base::Singleton<BackgroundDownloadServiceFactory>::get();
+  static base::NoDestructor<BackgroundDownloadServiceFactory> instance;
+  return instance.get();
 }
 
 // static
@@ -155,11 +150,6 @@ BackgroundDownloadServiceFactory::BuildServiceInstanceFor(
         download::DownloadClient::PLUGIN_VM_IMAGE,
         std::make_unique<download::DeferredClientWrapper>(
             base::BindOnce(&CreatePluginVmImageDownloadClient), key)));
-
-    clients->insert(std::make_pair(
-        download::DownloadClient::BRUSCHETTA,
-        std::make_unique<download::DeferredClientWrapper>(
-            base::BindOnce(&CreateBruschettaDownloadClient), key)));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

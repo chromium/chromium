@@ -56,7 +56,7 @@ class ChromeExtensionTestNotificationObserver
       content::WebContents* web_contents,
       content::BrowserContext* browser_context) override;
 
-  const raw_ptr<Browser, DanglingUntriaged> browser_;
+  const raw_ptr<Browser, AcrossTasksDanglingUntriaged> browser_;
 };
 
 }  // namespace extensions

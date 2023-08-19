@@ -7,18 +7,19 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/connection.h"
-#include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/session_context.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
-#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 
 namespace ash::quick_start {
 
 class FastPairAdvertiser;
+class QuickStartConnectivityService;
 
 class TargetDeviceConnectionBrokerImpl
     : public TargetDeviceConnectionBroker,
@@ -49,10 +50,9 @@ class TargetDeviceConnectionBrokerImpl
   };
 
   TargetDeviceConnectionBrokerImpl(
-      base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager,
-      std::unique_ptr<Connection::Factory> connection_factory,
-      mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder,
-      bool is_resume_after_update = false);
+      SessionContext session_context,
+      QuickStartConnectivityService* quick_start_connectivity_service,
+      std::unique_ptr<Connection::Factory> connection_factory);
   TargetDeviceConnectionBrokerImpl(TargetDeviceConnectionBrokerImpl&) = delete;
   TargetDeviceConnectionBrokerImpl& operator=(
       TargetDeviceConnectionBrokerImpl&) = delete;
@@ -64,19 +64,12 @@ class TargetDeviceConnectionBrokerImpl
                         bool use_pin_authentication,
                         ResultCallback on_start_advertising_callback) override;
   void StopAdvertising(base::OnceClosure on_stop_advertising_callback) override;
-  base::Value::Dict GetPrepareForUpdateInfo() override;
   std::string GetSessionIdDisplayCode() override;
 
  private:
   // Used to access the |random_session_id_| in tests, and to allow testing
   // |GenerateEndpointInfo()| directly.
   friend class TargetDeviceConnectionBrokerImplTest;
-
-  // When Quick Start is automatically resumed after the target device updates,
-  // this method retrieves the previously-persisted |random_session_id_| and
-  // |shared_secret_|.
-  void FetchPersistedSessionContext();
-  void DecodeSharedSecret(const std::string& encoded_shared_secret);
 
   // NearbyConnectionsManager::IncomingConnectionListener:
   void OnIncomingConnectionInitiated(
@@ -106,7 +99,11 @@ class TargetDeviceConnectionBrokerImpl
   void OnStopNearbyConnectionsAdvertising(
       base::OnceClosure callback,
       NearbyConnectionsManager::ConnectionsStatus status);
-  const Connection::SessionContext BuildConnectionSessionContext() const;
+
+  // When resuming after an update and Nearby Connections advertisement
+  // times out before an accepted connection is established, mimic the
+  // initial connection flow.
+  void OnNearbyConnectionsAdvertisementAfterUpdateTimeout();
 
   void OnHandshakeCompleted(bool success);
 
@@ -117,19 +114,17 @@ class TargetDeviceConnectionBrokerImpl
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
   base::OnceClosure deferred_start_advertising_callback_;
 
+  SessionContext session_context_;
   std::unique_ptr<FastPairAdvertiser> fast_pair_advertiser_;
-  RandomSessionId random_session_id_;
-  SharedSecret shared_secret_;
-  // The |secondary_shared_secret_| is never set when automatically resuming
-  // Quick Start after an update.
-  SharedSecret secondary_shared_secret_;
 
-  base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager_;
+  raw_ptr<QuickStartConnectivityService> quick_start_connectivity_service_;
   std::unique_ptr<Connection::Factory> connection_factory_;
   std::unique_ptr<Connection> connection_;
 
-  mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder_;
   bool is_resume_after_update_;
+
+  base::OneShotTimer
+      nearby_connections_advertisement_after_update_timeout_timer_;
 
   base::WeakPtrFactory<TargetDeviceConnectionBrokerImpl> weak_ptr_factory_{
       this};

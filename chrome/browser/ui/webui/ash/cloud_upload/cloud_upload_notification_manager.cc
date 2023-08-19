@@ -7,7 +7,9 @@
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/message_formatter.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -16,6 +18,8 @@
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
+#include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
@@ -43,13 +47,13 @@ CloudUploadNotificationManager::CloudUploadNotificationManager(
     const std::string& cloud_provider_name,
     const std::string& target_app_name,
     int num_files,
-    file_manager::io_task::OperationType operation_type)
+    UploadType upload_type)
     : profile_(profile),
       file_name_(file_name),
       cloud_provider_name_(cloud_provider_name),
       target_app_name_(target_app_name),
       num_files_(num_files),
-      operation_type_(operation_type) {
+      upload_type_(upload_type) {
   // Generate a unique ID for the cloud upload notifications.
   notification_id_ =
       "cloud-upload-" +
@@ -79,46 +83,65 @@ CloudUploadNotificationManager::GetNotificationDisplayService() {
 
 std::unique_ptr<message_center::Notification>
 CloudUploadNotificationManager::CreateUploadProgressNotification() {
-  std::string operation =
-      operation_type_ == file_manager::io_task::OperationType::kCopy ? "Copying"
-                                                                     : "Moving";
-  std::string title =
-      // TODO(b/242685536) Use "files" for multi-files when support for
-      // multi-files is added.
-      operation + " " + base::NumberToString(num_files_) + " file to " +
-      cloud_provider_name_;
-  std::string message = "File will open in " + target_app_name_;
+  bool is_copy_operation = upload_type_ == UploadType::kCopy;
+  // TODO(b/242685536) Use "files" for multi-files when support for
+  // multi-files is added.
+  std::u16string title = base::i18n::MessageFormatter::FormatWithNumberedArgs(
+      l10n_util::GetStringUTF16(is_copy_operation
+                                    ? IDS_OFFICE_NOTIFICATION_COPYING_FILES
+                                    : IDS_OFFICE_NOTIFICATION_MOVING_FILES),
+      num_files_, cloud_provider_name_);
+  std::u16string message = base::i18n::MessageFormatter::FormatWithNumberedArgs(
+      l10n_util::GetStringUTF16(IDS_OFFICE_NOTIFICATION_FILES_WILL_OPEN),
+      num_files_, target_app_name_);
 
-  return ash::CreateSystemNotificationPtr(
+  auto notification = ash::CreateSystemNotificationPtr(
       /*type=*/message_center::NOTIFICATION_TYPE_PROGRESS,
-      /*id=*/notification_id_, base::UTF8ToUTF16(title),
+      /*id=*/notification_id_, title,
       // TODO(b/272601262) Display or delete this message.
-      base::UTF8ToUTF16(message), /*display_source=*/display_source_,
+      /*message=*/{}, /*display_source=*/display_source_,
       /*origin_url=*/GURL(), /*notifier_id=*/message_center::NotifierId(),
       /*optional_fields=*/{},
       /*delegate=*/
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(
-              &CloudUploadNotificationManager::CloseNotification,
+              &CloudUploadNotificationManager::HandleProgressNotificationClick,
               weak_ptr_factory_.GetWeakPtr())),
       /*small_image=*/ash::kFolderIcon,
       /*warning_level=*/message_center::SystemNotificationWarningLevel::NORMAL);
+
+  // For a progress notification the message parameter won't be displayed in the
+  // notification. Therefore, its value is passed to progress_status which will
+  // be displayed.
+  notification->set_progress_status(message);
+
+  // Add "Cancel" button if upload still cancellable.
+  if (CanCancel() && cancel_callback_) {
+    std::vector<message_center::ButtonInfo> notification_buttons = {
+        message_center::ButtonInfo(
+            l10n_util::GetStringUTF16(IDS_FILE_BROWSER_CANCEL_LABEL))};
+    notification->set_buttons(notification_buttons);
+  }
+
+  return notification;
 }
 
 std::unique_ptr<message_center::Notification>
 CloudUploadNotificationManager::CreateUploadCompleteNotification() {
+  bool is_copy_operation = upload_type_ == UploadType::kCopy;
   // TODO(b/242685536) Use "files" for multi-files when support for multi-files
   // is added.
-  std::string operation =
-      operation_type_ == file_manager::io_task::OperationType::kCopy ? "Copied"
-                                                                     : "Moved";
-  std::string title = operation + " " + base::NumberToString(num_files_) +
-                      " file to " + cloud_provider_name_;
-  std::string message = "Opening in " + target_app_name_;
+  std::u16string title = base::i18n::MessageFormatter::FormatWithNumberedArgs(
+      l10n_util::GetStringUTF16(is_copy_operation
+                                    ? IDS_OFFICE_NOTIFICATION_FILES_COPIED
+                                    : IDS_OFFICE_NOTIFICATION_FILES_MOVED),
+      num_files_, cloud_provider_name_);
+  std::u16string message =
+      l10n_util::GetStringFUTF16(IDS_OFFICE_NOTIFICATION_FILES_OPENING,
+                                 base::UTF8ToUTF16(target_app_name_));
   auto notification = ash::CreateSystemNotificationPtr(
       /*type=*/message_center::NOTIFICATION_TYPE_SIMPLE,
-      /*id=*/notification_id_, base::UTF8ToUTF16(title),
-      base::UTF8ToUTF16(message),
+      /*id=*/notification_id_, title, message,
       /*display_source=*/display_source_,
       /*origin_url=*/GURL(), /*notifier_id=*/message_center::NotifierId(),
       /*optional_fields=*/{},
@@ -134,9 +157,10 @@ CloudUploadNotificationManager::CreateUploadCompleteNotification() {
   DCHECK(!destination_path_.empty());
   if (!destination_path_.empty()) {
     //  Add "Show in folder" button.
-    std::string button_title = "Show in folder";
+    std::u16string button_title = l10n_util::GetStringUTF16(
+        IDS_OFFICE_NOTIFICATION_SHOW_IN_FOLDER_BUTTON);
     std::vector<message_center::ButtonInfo> notification_buttons = {
-        message_center::ButtonInfo(base::UTF8ToUTF16(button_title))};
+        message_center::ButtonInfo(button_title)};
     notification->set_buttons(notification_buttons);
   }
   return notification;
@@ -145,23 +169,17 @@ CloudUploadNotificationManager::CreateUploadCompleteNotification() {
 std::unique_ptr<message_center::Notification>
 CloudUploadNotificationManager::CreateUploadErrorNotification(
     std::string message) {
-  // TODO(b/254586358): i18n these strings.
-  std::string operation =
-      operation_type_ == file_manager::io_task::OperationType::kCopy ? "copy"
-                                                                     : "move";
-  std::string title = "Can't " + operation + " file";
+  bool is_copy_operation = upload_type_ == UploadType::kCopy;
+  std::u16string title = base::i18n::MessageFormatter::FormatWithNumberedArgs(
+      l10n_util::GetStringUTF16(is_copy_operation
+                                    ? IDS_OFFICE_UPLOAD_ERROR_CANT_COPY_FILES
+                                    : IDS_OFFICE_UPLOAD_ERROR_CANT_MOVE_FILES),
+      num_files_, cloud_provider_name_);
   std::vector<message_center::ButtonInfo> notification_buttons;
-  //  Add "Sign in" button if this is a reauthentication error.
-  if (message == kReauthenticationRequiredMessage) {
-    title = "Can't " + operation + " file to Microsoft OneDrive";
-    std::string button_title = "Sign in";
-    notification_buttons.emplace_back(base::UTF8ToUTF16(button_title));
-  }
 
   auto notification = ash::CreateSystemNotificationPtr(
       /*type=*/message_center::NOTIFICATION_TYPE_SIMPLE,
-      /*id=*/notification_id_, base::UTF8ToUTF16(title),
-      base::UTF8ToUTF16(message),
+      /*id=*/notification_id_, title, base::UTF8ToUTF16(message),
       /*display_source=*/display_source_,
       /*origin_url=*/GURL(), /*notifier_id=*/message_center::NotifierId(),
       /*optional_fields=*/{},
@@ -174,14 +192,22 @@ CloudUploadNotificationManager::CreateUploadErrorNotification(
       /*warning_level=*/
       message_center::SystemNotificationWarningLevel::WARNING);
 
+  //  Add "Sign in" button if this is a reauthentication error.
+  if (message == GetReauthenticationRequiredMessage()) {
+    std::u16string button_title =
+        l10n_util::GetStringUTF16(IDS_OFFICE_NOTIFICATION_SIGN_IN_BUTTON);
+    notification_buttons.emplace_back(button_title);
+  }
+
   notification->set_buttons(notification_buttons);
   return notification;
 }
 
 void CloudUploadNotificationManager::ShowUploadProgress(int progress) {
+  progress_ = progress;
   std::unique_ptr<message_center::Notification> notification =
       CreateUploadProgressNotification();
-  notification->set_progress(progress);
+  notification->set_progress(progress_);
   notification->set_never_timeout(true);
   GetNotificationDisplayService()->Display(NotificationHandler::Type::TRANSIENT,
                                            *notification,
@@ -203,6 +229,10 @@ void CloudUploadNotificationManager::ShowCompleteNotification() {
   std::unique_ptr<message_center::Notification> notification =
       CreateUploadCompleteNotification();
   notification->set_never_timeout(true);
+  // Close the progress notification before displaying the completed
+  // notification.
+  GetNotificationDisplayService()->Close(NotificationHandler::Type::TRANSIENT,
+                                         notification_id_);
   GetNotificationDisplayService()->Display(NotificationHandler::Type::TRANSIENT,
                                            *notification,
                                            /*metadata=*/nullptr);
@@ -219,6 +249,9 @@ void CloudUploadNotificationManager::MarkUploadComplete() {
   // Check if the "in progress" timeout has happened yet or not.
   if (state_ == State::kInProgress) {
     state_ = State::kWaitingForInProgressTimeout;
+    // Re-show progress notification without the "Cancel" button as the upload
+    // has now finished.
+    ShowUploadProgress(progress_);
   } else if (state_ == State::kUninitialized ||
              state_ == State::kInProgressTimedOut) {
     // If the complete notification is shown before any progress notifications,
@@ -257,12 +290,23 @@ void CloudUploadNotificationManager::CloseNotification() {
   }
 }
 
+void CloudUploadNotificationManager::HandleProgressNotificationClick(
+    absl::optional<int> button_index) {
+  // If the "Cancel" button was pressed, rather than a click to somewhere
+  // else in the notification.
+  if (button_index && cancel_callback_ && CanCancel()) {
+    // Cancel upload.
+    std::move(cancel_callback_).Run();
+  }
+
+  CloseNotification();
+}
+
 void CloudUploadNotificationManager::HandleErrorNotificationClick(
     absl::optional<int> button_index) {
   // If the "Sign in" button was pressed, rather than a click to somewhere
   // else in the notification.
   if (button_index) {
-    // TODO(b/282619291) decide what callback should be.
     // Request an ODFS mount which will trigger reauthentication.
     CloudUploadDialog::RequestODFSMount(profile_, base::DoNothing());
   }
@@ -281,6 +325,11 @@ void CloudUploadNotificationManager::HandleCompleteNotificationClick(
   }
 
   CloseNotification();
+}
+
+bool CloudUploadNotificationManager::CanCancel() {
+  return state_ == State::kUninitialized || state_ == State::kInProgress ||
+         state_ == State::kInProgressTimedOut;
 }
 
 void CloudUploadNotificationManager::CloseForTest() {

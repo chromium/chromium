@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/test/task_environment.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace signin {
@@ -34,16 +35,16 @@ TEST_F(IdentityTestEnvironmentTest,
       std::make_unique<IdentityTestEnvironment>();
 
   identity_test_environment->MakePrimaryAccountAvailable(
-      "primary@example.com", signin::ConsentLevel::kSync);
+      "primary@example.com", signin::ConsentLevel::kSignin);
   AccessTokenFetcher::TokenCallback callback = base::BindOnce(
       [](GoogleServiceAuthError error, AccessTokenInfo access_token_info) {});
-  std::set<std::string> scopes{"scope"};
+  std::set<std::string> scopes{GaiaConstants::kGoogleUserInfoEmail};
 
   std::unique_ptr<AccessTokenFetcher> fetcher =
       identity_test_environment->identity_manager()
           ->CreateAccessTokenFetcherForAccount(
               identity_test_environment->identity_manager()
-                  ->GetPrimaryAccountId(ConsentLevel::kSync),
+                  ->GetPrimaryAccountId(ConsentLevel::kSignin),
               "dummy_consumer", scopes, std::move(callback),
               AccessTokenFetcher::Mode::kImmediate);
 
@@ -55,6 +56,8 @@ TEST_F(IdentityTestEnvironmentTest,
   fetcher.reset();
 }
 
+// TODO(https://crbug.com/1462552): Delete this test once `ConsentLevel::kSync`
+// is deleted.
 TEST_F(IdentityTestEnvironmentTest,
        IdentityTestEnvironmentSetPrimaryAccountWithSyncConsent) {
   std::unique_ptr<IdentityTestEnvironment> identity_test_environment =
@@ -86,9 +89,14 @@ TEST_F(IdentityTestEnvironmentTest,
   identity_test_environment->SetPrimaryAccount(primary_account_email,
                                                ConsentLevel::kSignin);
   EXPECT_TRUE(identity_manager->HasPrimaryAccount(ConsentLevel::kSignin));
+
+  // TODO(https://crbug.com/1462552): Remove once `ConsentLevel::kSync` is
+  // deleted.
   EXPECT_FALSE(identity_manager->HasPrimaryAccount(ConsentLevel::kSync));
 }
 
+// TODO(https://crbug.com/1462552): Delete this test once `ConsentLevel::kSync`
+// is deleted.
 TEST_F(IdentityTestEnvironmentTest,
        IdentityTestEnvironmentMakePrimaryAccountAvailableWithSyncConsent) {
   std::unique_ptr<IdentityTestEnvironment> identity_test_environment =
@@ -116,6 +124,9 @@ TEST_F(IdentityTestEnvironmentTest,
   identity_test_environment->MakePrimaryAccountAvailable(primary_account_email,
                                                          ConsentLevel::kSignin);
   EXPECT_TRUE(identity_manager->HasPrimaryAccount(ConsentLevel::kSignin));
+
+  // TODO(https://crbug.com/1462552): Remove once `ConsentLevel::kSync` is
+  // deleted.
   EXPECT_FALSE(identity_manager->HasPrimaryAccount(ConsentLevel::kSync));
 }
 

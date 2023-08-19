@@ -49,7 +49,7 @@ class MigrationWatcher : public syncer::MigrationObserver {
   syncer::ModelTypeSet migrated_types_;
 
   // The MigrationWatier that is waiting for this migration to complete.
-  raw_ptr<MigrationWaiter> migration_waiter_;
+  raw_ptr<MigrationWaiter> migration_waiter_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_MIGRATION_WATCHER_H_

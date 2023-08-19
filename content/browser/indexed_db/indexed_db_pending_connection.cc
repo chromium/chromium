@@ -10,18 +10,17 @@
 namespace content {
 
 IndexedDBPendingConnection::IndexedDBPendingConnection(
-    scoped_refptr<IndexedDBCallbacks> callbacks,
+    std::unique_ptr<IndexedDBFactoryClient> factory_client,
     scoped_refptr<IndexedDBDatabaseCallbacks> database_callbacks,
     int64_t transaction_id,
     int64_t version,
     base::OnceCallback<void(base::WeakPtr<IndexedDBTransaction>)>
         create_transaction_callback)
-    : callbacks(callbacks),
+    : factory_client(std::move(factory_client)),
       database_callbacks(database_callbacks),
       transaction_id(transaction_id),
       version(version),
-      create_transaction_callback(std::move(create_transaction_callback)) {
-}
+      create_transaction_callback(std::move(create_transaction_callback)) {}
 
 IndexedDBPendingConnection::~IndexedDBPendingConnection() {}
 

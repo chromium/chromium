@@ -93,7 +93,7 @@ class ManagedValueStoreCache : public ValueStoreCache,
       VALID_CONTEXT_REQUIRED(backend_sequence_checker_);
 
   // The profile that owns the extension system being used.
-  const raw_ref<Profile, DanglingUntriaged> profile_
+  const raw_ref<Profile, AcrossTasksDanglingUntriaged> profile_
       GUARDED_BY_CONTEXT(ui_sequence_checker_);
 
   // The policy domain. This is used for observing the policy updates.
@@ -101,8 +101,8 @@ class ManagedValueStoreCache : public ValueStoreCache,
       GUARDED_BY_CONTEXT(ui_sequence_checker_);
 
   // The `profile_`'s `PolicyService`.
-  const raw_ref<policy::PolicyService, DanglingUntriaged> policy_service_
-      GUARDED_BY_CONTEXT(ui_sequence_checker_);
+  const raw_ref<policy::PolicyService, AcrossTasksDanglingUntriaged>
+      policy_service_ GUARDED_BY_CONTEXT(ui_sequence_checker_);
 
   // Observes extension loading and unloading, and keeps the `Profile`'s
   // `PolicyService` aware of the current list of extensions.

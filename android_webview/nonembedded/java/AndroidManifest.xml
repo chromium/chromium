@@ -30,10 +30,7 @@ by a child template that "extends" this file.
     <!-- Required by WebView Developer UI only -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
-    {# TODO(wbjacksonjr crbug.com/1417656): Remove once we build against U #}
-    {% if android_sdk_release is defined and android_sdk_release == 'u' %}
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"/>
-    {% endif %}
     <!-- Required to run the foreground service-->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
@@ -170,20 +167,14 @@ by a child template that "extends" this file.
                          android:exported="true"
                          android:process=":webview_service" />  {# Explicit process required for monochrome compatibility. #}
                 <service android:name="org.chromium.android_webview.services.DeveloperUiService"
-                         {# TODO(wbjacksonjr crbug.com/1417656): Remove once we build against U#}
-                         {% if android_sdk_release is defined and android_sdk_release == 'u' %}
                          android:foregroundServiceType="specialUse"
-                         {% endif %}
                          android:exported="true"
                          android:process=":webview_service"  {# Explicit process required for monochrome compatibility. #}
                          tools:ignore="ExportedService" >
-                         {# TODO(wbjacksonjr crbug.com/1417656): Remove once we build against U#}
-                         {% if android_sdk_release is defined and android_sdk_release == 'u' %}
                           <property
                             android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
                             android:value="debugging"
                           />
-                         {% endif %}
                 </service>
                 <service android:name="org.chromium.android_webview.services.SafeModeService"
                          android:exported="true"

@@ -82,7 +82,7 @@ TEST_F(NGOutOfFlowLayoutPartTest, FixedInsideAbs) {
       )HTML");
 
   // Test whether the oof fragments have been collected at NG->Legacy boundary.
-  Element* rel = GetDocument().getElementById("rel");
+  Element* rel = GetDocument().getElementById(AtomicString("rel"));
   auto* block_flow = To<LayoutBlockFlow>(rel->GetLayoutObject());
   const NGLayoutResult* result = block_flow->GetSingleCachedLayoutResult();
   EXPECT_TRUE(result);
@@ -90,8 +90,8 @@ TEST_F(NGOutOfFlowLayoutPartTest, FixedInsideAbs) {
             2u);
 
   // Test the final result.
-  Element* fixed_1 = GetDocument().getElementById("fixed1");
-  Element* fixed_2 = GetDocument().getElementById("fixed2");
+  Element* fixed_1 = GetDocument().getElementById(AtomicString("fixed1"));
+  Element* fixed_2 = GetDocument().getElementById(AtomicString("fixed2"));
   // fixed1 top is static: #abs.top + #pad.height
   EXPECT_EQ(fixed_1->OffsetTop(), LayoutUnit(99));
   // fixed2 top is positioned: #fixed2.top

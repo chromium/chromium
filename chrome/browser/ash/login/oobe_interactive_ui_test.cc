@@ -54,6 +54,9 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/app_downloading_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/assistant_optin_flow_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/choobe_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/consumer_update_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/display_size_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gesture_navigation_screen_handler.h"
@@ -62,6 +65,7 @@
 #include "chrome/browser/ui/webui/ash/login/sync_consent_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/terms_of_service_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/theme_selection_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/touchpad_scroll_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
@@ -136,6 +140,13 @@ void HandleGaiaInfoScreen() {
 
   test::OobeJS().ClickOnPath({"gaia-info", "nextButton"});
   LOG(INFO) << "OobeInteractiveUITest: Exiting 'gaia-info' screen.";
+}
+
+void HandleConsumerUpdateScreen() {
+  OobeScreenWaiter(ConsumerUpdateScreenView::kScreenId).Wait();
+  LOG(INFO) << "OobeInteractiveUITest: Switched to 'consumer-update' screen.";
+
+  test::ExitConsumerUpdateScreenNoUpdate();
 }
 
 void WaitForGaiaSignInScreen() {
@@ -321,6 +332,68 @@ void HandleThemeSelectionScreen() {
   test::OobeJS().TapOnPath({"theme-selection", "nextButton"});
 
   OobeScreenExitWaiter(ThemeSelectionScreenView::kScreenId).Wait();
+}
+
+// Waits for display size screen to get shown, then taps through the screen
+// and waits for the screen to exit.
+void HandleDisplaySizeScreen() {
+  OobeScreenWaiter(DisplaySizeScreenView::kScreenId).Wait();
+
+  test::OobeJS().ClickOnPath({"display-size", "nextButton"});
+
+  OobeScreenExitWaiter(DisplaySizeScreenView::kScreenId).Wait();
+}
+
+// Waits for touchpad scroll screen to get shown, then taps through the screen
+// and waits for the screen to exit.
+void HandleTouchpadScrollScreen() {
+  OobeScreenWaiter(TouchpadScrollScreenView::kScreenId).Wait();
+
+  test::OobeJS().ClickOnPath({"touchpad-scroll", "nextButton"});
+
+  OobeScreenExitWaiter(TouchpadScrollScreenView::kScreenId).Wait();
+}
+
+// Waits for CHOOBE screen to get shown, selects all screens cards, then taps
+// through the screen and waits for the screen to exit.
+void HandleChoobeScreen() {
+  OobeScreenWaiter(ChoobeScreenView::kScreenId).Wait();
+
+  const test::UIPath screens_cards[] = {
+      {"choobe", "screensList", "cr-button-touchpad-scroll"},
+      {"choobe", "screensList", "cr-button-display-size"},
+      {"choobe", "screensList", "cr-button-theme-selection"}};
+  for (const auto& card : screens_cards) {
+    test::OobeJS().TapOnPath(card);
+  }
+  test::OobeJS().TapOnPath({"choobe", "nextButton"});
+
+  OobeScreenExitWaiter(ChoobeScreenView::kScreenId).Wait();
+}
+
+// Taps through CHOOBE screen (if it should be shown), then calls the handle
+// methods for the optional sreens.
+void HandleChoobeFlow() {
+  // CHOOBE screen will only be enabled when there are at least 3 eligible
+  // optional screens. So, for the screen to be shown, both `OobeDisplaySize`
+  // and `OobeTouchpadScroll` must be enabled to have at least 3 optional
+  // screens.
+  bool should_show_choobe = features::IsOobeDisplaySizeEnabled() &&
+                            features::IsOobeTouchpadScrollEnabled();
+
+  if (should_show_choobe) {
+    HandleChoobeScreen();
+  }
+
+  if (features::IsOobeTouchpadScrollEnabled()) {
+    HandleTouchpadScrollScreen();
+  }
+
+  if (features::IsOobeDisplaySizeEnabled()) {
+    HandleDisplaySizeScreen();
+  }
+
+  HandleThemeSelectionScreen();
 }
 
 // Waits for marketing opt in screen to get shown, then taps through the screen
@@ -632,7 +705,14 @@ void OobeInteractiveUITest::PerformSessionSignInSteps() {
   ForceBrandedBuild();
   if (GetFirstSigninScreen() == UserCreationView::kScreenId) {
     test::WaitForUserCreationScreen();
-    test::TapUserCreationNext();
+
+    if (features::IsOobeSoftwareUpdateEnabled()) {
+      test::TapForPersonalUseCrRadioButton();
+      test::TapUserCreationNext();
+      HandleConsumerUpdateScreen();
+    } else {
+      test::TapUserCreationNext();
+    }
 
     if (features::IsOobeGaiaInfoScreenEnabled()) {
       HandleGaiaInfoScreen();
@@ -676,11 +756,17 @@ void OobeInteractiveUITest::PerformSessionSignInSteps() {
     HandleGestureNavigationScreen();
   }
 
-  HandleThemeSelectionScreen();
+  if (features::IsOobeChoobeEnabled()) {
+    HandleChoobeFlow();
+  } else {
+    HandleThemeSelectionScreen();
+  }
+
   HandleMarketingOptInScreen();
 }
 
 void OobeInteractiveUITest::SimpleEndToEnd() {
+  test::SetFakeTouchpadDevice();
   PerformStepsBeforeEnrollmentCheck();
   PerformSessionSignInSteps();
 
@@ -754,6 +840,7 @@ class OobeZeroTouchInteractiveUITest : public OobeInteractiveUITest {
 };
 
 void OobeZeroTouchInteractiveUITest::ZeroTouchEndToEnd() {
+  test::SetFakeTouchpadDevice();
   policy_test_server_mixin_.SetupZeroTouchForcedEnrollment();
 
   WizardController::default_controller()

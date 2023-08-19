@@ -33,7 +33,7 @@ void ShortcutRegistryCache::RemoveObserver(Observer* observer) {
 
 void ShortcutRegistryCache::UpdateShortcut(ShortcutPtr delta) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Do not allow notified observer updating shortcut cache again.
+  // Do not allow notified observer to modify shortcut cache again.
   DCHECK(!is_updating_);
   is_updating_ = true;
   const ShortcutId shortcut_id = delta->shortcut_id;
@@ -54,6 +54,18 @@ void ShortcutRegistryCache::UpdateShortcut(ShortcutPtr delta) {
   is_updating_ = false;
 }
 
+void ShortcutRegistryCache::RemoveShortcut(const ShortcutId& id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Do not allow notified observer to modify shortcut cache again.
+  CHECK(!is_updating_);
+  is_updating_ = true;
+  states_.erase(id);
+  for (auto& obs : observers_) {
+    obs.OnShortcutRemoved(id);
+  }
+  is_updating_ = false;
+}
+
 ShortcutView ShortcutRegistryCache::GetShortcut(const ShortcutId& shortcut_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto shortcut = states_.find(shortcut_id);
@@ -66,11 +78,11 @@ bool ShortcutRegistryCache::HasShortcut(const ShortcutId& shortcut_id) {
   return base::Contains(states_, shortcut_id);
 }
 
-std::vector<ShortcutPtr> ShortcutRegistryCache::GetAllShortcuts() {
+std::vector<ShortcutView> ShortcutRegistryCache::GetAllShortcuts() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::vector<ShortcutPtr> shortcuts;
+  std::vector<ShortcutView> shortcuts;
   for (const auto& [shortcut_id, shortcut] : states_) {
-    shortcuts.push_back(shortcut.get()->Clone());
+    shortcuts.emplace_back(shortcut.get());
   }
   return shortcuts;
 }

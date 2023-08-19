@@ -40,13 +40,6 @@ BASE_FEATURE(kFileSystemAccessRemove,
              "FileSystemAccessRemove",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// TODO(crbug.com/1254078): Remove this flag eventually.
-// When enabled, removeEntry() acquires an exclusive lock (as opposed to a
-// shared lock when disabled).
-BASE_FEATURE(kFileSystemAccessRemoveEntryExclusiveLock,
-             "FileSystemAccessRemoveEntryExclusiveLock",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // TODO(crbug.com/1394837): Remove this flag eventually.
 // When enabled, a user gesture is required to rename a file if the site does
 // not have write access to the parent. See http://b/254157070 for more context.

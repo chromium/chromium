@@ -39,6 +39,14 @@ id<GREYMatcher> ButtonWithAccessibilityLabelId(int message_id);
 // `label` and accessibility trait UIAccessibilityTraitButton.
 id<GREYMatcher> ButtonWithAccessibilityLabel(NSString* label);
 
+// Returns a matcher for context menu items with accessibility label
+// corresponding to `label`.
+id<GREYMatcher> ContextMenuItemWithAccessibilityLabel(NSString* label);
+
+// Returns a matcher for context menu items with accessibility label
+// corresponding to `message_id`.
+id<GREYMatcher> ContextMenuItemWithAccessibilityLabelId(int message_id);
+
 // Returns a matcher for element with an image corresponding to `image_id`.
 id<GREYMatcher> ImageViewWithImage(UIImage* image);
 
@@ -316,8 +324,13 @@ id<GREYMatcher> GoogleServicesSettingsButton();
 // screen.
 id<GREYMatcher> ManageSyncSettingsButton();
 
-// Returns a matcher for the Tabs Settings button on the Tabs Settings screen.
+// Returns a matcher for the Inactive Tabs Settings button on the Tabs Settings
+// screen.
 id<GREYMatcher> InactiveTabsSettingsButton();
+
+// Returns a matcher for the Tab Pickup Settings button on the Tabs Settings
+// screen.
+id<GREYMatcher> TabPickupSettingsButton();
 
 // Returns a matcher for the Tabs Settings button on the main Settings screen.
 id<GREYMatcher> TabsSettingsButton();
@@ -558,6 +571,9 @@ id<GREYMatcher> SettingsBottomToolbarDeleteButton();
 
 // Returns a matcher for the search engine button in the main settings view.
 id<GREYMatcher> SettingsSearchEngineButton();
+
+// Returns a matcher for the address bar button in the main settings view.
+id<GREYMatcher> SettingsAddressBarButton();
 
 // Returns a matcher for an autofill suggestion view.
 id<GREYMatcher> AutofillSuggestionViewMatcher();

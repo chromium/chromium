@@ -208,10 +208,8 @@ class Driver(object):
         if self._port.get_option('profile'):
             profiler_name = self._port.get_option('profiler')
             self._profiler = ProfilerFactory.create_profiler(
-                self._port.host,
-                self._port._path_to_driver(),  # pylint: disable=protected-access
-                self._port.artifacts_directory(),
-                profiler_name)
+                self._port.host, self._port.path_to_driver(),
+                self._port.artifacts_directory(), profiler_name)
         else:
             self._profiler = None
 
@@ -571,7 +569,7 @@ class Driver(object):
         self._current_cmd_line = None
 
     def _base_cmd_line(self):
-        return [self._port._path_to_driver()]  # pylint: disable=protected-access
+        return [self._port.path_to_driver()]
 
     def cmd_line(self, per_test_args):
         cmd = self._command_wrapper(self._port.get_option('wrapper'))

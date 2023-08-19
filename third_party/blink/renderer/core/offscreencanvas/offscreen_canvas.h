@@ -36,7 +36,7 @@ typedef OffscreenCanvasRenderingContext2DOrWebGLRenderingContextOrWebGL2Renderin
 class ScriptState;
 
 class CORE_EXPORT OffscreenCanvas final
-    : public EventTargetWithInlineData,
+    : public EventTarget,
       public ImageBitmapSource,
       public CanvasRenderingContextHost,
       public CanvasResourceDispatcherClient {
@@ -44,9 +44,7 @@ class CORE_EXPORT OffscreenCanvas final
   USING_PRE_FINALIZER(OffscreenCanvas, Dispose);
 
  public:
-  static OffscreenCanvas* Create(ExecutionContext*,
-                                 unsigned width,
-                                 unsigned height);
+  static OffscreenCanvas* Create(ScriptState*, unsigned width, unsigned height);
 
   OffscreenCanvas(ExecutionContext*, const gfx::Size&);
   ~OffscreenCanvas() override;

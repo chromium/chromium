@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/one_shot_event.h"
@@ -50,6 +51,9 @@ using extensions::ExtensionSystem;
 using extensions::SyncBundle;
 
 namespace {
+BASE_FEATURE(kBookmarkAppDeletion,
+             "BookmarkAppDeletion",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Returns true if the sync type of |extension| matches |type|.
 bool IsCorrectSyncType(const Extension& extension, syncer::ModelType type) {
@@ -290,6 +294,17 @@ ExtensionSyncData ExtensionSyncService::CreateSyncData(
 void ExtensionSyncService::ApplySyncData(
     const ExtensionSyncData& extension_sync_data) {
   const std::string& id = extension_sync_data.id();
+
+  // Remove all deprecated bookmark apps immediately, as they aren't loaded into
+  // the extensions system at all (and thus cannot be looked up).
+  if (base::FeatureList::IsEnabled(kBookmarkAppDeletion) &&
+      extension_sync_data.is_deprecated_bookmark_app()) {
+    GetSyncBundle(syncer::APPS)->ApplySyncData(extension_sync_data);
+    GetSyncBundle(syncer::APPS)
+        ->PushSyncDeletion(id, extension_sync_data.GetSyncData());
+    return;
+  }
+
   // Note: |extension| may be null if it hasn't been installed yet.
   const Extension* extension =
       ExtensionRegistry::Get(profile_)->GetInstalledExtension(id);

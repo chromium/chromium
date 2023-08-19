@@ -80,7 +80,7 @@ TEST_P(FractionalScrollSimTest, GetBoundingClientRectAtFractional) {
 
   Compositor().BeginFrame();
 
-  Element* target = GetDocument().getElementById("target");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
   DOMRect* rect = target->getBoundingClientRect();
   const float kOneLayoutUnit = 1.f / kFixedPointDenominator;
   EXPECT_NEAR(LayoutUnit(800.f - 700.5f), rect->left(), kOneLayoutUnit);
@@ -173,7 +173,7 @@ TEST_P(FractionalScrollSimTest, StickyDoesntOscillate) {
   Compositor().BeginFrame();
 
   const float kOneLayoutUnitF = LayoutUnit::Epsilon();
-  Element* sticky = GetDocument().getElementById("sticky");
+  Element* sticky = GetDocument().getElementById(AtomicString("sticky"));
 
   // Try sub-layout-unit scroll offsets. The sticky box shouldn't move.
   for (int i = 0; i < 3; ++i) {
@@ -367,7 +367,7 @@ TEST_P(ScrollAnimatorSimTest, TestDivUserScrollCallBack) {
   WebView().MainFrameWidget()->SetFocus(true);
   WebView().SetIsActive(true);
 
-  Element* scroller = GetDocument().getElementById("scroller");
+  Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
 
   bool finished = false;
   PaintLayerScrollableArea* scrollable_area =
@@ -492,7 +492,7 @@ class ScrollInfacesUseCounterSimTest : public SimTest,
             <div id="scroller"><div id="content"></div></div>
         )HTML");
     auto& document = GetDocument();
-    auto* style = document.getElementById("scroller")->style();
+    auto* style = document.getElementById(AtomicString("scroller"))->style();
     style->setProperty(&Window(), "direction", direction, String(),
                        ASSERT_NO_EXCEPTION);
     style->setProperty(&Window(), "writing-mode", writing_mode, String(),

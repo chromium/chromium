@@ -287,6 +287,7 @@ public class SelectActionMenuHelper {
                             .setOrderInCategory(i)
                             .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM)
                             .setClickListener(listener)
+                            .setIntent(intent)
                             .build());
         }
         return textProcessingItems;
@@ -341,6 +342,7 @@ public class SelectActionMenuHelper {
                 .setShowAsActionFlags(
                         MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT)
                 .setIsEnabled(isEnabled)
+                .setIsIconTintable(true)
                 .build();
     }
 
@@ -353,6 +355,7 @@ public class SelectActionMenuHelper {
                 .setShowAsActionFlags(
                         MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT)
                 .setIsEnabled(isEnabled)
+                .setIsIconTintable(true)
                 .build();
     }
 
@@ -365,6 +368,7 @@ public class SelectActionMenuHelper {
                 .setShowAsActionFlags(
                         MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT)
                 .setIsEnabled(isEnabled)
+                .setIsIconTintable(true)
                 .build();
     }
 
@@ -376,6 +380,7 @@ public class SelectActionMenuHelper {
                 .setShowAsActionFlags(
                         MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT)
                 .setIsEnabled(isEnabled)
+                .setIsIconTintable(true)
                 .build();
     }
 
@@ -388,6 +393,7 @@ public class SelectActionMenuHelper {
                 .setShowAsActionFlags(
                         MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT)
                 .setIsEnabled(isEnabled)
+                .setIsIconTintable(true)
                 .build();
     }
 
@@ -410,6 +416,7 @@ public class SelectActionMenuHelper {
                 .setShowAsActionFlags(
                         MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT)
                 .setIsEnabled(isEnabled)
+                .setIsIconTintable(true)
                 .build();
     }
 }

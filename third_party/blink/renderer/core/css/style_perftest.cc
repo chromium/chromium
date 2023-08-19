@@ -108,9 +108,9 @@ static std::unique_ptr<DummyPageHolder> LoadDumpedPage(
                          /*allow_import_rules=*/true);
     }
     if (*sheet_dict.FindString("type") == "user") {
-      engine.InjectSheet("", sheet, WebCssOrigin::kUser);
+      engine.InjectSheet(g_empty_atom, sheet, WebCssOrigin::kUser);
     } else {
-      engine.InjectSheet("", sheet, WebCssOrigin::kAuthor);
+      engine.InjectSheet(g_empty_atom, sheet, WebCssOrigin::kAuthor);
     }
     ++num_sheets;
     num_bytes += sheet_dict.FindString("text")->size();
@@ -171,12 +171,16 @@ static StylePerfResult MeasureStyleForDumpedPage(
   {
     scoped_refptr<SharedBuffer> serialized =
         test::ReadFromFile(test::StylePerfTestDataPath(filename));
-    absl::optional<base::Value> json = base::JSONReader::Read(
-        base::StringPiece(serialized->Data(), serialized->size()));
-    if (!json.has_value()) {
+    if (!serialized) {
+      // Some test data is very large and needs to be downloaded separately,
+      // so it may not always be present. Do not fail, but report the test as
+      // skipped.
       result.skipped = true;
       return result;
     }
+    absl::optional<base::Value> json = base::JSONReader::Read(
+        base::StringPiece(serialized->Data(), serialized->size()));
+    CHECK(json.has_value());
     page = LoadDumpedPage(json->GetDict(), result.parse_time, reporter);
   }
 

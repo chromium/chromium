@@ -57,6 +57,8 @@ void SelectToSpeakSpeedBubbleController::Show(views::View* anchor_view,
     init_params.translucent = true;
     init_params.close_on_deactivate = false;
     init_params.preferred_width = kPreferredWidth;
+    init_params.type = TrayBubbleView::TrayBubbleType::kAccessibilityBubble;
+
     bubble_view_ = new TrayBubbleView(init_params);
     bubble_view_->SetArrow(views::BubbleBorder::BOTTOM_RIGHT);
     bubble_view_->SetCanActivate(true);

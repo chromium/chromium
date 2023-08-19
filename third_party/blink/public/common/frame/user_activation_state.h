@@ -12,6 +12,17 @@
 
 namespace blink {
 
+#if defined(MEMORY_SANITIZER)
+// MSan runs can be very slow, so don't time out user gestures quickly.  See
+// https://crbug.com/1433572 for one example.
+inline constexpr base::TimeDelta kActivationLifespan = base::Seconds(60);
+#else
+// The expiry time should be long enough to allow network round trips even in a
+// very slow connection (to support xhr-like calls with user activation), yet
+// not too long to make an "unattended" page feel activated.
+inline constexpr base::TimeDelta kActivationLifespan = base::Seconds(5);
+#endif
+
 // This class represents the user activation state of a frame.  It maintains two
 // bits of information: whether this frame has ever seen an activation in its
 // lifetime (the sticky bit), and whether this frame has a current activation

@@ -67,10 +67,12 @@
 #import "ios/chrome/browser/metrics/ios_chrome_default_browser_metrics_provider.h"
 #import "ios/chrome/browser/metrics/ios_chrome_signin_and_sync_status_metrics_provider.h"
 #import "ios/chrome/browser/metrics/ios_chrome_stability_metrics_provider.h"
+#import "ios/chrome/browser/metrics/ios_family_link_user_metrics_provider.h"
+#import "ios/chrome/browser/metrics/ios_feed_activity_metrics_provider.h"
 #import "ios/chrome/browser/metrics/ios_feed_enabled_metrics_provider.h"
 #import "ios/chrome/browser/metrics/ios_profile_session_metrics_provider.h"
 #import "ios/chrome/browser/metrics/mobile_session_shutdown_metrics_provider.h"
-#import "ios/chrome/browser/paths/paths.h"
+#import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -87,10 +89,6 @@
 #import "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -335,6 +333,9 @@ void IOSChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
       std::make_unique<IOSChromeSigninAndSyncStatusMetricsProvider>());
 
   metrics_service_->RegisterMetricsProvider(
+      std::make_unique<IOSFamilyLinkUserMetricsProvider>());
+
+  metrics_service_->RegisterMetricsProvider(
       std::make_unique<MobileSessionShutdownMetricsProvider>(
           metrics_service_.get()));
 
@@ -349,6 +350,9 @@ void IOSChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
       std::make_unique<metrics::DemographicMetricsProvider>(
           std::make_unique<metrics::ChromeBrowserStateClient>(),
           metrics::MetricsLogUploader::MetricServiceType::UMA));
+
+  metrics_service_->RegisterMetricsProvider(
+      std::make_unique<IOSFeedActivityMetricsProvider>());
 
   metrics_service_->RegisterMetricsProvider(
       CreateIOSProfileSessionMetricsProvider());

@@ -18,7 +18,7 @@
 #include "net/test/python_utils.h"
 
 #if BUILDFLAG(IS_APPLE)
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #endif
 
 namespace {
@@ -46,8 +46,9 @@ bool GetPyProtoPath(base::FilePath* dir) {
   }
 
 #if BUILDFLAG(IS_APPLE)
-  if (base::mac::AmIBundled())
+  if (base::apple::AmIBundled()) {
     generated_code_dir = generated_code_dir.DirName().DirName().DirName();
+  }
 #endif
 
   const base::FilePath kPyProto(FILE_PATH_LITERAL("pyproto"));

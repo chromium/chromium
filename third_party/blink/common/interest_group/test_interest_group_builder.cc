@@ -43,7 +43,8 @@ TestInterestGroupBuilder::TestInterestGroupBuilder(url::Origin owner,
           /*ads=*/absl::nullopt,
           /*ad_components=*/absl::nullopt,
           /*ad_sizes=*/{},
-          /*size_groups=*/{}) {}
+          /*size_groups=*/{},
+          /*auction_server_request_flags=*/{}) {}
 
 TestInterestGroupBuilder::~TestInterestGroupBuilder() = default;
 
@@ -166,6 +167,13 @@ TestInterestGroupBuilder& TestInterestGroupBuilder::SetSizeGroups(
     absl::optional<base::flat_map<std::string, std::vector<std::string>>>
         size_groups) {
   interest_group_.size_groups = std::move(size_groups);
+  return *this;
+}
+
+TestInterestGroupBuilder&
+TestInterestGroupBuilder::SetAuctionServerRequestFlags(
+    AuctionServerRequestFlags flags) {
+  interest_group_.auction_server_request_flags = std::move(flags);
   return *this;
 }
 

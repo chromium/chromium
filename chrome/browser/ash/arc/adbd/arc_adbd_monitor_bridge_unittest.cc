@@ -12,11 +12,11 @@
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_adbd_monitor_instance.h"
 #include "ash/components/arc/test/fake_arc_session.h"
-#include "ash/components/arc/test/test_browser_context.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,10 +39,10 @@ class ArcAdbdMonitorBridgeTest : public testing::Test {
   void SetUp() override {
     ash::UpstartClient::InitializeFake();
     arc_service_manager_ = std::make_unique<ArcServiceManager>();
-    context_ = std::make_unique<TestBrowserContext>();
+    profile_ = std::make_unique<TestingProfile>();
     instance_ = std::make_unique<FakeAdbdMonitorInstance>();
     bridge_ =
-        ArcAdbdMonitorBridge::GetForBrowserContextForTesting(context_.get());
+        ArcAdbdMonitorBridge::GetForBrowserContextForTesting(profile_.get());
     ArcServiceManager::Get()->arc_bridge_service()->adbd_monitor()->SetInstance(
         instance_.get());
     WaitForInstanceReady(
@@ -55,7 +55,7 @@ class ArcAdbdMonitorBridgeTest : public testing::Test {
         ->adbd_monitor()
         ->CloseInstance(instance_.get());
     instance_.reset();
-    context_.reset();
+    profile_.reset();
     arc_service_manager_.reset();
   }
 
@@ -86,7 +86,7 @@ class ArcAdbdMonitorBridgeTest : public testing::Test {
         base::BindLambdaForTesting([this](const std::string& job_name,
                                           const std::vector<std::string>& env) {
           upstart_operations_.emplace_back(job_name, true);
-          return true;
+          return ash::FakeUpstartClient::StartJobResult(true /* success */);
         }));
     upstart_client->set_stop_job_cb(
         base::BindLambdaForTesting([this](const std::string& job_name,
@@ -99,9 +99,9 @@ class ArcAdbdMonitorBridgeTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<FakeAdbdMonitorInstance> instance_;
-  std::unique_ptr<TestBrowserContext> context_;
+  std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
-  raw_ptr<ArcAdbdMonitorBridge, ExperimentalAsh> bridge_;
+  raw_ptr<ArcAdbdMonitorBridge, DanglingUntriaged | ExperimentalAsh> bridge_;
 
   // List of upstart operations recorded. When it's "start" the boolean is set
   // to true.

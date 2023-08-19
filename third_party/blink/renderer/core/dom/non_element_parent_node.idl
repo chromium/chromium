@@ -3,9 +3,6 @@
 // found in the LICENSE file.
 
 // https://dom.spec.whatwg.org/#interface-nonelementparentnode
-
-[
-    LegacyTreatAsPartialInterface
-] interface mixin NonElementParentNode {
-    [PerWorldBindings] Element? getElementById(DOMString elementId);
+interface mixin NonElementParentNode {
+   [PerWorldBindings] Element? getElementById(DOMString elementId);
 };

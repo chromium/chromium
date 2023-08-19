@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <set>
 #include <utility>
 #include <vector>
 
@@ -39,6 +40,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -139,14 +141,18 @@ AggregationServiceImpl::GetStorage() {
   return storage_;
 }
 
+void AggregationServiceImpl::OnUserVisibleTaskStarted() {
+  // When a user-visible task is queued or running, we use a higher priority.
+  ++num_pending_user_visible_tasks_;
+  storage_task_runner_->UpdatePriority(base::TaskPriority::USER_VISIBLE);
+}
+
 void AggregationServiceImpl::ClearData(
     base::Time delete_begin,
     base::Time delete_end,
     StoragePartition::StorageKeyMatcherFunction filter,
     base::OnceClosure done) {
-  // When a clear data task is queued or running, we use a higher priority.
-  ++num_pending_clear_data_tasks_;
-  storage_task_runner_->UpdatePriority(base::TaskPriority::USER_VISIBLE);
+  OnUserVisibleTaskStarted();
 
   storage_.AsyncCall(&AggregationServiceStorage::ClearDataBetween)
       .WithArgs(delete_begin, delete_end, std::move(filter))
@@ -155,13 +161,18 @@ void AggregationServiceImpl::ClearData(
                          weak_factory_.GetWeakPtr())));
 }
 
-void AggregationServiceImpl::OnClearDataComplete() {
-  DCHECK_GT(num_pending_clear_data_tasks_, 0);
-  --num_pending_clear_data_tasks_;
+void AggregationServiceImpl::OnUserVisibleTaskComplete() {
+  DCHECK_GT(num_pending_user_visible_tasks_, 0);
+  --num_pending_user_visible_tasks_;
 
-  // No more clear data tasks, so we can reset the priority.
-  if (num_pending_clear_data_tasks_ == 0)
+  // No more user visible tasks, so we can reset the priority.
+  if (num_pending_user_visible_tasks_ == 0) {
     storage_task_runner_->UpdatePriority(base::TaskPriority::BEST_EFFORT);
+  }
+}
+
+void AggregationServiceImpl::OnClearDataComplete() {
+  OnUserVisibleTaskComplete();
   NotifyRequestStorageModified();
 }
 
@@ -320,6 +331,16 @@ void AggregationServiceImpl::OnGetRequestsToSendFromWebUI(
   auto barrier = base::BarrierClosure(requests_and_ids.size(),
                                       std::move(reports_sent_callback));
   AssembleAndSendReports(std::move(requests_and_ids), std::move(barrier));
+}
+
+void AggregationServiceImpl::GetPendingReportReportingOrigins(
+    base::OnceCallback<void(std::set<url::Origin>)> callback) {
+  OnUserVisibleTaskStarted();
+  storage_
+      .AsyncCall(&AggregationServiceStorage::GetReportRequestReportingOrigins)
+      .Then(std::move(callback).Then(
+          base::BindOnce(&AggregationServiceImpl::OnUserVisibleTaskComplete,
+                         weak_factory_.GetWeakPtr())));
 }
 
 void AggregationServiceImpl::AddObserver(AggregationServiceObserver* observer) {

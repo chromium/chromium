@@ -15,6 +15,7 @@ import "components/power_bookmarks/core/proto/shopping_specifics.proto";
 
 // Used to query specific bookmark verticals.
 enum PowerBookmarkType {
+  UNKNOWN = 0;
   SHOPPING = 1;
 }
 

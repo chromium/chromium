@@ -10,9 +10,13 @@
 
 namespace embedder_support {
 
-extern const char kAlternateErrorPagesEnabled[];
-extern const char kForceMajorVersionToMinorPosition[];
-extern const char kReduceUserAgentMinorVersion[];
+// A boolean pref set to true if we're using Link Doctor error pages.
+inline constexpr char kAlternateErrorPagesEnabled[] =
+    "alternate_error_pages.enabled";
+
+// Enum indicating if the user agent reduction feature should be forced enabled
+// or disabled. Defaults to blink::features::kReduceUserAgentMinorVersion trial.
+inline constexpr char kReduceUserAgentMinorVersion[] = "user_agent_reduction";
 
 }  // namespace embedder_support
 

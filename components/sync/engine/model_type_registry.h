@@ -88,7 +88,13 @@ class ModelTypeRegistry : public ModelTypeConnector,
   CommitContributorMap* commit_contributor_map();
   KeystoreKeysHandler* keystore_keys_handler();
 
+  // Returns types that have local changes yet to be synced to the server.
+  ModelTypeSet GetTypesWithUnsyncedData() const;
+
   bool HasUnsyncedItems() const;
+
+  const std::vector<std::unique_ptr<ModelTypeWorker>>&
+  GetConnectedModelTypeWorkersForTest() const;
 
   base::WeakPtr<ModelTypeConnector> AsWeakPtr();
 

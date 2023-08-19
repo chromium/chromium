@@ -46,6 +46,8 @@ PrimaryAccountChangeEvent::Type PrimaryAccountChangeEvent::GetEventTypeFor(
     return Type::kNone;
 
   // Cannot change the Sync account without clearing the primary account first.
+  // TODO(crbug.com/1462978): Delete this when ConsentLevel::kSync is
+  //     deleted. See ConsentLevel::kSync documentation for details.
   DCHECK(previous_state_.consent_level != ConsentLevel::kSync ||
          previous_state_.primary_account == current_state_.primary_account ||
          current_state_.primary_account.IsEmpty());
@@ -62,6 +64,8 @@ PrimaryAccountChangeEvent::Type PrimaryAccountChangeEvent::GetEventTypeFor(
       }
       return Type::kNone;
     case ConsentLevel::kSync:
+      // TODO(crbug.com/1462978): Delete this when ConsentLevel::kSync is
+      //     deleted. See ConsentLevel::kSync documentation for details.
       if (previous_state_.consent_level != current_state_.consent_level) {
         return current_state_.consent_level == ConsentLevel::kSync
                    ? Type::kSet
@@ -94,7 +98,9 @@ std::ostream& operator<<(std::ostream& os,
                          const PrimaryAccountChangeEvent::State& state) {
   os << "{ primary_account: " << state.primary_account.account_id << ", "
      << "consent_level:"
-     << (state.consent_level == ConsentLevel::kSignin ? "NotRequired" : "Sync")
+     << (state.primary_account.IsEmpty()                ? ""
+         : state.consent_level == ConsentLevel::kSignin ? " Signin"
+                                                        : " Sync")
      << " }";
   return os;
 }
@@ -113,6 +119,8 @@ ConvertToJavaPrimaryAccountChangeEvent(
     const PrimaryAccountChangeEvent& event_details) {
   PrimaryAccountChangeEvent::Type event_type_not_required =
       event_details.GetEventTypeFor(ConsentLevel::kSignin);
+  // TODO(crbug.com/1462978): Delete this when ConsentLevel::kSync is
+  //     deleted. See ConsentLevel::kSync documentation for details.
   PrimaryAccountChangeEvent::Type event_type_sync =
       event_details.GetEventTypeFor(ConsentLevel::kSync);
   // Should not fire events if there is no change in primary accounts for any

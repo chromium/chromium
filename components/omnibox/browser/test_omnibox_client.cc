@@ -23,7 +23,6 @@
 
 TestOmniboxClient::TestOmniboxClient()
     : session_id_(SessionID::FromSerializedValue(1)),
-      bookmark_model_(nullptr),
       autocomplete_classifier_(
           std::make_unique<AutocompleteController>(
               CreateAutocompleteProviderClient(),
@@ -64,15 +63,6 @@ SessionID TestOmniboxClient::GetSessionID() const {
   return session_id_;
 }
 
-void TestOmniboxClient::SetBookmarkModel(
-    bookmarks::BookmarkModel* bookmark_model) {
-  bookmark_model_ = bookmark_model;
-}
-
-bookmarks::BookmarkModel* TestOmniboxClient::GetBookmarkModel() {
-  return bookmark_model_;
-}
-
 AutocompleteControllerEmitter*
 TestOmniboxClient::GetAutocompleteControllerEmitter() {
   return nullptr;
@@ -110,15 +100,4 @@ gfx::Image TestOmniboxClient::GetSizedIcon(
   SkBitmap bitmap;
   bitmap.allocN32Pixels(16, 16);
   return gfx::Image(gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
-}
-
-gfx::Image TestOmniboxClient::GetFaviconForPageUrl(
-    const GURL& page_url,
-    FaviconFetchedCallback on_favicon_fetched) {
-  page_url_for_last_favicon_request_ = page_url;
-  return gfx::Image();
-}
-
-GURL TestOmniboxClient::GetPageUrlForLastFaviconRequest() const {
-  return page_url_for_last_favicon_request_;
 }

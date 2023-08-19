@@ -2,14 +2,21 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-static_library("browser") {
+source_set("browser") {
   sources = [
     "startup_metric_utils.cc",
     "startup_metric_utils.h",
   ]
 
+  defines = [ "IS_STARTUP_METRIC_UTILS_IMPL" ]
+
   deps = [
     "//base",
+    "//components/startup_metric_utils/common",
     "//components/version_info",
   ]
+
+  # Do not add to this list. Depend on //components/startup_metric_utils rather
+  # than this.
+  visibility = [ "//components/startup_metric_utils/*" ]
 }

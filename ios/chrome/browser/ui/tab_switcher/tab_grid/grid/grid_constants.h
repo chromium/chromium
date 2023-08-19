@@ -29,10 +29,6 @@ extern NSString* const kSuggestedActionsGridCellIdentifier;
 // Grid styling.
 extern NSString* const kGridBackgroundColor;
 
-// PlusSignCell styling
-extern NSString* const kPlusSignCellBackgroundColor;
-extern NSString* const kPlusSignCellBackgroundDarkColor;
-
 // GridLayout.
 // Extra-small screens require a slightly different layout configuration (e.g.,
 // margins) even though they may be categorized into the same size class as
@@ -102,21 +98,8 @@ extern const CGFloat kGridCellPriceDropTopSpacing;
 extern const CGFloat kGridCellPriceDropLeadingSpacing;
 extern const CGFloat kGridCellPriceDropTrailingSpacing;
 
-// Horizontal distance from the center of the plus sign image to the trailing of
-// the tab grid.
-extern const CGFloat kPlusSignImageTrailingCenterDistance;
-// Threshold after which the thumb strip's plus sign button should be hidden.
-extern const CGFloat kScrollThresholdForPlusSignButtonHide;
-// Vertical distance from the center of the plus sign image and the top of the
-// tab grid.
-extern const CGFloat kPlusSignImageYCenterConstant;
-// With of the plus sign button.
-extern const CGFloat kPlusSignButtonWidth;
 // Expected collection view top content inset. If mismatch, the extra space
 // is communicated to the plus sign button to align + sign correctly.
 extern const CGFloat kGridExpectedTopContentInset;
-// Height of the view that is revealed. The thumb strip has a height equal to a
-// small grid cell + edge insets (top and bottom) from thumb strip layout.
-extern const CGFloat kThumbStripHeight;
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_GRID_CONSTANTS_H_

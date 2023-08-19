@@ -36,11 +36,13 @@ public class RadioButtonGroupAdaptiveToolbarPreference
     private @NonNull RadioButtonWithDescription mVoiceSearchButton;
     private @NonNull RadioButtonWithDescription mTranslateButton;
     private @NonNull RadioButtonWithDescription mAddToBookmarksButton;
+    private @NonNull RadioButtonWithDescription mReadAloudButton;
     private @AdaptiveToolbarButtonVariant int mSelected;
     private @Nullable AdaptiveToolbarStatePredictor mStatePredictor;
     private boolean mCanUseVoiceSearch = true;
     private boolean mCanUseTranslate;
     private boolean mCanUseAddToBookmarks;
+    private boolean mCanUseReadAloud;
 
     public RadioButtonGroupAdaptiveToolbarPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -65,7 +67,8 @@ public class RadioButtonGroupAdaptiveToolbarPreference
                 (RadioButtonWithDescription) holder.findViewById(R.id.adaptive_option_translate);
         mAddToBookmarksButton = (RadioButtonWithDescription) holder.findViewById(
                 R.id.adaptive_option_add_to_bookmarks);
-
+        mReadAloudButton =
+                (RadioButtonWithDescription) holder.findViewById(R.id.adaptive_option_read_aloud);
         initializeRadioButtonSelection();
         RecordUserAction.record("Mobile.AdaptiveToolbarButton.SettingsPage.Opened");
     }
@@ -95,6 +98,7 @@ public class RadioButtonGroupAdaptiveToolbarPreference
             updateVoiceButtonVisibility();
             updateTranslateButtonVisibility();
             updateAddToBookmarksButtonVisibility();
+            updateReadAloudButtonVisibility();
         });
         AdaptiveToolbarStats.recordRadioButtonStateAsync(mStatePredictor, /*onStartup=*/true);
     }
@@ -115,6 +119,8 @@ public class RadioButtonGroupAdaptiveToolbarPreference
             mSelected = AdaptiveToolbarButtonVariant.TRANSLATE;
         } else if (mAddToBookmarksButton.isChecked()) {
             mSelected = AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS;
+        } else if (mReadAloudButton.isChecked()) {
+            mSelected = AdaptiveToolbarButtonVariant.READ_ALOUD;
         } else {
             assert false : "No matching setting found.";
         }
@@ -150,6 +156,8 @@ public class RadioButtonGroupAdaptiveToolbarPreference
                 return mTranslateButton;
             case AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS:
                 return mAddToBookmarksButton;
+            case AdaptiveToolbarButtonVariant.READ_ALOUD:
+                return mReadAloudButton;
         }
         return null;
     }
@@ -173,6 +181,9 @@ public class RadioButtonGroupAdaptiveToolbarPreference
             case AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS:
                 stringRes = R.string.adaptive_toolbar_button_preference_add_to_bookmarks;
                 break;
+            case AdaptiveToolbarButtonVariant.READ_ALOUD:
+                stringRes = R.string.adaptive_toolbar_button_preference_read_aloud;
+                break;
             default:
                 assert false : "Unknown variant " + variant;
         }
@@ -194,6 +205,11 @@ public class RadioButtonGroupAdaptiveToolbarPreference
         updateAddToBookmarksButtonVisibility();
     }
 
+    void setCanUseReadAloud(boolean canUseReadAloud) {
+        mCanUseReadAloud = canUseReadAloud;
+        updateReadAloudButtonVisibility();
+    }
+
     private void updateVoiceButtonVisibility() {
         updateButtonVisibility(mVoiceSearchButton, mCanUseVoiceSearch);
     }
@@ -206,6 +222,9 @@ public class RadioButtonGroupAdaptiveToolbarPreference
         updateButtonVisibility(mAddToBookmarksButton, mCanUseAddToBookmarks);
     }
 
+    private void updateReadAloudButtonVisibility() {
+        updateButtonVisibility(mReadAloudButton, mCanUseReadAloud);
+    }
     /**
      * Updates a button's visibility based on a boolean value. If the button is currently checked
      * and it needs to be hidden then we check the default "Auto" button.

@@ -240,7 +240,8 @@ class ConnectionHolderImpl<InstanceType, void> {
   // This class does not have ownership. The pointers should be managed by the
   // caller.
   const raw_ptr<ConnectionNotifier, ExperimentalAsh> connection_notifier_;
-  raw_ptr<InstanceType, ExperimentalAsh> instance_ = nullptr;
+  raw_ptr<InstanceType, DanglingUntriaged | ExperimentalAsh> instance_ =
+      nullptr;
   uint32_t instance_version_ = 0;
 };
 

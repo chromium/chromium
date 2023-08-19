@@ -30,7 +30,7 @@ class ScriptState;
 
 // The implementation of a service worker registration object in Blink.
 class ServiceWorkerRegistration final
-    : public EventTargetWithInlineData,
+    : public EventTarget,
       public ActiveScriptWrappable<ServiceWorkerRegistration>,
       public ExecutionContextLifecycleObserver,
       public Supplementable<ServiceWorkerRegistration>,

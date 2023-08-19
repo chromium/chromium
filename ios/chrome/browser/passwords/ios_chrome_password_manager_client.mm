@@ -29,7 +29,6 @@
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/credential_provider_promo/features.h"
-#import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/passwords/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_change_success_tracker_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_reuse_manager_factory.h"
@@ -43,6 +42,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
@@ -50,10 +50,6 @@
 #import "services/metrics/public/cpp/ukm_recorder.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "url/gurl.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using password_manager::metrics_util::PasswordType;
 using password_manager::PasswordFormManagerForUI;
@@ -231,7 +227,7 @@ void IOSChromePasswordManagerClient::NotifySuccessfulLoginWithExistingPassword(
         submitted_manager) {
   helper_.NotifySuccessfulLoginWithExistingPassword(
       std::move(submitted_manager));
-  if (IsCredentialProviderExtensionPromoEnabledOnLoginWithAutofill()) {
+  if (IsCredentialProviderExtensionPromoEnabled()) {
     [bridge_
         showCredentialProviderPromo:CredentialProviderPromoTrigger::
                                         SuccessfulLoginUsingExistingPassword];
@@ -330,11 +326,6 @@ bool IOSChromePasswordManagerClient::IsIsolationForPasswordSitesEnabled()
 
 bool IOSChromePasswordManagerClient::IsNewTabPage() const {
   return false;
-}
-
-password_manager::FieldInfoManager*
-IOSChromePasswordManagerClient::GetFieldInfoManager() const {
-  return nullptr;
 }
 
 safe_browsing::PasswordProtectionService*

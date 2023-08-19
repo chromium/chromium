@@ -63,9 +63,10 @@ class LoginPublicAccountUserViewTest : public LoginTestBase {
 
   LoginUserInfo user_;
 
-  raw_ptr<LoginPublicAccountUserView, ExperimentalAsh> public_account_view_ =
+  raw_ptr<LoginPublicAccountUserView, DanglingUntriaged | ExperimentalAsh>
+      public_account_view_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> focusable_view_ =
       nullptr;
-  raw_ptr<views::View, ExperimentalAsh> focusable_view_ = nullptr;
 
   int user_view_tap_count_ = 0;
   int public_account_tap_count_ = 0;

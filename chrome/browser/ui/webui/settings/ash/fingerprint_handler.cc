@@ -7,11 +7,13 @@
 #include <algorithm>
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/quick_unlock/auth_token.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
@@ -19,6 +21,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/device_service.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -137,6 +140,7 @@ void FingerprintHandler::OnSessionFailed() {
 }
 
 void FingerprintHandler::OnSessionStateChanged() {
+  TRACE_EVENT0("ui", "FingerprintHandler::OnSessionStateChanged");
   SessionState state = SessionManager::Get()->session_state();
 
   FireWebUIListener("on-screen-locked",
@@ -301,13 +305,19 @@ void FingerprintHandler::OnSetRecordLabel(const std::string& callback_id,
 }
 
 bool FingerprintHandler::CheckAuthTokenValidity(const std::string& auth_token) {
-  quick_unlock::QuickUnlockStorage* quick_unlock_storage =
-      quick_unlock::QuickUnlockFactory::GetForProfile(profile_);
-  if (!quick_unlock_storage->GetAuthToken())
-    return false;
-  if (auth_token != quick_unlock_storage->GetAuthToken()->Identifier())
-    return false;
-  return true;
+  if (ash::features::ShouldUseAuthSessionStorage()) {
+    return ash::AuthSessionStorage::Get()->IsValid(auth_token);
+  } else {
+    quick_unlock::QuickUnlockStorage* quick_unlock_storage =
+        quick_unlock::QuickUnlockFactory::GetForProfile(profile_);
+    if (!quick_unlock_storage->GetAuthToken()) {
+      return false;
+    }
+    if (auth_token != quick_unlock_storage->GetAuthToken()->Identifier()) {
+      return false;
+    }
+    return true;
+  }
 }
 
 }  // namespace ash::settings

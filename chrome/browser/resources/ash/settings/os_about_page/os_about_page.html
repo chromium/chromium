@@ -1,0 +1,312 @@
+<style include="settings-shared">
+  :host {
+    --about-page-image-space: 10px;
+  }
+
+  .info-section {
+    margin-bottom: 12px;
+  }
+
+  .padded {
+    padding-bottom: 10px;
+    padding-top: 10px;
+  }
+
+  .product-title {
+    font-size: 153.85%;  /* 20px / 13px */
+    font-weight: 400;
+    margin-bottom: auto;
+    margin-top: auto;
+  }
+
+  img {
+    margin-inline-end: var(--about-page-image-space);
+  }
+
+  .icon-container {
+    margin-inline-end: var(--about-page-image-space);
+    min-width: 32px;  /* The width of the product-logo img. */
+    text-align: center;
+  }
+
+  /* TODO(crbug.com/986596): Don't use browser icons here. Fork them. */
+  iron-icon[icon='settings:check-circle'] {
+    fill: var(--cros-icon-color-prominent);
+  }
+
+  iron-icon[icon='cr:error-outline'],
+  iron-icon[icon='cr:warning'],
+  iron-icon[icon='os-settings:end-of-life'] {
+    fill: var(--cros-icon-color-alert);
+  }
+
+  #firmwareUpdateBadge {
+    --iron-icon-fill-color: var(--cros-icon-color-secondary);
+  }
+
+  .settings-box .start {
+    overflow-x: auto;
+  }
+
+  cr-button {
+    white-space: nowrap;
+  }
+
+  #regulatoryInfo img {
+    width: 330px;
+  }
+
+  @media(prefers-color-scheme: dark) {
+    #regulatoryInfo img {
+      filter: invert(1);
+    }
+  }
+
+  .separator-firmware-updates-badge {
+    margin-inline-end: -4px;
+    margin-inline-start: 12px;
+  }
+
+  #deferredUpdateButtons {
+    min-height: unset;
+    padding-bottom: 10px;
+  }
+
+  eol-offer-section {
+    margin: 6px 3px 16px 3px;
+  }
+</style>
+<iron-media-query query="(prefers-color-scheme: dark)"
+    query-matches="{{isDarkModeActive_}}">
+</iron-media-query>
+
+  <os-settings-animated-pages id="pages" section="[[section_]]">
+    <div route-path="default">
+      <settings-card header-text="$i18n{aboutOsPageTitle}">
+        <div class="settings-box two-line first">
+          <img id="product-logo" on-click="onProductLogoClick_"
+              srcset="chrome://theme/current-channel-logo@1x 1x,
+                      chrome://theme/current-channel-logo@2x 2x"
+              alt="$i18n{aboutProductLogoAlt}"
+              role="presentation">
+          <h1 class="product-title">$i18n{aboutOsProductTitle}</h1>
+        </div>
+        <div class="settings-box two-line">
+          <!-- Set the icon from the iconset (when it's obsolete/EOL and
+            when update is done) or set the src (when it's updating). -->
+          <div class="icon-container"
+              hidden="[[!shouldShowIcons_(showUpdateStatus_)]]">
+            <!-- TODO(crbug.com/986596): Don't use browser icons here. Fork
+              them. -->
+            <iron-icon
+                icon$="[[getUpdateStatusIcon_(
+                    hasEndOfLife_, currentUpdateStatusEvent_)]]"
+                src="[[getThrobberSrcIfUpdating_(
+                    isDarkModeActive_,
+                    hasEndOfLife_,
+                    currentUpdateStatusEvent_)]]">
+            </iron-icon>
+          </div>
+          <div class="start padded">
+            <div id="updateStatusMessage" hidden="[[!showUpdateStatus_]]">
+              <div id="updateStatusMessageInner" tabindex="-1"
+                  inner-h-t-m-l="[[getUpdateStatusMessage_(
+                  currentUpdateStatusEvent_, targetChannel_)]]"></div>
+              <a hidden$="[[!shouldShowLearnMoreLink_(
+                  currentUpdateStatusEvent_)]]" target="_blank"
+                  href="https://support.google.com/chrome?p=update_error">
+                $i18n{learnMore}
+              </a>
+            </div>
+            <template is="dom-if" if="[[showEolIncentive_]]">
+              <eol-offer-section id="endOfLifeOfferContainer"
+                  should-show-offer-text="[[shouldShowOfferText_]]">
+              </eol-offer-section>
+            </template>
+            <localized-link
+                id="endOfLifeMessageContainer" hidden="[[!hasEndOfLife_]]"
+                localized-string="$i18n{endOfLifeMessage}">
+            </localized-link>
+            <div class="secondary" hidden="[[!hasDeferredUpdate_]]">
+              $i18n{aboutDeferredUpdate}
+            </div>
+            <div class="secondary">$i18n{aboutBrowserVersion}</div>
+          </div>
+          <div class="separator" hidden="[[!showButtonContainer_]]"></div>
+          <span id="buttonContainer" hidden="[[!showButtonContainer_]]">
+            <cr-button id="relaunch" hidden$="[[!showRelaunch_]]"
+                      on-click="onRelaunchClick_">
+                [[getRelaunchButtonText_(
+                                currentUpdateStatusEvent_)]]
+            </cr-button>
+            <cr-button id="checkForUpdates" hidden="[[!showCheckUpdates_]]"
+                on-click="onCheckUpdatesClick_"
+                deep-link-focus-id$="[[Setting.kCheckForOsUpdate]]">
+              $i18n{aboutCheckForUpdates}
+            </cr-button>
+          </span>
+        </div>
+        <div id="deferredUpdateButtons" class="settings-box first"
+            hidden="[[!hasDeferredUpdate_]]">
+          <div class="icon-container"></div>
+          <cr-button id="applyDeferredUpdate"
+              on-click="onApplyDeferredUpdateClick_">
+            $i18n{aboutRelaunch}
+          </cr-button>
+          <cr-button id="applyAndSetAutoUpdate"
+              on-click="onApplyAndSetAutoUpdateClick_">
+            $i18n{aboutRelaunchAndAutoUpdate}
+          </cr-button>
+        </div>
+        <cr-link-row
+            id="aboutTPMFirmwareUpdate"
+            class="hr"
+            hidden$="[[!showTPMFirmwareUpdateLineItem_]]"
+            label="$i18n{aboutTPMFirmwareUpdateTitle}"
+            on-click="onTpmFirmwareUpdateClick_">
+          <div slot="sub-label">
+            $i18n{aboutTPMFirmwareUpdateDescription}
+            <a href="$i18n{aboutTPMFirmwareUpdateLearnMoreURL}"
+                target="_blank" on-click="onLearnMoreClick_">
+              $i18n{learnMore}
+            </a>
+          </div>
+        </cr-link-row>
+        <template is="dom-if" if="[[hasInternetConnection_]]">
+          <cr-link-row class="hr" id="releaseNotesOnline"
+              on-click="onReleaseNotesClick_"
+              label="$i18n{aboutShowReleaseNotes}"
+              sub-label="[[getShowReleaseNotesSublabel_()]]"
+              external
+              deep-link-focus-id$="[[Setting.kSeeWhatsNew]]">
+          </cr-link-row>
+        </template>
+        <template is="dom-if" if="[[!hasInternetConnection_]]">
+          <cr-link-row class="hr" id="releaseNotesOffline"
+              on-click="onReleaseNotesClick_"
+              label="$i18n{aboutShowReleaseNotes}"
+              title="$i18n{aboutReleaseNotesOffline}"
+              external
+              deep-link-focus-id$="[[Setting.kSeeWhatsNew]]">
+          </cr-link-row>
+        </template>
+        <cr-link-row class="hr" id="help" on-click="onHelpClick_"
+            label="$i18n{aboutGetHelpUsingChromeOs}"
+            sub-label="[[getHelpUsingChromeOsSublabel_()]]"
+            external
+            deep-link-focus-id$="[[Setting.kGetHelpWithChromeOs]]">
+        </cr-link-row>
+  <if expr="_google_chrome">
+        <cr-link-row class="hr" id="reportIssue"
+            on-click="onReportIssueClick_"
+            hidden="[[!prefs.feedback_allowed.value]]"
+            label="[[getReportIssueLabel_()]]"
+            sub-label="[[getReportIssueSublabel_()]]"
+            external
+            deep-link-focus-id$="[[Setting.kReportAnIssue]]">
+        </cr-link-row>
+  </if>
+        <cr-link-row class="hr" id="diagnostics"
+            on-click="onDiagnosticsClick_"
+            label="$i18n{aboutDiagnostics}"
+            sub-label="[[getDiagnosticsSublabel_()]]"
+            external
+            deep-link-focus-id$="[[Setting.kDiagnostics]]">
+        </cr-link-row>
+        <cr-link-row class="hr" id="firmwareUpdates"
+            on-click="onFirmwareUpdatesClick_"
+            label="$i18n{aboutFirmwareUpdates}"
+            sub-label="[[getFirmwareSublabel_(firmwareUpdateCount_)]]"
+            external
+            using-slotted-label
+            deep-link-focus-id$="[[Setting.kFirmwareUpdates]]">
+          <iron-icon id="firmwareUpdateBadge"
+              icon$="[[getFirmwareUpdatesIcon_(firmwareUpdateCount_)]]"
+              hidden$="[[!shouldShowFirmwareUpdatesBadge_(
+                firmwareUpdateCount_)]]">
+          </iron-icon>
+          <div id="firmwareUpdateBadgeSeparator"
+              class="separator separator-firmware-updates-badge"
+              hidden$="[[!shouldShowFirmwareUpdatesBadge_(
+                firmwareUpdateCount_)]]">
+          </div>
+        </cr-link-row>
+        <cr-link-row class="hr" id="detailedBuildInfoTrigger"
+            on-click="onDetailedBuildInfoClick_"
+            label="$i18n{aboutDetailedBuildInfo}"
+            role-description="$i18n{subpageArrowRoleDescription}">
+        </cr-link-row>
+        <cr-link-row class="hr" on-click="onManagementPageClick_"
+            start-icon="cr:domain" label="$i18n{managementPage}"
+            hidden$="[[!isManaged_]]"
+            external>
+        </cr-link-row>
+      </settings-card>
+
+      <settings-card>
+        <div class="settings-box padded block first">
+          <div class="info-section">
+            <div class="secondary">$i18n{aboutOsProductTitle}</div>
+            <div class="secondary">$i18n{aboutProductCopyright}</div>
+          </div>
+
+          <div class="info-section">
+            <div class="secondary">
+              <span>$i18nRaw{aboutProductLicenseChromium}</span>
+              <localized-link
+                localized-string="$i18nRaw{aboutProductLicenseOther}"
+                on-link-clicked="onProductLicenseOtherClicked_">
+              </localized-link>
+            </div>
+            <div class="secondary" inner-h-t-m-l="[[getAboutProductOsLicense_(
+                    showCrostiniLicense_)]]">
+            </div>
+          </div>
+          <if expr="_google_chrome">
+            <div class="secondary">
+              <a id="aboutProductTos"
+                  href="$i18n{aboutTermsURL}"
+                  target="_blank"
+                  deep-link-focus-id$="[[Setting.kTermsOfService]]">
+                $i18n{aboutProductTos}
+              </a>
+            </div>
+          </if>
+        </div>
+        <div class="settings-box padded block" id="regulatoryInfo"
+          hidden$="[[!shouldShowRegulatoryOrSafetyInfo_(regulatoryInfo_)]]">
+          <if expr="_google_chrome">
+            <div class="secondary" hidden$="[[!shouldShowSafetyInfo_()]]">
+              <a target="_blank" href="$i18n{aboutProductSafetyURL}">
+                $i18nRaw{aboutProductSafety}
+              </a>
+            </div>
+          </if>
+          <img src="[[regulatoryInfo_.url]]" alt="[[regulatoryInfo_.text]]"
+            hidden$="[[!shouldShowRegulatoryInfo_(regulatoryInfo_)]]">
+        </div>
+      </settings-card>
+    </div>
+
+    <template is="dom-if" route-path="/help/details">
+      <os-settings-subpage page-title="$i18n{aboutDetailedBuildInfo}">
+        <settings-detailed-build-info-subpage
+            eol-message-with-month-and-year=
+                "[[eolMessageWithMonthAndYear_]]"
+            prefs="{{prefs}}">
+        </settings-detailed-build-info-subpage>
+      </os-settings-subpage>
+    </template>
+  </os-settings-animated-pages>
+
+<template is="dom-if" if="[[showUpdateWarningDialog_]]" restamp>
+  <settings-update-warning-dialog update-info="[[updateInfo_]]"
+      on-close="onUpdateWarningDialogClose_">
+  </settings-update-warning-dialog>
+</template>
+<template is="dom-if" if="[[showTPMFirmwareUpdateDialog_]]"
+    restamp>
+  <os-settings-powerwash-dialog request-tpm-firmware-update
+      on-close="onPowerwashDialogClose_">
+  </os-settings-powerwash-dialog>
+</template>

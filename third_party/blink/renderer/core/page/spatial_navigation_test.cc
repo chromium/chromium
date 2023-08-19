@@ -142,7 +142,7 @@ TEST_F(SpatialNavigationTest, FindContainerWhenEnclosingContainerIsDocument) {
       "<!DOCTYPE html>"
       "<a id='child'>link</a>");
 
-  Element* child_element = GetDocument().getElementById("child");
+  Element* child_element = GetDocument().getElementById(AtomicString("child"));
   Node* enclosing_container = ScrollableAreaOrDocumentOf(child_element);
 
   EXPECT_EQ(enclosing_container, GetDocument());
@@ -165,8 +165,8 @@ TEST_F(SpatialNavigationTest, FindContainerWhenEnclosingContainerIsIframe) {
       "<a>link</a>");
 
   UpdateAllLifecyclePhasesForTest();
-  Element* iframe = GetDocument().QuerySelector("iframe");
-  Element* link = ChildDocument().QuerySelector("a");
+  Element* iframe = GetDocument().QuerySelector(AtomicString("iframe"));
+  Element* link = ChildDocument().QuerySelector(AtomicString("a"));
   Node* enclosing_container = ScrollableAreaOrDocumentOf(link);
 
   EXPECT_FALSE(IsOffscreen(iframe));
@@ -195,8 +195,8 @@ TEST_F(SpatialNavigationTest,
       "  <div id='content'>some text here</div>"
       "</div>");
 
-  Element* content = GetDocument().getElementById("content");
-  Element* container = GetDocument().getElementById("container");
+  Element* content = GetDocument().getElementById(AtomicString("content"));
+  Element* container = GetDocument().getElementById(AtomicString("container"));
   Node* enclosing_container = ScrollableAreaOrDocumentOf(content);
 
   // TODO(crbug.com/889840):
@@ -219,8 +219,8 @@ TEST_F(SpatialNavigationTest, ZooomPutsElementOffScreen) {
       "<button id='a'>hello</button><br>"
       "<button id='b' style='margin-top: 70%'>bello</button>");
 
-  Element* a = GetDocument().getElementById("a");
-  Element* b = GetDocument().getElementById("b");
+  Element* a = GetDocument().getElementById(AtomicString("a"));
+  Element* b = GetDocument().getElementById(AtomicString("b"));
   EXPECT_FALSE(IsOffscreen(a));
   EXPECT_FALSE(IsOffscreen(b));
 
@@ -242,7 +242,7 @@ TEST_F(SpatialNavigationTest, RootViewportRespectsVisibleSize) {
 
 TEST_F(SpatialNavigationTest, StartAtVisibleFocusedElement) {
   SetBodyInnerHTML("<button id='b'>hello</button>");
-  Element* b = GetDocument().getElementById("b");
+  Element* b = GetDocument().getElementById(AtomicString("b"));
 
   EXPECT_EQ(SearchOrigin(RootViewport(&GetFrame()), b,
                          SpatialNavigationDirection::kDown),
@@ -265,7 +265,7 @@ TEST_F(SpatialNavigationTest, StartAtVisibleFocusedScroller) {
       "  <div id='content'>some text here</div>"
       "</div>");
 
-  Element* scroller = GetDocument().getElementById("scroller");
+  Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
   EXPECT_EQ(SearchOrigin(RootViewport(&GetFrame()), scroller,
                          SpatialNavigationDirection::kDown),
             NodeRectInRootFrame(scroller));
@@ -286,7 +286,7 @@ TEST_F(SpatialNavigationTest, StartAtVisibleFocusedIframe) {
       "<!DOCTYPE html>"
       "<div>some text here</div>");
 
-  Element* iframe = GetDocument().getElementById("iframe");
+  Element* iframe = GetDocument().getElementById(AtomicString("iframe"));
   EXPECT_EQ(SearchOrigin(RootViewport(&GetFrame()), iframe,
                          SpatialNavigationDirection::kDown),
             NodeRectInRootFrame(iframe));
@@ -338,7 +338,7 @@ TEST_F(SpatialNavigationTest,
       "<button id='b' style='margin-top: 120%;'>B</button>");  // Outside the
                                                                // visual
                                                                // viewport.
-  Element* b = GetDocument().getElementById("b");
+  Element* b = GetDocument().getElementById(AtomicString("b"));
   EXPECT_TRUE(IsOffscreen(b));
 
   EXPECT_EQ(SearchOrigin(RootViewport(&GetFrame()), b,
@@ -363,8 +363,9 @@ TEST_F(SpatialNavigationTest, StartAtContainersEdge) {
       "  <button id='b'>B</button>"
       "</div>");
 
-  Element* b = GetDocument().getElementById("b");
-  const Element* container = GetDocument().getElementById("container");
+  Element* b = GetDocument().getElementById(AtomicString("b"));
+  const Element* container =
+      GetDocument().getElementById(AtomicString("container"));
   const PhysicalRect container_box = NodeRectInRootFrame(container);
 
   // TODO(crbug.com/889840):
@@ -427,8 +428,8 @@ TEST_F(SpatialNavigationTest,
       "  <button id='b'>B</button>"
       "</div>");
 
-  Element* scroller = GetDocument().getElementById("scroller");
-  Element* b = GetDocument().getElementById("b");
+  Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
+  Element* b = GetDocument().getElementById(AtomicString("b"));
 
   EXPECT_TRUE(IsOffscreen(scroller));
   EXPECT_TRUE(IsOffscreen(b));
@@ -463,9 +464,9 @@ TEST_F(SpatialNavigationTest,
       "  </div>"
       "</div>");
 
-  Element* scroller1 = GetDocument().getElementById("scroller1");
-  Element* scroller2 = GetDocument().getElementById("scroller2");
-  Element* link = GetDocument().getElementById("link");
+  Element* scroller1 = GetDocument().getElementById(AtomicString("scroller1"));
+  Element* scroller2 = GetDocument().getElementById(AtomicString("scroller2"));
+  Element* link = GetDocument().getElementById(AtomicString("link"));
 
   EXPECT_TRUE(IsScrollableAreaOrDocument(scroller1));
   EXPECT_TRUE(IsScrollableAreaOrDocument(scroller2));
@@ -479,7 +480,7 @@ TEST_F(SpatialNavigationTest,
 TEST_F(SpatialNavigationTest, PartiallyVisible) {
   // <button>'s bottom is clipped.
   SetBodyInnerHTML("<button id='b' style='height: 900px;'>B</button>");
-  Element* b = GetDocument().getElementById("b");
+  Element* b = GetDocument().getElementById(AtomicString("b"));
 
   EXPECT_FALSE(IsOffscreen(b));  // <button> is not completely offscreen.
 
@@ -524,8 +525,8 @@ TEST_F(SpatialNavigationTest,
       "<a id='link'>link</a>");
 
   UpdateAllLifecyclePhasesForTest();
-  Element* link = ChildDocument().QuerySelector("a");
-  Element* iframe = GetDocument().QuerySelector("iframe");
+  Element* link = ChildDocument().QuerySelector(AtomicString("a"));
+  Element* iframe = GetDocument().QuerySelector(AtomicString("iframe"));
 
   // The <iframe> is not displayed in the visual viewport. In other words, it is
   // being offscreen. And so is also its content, the <a>.
@@ -560,9 +561,9 @@ TEST_F(SpatialNavigationTest, DivsCanClipIframes) {
       "<a>link</a>");
 
   UpdateAllLifecyclePhasesForTest();
-  Element* div = GetDocument().QuerySelector("div");
-  Element* iframe = GetDocument().QuerySelector("iframe");
-  Element* link = ChildDocument().QuerySelector("a");
+  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  Element* iframe = GetDocument().QuerySelector(AtomicString("iframe"));
+  Element* link = ChildDocument().QuerySelector(AtomicString("a"));
   EXPECT_FALSE(IsOffscreen(div));
 
   // TODO(crbug.com/889840):
@@ -602,7 +603,8 @@ TEST_F(SpatialNavigationTest, PartiallyVisibleIFrame) {
       "<a id='child'>link</a>");
 
   UpdateAllLifecyclePhasesForTest();
-  Element* child_element = ChildDocument().getElementById("child");
+  Element* child_element =
+      ChildDocument().getElementById(AtomicString("child"));
   Node* enclosing_container = ScrollableAreaOrDocumentOf(child_element);
   EXPECT_EQ(enclosing_container, ChildDocument());
 
@@ -670,7 +672,7 @@ TEST_F(SpatialNavigationTest, StraightTextNoFragments) {
       "  body {font: 10px/10px Ahem; width: 500px}"
       "</style>"
       "<a href='#' id='a'>blaaaaa blaaaaa blaaaaa</a>");
-  Element* a = GetDocument().getElementById("a");
+  Element* a = GetDocument().getElementById(AtomicString("a"));
   EXPECT_FALSE(IsFragmentedInline(*a->GetLayoutObject()));
 }
 
@@ -682,7 +684,7 @@ TEST_F(SpatialNavigationTest, LineBrokenTextHasFragments) {
       "  body {font: 10px/10px Ahem; width: 40px}"
       "</style>"
       "<a href='#' id='a'>blaaaaa blaaaaa blaaaaa</a>");
-  Element* a = GetDocument().getElementById("a");
+  Element* a = GetDocument().getElementById(AtomicString("a"));
   EXPECT_TRUE(IsFragmentedInline(*a->GetLayoutObject()));
 }
 
@@ -693,7 +695,7 @@ TEST_F(SpatialNavigationTest, ManyClientRectsButNotLineBrokenText) {
       "  div {width: 20px; height: 20px;}"
       "</style>"
       "<a href='#' id='a'><div></div></a>");
-  Element* a = GetDocument().getElementById("a");
+  Element* a = GetDocument().getElementById(AtomicString("a"));
   EXPECT_FALSE(IsFragmentedInline(*a->GetLayoutObject()));
 }
 
@@ -705,7 +707,7 @@ TEST_F(SpatialNavigationTest, UseTheFirstFragment) {
       "  body {font: 10px/10px Ahem; margin: 0; width: 50px;}"
       "</style>"
       "<a href='#' id='a'>12345 12</a>");
-  Element* a = GetDocument().getElementById("a");
+  Element* a = GetDocument().getElementById(AtomicString("a"));
   EXPECT_TRUE(IsFragmentedInline(*a->GetLayoutObject()));
 
   // Search downards.
@@ -750,7 +752,7 @@ TEST_F(SpatialNavigationTest, InlineImageLink) {
       "<body style='font: 17px Ahem;'>"
       "<a id='a'><img id='pic' width='50' height='50'></a>"
       "</body>");
-  Element* a = GetDocument().getElementById("a");
+  Element* a = GetDocument().getElementById(AtomicString("a"));
   EXPECT_TRUE(HasSameSearchOriginRectAndCandidateRect(a));
   PhysicalRect uncropped_link = NodeRectInRootFrame(a);
   EXPECT_EQ(uncropped_link.Width(), 50);
@@ -769,7 +771,7 @@ TEST_F(SpatialNavigationTest, InlineImageLinkWithLineHeight) {
       "<body style='font: 17px Ahem; line-height: 13px;'>"
       "<a id='a'><img id='pic' width='50' height='50'></a>"
       "</body>");
-  Element* a = GetDocument().getElementById("a");
+  Element* a = GetDocument().getElementById(AtomicString("a"));
   EXPECT_TRUE(HasSameSearchOriginRectAndCandidateRect(a));
   PhysicalRect uncropped_link = NodeRectInRootFrame(a);
   EXPECT_EQ(uncropped_link.Width(), 50);
@@ -790,9 +792,9 @@ TEST_F(SpatialNavigationTest, InlineImageTextLinkWithLineHeight) {
       "<a id='b'>b</a><br/>"
       "<a id='c'>cccccccc</a>"
       "</div>");
-  Element* a = GetDocument().getElementById("a");
-  Element* b = GetDocument().getElementById("b");
-  Element* c = GetDocument().getElementById("c");
+  Element* a = GetDocument().getElementById(AtomicString("a"));
+  Element* b = GetDocument().getElementById(AtomicString("b"));
+  Element* c = GetDocument().getElementById(AtomicString("c"));
   EXPECT_TRUE(HasSameSearchOriginRectAndCandidateRect(a));
   EXPECT_TRUE(HasSameSearchOriginRectAndCandidateRect(b));
   EXPECT_TRUE(HasSameSearchOriginRectAndCandidateRect(c));
@@ -815,9 +817,9 @@ TEST_F(SpatialNavigationTest, InlineLinkWithInnerBlock) {
       "45px; color: red'>a</span>a</a><a id='b'>bbb</a><br/>"
       "<a id='c'>cccccccc</a>"
       "</div>");
-  Element* a = GetDocument().getElementById("a");
-  Element* b = GetDocument().getElementById("b");
-  Element* c = GetDocument().getElementById("c");
+  Element* a = GetDocument().getElementById(AtomicString("a"));
+  Element* b = GetDocument().getElementById(AtomicString("b"));
+  Element* c = GetDocument().getElementById(AtomicString("c"));
   EXPECT_TRUE(HasSameSearchOriginRectAndCandidateRect(a));
   EXPECT_TRUE(HasSameSearchOriginRectAndCandidateRect(b));
   EXPECT_TRUE(HasSameSearchOriginRectAndCandidateRect(c));
@@ -839,9 +841,9 @@ TEST_F(SpatialNavigationTest, NoOverlappingLinks) {
       "  <a id='a'>aaa</a> <a id='b'>bbb</a><br/>"
       "  <a id='c'>cccccccc</a>"
       "</div>");
-  Element* a = GetDocument().getElementById("a");
-  Element* b = GetDocument().getElementById("b");
-  Element* c = GetDocument().getElementById("c");
+  Element* a = GetDocument().getElementById(AtomicString("a"));
+  Element* b = GetDocument().getElementById(AtomicString("b"));
+  Element* c = GetDocument().getElementById(AtomicString("c"));
   AssertNormalizedHeight(a, 17, false);
   AssertNormalizedHeight(b, 17, false);
   AssertNormalizedHeight(c, 17, false);
@@ -860,9 +862,9 @@ TEST_F(SpatialNavigationTest, OverlappingLinks) {
       "  <a id='a'>aaa</a> <a id='b'>bbb</a><br/>"
       "  <a id='c'>cccccccc</a>"
       "</div>");
-  Element* a = GetDocument().getElementById("a");
-  Element* b = GetDocument().getElementById("b");
-  Element* c = GetDocument().getElementById("c");
+  Element* a = GetDocument().getElementById(AtomicString("a"));
+  Element* b = GetDocument().getElementById(AtomicString("b"));
+  Element* c = GetDocument().getElementById(AtomicString("c"));
   // SpatNav will use the line box's height.
   AssertNormalizedHeight(a, 13, true);
   AssertNormalizedHeight(b, 13, true);
@@ -882,9 +884,9 @@ TEST_F(SpatialNavigationTest, UseInlineBoxHeightWhenShorter) {
       "  <a id='a'>aaa</a> <a id='b'>bbb</a><br/>"
       "  <a id='c'>cccccccc</a>"
       "</div>");
-  Element* a = GetDocument().getElementById("a");
-  Element* b = GetDocument().getElementById("b");
-  Element* c = GetDocument().getElementById("c");
+  Element* a = GetDocument().getElementById(AtomicString("a"));
+  Element* b = GetDocument().getElementById(AtomicString("b"));
+  Element* c = GetDocument().getElementById(AtomicString("c"));
   // SpatNav will use the inline boxes' height (17px) when it's shorter than
   // their line box (20px).
   AssertNormalizedHeight(a, 17, false);
@@ -905,7 +907,7 @@ TEST_F(SpatialNavigationTest, LineBrokenLink) {
       "  body {font: 10px Ahem; line-height: 12px; width: 40px}"
       "</style>"
       "<a id='a'>bla bla bla</a>");
-  Element* a = GetDocument().getElementById("a");
+  Element* a = GetDocument().getElementById(AtomicString("a"));
   ASSERT_TRUE(IsFragmentedInline(*a->GetLayoutObject()));
   ASSERT_EQ(LineBoxes(*a->GetLayoutObject()), 3);
   PhysicalRect search_origin =
@@ -932,7 +934,7 @@ TEST_F(SpatialNavigationTest, NormalizedLineBrokenLink) {
       "  body {font: 10px Ahem; line-height: 7px; width: 40px}"
       "</style>"
       "<a id='a'>bla bla bla</a>");
-  Element* a = GetDocument().getElementById("a");
+  Element* a = GetDocument().getElementById(AtomicString("a"));
   ASSERT_TRUE(IsFragmentedInline(*a->GetLayoutObject()));
   ASSERT_EQ(LineBoxes(*a->GetLayoutObject()), 3);
   PhysicalRect search_origin =
@@ -962,8 +964,8 @@ TEST_F(SpatialNavigationTest, NormalizedLineBrokenLinkWithImg) {
       "<a id='a'>aa<img width='10' height='24' src=''>a aaaa</a>"
       "<a id='b'>bb</a>"
       "</div>");
-  Element* a = GetDocument().getElementById("a");
-  Element* b = GetDocument().getElementById("b");
+  Element* a = GetDocument().getElementById(AtomicString("a"));
+  Element* b = GetDocument().getElementById(AtomicString("b"));
   ASSERT_TRUE(IsFragmentedInline(*a->GetLayoutObject()));
   ASSERT_FALSE(IsFragmentedInline(*b->GetLayoutObject()));
   ASSERT_EQ(LineBoxes(*a->GetLayoutObject()), 2);
@@ -984,9 +986,9 @@ TEST_F(SpatialNavigationTest, PaddedInlineLinkOverlapping) {
       "  <a id='b'>bbb</a><br/>"
       "  <a id='c'>cccccccc</a>"
       "</div>");
-  Element* a = GetDocument().getElementById("a");
-  Element* b = GetDocument().getElementById("b");
-  Element* c = GetDocument().getElementById("c");
+  Element* a = GetDocument().getElementById(AtomicString("a"));
+  Element* b = GetDocument().getElementById(AtomicString("b"));
+  Element* c = GetDocument().getElementById(AtomicString("c"));
   // Padding doesn't grow |a|'s line box.
   AssertNormalizedHeight(a, 13, true);
   AssertNormalizedHeight(b, 13, true);
@@ -1007,9 +1009,9 @@ TEST_F(SpatialNavigationTest, PaddedInlineBlockLinkOverlapping) {
       "  <a id='b'>bbb</a><br/>"
       "  <a id='c'>cccccccc</a>"
       "</div>");
-  Element* a = GetDocument().getElementById("a");
-  Element* b = GetDocument().getElementById("b");
-  Element* c = GetDocument().getElementById("c");
+  Element* a = GetDocument().getElementById(AtomicString("a"));
+  Element* b = GetDocument().getElementById(AtomicString("b"));
+  Element* c = GetDocument().getElementById(AtomicString("c"));
   EXPECT_TRUE(HasSameSearchOriginRectAndCandidateRect(a));
   EXPECT_TRUE(HasSameSearchOriginRectAndCandidateRect(b));
   EXPECT_TRUE(HasSameSearchOriginRectAndCandidateRect(c));
@@ -1025,8 +1027,8 @@ TEST_F(SpatialNavigationTest, BoxWithLineHeight) {
       "  aaa bbb<br/>"
       "  <a id='c'>cccccccc</a>"
       "</div>");
-  Element* block = GetDocument().getElementById("block");
-  Element* c = GetDocument().getElementById("c");
+  Element* block = GetDocument().getElementById(AtomicString("block"));
+  Element* c = GetDocument().getElementById(AtomicString("c"));
   ASSERT_TRUE(Intersects(block, c));
 
   // The block's inner line-height does not change the block's outer dimensions.
@@ -1048,8 +1050,8 @@ TEST_F(SpatialNavigationTest, ReplacedInlineElement) {
       "  <img width='20' height='20' id='pic'> bbb<br/>"
       "  <a id='c'>cccccccc</a>"
       "</body>");
-  Element* pic = GetDocument().getElementById("pic");
-  Element* c = GetDocument().getElementById("c");
+  Element* pic = GetDocument().getElementById(AtomicString("pic"));
+  Element* c = GetDocument().getElementById(AtomicString("c"));
   EXPECT_FALSE(Intersects(pic, c));
 
   // The line-height around the img does not change the img's outer dimensions.
@@ -1074,9 +1076,9 @@ TEST_F(SpatialNavigationTest, VerticalText) {
       "<a id='a'>aaaaaaaaaaa</a>"
       "<a id='b'>bbb</a> <a id='c'>cccccc</a>"
       "</div>");
-  Element* a = GetDocument().getElementById("a");
-  Element* b = GetDocument().getElementById("b");
-  Element* c = GetDocument().getElementById("c");
+  Element* a = GetDocument().getElementById(AtomicString("a"));
+  Element* b = GetDocument().getElementById(AtomicString("b"));
+  Element* c = GetDocument().getElementById(AtomicString("c"));
   EXPECT_TRUE(HasSameSearchOriginRectAndCandidateRect(a));
   EXPECT_TRUE(HasSameSearchOriginRectAndCandidateRect(b));
   EXPECT_TRUE(HasSameSearchOriginRectAndCandidateRect(c));
@@ -1127,7 +1129,7 @@ TEST_F(SpatialNavigationTest, HasRemoteFrame) {
 
   Element* iframe =
       webview->MainFrameImpl()->GetFrame()->GetDocument()->getElementById(
-          "iframe");
+          AtomicString("iframe"));
   EXPECT_FALSE(HasRemoteFrame(iframe));
 
   frame_test_helpers::SwapRemoteFrame(webview->MainFrameImpl()->FirstChild(),
@@ -1157,7 +1159,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 TEST_P(SpatialNavigationWithFocuslessModeTest, PressEnterKeyActiveElement) {
   SetBodyInnerHTML("<button id='b'>hello</button>");
 
-  Element* b = GetDocument().getElementById("b");
+  Element* b = GetDocument().getElementById(AtomicString("b"));
 
   // Move interest to button.
   WebKeyboardEvent arrow_down{WebInputEvent::Type::kRawKeyDown,
@@ -1240,7 +1242,8 @@ TEST_F(FocuslessSpatialNavigationSimTest, OpenSelectPopup) {
       )HTML");
   Compositor().BeginFrame();
 
-  auto* select = To<HTMLSelectElement>(GetDocument().getElementById("target"));
+  auto* select = To<HTMLSelectElement>(
+      GetDocument().getElementById(AtomicString("target")));
   SimulateKeyPress(ui::DomKey::ARROW_DOWN);
 
   SpatialNavigationController& spat_nav_controller =

@@ -3,8 +3,6 @@
 # found in the LICENSE file.
 
 component("io_thread") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//base",
     "//components/net_log",
@@ -29,7 +27,6 @@ component("io_thread") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "ios_io_thread_unittest.mm",

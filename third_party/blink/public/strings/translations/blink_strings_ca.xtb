@@ -26,7 +26,6 @@
 <translation id="2060505056492490888">"<ph name="DOT" />" s'ha utilitzat en una posició incorrecta a "<ph name="INVALIDDOMAIN" />".</translation>
 <translation id="2148716181193084225">Avui</translation>
 <translation id="2226276347425096477">Escurceu aquest text a un màxim de <ph name="MAX_CHARACTERS" /> caràcters (ara n'esteu utilitzant <ph name="CURRENT_LENGTH" />).</translation>
-<translation id="2246498165605549352">Fitxer local</translation>
 <translation id="2247351761944213033">Setmana <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Pista <ph name="NUMBER" /></translation>
 <translation id="2393030564806080191">Valor hexadecimal del color</translation>
@@ -89,6 +88,7 @@
 <translation id="5425179576310518467">data actual</translation>
 <translation id="5466621249238537318">Seleccioneu un o diversos fitxers.</translation>
 <translation id="5468998798572797635">surt de la pantalla completa</translation>
+<translation id="5514612371225420585">Fitxer al teu dispositiu</translation>
 <translation id="5516235301412634559">0,75</translation>
 <translation id="5537725057119320332">Emet</translation>
 <translation id="5546461542133609677">deixa de silenciar</translation>
@@ -113,6 +113,7 @@
 <translation id="6398862346408813489">Mostra el tauler de la selecció de mes</translation>
 <translation id="6404546809543547843">barra de moment de l'àudio</translation>
 <translation id="6443871981718447451">mostra el menú de subtítols</translation>
+<translation id="6484738902856791350">Aplica estils de format</translation>
 <translation id="6550675742724504774">Opcions</translation>
 <translation id="6572309429103589720">La gramàtica no és vàlida</translation>
 <translation id="658823671542763450">passa a pantalla completa</translation>

@@ -5,6 +5,7 @@
 #include "chrome/browser/vr/win/graphics_delegate_win.h"
 
 #include "base/numerics/math_constants.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "content/public/browser/gpu_utils.h"
 #include "content/public/common/gpu_stream_constants.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
@@ -30,14 +31,6 @@ bool GraphicsDelegateWin::InitializeOnMainThread() {
   scoped_refptr<gpu::GpuChannelHost> host = factory->EstablishGpuChannelSync();
 
   gpu::ContextCreationAttribs attributes;
-  attributes.alpha_size = -1;
-  attributes.red_size = 8;
-  attributes.green_size = 8;
-  attributes.blue_size = 8;
-  attributes.stencil_size = 0;
-  attributes.depth_size = 0;
-  attributes.samples = 0;
-  attributes.sample_buffers = 0;
   attributes.bind_generates_resource = false;
 
   context_provider_ = base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
@@ -176,8 +169,10 @@ bool GraphicsDelegateWin::EnsureMemoryBuffer(int width, int height) {
       access_done_sync_token_.Clear();
     }
 
+    gfx::Size buffer_size = gfx::Size(width, height);
+    viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
     gpu_memory_buffer_ = gpu_memory_buffer_manager_->CreateGpuMemoryBuffer(
-        gfx::Size(width, height), gfx::BufferFormat::RGBA_8888,
+        buffer_size, SinglePlaneSharedImageFormatToBufferFormat(format),
         gfx::BufferUsage::SCANOUT, gpu::kNullSurfaceHandle, nullptr);
     if (!gpu_memory_buffer_)
       return false;
@@ -186,11 +181,11 @@ bool GraphicsDelegateWin::EnsureMemoryBuffer(int width, int height) {
     last_height_ = height;
 
     mailbox_ = sii_->CreateSharedImage(
-        gpu_memory_buffer_.get(), gpu_memory_buffer_manager_, gfx::ColorSpace(),
-        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+        format, buffer_size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
+        kPremul_SkAlphaType,
         gpu::SHARED_IMAGE_USAGE_GLES2 |
             gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT,
-        "VRGraphicsDelegate");
+        "VRGraphicsDelegate", gpu_memory_buffer_->CloneHandle());
 
     gl_->WaitSyncTokenCHROMIUM(sii_->GenUnverifiedSyncToken().GetConstData());
   }
@@ -264,14 +259,14 @@ CameraModel CameraModelViewProjFromXRView(
   float x_scale = 2.0f / (left_tan + right_tan);
   float y_scale = 2.0f / (up_tan + down_tan);
   // clang-format off
-  model.proj_matrix = gfx::Transform::RowMajor(
+  gfx::Transform proj_matrix = gfx::Transform::RowMajor(
       x_scale, 0, -((left_tan - right_tan) * x_scale * 0.5), 0,
       0, y_scale, ((up_tan - down_tan) * y_scale * 0.5), 0,
       0, 0, (kZFar + kZNear) / (kZNear - kZFar),
           2 * kZFar * kZNear / (kZNear - kZFar),
       0, 0, -1, 0);
   // clang-format on
-  model.view_proj_matrix = model.proj_matrix * model.view_matrix;
+  model.view_proj_matrix = proj_matrix * model.view_matrix;
   return model;
 }
 

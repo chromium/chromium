@@ -9,12 +9,12 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Build;
 
-import androidx.annotation.VisibleForTesting;
 import androidx.core.app.ServiceCompat;
 import androidx.core.content.ContextCompat;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.compat.ApiHelperForQ;
 import org.chromium.base.compat.ApiHelperForS;
 
@@ -36,9 +36,10 @@ public class ForegroundServiceUtils {
     /**
      * Sets a mocked instance for testing.
      */
-    @VisibleForTesting
     public static void setInstanceForTesting(ForegroundServiceUtils instance) {
+        var oldValue = ForegroundServiceUtils.LazyHolder.sInstance;
         ForegroundServiceUtils.LazyHolder.sInstance = instance;
+        ResettersForTesting.register(() -> ForegroundServiceUtils.LazyHolder.sInstance = oldValue);
     }
 
     private static class LazyHolder {

@@ -21,7 +21,7 @@
 ++++[static] name='This is an ARIA complementary landmark.'
 ++[landmark] xml-roles:contentinfo
 ++++[static] name='This is an ARIA contentinfo landmark.'
-++[form] xml-roles:form
+++[form] name='Named form' xml-roles:form
 ++++[static] name='This is an ARIA form landmark.'
 ++[landmark] xml-roles:main
 ++++[static] name='This is an ARIA main landmark.'

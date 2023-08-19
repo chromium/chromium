@@ -95,7 +95,7 @@ void EnsureInterpolatedValueCached(ActiveInterpolations* interpolations,
   state.SetStyle(initial_style);
 
   ActiveInterpolationsMap map;
-  map.Set(PropertyHandle("--unused"), interpolations);
+  map.Set(PropertyHandle(AtomicString("--unused")), interpolations);
 
   StyleCascade cascade(state);
   cascade.AddInterpolations(&map, CascadeOrigin::kAnimation);

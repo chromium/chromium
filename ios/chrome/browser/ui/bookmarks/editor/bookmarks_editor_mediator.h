@@ -36,20 +36,21 @@ class SyncService;
 @property(nonatomic, weak) id<BookmarksEditorConsumer> consumer;
 
 // Designated initializer.
-// `profileBookmarkModel` is the bookmark model for the profile storage, must
-// not be `nullptr` and must be loaded.
-// `accountBookmarkModel` is the bookmark model for the profile storage, must
-// be `nullptr`, or it should be loaded.
-// `bookmarkNode` mustn't be `nullptr` at initialization time. It also must be a
-// URL.
-// `prefs` is the user pref service.
+// `localOrSyncableBookmarkModel` is the bookmark model for the localOrSyncable
+// storage, must not be `nullptr` and must be loaded. `accountBookmarkModel` is
+// the bookmark model for the localOrSyncable storage, must be `nullptr`, or it
+// should be loaded. `bookmarkNode` mustn't be `nullptr` at initialization time.
+// It also must be a URL. `prefs` is the user pref service.
 - (instancetype)
-    initWithProfileBookmarkModel:(bookmarks::BookmarkModel*)profileBookmarkModel
-            accountBookmarkModel:(bookmarks::BookmarkModel*)accountBookmarkModel
-                    bookmarkNode:(const bookmarks::BookmarkNode*)bookmarkNode
-                           prefs:(PrefService*)prefs
-                     syncService:(syncer::SyncService*)syncService
-                    browserState:(ChromeBrowserState*)browserState
+    initWithLocalOrSyncableBookmarkModel:
+        (bookmarks::BookmarkModel*)localOrSyncableBookmarkModel
+                    accountBookmarkModel:
+                        (bookmarks::BookmarkModel*)accountBookmarkModel
+                            bookmarkNode:
+                                (const bookmarks::BookmarkNode*)bookmarkNode
+                                   prefs:(PrefService*)prefs
+                             syncService:(syncer::SyncService*)syncService
+                            browserState:(ChromeBrowserState*)browserState
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

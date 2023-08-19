@@ -340,8 +340,7 @@ class _BuildHelper:
       if not self.use_goma:
         logging.warning('GOMA not running. Setting use_goma=false.')
 
-    has_internal = os.path.exists(
-        os.path.join(os.path.dirname(_SRC_ROOT), 'src-internal'))
+    has_internal = os.path.exists(os.path.join(_SRC_ROOT, 'internal'))
     if has_internal:
       self.extra_gn_args_str = (
           'is_chrome_branded=true ' + self.extra_gn_args_str)

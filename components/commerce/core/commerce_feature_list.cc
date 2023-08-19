@@ -48,6 +48,8 @@ const CountryLocaleMap& GetAllowedCountryToLocaleMap() {
     map[&kCommerceMerchantViewerRegionLaunched] = {{"us", {"en-us"}}};
     map[&kCommercePriceTrackingRegionLaunched] = {{"us", {"en-us"}}};
     map[&kPriceInsightsRegionLaunched] = {{"us", {"en-us"}}};
+    map[&kShowDiscountOnNavigationRegionLaunched] = {{"us", {"en-us"}}};
+    map[&kShoppingPageTypesRegionLaunched] = {{"us", {"en-us"}}};
 
     return map;
   }());
@@ -168,9 +170,32 @@ BASE_FEATURE(kPriceInsights,
 BASE_FEATURE(kPriceInsightsRegionLaunched,
              "PriceInsightsRegionLaunched",
              base::FEATURE_DISABLED_BY_DEFAULT);
+const char kPriceInsightsDelayChipParam[] = "price-inishgts-delay-chip";
+const base::FeatureParam<bool> kPriceInsightsDelayChip{
+    &commerce::kPriceInsights, kPriceInsightsDelayChipParam, false};
+const char kPriceInsightsChipLabelExpandOnHighPriceParam[] =
+    "chip-expand-on-high-price";
+const base::FeatureParam<bool> kPriceInsightsChipLabelExpandOnHighPrice{
+    &commerce::kPriceInsights, kPriceInsightsChipLabelExpandOnHighPriceParam,
+    false};
+const char kPriceInsightsShowFeedbackParam[] = "price-insights-show-feedback";
+const base::FeatureParam<bool> kPriceInsightsShowFeedback{
+    &commerce::kPriceInsights, kPriceInsightsShowFeedbackParam, false};
+
+// Discount on navigation
+BASE_FEATURE(kShowDiscountOnNavigation,
+             "ShowDiscountOnNavigation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kShowDiscountOnNavigationRegionLaunched,
+             "ShowDiscountOnNavigationRegionLaunched",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<bool> kDeleteAllMerchantsOnClearBrowsingHistory{
     &kCommerceMerchantViewer, "delete_all_merchants_on_clear_history", false};
+
+BASE_FEATURE(kShoppingCollection,
+             "ShoppingCollection",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kShoppingList, "ShoppingList", base::FEATURE_DISABLED_BY_DEFAULT);
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
@@ -184,6 +209,10 @@ BASE_FEATURE(kShoppingListRegionLaunched,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+BASE_FEATURE(kShoppingListTrackByDefault,
+             "ShoppingListTrackByDefault",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kShoppingPDPMetrics,
              "ShoppingPDPMetrics",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -191,6 +220,14 @@ BASE_FEATURE(kShoppingPDPMetrics,
 BASE_FEATURE(kShoppingPDPMetricsRegionLaunched,
              "ShoppingPDPMetricsRegionLaunched",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kShoppingPageTypes,
+             "ShoppingPageTypes",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kShoppingPageTypesRegionLaunched,
+             "ShoppingPageTypesRegionLaunched",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRetailCoupons, "RetailCoupons", base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -356,17 +393,11 @@ bool IsPartnerMerchant(const GURL& url) {
 }
 
 bool IsRuleDiscountPartnerMerchant(const GURL& url) {
-  const std::string& url_string = url.spec();
-  return RE2::PartialMatch(
-      re2::StringPiece(url_string.data(), url_string.size()),
-      GetRulePartnerMerchantPattern());
+  return RE2::PartialMatch(url.spec(), GetRulePartnerMerchantPattern());
 }
 
 bool IsCouponDiscountPartnerMerchant(const GURL& url) {
-  const std::string& url_string = url.spec();
-  return RE2::PartialMatch(
-      re2::StringPiece(url_string.data(), url_string.size()),
-      GetCouponPartnerMerchantPattern());
+  return RE2::PartialMatch(url.spec(), GetCouponPartnerMerchantPattern());
 }
 
 bool IsCartDiscountFeatureEnabled() {
@@ -464,7 +495,6 @@ base::TimeDelta GetDiscountFetchDelay() {
 }
 
 bool IsNoDiscountMerchant(const GURL& url) {
-  const auto host_string = url.host_piece();
   auto* pattern_from_component =
       commerce_heuristics::CommerceHeuristicsData::GetInstance()
           .GetNoDiscountMerchantPattern();
@@ -472,9 +502,7 @@ bool IsNoDiscountMerchant(const GURL& url) {
   // considered to have no discounts by default.
   if (!pattern_from_component)
     return true;
-  return RE2::PartialMatch(
-      re2::StringPiece(host_string.data(), host_string.size()),
-      *pattern_from_component);
+  return RE2::PartialMatch(url.host_piece(), *pattern_from_component);
 }
 #endif
 }  // namespace commerce

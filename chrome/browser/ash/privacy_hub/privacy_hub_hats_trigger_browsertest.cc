@@ -21,7 +21,7 @@ class PrivacyHubHatsTriggerTest : public InProcessBrowserTest {
  public:
   PrivacyHubHatsTriggerTest() {
     scoped_feature_list_.InitAndEnableFeature(
-        kPrivacyHubBaselineSurvey.feature);
+        kPrivacyHubPostLaunchSurvey.feature);
   }
   ~PrivacyHubHatsTriggerTest() override = default;
 
@@ -38,7 +38,7 @@ class PrivacyHubHatsTriggerTest : public InProcessBrowserTest {
 
     command_line->AppendSwitchASCII(
         ash::switches::kForceHappinessTrackingSystem,
-        ::features::kHappinessTrackingPrivacyHubBaseline.name);
+        ::features::kHappinessTrackingPrivacyHubPostLaunch.name);
   }
 
   bool IsHatsNotificationActive() const {

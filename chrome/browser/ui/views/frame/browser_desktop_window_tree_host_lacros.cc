@@ -11,21 +11,19 @@
 #include "chrome/browser/ui/views/frame/desktop_browser_frame_lacros.h"
 #include "chrome/browser/ui/views/tabs/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
-#include "chromeos/ui/base/chromeos_ui_constants.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "chromeos/ui/frame/frame_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
 #include "ui/platform_window/platform_window.h"
 
 namespace {
-
-bool ShouldHaveRoundedCorners(chromeos::WindowStateType window_state) {
-  return window_state == chromeos::WindowStateType::kNormal ||
-         window_state == chromeos::WindowStateType::kDefault ||
-         window_state == chromeos::WindowStateType::kFloated;
-}
 
 // Returns the event source for the active tab drag session.
 absl::optional<ui::mojom::DragEventSource> GetCurrentTabDragEventSource() {
@@ -51,16 +49,17 @@ BrowserDesktopWindowTreeHostLacros::BrowserDesktopWindowTreeHostLacros(
                                   desktop_native_widget_aura),
       browser_view_(browser_view),
       desktop_native_widget_aura_(desktop_native_widget_aura) {
-  auto* native_frame = static_cast<DesktopBrowserFrameLacros*>(
+  native_frame_ = static_cast<DesktopBrowserFrameLacros*>(
       browser_frame->native_browser_frame());
-  native_frame->set_host(this);
+  native_frame_->set_host(this);
 
   // Lacros receives occlusion information from exo via aura-shell.
   SetNativeWindowOcclusionEnabled(true);
 }
 
-BrowserDesktopWindowTreeHostLacros::~BrowserDesktopWindowTreeHostLacros() =
-    default;
+BrowserDesktopWindowTreeHostLacros::~BrowserDesktopWindowTreeHostLacros() {
+  native_frame_->set_host(nullptr);
+}
 
 void BrowserDesktopWindowTreeHostLacros::UpdateFrameHints() {
   auto* const view = browser_view_->frame()->GetFrameView();
@@ -70,57 +69,63 @@ void BrowserDesktopWindowTreeHostLacros::UpdateFrameHints() {
   const gfx::Size widget_size_px =
       platform_window()->GetBoundsInPixels().size();
 
+  const float corner_radius =
+      chromeos::GetFrameCornerRadius(browser_view_->GetNativeWindow());
+
   std::vector<gfx::Rect> opaque_region;
-  if (showing_frame &&
-      ShouldHaveRoundedCorners(browser_view_->GetNativeWindow()->GetProperty(
-          chromeos::kWindowStateTypeKey))) {
-    const float corner_radius = chromeos::kTopCornerRadiusWhenRestored;
-    GetContentWindow()->layer()->SetRoundedCornerRadius(
-        gfx::RoundedCornersF(corner_radius, corner_radius, 0, 0));
+  const bool should_have_rounded_corners = corner_radius > 0;
+  if (showing_frame && should_have_rounded_corners) {
+    gfx::RoundedCornersF frame_radii{corner_radius, corner_radius, 0, 0};
+    if (chromeos::features::IsRoundedWindowsEnabled()) {
+      frame_radii.set_lower_left(corner_radius);
+      frame_radii.set_lower_right(corner_radius);
+    }
+
+    GetContentWindow()->layer()->SetRoundedCornerRadius(frame_radii);
     GetContentWindow()->layer()->SetIsFastRoundedCorner(true);
 
     // The opaque region is a list of rectangles that contain only fully
     // opaque pixels of the window.  We need to convert the clipping
     // rounded-rect into this format.
-    const SkVector radii[4]{
-        {corner_radius, corner_radius}, {corner_radius, corner_radius}, {}, {}};
-    SkRRect rrect;
-    rrect.setRectRadii(gfx::RectToSkRect(view->GetLocalBounds()), radii);
-    gfx::RectF rectf = gfx::SkRectToRectF(rrect.rect());
-    rectf.Scale(scale);
+    gfx::Rect local_bounds = view->GetLocalBounds();
+    gfx::RRectF rounded_corners_rect(gfx::RectF(local_bounds), frame_radii);
+    gfx::RectF rect_f = rounded_corners_rect.rect();
+    rect_f.Scale(scale);
+
     // It is acceptable to omit some pixels that are opaque, but the region
     // must not include any translucent pixels.  Therefore, we must
     // conservatively scale to the enclosed rectangle.
-    gfx::Rect rect = gfx::ToEnclosedRect(rectf);
+    gfx::Rect rect = gfx::ToEnclosedRect(rect_f);
 
     // Create the initial region from the clipping rectangle without rounded
     // corners.
-    SkRegion region(gfx::RectToSkIRect(rect));
+    cc::Region region(rect);
 
     // Now subtract out the small rectangles that cover the corners.
     struct {
-      SkRRect::Corner corner;
+      gfx::RRectF::Corner corner;
       bool left;
       bool upper;
     } kCorners[] = {
-        {SkRRect::kUpperLeft_Corner, true, true},
-        {SkRRect::kUpperRight_Corner, false, true},
-        {SkRRect::kLowerLeft_Corner, true, false},
-        {SkRRect::kLowerRight_Corner, false, false},
+        {gfx::RRectF::Corner::kUpperLeft, true, true},
+        {gfx::RRectF::Corner::kUpperRight, false, true},
+        {gfx::RRectF::Corner::kLowerLeft, true, false},
+        {gfx::RRectF::Corner::kLowerRight, false, false},
     };
     for (const auto& corner : kCorners) {
-      auto corner_radii = rrect.radii(corner.corner);
+      auto corner_radii = rounded_corners_rect.GetCornerRadii(corner.corner);
       auto rx = std::ceil(scale * corner_radii.x());
       auto ry = std::ceil(scale * corner_radii.y());
-      auto corner_rect = SkIRect::MakeXYWH(
-          corner.left ? rect.x() : rect.right() - rx,
-          corner.upper ? rect.y() : rect.bottom() - ry, rx, ry);
-      region.op(corner_rect, SkRegion::kDifference_Op);
+      auto corner_rect =
+          gfx::Rect(corner.left ? rect.x() : rect.right() - rx,
+                    corner.upper ? rect.y() : rect.bottom() - ry, rx, ry);
+      region.Subtract(corner_rect);
     }
 
     // Convert the region to a list of rectangles.
-    for (SkRegion::Iterator i(region); !i.done(); i.next())
-      opaque_region.push_back(gfx::SkIRectToRect(i.rect()));
+    for (gfx::Rect i : region) {
+      opaque_region.push_back(i);
+    }
   } else {
     GetContentWindow()->layer()->SetRoundedCornerRadius({});
     GetContentWindow()->layer()->SetIsFastRoundedCorner(false);
@@ -128,7 +133,7 @@ void BrowserDesktopWindowTreeHostLacros::UpdateFrameHints() {
   }
   // TODO(crbug.com/1306688): Instead of setting OpaqueRegion, set the rounded
   // corners in dp.
-  platform_window()->SetOpaqueRegion(&opaque_region);
+  platform_window()->SetOpaqueRegion(opaque_region);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

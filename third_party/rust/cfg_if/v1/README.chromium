@@ -5,4 +5,5 @@ parameters. Structured like an if-else chain, the first matching branch is the
 item that gets emitted.
 Version: 1.0.0
 Security Critical: no
+Shipped: yes
 License: Apache 2.0

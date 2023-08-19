@@ -18,7 +18,7 @@ class TestFormDataImporter : public FormDataImporter {
       AutofillClient* client,
       payments::PaymentsClient* payments_client,
       std::unique_ptr<CreditCardSaveManager> credit_card_save_manager,
-      std::unique_ptr<IBANSaveManager> iban_save_manager,
+      std::unique_ptr<IbanSaveManager> iban_save_manager,
       PersonalDataManager* personal_data_manager,
       const std::string& app_locale,
       std::unique_ptr<LocalCardMigrationManager> local_card_migration_manager =

@@ -162,7 +162,7 @@ export interface NativeLayer {
    * @return Promise that will resolve when the print request is
    *     finished or rejected.
    */
-  print(printTicket: string): Promise<string|undefined>;
+  doPrint(printTicket: string): Promise<string|undefined>;
 
   /** Requests that the current pending print request be cancelled. */
   cancelPendingPrintRequest(): void;
@@ -227,8 +227,8 @@ export class NativeLayerImpl implements NativeLayer {
     chrome.send('managePrinters');
   }
 
-  print(printTicket: string) {
-    return sendWithPromise('print', printTicket);
+  doPrint(printTicket: string) {
+    return sendWithPromise('doPrint', printTicket);
   }
 
   cancelPendingPrintRequest() {

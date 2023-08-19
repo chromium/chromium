@@ -13,13 +13,12 @@
 namespace ash {
 
 using AuthEnginesMap =
-    base::flat_map<AshAuthFactor, base::raw_ptr<AuthFactorEngine>>;
+    base::flat_map<AshAuthFactor, raw_ptr<AuthFactorEngine, DanglingUntriaged>>;
 
-struct AuthAttemptVector {
-  AccountId account;
-  AuthPurpose purpose;
-
-  bool operator==(const AuthAttemptVector&) const = default;
+class AuthHubConnector {
+ public:
+  virtual ~AuthHubConnector() = default;
+  virtual AuthFactorEngine* GetEngine(AshAuthFactor factor) = 0;
 };
 
 }  // namespace ash

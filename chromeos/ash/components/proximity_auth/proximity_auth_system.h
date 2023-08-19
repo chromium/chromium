@@ -97,10 +97,8 @@ class ProximityAuthSystem : public ScreenlockBridge::Observer {
       absl::optional<ash::multidevice::RemoteDeviceRef> local_device);
 
   // ScreenlockBridge::Observer:
-  void OnScreenDidLock(
-      ScreenlockBridge::LockHandler::ScreenType screen_type) override;
-  void OnScreenDidUnlock(
-      ScreenlockBridge::LockHandler::ScreenType screen_type) override;
+  void OnScreenDidLock() override;
+  void OnScreenDidUnlock() override;
   void OnFocusedUserChanged(const AccountId& account_id) override;
 
  private:

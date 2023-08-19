@@ -3,8 +3,6 @@
 <translationbundle lang="sl">
 <translation id="1075622780330595106">Toliko zavihkov nedavno niste uporabljali: <ph name="NUMBER_OF_TABS" />. Ali jih želite zapreti?</translation>
 <translation id="125153950246128346">Dotaknite se, če želite prikazati drug zavihek</translation>
-<translation id="1403228085774130835">Zaprte zavihke najdete med nedavnimi zavihki v glavnem meniju Chroma.</translation>
-<translation id="1455506303394048917">Vaša dejavnost na teh anonimnih zavihkih bo izbrisana iz te naprave.</translation>
 <translation id="1499635324672558517">Želite zapreti vse anonimne zavihke?</translation>
 <translation id="1657719826150349398">Premakni zavihek navzdol</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> zavihek}one{<ph name="TABS_COUNT_MANY" /> zavihek}two{<ph name="TABS_COUNT_MANY" /> zavihka}few{<ph name="TABS_COUNT_MANY" /> zavihki}other{<ph name="TABS_COUNT_MANY" /> zavihkov}}</translation>
@@ -47,6 +45,7 @@
 <translation id="5073204694187207510">Skrij celozaslonsko mrežo</translation>
 <translation id="5076161749301278626">Si želite ogledati mnenja o trgovini?</translation>
 <translation id="5082793167783849073">Hitro primerjate strani tako, da ustvarite skupino. Če želite začeti, se dotaknite povezave in jo pridržite.</translation>
+<translation id="5339733443032484186">Zadnji zavihek</translation>
 <translation id="5490235265819901748">Skupina zavihkov je razširjena</translation>
 <translation id="5494920125229734069">Izberi vse</translation>
 <translation id="5556417849629758491">Ogled podatkov o trgovini, možnosti so na voljo pri vrhu zaslona</translation>
@@ -62,10 +61,12 @@
 <translation id="6228793724645064692">(ocena trgovine)</translation>
 <translation id="6333260925957816943">Informacije o tej trgovini</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Razdruži <ph name="TABS_COUNT_ONE" /> izbrani zavihek}one{Razdruži <ph name="TABS_COUNT_MANY" /> izbrani zavihek}two{Razdruži <ph name="TABS_COUNT_MANY" /> izbrana zavihka}few{Razdruži <ph name="TABS_COUNT_MANY" /> izbrane zavihke}other{Razdruži <ph name="TABS_COUNT_MANY" /> izbranih zavihkov}}</translation>
+<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Zaprte zavihke najdete med nedavnimi zavihki v glavnem meniju Chroma. Anonimni zavihek ne bo na voljo.}one{Zaprte zavihke najdete med nedavnimi zavihki v glavnem meniju Chroma. # anonimni zavihek ne bo na voljo.}two{Zaprte zavihke najdete med nedavnimi zavihki v glavnem meniju Chroma. # anonimna zavihka ne bosta na voljo.}few{Zaprte zavihke najdete med nedavnimi zavihki v glavnem meniju Chroma. # anonimni zavihki ne bodo na voljo.}other{Zaprte zavihke najdete med nedavnimi zavihki v glavnem meniju Chroma. # anonimnih zavihkov ne bo na voljo.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> zavihek}one{<ph name="TABS_COUNT_MANY" /> zavihek}two{<ph name="TABS_COUNT_MANY" /> zavihka}few{<ph name="TABS_COUNT_MANY" /> zavihki}other{<ph name="TABS_COUNT_MANY" /> zavihkov}}</translation>
 <translation id="6549021453810473782">Ogled podatkov o trgovini</translation>
 <translation id="6562820390860419811">Premakni zavihek v levo</translation>
 <translation id="6615455863669487791">Pokaži mi</translation>
+<translation id="661742612106409204">Zaprte zavihke najdete med nedavnimi zavihki v glavnem meniju Chroma.</translation>
 <translation id="6840760312327750441">Če želite združiti zavihke v skupino, pridržite zavihek. Nato ga povlecite na drug zavihek.</translation>
 <translation id="6856809498882026482">Skrij način z več izbirami</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Deli zavihek}one{Deli zavihke}two{Deli zavihke}few{Deli zavihke}other{Deli zavihke}}</translation>

@@ -52,13 +52,15 @@ ukm::SourceId ToSourceId(int64_t navigation_id) {
 // which are related to the document finishing loading).
 // We ignore them to make tests easier to read and write.
 
-constexpr blink::scheduler::WebSchedulerTrackedFeatures kFeaturesToIgnore = {
-    blink::scheduler::WebSchedulerTrackedFeature::kDocumentLoaded,
-    blink::scheduler::WebSchedulerTrackedFeature::
-        kOutstandingNetworkRequestFetch,
-    blink::scheduler::WebSchedulerTrackedFeature::kOutstandingNetworkRequestXHR,
-    blink::scheduler::WebSchedulerTrackedFeature::
-        kOutstandingNetworkRequestOthers};
+blink::scheduler::WebSchedulerTrackedFeatures GetFeaturesToIgnore() {
+  return {blink::scheduler::WebSchedulerTrackedFeature::kDocumentLoaded,
+          blink::scheduler::WebSchedulerTrackedFeature::
+              kOutstandingNetworkRequestFetch,
+          blink::scheduler::WebSchedulerTrackedFeature::
+              kOutstandingNetworkRequestXHR,
+          blink::scheduler::WebSchedulerTrackedFeature::
+              kOutstandingNetworkRequestOthers};
+}
 
 using UkmMetrics = ukm::TestUkmRecorder::HumanReadableUkmMetrics;
 using UkmEntry = ukm::TestUkmRecorder::HumanReadableUkmEntry;
@@ -118,7 +120,7 @@ class BackForwardCacheMetricsBrowserTestBase : public ContentBrowserTest,
 
     EXPECT_EQ(base::Difference(
                   current_frame_host()->GetBackForwardCacheDisablingFeatures(),
-                  kFeaturesToIgnore),
+                  GetFeaturesToIgnore()),
               blink::scheduler::WebSchedulerTrackedFeatures({feature}));
 
     // Close the web contents to ensure that no new notifications arrive to the
@@ -449,48 +451,11 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
 
 namespace {
 
-struct FeatureUsage {
-  ukm::SourceId source_id;
-  uint64_t main_frame_features;
-  uint64_t same_origin_subframes_features;
-  uint64_t cross_origin_subframes_features;
-};
-
-bool operator==(const FeatureUsage& lhs, const FeatureUsage& rhs) {
-  return lhs.source_id == rhs.source_id &&
-         lhs.main_frame_features == rhs.main_frame_features &&
-         lhs.same_origin_subframes_features ==
-             rhs.same_origin_subframes_features &&
-         lhs.cross_origin_subframes_features ==
-             rhs.cross_origin_subframes_features;
-}
-
-std::ostream& operator<<(std::ostream& os, const FeatureUsage& usage) {
-  os << "source_id=" << usage.source_id
-     << " main_frame_features=" << usage.main_frame_features
-     << " same_origin_features=" << usage.same_origin_subframes_features
-     << " cross_origin_features=" << usage.cross_origin_subframes_features;
-  return os;
-}
-
-std::vector<FeatureUsage> GetFeatureUsageMetrics(
+std::vector<ukm::SourceId> GetMetricsSourceIds(
     ukm::TestAutoSetUkmRecorder* recorder) {
-  std::vector<FeatureUsage> result;
-  for (const auto& entry :
-       recorder->GetEntries("HistoryNavigation",
-                            {"MainFrameFeatures", "SameOriginSubframesFeatures",
-                             "CrossOriginSubframesFeatures"})) {
-    FeatureUsage feature_usage;
-    feature_usage.source_id = entry.source_id;
-    feature_usage.main_frame_features = entry.metrics.at("MainFrameFeatures") &
-                                        ~kFeaturesToIgnore.ToEnumBitmask();
-    feature_usage.same_origin_subframes_features =
-        entry.metrics.at("SameOriginSubframesFeatures") &
-        ~kFeaturesToIgnore.ToEnumBitmask();
-    feature_usage.cross_origin_subframes_features =
-        entry.metrics.at("CrossOriginSubframesFeatures") &
-        ~kFeaturesToIgnore.ToEnumBitmask();
-    result.push_back(feature_usage);
+  std::vector<ukm::SourceId> result;
+  for (const auto& entry : recorder->GetEntries("HistoryNavigation", {})) {
+    result.push_back(entry.source_id);
   }
   return result;
 }
@@ -518,8 +483,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest, Features_MainFrame) {
   // ukm::SourceId id2 = ToSourceId(navigation_ids_[1]);
   ukm::SourceId id3 = ToSourceId(navigation_ids_[2]);
 
-  EXPECT_THAT(GetFeatureUsageMetrics(&recorder),
-              testing::ElementsAre(FeatureUsage{id3, 0, 0, 0}));
+  EXPECT_THAT(GetMetricsSourceIds(&recorder), testing::ElementsAre(id3));
 }
 
 IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
@@ -544,8 +508,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
   // ukm::SourceId id2 = ToSourceId(navigation_ids_[1]);
   ukm::SourceId id3 = ToSourceId(navigation_ids_[2]);
 
-  EXPECT_THAT(GetFeatureUsageMetrics(&recorder),
-              testing::ElementsAre(FeatureUsage{id3, 0, 0, 0}));
+  EXPECT_THAT(GetMetricsSourceIds(&recorder), testing::ElementsAre(id3));
 }
 
 IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
@@ -577,8 +540,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
   // ukm::SourceId id3 = ToSourceId(navigation_ids_[2]);
   ukm::SourceId id4 = ToSourceId(navigation_ids_[3]);
 
-  EXPECT_THAT(GetFeatureUsageMetrics(&recorder),
-              testing::ElementsAre(FeatureUsage{id4, 0, 0, 0}));
+  EXPECT_THAT(GetMetricsSourceIds(&recorder), testing::ElementsAre(id4));
 }
 
 IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
@@ -604,8 +566,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
   // ukm::SourceId id3 = ToSourceId(navigation_ids_[2]);
   ukm::SourceId id4 = ToSourceId(navigation_ids_[3]);
 
-  EXPECT_THAT(GetFeatureUsageMetrics(&recorder),
-              testing::ElementsAre(FeatureUsage{id4, 0, 0, 0}));
+  EXPECT_THAT(GetMetricsSourceIds(&recorder), testing::ElementsAre(id4));
 }
 
 IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
@@ -638,23 +599,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
   // ukm::SourceId id3 = ToSourceId(navigation_ids_[2]);
   ukm::SourceId id4 = ToSourceId(navigation_ids_[3]);
 
-  EXPECT_THAT(GetFeatureUsageMetrics(&recorder),
-              testing::ElementsAre(FeatureUsage{id4, 0, 0, 0}));
-}
-
-IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest, DedicatedWorker) {
-  // This test should only run if the feature is disabled.
-  if (base::FeatureList::IsEnabled(
-          blink::features::kBackForwardCacheDedicatedWorker))
-    return;
-
-  ukm::TestAutoSetUkmRecorder recorder;
-  const GURL url(embedded_test_server()->GetURL(
-      "/back_forward_cache/page_with_dedicated_worker.html"));
-
-  NavigateAndWaitForDisablingFeature(
-      url,
-      blink::scheduler::WebSchedulerTrackedFeature::kDedicatedWorkerOrWorklet);
+  EXPECT_THAT(GetMetricsSourceIds(&recorder), testing::ElementsAre(id4));
 }
 
 // TODO(https://crbug.com/154571): Shared workers are not available on Android.
@@ -714,22 +659,6 @@ class RecordBackForwardCacheMetricsWithoutEnabling
 IN_PROC_BROWSER_TEST_F(RecordBackForwardCacheMetricsWithoutEnabling,
                        ReloadsAndHistoryNavigations) {
   base::HistogramTester histogram_tester;
-  using ReloadsAndHistoryNavigations =
-      BackForwardCacheMetrics::ReloadsAndHistoryNavigations;
-  using ReloadsAfterHistoryNavigation =
-      BackForwardCacheMetrics::ReloadsAfterHistoryNavigation;
-
-  const char kReloadsAndHistoryNavigationsHistogram[] =
-      "BackForwardCache.ReloadsAndHistoryNavigations";
-  const char kReloadsAfterHistoryNavigationHistogram[] =
-      "BackForwardCache.ReloadsAfterHistoryNavigation";
-
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(kReloadsAndHistoryNavigationsHistogram),
-      testing::IsEmpty());
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(kReloadsAfterHistoryNavigationHistogram),
-      testing::IsEmpty());
 
   GURL url1(embedded_test_server()->GetURL(
       "a.allowed", "/back_forward_cache/allowed_path.html"));
@@ -746,56 +675,11 @@ IN_PROC_BROWSER_TEST_F(RecordBackForwardCacheMetricsWithoutEnabling,
   web_contents()->GetController().Reload(content::ReloadType::NORMAL, false);
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
-  // Bucket count both "kHistoryNavigation" and
-  // "kReloadAfterHistoryNavigation" should be 1 after one history
-  // navigation and one reload.
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(kReloadsAndHistoryNavigationsHistogram),
-      ElementsAre(
-          Bucket(static_cast<int>(
-                     ReloadsAndHistoryNavigations::kHistoryNavigation),
-                 1),
-          Bucket(
-              static_cast<int>(
-                  ReloadsAndHistoryNavigations::kReloadAfterHistoryNavigation),
-              1)));
-
-  // BackForwardCache is disabled here, the navigation is not served from
-  // back/forward cache.
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(kReloadsAfterHistoryNavigationHistogram),
-      ElementsAre(Bucket(
-          static_cast<int>(
-              ReloadsAfterHistoryNavigation::kNotServedFromBackForwardCache),
-          1)));
-
   // 4) Go forward to url2 and reload.
   web_contents()->GetController().GoForward();
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
   web_contents()->GetController().Reload(content::ReloadType::NORMAL, false);
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
-
-  // Bucket count both "kHistoryNavigation" and
-  // "kReloadAfterHistoryNavigation" should still be 1 since the url2 is
-  // not in the list of allowed_websties by
-  // "kRecordBackForwardCacheMetricsWithoutEnabling" feature.
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(kReloadsAndHistoryNavigationsHistogram),
-      ElementsAre(
-          Bucket(static_cast<int>(
-                     ReloadsAndHistoryNavigations::kHistoryNavigation),
-                 1),
-          Bucket(
-              static_cast<int>(
-                  ReloadsAndHistoryNavigations::kReloadAfterHistoryNavigation),
-              1)));
-
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(kReloadsAfterHistoryNavigationHistogram),
-      ElementsAre(Bucket(
-          static_cast<int>(
-              ReloadsAfterHistoryNavigation::kNotServedFromBackForwardCache),
-          1)));
 }
 
 IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
@@ -803,10 +687,6 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
   if (!IsBackForwardCacheEnabled())
     return;
   base::HistogramTester histogram_tester;
-  using ReloadsAfterHistoryNavigation =
-      BackForwardCacheMetrics::ReloadsAfterHistoryNavigation;
-  const char kReloadsAfterHistoryNavigationHistogram[] =
-      "BackForwardCache.ReloadsAfterHistoryNavigation";
 
   GURL url1(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url2(embedded_test_server()->GetURL("b.com", "/title2.html"));
@@ -817,11 +697,6 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
   web_contents()->GetController().Reload(content::ReloadType::NORMAL, false);
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
-  // No reloads should be recorded since it is not a history navigation.
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(kReloadsAfterHistoryNavigationHistogram),
-      testing::IsEmpty());
-
   // 2) Navigate to url2.
   EXPECT_TRUE(NavigateToURL(shell(), url2));
 
@@ -830,15 +705,6 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
   web_contents()->GetController().Reload(content::ReloadType::NORMAL, false);
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
-  // Bucket with "kServedFromBackForwardCache" should be 1 as url1 is served
-  // from cache.
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(kReloadsAfterHistoryNavigationHistogram),
-      ElementsAre(Bucket(
-          static_cast<int>(
-              ReloadsAfterHistoryNavigation::kServedFromBackForwardCache),
-          1)));
-
   // 4) Go forward to url2 and reload twice.
   web_contents()->GetController().GoForward();
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
@@ -846,15 +712,6 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
   web_contents()->GetController().Reload(content::ReloadType::NORMAL, false);
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
-
-  // Bucket with "kServedFromBackForwardCache" should be 2 as only the first
-  // reload after history navigation is recorded.
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(kReloadsAfterHistoryNavigationHistogram),
-      ElementsAre(Bucket(
-          static_cast<int>(
-              ReloadsAfterHistoryNavigation::kServedFromBackForwardCache),
-          2)));
 
   // 5) Go back and navigate to url3.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
@@ -871,19 +728,6 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
   ASSERT_TRUE(HistoryGoBack(web_contents()));
   web_contents()->GetController().Reload(content::ReloadType::NORMAL, false);
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
-
-  // Bucket with "kNotServedFromBackForwardCache" should be 1 as url3 is not
-  // served from BackForwardCache.
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(kReloadsAfterHistoryNavigationHistogram),
-      ElementsAre(
-          Bucket(static_cast<int>(ReloadsAfterHistoryNavigation::
-                                      kNotServedFromBackForwardCache),
-                 1),
-          Bucket(
-              static_cast<int>(
-                  ReloadsAfterHistoryNavigation::kServedFromBackForwardCache),
-              2)));
 }
 
 IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
@@ -988,8 +832,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsPrerenderingBrowserTest,
   ukm::SourceId id5 = ToSourceId(navigation_ids_[4]);
 
   // We should only record metrics for the last navigation.
-  EXPECT_THAT(GetFeatureUsageMetrics(&recorder),
-              testing::ElementsAre(FeatureUsage{id5, 0, 0, 0}));
+  EXPECT_THAT(GetMetricsSourceIds(&recorder), testing::ElementsAre(id5));
 }
 
 class BackForwardCacheMetricsFencedFrameBrowserTest
@@ -1040,8 +883,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsFencedFrameBrowserTest,
   ukm::SourceId id4 = ToSourceId(navigation_ids_[3]);
 
   // We should only record metrics for the last navigation.
-  EXPECT_THAT(GetFeatureUsageMetrics(&recorder),
-              testing::ElementsAre(FeatureUsage{id4, 0, 0, 0}));
+  EXPECT_THAT(GetMetricsSourceIds(&recorder), testing::ElementsAre(id4));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

@@ -168,6 +168,10 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   virtual bool IsSharedStorageWorkletGlobalScope() const { return false; }
   virtual bool IsJSExecutionForbidden() const { return false; }
 
+  // Notifies the execution context that new web socket activity (such as
+  // sending or receiving a message) has happened.
+  virtual void NotifyWebSocketActivity() {}
+
   // TODO(crbug.com/1335924) Change this method to be pure-virtual and each
   // derivative explicitly override it.
   virtual bool IsInFencedFrame() const { return false; }
@@ -405,9 +409,6 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   // the future.
   bool CheckSharedArrayBufferTransferAllowedAndReport();
 
-  // Reports first usage of `navigator.userAgent` and related getters
-  void ReportNavigatorUserAgentAccess();
-
   virtual ukm::UkmRecorder* UkmRecorder() = 0;
   virtual ukm::SourceId UkmSourceID() const = 0;
 
@@ -510,7 +511,6 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
 
   bool has_filed_shared_array_buffer_transfer_issue_ = false;
   bool has_filed_shared_array_buffer_creation_issue_ = false;
-  bool has_filed_navigator_user_agent_issue_ = false;
 
   bool is_in_request_animation_frame_ = false;
 

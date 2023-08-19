@@ -21,7 +21,7 @@ from blinkpy.tool.commands.build_resolver import (
     BuildResolver,
     UnresolvedBuildException,
 )
-from blinkpy.tool.commands.command import check_file_option
+from blinkpy.tool.commands.command import resolve_test_patterns
 from blinkpy.tool.commands.rebaseline import AbstractParallelRebaselineCommand
 from blinkpy.tool.commands.rebaseline import TestBaselineSet
 
@@ -53,13 +53,6 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         action='store_false',
         default=True,
         help='Do not trigger any try jobs.')
-    test_name_file_option = optparse.make_option(
-        '--test-name-file',
-        action='callback',
-        callback=check_file_option,
-        type='string',
-        help=('Read names of tests to update from this file, '
-              'one test per line.'))
     patchset_option = optparse.make_option(
         '--patchset',
         default=None,
@@ -257,7 +250,8 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
                 # web tests to download baselines for.
                 continue
 
-            step_names = results_fetcher.get_layout_test_step_names(build)
+            step_names = self._tool.builders.step_names_for_builder(
+                build.builder_name)
             build_steps.extend((build, step_name) for step_name in step_names)
 
         map_fn = self._io_pool.map if self._io_pool else map
@@ -270,17 +264,10 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         return builds_to_results
 
     def _make_test_baseline_set_from_file(self, filename, builds_to_results):
-        tests = []
+        tests = set()
         try:
-            with self._tool.filesystem.open_text_file_for_reading(
-                    filename) as fh:
-                _log.info('Reading list of tests to rebaseline '
-                          'from %s', filename)
-                for test in fh.readlines():
-                    test = test.strip()
-                    if not test or test.startswith('#'):
-                        continue
-                    tests.append(test)
+            _log.info('Reading list of tests to rebaseline from %s', filename)
+            tests = self._host_port.tests_from_file(filename)
         except IOError:
             _log.info('Could not read test names from %s', filename)
         return self._make_test_baseline_set_for_tests(tests, builds_to_results)
@@ -297,7 +284,8 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             A TestBaselineSet object.
         """
         test_baseline_set = TestBaselineSet(self._tool.builders)
-        tests = self._tool.port_factory.get().tests(test_patterns)
+        port = self._tool.port_factory.get()
+        tests = resolve_test_patterns(port, test_patterns)
         for test, (build, builder_results) in itertools.product(
                 tests, builds_to_results.items()):
             for step_results in builder_results:
@@ -435,8 +423,9 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         """
 
         # A full port name should normally always be of the form <os>-<version>;
-        # for example "win-win11", or "linux-trusty". For the test port used in
-        # unit tests, though, the full port name may be "test-<os>-<version>".
+        # for example "win-win11", or "mac-mac13-arm64". For the test port used
+        # in unit tests, though, the full port name may be
+        # "test-<os>-<version>".
         def os_name(port):
             if '-' not in port:
                 return port

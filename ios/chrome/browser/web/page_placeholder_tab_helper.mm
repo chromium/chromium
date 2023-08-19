@@ -13,10 +13,6 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // Placeholder will not be displayed longer than this time.
 constexpr base::TimeDelta kPlaceholderMaxDisplayTime = base::Seconds(1.5);
@@ -106,19 +102,15 @@ void PagePlaceholderTabHelper::AddPlaceholder() {
   SnapshotTabHelper* snapshotTabHelper =
       SnapshotTabHelper::FromWebState(web_state_);
   if (snapshotTabHelper) {
-    __block base::OnceCallback<void(UIImage*)> callback =
-        base::BindOnce(&PagePlaceholderTabHelper::OnImageRetrieved,
-                       weak_factory_.GetWeakPtr());
-
-    auto block = ^(UIImage* image) {
-      std::move(callback).Run(image);
-    };
-
     // Show grey snapshots only for the WebStates that haven't been loaded
     if (web_state_->IsLoading()) {
-      snapshotTabHelper->RetrieveGreySnapshot(block);
+      snapshotTabHelper->RetrieveGreySnapshot(base::CallbackToBlock(
+          base::BindOnce(&PagePlaceholderTabHelper::OnImageRetrieved,
+                         weak_factory_.GetWeakPtr())));
     } else {
-      snapshotTabHelper->RetrieveColorSnapshot(block);
+      snapshotTabHelper->RetrieveColorSnapshot(base::CallbackToBlock(
+          base::BindOnce(&PagePlaceholderTabHelper::OnImageRetrieved,
+                         weak_factory_.GetWeakPtr())));
     }
   }
 

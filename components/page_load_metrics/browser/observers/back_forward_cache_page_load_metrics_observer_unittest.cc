@@ -113,7 +113,7 @@ class BackForwardCachePageLoadMetricsObserverTest
   void SetPageEndReasonLogged() { observer_->logged_page_end_metrics_ = true; }
 
   page_load_metrics::mojom::PageLoadTiming timing_;
-  raw_ptr<BackForwardCachePageLoadMetricsObserver> observer_;
+  raw_ptr<BackForwardCachePageLoadMetricsObserver, DanglingUntriaged> observer_;
 
   // |observer_with_fake_delegate_| is an observer set up with |fake_delegate_|
   // as its PageLoadMetricsObserverDelegate. This is for unit tests where it's

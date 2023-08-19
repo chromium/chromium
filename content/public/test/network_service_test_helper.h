@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "services/network/public/mojom/network_service_test.mojom.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 
 namespace content {
@@ -21,10 +23,16 @@ class NetworkServiceTestHelper {
   // If this returns an instance, it is ready to fulfill NetworkServiceTest
   // mojo interface requests within the network service.
   static std::unique_ptr<NetworkServiceTestHelper> Create();
+
   NetworkServiceTestHelper(const NetworkServiceTestHelper&) = delete;
   NetworkServiceTestHelper& operator=(const NetworkServiceTestHelper&) = delete;
 
   ~NetworkServiceTestHelper();
+
+  // Binds and returns the instance in the browser process. This assumes
+  // in-process network service.
+  static std::unique_ptr<NetworkServiceTestHelper> CreateInProcessReceiver(
+      mojo::PendingReceiver<network::mojom::NetworkServiceTest> receiver);
 
  private:
   class NetworkServiceTestImpl;

@@ -27,10 +27,12 @@
 #include "services/network/attribution/attribution_verification_mediator_metrics_recorder.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/trigger_verification.h"
 #include "services/network/public/cpp/trust_token_http_headers.h"
 #include "services/network/public/mojom/attribution.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/trust_tokens/trust_token_key_commitments.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -39,6 +41,7 @@ namespace network {
 namespace {
 
 using ::network::mojom::AttributionReportingEligibility;
+using ::testing::IsEmpty;
 
 constexpr char kAttributionReportingEligible[] =
     "Attribution-Reporting-Eligible";
@@ -107,7 +110,9 @@ class AttributionRequestHelperTest : public testing::Test {
     if (with == WithVerificationHeader::kYes) {
       response->headers->AddHeader(
           AttributionVerificationMediator::kReportVerificationHeader,
-          kTestBlindSignature);
+          SerializeStructureHeaderListOfStrings(std::vector<std::string>(
+              AttributionRequestHelper::kVerificationTokensPerTrigger,
+              kTestBlindSignature)));
     }
 
     return response;
@@ -127,17 +132,10 @@ class AttributionRequestHelperTest : public testing::Test {
     auto expected_response_time = response->response_time;
     helper_->OnReceiveRedirect(
         request, std::move(response), redirect_info,
-        base::BindLambdaForTesting([&run_loop, expected_response_time,
-                                    expect_trigger_verification](
-                                       mojom::URLResponseHeadPtr response) {
+        base::BindLambdaForTesting([&](mojom::URLResponseHeadPtr response) {
           EXPECT_EQ(expected_response_time, response->response_time);
-          if (expect_trigger_verification) {
-            ASSERT_TRUE(response->trigger_verification);
-            EXPECT_TRUE(FakeCryptographer::IsToken(
-                response->trigger_verification->token(), kTestBlindSignature));
-          } else {
-            ASSERT_FALSE(response->trigger_verification);
-          }
+          CheckVerifications(response->trigger_verifications,
+                             expect_trigger_verification);
           run_loop.Quit();
         }));
     run_loop.Run();
@@ -149,13 +147,8 @@ class AttributionRequestHelperTest : public testing::Test {
     helper_->Finalize(response, run_loop.QuitClosure());
     run_loop.Run();
 
-    if (expect_trigger_verification) {
-      ASSERT_TRUE(response.trigger_verification);
-      EXPECT_TRUE(FakeCryptographer::IsToken(
-          response.trigger_verification->token(), kTestBlindSignature));
-    } else {
-      ASSERT_FALSE(response.trigger_verification);
-    }
+    CheckVerifications(response.trigger_verifications,
+                       expect_trigger_verification);
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -170,6 +163,20 @@ class AttributionRequestHelperTest : public testing::Test {
   std::unique_ptr<net::URLRequestContext> context_;
   std::unique_ptr<TrustTokenKeyCommitments> trust_token_key_commitments_;
   net::TestDelegate delegate_;
+
+  void CheckVerifications(const std::vector<TriggerVerification>& verifications,
+                          bool expected_to_have_value) {
+    if (expected_to_have_value) {
+      EXPECT_EQ(verifications.size(),
+                AttributionRequestHelper::kVerificationTokensPerTrigger);
+      for (const auto& verification : verifications) {
+        EXPECT_TRUE(FakeCryptographer::IsToken(verification.token(),
+                                               kTestBlindSignature));
+      }
+    } else {
+      ASSERT_THAT(verifications, IsEmpty());
+    }
+  }
 };
 
 TEST_F(AttributionRequestHelperTest, Begin_HeadersAdded) {
@@ -187,21 +194,26 @@ TEST_F(AttributionRequestHelperTest, Begin_HeadersAdded) {
   ASSERT_TRUE(request->extra_request_headers().HasHeader(
       AttributionVerificationMediator::kReportVerificationHeader));
 
-  // The generated message should be composed of:
-  // a. The origin from which the request was made which corresponds to the
-  //    attribution destination origin.
-  // b. A generated uuid that represents the id of a future aggregatable report.
-  std::string blind_message_header;
+  std::string blind_messages_header;
   request->extra_request_headers().GetHeader(
       AttributionVerificationMediator::kReportVerificationHeader,
-      &blind_message_header);
-  std::string message = FakeCryptographer::UnblindMessage(blind_message_header);
+      &blind_messages_header);
+  std::vector<const std::string> blinded_messages =
+      DeserializeStructuredHeaderListOfStrings(blind_messages_header);
   std::string expected_origin = "https://origin.example";
+  for (const auto& blinded_message : blinded_messages) {
+    std::string message = FakeCryptographer::UnblindMessage(blinded_message);
 
-  EXPECT_TRUE(base::EndsWith(message, expected_origin));
-  std::string potential_id =
-      message.substr(0, message.length() - expected_origin.length());
-  EXPECT_TRUE(base::Uuid::ParseLowercase(potential_id).is_valid());
+    // Each generated message should be composed of:
+    // a. The origin from which the request was made which corresponds to the
+    //    attribution destination origin.
+    // b. A generated uuid that represents the id of a future aggregatable
+    // report.
+    EXPECT_TRUE(base::EndsWith(message, expected_origin));
+    std::string potential_id =
+        message.substr(0, message.length() - expected_origin.length());
+    EXPECT_TRUE(base::Uuid::ParseLowercase(potential_id).is_valid());
+  }
 
   histograms_.ExpectUniqueSample(
       "Conversions.ReportVerification.DestinationOriginStatus",

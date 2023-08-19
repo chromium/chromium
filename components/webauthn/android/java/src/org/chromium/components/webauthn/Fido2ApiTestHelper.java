@@ -22,9 +22,11 @@ import org.junit.Assert;
 
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UrlUtils;
+import org.chromium.blink.mojom.AuthenticationExtensionsClientInputs;
 import org.chromium.blink.mojom.AuthenticatorAttachment;
 import org.chromium.blink.mojom.AuthenticatorSelectionCriteria;
 import org.chromium.blink.mojom.CableAuthentication;
+import org.chromium.blink.mojom.DevicePublicKeyResponse;
 import org.chromium.blink.mojom.GetAssertionAuthenticatorResponse;
 import org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse;
 import org.chromium.blink.mojom.PaymentCredentialInstrument;
@@ -99,7 +101,6 @@ import java.util.concurrent.TimeUnit;
  */
 public class Fido2ApiTestHelper {
     // Test data.
-    private static final String FILLER_ERROR_MSG = "Error Error";
     private static final int OBJECT_MAGIC = 20293;
 
     /**
@@ -248,6 +249,133 @@ public class Fido2ApiTestHelper {
             2, 0, 0, 0, 2, 0, 4, 0, 2, 0, 0, 0, 3, 0, 4, 0, 4, 0, 0, 0, 32, 0, 0, 0, 69, 79, -1, -1,
             24, 0, 0, 0, 1, 0, 4, 0, 0, 2, 0, 0, 2, 0, 4, 0, 1, 0, 0, 0, 3, 0, 4, 0, 1, 0, 0, 0};
 
+    /**
+     * Get credential response captured with prf extension enabled.
+     */
+    private static final byte[] TEST_ASSERTION_PUBLIC_KEY_CREDENTIAL_WITH_PRF = new byte[] {69, 79,
+            -1, -1, -104, 2, 0, 0, 1, 0, -1, -1, 52, 0, 0, 0, 22, 0, 0, 0, 52, 0, 121, 0, 82, 0, 87,
+            0, 50, 0, 56, 0, 89, 0, 108, 0, 103, 0, 119, 0, 57, 0, 99, 0, 68, 0, 70, 0, 83, 0, 65,
+            0, 69, 0, 95, 0, 99, 0, 68, 0, 48, 0, 65, 0, 0, 0, 0, 0, 2, 0, -1, -1, 28, 0, 0, 0, 10,
+            0, 0, 0, 112, 0, 117, 0, 98, 0, 108, 0, 105, 0, 99, 0, 45, 0, 107, 0, 101, 0, 121, 0, 0,
+            0, 0, 0, 3, 0, -1, -1, 20, 0, 0, 0, 16, 0, 0, 0, -29, 36, 86, -37, -58, 37, -125, 15,
+            92, 12, 84, -128, 19, -9, 3, -48, 5, 0, -1, -1, -96, 1, 0, 0, 69, 79, -1, -1, -104, 1,
+            0, 0, 2, 0, -1, -1, 20, 0, 0, 0, 16, 0, 0, 0, -29, 36, 86, -37, -58, 37, -125, 15, 92,
+            12, 84, -128, 19, -9, 3, -48, 3, 0, -1, -1, -40, 0, 0, 0, -45, 0, 0, 0, 123, 34, 116,
+            121, 112, 101, 34, 58, 34, 119, 101, 98, 97, 117, 116, 104, 110, 46, 103, 101, 116, 34,
+            44, 34, 99, 104, 97, 108, 108, 101, 110, 103, 101, 34, 58, 34, 81, 113, 109, 48, 87, 76,
+            89, 87, 108, 99, 120, 95, 98, 106, 112, 84, 100, 113, 65, 80, 52, 50, 98, 102, 107, 118,
+            48, 97, 74, 116, 90, 95, 90, 120, 71, 72, 69, 113, 55, 74, 117, 55, 70, 112, 107, 117,
+            69, 79, 78, 73, 71, 110, 80, 113, 51, 102, 109, 68, 75, 45, 104, 55, 72, 73, 73, 54, 74,
+            71, 79, 86, 113, 72, 56, 52, 57, 53, 49, 66, 68, 83, 71, 45, 118, 68, 76, 65, 34, 44,
+            34, 111, 114, 105, 103, 105, 110, 34, 58, 34, 104, 116, 116, 112, 115, 58, 92, 47, 92,
+            47, 119, 101, 98, 97, 117, 116, 104, 110, 46, 105, 111, 34, 44, 34, 97, 110, 100, 114,
+            111, 105, 100, 80, 97, 99, 107, 97, 103, 101, 78, 97, 109, 101, 34, 58, 34, 99, 111,
+            109, 46, 103, 111, 111, 103, 108, 101, 46, 97, 110, 100, 114, 111, 105, 100, 46, 97,
+            112, 112, 115, 46, 99, 104, 114, 111, 109, 101, 34, 125, 0, 4, 0, -1, -1, 44, 0, 0, 0,
+            37, 0, 0, 0, 116, -90, -22, -110, 19, -55, -100, 47, 116, -78, 36, -110, -77, 32, -49,
+            64, 38, 42, -108, -63, -87, 80, -96, 57, 127, 41, 37, 11, 96, -124, 30, -16, 29, 0, 0,
+            0, 0, 0, 0, 0, 5, 0, -1, -1, 76, 0, 0, 0, 70, 0, 0, 0, 48, 68, 2, 32, 80, 79, -84, 125,
+            98, -42, -17, 18, 52, 61, -53, -41, -88, -21, -126, -123, 108, -44, -20, -6, 95, -82,
+            -67, 111, -13, 43, -127, -123, 105, 106, -29, -9, 2, 32, 11, 44, -2, -84, 60, -38, -49,
+            -45, 69, 69, -88, -29, 29, -29, -5, -115, -13, -50, -105, 92, -108, 74, -125, 35, 87,
+            95, -26, -29, -27, 64, -111, -73, 0, 0, 6, 0, -1, -1, 12, 0, 0, 0, 7, 0, 0, 0, 78, 68,
+            81, 48, 78, 68, 81, 0, 7, 0, -1, -1, 76, 0, 0, 0, 69, 79, -1, -1, 68, 0, 0, 0, 4, 0, -1,
+            -1, 60, 0, 0, 0, 69, 79, -1, -1, 52, 0, 0, 0, 1, 0, 4, 0, 0, 0, 0, 0, 2, 0, -1, -1, 36,
+            0, 0, 0, 32, 0, 0, 0, -49, 63, -92, 1, -28, 95, -13, -108, -64, 100, 81, 6, 53, -105,
+            125, 108, 37, 7, 73, 14, 36, -69, 65, 25, 17, -91, 61, 29, -43, 93, 70, 32, 8, 0, -1,
+            -1, 24, 0, 0, 0, 8, 0, 0, 0, 112, 0, 108, 0, 97, 0, 116, 0, 102, 0, 111, 0, 114, 0, 109,
+            0, 0, 0, 0, 0};
+
+    /**
+     * The value of the prf extension response in the sample,
+     * {@link Fido2ApiTestHelper#TEST_ASSERTION_PUBLIC_KEY_CREDENTIAL_WITH_PRF}.
+     */
+    private static final byte[] TEST_ASSERTION_PRF_VALUES_BYTES = {-49, 63, -92, 1, -28, 95, -13,
+            -108, -64, 100, 81, 6, 53, -105, 125, 108, 37, 7, 73, 14, 36, -69, 65, 25, 17, -91, 61,
+            29, -43, 93, 70, 32};
+
+    /**
+     * Get credential response captured with the devicePubKey extension enabled.
+     */
+    private static final byte[] TEST_ASSERTION_PUBLIC_KEY_CREDENTIAL_WITH_DEVICE_PUBKEY =
+            new byte[] {69, 79, -1, -1, -24, 3, 0, 0, 1, 0, -1, -1, 52, 0, 0, 0, 22, 0, 0, 0, 71, 0,
+                    83, 0, 109, 0, 82, 0, 95, 0, 70, 0, 111, 0, 89, 0, 73, 0, 120, 0, 98, 0, 112, 0,
+                    106, 0, 52, 0, 85, 0, 53, 0, 73, 0, 74, 0, 115, 0, 74, 0, 50, 0, 103, 0, 0, 0,
+                    0, 0, 2, 0, -1, -1, 28, 0, 0, 0, 10, 0, 0, 0, 112, 0, 117, 0, 98, 0, 108, 0,
+                    105, 0, 99, 0, 45, 0, 107, 0, 101, 0, 121, 0, 0, 0, 0, 0, 3, 0, -1, -1, 20, 0,
+                    0, 0, 16, 0, 0, 0, 25, 41, -111, -4, 90, 24, 35, 22, -23, -113, -123, 57, 32,
+                    -101, 9, -38, 5, 0, -1, -1, 56, 2, 0, 0, 69, 79, -1, -1, 48, 2, 0, 0, 2, 0, -1,
+                    -1, 20, 0, 0, 0, 16, 0, 0, 0, 25, 41, -111, -4, 90, 24, 35, 22, -23, -113, -123,
+                    57, 32, -101, 9, -38, 3, 0, -1, -1, -40, 0, 0, 0, -45, 0, 0, 0, 123, 34, 116,
+                    121, 112, 101, 34, 58, 34, 119, 101, 98, 97, 117, 116, 104, 110, 46, 103, 101,
+                    116, 34, 44, 34, 99, 104, 97, 108, 108, 101, 110, 103, 101, 34, 58, 34, 114, 82,
+                    78, 50, 114, 69, 117, 66, 116, 120, 75, 69, 114, 72, 119, 86, 116, 83, 45, 55,
+                    88, 48, 83, 82, 101, 74, 97, 82, 69, 77, 97, 55, 109, 116, 102, 65, 105, 110,
+                    65, 66, 120, 117, 111, 106, 101, 106, 52, 107, 80, 48, 85, 76, 72, 95, 73, 111,
+                    116, 117, 52, 112, 106, 84, 76, 107, 117, 77, 68, 106, 100, 114, 112, 101, 105,
+                    56, 104, 82, 97, 76, 87, 101, 105, 121, 77, 86, 115, 103, 34, 44, 34, 111, 114,
+                    105, 103, 105, 110, 34, 58, 34, 104, 116, 116, 112, 115, 58, 92, 47, 92, 47,
+                    119, 101, 98, 97, 117, 116, 104, 110, 46, 105, 111, 34, 44, 34, 97, 110, 100,
+                    114, 111, 105, 100, 80, 97, 99, 107, 97, 103, 101, 78, 97, 109, 101, 34, 58, 34,
+                    99, 111, 109, 46, 103, 111, 111, 103, 108, 101, 46, 97, 110, 100, 114, 111, 105,
+                    100, 46, 97, 112, 112, 115, 46, 99, 104, 114, 111, 109, 101, 34, 125, 0, 4, 0,
+                    -1, -1, -56, 0, 0, 0, -63, 0, 0, 0, 116, -90, -22, -110, 19, -55, -100, 47, 116,
+                    -78, 36, -110, -77, 32, -49, 64, 38, 42, -108, -63, -87, 80, -96, 57, 127, 41,
+                    37, 11, 96, -124, 30, -16, -99, 0, 0, 0, 0, -95, 108, 100, 101, 118, 105, 99,
+                    101, 80, 117, 98, 75, 101, 121, 88, -116, -90, 99, 100, 112, 107, 88, 77, -91,
+                    1, 2, 3, 38, 32, 1, 33, 88, 32, -46, -27, -85, 102, -94, -75, -1, 123, -38, 98,
+                    -40, -104, 33, -14, 17, -41, 75, 64, -109, 19, 77, 6, 13, 44, 73, 105, -47, 10,
+                    -21, -4, -126, 19, 34, 88, 32, 20, 86, -55, 21, 27, -34, 116, -115, -90, 84,
+                    126, 36, -16, 39, -60, 99, 3, -34, 32, 14, -98, 20, 80, 6, -123, 7, -116, 65,
+                    100, 84, 118, -1, 99, 102, 109, 116, 100, 110, 111, 110, 101, 101, 110, 111,
+                    110, 99, 101, 64, 101, 115, 99, 111, 112, 101, 0, 102, 97, 97, 103, 117, 105,
+                    100, 80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 103, 97, 116, 116, 83,
+                    116, 109, 116, -96, 0, 0, 0, 5, 0, -1, -1, 76, 0, 0, 0, 72, 0, 0, 0, 48, 70, 2,
+                    33, 0, -39, 107, -90, 58, -92, -120, -8, -127, -105, -64, 36, 48, 110, -78,
+                    -106, 69, 113, 67, -76, 93, -8, -58, -67, 46, 55, 109, -17, 77, -29, 92, -81,
+                    -28, 2, 33, 0, -128, 58, -39, 66, -3, 121, 88, 123, 15, -85, -64, -23, 108, -78,
+                    -81, -25, -27, -50, -93, -70, -77, 73, -65, 84, -61, -9, -113, -17, 115, 44,
+                    -47, -100, 6, 0, -1, -1, 8, 0, 0, 0, 4, 0, 0, 0, 82, 71, 115, 122, 7, 0, -1, -1,
+                    4, 1, 0, 0, 69, 79, -1, -1, -4, 0, 0, 0, 2, 0, -1, -1, -12, 0, 0, 0, 69, 79, -1,
+                    -1, -20, 0, 0, 0, 1, 0, -1, -1, 76, 0, 0, 0, 71, 0, 0, 0, 48, 69, 2, 32, 93, 93,
+                    116, -63, 46, 104, -118, -2, 50, -9, -103, 73, -43, 10, -108, 76, -38, -50, -65,
+                    51, 46, 69, 20, -67, -40, -124, -46, -37, 38, -27, -98, 6, 2, 33, 0, -47, -19,
+                    -46, -64, -24, 67, -92, 12, -88, 104, -100, -24, 16, 35, -128, 83, 105, -98, -7,
+                    -76, 0, -70, 91, -22, 54, 126, 80, -115, -120, 78, -38, -84, 0, 2, 0, -1, -1,
+                    -112, 0, 0, 0, -116, 0, 0, 0, -90, 99, 100, 112, 107, 88, 77, -91, 1, 2, 3, 38,
+                    32, 1, 33, 88, 32, -46, -27, -85, 102, -94, -75, -1, 123, -38, 98, -40, -104,
+                    33, -14, 17, -41, 75, 64, -109, 19, 77, 6, 13, 44, 73, 105, -47, 10, -21, -4,
+                    -126, 19, 34, 88, 32, 20, 86, -55, 21, 27, -34, 116, -115, -90, 84, 126, 36,
+                    -16, 39, -60, 99, 3, -34, 32, 14, -98, 20, 80, 6, -123, 7, -116, 65, 100, 84,
+                    118, -1, 99, 102, 109, 116, 100, 110, 111, 110, 101, 101, 110, 111, 110, 99,
+                    101, 64, 101, 115, 99, 111, 112, 101, 0, 102, 97, 97, 103, 117, 105, 100, 80, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 103, 97, 116, 116, 83, 116, 109,
+                    116, -96, 8, 0, -1, -1, 24, 0, 0, 0, 8, 0, 0, 0, 112, 0, 108, 0, 97, 0, 116, 0,
+                    102, 0, 111, 0, 114, 0, 109, 0, 0, 0, 0, 0};
+
+    /**
+     * The value of the devicePubKey's authenticatorOutput in the sample,
+     * {@link Fido2ApiTestHelper#TEST_ASSERTION_PUBLIC_KEY_CREDENTIAL_WITH_DEVICE_PUBKEY}
+     */
+    private static final byte[] TEST_ASSERTION_DEVICE_PUBKEY_AUTHENTICATOR_OUTPUT = new byte[] {-90,
+            99, 100, 112, 107, 88, 77, -91, 1, 2, 3, 38, 32, 1, 33, 88, 32, -46, -27, -85, 102, -94,
+            -75, -1, 123, -38, 98, -40, -104, 33, -14, 17, -41, 75, 64, -109, 19, 77, 6, 13, 44, 73,
+            105, -47, 10, -21, -4, -126, 19, 34, 88, 32, 20, 86, -55, 21, 27, -34, 116, -115, -90,
+            84, 126, 36, -16, 39, -60, 99, 3, -34, 32, 14, -98, 20, 80, 6, -123, 7, -116, 65, 100,
+            84, 118, -1, 99, 102, 109, 116, 100, 110, 111, 110, 101, 101, 110, 111, 110, 99, 101,
+            64, 101, 115, 99, 111, 112, 101, 0, 102, 97, 97, 103, 117, 105, 100, 80, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 103, 97, 116, 116, 83, 116, 109, 116, -96};
+
+    /**
+     * The value of the devicePubKey's signature in the sample,
+     * {@link Fido2ApiTestHelper#TEST_ASSERTION_PUBLIC_KEY_CREDENTIAL_WITH_DEVICE_PUBKEY}
+     */
+    private static final byte[] TEST_ASSERTION_DEVICE_PUBKEY_SIGNATURE = new byte[] {48, 69, 2, 32,
+            93, 93, 116, -63, 46, 104, -118, -2, 50, -9, -103, 73, -43, 10, -108, 76, -38, -50, -65,
+            51, 46, 69, 20, -67, -40, -124, -46, -37, 38, -27, -98, 6, 2, 33, 0, -47, -19, -46, -64,
+            -24, 67, -92, 12, -88, 104, -100, -24, 16, 35, -128, 83, 105, -98, -7, -76, 0, -70, 91,
+            -22, 54, 126, 80, -115, -120, 78, -38, -84};
+
     private static final byte[] TEST_KEY_HANDLE = BaseEncoding.base16().decode(
             "0506070805060708050607080506070805060708050607080506070805060709");
     private static final String TEST_ENCODED_KEY_HANDLE = Base64.encodeToString(
@@ -348,7 +476,6 @@ public class Fido2ApiTestHelper {
     private static final byte[] TEST_CLIENT_DATA_JSON = new byte[] {4, 5, 6};
     private static final byte[] TEST_AUTHENTICATOR_DATA = new byte[] {7, 8, 9};
     private static final byte[] TEST_SIGNATURE = new byte[] {10, 11, 12};
-    private static final long TIMEOUT_SAFETY_MARGIN_MS = scaleTimeout(TimeUnit.SECONDS.toMillis(1));
     private static final long TIMEOUT_MS = scaleTimeout(TimeUnit.SECONDS.toMillis(1));
     private static final int[] TEST_USER_VERIFICATION_METHOD = new int[] {0x00000002, 0x00000200};
     private static final short[] TEST_KEY_PROTECTION_TYPE = new short[] {0x0002, 0x0001};
@@ -461,6 +588,7 @@ public class Fido2ApiTestHelper {
     public static PublicKeyCredentialRequestOptions createDefaultGetAssertionOptions()
             throws Exception {
         PublicKeyCredentialRequestOptions options = new PublicKeyCredentialRequestOptions();
+        options.extensions = new AuthenticationExtensionsClientInputs();
         options.challenge = "climb a mountain".getBytes("UTF8");
         options.timeout = new TimeDelta();
         options.timeout.microseconds = TimeUnit.MILLISECONDS.toMicros(TIMEOUT_MS);
@@ -472,8 +600,8 @@ public class Fido2ApiTestHelper {
         descriptor.transports = new int[] {0};
         options.allowCredentials = new PublicKeyCredentialDescriptor[] {descriptor};
 
-        options.cableAuthenticationData = new CableAuthentication[] {};
-        options.prfInputs = new PrfValues[] {};
+        options.extensions.cableAuthenticationData = new CableAuthentication[] {};
+        options.extensions.prfInputs = new PrfValues[] {};
         return options;
     }
 
@@ -497,6 +625,50 @@ public class Fido2ApiTestHelper {
         Intent intent = new Intent();
         intent.putExtra(Fido2Api.CREDENTIAL_EXTRA, TEST_ASSERTION_PUBLIC_KEY_CREDENTIAL_WITH_UVM);
         return intent;
+    }
+
+    /**
+     * Builds a test intent with prf extension to be returned by a successful call to
+     * makeCredential.
+     * @return Intent containing the response from the Fido2 API.
+     */
+    public static Intent createSuccessfulGetAssertionIntentWithPrf() {
+        Intent intent = new Intent();
+        intent.putExtra(Fido2Api.CREDENTIAL_EXTRA, TEST_ASSERTION_PUBLIC_KEY_CREDENTIAL_WITH_PRF);
+        return intent;
+    }
+
+    /**
+     * Verifies the values in the prf extension.
+     * @param prfValues The {@link PrfValues} from Fido2Api's extensions.
+     */
+    public static void validatePrfResults(PrfValues prfValues) {
+        Assert.assertNotNull(prfValues);
+        Assert.assertArrayEquals(prfValues.first, TEST_ASSERTION_PRF_VALUES_BYTES);
+    }
+
+    /**
+     * Builds a test intent with the devicePubKey extension to be returned by a successful call to
+     * makeCredential.
+     * @return Intent containing the response from the Fido2 API.
+     */
+    public static Intent createSuccessfulGetAssertionIntentWithDevicePubKey() {
+        Intent intent = new Intent();
+        intent.putExtra(
+                Fido2Api.CREDENTIAL_EXTRA, TEST_ASSERTION_PUBLIC_KEY_CREDENTIAL_WITH_DEVICE_PUBKEY);
+        return intent;
+    }
+
+    /**
+     * Verifies the values in the devicePubKey extension.
+     * @param devicePublicKeyResponse The {@link DevicePublicKeyResponse} from Fido2Api's
+     * extensions.
+     */
+    public static void validateDevicePubKey(DevicePublicKeyResponse devicePublicKeyResponse) {
+        Assert.assertArrayEquals(devicePublicKeyResponse.authenticatorOutput,
+                TEST_ASSERTION_DEVICE_PUBKEY_AUTHENTICATOR_OUTPUT);
+        Assert.assertArrayEquals(
+                devicePublicKeyResponse.signature, TEST_ASSERTION_DEVICE_PUBKEY_SIGNATURE);
     }
 
     /**

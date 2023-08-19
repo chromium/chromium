@@ -192,48 +192,44 @@ typedef uintptr_t IpczDriverHandle;
 
 #define IPCZ_INVALID_DRIVER_HANDLE ((IpczDriverHandle)0)
 
-// Flags given to the ipcz activity handler by a driver transport to notify ipcz
-// about incoming data or state changes.
+// Flags which may be passed by a driver to an IpczTransportActivityHandler when
+// notifying ipcz about transport activity.
 typedef uint32_t IpczTransportActivityFlags;
 
-// If set, the driver encountered an unrecoverable error using the transport and
-// ipcz should discard it. Note that the driver is free to issue such
-// notifications many times as long as it remains active, but ipcz will generally
-// request deactivation ASAP once an error is signaled.
+// Indicates that the driver encountered an unrecoverable error while using the
+// transport. This generally results in ipcz deactivating the transport via the
+// driver's DeactivateTransport().
 #define IPCZ_TRANSPORT_ACTIVITY_ERROR IPCZ_FLAG_BIT(0)
 
-// When ipcz wants to deactivate a transport, it invokes the driver's
-// DeactivateTransport() function. Once the driver has finished any clean up and
-// can ensure that the transport's activity handler will no longer be invoked,
-// it must then invoke the activity handler one final time with this flag set.
-// This finalizes deactivation and allows ipcz to free any associated resources.
+// Informs ipcz that the driver will no longer invoke the activity handler for
+// a given listener, as the driver is no longer listening for activity on the
+// corresponding transport.
 #define IPCZ_TRANSPORT_ACTIVITY_DEACTIVATED IPCZ_FLAG_BIT(1)
 
 #if defined(__cplusplus)
 extern "C" {
 #endif
 
-// Notifies ipcz of activity on a transport. `transport` must be a handle to a
-// transport which is currently activated. The `transport` handle is acquired
-// exclusively by the driver transport via an ipcz call to the driver's
-// ActivateTransport(), which also provides the handle to the driver.
+// Notifies ipcz of activity on a transport. `listener` must be a handle to an
+// active transport's listener, as provided to the driver by ipcz via
+// ActivateTransport().
 //
-// The driver must use this function to feed incoming data and driver handles
-// from the transport to ipcz, or to inform ipcz of any error conditions
-// resulting in unexpected and irrecoverable dysfunction of the transport.
+// Drivers use this function to feed incoming data and driver handles from a
+// transport to ipcz, or to inform ipcz of any unrecoverable dysfunction of the
+// transport. In the latter case, drivers specify IPCZ_TRANSPORT_ACTIVITY_ERROR
+// in `flags` to instigate deactivation and disposal of the transport by ipcz.
 //
-// If the driver encounters an unrecoverable error while performing I/O on the
-// transport, it should invoke this with the IPCZ_TRANSPORT_ACTIVITY_ERROR flag
-// to instigate deactivation of the transport by ipcz via a subsequent
-// DeactivateTransport() call.
+// If IPCZ_TRANSPORT_ACTIVITY_DEACTIVATED is set in `flags`, this must be the
+// last call made by the driver for the given `listener`. See also
+// DeactivateTransport() defined on IpczDriver below.
 //
 // `options` is currently unused and must be null.
 //
-// NOTE: It is the driver's responsibility to ensure that calls to this function
-// for the same value of `transport` are mutually exclusive. Overlapping calls
-// are unsafe and will result in undefined behavior.
+// IMPORTANT: Drivers must ensure that all calls to this handler for the same
+// `listener` are mutually exclusive. Overlapping calls are unsafe and will
+// result in undefined behavior.
 typedef IpczResult(IPCZ_API* IpczTransportActivityHandler)(
-    IpczHandle transport,                    // in
+    IpczHandle listener,                     // in
     const void* data,                        // in
     size_t num_bytes,                        // in
     const IpczDriverHandle* driver_handles,  // in
@@ -259,11 +255,6 @@ struct IPCZ_ALIGN(8) IpczSharedMemoryInfo {
 // I/O operations to facilitate communication between nodes, giving embedding
 // systems full control over choice of OS-specific transport mechanisms and I/O
 // scheduling decisions.
-//
-// The driver API is meant to be used by both the application embedding ipcz,
-// particularly for creating transports to make initial contact between nodes,
-// as well as by ipcz itself to delegate creation and management of new
-// transports which ipcz brokers between nodes.
 struct IPCZ_ALIGN(8) IpczDriver {
   // The exact size of this structure in bytes. Must be set accurately by the
   // application before passing this structure to any ipcz API functions.
@@ -284,12 +275,12 @@ struct IPCZ_ALIGN(8) IpczDriver {
   // Serializes a driver object identified by `handle` into a collection of
   // bytes and readily transmissible driver objects, for eventual transmission
   // over `transport`. At a minimum this must support serialization of transport
-  // and memory objects allocated by ipcz through the driver. Any other driver
-  // objects intended for applications to box and transmit through portals must
-  // also be serializable here.
+  // and memory objects created by the same driver. Any other driver objects
+  // intended for applications to box and transmit through portals must also be
+  // serializable here.
   //
-  // If the specified object is invalid or unserializable, the driver must
-  // ignore all other arguments (including `transport`) and return
+  // If the object identified by `handle` is invalid or unserializable, the
+  // driver must ignore all other arguments (including `transport`) and return
   // IPCZ_RESULT_INVALID_ARGUMENT.
   //
   // If the object can be serialized but success may depend on the value of
@@ -307,32 +298,32 @@ struct IPCZ_ALIGN(8) IpczDriver {
   // object through a more capable broker node.
   //
   // For all other outcomes, the object identified by `handle` is considered to
-  // be serializable and ultimately transmissible.
+  // be serializable.
   //
   // `num_bytes` and `num_handles` on input point to the capacities of the
-  // respective output buffers provided by ipcz. If either capacity pointer is
-  // null, a capacity of zero is implied; and if either input capacity is zero,
-  // the corresponding input buffer may be null.
+  // respective output buffers provided by `data` and `handles`. If either
+  // capacity pointer is null, a capacity of zero is implied; and if either
+  // input capacity is zero, the corresponding output buffer may be null.
   //
   // Except in the failure modes described above, the driver must update any
   // non-null capacity input to reflect the exact capacity required to serialize
   // the object. For example if `num_bytes` is non-null and the object
   // serializes to 8 bytes of data, `*num_bytes` must be set to 8 upon return.
   //
-  // If the required data or handle capacity is larger than the respective input
-  // capacity, the driver must return IPCZ_RESULT_RESUORCE_EXHAUSTED without
-  // modifying the contents of either `data` or `handles` buffers.
+  // If serializing the object requires more data or handle capacity than ipcz
+  // provided, the driver must return IPCZ_RESULT_RESUORCE_EXHAUSTED after
+  // updating the capacity values as described above. In this case the driver
+  // must not touch `data` or `handles`.
   //
   // Finally, if the input capacities were both sufficient, the driver must fill
   // `data` and `handles` with a serialized representation of the object and
   // return IPCZ_RESULT_OK. In this case ipcz relinquishes `handle` and will no
-  // longer refer to it unless the driver outputs it back in `handles`, implying
-  // that it was already transmissible as-is.
+  // longer refer to it.
   IpczResult(IPCZ_API* Serialize)(IpczDriverHandle handle,     // in
                                   IpczDriverHandle transport,  // in
                                   uint32_t flags,              // in
                                   const void* options,         // in
-                                  void* data,                  // out
+                                  volatile void* data,         // out
                                   size_t* num_bytes,           // in/out
                                   IpczDriverHandle* handles,   // out
                                   size_t* num_handles);        // in/out
@@ -341,14 +332,14 @@ struct IPCZ_ALIGN(8) IpczDriver {
   // =============
   //
   // Deserializes a driver object from a collection of bytes and transmissible
-  // driver objects which was originally produced by Serialize() and received on
-  // the calling node via `transport`.
+  // driver handles that was originally produced by Serialize() and received by
+  // activity on `transport`.
   //
   // Any return value other than IPCZ_RESULT_OK indicates an error and implies
-  // that `handle` is unmodified. Otherwise `handle` must contain a valid driver
-  // handle to the deserialized object.
+  // that `handle` is unmodified. Otherwise `*handle` must be set to a valid
+  // driver handle which identifies the deserialized object upon return.
   IpczResult(IPCZ_API* Deserialize)(
-      const void* data,                        // in
+      const volatile void* data,               // in
       size_t num_bytes,                        // in
       const IpczDriverHandle* driver_handles,  // in
       size_t num_driver_handles,               // in
@@ -372,6 +363,9 @@ struct IPCZ_ALIGN(8) IpczDriver {
   //
   // Any return value other than IPCZ_RESULT_OK indicates an error and implies
   // that `new_transport0` and `new_transport1` are unmodified.
+  //
+  // Returned transports may be used immediately by ipcz for Transmit(), even
+  // if the transports are not yet activated.
   IpczResult(IPCZ_API* CreateTransports)(
       IpczDriverHandle transport0,        // in
       IpczDriverHandle transport1,        // in
@@ -383,34 +377,33 @@ struct IPCZ_ALIGN(8) IpczDriver {
   // ActivateTransport()
   // ===================
   //
-  // Called by ipcz to activate a transport. `driver_transport` is the
-  // driver-side handle assigned to the transport by the driver, either as given
-  // to ipcz via ConnectNode(), or as returned by the driver from an ipcz call
-  // out to CreateTransports().
+  // Called by ipcz to activate a given `transport`, either as given to ipcz via
+  // ConnectNode(), or as returned by the driver from CreateTransports().
   //
-  // `transport` is a handle the driver can use when calling `activity_handler`
-  // to update ipcz regarding any incoming data or state changes from the
+  // `listener` is a handle the driver must use when calling `activity_handler`
+  // to notify ipcz about any incoming data or state changes on the identified
   // transport.
   //
   // Before this returns, the driver should establish any I/O monitoring or
-  // scheduling state necessary to support operation of the endpoint, and once
-  // it returns ipcz may immediately begin making Transmit() calls on
-  // `driver_transport`.
+  // scheduling state necessary to support operation of the endpoint.
   //
   // Any return value other than IPCZ_RESULT_OK indicates an error, and the
-  // endpoint will be dropped by ipcz. Otherwise the endpoint may be used
-  // immediately to accept or submit data, and it should continue to operate
-  // until ipcz calls Close() on `driver_transport`.
+  // transport will be closed by ipcz. Otherwise the transport may immediately
+  // begin to invoke `activity_handler` and may continue to do so until
+  // deactivated via DeactivateTransport().
   //
-  // Note that `activity_handler` invocations MUST be mutually exclusive,
-  // because transmissions from ipcz are expected to arrive and be processed
-  // strictly in-order.
+  // Note that while `activity_handler` may be invoked by the driver from any
+  // thread, invocations MUST be mutually exclusive for a given `listener`.
+  // Overlapping invocations are unsafe and will result in undefined behavior.
   //
-  // The driver may elicit forced destruction of itself by calling
-  // `activity_handler` with the flag IPCZ_TRANSPORT_ACTIVITY_DEACTIVATED.
+  // The driver may elicit forced deactivation and destruction of an active
+  // transport by calling `activity_handler` with the
+  // IPCZ_TRANSPORT_ACTIVITY_DEACTIVATED flag. Otherwise ipcz will eventually
+  // deactivate `transport` when it's no longer in use by calling
+  // DeactivateTransport().
   IpczResult(IPCZ_API* ActivateTransport)(
-      IpczDriverHandle driver_transport,              // in
-      IpczHandle transport,                           // in
+      IpczDriverHandle transport,                     // in
+      IpczHandle listener,                            // in
       IpczTransportActivityHandler activity_handler,  // in
       uint32_t flags,                                 // in
       const void* options);                           // in
@@ -418,19 +411,20 @@ struct IPCZ_ALIGN(8) IpczDriver {
   // DeactivateTransport()
   // =====================
   //
-  // Called by ipcz to deactivate a transport. The driver does not need to
-  // complete deactivation synchronously, but it must begin to deactivate the
-  // transport and must invoke the transport's activity handler one final time
-  // with IPCZ_TRANSPORT_ACTIVITY_DEACTIVATED once finished. Beyond that point,
-  // the activity handler must no longer be invoked for that transport.
+  // Called by ipcz to deactivate a transport that is no longer needed.
   //
-  // Note that even after deactivation, ipcz may continue to call into the
-  // transport until it's closed with an explicit call to the driver's Close()
-  // by ipcz.
-  IpczResult(IPCZ_API* DeactivateTransport)(
-      IpczDriverHandle driver_transport,  // in
-      uint32_t flags,                     // in
-      const void* options);               // in
+  // The driver does not need to complete deactivation synchronously, but it
+  // must eventually (soon) cease operation of the transport and finalize the
+  // deactivation by invoking activity handler one final time with
+  // IPCZ_TRANSPORT_ACTIVITY_DEACTIVATED. Failure to do this will result in
+  // resource leaks.
+  //
+  // Note that even after deactivation, ipcz may continue to call into
+  // `transport` for other operations (e.g. Serialize() or Transmit()) until
+  // it's closed by ipcz with an explicit call to the driver's Close().
+  IpczResult(IPCZ_API* DeactivateTransport)(IpczDriverHandle transport,  // in
+                                            uint32_t flags,              // in
+                                            const void* options);        // in
 
   // Transmit()
   // ==========
@@ -440,21 +434,19 @@ struct IPCZ_ALIGN(8) IpczDriver {
   // it must return a result other than IPCZ_RESULT_OK, and this will cause the
   // transport's connection to be severed.
   //
-  // Note that any driver handles in `driver_handles` were obtained by ipcz from
-  // the driver itself, by some prior call to the driver's own Serialize()
+  // Note that all handles in `driver_handles` were obtained by ipcz from the
+  // driver itself, as returned by a prior call to the driver's own Serialize()
   // function. These handles are therefore expected to be directly transmissible
   // by the driver alongside any data in `data`.
   //
-  // The net result of this transmission should be an activity handler
-  // invocation on the corresponding remote transport by the driver on its node.
-  // It is the driver's responsibility to get any data and handles to the other
-  // transport, and to ensure that all transmissions from transport end up
-  // invoking the activity handler on the peer transport in the same order they
-  // were transmitted.
+  // The driver is responsible for ensuring that every Transmit() on a transport
+  // results in a corresponding activity handler invocation on the remote peer's
+  // transport, even if `num_bytes` and `num_driver_handles` are both zero.
   //
-  // If ipcz only wants to wake the peer node rather than transmit data or
-  // handles, `num_bytes` and `num_driver_handles` may both be zero.
-  IpczResult(IPCZ_API* Transmit)(IpczDriverHandle driver_transport,       // in
+  // IMPORTANT: For any sequence of Transmit() calls from the same thread, the
+  // corresponding activity handler invocations on the peer transport must
+  // occur in the same order.
+  IpczResult(IPCZ_API* Transmit)(IpczDriverHandle transport,              // in
                                  const void* data,                        // in
                                  size_t num_bytes,                        // in
                                  const IpczDriverHandle* driver_handles,  // in
@@ -468,7 +460,7 @@ struct IPCZ_ALIGN(8) IpczDriver {
   // The ipcz Reject() API can be used by an application to reject a specific
   // parcel received from a portal. If the parcel in question came from a
   // remote node, ipcz invokes ReportBadTransportActivity() to notify the driver
-  // about the `transport` which delivered the rejected parcel.
+  // about the `transport` which received the rejected parcel.
   //
   // `context` is an opaque value passed by the application to the Reject() call
   // which elicited this invocation.
@@ -527,7 +519,7 @@ struct IPCZ_ALIGN(8) IpczDriver {
       IpczDriverHandle driver_memory,     // in
       uint32_t flags,                     // in
       const void* options,                // in
-      void** address,                     // out
+      volatile void** address,            // out
       IpczDriverHandle* driver_mapping);  // out
 
   // GenerateRandomBytes()
@@ -622,6 +614,9 @@ typedef uint32_t IpczConnectNodeFlags;
 // the connecting node will be delegated to the connectee.
 #define IPCZ_CONNECT_NODE_TO_ALLOCATION_DELEGATE IPCZ_FLAG_BIT(3)
 
+// An opaque handle to a transaction returned by BeginGet() or BeginPut().
+typedef uintptr_t IpczTransaction;
+
 // See BeginPut() and the IPCZ_BEGIN_PUT_* flags described below.
 typedef uint32_t IpczBeginPutFlags;
 
@@ -635,8 +630,8 @@ typedef uint32_t IpczBeginPutFlags;
 // See EndPut() and the IPCZ_END_PUT_* flags described below.
 typedef uint32_t IpczEndPutFlags;
 
-// If this flag is given to EndPut(), any in-progress two-phase put operation is
-// aborted without committing a parcel to the portal.
+// If this flag is given to EndPut(), the referenced transaction is aborted
+// without committing its parcel to the portal.
 #define IPCZ_END_PUT_ABORT IPCZ_FLAG_BIT(0)
 
 // See Get() and the IPCZ_GET_* flag descriptions below.
@@ -646,22 +641,32 @@ typedef uint32_t IpczGetFlags;
 // a partial retrieval of the next available parcel. This means that in
 // situations where Get() would normally return IPCZ_RESULT_RESOURCE_EXHAUSTED,
 // it will instead return IPCZ_RESULT_OK with as much data and handles as the
-// caller indicated they could accept. This flag may not be specified if
-// IPCZ_GET_PARCEL_ONLY is specified.
+// caller indicated they could accept.
 #define IPCZ_GET_PARTIAL IPCZ_FLAG_BIT(0)
 
-// When given to Get() and a parcel is available to consume from the referenced
-// portal, no data or handles are consumed from the available parcel. Instead
-// only a handle to the parcel is returned, and the parcel is removed from the
-// portal to allow subsequent parcels to be retrieved. See documentation on
-// Get(). This flag may not be specified if IPCZ_GET_PARTIAL is specified.
-#define IPCZ_GET_PARCEL_ONLY IPCZ_FLAG_BIT(1)
+// See BeginGet() and the IPCZ_BEGIN_GET_* flag descriptions below.
+typedef uint32_t IpczBeginGetFlags;
+
+// Indicates that the caller will accept partial retrieval of a parcel's
+// attached handles. When this flag is given handles are only transferred to
+// the caller as output capacity allows, and it is not an error for the caller
+// to provide insufficient output capacity. See notes on BeginGet().
+#define IPCZ_BEGIN_GET_PARTIAL IPCZ_FLAG_BIT(0)
+
+// Indicates that BeginGet() should begin an "overlapped" get-transaction on its
+// source, meaning that additional overlapped get-transactions may begin on the
+// same source before this one is terminated. Only valid when the source is a
+// portal.
+#define IPCZ_BEGIN_GET_OVERLAPPED IPCZ_FLAG_BIT(1)
 
 // See EndGet() and the IPCZ_END_GET_* flag descriptions below.
 typedef uint32_t IpczEndGetFlags;
 
-// If this flag is given to EndGet(), any in-progress two-phase get operation is
-// aborted without consuming any data from the portal.
+// If this flag is given to EndGet() for a non-overlapped transaction on a
+// portal, the transaction's parcel is left intact in the portal's queue instead
+// of being dequeued. Note that if handles were transferred to the caller via
+// BeginGet(), they still remain property of the caller and will no longer be
+// attached to the parcel even if the transaction is aborted.
 #define IPCZ_END_GET_ABORT IPCZ_FLAG_BIT(0)
 
 // Enumerates the type of contents within a box.
@@ -693,7 +698,7 @@ typedef uint32_t IpczBoxType;
 typedef IpczResult (*IpczApplicationObjectSerializer)(uintptr_t object,
                                                       uint32_t flags,
                                                       const void* options,
-                                                      void* data,
+                                                      volatile void* data,
                                                       size_t* num_bytes,
                                                       IpczHandle* handles,
                                                       size_t* num_handles);
@@ -747,10 +752,10 @@ typedef uint32_t IpczUnboxFlags;
 // Flags given by the `flags` field in IpczPortalStatus.
 typedef uint32_t IpczPortalStatusFlags;
 
-// Indicates that the opposite portal is closed. Subsequent put operations on
+// Indicates that the opposite portal is closed. Subsequent put-transactions on
 // this portal will always fail with IPCZ_RESULT_NOT_FOUND. If there are not
-// currently any unretrieved parcels in the portal either, subsequent get
-// operations will also fail with the same error.
+// currently any unretrieved parcels in the portal either, subsequent
+// get-transactions will also fail with the same error.
 #define IPCZ_PORTAL_STATUS_PEER_CLOSED IPCZ_FLAG_BIT(0)
 
 // Indicates that the opposite portal is closed AND no more parcels can be
@@ -915,10 +920,11 @@ struct IPCZ_ALIGN(8) IpczAPI {
   // =======
   //
   // Releases the object identified by `handle`. If it's a portal, the portal is
-  // closed. If it's a node, parcel, or parcel fragment, the object is
-  // destroyed. If it's a boxed driver object, the object is released via the
-  // driver API's Close(). If it's a boxed application object, the object is
-  // destroyed using the object's boxed custom destructor.
+  // closed. If it's a node or parcel, the object is destroyed. If it's a boxed
+  // driver object, the object is released via the  driver API's Close(). If
+  // it's a boxed application object, the object is destroyed using the object's
+  // boxed custom destructor. For portals and parcels, any pending transactions
+  // are implicitly aborted.
   //
   // This function is NOT thread-safe. It is the application's responsibility to
   // ensure that no other threads are performing other operations on `handle`
@@ -992,9 +998,10 @@ struct IPCZ_ALIGN(8) IpczAPI {
   // =============
   //
   // Connects `node` to another node in the system using an application-provided
-  // driver transport handle in `driver_transport` for communication. If this
-  // call will succeed, ipcz will call back into the driver to activate this
-  // transport via ActivateTransport() before returning.
+  // driver transport handle in `transport` for communication. If this call will
+  // succeed, ipcz will call back into the driver to activate the transport via
+  // ActivateTransport() before returning, and may call Transmit() before or
+  // after that as well.
   //
   // The application is responsible for delivering the other endpoint of the
   // transport to whatever other node will use it with its own corresponding
@@ -1012,7 +1019,6 @@ struct IPCZ_ALIGN(8) IpczAPI {
   // node will behave as if their peer has been closed. On the other hand if the
   // remote node gives a larger `num_initial_portals`, then its own excess
   // portals will behave as if their peer has been closed.
-  //
   //
   // If IPCZ_CONNECT_NODE_TO_BROKER is given in `flags`, the remote node must
   // be a broker node, and the calling node will treat it as such. If the
@@ -1056,21 +1062,21 @@ struct IPCZ_ALIGN(8) IpczAPI {
   //    IPCZ_RESULT_OUT_OF_RANGE if `num_initial_portals` is larger than the
   //        ipcz implementation allows. There is no hard limit specified, but
   //        any ipcz implementation must support at least 8 initial portals.
-  IpczResult(IPCZ_API* ConnectNode)(IpczHandle node,                    // in
-                                    IpczDriverHandle driver_transport,  // in
-                                    size_t num_initial_portals,         // in
-                                    IpczConnectNodeFlags flags,         // in
-                                    const void* options,                // in
-                                    IpczHandle* initial_portals);       // out
+  IpczResult(IPCZ_API* ConnectNode)(IpczHandle node,               // in
+                                    IpczDriverHandle transport,    // in
+                                    size_t num_initial_portals,    // in
+                                    IpczConnectNodeFlags flags,    // in
+                                    const void* options,           // in
+                                    IpczHandle* initial_portals);  // out
 
   // OpenPortals()
   // =============
   //
   // Opens two new portals which exist as each other's opposite.
   //
-  // Data and handles can be put in a portal with put operations (see Put(),
+  // Data and handles can be put in a portal with put-transactions (see Put(),
   // BeginPut(), EndPut()). Anything placed into a portal can be retrieved in
-  // the same order by get operations (Get(), BeginGet(), EndGet()) on the
+  // the same order by get-transactions (Get(), BeginGet(), EndGet()) on the
   // opposite portal.
   //
   // To open portals which span two different nodes at creation time, see
@@ -1170,12 +1176,12 @@ struct IPCZ_ALIGN(8) IpczAPI {
   // Put()
   // =====
   //
-  // Puts any combination of data and handles into the portal identified by
-  // `portal`. Everything put into a portal can be retrieved in the same order
-  // by a corresponding get operation on the opposite portal. Depending on the
-  // driver and the state of the relevant portals, the data and handles may
-  // be delivered and retrievable immediately by the remote portal, or they may
-  // be delivered asynchronously.
+  // Executes a put-transaction to place a combination of data and handles into
+  // the portal identified by `portal`. Everything put into a portal can be
+  // retrieved in the same order by a corresponding get-transaction on the
+  // opposite portal. Depending on the driver and the state of the relevant
+  // portals, the data and handles may be delivered and retrievable immediately
+  // by the remote portal, or they may be delivered asynchronously.
   //
   // `flags` is unused and must be IPCZ_NO_FLAGS.
   //
@@ -1188,7 +1194,7 @@ struct IPCZ_ALIGN(8) IpczAPI {
   // there.
   //
   // Callers may wish to request a view directly into portal memory for direct
-  // writing. In such cases, a two-phase put operation can be used instead, by
+  // writing. In such cases, a two-phase put-transaction can be used instead by
   // calling BeginPut() and EndPut() as defined below.
   //
   // `options` is ignored and must be null.
@@ -1217,177 +1223,173 @@ struct IPCZ_ALIGN(8) IpczAPI {
   // BeginPut()
   // ==========
   //
-  // Begins a two-phase put operation on `portal`, returning a pointer in
-  // `*data` which points to writable portal memory. The application can write
-  // parcel data directly into this location and complete the transaction by
-  // calling EndPut().
+  // Begins a put-transaction on `portal`, returning a transaction handle in
+  // `*transaction` and an address to writable portal memory in `*data`. The
+  // application can write data directly to this location and complete the
+  // transaction by passing the returned value of `*transaction` to EndPut().
   //
   // The input value of `*num_bytes` tells ipcz how much data the caller would
   // like to place into the portal. If the call is successful, the output value
   // of `*num_bytes` conveys the actual capacity available for writing at
-  // `data`.
+  // `data`. Unless IPCZ_BEGIN_PUT_ALLOW_PARTIAL is specified in `flags`, a
+  // successful BeginPut() will always return a `*num_bytes` that is at least as
+  // large as the input `*num_bytes`. If `num_bytes` is null, the transaction
+  // will not include any data.
   //
-  // `flags` may specify IPCZ_BEGIN_PUT_ALLOW_PARTIAL to allow the
-  // implementation to select a smaller data size than the input value of
-  // `*num_bytes` if it might have a good reason to do so (e.g. performance or
-  // resource limitations).
+  // If IPCZ_BEGIN_PUT_ALLOW_PARTIAL is specified, the implementation may select
+  // a smaller data size than the input value of `*num_bytes` if it has reason
+  // to do so (e.g. performance or resource limitations).
   //
-  // Handles to transmit within a two-phase put are provided when committing the
-  // operation with EndPut().
+  // Note that any handles to be included in a put-transaction are provided when
+  // finalizing it with EndPut().
   //
   // `options` is ignored and must be null.
   //
   // Returns:
   //
-  //    IPCZ_RESULT_OK if the two-phase put operation has been successfully
-  //        initiated. `*data` is set to the address of a portal buffer into
-  //        which the application may write its data, and `*num_bytes` is
-  //        updated to reflect the capacity of that buffer, which may be greater
-  //        than (or less than, if and only if IPCZ_BEGIN_PUT_ALLOW_PARTIAL was
-  //        set in `flags`) the capacity requested by the input value of
-  //        `*num_bytes`.
+  //    IPCZ_RESULT_OK if the put-transaction has been successfully started.
+  //        If `data` is non-null, `*data` is set to the address of a portal
+  //        buffer into which the application may write its data; `*num_bytes`
+  //        is updated to reflect the capacity of that buffer, which may be
+  //        greater (or possibly less than, only if IPCZ_BEGIN_PUT_ALLOW_PARTIAL
+  //        was set in `flags`) the capacity requested by the input value of
+  //        `*num_bytes`; and `*transaction` is set to a handle which can be
+  //        used with EndPut() to finalize the transaction.
   //
-  //    IPCZ_RESULT_INVALID_ARGUMENT if `portal` is invalid or `data` is null.
+  //    IPCZ_RESULT_INVALID_ARGUMENT if `portal` or `transaction` is invalid.
   //
-  //    IPCZ_RESULT_RESOURCE_EXHAUSTED if completing the put with the number of
-  //        bytes specified by `*num_bytes` would cause the portal to exceed the
-  //        queued parcel limit or (if IPCZ_BEGIN_PUT_ALLOW_PARTIAL is not
-  //        specified in `flags`) data byte limit specified by
-  //        `options->limits`.
-  //
-  //    IPCZ_RESULT_NOT_FOUND if it is known that the opposite portal has
-  //        already been closed and anything put into this portal would be lost.
-  IpczResult(IPCZ_API* BeginPut)(IpczHandle portal,        // in
-                                 IpczBeginPutFlags flags,  // in
-                                 const void* options,      // in
-                                 size_t* num_bytes,        // in/out
-                                 void** data);             // out
+  //    IPCZ_RESULT_NOT_FOUND if it is known that the peer portal has already
+  //        been closed and anything put into this portal would be lost.
+  IpczResult(IPCZ_API* BeginPut)(IpczHandle portal,              // in
+                                 IpczBeginPutFlags flags,        // in
+                                 const void* options,            // in
+                                 volatile void** data,           // out
+                                 size_t* num_bytes,              // in/out
+                                 IpczTransaction* transaction);  // out
 
   // EndPut()
   // ========
   //
-  // Ends the two-phase put transaction identified by `data` on `portal`.
+  // Ends the put-transaction previously started on `portal` by BeginPut() and
+  // identified by `transaction`.
   //
-  // `data` is the address of the transaction's data, as previously returned by
-  // a call to BeginPut() on the same `portal`.
+  // `num_bytes_produced` specifies the number of bytes actually written by
+  // the application into the data buffer returned by BeginPut().
   //
-  // `num_bytes_produced` specifies the number of bytes actually written at
-  // `data` by the application prior to calling EndPut().
-  //
-  // Usage of `handles` and `num_handles` is identical to Put().
+  // `num_handles` specifies the number of handles to transmit along with the
+  // committed data, and `handles` specifies the address of those handles.
+  // `handles` may be null if `num_handles` is zero.
   //
   // If this call fails (returning anything other than IPCZ_RESULT_OK), any
-  // provided handles remain property of the caller. If it succeeds, their
+  // provided handles remain property of the caller. If it succeeds their
   // ownership is assumed by ipcz.
   //
-  // If IPCZ_END_PUT_ABORT is given in `flags` and `data` is valid for `portal`,
-  // all other arguments are ignored and the corresponding transaction is
-  // aborted with its parcel data discarded.
+  // If IPCZ_END_PUT_ABORT is given in `flags` and `transaction` is valid, all
+  // other arguments are ignored; the corresponding transaction is aborted and
+  // any associated resources are released.
   //
   // `options` is unused and must be null.
   //
   // Returns:
   //
-  //    IPCZ_RESULT_OK if the two-phase operation was successfully completed or
-  //        aborted. If not aborted all data and handles were committed to a new
-  //        parcel enqueued for retrieval by the opposite portal.
+  //    IPCZ_RESULT_OK if the put-transaction was successfully completed or
+  //        aborted. If not aborted, all data and handles were committed to a
+  //        new parcel and which will be enqueued for retrieval by the peer
+  //        portal.
   //
-  //    IPCZ_RESULT_INVALID_ARGUMENT if `portal` is invalid, `data` does not
-  //        identify a valid put transaction on `portal`, `num_handles` is
-  //        non-zero but `handles` is null, `num_bytes_produced` is larger than
-  //        the capacity of the buffer originally returned by BeginPut(), or any
-  //        handle in `handles` is invalid or not serializable. If `portal` and
-  //        `data` referenced a valid transaction, the transaction is still
-  //        in progress if EndPut() returns this error.
+  //    IPCZ_RESULT_INVALID_ARGUMENT if `portal` or `transaction` is invalid,
+  //        `num_handles` is non-zero but `handles` is null,
+  //        `num_bytes_produced` is larger than the capacity of the buffer
+  //        originally returned by BeginPut(), or any handle in `handles` is
+  //        invalid or not serializable. If `transaction` refers to a valid
+  //        transaction, the transaction remains in-progress in this case.
   //
-  //    IPCZ_RESULT_NOT_FOUND if it is known that the opposite portal has
-  //        already been closed and anything put into this portal would be lost.
-  //        The transaction referenced by the caller is implicitly aborted and
+  //    IPCZ_RESULT_NOT_FOUND if it is known that the peer portal has already
+  //        been closed and anything put into this portal would be lost. The
+  //        transaction referenced by the caller is implicitly aborted and
   //        ownership of all passed handles is retained by the caller.
-  IpczResult(IPCZ_API* EndPut)(IpczHandle portal,          // in
-                               const void* data,           // in
-                               size_t num_bytes_produced,  // in
-                               const IpczHandle* handles,  // in
-                               size_t num_handles,         // in
-                               IpczEndPutFlags flags,      // in
-                               const void* options);       // in
+  IpczResult(IPCZ_API* EndPut)(IpczHandle portal,            // in
+                               IpczTransaction transaction,  // in
+                               size_t num_bytes_produced,    // in
+                               const IpczHandle* handles,    // in
+                               size_t num_handles,           // in
+                               IpczEndPutFlags flags,        // in
+                               const void* options);         // in
 
   // Get()
   // =====
   //
-  // Retrieves some combination of data and handles from a source object.
+  // Executes a get-transaction to retrieve some combination of data and handles
+  // from a source object.
   //
-  // If IPCZ_GET_PARCEL_ONLY is specified in `flags` and `source` is a portal,
-  // then `data`, `num_bytes` `handles`, and `num_handles` are all ignored and,
-  // if a parcel is available to retrieve from the portal, a handle to it is
-  // output in `parcel`. This handle can itself be used with Get() (or
-  // BeginGet() and EndGet()) to retrieve the parcel's contents, or with
-  // Reject() to reject its contents. Returned parcels are owned by the caller
-  // and must eventually be closed with Close() to release any associated
-  // resources.
+  // On input the values pointed to by `num_bytes` and `num_handles` specify the
+  // the capacity of each corresponding output buffer argument (`buffer` and
+  //`handles` respectively). A null capacity pointer implies zero capacity. It
+  // is an error to specify a non-zero capacity if the corresponding output
+  // buffer is null.
   //
-  // Otherwise, on input the values pointed to by `num_bytes` and `num_handles`
-  // must specify the capacity of each corresponding buffer argument. A null
-  // pointer implies zero capacity. It is an error to specify non-zero capacity
-  // if the corresponding buffer (`data` or `handles`) is null.
+  // Data consumed by this call is copied to the address given by `data`. If an
+  // application wishes to read directly from parcel memory instead, a two-phase
+  // get-transaction can be used by calling BeginGet() and EndGet() as defined
+  // below.
   //
-  // Normally the data consumed by this call is copied directly to the address
-  // given by the `data` argument, and `*num_bytes` specifies how many bytes of
-  // storage are available there. If an application wishes to read directly
-  // from parcel memory instead, a two-phase get operation can be used by
-  // calling BeginGet() and EndGet() as defined below.
+  // If the caller does not provide enough storage capacity for all data and
+  // handles in the parcel and does not specify IPCZ_GET_PARTIAL in `flags`,
+  // this returns IPCZ_RESULT_RESOURCE_EXHAUSTED and outputs the actual capacity
+  // required for the message, without copying any of its contents. See details
+  // of the IPCZ_RESULT_RESOURCE_EXHAUSTED result below.
   //
-  // Note that if the caller does not provide enough storage capacity for a
-  // complete parcel and does not specify IPCZ_GET_PARTIAL in `flags`, this
-  // returns IPCZ_RESULT_RESOURCE_EXHAUSTED and outputs the actual capacity
-  // required for the message without copying any of its contents. See details
-  // of that return value below.
+  // If IPCZ_GET_PARTIAL is specified, capacity requirements are not enforced.
+  // Instead the call succeeds after copying as much data and handles as will
+  // fit in the provided buffers. Upon return `*num_bytes` and `*num_handles`
+  // are set to the capacity actually consumed from the parcel.
   //
-  // If IPCZ_GET_PARTIAL is specified, the call succeeds as long as `source` is
-  // a parcel or a portal with a parcel available. In this case the caller
-  // retrieves as much data and handles as their expressed capacity will allow,
-  // and the in/out capacity arguments (`num_bytes` and `num_handles`) are still
-  // updated as specified in the IPCZ_RESULT_OK details below.
+  // Parcel data is never consumed per se, so multiple consecutive partial gets
+  // on a single parcel will copy data from the same buffer every time. This is
+  // not true for handles however: any handles returned by Get() are transferred
+  // to the caller and removed from the parcel. Subsequent get-transactions on
+  // the same parcel will not retrieve handles which have already been consumed.
   //
-  // If this call succeeds and `parcel` is non-null, then `*parcel` is populated
-  // with a new parcel handle which the application can use to report
-  // application-level validation failures regarding the retrieved parcel (see
-  // Reject()).
+  // Any unconsumed data and handles during a partial Get() are permanently lost
+  // unless the caller retains a handle to the parcel and retreives them with a
+  // subsequent get-transaction on the same parcel.
+  //
+  // In any case, if this call succeeds and `parcel` is non-null, then `*parcel
+  // is populated with a new parcel handle which the application can use to
+  // refer to the underlying parcel in future operations (e.g. Reject() or
+  // additional get-transactions).
   //
   // `options` is ignored and must be null.
   //
   // Returns:
   //
   //    IPCZ_RESULT_OK if `source` is a portal and there is a parcel available
-  //        in the portal's queue, or `source` is a parcel; and in either case
-  //        the parcel's data and handles were able to be copied into the
-  //        caller's provided buffers, or IPCZ_GET_PARCEL_ONLY was specified and
-  //        `parcel` was non-null.
+  //        in the portal's queue, or `source` is a parcel; and either
+  //        IPCZ_GET_PARTIAL was specified or the caller provided sufficient
+  //        capacity to receive all data and handles from the parcel.
   //
-  //        When IPCZ_GET_PARCEL_ONLY is not specified, values pointed to by
-  //        `num_bytes` and `num_handles` (for each one that is non-null) are
-  //        updated to reflect what was actually consumed. Note that the caller
-  //        assumes ownership of all returned handles.
+  //        If `num_bytes` was not null, `*num_bytes` is set to the number of
+  //        bytes actually copied out to `data`, which will never be greater
+  //        than the input value of `*num_bytes`. Similarly if `num_handles`
+  //        was not null, `*num_handles` is set to the number of handles
+  //        actually copied out to `handles`, which will never be greater than
+  //        the input value of `*num_handles`.
   //
   //        If `parcel` was non-null, it is populated with a handle to the
-  //        retrieved parcel object. If any attached handles were consumed by
-  //        the Get() call itself, they will no longer be attached to the
-  //        returned parcel object.
+  //        retrieved parcel object. Any handles receivedby the caller are no
+  //        longer attached to the returned parcel object and will not be
+  //        present if, for example, another Get() is issued on the parcel.
   //
   //    IPCZ_RESULT_INVALID_ARGUMENT if `source` is invalid or not a portal or
-  //        parcel, `data` is null but `*num_bytes` is non-zero, `handles` is
-  //        null but `*num_handles` is non-zero; IPCZ_GET_PARCEL_ONLY is
-  //        specified in `flags` but `parcel` is null; `parcel` is non-null but
-  //        `source` is itself a parcel; or `parcel` is non-null but
-  //        IPCZ_GET_PARTIAL is specified in `flags`.
+  //        parcel, `data` is null but `*num_bytes` is non-zero, or `handles` is
+  //        null but `*num_handles` is non-zero.
   //
-  //    IPCZ_RESULT_RESOURCE_EXHAUSTED if the consumed parcel would exceed the
-  //        caller's specified capacity for either data bytes or handles, and
-  //        IPCZ_GET_PARTIAL was not specified in `flags`. In this case any
-  //        non-null size pointer is updated to convey the minimum capacity that
-  //        would have been required for an otherwise identical Get() call to
-  //        have succeeded. Callers observing this result may wish to allocate
-  //        storage accordingly and retry with updated parameters.
+  //    IPCZ_RESULT_RESOURCE_EXHAUSTED if the parcel's data and handles could
+  //        fit in the caller's provided buffers and the caller did not specify
+  //        IPCZ_GET_PARTIAL in `flags`. If `num_bytes` was not null,
+  //        `*num_bytes` is set to the size in bytes of the parcel's data. If
+  //        `num_handles` was not null, `*num_handles` is set to the number of
+  //        handles attached to the parcel.
   //
   //    IPCZ_RESULT_UNAVAILABLE if `source` is a portal whose parcel queue is
   //        currently empty. In this case callers should wait before attempting
@@ -1397,8 +1399,8 @@ struct IPCZ_ALIGN(8) IpczAPI {
   //        in its queue and whose peer portal is known to be closed. If this
   //        result is returned, no more parcels can ever be read from `source`.
   //
-  //    IPCZ_RESULT_ALREADY_EXISTS if there is a two-phase get operation in
-  //        progress on `source`.
+  //    IPCZ_RESULT_ALREADY_EXISTS if there is a non-overlapped two-phase
+  //        get-transaction in progress on `source`.
   IpczResult(IPCZ_API* Get)(IpczHandle source,    // in
                             IpczGetFlags flags,   // in
                             const void* options,  // in
@@ -1411,103 +1413,139 @@ struct IPCZ_ALIGN(8) IpczAPI {
   // BeginGet()
   // ==========
   //
-  // Begins a two-phase get operation on `source` to retrieve data and handles.
-  // While a two-phase get operation is in progress on an object, all other get
-  // operations on the same object will fail with IPCZ_RESULT_ALREADY_EXISTS.
+  // Begins a get-transaction on `source` to retrieve data and handles. If
+  // `source` is a portal this operates on the parcel at the head of the
+  // portal's incoming queue; if `source` is a parcel (as returned by a prior
+  // EndGet() or as extracted from a box of type IPCZ_BOX_TYPE_SUBPARCEL), this
+  // operates directly on the parcel itself.
   //
-  // Unlike a plain Get() call, two-phase get operations allow the application
-  // to read directly from parcel memory, potentially reducing memory access
-  // costs by eliminating redundant copying and caching.
+  // `transaction` must be non-null. On success `*transaction` is set to a value
+  // which can be used to finalize the transaction via `EndGet()`.
   //
-  // If `data` or `num_bytes` is null and the parcel has at least one byte of
-  // data, or if there are handles present but `num_handles` is null, this
-  // returns IPCZ_RESULT_RESOURCE_EXHAUSTED.
+  // If `data` is non-null, `*data` is set to the address of readable data for
+  // the caller to consume. If `num_bytes` is not null, `*num_bytes` is set to
+  // the number of bytes stored at the returned data address. If the parcel has
+  // no data, `*data` is set to null and `*num_bytes` is set to zero. Any
+  // returned data address remains valid only until the transaction is
+  // terminated, either by calling EndGet() or by closing `source`.
   //
-  // Otherwise a successful BeginGet() updates values pointed to by `data`,
-  // `num_bytes`, and `num_handles` to convey the parcel's data storage and
-  // capacity as well as the capacity required to read out any handles.
-  //
-  // NOTE: When performing two-phase get operations, callers should be mindful
-  // of time-of-check/time-of-use (TOCTOU) vulnerabilities. Exposed parcel
-  // memory may be shared with (and writable in) the process which transmitted
+  // NOTE: When performing get-transactions, callers should be mindful of
+  // time-of-check/time-of-use (TOCTOU) vulnerabilities. Exposed parcel memory
+  // may be shared with (and still writable in) the process which transmitted
   // the parcel, and that process may not be trustworthy.
   //
-  // `flags` is ignored and must be IPCZ_NO_FLAGS.
+  // Handles
+  // -------
+  // Unless the parcel has no handles attached or IPCZ_BEGIN_GET_PARTIAL is
+  // set in `flags`, `handles` must be non-null and `*num_handles` must convey
+  // the storage capacity available in `handles`. If the parcel has more than
+  // `*num_handles` handles attached (or any handles, if `num_handles` is null),
+  // the call fails with IPCZ_RESULT_RESOURCE_EXHAUSTED. In this case if
+  // `num_handles` is not null, `*num_handles` is set to the number of handles
+  // actually attached to the parcel.
+  //
+  // Ownership of any handles copied into `handles` is immediately assumed by
+  // the caller once a successful BeginGet() returns, even if the transaction is
+  // later aborted (see IPCZ_END_GET_ABORT).
+  //
+  // If IPCZ_BEGIN_GET_PARTIAL is set in `flags`, handle capacity constraints
+  // are not enforced: BeginGet() will copy (and transfer ownership of) only as
+  // many handles as will fit in the caller's provided handle buffer and any
+  // additional handles will remain attached to the parcel. In this case the
+  // output value of `*num_handles` will reflect the number of handles actually
+  // copied into the caller's buffer.
+  //
+  // Concurrent Transactions
+  // -----------------------
+  // By default BeginGet() establishes exclusive access to `source`, blocking it
+  // from starting additional get-transactions until the current one has ended.
+  // If, however, `source` is a portal and IPCZ_BEGIN_GET_OVERLAPPED is set in
+  // `flags`, the underlying parcel is immediately dequeued from the portal and
+  // owned exclusively by the new transaction. This allows the application to
+  // begin and maintain concurrent get-transactions on the same portal.
+  //
+  // If `source` is not a portal, get-transactions are always exclusive and it's
+  // invalid to specify IPCZ_BEGIN_GET_OVERLAPPED.
   //
   // `options` is ignored and must be null.
   //
   // Returns:
   //
-  //    IPCZ_RESULT_OK if the two-phase get was successfully initiated. In this
-  //        case both `*data` and `*num_bytes` are updated (if `data` and
-  //        `num_bytes` were non-null) to describe the parcel memory from which
-  //        the application is free to read parcel data. If `num_handles` is
-  //        is non-null, the value pointed to is updated to reflect the number
-  //        of handles available to retrieve.
+  //    IPCZ_RESULT_OK if a get-transaction was successfully started. In this
+  //        case `*transaction` is set to a handle which can be used with
+  //        EndGet() to finalize the transaction. If `data` is non-null then
+  //        `*data` is set to the address of the transaction's data buffer. If
+  //        `num_bytes` is non-null, `*num_bytes` is set to the size of the data
+  //        in that buffer. If `num_handles` is non-null, `*num_handles` is set
+  //        to the number of handles copied into `handles`.
   //
-  //    IPCZ_RESULT_INVALID_ARGUMENT if `source` is invalid.
+  //        If IPCZ_BEGIN_GET_OVERLAPPED was specified in `flags` and `source`
+  //        is a portal, the underlying parcel is dequeued from the portal
+  //        before returning, leaving the portal ready for additional
+  //        get-transactions to begin immediately.
   //
-  //    IPCZ_RESULT_RESOURCE_EXHAUSTED if the parcel has at least one data byte
-  //        but `data` or `num_bytes` is null; or if the parcel has any handles
-  //        but `num_handles` null.
+  //    IPCZ_RESULT_INVALID_ARGUMENT if `source` is not a valid portal or parcel
+  //        handle; `*num_handles` is non-zero but `handles` is null;
+  //        `transaction` is null; or `flags` contains IPCZ_BEGIN_GET_OVERLAPPED
+  //        but `source` is not a portal.
   //
-  //    IPCZ_RESULT_UNAVAILABLE if `source` is a portal whose parcel queue is
-  //        currently empty. In this case callers should wait before attempting
-  //        to get anything from the same portal again.
+  //    IPCZ_RESULT_RESOURCE_EXHAUSTED if the parcel has more handles attached
+  //        than the caller's provided handle buffer can store, and
+  //        IPCZ_BEGIN_GET_PARTIAL was not specified in `flags`.
   //
-  //    IPCZ_RESULT_NOT_FOUND if `source` is a portal with no more parcels in
-  //        its queue and whose peer portal is known to be closed. In this case,
-  //        no get operation can ever succeed again on this portal.
+  //    IPCZ_RESULT_UNAVAILABLE if `source` is a portal with no incoming parcels
+  //        queued for retrieval. In this case callers should wait before
+  //        attempting to get anything from the same portal again. See Trap().
   //
-  //    IPCZ_RESULT_ALREADY_EXISTS if there is already a two-phase get operation
-  //        in progress on `source`.
-  IpczResult(IPCZ_API* BeginGet)(IpczHandle source,     // in
-                                 uint32_t flags,        // in
-                                 const void* options,   // in
-                                 const void** data,     // out
-                                 size_t* num_bytes,     // out
-                                 size_t* num_handles);  // out
+  //    IPCZ_RESULT_NOT_FOUND if `source` is a portal with no incoming parcels
+  //        queued for retreival AND its peer portal is known to be closed. In
+  //        this case no get-transaction can ever succeed again on this portal.
+  //
+  //    IPCZ_RESULT_ALREADY_EXISTS if a non-overlapped get-transaction is
+  //        already in progress on `source`; or if an overlapped get-transaction
+  //        is already in progress on `source` but `flags` does not specify
+  //        IPCZ_BEGIN_GET_OVERLAPPED.
+  IpczResult(IPCZ_API* BeginGet)(IpczHandle source,              // in
+                                 IpczBeginGetFlags flags,        // in
+                                 const void* options,            // in
+                                 const volatile void** data,     // out
+                                 size_t* num_bytes,              // out
+                                 IpczHandle* handles,            // out
+                                 size_t* num_handles,            // in/out
+                                 IpczTransaction* transaction);  // out
 
   // EndGet()
   // ========
   //
-  // Ends the two-phase get operation started by the most recent successful call
-  // to BeginGet() on `source`.
+  // Ends a get-transaction identified by `transaction` on `source`, as
+  // previously returned by BeginGet().
   //
-  // `num_bytes_consumed` specifies the number of bytes actually read from the
-  // buffer that was returned from the original BeginGet() call. `num_handles`
-  // specifies the capacity of `handles` and must be no larger than the
-  // capacity indicated by the corresponding output from BeginGet().
+  // If `source` is a portal and this was a non-overlapped transaction, the
+  // underlying parcel is dequeued from the portal's incoming queue unless
+  // IPCZ_END_GET_ABORT is set in `flags`.
   //
-  // If IPCZ_END_GET_ABORT is given in `flags` and there is a two-phase get
-  // operation in progress on `source`, all other arguments are ignored and the
-  // pending operation is cancelled without consuming any data from the source.
+  // If this was an overlapped transaction or `source` is not a portal,
+  // IPCZ_END_GET_ABORT has no effect.
+  //
+  // If `parcel` is non-null, `*parcel` will be set to a handle the caller can
+  // use to refer to the transaction's underlying parcel in future operations,
+  // e.g. to Reject() it or to begin another get-transaction on it later.
   //
   // `options` is unused and must be null.
   //
   // Returns:
   //
-  //    IPCZ_RESULT_OK if the two-phase operation was successfully completed or
-  //        aborted. Note that if `source` is a portal and its frontmost parcel
-  //        was not fully consumed by this call, it will remain in queue with
-  //        the rest of its data intact for a subsequent get operation to
-  //        retrieve from the portal. Exactly `num_handles` handles will be
-  //        copied into `handles`.
+  //    IPCZ_RESULT_OK if the get-transaction was successfully committed or
+  //        aborted. If committed and `parcel` was non-null, `*parcel` is
+  //        assigned a handle to the transaction's underlying parcel. This may
+  //        be used in future calls to Reject(), BeginGet(), or EndGet().
   //
-  //    IPCZ_RESULT_INVALID_ARGUMENT if `source` is invalid, or if `num_handles`
-  //        is non-zero but `handles` is null.
-  //
-  //    IPCZ_RESULT_OUT_OF_RANGE if either `num_bytes_consumed` or `num_handles`
-  //        is larger than the capacity returned by BeginGet().
-  //
-  //    IPCZ_RESULT_FAILED_PRECONDITION if there was no two-phase get operation
-  //        in progress on `source`.
-  IpczResult(IPCZ_API* EndGet)(IpczHandle source,          // in
-                               size_t num_bytes_consumed,  // in
-                               size_t num_handles,         // in
-                               IpczEndGetFlags flags,      // in
-                               const void* options,        // in
-                               IpczHandle* handles);       // out
+  //    IPCZ_RESULT_INVALID_ARGUMENT if `source` or `transaction` is invalid.
+  IpczResult(IPCZ_API* EndGet)(IpczHandle source,
+                               IpczTransaction transaction,  // in
+                               IpczEndGetFlags flags,        // in
+                               const void* options,          // in
+                               IpczHandle* parcel);          // in
 
   // Trap()
   // ======
@@ -1572,7 +1610,7 @@ struct IPCZ_ALIGN(8) IpczAPI {
   // ========
   //
   // Reports an application-level validation failure to ipcz, in reference to
-  // a specific `parcel` returned by a previous call to Get().
+  // a specific `parcel` returned by a previous call to Get() or EndGet().
   //
   // ipcz propagates this rejection to the driver via
   // ReportBadTransportActivity(), if and only if the associated parcel did in
@@ -1591,7 +1629,7 @@ struct IPCZ_ALIGN(8) IpczAPI {
   //        rejection via ReportBadTransportActivity().
   //
   //    IPCZ_RESULT_INVALID_ARGUMENT if `parcel` is not a valid parcel handle
-  //        previously returned by Get().
+  //        previously returned by Get() or EndGet().
   //
   //    IPCZ_RESULT_FAILED_PRECONDITION if `parcel` is associated with a parcel
   //        that did not come from another node.

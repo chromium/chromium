@@ -17,3 +17,13 @@ imageset("overflow_menu_footer_managed") {
     "overflow_menu_footer_managed.imageset/overflow_menu_footer_managed_dark@3x.png",
   ]
 }
+
+imageset("overflow_menu_footer_family_link") {
+  sources = [
+    "overflow_menu_footer_family_link.imageset/Contents.json",
+    "overflow_menu_footer_family_link.imageset/overflow_menu_footer_family_link@2x.png",
+    "overflow_menu_footer_family_link.imageset/overflow_menu_footer_family_link@3x.png",
+    "overflow_menu_footer_family_link.imageset/overflow_menu_footer_family_link_dark@2x.png",
+    "overflow_menu_footer_family_link.imageset/overflow_menu_footer_family_link_dark@3x.png",
+  ]
+}

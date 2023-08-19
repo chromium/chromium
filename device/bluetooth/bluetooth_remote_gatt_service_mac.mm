@@ -23,14 +23,13 @@ BluetoothRemoteGattServiceMac::BluetoothRemoteGattServiceMac(
     CBService* service,
     bool is_primary)
     : bluetooth_device_mac_(bluetooth_device_mac),
-      service_(service, base::scoped_policy::RETAIN),
+      service_(service),
       is_primary_(is_primary),
       discovery_pending_count_(0) {
   uuid_ =
       BluetoothLowEnergyAdapterApple::BluetoothUUIDWithCBUUID([service_ UUID]);
-  identifier_ = base::SysNSStringToUTF8(
-      [NSString stringWithFormat:@"%s-%p", uuid_.canonical_value().c_str(),
-                                 service_.get()]);
+  identifier_ = base::SysNSStringToUTF8([NSString
+      stringWithFormat:@"%s-%p", uuid_.canonical_value().c_str(), service_]);
 }
 
 BluetoothRemoteGattServiceMac::~BluetoothRemoteGattServiceMac() {}

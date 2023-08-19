@@ -39,7 +39,7 @@
 <translation id="2517472476991765520">Digitalizar</translation>
 <translation id="2549985041256363841">Iniciar gravação</translation>
 <translation id="2577915835281444458">A gravação irá parar em breve. Aceda ao armazenamento do dispositivo para libertar espaço.</translation>
-<translation id="2599796128805996109">Câmara posterior</translation>
+<translation id="2599796128805996109">Câmara traseira</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" /> s</translation>
 <translation id="2761536921376153655">Tipo de leitura</translation>
 <translation id="28682968802727151">Pré-visualização do espelho</translation>
@@ -57,6 +57,7 @@
 <translation id="3566302376254083266">A mover para o canto superior esquerdo</translation>
 <translation id="3573890771273113519">Mudar para o modo de digitalização</translation>
 <translation id="3583444040776960729">Canto inferior esquerdo do documento</translation>
+<translation id="3642192109456033823">A processar vídeo…</translation>
 <translation id="3789724198583203151">Rodar 90 graus no sentido contrário ao dos ponteiros do relógio</translation>
 <translation id="3810838688059735925">Vídeo</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
@@ -87,6 +88,7 @@
 <translation id="5057360777601936059">De momento, a câmara não está disponível.
         Verifique se a câmara está ligada corretamente.</translation>
 <translation id="5163387177077603948">A mover para a direita</translation>
+<translation id="5219374179772385066">O modo Time Lapse já está disponível!</translation>
 <translation id="5235304959032763950">16 por 9</translation>
 <translation id="5266635337630551423">Canto superior esquerdo do documento</translation>
 <translation id="5317780077021120954">Guardar</translation>
@@ -108,7 +110,7 @@
 <translation id="6197807149213783179">Guardar metadados</translation>
 <translation id="6233780560267770709">3 por 3</translation>
 <translation id="6243827288366940320">Divina proporção</translation>
-<translation id="6248749904681914629">Câmara posterior</translation>
+<translation id="6248749904681914629">Câmara traseira</translation>
 <translation id="6353688143752491039">Obrigado por fornecer feedback acerca da app Câmara.
 
 Se o seu feedback for acerca da qualidade de imagem ou vídeo, anexe uma foto ou um vídeo de exemplo e descreva o problema. (Por exemplo, a foto está demasiado escura ou o objeto não está focado.)</translation>

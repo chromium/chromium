@@ -5,9 +5,6 @@
   program: {
     runner: "elf",
     binary: "web_engine_exe",
-
-    // Required to allow JIT in child processes such as renderers.
-    job_policy_ambient_mark_vmo_exec: "true",
   },
   capabilities: [
     {

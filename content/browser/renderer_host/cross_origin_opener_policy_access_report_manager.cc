@@ -4,6 +4,8 @@
 
 #include "content/browser/renderer_host/cross_origin_opener_policy_access_report_manager.h"
 
+#include <utility>
+
 #include "base/values.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
@@ -45,8 +47,10 @@ absl::optional<blink::FrameToken> GetFrameToken(
 }
 
 // Find all the related windows that might try to access the new document in
-// |frame|, but are in a different virtual browsing context group.
-std::vector<FrameTreeNode*> CollectOtherWindowForCoopAccess(
+// `frame`, but are in a different virtual browsing context group. The
+// associated boolean indicates whether they are in the same virtual
+// CoopRelatedGroup.
+std::vector<std::pair<FrameTreeNode*, bool>> CollectOtherWindowForCoopAccess(
     FrameTreeNode* frame) {
   DCHECK(frame->IsMainFrame());
   std::map<int, int>& bcg_to_coop_group_map =
@@ -54,7 +58,7 @@ std::vector<FrameTreeNode*> CollectOtherWindowForCoopAccess(
   int virtual_browsing_context_group =
       frame->current_frame_host()->virtual_browsing_context_group();
 
-  std::vector<FrameTreeNode*> out;
+  std::vector<std::pair<FrameTreeNode*, bool>> out;
   for (RenderFrameHostImpl* rfh :
        frame->current_frame_host()
            ->delegate()
@@ -66,20 +70,18 @@ std::vector<FrameTreeNode*> CollectOtherWindowForCoopAccess(
       continue;
     }
 
-    // Filter out windows from the same virtual coop related group.
-    // TODO(https://crbug.com/1424417): We should instead add access reporters
-    // for frames in different browsing context groups in the same
-    // CoopRelatedGroup, but not report their postMessage and closed accesses.
+    // Every virtual browsing context group should have an associated virtual
+    // CoopRelatedGroup.
     CHECK(bcg_to_coop_group_map.find(rfh->virtual_browsing_context_group()) !=
           bcg_to_coop_group_map.end());
     CHECK(bcg_to_coop_group_map.find(virtual_browsing_context_group) !=
           bcg_to_coop_group_map.end());
-    if (bcg_to_coop_group_map[rfh->virtual_browsing_context_group()] ==
-        bcg_to_coop_group_map[virtual_browsing_context_group]) {
-      continue;
-    }
 
-    out.push_back(rfh->frame_tree_node());
+    bool is_in_same_virtual_coop_related_group =
+        bcg_to_coop_group_map[rfh->virtual_browsing_context_group()] ==
+        bcg_to_coop_group_map[virtual_browsing_context_group];
+    out.emplace_back(rfh->frame_tree_node(),
+                     is_in_same_virtual_coop_related_group);
   }
   return out;
 }
@@ -100,35 +102,42 @@ void CrossOriginOpenerPolicyAccessReportManager::InstallAccessMonitorsIfNeeded(
 
   // Find all the related windows that might try to access the new document,
   // but are from a different virtual browsing context group.
-  std::vector<FrameTreeNode*> other_main_frames =
+  std::vector<std::pair<FrameTreeNode*, bool>> other_main_frames =
       CollectOtherWindowForCoopAccess(frame);
 
-  // Fenced frame roots are in their own browsing instance and shouldn't be
-  // joined with any other main frames.
+  // Fenced frame roots are in their own browsing context group in a separate
+  // coop related group and shouldn't be joined with any other main frames.
   DCHECK(!frame->IsInFencedFrameTree() || other_main_frames.empty());
 
   CrossOriginOpenerPolicyAccessReportManager* access_manager_frame =
       frame->current_frame_host()->coop_access_report_manager();
 
-  for (FrameTreeNode* other : other_main_frames) {
+  for (const std::pair<FrameTreeNode*, bool>& other : other_main_frames) {
+    FrameTreeNode* other_ftn = other.first;
+    bool is_in_same_virtual_coop_related_group = other.second;
     CrossOriginOpenerPolicyAccessReportManager* access_manager_other =
-        other->current_frame_host()->coop_access_report_manager();
+        other_ftn->current_frame_host()->coop_access_report_manager();
 
     // If the current frame has a reporter, install the access monitors to
     // monitor the accesses between this frame and the other frame.
-    access_manager_frame->MonitorAccesses(frame, other);
-    access_manager_frame->MonitorAccesses(other, frame);
+    access_manager_frame->MonitorAccesses(
+        frame, other_ftn, is_in_same_virtual_coop_related_group);
+    access_manager_frame->MonitorAccesses(
+        other_ftn, frame, is_in_same_virtual_coop_related_group);
 
     // If the other frame has a reporter, install the access monitors to monitor
     // the accesses between this frame and the other frame.
-    access_manager_other->MonitorAccesses(frame, other);
-    access_manager_other->MonitorAccesses(other, frame);
+    access_manager_other->MonitorAccesses(
+        frame, other_ftn, is_in_same_virtual_coop_related_group);
+    access_manager_other->MonitorAccesses(
+        other_ftn, frame, is_in_same_virtual_coop_related_group);
   }
 }
 
 void CrossOriginOpenerPolicyAccessReportManager::MonitorAccesses(
     FrameTreeNode* accessing_node,
-    FrameTreeNode* accessed_node) {
+    FrameTreeNode* accessed_node,
+    bool is_in_same_virtual_coop_related_group) {
   DCHECK_NE(accessing_node, accessed_node);
   DCHECK(accessing_node->current_frame_host()->coop_access_report_manager() ==
              this ||
@@ -163,7 +172,8 @@ void CrossOriginOpenerPolicyAccessReportManager::MonitorAccesses(
       ->InstallCoopAccessMonitor(
           *accessed_window_token,
           coop_reporter_->CreateReporterParams(access_from_coop_page,
-                                               accessing_node, accessed_node));
+                                               accessing_node, accessed_node),
+          is_in_same_virtual_coop_related_group);
 }
 
 // static
@@ -205,7 +215,7 @@ int CrossOriginOpenerPolicyAccessReportManager::GetVirtualBrowsingContextGroup(
 
   // If a swap in the same CoopRelatedGroup would be required, create a new
   // virtual browsing context group in the current virtual CoopRelatedGroup.
-  // TODO(https://crbug.com/1424417): This is not strictly correct, because
+  // TODO(https://crbug.com/1467238): This is not strictly correct, because
   // browsing context groups can be reused when navigating in the same
   // CoopRelatedGroup. Pass in the isolation information to make it as close
   // to reality as possible.

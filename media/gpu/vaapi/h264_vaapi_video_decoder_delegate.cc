@@ -627,6 +627,10 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SetStream(
                                                    : Status::kFail;
 }
 
+bool H264VaapiVideoDecoderDelegate::RequiresRefLists() {
+  return true;
+}
+
 void H264VaapiVideoDecoderDelegate::FillVAPicture(
     VAPictureH264* va_pic,
     scoped_refptr<H264Picture> pic) {

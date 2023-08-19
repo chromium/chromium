@@ -11,7 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/themes/theme_syncable_service.h"
-#include "chrome/browser/ui/signin/profile_customization_synced_theme_waiter.h"
+#include "chrome/browser/ui/profiles/profile_customization_synced_theme_waiter.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_observer.h"
 #include "third_party/skia/include/core/SkColor.h"

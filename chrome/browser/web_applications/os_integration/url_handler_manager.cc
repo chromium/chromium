@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
 
 namespace web_app {
 
@@ -17,10 +16,6 @@ UrlHandlerManager::UrlHandlerManager(Profile* profile)
 }
 
 UrlHandlerManager::~UrlHandlerManager() = default;
-
-void UrlHandlerManager::SetSubsystems(WebAppRegistrar* const registrar) {
-  registrar_ = registrar;
-}
 
 void UrlHandlerManager::SetAssociationManagerForTesting(
     std::unique_ptr<WebAppOriginAssociationManager> manager) {

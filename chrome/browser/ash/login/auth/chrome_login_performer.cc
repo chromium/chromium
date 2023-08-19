@@ -6,8 +6,13 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
+#include "base/path_service.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/ash/login/helper.h"
+#include "chrome/browser/ash/login/osauth/auth_policy_enforcer.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
@@ -15,6 +20,10 @@
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/common/chrome_paths.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/early_prefs/early_prefs_reader.h"
+#include "chromeos/ash/components/osauth/impl/early_login_auth_policy_connector.h"
 #include "components/account_id/account_id.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -119,6 +128,47 @@ void ChromeLoginPerformer::RunOnlineAllowlistCheck(
   } else {
     std::move(success_callback).Run();
   }
+}
+
+void ChromeLoginPerformer::LoadAndApplyEarlyPrefs(
+    std::unique_ptr<UserContext> context,
+    AuthOperationCallback callback) {
+  if (!base::FeatureList::IsEnabled(ash::features::kEnableEarlyPrefs)) {
+    std::move(callback).Run(std::move(context), absl::nullopt);
+    return;
+  }
+  base::FilePath early_prefs_dir;
+  bool success = base::PathService::Get(chrome::DIR_CHROMEOS_HOMEDIR_MOUNT,
+                                        &early_prefs_dir);
+  CHECK(success);
+  early_prefs_dir = early_prefs_dir.Append(context->GetUserIDHash());
+
+  early_prefs_reader_ = std::make_unique<EarlyPrefsReader>(
+      early_prefs_dir, base::ThreadPool::CreateSequencedTaskRunner(
+                           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+                            base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));
+  early_prefs_reader_->ReadFile(base::BindOnce(
+      &ChromeLoginPerformer::OnEarlyPrefsRead, weak_factory_.GetWeakPtr(),
+      std::move(context), std::move(callback)));
+}
+
+void ChromeLoginPerformer::OnEarlyPrefsRead(
+    std::unique_ptr<UserContext> context,
+    AuthOperationCallback callback,
+    bool success) {
+  if (!success) {
+    LOG(WARNING) << "No early prefs detected";
+    std::move(callback).Run(std::move(context), absl::nullopt);
+    return;
+  }
+  AuthParts::Get()->RegisterEarlyLoginAuthPolicyConnector(
+      std::make_unique<EarlyLoginAuthPolicyConnector>(
+          context->GetAccountId(), std::move(early_prefs_reader_)));
+  auth_policy_enforcer_ = std::make_unique<AuthPolicyEnforcer>(
+      AuthParts::Get()->GetAuthPolicyConnector(), UserDataAuthClient::Get(),
+      g_browser_process->local_state());
+  auth_policy_enforcer_->CheckAndEnforcePolicies(std::move(context),
+                                                 std::move(callback));
 }
 
 scoped_refptr<Authenticator> ChromeLoginPerformer::CreateAuthenticator() {

@@ -27,9 +27,10 @@ class YouTubeRestrictTest(ChromeEnterpriseTestCase):
     url = "https://www.youtube.com/results?search_query=restricted"
     dir = os.path.dirname(os.path.abspath(__file__))
     logging.info('Opening page: %s' % url)
-    output = self.RunWebDriverTest(self.win_config['client'],
-                                   os.path.join(dir, '../open_page.py'),
-                                   ['--url', url, '--wait=5', '--text_only'])
+    output = self.RunWebDriverTest(
+        self.win_config['client'],
+        os.path.join(dir, './youtube_restrict_webdriver.py'),
+        ['--url', url, '--wait=5'])
     return output
 
   @test

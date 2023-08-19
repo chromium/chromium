@@ -4,14 +4,20 @@
 
 #include "services/network/attribution/attribution_verification_mediator.h"
 
+#include <stddef.h>
+
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/thread_pool.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
+#include "net/http/structured_headers.h"
 #include "services/network/attribution/attribution_verification_mediator_metrics_recorder.h"
 #include "services/network/public/cpp/trust_token_http_headers.h"
 #include "services/network/trust_tokens/suitable_trust_token_origin.h"
@@ -22,39 +28,50 @@
 
 namespace network {
 
+namespace {
+
 using Cryptographer = AttributionVerificationMediator::Cryptographer;
 using metrics_recorder = AttributionVerificationMediator::MetricsRecorder;
 
-struct AttributionVerificationMediator::CryptographerAndBlindMessage {
-  std::unique_ptr<Cryptographer> cryptographer;
-  absl::optional<std::string> blind_message;
+using Message = AttributionVerificationMediator::Message;
+using BlindedMessage = AttributionVerificationMediator::BlindedMessage;
+using BlindedToken = AttributionVerificationMediator::BlindedToken;
+using Token = AttributionVerificationMediator::Token;
+
+}  // namespace
+
+struct AttributionVerificationMediator::CryptographersAndBlindedMessages {
+  std::vector<std::unique_ptr<Cryptographer>> cryptographers;
+  std::vector<BlindedMessage> blinded_messages;
 };
 
-struct AttributionVerificationMediator::CryptographerAndToken {
-  std::unique_ptr<Cryptographer> cryptographer;
-  absl::optional<std::string> token;
+struct AttributionVerificationMediator::CryptographersAndTokens {
+  std::vector<std::unique_ptr<Cryptographer>> cryptographers;
+  std::vector<Token> tokens;
 };
 
 AttributionVerificationMediator::AttributionVerificationMediator(
     const TrustTokenKeyCommitmentGetter* key_commitment_getter,
-    std::unique_ptr<Cryptographer> cryptographer,
+    std::vector<std::unique_ptr<Cryptographer>> cryptographers,
     std::unique_ptr<MetricsRecorder> metrics_recorder)
     : key_commitment_getter_(std::move(key_commitment_getter)),
-      cryptographer_(std::move(cryptographer)),
+      cryptographers_(std::move(cryptographers)),
       metrics_recorder_(std::move(metrics_recorder)) {
-  DCHECK(key_commitment_getter_);
-  DCHECK(cryptographer_);
-  DCHECK(metrics_recorder_);
+  CHECK(key_commitment_getter_);
+  CHECK(metrics_recorder_);
 }
 
 AttributionVerificationMediator::~AttributionVerificationMediator() = default;
 
 void AttributionVerificationMediator::GetHeadersForVerification(
     const GURL& url,
-    const std::string& message,
+    std::vector<Message> messages,
     base::OnceCallback<void(net::HttpRequestHeaders)> done) {
-  DCHECK(!message_);
-  message_ = message;
+  CHECK(messages_.empty());
+  CHECK(!messages.empty());
+  CHECK_EQ(messages.size(), cryptographers_.size());
+
+  messages_ = std::move(messages);
 
   metrics_recorder_->Start();
 
@@ -85,59 +102,82 @@ void AttributionVerificationMediator::OnGotKeyCommitment(
     return;
   }
 
-  if (!cryptographer_->Initialize(commitment_result->protocol_version)) {
-    metrics_recorder_->FinishGetHeadersWith(
-        GetHeadersStatus::kUnableToInitializeCryptographer);
-    std::move(done).Run(net::HttpRequestHeaders());
-    return;
-  }
-  for (const mojom::TrustTokenVerificationKeyPtr& key :
-       commitment_result->keys) {
-    if (!cryptographer_->AddKey(key->body)) {
+  for (const auto& cryptographer : cryptographers_) {
+    CHECK(cryptographer);
+    if (!cryptographer->Initialize(commitment_result->protocol_version)) {
       metrics_recorder_->FinishGetHeadersWith(
-          GetHeadersStatus::kUnableToAddKeysOnCryptographer);
+          GetHeadersStatus::kUnableToInitializeCryptographer);
       std::move(done).Run(net::HttpRequestHeaders());
       return;
     }
+    for (const mojom::TrustTokenVerificationKeyPtr& key :
+         commitment_result->keys) {
+      if (!cryptographer->AddKey(key->body)) {
+        metrics_recorder_->FinishGetHeadersWith(
+            GetHeadersStatus::kUnableToAddKeysOnCryptographer);
+        std::move(done).Run(net::HttpRequestHeaders());
+        return;
+      }
+    }
   }
+
   metrics_recorder_->Complete(Step::kInitializeCryptographer);
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(
-          [](std::unique_ptr<Cryptographer> cryptographer,
-             std::string message) {
-            absl::optional<std::string> blind_message =
-                cryptographer->BeginIssuance(message);
-            return AttributionVerificationMediator::
-                CryptographerAndBlindMessage{std::move(cryptographer),
-                                             std::move(blind_message)};
-          },
-          std::move(cryptographer_), message_.value()),
+      base::BindOnce(&AttributionVerificationMediator::BeginIssuances,
+                     std::move(cryptographers_), messages_),
       base::BindOnce(&AttributionVerificationMediator::OnDoneBeginIssuance,
                      weak_ptr_factory_.GetWeakPtr(),
                      commitment_result->protocol_version, std::move(done)));
 }
 
+// static
+AttributionVerificationMediator::CryptographersAndBlindedMessages
+AttributionVerificationMediator::BeginIssuances(
+    std::vector<std::unique_ptr<Cryptographer>> cryptographers,
+    const std::vector<Message>& messages) {
+  CHECK_GE(cryptographers.size(), messages.size());
+  std::vector<BlindedMessage> blinded_messages;
+  blinded_messages.reserve(messages.size());
+
+  for (size_t i = 0; i < messages.size(); ++i) {
+    absl::optional<BlindedMessage> blinded_message =
+        cryptographers.at(i)->BeginIssuance(messages.at(i));
+    if (!blinded_message.has_value()) {
+      return AttributionVerificationMediator::CryptographersAndBlindedMessages{
+          .cryptographers = std::move(cryptographers),
+          .blinded_messages = {},
+      };
+    }
+    blinded_messages.push_back(std::move(blinded_message.value()));
+  }
+  return AttributionVerificationMediator::CryptographersAndBlindedMessages{
+      .cryptographers = std::move(cryptographers),
+      .blinded_messages = std::move(blinded_messages)};
+}
+
 void AttributionVerificationMediator::OnDoneBeginIssuance(
     mojom::TrustTokenProtocolVersion protocol_version,
     base::OnceCallback<void(net::HttpRequestHeaders)> done,
-    AttributionVerificationMediator::CryptographerAndBlindMessage
+    AttributionVerificationMediator::CryptographersAndBlindedMessages
         cryptographer_and_blind_message) {
-  cryptographer_ = std::move(cryptographer_and_blind_message.cryptographer);
+  cryptographers_ = std::move(cryptographer_and_blind_message.cryptographers);
   metrics_recorder_->Complete(Step::kBlindMessage);
 
-  if (!cryptographer_and_blind_message.blind_message.has_value()) {
+  if (cryptographer_and_blind_message.blinded_messages.empty()) {
     metrics_recorder_->FinishGetHeadersWith(
         GetHeadersStatus::kUnableToBlindMessage);
     std::move(done).Run(net::HttpRequestHeaders());
     return;
   }
-
+  CHECK_EQ(cryptographer_and_blind_message.blinded_messages.size(),
+           messages_.size());
   net::HttpRequestHeaders request_headers;
   request_headers.SetHeader(
       kReportVerificationHeader,
-      std::move(cryptographer_and_blind_message.blind_message.value()));
+      AttributionVerificationMediator::SerializeBlindedMessages(
+          cryptographer_and_blind_message.blinded_messages));
   request_headers.SetHeader(
       kTrustTokensSecTrustTokenVersionHeader,
       internal::ProtocolVersionToString(protocol_version));
@@ -146,64 +186,133 @@ void AttributionVerificationMediator::OnDoneBeginIssuance(
   std::move(done).Run(std::move(request_headers));
 }
 
-void AttributionVerificationMediator::ProcessVerificationToGetToken(
+std::vector<BlindedToken>
+AttributionVerificationMediator::DeserializeBlindedTokens(
+    const std::string& blinded_tokens_header) {
+  absl::optional<net::structured_headers::List> parsed_list =
+      net::structured_headers::ParseList(blinded_tokens_header);
+  if (!parsed_list.has_value()) {
+    return {};
+  }
+
+  std::vector<BlindedToken> blinded_tokens;
+  blinded_tokens.reserve(parsed_list->size());
+  for (const auto& item : parsed_list.value()) {
+    // The item must be a non-empty string to be valid.
+    if (item.member_is_inner_list || item.member.size() != 1u ||
+        !item.member.at(0).item.is_string() ||
+        item.member.at(0).item.GetString().empty()) {
+      return {};
+    }
+    blinded_tokens.emplace_back(item.member.at(0).item.GetString());
+  }
+
+  return blinded_tokens;
+}
+
+std::string AttributionVerificationMediator::SerializeBlindedMessages(
+    const std::vector<BlindedMessage>& blinded_messages) {
+  net::structured_headers::List headers;
+
+  for (const BlindedMessage& blinded_message : blinded_messages) {
+    net::structured_headers::Item item(
+        blinded_message, net::structured_headers::Item::ItemType::kStringType);
+    headers.emplace_back(
+        net::structured_headers::ParameterizedMember(item, {}));
+  }
+  absl::optional<std::string> serialized =
+      net::structured_headers::SerializeList(headers);
+  CHECK(serialized.has_value());
+  return serialized.value();
+}
+
+void AttributionVerificationMediator::ProcessVerificationToGetTokens(
     net::HttpResponseHeaders& response_headers,
-    base::OnceCallback<void(absl::optional<std::string>)> done) {
-  DCHECK(message_.has_value());
+    base::OnceCallback<void(std::vector<Token>)> done) {
+  CHECK(!messages_.empty());
 
   metrics_recorder_->Complete(Step::kSignBlindMessage);
 
   std::string header_value;
-
-  // EnumerateHeader(|iter|=nullptr) asks for the first instance of the header,
-  // if any. At most one `kReportVerificationHeader` is expected as only one
-  // token can verify a trigger. Subsequent instances of the header are ignored.
-  if (!response_headers.EnumerateHeader(
-          /*iter=*/nullptr, kReportVerificationHeader, &header_value)) {
+  if (!response_headers.GetNormalizedHeader(kReportVerificationHeader,
+                                            &header_value)) {
     metrics_recorder_->FinishProcessVerificationWith(
         ProcessVerificationStatus::kNoSignatureReceivedFromIssuer);
-    std::move(done).Run(absl::nullopt);
+    std::move(done).Run({});
     return;
   }
   response_headers.RemoveHeader(kReportVerificationHeader);
 
+  std::vector<BlindedToken> blind_tokens =
+      DeserializeBlindedTokens(header_value);
+  if (blind_tokens.empty()) {
+    metrics_recorder_->FinishProcessVerificationWith(
+        ProcessVerificationStatus::kBadSignaturesHeaderReceivedFromIssuer);
+    std::move(done).Run({});
+    return;
+  }
+
+  if (blind_tokens.size() > messages_.size()) {
+    metrics_recorder_->FinishProcessVerificationWith(
+        ProcessVerificationStatus::kTooManySignaturesReceivedFromIssuer);
+    std::move(done).Run({});
+    return;
+  }
+  CHECK_EQ(messages_.size(), cryptographers_.size());
+
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
-          [](std::unique_ptr<Cryptographer> cryptographer,
-             std::string blind_token) {
-            absl::optional<std::string> token =
-                cryptographer->ConfirmIssuanceAndBeginRedemption(blind_token);
-
-            return AttributionVerificationMediator::CryptographerAndToken{
-                std::move(cryptographer), std::move(token)};
-          },
-          std::move(cryptographer_), std::move(header_value)),
+          &AttributionVerificationMediator::ConfirmIssuancesAndBeginRedemptions,
+          std::move(cryptographers_), std::move(blind_tokens)),
       base::BindOnce(
           &AttributionVerificationMediator::OnDoneProcessingIssuanceResponse,
           weak_ptr_factory_.GetWeakPtr(), std::move(done)));
 }
 
+AttributionVerificationMediator::CryptographersAndTokens
+AttributionVerificationMediator::ConfirmIssuancesAndBeginRedemptions(
+    std::vector<std::unique_ptr<Cryptographer>> cryptographers,
+    std::vector<BlindedToken> blind_tokens) {
+  std::vector<Token> tokens;
+  tokens.reserve(blind_tokens.size());
+
+  for (size_t i = 0; i < blind_tokens.size(); ++i) {
+    absl::optional<Token> token =
+        cryptographers.at(i)->ConfirmIssuanceAndBeginRedemption(
+            blind_tokens.at(i));
+    if (!token.has_value()) {
+      return AttributionVerificationMediator::CryptographersAndTokens{
+          .cryptographers = std::move(cryptographers), .tokens = {}};
+    }
+    tokens.push_back(std::move(token.value()));
+  }
+
+  return AttributionVerificationMediator::CryptographersAndTokens{
+      std::move(cryptographers), std::move(tokens)};
+}
+
 void AttributionVerificationMediator::OnDoneProcessingIssuanceResponse(
-    base::OnceCallback<void(absl::optional<std::string>)> done,
-    AttributionVerificationMediator::CryptographerAndToken
-        cryptographer_and_token) {
-  cryptographer_ = std::move(cryptographer_and_token.cryptographer);
+    base::OnceCallback<void(std::vector<Token>)> done,
+    AttributionVerificationMediator::CryptographersAndTokens
+        cryptographer_and_tokens) {
+  cryptographers_ = std::move(cryptographer_and_tokens.cryptographers);
 
   metrics_recorder_->Complete(Step::kUnblindMessage);
 
-  if (!cryptographer_and_token.token.has_value()) {
+  if (cryptographer_and_tokens.tokens.empty()) {
     // The response was rejected by the underlying cryptographic library as
     // malformed or otherwise invalid.
     metrics_recorder_->FinishProcessVerificationWith(
         ProcessVerificationStatus::kUnableToUnblindSignature);
-    std::move(done).Run(absl::nullopt);
+    std::move(done).Run({});
     return;
   }
 
+  CHECK_LE(cryptographer_and_tokens.tokens.size(), messages_.size());
   metrics_recorder_->FinishProcessVerificationWith(
       ProcessVerificationStatus::kSuccess);
-  std::move(done).Run(std::move(cryptographer_and_token.token.value()));
+  std::move(done).Run(std::move(cryptographer_and_tokens.tokens));
 }
 
 }  // namespace network

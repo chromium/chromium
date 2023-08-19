@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/html/cross_origin_attribute.h"
 #include "third_party/blink/renderer/core/html/html_link_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
 #include "third_party/blink/renderer/core/loader/fetch_priority_attribute.h"
 #include "third_party/blink/renderer/core/loader/link_load_parameters.h"
 #include "third_party/blink/renderer/core/loader/resource/css_style_sheet_resource.h"
@@ -57,6 +58,15 @@ void LinkStyle::NotifyFinished(Resource* resource) {
     if (sheet_)
       ClearSheet();
     return;
+  }
+
+  if (resource->LoadFailedOrCanceled()) {
+    AuditsIssue::ReportStylesheetLoadingRequestFailedIssue(
+        &GetDocument(), resource->Url(),
+        resource->LastResourceRequest().GetDevToolsId(), GetDocument().Url(),
+        resource->Options().initiator_info.position.line_,
+        resource->Options().initiator_info.position.column_,
+        resource->GetResourceError().LocalizedDescription());
   }
 
   auto* cached_style_sheet = To<CSSStyleSheetResource>(resource);

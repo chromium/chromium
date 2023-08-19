@@ -118,8 +118,6 @@ class ShortcutsBackend : public RefcountedKeyedService,
       scoped_refptr<ShortcutsBackend> backend,
       TestShortcutData* db,
       size_t db_size);
-  FRIEND_TEST_ALL_PREFIXES(ShortcutsBackendTest, EntitySuggestionTest);
-  FRIEND_TEST_ALL_PREFIXES(ShortcutsBackendTest, MatchCoreDescriptionTest);
 
   enum CurrentState {
     NOT_INITIALIZED,  // Backend created but not initialized.
@@ -168,7 +166,8 @@ class ShortcutsBackend : public RefcountedKeyedService,
   // Deletes all of the shortcuts.
   bool DeleteAllShortcuts();
 
-  raw_ptr<TemplateURLService, DanglingUntriaged> template_url_service_;
+  raw_ptr<TemplateURLService, AcrossTasksDanglingUntriaged>
+      template_url_service_;
   std::unique_ptr<SearchTermsData> search_terms_data_;
 
   CurrentState current_state_;

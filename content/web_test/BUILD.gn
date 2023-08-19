@@ -125,6 +125,8 @@ static_library("web_test_browser") {
     "browser/web_test_devtools_bindings.h",
     "browser/web_test_download_manager_delegate.cc",
     "browser/web_test_download_manager_delegate.h",
+    "browser/web_test_fedcm_manager.cc",
+    "browser/web_test_fedcm_manager.h",
     "browser/web_test_first_device_bluetooth_chooser.cc",
     "browser/web_test_first_device_bluetooth_chooser.h",
     "browser/web_test_javascript_dialog_manager.cc",
@@ -142,10 +144,6 @@ static_library("web_test_browser") {
     "browser/web_test_tts_platform.cc",
     "browser/web_test_tts_platform.h",
   ]
-
-  if (is_apple) {
-    configs += [ "//build/config/compiler:enable_arc" ]
-  }
 
   if (is_mac) {
     sources += [
@@ -233,10 +231,6 @@ static_library("web_test_browser") {
 
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
-  }
-
-  if (is_fuchsia) {
-    deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.scenic:fuchsia.ui.scenic_hlcpp" ]
   }
 }
 

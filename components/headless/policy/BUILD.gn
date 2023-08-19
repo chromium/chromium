@@ -12,6 +12,8 @@ source_set("policy") {
     "headless_mode_prefs.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base",
     "//components/policy:generated",

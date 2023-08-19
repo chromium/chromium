@@ -1,5 +1,0 @@
-Tests that worker events are recorded with proper devtools metadata events.
-
-Got DevTools worker metadata event(1): TracingSessionIdForWorker
-Got DevTools worker metadata event(2): TracingSessionIdForWorker
-

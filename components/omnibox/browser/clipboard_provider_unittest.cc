@@ -33,6 +33,10 @@
 #include "ui/gfx/image/image_unittest_util.h"
 #include "url/gurl.h"
 
+#if !BUILDFLAG(IS_IOS)
+#include "ui/base/clipboard/test/test_clipboard.h"  // nogncheck
+#endif
+
 namespace {
 
 const char kCurrentURL[] = "http://example.com/current";
@@ -326,6 +330,42 @@ TEST_F(ClipboardProviderTest, SkipImageMatchGivenWantAsynchronousMatchesFalse) {
   ASSERT_TRUE(provider_->done());
   ASSERT_TRUE(provider_->matches().empty());
 }
+
+// ios lacks support for reading the clipboard age.
+#if !BUILDFLAG(IS_IOS)
+TEST_F(ClipboardProviderTest, SuppressAfterFirstUsed) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {omnibox::kClipboardSuggestionContentHidden,
+       omnibox::kSuppressClipboardSuggestionAfterFirstUsed},
+      {});
+  auto test_clipboard = std::make_unique<ui::TestClipboard>();
+  test_clipboard->SetLastModifiedTime(base::Time::Now());
+  ui::Clipboard::SetClipboardForCurrentThread(std::move(test_clipboard));
+
+  SetClipboardUrl(GURL(kClipboardURL));
+  EXPECT_CALL(*client_.get(), GetSchemeClassifier())
+      .WillOnce(testing::ReturnRef(classifier_));
+  auto template_url_service = std::make_unique<TemplateURLService>(
+      /*initializers=*/nullptr, /*count=*/0);
+  client_->set_template_url_service(std::move(template_url_service));
+
+  AutocompleteMatch match = provider_->NewBlankURLMatch();
+  CreateMatchWithContentCallbackWaiter waiter(provider_, &match);
+  waiter.WaitForMatchUpdated();
+
+  AutocompleteInput input =
+      CreateAutocompleteInput(metrics::OmniboxFocusType::INTERACTION_FOCUS);
+  provider_->Start(input, false);
+  EXPECT_EQ(provider_->matches().size(), 0U);
+
+  static_cast<ui::TestClipboard*>(ui::Clipboard::GetForCurrentThread())
+      ->SetLastModifiedTime(base::Time::Now() + base::Minutes(1));
+
+  provider_->Start(input, false);
+  EXPECT_EQ(provider_->matches().size(), 1U);
+}
+#endif  // #if !BUILDFLAG(IS_IOS)
 
 TEST_F(ClipboardProviderTest, CreateURLMatchWithContent) {
   SetClipboardUrl(GURL(kClipboardURL));

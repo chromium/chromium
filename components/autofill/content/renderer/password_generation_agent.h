@@ -68,8 +68,11 @@ class PasswordGenerationAgent : public content::RenderFrameObserver,
   // is being offered. Updates the state of the popup if necessary.
   bool TextDidChangeInTextField(const blink::WebInputElement& element);
 
+  // Receives the currently focused element.
+  void NotifyFocusChangeComplete(const blink::WebNode& node);
+
   // Returns true if the newly focused node caused the generation UI to show.
-  bool HandleFocusChangeComplete(const blink::WebNode& node);
+  bool ShowPasswordGenerationSuggestions(const blink::WebInputElement& element);
 
   // Event forwarded by AutofillAgent from WebAutofillClient, informing that
   // the text field editing has ended, which means that the field is not

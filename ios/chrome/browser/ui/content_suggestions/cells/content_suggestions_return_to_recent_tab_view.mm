@@ -4,16 +4,13 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_return_to_recent_tab_view.h"
 
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_return_to_recent_tab_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ui/base/l10n/l10n_util.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 const CGFloat kContentViewCornerRadius = 12.0f;
@@ -29,15 +26,16 @@ const CGFloat kIconWidth = 32.0f;
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
-    [self.layer
-        setBorderColor:[UIColor colorNamed:kTertiaryBackgroundColor].CGColor];
-    [self.layer setBorderWidth:kContentViewBorderWidth];
     self.layer.cornerRadius = IsMagicStackEnabled()
                                   ? kMagicStackContentViewCornerRadius
                                   : kContentViewCornerRadius;
     self.layer.masksToBounds = YES;
     if (IsMagicStackEnabled()) {
       self.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+    } else {
+      [self.layer
+          setBorderColor:[UIColor colorNamed:kTertiaryBackgroundColor].CGColor];
+      [self.layer setBorderWidth:kContentViewBorderWidth];
     }
 
     _titleLabel = [[UILabel alloc] init];
@@ -61,7 +59,9 @@ const CGFloat kIconWidth = 32.0f;
     [self addSubview:textStackView];
 
     _iconImageView = [[UIImageView alloc]
-        initWithImage:[UIImage imageNamed:@"default_world_favicon_regular"]];
+        initWithImage:DefaultSymbolWithPointSize(kGlobeAmericasSymbol,
+                                                 kIconWidth)];
+    _iconImageView.tintColor = [UIColor colorNamed:kGrey400Color];
     _iconImageView.layer.cornerRadius = kIconCornerRadius;
     _iconImageView.layer.masksToBounds = YES;
     [self addSubview:_iconImageView];

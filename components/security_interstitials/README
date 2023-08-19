@@ -1,4 +1,0 @@
-Componentizing security interstitials is still in progress. Eventually this
-component will include most of the code from chrome/browser/interstitials/ as
-well as the various BlockingPage classes. It will be a layered component to
-allow for iOS support.

@@ -13,8 +13,6 @@
 
 namespace blink {
 
-// Note: if changing this, see also
-// content/public/common/common_param_traits_macros.h
 struct BLINK_COMMON_EXPORT UserAgentBrandVersion {
   UserAgentBrandVersion() = default;
   UserAgentBrandVersion(const std::string& ua_brand,
@@ -33,8 +31,6 @@ struct BLINK_COMMON_EXPORT UserAgentBrandVersion {
 
 using UserAgentBrandList = std::vector<UserAgentBrandVersion>;
 
-// Note: if changing this, see also
-// content/public/common/common_param_traits_macros.h
 struct BLINK_COMMON_EXPORT UserAgentMetadata {
  private:
   // Common private function turning the brand list into a structured header
@@ -64,15 +60,13 @@ struct BLINK_COMMON_EXPORT UserAgentMetadata {
   bool mobile = false;
   std::string bitness;
   bool wow64 = false;
+  std::string form_factor;
 };
 
 // Used when customizing the sent User-Agent and Sec-CH-UA-* for
 // features like "request desktop site", which override those from defaults
 // for some individual navigations. WebContents::SetUserAgentOverride()
 // is the main entry point used for the functionality.
-//
-// Like above, this has legacy IPC traits in
-// content/public/common/common_param_traits_macros.h
 struct BLINK_COMMON_EXPORT UserAgentOverride {
   // Helper which sets only UA with blank client hints.
   static UserAgentOverride UserAgentOnly(const std::string& ua);

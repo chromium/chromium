@@ -79,7 +79,7 @@ public class RestoreTabsUiRenderTest {
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_MOBILE_RECENT_TABS)
-                    .setRevision(2)
+                    .setRevision(3)
                     .build();
     @Rule
     public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
@@ -95,8 +95,6 @@ public class RestoreTabsUiRenderTest {
     FaviconHelper.Natives mFaviconHelperJniMock;
     @Mock
     private Profile mProfile;
-    @Mock
-    private RestoreTabsControllerFactory.ControllerListener mListener;
     @Mock
     private TabCreatorManager mTabCreatorManager;
     @Mock
@@ -125,7 +123,7 @@ public class RestoreTabsUiRenderTest {
             Activity activity = mActivityTestRule.getActivity();
 
             mCoordinator = new RestoreTabsCoordinator(mActivityTestRule.getActivity(), mProfile,
-                    mListener, mTabCreatorManager, mBottomSheetController);
+                    mTabCreatorManager, mBottomSheetController);
             mView = mCoordinator.getContentViewForTesting();
             mView.setBackground(
                     AppCompatResources.getDrawable(activity, R.drawable.menu_bg_tinted));

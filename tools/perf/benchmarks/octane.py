@@ -16,7 +16,7 @@ import page_sets
 from benchmarks import press
 
 
-@benchmark.Info(emails=['hablich@chromium.org'],
+@benchmark.Info(emails=['vahl@chromium.org', 'mlippautz@chromium.org'],
                 component='Blink>JavaScript')
 class Octane(press._PressBenchmark): # pylint: disable=protected-access
   """Google's Octane JavaScript benchmark.
@@ -48,4 +48,4 @@ class OctaneMinorMC(press._PressBenchmark):  # pylint: disable=protected-access
     return page_sets.OctaneStorySet()
 
   def SetExtraBrowserOptions(self, options):
-    options.AppendExtraBrowserArgs('--js-flags=--minor-mc')
+    options.AppendExtraBrowserArgs('--js-flags=--minor-ms')

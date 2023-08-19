@@ -9,6 +9,8 @@
 #include "ash/public/cpp/child_accounts/parent_access_controller.h"
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/login_screen_model.h"
+#include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "ash/webui/settings/public/constants/setting.mojom-shared.h"
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
@@ -34,8 +36,6 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_reauth_dialogs.h"
 #include "chrome/browser/ui/webui/ash/login/l10n_util.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/setting.mojom-shared.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
 #include "components/session_manager/core/session_manager.h"
@@ -173,11 +173,6 @@ ash::ParentCodeValidationResult LoginScreenClientImpl::ValidateParentAccessCode(
 void LoginScreenClientImpl::OnFocusPod(const AccountId& account_id) {
   if (delegate_)
     delegate_->HandleOnFocusPod(account_id);
-}
-
-void LoginScreenClientImpl::OnNoPodFocused() {
-  if (delegate_)
-    delegate_->HandleOnNoPodFocused();
 }
 
 void LoginScreenClientImpl::FocusLockScreenApps(bool reverse) {
@@ -322,14 +317,6 @@ void LoginScreenClientImpl::OnSystemTrayBubbleShown() {
 void LoginScreenClientImpl::OnLoginScreenShown() {
   for (LoginScreenShownObserver& observer : login_screen_shown_observers_)
     observer.OnLoginScreenShown();
-}
-
-void LoginScreenClientImpl::LoadWallpaper(const AccountId& account_id) {
-  WallpaperControllerClientImpl::Get()->ShowUserWallpaper(account_id);
-}
-
-void LoginScreenClientImpl::SignOutUser() {
-  ash::ScreenLocker::default_screen_locker()->Signout();
 }
 
 void LoginScreenClientImpl::CancelAddUser() {

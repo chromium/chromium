@@ -60,14 +60,6 @@ class TestDefaultModelManager : public DefaultModelManager {
       : DefaultModelManager(nullptr, base::flat_set<SegmentId>()) {}
   ~TestDefaultModelManager() override = default;
 
-  void GetAllSegmentInfoFromDefaultModel(
-      const base::flat_set<SegmentId>& segment_ids,
-      MultipleSegmentInfoCallback callback) override {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  DefaultModelManager::SegmentInfoList()));
-  }
-
   void GetAllSegmentInfoFromBothModels(
       const base::flat_set<SegmentId>& segment_ids,
       SegmentInfoDatabase* segment_database,
@@ -114,11 +106,15 @@ class SignalFilterProcessorTest : public testing::Test {
     auto moved_signal_config = std::make_unique<MockSignalStorageConfig>();
     signal_storage_config_ = moved_signal_config.get();
     ukm_data_manager_ = std::make_unique<MockUkmDataManager>();
+    auto default_model_manager = std::make_unique<TestDefaultModelManager>();
+    default_model_manager_ = default_model_manager.get();
     storage_service_ = std::make_unique<StorageService>(
         std::move(moved_segment_database), nullptr,
-        std::move(moved_signal_config),
-        std::make_unique<TestDefaultModelManager>(), nullptr,
-        ukm_data_manager_.get());
+        std::move(moved_signal_config), std::move(default_model_manager),
+        std::make_unique<ModelManagerImpl>(
+            segment_ids, nullptr, nullptr, segment_database_,
+            default_model_manager_, base::DoNothing()),
+        nullptr, ukm_data_manager_.get());
 
     signal_filter_processor_ = std::make_unique<SignalFilterProcessor>(
         storage_service_.get(), user_action_signal_handler_.get(),
@@ -133,6 +129,7 @@ class SignalFilterProcessorTest : public testing::Test {
   std::unique_ptr<MockUkmDataManager> ukm_data_manager_;
   std::unique_ptr<StorageService> storage_service_;
   raw_ptr<test::TestSegmentInfoDatabase> segment_database_;
+  raw_ptr<TestDefaultModelManager> default_model_manager_;
   raw_ptr<MockSignalStorageConfig> signal_storage_config_;
 };
 

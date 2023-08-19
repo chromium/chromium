@@ -8,8 +8,8 @@
 #import <QuartzCore/QuartzCore.h>
 #import <UIKit/UIKit.h>
 
+#include "base/apple/mach_logging.h"
 #include "base/logging.h"
-#include "base/mac/mach_logging.h"
 #include "base/numerics/checked_math.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 
@@ -53,17 +53,21 @@ uint64_t GetMachTimeFromSeconds(CFTimeInterval seconds) {
  @private
   // A timer object that helps to synchronize with the refresh rate of the
   // display.
-  CADisplayLink* _displayLink;
-  // Determines if vsync listener is enabled.
+  CADisplayLink* __strong _displayLink;
+
+  // Determines if a vsync listener is enabled.
   bool _enabled;
+
   // A client that receives vsync updates. Owns us.
   raw_ptr<viz::ExternalBeginFrameSourceIOS> _client;
+
   // Current preferred refresh rate in frames per second. The system may ignore
   // this and, for example, throttle the frame rate. Please note that the frame
   // rate that the system chooses will be rounded to the nearest factor of a
   // maximum refresh rate of display. Eg, if a display supports 60Hz, the
   // refresh rate might be rounded to 15, 20, 30, and 60 FPS respectively.
-  float _preferredRefrehRate;
+  float _preferredRefreshRate;
+
   // The maximum refresh rate that depends on a maximum supported refresh rate
   // of a display that a device uses.
   float _maximumRefreshRate;
@@ -84,10 +88,10 @@ uint64_t GetMachTimeFromSeconds(CFTimeInterval seconds) {
     _displayLink =
         [CADisplayLink displayLinkWithTarget:self
                                     selector:@selector(displayLinkDidFire:)];
-    _maximumRefreshRate = [UIScreen mainScreen].maximumFramesPerSecond;
+    _maximumRefreshRate = UIScreen.mainScreen.maximumFramesPerSecond;
     [self setPreferredInterval:base::Hertz(_maximumRefreshRate)];
     [self setEnabled:false];
-    [_displayLink addToRunLoop:[NSRunLoop currentRunLoop]
+    [_displayLink addToRunLoop:NSRunLoop.currentRunLoop
                        forMode:NSRunLoopCommonModes];
   }
   return self;
@@ -128,20 +132,20 @@ uint64_t GetMachTimeFromSeconds(CFTimeInterval seconds) {
   DCHECK_GE(interval, base::TimeDelta());
   const float refresh_rate = 1 / interval.InSecondsF();
 
-  if (_preferredRefrehRate != refresh_rate) {
+  if (_preferredRefreshRate != refresh_rate) {
     // The preferred refresh rate mustn't exceed the maximum one. The floating
     // part can result in exceeding the maximum rate because of the division
     // operation.
-    _preferredRefrehRate =
+    _preferredRefreshRate =
         refresh_rate > _maximumRefreshRate ? _maximumRefreshRate : refresh_rate;
     if (@available(iOS 15, *)) {
       [_displayLink
           setPreferredFrameRateRange:CAFrameRateRange{
                                          .minimum = kMinimumRefreshRate,
                                          .maximum = _maximumRefreshRate,
-                                         .preferred = _preferredRefrehRate}];
+                                         .preferred = _preferredRefreshRate}];
     } else if (@available(iOS 10, *)) {
-      [_displayLink setPreferredFramesPerSecond:_preferredRefrehRate];
+      [_displayLink setPreferredFramesPerSecond:_preferredRefreshRate];
     }
 
     // _displayLink.frameInterval is used on iOS 3-10. However, these are pretty
@@ -184,26 +188,33 @@ uint64_t GetMachTimeFromSeconds(CFTimeInterval seconds) {
 
 namespace viz {
 
+struct ExternalBeginFrameSourceIOS::ObjCStorage {
+  CADisplayLinkImpl* __strong display_link_impl;
+};
+
 ExternalBeginFrameSourceIOS::ExternalBeginFrameSourceIOS(uint32_t restart_id)
     : ExternalBeginFrameSource(this, restart_id),
-      display_link_impl_([[CADisplayLinkImpl alloc] initWithClient:this]) {}
+      objc_storage_(std::make_unique<ObjCStorage>()) {
+  objc_storage_->display_link_impl =
+      [[CADisplayLinkImpl alloc] initWithClient:this];
+}
 
 ExternalBeginFrameSourceIOS::~ExternalBeginFrameSourceIOS() {
   // We must manually invalidate the CADisplayLink as its addToRunLoop keeps
   // strong reference to its target. Thus, releasing our wrapper won't really
   // result in destroying the object.
-  [display_link_impl_ invalidateDisplayLink];
-  [display_link_impl_ release];
-  display_link_impl_ = nil;
+  [objc_storage_->display_link_impl invalidateDisplayLink];
+  objc_storage_->display_link_impl = nil;
 }
 
 void ExternalBeginFrameSourceIOS::SetPreferredInterval(
     base::TimeDelta interval) {
-  [display_link_impl_ setPreferredInterval:interval];
+  [objc_storage_->display_link_impl setPreferredInterval:interval];
 }
 
 base::TimeDelta ExternalBeginFrameSourceIOS::GetMaximumRefreshFrameInterval() {
-  const int64_t max_refresh_rate = [display_link_impl_ maximumRefreshRate];
+  const int64_t max_refresh_rate =
+      [objc_storage_->display_link_impl maximumRefreshRate];
   if (UNLIKELY(max_refresh_rate <= 0)) {
     return BeginFrameArgs::DefaultInterval();
   }
@@ -229,7 +240,7 @@ void ExternalBeginFrameSourceIOS::OnNeedsBeginFrames(bool needs_begin_frames) {
 }
 
 void ExternalBeginFrameSourceIOS::SetEnabled(bool enabled) {
-  [display_link_impl_ setEnabled:enabled];
+  [objc_storage_->display_link_impl setEnabled:enabled];
 }
 
 }  // namespace viz

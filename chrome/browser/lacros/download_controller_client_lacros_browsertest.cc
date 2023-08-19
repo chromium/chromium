@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/crosapi/mojom/download_controller.mojom.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/fake_download_item.h"
@@ -51,7 +52,8 @@ class DownloadControllerClientLacrosBrowserTest : public InProcessBrowserTest {
   }
 
   testing::NiceMock<content::MockDownloadManager>* download_manager() {
-    return download_manager_;
+    return static_cast<testing::NiceMock<content::MockDownloadManager>*>(
+        browser()->profile()->GetDownloadManager());
   }
 
   Profile* profile() { return browser()->profile(); }
@@ -64,7 +66,6 @@ class DownloadControllerClientLacrosBrowserTest : public InProcessBrowserTest {
     // Download manager.
     auto download_manager =
         std::make_unique<testing::NiceMock<content::MockDownloadManager>>();
-    download_manager_ = download_manager.get();
     profile()->GetDownloadManager()->Shutdown();
     profile()->SetDownloadManagerForTesting(std::move(download_manager));
 
@@ -80,8 +81,6 @@ class DownloadControllerClientLacrosBrowserTest : public InProcessBrowserTest {
 
   std::unique_ptr<crosapi::mojom::DownloadControllerClient>
       download_controller_client_;
-  raw_ptr<testing::NiceMock<content::MockDownloadManager>, DanglingUntriaged>
-      download_manager_ = nullptr;
 };
 
 // Tests -----------------------------------------------------------------------

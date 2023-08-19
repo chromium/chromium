@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey_ui.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
-#import "base/mac/foundation_util.h"
 #import "base/test/ios/wait_util.h"
 #import "build/build_config.h"
 #import "components/strings/grit/components_strings.h"
@@ -19,10 +19,6 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 // Redefine EarlGrey macro to use line number and file name taken from the place
 // of BookmarkEarlGreyUIImpl macro instantiation, rather than local line number
@@ -166,9 +162,9 @@ id<GREYMatcher> SearchIconButton() {
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Tap on "Create New Folder."
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(kBookmarkCreateNewProfileFolderCellIdentifier)]
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kBookmarkCreateNewLocalOrSyncableFolderCellIdentifier)]
       performAction:grey_tap()];
 
   // Verify the folder creator is displayed.
@@ -670,16 +666,20 @@ id<GREYMatcher> SearchIconButton() {
 
   NSString* titleIdentifier = @"bookmark_editing_text";
 
-  // Type the folder title.
+  // Type the folder title, tapping to provide focus first so that we can \n
+  // later.
+  [[EarlGrey
+      selectElementWithMatcher:[self textFieldMatcherForID:titleIdentifier]]
+      performAction:grey_tap()];
   [[EarlGrey
       selectElementWithMatcher:[self textFieldMatcherForID:titleIdentifier]]
       performAction:grey_replaceText(folderTitle)];
 
   // Press the keyboard return key.
   if (pressReturn) {
-    [[EarlGrey
-        selectElementWithMatcher:[self textFieldMatcherForID:titleIdentifier]]
-        performAction:grey_typeText(@"\n")];
+    // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
+    // replaceText can properly handle \n.
+    [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 
     // Wait until the editing textfield is gone.
     ConditionBlock condition = ^{

@@ -176,6 +176,7 @@ class COMPONENT_EXPORT(MEDIA_SESSION_TEST_SUPPORT_CPP) MockMediaSession
   void Raise() override {}
   void SetMute(bool mute) override {}
   void RequestMediaRemoting() override {}
+  void EnterAutoPictureInPicture() override {}
 
   void SetIsControllable(bool value);
   void SetPreferStop(bool value) { prefer_stop_ = value; }

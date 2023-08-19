@@ -315,7 +315,7 @@ CSSNumericValue* CSSNumericValue::parse(
             CSSMathExpressionNode::ParseMathFunction(
                 CSSValueID::kCalc, range,
                 *MakeGarbageCollected<CSSParserContext>(*execution_context),
-                kCSSAnchorQueryTypesNone);
+                true /* is_percentage_allowed */, kCSSAnchorQueryTypesNone);
         if (expression) {
           return CalcToNumericValue(*expression);
         }

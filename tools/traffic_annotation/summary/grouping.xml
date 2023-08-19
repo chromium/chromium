@@ -109,10 +109,6 @@ after discussions on the right group.
   </group>
   <group name="Unsorted" hidden="true">
     <sender name="Unsorted Sender">
-      <annotation id="auction_downloader"/>
-      <annotation id="auction_report_sender"/>
-      <annotation id="interest_group_update_fetcher"/>
-      <annotation id="interest_group_well_known_fetcher"/>
       <annotation id="shared_storage_worklet_module_script_downloader"/>
       <annotation id="proxy_config_windows_resolver"/>
       <annotation id="remoting_directory_delete_host"/>
@@ -289,6 +285,14 @@ after discussions on the right group.
       <annotation id="crash_file_uploader"/>
       <annotation id="glanceables_classroom_integration"/>
       <annotation id="promise_app_service_download_icon"/>
+      <annotation id="ip_protection_service_get_token"/>
+      <annotation id="supervised_user_request_blocked_site_permission"/>
+      <annotation id="password_sharing_recipients"/>
+      <annotation id="page_insights"/>
+      <annotation id="ntp_image_url_verification"/>
+      <annotation id="passkey_enclave_client"/>
+      <annotation id="iwa_update_discovery_update_manifest"/>
+      <annotation id="iwa_update_discovery_web_bundle"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">
@@ -365,11 +369,19 @@ after discussions on the right group.
       <annotation id="aggregation_service_helper_keys"/>
       <annotation id="aggregation_service_report"/>
     </sender>
+    <sender name="Protected Audiences">
+      <annotation id="auction_downloader"/>
+      <annotation id="auction_report_sender"/>
+      <annotation id="bidding_and_auction_server_key_fetch"/>
+      <annotation id="interest_group_update_fetcher"/>
+      <annotation id="interest_group_well_known_fetcher"/>
+    </sender>
   </group>
   <group name="Identity and Security" hidden="true">
     <sender name="Accounts, Identity, and Authentication">
       <annotation id="accounts_image_fetcher"/>
       <annotation id="affiliation_lookup_by_hash"/>
+      <annotation id="device_bound_session_register"/>
       <annotation id="device_management_service"/>
       <annotation id="lookup_single_password_leak"/>
     </sender>

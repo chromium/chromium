@@ -37,6 +37,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/traced_value.h"
+#include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/base/devtools_instrumentation.h"
@@ -91,6 +92,7 @@
 #include "cc/trees/mobile_optimized_viewport_util.h"
 #include "cc/trees/mutator_host.h"
 #include "cc/trees/presentation_time_callback_buffer.h"
+#include "cc/trees/raster_capabilities.h"
 #include "cc/trees/raster_context_provider_wrapper.h"
 #include "cc/trees/render_frame_metadata.h"
 #include "cc/trees/render_frame_metadata_observer.h"
@@ -110,14 +112,12 @@
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/common/resources/platform_color.h"
-#include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/common/traced_value.h"
 #include "components/viz/common/transition_utils.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/context_support.h"
-#include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -158,30 +158,6 @@ bool IsMobileOptimized(LayerTreeImpl* active_tree) {
                                  active_tree->ScrollableViewportSize(),
                                  active_tree->ScrollableSize(),
                                  active_tree->viewport_mobile_optimized());
-}
-
-viz::SharedImageFormat TileRasterBufferFormat(
-    const LayerTreeSettings& settings,
-    viz::ContextProvider* context_provider,
-    bool use_gpu_rasterization) {
-  // Software compositing always uses the native skia RGBA N32 format, but we
-  // just call it RGBA_8888 everywhere even though it can be BGRA ordering,
-  // because we don't need to communicate the actual ordering as the code all
-  // assumes the native skia format.
-  if (!context_provider)
-    return viz::SinglePlaneFormat::kRGBA_8888;
-
-  // RGBA4444 overrides the defaults if specified, but only for gpu compositing.
-  // It is always supported on platforms where it is specified.
-  if (settings.use_rgba_4444)
-    return viz::SinglePlaneFormat::kRGBA_4444;
-  // Otherwise we use BGRA textures if we can but it depends on the context
-  // capabilities, and we have different preferences when rastering to textures
-  // vs uploading textures.
-  const gpu::Capabilities& caps = context_provider->ContextCapabilities();
-  if (use_gpu_rasterization)
-    return viz::PlatformColor::BestSupportedRenderBufferFormat(caps);
-  return viz::PlatformColor::BestSupportedTextureFormat(caps);
 }
 
 void DidVisibilityChange(LayerTreeHostImpl* id, bool visible) {
@@ -237,12 +213,11 @@ class LayerTreeHostImpl::ImageDecodeCacheHolder {
                          bool gpu_compositing,
                          scoped_refptr<RasterContextProviderWrapper>
                              worker_context_provider_wrapper,
-                         viz::SharedImageFormat tile_format,
                          size_t decoded_image_working_set_budget_bytes,
                          RasterDarkModeFilter* dark_mode_filter) {
     if (raster_caps.use_gpu_rasterization) {
       auto color_type = viz::ToClosestSkColorType(
-          /*gpu_compositing=*/true, tile_format);
+          /*gpu_compositing=*/true, raster_caps.tile_format);
       if (enable_shared_image_cache_for_gpu) {
         image_decode_cache_ptr_ =
             &worker_context_provider_wrapper->GetGpuImageDecodeCache(
@@ -256,7 +231,7 @@ class LayerTreeHostImpl::ImageDecodeCacheHolder {
       }
     } else {
       image_decode_cache_ = std::make_unique<SoftwareImageDecodeCache>(
-          viz::ToClosestSkColorType(gpu_compositing, tile_format),
+          viz::ToClosestSkColorType(gpu_compositing, raster_caps.tile_format),
           decoded_image_working_set_budget_bytes);
     }
 
@@ -394,12 +369,6 @@ const LayerTreeHostImpl& LayerTreeHostImpl::GetImplDeprecated() const {
   return *this;
 }
 
-bool LayerTreeHostImpl::CanInjectJankOnMain() const {
-  return !!frame_trackers_.FrameSequenceTrackerActiveTypes() &&
-         compositor_frame_reporting_controller_
-             ->is_main_thread_driving_smoothness();
-}
-
 LayerTreeHostImpl::FrameData::FrameData() = default;
 LayerTreeHostImpl::FrameData::~FrameData() = default;
 LayerTreeHostImpl::UIResourceData::UIResourceData() = default;
@@ -529,9 +498,6 @@ LayerTreeHostImpl::LayerTreeHostImpl(
   frame_trackers_.set_custom_tracker_results_added_callback(
       base::BindRepeating(&LayerTreeHostImpl::NotifyThroughputTrackerResults,
                           weak_factory_.GetWeakPtr()));
-
-  raster_caps_.use_dmsaa_for_tiles =
-      base::FeatureList::IsEnabled(features::kUseDMSAAForTiles);
 }
 
 LayerTreeHostImpl::~LayerTreeHostImpl() {
@@ -801,9 +767,6 @@ void LayerTreeHostImpl::CommitComplete() {
 }
 
 void LayerTreeHostImpl::UpdateSyncTreeAfterCommitOrImplSideInvalidation() {
-  // LayerTreeHost may have changed the GPU rasterization flags state, which
-  // may require an update of the tree resources.
-  UpdateTreeResourcesForGpuRasterizationIfNeeded();
   sync_tree()->set_needs_update_draw_properties();
 
   // We need an update immediately post-commit to have the opportunity to create
@@ -1581,10 +1544,15 @@ void LayerTreeHostImpl::InvalidateLayerTreeFrameSink(bool needs_redraw) {
 DrawResult LayerTreeHostImpl::PrepareToDraw(FrameData* frame) {
   TRACE_EVENT1("cc", "LayerTreeHostImpl::PrepareToDraw", "SourceFrameNumber",
                active_tree_->source_frame_number());
-  TRACE_EVENT_WITH_FLOW1("viz,benchmark", "Graphics.Pipeline",
-                         TRACE_ID_GLOBAL(CurrentBeginFrameArgs().trace_id),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
-                         "step", "GenerateRenderPass");
+  TRACE_EVENT(
+      "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
+      perfetto::Flow::Global(CurrentBeginFrameArgs().trace_id),
+      [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_chrome_graphics_pipeline();
+        data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
+                           StepName::STEP_GENERATE_RENDER_PASS);
+      });
   if (input_delegate_)
     input_delegate_->WillDraw();
 
@@ -1999,12 +1967,7 @@ int LayerTreeHostImpl::GetMSAASampleCountForRaster(
   }
 
   if (display_list->HasNonAAPaint()) {
-    UMA_HISTOGRAM_BOOLEAN("GPU.SupportsDisableMsaa",
-                          raster_caps().supports_disable_msaa);
-    if (!raster_caps().supports_disable_msaa ||
-        raster_caps().use_dmsaa_for_tiles) {
-      return 0;
-    }
+    return 0;
   }
 
   return RequestedMSAASampleCount();
@@ -2203,13 +2166,42 @@ void LayerTreeHostImpl::ReclaimResources(
   // If we're not visible, we likely released resources, so we want to
   // aggressively flush here to make sure those DeleteSharedImage() calls make
   // it to the GPU process to free up the memory.
-  if (!visible_ && layer_tree_frame_sink_->context_provider()) {
-    if (base::FeatureList::IsEnabled(
-            features::kReclaimResourcesFlushInBackground)) {
-      auto* compositor_context = layer_tree_frame_sink_->context_provider();
-      compositor_context->ContextSupport()->FlushPendingWork();
-    }
+  MaybeFlushPendingWork();
+
+  if (base::FeatureList::IsEnabled(
+          features::kReclaimResourcesDelayedFlushInBackground)) {
+    // There are cases where the release callbacks executed from the call above
+    // don't actually free the GPU resource from this thread. For instance, for
+    // TextureLayer,
+    // TextureLayer::TransferableResourceHolder::~TransferableResourceHolder()
+    // posts a task to the main thread, and so flushing here is not sufficient.
+    //
+    // Ideally, we would not rely on a time-based delay, but given layering,
+    // threading and possibly unknown cases where the release can jump from
+    // thread to thread, this is likely a more practical solution. See
+    // crbug.com/1449271 for an example.
+    GetTaskRunner()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&LayerTreeHostImpl::MaybeFlushPendingWork,
+                       weak_factory_.GetWeakPtr()),
+        base::Seconds(1));
   }
+}
+
+void LayerTreeHostImpl::MaybeFlushPendingWork() {
+  // If we're not in background, delayed work will be flushed "at some point",
+  // and we also may have something better to do.
+  if (visible_ || !has_valid_layer_tree_frame_sink_ ||
+      !base::FeatureList::IsEnabled(
+          features::kReclaimResourcesFlushInBackground)) {
+    return;
+  }
+
+  auto* compositor_context = layer_tree_frame_sink_->context_provider();
+  if (!compositor_context || !compositor_context->ContextSupport()) {
+    return;
+  }
+  compositor_context->ContextSupport()->FlushPendingWork();
 }
 
 void LayerTreeHostImpl::OnDraw(const gfx::Transform& transform,
@@ -2334,6 +2326,12 @@ viz::CompositorFrameMetadata LayerTreeHostImpl::MakeCompositorFrameMetadata() {
         actively_scrolling || mutator_host_->NeedsTickAnimations();
   }
 
+  if (input_delegate_) {
+    metadata.is_handling_interaction =
+        GetActivelyScrollingType() != ActivelyScrollingType::kNone ||
+        input_delegate_->IsHandlingTouchSequence();
+  }
+
   const base::flat_set<viz::SurfaceRange>& referenced_surfaces =
       active_tree_->SurfaceRanges();
   for (auto& surface_range : referenced_surfaces)
@@ -2397,7 +2395,7 @@ RenderFrameMetadata LayerTreeHostImpl::MakeRenderFrameMetadata(
       browser_controls_offset_manager_->TopControlsHeight();
   metadata.top_controls_shown_ratio =
       browser_controls_offset_manager_->TopControlsShownRatio();
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   metadata.bottom_controls_height =
       browser_controls_offset_manager_->BottomControlsHeight();
   metadata.bottom_controls_shown_ratio =
@@ -2448,7 +2446,7 @@ RenderFrameMetadata LayerTreeHostImpl::MakeRenderFrameMetadata(
   }
 
   bool allocate_new_local_surface_id =
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
       last_draw_render_frame_metadata_ &&
       (last_draw_render_frame_metadata_->top_controls_height !=
            metadata.top_controls_height ||
@@ -2605,10 +2603,15 @@ absl::optional<LayerTreeHostImpl::SubmitInfo> LayerTreeHostImpl::DrawLayers(
 
 viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
     FrameData* frame) {
-  TRACE_EVENT_WITH_FLOW1("viz,benchmark", "Graphics.Pipeline",
-                         TRACE_ID_GLOBAL(CurrentBeginFrameArgs().trace_id),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
-                         "step", "GenerateCompositorFrame");
+  TRACE_EVENT(
+      "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
+      perfetto::Flow::Global(CurrentBeginFrameArgs().trace_id),
+      [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_chrome_graphics_pipeline();
+        data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
+                           StepName::STEP_GENERATE_COMPOSITOR_FRAME);
+      });
 
   rendering_stats_instrumentation_->IncrementFrameCount(1);
 
@@ -2652,11 +2655,7 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
   if (active_tree_->hud_layer()) {
     TRACE_EVENT0("cc", "DrawLayers.UpdateHudTexture");
     active_tree_->hud_layer()->UpdateHudTexture(
-        draw_mode, layer_tree_frame_sink_, &resource_provider_,
-        // The hud uses Gpu rasterization if the device is capable, not related
-        // to the content of the web page.
-        raster_caps().gpu_rasterization_status !=
-            GpuRasterizationStatus::OFF_DEVICE,
+        draw_mode, layer_tree_frame_sink_, &resource_provider_, raster_caps(),
         frame->render_passes);
   }
 
@@ -2824,101 +2823,113 @@ int LayerTreeHostImpl::RequestedMSAASampleCount() const {
     float device_scale_factor = pending_tree_
                                     ? pending_tree_->device_scale_factor()
                                     : active_tree_->device_scale_factor();
+
+    // Note: this feature ensures that we correctly report the device scale
+    // factor. As of June 2023, without this feature, the vast majority (or
+    // possibly all?) high-dpi screens are incorrectly considered normal DPI
+    // ones here. See the UMA histogram
+    // "Gpu.Rasterization.Raster.MSAASampleCountLog2", which almost always
+    // report "3", i.e. 8xMSAA on macOS, where High-DPI screens are prevalent.
+    if (base::FeatureList::IsEnabled(features::kDetectHiDpiForMsaa)) {
+      float painted_device_scale_factor =
+          pending_tree_ ? pending_tree_->painted_device_scale_factor()
+                        : active_tree_->painted_device_scale_factor();
+      DCHECK(painted_device_scale_factor == 1 || device_scale_factor == 1);
+
+      device_scale_factor *= painted_device_scale_factor;
+    }
+
     return device_scale_factor >= 2.0f ? 4 : 8;
   }
 
   return settings_.gpu_rasterization_msaa_sample_count;
 }
 
-void LayerTreeHostImpl::GetGpuRasterizationCapabilities(
-    RasterCapabilities& gpu_raster_caps) {
-  if (settings_.gpu_rasterization_disabled)
-    return;
+void LayerTreeHostImpl::UpdateRasterCapabilities() {
+  CHECK(layer_tree_frame_sink_);
 
-  if (!(layer_tree_frame_sink_ && layer_tree_frame_sink_->context_provider() &&
-        layer_tree_frame_sink_->worker_context_provider())) {
-    return;
-  }
+  raster_caps_ = RasterCapabilities();
 
-  viz::RasterContextProvider* context_provider =
+  auto* context_provider = layer_tree_frame_sink_->context_provider();
+  auto* worker_context_provider =
       layer_tree_frame_sink_->worker_context_provider();
-  viz::RasterContextProvider::ScopedRasterContextLock scoped_context(
-      context_provider);
 
-  const auto& caps = context_provider->ContextCapabilities();
-  gpu_raster_caps.use_gpu_rasterization = caps.gpu_rasterization;
-  if (!gpu_raster_caps.use_gpu_rasterization) {
+  if (!context_provider) {
+    // No context provider means software raster + compositing.
+    CHECK(!worker_context_provider);
+    raster_caps_.max_texture_size = settings_.max_render_buffer_bounds_for_sw;
+
+    // Software compositing always uses the native skia RGBA N32 format, but we
+    // just call it RGBA_8888 everywhere even though it can be BGRA ordering,
+    // because we don't need to communicate the actual ordering as the code all
+    // assumes the native skia format.
+    raster_caps_.tile_format = viz::SinglePlaneFormat::kRGBA_8888;
+    raster_caps_.ui_rgba_format = viz::SinglePlaneFormat::kRGBA_8888;
     return;
   }
 
-  DCHECK(caps.supports_oop_raster);
-  gpu_raster_caps.can_use_msaa =
-      !caps.msaa_is_slow && !caps.avoid_stencil_buffers;
-  gpu_raster_caps.supports_disable_msaa = caps.multisample_compatibility;
-}
-
-bool LayerTreeHostImpl::UpdateGpuRasterizationStatus() {
-  if (!raster_caps().need_update_gpu_rasterization_status) {
-    return false;
-  }
-  raster_caps_.need_update_gpu_rasterization_status = false;
-
-  // TODO(danakj): Can we avoid having this run when there's no
-  // LayerTreeFrameSink?
-  // For now just early out and leave things unchanged, we'll come back here
-  // when we get a LayerTreeFrameSink.
-  if (!layer_tree_frame_sink_)
-    return false;
-
-  RasterCapabilities gpu_raster_caps;
-  GetGpuRasterizationCapabilities(gpu_raster_caps);
-
-  bool use_gpu = false;
-
-  if (!gpu_raster_caps.use_gpu_rasterization) {
-    raster_caps_.gpu_rasterization_status = GpuRasterizationStatus::OFF_DEVICE;
-  } else {
-    use_gpu = true;
-    raster_caps_.gpu_rasterization_status = GpuRasterizationStatus::ON;
-  }
-
-  // Changes in MSAA settings require that we re-raster resources for the
-  // settings to take effect. But we don't need to trigger any raster
-  // invalidation in this case since these settings change only if the context
-  // changed. In this case we already re-allocate and re-raster all resources.
-  if (use_gpu == raster_caps().use_gpu_rasterization &&
-      gpu_raster_caps.can_use_msaa == raster_caps().can_use_msaa &&
-      gpu_raster_caps.supports_disable_msaa ==
-          raster_caps().supports_disable_msaa) {
-    return false;
-  }
-
-  raster_caps_.use_gpu_rasterization = use_gpu;
-  raster_caps_.can_use_msaa = gpu_raster_caps.can_use_msaa;
-  raster_caps_.supports_disable_msaa = gpu_raster_caps.supports_disable_msaa;
-  return true;
-}
-
-void LayerTreeHostImpl::UpdateTreeResourcesForGpuRasterizationIfNeeded() {
-  if (!UpdateGpuRasterizationStatus())
+  if (!worker_context_provider) {
+    // For Android UI it's possible to only have a compositor context and no
+    // worker context. Raster is not supported in this mode.
+    raster_caps_.max_texture_size =
+        context_provider->ContextCapabilities().max_texture_size;
     return;
-
-  // Clean up and replace existing tile manager with another one that uses
-  // appropriate rasterizer. Only do this however if we already have a
-  // resource pool, since otherwise we might not be able to create a new
-  // one.
-  ReleaseTileResources();
-  if (resource_pool_) {
-    CleanUpTileManagerResources();
-    CreateTileManagerResources();
   }
-  RecreateTileResources();
 
-  // We have released tilings for both active and pending tree.
-  // We would not have any content to draw until the pending tree is activated.
-  // Prevent the active tree from drawing until activation.
-  // TODO(crbug.com/469175): Replace with RequiresHighResToDraw.
-  SetRequiresHighResToDraw();
+  viz::RasterContextProvider::ScopedRasterContextLock scoped_lock(
+      worker_context_provider);
+  const auto& context_caps = worker_context_provider->ContextCapabilities();
+
+  raster_caps_.max_texture_size = context_caps.max_texture_size;
+  raster_caps_.ui_rgba_format =
+      viz::PlatformColor::BestSupportedTextureFormat(context_caps);
+
+  raster_caps_.tile_overlay_candidate =
+      settings_.resource_settings.use_gpu_memory_buffer_resources &&
+      context_caps.supports_scanout_shared_images;
+  raster_caps_.tile_texture_target = GL_TEXTURE_2D;
+
+  if (settings_.gpu_rasterization_disabled || !context_caps.gpu_rasterization) {
+    // This is the GPU compositing but software rasterization path. Pick the
+    // best format for GPU textures to be uploaded to.
+    raster_caps_.tile_format =
+        settings_.use_rgba_4444
+            ? viz::SinglePlaneFormat::kRGBA_4444
+            : viz::PlatformColor::BestSupportedTextureFormat(context_caps);
+
+    if (raster_caps_.tile_overlay_candidate) {
+      raster_caps_.tile_texture_target = gpu::GetBufferTextureTarget(
+          gfx::BufferUsage::SCANOUT,
+          viz::SinglePlaneSharedImageFormatToBufferFormat(
+              raster_caps_.tile_format),
+          context_caps);
+    }
+
+    return;
+  }
+
+  // GPU compositing + rasterization is enabled if we get this far.
+  CHECK(context_caps.supports_oop_raster);
+  raster_caps_.use_gpu_rasterization = true;
+
+  raster_caps_.can_use_msaa =
+      !context_caps.msaa_is_slow && !context_caps.avoid_stencil_buffers;
+
+  // Note this uses compositor context capabilities instead of worker since
+  // relevant capabilities are not set by raster decoder.
+  raster_caps_.tile_format =
+      settings_.use_rgba_4444
+          ? viz::SinglePlaneFormat::kRGBA_4444
+          : viz::PlatformColor::BestSupportedRenderBufferFormat(
+                context_provider->ContextCapabilities());
+
+  if (raster_caps_.tile_overlay_candidate) {
+    raster_caps_.tile_texture_target = gpu::GetBufferTextureTarget(
+        gfx::BufferUsage::SCANOUT,
+        viz::SinglePlaneSharedImageFormatToBufferFormat(
+            raster_caps_.tile_format),
+        context_caps);
+  }
 }
 
 ImageDecodeCache* LayerTreeHostImpl::GetImageDecodeCache() const {
@@ -3582,22 +3593,20 @@ void LayerTreeHostImpl::ReleaseTileResources() {
 
 void LayerTreeHostImpl::RecreateTileResources() {
   active_tree_->RecreateTileResources();
-  if (pending_tree_)
+  if (pending_tree_) {
     pending_tree_->RecreateTileResources();
-  if (recycle_tree_)
+  }
+  if (recycle_tree_) {
     recycle_tree_->RecreateTileResources();
+  }
 }
 
 void LayerTreeHostImpl::CreateTileManagerResources() {
-  viz::SharedImageFormat tile_format = TileRasterBufferFormat(
-      settings_, layer_tree_frame_sink_->context_provider(),
-      raster_caps().use_gpu_rasterization);
-
   const bool gpu_compositing = !!layer_tree_frame_sink_->context_provider();
   image_decode_cache_holder_ = std::make_unique<ImageDecodeCacheHolder>(
       settings_.enable_shared_image_cache_for_gpu, raster_caps(),
       gpu_compositing,
-      layer_tree_frame_sink_->worker_context_provider_wrapper(), tile_format,
+      layer_tree_frame_sink_->worker_context_provider_wrapper(),
       settings_.decoded_image_working_set_budget_bytes, dark_mode_filter_);
 
   if (raster_caps().use_gpu_rasterization) {
@@ -3630,28 +3639,24 @@ void LayerTreeHostImpl::CreateTileManagerResources() {
 std::unique_ptr<RasterBufferProvider>
 LayerTreeHostImpl::CreateRasterBufferProvider() {
   DCHECK(GetTaskRunner());
-
-  viz::ContextProvider* compositor_context_provider =
+  viz::RasterContextProvider* compositor_context_provider =
       layer_tree_frame_sink_->context_provider();
-  if (!compositor_context_provider)
+
+  if (!compositor_context_provider) {
     return std::make_unique<BitmapRasterBufferProvider>(layer_tree_frame_sink_);
+  }
 
   const gpu::Capabilities& caps =
       compositor_context_provider->ContextCapabilities();
   viz::RasterContextProvider* worker_context_provider =
       layer_tree_frame_sink_->worker_context_provider();
 
-  viz::SharedImageFormat tile_format =
-      TileRasterBufferFormat(settings_, compositor_context_provider,
-                             raster_caps().use_gpu_rasterization);
-
   if (raster_caps().use_gpu_rasterization) {
     DCHECK(worker_context_provider);
 
     return std::make_unique<GpuRasterBufferProvider>(
-        compositor_context_provider, worker_context_provider,
-        settings_.resource_settings.use_gpu_memory_buffer_resources,
-        tile_format, settings_.max_gpu_raster_tile_size,
+        compositor_context_provider, worker_context_provider, raster_caps_,
+        settings_.max_gpu_raster_tile_size,
         settings_.unpremultiply_and_dither_low_bit_depth_tiles,
         pending_raster_queries_.get());
   }
@@ -3668,7 +3673,7 @@ LayerTreeHostImpl::CreateRasterBufferProvider() {
   if (use_zero_copy) {
     return std::make_unique<ZeroCopyRasterBufferProvider>(
         layer_tree_frame_sink_->gpu_memory_buffer_manager(),
-        compositor_context_provider, tile_format);
+        compositor_context_provider, raster_caps_);
   }
 
   const int max_copy_texture_chromium_size =
@@ -3677,8 +3682,7 @@ LayerTreeHostImpl::CreateRasterBufferProvider() {
       GetTaskRunner(), compositor_context_provider, worker_context_provider,
       layer_tree_frame_sink_->gpu_memory_buffer_manager(),
       max_copy_texture_chromium_size, settings_.use_partial_raster,
-      settings_.resource_settings.use_gpu_memory_buffer_resources,
-      settings_.max_staging_buffer_usage_in_bytes, tile_format);
+      settings_.max_staging_buffer_usage_in_bytes, raster_caps_);
 }
 
 void LayerTreeHostImpl::SetLayerTreeMutator(
@@ -3810,10 +3814,11 @@ void LayerTreeHostImpl::ReleaseLayerTreeFrameSink() {
 #endif
 
   if (should_finish && layer_tree_frame_sink_->context_provider()) {
-    // TODO(ericrk): Remove this once all uses of ContextGL from LTFS are
-    // removed.
-    auto* gl = layer_tree_frame_sink_->context_provider()->ContextGL();
-    gl->Finish();
+    // TODO(kylechar): Exactly where this finish call is still required is not
+    // obvious. Attempts have been made to remove it which caused problems, eg.
+    // https://crbug.com/846709. We should test removing it via finch to find
+    // out if this is still needed on any platforms.
+    layer_tree_frame_sink_->context_provider()->RasterInterface()->Finish();
   }
 
   // Release any context visibility before we destroy the LayerTreeFrameSink.
@@ -3883,38 +3888,12 @@ bool LayerTreeHostImpl::InitializeFrameSink(
   layer_tree_frame_sink_ = layer_tree_frame_sink;
   has_valid_layer_tree_frame_sink_ = true;
 
-  auto* context_provider = layer_tree_frame_sink_->context_provider();
-  auto* worker_context_provider =
-      layer_tree_frame_sink_->worker_context_provider();
-
-  if (worker_context_provider) {
-    viz::RasterContextProvider::ScopedRasterContextLock scoped_context(
-        worker_context_provider);
-    raster_caps_.max_texture_size =
-        worker_context_provider->ContextCapabilities().max_texture_size;
-#if BUILDFLAG(IS_ANDROID)
-    // On Android, DMSAA is only enabled for vulkan until GL regressions are
-    // fixed.
-    raster_caps_.use_dmsaa_for_tiles &=
-        worker_context_provider->ContextCapabilities().using_vulkan_context;
-#endif
-  } else if (context_provider) {
-    raster_caps_.max_texture_size =
-        context_provider->ContextCapabilities().max_texture_size;
-  } else {
-    raster_caps_.max_texture_size = settings_.max_render_buffer_bounds_for_sw;
-  }
+  UpdateRasterCapabilities();
 
   resource_pool_ = std::make_unique<ResourcePool>(
-      &resource_provider_, context_provider, GetTaskRunner(),
-      ResourcePool::kDefaultExpirationDelay,
+      &resource_provider_, layer_tree_frame_sink_->context_provider(),
+      GetTaskRunner(), ResourcePool::kDefaultExpirationDelay,
       settings_.disallow_non_exact_resource_reuse);
-
-  // Since the new context may support GPU raster or be capable of MSAA, update
-  // status here. We don't need to check the return value since we are
-  // recreating all resources already.
-  SetNeedUpdateGpuRasterizationStatus();
-  UpdateGpuRasterizationStatus();
 
   // See note in LayerTreeImpl::UpdateDrawProperties, new LayerTreeFrameSink
   // means a new max texture size which affects draw properties. Also, if the
@@ -4205,6 +4184,7 @@ LayerTreeHostImpl::ProcessCompositorDeltas(
 
   commit_data->ongoing_scroll_animation =
       !!mutator_host_->ImplOnlyScrollAnimatingElement();
+  commit_data->is_auto_scrolling = mutator_host_->IsAutoScrolling();
 
   if (browser_controls_manager()) {
     commit_data->browser_controls_constraint =
@@ -4575,13 +4555,7 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
   viz::SharedImageFormat format;
   switch (bitmap.GetFormat()) {
     case UIResourceBitmap::RGBA8:
-      if (layer_tree_frame_sink_->context_provider()) {
-        const gpu::Capabilities& caps =
-            layer_tree_frame_sink_->context_provider()->ContextCapabilities();
-        format = viz::PlatformColor::BestSupportedTextureFormat(caps);
-      } else {
-        format = viz::SinglePlaneFormat::kRGBA_8888;
-      }
+      format = raster_caps_.ui_rgba_format;
       break;
     case UIResourceBitmap::ALPHA_8:
       format = viz::SinglePlaneFormat::kALPHA_8;
@@ -4621,13 +4595,13 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
   bool overlay_candidate = false;
 
   if (layer_tree_frame_sink_->context_provider()) {
-    viz::ContextProvider* context_provider =
+    viz::RasterContextProvider* context_provider =
         layer_tree_frame_sink_->context_provider();
     const auto& caps = context_provider->ContextCapabilities();
     overlay_candidate =
         settings_.resource_settings.use_gpu_memory_buffer_resources &&
         caps.supports_scanout_shared_images &&
-        viz::IsGpuMemoryBufferFormatSupported(format.resource_format());
+        viz::CanCreateGpuMemoryBufferForSinglePlaneSharedImageFormat(format);
     if (overlay_candidate) {
       shared_image_usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
       texture_target = gpu::GetBufferTextureTarget(
@@ -4643,7 +4617,7 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
     // If not scaled, we can copy the pixels 1:1 from the source bitmap to our
     // destination backing of a texture or shared bitmap.
     if (layer_tree_frame_sink_->context_provider()) {
-      viz::ContextProvider* context_provider =
+      viz::RasterContextProvider* context_provider =
           layer_tree_frame_sink_->context_provider();
       auto* sii = context_provider->SharedImageInterface();
       mailbox = sii->CreateSharedImage(
@@ -4690,11 +4664,13 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
     if (layer_tree_frame_sink_->context_provider()) {
       scaled_surface = SkSurfaces::Raster(SkImageInfo::MakeN32Premul(
           upload_size.width(), upload_size.height()));
+      CHECK(scaled_surface);  // This would fail in OOM situations.
     } else {
       SkImageInfo dst_info =
           SkImageInfo::MakeN32Premul(gfx::SizeToSkISize(upload_size));
       scaled_surface = SkSurfaces::WrapPixels(dst_info, shm.mapping.memory(),
                                               dst_info.minRowBytes());
+      CHECK(scaled_surface);  // This could fail on invalid parameters.
     }
     SkCanvas* scaled_canvas = scaled_surface->getCanvas();
     scaled_canvas->scale(canvas_scale_x, canvas_scale_y);
@@ -4708,7 +4684,7 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
     if (layer_tree_frame_sink_->context_provider()) {
       SkPixmap pixmap;
       scaled_surface->peekPixels(&pixmap);
-      viz::ContextProvider* context_provider =
+      viz::RasterContextProvider* context_provider =
           layer_tree_frame_sink_->context_provider();
       auto* sii = context_provider->SharedImageInterface();
       mailbox = sii->CreateSharedImage(
@@ -4953,10 +4929,6 @@ void LayerTreeHostImpl::SetTreeLayerScrollOffsetMutated(
     return;
   property_trees->scroll_tree_mutable().OnScrollOffsetAnimated(
       element_id, scroll_node->id, scroll_offset, tree);
-}
-
-void LayerTreeHostImpl::SetNeedUpdateGpuRasterizationStatus() {
-  raster_caps_.need_update_gpu_rasterization_status = true;
 }
 
 void LayerTreeHostImpl::SetElementFilterMutated(
@@ -5239,23 +5211,6 @@ void LayerTreeHostImpl::ApplyFirstScrollTracking(const ui::LatencyInfo& latency,
   // to the given `frame_token`.
   presentation_time_callbacks_.RegisterCompositorThreadSuccessfulCallbacks(
       frame_token, std::move(callbacks));
-}
-
-std::string LayerTreeHostImpl::GetHungCommitDebugInfo() const {
-  return base::StringPrintf(
-             "ptfp%d pwpd%d tmrta%d as%d gpur%d%d ltfs%d%d zc%d ",
-             static_cast<int>(pending_tree_fully_painted_),
-             static_cast<int>(paint_worklet_painter_ &&
-                              paint_worklet_painter_->HasOngoingDispatch()),
-             static_cast<int>(tile_manager_.IsReadyToActivate()),
-             static_cast<int>(GetActivelyScrollingType()),
-             static_cast<int>(raster_caps().use_gpu_rasterization),
-             static_cast<int>(raster_caps().gpu_rasterization_status),
-             static_cast<int>(has_valid_layer_tree_frame_sink_),
-             static_cast<int>(layer_tree_frame_sink_ &&
-                              layer_tree_frame_sink_->context_provider()),
-             static_cast<int>(settings_.use_zero_copy)) +
-         tile_manager_.GetHungCommitDebugInfo();
 }
 
 }  // namespace cc

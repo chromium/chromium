@@ -18,8 +18,8 @@ declare_args() {
 
   # Should Dawn support be compiled to back the WebGPU implementation?
   # Also controls linking Dawn dependencies in such as SPIRV-Tools/SPIRV-Cross.
-  use_dawn = is_mac || is_win || is_chromeos_ash || (is_linux && !is_castos) ||
-             is_chromeos_lacros ||
+  use_dawn = is_apple || is_win || is_chromeos_ash ||
+             (is_linux && !is_castos) || is_chromeos_lacros ||
              (is_android && target_cpu != "x86" && target_cpu != "x64")
 
   # Should Dawn test binaries (unittests, end2end_tests, perf_tests) be built?

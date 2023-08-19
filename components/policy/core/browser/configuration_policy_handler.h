@@ -545,6 +545,13 @@ class POLICY_EXPORT CloudOnlyPolicyHandler
                          SchemaOnErrorStrategy strategy);
   ~CloudOnlyPolicyHandler() override;
 
+  // Utility method for checking whether a policy is applied by a cloud-only
+  // source. Useful for cloud-only policy handlers which currently don't inherit
+  // from `CloudOnlyPolicyHandler`.
+  static bool CheckCloudOnlyPolicySettings(const char* policy_name,
+                                           const PolicyMap& policies,
+                                           PolicyErrorMap* errors);
+
   bool CheckPolicySettings(const PolicyMap& policies,
                            PolicyErrorMap* errors) override;
 };

@@ -18,14 +18,21 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_os_level_manager.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 #include "content/browser/attribution_reporting/os_registration.h"
+#include "content/browser/browser_thread_impl.h"
 #include "content/public/android/content_jni_headers/AttributionOsLevelManager_jni.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
@@ -80,12 +87,31 @@ ApiState ConvertToApiState(int value) {
   }
 }
 
+void GetMeasurementApiStatus() {
+  base::ElapsedThreadTimer timer;
+  Java_AttributionOsLevelManager_getMeasurementApiStatus(
+      base::android::AttachCurrentThread());
+  if (timer.is_supported()) {
+    base::UmaHistogramTimes("Conversions.GetMeasurementStatusTime",
+                            timer.Elapsed());
+  }
+}
+
 }  // namespace
 
 static void JNI_AttributionOsLevelManager_OnMeasurementStateReturned(
     JNIEnv* env,
     jint state) {
-  AttributionOsLevelManager::SetApiState(ConvertToApiState(state));
+  ApiState api_state = ConvertToApiState(state);
+
+  if (BrowserThread::CurrentlyOn(BrowserThread::UI)) {
+    AttributionOsLevelManager::SetApiState(api_state);
+    return;
+  }
+
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&AttributionOsLevelManager::SetApiState, api_state));
 }
 
 AttributionOsLevelManagerAndroid::AttributionOsLevelManagerAndroid() {
@@ -93,8 +119,8 @@ AttributionOsLevelManagerAndroid::AttributionOsLevelManagerAndroid() {
       base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this));
 
   if (AttributionOsLevelManager::ShouldInitializeApiState()) {
-    Java_AttributionOsLevelManager_getMeasurementApiStatus(
-        base::android::AttachCurrentThread(), jobj_);
+    base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
+        ->PostTask(FROM_HERE, base::BindOnce(&GetMeasurementApiStatus));
   }
 }
 
@@ -111,7 +137,7 @@ void AttributionOsLevelManagerAndroid::Register(OsRegistration registration,
 
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  attribution_reporting::mojom::OsRegistrationType type = registration.GetType();
+  attribution_reporting::mojom::RegistrationType type = registration.GetType();
   auto registration_url =
       url::GURLAndroid::FromNativeGURL(env, registration.registration_url);
   auto top_level_origin = url::GURLAndroid::FromNativeGURL(
@@ -123,7 +149,7 @@ void AttributionOsLevelManagerAndroid::Register(OsRegistration registration,
       request_id, base::BindOnce(std::move(callback), std::move(registration)));
 
   switch (type) {
-    case attribution_reporting::mojom::OsRegistrationType::kSource:
+    case attribution_reporting::mojom::RegistrationType::kSource:
       DCHECK(input_event.has_value());
       if (AttributionOsLevelManager::ShouldUseOsWebSource()) {
         Java_AttributionOsLevelManager_registerWebAttributionSource(
@@ -134,7 +160,7 @@ void AttributionOsLevelManagerAndroid::Register(OsRegistration registration,
             env, jobj_, request_id, registration_url, input_event->input_event);
       }
       break;
-    case attribution_reporting::mojom::OsRegistrationType::kTrigger:
+    case attribution_reporting::mojom::RegistrationType::kTrigger:
       Java_AttributionOsLevelManager_registerWebAttributionTrigger(
           env, jobj_, request_id, registration_url, top_level_origin,
           is_debug_key_allowed);

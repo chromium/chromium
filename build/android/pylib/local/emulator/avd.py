@@ -98,6 +98,9 @@ def _Load(avd_proto_path):
     avd_proto_path: path to a textpb file containing an Avd message.
   """
   with open(avd_proto_path) as avd_proto_file:
+    # python generated codes are simplified since Protobuf v3.20.0 and cause
+    # pylint error. See https://github.com/protocolbuffers/protobuf/issues/9730
+    # pylint: disable=no-member
     return text_format.Merge(avd_proto_file.read(), avd_pb2.Avd())
 
 
@@ -332,6 +335,14 @@ class AvdConfig:
     return self._config.avd_settings
 
   @property
+  def avd_launch_settings(self):
+    """The AvdLaunchSettings in the avd proto file.
+
+    This defines AVD setting during launch time.
+    """
+    return self._config.avd_launch_settings
+
+  @property
   def avd_name(self):
     """The name of the AVD to create or use."""
     return self._config.avd_name
@@ -532,10 +543,11 @@ class AvdConfig:
       # Installing privileged apks requires modifying the system
       # image.
       writable_system = bool(privileged_apk_tuples)
+      gpu_mode = self.avd_launch_settings.gpu_mode or _DEFAULT_GPU_MODE
       instance.Start(ensure_system_settings=False,
                      read_only=False,
                      writable_system=writable_system,
-                     gpu_mode=_DEFAULT_GPU_MODE,
+                     gpu_mode=gpu_mode,
                      debug_tags=debug_tags)
 
       assert instance.device is not None, '`instance.device` not initialized.'
@@ -544,7 +556,10 @@ class AvdConfig:
       # https://bit.ly/3agmjcM).
       # Wait for this step to complete since it can take a while for old OSs
       # like M, otherwise the avd may have "Encryption Unsuccessful" error.
-      instance.device.WaitUntilFullyBooted(decrypt=True, timeout=180, retries=0)
+      instance.device.WaitUntilFullyBooted(decrypt=True,
+                                           wifi=True,
+                                           timeout=180,
+                                           retries=0)
 
       if additional_apks:
         for apk in additional_apks:
@@ -939,9 +954,10 @@ class _AvdInstance:
             read_only=True,
             window=False,
             writable_system=False,
-            gpu_mode=_DEFAULT_GPU_MODE,
+            gpu_mode=None,
             wipe_data=False,
             debug_tags=None,
+            disk_size=None,
             require_fast_start=False):
     """Starts the emulator running an instance of the given AVD.
 
@@ -985,6 +1001,8 @@ class _AvdInstance:
 
       if wipe_data:
         emulator_cmd.append('-wipe-data')
+      if disk_size:
+        emulator_cmd.extend(['-partition-size', str(disk_size)])
       if read_only:
         emulator_cmd.append('-read-only')
       if writable_system:
@@ -995,8 +1013,10 @@ class _AvdInstance:
       #    EGL display". See the code in https://bit.ly/3ruiMlB as an example
       #    to setup the DISPLAY env with xvfb.
       #  * It will not work under remote sessions like chrome remote desktop.
-      if gpu_mode:
-        emulator_cmd.extend(['-gpu', gpu_mode])
+      if not gpu_mode:
+        gpu_mode = (self._avd_config.avd_launch_settings.gpu_mode
+                    or _DEFAULT_GPU_MODE)
+      emulator_cmd.extend(['-gpu', gpu_mode])
       if debug_tags:
         self._debug_tags = set(debug_tags.split(','))
         # Always print timestamp when debug tags are set.

@@ -20,7 +20,6 @@ import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.ImeEventObserver;
 import org.chromium.content_public.browser.NavigationHandle;
-import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
@@ -41,6 +40,7 @@ public class TabStateBrowserControlsVisibilityDelegate
     private WebContents mWebContents;
 
     private boolean mIsFullscreenWaitingForLoad;
+    private boolean mIsFocusedNodeEditable;
 
     /**
      * Basic constructor.
@@ -119,7 +119,11 @@ public class TabStateBrowserControlsVisibilityDelegate
 
             @Override
             public void onPageLoadFailed(Tab tab, int errorCode) {
-                cancelEnableFullscreenLoadDelay();
+                // TODO(https://crbug.com/1471156): Associate events with navigation ids or urls,
+                // so that we can fully unlock controls here possible here.
+                // May have already received the start of a different navigation. Do not cancel the
+                // outstanding delay. See https://crbug.com/1447237.
+                scheduleEnableFullscreenLoadDelayIfNecessary();
             }
 
             @Override
@@ -145,6 +149,11 @@ public class TabStateBrowserControlsVisibilityDelegate
             @Override
             public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
                 if (window != null) updateVisibilityConstraints();
+            }
+
+            @Override
+            public void onCrash(Tab tab) {
+                mIsFocusedNodeEditable = false;
             }
 
             @Override
@@ -183,8 +192,7 @@ public class TabStateBrowserControlsVisibilityDelegate
 
         enableHidingBrowserControls &=
                 !SecurityStateModel.isContentDangerous(mTab.getWebContents());
-        enableHidingBrowserControls &=
-                !SelectionPopupController.fromWebContents(webContents).isFocusedNodeEditable();
+        enableHidingBrowserControls &= !mIsFocusedNodeEditable;
         enableHidingBrowserControls &= !mTab.isShowingErrorPage();
         enableHidingBrowserControls &= !mTab.isRendererUnresponsive();
         enableHidingBrowserControls &= !mTab.isHidden();
@@ -224,6 +232,7 @@ public class TabStateBrowserControlsVisibilityDelegate
 
     @Override
     public void onNodeAttributeUpdated(boolean editable, boolean password) {
+        mIsFocusedNodeEditable = editable;
         updateVisibilityConstraints();
     }
 }

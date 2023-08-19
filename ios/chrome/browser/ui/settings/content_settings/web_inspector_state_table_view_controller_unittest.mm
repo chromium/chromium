@@ -4,15 +4,11 @@
 
 #import "ios/chrome/browser/ui/settings/content_settings/web_inspector_state_table_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest_mac.h"
 #import "ui/base/l10n/l10n_util.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 class WebInspectorStateTableViewControllerTest
     : public ChromeTableViewControllerTest {
@@ -60,7 +56,7 @@ TEST_F(WebInspectorStateTableViewControllerTest, TestSwitchItemAtLoad) {
 TEST_F(WebInspectorStateTableViewControllerTest, TestCheckmark) {
   ChromeTableViewController* chrome_controller = controller();
   WebInspectorStateTableViewController* controller =
-      base::mac::ObjCCastStrict<WebInspectorStateTableViewController>(
+      base::apple::ObjCCastStrict<WebInspectorStateTableViewController>(
           chrome_controller);
 
   [controller setWebInspectorEnabled:YES];

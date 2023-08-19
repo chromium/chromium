@@ -17,6 +17,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -52,6 +53,12 @@ VirtualKeyboardTray::VirtualKeyboardTray(
   icon->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::VH(vertical_padding, horizontal_padding)));
   icon_ = tray_container()->AddChildView(std::move(icon));
+  // First sets the image with non-Jelly color to get the image dimension and
+  // create the correct paddings, and then updates the color if Jelly is
+  // enabled.
+  if (chromeos::features::IsJellyEnabled()) {
+    UpdateTrayItemColor(is_active());
+  }
 
   // The Shell may not exist in some unit tests.
   if (Shell::HasInstance()) {
@@ -118,6 +125,14 @@ void VirtualKeyboardTray::HideBubbleWithView(
     const TrayBubbleView* bubble_view) {}
 
 void VirtualKeyboardTray::ClickedOutsideBubble() {}
+
+void VirtualKeyboardTray::UpdateTrayItemColor(bool is_active) {
+  DCHECK(chromeos::features::IsJellyEnabled());
+  icon_->SetImage(ui::ImageModel::FromVectorIcon(
+      kShelfKeyboardNewuiIcon,
+      is_active ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                : cros_tokens::kCrosSysOnSurface));
+}
 
 void VirtualKeyboardTray::OnAccessibilityStatusChanged() {
   bool new_enabled =

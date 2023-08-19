@@ -16,6 +16,8 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/multipart_data_pipe_getter.h"
+#include "components/file_access/scoped_file_access.h"
+#include "components/file_access/scoped_file_access_delegate.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -231,11 +233,9 @@ void MultipartUploadRequest::SendFileRequest(
     data_pipe_getter_->Reset();
     CompleteSendRequest(std::move(request));
   } else {
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
-        base::BindOnce(&CreateFileDataPipeGetterBlocking, boundary_, metadata_,
-                       path_),
-        base::BindOnce(&MultipartUploadRequest::DataPipeCreatedCallback,
+    file_access::RequestFilesAccessForSystem(
+        {path_},
+        base::BindOnce(&MultipartUploadRequest::CreateDatapipe,
                        weak_factory_.GetWeakPtr(), std::move(request)));
   }
 }
@@ -260,6 +260,7 @@ void MultipartUploadRequest::SendPageRequest(
 void MultipartUploadRequest::DataPipeCreatedCallback(
     std::unique_ptr<network::ResourceRequest> request,
     std::unique_ptr<MultipartDataPipeGetter> data_pipe_getter) {
+  scoped_file_access_.reset();
   if (!data_pipe_getter) {
     std::move(callback_).Run(/*success=*/false, 0, "");
     return;
@@ -285,6 +286,19 @@ void MultipartUploadRequest::CompleteSendRequest(
       url_loader_factory_.get(),
       base::BindOnce(&MultipartUploadRequest::OnURLLoaderComplete,
                      weak_factory_.GetWeakPtr()));
+}
+
+void MultipartUploadRequest::CreateDatapipe(
+    std::unique_ptr<network::ResourceRequest> request,
+    file_access::ScopedFileAccess file_access) {
+  scoped_file_access_ =
+      std::make_unique<file_access::ScopedFileAccess>(std::move(file_access));
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
+      base::BindOnce(&CreateFileDataPipeGetterBlocking, boundary_, metadata_,
+                     path_),
+      base::BindOnce(&MultipartUploadRequest::DataPipeCreatedCallback,
+                     weak_factory_.GetWeakPtr(), std::move(request)));
 }
 
 void MultipartUploadRequest::OnURLLoaderComplete(

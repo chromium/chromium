@@ -13,6 +13,7 @@
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/mojom/accelerator_info.mojom.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "base/containers/fixed_flat_set.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/events/event_constants.h"
@@ -28,11 +29,14 @@
 //    2.    If you are adding a browser/ambient [1] accelerator, add a new
 //          enum to `NonConfigurableActions`. Then add an entry to
 //          `GetNonConfigurableActionsMap` in `accelerator_layout_table.cc`.
-//    3.    Add a new entry to `kAcceleratorLayouts` below. Please check that
+//    3.    If the new accelerator does not have a layout and will not appear in
+//          the Shortcuts app, add it to `kAcceleratorsWithoutLayout` and skip
+//          step 4 & 5.
+//    4.    Add a new entry to `kAcceleratorLayouts` below. Please check that
 //          you are adding the accelerator to the correct category determined
 //          from step 1. The ordering of the accelerators is reflected in the
 //          app, so place the accelerator where it would most logically fit.
-//    4.    If the accelerator can be modified, ensure that the
+//    5.    If the accelerator can be modified, ensure that the
 //          `kAcceleratorLayouts` entry has its `locked` field set to `false`.
 //
 //   [1]: An "ambient" accelerator is a non-modifiable miscellaneous accelerator
@@ -66,6 +70,7 @@ enum NonConfigurableActions {
   kBrowserHome,
   kBrowserShowDownloads,
   kBrowserShowHistory,
+  kBrowserFocusAddressBar,
   kBrowserFocusSearch,
   kBrowserFocusMenuBar,
   kBrowserPrint,
@@ -91,7 +96,6 @@ enum NonConfigurableActions {
   kBrowserBottomPage,
   kBrowserTopPage,
   kBrowserNextPane,
-  kBrowserRightClick,
   kBrowserAutoComplete,
   kBrowserStopDragTab,
   kBrowserSelectNextTab,
@@ -189,6 +193,10 @@ class TextAcceleratorPart : public mojom::TextAcceleratorPart {
   TextAcceleratorPart(const TextAcceleratorPart&);
   TextAcceleratorPart& operator=(const TextAcceleratorPart&);
   ~TextAcceleratorPart();
+
+  // If the part is a keycode, we store it so that we will always have a way
+  // to get the accurate localized key string to display.
+  absl::optional<ui::KeyboardCode> keycode;
 };
 
 // Contains info related to a non-configurable accelerator. A non-configurable
@@ -228,6 +236,43 @@ using NonConfigurableActionsMap =
 const NonConfigurableActionsMap& GetNonConfigurableActionsMap();
 
 std::u16string GetKeyDisplay(ui::KeyboardCode key_code);
+
+// A fixed set of accelerators that should not have a layout. This is used for
+// integrity check to make sure when a new accelerator is added, either it has
+// been added to `kAcceleratorLayouts` or here.
+constexpr auto kAshAcceleratorsWithoutLayout =
+    base::MakeFixedFlatSet<AcceleratorAction>({
+        AcceleratorAction::kCycleBackwardMru,
+        AcceleratorAction::kCycleForwardMru,
+        AcceleratorAction::kDisableCapsLock,
+        AcceleratorAction::kFocusCameraPreview,
+        AcceleratorAction::kFocusNextPane,
+        AcceleratorAction::kLaunchApp0,
+        AcceleratorAction::kLaunchApp1,
+        AcceleratorAction::kLaunchApp2,
+        AcceleratorAction::kLaunchApp3,
+        AcceleratorAction::kLaunchApp4,
+        AcceleratorAction::kLaunchApp5,
+        AcceleratorAction::kLaunchApp6,
+        AcceleratorAction::kLaunchApp7,
+        AcceleratorAction::kLockPressed,
+        AcceleratorAction::kLockReleased,
+        AcceleratorAction::kMediaRewind,
+        AcceleratorAction::kMediaStop,
+        AcceleratorAction::kNewIncognitoWindow,
+        AcceleratorAction::kNewTab,
+        AcceleratorAction::kNewWindow,
+        AcceleratorAction::kPasteClipboardHistoryPlainText,
+        AcceleratorAction::kPowerPressed,
+        AcceleratorAction::kPowerReleased,
+        AcceleratorAction::kPrintUiHierarchies,
+        AcceleratorAction::kRestoreTab,
+        AcceleratorAction::kRotateWindow,
+        AcceleratorAction::kToggleProjectorMarker,
+        AcceleratorAction::kToggleWifi,
+        AcceleratorAction::kTouchHudClear,
+        AcceleratorAction::kTouchHudModeChange,
+    });
 
 // A fixed array of accelerator layouts used for categorization and styling of
 // accelerator actions. The ordering of the array is important and is used
@@ -310,15 +355,15 @@ constexpr AcceleratorLayoutDetails kAcceleratorLayouts[] = {
      IDS_ASH_ACCELERATOR_DESCRIPTION_SWITCH_TO_NEXT_USER,
      mojom::AcceleratorCategory::kGeneral,
      mojom::AcceleratorSubcategory::kGeneralControls,
-     /*locked=*/false, mojom::AcceleratorLayoutStyle::kDefault,
+     /*locked=*/true, mojom::AcceleratorLayoutStyle::kDefault,
      mojom::AcceleratorSource::kAsh},
     {AcceleratorAction::kSwitchToPreviousUser,
      IDS_ASH_ACCELERATOR_DESCRIPTION_SWITCH_TO_PREVIOUS_USER,
      mojom::AcceleratorCategory::kGeneral,
      mojom::AcceleratorSubcategory::kGeneralControls,
-     /*locked=*/false, mojom::AcceleratorLayoutStyle::kDefault,
+     /*locked=*/true, mojom::AcceleratorLayoutStyle::kDefault,
      mojom::AcceleratorSource::kAsh},
-    {AcceleratorAction::kToggleDictation,
+    {AcceleratorAction::kEnableOrToggleDictation,
      IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_DICTATION,
      mojom::AcceleratorCategory::kGeneral,
      mojom::AcceleratorSubcategory::kGeneralControls,
@@ -488,12 +533,6 @@ constexpr AcceleratorLayoutDetails kAcceleratorLayouts[] = {
      mojom::AcceleratorSubcategory::kInputs,
      /*locked=*/false, mojom::AcceleratorLayoutStyle::kDefault,
      mojom::AcceleratorSource::kAsh},
-    {NonConfigurableActions::kBrowserRightClick,
-     IDS_BROWSER_ACCELERATOR_DESCRIPTION_RIGHT_CLICK,
-     mojom::AcceleratorCategory::kDevice,
-     mojom::AcceleratorSubcategory::kInputs,
-     /*locked=*/true, mojom::AcceleratorLayoutStyle::kText,
-     mojom::AcceleratorSource::kAmbient},
     {AcceleratorAction::kShowStylusTools,
      IDS_ASH_ACCELERATOR_DESCRIPTION_SHOW_STYLUS_TOOLS,
      mojom::AcceleratorCategory::kDevice,
@@ -589,6 +628,12 @@ constexpr AcceleratorLayoutDetails kAcceleratorLayouts[] = {
      IDS_BROWSER_ACCELERATOR_DESCRIPTION_OPEN_FILE,
      mojom::AcceleratorCategory::kBrowser,
      mojom::AcceleratorSubcategory::kGeneral,
+     /*locked=*/true, mojom::AcceleratorLayoutStyle::kDefault,
+     mojom::AcceleratorSource::kAmbient},
+    {NonConfigurableActions::kBrowserFocusAddressBar,
+     IDS_BROWSER_ACCELERATOR_DESCRIPTION_FOCUS_ADDRESS_BAR,
+     mojom::AcceleratorCategory::kBrowser,
+     mojom::AcceleratorSubcategory::kBrowserNavigation,
      /*locked=*/true, mojom::AcceleratorLayoutStyle::kDefault,
      mojom::AcceleratorSource::kAmbient},
     {NonConfigurableActions::kBrowserFocusSearch,
@@ -913,7 +958,7 @@ constexpr AcceleratorLayoutDetails kAcceleratorLayouts[] = {
      IDS_ASH_ACCELERATOR_DESCRIPTION_SHOW_EMOJI_PICKER,
      mojom::AcceleratorCategory::kText,
      mojom::AcceleratorSubcategory::kTextEditing,
-     /*locked=*/true, mojom::AcceleratorLayoutStyle::kDefault,
+     /*locked=*/false, mojom::AcceleratorLayoutStyle::kDefault,
      mojom::AcceleratorSource::kAsh},
     {NonConfigurableActions::kAmbientCopy,
      IDS_AMBIENT_ACCELERATOR_DESCRIPTION_COPY,
@@ -1001,7 +1046,7 @@ constexpr AcceleratorLayoutDetails kAcceleratorLayouts[] = {
 
     // Windows and Desks
     {NonConfigurableActions::kAmbientCycleForwardMRU,
-     IDS_ASH_ACCELERATOR_DESCRIPTION_CYCLE_FORWARD_MRU,
+     IDS_AMBIENT_ACCELERATOR_DESCRIPTION_CYCLE_FORWARD_MRU,
      mojom::AcceleratorCategory::kWindowsAndDesks,
      mojom::AcceleratorSubcategory::kWindows,
      /*locked=*/true, mojom::AcceleratorLayoutStyle::kText,
@@ -1036,6 +1081,12 @@ constexpr AcceleratorLayoutDetails kAcceleratorLayouts[] = {
      mojom::AcceleratorSubcategory::kWindows,
      /*locked=*/true, mojom::AcceleratorLayoutStyle::kDefault,
      mojom::AcceleratorSource::kAmbient},
+    {AcceleratorAction::kToggleMultitaskMenu,
+     IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_MULTITASK_MENU,
+     mojom::AcceleratorCategory::kWindowsAndDesks,
+     mojom::AcceleratorSubcategory::kWindows,
+     /*locked=*/false, mojom::AcceleratorLayoutStyle::kDefault,
+     mojom::AcceleratorSource::kAsh},
     {AcceleratorAction::kWindowCycleSnapLeft,
      IDS_ASH_ACCELERATOR_DESCRIPTION_WINDOW_CYCLE_SNAP_LEFT,
      mojom::AcceleratorCategory::kWindowsAndDesks,

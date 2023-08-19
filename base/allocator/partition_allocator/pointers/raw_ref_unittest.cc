@@ -9,6 +9,7 @@
 
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/pointers/raw_ptr_counting_impl_wrapper_for_test.h"
 #include "base/allocator/partition_allocator/pointers/raw_ptr_test_support.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/gtest_util.h"
@@ -799,14 +800,14 @@ TEST(RawRefPtr, CTADWithConst) {
 
 // `kDisableHooks` matches what `CountingRawRef` does internally.
 // `kUseCountingWrapperForTest` is removed, and `DisableHooks` is added.
-using RawPtrCountingImpl = base::internal::RawPtrCountingImplWrapperForTest<
+using RawPtrCountingImpl = base::test::RawPtrCountingImplWrapperForTest<
     base::RawPtrTraits::kDisableHooks>;
 
 // `kDisableHooks | kMayDangle` matches what `CountingRawRefMayDangle` does
 // internally. `kUseCountingWrapperForTest` is removed, `kDisableHooks` is
 // added, and `kMayDangle` is kept.
 using RawPtrCountingMayDangleImpl =
-    base::internal::RawPtrCountingImplWrapperForTest<
+    base::test::RawPtrCountingImplWrapperForTest<
         base::RawPtrTraits::kMayDangle | base::RawPtrTraits::kDisableHooks>;
 
 template <typename T>

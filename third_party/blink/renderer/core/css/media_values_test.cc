@@ -33,6 +33,8 @@ TEST_F(MediaValuesTest, Basic) {
       {40.0, CSSPrimitiveValue::UnitType::kPixels, 16, 300, 300, true, 40},
       {40.0, CSSPrimitiveValue::UnitType::kEms, 16, 300, 300, true, 640},
       {40.0, CSSPrimitiveValue::UnitType::kRems, 16, 300, 300, true, 640},
+      {40.0, CSSPrimitiveValue::UnitType::kCaps, 16, 300, 300, true, 640},
+      {40.0, CSSPrimitiveValue::UnitType::kRcaps, 16, 300, 300, true, 640},
       {40.0, CSSPrimitiveValue::UnitType::kExs, 16, 300, 300, true, 320},
       {40.0, CSSPrimitiveValue::UnitType::kRexs, 16, 300, 300, true, 320},
       {40.0, CSSPrimitiveValue::UnitType::kChs, 16, 300, 300, true, 320},
@@ -91,7 +93,7 @@ TEST_F(MediaValuesTest, ZoomedFontUnits) {
   // Set 'font:Ahem 10px' as the default font.
   Settings* settings = GetDocument().GetSettings();
   ASSERT_TRUE(settings);
-  settings->GetGenericFontFamilySettings().UpdateStandard("Ahem");
+  settings->GetGenericFontFamilySettings().UpdateStandard(AtomicString("Ahem"));
   settings->SetDefaultFontSize(10.0f);
 
   UpdateAllLifecyclePhasesForTest();
@@ -108,6 +110,8 @@ TEST_F(MediaValuesTest, ZoomedFontUnits) {
   double ric = 0;
   double lh = 0;
   double rlh = 0;
+  double cap = 0;
+  double rcap = 0;
 
   using UnitType = CSSPrimitiveValue::UnitType;
 
@@ -121,6 +125,8 @@ TEST_F(MediaValuesTest, ZoomedFontUnits) {
   EXPECT_TRUE(media_values->ComputeLength(1.0, UnitType::kRics, ric));
   EXPECT_TRUE(media_values->ComputeLength(1.0, UnitType::kLhs, lh));
   EXPECT_TRUE(media_values->ComputeLength(1.0, UnitType::kRlhs, rlh));
+  EXPECT_TRUE(media_values->ComputeLength(1.0, UnitType::kCaps, cap));
+  EXPECT_TRUE(media_values->ComputeLength(1.0, UnitType::kRcaps, rcap));
 
   EXPECT_DOUBLE_EQ(10.0, em);
   EXPECT_DOUBLE_EQ(10.0, rem);
@@ -132,6 +138,8 @@ TEST_F(MediaValuesTest, ZoomedFontUnits) {
   EXPECT_DOUBLE_EQ(10.0, ric);
   EXPECT_DOUBLE_EQ(10.0, lh);
   EXPECT_DOUBLE_EQ(10.0, rlh);
+  EXPECT_DOUBLE_EQ(8.0, cap);
+  EXPECT_DOUBLE_EQ(8.0, rcap);
 }
 
 }  // namespace blink

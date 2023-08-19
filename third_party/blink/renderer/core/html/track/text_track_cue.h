@@ -42,7 +42,7 @@ namespace blink {
 class HTMLMediaElement;
 class TextTrack;
 
-class CORE_EXPORT TextTrackCue : public EventTargetWithInlineData {
+class CORE_EXPORT TextTrackCue : public EventTarget {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

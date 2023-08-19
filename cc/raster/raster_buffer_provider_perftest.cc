@@ -23,10 +23,12 @@
 #include "cc/tiles/tile_task_manager.h"
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/gpu/context_cache_controller.h"
-#include "components/viz/common/gpu/context_provider.h"
+#include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/platform_color.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/test/test_context_provider.h"
 #include "components/viz/test/test_context_support.h"
+#include "components/viz/test/test_gles2_interface.h"
 #include "components/viz/test/test_gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/raster_implementation_gles.h"
 #include "gpu/command_buffer/common/sync_token.h"
@@ -73,9 +75,10 @@ class PerfGLES2Interface : public gpu::gles2::GLES2InterfaceStub {
   }
 };
 
+}  // namespace
+
 class PerfContextProvider
     : public base::RefCountedThreadSafe<PerfContextProvider>,
-      public viz::ContextProvider,
       public viz::RasterContextProvider {
  public:
   PerfContextProvider()
@@ -87,7 +90,7 @@ class PerfContextProvider
         context_gl_.get(), ContextSupport(), capabilities_);
   }
 
-  // viz::ContextProvider implementation.
+  // viz::RasterContextProvider implementation.
   void AddRef() const override {
     base::RefCountedThreadSafe<PerfContextProvider>::AddRef();
   }
@@ -111,13 +114,13 @@ class PerfContextProvider
   gpu::ContextSupport* ContextSupport() override { return &support_; }
   class GrDirectContext* GrContext() override {
     if (!test_context_provider_) {
-      test_context_provider_ = viz::TestContextProvider::Create();
+      test_context_provider_ = viz::TestContextProvider::CreateRaster();
     }
     return test_context_provider_->GrContext();
   }
   gpu::SharedImageInterface* SharedImageInterface() override {
     if (!test_context_provider_) {
-      test_context_provider_ = viz::TestContextProvider::Create();
+      test_context_provider_ = viz::TestContextProvider::CreateRaster();
     }
     return test_context_provider_->SharedImageInterface();
   }
@@ -127,6 +130,12 @@ class PerfContextProvider
   base::Lock* GetLock() override { return &context_lock_; }
   void AddObserver(viz::ContextLostObserver* obs) override {}
   void RemoveObserver(viz::ContextLostObserver* obs) override {}
+  unsigned int GetGrGLTextureFormat(
+      viz::SharedImageFormat format) const override {
+    return viz::SharedImageFormatRestrictedSinglePlaneUtils::
+        ToGLTextureStorageFormat(
+            format, ContextCapabilities().angle_rgbx_internal_format);
+  }
 
  private:
   friend class base::RefCountedThreadSafe<PerfContextProvider>;
@@ -143,6 +152,8 @@ class PerfContextProvider
   gpu::Capabilities capabilities_;
   gpu::GpuFeatureInfo gpu_feature_info_;
 };
+
+namespace {
 
 enum RasterBufferProviderType {
   RASTER_BUFFER_PROVIDER_TYPE_ZERO_COPY,
@@ -329,7 +340,7 @@ class RasterBufferProviderPerfTestBase {
   }
 
  protected:
-  scoped_refptr<viz::ContextProvider> compositor_context_provider_;
+  scoped_refptr<viz::RasterContextProvider> compositor_context_provider_;
   scoped_refptr<viz::RasterContextProvider> worker_context_provider_;
   std::unique_ptr<FakeLayerTreeFrameSink> layer_tree_frame_sink_;
   std::unique_ptr<viz::ClientResourceProvider> resource_provider_;
@@ -349,29 +360,34 @@ class RasterBufferProviderPerfTest
     pending_raster_queries_ =
         std::make_unique<RasterQueryQueue>(worker_context_provider_.get());
 
+    RasterCapabilities raster_caps;
+    raster_caps.tile_format = viz::SinglePlaneFormat::kRGBA_8888;
+    raster_caps.tile_texture_target = GL_TEXTURE_2D;
+
     switch (GetParam()) {
       case RASTER_BUFFER_PROVIDER_TYPE_ZERO_COPY:
         Create3dResourceProvider();
+        raster_caps.use_gpu_rasterization = false;
         raster_buffer_provider_ =
             std::make_unique<ZeroCopyRasterBufferProvider>(
                 &gpu_memory_buffer_manager_, compositor_context_provider_.get(),
-                viz::SinglePlaneFormat::kRGBA_8888);
+                raster_caps);
         break;
       case RASTER_BUFFER_PROVIDER_TYPE_ONE_COPY:
         Create3dResourceProvider();
+        raster_caps.use_gpu_rasterization = false;
         raster_buffer_provider_ = std::make_unique<OneCopyRasterBufferProvider>(
             task_runner_.get(), compositor_context_provider_.get(),
             worker_context_provider_.get(), &gpu_memory_buffer_manager_,
-            std::numeric_limits<int>::max(), false, false,
-            std::numeric_limits<int>::max(),
-            viz::SinglePlaneFormat::kRGBA_8888);
+            std::numeric_limits<int>::max(), false,
+            std::numeric_limits<int>::max(), raster_caps);
         break;
       case RASTER_BUFFER_PROVIDER_TYPE_GPU:
         Create3dResourceProvider();
+        raster_caps.use_gpu_rasterization = true;
         raster_buffer_provider_ = std::make_unique<GpuRasterBufferProvider>(
             compositor_context_provider_.get(), worker_context_provider_.get(),
-            false, viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(), true,
-            pending_raster_queries_.get());
+            raster_caps, gfx::Size(), true, pending_raster_queries_.get());
         break;
       case RASTER_BUFFER_PROVIDER_TYPE_BITMAP:
         CreateSoftwareResourceProvider();

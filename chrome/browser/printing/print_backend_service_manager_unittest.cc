@@ -30,7 +30,7 @@ const RemoteId kRemoteIdTestPrinter{2};
 const ClientId kClientIdQuery1{1};
 const ClientId kClientIdQuery2{2};
 const ClientId kClientIdQueryWithUi1{5};
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENABLE_CONCURRENT_BASIC_PRINT_DIALOGS)
 const ClientId kClientIdQueryWithUi2{6};
 #endif
 const ClientId kClientIdPrintDocument1{10};
@@ -44,7 +44,7 @@ const ClientsSet kTestQueryWithTwoClients{kClientIdQuery1, kClientIdQuery2};
 const QueryWithUiClientsMap kTestQueryWithUiNoClients;
 const QueryWithUiClientsMap kTestQueryWithUiOneClient{
     {kClientIdQueryWithUi1, kRemoteIdEmpty}};
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENABLE_CONCURRENT_BASIC_PRINT_DIALOGS)
 const QueryWithUiClientsMap kTestQueryWithUiTwoClients{
     {kClientIdQueryWithUi1, kRemoteIdEmpty},
     {kClientIdQueryWithUi2, kRemoteIdEmpty}};
@@ -132,7 +132,7 @@ TEST(PrintBackendServiceManagerTest,
         PrintBackendServiceManager::ClientType::kQueryWithUi,
         kMaxTimeout,
     },
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENABLE_CONCURRENT_BASIC_PRINT_DIALOGS)
     // A new query with UI client with an existing query with UI client
     // should yield no new timeout needed.
     {
@@ -277,7 +277,7 @@ TEST(PrintBackendServiceManagerTest,
         PrintBackendServiceManager::ClientType::kQueryWithUi,
         PrintBackendServiceManager::kClientsRegisteredResetOnIdleTimeout,
     },
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENABLE_CONCURRENT_BASIC_PRINT_DIALOGS)
     // Any remaining query with UI client should yield no new timeout needed.
     {
         kTestQueryNoClients,

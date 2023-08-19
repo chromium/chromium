@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("infobars") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "infobar_controller+protected.h",
     "infobar_ios.h",
@@ -26,7 +25,6 @@ source_set("infobars") {
 }
 
 source_set("badge") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "infobar_badge_tab_helper.h",
     "infobar_badge_tab_helper.mm",
@@ -44,12 +42,10 @@ source_set("badge") {
 }
 
 source_set("badge_state_public") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "badge_state.h" ]
 }
 
 source_set("public") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "confirm_infobar_metrics_recorder.h",
     "confirm_infobar_metrics_recorder.mm",
@@ -66,7 +62,6 @@ source_set("public") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "infobar_badge_tab_helper_unittest.mm",

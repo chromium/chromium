@@ -238,8 +238,7 @@ public abstract class NotificationBuilderBase {
         return this;
     }
 
-    @Nullable
-    private static Bitmap applyWhiteOverlay(@Nullable Bitmap icon) {
+    private static @Nullable Bitmap applyWhiteOverlay(@Nullable Bitmap icon) {
         Bitmap whitened = null;
         if (icon != null) {
             whitened = icon.copy(icon.getConfig(), true /* isMutable */);
@@ -466,8 +465,7 @@ public abstract class NotificationBuilderBase {
         return builder.build();
     }
 
-    @Nullable
-    private static CharSequence limitLength(@Nullable CharSequence input) {
+    private static @Nullable CharSequence limitLength(@Nullable CharSequence input) {
         if (input == null) {
             return input;
         }

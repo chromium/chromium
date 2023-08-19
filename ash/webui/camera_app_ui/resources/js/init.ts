@@ -2,22 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/*
- * strings.m.js is generated when we enable it via UseStringsJs() in webUI
- * controller. When loading it, it will populate data such as localized strings
- * into |window.loadTimeData|.
- */
-import '/strings.m.js';
-
 import {AppWindow} from './app_window.js';
 import * as Comlink from './lib/comlink.js';
 import {TestBridge} from './test_bridge.js';
+import {getSanitizedScriptUrl} from './trusted_script_url_policy_util.js';
 import {
   createUntrustedIframe,
   injectUntrustedJSModule,
-  setGAHelper,
+  setGaHelper,
   setVideoProcessorHelper,
 } from './untrusted_scripts.js';
+import {expandPath} from './util.js';
 
 
 declare global {
@@ -31,8 +26,8 @@ declare global {
 
 
 document.addEventListener('DOMContentLoaded', async () => {
-  const workerPath = '/js/test_bridge.js';
-  const sharedWorker = new SharedWorker(workerPath, {type: 'module'});
+  const sharedWorker = new SharedWorker(
+      getSanitizedScriptUrl('/js/test_bridge.js'), {type: 'module'});
   const testBridge = Comlink.wrap<TestBridge>(sharedWorker.port);
 
   // To support code coverage collection and communication with tast, the
@@ -65,10 +60,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     await appWindow.waitUntilReadyOnTastSide();
   }
 
-  setGAHelper(
-      injectUntrustedJSModule(gaHelperIFrame, '/js/untrusted_ga_helper.js'));
+  setGaHelper(injectUntrustedJSModule(
+      gaHelperIFrame, expandPath('/js/untrusted_ga_helper.js')));
   setVideoProcessorHelper(injectUntrustedJSModule(
-      videoProcessorHelperIFrame, '/js/untrusted_video_processor_helper.js'));
+      videoProcessorHelperIFrame,
+      expandPath('/js/untrusted_video_processor_helper.js')));
 
   // Dynamically import the error module here so that the codes can be counted
   // by coverage report.
@@ -77,6 +73,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const mainScript = document.createElement('script');
   mainScript.setAttribute('type', 'module');
-  mainScript.setAttribute('src', '/js/main.js');
+  mainScript.setAttribute('src', getSanitizedScriptUrl('/js/main.js'));
   document.head.appendChild(mainScript);
 });

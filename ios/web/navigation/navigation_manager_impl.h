@@ -28,10 +28,12 @@ class ElapsedTimer;
 }
 
 namespace web {
+namespace proto {
+class NavigationStorage;
+}  // namespace proto
 class BrowserState;
 class NavigationItem;
 class NavigationManagerDelegate;
-class SessionStorageBuilder;
 
 // Name of UMA histogram to log the number of items Navigation Manager was
 // requested to restore. 100 is logged when the number of navigation items is
@@ -105,15 +107,18 @@ class NavigationManagerImpl final : public NavigationManager {
     kSynthesized,
   };
 
-  NavigationManagerImpl();
+  NavigationManagerImpl(BrowserState* browser_state,
+                        NavigationManagerDelegate* delegate);
   ~NavigationManagerImpl() final;
 
   NavigationManagerImpl(const NavigationManagerImpl&) = delete;
   NavigationManagerImpl& operator=(const NavigationManagerImpl&) = delete;
 
-  // Setters for NavigationManagerDelegate and BrowserState.
-  void SetDelegate(NavigationManagerDelegate* delegate);
-  void SetBrowserState(BrowserState* browser_state);
+  // Restores state from `storage`.
+  void RestoreFromProto(const proto::NavigationStorage& storage);
+
+  // Serializes the NavigationItemImpl into `storage`.
+  void SerializeToProto(proto::NavigationStorage& storage) const;
 
   // Setter for the callback used to fetch the native session data blob from
   // the session cache.
@@ -136,13 +141,15 @@ class NavigationManagerImpl final : public NavigationManager {
   // nil if there isn't one. The item starts out as pending, and will be lost
   // unless `-commitPendingItem` is called.
   // `is_post_navigation` is true if the navigation is using a POST HTTP method.
-  // `https_upgrade_type` indicates the type of the HTTPS upgrade applied on
-  // this navigation.
+  // `is_error_navigation` is true if the navigation leads to an internal error
+  // page. `https_upgrade_type` indicates the type of the HTTPS upgrade applied
+  // on this navigation.
   void AddPendingItem(const GURL& url,
                       const web::Referrer& referrer,
                       ui::PageTransition navigation_type,
                       NavigationInitiationType initiation_type,
                       bool is_post_navigation,
+                      bool is_error_navigation,
                       web::HttpsUpgradeType https_upgrade_type);
 
   // Commits the pending item, if any.
@@ -180,8 +187,9 @@ class NavigationManagerImpl final : public NavigationManager {
   // matches `url`.  Applies the workaround for crbug.com/997182
   void SetWKWebViewNextPendingUrlNotSerializable(const GURL& url);
 
-  // Returns true if URL was restored via the native WKWebView API.
-  bool RestoreNativeSession(const GURL& url);
+  // Restores the session using the native WKWebView API from the sources
+  // appended with `AppendSessionDataBlobFetcher`.
+  void RestoreNativeSession();
 
   // Resets the transient url rewriter list.
   void RemoveTransientURLRewriters();
@@ -261,10 +269,6 @@ class NavigationManagerImpl final : public NavigationManager {
   // the `web_view_cache_` member field.
   FRIEND_TEST_ALL_PREFIXES(NavigationManagerTest,
                            TestGetVisibleWebViewOriginURLCache);
-
-  // The SessionStorageBuilder functions require access to private variables of
-  // NavigationManagerImpl.
-  friend SessionStorageBuilder;
 
   // Access shim for NavigationItems associated with the WKBackForwardList. It
   // is responsible for caching NavigationItems when the navigation manager
@@ -399,10 +403,10 @@ class NavigationManagerImpl final : public NavigationManager {
   void FinalizeSessionRestore();
 
   // The primary delegate for this manager.
-  NavigationManagerDelegate* delegate_ = nullptr;
+  NavigationManagerDelegate* const delegate_;
 
   // The BrowserState that is associated with this instance.
-  BrowserState* browser_state_ = nullptr;
+  BrowserState* const browser_state_;
 
   // List of transient url rewriters added by `AddTransientURLRewriter()`.
   std::vector<BrowserURLRewriter::URLRewriter> transient_url_rewriters_;

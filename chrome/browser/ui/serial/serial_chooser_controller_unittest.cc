@@ -509,7 +509,8 @@ class SerialChooserControllerTestWithBlockedPorts
   SerialChooserControllerTestWithBlockedPorts() {
     feature_list_.InitWithFeaturesAndParameters(
         {{kWebSerialBlocklist,
-          {{kWebSerialBlocklistAdditions.name, "usb:1234:0002"}}}},
+          {{kWebSerialBlocklistAdditions.name,
+            "usb:1234:0002,bluetooth:aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"}}}},
         {});
     // Reinitialize SerialBlocklist in case it was already initialized by
     // another test.
@@ -535,9 +536,16 @@ TEST_F(SerialChooserControllerTestWithBlockedPorts, Blocklist) {
   base::UnguessableToken port_2 =
       AddPort("Test Port 2", base::FilePath(FILE_PATH_LITERAL("/dev/ttyS1")),
               0x1234, 0x0002);
+  const BluetoothUUID kBlockedBluetoothServiceClassId(
+      "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
+  base::UnguessableToken port_3 =
+      AddBluetoothPort(kBluetoothDevice1Address, kBluetoothDevice1Name,
+                       kBlockedBluetoothServiceClassId);
 
   std::vector<blink::mojom::SerialPortFilterPtr> filters;
   std::vector<device::BluetoothUUID> allowed_bluetooth_service_class_ids;
+  allowed_bluetooth_service_class_ids.push_back(
+      kBlockedBluetoothServiceClassId);
   auto controller = std::make_unique<SerialChooserController>(
       main_rfh(), std::move(filters),
       std::move(allowed_bluetooth_service_class_ids), base::DoNothing());
@@ -559,6 +567,11 @@ TEST_F(SerialChooserControllerTestWithBlockedPorts, Blocklist) {
   // Removing the second port should be a no-op since it is filtered out.
   EXPECT_CALL(view, OnOptionRemoved).Times(0);
   port_manager().RemovePort(port_2);
+  base::RunLoop().RunUntilIdle();
+
+  // Removing the third port should be a no-op since it is filtered out.
+  EXPECT_CALL(view, OnOptionRemoved).Times(0);
+  port_manager().RemovePort(port_3);
   base::RunLoop().RunUntilIdle();
 
   // Adding it back should be a no-op as well.

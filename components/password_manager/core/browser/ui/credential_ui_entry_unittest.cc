@@ -61,7 +61,7 @@ TEST(CredentialUIEntryTest, CredentialUIEntryFromForm) {
   CredentialUIEntry entry = CredentialUIEntry(form);
 
   unsigned long size = 1;
-  EXPECT_FALSE(entry.is_passkey);
+  EXPECT_TRUE(entry.passkey_credential_id.empty());
   EXPECT_EQ(entry.facets.size(), size);
   EXPECT_EQ(entry.facets[0].signon_realm, "https://g.com/");
   EXPECT_EQ(entry.stored_in.size(), size);
@@ -136,12 +136,13 @@ TEST(CredentialUIEntryTest, CredentialUIEntryFromPasskey) {
       PasskeyCredential::Username(base::UTF16ToUTF8(kUsername)),
       PasskeyCredential::DisplayName(base::UTF16ToUTF8(kDisplayName)));
   CredentialUIEntry entry(passkey);
-  EXPECT_TRUE(entry.is_passkey);
+  EXPECT_EQ(entry.passkey_credential_id, cred_id);
   EXPECT_EQ(entry.username, kUsername);
   EXPECT_EQ(entry.user_display_name, kDisplayName);
   ASSERT_EQ(entry.facets.size(), 1u);
   EXPECT_EQ(entry.facets.at(0).url, GURL("https://rpid.com/"));
-  EXPECT_EQ(entry.facets.at(0).signon_realm, "https://rpid.com/");
+  EXPECT_EQ(entry.facets.at(0).signon_realm, "https://rpid.com");
+  EXPECT_TRUE(entry.stored_in.empty());
 }
 
 TEST(CredentialUIEntryTest, TestGetAffiliatedDomains) {

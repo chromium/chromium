@@ -37,9 +37,8 @@ apps::proto::ClientDeviceContext::Channel ConvertChannelTypeToProto(
       return apps::proto::ClientDeviceContext::CHANNEL_STABLE;
     case version_info::Channel::UNKNOWN:
       // The "unknown" channel is used for builds without a channel (e.g.
-      // local builds). The API refers to this as "internal" to avoid confusion
-      // with the "unknown" default enum value.
-      return apps::proto::ClientDeviceContext::CHANNEL_INTERNAL;
+      // local builds).
+      return apps::proto::ClientDeviceContext::CHANNEL_UNKNOWN;
   }
 }
 
@@ -64,7 +63,7 @@ apps::DeviceInfo LoadVersionAndCustomLabel(apps::DeviceInfo info) {
   absl::optional<std::string> platform_version =
       chromeos::version_loader::GetVersion(
           chromeos::version_loader::VERSION_SHORT);
-  info.version_info.platform = platform_version.value_or("unknown");
+  info.version_info.platform = platform_version.value_or("");
   info.version_info.channel = chrome::GetChannel();
 
   // Load device identifiers from chromeos-config, as per
@@ -150,7 +149,7 @@ void DeviceInfoManager::GetDeviceInfo(
       ash::system::StatisticsProvider::GetInstance();
   absl::optional<base::StringPiece> hwid =
       provider->GetMachineStatistic(ash::system::kHardwareClassKey);
-  device_info.hardware_id = std::string(hwid.value_or("unknown"));
+  device_info.hardware_id = std::string(hwid.value_or(""));
 
   // Locale
   PrefService* prefs = profile_->GetPrefs();

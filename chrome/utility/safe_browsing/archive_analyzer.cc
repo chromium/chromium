@@ -46,11 +46,13 @@ ArchiveAnalyzer::~ArchiveAnalyzer() = default;
 void ArchiveAnalyzer::Analyze(
     base::File archive_file,
     base::FilePath relative_path,
+    const absl::optional<std::string>& password,
     FinishedAnalysisCallback finished_analysis_callback,
     GetTempFileCallback get_temp_file_callback,
     ArchiveAnalyzerResults* results) {
   archive_file_ = std::move(archive_file);
   root_path_ = relative_path;
+  password_ = password;
   finished_analysis_callback_ = std::move(finished_analysis_callback);
   get_temp_file_callback_ = std::move(get_temp_file_callback);
   results_ = results;
@@ -82,12 +84,13 @@ bool ArchiveAnalyzer::UpdateResultsForEntry(base::File entry,
                                             base::FilePath path,
                                             int file_length,
                                             bool is_encrypted,
-                                            bool is_directory) {
+                                            bool is_directory,
+                                            bool contents_valid) {
   if (base::FeatureList::IsEnabled(kNestedArchives) && !is_encrypted) {
     nested_analyzer_ = ArchiveAnalyzer::CreateForArchiveType(GetFileType(path));
     if (nested_analyzer_) {
       nested_analyzer_->Analyze(
-          entry.Duplicate(), path,
+          entry.Duplicate(), path, password(),
           base::BindOnce(&ArchiveAnalyzer::NestedAnalysisFinished, GetWeakPtr(),
                          entry.Duplicate(), path, file_length),
           get_temp_file_callback_, results_);
@@ -102,7 +105,7 @@ bool ArchiveAnalyzer::UpdateResultsForEntry(base::File entry,
   }
 
   UpdateArchiveAnalyzerResultsWithFile(path, &entry, file_length, is_encrypted,
-                                       is_directory, results_);
+                                       is_directory, contents_valid, results_);
   return true;
 }
 
@@ -130,6 +133,7 @@ void ArchiveAnalyzer::NestedAnalysisFinished(base::File entry,
   // successfully.
   if (!results_->success) {
     results_->has_archive = true;
+    results_->file_count++;
     results_->archived_archive_filenames.push_back(path.BaseName());
     ClientDownloadRequest::ArchivedBinary* archived_archive =
         results_->archived_binary.Add();

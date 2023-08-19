@@ -54,6 +54,7 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/lifetime/switch_utils.h"
+#include "chrome/browser/media/chrome_media_session_client.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager.h"
 #include "chrome/browser/media/webrtc/webrtc_log_uploader.h"
 #include "chrome/browser/metrics/chrome_feature_list_creator.h"
@@ -161,6 +162,7 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/accessibility/accessibility_prefs/android/accessibility_prefs_controller.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/ssl/chrome_security_state_client.h"
 #include "chrome/browser/webauthn/android/chrome_webauthn_client_android.h"
@@ -168,7 +170,6 @@
 #else
 #include "chrome/browser/devtools/devtools_auto_opener.h"
 #include "chrome/browser/gcm/gcm_product_util.h"
-#include "chrome/browser/hid/hid_policy_allowed_devices.h"
 #include "chrome/browser/hid/hid_system_tray_icon.h"
 #include "chrome/browser/intranet_redirect_detector.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
@@ -176,6 +177,7 @@
 #include "chrome/browser/serial/serial_policy_allowed_ports.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/usb/usb_system_tray_icon.h"
 #include "components/gcm_driver/gcm_client_factory.h"
 #include "components/gcm_driver/gcm_desktop_utils.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
@@ -210,7 +212,7 @@
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/first_run/upgrade_util.h"
-#include "chrome/browser/ui/profile_picker.h"
+#include "chrome/browser/ui/profiles/profile_picker.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #endif
 
@@ -225,8 +227,10 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/extensions/telemetry/chromeos_telemetry_extensions_browser_api_provider.h"
 #include "chrome/browser/hid/hid_pinned_notification.h"
+#include "chrome/browser/usb/usb_pinned_notification.h"
 #elif !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/hid/hid_status_icon.h"
+#include "chrome/browser/usb/usb_status_icon.h"
 #endif
 
 #if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
@@ -337,6 +341,9 @@ void BrowserProcessImpl::Init() {
   // Make sure permissions client has been set.
   ChromePermissionsClient::GetInstance();
 
+  // Make sure media session client has been set.
+  ChromeMediaSessionClient::GetInstance();
+
   // Make sure webapps client has been set.
   webapps::ChromeWebappsClient::GetInstance();
 
@@ -367,15 +374,20 @@ void BrowserProcessImpl::Init() {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-  components::WebAuthnClientAndroid::SetClient(
+  webauthn::WebAuthnClientAndroid::SetClient(
       std::make_unique<ChromeWebAuthnClientAndroid>());
+  accessibility_prefs_controller_ =
+      std::make_unique<accessibility::AccessibilityPrefsController>(
+          local_state());
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_CHROMEOS)
   hid_system_tray_icon_ = std::make_unique<HidPinnedNotification>();
+  usb_system_tray_icon_ = std::make_unique<UsbPinnedNotification>();
 #else
   hid_system_tray_icon_ = std::make_unique<HidStatusIcon>();
+  usb_system_tray_icon_ = std::make_unique<UsbStatusIcon>();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
@@ -419,6 +431,9 @@ void BrowserProcessImpl::StartTearDown() {
 
   platform_part()->BeginStartTearDown();
 
+#if BUILDFLAG(IS_ANDROID)
+  accessibility_prefs_controller_.reset();
+#endif
   metrics_services_manager_.reset();
   intranet_redirect_detector_.reset();
   if (safe_browsing_service_.get())
@@ -436,10 +451,11 @@ void BrowserProcessImpl::StartTearDown() {
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-  // |hid_system_tray_icon_| must be destroyed before
-  // |system_notification_helper_| for ChromeOS and |status_tray_| for
+  // |hid_system_tray_icon_| and |usb_system_tray_icon_| must be destroyed
+  // before |system_notification_helper_| for ChromeOS and |status_tray_| for
   // non-ChromeOS.
   hid_system_tray_icon_.reset();
+  usb_system_tray_icon_.reset();
 #endif
 
   system_notification_helper_.reset();
@@ -985,18 +1001,14 @@ SerialPolicyAllowedPorts* BrowserProcessImpl::serial_policy_allowed_ports() {
   return serial_policy_allowed_ports_.get();
 }
 
-HidPolicyAllowedDevices* BrowserProcessImpl::hid_policy_allowed_devices() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!hid_policy_allowed_devices_) {
-    hid_policy_allowed_devices_ =
-        std::make_unique<HidPolicyAllowedDevices>(local_state());
-  }
-  return hid_policy_allowed_devices_.get();
-}
-
 HidSystemTrayIcon* BrowserProcessImpl::hid_system_tray_icon() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return hid_system_tray_icon_.get();
+}
+
+UsbSystemTrayIcon* BrowserProcessImpl::usb_system_tray_icon() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return usb_system_tray_icon_.get();
 }
 #endif
 
@@ -1210,9 +1222,7 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
 
   platform_part_->PreMainMessageLoopRun();
 
-  if (base::FeatureList::IsEnabled(network_time::kNetworkTimeServiceQuerying)) {
-    CreateNetworkTimeTracker();
-  }
+  CreateNetworkTimeTracker();
 
   CreateNetworkQualityObserver();
 
@@ -1357,7 +1367,6 @@ void BrowserProcessImpl::CreateGCMDriver() {
 
   gcm_driver_ = gcm::CreateGCMDriverDesktop(
       base::WrapUnique(new gcm::GCMClientFactory), local_state(), store_path,
-      /*remove_account_mappings_with_email_key=*/false,
       base::BindRepeating(&RequestProxyResolvingSocketFactory),
       system_network_context_manager()->GetSharedURLLoaderFactory(),
       content::GetNetworkConnectionTracker(), chrome::GetChannel(),

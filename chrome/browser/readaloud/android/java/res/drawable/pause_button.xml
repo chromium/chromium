@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/primary_gray_rounded"/>
+    <item
+        android:drawable="@drawable/ic_pause_white_24dp"
+        android:left="40dp"
+        android:top="24dp"
+        android:right="40dp"
+        android:bottom="24dp"/>
+</layer-list>

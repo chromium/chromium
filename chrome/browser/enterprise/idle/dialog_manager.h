@@ -16,10 +16,16 @@
 #include "chrome/browser/ui/idle_dialog.h"
 #include "ui/views/widget/widget.h"
 
+class Profile;
+
 namespace enterprise_idle {
 
 // A singleton that manages IdleDialog's state. Shows the dialog, manages its
 // expiration, and runs a callback when it closes.
+//
+// The dialog is anchored to the currently-active browser window. If there is no
+// active browser window (e.g. user is in another app), the timer is completely
+// skipped and other actions resolve immediately.
 class DialogManager {
  public:
   using FinishedCallback = base::OnceCallback<void(bool expired)>;
@@ -28,7 +34,11 @@ class DialogManager {
 
   // Show a 30s dialog--or if it's already visible, re-use the existing one.
   // Run `on_finished` after 30s, or if the user dismisses the dialog.
-  base::CallbackListSubscription ShowDialog(
+  //
+  // If the user is in another app, skip the dialog and call
+  // `on_finished(true)`.
+  base::CallbackListSubscription MaybeShowDialog(
+      Profile* profile,
       base::TimeDelta threshold,
       const base::flat_set<ActionType>& action_types,
       FinishedCallback on_finished);

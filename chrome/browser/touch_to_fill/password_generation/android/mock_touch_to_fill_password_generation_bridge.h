@@ -19,10 +19,16 @@ class MockTouchToFillPasswordGenerationBridge
   MOCK_METHOD(bool,
               Show,
               (content::WebContents*,
-               base::WeakPtr<TouchToFillPasswordGenerationDelegate>),
+               base::WeakPtr<TouchToFillPasswordGenerationDelegate>,
+               std::u16string,
+               std::string),
               (override));
   MOCK_METHOD(void, Hide, (), (override));
-  MOCK_METHOD(void, OnDismissed, (JNIEnv * env), (override));
+  MOCK_METHOD(void, OnDismissed, (JNIEnv*), (override));
+  MOCK_METHOD(void,
+              OnGeneratedPasswordAccepted,
+              (JNIEnv*, const base::android::JavaParamRef<jstring>&),
+              (override));
 };
 
 #endif  // CHROME_BROWSER_TOUCH_TO_FILL_PASSWORD_GENERATION_ANDROID_MOCK_TOUCH_TO_FILL_PASSWORD_GENERATION_BRIDGE_H_

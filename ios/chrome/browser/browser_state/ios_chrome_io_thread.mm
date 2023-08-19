@@ -12,10 +12,6 @@
 #import "ios/web/public/thread/web_thread.h"
 #import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 IOSChromeIOThread::IOSChromeIOThread(PrefService* local_state,
                                      net::NetLog* net_log)
     : IOSIOThread(local_state, net_log) {

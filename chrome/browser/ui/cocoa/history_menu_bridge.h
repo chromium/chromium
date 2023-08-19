@@ -6,11 +6,11 @@
 #define CHROME_BROWSER_UI_COCOA_HISTORY_MENU_BRIDGE_H_
 
 #import <Cocoa/Cocoa.h>
+
 #include <map>
 #include <memory>
 #include <vector>
 
-#include "base/mac/scoped_nsobject.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -79,22 +79,23 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
     // The URL that will be navigated to if the user selects this item.
     GURL url;
     // Favicon for the URL.
-    base::scoped_nsobject<NSImage> icon;
+    NSImage* __strong icon;
 
     // If the icon is being requested from the FaviconService, |icon_requested|
     // will be true and |icon_task_id| will be valid. If this is false, then
     // |icon_task_id| will be
     // base::CancelableTaskTracker::kBadTaskId.
-    bool icon_requested;
+    bool icon_requested = false;
     // The Handle given to us by the FaviconService for the icon fetch request.
-    base::CancelableTaskTracker::TaskId icon_task_id;
+    base::CancelableTaskTracker::TaskId icon_task_id =
+        base::CancelableTaskTracker::kBadTaskId;
 
     // The pointer to the item after it has been created. Strong; NSMenu also
     // retains this. During a rebuild flood (if the user closes a lot of tabs
     // quickly), the NSMenu can release the item before the HistoryItem has
     // been fully deleted. If this were a weak pointer, it would result in a
     // zombie.
-    base::scoped_nsobject<NSMenuItem> menu_item;
+    NSMenuItem* __strong menu_item;
 
     // This ID is unique for a browser session and can be passed to the
     // TabRestoreService to re-open the closed window or tab that this
@@ -268,9 +269,9 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
   // Returns if the given menu item should be visible for the current profile.
   bool ShouldMenuItemBeVisible(NSMenuItem* item);
 
-  base::scoped_nsobject<HistoryMenuCocoaController> controller_;  // strong
+  HistoryMenuCocoaController* __strong controller_;
 
-  raw_ptr<Profile, DanglingUntriaged> profile_;                         // weak
+  raw_ptr<Profile, LeakedDanglingUntriaged> profile_;                   // weak
   raw_ptr<history::HistoryService> history_service_ = nullptr;          // weak
   raw_ptr<sessions::TabRestoreService> tab_restore_service_ = nullptr;  // weak
   base::FilePath profile_dir_;  // Remembered after OnProfileWillBeDestroyed().
@@ -297,7 +298,7 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
   bool is_menu_open_ = false;
 
   // The default favicon if a HistoryItem does not have one.
-  base::scoped_nsobject<NSImage> default_favicon_;
+  NSImage* __strong default_favicon_;
 
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>

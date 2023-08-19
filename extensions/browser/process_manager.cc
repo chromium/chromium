@@ -13,6 +13,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/one_shot_event.h"
@@ -216,12 +217,14 @@ ProcessManager* ProcessManager::Create(BrowserContext* context) {
     // a regular incognito mode, background pages of extensions must be
     // created regardless of whether extensions use "spanning" or "split"
     // incognito behavior.
-    BrowserContext* original_context = client->GetOriginalContext(context);
+    BrowserContext* original_context = client->GetContextRedirectedToOriginal(
+        context, /*force_guest_profile=*/true);
     return new ProcessManager(context, original_context, extension_registry);
   }
 
   if (context->IsOffTheRecord()) {
-    BrowserContext* original_context = client->GetOriginalContext(context);
+    BrowserContext* original_context = client->GetContextRedirectedToOriginal(
+        context, /*force_guest_profile=*/true);
     return new IncognitoProcessManager(
         context, original_context, extension_registry);
   }
@@ -748,12 +751,11 @@ void ProcessManager::ReleaseLazyKeepaliveCountForFrame(
   }
 }
 
-std::string ProcessManager::IncrementServiceWorkerKeepaliveCount(
+base::Uuid ProcessManager::IncrementServiceWorkerKeepaliveCount(
     const WorkerId& worker_id,
     content::ServiceWorkerExternalRequestTimeoutType timeout_type,
     Activity::Type activity_type,
     const std::string& extra_data) {
-  // TODO(lazyboy): Use |activity_type| and |extra_data|.
   int64_t service_worker_version_id = worker_id.version_id;
   DCHECK(!worker_id.extension_id.empty());
   const Extension* extension =
@@ -762,13 +764,25 @@ std::string ProcessManager::IncrementServiceWorkerKeepaliveCount(
   DCHECK(extension);
   DCHECK(BackgroundInfo::IsServiceWorkerBased(extension));
 
-  std::string request_uuid = base::Uuid::GenerateRandomV4().AsLowercaseString();
+  base::Uuid request_uuid = base::Uuid::GenerateRandomV4();
+
+
   content::ServiceWorkerContext* service_worker_context =
       util::GetServiceWorkerContextForExtensionId(extension->id(),
                                                   browser_context_);
 
-  service_worker_context->StartingExternalRequest(service_worker_version_id,
-                                                  timeout_type, request_uuid);
+  content::ServiceWorkerExternalRequestResult start_result =
+      service_worker_context->StartingExternalRequest(
+          service_worker_version_id, timeout_type, request_uuid);
+
+  service_worker_keepalives_[request_uuid] = ServiceWorkerKeepaliveData{
+      worker_id, activity_type, extra_data, timeout_type, start_result};
+
+  base::UmaHistogramEnumeration(
+      "Extensions.ServiceWorkerBackground."
+      "ProcessManagerStartingExternalRequestResult",
+      start_result);
+
   return request_uuid;
 }
 
@@ -808,7 +822,7 @@ void ProcessManager::DecrementLazyKeepaliveCount(
 
 void ProcessManager::DecrementServiceWorkerKeepaliveCount(
     const WorkerId& worker_id,
-    const std::string& request_uuid,
+    const base::Uuid& request_uuid,
     Activity::Type activity_type,
     const std::string& extra_data) {
   DCHECK(!worker_id.extension_id.empty());
@@ -819,22 +833,44 @@ void ProcessManager::DecrementServiceWorkerKeepaliveCount(
 
   DCHECK(BackgroundInfo::IsServiceWorkerBased(extension));
 
+  // Find and remove the entry from `service_worker_keepalives_`.
+  auto iter = service_worker_keepalives_.find(request_uuid);
+  CHECK(iter != service_worker_keepalives_.end());
+  CHECK_EQ(iter->second.worker_id, worker_id);
+  CHECK_EQ(iter->second.activity_type, activity_type);
+  CHECK_EQ(iter->second.extra_data, extra_data);
+  content::ServiceWorkerExternalRequestResult start_result =
+      iter->second.start_result;
+  service_worker_keepalives_.erase(iter);
+
   int64_t service_worker_version_id = worker_id.version_id;
   content::ServiceWorkerContext* service_worker_context =
       util::GetServiceWorkerContextForExtensionId(extension->id(),
                                                   browser_context_);
 
-  content::ServiceWorkerExternalRequestResult result =
+  content::ServiceWorkerExternalRequestResult finish_result =
       service_worker_context->FinishedExternalRequest(service_worker_version_id,
                                                       request_uuid);
+
+  if (start_result == content::ServiceWorkerExternalRequestResult::kOk) {
+    base::UmaHistogramEnumeration(
+        "Extensions.ServiceWorkerBackground."
+        "ProcessManagerFinishedExternalRequestResultWithSuccessfulStart",
+        finish_result);
+  } else {
+    base::UmaHistogramEnumeration(
+        "Extensions.ServiceWorkerBackground."
+        "ProcessManagerFinishedExternalRequestResultWithUnsuccessfulStart",
+        finish_result);
+  }
 
   // Example of when kWorkerNotRunning can happen is when the renderer process
   // is killed while handling a service worker request (e.g. because of a bad
   // IPC message).
-  DCHECK((result == content::ServiceWorkerExternalRequestResult::kOk) ||
-         (result ==
+  DCHECK((finish_result == content::ServiceWorkerExternalRequestResult::kOk) ||
+         (finish_result ==
           content::ServiceWorkerExternalRequestResult::kWorkerNotRunning))
-      << "; result = " << static_cast<int>(result);
+      << "; result = " << static_cast<int>(finish_result);
 }
 
 void ProcessManager::OnLazyBackgroundPageIdle(const std::string& extension_id,
@@ -1060,6 +1096,19 @@ base::Uuid ProcessManager::GetContextIdForWorker(
   return iter != worker_context_ids_.end() ? iter->second : base::Uuid();
 }
 
+std::vector<ProcessManager::ServiceWorkerKeepaliveData>
+ProcessManager::GetServiceWorkerKeepaliveDataForRecords(
+    const ExtensionId& extension_id) const {
+  std::vector<ServiceWorkerKeepaliveData> result;
+  for (const auto& entry : service_worker_keepalives_) {
+    if (entry.second.worker_id.extension_id == extension_id) {
+      result.push_back(entry.second);
+    }
+  }
+
+  return result;
+}
+
 std::vector<WorkerId> ProcessManager::GetAllWorkersIdsForTesting() {
   return all_extension_workers_.GetAllForTesting();
 }
@@ -1115,7 +1164,8 @@ IncognitoProcessManager::GetSiteInstanceForURL(const GURL& url) {
       extension_registry_->enabled_extensions().GetExtensionOrAppByURL(url);
   if (extension && !IncognitoInfo::IsSplitMode(extension)) {
     BrowserContext* original_context =
-        ExtensionsBrowserClient::Get()->GetOriginalContext(browser_context());
+        ExtensionsBrowserClient::Get()->GetContextRedirectedToOriginal(
+            browser_context(), /*force_guest_profile=*/true);
     return ProcessManager::Get(original_context)->GetSiteInstanceForURL(url);
   }
 

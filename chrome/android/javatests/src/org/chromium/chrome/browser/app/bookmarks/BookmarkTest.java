@@ -89,8 +89,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.sync.SyncService;
-import org.chromium.chrome.browser.sync.SyncService.SyncStateChangedListener;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController.SyncPromoState;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -101,6 +100,7 @@ import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
@@ -114,6 +114,8 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.power_bookmarks.ShoppingSpecifics;
 import org.chromium.components.profile_metrics.BrowserProfileType;
+import org.chromium.components.sync.SyncService;
+import org.chromium.components.sync.SyncService.SyncStateChangedListener;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -128,17 +130,15 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
 /** Tests for the bookmark manager. */
-// clang-format off
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 // TODO(1406059): Disabling the shopping CPA should not be a requirement for these tests.
-@Features.DisableFeatures({ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING})
+@DisableFeatures({ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING,
+        ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
 // TODO(crbug.com/1426138): Investigate batching.
 @DoNotBatch(reason = "BookmarkTest has behaviours and thus can't be batched.")
 public class BookmarkTest {
-    // clang-format on
-
     private static final String TEST_PAGE_URL_GOOGLE = "/chrome/test/data/android/google.html";
     private static final String TEST_PAGE_TITLE_GOOGLE = "The Google";
     private static final String TEST_PAGE_TITLE_GOOGLE2 = "Google";
@@ -199,7 +199,7 @@ public class BookmarkTest {
         mActivityTestRule.startMainActivityOnBlankPage();
         runOnUiThreadBlocking(() -> {
             mBookmarkModel = mActivityTestRule.getActivity().getBookmarkModelForTesting();
-            SyncService.overrideForTests(mSyncService);
+            SyncServiceFactory.setInstanceForTesting(mSyncService);
         });
         // Use a custom port so the links are consistent for render tests.
         mActivityTestRule.getEmbeddedTestServerRule().setServerPort(TEST_PORT);
@@ -600,7 +600,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
-    @Features.DisableFeatures({ChromeFeatureList.SHOPPING_LIST})
+    @DisableFeatures({ChromeFeatureList.SHOPPING_LIST})
     public void testSearchBookmarks_DeleteFolderWithChildrenInResults() throws Exception {
         BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.NO_PROMO);
         BookmarkId testFolder = addFolder(TEST_FOLDER_TITLE);
@@ -687,8 +687,46 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    public void testStopSpinnerOnEmptyFolder() throws Exception {
+        // Cannot have a promo if we're going to have 0 elements in RecyclerView.
+        BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.NO_PROMO);
+
+        // Force BookmarkModel to be loaded so we can get a folder id later.
+        loadBookmarkModel();
+
+        // This will cause opening the bookmarks UI to load the mobile folder.
+        runOnUiThreadBlocking(() -> {
+            BookmarkId folderId = mBookmarkModel.getMobileFolderId();
+            String prefUrl = BookmarkUiState.createFolderUrl(folderId).toString();
+            BookmarkUtils.setLastUsedUrl(mActivityTestRule.getActivity(), prefUrl);
+        });
+
+        // Prevent loading so we can verify we see the spinner initially.
+        BookmarkManagerCoordinator.preventLoadingForTesting(true);
+        openBookmarkManager();
+
+        // Loading view a child of the SelectableListLayout, not the RecyclerView.
+        View parent = (View) mItemsContainer.getParent();
+        View loadingView = parent.findViewById(R.id.loading_view);
+
+        CriteriaHelper.pollUiThread(
+                () -> Criteria.checkThat(loadingView.getVisibility(), Matchers.is(View.VISIBLE)));
+
+        // The idea is that the manager should now be able to figure out what rows it can populate.
+        // However if there are no rows created, because we have an empty folder, no events
+        // naturally reach the SelectableListLayout's observer. So the manager will have to manually
+        // notify.
+        BookmarkManagerCoordinator.preventLoadingForTesting(false);
+        runOnUiThreadBlocking(mBookmarkManagerCoordinator::finishLoadingForTesting);
+
+        CriteriaHelper.pollUiThread(
+                () -> { Criteria.checkThat(loadingView.getVisibility(), Matchers.is(View.GONE)); });
+    }
+
+    @Test
+    @MediumTest
     public void testEndIconVisibilityInSelectionMode() throws Exception {
-        BookmarkId testId = addFolder(TEST_FOLDER_TITLE);
+        addFolder(TEST_FOLDER_TITLE);
         addBookmark(TEST_TITLE_A, mTestUrlA);
 
         BookmarkPromoHeader.forcePromoStateForTesting(
@@ -1200,7 +1238,7 @@ public class BookmarkTest {
             assertEquals("Incorrect bookmark type for item 1", BookmarkType.PARTNER,
                     partnerBookmarkId1.getType());
             assertFalse("Partner item 1 should not be movable",
-                    BookmarkUtils.isMovable(partnerBookmarkItem1));
+                    BookmarkUtils.isMovable(mBookmarkModel, partnerBookmarkItem1));
             assertTrue("Partner item 1 should be editable", partnerBookmarkItem1.isEditable());
         });
 
@@ -1219,7 +1257,7 @@ public class BookmarkTest {
             assertEquals("Incorrect bookmark type for item 2", BookmarkType.PARTNER,
                     partnerBookmarkId2.getType());
             assertFalse("Partner item 2 should not be movable",
-                    BookmarkUtils.isMovable(partnerBookmarkItem2));
+                    BookmarkUtils.isMovable(mBookmarkModel, partnerBookmarkItem2));
             assertTrue("Partner item 2 should be editable", partnerBookmarkItem2.isEditable());
         });
 
@@ -1233,7 +1271,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
-    @Features.DisableFeatures({ChromeFeatureList.SHOPPING_LIST})
+    @DisableFeatures({ChromeFeatureList.SHOPPING_LIST})
     public void testTopLevelFolderUpdateAfterSync() throws Exception {
         // Set up the test and open the bookmark manager to the Mobile Bookmarks folder.
         BookmarkTestUtil.readPartnerBookmarks(mActivityTestRule);
@@ -1968,5 +2006,12 @@ public class BookmarkTest {
         assertTrue("Found " + view.getClass() + " expected " + clazz,
                 clazz.isAssignableFrom(view.getClass()));
         return (T) view;
+    }
+
+    private void loadBookmarkModel() {
+        runOnUiThreadBlocking(() -> { mBookmarkModel.finishLoadingBookmarkModel(() -> {}); });
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(mBookmarkModel.isBookmarkModelLoaded(), Matchers.is(true));
+        });
     }
 }

@@ -58,7 +58,7 @@ TEST_F(TrustedVaultAccessTokenFetcherFrontendTest,
   const CoreAccountId kAccountId =
       identity_env()
           ->MakePrimaryAccountAvailable("test@gmail.com",
-                                        signin::ConsentLevel::kSync)
+                                        signin::ConsentLevel::kSignin)
           .account_id;
   const std::string kAccessToken = "access_token";
 
@@ -94,7 +94,7 @@ TEST_F(TrustedVaultAccessTokenFetcherFrontendTest,
 TEST_F(TrustedVaultAccessTokenFetcherFrontendTest,
        ShouldRejectFetchAttemptForNonPrimaryAccount) {
   identity_env()->MakePrimaryAccountAvailable("test1@gmail.com",
-                                              signin::ConsentLevel::kSync);
+                                              signin::ConsentLevel::kSignin);
   const CoreAccountId kSecondaryAccountId =
       identity_env()->MakeAccountAvailable("test2@gmail.com").account_id;
 
@@ -113,7 +113,7 @@ TEST_F(TrustedVaultAccessTokenFetcherFrontendTest,
   const CoreAccountId kAccountId =
       identity_env()
           ->MakePrimaryAccountAvailable("test@gmail.com",
-                                        signin::ConsentLevel::kSync)
+                                        signin::ConsentLevel::kSignin)
           .account_id;
   const std::string kAccessToken = "access_token";
 
@@ -135,7 +135,7 @@ TEST_F(TrustedVaultAccessTokenFetcherFrontendTest,
   const CoreAccountId kAccountId =
       identity_env()
           ->MakePrimaryAccountAvailable("test@gmail.com",
-                                        signin::ConsentLevel::kSync)
+                                        signin::ConsentLevel::kSignin)
           .account_id;
   const std::string kAccessToken = "access_token";
 
@@ -155,7 +155,7 @@ TEST_F(TrustedVaultAccessTokenFetcherFrontendTest, ShouldAllowMultipleFetches) {
   const CoreAccountId kAccountId =
       identity_env()
           ->MakePrimaryAccountAvailable("test@gmail.com",
-                                        signin::ConsentLevel::kSync)
+                                        signin::ConsentLevel::kSignin)
           .account_id;
   const std::string kAccessToken = "access_token";
 

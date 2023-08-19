@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_string_resource.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_address_errors.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_android_pay_method_data.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_google_play_billing_method_data.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payer_errors.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_details_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_details_modifier.h"
@@ -45,7 +46,6 @@
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/event_target_modules_names.h"
-#include "third_party/blink/renderer/modules/payments/html_iframe_element_payments.h"
 #include "third_party/blink/renderer/modules/payments/payment_address.h"
 #include "third_party/blink/renderer/modules/payments/payment_method_change_event.h"
 #include "third_party/blink/renderer/modules/payments/payment_request_update_event.h"
@@ -417,6 +417,27 @@ void SetAndroidPayMethodData(v8::Isolate* isolate,
   }
 }
 
+void MeasureGooglePlayBillingPriceChangeConfirmation(
+    ExecutionContext& execution_context,
+    const ScriptValue& input,
+    ExceptionState& exception_state) {
+  DCHECK(!exception_state.HadException());
+
+  GooglePlayBillingMethodData* google_play_billing =
+      NativeValueTraits<GooglePlayBillingMethodData>::NativeValue(
+          execution_context.GetIsolate(), input.V8Value(), exception_state);
+  if (exception_state.HadException()) {
+    // No need to report this exception, because this function is
+    // only for measuring usage of a deprecated field.
+    exception_state.ClearException();
+    return;
+  }
+
+  if (google_play_billing->hasPriceChangeConfirmation()) {
+    UseCounter::Count(&execution_context, WebFeature::kPriceChangeConfirmation);
+  }
+}
+
 void StringifyAndParseMethodSpecificData(ExecutionContext& execution_context,
                                          const String& supported_method,
                                          const ScriptValue& input,
@@ -427,6 +448,11 @@ void StringifyAndParseMethodSpecificData(ExecutionContext& execution_context,
       exception_state);
   if (exception_state.HadException()) {
     return;
+  }
+
+  if (supported_method == kGooglePlayBillingMethod) {
+    MeasureGooglePlayBillingPriceChangeConfirmation(execution_context, input,
+                                                    exception_state);
   }
 
   // Serialize payment method specific data to be sent to the payment apps. The
@@ -815,21 +841,24 @@ bool ActivationlessShowEnabled(ExecutionContext* execution_context,
     return RuntimeEnabledFeatures::
         SecurePaymentConfirmationAllowOneActivationlessShowEnabled(
             execution_context);
+  } else {
+    return RuntimeEnabledFeatures::
+        PaymentRequestAllowOneActivationlessShowEnabled(execution_context);
   }
-
-  // Activationless show is currently only possible for the Secure Payment
-  // Confirmation method.
-  return false;
 }
 
 // Records metrics for an activationless Show() call based on the request
 // method.
 void RecordActivationlessShow(ExecutionContext* execution_context,
                               const HashSet<String>& method_names) {
-  DCHECK((method_names.size() == 1 &&
-          method_names.Contains(kSecurePaymentConfirmationMethod)));
-  UseCounter::Count(execution_context,
-                    WebFeature::kSecurePaymentConfirmationActivationlessShow);
+  if (method_names.size() == 1 &&
+      method_names.Contains(kSecurePaymentConfirmationMethod)) {
+    UseCounter::Count(execution_context,
+                      WebFeature::kSecurePaymentConfirmationActivationlessShow);
+  } else {
+    UseCounter::Count(execution_context,
+                      WebFeature::kPaymentRequestActivationlessShow);
+  }
 }
 
 }  // namespace
@@ -890,6 +919,8 @@ ScriptPromise PaymentRequest::show(ScriptState* script_state,
   bool has_transient_user_activation =
       LocalFrame::HasTransientUserActivation(local_frame);
   bool has_delegated_activation = DomWindow()->IsPaymentRequestTokenActive();
+  bool has_activation =
+      has_transient_user_activation || has_delegated_activation;
 
   if (!has_transient_user_activation) {
     UseCounter::Count(GetExecutionContext(),
@@ -903,17 +934,14 @@ ScriptPromise PaymentRequest::show(ScriptState* script_state,
 
   bool activationless_payment_request =
       ActivationlessShowEnabled(GetExecutionContext(), method_names_) &&
-      !has_transient_user_activation && !has_delegated_activation &&
-      !DomWindow()->HadActivationlessPaymentRequest();
+      !has_activation;
 
   if (activationless_payment_request) {
-    DomWindow()->SetHadActivationlessPaymentRequest();
     RecordActivationlessShow(GetExecutionContext(), method_names_);
   }
 
-  bool payment_request_allowed = has_transient_user_activation ||
-                                 has_delegated_activation ||
-                                 activationless_payment_request;
+  bool payment_request_allowed =
+      has_activation || activationless_payment_request;
   DomWindow()->ConsumePaymentRequestToken();
 
   if (payment_request_allowed) {
@@ -935,7 +963,8 @@ ScriptPromise PaymentRequest::show(ScriptState* script_state,
   UseCounter::Count(GetExecutionContext(), WebFeature::kPaymentRequestShow);
 
   is_waiting_for_show_promise_to_resolve_ = !details_promise.IsEmpty();
-  payment_provider_->Show(is_waiting_for_show_promise_to_resolve_);
+  payment_provider_->Show(is_waiting_for_show_promise_to_resolve_,
+                          has_activation);
   if (is_waiting_for_show_promise_to_resolve_) {
     // If the website does not calculate the final shopping cart contents within
     // 10 seconds, abort payment.
@@ -1277,7 +1306,7 @@ void PaymentRequest::Trace(Visitor* visitor) const {
   visitor->Trace(client_receiver_);
   visitor->Trace(complete_timer_);
   visitor->Trace(update_payment_details_timer_);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 

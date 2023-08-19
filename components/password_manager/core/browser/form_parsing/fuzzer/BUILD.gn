@@ -65,8 +65,8 @@ source_set("unit_tests") {
 # (https://crbug.com/828705#c11) and renaming causes confusion. So instead, the
 # new fuzzer has the "_generic" suffix on its target name.
 
-fuzzer_test("password_manager_form_parser_fuzzer") {
-  sources = [ "form_parser_fuzzer.cc" ]
+fuzzer_test("password_manager_form_data_parser_fuzzer") {
+  sources = [ "form_data_parser_fuzzer.cc" ]
 
   deps = [
     ":fuzzer_support",
@@ -76,11 +76,11 @@ fuzzer_test("password_manager_form_parser_fuzzer") {
     "//components/password_manager/core/browser/form_parsing",
   ]
 
-  dict = "form_parser_fuzzer.dict"
+  dict = "form_data_parser_fuzzer.dict"
 }
 
-fuzzer_test("password_manager_form_parser_proto_fuzzer") {
-  sources = [ "form_parser_proto_fuzzer.cc" ]
+fuzzer_test("password_manager_form_data_parser_proto_fuzzer") {
+  sources = [ "form_data_parser_proto_fuzzer.cc" ]
 
   deps = [
     ":form_data_essentials_proto",
@@ -93,7 +93,7 @@ fuzzer_test("password_manager_form_parser_proto_fuzzer") {
     "//third_party/libprotobuf-mutator",
   ]
 
-  dict = "form_parser_fuzzer.dict"
+  dict = "form_data_parser_fuzzer.dict"
 }
 
 proto_library("form_data_essentials_proto") {

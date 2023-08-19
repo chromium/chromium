@@ -17,6 +17,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getItemSource, SourceType} from './item_util.js';
 import {getTemplate} from './site_permissions_edit_permissions_dialog.html.js';
 import {SiteSettingsDelegate} from './site_settings_mixin.js';
 import {matchesSubdomains, SUBDOMAIN_SPECIFIER} from './url_util.js';
@@ -26,6 +27,8 @@ interface ExtensionSiteAccessInfo {
   name: string;
   iconUrl: string;
   siteAccess: string;
+  addedByPolicy: boolean;
+  canRequestAllSites: boolean;
 }
 
 export interface SitePermissionsEditPermissionsDialogElement {
@@ -200,10 +203,13 @@ export class SitePermissionsEditPermissionsDialogElement extends
         await this.delegate.getMatchingExtensionsForSite(siteToCheck);
 
     const extensionSiteAccessData: ExtensionSiteAccessInfo[] = [];
-    matchingExtensionsInfo.forEach(({id, siteAccess}) => {
+    matchingExtensionsInfo.forEach(({id, siteAccess, canRequestAllSites}) => {
       assert(this.extensionsIdToInfo_.has(id));
       const {name, iconUrl} = this.extensionsIdToInfo_.get(id)!;
-      extensionSiteAccessData.push({id, name, iconUrl, siteAccess});
+      const addedByPolicy = getItemSource(this.extensionsIdToInfo_.get(id)!) ===
+          SourceType.POLICY;
+      extensionSiteAccessData.push(
+          {id, name, iconUrl, siteAccess, addedByPolicy, canRequestAllSites});
 
       // Remove the unsaved HostAccess from `unsavedExtensionsIdToHostAccess_`
       // if it is now the same as `siteAccess`.
@@ -305,6 +311,12 @@ export class SitePermissionsEditPermissionsDialogElement extends
     const originalSiteAccess = e.model.item.siteAccess;
     const newSiteAccess =
         selectMenu.value as chrome.developerPrivate.HostAccess;
+
+    // Sanity check that extensions that don't request all sites access cannot
+    // request all sites access from the dialog.
+    assert(
+        e.model.item.canRequestAllSites ||
+        newSiteAccess !== chrome.developerPrivate.HostAccess.ON_ALL_SITES);
 
     if (originalSiteAccess === newSiteAccess) {
       this.unsavedExtensionsIdToHostAccess_.delete(e.model.item.id);

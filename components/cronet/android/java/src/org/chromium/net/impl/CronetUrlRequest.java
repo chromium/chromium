@@ -35,6 +35,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionException;
 
@@ -154,15 +155,9 @@ public final class CronetUrlRequest extends UrlRequestBase {
             boolean trafficStatsTagSet, int trafficStatsTag, boolean trafficStatsUidSet,
             int trafficStatsUid, RequestFinishedInfo.Listener requestFinishedListener,
             int idempotency, long networkHandle) {
-        if (url == null) {
-            throw new NullPointerException("URL is required");
-        }
-        if (callback == null) {
-            throw new NullPointerException("Listener is required");
-        }
-        if (executor == null) {
-            throw new NullPointerException("Executor is required");
-        }
+        Objects.requireNonNull(url, "URL is required");
+        Objects.requireNonNull(callback, "Listener is required");
+        Objects.requireNonNull(executor, "Executor is required");
 
         mAllowDirectExecutor = allowDirectExecutor;
         mRequestContext = requestContext;
@@ -190,29 +185,21 @@ public final class CronetUrlRequest extends UrlRequestBase {
     @Override
     public void setHttpMethod(String method) {
         checkNotStarted();
-        if (method == null) {
-            throw new NullPointerException("Method is required.");
-        }
+        Objects.requireNonNull(method, "Method is required.");
         mInitialMethod = method;
     }
 
     @Override
     public void addHeader(String header, String value) {
         checkNotStarted();
-        if (header == null) {
-            throw new NullPointerException("Invalid header name.");
-        }
-        if (value == null) {
-            throw new NullPointerException("Invalid header value.");
-        }
+        Objects.requireNonNull(header, "Invalid header name.");
+        Objects.requireNonNull(value, "Invalid header value.");
         mRequestHeaders.add(new AbstractMap.SimpleImmutableEntry<String, String>(header, value));
     }
 
     @Override
     public void setUploadDataProvider(UploadDataProvider uploadDataProvider, Executor executor) {
-        if (uploadDataProvider == null) {
-            throw new NullPointerException("Invalid UploadDataProvider.");
-        }
+        Objects.requireNonNull(uploadDataProvider, "Invalid UploadDataProvider.");
         if (mInitialMethod == null) {
             mInitialMethod = "POST";
         }
@@ -375,20 +362,17 @@ public final class CronetUrlRequest extends UrlRequestBase {
         postTaskToExecutor(task);
     }
 
-    @VisibleForTesting
     public void setOnDestroyedCallbackForTesting(Runnable onDestroyedCallbackForTesting) {
         synchronized (mUrlRequestAdapterLock) {
             mOnDestroyedCallbackForTesting = onDestroyedCallbackForTesting;
         }
     }
 
-    @VisibleForTesting
     public void setOnDestroyedUploadCallbackForTesting(
             Runnable onDestroyedUploadCallbackForTesting) {
         mUploadDataStream.setOnDestroyedCallbackForTesting(onDestroyedUploadCallbackForTesting);
     }
 
-    @VisibleForTesting
     public long getUrlRequestAdapterForTesting() {
         synchronized (mUrlRequestAdapterLock) {
             return mUrlRequestAdapter;

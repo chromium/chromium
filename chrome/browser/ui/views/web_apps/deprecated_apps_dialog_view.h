@@ -99,7 +99,7 @@ class DeprecatedAppsDialogView : public views::DialogDelegateView {
   absl::optional<std::u16string> single_app_name_;
   base::OnceClosure launch_anyways_;
 
-  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
+  raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> web_contents_;
 
   base::WeakPtrFactory<DeprecatedAppsDialogView> weak_ptr_factory_{this};
 };

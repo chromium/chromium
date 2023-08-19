@@ -5,7 +5,6 @@
 import("//build/config/chrome_build.gni")
 
 source_set("trusted_vault_reauthentication") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "trusted_vault_reauthentication_coordinator.h",
     "trusted_vault_reauthentication_coordinator.mm",
@@ -27,7 +26,6 @@ source_set("trusted_vault_reauthentication") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "trusted_vault_reauthentication_coordinator_unittest.mm" ]
   deps = [

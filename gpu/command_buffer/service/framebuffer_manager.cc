@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/service/framebuffer_completeness_cache.h"
@@ -625,15 +626,15 @@ void Framebuffer::MarkAttachmentsAsCleared(
 }
 
 bool Framebuffer::HasColorAttachment(int index) const {
-  return attachments_.find(GL_COLOR_ATTACHMENT0 + index) != attachments_.end();
+  return base::Contains(attachments_, GL_COLOR_ATTACHMENT0 + index);
 }
 
 bool Framebuffer::HasDepthAttachment() const {
-  return attachments_.find(GL_DEPTH_ATTACHMENT) != attachments_.end();
+  return base::Contains(attachments_, GL_DEPTH_ATTACHMENT);
 }
 
 bool Framebuffer::HasStencilAttachment() const {
-  return attachments_.find(GL_STENCIL_ATTACHMENT) != attachments_.end();
+  return base::Contains(attachments_, GL_STENCIL_ATTACHMENT);
 }
 
 bool Framebuffer::HasActiveFloat32ColorAttachment() const {
@@ -1020,9 +1021,10 @@ void Framebuffer::OnEraseUpdateLastColorAttachmentId(GLenum attachment) {
           last_color_attachment_id_) {
     for (last_color_attachment_id_--; last_color_attachment_id_ >= 0;
          last_color_attachment_id_--) {
-      if (attachments_.find(GL_COLOR_ATTACHMENT0 + last_color_attachment_id_) !=
-          attachments_.end())
+      if (base::Contains(attachments_,
+                         GL_COLOR_ATTACHMENT0 + last_color_attachment_id_)) {
         break;
+      }
     }
   }
 }

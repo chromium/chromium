@@ -29,17 +29,6 @@ ws.onclose = function()
   document.title = 'FAIL';
 }
 
-ws.onmessage = function(evt)
-{
-  domAutomationController.send(evt.data);
-}
-
-ws.onerror = function(evt)
-{
-  console.error(`WebSocket error: '${evt.message}'`);
-}
-
-
 </script>
 </head>
 </html>

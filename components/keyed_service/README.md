@@ -12,3 +12,7 @@ This component has the following structure:
 - core/: shared code that does not depend on src/content/ or src/ios/
 - content/: Code based on the content layer.
 - ios/: Code based on src/ios.
+
+On Android, C++ keyed services often have a corresponding Java object. In such
+cases, the C++ part should own the Java one. You can find more details in
+docs/android_jni_ownership_best_practices.md.

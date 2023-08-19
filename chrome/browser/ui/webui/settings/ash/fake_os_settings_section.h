@@ -8,9 +8,9 @@
 #include <utility>
 #include <vector>
 
+#include "ash/webui/settings/public/constants/setting.mojom-shared.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/setting.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::settings {
@@ -47,7 +47,7 @@ class FakeOsSettingsSection : public OsSettingsSection {
 
   // These functions return arbitrary dummy values.
   mojom::SearchResultIcon GetSectionIcon() const override;
-  std::string GetSectionPath() const override;
+  const char* GetSectionPath() const override;
   bool LogMetric(chromeos::settings::mojom::Setting setting,
                  base::Value& value) const override;
 

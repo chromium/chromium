@@ -70,20 +70,17 @@ public class DownloadMessageUiControllerTest {
 
     static class TestDelegate implements DownloadMessageUiController.Delegate {
         @Override
-        @Nullable
-        public Context getContext() {
+        public @Nullable Context getContext() {
             return ApplicationProvider.getApplicationContext();
         }
 
         @Override
-        @Nullable
-        public MessageDispatcher getMessageDispatcher() {
+        public @Nullable MessageDispatcher getMessageDispatcher() {
             return null;
         }
 
         @Override
-        @Nullable
-        public ModalDialogManager getModalDialogManager() {
+        public @Nullable ModalDialogManager getModalDialogManager() {
             return null;
         }
 

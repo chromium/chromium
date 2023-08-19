@@ -58,7 +58,7 @@ class ExtensionInstalledBubbleViewsBrowserTest
     return extension;
   }
 
-  raw_ptr<views::Widget, DanglingUntriaged> bubble_widget_;
+  raw_ptr<views::Widget, AcrossTasksDanglingUntriaged> bubble_widget_;
 };
 
 void ExtensionInstalledBubbleViewsBrowserTest::ShowUi(const std::string& name) {

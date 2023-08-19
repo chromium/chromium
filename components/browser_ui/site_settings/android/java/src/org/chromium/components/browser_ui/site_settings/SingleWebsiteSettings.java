@@ -40,7 +40,6 @@ import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.content_public.browser.BrowserContextHandle;
-import org.chromium.content_public.browser.ContentFeatureList;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -433,6 +432,11 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
                     merged.addStorageInfo(storageInfo);
                 }
             }
+            for (SharedDictionaryInfo sharedDictionaryInfo : other.getSharedDictionaryInfo()) {
+                if (origin.equals(sharedDictionaryInfo.getOrigin())) {
+                    merged.addSharedDictionaryInfo(sharedDictionaryInfo);
+                }
+            }
             if (merged.getFPSCookieInfo() == null && other.getFPSCookieInfo() != null
                     && domainAndRegistry.equals(other.getAddress().getDomainAndRegistry())) {
                 merged.setFPSCookieInfo(other.getFPSCookieInfo());
@@ -529,8 +533,6 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
                 setUpLocationPreference(preference);
             } else if (type == ContentSettingsType.NOTIFICATIONS) {
                 setUpNotificationsPreference(preference, mSite.isEmbargoed(type));
-            } else if (type == ContentSettingsType.REQUEST_DESKTOP_SITE) {
-                setUpDesktopSitePreference(preference);
             } else {
                 setupContentSettingsPreference(preference,
                         mSite.getContentSetting(
@@ -1100,19 +1102,6 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
         }
         // Not possible to embargo ADS.
         setupContentSettingsPreference(preference, permission, false /* isEmbargoed */);
-    }
-
-    private void setUpDesktopSitePreference(Preference preference) {
-        // Skip adding the desktop site preference if RDS exceptions support is removed.
-        if (!ContentFeatureList.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS)
-                && SiteSettingsFeatureList.isEnabled(
-                        SiteSettingsFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS_DOWNGRADE)) {
-            return;
-        }
-        setupContentSettingsPreference(preference,
-                mSite.getContentSetting(getSiteSettingsDelegate().getBrowserContextHandle(),
-                        ContentSettingsType.REQUEST_DESKTOP_SITE),
-                mSite.isEmbargoed(ContentSettingsType.REQUEST_DESKTOP_SITE));
     }
 
     private String getDSECategorySummary(@ContentSettingValues int value) {

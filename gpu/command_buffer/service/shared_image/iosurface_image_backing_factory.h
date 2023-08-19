@@ -10,8 +10,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "components/viz/common/resources/resource_format.h"
-#include "gpu/command_buffer/service/shared_image/gl_texture_image_backing_helper.h"
+#include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
@@ -86,6 +85,18 @@ class GPU_GLES2_EXPORT IOSurfaceImageBackingFactory
       SkAlphaType alpha_type,
       uint32_t usage,
       std::string debug_label) override;
+  std::unique_ptr<SharedImageBacking> CreateSharedImage(
+      const Mailbox& mailbox,
+      viz::SharedImageFormat format,
+      SurfaceHandle surface_handle,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      std::string debug_label,
+      bool is_thread_safe,
+      gfx::BufferUsage buffer_usage) override;
   bool IsSupported(uint32_t usage,
                    viz::SharedImageFormat format,
                    const gfx::Size& size,
@@ -116,7 +127,8 @@ class GPU_GLES2_EXPORT IOSurfaceImageBackingFactory
       gfx::GpuMemoryBufferHandle handle,
       uint32_t io_surface_plane,
       gfx::BufferPlane buffer_plane,
-      bool is_plane_format);
+      bool is_plane_format,
+      absl::optional<gfx::BufferUsage> buffer_usage = absl::nullopt);
 
   const GrContextType gr_context_type_;
   const int32_t max_texture_size_;

@@ -4,6 +4,7 @@
 
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 
+#include <memory>
 #include <string>
 
 #include "base/check_op.h"
@@ -33,8 +34,9 @@
 #include "content/browser/file_system_access/file_system_access_error.h"
 #include "content/browser/file_system_access/file_system_access_file_handle_impl.h"
 #include "content/browser/file_system_access/file_system_access_file_writer_impl.h"
+#include "content/browser/file_system_access/file_system_access_lock_manager.h"
 #include "content/browser/file_system_access/file_system_access_transfer_token_impl.h"
-#include "content/browser/file_system_access/file_system_access_write_lock_manager.h"
+#include "content/browser/file_system_access/file_system_access_watcher_manager.h"
 #include "content/browser/file_system_access/file_system_chooser.h"
 #include "content/browser/file_system_access/fixed_file_system_access_permission_grant.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -45,10 +47,10 @@
 #include "content/public/common/content_switches.h"
 #include "crypto/secure_hash.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/filename_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "storage/browser/file_system/file_system_context.h"
-#include "storage/browser/file_system/file_system_features.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/file_system/file_system_util.h"
@@ -234,15 +236,18 @@ bool IsValidId(const std::string& id) {
 }
 
 ui::SelectFileDialog::Type GetSelectFileDialogType(
-    blink::mojom::FilePickerOptionsPtr& options) {
+    const blink::mojom::TypeSpecificFilePickerOptionsUnionPtr& options) {
   switch (options->which()) {
-    case blink::mojom::FilePickerOptions::Tag::kOpenFilePickerOptions:
+    case blink::mojom::TypeSpecificFilePickerOptionsUnion::Tag::
+        kOpenFilePickerOptions:
       return options->get_open_file_picker_options()->can_select_multiple_files
                  ? ui::SelectFileDialog::SELECT_OPEN_MULTI_FILE
                  : ui::SelectFileDialog::SELECT_OPEN_FILE;
-    case blink::mojom::FilePickerOptions::Tag::kSaveFilePickerOptions:
+    case blink::mojom::TypeSpecificFilePickerOptionsUnion::Tag::
+        kSaveFilePickerOptions:
       return ui::SelectFileDialog::SELECT_SAVEAS_FILE;
-    case blink::mojom::FilePickerOptions::Tag::kDirectoryPickerOptions:
+    case blink::mojom::TypeSpecificFilePickerOptionsUnion::Tag::
+        kDirectoryPickerOptions:
       return ui::SelectFileDialog::SELECT_FOLDER;
   }
   NOTREACHED();
@@ -250,15 +255,18 @@ ui::SelectFileDialog::Type GetSelectFileDialogType(
 }
 
 blink::mojom::AcceptsTypesInfoPtr GetAndMoveAcceptsTypesInfo(
-    blink::mojom::FilePickerOptionsPtr& options) {
+    const blink::mojom::TypeSpecificFilePickerOptionsUnionPtr& options) {
   switch (options->which()) {
-    case blink::mojom::FilePickerOptions::Tag::kOpenFilePickerOptions:
+    case blink::mojom::TypeSpecificFilePickerOptionsUnion::Tag::
+        kOpenFilePickerOptions:
       return std::move(
           options->get_open_file_picker_options()->accepts_types_info);
-    case blink::mojom::FilePickerOptions::Tag::kSaveFilePickerOptions:
+    case blink::mojom::TypeSpecificFilePickerOptionsUnion::Tag::
+        kSaveFilePickerOptions:
       return std::move(
           options->get_save_file_picker_options()->accepts_types_info);
-    case blink::mojom::FilePickerOptions::Tag::kDirectoryPickerOptions:
+    case blink::mojom::TypeSpecificFilePickerOptionsUnion::Tag::
+        kDirectoryPickerOptions:
       return blink::mojom::AcceptsTypesInfo::New(
           /*accepts=*/std::vector<
               blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr>(),
@@ -310,8 +318,8 @@ FileSystemAccessManagerImpl::FileSystemAccessManagerImpl(
     : context_(std::move(context)),
       blob_context_(std::move(blob_context)),
       permission_context_(permission_context),
-      write_lock_manager_(
-          std::make_unique<FileSystemAccessWriteLockManager>(PassKey())),
+      lock_manager_(std::make_unique<FileSystemAccessLockManager>(PassKey())),
+      watcher_manager_(this, PassKey()),
       off_the_record_(off_the_record) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(context_);
@@ -383,7 +391,6 @@ void FileSystemAccessManagerImpl::GetSandboxedFileSystem(
 
 void FileSystemAccessManagerImpl::ChooseEntries(
     blink::mojom::FilePickerOptionsPtr options,
-    blink::mojom::CommonFilePickerOptionsPtr common_options,
     ChooseEntriesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const BindingContext& context = receivers_.current_context();
@@ -396,7 +403,7 @@ void FileSystemAccessManagerImpl::ChooseEntries(
   }
 
   // Non-compromised renderers shouldn't be able to send an invalid id.
-  if (!IsValidId(common_options->starting_directory_id)) {
+  if (!IsValidId(options->starting_directory_id)) {
     receivers_.ReportBadMessage("Invalid starting directory ID in browser");
     return;
   }
@@ -407,9 +414,10 @@ void FileSystemAccessManagerImpl::ChooseEntries(
     // a directory picker with `request_writable` true.
     if (!permission_context_->CanObtainReadPermission(
             context.storage_key.origin()) ||
-        ((options->is_save_file_picker_options() ||
-          (options->is_directory_picker_options() &&
-           options->get_directory_picker_options()->request_writable)) &&
+        ((options->type_specific_options->is_save_file_picker_options() ||
+          (options->type_specific_options->is_directory_picker_options() &&
+           options->type_specific_options->get_directory_picker_options()
+               ->request_writable)) &&
          !permission_context_->CanObtainWritePermission(
              context.storage_key.origin()))) {
       std::move(callback).Run(
@@ -447,51 +455,52 @@ void FileSystemAccessManagerImpl::ChooseEntries(
     return;
   }
 
-  auto token = std::move(common_options->starting_directory_token);
-
-  auto resolve_default_directory_callback =
-      base::BindOnce(&FileSystemAccessManagerImpl::ResolveDefaultDirectory,
-                     weak_factory_.GetWeakPtr(), context, std::move(options),
-                     std::move(common_options), std::move(callback));
-
-  if (token.is_valid()) {
-    ResolveTransferToken(std::move(token),
-                         std::move(resolve_default_directory_callback));
+  if (!options->start_in_options.is_null() &&
+      options->start_in_options->is_directory_token() &&
+      options->start_in_options->get_directory_token().is_valid()) {
+    auto token = std::move(options->start_in_options->get_directory_token());
+    options->start_in_options->set_directory_token(mojo::NullRemote());
+    ResolveTransferToken(
+        std::move(token),
+        base::BindOnce(&FileSystemAccessManagerImpl::ResolveDefaultDirectory,
+                       weak_factory_.GetWeakPtr(), context, std::move(options),
+                       std::move(callback)));
     return;
   }
 
-  std::move(resolve_default_directory_callback).Run(/*token=*/nullptr);
+  ResolveDefaultDirectory(context, std::move(options), std::move(callback),
+                          /*resolved_directory_token=*/nullptr);
 }
 
 void FileSystemAccessManagerImpl::ResolveDefaultDirectory(
     const BindingContext& context,
     blink::mojom::FilePickerOptionsPtr options,
-    blink::mojom::CommonFilePickerOptionsPtr common_options,
     ChooseEntriesCallback callback,
-    FileSystemAccessTransferTokenImpl* resolved_starting_directory_token) {
+    FileSystemAccessTransferTokenImpl* resolved_directory_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   PathInfo path_info;
-  if (resolved_starting_directory_token)
-    HandleTransferTokenAsDefaultDirectory(resolved_starting_directory_token,
-                                          path_info);
+  if (resolved_directory_token) {
+    // Prioritize an explicitly stated directory handle to start in over an `id`
+    // or a well-known directory.
+    HandleTransferTokenAsDefaultDirectory(resolved_directory_token, path_info);
+  }
 
   if (path_info.path.empty() && permission_context_) {
-    if (!common_options->starting_directory_id.empty()) {
+    if (!options->starting_directory_id.empty()) {
       // Prioritize an `id` over a well-known directory.
       path_info = permission_context_->GetLastPickedDirectory(
-          context.storage_key.origin(), common_options->starting_directory_id);
+          context.storage_key.origin(), options->starting_directory_id);
     }
     if (path_info.path.empty()) {
-      if (common_options->well_known_starting_directory !=
-          blink::mojom::WellKnownDirectory::kDefault) {
+      if (!options->start_in_options.is_null() &&
+          options->start_in_options->is_well_known_directory()) {
         // Prioritize an explicitly stated well-known directory over an
         // implicitly remembered LastPicked directory.
         path_info.path = permission_context_->GetWellKnownDirectoryPath(
-            common_options->well_known_starting_directory,
+            options->start_in_options->get_well_known_directory(),
             context.storage_key.origin());
-      } else { /*well_known_starting_directory ==
-                  blink::mojom::WellKnownDirectory::kDefault*/
+      } else {
         // If `id` empty or unset, fall back to the default LastPickedDirectory.
         path_info = permission_context_->GetLastPickedDirectory(
             context.storage_key.origin(), std::string());
@@ -502,10 +511,10 @@ void FileSystemAccessManagerImpl::ResolveDefaultDirectory(
   auto fs_url = CreateFileSystemURLFromPath(path_info.type, path_info.path);
   base::FilePath default_directory = fs_url.path();
 
-  auto wrapped_callback = base::BindOnce(
-      &FileSystemAccessManagerImpl::SetDefaultPathAndShowPicker,
-      weak_factory_.GetWeakPtr(), context, std::move(options),
-      std::move(common_options), default_directory, std::move(callback));
+  auto wrapped_callback =
+      base::BindOnce(&FileSystemAccessManagerImpl::SetDefaultPathAndShowPicker,
+                     weak_factory_.GetWeakPtr(), context, std::move(options),
+                     default_directory, std::move(callback));
   DoFileSystemOperation(FROM_HERE,
                         &storage::FileSystemOperationRunner::DirectoryExists,
                         base::BindOnce(&DidCheckIfDefaultDirectoryExists,
@@ -522,7 +531,6 @@ void FileSystemAccessManagerImpl::Shutdown() {
 void FileSystemAccessManagerImpl::SetDefaultPathAndShowPicker(
     const BindingContext& context,
     blink::mojom::FilePickerOptionsPtr options,
-    blink::mojom::CommonFilePickerOptionsPtr common_options,
     base::FilePath default_directory,
     ChooseEntriesCallback callback,
     bool default_directory_exists) {
@@ -530,17 +538,19 @@ void FileSystemAccessManagerImpl::SetDefaultPathAndShowPicker(
 
   if (!default_directory_exists && permission_context_) {
     default_directory = permission_context_->GetWellKnownDirectoryPath(
-        blink::mojom::WellKnownDirectory::kDefault,
+        blink::mojom::WellKnownDirectory::kDirDocuments,
         context.storage_key.origin());
   }
 
   auto request_directory_write_access =
-      options->is_directory_picker_options() &&
-      options->get_directory_picker_options()->request_writable;
+      options->type_specific_options->is_directory_picker_options() &&
+      options->type_specific_options->get_directory_picker_options()
+          ->request_writable;
 
   auto suggested_name =
-      options->is_save_file_picker_options()
-          ? options->get_save_file_picker_options()->suggested_name
+      options->type_specific_options->is_save_file_picker_options()
+          ? options->type_specific_options->get_save_file_picker_options()
+                ->suggested_name
           : std::string();
 
   base::FilePath suggested_name_path;
@@ -566,16 +576,16 @@ void FileSystemAccessManagerImpl::SetDefaultPathAndShowPicker(
                              ? permission_context_->GetPickerTitle(options)
                              : std::u16string();
   FileSystemChooser::Options file_system_chooser_options(
-      GetSelectFileDialogType(options), GetAndMoveAcceptsTypesInfo(options),
+      GetSelectFileDialogType(options->type_specific_options),
+      GetAndMoveAcceptsTypesInfo(options->type_specific_options),
       std::move(title), std::move(default_directory),
       std::move(suggested_name_path));
 
   if (auto_file_picker_result_for_test_) {
-    DidChooseEntries(context, file_system_chooser_options,
-                     common_options->starting_directory_id,
-                     request_directory_write_access, std::move(callback),
-                     file_system_access_error::Ok(),
-                     {*auto_file_picker_result_for_test_});
+    DidChooseEntries(
+        context, file_system_chooser_options, options->starting_directory_id,
+        request_directory_write_access, std::move(callback),
+        file_system_access_error::Ok(), {*auto_file_picker_result_for_test_});
     return;
   }
 
@@ -585,7 +595,7 @@ void FileSystemAccessManagerImpl::SetDefaultPathAndShowPicker(
       base::BindOnce(&FileSystemAccessManagerImpl::DidChooseEntries,
                      weak_factory_.GetWeakPtr(), context,
                      file_system_chooser_options,
-                     common_options->starting_directory_id,
+                     options->starting_directory_id,
                      request_directory_write_access, std::move(callback)));
 }
 
@@ -774,6 +784,15 @@ void FileSystemAccessManagerImpl::GetDirectoryHandleFromToken(
                      std::move(directory_handle_receiver)));
 }
 
+void FileSystemAccessManagerImpl::BindObserverHost(
+    mojo::PendingReceiver<blink::mojom::FileSystemAccessObserverHost>
+        host_receiver) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  const BindingContext& context = receivers_.current_context();
+  watcher_manager().BindObserverHost(context, std::move(host_receiver));
+}
+
 void FileSystemAccessManagerImpl::SerializeHandle(
     mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token,
     SerializeHandleCallback callback) {
@@ -819,8 +838,9 @@ std::string SerializeURLImpl(const storage::FileSystemURL& url,
         is_external ? data.mutable_external() : data.mutable_local();
 
     base::FilePath url_path = is_external ? url.virtual_path() : url.path();
-    if (root_permission_path.empty())
+    if (root_permission_path.empty()) {
       root_permission_path = url_path;
+    }
     file_data->set_root_path(SerializePath(root_permission_path));
 
     base::FilePath relative_path;
@@ -1066,12 +1086,27 @@ FileSystemAccessManagerImpl::CreateDirectoryHandle(
       result.InitWithNewPipeAndPassReceiver());
   return result;
 }
-scoped_refptr<FileSystemAccessWriteLockManager::WriteLock>
-FileSystemAccessManagerImpl::TakeWriteLock(
+scoped_refptr<FileSystemAccessLockManager::Lock>
+FileSystemAccessManagerImpl::TakeLock(
     const storage::FileSystemURL& url,
-    FileSystemAccessWriteLockManager::WriteLockType lock_type) {
+    FileSystemAccessLockManager::LockType lock_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return write_lock_manager_->TakeLock(url, lock_type);
+  return lock_manager_->TakeLock(url, lock_type);
+}
+FileSystemAccessLockManager::LockType
+FileSystemAccessManagerImpl::CreateSharedLockType() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return lock_manager_->CreateSharedLockType();
+}
+FileSystemAccessLockManager::LockType
+FileSystemAccessManagerImpl::GetExclusiveLockType() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return lock_manager_->GetExclusiveLockType();
+}
+FileSystemAccessLockManager::LockType
+FileSystemAccessManagerImpl::GetAncestorLockTypeForTesting() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return lock_manager_->GetAncestorLockTypeForTesting();  // IN-TEST
 }
 
 mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter>
@@ -1079,8 +1114,8 @@ FileSystemAccessManagerImpl::CreateFileWriter(
     const BindingContext& binding_context,
     const storage::FileSystemURL& url,
     const storage::FileSystemURL& swap_url,
-    scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
-    scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> swap_lock,
+    scoped_refptr<FileSystemAccessLockManager::Lock> lock,
+    scoped_refptr<FileSystemAccessLockManager::Lock> swap_lock,
     const SharedHandleState& handle_state,
     bool auto_close) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1103,8 +1138,8 @@ FileSystemAccessManagerImpl::CreateFileWriter(
     const BindingContext& binding_context,
     const storage::FileSystemURL& url,
     const storage::FileSystemURL& swap_url,
-    scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
-    scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> swap_lock,
+    scoped_refptr<FileSystemAccessLockManager::Lock> lock,
+    scoped_refptr<FileSystemAccessLockManager::Lock> swap_lock,
     const SharedHandleState& handle_state,
     mojo::PendingReceiver<blink::mojom::FileSystemAccessFileWriter> receiver,
     bool has_transient_user_activation,
@@ -1132,11 +1167,9 @@ FileSystemAccessManagerImpl::CreateAccessHandleHost(
     mojo::PendingReceiver<blink::mojom::FileSystemAccessCapacityAllocationHost>
         capacity_allocation_host_receiver,
     int64_t file_size,
-    scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
+    scoped_refptr<FileSystemAccessLockManager::Lock> lock,
     base::ScopedClosureRunner on_close_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(lock->type() ==
-         FileSystemAccessWriteLockManager::WriteLockType::kExclusive);
 
   mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost> result;
   auto receiver = result.InitWithNewPipeAndPassReceiver();
@@ -1536,11 +1569,7 @@ storage::FileSystemURL FileSystemAccessManagerImpl::CreateFileSystemURLFromPath(
     const base::FilePath& path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return context()->CreateCrackedFileSystemURL(
-      base::FeatureList::IsEnabled(
-          storage::features::
-              kFileSystemURLComparatorsTreatOpaqueOriginAsNoOrigin)
-          ? blink::StorageKey()
-          : opaque_origin_for_non_sandboxed_filesystemurls_,
+      blink::StorageKey(),
       path_type == PathType::kLocal ? storage::kFileSystemTypeLocal
                                     : storage::kFileSystemTypeExternal,
       path);
@@ -1647,12 +1676,14 @@ void FileSystemAccessManagerImpl::CleanupAccessHandleCapacityAllocationImpl(
     base::File::Error result,
     const base::File::Info& file_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (result != base::File::FILE_OK)
+  if (result != base::File::FILE_OK) {
     return;
+  }
   DCHECK_GE(file_info.size, 0);
   // if the QuotaManagerProxy is gone, no changes are possible.
-  if (!context_->quota_manager_proxy())
+  if (!context_->quota_manager_proxy()) {
     return;
+  }
   DCHECK_GE(allocated_file_size, 0);
 
   int64_t overallocation = allocated_file_size - file_info.size;

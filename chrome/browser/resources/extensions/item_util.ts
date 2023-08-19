@@ -155,6 +155,30 @@ export function computeInspectableViewLabel(
 }
 
 /**
+ * Computes the accessible human-facing aria label for an extension toggle item.
+ */
+export function getEnableToggleAriaLabel(
+    toggleEnabled: boolean,
+    extensionsDataType: chrome.developerPrivate.ExtensionType,
+    appEnabled: string, extensionEnabled: string, itemOff: string): string {
+  if (!toggleEnabled) {
+    return itemOff;
+  }
+
+  const ExtensionType = chrome.developerPrivate.ExtensionType;
+  switch (extensionsDataType) {
+    case ExtensionType.HOSTED_APP:
+    case ExtensionType.LEGACY_PACKAGED_APP:
+    case ExtensionType.PLATFORM_APP:
+      return appEnabled;
+    case ExtensionType.EXTENSION:
+    case ExtensionType.SHARED_MODULE:
+      return extensionEnabled;
+  }
+  assertNotReached('Item type is not App or Extension.');
+}
+
+/**
  * Clones the array and returns a new array with background pages and service
  * workers sorted before other views.
  * @returns Sorted array.

@@ -16,25 +16,20 @@
 #import "base/task/sequenced_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "chrome/updater/constants.h"
 #include "chrome/updater/mac/privileged_helper/helper_branding.h"
 #include "chrome/updater/updater_branding.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace updater {
 
 namespace {
-int kServerKeepAliveSeconds = 1;
+constexpr int kServerKeepAliveSeconds = 1;
 }
 
-PrivilegedHelperServer::PrivilegedHelperServer()
-    : main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
-      service_(base::MakeRefCounted<PrivilegedHelperService>()) {}
+PrivilegedHelperServer::PrivilegedHelperServer() = default;
 PrivilegedHelperServer::~PrivilegedHelperServer() = default;
 
-void PrivilegedHelperServer::Initialize() {
+int PrivilegedHelperServer::Initialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   service_delegate_ = [[PrivilegedHelperServiceXPCDelegate alloc]
       initWithService:service_
@@ -42,8 +37,8 @@ void PrivilegedHelperServer::Initialize() {
   service_listener_ = [[NSXPCListener alloc]
       initWithMachServiceName:base::SysUTF8ToNSString(PRIVILEGED_HELPER_NAME)];
   service_listener_.delegate = service_delegate_;
-
   [service_listener_ resume];
+  return kErrorOk;
 }
 
 void PrivilegedHelperServer::FirstTaskRun() {

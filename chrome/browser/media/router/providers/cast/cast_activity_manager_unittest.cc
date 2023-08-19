@@ -17,6 +17,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
@@ -83,6 +84,8 @@ constexpr char kAppParams[] = R"(
 )";
 constexpr char kPresentationId[] = "presentationId";
 constexpr char kPresentationId2[] = "presentationId2";
+constexpr char histogram[] =
+    "AccessCodeCast.Session.SavedDeviceRouteCreationDuration";
 
 std::string MakeSourceId(const std::string& app_id = kAppId1,
                          const std::string& app_params = "",
@@ -1006,6 +1009,59 @@ TEST_F(CastActivityManagerTest, FindMirroringActivityByRouteId) {
   LaunchCastSdkMirroringSession();
   EXPECT_TRUE(
       manager_->FindMirroringActivityByRouteId(route_->media_route_id()));
+}
+
+TEST_F(CastActivityManagerTest, LaunchAccessCodeCastSavedDeviceSuccess) {
+  // Set the sink member variable to a saved device.
+  sink_.cast_data().discovery_type =
+      CastDiscoveryType::kAccessCodeRememberedDevice;
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(histogram, 0);
+
+  // A successful saved device mirroring request should trigger 1 histogram
+  // count.
+  LaunchNonSdkMirroringSession();
+  histogram_tester.ExpectTotalCount(histogram, 1);
+}
+
+TEST_F(CastActivityManagerTest, LaunchAccessCodeCastSavedDeviceFailure) {
+  // Set the sink member variable to a saved device.
+  sink_.cast_data().discovery_type =
+      CastDiscoveryType::kAccessCodeRememberedDevice;
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(histogram, 0);
+
+  // A failed saved device mirroring request should trigger 0 histogram count.
+  CallLaunchSessionFailure();
+  histogram_tester.ExpectTotalCount(histogram, 0);
+}
+
+TEST_F(CastActivityManagerTest, LaunchAccessCodeCastInstantDeviceSuccess) {
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(histogram, 0);
+
+  // Set the sink member variable to a instant device.
+  sink_.cast_data().discovery_type = CastDiscoveryType::kAccessCodeManualEntry;
+
+  // A successful instant device mirroring request should not trigger any
+  // histogram count.
+  LaunchNonSdkMirroringSession();
+  histogram_tester.ExpectTotalCount(histogram, 0);
+}
+
+TEST_F(CastActivityManagerTest, LaunchMdnsInstantDeviceSuccess) {
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(histogram, 0);
+
+  // Set the sink member variable to Mdns.
+  sink_.cast_data().discovery_type = CastDiscoveryType::kMdns;
+
+  // A successful instant device mirroring request should not trigger any
+  // histogram count.
+  LaunchNonSdkMirroringSession();
+  histogram_tester.ExpectTotalCount(histogram, 0);
 }
 
 }  // namespace media_router

@@ -48,7 +48,7 @@ DOMVisualViewport::~DOMVisualViewport() = default;
 
 void DOMVisualViewport::Trace(Visitor* visitor) const {
   visitor->Trace(window_);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
 }
 
 const AtomicString& DOMVisualViewport::InterfaceName() const {

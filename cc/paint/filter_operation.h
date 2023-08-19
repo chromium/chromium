@@ -62,14 +62,10 @@ class CC_PAINT_EXPORT FilterOperation {
   FilterType type() const { return type_; }
 
   float amount() const {
+    DCHECK_NE(type_, ALPHA_THRESHOLD);
     DCHECK_NE(type_, COLOR_MATRIX);
     DCHECK_NE(type_, REFERENCE);
     return amount_;
-  }
-
-  float outer_threshold() const {
-    DCHECK_EQ(type_, ALPHA_THRESHOLD);
-    return outer_threshold_;
   }
 
   gfx::Point offset() const {
@@ -168,11 +164,8 @@ class CC_PAINT_EXPORT FilterOperation {
     return FilterOperation(SATURATING_BRIGHTNESS, amount);
   }
 
-  static FilterOperation CreateAlphaThresholdFilter(const ShapeRects& shape,
-                                                    float inner_threshold,
-                                                    float outer_threshold) {
-    return FilterOperation(ALPHA_THRESHOLD, shape, inner_threshold,
-                           outer_threshold);
+  static FilterOperation CreateAlphaThresholdFilter(const ShapeRects& shape) {
+    return FilterOperation(ALPHA_THRESHOLD, shape);
   }
 
   static FilterOperation CreateOffsetFilter(const gfx::Point& offset) {
@@ -193,14 +186,10 @@ class CC_PAINT_EXPORT FilterOperation {
   void set_type(FilterType type) { type_ = type; }
 
   void set_amount(float amount) {
+    DCHECK_NE(type_, ALPHA_THRESHOLD);
     DCHECK_NE(type_, COLOR_MATRIX);
     DCHECK_NE(type_, REFERENCE);
     amount_ = amount;
-  }
-
-  void set_outer_threshold(float outer_threshold) {
-    DCHECK_EQ(type_, ALPHA_THRESHOLD);
-    outer_threshold_ = outer_threshold;
   }
 
   void set_offset(const gfx::Point& offset) {
@@ -277,14 +266,10 @@ class CC_PAINT_EXPORT FilterOperation {
 
   FilterOperation(FilterType type, sk_sp<PaintFilter> image_filter);
 
-  FilterOperation(FilterType type,
-                  const ShapeRects& shape,
-                  float inner_threshold,
-                  float outer_threshold);
+  FilterOperation(FilterType type, const ShapeRects& shape);
 
   FilterType type_;
   float amount_;
-  float outer_threshold_;
   gfx::Point offset_;
   SkColor4f drop_shadow_color_;
   sk_sp<PaintFilter> image_filter_;

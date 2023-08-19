@@ -34,7 +34,6 @@ const DiagnosticsAppWithInput = class extends PolymerTest {
   get featureList() {
     return {
       enabled: [
-        'ash::features::kEnableInputInDiagnosticsApp',
         'ash::features::kEnableTouchpadsInDiagnosticsApp',
         'ash::features::kEnableTouchscreensInDiagnosticsApp',
       ],
@@ -66,7 +65,7 @@ const tests = [
   ['IpConfigInfoDrawer', 'ip_config_info_drawer_test.js'],
   ['KeyboardTester', 'keyboard_tester_test.js', 'Input'],
   ['MemoryCard', 'memory_card_test.js'],
-  ['NetworkCard', 'network_card_test.js', undefined, 'DISABLED_All'],
+  ['NetworkCard', 'network_card_test.js'],
   ['NetworkInfo', 'network_info_test.js'],
   ['NetworkList', 'network_list_test.js'],
   ['NetworkTroubleshooting', 'network_troubleshooting_test.js'],
@@ -78,7 +77,7 @@ const tests = [
   ['RoutineResultEntry', 'routine_result_entry_test.js'],
   ['RoutineResultList', 'routine_result_list_test.js'],
   ['RoutineSection', 'routine_section_test.js'],
-  ['SystemPage', 'system_page_test.js', undefined, 'DISABLED_All'],
+  ['SystemPage', 'system_page_test.js'],
   ['TextBadge', 'text_badge_test.js'],
   ['TouchscreenTester', 'touchscreen_tester_test.js', 'Input'],
   ['TouchpadTester', 'touchpad_tester_test.js', 'Input'],

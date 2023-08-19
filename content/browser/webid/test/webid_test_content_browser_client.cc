@@ -13,7 +13,8 @@ WebIdTestContentBrowserClient::WebIdTestContentBrowserClient() = default;
 WebIdTestContentBrowserClient::~WebIdTestContentBrowserClient() = default;
 
 std::unique_ptr<IdentityRequestDialogController>
-WebIdTestContentBrowserClient::CreateIdentityRequestDialogController() {
+WebIdTestContentBrowserClient::CreateIdentityRequestDialogController(
+    WebContents* rp_web_contents) {
   DCHECK(test_dialog_controller_);
   return std::move(test_dialog_controller_);
 }
@@ -36,7 +37,7 @@ void WebIdTestContentBrowserClient::SetMDocProvider(
 
 void WebIdTestContentBrowserClient::SetIdentityRegistry(
     WebContents* web_contents,
-    FederatedIdentityModalDialogViewDelegate* delegate,
+    base::WeakPtr<FederatedIdentityModalDialogViewDelegate> delegate,
     const url::Origin& url) {
   IdentityRegistry::CreateForWebContents(web_contents, delegate, url);
 }

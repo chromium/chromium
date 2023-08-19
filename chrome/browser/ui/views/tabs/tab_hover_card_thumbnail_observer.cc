@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/tabs/tab_hover_card_thumbnail_observer.h"
 
+#include "chrome/browser/ui/tabs/tab_style.h"
+
 TabHoverCardThumbnailObserver::TabHoverCardThumbnailObserver() = default;
 TabHoverCardThumbnailObserver::~TabHoverCardThumbnailObserver() = default;
 

@@ -40,7 +40,7 @@ class BiometricAuthenticationForFillingBubbleController
 
   bool accept_clicked_ = false;
 
-  raw_ptr<PrefService> prefs_;
+  raw_ptr<PrefService, DanglingUntriaged> prefs_;
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_BUBBLE_CONTROLLERS_BIOMETRIC_AUTHENTICATION_FOR_FILLING_BUBBLE_CONTROLLER_H_

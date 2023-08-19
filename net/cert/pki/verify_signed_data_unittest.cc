@@ -55,10 +55,10 @@ void RunTestCase(VerifyResult expected_result,
   ASSERT_TRUE(ReadTestDataFromPemFile(path, mappings));
 
   absl::optional<SignatureAlgorithm> signature_algorithm =
-      ParseSignatureAlgorithm(der::Input(&algorithm));
+      ParseSignatureAlgorithm(der::Input(algorithm));
   ASSERT_TRUE(signature_algorithm);
 
-  der::Parser signature_value_parser((der::Input(&signature_value)));
+  der::Parser signature_value_parser((der::Input(signature_value)));
   absl::optional<der::BitString> signature_value_bit_string =
       signature_value_parser.ReadBitString();
   ASSERT_TRUE(signature_value_bit_string.has_value())
@@ -66,9 +66,9 @@ void RunTestCase(VerifyResult expected_result,
 
   bool expected_result_bool = expected_result == SUCCESS;
 
-  bool result = VerifySignedData(*signature_algorithm, der::Input(&signed_data),
+  bool result = VerifySignedData(*signature_algorithm, der::Input(signed_data),
                                  signature_value_bit_string.value(),
-                                 der::Input(&public_key), cache);
+                                 der::Input(public_key), cache);
 
   EXPECT_EQ(expected_result_bool, result);
 }

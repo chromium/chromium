@@ -52,8 +52,6 @@ public class EphemeralTabSheetContent implements BottomSheetContent {
      */
     private static final int BASE_ANIMATION_DURATION_MS = 218;
 
-    private static final float PEEK_TOOLBAR_HEIGHT_MULTIPLE = 2.f;
-
     /** Ratio of the height when in full mode. Used in half-open variation. */
     private static final float FULL_HEIGHT_RATIO = 0.9f;
 

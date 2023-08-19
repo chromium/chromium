@@ -17,10 +17,6 @@
 #import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface TextZoomCoordinator () <ContainedPresenterDelegate>
 
 // The view controller managed by this coordinator.
@@ -86,6 +82,7 @@
   self.textZoomViewController = nil;
 
   [self.mediator disconnect];
+  self.mediator.consumer = nil;
   self.mediator = nil;
 }
 

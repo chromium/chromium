@@ -31,7 +31,9 @@ const size_t kContentDispositionLength = std::size(kContentDisposition) - 1;
 // from RFC 1738, end of section 2.2.
 const char kCharacterPattern[] =
     "(?:[a-zA-Z0-9$_.+!*'(),]|-|(?:%[a-fA-F0-9]{2}))";
-const char kEscapeClosingQuote[] = "\\\\E";
+const char kCRLF[] = "\r\n";
+const char kContentTypeOctetString[] =
+    "Content-Type: application/octet-stream\r\n";
 
 // A wrapper struct for static RE2 objects to be held as LazyInstance.
 struct Patterns {
@@ -40,7 +42,6 @@ struct Patterns {
   // is never called.
   ~Patterns() = delete;
   const RE2 transfer_padding_pattern;
-  const RE2 crlf_pattern;
   const RE2 closing_pattern;
   const RE2 epilogue_pattern;
   const RE2 crlf_free_pattern;
@@ -49,14 +50,11 @@ struct Patterns {
   const RE2 content_disposition_pattern;
   const RE2 name_pattern;
   const RE2 value_pattern;
-  const RE2 unquote_pattern;
   const RE2 url_encoded_pattern;
-  const RE2 content_type_octet_stream;
 };
 
 Patterns::Patterns()
     : transfer_padding_pattern("[ \\t]*\\r\\n"),
-      crlf_pattern("\\r\\n"),
       closing_pattern("--[ \\t]*"),
       epilogue_pattern("|\\r\\n(?s:.)*"),
       crlf_free_pattern("(?:[^\\r]|\\r+[^\\r\\n])*"),
@@ -66,13 +64,18 @@ Patterns::Patterns()
                                   ")"),
       name_pattern("\\bname=\"([^\"]*)\""),
       value_pattern("\\bfilename=\"([^\"]*)\""),
-      unquote_pattern(kEscapeClosingQuote),
       url_encoded_pattern(std::string("(") + kCharacterPattern + "*)=(" +
-                          kCharacterPattern + "*)"),
-      content_type_octet_stream(
-          "Content-Type: application\\/octet-stream\\r\\n") {}
+                          kCharacterPattern + "*)") {}
 
 base::LazyInstance<Patterns>::Leaky g_patterns = LAZY_INSTANCE_INITIALIZER;
+
+bool ConsumePrefix(re2::StringPiece* str, re2::StringPiece prefix) {
+  if (!str->starts_with(prefix)) {
+    return false;
+  }
+  str->remove_prefix(prefix.size());
+  return true;
+}
 
 }  // namespace
 
@@ -213,15 +216,6 @@ class FormDataParserMultipart : public FormDataParser {
     STATE_ERROR
   };
 
-  // Produces a regexp to match the string "--" + |literal|. The idea is to
-  // represent "--" + |literal| as a "quoted pattern", a verbatim copy enclosed
-  // in "\\Q" and "\\E". The only catch is to watch out for occurrences of "\\E"
-  // inside |literal|. Those must be excluded from the quote and the backslash
-  // doubly escaped. For example, for literal == "abc\\Edef" the result is
-  // "\\Q--abc\\E\\\\E\\Qdef\\E".
-  static std::string CreateBoundaryPatternFromLiteral(
-      const std::string& literal);
-
   // Tests whether |input| has a prefix matching |pattern|.
   static bool StartsWithPattern(const re2::StringPiece& input,
                                 const RE2& pattern);
@@ -249,9 +243,6 @@ class FormDataParserMultipart : public FormDataParser {
   const RE2& transfer_padding_pattern() const {
     return patterns_->transfer_padding_pattern;
   }
-  const RE2& crlf_pattern() const {
-    return patterns_->crlf_pattern;
-  }
   const RE2& closing_pattern() const {
     return patterns_->closing_pattern;
   }
@@ -277,16 +268,7 @@ class FormDataParserMultipart : public FormDataParser {
     return patterns_->value_pattern;
   }
 
-  const RE2& content_type_octet_stream() const {
-    return patterns_->content_type_octet_stream;
-  }
-
-  // However, this is used in a static method so it needs to be static.
-  static const RE2& unquote_pattern() {
-    return g_patterns.Get().unquote_pattern;  // No caching g_patterns here.
-  }
-
-  const RE2 dash_boundary_pattern_;
+  std::string dash_boundary_separator_;
 
   // Because of initialisation dependency, |state_| needs to be declared after
   // |dash_boundary_pattern_|.
@@ -402,12 +384,10 @@ bool FormDataParserUrlEncoded::GetNextNameValue(Result* result) {
     result->set_name(unescaped_name);
     std::string unescaped_value =
         base::UnescapeBinaryURLComponent(value_, kUnescapeRules);
-    const base::StringPiece unescaped_data(unescaped_value.data(),
-                                           unescaped_value.length());
-    if (base::IsStringUTF8(unescaped_data)) {
+    if (base::IsStringUTF8(unescaped_value)) {
       result->SetStringValue(std::move(unescaped_value));
     } else {
-      result->SetBinaryValue(unescaped_data);
+      result->SetBinaryValue(unescaped_value);
     }
   }
   if (source_.length() > 0) {
@@ -422,41 +402,10 @@ bool FormDataParserUrlEncoded::GetNextNameValue(Result* result) {
 bool FormDataParserUrlEncoded::SetSource(base::StringPiece source) {
   if (source_set_)
     return false;  // We do not allow multiple sources for this parser.
-  source_ = re2::StringPiece(source.data(), source.size());
+  source_ = source;
   source_set_ = true;
   source_malformed_ = false;
   return true;
-}
-
-// static
-std::string FormDataParserMultipart::CreateBoundaryPatternFromLiteral(
-    const std::string& literal) {
-  static const char quote[] = "\\Q";
-  static const char unquote[] = "\\E";
-
-  // The result always starts with opening the qoute and then "--".
-  std::string result("\\Q--");
-
-  // This StringPiece is used below to record the next occurrence of "\\E" in
-  // |literal|.
-  re2::StringPiece seek_unquote(literal);
-  const char* copy_start = literal.data();
-  size_t copy_length = literal.size();
-
-  // Find all "\\E" in |literal| and exclude them from the \Q...\E quote.
-  while (RE2::FindAndConsume(&seek_unquote, unquote_pattern())) {
-    copy_length = seek_unquote.data() - copy_start;
-    result.append(copy_start, copy_length);
-    result.append(kEscapeClosingQuote);
-    result.append(quote);
-    copy_start = seek_unquote.data();
-  }
-
-  // Finish the last \Q...\E quote.
-  copy_length = (literal.data() + literal.size()) - copy_start;
-  result.append(copy_start, copy_length);
-  result.append(unquote);
-  return result;
 }
 
 // static
@@ -467,9 +416,8 @@ bool FormDataParserMultipart::StartsWithPattern(const re2::StringPiece& input,
 
 FormDataParserMultipart::FormDataParserMultipart(
     const std::string& boundary_separator)
-    : dash_boundary_pattern_(
-          CreateBoundaryPatternFromLiteral(boundary_separator)),
-      state_(dash_boundary_pattern_.ok() ? STATE_INIT : STATE_ERROR),
+    : dash_boundary_separator_("--" + boundary_separator),
+      state_(STATE_INIT),
       patterns_(g_patterns.Pointer()) {}
 
 FormDataParserMultipart::~FormDataParserMultipart() = default;
@@ -479,36 +427,39 @@ bool FormDataParserMultipart::AllDataReadOK() {
 }
 
 bool FormDataParserMultipart::FinishReadingPart(base::StringPiece* data) {
-  const char* data_start = source_.data();
-  while (!StartsWithPattern(source_, dash_boundary_pattern_)) {
+  re2::StringPiece orig = source_;
+  while (!source_.starts_with(dash_boundary_separator_)) {
     if (!RE2::Consume(&source_, crlf_free_pattern()) ||
-        !RE2::Consume(&source_, crlf_pattern())) {
+        !ConsumePrefix(&source_, kCRLF)) {
       state_ = STATE_ERROR;
       return false;
     }
   }
   if (data != nullptr) {
-    if (source_.data() == data_start) {
+    if (orig.size() == source_.size()) {
       // No data in this body part.
       state_ = STATE_ERROR;
       return false;
     }
-    // Subtract 2 for the trailing "\r\n".
-    *data = base::StringPiece(data_start, source_.data() - data_start - 2);
+    // Return the data consumed, minus two bytes for the trailing "\r\n".
+    orig.remove_suffix(source_.size() + 2);
+    *data = orig;
   }
 
   // Finally, read the dash-boundary and either skip to the next body part, or
   // finish reading the source.
-  CHECK(RE2::Consume(&source_, dash_boundary_pattern_));
+  CHECK(ConsumePrefix(&source_, dash_boundary_separator_));
   if (StartsWithPattern(source_, closing_pattern())) {
     CHECK(RE2::Consume(&source_, closing_pattern()));
-    if (RE2::Consume(&source_, epilogue_pattern()))
+    if (RE2::Consume(&source_, epilogue_pattern())) {
       state_ = STATE_FINISHED;
-    else
+    } else {
       state_ = STATE_ERROR;
+    }
   } else {  // Next body part ahead.
-    if (!RE2::Consume(&source_, transfer_padding_pattern()))
+    if (!RE2::Consume(&source_, transfer_padding_pattern())) {
       state_ = STATE_ERROR;
+    }
   }
   return state_ != STATE_ERROR;
 }
@@ -535,7 +486,7 @@ bool FormDataParserMultipart::GetNextNameValue(Result* result) {
   }
 
   // 2. Read the trailing CRLF after headers.
-  if (!RE2::Consume(&source_, crlf_pattern())) {
+  if (!ConsumePrefix(&source_, kCRLF)) {
     state_ = STATE_ERROR;
     return false;
   }
@@ -566,12 +517,12 @@ bool FormDataParserMultipart::GetNextNameValue(Result* result) {
 bool FormDataParserMultipart::SetSource(base::StringPiece source) {
   if (source.data() == nullptr || !source_.empty())
     return false;
-  source_ = re2::StringPiece(source.data(), source.size());
+  source_ = source;
 
   switch (state_) {
     case STATE_INIT:
       // Seek behind the preamble.
-      while (!StartsWithPattern(source_, dash_boundary_pattern_)) {
+      while (!source_.starts_with(dash_boundary_separator_)) {
         if (!RE2::Consume(&source_, preamble_pattern())) {
           state_ = STATE_ERROR;
           break;
@@ -579,11 +530,12 @@ bool FormDataParserMultipart::SetSource(base::StringPiece source) {
       }
       // Read dash-boundary, transfer padding, and CRLF.
       if (state_ != STATE_ERROR) {
-        if (!RE2::Consume(&source_, dash_boundary_pattern_) ||
-            !RE2::Consume(&source_, transfer_padding_pattern()))
+        if (!ConsumePrefix(&source_, dash_boundary_separator_) ||
+            !RE2::Consume(&source_, transfer_padding_pattern())) {
           state_ = STATE_ERROR;
-        else
+        } else {
           state_ = STATE_READY;
+        }
       }
       break;
     case STATE_READY:  // Nothing to do.
@@ -605,7 +557,7 @@ bool FormDataParserMultipart::TryReadHeader(base::StringPiece* name,
   *value_is_binary = false;
   // Support Content-Type: application/octet-stream.
   // Form data with this content type is represented as string of bytes.
-  if (RE2::Consume(&source_, content_type_octet_stream())) {
+  if (ConsumePrefix(&source_, kContentTypeOctetString)) {
     *value_is_binary = true;
     return true;
   }
@@ -628,12 +580,12 @@ bool FormDataParserMultipart::TryReadHeader(base::StringPiece* name,
     state_ = STATE_ERROR;
     return true;  // See (*) for why true.
   }
-  *name = base::StringPiece(groups[1].data(), groups[1].size());
+  *name = groups[1];
 
   if (value_pattern().Match(header,
                             kContentDispositionLength, header.size(),
                             RE2::UNANCHORED, groups, 2)) {
-    *value = base::StringPiece(groups[1].data(), groups[1].size());
+    *value = groups[1];
     *value_assigned = true;
   }
   return true;

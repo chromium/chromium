@@ -2,13 +2,13 @@
 
 ## Starting ChromeVox
 
-On Chrome OS, you can enable spoken feedback (ChromeVox) by pressing Ctrl+Alt+Z.
+On ChromeOS, you can enable spoken feedback (ChromeVox) by pressing Ctrl+Alt+Z.
 
 If you have a Chromebook, this gives you speech support built-in. If you're
 building Chrome from source and running it on desktop Linux, speech and braille
 won't be included by default. Here's how to enable it.
 
-## Compiling the Chrome OS version of Chrome
+## Compiling the ChromeOS version of Chrome
 
 First follow the public instructions for
 [Chrome checkout and build](https://www.chromium.org/developers/how-tos/get-the-code).
@@ -46,7 +46,7 @@ Now build Chrome as usual, e.g.:
 autoninja -C out/cros chrome
 ```
 
-And run it as usual to see a mostly-complete Chrome OS desktop inside
+And run it as usual to see a mostly-complete ChromeOS desktop inside
 of a window:
 
 ```
@@ -79,14 +79,14 @@ To avoid these conflicts, run using startx as described above.
 #### Option 2: remapping keys in your window manager
 If you decide not to run under X or wish to run Linux within a window manager
 such as through Chrome Remote Desktop or a virtual machine, you need to remap
-keys either in Linux or inside Chrome OS.
+keys either in Linux or inside ChromeOS.
 
 To manually disable all conflicting key combinations in Linux, remove all
 keyboard bindings that reference "Super" or "Meta" in
 System Settings > Keyboard > Shortcuts.
 
-#### Option #3: remapping the Search key inside Chrome OS
-To remap the Search key inside Chrome OS, go to Settings > Device > Keyboard.
+#### Option #3: remapping the Search key inside ChromeOS
+To remap the Search key inside ChromeOS, go to Settings > Device > Keyboard.
 The control key is a good choice for setting as Search as there should be no
 conflicts with Linux on its own. Caps Lock is not recommended to change as
 ChromeVox may handle it as a special case.
@@ -94,16 +94,16 @@ ChromeVox may handle it as a special case.
 ## Speech
 
 If you want speech, you just need to copy the speech synthesis data files to
-/usr/share like it would be on a Chrome OS device:
+/usr/share like it would be on a ChromeOS device:
 
 ```
-gsutil ls gs://chromeos-localmirror/distfiles/espeak*
+gsutil ls gs://chromeos-localmirror/distfiles/espeak\*
 ```
 
 Pick the latest version and
 
 ```
-VERSION=1.49.3.14
+VERSION=1.51
 TMPDIR=$(mktemp -d)
 gsutil cp gs://chromeos-localmirror/distfiles/espeak-ng-$VERSION.tar.xz $TMPDIR
 tar -C $TMPDIR -xvf $TMPDIR/espeak-ng-$VERSION.tar.xz
@@ -117,7 +117,7 @@ rm -rf $TMPDIR
 they need to chmod or chown too, it really depends on your system.**
 
 **Note that the default Google tts engine is now only available on an actual
-Chrome OS device. **
+ChromeOS device.**
 
 After you do that, just run "chrome" as above (e.g. out/cros/chrome) and press
 Ctrl+Alt+Z, and you should hear it speak! If not, check the logs.

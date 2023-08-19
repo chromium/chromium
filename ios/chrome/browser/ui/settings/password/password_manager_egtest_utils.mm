@@ -18,10 +18,6 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using chrome_test_util::ButtonWithAccessibilityLabel;
 
 namespace {
@@ -44,10 +40,16 @@ NSString* GetDetailTextForPasswordCheckUIState(PasswordCheckUIState state,
                                                int number) {
   switch (state) {
     case PasswordCheckStateSafe:
-      return [PasswordSettingsAppInterface isPasswordCheckupEnabled]
-                 ? @"Checked just now"
-                 : base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
-                       IDS_IOS_PASSWORD_CHECKUP_COMPROMISED_COUNT, 0));
+      return
+          [PasswordSettingsAppInterface isPasswordCheckupEnabled]
+              ? [NSString
+                    stringWithFormat:
+                        @"%@. %@", @"Checked just now",
+                        l10n_util::GetNSString(
+                            IDS_IOS_PASSWORD_CHECKUP_SAFE_STATE_ACCESSIBILITY_LABEL)]
+              : base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
+                    IDS_IOS_PASSWORD_CHECKUP_COMPROMISED_COUNT, 0));
+
     case PasswordCheckStateUnmutedCompromisedPasswords:
       return base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
           [PasswordSettingsAppInterface isPasswordCheckupEnabled]

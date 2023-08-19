@@ -55,13 +55,13 @@ class NGLineBreakerTest : public RenderingTest {
     Vector<std::pair<String, unsigned>> lines;
     trailing_whitespaces_.resize(0);
     NGExclusionSpace exclusion_space;
-    NGPositionedFloatVector leading_floats;
+    NGLeadingFloats leading_floats;
     NGLineLayoutOpportunity line_opportunity(available_width);
     NGLineInfo line_info;
     do {
       NGLineBreaker line_breaker(node, NGLineBreakerMode::kContent, space,
-                                 line_opportunity, leading_floats, 0u,
-                                 break_token, /* column_spanner_path */ nullptr,
+                                 line_opportunity, leading_floats, break_token,
+                                 /* column_spanner_path */ nullptr,
                                  &exclusion_space);
       line_breaker.NextLine(&line_info);
       if (callback)
@@ -94,13 +94,13 @@ class NGLineBreakerTest : public RenderingTest {
     NGConstraintSpace space = ConstraintSpaceForAvailableSize(available_width);
     const NGInlineBreakToken* break_token = nullptr;
     NGExclusionSpace exclusion_space;
-    NGPositionedFloatVector leading_floats;
+    NGLeadingFloats leading_floats;
     NGLineLayoutOpportunity line_opportunity(available_width);
     wtf_size_t line_index = 0;
     do {
       NGLineBreaker line_breaker(node, NGLineBreakerMode::kContent, space,
-                                 line_opportunity, leading_floats, 0u,
-                                 break_token, /* column_spanner_path */ nullptr,
+                                 line_opportunity, leading_floats, break_token,
+                                 /* column_spanner_path */ nullptr,
                                  &exclusion_space);
       if (line_index < break_points.size()) {
         line_breaker.SetBreakAt(break_points[line_index]);
@@ -112,6 +112,13 @@ class NGLineBreakerTest : public RenderingTest {
       ++line_index;
     } while (break_token);
     return line_index;
+  }
+
+  wtf_size_t BreakLines(NGInlineNode node,
+                        LayoutUnit available_width,
+                        base::span<NGLineInfo> line_info_list) {
+    Vector<NGLineBreakPoint> break_points;
+    return BreakLinesAt(node, available_width, break_points, line_info_list);
   }
 
   MinMaxSizes ComputeMinMaxSizes(NGInlineNode node) {
@@ -824,7 +831,8 @@ TEST_F(NGLineBreakerTest, MinMaxWithHyphensDisabledWithTrailingSpaces) {
 
 TEST_F(NGLineBreakerTest, MinMaxWithHyphensAuto) {
   LoadAhem();
-  LayoutLocale::SetHyphenationForTesting("en-us", MockHyphenation::Create());
+  LayoutLocale::SetHyphenationForTesting(AtomicString("en-us"),
+                                         MockHyphenation::Create());
   NGInlineNode node = CreateInlineNode(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -839,7 +847,7 @@ TEST_F(NGLineBreakerTest, MinMaxWithHyphensAuto) {
   const auto sizes = ComputeMinMaxSizes(node);
   EXPECT_EQ(sizes.min_size, LayoutUnit(50));
   EXPECT_EQ(sizes.max_size, LayoutUnit(170));
-  LayoutLocale::SetHyphenationForTesting("en-us", nullptr);
+  LayoutLocale::SetHyphenationForTesting(AtomicString("en-us"), nullptr);
 }
 
 // For http://crbug.com/1104534
@@ -1184,6 +1192,66 @@ TEST_F(NGLineBreakerTest, BreakAtTrailingSpacesAfterAtomicInline) {
   EXPECT_EQ(line_info_list[1].Width(), LayoutUnit(20));
   EXPECT_EQ(line_info_list[0].Results().back().item_index, 3u);
   EXPECT_EQ(line_info_list[1].Results().front().item_index, 4u);
+}
+
+struct CanBreakInsideTestData {
+  bool can_break_insde;
+  const char* html;
+  const char* target_css = nullptr;
+  const char* style = nullptr;
+} can_break_inside_test_data[] = {
+    {false, "a"},
+    {true, "a b"},
+    {false, "a b", "white-space: nowrap;"},
+    {true, "<span>a</span>a b"},
+    {true, "<span>a</span> b"},
+    {true, "<span>a </span>b"},
+    {true, "a<span> </span>b"},
+    {false, "<ib></ib>", nullptr, "ib { display: inline-block; }"},
+    {true, "<ib></ib><ib></ib>", nullptr, "ib { display: inline-block; }"},
+    {true, "a<ib></ib>", nullptr, "ib { display: inline-block; }"},
+    {true, "<ib></ib>a", nullptr, "ib { display: inline-block; }"},
+};
+class CanBreakInsideTest
+    : public NGLineBreakerTest,
+      public testing::WithParamInterface<CanBreakInsideTestData> {};
+INSTANTIATE_TEST_SUITE_P(NGLineBreakerTest,
+                         CanBreakInsideTest,
+                         testing::ValuesIn(can_break_inside_test_data));
+
+TEST_P(CanBreakInsideTest, Data) {
+  const auto& data = GetParam();
+  SetBodyInnerHTML(String::Format(R"HTML(
+    <!DOCTYPE html>
+    <style>
+    #target {
+      font-size: 10px;
+      width: 800px;
+      %s
+    }
+    %s
+    </style>
+    <div id="target">%s</div>
+  )HTML",
+                                  data.target_css, data.style, data.html));
+  NGInlineNode target = GetInlineNodeByElementId("target");
+  NGLineInfo line_info_list[1];
+  const LayoutUnit available_width = LayoutUnit(800);
+  const wtf_size_t num_lines =
+      BreakLines(target, available_width, line_info_list);
+  ASSERT_EQ(num_lines, 1u);
+
+  NGConstraintSpace space = ConstraintSpaceForAvailableSize(available_width);
+  const NGInlineBreakToken* break_token = nullptr;
+  NGExclusionSpace exclusion_space;
+  NGLeadingFloats leading_floats;
+  NGLineLayoutOpportunity line_opportunity(available_width);
+  NGLineBreaker line_breaker(target, NGLineBreakerMode::kContent, space,
+                             line_opportunity, leading_floats, break_token,
+                             /* column_spanner_path */ nullptr,
+                             &exclusion_space);
+  EXPECT_EQ(line_breaker.CanBreakInside(line_info_list[0]),
+            data.can_break_insde);
 }
 
 }  // namespace

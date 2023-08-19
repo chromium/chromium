@@ -4,12 +4,14 @@
 
 package org.chromium.android_webview;
 
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 
 /**
  * For native to pass the information of a WebMessageListener related info to Java.
  */
+@Lifetime.Temporary
 @JNINamespace("android_webview")
 public class WebMessageListenerInfo {
     public String mObjectName;

@@ -21,85 +21,17 @@ enum class SmartLockState;
 
 namespace proximity_auth {
 
-// TODO(tbarzic): Rename ScreenlockBridge to SignInScreenBridge, as this is not
-// used solely for the lock screen anymore.
 // TODO(jhawkins): Rationalize this class now that it is CrOS only and most of
 // its functionality is not useful.
 class ScreenlockBridge {
  public:
-  // User pod icons supported by lock screen / signin screen UI.
-  enum UserPodCustomIcon {
-    USER_POD_CUSTOM_ICON_NONE,
-    USER_POD_CUSTOM_ICON_LOCKED,
-    USER_POD_CUSTOM_ICON_LOCKED_TO_BE_ACTIVATED,
-    // TODO(isherman): The "locked with proximity hint" icon is currently the
-    // same as the "locked" icon. It's treated as a separate case to allow an
-    // easy asset swap without changing the code, in case we decide to use a
-    // different icon for this case. If we definitely decide against that, then
-    // this enum entry should be removed.
-    USER_POD_CUSTOM_ICON_LOCKED_WITH_PROXIMITY_HINT,
-    USER_POD_CUSTOM_ICON_UNLOCKED,
-    USER_POD_CUSTOM_ICON_SPINNER
-  };
-
-  // Class containing parameters describing the custom icon that should be
-  // shown on a user's screen lock pod next to the input field.
-  class UserPodCustomIconInfo {
-   public:
-    UserPodCustomIconInfo();
-    UserPodCustomIconInfo(const UserPodCustomIconInfo&) = delete;
-    UserPodCustomIconInfo& operator=(const UserPodCustomIconInfo&) = delete;
-    ~UserPodCustomIconInfo();
-
-    // Converts parameters to a dictionary values that can be sent to the
-    // screenlock web UI.
-    base::Value::Dict ToDictForTesting() const;
-
-    // Sets the icon that should be shown in the UI.
-    void SetIcon(UserPodCustomIcon icon);
-
-    // Sets the icon tooltip. If |autoshow| is set the tooltip is automatically
-    // shown with the icon.
-    void SetTooltip(const std::u16string& tooltip, bool autoshow);
-
-    // Sets the accessibility label of the icon. If this attribute is not
-    // provided, then the tooltip will be used.
-    void SetAriaLabel(const std::u16string& aria_label);
-
-    std::string GetIDString() const;
-
-    UserPodCustomIcon icon() const { return icon_; }
-
-    const std::u16string tooltip() const { return tooltip_; }
-
-    bool autoshow_tooltip() const { return autoshow_tooltip_; }
-
-    const std::u16string aria_label() const { return aria_label_; }
-
-   private:
-    UserPodCustomIcon icon_;
-
-    std::u16string tooltip_;
-    bool autoshow_tooltip_ = false;
-
-    std::u16string aria_label_;
-  };
-
   class LockHandler {
    public:
-    enum ScreenType { SIGNIN_SCREEN = 0, LOCK_SCREEN = 1, OTHER_SCREEN = 2 };
+    enum ScreenType { LOCK_SCREEN = 0, OTHER_SCREEN = 1 };
 
     // Displays |message| in a banner on the lock screen.
     virtual void ShowBannerMessage(const std::u16string& message,
                                    bool is_warning) = 0;
-
-    // Shows a custom icon in the user pod on the lock screen.
-    virtual void ShowUserPodCustomIcon(
-        const AccountId& account_id,
-        const UserPodCustomIconInfo& icon_info) = 0;
-
-    // Hides the custom icon in user pod for a user.
-    virtual void HideUserPodCustomIcon(const AccountId& account_id) = 0;
 
     // Update the status of Smart Lock for |account_id|.
     virtual void SetSmartLockState(const AccountId& account_id,
@@ -137,14 +69,13 @@ class ScreenlockBridge {
   class Observer {
    public:
     // Invoked after the screen is locked.
-    virtual void OnScreenDidLock(LockHandler::ScreenType screen_type) = 0;
+    virtual void OnScreenDidLock() = 0;
 
     // Invoked after the screen lock is dismissed.
-    virtual void OnScreenDidUnlock(LockHandler::ScreenType screen_type) = 0;
+    virtual void OnScreenDidUnlock() = 0;
 
-    // TODO(b/227674947): This method isn't being used anywhere and can be
-    // deleted. Invoked when the user focused on the lock screen changes.
-    virtual void OnFocusedUserChanged(const AccountId& account_id) = 0;
+    // Invoked when the user focused on the lock screen changes.
+    virtual void OnFocusedUserChanged(const AccountId& account_id) {}
 
    protected:
     virtual ~Observer() {}

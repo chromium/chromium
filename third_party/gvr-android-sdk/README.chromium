@@ -7,6 +7,7 @@ Revision: 233e7fe922a543e0bc55382d64cacd047307d0e7
 License: Apache 2.0
 License File: LICENSE
 Security Critical: yes
+Shipped: yes
 
 Description:
 The GVR Android SDK supports both Daydream and Cardboard, including a simple API

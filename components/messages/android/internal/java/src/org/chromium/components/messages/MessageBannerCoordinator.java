@@ -36,26 +36,28 @@ class MessageBannerCoordinator {
      * @param view The inflated {@link MessageBannerView}.
      * @param model The model for the message banner.
      * @param maxTranslationSupplier A {@link Supplier} that supplies the maximum translation Y
-     *         value the message banner can have as a result of the animations or the gestures.
+     * value the message banner can have as a result of the animations or the gestures.
+     * @param topOffsetSupplier A {@link Supplier} that supplies the message's top offset.
      * @param resources The {@link Resources}.
      * @param messageDismissed The {@link Runnable} that will run if and when the user dismisses the
-     *         message.
+     * message.
      * @param swipeAnimationHandler The handler that will be used to delegate starting the
-     *         animations to {@link WindowAndroid} so the message is not clipped as a result of some
-     *         Android SurfaceView optimization.
+     * animations to {@link WindowAndroid} so the message is not clipped as a result of some Android
+     * SurfaceView optimization.
      * @param autodismissDurationMs A {@link Supplier} providing autodismiss duration for message
-     *         banner.
+     * banner.
      * @param onTimeUp A {@link Runnable} that will run if and when the auto dismiss timer is up.
      */
     MessageBannerCoordinator(MessageBannerView view, PropertyModel model,
-            Supplier<Integer> maxTranslationSupplier, Resources resources,
-            Runnable messageDismissed, SwipeAnimationHandler swipeAnimationHandler,
-            Supplier<Long> autodismissDurationMs, Runnable onTimeUp) {
+            Supplier<Integer> maxTranslationSupplier, Supplier<Integer> topOffsetSupplier,
+            Resources resources, Runnable messageDismissed,
+            SwipeAnimationHandler swipeAnimationHandler, Supplier<Long> autodismissDurationMs,
+            Runnable onTimeUp) {
         mView = view;
         mModel = model;
         PropertyModelChangeProcessor.create(model, view, MessageBannerViewBinder::bind);
-        mMediator = new MessageBannerMediator(
-                model, maxTranslationSupplier, resources, messageDismissed, swipeAnimationHandler);
+        mMediator = new MessageBannerMediator(model, topOffsetSupplier, maxTranslationSupplier,
+                resources, messageDismissed, swipeAnimationHandler);
         mAutodismissDurationMs = autodismissDurationMs;
         mTimer = new MessageAutoDismissTimer();
         mOnTimeUp = onTimeUp;

@@ -1,0 +1,37 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// TODO(https://crbug.com/1019297): Include spec link.
+
+enum FileSystemChangeType {
+  "created",
+  "deleted",
+  "errored",
+  "modified",
+  "moved",
+  "unsupported",
+};
+
+[
+    Exposed=(DedicatedWorker,SharedWorker,Window),
+    SecureContext,
+    RuntimeEnabled=FileSystemObserver
+] interface FileSystemChangeRecord {
+  // The handle that was passed to FileSystemObserver.observe().
+  readonly attribute FileSystemHandle root;
+
+  // The handle affected by the file system change.
+  readonly attribute FileSystemHandle changedHandle;
+
+  // The path of `changedHandle` relative to `root`.
+  readonly attribute FrozenArray<USVString> relativePathComponents;
+
+  // The type of change.
+  readonly attribute FileSystemChangeType type;
+
+  // If `type` is "moved", this corresponds to the former path of
+  // `changedHandle` relative to `root`, if the former path is known;
+  // otherwise null.
+  readonly attribute FrozenArray<USVString>? relativePathMovedFrom;
+};

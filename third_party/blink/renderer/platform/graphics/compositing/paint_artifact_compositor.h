@@ -135,16 +135,16 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   // nodes for noncomposited scrollers to complete the compositor's scroll
   // property tree.
   //
-  // |anchor_scroll_container_nodes| is the set of scroll nodes whose scroll
-  // offset contributes to any anchor-scroll translation (namely, whose id is
-  // snapshotted in an AnchorScrollData). This is needed only when
+  // |anchor_position_scrollers| is the set of scroll nodes whose scroll
+  // offset contributes to any anchor position scroll translation (namely, whose
+  // id is snapshotted in an AnchorPositionScrollData). This is needed only when
   // ScrollUnification is disabled.
   void Update(
       scoped_refptr<const PaintArtifact> artifact,
       const ViewportProperties& viewport_properties,
       const Vector<const TransformPaintPropertyNode*>& scroll_translation_nodes,
       const Vector<const TransformPaintPropertyNode*>&
-          anchor_scroll_container_nodes,
+          anchor_position_scrollers,
       Vector<std::unique_ptr<cc::ViewTransitionRequest>> requests);
 
   // Fast-path update where the painting of existing composited layers changed,
@@ -241,6 +241,10 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   // found by `element_id`.
   bool SetScrollbarNeedsDisplay(CompositorElementId element_id);
 
+  bool ShouldAlwaysUpdateOnScroll() const {
+    return should_always_update_on_scroll_;
+  }
+
  private:
   void UpdateCompositorViewportProperties(const ViewportProperties&,
                                           PropertyTreeManager&,
@@ -322,8 +326,9 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
 
   bool tracks_raster_invalidations_;
   bool needs_update_ = true;
-  PreviousUpdateType previous_update_for_testing_ = PreviousUpdateType::kNone;
   bool layer_debug_info_enabled_ = false;
+  bool should_always_update_on_scroll_ = false;
+  PreviousUpdateType previous_update_for_testing_ = PreviousUpdateType::kNone;
   LCDTextPreference lcd_text_preference_ = LCDTextPreference::kIgnored;
 
   scoped_refptr<cc::Layer> root_layer_;

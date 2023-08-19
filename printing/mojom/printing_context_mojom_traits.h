@@ -124,6 +124,9 @@ struct StructTraits<printing::mojom::PrintSettingsDataView,
       const printing::PrintSettings& s) {
     return s.page_setup_device_units();
   }
+  static const std::string& media_type(const printing::PrintSettings& s) {
+    return s.media_type();
+  }
   static const gfx::Size& dpi(const printing::PrintSettings& s) {
     return s.dpi_size();
   }
@@ -135,9 +138,6 @@ struct StructTraits<printing::mojom::PrintSettingsDataView,
   }
   static bool landscape(const printing::PrintSettings& s) {
     return s.landscape();
-  }
-  static bool supports_alpha_blend(const printing::PrintSettings& s) {
-    return s.supports_alpha_blend();
   }
 
 #if BUILDFLAG(IS_WIN)

@@ -2,7 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertExists, assertInstanceof} from '../assert.js';
+import {
+  assert,
+  assertEnumVariant,
+  assertExists,
+  assertInstanceof,
+} from '../assert.js';
 import * as dom from '../dom.js';
 import {reportError} from '../error.js';
 import * as expert from '../expert.js';
@@ -93,7 +98,7 @@ export class Preview {
   private isSupportPTZInternal = false;
 
   /**
-   * Device id to constraints to reset default PTZ setting.
+   * Map from device id to constraints to reset default PTZ setting.
    */
   private readonly deviceDefaultPTZ =
       new Map<string, MediaTrackConstraintSet>();
@@ -101,6 +106,8 @@ export class Preview {
   private constraints: StreamConstraints|null = null;
 
   private onPreviewExpired: WaitableEvent|null = null;
+
+  private enableFaceOverlay = false;
 
   /**
    * @param onNewStreamNeeded Callback to request new stream.
@@ -130,7 +137,7 @@ export class Preview {
   }
 
   getFacing(): Facing {
-    return util.assertEnumVariant(Facing, this.facing);
+    return assertEnumVariant(Facing, this.facing);
   }
 
   getDeviceId(): string|null {
@@ -257,7 +264,6 @@ export class Preview {
    * Sets video element's source.
    *
    * @param stream Stream to be the source.
-   * @return Promise for the operation.
    */
   private async setSource(stream: MediaStream): Promise<void> {
     const tpl = util.instantiateTemplate('#preview-video-template');
@@ -323,9 +329,9 @@ export class Preview {
       }, 100);
       await this.updateFacing();
       this.deviceId = getVideoTrackSettings(this.getVideoTrack()).deviceId;
-      this.updateShowMetadata();
       await this.updatePTZ();
 
+      this.enableFaceOverlay = false;
       const deviceOperator = DeviceOperator.getInstance();
       if (deviceOperator !== null) {
         const {deviceId} = getVideoTrackSettings(this.getVideoTrack());
@@ -338,9 +344,12 @@ export class Preview {
               new Error(
                   'Cannot disable camera frame rotation. ' +
                   'The camera is probably being used by another app.'));
+        } else {
+          this.enableFaceOverlay = true;
         }
         this.vidPid = await deviceOperator.getVidPid(deviceId);
       }
+      this.updateShowMetadata();
 
       assert(
           this.onPreviewExpired === null || this.onPreviewExpired.isSignaled());
@@ -361,6 +370,7 @@ export class Preview {
     // Pause video element to avoid black frames during transition.
     this.video.pause();
     this.disableShowMetadata();
+    this.enableFaceOverlay = false;
     if (this.streamInternal !== null && this.isStreamAlive()) {
       const track = this.getVideoTrack();
       const {deviceId} = getVideoTrackSettings(track);
@@ -380,7 +390,7 @@ export class Preview {
   }
 
   /**
-   * Checks preview whether to show preview metadata or not.
+   * Updates preview whether to show preview metadata or not.
    */
   private updateShowMetadata() {
     if (expert.isEnabled(expert.ExpertOption.SHOW_METADATA)) {
@@ -392,8 +402,6 @@ export class Preview {
 
   /**
    * Creates an image blob of the current frame.
-   *
-   * @return Promise for the result.
    */
   toImage(): Promise<Blob> {
     const {canvas, ctx} = util.newDrawingCanvas(
@@ -404,8 +412,6 @@ export class Preview {
 
   /**
    * Displays preview metadata on preview screen.
-   *
-   * @return Promise for the operation.
    */
   private async enableShowMetadata(): Promise<void> {
     if (this.streamInternal === null) {
@@ -550,25 +556,25 @@ export class Preview {
     const activeArraySize = await deviceOperator.getActiveArraySize(deviceId);
     const cameraFrameRotation =
         await deviceOperator.getCameraFrameRotation(deviceId);
-    this.faceOverlay =
-        new FaceOverlay(activeArraySize, cameraFrameRotation, deviceId);
-
+    if (this.enableFaceOverlay) {
+      this.faceOverlay =
+          new FaceOverlay(activeArraySize, cameraFrameRotation, deviceId);
+    }
     const updateFace =
         (mode: AndroidStatisticsFaceDetectMode, rects: number[]) => {
-          assert(this.faceOverlay !== null);
           if (mode ===
               AndroidStatisticsFaceDetectMode
                   .ANDROID_STATISTICS_FACE_DETECT_MODE_OFF) {
             dom.get('#preview-num-faces', HTMLDivElement).style.display =
                 'none';
-            this.faceOverlay.clearRects();
+            this.faceOverlay?.clearRects();
             return;
           }
           assert(rects.length % 4 === 0);
           const numFaces = rects.length / 4;
           const label = numFaces >= 2 ? 'Faces' : 'Face';
           showValue('#preview-num-faces', `${numFaces} ${label}`);
-          this.faceOverlay.show(rects);
+          this.faceOverlay?.show(rects);
         };
 
     const callback = (metadata: CameraMetadata) => {
@@ -627,9 +633,7 @@ export class Preview {
   }
 
   /**
-   * Hide display preview metadata on preview screen.
-   *
-   * @return Promise for the operation.
+   * Hides display preview metadata on preview screen.
    */
   private async disableShowMetadata(): Promise<void> {
     if (this.streamInternal === null || this.metadataObserver === null) {
@@ -661,7 +665,7 @@ export class Preview {
   }
 
   /**
-   * Apply point of interest to the stream.
+   * Applies point of interest to the stream.
    *
    * @param point The point in normalize coordidate system, which means both
    *     |x| and |y| are in range [0, 1).
@@ -708,7 +712,7 @@ export class Preview {
   }
 
   /**
-   * Cancels the current applying focus.
+   * Cancels the currently applied focus.
    */
   private cancelFocus() {
     this.focusMarker = null;

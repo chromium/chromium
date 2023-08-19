@@ -16,6 +16,7 @@ import("//build/config/ios/ios_sdk_overrides.gni")
 import("//build/config/mac/mac_sdk_overrides.gni")
 
 import("//build/config/pch.gni")
+import("//build/config/rust.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/ui.gni")
 import("//build/toolchain/goma.gni")
@@ -210,14 +211,9 @@ config("default_libs") {
     # linking can have run-time side effects, nothing should be listed here.
     libs = []
   } else if (is_ios) {
-    # The libraries listed here will be specified for both the target and the
-    # host. Only the common ones should be listed here.
-    frameworks = [
-      "CoreFoundation.framework",
-      "CoreGraphics.framework",
-      "CoreText.framework",
-      "Foundation.framework",
-    ]
+    # Targets should choose to explicitly link frameworks they require. Since
+    # linking can have run-time side effects, nothing should be listed here.
+    libs = []
   } else if (is_linux || is_chromeos) {
     libs = [
       "dl",
@@ -272,25 +268,31 @@ group("common_deps") {
 
 # Only the executable template in BUILDCONFIG.gn should reference this.
 group("executable_deps") {
-  public_deps = [ ":common_deps" ]
-  if (export_libcxxabi_from_executables) {
-    public_deps += [ "//buildtools/third_party/libc++abi" ]
+  if (!toolchain_for_rust_host_build_tools) {
+    public_deps = [ ":common_deps" ]
+    if (export_libcxxabi_from_executables) {
+      public_deps += [ "//buildtools/third_party/libc++abi" ]
+    }
+    public_configs = [ "//build/config/sanitizers:link_executable" ]
   }
-  public_configs = [ "//build/config/sanitizers:link_executable" ]
 }
 
 # Only the loadable_module template in BUILDCONFIG.gn should reference this.
 group("loadable_module_deps") {
-  public_deps = [ ":common_deps" ]
+  if (!toolchain_for_rust_host_build_tools) {
+    public_deps = [ ":common_deps" ]
 
-  public_configs = [ "//build/config/sanitizers:link_shared_library" ]
+    public_configs = [ "//build/config/sanitizers:link_shared_library" ]
+  }
 }
 
 # Only the shared_library template in BUILDCONFIG.gn should reference this.
 group("shared_library_deps") {
-  public_deps = [ ":common_deps" ]
+  if (!toolchain_for_rust_host_build_tools) {
+    public_deps = [ ":common_deps" ]
 
-  public_configs = [ "//build/config/sanitizers:link_shared_library" ]
+    public_configs = [ "//build/config/sanitizers:link_shared_library" ]
+  }
 }
 
 # Executable configs -----------------------------------------------------------

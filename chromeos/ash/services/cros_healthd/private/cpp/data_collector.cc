@@ -94,9 +94,7 @@ bool DataCollectorDelegateImpl::IsPrivacyScreenManaged() {
 }
 
 void DataCollectorDelegateImpl::SetPrivacyScreenState(bool state) {
-  Shell::Get()->privacy_screen_controller()->SetEnabled(
-      state,
-      PrivacyScreenController::ToggleUISurface::kToggleUISurfaceToastButton);
+  Shell::Get()->privacy_screen_controller()->SetEnabled(state);
 }
 
 bool DataCollectorDelegateImpl::IsOutputForceMuted() {

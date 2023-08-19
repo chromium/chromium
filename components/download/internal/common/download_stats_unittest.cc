@@ -38,18 +38,6 @@ TEST(DownloadStatsTest, RecordDownloadCompleted) {
   histogram_tester.ExpectBucketCount("Download.DownloadSize", 0, 1);
   histogram_tester.ExpectBucketCount("Download.DownloadSize.Parallelizable", 0,
                                      1);
-  histogram_tester.ExpectBucketCount("Download.NetworkConnectionType.Complete",
-                                     ConnectionType::CONNECTION_WIFI, 1);
-  histogram_tester.ExpectBucketCount(
-      "Download.NetworkConnectionType.Complete.Navigation",
-      ConnectionType::CONNECTION_WIFI, 1);
-}
-
-TEST(DownloadStatsTest, RecordDownloadLaterEvent) {
-  base::HistogramTester histogram_tester;
-  RecordDownloadLaterEvent(DownloadLaterEvent::kScheduleRemoved);
-  histogram_tester.ExpectBucketCount("Download.Later.Events",
-                                     DownloadLaterEvent::kScheduleRemoved, 1);
 }
 
 }  // namespace download

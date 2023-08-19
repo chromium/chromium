@@ -4,6 +4,7 @@
 
 import("//build/buildflag_header.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
+import("//net/features.gni")
 import("//services/network/public/cpp/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
@@ -88,8 +89,6 @@ component("cpp") {
     "link_header_parser.h",
     "load_info_util.cc",
     "load_info_util.h",
-    "local_network_access_check_result.cc",
-    "local_network_access_check_result.h",
     "net_adapters.cc",
     "net_adapters.h",
     "network_connection_tracker.cc",
@@ -106,6 +105,8 @@ component("cpp") {
     "origin_agent_cluster_parser.h",
     "parsed_headers.cc",
     "parsed_headers.h",
+    "private_network_access_check_result.cc",
+    "private_network_access_check_result.h",
     "record_ontransfersizeupdate_utils.h",
     "request_destination.cc",
     "request_destination.h",
@@ -151,7 +152,7 @@ component("cpp") {
     "x_frame_options_parser.h",
   ]
 
-  if (!is_ios) {
+  if (enable_websockets) {
     sources += [
       "server/http_connection.cc",
       "server/http_connection.h",
@@ -543,6 +544,7 @@ source_set("tests") {
     "empty_url_loader_client_unittest.cc",
     "file_enumeration_entry_mojom_traits_unittest.cc",
     "first_party_sets_mojom_traits_unittest.cc",
+    "hash_value_mojom_traits_unittest.cc",
     "header_util_unittest.cc",
     "host_resolver_mojom_traits_unittest.cc",
     "initiator_lock_compatibility_unittest.cc",
@@ -564,6 +566,8 @@ source_set("tests") {
     "parsed_headers_unittest.cc",
     "proxy_config_mojom_traits_unittest.cc",
     "schemeful_site_mojom_traits_unittest.cc",
+    "shared_dictionary_isolation_key_mojom_traits_unittest.cc",
+    "shared_dictionary_usage_info_mojom_traits_unittest.cc",
     "simple_host_resolver_unittest.cc",
     "simple_url_loader_unittest.cc",
     "source_stream_to_data_pipe_unittest.cc",
@@ -580,7 +584,7 @@ source_set("tests") {
     "x_frame_options_parser_unittest.cc",
   ]
 
-  if (!is_ios) {
+  if (enable_websockets) {
     sources += [
       "server/http_server_unittest.cc",
       "server/web_socket_encoder_unittest.cc",
@@ -589,6 +593,9 @@ source_set("tests") {
 
   if (is_linux) {
     sources += [ "network_interface_change_listener_mojom_traits_unittest.cc" ]
+  }
+  if (is_android) {
+    sources += [ "system_dns_config_observer_mojom_traits_unittest.cc" ]
   }
 
   deps = [
@@ -607,6 +614,12 @@ source_set("tests") {
   ]
 
   public_deps = [ ":buildflags" ]
+}
+
+fuzzer_test("coop_fuzzer") {
+  sources = [ "cross_origin_opener_policy_parser_fuzzer.cc" ]
+  dict = "cross_origin_opener_policy.dict"
+  deps = [ ":cpp" ]
 }
 
 fuzzer_test("xfo_fuzzer") {

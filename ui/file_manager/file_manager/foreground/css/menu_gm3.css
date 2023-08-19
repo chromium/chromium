@@ -49,7 +49,7 @@ cr-menu > [sub-menu]::after {
   -webkit-mask-image: url(../images/files/ui/arrow_right.svg);
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
-  background-color: var(--cros-sys-primary);
+  background-color: currentColor;
   content: '';
   float: right;
   height: 20px;
@@ -105,13 +105,14 @@ cr-menu.files-menu:not(.has-icon-start) cr-menu-item .icon.start {
 
 cr-menu.files-menu cr-menu-item .icon.managed {
   background-image: url(chrome://resources/images/business.svg);
-  margin-inline-start: 8px;
+  margin-inline-start: 16px;
 }
 
 cr-menu.files-menu cr-menu-item .icon.end {
   align-self: flex-end;
   /* Trailing icon has a different padding than its container padding (16px). */
   margin-inline-end: calc(12px - 16px);
+  margin-inline-start: 16px;
 }
 
 cr-menu.files-menu > cr-menu-item > .icon {

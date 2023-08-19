@@ -1,0 +1,5 @@
+include_rules = [
+  "+ios/chrome/browser/passwords",
+  "+ios/chrome/browser/upgrade",
+  "+ios/chrome/browser/omaha",
+]

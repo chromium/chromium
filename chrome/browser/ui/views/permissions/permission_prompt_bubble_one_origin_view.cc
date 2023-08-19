@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/url_identity.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -36,6 +37,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -122,8 +124,6 @@ absl::optional<std::u16string> GetExtraText(
           url_formatter::FormatUrlForSecurityDisplay(
               delegate.GetEmbeddingOrigin(),
               url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
-    case permissions::RequestType::kU2fApiRequest:
-      return l10n_util::GetStringUTF16(IDS_U2F_API_PERMISSION_EXPLANATION);
     default:
       return absl::nullopt;
   }
@@ -170,17 +170,27 @@ void PermissionPromptBubbleOneOriginView::AddRequestLine(
       views::BoxLayout::Orientation::kHorizontal,
       gfx::Insets::VH(0, provider->GetDistanceMetric(
                              DISTANCE_SUBSECTION_HORIZONTAL_INDENT)),
-      provider->GetDistanceMetric(views::DISTANCE_RELATED_LABEL_HORIZONTAL)));
+      provider->GetDistanceMetric(
+          DISTANCE_PERMISSION_PROMPT_HORIZONTAL_ICON_LABEL_PADDING)));
 
-  constexpr int kPermissionIconSize = 18;
+  const int kPermissionIconSize = features::IsChromeRefresh2023() ? 20 : 18;
   auto* icon = line_container->AddChildView(
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
           permissions::GetIconId(request->request_type()), ui::kColorIcon,
           kPermissionIconSize)));
-  icon->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
+  icon->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
 
   auto* label = line_container->AddChildView(
       std::make_unique<views::Label>(request->GetMessageTextFragment()));
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label->SetMultiLine(true);
+
+  if (features::IsChromeRefresh2023()) {
+    label->SetTextStyle(views::style::STYLE_BODY_3);
+    label->SetEnabledColorId(kColorPermissionPromptRequestText);
+
+    constexpr int kPermissionBodyTopMargin = 10;
+    line_container->SetProperty(
+        views::kMarginsKey, gfx::Insets().set_top(kPermissionBodyTopMargin));
+  }
 }

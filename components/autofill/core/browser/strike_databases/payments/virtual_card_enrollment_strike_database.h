@@ -14,6 +14,10 @@
 
 namespace autofill {
 
+// The delay required since the last strike before offering another virtual card
+// enrollment attempt.
+constexpr int kEnrollmentEnforcedDelayInDays = 7;
+
 // Implementation of StrikeDatabaseIntegratorBase for virtual card enrollment
 // dialogs.
 class VirtualCardEnrollmentStrikeDatabase

@@ -65,17 +65,17 @@ TEST_F(FontDescriptionTest, TestHashCollision) {
   }
 }
 
-TEST_F(FontDescriptionTest, VariationSettingsIdentical) {
+TEST_F(FontDescriptionTest, VariationSettingsIdenticalCacheKey) {
   FontDescription a;
   FontDescription b(a);
 
   scoped_refptr<FontVariationSettings> settings_a =
       FontVariationSettings::Create();
-  settings_a->Append(FontVariationAxis("test", 1));
+  settings_a->Append(FontVariationAxis(AtomicString("test"), 1));
 
   scoped_refptr<FontVariationSettings> settings_b =
       FontVariationSettings::Create();
-  settings_b->Append(FontVariationAxis("test", 1));
+  settings_b->Append(FontVariationAxis(AtomicString("test"), 1));
 
   ASSERT_EQ(*settings_a, *settings_b);
 
@@ -85,23 +85,23 @@ TEST_F(FontDescriptionTest, VariationSettingsIdentical) {
   ASSERT_EQ(a, b);
 
   FontFaceCreationParams test_creation_params;
-  FontCacheKey cache_key_a = a.CacheKey(test_creation_params, false, false);
-  FontCacheKey cache_key_b = b.CacheKey(test_creation_params, false, false);
+  FontCacheKey cache_key_a = a.CacheKey(test_creation_params, false);
+  FontCacheKey cache_key_b = b.CacheKey(test_creation_params, false);
 
   ASSERT_EQ(cache_key_a, cache_key_b);
 }
 
-TEST_F(FontDescriptionTest, VariationSettingsDifferent) {
+TEST_F(FontDescriptionTest, VariationSettingsDifferentCacheKey) {
   FontDescription a;
   FontDescription b(a);
 
   scoped_refptr<FontVariationSettings> settings_a =
       FontVariationSettings::Create();
-  settings_a->Append(FontVariationAxis("test", 1));
+  settings_a->Append(FontVariationAxis(AtomicString("test"), 1));
 
   scoped_refptr<FontVariationSettings> settings_b =
       FontVariationSettings::Create();
-  settings_b->Append(FontVariationAxis("0000", 1));
+  settings_b->Append(FontVariationAxis(AtomicString("0000"), 1));
 
   ASSERT_NE(*settings_a, *settings_b);
 
@@ -112,14 +112,14 @@ TEST_F(FontDescriptionTest, VariationSettingsDifferent) {
 
   FontFaceCreationParams test_creation_params;
 
-  FontCacheKey cache_key_a = a.CacheKey(test_creation_params, false, false);
-  FontCacheKey cache_key_b = b.CacheKey(test_creation_params, false, false);
+  FontCacheKey cache_key_a = a.CacheKey(test_creation_params, false);
+  FontCacheKey cache_key_b = b.CacheKey(test_creation_params, false);
 
   ASSERT_NE(cache_key_a, cache_key_b);
 
   scoped_refptr<FontVariationSettings> second_settings_a =
       FontVariationSettings::Create();
-  second_settings_a->Append(FontVariationAxis("test", 1));
+  second_settings_a->Append(FontVariationAxis(AtomicString("test"), 1));
 
   scoped_refptr<FontVariationSettings> second_settings_b =
       FontVariationSettings::Create();
@@ -131,15 +131,13 @@ TEST_F(FontDescriptionTest, VariationSettingsDifferent) {
 
   ASSERT_NE(a, b);
 
-  FontCacheKey second_cache_key_a =
-      a.CacheKey(test_creation_params, false, false);
-  FontCacheKey second_cache_key_b =
-      b.CacheKey(test_creation_params, false, false);
+  FontCacheKey second_cache_key_a = a.CacheKey(test_creation_params, false);
+  FontCacheKey second_cache_key_b = b.CacheKey(test_creation_params, false);
 
   ASSERT_NE(second_cache_key_a, second_cache_key_b);
 }
 
-TEST_F(FontDescriptionTest, PaletteDifferent) {
+TEST_F(FontDescriptionTest, PaletteDifferentCacheKey) {
   FontDescription a;
   FontDescription b(a);
 
@@ -158,13 +156,13 @@ TEST_F(FontDescriptionTest, PaletteDifferent) {
 
   FontFaceCreationParams test_creation_params;
 
-  FontCacheKey cache_key_a = a.CacheKey(test_creation_params, false, false);
-  FontCacheKey cache_key_b = b.CacheKey(test_creation_params, false, false);
+  FontCacheKey cache_key_a = a.CacheKey(test_creation_params, false);
+  FontCacheKey cache_key_b = b.CacheKey(test_creation_params, false);
 
   ASSERT_NE(cache_key_a, cache_key_b);
 }
 
-TEST_F(FontDescriptionTest, VariantAlternatesDifferent) {
+TEST_F(FontDescriptionTest, VariantAlternatesDifferentCacheKey) {
   FontDescription a;
   FontDescription b(a);
 
@@ -174,7 +172,7 @@ TEST_F(FontDescriptionTest, VariantAlternatesDifferent) {
 
   scoped_refptr<FontVariantAlternates> variants_b =
       FontVariantAlternates::Create();
-  variants_b->SetStyleset({"foo", "bar"});
+  variants_b->SetStyleset({AtomicString("foo"), AtomicString("bar")});
 
   ASSERT_NE(*variants_a, *variants_b);
   ASSERT_EQ(*variants_a, *variants_a);
@@ -184,8 +182,304 @@ TEST_F(FontDescriptionTest, VariantAlternatesDifferent) {
   ASSERT_NE(a, b);
 
   FontFaceCreationParams test_creation_params;
-  FontCacheKey key_a = a.CacheKey(test_creation_params, false, false);
-  FontCacheKey key_b = b.CacheKey(test_creation_params, false, false);
+  FontCacheKey key_a = a.CacheKey(test_creation_params, false);
+  FontCacheKey key_b = b.CacheKey(test_creation_params, false);
+
+  ASSERT_NE(key_a, key_b);
+}
+
+TEST_F(FontDescriptionTest, AllFeaturesHash) {
+  FontDescription font_description;
+  font_description.FirstFamily().SetFamily(font_family_names::kSerif,
+                                           FontFamily::Type::kGenericFamily);
+  unsigned key_a = font_description.GetHash();
+
+  // Test every relevant property except font families, which are tested in
+  // CompositeKeyFontFamilies. Check that the key is different from
+  // a description without the property change and that it is the same upon
+  // re-query (i.e. that the key is stable).
+  font_description.SetComputedSize(15.0);
+  unsigned key_b = font_description.GetHash();
+  EXPECT_NE(key_a, key_b);
+  key_a = font_description.GetHash();
+  EXPECT_EQ(key_a, key_b);
+
+  font_description.SetSpecifiedSize(16.0);
+  key_b = font_description.GetHash();
+  EXPECT_NE(key_a, key_b);
+  key_a = font_description.GetHash();
+  EXPECT_EQ(key_a, key_b);
+
+  font_description.SetAdjustedSize(17.0);
+  key_b = font_description.GetHash();
+  EXPECT_NE(key_a, key_b);
+  key_a = font_description.GetHash();
+  EXPECT_EQ(key_a, key_b);
+
+  FontSizeAdjust font_size_adjust(1.2, FontSizeAdjust::Metric::kCapHeight);
+  font_description.SetSizeAdjust(font_size_adjust);
+  key_b = font_description.GetHash();
+  EXPECT_NE(key_a, key_b);
+  key_a = font_description.GetHash();
+  EXPECT_EQ(key_a, key_b);
+
+  FontSelectionValue font_selection_value(8);
+  font_description.SetStyle(font_selection_value);
+  key_b = font_description.GetHash();
+  EXPECT_NE(key_a, key_b);
+  key_a = font_description.GetHash();
+  EXPECT_EQ(key_a, key_b);
+
+  FontSelectionValue font_selection_value_weight(1);
+  font_description.SetWeight(font_selection_value_weight);
+  key_b = font_description.GetHash();
+  EXPECT_NE(key_a, key_b);
+  key_a = font_description.GetHash();
+  EXPECT_EQ(key_a, key_b);
+
+  FontSelectionValue font_selection_value_stretch(1.2f);
+  font_description.SetStretch(font_selection_value_stretch);
+  key_b = font_description.GetHash();
+  EXPECT_NE(key_a, key_b);
+  key_a = font_description.GetHash();
+  EXPECT_EQ(key_a, key_b);
+
+  font_description.SetVariantCaps(FontDescription::kPetiteCaps);
+  key_b = font_description.GetHash();
+  EXPECT_NE(key_a, key_b);
+  key_a = font_description.GetHash();
+  EXPECT_EQ(key_a, key_b);
+
+  FontVariantEastAsian font_variant_east_asian =
+      FontVariantEastAsian::InitializeFromUnsigned(57u);
+  font_description.SetVariantEastAsian(font_variant_east_asian);
+  key_b = font_description.GetHash();
+  EXPECT_NE(key_a, key_b);
+  key_a = font_description.GetHash();
+  EXPECT_EQ(key_a, key_b);
+
+  FontDescription::VariantLigatures variant_ligatures(
+      FontDescription::kEnabledLigaturesState);
+  font_description.SetVariantLigatures(variant_ligatures);
+  key_b = font_description.GetHash();
+  EXPECT_NE(key_a, key_b);
+  key_a = font_description.GetHash();
+  EXPECT_EQ(key_a, key_b);
+
+  FontVariantNumeric font_variant_numeric =
+      FontVariantNumeric::InitializeFromUnsigned(171u);
+  font_description.SetVariantNumeric(font_variant_numeric);
+  key_b = font_description.GetHash();
+  EXPECT_NE(key_a, key_b);
+  key_a = font_description.GetHash();
+  EXPECT_EQ(key_a, key_b);
+
+  font_description.SetIsAbsoluteSize(true);
+  key_b = font_description.GetHash();
+  EXPECT_NE(key_a, key_b);
+  key_a = font_description.GetHash();
+  EXPECT_EQ(key_a, key_b);
+
+  font_description.SetGenericFamily(FontDescription::kSerifFamily);
+  key_b = font_description.GetHash();
+  EXPECT_NE(key_a, key_b);
+  key_a = font_description.GetHash();
+  EXPECT_EQ(key_a, key_b);
+
+  font_description.SetKerning(FontDescription::kNormalKerning);
+  key_b = font_description.GetHash();
+  EXPECT_NE(key_a, key_b);
+  key_a = font_description.GetHash();
+  EXPECT_EQ(key_a, key_b);
+
+  font_description.SetKeywordSize(5);
+  key_b = font_description.GetHash();
+  EXPECT_NE(key_a, key_b);
+  key_a = font_description.GetHash();
+  EXPECT_EQ(key_a, key_b);
+
+  font_description.SetFontSmoothing(kAntialiased);
+  key_b = font_description.GetHash();
+  EXPECT_NE(key_a, key_b);
+  key_a = font_description.GetHash();
+  EXPECT_EQ(key_a, key_b);
+
+  font_description.SetFontOpticalSizing(kNoneOpticalSizing);
+  key_b = font_description.GetHash();
+  EXPECT_NE(key_a, key_b);
+  key_a = font_description.GetHash();
+  EXPECT_EQ(key_a, key_b);
+
+  font_description.SetTextRendering(kOptimizeLegibility);
+  key_b = font_description.GetHash();
+  EXPECT_NE(key_a, key_b);
+  key_a = font_description.GetHash();
+  EXPECT_EQ(key_a, key_b);
+
+  font_description.SetOrientation(FontOrientation::kVerticalMixed);
+  key_b = font_description.GetHash();
+  EXPECT_NE(key_a, key_b);
+  key_a = font_description.GetHash();
+  EXPECT_EQ(key_a, key_b);
+
+  font_description.SetWidthVariant(kHalfWidth);
+  key_b = font_description.GetHash();
+  EXPECT_NE(key_a, key_b);
+  key_a = font_description.GetHash();
+  EXPECT_EQ(key_a, key_b);
+
+  font_description.SetLocale(&LayoutLocale::GetSystem());
+  key_b = font_description.GetHash();
+  EXPECT_NE(key_a, key_b);
+  key_a = font_description.GetHash();
+  EXPECT_EQ(key_a, key_b);
+
+  font_description.SetSyntheticBold(true);
+  key_b = font_description.GetHash();
+  EXPECT_NE(key_a, key_b);
+  key_a = font_description.GetHash();
+  EXPECT_EQ(key_a, key_b);
+
+  font_description.SetSyntheticItalic(true);
+  key_b = font_description.GetHash();
+  EXPECT_NE(key_a, key_b);
+  key_a = font_description.GetHash();
+  EXPECT_EQ(key_a, key_b);
+
+  font_description.SetFontSynthesisWeight(
+      FontDescription::kNoneFontSynthesisWeight);
+  key_b = font_description.GetHash();
+  EXPECT_NE(key_a, key_b);
+  key_a = font_description.GetHash();
+  EXPECT_EQ(key_a, key_b);
+
+  font_description.SetFontSynthesisStyle(
+      FontDescription::kNoneFontSynthesisStyle);
+  key_b = font_description.GetHash();
+  EXPECT_NE(key_a, key_b);
+  key_a = font_description.GetHash();
+  EXPECT_EQ(key_a, key_b);
+
+  font_description.SetFontSynthesisSmallCaps(
+      FontDescription::kNoneFontSynthesisSmallCaps);
+  key_b = font_description.GetHash();
+  EXPECT_NE(key_a, key_b);
+  key_a = font_description.GetHash();
+  EXPECT_EQ(key_a, key_b);
+
+  scoped_refptr<FontFeatureSettings> font_feature_setting =
+      FontFeatureSettings::Create();
+  font_feature_setting->Append(FontFeature(AtomicString("1234"), 2));
+  font_description.SetFeatureSettings(font_feature_setting);
+  key_b = font_description.GetHash();
+  EXPECT_NE(key_a, key_b);
+  key_a = font_description.GetHash();
+  EXPECT_EQ(key_a, key_b);
+
+  scoped_refptr<FontVariationSettings> font_variation_setting =
+      FontVariationSettings::Create();
+  font_variation_setting->Append(FontVariationAxis(AtomicString("1234"), 1.5f));
+  font_description.SetVariationSettings(font_variation_setting);
+  key_b = font_description.GetHash();
+  EXPECT_NE(key_a, key_b);
+  key_a = font_description.GetHash();
+  EXPECT_EQ(key_a, key_b);
+
+  font_description.SetVariantPosition(FontDescription::kSubVariantPosition);
+  key_b = font_description.GetHash();
+  EXPECT_NE(key_a, key_b);
+  key_a = font_description.GetHash();
+  EXPECT_EQ(key_a, key_b);
+
+  font_description.SetWordSpacing(1.2);
+  key_b = font_description.GetHash();
+  EXPECT_NE(key_a, key_b);
+  key_a = font_description.GetHash();
+  EXPECT_EQ(key_a, key_b);
+
+  font_description.SetLetterSpacing(0.9);
+  key_b = font_description.GetHash();
+  EXPECT_NE(key_a, key_b);
+  key_a = font_description.GetHash();
+  EXPECT_EQ(key_a, key_b);
+
+  font_description.SetSubpixelAscentDescent(true);
+  key_b = font_description.GetHash();
+  EXPECT_NE(key_a, key_b);
+  key_a = font_description.GetHash();
+  EXPECT_EQ(key_a, key_b);
+
+  // HashCategory does not matter for the key
+  // FontVariantAlternates is not used in the key
+}
+
+TEST_F(FontDescriptionTest, FontFamiliesHash) {
+  // One family in both descriptors
+  FontDescription a;
+  FontDescription b(a);
+
+  FontFamily* family_a = &a.FirstFamily();
+  family_a->SetFamily(font_family_names::kSerif,
+                      FontFamily::Type::kGenericFamily);
+
+  FontFamily* family_b = &b.FirstFamily();
+  family_b->SetFamily(font_family_names::kSerif,
+                      FontFamily::Type::kGenericFamily);
+
+  unsigned key_a = a.GetHash();
+  unsigned key_b = b.GetHash();
+
+  EXPECT_EQ(key_a, key_b);
+
+  // Differing family lists
+  scoped_refptr<SharedFontFamily> next_family_a = SharedFontFamily::Create();
+  next_family_a->SetFamily(AtomicString("CustomFont1"),
+                           FontFamily::Type::kFamilyName);
+  family_a->AppendFamily(next_family_a);
+  family_a = next_family_a.get();
+  key_a = a.GetHash();
+  EXPECT_NE(key_a, key_b);
+
+  // Same family lists with multiple entries
+  scoped_refptr<SharedFontFamily> next_family_b = SharedFontFamily::Create();
+  next_family_b->SetFamily(AtomicString("CustomFont1"),
+                           FontFamily::Type::kFamilyName);
+  family_b->AppendFamily(next_family_b);
+  family_b = next_family_b.get();
+  key_b = b.GetHash();
+  EXPECT_EQ(key_a, key_b);
+
+  // Same number of entries, different names
+  next_family_a = SharedFontFamily::Create();
+  next_family_a->SetFamily(AtomicString("CustomFont2a"),
+                           FontFamily::Type::kFamilyName);
+  family_a->AppendFamily(next_family_a);
+  family_a = next_family_a.get();
+  key_a = a.GetHash();
+  next_family_b = SharedFontFamily::Create();
+  next_family_b->SetFamily(AtomicString("CustomFont2b"),
+                           FontFamily::Type::kFamilyName);
+  family_b->AppendFamily(next_family_b);
+  family_b = next_family_b.get();
+  key_b = b.GetHash();
+  EXPECT_NE(key_a, key_b);
+}
+
+TEST_F(FontDescriptionTest, GenericFamilyDifferentHash) {
+  // Verify that we correctly distinguish between an unquoted
+  // CSS generic family and a quoted family name.
+  // See crbug.com/1408485
+  FontDescription a;
+  FontDescription b(a);
+
+  FontFamily* family_a = &a.FirstFamily();
+  family_a->SetFamily(font_family_names::kSerif,
+                      FontFamily::Type::kGenericFamily);
+  FontFamily* family_b = &b.FirstFamily();
+  family_b->SetFamily(font_family_names::kSerif, FontFamily::Type::kFamilyName);
+
+  unsigned key_a = a.GetHash();
+  unsigned key_b = b.GetHash();
 
   ASSERT_NE(key_a, key_b);
 }
@@ -194,23 +488,23 @@ TEST_F(FontDescriptionTest, ToString) {
   FontDescription description;
 
   FontFamily family;
-  family.SetFamily("A", FontFamily::Type::kFamilyName);
+  family.SetFamily(AtomicString("A"), FontFamily::Type::kFamilyName);
   scoped_refptr<SharedFontFamily> b_family = SharedFontFamily::Create();
-  b_family->SetFamily("B", FontFamily::Type::kFamilyName);
+  b_family->SetFamily(AtomicString("B"), FontFamily::Type::kFamilyName);
   family.AppendFamily(b_family);
   description.SetFamily(family);
 
-  description.SetLocale(LayoutLocale::Get("no"));
+  description.SetLocale(LayoutLocale::Get(AtomicString("no")));
 
   scoped_refptr<FontVariationSettings> variation_settings =
       FontVariationSettings::Create();
-  variation_settings->Append(FontVariationAxis{"aaaa", 42});
-  variation_settings->Append(FontVariationAxis{"bbbb", 8118});
+  variation_settings->Append(FontVariationAxis{AtomicString("aaaa"), 42});
+  variation_settings->Append(FontVariationAxis{AtomicString("bbbb"), 8118});
   description.SetVariationSettings(variation_settings);
 
   scoped_refptr<FontFeatureSettings> feature_settings = FontFeatureSettings::Create();
-  feature_settings->Append(FontFeature{"cccc", 76});
-  feature_settings->Append(FontFeature{"dddd", 94});
+  feature_settings->Append(FontFeature{AtomicString("cccc"), 76});
+  feature_settings->Append(FontFeature{AtomicString("dddd"), 94});
   description.SetFeatureSettings(feature_settings);
 
   description.SetSpecifiedSize(1.1f);
@@ -260,9 +554,9 @@ TEST_F(FontDescriptionTest, DefaultHashTrait) {
   description1.SetWeight(FontSelectionValue(100));
 
   FontFamily family;
-  family.SetFamily("A", FontFamily::Type::kFamilyName);
+  family.SetFamily(AtomicString("A"), FontFamily::Type::kFamilyName);
   scoped_refptr<SharedFontFamily> b_family = SharedFontFamily::Create();
-  b_family->SetFamily("B", FontFamily::Type::kFamilyName);
+  b_family->SetFamily(AtomicString("B"), FontFamily::Type::kFamilyName);
   family.AppendFamily(b_family);
   FontDescription description3;
   description3.SetFamily(family);

@@ -21,7 +21,7 @@ HTML file, these allow you to run tests as a series of synchronous steps that
 alternate between JavaScript and Java.
 
 For a concrete example, take a look at
-[`WebXrVrTransitionTest`][webxr_vr_transition_test]'s
+[`WebXrGvrTransitionTest`][webxr_vr_transition_test]'s
 `testNonImmersiveStopsDuringImmersive` test and its corresponding HTML file
 [test_non_immersive_stops_during_immersive.html][webxr_vr_transition_test_html].
 
@@ -121,7 +121,7 @@ need to add before being able to write your test.
 Test parameterization is how running a test multiple times in different
 activities is handled. However, it adds some amount of overhead to test runtime.
 
-See [`WebXrVrTransitionTest`][webxr_vr_transition_test] for an example of a
+See [`WebXrGvrTransitionTest`][webxr_vr_transition_test] for an example of a
 parameterized class. The general things you will need to are:
 
 * Set `@RunWith` to `ParameterizedRunner.class`.
@@ -129,7 +129,7 @@ parameterized class. The general things you will need to are:
 * Declare `sClassParams` as a static `List` of `ParameterSet`, annotate it with
   `@ClassParameter`, and set it to the value returned by either
   `XrTestRuleUtils.generateDefaultTestRuleParameters()` for AR tests or
-  `VrTestRuleUtils.generateDefaultTestRuleParameters()` for VR tests.
+  `GvrTestRuleUtils.generateDefaultTestRuleParameters()` for VR tests.
 * Declare `mRuleChain` as a `RuleChain` and annotate it with `@Rule`.
 * Declare `mTestRule` as a `ChromeActivityTestRule`.
 * Declare any necessary test frameworks and initialize them using `mTestRule` in
@@ -138,7 +138,7 @@ parameterized class. The general things you will need to are:
   `Callable<ChromeActivityTestRule>`. This constructor must set `mVrTestRule` to
   the `Callable`'s `call()` return value and set `mRuleChain` to the return
   value of `XrTestRuleUtils.wrapRuleInActivityRestrictionRule(mTestRule)`
-  for AR tests or `VrTestRuleUtils.wrapRuleInActivityRestrictionRule
+  for AR tests or `GvrTestRuleUtils.wrapRuleInActivityRestrictionRule
   (mTestRule)` for VR tests.
 
 ### Add The New File
@@ -163,7 +163,7 @@ bucket.
 
 
 [xr_instrumentation_deep_dive]: https://chromium.googlesource.com/chromium/src/+/main/chrome/android/javatests/src/org/chromium/chrome/browser/vr/xr_instrumentation_deep_dive.md
-[webxr_vr_transition_test]: https://chromium.googlesource.com/chromium/src/+/main/chrome/android/javatests/src/org/chromium/chrome/browser/vr/WebXrVrTransitionTest.java
+[webxr_vr_transition_test]: https://chromium.googlesource.com/chromium/src/+/main/chrome/android/javatests/src/org/chromium/chrome/browser/vr/WebXrGvrTransitionTest.java
 [webxr_vr_transition_test_html]: https://chromium.googlesource.com/chromium/src/+/main/chrome/test/data/xr/e2e_test_files/html/test_non_immersive_stops_during_immersive.html
 [vr_browser_transition_test]: https://chromium.googlesource.com/chromium/src/+/main/chrome/android/javatests/src/org/chromium/chrome/browser/vr/VrBrowserTransitionTest.java
 [build_gn]: https://chromium.googlesource.com/chromium/src/+/main/chrome/android/BUILD.gn

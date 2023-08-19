@@ -27,8 +27,21 @@ namespace ash {
 // fingerprint vector, it is considered a match.
 class COMPONENT_EXPORT(BIOD_CLIENT) FakeBiodClient : public BiodClient {
  public:
-  struct FakeRecord;
-  using RecordMap = std::map<dbus::ObjectPath, std::unique_ptr<FakeRecord>>;
+  struct FakeRecord {
+    FakeRecord();
+    FakeRecord(const FakeRecord&);
+    ~FakeRecord();
+
+    void Clear();
+
+    std::string user_id;
+    std::string label;
+    // A fake fingerprint is a vector which consists of all the strings which
+    // were "pressed" during the enroll session.
+    std::vector<std::string> fake_fingerprint;
+  };
+
+  using RecordMap = std::map<dbus::ObjectPath, FakeRecord>;
 
   FakeBiodClient();
 
@@ -118,7 +131,7 @@ class COMPONENT_EXPORT(BIOD_CLIENT) FakeBiodClient : public BiodClient {
   // assigned at the start of an enroll session and freed when the enroll
   // session is finished or cancelled.
   dbus::ObjectPath current_record_path_;
-  std::unique_ptr<FakeRecord> current_record_;
+  FakeRecord current_record_;
 
   // Unique indentifier that gets updated each time an enroll session is started
   // to ensure each record is stored at a different path.

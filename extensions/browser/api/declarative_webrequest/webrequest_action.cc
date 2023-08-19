@@ -27,6 +27,7 @@
 #include "extensions/common/extension.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/http/http_util.h"
+#include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "third_party/re2/src/re2/re2.h"
 
 using extension_web_request_api_helpers::EventResponseDelta;
@@ -676,7 +677,7 @@ std::string WebRequestRedirectByRegExAction::PerlToRe2Style(
       if (i == perl.end()) {
         result += '$';
         return result;
-      } else if (isdigit(*i)) {
+      } else if (absl::ascii_isdigit(static_cast<unsigned char>(*i))) {
         result += '\\';
         result += *i;
       } else {

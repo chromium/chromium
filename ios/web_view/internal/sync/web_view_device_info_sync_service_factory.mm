@@ -22,10 +22,6 @@
 #include "ios/web_view/internal/sync/web_view_sync_invalidations_service_factory.h"
 #include "ios/web_view/internal/web_view_browser_state.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
@@ -73,9 +69,9 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
     return syncer::ModelTypeSet();
   }
 
-  absl::optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo>
+  syncer::DeviceInfo::PhoneAsASecurityKeyInfo::StatusOrInfo
   GetPhoneAsASecurityKeyInfo() const override {
-    return absl::nullopt;
+    return syncer::DeviceInfo::PhoneAsASecurityKeyInfo::NoSupport();
   }
 
   // syncer::DeviceInfoSyncClient:

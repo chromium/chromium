@@ -327,8 +327,8 @@ void ArcNetHostImpl::SetUpFlags() {
   if (!net_instance)
     return;
 
-  net_instance->SetUpFlag(arc::mojom::Flag::ENABLE_ARC_HOST_VPN,
-                          base::FeatureList::IsEnabled(arc::kEnableArcHostVpn));
+  // arc::mojom::Flag::DEPRECATE_ENABLE_ARC_HOST_VPN no longer passed to ARC,
+  // see b/257889534
 }
 
 void ArcNetHostImpl::OnConnectionClosed() {
@@ -466,7 +466,9 @@ void ArcNetHostImpl::CreateNetworkWithEapTranslated(
       wifi_dict.Set(onc::wifi::kPassphrase, details->passphrase.value());
     }
   }
-  wifi_dict.Set(onc::wifi::kBSSID, cfg->bssid);
+  if (details->bssid.has_value()) {
+    wifi_dict.Set(onc::wifi::kBSSIDRequested, details->bssid.value());
+  }
   if (cfg->bssid_allowlist.has_value()) {
     wifi_dict.Set(onc::wifi::kBSSIDAllowlist,
                   TranslateStringListToValue(cfg->bssid_allowlist.value()));
@@ -1396,5 +1398,8 @@ void ArcNetHostImpl::EnsureFactoryBuilt() {
   ArcNetHostImplFactory::GetInstance();
 }
 
-void ArcNetHostImpl::NotifyAndroidWifiMulticastLockChange(bool is_held) {}
+void ArcNetHostImpl::NotifyAndroidWifiMulticastLockChange(bool is_held) {
+  ash::PatchPanelClient::Get()->NotifyAndroidWifiMulticastLockChange(is_held);
+}
+
 }  // namespace arc

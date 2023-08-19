@@ -8,7 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/signin/public/webdata/token_service_table.h"
 #include "components/webdata/common/web_database_service.h"
 
@@ -18,8 +18,8 @@ using base::Time;
 class TokenWebDataBackend
     : public base::RefCountedDeleteOnSequence<TokenWebDataBackend> {
  public:
-  TokenWebDataBackend(
-      scoped_refptr<base::SingleThreadTaskRunner> db_task_runner)
+  explicit TokenWebDataBackend(
+      scoped_refptr<base::SequencedTaskRunner> db_task_runner)
       : base::RefCountedDeleteOnSequence<TokenWebDataBackend>(db_task_runner) {}
 
   WebDatabase::State RemoveAllTokens(WebDatabase* db) {
@@ -70,8 +70,8 @@ TokenResult::~TokenResult() {}
 
 TokenWebData::TokenWebData(
     scoped_refptr<WebDatabaseService> wdbs,
-    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> db_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> db_task_runner)
     : WebDataServiceBase(wdbs, std::move(ui_task_runner)),
       token_backend_(new TokenWebDataBackend(std::move(db_task_runner))) {}
 
@@ -103,8 +103,8 @@ WebDataServiceBase::Handle TokenWebData::GetAllTokens(
 }
 
 TokenWebData::TokenWebData(
-    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> db_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> db_task_runner)
     : WebDataServiceBase(nullptr, std::move(ui_task_runner)),
       token_backend_(new TokenWebDataBackend(std::move(db_task_runner))) {}
 

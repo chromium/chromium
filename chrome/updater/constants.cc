@@ -48,7 +48,7 @@ const char kEnableLoggingSwitch[] = "enable-logging";
 const char kLoggingModuleSwitch[] = "vmodule";
 const char kLoggingModuleSwitchValue[] =
 #if BUILDFLAG(IS_WIN)
-    "*/components/winhttp/*=2,"
+    "*/components/winhttp/*=1,"
 #endif
     "*/components/update_client/*=2,*/chrome/updater/*=2";
 const char kAppIdSwitch[] = "app-id";
@@ -102,6 +102,8 @@ const char kDevOverrideKeyServerKeepAliveSeconds[] = "server_keep_alive";
 const char kDevOverrideKeyCrxVerifierFormat[] = "crx_verifier_format";
 const char kDevOverrideKeyGroupPolicies[] = "group_policies";
 const char kDevOverrideKeyOverinstallTimeout[] = "overinstall_timeout";
+const char kDevOverrideKeyIdleCheckPeriodSeconds[] = "idle_check_period";
+const char kDevOverrideKeyManagedDevice[] = "managed_device";
 
 // Policy Management constants.
 const char kProxyModeDirect[] = "direct";

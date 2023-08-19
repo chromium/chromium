@@ -55,6 +55,9 @@ class CORE_EXPORT NGGridTrackList {
  public:
   NGGridTrackList() = default;
   NGGridTrackList(const NGGridTrackList& other) = default;
+  explicit NGGridTrackList(const GridTrackSize& default_track_size) {
+    AddRepeater({default_track_size});
+  }
 
   // Returns the repeat count of the repeater at `index`, or `auto_value`
   // if the repeater is auto.
@@ -129,37 +132,6 @@ class CORE_EXPORT NGGridTrackList {
 
   // The grid axis type (standalone or subgridded).
   GridAxisType axis_type_{GridAxisType::kStandaloneAxis};
-};
-
-// This class wraps both legacy grid track list type, and the GridNG version:
-// Vector<GridTrackSize>, and NGGridTrackList respectively. The NGGridTrackList
-// is stored in a pointer to keep size down when not running GridNG.
-class GridTrackList {
-  DISALLOW_NEW();
-
- public:
-  GridTrackList() = default;
-
-  GridTrackList(const GridTrackList& other);
-  explicit GridTrackList(const GridTrackSize& default_track_size);
-  explicit GridTrackList(Vector<GridTrackSize, 1>& legacy_tracks);
-
-  Vector<GridTrackSize, 1>& LegacyTrackList();
-  const Vector<GridTrackSize, 1>& LegacyTrackList() const;
-
-  NGGridTrackList& NGTrackList();
-  const NGGridTrackList& NGTrackList() const;
-
-  void SetNGGridTrackList(const NGGridTrackList& other);
-
-  void operator=(const GridTrackList& other);
-  bool operator==(const GridTrackList& other) const;
-  bool operator!=(const GridTrackList& other) const;
-
- private:
-  void AssignFrom(const GridTrackList& other);
-  Vector<GridTrackSize, 1> legacy_track_list_;
-  NGGridTrackList ng_track_list_;
 };
 
 }  // namespace blink

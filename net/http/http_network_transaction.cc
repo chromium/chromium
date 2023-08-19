@@ -57,6 +57,7 @@
 #include "net/http/transport_security_state.h"
 #include "net/http/url_security_manager.h"
 #include "net/log/net_log_event_type.h"
+#include "net/proxy_resolution/proxy_info.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/transport_client_socket_pool.h"
@@ -96,15 +97,69 @@ const size_t kMaxRetryAttempts = 2;
 // looping forever, bound the number of restarts.
 const size_t kMaxRestarts = 32;
 
-void SetProxyInfoInReponse(const ProxyInfo& proxy_info,
-                           HttpResponseInfo* response_info) {
-  response_info->was_fetched_via_proxy = !proxy_info.is_direct();
-  if (response_info->was_fetched_via_proxy && !proxy_info.is_empty())
-    response_info->proxy_server = proxy_info.proxy_server();
-  else if (!response_info->was_fetched_via_proxy && proxy_info.is_direct())
-    response_info->proxy_server = ProxyServer::Direct();
-  else
-    response_info->proxy_server = ProxyServer();
+// Returns true when Early Hints are allowed on the given protocol.
+bool EarlyHintsAreAllowedOn(HttpResponseInfo::ConnectionInfo connection_info) {
+  switch (connection_info) {
+    case HttpResponseInfo::ConnectionInfo::CONNECTION_INFO_HTTP0_9:
+    case HttpResponseInfo::ConnectionInfo::CONNECTION_INFO_HTTP1_0:
+      return false;
+    case HttpResponseInfo::ConnectionInfo::CONNECTION_INFO_HTTP1_1:
+      return base::FeatureList::IsEnabled(features::kEnableEarlyHintsOnHttp11);
+    default:
+      CHECK_NE(connection_info,
+               HttpResponseInfo::ConnectionInfo::NUM_OF_CONNECTION_INFOS);
+      // Implicitly allow CONNECTION_INFO_UNKNOWN because this is the default
+      // value and ConnectionInfo isn't always set.
+      return true;
+  }
+}
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class WebSocketFallbackResult {
+  kSuccessHttp11 = 0,
+  kSuccessHttp2,
+  kSuccessHttp11AfterFallback,
+  kFailure,
+  kFailureAfterFallback,
+  kMaxValue = kFailureAfterFallback,
+};
+
+WebSocketFallbackResult CalculateWebSocketFallbackResult(
+    int result,
+    bool http_1_1_was_required,
+    HttpResponseInfo::ConnectionInfoCoarse connection_info) {
+  if (result == OK) {
+    if (connection_info ==
+        HttpResponseInfo::ConnectionInfoCoarse::CONNECTION_INFO_COARSE_HTTP2) {
+      return WebSocketFallbackResult::kSuccessHttp2;
+    }
+    return http_1_1_was_required
+               ? WebSocketFallbackResult::kSuccessHttp11AfterFallback
+               : WebSocketFallbackResult::kSuccessHttp11;
+  }
+
+  return http_1_1_was_required ? WebSocketFallbackResult::kFailureAfterFallback
+                               : WebSocketFallbackResult::kFailure;
+}
+
+void RecordWebSocketFallbackResult(
+    int result,
+    bool http_1_1_was_required,
+    HttpResponseInfo::ConnectionInfoCoarse connection_info) {
+  CHECK_NE(connection_info,
+           HttpResponseInfo::ConnectionInfoCoarse::CONNECTION_INFO_COARSE_QUIC);
+
+  // `connection_info` could be CONNECTION_INFO_COARSE_OTHER in tests.
+  if (connection_info ==
+      HttpResponseInfo::ConnectionInfoCoarse::CONNECTION_INFO_COARSE_OTHER) {
+    return;
+  }
+
+  base::UmaHistogramEnumeration(
+      "Net.WebSocket.FallbackResult",
+      CalculateWebSocketFallbackResult(result, http_1_1_was_required,
+                                       connection_info));
 }
 
 }  // namespace
@@ -532,6 +587,17 @@ void HttpNetworkTransaction::SetResponseHeadersCallback(
   response_headers_callback_ = std::move(callback);
 }
 
+void HttpNetworkTransaction::SetModifyRequestHeadersCallback(
+    base::RepeatingCallback<void(net::HttpRequestHeaders*)> callback) {
+  modify_headers_callbacks_ = std::move(callback);
+}
+
+void HttpNetworkTransaction::SetIsSharedDictionaryReadAllowedCallback(
+    base::RepeatingCallback<bool()> callback) {
+  // This method should not be called for this class.
+  NOTREACHED();
+}
+
 int HttpNetworkTransaction::ResumeNetworkStart() {
   DCHECK_EQ(next_state_, STATE_CREATE_STREAM);
   return DoLoop(OK);
@@ -567,7 +633,7 @@ void HttpNetworkTransaction::OnStreamReady(const SSLConfig& used_ssl_config,
       stream_request_->alternate_protocol_usage();
   response_.was_fetched_via_spdy = stream_request_->using_spdy();
   response_.dns_aliases = stream_->GetDnsAliases();
-  SetProxyInfoInReponse(used_proxy_info, &response_);
+  SetProxyInfoInResponse(used_proxy_info, &response_);
   OnIOComplete(OK);
 }
 
@@ -598,7 +664,7 @@ void HttpNetworkTransaction::OnStreamFailed(
   server_ssl_config_ = used_ssl_config;
   net_error_details_ = net_error_details;
   proxy_info_ = used_proxy_info;
-  SetProxyInfoInReponse(used_proxy_info, &response_);
+  SetProxyInfoInResponse(used_proxy_info, &response_);
   response_.resolve_error_info = resolve_error_info;
 
   OnIOComplete(result);
@@ -637,7 +703,7 @@ void HttpNetworkTransaction::OnNeedsProxyAuth(
   response_.headers = proxy_response.headers;
   response_.auth_challenge = proxy_response.auth_challenge;
   response_.did_use_http_auth = proxy_response.did_use_http_auth;
-  SetProxyInfoInReponse(used_proxy_info, &response_);
+  SetProxyInfoInResponse(used_proxy_info, &response_);
 
   if (!ContentEncodingsValid()) {
     DoCallback(ERR_CONTENT_DECODING_FAILED);
@@ -1037,6 +1103,10 @@ int HttpNetworkTransaction::BuildRequestHeaders(
 
   request_headers_.MergeFrom(request_->extra_headers);
 
+  if (modify_headers_callbacks_) {
+    modify_headers_callbacks_.Run(&request_headers_);
+  }
+
   response_.did_use_http_auth =
       request_headers_.HasHeader(HttpRequestHeaders::kAuthorization) ||
       request_headers_.HasHeader(HttpRequestHeaders::kProxyAuthorization);
@@ -1138,6 +1208,12 @@ int HttpNetworkTransaction::DoReadHeadersComplete(int result) {
   if (result == ERR_CONNECTION_CLOSED && response_.headers.get())
     result = OK;
 
+  if (ForWebSocketHandshake()) {
+    RecordWebSocketFallbackResult(
+        result, http_1_1_was_required_,
+        HttpResponseInfo::ConnectionInfoToCoarse(response_.connection_info));
+  }
+
   if (result < 0)
     return HandleIOError(result);
 
@@ -1151,15 +1227,20 @@ int HttpNetworkTransaction::DoReadHeadersComplete(int result) {
         response_.headers.get());
 
     // Early Hints does not make sense for a WebSocket handshake.
-    if (ForWebSocketHandshake())
+    if (ForWebSocketHandshake()) {
       return ERR_FAILED;
+    }
 
-    // TODO(crbug.com/671310): Validate headers? It seems that
-    // "Content-Encoding" etc should not appear.
+    // TODO(https://crbug.com/671310): Validate headers?  "Content-Encoding" etc
+    // should not appear since informational responses can't contain content.
+    // https://www.rfc-editor.org/rfc/rfc9110#name-informational-1xx
 
-    if (early_response_headers_callback_)
+    if (EarlyHintsAreAllowedOn(response_.connection_info) &&
+        early_response_headers_callback_) {
       early_response_headers_callback_.Run(std::move(response_.headers));
+    }
 
+    // Reset response headers for the final response.
     response_.headers =
         base::MakeRefCounted<HttpResponseHeaders>(std::string());
     next_state_ = STATE_READ_HEADERS;
@@ -1210,9 +1291,9 @@ int HttpNetworkTransaction::DoReadHeadersComplete(int result) {
   // Check for an intermediate 100 Continue response.  An origin server is
   // allowed to send this response even if we didn't ask for it, so we just
   // need to skip over it.
-  // We treat any other 1xx in this same way (although in practice getting
-  // a 1xx that isn't a 100 is rare).
-  // Unless this is a WebSocket request, in which case we pass it on up.
+  // We treat any other 1xx in this same way unless:
+  //  * The response is 103, which is already handled above
+  //  * This is a WebSocket request, in which case we pass it on up.
   if (response_.headers->response_code() / 100 == 1 &&
       !ForWebSocketHandshake()) {
     response_.headers =
@@ -1538,6 +1619,8 @@ int HttpNetworkTransaction::HandleHttp11Required(int error) {
   DCHECK(error == ERR_HTTP_1_1_REQUIRED ||
          error == ERR_PROXY_HTTP_1_1_REQUIRED);
 
+  http_1_1_was_required_ = true;
+
   // HttpServerProperties should have been updated, so when the request is sent
   // again, it will automatically use HTTP/1.1.
   ResetConnectionAndRequestForResend(RetryReason::kHttp11Required);
@@ -1618,12 +1701,6 @@ HttpNetworkTransaction::GetRetryReasonForIOError(int error) {
       return RetryReason::kHttp2PingFailed;
     case ERR_HTTP2_SERVER_REFUSED_STREAM:
       return RetryReason::kHttp2ServerRefusedStream;
-    case ERR_HTTP2_PUSHED_STREAM_NOT_AVAILABLE:
-      return RetryReason::kHttp2PushedStreamNotAvailable;
-    case ERR_HTTP2_CLAIMED_PUSHED_STREAM_RESET_BY_SERVER:
-      return RetryReason::kHttp2ClaimedPushedStreamResetByServer;
-    case ERR_HTTP2_PUSHED_RESPONSE_DOES_NOT_MATCH:
-      return RetryReason::kHttp2PushedResponseDoesNotMatch;
     case ERR_QUIC_HANDSHAKE_FAILED:
       return RetryReason::kQuicHandshakeFailed;
     case ERR_QUIC_GOAWAY_REQUEST_CAN_BE_RETRIED:
@@ -1691,9 +1768,6 @@ int HttpNetworkTransaction::HandleIOError(int error) {
       break;
     case RetryReason::kHttp2PingFailed:
     case RetryReason::kHttp2ServerRefusedStream:
-    case RetryReason::kHttp2PushedStreamNotAvailable:
-    case RetryReason::kHttp2ClaimedPushedStreamResetByServer:
-    case RetryReason::kHttp2PushedResponseDoesNotMatch:
     case RetryReason::kQuicHandshakeFailed:
     case RetryReason::kQuicGoawayRequestCanBeRetried:
       if (HasExceededMaxRetries())
@@ -1785,7 +1859,7 @@ void HttpNetworkTransaction::ResetStateForAuthRestart() {
   headers_valid_ = false;
   request_headers_.Clear();
   response_ = HttpResponseInfo();
-  SetProxyInfoInReponse(proxy_info_, &response_);
+  SetProxyInfoInResponse(proxy_info_, &response_);
   establishing_tunnel_ = false;
   remote_endpoint_ = IPEndPoint();
   net_error_details_.quic_broken = false;
@@ -2021,6 +2095,21 @@ void HttpNetworkTransaction::RecordQuicProtocolErrorMetrics(
   }
   base::UmaHistogramSparse(histogram + ".QuicErrorCode", *connection_error);
   base::UmaHistogramSparse(histogram + ".QuicStreamErrorCode", *stream_error);
+}
+
+// static
+void HttpNetworkTransaction::SetProxyInfoInResponse(
+    const ProxyInfo& proxy_info,
+    HttpResponseInfo* response_info) {
+  response_info->was_fetched_via_proxy = !proxy_info.is_direct();
+  response_info->was_ip_protected = proxy_info.is_for_ip_protection();
+  if (response_info->was_fetched_via_proxy && !proxy_info.is_empty()) {
+    response_info->proxy_server = proxy_info.proxy_server();
+  } else if (!response_info->was_fetched_via_proxy && proxy_info.is_direct()) {
+    response_info->proxy_server = ProxyServer::Direct();
+  } else {
+    response_info->proxy_server = ProxyServer();
+  }
 }
 
 }  // namespace net

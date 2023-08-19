@@ -7,10 +7,6 @@
 #import "base/run_loop.h"
 #import "components/sessions/core/live_tab.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 FakeTabRestoreService::FakeTabRestoreService() {}
 FakeTabRestoreService::~FakeTabRestoreService() {}
 

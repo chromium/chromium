@@ -3,9 +3,10 @@ Short Name: accessibility-test-framework
 URL: https://github.com/google/Accessibility-Test-Framework-for-Android
 Version: 4.0.0
 License: Android Software Development Kit License
-License File: NOT_SHIPPED
+License File: LICENSE
 CPEPrefix: unknown
 Security Critical: no
+Shipped: no
 
 Description:
 Library used to test for common accessibility issues.

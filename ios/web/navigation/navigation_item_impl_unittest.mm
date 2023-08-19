@@ -15,10 +15,6 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace web {
 namespace {
 
@@ -269,6 +265,21 @@ TEST_F(NavigationItemTest, NavigationItemImplRoundTripNonHTTPURL) {
   EXPECT_EQ(original.GetVirtualURL(), decoded.GetVirtualURL());
 }
 
+// Tests that NavigationItemImpl round trip correctly when serialized to proto
+// even when the URL is not an HTTP/HTTPS url, in absence of virtual URL.
+TEST_F(NavigationItemTest, NavigationItemImplRoundTripNonHTTPURLNoVirtualURL) {
+  NavigationItemImpl original;
+  original.SetURL(GURL("testwebui://invalid/"));
+
+  proto::NavigationItemStorage storage;
+  original.SerializeToProto(storage);
+
+  NavigationItemImpl decoded(storage);
+
+  EXPECT_EQ(original.GetURL(), decoded.GetURL());
+  EXPECT_EQ(original.GetVirtualURL(), decoded.GetVirtualURL());
+}
+
 // Tests that NavigationItemImpl serialization skips invalid referrer.
 TEST_F(NavigationItemTest, SerializationSkipsInvalidReferrer) {
   NavigationItemImpl original;
@@ -305,6 +316,42 @@ TEST_F(NavigationItemTest, SerializationOptimizesURLStorage) {
 
   EXPECT_FALSE(storage.url().empty());
   EXPECT_TRUE(storage.virtual_url().empty());
+}
+
+// Tests correct decoding of the URL and virtual URL when using http: scheme.
+TEST_F(NavigationItemTest, DecodeHTTPScheme) {
+  web::proto::NavigationItemStorage storage;
+  storage.set_url("http://url.test");
+  storage.set_virtual_url("http://virtual.test");
+  ASSERT_NE(storage.url(), storage.virtual_url());
+
+  NavigationItemImpl navigation_item(storage);
+  EXPECT_EQ(GURL(storage.url()), navigation_item.GetURL());
+  EXPECT_EQ(GURL(storage.virtual_url()), navigation_item.GetVirtualURL());
+}
+
+// Tests correct decoding of the URL and virtual URL when using file: scheme.
+TEST_F(NavigationItemTest, DecodeFileScheme) {
+  web::proto::NavigationItemStorage storage;
+  storage.set_url("file://myfile.test");
+  storage.set_virtual_url("http://virtual.test");
+  ASSERT_NE(storage.url(), storage.virtual_url());
+
+  NavigationItemImpl navigation_item(storage);
+  EXPECT_EQ(GURL(storage.virtual_url()), navigation_item.GetURL());
+  EXPECT_EQ(GURL(storage.virtual_url()), navigation_item.GetVirtualURL());
+}
+
+// Tests correct decoding of the URL and virtual URL when using blob: scheme.
+TEST_F(NavigationItemTest, DecodeBlobScheme) {
+  web::proto::NavigationItemStorage storage;
+  storage.set_url("blob:myfile.test");
+  storage.set_virtual_url("http://virtual.test");
+  ASSERT_NE(storage.url(), storage.virtual_url());
+
+  NavigationItemImpl navigation_item(storage);
+  EXPECT_EQ(GURL(storage.virtual_url()), navigation_item.GetURL());
+  EXPECT_EQ(GURL(storage.virtual_url()), navigation_item.GetVirtualURL());
 }
 
 }  // namespace

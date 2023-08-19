@@ -722,18 +722,17 @@ template("mojom") {
         "is_chromeos",
         "is_chromeos_ash",
       ]
+    } else if (is_chromeos_lacros) {
+      enabled_features += [
+        "is_chromeos",
+        "is_chromeos_lacros",
+      ]
     } else if (is_fuchsia) {
       enabled_features += [ "is_fuchsia" ]
     } else if (is_ios) {
       enabled_features += [ "is_ios" ]
-    } else if (is_linux || is_chromeos_lacros) {
+    } else if (is_linux) {
       enabled_features += [ "is_linux" ]
-      if (is_chromeos_lacros) {
-        enabled_features += [
-          "is_chromeos",
-          "is_chromeos_lacros",
-        ]
-      }
     } else if (is_mac) {
       enabled_features += [ "is_mac" ]
     } else if (is_win) {
@@ -1008,6 +1007,7 @@ template("mojom") {
     if (defined(invoker.testonly)) {
       testonly = invoker.testonly
     }
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
     deps = []
     public_deps = []
     if (output_file_base_paths != []) {
@@ -1892,6 +1892,7 @@ template("mojom") {
             "$root_gen_dir/${base_path}-webui-js-bridge-impl.h",
           ]
         }
+        configs += [ "//build/config/compiler:wexit_time_destructors" ]
         deps = [
           ":$cpp_target_name",
           ":$generator_webui_js_bridge_impl_target_name",

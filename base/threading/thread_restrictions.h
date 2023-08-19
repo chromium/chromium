@@ -151,6 +151,7 @@ bool EnsureBrowserStateDirectoriesCreated(const base::FilePath&,
                                           const base::FilePath&);
 
 namespace android_webview {
+class AwBrowserContext;
 class AwFormDatabaseService;
 class CookieManager;
 class JsSandboxIsolate;
@@ -491,7 +492,9 @@ class StackSamplingProfiler;
 class TestCustomDisallow;
 class Thread;
 
-void GetNSExecutablePath(base::FilePath* path);
+namespace apple::internal {
+base::FilePath GetExecutablePath();
+}
 
 #if DCHECK_IS_ON()
 // NOT_TAIL_CALLED if dcheck-is-on so it's always evident who irrevocably
@@ -584,6 +587,7 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedAllowBlocking {
   friend class ::ScopedAllowBlockingForProfile;
   friend class ::StartupTabProviderImpl;
   friend class ::WebEngineBrowserMainParts;
+  friend class android_webview::AwBrowserContext;
   friend class android_webview::ScopedAllowInitGLBindings;
   friend class ash::BrowserDataBackMigrator;
   friend class ash::LoginEventRecorder;
@@ -665,7 +669,7 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedAllowBlocking {
   friend bool ::HasWaylandDisplay(
       base::Environment* env);  // http://crbug.com/1246928
   friend bool ash::CameraAppUIShouldEnableLocalOverride(const std::string&);
-  friend void base::GetNSExecutablePath(base::FilePath*);
+  friend base::FilePath base::apple::internal::GetExecutablePath();
   friend bool base::internal::ReadProcFile(const FilePath& file,
                                            std::string* buffer);
   friend bool chrome::PathProvider(int,
@@ -781,7 +785,6 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedAllowBaseSyncPrimitives {
   friend class syncer::HttpBridge;
   friend class syncer::GetLocalChangesRequest;
   friend class updater::SystemctlLauncherScopedAllowBaseSyncPrimitives;
-  friend class viz::ClientGpuMemoryBufferManager;
   friend class webrtc::DesktopConfigurationMonitor;
 
   // Usage that should be fixed:
@@ -859,6 +862,7 @@ class BASE_EXPORT
   friend class mojo::core::ipcz_driver::MojoTrap;
   friend class net::NetworkConfigWatcherMacThread;
   friend class ui::DrmThreadProxy;
+  friend class viz::ClientGpuMemoryBufferManager;
   friend class viz::HostGpuMemoryBufferManager;
   friend class vr::VrShell;
 

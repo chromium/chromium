@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/whats_new/whats_new_coordinator.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check_op.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/time/time.h"
@@ -21,10 +21,6 @@
 #import "ios/chrome/browser/ui/whats_new/whats_new_table_view_controller.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 NSString* const kTableViewNavigationDismissButtonId =
@@ -32,13 +28,13 @@ NSString* const kTableViewNavigationDismissButtonId =
 
 }  // namespace
 
-@interface WhatsNewCoordinator () <UINavigationControllerDelegate>
+@interface WhatsNewCoordinator () <UINavigationControllerDelegate,
+                                   UIAdaptivePresentationControllerDelegate>
 
 // The mediator to display What's New data.
 @property(nonatomic, strong) WhatsNewMediator* mediator;
 // The navigation controller displaying WhatsNewTableViewController.
-@property(nonatomic, strong)
-    TableViewNavigationController* navigationController;
+@property(nonatomic, strong) UINavigationController* navigationController;
 // The view controller used to display the What's New features and chrome tips.
 @property(nonatomic, strong) WhatsNewTableViewController* tableViewController;
 // The coordinator used for What's New feature.
@@ -58,6 +54,7 @@ NSString* const kTableViewNavigationDismissButtonId =
 #pragma mark - ChromeCoordinator
 
 - (void)start {
+  base::RecordAction(base::UserMetricsAction("WhatsNew.Started"));
   self.mediator = [[WhatsNewMediator alloc] init];
   self.mediator.urlLoadingAgent =
       UrlLoadingBrowserAgent::FromBrowser(self.browser);
@@ -72,11 +69,14 @@ NSString* const kTableViewNavigationDismissButtonId =
 
   [self.tableViewController reloadData];
 
-  self.navigationController = [[TableViewNavigationController alloc]
-      initWithTable:self.tableViewController];
+  self.navigationController = [[UINavigationController alloc]
+      initWithRootViewController:self.tableViewController];
   [self.navigationController
       setModalPresentationStyle:UIModalPresentationFormSheet];
   self.navigationController.delegate = self;
+  self.navigationController.presentationController.delegate = self;
+  self.navigationController.navigationBar.prefersLargeTitles = YES;
+
   [self.baseViewController presentViewController:self.navigationController
                                         animated:YES
                                       completion:nil];
@@ -129,6 +129,13 @@ NSString* const kTableViewNavigationDismissButtonId =
   }
 }
 
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  [self dismiss];
+}
+
 #pragma mark - WhatsNewTableViewDelegate
 
 - (void)detailViewController:
@@ -157,13 +164,9 @@ NSString* const kTableViewNavigationDismissButtonId =
   UIBarButtonItem* button = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemDone
                            target:self
-                           action:@selector(dismissButtonTapped)];
+                           action:@selector(dismiss)];
   [button setAccessibilityIdentifier:kTableViewNavigationDismissButtonId];
   return button;
-}
-
-- (void)dismissButtonTapped {
-  [self dismiss];
 }
 
 - (void)dismiss {

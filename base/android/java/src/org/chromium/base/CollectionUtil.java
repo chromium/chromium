@@ -50,10 +50,12 @@ public final class CollectionUtil {
         return array;
     }
 
-    public static int[] integerListToIntArray(@NonNull List<Integer> list) {
-        int[] array = new int[list.size()];
-        for (int i = 0; i < list.size(); i++) {
-            array[i] = list.get(i);
+    public static int[] integerCollectionToIntArray(@NonNull Collection<Integer> collection) {
+        int[] array = new int[collection.size()];
+        int index = 0;
+        for (int num : collection) {
+            array[index] = num;
+            index++;
         }
         return array;
     }

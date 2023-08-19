@@ -4,8 +4,7 @@
 
 package org.chromium.chrome.browser.offlinepages.indicator;
 
-import androidx.annotation.VisibleForTesting;
-
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -25,11 +24,6 @@ public class OfflineIndicatorMetricsDelegate {
     // UMA Histograms.
     public static final String OFFLINE_INDICATOR_SHOWN_DURATION_V2 =
             "OfflineIndicator.ShownDurationV2";
-    public static final String
-            OFFLINE_INDICATOR_SHOWN_DURATION_V2_IN_FOREGROUND_WITHOUT_BEING_BACKGROUNDED =
-                    "OfflineIndicator.ShownDurationV2.InForegroundWithoutBeingBackgrounded";
-    public static final String OFFLINE_INDICATOR_SHOWN_DURATION_V2_NUM_TIMES_BACKGROUNDED =
-            "OfflineIndicator.ShownDurationV2.NumTimesBackgrounded";
 
     /** Whether or not we are tracking a shown duration of the offline indicator. */
     private boolean mIsTrackingShownDuration;
@@ -271,17 +265,10 @@ public class OfflineIndicatorMetricsDelegate {
     private void recordShownDurationHistograms() {
         RecordHistogram.recordLongTimesHistogram100(
                 OFFLINE_INDICATOR_SHOWN_DURATION_V2, mTimeInForegroundMs + mTimeInBackgroundMs);
-        RecordHistogram.recordCount100Histogram(
-                OFFLINE_INDICATOR_SHOWN_DURATION_V2_NUM_TIMES_BACKGROUNDED, mNumTimesBackgrounded);
 
         if (!SharedPreferencesManager.getInstance().contains(
                     ChromePreferenceKeys.OFFLINE_INDICATOR_V2_TIME_IN_BACKGROUND_MS)) {
             assert mNumTimesBackgrounded == 0;
-            // This histogram is only recorded if the app was always in the foreground while the
-            // offline indicator was shown.
-            RecordHistogram.recordLongTimesHistogram(
-                    OFFLINE_INDICATOR_SHOWN_DURATION_V2_IN_FOREGROUND_WITHOUT_BEING_BACKGROUNDED,
-                    mTimeInForegroundMs);
         }
     }
 
@@ -313,8 +300,9 @@ public class OfflineIndicatorMetricsDelegate {
                 ChromePreferenceKeys.OFFLINE_INDICATOR_V2_NUM_TIMES_BACKGROUNDED);
     }
 
-    @VisibleForTesting
     static void setClockForTesting(Clock clock) {
+        var oldValue = sClock;
         sClock = clock;
+        ResettersForTesting.register(() -> sClock = oldValue);
     }
 }

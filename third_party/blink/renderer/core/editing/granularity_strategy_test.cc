@@ -153,7 +153,7 @@ Text* GranularityStrategyTest::SetupTranslateZ(String str) {
       "</html>");
 
   Text* text = GetDocument().createTextNode(str);
-  Element* div = GetDocument().getElementById("mytext");
+  Element* div = GetDocument().getElementById(AtomicString("mytext"));
   div->AppendChild(text);
 
   UpdateAllLifecyclePhasesForTest();
@@ -178,7 +178,7 @@ Text* GranularityStrategyTest::SetupTransform(String str) {
       "</html>");
 
   Text* text = GetDocument().createTextNode(str);
-  Element* div = GetDocument().getElementById("mytext");
+  Element* div = GetDocument().getElementById(AtomicString("mytext"));
   div->AppendChild(text);
 
   UpdateAllLifecyclePhasesForTest();
@@ -203,7 +203,7 @@ Text* GranularityStrategyTest::SetupRotate(String str) {
       "</html>");
 
   Text* text = GetDocument().createTextNode(str);
-  Element* div = GetDocument().getElementById("mytext");
+  Element* div = GetDocument().getElementById(AtomicString("mytext"));
   div->AppendChild(text);
 
   UpdateAllLifecyclePhasesForTest();
@@ -221,7 +221,7 @@ void GranularityStrategyTest::SetupTextSpan(String str1,
   Text* text2 = GetDocument().createTextNode(str2);
   Text* text3 = GetDocument().createTextNode(str3);
   auto* span = MakeGarbageCollected<HTMLSpanElement>(GetDocument());
-  Element* div = GetDocument().getElementById("mytext");
+  Element* div = GetDocument().getElementById(AtomicString("mytext"));
   div->AppendChild(text1);
   div->AppendChild(span);
   span->AppendChild(text2);
@@ -702,11 +702,11 @@ TEST_F(GranularityStrategyTest, UpdateExtentWithNullPositionForCharacter) {
   GetDocument().body()->setInnerHTML(
       "<div id=host></div><div id=sample>ab</div>");
   // Simulate VIDEO element which has a RANGE as slider of video time.
-  Element* const host = GetDocument().getElementById("host");
+  Element* const host = GetDocument().getElementById(AtomicString("host"));
   ShadowRoot& shadow_root =
       host->AttachShadowRootInternal(ShadowRootType::kOpen);
   shadow_root.setInnerHTML("<input type=range>");
-  Element* const sample = GetDocument().getElementById("sample");
+  Element* const sample = GetDocument().getElementById(AtomicString("sample"));
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   const SelectionInDOMTree& selection_in_dom_tree =
       SelectionInDOMTree::Builder()
@@ -740,11 +740,11 @@ TEST_F(GranularityStrategyTest, UpdateExtentWithNullPositionForDirectional) {
   GetDocument().body()->setInnerHTML(
       "<div id=host></div><div id=sample>ab</div>");
   // Simulate VIDEO element which has a RANGE as slider of video time.
-  Element* const host = GetDocument().getElementById("host");
+  Element* const host = GetDocument().getElementById(AtomicString("host"));
   ShadowRoot& shadow_root =
       host->AttachShadowRootInternal(ShadowRootType::kOpen);
   shadow_root.setInnerHTML("<input type=range>");
-  Element* const sample = GetDocument().getElementById("sample");
+  Element* const sample = GetDocument().getElementById(AtomicString("sample"));
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   const SelectionInDOMTree& selection_in_dom_tree =
       SelectionInDOMTree::Builder()
@@ -783,7 +783,7 @@ TEST_F(GranularityStrategyTest, UpdateExtentWithNullNextWordBound) {
 
   // Move inside content editable
   ASSERT_EQ(
-      Position(*GetDocument().getElementById("target"), 0),
+      Position(*GetDocument().getElementById(AtomicString("target")), 0),
       CreateVisiblePosition(PositionForContentsPointRespectingEditingBoundary(
                                 gfx::Point(0, 0), &GetFrame()))
           .DeepEquivalent())

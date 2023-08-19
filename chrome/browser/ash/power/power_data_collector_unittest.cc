@@ -30,7 +30,8 @@ class PowerDataCollectorTest : public testing::Test {
   }
 
  protected:
-  raw_ptr<PowerDataCollector, ExperimentalAsh> power_data_collector_ = nullptr;
+  raw_ptr<PowerDataCollector, DanglingUntriaged | ExperimentalAsh>
+      power_data_collector_ = nullptr;
 };
 
 TEST_F(PowerDataCollectorTest, PowerChanged) {

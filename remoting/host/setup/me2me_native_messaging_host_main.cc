@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/i18n/icu_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -21,11 +22,11 @@
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "mojo/core/embedder/embedder.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/breakpad.h"
 #include "remoting/base/gaia_oauth_client.h"
 #include "remoting/base/logging.h"
-#include "remoting/base/mojo_util.h"
 #include "remoting/base/url_request_context_getter.h"
 #include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/base/switches.h"
@@ -39,7 +40,7 @@
 #include "services/network/transitional_url_loader_factory_owner.h"
 
 #if BUILDFLAG(IS_APPLE)
-#include "base/mac/scoped_nsautorelease_pool.h"
+#include "base/apple/scoped_nsautorelease_pool.h"
 #endif  // BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(IS_WIN)
@@ -53,6 +54,10 @@
 #if defined(USE_GLIB) && !BUILDFLAG(IS_CHROMEOS_ASH)
 #include <glib-object.h>
 #endif  // defined(USE_GLIB) && !BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "remoting/host/chromeos/browser_interop.h"
+#endif
 
 using remoting::protocol::PairingRegistry;
 
@@ -71,7 +76,7 @@ int Me2MeNativeMessagingHostMain(int argc, char** argv) {
 
 #if BUILDFLAG(IS_APPLE)
   // Needed so we don't leak objects when threads are created.
-  base::mac::ScopedNSAutoreleasePool pool;
+  base::apple::ScopedNSAutoreleasePool pool;
 #endif  // BUILDFLAG(IS_APPLE)
 
 #if defined(USE_GLIB) && !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -97,7 +102,7 @@ int Me2MeNativeMessagingHostMain(int argc, char** argv) {
 
   base::ThreadPoolInstance::CreateAndStartWithDefaultParams("Me2Me");
 
-  InitializeMojo();
+  mojo::core::Init();
 
   // An IO thread is needed for the pairing registry and URL context getter.
   base::Thread io_thread("io_thread");
@@ -276,8 +281,12 @@ int Me2MeNativeMessagingHostMain(int argc, char** argv) {
 #endif  // BUILDFLAG(IS_POSIX)
 
   std::unique_ptr<ChromotingHostContext> context =
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
       ChromotingHostContext::Create(new remoting::AutoThreadTaskRunner(
           main_task_executor.task_runner(), run_loop.QuitClosure()));
+#else   // !BUILDFLAG(IS_CHROMEOS_ASH)
+      base::MakeRefCounted<BrowserInterop>()->CreateChromotingHostContext();
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Create the native messaging host.
   std::unique_ptr<extensions::NativeMessageHost> host(

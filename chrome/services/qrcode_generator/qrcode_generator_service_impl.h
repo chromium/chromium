@@ -29,6 +29,9 @@ class QRCodeGeneratorServiceImpl : public mojom::QRCodeGeneratorService {
   ~QRCodeGeneratorServiceImpl() override;
 
  private:
+  friend class QRImageGenerator;
+  QRCodeGeneratorServiceImpl();
+
   // chrome::mojom::QRCodeGeneratorService override.
   void GenerateQRCode(mojom::GenerateQRCodeRequestPtr request,
                       GenerateQRCodeCallback callback) override;

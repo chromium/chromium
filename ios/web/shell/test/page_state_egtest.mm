@@ -14,10 +14,6 @@
 #import "ios/web/shell/test/earl_grey/web_shell_test_case.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 const char kLongPage1[] = "/tall_page.html";

@@ -333,7 +333,7 @@ class CHROME_DBUS_EXPORT PropertySet {
 
   // Pointer to object proxy for making method calls, no ownership is taken
   // so this must outlive this class.
-  raw_ptr<ObjectProxy, DanglingUntriaged> object_proxy_;
+  raw_ptr<ObjectProxy, AcrossTasksDanglingUntriaged> object_proxy_;
 
   // Interface of property, e.g. "org.chromium.ExampleService", this is
   // distinct from the interface of the method call itself which is the

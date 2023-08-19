@@ -128,7 +128,6 @@ public class LevelDBPersistedTabDataStorage implements PersistedTabDataStorage, 
         mPersistedDataStorage.performMaintenance(getKeysToKeep(tabIds, dataId), dataId);
     }
 
-    @VisibleForTesting
     public void performMaintenanceForTesting(
             List<Integer> tabIds, String dataId, Runnable onComplete) {
         mPersistedDataStorage.performMaintenanceForTesting(

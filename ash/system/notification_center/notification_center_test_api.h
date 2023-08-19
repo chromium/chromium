@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/system/unified/notification_icons_controller.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "ui/base/models/image_model.h"
@@ -51,12 +52,24 @@ class NotificationCenterTestApi {
       delete;
   ~NotificationCenterTestApi() = default;
 
-  // Toggles the `NotificationCenterBubble` by simulating a click on the
-  // `NotificationCenterTray` on the primary display.
+  // Toggles the `UnifiedMessageCenterBubble` or `NotificationCenterBubble`
+  // (depending on whether QsRevamp is disabled or enabled, respectively) by
+  // simulating a click on the `UnifiedSystemTray` or `NotificationCenterTray`
+  // on the primary display. Note: This API does not wait for any tray
+  // animations to finish before clicking on the tray - that responsibility is
+  // left to the caller (this becomes relevant, for instance, when the tray's
+  // hide animation is running, as events are disabled for the duration of that
+  // animation).
   void ToggleBubble();
 
-  // Toggles the `NotificationCenterBubble` by simulating a click on the
-  // `NotificationCenterTray` on the specified display.
+  // Toggles the `UnifiedMessageCenterBubble` or `NotificationCenterBubble`
+  // (depending on whether QsRevamp is disabled or enabled, respectively) by
+  // simulating a click on the `UnifiedSystemTray` or `NotificationCenterTray`
+  // on the specified display. Note: This API does not wait for any tray
+  // animations to finish before clicking on the tray - that responsibility is
+  // left to the caller (this becomes relevant, for instance, when the tray's
+  // hide animation is running, as events are disabled for the duration of that
+  // animation).
   void ToggleBubbleOnDisplay(int64_t dispay_id);
 
   // Adds a notification with custom parameters and returns the associated id.
@@ -85,6 +98,10 @@ class NotificationCenterTestApi {
   // level.
   std::string AddSystemNotification();
 
+  // Adds a system notification with a warning level of
+  // `SystemNotificationWarningLevel::CRITICAL_WARNING` and returns its id.
+  std::string AddCriticalWarningSystemNotification();
+
   // Removes the notification associated with the provided id.
   void RemoveNotification(const std::string& id);
 
@@ -104,14 +121,15 @@ class NotificationCenterTestApi {
   // associated with that display.
   bool IsNotificationCounterShownOnDisplay(int64_t display_id);
 
-  // Returns true if a pinned icon is shown in the primary display's
-  // `NotificationCenterTray`.
-  bool IsPinnedIconShown();
+  // Returns true if a `NotificationIconTrayItemView` is shown in the primary
+  // display's `NotificationCenterTray`.
+  bool IsNotificationIconShown();
 
-  // Returns true if a pinned icon is shown in the `NotificationCenterTray`
-  // associated with the display having an id of `display_id`. `CHECK()`s that
-  // there exists a notification center tray associated with that display.
-  bool IsPinnedIconShownOnDisplay(int64_t display_id);
+  // Returns true if a `NotificationIconTrayItemView` is shown in the
+  // `NotificationCenterTray` associated with the display having an id of
+  // `display_id`. `CHECK()`s that there exists a notification center tray
+  // associated with that display.
+  bool IsNotificationIconShownOnDisplay(int64_t display_id);
 
   // Returns true if a popup associated with the provided `id` exists, false
   // otherwise.
@@ -148,6 +166,10 @@ class NotificationCenterTestApi {
   // Returns true if `QuietModeView` is showing in the `NotificationCenterTray`,
   // false otherwise.
   bool IsDoNotDisturbIconShown();
+
+  // Returns the `NotificationIconTrayItemView` associated with the notification
+  // that has an id of `id`, or nullptr if none exists.
+  NotificationIconTrayItemView* GetNotificationIconForId(const std::string& id);
 
   // Returns the primary display's `NotificationCounterView`.
   NotificationCounterView* GetNotificationCounter();
@@ -234,7 +256,7 @@ class NotificationCenterTestApi {
       const message_center::RichNotificationData& optional_fields);
 
   int notification_id_ = 0;
-  const raw_ptr<NotificationCenterTray, ExperimentalAsh>
+  const raw_ptr<NotificationCenterTray, DanglingUntriaged | ExperimentalAsh>
       notification_center_tray_;
 
   const int64_t primary_display_id_;

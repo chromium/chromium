@@ -5,10 +5,13 @@
 #import "ios/chrome/browser/ui/ntp/feed_top_section/feed_top_section_view_controller.h"
 
 #import "base/check.h"
+#import "base/feature_list.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/discover_feed/feed_constants.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
@@ -17,10 +20,6 @@
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 // Content stack padding.
@@ -105,12 +104,14 @@ NSArray<NSLayoutConstraint*>* SameConstraintsWithInsets(
     DCHECK(!self.promoView);
     self.promoViewContainer = [[UIView alloc] init];
     self.promoViewContainer.translatesAutoresizingMaskIntoConstraints = NO;
-    if (GetTopOfFeedPromoStyle() == SigninPromoViewStyleCompactTitled) {
+    self.promoViewContainer.backgroundColor =
+        [UIColor colorNamed:kGrey100Color];
+
+    // TODO(b/287118358): Cleanup IsMagicStackEnabled() code from the sync promo
+    // after experiment.
+    if (IsMagicStackEnabled()) {
       self.promoViewContainer.backgroundColor =
-          [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
-    } else {
-      self.promoViewContainer.backgroundColor =
-          [UIColor colorNamed:kGrey100Color];
+          [UIColor colorNamed:kBackgroundColor];
     }
     self.promoViewContainer.layer.cornerRadius =
         kPromoViewContainerBorderRadius;
@@ -185,11 +186,10 @@ NSArray<NSLayoutConstraint*>* SameConstraintsWithInsets(
   SigninPromoViewStyle promoViewStyle = GetTopOfFeedPromoStyle();
   [configurator configureSigninPromoView:promoView withStyle:promoViewStyle];
 
-  // Override promo text for top of feed.
-  promoView.titleLabel.text =
-      l10n_util::GetNSString(IDS_IOS_NTP_FEED_SIGNIN_PROMO_TITLE);
   promoView.textLabel.text =
-      l10n_util::GetNSString(IDS_IOS_NTP_FEED_SIGNIN_COMPACT_PROMO_BODY);
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+          ? l10n_util::GetNSString(IDS_IOS_SIGNIN_SHEET_LABEL_FOR_FEED_PROMO)
+          : l10n_util::GetNSString(IDS_IOS_NTP_FEED_SIGNIN_COMPACT_PROMO_BODY);
   return promoView;
 }
 

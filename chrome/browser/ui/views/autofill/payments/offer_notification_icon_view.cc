@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/autofill/payments/offer_notification_bubble_views.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -62,7 +63,9 @@ void OfferNotificationIconView::OnExecuting(
     PageActionIconView::ExecuteSource execute_source) {}
 
 const gfx::VectorIcon& OfferNotificationIconView::GetVectorIcon() const {
-  return kLocalOfferFlippedIcon;
+  return OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
+             ? kLocalOfferFlippedRefreshIcon
+             : kLocalOfferFlippedIcon;
 }
 
 OfferNotificationBubbleController* OfferNotificationIconView::GetController()

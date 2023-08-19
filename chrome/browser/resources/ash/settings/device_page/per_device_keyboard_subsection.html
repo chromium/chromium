@@ -1,0 +1,45 @@
+<style include="settings-shared input-device-settings-shared">
+</style>
+<h2 class="subsection-header" id="keyboardName">
+  [[getKeyboardName(keyboard.name)]]
+</h2>
+<div class="subsection">
+  <template is="dom-if" if="[[!isChromeOsKeyboard(keyboard)]]" restamp>
+    <settings-toggle-button
+        inverted="true"
+        id="externalTopRowAreFunctionKeysButton"
+        pref="{{topRowAreFunctionKeysPref}}"
+        aria-describedby="keyboardName"
+        label="$i18n{keyboardSendInvertedFunctionKeys}"
+        sub-label="$i18n{keyboardSendInvertedFunctionKeysDescription}"
+        deep-link-focus-id$="[[Setting.kKeyboardFunctionKeys]]">
+    </settings-toggle-button>
+    <settings-toggle-button
+        inverted="true"
+        class="hr" id="blockMetaFunctionKeyRewritesButton"
+        pref="{{blockMetaFunctionKeyRewritesPref}}"
+        aria-describedby="keyboardName"
+        label="$i18n{keyboardBlockMetaFunctionKeyRewrites}"
+        sub-label="$i18n{keyboardBlockMetaFunctionKeyRewritesDescription}"
+        deep-link-focus-id$="[[Setting.kKeyboardBlockMetaFkeyRewrites]]">
+    </settings-toggle-button>
+  </template>
+  <template is="dom-if" if="[[isChromeOsKeyboard(keyboard)]]" restamp>
+    <settings-toggle-button
+        id="internalTopRowAreFunctionKeysButton"
+        pref="{{topRowAreFunctionKeysPref}}"
+        aria-describedby="keyboardName"
+        label="$i18n{keyboardSendFunctionKeys}"
+        sub-label="$i18n{keyboardSendFunctionKeysDescription}"
+        deep-link-focus-id$="[[Setting.kKeyboardFunctionKeys]]">
+    </settings-toggle-button>
+  </template>
+  <cr-link-row id="remapKeyboardKeys"
+      class$="[[getRemapKeyboardKeysClass(keyboard)]]"
+      on-click="onRemapKeyboardKeysClick"
+      aria-describedby="keyboardName"
+      label="$i18n{remapKeyboardKeysRowLabel}"
+      sub-label="[[remapKeyboardKeysSublabel]]"
+      deep-link-focus-id$="[[Setting.kKeyboardRemapKeys]]">
+  </cr-link-row>
+</div>

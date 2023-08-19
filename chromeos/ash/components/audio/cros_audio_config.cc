@@ -8,10 +8,7 @@
 
 namespace ash::audio_config {
 
-CrosAudioConfig::CrosAudioConfig() {
-  DCHECK(features::IsAudioSettingsPageEnabled());
-}
-
+CrosAudioConfig::CrosAudioConfig() = default;
 CrosAudioConfig::~CrosAudioConfig() = default;
 
 void CrosAudioConfig::ObserveAudioSystemProperties(

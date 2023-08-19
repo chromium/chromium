@@ -29,8 +29,8 @@ struct AccessingRequest {
   absl::optional<bool> microphone;
 };
 
-// MediaRequests records the media access requests for each app, e.g. accessing
-// camera, microphone.
+// MediaRequests tracks the media usage for each app (e.g. accessing camera,
+// microphone) on a per-WebContents basis.
 class MediaRequests {
  public:
   MediaRequests();
@@ -39,20 +39,20 @@ class MediaRequests {
   MediaRequests(const MediaRequests&) = delete;
   MediaRequests& operator=(const MediaRequests&) = delete;
 
-  // Returns true if there is no existing access request of both camera and
-  // microphone for |app_id| and |web_contents|, and |state| is a new request.
-  // Otherwise, return false.
-  bool IsNewRequest(const std::string& app_id,
-                    const content::WebContents* web_contents,
-                    const content::MediaRequestState state);
+  // Updates media request state to indicate that the app represented by
+  // `app_id` is/isn't accessing the microphone in the given `web_contents`.
+  // Returns an AccessingRequest with the updated tracked state for the app.
+  AccessingRequest UpdateMicrophoneState(
+      const std::string& app_id,
+      const content::WebContents* web_contents,
+      bool is_accessing_microphone);
 
-  // Updates |app_id_to_web_contents_for_camera_| and
-  // |app_id_to_web_contents_for_microphone_| to record the media accessing
-  // requests for |app_id|. Returns the update result AccessingRequest.
-  AccessingRequest UpdateRequests(const std::string& app_id,
-                                  const content::WebContents* web_contents,
-                                  blink::mojom::MediaStreamType stream_type,
-                                  const content::MediaRequestState state);
+  // Updates media request state to indicate that the app represented by
+  // `app_id` is/isn't accessing the camera in the given `web_contents`. Returns
+  // an AccessingRequest with the updated tracked state for the app.
+  AccessingRequest UpdateCameraState(const std::string& app_id,
+                                     const content::WebContents* web_contents,
+                                     bool is_accessing_camera);
 
   // Removes requests in |app_id_to_web_contents_for_camera_| and
   // |app_id_to_web_contents_for_microphone_| for the given |app_id|. If there
@@ -60,25 +60,12 @@ class MediaRequests {
   // AccessingRequest.camera or AccessingRequest.microphone.
   AccessingRequest RemoveRequests(const std::string& app_id);
 
-  // Invoked when |web_contents| is being destroyed. Removes requests in
-  // |app_id_to_web_contents_for_camera_| and
-  // |app_id_to_web_contents_for_microphone_| for the given |app_id| and
-  // |web_contents|. If there are media accessing requests for |app_id|, returns
-  // false for AccessingRequest.camera or AccessingRequest.microphone.
-  AccessingRequest OnWebContentsDestroyed(
-      const std::string& app_id,
-      const content::WebContents* web_contents);
-
  private:
   // Web contents which are accessing the cemera or microphone.
   using WebContents = std::set<const content::WebContents*>;
 
   // Maps one app id to a set of web contents.
   using AppIdToWebContents = std::map<std::string, WebContents>;
-
-  bool HasRequest(const std::string& app_id,
-                  const content::WebContents* web_contents,
-                  const AppIdToWebContents& app_id_to_web_contents);
 
   absl::optional<bool> MaybeAddRequest(
       const std::string& app_id,
@@ -94,7 +81,7 @@ class MediaRequests {
       const std::string& app_id,
       AppIdToWebContents& app_id_to_web_contents);
 
-  // Maps one app id to a set of web contents which are accessing the cemera.
+  // Maps one app id to a set of web contents which are accessing the camera.
   AppIdToWebContents app_id_to_web_contents_for_camera_;
 
   // Maps one app id to a set of web contents which are accessing the

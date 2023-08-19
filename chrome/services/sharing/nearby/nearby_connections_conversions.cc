@@ -4,8 +4,6 @@
 
 #include "chrome/services/sharing/nearby/nearby_connections_conversions.h"
 
-#include <utility>
-
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
@@ -58,24 +56,27 @@ mojom::Status StatusToMojom(Status::Value status) {
       return mojom::Status::kWifiLanError;
     case Status::Value::kPayloadUnknown:
       return mojom::Status::kPayloadUnknown;
+    case Status::Value::kAlreadyListening:
+      return mojom::Status::kAlreadyListening;
+    case Status::Value::kReset:
+      return mojom::Status::kReset;
+    case Status::Value::kTimeout:
+      return mojom::Status::kTimeout;
+    case Status::Value::kUnknown:
+      return mojom::Status::kUnknown;
+    case Status::Value::kNextValue:
+      return mojom::Status::kNextValue;
   }
 }
 
 ResultCallback ResultCallbackFromMojom(StatusCallback callback) {
-  // Since std::function must be CopyAssignable, use std::shared_ptr to capture
-  // |callback| inside lambda, and only use callback first time ResultCallback
-  // is invoked.
-  // Also capture the current sequence runner to run |callback| in the correct
-  // sequence.
-  return {[callback = std::make_shared<StatusCallback>(std::move(callback)),
-           task_runner =
-               base::SequencedTaskRunner::GetCurrentDefault()](Status status) {
-    if (*callback) {
-      task_runner->PostTask(
-          FROM_HERE,
-          base::BindOnce(std::move(*callback), StatusToMojom(status.value)));
-    }
-  }};
+  return [callback = std::move(callback),
+          task_runner = base::SequencedTaskRunner::GetCurrentDefault()](
+             Status status) mutable {
+    task_runner->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), StatusToMojom(status.value)));
+  };
 }
 
 std::vector<uint8_t> ByteArrayToMojom(const ByteArray& byte_array) {

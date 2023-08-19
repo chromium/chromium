@@ -36,6 +36,7 @@
 #include "chrome/browser/ash/file_system_provider/operations/truncate.h"
 #include "chrome/browser/ash/file_system_provider/operations/unmount.h"
 #include "chrome/browser/ash/file_system_provider/operations/write_file.h"
+#include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/request_dispatcher_impl.h"
 #include "chrome/browser/ash/file_system_provider/request_manager.h"
 #include "chrome/browser/chromeos/extensions/file_system_provider/service_worker_lifetime_manager.h"
@@ -54,6 +55,8 @@ namespace file_system_provider {
 
 namespace {
 
+constexpr char kODFSFlushAction[] = "HIDDEN_ONEDRIVE_FLUSH_FILE";
+
 // Timeout in seconds, before a file system operation request is considered as
 // stale and hence aborted.
 constexpr base::TimeDelta kDefaultOperationTimeout = base::Seconds(10);
@@ -69,6 +72,23 @@ GetServiceWorkerLifetimeManager(Profile* profile) {
   return extensions::file_system_provider::ServiceWorkerLifetimeManager::Get(
       profile);
 }
+
+class ScopedUserInteractionImpl : public ScopedUserInteraction {
+ public:
+  explicit ScopedUserInteractionImpl(ProvidedFileSystem* file_system)
+      : file_system_(file_system->GetWeakPtr()) {
+    file_system_->GetRequestManager()->StartUserInteraction();
+  }
+
+  ~ScopedUserInteractionImpl() override {
+    if (file_system_) {
+      file_system_->GetRequestManager()->EndUserInteraction();
+    }
+  }
+
+ private:
+  base::WeakPtr<ProvidedFileSystemInterface> file_system_;
+};
 
 }  // namespace
 
@@ -475,6 +495,34 @@ AbortCallback ProvidedFileSystem::WriteFile(
                         weak_ptr_factory_.GetWeakPtr(), request_id);
 }
 
+AbortCallback ProvidedFileSystem::FlushFile(
+    int file_handle,
+    storage::AsyncFileUtil::StatusCallback callback) {
+  if (!chromeos::features::IsUploadOfficeToCloudEnabled()) {
+    std::move(callback).Run(base::File::FILE_OK);
+    return AbortCallback();
+  }
+  const auto& provider_id = file_system_info_.provider_id();
+  bool is_odfs =
+      provider_id.GetType() == ProviderId::EXTENSION &&
+      provider_id.GetExtensionId() == extension_misc::kODFSExtensionId;
+  if (!is_odfs) {
+    // No-op for non-ODFS providers for backwards compatibility.
+    std::move(callback).Run(base::File::FILE_OK);
+    return AbortCallback();
+  }
+
+  // Flush for ODFS: run a custom action by path.
+  auto it = opened_files_.find(file_handle);
+  if (it == opened_files_.end()) {
+    std::move(callback).Run(base::File::FILE_ERROR_INVALID_OPERATION);
+    return AbortCallback();
+  }
+  const OpenedFile& opened_file = it->second;
+  return ExecuteAction({opened_file.file_path}, kODFSFlushAction,
+                       std::move(callback));
+}
+
 AbortCallback ProvidedFileSystem::MoveEntry(
     const base::FilePath& source_path,
     const base::FilePath& target_path,
@@ -764,6 +812,11 @@ AbortCallback ProvidedFileSystem::NotifyInQueue(
 
 base::WeakPtr<ProvidedFileSystemInterface> ProvidedFileSystem::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+std::unique_ptr<ScopedUserInteraction>
+ProvidedFileSystem::StartUserInteraction() {
+  return std::make_unique<ScopedUserInteractionImpl>(this);
 }
 
 void ProvidedFileSystem::OnAddWatcherInQueueCompleted(

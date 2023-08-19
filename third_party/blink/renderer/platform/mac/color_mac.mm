@@ -28,10 +28,6 @@
 
 #import <AppKit/AppKit.h>
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace blink {
 
 // NSColor calls don't throw, so no need to block Cocoa exceptions in this file

@@ -26,10 +26,6 @@
 #include "net/base/mac/url_conversions.h"
 #include "url/url_canon.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // A navigation throttle that calls a closure when a navigation to a specified
@@ -350,7 +346,7 @@ void AuthSessionRequest::WebContentsDestroyed() {
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AuthSessionRequest);
 
 std::unique_ptr<content::NavigationThrottle> MaybeCreateAuthSessionThrottleFor(
-    content::NavigationHandle* handle) API_AVAILABLE(macos(10.15)) {
+    content::NavigationHandle* handle) {
   AuthSessionRequest* request =
       AuthSessionRequest::FromWebContents(handle->GetWebContents());
   if (!request)

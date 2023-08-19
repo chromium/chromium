@@ -29,6 +29,8 @@
 import collections
 import contextlib
 import logging
+import uuid
+from pathlib import PurePosixPath
 from typing import (
     Collection,
     Dict,
@@ -40,6 +42,7 @@ from typing import (
     Set,
     Tuple,
 )
+from urllib.parse import urlparse
 
 from blinkpy.common.host import Host
 from blinkpy.common.memoized import memoized
@@ -80,6 +83,11 @@ class BaselineLocation(NamedTuple):
 # Sentinel node to force removal of all-pass nonvirtual baselines without
 # implementing a special case.
 BaselineLocation.ALL_PASS = BaselineLocation(platform='<all-pass>')
+# Sentinel node to block optimization between a virtual and nonvirtual tree.
+# Used for not deduplicating `virtual/stable/**/webexposed/` with their
+# nonvirtual counterparts.
+BaselineLocation.BLOCK = BaselineLocation(platform='<block>')
+
 SearchPath = List[BaselineLocation]
 DigestMap = Dict[BaselineLocation, 'ResultDigest']
 # An adjacency list.
@@ -205,6 +213,7 @@ class BaselineOptimizer:
             all of them.
           * Ports where a test is skipped will not generate corresponding paths.
         """
+        is_webexposed = 'webexposed' in _test_path(nonvirtual_test).parts
         # Group ports to write less verbose output.
         skipped_ports_by_test = collections.defaultdict(list)
         for port in self._ports:
@@ -224,6 +233,16 @@ class BaselineOptimizer:
                     self.location(self._filesystem.join(path, virtual_test))
                     for path in search_path
                 ]
+                test_abs_path = self._finder.path_from_web_tests(virtual_test)
+                virtual_suite = self.location(test_abs_path).virtual_suite
+                # Virtual suite was parsed correctly from all baseline/test
+                # paths.
+                assert {
+                    location.virtual_suite
+                    for location in virtual_locations
+                } == {virtual_suite}, virtual_locations
+                if virtual_suite == 'stable' and is_webexposed:
+                    virtual_locations.append(BaselineLocation.BLOCK)
                 yield virtual_locations + nonvirtual_locations
         for test, ports in skipped_ports_by_test.items():
             port_names = [
@@ -271,7 +290,9 @@ class BaselineOptimizer:
         digests = {}
         for location in locations:
             path = self.path(location, baseline_name)
-            if self._filesystem.exists(path):
+            if location == BaselineLocation.BLOCK:
+                digests[location] = random_digest()
+            elif self._filesystem.exists(path):
                 digests[location] = ResultDigest.from_file(
                     self._filesystem, path, is_reftest)
         return digests
@@ -662,3 +683,16 @@ def _indent_log(prefix: str = ' ' * 2) -> Iterator[None]:
         yield
     finally:
         logging.setLogRecordFactory(record_factory)
+
+
+def _test_path(test: str) -> PurePosixPath:
+    return PurePosixPath(urlparse(test).path)
+
+
+def random_digest() -> ResultDigest:
+    """Synthesize a digest that is guaranteed to not equal any other.
+
+    The purpose of this digest is to simulate a baseline that prevents
+    predecessors from being removed.
+    """
+    return ResultDigest(uuid.uuid4().hex)

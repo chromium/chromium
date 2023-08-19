@@ -5,6 +5,7 @@
 #include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/test/integration/history_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
@@ -15,6 +16,8 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_service_observer.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/features.h"
@@ -50,6 +53,7 @@ using history_helper::UrlIs;
 using history_helper::UrlsAre;
 using history_helper::VisitRowDurationIs;
 using history_helper::VisitRowIdIs;
+using ::testing::_;
 using testing::AllOf;
 using testing::Not;
 using testing::UnorderedElementsAre;
@@ -109,6 +113,28 @@ std::unique_ptr<syncer::LoopbackServerEntity> CreateFakeServerEntity(
       /*creation_time=*/0,
       /*last_modified_time=*/0);
 }
+
+// Used to test if the History Service Observer gets called for both
+// `OnURLVisited()` and `OnURLVisitedWithNavigationId()`.
+class MockHistoryServiceObserver : public history::HistoryServiceObserver {
+ public:
+  MockHistoryServiceObserver() = default;
+
+  MOCK_METHOD(void,
+              OnURLVisited,
+              (history::HistoryService*,
+               const history::URLRow&,
+               const history::VisitRow&),
+              (override));
+
+  MOCK_METHOD(void,
+              OnURLVisitedWithNavigationId,
+              (history::HistoryService*,
+               const history::URLRow&,
+               const history::VisitRow&,
+               absl::optional<int64_t>),
+              (override));
+};
 
 class SingleClientHistorySyncTest : public SyncTest {
  public:
@@ -460,6 +486,21 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
             IsChainEnd(), HasOpenerVisit()))));
 }
 
+IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, UploadsExternalReferrer) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  // Navigate to some URL, and specify a referrer that is not actually in the
+  // history DB.
+  GURL referrer("https://www.referrer.com/");
+  GURL url =
+      embedded_test_server()->GetURL("www.host.com", "/sync/simple.html");
+  NavigateToURL(url, ui::PAGE_TRANSITION_LINK, referrer);
+
+  EXPECT_TRUE(WaitForServerHistory(UnorderedElementsAre(
+      AllOf(StandardFieldsArePopulated(), UrlIs(url.spec()),
+            Not(HasReferringVisit()), ReferrerURLIs(referrer.spec())))));
+}
+
 IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, DownloadsAndMerges) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
 
@@ -497,6 +538,56 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, DownloadsAndMerges) {
   EXPECT_TRUE(
       typed_urls_helper::GetUrlFromClient(/*index=*/0, url_both, &row_both));
   EXPECT_EQ(row_both.visit_count(), 2);
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
+                       ObserversCallBothOnURLVisitedForSyncedVisits) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+
+  history::HistoryService* history_service =
+      HistoryServiceFactory::GetForProfile(GetProfile(0),
+                                           ServiceAccessType::EXPLICIT_ACCESS);
+
+  MockHistoryServiceObserver mock_observer;
+  history_service->AddObserver(&mock_observer);
+
+  const GURL url_remote("https://www.url-remote.com");
+  GetFakeServer()->InjectEntity(CreateFakeServerEntity(CreateSpecifics(
+      base::Time::Now() - base::Minutes(5), "other_cache_guid", url_remote)));
+
+  // The History Service Observer should be called for the synced visit.
+  history::VisitRow visit_row;
+  history::VisitRow visit_row2;
+  EXPECT_CALL(mock_observer, OnURLVisited(history_service, _, _))
+      .WillOnce(testing::SaveArg<2>(&visit_row));
+  EXPECT_CALL(mock_observer,
+              OnURLVisitedWithNavigationId(history_service, _, _,
+                                           testing::Eq(absl::nullopt)))
+      .WillOnce(testing::SaveArg<2>(&visit_row2));
+
+  // Turn on Sync - this should cause the remote URL to get downloaded.
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  // The remote URL should have one visit marked as known to Sync.
+  history::URLRow row_remote;
+  EXPECT_TRUE(typed_urls_helper::GetUrlFromClient(/*index=*/0, url_remote,
+                                                  &row_remote));
+  EXPECT_EQ(row_remote.visit_count(), 1);
+
+  history::VisitVector visits =
+      typed_urls_helper::GetVisitsFromClient(/*index=*/0, row_remote.id());
+  ASSERT_EQ(visits.size(), 1U);
+  EXPECT_TRUE(visits[0].is_known_to_sync);
+
+  // Both observer calls should have received the same fields as the synced
+  // visit.
+  EXPECT_EQ(visit_row.url_id, visits[0].url_id);
+  EXPECT_EQ(visit_row.originator_cache_guid, visits[0].originator_cache_guid);
+
+  EXPECT_EQ(visit_row2.url_id, visits[0].url_id);
+  EXPECT_EQ(visit_row2.originator_cache_guid, visits[0].originator_cache_guid);
+
+  history_service->RemoveObserver(&mock_observer);
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
@@ -614,6 +705,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
       base::Time::Now() - base::Minutes(4), "other_cache_guid", url2, 102);
   // The second visit has the first one as a referrer.
   specifics2.set_originator_referring_visit_id(101);
+  specifics2.set_referrer_url(url1.spec());
 
   GetFakeServer()->InjectEntity(CreateFakeServerEntity(specifics1));
   GetFakeServer()->InjectEntity(CreateFakeServerEntity(specifics2));
@@ -636,6 +728,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
     visit_id2 = visits2[0].visit_id;
 
     EXPECT_EQ(visits2[0].referring_visit, visits1[0].visit_id);
+    // Since there is an actual referrer visit, the external referrer URL should
+    // be empty.
+    EXPECT_TRUE(visits2[0].external_referrer_url.is_empty());
   }
 
   // Update the visits on the server.
@@ -679,7 +774,33 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
 
     // And finally, the referrer link should still exist.
     EXPECT_EQ(visits2[0].referring_visit, visits1[0].visit_id);
+    // Since there is an actual referrer visit, the external referrer URL should
+    // still be empty.
+    EXPECT_TRUE(visits2[0].external_referrer_url.is_empty());
   }
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, DownloadsExternalReferrer) {
+  const GURL url("https://www.url.com");
+  const GURL referrer("https://www.referrer.com");
+
+  sync_pb::HistorySpecifics specifics = CreateSpecifics(
+      base::Time::Now() - base::Minutes(5), "other_cache_guid", url, 101);
+  // The foreign visit has a referrer URL, but no referring visit ID.
+  specifics.set_referrer_url(referrer.spec());
+
+  GetFakeServer()->InjectEntity(CreateFakeServerEntity(specifics));
+
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  // Make sure the visit arrived, and its referrer URL was stored as an
+  // "external" referrer.
+  history::VisitVector visits =
+      typed_urls_helper::GetVisitsForURLFromClient(/*index=*/0, url);
+  ASSERT_EQ(visits.size(), 1u);
+  history::VisitRow visit = visits[0];
+  EXPECT_EQ(visit.referring_visit, history::kInvalidVisitID);
+  EXPECT_EQ(visit.external_referrer_url, referrer);
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,

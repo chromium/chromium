@@ -75,7 +75,7 @@
       :host-context([chrome-refresh-2023]):host {
         /* Default button colors. */
         --border-color: var(--color-button-border,
-            var(--cr-fallback-color-primary-container));
+            var(--cr-fallback-color-tonal-outline));
         --text-color: var(--color-button-foreground,
             var(--cr-fallback-color-primary));
         --hover-bg-color: transparent;
@@ -86,11 +86,11 @@
         --ripple-opacity: 1;
 
         /* Disabled default button colors. */
+        --disabled-bg: transparent;
         --disabled-border-color: var(--color-button-border-disabled,
-            rgba(var(--cr-fallback-color-on-surface-rgb), .12));
+            var(--cr-fallback-color-disabled-background));
         --disabled-text-color: var(--color-button-foreground-disabled,
-            rgba(var(--cr-fallback-color-on-surface-rgb),
-                 var(--cr-disabled-opacity)));
+            var(--cr-fallback-color-disabled-foreground));
 
         /* Action button colors. */
         --bg-action: var(--color-button-background-prominent,
@@ -104,10 +104,11 @@
 
         /* Disabled action button colors. */
         --disabled-bg-action: var(--color-button-background-prominent-disabled,
-            rgba(var(--cr-fallback-color-on-surface-rgb), .12));
+            var(--cr-fallback-color-disabled-background));
 
         background: transparent;
         border-radius: 100px;
+        isolation: isolate;
         line-height: 20px;
       }
 
@@ -149,12 +150,20 @@
              HCM. */
           outline: var(--cr-focus-outline-hcm);
         }
+
+        :host-context([chrome-refresh-2023]):host {
+          /* Refresh styles either use color pipeline colors which automatically
+           * provide high-contrast colors in high-contrast mode, or use fallback
+           * vars that have high-contrast fallbacks for critically important
+           * states such as disabled state. */
+          forced-color-adjust: none;
+        }
       }
 
       :host-context([chrome-refresh-2023].focus-outline-visible):host(:focus) {
-        border-color: transparent;
         box-shadow: none;
         outline: 2px solid var(--cr-focus-outline-color);
+        outline-offset: 2px;
       }
 
       :host(:active) {
@@ -175,7 +184,6 @@
       }
 
       #background {
-        border: 2px solid transparent;
         border-radius: inherit;
         inset: 0;
         pointer-events: none;
@@ -216,7 +224,7 @@
       :host-context([chrome-refresh-2023]):host([disabled].floating-button)
           #background {
         background-color: var(--color-button-background-tonal-disabled,
-            rgba(var(--cr-fallback-color-on-surface-rgb), .12));
+            var(--cr-fallback-color-disabled-background));
       }
 
       #content {
@@ -244,6 +252,11 @@
       :host-context([chrome-refresh-2023]):host(:hover) #hoverBackground {
         background: var(--cr-hover-background-color);
         display: block;
+      }
+
+      :host-context([chrome-refresh-2023]):host(.action-button:hover)
+          #hoverBackground {
+        background: var(--cr-hover-on-prominent-background-color);
       }
 
       :host(.action-button) {
@@ -308,7 +321,7 @@
       :host-context([chrome-refresh-2023]):host(.floating-button) {
         border: none;
         color: var(--color-button-foreground-tonal,
-            var(--cr-fallback-color-on-secondary-container));
+            var(--cr-fallback-color-on-tonal-container));
       }
 
       :host-context([chrome-refresh-2023]):host(.tonal-button[disabled]),
@@ -320,6 +333,7 @@
       :host-context([chrome-refresh-2023]):host(.floating-button) {
         border-radius: 8px;
         height: 40px;
+        transition: box-shadow 80ms linear;
       }
 
       :host-context([chrome-refresh-2023]):host(.floating-button:hover) {

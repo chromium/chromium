@@ -185,6 +185,8 @@ void WidgetBase::InitializeCompositing(
   main_thread_compositor_task_runner_ =
       page_scheduler.GetAgentGroupScheduler().CompositorTaskRunner();
 
+  main_thread_id_ = base::PlatformThread::CurrentId();
+
   auto* compositing_thread_scheduler =
       ThreadScheduler::CompositorThreadScheduler();
   layer_tree_view_ = std::make_unique<LayerTreeView>(this, widget_scheduler_);
@@ -494,6 +496,13 @@ void WidgetBase::RequestSuccessfulPresentationTimeForNextFrame(
   if (is_hidden_)
     return;
 
+  if (visible_time_request->show_reason_unfolding) {
+    LayerTreeHost()->RequestSuccessfulPresentationTimeForNextFrame(
+        tab_switch_time_recorder_.GetCallbackForNextFrameAfterUnfold(
+            visible_time_request->event_start_time));
+    return;
+  }
+
   // Tab was shown while widget was already painting, eg. due to being
   // captured.
   LayerTreeHost()->RequestSuccessfulPresentationTimeForNextFrame(
@@ -603,6 +612,10 @@ void WidgetBase::RequestNewLayerTreeFrameSink(
   auto params = std::make_unique<
       cc::mojo_embedder::AsyncLayerTreeFrameSink::InitParams>();
   params->io_thread_id = Platform::Current()->GetIOThreadId();
+  if (base::FeatureList::IsEnabled(::features::kEnableADPFRendererMain)) {
+    params->main_thread_id = main_thread_id_;
+  }
+
   params->compositor_task_runner =
       Platform::Current()->CompositorThreadTaskRunner();
   if (for_web_tests && !params->compositor_task_runner) {
@@ -631,6 +644,9 @@ void WidgetBase::RequestNewLayerTreeFrameSink(
   const cc::LayerTreeSettings& settings = LayerTreeHost()->GetSettings();
   if (settings.disable_frame_rate_limit ||
       settings.enable_variable_refresh_rate) {
+    params->use_begin_frame_presentation_feedback =
+        base::FeatureList::IsEnabled(
+            features::kUseBeginFramePresentationFeedback);
     params->synthetic_begin_frame_source = CreateSyntheticBeginFrameSource();
   }
 
@@ -758,15 +774,10 @@ void WidgetBase::FinishRequestNewLayerTreeFrameSink(
   // This is for an offscreen context for the compositor. So the default
   // framebuffer doesn't need alpha, depth, stencil, antialiasing.
   gpu::ContextCreationAttribs attributes;
-  attributes.alpha_size = -1;
-  attributes.depth_size = 0;
-  attributes.stencil_size = 0;
-  attributes.samples = 0;
-  attributes.sample_buffers = 0;
   attributes.bind_generates_resource = false;
   attributes.lose_context_when_out_of_memory = true;
   attributes.enable_gles2_interface = true;
-  attributes.enable_raster_interface = false;
+  attributes.enable_raster_interface = true;
   attributes.enable_oop_rasterization = false;
 
   constexpr bool automatic_flushes = false;
@@ -1208,10 +1219,17 @@ void WidgetBase::UpdateCompositionInfo(bool immediate_request) {
   composition_character_bounds_ = character_bounds;
   composition_range_ = range;
 
+  absl::optional<Vector<gfx::Rect>> line_bounds;
+  FrameWidget* frame_widget = client_->FrameWidget();
+  if (base::FeatureList::IsEnabled(features::kReportVisibleLineBounds) &&
+      frame_widget) {
+    line_bounds = frame_widget->GetVisibleLineBoundsOnScreen();
+  }
+
   if (mojom::blink::WidgetInputHandlerHost* host =
           widget_input_handler_manager_->GetWidgetInputHandlerHost()) {
-    host->ImeCompositionRangeChanged(composition_range_,
-                                     composition_character_bounds_);
+    host->ImeCompositionRangeChanged(
+        composition_range_, composition_character_bounds_, line_bounds);
   }
 }
 

@@ -213,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
   std::u16string clipboard_text;
 
-  CreditCard card(CreditCard::FULL_SERVER_CARD, "c123");
+  CreditCard card(CreditCard::RecordType::kFullServerCard, "c123");
   test::SetCreditCardInfo(&card, "John Smith", "5454545454545454",
                           test::NextMonth().c_str(), test::NextYear().c_str(),
                           "1");

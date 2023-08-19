@@ -7,6 +7,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_ios.h"
+#include "content/browser/renderer_host/web_menu_runner_ios.h"
 
 namespace content {
 
@@ -38,12 +39,29 @@ void PopupMenuHelper::ShowPopupMenu(
     std::vector<blink::mojom::MenuItemPtr> items,
     bool right_aligned,
     bool allow_multiple_selection) {
-  // TODO: Implement this method.
+  menu_runner_ =
+      [[WebMenuRunner alloc] initWithDelegate:weak_ptr_factory_.GetWeakPtr()
+                                        items:items
+                                 initialIndex:selected_item
+                                     fontSize:item_font_size
+                                 rightAligned:right_aligned];
+
+  [menu_runner_ showMenuInView:GetRenderWidgetHostView()->GetNativeView().Get()
+                    withBounds:bounds.ToCGRect()];
+}
+
+void PopupMenuHelper::OnMenuItemSelected(int idx) {
+  popup_client_->DidAcceptIndices({idx});
+  delegate_->OnMenuClosed();
+}
+
+void PopupMenuHelper::OnMenuCanceled() {
   popup_client_->DidCancel();
   delegate_->OnMenuClosed();
 }
 
 void PopupMenuHelper::CloseMenu() {
+  menu_runner_ = nil;
   popup_client_.reset();
 }
 

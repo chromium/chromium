@@ -11,18 +11,12 @@ namespace apps::features {
 
 BASE_DECLARE_FEATURE(kLinkCapturingUiUpdate);
 BASE_DECLARE_FEATURE(kLinkCapturingInfoBar);
-BASE_DECLARE_FEATURE(kIntentChipSkipsPicker);
 
 // Returns true if the overall link capturing UI update feature is enabled.
 bool LinkCapturingUiUpdateEnabled();
 
-// Returns true if clicking the Intent Chip should skip the Intent Picker when
-// there is only one relevant app. Only returns true if
-// LinkCapturingUiUpdateEnabled() returns true.
-bool ShouldIntentChipSkipIntentPicker();
-
-// Returns true if the Link Capturing Info Bar should be shown when launching a
-// web app through the Intent Picker. Only returns true if
+// Returns true if the Link Capturing Info Bar should be shown when launching an
+// app through the Intent Picker. Only returns true if
 // LinkCapturingUiUpdateEnabled() returns true.
 bool LinkCapturingInfoBarEnabled();
 

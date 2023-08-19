@@ -13,9 +13,6 @@ group("sync") {
     "//components/sync/nigori",
     "//components/sync/service",
   ]
-  if (!is_android) {
-    public_deps += [ "//components/trusted_vault" ]
-  }
   if (is_chromeos) {
     public_deps += [ "//components/sync/chromeos" ]
   }
@@ -145,7 +142,6 @@ static_library("test_support") {
     "//base/test:test_support",
     "//build:chromeos_buildflags",
     "//components/bookmarks/browser",
-    "//components/invalidation/impl:test_support",
     "//components/pref_registry",
     "//components/prefs:test_support",
     "//components/signin/public/base",
@@ -191,7 +187,6 @@ source_set("unit_tests") {
     "base/model_type_unittest.cc",
     "base/page_transition_conversion_unittest.cc",
     "base/protobuf_unittest.cc",
-    "base/sync_prefs_unittest.cc",
     "base/sync_util_unittest.cc",
     "base/unique_position_unittest.cc",
     "base/weak_handle_unittest.cc",
@@ -216,9 +211,9 @@ source_set("unit_tests") {
     "engine/model_type_worker_unittest.cc",
     "engine/net/http_bridge_unittest.cc",
     "engine/net/sync_server_connection_manager_unittest.cc",
+    "engine/nigori/cross_user_sharing_public_key_unittest.cc",
+    "engine/nigori/cross_user_sharing_public_private_key_pair_unittest.cc",
     "engine/nigori/nigori_unittest.cc",
-    "engine/nigori/public_key_unittest.cc",
-    "engine/nigori/public_private_key_pair_unittest.cc",
     "engine/sync_manager_impl_unittest.cc",
     "engine/sync_scheduler_impl_unittest.cc",
     "engine/syncer_proto_util_unittest.cc",
@@ -240,6 +235,7 @@ source_set("unit_tests") {
     "model/sync_data_unittest.cc",
     "model/sync_error_unittest.cc",
     "model/syncable_service_based_bridge_unittest.cc",
+    "nigori/cross_user_sharing_keys_unittest.cc",
     "nigori/cryptographer_impl_unittest.cc",
     "nigori/keystore_keys_cryptographer_unittest.cc",
     "nigori/nigori_key_bag_unittest.cc",
@@ -260,6 +256,7 @@ source_set("unit_tests") {
     "service/passphrase_type_metrics_provider_unittest.cc",
     "service/sync_auth_manager_unittest.cc",
     "service/sync_internals_util_unittest.cc",
+    "service/sync_prefs_unittest.cc",
     "service/sync_service_crypto_unittest.cc",
     "service/sync_service_impl_startup_unittest.cc",
     "service/sync_service_impl_unittest.cc",
@@ -287,9 +284,9 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//build:chromeos_buildflags",
     "//components/gcm_driver:test_support",
-    "//components/invalidation/impl",
     "//components/os_crypt/sync",
     "//components/os_crypt/sync:test_support",
+    "//components/password_manager/core/browser/features:password_features",
     "//components/prefs:test_support",
     "//components/signin/public/base:test_support",
     "//components/signin/public/identity_manager:test_support",

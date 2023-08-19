@@ -97,6 +97,10 @@ void GuestViewInternalCustomBindings::AddRoutes() {
       base::BindRepeating(&GuestViewInternalCustomBindings::AttachIframeGuest,
                           base::Unretained(this)));
   RouteHandlerFunction(
+      "GetRoutingId",
+      base::BindRepeating(&GuestViewInternalCustomBindings::GetRoutingId,
+                          base::Unretained(this)));
+  RouteHandlerFunction(
       "DestroyContainer",
       base::BindRepeating(&GuestViewInternalCustomBindings::DestroyContainer,
                           base::Unretained(this)));
@@ -216,6 +220,19 @@ void GuestViewInternalCustomBindings::AttachIframeGuest(
   guest_view_container->IssueRequest(std::move(request));
 
   args.GetReturnValue().Set(true);
+}
+
+void GuestViewInternalCustomBindings::GetRoutingId(
+    const v8::FunctionCallbackInfo<v8::Value>& args) {
+  CHECK_EQ(args.Length(), 1);
+  if (!args[0]->IsObject()) {
+    args.GetReturnValue().Set(MSG_ROUTING_NONE);
+    return;
+  }
+
+  content::RenderFrame* render_frame = GetRenderFrame(args[0]);
+  args.GetReturnValue().Set(render_frame ? render_frame->GetRoutingID()
+                                         : MSG_ROUTING_NONE);
 }
 
 void GuestViewInternalCustomBindings::DestroyContainer(

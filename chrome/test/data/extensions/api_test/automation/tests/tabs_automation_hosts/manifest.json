@@ -1,9 +1,0 @@
-{
-  "name": "chrome.automation.tabsAutomationHosts",
-  "version": "0.1",
-  "manifest_version": 2,
-  "description": "Tests for the Automation API.",
-  "automation": {
-    "matches": [ "http://a.com/*" ]
-  }
-}

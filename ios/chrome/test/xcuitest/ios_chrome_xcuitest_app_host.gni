@@ -6,6 +6,7 @@ import("//build/apple/tweak_info_plist.gni")
 import("//build/config/ios/ios_sdk.gni")
 import("//build/config/ios/rules.gni")
 import("//ios/build/chrome_build.gni")
+import("//ios/chrome/app/chrome_app.gni")
 import("//ios/public/provider/chrome/browser/build_config.gni")
 
 # Template to build a simple Chrome host app for XCUITests.
@@ -26,7 +27,7 @@ template("ios_chrome_xcuitest_app_host") {
     ]
   }
 
-  ios_app_bundle(target_name) {
+  chrome_app(target_name) {
     testonly = true
     forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
 

@@ -162,8 +162,6 @@ bool StructTraits<viz::mojom::FilterOperationDataView, cc::FilterOperation>::
       return true;
     }
     case cc::FilterOperation::ALPHA_THRESHOLD: {
-      out->set_amount(data.amount());
-      out->set_outer_threshold(data.outer_threshold());
       cc::FilterOperation::ShapeRects shape;
       if (!data.ReadShape(&shape))
         return false;

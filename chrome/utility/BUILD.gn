@@ -79,10 +79,6 @@ static_library("utility") {
     ]
   }
 
-  if (!is_ios && !is_android) {
-    deps += [ "//components/password_manager/services/password_strength:lib" ]
-  }
-
   if (is_mac) {
     deps += [ "//chrome/services/mac_notifications" ]
   }
@@ -115,7 +111,6 @@ static_library("utility") {
         "importer/safari_importer.h",
         "importer/safari_importer.mm",
       ]
-      configs += [ "//build/config/compiler:enable_arc" ]
     }
     if (!is_mac && !is_fuchsia && !is_chromeos) {
       # NSS decryptor is not needed on ChromeOS. Additionally, it depends on

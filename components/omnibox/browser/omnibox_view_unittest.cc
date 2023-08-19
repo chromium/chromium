@@ -19,11 +19,13 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/omnibox_controller.h"
+#include "components/omnibox/browser/test_location_bar_model.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
 #include "components/omnibox/browser/test_omnibox_edit_model.h"
-#include "components/omnibox/browser/test_omnibox_edit_model_delegate.h"
 #include "components/omnibox/browser/test_omnibox_view.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/favicon_size.h"
@@ -34,21 +36,28 @@
 #endif
 
 using base::ASCIIToUTF16;
+using testing::_;
+using testing::DoAll;
+using testing::Return;
+using testing::SaveArg;
 
 namespace {
 
 class OmniboxViewTest : public testing::Test {
  public:
-  OmniboxViewTest() {
-    edit_model_delegate_ = std::make_unique<TestOmniboxEditModelDelegate>();
-    view_ = std::make_unique<TestOmniboxView>(
-        edit_model_delegate_.get(), std::make_unique<TestOmniboxClient>());
+  OmniboxViewTest()
+      : bookmark_model_(bookmarks::TestBookmarkClient::CreateModel()) {
+    auto omnibox_client = std::make_unique<TestOmniboxClient>();
+    omnibox_client_ = omnibox_client.get();
+    EXPECT_CALL(*client(), GetLocationBarModel())
+        .WillRepeatedly(Return(&location_bar_model_));
+    EXPECT_CALL(*client(), GetBookmarkModel())
+        .WillRepeatedly(Return(bookmark_model_.get()));
 
-    view_->controller()->set_edit_model(std::make_unique<TestOmniboxEditModel>(
-        view_->controller(), view_.get(), edit_model_delegate_.get(), nullptr));
-
-    bookmark_model_ = bookmarks::TestBookmarkClient::CreateModel();
-    client()->SetBookmarkModel(bookmark_model_.get());
+    view_ = std::make_unique<TestOmniboxView>(std::move(omnibox_client));
+    view_->controller()->SetEditModelForTesting(
+        std::make_unique<TestOmniboxEditModel>(view_->controller(), view_.get(),
+                                               /*pref_service=*/nullptr));
   }
 
   TestOmniboxView* view() { return view_.get(); }
@@ -57,15 +66,14 @@ class OmniboxViewTest : public testing::Test {
     return static_cast<TestOmniboxEditModel*>(view_->model());
   }
 
-  TestOmniboxClient* client() {
-    return static_cast<TestOmniboxClient*>(model()->client());
-  }
+  TestOmniboxClient* client() { return omnibox_client_; }
 
   bookmarks::BookmarkModel* bookmark_model() { return bookmark_model_.get(); }
 
  private:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestOmniboxEditModelDelegate> edit_model_delegate_;
+  TestLocationBarModel location_bar_model_;
+  raw_ptr<TestOmniboxClient, DanglingUntriaged> omnibox_client_;
   std::unique_ptr<TestOmniboxView> view_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
 };
@@ -205,6 +213,10 @@ TEST_F(OmniboxViewTest, GetIcon_BookmarkIcon) {
 TEST_F(OmniboxViewTest, GetIcon_Favicon) {
   const GURL kUrl("https://woahDude.com");
 
+  GURL page_url;
+  EXPECT_CALL(*client(), GetFaviconForPageUrl(_, _))
+      .WillOnce(DoAll(SaveArg<0>(&page_url), Return(gfx::Image())));
+
   AutocompleteMatch match;
   match.type = AutocompleteMatchType::URL_WHAT_YOU_TYPED;
   match.destination_url = kUrl;
@@ -214,9 +226,9 @@ TEST_F(OmniboxViewTest, GetIcon_Favicon) {
                   gfx::kPlaceholderColor, gfx::kPlaceholderColor,
                   base::DoNothing(), false);
 
-  EXPECT_EQ(client()->GetPageUrlForLastFaviconRequest(), kUrl);
+  EXPECT_EQ(page_url, kUrl);
 }
-#endif  // !BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // Tests GetStateChanges correctly determines if text was deleted.
 TEST_F(OmniboxViewTest, GetStateChanges_DeletedText) {

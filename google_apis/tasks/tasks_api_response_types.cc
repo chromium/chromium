@@ -27,12 +27,14 @@ constexpr char kTaskListsKind[] = "tasks#taskLists";
 constexpr char kTasksKind[] = "tasks#tasks";
 
 constexpr char kApiResponseDueKey[] = "due";
+constexpr char kApiResponseLinksKey[] = "links";
+constexpr char kApiResponseLinkTypeKey[] = "type";
+constexpr char kApiResponseNotesKey[] = "notes";
 constexpr char kApiResponseParentKey[] = "parent";
+constexpr char kApiResponsePositionKey[] = "position";
 constexpr char kApiResponseStatusKey[] = "status";
 constexpr char kApiResponseTitleKey[] = "title";
 constexpr char kApiResponseUpdatedKey[] = "updated";
-constexpr char kApiResponseLinksKey[] = "links";
-constexpr char kApiResponseLinkTypeKey[] = "type";
 
 constexpr char kLinkTypeEmail[] = "email";
 
@@ -126,10 +128,12 @@ void Task::RegisterJSONConverter(JSONValueConverter<Task>* converter) {
   converter->RegisterCustomField<Status>(kApiResponseStatusKey, &Task::status_,
                                          &ConvertTaskStatus);
   converter->RegisterStringField(kApiResponseParentKey, &Task::parent_id_);
+  converter->RegisterStringField(kApiResponsePositionKey, &Task::position_);
   converter->RegisterCustomField<absl::optional<base::Time>>(
       kApiResponseDueKey, &Task::due_, &ConvertTaskDueDate);
   converter->RegisterRepeatedMessage<TaskLink>(kApiResponseLinksKey,
                                                &Task::links_);
+  converter->RegisterStringField(kApiResponseNotesKey, &Task::notes_);
 }
 
 // static

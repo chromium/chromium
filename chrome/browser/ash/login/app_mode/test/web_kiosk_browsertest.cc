@@ -13,9 +13,9 @@
 #include "base/test/bind.h"
 #include "base/test/gtest_tags.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/app_mode/app_session_ash.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_profile_loader.h"
+#include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
@@ -70,7 +70,7 @@ class WebKioskTest : public WebKioskBaseTest {
 
   void MakeAppAlreadyInstalled() {
     if (!base::FeatureList::IsEnabled(::features::kKioskEnableAppService)) {
-      WebAppInstallInfo info;
+      web_app::WebAppInstallInfo info;
       info.start_url = GURL(kAppLaunchUrl);
       info.title = kAppTitle;
       WebKioskAppManager::Get()->UpdateAppByAccountId(account_id(), info);
@@ -306,8 +306,8 @@ IN_PROC_BROWSER_TEST_F(WebKioskTest, KeyboardConfigPolicy) {
 IN_PROC_BROWSER_TEST_F(WebKioskTest, OpenA11ySettings) {
   InitializeRegularOnlineKiosk();
 
-  Browser* settings_browser =
-      OpenA11ySettingsBrowser(WebKioskAppManager::Get()->app_session());
+  Browser* settings_browser = OpenA11ySettingsBrowser(
+      WebKioskAppManager::Get()->kiosk_system_session());
 
   // Make sure the settings browser was opened.
   ASSERT_NE(settings_browser, nullptr);
@@ -321,23 +321,24 @@ IN_PROC_BROWSER_TEST_F(WebKioskTest, CloseSettingWindowIfOnlyOpen) {
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
   Browser* initial_browser = BrowserList::GetInstance()->get(0);
 
-  AppSessionAsh* app_session = WebKioskAppManager::Get()->app_session();
+  KioskSystemSession* session =
+      WebKioskAppManager::Get()->kiosk_system_session();
 
-  Browser* settings_browser = OpenA11ySettingsBrowser(app_session);
+  Browser* settings_browser = OpenA11ySettingsBrowser(session);
   // Make sure the settings browser was opened.
   ASSERT_NE(settings_browser, nullptr);
   EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
 
   // Close the initial browser.
   initial_browser->window()->Close();
-  // Ensure |settings_browser| is closed too.
+  // Ensure `settings_browser` is closed too.
   TestBrowserClosedWaiter settings_browser_closed_waiter{settings_browser};
   settings_browser_closed_waiter.WaitUntilClosed();
 
   // No browsers are opened in the web kiosk session, so it should be
   // terminated.
   EXPECT_EQ(BrowserList::GetInstance()->size(), 0u);
-  EXPECT_TRUE(app_session->is_shutting_down());
+  EXPECT_TRUE(session->is_shutting_down());
 }
 
 // Closing the a11y settings window should not exit the web app kiosk
@@ -347,14 +348,15 @@ IN_PROC_BROWSER_TEST_F(WebKioskTest, NotExitIfCloseSettingsWindow) {
   // The initial browser should exist in the web kiosk session.
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
 
-  AppSessionAsh* app_session = WebKioskAppManager::Get()->app_session();
+  KioskSystemSession* session =
+      WebKioskAppManager::Get()->kiosk_system_session();
 
-  Browser* settings_browser = OpenA11ySettingsBrowser(app_session);
+  Browser* settings_browser = OpenA11ySettingsBrowser(session);
   // Make sure the settings browser was opened.
   ASSERT_NE(settings_browser, nullptr);
   EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
 
-  // Close |settings_browser| and ensure it is closed.
+  // Close `settings_browser` and ensure it is closed.
   settings_browser->window()->Close();
   TestBrowserClosedWaiter settings_browser_closed_waiter{settings_browser};
   settings_browser_closed_waiter.WaitUntilClosed();
@@ -362,7 +364,7 @@ IN_PROC_BROWSER_TEST_F(WebKioskTest, NotExitIfCloseSettingsWindow) {
   // The initial browsers should still be opened and so the kiosk session should
   // not be terminated.
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
-  EXPECT_FALSE(app_session->is_shutting_down());
+  EXPECT_FALSE(session->is_shutting_down());
 }
 
 }  // namespace

@@ -1,0 +1,49 @@
+From f3351c5574d5bcd8b4f49baea9d8d654f27dfd3a Mon Sep 17 00:00:00 2001
+From: Clark DuVall <cduvall@chromium.org>
+Date: Wed, 16 Aug 2023 16:05:14 -0700
+Subject: [PATCH 3/4] Remove absl flags
+
+---
+ third_party/sentencepiece/src/src/init.h | 18 +-----------------
+ 1 file changed, 1 insertion(+), 17 deletions(-)
+
+diff --git a/third_party/sentencepiece/src/src/init.h b/third_party/sentencepiece/src/src/init.h
+index 14edb8c75f431..c5f6d9cc52472 100644
+--- a/third_party/sentencepiece/src/src/init.h
++++ b/third_party/sentencepiece/src/src/init.h
+@@ -16,31 +16,15 @@
+ #define INIT_H_
+ 
+ #include "common.h"
+-#include "absl/flags/flag.h"
+-#include "absl/flags/parse.h"
+ 
+ #ifdef _USE_EXTERNAL_PROTOBUF
+ #include "google/protobuf/message_lite.h"
+ #else
+-#include "third_party/protobuf-lite/google/protobuf/message_lite.h"
++#include "third_party/protobuf/src/google/protobuf/message_lite.h"
+ #endif
+ 
+-ABSL_DECLARE_FLAG(int32, minloglevel);
+ 
+ namespace sentencepiece {
+-inline void ParseCommandLineFlags(const char *usage, int *argc, char ***argv,
+-                                  bool remove_arg = true) {
+-  const auto unused_args = absl::ParseCommandLine(*argc, *argv);
+-
+-  if (remove_arg) {
+-    char **argv_val = *argv;
+-    *argv = argv_val = argv_val + *argc - unused_args.size();
+-    std::copy(unused_args.begin(), unused_args.end(), argv_val);
+-    *argc = static_cast<int>(unused_args.size());
+-  }
+-
+-  logging::SetMinLogLevel(absl::GetFlag(FLAGS_minloglevel));
+-}
+ 
+ inline void ShutdownLibrary() {
+   google::protobuf::ShutdownProtobufLibrary();
+-- 
+2.42.0.rc1.204.g551eb34607-goog
+

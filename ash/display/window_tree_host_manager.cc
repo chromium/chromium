@@ -233,8 +233,8 @@ class FocusActivationStore {
   raw_ptr<aura::client::CaptureClient, ExperimentalAsh> capture_client_;
   raw_ptr<aura::client::FocusClient, ExperimentalAsh> focus_client_;
   aura::WindowTracker tracker_;
-  raw_ptr<aura::Window, ExperimentalAsh> focused_;
-  raw_ptr<aura::Window, ExperimentalAsh> active_;
+  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> focused_;
+  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> active_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -891,9 +891,9 @@ void WindowTreeHostManager::SetPrimaryDisplayId(int64_t id) {
   // displays. If these go out of sync, we can lose the ability to composite
   // HDR content.
   primary_host->AsWindowTreeHost()->compositor()->SetDisplayColorSpaces(
-      new_primary_display.color_spaces());
+      new_primary_display.GetColorSpaces());
   non_primary_host->AsWindowTreeHost()->compositor()->SetDisplayColorSpaces(
-      old_primary_display.color_spaces());
+      old_primary_display.GetColorSpaces());
 
   std::u16string old_primary_title = primary_window->GetTitle();
   primary_window->SetTitle(non_primary_window->GetTitle());

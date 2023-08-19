@@ -27,6 +27,7 @@
 namespace content {
 
 class BrowserContext;
+class RenderProcessHost;
 class SharedStorageDocumentServiceImpl;
 class SharedStorageURLLoaderFactoryProxy;
 class SharedStorageWorkletDriver;
@@ -120,6 +121,15 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   void RecordUseCounters(
       const std::vector<blink::mojom::WebFeature>& features) override;
 
+  // Returns the process host associated with the worklet. Returns nullptr if
+  // the process has gone (e.g. during shutdown).
+  RenderProcessHost* GetProcessHost() const;
+
+  const GURL& script_source_url() const {
+    CHECK_EQ(add_module_state_, AddModuleState::kInitiated);
+    return script_source_url_;
+  }
+
   const url::Origin& shared_storage_origin_for_testing() const {
     return shared_storage_origin_;
   }
@@ -197,6 +207,9 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   bool IsSharedStorageAllowed();
 
   AddModuleState add_module_state_ = AddModuleState::kNotInitiated;
+
+  // The URL of the module script. Set when `AddModuleOnWorklet` is invoked.
+  GURL script_source_url_;
 
   // Responsible for initializing the `SharedStorageWorkletService`.
   std::unique_ptr<SharedStorageWorkletDriver> driver_;

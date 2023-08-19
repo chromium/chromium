@@ -80,7 +80,9 @@ export class CloudPanelContainer {
          (this.progress_.stage === bulkPinProgress.stage &&
           this.progress_.filesToPin === bulkPinProgress.filesToPin &&
           this.progress_.pinnedBytes === bulkPinProgress.pinnedBytes &&
-          this.progress_.bytesToPin === bulkPinProgress.bytesToPin)) &&
+          this.progress_.bytesToPin === bulkPinProgress.bytesToPin &&
+          this.progress_.remainingSeconds ===
+              bulkPinProgress.remainingSeconds)) &&
         this.bulkPinningPreference_ === bulkPinPref) {
       return;
     }
@@ -97,10 +99,13 @@ export class CloudPanelContainer {
     }
 
     // If the bulk pinning is paused, this indicates that it is currently
-    // offline. This could be from either the network not being connected or
-    // cellular being disabled for syncing.
-    if (bulkPinProgress.stage === BulkPinStage.PAUSED) {
+    // offline or battery saver mode is active.
+    if (bulkPinProgress.stage === BulkPinStage.PAUSED_OFFLINE) {
       this.updatePanelType_(CloudPanelType.OFFLINE);
+      return;
+    }
+    if (bulkPinProgress.stage === BulkPinStage.PAUSED_BATTERY_SAVER) {
+      this.updatePanelType_(CloudPanelType.BATTERY_SAVER);
       return;
     }
 
@@ -119,12 +124,20 @@ export class CloudPanelContainer {
       return;
     }
 
+    this.clearAllAttributes_();
     this.panel_.setAttribute('items', String(bulkPinProgress.filesToPin));
     const percentage = (bulkPinProgress.bytesToPin === 0) ?
         '100' :
         (bulkPinProgress.pinnedBytes / bulkPinProgress.bytesToPin * 100)
             .toFixed(0);
-    this.panel_.setAttribute('percentage', String(percentage));
+    if ((bulkPinProgress.filesToPin > 0 && bulkPinProgress.pinnedBytes > 0) ||
+        (bulkPinProgress.pinnedBytes === 0 &&
+         bulkPinProgress.bytesToPin === 0) ||
+        (bulkPinProgress.filesToPin === 0)) {
+      this.panel_.setAttribute('percentage', String(percentage));
+    }
+    this.panel_.setAttribute(
+        'seconds', String(bulkPinProgress.remainingSeconds));
     this.increaseUpdates_();
   }
 
@@ -134,9 +147,17 @@ export class CloudPanelContainer {
    */
   private updatePanelType_(type: CloudPanelType) {
     this.panel_.setAttribute('type', type);
+    this.clearAllAttributes_();
+    this.increaseUpdates_();
+  }
+
+  /**
+   * Clear all the attributes in anticipation of setting new ones.
+   */
+  private clearAllAttributes_() {
     this.panel_.removeAttribute('items');
     this.panel_.removeAttribute('percentage');
-    this.increaseUpdates_();
+    this.panel_.removeAttribute('seconds');
   }
 
   /**

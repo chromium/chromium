@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_util.h"
+#include "base/test/gmock_expected_support.h"
 #include "content/browser/attribution_reporting/attribution_storage_sql.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/sql_queries.h"
@@ -22,6 +23,7 @@
 namespace content {
 namespace {
 
+using base::test::ValueIs;
 using ::testing::AllOf;
 
 class AttributionSqlQueryPlanTest : public testing::Test {
@@ -56,200 +58,168 @@ class AttributionSqlQueryPlanTest : public testing::Test {
 };
 
 TEST_F(AttributionSqlQueryPlanTest, kMinPrioritySql) {
-  const auto plan = GetPlan(attribution_queries::kMinPrioritySql);
-  ASSERT_TRUE(plan.has_value());
-  EXPECT_THAT(plan.value(), UsesIndex("reports_by_source_id_report_type"));
+  EXPECT_THAT(GetPlan(attribution_queries::kMinPrioritySql),
+              ValueIs(UsesIndex("reports_by_source_id_report_type")));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kGetMatchingSourcesSql) {
-  const auto plan = GetPlan(attribution_queries::kGetMatchingSourcesSql);
-  ASSERT_TRUE(plan.has_value());
-  EXPECT_THAT(plan.value(), UsesIndex("sources_by_expiry_time"));
+  EXPECT_THAT(GetPlan(attribution_queries::kGetMatchingSourcesSql),
+              ValueIs(UsesIndex("sources_by_expiry_time")));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kSelectExpiredSourcesSql) {
-  const auto plan = GetPlan(attribution_queries::kSelectExpiredSourcesSql);
-  ASSERT_TRUE(plan.has_value());
-  EXPECT_THAT(plan.value(),
-              AllOf(UsesCoveringIndex("sources_by_expiry_time"),
-                    UsesIndex("reports_by_source_id_report_type")));
+  EXPECT_THAT(GetPlan(attribution_queries::kSelectExpiredSourcesSql),
+              ValueIs(AllOf(UsesCoveringIndex("sources_by_expiry_time"),
+                            UsesIndex("reports_by_source_id_report_type"))));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kSelectInactiveSourcesSql) {
-  const auto plan = GetPlan(attribution_queries::kSelectInactiveSourcesSql);
-  ASSERT_TRUE(plan.has_value());
-  EXPECT_THAT(
-      plan.value(),
-      AllOf(UsesCoveringIndex("sources_by_active_reporting_origin",
-                              {"event_level_active", "aggregatable_active"}),
-            UsesIndex("reports_by_source_id_report_type")));
+  EXPECT_THAT(GetPlan(attribution_queries::kSelectInactiveSourcesSql),
+              ValueIs(AllOf(UsesCoveringIndex(
+                                "sources_by_active_reporting_origin",
+                                {"event_level_active", "aggregatable_active"}),
+                            UsesIndex("reports_by_source_id_report_type"))));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kScanSourcesData) {
-  const auto plan = GetPlan(attribution_queries::kScanSourcesData);
-  ASSERT_TRUE(plan.has_value());
-  EXPECT_THAT(plan.value(), UsesIndex("sources_by_source_time"));
+  EXPECT_THAT(GetPlan(attribution_queries::kScanSourcesData),
+              ValueIs(UsesIndex("sources_by_source_time")));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kScanReportsData) {
-  const auto plan = GetPlan(attribution_queries::kScanReportsData);
-  ASSERT_TRUE(plan.has_value());
-  EXPECT_THAT(plan.value(), UsesIndex("reports_by_trigger_time"));
+  EXPECT_THAT(GetPlan(attribution_queries::kScanReportsData),
+              ValueIs(UsesIndex("reports_by_trigger_time")));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kDeleteVestigialConversionSql) {
-  const auto plan = GetPlan(attribution_queries::kDeleteVestigialConversionSql);
-  ASSERT_TRUE(plan.has_value());
-  EXPECT_THAT(plan.value(), UsesIndex("reports_by_source_id_report_type"));
+  EXPECT_THAT(GetPlan(attribution_queries::kDeleteVestigialConversionSql),
+              ValueIs(UsesIndex("reports_by_source_id_report_type")));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kCountSourcesSql) {
-  const auto plan = GetPlan(attribution_queries::kCountSourcesSql);
-  ASSERT_TRUE(plan.has_value());
-  EXPECT_THAT(plan.value(), UsesIndex("active_sources_by_source_origin"));
+  EXPECT_THAT(GetPlan(attribution_queries::kCountSourcesSql),
+              ValueIs(UsesIndex("active_sources_by_source_origin")));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kDedupKeySql) {
-  const auto plan = GetPlan(attribution_queries::kDedupKeySql);
-  ASSERT_TRUE(plan.has_value());
-  EXPECT_THAT(plan.value(), UsesPrimaryKey());
+  EXPECT_THAT(GetPlan(attribution_queries::kDedupKeySql),
+              ValueIs(UsesPrimaryKey()));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kGetSourcesDataKeysSql) {
-  const auto plan = GetPlan(attribution_queries::kGetSourcesDataKeysSql,
-                            SqlFullScanReason::kIntentional);
-  ASSERT_TRUE(plan.has_value());
-  EXPECT_THAT(plan.value(),
-              UsesCoveringIndex("sources_by_active_reporting_origin"));
+  EXPECT_THAT(GetPlan(attribution_queries::kGetSourcesDataKeysSql,
+                      SqlFullScanReason::kIntentional),
+              ValueIs(UsesCoveringIndex("sources_by_active_reporting_origin")));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kGetNullReportsDataKeysSql) {
-  const auto plan = GetPlan(attribution_queries::kGetNullReportsDataKeysSql,
-                            SqlFullScanReason::kNotOptimized);
-  ASSERT_TRUE(plan.has_value());
-  EXPECT_THAT(plan.value(), UsesIndex("reports_by_reporting_origin"));
+  EXPECT_THAT(GetPlan(attribution_queries::kGetNullReportsDataKeysSql,
+                      SqlFullScanReason::kNotOptimized),
+              ValueIs(UsesIndex("reports_by_reporting_origin")));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kGetRateLimitDataKeysSql) {
-  const auto plan = GetPlan(attribution_queries::kGetRateLimitDataKeysSql,
-                            SqlFullScanReason::kIntentional);
-  ASSERT_TRUE(plan.has_value());
+  EXPECT_THAT(GetPlan(attribution_queries::kGetRateLimitDataKeysSql,
+                      SqlFullScanReason::kIntentional),
+              base::test::HasValue());
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kCountReportsForDestinationSql) {
-  const auto plan =
-      GetPlan(attribution_queries::kCountReportsForDestinationSql);
-  ASSERT_TRUE(plan.has_value());
-  EXPECT_THAT(plan.value(),
-              AllOf(UsesCoveringIndex("sources_by_destination_site"),
-                    UsesIndex("reports_by_source_id_report_type")));
+  EXPECT_THAT(GetPlan(attribution_queries::kCountReportsForDestinationSql),
+              ValueIs(AllOf(UsesCoveringIndex("sources_by_destination_site"),
+                            UsesIndex("reports_by_source_id_report_type"))));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kNextReportTimeSql) {
-  const auto plan = GetPlan(attribution_queries::kNextReportTimeSql);
-  ASSERT_TRUE(plan.has_value());
-  EXPECT_THAT(plan.value(), UsesCoveringIndex("reports_by_report_time"));
+  EXPECT_THAT(GetPlan(attribution_queries::kNextReportTimeSql),
+              ValueIs(UsesCoveringIndex("reports_by_report_time")));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kSetReportTimeSql) {
-  const auto plan = GetPlan(attribution_queries::kSetReportTimeSql);
-  ASSERT_TRUE(plan.has_value());
-  EXPECT_THAT(plan.value(), UsesIndex("reports_by_report_time"));
+  EXPECT_THAT(GetPlan(attribution_queries::kSetReportTimeSql),
+              ValueIs(UsesIndex("reports_by_report_time")));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kReadSourceToAttributeSql) {
-  const auto plan = GetPlan(attribution_queries::kReadSourceToAttributeSql);
-  ASSERT_TRUE(plan.has_value());
-  EXPECT_THAT(plan.value(), UsesPrimaryKey());
+  EXPECT_THAT(GetPlan(attribution_queries::kReadSourceToAttributeSql),
+              ValueIs(UsesPrimaryKey()));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kGetActiveSourcesSql) {
-  const auto plan = GetPlan(attribution_queries::kGetActiveSourcesSql);
-  ASSERT_TRUE(plan.has_value());
-  EXPECT_THAT(plan.value(), UsesIndex("sources_by_expiry_time"));
+  EXPECT_THAT(GetPlan(attribution_queries::kGetActiveSourcesSql),
+              ValueIs(UsesIndex("sources_by_expiry_time")));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kGetReportsSql) {
-  const auto plan = GetPlan(attribution_queries::kGetReportsSql);
-  ASSERT_TRUE(plan.has_value());
-  EXPECT_THAT(plan.value(), UsesIndex("reports_by_report_time"));
+  EXPECT_THAT(GetPlan(attribution_queries::kGetReportsSql),
+              ValueIs(UsesIndex("reports_by_report_time")));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kGetReportSql) {
-  const auto plan = GetPlan(attribution_queries::kGetReportSql);
-  ASSERT_TRUE(plan.has_value());
-  EXPECT_THAT(plan.value(), UsesPrimaryKey());
+  EXPECT_THAT(GetPlan(attribution_queries::kGetReportSql),
+              ValueIs(UsesPrimaryKey()));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kUpdateFailedReportSql) {
-  const auto plan = GetPlan(attribution_queries::kUpdateFailedReportSql);
-  ASSERT_TRUE(plan.has_value());
-  EXPECT_THAT(plan.value(), UsesPrimaryKey());
+  EXPECT_THAT(GetPlan(attribution_queries::kUpdateFailedReportSql),
+              ValueIs(UsesPrimaryKey()));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kRateLimitAttributionAllowedSql) {
-  const auto plan =
-      GetPlan(attribution_queries::kRateLimitAttributionAllowedSql);
-  ASSERT_TRUE(plan.has_value());
-  EXPECT_THAT(plan.value(),
-              UsesIndex("rate_limit_reporting_origin_idx",
-                        {"scope", "destination_site", "source_site"}));
+  EXPECT_THAT(GetPlan(attribution_queries::kRateLimitAttributionAllowedSql),
+              ValueIs(UsesIndex("rate_limit_reporting_origin_idx",
+                                {"scope", "destination_site", "source_site"})));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kRateLimitSourceAllowedSql) {
-  const auto plan = GetPlan(attribution_queries::kRateLimitSourceAllowedSql);
-  ASSERT_TRUE(plan.has_value());
-  EXPECT_THAT(plan.value(),
-              UsesIndex("rate_limit_source_site_reporting_site_idx",
-                        {"source_site", "reporting_site"}));
+  EXPECT_THAT(GetPlan(attribution_queries::kRateLimitSourceAllowedSql),
+              ValueIs(UsesIndex("rate_limit_reporting_origin_idx",
+                                {"scope", "source_site"})));
+}
+
+TEST_F(AttributionSqlQueryPlanTest,
+       kRateLimitSourceAllowedDestinationRateLimitSql) {
+  EXPECT_THAT(
+      GetPlan(
+          attribution_queries::kRateLimitSourceAllowedDestinationRateLimitSql),
+      ValueIs(UsesIndex("rate_limit_reporting_origin_idx",
+                        {"scope", "source_site"})));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kRateLimitSourceReportingOriginsBySiteSql) {
-  const auto plan = GetPlan(
-      attribution_queries::kRateLimitSelectSourceReportingOriginsBySiteSql);
-  ASSERT_TRUE(plan.has_value());
-  EXPECT_THAT(plan.value(),
-              UsesIndex("rate_limit_source_site_reporting_site_idx",
-                        {"source_site", "reporting_site"}));
+  EXPECT_THAT(
+      GetPlan(
+          attribution_queries::kRateLimitSelectSourceReportingOriginsBySiteSql),
+      ValueIs(UsesIndex("rate_limit_reporting_origin_idx",
+                        {"scope", "source_site"})));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kRateLimitSelectReportingOriginsSql) {
-  const auto plan =
-      GetPlan(attribution_queries::kRateLimitSelectReportingOriginsSql);
-  ASSERT_TRUE(plan.has_value());
-  EXPECT_THAT(plan.value(),
-              UsesIndex("rate_limit_reporting_origin_idx",
-                        {"scope", "destination_site", "source_site"}));
+  EXPECT_THAT(GetPlan(attribution_queries::kRateLimitSelectReportingOriginsSql),
+              ValueIs(UsesIndex("rate_limit_reporting_origin_idx",
+                                {"scope", "destination_site", "source_site"})));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kDeleteRateLimitRangeSql) {
-  const auto plan = GetPlan(attribution_queries::kDeleteRateLimitRangeSql);
-  ASSERT_TRUE(plan.has_value());
-  EXPECT_THAT(plan.value(),
-              AllOf(UsesIndex("rate_limit_time_idx"),
-                    UsesIndex("rate_limit_reporting_origin_idx")));
+  EXPECT_THAT(GetPlan(attribution_queries::kDeleteRateLimitRangeSql),
+              ValueIs(AllOf(UsesIndex("rate_limit_time_idx"),
+                            UsesIndex("rate_limit_reporting_origin_idx"))));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kSelectRateLimitsForDeletionSql) {
-  const auto plan =
-      GetPlan(attribution_queries::kSelectRateLimitsForDeletionSql);
-  ASSERT_TRUE(plan.has_value());
-  EXPECT_THAT(plan.value(),
-              AllOf(UsesIndex("rate_limit_time_idx"),
-                    UsesIndex("rate_limit_reporting_origin_idx")));
+  EXPECT_THAT(GetPlan(attribution_queries::kSelectRateLimitsForDeletionSql),
+              ValueIs(AllOf(UsesIndex("rate_limit_time_idx"),
+                            UsesIndex("rate_limit_reporting_origin_idx"))));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kDeleteExpiredRateLimitsSql) {
-  const auto plan = GetPlan(attribution_queries::kDeleteExpiredRateLimitsSql);
-  ASSERT_TRUE(plan.has_value());
-  EXPECT_THAT(plan.value(), UsesIndex("rate_limit_time_idx"));
+  EXPECT_THAT(GetPlan(attribution_queries::kDeleteExpiredRateLimitsSql),
+              ValueIs(UsesIndex("rate_limit_time_idx")));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kDeleteRateLimitsBySourceIdSql) {
-  const auto plan =
-      GetPlan(attribution_queries::kDeleteRateLimitsBySourceIdSql);
-  ASSERT_TRUE(plan.has_value());
-  EXPECT_THAT(plan.value(), UsesIndex("rate_limit_source_id_idx"));
+  EXPECT_THAT(GetPlan(attribution_queries::kDeleteRateLimitsBySourceIdSql),
+              ValueIs(UsesIndex("rate_limit_source_id_idx")));
 }
 
 }  // namespace

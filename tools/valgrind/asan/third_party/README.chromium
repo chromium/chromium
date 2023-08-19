@@ -3,5 +3,6 @@ License: Apache-2.0 WITH LLVM-exception
 Version: a81e45b8bcb8eb274ad73357e10e2cdf8a314a8c
 URL: https://github.com/llvm/llvm-project/blob/a81e45b8bcb8eb274ad73357e10e2cdf8a314a8c/compiler-rt/lib/asan/scripts/asan_symbolize.py
 Security Critical: no
+Shipped: yes
 
 asan_symbolize.py is a verbatim copy of asan_symbolize.py in the LLVM trunk.

@@ -139,6 +139,13 @@ class JSChecker {
       const std::string& css_class,
       std::initializer_list<base::StringPiece> element_ids);
 
+  // Waiter that waits until the specified element is (not) present in the
+  // document.
+  [[nodiscard]] std::unique_ptr<TestConditionWaiter>
+  CreateElementTextContentWaiter(
+      const std::string& content,
+      std::initializer_list<base::StringPiece> element_ids);
+
   // Expects that indicated UI element is not hidden.
   // NOTE: This only checks hidden property - it might not work for elements
   // hidden by "display: none" style.
@@ -239,11 +246,8 @@ class JSChecker {
   content::WebContents* web_contents() { return web_contents_; }
 
  private:
-  void GetBoolImpl(const std::string& expression, bool* result);
-  void GetIntImpl(const std::string& expression, int* result);
-  void GetStringImpl(const std::string& expression, std::string* result);
-
-  raw_ptr<content::WebContents, ExperimentalAsh> web_contents_ = nullptr;
+  raw_ptr<content::WebContents, DanglingUntriaged | ExperimentalAsh>
+      web_contents_ = nullptr;
 };
 
 // Helper method to create the JSChecker instance from the login/oobe

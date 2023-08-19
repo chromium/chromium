@@ -17,17 +17,19 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.chromium.base.MathUtils;
+import org.chromium.base.BuildInfo;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
@@ -41,6 +43,8 @@ import java.lang.annotation.RetentionPolicy;
  * Collection of utility methods that operates on Tab.
  */
 public class TabUtils {
+    public static final float THUMBNAIL_ASPECT_RATIO = 0.85f;
+
     /**
      * Define the callers of NavigationControllerImpl#setUseDesktopUserAgent.
      */
@@ -82,8 +86,7 @@ public class TabUtils {
     /**
      * @return {@link Activity} associated with the given tab.
      */
-    @Nullable
-    public static Activity getActivity(Tab tab) {
+    public static @Nullable Activity getActivity(Tab tab) {
         WebContents webContents = tab != null ? tab.getWebContents() : null;
         if (webContents == null || webContents.isDestroyed()) return null;
         WindowAndroid window = webContents.getTopLevelNativeWindow();
@@ -128,12 +131,29 @@ public class TabUtils {
     }
 
     /**
+     * @param tab {@link Tab} instance being checked.
+     * @return Whether the tab is detached from any Activity and its {@link WindowAndroid}.
+     * Certain functionalities will not work until it is attached to an activity
+     * with {@link ReparentingTask#finish}.
+     */
+    public static boolean isDetached(Tab tab) {
+        if (tab.getWebContents() == null) return true;
+        // Should get WindowAndroid from WebContents since the one from |getWindowAndroid()|
+        // is always non-null even when the tab is in detached state. See the comment in |detach()|.
+        WindowAndroid window = tab.getWebContents().getTopLevelNativeWindow();
+        if (window == null) return true;
+        Activity activity = ContextUtils.activityFromContext(window.getContext().get());
+        return !(activity instanceof ChromeActivity);
+    }
+
+    /**
      * Call when tab need to switch user agent between desktop and mobile.
      * @param tab The tab to be switched the user agent.
      * @param switchToDesktop Whether switching the user agent to desktop.
      * @param forcedByUser Whether this was triggered by users action.
      * @param caller The caller of this method.
      */
+    // TODO(crbug.com/1413060): Remove param forcedByUser from TabUtils#switchUserAgent.
     public static void switchUserAgent(
             Tab tab, boolean switchToDesktop, boolean forcedByUser, int caller) {
         final boolean reloadOnChange = !tab.isNativePage();
@@ -193,11 +213,22 @@ public class TabUtils {
      */
     public static boolean readRequestDesktopSiteContentSettings(
             Profile profile, @Nullable GURL url) {
-        if (ContentFeatureList.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS)) {
-            return url != null && TabUtils.isDesktopSiteEnabled(profile, url);
-        } else {
-            return TabUtils.isDesktopSiteGlobalEnabled(profile);
+        return url != null && TabUtils.isDesktopSiteEnabled(profile, url);
+    }
+
+    /**
+     * Check if Request Desktop Site ContentSettings is global setting.
+     * @param profile The profile used to retrieve ContentSettings.
+     * @param url The Url used to retrieve ContentSettings.
+     * @return Whether Request Desktop Site ContentSettings is global setting.
+     */
+    public static boolean isRequestDesktopSiteContentSettingsGlobal(
+            Profile profile, @Nullable GURL url) {
+        if (url == null) {
+            return true;
         }
+        return WebsitePreferenceBridge.isContentSettingGlobal(
+                profile, ContentSettingsType.REQUEST_DESKTOP_SITE, url, url);
     }
 
     /**
@@ -242,28 +273,39 @@ public class TabUtils {
     /**
      * Return aspect ratio for grid tab card based on form factor and orientation.
      * @param context - Context of the application.
+     * @param browserControlsStateProvider - For getting browser controls height.
      * @return Aspect ratio for the grid tab card.
      */
-    public static float getTabThumbnailAspectRatio(Context context) {
-        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
+    public static float getTabThumbnailAspectRatio(
+            Context context, BrowserControlsStateProvider browserControlsStateProvider) {
+        if ((DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
+                    || BuildInfo.getInstance().isAutomotive
+                    || ChromeFeatureList.sGridTabSwitcherLandscapeAspectRatioPhones.isEnabled())
                 && context.getResources().getConfiguration().orientation
                         == Configuration.ORIENTATION_LANDSCAPE) {
+            assert browserControlsStateProvider != null;
+            int toolbarHeightDp = (browserControlsStateProvider == null)
+                    ? 0
+                    : Math.round((float) browserControlsStateProvider.getTopControlsHeight()
+                            / context.getResources().getDisplayMetrics().density);
             return (context.getResources().getConfiguration().screenWidthDp * 1.f)
-                    / (context.getResources().getConfiguration().screenHeightDp * 1.f);
+                    / (context.getResources().getConfiguration().screenHeightDp * 1.f
+                            - toolbarHeightDp);
         }
-        float value = (float) TabUiFeatureUtilities.THUMBNAIL_ASPECT_RATIO.getValue();
-        return MathUtils.clamp(value, 0.5f, 2.0f);
+        return THUMBNAIL_ASPECT_RATIO;
     }
 
     /**
      * Derive grid card height based on width, expected thumbnail aspect ratio and margins.
      * @param cardWidthPx width of the card
      * @param context to derive view margins
+     * @param browserControlsStateProvider - For getting browser controls height.
      * @return computed card height.
      */
-    public static int deriveGridCardHeight(int cardWidthPx, Context context) {
+    public static int deriveGridCardHeight(int cardWidthPx, Context context,
+            BrowserControlsStateProvider browserControlsStateProvider) {
         int tabThumbnailHeight = (int) ((cardWidthPx - getThumbnailWidthDiff(context))
-                / getTabThumbnailAspectRatio(context));
+                / getTabThumbnailAspectRatio(context, browserControlsStateProvider));
         int cardHeightPx = tabThumbnailHeight + getThumbnailHeightDiff(context);
         return cardHeightPx;
     }

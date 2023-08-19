@@ -11,8 +11,8 @@
 #include <sys/sysctl.h>
 #include <sys/types.h>
 
+#include "base/apple/scoped_mach_port.h"
 #include "base/check_op.h"
-#include "base/mac/scoped_mach_port.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/process_metrics.h"
@@ -46,8 +46,8 @@ std::string SysInfo::OperatingSystemName() {
   static std::string* system_name;
   dispatch_once(&get_system_name_once, ^{
     @autoreleasepool {
-      system_name = new std::string(
-          SysNSStringToUTF8([[UIDevice currentDevice] systemName]));
+      system_name =
+          new std::string(SysNSStringToUTF8(UIDevice.currentDevice.systemName));
     }
   });
   // Examples of returned value: 'iPhone OS' on iPad 5.1.1
@@ -62,7 +62,7 @@ std::string SysInfo::OperatingSystemVersion() {
   dispatch_once(&get_system_version_once, ^{
     @autoreleasepool {
       system_version = new std::string(
-          SysNSStringToUTF8([[UIDevice currentDevice] systemVersion]));
+          SysNSStringToUTF8(UIDevice.currentDevice.systemVersion));
     }
   });
   return *system_version;
@@ -73,7 +73,7 @@ void SysInfo::OperatingSystemVersionNumbers(int32_t* major_version,
                                             int32_t* minor_version,
                                             int32_t* bugfix_version) {
   NSOperatingSystemVersion version =
-      [[NSProcessInfo processInfo] operatingSystemVersion];
+      NSProcessInfo.processInfo.operatingSystemVersion;
   *major_version = saturated_cast<int32_t>(version.majorVersion);
   *minor_version = saturated_cast<int32_t>(version.minorVersion);
   *bugfix_version = saturated_cast<int32_t>(version.patchVersion);
@@ -110,7 +110,7 @@ std::string SysInfo::GetIOSBuildNumber() {
 uint64_t SysInfo::AmountOfPhysicalMemoryImpl() {
   struct host_basic_info hostinfo;
   mach_msg_type_number_t count = HOST_BASIC_INFO_COUNT;
-  base::mac::ScopedMachSendRight host(mach_host_self());
+  base::apple::ScopedMachSendRight host(mach_host_self());
   int result = host_info(host.get(), HOST_BASIC_INFO,
                          reinterpret_cast<host_info_t>(&hostinfo), &count);
   if (result != KERN_SUCCESS) {
@@ -143,7 +143,7 @@ std::string SysInfo::HardwareModelName() {
   // match the expected format, so supply a fake string here.
   const char* model = getenv("SIMULATOR_MODEL_IDENTIFIER");
   if (model == nullptr) {
-    switch ([[UIDevice currentDevice] userInterfaceIdiom]) {
+    switch (UIDevice.currentDevice.userInterfaceIdiom) {
       case UIUserInterfaceIdiomPhone:
         model = "iPhone";
         break;

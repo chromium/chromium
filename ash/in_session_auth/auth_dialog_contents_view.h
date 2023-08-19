@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "ash/ash_export.h"
 #include "ash/public/cpp/login_types.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/views/view.h"
@@ -41,6 +42,28 @@ class AuthDialogContentsView : public views::View {
   struct AuthMethodsMetadata {
     // User's pin length to use for autosubmit.
     size_t autosubmit_pin_length = 0;
+  };
+
+  class ASH_EXPORT TestApi {
+   public:
+    explicit TestApi(AuthDialogContentsView* view);
+    ~TestApi();
+    TestApi(const TestApi&) = delete;
+    TestApi& operator=(const TestApi&) = delete;
+
+    void PasswordOrPinAuthComplete(bool authenticated_by_pin,
+                                   bool success,
+                                   bool can_use_pin) const;
+
+    void FingerprintAuthComplete(bool success,
+                                 FingerprintState fingerprint_state) const;
+
+    raw_ptr<LoginPasswordView, ExperimentalAsh> GetPasswordView() const;
+
+    raw_ptr<LoginPasswordView, ExperimentalAsh> GetPinTextInputView() const;
+
+   private:
+    const raw_ptr<AuthDialogContentsView, ExperimentalAsh> view_;
   };
 
   AuthDialogContentsView(uint32_t auth_methods,

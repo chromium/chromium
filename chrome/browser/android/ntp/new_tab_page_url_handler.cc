@@ -27,14 +27,6 @@ bool HandleAndroidNativePageURL(GURL* url,
       *url = GURL(chrome::kChromeUINativeNewTabURL);
       return true;
     }
-
-    // TODO(twellington): stop redirecting chrome://history to
-    // chrome-native://history when M57 is a distant memory.
-    // See http://crbug.com/654071.
-    if (url->host() == kChromeUIHistoryHost) {
-      *url = GURL(kChromeUINativeHistoryURL);
-      return true;
-    }
   }
 
   if (url->SchemeIs(chrome::kChromeNativeScheme) &&

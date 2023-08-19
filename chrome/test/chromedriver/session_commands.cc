@@ -207,6 +207,9 @@ base::Value::Dict CreateCapabilities(Session* session,
   caps.Set("webauthn:extension:credBlob", !capabilities.IsAndroid());
   caps.Set("webauthn:extension:prf", !capabilities.IsAndroid());
 
+  // See https://github.com/fedidcg/FedCM/pull/478
+  caps.Set("fedcm:accounts", true);
+
   // Chrome-specific extensions.
   const std::string chrome_driver_version_key = base::StringPrintf(
       "%s.%sVersion", base::ToLowerASCII(kBrowserShortName).c_str(),
@@ -255,31 +258,14 @@ base::Value::Dict CreateCapabilities(Session* session,
   return caps;
 }
 
-Status CheckSessionCreated(Session* session) {
-  WebView* web_view = nullptr;
-  Status status = session->GetTargetWindow(&web_view);
-  if (status.IsError())
-    return Status(kSessionNotCreated, status);
-
-  base::Value::List args;
-  std::unique_ptr<base::Value> result(new base::Value(0));
-  status = web_view->CallFunction(session->GetCurrentFrameId(),
-                                  "function(s) { return 1; }", args, &result);
-  if (status.IsError())
-    return Status(kSessionNotCreated, status);
-
-  if (!result->is_int() || result->GetInt() != 1) {
-    return Status(kSessionNotCreated,
-                  "unexpected response from browser");
-  }
-
-  return Status(kOk);
-}
-
 Status InitSessionHelper(const InitSessionParams& bound_params,
                          Session* session,
                          const base::Value::Dict& params,
                          std::unique_ptr<base::Value>* value) {
+  if (!bound_params.device_manager) {
+    return Status{kSessionNotCreated, "device manager cannot be null"};
+  }
+
   const base::Value::Dict* desired_caps;
   base::Value::Dict merged_caps;
 
@@ -321,9 +307,9 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
 
   status =
       LaunchChrome(bound_params.url_loader_factory, bound_params.socket_factory,
-                   bound_params.device_manager, capabilities,
-                   std::move(devtools_event_listeners), &session->chrome,
-                   session->w3c_compliant);
+                   *bound_params.device_manager, capabilities,
+                   std::move(devtools_event_listeners), session->w3c_compliant,
+                   session->chrome);
 
   if (status.IsError())
     return status;
@@ -354,10 +340,6 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
   } else {
     *value = std::make_unique<base::Value>(session->capabilities->Clone());
   }
-
-  status = CheckSessionCreated(session);
-  if (status.IsError())
-    return status;
 
   if (session->webSocketUrl) {
     WebView* web_view = nullptr;
@@ -472,8 +454,9 @@ Status ConfigureSession(Session* session,
 
 Status ConfigureHeadlessSession(Session* session,
                                 const Capabilities& capabilities) {
-  if (!session->chrome->GetBrowserInfo()->is_headless)
+  if (!session->chrome->GetBrowserInfo()->is_headless_shell) {
     return Status(kOk);
+  }
 
   const std::string* download_directory = nullptr;
   if (capabilities.prefs) {
@@ -516,8 +499,8 @@ bool MergeCapabilities(const base::Value::Dict& always_match,
 // Implementation of "matching capabilities", as defined in W3C spec at
 // https://www.w3.org/TR/webdriver/#dfn-matching-capabilities.
 // It checks some requested capabilities and make sure they are supported.
-// Currently, we only check "browserName", "platformName", and webauthn
-// capabilities but more can be added as necessary.
+// Currently, we only check "browserName", "platformName", "fedcm:accounts"
+// and webauthn capabilities but more can be added as necessary.
 bool MatchCapabilities(const base::Value::Dict& capabilities) {
   const base::Value* name = capabilities.Find("browserName");
   if (name && !name->is_none()) {
@@ -580,6 +563,13 @@ bool MatchCapabilities(const base::Value::Dict& capabilities) {
   if (large_blob_value) {
     if (!large_blob_value->is_bool() ||
         (large_blob_value->GetBool() && is_android)) {
+      return false;
+    }
+  }
+
+  const base::Value* fedcm_accounts_value = capabilities.Find("fedcm:accounts");
+  if (fedcm_accounts_value) {
+    if (!fedcm_accounts_value->is_bool() || !fedcm_accounts_value->GetBool()) {
       return false;
     }
   }

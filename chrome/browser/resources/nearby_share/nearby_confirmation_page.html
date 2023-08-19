@@ -14,17 +14,26 @@
   }
 
   #confirmationToken {
-    color: var(--cros-text-color-disabled);
     flex-grow: 1;
-    font-size: 9px;
-    letter-spacing: 0.3px;
-    line-height: 12px;
     margin-top: 46px;
     padding-top: 6px;
     text-align: center;
   }
 
-  cr-lottie {
+  /* TODO(b/279623883): Remove once Jelly is launched. */
+  :host-context(body:not(.jelly-enabled)) #confirmationToken {
+    color: var(--cros-text-color-disabled);
+    font-size: 9px;
+    letter-spacing: 0.3px;
+    line-height: 12px;
+  }
+
+  :host-context(body.jelly-enabled) #confirmationToken {
+    font: var(--cros-label-2-font);
+    color: var(--cros-sys-secondary);
+  }
+
+  #animation {
     bottom: 0;
     height: 100%;
     left: 0;
@@ -115,13 +124,14 @@
       </div>
     </div>
 
+    <!-- TODO(b/279623883): Remove dark mode handling. -->
     <iron-media-query query="(prefers-color-scheme: dark)"
         query-matches="{{isDarkModeActive_}}">
     </iron-media-query>
-    <template is="dom-if" if="[[!errorTitle_]]">
-      <cr-lottie animation-url="[[getAnimationUrl_(isDarkModeActive_)]]"
-          autoplay="true">
-      </cr-lottie>
+    <template is="dom-if" if="[[!errorTitle_]]" restamp>
+      <cros-lottie-renderer id="animation" asset-url="[[getAnimationUrl_(isDarkModeActive_, isJellyEnabled_)]]"
+          autoplay dynamic aria-hidden>
+      </cros-lottie-renderer>
     </template>
 
     <template is="dom-if" if="[[contactName_(shareTarget, errorTitle_)]]">

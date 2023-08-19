@@ -18,10 +18,6 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using base::SysNSStringToUTF16;
 using l10n_util::GetNSString;
 using l10n_util::GetNSStringF;
@@ -60,20 +56,9 @@ using l10n_util::GetNSStringF;
 
 #pragma mark - SigninCoordinator
 
-- (void)interruptWithAction:(SigninCoordinatorInterruptAction)action
+- (void)interruptWithAction:(SigninCoordinatorInterrupt)action
                  completion:(ProceduralBlock)completion {
   BOOL animated;
-  switch (action) {
-    case SigninCoordinatorInterruptActionNoDismiss:
-      // Not supported by Trusted Vault UI, replaced by dismiss without
-      // animation.
-    case SigninCoordinatorInterruptActionDismissWithoutAnimation:
-      animated = NO;
-      break;
-    case SigninCoordinatorInterruptActionDismissWithAnimation:
-      animated = YES;
-      break;
-  }
   __weak __typeof(self) weakSelf = self;
   void (^cancelCompletion)(void) = ^() {
     // The reauthentication callback is dropped when the dialog is canceled.
@@ -87,9 +72,34 @@ using l10n_util::GetNSStringF;
       completion();
     }
   };
-  TrustedVaultClientBackendFactory::GetForBrowserState(
-      self.browser->GetBrowserState())
-      ->CancelDialog(animated, cancelCompletion);
+  switch (action) {
+    case SigninCoordinatorInterrupt::UIShutdownNoDismiss:
+      // TrustedVaultClientBackend doesn't support no dismiss. Therefore there
+      // is nothing to do. It will be just deallocated when the service will
+      // be shutdown.
+      if (self.errorAlertCoordinator) {
+        [self.errorAlertCoordinator stop];
+        self.errorAlertCoordinator = nil;
+      }
+      cancelCompletion();
+      return;
+    case SigninCoordinatorInterrupt::DismissWithoutAnimation:
+      animated = NO;
+      break;
+    case SigninCoordinatorInterrupt::DismissWithAnimation:
+      animated = YES;
+      break;
+  }
+  if (self.errorAlertCoordinator) {
+    CHECK(!self.errorAlertCoordinator.noInteractionAction);
+    self.errorAlertCoordinator.noInteractionAction = cancelCompletion;
+    [self.errorAlertCoordinator stop];
+    self.errorAlertCoordinator = nil;
+  } else {
+    TrustedVaultClientBackendFactory::GetForBrowserState(
+        self.browser->GetBrowserState())
+        ->CancelDialog(animated, cancelCompletion);
+  }
 }
 
 #pragma mark - ChromeCoordinator

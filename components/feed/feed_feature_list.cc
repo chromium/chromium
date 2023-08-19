@@ -76,9 +76,11 @@ BASE_FEATURE(kFeedImageMemoryCacheSizePercentage,
 BASE_FEATURE(kFeedBackToTop,
              "FeedBackToTop",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kFeedBottomSyncBanner,
-             "FeedBottomSyncBanner",
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+BASE_FEATURE(kFeedBottomSyncStringRemoval,
+             "FeedBottomSyncStringRemoval",
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 BASE_FEATURE(kFeedBoCSigninInterstitial,
              "FeedBoCSigninInterstitial",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -88,11 +90,11 @@ const char kDefaultReferrerUrl[] = "https://www.google.com/";
 
 BASE_FEATURE(kWebFeedAwareness,
              "WebFeedAwareness",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kWebFeedOnboarding,
              "WebFeedOnboarding",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kWebFeedSort, "WebFeedSort", base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -119,13 +121,8 @@ BASE_FEATURE(kPersonalizeFeedUnsignedUsers,
              "PersonalizeFeedUnsignedUsers",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPersonalizeFeedNonSyncUsers,
-             "PersonalizeFeedNonSyncUsers",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
+// TODO(crbug.com/1205923): Remove this helper, directly use kSignin instead.
 signin::ConsentLevel GetConsentLevelNeededForPersonalizedFeed() {
-  if (!base::FeatureList::IsEnabled(kPersonalizeFeedNonSyncUsers))
-    return signin::ConsentLevel::kSync;
   return signin::ConsentLevel::kSignin;
 }
 
@@ -148,9 +145,6 @@ const base::FeatureParam<bool> kFeedCloseRefreshRequireInteraction{
 BASE_FEATURE(kFeedNoViewCache,
              "FeedNoViewCache",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kFeedVideoInlinePlayback,
-             "FeedVideoInlinePlayback",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFeedExperimentIDTagging,
              "FeedExperimentIDTagging",

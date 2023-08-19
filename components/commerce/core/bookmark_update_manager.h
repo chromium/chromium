@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
@@ -54,7 +55,7 @@ class BookmarkUpdateManager {
 
   // Handle the response from the shopping service's on-demand API. This will
   // update the corresponding bookmark if there is new information.
-  void HandleOnDemandResponse(const int64_t bookmark_id,
+  void HandleOnDemandResponse(const base::Uuid& bookmark_uuid,
                               const GURL& url,
                               absl::optional<ProductInfo> info);
 
@@ -69,7 +70,7 @@ class BookmarkUpdateManager {
   // A queue of lists of bookmark IDs that need to be updated. This is needed
   // because there is a hard limit to the number of items the backing update
   // system (optimization guide) can handle at a time.
-  std::queue<std::vector<int64_t>> pending_update_batches_;
+  std::queue<std::vector<base::Uuid>> pending_update_batches_;
 
   // The expected number of bookmark updates for the currently running batch and
   // the number of updates received. The callback pushes updates one at a time,

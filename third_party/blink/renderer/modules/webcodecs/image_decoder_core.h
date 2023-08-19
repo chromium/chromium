@@ -24,7 +24,7 @@ class MODULES_EXPORT ImageDecoderCore {
   ImageDecoderCore(String mime_type,
                    scoped_refptr<SegmentReader> data,
                    bool data_complete,
-                   const ColorBehavior& color_behavior,
+                   ColorBehavior color_behavior,
                    const SkISize& desired_size,
                    ImageDecoder::AnimationOption animation_option);
   ~ImageDecoderCore();

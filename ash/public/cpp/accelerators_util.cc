@@ -4,6 +4,7 @@
 
 #include "ash/public/cpp/accelerators_util.h"
 
+#include <iterator>
 #include <string>
 
 #include "ash/public/cpp/accelerator_keycode_lookup_cache.h"
@@ -111,10 +112,14 @@ std::u16string KeycodeToKeyString(ui::KeyboardCode key_code,
 
     // Even though this isn't what we're looking for, we should still populate
     // the cache as we're iterating through the DomCode array.
+    // Do not store "Unidentified".
     if (key_code_to_compare != key_code) {
-      AcceleratorKeycodeLookupCache::Get()->InsertOrAssign(
-          key_code_to_compare,
-          base::UTF8ToUTF16(ui::KeycodeConverter::DomKeyToKeyString(dom_key)));
+      if (dom_key != ui::DomKey::UNIDENTIFIED) {
+        AcceleratorKeycodeLookupCache::Get()->InsertOrAssign(
+            key_code_to_compare,
+            base::UTF8ToUTF16(
+                ui::KeycodeConverter::DomKeyToKeyString(dom_key)));
+      }
       continue;
     }
 
@@ -125,7 +130,10 @@ std::u16string KeycodeToKeyString(ui::KeyboardCode key_code,
     // Found the correct lookup, cache and return the string.
     const std::u16string key_string =
         base::UTF8ToUTF16(ui::KeycodeConverter::DomKeyToKeyString(dom_key));
-    AcceleratorKeycodeLookupCache::Get()->InsertOrAssign(key_code, key_string);
+    if (dom_key != ui::DomKey::UNIDENTIFIED) {
+      AcceleratorKeycodeLookupCache::Get()->InsertOrAssign(key_code,
+                                                           key_string);
+    }
     return key_string;
   }
   return std::u16string();

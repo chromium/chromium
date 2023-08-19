@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("passwords") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "ios_chrome_bulk_leak_check_service_factory.cc",
     "ios_chrome_bulk_leak_check_service_factory.h",
@@ -52,10 +51,10 @@ source_set("passwords") {
     "//components/keyed_service/ios",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser:affiliation",
+    "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/browser/form_parsing",
     "//components/password_manager/core/browser/leak_detection:leak_detection_interface_headers",
     "//components/password_manager/core/common",
-    "//components/password_manager/core/common:features",
     "//components/password_manager/ios",
     "//components/password_manager/ios:account_select_fill_data",
     "//components/prefs",
@@ -68,11 +67,11 @@ source_set("passwords") {
     "//components/ukm",
     "//components/ukm/ios:ukm_url_recorder",
     "//google_apis",
+    "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill:autofill_shared",
     "//ios/chrome/browser/autofill/bottom_sheet",
     "//ios/chrome/browser/credential_provider_promo:features",
-    "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/safe_browsing",
@@ -82,6 +81,7 @@ source_set("passwords") {
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/signin",
@@ -109,12 +109,10 @@ source_set("passwords") {
 }
 
 source_set("password_controller_delegate") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "password_controller_delegate.h" ]
 }
 
 source_set("save_passwords_consumer") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "save_passwords_consumer.h",
     "save_passwords_consumer.mm",
@@ -123,7 +121,6 @@ source_set("save_passwords_consumer") {
 }
 
 source_set("store_factory") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "credentials_cleaner_runner_factory.cc",
     "credentials_cleaner_runner_factory.h",
@@ -147,6 +144,7 @@ source_set("store_factory") {
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
     "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/common:features",
     "//components/signin/public/identity_manager",
     "//components/sync",
@@ -161,7 +159,6 @@ source_set("store_factory") {
 }
 
 source_set("infobar_delegates") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "ios_chrome_save_password_infobar_delegate.h",
     "ios_chrome_save_password_infobar_delegate.mm",
@@ -182,7 +179,6 @@ source_set("infobar_delegates") {
 }
 
 source_set("public") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "ios_chrome_password_infobar_metrics_recorder.h",
     "ios_chrome_password_infobar_metrics_recorder.mm",
@@ -191,7 +187,6 @@ source_set("public") {
 }
 
 source_set("password_checkup_metrics") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "password_checkup_metrics.h",
     "password_checkup_metrics.mm",
@@ -201,7 +196,6 @@ source_set("password_checkup_metrics") {
 }
 
 source_set("password_checkup_utils") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "password_checkup_utils.h",
     "password_checkup_utils.mm",
@@ -216,7 +210,6 @@ source_set("password_checkup_utils") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "ios_chrome_password_check_manager_unittest.mm",
@@ -276,10 +269,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "password_controller_egtest.mm" ]
   deps = [
@@ -289,6 +279,7 @@ source_set("eg2_tests") {
     "//components/password_manager/core/common",
     "//components/strings",
     "//components/sync/base",
+    "//components/sync/service",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/signin:fake_system_identity",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
@@ -305,10 +296,7 @@ source_set("eg2_tests") {
 }
 
 source_set("eg_app_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "password_manager_app_interface.h",
@@ -331,10 +319,7 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("eg_test_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
 
   sources = [

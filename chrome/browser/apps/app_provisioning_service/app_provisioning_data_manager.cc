@@ -46,7 +46,6 @@ AppProvisioningDataManager::~AppProvisioningDataManager() = default;
 void AppProvisioningDataManager::PopulateFromDynamicUpdate(
     const ComponentFileContents& component_files,
     const base::FilePath& install_dir) {
-  // TODO(melzhang) : Add check that version of |app_with_locale_list| is newer.
   app_with_locale_list_ =
       PopulateAppWithLocaleList(component_files.app_with_locale_pb);
   data_dir_ = install_dir;

@@ -16,7 +16,7 @@ import {Command} from '../../common/command_store.js';
 import {ChromeVoxEvent, CustomAutomationEvent} from '../../common/custom_automation_event.js';
 import {EventSourceType} from '../../common/event_source_type.js';
 import {Msgs} from '../../common/msgs.js';
-import {QueueMode, TtsCategory} from '../../common/tts_types.js';
+import {Personality, QueueMode, TtsCategory} from '../../common/tts_types.js';
 import {AutoScrollHandler} from '../auto_scroll_handler.js';
 import {AutomationObjectConstructorInstaller} from '../automation_object_constructor_installer.js';
 import {ChromeVox} from '../chromevox.js';
@@ -141,6 +141,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
     this.addListener_(
         EventType.AUTOFILL_AVAILABILITY_CHANGED,
         this.onAutofillAvailabilityChanged);
+    this.addListener_(EventType.ORIENTATION_CHANGED, this.onOrientationChanged);
 
     await AutomationObjectConstructorInstaller.init(node);
     const focus = await AsyncUtil.getFocus();
@@ -229,9 +230,15 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
     }
 
     const range = CursorRange.fromNode(node);
-    const output = new Output()
-                       .withSpeechCategory(TtsCategory.LIVE)
-                       .withSpeechAndBraille(range, null, evt.type);
+    const output = new Output();
+    // Whenever chromevox is running together with dictation, we want to
+    // announce the hints provided by the Dictation feature in a different voice
+    // to differentiate them from regular UI text.
+    if (node.className === 'DictationHintView') {
+      output.withInitialSpeechProperties(Personality.DICTATION_HINT);
+    }
+    output.withSpeechCategory(TtsCategory.LIVE)
+        .withSpeechAndBraille(range, null, evt.type);
 
     const alertDelayMet = new Date() - this.lastAlertTime_ >
         DesktopAutomationHandler.MIN_ALERT_DELAY_MS;
@@ -399,15 +406,6 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
    * @param {!ChromeVoxEvent} evt
    */
   onLoadComplete(evt) {
-    // A load complete gets fired on the desktop node when display metrics
-    // change.
-    if (evt.target.role === RoleType.DESKTOP) {
-      const msg = evt.target.state[StateType.HORIZONTAL] ? 'device_landscape' :
-                                                           'device_portrait';
-      new Output().format('@' + msg).go();
-      return;
-    }
-
     // We are only interested in load completes on valid top level roots.
     const top = AutomationUtil.getTopLevelRoot(evt.target);
     if (!top || top !== evt.target.root || !top.docUrl) {
@@ -823,6 +821,20 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
           .withLocation(currentRange, null, evt.type)
           .withQueueMode(QueueMode.QUEUE)
           .go();
+    }
+  }
+
+  /**
+   * Handles orientation changes on the desktop node.
+   * @param {!ChromeVoxEvent} evt
+   */
+  onOrientationChanged(evt) {
+    // Changes on display metrics result in the desktop node's
+    // vertical/horizontal states changing.
+    if (evt.target.role === RoleType.DESKTOP) {
+      const msg = evt.target.state[StateType.HORIZONTAL] ? 'device_landscape' :
+                                                           'device_portrait';
+      new Output().format('@' + msg).go();
     }
   }
 

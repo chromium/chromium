@@ -116,7 +116,7 @@ class VerifiedRulesetDealer::Handle {
 
  private:
   // Note: Raw pointer, |dealer_| already holds a reference to |task_runner_|.
-  raw_ptr<base::SequencedTaskRunner, DanglingUntriaged> task_runner_;
+  raw_ptr<base::SequencedTaskRunner, AcrossTasksDanglingUntriaged> task_runner_;
   std::unique_ptr<VerifiedRulesetDealer, base::OnTaskRunnerDeleter> dealer_;
   SEQUENCE_CHECKER(sequence_checker_);
 };

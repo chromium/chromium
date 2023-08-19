@@ -5,13 +5,13 @@
 #ifndef IOS_WEB_VIEW_INTERNAL_SYNC_WEB_VIEW_TRUSTED_VAULT_CLIENT_H_
 #define IOS_WEB_VIEW_INTERNAL_SYNC_WEB_VIEW_TRUSTED_VAULT_CLIENT_H_
 
-#include "components/sync/service/trusted_vault_client.h"
+#include "components/trusted_vault/trusted_vault_client.h"
 
 namespace ios_web_view {
 
 // ChromeWebView implementation of TrustedVaultClient.
 // This class uses the Chrome trusted vault service to store the shared keys.
-class WebViewTrustedVaultClient : public syncer::TrustedVaultClient {
+class WebViewTrustedVaultClient : public trusted_vault::TrustedVaultClient {
  public:
   explicit WebViewTrustedVaultClient();
   ~WebViewTrustedVaultClient() override;

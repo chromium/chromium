@@ -112,6 +112,10 @@ class InProcessImageDecoder::DataDecoderServiceImpl
       mojo::PendingReceiver<data_decoder::mojom::Gzipper> receiver) override {
     FAIL();
   }
+  void BindCborParser(mojo::PendingReceiver<data_decoder::mojom::CborParser>
+                          receiver) override {
+    FAIL();
+  }
   void BindBleScanParser(
       mojo::PendingReceiver<data_decoder::mojom::BleScanParser> receiver)
       override {

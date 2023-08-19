@@ -6,10 +6,10 @@
 
 #include <IOKit/pwr_mgt/IOPMLib.h>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"

@@ -34,6 +34,43 @@ void TestGraphics3D::RunTests(const std::string& filter) {
   RUN_CALLBACK_TEST(TestGraphics3D, FrameGL, filter);
   RUN_CALLBACK_TEST(TestGraphics3D, ExtensionsGL, filter);
   RUN_CALLBACK_TEST(TestGraphics3D, BadResource, filter);
+  RUN_CALLBACK_TEST(TestGraphics3D, Attributes, filter);
+}
+
+// Tests that all valid context attributes are allowed.
+std::string TestGraphics3D::TestAttributes() {
+  const int width = 16;
+  const int height = 16;
+  const int32_t attribs[] = {PP_GRAPHICS3DATTRIB_ALPHA_SIZE,
+                             8,
+                             PP_GRAPHICS3DATTRIB_BLUE_SIZE,
+                             8,
+                             PP_GRAPHICS3DATTRIB_GREEN_SIZE,
+                             8,
+                             PP_GRAPHICS3DATTRIB_RED_SIZE,
+                             8,
+                             PP_GRAPHICS3DATTRIB_DEPTH_SIZE,
+                             0,
+                             PP_GRAPHICS3DATTRIB_STENCIL_SIZE,
+                             0,
+                             PP_GRAPHICS3DATTRIB_SAMPLES,
+                             0,
+                             PP_GRAPHICS3DATTRIB_SAMPLE_BUFFERS,
+                             0,
+                             PP_GRAPHICS3DATTRIB_SWAP_BEHAVIOR,
+                             PP_GRAPHICS3DATTRIB_BUFFER_PRESERVED,
+                             PP_GRAPHICS3DATTRIB_SINGLE_BUFFER,
+                             0,
+                             PP_GRAPHICS3DATTRIB_GPU_PREFERENCE,
+                             PP_GRAPHICS3DATTRIB_GPU_PREFERENCE_LOW_POWER,
+                             PP_GRAPHICS3DATTRIB_WIDTH,
+                             width,
+                             PP_GRAPHICS3DATTRIB_HEIGHT,
+                             height,
+                             PP_GRAPHICS3DATTRIB_NONE};
+  pp::Graphics3D context(instance_, attribs);
+  ASSERT_FALSE(context.is_null());
+  PASS();
 }
 
 std::string TestGraphics3D::TestFramePPAPI() {

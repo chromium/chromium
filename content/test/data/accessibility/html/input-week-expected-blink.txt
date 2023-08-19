@@ -14,4 +14,4 @@ rootWebArea
 ++++++++++++spinButton name='Year' placeholder='----' valueForRange=0.00 minValueForRange=1.00 maxValueForRange=275760.00
 ++++++++++++++staticText name='----'
 ++++++++++++++++inlineTextBox name='----'
-++++++++popUpButton name='Show week picker' haspopup=menu
+++++++++popUpButton description='Show week picker' name='Show week picker' descriptionFrom=title haspopup=menu

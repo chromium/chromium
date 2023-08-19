@@ -19,18 +19,15 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.ExpandedSheetHelper;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.util.TokenHolder;
 import org.chromium.url.GURL;
 
 /**
@@ -55,14 +52,10 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
     private final OneshotSupplier<LayoutStateProvider> mLayoutStateProviderSupplier;
     private LayoutStateProvider.LayoutStateObserver mLayoutStateObserver;
 
+    private final ExpandedSheetHelper mExpandedSheetHelper;
+
     /** A browser controls manager for polling browser controls offsets. */
     private BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
-
-    /** A token for suppressing app modal dialogs. */
-    private int mAppModalToken = TokenHolder.INVALID_TOKEN;
-
-    /** A token for suppressing tab modal dialogs. */
-    private int mTabModalToken = TokenHolder.INVALID_TOKEN;
 
     /**
      * A handle to the {@link ManagedBottomSheetController} this class manages interactions with.
@@ -72,17 +65,8 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
     /** A mechanism for accessing the currently active tab. */
     private ActivityTabProvider mTabProvider;
 
-    /** A supplier of the activity's dialog manager. */
-    private Supplier<ModalDialogManager> mDialogManager;
-
     /** A supplier of a snackbar manager for the bottom sheet. */
     private Supplier<SnackbarManager> mSnackbarManager;
-
-    /** A delegate that provides the functionality of obscuring all tabs. */
-    private TabObscuringHandler mTabObscuringHandler;
-
-    /** A token held while the bottom sheet is obscuring all visible tabs. */
-    private TabObscuringHandler.Token mTabObscuringToken;
 
     /** The manager for overlay panels to attach listeners to. */
     private Supplier<OverlayPanelManager> mOverlayPanelManager;
@@ -103,28 +87,25 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
     public BottomSheetManager(ManagedBottomSheetController controller,
             ActivityTabProvider tabProvider,
             BrowserControlsVisibilityManager controlsVisibilityManager,
-            Supplier<ModalDialogManager> dialogManager,
+            ExpandedSheetHelper expandedSheetHelper,
             Supplier<SnackbarManager> snackbarManagerSupplier,
-            TabObscuringHandler obscuringDelegate,
             ObservableSupplier<Boolean> omniboxFocusStateSupplier,
             Supplier<OverlayPanelManager> overlayManager,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier) {
         mSheetController = controller;
         mTabProvider = tabProvider;
         mBrowserControlsVisibilityManager = controlsVisibilityManager;
-        mDialogManager = dialogManager;
         mSnackbarManager = snackbarManagerSupplier;
-        mTabObscuringHandler = obscuringDelegate;
         mOmniboxFocusStateSupplier = omniboxFocusStateSupplier;
         mOverlayPanelManager = overlayManager;
         mCallbackController = new CallbackController();
+        mExpandedSheetHelper = expandedSheetHelper;
 
         mLayoutStateProviderSupplier = layoutStateProviderSupplier;
         mLayoutStateProviderSupplier.onAvailable(
                 mCallbackController.makeCancelable(this::addLayoutStateObserver));
 
         mSheetController.addObserver(this);
-        mSheetController.setAccessibilityUtil(ChromeAccessibilityUtil.get());
 
         // TODO(1092686): We should wait to instantiate all of these observers until the bottom
         //                sheet is actually used.
@@ -237,16 +218,7 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
             return;
         }
 
-        setIsObscuringAllTabs(true);
-
-        assert mAppModalToken == TokenHolder.INVALID_TOKEN;
-        assert mTabModalToken == TokenHolder.INVALID_TOKEN;
-        if (mDialogManager.get() != null) {
-            mAppModalToken =
-                    mDialogManager.get().suspendType(ModalDialogManager.ModalDialogType.APP);
-            mTabModalToken =
-                    mDialogManager.get().suspendType(ModalDialogManager.ModalDialogType.TAB);
-        }
+        mExpandedSheetHelper.onSheetExpanded();
     }
 
     @Override
@@ -265,35 +237,7 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
             return;
         }
 
-        setIsObscuringAllTabs(false);
-
-        // Tokens can be invalid if the sheet has a custom lifecycle.
-        if (mDialogManager.get() != null
-                && (mAppModalToken != TokenHolder.INVALID_TOKEN
-                        || mTabModalToken != TokenHolder.INVALID_TOKEN)) {
-            // If one modal dialog token is set, the other should be as well.
-            assert mAppModalToken != TokenHolder.INVALID_TOKEN
-                    && mTabModalToken != TokenHolder.INVALID_TOKEN;
-            mDialogManager.get().resumeType(ModalDialogManager.ModalDialogType.APP, mAppModalToken);
-            mDialogManager.get().resumeType(ModalDialogManager.ModalDialogType.TAB, mTabModalToken);
-        }
-        mAppModalToken = TokenHolder.INVALID_TOKEN;
-        mTabModalToken = TokenHolder.INVALID_TOKEN;
-    }
-
-    /**
-     * Set whether the bottom sheet is obscuring all tabs.
-     * @param isObscuring Whether the bottom sheet is considered to be obscuring.
-     */
-    private void setIsObscuringAllTabs(boolean isObscuring) {
-        if (isObscuring) {
-            assert mTabObscuringToken == null;
-            mTabObscuringToken =
-                    mTabObscuringHandler.obscure(TabObscuringHandler.Target.ALL_TABS_AND_TOOLBAR);
-        } else {
-            mTabObscuringHandler.unobscure(mTabObscuringToken);
-            mTabObscuringToken = null;
-        }
+        mExpandedSheetHelper.onSheetCollapsed();
     }
 
     @Override

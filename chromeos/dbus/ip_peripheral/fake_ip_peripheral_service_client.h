@@ -36,6 +36,16 @@ class COMPONENT_EXPORT(DBUS_IP_PERIPHERAL_CLIENT) FakeIpPeripheralServiceClient
   void SetZoom(const std::string& ip,
                int32_t zoom,
                SetCallback callback) override;
+  void GetControl(const std::string& ip,
+                  const std::vector<uint8_t>& guid_le,
+                  uint8_t control_selector,
+                  uint8_t uvc_get_request,
+                  GetControlCallback callback) override;
+  void SetControl(const std::string& ip,
+                  const std::vector<uint8_t>& guid_le,
+                  uint8_t control_selector,
+                  const std::vector<uint8_t>& control_setting,
+                  SetControlCallback callback) override;
 
   int get_pan_call_count() const { return get_pan_call_count_; }
   int get_tilt_call_count() const { return get_tilt_call_count_; }
@@ -43,6 +53,8 @@ class COMPONENT_EXPORT(DBUS_IP_PERIPHERAL_CLIENT) FakeIpPeripheralServiceClient
   int set_pan_call_count() const { return set_pan_call_count_; }
   int set_tilt_call_count() const { return set_tilt_call_count_; }
   int set_zoom_call_count() const { return set_zoom_call_count_; }
+  int get_control_call_count() const { return get_control_call_count_; }
+  int set_control_call_count() const { return set_control_call_count_; }
 
   int32_t pan() const { return pan_; }
   void set_pan(int32_t pan) { pan_ = pan; }
@@ -50,6 +62,10 @@ class COMPONENT_EXPORT(DBUS_IP_PERIPHERAL_CLIENT) FakeIpPeripheralServiceClient
   void set_tilt(int32_t tilt) { tilt_ = tilt; }
   int32_t zoom() const { return zoom_; }
   void set_zoom(int32_t zoom) { zoom_ = zoom; }
+  std::vector<uint8_t> control_response() const { return control_response_; }
+  void set_control_response(std::vector<uint8_t> control_setting) {
+    control_response_ = control_setting;
+  }
 
  private:
   int get_pan_call_count_ = 0;
@@ -61,6 +77,9 @@ class COMPONENT_EXPORT(DBUS_IP_PERIPHERAL_CLIENT) FakeIpPeripheralServiceClient
   int32_t pan_ = 0;
   int32_t tilt_ = 0;
   int32_t zoom_ = 0;
+  int get_control_call_count_ = 0;
+  int set_control_call_count_ = 0;
+  std::vector<uint8_t> control_response_;
 };
 
 }  // namespace chromeos

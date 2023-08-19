@@ -545,19 +545,19 @@ class MainTest(unittest.TestCase):
         self.orig_lint_fn = lint_test_expectations.lint
         self.orig_check_fn = lint_test_expectations.check_virtual_test_suites
         lint_test_expectations.check_virtual_test_suites = lambda host, options: []
-        self.orig_check_smoke = lint_test_expectations.check_smoke_tests
-        lint_test_expectations.check_smoke_tests = lambda host, options: []
+        self.orig_check_test_lists = lint_test_expectations.check_test_lists
+        lint_test_expectations.check_test_lists = lambda host, options: []
         self.stderr = StringIO()
 
     def tearDown(self):
         lint_test_expectations.lint = self.orig_lint_fn
         lint_test_expectations.check_virtual_test_suites = self.orig_check_fn
-        lint_test_expectations.check_smoke_tests = self.orig_check_smoke
+        lint_test_expectations.check_test_lists = self.orig_check_test_lists
 
     def test_success(self):
         lint_test_expectations.lint = lambda host, options: ([], [])
         res = lint_test_expectations.main(['--platform', 'test'], self.stderr)
-        self.assertEqual('Lint succeeded.', self.stderr.getvalue().strip())
+        self.assertEqual('', self.stderr.getvalue().strip())
         self.assertEqual(res, 0)
 
     def test_success_with_warning(self):

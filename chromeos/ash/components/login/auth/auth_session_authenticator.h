@@ -237,7 +237,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
   std::unique_ptr<SafeModeDelegate> safe_mode_delegate_;
   std::unique_ptr<AuthFactorEditor> auth_factor_editor_;
   std::unique_ptr<AuthPerformer> auth_performer_;
-  std::unique_ptr<HibernateManager> hibernate_manager_;
   std::unique_ptr<MountPerformer> mount_performer_;
 
   const raw_ptr<PrefService, DanglingUntriaged> local_state_;

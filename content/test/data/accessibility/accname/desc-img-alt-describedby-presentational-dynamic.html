@@ -1,0 +1,12 @@
+<!doctype HTML>
+<img src="foo.jpg" id="test" alt="test" aria-describedby="t1">
+<span id="t1" role="presentation">foo</span>
+<script>
+setTimeout(() => {
+    let span = document.createElement("span");
+    span.id = "t1";
+    span.role = "presentation";
+    span.innerText = "foo";
+    document.body.appendChild(span);
+}, 0);
+</script>

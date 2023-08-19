@@ -18,7 +18,8 @@ if (current_toolchain == default_toolchain) {
       "//base:jni_java",
       "//build/android:build_java",
     ]
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
+    srcjar_deps = [ ":safe_json_jni_headers" ]
     sources = [] + _jni_sources
   }
 }

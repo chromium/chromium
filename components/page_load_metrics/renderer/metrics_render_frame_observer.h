@@ -28,6 +28,7 @@ class OneShotTimer;
 
 namespace blink {
 struct JavaScriptFrameworkDetectionResult;
+struct SoftNavigationMetrics;
 }  // namespace blink
 
 namespace page_load_metrics {
@@ -57,7 +58,8 @@ class MetricsRenderFrameObserver
   void DidChangePerformanceTiming() override;
   void DidObserveInputDelay(base::TimeDelta input_delay) override;
   void DidObserveUserInteraction(
-      base::TimeDelta max_event_duration,
+      base::TimeTicks max_event_start,
+      base::TimeTicks max_event_end,
       blink::UserInteractionType interaction_type) override;
   void DidChangeCpuTiming(base::TimeDelta time) override;
   void DidObserveLoadingBehavior(blink::LoadingBehaviorFlag behavior) override;
@@ -67,7 +69,7 @@ class MetricsRenderFrameObserver
       const blink::SubresourceLoadMetrics& subresource_load_metrics) override;
   void DidObserveNewFeatureUsage(
       const blink::UseCounterFeature& feature) override;
-  void DidObserveSoftNavigation(uint32_t count) override;
+  void DidObserveSoftNavigation(blink::SoftNavigationMetrics metrics) override;
   void DidObserveLayoutShift(double score, bool after_input_or_scroll) override;
   void DidStartResponse(
       const url::SchemeHostPort& final_response_url,
@@ -152,6 +154,7 @@ class MetricsRenderFrameObserver
   void SendMetrics();
   void OnMetricsSenderCreated();
   virtual Timing GetTiming() const;
+  virtual mojom::SoftNavigationMetricsPtr GetSoftNavigationMetrics() const;
   virtual std::unique_ptr<base::OneShotTimer> CreateTimer();
   virtual std::unique_ptr<PageTimingSender> CreatePageTimingSender(
       bool limited_sending_mode);

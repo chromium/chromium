@@ -80,8 +80,9 @@ class GLOzoneEGLWayland : public GLOzoneEGL {
   bool LoadGLES2Bindings(const gl::GLImplementationParts& impl) override;
 
  private:
-  const raw_ptr<WaylandConnection, DanglingUntriaged> connection_;
-  const raw_ptr<WaylandBufferManagerGpu, DanglingUntriaged> buffer_manager_;
+  const raw_ptr<WaylandConnection, AcrossTasksDanglingUntriaged> connection_;
+  const raw_ptr<WaylandBufferManagerGpu, AcrossTasksDanglingUntriaged>
+      buffer_manager_;
 };
 
 bool GLOzoneEGLWayland::CanImportNativePixmap() {
@@ -299,6 +300,15 @@ WaylandSurfaceFactory::GetPreferredFormatForSolidColor() const {
   if (!buffer_manager_->SupportsFormat(gfx::BufferFormat::RGBA_8888))
     return gfx::BufferFormat::BGRA_8888;
   return gfx::BufferFormat::RGBA_8888;
+}
+
+bool WaylandSurfaceFactory::SupportsDrmModifiersFilter() const {
+  return true;
+}
+
+void WaylandSurfaceFactory::SetDrmModifiersFilter(
+    std::unique_ptr<DrmModifiersFilter> filter) {
+  buffer_manager_->set_drm_modifiers_filter(std::move(filter));
 }
 
 std::vector<gfx::BufferFormat>

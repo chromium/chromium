@@ -32,11 +32,7 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
  public:
   static ViewTimeline* Create(Document&, ViewTimelineOptions*, ExceptionState&);
 
-  ViewTimeline(Document*,
-               TimelineAttachment attachment,
-               Element* subject,
-               ScrollAxis axis,
-               TimelineInset);
+  ViewTimeline(Document*, Element* subject, ScrollAxis axis, TimelineInset);
 
   bool IsViewTimeline() const override { return true; }
 
@@ -45,10 +41,7 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
   // IDL API implementation.
   Element* subject() const;
 
-  bool Matches(TimelineAttachment,
-               Element* subject,
-               ScrollAxis,
-               const TimelineInset&) const;
+  bool Matches(Element* subject, ScrollAxis, const TimelineInset&) const;
 
   const TimelineInset& GetInset() const;
 
@@ -65,14 +58,18 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
  private:
   double ToFractionalOffset(const TimelineOffset& timeline_offset) const;
 
-  absl::optional<LayoutSize> SubjectSize() const;
+  absl::optional<gfx::SizeF> SubjectSize() const;
   absl::optional<gfx::PointF> SubjectPosition(Node* resolved_source) const;
-  void GetSubjectMaxStickyOffsets(LayoutUnit& top,
-                                  LayoutUnit& right,
-                                  LayoutUnit& bottom,
-                                  LayoutUnit& left,
-                                  Node* resolved_source) const;
 
+  void ApplyStickyAdjustments(ScrollOffsets& scroll_offsets,
+                              ViewOffsets& view_offsets,
+                              double viewport_size,
+                              double target_size,
+                              double target_offset,
+                              ScrollOrientation orientation,
+                              Node* resolved_source) const;
+
+  TimelineInset inset_;
   // If either of the following elements are non-null, we need to update
   // |inset_| on a style change.
   Member<const CSSValue> style_dependant_start_inset_;

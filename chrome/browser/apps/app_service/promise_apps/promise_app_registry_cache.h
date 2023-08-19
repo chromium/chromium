@@ -46,6 +46,9 @@ class PromiseAppRegistryCache {
 
   ~PromiseAppRegistryCache();
 
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
   // Find the promise app with the same package_id as the delta and apply
   // the changes for the fields specified by the delta object. If there is no
   // promise app with a matching package_id, then create a new promise app.
@@ -61,13 +64,17 @@ class PromiseAppRegistryCache {
   // Check that a promise app with `package_id` is registered in the cache.
   bool HasPromiseApp(const PackageId& package_id);
 
-  // For testing only. Retrieve a read-only pointer to the promise app with the
-  // specified package_id. Returns nullptr if the promise app does not exist. Do
-  // not store the pointer as the promise app may be destroyed at any time.
-  const PromiseApp* GetPromiseAppForTesting(const PackageId& package_id) const;
+  // Retrieve a read-only pointer to the promise app with the specified
+  // package_id. Returns nullptr if the promise app does not exist. Do not store
+  // the pointer as the promise app may be destroyed at any time.
+  const PromiseApp* GetPromiseApp(const PackageId& package_id) const;
 
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
+  // Retrieve a read-only pointer to the promise app with the specified
+  // string_package_id. Returns nullptr if the promise app does not exist or if
+  // `string_package_id` cannot be converted into a legitimate package ID. Do
+  // not store the pointer as the promise app may be destroyed at any time.
+  const PromiseApp* GetPromiseAppForStringPackageId(
+      const std::string& string_package_id) const;
 
  private:
   // Retrieve the registered promise app with the specified package_id. Returns

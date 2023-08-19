@@ -9,6 +9,7 @@
 #include <set>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -68,13 +69,14 @@ constexpr char kNonce[] = "nonce123";
 constexpr char kAccountId[] = "1234";
 constexpr char kToken[] = "[not a real token]";
 
-static const std::initializer_list<IdentityRequestAccount> kAccounts{{
-    kAccountId,                 // id
-    "ken@idp.example",          // email
-    "Ken R. Example",           // name
-    "Ken",                      // given_name
-    GURL(),                     // picture
-    std::vector<std::string>()  // login_hints
+static const std::vector<IdentityRequestAccount> kAccounts{{
+    kAccountId,                  // id
+    "ken@idp.example",           // email
+    "Ken R. Example",            // name
+    "Ken",                       // given_name
+    GURL(),                      // picture
+    std::vector<std::string>(),  // login_hints
+    std::vector<std::string>()   // hosted_domains
 }};
 
 // IdpNetworkRequestManager which returns valid data from IdP.
@@ -149,7 +151,6 @@ class TestDialogController
   TestDialogController& operator=(TestDialogController&) = delete;
 
   void ShowAccountsDialog(
-      WebContents* rp_web_contents,
       const std::string& top_frame_for_display,
       const absl::optional<std::string>& iframe_for_display,
       const std::vector<IdentityProviderData>& identity_provider_data,
@@ -180,6 +181,18 @@ class TestApiPermissionDelegate : public MockApiPermissionDelegate {
   }
 };
 
+class TestFederatedIdentityModalDialogViewDelegate
+    : public NiceMock<MockModalDialogViewDelegate> {
+ public:
+  base::WeakPtr<TestFederatedIdentityModalDialogViewDelegate> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<TestFederatedIdentityModalDialogViewDelegate>
+      weak_ptr_factory_{this};
+};
+
 }  // namespace
 
 class FederatedAuthRequestImplMultipleFramesTest
@@ -196,10 +209,10 @@ class FederatedAuthRequestImplMultipleFramesTest
         std::make_unique<NiceMock<MockAutoReauthnPermissionDelegate>>();
     mock_permission_delegate_ =
         std::make_unique<NiceMock<MockPermissionDelegate>>();
-    mock_modal_dialog_view_delegate_ =
-        std::make_unique<NiceMock<MockModalDialogViewDelegate>>();
+    test_modal_dialog_view_delegate_ =
+        std::make_unique<TestFederatedIdentityModalDialogViewDelegate>();
     mock_identity_registry_ = std::make_unique<NiceMock<MockIdentityRegistry>>(
-        web_contents(), mock_modal_dialog_view_delegate_.get(),
+        web_contents(), test_modal_dialog_view_delegate_->GetWeakPtr(),
         url::Origin::Create(GURL(kIdpUrl)));
 
     static_cast<TestWebContents*>(web_contents())
@@ -274,8 +287,8 @@ class FederatedAuthRequestImplMultipleFramesTest
   std::unique_ptr<NiceMock<MockAutoReauthnPermissionDelegate>>
       mock_auto_reauthn_permission_delegate_;
   std::unique_ptr<NiceMock<MockPermissionDelegate>> mock_permission_delegate_;
-  std::unique_ptr<NiceMock<MockModalDialogViewDelegate>>
-      mock_modal_dialog_view_delegate_;
+  std::unique_ptr<TestFederatedIdentityModalDialogViewDelegate>
+      test_modal_dialog_view_delegate_;
   std::unique_ptr<NiceMock<MockIdentityRegistry>> mock_identity_registry_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
 };

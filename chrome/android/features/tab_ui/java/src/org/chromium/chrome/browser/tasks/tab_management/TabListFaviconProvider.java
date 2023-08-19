@@ -23,7 +23,6 @@ import org.chromium.base.Callback;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
-import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.url.GURL;
@@ -215,6 +214,7 @@ public class TabListFaviconProvider {
     private final int mFaviconInset;
     private final boolean mIsTabStrip;
     private final Context mContext;
+    private final int mFaviconCornerRadius;
     private boolean mIsInitialized;
 
     private Profile mProfile;
@@ -224,9 +224,10 @@ public class TabListFaviconProvider {
      * Construct the provider that provides favicons for tab list.
      * @param context    The context to use for accessing {@link android.content.res.Resources}
      * @param isTabStrip Indicator for whether this class provides favicons for tab strip or not.
+     * @param faviconCornerRadiusId The resource Id for the favicon corner radius.
      *
      */
-    public TabListFaviconProvider(Context context, boolean isTabStrip) {
+    public TabListFaviconProvider(Context context, boolean isTabStrip, int faviconCornerRadiusId) {
         mContext = context;
         mDefaultFaviconSize =
                 context.getResources().getDimensionPixelSize(R.dimen.tab_grid_favicon_size);
@@ -236,6 +237,7 @@ public class TabListFaviconProvider {
         mFaviconInset = ViewUtils.dpToPx(context,
                 context.getResources().getDimensionPixelSize(R.dimen.tab_strip_favicon_inset));
         mIsTabStrip = isTabStrip;
+        mFaviconCornerRadius = context.getResources().getDimensionPixelSize(faviconCornerRadiusId);
 
         mDefaultIconColor =
                 TabUiThemeProvider.getChromeOwnedFaviconTintColor(context, false, false);
@@ -314,7 +316,6 @@ public class TabListFaviconProvider {
         }
     }
 
-    @VisibleForTesting
     public void initForTesting(Profile profile, FaviconHelper helper) {
         assert !mIsInitialized;
         mProfile = profile;
@@ -353,8 +354,8 @@ public class TabListFaviconProvider {
 
     private Drawable processBitmap(Bitmap bitmap, boolean isTabStrip) {
         int size = isTabStrip ? mStripFaviconSize : mDefaultFaviconSize;
-        Drawable favicon = FaviconUtils.createRoundedBitmapDrawable(
-                mContext.getResources(), Bitmap.createScaledBitmap(bitmap, size, size, true));
+        Drawable favicon = ViewUtils.createRoundedBitmapDrawable(mContext.getResources(),
+                Bitmap.createScaledBitmap(bitmap, size, size, true), mFaviconCornerRadius);
         if (!isTabStrip) {
             return favicon;
         }

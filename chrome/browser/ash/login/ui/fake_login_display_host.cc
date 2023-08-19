@@ -110,13 +110,8 @@ void FakeLoginDisplayHost::OnGaiaScreenReady() {}
 
 void FakeLoginDisplayHost::SetDisplayEmail(const std::string& email) {}
 
-void FakeLoginDisplayHost::SetDisplayAndGivenName(
-    const std::string& display_name,
-    const std::string& given_name) {}
-
-void FakeLoginDisplayHost::LoadWallpaper(const AccountId& account_id) {}
-
-void FakeLoginDisplayHost::LoadSigninWallpaper() {}
+void FakeLoginDisplayHost::UpdateWallpaper(const AccountId& prefilled_account) {
+}
 
 bool FakeLoginDisplayHost::IsUserAllowlisted(
     const AccountId& account_id,

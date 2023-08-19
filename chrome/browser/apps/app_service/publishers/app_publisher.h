@@ -36,8 +36,6 @@ using PromiseAppPtr = std::unique_ptr<PromiseApp>;
 
 // AppPublisher parent class (in the App Service sense) for all app publishers.
 // See components/services/app_service/README.md.
-//
-// TODO(crbug.com/1253250): Add other mojom publisher functions.
 class AppPublisher {
  public:
   explicit AppPublisher(AppServiceProxy* proxy);
@@ -78,14 +76,22 @@ class AppPublisher {
   //    is true and when no icon is available for the app (or an icon for the
   //    app cannot be efficiently provided). Otherwise, a null icon should be
   //    returned.
+  //
+  // NOTE: On Ash, App Service will not call this method, and instead will call
+  // `GetCompressedIconData()` to load raw icon data from the Publisher.
+  // TODO(crbug.com/1380608): Clean up/simplify remaining usages of LoadIcon.
   virtual void LoadIcon(const std::string& app_id,
                         const IconKey& icon_key,
                         apps::IconType icon_type,
                         int32_t size_hint_in_dip,
                         bool allow_placeholder_icon,
-                        LoadIconCallback callback) = 0;
+                        LoadIconCallback callback);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Returns the default icon if a valid icon can't be loaded, e.g. because an
+  // app didn't supply an icon.
+  virtual int DefaultIconResourceId() const;
+
   // Requests a compressed icon data for an app identified by `app_id`. The icon
   // is identified by `size_in_dip` and `scale_factor`. Calls `callback` with
   // the result.
@@ -245,6 +251,10 @@ class AppPublisher {
   void ModifyCapabilityAccess(const std::string& app_id,
                               absl::optional<bool> accessing_camera,
                               absl::optional<bool> accessing_microphone);
+
+  // Resets all tracked capabilities for apps of type `app_type`. Should be
+  // called when the publisher stops running apps (e.g. when a VM shuts down).
+  void ResetCapabilityAccess(AppType app_type);
 #endif
 
   AppServiceProxy* proxy() { return proxy_; }

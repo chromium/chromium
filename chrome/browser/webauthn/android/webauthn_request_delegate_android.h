@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WEBAUTHN_ANDROID_WEBAUTHN_REQUEST_DELEGATE_ANDROID_H_
 #define CHROME_BROWSER_WEBAUTHN_ANDROID_WEBAUTHN_REQUEST_DELEGATE_ANDROID_H_
 
+#include <memory>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -18,6 +19,10 @@ class WebContents;
 
 namespace device {
 class DiscoverableCredentialMetadata;
+}
+
+namespace password_manager {
+class KeyboardReplacingSurfaceVisibilityController;
 }
 
 class TouchToFillController;
@@ -61,7 +66,7 @@ class WebAuthnRequestDelegateAndroid : public base::SupportsUserData::Data {
 
   // Tells the WebAuthn Java implementation the the user has selected the
   // option for hybrid sign-in, which should be handled by the platform.
-  void ShowHybridSignIn();
+  virtual void ShowHybridSignIn();
 
   // Returns the WebContents that owns this object.
   content::WebContents* web_contents();
@@ -81,6 +86,10 @@ class WebAuthnRequestDelegateAndroid : public base::SupportsUserData::Data {
   // Controller for using the Touch To Fill bottom sheet for non-conditional
   // requests.
   std::unique_ptr<TouchToFillController> touch_to_fill_controller_;
+
+  std::unique_ptr<
+      password_manager::KeyboardReplacingSurfaceVisibilityController>
+      visibility_controller_;
 
   // The WebContents that has this object in its userdata.
   raw_ptr<content::WebContents> web_contents_;

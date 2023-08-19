@@ -14,8 +14,16 @@ build_webui("build") {
   web_component_files = [ "app.ts" ]
 
   ts_deps = [
+    "../shared:build_ts",
     "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_components/history_clusters:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
   ]
+
+  ts_path_mappings =
+      [ "chrome://history-clusters-side-panel.top-chrome/shared/*|" +
+        rebase_path(
+            "$root_gen_dir/chrome/browser/resources/side_panel/shared/tsc/*",
+            target_gen_dir) ]
 }

@@ -6,6 +6,7 @@
 
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/arc/optin/arc_optin_preference_handler_observer.h"
@@ -124,10 +125,20 @@ void ArcOptInPreferenceHandler::SendBackupAndRestoreMode() {
 void ArcOptInPreferenceHandler::SendLocationServicesMode() {
   // Override the pref default to the true value, in order to encourage users to
   // consent with it during OptIn flow.
-  const bool enabled =
+  bool enabled =
       pref_service_->HasPrefPath(prefs::kArcLocationServiceEnabled)
           ? pref_service_->GetBoolean(prefs::kArcLocationServiceEnabled)
           : true;
+
+  // We should use device location setting during optin, in case user has
+  // disabled location of device we should show the same preference during.
+  // opt-in. Default value of kUserGeolocationAllowed is true.
+  if (base::FeatureList::IsEnabled(ash::features::kCrosPrivacyHub) &&
+      // TODO(vsomani): Remove managed user check once kUserGeolocationAllowed
+      // is in sync with the managed policy of arcgooglelocationservicesenabled.
+      !pref_service_->IsManagedPreference(prefs::kArcLocationServiceEnabled)) {
+    enabled = pref_service_->GetBoolean(ash::prefs::kUserGeolocationAllowed);
+  }
   observer_->OnLocationServicesModeChanged(
       enabled,
       pref_service_->IsManagedPreference(prefs::kArcLocationServiceEnabled));
@@ -153,6 +164,11 @@ void ArcOptInPreferenceHandler::EnableBackupRestore(bool is_enabled) {
 
 void ArcOptInPreferenceHandler::EnableLocationService(bool is_enabled) {
   pref_service_->SetBoolean(prefs::kArcLocationServiceEnabled, is_enabled);
+  if (base::FeatureList::IsEnabled(ash::features::kCrosPrivacyHub)) {
+    pref_service_->SetBoolean(prefs::kArcInitialLocationSettingSyncRequired,
+                              false);
+    pref_service_->SetBoolean(ash::prefs::kUserGeolocationAllowed, is_enabled);
+  }
 }
 
 bool ArcOptInPreferenceHandler::ShouldUpdateUserConsent() {

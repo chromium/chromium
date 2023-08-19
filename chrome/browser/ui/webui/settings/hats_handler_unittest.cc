@@ -226,4 +226,52 @@ TEST_F(HatsHandlerNoSandboxTest, TrustSafetySentimentInteractions) {
   handler()->HandleTrustSafetyInteractionOccurred(args);
 }
 
+class HatsHandlerParamTest : public HatsHandlerTest,
+                             public testing::WithParamInterface<bool> {};
+
+TEST_P(HatsHandlerParamTest, AdPrivacyHats) {
+  auto cookie_setting =
+      GetParam() ? content_settings::CookieControlsMode::kBlockThirdParty
+                 : content_settings::CookieControlsMode::kIncognitoOnly;
+  profile()->GetPrefs()->SetInteger(prefs::kCookieControlsMode,
+                                    static_cast<int>(cookie_setting));
+  profile()->GetPrefs()->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled,
+                                    GetParam());
+  profile()->GetPrefs()->SetBoolean(prefs::kPrivacySandboxM1FledgeEnabled,
+                                    GetParam());
+  profile()->GetPrefs()->SetBoolean(
+      prefs::kPrivacySandboxM1AdMeasurementEnabled, GetParam());
+  SurveyBitsData expected_product_specific_data = {
+      {"3P cookies blocked", GetParam()},
+      {"Topics enabled", GetParam()},
+      {"Fledge enabled", GetParam()},
+      {"Ad Measurement enabled", GetParam()}};
+
+  auto interaction_to_survey =
+      std::map<HatsHandler::TrustSafetyInteraction, std::string>{
+          {HatsHandler::TrustSafetyInteraction::OPENED_AD_PRIVACY,
+           kHatsSurveyTriggerM1AdPrivacyPage},
+          {HatsHandler::TrustSafetyInteraction::OPENED_TOPICS_SUBPAGE,
+           kHatsSurveyTriggerM1TopicsSubpage},
+          {HatsHandler::TrustSafetyInteraction::OPENED_FLEDGE_SUBPAGE,
+           kHatsSurveyTriggerM1FledgeSubpage},
+          {HatsHandler::TrustSafetyInteraction::OPENED_AD_MEASUREMENT_SUBPAGE,
+           kHatsSurveyTriggerM1AdMeasurementSubpage},
+      };
+
+  for (const auto& [interaction, survey] : interaction_to_survey) {
+    EXPECT_CALL(*mock_hats_service_,
+                LaunchDelayedSurveyForWebContents(
+                    survey, web_contents(), 20000,
+                    expected_product_specific_data, _, true));
+    base::Value::List args;
+    args.Append(static_cast<int>(interaction));
+    handler()->HandleTrustSafetyInteractionOccurred(args);
+    task_environment()->RunUntilIdle();
+    testing::Mock::VerifyAndClearExpectations(mock_hats_service_);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(AdPrivacy, HatsHandlerParamTest, testing::Bool());
+
 }  // namespace settings

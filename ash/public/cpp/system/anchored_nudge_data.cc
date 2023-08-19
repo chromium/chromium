@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -15,13 +16,15 @@
 namespace ash {
 
 AnchoredNudgeData::AnchoredNudgeData(const std::string& id,
-                                     AnchoredNudgeCatalogName catalog_name,
-                                     const std::u16string& text,
+                                     NudgeCatalogName catalog_name,
+                                     const std::u16string& body_text,
                                      views::View* anchor_view)
     : id(std::move(id)),
       catalog_name(catalog_name),
-      text(text),
-      anchor_view(anchor_view) {}
+      body_text(body_text),
+      anchor_view(anchor_view) {
+  DCHECK(features::IsSystemNudgeV2Enabled());
+}
 
 AnchoredNudgeData::AnchoredNudgeData(AnchoredNudgeData&& other) = default;
 

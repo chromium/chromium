@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "build/build_config.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 
@@ -41,7 +42,9 @@ class ShellJavaScriptDialog {
 
  private:
 #if BUILDFLAG(IS_MAC)
-  ShellJavaScriptDialogHelper* helper_;  // owned
+  // This field is not a raw_ptr<> because it is a pointer to Objective-C
+  // object.
+  RAW_PTR_EXCLUSION ShellJavaScriptDialogHelper* helper_;  // owned
 #elif BUILDFLAG(IS_WIN)
   JavaScriptDialogManager::DialogClosedCallback callback_;
   raw_ptr<ShellJavaScriptDialogManager> manager_;

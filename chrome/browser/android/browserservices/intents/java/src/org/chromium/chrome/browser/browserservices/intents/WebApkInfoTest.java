@@ -69,6 +69,8 @@ public class WebApkInfoTest {
     private static final String ORIENTATION = "portrait";
     private static final String THEME_COLOR = "1L";
     private static final String BACKGROUND_COLOR = "2L";
+    private static final String DARK_THEME_COLOR = "3L";
+    private static final String DARK_BACKGROUND_COLOR = "4L";
     private static final int SHELL_APK_VERSION = 3;
     private static final String MANIFEST_URL = "https://www.google.com/alphabet.json";
     private static final String ICON_URL = "https://www.google.com/scope/worm.png";
@@ -197,6 +199,8 @@ public class WebApkInfoTest {
         bundle.putString(WebApkMetaDataKeys.ORIENTATION, ORIENTATION);
         bundle.putString(WebApkMetaDataKeys.THEME_COLOR, THEME_COLOR);
         bundle.putString(WebApkMetaDataKeys.BACKGROUND_COLOR, BACKGROUND_COLOR);
+        bundle.putString(WebApkMetaDataKeys.DARK_THEME_COLOR, DARK_THEME_COLOR);
+        bundle.putString(WebApkMetaDataKeys.DARK_BACKGROUND_COLOR, DARK_BACKGROUND_COLOR);
         bundle.putInt(WebApkMetaDataKeys.SHELL_APK_VERSION, SHELL_APK_VERSION);
         bundle.putString(WebApkMetaDataKeys.WEB_MANIFEST_URL, MANIFEST_URL);
         bundle.putString(WebApkMetaDataKeys.START_URL, START_URL);
@@ -244,6 +248,10 @@ public class WebApkInfoTest {
         Assert.assertEquals(1L, info.toolbarColor());
         Assert.assertTrue(info.hasValidBackgroundColor());
         Assert.assertEquals(2L, info.backgroundColor());
+        Assert.assertTrue(info.hasValidDarkToolbarColor());
+        Assert.assertEquals(3L, info.darkToolbarColor());
+        Assert.assertTrue(info.hasValidDarkBackgroundColor());
+        Assert.assertEquals(4L, info.darkBackgroundColor());
         Assert.assertEquals(WEBAPK_PACKAGE_NAME, info.webApkPackageName());
         Assert.assertEquals(SHELL_APK_VERSION, info.shellApkVersion());
         Assert.assertEquals(MANIFEST_URL, info.manifestUrl());

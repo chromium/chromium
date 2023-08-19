@@ -18,6 +18,7 @@ namespace ash {
 
 class UnifiedSystemTray;
 class UnifiedSliderListener;
+class UnifiedSliderView;
 
 // Controller class for independent slider bubbles e.g. volume slider and
 // brightness slider that can be triggered from hardware buttons.
@@ -84,6 +85,8 @@ class ASH_EXPORT UnifiedSliderBubbleController
   // ShelfObserver:
   void OnShelfWorkAreaInsetsChanged() override;
 
+  UnifiedSliderView* slider_view() { return slider_view_; }
+
  private:
   friend class UnifiedSystemTrayTest;
 
@@ -100,7 +103,8 @@ class ASH_EXPORT UnifiedSliderBubbleController
 
   raw_ptr<TrayBubbleView, ExperimentalAsh> bubble_view_ = nullptr;
   raw_ptr<views::Widget, ExperimentalAsh> bubble_widget_ = nullptr;
-  UnifiedSliderView* slider_view_ = nullptr;
+  raw_ptr<UnifiedSliderView, DanglingUntriaged | ExperimentalAsh> slider_view_ =
+      nullptr;
 
   // Type of the currently shown slider.
   SliderType slider_type_ = SLIDER_TYPE_VOLUME;

@@ -66,8 +66,7 @@ PasswordForm CreateTestForm() {
   form.username_value = u"Todd Tester";
   form.password_value = u"S3cr3t";
   form.url = GURL(u"https://example.com");
-  form.is_public_suffix_match = false;
-  form.is_affiliation_based_match = false;
+  form.match_type = PasswordForm::MatchType::kExact;
   return form;
 }
 
@@ -75,12 +74,10 @@ std::vector<std::unique_ptr<PasswordForm>> CreateTestLogins() {
   std::vector<std::unique_ptr<PasswordForm>> forms;
   forms.push_back(CreateEntry("Todd Tester", "S3cr3t",
                               GURL(u"https://example.com"),
-                              /*is_psl_match=*/false,
-                              /*is_affiliation_based_match=*/false));
+                              PasswordForm::MatchType::kExact));
   forms.push_back(CreateEntry("Marcus McSpartanGregor", "S0m3th1ngCr34t1v3",
                               GURL(u"https://m.example.com"),
-                              /*is_psl_match=*/true,
-                              /*is_affiliation_based_match=*/false));
+                              PasswordForm::MatchType::kPSL));
   return forms;
 }
 
@@ -163,16 +160,16 @@ TEST_F(PasswordStoreProxyBackendBaseTest, CallCompletionCallbackAfterInit) {
   // Both backends need to be invoked for a successful completion call.
   EXPECT_CALL(built_in_backend(), InitBackend)
       .WillOnce(
-          WithArg<2>(Invoke([](base::OnceCallback<void(bool)> reply) -> void {
+          WithArg<3>(Invoke([](base::OnceCallback<void(bool)> reply) -> void {
             std::move(reply).Run(true);
           })));
   EXPECT_CALL(android_backend(), InitBackend)
       .WillOnce(
-          WithArg<2>(Invoke([](base::OnceCallback<void(bool)> reply) -> void {
+          WithArg<3>(Invoke([](base::OnceCallback<void(bool)> reply) -> void {
             std::move(reply).Run(true);
           })));
   EXPECT_CALL(completion_callback, Run(true));
-  proxy_backend().InitBackend(base::DoNothing(), base::DoNothing(),
+  proxy_backend().InitBackend(nullptr, base::DoNothing(), base::DoNothing(),
                               completion_callback.Get());
 }
 
@@ -183,17 +180,17 @@ TEST_F(PasswordStoreProxyBackendBaseTest,
   // If one backend fails to initialize, the result of the second is irrelevant.
   EXPECT_CALL(built_in_backend(), InitBackend)
       .WillOnce(
-          WithArg<2>(Invoke([](base::OnceCallback<void(bool)> reply) -> void {
+          WithArg<3>(Invoke([](base::OnceCallback<void(bool)> reply) -> void {
             std::move(reply).Run(false);
           })));
   EXPECT_CALL(android_backend(), InitBackend)
       .Times(AtMost(1))
       .WillOnce(
-          WithArg<2>(Invoke([](base::OnceCallback<void(bool)> reply) -> void {
+          WithArg<3>(Invoke([](base::OnceCallback<void(bool)> reply) -> void {
             std::move(reply).Run(true);
           })));
   EXPECT_CALL(completion_callback, Run(false));
-  proxy_backend().InitBackend(base::DoNothing(), base::DoNothing(),
+  proxy_backend().InitBackend(nullptr, base::DoNothing(), base::DoNothing(),
                               completion_callback.Get());
 }
 
@@ -203,12 +200,12 @@ TEST_F(PasswordStoreProxyBackendBaseTest, CallRemoteChangesOnlyForMainBackend) {
   // Both backends receive a callback that they trigger for new remote changes.
   RemoveChangesReceived built_in_remote_changes_callback;
   EXPECT_CALL(built_in_backend(), InitBackend)
-      .WillOnce(SaveArg<0>(&built_in_remote_changes_callback));
+      .WillOnce(SaveArg<1>(&built_in_remote_changes_callback));
   RemoveChangesReceived android_remote_changes_callback;
   EXPECT_CALL(android_backend(), InitBackend)
-      .WillOnce(SaveArg<0>(&android_remote_changes_callback));
-  proxy_backend().InitBackend(original_callback.Get(), base::DoNothing(),
-                              base::DoNothing());
+      .WillOnce(SaveArg<1>(&android_remote_changes_callback));
+  proxy_backend().InitBackend(nullptr, original_callback.Get(),
+                              base::DoNothing(), base::DoNothing());
 
   // With sync enabled, only the android backend calls the original callback.
   EnablePasswordSync();
@@ -239,12 +236,12 @@ TEST_F(PasswordStoreProxyBackendBaseTest,
   // Both backends receive a callback that they trigger for new remote changes.
   base::RepeatingClosure built_in_sync_callback;
   EXPECT_CALL(built_in_backend(), InitBackend)
-      .WillOnce(SaveArg<1>(&built_in_sync_callback));
+      .WillOnce(SaveArg<2>(&built_in_sync_callback));
   base::RepeatingClosure android_sync_callback;
   EXPECT_CALL(android_backend(), InitBackend)
-      .WillOnce(SaveArg<1>(&android_sync_callback));
-  proxy_backend().InitBackend(base::DoNothing(), original_callback.Get(),
-                              base::DoNothing());
+      .WillOnce(SaveArg<2>(&android_sync_callback));
+  proxy_backend().InitBackend(nullptr, base::DoNothing(),
+                              original_callback.Get(), base::DoNothing());
 
   // With sync enabled, only the built-in backend calls the original callback.
   EnablePasswordSync();
@@ -477,12 +474,6 @@ TEST_P(PasswordStoreProxyBackendTest,
   EXPECT_CALL(main_backend(), GetSmartBubbleStatsStore);
   EXPECT_CALL(shadow_backend(), GetSmartBubbleStatsStore).Times(0);
   proxy_backend().GetSmartBubbleStatsStore();
-}
-
-TEST_P(PasswordStoreProxyBackendTest, UseMainBackendToGetFieldInfoStore) {
-  EXPECT_CALL(main_backend(), GetFieldInfoStore);
-  EXPECT_CALL(shadow_backend(), GetFieldInfoStore).Times(0);
-  proxy_backend().GetFieldInfoStore();
 }
 
 TEST_P(PasswordStoreProxyBackendTest,

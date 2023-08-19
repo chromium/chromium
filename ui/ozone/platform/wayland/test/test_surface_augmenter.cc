@@ -18,7 +18,7 @@ namespace wl {
 
 namespace {
 
-constexpr uint32_t kSurfaceAugmenterProtocolVersion = 2;
+constexpr uint32_t kSurfaceAugmenterProtocolVersion = 7;
 
 void CreateSolidColorBuffer(struct wl_client* client,
                             struct wl_resource* resource,

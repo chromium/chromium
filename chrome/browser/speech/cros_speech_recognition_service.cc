@@ -103,9 +103,11 @@ void CrosSpeechRecognitionService::BindRecognizer(
   PopulateFilePaths(base::OptionalToPtr(options->language), binary_path,
                     config_paths);
 
+  // TODO(crbug.com/1467525): Implement offensive word mask on ChromeOS so that
+  // mask_offensive_words is not hard-coded.
   CrosSpeechRecognitionRecognizerImpl::Create(
       std::move(receiver), std::move(client), std::move(options), binary_path,
-      config_paths, language_name);
+      config_paths, language_name, /* mask_offensive_words= */ false);
   std::move(callback).Run(
       CrosSpeechRecognitionRecognizerImpl::IsMultichannelSupported());
 }
@@ -129,6 +131,8 @@ void CrosSpeechRecognitionService::BindAudioSourceFetcher(
     // Note that its CrosSpeechRecognitionRecognizer must also run
     // on the IO thread. If CrosSpeechRecognitionService is moved away from
     // browser UI thread, we can call AudioSourceFetcherImpl::Create directly.
+    // TODO: Implement offensive word mask on ChromeOS so that
+    // mask_offensive_words is not hard-coded.
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(
@@ -136,7 +140,7 @@ void CrosSpeechRecognitionService::BindAudioSourceFetcher(
                 CreateAudioSourceFetcherForOnDeviceRecognitionOnIOThread,
             weak_factory_.GetWeakPtr(), std::move(fetcher_receiver),
             std::move(client), std::move(options), binary_path, config_paths,
-            language_name));
+            language_name, /* mask_offensive_words= */ false));
     std::move(callback).Run(
         CrosSpeechRecognitionRecognizerImpl::IsMultichannelSupported());
     return;
@@ -173,14 +177,15 @@ void CrosSpeechRecognitionService::
         media::mojom::SpeechRecognitionOptionsPtr options,
         const base::FilePath& binary_path,
         const base::flat_map<std::string, base::FilePath>& config_paths,
-        const std::string& primary_language_name) {
+        const std::string& primary_language_name,
+        const bool mask_offensive_words) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   DCHECK(!options->is_server_based);
   AudioSourceFetcherImpl::Create(
       std::move(fetcher_receiver),
       std::make_unique<CrosSpeechRecognitionRecognizerImpl>(
           std::move(client), std::move(options), binary_path, config_paths,
-          primary_language_name),
+          primary_language_name, mask_offensive_words),
       CrosSpeechRecognitionRecognizerImpl::IsMultichannelSupported(),
       /*is_server_based=*/false);
 }

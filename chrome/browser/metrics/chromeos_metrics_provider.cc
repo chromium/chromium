@@ -65,11 +65,16 @@ using metrics::SystemProfileProto;
 
 namespace {
 
-void IncrementPrefValue(const char* path) {
+inline constexpr char kFeatureManagementLevelFlag[] =
+    "feature-management-level";
+inline constexpr char kFeatureManagementMaxLevelFlag[] =
+    "feature-management-max-level";
+
+void IncrementPrefValue(const char* path, int num_samples) {
   PrefService* pref = g_browser_process->local_state();
   DCHECK(pref);
   int value = pref->GetInteger(path);
-  pref->SetInteger(path, value + 1);
+  pref->SetInteger(path, value + num_samples);
 }
 
 }  // namespace
@@ -93,15 +98,18 @@ void ChromeOSMetricsProvider::RegisterPrefs(PrefRegistrySimple* registry) {
 }
 
 // static
-void ChromeOSMetricsProvider::LogCrash(const std::string& crash_type) {
-  if (crash_type == "user")
-    IncrementPrefValue(prefs::kStabilityOtherUserCrashCount);
-  else if (crash_type == "kernel")
-    IncrementPrefValue(prefs::kStabilityKernelCrashCount);
-  else if (crash_type == "uncleanshutdown")
-    IncrementPrefValue(prefs::kStabilitySystemUncleanShutdownCount);
-  else
+void ChromeOSMetricsProvider::LogCrash(const std::string& crash_type,
+                                       int num_samples) {
+  if (crash_type == "user") {
+    IncrementPrefValue(prefs::kStabilityOtherUserCrashCount, num_samples);
+  } else if (crash_type == "kernel") {
+    IncrementPrefValue(prefs::kStabilityKernelCrashCount, num_samples);
+  } else if (crash_type == "uncleanshutdown") {
+    IncrementPrefValue(prefs::kStabilitySystemUncleanShutdownCount,
+                       num_samples);
+  } else {
     NOTREACHED() << "Unexpected Chrome OS crash type " << crash_type;
+  }
 
   // Wake up metrics logs sending if necessary now that new
   // log data is available.
@@ -245,5 +253,42 @@ bool ChromeOSMetricsProvider::UpdateUserTypeUMA() {
   user_manager::UserType user_type = primary_user->GetType();
   base::UmaHistogramEnumeration("UMA.PrimaryUserType", user_type,
                                 user_manager::UserType::NUM_USER_TYPES);
+  return true;
+}
+
+ChromeOSHistogramMetricsProvider::ChromeOSHistogramMetricsProvider() = default;
+
+ChromeOSHistogramMetricsProvider::~ChromeOSHistogramMetricsProvider() = default;
+
+bool ChromeOSHistogramMetricsProvider::ProvideHistograms() {
+  if (!base::CommandLine::InitializedForCurrentProcess()) {
+    return false;
+  }
+
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (!command_line->HasSwitch(kFeatureManagementLevelFlag) ||
+      !command_line->HasSwitch(kFeatureManagementMaxLevelFlag)) {
+    return false;
+  }
+  int feature_level = -1;
+  int feature_max_level = -1;
+  if (!base::StringToInt(
+          command_line->GetSwitchValueASCII(kFeatureManagementLevelFlag),
+          &feature_level) ||
+      !base::StringToInt(
+          command_line->GetSwitchValueASCII(kFeatureManagementMaxLevelFlag),
+          &feature_max_level)) {
+    return false;
+  }
+  if (feature_level < 0 || feature_max_level < 0 ||
+      feature_max_level < feature_level) {
+    LOG(ERROR) << "Invalid " << kFeatureManagementLevelFlag << " ("
+               << feature_level << ") or " << kFeatureManagementMaxLevelFlag
+               << " (" << feature_max_level << ")";
+    return false;
+  }
+
+  base::UmaHistogramExactLinear("Platform.Segmentation.FeatureLevel",
+                                feature_level, feature_max_level + 1);
   return true;
 }

@@ -12,10 +12,6 @@
 #import "components/image_fetcher/ios/ios_image_decoder_impl.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Cache directory for doodle.

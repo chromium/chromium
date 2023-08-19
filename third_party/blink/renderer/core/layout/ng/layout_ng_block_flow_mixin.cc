@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
@@ -64,7 +65,6 @@ NGInlineNodeData* LayoutNGBlockFlowMixin<Base>::TakeNGInlineNodeData() {
 template <typename Base>
 NGInlineNodeData* LayoutNGBlockFlowMixin<Base>::GetNGInlineNodeData() const {
   Base::CheckIsNotDestroyed();
-  DCHECK(ng_inline_node_data_);
   return ng_inline_node_data_;
 }
 
@@ -72,6 +72,14 @@ template <typename Base>
 void LayoutNGBlockFlowMixin<Base>::ResetNGInlineNodeData() {
   Base::CheckIsNotDestroyed();
   ng_inline_node_data_ = MakeGarbageCollected<NGInlineNodeData>();
+
+  // The offset_mapping determines the PlainText() output of text nodes,
+  // and depends non-locally on children inside the block flow. For example
+  // whitespace collapsing may happen or not based on the presence of a sibling
+  // inline object.
+  if (AXObjectCache* cache = Base::GetDocument().ExistingAXObjectCache()) {
+    cache->TextOffsetsChanged(this);
+  }
 }
 
 template <typename Base>
@@ -84,12 +92,6 @@ void LayoutNGBlockFlowMixin<Base>::ClearNGInlineNodeData() {
     ng_inline_node_data_->items.clear();
     ng_inline_node_data_.Clear();
   }
-}
-
-template <typename Base>
-bool LayoutNGBlockFlowMixin<Base>::HasNGInlineNodeData() const {
-  Base::CheckIsNotDestroyed();
-  return ng_inline_node_data_;
 }
 
 template <typename Base>
@@ -176,28 +178,14 @@ PositionWithAffinity LayoutNGBlockFlowMixin<Base>::PositionForPoint(
 
 template <typename Base>
 void LayoutNGBlockFlowMixin<Base>::DirtyLinesFromChangedChild(
-    LayoutObject* child,
-    MarkingBehavior marking_behavior) {
+    LayoutObject* child) {
   Base::CheckIsNotDestroyed();
-  DCHECK_EQ(marking_behavior, kMarkContainerChain);
 
   // We need to dirty line box fragments only if the child is once laid out in
   // LayoutNG inline formatting context. New objects are handled in
   // NGInlineNode::MarkLineBoxesDirty().
   if (child->IsInLayoutNGInlineFormattingContext())
     NGFragmentItems::DirtyLinesFromChangedChild(*child, *this);
-}
-
-template <typename Base>
-void LayoutNGBlockFlowMixin<Base>::UpdateNGBlockLayout() {
-  Base::CheckIsNotDestroyed();
-
-  if (Base::IsOutOfFlowPositioned()) {
-    LayoutNGMixin<Base>::UpdateOutOfFlowBlockLayout();
-    return;
-  }
-
-  LayoutNGMixin<Base>::UpdateInFlowBlockLayout();
 }
 
 template <typename Base>

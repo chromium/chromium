@@ -4,26 +4,18 @@
 
 package org.chromium.chrome.test.smoke.utilities;
 
-import org.hamcrest.Matchers;
-
 import org.chromium.base.Log;
-import org.chromium.base.test.util.Criteria;
-import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.pagecontroller.utils.IUi2Locator;
 import org.chromium.chrome.test.pagecontroller.utils.Ui2Locators;
 import org.chromium.chrome.test.pagecontroller.utils.UiAutomatorUtils;
 import org.chromium.chrome.test.pagecontroller.utils.UiLocatorHelper;
 
-import java.util.concurrent.Callable;
-
 /**
  * FirstRunNavigator is used to Navigate through FRE page.
  */
 public class FirstRunNavigator {
     public static final String TAG = "FirstRunNavigator";
-    public static final long TIMEOUT_MS = 20000L;
-    public static final long UI_CHECK_INTERVAL = 1000L;
 
     public FirstRunNavigator() {}
 
@@ -66,7 +58,7 @@ public class FirstRunNavigator {
         // Manually go through FRE.
         while (true) {
             // Wait for an FRE page to show up.
-            waitUntilAnyVisible(frePageDetectors);
+            UiAutomatorUtils.getInstance().waitUntilAnyVisible(frePageDetectors);
             // Different FRE versions show up randomly and in different order,
             // figure out which one we are on and proceed.
             if (uiLocatorHelper.isOnScreen(urlBar)) {
@@ -107,38 +99,5 @@ public class FirstRunNavigator {
                 throw new RuntimeException("Unexpected FRE or Start page detected.");
             }
         }
-    }
-
-    public void waitUntilAnyVisible(IUi2Locator... locators) {
-        CriteriaHelper.pollInstrumentationThread(
-                toNotSatisfiedRunnable(
-                        ()
-                                -> {
-                            for (IUi2Locator locator : locators) {
-                                if (UiAutomatorUtils.getInstance().getLocatorHelper().isOnScreen(
-                                            locator)) {
-                                    return true;
-                                }
-                            }
-                            return false;
-                        },
-                        "No Chrome views on screen. (i.e. Chrome has crashed "
-                                + "on startup). Look at earlier logs for the actual "
-                                + "crash stacktrace."),
-                TIMEOUT_MS, UI_CHECK_INTERVAL);
-    }
-
-    private static Runnable toNotSatisfiedRunnable(
-            Callable<Boolean> criteria, String failureReason) {
-        return () -> {
-            try {
-                boolean isSatisfied = criteria.call();
-                Criteria.checkThat(failureReason, isSatisfied, Matchers.is(true));
-            } catch (RuntimeException e) {
-                throw e;
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        };
     }
 }

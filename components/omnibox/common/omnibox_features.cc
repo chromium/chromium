@@ -4,10 +4,9 @@
 
 #include "components/omnibox/common/omnibox_features.h"
 
-#include <string>
-
 #include "base/feature_list.h"
 #include "build/build_config.h"
+#include "ui/base/ui_base_features.h"
 
 namespace omnibox {
 
@@ -20,13 +19,6 @@ constexpr auto enabled_by_default_desktop_only =
 
 constexpr auto enabled_by_default_android_only =
 #if BUILDFLAG(IS_ANDROID)
-    base::FEATURE_ENABLED_BY_DEFAULT;
-#else
-    base::FEATURE_DISABLED_BY_DEFAULT;
-#endif
-
-constexpr auto enabled_by_default_ios_only =
-#if BUILDFLAG(IS_IOS)
     base::FEATURE_ENABLED_BY_DEFAULT;
 #else
     base::FEATURE_DISABLED_BY_DEFAULT;
@@ -57,20 +49,11 @@ BASE_FEATURE(kOmniboxRemoveSuggestionsFromClipboard,
              "OmniboxRemoveSuggestionsFromClipboard",
              enabled_by_default_android_only);
 
-// When enabled, intermediate asynchronous updates will not be processed or
-// pushed to AutocompleteListeners. Only the first (synchronous) and the last
-// (final) AutocompleteResult will be pushed to listeners.
-// The change is expected to help help improve latency on low-end (Android)
-// devices.
-BASE_FEATURE(kIgnoreIntermediateResults,
-             "OmniboxIgnoreIntermediateResults",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, uses the grouping framework with zero prefix suggestions (i.e.
 // autocomplete_grouper_sections.h) to limit and group (but not sort) matches.
 BASE_FEATURE(kGroupingFrameworkForZPS,
              "OmniboxGroupingFrameworkForZPS",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             enabled_by_default_android_only);
 
 // When enabled, uses the grouping framework with prefixed suggestions (i.e.
 // autocomplete_grouper_sections.h) to limit and group (but not sort) matches.
@@ -107,9 +90,11 @@ BASE_FEATURE(kSingleSortAndCullPass,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Feature to debounce `AutocompleteController::NotifyChanged()`.
+// TODO(manukh): Enabled by default 7/11/23 m117. Clean up feature code 9/12
+//   when m117 reaches stable.
 BASE_FEATURE(kUpdateResultDebounce,
              "OmniboxUpdateResultDebounce",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Feature used to cap max zero suggestions shown according to the param
 // OmniboxMaxZeroSuggestMatches. If omitted,
@@ -141,12 +126,6 @@ BASE_FEATURE(kOmniboxMaxURLMatches,
 BASE_FEATURE(kDynamicMaxAutocomplete,
              "OmniboxDynamicMaxAutocomplete",
              enabled_by_default_desktop_android);
-
-// If enabled, proactively sets the `stripped_destination_url` for the entity
-// suggestions with identical search terms so they are not erroneously deduped.
-BASE_FEATURE(kDisambiguateEntitySuggestions,
-             "DisambiguateEntitySuggestions",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, takes the search intent query params into account for triggering
 // switch to tab actions on matches.
@@ -263,14 +242,6 @@ BASE_FEATURE(kOnDeviceTailModel,
              "OmniboxOnDeviceTailModel",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, the shortcut provider is more aggressive in scoring. The exact
-// details will change over time; but ATM, the shortcut provider will chose 1
-// candidate to compete with HUP's URL-what-you-typed suggestion for the default
-// slot.
-BASE_FEATURE(kShortcutBoost,
-             "OmniboxShortcutBoost",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, the relevant AutocompleteProviders will store "title" data in
 // AutocompleteMatch::contents and "URL" data in AutocompleteMatch::description
 // for URL-based omnibox suggestions (see crbug.com/1202964 for more details).
@@ -282,6 +253,19 @@ BASE_FEATURE(kStoreTitleInContentsAndUrlInDescription,
 BASE_FEATURE(kDocumentProvider,
              "OmniboxDocumentProvider",
              enabled_by_default_desktop_only);
+
+// If enabled, the 'Show Google Drive Suggestions' setting is removed and Drive
+// suggestions are available to all clients who meet the other requirements.
+BASE_FEATURE(kDocumentProviderNoSetting,
+             "OmniboxDocumentProviderNoSetting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, the requirement to be in an active Sync state is removed and
+// Drive suggestions are available to all clients who meet the other
+// requirements.
+BASE_FEATURE(kDocumentProviderNoSyncRequirement,
+             "OmniboxDocumentProviderNoSyncRequirement",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Feature to determine if the HQP should double as a domain provider by
 // suggesting up to the provider limit for each of the user's highly visited
@@ -303,10 +287,22 @@ BASE_FEATURE(kClipboardSuggestionContentHidden,
              "ClipboardSuggestionContentHidden",
              enabled_by_default_android_only);
 
-// If enabled, uses Chrome Refresh 2023 Action Chips in the omnibox suggestion
-// popup.
+// If enabled, clipboard suggestion for distinct clip data will not show after
+// first use.
+BASE_FEATURE(kSuppressClipboardSuggestionAfterFirstUsed,
+             "SuppressClipboardSuggestionAfterFirstUsed",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, uses the Chrome Refresh 2023 design's shape for action chips in
+// the omnibox suggestion popup.
 BASE_FEATURE(kCr2023ActionChips,
              "Cr2023ActionChips",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// If enabled, uses the Chrome Refresh 2023 design's icons for action chips in
+// the omnibox suggestion popup.
+BASE_FEATURE(kCr2023ActionChipsIcons,
+             "Cr2023ActionChipsIcons",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, finance ticker answer from omnibox will reverse the color for
@@ -321,7 +317,7 @@ BASE_FEATURE(kSuggestionAnswersColorReverse,
 // with a carousel of tiles, instead of one URL per row.
 BASE_FEATURE(kMostVisitedTiles,
              "OmniboxMostVisitedTiles",
-             enabled_by_default_android_ios);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, expands autocompletion to possibly (depending on params) include
 // suggestion titles and non-prefixes as opposed to be restricted to URL
@@ -336,6 +332,11 @@ BASE_FEATURE(kNtpRealboxPedals,
              "NtpRealboxPedals",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Feature used to enable the simplified actions UI design.
+BASE_FEATURE(kOmniboxActionsUISimplification,
+             "OmniboxActionsUISimplification",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Feature used to enable URL suggestions for inputs that may contain typos.
 BASE_FEATURE(kOmniboxFuzzyUrlSuggestions,
              "OmniboxFuzzyUrlSuggestions",
@@ -346,27 +347,32 @@ BASE_FEATURE(kOmniboxMatchToolbarAndStatusBarColor,
              "OmniboxMatchToolbarAndStatusBarColor",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Feature used to add a recycled view pool on the most visited tile carousel.
-BASE_FEATURE(kOmniboxMostVisitedTilesAddRecycledViewPool,
-             "OmniboxMostVisitedTilesAddRecycledViewPool",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Feature used to add most visited tiles to the suggestions when the user is on
 // a search result page that does not do search term replacement.
 BASE_FEATURE(kOmniboxMostVisitedTilesOnSrp,
              "OmniboxMostVisitedTilesOnSrp",
-             enabled_by_default_ios_only);
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, allows Search Ready Omnibox to populate original search query
+// when the user presses the <edit> button on EditUrl suggestion.
+BASE_FEATURE(kSearchReadyOmniboxAllowQueryEdit,
+             "SearchReadyOmniboxAllowQueryEdit",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, adds a grey square background to search icons, and makes answer
 // icon square instead of round.
+// TODO(manukh): Clean up feature code 9/12 when m117 reaches stable; we're
+//   launching the rest of CR23 in m117.
 BASE_FEATURE(kSquareSuggestIcons,
              "OmniboxSquareIcons",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, forces omnibox suggestion rows to be uniformly sized.
+// TODO(manukh): Clean up feature code 9/12 when m117 reaches stable; we're
+//   launching the rest of CR23 in m117.
 BASE_FEATURE(kUniformRowHeight,
              "OmniboxUniformRowHeight",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, shows the omnibox suggestions popup in WebUI.
 BASE_FEATURE(kWebUIOmniboxPopup,
@@ -376,13 +382,13 @@ BASE_FEATURE(kWebUIOmniboxPopup,
 // If enabled, Omnibox "expanded state" height is increased from 42 px to 44 px.
 BASE_FEATURE(kExpandedStateHeight,
              "OmniboxExpandedStateHeight",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, Omnibox "expanded state" corner radius is increased from 8px to
 // 16px.
 BASE_FEATURE(kExpandedStateShape,
              "OmniboxExpandedStateShape",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, Omnibox "expanded state" colors are updated to match CR23
 // guidelines.
@@ -400,6 +406,12 @@ BASE_FEATURE(kExpandedStateSuggestIcons,
 // guidelines.
 BASE_FEATURE(kExpandedLayout,
              "OmniboxExpandedLayout",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, the shape of the "hover fill" that's rendered for Omnibox
+// suggestions is updated to match CR23 guidelines.
+BASE_FEATURE(kSuggestionHoverFillShape,
+             "OmniboxSuggestionHoverFillShape",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, use Assistant for omnibox voice query recognition instead of
@@ -420,83 +432,13 @@ BASE_FEATURE(kOmniboxSteadyStateBackgroundColor,
              "OmniboxSteadyStateBackgroundColor",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Specifies the CR23 omnibox background color in Dark Mode.
-//
-// In order to control the value of this param via Finch, the
-// `kOmniboxSteadyStateBackgroundColor` feature flag must be enabled.
-//
-// Enabling `ChromeRefresh2023` Level 2 while leaving the
-// `kOmniboxSteadyStateBackgroundColor` flag disabled will result in the param
-// being locked to its default value and ignoring any overrides provided via
-// Finch.
-//
-// If neither `ChromeRefresh2023` Level 2 nor
-// `kOmniboxSteadyStateBackgroundColor` are enabled, then this feature param
-// will have zero effect on Chrome UI.
-const base::FeatureParam<std::string> kOmniboxDarkBackgroundColor(
-    &omnibox::kOmniboxSteadyStateBackgroundColor,
-    "OmniboxDarkBackgroundColor",
-    "0x2A2A2A");
-
-// Specifies the CR23 omnibox background color in Dark Mode (on-hover).
-//
-// In order to control the value of this param via Finch, the
-// `kOmniboxSteadyStateBackgroundColor` feature flag must be enabled.
-//
-// Enabling `ChromeRefresh2023` Level 2 while leaving the
-// `kOmniboxSteadyStateBackgroundColor` flag disabled, will result in the param
-// being locked to its default value and ignoring any overrides provided via
-// Finch.
-//
-// If neither `ChromeRefresh2023` Level 2 nor
-// `kOmniboxSteadyStateBackgroundColor` are enabled, then this feature param
-// will have zero effect on Chrome UI.
-const base::FeatureParam<std::string> kOmniboxDarkBackgroundColorHovered(
-    &omnibox::kOmniboxSteadyStateBackgroundColor,
-    "OmniboxDarkBackgroundColorHovered",
-    "0x4C4C4B");
-
-// Specifies the CR23 omnibox background color in Light Mode.
-//
-// In order to control the value of this param via Finch, the
-// `kOmniboxSteadyStateBackgroundColor` feature flag must be enabled.
-//
-// Enabling `ChromeRefresh2023` Level 2 while leaving the
-// `kOmniboxSteadyStateBackgroundColor` flag disabled, will result in the param
-// being locked to its default value and ignoring any overrides provided via
-// Finch.
-//
-// If neither `ChromeRefresh2023` Level 2 nor
-// `kOmniboxSteadyStateBackgroundColor` are enabled, then this feature param
-// will have zero effect on Chrome UI.
-const base::FeatureParam<std::string> kOmniboxLightBackgroundColor(
-    &omnibox::kOmniboxSteadyStateBackgroundColor,
-    "OmniboxLightBackgroundColor",
-    "0xEBEFF7");
-
-// Specifies the CR23 omnibox background color in Light Mode (on-hover).
-//
-// In order to control the value of this param via Finch, the
-// `kOmniboxSteadyStateBackgroundColor` feature flag must be enabled.
-//
-// Enabling `ChromeRefresh2023` Level 2 while leaving the
-// `kOmniboxSteadyStateBackgroundColor` flag disabled, will result in the param
-// being locked to its default value and ignoring any overrides provided via
-// Finch.
-//
-// If neither `ChromeRefresh2023` Level 2 nor
-// `kOmniboxSteadyStateBackgroundColor` are enabled, then this feature param
-// will have zero effect on Chrome UI.
-const base::FeatureParam<std::string> kOmniboxLightBackgroundColorHovered(
-    &omnibox::kOmniboxSteadyStateBackgroundColor,
-    "OmniboxLightBackgroundColorHovered",
-    "0xE3E7F0");
-
 // If enabled, Omnibox "steady state" height is increased from 28 dp to 34 dp to
 // match CR23 guidelines.
+// TODO(manukh): Clean up feature code 9/12 when m117 reaches stable; we're
+//   launching the rest of CR23 in m117.
 BASE_FEATURE(kOmniboxSteadyStateHeight,
              "OmniboxSteadyStateHeight",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, Omnibox "steady state" text style is updated to match CR23
 // guidelines.
@@ -510,97 +452,23 @@ BASE_FEATURE(kOmniboxSteadyStateTextColor,
              "OmniboxSteadyStateTextColor",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Specifies the CR23 omnibox text color in Dark Mode.
-//
-// In order to control the value of this param via Finch, the
-// `kOmniboxSteadyStateTextColor` feature flag must be enabled.
-//
-// Enabling `ChromeRefresh2023` Level 2 while leaving the
-// `kOmniboxSteadyStateTextColor` flag disabled, will result in the param being
-// locked to its default value and ignoring any overrides provided via Finch.
-//
-// If neither `ChromeRefresh2023` Level 2 nor `kOmniboxSteadyStateTextColor` are
-// enabled, then this feature param will have zero effect on Chrome UI.
-const base::FeatureParam<std::string> kOmniboxTextColorDarkMode(
-    &omnibox::kOmniboxSteadyStateTextColor,
-    "OmniboxTextColorDarkMode",
-    "0xE3E3E3");
-
-// Specifies the CR23 omnibox text color in Dark Mode (dimmed).
-//
-// In order to control the value of this param via Finch, the
-// `kOmniboxSteadyStateTextColor` feature flag must be enabled.
-//
-// Enabling `ChromeRefresh2023` Level 2 while leaving the
-// `kOmniboxSteadyStateTextColor` flag disabled, will result in the param being
-// locked to its default value and ignoring any overrides provided via Finch.
-//
-// If neither `ChromeRefresh2023` Level 2 nor `kOmniboxSteadyStateTextColor` are
-// enabled, then this feature param will have zero effect on Chrome UI.
-const base::FeatureParam<std::string> kOmniboxTextColorDimmedDarkMode(
-    &omnibox::kOmniboxSteadyStateTextColor,
-    "OmniboxTextColorDimmedDarkMode",
-    "0xC7C7C7");
-
-// Specifies the CR23 omnibox text color in Light Mode.
-//
-// In order to control the value of this param via Finch, the
-// `kOmniboxSteadyStateTextColor` feature flag must be enabled.
-//
-// Enabling `ChromeRefresh2023` Level 2 while leaving the
-// `kOmniboxSteadyStateTextColor` flag disabled, will result in the param being
-// locked to its default value and ignoring any overrides provided via Finch.
-//
-// If neither `ChromeRefresh2023` Level 2 nor `kOmniboxSteadyStateTextColor` are
-// enabled, then this feature param will have zero effect on Chrome UI.
-const base::FeatureParam<std::string> kOmniboxTextColorLightMode(
-    &omnibox::kOmniboxSteadyStateTextColor,
-    "OmniboxTextColorLightMode",
-    "0x1F1F1F");
-
-// Specifies the CR23 omnibox text color in Light Mode (dimmed).
-//
-// In order to control the value of this param via Finch, the
-// `kOmniboxSteadyStateTextColor` feature flag must be enabled.
-//
-// Enabling `ChromeRefresh2023` Level 2 while leaving the
-// `kOmniboxSteadyStateTextColor` flag disabled, will result in the param being
-// locked to its default value and ignoring any overrides provided via Finch.
-//
-// If neither`ChromeRefresh2023` Level 2 nor `kOmniboxSteadyStateTextColor` are
-// enabled, then this feature param will have zero effect on Chrome UI.
-const base::FeatureParam<std::string> kOmniboxTextColorDimmedLightMode(
-    &omnibox::kOmniboxSteadyStateTextColor,
-    "OmniboxTextColorDimmedLightMode",
-    "0x474747");
-
 // If enabled, switching tabs will not restore the omnibox state.
 // TODO(manukh): Should also blur the omnibox on tab switch.
 BASE_FEATURE(kDiscardTemporaryInputOnTabSwitch,
              "OmniboxDiscardTemporaryInputOnTabSwitch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// TODO(manukh): Enabled by default 4/5/23 m114. Clean up feature code 5/30 when
-//   m114 reaches stable.
-BASE_FEATURE(kClosePopupWithEscape,
-             "OmniboxClosePopupWithEscape",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable new Omnibox & Suggestions visual style.
 BASE_FEATURE(kOmniboxModernizeVisualUpdate,
              "OmniboxModernizeVisualUpdate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, adds a "starter pack" of @history, @bookmarks, and @settings
-// scopes to Site Search/Keyword Mode.
-BASE_FEATURE(kSiteSearchStarterPack,
-             "OmniboxSiteSearchStarterPack",
-             enabled_by_default_desktop_only);
-
-// Experiment to introduce new security indicators for HTTPS.
+// Android only flag that controls whether the new security indicator should be
+// used, on non-Android platforms this is controlled through the
+// ChromeRefresh2023 flag.
 BASE_FEATURE(kUpdatedConnectionSecurityIndicators,
              "OmniboxUpdatedConnectionSecurityIndicators",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Feature used to default typed navigations to use HTTPS instead of HTTP.
 // This only applies to navigations that don't have a scheme such as
@@ -624,7 +492,7 @@ const char kDefaultTypedNavigationsToHttpsTimeoutParam[] = "timeout";
 // Search Results Page URL.
 BASE_FEATURE(kReportAssistedQueryStats,
              "OmniboxReportAssistedQueryStats",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, `OmniboxEditModel` uses a new version of `current_match_` that
 // should be valid, and therefore usable, more often. The previous
@@ -632,26 +500,26 @@ BASE_FEATURE(kReportAssistedQueryStats,
 // resorts to recalculating it each time its needed.
 BASE_FEATURE(kRedoCurrentMatch,
              "OmniboxRedoCurrentMatch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, when reverting `OmniboxView`, it will first revert the
 // `OmniboxEditModel` before closing the popup. This should be more performant;
 // see comments in `OmniboxView::RevertAll()`.
 BASE_FEATURE(kRevertModelBeforeClosingPopup,
              "OmniboxRevertModelBeforeClosingPopup",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, an existing `AutocompleteClient` will be used instead of
 // generating a new one in `OmniboxEditModel`.
 BASE_FEATURE(kUseExistingAutocompleteClient,
              "OmniboxUseExistingAutocompleteClient",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, Omnibox reports the Searchbox Stats in the gs_lcrp= param in the
 // Search Results Page URL.
 BASE_FEATURE(kReportSearchboxStats,
              "OmniboxReportSearchboxStats",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, logs Omnibox URL scoring signals to OmniboxEventProto for
 // training the ML scoring models.
@@ -670,7 +538,7 @@ BASE_FEATURE(kUrlScoringModel,
 
 // If enabled, appends additional Trending and Recent Search Related Queries to
 // the suggestion list on the NTP and SRP.
-BASE_FEATURE(kInspireMe, "OmniboxInspireMe", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kInspireMe, "OmniboxInspireMe", enabled_by_default_android_only);
 
 // Actions in Suggest is a data-driven feature; it's considered enabled when the
 // data is available.
@@ -685,4 +553,24 @@ BASE_FEATURE(kActionsInSuggest,
 BASE_FEATURE(kCategoricalSuggestions,
              "CategoricalSuggestions",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// If enabled, merges the suggestion subtypes for the remote suggestions and the
+// local verbatim and history suggestion duplicates at the provider level. This
+// is needed for omnibox::kCategoricalSuggestions to function correctly but is
+// being controlled by a separate feature in case there are unintended side
+// effects beyond the categorical suggestions.
+BASE_FEATURE(kMergeSubtypes, "MergeSubtypes", base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool IsOmniboxCr23CustomizeGuardedFeatureEnabled(const base::Feature& feature) {
+  if (!features::CustomizeChromeSupportsChromeRefresh2023()) {
+    // Bail before checking any other feature flags so that associated studies
+    // don't get activated.
+    return false;
+  }
+
+  return features::GetChromeRefresh2023Level() ==
+             features::ChromeRefresh2023Level::kLevel2 ||
+         base::FeatureList::IsEnabled(feature);
+}
+
 }  // namespace omnibox

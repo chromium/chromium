@@ -1,3 +1,7 @@
+# Unless you have a specific reason to ask review to individual owners listed
+# below, please assign your CL to: assistive-code-review@google.com. It will
+# automatically assign your CL to reviewers.
+
 angelaxiao@chromium.org
 wutao@chromium.org
 xiaohuic@chromium.org

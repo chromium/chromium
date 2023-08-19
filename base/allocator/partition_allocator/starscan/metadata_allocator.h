@@ -14,7 +14,7 @@
 namespace partition_alloc::internal {
 
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)
-ThreadSafePartitionRoot& PCScanMetadataAllocator();
+PartitionRoot& PCScanMetadataAllocator();
 void ReinitPCScanMetadataAllocatorForTesting();
 
 // STL allocator which is needed to keep internal data structures required by

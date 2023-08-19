@@ -74,6 +74,26 @@ public class ModalDialogProperties {
         int PRIMARY_OUTLINE_NEGATIVE_FILLED = 2;
     }
 
+    /**
+     *
+     * Styles of the dialog. Only one of them can be set at the same time.
+     */
+    @IntDef({DialogStyles.NORMAL, DialogStyles.FULLSCREEN_DIALOG,
+            DialogStyles.FULLSCREEN_DARK_DIALOG, DialogStyles.DIALOG_WHEN_LARGE})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface DialogStyles {
+        int NORMAL = 0;
+        /** Default Fullscreen mode. */
+        int FULLSCREEN_DIALOG = 1;
+        /**
+         * Fullscreen mode with dark status and navigation bar. This is only supported for Android
+         * versions >= O. For versions < O, the FULLSCREEN_DIALOG style will be used.
+         */
+        int FULLSCREEN_DARK_DIALOG = 2;
+        /** Fullscreen mode on phone, and dialog on large screen. */
+        int DIALOG_WHEN_LARGE = 3;
+    }
+
     /** The {@link Controller} that handles events on user actions. */
     public static final ReadableObjectPropertyKey<Controller> CONTROLLER =
             new ReadableObjectPropertyKey<>();
@@ -162,25 +182,12 @@ public class ModalDialogProperties {
     public static final ReadableIntPropertyKey BUTTON_STYLES = new ReadableIntPropertyKey();
 
     /**
-     * Whether the dialog is of fullscreen style. Both {@code FULLSCREEN_DIALOG} and
-     * {@code DIALOG_WHEN_LARGE} cannot be set to true.
+     * Whether the dialog should follow {@link DialogStyles}.
      */
-    public static final ReadableBooleanPropertyKey FULLSCREEN_DIALOG =
-            new ReadableBooleanPropertyKey();
-
-    /**
-     * Whether the dialog is of DialogWhenLarge style i.e. fullscreen on phone, and dialog on large
-     * screen. Both {@code FULLSCREEN_DIALOG} and {@code DIALOG_WHEN_LARGE} cannot be set to true.
-     */
-    public static final ReadableBooleanPropertyKey DIALOG_WHEN_LARGE =
-            new ReadableBooleanPropertyKey();
+    public static final ReadableIntPropertyKey DIALOG_STYLES = new ReadableIntPropertyKey();
 
     /** Whether the dialog should be focused for accessibility. */
     public static final WritableBooleanPropertyKey FOCUS_DIALOG = new WritableBooleanPropertyKey();
-
-    /** Whether the dialog contents can be larger than the specs prefer (e.g. in fullscreen). */
-    public static final WritableBooleanPropertyKey EXCEED_MAX_HEIGHT =
-            new WritableBooleanPropertyKey();
 
     /**
      * The handler for back presses done on a {@ModalDialogType.APP}. By default, a back press
@@ -203,7 +210,6 @@ public class ModalDialogProperties {
             POSITIVE_BUTTON_CONTENT_DESCRIPTION, POSITIVE_BUTTON_DISABLED, NEGATIVE_BUTTON_TEXT,
             NEGATIVE_BUTTON_CONTENT_DESCRIPTION, NEGATIVE_BUTTON_DISABLED, FOOTER_MESSAGE,
             CANCEL_ON_TOUCH_OUTSIDE, FILTER_TOUCH_FOR_SECURITY, TOUCH_FILTERED_CALLBACK,
-            TITLE_SCROLLABLE, BUTTON_STYLES, FULLSCREEN_DIALOG, DIALOG_WHEN_LARGE, FOCUS_DIALOG,
-            EXCEED_MAX_HEIGHT, APP_MODAL_DIALOG_BACK_PRESS_HANDLER,
-            BUTTON_TAP_PROTECTION_PERIOD_MS};
+            TITLE_SCROLLABLE, BUTTON_STYLES, DIALOG_STYLES, FOCUS_DIALOG,
+            APP_MODAL_DIALOG_BACK_PRESS_HANDLER, BUTTON_TAP_PROTECTION_PERIOD_MS};
 }

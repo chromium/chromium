@@ -18,13 +18,10 @@
 #import "ios/chrome/common/ui/elements/highlight_button.h"
 #import "ios/chrome/common/ui/util/button_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
+#import "ios/chrome/common/ui/util/sdk_forward_declares.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -66,10 +63,8 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
 @property(nonatomic, copy) NSString* subtitleText;
 @property(nonatomic, copy) NSString* primaryActionString;
 @property(nonatomic, copy) NSArray<NSString*>* instructionSteps;
-@property(nonatomic, assign) BOOL hasPrimaryAction;
 @property(nonatomic, assign) WhatsNewType type;
 @property(nonatomic, assign) GURL learnMoreURL;
-@property(nonatomic, assign) BOOL hasLearnMoreAction;
 
 // The navigation bar at the top of the view.
 @property(nonatomic, strong) UINavigationBar* navigationBar;
@@ -83,10 +78,8 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
                       subtitle:(NSString*)subtitle
             primaryActionTitle:(NSString*)primaryAction
               instructionSteps:(NSArray<NSString*>*)instructionSteps
-              hasPrimaryAction:(BOOL)hasPrimaryAction
                           type:(WhatsNewType)type
-                  learnMoreURL:(const GURL&)learnMoreURL
-            hasLearnMoreAction:(BOOL)hasLearnMoreAction {
+                  learnMoreURL:(const GURL&)learnMoreURL {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _bannerImage = image;
@@ -94,10 +87,8 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
     _subtitleText = subtitle;
     _primaryActionString = primaryAction;
     _instructionSteps = instructionSteps;
-    _hasPrimaryAction = hasPrimaryAction;
     _type = type;
     _learnMoreURL = learnMoreURL;
-    _hasLearnMoreAction = hasLearnMoreAction;
   }
   return self;
 }
@@ -132,10 +123,10 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
   actionStackView.alignment = UIStackViewAlignmentFill;
   actionStackView.axis = UILayoutConstraintAxisVertical;
   actionStackView.translatesAutoresizingMaskIntoConstraints = NO;
-  if (self.hasPrimaryAction) {
+  if (self.primaryActionString) {
     [actionStackView addArrangedSubview:self.primaryActionButton];
   }
-  if (self.hasLearnMoreAction) {
+  if (self.learnMoreURL.is_valid()) {
     [actionStackView addArrangedSubview:self.learnMoreActionButton];
   }
 
@@ -241,11 +232,7 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
-  if (self.navigationBar) {
-    self.navigationBar.translucent = NO;
-    self.navigationBar.prefersLargeTitles = YES;
-    self.navigationBar = nil;
-  }
+  self.navigationBar = nil;
   self.actionHandler = nil;
   [super viewDidDisappear:animated];
 }
@@ -254,7 +241,7 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
   [super viewWillAppear:animated];
 
   if ([self.navigationController
-          isKindOfClass:[TableViewNavigationController class]]) {
+          isKindOfClass:[UINavigationController class]]) {
     UIBarButtonItem* doneButton = [[UIBarButtonItem alloc]
         initWithBarButtonSystemItem:UIBarButtonSystemItemDone
                       primaryAction:[UIAction actionWithHandler:^(
@@ -266,8 +253,6 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
     self.navigationItem.rightBarButtonItem = doneButton;
 
     self.navigationBar = self.navigationController.navigationBar;
-    self.navigationBar.translucent = YES;
-    self.navigationBar.prefersLargeTitles = NO;
   }
 }
 
@@ -334,61 +319,61 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
 
 - (UIButton*)primaryActionButton {
   if (!_primaryActionButton) {
-    // TODO(crbug.com/1418068): Simplify after minimum version required is >=
-    // iOS 15.
-    if (base::ios::IsRunningOnIOS15OrLater() &&
-        IsUIButtonConfigurationEnabled()) {
-      if (@available(iOS 15, *)) {
-        UIButtonConfiguration* buttonConfiguration =
-            [UIButtonConfiguration plainButtonConfiguration];
-        _primaryActionButton =
-            [HighlightButton buttonWithConfiguration:buttonConfiguration
-                                       primaryAction:nil];
-      }
+    if (IsUIButtonConfigurationEnabled()) {
+      UIButtonConfiguration* buttonConfiguration =
+          [UIButtonConfiguration plainButtonConfiguration];
+
+      // TODO(crbug.com/1466965): Replace kButtonHorizontalMargin.
+      CGFloat newButtonHorizontalMargin = kButtonHorizontalMargin + 10;
+      buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+          newButtonHorizontalMargin, 0, newButtonHorizontalMargin, 0);
+      UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+      NSDictionary* attributes = @{NSFontAttributeName : font};
+      NSMutableAttributedString* attributedString =
+          [[NSMutableAttributedString alloc]
+              initWithString:self.primaryActionString
+                  attributes:attributes];
+      buttonConfiguration.attributedTitle = attributedString;
+      buttonConfiguration.baseForegroundColor =
+          [UIColor colorNamed:kSolidButtonTextColor];
+      buttonConfiguration.background.backgroundColor =
+          [UIColor colorNamed:kBlueColor];
+      buttonConfiguration.titleLineBreakMode = NSLineBreakByTruncatingTail;
+      buttonConfiguration.background.cornerRadius = kPrimaryButtonCornerRadius;
+      _primaryActionButton =
+          [HighlightButton buttonWithConfiguration:buttonConfiguration
+                                     primaryAction:nil];
     } else {
       _primaryActionButton = [[HighlightButton alloc] initWithFrame:CGRectZero];
-    }
-
-    [_primaryActionButton setTitle:self.primaryActionString
-                          forState:UIControlStateNormal];
-    _primaryActionButton.accessibilityIdentifier =
-        kWhatsNewPrimaryActionAccessibilityIdentifier;
-    [_primaryActionButton setBackgroundColor:[UIColor colorNamed:kBlueColor]];
-    [_primaryActionButton
-        setTitleColor:[UIColor colorNamed:kSolidButtonTextColor]
-             forState:UIControlStateNormal];
-    _primaryActionButton.titleLabel.font =
-        [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
-    _primaryActionButton.titleLabel.adjustsFontForContentSizeCategory = YES;
-    _primaryActionButton.titleLabel.adjustsFontSizeToFitWidth = YES;
-    _primaryActionButton.titleLabel.minimumScaleFactor =
-        kLabelMinimumScaleFactor;
-    _primaryActionButton.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-    _primaryActionButton.layer.cornerRadius = kPrimaryButtonCornerRadius;
-    _primaryActionButton.translatesAutoresizingMaskIntoConstraints = NO;
-    _primaryActionButton.pointerInteractionEnabled = YES;
-    _primaryActionButton.pointerStyleProvider =
-        CreateOpaqueButtonPointerStyleProvider();
-
-    // TODO(crbug.com/1418068): Simplify after minimum version required is >=
-    // iOS 15.
-    if (base::ios::IsRunningOnIOS15OrLater() &&
-        IsUIButtonConfigurationEnabled()) {
-      if (@available(iOS 15, *)) {
-        DCHECK(_primaryActionButton.configuration);
-        _primaryActionButton.configuration.contentInsets =
-            NSDirectionalEdgeInsetsMake(0, kButtonHorizontalMargin, 0,
-                                        kButtonHorizontalMargin);
-      }
-    } else {
+      [_primaryActionButton setTitle:self.primaryActionString
+                            forState:UIControlStateNormal];
+      [_primaryActionButton setBackgroundColor:[UIColor colorNamed:kBlueColor]];
+      [_primaryActionButton
+          setTitleColor:[UIColor colorNamed:kSolidButtonTextColor]
+               forState:UIControlStateNormal];
+      _primaryActionButton.titleLabel.font =
+          [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+      _primaryActionButton.titleLabel.adjustsFontForContentSizeCategory = YES;
+      _primaryActionButton.titleLabel.adjustsFontSizeToFitWidth = YES;
+      _primaryActionButton.titleLabel.minimumScaleFactor =
+          kLabelMinimumScaleFactor;
+      _primaryActionButton.titleLabel.lineBreakMode =
+          NSLineBreakByTruncatingTail;
       UIEdgeInsets titleInsets = UIEdgeInsetsMake(0, kButtonHorizontalMargin, 0,
                                                   kButtonHorizontalMargin);
       SetTitleEdgeInsets(_primaryActionButton, titleInsets);
       UIEdgeInsets contentInsets =
           UIEdgeInsetsMake(kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
       SetContentEdgeInsets(_primaryActionButton, contentInsets);
+      _primaryActionButton.layer.cornerRadius = kPrimaryButtonCornerRadius;
     }
 
+    _primaryActionButton.accessibilityIdentifier =
+        kWhatsNewPrimaryActionAccessibilityIdentifier;
+    _primaryActionButton.translatesAutoresizingMaskIntoConstraints = NO;
+    _primaryActionButton.pointerInteractionEnabled = YES;
+    _primaryActionButton.pointerStyleProvider =
+        CreateOpaqueButtonPointerStyleProvider();
     [_primaryActionButton addTarget:self
                              action:@selector(didTapPrimaryActionButton)
                    forControlEvents:UIControlEventTouchUpInside];
@@ -401,53 +386,46 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
   if (!_learnMoreActionButton) {
     NSString* learnMoreText =
         l10n_util::GetNSString(IDS_IOS_WHATS_NEW_LEARN_MORE_ACTION_TITLE);
+    _learnMoreActionButton = [UIButton buttonWithType:UIButtonTypeSystem];
 
-    // TODO(crbug.com/1418068): Simplify after minimum version required is >=
-    // iOS 15.
-    if (base::ios::IsRunningOnIOS15OrLater() &&
-        IsUIButtonConfigurationEnabled()) {
-      if (@available(iOS 15, *)) {
-        UIButtonConfiguration* buttonConfiguration =
-            [UIButtonConfiguration plainButtonConfiguration];
-        _learnMoreActionButton =
-            [UIButton buttonWithConfiguration:buttonConfiguration
-                                primaryAction:nil];
-      }
-    } else {
-      _learnMoreActionButton = [UIButton buttonWithType:UIButtonTypeSystem];
-    }
-    [_learnMoreActionButton setTitle:learnMoreText
-                            forState:UIControlStateNormal];
-    _learnMoreActionButton.accessibilityIdentifier =
-        kWhatsNewLearnMoreActionAccessibilityIdentifier;
+    if (IsUIButtonConfigurationEnabled()) {
+      UIButtonConfiguration* buttonConfiguration =
+          [UIButtonConfiguration plainButtonConfiguration];
+      _learnMoreActionButton.configuration.contentInsets =
+          NSDirectionalEdgeInsetsMake(0, kButtonHorizontalMargin, 0,
+                                      kButtonHorizontalMargin);
+      UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+      NSDictionary* attributes = @{NSFontAttributeName : font};
+      NSMutableAttributedString* attributedString =
+          [[NSMutableAttributedString alloc] initWithString:learnMoreText
+                                                 attributes:attributes];
+      buttonConfiguration.attributedTitle = attributedString;
+      buttonConfiguration.background.backgroundColor = [UIColor clearColor];
+      buttonConfiguration.baseForegroundColor = [UIColor colorNamed:kBlueColor];
+      buttonConfiguration.titleLineBreakMode = NSLineBreakByTruncatingTail;
 
-    // TODO(crbug.com/1418068): Simplify after minimum version required is >=
-    // iOS 15.
-    if (base::ios::IsRunningOnIOS15OrLater() &&
-        IsUIButtonConfigurationEnabled()) {
-      if (@available(iOS 15, *)) {
-        DCHECK(_learnMoreActionButton.configuration);
-        _learnMoreActionButton.configuration.contentInsets =
-            NSDirectionalEdgeInsetsMake(0, kButtonHorizontalMargin, 0,
-                                        kButtonHorizontalMargin);
-      }
+      _learnMoreActionButton.configuration = buttonConfiguration;
     } else {
+      [_learnMoreActionButton setTitle:learnMoreText
+                              forState:UIControlStateNormal];
+      [_learnMoreActionButton setBackgroundColor:[UIColor clearColor]];
+      [_learnMoreActionButton setTitleColor:[UIColor colorNamed:kBlueColor]
+                                   forState:UIControlStateNormal];
+      _learnMoreActionButton.titleLabel.font =
+          [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+      _learnMoreActionButton.titleLabel.adjustsFontForContentSizeCategory = YES;
+      _learnMoreActionButton.titleLabel.adjustsFontSizeToFitWidth = YES;
+      _learnMoreActionButton.titleLabel.minimumScaleFactor =
+          kLabelMinimumScaleFactor;
+      _learnMoreActionButton.titleLabel.lineBreakMode =
+          NSLineBreakByTruncatingTail;
       UIEdgeInsets titleInsets = UIEdgeInsetsMake(0, kButtonHorizontalMargin, 0,
                                                   kButtonHorizontalMargin);
       SetTitleEdgeInsets(_learnMoreActionButton, titleInsets);
     }
 
-    [_learnMoreActionButton setBackgroundColor:[UIColor clearColor]];
-    [_learnMoreActionButton setTitleColor:[UIColor colorNamed:kBlueColor]
-                                 forState:UIControlStateNormal];
-    _learnMoreActionButton.titleLabel.font =
-        [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-    _learnMoreActionButton.titleLabel.adjustsFontForContentSizeCategory = YES;
-    _learnMoreActionButton.titleLabel.adjustsFontSizeToFitWidth = YES;
-    _learnMoreActionButton.titleLabel.minimumScaleFactor =
-        kLabelMinimumScaleFactor;
-    _learnMoreActionButton.titleLabel.lineBreakMode =
-        NSLineBreakByTruncatingTail;
+    _learnMoreActionButton.accessibilityIdentifier =
+        kWhatsNewLearnMoreActionAccessibilityIdentifier;
     _learnMoreActionButton.translatesAutoresizingMaskIntoConstraints = NO;
     _learnMoreActionButton.pointerInteractionEnabled = YES;
     _learnMoreActionButton.pointerStyleProvider =

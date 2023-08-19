@@ -15,6 +15,7 @@
 #include "device/fido/authenticator_selection_criteria.h"
 #include "device/fido/device_public_key_extension.h"
 #include "device/fido/fido_constants.h"
+#include "device/fido/json_request.h"
 #include "device/fido/pin.h"
 #include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/public_key_credential_params.h"
@@ -156,6 +157,9 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialOptions {
   MakeCredentialOptions(MakeCredentialOptions&&);
   MakeCredentialOptions& operator=(const MakeCredentialOptions&);
   MakeCredentialOptions& operator=(MakeCredentialOptions&&);
+
+  // The JSON form of the request. (May be nullptr.)
+  scoped_refptr<JSONRequest> json;
 
   // authenticator_attachment is a constraint on the type of authenticator
   // that a credential should be created on.

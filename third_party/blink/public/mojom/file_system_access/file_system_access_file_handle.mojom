@@ -9,10 +9,11 @@ import "mojo/public/mojom/base/file.mojom";
 import "third_party/blink/public/mojom/blob/blob.mojom";
 import "third_party/blink/public/mojom/blob/serialized_blob.mojom";
 import "third_party/blink/public/mojom/file_system_access/file_system_access_access_handle_host.mojom";
+import "third_party/blink/public/mojom/file_system_access/file_system_access_capacity_allocation_host.mojom";
+import "third_party/blink/public/mojom/file_system_access/file_system_access_cloud_identifier.mojom";
 import "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom";
 import "third_party/blink/public/mojom/file_system_access/file_system_access_file_delegate_host.mojom";
 import "third_party/blink/public/mojom/file_system_access/file_system_access_file_writer.mojom";
-import "third_party/blink/public/mojom/file_system_access/file_system_access_capacity_allocation_host.mojom";
 import "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom";
 import "third_party/blink/public/mojom/permissions/permission_status.mojom";
 
@@ -49,6 +50,12 @@ struct FileSystemAccessRegularFile {
 union FileSystemAccessAccessHandleFile {
     FileSystemAccessRegularFile regular_file;
     pending_remote<FileSystemAccessFileDelegateHost> incognito_file_delegate;
+};
+
+enum FileSystemAccessAccessHandleLockMode {
+  kReadwrite,
+  kReadOnly,
+  kReadwriteUnsafe,
 };
 
 // This interface represents a handle to a directory in the File System Access
@@ -92,10 +99,12 @@ interface FileSystemAccessFileHandle {
 
   // Returns a file object and an access handle host. The file can be used to
   // initiate file operations from the renderer. The access handle host acts as
-  // an exclusive write lock while the mojo pipe remains open.
+  // a lock while the mojo pipe remains open.
   // TODO(https://crbug.com/1327821): Replace this with expected<T, E> if/when
   // it becomes available for mojom.
-  OpenAccessHandle() =>  (FileSystemAccessError result, FileSystemAccessAccessHandleFile? file, pending_remote<FileSystemAccessAccessHandleHost>? access_handle_host);
+  OpenAccessHandle(FileSystemAccessAccessHandleLockMode mode) =>  (
+    FileSystemAccessError result, FileSystemAccessAccessHandleFile? file,
+    pending_remote<FileSystemAccessAccessHandleHost>? access_handle_host);
 
   // Returns true if `other` represents the same file on disk as this handle.
   // TODO(https://crbug.com/1327821): Replace this with expected<T, E> if/when
@@ -113,4 +122,12 @@ interface FileSystemAccessFileHandle {
   // TODO(https://crbug.com/1327821): Replace this with expected<T, E> if/when
   // it becomes available for mojom.
   GetUniqueId() => (FileSystemAccessError result, string id);
+
+  // Returns a list of cloud identifiers (`provider_name` and `id`) if the file
+  // is synced to the cloud and its syncing client has registered to the
+  // browser.
+  // TODO(https://crbug.com/1327821): Replace this with expected<T, E> if/when
+  // it becomes available for mojom.
+  GetCloudIdentifiers() =>
+      (FileSystemAccessError result, array<FileSystemAccessCloudIdentifier> cloud_identifiers);
 };

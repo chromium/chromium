@@ -29,7 +29,7 @@ using testing::Invoke;
 
 using Checkpoint = testing::MockFunction<void(int step)>;
 
-const base::Time kExampleTime = base::Time::FromJavaTime(1652984901234);
+constexpr base::Time kExampleTime = base::Time::FromJavaTime(1652984901234);
 
 class MockReportSchedulerTimerDelegate : public ReportSchedulerTimer::Delegate {
  public:

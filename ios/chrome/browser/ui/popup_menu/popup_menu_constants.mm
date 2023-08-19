@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 NSString* const kPopupMenuToolsMenuTableViewId =
     @"kPopupMenuToolsMenuTableViewId";
 NSString* const kPopupMenuToolsMenuActionListId =
@@ -19,8 +15,6 @@ NSString* const kToolsMenuStop = @"kToolsMenuStop";
 NSString* const kToolsMenuNewTabId = @"kToolsMenuNewTabId";
 NSString* const kToolsMenuNewWindowId = @"kToolsMenuNewWindowId";
 NSString* const kToolsMenuNewIncognitoTabId = @"kToolsMenuNewIncognitoTabId";
-NSString* const kToolsMenuPinTabId = @"kToolsMenuPinTabId";
-NSString* const kToolsMenuUnpinTabId = @"kToolsMenuUnpinTabId";
 NSString* const kToolsMenuFollowId = @"kToolsMenuFollowId";
 NSString* const kToolsMenuBookmarksId = @"kToolsMenuBookmarksId";
 NSString* const kToolsMenuReadingListId = @"kToolsMenuReadingListId";
@@ -42,9 +36,11 @@ NSString* const kToolsMenuSiteInformation = @"kToolsMenuSiteInformation";
 NSString* const kToolsMenuIncognitoSearch = @"kToolsMenuIncognitoSearch";
 NSString* const kToolsMenuTextZoom = @"kToolsMenuTextZoom";
 NSString* const kTextMenuEnterpriseInfo = @"kTextMenuEnterpriseInfo";
+NSString* const kTextMenuFamilyLinkInfo = @"kTextMenuFamilyLinkInfo";
 NSString* const kToolsMenuFollow = @"kToolsMenuFollow";
 NSString* const kToolsMenuUnfollow = @"kToolsMenuUnfollow";
 NSString* const kToolsMenuClearBrowsingData = @"kToolsMenuClearBrowsingData";
 NSString* const kToolsMenuShareChromeId = @"kToolsMenuShareChromeId";
 NSString* const kToolsMenuWhatsNewId = @"kToolsMenuWhatsNewId";
 NSString* const kToolsMenuPriceNotifications = @"kToolsMenuPriceNotifications";
+NSString* const kToolsMenuEditActionsId = @"kToolsMenuEditActionsId";

@@ -7,19 +7,15 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/apple/foundation_util.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/mac/foundation_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace base::apple {
 
@@ -49,7 +45,7 @@ TEST_F(BackupUtilTest, TestExcludeFileFromBackups_NotByPath) {
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
   FilePath excluded_file_path = temp_dir_.GetPath().Append("excluded");
   base::ScopedCFTypeRef<CFURLRef> excluded_url =
-      mac::FilePathToCFURL(excluded_file_path);
+      apple::FilePathToCFURL(excluded_file_path);
 
   constexpr char placeholder_data[] = "All your base are belong to us!";
   ASSERT_EQ(checked_cast<int>(std::size(placeholder_data)),

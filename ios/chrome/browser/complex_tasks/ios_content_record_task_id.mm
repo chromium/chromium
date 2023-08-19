@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/complex_tasks/ios_content_record_task_id.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 IOSContentRecordTaskId::IOSContentRecordTaskId() {}
 
 IOSContentRecordTaskId::IOSContentRecordTaskId(

@@ -14,6 +14,8 @@
 #include <vector>
 
 #include "base/scoped_native_library.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 
 namespace remoting {
 
@@ -64,6 +66,13 @@ class TouchInjectorWinDelegate {
 // This class just converts the object and hands it off to the Windows API.
 class TouchInjectorWin {
  public:
+  // Interval that we attempt to reinject currently active touch points to keep
+  // them alive. The actual interval might be somewhere within
+  // [kKeepAliveInterval, 2 * kKeepAliveInterval - 1]. The value is chosen
+  // somewhat arbitrarily, but it works well based on observations (timeout on
+  // Windows is about a second).
+  static constexpr base::TimeDelta kKeepAliveInterval = base::Milliseconds(100);
+
   TouchInjectorWin();
 
   TouchInjectorWin(const TouchInjectorWin&) = delete;
@@ -93,6 +102,15 @@ class TouchInjectorWin {
   void EndTouchPoints(const protocol::TouchEvent& event);
   void CancelTouchPoints(const protocol::TouchEvent& event);
 
+  bool InjectTouchInput(const std::vector<POINTER_TOUCH_INFO>& touches);
+
+  void UpdateKeepAliveTimer();
+
+  // Periodically reinjects active touch points to keep them "alive". Some
+  // clients won't send touch move events for press-and-hold gestures. If
+  // Windows doesn't see a touch point within ~1s, it will end the touch point.
+  void OnKeepAlive();
+
   // Set to null if touch injection is not available from the OS.
   std::unique_ptr<TouchInjectorWinDelegate> delegate_;
 
@@ -105,6 +123,12 @@ class TouchInjectorWin {
   // and resize the vector.
   // All the POINTER_TOUCH_INFOs are stored as "move" points.
   std::map<uint32_t, POINTER_TOUCH_INFO> touches_in_contact_;
+
+  // Since all active touches are re-injected, we don't need to store the
+  // timestamp per touch point.
+  base::TimeTicks last_injected_time_;
+
+  base::RepeatingTimer keep_alive_timer_;
 };
 
 }  // namespace remoting

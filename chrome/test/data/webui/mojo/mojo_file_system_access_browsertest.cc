@@ -242,7 +242,8 @@ IN_PROC_BROWSER_TEST_F(MojoFileSystemAccessBrowserTest, CanResolveFilePath) {
 
   // In WebUI, open test file and pass it to WebUIController.
   ui::SelectFileDialog::SetFactory(
-      new SelectPredeterminedFileDialogFactory({temp_file}));
+      std::make_unique<SelectPredeterminedFileDialogFactory>(
+          std::vector<base::FilePath>{temp_file}));
 
   EXPECT_EQ(true,
             content::EvalJs(

@@ -9,7 +9,6 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.Size;
@@ -47,8 +46,6 @@ public class ScreenshotBoundsManagerTest {
 
     @Mock
     private LongScreenshotsTabService mTabService;
-
-    private Bitmap mTestBitmap = Bitmap.createBitmap(512, 1024, Bitmap.Config.ARGB_8888);
 
     @Before
     public void setUp() {

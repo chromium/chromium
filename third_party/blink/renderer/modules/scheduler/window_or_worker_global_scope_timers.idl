@@ -29,7 +29,6 @@
 // https://html.spec.whatwg.org/C/#timers
 [
     ImplementedAs=DOMTimer,
-    LegacyTreatAsPartialInterface,
     Exposed=(Window,Worker)
 ] partial interface mixin WindowOrWorkerGlobalScope {
     // https://html.spec.whatwg.org/C/webappapis.html#windoworworkerglobalscope-mixin

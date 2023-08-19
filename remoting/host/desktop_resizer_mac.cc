@@ -7,9 +7,9 @@
 #include <Carbon/Carbon.h>
 #include <stdint.h>
 
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "remoting/base/logging.h"

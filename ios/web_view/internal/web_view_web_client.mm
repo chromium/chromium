@@ -49,10 +49,6 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/resource/resource_bundle.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace ios_web_view {
 
 WebViewWebClient::WebViewWebClient() = default;
@@ -108,11 +104,18 @@ std::vector<web::JavaScriptFeature*> WebViewWebClient::GetJavaScriptFeatures(
       WebViewMessageHandlerJavaScriptFeature::FromBrowserState(browser_state)};
 }
 
+NSString* WebViewWebClient::GetDocumentStartScriptForAllFrames(
+    web::BrowserState* browser_state) const {
+  WebViewEarlyPageScriptProvider& provider =
+      WebViewEarlyPageScriptProvider::FromBrowserState(browser_state);
+  return provider.GetAllFramesScript();
+}
+
 NSString* WebViewWebClient::GetDocumentStartScriptForMainFrame(
     web::BrowserState* browser_state) const {
   WebViewEarlyPageScriptProvider& provider =
       WebViewEarlyPageScriptProvider::FromBrowserState(browser_state);
-  return provider.GetScript();
+  return provider.GetMainFrameScript();
 }
 
 void WebViewWebClient::PrepareErrorPage(
@@ -166,16 +169,12 @@ void WebViewWebClient::PrepareErrorPage(
   } else if (info.has_value() &&
              [navigation_delegate respondsToSelector:@selector
                                   (webView:handleSSLErrorWithHandler:)]) {
-    __block base::OnceCallback<void(NSString*)> error_html_callback =
-        std::move(callback);
-    CWVSSLErrorHandler* handler =
-        [[CWVSSLErrorHandler alloc] initWithWebState:web_state
-                                                 URL:net::NSURLWithGURL(url)
-                                               error:error
-                                             SSLInfo:info.value()
-                               errorPageHTMLCallback:^(NSString* HTML) {
-                                 std::move(error_html_callback).Run(HTML);
-                               }];
+    CWVSSLErrorHandler* handler = [[CWVSSLErrorHandler alloc]
+             initWithWebState:web_state
+                          URL:net::NSURLWithGURL(url)
+                        error:error
+                      SSLInfo:info.value()
+        errorPageHTMLCallback:base::CallbackToBlock(std::move(callback))];
     [navigation_delegate webView:web_view handleSSLErrorWithHandler:handler];
   } else {
     std::move(callback).Run(error.localizedDescription);

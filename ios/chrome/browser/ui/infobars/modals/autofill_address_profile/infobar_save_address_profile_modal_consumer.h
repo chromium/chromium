@@ -7,21 +7,18 @@
 
 #import <Foundation/Foundation.h>
 
-namespace {
 // Pref keys passed through setupModalViewControllerWithPrefs:.
-NSString* kAddressPrefKey = @"AddressPrefKey";
-NSString* kPhonePrefKey = @"PhonePrefKey";
-NSString* kEmailPrefKey = @"EmailPrefKey";
-NSString* kCurrentAddressProfileSavedPrefKey = @"CurrentAddressProfileSavedKey";
-NSString* kIsUpdateModalPrefKey = @"IsUpdateModalPrefKey";
-NSString* kProfileDataDiffKey = @"ProfileDataDiffKey";
-NSString* kUpdateModalDescriptionKey = @"UpdateModalDescriptionKey";
-NSString* kSyncingUserEmailKey = @"SyncingUserEmailKey";
-NSString* kIsMigrationToAccountKey = @"IsMigrationToAccountKey";
-NSString* kIsProfileAnAccountProfileKey = @"IsProfileAnAccountProfileKey";
-NSString* kProfileDescriptionForMigrationPromptKey =
-    @"ProfileDescriptionForMigrationPromptKey";
-}  // namespace
+extern NSString* const kAddressPrefKey;
+extern NSString* const kPhonePrefKey;
+extern NSString* const kEmailPrefKey;
+extern NSString* const kCurrentAddressProfileSavedPrefKey;
+extern NSString* const kIsUpdateModalPrefKey;
+extern NSString* const kProfileDataDiffKey;
+extern NSString* const kUpdateModalDescriptionKey;
+extern NSString* const kUserEmailKey;
+extern NSString* const kIsMigrationToAccountKey;
+extern NSString* const kIsProfileAnAccountProfileKey;
+extern NSString* const kProfileDescriptionForMigrationPromptKey;
 
 // Consumer for model to push configurations to the SaveAddressProfile UI.
 @protocol InfobarSaveAddressProfileModalConsumer <NSObject>

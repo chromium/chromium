@@ -2,4 +2,4 @@ AXWebArea AXRoleDescription='HTML content'
 ++AXCheckBox AXSubrole=AXSwitch AXRoleDescription='switch' AXTitle='Switch1' AXValue=0
 ++AXCheckBox AXSubrole=AXSwitch AXRoleDescription='switch' AXTitle='Switch2' AXValue=0
 ++AXCheckBox AXSubrole=AXSwitch AXRoleDescription='switch' AXTitle='Switch3' AXValue=1
-++AXCheckBox AXSubrole=AXSwitch AXRoleDescription='switch' AXTitle='Switch4' AXValue=1
+++AXCheckBox AXSubrole=AXSwitch AXRoleDescription='switch' AXTitle='Switch4' AXValue=0

@@ -130,7 +130,7 @@ void LayoutNGTableColumn::UpdateFromElement() {
   }
 }
 
-LayoutSize LayoutNGTableColumn::Size() const {
+PhysicalSize LayoutNGTableColumn::Size() const {
   NOT_DESTROYED();
   if (!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled()) {
     return frame_size_;
@@ -139,7 +139,7 @@ LayoutSize LayoutNGTableColumn::Size() const {
   auto* table = Table();
   DCHECK(table);
   if (table->PhysicalFragmentCount() == 0) {
-    return LayoutSize();
+    return PhysicalSize();
   }
 
   WritingDirectionMode direction = StyleRef().GetWritingDirection();
@@ -155,11 +155,11 @@ LayoutSize LayoutNGTableColumn::Size() const {
       // table column geometries, or if the geometry at that index doesn't point
       // to this layout box, we return early.
       if (column_idx_ >= fragment.TableColumnGeometries()->size()) {
-        return LayoutSize();
+        return PhysicalSize();
       }
       const auto& geometry = (*fragment.TableColumnGeometries())[column_idx_];
       if (geometry.node.GetLayoutBox() != this) {
-        return LayoutSize();
+        return PhysicalSize();
       }
 
       found_geometries = true;
@@ -173,11 +173,10 @@ LayoutSize LayoutNGTableColumn::Size() const {
     size.block_size += fragment.TableGridRect().size.block_size;
   }
 
-  return ToPhysicalSize(size, table->StyleRef().GetWritingMode())
-      .ToLayoutSize();
+  return ToPhysicalSize(size, table->StyleRef().GetWritingMode());
 }
 
-LayoutPoint LayoutNGTableColumn::Location() const {
+LayoutPoint LayoutNGTableColumn::LocationInternal() const {
   NOT_DESTROYED();
   if (!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled()) {
     return frame_location_;

@@ -68,7 +68,7 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   std::unique_ptr<HTMLPreloadScanner> scanner =
       std::make_unique<HTMLPreloadScanner>(
-          std::make_unique<HTMLTokenizer>(options), false, document_url,
+          std::make_unique<HTMLTokenizer>(options), document_url,
           std::move(document_parameters), media_data,
           TokenPreloadScanner::ScannerType::kMainDocument, nullptr);
 

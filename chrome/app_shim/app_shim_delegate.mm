@@ -4,14 +4,11 @@
 
 #include "chrome/app_shim/app_shim_delegate.h"
 
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/app_shim/app_shim_controller.h"
 #include "net/base/mac/url_conversions.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 @implementation AppShimDelegate {
   raw_ptr<AppShimController> _appShimController;  // Weak, owns |this|
@@ -29,7 +26,7 @@
 
 - (BOOL)application:(NSApplication*)app openFile:(NSString*)filename {
   std::vector<base::FilePath> filePaths = {
-      base::mac::NSStringToFilePath(filename)};
+      base::apple::NSStringToFilePath(filename)};
   _appShimController->OpenFiles(filePaths);
   return YES;
 }
@@ -37,7 +34,7 @@
 - (void)application:(NSApplication*)app openFiles:(NSArray*)filenames {
   std::vector<base::FilePath> filePaths;
   for (NSString* filename in filenames)
-    filePaths.push_back(base::mac::NSStringToFilePath(filename));
+    filePaths.push_back(base::apple::NSStringToFilePath(filename));
   _appShimController->OpenFiles(filePaths);
   [app replyToOpenOrPrint:NSApplicationDelegateReplySuccess];
 }
@@ -61,7 +58,20 @@
 }
 
 - (BOOL)validateUserInterfaceItem:(id<NSValidatedUserInterfaceItem>)item {
+  SEL action = [item action];
+  if (action == @selector(commandDispatch:)) {
+    NSInteger tag = [item tag];
+    if (tag == IDC_WEB_APP_SETTINGS || tag == IDC_NEW_WINDOW) {
+      return YES;
+    }
+  }
   return NO;
+}
+
+- (void)commandDispatch:(id)sender {
+  NSInteger tag = [sender tag];
+  NSLog(@"Dispatching: %d", int(tag));
+  _appShimController->CommandDispatch(tag);
 }
 
 - (NSMenu*)applicationDockMenu:(NSApplication*)sender {

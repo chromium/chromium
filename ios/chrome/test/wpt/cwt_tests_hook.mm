@@ -4,13 +4,10 @@
 
 #import "ios/chrome/app/tests_hook.h"
 
+#import "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
 #import "ios/chrome/test/wpt/cwt_constants.h"
 #import "ios/chrome/test/wpt/cwt_webdriver_app_interface.h"
 #import "ios/third_party/edo/src/Service/Sources/EDOHostService.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace tests_hook {
 
@@ -47,10 +44,19 @@ bool DisableMainThreadFreezeDetection() {
 bool DelayAppLaunchPromos() {
   return true;
 }
+std::unique_ptr<ProfileOAuth2TokenService> GetOverriddenTokenService(
+    PrefService* user_prefs,
+    std::unique_ptr<ProfileOAuth2TokenServiceDelegate> delegate) {
+  return nullptr;
+}
 policy::ConfigurationPolicyProvider* GetOverriddenPlatformPolicyProvider() {
   return nullptr;
 }
 std::unique_ptr<SystemIdentityManager> CreateSystemIdentityManager() {
+  return nullptr;
+}
+std::unique_ptr<password_manager::BulkLeakCheckServiceInterface>
+GetOverriddenBulkLeakCheckService() {
   return nullptr;
 }
 void SetUpTestsIfPresent() {

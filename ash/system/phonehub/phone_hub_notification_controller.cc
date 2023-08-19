@@ -145,6 +145,11 @@ class PhoneHubAshNotificationView : public AshNotificationView {
     action_buttons_row_->SetVisible(true);
     inline_reply_->textfield()->SetText(std::u16string());
 
+    // Since the focus may still be on the now-hidden buttons used to send a
+    // message, refocus on the entire notification.
+    CHECK(GetFocusManager());
+    GetFocusManager()->SetFocusedView(this);
+
     // Briefly disable reply button.
     reply_button_->SetEnabled(false);
     enable_reply_timer_.Start(

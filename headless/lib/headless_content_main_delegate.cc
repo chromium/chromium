@@ -176,7 +176,14 @@ absl::optional<int> HeadlessContentMainDelegate::BasicStartupComplete() {
   // The DevTools remote debugging pipe file descriptors need to be checked
   // before any other files are opened, see https://crbug.com/1423048.
   const bool is_browser = !command_line->HasSwitch(::switches::kProcessType);
+#if BUILDFLAG(IS_WIN)
+  const bool pipes_are_specified_explicitly =
+      command_line->HasSwitch(::switches::kRemoteDebuggingIoPipes);
+#else
+  const bool pipes_are_specified_explicitly = false;
+#endif
   if (is_browser && command_line->HasSwitch(::switches::kRemoteDebuggingPipe) &&
+      !pipes_are_specified_explicitly &&
       !devtools_pipe::AreFileDescriptorsOpen()) {
     LOG(ERROR) << "Remote debugging pipe file descriptors are not open.";
     return EXIT_FAILURE;
@@ -502,7 +509,6 @@ absl::optional<int> HeadlessContentMainDelegate::PostEarlyInitialization(
         // Animtion-only BeginFrames are only supported when updates from the
         // impl-thread are disabled, see go/headless-rendering.
         cc::switches::kDisableCheckerImaging,
-        blink::switches::kDisableThreadedScrolling,
         // Ensure that image animations don't resync their animation timestamps
         // when looping back around.
         blink::switches::kDisableImageAnimationResync,

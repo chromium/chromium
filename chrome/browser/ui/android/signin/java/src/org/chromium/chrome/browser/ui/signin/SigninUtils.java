@@ -12,10 +12,7 @@ import android.os.Build;
 import android.provider.Settings;
 import android.text.TextUtils;
 
-import org.chromium.base.CommandLine;
 import org.chromium.base.IntentUtils;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 
 /**
@@ -70,12 +67,21 @@ public final class SigninUtils {
         if (!TextUtils.isEmpty(profileData.getFullName())) {
             return context.getString(R.string.sync_promo_continue_as, profileData.getFullName());
         }
-        if (!profileData.hasDisplayableEmailAddress()
-                && (CommandLine.getInstance().hasSwitch(
-                            ChromeSwitches.FORCE_HIDE_NON_DISPLAYABLE_ACCOUNT_EMAIL_FRE)
-                        || ChromeFeatureList.sHideNonDisplayableAccountEmail.isEnabled())) {
+        if (!profileData.hasDisplayableEmailAddress()) {
             return context.getString(R.string.sync_promo_continue);
         }
         return context.getString(R.string.sync_promo_continue_as, profileData.getAccountEmail());
+    }
+
+    /**
+     * Returns the accessibility label for the the account picker.
+     */
+    public static String getChooseAccountLabel(
+            final Context context, DisplayableProfileData profileData) {
+        if (profileData.hasDisplayableEmailAddress()) {
+            return context.getString(R.string.signin_account_picker_description_with_email,
+                    profileData.getAccountEmail());
+        }
+        return context.getString(R.string.signin_account_picker_description);
     }
 }

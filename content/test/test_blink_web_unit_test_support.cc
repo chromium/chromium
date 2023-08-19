@@ -43,8 +43,8 @@
 #include "v8/include/v8.h"
 
 #if BUILDFLAG(IS_APPLE)
-#include "base/mac/foundation_util.h"
-#include "base/mac/scoped_nsautorelease_pool.h"
+#include "base/apple/foundation_util.h"
+#include "base/apple/scoped_nsautorelease_pool.h"
 #endif
 
 #ifdef V8_USE_EXTERNAL_STARTUP_DATA
@@ -76,7 +76,7 @@ namespace content {
 TestBlinkWebUnitTestSupport::TestBlinkWebUnitTestSupport(
     TestBlinkWebUnitTestSupport::SchedulerType scheduler_type) {
 #if BUILDFLAG(IS_APPLE)
-  base::mac::ScopedNSAutoreleasePool autorelease_pool;
+  base::apple::ScopedNSAutoreleasePool autorelease_pool;
 #endif
 
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
@@ -127,7 +127,6 @@ TestBlinkWebUnitTestSupport::TestBlinkWebUnitTestSupport(
   blink::Initialize(this, &binders, main_thread_scheduler_.get());
   g_test_platform = this;
   blink::SetWebTestMode(true);
-  blink::WebRuntimeFeatures::EnableDatabase(true);
   blink::WebRuntimeFeatures::EnableNotifications(true);
   blink::WebRuntimeFeatures::EnableTouchEventFeatureDetection(true);
 
@@ -147,14 +146,6 @@ TestBlinkWebUnitTestSupport::~TestBlinkWebUnitTestSupport() {
 }
 
 blink::WebString TestBlinkWebUnitTestSupport::UserAgent() {
-  return blink::WebString::FromUTF8("test_runner/0.0.0.0");
-}
-
-blink::WebString TestBlinkWebUnitTestSupport::FullUserAgent() {
-  return blink::WebString::FromUTF8("test_runner/0.0.0.0");
-}
-
-blink::WebString TestBlinkWebUnitTestSupport::ReducedUserAgent() {
   return blink::WebString::FromUTF8("test_runner/0.0.0.0");
 }
 

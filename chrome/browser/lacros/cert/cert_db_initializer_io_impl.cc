@@ -103,7 +103,8 @@ void LoadSlotsOnWorkerThread(
   std::move(callback).Run(std::move(private_slot), std::move(system_slot));
 }
 
-void NotifyCertsChangedInLacrosOnUIThread() {
+void NotifyCertsChangedInLacrosOnUIThread(
+    crosapi::mojom::CertDatabaseChangeType change_type) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   chromeos::LacrosService* service = chromeos::LacrosService::Get();
@@ -116,7 +117,7 @@ void NotifyCertsChangedInLacrosOnUIThread() {
 
   chromeos::LacrosService::Get()
       ->GetRemote<crosapi::mojom::CertDatabase>()
-      ->OnCertsChangedInLacros();
+      ->OnCertsChangedInLacros(change_type);
 }
 
 }  // namespace
@@ -218,7 +219,16 @@ void CertDbInitializerIOImpl::InitializeReadOnlyNssCertDatabase(
   ready_callback_list_.Notify(nss_cert_database_.get());
 }
 
-void CertDbInitializerIOImpl::OnCertDBChanged() {
+void CertDbInitializerIOImpl::OnTrustStoreChanged() {
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(NotifyCertsChangedInLacrosOnUIThread));
+      FROM_HERE,
+      base::BindOnce(NotifyCertsChangedInLacrosOnUIThread,
+                     crosapi::mojom::CertDatabaseChangeType::kTrustStore));
+}
+
+void CertDbInitializerIOImpl::OnClientCertStoreChanged() {
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(NotifyCertsChangedInLacrosOnUIThread,
+                     crosapi::mojom::CertDatabaseChangeType::kClientCertStore));
 }

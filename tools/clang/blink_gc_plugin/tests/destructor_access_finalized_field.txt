@@ -14,6 +14,6 @@ destructor_access_finalized_field.cpp:20:5: warning: [blink-gc] Finalizer '~Heap
     m_objs[0];
     ^
 ./destructor_access_finalized_field.h:41:3: note: [blink-gc] Potentially finalized field 'm_objs' declared here:
-  Vector<Member<HeapObject>> m_objs;
+  HeapVector<Member<HeapObject>> m_objs;
   ^
 3 warnings generated.

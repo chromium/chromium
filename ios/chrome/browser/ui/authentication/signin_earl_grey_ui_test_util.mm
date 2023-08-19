@@ -4,8 +4,9 @@
 
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/test/ios/wait_util.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
@@ -25,10 +26,6 @@
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util_mac.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using chrome_test_util::ButtonWithAccessibilityLabel;
 using chrome_test_util::PrimarySignInButton;
@@ -82,11 +79,7 @@ void CloseSigninManagedAccountDialogIfAny(FakeSystemIdentity* fakeIdentity) {
         fakeIdentity.gaiaID, [SigninEarlGreyAppInterface primaryAccountGaiaID]);
     return;
   }
-  [ChromeEarlGreyUI openSettingsMenu];
-  [[[EarlGrey selectElementWithMatcher:chrome_test_util::PrimarySignInButton()]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionUp, 150)
-      onElementWithMatcher:chrome_test_util::SettingsCollectionView()]
-      performAction:grey_tap()];
+  [SigninEarlGreyUI tapPrimarySignInButtonInRecentTabs];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kIdentityButtonControlIdentifier)]
       performAction:grey_tap()];
@@ -96,7 +89,16 @@ void CloseSigninManagedAccountDialogIfAny(FakeSystemIdentity* fakeIdentity) {
   [self tapSigninConfirmationDialog];
   CloseSigninManagedAccountDialogIfAny(fakeIdentity);
 
-  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(
+                                       kTableViewNavigationDismissButtonId),
+                                   grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_swipeSlowInDirection(kGREYDirectionUp)
+      onElementWithMatcher:
+          grey_allOf(grey_accessibilityID(
+                         kRecentTabsTableViewControllerAccessibilityIdentifier),
+                     grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
 
   // Sync utilities require sync to be initialized in order to perform
@@ -319,19 +321,10 @@ void CloseSigninManagedAccountDialogIfAny(FakeSystemIdentity* fakeIdentity) {
   [[EarlGrey selectElementWithMatcher:
                  grey_accessibilityID(
                      kSyncEncryptionPassphraseTextFieldAccessibilityIdentifier)]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     kSyncEncryptionPassphraseTextFieldAccessibilityIdentifier)]
-      performAction:grey_typeText(passphrase)];
-
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_kindOfClassName(@"_UIButtonBarButton"),
-                                   ButtonWithAccessibilityLabel(
-                                       l10n_util::GetNSString(
-                                           IDS_IOS_SYNC_DECRYPT_BUTTON)),
-                                   nil)] performAction:grey_tap()];
+      performAction:grey_replaceText(passphrase)];
+  // grey_replaceText triggers textFieldDidEndEditing, which the
+  // SyncEncryptionPassphraseTableViewController will treat as a signInPressed,
+  // so there's no reason to tap the 'enter' button.
 }
 #pragma mark - Private
 

@@ -89,16 +89,11 @@ void HTMLTableCellElement::CollectStyleForPresentationAttribute(
     const AtomicString& value,
     MutableCSSPropertyValueSet* style) {
   if (name == html_names::kNowrapAttr) {
-    if (!RuntimeEnabledFeatures::CSSWhiteSpaceShorthandEnabled()) {
-      AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kWhiteSpace,
-                                              CSSValueID::kNowrap);
-    } else {
-      // Longhands of `white-space: nowrap`.
-      AddPropertyToPresentationAttributeStyle(
-          style, CSSPropertyID::kWhiteSpaceCollapse, CSSValueID::kCollapse);
-      AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kTextWrap,
-                                              CSSValueID::kNowrap);
-    }
+    // Longhands of `white-space: nowrap`.
+    AddPropertyToPresentationAttributeStyle(
+        style, CSSPropertyID::kWhiteSpaceCollapse, CSSValueID::kCollapse);
+    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kTextWrap,
+                                            CSSValueID::kNowrap);
   } else if (name == html_names::kWidthAttr) {
     if (!value.empty()) {
       AddHTMLLengthToStyle(style, CSSPropertyID::kWidth, value,

@@ -15,7 +15,7 @@ AutofillProfile CreateServerProfile(const std::string& server_id) {
 
 CreditCard CreateServerCreditCard(const std::string& server_id) {
   // TODO(sebsg): Set data.
-  return CreditCard(CreditCard::MASKED_SERVER_CARD, server_id);
+  return CreditCard(CreditCard::RecordType::kMaskedServerCard, server_id);
 }
 
 sync_pb::AutofillWalletSpecifics CreateAutofillWalletSpecificsForCard(

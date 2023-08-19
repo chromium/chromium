@@ -58,9 +58,11 @@ class FeatureRef {
   raw_ref<const Feature> feature_;
 };
 
-// ScopedFeatureList resets the global FeatureList instance to a new empty
-// instance and restores the original instance upon destruction. When using the
-// non-deprecated APIs, a corresponding FieldTrialList is also created.
+// ScopedFeatureList resets the global FeatureList instance to a new instance
+// and restores the original instance upon destruction. Whether the existing
+// FeatureList state is kept or discarded depends on the `Init` method called.
+// When using the non-deprecated APIs, a corresponding FieldTrialList is also
+// created.
 //
 // Note: Re-using the same object is allowed. To reset the feature list and
 // initialize it anew, call `Reset` and then one of the `Init` methods.

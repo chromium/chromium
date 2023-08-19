@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/network/policy_util.h"
 
 #include <memory>
+#include <sstream>
 #include <utility>
 
 #include "base/check.h"
@@ -25,10 +26,14 @@
 #include "components/onc/onc_constants.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
+#include "third_party/re2/src/re2/re2.h"
 
 namespace ash::policy_util {
 
 const char kFakeCredential[] = "FAKE_CREDENTIAL_VPaJDV9x";
+
+// This pattern captures the entire activation code except the matching ID.
+const char kActivationCodePattern[] = R"((^LPA\:1\$[a-zA-Z0-9.\-+*\/:%]*\$))";
 
 namespace {
 
@@ -154,30 +159,53 @@ void ApplyGlobalAutoconnectPolicy(NetworkProfile::Type profile_type,
 }  // namespace
 
 SmdxActivationCode::SmdxActivationCode(Type type, std::string value)
-    : type(type), value(value) {}
+    : type_(type), value_(value) {}
 
 SmdxActivationCode::SmdxActivationCode(SmdxActivationCode&& other) {
-  type = other.type;
-  value = std::move(other.value);
+  type_ = other.type_;
+  value_ = std::move(other.value_);
 }
 
 SmdxActivationCode& SmdxActivationCode::operator=(SmdxActivationCode&& other) {
-  type = other.type;
-  value = std::move(other.value);
+  type_ = other.type_;
+  value_ = std::move(other.value_);
   return *this;
 }
 
-std::ostream& operator<<(std::ostream& stream,
-                         const SmdxActivationCode& activation_code) {
-  switch (activation_code.type) {
+std::string SmdxActivationCode::ToString() const {
+  return GetString(/*for_error_message=*/false);
+}
+
+std::string SmdxActivationCode::ToErrorString() const {
+  return GetString(/*for_error_message=*/true);
+}
+
+std::string SmdxActivationCode::GetString(bool for_error_message) const {
+  std::stringstream ss;
+  ss << "[type: ";
+
+  switch (type_) {
     case SmdxActivationCode::Type::SMDP:
-      stream << "SM-DP+";
-      return stream;
+      ss << "SM-DP+";
+      break;
     case SmdxActivationCode::Type::SMDS:
-      stream << "SM-DS";
-      return stream;
+      ss << "SM-DS";
+      break;
   }
-  NOTREACHED();
+
+  if (for_error_message) {
+    ss << ", value: ";
+
+    std::string sanitized;
+    if (RE2::PartialMatch(value_, kActivationCodePattern, &sanitized)) {
+      ss << sanitized;
+    } else {
+      ss << "<bad format>";
+    }
+  }
+
+  ss << "]";
+  return ss.str();
 }
 
 base::Value::Dict CreateManagedONC(const base::Value::Dict* global_policy,

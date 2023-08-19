@@ -4,9 +4,9 @@
 
 #import "ios/web/navigation/crw_wk_navigation_handler.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
 #import "base/ios/ns_error_util.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
@@ -48,10 +48,6 @@
 #import "net/cert/x509_util_apple.h"
 #import "net/http/http_content_disposition.h"
 #import "url/gurl.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using web::wk_navigation_util::kReferrerHeaderName;
 using web::wk_navigation_util::IsRestoreSessionUrl;
@@ -167,8 +163,19 @@ web::HttpsUpgradeType GetFailedHttpsUpgradeType(
                         preferences:(WKWebpagePreferences*)preferences
                     decisionHandler:(void (^)(WKNavigationActionPolicy,
                                               WKWebpagePreferences*))handler {
-  GURL requestURL = net::GURLWithNSURL(action.request.URL);
+  // Check if OS lockdown mode is enabled and update the preference value.
+  if (!self.beingDestroyed) {
+    static dispatch_once_t onceToken;
+    web::BrowserState* browser_state = self.webStateImpl->GetBrowserState();
+    dispatch_once(&onceToken, ^{
+      if (@available(iOS 16.0, *)) {
+        web::GetWebClient()->SetOSLockdownModeEnabled(
+            browser_state, preferences.lockdownModeEnabled);
+      }
+    });
+  }
 
+  GURL requestURL = net::GURLWithNSURL(action.request.URL);
   const web::UserAgentType userAgentType =
       [self userAgentForNavigationAction:action webView:webView];
 
@@ -223,10 +230,19 @@ web::HttpsUpgradeType GetFailedHttpsUpgradeType(
                               preferences.lockdownModeEnabled);
       }
 
-      if (self.webStateImpl) {
+      if (!self.beingDestroyed) {
         web::BrowserState* browser_state = self.webStateImpl->GetBrowserState();
-        if (web::GetWebClient()->IsBrowserLockdownModeEnabled(browser_state))
+        bool browser_lockdown_mode_enabled =
+            web::GetWebClient()->IsBrowserLockdownModeEnabled(browser_state);
+        if ((policy == WKNavigationActionPolicyAllow) &&
+            isMainFrameNavigationAction) {
+          UMA_HISTOGRAM_BOOLEAN(
+              "IOS.MainFrameNavigationIsInBrowserLockdownMode",
+              browser_lockdown_mode_enabled);
+        }
+        if (browser_lockdown_mode_enabled) {
           preferences.lockdownModeEnabled = true;
+        }
       }
     }
 #endif  // defined (__IPHONE_16_0)
@@ -1643,7 +1659,7 @@ web::HttpsUpgradeType GetFailedHttpsUpgradeType(
       base::ScopedCFTypeRef<CFArrayRef> certificateChain(
           SecTrustCopyCertificateChain(trust));
       SecCertificateRef secCertificate =
-          base::mac::CFCastStrict<SecCertificateRef>(
+          base::apple::CFCastStrict<SecCertificateRef>(
               CFArrayGetValueAtIndex(certificateChain, 0));
       leafCert = net::x509_util::CreateX509CertificateFromSecCertificate(
           base::ScopedCFTypeRef<SecCertificateRef>(secCertificate,
@@ -1872,7 +1888,8 @@ web::HttpsUpgradeType GetFailedHttpsUpgradeType(
   self.navigationManagerImpl->AddPendingItem(
       blockedURL, web::Referrer(), transition,
       web::NavigationInitiationType::BROWSER_INITIATED,
-      /*is_post_navigation=*/false, web::HttpsUpgradeType::kNone);
+      /*is_post_navigation=*/false, /*is_error_navigation=*/true,
+      web::HttpsUpgradeType::kNone);
 
   // Create context.
   std::unique_ptr<web::NavigationContextImpl> context =
@@ -1882,6 +1899,8 @@ web::HttpsUpgradeType GetFailedHttpsUpgradeType(
           /*is_renderer_initiated=*/false);
   std::unique_ptr<web::NavigationItemImpl> item =
       self.navigationManagerImpl->ReleasePendingItem();
+  CHECK(item);
+
   context->SetNavigationItemUniqueID(item->GetUniqueID());
   context->SetItem(std::move(item));
   context->SetError(error);

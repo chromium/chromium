@@ -26,7 +26,6 @@
 <translation id="2060505056492490888">El signo "<ph name="DOT" />" está colocado en una posición incorrecta en "<ph name="INVALIDDOMAIN" />".</translation>
 <translation id="2148716181193084225">Hoy</translation>
 <translation id="2226276347425096477">Acorta este texto a <ph name="MAX_CHARACTERS" /> caracteres o menos (actualmente estás usando <ph name="CURRENT_LENGTH" /> caracteres).</translation>
-<translation id="2246498165605549352">Archivo local</translation>
 <translation id="2247351761944213033">Semana <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Pista <ph name="NUMBER" /></translation>
 <translation id="2393030564806080191">Valor hexadecimal de color</translation>
@@ -89,6 +88,7 @@
 <translation id="5425179576310518467">fecha actual</translation>
 <translation id="5466621249238537318">Selecciona uno o más archivos.</translation>
 <translation id="5468998798572797635">salir de pantalla completa</translation>
+<translation id="5514612371225420585">Archivo en tu dispositivo</translation>
 <translation id="5516235301412634559">0.75</translation>
 <translation id="5537725057119320332">Transmitir</translation>
 <translation id="5546461542133609677">desactivar silencio</translation>
@@ -113,6 +113,7 @@
 <translation id="6398862346408813489">Mostrar el panel de selección de meses</translation>
 <translation id="6404546809543547843">control deslizante de duración del audio</translation>
 <translation id="6443871981718447451">muestra el menú de subtítulos opcionales</translation>
+<translation id="6484738902856791350">Impresión con formato estilístico</translation>
 <translation id="6550675742724504774">Opciones</translation>
 <translation id="6572309429103589720">Gramática no válida</translation>
 <translation id="658823671542763450">ingresar a pantalla completa</translation>
@@ -163,7 +164,7 @@
 <translation id="8613126697340063924">controlar la reproducción remota</translation>
 <translation id="8634971699417195529">Mostrar el selector de meses</translation>
 <translation id="8637593834423658414">1.75</translation>
-<translation id="8668988909814782445">Unión de líneas</translation>
+<translation id="8668988909814782445">Ajustar líneas</translation>
 <translation id="8750798805984357768">Selecciona una de estas opciones.</translation>
 <translation id="8845239796550121995">Transmitiendo a tu TV</translation>
 <translation id="8875657656876809964">Error de reproducción de video</translation>

@@ -64,8 +64,7 @@ DialogModelTextfield* TestDialogModelHost::FindSingleTextfield() {
     if (field->type(GetPassKey()) == ui::DialogModelField::kTextfield)
       return field->AsTextfield(GetPassKey());
   }
-  NOTREACHED();
-  return nullptr;
+  NOTREACHED_NORETURN();
 }
 
 void TestDialogModelHost::SetSingleTextfieldText(std::u16string text) {
@@ -95,12 +94,16 @@ ElementIdentifier TestDialogModelHost::GetInitiallyFocusedField() {
 
 void TestDialogModelHost::Close() {
   // For now, TestDialogModelHost::Close() is the expected interface to close.
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 void TestDialogModelHost::OnFieldAdded(DialogModelField* field) {
   // TODO(pbos): Figure out what to do here. :)
-  NOTREACHED();
+  NOTREACHED_NORETURN();
+}
+
+void TestDialogModelHost::OnFieldChanged(DialogModelField* field) {
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace ui

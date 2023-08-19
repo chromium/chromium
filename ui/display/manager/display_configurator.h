@@ -127,7 +127,7 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
     base::TimeDelta GetConfigureDelay() const;
 
    private:
-    raw_ptr<DisplayConfigurator> configurator_;  // not owned
+    raw_ptr<DisplayConfigurator, DanglingUntriaged> configurator_;  // not owned
   };
 
   // Flags that can be passed to SetDisplayPower().

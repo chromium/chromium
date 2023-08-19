@@ -121,13 +121,13 @@ bool CookieDeletionInfo::Matches(const CanonicalCookie& cookie,
     return false;
   }
 
-  if (!domains_and_ips_to_delete.empty() &&
-      !DomainMatchesDomains(cookie, domains_and_ips_to_delete)) {
+  if (domains_and_ips_to_delete.has_value() &&
+      !DomainMatchesDomains(cookie, *domains_and_ips_to_delete)) {
     return false;
   }
 
-  if (!domains_and_ips_to_ignore.empty() &&
-      DomainMatchesDomains(cookie, domains_and_ips_to_ignore)) {
+  if (domains_and_ips_to_ignore.has_value() &&
+      DomainMatchesDomains(cookie, *domains_and_ips_to_ignore)) {
     return false;
   }
 

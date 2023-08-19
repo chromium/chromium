@@ -37,7 +37,7 @@ class WebAppShelfBrowserTest : public InProcessBrowserTest {
   web_app::AppId InstallTestWebApp(
       const GURL& start_url,
       web_app::mojom::UserDisplayMode user_display_mode) {
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
+    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
     web_app_info->start_url = start_url;
     web_app_info->user_display_mode = user_display_mode;
     const web_app::AppId app_id =

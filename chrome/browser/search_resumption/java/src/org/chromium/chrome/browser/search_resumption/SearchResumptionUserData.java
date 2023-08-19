@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.search_resumption;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.UserData;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
@@ -58,18 +59,19 @@ public class SearchResumptionUserData implements UserData {
     private long mTimeStampMs = -1;
     private SuggestionResult mCachedSuggestions;
 
-    /**
-     * Static class that implements the initialization-on-demand holder idiom.
-     */
-    private static class LazyHolder {
-        static final SearchResumptionUserData INSTANCE = new SearchResumptionUserData();
-    }
+    private static SearchResumptionUserData sInstance = new SearchResumptionUserData();
 
     /**
      * Gets the singleton instance for the SearchResumptionUserData.
      */
     public static SearchResumptionUserData getInstance() {
-        return SearchResumptionUserData.LazyHolder.INSTANCE;
+        return sInstance;
+    }
+
+    public static void setInstanceForTesting(SearchResumptionUserData value) {
+        var prevValue = sInstance;
+        sInstance = value;
+        ResettersForTesting.register(() -> sInstance = prevValue);
     }
 
     /**

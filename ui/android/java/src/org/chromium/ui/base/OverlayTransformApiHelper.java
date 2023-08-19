@@ -124,9 +124,9 @@ final class OverlayTransformApiHelper
         int bufferTransform;
         try {
             bufferTransform = surfacecontrol.getBufferTransformHint();
-        } catch (NullPointerException e) {
+        } catch (NullPointerException | IllegalStateException e) {
             // Can throw exception from implementation of getBufferTransformHint.
-            // See crbug.com/1358898.
+            // See crbug.com/1358898, crbug.com/1468179.
             return OverlayTransform.INVALID;
         }
         return toOverlayTransform(bufferTransform);

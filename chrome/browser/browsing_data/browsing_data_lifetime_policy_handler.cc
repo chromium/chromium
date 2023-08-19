@@ -34,11 +34,18 @@ bool BrowsingDataLifetimePolicyHandler::CheckPolicySettings(
     policy::PolicyErrorMap* errors) {
   if (!policy::SimpleSchemaValidatingPolicyHandler::CheckPolicySettings(
           policies, errors)) {
+    // Reset the sync types set in case the policy fails to be set after being
+    // previously set.
+    forced_disabled_sync_types_.Clear();
     return false;
   }
 
-  if (!policies.Get(policy_name()))
+  if (!policies.Get(policy_name())) {
+    // Reset the sync types set in case the policy has been unset after being
+    // previously set.
+    forced_disabled_sync_types_.Clear();
     return true;
+  }
 
   // If sync is already disabled or sign in is disabled altogether, the policy
   // requirements are automatically met.

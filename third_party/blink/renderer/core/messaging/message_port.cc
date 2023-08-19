@@ -290,7 +290,7 @@ MessagePortArray* MessagePort::EntanglePorts(
 
 void MessagePort::Trace(Visitor* visitor) const {
   ExecutionContextLifecycleObserver::Trace(visitor);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
 }
 
 bool MessagePort::Accept(mojo::Message* mojo_message) {

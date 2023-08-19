@@ -100,8 +100,6 @@ class may implement the required static method.
 
 Extended attributes on members of an interface mixin work as normal.
 
-* `[LegacyTreatAsPartialInterface]` is part of an ongoing change, as interface mixins used to be treated internally as partial interfaces.
-
 * `[ImplementedAs]` is only necessary for these legacy files: otherwise the class (C++) implementing (IDL) interface mixins does not need to be specified, as this is handled in Blink C++.
 
 * `[RuntimeEnabled]` behaves as for partial interfaces.
@@ -675,26 +673,6 @@ String Example::str(ExecutionContext* context);
 String Example::func(ExecutionContext* context, bool a, bool b);
 ```
 
-_(rare CallWith values)_
-
-#### [CallWith=ThisValue] _(m)_
-
-`[CallWith=ThisValue]` is used in only one place (location.idl).
-
-IDL example:
-
-```webidl
-interface Example {
-    [CallWith=ThisValue] boolean func(boolean a, boolean b);
-};
-```
-
-C++ Blink function signature:
-
-```c++
-bool Example::func(ScriptValue thisValue, bool a, bool b);
-```
-
 *** note
 `[CallWith=...]` arguments are added at the _head_ of `XXX::Create(...)'s` arguments, and ` [RaisesException]`'s `ExceptionState` argument is added at the _tail_ of `XXX::Create(...)`'s arguments.
 ***
@@ -793,7 +771,7 @@ Usage: `[Measure]` can be specified on interfaces, methods, attributes, and cons
 
 (_deprecated_) When specified on an interface usage of the constructor will be measured. This behavior could be changed in the future. Specify `[Measure]` on constructor operations instead.
 
-The generated feature name must be added to `WebFeature` (in [blink/public/mojom/web_feature/web_feature.mojom](https://source.chromium.org/chromium/chromium/src/+/master:third_party/blink/public/mojom/web_feature/web_feature.mojom)).
+The generated feature name must be added to `WebFeature` (in [blink/public/mojom/use_counter/metrics/web_feature.mojom](https://source.chromium.org/chromium/chromium/src/+/master:third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom)).
 
 ```webidl
 [Measure] attribute Node interestingAttribute;
@@ -810,7 +788,7 @@ Usage: `[MeasureAs]` can be specified on interfaces, methods, attributes, and co
 
 (_deprecated_) Specifying `[MeasureAs]` on interfaces is deprecated. Specify `[MeasureAs]` on constructor operations instead.
 
-The value must match one of the enumeration values in `WebFeature` (in [blink/public/mojom/web_feature/web_feature.mojom](https://source.chromium.org/chromium/chromium/src/+/master:third_party/blink/public/mojom/web_feature/web_feature.mojom)).
+The value must match one of the enumeration values in `WebFeature` (in [blink/public/mojom/use_counter/metrics/web_feature.mojom](https://source.chromium.org/chromium/chromium/src/+/master:third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom)).
 
 ```webidl
 [MeasureAs=AttributeWeAreInterestedIn] attribute Node interestingAttribute;
@@ -1216,7 +1194,7 @@ Usage: Applies to arguments of methods. See modules/webgl/WebGLRenderingContextB
 ### [IsolatedContext]
 
 Summary: Interfaces and interface members with a `IsolatedContext` extended attribute are exposed only inside isolated contexts.
-This attribute is primarily intended for Isolated Apps (see [explainer](https://github.com/reillyeon/isolated-web-apps)) with an option for the embedder to include their own additional scenarios.
+This attribute is primarily intended for Isolated Web Apps (see [explainer](https://github.com/WICG/isolated-web-apps)) with an option for the embedder to include their own additional scenarios.
 
 Note that it's likely for these requirements to shift over time: <https://crbug.com/1206150>.
 
@@ -1300,10 +1278,6 @@ the [IsCodeLike] attribute to a type, its instances will be treated as
 "code like" objects, as detailed in the spec.
 
 Standard: [TC39 Dynamic Code Brand Checks](https://github.com/tc39/proposal-dynamic-code-brand-checks)
-
-### [LegacyTreatAsPartialInterface]
-
-Summary: `[LegacyTreatAsPartialInterface]` on an interface mixin means that the mixin is treated as a partial interface, meaning members are accessed via static member functions in a separate class, rather than as instance methods on the instance object `*impl` or class methods on the C++ class implementing the (main) interface. This is legacy from original implementation of mixins, and is being removed ([Bug 360435](https://crbug.com/360435), nbarth@).
 
 ## Discouraged Blink-specific IDL Extended Attributes
 

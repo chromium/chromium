@@ -9,16 +9,12 @@
 #include "components/system_media_controls/system_media_controls.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @class NowPlayingInfoCenterDelegateCocoa;
 
 namespace system_media_controls::internal {
 
 // Wraps an NSObject which interfaces with the MPNowPlayingInfoCenter.
-class API_AVAILABLE(macos(10.13.1)) NowPlayingInfoCenterDelegate {
+class NowPlayingInfoCenterDelegate {
  public:
   NowPlayingInfoCenterDelegate();
   NowPlayingInfoCenterDelegate(const NowPlayingInfoCenterDelegate&) = delete;

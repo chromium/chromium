@@ -67,8 +67,9 @@ ChromeAppBannerManagerAndroid::~ChromeAppBannerManagerAndroid() = default;
 
 void ChromeAppBannerManagerAndroid::OnDidPerformInstallableWebAppCheck(
     const InstallableData& data) {
-  if (data.NoBlockingErrors())
+  if (data.errors.empty()) {
     WebApkUkmRecorder::RecordWebApkableVisit(*data.manifest_url);
+  }
 
   AppBannerManagerAndroid::OnDidPerformInstallableWebAppCheck(data);
 }
@@ -88,7 +89,7 @@ void ChromeAppBannerManagerAndroid::MaybeShowAmbientBadge() {
       web_contents(), GetAndroidWeakPtr(), segmentation_platform_service_,
       pref_service_);
   ambient_badge_manager_->MaybeShow(
-      validated_url_, GetAppName(),
+      validated_url_, GetAppName(), GetAppIdentifier(),
       CreateAddToHomescreenParams(InstallableMetrics::GetInstallSource(
           web_contents(), InstallTrigger::AMBIENT_BADGE)),
       base::BindOnce(&ChromeAppBannerManagerAndroid::ShowBannerFromBadge,
@@ -103,6 +104,17 @@ void ChromeAppBannerManagerAndroid::RecordExtraMetricsForInstallEvent(
     webapk::TrackInstallEvent(
         webapk::ADD_TO_HOMESCREEN_DIALOG_DISMISSED_BEFORE_INSTALLATION);
   }
+}
+
+segmentation_platform::SegmentationPlatformService*
+ChromeAppBannerManagerAndroid::GetSegmentationPlatformService() {
+  // TODO(https://crbug.com/1449993): Implement.
+  // Note: By returning a non-nullptr, all of the Ml code (after metrics
+  // gathering) in `MlInstallabilityPromoter` will execute, including requesting
+  // classifiction & eventually calling `OnMlInstallPrediction` above. Make sure
+  // that the contract of that class is being followed appropriately, and the ML
+  // parts are correct.
+  return nullptr;
 }
 
 bool ChromeAppBannerManagerAndroid::MaybeShowInProductHelp() const {

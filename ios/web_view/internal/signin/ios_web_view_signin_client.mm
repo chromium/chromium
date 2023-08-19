@@ -2,22 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web_view/internal/signin/ios_web_view_signin_client.h"
+#import "ios/web_view/internal/signin/ios_web_view_signin_client.h"
 
-#include "components/signin/core/browser/cookie_settings_util.h"
-#include "ios/web_view/internal/signin/web_view_gaia_auth_fetcher.h"
-#include "ios/web_view/internal/web_view_browser_state.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+#import "components/signin/core/browser/cookie_settings_util.h"
+#import "components/signin/ios/browser/wait_for_network_callback_helper_ios.h"
+#import "components/version_info/channel.h"
+#import "ios/web_view/internal/signin/web_view_gaia_auth_fetcher.h"
+#import "ios/web_view/internal/web_view_browser_state.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
 
 IOSWebViewSigninClient::IOSWebViewSigninClient(
     PrefService* pref_service,
     ios_web_view::WebViewBrowserState* browser_state)
     : network_callback_helper_(
-          std::make_unique<WaitForNetworkCallbackHelper>()),
+          std::make_unique<WaitForNetworkCallbackHelperIOS>()),
       pref_service_(pref_service),
       browser_state_(browser_state) {}
 
@@ -73,7 +71,7 @@ bool IOSWebViewSigninClient::AreNetworkCallsDelayed() {
 }
 
 void IOSWebViewSigninClient::DelayNetworkCall(base::OnceClosure callback) {
-  network_callback_helper_->HandleCallback(std::move(callback));
+  network_callback_helper_->DelayNetworkCall(std::move(callback));
 }
 
 std::unique_ptr<GaiaAuthFetcher> IOSWebViewSigninClient::CreateGaiaAuthFetcher(
@@ -83,3 +81,8 @@ std::unique_ptr<GaiaAuthFetcher> IOSWebViewSigninClient::CreateGaiaAuthFetcher(
       consumer, source, GetURLLoaderFactory());
 }
 
+version_info::Channel IOSWebViewSigninClient::GetClientChannel() {
+  // TODO(crbug.com/1299888): pass the correct channel information once
+  // implemented.
+  return version_info::Channel::STABLE;
+}

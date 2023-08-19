@@ -9,6 +9,7 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
@@ -19,10 +20,6 @@
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 // Enum to describe all 5 cases for a user being signed-in. This enum is used
 // internaly by SignoutActionSheetCoordinator().
@@ -88,8 +85,11 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
 }
 
 - (void)stop {
-  [self.actionSheetCoordinator stop];
-  self.actionSheetCoordinator = nil;
+  [self dismissActionSheetCoordinator];
+}
+
+- (void)dealloc {
+  DCHECK(!self.actionSheetCoordinator);
 }
 
 #pragma mark - ActionSheetCoordinator properties
@@ -196,6 +196,11 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
 
 #pragma mark - Private
 
+- (void)dismissActionSheetCoordinator {
+  [self.actionSheetCoordinator stop];
+  self.actionSheetCoordinator = nil;
+}
+
 // Starts the signout action sheet for the current user state.
 - (void)startActionSheetCoordinatorForSignout {
   self.actionSheetCoordinator = [[ActionSheetCoordinator alloc]
@@ -217,8 +222,7 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
                       weakSelf.confirmSignOut = YES;
                       // Stop the current action sheet coordinator and start a
                       // new one for the next step.
-                      [weakSelf.actionSheetCoordinator stop];
-                      weakSelf.actionSheetCoordinator = nil;
+                      [weakSelf dismissActionSheetCoordinator];
                       [weakSelf startActionSheetCoordinatorForSignout];
                     }
                      style:UIAlertActionStyleDestructive];
@@ -231,6 +235,7 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
           addItemWithTitle:clearFromDeviceTitle
                     action:^{
                       [weakSelf handleSignOutWithForceClearData:YES];
+                      [weakSelf dismissActionSheetCoordinator];
                     }
                      style:UIAlertActionStyleDestructive];
       break;
@@ -242,6 +247,7 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
           addItemWithTitle:clearFromDeviceTitle
                     action:^{
                       [weakSelf handleSignOutWithForceClearData:NO];
+                      [weakSelf dismissActionSheetCoordinator];
                     }
                      style:UIAlertActionStyleDestructive];
       break;
@@ -255,12 +261,14 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
           addItemWithTitle:clearFromDeviceTitle
                     action:^{
                       [weakSelf handleSignOutWithForceClearData:YES];
+                      [weakSelf dismissActionSheetCoordinator];
                     }
                      style:UIAlertActionStyleDestructive];
       [self.actionSheetCoordinator
           addItemWithTitle:keepOnDeviceTitle
                     action:^{
                       [weakSelf handleSignOutWithForceClearData:NO];
+                      [weakSelf dismissActionSheetCoordinator];
                     }
                      style:UIAlertActionStyleDefault];
       break;
@@ -272,6 +280,7 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
           addItemWithTitle:signOutButtonTitle
                     action:^{
                       [weakSelf handleSignOutWithForceClearData:NO];
+                      [weakSelf dismissActionSheetCoordinator];
                     }
                      style:UIAlertActionStyleDestructive];
       break;
@@ -280,8 +289,10 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
   [self.actionSheetCoordinator
       addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
                 action:^{
-                  if (weakSelf)
+                  if (weakSelf) {
                     weakSelf.completion(NO);
+                  }
+                  [weakSelf dismissActionSheetCoordinator];
                 }
                  style:UIAlertActionStyleCancel];
   [self.actionSheetCoordinator start];
@@ -318,11 +329,7 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
     UMA_HISTOGRAM_BOOLEAN("Signin.UserRequestedWipeDataOnSignout",
                           forceClearData);
   }
-  if (forceClearData) {
-    base::RecordAction(base::UserMetricsAction("Signin_SignoutClearData"));
-  } else {
-    base::RecordAction(base::UserMetricsAction("Signin_Signout"));
-  }
+  signin_metrics::RecordSignoutUserAction(forceClearData);
 }
 
 @end

@@ -36,8 +36,10 @@ std::ostream& operator<<(std::ostream& os, ObservedUiEvents event) {
       return os << "kPreviewFormData";
     case ObservedUiEvents::kFormDataFilled:
       return os << "kFormDataFilled";
-    case ObservedUiEvents::kSuggestionShown:
-      return os << "kSuggestionShown";
+    case ObservedUiEvents::kSuggestionsShown:
+      return os << "kSuggestionsShown";
+    case ObservedUiEvents::kSuggestionsHidden:
+      return os << "kSuggestionsHidden";
     case ObservedUiEvents::kNoEvent:
       return os << "kNoEvent";
     default:
@@ -104,7 +106,11 @@ void BrowserAutofillManagerTestDelegateImpl::DidFillFormData() {
 }
 
 void BrowserAutofillManagerTestDelegateImpl::DidShowSuggestions() {
-  FireEvent(ObservedUiEvents::kSuggestionShown);
+  FireEvent(ObservedUiEvents::kSuggestionsShown);
+}
+
+void BrowserAutofillManagerTestDelegateImpl::DidHideSuggestions() {
+  FireEvent(ObservedUiEvents::kSuggestionsHidden);
 }
 
 void BrowserAutofillManagerTestDelegateImpl::OnTextFieldChanged() {}
@@ -160,7 +166,7 @@ void AutofillUiTest::TearDownOnMainThread() {
   // Make sure to close any showing popups prior to tearing down the UI.
   BrowserAutofillManager* autofill_manager = GetBrowserAutofillManager();
   if (autofill_manager)
-    autofill_manager->client()->HideAutofillPopup(PopupHidingReason::kTabGone);
+    autofill_manager->client().HideAutofillPopup(PopupHidingReason::kTabGone);
   current_main_rfh_ = nullptr;
   InProcessBrowserTest::TearDownOnMainThread();
 }

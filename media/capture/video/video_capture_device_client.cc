@@ -531,14 +531,22 @@ VideoCaptureDeviceClient::CreateReadyFrameFromExternalBuffer(
   // Reserve an ID for this buffer that will not conflict with any of the IDs
   // used by |buffer_pool_|.
   int buffer_id_to_drop = VideoCaptureBufferPool::kInvalidId;
+  int buffer_id = VideoCaptureBufferPool::kInvalidId;
   // Use std::move to transfer the handle ownership here since the buffer will
   // be created and confirm each ScopedHandle can only have one owner at a
-  // time.
-  int buffer_id = VideoCaptureBufferPool::kInvalidId;
+  // time. Because the subsequent code mojom::VideoFrameInfoPtr needs to use the
+  // buffer information, so here use |buffer_for_reserve_id| instead of
+  // std::move(buffer).
+  CapturedExternalVideoBuffer buffer_for_reserve_id =
+      CapturedExternalVideoBuffer(std::move(buffer.handle), buffer.format,
+                                  buffer.color_space);
+#if BUILDFLAG(IS_WIN)
+  buffer_for_reserve_id.imf_buffer = std::move(buffer.imf_buffer);
+#endif
   VideoCaptureDevice::Client::ReserveResult reservation_result_code =
-      buffer_pool_->ReserveIdForExternalBuffer(
-          std::move(buffer.handle), buffer.format.pixel_format,
-          visible_rect.size(), &buffer_id_to_drop, &buffer_id);
+      buffer_pool_->ReserveIdForExternalBuffer(std::move(buffer_for_reserve_id),
+                                               visible_rect.size(),
+                                               &buffer_id_to_drop, &buffer_id);
   // If a buffer to retire was specified, retire one.
   if (buffer_id_to_drop != VideoCaptureBufferPool::kInvalidId) {
     auto entry_iter =

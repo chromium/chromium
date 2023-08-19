@@ -12,6 +12,7 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetControllerProvider.java",
     "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetObserver.java",
     "java/src/org/chromium/components/browser_ui/bottomsheet/EmptyBottomSheetObserver.java",
+    "java/src/org/chromium/components/browser_ui/bottomsheet/ExpandedSheetHelper.java",
   ]
 
   deps = [
@@ -50,6 +51,7 @@ android_library_factory("factory_java") {
   deps = [
     ":java",
     ":manager_java",
+    "//base:base_java",
     "//components/browser_ui/widget/android:java",
     "//ui/android:ui_full_java",
     "//ui/android:ui_utils_java",

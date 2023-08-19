@@ -317,9 +317,7 @@ export class PrefsManager {
    */
   async migrateStorageToSettingsPref_(
       storagePrefName, settingsPrefName, value) {
-    chrome.settingsPrivate.setPref(
-        settingsPrefName, value, '' /* unused, see crbug.com/866161 */,
-        () => {});
+    chrome.settingsPrivate.setPref(settingsPrefName, value);
     chrome.storage.sync.remove(storagePrefName);
   }
 
@@ -599,14 +597,12 @@ export class PrefsManager {
     this.enhancedNetworkVoicesEnabled_ = enabled;
     chrome.settingsPrivate.setPref(
         PrefsManager.ENHANCED_NETWORK_VOICES_KEY,
-        this.enhancedNetworkVoicesEnabled_,
-        '' /* unused, see crbug.com/866161 */, () => {});
+        this.enhancedNetworkVoicesEnabled_);
 
     this.enhancedVoicesDialogShown_ = true;
     chrome.settingsPrivate.setPref(
         PrefsManager.ENHANCED_VOICES_DIALOG_SHOWN_KEY,
-        this.enhancedVoicesDialogShown_, '' /* unused, see crbug.com/866161 */,
-        () => {});
+        this.enhancedVoicesDialogShown_);
 
     if (!this.enhancedNetworkVoicesAllowed_) {
       console.warn(

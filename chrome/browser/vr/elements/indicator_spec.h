@@ -22,8 +22,7 @@ struct VR_UI_EXPORT IndicatorSpec {
                 int resource_string,
                 int background_resource_string,
                 int potential_resource_string,
-                CapturingStateModelMemberPtr signal,
-                bool is_url);
+                CapturingStateModelMemberPtr signal);
   IndicatorSpec(const IndicatorSpec& other);
   ~IndicatorSpec();
 
@@ -34,7 +33,6 @@ struct VR_UI_EXPORT IndicatorSpec {
   int background_resource_string;
   int potential_resource_string;
   CapturingStateModelMemberPtr signal;
-  bool is_url;
 };
 
 VR_UI_EXPORT std::vector<IndicatorSpec> GetIndicatorSpecs();

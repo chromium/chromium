@@ -5,8 +5,8 @@
 ++++[static] name='Unnamed ARIA region on plain div uses generic container role.'
 ++[landmark] name='Named region' xml-roles:region
 ++++[static] name='Named ARIA region#1 gets the region role.'
-++[landmark] name='Named ARIA region#2 gets the region role.' labelled-by xml-roles:region
-++++[section] label-for
+++[landmark] name='Named ARIA region#2 gets the region role.' labelled-by=[section] xml-roles:region
+++++[section] label-for=[landmark]
 ++++++[static] name='Named ARIA region#2 gets the region role.'
 ++[landmark] name='Named region' xml-roles:region
 ++++[static] name='Named ARIA region#3 gets the region role.'

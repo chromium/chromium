@@ -12,6 +12,9 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/immediate_crash.h"
 
+#define PA_STRINGIFY_IMPL(s) #s
+#define PA_STRINGIFY(s) PA_STRINGIFY_IMPL(s)
+
 // This header defines the CHECK, DCHECK, and DPCHECK macros.
 //
 // CHECK dies with a fatal error if its condition is not true. It is not
@@ -113,10 +116,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) CheckError {
   PA_UNLIKELY(!(condition)) ? PA_IMMEDIATE_CRASH() \
                             : PA_EAT_CHECK_STREAM_PARAMS()
 
-// TODO(1151236): base/test/gtest_util.h uses CHECK_WILL_STREAM(). After
-// copying (or removing) gtest_util.h and removing gtest_uti.h from partition
-// allocator's DEPS, rename or remove CHECK_WILL_STREAM().
-#define CHECK_WILL_STREAM() false
+#define PA_BASE_CHECK_WILL_STREAM() false
 
 #define PA_BASE_PCHECK(condition)                                        \
   PA_LAZY_CHECK_STREAM(                                                  \
@@ -134,7 +134,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) CheckError {
           .stream(),                                           \
       !PA_ANALYZER_ASSUME_TRUE(condition))
 
-#define CHECK_WILL_STREAM() true
+#define PA_BASE_CHECK_WILL_STREAM() true
 
 #define PA_BASE_PCHECK(condition)                               \
   PA_LAZY_CHECK_STREAM(                                         \

@@ -62,6 +62,7 @@ import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonConstants.TransitionType;
+import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
 
 import java.util.function.BooleanSupplier;
 
@@ -80,6 +81,7 @@ public class OptionalButtonViewTest {
     private BooleanSupplier mMockAnimationChecker;
     private Callback<Transition> mMockBeginDelayedTransition;
     private ViewGroup mMockTransitionRoot;
+    private ListMenuButton mButton;
 
     @Before
     public void setUp() {
@@ -119,6 +121,7 @@ public class OptionalButtonViewTest {
         mActionChipLabel = mOptionalButtonView.findViewById(R.id.action_chip_label);
         mButtonBackground =
                 mOptionalButtonView.findViewById(R.id.swappable_icon_secondary_background);
+        mButton = mOptionalButtonView.findViewById(R.id.optional_toolbar_button);
     }
 
     private ButtonDataImpl getDataForStaticNewTabIconButton() {
@@ -179,6 +182,42 @@ public class OptionalButtonViewTest {
         buttonData.setEnabled(true);
 
         return buttonData;
+    }
+
+    private ButtonDataImpl getDataForTestingTooltipText(int buttonVariant) {
+        Drawable iconDrawable = AppCompatResources.getDrawable(mActivity, R.drawable.new_tab_icon);
+        OnClickListener clickListener = mock(OnClickListener.class);
+        OnLongClickListener longClickListener = mock(OnLongClickListener.class);
+        String contentDescription = mActivity.getString(R.string.actionbar_share);
+
+        ButtonSpec buttonSpec = new ButtonSpec(iconDrawable, clickListener, longClickListener,
+                contentDescription, true, null, /* buttonVariant= */
+                buttonVariant, 0);
+        ButtonDataImpl buttonData = new ButtonDataImpl();
+        buttonData.setButtonSpec(buttonSpec);
+        buttonData.setCanShow(true);
+        buttonData.setEnabled(true);
+
+        return buttonData;
+    }
+
+    @Test
+    public void testHoverTooltipText() {
+        // Test whether Share button tooltip Text is set correctly.
+        ButtonData buttonData = getDataForTestingTooltipText(AdaptiveToolbarButtonVariant.SHARE);
+        mOptionalButtonView.updateButtonWithAnimation(buttonData);
+        Assert.assertEquals("Tooltip text for Share button is not as expected",
+                mButton.getTooltipText(),
+                mActivity.getResources().getString(
+                        R.string.adaptive_toolbar_button_preference_share));
+
+        // Test whether Voice search button tooltip Text is set correctly.
+        buttonData = getDataForTestingTooltipText(AdaptiveToolbarButtonVariant.VOICE);
+        mOptionalButtonView.updateButtonWithAnimation(buttonData);
+        Assert.assertEquals("Tooltip text for Voice search button is not as expected",
+                mButton.getTooltipText(),
+                mActivity.getResources().getString(
+                        R.string.adaptive_toolbar_button_preference_voice_search));
     }
 
     @Test

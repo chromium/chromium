@@ -2,17 +2,17 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# Configuration for a generic x86 android-27 AVD.
+# Configuration for a generic x86 Android-27 (Oreo MR1) AVD.
 
 emulator_package {
   package_name: "chromium/third_party/android_sdk/public/emulator"
-  version: "Dogc_gNCYNb3fIG-ovlMkV5EhjaYwdA_Jw9goUpl3A8C"  # 30.7.5
+  version: "jyllFQutkgCJPjALrVoBHl7mJBbY-S8alvqzqK93LFMC"  # 32.1.14
   dest_path: "generic_android27"
 }
 
 system_image_package {
   package_name: "chromium/third_party/android_sdk/public/system-images/android-27/google_apis/x86"
-  version: "bTYdhg148IddQnOX04g5LgZ24XIXhjrKVRtKMc1fVfIC"  # 11
+  version: "vyNq28Xpw94SATs9y0iwWfF_nvkWA7f2hT-7nBsi47IC"  # r11
   dest_path: "generic_android27"
 }
 system_image_name: "system-images;android-27;google_apis;x86"
@@ -28,6 +28,11 @@ avd_settings {
     density: 480
     height: 1920
     width: 1080
+  }
+  # crbug.com/1459433#c6: Disable GLDMA for Android-27
+  advanced_features {
+    key: "GLDMA"
+    value: "off"
   }
   advanced_features {
     key: "GLESDynamicVersion"

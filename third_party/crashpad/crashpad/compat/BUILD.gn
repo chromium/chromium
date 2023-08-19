@@ -17,7 +17,7 @@ import("../build/crashpad_buildconfig.gni")
 config("compat_config") {
   include_dirs = []
 
-  if (crashpad_is_mac || crashpad_is_ios) {
+  if (crashpad_is_apple) {
     include_dirs += [ "mac" ]
   }
 
@@ -41,7 +41,7 @@ config("compat_config") {
 }
 
 template("compat_target") {
-  if (crashpad_is_mac || crashpad_is_ios) {
+  if (crashpad_is_apple) {
     # There are no sources to compile, which doesn’t mix will with a
     # static_library.
     group(target_name) {
@@ -64,7 +64,7 @@ template("compat_target") {
 compat_target("compat") {
   sources = []
 
-  if (crashpad_is_mac || crashpad_is_ios) {
+  if (crashpad_is_apple) {
     sources += [
       "mac/Availability.h",
       "mac/AvailabilityVersions.h",

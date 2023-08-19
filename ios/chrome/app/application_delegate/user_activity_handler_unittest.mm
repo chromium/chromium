@@ -49,10 +49,6 @@
 #import "ui/base/page_transition_types.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 #pragma mark - Test class.
 
 // A block that takes as arguments the caller and the arguments from
@@ -91,10 +87,6 @@ class UserActivityHandlerTest : public PlatformTest {
 
   void resetHandleStartupParametersHasBeenCalled() {
     handle_startup_parameters_has_been_called_ = NO;
-  }
-
-  NSString* GetTabIdForWebState(web::WebState* web_state) {
-    return web_state->GetStableIdentifier();
   }
 
   // Mock & stub a NSUserActivity object with an arbitrary `interaction`
@@ -783,11 +775,19 @@ TEST_F(UserActivityHandlerTest,
   FakeConnectionInformation* fakeConnectionInformation =
       [[FakeConnectionInformation alloc] init];
 
+  // Set a list of parameter to test, where each entry has a post open action
+  // name, whether or not it should open a new tab, whether or not to use
+  // incognito, and the post open action enum value.
   NSArray* parametersToTest = @[
-    @[ @"OpenNewSearch", @NO, @(FOCUS_OMNIBOX) ],
-    @[ @"OpenIncognitoSearch", @YES, @(FOCUS_OMNIBOX) ],
-    @[ @"OpenVoiceSearch", @NO, @(START_VOICE_SEARCH) ],
-    @[ @"OpenQRScanner", @NO, @(START_QR_CODE_SCANNER) ]
+    @[ @"OpenNewSearch", @YES, @NO, @(FOCUS_OMNIBOX) ],
+    @[ @"OpenIncognitoSearch", @YES, @YES, @(FOCUS_OMNIBOX) ],
+    @[ @"OpenVoiceSearch", @YES, @NO, @(START_VOICE_SEARCH) ],
+    @[ @"OpenQRScanner", @YES, @NO, @(START_QR_CODE_SCANNER) ],
+    @[
+      @"OpenLensFromAppIconLongPress", @NO, @NO,
+      @(START_LENS_FROM_APP_ICON_LONG_PRESS)
+    ],
+    @[ @"OpenLensFromSpotlight", @NO, @NO, @(START_LENS_FROM_SPOTLIGHT) ]
   ];
 
   swizzleHandleStartupParameters();
@@ -812,13 +812,19 @@ TEST_F(UserActivityHandlerTest,
                                             initStage:InitStageFinal];
 
     // Tests.
-    EXPECT_EQ(gurlNewTab,
-              [fakeConnectionInformation startupParameters].externalURL);
-    EXPECT_EQ([[parameters objectAtIndex:1] boolValue]
+    if ([[parameters objectAtIndex:1] boolValue]) {
+      EXPECT_EQ(gurlNewTab,
+                [fakeConnectionInformation startupParameters].externalURL);
+    } else {
+      EXPECT_TRUE(
+          [fakeConnectionInformation startupParameters].externalURL.is_empty());
+    }
+
+    EXPECT_EQ([[parameters objectAtIndex:2] boolValue]
                   ? ApplicationModeForTabOpening::INCOGNITO
                   : ApplicationModeForTabOpening::NORMAL,
               [fakeConnectionInformation startupParameters].applicationMode);
-    EXPECT_EQ([[parameters objectAtIndex:2] intValue],
+    EXPECT_EQ([[parameters objectAtIndex:3] intValue],
               [fakeConnectionInformation startupParameters].postOpeningAction);
     EXPECT_TRUE(completionHandlerExecuted());
     EXPECT_TRUE(completionHandlerArgument());

@@ -27,7 +27,7 @@ BOOL ShouldIgnoreNotification(NSNotification* notification) {
     case MacNotificationFilter::DontIgnoreNotifications:
       return NO;
     case MacNotificationFilter::IgnoreWorkspaceNotifications:
-      return [[notification name]
+      return [notification.name
           isEqualToString:NSWorkspaceDidActivateApplicationNotification];
     case MacNotificationFilter::IgnoreAllNotifications:
       return YES;
@@ -39,9 +39,9 @@ BOOL ShouldIgnoreNotification(NSNotification* notification) {
 
 struct MenuCocoaWatcherMac::ObjCStorage {
   // Tokens representing the notification observers.
-  id observer_token_other_menu = nil;
-  id observer_token_new_window_focus = nil;
-  id observer_token_app_change = nil;
+  id __strong observer_token_other_menu;
+  id __strong observer_token_new_window_focus;
+  id __strong observer_token_app_change;
 };
 
 MenuCocoaWatcherMac::MenuCocoaWatcherMac(base::OnceClosure callback)
@@ -91,11 +91,11 @@ MenuCocoaWatcherMac::MenuCocoaWatcherMac(base::OnceClosure callback)
 }
 
 MenuCocoaWatcherMac::~MenuCocoaWatcherMac() {
-  [[NSNotificationCenter defaultCenter]
+  [NSNotificationCenter.defaultCenter
       removeObserver:objc_storage_->observer_token_other_menu];
-  [[NSNotificationCenter defaultCenter]
+  [NSNotificationCenter.defaultCenter
       removeObserver:objc_storage_->observer_token_new_window_focus];
-  [[[NSWorkspace sharedWorkspace] notificationCenter]
+  [NSWorkspace.sharedWorkspace.notificationCenter
       removeObserver:objc_storage_->observer_token_app_change];
 }
 

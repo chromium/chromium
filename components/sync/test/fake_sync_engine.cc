@@ -69,7 +69,9 @@ std::string FakeSyncEngine::GetCacheGuid() const {
 }
 
 std::string FakeSyncEngine::GetBirthday() const {
-  return kTestBirthday;
+  // The birthday becomes known the very first time sync completes.
+  return (initialized_ || !is_first_time_sync_configure_) ? kTestBirthday
+                                                          : std::string();
 }
 
 base::Time FakeSyncEngine::GetLastSyncedTimeForDebugging() const {
@@ -140,12 +142,15 @@ void FakeSyncEngine::OnCookieJarChanged(bool account_mismatch,
   }
 }
 
-void FakeSyncEngine::SetInvalidationsForSessionsEnabled(bool enabled) {}
-
 bool FakeSyncEngine::IsNextPollTimeInThePast() const {
   return is_next_poll_time_in_the_past_;
 }
 
 void FakeSyncEngine::GetNigoriNodeForDebugging(AllNodesCallback callback) {}
+
+void FakeSyncEngine::GetTypesWithUnsyncedData(
+    base::OnceCallback<void(ModelTypeSet)> cb) const {
+  std::move(cb).Run(ModelTypeSet());
+}
 
 }  // namespace syncer

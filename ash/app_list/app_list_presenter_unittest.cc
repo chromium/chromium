@@ -41,7 +41,6 @@
 #include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/display/display_configuration_controller.h"
 #include "ash/display/display_configuration_controller_test_api.h"
-#include "ash/drag_drop/drag_drop_controller.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
@@ -81,6 +80,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
@@ -529,7 +529,8 @@ class AppListBubbleAndTabletTestBase : public AshTestBase {
   const bool tablet_mode_;
 
   std::unique_ptr<test::AppsGridViewTestApi> grid_test_api_;
-  raw_ptr<AppsGridView, ExperimentalAsh> apps_grid_view_ = nullptr;
+  raw_ptr<AppsGridView, DanglingUntriaged | ExperimentalAsh> apps_grid_view_ =
+      nullptr;
 };
 
 // Parameterized by tablet/clamshell mode.
@@ -701,44 +702,11 @@ class PopulatedAppListTest : public AshTestBase,
     return is_drag_drop_refactor_enabled_;
   }
 
-  void MaybeRunDragAndDropSequence(std::list<base::OnceClosure>* tasks,
-                                   bool is_touch) {
-    if (!is_drag_drop_refactor_enabled_) {
-      while (!tasks->empty()) {
-        std::move(tasks->front()).Run();
-        tasks->pop_front();
-      }
-      return;
-    }
-
-    ShellTestApi().drag_drop_controller()->SetLoopClosureForTesting(
-        base::BindLambdaForTesting([&]() {
-          auto task = std::move(tasks->front());
-          tasks->pop_front();
-          std::move(task).Run();
-        }),
-        base::DoNothing());
-    tasks->push_front(base::BindLambdaForTesting([&]() {
-      // Generate OnDragEnter() event for the host view.
-      if (is_touch) {
-        GetEventGenerator()->MoveTouchBy(10, 10);
-        return;
-      }
-      GetEventGenerator()->MoveMouseBy(10, 10);
-    }));
-    // Start Drag and Drop Sequence by moving the pointer.
-    if (is_touch) {
-      GetEventGenerator()->MoveTouchBy(10, 10);
-      return;
-    }
-    GetEventGenerator()->MoveMouseBy(10, 10);
-  }
-
   std::unique_ptr<test::AppsGridViewTestApi> apps_grid_test_api_;
-  raw_ptr<AppListView, ExperimentalAsh> app_list_view_ =
+  raw_ptr<AppListView, DanglingUntriaged | ExperimentalAsh> app_list_view_ =
       nullptr;  // Owned by native widget.
-  raw_ptr<PagedAppsGridView, ExperimentalAsh> apps_grid_view_ =
-      nullptr;  // Owned by |app_list_view_|.
+  raw_ptr<PagedAppsGridView, DanglingUntriaged | ExperimentalAsh>
+      apps_grid_view_ = nullptr;  // Owned by |app_list_view_|.
   base::test::ScopedFeatureList scoped_feature_list_;
   const bool is_drag_drop_refactor_enabled_;
 };
@@ -2314,7 +2282,7 @@ TEST_P(PopulatedAppListTest, CancelItemDragOnMouseCaptureLoss) {
     EXPECT_EQ("Item 1", apps_grid_view_->GetItemViewAt(1)->item()->id());
     EXPECT_EQ("Item 2", apps_grid_view_->GetItemViewAt(2)->item()->id());
   }));
-  MaybeRunDragAndDropSequence(&tasks, /*is_touch =*/false);
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/false);
 }
 
 // Tests that app list item drag gets canceled if the dragged app list item gets
@@ -2348,7 +2316,7 @@ TEST_P(PopulatedAppListTest, CancelItemDragOnDragItemDeletion) {
     // they are not properly releasing the drag.
     event_generator->ReleaseLeftButton();
   }));
-  MaybeRunDragAndDropSequence(&tasks, /*is_touch =*/false);
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/false);
 
   EXPECT_EQ("Item 1", apps_grid_view_->GetItemViewAt(0)->item()->id());
   EXPECT_EQ("Item 2", apps_grid_view_->GetItemViewAt(1)->item()->id());
@@ -2399,7 +2367,7 @@ TEST_P(PopulatedAppListTest, CancelFolderItemDragOnDragItemDeletion) {
     // they are not properly releasing the drag.
     event_generator->ReleaseTouch();
   }));
-  MaybeRunDragAndDropSequence(&tasks, /*is_touch =*/true);
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/true);
 
   EXPECT_EQ("Item 0", apps_grid_view_->GetItemViewAt(0)->item()->id());
   EXPECT_EQ("Item 1", apps_grid_view_->GetItemViewAt(1)->item()->id());
@@ -2474,7 +2442,7 @@ TEST_P(PopulatedAppListTest, CancelFolderItemReparentDragOnDragItemDeletion) {
     // they are not properly releasing the drag.
     event_generator->ReleaseTouch();
   }));
-  MaybeRunDragAndDropSequence(&tasks, /*is_touch =*/true);
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/true);
 
   EXPECT_EQ("Item 0", apps_grid_view_->GetItemViewAt(0)->item()->id());
   EXPECT_EQ("Item 1", apps_grid_view_->GetItemViewAt(1)->item()->id());
@@ -2552,7 +2520,7 @@ TEST_P(PopulatedAppListTest,
     // they are not properly releasing the drag.
     event_generator->ReleaseTouch();
   }));
-  MaybeRunDragAndDropSequence(&tasks, /*is_touch =*/true);
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/true);
 
   EXPECT_EQ("Item 0", apps_grid_view_->GetItemViewAt(0)->item()->id());
   EXPECT_EQ("Item 1", apps_grid_view_->GetItemViewAt(1)->item()->id());
@@ -2601,7 +2569,7 @@ TEST_P(PopulatedAppListTest,
   }));
   tasks.push_back(base::BindLambdaForTesting(
       [&]() { GetEventGenerator()->ReleaseLeftButton(); }));
-  MaybeRunDragAndDropSequence(&tasks, /*is_touch =*/false);
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/false);
 
   // After the drag is released, the item bounds should animate to their final
   // bounds.
@@ -2691,7 +2659,7 @@ TEST_P(PopulatedAppListScreenRotationTest,
     RotateScreen();
     EXPECT_FALSE(apps_grid_view_->IsDragging());
   }));
-  MaybeRunDragAndDropSequence(&tasks, /*is_touch =*/true);
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/true);
 
   // The model state should not have been changed.
   EXPECT_EQ("Item 0", apps_grid_view_->GetItemViewAt(0)->item()->id());
@@ -2733,7 +2701,7 @@ TEST_P(PopulatedAppListScreenRotationTest,
     EXPECT_FALSE(apps_grid_view_->IsDragging());
     EXPECT_FALSE(folder_view()->items_grid_view()->IsDragging());
   }));
-  MaybeRunDragAndDropSequence(&tasks, /*is_touch =*/true);
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/true);
 
   // The model state should not have been changed.
   EXPECT_EQ("Item 0", apps_grid_view_->GetItemViewAt(0)->item()->id());
@@ -2780,7 +2748,7 @@ TEST_P(PopulatedAppListScreenRotationTest,
     EXPECT_FALSE(apps_grid_view_->IsDragging());
     EXPECT_FALSE(folder_view()->items_grid_view()->IsDragging());
   }));
-  MaybeRunDragAndDropSequence(&tasks, /*is_touch =*/true);
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/true);
 
   // Make sure that the correct page displays, with the selected app.
   EXPECT_EQ(2, apps_grid_view_->pagination_model()->total_pages());
@@ -2831,7 +2799,7 @@ TEST_P(PopulatedAppListScreenRotationTest,
     EXPECT_FALSE(apps_grid_view_->IsDragging());
     EXPECT_FALSE(folder_view()->items_grid_view()->IsDragging());
   }));
-  MaybeRunDragAndDropSequence(&tasks, /*is_touch =*/true);
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/true);
 
   // Make sure that the correct page displays, with the selected app.
   EXPECT_EQ(1, apps_grid_view_->pagination_model()->total_pages());
@@ -3009,31 +2977,6 @@ TEST_P(AppListBubbleAndTabletDragTest, AppsGridItemReparentToFolderDrag) {
   ASSERT_TRUE(AppListIsInFolderView());
   ui::test::EventGenerator* event_generator = GetEventGenerator();
 
-  auto drag_sequence = base::BindLambdaForTesting([&]() {
-    // Generate another mouse event to properly start the drag and drop sequence
-    // with DragUpdate().
-    event_generator->MoveTouchBy(5, 5);
-    // Drag the item outside the folder bounds.
-    event_generator->MoveTouch(
-        apps_grid_view_->GetItemViewAt(0)->GetBoundsInScreen().CenterPoint());
-    event_generator->MoveTouchBy(2, 2);
-
-    EXPECT_TRUE(
-        folder_view()->items_grid_view()->FireFolderItemReparentTimerForTest());
-    EXPECT_FALSE(AppListIsInFolderView());
-
-    // Move the pointer over the item 3, and drop the dragged item.
-    gfx::Point target =
-        apps_grid_view_->GetItemViewAt(3)->GetBoundsInScreen().CenterPoint();
-    event_generator->MoveTouch(target);
-    event_generator->ReleaseTouch();
-  });
-
-  if (is_drag_drop_refactor_enabled()) {
-    ShellTestApi().drag_drop_controller()->SetLoopClosureForTesting(
-        drag_sequence, base::DoNothing());
-  }
-
   // Start dragging the first item in the active folder.
   AppListItemView* dragged_view =
       folder_view()->items_grid_view()->GetItemViewAt(0);
@@ -3043,12 +2986,25 @@ TEST_P(AppListBubbleAndTabletDragTest, AppsGridItemReparentToFolderDrag) {
   event_generator->PressTouch();
   ASSERT_TRUE(dragged_view->FireTouchDragTimerForTest());
 
-  // Drag the item to start drag and drop sequence.
-  event_generator->MoveTouchBy(10, 10);
+  std::list<base::OnceClosure> tasks;
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    // Drag the item outside the folder bounds.
+    event_generator->MoveTouch(
+        apps_grid_view_->GetItemViewAt(0)->GetBoundsInScreen().CenterPoint());
+    event_generator->MoveTouchBy(2, 2);
 
-  if (!is_drag_drop_refactor_enabled()) {
-    drag_sequence.Run();
-  }
+    EXPECT_TRUE(
+        folder_view()->items_grid_view()->FireFolderItemReparentTimerForTest());
+    EXPECT_FALSE(AppListIsInFolderView());
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    // Move the pointer over the item 3, and drop the dragged item.
+    gfx::Point target =
+        apps_grid_view_->GetItemViewAt(3)->GetBoundsInScreen().CenterPoint();
+    event_generator->MoveTouch(target);
+    event_generator->ReleaseTouch();
+  }));
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/true);
 
   // Verify the new item location within the apps grid.
   EXPECT_EQ("Item 0", apps_grid_view_->GetItemViewAt(0)->item()->id());
@@ -3099,7 +3055,7 @@ TEST_P(PopulatedAppListTest, RemoveFolderItemAfterFolderCreation) {
         apps_grid_view_->GetItemViewAt(3)->GetBoundsInScreen().CenterPoint());
     event_generator->ReleaseLeftButton();
   }));
-  MaybeRunDragAndDropSequence(&tasks, /*is_touch =*/false);
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/false);
 
   EXPECT_FALSE(apps_grid_view_->IsDragging());
 
@@ -3176,7 +3132,7 @@ TEST_P(PopulatedAppListTest, ReparentLastFolderItemAfterFolderCreation) {
         apps_grid_view_->GetItemViewAt(3)->GetBoundsInScreen().CenterPoint());
     event_generator->ReleaseLeftButton();
   }));
-  MaybeRunDragAndDropSequence(&tasks, /*is_touch =*/false);
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/false);
   EXPECT_FALSE(apps_grid_view_->IsDragging());
 
   AppListItem* folder_item = apps_grid_view_->GetItemViewAt(3)->item();
@@ -3792,13 +3748,13 @@ TEST_F(AppListPresenterTest, TapAppListThenShelfHidesAutoHiddenShelf) {
   EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
 }
 
-// TODO(b/283753290): Deflake and re-enable the test.
-TEST_F(AppListPresenterTest, DISABLED_ClickingShelfArrowDoesNotHideAppList) {
+TEST_F(AppListPresenterTest, ClickingShelfArrowDoesNotHideAppList) {
+  SetShelfAnimationDuration(base::Milliseconds(1));
+
   // Add enough shelf items for the shelf to enter overflow.
   Shelf* const shelf = GetPrimaryShelf();
   ScrollableShelfView* const scrollable_shelf_view =
       shelf->hotseat_widget()->scrollable_shelf_view();
-  ShelfView* const shelf_view = shelf->GetShelfViewForTesting();
   int index = 0;
   while (scrollable_shelf_view->layout_strategy_for_test() ==
          ScrollableShelfView::kNotShowArrowButtons) {
@@ -3806,8 +3762,7 @@ TEST_F(AppListPresenterTest, DISABLED_ClickingShelfArrowDoesNotHideAppList) {
         base::NumberToString(index++), TYPE_PINNED_APP);
   }
 
-  ShelfViewTestAPI shelf_view_test_api(shelf_view);
-  shelf_view_test_api.RunMessageLoopUntilAnimationsDone();
+  WaitForShelfAnimation();
 
   shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
 
@@ -4257,9 +4212,9 @@ TEST_F(AppListPresenterHomeLauncherTest, GoingHomeMinimizesAllWindows) {
   std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithId(0)),
       window2(CreateTestWindowInShellWithId(1)),
       window3(CreateTestWindowInShellWithId(2));
-  WindowState *state1 = WindowState::Get(window1.get()),
-              *state2 = WindowState::Get(window2.get()),
-              *state3 = WindowState::Get(window3.get());
+  WindowState* state1 = WindowState::Get(window1.get());
+  WindowState* state2 = WindowState::Get(window2.get());
+  WindowState* state3 = WindowState::Get(window3.get());
   state1->Maximize();
   state2->Maximize();
   state3->Maximize();

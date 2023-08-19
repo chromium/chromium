@@ -27,6 +27,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/common/pref_names.h"  // nogncheck
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "chromeos/ash/components/standalone_browser/lacros_availability.h"
 #include "components/account_id/account_id.h"  // nogncheck
 #include "components/prefs/pref_registry_simple.h"
@@ -550,11 +551,7 @@ TEST_F(ExtensionRegistrarTest, DisableNotAshKeeplistedExtension) {
 TEST_F(ExtensionRegistrarTest,
        DisableNotAshKeeplistedForceInstalledExtensionIfAshDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
-       ash::features::kLacrosOnly,
-       ash::features::kLacrosProfileMigrationForceOff},
-      {});
+  feature_list.InitWithFeatures(ash::standalone_browser::GetFeatureRefs(), {});
   auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
   auto* primary_user =
       fake_user_manager->AddUser(AccountId::FromUserEmail("test@test"));
@@ -586,15 +583,13 @@ TEST_F(ExtensionRegistrarTest,
 TEST_F(ExtensionRegistrarTest,
        NotDisableNotAshKeeplistedForceInstalledExtensionIfAshEnabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {ash::features::kLacrosSupport, ash::features::kLacrosPrimary},
-      {ash::features::kLacrosOnly});
+  feature_list.InitWithFeatures({}, ash::standalone_browser::GetFeatureRefs());
   static_cast<TestingPrefServiceSimple*>(pref_service())
       ->registry()
       ->RegisterIntegerPref(
           prefs::kLacrosLaunchSwitch,
           static_cast<int>(
-              ash::standalone_browser::LacrosAvailability::kLacrosPrimary));
+              ash::standalone_browser::LacrosAvailability::kLacrosOnly));
   EXPECT_TRUE(crosapi::browser_util::IsAshWebBrowserEnabled());
 
   // Prevent the extension from being disabled (by the user).

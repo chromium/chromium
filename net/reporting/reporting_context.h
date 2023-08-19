@@ -43,7 +43,7 @@ class NET_EXPORT ReportingContext {
   ReportingContext(const ReportingContext&) = delete;
   ReportingContext& operator=(const ReportingContext&) = delete;
 
-  ~ReportingContext();
+  virtual ~ReportingContext();
 
   const ReportingPolicy& policy() const { return policy_; }
 

@@ -11,6 +11,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker] interface AbortSignal : EventTarget
 [Worker]     static method abort
+[Worker]     static method any
 [Worker]     static method timeout
 [Worker]     attribute @@toStringTag
 [Worker]     getter aborted
@@ -1410,6 +1411,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter connectEnd
 [Worker]     getter connectStart
 [Worker]     getter decodedBodySize
+[Worker]     getter deliveryType
 [Worker]     getter domainLookupEnd
 [Worker]     getter domainLookupStart
 [Worker]     getter encodedBodySize
@@ -3530,6 +3532,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method open
 [Worker]     method overrideMimeType
 [Worker]     method send
+[Worker]     method setPrivateToken
 [Worker]     method setRequestHeader
 [Worker]     setter onreadystatechange
 [Worker]     setter responseType

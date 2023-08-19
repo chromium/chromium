@@ -8,9 +8,11 @@
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/user_education/user_education_types.h"
+#include "ash/user_education/user_education_util.h"
 #include "ash/user_education/views/help_bubble_view_ash_test_base.h"
 #include "ash/wm/window_util.h"
 #include "components/user_education/common/help_bubble_params.h"
+#include "components/vector_icons/vector_icons.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -19,7 +21,10 @@
 #include "ui/color/color_provider.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/bubble/bubble_frame_view.h"
+#include "ui/views/controls/image_view.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
@@ -30,7 +35,9 @@ namespace {
 using ::testing::AnyOf;
 using ::testing::Conditional;
 using ::testing::Eq;
+using ::testing::IsNull;
 using ::testing::Not;
+using ::testing::Property;
 using ::user_education::HelpBubbleArrow;
 
 // Matchers --------------------------------------------------------------------
@@ -87,6 +94,94 @@ TEST_F(HelpBubbleViewAshTest, ParentWindow) {
                   ->GetRootWindow()
                   ->GetChildById(kShellWindowId_HelpBubbleContainer)
                   ->Contains(help_bubble_view->GetWidget()->GetNativeWindow()));
+}
+
+// HelpBubbleViewAshBodyIconTest -----------------------------------------------
+
+// Base class for tests of `HelpBubbleViewAsh` which are primarily concerned
+// with body icons, parameterized by:
+// (a) the body icon from help bubble params, and
+// (b) the body icon from extended properties.
+class HelpBubbleViewAshBodyIconTest
+    : public HelpBubbleViewAshTestBase,
+      public ::testing::WithParamInterface<
+          std::tuple</*body_icon_from_params=*/absl::optional<
+                         std::reference_wrapper<const gfx::VectorIcon>>,
+                     /*body_icon_from_extended_properties=*/absl::optional<
+                         std::reference_wrapper<const gfx::VectorIcon>>>> {
+ public:
+  // Returns the body icon from help bubble params given test parameterization.
+  const absl::optional<std::reference_wrapper<const gfx::VectorIcon>>
+  body_icon_from_params() const {
+    return std::get<0>(GetParam());
+  }
+
+  // Returns the body icon from extended properties given test parameterization.
+  const absl::optional<std::reference_wrapper<const gfx::VectorIcon>>
+  body_icon_from_extended_properties() const {
+    return std::get<1>(GetParam());
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    HelpBubbleViewAshBodyIconTest,
+    ::testing::Combine(
+        /*body_icon_from_params=*/::testing::Values(
+            absl::make_optional(std::cref(gfx::kNoneIcon)),
+            absl::make_optional(std::cref(vector_icons::kCelebrationIcon)),
+            absl::make_optional(std::cref(vector_icons::kHelpIcon)),
+            absl::nullopt),
+        /*body_icon_from_extended_properties=*/::testing::Values(
+            absl::make_optional(std::cref(gfx::kNoneIcon)),
+            absl::make_optional(std::cref(vector_icons::kCelebrationIcon)),
+            absl::make_optional(std::cref(vector_icons::kHelpIcon)),
+            absl::nullopt)));
+
+// Tests -----------------------------------------------------------------------
+
+// Verifies that help bubble view body icons are configured as expected.
+TEST_P(HelpBubbleViewAshBodyIconTest, BodyIcon) {
+  // Construct help bubble `params`.
+  user_education::HelpBubbleParams params;
+  params.extended_properties =
+      user_education_util::CreateExtendedProperties(HelpBubbleId::kTest);
+
+  // Populate `body_icon_from_params` based on parameterization.
+  if (const auto& body_icon_from_params = this->body_icon_from_params()) {
+    params.body_icon = &body_icon_from_params->get();
+  }
+
+  // Populate `body_icon_from_extended_properties` based on parameterization.
+  if (const auto& body_icon_from_extended_properties =
+          this->body_icon_from_extended_properties()) {
+    params.extended_properties = user_education_util::CreateExtendedProperties(
+        std::move(params.extended_properties),
+        user_education_util::CreateExtendedProperties(
+            body_icon_from_extended_properties->get()));
+  }
+
+  // Create `help_bubble_view`.
+  auto* const help_bubble_view = CreateHelpBubbleView(std::move(params));
+  ASSERT_NE(help_bubble_view, nullptr);
+
+  // Cache `expected_body_icon` based on order of precedence.
+  const gfx::VectorIcon& expected_body_icon =
+      body_icon_from_extended_properties().value_or(
+          body_icon_from_params().value_or(gfx::kNoneIcon));
+
+  // Confirm body icon exists iff expected and is configured as expected.
+  EXPECT_THAT(
+      views::ElementTrackerViews::GetInstance()
+          ->GetUniqueViewAs<views::ImageView>(
+              HelpBubbleViewAsh::kBodyIconIdForTesting,
+              views::ElementTrackerViews::GetContextForView(help_bubble_view)),
+      Conditional(&expected_body_icon != &gfx::kNoneIcon,
+                  Property(&views::ImageView::GetImageModel,
+                           Eq(ui::ImageModel::FromVectorIcon(
+                               expected_body_icon,
+                               cros_tokens::kCrosSysDialogContainer, 20))),
+                  IsNull()));
 }
 
 // HelpBubbleViewAshStyleTest --------------------------------------------------

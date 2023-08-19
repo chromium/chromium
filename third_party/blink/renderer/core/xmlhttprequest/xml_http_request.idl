@@ -77,9 +77,8 @@ typedef (Blob or BufferSource or FormData or URLSearchParams or USVString) XMLHt
     ByteString getAllResponseHeaders();
     [RaisesException] void overrideMimeType(DOMString mime);
     [RaisesException=Setter] attribute XMLHttpRequestResponseType responseType;
-    [Custom=Getter, RaisesException=Getter] readonly attribute any response;
-    [Custom=Getter, RaisesException=Getter] readonly attribute USVString responseText;
+    [CallWith=ScriptState, RaisesException=Getter] readonly attribute any response;
+    [RaisesException=Getter] readonly attribute USVString responseText;
     // TODO(foolip): responseXML should be [Exposed=Window].
     [MeasureAs=XMLHttpRequestResponseXML, RaisesException=Getter] readonly attribute Document? responseXML;
-    [RuntimeEnabled=PrivateStateTokens, SecureContext] readonly attribute DOMException privateTokenOperationError;
 };

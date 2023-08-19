@@ -7,7 +7,6 @@
 
 #include "base/command_line.h"
 #include "base/strings/string_number_conversions.h"
-#include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/common/gles2_cmd_format.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/common/id_allocator.h"
@@ -25,7 +24,6 @@
 #include "gpu/command_buffer/service/test_helper.h"
 #include "gpu/config/gpu_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gl/gl_image.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_mock.h"
 #include "ui/gl/gl_surface_stub.h"
@@ -3341,29 +3339,6 @@ TEST_P(GLES2DecoderManualInitTest, GenerateMipmapDepthTexture) {
   EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-class MockGLImage : public gl::GLImage {
- public:
-  MockGLImage() = default;
-
-  // Overridden from gl::GLImage:
-  MOCK_METHOD0(GetSize, gfx::Size());
-  MOCK_METHOD0(GetInternalFormat, unsigned());
-  MOCK_METHOD1(BindTexImage, bool(unsigned));
-  MOCK_METHOD1(ReleaseTexImage, void(unsigned));
-  MOCK_METHOD1(CopyTexImage, bool(unsigned));
-  MOCK_METHOD3(CopyTexSubImage,
-               bool(unsigned, const gfx::Point&, const gfx::Rect&));
-  MOCK_METHOD3(OnMemoryDump,
-               void(base::trace_event::ProcessMemoryDump*,
-                    uint64_t,
-                    const std::string&));
-
- protected:
-  ~MockGLImage() override = default;
-};
-#endif
-
 TEST_P(GLES2DecoderManualInitTest, DrawWithGLImageExternal) {
   InitState init;
   init.extensions = "GL_OES_EGL_image_external";
@@ -3376,18 +3351,10 @@ TEST_P(GLES2DecoderManualInitTest, DrawWithGLImageExternal) {
   InitDecoder(init);
 
   TextureRef* texture_ref = GetTexture(client_texture_id_);
-#if !BUILDFLAG(IS_ANDROID)
-  scoped_refptr<MockGLImage> image(new MockGLImage);
-#endif
   group().texture_manager()->SetTarget(texture_ref, GL_TEXTURE_EXTERNAL_OES);
   group().texture_manager()->SetLevelInfo(texture_ref, GL_TEXTURE_EXTERNAL_OES,
                                           0, GL_RGBA, 1, 1, 1, 0, GL_RGBA,
                                           GL_UNSIGNED_BYTE, gfx::Rect(1, 1));
-#if !BUILDFLAG(IS_ANDROID)
-  group().texture_manager()->SetBoundLevelImage(
-      texture_ref, GL_TEXTURE_EXTERNAL_OES, 0, image.get());
-#endif
-
   DoBindTexture(GL_TEXTURE_EXTERNAL_OES, client_texture_id_, kServiceTextureId);
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
 

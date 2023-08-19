@@ -1,0 +1,24 @@
+This is a testharness.js-based test.
+PASS public to local: failed preflight.
+PASS public to local: missing CORS headers on preflight response.
+PASS public to local: missing PNA header on preflight response.
+PASS public to local: missing CORS headers on final response.
+PASS public to local: success.
+PASS public to local: PUT success.
+PASS public to local: no-CORS mode failed preflight.
+PASS public to local: no-CORS mode missing CORS headers on preflight response.
+PASS public to local: no-CORS mode missing PNA header on preflight response.
+PASS public to local: no-CORS mode success.
+PASS public to private: failed preflight.
+PASS public to private: missing CORS headers on preflight response.
+PASS public to private: missing PNA header on preflight response.
+PASS public to private: missing CORS headers on final response.
+PASS public to private: success.
+PASS public to private: PUT success.
+PASS public to private: no-CORS mode failed preflight.
+PASS public to private: no-CORS mode missing CORS headers on preflight response.
+PASS public to private: no-CORS mode missing PNA header on preflight response.
+PASS public to private: no-CORS mode success.
+PASS public to public: no preflight required.
+Harness: the test ran to completion.
+

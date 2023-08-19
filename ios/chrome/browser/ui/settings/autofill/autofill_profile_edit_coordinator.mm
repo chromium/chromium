@@ -13,21 +13,17 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/sync/sync_setup_service.h"
-#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/autofill/autofill_country_selection_table_view_controller.h"
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_mediator.h"
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_mediator_delegate.h"
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_table_view_controller.h"
 #import "ios/chrome/browser/ui/autofill/cells/country_item.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_settings_profile_edit_table_view_controller.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 @interface AutofillProfileEditCoordinator () <
     AutofillCountrySelectionTableViewControllerDelegate,
@@ -47,6 +43,9 @@
 // Default NO. Yes when the country selection view has been presented.
 @property(nonatomic, assign) BOOL isCountrySelectorPresented;
 
+// If YES, a button is shown asking the user to migrate the account.
+@property(nonatomic, assign) BOOL showMigrateToAccountButton;
+
 @end
 
 @implementation AutofillProfileEditCoordinator {
@@ -59,13 +58,15 @@
     initWithBaseNavigationController:
         (UINavigationController*)navigationController
                              browser:(Browser*)browser
-                             profile:(const autofill::AutofillProfile&)profile {
+                             profile:(const autofill::AutofillProfile&)profile
+              migrateToAccountButton:(BOOL)showMigrateToAccountButton {
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
     _baseNavigationController = navigationController;
     _autofillProfile = profile;
     _isCountrySelectorPresented = NO;
+    _showMigrateToAccountButton = showMigrateToAccountButton;
   }
   return self;
 }
@@ -90,14 +91,18 @@
         isMigrationPrompt:NO];
 
   self.viewController = [[AutofillSettingsProfileEditTableViewController alloc]
-      initWithStyle:ChromeTableViewStyle()];
+                      initWithDelegate:self.mediator
+      shouldShowMigrateToAccountButton:self.showMigrateToAccountButton
+                             userEmail:[self userEmail]];
   self.sharedViewController = [[AutofillProfileEditTableViewController alloc]
       initWithDelegate:self.mediator
-             userEmail:[self syncingUserEmail]
+             userEmail:[self userEmail]
             controller:self.viewController
           settingsView:YES];
   self.mediator.consumer = self.sharedViewController;
   self.viewController.handler = self.sharedViewController;
+  self.viewController.snackbarCommandsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SnackbarCommands);
 
   DCHECK(self.baseNavigationController);
   [self.baseNavigationController pushViewController:self.viewController
@@ -156,22 +161,14 @@
 
 #pragma mark - Private
 
-- (NSString*)syncingUserEmail {
+- (NSString*)userEmail {
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
-  DCHECK(authenticationService);
+  CHECK(authenticationService);
   id<SystemIdentity> identity =
-      authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSync);
-  if (identity) {
-    SyncSetupService* syncSetupService =
-        SyncSetupServiceFactory::GetForBrowserState(
-            self.browser->GetBrowserState());
-    if (syncSetupService->IsDataTypeActive(syncer::AUTOFILL)) {
-      return identity.userEmail;
-    }
-  }
-  return nil;
+      authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  return identity ? identity.userEmail : nil;
 }
 
 @end

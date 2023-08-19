@@ -7,6 +7,7 @@
 #include "chrome/common/safe_browsing/mock_binary_feature_extractor.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/download/public/common/mock_download_item.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/download_item_utils.h"
@@ -352,6 +353,10 @@ TEST_F(DownloadRequestMakerTest, PopulatesEnhancedProtection) {
 }
 
 TEST_F(DownloadRequestMakerTest, PopulateTailoredInfo) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(
+      safe_browsing::kImprovedDownloadBubbleWarnings);
+
   base::RunLoop run_loop;
   base::FilePath tmp_path(FILE_PATH_LITERAL("temp_path"));
 
@@ -384,6 +389,44 @@ TEST_F(DownloadRequestMakerTest, PopulateTailoredInfo) {
 
   ASSERT_NE(request, nullptr);
   EXPECT_EQ(request->tailored_info().version(), 1);
+}
+
+TEST_F(DownloadRequestMakerTest, PopulateTailoredInfo_WithImprovedWarnings) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(safe_browsing::kImprovedDownloadBubbleWarnings);
+
+  base::RunLoop run_loop;
+  base::FilePath tmp_path(FILE_PATH_LITERAL("temp_path"));
+
+  DownloadRequestMaker request_maker(
+      mock_feature_extractor_, &profile_, DownloadRequestMaker::TabUrls(),
+      /*target_file_path=*/base::FilePath(), tmp_path,
+      /*source_url=*/GURL(),
+      /*sha256_hash=*/"",
+      /*length=*/0,
+      /*resources=*/std::vector<ClientDownloadRequest::Resource>(),
+      /*is_user_initiated=*/true,
+      /*referrer_chain_data=*/nullptr);
+
+  EXPECT_CALL(*mock_feature_extractor_, CheckSignature(tmp_path, _))
+      .WillOnce(Return());
+  EXPECT_CALL(*mock_feature_extractor_, ExtractImageFeatures(tmp_path, _, _, _))
+      .WillRepeatedly(Return(true));
+
+  std::unique_ptr<ClientDownloadRequest> request;
+  request_maker.Start(base::BindOnce(
+      [](base::RunLoop* run_loop,
+         std::unique_ptr<ClientDownloadRequest>* request_target,
+         std::unique_ptr<ClientDownloadRequest> request) {
+        run_loop->Quit();
+        *request_target = std::move(request);
+      },
+      &run_loop, &request));
+
+  run_loop.Run();
+
+  ASSERT_NE(request, nullptr);
+  EXPECT_EQ(request->tailored_info().version(), 2);
 }
 
 TEST_F(DownloadRequestMakerTest, PopulatesFileBasename) {

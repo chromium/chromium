@@ -64,6 +64,17 @@ void SetAVStreamDiscard(AVStream* stream, AVDiscard discard) {
   stream->discard = discard;
 }
 
+int AVSeekFrame(AVFormatContext* s, int stream_index, int64_t timestamp) {
+  // Seek to a timestamp <= to the desired timestamp.
+  int result = av_seek_frame(s, stream_index, timestamp, AVSEEK_FLAG_BACKWARD);
+  if (result >= 0) {
+    return result;
+  }
+
+  // Seek to the nearest keyframe, wherever that may be.
+  return av_seek_frame(s, stream_index, timestamp, 0);
+}
+
 }  // namespace
 
 static base::Time ExtractTimelineOffset(
@@ -384,21 +395,8 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
   scoped_refptr<DecoderBuffer> buffer;
 
   if (type() == DemuxerStream::TEXT) {
-    size_t id_size = 0;
-    uint8_t* id_data = av_packet_get_side_data(
-        packet.get(), AV_PKT_DATA_WEBVTT_IDENTIFIER, &id_size);
-
-    size_t settings_size = 0;
-    uint8_t* settings_data = av_packet_get_side_data(
-        packet.get(), AV_PKT_DATA_WEBVTT_SETTINGS, &settings_size);
-
-    std::vector<uint8_t> side_data;
-    MakeSideData(id_data, id_data + id_size,
-                 settings_data, settings_data + settings_size,
-                 &side_data);
-
-    buffer = DecoderBuffer::CopyFrom(packet->data, packet->size,
-                                     side_data.data(), side_data.size());
+    // TODO(crbug.com/1471504): This is now broken without side data; remove.
+    buffer = DecoderBuffer::CopyFrom(packet->data, packet->size);
   } else {
     size_t side_data_size = 0;
     uint8_t* side_data = av_packet_get_side_data(
@@ -454,8 +452,9 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
     // into memory we control.
     if (side_data_size > 0) {
       buffer = DecoderBuffer::CopyFrom(packet->data + data_offset,
-                                       packet->size - data_offset, side_data,
-                                       side_data_size);
+                                       packet->size - data_offset);
+      buffer->WritableSideData().alpha_data.assign(side_data,
+                                                   side_data + side_data_size);
     } else {
       buffer = DecoderBuffer::CopyFrom(packet->data + data_offset,
                                        packet->size - data_offset);
@@ -1118,11 +1117,9 @@ void FFmpegDemuxer::SeekInternal(base::TimeDelta time,
 
   blocking_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&av_seek_frame, glue_->format_context(),
+      base::BindOnce(&AVSeekFrame, glue_->format_context(),
                      seeking_stream->index,
-                     ConvertToTimeBase(seeking_stream->time_base, seek_time),
-                     // Always seek to a timestamp <= to the desired timestamp.
-                     AVSEEK_FLAG_BACKWARD),
+                     ConvertToTimeBase(seeking_stream->time_base, seek_time)),
       std::move(seek_cb));
 }
 

@@ -21,6 +21,10 @@ constexpr char kSaveAndRecallTemplateSizeHistogramName[] =
 constexpr char kFloatingWorkspaceTemplateSizeHistogramName[] =
     "Ash.FloatingWorkspace.TemplateSize";
 
+// Histogram names for Saved Desk parsing error.
+constexpr char kSaveAndRecallLocalDeskSavedDeskParseErrorHistogramName[] =
+    "Ash.DeskTemplate.SaveAndRecallLocalDeskSavedDeskParseError";
+
 // Wrappers calls base::uma with correct histogram name.
 void RecordSavedDeskTemplateSizeHistogram(ash::DeskTemplateType type,
                                           int64_t file_size);

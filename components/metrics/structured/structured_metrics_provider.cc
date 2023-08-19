@@ -23,13 +23,13 @@ using ::metrics::SystemProfileProto;
 }  // namespace
 
 StructuredMetricsProvider::StructuredMetricsProvider(
-    base::raw_ptr<StructuredMetricsRecorder> structured_metrics_recorder)
+    raw_ptr<StructuredMetricsRecorder> structured_metrics_recorder)
     : StructuredMetricsProvider(base::Minutes(GetUploadCadenceMinutes()),
                                 structured_metrics_recorder) {}
 
 StructuredMetricsProvider::StructuredMetricsProvider(
     base::TimeDelta min_independent_metrics_interval,
-    base::raw_ptr<StructuredMetricsRecorder> structured_metrics_recorder)
+    raw_ptr<StructuredMetricsRecorder> structured_metrics_recorder)
     : min_independent_metrics_interval_(min_independent_metrics_interval),
       structured_metrics_recorder_(structured_metrics_recorder) {
   DCHECK(structured_metrics_recorder_);
@@ -87,6 +87,7 @@ bool StructuredMetricsProvider::HasIndependentMetrics() {
 }
 
 void StructuredMetricsProvider::ProvideIndependentMetrics(
+    base::OnceClosure serialize_log_callback,
     base::OnceCallback<void(bool)> done_callback,
     ChromeUserMetricsExtension* uma_proto,
     base::HistogramSnapshotManager*) {
@@ -95,28 +96,36 @@ void StructuredMetricsProvider::ProvideIndependentMetrics(
   // When StructuredMetricsService is enabled then the StructuredMetricsProvider
   // will not upload metrics.
   if (base::FeatureList::IsEnabled(kEnabledStructuredMetricsService)) {
+    NOTREACHED();
+    std::move(done_callback).Run(false);
     return;
   }
 
   if (!recording_enabled_) {
+    std::move(done_callback).Run(false);
     return;
   }
 
   last_provided_independent_metrics_ = base::Time::Now();
 
-  Recorder::GetInstance()->OnProvideIndependentMetrics(uma_proto);
   recorder().ProvideEventMetrics(*uma_proto);
 
   // Independent events should not be associated with the client_id, so clear
   // it.
   uma_proto->clear_client_id();
 
-  // TODO(crbug/1052796): Remove the UMA timer code, which is currently used to
+  // TODO(crbug/1428679): Remove the UMA timer code, which is currently used to
   // determine if it is worth to finalize independent logs in the background
   // by measuring the time it takes to execute the callback
   // MetricsService::PrepareProviderMetricsLogDone().
   SCOPED_UMA_HISTOGRAM_TIMER(
       "UMA.IndependentLog.StructuredMetricsProvider.FinalizeTime");
+
+  // Do not call |serialize_log_callback| on a background thread here because
+  // ProvideEventMetrics() above has already removed the data from disk. Doing
+  // so could imply data loss, e.g. if |done_callback| is never posted back due
+  // to the user shutting down the browser (so the log is never stored).
+
   std::move(done_callback).Run(true);
 }
 

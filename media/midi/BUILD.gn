@@ -54,8 +54,8 @@ if (is_android) {
       "//build/android:build_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
+    srcjar_deps = [ ":midi_jni_headers" ]
     sources = [
       "java/src/org/chromium/midi/MidiDeviceAndroid.java",
       "java/src/org/chromium/midi/MidiInputPortAndroid.java",

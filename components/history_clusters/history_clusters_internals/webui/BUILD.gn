@@ -10,10 +10,9 @@ static_library("webui") {
     "history_clusters_internals_page_handler_impl.h",
     "history_clusters_internals_ui.cc",
     "history_clusters_internals_ui.h",
-    "url_constants.cc",
-    "url_constants.h",
   ]
   deps = [
+    ":constants",
     "//base",
     "//components/history/core/browser",
     "//components/history_clusters/core",
@@ -22,6 +21,13 @@ static_library("webui") {
     "//third_party/abseil-cpp:absl",
     "//ui/base",
     "//ui/webui",
+  ]
+}
+
+static_library("constants") {
+  sources = [
+    "url_constants.cc",
+    "url_constants.h",
   ]
 }
 

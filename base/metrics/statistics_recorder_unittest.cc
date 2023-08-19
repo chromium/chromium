@@ -94,11 +94,28 @@ class StatisticsRecorderTest : public testing::TestWithParam<bool> {
   // NotInitialized to ensure a clean global state.
   void UninitializeStatisticsRecorder() {
     statistics_recorder_.reset();
-    delete StatisticsRecorder::top_;
-    DCHECK(!StatisticsRecorder::top_);
+
+    // Grab the lock, so we can access |top_| to satisfy locking annotations.
+    // Normally, this wouldn't be OK (we're taking a pointer to |top_| and then
+    // freeing it outside the lock), but in this case, it's benign because the
+    // test is single-threaded.
+    //
+    // Note: We can't clear |top_| in the locked block, because the
+    // StatisticsRecorder destructor expects that the lock isn't already held.
+    {
+      const StatisticsRecorder::SrAutoWriterLock auto_lock(
+          StatisticsRecorder::GetLock());
+      statistics_recorder_.reset(StatisticsRecorder::top_);
+    }
+    statistics_recorder_.reset();
+    DCHECK(!HasGlobalRecorder());
   }
 
-  bool HasGlobalRecorder() { return StatisticsRecorder::top_ != nullptr; }
+  bool HasGlobalRecorder() {
+    const StatisticsRecorder::SrAutoReaderLock auto_lock(
+        StatisticsRecorder::GetLock());
+    return StatisticsRecorder::top_ != nullptr;
+  }
 
   Histogram* CreateHistogram(const char* name,
                              HistogramBase::Sample min,
@@ -767,7 +784,7 @@ class TestHistogramProvider : public StatisticsRecorder::HistogramProvider {
   TestHistogramProvider(const TestHistogramProvider&) = delete;
   TestHistogramProvider& operator=(const TestHistogramProvider&) = delete;
 
-  void MergeHistogramDeltas() override {
+  void MergeHistogramDeltas(bool async, OnceClosure done_callback) override {
     PersistentHistogramAllocator::Iterator hist_iter(allocator_.get());
     while (true) {
       std::unique_ptr<base::HistogramBase> histogram = hist_iter.GetNext();
@@ -775,6 +792,7 @@ class TestHistogramProvider : public StatisticsRecorder::HistogramProvider {
         break;
       allocator_->MergeHistogramDeltaToStatisticsRecorder(histogram.get());
     }
+    std::move(done_callback).Run();
   }
 
  private:
@@ -809,7 +827,7 @@ TEST_P(StatisticsRecorderTest, ImportHistogramsTest) {
   ASSERT_FALSE(StatisticsRecorder::FindHistogram(histogram->histogram_name()));
 
   // Now test that it merges.
-  StatisticsRecorder::ImportProvidedHistograms();
+  StatisticsRecorder::ImportProvidedHistogramsSync();
   HistogramBase* found =
       StatisticsRecorder::FindHistogram(histogram->histogram_name());
   ASSERT_TRUE(found);
@@ -821,7 +839,7 @@ TEST_P(StatisticsRecorderTest, ImportHistogramsTest) {
   // Finally, verify that updates can also be merged.
   histogram->Add(3);
   histogram->Add(5);
-  StatisticsRecorder::ImportProvidedHistograms();
+  StatisticsRecorder::ImportProvidedHistogramsSync();
   snapshot = found->SnapshotSamples();
   EXPECT_EQ(3, snapshot->TotalCount());
   EXPECT_EQ(2, snapshot->GetCount(3));

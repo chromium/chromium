@@ -6,6 +6,10 @@
 
 namespace browsing_topics {
 
+ConfigVersion CurrentConfigVersion() {
+  return ConfigVersion::kDefault;
+}
+
 ApiUsageContextQueryResult::ApiUsageContextQueryResult() = default;
 
 ApiUsageContextQueryResult::ApiUsageContextQueryResult(

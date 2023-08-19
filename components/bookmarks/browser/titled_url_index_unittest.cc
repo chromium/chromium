@@ -93,11 +93,9 @@ class TitledUrlIndexFake : public TitledUrlIndex {
   using TitledUrlIndex::RetrieveNodesMatchingAnyTerms;
 
   // Helper to call `TitledUrlIndex::MatchTitledUrlNodeWithQuery` with simpler
-  // parameters. Uses a temporary `TitledUrlNode`, so if it returns non
-  // `nullopt`, the returned `TitledUrlMatch::node` will be invalid.
-  absl::optional<TitledUrlMatch> MatchTitledUrlNodeWithQuery(
-      std::u16string node_title,
-      std::u16string query) {
+  // parameters, returning a bool indicating success.
+  bool MatchTitledUrlNodeWithQuery(std::u16string node_title,
+                                   std::u16string query) {
     TestTitledUrlNode node{node_title, GURL("http://foo.com"), u""};
     std::vector<std::u16string> query_terms =
         TitledUrlIndexFake::ExtractQueryWords(query);
@@ -105,7 +103,8 @@ class TitledUrlIndexFake : public TitledUrlIndex {
     query_parser::QueryParser::ParseQueryNodes(
         query, query_parser::MatchingAlgorithm::ALWAYS_PREFIX_SEARCH,
         &query_nodes);
-    return MatchTitledUrlNodeWithQuery(&node, query_nodes, query_terms);
+    return MatchTitledUrlNodeWithQuery(&node, query_nodes, query_terms)
+        .has_value();
   }
 };
 

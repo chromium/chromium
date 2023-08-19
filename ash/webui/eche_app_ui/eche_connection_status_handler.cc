@@ -20,7 +20,8 @@ void EcheConnectionStatusHandler::Observer::OnConnectionStatusForUiChanged(
     mojom::ConnectionStatus connection_status) {}
 void EcheConnectionStatusHandler::Observer::
     OnRequestBackgroundConnectionAttempt() {}
-void EcheConnectionStatusHandler::Observer::OnRequestCloseConnnection() {}
+void EcheConnectionStatusHandler::Observer::OnRequestCloseConnection() {}
+void EcheConnectionStatusHandler::Observer::OnConnectionClosed() {}
 
 void EcheConnectionStatusHandler::OnConnectionStatusChanged(
     mojom::ConnectionStatus connection_status) {
@@ -98,6 +99,7 @@ void EcheConnectionStatusHandler::SetConnectionStatusForUi(
 }
 
 void EcheConnectionStatusHandler::ResetConnectionStatus() {
+  is_connecting_or_connected_ = false;
   last_update_timestamp_ = base::Time();
   connection_status_for_ui_ =
       mojom::ConnectionStatus::kConnectionStatusConnecting;
@@ -160,7 +162,14 @@ void EcheConnectionStatusHandler::NotifyConnectionStatusForUiChanged(
 
 void EcheConnectionStatusHandler::NotifyRequestCloseConnection() {
   for (auto& observer : observer_list_) {
-    observer.OnRequestCloseConnnection();
+    observer.OnRequestCloseConnection();
+    observer.OnConnectionClosed();
+  }
+}
+
+void EcheConnectionStatusHandler::NotifyConnectionClosed() {
+  for (auto& observer : observer_list_) {
+    observer.OnConnectionClosed();
   }
 }
 

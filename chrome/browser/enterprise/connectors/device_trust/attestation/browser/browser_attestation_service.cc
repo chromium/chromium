@@ -147,8 +147,8 @@ void BrowserAttestationService::OnChallengeValidated(
   }
 
   // Fill `key_info` out for Chrome Browser.
-  KeyInfo key_info;
-  key_info.set_key_type(CBCM);
+  auto key_info = std::make_unique<KeyInfo>();
+  key_info->set_flow_type(CBCM);
   // VA should accept signals JSON string.
   std::string signals_json;
   if (!base::JSONWriter::Write(signals, &signals_json)) {
@@ -156,17 +156,18 @@ void BrowserAttestationService::OnChallengeValidated(
         {std::string(), DTAttestationResult::kFailedToSerializeSignals});
     return;
   }
-  key_info.set_device_trust_signals_json(signals_json);
+  key_info->set_device_trust_signals_json(signals_json);
 
   // Populate profile and/or device level information.
+  auto* key_info_ptr = key_info.get();
   auto barrier_closure = base::BarrierClosure(
       /*num_closures=*/attesters_.size(),
       base::BindOnce(&BrowserAttestationService::OnKeyInfoDecorated,
                      weak_factory_.GetWeakPtr(), signed_data, levels,
-                     std::move(callback), std::ref(key_info)));
+                     std::move(callback), std::move(key_info)));
 
   for (const auto& attester : attesters_) {
-    attester->DecorateKeyInfo(levels, std::ref(key_info), barrier_closure);
+    attester->DecorateKeyInfo(levels, *key_info_ptr, barrier_closure);
   }
 }
 
@@ -174,9 +175,9 @@ void BrowserAttestationService::OnKeyInfoDecorated(
     const SignedData& signed_data,
     const std::set<DTCPolicyLevel>& levels,
     AttestationCallback callback,
-    KeyInfo& key_info) {
+    std::unique_ptr<KeyInfo> key_info) {
   std::string serialized_key_info;
-  if (!key_info.SerializeToString(&serialized_key_info)) {
+  if (!key_info->SerializeToString(&serialized_key_info)) {
     std::move(callback).Run(
         {std::string(), DTAttestationResult::kFailedToSerializeKeyInfo});
     return;

@@ -91,8 +91,10 @@ class MODULES_EXPORT WebTransport final
   void OnDatagramReceived(base::span<const uint8_t> data) override;
   void OnIncomingStreamClosed(uint32_t stream_id, bool fin_received) override;
   void OnOutgoingStreamClosed(uint32_t stream_id) override;
-  void OnReceivedResetStream(uint32_t stream_id, uint8_t code) override;
-  void OnReceivedStopSending(uint32_t stream_id, uint8_t code) override;
+  void OnReceivedResetStream(uint32_t stream_id,
+                             uint32_t stream_error_code) override;
+  void OnReceivedStopSending(uint32_t stream_id,
+                             uint32_t stream_error_code) override;
   void OnClosed(
       network::mojom::blink::WebTransportCloseInfoPtr close_info) override;
 
@@ -106,10 +108,10 @@ class MODULES_EXPORT WebTransport final
   void SendFin(uint32_t stream_id);
 
   // Forwards a AbortStream() message to the mojo interface.
-  void ResetStream(uint32_t stream_id, uint8_t code);
+  void ResetStream(uint32_t stream_id, uint32_t code);
 
   // Forwards a StopSending() message to the mojo interface.
-  void StopSending(uint32_t stream_id, uint8_t code);
+  void StopSending(uint32_t stream_id, uint32_t code);
 
   // Removes the reference to a stream.
   void ForgetIncomingStream(uint32_t stream_id);

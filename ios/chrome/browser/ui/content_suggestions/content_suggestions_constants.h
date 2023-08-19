@@ -9,16 +9,19 @@
 
 #import "ios/chrome/browser/ntp/set_up_list_item_type.h"
 
-// Enum specifying the type of Content Suggestions a module is showing.
+// Enum specifying the type of Content Suggestions a module is showing. Entries
+// should not be renumbered and numeric values should never be reused.
 enum class ContentSuggestionsModuleType {
-  kMostVisited,
-  kShortcuts,
-  kReturnToRecentTab,
-  kSetUpListSync,
-  kSetUpListDefaultBrowser,
-  kSetUpListAutofill,
-  kCompactedSetUpList,
-  kSetUpListAllSet,
+  kMostVisited = 0,
+  kShortcuts = 1,
+  kSetUpListSync = 2,
+  kSetUpListDefaultBrowser = 3,
+  kSetUpListAutofill = 4,
+  kCompactedSetUpList = 5,
+  kSetUpListAllSet = 6,
+  kSafetyCheck = 7,
+  kSafetyCheckMultiRow = 8,
+  kMaxValue = kSafetyCheckMultiRow,
 };
 
 // Represents the content suggestions collection view.
@@ -44,6 +47,9 @@ extern const CGFloat kMagicStackWideWidth;
 
 // The bottom margin below the Most Visited section.
 extern const CGFloat kMostVisitedBottomMargin;
+
+// Most Visited Tiles favicon width when kMagicStack is enabled.
+extern const CGFloat kMagicStackFaviconWidth;
 
 // Maximum number of Trending Queries shown.
 // If the value of this constant is updated, please also update the

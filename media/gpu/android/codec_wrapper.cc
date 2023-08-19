@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/bits.h"
 #include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -28,7 +29,8 @@ class CodecWrapperImpl : public base::RefCountedThreadSafe<CodecWrapperImpl> {
   CodecWrapperImpl(CodecSurfacePair codec_surface_pair,
                    CodecWrapper::OutputReleasedCB output_buffer_release_cb,
                    scoped_refptr<base::SequencedTaskRunner> release_task_runner,
-                   const gfx::Size& initial_expected_size);
+                   const gfx::Size& initial_expected_size,
+                   absl::optional<gfx::Size> coded_size_alignment);
 
   CodecWrapperImpl(const CodecWrapperImpl&) = delete;
   CodecWrapperImpl& operator=(const CodecWrapperImpl&) = delete;
@@ -55,6 +57,11 @@ class CodecWrapperImpl : public base::RefCountedThreadSafe<CodecWrapperImpl> {
   // the codec buffer is not valid. Can be called on any thread. Returns true if
   // the buffer was released.
   bool ReleaseCodecOutputBuffer(int64_t id, bool render);
+
+  size_t GetUnreleasedOutputBufferCount() const {
+    base::AutoLock l(lock_);
+    return buffer_ids_.size();
+  }
 
  private:
   enum class State {
@@ -103,25 +110,36 @@ class CodecWrapperImpl : public base::RefCountedThreadSafe<CodecWrapperImpl> {
   // Most recently reported color space.
   gfx::ColorSpace color_space_ = gfx::ColorSpace::CreateSRGB();
 
+  // The alignment to use for width, height when guessing coded size.
+  const absl::optional<gfx::Size> coded_size_alignment_;
+
   // Task runner on which we'll release codec buffers without rendering.  May be
   // null to always do this on the calling task runner.
   scoped_refptr<base::SequencedTaskRunner> release_task_runner_;
 };
 
-CodecOutputBuffer::CodecOutputBuffer(scoped_refptr<CodecWrapperImpl> codec,
-                                     int64_t id,
-                                     const gfx::Size& size,
-                                     const gfx::ColorSpace& color_space)
+CodecOutputBuffer::CodecOutputBuffer(
+    scoped_refptr<CodecWrapperImpl> codec,
+    int64_t id,
+    const gfx::Size& size,
+    const gfx::ColorSpace& color_space,
+    absl::optional<gfx::Size> coded_size_alignment)
     : codec_(std::move(codec)),
       id_(id),
       size_(size),
-      color_space_(color_space) {}
+      color_space_(color_space),
+      coded_size_alignment_(coded_size_alignment) {}
 
 // For testing.
-CodecOutputBuffer::CodecOutputBuffer(int64_t id,
-                                     const gfx::Size& size,
-                                     const gfx::ColorSpace& color_space)
-    : id_(id), size_(size), color_space_(color_space) {}
+CodecOutputBuffer::CodecOutputBuffer(
+    int64_t id,
+    const gfx::Size& size,
+    const gfx::ColorSpace& color_space,
+    absl::optional<gfx::Size> coded_size_alignment)
+    : id_(id),
+      size_(size),
+      color_space_(color_space),
+      coded_size_alignment_(coded_size_alignment) {}
 
 CodecOutputBuffer::~CodecOutputBuffer() {
   // While it will work if we re-release the buffer, since CodecWrapper handles
@@ -135,23 +153,37 @@ CodecOutputBuffer::~CodecOutputBuffer() {
 
 bool CodecOutputBuffer::ReleaseToSurface() {
   was_rendered_ = true;
-  auto result = codec_->ReleaseCodecOutputBuffer(id_, true);
+  // |codec_| is only null in tests.
+  auto result = codec_ ? codec_->ReleaseCodecOutputBuffer(id_, true) : true;
   if (render_cb_)
     std::move(render_cb_).Run();
   return result;
+}
+
+bool CodecOutputBuffer::CanGuessCodedSize() const {
+  return coded_size_alignment_.has_value();
+}
+
+gfx::Size CodecOutputBuffer::GuessCodedSize() const {
+  DCHECK(CanGuessCodedSize());
+  return gfx::Size(
+      base::bits::AlignUp(size_.width(), coded_size_alignment_->width()),
+      base::bits::AlignUp(size_.height(), coded_size_alignment_->height()));
 }
 
 CodecWrapperImpl::CodecWrapperImpl(
     CodecSurfacePair codec_surface_pair,
     CodecWrapper::OutputReleasedCB output_buffer_release_cb,
     scoped_refptr<base::SequencedTaskRunner> release_task_runner,
-    const gfx::Size& initial_expected_size)
+    const gfx::Size& initial_expected_size,
+    absl::optional<gfx::Size> coded_size_alignment)
     : state_(State::kFlushed),
       codec_(std::move(codec_surface_pair.first)),
       surface_bundle_(std::move(codec_surface_pair.second)),
       next_buffer_id_(0),
       size_(initial_expected_size),
       output_buffer_release_cb_(std::move(output_buffer_release_cb)),
+      coded_size_alignment_(coded_size_alignment),
       release_task_runner_(std::move(release_task_runner)) {
   DVLOG(2) << __func__;
 }
@@ -338,8 +370,8 @@ CodecWrapperImpl::DequeueStatus CodecWrapperImpl::DequeueOutputBuffer(
 
         int64_t buffer_id = next_buffer_id_++;
         buffer_ids_[buffer_id] = index;
-        *codec_buffer = base::WrapUnique(
-            new CodecOutputBuffer(this, buffer_id, size_, color_space_));
+        *codec_buffer = base::WrapUnique(new CodecOutputBuffer(
+            this, buffer_id, size_, color_space_, coded_size_alignment_));
         return DequeueStatus::kOk;
       }
       case MEDIA_CODEC_TRY_AGAIN_LATER: {
@@ -482,11 +514,13 @@ CodecWrapper::CodecWrapper(
     CodecSurfacePair codec_surface_pair,
     OutputReleasedCB output_buffer_release_cb,
     scoped_refptr<base::SequencedTaskRunner> release_task_runner,
-    const gfx::Size& initial_expected_size)
+    const gfx::Size& initial_expected_size,
+    absl::optional<gfx::Size> coded_size_alignment)
     : impl_(new CodecWrapperImpl(std::move(codec_surface_pair),
                                  std::move(output_buffer_release_cb),
                                  std::move(release_task_runner),
-                                 initial_expected_size)) {}
+                                 initial_expected_size,
+                                 coded_size_alignment)) {}
 
 CodecWrapper::~CodecWrapper() {
   // The codec must have already been taken.
@@ -541,6 +575,10 @@ bool CodecWrapper::SetSurface(
 
 scoped_refptr<CodecSurfaceBundle> CodecWrapper::SurfaceBundle() {
   return impl_->SurfaceBundle();
+}
+
+size_t CodecWrapper::GetUnreleasedOutputBufferCount() const {
+  return impl_->GetUnreleasedOutputBufferCount();
 }
 
 }  // namespace media

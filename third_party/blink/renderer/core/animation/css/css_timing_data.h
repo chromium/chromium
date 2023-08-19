@@ -40,6 +40,16 @@ class CSSTimingData {
     return timing_function_list_;
   }
 
+  bool HasSingleInitialDelayStart() const {
+    return delay_start_list_.size() == 1u &&
+           delay_start_list_.front() == InitialDelayStart();
+  }
+
+  bool HasSingleInitialDelayEnd() const {
+    return delay_end_list_.size() == 1u &&
+           delay_end_list_.front() == InitialDelayEnd();
+  }
+
   static Timing::Delay InitialDelayStart() { return Timing::Delay(); }
   static Timing::Delay InitialDelayEnd() { return Timing::Delay(); }
   static scoped_refptr<TimingFunction> InitialTimingFunction() {

@@ -32,7 +32,6 @@
 #include "third_party/blink/renderer/core/svg/graphics/filters/svg_filter_builder.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_filter_element.h"
-#include "third_party/blink/renderer/core/svg/svg_length_context.h"
 #include "third_party/blink/renderer/core/svg/svg_resource.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_filter_operations.h"
@@ -49,6 +48,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/vector2d_conversions.h"
 
 namespace blink {
 
@@ -286,8 +286,8 @@ FilterEffect* FilterEffectBuilder::BuildFilterEffect(
       case FilterOperation::OperationType::kDropShadow: {
         const ShadowData& shadow =
             To<DropShadowFilterOperation>(*filter_operation).Shadow();
-        gfx::PointF offset =
-            gfx::ScalePoint(shadow.Location(), shorthand_scale_);
+        const gfx::Vector2dF offset =
+            gfx::ScaleVector2d(shadow.Offset(), shorthand_scale_);
         gfx::PointF blur = gfx::ScalePoint(shadow.BlurXY(), shorthand_scale_);
         effect = MakeGarbageCollected<FEDropShadow>(
             parent_filter, blur.x(), blur.y(), offset.x(), offset.y(),
@@ -456,8 +456,8 @@ CompositorFilterOperations FilterEffectBuilder::BuildFilterOperations(
       }
       case FilterOperation::OperationType::kDropShadow: {
         const ShadowData& shadow = To<DropShadowFilterOperation>(*op).Shadow();
-        gfx::Point floored_offset = gfx::ToFlooredPoint(
-            gfx::ScalePoint(shadow.Location(), shorthand_scale_));
+        const gfx::Vector2d floored_offset = gfx::ToFlooredVector2d(
+            gfx::ScaleVector2d(shadow.Offset(), shorthand_scale_));
         float radius = shadow.Blur() * shorthand_scale_;
         filters.AppendDropShadowFilter(floored_offset, radius,
                                        shadow.GetColor().GetColor());
@@ -506,8 +506,8 @@ Filter* FilterEffectBuilder::BuildReferenceFilter(
     resource_container->ClearInvalidationMask();
 
   gfx::RectF filter_region =
-      SVGLengthContext::ResolveRectangle<SVGFilterElement>(
-          filter_element, filter_element->filterUnits()->CurrentEnumValue(),
+      LayoutSVGResourceContainer::ResolveRectangle<SVGFilterElement>(
+          *filter_element, filter_element->filterUnits()->CurrentEnumValue(),
           reference_box_);
   bool primitive_bounding_box_mode =
       filter_element->primitiveUnits()->CurrentEnumValue() ==

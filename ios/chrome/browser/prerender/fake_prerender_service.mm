@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/prerender/fake_prerender_service.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 FakePrerenderService::FakePrerenderService() = default;
 
 FakePrerenderService::~FakePrerenderService() = default;

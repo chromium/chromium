@@ -1,0 +1,109 @@
+off-heap-collections-of-gced.cpp:9:1: warning: [blink-gc] Class 'WithCollections' contains invalid fields.
+class WithCollections : public GarbageCollected<WithCollections> {
+^
+off-heap-collections-of-gced.cpp:46:3: note: [blink-gc] Raw pointer field 'set_ptr_' to a GC managed class declared here:
+  std::unordered_set<Base*> set_ptr_;
+  ^
+off-heap-collections-of-gced.cpp:47:3: note: [blink-gc] Reference pointer field 'vector_ref_' to a GC managed class declared here:
+  std::vector<Derived&> vector_ref_;
+  ^
+off-heap-collections-of-gced.cpp:56:3: note: [blink-gc] Raw pointer field 'wtf_linked_hash_set_' to a GC managed class declared here:
+  WTF::LinkedHashSet<Base*> wtf_linked_hash_set_;
+  ^
+off-heap-collections-of-gced.cpp:57:3: note: [blink-gc] Reference pointer field 'wtf_hash_counted_set_' to a GC managed class declared here:
+  WTF::HashCountedSet<Derived&> wtf_hash_counted_set_;
+  ^
+off-heap-collections-of-gced.cpp:42:3: warning: [blink-gc] Disallowed collection 'set<blink::Base>' found; 'Base' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  std::set<Base> set_;
+  ^~~~~~~~~~~~~~~~~~~
+off-heap-collections-of-gced.cpp:43:3: warning: [blink-gc] Disallowed collection 'vector<blink::Derived>' found; 'Derived' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  std::vector<Derived> vector_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-of-gced.cpp:44:3: warning: [blink-gc] Disallowed collection 'map<blink::Mixin, int>' found; 'Mixin' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  std::map<Mixin, int> map_key_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-of-gced.cpp:45:3: warning: [blink-gc] Disallowed collection 'unordered_map<int, blink::Base>' found; 'Base' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  std::unordered_map<int, Base> map_value_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-of-gced.cpp:46:3: warning: [blink-gc] Disallowed collection 'unordered_set<blink::Base *>' found; 'Base' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  std::unordered_set<Base*> set_ptr_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-of-gced.cpp:47:3: warning: [blink-gc] Disallowed collection 'vector<blink::Derived &>' found; 'Derived' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  std::vector<Derived&> vector_ref_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-of-gced.cpp:48:3: warning: [blink-gc] Disallowed collection 'map<const blink::Mixin, int>' found; 'Mixin' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  std::map<const Mixin, int> map_const_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-of-gced.cpp:49:3: warning: [blink-gc] Disallowed collection 'vector<std::pair<blink::Base, int>>' found; 'Base' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  std::vector<std::pair<Base, int>> vector_pair_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-of-gced.cpp:50:3: warning: [blink-gc] Disallowed collection 'array<blink::Base, 4>' found; 'Base' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  std::array<Base, 4> array_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-of-gced.cpp:53:3: warning: [blink-gc] Disallowed collection 'HashSet<blink::Base>' found; 'Base' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  WTF::HashSet<Base> wtf_hash_set_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-of-gced.cpp:54:3: warning: [blink-gc] Disallowed collection 'Deque<blink::Derived>' found; 'Derived' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  WTF::Deque<Derived> wtf_deque_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-of-gced.cpp:55:3: warning: [blink-gc] Disallowed collection 'Vector<blink::Mixin>' found; 'Mixin' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  WTF::Vector<Mixin> wtf_vector_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-of-gced.cpp:56:3: warning: [blink-gc] Disallowed collection 'LinkedHashSet<blink::Base *>' found; 'Base' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  WTF::LinkedHashSet<Base*> wtf_linked_hash_set_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-of-gced.cpp:57:3: warning: [blink-gc] Disallowed collection 'HashCountedSet<blink::Derived &>' found; 'Derived' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  WTF::HashCountedSet<Derived&> wtf_hash_counted_set_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-of-gced.cpp:58:3: warning: [blink-gc] Disallowed collection 'HashMap<blink::Mixin, bool>' found; 'Mixin' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  WTF::HashMap<Mixin, bool> wtf_hash_map_key_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-of-gced.cpp:59:3: warning: [blink-gc] Disallowed collection 'HashMap<double, const blink::Base>' found; 'Base' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  WTF::HashMap<double, const Base> wtf_hash_map_value_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-of-gced.cpp:86:3: warning: [blink-gc] Disallowed collection 'set<blink::Base>' found; 'Base' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  std::set<Base> set;
+  ^~~~~~~~~~~~~~~~~~
+off-heap-collections-of-gced.cpp:88:3: warning: [blink-gc] Disallowed collection 'vector<blink::Derived>' found; 'Derived' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  std::vector<Derived> vector;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-of-gced.cpp:90:3: warning: [blink-gc] Disallowed collection 'map<blink::Mixin, int>' found; 'Mixin' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  std::map<Mixin, int> map_key;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-of-gced.cpp:92:3: warning: [blink-gc] Disallowed collection 'unordered_map<int, blink::Base>' found; 'Base' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  std::unordered_map<int, Base> map_value;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-of-gced.cpp:94:3: warning: [blink-gc] Disallowed collection 'unordered_set<blink::Base *>' found; 'Base' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  std::unordered_set<Base*> set_ptr;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-of-gced.cpp:96:3: warning: [blink-gc] Disallowed collection 'vector<blink::Derived &>' found; 'Derived' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  std::vector<Derived&> vector_ref;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-of-gced.cpp:98:3: warning: [blink-gc] Disallowed collection 'map<const blink::Mixin, int>' found; 'Mixin' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  std::map<const Mixin, int> map_const;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-of-gced.cpp:100:3: warning: [blink-gc] Disallowed collection 'vector<std::pair<blink::Base, int>>' found; 'Base' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  std::vector<std::pair<Base, int>> vector_pair;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-of-gced.cpp:104:3: warning: [blink-gc] Disallowed collection 'HashSet<blink::Base>' found; 'Base' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  WTF::HashSet<Base> wtf_hash_set;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-of-gced.cpp:105:3: warning: [blink-gc] Disallowed collection 'Deque<blink::Derived>' found; 'Derived' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  WTF::Deque<Derived> wtf_deque;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-of-gced.cpp:106:3: warning: [blink-gc] Disallowed collection 'Vector<blink::Mixin>' found; 'Mixin' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  WTF::Vector<Mixin> wtf_vector;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-of-gced.cpp:107:3: warning: [blink-gc] Disallowed collection 'LinkedHashSet<blink::Base *>' found; 'Base' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  WTF::LinkedHashSet<Base*> wtf_linked_hash_set;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-of-gced.cpp:108:3: warning: [blink-gc] Disallowed collection 'HashCountedSet<blink::Derived &>' found; 'Derived' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  WTF::HashCountedSet<Derived&> wtf_hash_counted_set;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-of-gced.cpp:109:3: warning: [blink-gc] Disallowed collection 'HashMap<blink::Mixin, bool>' found; 'Mixin' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  WTF::HashMap<Mixin, bool> wtf_hash_map_key;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+off-heap-collections-of-gced.cpp:110:3: warning: [blink-gc] Disallowed collection 'HashMap<double, const blink::Base>' found; 'Base' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+  WTF::HashMap<double, const Base> wtf_hash_map_value;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+32 warnings generated.

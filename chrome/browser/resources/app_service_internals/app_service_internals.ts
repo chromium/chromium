@@ -5,7 +5,7 @@
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app_service_internals.html.js';
-import {AppCapabilityInfo, AppInfo, AppServiceInternalsPageHandler, PreferredAppInfo, PromiseAppInfo} from './app_service_internals.mojom-webui.js';
+import {AppCapabilityInfo, AppInfo, AppServiceInternalsPageHandler, PreferredAppInfo, PromiseAppInfo, ShortcutInfo} from './app_service_internals.mojom-webui.js';
 
 export class AppServiceInternalsElement extends PolymerElement {
   static get is() {
@@ -22,6 +22,7 @@ export class AppServiceInternalsElement extends PolymerElement {
       preferredAppList_: Array,
       promiseAppList_: Array,
       appCapabilityList_: Array,
+      shortcutList_: Array,
     };
   }
 
@@ -34,6 +35,8 @@ export class AppServiceInternalsElement extends PolymerElement {
   private promiseAppList_: PromiseAppInfo[] = [];
   /** List containing app capability access information. */
   private appCapabilityList_: AppCapabilityInfo[] = [];
+  /** List containing debug information for all shortcuts. */
+  private shortcutList_: ShortcutInfo[] = [];
 
   override ready() {
     super.ready();
@@ -46,6 +49,7 @@ export class AppServiceInternalsElement extends PolymerElement {
         this.preferredAppList_ = debugInfo.preferredAppList;
         this.promiseAppList_ = debugInfo.promiseAppList;
         this.appCapabilityList_ = debugInfo.appCapabilityList;
+        this.shortcutList_ = debugInfo.shortcutList;
       }
       window.addEventListener('hashchange', this.hashChangeListener_);
       // setTimeout ensures that we only apply the hash change after all the
@@ -100,6 +104,14 @@ export class AppServiceInternalsElement extends PolymerElement {
       fileParts.push(appCapability.name + '\n');
       fileParts.push('-----\n');
       fileParts.push(appCapability.debugInfo + '\n');
+    }
+
+    fileParts.push('Shortcut List\n');
+    fileParts.push('================\n\n');
+    for (const shortcut of this.shortcutList_) {
+      fileParts.push(shortcut.name + '\n');
+      fileParts.push('-----\n');
+      fileParts.push(shortcut.debugInfo + '\n');
     }
 
     const file = new Blob(fileParts);

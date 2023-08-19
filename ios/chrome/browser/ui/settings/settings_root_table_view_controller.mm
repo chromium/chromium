@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/settings_root_table_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -20,10 +20,6 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 // Height of the space used by header/footer when none is set. Default is
@@ -265,7 +261,7 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
     return nil;
   }
   SettingsNavigationController* navigationController =
-      base::mac::ObjCCast<SettingsNavigationController>(
+      base::apple::ObjCCast<SettingsNavigationController>(
           self.navigationController);
   UIBarButtonItem* doneButton = [navigationController doneButton];
   if (_shouldDisableDoneButtonOnEdit) {

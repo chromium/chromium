@@ -84,11 +84,11 @@ class CONTENT_EXPORT MediaDevicesDispatcherHost
 
   void GetDefaultVideoInputDeviceID(
       GetVideoInputCapabilitiesCallback client_callback,
-      MediaDeviceSaltAndOrigin salt_and_origin);
+      const MediaDeviceSaltAndOrigin& salt_and_origin);
 
   void GotDefaultVideoInputDeviceID(
       GetVideoInputCapabilitiesCallback client_callback,
-      MediaDeviceSaltAndOrigin salt_and_origin,
+      const MediaDeviceSaltAndOrigin& salt_and_origin,
       const std::string& default_device_id);
 
   void FinalizeGetVideoInputCapabilities(

@@ -193,7 +193,8 @@ class RenderViewContextMenuBase : public ui::SimpleMenuModel::Delegate,
       bool started_from_context_menu);
 
   content::ContextMenuParams params_;
-  const raw_ptr<content::WebContents, DanglingUntriaged> source_web_contents_;
+  const raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged>
+      source_web_contents_;
   const raw_ptr<content::BrowserContext, DanglingUntriaged> browser_context_;
 
   ui::SimpleMenuModel menu_model_;

@@ -69,7 +69,8 @@ void GaiaPasswordChangedScreen::ShowImpl() {
   if (view_)
     view_->Show(context()->user_context->GetAccountId().GetUserEmail());
   auth_performer_ = std::make_unique<AuthPerformer>(UserDataAuthClient::Get());
-  factor_editor_ = std::make_unique<AuthFactorEditor>();
+  factor_editor_ =
+      std::make_unique<AuthFactorEditor>(UserDataAuthClient::Get());
   mount_performer_ = std::make_unique<MountPerformer>();
   // Store password obtained during online authentication.
   // It will be either used to replace old password or

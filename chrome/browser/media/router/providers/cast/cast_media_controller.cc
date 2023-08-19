@@ -70,14 +70,9 @@ absl::optional<gfx::Size> GetValidSize(const base::Value::Dict& dict) {
 
 }  // namespace
 
-CastMediaController::CastMediaController(
-    AppActivity* activity,
-    mojo::PendingReceiver<mojom::MediaController> receiver,
-    mojo::PendingRemote<mojom::MediaStatusObserver> observer)
+CastMediaController::CastMediaController(AppActivity* activity)
     : sender_id_("sender-" + base::NumberToString(base::RandUint64())),
-      activity_(activity),
-      receiver_(this, std::move(receiver)),
-      observer_(std::move(observer)) {}
+      activity_(activity) {}
 
 CastMediaController::~CastMediaController() {}
 
@@ -98,32 +93,32 @@ void CastMediaController::Pause() {
 void CastMediaController::SetMute(bool mute) {
   if (session_id_.empty())
     return;
-  base::Value::Dict request = CreateVolumeRequest();
-  request.SetByDottedPath("message.volume.muted", mute);
-  request.Set("type", "v2_message");
-  request.Set("clientId", sender_id_);
-  auto message = CastInternalMessage::From(std::move(request));
+  auto message = CastInternalMessage::From(
+      CreateVolumeRequest()
+          .SetByDottedPath("message.volume.muted", mute)
+          .Set("type", "v2_message")
+          .Set("clientId", sender_id_));
   activity_->SendSetVolumeRequestToReceiver(*message, base::DoNothing());
 }
 
 void CastMediaController::SetVolume(float volume) {
   if (session_id_.empty())
     return;
-  base::Value::Dict request = CreateVolumeRequest();
-  request.SetByDottedPath("message.volume.level", volume);
-  request.Set("type", "v2_message");
-  request.Set("clientId", sender_id_);
   activity_->SendSetVolumeRequestToReceiver(
-      *CastInternalMessage::From(std::move(request)), base::DoNothing());
+      *CastInternalMessage::From(
+          CreateVolumeRequest()
+              .SetByDottedPath("message.volume.level", volume)
+              .Set("type", "v2_message")
+              .Set("clientId", sender_id_)),
+      base::DoNothing());
 }
 
 void CastMediaController::Seek(base::TimeDelta time) {
   if (session_id_.empty())
     return;
-  base::Value::Dict request = CreateMediaRequest(V2MessageType::kSeek);
-  request.SetByDottedPath("message.currentTime", time.InSecondsF());
-  activity_->SendMediaRequestToReceiver(
-      *CastInternalMessage::From(std::move(request)));
+  activity_->SendMediaRequestToReceiver(*CastInternalMessage::From(
+      CreateMediaRequest(V2MessageType::kSeek)
+          .SetByDottedPath("message.currentTime", time.InSecondsF())));
 }
 
 void CastMediaController::NextTrack() {
@@ -131,10 +126,9 @@ void CastMediaController::NextTrack() {
     return;
   // We do not use |kQueueNext| because not all receiver apps support it.
   // See crbug.com/1078601.
-  base::Value::Dict request = CreateMediaRequest(V2MessageType::kQueueUpdate);
-  request.SetByDottedPath("message.jump", kQueueNextJumpValue);
-  activity_->SendMediaRequestToReceiver(
-      *CastInternalMessage::From(std::move(request)));
+  activity_->SendMediaRequestToReceiver(*CastInternalMessage::From(
+      CreateMediaRequest(V2MessageType::kQueueUpdate)
+          .SetByDottedPath("message.jump", kQueueNextJumpValue)));
 }
 
 void CastMediaController::PreviousTrack() {
@@ -142,10 +136,16 @@ void CastMediaController::PreviousTrack() {
     return;
   // We do not use |kQueuePrev| because not all receiver apps support it.
   // See crbug.com/1078601.
-  base::Value::Dict request = CreateMediaRequest(V2MessageType::kQueueUpdate);
-  request.SetByDottedPath("message.jump", kQueuePrevJumpValue);
-  activity_->SendMediaRequestToReceiver(
-      *CastInternalMessage::From(std::move(request)));
+  activity_->SendMediaRequestToReceiver(*CastInternalMessage::From(
+      CreateMediaRequest(V2MessageType::kQueueUpdate)
+          .SetByDottedPath("message.jump", kQueuePrevJumpValue)));
+}
+
+void CastMediaController::AddMediaController(
+    mojo::PendingReceiver<mojom::MediaController> receiver,
+    mojo::PendingRemote<mojom::MediaStatusObserver> observer) {
+  receivers_.Add(this, std::move(receiver));
+  observers_.Add(std::move(observer));
 }
 
 void CastMediaController::SetSession(const CastSession& session) {
@@ -161,38 +161,40 @@ void CastMediaController::SetSession(const CastSession& session) {
     media_status_.can_set_volume = *volume_type != "fixed";
     media_status_.can_mute = media_status_.can_set_volume;
   }
-  observer_->OnMediaStatusUpdated(media_status_.Clone());
+  for (const auto& observer : observers_) {
+    observer->OnMediaStatusUpdated(media_status_.Clone());
+  }
 }
 
 void CastMediaController::SetMediaStatus(
     const base::Value::Dict& status_value) {
   UpdateMediaStatus(status_value);
-  observer_->OnMediaStatusUpdated(media_status_.Clone());
+  for (const auto& observer : observers_) {
+    observer->OnMediaStatusUpdated(media_status_.Clone());
+  }
 }
 
 base::Value::Dict CastMediaController::CreateMediaRequest(V2MessageType type) {
-  base::Value::Dict message;
-  message.Set("mediaSessionId", media_session_id_);
-  message.Set("sessionId", session_id_);
-  message.Set("type", cast_util::EnumToString(type).value().data());
-  base::Value::Dict request;
-  request.Set("message", std::move(message));
-  request.Set("type", "v2_message");
-  request.Set("clientId", sender_id_);
-  return request;
+  return base::Value::Dict()
+      .Set("message",
+           base::Value::Dict()
+               .Set("mediaSessionId", media_session_id_)
+               .Set("sessionId", session_id_)
+               .Set("type", cast_util::EnumToString(type).value().data()))
+      .Set("type", "v2_message")
+      .Set("clientId", sender_id_);
 }
 
 base::Value::Dict CastMediaController::CreateVolumeRequest() {
-  base::Value::Dict message;
-  message.Set("sessionId", session_id_);
-  // Muting also uses the |kSetVolume| message type.
-  message.Set(
-      "type",
-      cast_util::EnumToString(V2MessageType::kSetVolume).value().data());
-  message.Set("volume", base::Value::Dict());
-  base::Value::Dict request;
-  request.Set("message", std::move(message));
-  return request;
+  return base::Value::Dict().Set(
+      "message",
+      base::Value::Dict()
+          .Set("sessionId", session_id_)
+          // Muting also uses the |kSetVolume| message type.
+          .Set(
+              "type",
+              cast_util::EnumToString(V2MessageType::kSetVolume).value().data())
+          .Set("volume", base::Value::Dict()));
 }
 
 void CastMediaController::UpdateMediaStatus(

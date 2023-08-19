@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.autofill;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -22,27 +24,37 @@ public class AutofillSnackbarController implements SnackbarManager.SnackbarContr
     // Duration in milliseconds for which the snackbar should be shown.
     private static final int DURATION_MS = 10000;
 
-    private final long mNativeAutofillSnackbarView;
     private final SnackbarManager mSnackbarManager;
+    private long mNativeAutofillSnackbarView;
 
-    public AutofillSnackbarController(
-            long nativeAutofillSnackbarView, SnackbarManager snackbarManager) {
+    @VisibleForTesting
+    AutofillSnackbarController(long nativeAutofillSnackbarView, SnackbarManager snackbarManager) {
         this.mNativeAutofillSnackbarView = nativeAutofillSnackbarView;
         this.mSnackbarManager = snackbarManager;
     }
 
     @Override
     public void onAction(Object actionData) {
+        if (mNativeAutofillSnackbarView == 0) {
+            return;
+        }
+        // Notify the backend that the user clicked on the action button.
         AutofillSnackbarControllerJni.get().onActionClicked(mNativeAutofillSnackbarView);
+        // Since the snackbar gets dismissed when the action is clicked, notify the backend about
+        // the dismissal as well.
+        AutofillSnackbarControllerJni.get().onDismissed(mNativeAutofillSnackbarView);
     }
 
     @Override
     public void onDismissNoAction(Object actionData) {
+        if (mNativeAutofillSnackbarView == 0) {
+            return;
+        }
         AutofillSnackbarControllerJni.get().onDismissed(mNativeAutofillSnackbarView);
     }
 
     @CalledByNative
-    public static AutofillSnackbarController create(
+    static AutofillSnackbarController create(
             long nativeAutofillSnackbarView, WindowAndroid windowAndroid) {
         return new AutofillSnackbarController(
                 nativeAutofillSnackbarView, SnackbarManagerProvider.from(windowAndroid));
@@ -55,7 +67,7 @@ public class AutofillSnackbarController implements SnackbarManager.SnackbarContr
      * @param action Label for the action button in the snackbar.
      */
     @CalledByNative
-    public void show(String message, String action) {
+    void show(String message, String action) {
         Snackbar snackBar = Snackbar.make(message, this, Snackbar.TYPE_ACTION,
                                             Snackbar.UMA_AUTOFILL_VIRTUAL_CARD_FILLED)
                                     .setAction(action, /*objectData=*/null);
@@ -68,7 +80,8 @@ public class AutofillSnackbarController implements SnackbarManager.SnackbarContr
 
     /** Dismiss the autofill snackbar if it's showing. No-op if it's not showing. */
     @CalledByNative
-    public void dismiss() {
+    void dismiss() {
+        mNativeAutofillSnackbarView = 0;
         mSnackbarManager.dismissSnackbars(this);
     }
 

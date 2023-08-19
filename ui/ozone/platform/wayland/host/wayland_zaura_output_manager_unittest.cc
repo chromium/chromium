@@ -336,6 +336,7 @@ TEST_F(WaylandZAuraOutputManagerTest,
   EXPECT_CALL(output_delegate, OnOutputHandleMetrics(testing::_)).Times(1);
   primary_output()->set_delegate_for_testing(&output_delegate);
   SendSampleMetrics(GetSampleMetrics());
+  primary_output()->set_delegate_for_testing(nullptr);
 }
 
 }  // namespace ui

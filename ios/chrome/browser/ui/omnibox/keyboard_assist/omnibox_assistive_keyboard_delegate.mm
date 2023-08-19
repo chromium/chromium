@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_delegate.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -18,10 +18,6 @@
 #import "ios/chrome/browser/ui/location_bar/location_bar_constants.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_ios.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 @implementation OmniboxAssistiveKeyboardDelegateImpl
 
@@ -43,7 +39,7 @@
     // can be a regular view or a bar button item. Handle both cases.
     UIView* view;
     if ([sender isKindOfClass:[UIView class]]) {
-      view = base::mac::ObjCCastStrict<UIView>(sender);
+      view = base::apple::ObjCCastStrict<UIView>(sender);
     } else if ([sender isKindOfClass:[UIBarButtonItem class]]) {
       view = [sender valueForKey:@"view"];
     }

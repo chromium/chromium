@@ -81,14 +81,16 @@ void PolicyUiLacrosBrowserTest::ReadStatusFor(
         const policies = getPolicyFieldsets();
         const statuses = {};
         for (let i = 0; i < policies.length; ++i) {
-          const legend = policies[i].querySelector('legend').textContent;
+          const statusHeading = policies[i]
+            .querySelector('.status-box-heading').textContent;
           const entries = {};
           const rows = policies[i]
             .querySelectorAll('.status-entry div:nth-child(2)');
           for (let j = 0; j < rows.length; ++j) {
-            entries[rows[j].className] = rows[j].textContent.trim();
+            entries[rows[j].className.split(' ')[0]] = rows[j].textContent
+              .trim();
           }
-          statuses[legend.trim()] = entries;
+          statuses[statusHeading.trim()] = entries;
         }
         return JSON.stringify(statuses);
       };

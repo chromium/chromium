@@ -13,7 +13,7 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/repeating_test_future.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
@@ -57,7 +57,7 @@ class LoginScreenDefaultPolicyBrowsertestBase
 
   void RefreshDevicePolicyAndWaitForPrefChange(const char* pref_name);
 
-  raw_ptr<Profile, ExperimentalAsh> login_profile_;
+  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> login_profile_;
 };
 
 class LoginScreenDefaultPolicyLoginScreenBrowsertest
@@ -117,10 +117,11 @@ void LoginScreenDefaultPolicyBrowsertestBase::
   PrefService* prefs = login_profile_->GetPrefs();
   ASSERT_TRUE(prefs);
   PrefChangeRegistrar registrar;
-  base::test::RepeatingTestFuture<const char*> pref_changed_future;
+  base::test::TestFuture<const char*> pref_changed_future;
   registrar.Init(prefs);
-  registrar.Add(pref_name, base::BindRepeating(
-                               pref_changed_future.GetCallback(), pref_name));
+  registrar.Add(pref_name,
+                base::BindRepeating(pref_changed_future.GetRepeatingCallback(),
+                                    pref_name));
   RefreshDevicePolicy();
   EXPECT_EQ(pref_name, pref_changed_future.Take());
 }

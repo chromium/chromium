@@ -37,7 +37,7 @@ TEST_F(MdTextButtonTest, BackgroundColorChangesWithWidgetActivation) {
 
   std::unique_ptr<Widget> widget = CreateTestWidget();
   auto* button = widget->SetContentsView(
-      std::make_unique<MdTextButton>(Button::PressedCallback(), u"button"));
+      std::make_unique<MdTextButton>(Button::PressedCallback(), u" "));
   button->SetProminent(true);
   button->SetBounds(0, 0, 70, 20);
   widget->LayoutRootViewIfNecessary();
@@ -49,15 +49,8 @@ TEST_F(MdTextButtonTest, BackgroundColorChangesWithWidgetActivation) {
   SkBitmap active_bitmap = views::test::PaintViewToBitmap(button);
 
   auto background_color = [button](const SkBitmap& bitmap) {
-    // The very edge of the bitmap contains the button's border, which we aren't
-    // interested in here. Instead, grab a pixel that is inset by the button's
-    // corner radius from the top-left point to avoid the border.
-    //
-    // It would make a bit more sense to inset by the border thickness or
-    // something, but MdTextButton doesn't expose (or even know) that value
-    // without some major abstraction violation.
-    int corner_radius = button->GetCornerRadiusValue();
-    return bitmap.getColor(corner_radius, corner_radius);
+    return bitmap.getColor(button->size().width() / 2.,
+                           button->size().height() / 2.);
   };
 
   EXPECT_EQ(background_color(active_bitmap),

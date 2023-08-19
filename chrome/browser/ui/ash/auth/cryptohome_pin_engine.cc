@@ -16,7 +16,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
 
-namespace ash {
+namespace ash::legacy {
 namespace {
 
 // Possible values for the `kQuickUnlockModeAllowlist` policy.
@@ -64,7 +64,8 @@ std::string GetUserSalt(const AccountId& account_id) {
 }  // namespace
 
 CryptohomePinEngine::CryptohomePinEngine(ash::AuthPerformer* auth_performer)
-    : auth_performer_(auth_performer) {}
+    : auth_performer_(auth_performer),
+      auth_factor_editor_(ash::UserDataAuthClient::Get()) {}
 
 CryptohomePinEngine::~CryptohomePinEngine() = default;
 
@@ -98,8 +99,8 @@ bool CryptohomePinEngine::ShouldSkipSetupBecauseOfPolicy(
   absl::optional<bool> is_pin_disabled = IsCryptohomePinDisabledByPolicy(
       account_id, CryptohomePinEngine::Purpose::kAny);
   bool result = is_pin_disabled.has_value() ? is_pin_disabled.value() : false;
-  result =
-      result || chrome_user_manager_util::IsPublicSessionOrEphemeralLogin();
+  result = result ||
+           chrome_user_manager_util::IsManagedGuestSessionOrEphemeralLogin();
   return result;
 }
 
@@ -158,4 +159,4 @@ void CryptohomePinEngine::OnGetAuthFactorsConfiguration(
   std::move(callback).Run(true, std::move(user_context));
 }
 
-}  // namespace ash
+}  // namespace ash::legacy

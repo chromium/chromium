@@ -24,19 +24,21 @@ const char kTestWifiDeviceName[] = "wifi_name";
 
 // Creates a list of cellular SIM slots with an eSIM and pSIM slot.
 base::Value GenerateTestSimSlotInfos() {
-  base::Value::List sim_slot_infos;
+  auto psim_slot_info =
+      base::Value::Dict()
+          .Set(shill::kSIMSlotInfoICCID, kTestCellularPSimIccid)
+          .Set(shill::kSIMSlotInfoEID, std::string())
+          .Set(shill::kSIMSlotInfoPrimary, true);
 
-  base::Value::Dict psim_slot_info;
-  psim_slot_info.Set(shill::kSIMSlotInfoICCID, kTestCellularPSimIccid);
-  psim_slot_info.Set(shill::kSIMSlotInfoEID, std::string());
-  psim_slot_info.Set(shill::kSIMSlotInfoPrimary, true);
-  sim_slot_infos.Append(std::move(psim_slot_info));
+  auto esim_slot_info =
+      base::Value::Dict()
+          .Set(shill::kSIMSlotInfoICCID, kTestCellularESimIccid)
+          .Set(shill::kSIMSlotInfoEID, kTestCellularEid)
+          .Set(shill::kSIMSlotInfoPrimary, false);
 
-  base::Value::Dict esim_slot_info;
-  esim_slot_info.Set(shill::kSIMSlotInfoICCID, kTestCellularESimIccid);
-  esim_slot_info.Set(shill::kSIMSlotInfoEID, kTestCellularEid);
-  esim_slot_info.Set(shill::kSIMSlotInfoPrimary, false);
-  sim_slot_infos.Append(std::move(esim_slot_info));
+  auto sim_slot_infos = base::Value::List()
+                            .Append(std::move(psim_slot_info))
+                            .Append(std::move(esim_slot_info));
 
   return base::Value(std::move(sim_slot_infos));
 }

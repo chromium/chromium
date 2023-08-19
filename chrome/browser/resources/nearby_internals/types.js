@@ -99,6 +99,17 @@ export let TransferMetadataStatus;
  */
 export let TimestampedMessage;
 
+
+/**
+ * A Nearby Presence Device object to be used for displaying nearby devices
+ * during testing.
+ * @typedef {{connectable: boolean,
+ *            type: string,
+ *            endpoint_id: string,
+ *            actions: string}}
+ */
+export let PresenceDevice;
+
 /**
  * Share Target object sent by NearbyInternalsUiTriggerHandler on discovery or
  * lost.
@@ -146,3 +157,11 @@ export let NearbyShareStates;
  *            getLogMessages: function(): Promise<!Array<!LogMessage>> }}
  */
 export let LogProvider;
+
+/**
+ * Select object is used by the arrays which populate the actions drop down with
+ * a list of actions specific to each feature.
+ * @typedef {{name: string,
+ *            value: string}}
+ */
+export let SelectOption;

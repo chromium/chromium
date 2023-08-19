@@ -8,7 +8,9 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/common/chrome_features.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace web_app {
@@ -18,10 +20,10 @@ WithCrosapiParam::WithCrosapiParam() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (GetParam() == CrosapiParam::kEnabled) {
     scoped_feature_list_.InitWithFeatures(
-        {ash::features::kLacrosSupport, features::kWebAppsCrosapi}, {});
+        ash::standalone_browser::GetFeatureRefs(), {});
   } else {
     scoped_feature_list_.InitWithFeatures(
-        {}, {features::kWebAppsCrosapi, ash::features::kLacrosPrimary});
+        {}, ash::standalone_browser::GetFeatureRefs());
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
@@ -37,6 +39,14 @@ std::string WithCrosapiParam::ParamToString(
     case CrosapiParam::kEnabled:
       return "WebAppsCrosapiEnabled";
   }
+}
+
+// static
+void WithCrosapiParam::VerifyLacrosStatus() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ASSERT_EQ(GetParam() == CrosapiParam::kEnabled,
+            crosapi::browser_util::IsLacrosEnabled());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace test

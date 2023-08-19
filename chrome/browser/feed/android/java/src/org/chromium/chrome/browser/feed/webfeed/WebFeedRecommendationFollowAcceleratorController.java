@@ -34,8 +34,6 @@ import org.chromium.url.GURL;
  * recommendation (a recommendation card within the feed).
  */
 public class WebFeedRecommendationFollowAcceleratorController {
-    private static final String TAG = "WebFeedAccCon";
-
     /** We use UserData to put the web feed name into the tab and the NavigationHandle. */
     @VisibleForTesting
     private static class AssociatedWebFeedData implements UserData {
@@ -178,7 +176,6 @@ public class WebFeedRecommendationFollowAcceleratorController {
                 }));
     }
 
-    @VisibleForTesting
     public WebFeedFollowIntroView getIntroViewForTesting() {
         return mWebFeedFollowIntroView;
     }

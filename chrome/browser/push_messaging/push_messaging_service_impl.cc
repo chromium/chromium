@@ -15,7 +15,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
@@ -48,7 +47,6 @@
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/gcm_driver/instance_id/instance_id_profile_service.h"
 #include "components/permissions/permission_manager.h"
-#include "components/permissions/permission_result.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -153,14 +151,6 @@ void RecordPushSubcriptionChangeStatus(blink::mojom::PushEventStatus status) {
 }
 void RecordUnsubscribeReason(blink::mojom::PushUnregistrationReason reason) {
   UMA_HISTOGRAM_ENUMERATION("PushMessaging.UnregistrationReason", reason);
-}
-
-void RecordUnsubscribeGCMResult(gcm::GCMClient::Result result) {
-  UMA_HISTOGRAM_ENUMERATION("PushMessaging.UnregistrationGCMResult", result);
-}
-
-void RecordUnsubscribeIIDResult(InstanceID::Result result) {
-  UMA_HISTOGRAM_ENUMERATION("PushMessaging.UnregistrationIIDResult", result);
 }
 
 void UnregisterCallbackToClosure(
@@ -356,12 +346,6 @@ void PushMessagingServiceImpl::OnMessage(const std::string& app_id,
     return;
 
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
-  if (g_browser_process->background_mode_manager()) {
-    UMA_HISTOGRAM_BOOLEAN("PushMessaging.ReceivedMessageInBackground",
-                          g_browser_process->background_mode_manager()
-                              ->IsBackgroundWithoutWindows());
-  }
-
   if (!in_flight_keep_alive_) {
     in_flight_keep_alive_ = std::make_unique<ScopedKeepAlive>(
         KeepAliveOrigin::IN_FLIGHT_PUSH_MESSAGE,
@@ -438,9 +422,6 @@ void PushMessagingServiceImpl::OnCheckedOrigin(
     PendingMessage message,
     PermissionRevocationRequest::Outcome outcome) {
   origin_revocation_request_.reset();
-
-  base::UmaHistogramLongTimes("PushMessaging.CheckOriginForAbuseTime",
-                              base::Time::Now() - message.received_time);
 
   PushMessagingAppIdentifier app_identifier =
       PushMessagingAppIdentifier::FindByAppId(profile_, message.app_id);
@@ -532,9 +513,6 @@ void PushMessagingServiceImpl::
   absl::optional<std::string> payload;
   if (message.decrypted)
     payload = message.raw_data;
-
-  base::UmaHistogramLongTimes("PushMessaging.DeliverQueuedMessageTime",
-                              base::Time::Now() - next_message.received_time);
 
   // Inform tests observing message dispatching about the event.
   if (message_dispatched_callback_for_testing_) {
@@ -681,10 +659,6 @@ void PushMessagingServiceImpl::DidHandleEnqueuedMessage(
   // Remove the delivered message from the queue.
   std::queue<PendingMessage>& delivery_queue = iter->second;
   CHECK(!delivery_queue.empty());
-
-  base::UmaHistogramLongTimes(
-      "PushMessaging.MessageHandledTime",
-      base::Time::Now() - delivery_queue.front().received_time);
 
   delivery_queue.pop();
   if (delivery_queue.empty())
@@ -1321,14 +1295,12 @@ void PushMessagingServiceImpl::DidClearPushSubscriptionId(
 
 void PushMessagingServiceImpl::DidUnregister(bool was_subscribed,
                                              gcm::GCMClient::Result result) {
-  RecordUnsubscribeGCMResult(result);
   DidUnsubscribe(std::string() /* app_id_when_instance_id */, was_subscribed);
 }
 
 void PushMessagingServiceImpl::DidDeleteID(const std::string& app_id,
                                            bool was_subscribed,
                                            InstanceID::Result result) {
-  RecordUnsubscribeIIDResult(result);
   // DidUnsubscribe must be run asynchronously when passing a non-empty
   // |app_id_when_instance_id|, since it calls
   // InstanceIDDriver::RemoveInstanceID which deletes the InstanceID itself.

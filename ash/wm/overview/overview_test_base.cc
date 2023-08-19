@@ -49,6 +49,24 @@ bool OverviewTestBase::InOverviewSession() {
   return GetOverviewController()->InOverviewSession();
 }
 
+void OverviewTestBase::DispatchLongPress(OverviewItem* item) {
+  const gfx::Point point =
+      gfx::ToRoundedPoint(item->target_bounds().CenterPoint());
+  ui::GestureEvent long_press(
+      point.x(), point.y(), 0, base::TimeTicks::Now(),
+      ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
+  GetEventGenerator()->Dispatch(&long_press);
+}
+
+std::vector<std::unique_ptr<aura::Window>> OverviewTestBase::CreateAppWindows(
+    int n) {
+  std::vector<std::unique_ptr<aura::Window>> windows(n);
+  for (int i = n - 1; i >= 0; --i) {
+    windows[i] = CreateAppWindow();
+  }
+  return windows;
+}
+
 bool OverviewTestBase::WindowsOverlapping(aura::Window* window1,
                                           aura::Window* window2) {
   const gfx::Rect window1_bounds = GetTransformedTargetBounds(window1);

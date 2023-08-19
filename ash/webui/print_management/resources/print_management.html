@@ -11,6 +11,10 @@
     font: var(--cros-button-2-font);
   }
 
+  :host-context(body.jelly-enabled) #ongoingEmptyState {
+    font: var(--cros-body-2-font);
+  }
+
   :host-context(body.jelly-enabled) #printJobTitle {
     font: var(--cros-display-6-font);
   }
@@ -43,10 +47,11 @@
   }
 
   #clearAllContainer {
+    column-gap: 8px;
     display: flex;
   }
 
-  #deleteIcon {
+  :host-context(body:not(.jelly-enabled)) #deleteIcon {
     --iron-icon-height: 20px;
     --iron-icon-width: 20px;
     margin-inline-end: 4px;
@@ -122,8 +127,17 @@
       <cr-button id="clearAllButton" on-click="onClearHistoryClicked"
           disabled="[[shouldDisableClearAllButton]]"
           hidden="[[!showClearAllButton]]">
-        <iron-icon id="deleteIcon" icon="print-management:delete"></iron-icon>
+        <iron-icon id="deleteIcon" icon="print-management:delete"
+            slot="prefix-icon">
+        </iron-icon>
         [[i18n('clearAllHistoryLabel')]]
+      </cr-button>
+      <cr-button id="managePrinters" hidden="[[!shouldShowManagePrinterButton(
+          ongoingPrintJobs.length, printJobs.length)]]"
+          on-click="onManagePrintersClicked">
+        <iron-icon id="openInNewIcon" icon="cr:open-in-new" slot="suffix-icon">
+        </iron-icon>
+        [[i18n('managePrintersButtonLabel')]]
       </cr-button>
     </div>
   </div>
@@ -167,11 +181,14 @@
       </iron-list>
     </template>
 
-    <div id="ongoingEmptyState" hidden="[[ongoingPrintJobs.length]]">
+    <div id="ongoingEmptyState" hidden="[[!shouldShowOngoingEmptyState(
+          ongoingPrintJobs.length, printJobs.length)]]">
       [[i18n('noPrintJobInProgress')]]
     </div>
 
-    <printer-setup-info hidden$="[[!showSetupAssistance]]"></printer-setup-info>
+    <printer-setup-info hidden="[[!shouldShowSetupAssistance(
+        ongoingPrintJobs.length, printJobs.length)]]">
+    </printer-setup-info>
 
     <template is="dom-if" if="[[printJobs.length]]" restamp>
       <div id="historyHeaderContainer" class="column-headers flex-center">

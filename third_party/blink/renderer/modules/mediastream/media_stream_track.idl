@@ -54,6 +54,8 @@ enum MediaStreamTrackState {
     MediaTrackCapabilities getCapabilities();
     MediaTrackConstraints getConstraints();
     MediaTrackSettings getSettings();
+    // https://w3c.github.io/mediacapture-extensions/#mediastreamtrack-frame-stats
+    [RuntimeEnabled=MediaStreamTrackGetFrameStats, CallWith=ScriptState] Promise<MediaTrackFrameStats> getFrameStats();
     // https://w3c.github.io/mediacapture-handle/identity/
     [RuntimeEnabled=CaptureHandle, MeasureAs=CaptureHandle] CaptureHandle? getCaptureHandle();
 

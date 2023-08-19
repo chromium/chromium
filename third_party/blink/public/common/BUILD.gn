@@ -6,6 +6,7 @@ import("//build/buildflag_header.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/features.gni")
 import("//build/config/rust.gni")
+import("//skia/features.gni")
 import("//testing/test.gni")
 import("//third_party/blink/public/public_features.gni")
 import("//third_party/blink/renderer/build/scripts/scripts.gni")
@@ -103,7 +104,8 @@ buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [
     "RTC_USE_H264=$rtc_use_h264",
-    "BUILD_RUST_CRASH=$build_rust_crash",
+    "ENABLE_RUST_CRASH=$enable_rust_crash",
+    "USE_FONTATIONS_BACKEND=$use_typeface_fontations",
   ]
 }
 
@@ -180,7 +182,6 @@ source_set("headers") {
     "indexeddb/indexeddb_key_path.h",
     "indexeddb/indexeddb_key_range.h",
     "indexeddb/indexeddb_metadata.h",
-    "indexeddb/web_idb_types.h",
     "input/pointer_id.h",
     "input/synthetic_web_input_event_builders.h",
     "input/web_coalesced_input_event.h",
@@ -204,6 +205,7 @@ source_set("headers") {
     "interest_group/ad_display_size_utils.h",
     "interest_group/auction_config.h",
     "interest_group/auction_config_mojom_traits.h",
+    "interest_group/auction_server_request_flags.h",
     "interest_group/interest_group.h",
     "interest_group/interest_group_mojom_traits.h",
     "interest_group/seller_capabilities.h",
@@ -280,6 +282,7 @@ source_set("headers") {
     "page_state/page_state_serialization.h",
     "peerconnection/webrtc_ip_handling_policy.h",
     "performance/largest_contentful_paint_type.h",
+    "performance/performance_timeline_constants.h",
     "permissions/permission_utils.h",
     "permissions_policy/document_policy.h",
     "permissions_policy/document_policy_features.h",
@@ -290,6 +293,7 @@ source_set("headers") {
     "permissions_policy/policy_value.h",
     "renderer_preferences/renderer_preferences.h",
     "responsiveness_metrics/user_interaction_latency.h",
+    "safe_url_pattern.h",
     "scheduler/task_attribution_id.h",
     "scheduler/web_scheduler_tracked_feature.h",
     "scheme_registry.h",
@@ -314,7 +318,6 @@ source_set("headers") {
     "switches.h",
     "thread_safe_browser_interface_broker_proxy.h",
     "unique_name/unique_name_helper.h",
-    "url_pattern.h",
     "use_counter/use_counter_feature.h",
     "use_counter/use_counter_feature_tracker.h",
     "user_agent/user_agent_brand_version_type.h",

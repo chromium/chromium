@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<style>
+@font-face {
+  font-family: 'primary-font-ahem-ex-500';
+  src: url('../../../../resources/ahem-ex-500.otf');
+}
+.test {
+  font-family: 'primary-font-ahem-ex-500';
+  font-size: 100px;
+  color: green;
+  height: 200px;
+  margin-bottom: 24px;
+}
+.adjusted {
+  font-family: 'Tinos'; /* The default system font */
+  /* The aspect value of ex-height of Tinos is 0.458984.
+     scale factor = size_adjust / aspect_value = 1.0 / 0.458984 = 2.178725 */
+  font-size: 2.178725em;
+}
+.tall-inline-block {
+    display: inline-block;
+    height: 50px;
+}
+</style>
+<body>
+  <!--
+    The glyph 'A' cannot be rendered by the primary font, so it individually
+    falls back to the system fallback font. There are two glyphs of 'A' below.
+    The left glyph is not adjusted, and the right one is adjusted. The right
+    glyph should be bigger than the left one.
+  -->
+  <div class="test">
+    <!--
+      We are inserting a tall inline-block here to make the position of
+      the baseline independent of the adjusted glyph since on the expected result
+      we don't use font-size-adjust but font-size.
+    -->
+    A<span class="adjusted">A<span class="tall-inline-block"></span></span>
+  </div>
+</body>

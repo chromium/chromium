@@ -142,6 +142,7 @@ class GLManager : private GpuControl {
   void SetGpuControlClient(GpuControlClient*) override;
   const Capabilities& GetCapabilities() const override;
   void SignalQuery(uint32_t query, base::OnceClosure callback) override;
+  void CancelAllQueries() override;
   void CreateGpuFence(uint32_t gpu_fence_id, ClientGpuFence source) override;
   void GetGpuFence(uint32_t gpu_fence_id,
                    base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)>
@@ -198,7 +199,8 @@ class GLManager : private GpuControl {
 
   GLuint fbo_ = 0;
 
-  // Used on Android to virtualize GL for all contexts.
+  // Used on Android to virtualize GL for all contexts with validating command
+  // decoder.
   static int use_count_;
   static scoped_refptr<gl::GLShareGroup>* base_share_group_;
   static scoped_refptr<gl::GLSurface>* base_surface_;

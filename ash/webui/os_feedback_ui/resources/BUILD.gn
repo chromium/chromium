@@ -124,10 +124,7 @@ js_library("fake_feedback_service_provider") {
 }
 
 js_library("feedback_types") {
-  deps = [
-    "//ash/webui/common/resources:mojo_utils",
-    "//ash/webui/os_feedback_ui/mojom:mojom_js_library_for_compile",
-  ]
+  deps = [ "//ash/webui/os_feedback_ui/mojom:mojom_js_library_for_compile" ]
 }
 
 js_library("feedback_flow") {

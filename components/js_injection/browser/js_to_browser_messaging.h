@@ -59,7 +59,8 @@ class JsToBrowserMessaging : public mojom::JsToBrowserMessaging {
 
   raw_ptr<content::RenderFrameHost> render_frame_host_;
   std::unique_ptr<ReplyProxyImpl> reply_proxy_;
-  raw_ptr<WebMessageHostFactory, DanglingUntriaged> connection_factory_;
+  raw_ptr<WebMessageHostFactory, AcrossTasksDanglingUntriaged>
+      connection_factory_;
   OriginMatcher origin_matcher_;
   mojo::AssociatedReceiver<mojom::JsToBrowserMessaging> receiver_{this};
   std::unique_ptr<WebMessageHost> host_;

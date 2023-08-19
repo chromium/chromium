@@ -652,6 +652,7 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
     //   kAccountsPrefTransferSAMLCookies
     //   kDeviceAttestationEnabled
     //   kDeviceOwner
+    //   kDeviceReportRuntimeCounters
     //   kDeviceReportXDREvents
     //   kHeartbeatEnabled
     //   kHeartbeatFrequency
@@ -690,6 +691,7 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
     //   kVariationsRestrictParameter
     //   kDeviceDisabled
     //   kDeviceDisabledMessage
+    //   DeviceReportRuntimeCountersCheckingRateMs
     //   ReportDeviceNetworkTelemetryCollectionRateMs
     //   ReportDeviceNetworkTelemetryEventCheckingRateMs
     //   ReportDeviceAudioStatusCheckingRateMs
@@ -844,9 +846,6 @@ void OwnerSettingsServiceAsh::MigrateFeatureFlags(
   DCHECK(IsOwner() || IsOwnerInTests(user_id_));
 
   if (settings->feature_flags().switches_size() == 0) {
-    base::UmaHistogramEnumeration(
-        "ChromeOS.DeviceSettings.FeatureFlagsMigration",
-        FeatureFlagsMigrationStatus::kNoFeatureFlags);
     return;
   }
 
@@ -856,9 +855,6 @@ void OwnerSettingsServiceAsh::MigrateFeatureFlags(
     // does the most probable explanation is that we already migrated, so get
     // rid of the raw switches.
     feature_flags->clear_switches();
-    base::UmaHistogramEnumeration(
-        "ChromeOS.DeviceSettings.FeatureFlagsMigration",
-        FeatureFlagsMigrationStatus::kAlreadyMigrated);
     return;
   }
 
@@ -868,9 +864,6 @@ void OwnerSettingsServiceAsh::MigrateFeatureFlags(
     feature_flags->add_feature_flags(flag);
   }
   feature_flags->clear_switches();
-  base::UmaHistogramEnumeration(
-      "ChromeOS.DeviceSettings.FeatureFlagsMigration",
-      FeatureFlagsMigrationStatus::kMigrationPerformed);
 }
 
 }  // namespace ash

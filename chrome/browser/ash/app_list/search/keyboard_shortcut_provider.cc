@@ -5,10 +5,16 @@
 #include "chrome/browser/ash/app_list/search/keyboard_shortcut_provider.h"
 
 #include <algorithm>
+#include <cstdint>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/keyboard_shortcut_item.h"
 #include "ash/shortcut_viewer/keyboard_shortcut_viewer_metadata.h"
+#include "ash/webui/shortcut_customization_ui/backend/search/search_handler.h"
+#include "ash/webui/shortcut_customization_ui/shortcuts_app_manager.h"
+#include "ash/webui/shortcut_customization_ui/shortcuts_app_manager_factory.h"
+#include "base/feature_list.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/app_list/search/keyboard_shortcut_result.h"
@@ -24,7 +30,10 @@ using ::ash::string_matching::TokenizedString;
 
 constexpr size_t kMinQueryLength = 3u;
 constexpr size_t kMaxResults = 3u;
-constexpr double kResultRelevanceThreshold = 0.89;
+constexpr double kResultRelevanceThreshold = 0.79;
+// The threshold is used to filter the results from the search handler of the
+// new shortcuts app.
+constexpr double kRelevanceScoreThreshold = 0.52;
 
 std::vector<std::pair<KeyboardShortcutData, double>> Search(
     const std::vector<KeyboardShortcutData>& shortcut_data,
@@ -51,6 +60,14 @@ KeyboardShortcutProvider::KeyboardShortcutProvider(Profile* profile)
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ProcessShortcutList();
+
+  auto* shortcuts_app_manager_factory =
+      ash::shortcut_ui::ShortcutsAppManagerFactory::GetForBrowserContext(
+          profile_);
+  // The factory is null in unit tests.
+  if (shortcuts_app_manager_factory) {
+    search_handler_ = shortcuts_app_manager_factory->search_handler();
+  }
 }
 
 KeyboardShortcutProvider::~KeyboardShortcutProvider() = default;
@@ -61,14 +78,25 @@ void KeyboardShortcutProvider::Start(const std::u16string& query) {
   // Cancel all previous searches.
   weak_factory_.InvalidateWeakPtrs();
 
-  if (query.size() < kMinQueryLength)
+  if (query.size() < kMinQueryLength) {
     return;
+  }
 
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
-      base::BindOnce(&Search, shortcut_data_, query),
-      base::BindOnce(&KeyboardShortcutProvider::OnSearchComplete,
-                     weak_factory_.GetWeakPtr()));
+  if (ash::features::isSearchCustomizableShortcutsInLauncherEnabled()) {
+    if (!search_handler_) {
+      return;
+    }
+    search_handler_->Search(
+        query, UINT32_MAX,
+        base::BindOnce(&KeyboardShortcutProvider::OnShortcutsSearchComplete,
+                       weak_factory_.GetWeakPtr()));
+  } else {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+        base::BindOnce(&Search, shortcut_data_, query),
+        base::BindOnce(&KeyboardShortcutProvider::OnSearchComplete,
+                       weak_factory_.GetWeakPtr()));
+  }
 }
 
 void KeyboardShortcutProvider::StopQuery() {
@@ -102,6 +130,31 @@ void KeyboardShortcutProvider::OnSearchComplete(
     results.push_back(std::make_unique<KeyboardShortcutResult>(
         profile_, candidates[i].first, candidates[i].second));
   }
+  SwapResults(&results);
+}
+
+void KeyboardShortcutProvider::OnShortcutsSearchComplete(
+    std::vector<ash::shortcut_customization::mojom::SearchResultPtr>
+        search_results) {
+  CHECK(ash::features::isSearchCustomizableShortcutsInLauncherEnabled());
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Convert final candidates into correct type, and publish.
+  SearchProvider::Results results;
+  for (const auto& search_result : search_results) {
+    // The search results are sorted by relevance score in descending order
+    // already.
+    if (search_result->relevance_score < kRelevanceScoreThreshold) {
+      break;
+    }
+    results.push_back(
+        std::make_unique<KeyboardShortcutResult>(profile_, search_result));
+    if (results.size() >= kMaxResults) {
+      break;
+    }
+  }
+
   SwapResults(&results);
 }
 

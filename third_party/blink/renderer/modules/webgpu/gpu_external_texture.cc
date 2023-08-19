@@ -23,20 +23,8 @@ ExternalTextureCache::ExternalTextureCache(GPUDevice* device)
     : device_(device) {}
 
 GPUExternalTexture* ExternalTextureCache::Import(
-    ExecutionContext* execution_context,
     const GPUExternalTextureDescriptor* descriptor,
     ExceptionState& exception_state) {
-  // Gate VideoFrame importExternalTexture on the WebGPUWebCodecs OT.
-  if (descriptor->source()->GetContentType() ==
-          V8UnionHTMLVideoElementOrVideoFrame::ContentType::kVideoFrame &&
-      !RuntimeEnabledFeatures::WebGPUWebCodecsEnabled(execution_context)) {
-    exception_state.ThrowTypeError(
-        "VideoFrame isn't supported for importExternalTexture. This feature "
-        "requires the WebGPUWebCodecs origin trial or "
-        "--enable-webgpu-developer-features");
-    return nullptr;
-  }
-
   // Ensure the GPUExternalTexture created from a destroyed GPUDevice will be
   // expired immediately.
   if (device()->destroyed()) {
@@ -47,20 +35,29 @@ GPUExternalTexture* ExternalTextureCache::Import(
   switch (descriptor->source()->GetContentType()) {
     case V8UnionHTMLVideoElementOrVideoFrame::ContentType::kHTMLVideoElement: {
       HTMLVideoElement* video = descriptor->source()->GetAsHTMLVideoElement();
-
       auto cache = from_html_video_element_.find(video);
       if (cache != from_html_video_element_.end()) {
         external_texture = cache->value;
-        if (!external_texture->NeedsToUpdate()) {
-          break;
+
+        // If we got a cache miss, or `ContinueCheckingCurrentVideoFrame`
+        // returned false, make a new external texture.
+        // `ContinueCheckingCurrentVideoFrame` returns false if the frame has
+        // expired and it no longer needs to be checked for expiry.
+        if (external_texture->NeedsToUpdate()) {
+          external_texture = GPUExternalTexture::FromHTMLVideoElement(
+              this, video, descriptor, exception_state);
         }
+      } else {
+        external_texture = GPUExternalTexture::FromHTMLVideoElement(
+            this, video, descriptor, exception_state);
       }
-      // If we got a cache miss, or `ContinueCheckingCurrentVideoFrame` returned
-      // false, make a new external texture. `ContinueCheckingCurrentVideoFrame`
-      // returns false if the frame has expired and it no longer needs to be
-      // checked for expiry.
-      external_texture = GPUExternalTexture::FromHTMLVideoElement(
-          this, video, descriptor, exception_state);
+
+      // GPUExternalTexture imported from HTMLVideoElement should be expired
+      // at the end of task.
+      if (external_texture) {
+        external_texture->Refresh();
+        ExpireAtEndOfTask(external_texture);
+      }
       break;
     }
     case V8UnionHTMLVideoElementOrVideoFrame::ContentType::kVideoFrame: {
@@ -77,11 +74,6 @@ GPUExternalTexture* ExternalTextureCache::Import(
     }
     default:
       NOTREACHED();
-  }
-
-  if (external_texture) {
-    external_texture->Refresh();
-    ExpireAtEndOfTask(external_texture);
   }
 
   return external_texture;
@@ -270,6 +262,13 @@ GPUExternalTexture* GPUExternalTexture::FromHTMLVideoElement(
       GetExternalTextureSourceFromVideoElement(video, exception_state);
   if (!source.valid)
     return nullptr;
+
+  // Ensure that video playback remains unaffected by preventing any
+  // throttling when the video is not visible on the screen.
+  DCHECK(video);
+  if (auto* wmp = video->GetWebMediaPlayer()) {
+    wmp->RequestVideoFrameCallback();
+  }
 
   GPUExternalTexture* external_texture = GPUExternalTexture::CreateImpl(
       cache, webgpu_desc, source.media_video_frame, source.video_renderer,

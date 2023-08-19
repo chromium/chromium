@@ -46,6 +46,8 @@ class ASH_EXPORT FloatingAccessibilityController
   // Focuses on the first element in the floating menu.
   void FocusOnMenu();
 
+  FloatingAccessibilityBubbleView* bubble_view() { return bubble_view_; }
+
  private:
   friend class FloatingAccessibilityControllerTest;
   // FloatingAccessibilityView::Delegate:

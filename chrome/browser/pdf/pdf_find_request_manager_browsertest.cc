@@ -167,8 +167,14 @@ void SendRangeResponse(net::test_server::ControllableHttpResponse* response,
 
 // Tests searching in a PDF received in chunks via range-requests.  See also
 // https://crbug.com/1027173.
+// TODO(crbug.com/1470995): flaky on Linux debug.
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_FindInChunkedPDF DISABLED_FindInChunkedPDF
+#else
+#define MAYBE_FindInChunkedPDF FindInChunkedPDF
+#endif
 IN_PROC_BROWSER_TEST_F(PdfFindRequestManagerTestWithPdfPartialLoading,
-                       FindInChunkedPDF) {
+                       MAYBE_FindInChunkedPDF) {
   constexpr uint32_t kStalledResponseSize =
       chrome_pdf::DocumentLoaderImpl::kDefaultRequestSize + 123;
 

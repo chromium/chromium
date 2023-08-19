@@ -55,8 +55,6 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
     private static final String NOTIFICATION_MEDIA_TYPE_EXTRA = "NotificationMediaType";
     private static final String NOTIFICATION_MEDIA_URL_EXTRA = "NotificationMediaUrl";
 
-    private static final String TAG = "MediaCapture";
-
     private NotificationManagerProxy mNotificationManager;
     private SharedPreferencesManager mSharedPreferences;
     private final SparseIntArray mNotifications = new SparseIntArray();

@@ -1,0 +1,2 @@
+# For exposing //device features to Java.
+per-file device_feature_map.cc=file://device/fido/OWNERS

@@ -98,6 +98,9 @@ class FakeSyncEngine : public SyncEngine,
 
   const SyncStatus& GetDetailedStatus() const override;
 
+  void GetTypesWithUnsyncedData(
+      base::OnceCallback<void(ModelTypeSet)> cb) const override;
+
   void HasUnsyncedItemsForTest(
       base::OnceCallback<void(bool)> cb) const override;
   void GetThrottledDataTypesForTest(
@@ -108,7 +111,6 @@ class FakeSyncEngine : public SyncEngine,
 
   void OnCookieJarChanged(bool account_mismatch,
                           base::OnceClosure callback) override;
-  void SetInvalidationsForSessionsEnabled(bool enabled) override;
   bool IsNextPollTimeInThePast() const override;
   void GetNigoriNodeForDebugging(AllNodesCallback callback) override;
 
@@ -116,8 +118,9 @@ class FakeSyncEngine : public SyncEngine,
   const bool allow_init_completion_;
   const bool is_first_time_sync_configure_;
   const base::RepeatingClosure sync_transport_data_cleared_cb_;
-  // DanglingUntriaged because it is assigned a DanglingUntriaged pointer.
-  raw_ptr<SyncEngineHost, DanglingUntriaged> host_ = nullptr;
+  // AcrossTasksDanglingUntriaged because it is assigned a
+  // AcrossTasksDanglingUntriaged pointer.
+  raw_ptr<SyncEngineHost, AcrossTasksDanglingUntriaged> host_ = nullptr;
   bool initialized_ = false;
   SyncStatus sync_status_;
   CoreAccountId authenticated_account_id_;

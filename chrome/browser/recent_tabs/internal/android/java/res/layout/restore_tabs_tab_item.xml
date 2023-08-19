@@ -59,5 +59,6 @@ found in the LICENSE file.
         android:background="@android:color/transparent"
         app:tint="?attr/colorPrimary"
         android:checked="true"
+        android:focusable="false"
         android:clickable="false"/>
 </LinearLayout>

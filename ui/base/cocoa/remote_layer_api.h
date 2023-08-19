@@ -25,7 +25,7 @@ typedef uint32_t CGSConnectionID;
 CGSConnectionID CGSMainConnectionID(void);
 }
 
-#endif  // BUIDLFAG(IS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 // The CAContextID type identifies a CAContext across processes. This is the
 // token that is passed from the process that is sharing the CALayer that it is

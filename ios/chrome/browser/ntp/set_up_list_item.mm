@@ -6,10 +6,6 @@
 
 #import "ios/chrome/browser/ntp/set_up_list_item_type.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation SetUpListItem
 
 - (instancetype)initWithType:(SetUpListItemType)type complete:(BOOL)complete {

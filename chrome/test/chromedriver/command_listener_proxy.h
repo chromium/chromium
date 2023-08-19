@@ -24,7 +24,10 @@ class CommandListenerProxy : public CommandListener {
   Status BeforeCommand(const std::string& command_name) override;
 
  private:
-  const raw_ptr<CommandListener> command_listener_;
+  // This dangling raw_ptr occurred in:
+  // chromedriver_unittests: CommandsTest.SuccessNotifyingCommandListeners
+  // https://ci.chromium.org/ui/p/chromium/builders/try/linux-rel/1425111/test-results?q=ExactID%3Aninja%3A%2F%2Fchrome%2Ftest%2Fchromedriver%3Achromedriver_unittests%2FCommandsTest.SuccessNotifyingCommandListeners+VHash%3A2f0b3a347eef5911&sortby=&groupby=
+  const raw_ptr<CommandListener, FlakyDanglingUntriaged> command_listener_;
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_COMMAND_LISTENER_PROXY_H_

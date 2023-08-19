@@ -1,0 +1,9 @@
+include_rules = [
+  "+components/keyed_service/ios",
+  "+components/signin/public/identity_manager",
+  "+components/trusted_vault",
+  "+ios/chrome/browser/shared/model/browser_state",
+  "+ios/chrome/browser/signin",
+  "+ios/chrome/browser/signin:trusted_vault",
+  "+ios/chrome/browser/signin:trusted_vault_factory",
+]

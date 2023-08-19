@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("tailored_security") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "tailored_security_infobar_banner_overlay_mediator.h",
     "tailored_security_infobar_banner_overlay_mediator.mm",
@@ -11,23 +10,26 @@ source_set("tailored_security") {
   deps = [
     "//base",
     "//components/infobars/core",
+    "//ios/chrome/browser/infobars/overlays:util",
+    "//ios/chrome/browser/overlays/public/default",
     "//ios/chrome/browser/overlays/public/infobar_banner",
     "//ios/chrome/browser/safe_browsing/tailored_security:infobar_delegates",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/symbols:buildflags",
     "//ios/chrome/browser/ui/infobars/banners",
+    "//ios/chrome/browser/ui/overlays:coordinators",
     "//ios/chrome/browser/ui/overlays/infobar_banner:mediators",
   ]
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "tailored_security_infobar_banner_overlay_mediator_unittest.mm" ]
   deps = [
     ":tailored_security",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/overlays/public/default",
     "//ios/chrome/browser/overlays/public/infobar_banner",
     "//ios/chrome/browser/safe_browsing/tailored_security/test",
     "//ios/chrome/browser/shared/ui/symbols",

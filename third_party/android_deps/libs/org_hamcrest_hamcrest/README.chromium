@@ -3,9 +3,10 @@ Short Name: hamcrest
 URL: http://hamcrest.org/JavaHamcrest/
 Version: 2.2
 License: BSD
-License File: NOT_SHIPPED
+License File: LICENSE
 CPEPrefix: unknown
 Security Critical: no
+Shipped: no
 
 Description:
 Core API and libraries of hamcrest matcher framework.

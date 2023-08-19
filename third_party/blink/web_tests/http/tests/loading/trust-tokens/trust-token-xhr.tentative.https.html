@@ -15,9 +15,8 @@
       version: 1,
       operation: 'token-request'
     });
-    request.onerror = t.step_func(() => {
-      assert_equals(request.privateTokenOperationError.name, "InvalidStateError");
-
+    request.onerror = t.step_func(e => {
+      assert_equals(request.status, 0, "Expected HTTP status code 0 for network errors");
       if (window.testRunner)
         window.testRunner.clearTrustTokenState(t.step_func_done(() => {}));
     });
@@ -32,32 +31,11 @@
       operation: 'token-redemption'
     });
     request.onerror = t.step_func(() => {
-      assert_equals(request.privateTokenOperationError.name, "InvalidStateError");
+      assert_equals(request.status, 0, "Expected HTTP status code 0 for network errors");
 
       if (window.testRunner)
         window.testRunner.clearTrustTokenState(t.step_func_done(() => {}));
     });
     request.send();
   }, 'No keys for the issuer -> expect redemption to fail');
-
-  async_test((t) => {
-      let request = new XMLHttpRequest();
-      request.open('GET', 'https://destination.test');
-      request.setPrivateToken({
-        version: 1,
-        operation: 'send-redemption-record',
-        issuers: ['https://issuer.test']
-      });
-      request.onerror = t.step_func(() => {
-        assert_equals(request.privateTokenOperationError, null,
-          'The request should fail for a reason unrelated to its Private Tokens ' +
-          ' operation (namely that its destination doesn\'t exist)');
-
-        if (window.testRunner)
-          window.testRunner.clearTrustTokenState(t.step_func_done(() => {}));
-      });
-      request.send();
-    },
-    'No RR for the issuer -> expect signing to fail, but an error while' +
-    ' signing shouldn\'t result in the request being aborted');
 </script>

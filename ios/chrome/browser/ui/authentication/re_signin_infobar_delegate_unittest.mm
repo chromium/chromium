@@ -28,10 +28,6 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 class ReSignInInfoBarDelegateTest : public PlatformTest {
@@ -157,7 +153,7 @@ TEST_F(ReSignInInfoBarDelegateTest, TestAccept) {
   [[presenter expect]
       showSignin:[OCMArg checkWithBlock:^BOOL(id command) {
         EXPECT_TRUE([command isKindOfClass:[ShowSigninCommand class]]);
-        EXPECT_EQ(AuthenticationOperationReauthenticate,
+        EXPECT_EQ(AuthenticationOperation::kSigninAndSyncReauth,
                   static_cast<ShowSigninCommand*>(command).operation);
         return YES;
       }]];

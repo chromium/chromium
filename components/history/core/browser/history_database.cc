@@ -39,7 +39,7 @@ namespace {
 // Current version number. We write databases at the "current" version number,
 // but any previous version that can read the "compatible" one can make do with
 // our database without *too* many bad effects.
-const int kCurrentVersionNumber = 65;
+const int kCurrentVersionNumber = 66;
 const int kCompatibleVersionNumber = 16;
 
 const char kEarlyExpirationThresholdKey[] = "early_expiration_threshold";
@@ -318,7 +318,7 @@ int HistoryDatabase::CountUniqueHostsVisitedLastMonth() {
   return hosts.size();
 }
 
-std::pair<int, int> HistoryDatabase::CountUniqueDomainsVisited(
+DomainsVisitedResult HistoryDatabase::GetUniqueDomainsVisited(
     base::Time begin_time,
     base::Time end_time) {
   // TODO(crbug.com/1365291): Once syncer::kSyncEnableHistoryDataType is fully
@@ -334,7 +334,8 @@ std::pair<int, int> HistoryDatabase::CountUniqueDomainsVisited(
       "WHERE (transition & ?) != 0 "            // CHAIN_END
       "AND (transition & ?) NOT IN (?, ?, ?) "  // No *_SUBFRAME or
                                                 // KEYWORD_GENERATED
-      "AND hidden = 0 AND visit_time >= ? AND visit_time < ?"));
+      "AND hidden = 0 AND visit_time >= ? AND visit_time < ? "
+      "ORDER BY visit_time DESC, visits.id DESC"));
 
   url_sql.BindInt64(0, VisitSource::SOURCE_BROWSED);
   url_sql.BindInt64(1, ui::PAGE_TRANSITION_CHAIN_END);
@@ -346,8 +347,11 @@ std::pair<int, int> HistoryDatabase::CountUniqueDomainsVisited(
   url_sql.BindTime(6, begin_time);
   url_sql.BindTime(7, end_time);
 
-  std::set<std::string> all_domains;
-  std::set<std::string> local_domains;
+  DomainsVisitedResult result;
+
+  std::set<std::string> all_visited_domains_set;
+  std::set<std::string> locally_visited_domains_set;
+
   while (url_sql.Step()) {
     GURL url(url_sql.ColumnString(0));
     std::string domain = net::registry_controlled_domains::GetDomainAndRegistry(
@@ -359,15 +363,29 @@ std::pair<int, int> HistoryDatabase::CountUniqueDomainsVisited(
       continue;
     }
 
-    all_domains.insert(domain);
+    if (!all_visited_domains_set.contains(domain)) {
+      all_visited_domains_set.insert(domain);
+      result.all_visited_domains.push_back(domain);
+    }
 
     bool is_local = url_sql.ColumnString(1).empty() &&
                     url_sql.ColumnInt(2) == VisitSource::SOURCE_BROWSED;
-    if (is_local) {
-      local_domains.insert(domain);
+
+    if (is_local && !locally_visited_domains_set.contains(domain)) {
+      locally_visited_domains_set.insert(domain);
+      result.locally_visited_domains.push_back(domain);
     }
   }
-  return std::make_pair(local_domains.size(), all_domains.size());
+
+  return result;
+}
+
+std::pair<int, int> HistoryDatabase::CountUniqueDomainsVisited(
+    base::Time begin_time,
+    base::Time end_time) {
+  DomainsVisitedResult result = GetUniqueDomainsVisited(begin_time, end_time);
+  return {result.locally_visited_domains.size(),
+          result.all_visited_domains.size()};
 }
 
 void HistoryDatabase::BeginExclusiveMode() {
@@ -953,6 +971,15 @@ sql::InitStatus HistoryDatabase::EnsureCurrentVersion() {
 
   if (cur_version == 64) {
     if (!MigrateClustersAndVisitsAddInteractionState()) {
+      return LogMigrationFailure(64);
+    }
+    cur_version++;
+    // TODO(crbug.com/1414092): Handle failure instead of ignoring it.
+    std::ignore = meta_table_.SetVersionNumber(cur_version);
+  }
+
+  if (cur_version == 65) {
+    if (!MigrateVisitsAddExternalReferrerUrlColumn()) {
       return LogMigrationFailure(65);
     }
     cur_version++;

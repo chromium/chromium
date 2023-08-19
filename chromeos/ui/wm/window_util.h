@@ -27,11 +27,6 @@ gfx::Size GetFloatedWindowTabletSize(aura::Window* window);
 // Checks whether a `window` can be floated.
 COMPONENT_EXPORT(CHROMEOS_UI_WM) bool CanFloatWindow(aura::Window* window);
 
-// Returns true if dynamic color should be applied to the frame header of the
-// given `window`. Otherwise, returns false.
-COMPONENT_EXPORT(CHROMEOS_UI_WM)
-bool ApplyDynamicColorToWindowFrameHeader(aura::Window* window);
-
 }  // namespace chromeos::wm
 
 #endif  // CHROMEOS_UI_WM_WINDOW_UTIL_H_

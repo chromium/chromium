@@ -18,9 +18,6 @@
 #include "cc/metrics/event_metrics.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/paint_holding_reason.h"
-#include "components/power_scheduler/power_mode.h"
-#include "components/power_scheduler/power_mode_arbiter.h"
-#include "components/power_scheduler/power_mode_voter.h"
 #include "services/tracing/public/cpp/perfetto/flow_event_utils.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
@@ -93,6 +90,9 @@ mojom::blink::InputEventResultState InputEventDispositionToAck(
     case InputHandlerProxy::DID_HANDLE:
       return mojom::blink::InputEventResultState::kConsumed;
     case InputHandlerProxy::DID_NOT_HANDLE:
+      if (base::FeatureList::IsEnabled(features::kFixGestureScrollQueuingBug)) {
+        return mojom::blink::InputEventResultState::kNotConsumedBlocking;
+      }
       return mojom::blink::InputEventResultState::kNotConsumed;
     case InputHandlerProxy::DID_NOT_HANDLE_NON_BLOCKING_DUE_TO_FLING:
       return mojom::blink::InputEventResultState::kSetNonBlockingDueToFling;
@@ -245,9 +245,6 @@ WidgetInputHandlerManager::WidgetInputHandlerManager(
           compositor_thread_scheduler
               ? compositor_thread_scheduler->InputTaskRunner()
               : nullptr),
-      response_power_mode_voter_(
-          power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
-              "PowerModeVoter.Response")),
       allow_scroll_resampling_(allow_scroll_resampling) {
 #if BUILDFLAG(IS_ANDROID)
   if (compositor_thread_default_task_runner_) {
@@ -376,8 +373,11 @@ void WidgetInputHandlerManager::FindScrollTargetOnMainThread(
   DCHECK(main_thread_task_runner_->BelongsToCurrentThread());
   DCHECK(base::FeatureList::IsEnabled(::features::kScrollUnification));
 
-  cc::ElementId element_id =
-      widget_->client()->FrameWidget()->GetScrollableContainerIdAt(point);
+  cc::ElementId element_id;
+  if (widget_) {
+    element_id =
+        widget_->client()->FrameWidget()->GetScrollableContainerIdAt(point);
+  }
 
   InputThreadTaskRunner(TaskRunnerType::kInputBlocking)
       ->PostTask(FROM_HERE, base::BindOnce(std::move(callback), element_id));
@@ -474,8 +474,8 @@ void WidgetInputHandlerManager::LogInputTimingUMA() {
   bool should_emit_uma;
   {
     base::AutoLock lock(uma_data_lock_);
-    should_emit_uma = !uma_data_.have_emitted_uma_;
-    uma_data_.have_emitted_uma_ = true;
+    should_emit_uma = !uma_data_.have_emitted_uma;
+    uma_data_.have_emitted_uma = true;
   }
 
   if (!should_emit_uma)
@@ -495,7 +495,7 @@ void WidgetInputHandlerManager::LogInputTimingUMA() {
     }
   }
 
-  UMA_HISTOGRAM_ENUMERATION("PaintHolding.InputTiming3", lifecycle_state);
+  UMA_HISTOGRAM_ENUMERATION("PaintHolding.InputTiming4", lifecycle_state);
 }
 
 void WidgetInputHandlerManager::RecordMetricsForDroppedEventsBeforePaint(
@@ -503,17 +503,23 @@ void WidgetInputHandlerManager::RecordMetricsForDroppedEventsBeforePaint(
   // Initialize to 0 timestamp and log 0 if there was no suppressed event or
   // the most recent suppressed event was before the first_paint_time
   auto diff = base::TimeDelta();
+  int suppressed_interactions_count = 0;
   int suppressed_events_count = 0;
   {
     base::AutoLock lock(uma_data_lock_);
-    if (uma_data_.most_recent_suppressed_event_time_ > first_paint_time)
-      diff = uma_data_.most_recent_suppressed_event_time_ - first_paint_time;
+    if (uma_data_.most_recent_suppressed_event_time > first_paint_time) {
+      diff = uma_data_.most_recent_suppressed_event_time - first_paint_time;
+    }
 
-    suppressed_events_count = uma_data_.suppressed_events_count_;
+    suppressed_interactions_count = uma_data_.suppressed_interactions_count;
+    suppressed_events_count = uma_data_.suppressed_events_count;
   }
 
   UMA_HISTOGRAM_TIMES("PageLoad.Internal.SuppressedEventsTimingBeforePaint",
                       diff);
+  UMA_HISTOGRAM_COUNTS(
+      "PageLoad.Internal.SuppressedInteractionsCountBeforePaint",
+      suppressed_interactions_count);
   UMA_HISTOGRAM_COUNTS("PageLoad.Internal.SuppressedEventsCountBeforePaint",
                        suppressed_events_count);
 }
@@ -544,17 +550,12 @@ void WidgetInputHandlerManager::
 void WidgetInputHandlerManager::DispatchEvent(
     std::unique_ptr<WebCoalescedInputEvent> event,
     mojom::blink::WidgetInputHandler::DispatchEventCallback callback) {
-  // Since we can't easily track the end of processing for a non-blocking input
-  // event from here, we just temporarily bump kResponse mode for every
-  // dispatched event.
-  response_power_mode_voter_->VoteFor(power_scheduler::PowerMode::kResponse);
-  response_power_mode_voter_->ResetVoteAfterTimeout(
-      power_scheduler::PowerModeVoter::kResponseTimeout);
-
-  bool event_is_move =
-      event->Event().GetType() == WebInputEvent::Type::kMouseMove ||
-      event->Event().GetType() == WebInputEvent::Type::kPointerMove;
-  if (!event_is_move) {
+  WebInputEvent::Type event_type = event->Event().GetType();
+  bool event_is_mouse_or_pointer_move =
+      event_type == WebInputEvent::Type::kMouseMove ||
+      event_type == WebInputEvent::Type::kPointerMove;
+  if (!event_is_mouse_or_pointer_move &&
+      event_type != WebInputEvent::Type::kTouchMove) {
     LogInputTimingUMA();
 
     // We only count it if the only reason we are suppressing is because we
@@ -562,8 +563,22 @@ void WidgetInputHandlerManager::DispatchEvent(
     if (suppressing_input_events_state_ ==
         static_cast<uint16_t>(SuppressingInputEventsBits::kHasNotPainted)) {
       base::AutoLock lock(uma_data_lock_);
-      uma_data_.most_recent_suppressed_event_time_ = base::TimeTicks::Now();
-      uma_data_.suppressed_events_count_ += 1;
+      uma_data_.most_recent_suppressed_event_time = base::TimeTicks::Now();
+      uma_data_.suppressed_events_count += 1;
+
+      // Each of the events in the condition below represents a single
+      // interaction by the user even though some of these events can fire
+      // multiple JS events.  For example, further downstream from here Blink
+      // `EventHandler` fires a JS "pointerdown" event (and under certain
+      // conditions even a "mousedown" event) for single a kTouchStart event
+      // here.
+      if (event_type == WebInputEvent::Type::kMouseDown ||
+          event_type == WebInputEvent::Type::kRawKeyDown ||
+          event_type == WebInputEvent::Type::kKeyDown ||
+          event_type == WebInputEvent::Type::kTouchStart ||
+          event_type == WebInputEvent::Type::kPointerDown) {
+        uma_data_.suppressed_interactions_count += 1;
+      }
     }
   }
 
@@ -584,7 +599,8 @@ void WidgetInputHandlerManager::DispatchEvent(
         ~static_cast<uint16_t>(SuppressingInputEventsBits::kHasNotPainted);
   }
 
-  if (suppress_input && !allow_pre_commit_input_ && !event_is_move) {
+  if (suppress_input && !allow_pre_commit_input_ &&
+      !event_is_mouse_or_pointer_move) {
     if (callback) {
       std::move(callback).Run(mojom::blink::InputEventResultSource::kMainThread,
                               ui::LatencyInfo(),
@@ -642,19 +658,25 @@ void WidgetInputHandlerManager::DispatchEvent(
           gesture_event.GetTypeAsUiEventType(),
           gesture_event.GetScrollInputType(), is_inertial,
           event->Event().TimeStamp(), arrived_in_browser_main_timestamp,
-          blocking_touch_dispatched_to_renderer_timestamp);
+          blocking_touch_dispatched_to_renderer_timestamp,
+          base::IdType64<class ui::LatencyInfo>(
+              event->latency_info().trace_id()));
       has_seen_first_gesture_scroll_update_after_begin_ = false;
     }
-  } else if (WebInputEvent::IsPinchGestureEventType(event->Event().GetType())) {
+  } else if (WebInputEvent::IsPinchGestureEventType(event_type)) {
     const auto& gesture_event =
         static_cast<const WebGestureEvent&>(event->Event());
     metrics = cc::PinchEventMetrics::Create(
         gesture_event.GetTypeAsUiEventType(),
-        gesture_event.GetScrollInputType(), event->Event().TimeStamp());
+        gesture_event.GetScrollInputType(), event->Event().TimeStamp(),
+        base::IdType64<class ui::LatencyInfo>(
+            event->latency_info().trace_id()));
   } else {
     metrics = cc::EventMetrics::Create(event->Event().GetTypeAsUiEventType(),
                                        event->Event().TimeStamp(),
-                                       arrived_in_browser_main_timestamp);
+                                       arrived_in_browser_main_timestamp,
+                                       base::IdType64<class ui::LatencyInfo>(
+                                           event->latency_info().trace_id()));
   }
 
   if (uses_input_handler_) {
@@ -749,11 +771,21 @@ void WidgetInputHandlerManager::WaitForInputProcessed(
   DCHECK(!input_processed_callback_);
   input_processed_callback_ = std::move(callback);
 
-  // We mustn't touch widget_ from the impl thread so post all the setup
-  // to the main thread. Make sure the callback runs after all the queued events
-  // are dispatched.
-  input_event_queue_->QueueClosure(
-      base::BindOnce(&WaitForInputProcessedFromMain, widget_));
+  // We mustn't touch widget_ from the impl thread so post all the setup to the
+  // main thread. Make sure the callback runs after all the queued events are
+  // dispatched.
+  base::OnceClosure closure =
+      base::BindOnce(&MainThreadEventQueue::QueueClosure, input_event_queue_,
+                     base::BindOnce(&WaitForInputProcessedFromMain, widget_));
+
+  // If there are frame-aligned input events waiting to be dispatched, wait for
+  // that to happen before posting to the main thread input queue.
+  if (input_handler_proxy_) {
+    input_handler_proxy_->RequestCallbackAfterEventQueueFlushed(
+        std::move(closure));
+  } else {
+    std::move(closure).Run();
+  }
 }
 
 void WidgetInputHandlerManager::DidNavigate() {
@@ -761,9 +793,10 @@ void WidgetInputHandlerManager::DidNavigate() {
       static_cast<uint16_t>(SuppressingInputEventsBits::kHasNotPainted);
 
   base::AutoLock lock(uma_data_lock_);
-  uma_data_.have_emitted_uma_ = false;
-  uma_data_.most_recent_suppressed_event_time_ = base::TimeTicks();
-  uma_data_.suppressed_events_count_ = 0;
+  uma_data_.have_emitted_uma = false;
+  uma_data_.most_recent_suppressed_event_time = base::TimeTicks();
+  uma_data_.suppressed_interactions_count = 0;
+  uma_data_.suppressed_events_count = 0;
 }
 
 void WidgetInputHandlerManager::OnDeferMainFrameUpdatesChanged(bool status) {
@@ -995,7 +1028,8 @@ void WidgetInputHandlerManager::DidHandleInputEventSentToCompositor(
   if (ack_state == mojom::blink::InputEventResultState::kSetNonBlocking ||
       ack_state ==
           mojom::blink::InputEventResultState::kSetNonBlockingDueToFling ||
-      ack_state == mojom::blink::InputEventResultState::kNotConsumed) {
+      ack_state == mojom::blink::InputEventResultState::kNotConsumed ||
+      ack_state == mojom::blink::InputEventResultState::kNotConsumedBlocking) {
     DCHECK(!overscroll_params);
     DCHECK(!event->latency_info().coalesced());
     MainThreadEventQueue::DispatchType dispatch_type =

@@ -7,9 +7,10 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
+#include "extensions/common/extension_id.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/base/layout.h"
-#include "ui/color/color_provider_manager.h"
+#include "ui/base/resource/resource_scale_factor.h"
+#include "ui/color/color_provider_key.h"
 
 namespace base {
 class RefCountedMemory;
@@ -32,7 +33,7 @@ class NativeTheme;
 // public methods. Subclasses are expected to override all methods which should
 // provide non-default values.
 class CustomThemeSupplier
-    : public ui::ColorProviderManager::ThemeInitializerSupplier {
+    : public ui::ColorProviderKey::ThemeInitializerSupplier {
  public:
   using ThemeInitializerSupplier::ThemeInitializerSupplier;
   CustomThemeSupplier(const CustomThemeSupplier&) = delete;
@@ -75,9 +76,9 @@ class CustomThemeSupplier
   // doesn't supply all the colors it should (http://crbug.com/1045630).
   virtual bool CanUseIncognitoColors() const;
 
-  // ui::ColorProviderManager::ThemeInitializerSupplier:
+  // ui::ColorProviderKey::ThemeInitializerSupplier:
   void AddColorMixers(ui::ColorProvider* provider,
-                      const ui::ColorProviderManager::Key& key) const override {
+                      const ui::ColorProviderKey& key) const override {
     // TODO(pkasting): All classes that override GetColor() should override
     // this.
   }
@@ -89,13 +90,13 @@ class CustomThemeSupplier
 
   void set_extension_id(base::StringPiece id) {
     DCHECK_EQ(get_theme_type(), ThemeType::kExtension);
-    extension_id_.assign(id.data(), id.size());
+    extension_id_ = id;
   }
 
  private:
   friend class base::RefCountedThreadSafe<CustomThemeSupplier>;
 
-  std::string extension_id_;
+  extensions::ExtensionId extension_id_;
 };
 
 #endif  // CHROME_BROWSER_THEMES_CUSTOM_THEME_SUPPLIER_H_

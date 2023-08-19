@@ -38,7 +38,7 @@ class MockWebRtcTransformedFrameCallback
 class MockTransformerCallbackHolder {
  public:
   MOCK_METHOD1(OnEncodedFrame,
-               void(std::unique_ptr<webrtc::TransformableFrameInterface>));
+               void(std::unique_ptr<webrtc::TransformableAudioFrameInterface>));
 };
 
 }  // namespace

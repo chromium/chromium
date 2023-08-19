@@ -523,6 +523,7 @@ TEST_F(MessageCenterMetricsUtilsTest,
 
   // Apply a notification blocker.
   IdNotificationBlocker blocker(message_center);
+  blocker.Init();
   blocker.SetTargetIdAndNotifyBlock(notification->id());
 
   // Add more notification instances to the message center.

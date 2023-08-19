@@ -4,8 +4,14 @@
 
 #include "chrome/browser/ash/crosapi/web_app_service_ash.h"
 
+#include <utility>
+
+#include "base/functional/callback.h"
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
+#include "components/sync/model/string_ordinal.h"
 
 namespace crosapi {
 
@@ -66,6 +72,16 @@ void WebAppServiceAsh::GetAssociatedAndroidPackage(
   result->package_name = *package_name;
   result->sha256_fingerprint = *fingerprint;
   std::move(callback).Run(std::move(result));
+}
+
+void WebAppServiceAsh::MigrateLauncherState(
+    const std::string& from_app_id,
+    const std::string& to_app_id,
+    MigrateLauncherStateCallback callback) {
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  web_app::WebAppProvider::GetForLocalAppsUnchecked(profile)
+      ->ui_manager()
+      .MigrateLauncherState(from_app_id, to_app_id, std::move(callback));
 }
 
 mojom::WebAppProviderBridge* WebAppServiceAsh::GetWebAppProviderBridge() {

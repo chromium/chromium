@@ -4,13 +4,9 @@
 
 #import "ios/chrome/browser/tabs/tab_helper_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 #import "base/feature_list.h"
 #import "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
-#import "components/breadcrumbs/core/features.h"
+#import "components/breadcrumbs/core/breadcrumbs_status.h"
 #import "components/commerce/ios/browser/commerce_tab_helper.h"
 #import "components/favicon/core/favicon_service.h"
 #import "components/favicon/ios/web_favicon_driver.h"
@@ -43,6 +39,7 @@
 #import "ios/chrome/browser/favicon/favicon_service_factory.h"
 #import "ios/chrome/browser/find_in_page/find_tab_helper.h"
 #import "ios/chrome/browser/find_in_page/java_script_find_tab_helper.h"
+#import "ios/chrome/browser/find_in_page/util.h"
 #import "ios/chrome/browser/follow/follow_tab_helper.h"
 #import "ios/chrome/browser/history/history_service_factory.h"
 #import "ios/chrome/browser/history/history_tab_helper.h"
@@ -83,6 +80,7 @@
 #import "ios/chrome/browser/sharing/share_file_download_tab_helper.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ssl/captive_portal_tab_helper.h"
+#import "ios/chrome/browser/supervised_user/supervised_user_error_container.h"
 #import "ios/chrome/browser/supervised_user/supervised_user_url_filter_tab_helper.h"
 #import "ios/chrome/browser/sync/ios_chrome_synced_tab_delegate.h"
 #import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
@@ -112,7 +110,6 @@
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_query_manager.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_tab_helper.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_unsafe_resource_container.h"
-#import "ios/public/provider/chrome/browser/find_in_page/find_in_page_api.h"
 #import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
 #import "ios/web/common/annotations_utils.h"
 #import "ios/web/common/features.h"
@@ -131,7 +128,7 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
   IOSChromeSyncedTabDelegate::CreateForWebState(web_state);
   InfoBarManagerImpl::CreateForWebState(web_state);
   BlockedPopupTabHelper::CreateForWebState(web_state);
-  if (ios::provider::IsNativeFindInPageEnabled()) {
+  if (IsNativeFindInPageAvailable()) {
     FindTabHelper::CreateForWebState(web_state);
   } else {
     JavaScriptFindTabHelper::CreateForWebState(web_state);
@@ -164,7 +161,7 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
     FontSizeTabHelper::CreateForWebState(web_state);
   }
 
-  if (base::FeatureList::IsEnabled(breadcrumbs::kLogBreadcrumbs)) {
+  if (breadcrumbs::IsEnabled()) {
     BreadcrumbManagerTabHelper::CreateForWebState(web_state);
   }
 
@@ -188,9 +185,13 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
 
   PolicyUrlBlockingTabHelper::CreateForWebState(web_state);
 
+  // Supervised user services are not supported for off-the-record browser
+  // state.
   if (base::FeatureList::IsEnabled(
-          supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS)) {
+          supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS) &&
+      !is_off_the_record) {
     SupervisedUserURLFilterTabHelper::CreateForWebState(web_state);
+    SupervisedUserErrorContainer::CreateForWebState(web_state);
   }
 
   ImageFetchTabHelper::CreateForWebState(web_state);
@@ -283,7 +284,9 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
   NetExportTabHelper::CreateForWebState(web_state);
 
   if (base::FeatureList::IsEnabled(
-          security_interstitials::features::kHttpsOnlyMode)) {
+          security_interstitials::features::kHttpsOnlyMode) ||
+      base::FeatureList::IsEnabled(
+          security_interstitials::features::kHttpsUpgrades)) {
     HttpsOnlyModeUpgradeTabHelper::CreateForWebState(
         web_state, browser_state->GetPrefs(),
         PrerenderServiceFactory::GetForBrowserState(browser_state),
@@ -297,7 +300,7 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
         HttpsUpgradeServiceFactory::GetForBrowserState(browser_state));
   }
 
-  if (IsWebChannelsEnabled() && !is_off_the_record) {
+  if (!is_off_the_record) {
     FollowTabHelper::CreateForWebState(web_state);
   }
 

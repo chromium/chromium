@@ -141,6 +141,10 @@ class SessionService : public SessionServiceBase {
                                const sessions::SerializedUserAgentOverride&
                                    user_agent_override) override;
 
+  int count_delete_last_session_for_testing() const {
+    return count_delete_last_session_for_testing_;
+  }
+
  protected:
   Browser::Type GetDesiredBrowserTypeForWebContents() override;
   void DidScheduleCommand() override;
@@ -239,6 +243,10 @@ class SessionService : public SessionServiceBase {
 
   // Use to override IsOnlyOneTableft()
   bool is_only_one_tab_left_for_test_ = false;
+
+  // The number of times `DeleteLastSession()` has been invoked for the current
+  // session service instance.
+  int count_delete_last_session_for_testing_ = 0;
 
   // If true and a new tabbed browser is created and there are no opened
   // tabbed browser (has_open_trackable_browsers_ is false), then the current

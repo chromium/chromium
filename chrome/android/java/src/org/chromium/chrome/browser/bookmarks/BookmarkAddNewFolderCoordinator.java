@@ -73,8 +73,6 @@ public class BookmarkAddNewFolderCoordinator {
         Resources res = mContext.getResources();
         mModel = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                          .with(ModalDialogProperties.CONTROLLER, dialogController)
-                         .with(ModalDialogProperties.TITLE,
-                                 res.getString(R.string.create_new_folder))
                          .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                                  res.getString(R.string.app_banner_add))
                          .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT,

@@ -45,7 +45,7 @@ class LocalDOMWindow;
 class ExecutionContext;
 class DOMRect;
 
-class CORE_EXPORT DOMVisualViewport final : public EventTargetWithInlineData {
+class CORE_EXPORT DOMVisualViewport final : public EventTarget {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

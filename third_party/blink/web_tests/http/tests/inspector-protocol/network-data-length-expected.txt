@@ -6,17 +6,17 @@ url: http://127.0.0.1:8000/inspector-protocol/resources/data-xfer-resource.php?s
   isChunked: false
   isH2: false
   redirected: false
-  headersSize: 173
+  headersSize: 171
   receivedDataSize: 4
-  reportedTotalSize: 177
+  reportedTotalSize: 175
 
 url: http://127.0.0.1:8000/inspector-protocol/resources/data-xfer-resource.php?size=4&flush_header_with_x_bytes=1&wait_after_headers_packet=25&flush_every=1&wait_every_x_bytes=1&wait_duration_every_x_bytes=25
   isChunked: false
   isH2: false
   redirected: false
-  headersSize: 173
+  headersSize: 171
   receivedDataSize: 4
-  reportedTotalSize: 177
+  reportedTotalSize: 175
 
 url: http://127.0.0.1:8000/inspector-protocol/resources/data-xfer-resource.php?redirect=1
   isChunked: null
@@ -37,8 +37,8 @@ url: http://127.0.0.1:8000/inspector-protocol/resources/data-xfer-resource.php?
   isChunked: false
   isH2: false
   redirected: false
-  headersSize: 173
+  headersSize: 171
   receivedDataSize: 0
-  reportedTotalSize: 173
+  reportedTotalSize: 171
 
 

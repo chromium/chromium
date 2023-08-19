@@ -15,10 +15,6 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // A fake tab helper delegate.
 class Delegate {
@@ -87,7 +83,6 @@ class FakeTabHelperWebStateListDelegate : public WebStateListDelegate {
   void WillAddWebState(web::WebState* web_state) override {
     FakeTabHelper::CreateForWebState(web_state);
   }
-  void WebStateDetached(web::WebState* web_state) override {}
 };
 }  // namespace
 

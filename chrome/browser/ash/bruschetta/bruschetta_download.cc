@@ -8,11 +8,13 @@
 #include "base/memory/ptr_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_network_context.h"
 #include "chrome/browser/extensions/cws_info_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/storage_partition.h"
 #include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
+#include "net/base/net_errors.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 
@@ -94,25 +96,7 @@ std::string Sha256FileForTesting(const base::FilePath& path) {
   return Sha256File(path);
 }
 
-std::unique_ptr<SimpleURLLoaderDownload> SimpleURLLoaderDownload::StartDownload(
-    Profile* profile,
-    GURL url,
-    base::OnceCallback<void(base::FilePath path, std::string sha256)>
-        callback) {
-  return base::WrapUnique(new SimpleURLLoaderDownload(profile, std::move(url),
-                                                      std::move(callback)));
-}
-
-SimpleURLLoaderDownload::SimpleURLLoaderDownload(
-    Profile* profile,
-    GURL url,
-    base::OnceCallback<void(base::FilePath path, std::string sha256)> callback)
-    : profile_(profile), url_(std::move(url)), callback_(std::move(callback)) {
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()}, base::BindOnce(&MakeTempDir),
-      base::BindOnce(&SimpleURLLoaderDownload::Download,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
+SimpleURLLoaderDownload::SimpleURLLoaderDownload() = default;
 
 SimpleURLLoaderDownload::~SimpleURLLoaderDownload() {
   auto seq = base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
@@ -122,7 +106,25 @@ SimpleURLLoaderDownload::~SimpleURLLoaderDownload() {
   }
 }
 
+void SimpleURLLoaderDownload::StartDownload(
+    Profile* profile,
+    GURL url,
+    base::OnceCallback<void(base::FilePath path, std::string sha256)>
+        callback) {
+  DCHECK(url_.is_empty()) << " each instance is single use";
+  url_ = std::move(url);
+  callback_ = std::move(callback);
+  // We're owned (through a few levels of owning class) by the installer view
+  // which won't outlive the profile, so it's safe to pass around the raw
+  // pointer.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()}, base::BindOnce(&MakeTempDir),
+      base::BindOnce(&SimpleURLLoaderDownload::Download,
+                     weak_ptr_factory_.GetWeakPtr(), profile));
+}
+
 void SimpleURLLoaderDownload::Download(
+    Profile* profile,
     std::unique_ptr<base::ScopedTempDir> dir) {
   scoped_temp_dir_ = std::move(dir);
   auto path = scoped_temp_dir_->GetPath().Append("download");
@@ -130,9 +132,8 @@ void SimpleURLLoaderDownload::Download(
   req->url = url_;
   loader_ = network::SimpleURLLoader::Create(std::move(req),
                                              kBruschettaTrafficAnnotation);
-  auto factory = profile_->GetDefaultStoragePartition()
-                     ->GetURLLoaderFactoryForBrowserProcess();
-  loader_->DownloadToFile(factory.get(),
+  network_context_ = std::make_unique<BruschettaNetworkContext>(profile);
+  loader_->DownloadToFile(network_context_->GetURLLoaderFactory(),
                           base::BindOnce(&SimpleURLLoaderDownload::Finished,
                                          weak_ptr_factory_.GetWeakPtr()),
                           std::move(path));
@@ -140,7 +141,8 @@ void SimpleURLLoaderDownload::Download(
 
 void SimpleURLLoaderDownload::Finished(base::FilePath path) {
   if (path.empty()) {
-    LOG(ERROR) << "Download failed";
+    LOG(ERROR) << "Download failed: " << net::ErrorToString(loader_->NetError())
+               << " (" << loader_->NetError() << ")";
     std::move(callback_).Run(path, "");
     return;
   }

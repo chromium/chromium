@@ -50,8 +50,8 @@ DeviceMode TranslateProtobufDeviceMode(
       return DEVICE_MODE_ENTERPRISE;
     case em::DeviceRegisterResponse::RETAIL_DEPRECATED:
       return DEPRECATED_DEVICE_MODE_LEGACY_RETAIL_MODE;
-    case em::DeviceRegisterResponse::CHROME_AD:
-      return DEVICE_MODE_ENTERPRISE_AD;
+    case em::DeviceRegisterResponse::CHROME_AD_DEPRECATED:
+      break;
     case em::DeviceRegisterResponse::DEMO:
       return DEVICE_MODE_DEMO;
   }
@@ -1224,10 +1224,10 @@ void CloudPolicyClient::OnPolicyFetchCompleted(DMServerJobResult result) {
 
     VLOG_POLICY(2, CBCM_ENROLLMENT) << "Policy fetch succeeded";
   } else {
-    NotifyClientError();
-
     VLOG_POLICY(2, CBCM_ENROLLMENT)
         << "Policy fetching failed with DM status error: " << last_dm_status_;
+
+    NotifyClientError();
 
     if (result.dm_status == DM_STATUS_SERVICE_DEVICE_NOT_FOUND ||
         result.dm_status == DM_STATUS_SERVICE_DEVICE_NEEDS_RESET) {
@@ -1482,6 +1482,10 @@ void CloudPolicyClient::CreateDeviceRegisterRequest(
   if (params.license_type.has_value()) {
     request->mutable_license_type()->set_license_type(
         params.license_type.value());
+  }
+  if (params.demo_mode_dimensions.has_value()) {
+    *request->mutable_demo_mode_dimensions() =
+        params.demo_mode_dimensions.value();
   }
 }
 

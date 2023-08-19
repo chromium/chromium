@@ -389,7 +389,7 @@ TEST_F(RenderWidgetHostViewAndroidTest, RenderFrameSubmittedBeforeNavigation) {
 
   // Pre-commit information of Navigation is not told to RWHVA, these are the
   // two entry points. We should have a new Surface afterwards.
-  rwhva->OnDidNavigateMainFrameToNewPage();
+  rwhva->DidNavigateMainFramePreCommit();
   rwhva->DidNavigate();
   GetLocalSurfaceIdAndConfirmNewerThan(initial_local_surface_id);
 }

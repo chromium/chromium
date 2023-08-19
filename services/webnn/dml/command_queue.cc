@@ -7,6 +7,7 @@
 #include "base/check_is_test.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/numerics/safe_conversions.h"
 
 namespace webnn::dml {
 
@@ -23,7 +24,7 @@ CommandQueue::CommandQueue(ComPtr<ID3D12CommandQueue> command_queue,
 CommandQueue::~CommandQueue() = default;
 
 // static
-std::unique_ptr<CommandQueue> CommandQueue::Create(ID3D12Device* d3d12_device) {
+scoped_refptr<CommandQueue> CommandQueue::Create(ID3D12Device* d3d12_device) {
   ComPtr<ID3D12CommandQueue> command_queue;
   D3D12_COMMAND_QUEUE_DESC command_queue_desc = {};
   command_queue_desc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
@@ -45,14 +46,18 @@ std::unique_ptr<CommandQueue> CommandQueue::Create(ID3D12Device* d3d12_device) {
     return nullptr;
   }
 
-  return base::WrapUnique(
+  return base::WrapRefCounted(
       new CommandQueue(std::move(command_queue), std::move(fence)));
 }
 
+HRESULT CommandQueue::ExecuteCommandList(ID3D12CommandList* command_list) {
+  return ExecuteCommandLists(base::make_span(&command_list, 1u));
+}
+
 HRESULT CommandQueue::ExecuteCommandLists(
-    const std::vector<ID3D12CommandList*>& command_lists) {
-  command_queue_->ExecuteCommandLists(command_lists.size(),
-                                      command_lists.data());
+    base::span<ID3D12CommandList*> command_lists) {
+  command_queue_->ExecuteCommandLists(
+      base::checked_cast<uint32_t>(command_lists.size()), command_lists.data());
   ++last_fence_value_;
   return command_queue_->Signal(fence_.Get(), last_fence_value_);
 }
@@ -83,7 +88,7 @@ void CommandQueue::OnObjectSignaled(HANDLE object) {
   }
 }
 
-HRESULT CommandQueue::WaitAsync(base::OnceClosure callback) {
+void CommandQueue::WaitAsync(OnWaitAyncCallback callback) {
   if (!object_watcher_.IsWatching()) {
     CHECK(object_watcher_.StartWatchingMultipleTimes(fence_event_.get(), this));
   }
@@ -93,10 +98,11 @@ HRESULT CommandQueue::WaitAsync(base::OnceClosure callback) {
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to set event on completion : "
                 << logging::SystemErrorCodeToString(hr);
-    return hr;
+    std::move(callback).Run(hr);
+    return;
   };
-  queued_callbacks_.push_back({last_fence_value_, std::move(callback)});
-  return S_OK;
+  queued_callbacks_.push_back(
+      {last_fence_value_, base::BindOnce(std::move(callback), S_OK)});
 }
 
 void CommandQueue::ReferenceUntilCompleted(ComPtr<IUnknown> object) {
@@ -109,6 +115,14 @@ void CommandQueue::ReleaseCompletedResources() {
          queued_objects_.front().fence_value <= completed_value) {
     queued_objects_.pop_front();
   }
+}
+
+uint64_t CommandQueue::GetCompletedValue() const {
+  return fence_->GetCompletedValue();
+}
+
+uint64_t CommandQueue::GetLastFenceValue() const {
+  return last_fence_value_;
 }
 
 CommandQueue::QueuedObject::QueuedObject(uint64_t fence_value,

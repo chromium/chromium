@@ -24,6 +24,9 @@ class ASH_EXPORT AccessibilityControllerTestApi {
   virtual void SetLargeCursorEnabled(bool enabled) = 0;
   virtual bool IsLargeCursorEnabled() const = 0;
   virtual int GetDictationSodaDownloadProgress() const = 0;
+  virtual bool IsDictationKeboardDialogShowing() const = 0;
+  virtual void AcceptDictationKeyboardDialog() = 0;
+  virtual void DismissDictationKeyboardDialog() = 0;
 };
 
 }  // namespace ash

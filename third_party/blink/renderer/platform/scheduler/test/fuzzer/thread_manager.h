@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequence_manager/test/sequence_manager_for_test.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -128,6 +129,9 @@ class PLATFORM_EXPORT ThreadManager {
   void DeleteTask(Task* task);
 
   scoped_refptr<TaskQueueWithVoters> GetTaskQueueFor(uint64_t task_queue_id);
+
+  scoped_refptr<SingleThreadTaskRunner> GetTaskRunnerFor(
+      uint64_t task_queue_id);
 
   // Used to protect |task_queues_| and |pending_tasks_|.
   Lock lock_;

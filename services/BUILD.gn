@@ -36,6 +36,7 @@ test("services_unittests") {
   if (use_blink) {
     deps += [
       "//services/audio:tests",
+      "//services/data_decoder:tests",
       "//services/device:tests",
       "//services/image_annotation:tests",
       "//services/image_annotation/public/cpp:tests",
@@ -45,22 +46,21 @@ test("services_unittests") {
       "//services/proxy_resolver:tests",
       "//services/resource_coordinator:tests",
       "//services/shape_detection:tests",
+      "//services/tracing:tests",
       "//services/viz/privileged/mojom:unit_tests",
       "//services/viz/public/cpp/compositing:tests",
       "//services/viz/public/cpp/gpu:tests",
       "//services/viz/public/cpp/hit_test:tests",
       "//services/webnn:tests",
     ]
+    if (is_ios) {
+      bundle_deps =
+          [ "//services/tracing:services_tracing_perfetto_bundle_data" ]
+    }
   }
 
-  if (!is_ios) {
-    deps += [
-      "//services/data_decoder:tests",
-      "//services/tracing:tests",
-    ]
-    if (is_android && (current_cpu == "arm" || current_cpu == "arm64")) {
-      deps += [ "//base:base_profiler_test_support_library" ]
-    }
+  if (is_android && (current_cpu == "arm" || current_cpu == "arm64")) {
+    deps += [ "//base:base_profiler_test_support_library" ]
   }
 
   if (is_chromeos_ash || is_linux || is_fuchsia) {
@@ -95,8 +95,6 @@ test("services_unittests") {
   }
 
   if (is_fuchsia) {
-    test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
-
     additional_manifest_fragments = [
       "//build/config/fuchsia/test/mark_vmo_executable.shard.test-cml",
       "//build/config/fuchsia/test/network.shard.test-cml",
@@ -135,6 +133,7 @@ if (is_android) {
       "//mojo/public/java:base_java",
       "//mojo/public/java:bindings_java",
       "//mojo/public/java:system_java",
+      "//mojo/public/mojom/base:base_java",
       "//services/device/generic_sensor:java",
       "//services/device/geolocation:geolocation_java",
       "//services/device/nfc/android:java",
@@ -171,6 +170,7 @@ if (is_android) {
       "//skia/public/mojom:mojom_java",
       "//third_party/android_deps:chromium_play_services_availability_java",
       "//third_party/androidx:androidx_test_runner_java",
+      "//third_party/hamcrest:hamcrest_java",
       "//third_party/hamcrest:hamcrest_library_java",
       "//third_party/junit",
       "//ui/gfx/geometry/mojom:mojom_java",

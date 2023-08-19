@@ -39,6 +39,14 @@ class DisplaySizeScreen : public BaseScreen {
 
   ~DisplaySizeScreen() override;
 
+  void set_exit_callback_for_testing(const ScreenExitCallback& callback) {
+    exit_callback_ = callback;
+  }
+
+  const ScreenExitCallback& get_exit_callback_for_testing() {
+    return exit_callback_;
+  }
+
  private:
   // BaseScreen:
   bool ShouldBeSkipped(const WizardContext& context) const override;
@@ -47,7 +55,6 @@ class DisplaySizeScreen : public BaseScreen {
   void HideImpl() override;
   void OnUserAction(const base::Value::List& args) override;
   ScreenSummary GetScreenSummary() override;
-  std::string RetrieveChoobeSubtitle();
 
   base::WeakPtr<DisplaySizeScreenView> view_;
   ScreenExitCallback exit_callback_;

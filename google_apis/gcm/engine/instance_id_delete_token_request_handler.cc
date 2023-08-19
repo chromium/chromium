@@ -5,6 +5,7 @@
 #include "google_apis/gcm/engine/instance_id_delete_token_request_handler.h"
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "google_apis/gcm/base/gcm_util.h"
@@ -52,8 +53,9 @@ void InstanceIDDeleteTokenRequestHandler::BuildRequestBody(std::string* body){
 UnregistrationRequest::Status
 InstanceIDDeleteTokenRequestHandler::ParseResponse(
     const std::string& response) {
-  if (response.find(kTokenPrefix) == std::string::npos)
+  if (!base::Contains(response, kTokenPrefix)) {
     return UnregistrationRequest::RESPONSE_PARSING_FAILED;
+  }
 
   return UnregistrationRequest::SUCCESS;
 }

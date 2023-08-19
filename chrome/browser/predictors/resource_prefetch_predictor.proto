@@ -62,3 +62,38 @@ message OriginData {
   optional uint64 last_visit_time = 2;
   repeated OriginStat origins = 3;
 }
+
+// `LcpElementLocatorBucket` is a bucket of lcp_element_locator's histogram.
+message LcpElementLocatorBucket {
+  // `lcp_element_locator` contains LCP element locator information as bytes
+  // encoded with a protobuf wire format.
+  optional bytes lcp_element_locator = 1;
+  optional double frequency = 2;
+}
+
+message LcpElementLocatorStat {
+  // Conceptually, `lcp_element_locator_buckets` could be a `map<bytes,
+  // double>`. But proto3 doesn't support bytes as a key. Hence we use
+  // `repeated`. (see: https://protobuf.dev/programming-guides/proto3/#maps)
+  repeated LcpElementLocatorBucket lcp_element_locator_buckets = 1;
+  optional double other_bucket_frequency = 2;
+}
+
+// `LcppStat` contains all LCP predictor related statistics
+// accessed from a host.
+message LcppStat {
+  optional LcpElementLocatorStat lcp_element_locator_stat = 1;
+}
+
+// [LCP Critical Path Predictor (LCPP)]
+// `LcppData` stores LCP related optimization data.
+// TODO(crbug.com/1419756): This feature is still under development and proto
+// definition will likely change in the future.
+// LCPP:
+// https://docs.google.com/document/d/18qTNRyv_9K2CtvVrl_ancLzPxiAnfAcbvrCNegU9IBM
+// LCP: https://web.dev/lcp/
+message LcppData {
+  optional string host = 1;
+  optional uint64 last_visit_time = 2;
+  optional LcppStat lcpp_stat = 3;
+}

@@ -159,13 +159,10 @@ SVGAnimatedPropertyBase* SVGFEBlendElement::PropertyFromAttribute(
   }
 }
 
-void SVGFEBlendElement::SynchronizeSVGAttribute(
-    const QualifiedName& name) const {
-  if (name == AnyQName()) {
-    SVGAnimatedPropertyBase* attrs[]{in1_.Get(), in2_.Get(), mode_.Get()};
-    SynchronizeAllSVGAttributes(attrs);
-  }
-  SVGFilterPrimitiveStandardAttributes::SynchronizeSVGAttribute(name);
+void SVGFEBlendElement::SynchronizeAllSVGAttributes() const {
+  SVGAnimatedPropertyBase* attrs[]{in1_.Get(), in2_.Get(), mode_.Get()};
+  SynchronizeListOfSVGAttributes(attrs);
+  SVGFilterPrimitiveStandardAttributes::SynchronizeAllSVGAttributes();
 }
 
 }  // namespace blink

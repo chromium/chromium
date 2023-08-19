@@ -45,7 +45,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.KAnonymityService.JoinSet.Action"
-    enum="KAnonymityServiceJoinSetAction" expires_after="2023-10-01">
+    enum="KAnonymityServiceJoinSetAction" expires_after="2024-02-04">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
   <summary>
@@ -69,7 +69,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.KAnonymityService.QuerySet.Action"
-    enum="KAnonymityServiceQuerySetAction" expires_after="2023-10-08">
+    enum="KAnonymityServiceQuerySetAction" expires_after="2024-02-11">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
   <summary>
@@ -81,7 +81,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.KAnonymityService.QuerySet.Latency" units="ms"
-    expires_after="2023-11-12">
+    expires_after="2024-01-14">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
   <summary>
@@ -94,7 +94,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.KAnonymityService.QuerySet.Size" units="count"
-    expires_after="2023-10-08">
+    expires_after="2024-02-11">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
   <summary>
@@ -115,7 +115,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.KAnonymityService.TrustTokenGetter.Latency" units="ms"
-    expires_after="2023-10-08">
+    expires_after="2024-02-11">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
   <summary>
@@ -152,7 +152,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.ProcessSingleton.NotifyResult" enum="NotifyResult"
-    expires_after="2023-10-01">
+    expires_after="2024-02-04">
   <owner>gab@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
@@ -161,7 +161,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.ProcessSingleton.RemoteHungProcessTerminateReason"
-    enum="RemoteHungProcessTerminateReason" expires_after="2023-07-30">
+    enum="RemoteHungProcessTerminateReason" expires_after="2024-02-04">
   <owner>gab@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>The reason of remote hang processes termination.</summary>
@@ -188,7 +188,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.ProcessSingleton.TerminateProcessErrorCode.Windows"
-    enum="WinGetLastError" expires_after="2023-07-30">
+    enum="WinGetLastError" expires_after="2023-11-30">
   <owner>gab@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
@@ -198,7 +198,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.ProcessSingleton.TerminateProcessTime" units="ms"
-    expires_after="2023-07-30">
+    expires_after="2023-11-30">
   <owner>gab@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
@@ -208,7 +208,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.ProcessSingleton.TerminationWaitErrorCode.Windows"
-    enum="WinGetLastError" expires_after="2023-07-30">
+    enum="WinGetLastError" expires_after="2023-11-30">
   <owner>gab@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
@@ -217,7 +217,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.ProcessSingleton.TimeToCreate" units="ms"
-    expires_after="2023-10-01">
+    expires_after="2024-02-04">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>
@@ -227,7 +227,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.ProcessSingleton.TimeToFailure" units="ms"
-    expires_after="2023-07-30">
+    expires_after="2024-02-04">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>
@@ -238,7 +238,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.ProcessSingleton.TimeToNotify" units="ms"
-    expires_after="2023-11-19">
+    expires_after="2024-01-21">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>
@@ -275,7 +275,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.SystemNetworkContextManager.NetworkSandboxState"
-    enum="NetworkSandboxState" expires_after="2023-11-12">
+    enum="NetworkSandboxState" expires_after="2024-01-14">
   <owner>wfh@chromium.org</owner>
   <owner>mmenke@chromium.org</owner>
   <summary>
@@ -317,13 +317,67 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Chrome.WrenchMenu.MenuButtonPressedToMenuShown" units="ms"
+    expires_after="2024-05-31">
+  <owner>temao@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <summary>
+    Records the latency from when the app menu button is pressed to when the
+    menu is shown. It's logged every time the button is pressed.
+  </summary>
+</histogram>
+
+<histogram name="Chrome.WrenchMenu.MenuHostInitToNextFramePresented" units="ms"
+    expires_after="2024-08-10">
+  <owner>temao@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <summary>
+    Records time from when the menu host initialization is started to when the
+    next frame is successfully presented. It's logged every time the app menu
+    opens.
+  </summary>
+</histogram>
+
 <histogram name="ChromeColors.ColorOnLoad" enum="ChromeColorsInfo"
-    expires_after="2023-10-22">
-  <owner>gayane@chromium.org</owner>
-  <owner>yyushkina@chromium.org</owner>
+    expires_after="2023-12-24">
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
     Records installed color id every time theme service is initialized from
-    prefs. Happens once per profile load.
+    prefs. Happens once per profile load if the user has a GM2 color installed.
+
+    This histogram records only GM2 colors. For tracking the installed GM3 color
+    see the ChromeColors.DynamicColorOnLoad histogram. Or see the
+    ChromeColors.ColorType histogram for the type of installed Chrome color.
+  </summary>
+</histogram>
+
+<histogram name="ChromeColors.ColorType" enum="ChromeColorType"
+    expires_after="2023-12-24">
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Records installed color type every time theme service is initialized from
+    prefs. Happens once per profile load if the user has a Chrome color
+    installed.
+
+    To track, which color is installed see the ChromeColors.ColorOnLoad
+    histogram for GM2 colors and the ChromeColors.DynamicColorOnLoad histogram
+    for GM3 colors.
+  </summary>
+</histogram>
+
+<histogram name="ChromeColors.DynamicColorOnLoad"
+    enum="DynamicChromeColorsInfo" expires_after="2023-12-24">
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Records installed color id every time theme service is initialized from
+    prefs. Happens once per profile load if the user has a GM3 color installed.
+
+    This histogram records only GM3 colors. For tracking the installed GM2 color
+    see the ChromeColors.ColorOnLoad histogram. Or see the
+    ChromeColors.ColorType histogram for the type of installed Chrome color.
   </summary>
 </histogram>
 

@@ -52,6 +52,21 @@ AuctionConfig::NonSharedParams& AuctionConfig::NonSharedParams::operator=(
 AuctionConfig::NonSharedParams& AuctionConfig::NonSharedParams::operator=(
     NonSharedParams&&) = default;
 
+AuctionConfig::ServerResponseConfig::ServerResponseConfig() = default;
+AuctionConfig::ServerResponseConfig::ServerResponseConfig(
+    const ServerResponseConfig& other) = default;
+AuctionConfig::ServerResponseConfig::ServerResponseConfig(
+    ServerResponseConfig&&) = default;
+AuctionConfig::ServerResponseConfig::~ServerResponseConfig() = default;
+
+AuctionConfig::ServerResponseConfig&
+AuctionConfig::ServerResponseConfig::operator=(
+    const ServerResponseConfig& other) = default;
+
+AuctionConfig::ServerResponseConfig&
+AuctionConfig::ServerResponseConfig::operator=(ServerResponseConfig&&) =
+    default;
+
 AuctionConfig::AuctionConfig() = default;
 AuctionConfig::AuctionConfig(const AuctionConfig&) = default;
 AuctionConfig::AuctionConfig(AuctionConfig&&) = default;
@@ -81,6 +96,12 @@ int AuctionConfig::NumPromises() const {
     ++total;
   }
   if (direct_from_seller_signals.is_promise()) {
+    ++total;
+  }
+  if (expects_direct_from_seller_signals_header_ad_slot) {
+    ++total;
+  }
+  if (expects_additional_bids) {
     ++total;
   }
   for (const blink::AuctionConfig& sub_auction :

@@ -4,38 +4,94 @@
 
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/page_insights/PageInsightsActivator.java",
     "java/src/org/chromium/chrome/browser/page_insights/PageInsightsCoordinator.java",
+    "java/src/org/chromium/chrome/browser/page_insights/PageInsightsDataLoader.java",
     "java/src/org/chromium/chrome/browser/page_insights/PageInsightsMediator.java",
     "java/src/org/chromium/chrome/browser/page_insights/PageInsightsSheetContent.java",
+    "java/src/org/chromium/chrome/browser/page_insights/PageInsightsSwaaChecker.java",
   ]
+
+  srcjar_deps = [ ":jni_headers" ]
 
   deps = [
     ":java_resources",
+    ":proto",
     "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
     "//chrome/browser/browser_controls/android:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/signin/services/android:java",
+    "//chrome/browser/sync/android:java",
     "//chrome/browser/tab:java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/bottomsheet/android:manager_java",
     "//components/browser_ui/widget/android:java",
+    "//components/sync/android:sync_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/protobuf:protobuf_lite",
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
   ]
   resources_package = "org.chromium.chrome.browser.page_insights"
 }
 
+generate_jni("jni_headers") {
+  sources = [ "java/src/org/chromium/chrome/browser/page_insights/PageInsightsSwaaChecker.java" ]
+}
+
 android_resources("java_resources") {
   sources = [
     "java/res/drawable/page_insights_icon.xml",
     "java/res/layout/page_insights_sheet_toolbar.xml",
+    "java/res/values/dimens.xml",
   ]
   deps = [
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//components/browser_ui/bottomsheet/android:java_resources",
     "//components/browser_ui/widget/android:java_resources",
+  ]
+}
+
+proto_library("proto") {
+  proto_path = "java/src/org/chromium/chrome/browser/page_insights/proto"
+  sources = [ "$proto_path/page_insights.proto" ]
+}
+
+
+robolectric_library("junit") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/page_insights/PageInsightsActivatorUnitTest.java",
+    "java/src/org/chromium/chrome/browser/page_insights/PageInsightsMediatorTest.java",
+    "java/src/org/chromium/chrome/browser/page_insights/PageInsightsSwaaCheckerUnitTest.java",
+  ]
+  deps = [
+    ":java",
+    ":jni_headers",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//base:jni_java",
+    "//chrome/browser/browser_controls/android:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/signin/services/android:java",
+    "//chrome/browser/sync/android:java",
+    "//chrome/browser/tab:java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/bottomsheet/android:manager_java",
+    "//components/sync/android:sync_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
   ]
 }
 
@@ -67,6 +123,8 @@ android_library("unit_device_javatests") {
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java_test_support",
+    "//ui/android:ui_no_recycler_view_java",
     "//ui/android:ui_utils_java",
+    "//url:gurl_java",
   ]
 }

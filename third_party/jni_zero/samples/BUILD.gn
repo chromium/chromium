@@ -1,0 +1,64 @@
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//testing/test.gni")
+
+generate_jni("jni_sample_header") {
+  sources = [
+    "java/src/org/chromium/example/jni_generator/SampleForAnnotationProcessor.java",
+    "java/src/org/chromium/example/jni_generator/SampleForTests.java",
+  ]
+}
+
+android_library("jni_sample_java") {
+  srcjar_deps = [ ":jni_sample_header" ]
+  sources = [
+    "java/src/org/chromium/example/jni_generator/SampleForAnnotationProcessor.java",
+    "java/src/org/chromium/example/jni_generator/SampleForTests.java",
+  ]
+
+  deps = [
+    "//base:jni_java",
+    "//build/android:build_java",
+  ]
+}
+
+source_set("jni_sample_native_side") {
+  deps = [
+    ":jni_sample_header",
+    "//base",
+  ]
+  sources = [
+    "sample_for_tests.cc",
+    "sample_for_tests.h",
+  ]
+}
+
+generate_jni_registration("jni_registration") {
+  java_targets = [ ":jni_sample_java" ]
+  manual_jni_registration = true
+}
+
+shared_library("jni_sample_lib") {
+  sources = [ "sample_entry_point.cc" ]
+
+  deps = [
+    ":jni_registration",
+    ":jni_sample_native_side",
+    "//base",
+  ]
+}
+
+android_apk("sample_jni_apk") {
+  apk_name = "SampleJni"
+  android_manifest = "AndroidManifest.xml"
+  deps = [ ":jni_sample_java" ]
+  shared_libraries = [ ":jni_sample_lib" ]
+}
+
+# Serves to test that generated bindings compile properly.
+group("jni_generator_tests") {
+  deps = [ ":sample_jni_apk" ]
+}

@@ -100,6 +100,9 @@ enum Destination {
   // The file is expected to be a zipped set of logs prepared by Support Tool.
   LOG_UPLOAD = 27;
 
+  // |CROS_SECURITY_USER| is for events that are occurring from user actions.
+  CROS_SECURITY_USER = 28;
+
   reserved 8;
 }
 

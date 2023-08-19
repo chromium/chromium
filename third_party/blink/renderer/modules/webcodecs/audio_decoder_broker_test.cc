@@ -122,8 +122,9 @@ class FakeInterfaceFactory : public media::mojom::InterfaceFactory {
   void CreateAudioDecoder(
       mojo::PendingReceiver<media::mojom::AudioDecoder> receiver) override {
     audio_decoder_receivers_.Add(
-        std::make_unique<media::MojoAudioDecoderService>(&mojo_media_client_,
-                                                         &cdm_service_context_),
+        std::make_unique<media::MojoAudioDecoderService>(
+            &mojo_media_client_, &cdm_service_context_,
+            base::SingleThreadTaskRunner::GetCurrentDefault()),
         std::move(receiver));
   }
   void CreateAudioEncoder(

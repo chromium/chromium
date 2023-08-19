@@ -44,8 +44,7 @@ TEST_F(PromiseAppRegistryCacheTest, OnPromiseApp_UpdatesPromiseAppProgress) {
   // Pre-register a promise app with no installation progress value.
   auto promise_app = std::make_unique<PromiseApp>(kTestPackageId);
   cache()->OnPromiseApp(std::move(promise_app));
-  EXPECT_FALSE(
-      cache()->GetPromiseAppForTesting(kTestPackageId)->progress.has_value());
+  EXPECT_FALSE(cache()->GetPromiseApp(kTestPackageId)->progress.has_value());
   EXPECT_EQ(cache()->GetAllPromiseApps().size(), 1u);
 
   // Update the progress value for the correct app and confirm the progress
@@ -53,15 +52,13 @@ TEST_F(PromiseAppRegistryCacheTest, OnPromiseApp_UpdatesPromiseAppProgress) {
   auto promise_delta = std::make_unique<PromiseApp>(kTestPackageId);
   promise_delta->progress = progress_initial;
   cache()->OnPromiseApp(std::move(promise_delta));
-  EXPECT_EQ(cache()->GetPromiseAppForTesting(kTestPackageId)->progress,
-            progress_initial);
+  EXPECT_EQ(cache()->GetPromiseApp(kTestPackageId)->progress, progress_initial);
 
   // Update the progress value again and check if it is the correct value.
   auto promise_delta_next = std::make_unique<PromiseApp>(kTestPackageId);
   promise_delta_next->progress = progress_next;
   cache()->OnPromiseApp(std::move(promise_delta_next));
-  EXPECT_EQ(cache()->GetPromiseAppForTesting(kTestPackageId)->progress,
-            progress_next);
+  EXPECT_EQ(cache()->GetPromiseApp(kTestPackageId)->progress, progress_next);
 
   // All these changes should have applied to the same promise app instead
   // of creating new ones.
@@ -86,6 +83,47 @@ TEST_F(PromiseAppRegistryCacheTest, GetAllPromiseApps) {
   EXPECT_EQ(promise_app_list.size(), 2u);
   EXPECT_EQ(promise_app_list[0]->package_id, package_id_1);
   EXPECT_EQ(promise_app_list[1]->package_id, package_id_2);
+}
+
+TEST_F(PromiseAppRegistryCacheTest, GetPromiseAppForStringPackageId) {
+  // There should be no promise apps registered yet.
+  EXPECT_EQ(cache()->GetAllPromiseApps().size(), 0u);
+
+  std::string valid_package_id_1 = "android:something.example.test";
+  std::string valid_package_id_2 = "android:other.example.test";
+  std::string invalid_package_id = "invalid";
+  apps::PackageId package_id =
+      PackageId::FromString(valid_package_id_1).value();
+
+  // Register a promise app.
+  auto promise_app = std::make_unique<PromiseApp>(package_id);
+  cache()->OnPromiseApp(std::move(promise_app));
+
+  // Expect nullptr result for invalid string Package ID or when a Package ID
+  // isn't registered.
+  EXPECT_FALSE(cache()->GetPromiseAppForStringPackageId(invalid_package_id));
+  EXPECT_FALSE(cache()->GetPromiseAppForStringPackageId(valid_package_id_2));
+
+  const PromiseApp* promise_app_result =
+      cache()->GetPromiseAppForStringPackageId(valid_package_id_1);
+  EXPECT_EQ(promise_app_result->package_id, package_id);
+}
+
+TEST_F(PromiseAppRegistryCacheTest, RemovePromiseApp) {
+  // Register a promise app.
+  auto promise_app = std::make_unique<PromiseApp>(kTestPackageId);
+  cache()->OnPromiseApp(std::move(promise_app));
+
+  // Confirm that the promise app is registered.
+  EXPECT_TRUE(cache()->HasPromiseApp(kTestPackageId));
+
+  // Update the promise app with a kRemove status.
+  auto delta = std::make_unique<PromiseApp>(kTestPackageId);
+  delta->status = PromiseStatus::kRemove;
+  cache()->OnPromiseApp(std::move(delta));
+
+  // Confirm that the promise app was removed.
+  EXPECT_FALSE(cache()->HasPromiseApp(kTestPackageId));
 }
 
 class PromiseAppRegistryCacheObserverTest : public testing::Test,

@@ -205,6 +205,10 @@ extra_pre_call = {
 """,
    "xmlParserInputBufferCreateFd":
        "if (fd >= 0) fd = -1;",
+   "xmlSAXDefaultVersion": """
+        {
+            int original_version = xmlSAXDefaultVersion(2);
+""",
 }
 extra_post_call = {
    "xmlAddChild": 
@@ -261,6 +265,10 @@ extra_post_call = {
    "xmlParseChunk": "if (ctxt != NULL) {xmlFreeDoc(ctxt->myDoc); ctxt->myDoc = NULL;}",
    "xmlParseExtParsedEnt": "if (ctxt != NULL) {xmlFreeDoc(ctxt->myDoc); ctxt->myDoc = NULL;}",
    "xmlDOMWrapAdoptNode": "if ((node != NULL) && (node->parent == NULL)) {xmlUnlinkNode(node);xmlFreeNode(node);node = NULL;}",
+   "xmlSAXDefaultVersion": """
+            (void)xmlSAXDefaultVersion(original_version);
+        }
+""",
 }
 
 modules = []

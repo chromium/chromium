@@ -26,7 +26,7 @@ using CompleteCheckCallbackWithTimeout =
 
 MATCHER_P(Matches, threat_type, "") {
   return arg.value()->threat_type == threat_type &&
-         arg.value()->is_from_url_real_time_check;
+         arg.value()->threat_source == ThreatSource::URL_REAL_TIME_CHECK;
 }
 
 class MockSafeBrowsingLookupMechanism : public SafeBrowsingLookupMechanism {
@@ -53,7 +53,7 @@ class MockSafeBrowsingLookupMechanism : public SafeBrowsingLookupMechanism {
       bool is_safe_synchronously,
       SBThreatType threat_type,
       base::TimeDelta time_to_completion,
-      bool is_url_real_time,
+      ThreatSource threat_source,
       absl::optional<UrlLevelValidationDetails> url_level_validation_details)
       : SafeBrowsingLookupMechanism(
             GURL(),
@@ -63,7 +63,7 @@ class MockSafeBrowsingLookupMechanism : public SafeBrowsingLookupMechanism {
         is_safe_synchronously_(is_safe_synchronously),
         time_to_completion_(time_to_completion),
         threat_type_(threat_type),
-        is_url_real_time_(is_url_real_time),
+        threat_source_(threat_source),
         locally_cached_results_threat_type_(
             url_level_validation_details.has_value()
                 ? url_level_validation_details.value()
@@ -89,7 +89,7 @@ class MockSafeBrowsingLookupMechanism : public SafeBrowsingLookupMechanism {
               weak_factory_.GetWeakPtr(),
               std::make_unique<CompleteCheckResult>(
                   url_, threat_type_, ThreatMetadata(),
-                  /*is_from_url_real_time_check=*/is_url_real_time_,
+                  /*threat_source=*/threat_source_,
                   /*url_real_time_lookup_response=*/nullptr,
                   /*matched_high_confidence_allowlist=*/
                   matched_high_confidence_allowlist_,
@@ -112,9 +112,8 @@ class MockSafeBrowsingLookupMechanism : public SafeBrowsingLookupMechanism {
   // This is the resulting threat type that the mechanism will return. If
   // |is_safe_synchronously_| is true, this value will be ignored.
   SBThreatType threat_type_;
-  // Whether this is the URL real-time mechanism. Used for the |CompleteCheck|
-  // callback.
-  bool is_url_real_time_;
+  // The threat source used for the |CompleteCheck| callback.
+  ThreatSource threat_source_;
   // Passed into |CompleteCheck| callback.
   absl::optional<SBThreatType> locally_cached_results_threat_type_;
   // Passed into |CompleteCheck| callback.
@@ -135,7 +134,8 @@ class MockPingManager : public PingManager {
                     nullptr,
                     base::SequencedTaskRunner::GetCurrentDefault(),
                     base::NullCallback(),
-                    base::NullCallback()) {}
+                    base::NullCallback(),
+                    nullptr) {}
   ReportThreatDetailsResult ReportThreatDetails(
       std::unique_ptr<ClientSafeBrowsingReportRequest> report,
       bool attach_default_data = true) override {
@@ -403,8 +403,8 @@ class SafeBrowsingLookupMechanismExperimenterTest : public PlatformTest {
       absl::optional<UrlLevelValidationDetails> url_level_validation_details) {
     return std::make_unique<MockSafeBrowsingLookupMechanism>(
         /*is_safe_synchronously=*/false, /*threat_type=*/threat_type,
-        /*time_to_completion=*/time_to_completion, /*is_url_real_time=*/true,
-        url_level_validation_details);
+        /*time_to_completion=*/time_to_completion,
+        ThreatSource::URL_REAL_TIME_CHECK, url_level_validation_details);
   }
   std::unique_ptr<MockSafeBrowsingLookupMechanism> CreateHashRealTimeMechanism(
       SBThreatType threat_type,
@@ -412,8 +412,8 @@ class SafeBrowsingLookupMechanismExperimenterTest : public PlatformTest {
       absl::optional<UrlLevelValidationDetails> url_level_validation_details) {
     return std::make_unique<MockSafeBrowsingLookupMechanism>(
         /*is_safe_synchronously=*/false, /*threat_type=*/threat_type,
-        /*time_to_completion=*/time_to_completion, /*is_url_real_time=*/false,
-        url_level_validation_details);
+        /*time_to_completion=*/time_to_completion,
+        ThreatSource::NATIVE_PVER5_REAL_TIME, url_level_validation_details);
   }
   std::unique_ptr<MockSafeBrowsingLookupMechanism>
   CreateSyncHashDatabaseMechanism(
@@ -422,7 +422,7 @@ class SafeBrowsingLookupMechanismExperimenterTest : public PlatformTest {
         /*is_safe_synchronously=*/true,
         /*threat_type=*/SB_THREAT_TYPE_SAFE,       // not used
         /*time_to_completion=*/base::TimeDelta(),  // not used
-        /*is_url_real_time=*/false, url_level_validation_details);
+        ThreatSource::LOCAL_PVER4, url_level_validation_details);
   }
   std::unique_ptr<MockSafeBrowsingLookupMechanism>
   CreateAsyncHashDatabaseMechanism(
@@ -432,8 +432,8 @@ class SafeBrowsingLookupMechanismExperimenterTest : public PlatformTest {
     return std::make_unique<MockSafeBrowsingLookupMechanism>(
         /*is_safe_synchronously=*/false,
         /*threat_type=*/threat_type,
-        /*time_to_completion=*/time_to_completion,
-        /*is_url_real_time=*/false, url_level_validation_details);
+        /*time_to_completion=*/time_to_completion, ThreatSource::LOCAL_PVER4,
+        url_level_validation_details);
   }
 
   void VerifyNoLogs() {

@@ -57,8 +57,6 @@ ClientHintToWebFeatureMap MakeClientHintToWebFeatureMap() {
        WebFeature::kClientHintsPrefersColorScheme},
       {network::mojom::WebClientHintsType::kUABitness,
        WebFeature::kClientHintsUABitness},
-      {network::mojom::WebClientHintsType::kUAReduced,
-       WebFeature::kClientHintsUAReduced},
       {network::mojom::WebClientHintsType::kViewportHeight,
        WebFeature::kClientHintsViewportHeight},
       {network::mojom::WebClientHintsType::kDeviceMemory,
@@ -70,14 +68,14 @@ ClientHintToWebFeatureMap MakeClientHintToWebFeatureMap() {
        WebFeature::kClientHintsViewportWidth},
       {network::mojom::WebClientHintsType::kUAFullVersionList,
        WebFeature::kClientHintsUAFullVersionList},
-      {network::mojom::WebClientHintsType::kFullUserAgent,
-       WebFeature::kClientHintsUAFull},
       {network::mojom::WebClientHintsType::kUAWoW64,
        WebFeature::kClientHintsUAWoW64},
       {network::mojom::WebClientHintsType::kSaveData,
        WebFeature::kClientHintsSaveData},
       {network::mojom::WebClientHintsType::kPrefersReducedMotion,
        WebFeature::kClientHintsPrefersReducedMotion},
+      {network::mojom::WebClientHintsType::kUAFormFactor,
+       WebFeature::kClientHintsUAFormFactor},
   };
 }
 

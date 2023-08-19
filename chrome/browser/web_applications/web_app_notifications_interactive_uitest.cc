@@ -98,7 +98,7 @@ class WebAppNotificationsBrowserTest : public WebAppControllerBrowserTest {
   std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;
 
   // Can be different from browser();
-  raw_ptr<Browser, DanglingUntriaged> app_browser_ = nullptr;
+  raw_ptr<Browser, AcrossTasksDanglingUntriaged> app_browser_ = nullptr;
 };
 
 #if BUILDFLAG(IS_CHROMEOS)

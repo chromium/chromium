@@ -24,7 +24,6 @@
 
 namespace gl {
 class GLContext;
-class GLImage;
 class GLSurface;
 }  // namespace gl
 
@@ -111,6 +110,9 @@ class GPU_GLES2_EXPORT DecoderContext : public AsyncAPIInterface,
   virtual void SetQueryCallback(unsigned int query_client_id,
                                 base::OnceClosure callback) = 0;
 
+  // Cancel and clear all in progress Callbacks.
+  virtual void CancelAllQueries() = 0;
+
   // Gets the GpuFenceManager for this context.
   virtual gles2::GpuFenceManager* GetGpuFenceManager() = 0;
 
@@ -148,20 +150,6 @@ class GPU_GLES2_EXPORT DecoderContext : public AsyncAPIInterface,
                             unsigned type,
                             const gfx::Rect& cleared_rect) = 0;
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
-  // Attaches |image| to the texture referred to by |client_texture_id|, marking
-  // the image as needing on-demand binding by the decoder.
-  virtual void AttachImageToTextureWithDecoderBinding(
-      uint32_t client_texture_id,
-      uint32_t texture_target,
-      gl::GLImage* image) = 0;
-#elif !BUILDFLAG(IS_ANDROID)
-  // Attaches |image| to the texture referred to by |client_texture_id|, marking
-  // the image as not needing on-demand binding by the decoder.
-  virtual void AttachImageToTextureWithClientBinding(uint32_t client_texture_id,
-                                                     uint32_t texture_target,
-                                                     gl::GLImage* image) = 0;
-#endif
   virtual base::WeakPtr<DecoderContext> AsWeakPtr() = 0;
 
   //

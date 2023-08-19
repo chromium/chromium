@@ -17,11 +17,8 @@
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/proximity_auth/screenlock_bridge.h"
-#include "components/account_id/account_id.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/prefs/pref_change_registrar.h"
 #include "components/session_manager/core/session_manager_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace user_manager {
 class User;
@@ -122,7 +119,8 @@ class InSessionPasswordSyncManager
   const raw_ptr<Profile, ExperimentalAsh> primary_profile_;
   UserContext user_context_;
   raw_ptr<const base::Clock, ExperimentalAsh> clock_;
-  const raw_ptr<const user_manager::User, ExperimentalAsh> primary_user_;
+  const raw_ptr<const user_manager::User, DanglingUntriaged | ExperimentalAsh>
+      primary_user_;
   ReauthenticationReason lock_screen_reauth_reason_ =
       ReauthenticationReason::kNone;
   raw_ptr<proximity_auth::ScreenlockBridge, ExperimentalAsh> screenlock_bridge_;

@@ -8,6 +8,7 @@
 #include "base/test/test_simple_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -152,8 +153,7 @@ class TooltipBrowserTest : public InProcessBrowserTest {
     gfx::NativeWindow root_window =
         browser()->window()->GetNativeWindow()->GetRootWindow();
     event_generator_ = std::make_unique<ui::test::EventGenerator>(root_window);
-    helper_ = std::make_unique<TooltipControllerTestHelper>(
-        static_cast<TooltipController*>(wm::GetTooltipClient(root_window)));
+    helper_ = std::make_unique<TooltipControllerTestHelper>(root_window);
     tooltip_monitor_ = std::make_unique<TooltipMonitor>();
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     helper()->AddObserver(tooltip_monitor_.get());
@@ -206,8 +206,8 @@ class TooltipBrowserTest : public InProcessBrowserTest {
 
  private:
   std::unique_ptr<ui::test::EventGenerator> event_generator_ = nullptr;
-  raw_ptr<RenderWidgetHostView, DanglingUntriaged> rwhv_ = nullptr;
-  raw_ptr<WebContents, DanglingUntriaged> web_contents_ = nullptr;
+  raw_ptr<RenderWidgetHostView, AcrossTasksDanglingUntriaged> rwhv_ = nullptr;
+  raw_ptr<WebContents, AcrossTasksDanglingUntriaged> web_contents_ = nullptr;
 
   std::unique_ptr<TooltipControllerTestHelper> helper_;
   std::unique_ptr<TooltipMonitor> tooltip_monitor_ = nullptr;
@@ -437,4 +437,31 @@ IN_PROC_BROWSER_TEST_F(TooltipBrowserTest,
 
   EXPECT_FALSE(tooltip_monitor()->IsWidgetActive());
   EXPECT_FALSE(helper()->IsTooltipVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(TooltipBrowserTest, ResetTooltipOnClosingWindow) {
+  NavigateToURL("/tooltip.html");
+
+  // Trigger the tooltip from the cursor.
+  gfx::Point position = WebContentPositionToScreenCoordinate(10, 10);
+  event_generator()->MoveMouseTo(position);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Sends mouse move event to Ash as well to make server side tooltip work.
+  EXPECT_TRUE(ui_controls::SendMouseMove(
+      position.x(), position.y(), browser()->window()->GetNativeWindow()));
+#endif
+  tooltip_monitor()->WaitUntilTooltipShown();
+  EXPECT_TRUE(helper()->IsTooltipVisible());
+
+  // Tooltip should be hidden on closing window.
+  chrome::CloseWindow(browser());
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Verify tooltip is closed.
+  // This is skipped on Lacros since tooltip_controller is destructed before
+  // receiving OnTooltipHiddenOnServer.
+  tooltip_monitor()->WaitUntilTooltipClosed();
+#endif
+
+  // Make sure Chrome won't crash during window destruction.
+  ui_test_utils::WaitForBrowserToClose();
 }

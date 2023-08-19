@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/memory/singleton.h"
 #include "content/public/common/content_switches.h"
+#include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/test/test_api_observer_registry.h"
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/browser/extension_system.h"
@@ -70,6 +71,20 @@ ExtensionFunction::ResponseAction TestLogFunction::Run() {
   absl::optional<Log::Params> params = Log::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   VLOG(1) << params->message;
+  return RespondNow(NoArguments());
+}
+
+TestOpenFileUrlFunction::~TestOpenFileUrlFunction() = default;
+
+ExtensionFunction::ResponseAction TestOpenFileUrlFunction::Run() {
+  absl::optional<api::test::OpenFileUrl::Params> params =
+      api::test::OpenFileUrl::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+  GURL file_url(params->url);
+  EXTENSION_FUNCTION_VALIDATE(file_url.is_valid());
+  EXTENSION_FUNCTION_VALIDATE(file_url.SchemeIsFile());
+
+  ExtensionsAPIClient::Get()->OpenFileUrl(file_url, browser_context());
   return RespondNow(NoArguments());
 }
 

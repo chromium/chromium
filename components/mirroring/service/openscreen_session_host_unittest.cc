@@ -142,6 +142,14 @@ std::string Stringify(const Json::Value& value) {
   return stream.str();
 }
 
+openscreen::cast::SenderStats ConstructDefaultSenderStats() {
+  return openscreen::cast::SenderStats{
+      .audio_statistics = openscreen::cast::SenderStats::StatisticsList(),
+      .audio_histograms = openscreen::cast::SenderStats::HistogramsList(),
+      .video_statistics = openscreen::cast::SenderStats::StatisticsList(),
+      .video_histograms = openscreen::cast::SenderStats::HistogramsList()};
+}
+
 }  // namespace
 
 class OpenscreenSessionHostTest : public mojom::ResourceProvider,
@@ -219,6 +227,10 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
     OnGetVideoCaptureHost();
   }
 
+  void GetVideoEncoderMetricsProvider(
+      mojo::PendingReceiver<media::mojom::VideoEncoderMetricsProvider> receiver)
+      override {}
+
   void GetNetworkContext(
       mojo::PendingReceiver<network::mojom::NetworkContext> receiver) override {
     network_context_ =
@@ -282,7 +294,8 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
 
   // Create a mirroring session. Expect to send OFFER message.
   void CreateSession(SessionType session_type,
-                     bool is_remote_playback = false) {
+                     bool is_remote_playback = false,
+                     bool enable_rtcp_reporting = false) {
     session_type_ = session_type;
     is_remote_playback_ = is_remote_playback;
     mojom::SessionParametersPtr session_params =
@@ -298,6 +311,9 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
     }
     if (force_letterboxing_) {
       session_params->force_letterboxing = true;
+    }
+    if (enable_rtcp_reporting) {
+      session_params->enable_rtcp_reporting = true;
     }
     session_params->is_remote_playback = is_remote_playback_;
     cast_mode_ = "mirroring";
@@ -889,6 +905,18 @@ TEST_F(OpenscreenSessionHostTest, ShouldEnableHardwareH264EncodingIfSupported) {
                                    config.use_hardware_encoder;
                           }));
 #endif
+}
+
+TEST_F(OpenscreenSessionHostTest, GetStatsDefault) {
+  CreateSession(SessionType::AUDIO_AND_VIDEO);
+  EXPECT_TRUE(session_host().GetMirroringStats().empty());
+}
+
+TEST_F(OpenscreenSessionHostTest, GetStatsEnabled) {
+  CreateSession(SessionType::AUDIO_AND_VIDEO, /* remote_playback */ false,
+                /* rtcp_reporting */ true);
+  session_host().SetSenderStatsForTest(ConstructDefaultSenderStats());
+  EXPECT_FALSE(session_host().GetMirroringStats().empty());
 }
 
 }  // namespace mirroring

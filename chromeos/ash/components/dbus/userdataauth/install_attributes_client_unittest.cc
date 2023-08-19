@@ -112,7 +112,7 @@ class InstallAttributesClientTest : public testing::Test {
     EXPECT_CALL(*proxy_.get(), DoCallMethod(_, _, _))
         .WillRepeatedly(
             Invoke(this, &InstallAttributesClientTest::OnCallMethod));
-    EXPECT_CALL(*proxy_.get(), CallMethodAndBlockWithErrorDetails(_, _, _))
+    EXPECT_CALL(*proxy_.get(), CallMethodAndBlock(_, _))
         .WillRepeatedly(
             Invoke(this, &InstallAttributesClientTest::OnBlockingCallMethod));
 
@@ -134,7 +134,7 @@ class InstallAttributesClientTest : public testing::Test {
   scoped_refptr<dbus::MockObjectProxy> proxy_;
 
   // Convenience pointer to the global instance.
-  raw_ptr<InstallAttributesClient, ExperimentalAsh> client_;
+  raw_ptr<InstallAttributesClient, DanglingUntriaged | ExperimentalAsh> client_;
 
   // The expected replies to the respective D-Bus calls.
   ::user_data_auth::InstallAttributesGetReply
@@ -211,11 +211,9 @@ class InstallAttributesClientTest : public testing::Test {
                                   std::move(response)));
   }
 
-  // Handles blocking call to |proxy_|'s `CallMethodAndBlockWithErrorDetails`.
-  std::unique_ptr<dbus::Response> OnBlockingCallMethod(
-      dbus::MethodCall* method_call,
-      int timeout_ms,
-      dbus::ScopedDBusError* error) {
+  // Handles blocking call to |proxy_|'s `CallMethodAndBlock`.
+  base::expected<std::unique_ptr<dbus::Response>, dbus::Error>
+  OnBlockingCallMethod(dbus::MethodCall* method_call, int timeout_ms) {
     std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
     dbus::MessageWriter writer(response.get());
     if (shall_message_parsing_fail_) {
@@ -245,7 +243,7 @@ class InstallAttributesClientTest : public testing::Test {
       LOG(FATAL) << "Unrecognized member: " << method_call->GetMember();
       return nullptr;
     }
-    return response;
+    return base::ok(std::move(response));
   }
 };
 

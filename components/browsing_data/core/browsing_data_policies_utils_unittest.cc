@@ -43,6 +43,7 @@ TEST(BrowsingDataPoliciesUtils, UpdateSyncTypesForBrowsingDataLifetime) {
           browsing_data_lifetime_value);
   const syncer::UserSelectableTypeSet expected_types = {
       syncer::UserSelectableType::kAutofill,
+      syncer::UserSelectableType::kPayments,
       syncer::UserSelectableType::kPreferences,
       syncer::UserSelectableType::kPasswords,
       syncer::UserSelectableType::kHistory,
@@ -77,6 +78,7 @@ TEST(BrowsingDataPoliciesUtils, UpdateSyncTypesForClearBrowsingDataOnExit) {
           clear_browsing_data_on_exit_value);
   const syncer::UserSelectableTypeSet expected_types = {
       syncer::UserSelectableType::kAutofill,
+      syncer::UserSelectableType::kPayments,
       syncer::UserSelectableType::kPreferences,
       syncer::UserSelectableType::kPasswords,
       syncer::UserSelectableType::kHistory,
@@ -103,4 +105,47 @@ TEST(BrowsingDataPoliciesUtils, NameToPolicyDataType) {
             browsing_data::PolicyDataType::kCookiesAndOtherSiteData);
   EXPECT_EQ(browsing_data::NameToPolicyDataType("cached_images_and_files"),
             browsing_data::PolicyDataType::kCachedImagesAndFiles);
+}
+
+// This test checks that all sync types currently available in Chrome are known
+// and properly handled.
+TEST(BrowsingDataPoliciesUtils, AllSyncTypesChecked) {
+  // Set policy value to all browsing data types to disable all sync types that
+  // might be disabled for the policy.
+  base::Value::List clear_browsing_data_list =
+      base::Value::List()
+          .Append("autofill")
+          .Append("password_signin")
+          .Append("browsing_history")
+          .Append("site_settings")
+          .Append("cached_images_and_files")
+          .Append("cookies_and_other_site_data")
+          .Append("hosted_app_data")
+          .Append("download_history");
+
+  base::Value clear_browsing_data_on_exit_value(
+      std::move(clear_browsing_data_list));
+
+  // The sync types that are known to never be disabled as a result of setting
+  // the policy.
+  syncer::UserSelectableTypeSet always_enabled_sync_types = {
+      syncer::UserSelectableType::kBookmarks,
+      syncer::UserSelectableType::kThemes,
+      syncer::UserSelectableType::kExtensions,
+      syncer::UserSelectableType::kApps,
+      syncer::UserSelectableType::kReadingList};
+
+  syncer::UserSelectableTypeSet sync_types =
+      browsing_data::GetSyncTypesForClearBrowsingData(
+          clear_browsing_data_on_exit_value);
+
+  // Every sync type should be mapped to a browsing-data type in
+  // `kDataToSyncTypesMap` in browsing_data_policies_utils.cc. If a sync type is
+  // not affected by any browsing-data type, it can be added to
+  // `always_enabled_sync_types` in this test.
+  for (const syncer::UserSelectableType sync_type :
+       syncer::UserSelectableTypeSet::All()) {
+    EXPECT_TRUE(sync_types.Has(sync_type) ||
+                always_enabled_sync_types.Has(sync_type));
+  }
 }

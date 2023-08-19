@@ -5,22 +5,32 @@
 </head>
 <body id="body">
 
-<span tabindex="0" id="test" role="unknownrole checkbox" aria-checked="true">test</span>
+<span tabindex="0" id="test1" role="unknownrole checkbox" aria-checked="true">test1</span>
+<!--known role with whitespace edge cases-->
+<span tabindex="0" id="test2" role="	button" data-testname="ignoring tab">test2</span>
+<span tabindex="0" id="test3" role="  button" data-testname="ignoring whitespace">test3</span>
+<span tabindex="0" id="test4" role="
+button" data-testname="ignoring line break">test4</span>
 
 <p id="description"></p>
 <div id="console"></div>
 
 <script>
-
     description("This tests that aria fallback roles work correctly.");
     if (window.accessibilityController) {
+        const snippets = [
+            ['test1', 'AXRole: AXCheckBox'],
+            ['test2', 'AXRole: AXButton'],
+            ['test3', 'AXRole: AXButton'],
+            ['test4', 'AXRole: AXButton'],
+        ];
 
-        if (window.accessibilityController) {
-
-            var test = document.getElementById("test");
+        for (var [id, expectedRole] of snippets) {
+            var test = document.getElementById(id);
             test.focus();
             test = accessibilityController.focusedElement;
 
+            shouldBe("test.role", "expectedRole");
             debug("Role should be: " + test.role);
         }
     }

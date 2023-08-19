@@ -4,25 +4,49 @@
 
 #include "chrome/browser/ash/url_handler.h"
 
-#include "ash/public/cpp/new_window_delegate.h"
 #include "base/debug/dump_without_crashing.h"
+#include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/os_url_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"
+
+namespace {
+crosapi::mojom::OpenUrlParams::WindowOpenDisposition GetDispositionForLacros(
+    WindowOpenDisposition disposition) {
+  switch (disposition) {
+    case WindowOpenDisposition::NEW_FOREGROUND_TAB:
+      return crosapi::mojom::OpenUrlParams::WindowOpenDisposition::
+          kNewForegroundTab;
+    case WindowOpenDisposition::NEW_WINDOW:
+      return crosapi::mojom::OpenUrlParams::WindowOpenDisposition::kNewWindow;
+    case WindowOpenDisposition::OFF_THE_RECORD:
+      return crosapi::mojom::OpenUrlParams::WindowOpenDisposition::
+          kOffTheRecord;
+    case WindowOpenDisposition::SINGLETON_TAB:
+    case WindowOpenDisposition::SWITCH_TO_TAB:
+      return crosapi::mojom::OpenUrlParams::WindowOpenDisposition::kSwitchToTab;
+    default:
+      // Others are currently not supported.
+      return crosapi::mojom::OpenUrlParams::WindowOpenDisposition::
+          kNewForegroundTab;
+  }
+}
+}  // namespace
 
 namespace ash {
 
 bool TryOpenUrl(const GURL& url,
                 WindowOpenDisposition disposition,
-                bool from_webui) {
-  if (!crosapi::browser_util::IsLacrosPrimaryBrowser()) {
-    // We're running neither Lacros-Primary nor Lacros-Only, nothing to do.
+                NavigateParams::PathBehavior path_behavior,
+                ChromeSchemeSemantics chrome_scheme_semantics) {
+  if (!crosapi::browser_util::IsLacrosEnabled()) {
     return false;
   }
 
@@ -30,6 +54,11 @@ bool TryOpenUrl(const GURL& url,
     // Kiosk sessions already hide the navigation bar and block window creation.
     // Moreover, they don't support SWAs which we might end up trying to run
     // below.
+    return false;
+  }
+
+  if (disposition == WindowOpenDisposition::CURRENT_TAB) {
+    // We don't intercept CURRENT_TAB navigations.
     return false;
   }
 
@@ -67,14 +96,13 @@ bool TryOpenUrl(const GURL& url,
   }
 
   // Forcibly open various URLs (mostly chrome://) in the OS_URL_HANDLER SWA.
-  const bool is_lacros_only = !crosapi::browser_util::IsAshWebBrowserEnabled();
-  if (is_lacros_only &&  // Terminal's tabs must remain in the Terminal SWA.
-                         // TODO(neis): Actually limit this exception to
-                         // Terminal if possible. Also, remove Terminal from
-                         // ChromeWebUIControllerFactory's
-                         // GetListOfAcceptableURLs or at least make
-                         // TryLaunchOsUrlHandler return false for it somehow.
-      !url.SchemeIs(content::kChromeUIUntrustedScheme) &&
+  // Terminal's tabs must remain in the Terminal SWA.
+  // TODO(neis): Actually limit this exception to Terminal if possible. Also,
+  // remove Terminal from ChromeWebUIControllerFactory's GetListOfAcceptableURLs
+  // or at least make TryLaunchOsUrlHandler return false for it somehow.
+  if (!url.SchemeIs(content::kChromeUIUntrustedScheme) &&
+      ((chrome_scheme_semantics == ChromeSchemeSemantics::kAsh) ||
+       !url.SchemeIs(content::kChromeUIScheme)) &&
       ash::TryLaunchOsUrlHandler(url)) {
     return true;
   }
@@ -88,31 +116,35 @@ bool TryOpenUrl(const GURL& url,
   // will have to be dealt with separately) as well as some existing links that
   // currently must remain in Ash.
   bool should_open_in_lacros =
-      (is_lacros_only || from_webui) &&
       !url.SchemeIs(content::kChromeDevToolsScheme) &&
-      !url.SchemeIs(content::kChromeUIScheme) &&
+      ((chrome_scheme_semantics == ChromeSchemeSemantics::kLacros) ||
+       !url.SchemeIs(content::kChromeUIScheme)) &&
       // Terminal's tabs must remain in Ash.
       !url.SchemeIs(content::kChromeUIUntrustedScheme) &&
       // OS Settings's Accessibility section links to chrome-extensions://
       // URLs for Text-to-Speech engines that are installed in Ash.
       !url.SchemeIs(extensions::kExtensionScheme);
+
   if (should_open_in_lacros) {
-    ash::NewWindowDelegate::GetPrimary()->OpenUrl(
-        url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
-        ash::NewWindowDelegate::Disposition::kNewForegroundTab);
+    auto lacros_disposition = GetDispositionForLacros(disposition);
+    if (lacros_disposition ==
+        crosapi::mojom::OpenUrlParams::WindowOpenDisposition::kSwitchToTab) {
+      crosapi::BrowserManager::Get()->SwitchToTab(url, path_behavior);
+    } else {
+      crosapi::BrowserManager::Get()->OpenUrl(
+          url, crosapi::mojom::OpenUrlFrom::kUnspecified, lacros_disposition);
+    }
     return true;
   }
 
-  // If Lacros is the only browser, we should get here only in exceptional
-  // cases. Some of these exceptions may not even be needed anymore. Record a
-  // crash dump for various cases so that we can better understand the
-  // situation. For now, continue as usual afterwards (i.e. don't handle the
-  // request here). We know that Terminal still needs to open Ash windows, no
-  // need to dump in that case.
-  if (is_lacros_only && !(url.SchemeIs(content::kChromeUIUntrustedScheme) &&
-                          url.has_host() && url.host() == "terminal")) {
-    SCOPED_CRASH_KEY_STRING32("ash", "OpenExternally",
-                              url.possibly_invalid_spec());
+  // We should get here only in exceptional cases. Some of these exceptions may
+  // not even be needed anymore. Record a crash dump for various cases so that
+  // we can better understand the situation. For now, continue as usual
+  // afterwards (i.e. don't handle the request here). We know that Terminal
+  // still needs to open Ash windows, no need to dump in that case.
+  if (!(url.SchemeIs(content::kChromeUIUntrustedScheme) && url.has_host() &&
+        url.host() == "terminal")) {
+    SCOPED_CRASH_KEY_STRING32("ash", "TryOpenUrl", url.possibly_invalid_spec());
     base::debug::DumpWithoutCrashing();
     LOG(WARNING) << "Allowing Ash window creation for url " << url;
   }

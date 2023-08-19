@@ -90,8 +90,8 @@ v8::MaybeLocal<v8::Context> OnCreateShadowRealmV8Context(
   context->UseDefaultSecurityToken();
 
   // Associate the Blink object with the v8::Context.
-  ScriptState* script_state = MakeGarbageCollected<ScriptState>(
-      context, world, shadow_realm_global_scope);
+  ScriptState* script_state =
+      ScriptState::Create(context, world, shadow_realm_global_scope);
 
   // Associate the Blink object with the v8::Objects.
   global_proxy = context->Global();

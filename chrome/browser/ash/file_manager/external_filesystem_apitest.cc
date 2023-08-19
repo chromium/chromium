@@ -55,9 +55,6 @@
 // The tests cover following external file system types:
 // - local (kFileSystemTypeLocalNative): a local file system on which files are
 //   accessed using native local path.
-// - restricted (kFileSystemTypeRestrictedLocalNative): a *read-only* local file
-//   system which can only be accessed by extensions that have full access to
-//   external file systems (i.e. extensions with fileManagerPrivate permission).
 //
 // The tests cover following scenarios:
 // - Performing file system operations on external file systems from an
@@ -81,7 +78,6 @@ namespace {
 // but the test will have to make sure the mount point is added before
 // starting a test extension using WaitUntilDriveMountPointIsAdded().
 constexpr char kLocalMountPointName[] = "local";
-constexpr char kRestrictedMountPointName[] = "restricted";
 
 // Default file content for the test files.
 constexpr char kTestFileContent[] = "This is some test content.";
@@ -174,8 +170,8 @@ constexpr const TestDirConfig kDefaultDirConfig[] = {
      ""},
 };
 
-// Sets up the initial file system state for native local and restricted native
-// local file systems. The hierarchy is the same as for the drive file system.
+// Sets up the initial file system state for native local file systems. The
+// hierarchy is the same as for the drive file system.
 // The directory is created at unique_temp_dir/|mount_point_name| path.
 bool InitializeLocalFileSystem(std::string mount_point_name,
                                base::ScopedTempDir* tmp_dir,
@@ -388,36 +384,6 @@ class LocalFileSystemExtensionApiTest : public FileSystemExtensionApiTestBase {
   base::FilePath mount_point_dir_;
 };
 
-// Tests for restricted native local file systems.
-class RestrictedFileSystemExtensionApiTest
-    : public FileSystemExtensionApiTestBase {
- public:
-  RestrictedFileSystemExtensionApiTest() = default;
-  ~RestrictedFileSystemExtensionApiTest() override = default;
-
-  // FileSystemExtensionApiTestBase override.
-  void InitTestFileSystem() override {
-    ASSERT_TRUE(InitializeLocalFileSystem(kRestrictedMountPointName, &tmp_dir_,
-                                          &mount_point_dir_,
-                                          GetTestDirContents()))
-        << "Failed to initialize file system.";
-  }
-
-  // FileSystemExtensionApiTestBase override.
-  void AddTestMountPoint() override {
-    EXPECT_TRUE(profile()->GetMountPoints()->RegisterFileSystem(
-        kRestrictedMountPointName, storage::kFileSystemTypeRestrictedLocal,
-        storage::FileSystemMountOption(), mount_point_dir_));
-    VolumeManager::Get(profile())->AddVolumeForTesting(
-        mount_point_dir_, VOLUME_TYPE_TESTING, ash::DeviceType::kUnknown,
-        true /* read_only */);
-  }
-
- private:
-  base::ScopedTempDir tmp_dir_;
-  base::FilePath mount_point_dir_;
-};
-
 // Tests for a drive file system.
 class DriveFileSystemExtensionApiTest : public FileSystemExtensionApiTestBase {
  public:
@@ -575,7 +541,8 @@ class MultiProfileDriveFileSystemExtensionApiTest
       create_drive_integration_service_;
   std::unique_ptr<DriveIntegrationServiceFactory::ScopedFactoryForTest>
       service_factory_for_test_;
-  raw_ptr<Profile, ExperimentalAsh> second_profile_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> second_profile_ =
+      nullptr;
   std::unordered_map<Profile*, std::unique_ptr<drive::FakeDriveFsHelper>>
       fake_drivefs_helpers_;
 };
@@ -750,17 +717,6 @@ IN_PROC_BROWSER_TEST_F(LocalFileSystemExtensionApiTest, DefaultFileHandler) {
 }
 
 //
-// RestrictedFileSystemExtensionApiTests.
-//
-IN_PROC_BROWSER_TEST_F(RestrictedFileSystemExtensionApiTest,
-                       FileSystemOperations) {
-  EXPECT_TRUE(RunFileSystemExtensionApiTest(
-      "file_browser/filesystem_operations_test",
-      FILE_PATH_LITERAL("manifest.json"), "", FLAGS_NONE))
-      << message_;
-}
-
-//
 // DriveFileSystemExtensionApiTests.
 //
 // This test is flaky. See https://crbug.com/1008880.
@@ -803,8 +759,10 @@ IN_PROC_BROWSER_TEST_F(DriveFileSystemExtensionApiTest, AppFileHandler) {
 }
 
 IN_PROC_BROWSER_TEST_F(DriveFileSystemExtensionApiTest, RetainEntry) {
-  ui::SelectFileDialog::SetFactory(new content::FakeSelectFileDialogFactory(
-      {drivefs_root_.GetPath().Append("drive-user/root/test_dir")}));
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<content::FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{
+              drivefs_root_.GetPath().Append("drive-user/root/test_dir")}));
   EXPECT_TRUE(RunFileSystemExtensionApiTest("file_browser/retain_entry",
                                             FILE_PATH_LITERAL("manifest.json"),
                                             "", FLAGS_NONE))

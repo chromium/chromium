@@ -47,6 +47,8 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
   // policy::PolicyValueAndStatusAggregator::Observer implementation.
   void OnPolicyValueAndStatusChanged() override;
 
+  void set_web_ui_for_test(content::WebUI* web_ui) { set_web_ui(web_ui); }
+
  protected:
   // ui::SelectFileDialog::Listener implementation.
   void FileSelected(const base::FilePath& path,
@@ -59,14 +61,17 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
   void HandleListenPoliciesUpdates(const base::Value::List& args);
   void HandleReloadPolicies(const base::Value::List& args);
   void HandleCopyPoliciesJson(const base::Value::List& args);
+  void HandleSetLocalTestPolicies(const base::Value::List& args);
+  void HandleRevertLocalTestPolicies(const base::Value::List& args);
+  void HandleRestartBrowser(const base::Value::List& args);
+  void HandleSetUserAffiliated(const base::Value::List& args);
+
 #if !BUILDFLAG(IS_CHROMEOS)
   void HandleUploadReport(const base::Value::List& args);
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
   // Handler functions for chrome://policy/logs.
   void HandleGetPolicyLogs(const base::Value::List& args);
-#endif  // BUILDFLAG(IS_ANDROID)
 
   // Send information about the current policy values to the UI. Information is
   // sent in two parts to the UI:
@@ -103,6 +108,11 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
       policy_value_and_status_observation_{this};
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+
+  uint32_t reload_policies_count_ = 0;
+  uint32_t export_to_json_count_ = 0;
+  uint32_t copy_to_json_count_ = 0;
+  uint32_t upload_report_count_ = 0;
 
   base::WeakPtrFactory<PolicyUIHandler> weak_factory_{this};
 };

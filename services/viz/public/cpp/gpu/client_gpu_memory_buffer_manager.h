@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
+#include "gpu/ipc/common/client_gmb_interface.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/public/mojom/gpu.mojom.h"
@@ -33,8 +34,9 @@ namespace viz {
 // mojom::GpuMemoryBufferFactory
 class ClientGpuMemoryBufferManager : public gpu::GpuMemoryBufferManager {
  public:
-  explicit ClientGpuMemoryBufferManager(
-      mojo::PendingRemote<mojom::GpuMemoryBufferFactory> gpu);
+  ClientGpuMemoryBufferManager(
+      mojo::PendingRemote<mojom::GpuMemoryBufferFactory> gpu,
+      mojo::PendingRemote<gpu::mojom::ClientGmbInterface> gpu_direct);
 
   ClientGpuMemoryBufferManager(const ClientGpuMemoryBufferManager&) = delete;
   ClientGpuMemoryBufferManager& operator=(const ClientGpuMemoryBufferManager&) =
@@ -44,7 +46,8 @@ class ClientGpuMemoryBufferManager : public gpu::GpuMemoryBufferManager {
 
  private:
   void InitThread(
-      mojo::PendingRemote<mojom::GpuMemoryBufferFactory> gpu_remote);
+      mojo::PendingRemote<mojom::GpuMemoryBufferFactory> gpu_remote,
+      mojo::PendingRemote<gpu::mojom::ClientGmbInterface> gpu_direct_remote);
   void TearDownThread();
   void DisconnectGpuOnThread();
   void AllocateGpuMemoryBufferOnThread(const gfx::Size& size,
@@ -77,11 +80,13 @@ class ClientGpuMemoryBufferManager : public gpu::GpuMemoryBufferManager {
   // TODO(sad): Explore the option of doing this from an existing thread.
   base::Thread thread_;
   mojo::Remote<mojom::GpuMemoryBufferFactory> gpu_;
+  mojo::Remote<gpu::mojom::ClientGmbInterface> gpu_direct_;
   base::WeakPtr<ClientGpuMemoryBufferManager> weak_ptr_;
   std::set<base::WaitableEvent*> pending_allocation_waiters_;
   std::unique_ptr<gpu::GpuMemoryBufferSupport> gpu_memory_buffer_support_;
 
   scoped_refptr<base::UnsafeSharedMemoryPool> pool_;
+  const bool use_client_gmb_interface_;
 
   base::WeakPtrFactory<ClientGpuMemoryBufferManager> weak_ptr_factory_{this};
 };

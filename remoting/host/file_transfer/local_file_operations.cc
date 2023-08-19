@@ -6,6 +6,7 @@
 
 #include <cstdint>
 
+#include "base/files/file_path.h"
 #include "base/files/file_proxy.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -17,9 +18,9 @@
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "remoting/base/result.h"
+#include "remoting/host/file_transfer/directory_helpers.h"
 #include "remoting/host/file_transfer/ensure_user.h"
 #include "remoting/host/file_transfer/file_chooser.h"
-#include "remoting/host/file_transfer/get_desktop_directory.h"
 #include "remoting/protocol/file_transfer_helpers.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -311,7 +312,7 @@ void LocalFileWriter::Open(const base::FilePath& filename, Callback callback) {
   file_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce([] {
         return EnsureUserContext().AndThen(
-            [](absl::monostate) { return GetDesktopDirectory(); });
+            [](absl::monostate) { return GetFileUploadDirectory(); });
       }),
       base::BindOnce(&LocalFileWriter::OnGetTargetDirectoryResult,
                      weak_ptr_factory_.GetWeakPtr(), filename,

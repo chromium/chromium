@@ -75,10 +75,6 @@ p.title {
   width: 12px;
 }
 
-.button-active-directory-auth {
-  margin: 26px 24px 0 26px;
-}
-
 #button-retry,
 #button-agree,
 #button-next {
@@ -201,21 +197,6 @@ p.title {
   text-align: start;
 }
 
-.section-active-directory-auth {
-  align-content: left;
-  padding: 64px 0 0 64px;
-  text-align: start;
-}
-
-.section-active-directory-auth-view {
-  border: 1px solid #e6e6e6;
-  color: rgba(0, 0, 0, 0.54);
-  flex: auto;
-  height: 305px;
-  margin: 40px 64px 0 auto;
-  overflow: hidden;
-}
-
 .section-buttons {
   height: 80px;
   padding: 0;
@@ -225,10 +206,6 @@ p.title {
 
 .section-buttons-box-shadow {
   box-shadow: 0 -1px 1px rgba(0, 0, 0, 0.14);
-}
-
-.section-active-directory-auth-buttons {
-  float: right;
 }
 
 .section-flex {
@@ -248,19 +225,6 @@ p.title {
   flex: auto;
   margin: 0 0 16px 0;
   padding: 0;
-}
-
-.text-active-directory-auth-title {
-  color: rgba(0, 0, 0, 0.87);
-  font-size: 28px;
-  font-weight: normal;
-  margin: 36px 64px 0 0; /* = 64 - font height*/
-}
-
-.text-active-directory-auth-subtitle {
-  color: rgba(0, 0, 0, 0.87);
-  font-size: 13px;
-  margin: 23px 64px 0 0; /* = 40 - 4 (adjustment) - line-height */
 }
 
 .text-status {

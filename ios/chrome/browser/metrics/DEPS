@@ -1,3 +1,17 @@
+include_rules = [
+  "+ios/chrome/browser/history",
+  "+ios/chrome/browser/sync",
+  "+ios/chrome/browser/sessions",
+  "+ios/chrome/browser/prerender",
+  "+ios/chrome/browser/ntp/features.h",
+  "+ios/chrome/browser/variations",
+  "+ios/chrome/browser/crash_report",
+  "+ios/chrome/browser/voice",
+  "+ios/chrome/browser/tabs",
+  "+ios/chrome/browser/translate",
+  "+ios/chrome/browser/signin",
+]
+
 specific_include_rules = {
   # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
   # TODO:(crbug.com/891834) Remove this exception.
@@ -18,10 +32,11 @@ specific_include_rules = {
 
   # TODO(crbug.com/1294160): Remove these dependencies.
   "^incognito_usage_app_state_agent.mm": [
-    "+ios/chrome/browser/ui/main/scene_state.h",
+    "+ios/chrome/browser/shared/coordinator/scene/scene_state.h",
   ],
   "^ios_chrome_default_browser_metrics_provider.mm": [
     "+ios/chrome/browser/ui/default_promo/default_browser_utils.h",
+    "+ios/chrome/browser/default_browser/utils.h",
   ],
   "^ios_chrome_metrics_service_client.mm": [
     "+ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h",

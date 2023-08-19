@@ -32,6 +32,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
@@ -49,6 +50,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -144,6 +146,7 @@ WebURLResponse WebURLResponse::Create(
   response.SetConnectionReused(head.load_timing.socket_reused);
   response.SetWasFetchedViaSPDY(head.was_fetched_via_spdy);
   response.SetWasFetchedViaServiceWorker(head.was_fetched_via_service_worker);
+  response.SetDidUseSharedDictionary(head.did_use_shared_dictionary);
   response.SetServiceWorkerResponseSource(head.service_worker_response_source);
   response.SetType(head.response_type);
   response.SetPadding(head.padding);
@@ -201,7 +204,7 @@ WebURLResponse WebURLResponse::Create(
   response.SetWasCookieInRequest(head.was_cookie_in_request);
   response.SetRecursivePrefetchToken(head.recursive_prefetch_token);
   response.SetWebBundleURL(KURL(head.web_bundle_url));
-  response.SetTriggerVerification(head.trigger_verification);
+  response.SetTriggerVerifications(head.trigger_verifications);
 
   SetSecurityStyleAndDetails(GURL(KURL(url)), head, &response,
                              report_security_info);
@@ -343,9 +346,13 @@ void WebURLResponse::SetLoadTiming(
   resource_response_->SetResourceLoadTiming(std::move(timing));
 }
 
-void WebURLResponse::SetTriggerVerification(
-    const absl::optional<network::TriggerVerification>& trigger_verification) {
-  resource_response_->SetTriggerVerification(trigger_verification);
+void WebURLResponse::SetTriggerVerifications(
+    const std::vector<network::TriggerVerification>& trigger_verifications) {
+  WTF::Vector<network::TriggerVerification> verifications;
+  for (const auto& verification : trigger_verifications) {
+    verifications.push_back(verification);
+  }
+  resource_response_->SetTriggerVerifications(std::move(verifications));
 }
 
 base::Time WebURLResponse::ResponseTime() const {
@@ -501,6 +508,10 @@ WebURLResponse::GetServiceWorkerResponseSource() const {
 void WebURLResponse::SetServiceWorkerResponseSource(
     network::mojom::FetchResponseSource value) {
   resource_response_->SetServiceWorkerResponseSource(value);
+}
+
+void WebURLResponse::SetDidUseSharedDictionary(bool did_use_shared_dictionary) {
+  resource_response_->SetDidUseSharedDictionary(did_use_shared_dictionary);
 }
 
 void WebURLResponse::SetType(network::mojom::FetchResponseType value) {

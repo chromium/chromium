@@ -100,7 +100,7 @@ class PasswordSaveManager {
   // PasswordForm returned by GetPendingCredentials() and stores it in the
   // profile store. This is relevant only for account store users.
   virtual void BlockMovingToAccountStoreFor(
-      const autofill::GaiaIdHash& gaia_id_hash) = 0;
+      const signin::GaiaIdHash& gaia_id_hash) = 0;
 
   // Updates the submission indicator event for pending credentials at the
   // moment of submisison detection.

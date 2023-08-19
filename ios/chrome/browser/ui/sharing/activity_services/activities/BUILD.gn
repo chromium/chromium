@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("activities") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "bookmark_activity.h",
     "bookmark_activity.mm",
@@ -45,7 +44,6 @@ source_set("activities") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "bookmark_activity_unittest.mm",

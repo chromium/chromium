@@ -149,6 +149,14 @@ found in the LICENSE file.
             android:layout="@layout/status_indicator_container" />
 
         <ViewStub
+            android:id="@+id/readaloud_mini_player_stub"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|bottom"
+            android:inflatedId="@+id/readaloud_mini_player"
+            android:layout="@layout/readaloud_mini_player_layout" />
+
+        <ViewStub
             android:id="@+id/page_insights_hub_container_stub"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -179,13 +187,6 @@ found in the LICENSE file.
             android:layout_marginBottom="@dimen/page_zoom_view_margins"
             android:inflatedId="@+id/page_zoom_layout"
             android:layout="@layout/page_zoom_view" />
-
-        <ViewStub
-            android:id="@+id/quick_delete_animation_stub"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout="@layout/quick_delete_animation_view"
-            android:inflatedId="@+id/quick_delete_animation_layout"/>
 
     </org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer>
 

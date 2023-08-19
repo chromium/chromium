@@ -2,6 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# @generated from third_party/rust/BUILD.gn.hbs by tools/crates/gnrt.
+# Do not edit!
+
 import("//build/rust/cargo_crate.gni")
 
 cargo_crate("lib") {
@@ -13,10 +16,44 @@ cargo_crate("lib") {
   # third_party.toml to use it from first-party code.
   visibility = [ "//third_party/rust/*" ]
   crate_root = "crate/src/lib.rs"
+  sources = [
+    "//third_party/rust/regex_syntax/v0_6/crate/benches/bench.rs",
+    "//third_party/rust/regex_syntax/v0_6/crate/src/ast/mod.rs",
+    "//third_party/rust/regex_syntax/v0_6/crate/src/ast/parse.rs",
+    "//third_party/rust/regex_syntax/v0_6/crate/src/ast/print.rs",
+    "//third_party/rust/regex_syntax/v0_6/crate/src/ast/visitor.rs",
+    "//third_party/rust/regex_syntax/v0_6/crate/src/either.rs",
+    "//third_party/rust/regex_syntax/v0_6/crate/src/error.rs",
+    "//third_party/rust/regex_syntax/v0_6/crate/src/hir/interval.rs",
+    "//third_party/rust/regex_syntax/v0_6/crate/src/hir/literal/mod.rs",
+    "//third_party/rust/regex_syntax/v0_6/crate/src/hir/mod.rs",
+    "//third_party/rust/regex_syntax/v0_6/crate/src/hir/print.rs",
+    "//third_party/rust/regex_syntax/v0_6/crate/src/hir/translate.rs",
+    "//third_party/rust/regex_syntax/v0_6/crate/src/hir/visitor.rs",
+    "//third_party/rust/regex_syntax/v0_6/crate/src/lib.rs",
+    "//third_party/rust/regex_syntax/v0_6/crate/src/parser.rs",
+    "//third_party/rust/regex_syntax/v0_6/crate/src/unicode.rs",
+    "//third_party/rust/regex_syntax/v0_6/crate/src/unicode_tables/age.rs",
+    "//third_party/rust/regex_syntax/v0_6/crate/src/unicode_tables/case_folding_simple.rs",
+    "//third_party/rust/regex_syntax/v0_6/crate/src/unicode_tables/general_category.rs",
+    "//third_party/rust/regex_syntax/v0_6/crate/src/unicode_tables/grapheme_cluster_break.rs",
+    "//third_party/rust/regex_syntax/v0_6/crate/src/unicode_tables/mod.rs",
+    "//third_party/rust/regex_syntax/v0_6/crate/src/unicode_tables/perl_decimal.rs",
+    "//third_party/rust/regex_syntax/v0_6/crate/src/unicode_tables/perl_space.rs",
+    "//third_party/rust/regex_syntax/v0_6/crate/src/unicode_tables/perl_word.rs",
+    "//third_party/rust/regex_syntax/v0_6/crate/src/unicode_tables/property_bool.rs",
+    "//third_party/rust/regex_syntax/v0_6/crate/src/unicode_tables/property_names.rs",
+    "//third_party/rust/regex_syntax/v0_6/crate/src/unicode_tables/property_values.rs",
+    "//third_party/rust/regex_syntax/v0_6/crate/src/unicode_tables/script.rs",
+    "//third_party/rust/regex_syntax/v0_6/crate/src/unicode_tables/script_extension.rs",
+    "//third_party/rust/regex_syntax/v0_6/crate/src/unicode_tables/sentence_break.rs",
+    "//third_party/rust/regex_syntax/v0_6/crate/src/unicode_tables/word_break.rs",
+    "//third_party/rust/regex_syntax/v0_6/crate/src/utf8.rs",
+  ]
+  inputs = [ "//third_party/rust/regex_syntax/v0_6/crate/README.md" ]
 
   # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
-  sources = [ "crate/src/lib.rs" ]
   edition = "2018"
   cargo_pkg_version = "0.6.27"
   cargo_pkg_authors = "The Rust Project Developers"

@@ -30,6 +30,7 @@ source_set("navigation") {
     "//ios/web/public/js_messaging",
     "//ios/web/public/security",
     "//ios/web/public/session",
+    "//ios/web/public/session/proto",
     "//ios/web/security",
     "//ios/web/session",
     "//ios/web/web_state:user_interaction",
@@ -55,12 +56,8 @@ source_set("navigation") {
     "crw_wk_navigation_handler.mm",
     "crw_wk_navigation_states.h",
     "crw_wk_navigation_states.mm",
-    "navigation_item_storage_builder.h",
-    "navigation_item_storage_builder.mm",
     "serializable_user_data_manager_impl.h",
     "serializable_user_data_manager_impl.mm",
-    "session_storage_builder.h",
-    "session_storage_builder.mm",
     "url_schemes.mm",
     "web_kit_constants.cc",
     "web_kit_constants.h",
@@ -71,8 +68,6 @@ source_set("navigation") {
     "wk_navigation_action_util.h",
     "wk_navigation_action_util.mm",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("core") {
@@ -110,8 +105,6 @@ source_set("core") {
     "time_smoother.cc",
     "time_smoother.h",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("navigation_feature") {
@@ -127,7 +120,6 @@ source_set("navigation_feature") {
     "navigation_java_script_feature.h",
     "navigation_java_script_feature.mm",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 optimize_ts("navigation_js") {
@@ -165,7 +157,6 @@ source_set("session_restore_feature") {
     "session_restore_java_script_feature.h",
     "session_restore_java_script_feature.mm",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("wk_navigation_util") {
@@ -184,8 +175,6 @@ source_set("wk_navigation_util") {
     "wk_navigation_util.h",
     "wk_navigation_util.mm",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("navigation_manager_util") {
@@ -199,8 +188,6 @@ source_set("navigation_manager_util") {
     "navigation_manager_util.h",
     "navigation_manager_util.mm",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("proto_util") {
@@ -214,6 +201,4 @@ source_set("proto_util") {
     "proto_util.h",
     "proto_util.mm",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

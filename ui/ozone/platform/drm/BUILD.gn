@@ -207,6 +207,8 @@ source_set("gbm_unittests") {
     "gpu/hardware_display_plane_manager_unittest.cc",
     "gpu/mock_drm_device.cc",
     "gpu/mock_drm_device.h",
+    "gpu/mock_drm_modifiers_filter.cc",
+    "gpu/mock_drm_modifiers_filter.h",
     "gpu/proxy_helpers_unittest.cc",
     "gpu/screen_manager_unittest.cc",
   ]
@@ -222,7 +224,7 @@ source_set("gbm_unittests") {
     # the system.
     "//third_party/libdrm",
     "//ui/base/ime",
-    "//ui/display/fake:fake",
+    "//ui/display:test_support",
     "//ui/gfx",
     "//ui/gfx/linux:drm",
     "//ui/gfx/linux:gbm",

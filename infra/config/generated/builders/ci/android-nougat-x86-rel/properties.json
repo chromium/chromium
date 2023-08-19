@@ -44,6 +44,10 @@
         {
           "builder": "android-nougat-x86-rel",
           "group": "tryserver.chromium.android"
+        },
+        {
+          "builder": "android-nougat-x86-siso-rel",
+          "group": "tryserver.chromium.android"
         }
       ]
     }
@@ -51,7 +55,8 @@
   "$build/reclient": {
     "instance": "rbe-chromium-trusted",
     "jobs": 500,
-    "metrics_project": "chromium-reclient-metrics"
+    "metrics_project": "chromium-reclient-metrics",
+    "scandeps_server": true
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],

@@ -13,6 +13,7 @@
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/common/password_manager_ui.h"
 
 using password_manager::PasswordForm;
 using password_manager::PasswordFormManagerForUI;
@@ -178,14 +179,15 @@ void ManagePasswordsState::OnPasswordMovable(
 
 void ManagePasswordsState::TransitionToState(
     password_manager::ui::State state) {
-  DCHECK_NE(password_manager::ui::INACTIVE_STATE, state_);
-  DCHECK(state == password_manager::ui::MANAGE_STATE ||
-         state == password_manager::ui::PASSWORD_UPDATED_SAFE_STATE ||
-         state == password_manager::ui::PASSWORD_UPDATED_MORE_TO_FIX ||
-         state ==
-             password_manager::ui::BIOMETRIC_AUTHENTICATION_FOR_FILLING_STATE ||
-         state ==
-             password_manager::ui::BIOMETRIC_AUTHENTICATION_CONFIRMATION_STATE)
+  CHECK_NE(password_manager::ui::INACTIVE_STATE, state_);
+  CHECK(state == password_manager::ui::MANAGE_STATE ||
+        state == password_manager::ui::PASSWORD_UPDATED_SAFE_STATE ||
+        state == password_manager::ui::PASSWORD_UPDATED_MORE_TO_FIX ||
+        state ==
+            password_manager::ui::BIOMETRIC_AUTHENTICATION_FOR_FILLING_STATE ||
+        state ==
+            password_manager::ui::BIOMETRIC_AUTHENTICATION_CONFIRMATION_STATE ||
+        state == password_manager::ui::NOTIFY_RECEIVED_SHARED_CREDENTIALS)
       << state_;
   if (state_ == password_manager::ui::CREDENTIAL_REQUEST_STATE) {
     if (!credentials_callback_.is_null()) {

@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/components/network/network_handler.h"
 
+#include <memory>
+
 #include "ash/constants/ash_features.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/network/auto_connect_handler.h"
@@ -29,7 +31,6 @@
 #include "chromeos/ash/components/network/metrics/cellular_network_metrics_logger.h"
 #include "chromeos/ash/components/network/metrics/connection_info_metrics_logger.h"
 #include "chromeos/ash/components/network/metrics/esim_policy_login_metrics_logger.h"
-#include "chromeos/ash/components/network/metrics/hidden_network_metrics_helper.h"
 #include "chromeos/ash/components/network/metrics/hotspot_feature_usage_metrics.h"
 #include "chromeos/ash/components/network/metrics/hotspot_metrics_helper.h"
 #include "chromeos/ash/components/network/metrics/vpn_network_metrics_helper.h"
@@ -49,6 +50,7 @@
 #include "chromeos/ash/components/network/proxy/ui_proxy_config_service.h"
 #include "chromeos/ash/components/network/stub_cellular_networks_provider.h"
 #include "chromeos/ash/components/network/technology_state_controller.h"
+#include "chromeos/ash/components/network/text_message_provider.h"
 
 namespace ash {
 
@@ -75,12 +77,9 @@ NetworkHandler::NetworkHandler()
   managed_cellular_pref_handler_.reset(new ManagedCellularPrefHandler());
   cellular_metrics_logger_.reset(new CellularMetricsLogger());
   connection_info_metrics_logger_.reset(new ConnectionInfoMetricsLogger());
-  hidden_network_metrics_helper_.reset(new HiddenNetworkMetricsHelper());
   hotspot_allowed_flag_handler_.reset(new HotspotAllowedFlagHandler());
   vpn_network_metrics_helper_.reset(new VpnNetworkMetricsHelper());
-  if (base::FeatureList::IsEnabled(features::kHiddenNetworkMigration)) {
-    hidden_network_handler_.reset(new HiddenNetworkHandler());
-  }
+  hidden_network_handler_.reset(new HiddenNetworkHandler());
   if (ash::features::IsHotspotEnabled()) {
     enterprise_managed_metadata_store_.reset(
         new EnterpriseManagedMetadataStore());
@@ -100,6 +99,9 @@ NetworkHandler::NetworkHandler()
   network_activation_handler_.reset(new NetworkActivationHandlerImpl());
   prohibited_technologies_handler_.reset(new ProhibitedTechnologiesHandler());
   network_sms_handler_.reset(new NetworkSmsHandler());
+  if (features::IsSuppressTextMessagesEnabled()) {
+    text_message_provider_.reset(new TextMessageProvider());
+  }
   geolocation_handler_.reset(new GeolocationHandler());
 }
 
@@ -128,7 +130,7 @@ void NetworkHandler::Init() {
       cellular_policy_handler_.get(), managed_cellular_pref_handler_.get(),
       network_state_handler_.get(), network_profile_handler_.get(),
       network_configuration_handler_.get(), network_device_handler_.get(),
-      prohibited_technologies_handler_.get());
+      prohibited_technologies_handler_.get(), hotspot_controller_.get());
   network_connection_handler_->Init(
       network_state_handler_.get(), network_configuration_handler_.get(),
       managed_network_configuration_handler_.get(),
@@ -144,13 +146,11 @@ void NetworkHandler::Init() {
       network_state_handler_.get());
   cellular_policy_handler_->Init(
       cellular_esim_profile_handler_.get(), cellular_esim_installer_.get(),
-      network_profile_handler_.get(), network_state_handler_.get(),
-      managed_cellular_pref_handler_.get(),
+      cellular_inhibitor_.get(), network_profile_handler_.get(),
+      network_state_handler_.get(), managed_cellular_pref_handler_.get(),
       managed_network_configuration_handler_.get());
-  if (base::FeatureList::IsEnabled(features::kHiddenNetworkMigration)) {
-    hidden_network_handler_->Init(managed_network_configuration_handler_.get(),
-                                  network_state_handler_.get());
-  }
+  hidden_network_handler_->Init(managed_network_configuration_handler_.get(),
+                                network_state_handler_.get());
   hotspot_allowed_flag_handler_->Init();
   if (ash::features::IsHotspotEnabled()) {
     hotspot_capabilities_provider_->Init(network_state_handler_.get());
@@ -181,7 +181,6 @@ void NetworkHandler::Init() {
                                  managed_network_configuration_handler_.get());
   connection_info_metrics_logger_->Init(network_state_handler_.get(),
                                         network_connection_handler_.get());
-  hidden_network_metrics_helper_->Init(network_configuration_handler_.get());
   vpn_network_metrics_helper_->Init(network_configuration_handler_.get());
   if (client_cert_resolver_) {
     client_cert_resolver_->Init(network_state_handler_.get(),
@@ -197,6 +196,9 @@ void NetworkHandler::Init() {
       managed_network_configuration_handler_.get(),
       network_state_handler_.get(), technology_state_controller_.get());
   network_sms_handler_->Init();
+  if (features::IsSuppressTextMessagesEnabled()) {
+    text_message_provider_->Init(network_sms_handler_.get());
+  }
   geolocation_handler_->Init();
 }
 
@@ -238,24 +240,21 @@ void NetworkHandler::InitializePrefServices(
       ui_proxy_config_service_.get());
   network_metadata_store_.reset(new NetworkMetadataStore(
       network_configuration_handler_.get(), network_connection_handler_.get(),
-      network_state_handler_.get(), logged_in_profile_prefs, device_prefs,
-      is_enterprise_managed_));
+      network_state_handler_.get(),
+      managed_network_configuration_handler_.get(), logged_in_profile_prefs,
+      device_prefs, is_enterprise_managed_));
   cellular_network_metrics_logger_.reset(new CellularNetworkMetricsLogger(
       network_state_handler_.get(), network_metadata_store_.get(),
       connection_info_metrics_logger_.get()));
-  if (base::FeatureList::IsEnabled(ash::features::kHiddenNetworkMigration)) {
-    hidden_network_handler_->SetNetworkMetadataStore(
-        network_metadata_store_.get());
-  }
+  hidden_network_handler_->SetNetworkMetadataStore(
+      network_metadata_store_.get());
 }
 
 void NetworkHandler::ShutdownPrefServices() {
   cellular_esim_profile_handler_->SetDevicePrefs(nullptr);
   managed_cellular_pref_handler_->SetDevicePrefs(nullptr);
   ui_proxy_config_service_.reset();
-  if (base::FeatureList::IsEnabled(ash::features::kHiddenNetworkMigration)) {
-    hidden_network_handler_->SetNetworkMetadataStore(nullptr);
-  }
+  hidden_network_handler_->SetNetworkMetadataStore(nullptr);
   network_metadata_store_.reset();
 }
 
@@ -306,7 +305,6 @@ TechnologyStateController* NetworkHandler::technology_state_controller() {
 }
 
 HiddenNetworkHandler* NetworkHandler::hidden_network_handler() {
-  DCHECK(base::FeatureList::IsEnabled(features::kHiddenNetworkMigration));
   return hidden_network_handler_.get();
 }
 
@@ -369,6 +367,10 @@ NetworkMetadataStore* NetworkHandler::network_metadata_store() {
 
 NetworkSmsHandler* NetworkHandler::network_sms_handler() {
   return network_sms_handler_.get();
+}
+
+TextMessageProvider* NetworkHandler::text_message_provider() {
+  return text_message_provider_.get();
 }
 
 GeolocationHandler* NetworkHandler::geolocation_handler() {

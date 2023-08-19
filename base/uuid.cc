@@ -61,19 +61,6 @@ std::string GetCanonicalUuidInternal(StringPieceType input, bool strict) {
 
 }  // namespace
 
-std::string GenerateUuid() {
-  Uuid uuid = Uuid::GenerateRandomV4();
-  return uuid.AsLowercaseString();
-}
-
-bool IsValidUuid(StringPiece input) {
-  return !GetCanonicalUuidInternal(input, /*strict=*/false).empty();
-}
-
-bool IsValidUuidOutputString(StringPiece input) {
-  return !GetCanonicalUuidInternal(input, /*strict=*/true).empty();
-}
-
 // static
 Uuid Uuid::GenerateRandomV4() {
   uint8_t sixteen_bytes[kGuidV4InputLength];
@@ -194,18 +181,6 @@ bool Uuid::operator>=(const Uuid& other) const {
 
 std::ostream& operator<<(std::ostream& out, const Uuid& uuid) {
   return out << uuid.AsLowercaseString();
-}
-
-std::string GenerateGUID() {
-  return GenerateUuid();
-}
-
-bool IsValidGUID(StringPiece input) {
-  return IsValidUuid(input);
-}
-
-bool IsValidGUIDOutputString(StringPiece input) {
-  return IsValidUuidOutputString(input);
 }
 
 }  // namespace base

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<body>
+<p>Clicking on the right side of slider should cause the thumb to move for vertical range input.</p>
+<input id="slider" type="range" style="width: 10px; margin: 0; writing-mode: vertical-lr" min="1" max="3">
+<div id="results"></div>
+<script>
+// Force a layout so the slider starts with the default width.
+document.body.offsetHeight;
+
+if (window.testRunner) {
+    testRunner.dumpAsText();
+}
+
+window.onload = function() {
+    document.getElementById("slider").style.heigth = "100%";
+    changeAndCheckRangeValue();
+};
+
+function changeAndCheckRangeValue()
+{
+    if (!window.testRunner)
+        return;
+
+    // Click on the top side of the slider.  This should cause the thumb to move to the top (max value).
+    var slider = document.getElementById("slider");
+    var x = slider.offsetLeft + (slider.clientWidth / 2);
+    var y = slider.offsetTop + (slider.clientHeight * .25);
+    eventSender.mouseMoveTo(x, y);
+    eventSender.mouseDown();
+    eventSender.mouseUp();
+
+    document.getElementById("results").innerText = (slider.value == 3) ? "PASSED" : "FAILED";
+}
+
+</script>
+</body>
+</html>

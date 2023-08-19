@@ -10,6 +10,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
@@ -23,7 +24,9 @@ struct FilterPair;
 
 using FilterValues = base::flat_map<std::string, std::vector<std::string>>;
 
-using FiltersDisjunction = std::vector<FilterValues>;
+class FilterConfig;
+
+using FiltersDisjunction = std::vector<FilterConfig>;
 
 // Set on sources.
 class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) FilterData {
@@ -50,9 +53,14 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) FilterData {
 
   base::Value::Dict ToJson() const;
 
-  bool Matches(mojom::SourceType, const FilterPair&) const;
+  bool Matches(mojom::SourceType,
+               const base::Time& source_time,
+               const base::Time& trigger_time,
+               const FilterPair&) const;
 
   bool MatchesForTesting(mojom::SourceType,
+                         const base::Time& source_time,
+                         const base::Time& trigger_time,
                          const FiltersDisjunction&,
                          bool negated) const;
 
@@ -60,6 +68,8 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) FilterData {
   explicit FilterData(FilterValues);
 
   bool Matches(mojom::SourceType,
+               const base::Time& source_time,
+               const base::Time& trigger_time,
                const FiltersDisjunction&,
                bool negated) const;
 
@@ -86,6 +96,36 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) FilterPair {
       base::Value::Dict&);
 
   void SerializeIfNotEmpty(base::Value::Dict&) const;
+};
+
+class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) FilterConfig {
+ public:
+  static constexpr char kLookbackWindowKey[] = "_lookback_window";
+
+  // If set, FilterConfig's `lookback_window` must be positive.
+  static absl::optional<FilterConfig> Create(
+      FilterValues,
+      absl::optional<base::TimeDelta> lookback_window = absl::nullopt);
+
+  FilterConfig();
+  ~FilterConfig();
+
+  FilterConfig(const FilterConfig&);
+  FilterConfig(FilterConfig&&);
+
+  FilterConfig& operator=(const FilterConfig&);
+  FilterConfig& operator=(FilterConfig&&);
+
+  const absl::optional<base::TimeDelta>& lookback_window() const {
+    return lookback_window_;
+  }
+  const FilterValues& filter_values() const { return filter_values_; }
+
+ private:
+  explicit FilterConfig(FilterValues,
+                        absl::optional<base::TimeDelta> lookback_window);
+  absl::optional<base::TimeDelta> lookback_window_;
+  FilterValues filter_values_;
 };
 
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)

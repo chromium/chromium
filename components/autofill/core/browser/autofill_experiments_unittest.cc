@@ -31,8 +31,6 @@ class AutofillExperimentsTest : public testing::Test {
 
  protected:
   void SetUp() override {
-    pref_service_.registry()->RegisterBooleanPref(
-        prefs::kAutofillWalletImportEnabled, true);
     pref_service_.registry()->RegisterBooleanPref(prefs::kAutofillHasSeenIban,
                                                   false);
     log_manager_ = LogManager::Create(nullptr, base::NullCallback());
@@ -52,9 +50,9 @@ class AutofillExperimentsTest : public testing::Test {
   bool IsCreditCardUploadEnabled(const std::string& user_email,
                                  const std::string& user_country,
                                  const AutofillSyncSigninState sync_state) {
-    return autofill::IsCreditCardUploadEnabled(&pref_service_, &sync_service_,
-                                               user_email, user_country,
-                                               sync_state, log_manager_.get());
+    return autofill::IsCreditCardUploadEnabled(&sync_service_, user_email,
+                                               user_country, sync_state,
+                                               log_manager_.get());
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -148,7 +146,8 @@ TEST_F(AutofillExperimentsTest,
        IsCardUploadEnabled_SyncDoesNotHaveAutofillProfileActiveType) {
   sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
-      /*types=*/{syncer::UserSelectableType::kAutofill});
+      /*types=*/{syncer::UserSelectableType::kAutofill,
+                 syncer::UserSelectableType::kPayments});
   sync_service_.SetFailedDataTypes({syncer::AUTOFILL_PROFILE});
   EXPECT_FALSE(IsCreditCardUploadEnabled(
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
@@ -177,17 +176,21 @@ TEST_F(AutofillExperimentsTest,
       autofill_metrics::CardUploadEnabled::kUsingExplicitSyncPassphrase, 1);
 }
 
-TEST_F(AutofillExperimentsTest,
-       IsCardUploadEnabled_AutofillWalletImportEnabledPrefIsDisabled) {
-  prefs::SetPaymentsIntegrationEnabled(&pref_service_, false);
+TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_PaymentsTypeNotSelected) {
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, syncer::UserSelectableTypeSet());
   EXPECT_FALSE(IsCreditCardUploadEnabled(
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled",
-      autofill_metrics::CardUploadEnabled::kPaymentsIntegrationDisabled, 1);
+      autofill_metrics::CardUploadEnabled::
+          kSyncServiceMissingAutofillWalletDataActiveType,
+      1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled.SignedInAndSyncFeatureEnabled",
-      autofill_metrics::CardUploadEnabled::kPaymentsIntegrationDisabled, 1);
+      autofill_metrics::CardUploadEnabled::
+          kSyncServiceMissingAutofillWalletDataActiveType,
+      1);
 }
 
 TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_EmptyUserEmail) {
@@ -226,7 +229,8 @@ TEST_F(
 
   sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
-      /*types=*/{syncer::UserSelectableType::kAutofill});
+      /*types=*/{syncer::UserSelectableType::kAutofill,
+                 syncer::UserSelectableType::kPayments});
   sync_service_.SetFailedDataTypes({syncer::AUTOFILL_PROFILE});
 
   EXPECT_TRUE(IsCreditCardUploadEnabled(
@@ -363,7 +367,6 @@ TEST_F(AutofillExperimentsTest,
 }
 
 TEST_F(AutofillExperimentsTest, ShouldShowIbanOnSettingsPage_FeatureEnabled) {
-  scoped_feature_list_.InitAndEnableFeature(features::kAutofillFillIbanFields);
   // Use a supported country to verify the feature is enabled.
   EXPECT_TRUE(ShouldShowIbanOnSettingsPage("AE", &pref_service_));
 
@@ -376,12 +379,13 @@ TEST_F(AutofillExperimentsTest, ShouldShowIbanOnSettingsPage_FeatureEnabled) {
   EXPECT_TRUE(ShouldShowIbanOnSettingsPage("US", &pref_service_));
 }
 
-TEST_F(AutofillExperimentsTest,
-       IsDeviceAuthAvailable_FeatureEnabledAndBiometricAvailableForMacAndWin) {
+TEST_F(
+    AutofillExperimentsTest,
+    IsDeviceAuthAvailable_FeatureEnabledAndAuthenticationAvailableForMacAndWin) {
   scoped_feature_list_.InitAndEnableFeature(
       features::kAutofillEnablePaymentsMandatoryReauth);
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  ON_CALL(*mock_device_authenticator_, CanAuthenticateWithBiometrics)
+  ON_CALL(*mock_device_authenticator_, CanAuthenticateWithBiometricOrScreenLock)
       .WillByDefault(Return(true));
 
   EXPECT_TRUE(IsDeviceAuthAvailable(mock_device_authenticator_));
@@ -390,12 +394,13 @@ TEST_F(AutofillExperimentsTest,
 #endif
 }
 
-TEST_F(AutofillExperimentsTest,
-       IsDeviceAuthAvailable_FeatureDisabledAndBiometricAvailableForMacAndWin) {
+TEST_F(
+    AutofillExperimentsTest,
+    IsDeviceAuthAvailable_FeatureDisabledAndAuthenticationAvailableForMacAndWin) {
   scoped_feature_list_.InitAndDisableFeature(
       features::kAutofillEnablePaymentsMandatoryReauth);
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  ON_CALL(*mock_device_authenticator_, CanAuthenticateWithBiometrics)
+  ON_CALL(*mock_device_authenticator_, CanAuthenticateWithBiometricOrScreenLock)
       .WillByDefault(Return(true));
 #endif
   EXPECT_FALSE(IsDeviceAuthAvailable(mock_device_authenticator_));

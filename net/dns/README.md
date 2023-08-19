@@ -198,7 +198,6 @@ Data collected at this layer:
 * "Net.DNS.ResolveCategory"
 * "Net.DNS.ResolveError.Fast"
 * "Net.DNS.ResolveError.Slow"
-* "Net.DNS.SecureDnsMode.[Off/Automatic/Secure].ResolveTime"
 
 ### Host resolution sources
 
@@ -317,8 +316,6 @@ Data collected specifically for this source (more internally to
 * "Net.DNS.JobQueueTime.PerTransaction"
 * "Net.DNS.JobQueueTime.Failure"
 * "Net.DNS.JobQueueTime.Success"
-* "Net.DNS.SecureDnsTask.DnsModeSecure.FailureTime"
-* "Net.DNS.SecureDnsTask.DnsModeAutomatic.FailureTime"
 
 #### MULTICAST_DNS
 

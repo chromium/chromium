@@ -22,14 +22,15 @@ SelectToSpeakMouseSelectionTest = class extends SelectToSpeakE2ETest {
     window.EventType = chrome.automation.EventType;
     window.SelectToSpeakState = chrome.accessibilityPrivate.SelectToSpeakState;
 
-    await importModule(
-        'selectToSpeak', '/select_to_speak/select_to_speak_main.js');
-    await importModule(
-        'SELECT_TO_SPEAK_TRAY_CLASS_NAME', '/select_to_speak/ui_manager.js');
-    await importModule(
-        'SelectToSpeakConstants',
-        '/select_to_speak/select_to_speak_constants.js');
-    await importModule('PrefsManager', '/select_to_speak/prefs_manager.js');
+    await Promise.all([
+      importModule('selectToSpeak', '/select_to_speak/select_to_speak_main.js'),
+      importModule(
+          'SELECT_TO_SPEAK_TRAY_CLASS_NAME', '/select_to_speak/ui_manager.js'),
+      importModule(
+          'SelectToSpeakConstants',
+          '/select_to_speak/select_to_speak_constants.js'),
+      importModule('PrefsManager', '/select_to_speak/prefs_manager.js'),
+    ]);
     await new Promise(resolve => {
       chrome.settingsPrivate.setPref(
           PrefsManager.ENHANCED_VOICES_DIALOG_SHOWN_KEY, true,

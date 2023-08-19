@@ -4,7 +4,9 @@
 
 #include "components/printing/test/mock_printer.h"
 
+#include <algorithm>
 #include <string>
+#include <utility>
 
 #include "base/files/file_util.h"
 #include "base/memory/shared_memory_mapping.h"
@@ -17,73 +19,19 @@
 #include "printing/print_settings.h"
 #include "printing/units.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/size_conversions.h"
 
-#if BUILDFLAG(IS_APPLE)
-#include "printing/pdf_metafile_cg_mac.h"
+#if defined(MOCK_PRINTER_SUPPORTS_PAGE_IMAGES)
+#include "pdf/pdf.h"
 #endif
 
-namespace {
+namespace printing {
 
-void UpdateMargins(int margins_type,
-                   int dpi,
-                   printing::mojom::PrintParams* params) {
-  printing::mojom::MarginType type =
-      static_cast<printing::mojom::MarginType>(margins_type);
-  if (type == printing::mojom::MarginType::kNoMargins) {
-    params->content_size.SetSize(static_cast<int>((8.5 * dpi)),
-                                 static_cast<int>((11.0 * dpi)));
-    params->margin_left = 0;
-    params->margin_top = 0;
-  } else if (type == printing::mojom::MarginType::kPrintableAreaMargins) {
-    params->content_size.SetSize(static_cast<int>((8.0 * dpi)),
-                                 static_cast<int>((10.5 * dpi)));
-    params->margin_left = static_cast<int>(0.25 * dpi);
-    params->margin_top = static_cast<int>(0.25 * dpi);
-  } else if (type == printing::mojom::MarginType::kCustomMargins) {
-    params->content_size.SetSize(static_cast<int>((7.9 * dpi)),
-                                 static_cast<int>((10.4 * dpi)));
-    params->margin_left = static_cast<int>(0.30 * dpi);
-    params->margin_top = static_cast<int>(0.30 * dpi);
-  }
-}
+MockPrinterPage::MockPrinterPage(const Image& image) : image_(image) {}
 
-void UpdatePageSizeAndScaling(const gfx::Size& page_size,
-                              int scale_factor,
-                              printing::mojom::PrintParams* params) {
-  params->page_size = page_size;
-  params->scale_factor = static_cast<double>(scale_factor) / 100.0;
-}
+MockPrinterPage::~MockPrinterPage() = default;
 
-}  // namespace
-
-MockPrinterPage::MockPrinterPage(const void* source_data,
-                                 uint32_t source_size,
-                                 const printing::Image& image)
-    : source_size_(source_size), image_(image) {
-  // Create copies of the source data
-  source_data_.reset(new uint8_t[source_size]);
-  if (source_data_.get())
-    memcpy(source_data_.get(), source_data, source_size);
-}
-
-MockPrinterPage::~MockPrinterPage() {
-}
-
-MockPrinter::MockPrinter()
-    : dpi_(printing::kPointsPerInch),
-      selection_only_(false),
-      should_print_backgrounds_(false),
-      printer_status_(PRINTER_READY),
-      number_pages_(0u),
-      page_number_(0u),
-      is_first_request_(true),
-      print_to_pdf_(false),
-      preview_request_id_(0),
-      print_scaling_option_(printing::mojom::PrintScalingOption::kSourceSize),
-      display_header_footer_(false),
-      title_(u"title"),
-      url_(u"url"),
-      use_invalid_settings_(false) {
+MockPrinter::MockPrinter() {
   page_size_.SetSize(static_cast<int>(8.5 * dpi_),
                      static_cast<int>(11.0 * dpi_));
   content_size_.SetSize(static_cast<int>((7.5 * dpi_)),
@@ -94,28 +42,27 @@ MockPrinter::MockPrinter()
       static_cast<int>(8 * dpi_), static_cast<int>(10.5 * dpi_));
 }
 
-MockPrinter::~MockPrinter() {
+MockPrinter::~MockPrinter() = default;
+
+void MockPrinter::Reset() {
+  Finish();
+  pages_.clear();
+  page_count_ = 0;
 }
 
-void MockPrinter::ResetPrinter() {
-  printer_status_ = PRINTER_READY;
-  document_cookie_.reset();
-}
-
-printing::mojom::PrintParamsPtr MockPrinter::GetDefaultPrintSettings() {
+mojom::PrintParamsPtr MockPrinter::GetDefaultPrintSettings() {
   // Verify this printer is not processing a job.
   // Sorry, this mock printer is very fragile.
   EXPECT_FALSE(document_cookie_.has_value());
 
   // Assign a unit document cookie and set the print settings.
   CreateDocumentCookie();
-  auto params = printing::mojom::PrintParams::New();
-  SetPrintParams(params.get());
+  auto params = mojom::PrintParams::New();
+  GetPrintParams(params.get());
   return params;
 }
 
-void MockPrinter::SetDefaultPrintSettings(
-    const printing::mojom::PrintParams& params) {
+void MockPrinter::SetDefaultPrintSettings(const mojom::PrintParams& params) {
   // Use the same logic as in printing/print_settings.h
   dpi_ = std::max(params.dpi.width(), params.dpi.height());
   selection_only_ = params.selection_only;
@@ -133,43 +80,13 @@ void MockPrinter::SetDefaultPrintSettings(
 void MockPrinter::ScriptedPrint(int cookie,
                                 uint32_t expected_pages_count,
                                 bool has_selection,
-                                printing::mojom::PrintPagesParams* settings) {
+                                mojom::PrintPagesParams* settings) {
   // Verify the input parameters.
   EXPECT_EQ(document_cookie_, cookie);
 
-  *settings->params = printing::mojom::PrintParams();
+  *settings->params = mojom::PrintParams();
   settings->pages.clear();
-
-  settings->params->dpi = gfx::Size(dpi_, dpi_);
-  settings->params->selection_only = selection_only_;
-  settings->params->should_print_backgrounds = should_print_backgrounds_;
-  settings->params->document_cookie = document_cookie_.value();
-  settings->params->page_size = page_size_;
-  settings->params->content_size = content_size_;
-  settings->params->printable_area = printable_area_;
-  settings->params->is_first_request = is_first_request_;
-  settings->params->print_scaling_option = print_scaling_option_;
-  settings->params->print_to_pdf = print_to_pdf_;
-  settings->params->preview_request_id = preview_request_id_;
-  settings->params->display_header_footer = display_header_footer_;
-  settings->params->title = title_;
-  settings->params->url = url_;
-  printer_status_ = PRINTER_PRINTING;
-}
-
-void MockPrinter::UpdateSettings(printing::mojom::PrintPagesParams* params,
-                                 const printing::PageRanges& pages,
-                                 int margins_type,
-                                 const gfx::Size& page_size,
-                                 int scale_factor) {
-  EXPECT_TRUE(document_cookie_.has_value());
-
-  *params->params = printing::mojom::PrintParams();
-  params->pages = pages;
-  SetPrintParams(params->params.get());
-  UpdateMargins(margins_type, dpi_, params->params.get());
-  if (!page_size.IsEmpty())
-    UpdatePageSizeAndScaling(page_size, scale_factor, params->params.get());
+  GetPrintParams(settings->params.get());
   printer_status_ = PRINTER_PRINTING;
 }
 
@@ -178,104 +95,102 @@ void MockPrinter::SetPrintedPagesCount(int cookie, uint32_t number_pages) {
   // RenderViewTest class can verify the this function finishes without errors.
   EXPECT_EQ(document_cookie_, cookie);
   EXPECT_EQ(PRINTER_PRINTING, printer_status_);
-  EXPECT_EQ(0u, number_pages_);
-  EXPECT_EQ(0u, page_number_);
+  EXPECT_EQ(0, page_count_);
 
-  // Initialize the job status.
-  number_pages_ = number_pages;
-  page_number_ = 0u;
-  pages_.clear();
+  page_count_ = number_pages;
 }
 
-void MockPrinter::PrintPage(printing::mojom::DidPrintDocumentParamsPtr params) {
+void MockPrinter::OnDocumentPrinted(mojom::DidPrintDocumentParamsPtr params) {
   // Verify the input parameter and update the printer status so that the
   // RenderViewTest class can verify the this function finishes without errors.
   EXPECT_EQ(PRINTER_PRINTING, printer_status_);
   EXPECT_EQ(document_cookie_, params->document_cookie);
+  EXPECT_TRUE(pages_.empty());
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
-  // Load the data sent from a RenderView object and create a PageData object.
-  ASSERT_TRUE(params->content->metafile_data_region.IsValid());
-  base::ReadOnlySharedMemoryMapping mapping =
-      params->content->metafile_data_region.Map();
-  ASSERT_TRUE(mapping.IsValid());
-  EXPECT_GT(mapping.size(), 0U);
+#if defined(MOCK_PRINTER_SUPPORTS_PAGE_IMAGES)
+  if (should_generate_page_images_) {
+    // Load the data sent from a RenderView object and create a PageData object.
+    ASSERT_TRUE(params->content->metafile_data_region.IsValid());
+    base::ReadOnlySharedMemoryMapping mapping =
+        params->content->metafile_data_region.Map();
+    ASSERT_TRUE(mapping.IsValid());
+    EXPECT_GT(mapping.size(), 0U);
 
-#if BUILDFLAG(IS_APPLE)
-  printing::PdfMetafileCg metafile;
-#else
-  printing::MetafileSkia metafile;
-#endif
-  metafile.InitFromData(mapping.GetMemoryAsSpan<const uint8_t>());
-  printing::Image image(metafile);
-  pages_.push_back(base::MakeRefCounted<MockPrinterPage>(
-      mapping.memory(), mapping.size(), image));
-#endif
+    base::span<const uint8_t> pdf_buffer =
+        mapping.GetMemoryAsSpan<const uint8_t>();
 
-  // We finish printing a printing job.
-  // Reset the job status and the printer status.
-  ++page_number_;
-  if (number_pages_ == page_number_)
-    ResetPrinter();
+    int page_count;
+    bool success = chrome_pdf::GetPDFDocInfo(pdf_buffer, &page_count, nullptr);
+    ASSERT_TRUE(success);
+    for (int page_index = 0; page_index < page_count; page_index++) {
+      absl::optional<gfx::SizeF> page_size =
+          chrome_pdf::GetPDFPageSizeByIndex(pdf_buffer, page_index);
+      ASSERT_TRUE(page_size);
+      gfx::Size size = gfx::ToCeiledSize(*page_size);
+      ASSERT_GT(size.width(), 0);
+      ASSERT_GT(size.height(), 0);
+      int line_stride = size.width() * sizeof(uint32_t);
+      std::vector<unsigned char> pixel_buffer;
+      pixel_buffer.resize(line_stride * size.height());
+      gfx::Size dpi(72, 72);
+      chrome_pdf::RenderOptions options = {
+          /* stretch_to_bounds=*/false,
+          /* keep_aspect_ratio=*/false,
+          /* autorotate=*/false,
+          /* use_color=*/true, chrome_pdf::RenderDeviceType::kDisplay};
+
+      success = chrome_pdf::RenderPDFPageToBitmap(
+          pdf_buffer, page_index, pixel_buffer.data(), size, dpi, options);
+      ASSERT_TRUE(success);
+
+      Image image(size, line_stride, std::move(pixel_buffer));
+      ASSERT_FALSE(image.size().IsEmpty());
+      pages_.push_back(base::MakeRefCounted<MockPrinterPage>(image));
+    }
+  }
+#endif  // MOCK_PRINTER_SUPPORTS_PAGE_IMAGES
+
+  Finish();
 }
 
-int MockPrinter::GetPrintedPages() const {
+int MockPrinter::GetPageCount() const {
   if (printer_status_ != PRINTER_READY)
     return -1;
-  return page_number_;
+  return page_count_;
 }
 
-const MockPrinterPage* MockPrinter::GetPrintedPage(unsigned int pageno) const {
+#if defined(MOCK_PRINTER_SUPPORTS_PAGE_IMAGES)
+
+const MockPrinterPage* MockPrinter::GetPrinterPage(unsigned int pageno) const {
+  EXPECT_TRUE(should_generate_page_images_);
   if (pageno >= pages_.size())
     return nullptr;
   return pages_[pageno].get();
 }
 
 int MockPrinter::GetWidth(unsigned int page) const {
+  EXPECT_TRUE(should_generate_page_images_);
   if (printer_status_ != PRINTER_READY || page >= pages_.size())
     return -1;
   return pages_[page]->width();
 }
 
 int MockPrinter::GetHeight(unsigned int page) const {
+  EXPECT_TRUE(should_generate_page_images_);
   if (printer_status_ != PRINTER_READY || page >= pages_.size())
     return -1;
   return pages_[page]->height();
 }
 
-bool MockPrinter::GetBitmapChecksum(unsigned int page,
-                                    std::string* checksum) const {
-  if (printer_status_ != PRINTER_READY || page >= pages_.size())
-    return false;
-  *checksum = pages_[page]->image().checksum();
-  return true;
-}
-
-bool MockPrinter::SaveSource(unsigned int page,
-                             const base::FilePath& filepath) const {
-  if (printer_status_ != PRINTER_READY || page >= pages_.size())
-    return false;
-  base::WriteFile(filepath, base::make_span(pages_[page]->source_data(),
-                                            pages_[page]->source_size()));
-  return true;
-}
-
-bool MockPrinter::SaveBitmap(unsigned int page,
-                             const base::FilePath& filepath) const {
-  if (printer_status_ != PRINTER_READY || page >= pages_.size())
-    return false;
-
-  pages_[page]->image().SaveToPng(filepath);
-  return true;
-}
+#endif  // MOCK_PRINTER_SUPPORTS_PAGE_IMAGES
 
 void MockPrinter::CreateDocumentCookie() {
   EXPECT_FALSE(document_cookie_.has_value());
-  document_cookie_ =
-      use_invalid_settings_ ? 0 : printing::PrintSettings::NewCookie();
+  document_cookie_ = use_invalid_settings_ ? PrintSettings::NewInvalidCookie()
+                                           : PrintSettings::NewCookie();
 }
 
-void MockPrinter::SetPrintParams(printing::mojom::PrintParams* params) {
+void MockPrinter::GetPrintParams(mojom::PrintParams* params) const {
   params->dpi = gfx::Size(dpi_, dpi_);
   params->selection_only = selection_only_;
   params->should_print_backgrounds = should_print_backgrounds_;
@@ -292,4 +207,12 @@ void MockPrinter::SetPrintParams(printing::mojom::PrintParams* params) {
   params->display_header_footer = display_header_footer_;
   params->title = title_;
   params->url = url_;
+  params->prefer_css_page_size = true;
 }
+
+void MockPrinter::Finish() {
+  printer_status_ = PRINTER_READY;
+  document_cookie_.reset();
+}
+
+}  // namespace printing

@@ -14,7 +14,5 @@ blink_modules_sources("picture_in_picture") {
     "picture_in_picture_event.h",
     "picture_in_picture_window.cc",
     "picture_in_picture_window.h",
-    "shadow_root_picture_in_picture.cc",
-    "shadow_root_picture_in_picture.h",
   ]
 }

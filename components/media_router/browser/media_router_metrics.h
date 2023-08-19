@@ -86,22 +86,6 @@ enum class MediaRouterDialogActivationLocation {
   TOTAL_COUNT = 7
 };
 
-// The possible actions a user can take while interacting with the Media Router
-// dialog.
-enum class MediaRouterUserAction {
-  CHANGE_MODE = 0,
-  START_LOCAL = 1,
-  STOP_LOCAL = 2,
-  CLOSE = 3,
-  STATUS_REMOTE = 4,
-  REPLACE_LOCAL_ROUTE = 5,
-  STOP_REMOTE = 6,
-
-  // Note: Add entries only immediately above this line. Remember to also update
-  // tools/metrics/histograms/enums.xml.
-  TOTAL_COUNT = 7
-};
-
 enum class PresentationUrlType {
   kOther,
   kCast,            // cast:
@@ -193,10 +177,6 @@ class MediaRouterMetrics {
   // is the first action the user takes.
   static void RecordCloseDialogLatency(const base::TimeDelta& delta);
 
-  // Records the first action the user took after the Media Router dialog
-  // opened.
-  static void RecordMediaRouterInitialUserAction(MediaRouterUserAction action);
-
   // Records the format of a cast file.
   static void RecordMediaRouterFileFormat(
       media::container_names::MediaContainerName format);
@@ -236,10 +216,6 @@ class MediaRouterMetrics {
   // Records whether the toolbar icon is pinned by the user pref / admin policy.
   // Recorded whenever the Cast dialog is opened.
   static void RecordIconStateAtDialogOpen(bool is_pinned);
-
-  // Records whether the toolbar icon is pinned by the user pref / admin policy.
-  // Recorded whenever the browser is initialized.
-  static void RecordIconStateAtInit(bool is_pinned);
 
   // Records the outcome of a create route request to a Media Route Provider.
   // This and the following methods that record ResultCode use per-provider

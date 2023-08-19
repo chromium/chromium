@@ -19,17 +19,13 @@ namespace ash::standalone_browser {
 // Represents the policy indicating how to launch Lacros browser, named
 // LacrosAvailability. The values shall be consistent with the controlling
 // policy.
+// Values 2 and 3 were removed and should not be reused.
 enum class LacrosAvailability {
   // Indicates that the user decides whether to enable Lacros (if allowed) and
   // make it the primary/only browser.
   kUserChoice = 0,
   // Indicates that Lacros is not allowed to be enabled.
   kLacrosDisallowed = 1,
-  // Indicates that Lacros will be enabled (if allowed). Ash browser is the
-  // primary browser.
-  kSideBySide = 2,
-  // Similar to kSideBySide but Lacros is the primary browser.
-  kLacrosPrimary = 3,
   // Indicates that Lacros (if allowed) is the only available browser.
   kLacrosOnly = 4
 };

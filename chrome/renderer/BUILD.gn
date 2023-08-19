@@ -94,8 +94,8 @@ static_library("renderer") {
     "plugins/pdf_plugin_placeholder.h",
     "plugins/plugin_uma.cc",
     "plugins/plugin_uma.h",
-    "sync_encryption_keys_extension.cc",
-    "sync_encryption_keys_extension.h",
+    "trusted_vault_encryption_keys_extension.cc",
+    "trusted_vault_encryption_keys_extension.h",
     "url_loader_throttle_provider_impl.cc",
     "url_loader_throttle_provider_impl.h",
     "v8_unwinder.cc",
@@ -142,6 +142,7 @@ static_library("renderer") {
     "//chrome/common/cart:mojo_bindings",
     "//chrome/common/net",
     "//chrome/common/search:mojo_bindings",
+    "//chrome/renderer/companion/visual_search",
     "//chrome/services/speech/buildflags",
     "//components/autofill/content/renderer",
     "//components/autofill/core/common:features",
@@ -161,6 +162,7 @@ static_library("renderer") {
     "//components/feed/content/renderer:feed_renderer",
     "//components/heap_profiling/in_process",
     "//components/history_clusters/core",
+    "//components/language/core/common",
     "//components/lens",
     "//components/lens:lens_mojo",
     "//components/metrics:child_call_stack_profile_builder",
@@ -174,6 +176,7 @@ static_library("renderer") {
     "//components/page_load_metrics/renderer",
     "//components/paint_preview/buildflags",
     "//components/password_manager/core/common",
+    "//components/permissions:permissions_common",
     "//components/plugins/renderer",
     "//components/resources:components_resources",
     "//components/resources:components_scaled_resources",
@@ -191,7 +194,6 @@ static_library("renderer") {
     "//components/subresource_filter/content/renderer",
     "//components/subresource_filter/core/common",
     "//components/supervised_user/core/common:buildflags",
-    "//components/sync/service",
     "//components/translate/content/renderer",
     "//components/translate/core/common",
     "//components/translate/core/language_detection",
@@ -226,6 +228,7 @@ static_library("renderer") {
     "//third_party/libwebp",
     "//third_party/re2",
     "//third_party/widevine/cdm:buildflags",
+    "//ui/gfx/geometry:geometry",
     "//ui/surface",
     "//v8",
   ]
@@ -431,6 +434,7 @@ static_library("renderer") {
       "//components/crx_file",
       "//components/services/screen_ai/buildflags",
       "//components/services/screen_ai/public/mojom",
+      "//components/trusted_vault",
       "//third_party/re2:re2",
     ]
   }
@@ -467,5 +471,11 @@ static_library("renderer") {
         "//chromeos/ash/components/memory/userspace_swap:mojom",
       ]
     }
+  }
+  if (!is_android && !is_chromeos) {
+    sources += [
+      "cco/multiline_detector.cc",
+      "cco/multiline_detector.h",
+    ]
   }
 }

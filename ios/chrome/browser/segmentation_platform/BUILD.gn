@@ -32,22 +32,20 @@ source_set("segmentation_platform") {
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/metrics:accessor",
     "//ios/chrome/browser/optimization_guide",
-    "//ios/chrome/browser/paths",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/sync",
   ]
   if (build_with_tflite_lib) {
     deps += [ "//components/segmentation_platform/internal:optimization_guide_segmentation_handler" ]
   }
-  configs += [ "//build/config/compiler:enable_arc" ]
   frameworks = [ "Foundation.framework" ]
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "otr_web_state_observer_unittest.mm",

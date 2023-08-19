@@ -194,7 +194,8 @@ void AppServiceAppResult::OnLoadIcon(bool chip, apps::IconValuePtr icon_value) {
   if (chip) {
     SetChipIcon(icon_value->uncompressed);
   } else {
-    SetIcon(IconInfo(icon_value->uncompressed, kAppIconDimension));
+    SetIcon(IconInfo(ui::ImageModel::FromImageSkia(icon_value->uncompressed),
+                     kAppIconDimension));
   }
 
   if (icon_value->is_placeholder_icon) {

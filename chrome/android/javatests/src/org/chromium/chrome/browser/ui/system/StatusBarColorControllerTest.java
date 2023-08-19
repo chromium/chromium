@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.ui.system;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 import android.app.Activity;
 import android.graphics.Color;
@@ -45,7 +44,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.ThemeTestUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -66,7 +64,6 @@ import java.util.concurrent.TimeoutException;
 @Batch(Batch.PER_CLASS)
 // clang-format off
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Features.EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID})
 public class StatusBarColorControllerTest {
     // clang-format on
     @ClassRule
@@ -225,7 +222,7 @@ public class StatusBarColorControllerTest {
     @Test
     @LargeTest
     @Feature({"StatusBar"})
-    @Features.EnableFeatures({ChromeFeatureList.OMNIBOX_MATCH_TOOLBAR_AND_STATUS_BAR_COLOR})
+    @EnableFeatures({ChromeFeatureList.OMNIBOX_MATCH_TOOLBAR_AND_STATUS_BAR_COLOR})
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE}) // Status bar is always black on tablets
     public void testBrandColorIgnoredWhenOmniboxIsFocused_FeatureMatchToolbarColorEnabled()
             throws Exception {
@@ -257,7 +254,7 @@ public class StatusBarColorControllerTest {
     @Test
     @LargeTest
     @Feature({"StatusBar"})
-    @Features.EnableFeatures({ChromeFeatureList.OMNIBOX_MATCH_TOOLBAR_AND_STATUS_BAR_COLOR})
+    @EnableFeatures({ChromeFeatureList.OMNIBOX_MATCH_TOOLBAR_AND_STATUS_BAR_COLOR})
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE}) // Status bar is always black on tablets
     public void testColorWithStatusIndicator_FeatureMatchToolbarColorEnabled() {
         final ChromeActivity activity = sActivityTestRule.getActivity();
@@ -311,7 +308,7 @@ public class StatusBarColorControllerTest {
     @Test
     @LargeTest
     @Feature({"StatusBar"})
-    @EnableFeatures({ChromeFeatureList.TAB_STRIP_REDESIGN})
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_REDESIGN)
     @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
     public void testStatusBarColorForTabStripRedesignFolioTablet() throws Exception {
         final ChromeActivity activity = sActivityTestRule.getActivity();
@@ -340,7 +337,7 @@ public class StatusBarColorControllerTest {
     @Test
     @LargeTest
     @Feature({"StatusBar"})
-    @EnableFeatures({ChromeFeatureList.TAB_STRIP_REDESIGN})
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_REDESIGN)
     @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
     public void testStatusBarColorForTabStripRedesignDetachedTablet() throws Exception {
         final ChromeActivity activity = sActivityTestRule.getActivity();
@@ -372,12 +369,6 @@ public class StatusBarColorControllerTest {
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_AUTO)
     public void testStatusBarBlackInAutomotive() {
         final ChromeActivity activity = sActivityTestRule.getActivity();
-        final StatusBarColorController statusBarColorController =
-                sActivityTestRule.getActivity()
-                        .getRootUiCoordinatorForTesting()
-                        .getStatusBarColorController();
-
-        assertNull(statusBarColorController);
         assertEquals("Status bar should always be black in automotive devices.", Color.BLACK,
                 activity.getWindow().getStatusBarColor());
     }
@@ -403,7 +394,7 @@ public class StatusBarColorControllerTest {
                 "ToolbarLayout should be of type ToolbarPhone to get and check toolbar background.",
                 toolbar instanceof ToolbarPhone);
 
-        final int toolbarColor = ((ToolbarPhone) toolbar).getToolbarBackgroundColor();
+        final int toolbarColor = ((ToolbarPhone) toolbar).getBackgroundDrawable().getColor();
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(activity.getWindow().getStatusBarColor(), Matchers.is(toolbarColor));
         }, CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL, CriteriaHelper.DEFAULT_POLLING_INTERVAL);

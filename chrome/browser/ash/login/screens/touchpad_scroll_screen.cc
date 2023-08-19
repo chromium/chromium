@@ -6,8 +6,12 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/cpp/schedule_enums.h"
+#include "ash/public/mojom/input_device_settings.mojom.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -39,6 +43,17 @@ void ReportScreenCompletedToChoobe(ChoobeFlowController* controller) {
       TouchpadScrollScreenView::kScreenId);
 }
 
+void RecordSettingChangedMetric(bool initial_value, bool current_value) {
+  base::UmaHistogramBoolean("OOBE.CHOOBE.SettingChanged.Touchpad-scroll",
+                            initial_value != current_value);
+}
+
+bool CheckNoTouchpadDeviceExist() {
+  const auto touchpads =
+      InputDeviceSettingsController::Get()->GetConnectedTouchpads();
+  return touchpads.empty();
+}
+
 }  // namespace
 
 // static
@@ -66,12 +81,20 @@ bool TouchpadScrollScreen::ShouldBeSkipped(const WizardContext& context) const {
     return true;
   }
 
+  if (chrome_user_manager_util::IsManagedGuestSessionOrEphemeralLogin()) {
+    return true;
+  }
+
+  if (CheckNoTouchpadDeviceExist()) {
+    return true;
+  }
+
   if (features::IsOobeTouchpadScrollEnabled()) {
     auto* choobe_controller =
         WizardController::default_controller()->choobe_flow_controller();
-    if (choobe_controller) {
-      return choobe_controller->ShouldScreenBeSkipped(
-          TouchpadScrollScreenView::kScreenId);
+    if (choobe_controller && choobe_controller->ShouldScreenBeSkipped(
+                                 TouchpadScrollScreenView::kScreenId)) {
+      return true;
     }
   }
 
@@ -100,12 +123,27 @@ void TouchpadScrollScreen::OnScrollUpdate(bool is_reverse_scroll) {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   // The pref is true if touchpad reverse scroll is enabled.
   profile->GetPrefs()->SetBoolean(prefs::kNaturalScroll, is_reverse_scroll);
+
+  if (features::IsInputDeviceSettingsSplitEnabled()) {
+    const auto touchpads =
+        InputDeviceSettingsController::Get()->GetConnectedTouchpads();
+    for (const auto& touchpad : touchpads) {
+      const auto old_settings = std::move(touchpad->settings);
+      old_settings->reverse_scrolling = is_reverse_scroll;
+      InputDeviceSettingsController::Get()->SetTouchpadSettings(
+          touchpad->id, old_settings->Clone());
+    }
+  }
 }
 
 bool TouchpadScrollScreen::GetNaturalScrollPrefValue() {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   bool is_reverse_scrolling =
       profile->GetPrefs()->GetBoolean(prefs::kNaturalScroll);
+
+  // set the synced value with the new InputDeviceSettingSplit
+  // TODO(b/287376458) remove it when input team fix the sync value issue
+  OnScrollUpdate(is_reverse_scrolling);
   return is_reverse_scrolling;
 }
 
@@ -114,6 +152,7 @@ void TouchpadScrollScreen::ShowImpl() {
     return;
   }
 
+  initial_pref_value_ = GetNaturalScrollPrefValue();
   view_->SetReverseScrolling(GetNaturalScrollPrefValue());
 
   base::Value::Dict data;
@@ -132,6 +171,8 @@ void TouchpadScrollScreen::OnUserAction(const base::Value::List& args) {
   if (action_id == kUserActionNext) {
     ReportScreenCompletedToChoobe(
         WizardController::default_controller()->choobe_flow_controller());
+    RecordSettingChangedMetric(initial_pref_value_,
+                               GetNaturalScrollPrefValue());
     exit_callback_.Run(Result::kNext);
     return;
   }
@@ -142,6 +183,8 @@ void TouchpadScrollScreen::OnUserAction(const base::Value::List& args) {
         ->return_to_choobe_screen = true;
     ReportScreenCompletedToChoobe(
         WizardController::default_controller()->choobe_flow_controller());
+    RecordSettingChangedMetric(initial_pref_value_,
+                               GetNaturalScrollPrefValue());
     exit_callback_.Run(Result::kNext);
     return;
   }

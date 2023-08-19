@@ -1,6 +1,7 @@
 <!doctype html>
 <meta charset="utf-8">
 <title>CSS Motion Path test: &lt;coord-box&gt; &lt;border-box&gt;</title>
+<meta name=fuzzy content="0-20;0-200">
 <link rel="author" title="Daniil Sakhapov" href="sakhapov@google.com">
 <link rel="match" href="offset-path-coord-box-001-ref.html">
 <link rel="help" href="https://drafts.fxtf.org/motion/#valdef-offset-path-coord-box">
@@ -11,8 +12,8 @@
   left: 100px;
   position: relative;
   border-radius: 50%;
-  border: 5px solid black;
-  width: 600px;
+  border: 10px solid black;
+  width: 400px;
   height: 400px;
 }
 #box {
@@ -21,7 +22,7 @@
   left: 100px;
   position: relative;
   offset-path: border-box;
-  offset-distance: 15%;
+  offset-distance: 25%;
   width: 100px;
   height: 100px;
 }

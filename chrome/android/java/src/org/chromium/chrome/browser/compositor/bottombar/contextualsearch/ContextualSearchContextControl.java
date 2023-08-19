@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.Px;
+
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelRepaddingTextView;
@@ -67,5 +69,12 @@ public class ContextualSearchContextControl extends OverlayPanelRepaddingTextVie
         View view = getView();
         mSelectedText = (TextView) view.findViewById(R.id.selected_text);
         mEndText = (TextView) view.findViewById(R.id.surrounding_text_end);
+    }
+
+    /** @return the Search Context's TextView height. */
+    @Px
+    int getTextViewHeight() {
+        return Math.max(mSelectedText == null ? 0 : mSelectedText.getHeight(),
+                mEndText == null ? 0 : mEndText.getHeight());
     }
 }

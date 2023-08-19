@@ -140,9 +140,9 @@
 #include "base/base_export.h"
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/stack_container.h"
 #include "base/memory/ptr_util.h"
 #include "base/ranges/algorithm.h"
+#include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 
 namespace base {
 
@@ -431,15 +431,16 @@ class IntrusiveHeap {
     // elements to be erased into a temporary container before deleting them.
     // This is to avoid changing the underlying container during the erase()
     // call.
-    StackVector<value_type, 8> elements_to_delete;
+    absl::InlinedVector<value_type, 8> elements_to_delete;
     std::move(erase_start, impl_.heap_.end(),
-              std::back_inserter(elements_to_delete.container()));
+              std::back_inserter(elements_to_delete));
 
     impl_.heap_.erase(erase_start, impl_.heap_.end());
 
     // If no elements were removed, then the heap is still intact.
-    if (elements_to_delete->empty())
+    if (elements_to_delete.empty()) {
       return;
+    }
 
     // Repair the heap and ensure handles are pointing to the right index.
     ranges::make_heap(impl_.heap_, value_comp());
@@ -447,7 +448,7 @@ class IntrusiveHeap {
       SetHeapHandle(i);
 
     // Explicitly delete elements last.
-    elements_to_delete->clear();
+    elements_to_delete.clear();
   }
 
   //////////////////////////////////////////////////////////////////////////////

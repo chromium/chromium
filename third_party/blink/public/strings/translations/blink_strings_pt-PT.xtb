@@ -26,7 +26,6 @@
 <translation id="2060505056492490888">"<ph name="DOT" />" está a ser utilizado numa posição errada em "<ph name="INVALIDDOMAIN" />".</translation>
 <translation id="2148716181193084225">Hoje</translation>
 <translation id="2226276347425096477">Encurte este texto para <ph name="MAX_CHARACTERS" /> caracteres ou menos (está atualmente a utilizar <ph name="CURRENT_LENGTH" /> caracteres).</translation>
-<translation id="2246498165605549352">Ficheiro local</translation>
 <translation id="2247351761944213033">Semana <ph name="WEEKNUMBER" />, de <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Faixa <ph name="NUMBER" /></translation>
 <translation id="2393030564806080191">Valor de cor hexadecimal</translation>
@@ -89,6 +88,7 @@
 <translation id="5425179576310518467">data atual</translation>
 <translation id="5466621249238537318">Selecione um ou mais ficheiros.</translation>
 <translation id="5468998798572797635">sair do modo de ecrã inteiro</translation>
+<translation id="5514612371225420585">Ficheiro no dispositivo</translation>
 <translation id="5516235301412634559">0,75</translation>
 <translation id="5537725057119320332">Transmitir</translation>
 <translation id="5546461542133609677">reativar som</translation>
@@ -113,6 +113,7 @@
 <translation id="6398862346408813489">Mostrar painel de seleção do mês</translation>
 <translation id="6404546809543547843">controlo de arrasto do tempo do áudio</translation>
 <translation id="6443871981718447451">mostrar menu de legendas ocultas</translation>
+<translation id="6484738902856791350">Aplicar estilos de formatação</translation>
 <translation id="6550675742724504774">Opções</translation>
 <translation id="6572309429103589720">Gramática inválida.</translation>
 <translation id="658823671542763450">entrar no modo de ecrã inteiro</translation>

@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -53,7 +54,6 @@
 #include "net/spdy/spdy_session.h"
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "net/ssl/ssl_info.h"
-#include "net/third_party/quiche/src/quiche/quic/core/http/quic_client_promised_info.h"
 #include "net/third_party/quiche/src/quiche/quic/core/http/spdy_server_push_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_stream_priority.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
@@ -340,18 +340,6 @@ base::Value::Dict NetLogQuicClientSessionParams(
   return dict;
 }
 
-base::Value::Dict NetLogQuicPushPromiseReceivedParams(
-    const spdy::Http2HeaderBlock* headers,
-    spdy::SpdyStreamId stream_id,
-    spdy::SpdyStreamId promised_stream_id,
-    NetLogCaptureMode capture_mode) {
-  base::Value::Dict dict;
-  dict.Set("headers", ElideHttp2HeaderBlockForNetLog(*headers, capture_mode));
-  dict.Set("id", static_cast<int>(stream_id));
-  dict.Set("promised_stream_id", static_cast<int>(promised_stream_id));
-  return dict;
-}
-
 // TODO(fayang): Remove this when necessary data is collected.
 void LogProbeResultToHistogram(MigrationCause cause, bool success) {
   UMA_HISTOGRAM_BOOLEAN("Net.QuicSession.PathValidationSuccess", success);
@@ -362,32 +350,6 @@ void LogProbeResultToHistogram(MigrationCause cause, bool success) {
       base::BooleanHistogram::FactoryGet(
           histogram_name, base::HistogramBase::kUmaTargetedHistogramFlag));
 }
-
-class QuicServerPushHelper : public ServerPushDelegate::ServerPushHelper {
- public:
-  explicit QuicServerPushHelper(
-      base::WeakPtr<QuicChromiumClientSession> session,
-      const GURL& url)
-      : session_(session), request_url_(url) {}
-
-  void Cancel() override {
-    if (session_) {
-      session_->CancelPush(request_url_);
-    }
-  }
-  const GURL& GetURL() const override { return request_url_; }
-
-  NetworkAnonymizationKey GetNetworkAnonymizationKey() const override {
-    if (session_) {
-      return session_->quic_session_key().network_anonymization_key();
-    }
-    return NetworkAnonymizationKey();
-  }
-
- private:
-  base::WeakPtr<QuicChromiumClientSession> session_;
-  const GURL request_url_;
-};
 
 }  // namespace
 
@@ -406,12 +368,6 @@ QuicChromiumClientSession::Handle::Handle(
 }
 
 QuicChromiumClientSession::Handle::~Handle() {
-  if (push_handle_) {
-    auto* push_handle = push_handle_;
-    push_handle_ = nullptr;
-    push_handle->Cancel();
-  }
-
   if (session_)
     session_->RemoveHandle(this);
 }
@@ -437,7 +393,6 @@ void QuicChromiumClientSession::Handle::OnSessionClosed(
   quic_error_ = quic_error;
   quic_version_ = quic_version;
   connect_timing_ = connect_timing;
-  push_handle_ = nullptr;
   was_ever_used_ = was_ever_used;
 }
 
@@ -479,13 +434,6 @@ quic::ParsedQuicVersion QuicChromiumClientSession::Handle::GetQuicVersion()
   return session_->GetQuicVersion();
 }
 
-void QuicChromiumClientSession::Handle::ResetPromised(
-    quic::QuicStreamId id,
-    quic::QuicRstStreamErrorCode error_code) {
-  if (session_)
-    session_->ResetPromised(id, error_code);
-}
-
 std::unique_ptr<quic::QuicConnection::ScopedPacketFlusher>
 QuicChromiumClientSession::Handle::CreatePacketBundler() {
   if (!session_)
@@ -498,28 +446,6 @@ QuicChromiumClientSession::Handle::CreatePacketBundler() {
 bool QuicChromiumClientSession::Handle::SharesSameSession(
     const Handle& other) const {
   return session_.get() == other.session_.get();
-}
-
-int QuicChromiumClientSession::Handle::RendezvousWithPromised(
-    const spdy::Http2HeaderBlock& headers,
-    CompletionOnceCallback callback) {
-  if (!session_)
-    return ERR_CONNECTION_CLOSED;
-
-  quic::QuicAsyncStatus push_status =
-      session_->push_promise_index()->Try(headers, this, &push_handle_);
-
-  switch (push_status) {
-    case quic::QUIC_FAILURE:
-      return ERR_FAILED;
-    case quic::QUIC_SUCCESS:
-      return OK;
-    case quic::QUIC_PENDING:
-      push_callback_ = std::move(callback);
-      return ERR_IO_PENDING;
-  }
-  NOTREACHED();
-  return ERR_UNEXPECTED;
 }
 
 int QuicChromiumClientSession::Handle::RequestStream(
@@ -549,12 +475,6 @@ QuicChromiumClientSession::Handle::ReleaseStream() {
   return handle;
 }
 
-std::unique_ptr<QuicChromiumClientStream::Handle>
-QuicChromiumClientSession::Handle::ReleasePromisedStream() {
-  DCHECK(push_stream_);
-  return std::move(push_stream_);
-}
-
 int QuicChromiumClientSession::Handle::WaitForHandshakeConfirmation(
     CompletionOnceCallback callback) {
   if (!session_)
@@ -573,14 +493,6 @@ int QuicChromiumClientSession::Handle::TryCreateStream(StreamRequest* request) {
     return ERR_CONNECTION_CLOSED;
 
   return session_->TryCreateStream(request);
-}
-
-quic::QuicClientPushPromiseIndex*
-QuicChromiumClientSession::Handle::GetPushPromiseIndex() {
-  if (!session_)
-    return push_promise_index_;
-
-  return session_->push_promise_index();
 }
 
 int QuicChromiumClientSession::Handle::GetPeerAddress(
@@ -614,52 +526,6 @@ QuicChromiumClientSession::Handle::GetDnsAliasesForSessionKey(
   static const base::NoDestructor<std::set<std::string>> emptyset_result;
   return session_ ? session_->GetDnsAliasesForSessionKey(key)
                   : *emptyset_result;
-}
-
-bool QuicChromiumClientSession::Handle::CheckVary(
-    const spdy::Http2HeaderBlock& client_request,
-    const spdy::Http2HeaderBlock& promise_request,
-    const spdy::Http2HeaderBlock& promise_response) {
-  HttpRequestInfo promise_request_info;
-  ConvertHeaderBlockToHttpRequestHeaders(promise_request,
-                                         &promise_request_info.extra_headers);
-  HttpRequestInfo client_request_info;
-  ConvertHeaderBlockToHttpRequestHeaders(client_request,
-                                         &client_request_info.extra_headers);
-
-  HttpResponseInfo promise_response_info;
-  if (SpdyHeadersToHttpResponse(promise_response, &promise_response_info) !=
-      OK) {
-    DLOG(WARNING) << "Invalid headers";
-    return false;
-  }
-
-  HttpVaryData vary_data;
-  if (!vary_data.Init(promise_request_info,
-                      *promise_response_info.headers.get())) {
-    // Promise didn't contain valid vary info, so URL match was sufficient.
-    return true;
-  }
-  // Now compare the client request for matching.
-  return vary_data.MatchesRequest(client_request_info,
-                                  *promise_response_info.headers.get());
-}
-
-void QuicChromiumClientSession::Handle::OnRendezvousResult(
-    quic::QuicSpdyStream* stream) {
-  DCHECK(!push_stream_);
-  int rv = ERR_FAILED;
-  if (stream) {
-    rv = OK;
-    push_stream_ =
-        static_cast<QuicChromiumClientStream*>(stream)->CreateHandle();
-  }
-
-  if (push_callback_) {
-    DCHECK(push_handle_);
-    push_handle_ = nullptr;
-    std::move(push_callback_).Run(rv);
-  }
 }
 
 #if BUILDFLAG(ENABLE_WEBSOCKETS)
@@ -1020,7 +886,6 @@ QuicChromiumClientSession::QuicChromiumClientSession(
     base::TimeTicks dns_resolution_start_time,
     base::TimeTicks dns_resolution_end_time,
     std::unique_ptr<quic::QuicClientPushPromiseIndex> push_promise_index,
-    ServerPushDelegate* push_delegate,
     const base::TickClock* tick_clock,
     base::SequencedTaskRunner* task_runner,
     std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
@@ -1064,7 +929,6 @@ QuicChromiumClientSession::QuicChromiumClientSession(
           std::move(socket_performance_watcher),
           net_log_)),
       http3_logger_(std::make_unique<QuicHttp3Logger>(net_log_)),
-      push_delegate_(push_delegate),
       push_promise_index_(std::move(push_promise_index)),
       path_validation_writer_delegate_(this, task_runner_),
       ech_config_list_(endpoint_result.metadata.ech_config_list) {
@@ -1145,13 +1009,6 @@ QuicChromiumClientSession::~QuicChromiumClientSession() {
 
   UMA_HISTOGRAM_COUNTS_1M("Net.QuicSession.NumTotalStreams",
                           num_total_streams_);
-  UMA_HISTOGRAM_COUNTS_1M("Net.QuicSession.Pushed", streams_pushed_count_);
-  UMA_HISTOGRAM_COUNTS_1M("Net.QuicSession.PushedAndClaimed",
-                          streams_pushed_and_claimed_count_);
-  UMA_HISTOGRAM_COUNTS_1M("Net.QuicSession.PushedBytes", bytes_pushed_count_);
-  DCHECK_LE(bytes_pushed_and_unclaimed_count_, bytes_pushed_count_);
-  UMA_HISTOGRAM_COUNTS_1M("Net.QuicSession.PushedAndUnclaimedBytes",
-                          bytes_pushed_and_unclaimed_count_);
 
   if (!OneRttKeysAvailable())
     return;
@@ -1644,10 +1501,6 @@ void QuicChromiumClientSession::OnStreamClosed(quic::QuicStreamId stream_id) {
   if (stream != nullptr) {
     logger_->UpdateReceivedFrameCounts(stream_id, stream->num_frames_received(),
                                        stream->num_duplicate_frames_received());
-    if (quic::QuicUtils::IsServerInitiatedStreamId(
-            connection()->transport_version(), stream_id)) {
-      bytes_pushed_count_ += stream->stream_bytes_read();
-    }
   }
   quic::QuicSpdyClientSessionBase::OnStreamClosed(stream_id);
 }
@@ -1699,15 +1552,8 @@ void QuicChromiumClientSession::OnConfigNegotiated() {
   if (!stream_factory_ || !stream_factory_->allow_server_migration()) {
     return;
   }
-  if (connection()->connection_migration_use_new_cid()) {
-    if (!config()->HasReceivedPreferredAddressConnectionIdAndToken()) {
-      return;
-    }
-  } else {
-    if (!config()->HasReceivedIPv6AlternateServerAddress() &&
-        !config()->HasReceivedIPv4AlternateServerAddress()) {
-      return;
-    }
+  if (!config()->HasReceivedPreferredAddressConnectionIdAndToken()) {
+    return;
   }
 
   // Server has sent an alternate address to connect to.
@@ -1854,7 +1700,6 @@ void QuicChromiumClientSession::OnConnectionClosed(
     const quic::QuicConnectionCloseFrame& frame,
     quic::ConnectionCloseSource source) {
   DCHECK(!connection()->connected());
-
   logger_->OnConnectionClosed(frame, source);
 
   UMA_HISTOGRAM_COUNTS_1000("Net.QuicSession.NumDefaultPathDegrading",
@@ -2142,7 +1987,7 @@ void QuicChromiumClientSession::OnConnectionClosed(
     // writer is set with the same type originally.
     socket_found_in_writer |=
         static_cast<QuicChromiumPacketWriter*>(connection()->writer())
-            ->OnSocketClosed(std::move(socket));
+            ->OnSocketClosed(socket.get());
   }
   CHECK(socket_found_in_writer);
   DCHECK(!HasActiveRequestStreams());
@@ -2203,13 +2048,6 @@ int QuicChromiumClientSession::HandleWriteError(
                      weak_factory_.GetWeakPtr(), error_code,
                      connection()->writer()));
 
-  // Only save packet from the old path for retransmission on the new path when
-  // the connection ID does not change.
-  if (!connection()->connection_migration_use_new_cid()) {
-    // Store packet in the session since the actual migration and packet rewrite
-    // can happen via this posted task or via an async network notification.
-    packet_ = std::move(packet);
-  }
   ignore_read_error_ = true;
 
   // Cause the packet writer to return ERR_IO_PENDING and block so
@@ -2331,6 +2169,12 @@ void QuicChromiumClientSession::OnNoNewNetwork() {
   // alternate network available.
   static_cast<QuicChromiumPacketWriter*>(connection()->writer())
       ->set_force_write_blocked(true);
+
+  if (base::FeatureList::IsEnabled(features::kDisableBlackholeOnNoNewNetwork)) {
+    // Turn off the black hole detector since the writer is blocked.
+    // Blackhole will be re-enabled once a packet is sent again.
+    connection()->blackhole_detector().StopDetection(false);
+  }
 
   // Post a task to maybe close the session if the alarm fires.
   task_runner_->PostDelayedTask(
@@ -2546,7 +2390,6 @@ void QuicChromiumClientSession::OnServerPreferredAddressProbeSucceeded(
 void QuicChromiumClientSession::OnProbeFailed(
     handles::NetworkHandle network,
     const quic::QuicSocketAddress& peer_address) {
-  DCHECK(connection()->connection_migration_use_new_cid());
   net_log_.AddEvent(NetLogEventType::QUIC_SESSION_CONNECTIVITY_PROBING_FINISHED,
                     [&] {
                       return NetLogProbingResultParams(network, &peer_address,
@@ -2626,13 +2469,11 @@ void QuicChromiumClientSession::OnNetworkDisconnectedV2(
       "disconnected_network", disconnected_network);
 
   // Stop probing the disconnected network if there is one.
-  if (connection()->connection_migration_use_new_cid()) {
-    auto* context = static_cast<QuicChromiumPathValidationContext*>(
-        connection()->GetPathValidationContext());
-    if (context && context->network() == disconnected_network &&
-        context->peer_address() == peer_address()) {
-      connection()->CancelPathValidation();
-    }
+  auto* context = static_cast<QuicChromiumPathValidationContext*>(
+      connection()->GetPathValidationContext());
+  if (context && context->network() == disconnected_network &&
+      context->peer_address() == peer_address()) {
+    connection()->CancelPathValidation();
   }
 
   if (disconnected_network == default_network_) {
@@ -2754,13 +2595,11 @@ void QuicChromiumClientSession::MigrateNetworkImmediately(
   }
 
   // Cancel probing on |network| if there is any.
-  if (connection()->connection_migration_use_new_cid()) {
-    auto* context = static_cast<QuicChromiumPathValidationContext*>(
-        connection()->GetPathValidationContext());
-    if (context && context->network() == network &&
-        context->peer_address() == peer_address()) {
-      connection()->CancelPathValidation();
-    }
+  auto* context = static_cast<QuicChromiumPathValidationContext*>(
+      connection()->GetPathValidationContext());
+  if (context && context->network() == network &&
+      context->peer_address() == peer_address()) {
+    connection()->CancelPathValidation();
   }
   pending_migrate_network_immediately_ = true;
   Migrate(network, ToIPEndPoint(connection()->peer_address()),
@@ -2927,7 +2766,6 @@ void QuicChromiumClientSession::CloseSessionOnErrorLater(
     std::move(callback_).Run(net_error);
   }
   NotifyAllStreamsOfError(net_error);
-  CloseAllHandles(net_error);
   net_log_.AddEventWithIntParams(NetLogEventType::QUIC_SESSION_CLOSE_ON_ERROR,
                                  "net_error", net_error);
 
@@ -2935,6 +2773,7 @@ void QuicChromiumClientSession::CloseSessionOnErrorLater(
     connection()->CloseConnection(quic_error, "net error", behavior);
   DCHECK(!connection()->connected());
 
+  CloseAllHandles(net_error);
   NotifyFactoryOfSessionClosedLater();
 }
 
@@ -3096,17 +2935,6 @@ void QuicChromiumClientSession::MaybeStartProbing(
     return;
   }
 
-  // Abort probing if connection migration is disabled by config.
-  if (!connection()->connection_migration_use_new_cid()) {
-    DVLOG(1) << "Client IETF connection migration is not enabled.";
-    HistogramAndLogMigrationFailure(MIGRATION_STATUS_NOT_ENABLED,
-                                    connection_id(),
-                                    "IETF migration flag is false");
-    task_runner_->PostTask(FROM_HERE,
-                           base::BindOnce(std::move(probing_callback),
-                                          ProbingResult::DISABLED_BY_CONFIG));
-    return;
-  }
   if (config()->DisableConnectionMigration()) {
     DVLOG(1) << "Client disables probing network with connection migration "
              << "disabled by config";
@@ -3124,23 +2952,30 @@ void QuicChromiumClientSession::MaybeStartProbing(
 
 void QuicChromiumClientSession::CreateContextForMultiPortPath(
     std::unique_ptr<quic::MultiPortPathContextObserver> context_observer) {
-  if (!connection()->connection_migration_use_new_cid()) {
-    context_observer->OnMultiPortPathContextAvailable(nullptr);
-    return;
-  }
-
   // Create and configure socket on default network
   std::unique_ptr<DatagramClientSocket> probing_socket =
       stream_factory_->CreateSocket(net_log_.net_log(), net_log_.source());
-  DatagramClientSocket* probing_socket_ptr = probing_socket.get();
-  CompletionOnceCallback configure_callback = base::BindOnce(
-      &QuicChromiumClientSession::FinishCreateContextForMultiPortPath,
-      weak_factory_.GetWeakPtr(), std::move(context_observer),
-      std::move(probing_socket));
-  stream_factory_->ConnectAndConfigureSocket(
-      std::move(configure_callback), probing_socket_ptr,
-      ToIPEndPoint(peer_address()), default_network_,
-      session_key_.socket_tag());
+  if (base::FeatureList::IsEnabled(net::features::kAsyncMultiPortPath)) {
+    DatagramClientSocket* probing_socket_ptr = probing_socket.get();
+    CompletionOnceCallback configure_callback = base::BindOnce(
+        &QuicChromiumClientSession::FinishCreateContextForMultiPortPath,
+        weak_factory_.GetWeakPtr(), std::move(context_observer),
+        std::move(probing_socket));
+    stream_factory_->ConnectAndConfigureSocket(
+        std::move(configure_callback), probing_socket_ptr,
+        ToIPEndPoint(peer_address()), default_network_,
+        session_key_.socket_tag());
+    return;
+  }
+
+  if (stream_factory_->ConfigureSocket(
+          probing_socket.get(), ToIPEndPoint(peer_address()), default_network_,
+          session_key_.socket_tag()) != OK) {
+    return;
+  }
+
+  FinishCreateContextForMultiPortPath(std::move(context_observer),
+                                      std::move(probing_socket), OK);
 }
 
 void QuicChromiumClientSession::FinishCreateContextForMultiPortPath(
@@ -3149,6 +2984,7 @@ void QuicChromiumClientSession::FinishCreateContextForMultiPortPath(
     int rv) {
   if (rv != OK) {
     context_observer->OnMultiPortPathContextAvailable(nullptr);
+    return;
   }
   // Create new packet writer and reader on the probing socket.
   auto probing_writer = std::make_unique<QuicChromiumPacketWriter>(
@@ -3200,13 +3036,6 @@ void QuicChromiumClientSession::StartProbing(
     ProbingCallback probing_callback,
     handles::NetworkHandle network,
     const quic::QuicSocketAddress& peer_address) {
-  if (!connection()->connection_migration_use_new_cid()) {
-    task_runner_->PostTask(FROM_HERE,
-                           base::BindOnce(std::move(probing_callback),
-                                          ProbingResult::DISABLED_BY_CONFIG));
-    return;
-  }
-
   // Check if probing manager is probing the same path.
   auto* existing_context = static_cast<QuicChromiumPathValidationContext*>(
       connection()->GetPathValidationContext());
@@ -3573,9 +3402,7 @@ base::Value::Dict QuicChromiumClientSession::GetInfoAsValue(
 
   dict.Set("total_streams", static_cast<int>(num_total_streams_));
   dict.Set("peer_address", peer_address().ToString());
-  // TODO(https://crbug.com/1343856): Update "network_isolation_key" to
-  // "network_anonymization_key" and change NetLog viewer.
-  dict.Set("network_isolation_key",
+  dict.Set("network_anonymization_key",
            session_key_.network_anonymization_key().ToDebugString());
   dict.Set("connection_id", connection_id().ToString());
   if (!connection()->client_connection_id().IsEmpty()) {
@@ -3777,7 +3604,11 @@ void QuicChromiumClientSession::Migrate(handles::NetworkHandle network,
   DVLOG(1) << "Force blocking the packet writer";
   static_cast<QuicChromiumPacketWriter*>(connection()->writer())
       ->set_force_write_blocked(true);
-
+  if (base::FeatureList::IsEnabled(features::kDisableBlackholeOnNoNewNetwork)) {
+    // Turn off the black hole detector since the writer is blocked.
+    // Blackhole will be re-enabled once a packet is sent again.
+    connection()->blackhole_detector().StopDetection(false);
+  }
   CompletionOnceCallback connect_callback = base::BindOnce(
       &QuicChromiumClientSession::FinishMigrate, weak_factory_.GetWeakPtr(),
       std::move(socket), peer_address, close_session_on_error,
@@ -3923,52 +3754,11 @@ handles::NetworkHandle QuicChromiumClientSession::GetCurrentNetwork() const {
 }
 
 bool QuicChromiumClientSession::IsAuthorized(const std::string& hostname) {
-  bool result = CanPool(hostname, session_key_);
-  if (result)
-    streams_pushed_count_++;
-  return result;
-}
-
-bool QuicChromiumClientSession::HandlePromised(
-    quic::QuicStreamId id,
-    quic::QuicStreamId promised_id,
-    const spdy::Http2HeaderBlock& headers) {
-  bool result =
-      quic::QuicSpdyClientSessionBase::HandlePromised(id, promised_id, headers);
-  if (result && push_delegate_) {
-    // The push promise is accepted, notify the push_delegate that a push
-    // promise has been received.
-    std::string pushed_url =
-        quic::SpdyServerPushUtils::GetPromisedUrlFromHeaders(headers);
-    push_delegate_->OnPush(std::make_unique<QuicServerPushHelper>(
-                               weak_factory_.GetWeakPtr(), GURL(pushed_url)),
-                           net_log_);
-  }
-  net_log_.AddEvent(NetLogEventType::QUIC_SESSION_PUSH_PROMISE_RECEIVED,
-                    [&](NetLogCaptureMode capture_mode) {
-                      return NetLogQuicPushPromiseReceivedParams(
-                          &headers, id, promised_id, capture_mode);
-                    });
-  return result;
-}
-
-void QuicChromiumClientSession::DeletePromised(
-    quic::QuicClientPromisedInfo* promised) {
-  if (IsOpenStream(promised->id()))
-    streams_pushed_and_claimed_count_++;
-  quic::QuicSpdyClientSessionBase::DeletePromised(promised);
-}
-
-void QuicChromiumClientSession::OnPushStreamTimedOut(
-    quic::QuicStreamId stream_id) {
-  quic::QuicSpdyStream* stream = GetPromisedStream(stream_id);
-  if (stream != nullptr)
-    bytes_pushed_and_unclaimed_count_ += stream->stream_bytes_read();
+  return CanPool(hostname, session_key_);
 }
 
 void QuicChromiumClientSession::OnServerPreferredAddressAvailable(
     const quic::QuicSocketAddress& server_preferred_address) {
-  DCHECK(connection()->connection_migration_use_new_cid());
   current_migration_cause_ = ON_SERVER_PREFERRED_ADDRESS_AVAILABLE;
 
   net_log_.BeginEvent(
@@ -3984,27 +3774,6 @@ void QuicChromiumClientSession::OnServerPreferredAddressAvailable(
       NetLogEventType::QUIC_START_VALIDATING_SERVER_PREFERRED_ADDRESS);
 }
 
-void QuicChromiumClientSession::CancelPush(const GURL& url) {
-  quic::QuicClientPromisedInfo* promised_info =
-      quic::QuicSpdyClientSessionBase::GetPromisedByUrl(url.spec());
-  if (!promised_info || promised_info->is_validating()) {
-    // Push stream has already been claimed or is pending matched to a request.
-    return;
-  }
-
-  quic::QuicStreamId stream_id = promised_info->id();
-
-  // Collect data on the cancelled push stream.
-  quic::QuicSpdyStream* stream = GetPromisedStream(stream_id);
-  if (stream != nullptr)
-    bytes_pushed_and_unclaimed_count_ += stream->stream_bytes_read();
-
-  // Send the reset and remove the promised info from the promise index.
-  quic::QuicSpdyClientSessionBase::ResetPromised(stream_id,
-                                                 quic::QUIC_STREAM_CANCELLED);
-  DeletePromised(promised_info);
-}
-
 const LoadTimingInfo::ConnectTiming&
 QuicChromiumClientSession::GetConnectTiming() {
   connect_timing_.ssl_start = connect_timing_.connect_start;
@@ -4014,15 +3783,6 @@ QuicChromiumClientSession::GetConnectTiming() {
 
 quic::ParsedQuicVersion QuicChromiumClientSession::GetQuicVersion() const {
   return connection()->version();
-}
-
-quic::QuicClientPromisedInfo* QuicChromiumClientSession::GetPromised(
-    const GURL& url,
-    const QuicSessionKey& session_key) {
-  if (!session_key_.CanUseForAliasing(session_key)) {
-    return nullptr;
-  }
-  return push_promise_index_->GetPromised(url.spec());
 }
 
 const std::set<std::string>&

@@ -17,25 +17,8 @@ generate_grd("build_static_grdp") {
   input_files = [
     "main.html",
 
-    # For some unittests:
-    "common/js/app_util.js",
-    "common/js/dialog_type.js",
+    # For File Manager unittests:
     "common/js/lru_cache.js",
-    "common/js/file_type.js",
-    "common/js/files_app_entry_types.js",
-    "common/js/files_app_state.js",
-    "common/js/icon_util.js",
-    "common/js/mock_chrome.js",
-    "common/js/storage.js",
-    "common/js/test_error_reporting.js",
-    "common/js/volume_manager_types.js",
-    "common/js/url_constants.js",
-    "externs/background/file_manager_base.js",
-    "externs/entry_location.js",
-    "externs/files_app_entry_interfaces.js",
-    "externs/volume_info.js",
-    "externs/volume_info_list.js",
-    "externs/volume_manager.js",
 
     # CSS:
     "foreground/css/combobutton.css",
@@ -58,6 +41,7 @@ generate_grd("build_static_grdp") {
     "foreground/images/common/ic_selected.svg",
     "foreground/images/files/ui/arrow_right.svg",
     "foreground/images/files/ui/back.svg",
+    "foreground/images/files/ui/bulk_pinning_battery_saver.svg",
     "foreground/images/files/ui/bulk_pinning_done.svg",
     "foreground/images/files/ui/bulk_pinning_offline.svg",
     "foreground/images/files/ui/check.svg",
@@ -133,6 +117,7 @@ generate_grd("build_static_grdp") {
     "foreground/images/filetype/filetype_word.svg",
     "foreground/images/volumes/android.svg",
     "foreground/images/volumes/archive.svg",
+    "foreground/images/volumes/bruschetta.svg",
     "foreground/images/volumes/camera.svg",
     "foreground/images/volumes/cd.svg",
     "foreground/images/volumes/computer.svg",

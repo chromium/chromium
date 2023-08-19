@@ -12,6 +12,7 @@
 #include <map>
 #include <memory>
 #include <set>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -24,7 +25,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -66,254 +66,265 @@ namespace autofill {
 
 namespace {
 
-constexpr base::StringPiece kAutofillTable = "autofill";
-constexpr base::StringPiece kName = "name";
-constexpr base::StringPiece kValue = "value";
-constexpr base::StringPiece kValueLower = "value_lower";
-constexpr base::StringPiece kDateCreated = "date_created";
-constexpr base::StringPiece kDateLastUsed = "date_last_used";
-constexpr base::StringPiece kCount = "count";
+constexpr std::string_view kAutofillTable = "autofill";
+constexpr std::string_view kName = "name";
+constexpr std::string_view kValue = "value";
+constexpr std::string_view kValueLower = "value_lower";
+constexpr std::string_view kDateCreated = "date_created";
+constexpr std::string_view kDateLastUsed = "date_last_used";
+constexpr std::string_view kCount = "count";
 
-constexpr base::StringPiece kAutofillProfilesTable = "autofill_profiles";
-constexpr base::StringPiece kGuid = "guid";
-constexpr base::StringPiece kLabel = "label";
-constexpr base::StringPiece kCompanyName = "company_name";
-constexpr base::StringPiece kStreetAddress = "street_address";
-constexpr base::StringPiece kDependentLocality = "dependent_locality";
-constexpr base::StringPiece kCity = "city";
-constexpr base::StringPiece kState = "state";
-constexpr base::StringPiece kZipcode = "zipcode";
-constexpr base::StringPiece kSortingCode = "sorting_code";
-constexpr base::StringPiece kCountryCode = "country_code";
-constexpr base::StringPiece kUseCount = "use_count";
-constexpr base::StringPiece kUseDate = "use_date";
-constexpr base::StringPiece kDateModified = "date_modified";
-constexpr base::StringPiece kOrigin = "origin";
-constexpr base::StringPiece kLanguageCode = "language_code";
-constexpr base::StringPiece kDisallowSettingsVisibleUpdates =
+constexpr std::string_view kAutofillProfilesTable = "autofill_profiles";
+constexpr std::string_view kGuid = "guid";
+constexpr std::string_view kLabel = "label";
+constexpr std::string_view kCompanyName = "company_name";
+constexpr std::string_view kStreetAddress = "street_address";
+constexpr std::string_view kDependentLocality = "dependent_locality";
+constexpr std::string_view kCity = "city";
+constexpr std::string_view kState = "state";
+constexpr std::string_view kZipcode = "zipcode";
+constexpr std::string_view kSortingCode = "sorting_code";
+constexpr std::string_view kCountryCode = "country_code";
+constexpr std::string_view kUseCount = "use_count";
+constexpr std::string_view kUseDate = "use_date";
+constexpr std::string_view kDateModified = "date_modified";
+constexpr std::string_view kOrigin = "origin";
+constexpr std::string_view kLanguageCode = "language_code";
+constexpr std::string_view kDisallowSettingsVisibleUpdates =
     "disallow_settings_visible_updates";
 
-constexpr base::StringPiece kAutofillProfileAddressesTable =
+constexpr std::string_view kAutofillProfileAddressesTable =
     "autofill_profile_addresses";
 // kGuid = "guid"
 // kStreetAddress = "street_address"
-constexpr base::StringPiece kStreetName = "street_name";
-constexpr base::StringPiece kDependentStreetName = "dependent_street_name";
-constexpr base::StringPiece kHouseNumber = "house_number";
-constexpr base::StringPiece kSubpremise = "subpremise";
+constexpr std::string_view kStreetName = "street_name";
+constexpr std::string_view kDependentStreetName = "dependent_street_name";
+constexpr std::string_view kHouseNumber = "house_number";
+constexpr std::string_view kSubpremise = "subpremise";
 // kDependentLocality = "dependent_locality"
 // kCity = "city"
 // kState = "state"
-constexpr base::StringPiece kZipCode = "zip_code";
+constexpr std::string_view kZipCode = "zip_code";
 // kCountryCode = "country_code"
 // kSortingCode = "sorting_code"
-constexpr base::StringPiece kPremiseName = "premise_name";
-constexpr base::StringPiece kApartmentNumber = "apartment_number";
-constexpr base::StringPiece kFloor = "floor";
-constexpr base::StringPiece kStreetAddressStatus = "street_address_status";
-constexpr base::StringPiece kStreetNameStatus = "street_name_status";
-constexpr base::StringPiece kDependentStreetNameStatus =
+constexpr std::string_view kPremiseName = "premise_name";
+constexpr std::string_view kApartmentNumber = "apartment_number";
+constexpr std::string_view kFloor = "floor";
+constexpr std::string_view kStreetAddressStatus = "street_address_status";
+constexpr std::string_view kStreetNameStatus = "street_name_status";
+constexpr std::string_view kDependentStreetNameStatus =
     "dependent_street_name_status";
-constexpr base::StringPiece kHouseNumberStatus = "house_number_status";
-constexpr base::StringPiece kSubpremiseStatus = "subpremise_status";
-constexpr base::StringPiece kPremiseNameStatus = "premise_name_status";
-constexpr base::StringPiece kDependentLocalityStatus =
+constexpr std::string_view kHouseNumberStatus = "house_number_status";
+constexpr std::string_view kSubpremiseStatus = "subpremise_status";
+constexpr std::string_view kPremiseNameStatus = "premise_name_status";
+constexpr std::string_view kDependentLocalityStatus =
     "dependent_locality_status";
-constexpr base::StringPiece kCityStatus = "city_status";
-constexpr base::StringPiece kStateStatus = "state_status";
-constexpr base::StringPiece kZipCodeStatus = "zip_code_status";
-constexpr base::StringPiece kCountryCodeStatus = "country_code_status";
-constexpr base::StringPiece kSortingCodeStatus = "sorting_code_status";
-constexpr base::StringPiece kApartmentNumberStatus = "apartment_number_status";
-constexpr base::StringPiece kFloorStatus = "floor_status";
+constexpr std::string_view kCityStatus = "city_status";
+constexpr std::string_view kStateStatus = "state_status";
+constexpr std::string_view kZipCodeStatus = "zip_code_status";
+constexpr std::string_view kCountryCodeStatus = "country_code_status";
+constexpr std::string_view kSortingCodeStatus = "sorting_code_status";
+constexpr std::string_view kApartmentNumberStatus = "apartment_number_status";
+constexpr std::string_view kFloorStatus = "floor_status";
 
-constexpr base::StringPiece kAutofillProfileNamesTable =
+constexpr std::string_view kAutofillProfileNamesTable =
     "autofill_profile_names";
 // kGuid = "guid"
-constexpr base::StringPiece kHonorificPrefix = "honorific_prefix";
-constexpr base::StringPiece kFirstName = "first_name";
-constexpr base::StringPiece kMiddleName = "middle_name";
-constexpr base::StringPiece kLastName = "last_name";
-constexpr base::StringPiece kFirstLastName = "first_last_name";
-constexpr base::StringPiece kConjunctionLastName = "conjunction_last_name";
-constexpr base::StringPiece kSecondLastName = "second_last_name";
-constexpr base::StringPiece kFullName = "full_name";
-constexpr base::StringPiece kFullNameWithHonorificPrefix =
+constexpr std::string_view kHonorificPrefix = "honorific_prefix";
+constexpr std::string_view kFirstName = "first_name";
+constexpr std::string_view kMiddleName = "middle_name";
+constexpr std::string_view kLastName = "last_name";
+constexpr std::string_view kFirstLastName = "first_last_name";
+constexpr std::string_view kConjunctionLastName = "conjunction_last_name";
+constexpr std::string_view kSecondLastName = "second_last_name";
+constexpr std::string_view kFullName = "full_name";
+constexpr std::string_view kFullNameWithHonorificPrefix =
     "full_name_with_honorific_prefix";
-constexpr base::StringPiece kHonorificPrefixStatus = "honorific_prefix_status";
-constexpr base::StringPiece kFirstNameStatus = "first_name_status";
-constexpr base::StringPiece kMiddleNameStatus = "middle_name_status";
-constexpr base::StringPiece kLastNameStatus = "last_name_status";
-constexpr base::StringPiece kFirstLastNameStatus = "first_last_name_status";
-constexpr base::StringPiece kConjunctionLastNameStatus =
+constexpr std::string_view kHonorificPrefixStatus = "honorific_prefix_status";
+constexpr std::string_view kFirstNameStatus = "first_name_status";
+constexpr std::string_view kMiddleNameStatus = "middle_name_status";
+constexpr std::string_view kLastNameStatus = "last_name_status";
+constexpr std::string_view kFirstLastNameStatus = "first_last_name_status";
+constexpr std::string_view kConjunctionLastNameStatus =
     "conjunction_last_name_status";
-constexpr base::StringPiece kSecondLastNameStatus = "second_last_name_status";
-constexpr base::StringPiece kFullNameStatus = "full_name_status";
-constexpr base::StringPiece kFullNameWithHonorificPrefixStatus =
+constexpr std::string_view kSecondLastNameStatus = "second_last_name_status";
+constexpr std::string_view kFullNameStatus = "full_name_status";
+constexpr std::string_view kFullNameWithHonorificPrefixStatus =
     "full_name_with_honorific_prefix_status";
 
-constexpr base::StringPiece kAutofillProfileEmailsTable =
+constexpr std::string_view kAutofillProfileEmailsTable =
     "autofill_profile_emails";
 // kGuid = "guid"
-constexpr base::StringPiece kEmail = "email";
+constexpr std::string_view kEmail = "email";
 
-constexpr base::StringPiece kAutofillProfilePhonesTable =
+constexpr std::string_view kAutofillProfilePhonesTable =
     "autofill_profile_phones";
 // kGuid = "guid"
-constexpr base::StringPiece kNumber = "number";
+constexpr std::string_view kNumber = "number";
 
-constexpr base::StringPiece kAutofillProfileBirthdatesTable =
+constexpr std::string_view kAutofillProfileBirthdatesTable =
     "autofill_profile_birthdates";
 // kGuid = "guid"
-constexpr base::StringPiece kDay = "day";
-constexpr base::StringPiece kMonth = "month";
-constexpr base::StringPiece kYear = "year";
+constexpr std::string_view kDay = "day";
+constexpr std::string_view kMonth = "month";
+constexpr std::string_view kYear = "year";
 
-constexpr base::StringPiece kCreditCardsTable = "credit_cards";
+constexpr std::string_view kCreditCardsTable = "credit_cards";
 // kGuid = "guid"
-constexpr base::StringPiece kNameOnCard = "name_on_card";
-constexpr base::StringPiece kExpirationMonth = "expiration_month";
-constexpr base::StringPiece kExpirationYear = "expiration_year";
-constexpr base::StringPiece kCardNumberEncrypted = "card_number_encrypted";
+constexpr std::string_view kNameOnCard = "name_on_card";
+constexpr std::string_view kExpirationMonth = "expiration_month";
+constexpr std::string_view kExpirationYear = "expiration_year";
+constexpr std::string_view kCardNumberEncrypted = "card_number_encrypted";
 // kUseCount = "use_count"
 // kUseDate = "use_date"
 // kDateModified = "date_modified"
 // kOrigin = "origin"
-constexpr base::StringPiece kBillingAddressId = "billing_address_id";
-constexpr base::StringPiece kNickname = "nickname";
+constexpr std::string_view kBillingAddressId = "billing_address_id";
+constexpr std::string_view kNickname = "nickname";
 
-constexpr base::StringPiece kMaskedCreditCardsTable = "masked_credit_cards";
-constexpr base::StringPiece kId = "id";
-constexpr base::StringPiece kStatus = "status";
+constexpr std::string_view kMaskedCreditCardsTable = "masked_credit_cards";
+constexpr std::string_view kId = "id";
+constexpr std::string_view kStatus = "status";
 // kNameOnCard = "name_on_card"
-constexpr base::StringPiece kNetwork = "network";
-constexpr base::StringPiece kLastFour = "last_four";
-constexpr base::StringPiece kExpMonth = "exp_month";
-constexpr base::StringPiece kExpYear = "exp_year";
-constexpr base::StringPiece kBankName = "bank_name";
+constexpr std::string_view kNetwork = "network";
+constexpr std::string_view kLastFour = "last_four";
+constexpr std::string_view kExpMonth = "exp_month";
+constexpr std::string_view kExpYear = "exp_year";
+constexpr std::string_view kBankName = "bank_name";
 // kNickname = "nickname"
-constexpr base::StringPiece kCardIssuer = "card_issuer";
-constexpr base::StringPiece kCardIssuerId = "card_issuer_id";
-constexpr base::StringPiece kInstrumentId = "instrument_id";
-constexpr base::StringPiece kVirtualCardEnrollmentState =
+constexpr std::string_view kCardIssuer = "card_issuer";
+constexpr std::string_view kCardIssuerId = "card_issuer_id";
+constexpr std::string_view kInstrumentId = "instrument_id";
+constexpr std::string_view kVirtualCardEnrollmentState =
     "virtual_card_enrollment_state";
-constexpr base::StringPiece kVirtualCardEnrollmentType =
+constexpr std::string_view kVirtualCardEnrollmentType =
     "virtual_card_enrollment_type";
-constexpr base::StringPiece kCardArtUrl = "card_art_url";
-constexpr base::StringPiece kProductDescription = "product_description";
+constexpr std::string_view kCardArtUrl = "card_art_url";
+constexpr std::string_view kProductDescription = "product_description";
 
-constexpr base::StringPiece kUnmaskedCreditCardsTable = "unmasked_credit_cards";
+constexpr std::string_view kUnmaskedCreditCardsTable = "unmasked_credit_cards";
 // kId = "id"
 // kCardNumberEncrypted = "card_number_encrypted"
-constexpr base::StringPiece kUnmaskDate = "unmask_date";
+constexpr std::string_view kUnmaskDate = "unmask_date";
 
-constexpr base::StringPiece kServerCardCloudTokenDataTable =
+constexpr std::string_view kServerCardCloudTokenDataTable =
     "server_card_cloud_token_data";
 // kId = "id"
-constexpr base::StringPiece kSuffix = "suffix";
+constexpr std::string_view kSuffix = "suffix";
 // kExpMonth = "exp_month"
 // kExpYear = "exp_year"
 // kCardArtUrl = "card_art_url"
-constexpr base::StringPiece kInstrumentToken = "instrument_token";
+constexpr std::string_view kInstrumentToken = "instrument_token";
 
-constexpr base::StringPiece kServerCardMetadataTable = "server_card_metadata";
+constexpr std::string_view kServerCardMetadataTable = "server_card_metadata";
 // kId = "id"
 // kUseCount = "use_count"
 // kUseDate = "use_date"
 // kBillingAddressId = "billing_address_id"
 
-constexpr base::StringPiece kIBANsTable = "ibans";
+constexpr std::string_view kIbansTable = "ibans";
 // kGuid = "guid"
 // kUseCount = "use_count"
 // kUseDate = "use_date"
-constexpr base::StringPiece kValueEncrypted = "value_encrypted";
+constexpr std::string_view kValueEncrypted = "value_encrypted";
 // kNickname = "nickname"
 
-constexpr base::StringPiece kServerAddressesTable = "server_addresses";
+constexpr std::string_view kServerAddressesTable = "server_addresses";
 // kId = "id"
-constexpr base::StringPiece kRecipientName = "recipient_name";
+constexpr std::string_view kRecipientName = "recipient_name";
 // kCompanyName = "company_name"
 // kStreetAddress = "street_address"
-constexpr base::StringPiece kAddress1 = "address_1";
-constexpr base::StringPiece kAddress2 = "address_2";
-constexpr base::StringPiece kAddress3 = "address_3";
-constexpr base::StringPiece kAddress4 = "address_4";
-constexpr base::StringPiece kPostalCode = "postal_code";
+constexpr std::string_view kAddress1 = "address_1";
+constexpr std::string_view kAddress2 = "address_2";
+constexpr std::string_view kAddress3 = "address_3";
+constexpr std::string_view kAddress4 = "address_4";
+constexpr std::string_view kPostalCode = "postal_code";
 // kSortingCode = "sorting_code"
 // kCountryCode = "country_code"
 // kLanguageCode = "language_code"
-constexpr base::StringPiece kPhoneNumber = "phone_number";
+constexpr std::string_view kPhoneNumber = "phone_number";
 
-constexpr base::StringPiece kServerAddressMetadataTable =
+constexpr std::string_view kServerAddressMetadataTable =
     "server_address_metadata";
 // kId = "id"
 // kUseCount = "use_count"
 // kUseDate = "use_date"
-constexpr base::StringPiece kHasConverted = "has_converted";
+constexpr std::string_view kHasConverted = "has_converted";
 
-constexpr base::StringPiece kAutofillSyncMetadataTable =
+constexpr std::string_view kAutofillSyncMetadataTable =
     "autofill_sync_metadata";
-constexpr base::StringPiece kModelType = "model_type";
-constexpr base::StringPiece kStorageKey = "storage_key";
+constexpr std::string_view kModelType = "model_type";
+constexpr std::string_view kStorageKey = "storage_key";
 // kValue = "value"
 
-constexpr base::StringPiece kAutofillModelTypeStateTable =
+constexpr std::string_view kAutofillModelTypeStateTable =
     "autofill_model_type_state";
 // kModelType = "model_type"
 // kValue = "value"
 
-constexpr base::StringPiece kPaymentsCustomerDataTable =
+constexpr std::string_view kPaymentsCustomerDataTable =
     "payments_customer_data";
-constexpr base::StringPiece kCustomerId = "customer_id";
+constexpr std::string_view kCustomerId = "customer_id";
 
-constexpr base::StringPiece kPaymentsUpiVpaTable = "payments_upi_vpa";
-constexpr base::StringPiece kVpa = "vpa";
+constexpr std::string_view kPaymentsUpiVpaTable = "payments_upi_vpa";
+constexpr std::string_view kVpa = "vpa";
 
-constexpr base::StringPiece kOfferDataTable = "offer_data";
-constexpr base::StringPiece kOfferId = "offer_id";
-constexpr base::StringPiece kOfferRewardAmount = "offer_reward_amount";
-constexpr base::StringPiece kExpiry = "expiry";
-constexpr base::StringPiece kOfferDetailsUrl = "offer_details_url";
-constexpr base::StringPiece kPromoCode = "promo_code";
-constexpr base::StringPiece kValuePropText = "value_prop_text";
-constexpr base::StringPiece kSeeDetailsText = "see_details_text";
-constexpr base::StringPiece kUsageInstructionsText = "usage_instructions_text";
+constexpr std::string_view kOfferDataTable = "offer_data";
+constexpr std::string_view kOfferId = "offer_id";
+constexpr std::string_view kOfferRewardAmount = "offer_reward_amount";
+constexpr std::string_view kExpiry = "expiry";
+constexpr std::string_view kOfferDetailsUrl = "offer_details_url";
+constexpr std::string_view kPromoCode = "promo_code";
+constexpr std::string_view kValuePropText = "value_prop_text";
+constexpr std::string_view kSeeDetailsText = "see_details_text";
+constexpr std::string_view kUsageInstructionsText = "usage_instructions_text";
 
-constexpr base::StringPiece kOfferEligibleInstrumentTable =
+constexpr std::string_view kOfferEligibleInstrumentTable =
     "offer_eligible_instrument";
 // kOfferId = "offer_id"
 // kInstrumentId = "instrument_id"
 
-constexpr base::StringPiece kOfferMerchantDomainTable = "offer_merchant_domain";
+constexpr std::string_view kOfferMerchantDomainTable = "offer_merchant_domain";
 // kOfferId = "offer_id"
-constexpr base::StringPiece kMerchantDomain = "merchant_domain";
+constexpr std::string_view kMerchantDomain = "merchant_domain";
 
-constexpr base::StringPiece kContactInfoTable = "contact_info";
-constexpr base::StringPiece kLocalAddressesTable = "local_addresses";
+constexpr std::string_view kContactInfoTable = "contact_info";
+constexpr std::string_view kLocalAddressesTable = "local_addresses";
 // kGuid = "guid"
 // kUseCount = "use_count"
 // kUseDate = "use_date"
 // kDateModified = "date_modified"
 // kLanguageCode = "language_code"
 // kLabel = "label"
-constexpr base::StringPiece kInitialCreatorId = "initial_creator_id";
-constexpr base::StringPiece kLastModifierId = "last_modifier_id";
+constexpr std::string_view kInitialCreatorId = "initial_creator_id";
+constexpr std::string_view kLastModifierId = "last_modifier_id";
 
-constexpr base::StringPiece kContactInfoTypeTokensTable =
+constexpr std::string_view kContactInfoTypeTokensTable =
     "contact_info_type_tokens";
-constexpr base::StringPiece kLocalAddressesTypeTokensTable =
+constexpr std::string_view kLocalAddressesTypeTokensTable =
     "local_addresses_type_tokens";
 // kGuid = "guid"
-constexpr base::StringPiece kType = "type";
+constexpr std::string_view kType = "type";
 // kValue = "value"
-constexpr base::StringPiece kVerificationStatus = "verification_status";
+constexpr std::string_view kVerificationStatus = "verification_status";
+constexpr std::string_view kObservations = "observations";
 
-constexpr base::StringPiece kVirtualCardUsageDataTable =
+constexpr std::string_view kVirtualCardUsageDataTable =
     "virtual_card_usage_data";
 // kId = "id"
 // kInstrumentId = "instrument_id"
 // kMerchantDomain = "merchant_domain"
 // kLastFour = "last_four"
+
+constexpr std::string_view kLocalStoredCvcTable = "local_stored_cvc";
+// kGuid = "guid"
+// kValueEncrypted = "value_encrypted"
+constexpr std::string_view kLastUpdatedTimestamp = "last_updated_timestamp";
+
+constexpr std::string_view kServerStoredCvcTable = "server_stored_cvc";
+// kInstrumentId = "instrument_id"
+// kValueEncrypted = "value_encrypted"
+// kLastUpdatedTimestamp = "last_updated_timestamp"
 
 // Helper functions to construct SQL statements from string constants.
 // - Functions with names corresponding to SQL keywords execute the statement
@@ -329,10 +340,10 @@ constexpr base::StringPiece kVirtualCardUsageDataTable =
 // Returns true if successful.
 bool CreateTable(
     sql::Database* db,
-    base::StringPiece table_name,
-    std::initializer_list<std::pair<base::StringPiece, base::StringPiece>>
+    std::string_view table_name,
+    std::initializer_list<std::pair<std::string_view, std::string_view>>
         column_names_and_types,
-    std::initializer_list<base::StringPiece> composite_primary_key = {}) {
+    std::initializer_list<std::string_view> composite_primary_key = {}) {
   DCHECK(composite_primary_key.size() == 0 ||
          composite_primary_key.size() >= 2);
 
@@ -359,10 +370,10 @@ bool CreateTable(
 // Returns true if the table now exists.
 bool CreateTableIfNotExists(
     sql::Database* db,
-    base::StringPiece table_name,
-    std::initializer_list<std::pair<base::StringPiece, base::StringPiece>>
+    std::string_view table_name,
+    std::initializer_list<std::pair<std::string_view, std::string_view>>
         column_names_and_types,
-    std::initializer_list<base::StringPiece> composite_primary_key = {}) {
+    std::initializer_list<std::string_view> composite_primary_key = {}) {
   return db->DoesTableExist(table_name) ||
          CreateTable(db, table_name, column_names_and_types,
                      composite_primary_key);
@@ -372,8 +383,8 @@ bool CreateTableIfNotExists(
 // The index is named after the table and columns, separated by '_'.
 // Returns true if successful.
 bool CreateIndex(sql::Database* db,
-                 base::StringPiece table_name,
-                 std::initializer_list<base::StringPiece> columns) {
+                 std::string_view table_name,
+                 std::initializer_list<std::string_view> columns) {
   auto index_name =
       base::StrCat({table_name, "_", base::JoinString(columns, "_")});
   return db->Execute(
@@ -387,8 +398,8 @@ bool CreateIndex(sql::Database* db,
 // By setting `or_replace`, INSERT OR REPLACE INTO is used instead.
 void InsertBuilder(sql::Database* db,
                    sql::Statement& statement,
-                   base::StringPiece table_name,
-                   std::initializer_list<base::StringPiece> column_names,
+                   std::string_view table_name,
+                   std::initializer_list<std::string_view> column_names,
                    bool or_replace = false) {
   auto insert_or_replace =
       base::StrCat({"INSERT ", or_replace ? "OR REPLACE " : ""});
@@ -403,8 +414,8 @@ void InsertBuilder(sql::Database* db,
 
 // Renames the table `from` into `to` and returns true if successful.
 bool RenameTable(sql::Database* db,
-                 base::StringPiece from,
-                 base::StringPiece to) {
+                 std::string_view from,
+                 std::string_view to) {
   return db->Execute(
       base::StrCat({"ALTER TABLE ", from, " RENAME TO ", to}).c_str());
 }
@@ -412,8 +423,8 @@ bool RenameTable(sql::Database* db,
 // Wrapper around `sql::Database::DoesColumnExist()`, because that function
 // only accepts const char* parameters.
 bool DoesColumnExist(sql::Database* db,
-                     base::StringPiece table_name,
-                     base::StringPiece column_name) {
+                     std::string_view table_name,
+                     std::string_view column_name) {
   return db->DoesColumnExist(std::string(table_name).c_str(),
                              std::string(column_name).c_str());
 }
@@ -421,9 +432,9 @@ bool DoesColumnExist(sql::Database* db,
 // Adds a column named `column_name` of `type` to `table_name` and returns true
 // if successful.
 bool AddColumn(sql::Database* db,
-               base::StringPiece table_name,
-               base::StringPiece column_name,
-               base::StringPiece type) {
+               std::string_view table_name,
+               std::string_view column_name,
+               std::string_view type) {
   return db->Execute(base::StrCat({"ALTER TABLE ", table_name, " ADD COLUMN ",
                                    column_name, " ", type})
                          .c_str());
@@ -432,15 +443,26 @@ bool AddColumn(sql::Database* db,
 // Like `AddColumn()`, but conditioned on `column` not existing in `table_name`.
 // Returns true if the column is now part of the table
 bool AddColumnIfNotExists(sql::Database* db,
-                          base::StringPiece table_name,
-                          base::StringPiece column_name,
-                          base::StringPiece type) {
+                          std::string_view table_name,
+                          std::string_view column_name,
+                          std::string_view type) {
   return DoesColumnExist(db, table_name, column_name) ||
          AddColumn(db, table_name, column_name, type);
 }
 
+// Drops the column named `column_name` from `table_name` and returns true if
+// successful.
+bool DropColumn(sql::Database* db,
+                std::string_view table_name,
+                std::string_view column_name) {
+  return db->Execute(
+      base::StrCat({"ALTER TABLE ", table_name, " DROP COLUMN ", column_name})
+          .c_str());
+  ;
+}
+
 // Drops `table_name` and returns true if successful.
-bool DropTable(sql::Database* db, base::StringPiece table_name) {
+bool DropTable(sql::Database* db, std::string_view table_name) {
   return db->Execute(base::StrCat({"DROP TABLE ", table_name}).c_str());
 }
 
@@ -448,8 +470,8 @@ bool DropTable(sql::Database* db, base::StringPiece table_name) {
 // can optionally be specified in `where_clause`.
 void DeleteBuilder(sql::Database* db,
                    sql::Statement& statement,
-                   base::StringPiece table_name,
-                   base::StringPiece where_clause = "") {
+                   std::string_view table_name,
+                   std::string_view where_clause = "") {
   auto where =
       where_clause.empty() ? "" : base::StrCat({" WHERE ", where_clause});
   statement.Assign(db->GetUniqueStatement(
@@ -459,8 +481,8 @@ void DeleteBuilder(sql::Database* db,
 // Like `DeleteBuilder()`, but runs the statement and returns true if it was
 // successful.
 bool Delete(sql::Database* db,
-            base::StringPiece table_name,
-            base::StringPiece where_clause = "") {
+            std::string_view table_name,
+            std::string_view where_clause = "") {
   sql::Statement statement;
   DeleteBuilder(db, statement, table_name, where_clause);
   return statement.Run();
@@ -470,9 +492,9 @@ bool Delete(sql::Database* db,
 // `column` = `value`.
 // Runs the statement and returns true if it was successful.
 bool DeleteWhereColumnEq(sql::Database* db,
-                         base::StringPiece table_name,
-                         base::StringPiece column,
-                         base::StringPiece value) {
+                         std::string_view table_name,
+                         std::string_view column,
+                         std::string_view value) {
   sql::Statement statement;
   DeleteBuilder(db, statement, table_name, base::StrCat({column, " = ?"}));
   statement.BindString(0, value);
@@ -483,8 +505,8 @@ bool DeleteWhereColumnEq(sql::Database* db,
 // `column` = `value`.
 // Runs the statement and returns true if it was successful.
 bool DeleteWhereColumnEq(sql::Database* db,
-                         base::StringPiece table_name,
-                         base::StringPiece column,
+                         std::string_view table_name,
+                         std::string_view column,
                          int value) {
   sql::Statement statement;
   DeleteBuilder(db, statement, table_name, base::StrCat({column, " = ?"}));
@@ -497,9 +519,9 @@ bool DeleteWhereColumnEq(sql::Database* db,
 // specified in `where_clause`.
 void UpdateBuilder(sql::Database* db,
                    sql::Statement& statement,
-                   base::StringPiece table_name,
-                   std::initializer_list<base::StringPiece> column_names,
-                   base::StringPiece where_clause = "") {
+                   std::string_view table_name,
+                   std::initializer_list<std::string_view> column_names,
+                   std::string_view where_clause = "") {
   auto columns_with_placeholders =
       base::JoinString(column_names, " = ?, ") + " = ?";
   auto where =
@@ -514,9 +536,9 @@ void UpdateBuilder(sql::Database* db,
 // optionally further `modifiers`, such as WHERE, ORDER BY, etc.
 void SelectBuilder(sql::Database* db,
                    sql::Statement& statement,
-                   base::StringPiece table_name,
-                   std::initializer_list<base::StringPiece> columns,
-                   base::StringPiece modifiers = "") {
+                   std::string_view table_name,
+                   std::initializer_list<std::string_view> columns,
+                   std::string_view modifiers = "") {
   statement.Assign(db->GetUniqueStatement(
       base::StrCat({"SELECT ", base::JoinString(columns, ", "), " FROM ",
                     table_name, " ", modifiers})
@@ -527,9 +549,9 @@ void SelectBuilder(sql::Database* db,
 // `guid`. Returns `statement.is_valid() && statement.Step()`.
 bool SelectByGuid(sql::Database* db,
                   sql::Statement& statement,
-                  base::StringPiece table_name,
-                  std::initializer_list<base::StringPiece> columns,
-                  base::StringPiece guid) {
+                  std::string_view table_name,
+                  std::initializer_list<std::string_view> columns,
+                  std::string_view guid) {
   SelectBuilder(db, statement, table_name, columns, "WHERE guid=?");
   statement.BindString(0, guid);
   return statement.is_valid() && statement.Step();
@@ -539,9 +561,9 @@ bool SelectByGuid(sql::Database* db,
 // [low, high[ of `column_between`.
 void SelectBetween(sql::Database* db,
                    sql::Statement& statement,
-                   base::StringPiece table_name,
-                   std::initializer_list<base::StringPiece> columns,
-                   base::StringPiece column_between,
+                   std::string_view table_name,
+                   std::initializer_list<std::string_view> columns,
+                   std::string_view column_between,
                    int64_t low,
                    int64_t high) {
   auto between_selector = base::StrCat(
@@ -615,7 +637,29 @@ void BindCreditCardToStatement(const CreditCard& credit_card,
   s->BindString16(index++, credit_card.nickname());
 }
 
-void BindIBANToStatement(const IBAN& iban,
+void BindLocalStoredCvcToStatement(const CreditCard& credit_card,
+                                   const base::Time& modification_date,
+                                   sql::Statement* s,
+                                   const AutofillTableEncryptor& encryptor) {
+  CHECK(credit_card.record_type() == CreditCard::RecordType::kLocalCard);
+  DCHECK(base::Uuid::ParseCaseInsensitive(credit_card.guid()).is_valid());
+  int index = 0;
+  s->BindString(index++, credit_card.guid());
+
+  BindEncryptedValueToColumn(s, index++, credit_card.cvc(), encryptor);
+  s->BindInt64(index++, modification_date.ToTimeT());
+}
+
+void BindServerCvcToStatement(const ServerCvc& server_cvc,
+                              const AutofillTableEncryptor& encryptor,
+                              sql::Statement* s) {
+  int index = 0;
+  s->BindInt64(index++, server_cvc.instrument_id);
+  BindEncryptedValueToColumn(s, index++, server_cvc.cvc, encryptor);
+  s->BindInt64(index++, server_cvc.last_updated_timestamp.ToTimeT());
+}
+
+void BindIbanToStatement(const Iban& iban,
                          sql::Statement* s,
                          const AutofillTableEncryptor& encryptor) {
   DCHECK(base::Uuid::ParseCaseInsensitive(iban.guid()).is_valid());
@@ -667,34 +711,51 @@ std::u16string UnencryptValueFromColumn(
 }
 
 std::unique_ptr<CreditCard> CreditCardFromStatement(
-    sql::Statement& s,
+    sql::Statement& card_statement,
+    absl::optional<std::reference_wrapper<sql::Statement>> cvc_statement,
     const AutofillTableEncryptor& encryptor) {
   auto credit_card = std::make_unique<CreditCard>();
 
   int index = 0;
-  credit_card->set_guid(s.ColumnString(index++));
+  credit_card->set_guid(card_statement.ColumnString(index++));
   DCHECK(base::Uuid::ParseCaseInsensitive(credit_card->guid()).is_valid());
 
   for (ServerFieldType type : {CREDIT_CARD_NAME_FULL, CREDIT_CARD_EXP_MONTH,
                                CREDIT_CARD_EXP_4_DIGIT_YEAR}) {
-    credit_card->SetRawInfo(type, s.ColumnString16(index++));
+    credit_card->SetRawInfo(type, card_statement.ColumnString16(index++));
   }
-  credit_card->SetRawInfo(CREDIT_CARD_NUMBER,
-                          UnencryptValueFromColumn(s, index++, encryptor));
-  credit_card->set_use_count(s.ColumnInt64(index++));
-  credit_card->set_use_date(base::Time::FromTimeT(s.ColumnInt64(index++)));
+  credit_card->SetRawInfo(
+      CREDIT_CARD_NUMBER,
+      UnencryptValueFromColumn(card_statement, index++, encryptor));
+  credit_card->set_use_count(card_statement.ColumnInt64(index++));
+  credit_card->set_use_date(
+      base::Time::FromTimeT(card_statement.ColumnInt64(index++)));
   credit_card->set_modification_date(
-      base::Time::FromTimeT(s.ColumnInt64(index++)));
-  credit_card->set_origin(s.ColumnString(index++));
-  credit_card->set_billing_address_id(s.ColumnString(index++));
-  credit_card->SetNickname(s.ColumnString16(index++));
+      base::Time::FromTimeT(card_statement.ColumnInt64(index++)));
+  credit_card->set_origin(card_statement.ColumnString(index++));
+  credit_card->set_billing_address_id(card_statement.ColumnString(index++));
+  credit_card->SetNickname(card_statement.ColumnString16(index++));
+  // Only set cvc if we retrieve cvc from local_stored_cvc table.
+  if (cvc_statement) {
+    credit_card->set_cvc(
+        UnencryptValueFromColumn(cvc_statement.value(), 0, encryptor));
+  }
   return credit_card;
 }
 
-std::unique_ptr<IBAN> IBANFromStatement(
+std::unique_ptr<ServerCvc> ServerCvcFromStatement(
     sql::Statement& s,
     const AutofillTableEncryptor& encryptor) {
-  auto iban = std::make_unique<IBAN>();
+  return std::make_unique<ServerCvc>(ServerCvc{
+      .instrument_id = s.ColumnInt64(0),
+      .cvc = UnencryptValueFromColumn(s, 1, encryptor),
+      .last_updated_timestamp = base::Time::FromTimeT(s.ColumnInt64(2))});
+}
+
+std::unique_ptr<Iban> IbanFromStatement(
+    sql::Statement& s,
+    const AutofillTableEncryptor& encryptor) {
+  auto iban = std::make_unique<Iban>();
 
   int index = 0;
   iban->set_guid(s.ColumnString(index++));
@@ -912,52 +973,6 @@ std::u16string Substitute(const std::u16string& s,
   return result;
 }
 
-// All ServerFieldTypes stored for an AutofillProfile in
-// `GetProfileTypeTokensTable(profile-source)`
-// When introducing a new field type, it suffices to add it here. When removing
-// a field type, removing it from the list suffices (no additional clean-up in
-// the table necessary).
-// This is not reusing `AutofillProfile::SupportedTypes()` for three reasons:
-// - Due to the table design, the stored types are already ambiguous, so we
-//   prefer the explicitness here.
-// - Some supported types (like PHONE_HOME_CITY_CODE) are not stored.
-// - Some non-supported types are stored (usually types that don't have filling
-//   support yet).
-std::vector<ServerFieldType> GetStoredTypesForAutofillProfile() {
-  return {COMPANY_NAME,
-          NAME_HONORIFIC_PREFIX,
-          NAME_FIRST,
-          NAME_MIDDLE,
-          NAME_LAST_FIRST,
-          NAME_LAST_CONJUNCTION,
-          NAME_LAST_SECOND,
-          NAME_LAST,
-          NAME_FULL,
-          NAME_FULL_WITH_HONORIFIC_PREFIX,
-          ADDRESS_HOME_STREET_ADDRESS,
-          ADDRESS_HOME_STREET_NAME,
-          ADDRESS_HOME_DEPENDENT_STREET_NAME,
-          ADDRESS_HOME_HOUSE_NUMBER,
-          ADDRESS_HOME_SUBPREMISE,
-          ADDRESS_HOME_PREMISE_NAME,
-          ADDRESS_HOME_DEPENDENT_LOCALITY,
-          ADDRESS_HOME_CITY,
-          ADDRESS_HOME_STATE,
-          ADDRESS_HOME_ZIP,
-          ADDRESS_HOME_SORTING_CODE,
-          ADDRESS_HOME_COUNTRY,
-          ADDRESS_HOME_APT_NUM,
-          ADDRESS_HOME_FLOOR,
-          ADDRESS_HOME_LANDMARK,
-          ADDRESS_HOME_BETWEEN_STREETS,
-          ADDRESS_HOME_ADMIN_LEVEL2,
-          EMAIL_ADDRESS,
-          PHONE_HOME_WHOLE_NUMBER,
-          BIRTHDATE_DAY,
-          BIRTHDATE_MONTH,
-          BIRTHDATE_4_DIGIT_YEAR};
-}
-
 // This helper function binds the `profile`s properties to the placeholders in
 // `s`, in the order the columns are defined in the header file.
 // Instead of `profile.modification_date()`, `modification_date` is used. This
@@ -980,7 +995,7 @@ void BindAutofillProfileToStatement(const AutofillProfile& profile,
 // layout. One table contains profile-level metadata, while another table
 // contains the values for every relevant ServerFieldType. The following two
 // functions are used to map from a profile's `source` to the correct table.
-base::StringPiece GetProfileMetadataTable(AutofillProfile::Source source) {
+std::string_view GetProfileMetadataTable(AutofillProfile::Source source) {
   switch (source) {
     case AutofillProfile::Source::kLocalOrSyncable:
       return kLocalAddressesTable;
@@ -989,7 +1004,7 @@ base::StringPiece GetProfileMetadataTable(AutofillProfile::Source source) {
   }
   NOTREACHED_NORETURN();
 }
-base::StringPiece GetProfileTypeTokensTable(AutofillProfile::Source source) {
+std::string_view GetProfileTypeTokensTable(AutofillProfile::Source source) {
   switch (source) {
     case AutofillProfile::Source::kLocalOrSyncable:
       return kLocalAddressesTypeTokensTable;
@@ -1012,7 +1027,14 @@ bool AddAutofillProfileToTable(sql::Database* db,
   BindAutofillProfileToStatement(profile, modification_date, s);
   if (!s.Run())
     return false;
-  for (ServerFieldType type : GetStoredTypesForAutofillProfile()) {
+  for (ServerFieldType type :
+       AutofillTable::GetStoredTypesForAutofillProfile()) {
+    if (!base::FeatureList::IsEnabled(
+            features::kAutofillEnableSupportForAddressOverflow) &&
+        type == ADDRESS_HOME_OVERFLOW) {
+      continue;
+    }
+
     if (!base::FeatureList::IsEnabled(
             features::kAutofillEnableSupportForLandmark) &&
         type == ADDRESS_HOME_LANDMARK) {
@@ -1029,13 +1051,52 @@ bool AddAutofillProfileToTable(sql::Database* db,
       continue;
     }
     InsertBuilder(db, s, GetProfileTypeTokensTable(profile.source()),
+                  {kGuid, kType, kValue, kVerificationStatus, kObservations});
+    s.BindString(0, profile.guid());
+    s.BindInt(1, type);
+    s.BindString16(2, Truncate(profile.GetRawInfo(type)));
+    s.BindInt(3, profile.GetVerificationStatusInt(type));
+    s.BindBlob(
+        4, profile.token_quality().SerializeObservationsForStoredType(type));
+    if (!s.Run())
+      return false;
+  }
+  return true;
+}
+
+// `MigrateToVersion113MigrateLocalAddressProfilesToNewTable()` migrates
+// profiles from one table layout to another. This function inserts the given
+// `profile` into the `GetProfileMetadataTable()` of schema version 113.
+// `AddAutofillProfileToTable()` can't be reused, since the schema can change in
+// future database versions in ways incompatible with version 113 (e.g. adding
+// a column).
+// The code was copied from `AddAutofillProfileToTable()` in version 113. Like
+// the migration logic, it shouldn't be changed.
+bool AddAutofillProfileToTableVersion113(sql::Database* db,
+                                         const AutofillProfile& profile,
+                                         const base::Time& modification_date) {
+  sql::Statement s;
+  InsertBuilder(db, s, GetProfileMetadataTable(profile.source()),
+                {kGuid, kUseCount, kUseDate, kDateModified, kLanguageCode,
+                 kLabel, kInitialCreatorId, kLastModifierId});
+  BindAutofillProfileToStatement(profile, modification_date, s);
+  if (!s.Run()) {
+    return false;
+  }
+  // Note that `GetStoredTypesForAutofillProfile()` might change in future
+  // versions. Due to the flexible layout of the type tokens table, this is not
+  // a problem.
+  for (ServerFieldType type :
+       AutofillTable::GetStoredTypesForAutofillProfile()) {
+    InsertBuilder(db, s, GetProfileTypeTokensTable(profile.source()),
                   {kGuid, kType, kValue, kVerificationStatus});
     s.BindString(0, profile.guid());
     s.BindInt(1, type);
     s.BindString16(2, Truncate(profile.GetRawInfo(type)));
     s.BindInt(3, profile.GetVerificationStatusInt(type));
-    if (!s.Run())
+    if (!s.Run()) {
       return false;
+    }
   }
   return true;
 }
@@ -1053,8 +1114,50 @@ AutofillTable::AutofillTable()
 
 AutofillTable::~AutofillTable() = default;
 
+// static
 AutofillTable* AutofillTable::FromWebDatabase(WebDatabase* db) {
   return static_cast<AutofillTable*>(db->GetTable(GetKey()));
+}
+
+// static
+base::span<const ServerFieldType>
+AutofillTable::GetStoredTypesForAutofillProfile() {
+  static constexpr ServerFieldType stored_types[]{
+      COMPANY_NAME,
+      NAME_HONORIFIC_PREFIX,
+      NAME_FIRST,
+      NAME_MIDDLE,
+      NAME_LAST_FIRST,
+      NAME_LAST_CONJUNCTION,
+      NAME_LAST_SECOND,
+      NAME_LAST,
+      NAME_FULL,
+      NAME_FULL_WITH_HONORIFIC_PREFIX,
+      ADDRESS_HOME_STREET_ADDRESS,
+      ADDRESS_HOME_STREET_NAME,
+      ADDRESS_HOME_DEPENDENT_STREET_NAME,
+      ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME,
+      ADDRESS_HOME_HOUSE_NUMBER,
+      ADDRESS_HOME_SUBPREMISE,
+      ADDRESS_HOME_PREMISE_NAME,
+      ADDRESS_HOME_DEPENDENT_LOCALITY,
+      ADDRESS_HOME_CITY,
+      ADDRESS_HOME_STATE,
+      ADDRESS_HOME_ZIP,
+      ADDRESS_HOME_SORTING_CODE,
+      ADDRESS_HOME_COUNTRY,
+      ADDRESS_HOME_APT_NUM,
+      ADDRESS_HOME_FLOOR,
+      ADDRESS_HOME_OVERFLOW,
+      ADDRESS_HOME_LANDMARK,
+      ADDRESS_HOME_BETWEEN_STREETS,
+      ADDRESS_HOME_ADMIN_LEVEL2,
+      EMAIL_ADDRESS,
+      PHONE_HOME_WHOLE_NUMBER,
+      BIRTHDATE_DAY,
+      BIRTHDATE_MONTH,
+      BIRTHDATE_4_DIGIT_YEAR};
+  return stored_types;
 }
 
 WebDatabaseTable::TypeKey AutofillTable::GetTypeKey() const {
@@ -1062,7 +1165,7 @@ WebDatabaseTable::TypeKey AutofillTable::GetTypeKey() const {
 }
 
 bool AutofillTable::CreateTablesIfNecessary() {
-  return InitMainTable() && InitCreditCardsTable() && InitIBANsTable() &&
+  return InitMainTable() && InitCreditCardsTable() && InitIbansTable() &&
          InitMaskedCreditCardsTable() && InitUnmaskedCreditCardsTable() &&
          InitServerCardMetadataTable() && InitServerAddressesTable() &&
          InitServerAddressMetadataTable() && InitAutofillSyncMetadataTable() &&
@@ -1075,7 +1178,7 @@ bool AutofillTable::CreateTablesIfNecessary() {
          InitProfileMetadataTable(AutofillProfile::Source::kLocalOrSyncable) &&
          InitProfileTypeTokensTable(
              AutofillProfile::Source::kLocalOrSyncable) &&
-         InitVirtualCardUsageDataTable();
+         InitVirtualCardUsageDataTable() && InitStoredCvcTable();
 }
 
 bool AutofillTable::MigrateToVersion(int version,
@@ -1149,10 +1252,10 @@ bool AutofillTable::MigrateToVersion(int version,
       return MigrateToVersion104AddProductDescriptionColumn();
     case 105:
       *update_compatible_version = false;
-      return MigrateToVersion105AddAutofillIBANTable();
+      return MigrateToVersion105AddAutofillIbanTable();
     case 106:
       *update_compatible_version = true;
-      return MigrateToVersion106RecreateAutofillIBANTable();
+      return MigrateToVersion106RecreateAutofillIbanTable();
     case 107:
       *update_compatible_version = false;
       return MigrateToVersion107AddContactInfoTables();
@@ -1180,6 +1283,12 @@ bool AutofillTable::MigrateToVersion(int version,
     case 115:
       *update_compatible_version = true;
       return MigrateToVersion115EncryptIbanValue();
+    case 116:
+      *update_compatible_version = false;
+      return MigrateToVersion116AddStoredCvcTable();
+    case 117:
+      *update_compatible_version = false;
+      return MigrateToVersion117AddProfileObservationColumn();
   }
   return true;
 }
@@ -1592,7 +1701,8 @@ std::unique_ptr<AutofillProfile> AutofillTable::GetAutofillProfile(
   profile->set_last_modifier_id(s.ColumnInt(index++));
 
   if (!SelectByGuid(db_, s, GetProfileTypeTokensTable(profile_source),
-                    {kType, kValue, kVerificationStatus}, guid)) {
+                    {kType, kValue, kVerificationStatus, kObservations},
+                    guid)) {
     return nullptr;
   }
   // As `SelectByGuid()` already calls `s.Step()`, do-while is used here.
@@ -1601,6 +1711,8 @@ std::unique_ptr<AutofillProfile> AutofillTable::GetAutofillProfile(
     DCHECK(type != UNKNOWN_TYPE);
     profile->SetRawInfoWithVerificationStatusInt(type, s.ColumnString16(1),
                                                  s.ColumnInt(2));
+    profile->token_quality().LoadSerializedObservationsForStoredType(
+        type, s.ColumnBlob(3));
   } while (s.Step());
 
   profile->FinalizeAfterImport();
@@ -1820,11 +1932,11 @@ void AutofillTable::SetServerProfiles(
   SetServerProfilesAndMetadata(profiles, /*update_metadata=*/true);
 }
 
-bool AutofillTable::AddIBAN(const IBAN& iban) {
+bool AutofillTable::AddIban(const Iban& iban) {
   sql::Statement s;
-  InsertBuilder(db_, s, kIBANsTable,
+  InsertBuilder(db_, s, kIbansTable,
                 {kGuid, kUseCount, kUseDate, kValueEncrypted, kNickname});
-  BindIBANToStatement(iban, &s, *autofill_table_encryptor_);
+  BindIbanToStatement(iban, &s, *autofill_table_encryptor_);
   if (!s.Run())
     return false;
 
@@ -1832,10 +1944,10 @@ bool AutofillTable::AddIBAN(const IBAN& iban) {
   return true;
 }
 
-bool AutofillTable::UpdateIBAN(const IBAN& iban) {
+bool AutofillTable::UpdateIban(const Iban& iban) {
   DCHECK(base::Uuid::ParseCaseInsensitive(iban.guid()).is_valid());
 
-  std::unique_ptr<IBAN> old_iban = GetIBAN(iban.guid());
+  std::unique_ptr<Iban> old_iban = GetIban(iban.guid());
   if (!old_iban) {
     return false;
   }
@@ -1845,25 +1957,25 @@ bool AutofillTable::UpdateIBAN(const IBAN& iban) {
   }
 
   sql::Statement s;
-  UpdateBuilder(db_, s, kIBANsTable,
+  UpdateBuilder(db_, s, kIbansTable,
                 {kGuid, kUseCount, kUseDate, kValueEncrypted, kNickname},
                 "guid=?1");
-  BindIBANToStatement(iban, &s, *autofill_table_encryptor_);
+  BindIbanToStatement(iban, &s, *autofill_table_encryptor_);
 
   bool result = s.Run();
   DCHECK_GT(db_->GetLastChangeCount(), 0);
   return result;
 }
 
-bool AutofillTable::RemoveIBAN(const std::string& guid) {
+bool AutofillTable::RemoveIban(const std::string& guid) {
   DCHECK(base::Uuid::ParseCaseInsensitive(guid).is_valid());
-  return DeleteWhereColumnEq(db_, kIBANsTable, kGuid, guid);
+  return DeleteWhereColumnEq(db_, kIbansTable, kGuid, guid);
 }
 
-std::unique_ptr<IBAN> AutofillTable::GetIBAN(const std::string& guid) {
+std::unique_ptr<Iban> AutofillTable::GetIban(const std::string& guid) {
   DCHECK(base::Uuid::ParseCaseInsensitive(guid).is_valid());
   sql::Statement s;
-  SelectBuilder(db_, s, kIBANsTable,
+  SelectBuilder(db_, s, kIbansTable,
                 {kGuid, kUseCount, kUseDate, kValueEncrypted, kNickname},
                 "WHERE guid = ?");
   s.BindString(0, guid);
@@ -1871,19 +1983,19 @@ std::unique_ptr<IBAN> AutofillTable::GetIBAN(const std::string& guid) {
   if (!s.Step())
     return nullptr;
 
-  return IBANFromStatement(s, *autofill_table_encryptor_);
+  return IbanFromStatement(s, *autofill_table_encryptor_);
 }
 
-bool AutofillTable::GetIBANs(std::vector<std::unique_ptr<IBAN>>* ibans) {
+bool AutofillTable::GetIbans(std::vector<std::unique_ptr<Iban>>* ibans) {
   DCHECK(ibans);
   ibans->clear();
 
   sql::Statement s;
-  SelectBuilder(db_, s, kIBANsTable, {kGuid}, "ORDER BY use_date DESC, guid");
+  SelectBuilder(db_, s, kIbansTable, {kGuid}, "ORDER BY use_date DESC, guid");
 
   while (s.Step()) {
     std::string guid = s.ColumnString(0);
-    std::unique_ptr<IBAN> iban = GetIBAN(guid);
+    std::unique_ptr<Iban> iban = GetIban(guid);
     if (!iban)
       return false;
     ibans->push_back(std::move(iban));
@@ -1893,18 +2005,36 @@ bool AutofillTable::GetIBANs(std::vector<std::unique_ptr<IBAN>>* ibans) {
 }
 
 bool AutofillTable::AddCreditCard(const CreditCard& credit_card) {
-  sql::Statement s;
-  InsertBuilder(db_, s, kCreditCardsTable,
+  // We have 2 independent DB operations:
+  // 1. Insert a credit_card
+  // 2. Insert a CVC.
+  // We don't wrap these in a transaction because a credit_card without a CVC is
+  // a valid record, we are OK that the CC is stored but the CVC fails silently.
+  // We only return false if credit_card insert fails.
+  sql::Statement card_statement;
+  InsertBuilder(db_, card_statement, kCreditCardsTable,
                 {kGuid, kNameOnCard, kExpirationMonth, kExpirationYear,
                  kCardNumberEncrypted, kUseCount, kUseDate, kDateModified,
                  kOrigin, kBillingAddressId, kNickname});
-  BindCreditCardToStatement(credit_card, AutofillClock::Now(), &s,
+  BindCreditCardToStatement(credit_card, AutofillClock::Now(), &card_statement,
                             *autofill_table_encryptor_);
 
-  if (!s.Run())
+  if (!card_statement.Run()) {
     return false;
+  }
 
   DCHECK_GT(db_->GetLastChangeCount(), 0);
+
+  // If credit card contains cvc, will store cvc in local_stored_cvc table.
+  if (!credit_card.cvc().empty()) {
+    sql::Statement cvc_statement;
+    InsertBuilder(db_, cvc_statement, kLocalStoredCvcTable,
+                  {kGuid, kValueEncrypted, kLastUpdatedTimestamp});
+    BindLocalStoredCvcToStatement(credit_card, AutofillClock::Now(),
+                                  &cvc_statement, *autofill_table_encryptor_);
+    cvc_statement.Run();
+  }
+
   return true;
 }
 
@@ -1916,32 +2046,54 @@ bool AutofillTable::UpdateCreditCard(const CreditCard& credit_card) {
   if (!old_credit_card)
     return false;
 
-  bool update_modification_date = *old_credit_card != credit_card;
+  bool cvc_result = false;
+  if (old_credit_card->cvc() != credit_card.cvc()) {
+    sql::Statement cvc_statement;
+    // If existing card doesn't have CVC, we will insert CVC into
+    // local_stored_cvc table. If existing card does have CVC, we will update
+    // CVC for local_stored_cvc table.
+    if (old_credit_card->cvc().empty()) {
+      InsertBuilder(db_, cvc_statement, kLocalStoredCvcTable,
+                    {kGuid, kValueEncrypted, kLastUpdatedTimestamp});
+    } else {
+      UpdateBuilder(db_, cvc_statement, kLocalStoredCvcTable,
+                    {kGuid, kValueEncrypted, kLastUpdatedTimestamp}, "guid=?1");
+    }
+    BindLocalStoredCvcToStatement(credit_card, AutofillClock::Now(),
+                                  &cvc_statement, *autofill_table_encryptor_);
+    cvc_result = cvc_statement.Run();
+    CHECK(db_->GetLastChangeCount() > 0);
+  }
 
-  sql::Statement s;
-  UpdateBuilder(db_, s, kCreditCardsTable,
+  // If only cvc is updated, we don't need to update credit_card table
+  // date_modified field. Since we already checked if cvc updated, to ignore
+  // cvc, we set old_credit_card cvc to new cvc.
+  old_credit_card->set_cvc(credit_card.cvc());
+  bool card_updated = *old_credit_card != credit_card;
+  sql::Statement card_statement;
+  UpdateBuilder(db_, card_statement, kCreditCardsTable,
                 {kGuid, kNameOnCard, kExpirationMonth, kExpirationYear,
                  kCardNumberEncrypted, kUseCount, kUseDate, kDateModified,
                  kOrigin, kBillingAddressId, kNickname},
                 "guid=?1");
   BindCreditCardToStatement(credit_card,
-                            update_modification_date
-                                ? AutofillClock::Now()
-                                : old_credit_card->modification_date(),
-                            &s, *autofill_table_encryptor_);
+                            card_updated ? AutofillClock::Now()
+                                         : old_credit_card->modification_date(),
+                            &card_statement, *autofill_table_encryptor_);
+  bool card_result = card_statement.Run();
+  CHECK(db_->GetLastChangeCount() > 0);
 
-  bool result = s.Run();
-  DCHECK_GT(db_->GetLastChangeCount(), 0);
-  return result;
+  return cvc_result || card_result;
 }
 
 bool AutofillTable::RemoveCreditCard(const std::string& guid) {
   DCHECK(base::Uuid::ParseCaseInsensitive(guid).is_valid());
+  DeleteWhereColumnEq(db_, kLocalStoredCvcTable, kGuid, guid);
   return DeleteWhereColumnEq(db_, kCreditCardsTable, kGuid, guid);
 }
 
 bool AutofillTable::AddFullServerCreditCard(const CreditCard& credit_card) {
-  DCHECK_EQ(CreditCard::FULL_SERVER_CARD, credit_card.record_type());
+  DCHECK_EQ(CreditCard::RecordType::kFullServerCard, credit_card.record_type());
   DCHECK(!credit_card.number().empty());
   DCHECK(!credit_card.server_id().empty());
 
@@ -1954,7 +2106,7 @@ bool AutofillTable::AddFullServerCreditCard(const CreditCard& credit_card) {
   DeleteFromMaskedCreditCards(credit_card.server_id());
 
   CreditCard masked(credit_card);
-  masked.set_record_type(CreditCard::MASKED_SERVER_CARD);
+  masked.set_record_type(CreditCard::RecordType::kMaskedServerCard);
   masked.SetNumber(credit_card.LastFourDigits());
   masked.RecordAndLogUse();
   DCHECK(!masked.network().empty());
@@ -1970,18 +2122,31 @@ bool AutofillTable::AddFullServerCreditCard(const CreditCard& credit_card) {
 std::unique_ptr<CreditCard> AutofillTable::GetCreditCard(
     const std::string& guid) {
   DCHECK(base::Uuid::ParseCaseInsensitive(guid).is_valid());
-  sql::Statement s;
-  SelectBuilder(db_, s, kCreditCardsTable,
+  sql::Statement card_statement;
+  SelectBuilder(db_, card_statement, kCreditCardsTable,
                 {kGuid, kNameOnCard, kExpirationMonth, kExpirationYear,
                  kCardNumberEncrypted, kUseCount, kUseDate, kDateModified,
                  kOrigin, kBillingAddressId, kNickname},
                 "WHERE guid = ?");
-  s.BindString(0, guid);
+  card_statement.BindString(0, guid);
 
-  if (!s.Step())
+  if (!card_statement.Step()) {
     return nullptr;
+  }
 
-  return CreditCardFromStatement(s, *autofill_table_encryptor_);
+  // Get cvc from local_stored_cvc table.
+  sql::Statement cvc_statement;
+  SelectBuilder(db_, cvc_statement, kLocalStoredCvcTable, {kValueEncrypted},
+                "WHERE guid = ?");
+  cvc_statement.BindString(0, guid);
+
+  bool has_cvc = cvc_statement.Step();
+  return CreditCardFromStatement(
+      card_statement,
+      has_cvc ? absl::optional<
+                    std::reference_wrapper<sql::Statement>>{cvc_statement}
+              : absl::nullopt,
+      *autofill_table_encryptor_);
 }
 
 bool AutofillTable::GetCreditCards(
@@ -2007,6 +2172,10 @@ bool AutofillTable::GetCreditCards(
 bool AutofillTable::GetServerCreditCards(
     std::vector<std::unique_ptr<CreditCard>>* credit_cards) const {
   credit_cards->clear();
+  auto instrument_to_cvc = base::MakeFlatMap<int64_t, std::u16string>(
+      GetAllServerCvcs(), {}, [](const auto& server_cvc) {
+        return std::make_pair(server_cvc->instrument_id, server_cvc->cvc);
+      });
 
   sql::Statement s;
   SelectBuilder(
@@ -2028,14 +2197,14 @@ bool AutofillTable::GetServerCreditCards(
     std::u16string full_card_number =
         UnencryptValueFromColumn(s, index++, *autofill_table_encryptor_);
     std::u16string last_four = s.ColumnString16(index++);
-    CreditCard::RecordType record_type = full_card_number.empty()
-                                             ? CreditCard::MASKED_SERVER_CARD
-                                             : CreditCard::FULL_SERVER_CARD;
+    CreditCard::RecordType record_type =
+        full_card_number.empty() ? CreditCard::RecordType::kMaskedServerCard
+                                 : CreditCard::RecordType::kFullServerCard;
     std::string server_id = s.ColumnString(index++);
     std::unique_ptr<CreditCard> card =
         std::make_unique<CreditCard>(record_type, server_id);
     card->SetRawInfo(CREDIT_CARD_NUMBER,
-                     record_type == CreditCard::MASKED_SERVER_CARD
+                     record_type == CreditCard::RecordType::kMaskedServerCard
                          ? last_four
                          : full_card_number);
     card->set_use_count(s.ColumnInt64(index++));
@@ -2045,7 +2214,7 @@ bool AutofillTable::GetServerCreditCards(
     card->set_modification_date(base::Time());
 
     std::string card_network = s.ColumnString(index++);
-    if (record_type == CreditCard::MASKED_SERVER_CARD) {
+    if (record_type == CreditCard::RecordType::kMaskedServerCard) {
       // The issuer network must be set after setting the number to override the
       // autodetected issuer network.
       card->SetNetworkForMaskedCard(card_network.c_str());
@@ -2071,6 +2240,7 @@ bool AutofillTable::GetServerCreditCards(
             s.ColumnInt(index++)));
     card->set_card_art_url(GURL(s.ColumnString(index++)));
     card->set_product_description(s.ColumnString16(index++));
+    card->set_cvc(instrument_to_cvc[card->instrument_id()]);
     credit_cards->push_back(std::move(card));
   }
   return s.Succeeded();
@@ -2109,7 +2279,7 @@ bool AutofillTable::UnmaskServerCreditCard(const CreditCard& masked,
   AddUnmaskedCreditCard(masked.server_id(), full_number);
 
   CreditCard unmasked = masked;
-  unmasked.set_record_type(CreditCard::FULL_SERVER_CARD);
+  unmasked.set_record_type(CreditCard::RecordType::kFullServerCard);
   unmasked.SetNumber(full_number);
   unmasked.RecordAndLogUse();
   UpdateServerCardMetadata(unmasked);
@@ -2121,6 +2291,61 @@ bool AutofillTable::UnmaskServerCreditCard(const CreditCard& masked,
 
 bool AutofillTable::MaskServerCreditCard(const std::string& id) {
   return DeleteFromUnmaskedCreditCards(id);
+}
+
+bool AutofillTable::AddServerCvc(const ServerCvc& server_cvc) {
+  if (server_cvc.cvc.empty()) {
+    return false;
+  }
+
+  sql::Statement s;
+  InsertBuilder(db_, s, kServerStoredCvcTable,
+                {kInstrumentId, kValueEncrypted, kLastUpdatedTimestamp});
+  BindServerCvcToStatement(server_cvc, *autofill_table_encryptor_, &s);
+  s.Run();
+  return db_->GetLastChangeCount() > 0;
+}
+
+bool AutofillTable::UpdateServerCvc(const ServerCvc& server_cvc) {
+  sql::Statement s;
+  UpdateBuilder(db_, s, kServerStoredCvcTable,
+                {kInstrumentId, kValueEncrypted, kLastUpdatedTimestamp},
+                "instrument_id=?1");
+  BindServerCvcToStatement(server_cvc, *autofill_table_encryptor_, &s);
+  s.Run();
+  return db_->GetLastChangeCount() > 0;
+}
+
+bool AutofillTable::RemoveServerCvc(int64_t instrument_id) {
+  DeleteWhereColumnEq(db_, kServerStoredCvcTable, kInstrumentId, instrument_id);
+  return db_->GetLastChangeCount() > 0;
+}
+
+bool AutofillTable::ClearServerCvcs() {
+  Delete(db_, kServerStoredCvcTable);
+  return db_->GetLastChangeCount() > 0;
+}
+
+bool AutofillTable::ReconcileServerCvcs() {
+  sql::Statement s(db_->GetUniqueStatement(
+      base::StrCat({"DELETE FROM ", kServerStoredCvcTable, " WHERE ",
+                    kInstrumentId, " NOT IN (SELECT ", kInstrumentId, " FROM ",
+                    kMaskedCreditCardsTable, ")"})
+          .c_str()));
+  s.Run();
+  return db_->GetLastChangeCount() > 0;
+}
+
+std::vector<std::unique_ptr<ServerCvc>> AutofillTable::GetAllServerCvcs()
+    const {
+  std::vector<std::unique_ptr<ServerCvc>> cvcs;
+  sql::Statement s;
+  SelectBuilder(db_, s, kServerStoredCvcTable,
+                {kInstrumentId, kValueEncrypted, kLastUpdatedTimestamp});
+  while (s.Step()) {
+    cvcs.push_back(ServerCvcFromStatement(s, *autofill_table_encryptor_));
+  }
+  return cvcs;
 }
 
 bool AutofillTable::AddServerCardMetadata(
@@ -2138,7 +2363,7 @@ bool AutofillTable::AddServerCardMetadata(
 }
 
 bool AutofillTable::UpdateServerCardMetadata(const CreditCard& credit_card) {
-  DCHECK_NE(CreditCard::LOCAL_CARD, credit_card.record_type());
+  DCHECK_NE(CreditCard::RecordType::kLocalCard, credit_card.record_type());
 
   DeleteWhereColumnEq(db_, kServerCardMetadataTable, kId,
                       credit_card.server_id());
@@ -2303,7 +2528,7 @@ void AutofillTable::SetServerCardsData(
 
   int index;
   for (const CreditCard& card : credit_cards) {
-    DCHECK_EQ(CreditCard::MASKED_SERVER_CARD, card.record_type());
+    DCHECK_EQ(CreditCard::RecordType::kMaskedServerCard, card.record_type());
     index = 0;
     masked_insert.BindString(index++, card.server_id());
     masked_insert.BindString(index++, card.network());
@@ -2658,7 +2883,7 @@ bool AutofillTable::ClearAllServerData() {
     return false;  // Some error, nothing was changed.
 
   bool changed = false;
-  for (base::StringPiece table_name :
+  for (std::string_view table_name :
        {kMaskedCreditCardsTable, kUnmaskedCreditCardsTable,
         kServerAddressesTable, kServerCardMetadataTable,
         kServerAddressMetadataTable, kPaymentsCustomerDataTable,
@@ -2749,6 +2974,16 @@ bool AutofillTable::RemoveAutofillDataModifiedBetween(
   if (!s_credit_cards.Run())
     return false;
 
+  // Remove credit card cvcs in the time range.
+  sql::Statement s_cvc;
+  DeleteBuilder(db_, s_cvc, kLocalStoredCvcTable,
+                "last_updated_timestamp >= ? AND last_updated_timestamp < ?");
+  s_cvc.BindInt64(0, delete_begin_t);
+  s_cvc.BindInt64(1, delete_end_t);
+  if (!s_cvc.Run()) {
+    return false;
+  }
+
   // Remove unmasked credit cards in the time range.
   sql::Statement s_unmasked_cards;
   DeleteBuilder(db_, s_unmasked_cards, kUnmaskedCreditCardsTable,
@@ -2794,8 +3029,9 @@ bool AutofillTable::RemoveOriginURLsModifiedBetween(
   return true;
 }
 
-bool AutofillTable::ClearCreditCards() {
-  return Delete(db_, kCreditCardsTable);
+void AutofillTable::ClearCreditCards() {
+  Delete(db_, kLocalStoredCvcTable);
+  Delete(db_, kCreditCardsTable);
 }
 
 bool AutofillTable::GetAllSyncMetadata(syncer::ModelType model_type,
@@ -2881,29 +3117,9 @@ bool AutofillTable::ClearModelTypeState(syncer::ModelType model_type) {
 }
 
 bool AutofillTable::MigrateToVersion83RemoveServerCardTypeColumn() {
-  // Sqlite does not support "alter table drop column" syntax, so it has be done
-  // manually.
-  constexpr base::StringPiece kMaskedCreditCardsTempTable =
-      "masked_credit_cards_temp";
   sql::Transaction transaction(db_);
   return transaction.Begin() &&
-         CreateTable(db_, kMaskedCreditCardsTempTable,
-                     {{kId, "VARCHAR"},
-                      {kStatus, "VARCHAR"},
-                      {kNameOnCard, "VARCHAR"},
-                      {kNetwork, "VARCHAR"},
-                      {kLastFour, "VARCHAR"},
-                      {kExpMonth, "INTEGER DEFAULT 0"},
-                      {kExpYear, "INTEGER DEFAULT 0"},
-                      {kBankName, "VARCHAR"}}) &&
-         db_->Execute(
-             "INSERT INTO masked_credit_cards_temp "
-             "SELECT id, status, name_on_card, network, last_four, exp_month,"
-             "exp_year, bank_name "
-             "FROM masked_credit_cards") &&
-         DropTable(db_, kMaskedCreditCardsTable) &&
-         RenameTable(db_, kMaskedCreditCardsTempTable,
-                     kMaskedCreditCardsTable) &&
+         DropColumn(db_, kMaskedCreditCardsTable, kType) &&
          transaction.Commit();
 }
 
@@ -2921,15 +3137,15 @@ bool AutofillTable::MigrateToVersion85AddCardIssuerColumnToMaskedCreditCard() {
 }
 
 bool AutofillTable::MigrateToVersion88AddNewNameColumns() {
-  for (base::StringPiece column : {kHonorificPrefix, kFirstLastName,
-                                   kConjunctionLastName, kSecondLastName}) {
+  for (std::string_view column : {kHonorificPrefix, kFirstLastName,
+                                  kConjunctionLastName, kSecondLastName}) {
     if (!AddColumnIfNotExists(db_, kAutofillProfileNamesTable, column,
                               "VARCHAR")) {
       return false;
     }
   }
 
-  for (base::StringPiece column :
+  for (std::string_view column :
        {kHonorificPrefixStatus, kFirstNameStatus, kMiddleNameStatus,
         kLastNameStatus, kFirstLastNameStatus, kConjunctionLastNameStatus,
         kSecondLastNameStatus, kFullNameStatus}) {
@@ -2952,23 +3168,10 @@ bool AutofillTable::MigrateToVersion92AddNewPrefixedNameColumn() {
 }
 
 bool AutofillTable::MigrateToVersion86RemoveUnmaskedCreditCardsUseColumns() {
-  // Sqlite does not support "alter table drop column" syntax, so it has be
-  // done manually.
-  constexpr base::StringPiece kUnmaskedCreditCardsTempTable =
-      "unmasked_credit_cards_temp";
   sql::Transaction transaction(db_);
   return transaction.Begin() &&
-         CreateTable(db_, kUnmaskedCreditCardsTempTable,
-                     {{kId, "VARCHAR"},
-                      {kCardNumberEncrypted, "VARCHAR"},
-                      {kUnmaskDate, "INTEGER NOT NULL DEFAULT 0"}}) &&
-         db_->Execute(
-             "INSERT INTO unmasked_credit_cards_temp "
-             "SELECT id, card_number_encrypted, unmask_date "
-             "FROM unmasked_credit_cards") &&
-         DropTable(db_, kUnmaskedCreditCardsTable) &&
-         RenameTable(db_, kUnmaskedCreditCardsTempTable,
-                     kUnmaskedCreditCardsTable) &&
+         DropColumn(db_, kUnmaskedCreditCardsTable, kUseCount) &&
+         DropColumn(db_, kUnmaskedCreditCardsTable, kUseDate) &&
          transaction.Commit();
 }
 
@@ -2981,15 +3184,15 @@ bool AutofillTable::MigrateToVersion90AddNewStructuredAddressColumns() {
   if (!db_->DoesTableExist("autofill_profile_addresses"))
     InitLegacyProfileAddressesTable();
 
-  for (base::StringPiece column : {kDependentLocality, kCity, kState, kZipCode,
-                                   kSortingCode, kCountryCode}) {
+  for (std::string_view column : {kDependentLocality, kCity, kState, kZipCode,
+                                  kSortingCode, kCountryCode}) {
     if (!AddColumnIfNotExists(db_, kAutofillProfileAddressesTable, column,
                               "VARCHAR")) {
       return false;
     }
   }
 
-  for (base::StringPiece column :
+  for (std::string_view column :
        {kDependentLocalityStatus, kCityStatus, kStateStatus, kZipCodeStatus,
         kSortingCodeStatus, kCountryCodeStatus}) {
     // The default value of 0 corresponds to the verification status
@@ -3006,14 +3209,14 @@ bool AutofillTable::MigrateToVersion91AddMoreStructuredAddressColumns() {
   if (!db_->DoesTableExist(kAutofillProfileAddressesTable))
     InitLegacyProfileAddressesTable();
 
-  for (base::StringPiece column : {kApartmentNumber, kFloor}) {
+  for (std::string_view column : {kApartmentNumber, kFloor}) {
     if (!AddColumnIfNotExists(db_, kAutofillProfileAddressesTable, column,
                               "VARCHAR")) {
       return false;
     }
   }
 
-  for (base::StringPiece column : {kApartmentNumberStatus, kFloorStatus}) {
+  for (std::string_view column : {kApartmentNumberStatus, kFloorStatus}) {
     // The default value of 0 corresponds to the verification status
     // |kNoStatus|.
     if (!AddColumnIfNotExists(db_, kAutofillProfileAddressesTable, column,
@@ -3059,7 +3262,7 @@ bool AutofillTable::MigrateToVersion94AddPromoCodeColumnsToOfferData() {
 
   // Add the new promo_code and DisplayStrings text columns to the offer_data
   // table.
-  for (base::StringPiece column :
+  for (std::string_view column :
        {kPromoCode, kValuePropText, kSeeDetailsText, kUsageInstructionsText}) {
     if (!AddColumnIfNotExists(db_, kOfferDataTable, column, "VARCHAR")) {
       return false;
@@ -3092,34 +3295,9 @@ bool AutofillTable::MigrateToVersion95AddVirtualCardMetadata() {
 }
 
 bool AutofillTable::MigrateToVersion98RemoveStatusColumnMaskedCreditCards() {
-  // Sqlite does not support "alter table drop column" syntax, so it has be done
-  // manually.
-  constexpr base::StringPiece kMaskedCreditCardsTempTable =
-      "masked_credit_cards_temp";
   sql::Transaction transaction(db_);
   return transaction.Begin() &&
-         CreateTable(db_, kMaskedCreditCardsTempTable,
-                     {{kId, "VARCHAR"},
-                      {kNameOnCard, "VARCHAR"},
-                      {kNetwork, "VARCHAR"},
-                      {kLastFour, "VARCHAR"},
-                      {kExpMonth, "INTEGER DEFAULT 0"},
-                      {kExpYear, "INTEGER DEFAULT 0"},
-                      {kBankName, "VARCHAR"},
-                      {kNickname, "VARCHAR"},
-                      {kCardIssuer, "INTEGER DEFAULT 0"},
-                      {kInstrumentId, "INTEGER DEFAULT 0"},
-                      {kVirtualCardEnrollmentState, "INTEGER DEFAULT 0"},
-                      {kCardArtUrl, "VARCHAR"}}) &&
-         db_->Execute(
-             "INSERT INTO masked_credit_cards_temp "
-             "SELECT id, name_on_card, network, last_four, exp_month, "
-             "exp_year, bank_name, nickname, card_issuer, instrument_id, "
-             "virtual_card_enrollment_state, card_art_url "
-             "FROM masked_credit_cards") &&
-         DropTable(db_, kMaskedCreditCardsTable) &&
-         RenameTable(db_, kMaskedCreditCardsTempTable,
-                     kMaskedCreditCardsTable) &&
+         DropColumn(db_, kMaskedCreditCardsTable, kStatus) &&
          transaction.Commit();
 }
 
@@ -3128,38 +3306,11 @@ bool AutofillTable::MigrateToVersion99RemoveAutofillProfilesTrashTable() {
 }
 
 bool AutofillTable::MigrateToVersion100RemoveProfileValidityBitfieldColumn() {
-  // Sqlite does not support "alter table drop column" syntax, so it has be done
-  // manually.
   sql::Transaction transaction(db_);
-
   return transaction.Begin() &&
-         CreateTable(db_, "autofill_profiles_tmp",
-                     {{kGuid, "VARCHAR PRIMARY KEY"},
-                      {kCompanyName, "VARCHAR"},
-                      {kStreetAddress, "VARCHAR"},
-                      {kDependentLocality, "VARCHAR"},
-                      {kCity, "VARCHAR"},
-                      {kState, "VARCHAR"},
-                      {kZipcode, "VARCHAR"},
-                      {kSortingCode, "VARCHAR"},
-                      {kCountryCode, "VARCHAR"},
-                      {kDateModified, "INTEGER NOT NULL DEFAULT 0"},
-                      {kOrigin, "VARCHAR DEFAULT ''"},
-                      {kLanguageCode, "VARCHAR"},
-                      {kUseCount, "INTEGER NOT NULL DEFAULT 0"},
-                      {kUseDate, "INTEGER NOT NULL DEFAULT 0"},
-                      {kLabel, "VARCHAR"},
-                      {kDisallowSettingsVisibleUpdates,
-                       "INTEGER NOT NULL DEFAULT 0"}}) &&
-         db_->Execute(
-             "INSERT INTO autofill_profiles_tmp "
-             "SELECT guid, company_name, street_address, dependent_locality, "
-             "city, state, zipcode, sorting_code, country_code, date_modified, "
-             "origin, language_code, use_count, use_date, label, "
-             "disallow_settings_visible_updates "
-             " FROM autofill_profiles") &&
-         DropTable(db_, kAutofillProfilesTable) &&
-         RenameTable(db_, "autofill_profiles_tmp", kAutofillProfilesTable) &&
+         DropColumn(db_, kAutofillProfilesTable, "validity_bitfield") &&
+         DropColumn(db_, kAutofillProfilesTable,
+                    "is_client_validity_states_updated") &&
          transaction.Commit();
 }
 
@@ -3192,8 +3343,8 @@ bool AutofillTable::MigrateToVersion104AddProductDescriptionColumn() {
   return transaction.Commit();
 }
 
-bool AutofillTable::MigrateToVersion105AddAutofillIBANTable() {
-  return CreateTable(db_, kIBANsTable,
+bool AutofillTable::MigrateToVersion105AddAutofillIbanTable() {
+  return CreateTable(db_, kIbansTable,
                      {{kGuid, "VARCHAR"},
                       {kUseCount, "INTEGER NOT NULL DEFAULT 0"},
                       {kUseDate, "INTEGER NOT NULL DEFAULT 0"},
@@ -3201,10 +3352,10 @@ bool AutofillTable::MigrateToVersion105AddAutofillIBANTable() {
                       {kNickname, "VARCHAR"}});
 }
 
-bool AutofillTable::MigrateToVersion106RecreateAutofillIBANTable() {
+bool AutofillTable::MigrateToVersion106RecreateAutofillIbanTable() {
   sql::Transaction transaction(db_);
-  return transaction.Begin() && DropTable(db_, kIBANsTable) &&
-         CreateTable(db_, kIBANsTable,
+  return transaction.Begin() && DropTable(db_, kIbansTable) &&
+         CreateTable(db_, kIbansTable,
                      {{kGuid, "VARCHAR PRIMARY KEY"},
                       {kUseCount, "INTEGER NOT NULL DEFAULT 0"},
                       {kUseDate, "INTEGER NOT NULL DEFAULT 0"},
@@ -3292,13 +3443,13 @@ bool AutofillTable::MigrateToVersion113MigrateLocalAddressProfilesToNewTable() {
     success = GetAutofillProfilesFromLegacyTable(&profiles);
     // Migrate profiles to the new tables. Preserve the modification dates.
     for (const std::unique_ptr<AutofillProfile>& profile : profiles) {
-      success = success && AddAutofillProfileToTable(
+      success = success && AddAutofillProfileToTableVersion113(
                                db_, *profile, profile->modification_date());
     }
   }
   // Delete all profiles from the legacy tables. The tables are dropped in
   // version 114.
-  for (base::StringPiece deprecated_table :
+  for (std::string_view deprecated_table :
        {kAutofillProfilesTable, kAutofillProfileAddressesTable,
         kAutofillProfileNamesTable, kAutofillProfileEmailsTable,
         kAutofillProfilePhonesTable, kAutofillProfileBirthdatesTable}) {
@@ -3311,7 +3462,7 @@ bool AutofillTable::MigrateToVersion113MigrateLocalAddressProfilesToNewTable() {
 bool AutofillTable::MigrateToVersion114DropLegacyAddressTables() {
   sql::Transaction transaction(db_);
   bool success = transaction.Begin();
-  for (base::StringPiece deprecated_table :
+  for (std::string_view deprecated_table :
        {kAutofillProfilesTable, kAutofillProfileAddressesTable,
         kAutofillProfileNamesTable, kAutofillProfileEmailsTable,
         kAutofillProfilePhonesTable, kAutofillProfileBirthdatesTable}) {
@@ -3332,7 +3483,7 @@ bool AutofillTable::MigrateToVersion115EncryptIbanValue() {
     return false;
   }
   sql::Statement s;
-  SelectBuilder(db_, s, kIBANsTable, {kGuid, kValue});
+  SelectBuilder(db_, s, kIbansTable, {kGuid, kValue});
   std::vector<std::pair<std::string, std::u16string>> iban_guid_to_value_pairs;
   while (s.Step()) {
     iban_guid_to_value_pairs.emplace_back(s.ColumnString(0),
@@ -3343,7 +3494,7 @@ bool AutofillTable::MigrateToVersion115EncryptIbanValue() {
   }
 
   for (const auto& [guid, value] : iban_guid_to_value_pairs) {
-    UpdateBuilder(db_, s, kIBANsTable, {kGuid, kValue}, "guid=?1");
+    UpdateBuilder(db_, s, kIbansTable, {kGuid, kValue}, "guid=?1");
     int index = 0;
     s.BindString(index++, guid);
     BindEncryptedValueToColumn(&s, index++, value, *autofill_table_encryptor_);
@@ -3353,9 +3504,32 @@ bool AutofillTable::MigrateToVersion115EncryptIbanValue() {
   }
 
   return db_->Execute(
-             base::StrCat({"ALTER TABLE ", kIBANsTable, " RENAME COLUMN ",
+             base::StrCat({"ALTER TABLE ", kIbansTable, " RENAME COLUMN ",
                            kValue, " TO ", kValueEncrypted})
                  .c_str()) &&
+         transaction.Commit();
+}
+
+bool AutofillTable::MigrateToVersion116AddStoredCvcTable() {
+  sql::Transaction transaction(db_);
+  return transaction.Begin() &&
+         CreateTable(db_, kLocalStoredCvcTable,
+                     {{kGuid, "VARCHAR PRIMARY KEY NOT NULL"},
+                      {kValueEncrypted, "VARCHAR NOT NULL"},
+                      {kLastUpdatedTimestamp, "INTEGER NOT NULL"}}) &&
+         CreateTable(db_, kServerStoredCvcTable,
+                     {{kInstrumentId, "INTEGER PRIMARY KEY NOT NULL"},
+                      {kValueEncrypted, "VARCHAR NOT NULL"},
+                      {kLastUpdatedTimestamp, "INTEGER NOT NULL"}}) &&
+         transaction.Commit();
+}
+
+bool AutofillTable::MigrateToVersion117AddProfileObservationColumn() {
+  sql::Transaction transaction(db_);
+  return transaction.Begin() &&
+         AddColumn(db_, kContactInfoTypeTokensTable, kObservations, "BLOB") &&
+         AddColumn(db_, kLocalAddressesTypeTokensTable, kObservations,
+                   "BLOB") &&
          transaction.Commit();
 }
 
@@ -3459,6 +3633,7 @@ bool AutofillTable::SupportsMetadataForModelType(
     syncer::ModelType model_type) const {
   return (model_type == syncer::AUTOFILL ||
           model_type == syncer::AUTOFILL_PROFILE ||
+          model_type == syncer::AUTOFILL_WALLET_CREDENTIAL ||
           model_type == syncer::AUTOFILL_WALLET_DATA ||
           model_type == syncer::AUTOFILL_WALLET_METADATA ||
           model_type == syncer::AUTOFILL_WALLET_OFFER ||
@@ -3545,7 +3720,7 @@ void AutofillTable::AddMaskedCreditCards(
 
   int index;
   for (const CreditCard& card : credit_cards) {
-    DCHECK_EQ(CreditCard::MASKED_SERVER_CARD, card.record_type());
+    DCHECK_EQ(CreditCard::RecordType::kMaskedServerCard, card.record_type());
     index = 0;
     masked_insert.BindString(index++, card.server_id());
     masked_insert.BindString(index++, card.network());
@@ -3559,8 +3734,10 @@ void AutofillTable::AddMaskedCreditCards(
     masked_insert.BindInt(index++, static_cast<int>(card.card_issuer()));
     masked_insert.BindString(index++, card.issuer_id());
     masked_insert.BindInt64(index++, card.instrument_id());
-    masked_insert.BindInt(index++, card.virtual_card_enrollment_state());
-    masked_insert.BindInt(index++, card.virtual_card_enrollment_type());
+    masked_insert.BindInt(
+        index++, static_cast<int>(card.virtual_card_enrollment_state()));
+    masked_insert.BindInt(index++, static_cast<int>(
+                                   card.virtual_card_enrollment_type()));
     masked_insert.BindString(index++, card.card_art_url().spec());
     masked_insert.BindString16(index++, card.product_description());
     masked_insert.Run();
@@ -3627,8 +3804,8 @@ bool AutofillTable::InitCreditCardsTable() {
                                  {kNickname, "VARCHAR"}});
 }
 
-bool AutofillTable::InitIBANsTable() {
-  return CreateTableIfNotExists(db_, kIBANsTable,
+bool AutofillTable::InitIbansTable() {
+  return CreateTableIfNotExists(db_, kIbansTable,
                                 {{kGuid, "VARCHAR PRIMARY KEY"},
                                  {kUseCount, "INTEGER NOT NULL DEFAULT 0"},
                                  {kUseDate, "INTEGER NOT NULL DEFAULT 0"},
@@ -3831,6 +4008,19 @@ bool AutofillTable::InitServerCreditCardCloudTokenDataTable() {
                                  {kInstrumentToken, "VARCHAR"}});
 }
 
+bool AutofillTable::InitStoredCvcTable() {
+  return CreateTableIfNotExists(
+             db_, kLocalStoredCvcTable,
+             {{kGuid, "VARCHAR PRIMARY KEY NOT NULL"},
+              {kValueEncrypted, "VARCHAR NOT NULL"},
+              {kLastUpdatedTimestamp, "INTEGER NOT NULL"}}) &&
+         CreateTableIfNotExists(
+             db_, kServerStoredCvcTable,
+             {{kInstrumentId, "INTEGER PRIMARY KEY NOT NULL"},
+              {kValueEncrypted, "VARCHAR NOT NULL"},
+              {kLastUpdatedTimestamp, "INTEGER NOT NULL"}});
+}
+
 bool AutofillTable::InitOfferDataTable() {
   return CreateTableIfNotExists(db_, kOfferDataTable,
                                 {{kOfferId, "UNSIGNED LONG"},
@@ -3873,7 +4063,8 @@ bool AutofillTable::InitProfileTypeTokensTable(AutofillProfile::Source source) {
                                 {{kGuid, "VARCHAR"},
                                  {kType, "INTEGER"},
                                  {kValue, "VARCHAR"},
-                                 {kVerificationStatus, "INTEGER DEFAULT 0"}},
+                                 {kVerificationStatus, "INTEGER DEFAULT 0"},
+                                 {kObservations, "BLOB"}},
                                 /*composite_primary_key=*/{kGuid, kType});
 }
 

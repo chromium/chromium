@@ -10,10 +10,6 @@
 #import "components/content_settings/core/common/content_settings.h"
 #import "components/content_settings/core/common/content_settings_types.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface ContentSettingBackedBoolean ()
 
 // The ID of the setting in `settingsMap`.

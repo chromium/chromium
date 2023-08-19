@@ -8,9 +8,9 @@
 #import <memory>
 #import <utility>
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/ios/block_types.h"
-#import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/send_tab_to_self/entry_point_display_reason.h"
 #import "components/send_tab_to_self/metrics_util.h"
@@ -40,6 +40,7 @@
 #import "ios/chrome/browser/signin/system_identity.h"
 #import "ios/chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/infobars/presentation/infobar_modal_positioner.h"
 #import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_modal_delegate.h"
@@ -48,10 +49,6 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "third_party/abseil-cpp/absl/types/optional.h"
 #import "ui/base/l10n/l10n_util.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -222,7 +219,7 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
 - (CGFloat)modalHeightForWidth:(CGFloat)width {
   UIView* view = self.sendTabToSelfViewController.view;
   CGSize contentSize = CGSizeZero;
-  if (UIScrollView* scrollView = base::mac::ObjCCast<UIScrollView>(view)) {
+  if (UIScrollView* scrollView = base::apple::ObjCCast<UIScrollView>(view)) {
     CGRect layoutFrame = self.baseViewController.view.bounds;
     layoutFrame.size.width = width;
     scrollView.frame = layoutFrame;
@@ -340,11 +337,14 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
           send_tab_to_self::SendingEvent::kShowSigninPromo);
 
       __weak __typeof(self) weakSelf = self;
-      ShowSigninCommandCompletionCallback callback = ^(BOOL succeeded) {
-        [weakSelf onSigninComplete:succeeded];
-      };
+      ShowSigninCommandCompletionCallback callback =
+          ^(SigninCoordinatorResult result,
+            SigninCompletionInfo* completionInfo) {
+            BOOL succeeded = result == SigninCoordinatorResultSuccess;
+            [weakSelf onSigninComplete:succeeded];
+          };
       ShowSigninCommand* command = [[ShowSigninCommand alloc]
-          initWithOperation:AuthenticationOperationSigninOnly
+          initWithOperation:AuthenticationOperation::kSigninOnly
                    identity:nil
                 accessPoint:signin_metrics::AccessPoint::
                                 ACCESS_POINT_SEND_TAB_TO_SELF_PROMO
@@ -380,11 +380,10 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
 }
 
 - (absl::optional<send_tab_to_self::EntryPointDisplayReason>)displayReason {
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  return send_tab_to_self::GetEntryPointDisplayReason(
-      _url, SyncServiceFactory::GetForBrowserState(browserState),
-      SendTabToSelfSyncServiceFactory::GetForBrowserState(browserState),
-      browserState->GetPrefs());
+  send_tab_to_self::SendTabToSelfSyncService* service =
+      SendTabToSelfSyncServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  return service ? service->GetEntryPointDisplayReason(_url) : absl::nullopt;
 }
 
 @end

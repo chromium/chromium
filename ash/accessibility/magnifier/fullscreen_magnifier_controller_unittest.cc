@@ -1034,8 +1034,8 @@ TEST_F(FullscreenMagnifierControllerTest, CaptureMode) {
   event_generator->MoveMouseTo(gfx::Point{510, 420});
   EXPECT_NE(viewport_center, GetViewport().CenterPoint());
   viewport_center = GetViewport().CenterPoint();
-  auto* bar_widget = capture_mode_controller->capture_mode_session()
-                         ->capture_mode_bar_widget();
+  const auto* bar_widget = capture_mode_controller->capture_mode_session()
+                               ->GetCaptureModeBarWidget();
   const auto point_of_interest =
       bar_widget->GetWindowBoundsInScreen().CenterPoint();
   event_generator->MoveMouseTo(point_of_interest);

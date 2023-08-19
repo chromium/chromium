@@ -120,7 +120,7 @@ interface MediaStreamTrack : EventTarget
   method getCaptureHandle
 interface BrowserCaptureMediaStreamTrack : MediaStreamTrack
 interface CropTarget
-interface CaptureController
+interface CaptureController : EventTarget
 
 # WebAuthN API should not be exposed in WebView, crbug.com/828168
 interface AuthenticatorAssertionResponse : AuthenticatorResponse
@@ -142,11 +142,6 @@ interface ServiceWorkerRegistration : EventTarget
 interface PeriodicSyncManager
 interface ServiceWorkerRegistration : EventTarget
     getter periodicSync
-
-# User Agent Client Hints are not enabled in Android WebView, crbug.com/921655
-interface Navigator
-    getter userAgentData
-interface NavigatorUAData
 
 # WebXR dependent interfaces are not supported on WebView crbug.com/1012899
 interface XRView
@@ -242,6 +237,11 @@ interface FontData
 
 # FedCM API is not implemented on WebView. crbug.com/1340252
 interface IdentityCredential : Credential
+interface IdentityProvider
+
+# Document Picture-in-Picture is not implemented in WebView (or Android).
+interface DocumentPictureInPicture : EventTarget
+interface DocumentPictureInPictureEvent : Event
 
 [GLOBAL OBJECT]
     method openDatabase
@@ -252,6 +252,7 @@ interface IdentityCredential : Credential
     attribute textInputController            # test only
     attribute gamepadController              # test only
     attribute GCController                   # test only
+    getter documentPictureInPicture          # Document Picture-in-Picture is desktop-only
     getter launchQueue                       # PWA File Handling API, crbug.com/829689
     getter speechSynthesis                   # Speech API, crbug.com/487255
     attribute chrome                         # crbug.com/618471

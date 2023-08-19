@@ -20,12 +20,6 @@
 #include "third_party/blink/public/mojom/choosers/popup_menu.mojom.h"
 #include "ui/gfx/geometry/rect.h"
 
-#ifdef __OBJC__
-@class WebMenuRunner;
-#else
-class WebMenuRunner;
-#endif
-
 namespace base {
 class ScopedPumpMessagesInPrivateModes;
 }
@@ -85,13 +79,13 @@ class PopupMenuHelper : public RenderWidgetHostObserver {
   base::WeakPtr<RenderFrameHostImpl> render_frame_host_;
   mojo::Remote<blink::mojom::PopupMenuClient> popup_client_;
 
-  // This field is not a raw_ptr<> because it is a pointer to Objective-C
-  // object.
-  RAW_PTR_EXCLUSION WebMenuRunner* menu_runner_ = nil;
   bool popup_was_hidden_ = false;
 
   // Controls whether messages can be pumped during the menu fade.
   std::unique_ptr<base::ScopedPumpMessagesInPrivateModes> pump_in_fade_;
+
+  struct ObjCStorage;
+  std::unique_ptr<ObjCStorage> objc_storage_;
 
   base::WeakPtrFactory<PopupMenuHelper> weak_ptr_factory_{this};
 };

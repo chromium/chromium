@@ -105,7 +105,6 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{Il y a un mois}one{Il y a # mois}other{Il y a # mois}}</translation>
 <translation id="4289300219472526559">Commencer la lecture</translation>
 <translation id="4289540628985791613">Aperçu</translation>
-<translation id="4306392492252714209">Retirer du presse-papiers.</translation>
 <translation id="4491109536499578614">Image</translation>
 <translation id="4565377596337484307">Masquer le mot de passe</translation>
 <translation id="4588090240171750605">Défilement vers la droite</translation>
@@ -148,6 +147,7 @@
 <translation id="6142413573757616983"><ph name="QUANTITY" /> o/s</translation>
 <translation id="6237461503717005873">Langue sélectionnée : <ph name="ROW_NAME" />.</translation>
 <translation id="6264365405983206840">Tout &amp;sélectionner</translation>
+<translation id="6346952829206698721">Coller à partir du presse-papiers</translation>
 <translation id="6364916375976753737">Défilement vers la gauche</translation>
 <translation id="6394627529324717982">Virgule</translation>
 <translation id="6397363302884558537">Arrêter Dictée</translation>
@@ -174,6 +174,7 @@
 <translation id="7170202025028120564">Les paramètres d'affichage de votre application prendront effet à son prochain redémarrage.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1 min restante}one{# min restante}other{# min restantes}}</translation>
+<translation id="7363164521834647158">Envoyer une réponse</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{Il y a 1 min}one{Il y a # min}other{Il y a # min}}</translation>
 <translation id="7389409599945284130">– <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{1 minute restante}one{# minute restante}other{# minutes restantes}}</translation>

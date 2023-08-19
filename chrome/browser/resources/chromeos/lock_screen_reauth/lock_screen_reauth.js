@@ -16,6 +16,8 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import './components/buttons/oobe_text_button.js';
 import './components/oobe_icons.html.js';
+import './components/oobe_illo_icons.html.js';
+import './gaia_action_buttons/gaia_action_buttons.js';
 import '//resources/cr_elements/policy/cr_tooltip_icon.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 
@@ -234,6 +236,7 @@ class LockReauth extends LockReauthBase {
       }
     });
 
+    params.enableGaiaActionButtons = data.enableGaiaActionButtons;
     this.authenticatorParams_ = /** @type {AuthParams} */ (params);
     this.email_ = data.email;
     this.isDefaultSsoProvider = data.doSamlRedirect;
@@ -276,6 +279,11 @@ class LockReauth extends LockReauthBase {
     const signinFrame = this.shadowRoot.getElementById('signin-frame');
     assert(signinFrame);
     return /** @type {!WebView} */ (signinFrame);
+  }
+
+  /** @private */
+  setFocusToWebview_() {
+    this.signinFrame_.focus();
   }
 
   onAuthCompletedMessage_(e) {

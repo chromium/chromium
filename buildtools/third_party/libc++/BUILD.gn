@@ -70,72 +70,86 @@ target(_libcxx_target_type, "libc++") {
 
   inputs = [ "__config_site" ]
 
+  # TODO(crbug.com/1458042): Move this build file to third_party/libc++/BUILD.gn once submodule migration is done
   sources = [
-    "trunk/src/algorithm.cpp",
-    "trunk/src/any.cpp",
-    "trunk/src/atomic.cpp",
-    "trunk/src/barrier.cpp",
-    "trunk/src/bind.cpp",
-    "trunk/src/charconv.cpp",
-    "trunk/src/chrono.cpp",
-    "trunk/src/condition_variable.cpp",
-    "trunk/src/condition_variable_destructor.cpp",
-    "trunk/src/exception.cpp",
-    "trunk/src/format.cpp",
-    "trunk/src/functional.cpp",
-    "trunk/src/future.cpp",
-    "trunk/src/hash.cpp",
-    "trunk/src/ios.cpp",
-    "trunk/src/ios.instantiations.cpp",
-    "trunk/src/iostream.cpp",
-    "trunk/src/legacy_pointer_safety.cpp",
-    "trunk/src/locale.cpp",
-    "trunk/src/memory.cpp",
-    "trunk/src/mutex.cpp",
-    "trunk/src/mutex_destructor.cpp",
-    "trunk/src/new.cpp",
-    "trunk/src/optional.cpp",
-    "trunk/src/random.cpp",
-    "trunk/src/random_shuffle.cpp",
-    "trunk/src/regex.cpp",
-    "trunk/src/ryu/d2fixed.cpp",
-    "trunk/src/ryu/d2s.cpp",
-    "trunk/src/ryu/f2s.cpp",
-    "trunk/src/shared_mutex.cpp",
-    "trunk/src/stdexcept.cpp",
-    "trunk/src/string.cpp",
-    "trunk/src/strstream.cpp",
-    "trunk/src/system_error.cpp",
-    "trunk/src/thread.cpp",
-    "trunk/src/typeinfo.cpp",
-    "trunk/src/valarray.cpp",
-    "trunk/src/variant.cpp",
-    "trunk/src/vector.cpp",
-    "trunk/src/verbose_abort.cpp",
+    "//third_party/libc++/src/src/algorithm.cpp",
+    "//third_party/libc++/src/src/any.cpp",
+    "//third_party/libc++/src/src/atomic.cpp",
+    "//third_party/libc++/src/src/barrier.cpp",
+    "//third_party/libc++/src/src/bind.cpp",
+    "//third_party/libc++/src/src/charconv.cpp",
+    "//third_party/libc++/src/src/chrono.cpp",
+    "//third_party/libc++/src/src/condition_variable.cpp",
+    "//third_party/libc++/src/src/condition_variable_destructor.cpp",
+    "//third_party/libc++/src/src/exception.cpp",
+    "//third_party/libc++/src/src/filesystem/directory_iterator.cpp",
+    "//third_party/libc++/src/src/filesystem/filesystem_error.cpp",
+    "//third_party/libc++/src/src/filesystem/operations.cpp",
+    "//third_party/libc++/src/src/filesystem/path.cpp",
+    "//third_party/libc++/src/src/functional.cpp",
+    "//third_party/libc++/src/src/future.cpp",
+    "//third_party/libc++/src/src/hash.cpp",
+    "//third_party/libc++/src/src/ios.cpp",
+    "//third_party/libc++/src/src/ios.instantiations.cpp",
+    "//third_party/libc++/src/src/iostream.cpp",
+    "//third_party/libc++/src/src/legacy_pointer_safety.cpp",
+    "//third_party/libc++/src/src/locale.cpp",
+    "//third_party/libc++/src/src/memory.cpp",
+    "//third_party/libc++/src/src/mutex.cpp",
+    "//third_party/libc++/src/src/mutex_destructor.cpp",
+    "//third_party/libc++/src/src/new_handler.cpp",
+    "//third_party/libc++/src/src/new_helpers.cpp",
+    "//third_party/libc++/src/src/optional.cpp",
+    "//third_party/libc++/src/src/random.cpp",
+    "//third_party/libc++/src/src/random_shuffle.cpp",
+    "//third_party/libc++/src/src/regex.cpp",
+    "//third_party/libc++/src/src/ryu/d2fixed.cpp",
+    "//third_party/libc++/src/src/ryu/d2s.cpp",
+    "//third_party/libc++/src/src/ryu/f2s.cpp",
+    "//third_party/libc++/src/src/shared_mutex.cpp",
+    "//third_party/libc++/src/src/stdexcept.cpp",
+    "//third_party/libc++/src/src/string.cpp",
+    "//third_party/libc++/src/src/strstream.cpp",
+    "//third_party/libc++/src/src/system_error.cpp",
+    "//third_party/libc++/src/src/thread.cpp",
+    "//third_party/libc++/src/src/typeinfo.cpp",
+    "//third_party/libc++/src/src/valarray.cpp",
+    "//third_party/libc++/src/src/variant.cpp",
+    "//third_party/libc++/src/src/vector.cpp",
+    "//third_party/libc++/src/src/verbose_abort.cpp",
   ]
+
+  if (is_apple || (!is_asan && !is_tsan && !is_msan)) {
+    # In {a,t,m}san configurations, operator new and operator delete will be
+    # provided by the sanitizer runtime library.  Since libc++ defines these
+    # symbols with weak linkage, and the *san runtime uses strong linkage, it
+    # should technically be OK to include this file, but it's removed to be
+    # explicit.
+    sources += [ "//third_party/libc++/src/src/new.cpp" ]
+  }
 
   if (is_linux) {
     # These sources are necessary for the Centipede fuzzer,
     # which currently only needs to run on Linux.
     sources += [
-      "trunk/src/filesystem/directory_iterator.cpp",
-      "trunk/src/filesystem/operations.cpp",
+      "//third_party/libc++/src/src/filesystem/directory_entry.cpp",
+      "//third_party/libc++/src/src/filesystem/filesystem_clock.cpp",
     ]
   }
 
   if (enable_iterator_debugging) {
     sources += [
-      "trunk/src/debug.cpp",
-      "trunk/src/legacy_debug_handler.cpp",
+      "//third_party/libc++/src/src/debug.cpp",
+      "//third_party/libc++/src/src/legacy_debug_handler.cpp",
     ]
   }
 
-  include_dirs = [ "trunk/src" ]
+  include_dirs = [ "//third_party/libc++/src/src" ]
   if (is_win) {
     sources += [
-      "trunk/src/support/win32/locale_win32.cpp",
-      "trunk/src/support/win32/support.cpp",
-      "trunk/src/support/win32/thread_win32.cpp",
+      "//third_party/libc++/src/src/support/win32/locale_win32.cpp",
+      "//third_party/libc++/src/src/support/win32/support.cpp",
+      "//third_party/libc++/src/src/support/win32/thread_win32.cpp",
     ]
     configs -= [ "//build/config/win:winver" ]
     configs += [ ":winver" ]
@@ -203,13 +217,6 @@ target(_libcxx_target_type, "libc++") {
         "_LIBCPP_OVERRIDABLE_FUNC_VIS=__attribute__((__visibility__(\"default\")))",
       ]
     }
-  }
-  if (!is_apple && (is_asan || is_tsan || is_msan)) {
-    # In {a,t,m}san configurations, operator new and operator delete will be
-    # provided by the sanitizer runtime library.  Since libc++ defines these
-    # symbols with weak linkage, and the *san runtime uses strong linkage, it
-    # should technically be OK to omit this, but it's added to be explicit.
-    defines += [ "_LIBCPP_DISABLE_NEW_DELETE_DEFINITIONS" ]
   }
 
   if (!is_win) {

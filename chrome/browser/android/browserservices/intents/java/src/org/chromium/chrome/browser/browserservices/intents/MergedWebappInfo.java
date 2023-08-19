@@ -75,8 +75,7 @@ public class MergedWebappInfo extends WebappInfo {
     }
 
     @Override
-    @NonNull
-    public WebappIcon icon() {
+    public @NonNull WebappIcon icon() {
         if (mUseOldIcons) {
             return mOldWebappInfo.getWebappExtras().icon;
         }

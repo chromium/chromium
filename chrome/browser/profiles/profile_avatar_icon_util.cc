@@ -28,7 +28,7 @@
 #include "chrome/browser/profiles/avatar_menu.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/signin/profile_colors_util.h"
+#include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
@@ -41,6 +41,7 @@
 #include "third_party/skia/include/core/SkScalar.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
@@ -293,7 +294,9 @@ constexpr size_t kPlaceholderAvatarIndex = 0;
 #endif
 
 ui::ImageModel GetGuestAvatar(int size) {
-  return ui::ImageModel::FromVectorIcon(kUserAccountAvatarIcon,
+  return ui::ImageModel::FromVectorIcon(features::IsChromeRefresh2023()
+                                            ? kUserAccountAvatarRefreshIcon
+                                            : kUserAccountAvatarIcon,
                                         ui::kColorAvatarIconGuest, size);
 }
 
@@ -698,7 +701,6 @@ void SetDefaultProfileAvatarIndex(Profile* profile, size_t avatar_icon_index) {
   pref_service->SetBoolean(prefs::kProfileUsingGAIAAvatar, false);
 
   ProfileMetrics::LogProfileAvatarSelection(avatar_icon_index);
-  ProfileMetrics::LogProfileUpdate(profile->GetPath());
 }
 
 #if BUILDFLAG(IS_WIN)

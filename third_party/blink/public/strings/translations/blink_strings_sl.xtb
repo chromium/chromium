@@ -26,7 +26,6 @@
 <translation id="2060505056492490888">»<ph name="DOT" />« je na napačnem mestu v »<ph name="INVALIDDOMAIN" />«.</translation>
 <translation id="2148716181193084225">Danes</translation>
 <translation id="2226276347425096477">Skrajšajte to besedilo na <ph name="MAX_CHARACTERS" /> znakov ali manj (trenutno uporabljate <ph name="CURRENT_LENGTH" /> znakov).</translation>
-<translation id="2246498165605549352">Lokalna datoteka</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />. teden, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Besedilni posnetek <ph name="NUMBER" /></translation>
 <translation id="2393030564806080191">Šestnajstiška barvna vrednost</translation>
@@ -89,6 +88,7 @@
 <translation id="5425179576310518467">trenutni datum</translation>
 <translation id="5466621249238537318">Izberite eno ali več datotek.</translation>
 <translation id="5468998798572797635">izhod iz celozaslonskega načina</translation>
+<translation id="5514612371225420585">Datoteka v napravi</translation>
 <translation id="5516235301412634559">0,75</translation>
 <translation id="5537725057119320332">Predvajanje</translation>
 <translation id="5546461542133609677">vklop zvoka</translation>
@@ -113,6 +113,7 @@
 <translation id="6398862346408813489">Prikaz podokna za izbiro meseca</translation>
 <translation id="6404546809543547843">časovni krmilnik za predvajanje zvoka</translation>
 <translation id="6443871981718447451">pokaži meni s podnapisi</translation>
+<translation id="6484738902856791350">Oblikovanje za večjo berljivost</translation>
 <translation id="6550675742724504774">Možnosti</translation>
 <translation id="6572309429103589720">Neveljavna slovnica</translation>
 <translation id="658823671542763450">prehod v celozaslonski način</translation>

@@ -59,13 +59,7 @@ class HotspotFeaturePodControllerTest : public AshTestBase {
     base::RunLoop().RunUntilIdle();
 
     GetPrimaryUnifiedSystemTray()->ShowBubble();
-
-    hotspot_feature_pod_controller_ =
-        std::make_unique<HotspotFeaturePodController>(
-            GetPrimaryUnifiedSystemTray()
-                ->bubble()
-                ->unified_system_tray_controller());
-    hotspot_feature_tile_ = hotspot_feature_pod_controller_->CreateTile();
+    CreateHotspotFeatureTile();
   }
 
   void TearDown() override {
@@ -74,6 +68,16 @@ class HotspotFeaturePodControllerTest : public AshTestBase {
     AshTestBase::TearDown();
 
     cros_hotspot_config_test_helper_.reset();
+  }
+
+  void CreateHotspotFeatureTile() {
+    CHECK(GetPrimaryUnifiedSystemTray()->IsBubbleShown());
+    hotspot_feature_pod_controller_ =
+        std::make_unique<HotspotFeaturePodController>(
+            GetPrimaryUnifiedSystemTray()
+                ->bubble()
+                ->unified_system_tray_controller());
+    hotspot_feature_tile_ = hotspot_feature_pod_controller_->CreateTile();
   }
 
   void UpdateHotspotInfo(HotspotState state,
@@ -192,10 +196,10 @@ TEST_F(HotspotFeaturePodControllerTest, HotspotEnabling) {
   EXPECT_TRUE(hotspot_feature_tile_->GetEnabled());
   EXPECT_TRUE(hotspot_feature_tile_->IsToggled());
   EXPECT_EQ(u"Hotspot", hotspot_feature_tile_->label()->GetText());
-  EXPECT_EQ(u"Enabling…", hotspot_feature_tile_->sub_label()->GetText());
-  EXPECT_EQ(u"Show hotspot details. Hotspot is enabling.",
+  EXPECT_EQ(u"Turning on…", hotspot_feature_tile_->sub_label()->GetText());
+  EXPECT_EQ(u"Show hotspot details. Hotspot is turning on.",
             hotspot_feature_tile_->icon_button()->GetTooltipText());
-  EXPECT_EQ(u"Show hotspot details. Hotspot is enabling.",
+  EXPECT_EQ(u"Show hotspot details. Hotspot is turning on.",
             hotspot_feature_tile_->GetTooltipText());
   EXPECT_STREQ(kHotspotDotIcon.name, GetVectorIconName());
   // Verifies the hotspot icon is animating when enabling.
@@ -221,10 +225,10 @@ TEST_F(HotspotFeaturePodControllerTest, HotspotDisabling) {
   EXPECT_TRUE(hotspot_feature_tile_->GetEnabled());
   EXPECT_TRUE(hotspot_feature_tile_->IsToggled());
   EXPECT_EQ(u"Hotspot", hotspot_feature_tile_->label()->GetText());
-  EXPECT_EQ(u"Disabling…", hotspot_feature_tile_->sub_label()->GetText());
-  EXPECT_EQ(u"Show hotspot details. Hotspot is disabling.",
+  EXPECT_EQ(u"Turning off…", hotspot_feature_tile_->sub_label()->GetText());
+  EXPECT_EQ(u"Show hotspot details. Hotspot is turning off.",
             hotspot_feature_tile_->icon_button()->GetTooltipText());
-  EXPECT_EQ(u"Show hotspot details. Hotspot is disabling.",
+  EXPECT_EQ(u"Show hotspot details. Hotspot is turning off.",
             hotspot_feature_tile_->GetTooltipText());
   EXPECT_STREQ(kHotspotOffIcon.name, GetVectorIconName());
 
@@ -367,6 +371,11 @@ TEST_F(HotspotFeaturePodControllerTest, HotspotDisabledBlockedByPolicy) {
 TEST_F(HotspotFeaturePodControllerTest, LockScreen) {
   EnableAndDisableHotspotOnce();
   LockScreen();
+
+  // Locking the screen closes the system tray bubble thus destroying the
+  // hotspot feature tile, so re-show the bubble and recreate the tile.
+  GetPrimaryUnifiedSystemTray()->ShowBubble();
+  CreateHotspotFeatureTile();
   UpdateHotspotInfo(HotspotState::kDisabled, HotspotAllowStatus::kAllowed);
 
   EXPECT_TRUE(hotspot_feature_tile_->GetVisible());

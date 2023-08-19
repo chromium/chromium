@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
-import {startColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
+import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 
 import {HelpContentElement} from './help_content.js';
 
@@ -48,8 +48,8 @@ function initialize() {
     typographyLink.rel = 'stylesheet';
     document.head.appendChild(typographyLink);
     document.body.classList.add('jelly-enabled');
-    startColorChangeUpdater();
-    // Post a message to parent to make testing `startColorChangeUpdater()`
+    ColorChangeUpdater.forDocument().start();
+    // Post a message to parent to make testing `ColorChangeUpdater#start()`
     // called from untrusted ui easier.
     window.parent.postMessage(
         {

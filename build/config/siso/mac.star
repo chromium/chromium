@@ -5,17 +5,23 @@
 """Siso configuration for macOS."""
 
 load("@builtin//struct.star", "module")
+load("./clang_mac.star", "clang")
 load("./config.star", "config")
-load("./remote_exec_wrapper.star", "remote_exec_wrapper")
+load("./reproxy.star", "reproxy")
 
 __filegroups = {}
+__filegroups.update(clang.filegroups)
 __handlers = {}
+__handlers.update(clang.handlers)
+__handlers.update(reproxy.handlers)
 
 def __step_config(ctx, step_config):
-    # TODO(b/273407069): Handle reproxy mode.
     config.check(ctx)
-    if remote_exec_wrapper.enabled(ctx):
-        step_config = remote_exec_wrapper.step_config(ctx, step_config)
+    step_config["platforms"] = {}
+
+    step_config = clang.step_config(ctx, step_config)
+    if reproxy.enabled(ctx):
+        step_config = reproxy.step_config(ctx, step_config)
     return step_config
 
 chromium = module(

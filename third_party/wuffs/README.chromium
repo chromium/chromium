@@ -5,6 +5,8 @@ Version: 0.3.0-rc.3
 Revision: fe9d08f2b6e80af691bfb1a718e144c49a1b9eba
 Security critical: yes
 License: Apache 2.0
+License File: src/LICENSE
+Shipped: yes
 
 Description:
 Codecs (compression, images, etc.) written in a custom memory-safe programming

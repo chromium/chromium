@@ -90,13 +90,10 @@ class ExtensionWebUIEmbeddedOptionsTest : public ExtensionWebUITest {
  public:
   void SetUpOnMainThread() override {
     ExtensionWebUITest::SetUpOnMainThread();
-    guest_view::GuestViewManager::set_factory_for_testing(
-        &test_guest_view_manager_factory_);
-    test_guest_view_manager_ = static_cast<guest_view::TestGuestViewManager*>(
-        guest_view::GuestViewManager::CreateWithDelegate(
+    test_guest_view_manager_ =
+        test_guest_view_manager_factory_.GetOrCreateTestGuestViewManager(
             browser()->profile(),
-            ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate(
-                browser()->profile())));
+            ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate());
   }
 
  protected:
@@ -229,7 +226,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebUIEmbeddedOptionsTest,
                         .AppendASCII("extension_with_options_page"));
   ASSERT_TRUE(extension);
 
-  auto* guest_rfh = OpenExtensionOptions(extension);
+  auto* guest_render_frame_host = OpenExtensionOptions(extension);
 
   // Check access to the storage API, both for getting/setting values and being
   // notified of changes.
@@ -237,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebUIEmbeddedOptionsTest,
   const int storage_value = 42;
 
   EXPECT_TRUE(content::ExecJs(
-      guest_rfh,
+      guest_render_frame_host,
       content::JsReplace("var onChangedPromise = new Promise((resolve) => {"
                          "  chrome.storage.onChanged.addListener((change) => {"
                          "    resolve(change[$1].newValue);"
@@ -249,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebUIEmbeddedOptionsTest,
   ASSERT_EQ(
       "success",
       content::EvalJs(
-          guest_rfh,
+          guest_render_frame_host,
           content::JsReplace(
               "try {"
               "  new Promise(resolve => {"
@@ -264,15 +261,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebUIEmbeddedOptionsTest,
               "}",
               storage_key, storage_value)));
 
-  EXPECT_EQ(
-      storage_value,
-      content::EvalJs(guest_rfh, content::JsReplace(
-                                     "new Promise(resolve =>"
-                                     "  chrome.storage.local.get((storage) => "
-                                     "    resolve(storage[$1])));",
-                                     storage_key)));
+  EXPECT_EQ(storage_value,
+            content::EvalJs(
+                guest_render_frame_host,
+                content::JsReplace("new Promise(resolve =>"
+                                   "  chrome.storage.local.get((storage) => "
+                                   "    resolve(storage[$1])));",
+                                   storage_key)));
 
-  EXPECT_EQ(storage_value, content::EvalJs(guest_rfh, "onChangedPromise;"));
+  EXPECT_EQ(storage_value,
+            content::EvalJs(guest_render_frame_host, "onChangedPromise;"));
 
   // Now check access to the tabs API, which is restricted to
   // Feature::BLESSED_EXTENSION_CONTEXTs (which this should be).
@@ -291,7 +289,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebUIEmbeddedOptionsTest,
              r(message);
            });
          });)";
-  EXPECT_EQ("success", content::EvalJs(guest_rfh, kTabsExecution));
+  EXPECT_EQ("success",
+            content::EvalJs(guest_render_frame_host, kTabsExecution));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionWebUIEmbeddedOptionsTest,
@@ -301,11 +300,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebUIEmbeddedOptionsTest,
                         .AppendASCII("extension_with_options_page"));
   ASSERT_TRUE(extension);
 
-  auto* guest_rfh = OpenExtensionOptions(extension);
+  auto* guest_render_frame_host = OpenExtensionOptions(extension);
 
   content::WebContentsAddedObserver new_contents_observer;
-  EXPECT_TRUE(
-      content::ExecJs(guest_rfh, "document.getElementById('link').click();"));
+  EXPECT_TRUE(content::ExecJs(guest_render_frame_host,
+                              "document.getElementById('link').click();"));
   content::WebContents* new_contents = new_contents_observer.GetWebContents();
   EXPECT_NE(TabStripModel::kNoTab,
             browser()->tab_strip_model()->GetIndexOfWebContents(new_contents));

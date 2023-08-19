@@ -62,6 +62,4 @@ public interface WebSettingsBoundaryInterface {
 
     void setEnterpriseAuthenticationAppLinkPolicyEnabled(boolean enabled);
     boolean getEnterpriseAuthenticationAppLinkPolicyEnabled();
-
-    void enableRestrictSensitiveWebContent();
 }

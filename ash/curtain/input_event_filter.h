@@ -17,7 +17,7 @@ namespace ash::curtain {
 
 // This class will observe all events in the given root window, and filter out
 // the input events (keyboard/mouse/touch/...) that are rejected by the given
-// |EventFilter|.
+// `EventFilter`.
 class InputEventFilter : public ui::EventRewriter {
  public:
   InputEventFilter(aura::Window* root_window, EventFilter filter);

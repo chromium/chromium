@@ -40,11 +40,10 @@ const char kBadStateCSSClass[] = "in_bad_state";
 class StatBase {
  public:
   base::Value::Dict ToValue() const {
-    base::Value::Dict result;
-    result.Set("stat_name", base::Value(key_));
-    result.Set("stat_value", value_.Clone());
-    result.Set("stat_status", base::Value(status_));
-    return result;
+    return base::Value::Dict()
+        .Set("stat_name", base::Value(key_))
+        .Set("stat_value", value_.Clone())
+        .Set("stat_status", base::Value(status_));
   }
 
  protected:
@@ -89,15 +88,14 @@ class Section {
   }
 
   base::Value::Dict ToValue() const {
-    base::Value::Dict result;
-    result.Set("title", base::Value(title_));
     base::Value::List stats;
     for (const std::unique_ptr<StatBase>& stat : stats_) {
       stats.Append(stat->ToValue());
     }
-    result.Set("data", std::move(stats));
-    result.Set("is_sensitive", base::Value(is_sensitive_));
-    return result;
+    return base::Value::Dict()
+        .Set("title", base::Value(title_))
+        .Set("data", std::move(stats))
+        .Set("is_sensitive", base::Value(is_sensitive_));
   }
 
   bool is_sensitive() { return is_sensitive_; }
@@ -333,8 +331,6 @@ base::Value::Dict ConstructAboutInformation(
       section_list.AddSection(kIdentityTitle, /*is_sensitive=*/true);
   Stat<std::string>* sync_client_id =
       section_identity->AddStringStat("Sync Client ID");
-  Stat<std::string>* invalidator_id =
-      section_identity->AddStringStat("Invalidator Client ID");
   Stat<std::string>* username = section_identity->AddStringStat("Username");
   Stat<bool>* user_has_consent = section_identity->AddBoolStat("Sync Consent");
 
@@ -480,9 +476,6 @@ base::Value::Dict ConstructAboutInformation(
   if (is_status_valid && !full_status.cache_guid.empty()) {
     sync_client_id->Set(full_status.cache_guid);
   }
-  if (is_status_valid && !full_status.invalidator_client_id.empty()) {
-    invalidator_id->Set(full_status.invalidator_client_id);
-  }
   if (!is_local_sync_enabled_state) {
     username->Set(service->GetAccountInfo().email);
     user_has_consent->Set(service->HasSyncConsent());
@@ -617,7 +610,6 @@ base::Value::Dict ConstructAboutInformation(
   // NOTE: We won't bother showing any of the following values unless
   // actionable_error_detected is set.
 
-  base::Value::List actionable_error;
   Stat<std::string> error_type("Error Type", kUninitialized);
   Stat<std::string> action("Action", kUninitialized);
   Stat<std::string> description("Error Description", kUninitialized);
@@ -629,10 +621,10 @@ base::Value::Dict ConstructAboutInformation(
     description.Set(full_status.sync_protocol_error.error_description);
   }
 
-  actionable_error.Append(error_type.ToValue());
-  actionable_error.Append(action.ToValue());
-  actionable_error.Append(description.ToValue());
-  about_info.Set("actionable_error", std::move(actionable_error));
+  about_info.Set("actionable_error", base::Value::List()
+                                         .Append(error_type.ToValue())
+                                         .Append(action.ToValue())
+                                         .Append(description.ToValue()));
 
   about_info.Set("unrecoverable_error_detected",
                  base::Value(service->HasUnrecoverableError()));

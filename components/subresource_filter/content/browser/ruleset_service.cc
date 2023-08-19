@@ -410,10 +410,6 @@ RulesetService::IndexAndWriteRulesetResult RulesetService::WriteRuleset(
   if (!(*g_replace_file_func)(scratch_dir_with_new_indexed_ruleset,
                               indexed_ruleset_version_dir, &error)) {
     base::DeletePathRecursively(scratch_dir_with_new_indexed_ruleset);
-    // While enumerators of base::File::Error all have negative values, the
-    // histogram records the absolute values.
-    UMA_HISTOGRAM_ENUMERATION("SubresourceFilter.WriteRuleset.ReplaceFileError",
-                              -error, -base::File::FILE_ERROR_MAX);
     return IndexAndWriteRulesetResult::FAILED_REPLACE_FILE;
   }
 

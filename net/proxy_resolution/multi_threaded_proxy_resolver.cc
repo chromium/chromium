@@ -261,7 +261,7 @@ class CreateResolverJob : public Job {
   }
 
   const scoped_refptr<PacFileData> script_data_;
-  raw_ptr<ProxyResolverFactory, DanglingUntriaged> factory_;
+  raw_ptr<ProxyResolverFactory, AcrossTasksDanglingUntriaged> factory_;
   std::unique_ptr<ProxyResolver> resolver_;
 };
 

@@ -61,12 +61,10 @@ static_library("test") {
   # TODO(crbug.com/812974): Remove !crashpad_is_fuchsia when Fuchsia is no
   # longer treated as a posix platform.
   if (crashpad_is_posix && !crashpad_is_fuchsia) {
-    sources += [
-      "scoped_set_thread_name_posix.cc",
-    ]
+    sources += [ "scoped_set_thread_name_posix.cc" ]
   }
 
-  if (crashpad_is_mac || crashpad_is_ios) {
+  if (crashpad_is_apple) {
     sources += [
       "mac/mach_errors.cc",
       "mac/mach_errors.h",
@@ -135,9 +133,9 @@ static_library("test") {
   data = [ "test_paths_test_data_root.txt" ]
 
   deps = [
+    "$mini_chromium_source_parent:base",
     "../compat",
     "../third_party/googletest:googletest",
-    "$mini_chromium_source_parent:base",
     "../util",
   ]
 
@@ -214,10 +212,10 @@ source_set("test_test") {
 
   deps = [
     ":test",
+    "$mini_chromium_source_parent:base",
     "../compat",
     "../third_party/googletest:googlemock",
     "../third_party/googletest:googletest",
-    "$mini_chromium_source_parent:base",
     "../util",
   ]
 
@@ -249,10 +247,10 @@ static_library("googlemock_main") {
   defines = [ "CRASHPAD_TEST_LAUNCHER_GOOGLEMOCK" ]
   deps = [
     ":test",
-    "../third_party/googletest:googlemock",
-    "../third_party/googletest:googletest",
     "$mini_chromium_source_parent:base",
     "$mini_chromium_source_parent:base_test_support",
+    "../third_party/googletest:googlemock",
+    "../third_party/googletest:googletest",
   ]
   if (crashpad_is_android) {
     deps += [ "../util" ]
@@ -269,9 +267,9 @@ static_library("googletest_main") {
   defines = [ "CRASHPAD_TEST_LAUNCHER_GOOGLETEST" ]
   deps = [
     ":test",
-    "../third_party/googletest:googletest",
     "$mini_chromium_source_parent:base",
     "$mini_chromium_source_parent:base_test_support",
+    "../third_party/googletest:googletest",
   ]
   if (crashpad_is_android) {
     deps += [ "../util" ]

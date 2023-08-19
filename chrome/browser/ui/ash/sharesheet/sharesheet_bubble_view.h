@@ -51,6 +51,8 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView,
                   apps::IntentPtr intent,
                   ::sharesheet::DeliveredCallback delivered_callback,
                   ::sharesheet::CloseCallback close_callback);
+  // Triggers the sharesheet bubble, then immediately triggers the nearby share
+  // action, which opens within the bubble, bypassing the sharesheet entirely.
   void ShowNearbyShareBubbleForArc(
       apps::IntentPtr intent,
       ::sharesheet::DeliveredCallback delivered_callback,
@@ -58,14 +60,6 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView,
   void ShowActionView();
   void ResizeBubble(const int& width, const int& height);
   void CloseBubble(views::Widget::ClosedReason reason);
-
-  // --- Added for debugging purposes. Remove after bug fixed.
-
-  ASH_EXPORT void PerformLoggingAndChecks(gfx::NativeWindow native_window);
-  ASH_EXPORT void SetUpDialog();
-  ASH_EXPORT void SetUpParentWindow(gfx::NativeWindow native_window);
-
-  // --- End of functions added for debugging.
 
  private:
   class SharesheetParentWidgetObserver;
@@ -89,7 +83,14 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView,
   void OnTabletModeEnded() override;
   void OnTabletControllerDestroyed() override;
 
-  void CreateBubble();
+  // Initialises the base views in the bubble: main_view (for the sharesheet)
+  // and share_action_view (for the Nearby Share UI). Also defines basic bubble
+  // properties.
+  void InitBubble();
+  // Called from ShowBubble or ShowNearbyShareBubbleForArc when the bubble is
+  // launching. Creates the bubble and shows it to the user.
+  void SetUpAndShowBubble();
+
   std::unique_ptr<views::View> MakeScrollableTargetView(
       std::vector<TargetInfo> targets);
   void PopulateLayoutsWithTargets(std::vector<TargetInfo> targets,

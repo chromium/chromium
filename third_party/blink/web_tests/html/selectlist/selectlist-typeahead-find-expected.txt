@@ -1,0 +1,7 @@
+Verify type ahead selection fires onchange event.
+Set focus to selectlist element
+Type "c"
+You see "cherry" in selectlist element and "PASS" below selectlist element.
+
+
+PASS

@@ -4,10 +4,12 @@
 
 #include <stddef.h>
 
+#include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_path_override.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -84,10 +86,17 @@ IN_PROC_BROWSER_TEST_F(ProfileShortcutManagerBrowserTest,
   // This is for triggering a profile icon update on the next run. 1 is just a
   // small enough number for kCurrentProfileIconVersion.
   browser()->profile()->GetPrefs()->SetInteger(prefs::kProfileIconVersion, 1);
+
+  // Ensure that any tasks started by profile creation are finished before we
+  // advance to the main test. In particular, we want to finish all tasks that
+  // might update the profile icon before the main test runs.
+  content::RunAllTasksUntilIdle();
 }
 
 IN_PROC_BROWSER_TEST_F(ProfileShortcutManagerBrowserTest,
                        UpdateProfileIconOnAvatarLoaded) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedPathOverride desktop_override(base::DIR_USER_DESKTOP);
   std::string badged_icon;
   EXPECT_NO_FATAL_FAILURE(badged_icon = ReadProfileIcon());
 

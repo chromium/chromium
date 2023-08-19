@@ -37,6 +37,13 @@ bool ShellPlatformDelegate::ShouldAllowRunningInsecureContent(Shell* shell) {
 }
 
 #if !BUILDFLAG(IS_IOS)
+std::unique_ptr<ColorChooser> ShellPlatformDelegate::OpenColorChooser(
+    WebContents* web_contents,
+    SkColor color,
+    const std::vector<blink::mojom::ColorSuggestionPtr>& suggestions) {
+  return nullptr;
+}
+
 void ShellPlatformDelegate::RunFileChooser(
     RenderFrameHost* render_frame_host,
     scoped_refptr<FileSelectListener> listener,

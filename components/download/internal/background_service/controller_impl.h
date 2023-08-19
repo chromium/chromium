@@ -202,7 +202,6 @@ class ControllerImpl : public Controller,
 
   // Handles and clears any pending task finished callbacks.
   void HandleTaskFinished(DownloadTaskType task_type,
-                          bool needs_reschedule,
                           stats::ScheduledTaskStatus status);
   void OnCompleteCleanupTask();
 

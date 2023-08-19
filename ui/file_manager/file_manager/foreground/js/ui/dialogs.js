@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {isRTL} from 'chrome://resources/ash/common/util.js';
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 
 import {util} from '../../../common/js/util.js';
 
@@ -237,13 +238,13 @@ export class BaseDialog {
 
   /**
    * @param {string} title
-   * @param {string} message
+   * @param {string} messageHtml a message that may contain HTML tags.
    * @param {Function=} opt_onOk
    * @param {Function=} opt_onCancel
    * @param {Function=} opt_onShow
    */
-  showHtml(title, message, opt_onOk, opt_onCancel, opt_onShow) {
-    this.text.innerHTML = message;
+  showHtml(title, messageHtml, opt_onOk, opt_onCancel, opt_onShow) {
+    this.text.innerHTML = sanitizeInnerHtml(messageHtml);
     this.show_(title, opt_onOk, opt_onCancel, opt_onShow);
   }
 

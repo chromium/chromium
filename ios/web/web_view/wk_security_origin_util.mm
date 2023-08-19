@@ -10,10 +10,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "url/scheme_host_port.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace web {
 
 GURL GURLOriginWithWKSecurityOrigin(WKSecurityOrigin* origin) {

@@ -68,8 +68,7 @@ class OverlayPresenterImpl : public BrowserObserver,
 
   // Setter for the active WebState.  Setting to a new value will hide any
   // presented overlays and show the next overlay for the new active WebState.
-  void SetActiveWebState(web::WebState* web_state,
-                         ActiveWebStateChangeReason reason);
+  void SetActiveWebState(web::WebState* web_state, bool is_replaced);
 
   // Fetches the request queue for `web_state`, creating it if necessary.
   OverlayRequestQueueImpl* GetQueueForWebState(web::WebState* web_state) const;
@@ -149,22 +148,12 @@ class OverlayPresenterImpl : public BrowserObserver,
       UIWindow* window) override;
 
   // WebStateListObserver:
-  void WebStateInsertedAt(WebStateList* web_state_list,
-                          web::WebState* web_state,
-                          int index,
-                          bool activating) override;
-  void WebStateReplacedAt(WebStateList* web_state_list,
-                          web::WebState* old_web_state,
-                          web::WebState* new_web_state,
-                          int index) override;
-  void WillDetachWebStateAt(WebStateList* web_state_list,
-                            web::WebState* web_state,
-                            int index) override;
-  void WebStateActivatedAt(WebStateList* web_state_list,
-                           web::WebState* old_web_state,
-                           web::WebState* new_web_state,
-                           int active_index,
-                           ActiveWebStateChangeReason reason) override;
+  void WebStateListWillChange(WebStateList* web_state_list,
+                              const WebStateListChangeDetach& detach_change,
+                              const WebStateListStatus& status) override;
+  void WebStateListDidChange(WebStateList* web_state_list,
+                             const WebStateListChange& change,
+                             const WebStateListStatus& status) override;
 
   // Whether the UI delegate is presenting overlay UI for this presenter.  Stays
   // true from the beginning of the presentation until the end of the

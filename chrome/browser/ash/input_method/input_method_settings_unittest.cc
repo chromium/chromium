@@ -36,7 +36,7 @@ constexpr char kVietnameseTelexEngineId[] = "vkd_vi_telex";
 
 // This should be kept in sync with the values on the settings page's
 // InputMethodOptions. This should match
-// https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/resources/settings/chromeos/os_languages_page/input_method_util.js;l=71-88;drc=6c88edbfe6096489ccac66b3ef5c84d479892181.
+// https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/resources/ash/settings/os_languages_page/input_method_util.js;l=71-88;drc=6c88edbfe6096489ccac66b3ef5c84d479892181.
 constexpr char kJapaneseInputMode[] = "JapaneseInputMode";
 constexpr char kJapanesePunctuationStyle[] = "JapanesePunctuationStyle";
 constexpr char kJapaneseSymbolStyle[] = "JapaneseSymbolStyle";
@@ -56,7 +56,7 @@ constexpr char kJapaneseAutomaticallySendStatisticsToGoogle[] =
 
 // This should match the strings listed here:
 //
-// https://crsrc.org/c/chrome/browser/resources/settings/chromeos/os_languages_page/input_method_types.js;l=8-71;drc=7df206933530e6ac65a7e17a88757cbb780c829e
+// https://crsrc.org/c/chrome/browser/resources/ash/settings/os_languages_page/input_method_types.js;l=8-71;drc=7df206933530e6ac65a7e17a88757cbb780c829e
 // These are possible values for their corresponding enum type.
 constexpr char kJapaneseInputModeKana[] = "Kana";
 constexpr char kJapaneseInputModeRomaji[] = "Romaji";

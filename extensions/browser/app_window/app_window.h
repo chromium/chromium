@@ -21,6 +21,7 @@
 #include "extensions/browser/app_window/native_app_window.h"
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/common/extension_id.h"
 #include "ui/base/ui_base_types.h"  // WindowShowState
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
@@ -237,7 +238,7 @@ class AppWindow : public content::WebContentsDelegate,
 
   const std::string& window_key() const { return window_key_; }
   SessionID session_id() const { return session_id_; }
-  const std::string& extension_id() const { return extension_id_; }
+  const ExtensionId& extension_id() const { return extension_id_; }
   content::WebContents* web_contents() const;
   WindowType window_type() const { return window_type_; }
   content::BrowserContext* browser_context() const { return browser_context_; }
@@ -525,7 +526,7 @@ class AppWindow : public content::WebContentsDelegate,
   // not own this object.
   raw_ptr<content::BrowserContext> browser_context_;
 
-  const std::string extension_id_;
+  const ExtensionId extension_id_;
 
   // Identifier that is used when saving and restoring geometry for this
   // window.

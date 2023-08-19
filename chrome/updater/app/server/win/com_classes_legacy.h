@@ -9,9 +9,9 @@
 #include <wrl/implements.h>
 
 #include <string>
-#include <unordered_map>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -61,8 +61,8 @@ template <typename TDualInterface, typename... TInterfaces>
 class IDispatchImpl
     : public WrlRuntimeDispatchClass<TDualInterface, TInterfaces...> {
  public:
-  IDispatchImpl(const std::unordered_map<IID, IID>& user_iid_map,
-                const std::unordered_map<IID, IID>& system_iid_map)
+  IDispatchImpl(const base::flat_map<IID, IID, IidComparator>& user_iid_map,
+                const base::flat_map<IID, IID, IidComparator>& system_iid_map)
       : iid_map_(IsSystemInstall() ? system_iid_map : user_iid_map),
         hr_load_typelib_(InitializeTypeInfo()) {}
   IDispatchImpl(const IDispatchImpl&) = default;
@@ -164,7 +164,7 @@ class IDispatchImpl
   }
 
  private:
-  const std::unordered_map<IID, IID> iid_map_;
+  const base::flat_map<IID, IID, IidComparator> iid_map_;
   Microsoft::WRL::ComPtr<ITypeInfo> type_info_;
   const HRESULT hr_load_typelib_;
 };

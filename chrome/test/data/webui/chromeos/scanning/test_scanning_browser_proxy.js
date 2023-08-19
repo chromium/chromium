@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {ScanningBrowserProxy, SelectedPath} from 'chrome://scanning/scanning_browser_proxy.js';
-
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/chromeos/test_browser_proxy.js';
 
@@ -97,7 +97,7 @@ export class TestScanningBrowserProxy extends TestBrowserProxy {
         break;
     }
 
-    return Promise.resolve(pluralString);
+    return Promise.resolve(sanitizeInnerHtml(pluralString, {attrs: ['id']}));
   }
 
   /** @override */

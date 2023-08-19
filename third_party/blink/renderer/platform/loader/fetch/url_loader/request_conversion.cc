@@ -367,6 +367,8 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
 
   dest->is_fetch_like_api = src.IsFetchLikeAPI();
 
+  dest->is_fetch_later_api = src.IsFetchLaterAPI();
+
   dest->is_favicon = src.IsFavicon();
 
   dest->request_body = NetworkResourceRequestBodyFor(std::move(src_body));
@@ -412,6 +414,8 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
 
   dest->attribution_reporting_runtime_features =
       src.GetAttributionReportingRuntimeFeatures();
+
+  dest->attribution_reporting_src_token = src.GetAttributionSrcToken();
 
   dest->shared_dictionary_writer_enabled = src.SharedDictionaryWriterEnabled();
 }

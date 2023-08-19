@@ -7,6 +7,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_sink_service.h"
 #include "chrome/browser/media/router/discovery/access_code/discovery_resources.pb.h"
 #include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service_impl.h"
@@ -149,6 +150,9 @@ class AccessCodeCastHandler : public access_code_cast::mojom::PageHandler,
 
   // This contains a value only when tracking a pending route request.
   absl::optional<RouteRequest> current_route_request_;
+
+  // The time that the AddSink() function was last called. Used for metrics.
+  base::Time add_sink_request_time_;
 
   base::WeakPtrFactory<AccessCodeCastHandler> weak_ptr_factory_{this};
 };

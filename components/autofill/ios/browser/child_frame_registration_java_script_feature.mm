@@ -10,10 +10,6 @@
 #import "base/values.h"
 #import "ios/web/public/js_messaging/script_message.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 constexpr char kScriptName[] = "child_frame_registration";

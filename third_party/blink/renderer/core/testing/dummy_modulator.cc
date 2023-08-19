@@ -78,7 +78,8 @@ void DummyModulator::FetchTree(const KURL&,
                                network::mojom::RequestDestination,
                                const ScriptFetchOptions&,
                                ModuleScriptCustomFetchType,
-                               ModuleTreeClient*) {
+                               ModuleTreeClient*,
+                               String referrer) {
   NOTREACHED();
 }
 

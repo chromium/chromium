@@ -35,6 +35,18 @@
         z-index: 1;
       }
 
+      :host-context([chrome-refresh-2023]):host {
+        --cr-toast-background: var(--color-toast-background,
+            var(--cr-fallback-color-inverse-surface));
+        --cr-toast-button-color: var(--color-toast-button,
+            var(--cr-fallback-color-inverse-primary));
+        --cr-toast-text-color: var(--color-toast-foreground,
+            var(--cr-fallback-color-inverse-on-surface));
+        border-radius: 8px;
+        line-height: 20px;
+        padding: 0 16px;
+      }
+
       :host-context([dir=ltr]) {
         left: 0;
       }
@@ -66,6 +78,10 @@
 
       :host ::slotted(cr-button:hover) {
         background-color: transparent !important;
+      }
+
+      :host-context([chrome-refresh-2023]) ::slotted(cr-button:last-of-type) {
+        margin-inline-end: -8px;
       }
     </style>
     <slot></slot>

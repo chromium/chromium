@@ -10,7 +10,7 @@
 @class TabSwitcherItem;
 
 // Supports idempotent insert/delete/updates tabs to a collection view.
-@protocol TabCollectionConsumer
+@protocol TabCollectionConsumer <NSObject>
 
 // Many of the following methods pass a `selectedItemID` as a parameter,
 // indicating the identifier of the item that should be in the selected state
@@ -18,6 +18,7 @@
 // indicates that no item should be selected (typically because there are no
 // items). It is up to the consumer to determine how to handle a
 // `selectedItemID` that is not the identifier of any current items.
+// TODO(crbug.com/1450598): Migrate to unique identifier.
 
 // Tells the consumer to replace its current set of items with `items` and
 // update the selected item ID to be `selectedItemID`. It's an error to pass
@@ -52,6 +53,20 @@
 
 // Dismisses any presented modal UI.
 - (void)dismissModals;
+
+@optional
+
+// Notifies the grid that all items will be closed.
+- (void)willCloseAll;
+
+// Notifies the grid that all items have been closed.
+- (void)didCloseAll;
+
+// Notifies the grid that all closed items will be restored.
+- (void)willUndoCloseAll;
+
+// Notifies the grid that all closed items have been restored.
+- (void)didUndoCloseAll;
 
 @end
 

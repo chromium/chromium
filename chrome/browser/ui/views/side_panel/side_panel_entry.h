@@ -80,6 +80,10 @@ class SidePanelEntry final {
   // open new tab button URL.
   bool SupportsNewTabButton();
 
+  // Resets the `entry_show_triggered_timestamp_` so we don't track metrics
+  // incorrectly.
+  void ResetLoadTimestamp();
+
   base::WeakPtr<SidePanelEntry> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
@@ -95,6 +99,9 @@ class SidePanelEntry final {
 
   // If this returns an empty GURL, the 'Open in New Tab' button is hidden.
   base::RepeatingCallback<GURL()> open_in_new_tab_url_callback_;
+
+  // Timestamp of when the side panel was triggered to be shown.
+  base::TimeTicks entry_show_triggered_timestamp_;
 
   base::TimeTicks entry_shown_timestamp_;
 

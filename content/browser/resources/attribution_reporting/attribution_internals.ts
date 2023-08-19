@@ -6,14 +6,12 @@ import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
 import './attribution_internals_table.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
-import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 
 import {AttributionSupport, TriggerVerification} from './attribution.mojom-webui.js';
-import {Factory, HandlerInterface, HandlerRemote, ObserverInterface, ObserverReceiver, ReportID, SourceStatus, WebUIDebugReport, WebUIOsRegistration, WebUIRegistration, WebUIReport, WebUISource, WebUISource_Attributability, WebUISourceRegistration, WebUITrigger, WebUITrigger_Status} from './attribution_internals.mojom-webui.js';
+import {Factory, HandlerInterface, HandlerRemote, ObserverInterface, ObserverReceiver, ReportID, WebUIDebugReport, WebUIOsRegistration, WebUIRegistration, WebUIReport, WebUISource, WebUISource_Attributability, WebUISourceRegistration, WebUITrigger, WebUITrigger_Status} from './attribution_internals.mojom-webui.js';
 import {AttributionInternalsTableElement} from './attribution_internals_table.js';
-import {OsRegistrationResult, OsRegistrationType} from './attribution_reporting.mojom-webui.js';
-import {SourceRegistrationError} from './source_registration_error.mojom-webui.js';
+import {OsRegistrationResult, RegistrationType} from './attribution_reporting.mojom-webui.js';
 import {SourceType} from './source_type.mojom-webui.js';
 import {StoreSourceResult} from './store_source_result.mojom-webui.js';
 import {Column, TableModel} from './table_model.js';
@@ -235,7 +233,6 @@ class Source {
   reportingOrigin: string;
   sourceTime: Date;
   expiryTime: Date;
-  eventReportWindowTime: Date;
   aggregatableReportWindowTime: Date;
   sourceType: string;
   filterData: string;
@@ -255,7 +252,6 @@ class Source {
     this.reportingOrigin = originToText(mojo.reportingOrigin);
     this.sourceTime = new Date(mojo.sourceTime);
     this.expiryTime = new Date(mojo.expiryTime);
-    this.eventReportWindowTime = new Date(mojo.eventReportWindowTime);
     this.aggregatableReportWindowTime =
         new Date(mojo.aggregatableReportWindowTime);
     this.sourceType = sourceTypeToText(mojo.sourceType);
@@ -289,8 +285,6 @@ class SourceTableModel extends TableModel<Source> {
           new DateColumn<Source>(
               'Source Registration Time', (e) => e.sourceTime),
           new DateColumn<Source>('Expiry Time', (e) => e.expiryTime),
-          new DateColumn<Source>(
-              'Event Report Window Time', (e) => e.eventReportWindowTime),
           new DateColumn<Source>(
               'Aggregatable Report Window Time',
               (e) => e.aggregatableReportWindowTime),
@@ -390,13 +384,13 @@ class RegistrationTableModel<T extends Registration> extends TableModel<T> {
 class Trigger extends Registration {
   readonly eventLevelStatus: string;
   readonly aggregatableStatus: string;
-  readonly verification?: TriggerVerification;
+  readonly verifications: TriggerVerification[];
 
   constructor(mojo: WebUITrigger) {
     super(mojo.registration);
     this.eventLevelStatus = triggerStatusToText(mojo.eventLevelStatus);
     this.aggregatableStatus = triggerStatusToText(mojo.aggregatableStatus);
-    this.verification = mojo.verification;
+    this.verifications = mojo.verifications;
   }
 }
 
@@ -412,9 +406,9 @@ class ReportVerificationColumn implements Column<Trigger> {
   }
 
   render(td: HTMLElement, row: Trigger) {
-    if (row.verification) {
-      renderDL(td, row.verification, VERIFICATION_COLS);
-    }
+      row.verifications.forEach(verification => {
+        renderDL(td, verification, VERIFICATION_COLS);
+      });
   }
 }
 
@@ -716,6 +710,7 @@ class OsRegistration {
   topLevelOrigin: string;
   registrationType: string;
   debugKeyAllowed: boolean;
+  debugReporting: boolean;
   result: string;
 
   constructor(mojo: WebUIOsRegistration) {
@@ -723,12 +718,13 @@ class OsRegistration {
     this.registrationUrl = mojo.registrationUrl.url;
     this.topLevelOrigin = originToText(mojo.topLevelOrigin);
     this.debugKeyAllowed = mojo.isDebugKeyAllowed;
+    this.debugReporting = mojo.debugReporting;
 
     switch (mojo.type) {
-      case OsRegistrationType.kSource:
+      case RegistrationType.kSource:
         this.registrationType = 'OS Source';
         break;
-      case OsRegistrationType.kTrigger:
+      case RegistrationType.kTrigger:
         this.registrationType = 'OS Trigger';
         break;
       default:
@@ -775,6 +771,8 @@ class OsRegistrationTableModel extends TableModel<OsRegistration> {
               'Top-Level Origin', (e) => e.topLevelOrigin),
           new ValueColumn<OsRegistration, boolean>(
               'Debug Key Allowed', (e) => e.debugKeyAllowed),
+          new ValueColumn<OsRegistration, boolean>(
+              'Debug Reporting', (e) => e.debugReporting),
           new ValueColumn<OsRegistration, string>('Result', (e) => e.result),
         ],
         0,
@@ -864,51 +862,6 @@ class DebugReportTableModel extends TableModel<DebugReport> {
   }
 }
 
-function sourceRegistrationErrorToText(error: SourceRegistrationError) {
-  switch (error) {
-    case SourceRegistrationError.kInvalidJson:
-      return 'invalid syntax';
-    case SourceRegistrationError.kRootWrongType:
-      return 'root JSON value has wrong type (must be a dictionary)';
-    case SourceRegistrationError.kDestinationMissing:
-      return 'destination missing';
-    case SourceRegistrationError.kDestinationWrongType:
-      return 'destination has wrong type (must be a string)';
-    case SourceRegistrationError.kDestinationListTooLong:
-      return 'number of destinations exceeds limit';
-    case SourceRegistrationError.kDestinationUntrustworthy:
-      return 'destination not potentially trustworthy';
-    case SourceRegistrationError.kFilterDataWrongType:
-      return 'filter_data has wrong type (must be a dictionary)';
-    case SourceRegistrationError.kFilterDataTooManyKeys:
-      return 'filter_data has too many keys';
-    case SourceRegistrationError.kFilterDataHasSourceTypeKey:
-      return 'filter_data must not have a source_type key';
-    case SourceRegistrationError.kFilterDataKeyTooLong:
-      return 'filter_data key too long';
-    case SourceRegistrationError.kFilterDataListWrongType:
-      return 'filter_data value has wrong type (must be a list)';
-    case SourceRegistrationError.kFilterDataListTooLong:
-      return 'filter_data list too long';
-    case SourceRegistrationError.kFilterDataValueWrongType:
-      return 'filter_data list value has wrong type (must be a string)';
-    case SourceRegistrationError.kFilterDataValueTooLong:
-      return 'filter_data list value too long';
-    case SourceRegistrationError.kAggregationKeysWrongType:
-      return 'aggregation_keys has wrong type (must be a dictionary)';
-    case SourceRegistrationError.kAggregationKeysTooManyKeys:
-      return 'aggregation_keys has too many keys';
-    case SourceRegistrationError.kAggregationKeysKeyTooLong:
-      return 'aggregation_keys key too long';
-    case SourceRegistrationError.kAggregationKeysValueWrongType:
-      return 'aggregation_keys value has wrong type (must be a string)';
-    case SourceRegistrationError.kAggregationKeysValueWrongFormat:
-      return 'aggregation_keys value must be a base-16 integer starting with 0x';
-    default:
-      return 'unknown error';
-  }
-}
-
 /**
  * Converts a mojo origin into a user-readable string, omitting default ports.
  * @param origin Origin to convert
@@ -962,30 +915,34 @@ function attributabilityToText(attributability: WebUISource_Attributability):
   }
 }
 
-function sourceRegistrationStatusToText(status: SourceStatus): string {
-  if (status.storeSourceResult !== undefined) {
-    switch (status.storeSourceResult) {
-      case StoreSourceResult.kSuccess:
-      case StoreSourceResult.kSuccessNoised:
-        return 'Success';
-      case StoreSourceResult.kInternalError:
-        return 'Rejected: internal error';
-      case StoreSourceResult.kInsufficientSourceCapacity:
-        return 'Rejected: insufficient source capacity';
-      case StoreSourceResult.kInsufficientUniqueDestinationCapacity:
-        return 'Rejected: insufficient unique destination capacity';
-      case StoreSourceResult.kExcessiveReportingOrigins:
-        return 'Rejected: excessive reporting origins';
-      case StoreSourceResult.kProhibitedByBrowserPolicy:
-        return 'Rejected: prohibited by browser policy';
-      default:
-        return status.toString();
-    }
-  } else if (status.jsonError !== undefined) {
-    return `Rejected: invalid JSON: ${
-        sourceRegistrationErrorToText(status.jsonError)}`;
-  } else {
-    return 'Unknown';
+function sourceRegistrationStatusToText(status: StoreSourceResult): string {
+  switch (status) {
+    case StoreSourceResult.kSuccess:
+    case StoreSourceResult.kSuccessNoised:
+      return 'Success';
+    case StoreSourceResult.kInternalError:
+      return 'Rejected: internal error';
+    case StoreSourceResult.kInsufficientSourceCapacity:
+      return 'Rejected: insufficient source capacity';
+    case StoreSourceResult.kInsufficientUniqueDestinationCapacity:
+      return 'Rejected: insufficient unique destination capacity';
+    case StoreSourceResult.kExcessiveReportingOrigins:
+      return 'Rejected: excessive reporting origins';
+    case StoreSourceResult.kProhibitedByBrowserPolicy:
+      return 'Rejected: prohibited by browser policy';
+    case StoreSourceResult.kDestinationReportingLimitReached:
+      return 'Rejected: destination reporting limit reached';
+    case StoreSourceResult.kDestinationGlobalLimitReached:
+      return 'Rejected: destination global limit reached';
+    case StoreSourceResult.kDestinationBothLimitsReached:
+      return 'Rejected: destination both limits reached';
+    case StoreSourceResult.kExceedsMaxChannelCapacity:
+      return 'Rejected: channel capacity exceeds max allowed';
+    case StoreSourceResult.kEventReportWindowsInvalidStartTime:
+      return 'Rejected: report windows start time is greater than default end ' +
+          'time';
+    default:
+      assertNotReached();
   }
 }
 
@@ -1007,6 +964,8 @@ function triggerStatusToText(status: WebUITrigger_Status): string {
       return 'Failure: Excessive reporting origins';
     case WebUITrigger_Status.kDeduplicated:
       return 'Failure: Deduplicated against an earlier report';
+    case WebUITrigger_Status.kReportWindowNotStarted:
+      return 'Failure: Report window has not started';
     case WebUITrigger_Status.kReportWindowPassed:
       return 'Failure: Report window has passed';
     case WebUITrigger_Status.kLowPriority:
@@ -1179,14 +1138,16 @@ class AttributionInternals implements ObserverInterface {
           response.enabled ? 'enabled' : 'disabled';
       featureStatusContent.classList.toggle('disabled', !response.enabled);
 
-      const debugModeContent =
-          document.querySelector<HTMLElement>('#debug-mode-content')!;
-      const html = getTrustedHTML`The #attribution-reporting-debug-mode flag is
- <strong>enabled</strong>, reports are sent immediately and never pending.`;
-      debugModeContent.innerHTML = html as unknown as string;
+      const reportDelaysContent =
+          document.querySelector<HTMLElement>('#report-delays')!;
+      const noiseContent = document.querySelector<HTMLElement>('#noise')!;
 
-      if (!response.debugMode) {
-        debugModeContent.innerText = '';
+      if (response.debugMode) {
+        reportDelaysContent.innerText = 'disabled';
+        noiseContent.innerText = 'disabled';
+      } else {
+        reportDelaysContent.innerText = 'enabled';
+        noiseContent.innerText = 'enabled';
       }
 
       const attributionSupport = document.querySelector<HTMLElement>('#attribution-support')!;

@@ -5,6 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_SCREEN_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_SCREEN_H_
 
+#include <ostream>
 #include <set>
 #include <vector>
 
@@ -80,6 +81,12 @@ class WaylandScreen : public PlatformScreen {
   void OnTabletStateChanged(display::TabletState tablet_state) override;
   display::TabletState GetTabletState() const override;
 #endif
+
+  void DumpState(std::ostream& out) const;
+
+  // True if the internal representations for output objects is consistent for
+  // the screen.
+  bool VerifyOutputStateConsistentForTesting() const;
 
  protected:
   // Suspends or un-suspends the platform-specific screensaver, and returns

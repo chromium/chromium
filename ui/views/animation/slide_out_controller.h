@@ -89,7 +89,7 @@ class VIEWS_EXPORT SlideOutController : public ui::EventHandler {
   ui::ScopedTargetHandler target_handling_;
 
   // Unowned and outlives this object.
-  raw_ptr<SlideOutControllerDelegate> delegate_;
+  raw_ptr<SlideOutControllerDelegate, DanglingUntriaged> delegate_;
 
   // Cumulative scroll amount since the beginning of current slide gesture.
   // Includes the initial shift when swipe control was open at gesture start.

@@ -1,10 +1,12 @@
 Name: Protected Content Interface for libva
 Short Name: libva_protected_content
+URL: https://github.com/intel/libva
 Version: 2.9.0
 Date: 2020-11-02
 License: MIT
 License File: LICENSE
 Security Critical: no
+Shipped: yes
 
 Description:
 This contains a header file supplied by Intel that is used for protected content

@@ -95,7 +95,7 @@ function testClickButton(buttonSelector: string, element: HTMLElement|null) {
   actionButton.click();
 }
 
-suite('PrivacySandboxDialogConsent', function() {
+suite('Consent', function() {
   let page: PrivacySandboxDialogAppElement;
   let browserProxy: TestPrivacySandboxDialogBrowserProxy;
 
@@ -191,7 +191,7 @@ suite('PrivacySandboxDialogConsent', function() {
   });
 });
 
-suite('PrivacySandboxDialogNotice', function() {
+suite('Notice', function() {
   let page: PrivacySandboxDialogAppElement;
   let browserProxy: TestPrivacySandboxDialogBrowserProxy;
 
@@ -248,7 +248,7 @@ suite('PrivacySandboxDialogNotice', function() {
   });
 });
 
-suite('PrivacySandboxDialogCombined', function() {
+suite('Combined', function() {
   let page: PrivacySandboxCombinedDialogAppElement;
   let browserProxy: TestPrivacySandboxDialogBrowserProxy;
 
@@ -468,7 +468,7 @@ suite('PrivacySandboxDialogCombined', function() {
   });
 });
 
-suite('PrivacySandboxDialogNoticeEEA', function() {
+suite('NoticeEEA', function() {
   let page: PrivacySandboxCombinedDialogAppElement;
   let browserProxy: TestPrivacySandboxDialogBrowserProxy;
 
@@ -606,7 +606,7 @@ suite('PrivacySandboxDialogNoticeEEA', function() {
   });
 });
 
-suite('PrivacySandboxDialogNoticeROW', function() {
+suite('NoticeROW', function() {
   let page: PrivacySandboxNoticeDialogAppElement;
   let browserProxy: TestPrivacySandboxDialogBrowserProxy;
 
@@ -622,13 +622,9 @@ suite('PrivacySandboxDialogNoticeROW', function() {
     await browserProxy.whenCalled('showDialog');
   });
 
-  test('moreButton', async function() {
-    // TODO(crbug.com/1432915): flaky on mac.
-    // <if expr="is_macosx">
-    if (1) {
-      this.skip();
-    }
-    // </if>
+  // TODO(crbug.com/1432915, crbug.com/1432915): various more button test
+  // issues. Re-enable once resolved.
+  test.skip('moreButton', async function() {
     await verifyActionOccured(
         browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
     await flushTasks();
@@ -689,12 +685,6 @@ suite('PrivacySandboxDialogNoticeROW', function() {
   });
 
   test('ackClicked', async function() {
-    // TODO(crbug.com/1432915): flaky on mac.
-    // <if expr="is_macosx">
-    if (1) {
-      this.skip();
-    }
-    // </if>
     await verifyActionOccured(
         browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
     testClickButton('#ackButton', page);
@@ -703,12 +693,6 @@ suite('PrivacySandboxDialogNoticeROW', function() {
   });
 
   test('settingsClicked', async function() {
-    // TODO(crbug.com/1432915): flaky on mac.
-    // <if expr="is_macosx">
-    if (1) {
-      this.skip();
-    }
-    // </if>
     await verifyActionOccured(
         browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
     testClickButton('#settingsButton', page);
@@ -717,12 +701,6 @@ suite('PrivacySandboxDialogNoticeROW', function() {
   });
 
   test('learnMoreClicked', async function() {
-    // TODO(crbug.com/1432915): flaky on mac.
-    // <if expr="is_macosx">
-    if (1) {
-      this.skip();
-    }
-    // </if>
     await verifyActionOccured(
         browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
     // TODO(crbug.com/1378703): Test scrolling behaviour.
@@ -749,7 +727,7 @@ suite('PrivacySandboxDialogNoticeROW', function() {
   });
 });
 
-suite('PrivacySandboxDialogNoticeRestricted', function() {
+suite('NoticeRestricted', function() {
   let page: PrivacySandboxNoticeRestrictedDialogAppElement;
   let browserProxy: TestPrivacySandboxDialogBrowserProxy;
 
@@ -767,13 +745,13 @@ suite('PrivacySandboxDialogNoticeRestricted', function() {
 
   test('validDialog', async function() {
     await verifyActionOccured(
-        browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
+        browserProxy, PrivacySandboxPromptAction.RESTRICTED_NOTICE_SHOWN);
     assertTrue(!!page.shadowRoot!.querySelector('div'));
   });
 
   test('settingsClicked', async function() {
     await verifyActionOccured(
-        browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
+        browserProxy, PrivacySandboxPromptAction.RESTRICTED_NOTICE_SHOWN);
     testClickButton('#settingsButton', page);
     await verifyActionOccured(
         browserProxy,
@@ -782,7 +760,7 @@ suite('PrivacySandboxDialogNoticeRestricted', function() {
 
   test('acknowledgeClicked', async function() {
     await verifyActionOccured(
-        browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
+        browserProxy, PrivacySandboxPromptAction.RESTRICTED_NOTICE_SHOWN);
     testClickButton('#ackButton', page);
     await verifyActionOccured(
         browserProxy, PrivacySandboxPromptAction.RESTRICTED_NOTICE_ACKNOWLEDGE);
@@ -794,7 +772,7 @@ suite('PrivacySandboxDialogNoticeRestricted', function() {
   // resolved.
   test.skip('moreButton', async function() {
     await verifyActionOccured(
-        browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
+        browserProxy, PrivacySandboxPromptAction.RESTRICTED_NOTICE_SHOWN);
     await flushTasks();
 
     const scrollable: HTMLElement =
@@ -839,7 +817,8 @@ suite('PrivacySandboxDialogNoticeRestricted', function() {
     }
 
     await verifyActionOccured(
-        browserProxy, PrivacySandboxPromptAction.NOTICE_MORE_BUTTON_CLICKED);
+        browserProxy,
+        PrivacySandboxPromptAction.RESTRICTED_NOTICE_MORE_BUTTON_CLICKED);
     await page.whenWasScrolledToBottomForTest();
 
     // After scrolling down, the "More" button is hidden and dialog button are
@@ -856,7 +835,7 @@ suite('PrivacySandboxDialogNoticeRestricted', function() {
   });
 });
 
-suite('PrivacySandboxDialogMixin', function() {
+suite('Mixin', function() {
   const TestElementBase = PrivacySandboxDialogMixin(PolymerElement);
 
   // Create a test element to have more control over size of the element and

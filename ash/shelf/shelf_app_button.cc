@@ -383,6 +383,11 @@ ShelfAppButton::ShelfAppButton(ShelfView* shelf_view,
   };
   icon_shadows_.assign(kShadows, kShadows + std::size(kShadows));
 
+  views::InkDrop::Get(this)->SetMode(
+      views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
+  views::InkDrop::UseInkDropForSquareRipple(views::InkDrop::Get(this),
+                                            /*highlight_on_hover=*/false);
+
   views::InkDrop::Get(this)->SetCreateRippleCallback(base::BindRepeating(
       [](ShelfAppButton* host) -> std::unique_ptr<views::InkDropRipple> {
         const gfx::Rect small_ripple_area = host->CalculateSmallRippleArea();
@@ -424,6 +429,7 @@ ShelfAppButton::ShelfAppButton(ShelfView* shelf_view,
   views::InstallEmptyHighlightPathGenerator(this);
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetInstallFocusRingOnFocus(true);
+  views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
   if (chromeos::features::IsJellyEnabled()) {
     views::FocusRing::Get(this)->SetColorId(cros_tokens::kCrosSysFocusRing);
   } else {

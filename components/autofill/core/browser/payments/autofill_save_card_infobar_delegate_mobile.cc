@@ -15,7 +15,6 @@
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
-#include "components/autofill/core/browser/payments/autofill_save_card_ui_utils_mobile.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -128,7 +127,8 @@ std::u16string AutofillSaveCardInfoBarDelegateMobile::GetDescriptionText()
 }
 
 int AutofillSaveCardInfoBarDelegateMobile::GetIconId() const {
-  return GetSaveCardIconId(IsGooglePayBrandingEnabled());
+  return IsGooglePayBrandingEnabled() ? IDR_AUTOFILL_GOOGLE_PAY
+                                      : IDR_INFOBAR_AUTOFILL_CC;
 }
 
 std::u16string AutofillSaveCardInfoBarDelegateMobile::GetMessageText() const {

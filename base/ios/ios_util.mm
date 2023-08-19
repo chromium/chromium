@@ -8,13 +8,9 @@
 #import <UIKit/UIKit.h>
 #include <stddef.h>
 
+#include "base/apple/foundation_util.h"
 #import "base/ios/device_util.h"
-#include "base/mac/foundation_util.h"
 #include "base/system/sys_info.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -46,6 +42,11 @@ bool IsRunningOnIOS15OrLater() {
 
 bool IsRunningOnIOS16OrLater() {
   static const bool is_running_on_or_later = IsRunningOnOrLater(16, 0, 0);
+  return is_running_on_or_later;
+}
+
+bool IsRunningOnIOS17OrLater() {
+  static const bool is_running_on_or_later = IsRunningOnOrLater(17, 0, 0);
   return is_running_on_or_later;
 }
 

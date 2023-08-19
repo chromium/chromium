@@ -21,7 +21,7 @@ import {TabDiscardExceptionCurrentSitesListElement} from './tab_discard_exceptio
 import {getTemplate} from './tab_discard_exception_tabbed_add_dialog.html.js';
 
 export enum TabDiscardExceptionAddDialogTabs {
-  LIST = 0,
+  CURRENT_SITES = 0,
   MANUAL = 1,
 }
 
@@ -78,9 +78,13 @@ export class TabDiscardExceptionTabbedAddDialogElement extends
 
   private onSitesPopulated_(e: CustomEvent<{length: number}>) {
     if (e.detail.length > 0) {
-      this.selectedTab_ = TabDiscardExceptionAddDialogTabs.LIST;
+      this.selectedTab_ = TabDiscardExceptionAddDialogTabs.CURRENT_SITES;
     }
     this.$.dialog.showModal();
+  }
+
+  private isAddCurrentSitesTabSelected_() {
+    return this.selectedTab_ === TabDiscardExceptionAddDialogTabs.CURRENT_SITES;
   }
 
   private onCancelClick_() {
@@ -89,18 +93,18 @@ export class TabDiscardExceptionTabbedAddDialogElement extends
 
   private onSubmitClick_() {
     this.$.dialog.close();
-    if (this.selectedTab_ === TabDiscardExceptionAddDialogTabs.MANUAL) {
-      this.$.input.submit();
-    } else {
+    if (this.isAddCurrentSitesTabSelected_()) {
       this.$.list.submit();
+    } else {
+      this.$.input.submit();
     }
   }
 
   private isSubmitDisabled_() {
-    if (this.selectedTab_ === TabDiscardExceptionAddDialogTabs.MANUAL) {
-      return this.submitDisabledManual_;
+    if (this.isAddCurrentSitesTabSelected_()) {
+      return this.submitDisabledList_;
     }
-    return this.submitDisabledList_;
+    return this.submitDisabledManual_;
   }
 }
 

@@ -66,14 +66,14 @@ bool ProduceSymmetricKey(const uint8_t shared_secret[kKeySize],
 }
 
 bool PerformSymmetricEncryption(const uint8_t symmetric_key[kKeySize],
-                                base::StringPiece input_data,
+                                std::string_view input_data,
                                 std::string* output_data) {
   // Make sure OpenSSL is initialized, in order to avoid data races later.
   crypto::EnsureOpenSSLInit();
 
   // Encrypt the data with symmetric key using AEAD interface.
   crypto::Aead aead(crypto::Aead::CHACHA20_POLY1305);
-  DCHECK_EQ(aead.KeyLength(), kKeySize);
+  CHECK_EQ(aead.KeyLength(), kKeySize);
 
   // Use the symmetric key for data encryption.
   aead.Init(base::make_span(symmetric_key, kKeySize));
@@ -81,7 +81,7 @@ bool PerformSymmetricEncryption(const uint8_t symmetric_key[kKeySize],
   // Set nonce to 0s, since a symmetric key is only used once.
   // Note: if we ever start reusing the same symmetric key, we will need
   // to generate new nonce for every record and transfer it to the peer.
-  DCHECK_EQ(aead.NonceLength(), kNonceSize);
+  CHECK_EQ(aead.NonceLength(), kNonceSize);
   std::string nonce(kNonceSize, 0);
 
   // Encrypt the whole record.
@@ -95,7 +95,7 @@ bool PerformSymmetricEncryption(const uint8_t symmetric_key[kKeySize],
 }
 
 bool VerifySignature(const uint8_t verification_key[kKeySize],
-                     base::StringPiece message,
+                     std::string_view message,
                      const uint8_t signature[kSignatureSize]) {
   // Make sure OpenSSL is initialized, in order to avoid data races later.
   crypto::EnsureOpenSSLInit();

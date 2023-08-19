@@ -40,7 +40,9 @@ type MarginsObject = {
 
 export class Margins {
   /**
-   * Backing store for the margin values in points.
+   * Backing store for the margin values in points. The numbers are stored as
+   * integer values, because that is what the C++ `printing::PageMargins` class
+   * expects.
    */
   private value_: MarginsObject = {top: 0, bottom: 0, left: 0, right: 0};
 
@@ -48,21 +50,12 @@ export class Margins {
    * Creates a Margins object that holds four margin values in points.
    */
   constructor(top: number, right: number, bottom: number, left: number) {
-    this.value_ = {top, right, bottom, left};
-  }
-
-  /**
-   * Parses a margins object from the given serialized state.
-   * @param state Serialized representation of the margins created by
-   *     the {@code serialize} method.
-   * @return New margins instance.
-   */
-  static parse(state: MarginsObject): Margins {
-    return new Margins(
-        state[CustomMarginsOrientation.TOP] || 0,
-        state[CustomMarginsOrientation.RIGHT] || 0,
-        state[CustomMarginsOrientation.BOTTOM] || 0,
-        state[CustomMarginsOrientation.LEFT] || 0);
+    this.value_ = {
+      top: Math.round(top),
+      right: Math.round(right),
+      bottom: Math.round(bottom),
+      left: Math.round(left),
+    };
   }
 
   /**

@@ -14,7 +14,7 @@
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/tracing/tracing_controller_impl.h"
-#include "content/public/android/content_jni_headers/TracingControllerAndroidImpl_jni.h"
+#include "content/public/android/content_main_dex_jni/TracingControllerAndroidImpl_jni.h"
 #include "content/public/browser/tracing_controller.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_session.h"

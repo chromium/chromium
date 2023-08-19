@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ui/overlays/overlay_container_view_controller.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface OverlayContainerView : UIView
 // The owning view controller.
 @property(nonatomic, weak) OverlayContainerViewController* viewController;

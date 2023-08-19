@@ -52,7 +52,6 @@ class ArcGhostWindowShellSurface : public exo::ClientControlledShellSurface {
  private:
   ArcGhostWindowShellSurface(std::unique_ptr<exo::Surface> surface,
                              int container,
-                             double scale_factor,
                              const std::string& application_id);
 
   void InitContentOverlay(const std::string& app_id,
@@ -62,7 +61,8 @@ class ArcGhostWindowShellSurface : public exo::ClientControlledShellSurface {
   void SetShellAppId(ui::PropertyHandler* property_handler,
                      const absl::optional<std::string>& id);
 
-  raw_ptr<ArcGhostWindowView, ExperimentalAsh> view_observer_ = nullptr;
+  raw_ptr<ArcGhostWindowView, DanglingUntriaged | ExperimentalAsh>
+      view_observer_ = nullptr;
   absl::optional<std::string> app_id_;
 
   std::unique_ptr<exo::Surface> controller_surface_;

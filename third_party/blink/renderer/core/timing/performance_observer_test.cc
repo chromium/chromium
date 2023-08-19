@@ -98,7 +98,7 @@ TEST_F(PerformanceObserverTest, Enqueue) {
   PerformanceMarkOptions* options = PerformanceMarkOptions::Create();
   options->setStartTime(1234);
   Persistent<PerformanceEntry> entry = PerformanceMark::Create(
-      scope.GetScriptState(), "m", options, exception_state);
+      scope.GetScriptState(), AtomicString("m"), options, exception_state);
   EXPECT_EQ(0, NumPerformanceEntries());
 
   observer_->EnqueuePerformanceEntry(*entry);
@@ -113,7 +113,7 @@ TEST_F(PerformanceObserverTest, Deliver) {
   PerformanceMarkOptions* options = PerformanceMarkOptions::Create();
   options->setStartTime(1234);
   Persistent<PerformanceEntry> entry = PerformanceMark::Create(
-      scope.GetScriptState(), "m", options, exception_state);
+      scope.GetScriptState(), AtomicString("m"), options, exception_state);
   EXPECT_EQ(0, NumPerformanceEntries());
 
   observer_->EnqueuePerformanceEntry(*entry);
@@ -131,7 +131,7 @@ TEST_F(PerformanceObserverTest, Disconnect) {
   PerformanceMarkOptions* options = PerformanceMarkOptions::Create();
   options->setStartTime(1234);
   Persistent<PerformanceEntry> entry = PerformanceMark::Create(
-      scope.GetScriptState(), "m", options, exception_state);
+      scope.GetScriptState(), AtomicString("m"), options, exception_state);
   EXPECT_EQ(0, NumPerformanceEntries());
 
   observer_->EnqueuePerformanceEntry(*entry);

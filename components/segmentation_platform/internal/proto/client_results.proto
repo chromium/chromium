@@ -16,6 +16,10 @@ message ClientResult {
 
   // Timestamp when this result was written to prefs.
   optional int64 timestamp_us = 2;
+
+  // Timestamp when the result was first used by the client. Note that this is
+  // only useful if there is a single feature that fetches the result.
+  optional int64 first_used_timestamp = 3;
 }
 
 // Proto containing model results for all clients. Used for storing in prefs.

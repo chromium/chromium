@@ -4,6 +4,8 @@
 
 #include "components/page_load_metrics/browser/fake_page_load_metrics_observer_delegate.h"
 #include "base/time/default_tick_clock.h"
+#include "components/page_load_metrics/common/page_load_metrics.mojom.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace page_load_metrics {
 
@@ -133,9 +135,19 @@ FakePageLoadMetricsObserverDelegate::GetNormalizedCLSData(
   return normalized_cls_data_;
 }
 
+const NormalizedCLSData& FakePageLoadMetricsObserverDelegate::
+    GetSoftNavigationIntervalNormalizedCLSData() const {
+  return normalized_cls_data_;
+}
+
 const NormalizedResponsivenessMetrics&
 FakePageLoadMetricsObserverDelegate::GetNormalizedResponsivenessMetrics()
     const {
+  return normalized_responsiveness_metrics_;
+}
+
+const NormalizedResponsivenessMetrics& FakePageLoadMetricsObserverDelegate::
+    GetSoftNavigationIntervalNormalizedResponsivenessMetrics() const {
   return normalized_responsiveness_metrics_;
 }
 
@@ -178,8 +190,20 @@ ukm::SourceId FakePageLoadMetricsObserverDelegate::GetPageUkmSourceId() const {
   return ukm::kInvalidSourceId;
 }
 
-uint32_t FakePageLoadMetricsObserverDelegate::GetSoftNavigationCount() const {
-  return 0;
+mojom::SoftNavigationMetrics&
+FakePageLoadMetricsObserverDelegate::GetSoftNavigationMetrics() const {
+  return *mojom::SoftNavigationMetrics::New();
+}
+
+ukm::SourceId
+FakePageLoadMetricsObserverDelegate::GetUkmSourceIdForSoftNavigation() const {
+  return ukm::kInvalidSourceId;
+}
+
+ukm::SourceId
+FakePageLoadMetricsObserverDelegate::GetPreviousUkmSourceIdForSoftNavigation()
+    const {
+  return ukm::kInvalidSourceId;
 }
 
 bool FakePageLoadMetricsObserverDelegate::IsFirstNavigationInWebContents()

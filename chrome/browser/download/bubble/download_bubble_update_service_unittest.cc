@@ -8,8 +8,10 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/download/bubble/download_bubble_update_service_factory.h"
 #include "chrome/browser/download/bubble/download_display_controller.h"
+#include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/download_item_web_app_data.h"
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/offline_items_collection/offline_content_aggregator_factory.h"
@@ -90,6 +92,9 @@ class DownloadBubbleUpdateServiceTest : public testing::Test {
     EXPECT_CALL(*download_manager, GetBrowserContext())
         .WillRepeatedly(Return(profile));
     EXPECT_CALL(*download_manager, RemoveObserver(_)).WillRepeatedly(Return());
+    // Default case for when no download exists with the requested guid.
+    EXPECT_CALL(*download_manager, GetDownloadByGuid(_))
+        .WillRepeatedly(Return(nullptr));
     profile->SetDownloadManagerForTesting(std::move(download_manager));
     return manager;
   }
@@ -226,13 +231,11 @@ class DownloadBubbleUpdateServiceTest : public testing::Test {
   }
 
   void UpdateDownloadItem(
-      int item_index,
+      download::MockDownloadItem& item,
       DownloadState state,
       bool is_paused = false,
       DownloadDangerType danger_type =
           DownloadDangerType::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS) {
-    DCHECK_GT(download_items_.size(), static_cast<size_t>(item_index));
-    auto& item = GetDownloadItem(item_index);
     EXPECT_CALL(item, GetState()).WillRepeatedly(Return(state));
     EXPECT_CALL(item, IsDone())
         .WillRepeatedly(Return(state == DownloadState::COMPLETE));
@@ -243,6 +246,18 @@ class DownloadBubbleUpdateServiceTest : public testing::Test {
     EXPECT_CALL(item, GetDangerType()).WillRepeatedly(Return(danger_type));
     EXPECT_CALL(item, IsPaused()).WillRepeatedly(Return(is_paused));
     item.NotifyObserversDownloadUpdated();
+  }
+
+  // Overload of the above that identifies the item by index.
+  void UpdateDownloadItem(
+      int item_index,
+      DownloadState state,
+      bool is_paused = false,
+      DownloadDangerType danger_type =
+          DownloadDangerType::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS) {
+    DCHECK_GT(download_items_.size(), static_cast<size_t>(item_index));
+    auto& item = GetDownloadItem(item_index);
+    UpdateDownloadItem(item, state, is_paused, danger_type);
   }
 
   void RemoveDownloadItem(size_t item_index) {
@@ -951,5 +966,109 @@ TEST_F(DownloadBubbleUpdateServiceIncognitoTest, InitIncognito) {
   EXPECT_EQ(models[0]->GetContentId().id, "incognito_profile_download");
   EXPECT_EQ(models[1]->GetContentId().id, "regular_profile_download");
 }
+
+// Ephemeral warnings are only enabled when the download bubble is enabled,
+// which it is not on ChromeOS Ash.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// Tests that the AllDownloadUIModelsInfo is updated when a download with an
+// ephemeral warning expires.
+TEST_F(DownloadBubbleUpdateServiceTest, OnEphemeralWarningExpired) {
+  base::Time now = base::Time::Now();
+  InitDownloadItem(DownloadState::IN_PROGRESS, "normal_download",
+                   /*is_paused=*/false, now);
+  InitDownloadItem(DownloadState::IN_PROGRESS, "ephemeral_warning_download",
+                   /*is_paused=*/false, now);
+
+  DownloadUIModelPtrVector models;
+  EXPECT_TRUE(
+      update_service_->GetAllModelsToDisplay(models, /*web_app_id=*/nullptr));
+  EXPECT_EQ(models.size(), 2u);
+  AllDownloadUIModelsInfo info =
+      update_service_->GetAllModelsInfo(/*web_app_id=*/nullptr);
+  EXPECT_EQ(info.all_models_size, 2u);
+
+  // Mark the download with an ephemeral warning.
+  UpdateDownloadItem(1, DownloadState::IN_PROGRESS, /*is_paused=*/false,
+                     DownloadDangerType::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE);
+
+  // Simulate showing the warning in the UI and waiting past the expiry time.
+  DownloadItemModel(&GetDownloadItem(1)).SetEphemeralWarningUiShownTime(now);
+  task_environment_.FastForwardBy(
+      DownloadItemModel::kEphemeralWarningLifetimeOnBubble * 2);
+
+  update_service_->OnEphemeralWarningExpired(GetDownloadItem(1).GetGuid());
+
+  // The ephemeral warning download should no longer be observable.
+  // Check GetAllModelsInfo first, because GetAllModelsToDisplay will prune it.
+  info = update_service_->GetAllModelsInfo(/*web_app_id=*/nullptr);
+  EXPECT_EQ(info.all_models_size, 1u);
+  EXPECT_TRUE(
+      update_service_->GetAllModelsToDisplay(models, /*web_app_id=*/nullptr));
+  ASSERT_EQ(models.size(), 1u);
+  EXPECT_EQ(models[0]->GetContentId().id, "normal_download");
+}
+
+// Tests that a download with an ephemeral warning from the original profile is
+// properly handled when it expires.
+TEST_F(DownloadBubbleUpdateServiceIncognitoTest,
+       OnEphemeralWarningExpiredFromOriginalProfile) {
+  base::Time now = base::Time::Now();
+  InitDownloadItem(DownloadState::COMPLETE, "regular_profile_normal_download",
+                   /*is_paused=*/false, now - base::Hours(1),
+                   /*web_app_id=*/nullptr, /*is_crx=*/false,
+                   /*observe=*/false);
+  InitDownloadItem(DownloadState::COMPLETE,
+                   "regular_profile_ephemeral_warning_download",
+                   /*is_paused=*/false, now - base::Hours(1),
+                   /*web_app_id=*/nullptr, /*is_crx=*/false,
+                   /*observe=*/false);
+  InitDownloadItem(*incognito_download_manager_, *incognito_update_service_,
+                   incognito_download_items_, incognito_profile_,
+                   DownloadState::COMPLETE,
+                   "incognito_profile_ephemeral_warning_download",
+                   /*is_paused=*/false, now, /*web_app_id=*/nullptr,
+                   /*is_crx=*/false,
+                   /*observe=*/false);
+  incognito_update_service_->Initialize(incognito_download_manager_);
+
+  DownloadUIModelPtrVector models;
+  EXPECT_TRUE(incognito_update_service_->GetAllModelsToDisplay(
+      models, /*web_app_id=*/nullptr));
+  EXPECT_EQ(models.size(), 3u);
+  AllDownloadUIModelsInfo info =
+      incognito_update_service_->GetAllModelsInfo(/*web_app_id=*/nullptr);
+  EXPECT_EQ(info.all_models_size, 3u);
+
+  // Mark the regular profile ephemeral download with an ephemeral warning.
+  UpdateDownloadItem(1, DownloadState::IN_PROGRESS, /*is_paused=*/false,
+                     DownloadDangerType::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE);
+  // Mark the incognito profile ephemeral download with an ephemeral warning.
+  UpdateDownloadItem(*incognito_download_items_[0], DownloadState::IN_PROGRESS,
+                     /*is_paused=*/false,
+                     DownloadDangerType::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE);
+
+  // Simulate showing the warning in the UI and waiting past the expiry time.
+  DownloadItemModel(&GetDownloadItem(1)).SetEphemeralWarningUiShownTime(now);
+  DownloadItemModel(incognito_download_items_[0].get())
+      .SetEphemeralWarningUiShownTime(now);
+  task_environment_.FastForwardBy(
+      DownloadItemModel::kEphemeralWarningLifetimeOnBubble * 2);
+
+  incognito_update_service_->OnEphemeralWarningExpired(
+      GetDownloadItem(1).GetGuid());
+  incognito_update_service_->OnEphemeralWarningExpired(
+      incognito_download_items_[0]->GetGuid());
+
+  // The ephemeral warning downloads should no longer be observable.
+  // Check GetAllModelsInfo first, because GetAllModelsToDisplay will prune
+  // them.
+  info = incognito_update_service_->GetAllModelsInfo(/*web_app_id=*/nullptr);
+  EXPECT_EQ(info.all_models_size, 1u);
+  EXPECT_TRUE(incognito_update_service_->GetAllModelsToDisplay(
+      models, /*web_app_id=*/nullptr));
+  ASSERT_EQ(models.size(), 1u);
+  EXPECT_EQ(models[0]->GetContentId().id, "regular_profile_normal_download");
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace

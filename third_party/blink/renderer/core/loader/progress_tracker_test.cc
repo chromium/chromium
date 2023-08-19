@@ -20,7 +20,7 @@ class ProgressTrackerTest : public testing::Test, public FakeLocalFrameHost {
  public:
   ProgressTrackerTest()
       : response_(KURL("http://example.com")), last_progress_(0.0) {
-    response_.SetMimeType("text/html");
+    response_.SetMimeType(AtomicString("text/html"));
     response_.SetExpectedContentLength(1024);
   }
 

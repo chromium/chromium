@@ -181,7 +181,7 @@ class TaskScheduler : public base::RefCountedThreadSafe<TaskScheduler> {
   // Runs `callback` for each task that matches `prefix`.
   virtual void ForEachTaskWithPrefix(
       const std::wstring& prefix,
-      base::RepeatingCallback<void(const std::wstring&)> callback) = 0;
+      base::FunctionRef<void(const std::wstring&)> callback) = 0;
 
  protected:
   friend class base::RefCountedThreadSafe<TaskScheduler>;

@@ -287,6 +287,7 @@ ci = struct(
     DEFAULT_FYI_PRIORITY = 35,
     DEFAULT_POOL = "luci.chromium.ci",
     DEFAULT_SERVICE_ACCOUNT = "chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
+    DEFAULT_SHADOW_SERVICE_ACCOUNT = "chromium-try-builder@chops-service-accounts.iam.gserviceaccount.com",
 
     # Functions and constants for the GPU-related builder groups
     gpu = struct(
@@ -295,6 +296,7 @@ ci = struct(
         windows_builder = _gpu_windows_builder,
         POOL = "luci.chromium.gpu.ci",
         SERVICE_ACCOUNT = "chromium-ci-gpu-builder@chops-service-accounts.iam.gserviceaccount.com",
+        SHADOW_SERVICE_ACCOUNT = "chromium-try-gpu-builder@chops-service-accounts.iam.gserviceaccount.com",
         TREE_CLOSING_NOTIFIERS = ["gpu-tree-closer-email"],
     ),
 )

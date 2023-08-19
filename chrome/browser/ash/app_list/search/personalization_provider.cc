@@ -19,7 +19,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/search/common/icon_constants.h"
-#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_metrics.h"
+#include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
@@ -52,7 +52,7 @@ PersonalizationResult::PersonalizationResult(
   SetTitle(result.text);
   SetResultType(ResultType::kPersonalization);
   SetDisplayType(DisplayType::kList);
-  SetIcon(IconInfo(icon, kAppIconDimension));
+  SetIcon(IconInfo(ui::ImageModel::FromImageSkia(icon), kAppIconDimension));
   SetMetricsType(::ash::SearchResultType::PERSONALIZATION);
 }
 
@@ -72,8 +72,9 @@ PersonalizationProvider::PersonalizationProvider(
     Profile* profile,
     ash::personalization_app::SearchHandler* search_handler)
     : profile_(profile), search_handler_(search_handler) {
-  app_service_proxy_ = apps::AppServiceProxyFactory::GetForProfile(profile_);
-  Observe(&app_service_proxy_->AppRegistryCache());
+  app_registry_cache_observer_.Observe(
+      &apps::AppServiceProxyFactory::GetForProfile(profile_)
+           ->AppRegistryCache());
   StartLoadIcon();
 
   if (search_handler_) {
@@ -135,7 +136,9 @@ void PersonalizationProvider::OnAppUpdate(const apps::AppUpdate& update) {
 }
 
 void PersonalizationProvider::OnAppRegistryCacheWillBeDestroyed(
-    apps::AppRegistryCache* cache) {}
+    apps::AppRegistryCache* cache) {
+  app_registry_cache_observer_.Reset();
+}
 
 void PersonalizationProvider::OnSearchDone(
     base::TimeTicks start_time,
@@ -154,9 +157,9 @@ void PersonalizationProvider::OnSearchDone(
 }
 
 void PersonalizationProvider::StartLoadIcon() {
-  app_service_proxy_->LoadIcon(
-      app_service_proxy_->AppRegistryCache().GetAppType(
-          web_app::kPersonalizationAppId),
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
+  proxy->LoadIcon(
+      proxy->AppRegistryCache().GetAppType(web_app::kPersonalizationAppId),
       web_app::kPersonalizationAppId, apps::IconType::kStandard,
       ash::SharedAppListConfig::instance().search_list_icon_dimension(),
       /*allow_placeholder_icon=*/false,

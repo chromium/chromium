@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.omnibox.suggestions.base;
 
 import android.content.Context;
 import android.graphics.Rect;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.IntDef;
@@ -15,6 +16,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 
 import java.lang.annotation.Retention;
@@ -86,7 +88,7 @@ class SuggestionLayout extends ViewGroup {
         private final @SuggestionViewType int mSuggestionViewType;
         private final @NonNull Rect mPlacement;
 
-        public LayoutParams(int width, int height, @SuggestionViewType int type) {
+        private LayoutParams(int width, int height, @SuggestionViewType int type) {
             super(width, height);
             mPlacement = new Rect();
             mSuggestionViewType = type;
@@ -142,10 +144,8 @@ class SuggestionLayout extends ViewGroup {
             setPaddingRelative(startSpace, 0, endSpace, 0);
         }
 
-        mDecorationIconWidthPx = getResources().getDimensionPixelSize(
-                useModernUI && OmniboxFeatures.shouldShowSmallBottomMargin()
-                        ? R.dimen.omnibox_suggestion_icon_area_size_modern
-                        : R.dimen.omnibox_suggestion_icon_area_size);
+        mDecorationIconWidthPx =
+                OmniboxResourceProvider.getSuggestionDecorationIconSizeWidth(context);
 
         mActionButtonWidthPx = getResources().getDimensionPixelSize(
                 R.dimen.omnibox_suggestion_action_button_width);
@@ -277,6 +277,7 @@ class SuggestionLayout extends ViewGroup {
     private @Px int measureContentViewHeightPx(@Px int contentWidthPx) {
         int contentHeightPx = 0;
         boolean hasFooter = false;
+        View contentView = null;
 
         for (int index = 0; index < getChildCount(); ++index) {
             var view = getChildAt(index);
@@ -288,6 +289,7 @@ class SuggestionLayout extends ViewGroup {
                 // Content views' width is constrained by how much space the decoration views
                 // allocate. These views may, as a result, wrap around to one or more extra lines of
                 // text.
+                contentView = view;
                 view.measure(MeasureSpec.makeMeasureSpec(contentWidthPx, MeasureSpec.EXACTLY),
                         MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
                 contentHeightPx = view.getMeasuredHeight();
@@ -300,13 +302,25 @@ class SuggestionLayout extends ViewGroup {
         // suggestion height. Apply necessary corrections here. We currently expect the
         // CONTENT view to properly utilize the LAYOUT GRAVITY to position its content
         // around the center, if its measured height is smaller than our minimum.
-        assert contentHeightPx != 0 : "No content views, or content view is empty";
+        assert contentView != null : "No content views";
 
         // Pad suggestion around to guarantee appropriate spacing around suggestions.
-        if (!hasFooter) contentHeightPx += mContentPaddingPx;
+        // "Shorter" suggestions (no extra padding) are used to present footer closer to
+        // the suggestions content to make them show as related.
+        // Modernized UI present their content in distinc blocks, and the extra space
+        // does not break visually the relationship between the content and footer parts.
+        if (OmniboxFeatures.shouldShowModernizeVisualUpdate(getContext()) || !hasFooter) {
+            contentHeightPx += mContentPaddingPx;
+        }
 
         // Guarantee that the suggestion height meets our required minimum tap target size.
-        return Math.max(contentHeightPx, hasFooter ? mCompactContentHeightPx : mContentHeightPx);
+        var height =
+                Math.max(contentHeightPx, hasFooter ? mCompactContentHeightPx : mContentHeightPx);
+        // Some views (e.g. TextView) won't render correctly unless measure specs are explicitly
+        // supplied, failing to properly center the content.
+        contentView.measure(MeasureSpec.makeMeasureSpec(contentWidthPx, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
+        return height;
     }
 
     /**
@@ -365,8 +379,9 @@ class SuggestionLayout extends ViewGroup {
             // Note that at this stage everything else has already been measured.
             var viewWidthSpec = 0;
             if (params.getViewType() == LayoutParams.SuggestionViewType.DECORATION) {
-                viewWidthSpec =
-                        MeasureSpec.makeMeasureSpec(mDecorationIconWidthPx, MeasureSpec.EXACTLY);
+                viewWidthSpec = getChildMeasureSpec(
+                        MeasureSpec.makeMeasureSpec(mDecorationIconWidthPx, MeasureSpec.AT_MOST), 0,
+                        params.width);
             } else if (params.getViewType() == LayoutParams.SuggestionViewType.ACTION_BUTTON) {
                 viewWidthSpec =
                         MeasureSpec.makeMeasureSpec(mActionButtonWidthPx, MeasureSpec.EXACTLY);

@@ -7,9 +7,9 @@
 #include <map>
 #include <memory>
 
-#include "chrome/browser/ash/app_mode/app_session_ash.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
+#include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -95,7 +95,7 @@ const WebKioskAppData* WebKioskAppManager::GetAppByAccountId(
 
 void WebKioskAppManager::UpdateAppByAccountId(
     const AccountId& account_id,
-    const WebAppInstallInfo& app_info) {
+    const web_app::WebAppInstallInfo& app_info) {
   for (auto& web_app : apps_) {
     if (web_app->account_id() == account_id) {
       web_app->UpdateFromWebAppInfo(app_info);
@@ -128,14 +128,15 @@ void WebKioskAppManager::AddAppForTesting(const AccountId& account_id,
   NotifyKioskAppsChanged();
 }
 
-void WebKioskAppManager::InitSession(
+void WebKioskAppManager::InitKioskSystemSession(
     Profile* profile,
     const KioskAppId& kiosk_app_id,
     const absl::optional<std::string>& app_name) {
-  LOG_IF(FATAL, app_session_) << "Kiosk session is already initialized.";
+  LOG_IF(FATAL, kiosk_system_session_)
+      << "Kiosk session is already initialized.";
 
-  app_session_ =
-      std::make_unique<AppSessionAsh>(profile, kiosk_app_id, app_name);
+  kiosk_system_session_ =
+      std::make_unique<KioskSystemSession>(profile, kiosk_app_id, app_name);
 
   NotifySessionInitialized();
 }
@@ -154,7 +155,7 @@ void WebKioskAppManager::UpdateAppsFromPolicy() {
   CrosSettings::Get()->GetString(kAccountsPrefDeviceLocalAccountAutoLoginId,
                                  &auto_login_account_id_from_settings);
 
-  // Re-populates |apps_| and reuses existing apps when possible.
+  // Re-populates `apps_` and reuses existing apps when possible.
   const std::vector<policy::DeviceLocalAccount> device_local_accounts =
       policy::GetDeviceLocalAccounts(CrosSettings::Get());
   for (auto account : device_local_accounts) {

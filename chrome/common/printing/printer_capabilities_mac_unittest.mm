@@ -4,15 +4,11 @@
 
 #include "chrome/common/printing/printer_capabilities_mac.h"
 
+#include "base/apple/foundation_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/mac/foundation_util.h"
 #include "base/path_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace printing {
 
@@ -22,7 +18,7 @@ base::FilePath WriteOutCustomPapersPlist(const base::FilePath& dir,
                                          const char* name,
                                          NSDictionary* dict) {
   base::FilePath path = dir.Append(name);
-  if (![dict writeToURL:base::mac::FilePathToNSURL(path) error:nil]) {
+  if (![dict writeToURL:base::apple::FilePathToNSURL(path) error:nil]) {
     path.clear();
   }
   return path;
@@ -46,11 +42,11 @@ TEST(PrinterCapabilitiesMacTest, GetMacCustomPaperSizesFromFile) {
     ASSERT_FALSE(path.empty());
     auto papers = internal::GetMacCustomPaperSizesFromFile(path);
     ASSERT_EQ(1u, papers.size());
-    EXPECT_EQ("foo", papers[0].display_name);
-    EXPECT_EQ("", papers[0].vendor_id);
-    EXPECT_EQ(50800, papers[0].size_um.width());
-    EXPECT_EQ(101600, papers[0].size_um.height());
-    EXPECT_EQ(gfx::Rect(0, 0, 50800, 101600), papers[0].printable_area_um);
+    EXPECT_EQ("foo", papers[0].display_name());
+    EXPECT_EQ("", papers[0].vendor_id());
+    EXPECT_EQ(50800, papers[0].size_um().width());
+    EXPECT_EQ(101600, papers[0].size_um().height());
+    EXPECT_EQ(gfx::Rect(0, 0, 50800, 101600), papers[0].printable_area_um());
   }
   {
     NSDictionary* dict = @{
@@ -65,11 +61,11 @@ TEST(PrinterCapabilitiesMacTest, GetMacCustomPaperSizesFromFile) {
     ASSERT_FALSE(path.empty());
     auto papers = internal::GetMacCustomPaperSizesFromFile(path);
     ASSERT_EQ(1u, papers.size());
-    EXPECT_EQ("bar", papers[0].display_name);
-    EXPECT_EQ("", papers[0].vendor_id);
-    EXPECT_EQ(35278, papers[0].size_um.width());
-    EXPECT_EQ(70556, papers[0].size_um.height());
-    EXPECT_EQ(gfx::Rect(0, 0, 35278, 70556), papers[0].printable_area_um);
+    EXPECT_EQ("bar", papers[0].display_name());
+    EXPECT_EQ("", papers[0].vendor_id());
+    EXPECT_EQ(35278, papers[0].size_um().width());
+    EXPECT_EQ(70556, papers[0].size_um().height());
+    EXPECT_EQ(gfx::Rect(0, 0, 35278, 70556), papers[0].printable_area_um());
   }
   {
     NSDictionary* dict = @{};
@@ -201,12 +197,12 @@ TEST(PrinterCapabilitiesMacTest, SortMacCustomPaperSizes) {
 
   auto papers = internal::GetMacCustomPaperSizesFromFile(unsorted_plist);
   ASSERT_EQ(6u, papers.size());
-  EXPECT_EQ("123", papers[0].display_name);
-  EXPECT_EQ("Another Size", papers[1].display_name);
-  EXPECT_EQ("Custom 11x11", papers[2].display_name);
-  EXPECT_EQ("Size 3", papers[3].display_name);
-  EXPECT_EQ("size 3", papers[4].display_name);
-  EXPECT_EQ("\xC3\xA1nother size", papers[5].display_name);
+  EXPECT_EQ("123", papers[0].display_name());
+  EXPECT_EQ("Another Size", papers[1].display_name());
+  EXPECT_EQ("Custom 11x11", papers[2].display_name());
+  EXPECT_EQ("Size 3", papers[3].display_name());
+  EXPECT_EQ("size 3", papers[4].display_name());
+  EXPECT_EQ("\xC3\xA1nother size", papers[5].display_name());
 }
 
 TEST(PrinterCapabilitiesMacTest, GetMacCustomPaperSizesWithSetMargins) {
@@ -229,12 +225,12 @@ TEST(PrinterCapabilitiesMacTest, GetMacCustomPaperSizesWithSetMargins) {
     ASSERT_FALSE(path.empty());
     auto papers = internal::GetMacCustomPaperSizesFromFile(path);
     ASSERT_EQ(1u, papers.size());
-    EXPECT_EQ("foo", papers[0].display_name);
-    EXPECT_EQ("", papers[0].vendor_id);
-    EXPECT_EQ(50800, papers[0].size_um.width());
-    EXPECT_EQ(101600, papers[0].size_um.height());
+    EXPECT_EQ("foo", papers[0].display_name());
+    EXPECT_EQ("", papers[0].vendor_id());
+    EXPECT_EQ(50800, papers[0].size_um().width());
+    EXPECT_EQ(101600, papers[0].size_um().height());
     EXPECT_EQ(gfx::Rect(4233, 12700, 38100, 71967),
-              papers[0].printable_area_um);
+              papers[0].printable_area_um());
   }
   {
     NSDictionary* dict = @{
@@ -253,12 +249,12 @@ TEST(PrinterCapabilitiesMacTest, GetMacCustomPaperSizesWithSetMargins) {
     ASSERT_FALSE(path.empty());
     auto papers = internal::GetMacCustomPaperSizesFromFile(path);
     ASSERT_EQ(1u, papers.size());
-    EXPECT_EQ("foo", papers[0].display_name);
-    EXPECT_EQ("", papers[0].vendor_id);
-    EXPECT_EQ(215900, papers[0].size_um.width());
-    EXPECT_EQ(279400, papers[0].size_um.height());
+    EXPECT_EQ("foo", papers[0].display_name());
+    EXPECT_EQ("", papers[0].vendor_id());
+    EXPECT_EQ(215900, papers[0].size_um().width());
+    EXPECT_EQ(279400, papers[0].size_um().height());
     EXPECT_EQ(gfx::Rect(25400, 25400, 165100, 228600),
-              papers[0].printable_area_um);
+              papers[0].printable_area_um());
   }
 }
 
@@ -278,11 +274,11 @@ TEST(PrinterCapabilitiesMacTest, GetMacCustomPaperSizesMissingMargins) {
   ASSERT_FALSE(path.empty());
   auto papers = internal::GetMacCustomPaperSizesFromFile(path);
   ASSERT_EQ(1u, papers.size());
-  EXPECT_EQ("foo", papers[0].display_name);
-  EXPECT_EQ("", papers[0].vendor_id);
-  EXPECT_EQ(215900, papers[0].size_um.width());
-  EXPECT_EQ(279400, papers[0].size_um.height());
-  EXPECT_EQ(gfx::Rect(0, 0, 215900, 279400), papers[0].printable_area_um);
+  EXPECT_EQ("foo", papers[0].display_name());
+  EXPECT_EQ("", papers[0].vendor_id());
+  EXPECT_EQ(215900, papers[0].size_um().width());
+  EXPECT_EQ(279400, papers[0].size_um().height());
+  EXPECT_EQ(gfx::Rect(0, 0, 215900, 279400), papers[0].printable_area_um());
 }
 
 TEST(PrinterCapabilitiesMacTest, GetMacCustomPaperSizesOutOfBoundsMargins) {
@@ -418,11 +414,11 @@ TEST(PrinterCapabilitiesMacTest, GetMacCustomPaperSizesEmptyMargins) {
   ASSERT_FALSE(path.empty());
   auto papers = internal::GetMacCustomPaperSizesFromFile(path);
   ASSERT_EQ(1u, papers.size());
-  EXPECT_EQ("foo", papers[0].display_name);
-  EXPECT_EQ("", papers[0].vendor_id);
-  EXPECT_EQ(50800, papers[0].size_um.width());
-  EXPECT_EQ(101600, papers[0].size_um.height());
-  EXPECT_EQ(gfx::Rect(0, 0, 50800, 101600), papers[0].printable_area_um);
+  EXPECT_EQ("foo", papers[0].display_name());
+  EXPECT_EQ("", papers[0].vendor_id());
+  EXPECT_EQ(50800, papers[0].size_um().width());
+  EXPECT_EQ(101600, papers[0].size_um().height());
+  EXPECT_EQ(gfx::Rect(0, 0, 50800, 101600), papers[0].printable_area_um());
 }
 
 }  // namespace printing

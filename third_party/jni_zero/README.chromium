@@ -1,0 +1,16 @@
+Name: JNI Zero
+Short Name: jni_zero
+URL: https://chromium.googlesource.com/chromium/src/+/master/third_party/jni_zero
+Version: 0
+License: BSD
+License File: LICENSE
+Security Critical: yes
+Shipped: yes
+
+Description:
+A Chromium-developed JNI middleware, that is designed to provide a zero cost
+(or better!) abstraction when used with R8.
+
+Local Modifications:
+This entire project is developed in //third_party/jni_zero to make it more
+easily usable outside of Chromium.

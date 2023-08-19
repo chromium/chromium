@@ -531,8 +531,6 @@ public class MerchantTrustSignalsCoordinatorTest {
                 .notifyEvent(eq(EventConstants.PAGE_INFO_STORE_INFO_ROW_CLICKED));
         mOnBottomSheetDismissedCaptor.getValue().run();
         verify(mCoordinator, times(0)).maybeShowStoreIcon(any(), anyBoolean());
-
-        TrackerFactory.setTrackerForTests(null);
     }
 
     @SmallTest

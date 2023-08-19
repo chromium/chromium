@@ -437,8 +437,7 @@ suite('SettingsSectionTest', function() {
     assertTrue(!!managePasskeysRow);
 
     managePasskeysRow.click();
-    const url = await openWindowProxy.whenCalled('openUrl');
-    assertEquals('chrome://settings/passkeys', url);
+    await passkeysProxy.whenCalled('passkeysManagePasskeys');
   });
   // </if>
 

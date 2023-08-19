@@ -37,7 +37,7 @@ class CopyToClipboardShareAction : public ::sharesheet::ShareAction {
   // Virtual so that it can be overridden in testing.
   virtual void ShowToast(ash::ToastData toast_data);
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
 };
 
 }  // namespace sharesheet

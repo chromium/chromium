@@ -7,6 +7,7 @@
 #include <jni.h>
 #include <cstdint>
 
+#include "android_webview/browser/metrics/android_metrics_provider.h"
 #include "android_webview/browser_jni_headers/AwMetricsServiceClient_jni.h"
 #include "android_webview/common/aw_features.h"
 #include "android_webview/common/metrics/app_package_name_logging_rule.h"
@@ -69,6 +70,17 @@ bool IsAppPackageNameServerSideAllowlistEnabled() {
       android_webview::features::kWebViewAppsPackageNamesServerSideAllowlist);
 }
 
+int GetBaseSampleRatePerMille() {
+  // Down-sample unknown channel as a precaution in case it ends up being
+  // shipped to Stable users.
+  version_info::Channel channel = version_info::android::GetChannel();
+  if (channel == version_info::Channel::STABLE ||
+      channel == version_info::Channel::UNKNOWN) {
+    return kStableSampledInRatePerMille;
+  }
+  return kBetaDevCanarySampledInRatePerMille;
+}
+
 }  // namespace
 
 const base::TimeDelta kRecordAppDataDirectorySizeDelay = base::Seconds(10);
@@ -103,17 +115,19 @@ int32_t AwMetricsServiceClient::GetProduct() {
 }
 
 int AwMetricsServiceClient::GetSampleRatePerMille() const {
-  if (base::FeatureList::IsEnabled(features::kWebViewServerSideSampling)) {
+  if (base::FeatureList::IsEnabled(features::kWebViewMetricsFiltering)) {
     return 1000;
   }
-  // Down-sample unknown channel as a precaution in case it ends up being
-  // shipped to Stable users.
-  version_info::Channel channel = version_info::android::GetChannel();
-  if (channel == version_info::Channel::STABLE ||
-      channel == version_info::Channel::UNKNOWN) {
-    return kStableSampledInRatePerMille;
+  return GetBaseSampleRatePerMille();
+}
+
+bool AwMetricsServiceClient::ShouldApplyMetricsFiltering() const {
+  if (base::FeatureList::IsEnabled(features::kWebViewMetricsFiltering)) {
+    bool used_to_sample_in =
+        GetSampleBucketValue() < GetBaseSampleRatePerMille();
+    return !used_to_sample_in;
   }
-  return kBetaDevCanarySampledInRatePerMille;
+  return false;
 }
 
 std::string AwMetricsServiceClient::GetAppPackageNameIfLoggable() {
@@ -298,6 +312,7 @@ void AwMetricsServiceClient::RegisterMetricsPrefs(
   registry->RegisterDictionaryPref(prefs::kMetricsAppPackageNameLoggingRule);
   registry->RegisterTimePref(prefs::kAppPackageNameLoggingRuleLastUpdateTime,
                              base::Time());
+  AndroidMetricsProvider::RegisterPrefs(registry);
 }
 
 // static

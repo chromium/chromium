@@ -7,10 +7,6 @@
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface ReadingListAddCommand ()
 
 @property(nonatomic, strong) NSArray<URLWithTitle*>* URLs;

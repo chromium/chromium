@@ -21,7 +21,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/color/color_provider.h"
-#include "ui/color/color_provider_manager.h"
+#include "ui/color/color_provider_key.h"
 #include "url/gurl.h"
 
 class Browser;
@@ -54,11 +54,10 @@ class WebAppBrowserController;
 bool IsSameHostAndPort(const GURL& app_url, const GURL& page_url);
 
 // Class to encapsulate logic to control the browser UI for web apps.
-class AppBrowserController
-    : public ui::ColorProviderManager::InitializerSupplier,
-      public TabStripModelObserver,
-      public content::WebContentsObserver,
-      public BrowserThemeProviderDelegate {
+class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
+                             public TabStripModelObserver,
+                             public content::WebContentsObserver,
+                             public BrowserThemeProviderDelegate {
  public:
   AppBrowserController(const AppBrowserController&) = delete;
   AppBrowserController& operator=(const AppBrowserController&) = delete;
@@ -148,6 +147,10 @@ class AppBrowserController
 
   // Gets the new tab URL for tabbed apps.
   virtual GURL GetAppNewTabUrl() const;
+
+  // Whether the app's tab strip should hide the new tab button, e.g. because
+  // the app has a pinned home tab at the same URL as the new tab URL.
+  virtual bool ShouldHideNewTabButton() const;
 
   // Returns whether the url is within the scope of the tab strip home tab.
   virtual bool IsUrlInHomeTabScope(const GURL& url) const;
@@ -252,9 +255,9 @@ class AppBrowserController
   CustomThemeSupplier* GetThemeSupplier() const override;
   bool ShouldUseCustomFrame() const override;
 
-  // ui::ColorProviderManager::InitializerSupplier
+  // ui::ColorProviderKey::InitializerSupplier
   void AddColorMixers(ui::ColorProvider* provider,
-                      const ui::ColorProviderManager::Key& key) const override;
+                      const ui::ColorProviderKey& key) const override;
 
   void UpdateDraggableRegion(const SkRegion& region);
   const absl::optional<SkRegion>& draggable_region() const {
@@ -262,6 +265,13 @@ class AppBrowserController
   }
 
   void SetOnUpdateDraggableRegionForTesting(base::OnceClosure done);
+
+  // Called when this browser is going to receive a reparented web contents
+  // from an installation or intent action. If the initial url is not set or
+  // isn't within the app scope, set it to the app's start_url, allowing the 'x'
+  // button to appear in the toolbar & the user can use it to navigate back to
+  // that location.
+  void MaybeSetInitialUrlOnReparentTab();
 
  protected:
   AppBrowserController(Browser* browser,

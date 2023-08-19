@@ -19,9 +19,9 @@ namespace blink {
 class LocalDOMWindow;
 
 class MODULES_EXPORT DevicePosture
-    : public EventTargetWithInlineData,
+    : public EventTarget,
       public ExecutionContextClient,
-      public device::mojom::blink::DevicePostureProviderClient {
+      public device::mojom::blink::DevicePostureClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -39,7 +39,7 @@ class MODULES_EXPORT DevicePosture
   void Trace(blink::Visitor*) const override;
 
  private:
-  // DevicePostureServiceClient
+  // DevicePostureClient
   void OnPostureChanged(
       device::mojom::blink::DevicePostureType posture) override;
   void AddedEventListener(const AtomicString& event_type,
@@ -50,8 +50,7 @@ class MODULES_EXPORT DevicePosture
   device::mojom::blink::DevicePostureType posture_ =
       device::mojom::blink::DevicePostureType::kContinuous;
   HeapMojoRemote<device::mojom::blink::DevicePostureProvider> service_;
-  HeapMojoReceiver<device::mojom::blink::DevicePostureProviderClient,
-                   DevicePosture>
+  HeapMojoReceiver<device::mojom::blink::DevicePostureClient, DevicePosture>
       receiver_;
 };
 

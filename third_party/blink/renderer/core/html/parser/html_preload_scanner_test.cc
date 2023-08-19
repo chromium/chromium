@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/html/parser/html_resource_preloader.h"
 #include "third_party/blink/renderer/core/html/parser/html_tokenizer.h"
 #include "third_party/blink/renderer/core/html/parser/preload_request.h"
+#include "third_party/blink/renderer/core/lcp_critical_path_predictor/element_locator.h"
 #include "third_party/blink/renderer/core/media_type_names.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_response.h"
@@ -107,6 +108,19 @@ struct AttributionSrcTestCase {
   network::mojom::AttributionReportingEligibility expected_eligibility;
   network::mojom::AttributionSupport attribution_support =
       network::mojom::AttributionSupport::kWeb;
+};
+
+struct TokenStreamMatcherTestCase {
+  ElementLocator locator;
+  const char* input_html;
+  const char* potentially_lcp_preload_url;
+};
+
+struct SharedStorageWritableTestCase {
+  bool use_secure_document_url;
+  const char* base_url;
+  const char* input_html;
+  bool expected_shared_storage_writable;
 };
 
 class HTMLMockHTMLResourcePreloader : public ResourcePreloader {
@@ -264,6 +278,22 @@ class HTMLMockHTMLResourcePreloader : public ResourcePreloader {
               resource->GetResourceRequest().GetAttributionReportingSupport());
   }
 
+  void IsPotentiallyLCPElementFlagVerification(bool expected) {
+    EXPECT_EQ(expected, preload_request_->IsPotentiallyLCPElement())
+        << preload_request_->ResourceURL();
+  }
+
+  void SharedStorageWritableRequestVerification(
+      Document* document,
+      bool expected_shared_storage_writable) {
+    ASSERT_TRUE(preload_request_.get());
+    Resource* resource = preload_request_->Start(document);
+    ASSERT_TRUE(resource);
+
+    EXPECT_EQ(expected_shared_storage_writable,
+              resource->GetResourceRequest().GetSharedStorageWritable());
+  }
+
  protected:
   void Preload(std::unique_ptr<PreloadRequest> preload_request) override {
     preload_request_ = std::move(preload_request);
@@ -308,7 +338,8 @@ class HTMLPreloadScannerTest : public PageTestBase {
                 PreloadState preload_state = kPreloadEnabled,
                 network::mojom::ReferrerPolicy document_referrer_policy =
                     network::mojom::ReferrerPolicy::kDefault,
-                bool use_secure_document_url = false) {
+                bool use_secure_document_url = false,
+                Vector<ElementLocator> locators = {}) {
     HTMLParserOptions options(&GetDocument());
     KURL document_url = KURL("http://whatever.test/");
     if (use_secure_document_url)
@@ -322,10 +353,12 @@ class HTMLPreloadScannerTest : public PageTestBase {
                                                           kPreloadEnabled);
     GetFrame().DomWindow()->SetReferrerPolicy(document_referrer_policy);
     scanner_ = std::make_unique<HTMLPreloadScanner>(
-        std::make_unique<HTMLTokenizer>(options), false, document_url,
+        std::make_unique<HTMLTokenizer>(options), document_url,
         std::make_unique<CachedDocumentParameters>(&GetDocument()),
         CreateMediaValuesData(),
-        TokenPreloadScanner::ScannerType::kMainDocument, nullptr);
+        TokenPreloadScanner::ScannerType::kMainDocument,
+        /* script_token_scanner=*/nullptr,
+        /* take_preload=*/HTMLPreloadScanner::TakePreloadFn(), locators);
   }
 
   void SetUp() override {
@@ -448,6 +481,39 @@ class HTMLPreloadScannerTest : public PageTestBase {
     preloader.AttributionSrcRequestVerification(&GetDocument(),
                                                 test_case.expected_eligibility,
                                                 test_case.attribution_support);
+  }
+
+  void Test(TokenStreamMatcherTestCase test_case) {
+    SCOPED_TRACE(test_case.input_html);
+    RunSetUp(kViewportEnabled, kPreloadEnabled,
+             network::mojom::ReferrerPolicy::kDefault,
+             /* use_secure_document_url=*/true, {test_case.locator});
+    scanner_->AppendToEnd(String(test_case.input_html));
+    std::unique_ptr<PendingPreloadData> preload_data =
+        scanner_->Scan(GetDocument().Url());
+    int count = 0;
+    for (const auto& request_ptr : preload_data->requests) {
+      if (request_ptr->IsPotentiallyLCPElement()) {
+        EXPECT_EQ(request_ptr->ResourceURL(),
+                  String(test_case.potentially_lcp_preload_url));
+        count++;
+      }
+    }
+    EXPECT_EQ(1, count);
+  }
+
+  void Test(SharedStorageWritableTestCase test_case) {
+    SCOPED_TRACE(base::StringPrintf("Use secure doc URL: %d; HTML: '%s'",
+                                    test_case.use_secure_document_url,
+                                    test_case.input_html));
+
+    HTMLMockHTMLResourcePreloader preloader(GetDocument().Url());
+    KURL base_url(test_case.base_url);
+    scanner_->AppendToEnd(String(test_case.input_html));
+    std::unique_ptr<PendingPreloadData> preload_data = scanner_->Scan(base_url);
+    preloader.TakePreloadData(std::move(preload_data));
+    preloader.SharedStorageWritableRequestVerification(
+        &GetDocument(), test_case.expected_shared_storage_writable);
   }
 
  private:
@@ -1608,6 +1674,63 @@ TEST_F(HTMLPreloadScannerTest, PreloadLayeredImport) {
 
   for (const auto& test : test_cases)
     Test(test);
+}
+
+TEST_F(HTMLPreloadScannerTest, TokenStreamMatcher) {
+  ElementLocator locator;
+  auto* c = locator.add_components()->mutable_id();
+  c->set_id_attr("target");
+
+  TokenStreamMatcherTestCase test_case = {locator,
+                                          R"HTML(
+    <div>
+      <img src="not-interesting.jpg">
+      <img src="super-interesting.jpg" id="target">
+      <img src="not-interesting2.jpg">
+    </div>
+    )HTML",
+                                          "super-interesting.jpg"};
+  Test(test_case);
+}
+
+TEST_F(HTMLPreloadScannerTest, testSharedStorageWritable) {
+  WebRuntimeFeaturesBase::EnableSharedStorageAPI(true);
+  WebRuntimeFeaturesBase::EnableSharedStorageAPIM118(true);
+  static constexpr bool kSecureDocumentUrl = true;
+  static constexpr bool kInsecureDocumentUrl = false;
+
+  static constexpr char kSecureBaseURL[] = "https://example.test";
+  static constexpr char kInsecureBaseURL[] = "http://example.test";
+
+  SharedStorageWritableTestCase test_cases[] = {
+      // Insecure context
+      {kInsecureDocumentUrl, kSecureBaseURL,
+       "<img src='/image' sharedstoragewritable>",
+       /*expected_shared_storage_writable=*/false},
+      // No sharedstoragewritable attribute
+      {kSecureDocumentUrl, kSecureBaseURL, "<img src='/image'>",
+       /*expected_shared_storage_writable=*/false},
+      // Irrelevant element type
+      {kSecureDocumentUrl, kSecureBaseURL,
+       "<video poster='/image' sharedstoragewritable>",
+       /*expected_shared_storage_writable=*/false},
+      // Secure context, sharedstoragewritable attribute
+      // Base (initial) URL does not affect SharedStorageWritable eligibility
+      {kSecureDocumentUrl, kInsecureBaseURL,
+       "<img src='/image' sharedstoragewritable>",
+       /*expected_shared_storage_writable=*/true},
+      // Secure context, sharedstoragewritable attribute
+      {kSecureDocumentUrl, kSecureBaseURL,
+       "<img src='/image' sharedstoragewritable>",
+       /*expected_shared_storage_writable=*/true},
+  };
+
+  for (const auto& test_case : test_cases) {
+    RunSetUp(kViewportDisabled, kPreloadEnabled,
+             network::mojom::ReferrerPolicy::kDefault,
+             /*use_secure_document_url=*/test_case.use_secure_document_url);
+    Test(test_case);
+  }
 }
 
 }  // namespace blink

@@ -263,6 +263,16 @@ void BackdropController::OnDisplayMetricsChanged() {
 }
 
 void BackdropController::OnPostWindowStateTypeChange(aura::Window* window) {
+  // When `window` is snapped and about to be put into overview, the backdrop
+  // can remain behind the window. We will hide the backdrop early to prevent it
+  // from being seen during the overview starting animation.
+  if (backdrop_ && backdrop_->IsVisible() &&
+      WindowState::Get(window)->IsSnapped() &&
+      SplitViewController::Get(window->GetRootWindow())->WillStartOverview()) {
+    Hide(/*destroy=*/false, /*animate=*/false);
+    return;
+  }
+
   if (DoesWindowCauseBackdropUpdates(window))
     UpdateBackdrop();
 }

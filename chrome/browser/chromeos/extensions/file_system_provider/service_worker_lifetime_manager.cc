@@ -97,15 +97,18 @@ bool ServiceWorkerLifetimeManager::KeepaliveKey::operator<(
 
 std::string ServiceWorkerLifetimeManager::IncrementKeepalive(
     const WorkerId& worker_id) {
-  return process_manager_->IncrementServiceWorkerKeepaliveCount(
-      worker_id,
-      content::ServiceWorkerExternalRequestTimeoutType::kDoesNotTimeout,
-      extensions::Activity::Type::EVENT, /*extra_data=*/"");
+  return process_manager_
+      ->IncrementServiceWorkerKeepaliveCount(
+          worker_id,
+          content::ServiceWorkerExternalRequestTimeoutType::kDoesNotTimeout,
+          extensions::Activity::Type::EVENT, /*extra_data=*/"")
+      .AsLowercaseString();
 }
 
 void ServiceWorkerLifetimeManager::DecrementKeepalive(const KeepaliveKey& key) {
+  base::Uuid uuid = base::Uuid::ParseLowercase(key.request_uuid);
   process_manager_->DecrementServiceWorkerKeepaliveCount(
-      key.worker_id, key.request_uuid, extensions::Activity::Type::EVENT,
+      key.worker_id, uuid, extensions::Activity::Type::EVENT,
       /*extra_data=*/"");
 }
 

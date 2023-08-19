@@ -9,6 +9,8 @@
 
   const baseOrigin = 'http://127.0.0.1:8000/';
 
+  await dp.Storage.clearSharedStorageEntries({ownerOrigin: baseOrigin});
+
   async function getSharedStorageMetadata(dp, testRunner, origin) {
     const data =
         await dp.Storage.getSharedStorageMetadata({ownerOrigin: origin});
@@ -80,9 +82,7 @@
   await getSharedStorageMetadata(dp, testRunner, baseOrigin);
   await getSharedStorageEntries(dp, testRunner, baseOrigin);
 
-  await dp.Storage.clearSharedStorageEntries({
-    ownerOrigin: baseOrigin
-  });
+  await dp.Storage.clearSharedStorageEntries({ownerOrigin: baseOrigin});
 
   testRunner.completeTest();
 })

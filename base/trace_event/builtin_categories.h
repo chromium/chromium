@@ -80,7 +80,6 @@
   X("drm")                                                               \
   X("drmcursor")                                                         \
   X("dwrite")                                                            \
-  X("DXVA_Decoding")                                                     \
   X("evdev")                                                             \
   X("event")                                                             \
   X("exo")                                                               \
@@ -95,6 +94,7 @@
   X("gpu.angle")                                                         \
   X("gpu.angle.texture_metrics")                                         \
   X("gpu.capture")                                                       \
+  X("graphics.pipeline")                                                 \
   X("headless")                                                          \
   /* Traces for //components/history. */                                 \
   X("history")                                                           \
@@ -125,6 +125,7 @@
   X("navigation")                                                        \
   X("navigation.debug")                                                  \
   X("net")                                                               \
+  X("network.scheduler")                                                 \
   X("netlog")                                                            \
   X("offline_pages")                                                     \
   X("omnibox")                                                           \
@@ -199,7 +200,6 @@
   X(TRACE_DISABLED_BY_DEFAULT("blink.debug"))                            \
   X(TRACE_DISABLED_BY_DEFAULT("blink.debug.display_lock"))               \
   X(TRACE_DISABLED_BY_DEFAULT("blink.debug.layout"))                     \
-  X(TRACE_DISABLED_BY_DEFAULT("blink.debug.layout.scrollbars"))          \
   X(TRACE_DISABLED_BY_DEFAULT("blink.debug.layout.trees"))               \
   X(TRACE_DISABLED_BY_DEFAULT("blink.feature_usage"))                    \
   X(TRACE_DISABLED_BY_DEFAULT("blink.image_decoding"))                   \
@@ -288,6 +288,7 @@
   X(TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"))                    \
   X(TRACE_DISABLED_BY_DEFAULT("viz.surface_lifetime"))                   \
   X(TRACE_DISABLED_BY_DEFAULT("viz.triangles"))                          \
+  X(TRACE_DISABLED_BY_DEFAULT("viz.visual_debugger"))                    \
   X(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"))                     \
   X(TRACE_DISABLED_BY_DEFAULT("webgpu"))                                 \
   X(TRACE_DISABLED_BY_DEFAULT("webrtc"))                                 \
@@ -313,7 +314,6 @@
   X("blink,rail")                                                             \
   X("blink.animations,devtools.timeline,benchmark,rail")                      \
   X("blink.user_timing,rail")                                                 \
-  X("blink_gc,devtools.timeline")                                             \
   X("browser,content,navigation")                                             \
   X("browser,navigation")                                                     \
   X("browser,navigation,benchmark")                                           \
@@ -334,6 +334,7 @@
   X("gpu,benchmark")                                                          \
   X("gpu,benchmark,android_webview")                                          \
   X("gpu,benchmark,webview")                                                  \
+  X("gpu,login")                                                              \
   X("gpu,startup")                                                            \
   X("gpu,toplevel.flow")                                                      \
   X("gpu.angle,startup")                                                      \
@@ -373,6 +374,7 @@
   X("v8,devtools.timeline")                                                   \
   X("v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"))          \
   X("viz,benchmark")                                                          \
+  X("viz,benchmark,graphics.pipeline")                                        \
   X("WebCore,benchmark,rail")                                                 \
   X(TRACE_DISABLED_BY_DEFAULT("cc.debug") "," TRACE_DISABLED_BY_DEFAULT(      \
       "viz.quads") "," TRACE_DISABLED_BY_DEFAULT("devtools.timeline.layers")) \

@@ -47,7 +47,6 @@
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/paint/layout_object_counter.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_request_forward.h"
-#include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/paint/cull_rect.h"
@@ -216,16 +215,22 @@ class CORE_EXPORT LocalFrameView final
   enum IntersectionObservationState {
     // The next painting frame does not need an intersection observation.
     kNotNeeded = 0,
+    // The next painting frame only needs to update frame viewport intersection,
+    // not intersection observations. Note that intersection observations in
+    // child remote frames happen during the parent frame's viewport
+    // intersection update, with kDesired or kRequired set on the child frames.
+    kFrameViewportIntersectionOnly = 1,
     // The next painting frame needs an intersection observation.
-    kDesired = 1,
+    kDesired = 2,
     // The next painting frame must be generated up to intersection observation
     // (even if frame is throttled).
-    kRequired = 2
+    kRequired = 3
   };
 
   // Sets the internal IntersectionObservationState to the max of the
   // current value and the provided one.
   void SetIntersectionObservationState(IntersectionObservationState);
+  void UpdateIntersectionObservationStateOnScroll(gfx::Vector2dF scroll_delta);
   IntersectionObservationState GetIntersectionObservationStateForTesting()
       const {
     return intersection_observation_state_;
@@ -236,6 +241,10 @@ class CORE_EXPORT LocalFrameView final
   unsigned GetIntersectionObservationFlags(unsigned parent_flags) const;
 
   void ForceUpdateViewportIntersections();
+
+  gfx::Vector2dF MinScrollDeltaToUpdateIntersectionForTesting() const {
+    return min_scroll_delta_to_update_intersection_;
+  }
 
   void SetPaintArtifactCompositorNeedsUpdate();
 
@@ -413,9 +422,7 @@ class CORE_EXPORT LocalFrameView final
   void EnableAutoSizeMode(const gfx::Size& min_size, const gfx::Size& max_size);
   void DisableAutoSizeMode();
 
-  void ForceLayoutForPagination(const gfx::SizeF& page_size,
-                                const gfx::SizeF& aspect_ratio,
-                                float maximum_shrink_factor);
+  void ForceLayoutForPagination(float maximum_shrink_factor);
 
   // Updates the fragment anchor element based on URL's fragment identifier.
   // Updates corresponding ':target' CSS pseudo class on the anchor element.
@@ -634,7 +641,6 @@ class CORE_EXPORT LocalFrameView final
   // Viewport size that should be used for viewport units (i.e. 'vh'/'vw').
   // May include the size of browser controls. See implementation for further
   // documentation.
-  gfx::SizeF ViewportSizeForViewportUnits() const;
   // https://drafts.csswg.org/css-values-4/#small-viewport-size
   gfx::SizeF SmallViewportSizeForViewportUnits() const;
   // https://drafts.csswg.org/css-values-4/#large-viewport-size
@@ -750,10 +756,7 @@ class CORE_EXPORT LocalFrameView final
     return EnsurePaintController();
   }
 
-  bool PaintDebugInfoEnabled() const {
-    return layer_debug_info_enabled_ ||
-           RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled();
-  }
+  bool PaintDebugInfoEnabled() const { return paint_debug_info_enabled_; }
 
   void AddPendingTransformUpdate(LayoutObject& object);
   bool RemovePendingTransformUpdate(const LayoutObject& object);
@@ -763,6 +766,13 @@ class CORE_EXPORT LocalFrameView final
 
   void RemoveAllPendingUpdates();
   bool ExecuteAllPendingUpdates();
+
+  void AddPendingStickyUpdate(PaintLayerScrollableArea*);
+  void ExecutePendingStickyUpdates();
+
+  void AddPendingSnapUpdate(PaintLayerScrollableArea*);
+  void RemovePendingSnapUpdate(PaintLayerScrollableArea*);
+  void ExecutePendingSnapUpdates();
 
   void ForAllChildLocalFrameViews(base::FunctionRef<void(LocalFrameView&)>);
 
@@ -951,7 +961,7 @@ class CORE_EXPORT LocalFrameView final
 
   void ForAllRemoteFrameViews(base::FunctionRef<void(RemoteFrameView&)>);
 
-  bool UpdateViewportIntersectionsForSubtree(
+  IntersectionUpdateResult UpdateViewportIntersectionsForSubtree(
       unsigned parent_flags,
       absl::optional<base::TimeTicks>& monotonic_time) override;
   void DeliverSynchronousIntersectionObservations();
@@ -983,8 +993,8 @@ class CORE_EXPORT LocalFrameView final
   // was prevented (e.g. by ancestor display-lock) or not needed.
   bool LayoutFromRootObject(LayoutObject& root);
 
-  // Returns true if the value of layer_debug_info_enabled_ changed.
-  bool UpdateLayerDebugInfoEnabled();
+  // Returns true if the value of paint_debug_info_enabled_ changed.
+  bool UpdatePaintDebugInfoEnabled();
 
   // Return the interstitial-ad detector for this frame, creating it if
   // necessary.
@@ -993,8 +1003,8 @@ class CORE_EXPORT LocalFrameView final
   void GetUserScrollTranslationNodes(
       Vector<const TransformPaintPropertyNode*>& scroll_translation_nodes);
 
-  void GetAnchorScrollContainerNodes(
-      Vector<const TransformPaintPropertyNode*>& anchor_scroll_container_nodes);
+  void GetAnchorPositionScrollerIds(
+      Vector<const TransformPaintPropertyNode*>& anchor_position_scrollers);
 
   // Return the sticky-ad detector for this frame, creating it if necessary.
   StickyAdDetector& EnsureStickyAdDetector();
@@ -1012,8 +1022,6 @@ class CORE_EXPORT LocalFrameView final
   DarkModeFilter& EnsureDarkModeFilter();
 
   bool HasViewTransitionThrottlingRendering() const;
-
-  LayoutSize size_;
 
   typedef HeapHashSet<Member<LayoutEmbeddedObject>> EmbeddedObjectSet;
   EmbeddedObjectSet part_update_set_;
@@ -1112,7 +1120,10 @@ class CORE_EXPORT LocalFrameView final
   // phases past layout to ensure that phases after layout don't dirty layout.
   bool allows_layout_invalidation_after_layout_clean_ = true;
 #endif
+
   IntersectionObservationState intersection_observation_state_;
+  gfx::Vector2dF min_scroll_delta_to_update_intersection_;
+  gfx::Vector2dF accumulated_scroll_delta_since_last_intersection_update_;
 
   bool needs_focus_on_fragment_;
 
@@ -1125,7 +1136,7 @@ class CORE_EXPORT LocalFrameView final
 
   // Whether to collect layer debug information for debugging, tracing,
   // inspection, etc. Applies to local root only.
-  bool layer_debug_info_enabled_ = DCHECK_IS_ON();
+  bool paint_debug_info_enabled_ = DCHECK_IS_ON();
 
   LifecycleData lifecycle_data_;
 
@@ -1179,6 +1190,14 @@ class CORE_EXPORT LocalFrameView final
   // TODO(yotha): unify these into one HeapHashMap.
   Member<HeapHashSet<Member<LayoutObject>>> pending_transform_updates_;
   Member<HeapHashSet<Member<LayoutObject>>> pending_opacity_updates_;
+
+  // A set of objects needing sticky constraint updates. These updates are
+  // registered during layout, and deferred until the end of layout.
+  Member<HeapHashSet<Member<PaintLayerScrollableArea>>> pending_sticky_updates_;
+
+  // A set of objects needing snap-area constraint updates. These updates are
+  // registered during style/layout, and deferred until the end of layout.
+  Member<HeapHashSet<Member<PaintLayerScrollableArea>>> pending_snap_updates_;
 
   // These are elements that were disconnected while having a remembered
   // size. We need to clear the remembered at resize observer timing,

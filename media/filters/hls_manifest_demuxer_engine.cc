@@ -156,9 +156,67 @@ void HlsManifestDemuxerEngine::OnTimeUpdate(base::TimeDelta time,
                                             double playback_rate,
                                             ManifestDemuxer::DelayCallback cb) {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
-  // TODO(crbug/1266991): Run all renditions in series.
-  std::move(cb).Run(kNoTimestamp);
-  NOTIMPLEMENTED();
+  if (renditions_.empty()) {
+    std::move(cb).Run(kNoTimestamp);
+    return;
+  }
+
+  CheckStateAtIndex(time, playback_rate, std::move(cb), 0, absl::nullopt);
+}
+
+void HlsManifestDemuxerEngine::CheckStateAtIndex(
+    base::TimeDelta media_time,
+    double playback_rate,
+    ManifestDemuxer::DelayCallback cb,
+    size_t rendition_index,
+    absl::optional<base::TimeDelta> response_time) {
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  if (rendition_index >= renditions_.size()) {
+    // The response time collected at this point _must_ be valid.
+    std::move(cb).Run(response_time.value());
+    return;
+  }
+
+  auto recurse = base::BindOnce(
+      &HlsManifestDemuxerEngine::CheckStateAtIndex, weak_factory_.GetWeakPtr(),
+      media_time, playback_rate, std::move(cb), rendition_index + 1);
+
+  auto on_reply = base::BindOnce(
+      &HlsManifestDemuxerEngine::OnStateChecked, weak_factory_.GetWeakPtr(),
+      base::TimeTicks::Now(), response_time, std::move(recurse));
+
+  renditions_[rendition_index]->CheckState(media_time, playback_rate,
+                                           std::move(on_reply));
+}
+
+void HlsManifestDemuxerEngine::OnStateChecked(
+    base::TimeTicks call_start,
+    absl::optional<base::TimeDelta> prior_delay,
+    base::OnceCallback<void(absl::optional<base::TimeDelta>)> cb,
+    base::TimeDelta delay_time) {
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  if (prior_delay.value_or(kNoTimestamp) == kNoTimestamp) {
+    std::move(cb).Run(delay_time);
+    return;
+  }
+
+  base::TimeDelta spent_duration = base::TimeTicks::Now() - call_start;
+  if (spent_duration > prior_delay.value()) {
+    // Some previous rendition requested a delay that we've already spent while
+    // calculating the delay for the current rendition. Going forward then,
+    // we want to have no delay.
+    std::move(cb).Run(base::Seconds(0));
+    return;
+  }
+
+  auto adjusted_prior_delay = prior_delay.value() - spent_duration;
+  if (delay_time == kNoTimestamp) {
+    std::move(cb).Run(adjusted_prior_delay);
+    return;
+  }
+
+  std::move(cb).Run(adjusted_prior_delay > delay_time ? delay_time
+                                                      : adjusted_prior_delay);
 }
 
 bool HlsManifestDemuxerEngine::Seek(base::TimeDelta time) {
@@ -318,6 +376,11 @@ HlsManifestDemuxerEngine::ParseMediaPlaylistFromStream(
                                    multivariant_root_.get());
 }
 
+void HlsManifestDemuxerEngine::AddRenditionForTesting(
+    std::unique_ptr<HlsRendition> test_rendition) {
+  renditions_.push_back(std::move(test_rendition));
+}
+
 void HlsManifestDemuxerEngine::OnMultivariantPlaylist(
     PipelineStatusCallback parse_complete_cb,
     scoped_refptr<hls::MultivariantPlaylist> playlist) {
@@ -331,9 +394,25 @@ void HlsManifestDemuxerEngine::OnMultivariantPlaylist(
       rendition_selector_->GetPreferredVariants(video_preferences_,
                                                 audio_preferences_);
 
-  if (streams.audio_override_rendition &&
-      !streams.audio_override_rendition->GetUri().has_value()) {
-    return Abort(HlsDemuxerStatus::Codes::kPlaylistUrlInvalid);
+  // Possible outcomes of the rendition selector:
+  // | AOVariant | SelVariant | AORend  | primary=? | secondary=? |
+  // |-----------|------------|---------|-----------|-------------|
+  // | null      | null       | null    | X         | X           |
+  // |-----------|------------|---------|-----------|-------------|
+  // | null      | present    | null    | SV        | X           |
+  // |-----------|------------|---------|-----------|-------------|
+  // | present   | null       | present | AOV       | X           |
+  // |-----------|------------|---------|-----------|-------------|
+  // | present   | present    | null    | SV        | X           |
+  // |-----------|------------|---------|-----------|-------------|
+  // | present   | present    | present | SV        | AOV         |
+  // |-----------|------------|---------|-----------|-------------|
+  absl::optional<GURL> audio_override_uri;
+  const GURL& primary_uri = streams.selected_variant->GetPrimaryRenditionUri();
+  if (streams.audio_override_rendition) {
+    CHECK_NE(streams.audio_override_variant, nullptr);
+    audio_override_uri = streams.audio_override_rendition->GetUri().value_or(
+        streams.audio_override_variant->GetPrimaryRenditionUri());
   }
 
   std::vector<PlaylistParseInfo> renditions_to_parse;
@@ -344,16 +423,18 @@ void HlsManifestDemuxerEngine::OnMultivariantPlaylist(
         streams.selected_variant->GetPrimaryRenditionUri(),
         streams.selected_variant->GetCodecs().value_or(no_codecs), kPrimary);
 
-    if (streams.audio_override_rendition) {
+    if (streams.audio_override_rendition &&
+        primary_uri != audio_override_uri.value_or(primary_uri)) {
       CHECK_NE(streams.audio_override_variant, nullptr);
       renditions_to_parse.emplace_back(
-          streams.audio_override_rendition->GetUri().value_or(GURL{}),
+          *audio_override_uri,
           streams.audio_override_variant->GetCodecs().value_or(no_codecs),
           kAudioOverride);
     }
-  } else if (streams.audio_override_rendition) {
+  } else if (streams.audio_override_rendition &&
+             primary_uri != audio_override_uri.value_or(primary_uri)) {
     renditions_to_parse.emplace_back(
-        streams.audio_override_rendition->GetUri().value_or(GURL{}),
+        *audio_override_uri,
         streams.audio_override_variant->GetCodecs().value_or(no_codecs),
         kPrimary);
   } else {

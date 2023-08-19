@@ -193,7 +193,7 @@
     div.innerHTML = divText;
 
     let editContext = new EditContext();
-    editContext.text = "Hello!😎";
+    editContext.updateText(0, 8, "Hello!😎");
     editContext.updateSelection(8, 8); // Move to the end. Note '😎' occupies 2 characters.
     div.editContext = editContext;
     div.focus();
@@ -227,7 +227,7 @@
     div.innerHTML = divText;
 
     let editContext = new EditContext();
-    editContext.text = "Hello!😎";
+    editContext.updateText(0, 8, "Hello!😎");
     editContext.updateSelection(6, 6);
     div.editContext = editContext;
     div.focus();
@@ -261,7 +261,7 @@
     div.innerHTML = divText;
 
     let editContext = new EditContext();
-    editContext.text = "Hello world!";
+    editContext.updateText(0, 12, "Hello world!");
     editContext.updateSelection(5, 5);
     div.editContext = editContext;
     div.focus();
@@ -298,7 +298,7 @@
     div.innerHTML = divText;
 
     let editContext = new EditContext();
-    editContext.text = "Hello world!";
+    editContext.updateText(0, 12, "Hello world!");
     editContext.updateSelection(6, 6);
     div.editContext = editContext;
     div.focus();

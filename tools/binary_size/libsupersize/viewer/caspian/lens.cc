@@ -14,14 +14,9 @@ namespace {
 constexpr const char* kDefaultContainer = "(Default container)";
 constexpr const char* kNoComponent = "(No component)";
 
-bool PartialMatch(std::string_view view, const RE2& regex) {
-  re2::StringPiece piece(view.data(), view.size());
-  return RE2::PartialMatch(piece, regex);
-}
-
 bool PartialMatch(const char* string, const RE2& regex) {
   if (string) {
-    return PartialMatch(std::string_view(string), regex);
+    return RE2::PartialMatch(string, regex);
   }
   return false;
 }
@@ -53,7 +48,7 @@ std::string_view TemplateLens::ParentName(const BaseSymbol& symbol) {
 std::string_view GeneratedLens::ParentName(const BaseSymbol& symbol) {
   static LazyRE2 register_jni_regex = {
       R"(Register.*JNIEnv\*\)|RegisteredMethods$)"};
-  if (PartialMatch(symbol.FullName(), *register_jni_regex)) {
+  if (RE2::PartialMatch(symbol.FullName(), *register_jni_regex)) {
     return "RegisterJNI";
   }
 

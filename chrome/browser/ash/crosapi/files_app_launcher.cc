@@ -44,13 +44,12 @@ void FilesAppLauncher::Launch(base::OnceClosure callback) {
   }
 
   // Files.app is not yet initialized. Wait for its ready.
-  apps::AppRegistryCache::Observer::Observe(&app_registry);
+  app_registry_cache_observer_.Observe(&app_registry);
 }
 
 void FilesAppLauncher::LaunchInternal() {
   // Start observing the launching.
-  auto& instance_registry = proxy_->InstanceRegistry();
-  apps::InstanceRegistry::Observer::Observe(&instance_registry);
+  instance_registry_observation_.Observe(&proxy_->InstanceRegistry());
 
   // Launching traditional files.app and launching SWA files.app need quite
   // different procedure.
@@ -67,14 +66,14 @@ void FilesAppLauncher::OnAppUpdate(const apps::AppUpdate& update) {
 
   // So it's ready to launch files.app now.
   // We no longer need to observe the update.
-  apps::AppRegistryCache::Observer::Observe(nullptr);
+  app_registry_cache_observer_.Reset();
 
   LaunchInternal();
 }
 
 void FilesAppLauncher::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {
-  apps::AppRegistryCache::Observer::Observe(nullptr);
+  app_registry_cache_observer_.Reset();
 }
 
 void FilesAppLauncher::OnInstanceUpdate(const apps::InstanceUpdate& update) {
@@ -83,13 +82,13 @@ void FilesAppLauncher::OnInstanceUpdate(const apps::InstanceUpdate& update) {
 
   // So launching is progressed. Stop observing and run the callback
   // to notify the caller of Launch().
-  apps::InstanceRegistry::Observer::Observe(nullptr);
+  instance_registry_observation_.Reset();
   std::move(callback_).Run();
 }
 
 void FilesAppLauncher::OnInstanceRegistryWillBeDestroyed(
     apps::InstanceRegistry* cache) {
-  apps::InstanceRegistry::Observer::Observe(nullptr);
+  instance_registry_observation_.Reset();
 }
 
 }  // namespace crosapi

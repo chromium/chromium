@@ -16,13 +16,13 @@ class ImeKeyboardTest : public testing::Test,
                         public ImeKeyboard::Observer {
  public:
   void SetUp() override {
-    xkey_ = std::make_unique<FakeImeKeyboard>();
-    xkey_->AddObserver(this);
+    ime_keyboard_ = std::make_unique<FakeImeKeyboard>();
+    ime_keyboard_->AddObserver(this);
     caps_changed_ = false;
   }
   void TearDown() override {
-    xkey_->RemoveObserver(this);
-    xkey_.reset();
+    ime_keyboard_->RemoveObserver(this);
+    ime_keyboard_.reset();
   }
   void OnCapsLockChanged(bool enabled) override {
     caps_changed_ = true;
@@ -38,17 +38,32 @@ class ImeKeyboardTest : public testing::Test,
     EXPECT_EQ(changed, layout_changed_);
     layout_changed_ = false;
   }
-  std::unique_ptr<ImeKeyboard> xkey_;
+
+  std::unique_ptr<ImeKeyboard> ime_keyboard_;
   bool caps_changed_;
   bool layout_changed_;
 };
 
 // Tests CheckLayoutName() function.
 TEST_F(ImeKeyboardTest, TestObserver) {
-  xkey_->SetCapsLockEnabled(true);
+  ime_keyboard_->SetCapsLockEnabled(true);
   VerifyCapsLockChanged(true);
-  xkey_->SetCurrentKeyboardLayoutByName("foo");
+  ime_keyboard_->SetCurrentKeyboardLayoutByName("foo");
   VerifyLayoutChanged(true);
+}
+
+TEST_F(ImeKeyboardTest, IsISOLevel5ShiftAvailable) {
+  ime_keyboard_->SetCurrentKeyboardLayoutByName("us");
+  EXPECT_FALSE(ime_keyboard_->IsISOLevel5ShiftAvailable());
+  ime_keyboard_->SetCurrentKeyboardLayoutByName("ca(multix)");
+  EXPECT_TRUE(ime_keyboard_->IsISOLevel5ShiftAvailable());
+}
+
+TEST_F(ImeKeyboardTest, IsAltGrAvailable) {
+  ime_keyboard_->SetCurrentKeyboardLayoutByName("us");
+  EXPECT_FALSE(ime_keyboard_->IsAltGrAvailable());
+  ime_keyboard_->SetCurrentKeyboardLayoutByName("fr");
+  EXPECT_TRUE(ime_keyboard_->IsAltGrAvailable());
 }
 
 }  // namespace

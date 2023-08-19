@@ -9,10 +9,7 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_cell_utils.h"
 #import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+#import "ios/chrome/common/ui/util/sdk_forward_declares.h"
 
 namespace {
 
@@ -57,30 +54,26 @@ static const CGFloat kButtonVerticalMargin = 12;
   [self setTitleColor:[UIColor colorNamed:kBlueColor]
              forState:UIControlStateNormal];
   self.translatesAutoresizingMaskIntoConstraints = NO;
-  self.titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-  self.titleLabel.adjustsFontForContentSizeCategory = YES;
   self.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeading;
 
-  // TODO(crbug.com/1418068): Simplify after minimum version required is >=
-  // iOS 15.
-  if (base::ios::IsRunningOnIOS15OrLater() &&
-      IsUIButtonConfigurationEnabled()) {
-    if (@available(iOS 15, *)) {
-      UIButtonConfiguration* buttonConfiguration =
-          [UIButtonConfiguration plainButtonConfiguration];
-      buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-          kButtonVerticalMargin, kButtonHorizontalMargin, kButtonVerticalMargin,
-          kButtonHorizontalMargin);
-      self.configuration = buttonConfiguration;
-    }
+  if (IsUIButtonConfigurationEnabled()) {
+    UIButtonConfiguration* buttonConfiguration =
+        [UIButtonConfiguration plainButtonConfiguration];
+    buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+        kButtonVerticalMargin, kButtonHorizontalMargin, kButtonVerticalMargin,
+        kButtonHorizontalMargin);
+    buttonConfiguration.titleLineBreakMode = NSLineBreakByTruncatingTail;
+    self.configuration = buttonConfiguration;
   } else {
+    self.titleLabel.font =
+        [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+    self.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+    self.titleLabel.adjustsFontForContentSizeCategory = YES;
     UIEdgeInsets contentEdgeInsets =
         UIEdgeInsetsMake(kButtonVerticalMargin, kButtonHorizontalMargin,
                          kButtonVerticalMargin, kButtonHorizontalMargin);
     SetContentEdgeInsets(self, contentEdgeInsets);
   }
-
-  self.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
 }
 
 @end

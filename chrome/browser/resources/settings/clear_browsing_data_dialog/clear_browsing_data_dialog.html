@@ -178,7 +178,6 @@
                     '$i18nPolymer{clearBrowsingHistorySummarySignedInNoLink}'
                     )]]"
                 disabled="[[clearingInProgress_]]"
-                hidden="[[isChildAccountWithDisallowedHistoryDeletion_]]"
                 no-set-pref>
             </settings-checkbox>
             <settings-checkbox id="cookiesCheckboxBasic"
@@ -188,7 +187,9 @@
                 sub-label="[[cookiesCheckboxLabel_(
                     shouldShowCookieException_,
                     '$i18nPolymer{clearCookiesSummary}',
-                    '$i18nPolymer{clearCookiesSummarySignedIn}')]]"
+                    '$i18nPolymer{clearCookiesSummarySignedIn}',
+                    '$i18nPolymer{clearCookiesSummarySignedInSupervisedProfile}'
+                    )]]"
                 disabled="[[clearingInProgress_]]" no-set-pref>
             </settings-checkbox>
             <settings-checkbox id="cacheCheckboxBasic"
@@ -235,7 +236,6 @@
                 label="$i18n{clearBrowsingHistory}"
                 sub-label="[[counters_.browsing_history]]"
                 disabled="[[clearingInProgress_]]"
-                hidden="[[isChildAccountWithDisallowedHistoryDeletion_]]"
                 no-set-pref>
             </settings-checkbox>
             <settings-checkbox id="downloadCheckbox"
@@ -243,7 +243,6 @@
                 label="$i18n{clearDownloadHistory}"
                 sub-label="[[counters_.download_history]]"
                 disabled="[[clearingInProgress_]]"
-                hidden="[[isChildAccountWithDisallowedHistoryDeletion_]]"
                 no-set-pref>
             </settings-checkbox>
             <settings-checkbox id="cookiesCheckbox"

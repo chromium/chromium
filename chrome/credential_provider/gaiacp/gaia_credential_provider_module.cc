@@ -166,7 +166,7 @@ BOOL CGaiaCredentialProviderModule::DllMain(HINSTANCE /*hinstance*/,
                            false);  // Enable tickcount.
       logging::SetEventSource("GCPW", GCPW_CATEGORY, MSG_LOG_MESSAGE);
       if (GetGlobalFlagOrDefault(kRegEnableVerboseLogging, 0))
-        logging::SetMinLogLevel(logging::LOG_VERBOSE);
+        logging::SetMinLogLevel(logging::LOGGING_VERBOSE);
       break;
     }
     case DLL_PROCESS_DETACH:

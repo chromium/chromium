@@ -4,10 +4,11 @@
 
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_table_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/settings/cells/sync_switch_item.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
@@ -18,9 +19,19 @@
 #import "net/base/mac/url_conversions.h"
 #import "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+namespace {
+
+// Table view customized header heights.
+CGFloat kAccountSectionHeaderHeightPointSize = 22.17;
+CGFloat kSyncDataTypeSectionHeaderHeightPointSize = 60.;
+CGFloat kAdvancedSettingsSectionHeaderHeightPointSize = 26.;
+CGFloat kSignOutSectionHeaderHeightPointSize = 26.;
+
+// Table view customized footer heights.
+CGFloat kAccountSectionFooterHeightPointSize = 16.;
+CGFloat kDefaultSectionFooterHeightPointSize = 10.;
+
+}  // namespace
 
 @interface ManageSyncSettingsTableViewController () <
     PopoverLabelViewControllerDelegate>
@@ -55,7 +66,7 @@
   TableViewModel* model = self.tableViewModel;
   NSIndexPath* indexPath = [model indexPathForItemType:sender.tag];
   DCHECK(indexPath);
-  SyncSwitchItem* syncSwitchItem = base::mac::ObjCCastStrict<SyncSwitchItem>(
+  SyncSwitchItem* syncSwitchItem = base::apple::ObjCCastStrict<SyncSwitchItem>(
       [model itemAtIndexPath:indexPath]);
   DCHECK(syncSwitchItem);
   [self.serviceDelegate toggleSwitchItem:syncSwitchItem withValue:sender.isOn];
@@ -69,7 +80,7 @@
                      cellForRowAtIndexPath:indexPath];
   if ([cell isKindOfClass:[TableViewSwitchCell class]]) {
     TableViewSwitchCell* switchCell =
-        base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
+        base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
     [switchCell.switchView addTarget:self
                               action:@selector(switchAction:)
                     forControlEvents:UIControlEventValueChanged];
@@ -77,7 +88,7 @@
     switchCell.switchView.tag = item.type;
   } else if ([cell isKindOfClass:[TableViewInfoButtonCell class]]) {
     TableViewInfoButtonCell* managedCell =
-        base::mac::ObjCCastStrict<TableViewInfoButtonCell>(cell);
+        base::apple::ObjCCastStrict<TableViewInfoButtonCell>(cell);
     managedCell.textLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
     [managedCell.trailingButton addTarget:self
                                    action:@selector(didTapManagedUIInfoButton:)
@@ -100,7 +111,7 @@
 
   if (sectionIdentifier == SignOutSectionIdentifier) {
     TableViewLinkHeaderFooterView* linkView =
-        base::mac::ObjCCastStrict<TableViewLinkHeaderFooterView>(view);
+        base::apple::ObjCCastStrict<TableViewLinkHeaderFooterView>(view);
     linkView.delegate = self;
   }
 
@@ -130,8 +141,12 @@
     // No need to reload since the model has not been loaded yet.
     return;
   }
-  [self.tableView deleteSections:sections
-                withRowAnimation:UITableViewRowAnimationNone];
+  [UIView performWithoutAnimation:^{
+    [self.tableView beginUpdates];
+    [self.tableView deleteSections:sections
+                  withRowAnimation:UITableViewRowAnimationNone];
+    [self.tableView endUpdates];
+  }];
 }
 
 - (void)reloadItem:(TableViewItem*)item {
@@ -164,6 +179,50 @@
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
+- (CGFloat)tableView:(UITableView*)tableView
+    heightForHeaderInSection:(NSInteger)section {
+  if (self.isAccountStateSignedIn) {
+    NSInteger sectionIdentifier =
+        [self.tableViewModel sectionIdentifierForSectionIndex:section];
+    switch (sectionIdentifier) {
+      case AccountSectionIdentifier:
+        return kAccountSectionHeaderHeightPointSize;
+      case SyncDataTypeSectionIdentifier:
+        return kSyncDataTypeSectionHeaderHeightPointSize;
+      case AdvancedSettingsSectionIdentifier:
+        return kAdvancedSettingsSectionHeaderHeightPointSize;
+      case SignOutSectionIdentifier:
+        if (![self.tableViewModel hasSectionForSectionIdentifier:
+                                      AdvancedSettingsSectionIdentifier]) {
+          return kSignOutSectionHeaderHeightPointSize;
+        }
+        break;
+      case SyncErrorsSectionIdentifier:
+        break;
+    }
+  }
+  return ChromeTableViewHeightForHeaderInSection(section);
+}
+
+- (CGFloat)tableView:(UITableView*)tableView
+    heightForFooterInSection:(NSInteger)section {
+  if (self.isAccountStateSignedIn) {
+    NSInteger sectionIdentifier =
+        [self.tableViewModel sectionIdentifierForSectionIndex:section];
+    switch (sectionIdentifier) {
+      case AccountSectionIdentifier:
+        return kAccountSectionFooterHeightPointSize;
+      case SyncDataTypeSectionIdentifier:
+        return UITableViewAutomaticDimension;
+      case AdvancedSettingsSectionIdentifier:
+      case SyncErrorsSectionIdentifier:
+      case SignOutSectionIdentifier:
+        break;
+    }
+  }
+  return kDefaultSectionFooterHeightPointSize;
+}
+
 #pragma mark - Sync helpers
 
 // Called when the user clicks on the information button of the managed
@@ -171,8 +230,11 @@
 - (void)didTapManagedUIInfoButton:(UIButton*)buttonView {
   EnterpriseInfoPopoverViewController* bubbleViewController =
       [[EnterpriseInfoPopoverViewController alloc]
-          initWithMessage:l10n_util::GetNSString(
-                              IDS_IOS_ENTERPRISE_MANAGED_SYNC)
+          initWithMessage:self.isAccountStateSignedIn
+                              ? l10n_util::GetNSString(
+                                    IDS_IOS_ENTERPRISE_MANAGED_SAVE_IN_ACCOUNT)
+                              : l10n_util::GetNSString(
+                                    IDS_IOS_ENTERPRISE_MANAGED_SYNC)
            enterpriseName:nil];
   [self presentViewController:bubbleViewController animated:YES completion:nil];
 

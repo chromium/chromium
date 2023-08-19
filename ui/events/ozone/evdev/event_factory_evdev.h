@@ -98,6 +98,8 @@ class COMPONENT_EXPORT(EVDEV) EventFactoryEvdev : public DeviceEventObserver,
   void DispatchTouchpadDevicesUpdated(
       const std::vector<TouchpadDevice>& devices,
       bool has_haptic_touchpad);
+  void DispatchGraphicsTabletDevicesUpdated(
+      const std::vector<InputDevice>& devices);
   void DispatchUncategorizedDevicesUpdated(
       const std::vector<InputDevice>& devices);
   void DispatchDeviceListsComplete();

@@ -41,7 +41,8 @@ class LocalRouterLink : public RouterLink {
   void AllocateParcelData(size_t num_bytes,
                           bool allow_partial,
                           Parcel& parcel) override;
-  void AcceptParcel(const OperationContext& context, Parcel& parcel) override;
+  void AcceptParcel(const OperationContext& context,
+                    std::unique_ptr<Parcel> parcel) override;
   void AcceptRouteClosure(const OperationContext& context,
                           SequenceNumber sequence_length) override;
   void AcceptRouteDisconnected(const OperationContext& context) override;

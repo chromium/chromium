@@ -50,7 +50,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.util.ColorUtils;
 
 import java.lang.annotation.Retention;
@@ -155,14 +155,12 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
     }
 
     @Override
-    @PartialCustomTabType
-    public int getStrategyType() {
+    public @PartialCustomTabType int getStrategyType() {
         return PartialCustomTabType.BOTTOM_SHEET;
     }
 
     @Override
-    @StringRes
-    public int getTypeStringId() {
+    public @StringRes int getTypeStringId() {
         return R.string.accessibility_partial_custom_tab_bottom_sheet;
     }
 
@@ -209,7 +207,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
                 end = initialY();
                 break;
             case HeightStatus.CLOSE:
-                end = mDisplayHeight - mNavbarHeight;
+                end = mDisplayHeight;
                 if (isFullHeight()) {
                     attrs.y = getFullyExpandedY();
                     window.setAttributes(attrs);
@@ -320,8 +318,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
     }
 
     @Override
-    @ActivityLayoutState
-    protected int getActivityLayoutState() {
+    protected @ActivityLayoutState int getActivityLayoutState() {
         if (isFullscreen()) {
             return ACTIVITY_LAYOUT_STATE_FULL_SCREEN;
         } else if (isMaximized()) {
@@ -647,7 +644,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
             mVersionCompat.setImeStateCallback(this::onImeStateChanged);
         }
 
-        if (ChromeAccessibilityUtil.get().isTouchExplorationEnabled()) {
+        if (AccessibilityState.isScreenReaderEnabled()) {
             int textId = mStatus == HeightStatus.TOP ? R.string.accessibility_custom_tab_expanded
                                                      : R.string.accessibility_custom_tab_collapsed;
             getCoordinatorLayout().announceForAccessibility(
@@ -849,6 +846,10 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
 
     @Override
     public void onExitFullscreen(Tab tab) {
+        // Ignore the notification coming before toolbar/post-inflation initialization, which
+        // can happen when devices gets rotated while fullscreen video is playing.
+        if (mHandleStrategy == null) return;
+
         // System UI (navigation/status bar) dimensions still remain zero at this point.
         // For the restoring job that needs these values, we wait till they get reported
         // correctly by posting the task instead of executing them right away.
@@ -895,7 +896,6 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
         return isLandscape() && width / density > BOTTOM_SHEET_MAX_WIDTH_DP_LANDSCAPE;
     }
 
-    @VisibleForTesting
     void setMockViewForTesting(LinearLayout navbar, ImageView spinnerView,
             CircularProgressDrawable spinner, CustomTabToolbar toolbar, View toolbarCoordinator,
             PartialCustomTabHandleStrategyFactory handleStrategyFactory) {
@@ -910,17 +910,14 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
         onPostInflationStartup();
     }
 
-    @VisibleForTesting
     int getNavbarHeightForTesting() {
         return mNavbarHeight;
     }
 
-    @VisibleForTesting
     CustomTabToolbar.HandleStrategy getHandleStrategyForTesting() {
         return mHandleStrategy;
     }
 
-    @VisibleForTesting
     CustomTabToolbar.HandleStrategy createHandleStrategyForTesting() {
         // Pass null for context because we don't depend on the GestureDetector inside as we invoke
         // MotionEvents directly in the tests.
@@ -929,7 +926,6 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
         return mHandleStrategy;
     }
 
-    @VisibleForTesting
     void setToolbarColorForTesting(int toolbarColor) {
         mToolbarColor = toolbarColor;
     }
@@ -963,8 +959,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
             mAnimator.start();
         }
 
-        @HeightStatus
-        private int getTargetStatus() {
+        private @HeightStatus int getTargetStatus() {
             return mTargetStatus;
         }
 

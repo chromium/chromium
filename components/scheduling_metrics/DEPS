@@ -1,5 +1,0 @@
-deps = [
-  # This component should not have any dependencies other than //base as it 
-  # should be able to be used from any other place.
-  "+components/scheduling_metrics",
-]

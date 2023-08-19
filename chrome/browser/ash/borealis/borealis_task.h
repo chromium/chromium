@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_BOREALIS_BOREALIS_TASK_H_
 
 #include <memory>
+#include "base/callback_list.h"
 #include "base/files/file.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -13,9 +14,9 @@
 #include "chrome/browser/ash/borealis/borealis_context_manager.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_launch_options.h"
-#include "chrome/browser/ash/borealis/borealis_launch_watcher.h"
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/guest_os/guest_os_dlc_helper.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_wayland_server.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 
@@ -126,15 +127,15 @@ class StartBorealisVm : public BorealisTask {
 // Waits for the startup daemon to signal completion.
 class AwaitBorealisStartup : public BorealisTask {
  public:
-  AwaitBorealisStartup(Profile* profile, std::string vm_name);
+  AwaitBorealisStartup();
   ~AwaitBorealisStartup() override;
   void RunInternal(BorealisContext* context) override;
-  BorealisLaunchWatcher& GetWatcherForTesting();
 
  private:
-  void OnAwaitBorealisStartup(BorealisContext* context,
-                              absl::optional<std::string> container);
-  BorealisLaunchWatcher watcher_;
+  void OnContainerStarted(BorealisContext* context, guest_os::GuestInfo info);
+  void OnTimeout();
+
+  base::CallbackListSubscription subscription_;
   base::WeakPtrFactory<AwaitBorealisStartup> weak_factory_{this};
 };
 

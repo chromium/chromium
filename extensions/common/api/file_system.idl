@@ -113,20 +113,23 @@ namespace fileSystem {
     // Get the display path of an Entry object. The display path is based on
     // the full path of the file or directory on the local file system, but may
     // be made more readable for display purposes.
-    static void getDisplayPath([instanceOf=Entry] object entry,
-                               GetDisplayPathCallback callback);
+    [supportsPromises] static void getDisplayPath(
+        [instanceOf=Entry] object entry,
+        GetDisplayPathCallback callback);
 
     // Get a writable Entry from another Entry. This call will fail with a
     // runtime error if the application does not have the 'write' permission
     // under 'fileSystem'. If entry is a DirectoryEntry, this call will fail if
     // the application does not have the 'directory' permission under
     // 'fileSystem'.
-    static void getWritableEntry([instanceOf=Entry] object entry,
-                                 EntryCallback callback);
+    [supportsPromises] static void getWritableEntry(
+        [instanceOf=Entry] object entry,
+        EntryCallback callback);
 
     // Gets whether this Entry is writable or not.
-    static void isWritableEntry([instanceOf=Entry] object entry,
-                                IsWritableCallback callback);
+    [supportsPromises] static void isWritableEntry(
+        [instanceOf=Entry] object entry,
+        IsWritableCallback callback);
 
     // Ask the user to choose a file or directory.
     static void chooseEntry(optional ChooseEntryOptions options,
@@ -134,11 +137,13 @@ namespace fileSystem {
 
     // Returns the file entry with the given id if it can be restored. This call
     // will fail with a runtime error otherwise.
-    static void restoreEntry(DOMString id, EntryCallback callback);
+    static void restoreEntry(DOMString id,
+                             EntryCallback callback);
 
     // Returns whether the app has permission to restore the entry with the
     // given id.
-    static void isRestorable(DOMString id, IsRestorableCallback callback);
+    [supportsPromises] static void isRestorable(DOMString id,
+                                                IsRestorableCallback callback);
 
     // Returns an id that can be passed to restoreEntry to regain access to a
     // given file entry. Only the 500 most recently used entries are retained,
@@ -157,15 +162,17 @@ namespace fileSystem {
     // confirmation dialog will be shown on top of the active app window.
     // In case of an error, <code>fileSystem</code> will be undefined, and
     // <code>chrome.runtime.lastError</code> will be set.
-    static void requestFileSystem(RequestFileSystemOptions options,
-                                  RequestFileSystemCallback callback);
+    [supportsPromises] static void requestFileSystem(
+        RequestFileSystemOptions options,
+        RequestFileSystemCallback callback);
 
     // Returns a list of volumes available for <code>requestFileSystem()</code>.
     // The <code>"fileSystem": {"requestFileSystem"}</code> manifest permission
     // is required. Available to kiosk apps running in the kiosk session only.
     // In case of an error, <code>volumes</code> will be undefined, and <code>
     // chrome.runtime.lastError</code> will be set.
-    static void getVolumeList(GetVolumeListCallback callback);
+    [supportsPromises] static void getVolumeList(
+        GetVolumeListCallback callback);
   };
 
   interface Events {

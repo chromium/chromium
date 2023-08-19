@@ -7,6 +7,8 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -18,6 +20,7 @@
 #include "chromeos/ash/services/multidevice_setup/fake_host_status_provider.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/oobe_completion_tracker.h"
 #include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -28,12 +31,18 @@ namespace multidevice_setup {
 namespace {
 
 const int64_t kTestTimeMillis = 1500000000000;
+const int64_t kTestFastForwardTenMinutesMillis = 10 * 60 * 1000;
+const int64_t kTestFastForwardFourMinutesMillis = 4 * 60 * 1000;
 const char kFakePhoneKey[] = "fake-phone-key";
 const char kFakePhoneName[] = "Phony Phone";
 const char kFakePhoneKeyA[] = "fake-phone-key-A";
 const char kFakePhoneNameA[] = "Phony Phone A";
 const char kFakePhoneKeyB[] = "fake-phone-key-B";
 const char kFakePhoneNameB[] = "Phony Phone B";
+
+std::string kPhoneHubNudgeFeatureParam = "use_nudge";
+std::string kPhoneHubNudgeFeatureUseNudgeTrue = "true";
+std::string kPhoneHubNudgeFeatureUseNudgeFalse = "false";
 
 const multidevice::RemoteDeviceRef kFakePhone =
     multidevice::RemoteDeviceRefBuilder()
@@ -81,6 +90,7 @@ class MultiDeviceSetupAccountStatusChangeDelegateNotifierTest
         std::make_unique<FakeHostDeviceTimestampManager>();
     fake_oobe_completion_tracker_ = std::make_unique<OobeCompletionTracker>();
     test_clock_->SetNow(base::Time::FromJavaTime(kTestTimeMillis));
+    session_manager_ = std::make_unique<session_manager::SessionManager>();
   }
 
   void BuildAccountStatusChangeDelegateNotifier() {
@@ -188,6 +198,28 @@ class MultiDeviceSetupAccountStatusChangeDelegateNotifierTest
             kVerifiedHostDeviceIdFromMostRecentHostStatusUpdatePrefName);
   }
 
+  void FastForward(int64_t time_delta) {
+    test_clock_->SetNow(base::Time::FromJavaTime(kTestTimeMillis + time_delta));
+    if (fake_delegate_) {
+      delegate_notifier_->FlushForTesting();
+    }
+  }
+
+  void SetSeeionState(session_manager::SessionState state) {
+    session_manager_->SetSessionState(state);
+    if (fake_delegate_) {
+      delegate_notifier_->FlushForTesting();
+    }
+  }
+
+  void InitFeaturesWithParam(std::string use_nudge) {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kPhoneHubOnboardingNotifierRevamp,
+          {{kPhoneHubNudgeFeatureParam, use_nudge}}},
+         {features::kSystemNudgeV2, {}}},
+        {});
+  }
+
   FakeAccountStatusChangeDelegate* fake_delegate() {
     return fake_delegate_.get();
   }
@@ -203,6 +235,8 @@ class MultiDeviceSetupAccountStatusChangeDelegateNotifierTest
       fake_host_device_timestamp_manager_;
   std::unique_ptr<OobeCompletionTracker> fake_oobe_completion_tracker_;
   std::unique_ptr<base::SimpleTestClock> test_clock_;
+  std::unique_ptr<session_manager::SessionManager> session_manager_;
+  base::test::ScopedFeatureList feature_list_;
 
   std::unique_ptr<AccountStatusChangeDelegateNotifier> delegate_notifier_;
 };
@@ -699,6 +733,77 @@ TEST_F(MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
 
   ForgetHost();
   EXPECT_EQ(GetMostRecentVerifiedHostDeviceIdPref(), "");
+}
+
+TEST_F(
+    MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
+    CompletingOobeSetupFlowDoNotBlockNewUserEventIfInPhoneHubNotificationExperiment) {
+  InitFeaturesWithParam(/*use_nudge=*/kPhoneHubNudgeFeatureUseNudgeFalse);
+  BuildAccountStatusChangeDelegateNotifier();
+
+  // Complete OOBE MultiDevice setup flow before delegate is set.
+  EXPECT_EQ(0u, GetOobeSetupFlowTimestamp());
+  CompleteOobeSetupFlow();
+  EXPECT_EQ(kTestTimeMillis, GetOobeSetupFlowTimestamp());
+
+  SetAccountStatusChangeDelegateRemote();
+
+  EXPECT_EQ(1u, fake_delegate()->num_new_user_potential_host_events_handled());
+  EXPECT_EQ(kTestTimeMillis, GetNewUserPotentialHostExistsTimestamp());
+}
+
+TEST_F(MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
+       NoNewUserEventIfInPhoneHubNudgeExperimentGroup) {
+  InitFeaturesWithParam(/*use_nudge=*/kPhoneHubNudgeFeatureUseNudgeTrue);
+  BuildAccountStatusChangeDelegateNotifier();
+  SetAccountStatusChangeDelegateRemote();
+  SetHostWithStatus(mojom::HostStatus::kEligibleHostExistsButNoHostSet,
+                    absl::nullopt /* host_device */);
+
+  EXPECT_EQ(0u, fake_delegate()->num_new_user_potential_host_events_handled());
+  EXPECT_EQ(0u, GetNewUserPotentialHostExistsTimestamp());
+}
+
+TEST_F(
+    MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
+    NoNewUserEventIfFiveMinutesAfterLoginInPhoneHubNotificationExperimentGroup) {
+  InitFeaturesWithParam(/*use_nudge=*/kPhoneHubNudgeFeatureUseNudgeFalse);
+  BuildAccountStatusChangeDelegateNotifier();
+  SetAccountStatusChangeDelegateRemote();
+  SetSeeionState(session_manager::SessionState::ACTIVE);
+  FastForward(kTestFastForwardTenMinutesMillis);
+  SetHostWithStatus(mojom::HostStatus::kEligibleHostExistsButNoHostSet,
+                    absl::nullopt /* host_device */);
+
+  EXPECT_EQ(0u, fake_delegate()->num_new_user_potential_host_events_handled());
+  EXPECT_EQ(0u, GetNewUserPotentialHostExistsTimestamp());
+
+  SetSeeionState(session_manager::SessionState::LOCKED);
+
+  EXPECT_EQ(0u, fake_delegate()->num_new_user_potential_host_events_handled());
+  EXPECT_EQ(0u, GetNewUserPotentialHostExistsTimestamp());
+
+  SetSeeionState(session_manager::SessionState::ACTIVE);
+
+  EXPECT_EQ(1u, fake_delegate()->num_new_user_potential_host_events_handled());
+  EXPECT_EQ(kTestTimeMillis + kTestFastForwardTenMinutesMillis,
+            GetNewUserPotentialHostExistsTimestamp());
+}
+
+TEST_F(
+    MultiDeviceSetupAccountStatusChangeDelegateNotifierTest,
+    NewUserEventIfWithinFiveMinutesOfLoginInPhoneHubNotificationExperimentGroup) {
+  InitFeaturesWithParam(/*use_nudge=*/kPhoneHubNudgeFeatureUseNudgeFalse);
+  BuildAccountStatusChangeDelegateNotifier();
+  SetAccountStatusChangeDelegateRemote();
+  SetSeeionState(session_manager::SessionState::ACTIVE);
+  FastForward(kTestFastForwardFourMinutesMillis);
+  SetHostWithStatus(mojom::HostStatus::kEligibleHostExistsButNoHostSet,
+                    absl::nullopt /* host_device */);
+
+  EXPECT_EQ(1u, fake_delegate()->num_new_user_potential_host_events_handled());
+  EXPECT_EQ(kTestTimeMillis + kTestFastForwardFourMinutesMillis,
+            GetNewUserPotentialHostExistsTimestamp());
 }
 
 }  // namespace multidevice_setup

@@ -25,6 +25,11 @@ RenderWidgetHostViewBase* CreateRenderWidgetHostViewMacForTesting(
 BrowserCompositorMac* GetBrowserCompositorMacForTesting(
     const RenderWidgetHostView* rwhv);
 
+// Force setting the cached screen info in RenderWidgetHostViewMac. `rwhv` must
+// be an instance of RenderWidgetHostViewMac.
+void SetScreenInfosForTesting(RenderWidgetHostView* rwhv,
+                              const display::ScreenInfos& screen_infos);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_RENDERER_HOST_TEST_RENDER_WIDGET_HOST_VIEW_MAC_FACTORY_H_

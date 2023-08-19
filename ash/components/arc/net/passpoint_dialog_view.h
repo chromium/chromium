@@ -83,10 +83,10 @@ class PasspointDialogView : public views::BoxLayoutView {
   PasspointDialogCallback callback_;
 
   // Added for testing.
-  views::StyledLabel* body_text_{nullptr};
-  views::StyledLabel* body_subscription_text_{nullptr};
-  views::MdTextButton* allow_button_{nullptr};
-  views::MdTextButton* dont_allow_button_{nullptr};
+  raw_ptr<views::StyledLabel, ExperimentalAsh> body_text_{nullptr};
+  raw_ptr<views::StyledLabel, ExperimentalAsh> body_subscription_text_{nullptr};
+  raw_ptr<views::MdTextButton, ExperimentalAsh> allow_button_{nullptr};
+  raw_ptr<views::MdTextButton, ExperimentalAsh> dont_allow_button_{nullptr};
 
   base::WeakPtrFactory<PasspointDialogView> weak_factory_{this};
 };

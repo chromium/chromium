@@ -12,7 +12,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "base/test/task_environment.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,7 +23,7 @@ using testing::_;
 
 namespace {
 const char kValidSAMLResponse[] = R"(
-<samlp:Response ID="id" Version="2.0">
+<samlp:Response ID="id" Version="2.0" Destination="https://dest.test">
   <Issuer xmlns="urn:oasis:names:tc:SAML:2.0">https://issuer.com/</Issuer>
   <samlp:Status>
     <samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/>
@@ -60,41 +60,30 @@ const char kHTMLTemplate[] = R"(
 
 }  // namespace
 
-class SAMLResponseParserTest : public BrowserWithTestWindowTest {
+class SAMLResponseParserTest : public testing::Test {
  public:
   SAMLResponseParserTest() = default;
-
   ~SAMLResponseParserTest() override = default;
 
-  void SetUp() override { BrowserWithTestWindowTest::SetUp(); }
-
- protected:
+ private:
+  base::test::SingleThreadTaskEnvironment task_environment_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
-  mojo::ScopedDataPipeProducerHandle producer_handle_;
-  mojo::ScopedDataPipeConsumerHandle consumer_handle_;
 };
 
 TEST_F(SAMLResponseParserTest, RetrievesNoAttributesWithEmptyResponse) {
   std::string response = "<html></html>";
-  uint32_t write_size = response.size();
-  ASSERT_EQ(
-      mojo::CreateDataPipe(response.size(), producer_handle_, consumer_handle_),
-      MOJO_RESULT_OK);
   base::flat_map<std::string, std::string> attributes;
 
   base::RunLoop loop;
   SAMLResponseParser body_reader(
       std::vector<std::string>{"attribute", "notattribute", "anotherattribute"},
-      consumer_handle_.get(),
+      response,
       base::BindLambdaForTesting(
           [&attributes,
-           &loop](base::flat_map<std::string, std::string> result) {
+           &loop](const base::flat_map<std::string, std::string>& result) {
             attributes = std::move(result);
             loop.Quit();
           }));
-  ASSERT_EQ(producer_handle_->WriteData(response.c_str(), &write_size,
-                                        MOJO_WRITE_DATA_FLAG_NONE),
-            MOJO_RESULT_OK);
   loop.Run();
 
   EXPECT_TRUE(attributes.empty());
@@ -102,25 +91,18 @@ TEST_F(SAMLResponseParserTest, RetrievesNoAttributesWithEmptyResponse) {
 
 TEST_F(SAMLResponseParserTest, RetrievesNoAttributesWithEmptySAMLResponse) {
   std::string response = base::StringPrintf(kHTMLTemplate, "");
-  uint32_t write_size = response.size();
-  ASSERT_EQ(
-      mojo::CreateDataPipe(response.size(), producer_handle_, consumer_handle_),
-      MOJO_RESULT_OK);
   base::flat_map<std::string, std::string> attributes;
 
   base::RunLoop loop;
   SAMLResponseParser body_reader(
       std::vector<std::string>{"attribute", "notattribute", "anotherattribute"},
-      consumer_handle_.get(),
+      response,
       base::BindLambdaForTesting(
           [&attributes,
-           &loop](base::flat_map<std::string, std::string> result) {
+           &loop](const base::flat_map<std::string, std::string>& result) {
             attributes = std::move(result);
             loop.Quit();
           }));
-  ASSERT_EQ(producer_handle_->WriteData(response.c_str(), &write_size,
-                                        MOJO_WRITE_DATA_FLAG_NONE),
-            MOJO_RESULT_OK);
   loop.Run();
 
   EXPECT_TRUE(attributes.empty());
@@ -131,31 +113,26 @@ TEST_F(SAMLResponseParserTest, RetrievesSpecifiedAttributesWithValidResponse) {
   base::Base64Encode(kValidSAMLResponse, &encoded_saml_response);
   std::string response =
       base::StringPrintf(kHTMLTemplate, encoded_saml_response.c_str());
-  uint32_t write_size = response.size();
-  ASSERT_EQ(
-      mojo::CreateDataPipe(response.size(), producer_handle_, consumer_handle_),
-      MOJO_RESULT_OK);
   base::flat_map<std::string, std::string> attributes;
 
   base::RunLoop loop;
   SAMLResponseParser body_reader(
       std::vector<std::string>{"attribute", "notattribute", "anotherattribute"},
-      consumer_handle_.get(),
+      response,
       base::BindLambdaForTesting(
           [&attributes,
-           &loop](base::flat_map<std::string, std::string> result) {
+           &loop](const base::flat_map<std::string, std::string>& result) {
             attributes = std::move(result);
             loop.Quit();
           }));
-  ASSERT_EQ(producer_handle_->WriteData(response.c_str(), &write_size,
-                                        MOJO_WRITE_DATA_FLAG_NONE),
-            MOJO_RESULT_OK);
   loop.Run();
 
   EXPECT_EQ(attributes["attribute"], "attributevalue");
   EXPECT_EQ(attributes["anotherattribute"], "anotherattributevalue");
   EXPECT_EQ(attributes.find("notattribute"), attributes.end());
   EXPECT_EQ(attributes.find("uselessattribute"), attributes.end());
+  EXPECT_EQ(attributes[SAMLResponseParser::kDestinationUrl],
+            "https://dest.test");
 }
 
 }  // namespace profile_management

@@ -20,6 +20,7 @@
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -44,9 +45,8 @@ enum class CreationResult {
 }  // namespace
 
 ShortcutSubManager::ShortcutSubManager(Profile& profile,
-                                       WebAppIconManager& icon_manager,
-                                       WebAppRegistrar& registrar)
-    : profile_(profile), icon_manager_(icon_manager), registrar_(registrar) {}
+                                       WebAppProvider& provider)
+    : profile_(profile), provider_(provider) {}
 
 ShortcutSubManager::~ShortcutSubManager() = default;
 
@@ -58,15 +58,16 @@ void ShortcutSubManager::Configure(
 
   desired_state.clear_shortcut();
 
-  if (!registrar_->IsLocallyInstalled(app_id)) {
+  if (!provider_->registrar_unsafe().IsLocallyInstalled(app_id)) {
     std::move(configure_done).Run();
     return;
   }
 
   auto* shortcut = desired_state.mutable_shortcut();
-  shortcut->set_title(registrar_->GetAppShortName(app_id));
-  shortcut->set_description(registrar_->GetAppDescription(app_id));
-  icon_manager_->ReadIconsLastUpdateTime(
+  shortcut->set_title(provider_->registrar_unsafe().GetAppShortName(app_id));
+  shortcut->set_description(
+      provider_->registrar_unsafe().GetAppDescription(app_id));
+  provider_->icon_manager().ReadIconsLastUpdateTime(
       app_id, base::BindOnce(&ShortcutSubManager::StoreIconDataFromDisk,
                              weak_ptr_factory_.GetWeakPtr(), shortcut)
                   .Then(std::move(configure_done)));
@@ -79,9 +80,10 @@ void ShortcutSubManager::Execute(
     const proto::WebAppOsIntegrationState& current_state,
     base::OnceClosure callback) {
   base::FilePath shortcut_data_dir = GetOsIntegrationResourcesDirectoryForApp(
-      profile_->GetPath(), app_id, registrar_->GetAppStartUrl(app_id));
+      profile_->GetPath(), app_id,
+      provider_->registrar_unsafe().GetAppStartUrl(app_id));
 
-  const WebApp* app = registrar_->GetAppById(app_id);
+  const WebApp* app = provider_->registrar_unsafe().GetAppById(app_id);
   DCHECK(app);
 
   // First, handle the case where both current & desired don't have shortcuts,
@@ -100,11 +102,12 @@ void ShortcutSubManager::Execute(
 
     std::unique_ptr<ShortcutInfo> desired_shortcut_info =
         BuildShortcutInfoWithoutFavicon(
-            app_id, registrar_->GetAppStartUrl(app_id), profile_->GetPath(),
+            app_id, provider_->registrar_unsafe().GetAppStartUrl(app_id),
+            profile_->GetPath(),
             profile_->GetPrefs()->GetString(prefs::kProfileName),
             desired_state);
     PopulateFaviconForShortcutInfo(
-        app, *icon_manager_, std::move(desired_shortcut_info),
+        app, provider_->icon_manager(), std::move(desired_shortcut_info),
         base::BindOnce(&ShortcutSubManager::CreateShortcut,
                        weak_ptr_factory_.GetWeakPtr(), app_id,
                        synchronize_options, std::move(callback)));
@@ -115,7 +118,8 @@ void ShortcutSubManager::Execute(
   if (!desired_state.has_shortcut() && current_state.has_shortcut()) {
     std::unique_ptr<ShortcutInfo> current_shortcut_info =
         BuildShortcutInfoWithoutFavicon(
-            app_id, registrar_->GetAppStartUrl(app_id), profile_->GetPath(),
+            app_id, provider_->registrar_unsafe().GetAppStartUrl(app_id),
+            profile_->GetPath(),
             profile_->GetPrefs()->GetString(prefs::kProfileName),
             current_state);
 
@@ -130,7 +134,8 @@ void ShortcutSubManager::Execute(
   // Fourth, handle update.
   std::unique_ptr<ShortcutInfo> desired_shortcut_info =
       BuildShortcutInfoWithoutFavicon(
-          app_id, registrar_->GetAppStartUrl(app_id), profile_->GetPath(),
+          app_id, provider_->registrar_unsafe().GetAppStartUrl(app_id),
+          profile_->GetPath(),
           profile_->GetPrefs()->GetString(prefs::kProfileName), desired_state);
 
   // The following section decides if an update needs to occur or not. To
@@ -149,7 +154,7 @@ void ShortcutSubManager::Execute(
   // Note: This callback is either called immediately (and synchronously), or
   // not at all. This is why the usage of `std::ref` and `app` is safe.
   auto do_update = base::BindOnce(
-      &PopulateFaviconForShortcutInfo, app, std::ref(*icon_manager_),
+      &PopulateFaviconForShortcutInfo, app, std::ref(provider_->icon_manager()),
       std::move(desired_shortcut_info),
       base::BindOnce(&ShortcutSubManager::UpdateShortcut,
                      weak_ptr_factory_.GetWeakPtr(), app_id,

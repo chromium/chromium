@@ -9,7 +9,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_functions.h"
 #include "chrome/android/chrome_jni_headers/DuplicateDownloadInfoBar_jni.h"
 #include "chrome/browser/download/android/duplicate_download_infobar_delegate.h"
 
@@ -22,16 +21,6 @@ std::unique_ptr<infobars::InfoBar> DuplicateDownloadInfoBar::CreateInfoBar(
 }
 
 DuplicateDownloadInfoBar::~DuplicateDownloadInfoBar() {
-}
-
-// static
-void DuplicateDownloadInfoBar::RecordDuplicateDownloadInfobarEvent(
-    bool is_offline_page,
-    DuplicateDownloadInfobarEvent event) {
-  base::UmaHistogramEnumeration(
-      is_offline_page ? "Download.DuplicateInfobarEvent.OfflinePage"
-                      : "Download.DuplicateInfobarEvent.Download",
-      event, DuplicateDownloadInfobarEvent::kCount);
 }
 
 DuplicateDownloadInfoBar::DuplicateDownloadInfoBar(

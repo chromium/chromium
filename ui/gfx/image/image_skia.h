@@ -165,6 +165,9 @@ class GFX_EXPORT ImageSkia {
   // based on |scale|.
   void RemoveUnsupportedRepresentationsForScale(float scale);
 
+  // Returns true if the image storage is uniquely owned.
+  bool IsUniquelyOwned() const;
+
  private:
   friend class test::TestOnThread;
   FRIEND_TEST_ALL_PREFIXES(ImageSkiaTest, EmptyOnThreadTest);

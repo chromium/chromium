@@ -31,10 +31,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
-#include "chrome/browser/offline_pages/prefetch/prefetch_service_factory.h"
-#include "components/gcm_driver/gcm_driver.h"
-#include "components/offline_pages/core/offline_page_feature.h"
-#include "components/offline_pages/core/prefetch/prefetch_service.h"
+#include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #endif
 
 namespace gcm {
@@ -92,9 +89,19 @@ GCMProfileServiceFactory::ScopedTestingFactoryInstaller::
 // static
 GCMProfileService* GCMProfileServiceFactory::GetForProfile(
     content::BrowserContext* profile) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // On desktop, incognito profiles are checked with IsIncognitoProfile().
+  // It's possible for non-incognito profiles to also be off-the-record.
+  bool is_profile_supported =
+      !Profile::FromBrowserContext(profile)->IsIncognitoProfile();
+#else
+  bool is_profile_supported = !profile->IsOffTheRecord();
+#endif
+
   // GCM is not supported in incognito mode.
-  if (profile->IsOffTheRecord())
+  if (!is_profile_supported) {
     return nullptr;
+  }
 
   return static_cast<GCMProfileService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
@@ -111,14 +118,9 @@ GCMProfileServiceFactory::GCMProfileServiceFactory()
           "GCMProfileService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOwnInstance)
-              // TODO(crbug.com/1418376): Check if this service is needed in
-              // Guest mode.
               .WithGuest(ProfileSelection::kOwnInstance)
               .Build()) {
   DependsOn(IdentityManagerFactory::GetInstance());
-#if BUILDFLAG(ENABLE_OFFLINE_PAGES)
-  DependsOn(offline_pages::PrefetchServiceFactory::GetInstance());
-#endif  // BUILDFLAG(ENABLE_OFFLINE_PAGES)
 }
 
 GCMProfileServiceFactory::~GCMProfileServiceFactory() {
@@ -127,7 +129,11 @@ GCMProfileServiceFactory::~GCMProfileServiceFactory() {
 KeyedService* GCMProfileServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  DCHECK(!profile->IsIncognitoProfile());
+#else
   DCHECK(!profile->IsOffTheRecord());
+#endif
 
   TestingFactory& testing_factory = GetTestingFactory();
   if (testing_factory)
@@ -155,9 +161,13 @@ KeyedService* GCMProfileServiceFactory::BuildServiceInstanceFor(
       content::GetIOThreadTaskRunner({}), blocking_task_runner);
 #endif
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
-  // TODO(crbug/1424920): PrefetchService is being removed. Leave this for at
-  // least one milestone.
-  offline_pages::PrefetchServiceFactory::GetForKey(profile->GetProfileKey());
+  // TODO(crbug.com/1424920): Removing image fetcher references here breaks
+  // tests: org.chromium.chrome.browser.ImageFetcherIntegrationTest Users of
+  // image fetcher may be depending on this service to initialize the image
+  // fetcher factory. [FATAL:scoped_refptr.h(291)] Check failed: ptr_.
+  // ...
+  // image_fetcher::GetImageFetcherService()
+  ImageFetcherServiceFactory::GetForKey(profile->GetProfileKey());
 #endif  // BUILDFLAG(ENABLE_OFFLINE_PAGES)
 
   return service.release();

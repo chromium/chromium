@@ -1,0 +1,243 @@
+<style include="cr-shared-style settings-shared iron-flex">
+  #help {
+    flex-direction: row;
+    align-items: flex-start;
+    padding-block-start: 12px;
+  }
+
+  #helpIcon {
+    --iron-icon-fill-color: var(--cros-icon-color-disabled);
+    height: 16px;
+    margin-inline-end: 8px;
+    padding: 2px;
+    width: 16px;
+  }
+
+  #helpText {
+    flex-direction: column;
+    color: var(--cros-text-color-disabled);
+    font-size: 13px;
+    line-height: 20px;
+  }
+
+  #helpTopRow {
+    margin-bottom: 2.5%;
+  }
+
+  #highVisibilityContainer {
+    border-top: none;
+    padding: 0 var(--cr-section-padding) 0 60px;
+  }
+
+  .separator {
+    margin: 0;
+  }
+
+  #highVisibilityContainer cr-toggle {
+    margin-inline-start: var(--cr-section-padding);
+    padding-inline-end: var(--cr-section-padding);
+  }
+
+  .enabled-toggle-off {
+    font-weight: 500;
+  }
+
+  .enabled-toggle-on {
+    color: var(--cros-text-color-prominent);
+    font-weight: 500;
+  }
+
+  #setupRow {
+    align-items: center;
+    display: flex;
+    min-height: var(--cr-section-two-line-min-height);
+    padding: 0 var(--cr-section-padding);
+  }
+</style>
+<!-- Use a template to work around visual glitch where the toggle flips
+    on when the page first loads. -->
+<template is="dom-if" if="[[prefs]]" restamp>
+  <template is="dom-if"
+      if="[[prefs.nearby_sharing.onboarding_complete.value]]" restamp>
+    <settings-toggle-button id="featureToggleButton"
+        label="[[getOnOffString_(prefs.nearby_sharing.enabled.value,
+            '$i18nPolymer{deviceOn}', '$i18nPolymer{deviceOff}')]]"
+        pref="{{prefs.nearby_sharing.enabled}}"
+        deep-link-focus-id$="[[Setting.kNearbyShareOnOff]]"
+        class$="[[getEnabledToggleClassName_(
+            prefs.nearby_sharing.enabled.value)]]">
+    </settings-toggle-button>
+  </template>
+  <template is="dom-if"
+      if="[[!prefs.nearby_sharing.onboarding_complete.value]]" restamp>
+    <div id="setupRow">
+      <div class="flex">
+        <div aria-hidden="true" class="enabled-toggle-off">
+          $i18n{deviceOff}
+        </div>
+      </div>
+      <cr-button id="setUpButton" on-click="showOnboarding_">
+        $i18n{nearbyShareSetUpButtonTitle}
+      </cr-button>
+    </div>
+  </template>
+</template>
+<template is="dom-if" id="subpageContent" if="[[shouldShowSubpageContent_(
+    prefs.nearby_sharing.enabled.value,
+    prefs.nearby_sharing.onboarding_complete.value,
+    shouldShowFastInititationNotificationToggle_)]]" restamp>
+  <div class="settings-box two-line">
+    <div class="start"
+        aria-label="[[getAccountRowLabel(profileName_, profileLabel_)]]">
+      <div id="profileName" role="heading" aria-hidden="true">
+        [[profileName_]]
+      </div>
+      <div id="profileLabel" class="secondary" aria-hidden="true">
+        [[profileLabel_]]
+      </div>
+    </div>
+  </div>
+  <div class="settings-box two-line" id="deviceRow">
+    <div class="start">
+      <div role="heading" aria-hidden="true">
+        $i18n{nearbyShareDeviceNameRowTitle}
+      </div>
+      <div aria-hidden="true" class="secondary">
+        [[settings.deviceName]]
+      </div>
+    </div>
+    <cr-button id="editDeviceNameButton" on-click="onDeviceNameClick_"
+        disabled="[[!prefs.nearby_sharing.enabled.value]]"
+        aria-description="[[getEditNameButtonAriaDescription_(
+            settings.deviceName)]]"
+        deep-link-focus-id$="[[Setting.kNearbyShareDeviceName]]">
+      $i18n{nearbyShareEditDeviceName}
+    </cr-button>
+  </div>
+  <template is="dom-if" if="[[showDeviceNameDialog_]]" restamp>
+    <nearby-share-device-name-dialog settings="{{settings}}"
+        id="deviceNameDialog" on-close="onDeviceNameDialogClose_">
+    </nearby-share-device-name-dialog>
+  </template>
+  <div class="settings-box two-line" id="visibilityRow">
+    <div class="start">
+      <div role="heading" aria-hidden="true">
+        $i18n{nearbyShareContactVisibilityRowTitle}
+      </div>
+      <div aria-hidden="true" class="secondary">
+        [[getVisibilityText_(settings.visibility)]]
+      </div>
+    </div>
+    <cr-button id="editVisibilityButton" on-click="onVisibilityClick_"
+        disabled="[[!prefs.nearby_sharing.enabled.value]]"
+        aria-description="[[getVisibilityDescription_(
+            settings.visibility)]]"
+        deep-link-focus-id$="[[Setting.kNearbyShareDeviceVisibility]]">
+      $i18n{nearbyShareEditVisibility}
+    </cr-button>
+  </div>
+  <div id="highVisibilityContainer" class="settings-box two-line">
+    <div class="start">
+      <div id="highVisibilityTitle"
+          role="heading" aria-hidden="true">
+        $i18n{nearbyShareHighVisibilityTitle}
+      </div>
+      <div id="highVisibilitySubtitle"
+          class="secondary" aria-hidden="true">
+        <localized-link id="highVisibilityOff"
+            localized-string="[[getHighVisibilityToggleText_(
+                inHighVisibility_)]]"
+            link-url="$i18n{nearbyShareLearnMoreLink}">
+        </localized-link>
+      </div>
+    </div>
+    <div class="separator"></div>
+    <cr-toggle
+        id="highVisibilityToggle"
+        checked="{{inHighVisibility_}}"
+        disabled="[[!prefs.nearby_sharing.enabled.value]]"
+        aria-labelledby="highVisibilityTitle"
+        aria-describedby="highVisibilitySubtitle"
+        on-change="onInHighVisibilityToggledByUser_">
+    </cr-toggle>
+  </div>
+  <template is="dom-if" if="[[showVisibilityDialog_]]" restamp>
+    <nearby-share-contact-visibility-dialog settings="{{settings}}" profile-email="[[profileLabel_]]"
+        id="visibilityDialog" on-close="onVisibilityDialogClose_">
+    </nearby-share-contact-visibility-dialog>
+  </template>
+  <cr-link-row id="manageContactsLinkRow" class="hr"
+      on-click="onManageContactsClick_"
+      label="$i18n{nearbyShareManageContactsRowTitle}"
+      sub-label="[[getManageContactsSubLabel_(manageContactsUrl_)]]"
+      external
+      deep-link-focus-id$="[[Setting.kNearbyShareContacts]]">
+  </cr-link-row>
+  <div class="settings-box two-line" id="dataUsageRow">
+    <div class="start">
+      <div aria-hidden="true">
+        $i18n{nearbyShareDataUsageDialogTitle}
+      </div>
+      <div aria-hidden="true" class="secondary">
+        [[getDataUsageLabel_(prefs.nearby_sharing.data_usage.value)]]
+      </div>
+    </div>
+    <cr-button id="editDataUsageButton" on-click="onDataUsageClick_"
+        disabled="[[!prefs.nearby_sharing.enabled.value]]"
+        aria-description="[[getEditDataUsageButtonAriaDescription_(
+            prefs.nearby_sharing.data_usage.value)]]"
+        deep-link-focus-id$="[[Setting.kNearbyShareDataUsage]]">
+      $i18n{nearbyShareEditDataUsage}
+    </cr-button>
+  </div>
+</template>
+<template is="dom-if" if="[[shouldShowFastInititationNotificationToggle_]]"
+    restamp>
+  <div class="settings-box two-line" id="fastInitiationNotificationRow">
+    <div class="start">
+      <div id="fastInitiationNotificationRowTitle" aria-hidden="true">
+        $i18n{fastInitiationNotificationToggleTitle}
+      </div>
+      <div aria-hidden="true" class="secondary"
+          id="fastInitiationNotificationRowDescription">
+        $i18n{fastInitiationNotificationToggleDescription}
+      </div>
+    </div>
+    <cr-toggle
+        id="fastInitiationNotificationToggle"
+        aria-label="$i18n{fastInitiationNotificationToggleAriaLabel}"
+        checked="[[isFastInitiationNotificationEnabled_(
+            settings.fastInitiationNotificationState)]]"
+        on-change="onFastInitiationNotificationToggledByUser_"
+        deep-link-focus-id$="
+            [[Setting.kDevicesNearbyAreSharingNotificationOnOff]]">
+    </cr-toggle>
+  </div>
+</template>
+<template is="dom-if" if="[[showDataUsageDialog_]]" restamp>
+  <nearby-share-data-usage-dialog settings="{{settings}}" id="dataUsageDialog"
+      on-close="onDataUsageDialogClose_">
+  </nearby-share-data-usage-dialog>
+</template>
+<template is="dom-if" id="helpContent"
+    if="[[prefs.nearby_sharing.enabled.value]]" restamp>
+  <div id="help" class="settings-box">
+    <iron-icon id="helpIcon" icon="nearby20:info"></iron-icon>
+    <div id="helpText">
+      <div id="helpTopRow">
+        $i18n{nearbyShareSettingsHelpCaptionTop}
+      </div>
+      <localized-link class="help-text"
+          localized-string="$i18n{nearbyShareSettingsHelpCaptionBottom}"
+          link-url="$i18n{nearbyShareLearnMoreLink}">
+      </localized-link>
+    </div>
+  </div>
+</template>
+<template is="dom-if" if="[[showReceiveDialog_]]" restamp>
+  <nearby-share-receive-dialog id="receiveDialog"
+      on-close="onReceiveDialogClose_" settings="{{settings}}"
+      prefs="{{prefs}}"
+      is-settings-retreived="[[isSettingsRetreived]]">
+  </nearby-share-receive-dialog>
+</template>

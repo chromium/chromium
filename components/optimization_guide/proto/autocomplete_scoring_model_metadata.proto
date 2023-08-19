@@ -35,6 +35,8 @@ enum ScoringSignalType {
   SCORING_SIGNAL_TYPE_SHORTCUT_VISIT_COUNT = 20;
   SCORING_SIGNAL_TYPE_SHORTEST_SHORTCUT_LEN = 21;
   SCORING_SIGNAL_TYPE_ELAPSED_TIME_LAST_SHORTCUT_VISIT_SEC = 22;
+  SCORING_SIGNAL_TYPE_ELAPSED_TIME_LAST_VISIT_DAYS = 23;
+  SCORING_SIGNAL_TYPE_ELAPSED_TIME_LAST_SHORTCUT_VISIT_DAYS = 24;
 }
 
 // Types of signal transformations.
@@ -57,6 +59,8 @@ message ScoringSignalSpec {
   optional float min_value = 4;
   // Maximum value of valid signals.
   optional float max_value = 5;
+  // The upper boundary for normalization.
+  optional float norm_upper_boundary = 6;
 }
 
 // The message contains a set of params to run a specific autocomplete scoring

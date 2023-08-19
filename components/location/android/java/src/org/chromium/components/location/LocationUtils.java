@@ -64,7 +64,14 @@ public class LocationUtils {
      */
     public boolean hasAndroidLocationPermission() {
         return hasPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
-                || hasPermission(Manifest.permission.ACCESS_FINE_LOCATION);
+                || hasAndroidFineLocationPermission();
+    }
+
+    /**
+     * Returns true if Chromium has permission to access precise location.
+     */
+    public boolean hasAndroidFineLocationPermission() {
+        return hasPermission(Manifest.permission.ACCESS_FINE_LOCATION);
     }
 
     /**

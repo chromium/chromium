@@ -13,10 +13,6 @@
 #import "ios/chrome/credential_provider_extension/ui/new_password_view_controller.h"
 #import "ios/chrome/credential_provider_extension/ui/ui_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface NewPasswordCoordinator () <NewPasswordViewControllerDelegate>
 
 // Base view controller from where `viewController` is presented.

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <vector>
 
 #include "base/test/bind.h"
@@ -9,9 +10,12 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/webapps/browser/installable/installable_data.h"
+#include "components/webapps/browser/installable/ml_install_operation_tracker.h"
+#include "components/webapps/browser/installable/ml_installability_promoter.h"
 #include "components/webapps/common/constants.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -28,9 +32,11 @@ class WebAppDetailedInstallDialogBrowserTest : public DialogBrowserTest {
  public:
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
-    auto install_info = std::make_unique<WebAppInstallInfo>();
+    auto install_info = std::make_unique<WebAppInstallInfo>(
+        GenerateManifestIdFromStartUrlOnly(GURL("https://example.com")));
     install_info->title = u"test";
     install_info->description = u"This is a test app";
+    install_info->start_url = GURL("https://example.com");
 
     install_info->icon_bitmaps.any[kIconSize] =
         CreateSolidColorIcon(kIconSize, kIconSize, kIconColor);
@@ -61,9 +67,17 @@ class WebAppDetailedInstallDialogBrowserTest : public DialogBrowserTest {
           CreateSolidColorIcon(kScreenshotSize, kScreenshotSize, SK_ColorGREEN),
           absl::nullopt);
     }
+
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
+        webapps::MLInstallabilityPromoter::FromWebContents(web_contents)
+            ->RegisterCurrentInstallForWebContents(
+                webapps::WebappInstallSource::MENU_CREATE_SHORTCUT);
+
     chrome::ShowWebAppDetailedInstallDialog(
         browser()->tab_strip_model()->GetWebContentsAt(0),
-        std::move(install_info),
+        std::move(install_info), std::move(install_tracker),
         base::BindLambdaForTesting(
             [&](bool result, std::unique_ptr<WebAppInstallInfo>) {
               dialog_accepted_ = result;

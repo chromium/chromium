@@ -102,6 +102,8 @@ const FileToMimeTypeMap& GetFileToMimeTypeMap() {
        kWebMVorbisAudioVp8Video},
       {"bear-640x360-a_frag-cbcs.mp4", kMp4AacAudio},
       {"bear-640x360-a_frag-cenc.mp4", kMp4AacAudio},
+      {"bear-640x360-a_frag-cenc.mp4;bear-640x360-v_frag-cenc.mp4",
+       kMp4AacAudioAvc1Video},
       {"bear-640x360-a_frag.mp4", kMp4AacAudio},
       {"bear-640x360-av_frag.mp4", kMp4AacAudioAvc1Video},
       {"bear-640x360-v_frag-cbc1.mp4", kMp4Avc1Video},

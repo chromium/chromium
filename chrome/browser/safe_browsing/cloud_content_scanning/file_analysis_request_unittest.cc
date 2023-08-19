@@ -10,6 +10,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
@@ -17,6 +18,9 @@
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/common/chrome_paths.h"
+#include "components/file_access/scoped_file_access.h"
+#include "components/file_access/scoped_file_access_delegate.h"
+#include "components/file_access/test/mock_scoped_file_access_delegate.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -208,7 +212,46 @@ TEST_F(FileAnalysisRequestTest, NormalFiles) {
   EXPECT_EQ(result, BinaryUploadService::Result::SUCCESS);
   EXPECT_EQ(data.size, long_contents.size());
   EXPECT_TRUE(data.contents.empty());
+  // python3 -c "print('a' * (50 * 1024 * 1024), end='')" | sha256sum | tr
+  // '[:lower:]' '[:upper:]'
+  EXPECT_EQ(data.hash,
+            "4F0E9C6A1A9A90F35B884D0F0E7343459C21060EEFEC6C0F2FA9DC1118DBE5BE");
+  EXPECT_TRUE(IsDocMimeType(data.mime_type))
+      << data.mime_type << " is not an expected mimetype";
+}
+
+TEST_F(FileAnalysisRequestTest, NormalFilesDataControls) {
+  base::test::TaskEnvironment task_environment;
+
+  BinaryUploadService::Result result;
+  BinaryUploadService::Request::Data data;
+
+  file_access::MockScopedFileAccessDelegate scoped_files_access_delegate;
+
+  EXPECT_CALL(scoped_files_access_delegate, RequestFilesAccessForSystem)
+      .Times(2)
+      .WillRepeatedly(base::test::RunOnceCallback<1>(
+          file_access::ScopedFileAccess::Allowed()));
+
+  std::string normal_contents = "Normal file contents";
+  GetResultsForFileContents(normal_contents, &result, &data);
+  EXPECT_EQ(result, BinaryUploadService::Result::SUCCESS);
+  EXPECT_EQ(data.size, normal_contents.size());
+  EXPECT_TRUE(data.contents.empty());
   // printf "Normal file contents" | sha256sum |  tr '[:lower:]' '[:upper:]'
+  EXPECT_EQ(data.hash,
+            "29644C10BD036866FCFD2BDACFF340DB5DE47A90002D6AB0C42DE6A22C26158B");
+  EXPECT_TRUE(IsDocMimeType(data.mime_type))
+      << data.mime_type << " is not an expected mimetype";
+
+  std::string long_contents =
+      std::string(BinaryUploadService::kMaxUploadSizeBytes, 'a');
+  GetResultsForFileContents(long_contents, &result, &data);
+  EXPECT_EQ(result, BinaryUploadService::Result::SUCCESS);
+  EXPECT_EQ(data.size, long_contents.size());
+  EXPECT_TRUE(data.contents.empty());
+  // python3 -c "print('a' * (50 * 1024 * 1024), end='')" | sha256sum | tr
+  // '[:lower:]' '[:upper:]'
   EXPECT_EQ(data.hash,
             "4F0E9C6A1A9A90F35B884D0F0E7343459C21060EEFEC6C0F2FA9DC1118DBE5BE");
   EXPECT_TRUE(IsDocMimeType(data.mime_type))

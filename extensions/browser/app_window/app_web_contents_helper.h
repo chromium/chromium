@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/media_stream_request.h"
+#include "extensions/common/extension_id.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 
 namespace blink {
@@ -66,7 +67,7 @@ class AppWebContentsHelper {
   // AppWindowWebContentsDelegate does not own this object.
   raw_ptr<content::BrowserContext> browser_context_;
 
-  const std::string extension_id_;
+  const ExtensionId extension_id_;
 
   raw_ptr<content::WebContents> web_contents_;
 

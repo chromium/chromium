@@ -26,18 +26,36 @@ absl::optional<::mojom::LifecycleUnitDiscardReason> GetDiscardReason(
                    pre_discard_resource_usage->discard_reason());
 }
 
-void AddSiteToExceptionsList(PrefService* pref_service, std::string site) {
-  base::Value::List discard_exclusion_list =
+bool IsSiteInExceptionsList(PrefService* pref_service,
+                            const std::string& site) {
+  const base::Value::List& discard_exception_list = pref_service->GetList(
+      performance_manager::user_tuning::prefs::kTabDiscardingExceptions);
+  return base::Contains(discard_exception_list, site);
+}
+
+void AddSiteToExceptionsList(PrefService* pref_service,
+                             const std::string& site) {
+  base::Value::List discard_exception_list =
       pref_service
           ->GetList(
               performance_manager::user_tuning::prefs::kTabDiscardingExceptions)
           .Clone();
-  if (!base::Contains(discard_exclusion_list, site)) {
-    discard_exclusion_list.Append(site);
+  if (!base::Contains(discard_exception_list, site)) {
+    discard_exception_list.Append(site);
     pref_service->SetList(
         performance_manager::user_tuning::prefs::kTabDiscardingExceptions,
-        std::move(discard_exclusion_list));
+        std::move(discard_exception_list));
   }
+}
+
+uint64_t GetDiscardedMemorySavingsInBytes(content::WebContents* contents) {
+  const auto* const pre_discard_resource_usage =
+      performance_manager::user_tuning::UserPerformanceTuningManager::
+          PreDiscardResourceUsage::FromWebContents(contents);
+  return pre_discard_resource_usage == nullptr
+             ? 0
+             : pre_discard_resource_usage->memory_footprint_estimate_kb() *
+                   1024;
 }
 
 }  //  namespace high_efficiency

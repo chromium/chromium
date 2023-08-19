@@ -21,7 +21,7 @@
 #include "content/browser/loader/content_security_notifier.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
-#include "content/browser/renderer_host/local_network_access_util.h"
+#include "content/browser/renderer_host/private_network_access_util.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
@@ -55,6 +55,10 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "content/browser/direct_sockets/direct_sockets_service_impl.h"
+#endif
 
 namespace content {
 
@@ -189,16 +193,18 @@ void DedicatedWorkerHost::RenderProcessExited(
   delete this;
 }
 
-void DedicatedWorkerHost::RenderProcessHostDestroyed(
+void DedicatedWorkerHost::InProcessRendererExiting(
     RenderProcessHost* render_process_host) {
   DCHECK_EQ(worker_process_host_, render_process_host);
 
-  // In --single-process mode, RenderProcessExited() is not called, so we must
-  // also listen to RenderProcessHostDestroyed() to know to delete `this` and
-  // preserve the invariant that RenderProcessHostImpl outlives `this`.
-  DCHECK(RenderProcessHost::run_renderer_in_process());
-
   delete this;
+}
+
+void DedicatedWorkerHost::RenderProcessHostDestroyed(
+    RenderProcessHost* render_process_host) {
+  // This is never reached as either RenderProcessExited() or InProcessRendererExiting() is
+  // guaranteed to be called before this function and `this` is deleted there.
+  NOTREACHED_NORETURN();
 }
 
 void DedicatedWorkerHost::StartScriptLoad(
@@ -400,7 +406,7 @@ void DedicatedWorkerHost::DidStartScriptLoad(
       worker_client_security_state_->is_web_secure_context =
           network::IsUrlPotentiallyTrustworthy(final_response_url) &&
           creator_client_security_state_->is_web_secure_context;
-      worker_client_security_state_->local_network_request_policy =
+      worker_client_security_state_->private_network_request_policy =
           DerivePrivateNetworkRequestPolicy(
               worker_client_security_state_->ip_address_space,
               worker_client_security_state_->is_web_secure_context,
@@ -616,6 +622,23 @@ bool DedicatedWorkerHost::CheckCrossOriginEmbedderPolicy() {
   // [spec]: 7. Return false.
   return false;
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void DedicatedWorkerHost::CreateDirectSocketsService(
+    mojo::PendingReceiver<blink::mojom::DirectSocketsService> receiver) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  RenderFrameHostImpl* ancestor_render_frame_host =
+      RenderFrameHostImpl::FromID(ancestor_render_frame_host_id_);
+  // The ancestor frame may have already been closed. In that case, the worker
+  // will soon be terminated too, so abort the connection.
+  if (!ancestor_render_frame_host) {
+    return;
+  }
+
+  DirectSocketsServiceImpl::CreateForFrame(ancestor_render_frame_host,
+                                           std::move(receiver));
+}
+#endif
 
 void DedicatedWorkerHost::CreateWebUsbService(
     mojo::PendingReceiver<blink::mojom::WebUsbService> receiver) {

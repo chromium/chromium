@@ -21,7 +21,6 @@
 #include "media/capture/video/video_capture_feedback.h"
 #include "media/capture/video_capture_types.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
-#include "ui/base/layout.h"
 
 namespace content {
 

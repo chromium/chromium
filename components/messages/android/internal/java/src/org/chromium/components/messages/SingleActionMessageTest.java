@@ -14,7 +14,6 @@ import android.view.LayoutInflater;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -98,12 +97,6 @@ public class SingleActionMessageTest {
                 MessageFeatureList.MESSAGES_FOR_ANDROID_STACKING_ANIMATION, false));
     }
 
-    @After
-    public void tearDownTest() {
-        FeatureList.setTestFeatures(Collections.singletonMap(
-                MessageFeatureList.MESSAGES_FOR_ANDROID_STACKING_ANIMATION, false));
-    }
-
     @Test
     @MediumTest
     public void testAddAndRemoveSingleActionMessage() throws Exception {
@@ -111,7 +104,7 @@ public class SingleActionMessageTest {
         PropertyModel model = createBasicSingleActionMessageModel();
         SingleActionMessage message =
                 new SingleActionMessage(container, model, mEmptyDismissCallback,
-                        () -> 0, new MockDurationProvider(0L), mSwipeAnimationHandler);
+                        () -> 0, () -> 0, new MockDurationProvider(0L), mSwipeAnimationHandler);
         final MessageBannerView view = createMessageBannerView(container);
         view.setId(R.id.message_banner);
         message.setMessageBannerForTesting(mMessageBanner);
@@ -143,9 +136,9 @@ public class SingleActionMessageTest {
         MessageContainer container = new MessageContainer(sActivity, null);
         PropertyModel model = createBasicSingleActionMessageModel();
         long duration = 42;
-        SingleActionMessage message =
-                new SingleActionMessage(container, model, mEmptyDismissCallback,
-                        () -> 0, new MockDurationProvider(duration), mSwipeAnimationHandler);
+        SingleActionMessage message = new SingleActionMessage(container, model,
+                mEmptyDismissCallback,
+                () -> 0, () -> 0, new MockDurationProvider(duration), mSwipeAnimationHandler);
         Assert.assertEquals("Autodismiss duration is not propagated correctly.", duration,
                 message.getAutoDismissDuration());
     }
@@ -159,6 +152,8 @@ public class SingleActionMessageTest {
         long duration = 42;
         SingleActionMessage message =
                 new SingleActionMessage(container, model, mEmptyDismissCallback,
+                        ()
+                                -> 0,
                         () -> 0, new MockDurationProvider(duration + 1000), mSwipeAnimationHandler);
         Assert.assertEquals("Autodismiss duration is not propagated correctly.", duration + 1000,
                 message.getAutoDismissDuration());
@@ -290,7 +285,7 @@ public class SingleActionMessageTest {
             PropertyModel model, MessageBannerView view, @Position int from, @Position int to) {
         SingleActionMessage message =
                 new SingleActionMessage(container, model, mEmptyDismissCallback,
-                        () -> 0, new MockDurationProvider(0L), mSwipeAnimationHandler);
+                        () -> 0, () -> 0, new MockDurationProvider(0L), mSwipeAnimationHandler);
         view.setId(R.id.message_banner);
         PropertyModelChangeProcessor.create(model, view, MessageBannerViewBinder::bind);
         message.setMessageBannerForTesting(mMessageBanner);

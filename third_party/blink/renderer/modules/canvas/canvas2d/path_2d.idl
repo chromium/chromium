@@ -31,7 +31,7 @@
 [
     Exposed=(PaintWorklet,Window,Worker)
 ] interface Path2D {
-    [CallWith=ExecutionContext] constructor(optional (Path2D or DOMString) path);
+    [CallWith=ScriptState] constructor(optional (Path2D or DOMString) path);
     [RaisesException] void addPath(Path2D path, optional DOMMatrix2DInit transform = {});
 };
 

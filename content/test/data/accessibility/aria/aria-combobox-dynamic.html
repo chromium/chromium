@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<!--
+@BLINK-ALLOW:focus*
+@BLINK-ALLOW:haspopup*
+@WAIT-FOR:Done
+-->
+<html>
+  <body>
+    <div tabindex="0" id="status" aria-label="Working"></div>
+    <div id="state_label">State</div>
+    <input type="text"
+        role="combobox"
+        aria-autocomplete="list"
+        aria-expanded="true"
+        aria-haspopup="listbox"
+        aria-labelledby="state_label"
+        aria-owns="state_list"
+        aria-readonly="true"
+        aria-activedescendant="state2"
+        autofocus>
+    <ul id="state_list" role="listbox" onclick="console.log('hi')">
+      <li id="state1" role="option">Alabama</li>
+    </ul>
+  </body>
+</html>
+<script>
+requestAnimationFrame(() => requestAnimationFrame(() => {
+    let li = document.createElement('li');
+    li.id = "state2";
+    li.setAttribute("role", "option");
+    li.innerText = "Alaska";
+    state_list.appendChild(li);
+    document.getElementById('status').setAttribute('aria-label', 'Done');
+  }));
+
+</script>

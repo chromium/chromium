@@ -59,13 +59,12 @@ class SyncEngine : public ModelTypeConfigurer {
 
     ~InitParams();
 
-    raw_ptr<SyncEngineHost, DanglingUntriaged> host = nullptr;
+    raw_ptr<SyncEngineHost, AcrossTasksDanglingUntriaged> host = nullptr;
     std::unique_ptr<SyncEncryptionHandler::Observer> encryption_observer_proxy;
     scoped_refptr<ExtensionsActivity> extensions_activity;
     GURL service_url;
     SyncEngine::HttpPostProviderFactoryGetter http_factory_getter;
     CoreAccountInfo authenticated_account_info;
-    std::string invalidator_client_id;
     std::unique_ptr<SyncManagerFactory> sync_manager_factory;
     bool enable_local_sync_backend = false;
     base::FilePath local_sync_backend_folder;
@@ -155,6 +154,11 @@ class SyncEngine : public ModelTypeConfigurer {
   // Returns current detailed status information.
   virtual const SyncStatus& GetDetailedStatus() const = 0;
 
+  // Returns types that have local changes yet to be synced to the server.
+  // ONLY CALL THIS IF OnInitializationComplete was called!
+  virtual void GetTypesWithUnsyncedData(
+      base::OnceCallback<void(ModelTypeSet)> cb) const = 0;
+
   // Determines if the underlying sync engine has made any local changes to
   // items that have not yet been synced with the server.
   // ONLY CALL THIS IF OnInitializationComplete was called!
@@ -178,9 +182,6 @@ class SyncEngine : public ModelTypeConfigurer {
   // See SyncManager::OnCookieJarChanged.
   virtual void OnCookieJarChanged(bool account_mismatch,
                                   base::OnceClosure callback) = 0;
-
-  // Enables/Disables invalidations for session sync related datatypes.
-  virtual void SetInvalidationsForSessionsEnabled(bool enabled) = 0;
 
   // Returns whether the poll interval elapsed since the last known poll time.
   // If returns true, there will likely be the next PERIODIC sync cycle soon but

@@ -114,7 +114,8 @@ class DesktopCaptureAccessHandler : public CaptureAccessHandlerBase,
       bool capture_audio,
       bool is_dlp_allowed);
 
-  raw_ptr<aura::Window> primary_root_window_for_testing_ = nullptr;
+  raw_ptr<aura::Window, DanglingUntriaged> primary_root_window_for_testing_ =
+      nullptr;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 };
 

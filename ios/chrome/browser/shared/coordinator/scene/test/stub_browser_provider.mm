@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation StubBrowserProvider
 
 @synthesize userInteractionEnabled = _userInteractionEnabled;

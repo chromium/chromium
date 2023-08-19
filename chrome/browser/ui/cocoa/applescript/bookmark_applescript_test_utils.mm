@@ -4,7 +4,7 @@
 
 #import "chrome/browser/ui/cocoa/applescript/bookmark_applescript_test_utils.h"
 
-#include "base/mac/scoped_objc_class_swizzler.h"
+#include "base/apple/scoped_objc_class_swizzler.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/testing_profile.h"
@@ -12,15 +12,11 @@
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Represents the current fake command that is executing.
 static FakeScriptCommand* gFakeCurrentCommand;
 
 @implementation FakeScriptCommand {
-  absl::optional<base::mac::ScopedObjCClassSwizzler> swizzler;
+  absl::optional<base::apple::ScopedObjCClassSwizzler> swizzler;
 }
 
 - (instancetype)init {

@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "components/system_media_controls/system_media_controls.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/media_session_client.h"
 #include "content/public/browser/media_session_service.h"
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -251,15 +252,30 @@ void SystemMediaControlsNotifier::UpdateMetadata() {
   }
 
   if (delayed_metadata_update_) {
-    // If no title was provided, the title of the tab will be in the title
-    // property.
-    system_media_controls_->SetTitle(delayed_metadata_update_->title);
+    // If we need to hide the playing media's metadata we replace it with
+    // placeholder metadata.
+    if (session_info_ptr_ && session_info_ptr_->hide_metadata) {
+      CHECK(MediaSessionClient::Get());
 
-    // If no artist was provided, then the source URL will be in the artist
-    // property.
-    system_media_controls_->SetArtist(delayed_metadata_update_->artist);
+      system_media_controls_->SetTitle(
+          MediaSessionClient::Get()->GetTitlePlaceholder());
 
-    system_media_controls_->SetAlbum(delayed_metadata_update_->album);
+      system_media_controls_->SetArtist(
+          MediaSessionClient::Get()->GetArtistPlaceholder());
+
+      system_media_controls_->SetAlbum(
+          MediaSessionClient::Get()->GetAlbumPlaceholder());
+    } else {
+      // If no title was provided, the title of the tab will be in the title
+      // property.
+      system_media_controls_->SetTitle(delayed_metadata_update_->title);
+
+      // If no artist was provided, then the source URL will be in the artist
+      // property.
+      system_media_controls_->SetArtist(delayed_metadata_update_->artist);
+
+      system_media_controls_->SetAlbum(delayed_metadata_update_->album);
+    }
 
     system_media_controls_->UpdateDisplay();
     delayed_metadata_update_ = absl::nullopt;
@@ -275,16 +291,23 @@ void SystemMediaControlsNotifier::UpdateIcon() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(delayed_icon_update_);
 
-  if (!delayed_icon_update_->empty()) {
-    // 5.3.4.4.3 If the image format is supported, use the image as the artwork
-    // for display in the platform UI. Otherwise the fetch image algorithm fails
-    // and terminates.
+  // If we need to hide the media metadata we replace the playing media's image
+  // with a placeholder.
+  if (session_info_ptr_ && session_info_ptr_->hide_metadata) {
+    CHECK(MediaSessionClient::Get());
+
+    system_media_controls_->SetThumbnail(
+        MediaSessionClient::Get()->GetThumbnailPlaceholder());
+  } else if (!delayed_icon_update_->empty()) {
+    // 5.3.4.4.3 If the image format is supported, use the image as the
+    // artwork for display in the platform UI. Otherwise the fetch image
+    // algorithm fails and terminates.
     system_media_controls_->SetThumbnail(*delayed_icon_update_);
   } else {
     // 5.3.4.2 If metadata's artwork is empty, terminate these steps.
-    // If no images are fetched in the fetch image algorithm, the user agent may
-    // have fallback behavior such as displaying a default image as artwork.
-    // We display the application icon if no artwork is provided.
+    // If no images are fetched in the fetch image algorithm, the user agent
+    // may have fallback behavior such as displaying a default image as
+    // artwork. We display the application icon if no artwork is provided.
     absl::optional<gfx::ImageSkia> icon =
         GetContentClient()->browser()->GetProductLogo();
     if (icon.has_value()) {

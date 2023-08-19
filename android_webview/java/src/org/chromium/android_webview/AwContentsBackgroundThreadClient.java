@@ -6,6 +6,7 @@ package org.chromium.android_webview;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -15,6 +16,7 @@ import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
  * Delegate for handling callbacks. All methods are called on the background thread.
  * "Background" means something that isn't UI or IO.
  */
+@Lifetime.WebView
 @JNINamespace("android_webview")
 public abstract class AwContentsBackgroundThreadClient {
     private static final String TAG = "AwBgThreadClient";

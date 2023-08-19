@@ -97,7 +97,7 @@ class StorageBlock : public FileBlock {
   raw_ptr<T> data_ = nullptr;
   // DanglingUntriaged is largely needed for when this class is owned by an
   // EntryImpl that is deleted after the Backend.
-  raw_ptr<MappedFile, DanglingUntriaged> file_;
+  raw_ptr<MappedFile, AcrossTasksDanglingUntriaged> file_;
   Addr address_;
   bool modified_ = false;
   // Is data_ owned by this object or shared with someone else.

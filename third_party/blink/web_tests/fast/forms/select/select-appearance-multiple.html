@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<select></select>
+<select style="direction: rtl;"></select>
+<select style="appearance: none;"></select>
+<select style="direction: rtl; appearance: none;"></select>
+<br><br>
+<select style="writing-mode: vertical-rl; direction: ltr;"></select>
+<select style="writing-mode: vertical-rl; direction: rtl;"></select>
+<select style="writing-mode: vertical-lr; direction: ltr;"></select>
+<select style="writing-mode: vertical-lr; direction: rtl;"></select>
+<br><br>
+<select style="writing-mode: vertical-rl; direction: ltr; appearance: none;"></select>
+<select style="writing-mode: vertical-rl; direction: rtl; appearance: none;"></select>
+<select style="writing-mode: vertical-lr; direction: ltr; appearance: none;"></select>
+<select style="writing-mode: vertical-lr; direction: rtl; appearance: none;"></select>
+<script>
+const selects = document.getElementsByTagName('select');
+for(var s=0; s<selects.length; s++){
+    selects[s].multiple = true;
+    for (var i = 0; i < 3; i++){
+        var opt = document.createElement('option');
+        opt.value = i;
+        opt.innerHTML = `Option ${i+1}`;
+        selects[s].appendChild(opt);
+    }
+}
+</script>
+</body>
+</html>
+

@@ -264,7 +264,8 @@ class MessageTransferOperationTest : public testing::Test {
   std::unique_ptr<device_sync::FakeDeviceSyncClient> fake_device_sync_client_;
   std::unique_ptr<secure_channel::FakeSecureChannelClient>
       fake_secure_channel_client_;
-  raw_ptr<TestTimerFactory, ExperimentalAsh> test_timer_factory_;
+  raw_ptr<TestTimerFactory, DanglingUntriaged | ExperimentalAsh>
+      test_timer_factory_;
   std::unique_ptr<TestOperation> operation_;
 };
 

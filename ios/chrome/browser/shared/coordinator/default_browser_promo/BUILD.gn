@@ -3,8 +3,9 @@
 # found in the LICENSE file.
 
 source_set("default_browser_promo") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "base_default_browser_promo_scene_agent.h",
+    "base_default_browser_promo_scene_agent.mm",
     "non_modal_default_browser_promo_scheduler_scene_agent.h",
     "non_modal_default_browser_promo_scheduler_scene_agent.mm",
   ]
@@ -24,8 +25,20 @@ source_set("default_browser_promo") {
   ]
 }
 
+source_set("default_browser_promo_scene_agent_utils") {
+  sources = [
+    "default_browser_promo_scene_agent_utils.h",
+    "default_browser_promo_scene_agent_utils.mm",
+  ]
+  deps = [
+    ":default_browser_promo",
+    "//ios/chrome/browser/default_browser:utils",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
+    "//ios/chrome/browser/ui/main:default_browser_scene_agent",
+  ]
+}
+
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources =
       [ "non_modal_default_browser_promo_scheduler_scene_agent_unittest.mm" ]

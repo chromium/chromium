@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/guest_session_mixin.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
+#include "chrome/browser/ash/scalable_iph/customizable_test_env_browser_test_base.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
@@ -38,8 +39,6 @@
 #include "url/gurl.h"
 
 namespace {
-constexpr char kOwnerEmail[] = "test@example.com";
-
 constexpr char kGoogleDriveUrl[] = "https://drive.google.com/";
 constexpr char kGooglePhotosUrl[] = "https://photos.google.com/";
 
@@ -48,114 +47,40 @@ constexpr char kNotificationTitle[] = "NotificationTitle";
 constexpr char kNotificationMessage[] = "NotificationMessage";
 constexpr char kGetPerkButtonTitle[] = "GetPerkButtonTitle";
 
-enum UserSessionType {
-  kGuest,
-  kChild,
-  kChildOwner,
-  kRegular,
-  kRegularNonOwner,
-  kManaged
-};
+using TestEnvironment =
+    ::ash::CustomizableTestEnvBrowserTestBase::TestEnvironment;
+using UserSessionType =
+    ::ash::CustomizableTestEnvBrowserTestBase::UserSessionType;
 
-class GoogleOneOfferIphTabHelperTest : public MixinBasedInProcessBrowserTest {
+class GoogleOneOfferIphTabHelperTest
+    : public ash::CustomizableTestEnvBrowserTestBase {
  public:
-  // MixinBasedInProcessBrowserTest:
+  // ash::CustomizableTestEnvBrowserTestBase:
   void SetUp() override {
-    device_state_mixin_ =
-        std::make_unique<ash::DeviceStateMixin>(&mixin_host_, device_state_);
-
-    switch (user_session_type_) {
-      case kGuest:
-        guest_session_mixin_ =
-            std::make_unique<ash::GuestSessionMixin>(&mixin_host_);
-        break;
-      case kChild:
-        logged_in_user_mixin_ = std::make_unique<ash::LoggedInUserMixin>(
-            &mixin_host_, ash::LoggedInUserMixin::LogInType::kChild,
-            embedded_test_server(), this, /*should_launch_browser=*/false);
-        break;
-      case kChildOwner:
-        logged_in_user_mixin_ = std::make_unique<ash::LoggedInUserMixin>(
-            &mixin_host_, ash::LoggedInUserMixin::LogInType::kChild,
-            embedded_test_server(), this, /*should_launch_browser=*/false);
-        owner_user_email_ =
-            logged_in_user_mixin_->GetAccountId().GetUserEmail();
-        break;
-      case kManaged:
-        logged_in_user_mixin_ = std::make_unique<ash::LoggedInUserMixin>(
-            &mixin_host_, ash::LoggedInUserMixin::LogInType::kRegular,
-            embedded_test_server(), this, /*should_launch_browser=*/false,
-            AccountId::FromUserEmailGaiaId(
-                FakeGaiaMixin::kEnterpriseUser1,
-                FakeGaiaMixin::kEnterpriseUser1GaiaId));
-
-        // If a device is not enrolled, simulate a case where a device is owned
-        // by the managed account. Note that an account cannot be an onwer of a
-        // device if a device is enrolled.
-        if (device_state_ ==
-            ash::DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED) {
-          owner_user_email_ =
-              logged_in_user_mixin_->GetAccountId().GetUserEmail();
-        }
-        break;
-      case kRegular:
-        logged_in_user_mixin_ = std::make_unique<ash::LoggedInUserMixin>(
-            &mixin_host_, ash::LoggedInUserMixin::LogInType::kRegular,
-            embedded_test_server(), this);
-        owner_user_email_ =
-            logged_in_user_mixin_->GetAccountId().GetUserEmail();
-        break;
-      case kRegularNonOwner:
-        logged_in_user_mixin_ = std::make_unique<ash::LoggedInUserMixin>(
-            &mixin_host_, ash::LoggedInUserMixin::LogInType::kRegular,
-            embedded_test_server(), this);
-
-        CHECK(kOwnerEmail !=
-              logged_in_user_mixin_->GetAccountId().GetUserEmail());
-        owner_user_email_ = kOwnerEmail;
-        break;
-    }
-
-    if (!owner_user_email_.empty()) {
-      scoped_testing_cros_settings_.device_settings()->Set(
-          ash::kDeviceOwner, base::Value(owner_user_email_));
-    }
-
     subscription_ = BrowserContextDependencyManager::GetInstance()
                         ->RegisterCreateServicesCallbackForTesting(
                             base::BindRepeating(&SetMockTrackerFactory));
 
-    MixinBasedInProcessBrowserTest::SetUp();
+    ash::CustomizableTestEnvBrowserTestBase::SetUp();
   }
 
   void SetUpOnMainThread() override {
-    if (logged_in_user_mixin_) {
-      logged_in_user_mixin_->LogInUser();
-    }
+    // `ash::CustomizableTestEnvBrowserTestBase::SetUpOnMainThread` must be
+    // called before our `SetUpOnMainThread` as login happens in the method,
+    // i.e. profile is not available before it.
+    ash::CustomizableTestEnvBrowserTestBase::SetUpOnMainThread();
+    CHECK(browser()->profile());
 
     display_service_tester_ =
         std::make_unique<NotificationDisplayServiceTester>(
             browser()->profile());
-
-    MixinBasedInProcessBrowserTest::SetUpOnMainThread();
   }
 
  protected:
-  ash::DeviceStateMixin::State device_state_ =
-      ash::DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED;
-  UserSessionType user_session_type_ = kRegular;
-  std::string owner_user_email_;
-
-  std::unique_ptr<ash::GuestSessionMixin> guest_session_mixin_;
-  std::unique_ptr<ash::LoggedInUserMixin> logged_in_user_mixin_;
-  std::unique_ptr<ash::DeviceStateMixin> device_state_mixin_;
-
   std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
   std::unique_ptr<feature_engagement::test::ScopedIphFeatureList>
       scoped_iph_feature_list_;
-
-  ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 
  private:
   static void SetMockTrackerFactory(content::BrowserContext* context) {
@@ -174,6 +99,7 @@ class GoogleOneOfferIphTabHelperTest : public MixinBasedInProcessBrowserTest {
         .WillByDefault(testing::Return(true));
     return mock_tracker;
   }
+
   base::CallbackListSubscription subscription_;
 };
 
@@ -321,80 +247,12 @@ IN_PROC_BROWSER_TEST_F(GoogleOneOfferIphTabHelperTest, NotificationDismiss) {
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
 }
 
-// Test param for `GoogleOneOfferIphTabHelperTestParameterized`. This allows you
-// to run a test in various device and account set up states.
-class TestEnvironment {
- public:
-  TestEnvironment(ash::DeviceStateMixin::State device_state,
-                  UserSessionType user_session_type)
-      : device_state_(device_state), user_session_type_(user_session_type) {}
-
-  ash::DeviceStateMixin::State device_state() const { return device_state_; }
-  UserSessionType session_state() const { return user_session_type_; }
-
-  std::string GetTestName() const {
-    std::string test_name;
-    switch (device_state_) {
-      case ash::DeviceStateMixin::State::BEFORE_OOBE:
-        test_name += "BEFORE_OOBE";
-        break;
-      case ash::DeviceStateMixin::State::
-          OOBE_COMPLETED_ACTIVE_DIRECTORY_ENROLLED:
-        test_name += "OOBE_COMPLETED_ACTIVE_DIRECTORY_ENROLLED";
-        break;
-      case ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED:
-        test_name += "OOBE_COMPLETED_CLOUD_ENROLLED";
-        break;
-      case ash::DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED:
-        test_name += "OOBE_COMPLETED_CONSUMER_OWNED";
-        break;
-      case ash::DeviceStateMixin::State::OOBE_COMPLETED_PERMANENTLY_UNOWNED:
-        test_name += "OOBE_COMPLETED_PERMANENTLY_UNOWNED";
-        break;
-      case ash::DeviceStateMixin::State::OOBE_COMPLETED_UNOWNED:
-        test_name += "OOBE_COMPLETED_UNOWNED";
-        break;
-      case ash::DeviceStateMixin::State::OOBE_COMPLETED_DEMO_MODE:
-        test_name += "OOBE_COMPLETED_DEMO_MODE";
-        break;
-    }
-
-    switch (user_session_type_) {
-      case kRegular:
-        test_name += "_REGULAR";
-        break;
-      case kRegularNonOwner:
-        test_name += "_REGULAR_NON_OWNER";
-        break;
-      case kGuest:
-        test_name += "_GUEST";
-        break;
-      case kChild:
-        test_name += "_CHILD";
-        break;
-      case kChildOwner:
-        test_name += "_CHILD_OWNER";
-        break;
-      case kManaged:
-        test_name += "_MANAGED";
-        break;
-    }
-    return test_name;
-  }
-
- private:
-  ash::DeviceStateMixin::State device_state_;
-  UserSessionType user_session_type_;
-};
-
 class GoogleOneOfferIphTabHelperTestParameterized
     : public GoogleOneOfferIphTabHelperTest,
       public testing::WithParamInterface<TestEnvironment> {
  public:
   void SetUp() override {
-    TestEnvironment test_environment = GetParam();
-    device_state_ = test_environment.device_state();
-    user_session_type_ = test_environment.session_state();
+    SetTestEnvironment(GetParam());
 
     GoogleOneOfferIphTabHelperTest::SetUp();
   }
@@ -406,30 +264,32 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(
         TestEnvironment(
             ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED,
-            kRegular),
+            UserSessionType::kManaged),
+        // A test case where a regular profile on a managed device.
+        TestEnvironment(
+            ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED,
+            UserSessionType::kRegular),
         TestEnvironment(
             ash::DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED,
-            kGuest),
+            UserSessionType::kGuest),
         TestEnvironment(
             ash::DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED,
-            kChild),
+            UserSessionType::kChild),
         // A test case where a child profile is an owner of a device.
         TestEnvironment(
             ash::DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED,
-            kChildOwner),
+            UserSessionType::kChildOwner),
         // A Test case where a managed account is an owner of an un-enrolled
         // device.
         TestEnvironment(
             ash::DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED,
-            kManaged),
+            UserSessionType::kManaged),
         // A test case where we do not show a notification if a profile is not
         // an owner profile.
         TestEnvironment(
             ash::DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED,
-            kRegularNonOwner)),
-    [](testing::TestParamInfo<TestEnvironment> param_info) {
-      return param_info.param.GetTestName();
-    });
+            UserSessionType::kRegularNonOwner)),
+    &TestEnvironment::GenerateTestName);
 
 IN_PROC_BROWSER_TEST_P(GoogleOneOfferIphTabHelperTestParameterized,
                        NoNotification) {

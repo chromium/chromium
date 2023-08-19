@@ -131,7 +131,8 @@ absl::optional<syncer::ModelError> ParseInitialDataOnBackendSequence(
 }  // namespace
 
 struct SessionStore::Builder {
-  raw_ptr<SyncSessionsClient, DanglingUntriaged> sessions_client = nullptr;
+  raw_ptr<SyncSessionsClient, AcrossTasksDanglingUntriaged> sessions_client =
+      nullptr;
   OpenCallback callback;
   SessionInfo local_session_info;
   std::unique_ptr<syncer::ModelTypeStore> underlying_store;

@@ -97,9 +97,10 @@ class NearbyShareFeaturePodControllerTest
   std::unique_ptr<FeaturePodButton> button_;
   std::unique_ptr<FeatureTile> tile_;
 
-  raw_ptr<TestNearbyShareDelegate, ExperimentalAsh> test_delegate_ = nullptr;
-  raw_ptr<NearbyShareController, ExperimentalAsh> nearby_share_controller_ =
-      nullptr;
+  raw_ptr<TestNearbyShareDelegate, DanglingUntriaged | ExperimentalAsh>
+      test_delegate_ = nullptr;
+  raw_ptr<NearbyShareController, DanglingUntriaged | ExperimentalAsh>
+      nearby_share_controller_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(QsRevamp,
@@ -122,7 +123,12 @@ TEST_P(NearbyShareFeaturePodControllerTest, ButtonVisibilityLoggedIn) {
 TEST_P(NearbyShareFeaturePodControllerTest, ButtonVisibilityLocked) {
   CreateUserSessions(1);
   BlockUserSession(UserSessionBlockReason::BLOCKED_BY_LOCK_SCREEN);
+
+  // Showing the lock screen closes the system tray bubble, so re-show it before
+  // setting up the button.
+  GetPrimaryUnifiedSystemTray()->ShowBubble();
   SetUpButton();
+
   // If locked, it should not be visible.
   EXPECT_FALSE(IsButtonVisible());
 }

@@ -1,0 +1,2658 @@
+Tests DOM objects serialization
+Testing 'document.querySelector('body > div')' with {"serialization":"deep"}
+{
+    type : node
+    value : {
+        attributes : {
+            some_attr_name : some_attr_value
+        }
+        backendNodeId : <number>
+        childNodeCount : 2
+        localName : div
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+        shadowRoot : null
+    }
+}
+Testing 'document.querySelector('body > div')' with {"serialization":"deep","additionalParameters":{"UNKNOWN_PARAMETER_NAME":"SOME_VALUE"}}
+{
+    type : node
+    value : {
+        attributes : {
+            some_attr_name : some_attr_value
+        }
+        backendNodeId : <number>
+        childNodeCount : 2
+        localName : div
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+        shadowRoot : null
+    }
+}
+Testing 'document.querySelector('body > div')' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":"STRING_INSTEAD_OF_INT"}}
+{
+    error : {
+        code : -32000
+        message : Parameter maxNodeDepth should be of type int.
+    }
+    id : <number>
+    sessionId : <string>
+}
+Testing 'document.querySelector('body > div')' with {"serialization":"deep","additionalParameters":{"INVALID_PARAMETER_TYPE":{}}}
+{
+    error : {
+        code : -32602
+        message : Values of serializationOptions.additionalParameters can be only of type string or integer.
+    }
+    id : <number>
+    sessionId : <string>
+}
+Testing 'document.querySelector('body > div')' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":0}}
+{
+    type : node
+    value : {
+        attributes : {
+            some_attr_name : some_attr_value
+        }
+        backendNodeId : <number>
+        childNodeCount : 2
+        localName : div
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+        shadowRoot : null
+    }
+}
+Testing 'document.querySelector('body > div')' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":1}}
+{
+    type : node
+    value : {
+        attributes : {
+            some_attr_name : some_attr_value
+        }
+        backendNodeId : <number>
+        childNodeCount : 2
+        children : [
+            [0] : {
+                type : node
+                value : {
+                    backendNodeId : <number>
+                    childNodeCount : 0
+                    nodeType : 3
+                    nodeValue : some text
+                }
+            }
+            [1] : {
+                type : node
+                value : {
+                    attributes : {
+                    }
+                    backendNodeId : <number>
+                    childNodeCount : 1
+                    localName : h2
+                    namespaceURI : http://www.w3.org/1999/xhtml
+                    nodeType : 1
+                    shadowRoot : null
+                }
+            }
+        ]
+        localName : div
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+        shadowRoot : null
+    }
+}
+Testing 'document.querySelector('body > div')' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":99}}
+{
+    type : node
+    value : {
+        attributes : {
+            some_attr_name : some_attr_value
+        }
+        backendNodeId : <number>
+        childNodeCount : 2
+        children : [
+            [0] : {
+                type : node
+                value : {
+                    backendNodeId : <number>
+                    childNodeCount : 0
+                    children : [
+                    ]
+                    nodeType : 3
+                    nodeValue : some text
+                }
+            }
+            [1] : {
+                type : node
+                value : {
+                    attributes : {
+                    }
+                    backendNodeId : <number>
+                    childNodeCount : 1
+                    children : [
+                        [0] : {
+                            type : node
+                            value : {
+                                backendNodeId : <number>
+                                childNodeCount : 0
+                                children : [
+                                ]
+                                nodeType : 3
+                                nodeValue : some another text
+                            }
+                        }
+                    ]
+                    localName : h2
+                    namespaceURI : http://www.w3.org/1999/xhtml
+                    nodeType : 1
+                    shadowRoot : null
+                }
+            }
+        ]
+        localName : div
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+        shadowRoot : null
+    }
+}
+Testing 'document.querySelector('body > div')' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":99,"includeShadowTree":"none"}}
+{
+    type : node
+    value : {
+        attributes : {
+            some_attr_name : some_attr_value
+        }
+        backendNodeId : <number>
+        childNodeCount : 2
+        children : [
+            [0] : {
+                type : node
+                value : {
+                    backendNodeId : <number>
+                    childNodeCount : 0
+                    children : [
+                    ]
+                    nodeType : 3
+                    nodeValue : some text
+                }
+            }
+            [1] : {
+                type : node
+                value : {
+                    attributes : {
+                    }
+                    backendNodeId : <number>
+                    childNodeCount : 1
+                    children : [
+                        [0] : {
+                            type : node
+                            value : {
+                                backendNodeId : <number>
+                                childNodeCount : 0
+                                children : [
+                                ]
+                                nodeType : 3
+                                nodeValue : some another text
+                            }
+                        }
+                    ]
+                    localName : h2
+                    namespaceURI : http://www.w3.org/1999/xhtml
+                    nodeType : 1
+                    shadowRoot : null
+                }
+            }
+        ]
+        localName : div
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+        shadowRoot : null
+    }
+}
+Testing 'document.querySelector('body > div')' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":99,"includeShadowTree":"open"}}
+{
+    type : node
+    value : {
+        attributes : {
+            some_attr_name : some_attr_value
+        }
+        backendNodeId : <number>
+        childNodeCount : 2
+        children : [
+            [0] : {
+                type : node
+                value : {
+                    backendNodeId : <number>
+                    childNodeCount : 0
+                    children : [
+                    ]
+                    nodeType : 3
+                    nodeValue : some text
+                }
+            }
+            [1] : {
+                type : node
+                value : {
+                    attributes : {
+                    }
+                    backendNodeId : <number>
+                    childNodeCount : 1
+                    children : [
+                        [0] : {
+                            type : node
+                            value : {
+                                backendNodeId : <number>
+                                childNodeCount : 0
+                                children : [
+                                ]
+                                nodeType : 3
+                                nodeValue : some another text
+                            }
+                        }
+                    ]
+                    localName : h2
+                    namespaceURI : http://www.w3.org/1999/xhtml
+                    nodeType : 1
+                    shadowRoot : null
+                }
+            }
+        ]
+        localName : div
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+        shadowRoot : null
+    }
+}
+Testing 'document.querySelector('body > div')' with {"serialization":"deep","additionalParameters":{"includeShadowTree":"all"}}
+{
+    type : node
+    value : {
+        attributes : {
+            some_attr_name : some_attr_value
+        }
+        backendNodeId : <number>
+        childNodeCount : 2
+        localName : div
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+        shadowRoot : null
+    }
+}
+Testing 'document.querySelector('body > div')' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":0,"includeShadowTree":"all"}}
+{
+    type : node
+    value : {
+        attributes : {
+            some_attr_name : some_attr_value
+        }
+        backendNodeId : <number>
+        childNodeCount : 2
+        localName : div
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+        shadowRoot : null
+    }
+}
+Testing 'document.querySelector('body > div')' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":1,"includeShadowTree":"all"}}
+{
+    type : node
+    value : {
+        attributes : {
+            some_attr_name : some_attr_value
+        }
+        backendNodeId : <number>
+        childNodeCount : 2
+        children : [
+            [0] : {
+                type : node
+                value : {
+                    backendNodeId : <number>
+                    childNodeCount : 0
+                    nodeType : 3
+                    nodeValue : some text
+                }
+            }
+            [1] : {
+                type : node
+                value : {
+                    attributes : {
+                    }
+                    backendNodeId : <number>
+                    childNodeCount : 1
+                    localName : h2
+                    namespaceURI : http://www.w3.org/1999/xhtml
+                    nodeType : 1
+                    shadowRoot : null
+                }
+            }
+        ]
+        localName : div
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+        shadowRoot : null
+    }
+}
+Testing 'document.querySelector('body > div')' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":99,"includeShadowTree":"all"}}
+{
+    type : node
+    value : {
+        attributes : {
+            some_attr_name : some_attr_value
+        }
+        backendNodeId : <number>
+        childNodeCount : 2
+        children : [
+            [0] : {
+                type : node
+                value : {
+                    backendNodeId : <number>
+                    childNodeCount : 0
+                    children : [
+                    ]
+                    nodeType : 3
+                    nodeValue : some text
+                }
+            }
+            [1] : {
+                type : node
+                value : {
+                    attributes : {
+                    }
+                    backendNodeId : <number>
+                    childNodeCount : 1
+                    children : [
+                        [0] : {
+                            type : node
+                            value : {
+                                backendNodeId : <number>
+                                childNodeCount : 0
+                                children : [
+                                ]
+                                nodeType : 3
+                                nodeValue : some another text
+                            }
+                        }
+                    ]
+                    localName : h2
+                    namespaceURI : http://www.w3.org/1999/xhtml
+                    nodeType : 1
+                    shadowRoot : null
+                }
+            }
+        ]
+        localName : div
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+        shadowRoot : null
+    }
+}
+Testing 'document.querySelector('body > div').childNodes' with {"serialization":"deep"}
+{
+    type : nodelist
+    value : [
+        [0] : {
+            type : node
+            value : {
+                backendNodeId : <number>
+                childNodeCount : 0
+                nodeType : 3
+                nodeValue : some text
+            }
+        }
+        [1] : {
+            type : node
+            value : {
+                attributes : {
+                }
+                backendNodeId : <number>
+                childNodeCount : 1
+                localName : h2
+                namespaceURI : http://www.w3.org/1999/xhtml
+                nodeType : 1
+                shadowRoot : null
+            }
+        }
+    ]
+}
+Testing 'document.querySelector('body > div').childNodes' with {"serialization":"deep","additionalParameters":{"UNKNOWN_PARAMETER_NAME":"SOME_VALUE"}}
+{
+    type : nodelist
+    value : [
+        [0] : {
+            type : node
+            value : {
+                backendNodeId : <number>
+                childNodeCount : 0
+                nodeType : 3
+                nodeValue : some text
+            }
+        }
+        [1] : {
+            type : node
+            value : {
+                attributes : {
+                }
+                backendNodeId : <number>
+                childNodeCount : 1
+                localName : h2
+                namespaceURI : http://www.w3.org/1999/xhtml
+                nodeType : 1
+                shadowRoot : null
+            }
+        }
+    ]
+}
+Testing 'document.querySelector('body > div').childNodes' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":"STRING_INSTEAD_OF_INT"}}
+{
+    error : {
+        code : -32000
+        message : Parameter maxNodeDepth should be of type int.
+    }
+    id : <number>
+    sessionId : <string>
+}
+Testing 'document.querySelector('body > div').childNodes' with {"serialization":"deep","additionalParameters":{"INVALID_PARAMETER_TYPE":{}}}
+{
+    error : {
+        code : -32602
+        message : Values of serializationOptions.additionalParameters can be only of type string or integer.
+    }
+    id : <number>
+    sessionId : <string>
+}
+Testing 'document.querySelector('body > div').childNodes' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":0}}
+{
+    type : nodelist
+    value : [
+        [0] : {
+            type : node
+            value : {
+                backendNodeId : <number>
+                childNodeCount : 0
+                nodeType : 3
+                nodeValue : some text
+            }
+        }
+        [1] : {
+            type : node
+            value : {
+                attributes : {
+                }
+                backendNodeId : <number>
+                childNodeCount : 1
+                localName : h2
+                namespaceURI : http://www.w3.org/1999/xhtml
+                nodeType : 1
+                shadowRoot : null
+            }
+        }
+    ]
+}
+Testing 'document.querySelector('body > div').childNodes' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":1}}
+{
+    type : nodelist
+    value : [
+        [0] : {
+            type : node
+            value : {
+                backendNodeId : <number>
+                childNodeCount : 0
+                children : [
+                ]
+                nodeType : 3
+                nodeValue : some text
+            }
+        }
+        [1] : {
+            type : node
+            value : {
+                attributes : {
+                }
+                backendNodeId : <number>
+                childNodeCount : 1
+                children : [
+                    [0] : {
+                        type : node
+                        value : {
+                            backendNodeId : <number>
+                            childNodeCount : 0
+                            nodeType : 3
+                            nodeValue : some another text
+                        }
+                    }
+                ]
+                localName : h2
+                namespaceURI : http://www.w3.org/1999/xhtml
+                nodeType : 1
+                shadowRoot : null
+            }
+        }
+    ]
+}
+Testing 'document.querySelector('body > div').childNodes' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":99}}
+{
+    type : nodelist
+    value : [
+        [0] : {
+            type : node
+            value : {
+                backendNodeId : <number>
+                childNodeCount : 0
+                children : [
+                ]
+                nodeType : 3
+                nodeValue : some text
+            }
+        }
+        [1] : {
+            type : node
+            value : {
+                attributes : {
+                }
+                backendNodeId : <number>
+                childNodeCount : 1
+                children : [
+                    [0] : {
+                        type : node
+                        value : {
+                            backendNodeId : <number>
+                            childNodeCount : 0
+                            children : [
+                            ]
+                            nodeType : 3
+                            nodeValue : some another text
+                        }
+                    }
+                ]
+                localName : h2
+                namespaceURI : http://www.w3.org/1999/xhtml
+                nodeType : 1
+                shadowRoot : null
+            }
+        }
+    ]
+}
+Testing 'document.querySelector('body > div').childNodes' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":99,"includeShadowTree":"none"}}
+{
+    type : nodelist
+    value : [
+        [0] : {
+            type : node
+            value : {
+                backendNodeId : <number>
+                childNodeCount : 0
+                children : [
+                ]
+                nodeType : 3
+                nodeValue : some text
+            }
+        }
+        [1] : {
+            type : node
+            value : {
+                attributes : {
+                }
+                backendNodeId : <number>
+                childNodeCount : 1
+                children : [
+                    [0] : {
+                        type : node
+                        value : {
+                            backendNodeId : <number>
+                            childNodeCount : 0
+                            children : [
+                            ]
+                            nodeType : 3
+                            nodeValue : some another text
+                        }
+                    }
+                ]
+                localName : h2
+                namespaceURI : http://www.w3.org/1999/xhtml
+                nodeType : 1
+                shadowRoot : null
+            }
+        }
+    ]
+}
+Testing 'document.querySelector('body > div').childNodes' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":99,"includeShadowTree":"open"}}
+{
+    type : nodelist
+    value : [
+        [0] : {
+            type : node
+            value : {
+                backendNodeId : <number>
+                childNodeCount : 0
+                children : [
+                ]
+                nodeType : 3
+                nodeValue : some text
+            }
+        }
+        [1] : {
+            type : node
+            value : {
+                attributes : {
+                }
+                backendNodeId : <number>
+                childNodeCount : 1
+                children : [
+                    [0] : {
+                        type : node
+                        value : {
+                            backendNodeId : <number>
+                            childNodeCount : 0
+                            children : [
+                            ]
+                            nodeType : 3
+                            nodeValue : some another text
+                        }
+                    }
+                ]
+                localName : h2
+                namespaceURI : http://www.w3.org/1999/xhtml
+                nodeType : 1
+                shadowRoot : null
+            }
+        }
+    ]
+}
+Testing 'document.querySelector('body > div').childNodes' with {"serialization":"deep","additionalParameters":{"includeShadowTree":"all"}}
+{
+    type : nodelist
+    value : [
+        [0] : {
+            type : node
+            value : {
+                backendNodeId : <number>
+                childNodeCount : 0
+                nodeType : 3
+                nodeValue : some text
+            }
+        }
+        [1] : {
+            type : node
+            value : {
+                attributes : {
+                }
+                backendNodeId : <number>
+                childNodeCount : 1
+                localName : h2
+                namespaceURI : http://www.w3.org/1999/xhtml
+                nodeType : 1
+                shadowRoot : null
+            }
+        }
+    ]
+}
+Testing 'document.querySelector('body > div').childNodes' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":0,"includeShadowTree":"all"}}
+{
+    type : nodelist
+    value : [
+        [0] : {
+            type : node
+            value : {
+                backendNodeId : <number>
+                childNodeCount : 0
+                nodeType : 3
+                nodeValue : some text
+            }
+        }
+        [1] : {
+            type : node
+            value : {
+                attributes : {
+                }
+                backendNodeId : <number>
+                childNodeCount : 1
+                localName : h2
+                namespaceURI : http://www.w3.org/1999/xhtml
+                nodeType : 1
+                shadowRoot : null
+            }
+        }
+    ]
+}
+Testing 'document.querySelector('body > div').childNodes' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":1,"includeShadowTree":"all"}}
+{
+    type : nodelist
+    value : [
+        [0] : {
+            type : node
+            value : {
+                backendNodeId : <number>
+                childNodeCount : 0
+                children : [
+                ]
+                nodeType : 3
+                nodeValue : some text
+            }
+        }
+        [1] : {
+            type : node
+            value : {
+                attributes : {
+                }
+                backendNodeId : <number>
+                childNodeCount : 1
+                children : [
+                    [0] : {
+                        type : node
+                        value : {
+                            backendNodeId : <number>
+                            childNodeCount : 0
+                            nodeType : 3
+                            nodeValue : some another text
+                        }
+                    }
+                ]
+                localName : h2
+                namespaceURI : http://www.w3.org/1999/xhtml
+                nodeType : 1
+                shadowRoot : null
+            }
+        }
+    ]
+}
+Testing 'document.querySelector('body > div').childNodes' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":99,"includeShadowTree":"all"}}
+{
+    type : nodelist
+    value : [
+        [0] : {
+            type : node
+            value : {
+                backendNodeId : <number>
+                childNodeCount : 0
+                children : [
+                ]
+                nodeType : 3
+                nodeValue : some text
+            }
+        }
+        [1] : {
+            type : node
+            value : {
+                attributes : {
+                }
+                backendNodeId : <number>
+                childNodeCount : 1
+                children : [
+                    [0] : {
+                        type : node
+                        value : {
+                            backendNodeId : <number>
+                            childNodeCount : 0
+                            children : [
+                            ]
+                            nodeType : 3
+                            nodeValue : some another text
+                        }
+                    }
+                ]
+                localName : h2
+                namespaceURI : http://www.w3.org/1999/xhtml
+                nodeType : 1
+                shadowRoot : null
+            }
+        }
+    ]
+}
+Testing 'document.getElementsByTagName('div')' with {"serialization":"deep"}
+{
+    type : htmlcollection
+    value : [
+        [0] : {
+            type : node
+            value : {
+                attributes : {
+                    some_attr_name : some_attr_value
+                }
+                backendNodeId : <number>
+                childNodeCount : 2
+                localName : div
+                namespaceURI : http://www.w3.org/1999/xhtml
+                nodeType : 1
+                shadowRoot : null
+            }
+        }
+        [1] : {
+            type : node
+            value : {
+                attributes : {
+                }
+                backendNodeId : <number>
+                childNodeCount : 0
+                localName : div
+                namespaceURI : http://www.w3.org/1999/xhtml
+                nodeType : 1
+                shadowRoot : {
+                    type : node
+                    value : {
+                        backendNodeId : <number>
+                        childNodeCount : 1
+                        mode : open
+                        nodeType : 11
+                    }
+                }
+            }
+        }
+        [2] : {
+            type : node
+            value : {
+                attributes : {
+                }
+                backendNodeId : <number>
+                childNodeCount : 0
+                localName : div
+                namespaceURI : http://www.w3.org/1999/xhtml
+                nodeType : 1
+                shadowRoot : {
+                    type : node
+                    value : {
+                        backendNodeId : <number>
+                        childNodeCount : 1
+                        mode : closed
+                        nodeType : 11
+                    }
+                }
+            }
+        }
+    ]
+}
+Testing 'document.getElementsByTagName('div')' with {"serialization":"deep","additionalParameters":{"UNKNOWN_PARAMETER_NAME":"SOME_VALUE"}}
+{
+    type : htmlcollection
+    value : [
+        [0] : {
+            type : node
+            value : {
+                attributes : {
+                    some_attr_name : some_attr_value
+                }
+                backendNodeId : <number>
+                childNodeCount : 2
+                localName : div
+                namespaceURI : http://www.w3.org/1999/xhtml
+                nodeType : 1
+                shadowRoot : null
+            }
+        }
+        [1] : {
+            type : node
+            value : {
+                attributes : {
+                }
+                backendNodeId : <number>
+                childNodeCount : 0
+                localName : div
+                namespaceURI : http://www.w3.org/1999/xhtml
+                nodeType : 1
+                shadowRoot : {
+                    type : node
+                    value : {
+                        backendNodeId : <number>
+                        childNodeCount : 1
+                        mode : open
+                        nodeType : 11
+                    }
+                }
+            }
+        }
+        [2] : {
+            type : node
+            value : {
+                attributes : {
+                }
+                backendNodeId : <number>
+                childNodeCount : 0
+                localName : div
+                namespaceURI : http://www.w3.org/1999/xhtml
+                nodeType : 1
+                shadowRoot : {
+                    type : node
+                    value : {
+                        backendNodeId : <number>
+                        childNodeCount : 1
+                        mode : closed
+                        nodeType : 11
+                    }
+                }
+            }
+        }
+    ]
+}
+Testing 'document.getElementsByTagName('div')' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":"STRING_INSTEAD_OF_INT"}}
+{
+    error : {
+        code : -32000
+        message : Parameter maxNodeDepth should be of type int.
+    }
+    id : <number>
+    sessionId : <string>
+}
+Testing 'document.getElementsByTagName('div')' with {"serialization":"deep","additionalParameters":{"INVALID_PARAMETER_TYPE":{}}}
+{
+    error : {
+        code : -32602
+        message : Values of serializationOptions.additionalParameters can be only of type string or integer.
+    }
+    id : <number>
+    sessionId : <string>
+}
+Testing 'document.getElementsByTagName('div')' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":0}}
+{
+    type : htmlcollection
+    value : [
+        [0] : {
+            type : node
+            value : {
+                attributes : {
+                    some_attr_name : some_attr_value
+                }
+                backendNodeId : <number>
+                childNodeCount : 2
+                localName : div
+                namespaceURI : http://www.w3.org/1999/xhtml
+                nodeType : 1
+                shadowRoot : null
+            }
+        }
+        [1] : {
+            type : node
+            value : {
+                attributes : {
+                }
+                backendNodeId : <number>
+                childNodeCount : 0
+                localName : div
+                namespaceURI : http://www.w3.org/1999/xhtml
+                nodeType : 1
+                shadowRoot : {
+                    type : node
+                    value : {
+                        backendNodeId : <number>
+                        childNodeCount : 1
+                        mode : open
+                        nodeType : 11
+                    }
+                }
+            }
+        }
+        [2] : {
+            type : node
+            value : {
+                attributes : {
+                }
+                backendNodeId : <number>
+                childNodeCount : 0
+                localName : div
+                namespaceURI : http://www.w3.org/1999/xhtml
+                nodeType : 1
+                shadowRoot : {
+                    type : node
+                    value : {
+                        backendNodeId : <number>
+                        childNodeCount : 1
+                        mode : closed
+                        nodeType : 11
+                    }
+                }
+            }
+        }
+    ]
+}
+Testing 'document.getElementsByTagName('div')' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":1}}
+{
+    type : htmlcollection
+    value : [
+        [0] : {
+            type : node
+            value : {
+                attributes : {
+                    some_attr_name : some_attr_value
+                }
+                backendNodeId : <number>
+                childNodeCount : 2
+                children : [
+                    [0] : {
+                        type : node
+                        value : {
+                            backendNodeId : <number>
+                            childNodeCount : 0
+                            nodeType : 3
+                            nodeValue : some text
+                        }
+                    }
+                    [1] : {
+                        type : node
+                        value : {
+                            attributes : {
+                            }
+                            backendNodeId : <number>
+                            childNodeCount : 1
+                            localName : h2
+                            namespaceURI : http://www.w3.org/1999/xhtml
+                            nodeType : 1
+                            shadowRoot : null
+                        }
+                    }
+                ]
+                localName : div
+                namespaceURI : http://www.w3.org/1999/xhtml
+                nodeType : 1
+                shadowRoot : null
+            }
+        }
+        [1] : {
+            type : node
+            value : {
+                attributes : {
+                }
+                backendNodeId : <number>
+                childNodeCount : 0
+                children : [
+                ]
+                localName : div
+                namespaceURI : http://www.w3.org/1999/xhtml
+                nodeType : 1
+                shadowRoot : {
+                    type : node
+                    value : {
+                        backendNodeId : <number>
+                        childNodeCount : 1
+                        mode : open
+                        nodeType : 11
+                    }
+                }
+            }
+        }
+        [2] : {
+            type : node
+            value : {
+                attributes : {
+                }
+                backendNodeId : <number>
+                childNodeCount : 0
+                children : [
+                ]
+                localName : div
+                namespaceURI : http://www.w3.org/1999/xhtml
+                nodeType : 1
+                shadowRoot : {
+                    type : node
+                    value : {
+                        backendNodeId : <number>
+                        childNodeCount : 1
+                        mode : closed
+                        nodeType : 11
+                    }
+                }
+            }
+        }
+    ]
+}
+Testing 'document.getElementsByTagName('div')' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":99}}
+{
+    type : htmlcollection
+    value : [
+        [0] : {
+            type : node
+            value : {
+                attributes : {
+                    some_attr_name : some_attr_value
+                }
+                backendNodeId : <number>
+                childNodeCount : 2
+                children : [
+                    [0] : {
+                        type : node
+                        value : {
+                            backendNodeId : <number>
+                            childNodeCount : 0
+                            children : [
+                            ]
+                            nodeType : 3
+                            nodeValue : some text
+                        }
+                    }
+                    [1] : {
+                        type : node
+                        value : {
+                            attributes : {
+                            }
+                            backendNodeId : <number>
+                            childNodeCount : 1
+                            children : [
+                                [0] : {
+                                    type : node
+                                    value : {
+                                        backendNodeId : <number>
+                                        childNodeCount : 0
+                                        children : [
+                                        ]
+                                        nodeType : 3
+                                        nodeValue : some another text
+                                    }
+                                }
+                            ]
+                            localName : h2
+                            namespaceURI : http://www.w3.org/1999/xhtml
+                            nodeType : 1
+                            shadowRoot : null
+                        }
+                    }
+                ]
+                localName : div
+                namespaceURI : http://www.w3.org/1999/xhtml
+                nodeType : 1
+                shadowRoot : null
+            }
+        }
+        [1] : {
+            type : node
+            value : {
+                attributes : {
+                }
+                backendNodeId : <number>
+                childNodeCount : 0
+                children : [
+                ]
+                localName : div
+                namespaceURI : http://www.w3.org/1999/xhtml
+                nodeType : 1
+                shadowRoot : {
+                    type : node
+                    value : {
+                        backendNodeId : <number>
+                        childNodeCount : 1
+                        mode : open
+                        nodeType : 11
+                    }
+                }
+            }
+        }
+        [2] : {
+            type : node
+            value : {
+                attributes : {
+                }
+                backendNodeId : <number>
+                childNodeCount : 0
+                children : [
+                ]
+                localName : div
+                namespaceURI : http://www.w3.org/1999/xhtml
+                nodeType : 1
+                shadowRoot : {
+                    type : node
+                    value : {
+                        backendNodeId : <number>
+                        childNodeCount : 1
+                        mode : closed
+                        nodeType : 11
+                    }
+                }
+            }
+        }
+    ]
+}
+Testing 'document.getElementsByTagName('div')' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":99,"includeShadowTree":"none"}}
+{
+    type : htmlcollection
+    value : [
+        [0] : {
+            type : node
+            value : {
+                attributes : {
+                    some_attr_name : some_attr_value
+                }
+                backendNodeId : <number>
+                childNodeCount : 2
+                children : [
+                    [0] : {
+                        type : node
+                        value : {
+                            backendNodeId : <number>
+                            childNodeCount : 0
+                            children : [
+                            ]
+                            nodeType : 3
+                            nodeValue : some text
+                        }
+                    }
+                    [1] : {
+                        type : node
+                        value : {
+                            attributes : {
+                            }
+                            backendNodeId : <number>
+                            childNodeCount : 1
+                            children : [
+                                [0] : {
+                                    type : node
+                                    value : {
+                                        backendNodeId : <number>
+                                        childNodeCount : 0
+                                        children : [
+                                        ]
+                                        nodeType : 3
+                                        nodeValue : some another text
+                                    }
+                                }
+                            ]
+                            localName : h2
+                            namespaceURI : http://www.w3.org/1999/xhtml
+                            nodeType : 1
+                            shadowRoot : null
+                        }
+                    }
+                ]
+                localName : div
+                namespaceURI : http://www.w3.org/1999/xhtml
+                nodeType : 1
+                shadowRoot : null
+            }
+        }
+        [1] : {
+            type : node
+            value : {
+                attributes : {
+                }
+                backendNodeId : <number>
+                childNodeCount : 0
+                children : [
+                ]
+                localName : div
+                namespaceURI : http://www.w3.org/1999/xhtml
+                nodeType : 1
+                shadowRoot : {
+                    type : node
+                    value : {
+                        backendNodeId : <number>
+                        childNodeCount : 1
+                        mode : open
+                        nodeType : 11
+                    }
+                }
+            }
+        }
+        [2] : {
+            type : node
+            value : {
+                attributes : {
+                }
+                backendNodeId : <number>
+                childNodeCount : 0
+                children : [
+                ]
+                localName : div
+                namespaceURI : http://www.w3.org/1999/xhtml
+                nodeType : 1
+                shadowRoot : {
+                    type : node
+                    value : {
+                        backendNodeId : <number>
+                        childNodeCount : 1
+                        mode : closed
+                        nodeType : 11
+                    }
+                }
+            }
+        }
+    ]
+}
+Testing 'document.getElementsByTagName('div')' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":99,"includeShadowTree":"open"}}
+{
+    type : htmlcollection
+    value : [
+        [0] : {
+            type : node
+            value : {
+                attributes : {
+                    some_attr_name : some_attr_value
+                }
+                backendNodeId : <number>
+                childNodeCount : 2
+                children : [
+                    [0] : {
+                        type : node
+                        value : {
+                            backendNodeId : <number>
+                            childNodeCount : 0
+                            children : [
+                            ]
+                            nodeType : 3
+                            nodeValue : some text
+                        }
+                    }
+                    [1] : {
+                        type : node
+                        value : {
+                            attributes : {
+                            }
+                            backendNodeId : <number>
+                            childNodeCount : 1
+                            children : [
+                                [0] : {
+                                    type : node
+                                    value : {
+                                        backendNodeId : <number>
+                                        childNodeCount : 0
+                                        children : [
+                                        ]
+                                        nodeType : 3
+                                        nodeValue : some another text
+                                    }
+                                }
+                            ]
+                            localName : h2
+                            namespaceURI : http://www.w3.org/1999/xhtml
+                            nodeType : 1
+                            shadowRoot : null
+                        }
+                    }
+                ]
+                localName : div
+                namespaceURI : http://www.w3.org/1999/xhtml
+                nodeType : 1
+                shadowRoot : null
+            }
+        }
+        [1] : {
+            type : node
+            value : {
+                attributes : {
+                }
+                backendNodeId : <number>
+                childNodeCount : 0
+                children : [
+                ]
+                localName : div
+                namespaceURI : http://www.w3.org/1999/xhtml
+                nodeType : 1
+                shadowRoot : {
+                    type : node
+                    value : {
+                        backendNodeId : <number>
+                        childNodeCount : 1
+                        children : [
+                            [0] : {
+                                type : node
+                                value : {
+                                    attributes : {
+                                    }
+                                    backendNodeId : <number>
+                                    childNodeCount : 1
+                                    children : [
+                                        [0] : {
+                                            type : node
+                                            value : {
+                                                backendNodeId : <number>
+                                                childNodeCount : 0
+                                                children : [
+                                                ]
+                                                nodeType : 3
+                                                nodeValue : element in open shadow DOM
+                                            }
+                                        }
+                                    ]
+                                    localName : div
+                                    namespaceURI : http://www.w3.org/1999/xhtml
+                                    nodeType : 1
+                                    shadowRoot : null
+                                }
+                            }
+                        ]
+                        mode : open
+                        nodeType : 11
+                    }
+                }
+            }
+        }
+        [2] : {
+            type : node
+            value : {
+                attributes : {
+                }
+                backendNodeId : <number>
+                childNodeCount : 0
+                children : [
+                ]
+                localName : div
+                namespaceURI : http://www.w3.org/1999/xhtml
+                nodeType : 1
+                shadowRoot : {
+                    type : node
+                    value : {
+                        backendNodeId : <number>
+                        childNodeCount : 1
+                        mode : closed
+                        nodeType : 11
+                    }
+                }
+            }
+        }
+    ]
+}
+Testing 'document.getElementsByTagName('div')' with {"serialization":"deep","additionalParameters":{"includeShadowTree":"all"}}
+{
+    type : htmlcollection
+    value : [
+        [0] : {
+            type : node
+            value : {
+                attributes : {
+                    some_attr_name : some_attr_value
+                }
+                backendNodeId : <number>
+                childNodeCount : 2
+                localName : div
+                namespaceURI : http://www.w3.org/1999/xhtml
+                nodeType : 1
+                shadowRoot : null
+            }
+        }
+        [1] : {
+            type : node
+            value : {
+                attributes : {
+                }
+                backendNodeId : <number>
+                childNodeCount : 0
+                localName : div
+                namespaceURI : http://www.w3.org/1999/xhtml
+                nodeType : 1
+                shadowRoot : {
+                    type : node
+                    value : {
+                        backendNodeId : <number>
+                        childNodeCount : 1
+                        mode : open
+                        nodeType : 11
+                    }
+                }
+            }
+        }
+        [2] : {
+            type : node
+            value : {
+                attributes : {
+                }
+                backendNodeId : <number>
+                childNodeCount : 0
+                localName : div
+                namespaceURI : http://www.w3.org/1999/xhtml
+                nodeType : 1
+                shadowRoot : {
+                    type : node
+                    value : {
+                        backendNodeId : <number>
+                        childNodeCount : 1
+                        mode : closed
+                        nodeType : 11
+                    }
+                }
+            }
+        }
+    ]
+}
+Testing 'document.getElementsByTagName('div')' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":0,"includeShadowTree":"all"}}
+{
+    type : htmlcollection
+    value : [
+        [0] : {
+            type : node
+            value : {
+                attributes : {
+                    some_attr_name : some_attr_value
+                }
+                backendNodeId : <number>
+                childNodeCount : 2
+                localName : div
+                namespaceURI : http://www.w3.org/1999/xhtml
+                nodeType : 1
+                shadowRoot : null
+            }
+        }
+        [1] : {
+            type : node
+            value : {
+                attributes : {
+                }
+                backendNodeId : <number>
+                childNodeCount : 0
+                localName : div
+                namespaceURI : http://www.w3.org/1999/xhtml
+                nodeType : 1
+                shadowRoot : {
+                    type : node
+                    value : {
+                        backendNodeId : <number>
+                        childNodeCount : 1
+                        mode : open
+                        nodeType : 11
+                    }
+                }
+            }
+        }
+        [2] : {
+            type : node
+            value : {
+                attributes : {
+                }
+                backendNodeId : <number>
+                childNodeCount : 0
+                localName : div
+                namespaceURI : http://www.w3.org/1999/xhtml
+                nodeType : 1
+                shadowRoot : {
+                    type : node
+                    value : {
+                        backendNodeId : <number>
+                        childNodeCount : 1
+                        mode : closed
+                        nodeType : 11
+                    }
+                }
+            }
+        }
+    ]
+}
+Testing 'document.getElementsByTagName('div')' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":1,"includeShadowTree":"all"}}
+{
+    type : htmlcollection
+    value : [
+        [0] : {
+            type : node
+            value : {
+                attributes : {
+                    some_attr_name : some_attr_value
+                }
+                backendNodeId : <number>
+                childNodeCount : 2
+                children : [
+                    [0] : {
+                        type : node
+                        value : {
+                            backendNodeId : <number>
+                            childNodeCount : 0
+                            nodeType : 3
+                            nodeValue : some text
+                        }
+                    }
+                    [1] : {
+                        type : node
+                        value : {
+                            attributes : {
+                            }
+                            backendNodeId : <number>
+                            childNodeCount : 1
+                            localName : h2
+                            namespaceURI : http://www.w3.org/1999/xhtml
+                            nodeType : 1
+                            shadowRoot : null
+                        }
+                    }
+                ]
+                localName : div
+                namespaceURI : http://www.w3.org/1999/xhtml
+                nodeType : 1
+                shadowRoot : null
+            }
+        }
+        [1] : {
+            type : node
+            value : {
+                attributes : {
+                }
+                backendNodeId : <number>
+                childNodeCount : 0
+                children : [
+                ]
+                localName : div
+                namespaceURI : http://www.w3.org/1999/xhtml
+                nodeType : 1
+                shadowRoot : {
+                    type : node
+                    value : {
+                        backendNodeId : <number>
+                        childNodeCount : 1
+                        children : [
+                            [0] : {
+                                type : node
+                                value : {
+                                    attributes : {
+                                    }
+                                    backendNodeId : <number>
+                                    childNodeCount : 1
+                                    localName : div
+                                    namespaceURI : http://www.w3.org/1999/xhtml
+                                    nodeType : 1
+                                    shadowRoot : null
+                                }
+                            }
+                        ]
+                        mode : open
+                        nodeType : 11
+                    }
+                }
+            }
+        }
+        [2] : {
+            type : node
+            value : {
+                attributes : {
+                }
+                backendNodeId : <number>
+                childNodeCount : 0
+                children : [
+                ]
+                localName : div
+                namespaceURI : http://www.w3.org/1999/xhtml
+                nodeType : 1
+                shadowRoot : {
+                    type : node
+                    value : {
+                        backendNodeId : <number>
+                        childNodeCount : 1
+                        children : [
+                            [0] : {
+                                type : node
+                                value : {
+                                    attributes : {
+                                    }
+                                    backendNodeId : <number>
+                                    childNodeCount : 1
+                                    localName : div
+                                    namespaceURI : http://www.w3.org/1999/xhtml
+                                    nodeType : 1
+                                    shadowRoot : null
+                                }
+                            }
+                        ]
+                        mode : closed
+                        nodeType : 11
+                    }
+                }
+            }
+        }
+    ]
+}
+Testing 'document.getElementsByTagName('div')' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":99,"includeShadowTree":"all"}}
+{
+    type : htmlcollection
+    value : [
+        [0] : {
+            type : node
+            value : {
+                attributes : {
+                    some_attr_name : some_attr_value
+                }
+                backendNodeId : <number>
+                childNodeCount : 2
+                children : [
+                    [0] : {
+                        type : node
+                        value : {
+                            backendNodeId : <number>
+                            childNodeCount : 0
+                            children : [
+                            ]
+                            nodeType : 3
+                            nodeValue : some text
+                        }
+                    }
+                    [1] : {
+                        type : node
+                        value : {
+                            attributes : {
+                            }
+                            backendNodeId : <number>
+                            childNodeCount : 1
+                            children : [
+                                [0] : {
+                                    type : node
+                                    value : {
+                                        backendNodeId : <number>
+                                        childNodeCount : 0
+                                        children : [
+                                        ]
+                                        nodeType : 3
+                                        nodeValue : some another text
+                                    }
+                                }
+                            ]
+                            localName : h2
+                            namespaceURI : http://www.w3.org/1999/xhtml
+                            nodeType : 1
+                            shadowRoot : null
+                        }
+                    }
+                ]
+                localName : div
+                namespaceURI : http://www.w3.org/1999/xhtml
+                nodeType : 1
+                shadowRoot : null
+            }
+        }
+        [1] : {
+            type : node
+            value : {
+                attributes : {
+                }
+                backendNodeId : <number>
+                childNodeCount : 0
+                children : [
+                ]
+                localName : div
+                namespaceURI : http://www.w3.org/1999/xhtml
+                nodeType : 1
+                shadowRoot : {
+                    type : node
+                    value : {
+                        backendNodeId : <number>
+                        childNodeCount : 1
+                        children : [
+                            [0] : {
+                                type : node
+                                value : {
+                                    attributes : {
+                                    }
+                                    backendNodeId : <number>
+                                    childNodeCount : 1
+                                    children : [
+                                        [0] : {
+                                            type : node
+                                            value : {
+                                                backendNodeId : <number>
+                                                childNodeCount : 0
+                                                children : [
+                                                ]
+                                                nodeType : 3
+                                                nodeValue : element in open shadow DOM
+                                            }
+                                        }
+                                    ]
+                                    localName : div
+                                    namespaceURI : http://www.w3.org/1999/xhtml
+                                    nodeType : 1
+                                    shadowRoot : null
+                                }
+                            }
+                        ]
+                        mode : open
+                        nodeType : 11
+                    }
+                }
+            }
+        }
+        [2] : {
+            type : node
+            value : {
+                attributes : {
+                }
+                backendNodeId : <number>
+                childNodeCount : 0
+                children : [
+                ]
+                localName : div
+                namespaceURI : http://www.w3.org/1999/xhtml
+                nodeType : 1
+                shadowRoot : {
+                    type : node
+                    value : {
+                        backendNodeId : <number>
+                        childNodeCount : 1
+                        children : [
+                            [0] : {
+                                type : node
+                                value : {
+                                    attributes : {
+                                    }
+                                    backendNodeId : <number>
+                                    childNodeCount : 1
+                                    children : [
+                                        [0] : {
+                                            type : node
+                                            value : {
+                                                backendNodeId : <number>
+                                                childNodeCount : 0
+                                                children : [
+                                                ]
+                                                nodeType : 3
+                                                nodeValue : element in closed shadow DOM
+                                            }
+                                        }
+                                    ]
+                                    localName : div
+                                    namespaceURI : http://www.w3.org/1999/xhtml
+                                    nodeType : 1
+                                    shadowRoot : null
+                                }
+                            }
+                        ]
+                        mode : closed
+                        nodeType : 11
+                    }
+                }
+            }
+        }
+    ]
+}
+Testing 'window' with {"serialization":"deep"}
+{
+    type : window
+    value : {
+        context : <string>
+    }
+}
+Testing 'window' with {"serialization":"deep","additionalParameters":{"UNKNOWN_PARAMETER_NAME":"SOME_VALUE"}}
+{
+    type : window
+    value : {
+        context : <string>
+    }
+}
+Testing 'window' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":"STRING_INSTEAD_OF_INT"}}
+{
+    error : {
+        code : -32000
+        message : Parameter maxNodeDepth should be of type int.
+    }
+    id : <number>
+    sessionId : <string>
+}
+Testing 'window' with {"serialization":"deep","additionalParameters":{"INVALID_PARAMETER_TYPE":{}}}
+{
+    error : {
+        code : -32602
+        message : Values of serializationOptions.additionalParameters can be only of type string or integer.
+    }
+    id : <number>
+    sessionId : <string>
+}
+Testing 'window' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":0}}
+{
+    type : window
+    value : {
+        context : <string>
+    }
+}
+Testing 'window' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":1}}
+{
+    type : window
+    value : {
+        context : <string>
+    }
+}
+Testing 'window' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":99}}
+{
+    type : window
+    value : {
+        context : <string>
+    }
+}
+Testing 'window' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":99,"includeShadowTree":"none"}}
+{
+    type : window
+    value : {
+        context : <string>
+    }
+}
+Testing 'window' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":99,"includeShadowTree":"open"}}
+{
+    type : window
+    value : {
+        context : <string>
+    }
+}
+Testing 'window' with {"serialization":"deep","additionalParameters":{"includeShadowTree":"all"}}
+{
+    type : window
+    value : {
+        context : <string>
+    }
+}
+Testing 'window' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":0,"includeShadowTree":"all"}}
+{
+    type : window
+    value : {
+        context : <string>
+    }
+}
+Testing 'window' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":1,"includeShadowTree":"all"}}
+{
+    type : window
+    value : {
+        context : <string>
+    }
+}
+Testing 'window' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":99,"includeShadowTree":"all"}}
+{
+    type : window
+    value : {
+        context : <string>
+    }
+}
+Testing 'new URL('http://example.com')' with {"serialization":"deep"}
+{
+    type : platformobject
+}
+Testing 'new URL('http://example.com')' with {"serialization":"deep","additionalParameters":{"UNKNOWN_PARAMETER_NAME":"SOME_VALUE"}}
+{
+    type : platformobject
+}
+Testing 'new URL('http://example.com')' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":"STRING_INSTEAD_OF_INT"}}
+{
+    error : {
+        code : -32000
+        message : Parameter maxNodeDepth should be of type int.
+    }
+    id : <number>
+    sessionId : <string>
+}
+Testing 'new URL('http://example.com')' with {"serialization":"deep","additionalParameters":{"INVALID_PARAMETER_TYPE":{}}}
+{
+    error : {
+        code : -32602
+        message : Values of serializationOptions.additionalParameters can be only of type string or integer.
+    }
+    id : <number>
+    sessionId : <string>
+}
+Testing 'new URL('http://example.com')' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":0}}
+{
+    type : platformobject
+}
+Testing 'new URL('http://example.com')' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":1}}
+{
+    type : platformobject
+}
+Testing 'new URL('http://example.com')' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":99}}
+{
+    type : platformobject
+}
+Testing 'new URL('http://example.com')' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":99,"includeShadowTree":"none"}}
+{
+    type : platformobject
+}
+Testing 'new URL('http://example.com')' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":99,"includeShadowTree":"open"}}
+{
+    type : platformobject
+}
+Testing 'new URL('http://example.com')' with {"serialization":"deep","additionalParameters":{"includeShadowTree":"all"}}
+{
+    type : platformobject
+}
+Testing 'new URL('http://example.com')' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":0,"includeShadowTree":"all"}}
+{
+    type : platformobject
+}
+Testing 'new URL('http://example.com')' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":1,"includeShadowTree":"all"}}
+{
+    type : platformobject
+}
+Testing 'new URL('http://example.com')' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":99,"includeShadowTree":"all"}}
+{
+    type : platformobject
+}
+Testing 'window.openShadowContainer' with {"serialization":"deep"}
+{
+    type : node
+    value : {
+        attributes : {
+        }
+        backendNodeId : <number>
+        childNodeCount : 0
+        localName : div
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+        shadowRoot : {
+            type : node
+            value : {
+                backendNodeId : <number>
+                childNodeCount : 1
+                mode : open
+                nodeType : 11
+            }
+        }
+    }
+}
+Testing 'window.openShadowContainer' with {"serialization":"deep","additionalParameters":{"UNKNOWN_PARAMETER_NAME":"SOME_VALUE"}}
+{
+    type : node
+    value : {
+        attributes : {
+        }
+        backendNodeId : <number>
+        childNodeCount : 0
+        localName : div
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+        shadowRoot : {
+            type : node
+            value : {
+                backendNodeId : <number>
+                childNodeCount : 1
+                mode : open
+                nodeType : 11
+            }
+        }
+    }
+}
+Testing 'window.openShadowContainer' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":"STRING_INSTEAD_OF_INT"}}
+{
+    error : {
+        code : -32000
+        message : Parameter maxNodeDepth should be of type int.
+    }
+    id : <number>
+    sessionId : <string>
+}
+Testing 'window.openShadowContainer' with {"serialization":"deep","additionalParameters":{"INVALID_PARAMETER_TYPE":{}}}
+{
+    error : {
+        code : -32602
+        message : Values of serializationOptions.additionalParameters can be only of type string or integer.
+    }
+    id : <number>
+    sessionId : <string>
+}
+Testing 'window.openShadowContainer' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":0}}
+{
+    type : node
+    value : {
+        attributes : {
+        }
+        backendNodeId : <number>
+        childNodeCount : 0
+        localName : div
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+        shadowRoot : {
+            type : node
+            value : {
+                backendNodeId : <number>
+                childNodeCount : 1
+                mode : open
+                nodeType : 11
+            }
+        }
+    }
+}
+Testing 'window.openShadowContainer' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":1}}
+{
+    type : node
+    value : {
+        attributes : {
+        }
+        backendNodeId : <number>
+        childNodeCount : 0
+        children : [
+        ]
+        localName : div
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+        shadowRoot : {
+            type : node
+            value : {
+                backendNodeId : <number>
+                childNodeCount : 1
+                mode : open
+                nodeType : 11
+            }
+        }
+    }
+}
+Testing 'window.openShadowContainer' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":99}}
+{
+    type : node
+    value : {
+        attributes : {
+        }
+        backendNodeId : <number>
+        childNodeCount : 0
+        children : [
+        ]
+        localName : div
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+        shadowRoot : {
+            type : node
+            value : {
+                backendNodeId : <number>
+                childNodeCount : 1
+                mode : open
+                nodeType : 11
+            }
+        }
+    }
+}
+Testing 'window.openShadowContainer' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":99,"includeShadowTree":"none"}}
+{
+    type : node
+    value : {
+        attributes : {
+        }
+        backendNodeId : <number>
+        childNodeCount : 0
+        children : [
+        ]
+        localName : div
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+        shadowRoot : {
+            type : node
+            value : {
+                backendNodeId : <number>
+                childNodeCount : 1
+                mode : open
+                nodeType : 11
+            }
+        }
+    }
+}
+Testing 'window.openShadowContainer' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":99,"includeShadowTree":"open"}}
+{
+    type : node
+    value : {
+        attributes : {
+        }
+        backendNodeId : <number>
+        childNodeCount : 0
+        children : [
+        ]
+        localName : div
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+        shadowRoot : {
+            type : node
+            value : {
+                backendNodeId : <number>
+                childNodeCount : 1
+                children : [
+                    [0] : {
+                        type : node
+                        value : {
+                            attributes : {
+                            }
+                            backendNodeId : <number>
+                            childNodeCount : 1
+                            children : [
+                                [0] : {
+                                    type : node
+                                    value : {
+                                        backendNodeId : <number>
+                                        childNodeCount : 0
+                                        children : [
+                                        ]
+                                        nodeType : 3
+                                        nodeValue : element in open shadow DOM
+                                    }
+                                }
+                            ]
+                            localName : div
+                            namespaceURI : http://www.w3.org/1999/xhtml
+                            nodeType : 1
+                            shadowRoot : null
+                        }
+                    }
+                ]
+                mode : open
+                nodeType : 11
+            }
+        }
+    }
+}
+Testing 'window.openShadowContainer' with {"serialization":"deep","additionalParameters":{"includeShadowTree":"all"}}
+{
+    type : node
+    value : {
+        attributes : {
+        }
+        backendNodeId : <number>
+        childNodeCount : 0
+        localName : div
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+        shadowRoot : {
+            type : node
+            value : {
+                backendNodeId : <number>
+                childNodeCount : 1
+                mode : open
+                nodeType : 11
+            }
+        }
+    }
+}
+Testing 'window.openShadowContainer' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":0,"includeShadowTree":"all"}}
+{
+    type : node
+    value : {
+        attributes : {
+        }
+        backendNodeId : <number>
+        childNodeCount : 0
+        localName : div
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+        shadowRoot : {
+            type : node
+            value : {
+                backendNodeId : <number>
+                childNodeCount : 1
+                mode : open
+                nodeType : 11
+            }
+        }
+    }
+}
+Testing 'window.openShadowContainer' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":1,"includeShadowTree":"all"}}
+{
+    type : node
+    value : {
+        attributes : {
+        }
+        backendNodeId : <number>
+        childNodeCount : 0
+        children : [
+        ]
+        localName : div
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+        shadowRoot : {
+            type : node
+            value : {
+                backendNodeId : <number>
+                childNodeCount : 1
+                children : [
+                    [0] : {
+                        type : node
+                        value : {
+                            attributes : {
+                            }
+                            backendNodeId : <number>
+                            childNodeCount : 1
+                            localName : div
+                            namespaceURI : http://www.w3.org/1999/xhtml
+                            nodeType : 1
+                            shadowRoot : null
+                        }
+                    }
+                ]
+                mode : open
+                nodeType : 11
+            }
+        }
+    }
+}
+Testing 'window.openShadowContainer' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":99,"includeShadowTree":"all"}}
+{
+    type : node
+    value : {
+        attributes : {
+        }
+        backendNodeId : <number>
+        childNodeCount : 0
+        children : [
+        ]
+        localName : div
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+        shadowRoot : {
+            type : node
+            value : {
+                backendNodeId : <number>
+                childNodeCount : 1
+                children : [
+                    [0] : {
+                        type : node
+                        value : {
+                            attributes : {
+                            }
+                            backendNodeId : <number>
+                            childNodeCount : 1
+                            children : [
+                                [0] : {
+                                    type : node
+                                    value : {
+                                        backendNodeId : <number>
+                                        childNodeCount : 0
+                                        children : [
+                                        ]
+                                        nodeType : 3
+                                        nodeValue : element in open shadow DOM
+                                    }
+                                }
+                            ]
+                            localName : div
+                            namespaceURI : http://www.w3.org/1999/xhtml
+                            nodeType : 1
+                            shadowRoot : null
+                        }
+                    }
+                ]
+                mode : open
+                nodeType : 11
+            }
+        }
+    }
+}
+Testing 'window.closedShadowContainer' with {"serialization":"deep"}
+{
+    type : node
+    value : {
+        attributes : {
+        }
+        backendNodeId : <number>
+        childNodeCount : 0
+        localName : div
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+        shadowRoot : {
+            type : node
+            value : {
+                backendNodeId : <number>
+                childNodeCount : 1
+                mode : closed
+                nodeType : 11
+            }
+        }
+    }
+}
+Testing 'window.closedShadowContainer' with {"serialization":"deep","additionalParameters":{"UNKNOWN_PARAMETER_NAME":"SOME_VALUE"}}
+{
+    type : node
+    value : {
+        attributes : {
+        }
+        backendNodeId : <number>
+        childNodeCount : 0
+        localName : div
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+        shadowRoot : {
+            type : node
+            value : {
+                backendNodeId : <number>
+                childNodeCount : 1
+                mode : closed
+                nodeType : 11
+            }
+        }
+    }
+}
+Testing 'window.closedShadowContainer' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":"STRING_INSTEAD_OF_INT"}}
+{
+    error : {
+        code : -32000
+        message : Parameter maxNodeDepth should be of type int.
+    }
+    id : <number>
+    sessionId : <string>
+}
+Testing 'window.closedShadowContainer' with {"serialization":"deep","additionalParameters":{"INVALID_PARAMETER_TYPE":{}}}
+{
+    error : {
+        code : -32602
+        message : Values of serializationOptions.additionalParameters can be only of type string or integer.
+    }
+    id : <number>
+    sessionId : <string>
+}
+Testing 'window.closedShadowContainer' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":0}}
+{
+    type : node
+    value : {
+        attributes : {
+        }
+        backendNodeId : <number>
+        childNodeCount : 0
+        localName : div
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+        shadowRoot : {
+            type : node
+            value : {
+                backendNodeId : <number>
+                childNodeCount : 1
+                mode : closed
+                nodeType : 11
+            }
+        }
+    }
+}
+Testing 'window.closedShadowContainer' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":1}}
+{
+    type : node
+    value : {
+        attributes : {
+        }
+        backendNodeId : <number>
+        childNodeCount : 0
+        children : [
+        ]
+        localName : div
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+        shadowRoot : {
+            type : node
+            value : {
+                backendNodeId : <number>
+                childNodeCount : 1
+                mode : closed
+                nodeType : 11
+            }
+        }
+    }
+}
+Testing 'window.closedShadowContainer' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":99}}
+{
+    type : node
+    value : {
+        attributes : {
+        }
+        backendNodeId : <number>
+        childNodeCount : 0
+        children : [
+        ]
+        localName : div
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+        shadowRoot : {
+            type : node
+            value : {
+                backendNodeId : <number>
+                childNodeCount : 1
+                mode : closed
+                nodeType : 11
+            }
+        }
+    }
+}
+Testing 'window.closedShadowContainer' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":99,"includeShadowTree":"none"}}
+{
+    type : node
+    value : {
+        attributes : {
+        }
+        backendNodeId : <number>
+        childNodeCount : 0
+        children : [
+        ]
+        localName : div
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+        shadowRoot : {
+            type : node
+            value : {
+                backendNodeId : <number>
+                childNodeCount : 1
+                mode : closed
+                nodeType : 11
+            }
+        }
+    }
+}
+Testing 'window.closedShadowContainer' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":99,"includeShadowTree":"open"}}
+{
+    type : node
+    value : {
+        attributes : {
+        }
+        backendNodeId : <number>
+        childNodeCount : 0
+        children : [
+        ]
+        localName : div
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+        shadowRoot : {
+            type : node
+            value : {
+                backendNodeId : <number>
+                childNodeCount : 1
+                mode : closed
+                nodeType : 11
+            }
+        }
+    }
+}
+Testing 'window.closedShadowContainer' with {"serialization":"deep","additionalParameters":{"includeShadowTree":"all"}}
+{
+    type : node
+    value : {
+        attributes : {
+        }
+        backendNodeId : <number>
+        childNodeCount : 0
+        localName : div
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+        shadowRoot : {
+            type : node
+            value : {
+                backendNodeId : <number>
+                childNodeCount : 1
+                mode : closed
+                nodeType : 11
+            }
+        }
+    }
+}
+Testing 'window.closedShadowContainer' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":0,"includeShadowTree":"all"}}
+{
+    type : node
+    value : {
+        attributes : {
+        }
+        backendNodeId : <number>
+        childNodeCount : 0
+        localName : div
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+        shadowRoot : {
+            type : node
+            value : {
+                backendNodeId : <number>
+                childNodeCount : 1
+                mode : closed
+                nodeType : 11
+            }
+        }
+    }
+}
+Testing 'window.closedShadowContainer' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":1,"includeShadowTree":"all"}}
+{
+    type : node
+    value : {
+        attributes : {
+        }
+        backendNodeId : <number>
+        childNodeCount : 0
+        children : [
+        ]
+        localName : div
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+        shadowRoot : {
+            type : node
+            value : {
+                backendNodeId : <number>
+                childNodeCount : 1
+                children : [
+                    [0] : {
+                        type : node
+                        value : {
+                            attributes : {
+                            }
+                            backendNodeId : <number>
+                            childNodeCount : 1
+                            localName : div
+                            namespaceURI : http://www.w3.org/1999/xhtml
+                            nodeType : 1
+                            shadowRoot : null
+                        }
+                    }
+                ]
+                mode : closed
+                nodeType : 11
+            }
+        }
+    }
+}
+Testing 'window.closedShadowContainer' with {"serialization":"deep","additionalParameters":{"maxNodeDepth":99,"includeShadowTree":"all"}}
+{
+    type : node
+    value : {
+        attributes : {
+        }
+        backendNodeId : <number>
+        childNodeCount : 0
+        children : [
+        ]
+        localName : div
+        namespaceURI : http://www.w3.org/1999/xhtml
+        nodeType : 1
+        shadowRoot : {
+            type : node
+            value : {
+                backendNodeId : <number>
+                childNodeCount : 1
+                children : [
+                    [0] : {
+                        type : node
+                        value : {
+                            attributes : {
+                            }
+                            backendNodeId : <number>
+                            childNodeCount : 1
+                            children : [
+                                [0] : {
+                                    type : node
+                                    value : {
+                                        backendNodeId : <number>
+                                        childNodeCount : 0
+                                        children : [
+                                        ]
+                                        nodeType : 3
+                                        nodeValue : element in closed shadow DOM
+                                    }
+                                }
+                            ]
+                            localName : div
+                            namespaceURI : http://www.w3.org/1999/xhtml
+                            nodeType : 1
+                            shadowRoot : null
+                        }
+                    }
+                ]
+                mode : closed
+                nodeType : 11
+            }
+        }
+    }
+}
+

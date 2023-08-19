@@ -27,6 +27,7 @@ class DevicePosturePlatformProvider {
   virtual ~DevicePosturePlatformProvider() = default;
 
   virtual device::mojom::DevicePostureType GetDevicePosture() = 0;
+  virtual const std::vector<gfx::Rect>& GetViewportSegments() = 0;
   virtual void StopListening() = 0;
   virtual void StartListening() = 0;
 
@@ -39,6 +40,7 @@ class DevicePosturePlatformProvider {
  protected:
   DevicePosturePlatformProvider() = default;
   void NotifyDevicePostureChanged(const mojom::DevicePostureType& posture);
+  void NotifyWindowSegmentsChanged(const std::vector<gfx::Rect>& segments);
 
  private:
   // DevicePosturePlatformProvider is created and owned by

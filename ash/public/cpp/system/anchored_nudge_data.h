@@ -24,67 +24,75 @@ namespace ash {
 
 using HoverStateChangeCallback =
     base::RepeatingCallback<void(bool is_hovering)>;
-using AnchoredNudgeClickCallback = base::RepeatingCallback<void()>;
-using AnchoredNudgeDismissCallback = base::RepeatingCallback<void()>;
+using NudgeClickCallback = base::RepeatingCallback<void()>;
+using NudgeDismissCallback = base::RepeatingCallback<void()>;
 
-// Describes the contents of an AnchoredNudge, which is a notifier that anchors
-// to an `anchor_view` and informs users about something that might enhance
-// their experience immediately. See the "Educational Nudges" section in
-// go/notifier-framework for example usages.
+// Describes the contents of a System Nudge (AnchoredNudge), which is a notifier
+// that informs users about something that might enhance their experience. See
+// the "Educational Nudges" section in go/notifier-framework for example usages.
+// Nudges may anchor to any `views::View` on screen and will follow it to set
+// its bounds. Nudges with no `anchor_view` will show in the default location.
+// Nudges `anchored_to_shelf` will set their arrow based on the shelf alignment.
+// TODO(b/285988235): `AnchoredNudge` will replace the existing `SystemNudge`
+// and take over its name.
 struct ASH_PUBLIC_EXPORT AnchoredNudgeData {
   AnchoredNudgeData(const std::string& id,
-                    AnchoredNudgeCatalogName catalog_name,
-                    const std::u16string& text,
-                    views::View* anchor_view);
+                    NudgeCatalogName catalog_name,
+                    const std::u16string& body_text,
+                    views::View* anchor_view = nullptr);
   AnchoredNudgeData(AnchoredNudgeData&& other);
   AnchoredNudgeData& operator=(AnchoredNudgeData&& other);
   ~AnchoredNudgeData();
 
+  // Required system nudge elements.
   std::string id;
-  AnchoredNudgeCatalogName catalog_name;
-  std::u16string text;
+  NudgeCatalogName catalog_name;
+  std::u16string body_text;
 
-  // Unowned. Must outlive the `AnchoredNudge`.
-  raw_ptr<views::View> anchor_view;
+  // Optional system nudge view elements. If not empty, a leading image or nudge
+  // title will be created.
+  ui::ImageModel image_model;
+  std::u16string title_text;
 
-  HoverStateChangeCallback hover_state_change_callback = base::DoNothing();
-  AnchoredNudgeClickCallback nudge_click_callback = base::DoNothing();
-  AnchoredNudgeDismissCallback nudge_dimiss_callback = base::DoNothing();
+  // Optional system nudge buttons. If the text is not empty, the respective
+  // button will be created. Pressing the button will execute its callback, if
+  // any, followed by the nudge being closed. `second_button_text` should only
+  // be set if `first_button_text` has also been set.
+  // TODO(b/285023559): Add a `ChainedCancelCallback` class instead of a
+  // `RepeatingClosure` so we don't have to manually modify the provided
+  // callbacks in the manager.
+  std::u16string first_button_text;
+  base::RepeatingClosure first_button_callback = base::DoNothing();
 
-  // Used to set bubble placement in relation to the anchor view.
-  // A value of `BOTTOM_CENTER` means that the nudge will be anchored from its
-  // bottom center to the anchor view.
+  std::u16string second_button_text;
+  base::RepeatingClosure second_button_callback = base::DoNothing();
+
+  // Unowned view that the nudge may anchor to, to define its bounds.
+  // Nudges with no `anchor_view` will show on their default location.
+  raw_ptr<views::View, DanglingUntriaged> anchor_view;
+
+  // Used to set the nudge's placement in relation to the anchor view, if any.
   views::BubbleBorder::Arrow arrow = views::BubbleBorder::BOTTOM_CENTER;
 
-  // If `dismiss_text` is not empty, a dismiss button will be created.
-  // Pressing the button will execute `dismiss_callback`, if any, followed by
-  // the nudge being closed.
-  std::u16string dismiss_text;
-  // TODO(b/285023559): Add and use a `ChainedCancelCallback` class instead of a
-  // `RepeatingClosure` so we don't have to manually modify the provided
-  // callbacks in the manager.
-  base::RepeatingClosure dismiss_callback;
+  // Nudges with long duration are meant to persist and expect an action from
+  // the user for them to be dismissed. They have a duration of 30 minutes.
+  bool has_long_duration = false;
 
-  // If `second_button_text` is not empty, a second button will be created.
-  // Pressing the button will execute `second_button_callback`, if any, followed
-  // by the nudge being closed.
-  // TODO(b/283159669): Will use `SystemToastStyle` with a second button
-  // temporarily for M116, migrate to `DialogStyle` once implemented.
-  std::u16string second_button_text;
-  // TODO(b/285023559): Add and use a `ChainedCancelCallback` class instead of a
-  // `RepeatingClosure` so we don't have to manually modify the provided
-  // callbacks in the manager.
-  base::RepeatingClosure second_button_callback;
+  // If true, `arrow` will be set based on the current shelf alignment, and the
+  // nudge will listen to shelf alignment changes to readjust its `arrow`.
+  // It will maintain the shelf visible while a nudge is being shown.
+  bool anchored_to_shelf = false;
 
-  // To disable dismiss via timer, set `has_infinite_duration_` to true.
-  // A nudge with infinite duration will be displayed until the dismiss button
-  // on the nudge is clicked, or when it is destroyed due to other reasons (e.g.
-  // anchor view is deleted, user locks session, etc.)
-  bool has_infinite_duration = false;
+  // If true, the view will be styled to look like go/toast-style-spec. If there
+  // is a button it will be added on the trailing side of the nudge instead of
+  // the bottom when creating the nudge's contents view. Does not support adding
+  // a second button or a leading image.
+  bool use_toast_style = false;
 
-  // If `leading_icon` has a value other than `kNoneIcon` it will place a
-  // leading icon next to the nudge text.
-  const gfx::VectorIcon* leading_icon = &gfx::kNoneIcon;
+  // Nudge action callbacks.
+  HoverStateChangeCallback hover_state_change_callback;
+  NudgeClickCallback click_callback;
+  NudgeDismissCallback dismiss_callback;
 };
 
 }  // namespace ash

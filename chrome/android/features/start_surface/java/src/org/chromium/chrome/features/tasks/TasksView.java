@@ -180,10 +180,6 @@ public class TasksView extends CoordinatorLayoutForPointer {
      * @param isIncognito Whether it's in incognito mode.
      */
     void setIncognitoMode(boolean isIncognito) {
-        int backgroundColor = ChromeColors.getPrimaryBackgroundColor(mContext, isIncognito);
-        setBackgroundColor(backgroundColor);
-        mHeaderView.setBackgroundColor(backgroundColor);
-
         mSearchBoxCoordinator.setIncognitoMode(isIncognito);
         Drawable searchBackground = AppCompatResources.getDrawable(mContext,
                 isIncognito ? R.drawable.fake_search_box_bg_incognito : R.drawable.ntp_search_box);
@@ -445,5 +441,15 @@ public class TasksView extends CoordinatorLayoutForPointer {
      */
     private void setHeaderPadding() {
         FeedStreamViewResizer.createAndAttach((Activity) mContext, mHeaderView, mUiConfig);
+    }
+
+    /**
+     * Set the background color for Start Surface.
+     * @param backgroundColor The drawable which contains the background color to set for the Start
+     *         Surface.
+     */
+    void setStartSurfaceBackgroundColor(int backgroundColor) {
+        setBackgroundColor(backgroundColor);
+        mHeaderView.setBackgroundColor(backgroundColor);
     }
 }

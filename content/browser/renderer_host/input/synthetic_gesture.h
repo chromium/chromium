@@ -18,12 +18,12 @@ namespace content {
 class SyntheticGestureTarget;
 class SyntheticGestureController;
 
-// Base class for synthetic gesture implementations. A synthetic gesture class
-// is responsible for forwarding InputEvents, simulating the gesture, to a
-// SyntheticGestureTarget.
+// Abstract base class for synthetic gesture implementations. A synthetic
+// gesture class is responsible for forwarding InputEvents, simulating the
+// gesture, to a SyntheticGestureTarget.
 //
 // Adding new gesture types involved the following steps:
-//   1) Create a sub-type of SyntheticGesture that implements the gesture.
+//   1) Create a sub-type of SyntheticGestureBase that implements the gesture.
 //   2) Extend SyntheticGesture::Create with the new class.
 //   3) Add at least one unit test per supported input source type (touch,
 //      mouse, etc) to SyntheticGestureController unit tests. The unit tests
@@ -31,15 +31,12 @@ class SyntheticGestureController;
 //      hooked up to Telemetry its correctness can additionally be tested there.
 class CONTENT_EXPORT SyntheticGesture {
  public:
-  SyntheticGesture();
+  explicit SyntheticGesture(std::unique_ptr<SyntheticGestureParams> params);
 
   SyntheticGesture(const SyntheticGesture&) = delete;
   SyntheticGesture& operator=(const SyntheticGesture&) = delete;
 
   virtual ~SyntheticGesture();
-
-  static std::unique_ptr<SyntheticGesture> Create(
-      const SyntheticGestureParams& gesture_params);
 
   enum Result {
     GESTURE_RUNNING,
@@ -64,7 +61,7 @@ class CONTENT_EXPORT SyntheticGesture {
                                 SyntheticGestureTarget* target) const;
 
   // Returns whether the gesture events can be dispatched at high frequency
-  // (e.g. at 120Hz), instead of the regular frequence (at 60Hz). Some gesture
+  // (e.g. at 120Hz), instead of the regular frequency (at 60Hz). Some gesture
   // interact differently depending on how long they take (e.g. the TAP gesture
   // generates a click only if its duration is longer than a threshold).
   virtual bool AllowHighFrequencyDispatch() const;
@@ -72,12 +69,39 @@ class CONTENT_EXPORT SyntheticGesture {
   // Called when the gesture is queued with a SyntheticGestureController.
   void DidQueue(base::WeakPtr<SyntheticGestureController> controller);
 
+  bool IsFromDevToolsDebugger() const;
+
  protected:
   // This is null until the gesture is queued with a controller. It must be set
   // before calling ForwardInputEvents. A gesture can cause the destruction of
   // the WebContents hosting its controller (e.g. click on the tab-close
   // button). This WeakPtr is necessary to know if this happens and abort.
   base::WeakPtr<SyntheticGestureController> dispatching_controller_;
+
+  std::unique_ptr<SyntheticGestureParams> params_;
+};
+
+template <class ParamType>
+class SyntheticGestureBase : public SyntheticGesture {
+ public:
+  explicit SyntheticGestureBase(const SyntheticGestureParams& params)
+      : SyntheticGesture(std::make_unique<ParamType>(
+            *static_cast<const ParamType*>(&params))) {}
+  ~SyntheticGestureBase() override = default;
+
+  SyntheticGestureBase(const SyntheticGesture&) = delete;
+  SyntheticGestureBase<ParamType>& operator=(
+      const SyntheticGestureBase<ParamType>&) = delete;
+
+ protected:
+  const ParamType& params() const {
+    CHECK(params_);
+    return *static_cast<const ParamType*>(params_.get());
+  }
+  ParamType& params() {
+    CHECK(params_);
+    return *static_cast<ParamType*>(params_.get());
+  }
 };
 
 }  // namespace content

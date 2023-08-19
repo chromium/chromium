@@ -4,7 +4,6 @@
 
 source_set("lens") {
   testonly = true
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "test_lens.mm" ]
   deps = [
     "//base",

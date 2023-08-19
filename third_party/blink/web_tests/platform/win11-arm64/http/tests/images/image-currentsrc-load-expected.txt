@@ -1,0 +1,12 @@
+PASS img.currentSrc is ""
+PASS img.width is 0
+PASS img.currentSrc is "http://127.0.0.1:8000/resources/slow-image-dimensions.php?name=square100.png&mimeType=image/png&sleep=100"
+FAIL img.width should be 100. Was 16.
+PASS img.currentSrc is "http://127.0.0.1:8000/resources/slow-image-dimensions.php?name=square100.png&mimeType=image/png&sleep=100"
+FAIL img.width should be 100. Was 0.
+FAIL img.currentSrc should be http://127.0.0.1:8000/resources/slow-image-dimensions.php?name=square200.png&mimeType=image/png&sleep=100. Was .
+FAIL img.width should be 200. Was 0.
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

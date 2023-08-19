@@ -43,6 +43,9 @@ def blink_class_name(idl_definition):
         # cases.  Plus, we prefer a simple naming rule conformant to the
         # Chromium coding style.  So, we go with this way.
         return "V8Union{}".format("Or".join(idl_definition.member_tokens))
+    elif isinstance(idl_definition, web_idl.AsyncIterator):
+        return "AsyncIterator<{}>".format(
+            blink_class_name(idl_definition.interface))
     elif isinstance(idl_definition, web_idl.SyncIterator):
         return "SyncIterator<{}>".format(
             blink_class_name(idl_definition.interface))
@@ -54,13 +57,16 @@ def v8_bridge_class_name(idl_definition):
     """
     Returns the name of V8-from/to-Blink bridge class.
     """
-    assert isinstance(idl_definition,
-                      (web_idl.CallbackInterface, web_idl.Interface,
-                       web_idl.Namespace, web_idl.SyncIterator))
+    assert isinstance(
+        idl_definition,
+        (web_idl.AsyncIterator, web_idl.CallbackInterface, web_idl.Interface,
+         web_idl.Namespace, web_idl.SyncIterator))
 
     assert idl_definition.identifier[0].isupper()
     # Do not apply |name_style.class_| due to the same reason as
     # |blink_class_name|.
+    if isinstance(idl_definition, web_idl.AsyncIterator):
+        return "V8AsyncIterator{}".format(idl_definition.interface.identifier)
     if isinstance(idl_definition, web_idl.SyncIterator):
         return "V8SyncIterator{}".format(idl_definition.interface.identifier)
     return "V8{}".format(idl_definition.identifier)

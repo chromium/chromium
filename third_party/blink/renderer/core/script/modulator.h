@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_per_context_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/weborigin/referrer.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -127,14 +128,16 @@ class CORE_EXPORT Modulator : public GarbageCollected<Modulator>,
   // Note that |this| is the "module map settings object" and
   // ResourceFetcher represents "fetch client settings object"
   // used in the "fetch a module worker script graph" algorithm.
-  virtual void FetchTree(const KURL&,
-                         ModuleType,
-                         ResourceFetcher* fetch_client_settings_object_fetcher,
-                         mojom::blink::RequestContextType context_type,
-                         network::mojom::RequestDestination destination,
-                         const ScriptFetchOptions&,
-                         ModuleScriptCustomFetchType,
-                         ModuleTreeClient*) = 0;
+  virtual void FetchTree(
+      const KURL&,
+      ModuleType,
+      ResourceFetcher* fetch_client_settings_object_fetcher,
+      mojom::blink::RequestContextType context_type,
+      network::mojom::RequestDestination destination,
+      const ScriptFetchOptions&,
+      ModuleScriptCustomFetchType,
+      ModuleTreeClient*,
+      String referrer = Referrer::ClientReferrerString()) = 0;
 
   // Asynchronously retrieve a module script from the module map, or fetch it
   // and put it in the map if it's not there already.

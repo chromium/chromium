@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "ui/display/screen_infos.h"
 
 namespace blink {
@@ -19,9 +18,9 @@ class LocalDOMWindow;
 class ScreenDetailed;
 
 // Interface exposing multi-screen information.
-// https://w3c.github.io/window-placement/
+// https://w3c.github.io/window-management/
 class MODULES_EXPORT ScreenDetails final
-    : public EventTargetWithInlineData,
+    : public EventTarget,
       public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -34,7 +33,7 @@ class MODULES_EXPORT ScreenDetails final
   DEFINE_ATTRIBUTE_EVENT_LISTENER(screenschange, kScreenschange)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(currentscreenchange, kCurrentscreenchange)
 
-  // EventTargetWithInlineData:
+  // EventTarget:
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;
 
@@ -55,19 +54,10 @@ class MODULES_EXPORT ScreenDetails final
                              const display::ScreenInfos& new_infos,
                              bool dispatch_events);
 
-  // Returns the first unused index, starting at one.  Internal and external
-  // are numbered separately.  This is used for ScreenDetailed::label strings.
-  uint32_t GetNewLabelIdx(bool is_internal);
-  void WillRemoveScreen(const ScreenDetailed& screen);
-
   // The ScreenInfos sent by the previous UpdateScreenInfos call.
   display::ScreenInfos prev_screen_infos_;
   int64_t current_display_id_ = display::ScreenInfo::kInvalidDisplayId;
   HeapVector<Member<ScreenDetailed>> screens_;
-
-  // Active set of ids used in labels.
-  HashSet<uint32_t> internal_label_ids_;
-  HashSet<uint32_t> external_label_ids_;
 };
 
 }  // namespace blink

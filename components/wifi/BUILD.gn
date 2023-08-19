@@ -35,7 +35,6 @@ component("wifi") {
       "Foundation.framework",
       "SystemConfiguration.framework",
     ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_fuchsia) {

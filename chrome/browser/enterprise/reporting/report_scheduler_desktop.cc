@@ -10,7 +10,6 @@
 #include "base/notreached.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/reporting/extension_request/extension_request_report_generator.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
 #include "chrome/browser/profiles/reporting_util.h"
 #include "chrome/browser/upgrade_detector/build_state.h"
@@ -47,24 +46,15 @@ PrefService* LocalState() {
 }  // namespace
 
 ReportSchedulerDesktop::ReportSchedulerDesktop()
-    : ReportSchedulerDesktop(nullptr, false) {}
+    : profile_(nullptr), prefs_(LocalState()) {}
 
-ReportSchedulerDesktop::ReportSchedulerDesktop(Profile* profile,
-                                               bool profile_reporting) {
-  if (profile_reporting) {
+ReportSchedulerDesktop::ReportSchedulerDesktop(Profile* profile)
+    : profile_(profile), prefs_(profile->GetPrefs()) {
+  if (profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Profile reporting is on LaCrOs instead of Ash.
     NOTREACHED();
 #endif
-    profile_ = profile;
-    prefs_ = profile->GetPrefs();
-    // Extension request hasn't support profile report yet. When we do, we also
-    // need to refactor the code to avoid multiple extension request observer.
-  } else {
-    profile_ = nullptr;
-    prefs_ = LocalState();
-    extension_request_observer_factory_ =
-        std::make_unique<ExtensionRequestObserverFactory>(profile);
   }
 }
 
@@ -120,26 +110,6 @@ void ReportSchedulerDesktop::OnBrowserVersionUploaded() {
   }
 }
 
-void ReportSchedulerDesktop::StartWatchingExtensionRequestIfNeeded() {
-  if (!extension_request_observer_factory_)
-    return;
-
-  // On CrOS, the function may be called twice during startup.
-  if (extension_request_observer_factory_->IsReportEnabled())
-    return;
-
-  extension_request_observer_factory_->EnableReport(
-      base::BindRepeating(&ReportSchedulerDesktop::TriggerExtensionRequest,
-                          base::Unretained(this)));
-}
-
-void ReportSchedulerDesktop::StopWatchingExtensionRequest() {
-  if (extension_request_observer_factory_)
-    extension_request_observer_factory_->DisableReport();
-}
-
-void ReportSchedulerDesktop::OnExtensionRequestUploaded() {}
-
 policy::DMToken ReportSchedulerDesktop::GetProfileDMToken() {
   absl::optional<std::string> dm_token = reporting::GetUserDmToken(profile_);
   if (!dm_token || dm_token->empty())
@@ -159,14 +129,6 @@ void ReportSchedulerDesktop::OnUpdate(const BuildState* build_state) {
   if (!trigger_report_callback_.is_null()) {
     trigger_report_callback_.Run(
         ReportScheduler::ReportTrigger::kTriggerUpdate);
-  }
-}
-
-void ReportSchedulerDesktop::TriggerExtensionRequest(Profile* profile) {
-  if (!trigger_realtime_report_callback_.is_null()) {
-    trigger_realtime_report_callback_.Run(
-        ReportScheduler::ReportTrigger::kTriggerExtensionRequestRealTime,
-        ExtensionRequestReportGenerator::ExtensionRequestData(profile));
   }
 }
 

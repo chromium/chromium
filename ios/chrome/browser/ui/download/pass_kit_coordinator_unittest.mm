@@ -31,10 +31,6 @@
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForUIElementTimeout;
 
@@ -63,6 +59,8 @@ class PassKitCoordinatorTest : public PlatformTest {
 
     [scoped_key_window_.Get() setRootViewController:base_view_controller_];
   }
+
+  ~PassKitCoordinatorTest() override { [coordinator_ stop]; }
 
   PassKitTabHelper* tab_helper() {
     return PassKitTabHelper::FromWebState(web_state_);

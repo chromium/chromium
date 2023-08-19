@@ -1007,6 +1007,14 @@
       "features": [
         "test_feature_0"
       ]
+    },
+    {
+      "id": 81,
+      "description": "GpuControlListEntryTest.NativeAngleRenderer",
+      "gl_renderer": "ANGLE \\(Samsung Xclipse 920\\) on Vulkan 1.1.179",
+      "features": [
+        "test_feature_0"
+      ]
     }
   ]
 }

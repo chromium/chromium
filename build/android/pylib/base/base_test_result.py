@@ -12,7 +12,7 @@ import threading
 from lib.results import result_types  # pylint: disable=import-error
 
 # This must match the source adding the suffix: bit.ly/3Zmwwyx
-_MULTIPROCESS_SUFFIX = '__multiprocess_mode'
+MULTIPROCESS_SUFFIX = '__multiprocess_mode'
 
 
 class ResultType:
@@ -57,7 +57,7 @@ class BaseTestResult:
     self._log = log
     self._failure_reason = failure_reason
     self._links = {}
-    self._webview_multiprocess_mode = name.endswith(_MULTIPROCESS_SUFFIX)
+    self._webview_multiprocess_mode = name.endswith(MULTIPROCESS_SUFFIX)
 
   def __str__(self):
     return self._name
@@ -69,7 +69,7 @@ class BaseTestResult:
     return self.GetName() == other.GetName()
 
   def __lt__(self, other):
-    return self.GetName() == other.GetName()
+    return self.GetName() < other.GetName()
 
   def __hash__(self):
     return hash(self._name)
@@ -91,9 +91,9 @@ class BaseTestResult:
     raw_name = self.GetName()
     if self._webview_multiprocess_mode:
       assert raw_name.endswith(
-          _MULTIPROCESS_SUFFIX
+          MULTIPROCESS_SUFFIX
       ), 'multiprocess mode test raw name should have the corresponding suffix'
-      return raw_name[:-len(_MULTIPROCESS_SUFFIX)]
+      return raw_name[:-len(MULTIPROCESS_SUFFIX)]
     return raw_name
 
   def SetType(self, test_type):

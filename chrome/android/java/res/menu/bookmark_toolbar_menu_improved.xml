@@ -16,10 +16,14 @@ found in the LICENSE file.
                 <!-- Groups with unique ids used to show a divider. -->
                 <group android:id="@+id/sort_opts"
                        android:checkableBehavior="single">
+                    <item android:id="@+id/sort_by_manual"
+                        android:title="@string/sort_by_manual" />
                     <item android:id="@+id/sort_by_newest"
                         android:title="@string/sort_by_newest" />
                     <item android:id="@+id/sort_by_oldest"
                         android:title="@string/sort_by_oldest" />
+                    <item android:id="@+id/sort_by_last_opened"
+                        android:title="@string/sort_by_last_opened" />
                     <item android:id="@+id/sort_by_alpha"
                         android:title="@string/sort_by_alpha" />
                     <item android:id="@+id/sort_by_reverse_alpha"

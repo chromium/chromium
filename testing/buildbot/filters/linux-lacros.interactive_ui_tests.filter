@@ -1,17 +1,10 @@
 # TODO(crbug.com/1443374) Fix BookmarkBarViewTests.
 # The following tests fail consistently.
--BookmarkBarViewTest21.ContextMenusForEmptyFolder
 -BookmarkBarViewTest22.CloseSourceBrowserDuringDrag
 -BookmarkBarViewTest28.ClickWithModifierOnFolderOpensAllBookmarks
--BookmarkBarViewTest4.ContextMenus
 -BookmarkBarViewTest5.DND
 -BookmarkBarViewTest7.DNDToDifferentMenu
 -BookmarkBarViewTest8.DNDBackToOriginatingMenu
-# The following tests are flaky.
--BookmarkBarViewTest12.CloseWithModalDialog
--BookmarkBarViewTest13.ClickOnContextMenuSeparator
--BookmarkBarViewTest15.MenuStaysVisibleAfterDelete
--BookmarkBarViewTest23.ContextMenusKeyboard
 
 # TODO(crbug.com/1111979) Enable all tests on lacros.
 # The following tests fail consistently.
@@ -130,4 +123,3 @@
 # TODO(b/256212431): Re-enable when linux-lacros-rel support
 # signin::MakePrimaryAccountAvailable().
 -AccessCodeCastHandlerBrowserTest.ExpectProfileSynErrorWhenNoSync
-

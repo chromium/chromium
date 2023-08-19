@@ -15,7 +15,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.Fragment;
 
-import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 
 import java.util.Set;
@@ -36,7 +37,7 @@ public class HistorySyncFragment
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        mSyncService = SyncService.get();
+        mSyncService = SyncServiceFactory.get();
         mInitialKeepEverythingSynced = mSyncService.hasKeepEverythingSynced();
 
         SwitchCompat historySyncSwitch = view.findViewById(R.id.history_sync_switch);

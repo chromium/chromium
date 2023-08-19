@@ -128,8 +128,10 @@ export enum I18nString {
   MOVING_IN_TOP_RIGHT_DIRECTION = 'moving_in_top_right_direction',
   MSG_DOCUMENT_DETECTED = 'msg_document_detected',
   MSG_PROCESSING_IMAGE = 'msg_processing_image',
+  MSG_PROCESSING_VIDEO = 'msg_processing_video',
+  NEW_TIME_LAPSE_TOAST = 'new_time_lapse_toast',
   // I18nString.NAME: Bypass the presubmit check for unused strings. Used here:
-  // https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ash/web_applications/camera_app/camera_system_web_app_info.cc
+  // https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ash/system_web_apps/apps/camera_app/camera_system_web_app_info.cc
   // NAME = 'name',
   NEXT_PAGE_COUNT = 'next_page_count',
   NO_DOCUMENT_GUIDE_MSG = 'no_document_guide_msg',

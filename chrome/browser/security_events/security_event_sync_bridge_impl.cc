@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_batch.h"
@@ -200,6 +201,7 @@ void SecurityEventSyncBridgeImpl::OnReadAllData(
 void SecurityEventSyncBridgeImpl::OnReadAllMetadata(
     const absl::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
+  TRACE_EVENT0("ui", "SecurityEventSyncBridgeImpl::OnReadAllMetadata");
   if (error) {
     change_processor()->ReportError(*error);
   } else {

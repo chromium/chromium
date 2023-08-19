@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(crbug.com/1309178): Define CSSOM API for @position-fallback at rule.
-
 [Exposed=Window, RuntimeEnabled=CSSAnchorPositioning]
-interface CSSPositionFallbackRule : CSSRule {
+interface CSSPositionFallbackRule : CSSGroupingRule {
   readonly attribute CSSOMString name;
-  readonly attribute CSSRuleList cssRules;
 };

@@ -18,6 +18,12 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserPostLoginParams {
   BrowserPostLoginParams(const BrowserPostLoginParams&) = delete;
   BrowserPostLoginParams& operator=(const BrowserPostLoginParams&) = delete;
 
+  // Wait for the user to login and post-login parameters to be available.
+  // NOTE: This needs to be called before parameters are accessed.
+  // Please note that this method is not thread-safe and should be called
+  // before any threads are created in the browser process.
+  static void WaitForLogin();
+
   // Sets `postlogin_params_` to the provided value.
   // Useful for tests that cannot setup a full Lacros test environment with a
   // working Mojo connection to Ash.
@@ -42,10 +48,11 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserPostLoginParams {
   // NOTE: You should use BrowserProxyParams to access parameters instead.
   static const crosapi::mojom::BrowserPostLoginParams* Get();
 
-  static BrowserPostLoginParams* GetInstance();
+  static BrowserPostLoginParams* GetInstanceInternal();
 
   BrowserPostLoginParams();
   ~BrowserPostLoginParams();
+
   // Parameters passed from ash-chrome.
   crosapi::mojom::BrowserPostLoginParamsPtr postlogin_params_;
 };

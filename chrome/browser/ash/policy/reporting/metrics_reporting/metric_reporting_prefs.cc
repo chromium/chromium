@@ -22,6 +22,7 @@ void RegisterProfilePrefs(::user_prefs::PrefRegistrySyncable* registry) {
       kReportAppUsageCollectionRateMs,
       ::reporting::metrics::kDefaultAppUsageTelemetryCollectionRate
           .InMilliseconds());
+  registry->RegisterListPref(kAppsInstalled);
 }
 
 absl::optional<std::string> GetAppReportingCategoryForType(

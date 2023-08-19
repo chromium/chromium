@@ -76,8 +76,8 @@ export class StatusBoxElement extends CustomElement {
   initialize(scope: string, status: Status) {
     const notSpecifiedString = loadTimeData.getString('notSpecified');
 
-    // Set appropriate box legend based on status key
-    this.shadowRoot!.querySelector('.legend')!.textContent =
+    // Set appropriate box heading based on status key.
+    this.shadowRoot!.querySelector('.status-box-heading')!.textContent =
         loadTimeData.getString(status.policyDescriptionKey);
     if (status.flexOrgWarning) {
       this.setLabelInnerHtmlAndShow(

@@ -29,7 +29,7 @@ class AppViewGuest : public guest_view::GuestView<AppViewGuest> {
   AppViewGuest& operator=(const AppViewGuest&) = delete;
 
   static std::unique_ptr<GuestViewBase> Create(
-      content::WebContents* owner_web_contents);
+      content::RenderFrameHost* owner_rfh);
 
   // Completes the creation of a WebContents associated with the provided
   // |guest_extension_id| and |guest_instance_id| for the given
@@ -53,7 +53,7 @@ class AppViewGuest : public guest_view::GuestView<AppViewGuest> {
   void SetAppDelegateForTest(AppDelegate* delegate);
 
  private:
-  explicit AppViewGuest(content::WebContents* owner_web_contents);
+  explicit AppViewGuest(content::RenderFrameHost* owner_rfh);
 
   // GuestViewBase implementation.
   void CreateWebContents(std::unique_ptr<GuestViewBase> owned_this,
@@ -61,7 +61,7 @@ class AppViewGuest : public guest_view::GuestView<AppViewGuest> {
                          WebContentsCreatedCallback callback) final;
   void DidInitialize(const base::Value::Dict& create_params) final;
   void MaybeRecreateGuestContents(
-      content::WebContents* embedder_web_contents) final;
+      content::RenderFrameHost* outer_contents_frame) final;
   const char* GetAPINamespace() const final;
   int GetTaskPrefix() const final;
 

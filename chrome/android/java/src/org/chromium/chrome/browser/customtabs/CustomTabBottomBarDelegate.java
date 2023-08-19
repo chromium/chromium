@@ -21,7 +21,6 @@ import android.widget.LinearLayout;
 import android.widget.RemoteViews;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -45,7 +44,7 @@ import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
 import org.chromium.ui.base.ViewportInsets;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.interpolators.BakedBezierInterpolator;
+import org.chromium.ui.interpolators.Interpolators;
 
 import java.util.List;
 
@@ -248,7 +247,7 @@ public class CustomTabBottomBarDelegate
             return 0;
         }
         if (mBottomBarHeightOverride != -1) return mBottomBarHeightOverride;
-        return mBottomBarView.getChildAt(1).getHeight();
+        return mBottomBarView.getHeight();
     }
 
     /**
@@ -281,7 +280,7 @@ public class CustomTabBottomBarDelegate
                 if (mBottomBarView == null) return;
                 mBottomBarView.animate()
                         .alpha(0)
-                        .setInterpolator(BakedBezierInterpolator.TRANSFORM_CURVE)
+                        .setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR)
                         .setDuration(SLIDE_ANIMATION_DURATION_MS)
                         .withEndAction(() -> mBottomBarView.setVisibility(View.GONE))
                         .start();
@@ -292,7 +291,7 @@ public class CustomTabBottomBarDelegate
                 mBottomBarView.setVisibility(View.VISIBLE);
                 mBottomBarView.animate()
                         .alpha(1)
-                        .setInterpolator(BakedBezierInterpolator.TRANSFORM_CURVE)
+                        .setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR)
                         .setDuration(SLIDE_ANIMATION_DURATION_MS)
                         .start();
             }
@@ -306,8 +305,10 @@ public class CustomTabBottomBarDelegate
     private void hideBottomBar() {
         if (mBottomBarView == null) return;
         stopListeningForSwipeUpGestures();
-        mBottomBarView.animate().alpha(0f).translationY(mBottomBarView.getHeight())
-                .setInterpolator(BakedBezierInterpolator.TRANSFORM_CURVE)
+        mBottomBarView.animate()
+                .alpha(0f)
+                .translationY(mBottomBarView.getHeight())
+                .setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR)
                 .setDuration(SLIDE_ANIMATION_DURATION_MS)
                 .withEndAction(new Runnable() {
                     @Override
@@ -315,7 +316,8 @@ public class CustomTabBottomBarDelegate
                         ((ViewGroup) mBottomBarView.getParent()).removeView(mBottomBarView);
                         mBottomBarView = null;
                     }
-                }).start();
+                })
+                .start();
         mBrowserControlsSizer.setBottomControlsHeight(0, 0);
     }
 
@@ -474,7 +476,6 @@ public class CustomTabBottomBarDelegate
                 && getBottomBarView().getVisibility() == View.VISIBLE;
     }
 
-    @VisibleForTesting
     void setBottomBarViewForTesting(CustomTabBottomBarView bottomBarView) {
         mBottomBarView = bottomBarView;
     }

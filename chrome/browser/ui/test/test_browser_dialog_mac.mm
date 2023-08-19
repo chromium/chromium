@@ -9,7 +9,7 @@
 namespace internal {
 
 void TestBrowserDialogInteractiveSetUp() {
-  [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
+  NSApp.activationPolicy = NSApplicationActivationPolicyRegular;
   [NSApp activateIgnoringOtherApps:YES];
 }
 

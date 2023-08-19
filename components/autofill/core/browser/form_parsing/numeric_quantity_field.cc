@@ -17,7 +17,7 @@ std::unique_ptr<FormField> NumericQuantityField::Parse(
     const LanguageCode& page_language,
     PatternSource pattern_source,
     LogManager* log_manager) {
-  AutofillField* field;
+  raw_ptr<AutofillField> field;
   base::span<const MatchPatternRef> quantity_patterns =
       GetMatchPatterns("NUMERIC_QUANTITY", page_language, pattern_source);
 

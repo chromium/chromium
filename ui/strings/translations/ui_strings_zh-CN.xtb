@@ -65,7 +65,7 @@
 <translation id="2653844658857826081">新</translation>
 <translation id="2666092431469916601">顶部</translation>
 <translation id="2701330563083355633">共享自 <ph name="DEVICE_NAME" /></translation>
-<translation id="271033894570825754">新建</translation>
+<translation id="271033894570825754">新</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 年前}other{# 年前}}</translation>
 <translation id="2878511608894704031">全部删除</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1 天后}other{# 天后}}</translation>
@@ -105,7 +105,6 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 个月前}other{# 个月前}}</translation>
 <translation id="4289300219472526559">开始讲话</translation>
 <translation id="4289540628985791613">概述</translation>
-<translation id="4306392492252714209">从剪贴板中移除。</translation>
 <translation id="4491109536499578614">图片</translation>
 <translation id="4565377596337484307">隐藏密码</translation>
 <translation id="4588090240171750605">向右滚动</translation>
@@ -148,6 +147,7 @@
 <translation id="6142413573757616983"><ph name="QUANTITY" /> B/s</translation>
 <translation id="6237461503717005873">已选择“<ph name="ROW_NAME" />”。</translation>
 <translation id="6264365405983206840">全选(&amp;A)</translation>
+<translation id="6346952829206698721">从剪贴板中粘贴</translation>
 <translation id="6364916375976753737">向左滚动</translation>
 <translation id="6394627529324717982">逗号</translation>
 <translation id="6397363302884558537">停止讲话</translation>
@@ -174,6 +174,7 @@
 <translation id="7170202025028120564">您的应用的显示设置会在下次重启此应用时生效。</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{还剩 1 分钟}other{还剩 # 分钟}}</translation>
+<translation id="7363164521834647158">发送回复</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{1 分钟前}other{# 分钟前}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{还剩 1 分钟}other{还剩 # 分钟}}</translation>

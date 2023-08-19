@@ -14,11 +14,9 @@ source_set("webui") {
     "//base",
     "//ios/web",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "net_export_tab_helper_unittest.mm" ]
   deps = [

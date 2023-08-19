@@ -19,6 +19,7 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "media/base/fake_single_thread_task_runner.h"
+#include "media/base/mock_filters.h"
 #include "media/base/video_frame.h"
 #include "media/cast/cast_environment.h"
 #include "media/cast/common/video_frame_factory.h"
@@ -110,17 +111,17 @@ void IgnorePlayoutDelayChanges(base::TimeDelta unused_playout_delay) {}
 
 class PeerVideoSender : public VideoSender {
  public:
-  PeerVideoSender(
-      scoped_refptr<CastEnvironment> cast_environment,
-      const FrameSenderConfig& video_config,
-      const StatusChangeCallback& status_change_cb,
-      const CreateVideoEncodeAcceleratorCallback& create_vea_cb,
-      CastTransport* const transport_sender)
+  PeerVideoSender(scoped_refptr<CastEnvironment> cast_environment,
+                  const FrameSenderConfig& video_config,
+                  const StatusChangeCallback& status_change_cb,
+                  const CreateVideoEncodeAcceleratorCallback& create_vea_cb,
+                  CastTransport* const transport_sender)
       : VideoSender(cast_environment,
                     video_config,
                     status_change_cb,
                     create_vea_cb,
                     transport_sender,
+                    std::make_unique<media::MockVideoEncoderMetricsProvider>(),
                     base::BindRepeating(&IgnorePlayoutDelayChanges),
                     base::BindRepeating(&PeerVideoSender::ProcessFeedback,
                                         base::Unretained(this))) {}

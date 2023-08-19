@@ -8,21 +8,13 @@
 #include <d3d11_1.h>
 #include <d3d9.h>
 #include <dxva.h>
-#include <wrl/client.h>
 
-#include <vector>
-
-#include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "media/base/video_frame.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/gpu/h264_decoder.h"
 #include "media/gpu/h264_dpb.h"
-#include "media/gpu/windows/d3d11_com_defs.h"
-#include "media/gpu/windows/d3d11_status.h"
-#include "media/gpu/windows/d3d11_video_decoder_client.h"
 #include "media/gpu/windows/d3d_accelerator.h"
-#include "media/gpu/windows/d3d_video_decoder_wrapper.h"
 #include "media/video/picture.h"
 #include "third_party/angle/include/EGL/egl.h"
 #include "third_party/angle/include/EGL/eglext.h"
@@ -36,9 +28,7 @@ class MediaLog;
 class D3D11H264Accelerator : public D3DAccelerator,
                              public H264Decoder::H264Accelerator {
  public:
-  D3D11H264Accelerator(D3D11VideoDecoderClient* client,
-                       MediaLog* media_log,
-                       ComD3D11VideoDevice video_device);
+  D3D11H264Accelerator(D3D11VideoDecoderClient* client, MediaLog* media_log);
 
   D3D11H264Accelerator(const D3D11H264Accelerator&) = delete;
   D3D11H264Accelerator& operator=(const D3D11H264Accelerator&) = delete;

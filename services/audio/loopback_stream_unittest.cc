@@ -261,7 +261,7 @@ class LoopbackStreamTest : public testing::Test {
   std::vector<std::unique_ptr<FakeLoopbackGroupMember>> sources_;
   NiceMock<MockClientAndObserver> client_;
   std::unique_ptr<LoopbackStream> stream_;
-  raw_ptr<FakeSyncWriter, DanglingUntriaged> consumer_ =
+  raw_ptr<FakeSyncWriter, AcrossTasksDanglingUntriaged> consumer_ =
       nullptr;  // Owned by |stream_|.
 
   mojo::Remote<media::mojom::AudioInputStream> remote_input_stream_;

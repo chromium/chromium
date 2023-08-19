@@ -40,13 +40,11 @@ void RecordMemoryStats(RecordMemoryStatsType type) {
   if (mem_gpu_result) {
     mem_gpu_mb = gpu_memory.gpu_memory_size / 1024 / 1024;
     switch (type) {
-      case RECORD_MEMORY_STATS_CONTENTS_OOM_KILLED:
-        UMA_HISTOGRAM_MEGABYTES_LINEAR("Memory.OOMKill.Contents.MemGraphicsMB",
-                                       mem_gpu_mb);
-        break;
       case RECORD_MEMORY_STATS_EXTENSIONS_OOM_KILLED:
         UMA_HISTOGRAM_MEGABYTES_LINEAR(
             "Memory.OOMKill.Extensions.MemGraphicsMB", mem_gpu_mb);
+        break;
+      default:
         break;
     }
   }
@@ -68,8 +66,6 @@ void RecordMemoryStats(RecordMemoryStatsType type) {
       case RECORD_MEMORY_STATS_CONTENTS_OOM_KILLED: {
         UMA_HISTOGRAM_ALLOCATED_MEGABYTES(
             "Memory.OOMKill.Contents.MemAllocatedMB", mem_allocated_mb);
-        UMA_HISTOGRAM_LARGE_MEMORY_MB("Memory.OOMKill.Contents.MemAvailableMB",
-                                      mem_available_mb);
         break;
       }
       case RECORD_MEMORY_STATS_EXTENSIONS_OOM_KILLED: {

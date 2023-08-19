@@ -40,7 +40,7 @@ enum FamilyRole {
   // next ID: 6
 }
 // LINT.ThenChange(
-//     //chrome/browser/supervised_user/child_accounts/child_account_service.cc
+//     //components/supervised_user/core/browser/child_account_service.cc
 // )
 
 // Data about a family member.

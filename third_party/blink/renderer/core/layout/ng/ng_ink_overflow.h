@@ -22,8 +22,9 @@ class Font;
 class NGFragmentItem;
 class NGInlineCursor;
 class NGInlinePaintContext;
-struct NGTextFragmentPaintInfo;
 class Text;
+struct LogicalRect;
+struct NGTextFragmentPaintInfo;
 
 // Represents an ink-overflow rectangle. Used for:
 // - Objects without children, such as text runs.
@@ -153,21 +154,22 @@ class CORE_EXPORT NGInkOverflow {
   // |size| is a size of text item, e.g. |NGFragmentItem::Size()|.
   // Note: |style| should have emphasis mark and |ink_overflow| should be in
   // logical direction.
-  static LayoutRect ComputeEmphasisMarkOverflow(const ComputedStyle& style,
-                                                const PhysicalSize& size,
-                                                const LayoutRect& ink_overflow);
+  static LogicalRect ComputeEmphasisMarkOverflow(
+      const ComputedStyle& style,
+      const PhysicalSize& size,
+      const LogicalRect& ink_overflow);
 
   // Returns ink-overflow with text decoration overflow in logical direction.
   // |inline_context| may be null.
   // Note: |ink_overflow| should be in logical direction.
   // Returns ink-overflow with text decoration, markers and highlights
   // overflow in the logical direction.
-  static LayoutRect ComputeDecorationOverflow(
+  static LogicalRect ComputeDecorationOverflow(
       const NGInlineCursor& cursor,
       const ComputedStyle& style,
       const Font& scaled_font,
       const PhysicalOffset& container_offset,
-      const LayoutRect& ink_overflow,
+      const LogicalRect& ink_overflow,
       const NGInlinePaintContext* inline_context);
 
 #if DCHECK_IS_ON()
@@ -183,17 +185,17 @@ class CORE_EXPORT NGInkOverflow {
 #endif
 
  private:
-  static LayoutRect ComputeAppliedDecorationOverflow(
+  static LogicalRect ComputeAppliedDecorationOverflow(
       const ComputedStyle& style,
       const Font& scaled_font,
       const PhysicalOffset& offset_in_container,
-      const LayoutRect& ink_overflow,
+      const LogicalRect& ink_overflow,
       const NGInlinePaintContext* inline_context,
       const AppliedTextDecoration* decoration_override = nullptr);
 
   // For all markers but custom highlights. i.e. those with only one
   // potential style for the type, regardless of which marker it is.
-  static LayoutRect ComputeMarkerOverflow(
+  static LogicalRect ComputeMarkerOverflow(
       const DocumentMarkerVector& markers,
       const DocumentMarker::MarkerType type,
       const NGFragmentItem* fragment_item,
@@ -201,17 +203,17 @@ class CORE_EXPORT NGInkOverflow {
       const ComputedStyle& style,
       const Font& scaled_font,
       const PhysicalOffset& offset_in_container,
-      const LayoutRect& ink_overflow,
+      const LogicalRect& ink_overflow,
       const NGInlinePaintContext* inline_context);
 
-  static LayoutRect ComputeCustomHighlightOverflow(
+  static LogicalRect ComputeCustomHighlightOverflow(
       const DocumentMarkerVector& markers,
       const NGFragmentItem* fragment_item,
       Text* text_node,
       const ComputedStyle& style,
       const Font& scaled_font,
       const PhysicalOffset& offset_in_container,
-      const LayoutRect& ink_overflow,
+      const LogicalRect& ink_overflow,
       const NGInlinePaintContext* inline_context);
 
   PhysicalRect FromOutsets(const PhysicalSize& size) const;

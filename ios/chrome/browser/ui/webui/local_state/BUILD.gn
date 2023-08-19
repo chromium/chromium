@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("local_state") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "local_state_ui.h",
     "local_state_ui.mm",

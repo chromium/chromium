@@ -11,10 +11,6 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "third_party/abseil-cpp/absl/types/optional.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 std::unique_ptr<password_manager::PasswordFormManagerForUI> CreateFormManager(
     password_manager::PasswordForm* form,

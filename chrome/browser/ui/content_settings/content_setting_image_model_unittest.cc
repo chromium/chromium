@@ -29,6 +29,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/permissions/features.h"
@@ -38,6 +39,7 @@
 #include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/permissions/test/mock_permission_request.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
@@ -50,6 +52,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/paint_vector_icon.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "services/device/public/cpp/geolocation/geolocation_manager.h"
@@ -110,7 +113,7 @@ class ContentSettingImageModelTest : public BrowserWithTestWindowTest {
   ContentSettingImageModelTest& operator=(const ContentSettingImageModelTest&) =
       delete;
 
-  ~ContentSettingImageModelTest() override {}
+  ~ContentSettingImageModelTest() override = default;
 
   content::WebContents* web_contents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
@@ -721,6 +724,52 @@ TEST_F(ContentSettingImageModelTest, NotificationsContentAbusive) {
   EXPECT_TRUE(content_setting_image_model->is_visible());
   EXPECT_EQ(0, content_setting_image_model->explanatory_string_id());
   manager_->Accept();
+}
+
+TEST_F(ContentSettingImageModelTest, StorageAccess) {
+  auto content_setting_image_model =
+      ContentSettingImageModel::CreateForContentType(
+          ContentSettingImageModel::ImageType::STORAGE_ACCESS);
+  EXPECT_FALSE(content_setting_image_model->is_visible());
+
+  auto* content_settings = PageSpecificContentSettings::GetForFrame(
+      web_contents()->GetPrimaryMainFrame());
+
+  // Add an allowed permission.
+  content_settings->OnTwoSitePermissionChanged(
+      ContentSettingsType::STORAGE_ACCESS,
+      net::SchemefulSite(GURL("https://example.com")), CONTENT_SETTING_ALLOW);
+  content_setting_image_model->Update(web_contents());
+  EXPECT_TRUE(content_setting_image_model->is_visible());
+  EXPECT_EQ(content_setting_image_model->get_icon_badge(), &gfx::kNoneIcon);
+
+  // Add a blocked permission.
+  content_settings->OnTwoSitePermissionChanged(
+      ContentSettingsType::STORAGE_ACCESS,
+      net::SchemefulSite(GURL("https://foo.com")), CONTENT_SETTING_BLOCK);
+  content_setting_image_model->Update(web_contents());
+  EXPECT_TRUE(content_setting_image_model->is_visible());
+  EXPECT_EQ(content_setting_image_model->get_icon_badge(),
+            &vector_icons::kBlockedBadgeIcon);
+
+  // Change permission to be allowed. E.g. through PageInfo.
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
+  map->SetContentSettingDefaultScope(
+      GURL("https://foo.com"), web_contents()->GetURL(),
+      ContentSettingsType::STORAGE_ACCESS, CONTENT_SETTING_ALLOW);
+  content_setting_image_model->Update(web_contents());
+  EXPECT_TRUE(content_setting_image_model->is_visible());
+  EXPECT_EQ(content_setting_image_model->get_icon_badge(), &gfx::kNoneIcon);
+
+  // Reset permissions.
+  map->SetContentSettingDefaultScope(
+      GURL("https://foo.com"), web_contents()->GetURL(),
+      ContentSettingsType::STORAGE_ACCESS, CONTENT_SETTING_ASK);
+  map->SetContentSettingDefaultScope(
+      GURL("https://example.com"), web_contents()->GetURL(),
+      ContentSettingsType::STORAGE_ACCESS, CONTENT_SETTING_ASK);
+  content_setting_image_model->Update(web_contents());
+  EXPECT_FALSE(content_setting_image_model->is_visible());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

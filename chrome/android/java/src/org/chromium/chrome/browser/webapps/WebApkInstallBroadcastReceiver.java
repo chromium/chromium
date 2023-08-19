@@ -78,8 +78,7 @@ public class WebApkInstallBroadcastReceiver extends BroadcastReceiver {
 
     // Get the Bitmap icon from the current install notification, it will be use for the retry
     // install notification.
-    @Nullable
-    private Bitmap getCurrentIconFromNotification(Context context, String id) {
+    private @Nullable Bitmap getCurrentIconFromNotification(Context context, String id) {
         NotificationManager nm =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         for (StatusBarNotification sbn : nm.getActiveNotifications()) {

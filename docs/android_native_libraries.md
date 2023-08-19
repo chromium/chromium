@@ -261,7 +261,7 @@ Partitioned libraries are usable when all of the following are true:
    * It was loaded directly from the apk via `libchromium_android_linker.so`.
    * Only JNI_OnLoad was exported. Explicit JNI registration was required
      because the Android runtime uses the system's `dlsym()`, which doesn't know
-     about Crazy-Linker-opened libraries. (see [//base/android/jni_generator/README.md]).
+     about Crazy-Linker-opened libraries. (see [JNI README](/third_party/jni_zero/README.md)).
 
 ## See Also
  * [//docs/android_build_instructions.md#Multiple-Chrome-APK-Targets](android_build_instructions.md#Multiple-Chrome-APK-Targets)

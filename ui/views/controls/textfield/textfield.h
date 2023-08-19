@@ -34,6 +34,7 @@
 #include "ui/gfx/range/range.h"
 #include "ui/gfx/selection_model.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/touch_selection/touch_selection_metrics.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/textfield/textfield_model.h"
 #include "ui/views/drag_controller.h"
@@ -668,12 +669,23 @@ class VIEWS_EXPORT Textfield : public View,
   // Returns the corner radius of the text field.
   float GetCornerRadius();
 
-  // Checks and updates the selection dragging state for the upcoming scroll
-  // sequence, if required. If the scroll sequence starts while long pressing,
-  // it will be used for adjusting the text selection. Otherwise, if the scroll
-  // begins horizontally it will be used for cursor placement. Otherwise, the
-  // scroll sequence won't be used for selection dragging.
-  void MaybeStartSelectionDragging(ui::GestureEvent* event);
+  // Prepares the Textfield for gesture scrolling by setting the drag start
+  // state.
+  void OnGestureScrollBegin(int drag_start_location_x);
+
+  // Performs gesture scrolling.
+  void GestureScroll(int drag_location_x);
+
+  // Performs gesture handling needed for touch selection dragging. Sets `event`
+  // as handled and returns true if the event should not be processed further.
+  bool HandleGestureForSelectionDragging(ui::GestureEvent* event);
+
+  // Determines whether touch selection dragging should start and updates the
+  // selection dragging state if needed. Returns true if selection dragging
+  // starts.
+  bool StartSelectionDragging(const ui::GestureEvent& event);
+
+  void StopSelectionDragging();
 
   // The text model.
   std::unique_ptr<TextfieldModel> model_;
@@ -761,15 +773,32 @@ class VIEWS_EXPORT Textfield : public View,
 
   SelectionController selection_controller_;
 
-  // Tracks when the current scroll sequence should be used for cursor placement
+  // Tracks the touch selection dragging state which is used when determining
+  // whether a dragging movement should be used for scrolling, cursor placement
   // or adjusting the text selection.
   enum class SelectionDraggingState {
+    // Default state, i.e. no selection dragging gestures being handled.
     kNone,
+    // A gesture has used to select all text (e.g. triple press), but dragging
+    // has not started yet.
+    kSelectedAll,
+    // A gesture has used to select word (e.g. long press or double press), but
+    // dragging has not started yet.
+    kSelectedWord,
+    // Dragging gesture is being handled to move the cursor. This state is
+    // reached if a dragging gesture begins while the cursor is present (roughly
+    // corresponds to the case where no text was selected by a prior gesture).
     kDraggingCursor,
+    // Dragging gesture is being handled to adjust the selection. This state is
+    // reached if a dragging gesture begins after a word was selected by a prior
+    // gesture.
     kDraggingSelectionExtent
   };
   SelectionDraggingState selection_dragging_state_ =
       SelectionDraggingState::kNone;
+
+  // Tracks the type of the current or pending selection drag gesture.
+  absl::optional<ui::TouchSelectionDragType> selection_drag_type_;
 
   // The offset applied to the touch drag location when determining selection
   // updates.

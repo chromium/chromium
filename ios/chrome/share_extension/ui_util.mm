@@ -6,10 +6,6 @@
 
 #import "ios/chrome/share_extension/ui_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace ui_util {
 
 const CGFloat kAnimationDuration = 0.3;

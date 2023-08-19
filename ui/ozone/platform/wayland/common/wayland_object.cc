@@ -25,6 +25,7 @@
 #include <presentation-time-client-protocol.h>
 #include <primary-selection-unstable-v1-client-protocol.h>
 #include <relative-pointer-unstable-v1-client-protocol.h>
+#include <single-pixel-buffer-v1-client-protocol.h>
 #include <stylus-unstable-v2-client-protocol.h>
 #include <surface-augmenter-client-protocol.h>
 #include <text-input-extension-unstable-v1-client-protocol.h>
@@ -222,6 +223,7 @@ IMPLEMENT_WAYLAND_OBJECT_TRAITS(wl_surface)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS_WITH_DELETER(wl_touch, delete_touch)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(wp_presentation)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(wp_presentation_feedback)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS(wp_single_pixel_buffer_manager_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(wp_viewport)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(wp_viewporter)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(wp_content_type_v1)
@@ -275,6 +277,7 @@ IMPLEMENT_WAYLAND_OBJECT_TRAITS(zwp_linux_surface_synchronization_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zwp_locked_pointer_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zwp_pointer_constraints_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zwp_pointer_gesture_pinch_v1)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS(zwp_pointer_gesture_hold_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zwp_pointer_gestures_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zwp_primary_selection_device_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zwp_primary_selection_device_manager_v1)

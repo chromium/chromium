@@ -37,7 +37,6 @@
 #include "chrome/browser/nearby_sharing/contacts/fake_nearby_share_contact_manager.h"
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_manager_impl.h"
 #include "chrome/browser/nearby_sharing/fake_nearby_connection.h"
-#include "chrome/browser/nearby_sharing/fake_nearby_connections_manager.h"
 #include "chrome/browser/nearby_sharing/fast_initiation/fast_initiation_advertiser.h"
 #include "chrome/browser/nearby_sharing/fast_initiation/fast_initiation_scanner.h"
 #include "chrome/browser/nearby_sharing/local_device_data/fake_nearby_share_local_device_data_manager.h"
@@ -47,6 +46,7 @@
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/browser/nearby_sharing/power_client.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
+#include "chrome/browser/nearby_sharing/public/cpp/fake_nearby_connections_manager.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
 #include "chrome/browser/nearby_sharing/wifi_network_configuration/fake_wifi_network_configuration_handler.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
@@ -245,7 +245,7 @@ class FakeFastInitiationScannerFactory : public FastInitiationScanner::Factory {
  private:
   void OnScannerDestroyed() { ++scanner_destroyed_count_; }
 
-  raw_ptr<FakeFastInitiationScanner, ExperimentalAsh>
+  raw_ptr<FakeFastInitiationScanner, DanglingUntriaged | ExperimentalAsh>
       last_fake_fast_initiation_scanner_ = nullptr;
   size_t scanner_created_count_ = 0u;
   size_t scanner_destroyed_count_ = 0u;
@@ -639,6 +639,11 @@ class NearbySharingServiceImplTestBase : public testing::Test {
     // This ensures that the change propagates through mojo and the observers
     // are called.
     base::RunLoop().RunUntilIdle();
+  }
+
+  nearby_share::mojom::Visibility GetVisibility() {
+    NearbyShareSettings settings(&prefs_, local_device_data_manager());
+    return settings.GetVisibility();
   }
 
   void SetIsEnabled(bool is_enabled) {
@@ -1518,10 +1523,12 @@ class NearbySharingServiceImplTestBase : public testing::Test {
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
   raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
   sync_preferences::TestingPrefServiceSyncable prefs_;
-  raw_ptr<FakeNearbyConnectionsManager, ExperimentalAsh>
+  raw_ptr<FakeNearbyConnectionsManager, DanglingUntriaged | ExperimentalAsh>
       fake_nearby_connections_manager_ = nullptr;
-  raw_ptr<FakePowerClient, ExperimentalAsh> power_client_ = nullptr;
-  raw_ptr<FakeWifiNetworkConfigurationHandler, ExperimentalAsh>
+  raw_ptr<FakePowerClient, DanglingUntriaged | ExperimentalAsh> power_client_ =
+      nullptr;
+  raw_ptr<FakeWifiNetworkConfigurationHandler,
+          DanglingUntriaged | ExperimentalAsh>
       wifi_network_handler_ = nullptr;
   FakeNearbyShareLocalDeviceDataManager::Factory
       local_device_data_manager_factory_;
@@ -1540,7 +1547,8 @@ class NearbySharingServiceImplTestBase : public testing::Test {
   bool is_bluetooth_powered_ = true;
   device::BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus
       hardware_support_state_;
-  raw_ptr<device::BluetoothAdapter::Observer, ExperimentalAsh>
+  raw_ptr<device::BluetoothAdapter::Observer,
+          DanglingUntriaged | ExperimentalAsh>
       adapter_observer_ = nullptr;
   scoped_refptr<NiceMock<MockBluetoothAdapterWithIntervals>>
       mock_bluetooth_adapter_;
@@ -1692,7 +1700,7 @@ class TestObserver : public NearbySharingService::Observer {
   bool devices_detected_called_ = false;
   bool devices_not_detected_called_ = false;
   bool scanning_stopped_called_ = false;
-  raw_ptr<NearbySharingService, ExperimentalAsh> service_;
+  raw_ptr<NearbySharingService, DanglingUntriaged | ExperimentalAsh> service_;
 };
 
 TEST_P(NearbySharingServiceImplTest, DisableNearbyShutdownConnections) {
@@ -2323,7 +2331,7 @@ TEST_P(NearbySharingServiceImplTest,
   NearbySharingService::StatusCodes result = service_->RegisterReceiveSurface(
       &callback, NearbySharingService::ReceiveSurfaceState::kForeground);
   EXPECT_EQ(result, NearbySharingService::StatusCodes::kOk);
-  if (base::FeatureList::IsEnabled(features::kNearbySharingSelfShare)) {
+  if (features::IsSelfShareEnabled()) {
     EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
   } else {
     EXPECT_FALSE(fake_nearby_connections_manager_->IsAdvertising());
@@ -2341,7 +2349,7 @@ TEST_P(NearbySharingServiceImplTest, ScreenLocksDuringAdvertising) {
   EXPECT_FALSE(fake_nearby_connections_manager_->is_shutdown());
 
   session_controller_->SetScreenLocked(true);
-  if (base::FeatureList::IsEnabled(features::kNearbySharingSelfShare)) {
+  if (features::IsSelfShareEnabled()) {
     EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
   } else {
     EXPECT_FALSE(fake_nearby_connections_manager_->IsAdvertising());
@@ -5254,7 +5262,7 @@ TEST_P(NearbySharingServiceImplTest, CreateShareTarget) {
   ASSERT_TRUE(share_target.has_value());
   EXPECT_EQ(kDeviceName, share_target->device_name);
   EXPECT_EQ(kDeviceType, share_target->type);
-  if (base::FeatureList::IsEnabled(features::kNearbySharingSelfShare)) {
+  if (features::IsSelfShareEnabled()) {
     EXPECT_EQ(certificate_proto.for_self_share(), share_target->for_self_share);
   }
 
@@ -5284,7 +5292,7 @@ TEST_P(NearbySharingServiceImplTest, SelfShareAutoAccept) {
       SetUpIncomingConnection(callback, /*for_self_share=*/true);
 
   // If Self Share is not enabled, we should just time out.
-  if (!base::FeatureList::IsEnabled(features::kNearbySharingSelfShare)) {
+  if (!features::IsSelfShareEnabled()) {
     base::RunLoop run_loop;
     EXPECT_CALL(callback, OnTransferUpdate(testing::_, testing::_))
         .WillOnce(testing::Invoke(
@@ -5328,6 +5336,21 @@ TEST_P(NearbySharingServiceImplTest, SelfShareAutoAccept) {
 
   // To avoid UAF in OnIncomingTransferUpdate().
   service_->UnregisterReceiveSurface(&callback);
+}
+
+TEST_P(NearbySharingServiceImplTest, YourDevicesVisibilityOnScreenLock) {
+  if (features::IsSelfShareEnabled()) {
+    SetIsEnabled(true);
+    SetVisibility(nearby_share::mojom::Visibility::kAllContacts);
+
+    // Lock screen, expect Your Devices visibility.
+    session_controller_->SetScreenLocked(true);
+    EXPECT_EQ(GetVisibility(), nearby_share::mojom::Visibility::kYourDevices);
+
+    // Unlock screen, expect visibility to return to All Contacts.
+    session_controller_->SetScreenLocked(false);
+    EXPECT_EQ(GetVisibility(), nearby_share::mojom::Visibility::kAllContacts);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(NearbySharingServiceImplTest,

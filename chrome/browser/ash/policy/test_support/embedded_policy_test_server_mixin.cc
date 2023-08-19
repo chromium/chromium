@@ -250,6 +250,12 @@ void EmbeddedPolicyTestServerMixin::SetupZeroTouchForcedEnrollment() {
                                      initial_enrollment, test::kTestDomain);
 }
 
+void EmbeddedPolicyTestServerMixin::SetEnrollmentNudgePolicy(
+    bool enrollment_required) {
+  policy_test_server_->policy_storage()->set_enrollment_required(
+      enrollment_required);
+}
+
 void EmbeddedPolicyTestServerMixin::ConfigureFakeStatisticsForZeroTouch(
     system::ScopedFakeStatisticsProvider* provider) {
   provider->SetMachineStatistic(system::kRlzBrandCodeKey,

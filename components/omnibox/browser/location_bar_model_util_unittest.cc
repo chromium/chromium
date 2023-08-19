@@ -24,14 +24,6 @@ TEST(LocationBarModelUtilTest, GetSecurityVectorIconWithSecureLevel) {
 }
 
 TEST(LocationBarModelUtilTest,
-     GetSecurityVectorIconWithSecureLevelUpdatedIcon) {
-  const gfx::VectorIcon& icon = location_bar_model::GetSecurityVectorIcon(
-      security_state::SecurityLevel::SECURE,
-      /*use_updated_connection_security_indicators=*/true);
-  EXPECT_EQ(icon.name, vector_icons::kHttpsValidArrowIcon.name);
-}
-
-TEST(LocationBarModelUtilTest,
      GetSecurityVectorIconWithSecureWithPolicyInstalledCertLevel) {
   const gfx::VectorIcon& icon = location_bar_model::GetSecurityVectorIcon(
       security_state::SecurityLevel::SECURE_WITH_POLICY_INSTALLED_CERT,

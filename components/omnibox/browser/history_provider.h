@@ -45,7 +45,7 @@ class HistoryProvider : public AutocompleteProvider {
   AutocompleteProviderClient* client() const { return client_; }
 
  private:
-  raw_ptr<AutocompleteProviderClient, DanglingUntriaged> client_;
+  raw_ptr<AutocompleteProviderClient, AcrossTasksDanglingUntriaged> client_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_HISTORY_PROVIDER_H_

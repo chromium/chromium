@@ -566,9 +566,9 @@ IN_PROC_BROWSER_TEST_F(SystemProxyManagerPolicyCredentialsBrowserTest,
   ExpectSystemCredentialsSent("", "");
 
   // Configure a proxy via user policy.
-  base::Value::Dict proxy_config;
-  proxy_config.Set("mode", ProxyPrefs::kPacScriptProxyModeName);
-  proxy_config.Set("pac_url", "http://proxy");
+  auto proxy_config = base::Value::Dict()
+                          .Set("mode", ProxyPrefs::kPacScriptProxyModeName)
+                          .Set("pac_url", "http://proxy");
   browser()->profile()->GetPrefs()->SetDict(::proxy_config::prefs::kProxy,
                                             std::move(proxy_config));
   RunUntilIdle();
@@ -582,9 +582,9 @@ IN_PROC_BROWSER_TEST_F(SystemProxyManagerPolicyCredentialsBrowserTest,
 IN_PROC_BROWSER_TEST_F(SystemProxyManagerPolicyCredentialsBrowserTest,
                        UserSetProxy) {
   SetPolicyCredentials(kUsername, kPassword);
-  base::Value::Dict proxy_config;
-  proxy_config.Set("mode", ProxyPrefs::kFixedServersProxyModeName);
-  proxy_config.Set("server", "proxy:8080");
+  auto proxy_config = base::Value::Dict()
+                          .Set("mode", ProxyPrefs::kFixedServersProxyModeName)
+                          .Set("server", "proxy:8080");
   SetProxyConfigForNetworkService(kDefaultServicePath, std::move(proxy_config));
   RunUntilIdle();
   int set_auth_details_call_count = 0;
@@ -661,9 +661,10 @@ class SystemProxyCredentialsReuseBrowserTest
 
   void SetManagedProxy() {
     // Configure a proxy via user policy.
-    base::Value::Dict proxy_config;
-    proxy_config.Set("mode", ProxyPrefs::kFixedServersProxyModeName);
-    proxy_config.Set("server", proxy_server_->host_port_pair().ToString());
+    auto proxy_config =
+        base::Value::Dict()
+            .Set("mode", ProxyPrefs::kFixedServersProxyModeName)
+            .Set("server", proxy_server_->host_port_pair().ToString());
     browser()->profile()->GetPrefs()->SetDict(::proxy_config::prefs::kProxy,
                                               std::move(proxy_config));
     RunUntilIdle();

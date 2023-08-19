@@ -10,6 +10,7 @@
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_provider.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/disk_data_allocator.h"
 #include "third_party/blink/renderer/platform/graphics/parkable_image.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -20,8 +21,6 @@ namespace blink {
 
 class ParkableImageImpl;
 class ParkableImage;
-
-PLATFORM_EXPORT BASE_DECLARE_FEATURE(kParkableImagesToDisk);
 
 // Manages parkable images, which are used in blink::BitmapImage. Currently,
 // only records metrics for this. In the future we will park eligible images
@@ -40,8 +39,10 @@ class PLATFORM_EXPORT ParkableImageManager
   size_t Size() const LOCKS_EXCLUDED(lock_);
 
   static bool IsParkableImagesToDiskEnabled() {
-    return base::FeatureList::IsEnabled(kParkableImagesToDisk);
+    return base::FeatureList::IsEnabled(features::kParkableImagesToDisk);
   }
+
+  void MaybeParkImagesForTesting() { MaybeParkImages(); }
 
  private:
   struct Statistics;

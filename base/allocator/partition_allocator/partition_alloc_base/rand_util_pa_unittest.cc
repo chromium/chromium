@@ -13,9 +13,9 @@
 #include <memory>
 #include <vector>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/check.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/logging.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/time/time.h"
-#include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace partition_alloc::internal::base {
@@ -180,7 +180,8 @@ bool ChiSquaredTest(InsecureRandomGenerator& gen,
                     int from_bit,
                     int num_bits) {
   const int range = 1 << num_bits;
-  PA_CHECK(static_cast<int>(n % range) == 0) << "Makes computations simpler";
+  PA_BASE_CHECK(static_cast<int>(n % range) == 0)
+      << "Makes computations simpler";
   std::vector<size_t> samples(range, 0);
 
   // Count how many samples pf each value are found. All buckets should be

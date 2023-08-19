@@ -18,7 +18,7 @@ namespace browsing_topics {
 // message ids to use to get the topic names.
 class COMPONENT_EXPORT(BROWSING_TOPICS_COMMON) SemanticTree {
  public:
-  static constexpr int kNumTopics = 349;
+  static constexpr int kNumTopics = 629;
 
   SemanticTree();
   SemanticTree(const SemanticTree& other) = delete;

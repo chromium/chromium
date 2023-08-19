@@ -5,6 +5,7 @@
 #include "storage/browser/blob/blob_url_registry.h"
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "net/base/features.h"
 #include "storage/browser/blob/blob_url_store_impl.h"
@@ -95,13 +96,15 @@ bool BlobUrlRegistry::IsUrlMapped(const GURL& blob_url,
                                   const blink::StorageKey& storage_key) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (base::FeatureList::IsEnabled(net::features::kSupportPartitionedBlobUrl)) {
-    if (url_to_blob_.find(blob_url) != url_to_blob_.end() &&
+    if (base::Contains(url_to_blob_, blob_url) &&
+        base::Contains(url_to_storage_key_, blob_url) &&
         url_to_storage_key_.at(blob_url) == storage_key) {
       return true;
     }
   } else {
-    if (url_to_blob_.find(blob_url) != url_to_blob_.end())
+    if (base::Contains(url_to_blob_, blob_url)) {
       return true;
+    }
   }
   if (fallback_) {
     return fallback_->IsUrlMapped(blob_url, storage_key);
@@ -150,13 +153,13 @@ void BlobUrlRegistry::AddTokenMapping(
     const GURL& url,
     mojo::PendingRemote<blink::mojom::Blob> blob) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(token_to_url_and_blob_.find(token) == token_to_url_and_blob_.end());
+  DCHECK(!base::Contains(token_to_url_and_blob_, token));
   token_to_url_and_blob_.emplace(token, std::make_pair(url, std::move(blob)));
 }
 
 void BlobUrlRegistry::RemoveTokenMapping(const base::UnguessableToken& token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(token_to_url_and_blob_.find(token) != token_to_url_and_blob_.end());
+  DCHECK(base::Contains(token_to_url_and_blob_, token));
   token_to_url_and_blob_.erase(token);
 }
 

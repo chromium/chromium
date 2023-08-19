@@ -226,10 +226,11 @@ EncoderApp -f 5 --EnablePicPartitioning=1 --CTUSize=128 \
   --SliceLevelRpl=1 --SliceLevelDblk=1 --SliceLevelSao=1 --SliceLevelAlf=1 \
   --SliceLevelDeltaQp=1 --ALF=1 --JointCbCr=1 --SAO=1 --WeightedPredP=1 \
   --WeightedPredB=1 --WeightedPredMethod=4 --CCALF=1 \
-  --VirtualBoundariesPresentInSPSFlag=0 --SliceLevelWeightedPrediction=1
+  --VirtualBoundariesPresentInSPSFlag=0 --SliceLevelWeightedPrediction=1 \
+  --InputFile=bbb_1920x1080.yuv --BitstreamFile=bbb_rpl_in_slice.vvc
 ```
 
-#### bbb_slice_with_entrypoints
+#### bbb_slice_with_entrypoints.vvc
 VVC stream generated with VTM that is used to verify slices with entrypoints
 specified in slice header, and also with deblocking filter params in it.
 Created with VTM and ffmpeg:
@@ -246,10 +247,10 @@ EncoderApp --EnablePicPartitioning=1 --CTUSize=128 --TileColumnWidthArray=5 \
   --DeblockingFilterCbBetaOffset_div2=-2 --DeblockingFilterCbTcOffset_div2=0 \
   --DeblockingFilterCrBetaOffset_div2=-2 --DeblockingFilterCrTcOffset_div2=0 \
   --DeblockingFilterMetric=0 --EntryPointsPresent=1 --WaveFrontSynchro=1 \
-  -f 2 --InputFile=bbb_1920x1080.yuv --BitstreamFile=bbb_9tiles.vvc
+  -f 2 --InputFile=bbb_1920x1080.yuv --BitstreamFile=bbb_slice_with_entrypoints.vvc
 ```
 
-#### bbb_2_subpictures_8_slices
+#### bbb_2_subpictures_8_slices.vvc
 VVC stream generated with VTM that is used to verify VVC slice parser on stream
 that is with multiple subpictures.
 Created with VTM and ffmpeg:
@@ -265,8 +266,28 @@ EncoderApp --EnablePicPartitioning=1 --CTUSize=128 --TileColumnWidthArray=3,4 \
  --SubPicHeight=9,9 --SubPicTreatedAsPicFlag=1,1 \
  --LoopFilterAcrossSubpicEnabledFlag=0,0 \
  --SubPicIdMappingExplicitlySignalledFlag=0 \
- -f 2 --InputFile=bbb_1920x1080.yuv --BitstreamFile=bbb_9tiles.vvc
+ -f 2 --InputFile=bbb_1920x1080.yuv --BitstreamFile=bbb_2_subpictures_8slices.vvc
 ```
+
+#### bbb_poc_msb.vvc
+VVC stream generated with VTM that is modified to limit the POC LSB maximum value
+to 16. This is done by change sps_log2_max_pic_order_cnt_lsb_minus4 to 0 in the
+VTM encoder implementation.
+
+#### bbb_poc_gop8.vvc
+VVC stream generated with VTM that is configured to having a GOP size of 4 and
+IDR interval of 8, to verify the POC difference for IDR frame with HEVC.
+Created with VTM and ffmpeg:
+```
+ffmpeg -i bbb-320x240-2video-2audio.mp4 bbb_320x240.yuv
+EncoderApp --CTUSize=128 --GOPSize=4 --DecodingRefreshType=2 --IntraPeriod=8 \
+  --InputFile=bbb_320x240.yuv --BitstreamFile=bbb__poc_gop8.vvc
+```
+
+#### vvc_frames_with_ltr.vvc
+VVC stream generated manually with modified VTM to enable long term reference
+pictures. The stream is also encoded with multiple slices per AU, and each
+slice is with different reference picture lists.
 
 ### AV1
 
@@ -480,6 +501,23 @@ converted from four-colors.mp4 by ffmpeg.
 #### four-colors-vp9-i420a.webm
 A 960x540 yuva420p vp9 video with 4 color blocks (Y,R,G,B) in every frame. This
 is converted from four-colors.mp4 by adding an opacity of 0.5 using ffmpeg.
+
+
+#### four-colors-av1.mp4
+```
+ffmpeg -y -i four-colors.png -t 2 \
+       -vf "colorspace=bt709:iall=bt709:fast=1,scale=960:540,setsar=1:1" \
+       -c:v libaom-av1 -b:v 2M \
+       -pix_fmt yuv420p -movflags +write_colr four-colors-av1.mp4
+```
+
+#### four-colors-hevc.mp4
+```
+ffmpeg -y -i four-colors.png -t 2 \
+       -vf "colorspace=bt709:iall=bt709:fast=1,scale=960:540,setsar=1:1" \
+       -c:v libx265 -crf 26 \
+       -pix_fmt yuv420p -movflags +write_colr four-colors-hevc.mp4
+```
 
 #### bear-320x180-hi10p.mp4
 #### bear-320x240-vp9_profile2.webm
@@ -1348,10 +1386,28 @@ HEVC video stream with 8-bit main profile, generated with
 ffmpeg -i bear-1280x720.mp4 -vcodec hevc bear-1280x720-hevc.mp4
 ```
 
+#### bear-1280x720-hevc-no-audio.mp4
+HEVC video stream with 8-bit main profile, generated with
+```
+ffmpeg -i bear-1280x720-hevc.mp4 -vcodec copy -an bear-1280x720-hevc-no-audio.mp4
+```
+
 #### bear-1280x720-hevc-10bit.mp4
 HEVC video stream with 10-bit main10 profile, generated with
 ```
 ffmpeg -i bear-1280x720.mp4 -vcodec hevc -pix_fmt yuv420p10le bear-1280x720-hevc-10bit.mp4
+```
+
+#### bear-1280x720-hevc-8bit-422.mp4
+HEVC video stream with 8-bit 422 range extension profile, generated with
+```
+ffmpeg -i bear-1280x720.mp4 -vcodec hevc -pix_fmt yuv422p bear-1280x720-hevc-8bit-422.mp4
+```
+
+#### bear-1280x720-hevc-10bit-no-audio.mp4
+HEVC video stream with 10-bit main10 profile, generated with
+```
+ffmpeg -i bear-1280x720-hevc-10bit.mp4 -vcodec copy -an bear-1280x720-hevc-10bit-no-audio.mp4
 ```
 
 #### bear-1280x720-hevc-10bit-422.mp4
@@ -1360,10 +1416,22 @@ HEVC video stream with 10-bit 422 range extension profile, generated with
 ffmpeg -i bear-1280x720.mp4 -vcodec libx265 -pix_fmt yuv422p10le bear-1280x720-hevc-10bit-422.mp4
 ```
 
+#### bear-1280x720-hevc-10bit-422-no-audio.mp4
+HEVC video stream with 10-bit 422 range extension profile, generated with
+```
+ffmpeg -i bear-1280x720-hevc-10bit-422.mp4 -vcodec copy -an bear-1280x720-hevc-10bit-422-no-audio.mp4
+```
+
 #### bear-1280x720-hevc-10bit-444.mp4
 HEVC video stream with 10-bit 444 range extension profile, generated with
 ```
 ffmpeg -i bear-1280x720.mp4 -vcodec libx265 -pix_fmt yuv444p10le bear-1280x720-hevc-10bit-444.mp4
+```
+
+#### bear-1280x720-hevc-10bit-444-no-audio.mp4
+HEVC video stream with 10-bit 444 range extension profile, generated with
+```
+ffmpeg -i bear-1280x720-hevc-10bit-444.mp4 -vcodec copy -an bear-1280x720-hevc-10bit-444-no-audio.mp4
 ```
 
 #### bear-1280x720-hevc-12bit-420.mp4
@@ -1389,6 +1457,12 @@ HEVC video stream with HDR10 metadata included, generated with
 ````
 ffmpeg -i bear-1280x720.mp4 -vcodec libx265 -x265-params colorprim=bt2020:transfer=smpte2084:colormatrix=bt2020nc:master-display="G(13250,34500)B(7500,3000)R(34000,16000)WP(15635,16450)L(10000000,500)":max-cll=1000,400 -pix_fmt yuv420p10le bear-1280x720-hevc-10bit-hdr10.mp4 // nocheck
 ````
+
+#### bear-3840x2160-hevc.mp4
+HEVC video stream with 8-bit main profile, generated with
+```
+ffmpeg -i bear-1280x720.mp4 -vf "scale=3840:2160,setpts=4*PTS" -c:v libx265 -crf 28 -c:a copy bear-3840x2160-hevc.mp4
+```
 
 ### Multi-track MP4 file
 
@@ -1506,3 +1580,16 @@ ffmpeg -i bear2.wav -i bear2.wav -i bear2.wav -ar 48000 -filter_complex 'amerge=
 ffmpeg -i bear6.wav -c:a dtsxS -b:a 160000 -movflags frag_keyframe -y bear_dtsx.mp4
 # truncate to size of moov box (truncate -s)
 ```
+### one_frame_1280x720.mjpeg
+It's a single frame mjpeg data. Resolution: 1280x720, color primary: sRGB, transfer function: BT.709, color matrix: BT.601, color range: full-range.
+
+### avc-bitstream-format-0.h264
+The first 2 frames of the H.264 with bitstream format (NALU length)
+
+avc-bitstream-format-0.h264: IDR
+- ffmpeg -y -i bear-1280x720.mp4 -vcodec copy -f m4v avc-bitstream-format-0.h264
+avc-bitstream-format-1.h264: Non-IDR
+- split bear-1280x720.mp4 to annexb files by command of
+  ffmpeg -i %1 -f image2 -vcodec copy -bsf h264_mp4toannexb "%d.h264"
+- manually convert one of created Non-IDR annexb file to avc bitstream.
+  (replace annexb start code with length)

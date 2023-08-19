@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("safe_browsing") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "safe_browsing_coordinator.h",
     "safe_browsing_coordinator.mm",

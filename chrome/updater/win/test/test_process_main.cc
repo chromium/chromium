@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/at_exit.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/logging.h"
@@ -91,6 +92,8 @@ int DoMain(const base::CommandLine* command_line) {
 }  // namespace
 
 int main(int, char**) {
+  base::AtExitManager exit_manager;
+
   bool success = base::CommandLine::Init(0, nullptr);
   CHECK(success);
 

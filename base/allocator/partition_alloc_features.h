@@ -87,16 +87,9 @@ enum class BackupRefPtrMode {
   // This entails splitting the main partition.
   kEnabled,
 
-  // Same as kEnabled but registers the main partition to memory reclaimer.
-  kEnabledWithMemoryReclaimer,
-
   // BRP is disabled, but the main partition is split out, as if BRP was enabled
   // in the "previous slot" mode.
   kDisabledButSplitPartitions2Way,
-
-  // Same as kDisabledButSplitPartitions2Way but registers the main partition to
-  // memory reclaimer.
-  kDisabledButSplitPartitions2WayWithMemoryReclaimer,
 
   // BRP is disabled, but the main partition *and* aligned partition are split
   // out, as if BRP was enabled in the "before allocation" mode.
@@ -171,10 +164,21 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPCScanStackScanning);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocDCScan);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPCScanImmediateFreeing);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPCScanEagerClearing);
+BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocSortSmallerSlotSpanFreeLists);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocSortActiveSlotSpans);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocUseDenserDistribution);
+
+BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocMemoryReclaimer);
+extern const BASE_EXPORT base::FeatureParam<TimeDelta>
+    kPartitionAllocMemoryReclaimerInterval;
+
 #if BUILDFLAG(IS_WIN)
 BASE_EXPORT BASE_DECLARE_FEATURE(kPageAllocatorRetryOnCommitFailure);
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+extern const base::FeatureParam<bool>
+    kPartialLowEndModeExcludePartitionAllocSupport;
 #endif
 
 // Name of the synthetic trial associated with forcibly enabling BRP in

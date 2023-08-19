@@ -120,9 +120,9 @@ class AutocompleteController : public AutocompleteProviderListener,
   AutocompleteController& operator=(const AutocompleteController&) = delete;
 
   // UI elements that need to be notified when the results get updated should
-  // be added as an |observer|. So far there is no need for a RemoveObserver
-  // method because all observers outlive the AutocompleteController.
+  // be added as an |observer|.
   void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   // Starts an autocomplete query, which continues until all providers are
   // done or the query is Stop()ed.  It is safe to Start() a new query without
@@ -238,7 +238,13 @@ class AutocompleteController : public AutocompleteProviderListener,
   // match into the result set, currently still needed only by iOS.
   size_t InjectAdHocMatch(AutocompleteMatch match);
 
+  // Sets the position of the omnibox when it's in steady state (unfocused).
+  // Only used on iOS for logging purposes.
+  void SetSteadyStateOmniboxPosition(
+      metrics::OmniboxEventProto::OmniboxPosition position);
+
  private:
+  friend class AutocompleteControllerTest;
   friend class FakeAutocompleteController;
   friend class AutocompleteProviderTest;
   friend class OmniboxSuggestionButtonRowBrowserTest;
@@ -279,6 +285,8 @@ class AutocompleteController : public AutocompleteProviderListener,
                            PopupInlineAutocompleteAndTemporaryText);
   FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewViewsTest,
                            EmitSelectedChildrenChangedAccessibilityEvent);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest,
+                           OpenActionSelectionLogsOmniboxEvent);
 
   // Helpers called by the constructor. These initialize the specified providers
   // and add them `providers_`. Split into 2 methods to avoid accidentally
@@ -303,6 +311,14 @@ class AutocompleteController : public AutocompleteProviderListener,
   // even if the default match didn't change.
   void UpdateResult(bool regenerate_result,
                     bool force_notify_default_match_changed);
+
+  // When the preserve default feature param is enabled, the default match
+  // that would have been shown before ML scoring is preserved. In this case,
+  // call `SortAndCull()` before the ML model is invoked to determine what
+  // this default match would've been. This also limits the potential
+  // suggestions to only what would've been shown in the legacy system.
+  absl::optional<AutocompleteMatch> PreprocessResultForMlScoring(
+      absl::optional<AutocompleteMatch> default_match_to_preserve);
 
   // Calls `SortAndCull()`, then annotates the final set of suggestions (with
   // open tab match, pedals, keyword info, etc.). Upon completion, notifies the
@@ -375,11 +391,14 @@ class AutocompleteController : public AutocompleteProviderListener,
   // for all the eligible matches, whether successfully or not.
   void RunUrlScoringModel(base::OnceClosure completion_callback);
 
-  // Runs the async batch scoring for all the eligible matches in
-  // `results_.matches_`. Passes `completion_callback` to
-  // `OnUrlScoringModelDone()` callback which is called once the model is done
-  // for all the eligible matches, whether successfully or not.
-  void RunBatchUrlScoringModel(base::OnceClosure completion_callback);
+  // Runs the batch scoring for all the eligible matches in
+  // `results_.matches_`. If `is_sync` is true, runs sync ML scoring on the
+  // current thread. Otherwise, runs async ML scoring. Passes
+  // `completion_callback` to `OnUrlScoringModelDone()` callback which is called
+  // once the model is done for all the eligible matches, whether successfully
+  // or not.
+  void RunBatchUrlScoringModel(base::OnceClosure completion_callback,
+                               bool is_sync);
 
   // Called when the async scoring model is done running for all the eligible
   // matches in `results_.matches_`. Redistributes the existing relevance scores
@@ -525,6 +544,9 @@ class AutocompleteController : public AutocompleteProviderListener,
   raw_ptr<TemplateURLService> template_url_service_;
 
   raw_ptr<OmniboxTriggeredFeatureService> triggered_feature_service_;
+
+  // The preferred steady state (unfocused) omnibox position.
+  metrics::OmniboxEventProto::OmniboxPosition steady_state_omnibox_position_;
 
   // Combined, used to cancel model execution requests sent to
   // `AutocompleteScoringModelService` and to prevent its callbacks from being

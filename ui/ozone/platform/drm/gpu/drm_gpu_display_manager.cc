@@ -155,10 +155,27 @@ MovableDisplaySnapshots DrmGpuDisplayManager::GetDisplays() {
 
     // Receiving a signal that DRM state was updated. Need to reset the plane
     // manager's resource cache since IDs may have changed.
-    drm->plane_manager()->ResetConnectorsCache(drm->GetResources());
+    base::flat_set<uint32_t> valid_connector_ids =
+        drm->plane_manager()->ResetConnectorsCacheAndGetValidIds(
+            drm->GetResources());
 
     // Create new DisplaySnapshots and resolve display ID collisions.
     auto display_infos = GetDisplayInfosAndUpdateCrtcs(*drm);
+
+    // Make sure that the display infos we got have valid connector IDs.
+    // If not, we need to remove the display info from the list. This removes
+    // any zombie connectors.
+    display_infos.erase(
+        std::remove_if(display_infos.begin(), display_infos.end(),
+                       [&valid_connector_ids](const auto& display_info) {
+                         return std::find(
+                                    valid_connector_ids.begin(),
+                                    valid_connector_ids.end(),
+                                    display_info->connector()->connector_id) ==
+                                valid_connector_ids.end();
+                       }),
+        display_infos.end());
+
     for (auto& display_info : display_infos) {
       display_snapshots.emplace_back(CreateDisplaySnapshot(
           *drm, display_info.get(), static_cast<uint8_t>(device_index)));

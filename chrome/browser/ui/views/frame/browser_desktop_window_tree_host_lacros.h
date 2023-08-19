@@ -11,6 +11,7 @@
 
 class BrowserView;
 class BrowserFrame;
+class DesktopBrowserFrameLacros;
 enum class TabDragKind;
 
 namespace views {
@@ -61,6 +62,7 @@ class BrowserDesktopWindowTreeHostLacros
   void OnImmersiveModeChanged(bool enabled) override;
 
   const raw_ptr<BrowserView> browser_view_;
+  raw_ptr<DesktopBrowserFrameLacros> native_frame_ = nullptr;
   raw_ptr<views::DesktopNativeWidgetAura> desktop_native_widget_aura_ = nullptr;
 };
 

@@ -27,6 +27,13 @@ class TtsClientImpl : public ax::mojom::Tts {
   void Bind(mojo::PendingReceiver<Tts> tts_receiver);
 
   // ax::mojom::Tts:
+  void Speak(const std::string& utterance,
+             ax::mojom::TtsOptionsPtr options,
+             SpeakCallback callback) override;
+  void Stop() override;
+  void Pause() override;
+  void Resume() override;
+  void IsSpeaking(IsSpeakingCallback callback) override;
   void GetVoices(GetVoicesCallback callback) override;
 
  private:

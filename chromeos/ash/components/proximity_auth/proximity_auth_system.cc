@@ -119,16 +119,14 @@ ProximityAuthSystem::CreateRemoteDeviceLifeCycle(
       remote_device, local_device, secure_channel_client_);
 }
 
-void ProximityAuthSystem::OnScreenDidLock(
-    ScreenlockBridge::LockHandler::ScreenType screen_type) {
+void ProximityAuthSystem::OnScreenDidLock() {
   const AccountId& focused_account_id =
       ScreenlockBridge::Get()->focused_account_id();
   if (focused_account_id.is_valid())
     OnFocusedUserChanged(focused_account_id);
 }
 
-void ProximityAuthSystem::OnScreenDidUnlock(
-    ScreenlockBridge::LockHandler::ScreenType screen_type) {
+void ProximityAuthSystem::OnScreenDidUnlock() {
   unlock_manager_->SetRemoteDeviceLifeCycle(nullptr);
   remote_device_life_cycle_.reset();
 }

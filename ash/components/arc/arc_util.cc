@@ -22,7 +22,9 @@
 #include "base/process/process_metrics.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/system/sys_info.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
 #include "chromeos/version/version_loader.h"
@@ -96,6 +98,55 @@ int64_t GetRequiredDiskImageSizeForArcVmDataMigrationInBytes(
   return android_data_size_in_bytes * 11ULL / 10ULL + kReservedDiskSpaceInBytes;
 }
 
+void OnStaleArcVmStopped(
+    EnsureStaleArcVmAndArcVmUpstartJobsStoppedCallback callback,
+    absl::optional<vm_tools::concierge::StopVmResponse> response) {
+  // Successful response is returned even when the VM is not running. See
+  // Service::StopVm() in platform2/vm_tools/concierge/service.cc.
+  if (!response.has_value() || !response->success()) {
+    LOG(ERROR) << "StopVm failed: "
+               << (response.has_value() ? response->failure_reason()
+                                        : "No D-Bus response.");
+    std::move(callback).Run(false);
+    return;
+  }
+  std::move(callback).Run(true);
+}
+
+void OnConciergeServiceAvailable(
+    const std::string& user_id_hash,
+    EnsureStaleArcVmAndArcVmUpstartJobsStoppedCallback callback,
+    bool available) {
+  if (!available) {
+    LOG(ERROR) << "ConciergeService is not available";
+    std::move(callback).Run(false);
+    return;
+  }
+  vm_tools::concierge::StopVmRequest request;
+  request.set_name(kArcVmName);
+  request.set_owner_id(user_id_hash);
+  ash::ConciergeClient::Get()->StopVm(
+      request, base::BindOnce(&OnStaleArcVmStopped, std::move(callback)));
+}
+
+void OnStaleArcVmUpstartJobsStopped(
+    const std::string& user_id_hash,
+    EnsureStaleArcVmAndArcVmUpstartJobsStoppedCallback callback,
+    bool stopped) {
+  if (!stopped) {
+    LOG(ERROR) << "Failed to stop stale ARCVM Upstart jobs";
+    std::move(callback).Run(false);
+    return;
+  }
+  if (!ash::ConciergeClient::Get()) {
+    LOG(ERROR) << "ConciergeClient is not available";
+    std::move(callback).Run(false);
+    return;
+  }
+  ash::ConciergeClient::Get()->WaitForServiceToBeAvailable(base::BindOnce(
+      &OnConciergeServiceAvailable, user_id_hash, std::move(callback)));
+}
+
 }  // namespace
 
 bool IsArcAvailable() {
@@ -129,7 +180,9 @@ int GetArcAndroidSdkVersionAsInt() {
   const auto arc_version_str =
       chromeos::version_loader::GetArcAndroidSdkVersion();
   if (!arc_version_str) {
-    LOG(ERROR) << "ARC SDK version is unknown";
+    // Expected in tests and linux-chromeos that don't have /etc/lsb-release.
+    LOG_IF(ERROR, base::SysInfo::IsRunningOnChromeOS())
+        << "ARC SDK version is unknown";
     return kMaxArcVersion;
   }
   int arc_version;
@@ -146,10 +199,12 @@ bool IsArcVmRtVcpuEnabled(uint32_t cpus) {
           ash::switches::kEnableArcVmRtVcpu)) {
     return true;
   }
-  if (cpus == 2 && base::FeatureList::IsEnabled(kRtVcpuDualCore))
+  if (cpus == 2 && base::FeatureList::IsEnabled(kRtVcpuDualCore)) {
     return true;
-  if (cpus > 2 && base::FeatureList::IsEnabled(kRtVcpuQuadCore))
+  }
+  if (cpus > 2 && base::FeatureList::IsEnabled(kRtVcpuQuadCore)) {
     return true;
+  }
   return false;
 }
 
@@ -171,6 +226,11 @@ bool IsUreadaheadDisabled() {
 bool IsHostUreadaheadGeneration() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       ash::switches::kArcHostUreadaheadGeneration);
+}
+
+bool IsArcUseDevCaches() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      ash::switches::kArcUseDevCaches);
 }
 
 ArcVmUreadaheadMode GetArcVmUreadaheadMode() {
@@ -222,14 +282,16 @@ bool IsArcKioskAvailable() {
   if (command_line->HasSwitch(ash::switches::kArcAvailability)) {
     std::string value =
         command_line->GetSwitchValueASCII(ash::switches::kArcAvailability);
-    if (value == kAvailabilityInstalled)
+    if (value == kAvailabilityInstalled) {
       return true;
+    }
     return IsArcAvailable();
   }
 
   // TODO(hidehiko): Remove this when session_manager supports the new flag.
-  if (command_line->HasSwitch(ash::switches::kArcAvailable))
+  if (command_line->HasSwitch(ash::switches::kArcAvailable)) {
     return true;
+  }
 
   // If not special kiosk device case, use general ARC check.
   return IsArcAvailable();
@@ -243,7 +305,7 @@ bool IsArcKioskMode() {
 bool IsRobotOrOfflineDemoAccountMode() {
   return user_manager::UserManager::IsInitialized() &&
          (user_manager::UserManager::Get()->IsLoggedInAsArcKioskApp() ||
-          user_manager::UserManager::Get()->IsLoggedInAsPublicAccount());
+          user_manager::UserManager::Get()->IsLoggedInAsManagedGuestSession());
 }
 
 bool IsArcAllowedForUser(const user_manager::User* user) {
@@ -277,27 +339,33 @@ bool IsArcOptInVerificationDisabled() {
 }
 
 absl::optional<int> GetWindowTaskId(const aura::Window* window) {
-  if (!window)
+  if (!window) {
     return absl::nullopt;
+  }
   const std::string* window_app_id = exo::GetShellApplicationId(window);
-  if (!window_app_id)
+  if (!window_app_id) {
     return absl::nullopt;
+  }
   return GetTaskIdFromWindowAppId(*window_app_id);
 }
 
 absl::optional<int> GetTaskIdFromWindowAppId(const std::string& window_app_id) {
   int task_id;
-  if (std::sscanf(window_app_id.c_str(), "org.chromium.arc.%d", &task_id) != 1)
+  if (std::sscanf(window_app_id.c_str(), "org.chromium.arc.%d", &task_id) !=
+      1) {
     return absl::nullopt;
+  }
   return task_id;
 }
 
 absl::optional<int> GetWindowSessionId(const aura::Window* window) {
-  if (!window)
+  if (!window) {
     return absl::nullopt;
+  }
   const std::string* window_app_id = exo::GetShellApplicationId(window);
-  if (!window_app_id)
+  if (!window_app_id) {
     return absl::nullopt;
+  }
   return GetSessionIdFromWindowAppId(*window_app_id);
 }
 
@@ -313,8 +381,9 @@ absl::optional<int> GetSessionIdFromWindowAppId(
 
 absl::optional<int> GetWindowTaskOrSessionId(const aura::Window* window) {
   auto result = GetWindowTaskId(window);
-  if (result)
+  if (result) {
     return result;
+  }
   return GetWindowSessionId(window);
 }
 
@@ -349,25 +418,32 @@ int32_t GetLcdDensityForDeviceScaleFactor(float device_scale_factor) {
     const std::string dpi_str =
         command_line->GetSwitchValueASCII(ash::switches::kArcScale);
     int dpi;
-    if (base::StringToInt(dpi_str, &dpi))
+    if (base::StringToInt(dpi_str, &dpi)) {
       return dpi;
+    }
     VLOG(1) << "Invalid Arc scale set. Using default.";
   }
   // TODO(b/131884992): Remove the logic to update default lcd density once
   // per-display-density is supported.
   constexpr float kEpsilon = 0.001;
-  if (std::abs(device_scale_factor - display::kDsf_2_252) < kEpsilon)
+  if (std::abs(device_scale_factor - display::kDsf_2_252) < kEpsilon) {
     return 280;
-  if (std::abs(device_scale_factor - 2.4f) < kEpsilon)
+  }
+  if (std::abs(device_scale_factor - 2.4f) < kEpsilon) {
     return 280;
-  if (std::abs(device_scale_factor - 1.6f) < kEpsilon)
+  }
+  if (std::abs(device_scale_factor - 1.6f) < kEpsilon) {
     return 213;  // TVDPI
-  if (std::abs(device_scale_factor - display::kDsf_1_777) < kEpsilon)
+  }
+  if (std::abs(device_scale_factor - display::kDsf_1_777) < kEpsilon) {
     return 240;  // HDPI
-  if (std::abs(device_scale_factor - display::kDsf_1_8) < kEpsilon)
+  }
+  if (std::abs(device_scale_factor - display::kDsf_1_8) < kEpsilon) {
     return 240;  // HDPI
-  if (std::abs(device_scale_factor - display::kDsf_2_666) < kEpsilon)
+  }
+  if (std::abs(device_scale_factor - display::kDsf_2_666) < kEpsilon) {
     return 320;  // XHDPI
+  }
 
   constexpr float kChromeScaleToAndroidScaleRatio = 0.75f;
   constexpr int32_t kDefaultDensityDpi = 160;
@@ -378,8 +454,9 @@ int32_t GetLcdDensityForDeviceScaleFactor(float device_scale_factor) {
 
 int GetSystemPropertyInt(const std::string& property) {
   std::string output;
-  if (!base::GetAppOutput({kCrosSystemPath, property}, &output))
+  if (!base::GetAppOutput({kCrosSystemPath, property}, &output)) {
     return -1;
+  }
   int output_int;
   return base::StringToInt(output, &output_int) ? output_int : -1;
 }
@@ -437,6 +514,17 @@ ArcVmDataMigrationStatus GetArcVmDataMigrationStatus(PrefService* prefs) {
       prefs->GetInteger(prefs::kArcVmDataMigrationStatus));
 }
 
+ArcVmDataMigrationStrategy GetArcVmDataMigrationStrategy(PrefService* prefs) {
+  int value =
+      std::max(0, prefs->GetInteger(prefs::kArcVmDataMigrationStrategy));
+  if (value > static_cast<int>(ArcVmDataMigrationStrategy::kMaxValue)) {
+    LOG(ERROR) << "Unexpected value for ArcVmDataMigrationStrategy pref: "
+               << value;
+    value = static_cast<int>(ArcVmDataMigrationStrategy::kPrompt);
+  }
+  return static_cast<ArcVmDataMigrationStrategy>(value);
+}
+
 void SetArcVmDataMigrationStatus(PrefService* prefs,
                                  ArcVmDataMigrationStatus status) {
   prefs->SetInteger(prefs::kArcVmDataMigrationStatus, static_cast<int>(status));
@@ -445,12 +533,14 @@ void SetArcVmDataMigrationStatus(PrefService* prefs,
 bool ShouldUseVirtioBlkData(PrefService* prefs) {
   // If kEnableVirtioBlkForData is set, force using virtio-blk /data regardless
   // of the migration status.
-  if (base::FeatureList::IsEnabled(kEnableVirtioBlkForData))
+  if (base::FeatureList::IsEnabled(kEnableVirtioBlkForData)) {
     return true;
+  }
 
   // Just use virtio-fs when ARCVM /data migration is not enabled.
-  if (!base::FeatureList::IsEnabled(kEnableArcVmDataMigration))
+  if (!base::FeatureList::IsEnabled(kEnableArcVmDataMigration)) {
     return false;
+  }
 
   ArcVmDataMigrationStatus status = GetArcVmDataMigrationStatus(prefs);
   if (status == ArcVmDataMigrationStatus::kFinished) {
@@ -459,6 +549,12 @@ bool ShouldUseVirtioBlkData(PrefService* prefs) {
   }
   VLOG(1) << "ARCVM /data migration hasn't finished yet. Status=" << status;
   return false;
+}
+
+bool ShouldUseArcKeyMint() {
+  auto version = GetArcAndroidSdkVersionAsInt();
+  return version >= kArcVersionT && version < kMaxArcVersion &&
+         base::FeatureList::IsEnabled(kSwitchToKeyMintOnT);
 }
 
 int GetDaysUntilArcVmDataMigrationDeadline(PrefService* prefs) {
@@ -569,6 +665,21 @@ uint64_t GetRequiredFreeDiskSpaceForArcVmDataMigrationInBytes(
 bool IsReadOnlyPermissionsEnabled() {
   return base::FeatureList::IsEnabled(arc::kEnableReadOnlyPermissions) &&
          GetArcAndroidSdkVersionAsInt() >= kArcVersionT;
+}
+
+void EnsureStaleArcVmAndArcVmUpstartJobsStopped(
+    const std::string& user_id_hash,
+    EnsureStaleArcVmAndArcVmUpstartJobsStoppedCallback callback) {
+  // Stop stale Upstart jobs first. StopVm() is called after
+  // ConfigureUpstartJobs() is successfully finished.
+  std::deque<JobDesc> jobs;
+  for (const char* job : kArcVmUpstartJobsToBeStoppedOnRestart) {
+    jobs.emplace_back(job, UpstartOperation::JOB_STOP,
+                      std::vector<std::string>());
+  }
+  ConfigureUpstartJobs(std::move(jobs),
+                       base::BindOnce(&OnStaleArcVmUpstartJobsStopped,
+                                      user_id_hash, std::move(callback)));
 }
 
 }  // namespace arc

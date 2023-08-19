@@ -11,8 +11,6 @@ source_set("translate") {
     "translate_infobar_modal_overlay_mediator_delegate.h",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//base",
     "//components/metrics",
@@ -20,8 +18,10 @@ source_set("translate") {
     "//components/translate/core/common",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/infobars:public",
+    "//ios/chrome/browser/infobars/overlays:util",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/common/infobars",
+    "//ios/chrome/browser/overlays/public/default",
     "//ios/chrome/browser/overlays/public/infobar_modal",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
@@ -41,8 +41,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "translate_infobar_modal_overlay_mediator_unittest.mm" ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     ":translate",
     "//base/test:test_support",
@@ -50,8 +48,10 @@ source_set("unit_tests") {
     "//components/translate/core/browser:browser",
     "//components/translate/core/browser:test_support",
     "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/infobars/test",
     "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/overlays/public/default",
     "//ios/chrome/browser/overlays/public/infobar_modal",
     "//ios/chrome/browser/overlays/test",
     "//ios/chrome/browser/translate:test_support",

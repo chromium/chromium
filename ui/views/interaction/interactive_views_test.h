@@ -11,18 +11,19 @@
 #include <type_traits>
 #include <utility>
 
+#include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/interaction/element_tracker.h"
-#include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/interaction/interactive_test.h"
 #include "ui/base/interaction/interactive_test_internal.h"
+#include "ui/base/metadata/metadata_types.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_mouse.h"
 #include "ui/views/interaction/interactive_views_test_internal.h"
@@ -177,7 +178,8 @@ class InteractiveViewsTestApi : public ui::test::InteractiveTestApi {
   // As CheckView(), but checks that the result of calling `function` on `view`
   // matches `matcher`. If not, the mismatch is printed and the test fails.
   //
-  // `matcher` should resolve or convert to type `Matcher<R>`.
+  // `matcher` can be any type `M` that resolves or converts to type
+  // `Matcher<R>`.
   template <typename F,
             typename M,
             typename R = ui::test::internal::ReturnTypeOf<F>,
@@ -191,11 +193,52 @@ class InteractiveViewsTestApi : public ui::test::InteractiveTestApi {
   // calling `property` on `view`. On failure, logs the matcher error and fails
   // the test.
   //
+  // `V` is the View class, `R` is the type of the property being checked, and
+  // `M` is the type of the matcher, or the constant that will be converted to
+  // an equality matcher (e.g. `1` would be converted to `testing::Eq(1)`).
+  //
   // `matcher` must resolve or convert to type `Matcher<R>`.
   template <typename V, typename R, typename M>
   [[nodiscard]] static StepBuilder CheckViewProperty(ElementSpecifier view,
                                                      R (V::*property)() const,
                                                      M&& matcher);
+
+  // Adds a step that waits for `property` to match `matcher` on `view`. The
+  // `add_listener` method must be specified in this version of the function.
+  //
+  // `V` is the View class, `R` is the type of the property being checked, and
+  // `M` is the type of the matcher, or the constant that will be converted to
+  // an equality matcher (e.g. `1` would be converted to `testing::Eq(1)`).
+  //
+  // NOTE: Prefer using the `WaitForViewProperty` macro as it is more concise
+  // and creates its own unique event (so you don't have to specify one). For
+  // example, the following are equivalent:
+  // ```
+  //   WaitForViewPropertyCallback(
+  //       kMyViewId,
+  //       &View::GetEnabled,
+  //       &View::AddEnabledChangedListener,
+  //       true,
+  //       kMyCustomEventType)
+  // ```
+  // and:
+  // ```
+  //   WaitForViewProperty(kMyViewId, View, Enabled, true)
+  // ```
+  //
+  // Usage notes:
+  // - Do not use with the "Visible" property; use `WaitForShow()` and
+  //   `WaitForHide()` instead.
+  // - Specify a unique `event` to avoid collisions between parallel or
+  //   subsequent wait steps.
+  template <typename V, typename R, typename M>
+  [[nodiscard]] static MultiStep WaitForViewPropertyCallback(
+      ElementSpecifier view,
+      R (V::*property)() const,
+      base::CallbackListSubscription (V::*add_listener)(
+          ui::metadata::PropertyChangedCallback),
+      M&& matcher,
+      ui::CustomElementEventType event);
 
   // Scrolls `view` into the visible viewport if it is currently scrolled
   // outside its container. The view must be otherwise present and visible.
@@ -216,11 +259,11 @@ class InteractiveViewsTestApi : public ui::test::InteractiveTestApi {
       // created; use gfx::Point* if you want to capture a point during sequence
       // execution.
       gfx::Point,
-      // As above, but the position is read from the memory address on execution
+      // As above, but the position is read from the reference on execution
       // instead of copied when the test sequence is constructed. Use this when
       // you want to calculate and cache a point during test execution for later
       // use. The pointer must remain valid through the end of the test.
-      gfx::Point*,
+      std::reference_wrapper<gfx::Point>,
       // Use the return value of the supplied callback
       AbsolutePositionCallback>;
 
@@ -349,7 +392,7 @@ class InteractiveViewsTestApi : public ui::test::InteractiveTestApi {
   // Creates the follow-up step for a mouse action.
   StepBuilder CreateMouseFollowUpStep(const base::StringPiece& description);
 
-  raw_ptr<Widget, DanglingUntriaged> context_widget_ = nullptr;
+  raw_ptr<Widget, AcrossTasksDanglingUntriaged> context_widget_ = nullptr;
 };
 
 // Template that adds InteractiveViewsTestApi to any test fixture. Prefer to use
@@ -659,6 +702,83 @@ ui::InteractionSequence::StepBuilder InteractiveViewsTestApi::CheckViewProperty(
       property, testing::Matcher<R>(std::forward<M>(matcher))));
   return builder;
 }
+
+// static
+template <typename V, typename R, typename M>
+ui::test::InteractiveTestApi::MultiStep
+InteractiveViewsTestApi::WaitForViewPropertyCallback(
+    ElementSpecifier view,
+    R (V::*property)() const,
+    base::CallbackListSubscription (V::*add_listener)(
+        ui::metadata::PropertyChangedCallback),
+    M&& matcher,
+    ui::CustomElementEventType event_type) {
+  // Need to make this ref-counted to ensure it lives long enough to actually
+  // listen for the state change.
+  using RefCountedSubscription =
+      scoped_refptr<base::RefCountedData<base::CallbackListSubscription>>;
+  RefCountedSubscription subscription =
+      base::MakeRefCounted<RefCountedSubscription::element_type>();
+  const std::string format_string = base::StringPrintf(
+      "WaitForProperty( %%s, \"%s\" )", event_type.GetName().c_str());
+
+  // The first step will check the property, and either immediately send the
+  // event or install the observer that will send the event when the state
+  // achieves the correct value.
+  auto observe_property = base::BindOnce(
+      [](RefCountedSubscription subscription, R (V::*property)() const,
+         base::CallbackListSubscription (V::*add_listener)(
+             ui::metadata::PropertyChangedCallback),
+         ui::CustomElementEventType event_type, testing::Matcher<R> matcher,
+         ui::TrackedElement* el) {
+        auto* const view = AsView<V>(el);
+        if (matcher.Matches((view->*property)())) {
+          // Property is already in the desired state, send event immediately.
+          ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
+              el, event_type);
+        } else {
+          // Watch the property for a value that satisfies the matcher.
+          subscription->data = (view->*add_listener)(base::BindRepeating(
+              [](V* view, R (V::*property)() const,
+                 ui::CustomElementEventType event_type,
+                 testing::Matcher<R> matcher) {
+                if (matcher.Matches((view->*property)())) {
+                  ElementTrackerViews::GetInstance()->NotifyCustomEvent(
+                      event_type, view);
+                }
+              },
+              view, property, event_type, std::move(matcher)));
+        }
+      },
+      subscription, property, add_listener, event_type,
+      testing::Matcher<R>(std::forward<M>(matcher)));
+
+  return Steps(std::move(AfterShow(view, std::move(observe_property))
+                             .SetMustRemainVisible(true)
+                             .FormatDescription(format_string)),
+               std::move(AfterEvent(view, event_type, [subscription]() {
+                           // Need to reference subscription by value so that it
+                           // is not discarded until this step runs or the
+                           // sequence fails.
+                           subscription->data =
+                               base::CallbackListSubscription();
+                         }).FormatDescription(format_string)));
+}
+
+// Waits for a property named `Property` to have a value that matches `matcher`
+// on View `view` of View class `Class`. Convenience method for
+// `InteractiveViewsTestApi::WaitForClassPropertyCallback`.
+//
+// Do not use with the "Visible" property; use `WaitForShow()` or
+// `WaitForHide()` instead.
+#define WaitForViewProperty(view, Class, Property, matcher)                    \
+  []() {                                                                       \
+    DEFINE_MACRO_CUSTOM_ELEMENT_EVENT_TYPE(__FILE__, __LINE__,                 \
+                                           kWaitFor##Property##Event);         \
+    return WaitForViewPropertyCallback((view), &Class::Get##Property,          \
+                                       &Class::Add##Property##ChangedCallback, \
+                                       (matcher), kWaitFor##Property##Event);  \
+  }()
 
 }  // namespace views::test
 

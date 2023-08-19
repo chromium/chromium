@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("field_trial") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "ios_first_run_field_trials.cc",
     "ios_first_run_field_trials.h",
@@ -24,7 +23,6 @@ source_set("field_trial") {
 }
 
 source_set("field_trial_ids") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "field_trial_ids.cc",
     "field_trial_ids.h",
@@ -36,7 +34,6 @@ source_set("field_trial_ids") {
 }
 
 source_set("first_run") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "first_run_coordinator.h",
     "first_run_coordinator.mm",
@@ -76,14 +73,13 @@ source_set("first_run") {
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/ui/authentication",
+    "//ios/chrome/browser/ui/authentication/history_sync",
     "//ios/chrome/browser/ui/authentication/signin",
     "//ios/chrome/browser/ui/authentication/signin/add_account_signin",
     "//ios/chrome/browser/ui/authentication/signin/user_signin/logging",
     "//ios/chrome/browser/ui/authentication/unified_consent/identity_chooser",
     "//ios/chrome/browser/ui/authentication/views",
-    "//ios/chrome/browser/ui/fancy_ui",
     "//ios/chrome/browser/ui/first_run/default_browser",
-    "//ios/chrome/browser/ui/first_run/history_sync",
     "//ios/chrome/browser/ui/first_run/signin",
     "//ios/chrome/browser/ui/first_run/tangible_sync",
     "//ios/chrome/browser/ui/first_run/tos",
@@ -96,6 +92,7 @@ source_set("first_run") {
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/promo_style",
     "//ios/chrome/common/ui/util",
+    "//ios/public/provider/chrome/browser/signin:choice_api",
     "//ui/base",
     "//ui/gfx",
     "//url",
@@ -104,7 +101,6 @@ source_set("first_run") {
 }
 
 source_set("first_run_provider") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "first_run_screen_provider.h",
     "first_run_screen_provider.mm",
@@ -112,14 +108,15 @@ source_set("first_run_provider") {
   deps = [
     ":field_trial",
     "//base",
+    "//components/sync/base:features",
     "//ios/chrome/browser/ui/screen:screen_provider",
     "//ios/chrome/browser/ui/screen:screen_provider_protected",
     "//ios/chrome/browser/ui/screen:screen_type",
+    "//ios/public/provider/chrome/browser/signin:choice_api",
   ]
 }
 
 source_set("utils") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "first_run_util.h",
     "first_run_util.mm",
@@ -129,16 +126,16 @@ source_set("utils") {
     "//components/metrics",
     "//components/policy/core/common:common_constants",
     "//components/signin/public/identity_manager",
-    "//components/startup_metric_utils/browser",
+    "//components/startup_metric_utils",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/crash_report",
     "//ios/chrome/browser/first_run",
-    "//ios/chrome/browser/flags:system_flags",
+    "//ios/chrome/browser/settings/sync/utils",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/signin",
-    "//ios/chrome/browser/ui/settings/sync/utils",
     "//ios/web/public/thread",
     "//third_party/abseil-cpp:absl",
     "//ui/gfx",
@@ -146,7 +143,6 @@ source_set("utils") {
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "first_run_constants.h",
     "first_run_constants.mm",
@@ -154,12 +150,10 @@ source_set("constants") {
 }
 
 source_set("screen_delegate") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "first_run_screen_delegate.h" ]
 }
 
 source_set("interruptible_chrome_coordinator") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "interruptible_chrome_coordinator.h",
     "interruptible_chrome_coordinator.mm",
@@ -173,10 +167,7 @@ source_set("interruptible_chrome_coordinator") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "enterprise_loading_screen_egtest.mm",
@@ -194,6 +185,10 @@ source_set("eg2_tests") {
     "//components/policy/test_support:test_support",
     "//components/signin/internal/identity_manager",
     "//components/signin/ios/browser:features",
+    "//components/sync/base",
+    "//components/sync/base:features",
+    "//components/sync/service",
+    "//components/unified_consent",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/metrics:eg_test_support+eg2",
     "//ios/chrome/browser/policy:eg_test_support+eg2",
@@ -216,15 +211,13 @@ source_set("eg2_tests") {
     "//ios/chrome/test/earl_grey:switches",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ui/base",
+    "//ui/base:test_support",
   ]
   frameworks = [ "UIKit.framework" ]
 }
 
 source_set("eg_app_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "first_run_app_interface.h",
@@ -247,10 +240,7 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("eg_test_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "first_run_app_interface.h",

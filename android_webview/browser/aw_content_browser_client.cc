@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "android_webview/browser/aw_browser_context.h"
+#include "android_webview/browser/aw_browser_context_store.h"
 #include "android_webview/browser/aw_browser_main_parts.h"
 #include "android_webview/browser/aw_browser_process.h"
 #include "android_webview/browser/aw_client_hints_controller_delegate.h"
@@ -24,7 +25,6 @@
 #include "android_webview/browser/aw_settings.h"
 #include "android_webview/browser/aw_speech_recognition_manager_delegate.h"
 #include "android_webview/browser/aw_web_contents_view_delegate.h"
-#include "android_webview/browser/content_relationship_verification/aw_origin_verification_scheduler_bridge.h"
 #include "android_webview/browser/cookie_manager.h"
 #include "android_webview/browser/network_service/aw_proxy_config_monitor.h"
 #include "android_webview/browser/network_service/aw_proxying_restricted_cookie_manager.h"
@@ -36,6 +36,7 @@
 #include "android_webview/common/aw_content_client.h"
 #include "android_webview/common/aw_descriptors.h"
 #include "android_webview/common/aw_features.h"
+#include "android_webview/common/aw_paths.h"
 #include "android_webview/common/aw_switches.h"
 #include "android_webview/common/mojom/render_message_filter.mojom.h"
 #include "android_webview/common/url_constants.h"
@@ -52,6 +53,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -69,6 +71,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/browser_url_loader_throttle.h"
 #include "components/safe_browsing/content/browser/mojo_safe_browsing_impl.h"
+#include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/url_matcher/url_matcher.h"
 #include "components/url_matcher/url_util.h"
@@ -102,6 +105,7 @@
 #include "net/net_buildflags.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_info.h"
+#include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -237,6 +241,12 @@ AwContentBrowserClient::~AwContentBrowserClient() {}
 
 void AwContentBrowserClient::OnNetworkServiceCreated(
     network::mojom::NetworkService* network_service) {
+  // TODO(https://crbug.com/1085233): If CertVerifierServiceFactory is moved to
+  // a separate process, this will likely need to be set somewhere else instead
+  // of here.
+  content::GetCertVerifierServiceFactory()->SetUseChromeRootStore(
+      false, base::DoNothing());
+
   content::GetNetworkService()->SetUpHttpAuth(
       network::mojom::HttpAuthStaticParams::New());
   content::GetNetworkService()->ConfigureHttpAuthPrefs(
@@ -276,8 +286,7 @@ void AwContentBrowserClient::ConfigureNetworkContextParams(
 }
 
 AwBrowserContext* AwContentBrowserClient::InitBrowserContext() {
-  browser_context_ = std::make_unique<AwBrowserContext>();
-  return browser_context_.get();
+  return AwBrowserContextStore::GetOrCreateInstance()->GetDefault();
 }
 
 std::unique_ptr<content::BrowserMainParts>
@@ -364,7 +373,7 @@ void AwContentBrowserClient::AppendExtraCommandLineSwitches(
     };
 
     command_line->CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
-                                   kSwitchNames, std::size(kSwitchNames));
+                                   kSwitchNames);
   }
 }
 
@@ -393,8 +402,8 @@ AwContentBrowserClient::GetGeneratedCodeCacheSettings(
   // roughly 2x what it was before the code cache was implemented.
   // TODO(crbug/893318): webview should have smarter cache sizing logic.
   AwBrowserContext* browser_context = static_cast<AwBrowserContext*>(context);
-  return content::GeneratedCodeCacheSettings(true, 10 * 1024 * 1024,
-                                             browser_context->GetCacheDir());
+  return content::GeneratedCodeCacheSettings(
+      true, 10 * 1024 * 1024, browser_context->GetHttpCachePath());
 }
 
 void AwContentBrowserClient::AllowCertificateError(
@@ -423,12 +432,14 @@ void AwContentBrowserClient::AllowCertificateError(
 }
 
 base::OnceClosure AwContentBrowserClient::SelectClientCertificate(
+    content::BrowserContext* browser_context,
     content::WebContents* web_contents,
     net::SSLCertRequestInfo* cert_request_info,
     net::ClientCertIdentityList client_certs,
     std::unique_ptr<content::ClientCertificateDelegate> delegate) {
   AwContentsClientBridge* client =
-      AwContentsClientBridge::FromWebContents(web_contents);
+      web_contents ? AwContentsClientBridge::FromWebContents(web_contents)
+                   : nullptr;
   if (client) {
     client->SelectClientCertificate(cert_request_info, std::move(delegate));
   }
@@ -480,6 +491,17 @@ base::FilePath AwContentBrowserClient::GetDefaultDownloadDirectory() {
 std::string AwContentBrowserClient::GetDefaultDownloadName() {
   NOTREACHED() << "Android WebView does not use chromium downloads";
   return std::string();
+}
+
+absl::optional<base::FilePath>
+AwContentBrowserClient::GetLocalTracesDirectory() {
+  base::FilePath user_data_dir;
+  if (!base::PathService::Get(android_webview::DIR_LOCAL_TRACES,
+                              &user_data_dir)) {
+    return absl::nullopt;
+  }
+  DCHECK(!user_data_dir.empty());
+  return user_data_dir;
 }
 
 void AwContentBrowserClient::DidCreatePpapiPlugin(
@@ -595,19 +617,6 @@ AwContentBrowserClient::CreateURLLoaderThrottles(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> result;
-
-  content::WebContents* web_contents = wc_getter.Run();
-  AwSettings* aw_settings = AwSettings::FromWebContents(web_contents);
-  if (request.is_outermost_main_frame &&
-      ((aw_settings && aw_settings->GetRestrictSensitiveWebContentEnabled()) ||
-       base::FeatureList::IsEnabled(
-           features::kWebViewRestrictSensitiveContent))) {
-    auto* origin_verification_bridge =
-        AwOriginVerificationSchedulerBridge::GetInstance();
-    result.push_back(
-        BrowserURLLoaderThrottle::Create(origin_verification_bridge));
-  }
-
   result.push_back(safe_browsing::BrowserURLLoaderThrottle::Create(
       base::BindOnce(
           [](AwContentBrowserClient* client) {
@@ -620,7 +629,9 @@ AwContentBrowserClient::CreateURLLoaderThrottles(
       // Since AW currently doesn't support UKM, this feature is not enabled.
       /* rt_lookup_service */ nullptr,
       /* hash_realtime_service */ nullptr,
-      /* ping_manager */ nullptr));
+      /* ping_manager */ nullptr,
+      /* hash_realtime_selection */
+      safe_browsing::hash_realtime_utils::HashRealTimeSelection::kNone));
 
   if (request.destination == network::mojom::RequestDestination::kDocument) {
     const bool is_load_url =
@@ -636,6 +647,35 @@ AwContentBrowserClient::CreateURLLoaderThrottles(
               browser_context)));
     }
   }
+
+  return result;
+}
+
+std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
+AwContentBrowserClient::CreateURLLoaderThrottlesForKeepAlive(
+    const network::ResourceRequest& request,
+    content::BrowserContext* browser_context,
+    const base::RepeatingCallback<content::WebContents*()>& wc_getter,
+    int frame_tree_node_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  std::vector<std::unique_ptr<blink::URLLoaderThrottle>> result;
+
+  result.push_back(safe_browsing::BrowserURLLoaderThrottle::Create(
+      base::BindOnce(
+          [](AwContentBrowserClient* client) {
+            return client->GetSafeBrowsingUrlCheckerDelegate();
+          },
+          base::Unretained(this)),
+      wc_getter, frame_tree_node_id,
+      // TODO(crbug.com/1033760): rt_lookup_service is
+      // used to perform real time URL check, which is gated by UKM opted-in.
+      // Since AW currently doesn't support UKM, this feature is not enabled.
+      /* rt_lookup_service */ nullptr,
+      /* hash_realtime_service */ nullptr,
+      /* ping_manager */ nullptr,
+      /* hash_realtime_selection */
+      safe_browsing::hash_realtime_utils::HashRealTimeSelection::kNone));
 
   return result;
 }
@@ -1050,11 +1090,11 @@ void AwContentBrowserClient::LogWebFeatureForCurrentPage(
       render_frame_host, feature);
 }
 
-bool AwContentBrowserClient::ShouldAllowInsecureLocalNetworkRequests(
+bool AwContentBrowserClient::ShouldAllowInsecurePrivateNetworkRequests(
     content::BrowserContext* browser_context,
     const url::Origin& origin) {
   // Webview does not implement support for deprecation trials, so webview apps
-  // broken by Local Network Access restrictions cannot help themselves by
+  // broken by Private Network Access restrictions cannot help themselves by
   // registering for the trial.
   // See crbug.com/1255675.
   return true;
@@ -1112,9 +1152,22 @@ bool AwContentBrowserClient::IsAttributionReportingOperationAllowed(
     const url::Origin* destination_origin,
     const url::Origin* reporting_origin) {
   // WebView only supports OS-level attribution and not web-attribution.
-  return operation == AttributionReportingOperation::kAny ||
-         operation == AttributionReportingOperation::kOsSource ||
-         operation == AttributionReportingOperation::kOsTrigger;
+  switch (operation) {
+    case AttributionReportingOperation::kAny:
+    case AttributionReportingOperation::kOsSource:
+    case AttributionReportingOperation::kOsTrigger:
+    case AttributionReportingOperation::kOsSourceVerboseDebugReport:
+    case AttributionReportingOperation::kOsTriggerVerboseDebugReport:
+      return true;
+    case AttributionReportingOperation::kSource:
+    case AttributionReportingOperation::kTrigger:
+    case AttributionReportingOperation::kSourceVerboseDebugReport:
+    case AttributionReportingOperation::kTriggerVerboseDebugReport:
+    case AttributionReportingOperation::kReport:
+      return false;
+  }
+
+  NOTREACHED_NORETURN();
 }
 
 bool AwContentBrowserClient::IsWebAttributionReportingAllowed() {

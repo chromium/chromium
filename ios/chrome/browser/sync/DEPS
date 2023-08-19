@@ -1,6 +1,27 @@
 include_rules = [
   "+components/consent_auditor",
   "+components/trusted_vault",
+  "+ios/chrome/browser/search_engines",
+  "+ios/chrome/browser/signin",
+  "+ios/chrome/browser/history",
+  "+ios/chrome/browser/webdata_services",
+  "+ios/chrome/browser/tabs",
+  "+ios/chrome/browser/favicon",
+  "+ios/chrome/browser/reading_list",
+  "+ios/chrome/browser/voice",
+  "+ios/chrome/browser/gcm",
+  "+ios/chrome/browser/power_bookmarks",
+  "+ios/chrome/browser/passwords",
+  "+ios/chrome/browser/invalidation",
+  "+ios/chrome/browser/bookmarks",
+  "+ios/chrome/browser/consent_auditor",
+  "+ios/chrome/browser/metrics",
+  "+ios/chrome/browser/sessions",
+  "+ios/chrome/browser/settings/sync",
+  "+ios/chrome/browser/trusted_vault",
+  "+ios/chrome/browser/dom_distiller",
+  "+ios/chrome/browser/complex_tasks",
+  "+ios/chrome/browser/supervised_user",
 ]
 
 specific_include_rules = {

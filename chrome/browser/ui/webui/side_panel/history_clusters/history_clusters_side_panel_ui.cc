@@ -17,6 +17,8 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/side_panel_history_clusters_resources.h"
 #include "chrome/grit/side_panel_history_clusters_resources_map.h"
+#include "chrome/grit/side_panel_shared_resources.h"
+#include "chrome/grit/side_panel_shared_resources_map.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/page_image_service/image_service.h"
 #include "components/page_image_service/image_service_handler.h"
@@ -24,6 +26,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/webui/color_change_listener/color_change_handler.h"
 
 HistoryClustersSidePanelUI::HistoryClustersSidePanelUI(content::WebUI* web_ui)
     : ui::MojoBubbleWebUIController(web_ui),
@@ -43,11 +46,20 @@ HistoryClustersSidePanelUI::HistoryClustersSidePanelUI(content::WebUI* web_ui)
       base::make_span(kSidePanelHistoryClustersResources,
                       kSidePanelHistoryClustersResourcesSize),
       IDR_SIDE_PANEL_HISTORY_CLUSTERS_HISTORY_CLUSTERS_HTML);
+  source->AddResourcePaths(base::make_span(kSidePanelSharedResources,
+                                           kSidePanelSharedResourcesSize));
 }
 
 HistoryClustersSidePanelUI::~HistoryClustersSidePanelUI() = default;
 
 WEB_UI_CONTROLLER_TYPE_IMPL(HistoryClustersSidePanelUI)
+
+void HistoryClustersSidePanelUI::BindInterface(
+    mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
+        pending_receiver) {
+  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
+      web_ui()->GetWebContents(), std::move(pending_receiver));
+}
 
 void HistoryClustersSidePanelUI::BindInterface(
     mojo::PendingReceiver<history_clusters::mojom::PageHandler>

@@ -6,10 +6,6 @@
 
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace blink {
 
 static AtomicString& MutableSystemFontFamily() {

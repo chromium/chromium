@@ -40,6 +40,7 @@
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
+#include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "components/page_load_metrics/common/page_visit_final_status.h"
 #include "components/page_load_metrics/common/test/page_load_metrics_test_util.h"
 #include "components/performance_manager/public/features.h"
@@ -48,6 +49,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
 #include "net/base/ip_endpoint.h"
 #include "net/nqe/effective_connection_type.h"
@@ -1897,9 +1899,24 @@ TEST_F(UkmPageLoadMetricsObserverTest, LayoutInstability) {
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest, SoftNavigationCount) {
-  NavigateAndCommit(GURL(kTestUrl1));
+  auto url = GURL(kTestUrl1);
+  NavigateAndCommit(url);
 
-  tester()->SimulateSoftNavigationCountUpdate(1);
+  auto soft_navigation_metrics =
+      page_load_metrics::mojom::SoftNavigationMetrics(
+          1, base::Milliseconds(12), "00000-00000-00000-00000",
+          page_load_metrics::mojom::LargestContentfulPaintTiming::New());
+
+  content::MockNavigationHandle navigation_handle;
+  navigation_handle.set_has_committed(true);
+  navigation_handle.set_is_in_primary_main_frame(true);
+  navigation_handle.set_is_same_document(true);
+
+  // Simulate the detection of soft navigation so that the ukm source id for
+  // soft navigation is initialized.
+  tester()->SimulateSoftNavigation(&navigation_handle);
+
+  tester()->SimulateSoftNavigationCountUpdate(soft_navigation_metrics);
 
   // Simulate closing the tab.
   DeleteContents();

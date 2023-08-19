@@ -45,6 +45,9 @@ ResultExpr ScreenAIProcessPolicy::EvaluateSyscall(
           .Default(Error(ENOSYS));
     }
 
+    case __NR_getcpu:
+      return Allow();
+
     case __NR_get_mempolicy: {
       const Arg<unsigned long> which(4);
       return If(which == 0, Allow()).Else(Error(EPERM));

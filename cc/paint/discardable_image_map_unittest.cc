@@ -11,6 +11,7 @@
 #include <memory>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/gtest_util.h"
 #include "base/values.h"
@@ -57,7 +58,7 @@ using ::testing::Field;
 using ::testing::FloatNear;
 using ::testing::IsEmpty;
 using ::testing::SizeIs;
-using Rects = base::StackVector<gfx::Rect, 1>;
+using Rects = absl::InlinedVector<gfx::Rect, 1>;
 
 struct PositionScaleDrawImage {
   PositionScaleDrawImage(const PaintImage& image,
@@ -294,7 +295,7 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectNonZeroLayer) {
   // Image not present in the list.
   {
     PaintImage image = CreateDiscardablePaintImage(gfx::Size(500, 500));
-    EXPECT_EQ(image_map.GetRectsForImage(image.stable_id())->size(), 0u);
+    EXPECT_EQ(image_map.GetRectsForImage(image.stable_id()).size(), 0u);
   }
 }
 
@@ -1011,10 +1012,10 @@ TEST_F(DiscardableImageMapTest, DecodingModeHintsBasic) {
       content_layer_client.PaintContentsToDisplayList();
   display_list->GenerateDiscardableImagesMetadata();
   auto decode_hints = display_list->TakeDecodingModeMap();
-  ASSERT_EQ(decode_hints.size(), 3u);
-  ASSERT_TRUE(decode_hints.find(1) != decode_hints.end());
-  ASSERT_TRUE(decode_hints.find(2) != decode_hints.end());
-  ASSERT_TRUE(decode_hints.find(3) != decode_hints.end());
+  EXPECT_EQ(decode_hints.size(), 3u);
+  EXPECT_TRUE(base::Contains(decode_hints, 1));
+  EXPECT_TRUE(base::Contains(decode_hints, 2));
+  EXPECT_TRUE(base::Contains(decode_hints, 3));
   EXPECT_EQ(decode_hints[1], PaintImage::DecodingMode::kUnspecified);
   EXPECT_EQ(decode_hints[2], PaintImage::DecodingMode::kAsync);
   EXPECT_EQ(decode_hints[3], PaintImage::DecodingMode::kSync);
@@ -1077,10 +1078,10 @@ TEST_F(DiscardableImageMapTest, DecodingModeHintsDuplicates) {
   display_list->GenerateDiscardableImagesMetadata();
 
   auto decode_hints = display_list->TakeDecodingModeMap();
-  ASSERT_EQ(decode_hints.size(), 3u);
-  ASSERT_TRUE(decode_hints.find(1) != decode_hints.end());
-  ASSERT_TRUE(decode_hints.find(2) != decode_hints.end());
-  ASSERT_TRUE(decode_hints.find(3) != decode_hints.end());
+  EXPECT_EQ(decode_hints.size(), 3u);
+  EXPECT_TRUE(base::Contains(decode_hints, 1));
+  EXPECT_TRUE(base::Contains(decode_hints, 2));
+  EXPECT_TRUE(base::Contains(decode_hints, 3));
   // 1 was unspecified and async, so the result should be unspecified.
   EXPECT_EQ(decode_hints[1], PaintImage::DecodingMode::kUnspecified);
   // 2 was unspecified and sync, so the result should be sync.

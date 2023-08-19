@@ -18,6 +18,8 @@
 #include <cstring>
 #include <string>
 
+#include "absl/base/config.h"
+
 namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace ascii_internal {

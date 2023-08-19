@@ -8,6 +8,7 @@ import android.text.format.DateUtils;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -40,9 +41,9 @@ public class NotificationTriggerScheduler {
 
     private static NotificationTriggerScheduler sInstanceForTests;
 
-    @VisibleForTesting
     protected static void setInstanceForTests(NotificationTriggerScheduler instance) {
         sInstanceForTests = instance;
+        ResettersForTesting.register(() -> sInstanceForTests = null);
     }
 
     @CalledByNative

@@ -66,12 +66,12 @@ class MEDIA_EXPORT Mp4BoxWriter {
 
   // Same as `Write()` but creates a `BoxByteStream` and writes to `context`.
   // It is expected that it will create box itself as well as its children.
-  void WriteAndFlush();
+  size_t WriteAndFlush();
 
   // Same as `WriteAndFlush()` but accept `BoxByteStream` as a parameter.
   // It is expected that it write on input `BoxByteStream` object.
   // `writer` must not have any opened box.
-  void WriteAndFlush(BoxByteStream& writer);
+  size_t WriteAndFlush(BoxByteStream& writer);
 
  protected:
   // Write for children boxes. The function will calls Write
@@ -87,6 +87,7 @@ class MEDIA_EXPORT Mp4BoxWriter {
  private:
   const raw_ref<const Mp4MuxerContext, DanglingUntriaged> context_;
   std::vector<std::unique_ptr<Mp4BoxWriter>> child_boxes_;
+
   SEQUENCE_CHECKER(sequence_checker_);
 };
 

@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
+#include "chrome/browser/ash/arc/input_overlay/touch_injector_observer.h"
 #include "ui/views/view.h"
 
 namespace arc::input_overlay {
@@ -15,7 +16,7 @@ class Action;
 class DisplayOverlayController;
 
 // InputMappingView shows all the input mappings.
-class InputMappingView : public views::View {
+class InputMappingView : public views::View, public TouchInjectorObserver {
  public:
   explicit InputMappingView(
       DisplayOverlayController* display_overlay_controller);
@@ -24,11 +25,6 @@ class InputMappingView : public views::View {
   ~InputMappingView() override;
 
   void SetDisplayMode(const DisplayMode mode);
-
-  // Add action view for |action|.
-  void OnActionAdded(Action* action);
-  // Remove action view for |action|.
-  void OnActionRemoved(Action* action);
 
  private:
   void ProcessPressedEvent(const ui::LocatedEvent& event);
@@ -45,7 +41,14 @@ class InputMappingView : public views::View {
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
 
-  const raw_ptr<DisplayOverlayController> display_overlay_controller_ = nullptr;
+  // TouchInjectorObserver:
+  void OnActionAdded(Action& action) override;
+  void OnActionRemoved(const Action& action) override;
+  void OnActionTypeChanged(Action* action, Action* new_action) override;
+  void OnActionInputBindingUpdated(const Action& action) override;
+  void OnContentBoundsSizeChanged() override;
+
+  const raw_ptr<DisplayOverlayController> controller_ = nullptr;
   DisplayMode current_display_mode_ = DisplayMode::kNone;
 };
 

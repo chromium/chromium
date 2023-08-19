@@ -67,7 +67,9 @@ class ClientResourceProviderTest : public testing::TestWithParam<bool> {
 
   bool use_gpu() const { return use_gpu_; }
   ClientResourceProvider& provider() const { return *provider_; }
-  ContextProvider* context_provider() const { return context_provider_.get(); }
+  RasterContextProvider* context_provider() const {
+    return context_provider_.get();
+  }
 
   void DestroyProvider() {
     provider_->ShutdownAndReleaseAllResources();

@@ -92,6 +92,7 @@
 #include "third_party/blink/renderer/core/loader/form_submission.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/loader/frame_loader_types.h"
+#include "third_party/blink/renderer/core/loader/idleness_detector.h"
 #include "third_party/blink/renderer/core/loader/idna_util.h"
 #include "third_party/blink/renderer/core/loader/mixed_content_checker.h"
 #include "third_party/blink/renderer/core/loader/progress_tracker.h"
@@ -126,6 +127,7 @@
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/blink/renderer/platform/network/network_utils.h"
 #include "third_party/blink/renderer/platform/runtime_feature_state/runtime_feature_state_override_context.h"
+#include "third_party/blink/renderer/platform/scheduler/main_thread/frame_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
@@ -372,13 +374,19 @@ void FrameLoader::DispatchUnloadEventAndFillOldDocumentInfoIfNeeded(
   // frame needs should fill in the info.
   OldDocumentInfoForCommit* old_document_info =
       ScopedOldDocumentInfoForCommitCapturer::CurrentInfo();
-  if (!old_document_info || !will_commit_new_document_in_this_frame) {
+  if (!old_document_info || !will_commit_new_document_in_this_frame ||
+      !GetDocumentLoader()) {
     frame_->GetDocument()->DispatchUnloadEvents(nullptr);
     return;
   }
   old_document_info->history_item = GetDocumentLoader()->GetHistoryItem();
   old_document_info->had_sticky_activation_before_navigation =
       frame_->HadStickyUserActivationBeforeNavigation();
+  if (auto* scheduler = static_cast<scheduler::FrameSchedulerImpl*>(
+          frame_->GetFrameScheduler())) {
+    old_document_info->frame_scheduler_unreported_task_time =
+        scheduler->unreported_task_time();
+  }
 
   frame_->GetDocument()->DispatchUnloadEvents(
       &old_document_info->unload_timing_info);
@@ -466,15 +474,6 @@ void FrameLoader::DidFinishNavigation(NavigationFinishState state) {
   Frame* parent = frame_->Tree().Parent();
   if (parent)
     parent->CheckCompleted();
-}
-
-Frame* FrameLoader::Opener() {
-  return frame_->Opener();
-}
-
-void FrameLoader::SetOpener(LocalFrame* opener) {
-  // If the frame is already detached, the opener has already been cleared.
-  frame_->SetOpener(opener);
 }
 
 bool FrameLoader::AllowPlugins() {
@@ -1040,18 +1039,28 @@ void FrameLoader::CommitNavigation(
   if (!CancelProvisionalLoaderForNewNavigation())
     return;
 
+  // Dispatch the "navigate" event on the previous document if needed. Note that
+  // when the navigation is going to do a LocalFrame <-> LocalFrame swap, the
+  // event should be dispatched on the previous LocalFrame's document, instead
+  // of the new provisional LocalFrame's initial empty document.
+  LocalFrame* frame_for_navigate_event = frame_;
+  if (frame_->IsProvisional() && frame_->GetPreviousLocalFrameForLocalSwap()) {
+    frame_for_navigate_event = frame_->GetPreviousLocalFrameForLocalSwap();
+  }
   auto url_origin = SecurityOrigin::Create(navigation_params->url);
   if (navigation_params->frame_load_type == WebFrameLoadType::kBackForward &&
-      frame_->DomWindow()->GetSecurityOrigin()->IsSameOriginWith(
-          url_origin.get())) {
+      frame_for_navigate_event->DomWindow()
+          ->GetSecurityOrigin()
+          ->IsSameOriginWith(url_origin.get())) {
     auto* params = MakeGarbageCollected<NavigateEventDispatchParams>(
         navigation_params->url, NavigateEventType::kCrossDocument,
         WebFrameLoadType::kBackForward);
     if (navigation_params->is_browser_initiated)
       params->involvement = UserNavigationInvolvement::kBrowserUI;
     params->destination_item = navigation_params->history_item;
-    auto result =
-        frame_->DomWindow()->navigation()->DispatchNavigateEvent(params);
+    auto result = frame_for_navigate_event->DomWindow()
+                      ->navigation()
+                      ->DispatchNavigateEvent(params);
     DCHECK_EQ(result, NavigationApi::DispatchResult::kContinue);
     if (!document_loader_)
       return;
@@ -1218,7 +1227,17 @@ void FrameLoader::StopAllLoaders(bool abort_client) {
   }
 
   frame_->GetDocument()->CancelParsing();
-  frame_->DomWindow()->navigation()->InformAboutCanceledNavigation();
+
+  // `abort_client` is false only when we are stopping all loading in
+  // preparation for a frame swap. When a swap occurs, we're stopping all
+  // loading in this particular LocalFrame, but the conceptual frame is
+  // committing and continuing loading. We shouldn't treat this as a navigation
+  // cancellation in web-observable ways, so the navigation API should not do
+  // its cancelled navigation steps (e.g., firing a navigateerror event).
+  if (abort_client) {
+    frame_->DomWindow()->navigation()->InformAboutCanceledNavigation();
+  }
+
   if (document_loader_)
     document_loader_->StopLoading();
   if (abort_client)
@@ -1393,14 +1412,6 @@ String FrameLoader::ApplyUserAgentOverride(const String& user_agent) const {
 
 String FrameLoader::UserAgent() const {
   return ApplyUserAgentOverride(Client()->UserAgent());
-}
-
-String FrameLoader::FullUserAgent() const {
-  return ApplyUserAgentOverride(Client()->FullUserAgent());
-}
-
-String FrameLoader::ReducedUserAgent() const {
-  return ApplyUserAgentOverride(Client()->ReducedUserAgent());
 }
 
 absl::optional<blink::UserAgentMetadata> FrameLoader::UserAgentMetadata()
@@ -1595,6 +1606,7 @@ void FrameLoader::DidDropNavigation() {
     frame_->DomWindow()->GetScriptController().WindowProxy(
         DOMWrapperWorld::MainWorld());
   }
+  frame_->GetIdlenessDetector()->DidDropNavigation();
 }
 
 bool FrameLoader::CancelProvisionalLoaderForNewNavigation() {

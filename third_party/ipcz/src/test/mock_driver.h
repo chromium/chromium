@@ -26,13 +26,13 @@ class MockDriver {
                IpczDriverHandle,
                uint32_t,
                const void*,
-               void*,
+               volatile void*,
                size_t*,
                IpczDriverHandle*,
                size_t*));
   MOCK_METHOD(IpczResult,
               Deserialize,
-              (const void*,
+              (const volatile void*,
                size_t,
                const IpczDriverHandle*,
                size_t,
@@ -79,10 +79,13 @@ class MockDriver {
   MOCK_METHOD(IpczResult,
               DuplicateSharedMemory,
               (IpczDriverHandle, uint32_t, const void*, IpczDriverHandle*));
-  MOCK_METHOD(
-      IpczResult,
-      MapSharedMemory,
-      (IpczDriverHandle, uint32_t, const void*, void**, IpczDriverHandle*));
+  MOCK_METHOD(IpczResult,
+              MapSharedMemory,
+              (IpczDriverHandle,
+               uint32_t,
+               const void*,
+               volatile void**,
+               IpczDriverHandle*));
   MOCK_METHOD(IpczResult,
               GenerateRandomBytes,
               (size_t, uint32_t, const void*, void*));

@@ -93,6 +93,8 @@ void UpdateRenderText(const Rect& rect,
   render_text->SetStyle(TEXT_STYLE_ITALIC, (font_style & Font::ITALIC) != 0);
   render_text->SetStyle(TEXT_STYLE_UNDERLINE,
                         (font_style & Font::UNDERLINE) != 0);
+  render_text->SetStyle(TEXT_STYLE_STRIKE,
+                        (font_style & Font::STRIKE_THROUGH) != 0);
   render_text->SetWeight(font_list.GetFontWeight());
 }
 
@@ -162,11 +164,21 @@ void Canvas::DrawStringRectWithFlags(const std::u16string& text,
     return;
 
   canvas_->save();
-  ClipRect(text_bounds);
 
+  gfx::RectF clip_rect(text_bounds);
+
+  // Pixels on the border of `text_bounds` will get clipped if the
+  // border is not pixel-aligned. This can only happen when the canvas
+  // is scaled. Expand the clip rect by 0.5 dip to fix that.
+  // See crbug.com/1469229.
+  if (std::abs(std::trunc(image_scale()) - image_scale()) > 1e-5f) {
+    clip_rect.Outset(0.5f);
+  }
+  ClipRect(clip_rect);
   Rect rect(text_bounds);
 
   std::unique_ptr<RenderText> render_text = RenderText::CreateRenderText();
+  render_text->set_clip_to_display_rect(false);
 
   if (flags & MULTI_LINE) {
     WordWrapBehavior wrap_behavior = IGNORE_LONG_WORDS;

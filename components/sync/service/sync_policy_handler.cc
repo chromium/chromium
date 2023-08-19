@@ -12,8 +12,8 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/sync/base/pref_names.h"
-#include "components/sync/base/sync_prefs.h"
 #include "components/sync/base/user_selectable_type.h"
+#include "components/sync/service/sync_prefs.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
@@ -24,6 +24,12 @@ void DisableSyncType(const std::string& type_name, PrefValueMap* prefs) {
       GetUserSelectableTypeFromString(type_name);
   if (type.has_value()) {
     syncer::SyncPrefs::SetTypeDisabledByPolicy(prefs, *type);
+
+    // The autofill policy also controls payments.
+    if (*type == UserSelectableType::kAutofill) {
+      syncer::SyncPrefs::SetTypeDisabledByPolicy(prefs,
+                                                 UserSelectableType::kPayments);
+    }
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

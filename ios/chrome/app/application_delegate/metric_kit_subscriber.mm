@@ -20,10 +20,6 @@
 #import "components/version_info/version_info.h"
 #import "ios/chrome/browser/crash_report/features.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // The different causes of app exit as reported by MetricKit.
 // This enum is used in UMA. Do not change the order.
 // These values are persisted to logs. Entries should not be renumbered and

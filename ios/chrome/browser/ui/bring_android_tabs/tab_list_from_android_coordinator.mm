@@ -19,10 +19,6 @@
 #import "ios/chrome/browser/ui/bring_android_tabs/tab_list_from_android_view_controller.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation TabListFromAndroidCoordinator {
   // Main mediator for this coordinator.
   TabListFromAndroidMediator* _mediator;

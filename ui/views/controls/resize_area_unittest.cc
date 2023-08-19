@@ -94,7 +94,7 @@ class ResizeAreaTest : public ViewsTestBase {
 
  private:
   std::unique_ptr<TestResizeAreaDelegate> delegate_;
-  raw_ptr<views::Widget, DanglingUntriaged> widget_ = nullptr;
+  raw_ptr<views::Widget, AcrossTasksDanglingUntriaged> widget_ = nullptr;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
 
   // The number of ui::ET_GESTURE_SCROLL_UPDATE events seen by

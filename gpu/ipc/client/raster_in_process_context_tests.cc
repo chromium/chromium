@@ -49,7 +49,7 @@ class RasterInProcessCommandBufferTest : public ::testing::Test {
     auto context = std::make_unique<RasterInProcessContext>();
     auto result = context->Initialize(
         gpu_thread_holder_.GetTaskExecutor(), attributes, SharedMemoryLimits(),
-        /*gr_shader_cache=*/nullptr, /*activity_flags=*/nullptr);
+        /*gr_shader_cache=*/nullptr, /*use_shader_cache_shm_count=*/nullptr);
     DCHECK_EQ(result, ContextResult::kSuccess);
     return context;
   }
@@ -59,6 +59,8 @@ class RasterInProcessCommandBufferTest : public ::testing::Test {
       return;
     gpu_thread_holder_.GetGpuPreferences()->texture_target_exception_list =
         CreateBufferUsageAndFormatExceptionList();
+    gpu_thread_holder_.GetGpuPreferences()->gr_context_type =
+        GrContextType::kGL;
     context_ = CreateRasterInProcessContext();
     ri_ = context_->GetImplementation();
   }
@@ -74,12 +76,13 @@ class RasterInProcessCommandBufferTest : public ::testing::Test {
 }  // namespace
 
 TEST_F(RasterInProcessCommandBufferTest, AllowedBetweenBeginEndRasterCHROMIUM) {
-  if (!RasterInProcessContext::SupportedInTest())
-    return;
+  if (!RasterInProcessContext::SupportedInTest()) {
+    GTEST_SKIP();
+  }
 
   // Check for GPU and driver support
   if (!context_->GetCapabilities().supports_oop_raster) {
-    return;
+    GTEST_SKIP();
   }
 
   // Create shared image and allocate storage.

@@ -19,12 +19,14 @@ namespace network {
 
 namespace {
 using GreaseContext =
-    ::network::AttributionReportingEligibleGreaseOptions::GreaseContext;
+    ::network::AttributionReportingHeaderGreaseOptions::GreaseContext;
+
+using ::network::mojom::AttributionSupport;
 }  // namespace
 
-bool operator==(const AttributionReportingEligibleGreaseOptions& a,
-                const AttributionReportingEligibleGreaseOptions& b) {
-  const auto tie = [](const AttributionReportingEligibleGreaseOptions& o) {
+bool operator==(const AttributionReportingHeaderGreaseOptions& a,
+                const AttributionReportingHeaderGreaseOptions& b) {
+  const auto tie = [](const AttributionReportingHeaderGreaseOptions& o) {
     return std::make_tuple(o.reverse, o.swap_greases, o.context1, o.context2,
                            o.use_front1, o.use_front2);
   };
@@ -45,7 +47,7 @@ std::ostream& operator<<(std::ostream& out, GreaseContext context) {
 }
 
 std::ostream& operator<<(std::ostream& out,
-                         const AttributionReportingEligibleGreaseOptions& o) {
+                         const AttributionReportingHeaderGreaseOptions& o) {
   return out << o.reverse << ", " << o.swap_greases << ", " << o.context1
              << ", " << o.context2 << ", " << o.use_front1 << ", "
              << o.use_front2;
@@ -57,8 +59,8 @@ using ::network::mojom::AttributionReportingEligibility;
 
 TEST(AttributionRequestHeadersTest, GreaseOptionsFromBits) {
   const struct {
-    uint64_t bits;
-    AttributionReportingEligibleGreaseOptions expected;
+    uint8_t bits;
+    AttributionReportingHeaderGreaseOptions expected;
   } kTestCases[] = {
       {
           0b00000000,
@@ -109,7 +111,7 @@ TEST(AttributionRequestHeadersTest, GreaseOptionsFromBits) {
   for (const auto& test_case : kTestCases) {
     EXPECT_EQ(
         test_case.expected,
-        AttributionReportingEligibleGreaseOptions::FromBits(test_case.bits));
+        AttributionReportingHeaderGreaseOptions::FromBits(test_case.bits));
   }
 }
 
@@ -127,17 +129,17 @@ TEST(AttributionRequestHeadersTest, NoGrease) {
   };
 
   for (const auto& test_case : kTestCases) {
-    EXPECT_EQ(test_case.expected,
-              SerializeAttributionReportingEligibleHeader(
-                  test_case.eligibility,
-                  AttributionReportingEligibleGreaseOptions()));
+    EXPECT_EQ(
+        test_case.expected,
+        SerializeAttributionReportingEligibleHeader(
+            test_case.eligibility, AttributionReportingHeaderGreaseOptions()));
   }
 }
 
 TEST(AttributionRequestHeadersTest, Greases) {
   const struct {
     AttributionReportingEligibility eligibility;
-    AttributionReportingEligibleGreaseOptions options;
+    AttributionReportingHeaderGreaseOptions options;
     const char* expected;
   } kTestCases[] = {
       // reverse with vectors of varying lengths
@@ -307,7 +309,8 @@ TEST(AttributionRequestHeadersTest, GetAttributionSupportHeader) {
     SCOPED_TRACE(test_case.attribution_support);
 
     std::string actual =
-        GetAttributionSupportHeader(test_case.attribution_support);
+        GetAttributionSupportHeader(test_case.attribution_support,
+                                    AttributionReportingHeaderGreaseOptions());
 
     auto dict = net::structured_headers::ParseDictionary(actual);
     EXPECT_TRUE(dict.has_value());
@@ -319,6 +322,87 @@ TEST(AttributionRequestHeadersTest, GetAttributionSupportHeader) {
     for (const auto& key : test_case.prohibited_keys) {
       EXPECT_FALSE(dict->contains(key)) << key;
     }
+  }
+}
+
+TEST(AttributionRequestHeadersTest, Greases_Support) {
+  const struct {
+    AttributionSupport support;
+    AttributionReportingHeaderGreaseOptions options;
+    const char* expected;
+  } kTestCases[] = {
+      // reverse with vectors of varying lengths
+      {
+          AttributionSupport::kNone,
+          {.reverse = true},
+          "",
+      },
+      {
+          AttributionSupport::kWeb,
+          {.reverse = true},
+          "web",
+      },
+      {
+          AttributionSupport::kWebAndOs,
+          {.reverse = true},
+          "web, os",
+      },
+      // grease 1
+      {
+          AttributionSupport::kNone,
+          {.context1 = GreaseContext::kKey},
+          "not-os",
+      },
+      {
+          AttributionSupport::kWeb,
+          {.context1 = GreaseContext::kKey},
+          "web, not-os",
+      },
+      {
+          AttributionSupport::kWeb,
+          {.context1 = GreaseContext::kValue},
+          "web=os",
+      },
+      {
+          AttributionSupport::kWeb,
+          {.context1 = GreaseContext::kParamName},
+          "web;os",
+      },
+      {
+          AttributionSupport::kOs,
+          {.context1 = GreaseContext::kKey},
+          "os, not-web",
+      },
+      {
+          AttributionSupport::kOs,
+          {.context1 = GreaseContext::kValue},
+          "os=web",
+      },
+      {
+          AttributionSupport::kOs,
+          {.context1 = GreaseContext::kParamName},
+          "os;web",
+      },
+      {
+          AttributionSupport::kWebAndOs,
+          {.context1 = GreaseContext::kKey},
+          "os, web",
+      },
+      {
+          AttributionSupport::kWebAndOs,
+          {.context1 = GreaseContext::kValue},
+          "os, web",
+      },
+      {
+          AttributionSupport::kWebAndOs,
+          {.context1 = GreaseContext::kParamName},
+          "os, web",
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    EXPECT_EQ(test_case.expected, GetAttributionSupportHeader(
+                                      test_case.support, test_case.options));
   }
 }
 

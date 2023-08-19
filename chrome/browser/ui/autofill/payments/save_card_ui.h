@@ -12,6 +12,9 @@ enum class BubbleType {
   // Save prompt when the user is saving locally.
   LOCAL_SAVE,
 
+  // Save prompt for saving CVC locally to an existing local card.
+  LOCAL_CVC_SAVE,
+
   // Save prompt when uploading a card to Google payments.
   UPLOAD_SAVE,
 

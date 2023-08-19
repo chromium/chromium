@@ -12,6 +12,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "content/browser/service_worker/service_worker_version.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/usb_chooser.h"
@@ -27,7 +28,6 @@
 namespace content {
 
 class RenderFrameHostImpl;
-class ServiceWorkerContextCore;
 
 // Implements a restricted device::mojom::UsbDeviceManager interface by wrapping
 // another UsbDeviceManager instance and enforces the rules of the WebUSB
@@ -36,10 +36,9 @@ class ServiceWorkerContextCore;
 class CONTENT_EXPORT WebUsbServiceImpl : public blink::mojom::WebUsbService,
                                          public UsbDelegate::Observer {
  public:
-  WebUsbServiceImpl(
-      RenderFrameHostImpl* render_frame_host,
-      base::WeakPtr<ServiceWorkerContextCore> service_worker_context,
-      const url::Origin& origin);
+  WebUsbServiceImpl(RenderFrameHostImpl* render_frame_host,
+                    base::WeakPtr<ServiceWorkerVersion> service_worker_version,
+                    const url::Origin& origin);
   WebUsbServiceImpl(const WebUsbServiceImpl&) = delete;
   WebUsbServiceImpl& operator=(const WebUsbServiceImpl&) = delete;
   ~WebUsbServiceImpl() override;
@@ -51,7 +50,7 @@ class CONTENT_EXPORT WebUsbServiceImpl : public blink::mojom::WebUsbService,
 
   // Use this when creating from a service worker.
   static void Create(
-      base::WeakPtr<ServiceWorkerContextCore> service_worker_context,
+      base::WeakPtr<ServiceWorkerVersion> service_worker_version,
       const url::Origin& origin,
       mojo::PendingReceiver<blink::mojom::WebUsbService> pending_receiver);
 
@@ -60,9 +59,8 @@ class CONTENT_EXPORT WebUsbServiceImpl : public blink::mojom::WebUsbService,
   void GetDevice(
       const std::string& guid,
       mojo::PendingReceiver<device::mojom::UsbDevice> device_receiver) override;
-  void GetPermission(
-      std::vector<device::mojom::UsbDeviceFilterPtr> device_filters,
-      GetPermissionCallback callback) override;
+  void GetPermission(blink::mojom::WebUsbRequestDeviceOptionsPtr options,
+                     GetPermissionCallback callback) override;
   void ForgetDevice(const std::string& guid,
                     ForgetDeviceCallback callback) override;
   void SetClient(
@@ -98,9 +96,12 @@ class CONTENT_EXPORT WebUsbServiceImpl : public blink::mojom::WebUsbService,
   // `WebUsbServiceImpl` is destroyed first.
   const raw_ptr<RenderFrameHostImpl> render_frame_host_;
 
-  // `nullptr` if this `WebUsbServiceImpl` is not created in a service worker
-  // context.
-  const base::WeakPtr<ServiceWorkerContextCore> service_worker_context_;
+  // The ServiceWorkerVersion of the service worker this WebUsbService belongs
+  // to.
+  const base::WeakPtr<ServiceWorkerVersion> service_worker_version_;
+
+  // The request uuid for keeping service worker alive.
+  absl::optional<base::Uuid> service_worker_activity_request_uuid_;
 
   const url::Origin origin_;
 

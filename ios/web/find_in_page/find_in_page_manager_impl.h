@@ -19,8 +19,7 @@ namespace web {
 class FindInPageManagerImpl : public FindInPageManager,
                               public web::WebStateObserver {
  public:
-  explicit FindInPageManagerImpl(web::WebState* web_state,
-                                 bool use_find_interaction);
+  explicit FindInPageManagerImpl(web::WebState* web_state);
   ~FindInPageManagerImpl() override;
 
   // AbstractFindInPageManager:
@@ -66,10 +65,6 @@ class FindInPageManagerImpl : public FindInPageManager,
   void WebStateDestroyed(WebState* web_state) override;
 
  protected:
-  // Whether the manager should use a Find interaction, or instead use its own
-  // `UIFindSession` instance stored in `find_session_`.
-  bool use_find_interaction_;
-
   // Last value given to `StartSearch`. This is used in `PollActiveFindSession`
   // so a query value can be provided to the delegate.
   NSString* current_query_ = nil;

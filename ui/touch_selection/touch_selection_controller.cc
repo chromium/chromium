@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
+#include "ui/touch_selection/touch_selection_metrics.h"
 
 namespace ui {
 namespace {
@@ -198,6 +199,7 @@ void TouchSelectionController::HandleLongPressEvent(
     const gfx::PointF& location) {
   longpress_drag_selector_.OnLongPressEvent(event_time, location);
   response_pending_input_event_ = LONG_PRESS;
+  drag_selector_initiating_gesture_ = DragSelectorInitiatingGesture::kLongPress;
 }
 
 void TouchSelectionController::HandleDoublePressEvent(
@@ -205,6 +207,8 @@ void TouchSelectionController::HandleDoublePressEvent(
     const gfx::PointF& location) {
   longpress_drag_selector_.OnDoublePressEvent(event_time, location);
   response_pending_input_event_ = LONG_PRESS;
+  drag_selector_initiating_gesture_ =
+      DragSelectorInitiatingGesture::kDoublePress;
 }
 
 void TouchSelectionController::OnScrollBeginEvent() {
@@ -380,7 +384,6 @@ bool TouchSelectionController::WillHandleTouchEventImpl(
 
 void TouchSelectionController::OnSwipeToMoveCursorBegin() {
   if (config_.hide_active_handle) {
-    // Hide the handle when magnifier is showing since it can confuse the user.
     SetTemporarilyHidden(true);
 
     // If the user has typed something, the insertion handle might be hidden.
@@ -390,9 +393,10 @@ void TouchSelectionController::OnSwipeToMoveCursorBegin() {
 }
 
 void TouchSelectionController::OnSwipeToMoveCursorEnd() {
-  // Show the handle at the end if magnifier was showing.
-  if (config_.hide_active_handle)
+  if (config_.hide_active_handle) {
     SetTemporarilyHidden(false);
+  }
+  RecordTouchSelectionDrag(ui::TouchSelectionDragType::kCursorDrag);
 }
 
 void TouchSelectionController::OnDragBegin(
@@ -477,10 +481,13 @@ void TouchSelectionController::OnDragUpdate(
 
 void TouchSelectionController::OnDragEnd(
     const TouchSelectionDraggable& draggable) {
-  if (&draggable == insertion_handle_.get())
+  if (&draggable == insertion_handle_.get()) {
     client_->OnSelectionEvent(INSERTION_HANDLE_DRAG_STOPPED);
-  else
+  } else {
     client_->OnSelectionEvent(SELECTION_HANDLE_DRAG_STOPPED);
+  }
+  LogDragType(draggable);
+  drag_selector_initiating_gesture_ = DragSelectorInitiatingGesture::kNone;
 }
 
 bool TouchSelectionController::IsWithinTapSlop(
@@ -707,6 +714,22 @@ void TouchSelectionController::LogSelectionEnd() {
     UMA_HISTOGRAM_CUSTOM_TIMES("Event.TouchSelection.WasDraggedDuration",
                                duration, base::Milliseconds(500),
                                base::Seconds(60), 60);
+  }
+}
+
+void TouchSelectionController::LogDragType(
+    const TouchSelectionDraggable& draggable) {
+  if (&draggable == insertion_handle_.get()) {
+    RecordTouchSelectionDrag(ui::TouchSelectionDragType::kCursorHandleDrag);
+  } else if (&draggable == start_selection_handle_.get() ||
+             &draggable == end_selection_handle_.get()) {
+    RecordTouchSelectionDrag(ui::TouchSelectionDragType::kSelectionHandleDrag);
+  } else if (drag_selector_initiating_gesture_ ==
+             DragSelectorInitiatingGesture::kLongPress) {
+    RecordTouchSelectionDrag(ui::TouchSelectionDragType::kLongPressDrag);
+  } else if (drag_selector_initiating_gesture_ ==
+             DragSelectorInitiatingGesture::kDoublePress) {
+    RecordTouchSelectionDrag(ui::TouchSelectionDragType::kDoublePressDrag);
   }
 }
 

@@ -130,7 +130,8 @@ TEST_F(EventSourceParserTest, DispatchSimpleMessageEvent) {
 }
 
 TEST_F(EventSourceParserTest, ConstructWithLastEventId) {
-  parser_ = MakeGarbageCollected<EventSourceParser>("hoge", client_);
+  parser_ =
+      MakeGarbageCollected<EventSourceParser>(AtomicString("hoge"), client_);
   EXPECT_EQ("hoge", Parser()->LastEventId());
 
   Enqueue("data:hello\n\n");

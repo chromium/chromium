@@ -233,7 +233,7 @@ void SpinButtonElement::CalculateUpDownStateByMouseLocation(Event& event) {
   gfx::Point local = gfx::ToRoundedPoint(
       box->AbsoluteToLocalPoint(mouse_event->AbsoluteLocation()));
   UpDownState old_up_down_state = up_down_state_;
-  up_down_state_ = (local.y() < box->Size().Height() / 2) ? kUp : kDown;
+  up_down_state_ = (local.y() < box->Size().height / 2) ? kUp : kDown;
   if (up_down_state_ != old_up_down_state)
     GetLayoutObject()->SetShouldDoFullPaintInvalidation();
 }

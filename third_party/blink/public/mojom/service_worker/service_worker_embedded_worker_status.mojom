@@ -1,0 +1,28 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// The enum represents ServiceWorker running status.
+enum ServiceWorkerEmbeddedWorkerStatus {
+  // The worker instance is stopped.
+  // Initial status of the instance.
+  // Changes to this state after the attached process and all states are reset.
+  // See: `EmbeddedWorkerInstance::ReleaseProcess`.
+  kStopped = 0,
+
+  // Starting the service worker instance, and not evaluated the script yet.
+  // Changes to this state when `EmbeddedWorkerInstance::Start` is called.
+  kStarting = 1,
+
+  // The service worker is running, and ready to run handlers.
+  // Changes to this state when `EmbeddedWorkerInstance::OnStarted` is called,
+  // which is called after the script evaluation.
+  // See: `ServiceWorkerContextClient::DidEvaluateScript`.
+  kRunning = 2,
+
+  // The service worker is stopping, but resources are not released yet.
+  // Changes to this state when `EmbeddedWorkerInstance::Stop` is called.
+  kStopping = 3,
+};

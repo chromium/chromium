@@ -30,10 +30,6 @@ namespace ash::disks {
 class DiskMountManager;
 }  // namespace ash::disks
 
-namespace drive {
-class DriveNotificationManager;
-}  // namespace drive
-
 namespace network {
 class NetworkConnectionTracker;
 }  // namespace network
@@ -62,7 +58,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsHost {
 
     ~Delegate() override = default;
 
-    virtual drive::DriveNotificationManager& GetDriveNotificationManager() = 0;
     virtual std::unique_ptr<DriveFsBootstrapListener> CreateMojoListener();
     virtual base::FilePath GetMyFilesPath() = 0;
     virtual std::string GetLostAndFoundDirectoryName() = 0;
@@ -132,8 +127,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsHost {
   // The path to the user's profile.
   const base::FilePath profile_path_;
 
-  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
-  const raw_ptr<MountObserver, ExperimentalAsh> mount_observer_;
+  const raw_ptr<Delegate, DanglingUntriaged | ExperimentalAsh> delegate_;
+  const raw_ptr<MountObserver, DanglingUntriaged | ExperimentalAsh>
+      mount_observer_;
   const raw_ptr<network::NetworkConnectionTracker, ExperimentalAsh>
       network_connection_tracker_;
   const raw_ptr<const base::Clock, ExperimentalAsh> clock_;

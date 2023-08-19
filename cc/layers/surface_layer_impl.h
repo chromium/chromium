@@ -60,6 +60,8 @@ class CC_EXPORT SurfaceLayerImpl : public LayerImpl {
   void SetIsReflection(bool is_reflection);
   bool is_reflection() const { return is_reflection_; }
 
+  void ResetStateForUpdateSubmissionStateCallback();
+
   // LayerImpl overrides.
   std::unique_ptr<LayerImpl> CreateLayerImpl(
       LayerTreeImpl* tree_impl) const override;
@@ -89,6 +91,10 @@ class CC_EXPORT SurfaceLayerImpl : public LayerImpl {
   bool has_pointer_events_none_ = false;
   bool is_reflection_ = false;
   bool will_draw_ = false;
+  // This value tracks if a visibility reset took place in the associated
+  // SurfaceLayer, so that it can be propagated to the active SurfaceLayerImpl
+  // and used to update `will_draw_` on that layer accordingly.
+  bool will_draw_needs_reset_ = false;
 };
 
 }  // namespace cc

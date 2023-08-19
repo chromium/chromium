@@ -102,7 +102,6 @@
 #include "net/filter/gzip_header.h"
 #include "net/filter/gzip_source_stream.h"
 #include "net/filter/mock_source_stream.h"
-#include "net/first_party_sets/same_party_context.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -171,7 +170,7 @@ void BuildSimpleWebKeyEvent(blink::WebInputEvent::Type type,
   event->native_key_code = ui::KeycodeConverter::DomCodeToNativeKeycode(code);
   event->windows_key_code = key_code;
   event->is_system_key = false;
-  event->skip_in_browser = true;
+  event->skip_if_unhandled = true;
 
   if (type == blink::WebInputEvent::Type::kChar ||
       type == blink::WebInputEvent::Type::kRawKeyDown) {
@@ -783,14 +782,7 @@ void WaitForLoadStopWithoutSuccessCheck(WebContents* web_contents) {
   }
 }
 
-bool WaitForLoadStop(WebContents* web_contents) {
-  TRACE_EVENT0("test", "content::WaitForLoadStop");
-  WebContentsDestroyedWatcher watcher(web_contents);
-  WaitForLoadStopWithoutSuccessCheck(web_contents);
-  if (watcher.IsDestroyed()) {
-    LOG(ERROR) << "WebContents was destroyed during waiting for load stop.";
-    return false;
-  }
+bool IsLastCommittedPageNormal(WebContents* web_contents) {
   bool is_page_normal =
       IsLastCommittedEntryOfPageType(web_contents, PAGE_TYPE_NORMAL);
   if (!is_page_normal) {
@@ -804,6 +796,30 @@ bool WaitForLoadStop(WebContents* web_contents) {
     }
   }
   return is_page_normal;
+}
+
+bool WaitForLoadStop(WebContents* web_contents) {
+  TRACE_EVENT0("test", "content::WaitForLoadStop");
+  WebContentsDestroyedWatcher watcher(web_contents);
+  WaitForLoadStopWithoutSuccessCheck(web_contents);
+  if (watcher.IsDestroyed()) {
+    LOG(ERROR) << "WebContents was destroyed during waiting for load stop.";
+    return false;
+  }
+  return IsLastCommittedPageNormal(web_contents);
+}
+
+bool WaitForNavigationFinished(WebContents* web_contents,
+                               TestNavigationObserver& observer) {
+  TRACE_EVENT0("test", "content::WaitForNavigationFinished");
+  WebContentsDestroyedWatcher watcher(web_contents);
+  observer.WaitForNavigationFinished();
+  if (watcher.IsDestroyed()) {
+    LOG(ERROR)
+        << "WebContents was destroyed during waiting for navigation finished.";
+    return false;
+  }
+  return IsLastCommittedPageNormal(web_contents);
 }
 
 void PrepContentsForBeforeUnloadTest(WebContents* web_contents,
@@ -932,22 +948,22 @@ void SimulateMouseClickAt(WebContents* web_contents,
 }
 
 gfx::PointF GetCenterCoordinatesOfElementWithId(
-    content::WebContents* web_contents,
+    const ToRenderFrameHost& adapter,
     base::StringPiece id) {
-  float x = EvalJs(web_contents,
-                   JsReplace("const bounds = "
-                             "document.getElementById($1)."
-                             "getBoundingClientRect();"
-                             "Math.floor(bounds.left + bounds.width / 2)",
-                             id))
-                .ExtractDouble();
-  float y = EvalJs(web_contents,
-                   JsReplace("const bounds = "
-                             "document.getElementById($1)."
-                             "getBoundingClientRect();"
-                             "Math.floor(bounds.top + bounds.height / 2)",
-                             id))
-                .ExtractDouble();
+  float x =
+      EvalJs(adapter, JsReplace("const bounds = "
+                                "document.getElementById($1)."
+                                "getBoundingClientRect();"
+                                "Math.floor(bounds.left + bounds.width / 2)",
+                                id))
+          .ExtractDouble();
+  float y =
+      EvalJs(adapter, JsReplace("const bounds = "
+                                "document.getElementById($1)."
+                                "getBoundingClientRect();"
+                                "Math.floor(bounds.top + bounds.height / 2)",
+                                id))
+          .ExtractDouble();
   return gfx::PointF(x, y);
 }
 
@@ -1894,8 +1910,7 @@ std::vector<net::CanonicalCookie> GetCanonicalCookies(
 bool SetCookie(BrowserContext* browser_context,
                const GURL& url,
                const std::string& value,
-               net::CookieOptions::SameSiteCookieContext context,
-               net::SamePartyContext::Type party_context) {
+               net::CookieOptions::SameSiteCookieContext context) {
   mojo::Remote<network::mojom::CookieManager> cookie_manager;
   browser_context->GetDefaultStoragePartition()
       ->GetNetworkContext()
@@ -1908,7 +1923,6 @@ bool SetCookie(BrowserContext* browser_context,
   net::CookieOptions options;
   options.set_include_httponly();
   options.set_same_site_cookie_context(context);
-  options.set_same_party_context(net::SamePartyContext(party_context));
   base::test::TestFuture<net::CookieAccessResult> future;
   cookie_manager->SetCanonicalCookie(*cc.get(), url, options,
                                      future.GetCallback());
@@ -1919,8 +1933,7 @@ bool SetPartitionedCookie(BrowserContext* browser_context,
                           const GURL& url,
                           const std::string& value,
                           const net::CookiePartitionKey& cookie_partition_key,
-                          net::CookieOptions::SameSiteCookieContext context,
-                          net::SamePartyContext::Type party_context) {
+                          net::CookieOptions::SameSiteCookieContext context) {
   DCHECK(base::Contains(value, ";Partitioned"));
   mojo::Remote<network::mojom::CookieManager> cookie_manager;
   browser_context->GetDefaultStoragePartition()
@@ -1934,7 +1947,6 @@ bool SetPartitionedCookie(BrowserContext* browser_context,
   net::CookieOptions options;
   options.set_include_httponly();
   options.set_same_site_cookie_context(context);
-  options.set_same_party_context(net::SamePartyContext(party_context));
   base::test::TestFuture<net::CookieAccessResult> future;
   cookie_manager->SetCanonicalCookie(*cc, url, options, future.GetCallback());
   return future.Get().status.IsInclude();
@@ -3575,9 +3587,9 @@ void PwnMessageHelper::FileSystemWrite(RenderProcessHost* process,
       &waiter, listener.InitWithNewPipeAndPassReceiver());
   mojo::Remote<blink::mojom::FileSystemCancellableOperation> op;
 
-  file_system_manager->Write(file_path, blob_uuid, position,
-                             op.BindNewPipeAndPassReceiver(),
-                             std::move(listener));
+  file_system_manager->Write(
+      file_path, process->GetBrowserContext()->GetBlobRemote(blob_uuid),
+      position, op.BindNewPipeAndPassReceiver(), std::move(listener));
   waiter.WaitForOperationToFinish();
 }
 
@@ -4164,23 +4176,36 @@ void DidFinishNavigationObserver::DidFinishNavigation(
   callback_.Run(navigation_handle);
 }
 
+// Since the loading state might be switched more than once due to navigation
+// restart, the following helper methods for history traversal need to call
+// `WaitForNavigationFinished()` to ensure the navigation is finally committed
+// and `WaitForLoadStop()` to ensure the `WebContents` finishes the last
+// loading.
 bool HistoryGoToIndex(WebContents* wc, int index) {
+  TestNavigationObserver observer(wc);
   wc->GetController().GoToIndex(index);
+  WaitForNavigationFinished(wc, observer);
   return WaitForLoadStop(wc);
 }
 
 bool HistoryGoToOffset(WebContents* wc, int offset) {
+  TestNavigationObserver observer(wc);
   wc->GetController().GoToOffset(offset);
+  WaitForNavigationFinished(wc, observer);
   return WaitForLoadStop(wc);
 }
 
 bool HistoryGoBack(WebContents* wc) {
+  TestNavigationObserver observer(wc);
   wc->GetController().GoBack();
+  WaitForNavigationFinished(wc, observer);
   return WaitForLoadStop(wc);
 }
 
 bool HistoryGoForward(WebContents* wc) {
+  TestNavigationObserver observer(wc);
   wc->GetController().GoForward();
+  WaitForNavigationFinished(wc, observer);
   return WaitForLoadStop(wc);
 }
 

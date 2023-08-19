@@ -5,7 +5,6 @@
 import("//build/config/chrome_build.gni")
 
 source_set("user_signin") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "user_signin_constants.h",
     "user_signin_constants.mm",
@@ -24,6 +23,7 @@ source_set("user_signin") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/consent_auditor",
     "//ios/chrome/browser/policy/resources:enterprise_icon_blue_large",
+    "//ios/chrome/browser/settings/sync/utils",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/public/commands",
@@ -37,7 +37,6 @@ source_set("user_signin") {
     "//ios/chrome/browser/ui/authentication/signin:signin_protected",
     "//ios/chrome/browser/ui/authentication/signin/user_signin/logging",
     "//ios/chrome/browser/ui/authentication/unified_consent",
-    "//ios/chrome/browser/ui/settings/sync/utils",
     "//ios/chrome/browser/unified_consent",
     "//ios/chrome/common",
     "//ios/chrome/common:button_config",
@@ -56,7 +55,6 @@ source_set("user_signin") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "user_signin_coordinator_unittest.mm",
@@ -97,10 +95,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "upgrade_signin_promo_egtest.mm" ]
   deps = [
@@ -109,6 +104,7 @@ source_set("eg2_tests") {
     "//components/signin/internal/identity_manager",
     "//components/signin/ios/browser:features",
     "//ios/chrome/browser/flags:system_flags",
+    "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/signin:capabilities_types",
     "//ios/chrome/browser/signin:fake_system_identity",
     "//ios/chrome/browser/signin:system_identity_manager",

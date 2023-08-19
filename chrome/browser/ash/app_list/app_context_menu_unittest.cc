@@ -43,6 +43,7 @@
 #include "chrome/browser/extensions/menu_manager_factory.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "components/app_constants/constants.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/app_update.h"
@@ -726,7 +727,9 @@ TEST_F(AppContextMenuTest, InternalAppMenu) {
 class AppContextMenuLacrosTest : public AppContextMenuTest {
  public:
   AppContextMenuLacrosTest() {
-    feature_list_.InitAndEnableFeature(ash::features::kLacrosSupport);
+    feature_list_.InitWithFeatures(
+        ash::standalone_browser::GetFeatureRefs(),
+        {ash::features::kEnforceAshExtensionKeeplist});
     crosapi::browser_util::SetProfileMigrationCompletedForTest(true);
   }
   AppContextMenuLacrosTest(const AppContextMenuLacrosTest&) = delete;

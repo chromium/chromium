@@ -81,6 +81,9 @@ component("policy") {
       ]
       deps += [ "//media/gpu:buildflags" ]
     }
+    if (is_linux) {
+      deps += [ "//net" ]  # TODO(crbug.com/1312226): remove this.
+    }
     if (enable_oop_printing) {
       sources += [
         "linux/bpf_print_backend_policy_linux.cc",
@@ -128,7 +131,6 @@ component("policy") {
     ]
     deps += [ "//sandbox/mac:seatbelt" ]
     public_deps += [ "mac:packaged_sb_files" ]
-    configs += [ "//build/config/compiler:enable_arc" ]
     frameworks = [
       "AppKit.framework",
       "CoreFoundation.framework",
@@ -142,6 +144,8 @@ component("policy") {
       "win/lpac_capability.h",
       "win/sandbox_diagnostics.cc",
       "win/sandbox_diagnostics.h",
+      "win/sandbox_warmup.cc",
+      "win/sandbox_warmup.h",
       "win/sandbox_win.cc",
       "win/sandbox_win.h",
     ]

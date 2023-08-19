@@ -120,7 +120,11 @@ public class MessageBannerProperties {
     static final WritableFloatPropertyKey TRANSLATION_Y = new WritableFloatPropertyKey();
 
     static final WritableIntPropertyKey MARGIN_TOP = new WritableIntPropertyKey();
-    static final WritableFloatPropertyKey ALPHA = new WritableFloatPropertyKey();
+    // ALPHA value of the content, i.e. every thing other than the background and shadow.
+    static final WritableFloatPropertyKey CONTENT_ALPHA = new WritableFloatPropertyKey();
+    // Height of the message for the expanding animation. This does not modify the view height
+    // of the view in order to avoid triggering re-layout.
+    static final WritableFloatPropertyKey VISUAL_HEIGHT = new WritableFloatPropertyKey();
     static final WritableObjectPropertyKey<Runnable> ON_TOUCH_RUNNABLE =
             new WritableObjectPropertyKey<>();
     static final WritableFloatPropertyKey ELEVATION = new WritableFloatPropertyKey();
@@ -138,7 +142,8 @@ public class MessageBannerProperties {
             ICON_RESOURCE_ID, ICON_TINT_COLOR, LARGE_ICON, ICON_ROUNDED_CORNER_RADIUS_PX,
             SECONDARY_ICON, SECONDARY_ICON_RESOURCE_ID, SECONDARY_BUTTON_MENU_TEXT,
             ON_SECONDARY_BUTTON_CLICK, SECONDARY_ICON_CONTENT_DESCRIPTION, DISMISSAL_DURATION,
-            TRANSLATION_X, TRANSLATION_Y, ALPHA, ON_TOUCH_RUNNABLE, ON_PRIMARY_ACTION,
+            TRANSLATION_X, TRANSLATION_Y, CONTENT_ALPHA, ON_TOUCH_RUNNABLE, ON_PRIMARY_ACTION,
             ON_SECONDARY_ACTION, ON_DISMISSED, ON_STARTED_SHOWING, SECONDARY_MENU_BUTTON_DELEGATE,
-            SECONDARY_MENU_MAX_SIZE, PRIMARY_WIDGET_APPEARANCE, ELEVATION, MARGIN_TOP};
+            SECONDARY_MENU_MAX_SIZE, PRIMARY_WIDGET_APPEARANCE, ELEVATION, MARGIN_TOP,
+            VISUAL_HEIGHT};
 }

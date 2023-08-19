@@ -170,3 +170,11 @@ export function processDeviceState(type, devices, deviceState) {
   }
   return {deviceState, shouldGetNetworkDetails};
 }
+
+/**
+ * Returns the display name for |apn|.
+ * @param {!ApnProperties} apn
+ */
+export function getApnDisplayName(apn) {
+  return apn.name || apn.accessPointName;
+}

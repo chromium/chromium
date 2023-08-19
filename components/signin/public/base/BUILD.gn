@@ -16,7 +16,7 @@ buildflag_header("signin_buildflags") {
     "ENABLE_DICE_SUPPORT=$enable_dice_support",
     "ENABLE_MIRROR=$enable_mirror",
     "ENABLE_BOUND_SESSION_CREDENTIALS=$enable_bound_session_credentials",
-    "ENABLE_WAFFLE_DESKTOP=$enable_waffle_desktop",
+    "ENABLE_SEARCH_ENGINE_CHOICE=$enable_search_engine_choice",
   ]
 }
 
@@ -28,6 +28,8 @@ static_library("base") {
     "consent_level.h",
     "device_id_helper.cc",
     "device_id_helper.h",
+    "gaia_id_hash.cc",
+    "gaia_id_hash.h",
     "multilogin_parameters.cc",
     "multilogin_parameters.h",
     "persistent_repeating_timer.cc",
@@ -42,6 +44,8 @@ static_library("base") {
     "signin_pref_names.h",
     "signin_switches.cc",
     "signin_switches.h",
+    "wait_for_network_callback_helper.cc",
+    "wait_for_network_callback_helper.h",
   ]
   deps = [
     "//build:chromeos_buildflags",
@@ -53,6 +57,7 @@ static_library("base") {
     ":signin_buildflags",
     "//base",
     "//components/keyed_service/core",
+    "//components/version_info:channel",
     "//google_apis",
     "//url",
   ]
@@ -106,6 +111,7 @@ source_set("unit_tests") {
   sources = [
     "avatar_icon_util_unittest.cc",
     "device_id_helper_unittest.cc",
+    "gaia_id_hash_unittest.cc",
     "persistent_repeating_timer_unittest.cc",
     "session_binding_utils_unittest.cc",
     "signin_metrics_unittest.cc",

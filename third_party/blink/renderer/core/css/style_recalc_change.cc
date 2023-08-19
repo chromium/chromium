@@ -27,16 +27,7 @@ bool StyleRecalcChange::TraverseChild(const Node& node) const {
          node.NeedsLayoutSubtreeUpdate();
 }
 
-bool StyleRecalcChange::ShouldRecalcStyleFor(const Node& node) const {
-  if (flags_ & kSuppressRecalc) {
-    return false;
-  }
-  if (RecalcChildren()) {
-    return true;
-  }
-  if (node.NeedsStyleRecalc()) {
-    return true;
-  }
+bool StyleRecalcChange::RecalcContainerQueryDependent(const Node& node) const {
   // Early exit before getting the computed style.
   if (!RecalcContainerQueryDependent()) {
     return false;
@@ -49,7 +40,22 @@ bool StyleRecalcChange::ShouldRecalcStyleFor(const Node& node) const {
          (RecalcSizeContainerQueryDependent() &&
           old_style->DependsOnSizeContainerQueries()) ||
          (RecalcStyleContainerQueryDependent() &&
-          old_style->DependsOnStyleContainerQueries());
+          old_style->DependsOnStyleContainerQueries()) ||
+         (RecalcStickyContainerQueryDependent() &&
+          old_style->DependsOnStickyContainerQueries());
+}
+
+bool StyleRecalcChange::ShouldRecalcStyleFor(const Node& node) const {
+  if (flags_ & kSuppressRecalc) {
+    return false;
+  }
+  if (RecalcChildren()) {
+    return true;
+  }
+  if (node.NeedsStyleRecalc()) {
+    return true;
+  }
+  return RecalcContainerQueryDependent(node);
 }
 
 bool StyleRecalcChange::ShouldUpdatePseudoElement(

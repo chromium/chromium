@@ -21,6 +21,7 @@ component("accelerated_widget_mac") {
     "ACCELERATED_WIDGET_MAC_IMPLEMENTATION",
     "GL_SILENCE_DEPRECATION",
   ]
+
   frameworks = [
     "AVFoundation.framework",
     "CoreGraphics.framework",

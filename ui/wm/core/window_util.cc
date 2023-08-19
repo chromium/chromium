@@ -38,6 +38,7 @@ void CloneChildren(ui::Layer* to_clone,
       CloneChildren(owner->layer(), old_layer, map_func);
     }
   }
+  parent->set_no_mutation(true);
 }
 
 // Invokes Mirror() on all the children of |to_mirror|, adding the newly cloned

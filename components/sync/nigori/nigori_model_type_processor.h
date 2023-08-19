@@ -90,7 +90,7 @@ class NigoriModelTypeProcessor : public ModelTypeProcessor,
 
   // The bridge owns this processor instance so the pointer should never become
   // invalid.
-  raw_ptr<NigoriSyncBridge> bridge_;
+  raw_ptr<NigoriSyncBridge> bridge_ = nullptr;
 
   // The model type metadata (progress marker, initial sync done, etc).
   sync_pb::ModelTypeState model_type_state_;

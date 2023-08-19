@@ -6,10 +6,6 @@
 
 #import <UIKit/UIKit.h>
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface ShellTranslationDelegate ()
 // Action Sheet to prompt user whether or not the page should be translated.
 @property(nonatomic, strong) UIAlertController* beforeTranslateActionSheet;

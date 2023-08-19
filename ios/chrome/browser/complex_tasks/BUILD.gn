@@ -10,11 +10,9 @@ source_set("complex_tasks") {
     "ios_task_tab_helper.mm",
   ]
   deps = [ "//ios/web" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "ios_task_tab_helper_unittest.mm" ]
   deps = [

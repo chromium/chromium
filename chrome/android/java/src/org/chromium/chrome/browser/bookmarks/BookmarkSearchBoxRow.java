@@ -24,7 +24,7 @@ import org.chromium.ui.text.EmptyTextWatcher;
  * bookmarks.
  */
 public class BookmarkSearchBoxRow extends LinearLayout {
-    private Callback<String> mQueryCallback;
+    private EditText mSearchText;
 
     public BookmarkSearchBoxRow(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -33,26 +33,42 @@ public class BookmarkSearchBoxRow extends LinearLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-
-        EditText searchText = findViewById(R.id.search_text);
-        searchText.addTextChangedListener(new EmptyTextWatcher() {
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                mQueryCallback.onResult(charSequence.toString());
-            }
-        });
-        searchText.setOnEditorActionListener(this::onEditorAction);
+        mSearchText = findViewById(R.id.search_text);
+        mSearchText.setOnEditorActionListener(this::onEditorAction);
     }
 
     void setQueryCallback(Callback<String> queryCallback) {
-        mQueryCallback = queryCallback;
+        mSearchText.addTextChangedListener(new EmptyTextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                queryCallback.onResult(charSequence.toString());
+            }
+        });
+    }
+
+    void setFocusChangeCallback(Callback<Boolean> focusChangeCallback) {
+        mSearchText.setOnFocusChangeListener((view, hasFocus) -> {
+            assert view == mSearchText;
+            focusChangeCallback.onResult(hasFocus);
+        });
+    }
+
+    void setHasFocus(boolean modelHasFocus) {
+        boolean viewHasFocus = mSearchText.hasFocus();
+        if (modelHasFocus == viewHasFocus) return;
+        if (modelHasFocus) {
+            mSearchText.requestFocus();
+        } else {
+            mSearchText.clearFocus();
+        }
     }
 
     private boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
+        assert textView == mSearchText;
         if (actionId == EditorInfo.IME_ACTION_SEARCH
                 || keyEvent != null && keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
             KeyboardVisibilityDelegate.getInstance().hideKeyboard(textView);
-            clearFocus();
+            mSearchText.clearFocus();
             return true;
         } else {
             return false;

@@ -103,19 +103,6 @@ ArcEnterpriseReportingService::~ArcEnterpriseReportingService() {
   arc_bridge_service_->enterprise_reporting()->SetHost(nullptr);
 }
 
-void ArcEnterpriseReportingService::ReportManagementState(
-    mojom::ManagementState state) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  VLOG(1) << "ReportManagementState state=" << state;
-
-  if (state == mojom::ManagementState::MANAGED_DO_LOST) {
-    DCHECK(ArcServiceManager::Get());
-    VLOG(1) << "Management state lost. Removing ARC user data.";
-    ArcSessionManager::Get()->RequestArcDataRemoval();
-    ArcSessionManager::Get()->StopAndEnableArc();
-  }
-}
-
 void ArcEnterpriseReportingService::ReportCloudDpcOperationTime(
     int64_t time_ms,
     mojom::TimedCloudDpcOp op,

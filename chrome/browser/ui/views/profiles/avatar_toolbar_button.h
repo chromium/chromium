@@ -46,6 +46,11 @@ class AvatarToolbarButton : public ToolbarButton {
   ~AvatarToolbarButton() override;
 
   void UpdateText();
+  absl::optional<SkColor> GetHighlightTextColor() const override;
+  absl::optional<SkColor> GetHighlightBorderColor() const override;
+  bool ShouldPaintBorder() const override;
+  bool ShouldBlendHighlightColor() const override;
+
   void ShowAvatarHighlightAnimation();
 
   void AddObserver(Observer* observer);
@@ -63,8 +68,15 @@ class AvatarToolbarButton : public ToolbarButton {
   void UpdateIcon() override;
   void Layout() override;
   int GetIconSize() const override;
+  SkColor GetForegroundColor(ButtonState state) const override;
 
-  bool ShouldDirectlyUseHighlightAsBackground() const override;
+  // Returns true if a text is set and is visible.
+  bool IsLabelPresentAndVisible() const;
+
+  // Updates the inkdrop highlight and ripple properties depending on the state
+  // and
+  // whether the chip is expanded.
+  void UpdateInkdrop();
 
   // Can be used in tests to reduce or remove the delay before showing the IPH.
   static void SetIPHMinDelayAfterCreationForTesting(base::TimeDelta delay);
@@ -83,6 +95,9 @@ class AvatarToolbarButton : public ToolbarButton {
                                const gfx::Image& profile_identity_image) const;
 
   void SetInsets();
+
+  // Updates the layout insets depending on whether it is a chip or a button.
+  void UpdateLayoutInsets();
 
   std::unique_ptr<AvatarToolbarButtonDelegate> delegate_;
 

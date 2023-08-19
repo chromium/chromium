@@ -289,6 +289,35 @@ test.util.sync.deepGetActiveElement = (contentWindow, opt_styleNames) => {
 };
 
 /**
+ * Gets an array of every activeElement, walking down the shadowRoot of every
+ * active element it finds.
+ *
+ * @param {Window} contentWindow Window to be tested.
+ * @param {Array<string>=} opt_styleNames List of CSS property name to be
+ *     obtained.
+ * @return {Array<ElementObject>} Element information that contains contentText,
+ *     attribute names and values, hidden attribute, and style names and values.
+ *     If there is no active element, returns an empty array.
+ */
+test.util.sync.deepGetActivePath = (contentWindow, opt_styleNames) => {
+  if (!contentWindow.document || !contentWindow.document.activeElement) {
+    return [];
+  }
+
+  const path = [contentWindow.document.activeElement];
+  while (true) {
+    const shadow = path[path.length - 1].shadowRoot;
+    if (shadow && shadow.activeElement) {
+      path.push(shadow.activeElement);
+    } else {
+      break;
+    }
+  }
+
+  return path.map(el => extractElementInfo(el, contentWindow, opt_styleNames));
+};
+
+/**
  * Assigns the text to the input element.
  * @param {Window} contentWindow Window to be tested.
  * @param {string|!Array<string>} query Query for the input element.

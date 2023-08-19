@@ -191,7 +191,7 @@ class AvatarMenu :
   raw_ptr<AvatarMenuObserver, DanglingUntriaged> observer_;
 
   // Browser in which this avatar menu resides. Weak.
-  raw_ptr<Browser, DanglingUntriaged> browser_;
+  raw_ptr<Browser, AcrossTasksDanglingUntriaged> browser_;
 };
 
 #endif  // CHROME_BROWSER_PROFILES_AVATAR_MENU_H_

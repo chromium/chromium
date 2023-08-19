@@ -6,13 +6,14 @@
 
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/policy/dm_token_utils.h"
-#include "chrome/browser/policy/management_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/policy/core/common/cloud/dm_token.h"
+#include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/browser/realtime/policy_engine.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
@@ -64,7 +65,9 @@ bool ChromeEnterpriseRealTimeUrlLookupService::
 
   // Don't allow using the access token if the managed profile doesn't match the
   // managed device.
-  if (policy::IsDeviceCloudManaged() &&
+  if (policy::ManagementServiceFactory::GetForProfile(profile_)
+          ->HasManagementAuthority(
+              policy::EnterpriseManagementAuthority::CLOUD_DOMAIN) &&
       !chrome::enterprise_util::IsProfileAffiliated(profile_)) {
     return false;
   }

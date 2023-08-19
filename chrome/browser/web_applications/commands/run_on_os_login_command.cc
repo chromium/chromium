@@ -148,7 +148,7 @@ void RunOnOsLoginCommand::SetRunOnOsLoginMode() {
   }
 
   {
-    ScopedRegistryUpdate update(&lock_->sync_bridge());
+    ScopedRegistryUpdate update = lock_->sync_bridge().BeginUpdate();
     update->UpdateApp(app_id_)->SetRunOnOsLoginMode(login_mode_.value());
   }
   lock_->registrar().NotifyWebAppRunOnOsLoginModeChanged(app_id_,

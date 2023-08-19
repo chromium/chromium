@@ -8,10 +8,13 @@
 
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/metrics/arc_metrics_constants.h"
+#include "ash/constants/ash_features.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
 #include "chrome/browser/apps/app_service/web_contents_app_id_utils.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
@@ -37,8 +40,12 @@
 #include "content/public/browser/navigation_entry.h"
 #include "extensions/browser/extension_util.h"
 #include "net/base/url_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
+
+constexpr float kProgressNone = 0;
+constexpr float kProgressNotApplicable = -1;
 
 std::string GetSourceFromAppListSource(ash::ShelfLaunchSource source) {
   switch (source) {
@@ -84,6 +91,14 @@ std::u16string ShelfControllerHelper::GetAppTitle(Profile* profile,
   if (!name.empty())
     return base::UTF8ToUTF16(name);
 
+  if (ash::features::ArePromiseIconsEnabled()) {
+    const std::u16string promise_app_title =
+        GetPromiseAppTitle(profile, app_id);
+    if (!promise_app_title.empty()) {
+      return promise_app_title;
+    }
+  }
+
   // Get the title for the extension which is not managed by AppService.
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(profile);
@@ -106,6 +121,16 @@ ash::AppStatus ShelfControllerHelper::GetAppStatus(Profile* profile,
   if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile))
     return status;
 
+  if (ash::features::ArePromiseIconsEnabled()) {
+    const apps::PromiseApp* promise_app =
+        apps::AppServiceProxyFactory::GetForProfile(profile)
+            ->PromiseAppRegistryCache()
+            ->GetPromiseAppForStringPackageId(app_id);
+    if (promise_app) {
+      return ConvertPromiseStatusToAppStatus(promise_app->status);
+    }
+  }
+
   apps::AppServiceProxyFactory::GetForProfile(profile)
       ->AppRegistryCache()
       .ForOneApp(app_id, [&status](const apps::AppUpdate& update) {
@@ -118,25 +143,74 @@ ash::AppStatus ShelfControllerHelper::GetAppStatus(Profile* profile,
   return status;
 }
 
-// static
-bool ShelfControllerHelper::IsAppHiddenFromShelf(Profile* profile,
-                                                 const std::string& app_id) {
-  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile))
-    return false;
-
-  bool hidden = false;
-  apps::AppServiceProxyFactory::GetForProfile(profile)
-      ->AppRegistryCache()
-      .ForOneApp(app_id, [&hidden](const apps::AppUpdate& update) {
-        hidden = !update.ShowInShelf().value_or(true);
-      });
-
-  return hidden;
-}
-
 std::string ShelfControllerHelper::GetAppID(content::WebContents* tab) {
   DCHECK(tab);
   return apps::GetInstanceAppIdForWebContents(tab).value_or(std::string());
+}
+
+std::u16string ShelfControllerHelper::GetPromiseAppTitle(
+    Profile* profile,
+    const std::string& string_package_id) {
+  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
+    return std::u16string();
+  }
+
+  const apps::PromiseApp* promise_app =
+      apps::AppServiceProxyFactory::GetForProfile(profile)
+          ->PromiseAppRegistryCache()
+          ->GetPromiseAppForStringPackageId(string_package_id);
+  if (!promise_app || !promise_app->name.has_value() ||
+      promise_app->name->empty()) {
+    return std::u16string();
+  }
+
+  return base::UTF8ToUTF16(promise_app->name.value());
+}
+
+// static
+float ShelfControllerHelper::GetPromiseAppProgress(
+    Profile* profile,
+    const std::string& string_package_id) {
+  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
+    return kProgressNotApplicable;
+  }
+  const apps::PromiseApp* promise_app =
+      apps::AppServiceProxyFactory::GetForProfile(profile)
+          ->PromiseAppRegistryCache()
+          ->GetPromiseAppForStringPackageId(string_package_id);
+  if (!promise_app) {
+    return kProgressNotApplicable;
+  }
+  if (!promise_app->progress.has_value()) {
+    return kProgressNone;
+  }
+  return promise_app->progress.value();
+}
+
+// static
+bool ShelfControllerHelper::IsPromiseApp(Profile* profile,
+                                         const std::string& id) {
+  return apps::AppServiceProxyFactory::GetForProfile(profile)
+      ->PromiseAppRegistryCache()
+      ->GetPromiseAppForStringPackageId(id);
+}
+
+// static
+ash::AppStatus ShelfControllerHelper::ConvertPromiseStatusToAppStatus(
+    apps::PromiseStatus promise_status) {
+  switch (promise_status) {
+    case apps::PromiseStatus::kUnknown:
+      // Fallthrough.
+    case apps::PromiseStatus::kPending:
+      return ash::AppStatus::kPending;
+    case apps::PromiseStatus::kInstalling:
+      return ash::AppStatus::kInstalling;
+    case apps::PromiseStatus::kRemove:
+      NOTREACHED();
+      // Set to kInstalling, as that would've been the last valid status before
+      // the promise app was removed.
+      return ash::AppStatus::kInstalling;
+  }
 }
 
 bool ShelfControllerHelper::IsValidIDForCurrentUser(
@@ -267,6 +341,17 @@ bool ShelfControllerHelper::IsValidIDFromAppService(
           is_valid = true;
         }
       });
+
+  if (ash::features::ArePromiseIconsEnabled()) {
+    absl::optional<apps::PackageId> possible_package_id =
+        apps::PackageId::FromString(app_id);
+    if (possible_package_id.has_value() &&
+        apps::AppServiceProxyFactory::GetForProfile(profile_)
+            ->PromiseAppRegistryCache()
+            ->HasPromiseApp(possible_package_id.value())) {
+      is_valid = true;
+    }
+  }
 
   return is_valid;
 }

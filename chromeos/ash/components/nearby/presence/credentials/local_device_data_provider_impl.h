@@ -39,7 +39,8 @@ class LocalDeviceDataProviderImpl : public LocalDeviceDataProvider {
   std::string GetAccountName() override;
   void SaveUserRegistrationInfo(const std::string& display_name,
                                 const std::string& image_url) override;
-  bool IsUserRegistrationInfoSaved() override;
+  bool IsRegistrationCompleteAndUserInfoSaved() override;
+  void SetRegistrationComplete(bool complete) override;
 
  private:
   // Creates a device name of the form "<given name>'s <device type>."

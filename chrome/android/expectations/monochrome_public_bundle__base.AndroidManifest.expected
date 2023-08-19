@@ -2,8 +2,8 @@
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.chromium.chrome.stable"
-    platformBuildVersionCode="33"
-    platformBuildVersionName="13"
+    platformBuildVersionCode="34"
+    platformBuildVersionName="14"
     android:isolatedSplits="true"
     android:versionCode="OFFSET=20"
     android:versionName="#.#.#.#">
@@ -12,7 +12,6 @@
   <permission android:name="$PACKAGE.permission.CHILD_SERVICE" android:protectionLevel="signature"/>
   <permission android:name="$PACKAGE.permission.DEBUG" android:label="Debug web pages" android:protectionLevel="signature"/>
   <permission android:name="$PACKAGE.permission.READ_WRITE_BOOKMARK_FOLDERS" android:protectionLevel="signatureOrSystem"/>
-  <permission android:name="$PACKAGE.permission.TRANSLATE" android:protectionLevel="signature"/>
   <queries>  # DIFF-ANCHOR: 9588fea7
     <package android:name="com.google.ar.core"/>
   </queries>  # DIFF-ANCHOR: 9588fea7
@@ -75,7 +74,7 @@
   <uses-permission-sdk-23 android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
   <uses-permission-sdk-23 android:name="android.permission.USE_BIOMETRIC"/>
   <uses-permission-sdk-23 android:name="android.permission.USE_FINGERPRINT"/>
-  <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="33"/>
+  <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="34"/>
   <application
       android:name="org.chromium.chrome.browser.base.SplitMonochromeApplication"
       android:allowAudioPlaybackCapture="false"
@@ -306,7 +305,9 @@
     <service  # DIFF-ANCHOR: adce9ea1
         android:name="org.chromium.android_webview.services.DeveloperUiService"
         android:exported="true"
+        android:foregroundServiceType="specialUse"
         android:process=":webview_service">
+      <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE" android:value="debugging"/>
     </service>  # DIFF-ANCHOR: adce9ea1
     <service  # DIFF-ANCHOR: eecf2fee
         android:name="org.chromium.android_webview.services.MetricsBridgeService"

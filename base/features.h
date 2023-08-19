@@ -17,6 +17,8 @@ namespace base::features {
 // Alphabetical:
 BASE_EXPORT BASE_DECLARE_FEATURE(kEnforceNoExecutableFileHandles);
 
+BASE_EXPORT BASE_DECLARE_FEATURE(kNotReachedIsFatal);
+
 BASE_EXPORT BASE_DECLARE_FEATURE(kOptimizeDataUrls);
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kSupportsUserDataFlatHashMap);

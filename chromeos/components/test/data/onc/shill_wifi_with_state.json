@@ -12,6 +12,8 @@
    "Strength": 10,
    "Type": "wifi",
    "WiFi.BSSID": "00:12:34:ca:56:8b",
+   "WiFi.BSSIDAllowlist": [ "00:12:34:ca:56:8b" ],
+   "WiFi.BSSIDRequested": "00:12:34:ca:56:8b",
    "WiFi.HexSSID": "4F70656E577274", // "OpenWrt"
    "WiFi.HiddenSSID": false,
 }

@@ -123,8 +123,9 @@ class SharingBrowserTest : public SyncTest {
   raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
   syncer::FakeDeviceInfoTracker fake_device_info_tracker_;
   std::vector<std::unique_ptr<syncer::DeviceInfo>> device_infos_;
-  raw_ptr<SharingService, DanglingUntriaged> sharing_service_;
-  raw_ptr<FakeWebPushSender, DanglingUntriaged> fake_web_push_sender_;
+  raw_ptr<SharingService, AcrossTasksDanglingUntriaged> sharing_service_;
+  raw_ptr<FakeWebPushSender, AcrossTasksDanglingUntriaged>
+      fake_web_push_sender_;
   FakeSharingMessageBridge fake_sharing_message_bridge_;
 };
 

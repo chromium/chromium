@@ -11,6 +11,7 @@
 #include "ash/webui/personalization_app/search/search.mojom.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
@@ -18,7 +19,7 @@
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "ui/gfx/image/image_skia.h"
+#include "ui/base/models/image_model.h"
 
 class Profile;
 
@@ -88,12 +89,16 @@ class PersonalizationProvider
   void OnLoadIcon(::apps::IconValuePtr icon_value);
 
   const raw_ptr<Profile> profile_;
-  raw_ptr<::apps::AppServiceProxy> app_service_proxy_;
   std::u16string current_query_;
   gfx::ImageSkia icon_;
   raw_ptr<::ash::personalization_app::SearchHandler> search_handler_;
   mojo::Receiver<::ash::personalization_app::mojom::SearchResultsObserver>
       search_results_observer_{this};
+
+  base::ScopedObservation<apps::AppRegistryCache,
+                          apps::AppRegistryCache::Observer>
+      app_registry_cache_observer_{this};
+
   base::WeakPtrFactory<PersonalizationProvider> weak_ptr_factory_{this};
   base::WeakPtrFactory<PersonalizationProvider> app_service_weak_ptr_factory_{
       this};

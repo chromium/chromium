@@ -41,8 +41,7 @@ class AppRecover : public App {
 
  private:
   ~AppRecover() override = default;
-  void Initialize() override;
-  void Uninitialize() override;
+  [[nodiscard]] int Initialize() override;
   void FirstTaskRun() override;
 
   std::vector<RegistrationRequest> RecordRegisteredApps() const;
@@ -56,18 +55,29 @@ class AppRecover : public App {
   scoped_refptr<GlobalPrefs> global_prefs_;
 };
 
-void AppRecover::Initialize() {
+int AppRecover::Initialize() {
   global_prefs_ = CreateGlobalPrefs(updater_scope());
-}
-
-void AppRecover::Uninitialize() {
-  global_prefs_ = nullptr;
+  return kErrorOk;
 }
 
 void AppRecover::FirstTaskRun() {
   if (!global_prefs_) {
     VLOG(0) << "Recovery task could not acquire global prefs.";
-    Shutdown(kErrorFailedToLockPrefsMutex);
+
+    // If global prefs cannot be acquired, it's possible that an active updater
+    // is running but is stuck. Issuing a GetVersion RPC to the updater may
+    // unstick it, and won't do harm if it is actively working.
+    scoped_refptr<UpdateService> update_service =
+        CreateUpdateServiceProxy(updater_scope());
+    update_service->GetVersion(
+        base::BindOnce(
+            [](scoped_refptr<UpdateService> /*update_service*/,
+               const base::Version& version) {
+              VLOG(0) << "GetVersion returned " << version;
+            },
+            update_service)
+            .Then(base::BindOnce(&AppRecover::Shutdown, this,
+                                 kErrorFailedToLockPrefsMutex)));
     return;
   }
 
@@ -168,11 +178,7 @@ void AppRecover::RegisterApps(
       CreateUpdateServiceProxy(updater_scope());
   base::RepeatingClosure barrier = base::BarrierClosure(
       registrations.size(),
-      // The service is bound to keep it alive through all callbacks.
-      base::BindOnce(
-          [](scoped_refptr<UpdateService> /*service*/,
-             base::OnceClosure shutdown) { std::move(shutdown).Run(); },
-          service, base::BindOnce(&AppRecover::Shutdown, this, kErrorOk)));
+      base::BindOnce(&AppRecover::Shutdown, this, kErrorOk));
   for (const RegistrationRequest& registration : registrations) {
     service->RegisterApp(registration,
                          base::BindOnce(

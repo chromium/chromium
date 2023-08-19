@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/containers/contains.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -50,8 +51,6 @@ MoveMigrator::MoveMigrator(
 
 MoveMigrator::~MoveMigrator() = default;
 
-// TODO(ythjkt): Add UMA for each step to detect failures and measure time taken
-// for critical steps.
 void MoveMigrator::Migrate() {
   ResumeStep resume_step = GetResumeStep(local_state_, user_id_hash_);
 
@@ -68,6 +67,8 @@ void MoveMigrator::Migrate() {
     if (resume_count > kMoveMigrationResumeCountLimit) {
       LOG(ERROR) << "The number of resume attempt limit has reached. Marking "
                     "move migration as completed.";
+      base::UmaHistogramBoolean(kMoveMigratorMaxResumeReached, true);
+      base::debug::DumpWithoutCrashing();
       SetResumeStep(local_state_, user_id_hash_, ResumeStep::kCompleted);
       resume_step = ResumeStep::kCompleted;
     }
@@ -359,7 +360,7 @@ MoveMigrator::TaskResult MoveMigrator::SetupLacrosDir(
                              timer_for_copy.Elapsed());
 
   if (!base::WriteFile(tmp_user_dir.Append(chrome::kFirstRunSentinel), "")) {
-    LOG(ERROR) << "WriteFile() failed for " << chrome::kFirstRunSentinel;
+    PLOG(ERROR) << "WriteFile() failed for " << chrome::kFirstRunSentinel;
     return {TaskStatus::kSetupLacrosDirWriteFirstRunSentinelFileFailed, errno};
   }
 

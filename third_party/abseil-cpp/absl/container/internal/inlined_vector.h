@@ -390,14 +390,18 @@ class Storage {
     return data_.allocated.allocated_data;
   }
 
-  Pointer<A> GetInlinedData() {
-    return reinterpret_cast<Pointer<A>>(
-        std::addressof(data_.inlined.inlined_data[0]));
+  // ABSL_ATTRIBUTE_NO_SANITIZE_CFI is used because the memory pointed to may be
+  // uninitialized, a common pattern in allocate()+construct() APIs.
+  // https://clang.llvm.org/docs/ControlFlowIntegrity.html#bad-cast-checking
+  // NOTE: When this was written, LLVM documentation did not explicitly
+  // mention that casting `char*` and using `reinterpret_cast` qualifies
+  // as a bad cast.
+  ABSL_ATTRIBUTE_NO_SANITIZE_CFI Pointer<A> GetInlinedData() {
+    return reinterpret_cast<Pointer<A>>(data_.inlined.inlined_data);
   }
 
-  ConstPointer<A> GetInlinedData() const {
-    return reinterpret_cast<ConstPointer<A>>(
-        std::addressof(data_.inlined.inlined_data[0]));
+  ABSL_ATTRIBUTE_NO_SANITIZE_CFI ConstPointer<A> GetInlinedData() const {
+    return reinterpret_cast<ConstPointer<A>>(data_.inlined.inlined_data);
   }
 
   SizeType<A> GetAllocatedCapacity() const {

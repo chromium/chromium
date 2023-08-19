@@ -215,7 +215,7 @@ class VideoEncodeAcceleratorAdapterTest
       gfx::ColorSpace::CreateREC709();
   std::vector<VideoEncodeAccelerator::SupportedProfile> supported_profiles_;
   base::test::TaskEnvironment task_environment_;
-  raw_ptr<FakeVideoEncodeAccelerator, DanglingUntriaged>
+  raw_ptr<FakeVideoEncodeAccelerator, AcrossTasksDanglingUntriaged>
       vea_;  // owned by |vae_adapter_|
   std::unique_ptr<MockGpuVideoAcceleratorFactories> gpu_factories_;
   std::unique_ptr<VideoEncodeAcceleratorAdapter> vae_adapter_;

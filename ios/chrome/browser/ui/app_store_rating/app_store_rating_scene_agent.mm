@@ -6,7 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/time/time.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
@@ -22,11 +22,8 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/ui/app_store_rating/constants.h"
+#import "ios/chrome/browser/ui/app_store_rating/features.h"
 #import "ios/chrome/common/channel_info.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 @interface AppStoreRatingSceneAgent ()
 
@@ -62,6 +59,9 @@
 }
 
 - (BOOL)isUserEngaged {
+  if (IsAppStoreRatingLoosenedTriggersEnabled()) {
+    return IsChromeLikelyDefaultBrowser() || self.CPEEnabled;
+  }
   return IsChromeLikelyDefaultBrowser() && self.daysInPastWeekRequirementMet &&
          self.totalDaysRequirementMet && self.CPEEnabled;
 }
@@ -72,6 +72,7 @@
     transitionedToActivationLevel:(SceneActivationLevel)level {
   switch (level) {
     case SceneActivationLevelUnattached:
+    case SceneActivationLevelDisconnected:
       // no-op.
       break;
     case SceneActivationLevelBackground:
@@ -95,8 +96,8 @@
 #pragma mark - Getters
 
 - (BOOL)isDaysInPastWeekRequirementMet {
-  NSArray* activeDaysInPastWeek =
-      base::mac::ObjCCastStrict<NSArray>([[NSUserDefaults standardUserDefaults]
+  NSArray* activeDaysInPastWeek = base::apple::ObjCCastStrict<NSArray>(
+      [[NSUserDefaults standardUserDefaults]
           objectForKey:kAppStoreRatingActiveDaysInPastWeekKey]);
   const NSUInteger appStoreRatingTotalDaysOnChromeRequirement =
       (GetChannel() == version_info::Channel::DEV ||
@@ -148,8 +149,8 @@
 // Returns an array of user's active days in the past week, not including the
 // current session.
 - (std::vector<base::Time>)activeDaysInPastWeek {
-  NSArray* storedActiveDaysInPastWeek =
-      base::mac::ObjCCastStrict<NSArray>([[NSUserDefaults standardUserDefaults]
+  NSArray* storedActiveDaysInPastWeek = base::apple::ObjCCastStrict<NSArray>(
+      [[NSUserDefaults standardUserDefaults]
           objectForKey:kAppStoreRatingActiveDaysInPastWeekKey]);
 
   std::vector<base::Time> activeDaysInPastWeek;
@@ -217,7 +218,7 @@
 // 365 days.
 - (BOOL)promoShownOver365DaysAgo {
   NSDate* lastShown =
-      base::mac::ObjCCastStrict<NSDate>([[NSUserDefaults standardUserDefaults]
+      base::apple::ObjCCastStrict<NSDate>([[NSUserDefaults standardUserDefaults]
           objectForKey:kAppStoreRatingLastShownPromoDayKey]);
   if (!lastShown) {
     return YES;

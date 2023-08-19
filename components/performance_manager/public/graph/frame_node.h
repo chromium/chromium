@@ -31,6 +31,10 @@ class WorkerNode;
 
 using execution_context_priority::PriorityAndReason;
 
+namespace execution_context_priority {
+class InheritClientPriorityVoter;
+}
+
 // Frame nodes form a tree structure, each FrameNode at most has one parent
 // that is a FrameNode. Conceptually, a FrameNode corresponds to a
 // content::RenderFrameHost (RFH) in the browser, and a
@@ -196,10 +200,6 @@ class FrameNode : public Node {
   virtual bool VisitChildDedicatedWorkers(
       const WorkerNodeVisitor& visitor) const = 0;
 
-  // Returns the current priority of the frame, and the reason for the frame
-  // having that particular priority.
-  virtual const PriorityAndReason& GetPriorityAndReason() const = 0;
-
   // Returns true if at least one form of the frame has been interacted with.
   virtual bool HadFormInteraction() const = 0;
 
@@ -236,6 +236,14 @@ class FrameNode : public Node {
   // kilobytes. This is an estimate because it is computed by process, and a
   // process can host multiple frames.
   virtual uint64_t GetPrivateFootprintKbEstimate() const = 0;
+
+ private:
+  friend class execution_context_priority::InheritClientPriorityVoter;
+
+  // Returns the current priority of the frame, and the reason for the frame
+  // having that particular priority.
+  // Note: Do not use, not ready for prime time.
+  virtual const PriorityAndReason& GetPriorityAndReason() const = 0;
 };
 
 // Pure virtual observer interface. Derive from this if you want to be forced to

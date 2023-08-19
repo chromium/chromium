@@ -24,7 +24,6 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_icon/arc_activity_adaptive_icon_impl.h"
-#include "chrome/browser/apps/app_service/app_icon/arc_icon_once_loader.h"
 #include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "chrome/browser/apps/app_service/app_notifications.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
@@ -74,10 +73,6 @@ class ArcApps : public KeyedService,
 
   ~ArcApps() override;
 
-  ArcIconOnceLoader& GetArcIconOnceLoaderForTesting() {
-    return arc_icon_once_loader_;
-  }
-
   WebApkManager* GetWebApkManagerForTesting() { return web_apk_manager_.get(); }
 
  private:
@@ -95,12 +90,6 @@ class ArcApps : public KeyedService,
   void Shutdown() override;
 
   // apps::AppPublisher overrides.
-  void LoadIcon(const std::string& app_id,
-                const IconKey& icon_key,
-                IconType icon_type,
-                int32_t size_hint_in_dip,
-                bool allow_placeholder_icon,
-                apps::LoadIconCallback callback) override;
   void GetCompressedIconData(const std::string& app_id,
                              int32_t size_in_dip,
                              ui::ResourceScaleFactor scale_factor,
@@ -149,8 +138,6 @@ class ArcApps : public KeyedService,
   void OnAppStatesChanged(const std::string& app_id,
                           const ArcAppListPrefs::AppInfo& app_info) override;
   void OnAppRemoved(const std::string& app_id) override;
-  void OnAppIconUpdated(const std::string& app_id,
-                        const ArcAppIconDescriptor& descriptor) override;
   void OnAppNameUpdated(const std::string& app_id,
                         const std::string& name) override;
   void OnAppLastLaunchTimeUpdated(const std::string& app_id) override;
@@ -201,11 +188,6 @@ class ArcApps : public KeyedService,
   void OnInstanceRegistryWillBeDestroyed(
       apps::InstanceRegistry* instance_registry) override;
 
-  void LoadPlayStoreIcon(apps::IconType icon_type,
-                         int32_t size_hint_in_dip,
-                         IconEffects icon_effects,
-                         apps::LoadIconCallback callback);
-
   // Creates the App struct for `app_id` based on `app_info`. If `update_icon`
   // is true, creates a new icon key. If `raw_icon_updated` is true, sets
   // `raw_icon_updated` in the icon key as true, to remove the icon files in the
@@ -235,7 +217,6 @@ class ArcApps : public KeyedService,
       std::unique_ptr<apps::AppShortcutItems> app_shortcut_items);
 
   const raw_ptr<Profile, ExperimentalAsh> profile_;
-  ArcIconOnceLoader arc_icon_once_loader_;
   ArcActivityAdaptiveIconImpl arc_activity_adaptive_icon_impl_;
 
   apps_util::IncrementingIconKeyFactory icon_key_factory_;

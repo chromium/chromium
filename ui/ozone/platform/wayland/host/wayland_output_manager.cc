@@ -172,6 +172,19 @@ const WaylandOutputManager::OutputList& WaylandOutputManager::GetAllOutputs()
   return output_list_;
 }
 
+void WaylandOutputManager::DumpState(std::ostream& out) const {
+  out << "WaylandOutputManager:" << std::endl;
+  if (wayland_screen_) {
+    wayland_screen_->DumpState(out);
+    out << std::endl;
+  }
+  for (const auto& output : output_list_) {
+    out << "  output[" << output.first << "]:";
+    output.second->DumpState(out);
+    out << std::endl;
+  }
+}
+
 void WaylandOutputManager::OnOutputHandleMetrics(
     const WaylandOutput::Metrics& metrics) {
   if (wayland_screen_) {

@@ -94,7 +94,6 @@ public class TabIdManager {
         mIdCounter.set(mPreferences.readInt(ChromePreferenceKeys.TAB_ID_MANAGER_NEXT_ID));
     }
 
-    @VisibleForTesting
     public static void resetInstanceForTesting() {
         sInstance = null;
     }

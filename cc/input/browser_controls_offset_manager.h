@@ -25,9 +25,9 @@ class BrowserControlsOffsetManagerClient;
 class CC_EXPORT BrowserControlsOffsetManager {
  public:
   enum class AnimationDirection {
-    NO_ANIMATION,
-    SHOWING_CONTROLS,
-    HIDING_CONTROLS
+    kNoAnimation,
+    kShowingControls,
+    kHidingControls
   };
 
   static std::unique_ptr<BrowserControlsOffsetManager> Create(
@@ -84,7 +84,7 @@ class CC_EXPORT BrowserControlsOffsetManager {
   bool IsAnimatingToShowControls() const {
     return top_controls_animation_.IsInitialized() &&
            top_controls_animation_.Direction() ==
-               AnimationDirection::SHOWING_CONTROLS;
+               AnimationDirection::kShowingControls;
   }
 
   void UpdateBrowserControlsState(BrowserControlsState constraints,
@@ -231,7 +231,7 @@ class CC_EXPORT BrowserControlsOffsetManager {
     // Whether the animation is initialized by setting start and stop time and
     // values.
     bool initialized_ = false;
-    AnimationDirection direction_ = AnimationDirection::NO_ANIMATION;
+    AnimationDirection direction_ = AnimationDirection::kNoAnimation;
     // Monotonic start and stop times.
     base::TimeTicks start_time_;
     base::TimeTicks stop_time_;

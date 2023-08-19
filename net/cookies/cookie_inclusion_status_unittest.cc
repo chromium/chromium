@@ -258,7 +258,7 @@ TEST(CookieInclusionStatusTest, ValidateExclusionAndWarningFromWire) {
       0u, warning_reasons));
 
   exclusion_reasons = (1u << CookieInclusionStatus::EXCLUDE_DOMAIN_MISMATCH);
-  warning_reasons = (1u << CookieInclusionStatus::WARN_TREATED_AS_SAMEPARTY);
+  warning_reasons = (1u << CookieInclusionStatus::WARN_PORT_MISMATCH);
   EXPECT_TRUE(CookieInclusionStatus::ValidateExclusionAndWarningFromWire(
       exclusion_reasons, warning_reasons));
 

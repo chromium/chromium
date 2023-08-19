@@ -6,8 +6,8 @@
 
 #import <UserNotifications/UserNotifications.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
@@ -24,6 +24,7 @@
 #import "ios/chrome/app/chrome_overlay_window.h"
 #import "ios/chrome/app/main_application_delegate_testing.h"
 #import "ios/chrome/app/main_controller.h"
+#import "ios/chrome/app/startup/app_launch_metrics.h"
 #import "ios/chrome/browser/commerce/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/crash_report/crash_keys_helper.h"
 #import "ios/chrome/browser/download/background_service/background_download_service_factory.h"
@@ -39,10 +40,6 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/keyboard/menu_builder.h"
 #import "ios/web/common/uikit_ui_util.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 // The time delay after firstSceneWillEnterForeground: before checking for main
@@ -289,9 +286,9 @@ const int kMainIntentCheckDelay = 1;
 
 - (void)sceneWillConnect:(NSNotification*)notification {
   UIWindowScene* scene =
-      base::mac::ObjCCastStrict<UIWindowScene>(notification.object);
+      base::apple::ObjCCastStrict<UIWindowScene>(notification.object);
   SceneDelegate* sceneDelegate =
-      base::mac::ObjCCastStrict<SceneDelegate>(scene.delegate);
+      base::apple::ObjCCastStrict<SceneDelegate>(scene.delegate);
 
   // Under some iOS 15 betas, Chrome gets scene connection events for some
   // system scene connections. To handle this, early return if the connecting
@@ -348,6 +345,8 @@ const int kMainIntentCheckDelay = 1;
           }
         }
         if (!appStartupFromExternalIntent) {
+          base::UmaHistogramEnumeration(kAppLaunchSource,
+                                        AppLaunchSource::APP_ICON);
           base::RecordAction(base::UserMetricsAction("IOSOpenByMainIntent"));
         } else {
           [self notifyFETAppStartupFromExternalIntent];
@@ -392,13 +391,13 @@ const int kMainIntentCheckDelay = 1;
 #pragma mark - Testing methods
 
 + (AppState*)sharedAppState {
-  return base::mac::ObjCCast<MainApplicationDelegate>(
+  return base::apple::ObjCCast<MainApplicationDelegate>(
              [[UIApplication sharedApplication] delegate])
       .appState;
 }
 
 + (MainController*)sharedMainController {
-  return base::mac::ObjCCast<MainApplicationDelegate>(
+  return base::apple::ObjCCast<MainApplicationDelegate>(
              [[UIApplication sharedApplication] delegate])
       .mainController;
 }

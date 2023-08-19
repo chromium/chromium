@@ -19,6 +19,7 @@ ActivityFilteringWebSocketHandshakeThrottle::
 
 void ActivityFilteringWebSocketHandshakeThrottle::ThrottleHandshake(
     const blink::WebURL& url,
+    const blink::WebSecurityOrigin& creator_origin,
     blink::WebSocketHandshakeThrottle::OnCompletion completion_callback) {
   GURL gurl = GURL(url);
 

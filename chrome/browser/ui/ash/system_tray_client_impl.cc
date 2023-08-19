@@ -15,6 +15,8 @@
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/system_tray.h"
 #include "ash/public/cpp/update_types.h"
+#include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "ash/webui/settings/public/constants/setting.mojom.h"
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -25,6 +27,7 @@
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
@@ -38,7 +41,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/set_time_dialog.h"
 #include "chrome/browser/ash/system/system_clock.h"
-#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_metrics.h"
+#include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_metrics.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service_factory.h"
@@ -56,8 +59,6 @@
 #include "chrome/browser/ui/webui/ash/internet_config_dialog.h"
 #include "chrome/browser/ui/webui/ash/internet_detail_dialog.h"
 #include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_dialog.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/setting.mojom.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/channel_info.h"
@@ -71,6 +72,7 @@
 #include "chromeos/ash/components/network/network_util.h"
 #include "chromeos/ash/components/network/onc/network_onc_utils.h"
 #include "chromeos/ash/components/network/tether_constants.h"
+#include "chromeos/ash/components/phonehub/util/histogram_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/session_manager/core/session_manager.h"
@@ -79,6 +81,7 @@
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "ui/events/event_constants.h"
 #include "url/gurl.h"
+
 using session_manager::SessionManager;
 using session_manager::SessionState;
 
@@ -172,21 +175,9 @@ bool IsAppInstalled(std::string app_id) {
 }
 
 void OpenInBrowser(const GURL& event_url) {
-  if (crosapi::browser_util::IsLacrosPrimaryBrowser()) {
-    auto* browser_manager = crosapi::BrowserManager::Get();
-    browser_manager->SwitchToTab(
-        event_url,
-        /*path_behavior=*/NavigateParams::IGNORE_AND_NAVIGATE);
-    return;
-  }
-
-  // Lacros is not the primary browser, so use this workaround.
-  chrome::ScopedTabbedBrowserDisplayer displayer(
-      ProfileManager::GetActiveUserProfile());
-  NavigateParams params(
-      GetSingletonTabNavigateParams(displayer.browser(), event_url));
-  params.path_behavior = NavigateParams::IGNORE_AND_NAVIGATE;
-  ShowSingletonTabOverwritingNTP(displayer.browser(), &params);
+  ShowSingletonTabOverwritingNTP(ProfileManager::GetActiveUserProfile(),
+                                 event_url,
+                                 NavigateParams::IGNORE_AND_NAVIGATE);
 }
 
 ash::ManagementDeviceMode GetManagementDeviceMode(
@@ -249,7 +240,12 @@ class SystemTrayClientImpl::EnterpriseAccountObserver
   }
 
   // session_manager::SessionManagerObserver:
-  void OnSessionStateChanged() override { UpdateProfile(); }
+  void OnSessionStateChanged() override {
+    TRACE_EVENT0("ui",
+                 "SystemTrayClientImpl::EnterpriseAccountObserver::"
+                 "OnSessionStateChanged");
+    UpdateProfile();
+  }
 
   // policy::CloudPolicyStore::Observer
   void OnStoreLoaded(policy::CloudPolicyStore* store) override {
@@ -379,6 +375,12 @@ void SystemTrayClientImpl::ShowSettings(int64_t display_id) {
   base::RecordAction(base::UserMetricsAction("ShowOptions"));
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
       ProfileManager::GetActiveUserProfile(), display_id);
+}
+
+void SystemTrayClientImpl::ShowAccountSettings() {
+  // The "Accounts" section is called "People" for historical reasons.
+  ShowSettingsSubPageForActiveUser(
+      chromeos::settings::mojom::kPeopleSectionPath);
 }
 
 void SystemTrayClientImpl::ShowBluetoothSettings() {
@@ -520,6 +522,16 @@ void SystemTrayClientImpl::ShowAccessibilitySettings() {
           : chromeos::settings::mojom::kAccessibilitySectionPath);
 }
 
+void SystemTrayClientImpl::ShowColorCorrectionSettings() {
+  if (user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp()) {
+    // TODO(b/259370808): Color correction settings subpage not available in
+    // Kiosk.
+    return;
+  }
+  ShowSettingsSubPageForActiveUser(
+      chromeos::settings::mojom::kDisplayAndMagnificationSubpagePath);
+}
+
 void SystemTrayClientImpl::ShowGestureEducationHelp() {
   base::RecordAction(base::UserMetricsAction("ShowGestureEducationHelp"));
   Profile* profile = ProfileManager::GetActiveUserProfile();
@@ -533,16 +545,8 @@ void SystemTrayClientImpl::ShowGestureEducationHelp() {
 }
 
 void SystemTrayClientImpl::ShowPaletteHelp() {
-  if (crosapi::browser_util::IsLacrosPrimaryBrowser()) {
-    crosapi::BrowserManager::Get()->SwitchToTab(
-        GURL(chrome::kChromePaletteHelpURL),
-        /*path_behavior=*/NavigateParams::RESPECT);
-    return;
-  }
-
-  chrome::ScopedTabbedBrowserDisplayer displayer(
-      ProfileManager::GetActiveUserProfile());
-  ShowSingletonTab(displayer.browser(), GURL(chrome::kChromePaletteHelpURL));
+  ShowSingletonTab(ProfileManager::GetActiveUserProfile(),
+                   GURL(chrome::kChromePaletteHelpURL));
 }
 
 void SystemTrayClientImpl::ShowPaletteSettings() {
@@ -560,7 +564,7 @@ void SystemTrayClientImpl::ShowEnterpriseInfo() {
   }
 
   // Otherwise show enterprise management info page.
-  if (crosapi::browser_util::IsLacrosPrimaryBrowser()) {
+  if (crosapi::browser_util::IsLacrosEnabled()) {
     crosapi::BrowserManager::Get()->SwitchToTab(
         GURL(chrome::kChromeUIManagementURL),
         /*path_behavior=*/NavigateParams::RESPECT);
@@ -697,6 +701,9 @@ void SystemTrayClientImpl::ShowNetworkSettingsHelper(
 
 void SystemTrayClientImpl::ShowMultiDeviceSetup() {
   ash::multidevice_setup::MultiDeviceSetupDialog::Show();
+  ash::phonehub::util::LogMultiDeviceSetupDialogEntryPoint(
+      ash::phonehub::util::MultiDeviceSetupDialogEntrypoint::
+          kSetupNotification);
 }
 
 void SystemTrayClientImpl::ShowFirmwareUpdate() {
@@ -794,10 +801,26 @@ void SystemTrayClientImpl::ShowChannelInfoGiveFeedback() {
 }
 
 void SystemTrayClientImpl::ShowAudioSettings() {
-  DCHECK(ash::features::IsAudioSettingsPageEnabled());
   base::RecordAction(base::UserMetricsAction("ShowAudioSettingsPage"));
   ShowSettingsSubPageForActiveUser(
       chromeos::settings::mojom::kAudioSubpagePath);
+}
+
+void SystemTrayClientImpl::ShowTouchpadSettings() {
+  DCHECK(ash::features::IsInputDeviceSettingsSplitEnabled());
+  base::RecordAction(base::UserMetricsAction("ShowTouchpadSettingsPage"));
+  ShowSettingsSubPageForActiveUser(
+      chromeos::settings::mojom::kPerDeviceTouchpadSubpagePath);
+}
+
+void SystemTrayClientImpl::ShowRemapKeysSubpage(int device_id) {
+  DCHECK(ash::features::IsInputDeviceSettingsSplitEnabled());
+  base::RecordAction(base::UserMetricsAction("ShowRemapKeysSettingsSubpage"));
+  ShowSettingsSubPageForActiveUser(base::StrCat({
+      chromeos::settings::mojom::kPerDeviceKeyboardRemapKeysSubpagePath,
+      "?keyboardId=",
+      base::NumberToString(device_id),
+  }));
 }
 
 void SystemTrayClientImpl::ShowEolInfoPage() {

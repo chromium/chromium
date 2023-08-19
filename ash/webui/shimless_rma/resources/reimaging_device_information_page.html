@@ -1,4 +1,76 @@
 <style include="cr-shared-style shimless-rma-shared shimless-fonts">
+  :host {
+    --device-info-input-width: 336px;
+    /* Height of the shadows that are added by CrContainerShadowMixin. */
+    --shadow-height: 20px;
+    /* This inverted margin "pulls" in the content below/above it, so the shadow
+     * overlaps the content. The 2px is an optical adjustment. */
+    --shadow-negative-margin: calc(2px + calc(-1 * var(--shadow-height)));
+  }
+
+  hr {
+    border: 0;
+    border-top: 1px solid var(--cros-separator-color);
+    display: block;
+    height: 1px;
+    margin-bottom: 16px;
+    margin-inline-start: 0;
+    margin-top: 0;
+    transition: opacity 250ms ease;
+    /* 90px is the width (including margins) of the revert button to the right
+     * of each input. */
+    width: calc(var(--device-info-input-width) + 90px);
+  }
+
+  .wrapper #cr-container-shadow-top,
+  .wrapper #cr-container-shadow-bottom {
+    background: linear-gradient(180deg, rgba(0,0,0,0.05), transparent);
+    box-shadow: none;
+    height: var(--shadow-height);
+  }
+
+  .wrapper #cr-container-shadow-top {
+    margin-bottom: var(--shadow-negative-margin);
+  }
+
+  .wrapper #cr-container-shadow-bottom {
+    margin-top: var(--shadow-negative-margin);
+  }
+
+  /* Hide the compliance info horizontal line when the bottom shadow is present
+   * to avoid unsightly overlap. */
+  .wrapper:has(#cr-container-shadow-bottom.has-shadow) hr {
+    opacity: 0;
+  }
+
+  /* Show the compliance info horizontal line when the bottom shadow is gone. */
+  .wrapper:not(:has(#cr-container-shadow-bottom.has-shadow)) hr {
+    opacity: 1;
+  }
+
+  .input-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    overflow-y: auto;
+    /* Add padding on the left so the inputs don't get visually cropped. */
+    padding-inline-start: 2px;
+  }
+
+  /*
+   * This CSS block is necessary for the correct functioning of the
+   * CrContainerShadowMixin intersection probe: that mixin uses an empty div
+   * with the IntersectionObserver API to track when the scroll container is
+   * scrolled all the way to the bottom (to hide/show the bottom shadow).
+   * When the scroll container has height 100%, the intersection probe div will
+   * never trigger, causing the bottom shadow to never disappear. This block
+   * of CSS moves the element up slightly so that it works correctly.
+   */
+  .input-wrapper > div:last-of-type {
+    position: relative;
+    top: -1px;
+  }
+
   .input-row {
     margin-bottom: 30px;
   }
@@ -43,24 +115,54 @@
 
   cr-input,
   .md-select {
-    width: 336px;
+    width: var(--device-info-input-width);
   }
-  
-  #skuIconContainer {
+
+  .label-wrapper {
     align-items: center;
     display: inline-flex;
     vertical-align: middle;
   }
 
-  #infoIcon {
+  .info-icon {
+    color: var(--shimless-hint-text-color);
     display: inline-block;
     height: 18px;
     margin-inline-start: 6px;
+    position: relative;
+    top: -5px;
     width: 18px;
   }
 
-  #tooltipContent {
+  .tooltip-content {
     line-height: var(--shimless-instructions-line-height);
+  }
+
+  #complianceWarning {
+    align-items: center;
+    /* We're using this hex color, which corresponds to google_orange_900 in
+     * cros_palette.json5, because there is no shared variable for the color. */
+    color: #b06000;
+    display: flex;
+    margin-top: 2px;
+  }
+
+  #complianceWarning iron-icon {
+    display: inline-block;
+    height: 18px;
+    margin-inline-end: 6px;
+    width: 18px;
+  }
+
+  .required-field-asterisk {
+    color: var(--cros-text-color-alert);
+    margin-inline-start: 3px;
+  }
+
+  .wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
   }
 </style>
 
@@ -72,105 +174,192 @@
     </div>
   </div>
   <div slot="right-pane">
-    <div class="input-wrapper">
-      <div class="input-row">
-        <div class="input-holder">
-          <cr-input id="serialNumber" value="{{serialNumber_}}" 
-              label="[[i18n('confirmDeviceInfoSerialNumberLabel')]]"
-              disabled="[[allButtonsDisabled]]">
-          </cr-input>
-          <cr-button id="resetSerialNumber"
-              on-click="onResetSerialNumberButtonClicked_"
-              disabled="[[disableResetSerialNumber_]]"
-              aria-description="[[i18n('confirmDeviceInfoSerialNumberLabel')]]">
-            [[i18n('confirmDeviceInfoResetButtonLabel')]]
-          </cr-button>
+    <div class="wrapper">
+      <!-- The #container ID is necessary for the CrContainerShadowMixin to work. -->
+      <div id="container" class="input-wrapper"
+          show-bottom-shadow>
+        <div hidden="[[!shouldShowComplianceSection_(featureLevel_)]]">
+          <div hidden="[[isComplianceStatusKnown_(featureLevel_)]]">
+            <div class="input-row">
+              <div class="label-wrapper">
+                <label id="isChassisBrandedLabel" class="cr-form-field-label">
+                  [[i18n('confirmDeviceInfoDeviceQuestionIsBranded')]]
+                </label>
+                <span class="required-field-asterisk cr-form-field-label"
+                    aria-hidden="true">
+                  *
+                </span>
+              </div>
+              <div class="input-holder">
+                <select id="isChassisBranded" class="md-select"
+                    on-change="onIsChassisBrandedChange_"
+                    aria-labelledby="isChassisBrandedLabel"
+                    disabled="[[allButtonsDisabled]]">
+                  <option value="[[booleanOrDefaultOptions_.DEFAULT]]">
+                    [[i18n('confirmDeviceInfoDeviceAnswerDefault')]]
+                  </option>
+                  <option value="[[booleanOrDefaultOptions_.NO]]">
+                    [[i18n('confirmDeviceInfoDeviceAnswerNo')]]
+                  </option>
+                  <option value="[[booleanOrDefaultOptions_.YES]]">
+                    [[i18n('confirmDeviceInfoDeviceAnswerYes')]]
+                  </option>
+                </select>
+              </div>
+            </div>
+            <div class="input-row">
+              <div class="label-wrapper">
+                <label id="doesMeetRequirementsLabel" class="cr-form-field-label">
+                  [[i18n('confirmDeviceInfoDeviceQuestionDoesMeetRequirements')]]
+                </label>
+                <span class="required-field-asterisk cr-form-field-label"
+                    aria-hidden="true">
+                  *
+                </span>
+                <iron-icon icon="shimless-icon:info" class="info-icon"
+                  id="requirements-icon">
+                </iron-icon>
+                <paper-tooltip for="requirements-icon" aria-hidden="true">
+                  <div class="tooltip-content">
+                    [[i18n('confirmDeviceInfoDeviceQuestionDoesMeetRequirementsTooltip')]]
+                  </div>
+                </paper-tooltip>
+              </div>
+              <div class="input-holder">
+                <select id="doesMeetRequirements" class="md-select"
+                    on-change="onDoesMeetRequirementsChange_"
+                    aria-labelledby="doesMeetRequirementsLabel"
+                    disabled="[[allButtonsDisabled]]">
+                  <option value="[[booleanOrDefaultOptions_.DEFAULT]]">
+                    [[i18n('confirmDeviceInfoDeviceAnswerDefault')]]
+                  </option>
+                  <option value="[[booleanOrDefaultOptions_.NO]]">
+                    [[i18n('confirmDeviceInfoDeviceAnswerNo')]]
+                  </option>
+                  <option value="[[booleanOrDefaultOptions_.YES]]">
+                    [[i18n('confirmDeviceInfoDeviceAnswerYes')]]
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="input-row">
-        <div class="input-holder">
-          <cr-input id="dramPartNumber" value="{{dramPartNumber_}}"
-              label="[[i18n('confirmDeviceInfoDramPartNumberLabel')]]"
-              disabled="[[allButtonsDisabled]]">
-          </cr-input>
-          <cr-button id="resetDramPartNumber"
-              on-click="onResetDramPartNumberButtonClicked_"
-              disabled="[[disableResetDramPartNumber_]]"
-              aria-description="[[i18n('confirmDeviceInfoDramPartNumberLabel')]]">
-            [[i18n('confirmDeviceInfoResetButtonLabel')]]
-          </cr-button>
+        <div class="input-row">
+          <div class="input-holder">
+            <cr-input id="serialNumber" value="{{serialNumber_}}"
+                label="[[i18n('confirmDeviceInfoSerialNumberLabel')]]"
+                disabled="[[allButtonsDisabled]]">
+            </cr-input>
+            <cr-button id="resetSerialNumber"
+                on-click="onResetSerialNumberButtonClicked_"
+                disabled="[[disableResetSerialNumber_]]"
+                aria-description="[[i18n('confirmDeviceInfoSerialNumberLabel')]]">
+              [[i18n('confirmDeviceInfoResetButtonLabel')]]
+            </cr-button>
+          </div>
         </div>
-      </div>
-      <div class="input-row">
-        <label id="regionLabel" class="cr-form-field-label">
-          [[i18n('confirmDeviceInfoRegionLabel')]]
-        </label>
-        <div class="input-holder">
-          <select id="regionSelect" class="md-select"
-              on-change="onSelectedRegionChange_" aria-labelledby="regionLabel"
+        <div class="input-row">
+          <div class="input-holder">
+            <cr-input id="dramPartNumber" value="{{dramPartNumber_}}"
+                label="[[i18n('confirmDeviceInfoDramPartNumberLabel')]]"
+                disabled="[[allButtonsDisabled]]">
+            </cr-input>
+            <cr-button id="resetDramPartNumber"
+                on-click="onResetDramPartNumberButtonClicked_"
+                disabled="[[disableResetDramPartNumber_]]"
+                aria-description="[[i18n('confirmDeviceInfoDramPartNumberLabel')]]">
+              [[i18n('confirmDeviceInfoResetButtonLabel')]]
+            </cr-button>
+          </div>
+        </div>
+        <div class="input-row">
+          <label id="regionLabel" class="cr-form-field-label">
+            [[i18n('confirmDeviceInfoRegionLabel')]]
+          </label>
+          <div class="input-holder">
+            <select id="regionSelect" class="md-select"
+                on-change="onSelectedRegionChange_" aria-labelledby="regionLabel"
+                disabled="[[allButtonsDisabled]]">
+              <template is="dom-repeat" items="[[regions_]]" as="region">
+                <option value="[[region]]">
+                  [[region]]
+                </option>
+              </template>
+            </select>
+            <cr-button id="resetRegion" on-click="onResetRegionButtonClicked_"
+                disabled="[[disableResetRegion_]]"
+                aria-describedby="regionLabel">
+              [[i18n('confirmDeviceInfoResetButtonLabel')]]
+            </cr-button>
+          </div>
+        </div>
+        <div class="input-row">
+          <label id="whiteLabelLabel" class="cr-form-field-label">
+            [[i18n('confirmDeviceInfoWhiteLabelLabel')]]
+          </label>
+          <div class="input-holder">
+            <select id="whiteLabelSelect" class="md-select"
+                on-change="onSelectedWhiteLabelChange_"
+                aria-labelledby="whiteLabelLabel"
+                disabled="[[allButtonsDisabled]]">
+              <template is="dom-repeat" items="[[whiteLabels_]]" as="whiteLabel">
+                <option value="[[whiteLabel]]">
+                  [[whiteLabel]]
+                </option>
+              </template>
+            </select>
+            <cr-button id="resetWhiteLabel"
+                on-click="onResetWhiteLabelButtonClicked_"
+                disabled="[[disableResetWhiteLabel_]]"
+                aria-describedby="whiteLabelLabel">
+              [[i18n('confirmDeviceInfoResetButtonLabel')]]
+            </cr-button>
+          </div>
+        </div>
+        <div class="label-wrapper">
+          <label id="skuLabel" class="cr-form-field-label">
+            [[i18n('confirmDeviceInfoSkuLabel')]]
+          </label>
+          <iron-icon id="skuIcon" icon="shimless-icon:info" class="info-icon">
+          </iron-icon>
+          <paper-tooltip for="skuIcon" aria-hidden="true">
+            <div class="tooltip-content">
+              [[i18n('confirmDeviceInfoSkuWarning')]]
+            </div>
+          </paper-tooltip>
+        </div>
+        <div class="input-holder input-row">
+          <select id="skuSelect" class="md-select"
+              on-change="onSelectedSkuChange_" aria-labelledby="skuLabel"
               disabled="[[allButtonsDisabled]]">
-            <template is="dom-repeat" items="[[regions_]]" as="region">
-              <option value="[[region]]">
-                [[region]]
+            <template is="dom-repeat" items="[[skus_]]" as="sku">
+              <option value="[[sku]]">
+                [[sku]]
               </option>
             </template>
           </select>
-          <cr-button id="resetRegion" on-click="onResetRegionButtonClicked_"
-              disabled="[[disableResetRegion_]]"
-              aria-describedby="regionLabel">
+          <cr-button id="resetSku" on-click="onResetSkuButtonClicked_"
+              disabled="[[disableResetSku_]]"
+              aria-describedby="skuLabel">
             [[i18n('confirmDeviceInfoResetButtonLabel')]]
           </cr-button>
         </div>
       </div>
-      <div class="input-row">
-        <label id="whiteLabelLabel" class="cr-form-field-label">
-          [[i18n('confirmDeviceInfoWhiteLabelLabel')]]
-        </label>
-        <div class="input-holder">
-          <select id="whiteLabelSelect" class="md-select"
-              on-change="onSelectedWhiteLabelChange_"
-              aria-labelledby="whiteLabelLabel"
-              disabled="[[allButtonsDisabled]]">
-            <template is="dom-repeat" items="[[whiteLabels_]]" as="whiteLabel">
-              <option value="[[whiteLabel]]">
-                [[whiteLabel]]
-              </option>
-            </template>
-          </select>
-          <cr-button id="resetWhiteLabel"
-              on-click="onResetWhiteLabelButtonClicked_"
-              disabled="[[disableResetWhiteLabel_]]"
-              aria-describedby="whiteLabelLabel">
-            [[i18n('confirmDeviceInfoResetButtonLabel')]]
-          </cr-button>
+      <div hidden="[[!shouldShowComplianceSection_(featureLevel_)]]">
+        <div hidden="[[!isComplianceStatusKnown_(featureLevel_)]]">
+          <hr aria-hidden="true">
+          <div class="input-row">
+            <div class="compliance-status-string">
+              [[getComplianceStatusString_(featureLevel_)]]
+            </div>
+            <div id="complianceWarning">
+              <iron-icon icon="shimless-icon:info"></iron-icon>
+              <span>
+                [[i18n('confirmDeviceInfoDeviceComplianceWarning')]]
+              </span>
+            </div>
+          </div>
         </div>
-      </div>
-      <div id="skuIconContainer">
-        <label id="skuLabel" class="cr-form-field-label">
-          [[i18n('confirmDeviceInfoSkuLabel')]]
-        </label>
-        <iron-icon icon="shimless-icon:info" id="infoIcon"
-            class="cr-form-field-label">
-        </iron-icon>
-        <paper-tooltip for="infoIcon" aria-hidden="true">
-          <div id="tooltipContent">[[i18n('confirmDeviceInfoSkuWarning')]]</div>
-        </paper-tooltip>
-      </div>
-      <div class="input-holder">
-        <select id="skuSelect" class="md-select"
-            on-change="onSelectedSkuChange_" aria-labelledby="skuLabel"
-            disabled="[[allButtonsDisabled]]">
-          <template is="dom-repeat" items="[[skus_]]" as="sku">
-            <option value="[[sku]]">
-              [[sku]]
-            </option>
-          </template>
-        </select>
-        <cr-button id="resetSku" on-click="onResetSkuButtonClicked_"
-            disabled="[[disableResetSku_]]"
-            aria-describedby="skuLabel">
-          [[i18n('confirmDeviceInfoResetButtonLabel')]]
-        </cr-button>
       </div>
     </div>
   </div>

@@ -39,6 +39,7 @@ class Clock;
 namespace sql {
 class Database;
 class MetaTable;
+class Statement;
 }  // namespace sql
 
 namespace storage {
@@ -212,9 +213,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   bool IsBootstrapped();
   QuotaError SetIsBootstrapped(bool bootstrap_flag);
 
-  // Razes and re-opens the database. Will try to open a database again if
-  // one doesn't exist.
-  QuotaError RazeAndReopen();
+  // If the database has failed to open, this will attempt to reopen it.
+  // Otherwise, it will attempt to recover the database. If recovery is
+  // attempted but fails, the database will be razed. In all cases, this will
+  // attempt to reopen the database and return true on success.
+  bool RecoverOrRaze(int error_code);
 
   // Flushes previously scheduled commits.
   void CommitNow();
@@ -267,6 +270,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   void ScheduleCommit();
 
   QuotaError EnsureOpened();
+  void OnSqliteError(int sqlite_error_code, sql::Statement* statement);
   bool MoveLegacyDatabase();
   bool OpenDatabase();
   bool EnsureDatabaseVersion();
@@ -313,6 +317,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   static const size_t kTableCount;
   static const IndexSchema kIndexes[];
   static const size_t kIndexCount;
+
+  // A descriptor of the last SQL statement that was executed, used for metrics.
+  absl::optional<std::string> last_operation_;
 
   base::RepeatingCallback<void(int)> db_error_callback_;
 };

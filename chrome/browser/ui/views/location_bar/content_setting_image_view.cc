@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
 
+#include <string>
 #include <utility>
 
 #include "base/metrics/user_metrics.h"
@@ -63,6 +64,7 @@ absl::optional<ViewID> GetViewID(
     case ImageType::CLIPBOARD_READ_WRITE:
     case ImageType::SENSORS:
     case ImageType::NOTIFICATIONS_QUIET_PROMPT:
+    case ImageType::STORAGE_ACCESS:
       return absl::nullopt;
 
     case ImageType::NUM_IMAGE_TYPES:
@@ -109,14 +111,17 @@ ContentSettingImageView::ContentSettingImageView(
           ? l10n_util::GetStringUTF16(content_setting_image_model_
                                           ->AccessibilityAnnouncementStringId())
           : std::u16string();
-  const std::u16string& accessible_description =
-      l10n_util::GetStringUTF16(IDS_A11Y_OMNIBOX_CHIP_HINT);
 
   SetAccessibilityProperties(
-      /*role*/ absl::nullopt, accessible_name, accessible_description,
+      /*role*/ absl::nullopt, accessible_name,
+      /*description=*/absl::nullopt,
       /*role_description*/ absl::nullopt,
       accessible_name.empty() ? ax::mojom::NameFrom::kAttributeExplicitlyEmpty
                               : ax::mojom::NameFrom::kAttribute);
+
+  // The chrome refresh version of this view has a ripple effect which is
+  // configured by the background.
+  UpdateBackground();
 }
 
 ContentSettingImageView::~ContentSettingImageView() = default;
@@ -127,7 +132,10 @@ void ContentSettingImageView::Update() {
 
   // Calling Update() with a nullptr WebContents will hide the image.
   content_setting_image_model_->Update(
-      delegate_->ShouldHideContentSettingImage() ? nullptr : web_contents);
+      delegate_->ShouldHideContentSettingImage(
+          content_setting_image_model_->image_type())
+          ? nullptr
+          : web_contents);
   SetTooltipText(content_setting_image_model_->get_tooltip());
 
   if (!content_setting_image_model_->is_visible()) {
@@ -140,17 +148,16 @@ void ContentSettingImageView::Update() {
   UpdateImage();
   SetVisible(true);
   GetViewAccessibility().OverrideIsIgnored(false);
+  // An alert role is required in order to fire the alert event.
+  SetAccessibleRole(ax::mojom::Role::kAlert);
 
   if (content_setting_image_model_->ShouldNotifyAccessibility(web_contents)) {
     auto name = l10n_util::GetStringUTF16(
         content_setting_image_model_->AccessibilityAnnouncementStringId());
     SetAccessibleName(name);
-#if BUILDFLAG(IS_MAC)
-    NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
-#else
-    GetViewAccessibility().AnnounceText(l10n_util::GetStringFUTF16(
-        IDS_CONCAT_TWO_STRINGS_WITH_COMMA, name, GetAccessibleDescription()));
-#endif
+    const std::u16string& accessible_description =
+        l10n_util::GetStringUTF16(IDS_A11Y_OMNIBOX_CHIP_HINT);
+    SetAccessibleDescription(accessible_description);
     NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
     content_setting_image_model_->AccessibilityWasNotified(web_contents);
   }

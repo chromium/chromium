@@ -7,6 +7,7 @@
 #include "ash/keyboard/ui/keyboard_ui_factory.h"
 #include "ash/shell_delegate.h"
 #include "base/values.h"
+#include "ui/display/types/native_display_delegate.h"
 
 namespace ash {
 

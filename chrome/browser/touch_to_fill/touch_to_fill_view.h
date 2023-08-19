@@ -21,6 +21,21 @@ class TouchToFillView {
  public:
   using IsOriginSecure = base::StrongAlias<class IsOriginSecureTag, bool>;
 
+  enum ShowFlags {
+    kNone = 0,
+
+    // Indicates whether Touch To Fill will submit a form after filling.
+    kTriggerSubmission = 1 << 0,
+
+    // Indicates whether selecting the 'manage' button with passkeys available
+    // will show a screen that also allows management of passwords.
+    kCanManagePasswordsWhenPasskeysPresent = 1 << 1,
+
+    // Indicates whether the footer should contain a button that invokes hybrid
+    // passkey sign-in.
+    kShouldShowHybridOption = 1 << 2,
+  };
+
   TouchToFillView() = default;
   TouchToFillView(const TouchToFillView&) = delete;
   TouchToFillView& operator=(const TouchToFillView&) = delete;
@@ -29,18 +44,15 @@ class TouchToFillView {
   // Instructs Touch To Fill to show the provided `credentials` to the user.
   // `formatted_url` contains a human friendly version of the current origin.
   // `is_origin_secure` indicates whether the current frame origin is secure.
-  // `trigger_submission` indicates whether Touch To Fill will submit a form
-  // after filling. `can_manage_passwords_when_passkeys_present` indicates
-  // whether selecting the 'manage' button with passkeys available will show a
-  // screen that also allows management of passwords. After user interaction
-  // either OnCredentialSelected() or OnDismiss() gets invoked.
+  // `flags` is a combination of bits that affect the behaviors listed in the
+  // `ShowFlags` enum. After user interaction either OnCredentialSelected() or
+  // OnDismiss() gets invoked.
   virtual void Show(
       const GURL& url,
       IsOriginSecure is_origin_secure,
       base::span<const password_manager::UiCredential> credentials,
       base::span<const password_manager::PasskeyCredential> passkey_credentials,
-      bool trigger_submission,
-      bool can_manage_passwords_when_passkeys_present) = 0;
+      int flags) = 0;
 
   // Invoked in case the user chooses an entry from the credential list
   // presented to them.

@@ -26,7 +26,7 @@ class HistoryService;
 }  // namespace history
 
 namespace optimization_guide {
-class NewOptimizationGuideDecider;
+class OptimizationGuideDecider;
 }  // namespace optimization_guide
 
 namespace site_engagement {
@@ -89,8 +89,7 @@ class ContextClustererHistoryServiceObserver
   ContextClustererHistoryServiceObserver(
       history::HistoryService* history_service,
       TemplateURLService* template_url_service,
-      optimization_guide::NewOptimizationGuideDecider*
-          optimization_guide_decider,
+      optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
       site_engagement::SiteEngagementScoreProvider* engagement_score_provider);
   ~ContextClustererHistoryServiceObserver() override;
 
@@ -124,9 +123,6 @@ class ContextClustererHistoryServiceObserver
   // Gets the site engagement score for `normalized_url`.
   float GetEngagementScore(const GURL& normalized_url);
 
-  // Gets the URL for display for `normalized_url`.
-  std::u16string GetURLForDisplay(const GURL& normalized_url);
-
   // Overrides `clock_` for testing.
   void OverrideClockForTesting(const base::Clock* clock);
 
@@ -158,7 +154,7 @@ class ContextClustererHistoryServiceObserver
 
   // Used to determine whether to include a visit in any cluster. Can be null,
   // but is guaranteed to outlive `this`.
-  raw_ptr<optimization_guide::NewOptimizationGuideDecider>
+  raw_ptr<optimization_guide::OptimizationGuideDecider>
       optimization_guide_decider_;
 
   // URL host to score mapping.
@@ -169,9 +165,6 @@ class ContextClustererHistoryServiceObserver
   // Should only be null for tests.
   raw_ptr<site_engagement::SiteEngagementScoreProvider>
       engagement_score_provider_;
-
-  // URL to URL for display mapping.
-  base::HashingLRUCache<std::string, std::u16string> url_for_display_cache_;
 
   // Used to schedule the clean up of clusters.
   raw_ptr<const base::Clock> clock_;

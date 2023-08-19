@@ -26,7 +26,6 @@
 <translation id="2060505056492490888">'<ph name="INVALIDDOMAIN" />' এ একটি ভুল অবস্থানে '<ph name="DOT" />' ব্যবহৃত হয়েছে৷</translation>
 <translation id="2148716181193084225">আজ</translation>
 <translation id="2226276347425096477">দয়া করে এই পাঠ্যটি <ph name="MAX_CHARACTERS" />টি অক্ষর বা তার কমে (আপনি বর্তমানে <ph name="CURRENT_LENGTH" />টি অক্ষর ব্যবহার করছেন) সংক্ষিপ্ত করুন৷</translation>
-<translation id="2246498165605549352">স্থানীয় ফাইল</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" /> সপ্তাহ, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ট্র্যাক <ph name="NUMBER" /></translation>
 <translation id="2393030564806080191">রঙের হেক্সাডেসিমেল মান</translation>
@@ -89,6 +88,7 @@
 <translation id="5425179576310518467">বর্তমান তারিখ</translation>
 <translation id="5466621249238537318">অনুগ্রহ করে এক বা একাধিক ফাইল নির্বাচন করুন৷</translation>
 <translation id="5468998798572797635">পূর্ণ স্ক্রিন বন্ধ করুন</translation>
+<translation id="5514612371225420585">আপনার ডিভাইসের ফাইল</translation>
 <translation id="5516235301412634559">0.75</translation>
 <translation id="5537725057119320332">কাস্ট করুন</translation>
 <translation id="5546461542133609677">সশব্দ</translation>
@@ -113,6 +113,7 @@
 <translation id="6398862346408813489">মাস নির্বাচনের প্যানেল দেখান</translation>
 <translation id="6404546809543547843">অডিও সময় স্ক্রাবার</translation>
 <translation id="6443871981718447451">ক্লোজড ক্যাপশনের মেনু দেখান</translation>
+<translation id="6484738902856791350">সুন্দর প্রিন্ট</translation>
 <translation id="6550675742724504774">বিকল্পসমূহ</translation>
 <translation id="6572309429103589720">ভুল ব্যাকরণ</translation>
 <translation id="658823671542763450">পূর্ণ স্ক্রীনে প্রবেশ করুন</translation>

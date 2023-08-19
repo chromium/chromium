@@ -16,6 +16,7 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/ui/ash/test_ime_controller.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/fake_input_method_delegate.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/ash/input_method_descriptor.h"
@@ -49,10 +50,12 @@ class TestInputMethodManager : public MockInputMethodManager {
       std::vector<std::string> languages({"en-US"});
       InputMethodDescriptor ime1("id1", "name1", "indicator1", layout,
                                  languages, true /* is_login_keyboard */,
-                                 GURL(), GURL());
+                                 GURL(), GURL(),
+                                 /*handwriting_language=*/absl::nullopt);
       InputMethodDescriptor ime2("id2", "name2", "indicator2", layout,
                                  languages, false /* is_login_keyboard */,
-                                 GURL(), GURL());
+                                 GURL(), GURL(),
+                                 /*handwriting_language=*/absl::nullopt);
       current_ime_id_ = ime1.id();
       input_methods_ = {ime1, ime2};
     }

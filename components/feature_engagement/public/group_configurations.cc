@@ -32,7 +32,7 @@ absl::optional<GroupConfig> GetClientSideGroupConfig(
     // Only used for tests. Various magic tricks are used below to ensure this
     // config is invalid and unusable.
     absl::optional<GroupConfig> config = GroupConfig();
-    config->valid = false;
+    config->valid = true;
     config->session_rate = Comparator(LESS_THAN, 0);
     config->trigger =
         EventConfig("dummy_group_iph_trigger", Comparator(LESS_THAN, 0), 1, 1);

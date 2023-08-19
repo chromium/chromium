@@ -192,7 +192,8 @@ class SessionControllerImplWithShellTest : public AshTestBase {
   const TestSessionObserver* observer() const { return &observer_; }
 
  protected:
-  raw_ptr<WindowState, ExperimentalAsh> window_state_ = nullptr;
+  raw_ptr<WindowState, DanglingUntriaged | ExperimentalAsh> window_state_ =
+      nullptr;
 
  private:
   TestSessionObserver observer_;
@@ -499,7 +500,8 @@ TEST_F(SessionControllerImplPrefsTest, Observer) {
   EXPECT_EQ(nullptr, observer.last_user_pref_service());
 
   auto pref_service = std::make_unique<TestingPrefServiceSimple>();
-  RegisterUserProfilePrefs(pref_service->registry(), true /* for_test */);
+  RegisterUserProfilePrefs(pref_service->registry(), /*country=*/"",
+                           /*for_test=*/true);
   session->SetUserPrefService(kUserAccount1, std::move(pref_service));
   EXPECT_EQ(controller->GetUserPrefServiceForUser(kUserAccount1),
             observer.last_user_pref_service());
@@ -523,7 +525,8 @@ TEST_F(SessionControllerImplPrefsTest, Observer) {
   // There should be no notification about a PrefService for an inactive user
   // becoming initialized.
   pref_service = std::make_unique<TestingPrefServiceSimple>();
-  RegisterUserProfilePrefs(pref_service->registry(), true /* for_test */);
+  RegisterUserProfilePrefs(pref_service->registry(), /*country=*/"",
+                           /*for_text=*/true);
   session->SetUserPrefService(kUserAccount2, std::move(pref_service));
   EXPECT_EQ(nullptr, observer.last_user_pref_service());
 

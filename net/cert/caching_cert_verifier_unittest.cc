@@ -235,7 +235,7 @@ class CachingCertVerifierCacheClearingTest
         mock_verifier_->SimulateOnCertVerifierChanged();
         break;
       case ChangeType::kCertDBChanged:
-        CertDatabase::GetInstance()->NotifyObserversCertDBChanged();
+        CertDatabase::GetInstance()->NotifyObserversTrustStoreChanged();
         base::RunLoop().RunUntilIdle();
         break;
     }

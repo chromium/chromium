@@ -9,10 +9,6 @@
 #import "ui/gfx/image/image.h"
 #import "ui/gfx/image/image_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 web::NavigationManager::WebLoadParams
 ImageSearchParamGenerator::LoadParamsForImageData(
     NSData* data,

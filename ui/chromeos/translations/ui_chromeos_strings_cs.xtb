@@ -37,6 +37,7 @@
 <translation id="1297922636971898492">Disk Google aktuálně není k dispozici. Jakmile bude Disk Google opět dostupný, nahrávání se automaticky obnoví.</translation>
 <translation id="1307931752636661898">Soubory systému Linux nelze zobrazit</translation>
 <translation id="1313405956111467313">Automatické nastavení proxy serveru</translation>
+<translation id="134645005685694099">V zařízení není dostatek úložného prostoru k tomu, aby synchronizace souborů mohla zůstat zapnutá. Nové soubory se již nebudou automaticky synchronizovat.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Soubor nebo adresář nelze použít.</translation>
 <translation id="1363028406613469049">Stopa</translation>
@@ -113,7 +114,6 @@
 <translation id="1920798810075583923">Meloun</translation>
 <translation id="1924372192547904021">Disk <ph name="DRIVE_NAME" /> byl naformátován</translation>
 <translation id="1931134289871235022">slovenština</translation>
-<translation id="1933345018156373194">Přesunutí se nezdařilo, neočekávaná chyba: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">finština</translation>
 <translation id="1942765061641586207">Rozlišení obrázku</translation>
 <translation id="1972984168337863910">Rozbalit panely zpětné vazby k souborům</translation>
@@ -130,7 +130,7 @@
 <translation id="2084108471225856927">Nastavení zařízení</translation>
 <translation id="2084809735218147718">Znakování poděkování</translation>
 <translation id="2088690981887365033">Síť VPN</translation>
-<translation id="2089751716171649322">Získejte snadný přístup ke svým souborům na Disku Google i offline</translation>
+<translation id="209653272837065803">K pokračování v synchronizaci souborů není k dispozici dostatek úložného prostoru</translation>
 <translation id="2111134541987263231">Zapněte možnost <ph name="BEGIN_BOLD" />Povolit v anonymním režimu<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086">Položky (<ph name="NUMBER_OF_ITEMS" />) budou smazány bez možnosti obnovy.</translation>
 <translation id="2122305276694332719">Automatické připojování ke skryté síti umožňuje ostatním uživatelům zobrazit vaše zařízení a některá vaše nastavení sítě a nedoporučujeme jej.</translation>
@@ -147,9 +147,11 @@
 <translation id="2198315389084035571">Zjednodušená čínština</translation>
 <translation id="22085916256174561">korejština</translation>
 <translation id="2208919847696382164">Instalovat aplikaci pro Linux</translation>
+<translation id="2215692307449050019">Baterie je slabá. Synchronizace bude pokračovat, až bude zařízení připojeno k napájení.</translation>
 <translation id="2225536596944493418">Opravdu chcete tyto položky (<ph name="NUMBER_OF_ITEMS" />) smazat?</translation>
 <translation id="2230062665678605299">Složku „<ph name="FOLDER_NAME" />“ se nepodařilo vytvořit. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">Člověk s kávou</translation>
+<translation id="2247561763838186830">Byli jste odhlášeni</translation>
 <translation id="2251368349685848079">Obnovit z koše</translation>
 <translation id="2278133026967558505">Přístup k souborům ze všech webů a adres URL</translation>
 <translation id="2282155092769082568">Adresa URL automatické konfigurace:</translation>
@@ -163,7 +165,7 @@
 <translation id="2312704192806647271">{COUNT,plural, =1{Rozšíření s ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> nelze najít. Kontaktujte svého administrátora.}few{Rozšíření s ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> nelze najít. Kontaktujte svého administrátora.}many{Rozšíření s ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> nelze najít. Kontaktujte svého administrátora.}other{Rozšíření s ID <ph name="BEGIN_LIST" /><ph name="END_LIST" /> nelze najít. Kontaktujte svého administrátora.}}</translation>
 <translation id="2325650632570794183">Tento typ souboru není podporován. Navštivte prosím Internetový obchod Chrome, kde najdete aplikaci, ve které lze otevřít tento typ souboru.</translation>
 <translation id="2326539130272988168">bulharština</translation>
-<translation id="2337715497728194187">Sdílet s Bruschettou</translation>
+<translation id="233822363739146957">K synchronizaci všech vašich souborů není k dispozici dostatek úložného prostoru</translation>
 <translation id="23721837607121582">Stáhněte si mobilní profil, síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Přepnout na zobrazení seznamu</translation>
 <translation id="2377590462528165447">Počet složek sdílených s Linuxem: <ph name="NUMBER_OF_ITEMS" /></translation>
@@ -181,6 +183,7 @@
 <translation id="2464089476039395325">Proxy server protokolu HTTP</translation>
 <translation id="2467267713099745100">Síť: <ph name="NETWORK_TYPE" />, vypnuto</translation>
 <translation id="2468402215065996499">Tamagoči</translation>
+<translation id="2468470447085858632">Získejte přístup k souborům na Disku Google offline pomocí synchronizace souborů</translation>
 <translation id="2470939964922472929">Příliš mnohokrát jste zadali nesprávný PIN. Pokud chcete nastavit nový PIN, zadejte osmimístný kód PUK, který vám poskytl operátor.</translation>
 <translation id="2500392669976258912">gudžarátština (fonetická)</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -192,7 +195,6 @@
 <translation id="2544853746127077729">Ověřovací certifikát byl sítí odmítnut</translation>
 <translation id="255937426064304553">Americká klávesnice (mezinárodní)</translation>
 <translation id="2563185590376525700">Žába</translation>
-<translation id="2574327434504608656">1 složka je sdílena s Bruschettou</translation>
 <translation id="2578394532502990878">tamilština (fonetická)</translation>
 <translation id="2579959351793446050">urijština</translation>
 <translation id="2587195714949534472">Příprava k synchronizaci souboru <ph name="FILE_NAME" />…</translation>
@@ -216,6 +218,7 @@
 <translation id="2782104745158847185">Při instalaci aplikace pro Linux došlo k chybě</translation>
 <translation id="2802583107108007218">Další informace o těchto omezeních</translation>
 <translation id="2803375539583399270">Zadejte kód PIN</translation>
+<translation id="2819519502129272135">Synchronizace souborů je vypnutá</translation>
 <translation id="2820957248982571256">Vyhledávání...</translation>
 <translation id="2830077785865012357">čínský ču-jin</translation>
 <translation id="2843806747483486897">Změnit výchozí akci...</translation>
@@ -291,7 +294,6 @@
 <translation id="3408072735282270043">Aktivovat, <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">němčina (Německo) s klávesnicí Neo 2</translation>
 <translation id="3414856743105198592">Formátování vyměnitelného média vymaže všechna data. Chcete pokračovat?</translation>
-<translation id="3435143625481187092">Udělit Bruschettě oprávnění k přístupu k souborům ve složce <ph name="FOLDER_NAME" /></translation>
 <translation id="3437801641691368414">Čas vytvoření</translation>
 <translation id="343907260260897561">Okamžitý fotoaparát</translation>
 <translation id="3455931012307786678">estonština</translation>
@@ -299,7 +301,6 @@
 <translation id="3479552764303398839">Teď ne</translation>
 <translation id="3486821258960016770">mongolština</translation>
 <translation id="3495304270784461826">Chyby: <ph name="COUNT" />.</translation>
-<translation id="3501954296166022751">Vaše soubory na Disku Google jsou dostupné offline</translation>
 <translation id="3509680540198371098">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>
 <translation id="3511705761158917664">Příprava na synchronizaci položek (<ph name="NUMBER_OF_ITEMS" />)…</translation>
 <translation id="3522708245912499433">portugalština</translation>
@@ -356,8 +357,10 @@
 <translation id="3906232975181435906">Instalace mobilního profilu, síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Vložit</translation>
+<translation id="3950820424414687140">Přihlaste se</translation>
 <translation id="3952872973865944257">telugština (fonetická)</translation>
 <translation id="3958548648197196644">Kiwi</translation>
+<translation id="397105322502079400">Probíhá výpočet…</translation>
 <translation id="3971140002794351170">Stáhněte si mobilní profil, síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">angličtina (Spojené království)</translation>
 <translation id="3975895378829046965">bengálština (fonetická)</translation>
@@ -368,6 +371,7 @@
 <translation id="4040753847560036377">Nesprávný kód PUK</translation>
 <translation id="4057991113334098539">Aktivace...</translation>
 <translation id="4092890906744441904">irština</translation>
+<translation id="4124731372776320263">Synchronizace 1 souboru na Disku</translation>
 <translation id="4124935795427217608">Jednorožec</translation>
 <translation id="4131235941541910880">Nepotřebné položky přesuňte do koše</translation>
 <translation id="4134804435730168042">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, aktivujte po nastavení zařízení</translation>
@@ -377,7 +381,6 @@
 <translation id="4159731583141908892">Přesunutá položka: <ph name="FILE_NAME" />.</translation>
 <translation id="4176286497474237543">Vysypat koš</translation>
 <translation id="4179621117429069925">Tato položka je ve vašem koši</translation>
-<translation id="4181839429935094755">S Bruschettou je sdílen tento počet složek: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="4186579485882418952">Povolit režim offline</translation>
 <translation id="4193154014135846272">Dokument Google</translation>
 <translation id="4197674956721858839">Výběr souborů pro komprimaci</translation>
@@ -417,6 +420,7 @@
 <translation id="4432921877815220091">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, aktivujte po nastavení zařízení, spravováno administrátorem</translation>
 <translation id="4439427728133035643">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, síla signálu: <ph name="SIGNAL_STRENGTH" /> %, připojit</translation>
 <translation id="4442424173763614572">Nepodařilo se nalézt server DNS.</translation>
+<translation id="4445896958353114391">Soubory se synchronizují</translation>
 <translation id="4462159676511157176">Vlastní názvové servery</translation>
 <translation id="4465725236958772856">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, spravováno administrátorem, připojit</translation>
 <translation id="4470564870223067757">Hangul – 2 sady</translation>
@@ -438,11 +442,11 @@
 <translation id="4599600860674643278">Filtr byl resetován.</translation>
 <translation id="4603392156942865207">Kopírování souboru <ph name="FILE_NAME" /> do složky <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">Interpret</translation>
+<translation id="4635373743001040938">V úložišti bylo velmi málo místa. Synchronizace souborů byla vypnuta.</translation>
 <translation id="4642769377300286600">Instalace mobilního profilu, síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">čeština s klávesnicí Qwerty</translation>
 <translation id="4656777537938206294">Dostupnost souborů v režimu offline</translation>
 <translation id="4658782175094886150">Člověk ve sněhu</translation>
-<translation id="466782788172479199">Udělit Bruschettě oprávnění k přístupu k souborům na Disku Google. Změny se synchronizují do vašich ostatních zařízení.</translation>
 <translation id="4669606053856530811">Pokud s nimi tyto položky nejsou sdíleny, ztratí k nim členové týmu <ph name="SOURCE_NAME" /> přístup.</translation>
 <translation id="467809019005607715">Prezentace Google</translation>
 <translation id="4690246192099372265">švédština</translation>
@@ -491,8 +495,8 @@
 <translation id="4961158930123534723">1 soubor sdílen s nástrojem Parallels Desktop</translation>
 <translation id="496656650103537022">Soubor <ph name="FILE_NAME" /> byl obnoven</translation>
 <translation id="4969785127455456148">Album</translation>
+<translation id="4972330214479971536">Nastavení synchronizace souborů se nepodařilo dokončit</translation>
 <translation id="4973523518332075481">Název nesmí být delší než <ph name="MAX_LENGTH" /> znaků</translation>
-<translation id="4973970068702235170">Komprimace se nezdařila, neočekávaná chyba: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">japonština</translation>
 <translation id="4987699874727873250">Angličtina (Indie)‎</translation>
 <translation id="4988205478593450158">Opravdu soubor <ph name="FILE_NAME" /> chcete odstranit?</translation>
@@ -514,6 +518,7 @@
 <translation id="5102922915594634436">Spravovat synchronizované složky</translation>
 <translation id="5109254780565519649">Došlo k chybě. Některé položky možná nebyly obnoveny.</translation>
 <translation id="5110329002213341433">angličtina (Kanada)</translation>
+<translation id="5119780910075847424">Synchronizace je pozastavena</translation>
 <translation id="5123433949759960244">Basketbal</translation>
 <translation id="5129662217315786329">polština</translation>
 <translation id="5144820558584035333">Hangul – 3 sady (390)</translation>
@@ -551,7 +556,6 @@
 <translation id="5323213332664049067">Latinská Amerika</translation>
 <translation id="5330145655348521461">Tyto soubory jsou otevřeny na jiné ploše. Chcete-li je zobrazit, přejděte do profilu <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="5330512191124428349">Zobrazit informace</translation>
-<translation id="5344246330454251646">Spravovat sdílení s Bruschettou</translation>
 <translation id="535792325654997756">Člověk s kočkami</translation>
 <translation id="5358764674931277">Snímková frekvence</translation>
 <translation id="5363339716524495120">Jazyk vstupu je čínština</translation>
@@ -563,6 +567,7 @@
 <translation id="5422221874247253874">Přístupový bod</translation>
 <translation id="5428105026674456456">španělština</translation>
 <translation id="5438282218546237410">Pro dotaz <ph name="SEARCH_TERM" /> nebyly nalezeny žádné výsledky.</translation>
+<translation id="5447680084201416734">Nedostatek místa v úložišti.</translation>
 <translation id="5449551289610225147">Neplatné heslo</translation>
 <translation id="5459064203055649751">Soubor s názvem <ph name="FILENAME" /> už existuje. Chcete ho nahradit tím, který právě přesouváte?</translation>
 <translation id="5463231940765244860">Zadat</translation>
@@ -573,7 +578,6 @@
 <translation id="5494920125229734069">Vybrat vše</translation>
 <translation id="5500122897333236901">islandština</translation>
 <translation id="5508696409934741614">Tečky</translation>
-<translation id="5519161320735100193">Nastavení Disku Google</translation>
 <translation id="5522908512596376669">Seznam souborů byl změněn na seznamové zobrazení.</translation>
 <translation id="5524517123096967210">Soubor se nepodařilo načíst.</translation>
 <translation id="5533102081734025921">Obrázek <ph name="IMAGE_TYPE" /></translation>
@@ -601,6 +605,7 @@
 <translation id="5720028165859493293">Soubor <ph name="FILE_NAME" /> byl přesunut do koše</translation>
 <translation id="5724172041621205163">thajština s klávesnicí Pattachote</translation>
 <translation id="57383366388012121">Minulý měsíc</translation>
+<translation id="575175778971367197">Tento soubor momentálně nelze synchronizovat</translation>
 <translation id="5756666464756035725">Maďarská klávesnice QWERTY</translation>
 <translation id="5760252553414789727">Vybrané položky: <ph name="SELECTED_FILES_COUNT" /></translation>
 <translation id="5763377084591234761">němčina (Švýcarsko)</translation>
@@ -626,7 +631,6 @@
 <translation id="5896749729057314184">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, neaktivováno, síla signálu <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>
 <translation id="5911887972742538906">Při instalaci aplikace pro Linux došlo k chybě.</translation>
 <translation id="5912396950572065471">Formát</translation>
-<translation id="5913638992615760742">Kopírování se nezdařilo, neočekávaná chyba: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5918480239180455431">K dispozici jsou nové funkce vyhledávání</translation>
 <translation id="5926082595146149752">nizozemština (Nizozemsko) s klávesnicí USA – mezinárodní (PC)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -634,7 +638,6 @@
 <translation id="5955954492236143329">Počet položek: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">Možnosti řazení</translation>
-<translation id="6007237601604674381">Přesun se nezdařil. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Síť Ethernet</translation>
 <translation id="60357267506638014">Česká klávesnice QWERTY</translation>
 <translation id="603895874132768835">Tuto síť budete moci používat až poté, co si nastavíte nový PIN</translation>
@@ -690,6 +693,7 @@
 <translation id="6423031066725912715">vietnamština s klávesnicí TCVN</translation>
 <translation id="6430271654280079150">Zbývá vám jeden pokus.</translation>
 <translation id="643243556292470964">Smazané soubory byly přesunuty do koše</translation>
+<translation id="6438480100790416671">Kontrola úložného prostoru…</translation>
 <translation id="6485131920355264772">Informace o volném místě se nepodařilo načíst</translation>
 <translation id="6495925982925244349">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" /> síla signálu: <ph name="SIGNAL_STRENGTH" /> %, spravováno administrátorem, podrobnosti</translation>
 <translation id="649877868557234318">Rozbalování souboru <ph name="FILE_NAME" /> do složky <ph name="FOLDER_NAME" /></translation>
@@ -702,6 +706,7 @@
 <translation id="6558280019477628686">Došlo k chybě. Některé položky možná nebyly smazány.</translation>
 <translation id="656398493051028875">Mazání souboru <ph name="FILENAME" />...</translation>
 <translation id="6581162200855843583">Odkaz na Disk Google</translation>
+<translation id="6588648400954570689">Nastavení synchronizace souborů</translation>
 <translation id="6594855146910089723">Tato složka je sdílena se systémem Linux a nástrojem Parallels Desktop</translation>
 <translation id="6607272825297743757">Informace o souboru</translation>
 <translation id="6609332149380188670">Složky sdílené s nástrojem Parallels Desktop: <ph name="NUMBER_OF_ITEMS" /></translation>
@@ -716,7 +721,6 @@
 <translation id="6710213216561001401">Předchozí</translation>
 <translation id="6732801395666424405">Certifikáty nebyly načteny</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
-<translation id="6740270213273127264">Sdílení složky s Bruschettou</translation>
 <translation id="6750737795876287924">Aktuální adresář</translation>
 <translation id="6751256176799620176">Je vybrána 1 složka</translation>
 <translation id="6755827872271341378">Zařízení se systémem ChromeOS Flex</translation>
@@ -793,6 +797,7 @@
 <translation id="7256405249507348194">Neznámá chyba: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Dostupné služby</translation>
 <translation id="7291818353625820805">Chcete, aby se klávesy opakovaly? Vypněte v Nastavení klávesnice diakritická znaménka</translation>
+<translation id="729236380049459563">Synchronizace souborů je zapnutá</translation>
 <translation id="7292816689782057017">Zásady administrátora omezují ukládání do určitých umístění.</translation>
 <translation id="7294063083760278948">telugština (přepis)</translation>
 <translation id="7295662345261934369">Sdílet s dalšími uživateli</translation>
@@ -800,6 +805,7 @@
 <translation id="7309413087278791451">němčina (Belgie)</translation>
 <translation id="7339898014177206373">Nové okno</translation>
 <translation id="7343393116438664539">vietnamština (telex)</translation>
+<translation id="7347346221088620549">Šifrovaný soubor</translation>
 <translation id="7357762654218998920">Tento typ souboru není podporován. <ph name="BEGIN_LINK_HELP" />Další informace<ph name="END_LINK_HELP" /> o otevírání souborů v systému ChromeOS.</translation>
 <translation id="7359359531237882347">Kopírování <ph name="NUMBER_OF_ITEMS" /> položek...</translation>
 <translation id="7375951387215729722">Seznam souborů seřazený sestupně podle sloupce <ph name="COLUMN_NAME" />.</translation>
@@ -826,6 +832,7 @@
 <translation id="7547811415869834682">holandština</translation>
 <translation id="7551643184018910560">Připnout k poličce</translation>
 <translation id="7553492409867692754">Udělujete linuxovým aplikacím oprávnění k přístupu k souborům ve složce <ph name="FOLDER_NAME" />.</translation>
+<translation id="7555339735447658365">Momentálně jste offline. Synchronizace souborů bude pokračovat, až budete připojeni k internetu.</translation>
 <translation id="7589661784326793847">Chvilku strpení</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> se zpřístupňuje pro použití offline</translation>
 <translation id="7600126690270271294">srbština</translation>
@@ -844,6 +851,7 @@
 <translation id="76959938259365003">Koš se nepodařilo vysypat.</translation>
 <translation id="770015031906360009">řečtina</translation>
 <translation id="7705251383879779343">Položka <ph name="FILE_NAME" /> byla zkopírována.</translation>
+<translation id="7707941139430559579">Soubor nelze přesunout. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="7708271999969613024">Pokud chcete tuto síť používat, je nutné zadat osmimístný klíč PUK, který vám poskytl operátor.</translation>
 <translation id="7711920809702896782">Informace o obrázku</translation>
 <translation id="7724603315864178912">Vyjmout</translation>
@@ -889,10 +897,10 @@
 <translation id="7972920761225148017">francouzština (Švýcarsko)</translation>
 <translation id="7973962044839454485">Ověření PPP se nezdařilo kvůli nesprávnému uživatelskému jménu nebo heslu</translation>
 <translation id="7980421588063892270">angličtina (USA) s klávesnicí Colemak</translation>
-<translation id="7985008041109611710">Synchronizace <ph name="NUMBER_OF_FILES_SYNCING" /> souborů</translation>
 <translation id="8000066093800657092">Žádná síť</translation>
 <translation id="8008366997883261463">Jack Russell teriér</translation>
 <translation id="8028993641010258682">Velikost</translation>
+<translation id="8034974485549318493">K počátečnímu nastavení je potřeba připojení k internetu, aby se soubory mohly synchronizovat.</translation>
 <translation id="803771048473350947">Soubor</translation>
 <translation id="8038111231936746805">(výchozí)</translation>
 <translation id="8042602468072383151">Zvuk <ph name="AUDIO_TYPE" /></translation>
@@ -903,6 +911,7 @@
 <translation id="8087576439476816834">Stáhnout, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Sdíleno se mnou</translation>
 <translation id="8116072619078571545">Ledová voda</translation>
+<translation id="8124093710070495550">Potíže se synchronizací</translation>
 <translation id="8128733386027980860">angličtina (Spojené království) s klávesnicí Dvorak</translation>
 <translation id="8137331602592933310">Soubor <ph name="FILENAME" /> s vámi někdo sdílí. Nemůžete ho smazat, protože ho nevlastníte.</translation>
 <translation id="8138705869659070104">Po nastavení zařízení</translation>
@@ -912,9 +921,11 @@
 <translation id="8154842056504218462">Vybrali jste všechny položky.</translation>
 <translation id="8157684860301034423">Informace o aplikaci se nepodařilo načíst.</translation>
 <translation id="8175731104491895765">francouzština (Belgie)</translation>
+<translation id="8175799081768705361">Synchronizace <ph name="NUMBER_OF_FILES_SYNCING" /> souborů na Disku</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Model zařízení</translation>
 <translation id="8223479393428528563">Chcete-li tyto soubory uložit pro používání offline, vraťte se zpět online, klikněte na ně pravým tlačítkem a vyberte možnost <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
+<translation id="8241139360630443550">Zobrazit úložiště</translation>
 <translation id="8249296373107784235">Zrušit</translation>
 <translation id="8250690786522693009">Latinka</translation>
 <translation id="8250920743982581267">Dokumenty</translation>
@@ -945,6 +956,7 @@
 <translation id="8404498045299006085">Ponechat vše</translation>
 <translation id="8408068190360279472">Síť: <ph name="NETWORK_TYPE" />, připojování</translation>
 <translation id="8425213833346101688">Změnit</translation>
+<translation id="8428213095426709021">Nastavení</translation>
 <translation id="8431909052837336408">Změnit PIN SIM karty</translation>
 <translation id="8437209419043462667">Americká klávesnice</translation>
 <translation id="8452135315243592079">Chybí SIM karta</translation>
@@ -981,6 +993,7 @@
 <translation id="8609695766746872526">islandština</translation>
 <translation id="863903787380594467">Nesprávný PIN. Počet zbývajících pokusů: <ph name="RETRIES" />.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – port</translation>
+<translation id="8656407365183407932">Vaše offline soubory musely být odstraněny</translation>
 <translation id="8656768832129462377">Nekontrolovat</translation>
 <translation id="8688591111840995413">Nesprávné heslo</translation>
 <translation id="8698464937041809063">Nákres Google</translation>
@@ -1011,10 +1024,12 @@
 <translation id="8919081441417203123">dánština</translation>
 <translation id="8949925099261528566">Připojeno, není k dispozici internet</translation>
 <translation id="8965697826696209160">Nedostatek místa.</translation>
+<translation id="8970887620466824814">Došlo k chybě.</translation>
 <translation id="8971742885766657349">Synchronizace – <ph name="PERCENT" /> %</translation>
 <translation id="8997962250644902079">čínština (tradiční) – pchin-jin</translation>
 <translation id="8998871447376656508">K nahrání na Disk Google není dost volného místa.</translation>
 <translation id="9003940392834790328">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" /> %, spravováno administrátorem, podrobnosti</translation>
+<translation id="9007990314804111233">Přihlaste se ke svému účtu Microsoft</translation>
 <translation id="9017798300203431059">Ruská fonetická klávesnice</translation>
 <translation id="9034924485347205037">Soubory systému Linux</translation>
 <translation id="9035012421917565900">Položky nelze přesunout zpět do týmu <ph name="DESTINATION_NAME" />. Tuto akci proto nebude možné vrátit zpět.</translation>
@@ -1045,7 +1060,6 @@
 <translation id="9213073329713032541">Instalace byla úspěšně spuštěna.</translation>
 <translation id="9219103736887031265">Obrázky</translation>
 <translation id="9219908252191632183">Měsíční krajina</translation>
-<translation id="937795003075802289">Synchronizace 1 souboru</translation>
 <translation id="938470336146445890">Nainstalujte prosím uživatelský certifikát.</translation>
 <translation id="939736085109172342">Nová složka</translation>
 <translation id="943972244133411984">Upravil(a)</translation>

@@ -46,10 +46,6 @@ unit tests.
      purposes is not recommended. This needs to be updated periodically so the
      server name the cert is valid for may change.
 
-- treadclimber.pem: A chain where the leaf does not contain embedded SCTs,
-  and which has a notBefore date after 2018/10/15. Expires 2020/02/07.
-- treadclimber.sctlist: The TLS encoded SignedCertificateTimestampList for the
-  treadclimber.pem leaf certificate.
 - lets-encrypt-dst-x3-root.pem: A chain that ends in the Lets encrypt DST X3
   root (https://crt.sh/?id=8395). Has the same leaf as
   lets-encrypt-isrg-x1-root.pem.
@@ -193,18 +189,15 @@ unit tests.
      Certificates for testing EV display (including regression test for
      https://crbug.com/1069113).
 
-===== From net/data/ssl/scripts/generate-weak-test-chains.sh
-- 2048-rsa-root.pem
-- {768-rsa,1024-rsa,2048-rsa,prime256v1-ecdsa}-intermediate.pem
-- {768-rsa,1024-rsa,2048-rsa,prime256v1-ecdsa}-ee-by-
-      {768-rsa,1024-rsa,2048-rsa,prime256v1-ecdsa}-intermediate.pem
-      Test certificates used to ensure that weak keys are detected and rejected
-
-===== From net/data/ssl/scripts/generate-cross-signed-certs.sh
-- cross-signed-leaf.pem
-- cross-signed-root-md5.pem
-- cross-signed-root-sha256.pem
-     A certificate chain for regression testing http://crbug.com/108514
+===== From net/data/ssl/scripts/generate-test-keys.sh
+- rsa-{768,1024,2048}-{1..3}.key
+- ec-prime256v1-{1..3}.key
+     Pre-generated keys of various types/sizes.
+     Useful for tests that generate RSA certificates with CertBuilder without
+     having to pay the cost of generating RSA keys at runtime. Multiple keys
+     of each size are provided. (EC keys are cheap to generate at runtime, but
+     having some as files simplifies test logic in cases where the test is
+     reading both RSA and EC keys from files.)
 
 ===== From net/data/ssl/scripts/generate-redundant-test-chains.sh
 - redundant-validated-chain.pem

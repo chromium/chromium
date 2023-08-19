@@ -83,7 +83,7 @@ class PinSetupScreen : public BaseScreen {
 
   AuthPerformer auth_performer_;
 
-  CryptohomePinEngine cryptohome_pin_engine_;
+  legacy::CryptohomePinEngine cryptohome_pin_engine_;
 
   base::WeakPtrFactory<PinSetupScreen> weak_ptr_factory_{this};
 };

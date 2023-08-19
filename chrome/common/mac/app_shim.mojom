@@ -4,6 +4,7 @@
 
 module chrome.mojom;
 
+import "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom";
 import "components/remote_cocoa/common/application.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/string16.mojom";
@@ -105,6 +106,12 @@ interface AppShim {
 
   // Called to update the state of the application dock menu.
   UpdateApplicationDockMenu(array<ApplicationDockMenuItem> dock_menu_items);
+
+  // Called from the browser process to connect to an app-scoped
+  // NotificationProvider implementation. Calling this again will disconnect
+  // the original notification provider connection.
+  BindNotificationProvider(
+      pending_receiver<mac_notifications.mojom.MacNotificationProvider> provider);
 };
 
 // Interface through which the a process communicates to the browser process.
@@ -123,6 +130,10 @@ interface AppShimHost {
 
   // Called when a profile is selected from the profiles menu.
   ProfileSelectedFromMenu(mojo_base.mojom.FilePath profile_path);
+
+  // Called when settings is opened from the app menu while no browser windows
+  // are open.
+  OpenAppSettings();
 
   // Sent when urls are opened by the app (e.g. clicking a link in mail)
   UrlsOpened(array<url.mojom.Url> urls);

@@ -5,14 +5,35 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 <html dir="$i18n{textdirection}" lang="$i18n{language}">
-  <head>
-    <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
-    <meta charset="utf-8">
-  </head>
+<head>
+  <meta charset="utf-8">
+  <meta name="color-scheme" content="light dark">
+  <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
+  <link rel="stylesheet" href="chrome://resources/css/md_colors.css">
+  <style>
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      width: 100%;
+    }
 
-  <body>
-    <div id="productTitle"></div>
-  </body>
+    body {
+      background: white;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
 
-  <script type="module" src="shopping_insights.js"></script>
+    @media (prefers-color-scheme: dark) {
+      body {
+        background: var(--google-grey-900);
+      }
+    }
+  </style>
+</head>
+<body>
+  <shopping-insights-app></shopping-insights-app>
+  <script type="module" src="app.js"></script>
+</body>
 </html>

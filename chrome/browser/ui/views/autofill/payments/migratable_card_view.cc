@@ -118,8 +118,8 @@ MigratableCardView::GetMigratableCardDescriptionView(
         // TODO(crbug/867194): Currently the ink drop animation circle is
         // cropped by the border of scroll bar view. Find a way to adjust the
         // format.
-        views::InkDrop::Get(checkbox_)->SetMode(
-            views::InkDropHost::InkDropMode::OFF);
+        views::InkDrop::Get(checkbox_->ink_drop_view())
+            ->SetMode(views::InkDropHost::InkDropMode::OFF);
         checkbox_->SetAccessibleName(card_description.get());
       }
       break;

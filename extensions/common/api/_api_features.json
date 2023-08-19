@@ -88,12 +88,6 @@
     "contexts": ["blessed_extension"],
     "disallow_for_service_workers": true
   },
-  "automation.languageAnnotationForStringAttribute": {
-    "command_line_switch": "enable-experimental-accessibility-chromevox-sub-node-language-switching",
-    "channel": "dev",
-    "contexts": ["blessed_extension"],
-    "disallow_for_service_workers": true
-  },
   "bluetooth": [{
     "dependencies": ["manifest:bluetooth"],
     "contexts": ["blessed_extension"]
@@ -317,17 +311,6 @@
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"]
   },
-  "management.canInstallReplacementAndroidApp": {
-    "dependencies": ["manifest:replacement_android_app"],
-    // TODO(jshikaram): add test coverage before trunk promotion.
-    "channel": "trunk",
-    "extension_types": ["platform_app"]
-  },
-  "management.installReplacementAndroidApp": {
-    "dependencies": ["manifest:replacement_android_app"],
-    "channel": "trunk",
-    "extension_types": ["platform_app"]
-  },
   "management.installReplacementWebApp": {
     "dependencies": ["manifest:replacement_web_app"],
     "channel": "stable",
@@ -355,6 +338,7 @@
       "chrome://bookmarks/*",
       "chrome://bookmarks-side-panel.top-chrome/*",
       "chrome://customize-chrome-side-panel.top-chrome/*",
+      "chrome://shopping-insights-side-panel.top-chrome/*",
       "chrome://download-shelf.top-chrome/*",
       "chrome://eche-app/*",
       "chrome://extensions/*",
@@ -557,7 +541,6 @@
   "runtime.getContexts": {
     "min_manifest_version": 3,
     "contexts": ["blessed_extension"],
-    "channel": "dev",
     "feature_flag": "ApiRuntimeGetContexts"
   },
   "runtime.getURL": {
@@ -774,6 +757,12 @@
   "usb": {
     "dependencies": ["permission:usb"],
     "contexts": ["blessed_extension"]
+  },
+  "userScripts": {
+    "dependencies": [ "permission:userScripts" ],
+    "contexts": [ "blessed_extension" ],
+    "channel": "trunk",
+    "feature_flag": "ApiUserScripts"
   },
   "virtualKeyboard": {
     "dependencies": ["permission:virtualKeyboard"],

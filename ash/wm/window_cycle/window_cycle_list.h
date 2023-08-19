@@ -104,6 +104,8 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
 
   static void SetDisableInitialDelayForTesting(bool disabled);
 
+  const WindowList& windows_for_testing() const { return windows_; }
+
  private:
   friend class ModeSelectionWindowCycleControllerTest;
   friend class MultiUserWindowCycleControllerTest;

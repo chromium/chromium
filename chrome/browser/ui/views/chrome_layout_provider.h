@@ -21,6 +21,8 @@ enum ChromeInsetsMetric {
   INSETS_OMNIBOX_PILL_BUTTON,
   // Padding used in an page info hover button.
   INSETS_PAGE_INFO_HOVER_BUTTON,
+  // Padding used in Infobar view.
+  INSETS_INFOBAR_VIEW,
 };
 
 enum ChromeDistanceMetric {
@@ -41,6 +43,8 @@ enum ChromeDistanceMetric {
   DISTANCE_DROPDOWN_BUTTON_RIGHT_MARGIN,
   // Width and height of a button's icon in the extensions menu.
   DISTANCE_EXTENSIONS_MENU_BUTTON_ICON_SIZE,
+  // Width and height of a small button's icon in the extensions menu.
+  DISTANCE_EXTENSIONS_MENU_BUTTON_ICON_SMALL_SIZE,
   // Width and height of an extension's icon in the extensions menu. This are
   // larger than menu button's icons because it contains internal padding to
   // provide space for badging.
@@ -92,6 +96,15 @@ enum ChromeDistanceMetric {
   DISTANCE_SIDE_PANEL_HEADER_BUTTON_MINIMUM_SIZE,
   // Horizontal spacing for separating side panel header border from controls.
   DISTANCE_SIDE_PANEL_HEADER_INTERIOR_MARGIN_HORIZONTAL,
+  // Horizontal padding between separator in the page info view.
+  DISTANCE_HORIZONTAL_SEPARATOR_PADDING_PAGE_INFO_VIEW,
+  // Horizontal padding applied between the icon and label in the infobar.
+  DISTANCE_INFOBAR_HORIZONTAL_ICON_LABEL_PADDING,
+  // Horizontal padding applied between the icon and label in the permission
+  // prompt.
+  DISTANCE_PERMISSION_PROMPT_HORIZONTAL_ICON_LABEL_PADDING,
+  // Horizontal spacing between icon and label in the rich hover button.
+  DISTANCE_RICH_HOVER_BUTTON_ICON_HORIZONTAL,
 };
 
 class ChromeLayoutProvider : public views::LayoutProvider {

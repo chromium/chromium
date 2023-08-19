@@ -51,6 +51,11 @@ PickerIndicatorElement::PickerIndicatorElement(
       picker_indicator_owner_(&picker_indicator_owner) {
   SetShadowPseudoId(shadow_element_names::kPseudoCalendarPickerIndicator);
   setAttribute(html_names::kIdAttr, shadow_element_names::kIdPickerIndicator);
+  // Set the tooltip title.
+  setAttribute(
+      html_names::kTitleAttr,
+      AtomicString(
+          this->picker_indicator_owner_->AriaLabelForPickerIndicator()));
 }
 
 PickerIndicatorElement::~PickerIndicatorElement() {

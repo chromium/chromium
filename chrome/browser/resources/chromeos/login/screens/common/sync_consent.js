@@ -7,6 +7,7 @@
  * screen.
  */
 
+import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 // <if expr="_google_chrome">
@@ -50,6 +51,7 @@ const UserAction = {
   CONTINUE: 'continue',
   SYNC_EVERYTHING: 'sync-everything',
   SYNC_CUSTOM: 'sync-custom',
+  LACROS_DECLINE: 'lacros-decline',
 };
 
 
@@ -111,11 +113,10 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
       isMinorMode_: Boolean,
 
       /**
-       * Indicates whether ArcAccountRestrictions and LacrosSupport features are
-       * enabled.
+       * Indicates whether Lacros is enabled.
        * @private
        */
-      isArcRestricted_: Boolean,
+      isLacrosEnabled_: Boolean,
 
       /**
        * The text key for the opt-in button (it could vary based on whether
@@ -152,7 +153,7 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
     this.UI_STEPS = SyncUIState;
 
     this.isMinorMode_ = false;
-    this.isArcRestricted_ = false;
+    this.isLacrosEnabled_ = false;
     this.osSyncItemsStatus = {
       osApps: true,
       osPreferences: true,
@@ -175,7 +176,7 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
    * @param {Object} data Screen init payload.
    */
   onBeforeShow(data) {
-    this.isArcRestricted_ = data['isArcRestricted'];
+    this.isLacrosEnabled_ = data['isLacrosEnabled'];
   }
 
   defaultUIStep() {
@@ -364,6 +365,10 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
       this.consentDescription_,
       this.consentConfirmation_,
     ]);
+  }
+
+  onLacrosDeclineClicked_() {
+    this.userActed(UserAction.LACROS_DECLINE);
   }
 
   getAriaLabeltooltip_(locale) {

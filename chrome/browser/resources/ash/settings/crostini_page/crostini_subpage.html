@@ -1,0 +1,128 @@
+<style include="settings-shared"></style>
+<template is="dom-if" if="[[showCrostiniContainerUpgrade_]]">
+  <div id="container-upgrade" class="settings-box first">
+    <iron-icon icon="cr:file-download"></iron-icon>
+    <div class="middle settings-box-text" aria-hidden="true">
+      <div id="containerUpgradeLabel">
+        $i18n{crostiniContainerUpgrade}
+      </div>
+      <div class="secondary" id="containerUpgradeDescription">
+        $i18n{crostiniContainerUpgradeSubtext}
+      </div>
+    </div>
+    <cr-button id="containerUpgradeButton"
+        on-click="onContainerUpgradeClick_"
+        aria-labelledby="containerUpgradeLabel containerUpgradeButton"
+        aria-describedby="containerUpgradeDescription"
+        disabled="[[disableUpgradeButton_]]"
+        deep-link-focus-id$="[[Setting.kCrostiniContainerUpgrade]]">
+      $i18n{crostiniContainerUpgradeButton}
+    </cr-button>
+  </div>
+</template>
+<cr-link-row
+    id="crostiniSharedPathsRow"
+    class="hr"
+    label="$i18n{guestOsSharedPaths}"
+    on-click="onSharedPathsClick_"
+    role-description="$i18n{subpageArrowRoleDescription}">
+</cr-link-row>
+<cr-link-row
+    id="crostiniSharedUsbDevicesRow"
+    class="hr"
+    label="$i18n{guestOsSharedUsbDevicesLabel}"
+    on-click="onSharedUsbDevicesClick_"
+    role-description="$i18n{subpageArrowRoleDescription}">
+</cr-link-row>
+<template is="dom-if" if="[[showCrostiniExtraContainers_]]">
+  <cr-link-row
+      id="crostiniExtraContainersRow"
+      class="hr"
+      label="$i18n{crostiniExtraContainersLabel}"
+      on-click="onExtraContainersClick_"
+      role-description="$i18n{subpageArrowRoleDescription}">
+  </cr-link-row>
+</template>
+<template is="dom-if" if="[[showCrostiniExportImport_]]">
+  <cr-link-row
+      id="crostiniExportImportRow"
+      class="hr"
+      label="$i18n{crostiniExportImportTitle}"
+      on-click="onExportImportClick_"
+      role-description="$i18n{subpageArrowRoleDescription}">
+  </cr-link-row>
+</template>
+<template is="dom-if" if="[[showArcAdbSideloading_]]">
+  <cr-link-row
+      id="crostiniEnableArcAdbRow"
+      class="hr"
+      label="$i18n{crostiniArcAdbTitle}"
+      on-click="onEnableArcAdbClick_"
+      role-description="$i18n{subpageArrowRoleDescription}">
+  </cr-link-row>
+</template>
+<template is="dom-if" if="[[showCrostiniPortForwarding_]]">
+  <cr-link-row
+      id="crostiniPortForwardingRow"
+      class="hr"
+      label="$i18n{crostiniPortForwarding}"
+      on-click="onPortForwardingClick_"
+      role-description="$i18n{subpageArrowRoleDescription}">
+  </cr-link-row>
+</template>
+<div class="settings-box hr" id="crostiniDiskResizeRow">
+  <div class="start">
+    <div>
+      $i18n{crostiniDiskResizeLabel}
+    </div>
+    <div class="secondary" id="diskSizeDescription">
+      [[diskSizeLabel_]]
+    </div>
+  </div>
+  <cr-button on-click="onDiskResizeClick_" hidden="[[!canDiskResize_]]"
+      aria-label="[[diskResizeButtonAriaLabel_]]"
+      aria-describedby="diskSizeDescription" id="showDiskResizeButton"
+      deep-link-focus-id$="[[Setting.kCrostiniDiskResize]]">
+    [[diskResizeButtonLabel_]]
+  </cr-button>
+</div>
+<template is="dom-if" if="[[showDiskResizeDialog_]]" restamp>
+  <settings-crostini-disk-resize-dialog on-close="onDiskResizeDialogClose_">
+  </settings-crostini-disk-resize-dialog>
+</template>
+<template is="dom-if" if="[[showDiskResizeConfirmationDialog_]]" restamp>
+  <settings-crostini-disk-resize-confirmation-dialog
+      on-close="onDiskResizeConfirmationDialogClose_"
+      on-cancel="onDiskResizeConfirmationDialogCancel_">
+  </settings-crostini-disk-resize-confirmation-dialog>
+</template>
+<settings-toggle-button
+    class="hr"
+    id="crostini-mic-permission-toggle"
+    pref="{{prefs.crostini.mic_allowed}}"
+    no-set-pref
+    label="$i18n{crostiniMicTitle}"
+    on-settings-boolean-control-change="onMicPermissionChange_"
+    deep-link-focus-id$="[[Setting.kCrostiniMicAccess]]">
+</settings-toggle-button>
+<template is="dom-if" if="[[showCrostiniMicPermissionDialog_]]" restamp>
+  <settings-crostini-confirmation-dialog
+      id="crostini-mic-permission-dialog"
+      accept-button-text="$i18n{crostiniMicDialogShutdownButton}"
+      on-close="onCrostiniMicPermissionDialogClose_">
+    <div slot="body">$i18n{crostiniMicDialogLabel}</div>
+  </settings-crostini-confirmation-dialog>
+</template>
+<template is="dom-if" if="[[!hideCrostiniUninstall_]]">
+  <div id="remove" class="settings-box">
+    <div id="removeCrostiniLabel" class="start" aria-hidden="true">
+      $i18n{crostiniRemove}
+    </div>
+    <cr-button on-click="onRemoveClick_"
+        aria-label="$i18n{crostiniRemoveButton}"
+        aria-describedby="removeCrostiniLabel"
+        deep-link-focus-id$="[[Setting.kUninstallCrostini]]">
+      $i18n{crostiniRemoveButton}
+    </cr-button>
+  </div>
+</template>

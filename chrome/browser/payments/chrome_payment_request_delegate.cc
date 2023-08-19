@@ -11,6 +11,10 @@
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/browser_app_instance.h"
+#include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
 #include "chrome/browser/autofill/address_normalizer_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/validation_rules_storage_factory.h"
@@ -134,11 +138,8 @@ void ChromePaymentRequestDelegate::ShowProcessingSpinner() {
 
 autofill::PersonalDataManager*
 ChromePaymentRequestDelegate::GetPersonalDataManager() {
-  // Autofill uses the original profile's PersonalDataManager to make data
-  // available in incognito, so PaymentRequest should do the same.
   return autofill::PersonalDataManagerFactory::GetForProfile(
-      Profile::FromBrowserContext(GetBrowserContextOrNull())
-          ->GetOriginalProfile());
+      Profile::FromBrowserContext(GetBrowserContextOrNull()));
 }
 
 const std::string& ChromePaymentRequestDelegate::GetApplicationLocale() const {
@@ -302,6 +303,39 @@ PaymentRequestDialog* ChromePaymentRequestDelegate::GetDialogForTesting() {
 SecurePaymentConfirmationNoCreds*
 ChromePaymentRequestDelegate::GetNoMatchingCredentialsDialogForTesting() {
   return spc_no_creds_dialog_.get();
+}
+
+absl::optional<base::UnguessableToken>
+ChromePaymentRequestDelegate::GetChromeOSTWAInstanceId() const {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
+  if (!FrameSupportsPayments(rfh)) {
+    return absl::nullopt;
+  }
+
+  auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
+  if (!web_contents) {
+    return absl::nullopt;
+  }
+  Profile* profile = Profile::FromBrowserContext(rfh->GetBrowserContext());
+  if (!profile) {
+    return absl::nullopt;
+  }
+  auto* app_instance_tracker =
+      apps::AppServiceProxyFactory::GetForProfile(profile)
+          ->BrowserAppInstanceTracker();
+  if (!app_instance_tracker) {
+    return absl::nullopt;
+  }
+  const apps::BrowserAppInstance* app_instance =
+      app_instance_tracker->GetAppInstance(web_contents);
+  if (!app_instance) {
+    return absl::nullopt;
+  }
+  return app_instance->id;
+#else
+  return absl::nullopt;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 const base::WeakPtr<PaymentUIObserver>

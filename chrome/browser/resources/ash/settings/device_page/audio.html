@@ -1,0 +1,243 @@
+<style include="settings-shared md-select">
+  .audio-mute-button {
+    margin-inline-end: 8px;
+  }
+
+  /* Allows the mute button tooltips to be visible even when disabled. */
+  .audio-mute-button[disabled] {
+    background-color: transparent;
+    pointer-events: auto;
+  }
+
+  .audio-options-container {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+  }
+
+  .audio-slider {
+    margin-inline-end: 16px;
+    padding: 0;
+    width: 142px;
+  }
+
+  h2 {
+    padding-inline-start: var(--cr-section-padding);
+  }
+
+  .settings-box:first-of-type {
+    border-top: none;
+  }
+
+  .subsection {
+    padding-inline-end: var(--cr-section-padding);
+    padding-inline-start: var(--cr-section-indent-padding);
+  }
+
+  .subsection > .settings-box,
+  .subsection > settings-toggle-button {
+    padding-inline-end: 0;
+    padding-inline-start: 0;
+  }
+
+  :host([is-output-muted_]) #outputVolumeSlider {
+    --cr-slider-active-color: var(--cros-slider-color-inactive);
+    --cr-slider-container-color: var(--cros-slider-track-color-inactive);
+    --cr-slider-knob-color-rgb: var(--cros-color-primary-rgb);
+  }
+
+  :host([is-output-muted_]) #audioOutputMuteButton {
+    --cr-icon-button-fill-color: var(--cros-color-secondary);
+  }
+
+  :host(:not([is-output-muted_])) #audioOutputMuteButton {
+    --cr-icon-button-fill-color: var(--cros-color-prominent);
+  }
+
+  :host([is-input-muted_]) #audioInputGainVolumeSlider {
+    --cr-slider-active-color: var(--cros-slider-color-inactive);
+    --cr-slider-container-color: var(--cros-slider-track-color-inactive);
+    --cr-slider-knob-color-rgb: var(--cros-color-primary-rgb);
+  }
+
+  :host([is-input-muted_]) #audioInputGainMuteButton {
+    --cr-icon-button-fill-color: var(--cros-color-secondary);
+  }
+
+  :host(:not([is-input-muted_])) #audioInputGainMuteButton {
+    --cr-icon-button-fill-color: var(--cros-color-prominent);
+  }
+
+  paper-tooltip {
+    --paper-tooltip-min-width: max-content;
+  }
+</style>
+
+<!-- Output section -->
+<div id="output"
+    hidden="[[getOutputHidden_(audioSystemProperties_.outputDevices)]]">
+  <h2 id="audioOutputTitle">$i18n{audioOutputTitle}</h2>
+  <div id="audioOutputSubsection" class="subsection">
+    <div id="outputDeviceSubsection" class="settings-box">
+      <div class="start settings-box-text" id="audioOutputDeviceLabel">
+        $i18n{audioOutputDeviceTitle}
+      </div>
+      <select id="audioOutputDeviceDropdown" class="md-select"
+          on-change="onOutputDeviceChanged"
+          aria-labelledby="audioOutputTitle audioOutputDeviceLabel">
+        <template is="dom-repeat"
+            items="[[audioSystemProperties_.outputDevices]]">
+          <option value="[[item.id]]" selected="[[item.isActive]]">
+            [[getDeviceName_(item)]]
+          </option>
+        </template>
+      </select>
+    </div>
+    <div id="outputVolumeSubsection" class="settings-box">
+      <div class="start settings-box-text" id="audioOutputVolumeLabel">
+        $i18n{audioVolumeTitle}
+      </div>
+      <div class="audio-options-container">
+        <template is="dom-if" if="[[isOutputMutedByPolicy_(
+              audioSystemProperties_.outputMuteState
+            )]]">
+          <cr-policy-indicator id="audioOutputMuteByPolicyIndicator"
+              indicator-type="userPolicy">
+          </cr-policy-indicator>
+        </template>
+        <cr-icon-button class="audio-mute-button"
+            id="audioOutputMuteButton"
+            iron-icon="[[getOutputIcon_(isOutputMuted_, outputVolume_)]]"
+            on-click="onOutputMuteButtonClicked"
+            disabled="[[isOutputMutedByPolicy_(
+                audioSystemProperties_.outputMuteState
+              )]]"
+            aria-description="[[getOutputMuteButtonAriaLabel(
+                isOutputMuted_
+              )]]"
+            aria-labelledby="audioOutputVolumeLabel"
+            aria-pressed="[[isOutputMuted_]]">
+        </cr-icon-button>
+        <paper-tooltip id="audioOutputMuteButtonTooltip" aria-hidden="true"
+            for="audioOutputMuteButton">
+          [[getMuteTooltip_(audioSystemProperties_.outputMuteState)]]
+        </paper-tooltip>
+        <cr-slider class="audio-slider"
+            id ="outputVolumeSlider"
+            min="0"
+            max="100"
+            key-press-slider-increment="10"
+            disabled="[[isOutputMutedByPolicy_(
+                audioSystemProperties_.outputMuteState
+              )]]"
+            value="[[audioSystemProperties_.outputVolumePercent]]"
+            on-cr-slider-value-changed="onOutputVolumeSliderChanged_"
+            aria-labelledby="audioOutputTitle audioOutputVolumeLabel">
+        </cr-slider>
+      </div>
+    </div>
+  </div>
+</div>
+<!--TODO(b/260277007): Replace placeholder text when localization strings
+  available. Add styling. -->
+<div id="input"
+    hidden="[[getInputHidden_(audioSystemProperties_.inputDevices)]]">
+  <h2 id="audioInputTitle">$i18n{audioInputTitle}</h2>
+  <div id="audioInputSection" class="subsection">
+    <div id="audioInputDeviceSubsection" class="settings-box">
+      <div id="audioInputDeviceLabel" class="start settings-box-text">
+        $i18n{audioInputDeviceTitle}
+      </div>
+      <select id="audioInputDeviceDropdown" on-change="onInputDeviceChanged"
+          class="md-select"
+          aria-labelledby="audioInputTitle audioInputDeviceLabel">
+        <template is="dom-repeat"
+            items="[[audioSystemProperties_.inputDevices]]">
+          <option value="[[item.id]]" selected="[[item.isActive]]">
+            [[getDeviceName_(item)]]
+          </option>
+        </template>
+      </select>
+    </div>
+    <div id="audioInputDeviceSubsection" class="settings-box">
+      <div id="audioInputGainLabel" class="start settings-box-text">
+        $i18n{audioInputGainTitle}
+      </div>
+      <div class="audio-options-container">
+        <cr-icon-button id="audioInputGainMuteButton"
+            iron-icon="[[getInputIcon_(isInputMuted_)]]"
+            on-click="onInputMuteClicked"
+            class="audio-mute-button"
+            disabled="[[shouldDisableInputGainControls(isInputMuted_)]]"
+            aria-description$="[[getInputMuteButtonAriaLabel(
+                audioSystemProperties_.inputMuteState,
+                isInputMuted_
+              )]]"
+            aria-labelledby="audioInputGainLabel"
+            aria-pressed="[[isInputMuted_]]">
+        </cr-icon-button>
+        <paper-tooltip id="audioInputMuteButtonTooltip" aria-hidden="true"
+            for="audioInputGainMuteButton">
+          [[getMuteTooltip_(audioSystemProperties_.inputMuteState)]]
+        </paper-tooltip>
+        <cr-slider id="audioInputGainVolumeSlider" min="0" max="100"
+            key-press-slider-increment="10"
+            iron-icon="[[getInputIcon_(isInputMuted_)]]"
+            value="[[audioSystemProperties_.inputGainPercent]]"
+            on-cr-slider-value-changed="onInputVolumeSliderChanged"
+            class="audio-slider"
+            aria-labelledby="audioInputTitle audioInputGainLabel"
+            disabled="[[shouldDisableInputGainControls(isInputMuted_)]]">
+        </cr-slider>
+      </div>
+    </div>
+    <div id="audioInputNoiseCancellationSubsection" class="settings-box"
+        hidden="[[!isNoiseCancellationSupported_]]">
+      <div id="audioInputNoiseCancellationLabel"
+          class="settings-box-text start" aria-hidden="true">
+        $i18n{audioInputNoiseCancellationTitle}
+      </div>
+      <cr-toggle id="audioInputNoiseCancellationToggle"
+          checked="{{isNoiseCancellationEnabled_}}"
+          aria-labelledby="audioInputNoiseCancellationLabel">
+      </cr-toggle>
+    </div>
+    <div id="audioInputAllowAGCSubsection" class="settings-box"
+        hidden="[[!showAllowAGC]]">
+      <div id="audioInputAllowAGCLabel" class="settings-box-text start">
+        $i18n{audioInputAllowAGCTitle}
+      </div>
+      <cr-toggle id="audioInputAllowAGCToggle"
+          checked="{{isAllowAGCEnabled}}">
+      </cr-toggle>
+    </div>
+  </div>
+</div>
+
+<div id="deviceSounds">
+  <h2>$i18n{deviceSoundsTitle}</h2>
+  <div id="deviceSoundsSection" class="subsection">
+    <settings-toggle-button id="lowBatterySoundToggle"
+        pref="{{prefs.ash.low_battery_sound.enabled}}"
+        label="$i18n{lowBatterySoundLabel}"
+        deep-link-focus-id$="[[Setting.kLowBatterySound]]"
+        hidden$="[[!systemSoundsEnabled_]]">
+    </settings-toggle-button>
+    <settings-toggle-button id="chargingSoundsToggle"
+        pref="{{prefs.ash.charging_sounds.enabled}}"
+        label="$i18n{chargingSoundsLabel}"
+        deep-link-focus-id$="[[Setting.kChargingSounds]]"
+        hidden$="[[!systemSoundsEnabled_]]">
+    </settings-toggle-button>
+    <div class="settings-box start-padding continuation">
+      <div id="deviceStartupSoundEnabledLabel"
+          class="start settings-box-text">
+        $i18n{deviceStartupSoundLabel}
+      </div>
+      <cr-toggle id="deviceStartupSoundToggle"
+          checked="[[startupSoundEnabled_]]"
+          on-change="toggleStartupSoundEnabled_">
+      </cr-toggle>
+    </div>
+  </div>
+</div>

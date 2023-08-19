@@ -22,6 +22,10 @@ constexpr const char kPrefAcknowledgedBlocklistState[] =
 // If extension is blocklisted or greylisted.
 constexpr const char kPrefBlocklistState[] = "blacklist_state";
 
+// If extension is blocklisted by the Extension Telemetry service.
+constexpr const char kPrefExtensionTelemetryServiceBlocklistState[] =
+    "extension_telemetry_service_blocklist_state";
+
 // The default value to use for getting blocklist state from the pref.
 constexpr BitMapBlocklistState kDefaultBitMapBlocklistState =
     BitMapBlocklistState::NOT_BLOCKLISTED;
@@ -83,10 +87,14 @@ BitMapBlocklistState GetExtensionBlocklistState(
     ExtensionPrefs* extension_prefs) {
   BitMapBlocklistState sb_state =
       GetSafeBrowsingExtensionBlocklistState(extension_id, extension_prefs);
+  BitMapBlocklistState extension_telemetry_service_state =
+      GetExtensionTelemetryServiceBlocklistState(extension_id, extension_prefs);
   if (sb_state == BitMapBlocklistState::BLOCKLISTED_MALWARE ||
       HasOmahaBlocklistState(extension_id,
                              BitMapBlocklistState::BLOCKLISTED_MALWARE,
-                             extension_prefs)) {
+                             extension_prefs) ||
+      extension_telemetry_service_state ==
+          BitMapBlocklistState::BLOCKLISTED_MALWARE) {
     return BitMapBlocklistState::BLOCKLISTED_MALWARE;
   }
 
@@ -213,6 +221,38 @@ BitMapBlocklistState GetSafeBrowsingExtensionBlocklistState(
   int int_value = -1;
   if (extension_prefs->ReadPrefAsInteger(extension_id, kPrefBlocklistState,
                                          &int_value) &&
+      int_value >= 0) {
+    return BlocklistStateToBitMapBlocklistState(
+        static_cast<BlocklistState>(int_value));
+  }
+
+  return BitMapBlocklistState::NOT_BLOCKLISTED;
+}
+
+void SetExtensionTelemetryServiceBlocklistState(
+    const ExtensionId& extension_id,
+    BitMapBlocklistState bitmap_blocklist_state,
+    ExtensionPrefs* extension_prefs) {
+  if (bitmap_blocklist_state == BitMapBlocklistState::NOT_BLOCKLISTED) {
+    extension_prefs->UpdateExtensionPref(
+        extension_id, kPrefExtensionTelemetryServiceBlocklistState,
+        absl::nullopt);
+    extension_prefs->DeleteExtensionPrefsIfPrefEmpty(extension_id);
+  } else {
+    extension_prefs->UpdateExtensionPref(
+        extension_id, kPrefExtensionTelemetryServiceBlocklistState,
+        base::Value(
+            BitMapBlocklistStateToBlocklistState(bitmap_blocklist_state)));
+  }
+}
+
+BitMapBlocklistState GetExtensionTelemetryServiceBlocklistState(
+    const ExtensionId& extension_id,
+    ExtensionPrefs* extension_prefs) {
+  int int_value = -1;
+  if (extension_prefs->ReadPrefAsInteger(
+          extension_id, kPrefExtensionTelemetryServiceBlocklistState,
+          &int_value) &&
       int_value >= 0) {
     return BlocklistStateToBitMapBlocklistState(
         static_cast<BlocklistState>(int_value));

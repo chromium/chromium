@@ -87,8 +87,7 @@ public class SwipeRefreshHandler
         return handler;
     }
 
-    @Nullable
-    public static SwipeRefreshHandler get(Tab tab) {
+    public static @Nullable SwipeRefreshHandler get(Tab tab) {
         return tab.getUserDataHost().getUserData(USER_DATA_KEY);
     }
 

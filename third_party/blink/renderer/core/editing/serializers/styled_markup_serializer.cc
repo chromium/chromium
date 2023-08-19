@@ -325,7 +325,7 @@ StyledMarkupTraverser<Strategy>::StyledMarkupTraverser(
   }
   if (!last_closed_)
     return;
-  ContainerNode* parent = Strategy::Parent(*last_closed_);
+  Element* parent = DynamicTo<Element>(Strategy::Parent(*last_closed_));
   if (!parent)
     return;
   if (ShouldAnnotate()) {

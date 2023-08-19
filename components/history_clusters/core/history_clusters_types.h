@@ -62,6 +62,18 @@ struct QueryClustersFilterParams {
 
   // Whether the returned clusters will be shown on prominent UI surfaces.
   bool is_shown_on_prominent_ui_surfaces = false;
+
+  // Whether to exclude clusters that have interaction state equal to done.
+  bool filter_done_clusters = false;
+
+  // Whether to exclude visits that have interaction state equal to hidden.
+  bool filter_hidden_visits = false;
+
+  // Whether to include synced visits.
+  bool include_synced_visits = false;
+
+  // Whether to return merged clusters that are similar based on content.
+  bool group_clusters_by_content = false;
 };
 
 struct QueryClustersContinuationParams {

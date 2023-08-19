@@ -63,33 +63,29 @@
     margin: 0 auto;
   }
 </style>
-<div id="icons" hidden$="[[!bookmarks.length]]" role="tablist">
-  <div class$="
-      button-wrapper cr-vertical-tab [[thumbnailButtonClass_(thumbnailView_)]]">
-    <cr-icon-button iron-icon="pdf:thumbnails" role="tab"
-        title="$i18n{tooltipThumbnails}" aria-label="$i18n{tooltipThumbnails}"
-        aria-selected$="[[getAriaSelectedThumbnails_(thumbnailView_)]]"
-        on-click="onThumbnailClick_"
-        tabindex$="[[getTabIndexThumbnail_(thumbnailView_)]]">
-    </cr-icon-button>
-  </div>
-  <div class$="
-      button-wrapper cr-vertical-tab [[outlineButtonClass_(thumbnailView_)]]">
-    <cr-icon-button iron-icon="pdf:doc-outline" role="tab"
-        title="$i18n{tooltipDocumentOutline}"
-        aria-label="$i18n{tooltipDocumentOutline}"
-        aria-selected$="[[getAriaSelectedOutline_(thumbnailView_)]]"
-        on-click="onOutlineClick_"
-        tabindex$="[[getTabIndexOutline_(thumbnailView_)]]">
-    </cr-icon-button>
-  </div>
+<div id="icons" hidden$="[[hideIcons_]]" role="tablist">
+  <template is="dom-repeat" items="[[tabs_]]">
+    <div class$="button-wrapper cr-vertical-tab
+        [[getTabSelectedClass_(item.id, selectedTab_)]]">
+      <cr-icon-button iron-icon="[[item.icon]]" role="tab"
+          title$="[[item.title]]"
+          aria-selected$="[[getTabAriaSelected_(item.id, selectedTab_)]]"
+          tabindex$="[[getTabIndex_(item.id, selectedTab_)]]"
+          on-click="onTabClick_">
+      </cr-icon-button>
+    </div>
+  </template>
 </div>
 <div id="content">
   <viewer-thumbnail-bar id="thumbnail-bar" tabindex="0"
-      hidden="[[!thumbnailView_]]" active-page="[[activePage]]"
+      hidden="[[hideThumbnailView_(selectedTab_)]]" active-page="[[activePage]]"
       clockwise-rotations="[[clockwiseRotations]]" doc-length="[[docLength]]">
   </viewer-thumbnail-bar>
-  <viewer-document-outline id="outline" hidden="[[thumbnailView_]]"
-      bookmarks="[[bookmarks]]">
+  <viewer-document-outline id="outline"
+      hidden="[[hideOutlineView_(selectedTab_)]]" bookmarks="[[bookmarks]]">
   </viewer-document-outline>
+  <viewer-attachment-bar id="attachment-bar"
+      hidden="[[hideAttachmentView_(selectedTab_)]]"
+      attachments="[[attachments]]">
+  </viewer-attachment-bar>
 </div>

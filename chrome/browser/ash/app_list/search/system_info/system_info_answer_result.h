@@ -16,6 +16,7 @@ namespace app_list {
 class SystemInfoAnswerResult : public ChromeSearchResult {
  public:
   enum class SystemInfoCategory { kSettings, kDiagnostics };
+  enum class SystemInfoCardType { kVersion, kMemory, kStorage, kCPU, kBattery };
 
   SystemInfoAnswerResult(Profile* profile,
                          const std::u16string& query,
@@ -24,7 +25,9 @@ class SystemInfoAnswerResult : public ChromeSearchResult {
                          double relevance_score,
                          const std::u16string& title,
                          const std::u16string& description,
+                         const std::u16string& accessibility_label,
                          SystemInfoCategory system_info_category,
+                         SystemInfoCardType system_info_card_type,
                          const ash::SystemInfoAnswerCardData& answer_card_info);
   SystemInfoAnswerResult(const SystemInfoAnswerResult&) = delete;
   SystemInfoAnswerResult& operator=(const SystemInfoAnswerResult&) = delete;
@@ -33,15 +36,16 @@ class SystemInfoAnswerResult : public ChromeSearchResult {
 
   void Open(int event_flags) override;
 
-  void UpdateTitle(const std::u16string& title);
-
   void UpdateTitleAndDetails(const std::u16string& title,
-                             const std::u16string& description);
+                             const std::u16string& description,
+                             const std::u16string& accessibility_label);
 
   void UpdateBarChartPercentage(const double bar_chart_percentage);
 
  private:
   SystemInfoCategory const system_info_category_;
+  SystemInfoCardType const system_info_card_type_;
+  ash::SystemInfoAnswerCardData answer_card_info_;
   const raw_ptr<Profile, ExperimentalAsh> profile_;
   const std::u16string query_;
 

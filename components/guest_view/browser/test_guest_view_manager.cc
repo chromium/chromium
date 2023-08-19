@@ -122,14 +122,15 @@ GuestViewBase* TestGuestViewManager::WaitForNextGuestViewCreated() {
 }
 
 void TestGuestViewManager::WaitForNumGuestsCreated(size_t count) {
-  if (count == num_guests_created_)
+  if (count == num_guests_created_) {
     return;
+  }
 
-  waiting_for_guests_created_ = true;
   expected_num_guests_created_ = count;
 
   num_created_run_loop_ = std::make_unique<base::RunLoop>();
   num_created_run_loop_->Run();
+  num_created_run_loop_ = nullptr;
 }
 
 void TestGuestViewManager::WaitUntilAttached(GuestViewBase* guest_view) {
@@ -173,13 +174,11 @@ void TestGuestViewManager::AddGuest(GuestViewBase* guest) {
     created_run_loop_->Quit();
 
   ++num_guests_created_;
-  if (!waiting_for_guests_created_ &&
-      num_guests_created_ != expected_num_guests_created_) {
-    return;
-  }
 
-  if (num_created_run_loop_)
+  if (num_created_run_loop_ &&
+      num_guests_created_ == expected_num_guests_created_) {
     num_created_run_loop_->Quit();
+  }
 }
 
 void TestGuestViewManager::AttachGuest(int embedder_process_id,
@@ -225,9 +224,29 @@ void TestGuestViewManager::ViewGarbageCollected(int embedder_process_id,
 }
 
 // Test factory for creating test instances of GuestViewManager.
-TestGuestViewManagerFactory::TestGuestViewManagerFactory() = default;
+TestGuestViewManagerFactory::TestGuestViewManagerFactory() {
+  GuestViewManager::set_factory_for_testing(this);
+}
 
-TestGuestViewManagerFactory::~TestGuestViewManagerFactory() = default;
+TestGuestViewManagerFactory::~TestGuestViewManagerFactory() {
+  GuestViewManager::set_factory_for_testing(nullptr);
+}
+
+TestGuestViewManager*
+TestGuestViewManagerFactory::GetOrCreateTestGuestViewManager(
+    content::BrowserContext* context,
+    std::unique_ptr<GuestViewManagerDelegate> delegate) {
+  GuestViewManager* manager = GuestViewManager::FromBrowserContext(context);
+
+  // Test code may access the TestGuestViewManager before it would be created
+  // during creation of the first guest.
+  if (!manager) {
+    manager =
+        GuestViewManager::CreateWithDelegate(context, std::move(delegate));
+  }
+
+  return static_cast<TestGuestViewManager*>(manager);
+}
 
 std::unique_ptr<GuestViewManager>
 TestGuestViewManagerFactory::CreateGuestViewManager(

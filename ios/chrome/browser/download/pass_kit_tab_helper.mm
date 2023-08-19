@@ -17,10 +17,6 @@
 #import "ios/chrome/browser/shared/public/commands/web_content_commands.h"
 #import "ios/web/public/download/download_task.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 const char kUmaDownloadPassKitResult[] = "Download.IOSDownloadPassKitResult";
 
 namespace {

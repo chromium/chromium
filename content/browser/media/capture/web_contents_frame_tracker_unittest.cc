@@ -203,7 +203,7 @@ class WebContentsFrameTrackerTest : public RenderViewHostTestHarness {
   std::unique_ptr<WebContentsFrameTracker> tracker_;
 
   // Save because the pointed-to location should not change during testing.
-  raw_ptr<SimpleContext, DanglingUntriaged> raw_context_;
+  raw_ptr<SimpleContext, AcrossTasksDanglingUntriaged> raw_context_;
 };
 
 TEST_F(WebContentsFrameTrackerTest, CalculatesPreferredSizeClampsToView) {

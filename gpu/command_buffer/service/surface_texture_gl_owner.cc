@@ -112,11 +112,6 @@ void SurfaceTextureGLOwner::UpdateTexImage() {
   }
 }
 
-void SurfaceTextureGLOwner::EnsureTexImageBound(GLuint service_id) {
-  // We can't bind SurfaceTexture to different ids.
-  DCHECK_EQ(service_id, GetTextureId());
-}
-
 void SurfaceTextureGLOwner::ReleaseBackBuffers() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (surface_texture_)

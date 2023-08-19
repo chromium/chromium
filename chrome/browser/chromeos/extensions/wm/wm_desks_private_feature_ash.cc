@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/desk_template.h"
 #include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desks_controller.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
@@ -109,8 +110,13 @@ void WMDesksPrivateFeatureAsh::LaunchDesk(std::string desk_name,
 
 void WMDesksPrivateFeatureAsh::RemoveDesk(const base::Uuid& desk_uuid,
                                           bool combine_desk,
+                                          bool allow_undo,
                                           RemoveDeskCallback callback) {
-  auto error = DesksClient::Get()->RemoveDesk(desk_uuid, combine_desk);
+  ash::DeskCloseType close_type =
+      combine_desk ? ash::DeskCloseType::kCombineDesks
+                   : (allow_undo ? ash::DeskCloseType::kCloseAllWindowsAndWait
+                                 : ash::DeskCloseType::kCloseAllWindows);
+  auto error = DesksClient::Get()->RemoveDesk(desk_uuid, close_type);
   std::move(callback).Run(error ? GetStringError(error.value()) : "");
 }
 

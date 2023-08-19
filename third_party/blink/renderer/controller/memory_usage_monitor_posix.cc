@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/controller/memory_usage_monitor_posix.h"
 
-#include <ctype.h>
 #include <fcntl.h>
 #include <inttypes.h>
 #include <unistd.h>

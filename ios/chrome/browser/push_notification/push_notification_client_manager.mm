@@ -12,10 +12,6 @@
 #import "ios/chrome/browser/commerce/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/push_notification/push_notification_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 PushNotificationClientManager::PushNotificationClientManager() {
   if (IsPriceNotificationsEnabled() &&
       optimization_guide::features::IsPushNotificationsEnabled()) {

@@ -12,6 +12,7 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.UnownedUserData;
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.supplier.Supplier;
@@ -206,7 +207,7 @@ public class NotificationPermissionController implements UnownedUserData {
         NotificationUmaTracker.getInstance().onNotificationPermissionRequested();
         SharedPreferencesManager.getInstance().writeLong(
                 ChromePreferenceKeys.NOTIFICATION_PERMISSION_RATIONALE_TIMESTAMP_KEY,
-                System.currentTimeMillis());
+                TimeUtils.currentTimeMillis());
     }
 
     @PermissionRequestMode
@@ -340,7 +341,7 @@ public class NotificationPermissionController implements UnownedUserData {
         // If the pref wasn't there to begin with, we don't need to retrigger the UI.
         if (lastRequestTimestamp == 0) return false;
 
-        long elapsedTime = System.currentTimeMillis() - lastRequestTimestamp;
+        long elapsedTime = TimeUtils.currentTimeMillis() - lastRequestTimestamp;
         return elapsedTime > getPermissionRequestRetriggerIntervalMs();
     }
 

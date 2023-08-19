@@ -26,12 +26,11 @@ PaintPropertyChangeType ClipPaintPropertyNode::State::ComputeChange(
 }
 
 const ClipPaintPropertyNode& ClipPaintPropertyNode::Root() {
-  DEFINE_STATIC_REF(
-      ClipPaintPropertyNode, root,
-      base::AdoptRef(new ClipPaintPropertyNode(
-          nullptr, State(&TransformPaintPropertyNode::Root(),
-                         gfx::RectF(LayoutRect::InfiniteIntRect()),
-                         FloatRoundedRect(LayoutRect::InfiniteIntRect())))));
+  DEFINE_STATIC_REF(ClipPaintPropertyNode, root,
+                    base::AdoptRef(new ClipPaintPropertyNode(
+                        nullptr, State(&TransformPaintPropertyNode::Root(),
+                                       gfx::RectF(InfiniteIntRect()),
+                                       FloatRoundedRect(InfiniteIntRect())))));
   return *root;
 }
 

@@ -23,12 +23,12 @@
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "base/version.h"
-#include "chrome/browser/ash/app_mode/app_session_ash.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_data.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
 #include "chrome/browser/ash/app_mode/kiosk_external_updater.h"
+#include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include "chrome/browser/ash/app_mode/pref_names.h"
 #include "chrome/browser/ash/extensions/external_cache_impl.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
@@ -119,19 +119,20 @@ std::unique_ptr<chromeos::ExternalCache> CreateExternalCache(
       g_browser_process->shared_url_loader_factory();
   auto cache = std::make_unique<chromeos::ExternalCacheImpl>(
       GetCrxCacheDir(), shared_url_loader_factory, GetBackgroundTaskRunner(),
-      delegate, true /* always_check_updates */,
-      false /* wait_for_cache_initialization */,
-      true /* allow_scheduled_updates */);
+      delegate, /*always_check_updates=*/true,
+      /*wait_for_cache_initialization=*/false,
+      /*allow_scheduled_updates=*/true);
   cache->set_flush_on_put(true);
   return cache;
 }
 
-std::unique_ptr<AppSessionAsh> CreateAppSession(Profile* profile,
-                                                const KioskAppId& app_id) {
+std::unique_ptr<KioskSystemSession> CreateKioskSystemSession(
+    Profile* profile,
+    const KioskAppId& app_id) {
   if (g_test_overrides) {
-    return g_test_overrides->CreateAppSession();
+    return g_test_overrides->CreateKioskSystemSession();
   }
-  return std::make_unique<AppSessionAsh>(profile, app_id);
+  return std::make_unique<KioskSystemSession>(profile, app_id);
 }
 
 base::Version GetPlatformVersion() {
@@ -208,13 +209,13 @@ void KioskAppManager::InitializeForTesting(Overrides* overrides) {
 // static
 void KioskAppManager::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kKioskDictionaryName);
-  chromeos::AppSession::RegisterLocalStatePrefs(registry);
+  chromeos::KioskBrowserSession::RegisterLocalStatePrefs(registry);
 }
 
 // static
 void KioskAppManager::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  chromeos::AppSession::RegisterProfilePrefs(registry);
+  chromeos::KioskBrowserSession::RegisterProfilePrefs(registry);
 }
 
 // static
@@ -260,13 +261,15 @@ void KioskAppManager::SetExtensionDownloaderBackoffPolicy(
   external_cache_->SetBackoffPolicy(backoff_policy);
 }
 
-void KioskAppManager::InitSession(Profile* profile, const KioskAppId& app_id) {
-  LOG_IF(FATAL, app_session_) << "Kiosk session is already initialized.";
+void KioskAppManager::InitKioskSystemSession(Profile* profile,
+                                             const KioskAppId& app_id) {
+  LOG_IF(FATAL, kiosk_system_session_)
+      << "Kiosk system session is already initialized.";
 
   base::CommandLine session_flags(base::CommandLine::NO_PROGRAM);
   if (GetSwitchesForSessionRestore(app_id.app_id.value(), &session_flags)) {
     base::CommandLine::StringVector flags;
-    // argv[0] is the program name |base::CommandLine::NO_PROGRAM|.
+    // argv[0] is the program name `base::CommandLine::NO_PROGRAM`.
     flags.assign(session_flags.argv().begin() + 1, session_flags.argv().end());
 
     // Update user flags, but do not restart Chrome - the purpose of the flags
@@ -279,7 +282,7 @@ void KioskAppManager::InitSession(Profile* profile, const KioskAppId& app_id) {
         flags);
   }
 
-  app_session_ = CreateAppSession(profile, app_id);
+  kiosk_system_session_ = CreateKioskSystemSession(profile, app_id);
   NotifySessionInitialized();
 }
 
@@ -547,7 +550,7 @@ void KioskAppManager::RemoveApp(const std::string& app_id,
     return;
   }
 
-  // Remove entries that match |app_id|.
+  // Remove entries that match `app_id`.
   for (std::vector<policy::DeviceLocalAccount>::iterator it =
            device_local_accounts.begin();
        it != device_local_accounts.end(); ++it) {
@@ -744,7 +747,7 @@ KioskAppManager::KioskAppManager() {
 }
 
 KioskAppManager::~KioskAppManager() {
-  ChromeKioskExternalLoaderBroker::Shutdown();
+  chromeos::ChromeKioskExternalLoaderBroker::Shutdown();
   observers_.Clear();
   g_test_overrides = nullptr;
   g_kiosk_app_manager = nullptr;
@@ -783,7 +786,7 @@ void KioskAppManager::UpdateAppsFromPolicy() {
   CrosSettings::Get()->GetString(kAccountsPrefDeviceLocalAccountAutoLoginId,
                                  &auto_login_account_id);
 
-  // Re-populates |apps_| and reuses existing KioskAppData when possible.
+  // Re-populates `apps_` and reuses existing KioskAppData when possible.
   const std::vector<policy::DeviceLocalAccount> device_local_accounts =
       policy::GetDeviceLocalAccounts(CrosSettings::Get());
   for (const auto& device_local_account : device_local_accounts) {

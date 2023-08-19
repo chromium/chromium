@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/syslog_logging.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/ec_signing_key.h"
@@ -96,7 +97,8 @@ bool WinKeyPersistenceDelegate::StoreKeyPair(
                        "the signing key storage.");
 }
 
-std::unique_ptr<SigningKeyPair> WinKeyPersistenceDelegate::LoadKeyPair() {
+scoped_refptr<SigningKeyPair> WinKeyPersistenceDelegate::LoadKeyPair(
+    KeyStorageType type) {
   base::win::RegKey key;
   std::wstring signingkey_name;
   std::wstring trustlevel_name;
@@ -139,12 +141,13 @@ std::unique_ptr<SigningKeyPair> WinKeyPersistenceDelegate::LoadKeyPair() {
   }
 
   std::vector<uint8_t> wrapped;
-  DWORD type = REG_NONE;
+  DWORD reg_type = REG_NONE;
   DWORD size = 0;
-  res = key.ReadValue(signingkey_name.c_str(), nullptr, &size, &type);
-  if (res == ERROR_SUCCESS && type == REG_BINARY) {
+  res = key.ReadValue(signingkey_name.c_str(), nullptr, &size, &reg_type);
+  if (res == ERROR_SUCCESS && reg_type == REG_BINARY) {
     wrapped.resize(size);
-    res = key.ReadValue(signingkey_name.c_str(), wrapped.data(), &size, &type);
+    res = key.ReadValue(signingkey_name.c_str(), wrapped.data(), &size,
+                        &reg_type);
   }
   if (res != ERROR_SUCCESS) {
     RecordFailure(
@@ -154,7 +157,7 @@ std::unique_ptr<SigningKeyPair> WinKeyPersistenceDelegate::LoadKeyPair() {
         "details from the signing key storage.");
     return nullptr;
 
-  } else if (type != REG_BINARY) {
+  } else if (reg_type != REG_BINARY) {
     RecordFailure(
         KeyPersistenceOperation::kLoadKeyPair,
         KeyPersistenceError::kInvalidSigningKey,
@@ -172,10 +175,11 @@ std::unique_ptr<SigningKeyPair> WinKeyPersistenceDelegate::LoadKeyPair() {
     return nullptr;
   }
 
-  return std::make_unique<SigningKeyPair>(std::move(signing_key), trust_level);
+  return base::MakeRefCounted<SigningKeyPair>(std::move(signing_key),
+                                              trust_level);
 }
 
-std::unique_ptr<SigningKeyPair> WinKeyPersistenceDelegate::CreateKeyPair() {
+scoped_refptr<SigningKeyPair> WinKeyPersistenceDelegate::CreateKeyPair() {
   // Attempt to create a TPM signing key.
   KeyPersistenceDelegate::KeyTrustLevel trust_level =
       BPKUR::CHROME_BROWSER_HW_KEY;
@@ -200,7 +204,18 @@ std::unique_ptr<SigningKeyPair> WinKeyPersistenceDelegate::CreateKeyPair() {
     return nullptr;
   }
 
-  return std::make_unique<SigningKeyPair>(std::move(signing_key), trust_level);
+  return base::MakeRefCounted<SigningKeyPair>(std::move(signing_key),
+                                              trust_level);
+}
+
+bool WinKeyPersistenceDelegate::PromoteTemporaryKeyPair() {
+  // TODO(b/290068551): Implement this method.
+  return true;
+}
+
+bool WinKeyPersistenceDelegate::DeleteKeyPair(KeyStorageType type) {
+  // TODO(b/290068551): Implement this method.
+  return true;
 }
 
 }  // namespace enterprise_connectors

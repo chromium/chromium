@@ -87,6 +87,19 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
     kError,
   };
 
+  // Don't change the meaning or the order of these values because they are
+  // being recorded in metrics and in sync with the counterpart in enums.xml.
+  enum class AccountsResponseInvalidReason {
+    kResponseIsNotJsonOrDict,
+    kNoAccountsKey,
+    kAccountListIsEmpty,
+    kAccountIsNotDict,
+    kAccountMissesRequiredField,
+    kAccountsShareSameId,
+
+    kMaxValue = kAccountsShareSameId
+  };
+
   struct CONTENT_EXPORT Endpoints {
     Endpoints();
     ~Endpoints();

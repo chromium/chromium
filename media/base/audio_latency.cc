@@ -68,7 +68,7 @@ int LCM(int a, int b) {
 }  // namespace
 
 // static
-bool AudioLatency::IsResamplingPassthroughSupported(LatencyType type) {
+bool AudioLatency::IsResamplingPassthroughSupported(Type type) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return true;
 #elif BUILDFLAG(IS_FUCHSIA)
@@ -78,7 +78,7 @@ bool AudioLatency::IsResamplingPassthroughSupported(LatencyType type) {
   // power efficient playback. Per the Android audio team, we shouldn't waste
   // cycles on resampling when using the playback mode. See OpenSLESOutputStream
   // for additional implementation details.
-  return type == LATENCY_PLAYBACK &&
+  return type == Type::kPlayback &&
          base::android::BuildInfo::GetInstance()->sdk_int() >=
              base::android::SDK_VERSION_NOUGAT_MR1;
 #else
@@ -251,5 +251,22 @@ int AudioLatency::GetExactBufferSize(base::TimeDelta duration,
           : (max_allowed_buffer_size / multiplier) * multiplier;
 
   return std::min(buffer_size, platform_max_buffer_size);
+}
+
+// static
+// Used for UMA histogram names, do not change the lookup.
+const char* AudioLatency::ToString(Type type) {
+  switch (type) {
+    case Type::kExactMS:
+      return "LatencyExactMs";
+    case Type::kInteractive:
+      return "LatencyInteractive";
+    case Type::kRtc:
+      return "LatencyRtc";
+    case Type::kPlayback:
+      return "LatencyPlayback";
+    case Type::kUnknown:
+      return "LatencyUnknown";
+  }
 }
 }  // namespace media

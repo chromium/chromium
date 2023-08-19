@@ -1,0 +1,12 @@
+Tests metadata trace events during frame navigation
+Recording started
+Tracing complete
+FrameCommittedInBrowser [
+    [0] : {
+        frame : <string>
+        name : 
+        processId : <number>
+        url : http://127.0.0.1:8000/inspector-protocol/resources/test-page.html
+    }
+]
+

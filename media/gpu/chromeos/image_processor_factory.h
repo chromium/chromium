@@ -40,7 +40,6 @@ class MEDIA_GPU_EXPORT ImageProcessorFactory {
       const ImageProcessor::PortConfig& output_config,
       ImageProcessor::OutputMode output_mode,
       size_t num_buffers,
-      VideoRotation relative_rotation,
       scoped_refptr<base::SequencedTaskRunner> client_task_runner,
       ImageProcessor::ErrorCB error_cb);
 

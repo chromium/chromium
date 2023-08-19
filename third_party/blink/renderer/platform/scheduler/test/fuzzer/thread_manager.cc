@@ -211,18 +211,19 @@ void ThreadManager::PostDelayedTask(
     uint64_t task_queue_id,
     uint32_t delay_ms,
     const SequenceManagerTestDescription::Task& task) {
-  // PostDelayedTask could be called cross-thread - therefore we need a refptr
-  // to the TaskQueue which could potentially be deleted by the thread on which
-  // ThreadManager lives.
-  scoped_refptr<TaskQueue> chosen_task_queue =
-      GetTaskQueueFor(task_queue_id)->queue.get();
+  // PostDelayedTask can be called cross-thread, which can race with destroying
+  // the task queue on the thread on which ThreadManager lives. Instead of
+  // accessing the queue, get the task runner, which is synchronized with task
+  // queue destruction.
+  scoped_refptr<SingleThreadTaskRunner> chosen_task_runner =
+      GetTaskRunnerFor(task_queue_id);
 
   std::unique_ptr<Task> pending_task = std::make_unique<Task>(this);
 
   // TODO(farahcharab) After adding non-nestable/nestable tasks, fix this to
   // PostNonNestableDelayedTask for the former and PostDelayedTask for the
   // latter.
-  chosen_task_queue->task_runner()->PostDelayedTask(
+  chosen_task_runner->PostDelayedTask(
       FROM_HERE,
       BindOnce(&Task::Execute, pending_task->weak_ptr_factory_.GetWeakPtr(),
                task),
@@ -243,9 +244,10 @@ void ThreadManager::ExecuteSetQueuePriorityAction(
                                   ActionForTest::ActionType::kSetQueuePriority,
                                   NowTicks());
 
-  TaskQueue* chosen_task_queue =
-      GetTaskQueueFor(action.task_queue_id())->queue.get();
-  chosen_task_queue->SetQueuePriority(ToTaskQueuePriority(action.priority()));
+  scoped_refptr<TaskQueueWithVoters> chosen_task_queue =
+      GetTaskQueueFor(action.task_queue_id());
+  chosen_task_queue->queue->SetQueuePriority(
+      ToTaskQueuePriority(action.priority()));
 }
 
 void ThreadManager::ExecuteSetQueueEnabledAction(
@@ -343,14 +345,14 @@ void ThreadManager::ExecuteInsertFenceAction(
                                   ActionForTest::ActionType::kInsertFence,
                                   NowTicks());
 
-  scoped_refptr<TaskQueue> chosen_task_queue =
-      GetTaskQueueFor(action.task_queue_id())->queue.get();
+  scoped_refptr<TaskQueueWithVoters> chosen_task_queue =
+      GetTaskQueueFor(action.task_queue_id());
 
   if (action.position() ==
       SequenceManagerTestDescription::InsertFenceAction::NOW) {
-    chosen_task_queue->InsertFence(TaskQueue::InsertFencePosition::kNow);
+    chosen_task_queue->queue->InsertFence(TaskQueue::InsertFencePosition::kNow);
   } else {
-    chosen_task_queue->InsertFence(
+    chosen_task_queue->queue->InsertFence(
         TaskQueue::InsertFencePosition::kBeginningOfTime);
   }
 }
@@ -364,9 +366,9 @@ void ThreadManager::ExecuteRemoveFenceAction(
                                   ActionForTest::ActionType::kRemoveFence,
                                   NowTicks());
 
-  scoped_refptr<TaskQueue> chosen_task_queue =
-      GetTaskQueueFor(action.task_queue_id())->queue.get();
-  chosen_task_queue->RemoveFence();
+  scoped_refptr<TaskQueueWithVoters> chosen_task_queue =
+      GetTaskQueueFor(action.task_queue_id());
+  chosen_task_queue->queue->RemoveFence();
 }
 
 void ThreadManager::ExecuteTask(
@@ -412,6 +414,14 @@ scoped_refptr<TaskQueueWithVoters> ThreadManager::GetTaskQueueFor(
   AutoLock lock(lock_);
   DCHECK(!task_queues_.empty());
   return task_queues_[task_queue_id % task_queues_.size()].get();
+}
+
+scoped_refptr<SingleThreadTaskRunner> ThreadManager::GetTaskRunnerFor(
+    uint64_t task_queue_id) {
+  AutoLock lock(lock_);
+  DCHECK(!task_queues_.empty());
+  return task_queues_[task_queue_id % task_queues_.size()]
+      ->queue->task_runner();
 }
 
 const Vector<SequenceManagerFuzzerProcessor::TaskForTest>&

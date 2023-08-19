@@ -34,11 +34,18 @@ class ExternallyManagedAppRegistrationTaskBase
 
   const GURL& install_url() const { return install_url_; }
 
+  const base::TimeDelta registration_timeout() const {
+    return registration_timeout_;
+  }
+
  protected:
-  explicit ExternallyManagedAppRegistrationTaskBase(GURL install_url);
+  ExternallyManagedAppRegistrationTaskBase(
+      GURL install_url,
+      const base::TimeDelta registration_timeout);
 
  private:
   const GURL install_url_;
+  const base::TimeDelta registration_timeout_;
 };
 
 class ExternallyManagedAppRegistrationTask
@@ -46,10 +53,13 @@ class ExternallyManagedAppRegistrationTask
  public:
   using RegistrationCallback = base::OnceCallback<void(RegistrationResultCode)>;
 
-  ExternallyManagedAppRegistrationTask(GURL install_url,
-                                       WebAppUrlLoader* url_loader,
-                                       content::WebContents* web_contents,
-                                       RegistrationCallback callback);
+  ExternallyManagedAppRegistrationTask(
+      GURL install_url,
+      const base::TimeDelta registration_timeout,
+      WebAppUrlLoader* url_loader,
+      content::WebContents* web_contents,
+      RegistrationCallback callback);
+
   ExternallyManagedAppRegistrationTask(
       const ExternallyManagedAppRegistrationTask&) = delete;
   ExternallyManagedAppRegistrationTask& operator=(
@@ -62,15 +72,11 @@ class ExternallyManagedAppRegistrationTask
 
   void Start() override;
 
-  static void SetTimeoutForTesting(int registration_timeout_in_seconds);
-
  private:
   // Check to see if there is already a service worker for the install url.
   void CheckHasServiceWorker();
 
   void OnDidCheckHasServiceWorker(content::ServiceWorkerCapability capability);
-
-  void OnWebContentsReady(WebAppUrlLoader::Result result);
 
   void OnRegistrationTimeout();
 
@@ -83,8 +89,6 @@ class ExternallyManagedAppRegistrationTask
 
   base::WeakPtrFactory<ExternallyManagedAppRegistrationTask> weak_ptr_factory_{
       this};
-
-  static int registration_timeout_in_seconds_;
 };
 
 }  // namespace web_app

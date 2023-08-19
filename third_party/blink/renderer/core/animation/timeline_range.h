@@ -40,14 +40,35 @@ class CORE_EXPORT TimelineRange {
   using ScrollOffsets = cc::ScrollTimeline::ScrollOffsets;
   using NamedRange = V8TimelineRange::Enum;
 
+  // For a view timeline, stores the distances of 'entry-crossing' and
+  // 'exit-crossing' ranges.
+  // Note that 'cover' is in TimelineRange::offsets_, and 'contain' and others
+  // can be inferred (see TimelineRange::ConvertNamedRange). Usually, entry and
+  // exit distance correspond to the layout size of the subject, but may differ
+  // with position:sticky (crbug.com/1448294).
+  struct ViewOffsets {
+    ViewOffsets() = default;
+    ViewOffsets(double entry, double exit) {
+      entry_crossing_distance = entry;
+      exit_crossing_distance = exit;
+    }
+    bool operator==(const ViewOffsets& other) const {
+      return entry_crossing_distance == other.entry_crossing_distance &&
+             exit_crossing_distance == other.exit_crossing_distance;
+    }
+    bool operator!=(const ViewOffsets& other) const {
+      return !(*this == other);
+    }
+    double entry_crossing_distance = 0;
+    double exit_crossing_distance = 0;
+  };
+
   TimelineRange() = default;
-  // The subject_size is the size of the subject element for ViewTimelines.
-  // It should be zero for other timelines.
-  explicit TimelineRange(ScrollOffsets offsets, double subject_size = 0)
-      : offsets_(offsets), subject_size_(subject_size) {}
+  explicit TimelineRange(ScrollOffsets offsets, ViewOffsets view_offsets)
+      : offsets_(offsets), view_offsets_(view_offsets) {}
 
   bool operator==(const TimelineRange& other) const {
-    return offsets_ == other.offsets_ && subject_size_ == other.subject_size_;
+    return offsets_ == other.offsets_ && view_offsets_ == other.view_offsets_;
   }
 
   bool operator!=(const TimelineRange& other) const {
@@ -65,7 +86,7 @@ class CORE_EXPORT TimelineRange {
   ScrollOffsets ConvertNamedRange(NamedRange) const;
 
   ScrollOffsets offsets_;
-  double subject_size_ = 0;
+  ViewOffsets view_offsets_;
 };
 
 }  // namespace blink

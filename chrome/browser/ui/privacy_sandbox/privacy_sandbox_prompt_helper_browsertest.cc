@@ -267,8 +267,14 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
         1}});
 }
 
+// TODO(crbug.com/1452014): Debug and re-enable the test.
+# if BUILDFLAG(IS_CHROMEOS)
+# define MAYBE_PromptOpensOnHistory DISABLED_PromptOpensOnHistory
+# else
+# define MAYBE_PromptOpensOnHistory PromptOpensOnHistory
+# endif
 IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
-                       PromptOpensOnHistory) {
+                       MAYBE_PromptOpensOnHistory) {
   // Check when a navigation to the Chrome history occurs, which is a
   // suitable location, a prompt is shown.
   base::HistogramTester histogram_tester;

@@ -180,6 +180,13 @@ class POLICY_EXPORT CloudPolicyClient {
     // undergoes enrollment and PSM got executed successfully (on ChromeOS, as
     // encoded in `prefs::kEnrollmentPsmDeterminationTime` pref).
     absl::optional<int64_t> psm_determination_timestamp;
+
+    // The following field is relevant only to Chrome OS Demo Mode.
+    // Information about demo-specific device attributes and retail context.
+    // This value will only exist if the enrollment requisition is
+    // kDemoRequisition ("cros-demo-mode").
+    absl::optional<enterprise_management::DemoModeDimensions>
+        demo_mode_dimensions;
   };
 
   // If non-empty, |machine_id|, |machine_model|, |brand_code|,

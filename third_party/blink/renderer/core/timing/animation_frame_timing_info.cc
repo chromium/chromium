@@ -22,7 +22,10 @@ ScriptTimingInfo::ScriptTimingInfo(ExecutionContext* context,
       end_time_(end_time),
       style_duration_(style_duration),
       layout_duration_(layout_duration),
-      window_(DynamicTo<LocalDOMWindow>(context)) {}
+      window_(DynamicTo<LocalDOMWindow>(context)),
+      security_origin_(context->GetSecurityOrigin()) {
+  CHECK(security_origin_);
+}
 
 void ScriptTimingInfo::Trace(Visitor* visitor) const {
   visitor->Trace(window_);

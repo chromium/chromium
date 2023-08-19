@@ -33,9 +33,10 @@ class CameraEffectsControllerTest : public NoSessionAshTestBase {
  public:
   // NoSessionAshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({features::kVideoConference}, {});
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kCameraEffectsSupportedByHardware);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kVideoConference,
+         features::kCameraEffectsSupportedByHardware},
+        {});
 
     // Instantiates a fake controller (the real one is created in
     // ChromeBrowserMainExtraPartsAsh::PreProfileInit() which is not called in
@@ -134,8 +135,8 @@ class CameraEffectsControllerTest : public NoSessionAshTestBase {
   FakeVideoConferenceTrayController* controller() { return controller_.get(); }
 
  protected:
-  raw_ptr<CameraEffectsController, ExperimentalAsh> camera_effects_controller_ =
-      nullptr;
+  raw_ptr<CameraEffectsController, DanglingUntriaged | ExperimentalAsh>
+      camera_effects_controller_ = nullptr;
   std::unique_ptr<FakeVideoConferenceTrayController> controller_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };

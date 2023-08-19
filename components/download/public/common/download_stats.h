@@ -144,36 +144,6 @@ enum DownloadCountTypes {
   DOWNLOAD_COUNT_TYPES_LAST_ENTRY
 };
 
-// Enum for in-progress download DB, used in histogram
-// "Download.InProgressDB.Counts".
-enum InProgressDBCountTypes : uint8_t {
-  // Count of initialization attempts.
-  kInitializationCount = 0,
-
-  // Count of initialization attempts that succeeded.
-  kInitializationSucceededCount = 1,
-
-  // Count of initialization attempts that failed.
-  kInitializationFailedCount = 2,
-
-  // Count of load attempts that succeeded.
-  kLoadSucceededCount = 3,
-
-  // Count of load attempts that failed.
-  kLoadFailedCount = 4,
-
-  // Count of in-progress cache migration attempts.
-  kCacheMigrationCount = 5,
-
-  // Count of in-progress cache migration attempts that succeeded.
-  kCacheMigrationSucceededCount = 6,
-
-  // Count of in-progress cache migration attempts that failed.
-  kCacheMigrationFailedCount = 7,
-
-  kMaxValue = kCacheMigrationFailedCount
-};
-
 // Events for user scheduled downloads. Used in histograms, don't reuse or
 // remove items. Keep in sync with DownloadLaterEvent in enums.xml.
 enum class DownloadLaterEvent {
@@ -248,40 +218,10 @@ COMPONENTS_DOWNLOAD_EXPORT void RecordParallelizableDownloadCount(
     DownloadCountTypes type,
     bool is_parallel_download_enabled);
 
-// Records the actual total number of requests sent for a parallel download,
-// including the initial request.
-COMPONENTS_DOWNLOAD_EXPORT void RecordParallelDownloadRequestCount(
-    int request_count);
-
 // Record the result of a download file rename.
 COMPONENTS_DOWNLOAD_EXPORT void RecordDownloadFileRenameResultAfterRetry(
     base::TimeDelta time_since_first_failure,
     DownloadInterruptReason interrupt_reason);
-
-enum SavePackageEvent {
-  // The user has started to save a page as a package.
-  SAVE_PACKAGE_STARTED,
-
-  // The save package operation was cancelled.
-  SAVE_PACKAGE_CANCELLED,
-
-  // The save package operation finished without being cancelled.
-  SAVE_PACKAGE_FINISHED,
-
-  // The save package tried to write to an already completed file.
-  SAVE_PACKAGE_WRITE_TO_COMPLETED,
-
-  // The save package tried to write to an already failed file.
-  SAVE_PACKAGE_WRITE_TO_FAILED,
-
-  // Instead of using save package API, used download API to save non HTML
-  // format files.
-  SAVE_PACKAGE_DOWNLOAD_ON_NON_HTML,
-
-  SAVE_PACKAGE_LAST_ENTRY
-};
-
-COMPONENTS_DOWNLOAD_EXPORT void RecordSavePackageEvent(SavePackageEvent event);
 
 // Enumeration for histogramming purposes.
 // These values are written to logs.  New enum values can be added, but existing
@@ -350,9 +290,6 @@ COMPONENTS_DOWNLOAD_EXPORT void RecordDownloadHttpResponseCode(
     int response_code,
     bool is_background_mode);
 
-COMPONENTS_DOWNLOAD_EXPORT void RecordInProgressDBCount(
-    InProgressDBCountTypes type);
-
 // Records the interrupt reason that causes download to restart.
 COMPONENTS_DOWNLOAD_EXPORT void RecordResumptionStrongValidators(
     DownloadInterruptReason reason);
@@ -360,11 +297,7 @@ COMPONENTS_DOWNLOAD_EXPORT void RecordResumptionStrongValidators(
 COMPONENTS_DOWNLOAD_EXPORT void RecordParallelRequestCreationFailure(
     DownloadInterruptReason reason);
 
-// Record download later events.
-COMPONENTS_DOWNLOAD_EXPORT void RecordDownloadLaterEvent(
-    DownloadLaterEvent event);
-
-// Record download later events.
+// Records the input stream read error type.
 COMPONENTS_DOWNLOAD_EXPORT void RecordInputStreamReadError(
     MojoResult mojo_result);
 

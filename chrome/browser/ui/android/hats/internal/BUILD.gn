@@ -1,0 +1,64 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//chrome/android/features/android_library_factory_tmpl.gni")
+
+android_library("java") {
+  visibility = [
+    ":*",
+    "//chrome/android:chrome_all_java",
+  ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/hats/SurveyClientFactory.java",
+    "java/src/org/chromium/chrome/browser/ui/hats/SurveyClientImpl.java",
+  ]
+  deps = [
+    ":controller_java",
+    "//base:base_java",
+    "//base:jni_java",
+    "//chrome/browser/android/lifecycle:java",
+    "//chrome/browser/ui/android/hats:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+}
+
+robolectric_library("junit") {
+  testonly = true
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/hats/SurveyClientUnitTest.java",
+  ]
+  deps = [
+    ":controller_java",
+    ":java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/browser/ui/android/hats:java",
+    "//third_party/junit",
+  ]
+}
+
+android_library("controller_java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/hats/SurveyController.java",
+    "java/src/org/chromium/chrome/browser/ui/hats/SurveyControllerProvider.java",
+  ]
+
+  deps = [
+    "//base:base_java",
+    "//chrome/browser/android/lifecycle:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_java",
+  ]
+
+  # Add the actual implementation where necessary so that downstream targets
+  # can provide their own implementations.
+  jar_excluded_patterns = [ "*/SurveyControllerProvider*.class" ]
+}
+
+android_library("provider_public_impl_java") {
+  sources = [ "java/src/org/chromium/chrome/browser/ui/hats/SurveyControllerProvider.java" ]
+
+  deps = [ ":controller_java" ]
+}

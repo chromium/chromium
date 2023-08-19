@@ -12,10 +12,6 @@
 // This coordinator presents settings related to the Password Manager.
 @interface PasswordSettingsCoordinator : ChromeCoordinator
 
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
-    NS_DESIGNATED_INITIALIZER;
-
 // Delegate.
 @property(nonatomic, weak) id<PasswordSettingsCoordinatorDelegate> delegate;
 

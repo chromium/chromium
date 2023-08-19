@@ -18,52 +18,52 @@ TEST_F(PropertyRegistrationTest, VarInInitialValueTypedDeclared) {
   css_test_helpers::DeclareProperty(GetDocument(), "--valid", "<length>", "0px",
                                     false);
   EXPECT_TRUE(PropertyRegistration::From(GetDocument().GetExecutionContext(),
-                                         "--valid"));
+                                         AtomicString("--valid")));
 
   css_test_helpers::DeclareProperty(GetDocument(), "--invalid", "<length>",
                                     "var(--x)", false);
   EXPECT_FALSE(PropertyRegistration::From(GetDocument().GetExecutionContext(),
-                                          "--invalid"));
+                                          AtomicString("--invalid")));
 }
 
 TEST_F(PropertyRegistrationTest, VarInInitialValueUniversalDeclared) {
   css_test_helpers::DeclareProperty(GetDocument(), "--valid", "*", "0px",
                                     false);
   EXPECT_TRUE(PropertyRegistration::From(GetDocument().GetExecutionContext(),
-                                         "--valid"));
+                                         AtomicString("--valid")));
 
   css_test_helpers::DeclareProperty(GetDocument(), "--invalid", "*", "var(--x)",
                                     false);
   EXPECT_FALSE(PropertyRegistration::From(GetDocument().GetExecutionContext(),
-                                          "--invalid"));
+                                          AtomicString("--invalid")));
 }
 
 TEST_F(PropertyRegistrationTest, VarInInitialValueTypedRegistered) {
   css_test_helpers::RegisterProperty(GetDocument(), "--valid", "<length>",
                                      "0px", false);
   EXPECT_TRUE(PropertyRegistration::From(GetDocument().GetExecutionContext(),
-                                         "--valid"));
+                                         AtomicString("--valid")));
 
   DummyExceptionStateForTesting exception_state;
   css_test_helpers::RegisterProperty(GetDocument(), "--invalid", "<length>",
                                      "var(--x)", false, exception_state);
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_FALSE(PropertyRegistration::From(GetDocument().GetExecutionContext(),
-                                          "--invalid"));
+                                          AtomicString("--invalid")));
 }
 
 TEST_F(PropertyRegistrationTest, VarInInitialValueUniversalRegistered) {
   css_test_helpers::RegisterProperty(GetDocument(), "--valid", "*", "0px",
                                      false);
   EXPECT_TRUE(PropertyRegistration::From(GetDocument().GetExecutionContext(),
-                                         "--valid"));
+                                         AtomicString("--valid")));
 
   DummyExceptionStateForTesting exception_state;
   css_test_helpers::RegisterProperty(GetDocument(), "--invalid", "*",
                                      "var(--x)", false, exception_state);
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_FALSE(PropertyRegistration::From(GetDocument().GetExecutionContext(),
-                                          "--invalid"));
+                                          AtomicString("--invalid")));
 }
 
 }  // namespace blink

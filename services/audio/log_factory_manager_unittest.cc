@@ -110,7 +110,8 @@ TEST_F(LogFactoryManagerTest, LogFactoryManagerQueuesRequestsAndSetsFactory) {
   const double kVolume1 = 0.5;
   media::AudioLogFactory* log_factory = log_factory_manager_->GetLogFactory();
   std::unique_ptr<media::AudioLog> log1 = log_factory->CreateAudioLog(
-      media::AudioLogFactory::AUDIO_OUTPUT_STREAM, kComponentId1);
+      media::AudioLogFactory::AudioComponent::kAudioOutputStream,
+      kComponentId1);
   log1->OnStarted();
   log1->OnSetVolume(kVolume1);
   log1->OnStopped();
@@ -148,7 +149,7 @@ TEST_F(LogFactoryManagerTest, LogFactoryManagerQueuesRequestsAndSetsFactory) {
   EXPECT_CALL(*mock_log2, OnClosed());
 
   std::unique_ptr<media::AudioLog> log2 = log_factory->CreateAudioLog(
-      media::AudioLogFactory::AUDIO_INPUT_CONTROLLER, 2);
+      media::AudioLogFactory::AudioComponent::kAudioInputController, 2);
   log2->OnStarted();
   log2->OnSetVolume(kVolume2);
   log2->OnStopped();

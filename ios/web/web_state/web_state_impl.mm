@@ -16,6 +16,10 @@
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/session/crw_session_storage.h"
+#import "ios/web/public/session/proto/metadata.pb.h"
+#import "ios/web/public/session/proto/storage.pb.h"
+#import "ios/web/public/session/serializable_user_data_manager.h"
+#import "ios/web/public/web_client.h"
 #import "ios/web/session/session_certificate_policy_cache_impl.h"
 #import "ios/web/web_state/global_web_state_event_tracker.h"
 #import "ios/web/web_state/ui/crw_web_controller.h"
@@ -24,9 +28,9 @@
 #import "net/base/mac/url_conversions.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+// To get access to UseSessionSerializationOptimizations().
+// TODO(crbug.com/1383087): remove once the feature is fully launched.
+#import "ios/web/common/features.h"
 
 namespace web {
 namespace {
@@ -57,6 +61,16 @@ void CheckForOverRealization() {
   }
 }
 
+// Returns the session data blob from the cache for `weak_web_state`.
+NSData* FetchSessionDataBlob(base::WeakPtr<WebState> weak_web_state) {
+  web::WebState* web_state = weak_web_state.get();
+  if (!web_state) {
+    return nil;
+  }
+
+  return GetWebClient()->FetchSessionFromCache(web_state);
+}
+
 // Key used to store an empty base::SupportsUserData::Data to all WebStateImpl
 // instances. Used by WebStateImpl::FromWebState(...) to assert the pointer is
 // pointing to a WebStateImpl instance and not another sub-class of WebState.
@@ -70,27 +84,89 @@ void IgnoreOverRealizationCheck() {
 
 #pragma mark - WebStateImpl public methods
 
-WebStateImpl::WebStateImpl(const CreateParams& params)
-    : WebStateImpl(params, nil) {}
+WebStateImpl::WebStateImpl(const CreateParams& params) {
+  AddWebStateImplMarker();
+
+  pimpl_ = std::make_unique<RealizedWebState>(this, base::Time::Now(),
+                                              [[NSUUID UUID] UUIDString],
+                                              SessionID::NewUnique());
+  pimpl_->Init(params.browser_state, params.last_active_time,
+               params.created_with_opener);
+
+  SendGlobalCreationEvent();
+}
 
 WebStateImpl::WebStateImpl(const CreateParams& params,
                            CRWSessionStorage* session_storage) {
-  // Store an empty base::SupportsUserData::Data that mark the current instance
-  // as a WebStateImpl. Need to be done before anything else, so that casting
-  // can safely be performed even before the end of the constructor.
-  SetUserData(kWebStateIsWebStateImpl,
-              std::make_unique<base::SupportsUserData::Data>());
+  DCHECK(!features::UseSessionSerializationOptimizations());
+  AddWebStateImplMarker();
 
-  if (session_storage) {
-    saved_ = std::make_unique<SerializedData>(this, params, session_storage);
-  } else {
-    pimpl_ = std::make_unique<RealizedWebState>(
-        this, [[NSUUID UUID] UUIDString], SessionID::NewUnique());
-    pimpl_->Init(params, session_storage, FaviconStatus{});
+  // Restore the serializable user data as user code may depend on accessing
+  // on those values even for an unrealized WebState.
+  if (session_storage.userData) {
+    SerializableUserDataManager::FromWebState(this)->SetUserDataFromSession(
+        session_storage.userData);
   }
 
-  // Send creation event.
-  GlobalWebStateEventTracker::GetInstance()->OnWebStateCreated(this);
+  // Extract the metadata part from CRWSessionStorage to protobuf message.
+  // The callback convert the data to protobuf message to simulate loading
+  // from disk while using the non-optimised session storage serialization
+  // code.
+  proto::WebStateMetadataStorage metadata;
+  [session_storage serializeMetadataToProto:metadata];
+
+  saved_ = std::make_unique<SerializedData>(
+      this, params.browser_state, session_storage.stableIdentifier,
+      session_storage.uniqueIdentifier, std::move(metadata),
+      base::BindOnce(^(proto::WebStateStorage& inner_storage) {
+        [session_storage serializeToProto:inner_storage];
+      }),
+      base::BindOnce(&FetchSessionDataBlob, GetWeakPtr()));
+  saved_->SetSessionStorage(session_storage);
+
+  SendGlobalCreationEvent();
+}
+
+WebStateImpl::WebStateImpl(BrowserState* browser_state,
+                           SessionID unique_identifier,
+                           proto::WebStateMetadataStorage metadata,
+                           WebStateStorageLoader storage_loader,
+                           NativeSessionFetcher session_fetcher) {
+  DCHECK(features::UseSessionSerializationOptimizations());
+  AddWebStateImplMarker();
+
+  saved_ = std::make_unique<SerializedData>(
+      this, browser_state, [[NSUUID UUID] UUIDString], unique_identifier,
+      std::move(metadata), std::move(storage_loader),
+      std::move(session_fetcher));
+
+  SendGlobalCreationEvent();
+}
+
+WebStateImpl::WebStateImpl(CloneFrom, const RealizedWebState& pimpl) {
+  AddWebStateImplMarker();
+
+  // Serialize `pimpl` state to protobuf message.
+  proto::WebStateStorage storage;
+  pimpl.SerializeToProto(storage);
+
+  // Extract the native session state if possible. Do not bind a callback
+  // that invokes `WebState::SessionStateData()` on a weak pointer to the
+  // cloned WebState since it will be called immediately anyway.
+  NSData* session_data = pimpl.SessionStateData();
+  NativeSessionFetcher session_fetcher = base::BindOnce(^() {
+    return session_data;
+  });
+
+  pimpl_ = std::make_unique<RealizedWebState>(this, pimpl.GetCreationTime(),
+                                              [[NSUUID UUID] UUIDString],
+                                              SessionID::NewUnique());
+  pimpl_->InitWithProto(pimpl.GetBrowserState(), base::Time::Now(),
+                        pimpl.GetTitle(), pimpl.GetVisibleURL(),
+                        pimpl.GetFaviconStatus(), std::move(storage),
+                        std::move(session_fetcher));
+
+  SendGlobalCreationEvent();
 }
 
 WebStateImpl::~WebStateImpl() {
@@ -339,12 +415,25 @@ void WebStateImpl::RequestPermissionsWithDecisionHandler(
 
 #pragma mark - WebState implementation
 
+void WebStateImpl::SerializeToProto(proto::WebStateStorage& storage) const {
+  DCHECK(features::UseSessionSerializationOptimizations());
+  DCHECK(IsRealized());
+  pimpl_->SerializeToProto(storage);
+}
+
 WebStateDelegate* WebStateImpl::GetDelegate() {
   return LIKELY(pimpl_) ? pimpl_->GetDelegate() : nullptr;
 }
 
 void WebStateImpl::SetDelegate(WebStateDelegate* delegate) {
   RealizedState()->SetDelegate(delegate);
+}
+
+std::unique_ptr<WebState> WebStateImpl::Clone() const {
+  CHECK(IsRealized());
+  CHECK(!is_being_destroyed_);
+
+  return std::make_unique<WebStateImpl>(CloneFrom{}, *pimpl_);
 }
 
 bool WebStateImpl::IsRealized() const {
@@ -356,28 +445,36 @@ WebState* WebStateImpl::ForceRealized() {
 
   if (UNLIKELY(!pimpl_)) {
     DCHECK(saved_);
-    const CreateParams params = saved_->GetCreateParams();
-    CRWSessionStorage* session_storage = saved_->GetSessionStorage();
-    FaviconStatus favicon_status = saved_->GetFaviconStatus();
-    DCHECK(session_storage);
 
     // Create the RealizedWebState. At this point the WebStateImpl has
     // both `pimpl_` and `saved_` that are non-null. This is one of the
     // reason why the initialisation of the RealizedWebState needs to
     // be done after the constructor is done.
-    pimpl_ = std::make_unique<RealizedWebState>(
-        this, session_storage.stableIdentifier,
-        session_storage.uniqueIdentifier);
+    pimpl_ = std::make_unique<RealizedWebState>(this, saved_->GetCreationTime(),
+                                                saved_->GetStableIdentifier(),
+                                                saved_->GetUniqueIdentifier());
 
-    // Delete the SerializedData without calling TearDown() as the WebState
-    // itself is not destroyed. The TearDown() method will be called on the
-    // RealizedWebState in WebStateImpl destructor.
-    saved_.reset();
+    // Take the SerializedData out of `saved_`. This ensures that `saved_` is
+    // null while still keeping access to the object (to extract metadata and
+    // pass it to initialize the RealizedWebState).
+    std::unique_ptr<SerializedData> saved = std::move(saved_);
+
+    // Load the storage from disk.
+    proto::WebStateStorage storage;
+    saved->TakeStorageLoader().Run(storage);
 
     // Perform the initialisation of the RealizedWebState. No outside
     // code should be able to observe the WebStateImpl with both `saved_`
     // and `pimpl_` set.
-    pimpl_->Init(params, session_storage, std::move(favicon_status));
+    pimpl_->InitWithProto(saved->GetBrowserState(), saved->GetLastActiveTime(),
+                          saved->GetTitle(), saved->GetVisibleURL(),
+                          saved->GetFaviconStatus(), std::move(storage),
+                          saved->TakeNativeSessionFetcher());
+
+    // Delete the SerializedData without calling TearDown() as the WebState
+    // itself is not destroyed. The TearDown() method will be called on the
+    // RealizedWebState in WebStateImpl destructor.
+    saved.reset();
 
     // Notify all observers that the WebState has become realized.
     for (auto& observer : observers_)
@@ -492,9 +589,33 @@ WebStateImpl::GetSessionCertificatePolicyCache() {
   return &RealizedState()->GetSessionCertificatePolicyCache();
 }
 
-CRWSessionStorage* WebStateImpl::BuildSessionStorage() {
-  return LIKELY(pimpl_) ? pimpl_->BuildSessionStorage()
-                        : saved_->GetSessionStorage();
+CRWSessionStorage* WebStateImpl::BuildSessionStorage() const {
+  DCHECK(!features::UseSessionSerializationOptimizations());
+  CRWSessionStorage* session_storage = nil;
+  if (LIKELY(pimpl_)) {
+    proto::WebStateStorage storage;
+    pimpl_->SerializeToProto(storage);
+
+    // Convert the proto::WebStateStorage to CRWSessionStorage as this
+    // is still the format used outside of //ios/web.
+    session_storage = [[CRWSessionStorage alloc] initWithProto:storage];
+    session_storage.stableIdentifier = GetStableIdentifier();
+    session_storage.uniqueIdentifier = GetUniqueIdentifier();
+  } else {
+    session_storage = saved_->GetSessionStorage();
+  }
+
+  // If a SerializableUserDataManager is attached to the WebState, the user
+  // may have changed its content. Thus, update the serializable user data
+  // if needed. Since `BuildSessionStorage()` is marked const, the manager
+  // will not be created if it does not exist.
+  const SerializableUserDataManager* user_data_manager =
+      SerializableUserDataManager::FromWebState(this);
+  if (user_data_manager) {
+    session_storage.userData = user_data_manager->GetUserDataForSession();
+  }
+
+  return session_storage;
 }
 
 void WebStateImpl::LoadData(NSData* data,
@@ -713,6 +834,13 @@ id WebStateImpl::GetActivityItem() API_AVAILABLE(ios(16.4)) {
   return [GetWebController() activityItem];
 }
 
+UIColor* WebStateImpl::GetThemeColor() {
+  if (UNLIKELY(!IsRealized())) {
+    return nil;
+  }
+  return [GetWebController() themeColor];
+}
+
 #pragma mark - WebStateImpl private methods
 
 WebStateImpl::RealizedWebState* WebStateImpl::RealizedState() {
@@ -722,6 +850,21 @@ WebStateImpl::RealizedWebState* WebStateImpl::RealizedState() {
 
   DCHECK(pimpl_);
   return pimpl_.get();
+}
+
+void WebStateImpl::AddWebStateImplMarker() {
+  // Store an empty base::SupportsUserData::Data that mark the current instance
+  // as a WebStateImpl. Need to be done before anything else, so that casting
+  // can safely be performed even before the end of the constructor.
+  SetUserData(kWebStateIsWebStateImpl,
+              std::make_unique<base::SupportsUserData::Data>());
+}
+
+void WebStateImpl::SendGlobalCreationEvent() {
+  CHECK(saved_ || pimpl_);
+
+  // Send creation event.
+  GlobalWebStateEventTracker::GetInstance()->OnWebStateCreated(this);
 }
 
 }  // namespace web

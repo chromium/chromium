@@ -38,9 +38,7 @@ const char kTestUserAgent[] = "test-user-agent";
 
 class CalendarKeyedServiceTest : public BrowserWithTestWindowTest {
  public:
-  CalendarKeyedServiceTest()
-      : fake_user_manager_(std::make_unique<FakeChromeUserManager>()) {}
-
+  CalendarKeyedServiceTest() = default;
   CalendarKeyedServiceTest(const CalendarKeyedServiceTest& other) = delete;
   CalendarKeyedServiceTest& operator=(const CalendarKeyedServiceTest& other) =
       delete;
@@ -82,7 +80,8 @@ class CalendarKeyedServiceTest : public BrowserWithTestWindowTest {
   }
 
  private:
-  std::unique_ptr<FakeChromeUserManager> fake_user_manager_;
+  user_manager::TypedScopedUserManager<FakeChromeUserManager>
+      fake_user_manager_{std::make_unique<FakeChromeUserManager>()};
 };
 
 class CalendarKeyedServiceIOTest : public testing::Test {
@@ -148,7 +147,8 @@ TEST_F(CalendarKeyedServiceTest, GuestUserProfile) {
   ASSERT_TRUE(guest_profile);
   CalendarKeyedService* const guest_profile_service =
       CalendarKeyedServiceFactory::GetInstance()->GetService(
-          guest_profile.get());
+          // Use OTR profile for guest.
+          guest_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
   EXPECT_FALSE(guest_profile_service);
 }
 

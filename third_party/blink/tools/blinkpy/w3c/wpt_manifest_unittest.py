@@ -29,8 +29,8 @@ class WPTManifestUnitTest(unittest.TestCase):
             'manifest',
             '-v',
             '--no-download',
-            '--tests-root',
-            MOCK_WEB_TESTS + 'external/wpt',
+            f'--tests-root={MOCK_WEB_TESTS + "external/wpt"}',
+            '--url-base=/',
         ]])
 
     def test_ensure_manifest_updates_manifest_if_it_exists(self):
@@ -53,8 +53,8 @@ class WPTManifestUnitTest(unittest.TestCase):
             'manifest',
             '-v',
             '--no-download',
-            '--tests-root',
-            MOCK_WEB_TESTS + 'external/wpt',
+            f'--tests-root={MOCK_WEB_TESTS + "external/wpt"}',
+            '--url-base=/',
         ]])
 
     def test_ensure_manifest_raises_exception(self):
@@ -75,8 +75,8 @@ class WPTManifestUnitTest(unittest.TestCase):
             'manifest',
             '-v',
             '--no-download',
-            '--tests-root',
-            MOCK_WEB_TESTS + 'wpt_internal',
+            f'--tests-root={MOCK_WEB_TESTS + "wpt_internal"}',
+            '--url-base=/wpt_internal/',
         ]])
 
     def test_all_test_types_are_identified(self):

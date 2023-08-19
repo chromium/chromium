@@ -162,14 +162,6 @@ base::TimeTicks SchedulerHelper::NowTicks() const {
   return base::TimeTicks::Now();
 }
 
-void SchedulerHelper::SetTimerSlack(base::TimerSlack timer_slack) {
-  if (sequence_manager_) {
-    static_cast<base::sequence_manager::internal::SequenceManagerImpl*>(
-        sequence_manager_)
-        ->SetTimerSlack(timer_slack);
-  }
-}
-
 bool SchedulerHelper::HasCPUTimingForEachTask() const {
   if (sequence_manager_) {
     return sequence_manager_->GetMetricRecordingSettings()

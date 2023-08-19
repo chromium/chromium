@@ -53,6 +53,7 @@ aggregate_vector_icons("omnibox_vector_icons") {
     "cookie_chrome_refresh.icon",
     "cookie_crossed_chrome_refresh.icon",
     "dino.icon",
+    "dino_cr2023.icon",
     "drive_docs.icon",
     "drive_folder.icon",
     "drive_forms.icon",
@@ -69,6 +70,7 @@ aggregate_vector_icons("omnibox_vector_icons") {
     "http_chrome_refresh.icon",
     "https_valid_in_chip.icon",
     "incognito.icon",
+    "incognito_cr2023.icon",
     "install_desktop.icon",
     "journeys.icon",
     "journeys_chrome_refresh.icon",
@@ -78,7 +80,9 @@ aggregate_vector_icons("omnibox_vector_icons") {
     "page_chrome_refresh.icon",
     "pedal.icon",
     "price_tracking_disabled.icon",
+    "price_tracking_disabled_refresh.icon",
     "price_tracking_enabled_filled.icon",
+    "price_tracking_enabled_refresh.icon",
     "product.icon",
     "product_chrome_refresh.icon",
     "secure_page_info_chrome_refresh.icon",
@@ -89,6 +93,7 @@ aggregate_vector_icons("omnibox_vector_icons") {
     "star_active_chrome_refresh.icon",
     "star_chrome_refresh.icon",
     "switch.icon",
+    "switch_cr2023.icon",
     "tab.icon",
     "trending_up.icon",
     "trending_up_chrome_refresh.icon",
@@ -176,6 +181,8 @@ static_library("browser") {
     "bookmark_scoring_signals_annotator.h",
     "builtin_provider.cc",
     "builtin_provider.h",
+    "calculator_provider.cc",
+    "calculator_provider.h",
     "clipboard_provider.cc",
     "clipboard_provider.h",
     "document_provider.cc",
@@ -219,9 +226,10 @@ static_library("browser") {
     "omnibox_controller.h",
     "omnibox_edit_model.cc",
     "omnibox_edit_model.h",
-    "omnibox_edit_model_delegate.h",
     "omnibox_event_global_tracker.cc",
     "omnibox_event_global_tracker.h",
+    "omnibox_feature_configs.cc",
+    "omnibox_feature_configs.h",
     "omnibox_field_trial.cc",
     "omnibox_field_trial.h",
     "omnibox_log.cc",
@@ -231,6 +239,7 @@ static_library("browser") {
     "omnibox_navigation_observer.h",
     "omnibox_popup_selection.cc",
     "omnibox_popup_selection.h",
+    "omnibox_popup_view.cc",
     "omnibox_popup_view.h",
     "omnibox_prefs.cc",
     "omnibox_prefs.h",
@@ -386,8 +395,8 @@ static_library("browser") {
     deps += [ "//components/keep_alive_registry" ]
   }
 
-  if (is_ios) {
-    deps += [ "//base/ios" ]
+  if (!is_ios) {
+    deps += [ "//ui/base/clipboard" ]
   }
 
   if (use_blink) {
@@ -481,7 +490,7 @@ static_library("location_bar") {
       "autocomplete_scheme_classifier_android.h",
       "omnibox_url_emphasizer.cc",
     ]
-    deps += [ ":jni_headers" ]
+    deps += [ ":scheme_classifier_jni" ]
   }
 }
 
@@ -489,28 +498,24 @@ if (is_android) {
   android_resources("java_resources") {
     sources = [
       "android/java/res/drawable-hdpi/omnibox_https_valid.png",
-      "android/java/res/drawable-hdpi/omnibox_https_valid_arrow.png",
       "android/java/res/drawable-hdpi/omnibox_info.png",
       "android/java/res/drawable-hdpi/omnibox_not_secure_warning.png",
       "android/java/res/drawable-mdpi/omnibox_https_valid.png",
-      "android/java/res/drawable-mdpi/omnibox_https_valid_arrow.png",
       "android/java/res/drawable-mdpi/omnibox_info.png",
       "android/java/res/drawable-mdpi/omnibox_not_secure_warning.png",
       "android/java/res/drawable-xhdpi/omnibox_https_valid.png",
-      "android/java/res/drawable-xhdpi/omnibox_https_valid_arrow.png",
       "android/java/res/drawable-xhdpi/omnibox_info.png",
       "android/java/res/drawable-xhdpi/omnibox_not_secure_warning.png",
       "android/java/res/drawable-xxhdpi/omnibox_https_valid.png",
-      "android/java/res/drawable-xxhdpi/omnibox_https_valid_arrow.png",
       "android/java/res/drawable-xxhdpi/omnibox_info.png",
       "android/java/res/drawable-xxhdpi/omnibox_not_secure_warning.png",
       "android/java/res/drawable-xxxhdpi/omnibox_https_valid.png",
-      "android/java/res/drawable-xxxhdpi/omnibox_https_valid_arrow.png",
       "android/java/res/drawable-xxxhdpi/omnibox_info.png",
       "android/java/res/drawable-xxxhdpi/omnibox_not_secure_warning.png",
       "android/java/res/drawable/action_call.xml",
       "android/java/res/drawable/action_directions.xml",
       "android/java/res/drawable/action_reviews.xml",
+      "android/java/res/drawable/omnibox_https_valid_refresh.xml",
       "android/java/res/values/colors.xml",
       "android/java/res/values/drawables.xml",
     ]
@@ -520,8 +525,16 @@ if (is_android) {
     ]
   }
 
+  generate_jni("scheme_classifier_jni") {
+    sources = [
+      "android/java/src/org/chromium/components/omnibox/AutocompleteSchemeClassifier.java",
+      "android/java/src/org/chromium/components/omnibox/OmniboxUrlEmphasizer.java",
+    ]
+  }
+
   android_library("scheme_classifier_java") {
     resources_package = "org.chromium.components.omnibox"
+    srcjar_deps = [ ":scheme_classifier_jni" ]
     sources = [
       "android/java/src/org/chromium/components/omnibox/AutocompleteSchemeClassifier.java",
       "android/java/src/org/chromium/components/omnibox/OmniboxUrlEmphasizer.java",
@@ -534,7 +547,6 @@ if (is_android) {
       "//components/security_state/core:security_state_enums_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 
   android_library("browser_java") {
@@ -566,6 +578,7 @@ if (is_android) {
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_collection_collection_java",
       "//third_party/androidx:androidx_core_core_java",
+      "//third_party/androidx:androidx_interpolator_interpolator_java",
       "//third_party/metrics_proto:metrics_proto_java",
       "//ui/android:ui_full_java",
       "//url:gurl_java",
@@ -576,8 +589,10 @@ if (is_android) {
       "//third_party/omnibox_proto:omnibox_proto_java",
     ]
 
-    srcjar_deps = [ ":browser_java_enums_srcjar" ]
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+    srcjar_deps = [
+      ":browser_java_enums_srcjar",
+      ":jni_headers",
+    ]
   }
 
   robolectric_library("junit") {
@@ -610,6 +625,7 @@ if (is_android) {
     deps = [
       "//components/omnibox/browser:browser_java",
       "//components/query_tiles:query_tile_java",
+      "//third_party/android_deps:protobuf_lite_runtime_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_collection_collection_java",
       "//url:gurl_java",
@@ -633,8 +649,6 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/components/omnibox/AutocompleteMatch.java",
       "android/java/src/org/chromium/components/omnibox/AutocompleteResult.java",
-      "android/java/src/org/chromium/components/omnibox/AutocompleteSchemeClassifier.java",
-      "android/java/src/org/chromium/components/omnibox/OmniboxUrlEmphasizer.java",
       "android/java/src/org/chromium/components/omnibox/SuggestionAnswer.java",
       "android/java/src/org/chromium/components/omnibox/action/OmniboxAction.java",
       "android/java/src/org/chromium/components/omnibox/action/OmniboxActionFactory.java",
@@ -664,8 +678,6 @@ static_library("test_support") {
     "test_omnibox_client.h",
     "test_omnibox_edit_model.cc",
     "test_omnibox_edit_model.h",
-    "test_omnibox_edit_model_delegate.cc",
-    "test_omnibox_edit_model_delegate.h",
     "test_omnibox_view.cc",
     "test_omnibox_view.h",
     "test_scheme_classifier.cc",
@@ -738,6 +750,7 @@ source_set("unit_tests") {
     "actions/omnibox_pedal_unittest.cc",
     "answers_cache_unittest.cc",
     "autocomplete_controller_metrics_unittest.cc",
+    "autocomplete_controller_unittest.cc",
     "autocomplete_grouper_groups_unittest.cc",
     "autocomplete_grouper_sections_unittest.cc",
     "autocomplete_input_unittest.cc",
@@ -860,6 +873,7 @@ source_set("unit_tests") {
       "actions/history_clusters_action_unittest.cc",
       "history_cluster_provider_unittest.cc",
     ]
+    deps += [ "//ui/base/clipboard:clipboard_test_support" ]
   }
 
   if (use_blink) {

@@ -27,10 +27,10 @@
 #include <iterator>
 #include <utility>
 
+#include "base/apple/mach_logging.h"
+#include "base/apple/scoped_mach_port.h"
 #include "base/check_op.h"
 #include "base/logging.h"
-#include "base/mac/mach_logging.h"
-#include "base/mac/scoped_mach_port.h"
 #include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/rand_util.h"
@@ -113,7 +113,8 @@ mach_port_t ChildPortHandshakeServer::RunServer(
 
   // Check the new service in with the bootstrap server, obtaining a receive
   // right for it.
-  base::mac::ScopedMachReceiveRight server_port(BootstrapCheckIn(service_name));
+  base::apple::ScopedMachReceiveRight server_port(
+      BootstrapCheckIn(service_name));
   CHECK(server_port.is_valid());
 
   // Share the service name with the client via the pipe.
@@ -137,7 +138,7 @@ mach_port_t ChildPortHandshakeServer::RunServer(
   // MACH_PORT_RIGHT_PORT_SET, to 10.12.0 xnu-3789.1.32/osfmk/ipc/ipc_pset.c
   // filt_machportattach(), which also handles MACH_PORT_TYPE_RECEIVE. Create a
   // new port set and add the receive right to it.
-  base::mac::ScopedMachPortSet server_port_set(
+  base::apple::ScopedMachPortSet server_port_set(
       NewMachPort(MACH_PORT_RIGHT_PORT_SET));
   CHECK(server_port_set.is_valid());
 
@@ -442,7 +443,7 @@ bool ChildPortHandshake::RunClientInternal_SendCheckIn(
     mach_msg_type_name_t right_type) {
   // Get a send right to the server by looking up the service with the bootstrap
   // server by name.
-  base::mac::ScopedMachSendRight server_port(BootstrapLookUp(service_name));
+  base::apple::ScopedMachSendRight server_port(BootstrapLookUp(service_name));
   if (server_port == kMachPortNull) {
     return false;
   }

@@ -136,7 +136,6 @@ bool ShouldShowEmailMenuItem() {
     case user_manager::USER_TYPE_KIOSK_APP:
     case user_manager::USER_TYPE_ARC_KIOSK_APP:
     case user_manager::USER_TYPE_WEB_KIOSK_APP:
-    case user_manager::USER_TYPE_ACTIVE_DIRECTORY:
     case user_manager::NUM_USER_TYPES:
       return false;
   }
@@ -282,7 +281,7 @@ class PowerButton::MenuController : public ui::SimpleMenuModel::Delegate,
     if (show_power_off_button) {
       context_menu_model_->AddItemWithIcon(
           VIEW_ID_QS_POWER_OFF_MENU_BUTTON,
-          l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_POWER_OFF),
+          l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_SHUTDOWN),
           ui::ImageModel::FromVectorIcon(kSystemPowerButtonMenuPowerOffIcon,
                                          cros_tokens::kCrosSysOnSurface,
                                          kTrayTopShortcutButtonIconSize));
@@ -330,7 +329,8 @@ class PowerButton::MenuController : public ui::SimpleMenuModel::Delegate,
   std::unique_ptr<views::MenuRunner> menu_runner_;
 
   // The root menu item view of `context_menu_model_`. Cached for testing.
-  raw_ptr<views::MenuItemView, ExperimentalAsh> root_menu_item_view_ = nullptr;
+  raw_ptr<views::MenuItemView, DanglingUntriaged | ExperimentalAsh>
+      root_menu_item_view_ = nullptr;
 
   // Owned by views hierarchy.
   raw_ptr<PowerButton, ExperimentalAsh> power_button_ = nullptr;

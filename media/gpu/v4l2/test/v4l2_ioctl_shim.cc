@@ -12,9 +12,13 @@
 #include <unordered_map>
 
 #include "base/containers/contains.h"
+#include "base/files/file.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
 #include "media/base/video_types.h"
 #include "media/gpu/macros.h"
@@ -169,6 +173,24 @@ scoped_refptr<MmappedBuffer> V4L2Queue::GetBuffer(const size_t index) const {
 
 V4L2IoctlShim::V4L2IoctlShim(const uint32_t coded_fourcc) {
   uint32_t i;
+
+  // TODO(b/278748005): Remove |cur_val_is_supported_| when all drivers
+  // fully support |V4L2_CTRL_WHICH_CUR_VAL|
+
+  // On kernel version 5.4 the MTK driver for MT8192 does not correctly support
+  // |V4L2_CTRL_WHICH_CUR_VAL|. This parameter is used when calling
+  // VIDIOC_S_EXT_CTRLS to indicate that the call should be executed
+  // immediately instead of putting it in a queue. Making sure the first
+  // buffer is processed immediately is only necessary for codecs that
+  // support 10 bit profiles. When processing a 10 bit profile the parameters
+  // need to be processed before the format can be determined. There are no
+  // chipsets that are on kernels older 5.10 and produce 10 bit output.
+  constexpr base::StringPiece kKernelVersion5dot4 = "Linux version 5.4*";
+  std::string kernel_version;
+  ReadFileToString(base::FilePath("/proc/version"), &kernel_version);
+
+  cur_val_is_supported_ =
+      !base::MatchPattern(kernel_version, kKernelVersion5dot4);
 
   for (i = 0; i < kMaximumDeviceNumber; ++i) {
     std::string path =
@@ -580,7 +602,8 @@ void V4L2IoctlShim::SetExtCtrls(const std::unique_ptr<V4L2Queue>& queue,
   // Unmentioned in that documentation is that |V4L2_CTRL_WHICH_CUR_VAL| will
   // force the request to be processed immediately instead of being queue.
   if (immediate) {
-    ext_ctrls->which = V4L2_CTRL_WHICH_CUR_VAL;
+    ext_ctrls->which = cur_val_is_supported_ ? V4L2_CTRL_WHICH_CUR_VAL
+                                             : V4L2_CTRL_WHICH_REQUEST_VAL;
   } else {
     ext_ctrls->which = V4L2_CTRL_WHICH_REQUEST_VAL;
   }

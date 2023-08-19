@@ -5,6 +5,7 @@
 #include "ash/shell.h"
 
 #include <algorithm>
+#include <iterator>
 #include <memory>
 #include <string>
 #include <utility>
@@ -67,7 +68,6 @@
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/drag_drop/drag_drop_controller.h"
 #include "ash/events/event_rewriter_controller_impl.h"
-#include "ash/events/keyboard_capability_delegate_impl.h"
 #include "ash/fast_ink/laser/laser_pointer_controller.h"
 #include "ash/focus_cycler.h"
 #include "ash/frame/non_client_frame_view_ash.h"
@@ -134,6 +134,7 @@
 #include "ash/system/diagnostics/diagnostics_log_controller.h"
 #include "ash/system/federated/federated_service_controller_impl.h"
 #include "ash/system/firmware_update/firmware_update_notification_controller.h"
+#include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/geolocation/geolocation_controller.h"
 #include "ash/system/hotspot/hotspot_icon_animation.h"
 #include "ash/system/hotspot/hotspot_info_cache.h"
@@ -159,6 +160,7 @@
 #include "ash/system/pcie_peripheral/pcie_peripheral_notification_controller.h"
 #include "ash/system/power/adaptive_charging_controller.h"
 #include "ash/system/power/backlights_forced_off_setter.h"
+#include "ash/system/power/battery_saver_controller.h"
 #include "ash/system/power/peripheral_battery_notifier.h"
 #include "ash/system/power/power_button_controller.h"
 #include "ash/system/power/power_event_observer.h"
@@ -172,13 +174,13 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/system/system_notification_controller.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
+#include "ash/system/toast/system_nudge_pause_manager_impl.h"
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/system/usb_peripheral/usb_peripheral_notification_controller.h"
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "ash/touch/ash_touch_transform_controller.h"
 #include "ash/touch/touch_devices_controller.h"
-#include "ash/touch/touch_selection_magnifier_runner_ash.h"
 #include "ash/tray_action/tray_action.h"
 #include "ash/user_education/user_education_controller.h"
 #include "ash/user_education/user_education_delegate.h"
@@ -200,7 +202,7 @@
 #include "ash/wm/multitask_menu_nudge_delegate_ash.h"
 #include "ash/wm/native_cursor_manager_ash.h"
 #include "ash/wm/overview/overview_controller.h"
-#include "ash/wm/raster_scale_controller.h"
+#include "ash/wm/raster_scale/raster_scale_controller.h"
 #include "ash/wm/resize_shadow_controller.h"
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
@@ -225,6 +227,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/system/sys_info.h"
 #include "base/trace_event/trace_event.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_client.h"
@@ -324,7 +327,8 @@ Shell* Shell::CreateInstance(ShellInitParams init_params) {
   instance_->Init(init_params.context_factory, init_params.local_state,
                   std::move(init_params.keyboard_ui_factory),
                   std::move(init_params.quick_pair_mediator_factory),
-                  init_params.dbus_bus);
+                  init_params.dbus_bus,
+                  std::move(init_params.native_display_delegate));
   return instance_;
 }
 
@@ -696,7 +700,6 @@ Shell::~Shell() {
 
   // Observes `SessionController` and must be destroyed before it.
   privacy_hub_controller_.reset();
-  microphone_privacy_switch_controller_.reset();
 
   for (auto& observer : shell_observers_) {
     observer.OnShellDestroying();
@@ -859,7 +862,7 @@ Shell::~Shell() {
 
   // As clients of `capture_mode_controller_`, `projector_controller_` and
   // `game_dashboard_controller_` need to be destroyed before
-  // `capture_mode_controller_`
+  // `capture_mode_controller_`.
   projector_controller_.reset();
   game_dashboard_controller_.reset();
 
@@ -889,6 +892,10 @@ Shell::~Shell() {
   // Should be destroyed after Shelf and |system_notification_controller_|.
   system_tray_model_.reset();
   system_sounds_delegate_.reset();
+
+  // This must be destroyed before `message_center_controller_` in order to
+  // restore the original settings if a focus session was active.
+  focus_mode_controller_.reset();
 
   // MultiDisplayMetricsController has a dependency on `mru_window_tracker_`.
   multi_display_metrics_controller_.reset();
@@ -993,6 +1000,10 @@ Shell::~Shell() {
   // |window_tree_host_manager_|.
   clipboard_history_controller_.reset();
 
+  // Should be destroyed after `clipbaord_history_controller_` and
+  // `autozoom_controller_` since they will destruct `SystemNudgeController`.
+  system_nudge_pause_manager_.reset();
+
   // This also deletes all RootWindows. Note that we invoke Shutdown() on
   // WindowTreeHostManager before resetting |window_tree_host_manager_|, since
   // destruction of its owned RootWindowControllers relies on the value.
@@ -1017,8 +1028,6 @@ Shell::~Shell() {
 
   partial_magnifier_controller_.reset();
 
-  touch_selection_magnifier_runner_ash_.reset();
-
   laser_pointer_controller_.reset();
 
   if (display_change_observer_) {
@@ -1035,6 +1044,9 @@ Shell::~Shell() {
   display_port_observer_.reset();
 
   keyboard_controller_.reset();
+
+  // Depends on PowerStatus.
+  battery_saver_controller_.reset();
 
   PowerStatus::Shutdown();
   // Depends on SessionController.
@@ -1108,7 +1120,9 @@ void Shell::Init(
     std::unique_ptr<keyboard::KeyboardUIFactory> keyboard_ui_factory,
     std::unique_ptr<ash::quick_pair::Mediator::Factory>
         quick_pair_mediator_factory,
-    scoped_refptr<dbus::Bus> dbus_bus) {
+    scoped_refptr<dbus::Bus> dbus_bus,
+    std::unique_ptr<display::NativeDisplayDelegate> native_display_delegate) {
+  native_display_delegate_ = std::move(native_display_delegate);
   login_unlock_throughput_recorder_ =
       std::make_unique<LoginUnlockThroughputRecorder>();
 
@@ -1119,6 +1133,11 @@ void Shell::Init(
 
   local_state_ = local_state;
 
+  if (features::IsBatterySaverAvailable()) {
+    battery_saver_controller_ =
+        std::make_unique<BatterySaverController>(local_state_);
+  }
+
   // This creates the MessageCenter object which is used by some other objects
   // initialized here, so it needs to come early.
   message_center_controller_ = std::make_unique<MessageCenterController>();
@@ -1126,8 +1145,7 @@ void Shell::Init(
   message_center_ash_impl_ = std::make_unique<MessageCenterAshImpl>();
 
   // Initialized early since it is used by some other objects.
-  keyboard_capability_ = std::make_unique<ui::KeyboardCapability>(
-      std::make_unique<KeyboardCapabilityDelegateImpl>());
+  keyboard_capability_ = std::make_unique<ui::KeyboardCapability>();
 
   // These controllers call Shell::Get() in their constructors, so they cannot
   // be in the member initialization list.
@@ -1151,10 +1169,8 @@ void Shell::Init(
 
   tablet_mode_controller_ = std::make_unique<TabletModeController>();
 
-  if (features::IsRgbKeyboardEnabled()) {
-    rgb_keyboard_manager_ =
-        std::make_unique<RgbKeyboardManager>(ime_controller_.get());
-  }
+  rgb_keyboard_manager_ =
+      std::make_unique<RgbKeyboardManager>(ime_controller_.get());
 
   // Observes the tablet mode controller if any hps feature is enabled.
   if (features::IsSnoopingProtectionEnabled() ||
@@ -1187,7 +1203,10 @@ void Shell::Init(
   accessibility_delegate_.reset(shell_delegate_->CreateAccessibilityDelegate());
   accessibility_controller_ = std::make_unique<AccessibilityControllerImpl>();
   toast_manager_ = std::make_unique<ToastManagerImpl>();
-  anchored_nudge_manager_ = std::make_unique<AnchoredNudgeManagerImpl>();
+  if (features::IsSystemNudgeV2Enabled()) {
+    anchored_nudge_manager_ = std::make_unique<AnchoredNudgeManagerImpl>();
+  }
+  system_nudge_pause_manager_ = std::make_unique<SystemNudgePauseManagerImpl>();
 
   peripheral_battery_listener_ = std::make_unique<PeripheralBatteryListener>();
 
@@ -1198,6 +1217,10 @@ void Shell::Init(
 
   capture_mode_controller_ = std::make_unique<CaptureModeController>(
       shell_delegate_->CreateCaptureModeDelegate());
+
+  if (features::IsFocusModeEnabled()) {
+    focus_mode_controller_ = std::make_unique<FocusModeController>();
+  }
 
   if (features::IsGameDashboardEnabled()) {
     game_dashboard_controller_ = std::make_unique<GameDashboardController>(
@@ -1213,13 +1236,11 @@ void Shell::Init(
 
   wallpaper_controller_ = WallpaperControllerImpl::Create(local_state_);
 
-  if (features::IsRgbKeyboardEnabled()) {
-    // Initialized after |rgb_keyboard_manager_| to observe the state of rgb
-    // keyboard and |wallpaper_controller_| because we will need to observe when
-    // the extracted wallpaper color changes.
-    keyboard_backlight_color_controller_ =
-        std::make_unique<KeyboardBacklightColorController>(local_state_);
-  }
+  // Initialized after |rgb_keyboard_manager_| to observe the state of rgb
+  // keyboard and |wallpaper_controller_| because we will need to observe when
+  // the extracted wallpaper color changes.
+  keyboard_backlight_color_controller_ =
+      std::make_unique<KeyboardBacklightColorController>(local_state_);
 
   native_cursor_manager_ = new NativeCursorManagerAsh;
   cursor_manager_ = std::make_unique<CursorManager>(
@@ -1257,8 +1278,9 @@ void Shell::Init(
 
   dark_light_mode_controller_ = std::make_unique<DarkLightModeControllerImpl>();
 
-  color_palette_controller_ = ColorPaletteController::Create(
-      dark_light_mode_controller_.get(), wallpaper_controller_.get());
+  color_palette_controller_ =
+      ColorPaletteController::Create(dark_light_mode_controller_.get(),
+                                     wallpaper_controller_.get(), local_state_);
 
   // Privacy Screen depends on the display manager, so initialize it after
   // display manager was properly initialized.
@@ -1303,16 +1325,18 @@ void Shell::Init(
   env_filter_ = std::make_unique<::wm::CompoundEventFilter>();
   AddPreTargetHandler(env_filter_.get());
 
-  if (features::IsSnapGroupEnabled()) {
-    snap_group_controller_ = std::make_unique<SnapGroupController>();
-  }
-
   // FocusController takes ownership of AshFocusRules.
   focus_rules_ = new AshFocusRules();
   focus_controller_ = std::make_unique<::wm::FocusController>(focus_rules_);
   focus_controller_->AddObserver(this);
 
   overview_controller_ = std::make_unique<OverviewController>();
+
+  // `SnapGroupController` has dependencies on `OverviweController` and
+  // `TabletModeController`.
+  if (features::IsSnapGroupEnabled()) {
+    snap_group_controller_ = std::make_unique<SnapGroupController>();
+  }
 
   screen_position_controller_ = std::make_unique<ScreenPositionController>();
 
@@ -1453,10 +1477,6 @@ void Shell::Init(
   laser_pointer_controller_ = std::make_unique<LaserPointerController>();
   partial_magnifier_controller_ =
       std::make_unique<PartialMagnifierController>();
-  if (::features::IsTouchTextEditingRedesignEnabled()) {
-    touch_selection_magnifier_runner_ash_ =
-        std::make_unique<TouchSelectionMagnifierRunnerAsh>();
-  }
 
   fullscreen_magnifier_controller_ =
       std::make_unique<FullscreenMagnifierController>();
@@ -1551,18 +1571,11 @@ void Shell::Init(
     system_sounds_delegate_->Init();
   }
 
+  privacy_hub_controller_ = PrivacyHubController::CreatePrivacyHubController();
+
+  // One of the subcontrollers accesses the SystemNotificationController.
   system_notification_controller_ =
       std::make_unique<SystemNotificationController>();
-
-  if (features::IsCrosPrivacyHubEnabled()) {
-    // One of the subcontrollers accesses the SystemNotificationController.
-    privacy_hub_controller_ = std::make_unique<PrivacyHubController>();
-  } else if (features::IsMicMuteNotificationsEnabled()) {
-    // TODO(b/264388354) Until PrivacyHub is enabled for all keep this around
-    // for the already existing microphone notifications to continue working.
-    microphone_privacy_switch_controller_ =
-        std::make_unique<MicrophonePrivacySwitchController>();
-  }
 
   // WmModeController should be created before initializing the window tree
   // hosts, since the latter will initialize the shelf on each display, which
@@ -1643,9 +1656,7 @@ void Shell::Init(
     glanceables_v2_controller_ = std::make_unique<GlanceablesV2Controller>();
   }
 
-  if (features::IsProjectorEnabled()) {
-    projector_controller_ = std::make_unique<ProjectorControllerImpl>();
-  }
+  projector_controller_ = std::make_unique<ProjectorControllerImpl>();
 
   if (chromeos::wm::features::IsWindowLayoutMenuEnabled()) {
     float_controller_ = std::make_unique<FloatController>();
@@ -1679,11 +1690,14 @@ void Shell::Init(
   // `clipboard_history_controller_` is destroyed.
   chromeos::clipboard_history::SetQueryItemDescriptorsImpl(base::BindRepeating(
       [](ClipboardHistoryControllerImpl* controller) {
+        std::vector<crosapi::mojom::ClipboardHistoryItemDescriptor> descriptors;
         if (clipboard_history_util::IsEnabledInCurrentMode()) {
-          return clipboard_history_util::GetItemDescriptorsFrom(
-              controller->history()->GetItems());
+          const auto& items = controller->history()->GetItems();
+          descriptors.reserve(items.size());
+          base::ranges::transform(items, std::back_inserter(descriptors),
+                                  &clipboard_history_util::ItemToDescriptor);
         }
-        return std::vector<crosapi::mojom::ClipboardHistoryItemDescriptor>();
+        return descriptors;
       },
       clipboard_history_controller_.get()));
   chromeos::clipboard_history::SetPasteClipboardItemByIdImpl(
@@ -1708,8 +1722,11 @@ void Shell::Init(
 }
 
 void Shell::InitializeDisplayManager() {
-  display_manager_->InitConfigurator(
-      ui::OzonePlatform::GetInstance()->CreateNativeDisplayDelegate());
+  if (!native_display_delegate_) {
+    native_display_delegate_ =
+        ui::OzonePlatform::GetInstance()->CreateNativeDisplayDelegate();
+  }
+  display_manager_->InitConfigurator(std::move(native_display_delegate_));
   display_configuration_controller_ =
       std::make_unique<DisplayConfigurationController>(
           display_manager_.get(), window_tree_host_manager_.get());
@@ -1871,7 +1888,8 @@ void Shell::OnSessionStateChanged(session_manager::SessionState state) {
   // up earlier than expected and causes a delay during boot.
   // See b/250002264 for more details.
   if (is_session_active && !FwupdClient::Get() &&
-      !firmware_update_notification_controller_) {
+      !firmware_update_notification_controller_ &&
+      !features::IsBlockFwupdClientEnabled()) {
     chromeos::InitializeDBusClient<FwupdClient>(dbus_bus_.get());
     firmware_update_manager_ = std::make_unique<FirmwareUpdateManager>();
     // The notification controller is registered as an observer before

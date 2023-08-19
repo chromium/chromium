@@ -1035,6 +1035,7 @@ sub diskImageMaker($$$$$$$$) {
     if(command($gConfig{'cmd_hdiutil'}, 'convert', '-format', $format,
      ($format eq 'UDZO' ? ('-imagekey', 'zlib-level=9') : ()),
      ($format eq 'UDBZ' ? ('-imagekey', 'bzip2-level=9') : ()),
+     ($format eq 'ULMO' ? ('-imagekey', 'udif-chunk-size=8192') : ()),
      (defined($gDarwinMajor) && $gDarwinMajor <= 6 ? () : ('-ov')),
      $uncompressedImage, '-o', $destination) != 0) {
       cleanupDie('hdiutil convert failed');

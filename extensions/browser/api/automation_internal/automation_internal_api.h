@@ -20,16 +20,6 @@ namespace extensions {
 
 struct AutomationInfo;
 
-// Implementation of the chrome.automation API.
-class AutomationInternalEnableTabFunction : public ExtensionFunction {
-  DECLARE_EXTENSION_FUNCTION("automationInternal.enableTab",
-                             AUTOMATIONINTERNAL_ENABLETAB)
- protected:
-  ~AutomationInternalEnableTabFunction() override = default;
-
-  ExtensionFunction::ResponseAction Run() override;
-};
-
 class AutomationInternalPerformActionFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("automationInternal.performAction",
                              AUTOMATIONINTERNAL_PERFORMACTION)
@@ -95,27 +85,6 @@ class AutomationInternalDisableDesktopFunction : public ExtensionFunction {
   ~AutomationInternalDisableDesktopFunction() override = default;
 
   ResponseAction Run() override;
-};
-
-class AutomationInternalQuerySelectorFunction : public ExtensionFunction {
-  DECLARE_EXTENSION_FUNCTION("automationInternal.querySelector",
-                             AUTOMATIONINTERNAL_QUERYSELECTOR)
-
- public:
-  using Callback =
-      base::OnceCallback<void(const std::string& error, int result_acc_obj_id)>;
-
- protected:
-  ~AutomationInternalQuerySelectorFunction() override = default;
-
-  ResponseAction Run() override;
-
- private:
-  void OnResponse(const std::string& error, int result_acc_obj_id);
-
-  // Used for assigning a unique ID to each request so that the response can be
-  // routed appropriately.
-  static int query_request_id_counter_;
 };
 
 }  // namespace extensions

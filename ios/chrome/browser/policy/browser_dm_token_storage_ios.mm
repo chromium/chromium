@@ -7,12 +7,12 @@
 #import <Foundation/Foundation.h>
 
 #import "base/apple/backup_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/base64url.h"
 #import "base/files/file_util.h"
 #import "base/files/important_file_writer.h"
 #import "base/hash/sha1.h"
 #import "base/ios/device_util.h"
-#import "base/mac/foundation_util.h"
 #import "base/path_service.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
@@ -21,10 +21,6 @@
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/core/common/policy_logger.h"
 #import "components/policy/policy_constants.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace policy {
 
@@ -94,7 +90,7 @@ std::string BrowserDMTokenStorageIOS::InitEnrollmentToken() {
   NSDictionary* raw_policies = [[NSUserDefaults standardUserDefaults]
       dictionaryForKey:kPolicyLoaderIOSConfigurationKey];
   NSString* token =
-      base::mac::ObjCCast<NSString>(raw_policies[base::SysUTF8ToNSString(
+      base::apple::ObjCCast<NSString>(raw_policies[base::SysUTF8ToNSString(
           key::kCloudManagementEnrollmentToken)]);
 
   if (token) {

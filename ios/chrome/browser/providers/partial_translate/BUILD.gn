@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("chromium_partial_translate") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "chromium_partial_translate.mm" ]
   deps = [
     "//base",

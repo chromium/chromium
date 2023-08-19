@@ -21,6 +21,8 @@ TextFragmentAnchorMetrics::TextFragmentAnchorMetrics(Document* document)
 void TextFragmentAnchorMetrics::DidCreateAnchor(int selector_count) {
   UseCounter::Count(document_, WebFeature::kTextFragmentAnchor);
   selector_count_ = selector_count;
+  CHECK(search_start_time_.is_null());
+  search_start_time_ = tick_clock_->NowTicks();
 }
 
 void TextFragmentAnchorMetrics::DidFindMatch() {
@@ -29,11 +31,6 @@ void TextFragmentAnchorMetrics::DidFindMatch() {
 
 void TextFragmentAnchorMetrics::DidFindAmbiguousMatch() {
   ambiguous_match_ = true;
-}
-
-void TextFragmentAnchorMetrics::DidStartSearch() {
-  if (search_start_time_.is_null())
-    search_start_time_ = tick_clock_->NowTicks();
 }
 
 void TextFragmentAnchorMetrics::DidInvokeScrollIntoView() {

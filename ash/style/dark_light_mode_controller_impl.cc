@@ -30,7 +30,8 @@ DarkLightModeControllerImpl* g_instance = nullptr;
 // In the future additional screens will be added. Eventually all screens
 // will support it and this array will not be needed anymore.
 constexpr OobeDialogState kStatesSupportingDarkTheme[] = {
-    OobeDialogState::MARKETING_OPT_IN, OobeDialogState::THEME_SELECTION};
+    OobeDialogState::MARKETING_OPT_IN, OobeDialogState::THEME_SELECTION,
+    OobeDialogState::CHOOBE};
 
 }  // namespace
 

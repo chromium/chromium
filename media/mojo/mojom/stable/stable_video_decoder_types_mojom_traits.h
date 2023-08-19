@@ -482,7 +482,7 @@ struct StructTraits<media::stable::mojom::DecoderBufferDataView,
 
   static bool is_key_frame(const scoped_refptr<media::DecoderBuffer>& input);
 
-  static std::vector<uint8_t> side_data(
+  static std::vector<uint8_t> raw_side_data(
       const scoped_refptr<media::DecoderBuffer>& input);
 
   static std::unique_ptr<media::DecryptConfig> decrypt_config(
@@ -494,8 +494,23 @@ struct StructTraits<media::stable::mojom::DecoderBufferDataView,
   static base::TimeDelta back_discard(
       const scoped_refptr<media::DecoderBuffer>& input);
 
+  static absl::optional<media::DecoderBufferSideData> side_data(
+      const scoped_refptr<media::DecoderBuffer>& input);
+
   static bool Read(media::stable::mojom::DecoderBufferDataView input,
                    scoped_refptr<media::DecoderBuffer>* output);
+};
+
+template <>
+struct StructTraits<media::stable::mojom::DecoderBufferSideDataDataView,
+                    media::DecoderBufferSideData> {
+  static std::vector<uint32_t> spatial_layers(
+      media::DecoderBufferSideData input);
+  static std::vector<uint8_t> alpha_data(media::DecoderBufferSideData input);
+  static uint64_t secure_handle(media::DecoderBufferSideData input);
+
+  static bool Read(media::stable::mojom::DecoderBufferSideDataDataView data,
+                   media::DecoderBufferSideData* output);
 };
 
 template <>
@@ -608,7 +623,7 @@ struct StructTraits<media::stable::mojom::HDRMetadataDataView,
 
   static uint32_t max_frame_average_light_level(const gfx::HDRMetadata& input);
 
-  static const gfx::HdrMetadataSmpteSt2086& color_volume_metadata(
+  static gfx::HdrMetadataSmpteSt2086 color_volume_metadata(
       const gfx::HDRMetadata& input);
 
   static bool Read(media::stable::mojom::HDRMetadataDataView data,
@@ -923,6 +938,45 @@ struct EnumTraits<media::stable::mojom::VideoCodecProfile,
         return media::stable::mojom::VideoCodecProfile::kDolbyVisionProfile8;
       case ::media::VideoCodecProfile::DOLBYVISION_PROFILE9:
         return media::stable::mojom::VideoCodecProfile::kDolbyVisionProfile9;
+      case ::media::VideoCodecProfile::VVCPROFILE_MAIN10:
+        return ::media::stable::mojom::VideoCodecProfile::kVVCProfileMain10;
+      case ::media::VideoCodecProfile::VVCPROFILE_MAIN12:
+        return ::media::stable::mojom::VideoCodecProfile::kVVCProfileMain12;
+      case ::media::VideoCodecProfile::VVCPROFILE_MAIN12_INTRA:
+        return ::media::stable::mojom::VideoCodecProfile::
+            kVVCProfileMain12Intra;
+      case ::media::VideoCodecProfile::VVCPROIFLE_MULTILAYER_MAIN10:
+        return ::media::stable::mojom::VideoCodecProfile::
+            kVVCProfileMultilayerMain10;
+      case ::media::VideoCodecProfile::VVCPROFILE_MAIN10_444:
+        return ::media::stable::mojom::VideoCodecProfile::kVVCProfileMain10444;
+      case ::media::VideoCodecProfile::VVCPROFILE_MAIN12_444:
+        return ::media::stable::mojom::VideoCodecProfile::kVVCProfileMain12444;
+      case ::media::VideoCodecProfile::VVCPROFILE_MAIN16_444:
+        return ::media::stable::mojom::VideoCodecProfile::kVVCProfileMain16444;
+      case ::media::VideoCodecProfile::VVCPROFILE_MAIN12_444_INTRA:
+        return ::media::stable::mojom::VideoCodecProfile::
+            kVVCProfileMain12444Intra;
+      case ::media::VideoCodecProfile::VVCPROFILE_MAIN16_444_INTRA:
+        return ::media::stable::mojom::VideoCodecProfile::
+            kVVCProfileMain16444Intra;
+      case ::media::VideoCodecProfile::VVCPROFILE_MULTILAYER_MAIN10_444:
+        return ::media::stable::mojom::VideoCodecProfile::kVVCProfileMain10444;
+      case ::media::VideoCodecProfile::VVCPROFILE_MAIN10_STILL_PICTURE:
+        return ::media::stable::mojom::VideoCodecProfile::
+            kVVCProfileMain10Still;
+      case ::media::VideoCodecProfile::VVCPROFILE_MAIN12_STILL_PICTURE:
+        return ::media::stable::mojom::VideoCodecProfile::
+            kVVCProfileMain12Still;
+      case ::media::VideoCodecProfile::VVCPROFILE_MAIN10_444_STILL_PICTURE:
+        return ::media::stable::mojom::VideoCodecProfile::
+            kVVCProfileMain10444Still;
+      case ::media::VideoCodecProfile::VVCPROFILE_MAIN12_444_STILL_PICTURE:
+        return ::media::stable::mojom::VideoCodecProfile::
+            kVVCProfileMain12444Still;
+      case ::media::VideoCodecProfile::VVCPROFILE_MAIN16_444_STILL_PICTURE:
+        return ::media::stable::mojom::VideoCodecProfile::
+            kVVCProfileMain16444Still;
     }
 
     NOTREACHED_NORETURN();
@@ -1052,6 +1106,55 @@ struct EnumTraits<media::stable::mojom::VideoCodecProfile,
         return true;
       case media::stable::mojom::VideoCodecProfile::kDolbyVisionProfile9:
         *output = ::media::VideoCodecProfile::DOLBYVISION_PROFILE9;
+        return true;
+      case media::stable::mojom::VideoCodecProfile::kVVCProfileMain10:
+        *output = ::media::VideoCodecProfile::VVCPROFILE_MAIN10;
+        return true;
+      case media::stable::mojom::VideoCodecProfile::kVVCProfileMain12:
+        *output = ::media::VideoCodecProfile::VVCPROFILE_MAIN12;
+        return true;
+      case media::stable::mojom::VideoCodecProfile::kVVCProfileMain12Intra:
+        *output = ::media::VideoCodecProfile::VVCPROFILE_MAIN12_INTRA;
+        return true;
+      case media::stable::mojom::VideoCodecProfile::kVVCProfileMultilayerMain10:
+        *output = ::media::VideoCodecProfile::VVCPROIFLE_MULTILAYER_MAIN10;
+        return true;
+      case media::stable::mojom::VideoCodecProfile::kVVCProfileMain10444:
+        *output = ::media::VideoCodecProfile::VVCPROFILE_MAIN10_444;
+        return true;
+      case media::stable::mojom::VideoCodecProfile::kVVCProfileMain12444:
+        *output = ::media::VideoCodecProfile::VVCPROFILE_MAIN12_444;
+        return true;
+      case media::stable::mojom::VideoCodecProfile::kVVCProfileMain16444:
+        *output = ::media::VideoCodecProfile::VVCPROFILE_MAIN16_444;
+        return true;
+      case media::stable::mojom::VideoCodecProfile::kVVCProfileMain12444Intra:
+        *output = ::media::VideoCodecProfile::VVCPROFILE_MAIN12_444_INTRA;
+        return true;
+      case media::stable::mojom::VideoCodecProfile::kVVCProfileMain16444Intra:
+        *output = ::media::VideoCodecProfile::VVCPROFILE_MAIN16_444_INTRA;
+        return true;
+      case media::stable::mojom::VideoCodecProfile::
+          kVVCProfileMultilayerMain10444:
+        *output = ::media::VideoCodecProfile::VVCPROFILE_MULTILAYER_MAIN10_444;
+        return true;
+      case media::stable::mojom::VideoCodecProfile::kVVCProfileMain10Still:
+        *output = ::media::VideoCodecProfile::VVCPROFILE_MAIN10_STILL_PICTURE;
+        return true;
+      case media::stable::mojom::VideoCodecProfile::kVVCProfileMain12Still:
+        *output = ::media::VideoCodecProfile::VVCPROFILE_MAIN12_STILL_PICTURE;
+        return true;
+      case media::stable::mojom::VideoCodecProfile::kVVCProfileMain10444Still:
+        *output =
+            ::media::VideoCodecProfile::VVCPROFILE_MAIN10_444_STILL_PICTURE;
+        return true;
+      case media::stable::mojom::VideoCodecProfile::kVVCProfileMain12444Still:
+        *output =
+            ::media::VideoCodecProfile::VVCPROFILE_MAIN12_444_STILL_PICTURE;
+        return true;
+      case media::stable::mojom::VideoCodecProfile::kVVCProfileMain16444Still:
+        *output =
+            ::media::VideoCodecProfile::VVCPROFILE_MAIN16_444_STILL_PICTURE;
         return true;
     }
 

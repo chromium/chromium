@@ -19,6 +19,7 @@
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/test/test_sync_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -57,10 +58,9 @@ class AutofillOfferManagerTest : public testing::Test {
                                 /*local_state=*/autofill_client_.GetPrefs(),
                                 /*identity_manager=*/nullptr,
                                 /*history_service=*/nullptr,
-                                /*sync_service=*/nullptr,
+                                /*sync_service=*/&sync_service_,
                                 /*strike_database=*/nullptr,
-                                /*image_fetcher=*/nullptr,
-                                /*is_off_the_record=*/false);
+                                /*image_fetcher=*/nullptr);
     personal_data_manager_.SetPrefService(autofill_client_.GetPrefs());
     autofill_offer_manager_ = std::make_unique<AutofillOfferManager>(
         &personal_data_manager_, &coupon_service_delegate_);
@@ -75,7 +75,7 @@ class AutofillOfferManagerTest : public testing::Test {
                             "1");
     card.set_guid(guid);
     card.set_instrument_id(instrument_id);
-    card.set_record_type(CreditCard::MASKED_SERVER_CARD);
+    card.set_record_type(CreditCard::RecordType::kMaskedServerCard);
 
     personal_data_manager_.AddServerCreditCard(card);
     return card;
@@ -133,6 +133,7 @@ class AutofillOfferManagerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestAutofillClient autofill_client_;
+  syncer::TestSyncService sync_service_;
   scoped_refptr<AutofillWebDataService> database_;
   TestPersonalDataManager personal_data_manager_;
   std::unique_ptr<AutofillOfferManager> autofill_offer_manager_;

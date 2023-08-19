@@ -39,8 +39,7 @@
 
 namespace blink {
 
-DatabaseClient::DatabaseClient()
-    : Supplement(nullptr), inspector_agent_(nullptr) {}
+DatabaseClient::DatabaseClient(Page& page) : Supplement(page) {}
 
 void DatabaseClient::Trace(Visitor* visitor) const {
   visitor->Trace(inspector_agent_);
@@ -80,10 +79,6 @@ void DatabaseClient::SetInspectorAgent(InspectorDatabaseAgent* agent) {
   // TODO(dgozman): we should not set agent twice, but it's happening in OOPIF
   // case.
   inspector_agent_ = agent;
-}
-
-void ProvideDatabaseClientTo(Page& page, DatabaseClient* client) {
-  page.ProvideSupplement(client);
 }
 
 }  // namespace blink

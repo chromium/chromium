@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_settings/scoped_password_settings_reauth_module_override.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/passwords_in_other_apps_coordinator.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
+#import "ios/chrome/browser/ui/settings/utils/password_utils.h"
 #import "ios/chrome/browser/ui/settings/utils/settings_utils.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
@@ -38,10 +39,6 @@
 #import "net/base/mac/url_conversions.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 // Methods to update state in response to actions taken in the Export
 // ActivityViewController.
@@ -127,21 +124,12 @@
 
 @implementation PasswordSettingsCoordinator
 
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser {
-  self = [super initWithBaseViewController:viewController browser:browser];
-  return self;
-}
-
 #pragma mark - ChromeCoordinator
 
 - (void)start {
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
 
-  self.reauthModule =
-      ScopedPasswordSettingsReauthModuleOverride::instance
-          ? ScopedPasswordSettingsReauthModuleOverride::instance->module
-          : [[ReauthenticationModule alloc] init];
+  self.reauthModule = password_manager::BuildReauthenticationModule();
 
   _savedPasswordsPresenter =
       std::make_unique<password_manager::SavedPasswordsPresenter>(
@@ -196,11 +184,20 @@
   self.passwordsInOtherAppsCoordinator.delegate = nil;
   self.passwordsInOtherAppsCoordinator = nil;
 
+  self.passwordSettingsViewController.presentationDelegate = nil;
+  self.passwordSettingsViewController.delegate = nil;
   self.passwordSettingsViewController = nil;
+  [self.settingsNavigationController cleanUpSettings];
   self.settingsNavigationController = nil;
   _preparingPasswordsAlert = nil;
 
+  _dispatcher = nil;
+  _reauthModule = nil;
+
   [self.mediator disconnect];
+  self.mediator.consumer = nil;
+  self.mediator = nil;
+  _savedPasswordsPresenter.reset();
 }
 
 #pragma mark - PasswordSettingsPresentationDelegate

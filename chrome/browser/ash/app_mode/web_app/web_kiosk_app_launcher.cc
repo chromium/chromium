@@ -140,8 +140,10 @@ void WebKioskAppLauncher::OnUrlLoaded(web_app::WebAppUrlLoader::Result result) {
 
   data_retriever_->GetWebAppInstallInfo(
       web_contents_for_app_info_.get(),
-      base::BindOnce([](std::unique_ptr<WebAppInstallInfo> install_info) {
-        absl::variant<WebAppInstallInfo, webapps::InstallResultCode> result;
+      base::BindOnce([](std::unique_ptr<web_app::WebAppInstallInfo>
+                            install_info) {
+        absl::variant<web_app::WebAppInstallInfo, webapps::InstallResultCode>
+            result;
         if (install_info) {
           result = std::move(*install_info);
         } else {
@@ -154,7 +156,8 @@ void WebKioskAppLauncher::OnUrlLoaded(web_app::WebAppUrlLoader::Result result) {
 }
 
 void WebKioskAppLauncher::OnAppDataObtained(
-    absl::variant<WebAppInstallInfo, webapps::InstallResultCode> info) {
+    absl::variant<web_app::WebAppInstallInfo, webapps::InstallResultCode>
+        info) {
   web_contents_for_app_info_.reset();
   data_retriever_.reset();
   if (absl::holds_alternative<webapps::InstallResultCode>(info)) {
@@ -164,11 +167,11 @@ void WebKioskAppLauncher::OnAppDataObtained(
     return;
   }
 
-  DCHECK(absl::holds_alternative<WebAppInstallInfo>(info));
-  const auto& app_info = absl::get<WebAppInstallInfo>(info);
+  DCHECK(absl::holds_alternative<web_app::WebAppInstallInfo>(info));
+  const auto& app_info = absl::get<web_app::WebAppInstallInfo>(info);
 
-  // When received |app_info.start_url| origin does not match the origin of
-  // |install_url|, fail.
+  // When received `app_info.start_url` origin does not match the origin of
+  // `install_url`, fail.
   if (url::Origin::Create(GetCurrentApp()->install_url()) !=
       url::Origin::Create(app_info.start_url)) {
     VLOG(1) << "Origin of the app does not match the origin of install url";

@@ -1,0 +1,48 @@
+context.properties = {
+  log.level = 2
+  wireplumber.script-engine = lua-scripting
+
+  remote.name = "$instance_name"
+}
+
+context.spa-libs = {
+  audio.convert.* = audioconvert/libspa-audioconvert
+  support.*       = support/libspa-support
+}
+
+context.modules = [
+  # The native communication protocol.
+  { name = libpipewire-module-protocol-native }
+
+  # Allows creating nodes that run in the context of the
+  # client. Is used by all clients that want to provide
+  # data to PipeWire.
+  { name = libpipewire-module-client-node }
+
+  # Allows creating devices that run in the context of the
+  # client. Is used by the session manager.
+  { name = libpipewire-module-client-device }
+
+  # Makes a factory for wrapping nodes in an adapter with a
+  # converter and resampler.
+  { name = libpipewire-module-adapter }
+
+  # Allows applications to create metadata objects. It creates
+  # a factory for Metadata objects.
+  { name = libpipewire-module-metadata }
+
+  # Provides factories to make session manager objects.
+  { name = libpipewire-module-session-manager }
+]
+
+wireplumber.components = [
+  # The lua scripting engine
+  { name = libwireplumber-module-lua-scripting, type = module }
+
+  # The lua configuration file(s)
+  # Other components are loaded from there
+  # TODO(rkjnsn): Use simplified CRD-specific lua scripts instead of relying on
+  # the system ones, which may have been overridden or modified.
+  { name = main.lua, type = config/lua }
+  { name = policy.lua, type = config/lua }
+]

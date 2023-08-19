@@ -7,7 +7,7 @@
 import {AccountStorageOptInStateChangedListener, BlockedSite, BlockedSitesListChangedListener, CredentialsChangedListener, PasswordCheckInteraction, PasswordCheckStatusChangedListener, PasswordManagerAuthTimeoutListener, PasswordManagerProxy, PasswordsFileExportProgressListener, PasswordViewPageInteractions} from 'chrome://password-manager/password_manager.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-import {makePasswordCheckStatus} from './test_util.js';
+import {makeFamilyFetchResults, makePasswordCheckStatus} from './test_util.js';
 
 /**
  * Test implementation
@@ -18,6 +18,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     blockedSites: BlockedSite[],
     checkStatus: chrome.passwordsPrivate.PasswordCheckStatus,
     credentialWithReusedPassword: chrome.passwordsPrivate.PasswordUiEntryList[],
+    familyFetchResults: chrome.passwordsPrivate.FamilyFetchResults,
     groups: chrome.passwordsPrivate.CredentialGroup[],
     insecureCredentials: chrome.passwordsPrivate.PasswordUiEntry[],
     isOptedInAccountStorage: boolean,
@@ -50,11 +51,12 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
   constructor() {
     super([
       'addPassword',
+      'changeCredential',
       'cancelExportPasswords',
-      'changeSavedPassword',
       'continueImport',
       'exportPasswords',
       'extendAuthValidity',
+      'fetchFamilyMembers',
       'importPasswords',
       'isAccountStoreDefault',
       'isOptedInForAccountStorage',
@@ -71,13 +73,14 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'recordPasswordCheckInteraction',
       'recordPasswordViewInteraction',
       'removeBlockedSite',
-      'removeSavedPassword',
+      'removeCredential',
       'resetImporter',
       'requestCredentialsDetails',
       'requestExportProgressStatus',
       'requestPlaintextPassword',
       'showAddShortcutDialog',
       'showExportedFileInShell',
+      'sharePassword',
       'startBulkPasswordCheck',
       'switchBiometricAuthBeforeFillingState',
       'undoRemoveSavedPasswordOrException',
@@ -89,6 +92,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       blockedSites: [],
       checkStatus: makePasswordCheckStatus({}),
       credentialWithReusedPassword: [],
+      familyFetchResults: makeFamilyFetchResults(),
       groups: [],
       insecureCredentials: [],
       isOptedInAccountStorage: false,
@@ -229,15 +233,14 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     return Promise.resolve();
   }
 
-  changeSavedPassword(
-      id: number, params: chrome.passwordsPrivate.ChangeSavedPasswordParams) {
-    this.methodCalled('changeSavedPassword', {id, params});
-    return Promise.resolve(id);
+  changeCredential(credential: chrome.passwordsPrivate.PasswordUiEntry) {
+    this.methodCalled('changeCredential', credential);
+    return Promise.resolve();
   }
 
-  removeSavedPassword(
+  removeCredential(
       id: number, fromStores: chrome.passwordsPrivate.PasswordStoreSet) {
-    this.methodCalled('removeSavedPassword', {id, fromStores});
+    this.methodCalled('removeCredential', {id, fromStores});
   }
 
   removeBlockedSite(id: number) {
@@ -316,6 +319,16 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
   removeAccountStorageOptInStateListener(
       _listener: AccountStorageOptInStateChangedListener) {
     this.listeners.accountStorageOptInStateListener = null;
+  }
+
+  fetchFamilyMembers() {
+    this.methodCalled('fetchFamilyMembers');
+    return Promise.resolve(this.data.familyFetchResults);
+  }
+
+  sharePassword(
+      id: number, recipients: chrome.passwordsPrivate.RecipientInfo[]) {
+    this.methodCalled('sharePassword', id, recipients);
   }
 
   /**

@@ -262,10 +262,10 @@ IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfWithTransportModeSyncTest,
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
 
   // Set up one client syncing and the other signed-in but not syncing.
-  GetClient(0)->SetupSync();
+  ASSERT_TRUE(GetClient(0)->SetupSync());
   secondary_account_helper::SignInUnconsentedAccount(
       GetProfile(1), &test_url_loader_factory_, "user@g.com");
-  GetClient(1)->AwaitSyncTransportActive();
+  ASSERT_TRUE(GetClient(1)->AwaitSyncTransportActive());
 
   DeviceInfoSyncServiceFactory::GetForProfile(GetProfile(1))
       ->GetDeviceInfoTracker()

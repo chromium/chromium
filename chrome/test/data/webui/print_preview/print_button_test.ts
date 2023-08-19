@@ -88,7 +88,7 @@ suite(print_button_test.suiteName, function() {
     ]);
   }
 
-  // Tests that hidePreview() is called before print() if a local printer is
+  // Tests that hidePreview() is called before doPrint() if a local printer is
   // selected and the user clicks print while the preview is loading.
   test(print_button_test.TestNames.LocalPrintHidePreview, function() {
     printBeforePreviewReady = true;
@@ -96,7 +96,7 @@ suite(print_button_test.suiteName, function() {
     return waitForInitialPreview()
         .then(function() {
           // Wait for the print request.
-          return nativeLayer.whenCalled('print');
+          return nativeLayer.whenCalled('doPrint');
         })
         .then(function(printTicket: string) {
           assertTrue(previewHidden);
@@ -133,7 +133,7 @@ suite(print_button_test.suiteName, function() {
               pdfDestination!);
 
           // Reload preview and wait for print.
-          return nativeLayer.whenCalled('print');
+          return nativeLayer.whenCalled('doPrint');
         })
         .then(function(printTicket) {
           assertFalse(previewHidden);
@@ -176,7 +176,7 @@ suite(print_button_test.suiteName, function() {
                   .selectDestination(driveDestination!);
 
               // Reload preview and wait for print.
-              return nativeLayer.whenCalled('print');
+              return nativeLayer.whenCalled('doPrint');
             })
             .then(function(printTicket) {
               assertFalse(previewHidden);

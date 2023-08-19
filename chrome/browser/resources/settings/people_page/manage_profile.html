@@ -30,6 +30,7 @@
   }
 
   cr-customize-themes,
+  cr-theme-color-picker,
   cr-profile-avatar-selector {
     margin-bottom: 10px;
   }
@@ -40,6 +41,17 @@
         var(--selected-border));
     --cr-customize-themes-icon-size: calc(var(--icon-size) +
         var(--selected-border));
+  }
+
+  cr-theme-color-picker {
+    --selected-border: 9px; /* Selected border per side: 4.5px*/
+    --cr-theme-color-picker-column-width: calc(var(--icon-size) +
+        var(--selected-border));
+    --cr-theme-color-picker-grid-gap: calc(var(--icon-grid-gap) -
+        var(--selected-border));
+    --cr-theme-color-picker-grid-padding: 0;
+    /* With display: block, the bottom margin collapses. */
+    display: inline-block;
   }
 
   #profileAvatarSelector {
@@ -79,8 +91,13 @@
 <div class="cr-row manage-profile-section">
   <h1 class="cr-title-text">$i18n{pickThemeColor}</h1>
   <div class="content grid-container">
-    <cr-customize-themes id="themeSelector" auto-confirm-theme-changes>
-    </cr-customize-themes>
+    <template is="dom-if" if="[[isChromeRefresh2023_]]">
+      <cr-theme-color-picker columns="6"></cr-theme-color-picker>
+    </template>
+    <template is="dom-if" if="[[!isChromeRefresh2023_]]">
+      <cr-customize-themes id="themeSelector" auto-confirm-theme-changes>
+      </cr-customize-themes>
+    </template>
  </div>
 </div>
 <div class="cr-row manage-profile-section">

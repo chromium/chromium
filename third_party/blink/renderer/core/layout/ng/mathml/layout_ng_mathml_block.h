@@ -19,8 +19,6 @@ class LayoutNGMathMLBlock : public LayoutNGBlock {
   }
 
  private:
-  void UpdateBlockLayout() final;
-
   bool IsOfType(LayoutObjectType) const final;
   bool IsChildAllowed(LayoutObject*, const ComputedStyle&) const final;
   bool CanHaveChildren() const final;

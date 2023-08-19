@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/style/style_svg_resource.h"
 #include "third_party/blink/renderer/core/svg/graphics/filters/svg_filter_builder.h"
 #include "third_party/blink/renderer/core/svg/svg_filter_primitive_standard_attributes.h"
+#include "third_party/blink/renderer/core/svg/svg_length_functions.h"
 #include "third_party/blink/renderer/core/svg/svg_resource.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter_effect.h"
@@ -47,15 +48,8 @@ SVGElementResourceClient& SVGResources::EnsureClient(
 }
 
 gfx::RectF SVGResources::ReferenceBoxForEffects(
-    const LayoutObject& layout_object) {
-  // For SVG foreign objects, remove the position part of the bounding box. The
-  // position is already baked into the transform, and we don't want to re-apply
-  // the offset when, e.g., using "objectBoundingBox" for clipPathUnits.
-  // Use the frame size since it should have the proper zoom applied.
-  if (layout_object.IsSVGForeignObject()) {
-    return gfx::RectF(gfx::SizeF(To<LayoutBox>(layout_object).Size()));
-  }
-
+    const LayoutObject& layout_object,
+    GeometryBox geometry_box) {
   // Text "sub-elements" (<tspan>, <textpath>, <a>) should use the entire
   // <text>s object bounding box rather then their own.
   // https://svgwg.org/svg2-draft/text.html#ObjectBoundingBoxUnitsTextObjects
@@ -65,7 +59,40 @@ gfx::RectF SVGResources::ReferenceBoxForEffects(
         LayoutNGSVGText::LocateLayoutSVGTextAncestor(&layout_object);
   }
   DCHECK(obb_layout_object);
-  return obb_layout_object->ObjectBoundingBox();
+
+  gfx::RectF box;
+  switch (geometry_box) {
+    case GeometryBox::kPaddingBox:
+    case GeometryBox::kContentBox:
+    case GeometryBox::kFillBox:
+      box = obb_layout_object->ObjectBoundingBox();
+      break;
+    case GeometryBox::kMarginBox:
+    case GeometryBox::kBorderBox:
+    case GeometryBox::kStrokeBox:
+      box = obb_layout_object->StrokeBoundingBox();
+      break;
+    case GeometryBox::kViewBox: {
+      const SVGViewportResolver viewport_resolver(obb_layout_object);
+      box.set_size(viewport_resolver.ResolveViewport());
+      break;
+    }
+    default:
+      NOTREACHED();
+  }
+
+  if (obb_layout_object->IsSVGForeignObject()) {
+    // For SVG foreign objects, remove the position part of the bounding box.
+    // The position is already baked into the transform, and we don't want to
+    // re-apply the offset when, e.g., using "objectBoundingBox" for
+    // clipPathUnits. Similarly, the reference box should have zoom applied.
+    // This simple approach only works because foreign objects do not support
+    // strokes.
+    box.set_origin(gfx::PointF());
+    box.Scale(obb_layout_object->StyleRef().EffectiveZoom());
+  }
+
+  return box;
 }
 
 void SVGResources::UpdateEffects(LayoutObject& object,

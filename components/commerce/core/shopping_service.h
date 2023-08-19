@@ -20,6 +20,7 @@
 #include "base/scoped_observation_traits.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
+#include "base/uuid.h"
 #include "components/commerce/core/account_checker.h"
 #include "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
@@ -48,7 +49,7 @@ class SharedURLLoaderFactory;
 }  // namespace network
 
 namespace optimization_guide {
-class NewOptimizationGuideDecider;
+class OptimizationGuideDecider;
 class OptimizationMetadata;
 }  // namespace optimization_guide
 
@@ -130,6 +131,7 @@ struct ProductInfo {
   ~ProductInfo();
 
   std::string title;
+  std::string product_cluster_title;
   GURL image_url;
   absl::optional<uint64_t> product_cluster_id;
   absl::optional<uint64_t> offer_id;
@@ -190,17 +192,83 @@ struct MerchantInfo {
   bool proactive_message_disabled;
 };
 
+// Position of current price with respect to the typical price range.
+enum class PriceBucket {
+  kUnknown = 0,
+  kLowPrice = 1,
+  kTypicalPrice = 2,
+  kHighPrice = 3,
+  kMaxValue = kHighPrice,
+};
+
+// Information returned by the price insights APIs.
+struct PriceInsightsInfo {
+  PriceInsightsInfo();
+  PriceInsightsInfo(const PriceInsightsInfo&);
+  PriceInsightsInfo& operator=(const PriceInsightsInfo&);
+  ~PriceInsightsInfo();
+
+  absl::optional<uint64_t> product_cluster_id;
+  std::string currency_code;
+  absl::optional<int64_t> typical_low_price_micros;
+  absl::optional<int64_t> typical_high_price_micros;
+  absl::optional<std::string> catalog_attributes;
+  std::vector<std::tuple<std::string, int64_t>> catalog_history_prices;
+  absl::optional<GURL> jackpot_url;
+  PriceBucket price_bucket;
+  bool has_multiple_catalogs;
+};
+
+// Information returned by the discount APIs.
+struct DiscountInfo {
+  DiscountInfo();
+  DiscountInfo(const DiscountInfo&);
+  DiscountInfo& operator=(const DiscountInfo&);
+  ~DiscountInfo();
+
+  std::string description_detail;
+  absl::optional<std::string> terms_and_conditions;
+  std::string value_in_text;
+  std::string discount_code;
+  int64_t id;
+  bool is_merchant_wide;
+  double expiry_time_sec;
+};
+
+// Types of shopping pages from backend.
+enum class ShoppingPageType {
+  kUnknown = 0,
+  kShoppingPage = 1,
+  kMerchantDomainPage = 2,
+  kMultiProductPage = 3,
+  kSingleProductPage = 4,
+  kProductReviewPage = 5,
+  kProductComparisonPage = 6,
+  kProductTopNPage = 7,
+  kSoldOutPage = 8,
+  kBuyingGuidePage = 9,
+  kMaxValue = kBuyingGuidePage,
+};
+
 // Callbacks for querying a single URL or observing information from all
 // navigated urls.
 using ProductInfoCallback =
     base::OnceCallback<void(const GURL&, const absl::optional<ProductInfo>&)>;
 using MerchantInfoCallback =
     base::OnceCallback<void(const GURL&, absl::optional<MerchantInfo>)>;
+using PriceInsightsInfoCallback =
+    base::OnceCallback<void(const GURL&,
+                            const absl::optional<PriceInsightsInfo>&)>;
+using IsShoppingPageCallback =
+    base::OnceCallback<void(const GURL&, absl::optional<bool>)>;
+
+using DiscountsMap = std::map<GURL, std::vector<DiscountInfo>>;
+using DiscountInfoCallback = base::OnceCallback<void(const DiscountsMap&)>;
 
 // A callback for getting updated ProductInfo for a bookmark. This provides the
 // bookmark ID being updated, the URL, and the product info.
 using BookmarkProductInfoUpdatedCallback = base::RepeatingCallback<
-    void(const int64_t, const GURL&, absl::optional<ProductInfo>)>;
+    void(const base::Uuid&, const GURL&, absl::optional<ProductInfo>)>;
 
 class ShoppingService : public KeyedService, public base::SupportsUserData {
  public:
@@ -208,7 +276,7 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
       const std::string& country_on_startup,
       const std::string& locale_on_startup,
       bookmarks::BookmarkModel* bookmark_model,
-      optimization_guide::NewOptimizationGuideDecider* opt_guide,
+      optimization_guide::OptimizationGuideDecider* opt_guide,
       PrefService* pref_service,
       signin::IdentityManager* identity_manager,
       syncer::SyncService* sync_service,
@@ -241,7 +309,7 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   // repeating callback that provides the bookmark's ID, URL, and product info.
   // Currently this API should only be used in the BookmarkUpdateManager.
   virtual void GetUpdatedProductInfoForBookmarks(
-      const std::vector<int64_t>& bookmark_ids,
+      const std::vector<base::Uuid>& bookmark_uuids,
       BookmarkProductInfoUpdatedCallback info_updated_callback);
 
   // Gets the maximum number of bookmarks that the backend will retrieve per
@@ -255,6 +323,24 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   // none available.
   virtual void GetMerchantInfoForUrl(const GURL& url,
                                      MerchantInfoCallback callback);
+
+  // This API fetches price insights information of the product on the provided
+  // |url| and passes the payload back to the caller via |callback|. Call will
+  // run after the fetch is completed. The price insights info object will be
+  // null if there is none available.
+  virtual void GetPriceInsightsInfoForUrl(const GURL& url,
+                                          PriceInsightsInfoCallback callback);
+
+  // This API fetches valid discounts information on the provided |urls| and
+  // passes the payload back to the caller via |callback|. Call will run after
+  // the fetch is completed.
+  virtual void GetDiscountInfoForUrls(const std::vector<GURL>& urls,
+                                      DiscountInfoCallback callback);
+
+  // This API fetches whether the provided |url| is a shopping-related page and
+  // passes the result back to the caller via |callback|. Call will run after
+  // the fetch is completed.
+  virtual void IsShoppingPage(const GURL& url, IsShoppingPageCallback callback);
 
   // Create new subscriptions in batch if needed, and will notify |callback| if
   // the operation completes successfully.
@@ -345,6 +431,14 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   // whether to create critical, feature-related infrastructure.
   virtual bool IsPriceInsightsEligible();
 
+  // This is a feature check for "show discounts on navigation", which will
+  // return true if the user has the feature flag enabled, is signed-in and
+  // synced, has MSBB enabled, and (if applicable) is in an eligible country and
+  // locale. The value returned by this method can change at runtime, so it
+  // should not be used when deciding whether to create critical,
+  // feature-related infrastructure.
+  virtual bool IsDiscountEligibleToShowOnNavigation();
+
   // Get a weak pointer for this service instance.
   base::WeakPtr<ShoppingService> AsWeakPtr();
 
@@ -421,7 +515,7 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   // info.
   void OnProductInfoUpdatedOnDemand(
       BookmarkProductInfoUpdatedCallback callback,
-      std::unordered_map<std::string, int64_t> url_to_id_map,
+      std::unordered_map<std::string, base::Uuid> url_to_uuid_map,
       const GURL& url,
       const base::flat_map<
           optimization_guide::proto::OptimizationType,
@@ -485,6 +579,25 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   // provided URL or closing of a tab.
   void UpdateProductInfoCacheForRemoval(const GURL& url);
 
+  // Whether APIs like |GetPriceInsightsInfoForURL| are enabled and allowed to
+  // be used.
+  bool IsPriceInsightsInfoApiEnabled();
+
+  // Whether APIs like |IsShoppingPage| are enabled and allowed to be used.
+  bool IsShoppingPageTypesApiEnabled();
+
+  void HandleOptGuidePriceInsightsInfoResponse(
+      const GURL& url,
+      PriceInsightsInfoCallback callback,
+      optimization_guide::OptimizationGuideDecision decision,
+      const optimization_guide::OptimizationMetadata& metadata);
+
+  void HandleOptGuideShoppingPageTypesResponse(
+      const GURL& url,
+      IsShoppingPageCallback callback,
+      optimization_guide::OptimizationGuideDecision decision,
+      const optimization_guide::OptimizationMetadata& metadata);
+
   // The two-letter country code as detected on startup.
   std::string country_on_startup_;
 
@@ -493,7 +606,7 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
 
   // A handle to optimization guide for information about URLs that have
   // recently been navigated to.
-  raw_ptr<optimization_guide::NewOptimizationGuideDecider> opt_guide_;
+  raw_ptr<optimization_guide::OptimizationGuideDecider> opt_guide_;
 
   raw_ptr<PrefService> pref_service_;
 

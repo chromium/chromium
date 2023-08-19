@@ -6,10 +6,6 @@
 
 #import "ios/web/web_state/global_web_state_event_tracker.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace web {
 
 GlobalWebStateObserver::GlobalWebStateObserver() {

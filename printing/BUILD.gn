@@ -327,20 +327,6 @@ static_library("test_support") {
     "//skia",
     "//ui/gfx",
   ]
-
-  if (is_android) {
-    sources += [ "image_android.cc" ]
-  }
-
-  if (is_linux || is_chromeos || is_fuchsia) {
-    sources += [ "image_linux.cc" ]
-  }
-  if (is_apple) {
-    sources += [ "image_mac.cc" ]
-  }
-  if (is_win) {
-    sources += [ "image_win.cc" ]
-  }
 }
 
 if (enable_printing_unittests) {
@@ -415,6 +401,7 @@ test("printing_unittests") {
 
   if (is_win) {
     sources += [
+      "backend/win_helper_unittest.cc",
       "backend/xps_utils_win_unittest.cc",
       "emf_win_unittest.cc",
       "printed_page_win_unittest.cc",
@@ -490,6 +477,7 @@ if (is_android) {
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//ui/android:ui_java",
     ]
+    srcjar_deps = [ ":printing_jni_headers" ]
     sources = [
       "android/java/src/org/chromium/printing/PrintDocumentAdapterWrapper.java",
       "android/java/src/org/chromium/printing/PrintManagerDelegate.java",
@@ -499,6 +487,5 @@ if (is_android) {
       "android/java/src/org/chromium/printing/PrintingController.java",
       "android/java/src/org/chromium/printing/PrintingControllerImpl.java",
     ]
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 }

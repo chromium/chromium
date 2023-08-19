@@ -3,6 +3,5 @@
 # found in the LICENSE file.
 
 source_set("public") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "history_presentation_delegate.h" ]
 }

@@ -5,6 +5,7 @@
 #include "components/devtools/devtools_pipe/devtools_pipe.h"
 
 #include "build/build_config.h"
+#include "content/public/browser/devtools_agent_host.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <io.h>
@@ -59,12 +60,13 @@ class ScopedInvalidParameterHandlerOverride {
 bool AreFileDescriptorsOpen() {
 #if BUILDFLAG(IS_WIN)
   ScopedInvalidParameterHandlerOverride invalid_parameter_handler_override;
-  return reinterpret_cast<HANDLE>(_get_osfhandle(kReadFD)) !=
-             INVALID_HANDLE_VALUE &&
-         reinterpret_cast<HANDLE>(_get_osfhandle(kWriteFD)) !=
-             INVALID_HANDLE_VALUE;
+  return reinterpret_cast<HANDLE>(_get_osfhandle(
+             content::DevToolsAgentHost::kReadFD)) != INVALID_HANDLE_VALUE &&
+         reinterpret_cast<HANDLE>(_get_osfhandle(
+             content::DevToolsAgentHost::kWriteFD)) != INVALID_HANDLE_VALUE;
 #else
-  return fcntl(kReadFD, F_GETFL) != -1 && fcntl(kWriteFD, F_GETFL) != -1;
+  return fcntl(content::DevToolsAgentHost::kReadFD, F_GETFL) != -1 &&
+         fcntl(content::DevToolsAgentHost::kWriteFD, F_GETFL) != -1;
 #endif
 }
 

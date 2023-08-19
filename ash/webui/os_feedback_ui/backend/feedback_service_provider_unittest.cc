@@ -6,13 +6,15 @@
 
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/webui/os_feedback_ui/backend/histogram_util.h"
 #include "ash/webui/os_feedback_ui/backend/os_feedback_delegate.h"
-#include "ash/webui/os_feedback_ui/mojom/os_feedback_ui.mojom-test-utils.h"
 #include "ash/webui/os_feedback_ui/mojom/os_feedback_ui.mojom.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,9 +30,11 @@ constexpr char kSignedInUserEmail[] = "test_user_email@test.com";
 constexpr char kSignedInInternalUserEmail[] = "test_user_email@google.com";
 constexpr char kFeedbackAppPostSubmitAction[] =
     "Feedback.ChromeOSApp.PostSubmitAction";
+constexpr char kTestMacAddress[] = "12:34:56:78:AB";
 // Set this flag true to use kSignedInInternalUserEmail as signed in email,
 // set false to use kSignedInUserEmail as signed in email.
 bool kUseInternalUserEmail = false;
+bool kHasLinkedCrossDevicePhone = false;
 constexpr bool kIsInternalEmail = true;
 constexpr bool kIsNotInternalEmail = false;
 constexpr int kPerformanceTraceId = 1;
@@ -43,7 +47,6 @@ using FeedbackAppPostSubmitAction =
 
 using ::ash::os_feedback_ui::mojom::FeedbackContext;
 using ::ash::os_feedback_ui::mojom::FeedbackContextPtr;
-using ::ash::os_feedback_ui::mojom::FeedbackServiceProviderAsyncWaiter;
 using ::ash::os_feedback_ui::mojom::Report;
 using ::ash::os_feedback_ui::mojom::ReportPtr;
 using ::ash::os_feedback_ui::mojom::SendReportStatus;
@@ -59,6 +62,11 @@ class TestOsFeedbackDelegate : public OsFeedbackDelegate {
 
   absl::optional<GURL> GetLastActivePageUrl() override {
     return GURL(kPageUrl);
+  }
+
+  absl::optional<std::string> GetLinkedPhoneMacAddress() override {
+    return kHasLinkedCrossDevicePhone ? absl::make_optional(kTestMacAddress)
+                                      : absl::nullopt;
   }
 
   absl::optional<std::string> GetSignedInUserEmail() const override {
@@ -104,28 +112,25 @@ class FeedbackServiceProviderTest : public testing::Test {
   // Call the GetFeedbackContext of the remote provider async and return the
   // response.
   FeedbackContextPtr GetFeedbackContextAndWait() {
-    FeedbackContextPtr out_feedback_context;
-    FeedbackServiceProviderAsyncWaiter(provider_remote_.get())
-        .GetFeedbackContext(&out_feedback_context);
-    return out_feedback_context;
+    base::test::TestFuture<FeedbackContextPtr> future;
+    provider_remote_->GetFeedbackContext(future.GetCallback());
+    return future.Take();
   }
 
   // Call the GetScreenshotPng of the remote provider async and return the
   // response.
   std::vector<uint8_t> GetScreenshotPngAndWait() {
-    std::vector<uint8_t> out_png_data;
-    FeedbackServiceProviderAsyncWaiter(provider_remote_.get())
-        .GetScreenshotPng(&out_png_data);
-    return out_png_data;
+    base::test::TestFuture<const std::vector<uint8_t>&> future;
+    provider_remote_->GetScreenshotPng(future.GetCallback());
+    return future.Take();
   }
 
   // Call the SendReport of the remote provider async and return the
   // response.
   SendReportStatus SendReportAndWait(ReportPtr report) {
-    SendReportStatus out_status;
-    FeedbackServiceProviderAsyncWaiter(provider_remote_.get())
-        .SendReport(std::move(report), &out_status);
-    return out_status;
+    base::test::TestFuture<SendReportStatus> future;
+    provider_remote_->SendReport(std::move(report), future.GetCallback());
+    return future.Take();
   }
 
  protected:
@@ -137,7 +142,11 @@ class FeedbackServiceProviderTest : public testing::Test {
 // Test that GetFeedbackContext returns a response with correct feedback
 // context.
 TEST_F(FeedbackServiceProviderTest, GetFeedbackContext) {
+  base::test::ScopedFeatureList feature_list{
+      ash::features::kLinkCrossDeviceDogfoodFeedback};
+
   kUseInternalUserEmail = true;
+  kHasLinkedCrossDevicePhone = true;
   auto internal_feedback_context = GetFeedbackContextAndWait();
 
   EXPECT_EQ(kSignedInInternalUserEmail,
@@ -145,14 +154,19 @@ TEST_F(FeedbackServiceProviderTest, GetFeedbackContext) {
   EXPECT_EQ(kPageUrl, internal_feedback_context->page_url.value().spec());
   EXPECT_EQ(kIsInternalEmail, internal_feedback_context->is_internal_account);
   EXPECT_EQ(kPerformanceTraceId, internal_feedback_context->trace_id);
+  EXPECT_EQ(kHasLinkedCrossDevicePhone,
+            internal_feedback_context->has_linked_cross_device_phone);
 
   kUseInternalUserEmail = false;
+  kHasLinkedCrossDevicePhone = false;
   auto feedback_context = GetFeedbackContextAndWait();
 
   EXPECT_EQ(kSignedInUserEmail, feedback_context->email.value());
   EXPECT_EQ(kPageUrl, feedback_context->page_url.value().spec());
   EXPECT_EQ(kIsNotInternalEmail, feedback_context->is_internal_account);
   EXPECT_EQ(kPerformanceTraceId, feedback_context->trace_id);
+  EXPECT_EQ(kHasLinkedCrossDevicePhone,
+            feedback_context->has_linked_cross_device_phone);
 }
 
 // Test that GetScreenshotPng returns a response with correct status.

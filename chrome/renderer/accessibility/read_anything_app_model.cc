@@ -8,14 +8,26 @@
 
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
+#include "content/public/renderer/render_thread.h"
+#include "services/metrics/public/cpp/mojo_ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_serializable_tree.h"
 #include "ui/accessibility/ax_tree_update_util.h"
 
-ReadAnythingAppModel::ReadAnythingAppModel() = default;
-ReadAnythingAppModel::~ReadAnythingAppModel() = default;
+ReadAnythingAppModel::ReadAnythingAppModel() {
+  // TODO(crbug.com/1450930): Use a global ukm recorder instance instead.
+  mojo::Remote<ukm::mojom::UkmRecorderFactory> factory;
+  content::RenderThread::Get()->BindHostReceiver(
+      factory.BindNewPipeAndPassReceiver());
+  ukm_recorder_ = ukm::MojoUkmRecorder::Create(*factory);
+}
+
+ReadAnythingAppModel::~ReadAnythingAppModel() {
+  SetActiveUkmSourceId(ukm::kInvalidSourceId);
+}
 
 void ReadAnythingAppModel::OnThemeChanged(
     read_anything::mojom::ReadAnythingThemePtr new_theme) {
@@ -25,6 +37,19 @@ void ReadAnythingAppModel::OnThemeChanged(
   line_spacing_ = GetLineSpacingValue(new_theme->line_spacing);
   background_color_ = new_theme->background_color;
   foreground_color_ = new_theme->foreground_color;
+}
+
+void ReadAnythingAppModel::OnSettingsRestoredFromPrefs(
+    read_anything::mojom::LineSpacing line_spacing,
+    read_anything::mojom::LetterSpacing letter_spacing,
+    const std::string& font,
+    double font_size,
+    read_anything::mojom::Colors color) {
+  line_spacing_ = GetLineSpacingValue(line_spacing);
+  letter_spacing_ = GetLetterSpacingValue(letter_spacing);
+  font_name_ = font;
+  font_size_ = font_size;
+  color_theme_ = static_cast<size_t>(color);
 }
 
 void ReadAnythingAppModel::InsertDisplayNode(ui::AXNodeID node) {
@@ -41,6 +66,7 @@ void ReadAnythingAppModel::Reset(
   display_node_ids_.clear();
   distillation_in_progress_ = false;
   requires_post_process_selection_ = false;
+  selection_from_action_ = false;
   ResetSelection();
 }
 
@@ -57,8 +83,12 @@ bool ReadAnythingAppModel::PostProcessSelection() {
   DCHECK_NE(active_tree_id_, ui::AXTreeIDUnknown());
   DCHECK(ContainsTree(active_tree_id_));
 
+  bool was_empty = is_empty();
   requires_post_process_selection_ = false;
 
+  // If the new selection came from the side panel, we don't need to draw
+  // anything in the side panel, since whatever was being selected had to have
+  // been drawn already.
   // If the previous selection was inside the distilled content, that means we
   // are currently displaying the distilled content in Read Anything. We may not
   // need to redraw the distilled content if the user's new selection is inside
@@ -67,10 +97,17 @@ bool ReadAnythingAppModel::PostProcessSelection() {
   // redraw either a) the new selected content or b) the original distilled
   // content if the new selection is inside that or if the selection was
   // cleared.
-  bool need_to_draw = !SelectionInsideDisplayNodes();
+  bool need_to_draw = !selection_from_action_ && !SelectionInsideDisplayNodes();
 
   // Save the current selection
   UpdateSelection();
+
+  if (has_selection_ && was_empty) {
+    base::UmaHistogramEnumeration(
+        string_constants::kEmptyStateHistogramName,
+        ReadAnythingEmptyState::kSelectionAfterEmptyStateShown);
+    num_selections_++;
+  }
 
   // If the main panel selection contains content outside of the distilled
   // content, we need to find the selected nodes to display instead of the
@@ -397,6 +434,19 @@ void ReadAnythingAppModel::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
   EraseTree(tree_id);
 }
 
+void ReadAnythingAppModel::SetActiveUkmSourceId(ukm::SourceId source_id) {
+  // Record the number of selections made on the current page if it was not
+  // distillable.
+  if (active_ukm_source_id_ != ukm::kInvalidSourceId &&
+      content_node_ids_.empty()) {
+    ukm::builders::Accessibility_ReadAnything_EmptyState(active_ukm_source_id_)
+        .SetTotalNumSelections(num_selections_)
+        .Record(ukm_recorder_.get());
+  }
+  num_selections_ = 0;
+  active_ukm_source_id_ = source_id;
+}
+
 ui::AXNode* ReadAnythingAppModel::GetAXNode(ui::AXNodeID ax_node_id) const {
   ui::AXSerializableTree* tree = GetTreeFromId(active_tree_id_).get();
   return tree->GetFromId(ax_node_id);
@@ -503,7 +553,6 @@ void ReadAnythingAppModel::ProcessNonGeneratedEvents(
 
         // Audit these events e.g. to require distillation.
       case ax::mojom::Event::kActiveDescendantChanged:
-      case ax::mojom::Event::kAriaAttributeChanged:
       case ax::mojom::Event::kCheckedStateChanged:
       case ax::mojom::Event::kChildrenChanged:
       case ax::mojom::Event::kDocumentSelectionChanged:
@@ -561,6 +610,8 @@ void ReadAnythingAppModel::ProcessNonGeneratedEvents(
       case ax::mojom::Event::kTreeChanged:
       case ax::mojom::Event::kValueChanged:
         break;
+      case ax::mojom::Event::kAriaAttributeChangedDeprecated:
+        NOTREACHED_NORETURN();
     }
   }
 }
@@ -575,6 +626,8 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
         if (event.event_params.event_from == ax::mojom::EventFrom::kUser ||
             event.event_params.event_from == ax::mojom::EventFrom::kAction) {
           requires_post_process_selection_ = true;
+          selection_from_action_ =
+              event.event_params.event_from == ax::mojom::EventFrom::kAction;
         }
         break;
       case ui::AXEventGenerator::Event::DOCUMENT_TITLE_CHANGED:
@@ -636,6 +689,7 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
       case ui::AXEventGenerator::Event::MULTISELECTABLE_STATE_CHANGED:
       case ui::AXEventGenerator::Event::NAME_CHANGED:
       case ui::AXEventGenerator::Event::OBJECT_ATTRIBUTE_CHANGED:
+      case ui::AXEventGenerator::Event::ORIENTATION_CHANGED:
       case ui::AXEventGenerator::Event::OTHER_ATTRIBUTE_CHANGED:
       case ui::AXEventGenerator::Event::PARENT_CHANGED:
       case ui::AXEventGenerator::Event::PLACEHOLDER_CHANGED:
@@ -664,5 +718,19 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
       case ui::AXEventGenerator::Event::WIN_IACCESSIBLE_STATE_CHANGED:
         break;
     }
+  }
+}
+
+void ReadAnythingAppModel::IncreaseTextSize() {
+  font_size_ += kReadAnythingFontScaleIncrement;
+  if (font_size_ > kReadAnythingMaximumFontScale) {
+    font_size_ = kReadAnythingMaximumFontScale;
+  }
+}
+
+void ReadAnythingAppModel::DecreaseTextSize() {
+  font_size_ -= kReadAnythingFontScaleIncrement;
+  if (font_size_ < kReadAnythingMinimumFontScale) {
+    font_size_ = kReadAnythingMinimumFontScale;
   }
 }

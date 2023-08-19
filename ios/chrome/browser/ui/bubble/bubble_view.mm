@@ -19,10 +19,6 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Accessibility identifier for the close button.
 NSString* const kBubbleViewCloseButtonIdentifier =
     @"BubbleViewCloseButtonIdentifier";
@@ -42,6 +38,13 @@ NSString* const kBubbleViewArrowViewIdentifier =
     @"kBubbleViewArrowViewIdentifier";
 
 namespace {
+
+// Whether the arrow of the bubble is pointing vertically.
+BOOL IsArrowDirectionVertical(BubbleArrowDirection direction) {
+  return direction == BubbleArrowDirectionUp ||
+         direction == BubbleArrowDirectionDown;
+}
+
 // The color of the bubble (both circular background and arrow).
 UIColor* BubbleColor() {
   return [UIColor colorNamed:kBlueColor];
@@ -61,10 +64,12 @@ const CGFloat kBubbleVerticalPadding = 16.0f;
 // content.
 const CGFloat kBubbleHorizontalPadding = 16.0f;
 
-// The size that the arrow will appear to have.
-const CGSize kArrowSize = {32, 9};
+// The base length of the arrow.
+const CGFloat kArrowBase = 32;
+// The distance between the arrowhead and the base of the arrow.
+const CGFloat kArrowHeight = 9;
 // Margin to ensure that the arrow is not outside of the background.
-const CGFloat kArrowMargin = kArrowSize.width / 2.0f;
+const CGFloat kArrowMargin = kArrowBase / 2.0f;
 
 // The offset of the bubble's drop shadow, which will be slightly below the
 // bubble.
@@ -102,6 +107,13 @@ const CGFloat kSnoozeButtonFontSize = 15.0f;
 // The size of symbol action images.
 const CGFloat kSymbolBubblePointSize = 17;
 
+// The size that the arrow with arrow direction will appear to have.
+CGSize GetArrowSize(BubbleArrowDirection arrowDirection) {
+  return IsArrowDirectionVertical(arrowDirection)
+             ? CGSizeMake(kArrowBase, kArrowHeight)
+             : CGSizeMake(kArrowHeight, kArrowBase);
+}
+
 // Returns a background view for BubbleView.
 UIView* BubbleBackgroundView() {
   UIView* background = [[UIView alloc] initWithFrame:CGRectZero];
@@ -113,32 +125,61 @@ UIView* BubbleBackgroundView() {
 
 // Returns an arrow view for BubbleView.
 UIView* BubbleArrowViewWithDirection(BubbleArrowDirection arrowDirection) {
-  CGFloat width = kArrowSize.width;
-  CGFloat height = kArrowSize.height;
+  CGSize arrowSize = GetArrowSize(arrowDirection);
+  CGFloat width = arrowSize.width;
+  CGFloat height = arrowSize.height;
   UIView* arrow =
       [[UIView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, width, height)];
   UIBezierPath* path = UIBezierPath.bezierPath;
-  CGFloat xCenter = width / 2;
-  CGFloat controlPointCenter = xCenter * kControlPointCenter;
-  CGFloat controlPointEnd = xCenter * kControlPointEnd;
-  if (arrowDirection == BubbleArrowDirectionUp) {
-    [path moveToPoint:CGPointMake(xCenter, 0)];
-    [path addCurveToPoint:CGPointMake(width, height)
-            controlPoint1:CGPointMake(xCenter + controlPointCenter, 0)
-            controlPoint2:CGPointMake(xCenter + controlPointEnd, height)];
-    [path addLineToPoint:CGPointMake(0, height)];
-    [path addCurveToPoint:CGPointMake(xCenter, 0)
-            controlPoint1:CGPointMake(xCenter - controlPointEnd, height)
-            controlPoint2:CGPointMake(xCenter - controlPointCenter, 0)];
-  } else {
-    [path moveToPoint:CGPointMake(xCenter, height)];
-    [path addCurveToPoint:CGPointMake(width, 0)
-            controlPoint1:CGPointMake(xCenter + controlPointCenter, height)
-            controlPoint2:CGPointMake(xCenter + controlPointEnd, 0)];
-    [path addLineToPoint:CGPointZero];
-    [path addCurveToPoint:CGPointMake(xCenter, height)
-            controlPoint1:CGPointMake(xCenter - controlPointEnd, 0)
-            controlPoint2:CGPointMake(xCenter - controlPointCenter, height)];
+  CGFloat center = kArrowBase / 2;
+  CGFloat controlPointCenter = center * kControlPointCenter;
+  CGFloat controlPointEnd = center * kControlPointEnd;
+  switch (arrowDirection) {
+    case BubbleArrowDirectionUp:
+      [path moveToPoint:CGPointMake(center, 0)];
+      [path addCurveToPoint:CGPointMake(width, height)
+              controlPoint1:CGPointMake(center + controlPointCenter, 0)
+              controlPoint2:CGPointMake(center + controlPointEnd, height)];
+      [path addLineToPoint:CGPointMake(0, height)];
+      [path addCurveToPoint:CGPointMake(center, 0)
+              controlPoint1:CGPointMake(center - controlPointEnd, height)
+              controlPoint2:CGPointMake(center - controlPointCenter, 0)];
+      break;
+    case BubbleArrowDirectionDown:
+      [path moveToPoint:CGPointMake(center, height)];
+      [path addCurveToPoint:CGPointMake(width, 0)
+              controlPoint1:CGPointMake(center + controlPointCenter, height)
+              controlPoint2:CGPointMake(center + controlPointEnd, 0)];
+      [path addLineToPoint:CGPointZero];
+      [path addCurveToPoint:CGPointMake(center, height)
+              controlPoint1:CGPointMake(center - controlPointEnd, 0)
+              controlPoint2:CGPointMake(center - controlPointCenter, height)];
+      break;
+    case BubbleArrowDirectionLeading:
+    case BubbleArrowDirectionTrailing:
+      BOOL pointingLeft = UseRTLLayout()
+                              ? arrowDirection == BubbleArrowDirectionTrailing
+                              : arrowDirection == BubbleArrowDirectionLeading;
+      if (pointingLeft) {
+        [path moveToPoint:CGPointMake(0, center)];
+        [path addCurveToPoint:CGPointMake(width, 0)
+                controlPoint1:CGPointMake(0, center - controlPointCenter)
+                controlPoint2:CGPointMake(width, center - controlPointEnd)];
+        [path addLineToPoint:CGPointMake(width, height)];
+        [path addCurveToPoint:CGPointMake(0, center)
+                controlPoint1:CGPointMake(width, center + controlPointEnd)
+                controlPoint2:CGPointMake(0, center + controlPointCenter)];
+      } else {
+        [path moveToPoint:CGPointMake(width, center)];
+        [path addCurveToPoint:CGPointMake(0, height)
+                controlPoint1:CGPointMake(width, center + controlPointCenter)
+                controlPoint2:CGPointMake(0, center + controlPointEnd)];
+        [path addLineToPoint:CGPointMake(0, 0)];
+        [path addCurveToPoint:CGPointMake(width, center)
+                controlPoint1:CGPointMake(0, center - controlPointEnd)
+                controlPoint2:CGPointMake(width, center - controlPointCenter)];
+      }
+      break;
   }
   [path closePath];
   CAShapeLayer* layer = [CAShapeLayer layer];
@@ -494,12 +535,7 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
   for (NSLayoutConstraint* constraint in bubbleMarginConstraints) {
     constraint.priority = UILayoutPriorityDefaultHigh;
   }
-  // Make sure that if one of the bubbleMarginConstraints is overridden, the
-  // bubble still stays centered.
-  NSLayoutConstraint* backgroundCentering =
-      [self.centerXAnchor constraintEqualToAnchor:background.centerXAnchor];
-  bubbleMarginConstraints =
-      [bubbleMarginConstraints arrayByAddingObject:backgroundCentering];
+  CGSize arrowSize = GetArrowSize(self.direction);
   // Ensure that the arrow is inside the background's bound. These constraints
   // shouldn't affect the arrow's position.
   NSArray<NSLayoutConstraint*>* bubbleArrowMarginConstraints = @[
@@ -508,6 +544,11 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
                                     constant:kArrowMargin],
     [background.trailingAnchor
         constraintGreaterThanOrEqualToAnchor:arrow.trailingAnchor
+                                    constant:kArrowMargin],
+    [arrow.topAnchor constraintGreaterThanOrEqualToAnchor:background.topAnchor
+                                                 constant:kArrowMargin],
+    [background.bottomAnchor
+        constraintGreaterThanOrEqualToAnchor:arrow.bottomAnchor
                                     constant:kArrowMargin],
   ];
   for (NSLayoutConstraint* constraint in bubbleArrowMarginConstraints) {
@@ -520,6 +561,10 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
             constraintGreaterThanOrEqualToAnchor:self.leadingAnchor],
         [self.trailingAnchor
             constraintGreaterThanOrEqualToAnchor:background.trailingAnchor],
+        [background.topAnchor
+            constraintGreaterThanOrEqualToAnchor:self.topAnchor],
+        [self.bottomAnchor
+            constraintGreaterThanOrEqualToAnchor:background.bottomAnchor],
         // Ensure that the background view is as wide as the label, with added
         // padding on the sides of the label.
         [label.topAnchor
@@ -536,8 +581,8 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
                                         constant:kBubbleHorizontalPadding],
         // Enforce the arrow's size, scaling by `kArrowScaleFactor` to prevent
         // gaps between the arrow and the background view.
-        [arrow.widthAnchor constraintEqualToConstant:kArrowSize.width],
-        [arrow.heightAnchor constraintEqualToConstant:kArrowSize.height]
+        [arrow.widthAnchor constraintEqualToConstant:arrowSize.width],
+        [arrow.heightAnchor constraintEqualToConstant:arrowSize.height]
       ]];
   [constraints addObjectsFromArray:labelAlignmentConstraints];
   [constraints addObjectsFromArray:bubbleMarginConstraints];
@@ -637,60 +682,100 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
   NSLayoutAnchor* anchor;
   // The constant by which `anchor` is offset from the arrow's center anchor.
   CGFloat offset;
+  BOOL vertical = IsArrowDirectionVertical(self.direction);
   switch (self.alignment) {
-    case BubbleAlignmentLeading:
+    case BubbleAlignmentTopOrLeading:
       // The anchor point is at a distance of `alignmentOffset`
       // from the bubble's leading edge. Center align the arrow with the anchor
       // point by aligning the center of the arrow with the leading edge of the
       // bubble view and adding an offset of `alignmentOffset`.
-      anchor = self.leadingAnchor;
+      anchor = vertical ? (NSLayoutAnchor*)self.leadingAnchor
+                        : (NSLayoutAnchor*)self.topAnchor;
       offset = alignmentOffset;
       break;
     case BubbleAlignmentCenter:
       // Since the anchor point is at the center of the bubble view, center the
       // arrow on the bubble view.
-      anchor = self.centerXAnchor;
+      anchor = vertical ? (NSLayoutAnchor*)self.centerXAnchor
+                        : (NSLayoutAnchor*)self.centerYAnchor;
       offset = 0.0f;
       break;
-    case BubbleAlignmentTrailing:
+    case BubbleAlignmentBottomOrTrailing:
       // The anchor point is at a distance of `alignmentOffset`
       // from the bubble's trailing edge. Center align the arrow with the anchor
       // point by aligning the center of the arrow with the trailing edge of the
       // bubble view and adding an offset of `-alignmentOffset`.
-      anchor = self.trailingAnchor;
+      anchor = vertical ? (NSLayoutAnchor*)self.trailingAnchor
+                        : (NSLayoutAnchor*)self.bottomAnchor;
       offset = -alignmentOffset;
       break;
     default:
       NOTREACHED() << "Invalid bubble alignment " << self.alignment;
       return nil;
   }
-  return
-      [self.arrow.centerXAnchor constraintEqualToAnchor:anchor constant:offset];
+  NSLayoutAnchor* centerAnchor =
+      vertical ? (NSLayoutAnchor*)self.arrow.centerXAnchor
+               : (NSLayoutAnchor*)self.arrow.centerYAnchor;
+  return [centerAnchor constraintEqualToAnchor:anchor constant:offset];
 }
 
 // Return an array of constraints that depend on the bubble's arrow direction.
 - (NSArray<NSLayoutConstraint*>*)arrowDirectionConstraints {
   NSArray<NSLayoutConstraint*>* constraints;
-  if (self.direction == BubbleArrowDirectionUp) {
-    constraints = @[
-      [self.background.topAnchor constraintEqualToAnchor:self.arrow.topAnchor
-                                                constant:kArrowSize.height],
-      // Ensure that the top of the arrow is aligned with the top of the bubble
-      // view and add a margin above the arrow.
-      [self.arrow.topAnchor constraintEqualToAnchor:self.topAnchor
-                                           constant:kBubbleVerticalMargin]
-    ];
-  } else {
-    DCHECK(self.direction == BubbleArrowDirectionDown);
-    constraints = @[
-      [self.arrow.bottomAnchor
-          constraintEqualToAnchor:self.background.bottomAnchor
-                         constant:kArrowSize.height],
-      // Ensure that the bottom of the arrow is aligned with the bottom of the
-      // bubble view and add a margin below the arrow.
-      [self.bottomAnchor constraintEqualToAnchor:self.arrow.bottomAnchor
-                                        constant:kBubbleVerticalMargin]
-    ];
+  CGSize arrowSize = GetArrowSize(self.direction);
+  switch (self.direction) {
+    case BubbleArrowDirectionUp:
+      constraints = @[
+        [self.background.topAnchor constraintEqualToAnchor:self.arrow.topAnchor
+                                                  constant:arrowSize.height],
+        // Ensure that the top of the arrow is aligned with the top of the
+        // bubble view and add a margin above the arrow.
+        [self.arrow.topAnchor constraintEqualToAnchor:self.topAnchor
+                                             constant:kBubbleVerticalMargin],
+        [self.centerXAnchor
+            constraintEqualToAnchor:self.background.centerXAnchor],
+      ];
+      break;
+    case BubbleArrowDirectionDown:
+      constraints = @[
+        [self.arrow.bottomAnchor
+            constraintEqualToAnchor:self.background.bottomAnchor
+                           constant:arrowSize.height],
+        // Ensure that the bottom of the arrow is aligned with the bottom of the
+        // bubble view and add a margin below the arrow.
+        [self.bottomAnchor constraintEqualToAnchor:self.arrow.bottomAnchor
+                                          constant:kBubbleVerticalMargin],
+        [self.centerXAnchor
+            constraintEqualToAnchor:self.background.centerXAnchor],
+      ];
+      break;
+    case BubbleArrowDirectionLeading:
+      constraints = @[
+        [self.background.leadingAnchor
+            constraintEqualToAnchor:self.arrow.leadingAnchor
+                           constant:arrowSize.width],
+        // Ensure that the leading edge of the arrow is aligned with the bottom
+        // of the bubble view and add a margin below the arrow.
+        [self.arrow.leadingAnchor
+            constraintEqualToAnchor:self.leadingAnchor
+                           constant:kBubbleHorizontalMargin],
+        [self.centerYAnchor
+            constraintEqualToAnchor:self.background.centerYAnchor],
+      ];
+      break;
+    case BubbleArrowDirectionTrailing:
+      constraints = @[
+        [self.arrow.trailingAnchor
+            constraintEqualToAnchor:self.background.trailingAnchor
+                           constant:arrowSize.width],
+        // Ensure that the trailing edge of the arrow is aligned with the bottom
+        // of the bubble view and add a margin below the arrow.
+        [self.trailingAnchor constraintEqualToAnchor:self.arrow.trailingAnchor
+                                            constant:kBubbleHorizontalMargin],
+        [self.centerYAnchor
+            constraintEqualToAnchor:self.background.centerYAnchor],
+      ];
+      break;
   }
   return constraints;
 }
@@ -789,8 +874,13 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
   CGFloat imageContentHeight =
       self.imageView ? 2 * kBubbleVerticalPadding + kImageViewSize : 0.0f;
   // Calculates the height needed to display the bubble.
-  CGFloat bubbleHeight = 2 * kBubbleVerticalMargin + kArrowSize.height +
-                         MAX(imageContentHeight, textContentHeight);
+  CGFloat bubbleHeight =
+      MAX(imageContentHeight, textContentHeight) + kBubbleVerticalMargin * 2;
+  if (IsArrowDirectionVertical(self.direction)) {
+    bubbleHeight += GetArrowSize(self.direction).height;
+  } else {
+    bubbleWidth += GetArrowSize(self.direction).width;
+  }
   CGSize bubbleSize = CGSizeMake(bubbleWidth, bubbleHeight);
   return bubbleSize;
 }

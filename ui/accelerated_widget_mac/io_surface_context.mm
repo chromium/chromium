@@ -15,6 +15,30 @@
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/gpu_switching_manager.h"
 
+namespace base {
+
+template <>
+struct ScopedTypeRefTraits<CGLContextObj> {
+  static CGLContextObj InvalidValue() { return nullptr; }
+  static CGLContextObj Retain(CGLContextObj object) {
+    return CGLRetainContext(object);
+  }
+  static void Release(CGLContextObj object) { CGLReleaseContext(object); }
+};
+
+template <>
+struct ScopedTypeRefTraits<CGLPixelFormatObj> {
+  static CGLPixelFormatObj InvalidValue() { return nullptr; }
+  static CGLPixelFormatObj Retain(CGLPixelFormatObj object) {
+    return CGLRetainPixelFormat(object);
+  }
+  static void Release(CGLPixelFormatObj object) {
+    CGLReleasePixelFormat(object);
+  }
+};
+
+}  // namespace base
+
 namespace ui {
 
 namespace {
@@ -82,15 +106,16 @@ void IOSurfaceContext::PoisonContextAndSharegroup() {
     return;
 
   auto* type_map = GetTypeMap();
-  for (TypeMap::iterator it = type_map->begin(); it != type_map->end(); ++it) {
-    it->second->poisoned_ = true;
+  for (auto& it : *type_map) {
+    it.second->poisoned_ = true;
   }
   type_map->clear();
 }
 
 IOSurfaceContext::IOSurfaceContext(
-    Type type, base::ScopedTypeRef<CGLContextObj> cgl_context)
-    : type_(type), cgl_context_(cgl_context), poisoned_(false) {
+    Type type,
+    base::ScopedTypeRef<CGLContextObj> cgl_context)
+    : type_(type), cgl_context_(cgl_context) {
   auto* type_map = GetTypeMap();
   DCHECK(type_map->find(type_) == type_map->end());
   type_map->insert(std::make_pair(type_, this));

@@ -54,7 +54,14 @@ void ParseHeader(base::StringPiece header_value,
             mojom::CrossOriginOpenerPolicyValue::kSameOriginAllowPopups;
       }
     }
-    if (base::FeatureList::IsEnabled(features::kCoopRestrictProperties) &&
+    // CoopRestrictProperties enables COOP:RP unconditionally.
+    // CoopRestrictPropertiesOriginTrial enables COOP:RP when provided a valid
+    // origin trial token. Since we can't check the trial token in the network
+    // service, we need to parse the header regardless. In content, we'll
+    // sanitize the header if we don't get valid trial tokens.
+    if ((base::FeatureList::IsEnabled(features::kCoopRestrictProperties) ||
+         base::FeatureList::IsEnabled(
+             features::kCoopRestrictPropertiesOriginTrial)) &&
         policy_item == kRestrictProperties) {
       *value = mojom::CrossOriginOpenerPolicyValue::kRestrictProperties;
       if (soap_by_default_value) {

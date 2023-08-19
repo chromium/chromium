@@ -60,12 +60,20 @@ void NetworkScreenHandler::DeclareLocalizedValues(
   builder->Add("proxySettingsListItemName",
                IDS_NETWORK_PROXY_SETTINGS_LIST_ITEM_NAME);
   builder->Add("addWiFiListItemName", IDS_NETWORK_ADD_WI_FI_LIST_ITEM_NAME);
+
+  builder->Add("networkScreenQuickStart",
+               IDS_LOGIN_QUICK_START_SETUP_NETWORK_SCREEN_ENTRY_POINT);
+
   ui::network_element::AddLocalizedValuesToBuilder(builder);
   cellular_setup::AddLocalizedValuesToBuilder(builder);
 }
 
 void NetworkScreenHandler::GetAdditionalParameters(base::Value::Dict* dict) {
   cellular_setup::AddNonStringLoadTimeDataToDict(dict);
+}
+
+void NetworkScreenHandler::SetQuickStartEnabled() {
+  CallExternalAPI("setQuickStartEnabled");
 }
 
 }  // namespace ash

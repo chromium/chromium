@@ -37,6 +37,7 @@
 <translation id="1297922636971898492">Google Disk hazırda əlçatmazdır. Google Disk əlçatan olan kimi yükləmə avtomatik yenidən başlayacaq.</translation>
 <translation id="1307931752636661898">Linux fayllarını göstərmək alınmadı</translation>
 <translation id="1313405956111467313">Avtomatik proksi sazlama</translation>
+<translation id="134645005685694099">Fayl sinxronlaşdırmasını aktiv saxlamaq üçün cihazda yaddaş yeri kifayət deyil. Yeni fayllar avtomatik sinxronlaşdırılmayacaq.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Fayl və ya direktoriya qeyri-stabildir.</translation>
 <translation id="1363028406613469049">Trek</translation>
@@ -113,7 +114,6 @@
 <translation id="1920798810075583923">Qarpız</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> formatlandı</translation>
 <translation id="1931134289871235022">Slovak</translation>
-<translation id="1933345018156373194">Köçürmək alınmadı, gözlənilməz xəta baş verdi: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Fin</translation>
 <translation id="1942765061641586207">Şəkil dəqiqliyi</translation>
 <translation id="1972984168337863910">Faylların rəy panelini genişləndirin</translation>
@@ -130,7 +130,7 @@
 <translation id="2084108471225856927">Cihaz ayarları</translation>
 <translation id="2084809735218147718">Təşəkkür edən adam</translation>
 <translation id="2088690981887365033">VPN şəbəkəsi</translation>
-<translation id="2089751716171649322">Oflayn olduqda Google Disk fayllarına asanlıqla daxil olun</translation>
+<translation id="209653272837065803">Faylları sinxronlaşdırmaq üçün yetərli yaddaş yeri yoxdur</translation>
 <translation id="2111134541987263231"><ph name="BEGIN_BOLD" />Anonim rejimdə icazə verin<ph name="END_BOLD" /> seçimini aktiv edin</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> element silinəcək və onları bərpa edə bilməyəcəksiniz.</translation>
 <translation id="2122305276694332719">Gizlədilmiş şəbəkəyə avtomatik qoşulduqda başqaları cihaz və şəbəkə ayarlarınızı görəcək. Bu, tövsiyə edilmir.</translation>
@@ -147,9 +147,11 @@
 <translation id="2198315389084035571">Sadələşmiş Çin</translation>
 <translation id="22085916256174561">Koreya</translation>
 <translation id="2208919847696382164">Linux ilə quraşdırın</translation>
+<translation id="2215692307449050019">Batareya azdır. Enerji mənbəyinə qoşulduqda fayl sinxronlaşdırması bərpa ediləcək.</translation>
 <translation id="2225536596944493418"><ph name="NUMBER_OF_ITEMS" /> elementi silmək istədiyinizə əminsiniz?</translation>
 <translation id="2230062665678605299">Qovluq yaratmaq alınmadı "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">Kofe içən adam</translation>
+<translation id="2247561763838186830">Çıxmısınız</translation>
 <translation id="2251368349685848079">Zibil qutusundan bərpa edin</translation>
 <translation id="2278133026967558505">Bütün veb-sayt və URL-lər tərəfindən fayla giriş</translation>
 <translation id="2282155092769082568">Avtokonfiqurasiya URL-i:</translation>
@@ -163,7 +165,7 @@
 <translation id="2312704192806647271">{COUNT,plural, =1{Bu məlumat ilə artırmanın yerini tapmaq olmur: <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Admin ilə əlaqə saxlayın.}other{Bu məlumat ilə artırmaların yerini tapmaq olmur: <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Admin ilə əlaqə saxlayın.}}</translation>
 <translation id="2325650632570794183">Bu fayl növü dəstəklənmir. Bu faylı aça bilən tətbiqi tapmaq üçün Chrome Veb Marketə daxil olun.</translation>
 <translation id="2326539130272988168">Bolqar</translation>
-<translation id="2337715497728194187">Bruschetta ilə paylaşın</translation>
+<translation id="233822363739146957">Bütün faylları sinxronlaşdırmaq üçün yetərli yaddaş yeri yoxdur</translation>
 <translation id="23721837607121582">Mobil profili endirin, Şəbəkə <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Siyahı görünüşünə keçin</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> qovluq Linux ilə paylaşıldı</translation>
@@ -181,6 +183,7 @@
 <translation id="2464089476039395325">HTTP Proksi</translation>
 <translation id="2467267713099745100"><ph name="NETWORK_TYPE" /> şəbəkəsi, deaktivdir</translation>
 <translation id="2468402215065996499">Tamaqoçi</translation>
+<translation id="2468470447085858632">Fayl sinxronlaşdırması ilə Google Disk fayllarına oflayn daxil olun</translation>
 <translation id="2470939964922472929">Yanlış PİN kod dəfələrlə daxil edilib. Yeni PİN kod ayarlamaq üçün operator tərəfindən təmin edilən 8 rəqəmli Şəxsi Blokdan Çıxarma Açarını (PUK) daxil edin.</translation>
 <translation id="2500392669976258912">Qucarat Fonetikası</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -192,7 +195,6 @@
 <translation id="2544853746127077729">Doğrulama təsdiqi şəbəkə tərəfindən ləğv edildi</translation>
 <translation id="255937426064304553">ABŞ Beynəlxalq</translation>
 <translation id="2563185590376525700">Qurbağa</translation>
-<translation id="2574327434504608656">Bruschetta ilə 1 qovluq paylaşıldı</translation>
 <translation id="2578394532502990878">Tamil dili (Fonetik)</translation>
 <translation id="2579959351793446050">Oriya dili</translation>
 <translation id="2587195714949534472"><ph name="FILE_NAME" /> faylı sinxronlaşdırma üçün hazırlanır...</translation>
@@ -216,6 +218,7 @@
 <translation id="2782104745158847185">Linux tətbiqini quraşdırarkən xəta baş verdi</translation>
 <translation id="2802583107108007218">Bu məhdudiyyətlər haqqında ətraflı məlumat</translation>
 <translation id="2803375539583399270">PİN daxil edin</translation>
+<translation id="2819519502129272135">Fayl sinxronlaşdırması deaktivdir</translation>
 <translation id="2820957248982571256">Skan edilir...</translation>
 <translation id="2830077785865012357">Çin dili (Juyin)</translation>
 <translation id="2843806747483486897">Defoltu dəyişin...</translation>
@@ -291,7 +294,6 @@
 <translation id="3408072735282270043">Aktivləşdirin, <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">Neo 2 klaviaturası ilə Alman (Almaniya)</translation>
 <translation id="3414856743105198592">Kənarlaşdırıla bilən medianın format edilməsi bütün datanın silinməsi ilə nəticələnir. Davam edirsiniz?</translation>
-<translation id="3435143625481187092">Bruschetta'ya <ph name="FOLDER_NAME" /> qovluğundakı fayllara giriş icazəsi verin</translation>
 <translation id="3437801641691368414">Yaranma tarixi</translation>
 <translation id="343907260260897561">Ani Kamera</translation>
 <translation id="3455931012307786678">Eston</translation>
@@ -299,7 +301,6 @@
 <translation id="3479552764303398839">İndi yox</translation>
 <translation id="3486821258960016770">Monqol</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> xətalar.</translation>
-<translation id="3501954296166022751">Google Disk faylları oflayn əlçatandır</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> şəbəkə, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />%, Detallar</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> element sinxronlaşdırma üçün hazırlanır...</translation>
 <translation id="3522708245912499433">Portuqal</translation>
@@ -356,8 +357,10 @@
 <translation id="3906232975181435906">Mobil profil quraşdırılır, Şəbəkə <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Yapışdırın.</translation>
+<translation id="3950820424414687140">Giriş</translation>
 <translation id="3952872973865944257">Teluqu (Fonetik)</translation>
 <translation id="3958548648197196644">Kivi</translation>
+<translation id="397105322502079400">Hesablanır...</translation>
 <translation id="3971140002794351170">Mobil profili endirin, Şəbəkə <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">İngilis (BK)</translation>
 <translation id="3975895378829046965">Banqla Fonetikası</translation>
@@ -368,6 +371,7 @@
 <translation id="4040753847560036377">Yanlış PUK</translation>
 <translation id="4057991113334098539">Aktiv edilir...</translation>
 <translation id="4092890906744441904">İrland</translation>
+<translation id="4124731372776320263">1 Disk faylı sinxronlaşdırılır</translation>
 <translation id="4124935795427217608">Tək buynuzlu at</translation>
 <translation id="4131235941541910880">Lazımsız elementləri zibil qutusuna köçürün</translation>
 <translation id="4134804435730168042">Şəbəkə <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Cihaz ayarlamasından sonra aktiv edin</translation>
@@ -377,7 +381,6 @@
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> köçürülüb.</translation>
 <translation id="4176286497474237543">Zibil qutusunu indi boşaldın</translation>
 <translation id="4179621117429069925">Bu element zibil qutunuzdadır</translation>
-<translation id="4181839429935094755"><ph name="NUMBER_OF_ITEMS" /> qovluq Bruschetta ilə paylaşılıb</translation>
 <translation id="4186579485882418952">Oflayn rejimi aktiv edin</translation>
 <translation id="4193154014135846272">Google sənəd</translation>
 <translation id="4197674956721858839">Zip seçimi</translation>
@@ -417,6 +420,7 @@
 <translation id="4432921877815220091">Şəbəkə <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Cihaz ayarlamasından sonra aktiv edin, Administrator idarə edir</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> şəbəkə, <ph name="NETWORK_NAME" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />%, Qoşulun</translation>
 <translation id="4442424173763614572">DNS sistemi uğursuz oldu</translation>
+<translation id="4445896958353114391">Fayllar sinxronlaşdırılır</translation>
 <translation id="4462159676511157176">Fərdi ad serverləri</translation>
 <translation id="4465725236958772856"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> şəbəkə, <ph name="NETWORK_NAME" />, Administratorunuz tərəfindən idarə olunur, Qoşulun</translation>
 <translation id="4470564870223067757">Hangul 2 Dəsti</translation>
@@ -438,11 +442,11 @@
 <translation id="4599600860674643278">Filtr sıfırlanıb.</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" /> faylı <ph name="FOLDER_NAME" /> qovluğuna kopyalanır</translation>
 <translation id="4631887759990505102">Artist</translation>
+<translation id="4635373743001040938">Yaddaş yeri az idi. Fayl sinxronlaşdırması deaktiv edilib.</translation>
 <translation id="4642769377300286600">Mobil profil quraşdırılır, Şəbəkə <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Qwerty klaviaturası ilə Çex dili</translation>
 <translation id="4656777537938206294">Faylları oflayn əlçatan edin</translation>
 <translation id="4658782175094886150">Qarda adam</translation>
-<translation id="466782788172479199">Bruschetta'ya Google Diskinizdəki fayllara giriş icazəsi verin. Dəyişikliklər digər cihazlara sinxronizasiya ediləcək.</translation>
 <translation id="4669606053856530811">"<ph name="SOURCE_NAME" />" bu element onlarla paylaşılmadığı halda, daxil ola bilməyəcəklər.</translation>
 <translation id="467809019005607715">Google Slayd</translation>
 <translation id="4690246192099372265">İsveç</translation>
@@ -491,8 +495,8 @@
 <translation id="4961158930123534723">1 qovluq Parallels Desktop ilə paylaşılır</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> bərpa edildi</translation>
 <translation id="4969785127455456148">Albom</translation>
+<translation id="4972330214479971536">Fayl sinxronlaşdırması ayarlanmadı</translation>
 <translation id="4973523518332075481">Maksimum <ph name="MAX_LENGTH" /> və ya daha az simvoldan ibarət olan addan istifadə edin</translation>
-<translation id="4973970068702235170">Sıxmaq alınmadı, gözlənilməz xəta baş verdi: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">Yapon</translation>
 <translation id="4987699874727873250">İngilis (Hindistan)</translation>
 <translation id="4988205478593450158">"<ph name="FILE_NAME" />" faylını silmək istədyinizə əminsiniz?</translation>
@@ -514,6 +518,7 @@
 <translation id="5102922915594634436">Sinxronlaşdırılmış qovluqları idarə edin</translation>
 <translation id="5109254780565519649">Xəta baş verdi. Bəzi elementlər bərpa edilməmiş ola bilər.</translation>
 <translation id="5110329002213341433">İngilis dili (Kanada)</translation>
+<translation id="5119780910075847424">Sinxronlaşdırma durdurulub</translation>
 <translation id="5123433949759960244">Basketbol</translation>
 <translation id="5129662217315786329">Polyak</translation>
 <translation id="5144820558584035333">Hangul 3 Set (390)</translation>
@@ -551,7 +556,6 @@
 <translation id="5323213332664049067">Latın Amerikası</translation>
 <translation id="5330145655348521461">Bu fayllar başqa masa üstündə açıldı. Ona baxmaq üçün <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) üzərinə köçürün.</translation>
 <translation id="5330512191124428349">Məlumatı əldə edin</translation>
-<translation id="5344246330454251646">Bruschetta paylaşımını idarəedin</translation>
 <translation id="535792325654997756">Pişiklərin əhatəsində olan adam</translation>
 <translation id="5358764674931277">Çərçivə nisbəti</translation>
 <translation id="5363339716524495120">Daxiletmə dili Çin dilidir</translation>
@@ -563,6 +567,7 @@
 <translation id="5422221874247253874">Giriş Nöqtəsi</translation>
 <translation id="5428105026674456456">Ispan</translation>
 <translation id="5438282218546237410"><ph name="SEARCH_TERM" /> üçün nəticə yoxdur.</translation>
+<translation id="5447680084201416734">Kifayət qədər yer yoxdur.</translation>
 <translation id="5449551289610225147">Yanlış parol</translation>
 <translation id="5459064203055649751">"<ph name="FILENAME" />" adlı fayl hazırda mövcuddur. Onu köçürdüyünüzlə əvəz etmək istəyirsiniz?</translation>
 <translation id="5463231940765244860">Daxil edin</translation>
@@ -573,7 +578,6 @@
 <translation id="5494920125229734069">Hamısını seçin</translation>
 <translation id="5500122897333236901">İsland</translation>
 <translation id="5508696409934741614">Nöqtə</translation>
-<translation id="5519161320735100193">Google Disk ayarları</translation>
 <translation id="5522908512596376669">Fayl siyahısı siyahı görünüşünə dəyişdirilib.</translation>
 <translation id="5524517123096967210">Fayl oxunmadı.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> şəkli</translation>
@@ -601,6 +605,7 @@
 <translation id="5720028165859493293"><ph name="FILE_NAME" /> zibil qutusuna köçürüldü</translation>
 <translation id="5724172041621205163">Pattachote klaviaturası ilə Tay dili</translation>
 <translation id="57383366388012121">Keçən ay</translation>
+<translation id="575175778971367197">Hazırda bu faylı sinxronlaşdırmaq olmur</translation>
 <translation id="5756666464756035725">Macar QWERTY</translation>
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> element seçilib</translation>
 <translation id="5763377084591234761">Alman (İsveçrə)</translation>
@@ -626,7 +631,6 @@
 <translation id="5896749729057314184">Şəbəkə <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Deaktivdir, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />%, Detallar</translation>
 <translation id="5911887972742538906">Linux tətbiqi quraşdırılan zaman xəta baş verdi.</translation>
 <translation id="5912396950572065471">Format</translation>
-<translation id="5913638992615760742">Kopyalamaq alınmadı, gözlənilməz xəta:<ph name="ERROR_MESSAGE" /></translation>
 <translation id="5918480239180455431">Yeni axtarış funksiyaları var</translation>
 <translation id="5926082595146149752">ABŞ Beynəlxalq kompüter klaviaturası ilə Holland dili (Niderland)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -634,7 +638,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> element</translation>
 <translation id="5957366693331451795">Chromebox cihazları</translation>
 <translation id="5982621672636444458">Çeşidləmə variantları</translation>
-<translation id="6007237601604674381">Daşınma alınmadı. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Ethernet şəbəkəsi</translation>
 <translation id="60357267506638014">Çex QWERTY</translation>
 <translation id="603895874132768835">Yeni bir PİN ayarlayana qədər bu şəbəkədən istifadə edə bilməyəcəksiniz</translation>
@@ -690,6 +693,7 @@
 <translation id="6423031066725912715">TCVN klaviaturası ilə Vyetnam dili</translation>
 <translation id="6430271654280079150">1 cəhdiniz qalıb.</translation>
 <translation id="643243556292470964">Silinmiş fayllar indi zibil qutusuna köçürülüb</translation>
+<translation id="6438480100790416671">Yaddaş yeri yoxlanır…</translation>
 <translation id="6485131920355264772">Boşluq infosunu əldə etmək alınmadı</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> şəbəkə, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />%, Administratorunuz tərəfindən idarə olunur, Detallar</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> faylı <ph name="FOLDER_NAME" /> qovluğunda arxivdən çıxarılır</translation>
@@ -702,6 +706,7 @@
 <translation id="6558280019477628686">Xəta baş verdi. Bəzi elementlər silinməmiş ola bilər.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" silinir...</translation>
 <translation id="6581162200855843583">Google Disk linki</translation>
+<translation id="6588648400954570689">Fayl sinxronlaşdırma ayarları</translation>
 <translation id="6594855146910089723">Bu qovluq Linux və Parallels Desktop ilə paylaşılır</translation>
 <translation id="6607272825297743757">Fayl məlumatı</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> qovluq Parallels Desktop ilə paylaşılır</translation>
@@ -716,7 +721,6 @@
 <translation id="6710213216561001401">Əvvəlki</translation>
 <translation id="6732801395666424405">Sertifikatlar yüklənilmədi</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
-<translation id="6740270213273127264">Bruschetta ilə qovluq paylaşın</translation>
 <translation id="6750737795876287924">Cari kataloq</translation>
 <translation id="6751256176799620176">1 qovluq seçildi</translation>
 <translation id="6755827872271341378">ChromeOS Flex cihazı</translation>
@@ -793,6 +797,7 @@
 <translation id="7256405249507348194">Naməlum xəta: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Əlçatan xidmətlər</translation>
 <translation id="7291818353625820805">Düymələrin təkrarlanmasını istəyirsiniz? Klaviatura Ayarlarında aksent vurğularını deaktiv edin</translation>
+<translation id="729236380049459563">Fayl sinxronlaşdırması aktivdir</translation>
 <translation id="7292816689782057017">Administrator siyasəti bəzi məkanlarda saxlamağı məhdudlaşdırır.</translation>
 <translation id="7294063083760278948">Teluqu dilində Transliterasiya</translation>
 <translation id="7295662345261934369">Başqaları ilə paylaşın</translation>
@@ -800,6 +805,7 @@
 <translation id="7309413087278791451">Alman dili (Belçika)</translation>
 <translation id="7339898014177206373">Yeni pəncərə</translation>
 <translation id="7343393116438664539">Vyetnam dili (Teleks)</translation>
+<translation id="7347346221088620549">Şifrələnmiş fayl</translation>
 <translation id="7357762654218998920">Bu fayl növü dəstəklənmir. ChromeOS'də faylların açılması barədə <ph name="BEGIN_LINK_HELP" />ətraflı məlumat<ph name="END_LINK_HELP" />.</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> element kopyalanır...</translation>
 <translation id="7375951387215729722">Fayllar <ph name="COLUMN_NAME" /> üzrə artan sıra ilə çeşidlənib.</translation>
@@ -826,6 +832,7 @@
 <translation id="7547811415869834682">Holland</translation>
 <translation id="7551643184018910560">Rəfə sancaqlayın</translation>
 <translation id="7553492409867692754">Linux tətbiqlərinə <ph name="FOLDER_NAME" /> qovluğundakı fayllara giriş icazəsi verin</translation>
+<translation id="7555339735447658365">Oflaynsınız. İnternetə qoşulduqda fayl sinxronlaşdırması bərpa ediləcək</translation>
 <translation id="7589661784326793847">Bir saniyə gözləyin</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> oflayn əlçatan edilir</translation>
 <translation id="7600126690270271294">Serb</translation>
@@ -844,6 +851,7 @@
 <translation id="76959938259365003">Zibil qutusunu boşaltmaq alınmadı.</translation>
 <translation id="770015031906360009">Yunan</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> kopyalanıb.</translation>
+<translation id="7707941139430559579">Faylı köçürmək olmur. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="7708271999969613024">Bu şəbəkədən istifadə etmək üçün operator tərəfindən təqdim olunan 8 rəqəmli Fərdi Blokdan Çıxarma Açarını (PUK) daxil etməlisiniz.</translation>
 <translation id="7711920809702896782">Şəkil məlumatı</translation>
 <translation id="7724603315864178912">Kəsin</translation>
@@ -887,10 +895,10 @@
 <translation id="7972920761225148017">Fransız (İsveçrə)</translation>
 <translation id="7973962044839454485">PPP identifikasiyası yanlış istifadəçi adı və ya parol səbəbindən uğursuz oldu</translation>
 <translation id="7980421588063892270">Colemak klaviaturası ilə İngilis dili (ABŞ)</translation>
-<translation id="7985008041109611710"><ph name="NUMBER_OF_FILES_SYNCING" /> fayl sinxronlaşdırılır</translation>
 <translation id="8000066093800657092">Şəbəkə yoxdur</translation>
 <translation id="8008366997883261463">Jack Russell Terrier</translation>
 <translation id="8028993641010258682">Ölçü</translation>
+<translation id="8034974485549318493">İlkin ayarlamada faylların sinxronlaşdırılması üçün internetə qoşulmalısınız.</translation>
 <translation id="803771048473350947">Fayl</translation>
 <translation id="8038111231936746805">(defolt)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> audiosu</translation>
@@ -901,6 +909,7 @@
 <translation id="8087576439476816834">Endirin: <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Mənimlə Paylaşılan</translation>
 <translation id="8116072619078571545">Buzlu su</translation>
+<translation id="8124093710070495550">Sinxronlaşdırma problemi</translation>
 <translation id="8128733386027980860">Dvorak klaviaturası ilə İngilis dili (BK)</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" Sizinlə paylaşılıb. Onun sahibi olmadığınız üçün onu silə bilməzsiniz.</translation>
 <translation id="8138705869659070104">Cihazı ayarlayıb, aktiv edin</translation>
@@ -910,9 +919,11 @@
 <translation id="8154842056504218462">Bütün daxiletmələri seçin</translation>
 <translation id="8157684860301034423">Tətbiq məlumatını əldə etmək alınmadı.</translation>
 <translation id="8175731104491895765">Fransız dili (Belçika)</translation>
+<translation id="8175799081768705361"><ph name="NUMBER_OF_FILES_SYNCING" /> Disk faylı sinxronlaşdırılır</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Cihaz modeli</translation>
 <translation id="8223479393428528563">Bu faylları oflayn istifadəyə saxlamaq üçün onlayn olun, faylları sağ klikləyin və <ph name="OFFLINE_CHECKBOX_NAME" /> seçimini edin.</translation>
+<translation id="8241139360630443550">Yaddaşa baxın</translation>
 <translation id="8249296373107784235">Dayandırın</translation>
 <translation id="8250690786522693009">Latın</translation>
 <translation id="8250920743982581267">Sənədlər</translation>
@@ -943,6 +954,7 @@
 <translation id="8404498045299006085">Hamısını saxlayın</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> şəbəkəsi, qoşulur</translation>
 <translation id="8425213833346101688">Dəyişin</translation>
+<translation id="8428213095426709021">Ayarlar</translation>
 <translation id="8431909052837336408">SIM PIN kodu dəyişin</translation>
 <translation id="8437209419043462667">ABŞ</translation>
 <translation id="8452135315243592079">SIM kart yoxdur</translation>
@@ -979,6 +991,7 @@
 <translation id="8609695766746872526">İsland</translation>
 <translation id="863903787380594467">Yanlış PIN. <ph name="RETRIES" /> cəhdiniz qalıb.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Port</translation>
+<translation id="8656407365183407932">Oflayn fayllar silinib</translation>
 <translation id="8656768832129462377">Yoxlamayın</translation>
 <translation id="8688591111840995413">Yanlış parol</translation>
 <translation id="8698464937041809063">Google çertyoj</translation>
@@ -1009,10 +1022,12 @@
 <translation id="8919081441417203123">Danimarka</translation>
 <translation id="8949925099261528566">Qoşuludur, internet yoxdur</translation>
 <translation id="8965697826696209160">Yer çatmır.</translation>
+<translation id="8970887620466824814">Xəta baş verdi.</translation>
 <translation id="8971742885766657349">Sinxronlaşdırılır - <ph name="PERCENT" />%</translation>
 <translation id="8997962250644902079">Çin dili (Ənənəvi) Pinyin</translation>
 <translation id="8998871447376656508">Yükləməni tamamlamaq üçün Google Diskinizdə kifayət qədər boş yer yoxdur.</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> şəbəkə, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />%, Administratorunuz tərəfindən idarə olunur, Detallar</translation>
+<translation id="9007990314804111233">Microsoft hesabına daxil olun</translation>
 <translation id="9017798300203431059">Rus fonetikası</translation>
 <translation id="9034924485347205037">Linux faylları</translation>
 <translation id="9035012421917565900">Element yenidən "<ph name="DESTINATION_NAME" />" təyinatına köçürülə bilməz, ona görə də bu əməliyyat geri qaytara bilməyəcəksiniz.</translation>
@@ -1043,7 +1058,6 @@
 <translation id="9213073329713032541">Quraşdırma uğurla başladı.</translation>
 <translation id="9219103736887031265">Şəkillər</translation>
 <translation id="9219908252191632183">Qəməri</translation>
-<translation id="937795003075802289">1 fayl sinxronlaşdırılır</translation>
 <translation id="938470336146445890">İstifadəçi sertifikatını bərpa edin.</translation>
 <translation id="939736085109172342">Yeni qovluq</translation>
 <translation id="943972244133411984">Düzəliş edib:</translation>

@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Accessibility identifier prefix of a grid cell.
 NSString* const kGridCellIdentifierPrefix = @"GridCellIdentifierPrefix";
 
@@ -27,10 +23,6 @@ NSString* const kSuggestedActionsGridCellIdentifier =
 
 // Grid styling.
 NSString* const kGridBackgroundColor = @"grid_background_color";
-
-// PlusSignCell styling
-NSString* const kPlusSignCellBackgroundColor =
-    @"plus_sign_grid_cell_background_color";
 
 // Definition of limited width for applicable size classes. The first refers to
 // the horizontal size class; the second to the vertical.
@@ -95,22 +87,4 @@ const CGFloat kGridCellPriceDropTopSpacing = 10.0f;
 const CGFloat kGridCellPriceDropLeadingSpacing = 10.0f;
 const CGFloat kGridCellPriceDropTrailingSpacing = 10.0f;
 
-const CGFloat kPlusSignImageTrailingCenterDistance = 55.5;
-// The threshold is set so that the hide transition starts at the moment the
-// plus sign image from the button and the one from the plus sign cell coincide
-// in position.
-const CGFloat kScrollThresholdForPlusSignButtonHide =
-    kPlusSignImageTrailingCenterDistance -
-    kGridLayoutLineSpacingCompactCompactLimitedWidth -
-    kGridCellSizeSmall.width / 2;
-const CGFloat kPlusSignImageYCenterConstant =
-    kGridLayoutLineSpacingCompactCompactLimitedWidth +
-    kGridCellSelectionRingGapWidth + kGridCellSelectionRingTintWidth +
-    kGridCellSizeSmall.height / 2 - 2;
-const CGFloat kPlusSignButtonWidth = 156;
-
 const CGFloat kGridExpectedTopContentInset = 20.0f;
-
-const CGFloat kThumbStripHeight =
-    kGridCellSizeSmall.height +
-    2 * kGridLayoutLineSpacingCompactCompactLimitedWidth;

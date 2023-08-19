@@ -71,8 +71,6 @@ class OfferNotificationBubbleControllerImplTest
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
-
   class MockCouponService : public CouponService {
    public:
     MOCK_METHOD(void,
@@ -280,8 +278,6 @@ TEST_F(OfferNotificationBubbleControllerImplTest,
 // Tests that the offer notification bubble will be shown, and coupon service
 // will not be called for a GPay promo code offer.
 TEST_F(OfferNotificationBubbleControllerImplTest, GPayPromoCode_BubbleShown) {
-  feature_list_.InitAndEnableFeature(
-      autofill::features::kAutofillFillMerchantPromoCodeFields);
   AutofillOfferData offer = CreateTestGPayPromoCodeOffer(
       /*merchant_origins=*/{GURL("https://www.example.com/first/")
                                 .DeprecatedGetOriginAsURL()},
@@ -293,26 +289,6 @@ TEST_F(OfferNotificationBubbleControllerImplTest, GPayPromoCode_BubbleShown) {
   EXPECT_EQ(controller()->GetWindowTitle(),
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_GPAY_PROMO_CODE_OFFERS_REMINDER_TITLE));
-}
-
-// Tests that the offer notification bubble will be shown as a free-listing
-// coupon notification bubble when the feature is disabled.
-TEST_F(OfferNotificationBubbleControllerImplTest,
-       GPayPromoCode_BubbleShownWithFLCTitle) {
-  feature_list_.InitAndDisableFeature(
-      autofill::features::kAutofillFillMerchantPromoCodeFields);
-
-  AutofillOfferData offer = CreateTestGPayPromoCodeOffer(
-      /*merchant_origins=*/{GURL("https://www.example.com/first/")
-                                .DeprecatedGetOriginAsURL()},
-      /*promo_code=*/"FREEFALL5678");
-  ShowBubble(&offer);
-
-  EXPECT_CALL(mock_coupon_service_, GetCouponDisplayTimestamp).Times(0);
-  EXPECT_TRUE(controller()->GetOfferNotificationBubbleView());
-  EXPECT_EQ(
-      controller()->GetWindowTitle(),
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_PROMO_CODE_OFFERS_REMINDER_TITLE));
 }
 
 }  // namespace autofill

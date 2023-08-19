@@ -28,6 +28,9 @@
 #include "ash/test/ash_test_base.h"
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/unguessable_token.h"
+#include "chromeos/crosapi/mojom/video_conference.mojom-shared.h"
+#include "chromeos/crosapi/mojom/video_conference.mojom.h"
 
 namespace ash::video_conference {
 
@@ -110,6 +113,16 @@ class SnackNationForever : public VcEffectsDelegate {
                                 absl::optional<int> state) override {}
 };
 
+crosapi::mojom::VideoConferenceMediaAppInfoPtr CreateFakeMediaApp(
+    const crosapi::mojom::VideoConferenceAppType app_type) {
+  return crosapi::mojom::VideoConferenceMediaAppInfo::New(
+      base::UnguessableToken::Create(),
+      /*last_activity_time=*/base::Time::Now(), /*is_capturing_camera=*/true,
+      /*is_capturing_microphone=*/true, /*is_capturing_screen=*/false,
+      u"Test App Name",
+      /*url=*/GURL(), app_type);
+}
+
 }  // namespace
 
 class BubbleViewTest : public AshTestBase {
@@ -121,9 +134,10 @@ class BubbleViewTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kVideoConference);
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kCameraEffectsSupportedByHardware);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kVideoConference,
+         features::kCameraEffectsSupportedByHardware},
+        {});
 
     // Instantiates a fake controller (the real one is created in
     // `ChromeBrowserMainExtraPartsAsh::PreProfileInit()` which is not called in
@@ -197,6 +211,11 @@ class BubbleViewTest : public AshTestBase {
   views::View* toggle_effect_button() {
     return bubble_view()->GetViewByID(
         video_conference::BubbleViewID::kToggleEffectsButton);
+  }
+
+  views::View* linux_app_warning_view() {
+    return bubble_view()->GetViewByID(
+        video_conference::BubbleViewID::kLinuxAppWarningView);
   }
 
   ash::fake_video_conference::OfficeBunnyEffect* office_bunny() {
@@ -415,6 +434,34 @@ TEST_F(BubbleViewTest, InvalidEffectState) {
   EXPECT_FALSE(single_set_value_effect_view());
 }
 
+TEST_F(BubbleViewTest, LinuxAppWarningView) {
+  controller()->ClearMediaApps();
+  controller()->AddMediaApp(CreateFakeMediaApp(
+      /*app_type=*/crosapi::mojom::VideoConferenceAppType::kChromeApp));
+
+  // Click to open the bubble, the linux app warning view is NOT present.
+  LeftClickOn(toggle_bubble_button());
+  EXPECT_FALSE(linux_app_warning_view());
+
+  // Close the bubble.
+  LeftClickOn(toggle_bubble_button());
+
+  controller()->AddMediaApp(CreateFakeMediaApp(
+      /*app_type=*/crosapi::mojom::VideoConferenceAppType::kCrostiniVm));
+
+  // When there's a linux app alongside a non-linux app, the linux app warning
+  // view is present only when there's effect(s) available.
+  LeftClickOn(toggle_bubble_button());
+  EXPECT_FALSE(linux_app_warning_view());
+
+  LeftClickOn(toggle_bubble_button());
+
+  controller()->effects_manager().RegisterDelegate(office_bunny());
+  LeftClickOn(toggle_bubble_button());
+  ASSERT_TRUE(linux_app_warning_view());
+  EXPECT_TRUE(linux_app_warning_view()->GetVisible());
+}
+
 // The four `bool` params are as follows, if 'true':
 //    0 - The test effects depend on the camera being enabled.
 //    1 - The test effects depend on the microphone being enabled.
@@ -434,9 +481,10 @@ class ResourceDependencyTest
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kVideoConference);
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kCameraEffectsSupportedByHardware);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kVideoConference,
+         features::kCameraEffectsSupportedByHardware},
+        {});
 
     // Here we have to create the global instance of `CrasAudioHandler` before
     // `FakeVideoConferenceTrayController`, so we do it here and not do it in

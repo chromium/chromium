@@ -185,7 +185,7 @@ class CaptureModeCameraTest : public AshTestBase {
   }
 
   void OpenSettingsView() {
-    CaptureModeSession* session =
+    BaseCaptureModeSession* session =
         CaptureModeController::Get()->capture_mode_session();
     DCHECK(session);
     ClickOnView(CaptureModeSessionTestApi(session)
@@ -1111,7 +1111,7 @@ TEST_F(CaptureModeCameraTest, MultiDisplayCameraPreviewWidgetBounds) {
 
   const gfx::Point point_in_second_display = gfx::Point(1000, 500);
   auto* event_generator = GetEventGenerator();
-  MoveMouseToAndUpdateCursorDisplay(point_in_second_display, event_generator);
+  event_generator->MoveMouseTo(point_in_second_display);
 
   // Start the capture session in the second display.
   auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
@@ -1129,14 +1129,14 @@ TEST_F(CaptureModeCameraTest, MultiDisplayCameraPreviewWidgetBounds) {
 
   // Move the capture session to the primary display should move the camera
   // preview to the primary display as well.
-  MoveMouseToAndUpdateCursorDisplay(gfx::Point(10, 20), event_generator);
+  event_generator->MoveMouseTo(gfx::Point(10, 20));
   EXPECT_TRUE(gfx::Rect(0, 0, 800, 700)
                   .Contains(preview_widget->GetWindowBoundsInScreen()));
 
   // Move back to the second display, switch to `kRegion` and set the capture
   // region. The camera preview should be moved back to the second display and
   // inside the capture region.
-  MoveMouseToAndUpdateCursorDisplay(point_in_second_display, event_generator);
+  event_generator->MoveMouseTo(point_in_second_display);
   controller->SetSource(CaptureModeSource::kRegion);
   // The capture region set through `controller` is in root coordinate.
   const gfx::Rect capture_region(100, 0, 400, 550);
@@ -1372,7 +1372,9 @@ TEST_F(CaptureModeCameraTest,
        CaptureLabelOpacityChangeWhenOverlappingWithCameraPreview) {
   auto* controller =
       StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kVideo);
-  auto* capture_session = controller->capture_mode_session();
+  auto* capture_session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  ASSERT_EQ(capture_session->session_type(), SessionType::kReal);
   auto* camera_controller = GetCameraController();
   AddDefaultCamera();
   camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
@@ -1447,7 +1449,7 @@ TEST_F(CaptureModeCameraTest,
   camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
   const auto* camera_preview_widget =
       camera_controller->camera_preview_widget();
-  const auto* capture_bar_widget = capture_session->capture_mode_bar_widget();
+  const auto* capture_bar_widget = capture_session->GetCaptureModeBarWidget();
   const ui::Layer* capture_bar_layer = capture_bar_widget->GetLayer();
 
   // Move mouse on top of `window` to set the selected window. Verify capture
@@ -1492,7 +1494,7 @@ TEST_F(CaptureModeCameraTest, CaptureBarOpacityChangeOnDisplayRotation) {
   camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
   const auto* camera_preview_widget =
       camera_controller->camera_preview_widget();
-  const auto* capture_bar_widget = capture_session->capture_mode_bar_widget();
+  const auto* capture_bar_widget = capture_session->GetCaptureModeBarWidget();
   const ui::Layer* capture_bar_layer = capture_bar_widget->GetLayer();
 
   // Move mouse on top of `window` to set the selected window. Verify capture
@@ -1529,7 +1531,9 @@ TEST_F(CaptureModeCameraTest, CaptureLabelOpacityChangeOnCaptureSourceChange) {
   UpdateDisplay("800x600");
   auto* controller =
       StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kVideo);
-  auto* capture_session = controller->capture_mode_session();
+  auto* capture_session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  ASSERT_EQ(capture_session->session_type(), SessionType::kReal);
   auto* camera_controller = GetCameraController();
   AddDefaultCamera();
   camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
@@ -1572,7 +1576,9 @@ TEST_F(CaptureModeCameraTest,
   // belong to the new capture session.
   controller->Start(CaptureModeEntryType::kQuickSettings);
   EXPECT_EQ(CaptureModeSource::kRegion, controller->source());
-  auto* capture_session = controller->capture_mode_session();
+  auto* capture_session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  ASSERT_EQ(capture_session->session_type(), SessionType::kReal);
 
   const auto* capture_label_widget = capture_session->capture_label_widget();
   EXPECT_TRUE(capture_label_widget->GetWindowBoundsInScreen().Intersects(
@@ -2134,7 +2140,7 @@ TEST_F(CaptureModeCameraTest, CaptureBarOpacityChangeOnKeyboardNavigation) {
   camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
   const auto* camera_preview_widget =
       camera_controller->camera_preview_widget();
-  const auto* capture_bar_widget = capture_session->capture_mode_bar_widget();
+  const auto* capture_bar_widget = capture_session->GetCaptureModeBarWidget();
   const ui::Layer* capture_bar_layer = capture_bar_widget->GetLayer();
 
   // Move mouse on top of `window` to set the selected window. Verify capture
@@ -2194,7 +2200,9 @@ TEST_F(CaptureModeCameraTest, CaptureLabelOpacityChangeOnKeyboardNavigation) {
   auto* controller =
       StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kVideo);
   CaptureModeSessionTestApi test_api(controller->capture_mode_session());
-  auto* capture_session = controller->capture_mode_session();
+  auto* capture_session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  ASSERT_EQ(capture_session->session_type(), SessionType::kReal);
   auto* camera_controller = GetCameraController();
   AddDefaultCamera();
   camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
@@ -2544,7 +2552,9 @@ TEST_F(CaptureModeCameraTest, ToastVisibilityChangeOnCaptureRegionUpdated) {
 
   auto* controller =
       StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kVideo);
-  auto* capture_session = controller->capture_mode_session();
+  auto* capture_session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  ASSERT_EQ(capture_session->session_type(), SessionType::kReal);
   auto* camera_controller = GetCameraController();
   auto* capture_toast_controller = capture_session->capture_toast_controller();
   AddDefaultCamera();
@@ -2619,7 +2629,9 @@ TEST_F(CaptureModeCameraTest, ToastVisibilityChangeOnTimeOut) {
 
   auto* controller =
       StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kVideo);
-  auto* capture_session = controller->capture_mode_session();
+  auto* capture_session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  ASSERT_EQ(capture_session->session_type(), SessionType::kReal);
   auto* camera_controller = GetCameraController();
   auto* capture_toast_controller = capture_session->capture_toast_controller();
   AddDefaultCamera();
@@ -2649,7 +2661,9 @@ TEST_F(CaptureModeCameraTest, ToastVisibilityChangeOnSettingsMenuOpen) {
 
   auto* controller =
       StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kVideo);
-  auto* capture_session = controller->capture_mode_session();
+  auto* capture_session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  ASSERT_EQ(capture_session->session_type(), SessionType::kReal);
   auto* camera_controller = GetCameraController();
   auto* capture_toast_controller = capture_session->capture_toast_controller();
   AddDefaultCamera();
@@ -2676,7 +2690,9 @@ TEST_F(CaptureModeCameraTest, ToastVisibilityChangeOnCaptureRegionMoved) {
 
   auto* controller =
       StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kVideo);
-  auto* capture_session = controller->capture_mode_session();
+  auto* capture_session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  ASSERT_EQ(capture_session->session_type(), SessionType::kReal);
   auto* camera_controller = GetCameraController();
   auto* capture_toast_controller = capture_session->capture_toast_controller();
   AddDefaultCamera();
@@ -2712,7 +2728,9 @@ TEST_F(CaptureModeCameraTest, ToastVisibilityChangeOnCaptureModeTurnedOn) {
 
   auto* controller =
       StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kVideo);
-  auto* capture_session = controller->capture_mode_session();
+  auto* capture_session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  ASSERT_EQ(capture_session->session_type(), SessionType::kReal);
   auto* camera_controller = GetCameraController();
   auto* capture_toast_controller = capture_session->capture_toast_controller();
   AddDefaultCamera();
@@ -2734,7 +2752,8 @@ TEST_F(CaptureModeCameraTest, ToastVisibilityChangeOnCaptureModeTurnedOn) {
   // Turn on capture mode again through the quick settings, verify that toast
   // preview is visible.
   controller->Start(CaptureModeEntryType::kQuickSettings);
-  capture_session = controller->capture_mode_session();
+  capture_session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
   capture_toast_controller = capture_session->capture_toast_controller();
   EXPECT_TRUE(capture_toast_controller->capture_toast_widget()->IsVisible());
   ASSERT_TRUE(capture_toast_controller->current_toast_type());
@@ -2760,14 +2779,16 @@ TEST_F(CaptureModeCameraTest, ToastStackingOrderChangeOnCaptureModeTurnedOn) {
   // stacking order for capture toast relative to other capture UIs is correct.
   controller->Start(CaptureModeEntryType::kQuickSettings);
   base::RunLoop().RunUntilIdle();
-  auto* capture_session = controller->capture_mode_session();
+  auto* capture_session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  ASSERT_EQ(capture_session->session_type(), SessionType::kReal);
   auto* capture_toast_controller = capture_session->capture_toast_controller();
   auto* capture_toast_widget = capture_toast_controller->capture_toast_widget();
   auto* capture_toast_window = capture_toast_widget->GetNativeWindow();
   auto* capture_label_window =
       capture_session->capture_label_widget()->GetNativeWindow();
   auto* capture_bar_window =
-      capture_session->capture_mode_bar_widget()->GetNativeWindow();
+      capture_session->GetCaptureModeBarWidget()->GetNativeWindow();
   auto* camera_preview_window =
       camera_controller->camera_preview_widget()->GetNativeWindow();
 
@@ -2786,7 +2807,9 @@ TEST_F(CaptureModeCameraTest, ToastVisibilityChangeOnPerformingCapture) {
 
   auto* controller =
       StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kVideo);
-  auto* capture_session = controller->capture_mode_session();
+  auto* capture_session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  ASSERT_EQ(capture_session->session_type(), SessionType::kReal);
   auto* camera_controller = GetCameraController();
   auto* capture_toast_controller = capture_session->capture_toast_controller();
   AddDefaultCamera();
@@ -2831,7 +2854,9 @@ TEST_F(CaptureModeCameraTest, ToastVisibilityChangeOnMultiDisplays) {
   auto* controller =
       StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kVideo);
   auto* camera_controller = GetCameraController();
-  auto* capture_session = controller->capture_mode_session();
+  auto* capture_session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  ASSERT_EQ(capture_session->session_type(), SessionType::kReal);
   auto* capture_toast_controller = capture_session->capture_toast_controller();
   AddDefaultCamera();
   camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
@@ -3054,14 +3079,14 @@ TEST_P(CaptureModeCameraPreviewTest, PreviewVisibilityWhileFolderSelection) {
   CaptureModeSettingsTestApi settings_test_api;
   ClickOnView(settings_test_api.GetSelectFolderMenuItem(), event_generator);
   EXPECT_TRUE(session_test_api.IsFolderSelectionDialogShown());
-  EXPECT_FALSE(session_test_api.IsAllUisVisible());
+  EXPECT_FALSE(session_test_api.AreAllUisVisible());
   EXPECT_FALSE(preview_widget->IsVisible());
 
   // Dismiss the folder selection dialog, all capture UIs should show again,
   // including the camera preview.
   FakeFolderSelectionDialogFactory::Get()->CancelDialog();
   EXPECT_FALSE(session_test_api.IsFolderSelectionDialogShown());
-  EXPECT_TRUE(session_test_api.IsAllUisVisible());
+  EXPECT_TRUE(session_test_api.AreAllUisVisible());
   EXPECT_TRUE(preview_widget->IsVisible());
 }
 
@@ -3222,14 +3247,16 @@ TEST_P(CaptureModeCameraPreviewTest,
 TEST_P(CaptureModeCameraPreviewTest, CaptureUisVisibilityChangeOnDragAndDrop) {
   StartCaptureSessionWithParam();
   auto* camera_controller = GetCameraController();
-  auto* capture_session = CaptureModeController::Get()->capture_mode_session();
+  auto* capture_session = static_cast<CaptureModeSession*>(
+      CaptureModeController::Get()->capture_mode_session());
+  ASSERT_EQ(capture_session->session_type(), SessionType::kReal);
   AddDefaultCamera();
   camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
   auto* preview_widget = camera_controller->camera_preview_widget();
   const gfx::Point center_point_of_preview_widget =
       preview_widget->GetWindowBoundsInScreen().CenterPoint();
 
-  const auto* capture_bar_widget = capture_session->capture_mode_bar_widget();
+  const auto* capture_bar_widget = capture_session->GetCaptureModeBarWidget();
   const auto* capture_label_widget = capture_session->capture_label_widget();
 
   // Press on top of the preview widget. Verify capture bar and capture label
@@ -3258,7 +3285,7 @@ TEST_P(CaptureModeCameraPreviewTest, CameraPreviewDragToSnapOnMultipleDisplay) {
 
   const gfx::Point point_in_second_display = gfx::Point(1000, 500);
   auto* event_generator = GetEventGenerator();
-  MoveMouseToAndUpdateCursorDisplay(point_in_second_display, event_generator);
+  event_generator->MoveMouseTo(point_in_second_display);
 
   // Start capture mode on the second display.
   StartCaptureSessionWithParam();
@@ -3325,6 +3352,33 @@ TEST_P(CaptureModeCameraPreviewTest,
             preview_bounds_in_screen_before_drag);
   EXPECT_EQ(camera_controller->camera_preview_snap_position(),
             snap_position_before_drag);
+}
+
+// Tests that the bounds of the camera preview widget should always be
+// constrained by the capture mode confine bounds.
+TEST_P(CaptureModeCameraPreviewTest,
+       PreviewWidgetIsConstrainedByConfineBounds) {
+  StartCaptureSessionWithParam();
+  auto* camera_controller = GetCameraController();
+  AddDefaultCamera();
+  camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+  auto* preview_widget = camera_controller->camera_preview_widget();
+  ASSERT_TRUE(preview_widget);
+
+  const auto confine_bounds = GetCaptureBoundsInScreen();
+
+  // Create an outsetted bounds to generate locations outside of the confine
+  // bounds.
+  gfx::Rect outer_rect = confine_bounds;
+  outer_rect.Inset(-20);
+
+  for (const auto& release_point :
+       {outer_rect.origin(), outer_rect.top_right(), outer_rect.bottom_left(),
+        outer_rect.bottom_right()}) {
+    DragPreviewToPoint(preview_widget, release_point);
+    EXPECT_TRUE(
+        confine_bounds.Contains(preview_widget->GetWindowBoundsInScreen()));
+  }
 }
 
 // Tests that dragging camera preview outside of the preview circle shouldn't
@@ -3514,7 +3568,7 @@ TEST_P(CaptureModeCameraPreviewTest, MultiDisplayResize) {
   // Put the cursor in the secondary display, and expect the session root to be
   // there.
   auto* event_generator = GetEventGenerator();
-  MoveMouseToAndUpdateCursorDisplay(gfx::Point(900, 500), event_generator);
+  event_generator->MoveMouseTo(gfx::Point(900, 500));
   StartCaptureSessionWithParam();
   auto* controller = CaptureModeController::Get();
   auto* session = controller->capture_mode_session();
@@ -3846,7 +3900,7 @@ TEST_P(CaptureModeCameraPreviewTest,
   // can stay in the same side with it when camera preview is collapsed,
   // otherwise, camera preview should be snapped to the other side of the
   // display.
-  UpdateDisplay("1366x700");
+  UpdateDisplay("1366x950");
 
   StartCaptureSessionWithParam();
   auto* camera_controller = GetCameraController();

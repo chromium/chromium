@@ -36,10 +36,6 @@
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using password_manager::CredentialUIEntry;
 using password_manager::InsecureType;
 using password_manager::PasswordForm;
@@ -55,8 +51,7 @@ class PasswordCheckupViewControllerTest : public ChromeTableViewControllerTest {
     // Enable Password Checkup and Password Grouping to get the affiliated
     // groups.
     feature_list.InitWithFeatures(
-        /*enabled_features=*/{password_manager::features::kIOSPasswordCheckup,
-                              password_manager::features::kPasswordsGrouping},
+        /*enabled_features=*/{password_manager::features::kIOSPasswordCheckup},
         /*disabled_features=*/{});
 
     ChromeTableViewControllerTest::SetUp();

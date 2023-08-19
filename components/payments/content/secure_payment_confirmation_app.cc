@@ -88,6 +88,10 @@ void SecurePaymentConfirmationApp::InvokePaymentApp(
                          : base::Minutes(kDefaultTimeoutMinutes);
   options->user_verification = device::UserVerificationRequirement::kRequired;
   std::vector<device::PublicKeyCredentialDescriptor> credentials;
+  options->extensions =
+      !request_->extensions
+          ? blink::mojom::AuthenticationExtensionsClientInputs::New()
+          : request_->extensions.Clone();
 
   if (base::FeatureList::IsEnabled(features::kSecurePaymentConfirmationDebug)) {
     options->user_verification =

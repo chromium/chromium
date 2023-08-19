@@ -4,7 +4,7 @@
 
 #include "chrome/browser/privacy/privacy_metrics_service_factory.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/privacy/privacy_metrics_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -14,7 +14,8 @@
 #include "components/keyed_service/core/keyed_service.h"
 
 PrivacyMetricsServiceFactory* PrivacyMetricsServiceFactory::GetInstance() {
-  return base::Singleton<PrivacyMetricsServiceFactory>::get();
+  static base::NoDestructor<PrivacyMetricsServiceFactory> instance;
+  return instance.get();
 }
 
 PrivacyMetricsService* PrivacyMetricsServiceFactory::GetForProfile(

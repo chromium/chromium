@@ -93,11 +93,6 @@ const char kProfilingFlush[] = "profiling-flush";
 // to the test framework that the current process is a child process.
 const char kTestChildProcess[] = "test-child-process";
 
-// When running certain tests that spawn child processes, this switch indicates
-// to the test framework that the current process should not initialize ICU to
-// avoid creating any scoped handles too early in startup.
-const char kTestDoNotInitializeIcu[] = "test-do-not-initialize-icu";
-
 // Sends trace events from these categories to a file.
 // --trace-to-file on its own sends to default categories.
 const char kTraceToFile[] = "trace-to-file";

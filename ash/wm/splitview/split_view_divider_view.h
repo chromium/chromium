@@ -36,7 +36,6 @@ class SplitViewDividerView : public views::View,
 
   // views::View:
   void Layout() override;
-  void OnThemeChanged() override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
@@ -66,14 +65,15 @@ class SplitViewDividerView : public views::View,
   // Called to update the bounds of the `snap_group_expanded_menu_widget_`.
   void MaybeUpdateExpandedMenuWidgetBounds();
 
-  raw_ptr<SplitViewController, ExperimentalAsh> split_view_controller_;
+  raw_ptr<SplitViewController, DanglingUntriaged | ExperimentalAsh>
+      split_view_controller_;
   raw_ptr<SplitViewDividerHandlerView, ExperimentalAsh> divider_handler_view_ =
       nullptr;
   raw_ptr<SplitViewDivider, DanglingUntriaged | ExperimentalAsh> divider_;
 
   // A vertical 3-dot button that shows on the split view divider when
   // `ShouldAutomaticallyGroupOnWindowsSnappedInClamshell()` is true.
-  raw_ptr<IconButton, ExperimentalAsh> kebab_button_;
+  raw_ptr<IconButton, ExperimentalAsh> kebab_button_ = nullptr;
 
   // The snap group expanded menu widget and its contents view.
   views::UniqueWidgetPtr snap_group_expanded_menu_widget_;

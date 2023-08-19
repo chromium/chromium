@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("ios") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "parsing_utils.h",
     "parsing_utils.mm",
@@ -20,7 +19,6 @@ source_set("ios") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "parsing_utils_unittest.mm" ]
   deps = [

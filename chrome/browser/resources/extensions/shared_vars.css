@@ -16,10 +16,13 @@ html {
   --warning-color: rgb(242, 153, 0);
   --extensions-card-height: 160px;
   --separator-gap: 9px;
+  --sidebar-width: 256px;
+  --cr-toolbar-field-width: 680px;
 }
 
 @media (prefers-color-scheme: dark) {
   html {
+    --review-panel-icon-color: rgb(50, 54, 57); /* #323639 */
     --error-color: var(--google-red-300);
     --warning-color: var(--google-yellow-300);
   }

@@ -10,25 +10,20 @@
 
 #include "base/base64.h"
 #include "base/containers/contains.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
-#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/mock_callback.h"
 #include "components/os_crypt/sync/os_crypt.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/sync/base/sync_prefs.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/engine/sync_status.h"
-#include "components/sync/service/trusted_vault_client.h"
 #include "components/sync/test/mock_sync_engine.h"
+#include "components/trusted_vault/trusted_vault_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 
@@ -42,6 +37,7 @@ using testing::Ne;
 using testing::Not;
 using testing::NotNull;
 using testing::Return;
+using testing::ReturnPointee;
 using testing::ReturnRef;
 using testing::SaveArg;
 
@@ -128,11 +124,16 @@ class MockDelegate : public SyncServiceCrypto::Delegate {
   MOCK_METHOD(void, CryptoStateChanged, (), (override));
   MOCK_METHOD(void, CryptoRequiredUserActionChanged, (), (override));
   MOCK_METHOD(void, ReconfigureDataTypesDueToCrypto, (), (override));
+  MOCK_METHOD(void, SetPassphraseType, (PassphraseType), (override));
+  MOCK_METHOD(absl::optional<PassphraseType>,
+              GetPassphraseType,
+              (),
+              (const override));
   MOCK_METHOD(void,
               SetEncryptionBootstrapToken,
               (const std::string&),
               (override));
-  MOCK_METHOD(std::string, GetEncryptionBootstrapToken, (), (override));
+  MOCK_METHOD(std::string, GetEncryptionBootstrapToken, (), (const override));
 };
 
 // Object representing a server that contains the authoritative trusted vault
@@ -150,7 +151,7 @@ class TestTrustedVaultServer {
   // Mimics a user going through a key-retrieval flow (e.g. reauth) such that
   // keys are fetched from the server and cached in |client|.
   void MimicKeyRetrievalByUser(const std::string& gaia_id,
-                               TrustedVaultClient* client) {
+                               trusted_vault::TrustedVaultClient* client) {
     DCHECK(client);
     DCHECK_NE(0U, gaia_id_to_keys_.count(gaia_id))
         << "StoreKeysOnServer() should have been called for " << gaia_id;
@@ -184,7 +185,7 @@ class TestTrustedVaultServer {
 };
 
 // Simple in-memory implementation of TrustedVaultClient.
-class TestTrustedVaultClient : public TrustedVaultClient {
+class TestTrustedVaultClient : public trusted_vault::TrustedVaultClient {
  public:
   explicit TestTrustedVaultClient(const TestTrustedVaultServer* server)
       : server_(server) {}
@@ -355,6 +356,11 @@ class SyncServiceCryptoTest : public testing::Test {
         crypto_(&delegate_, &trusted_vault_client_) {
     trusted_vault_server_.StoreKeysOnServer(kSyncingAccount.gaia,
                                             kInitialTrustedVaultKeys);
+
+    ON_CALL(delegate_, GetPassphraseType())
+        .WillByDefault(ReturnPointee(&passphrase_type_));
+    ON_CALL(delegate_, SetPassphraseType(_))
+        .WillByDefault(SaveArg<0>(&passphrase_type_));
   }
 
   ~SyncServiceCryptoTest() override = default;
@@ -373,6 +379,8 @@ class SyncServiceCryptoTest : public testing::Test {
     trusted_vault_server_.MimicKeyRetrievalByUser(kSyncingAccount.gaia,
                                                   &trusted_vault_client_);
   }
+
+  absl::optional<PassphraseType> passphrase_type_;
 
   testing::NiceMock<MockDelegate> delegate_;
   TestTrustedVaultServer trusted_vault_server_;
@@ -395,7 +403,6 @@ TEST_F(SyncServiceCryptoTest, ShouldSetUpNewCustomPassphrase) {
 
   crypto_.SetSyncEngine(CoreAccountInfo(), &engine_);
   ASSERT_FALSE(crypto_.IsPassphraseRequired());
-  ASSERT_FALSE(crypto_.IsUsingExplicitPassphrase());
   ASSERT_FALSE(crypto_.IsEncryptEverythingEnabled());
   ASSERT_THAT(crypto_.GetPassphraseType(),
               Ne(PassphraseType::kCustomPassphrase));
@@ -419,9 +426,8 @@ TEST_F(SyncServiceCryptoTest, ShouldSetUpNewCustomPassphrase) {
 
   EXPECT_FALSE(crypto_.IsPassphraseRequired());
   EXPECT_TRUE(crypto_.IsEncryptEverythingEnabled());
-  ASSERT_THAT(crypto_.GetPassphraseType(),
+  EXPECT_THAT(crypto_.GetPassphraseType(),
               Eq(PassphraseType::kCustomPassphrase));
-  EXPECT_TRUE(crypto_.IsUsingExplicitPassphrase());
 }
 
 TEST_F(SyncServiceCryptoTest, ShouldExposePassphraseRequired) {

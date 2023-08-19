@@ -6,7 +6,7 @@ import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Coordinate2d} from './coordinate2d.js';
-import {CustomMarginsOrientation, Margins} from './margins.js';
+import {Margins} from './margins.js';
 import {PrintableArea} from './printable_area.js';
 import {Size} from './size.js';
 
@@ -161,14 +161,20 @@ export class PrintPreviewDocumentInfoElement extends
     const size =
         new Size(pageLayout.printableAreaWidth, pageLayout.printableAreaHeight);
 
-    const margins = new Margins(
-        Math.round(pageLayout.marginTop), Math.round(pageLayout.marginRight),
-        Math.round(pageLayout.marginBottom), Math.round(pageLayout.marginLeft));
-
-    const o = CustomMarginsOrientation;
     const pageSize = new Size(
-        pageLayout.contentWidth + margins.get(o.LEFT) + margins.get(o.RIGHT),
-        pageLayout.contentHeight + margins.get(o.TOP) + margins.get(o.BOTTOM));
+        Math.round(
+            pageLayout.contentWidth + pageLayout.marginLeft +
+            pageLayout.marginRight),
+        Math.round(
+            pageLayout.contentHeight + pageLayout.marginTop +
+            pageLayout.marginBottom));
+
+    // Note that `Margins` stores rounded margin values, which is not
+    // appropriate for use with `pageSize` above, as that could cause rounding
+    // errors.
+    const margins = new Margins(
+        pageLayout.marginTop, pageLayout.marginRight, pageLayout.marginBottom,
+        pageLayout.marginLeft);
 
     if (this.isInitialized_) {
       this.printableArea = new PrintableArea(origin, size);

@@ -1,13 +1,45 @@
 import base64
-from typing import Any, List, Mapping, MutableMapping, Optional
+from typing import Any, Dict, List, Mapping, MutableMapping, Optional, Union
 
 from ._module import BidiModule, command
 
 
+class ElementOptions(Dict[str, Any]):
+    def __init__(
+        self, element: Mapping[str, Any], scroll_into_view: Optional[bool] = None
+    ):
+        self["type"] = "element"
+        self["element"] = element
+
+        if scroll_into_view is not None:
+            self["scrollIntoView"] = scroll_into_view
+
+
+class ViewportOptions(Dict[str, Any]):
+    def __init__(self, x: float, y: float, width: float, height: float):
+        self["type"] = "viewport"
+        self["x"] = x
+        self["y"] = y
+        self["width"] = width
+        self["height"] = height
+
+
+ClipOptions = Union[ElementOptions, ViewportOptions]
+
+
 class BrowsingContext(BidiModule):
     @command
-    def capture_screenshot(self, context: str) -> Mapping[str, Any]:
+    def activate(self, context: str) -> Mapping[str, Any]:
+        return {"context": context}
+
+    @command
+    def capture_screenshot(
+        self, context: str, clip: Optional[ClipOptions] = None
+    ) -> Mapping[str, Any]:
         params: MutableMapping[str, Any] = {"context": context}
+
+        if clip is not None:
+            params["clip"] = clip
 
         return params
 
@@ -28,11 +60,15 @@ class BrowsingContext(BidiModule):
     @command
     def create(self,
                type_hint: str,
-               reference_context: Optional[str] = None) -> Mapping[str, Any]:
+               reference_context: Optional[str] = None,
+               background: Optional[bool] = None) -> Mapping[str, Any]:
         params: MutableMapping[str, Any] = {"type": type_hint}
 
         if reference_context is not None:
             params["referenceContext"] = reference_context
+
+        if background is not None:
+            params["background"] = background
 
         return params
 
@@ -61,6 +97,19 @@ class BrowsingContext(BidiModule):
         assert isinstance(result["contexts"], list)
 
         return result["contexts"]
+
+    @command
+    def handle_user_prompt(self,
+                           context: str,
+                           accept: Optional[bool] = None,
+                           user_text: Optional[str] = None) -> Mapping[str, Any]:
+        params: MutableMapping[str, Any] = {"context": context}
+
+        if accept is not None:
+            params["accept"] = accept
+        if user_text is not None:
+            params["userText"] = user_text
+        return params
 
     @command
     def navigate(self,
@@ -127,3 +176,7 @@ class BrowsingContext(BidiModule):
     def _print(self, result: Mapping[str, Any]) -> Any:
         assert result["data"] is not None
         return result["data"]
+
+    @command
+    def set_viewport(self, context: str, viewport: Optional[Mapping[str, Any]] = None) -> Mapping[str, Any]:
+        return {"context": context, "viewport": viewport}

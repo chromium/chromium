@@ -4,18 +4,26 @@
 
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 
+#include <string>
+#include <vector>
+
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
+#include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/test/debug_info_printer.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -33,15 +41,23 @@
 #include "content/public/common/page_type.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#include "base/containers/extend.h"
 #include "chrome/common/chrome_features.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #endif
 
 namespace web_app {
 
 WebAppControllerBrowserTest::WebAppControllerBrowserTest()
+    : WebAppControllerBrowserTest({}, {}) {}
+
+WebAppControllerBrowserTest::WebAppControllerBrowserTest(
+    const std::vector<base::test::FeatureRef>& enabled_features,
+    const std::vector<base::test::FeatureRef>& disabled_features)
     // TODO(crbug.com/1378355): Fix the manifest update process by ensuring
     // during test installs, an app is installed from the manifest so that the
     // identity update dialog is not triggered after navigation. This will
@@ -50,11 +66,14 @@ WebAppControllerBrowserTest::WebAppControllerBrowserTest()
       update_dialog_scope_(SetIdentityUpdateDialogActionForTesting(
           AppIdentityUpdate::kSkipped)) {
   os_hooks_suppress_.emplace();
-  scoped_feature_list_.InitWithFeatures({}, {
+  std::vector<base::test::FeatureRef> all_disabled_features = disabled_features;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    features::kWebAppsCrosapi, ash::features::kLacrosPrimary
+  // TODO(crbug.com/1462253): Also test with Lacros flags enabled.
+  base::Extend(all_disabled_features,
+               ash::standalone_browser::GetFeatureRefs());
 #endif
-  });
+  scoped_feature_list_.InitWithFeatures(enabled_features,
+                                        all_disabled_features);
 }
 
 WebAppControllerBrowserTest::~WebAppControllerBrowserTest() = default;
@@ -214,6 +233,15 @@ void WebAppControllerBrowserTest::SetUpInProcessBrowserTestFixture() {
 void WebAppControllerBrowserTest::TearDownInProcessBrowserTestFixture() {
   InProcessBrowserTest::TearDownInProcessBrowserTestFixture();
   cert_verifier_.TearDownInProcessBrowserTestFixture();
+}
+
+void WebAppControllerBrowserTest::TearDownOnMainThread() {
+  if (testing::Test::HasFailure()) {
+    ProfileManager* profile_manager = g_browser_process->profile_manager();
+    base::TimeDelta log_time = base::TimeTicks::Now() - start_time_;
+    test::LogDebugInfoToConsole(profile_manager->GetLoadedProfiles(), log_time);
+  }
+  InProcessBrowserTest::TearDownOnMainThread();
 }
 
 void WebAppControllerBrowserTest::SetUpCommandLine(

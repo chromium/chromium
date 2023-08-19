@@ -132,18 +132,17 @@ enum class ThreadPriorityForTest : int {
   kMaxValue = kRealtimeAudio,
 };
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-class ThreadTypeDelegate;
-#endif
-
 // A namespace for low-level thread functions.
-class BASE_EXPORT PlatformThread {
+class BASE_EXPORT PlatformThreadBase {
  public:
   // Implement this interface to run code on a background thread.  Your
   // ThreadMain method will be called on the newly created thread.
   class BASE_EXPORT Delegate {
    public:
+    virtual void ThreadMain() = 0;
+
 #if BUILDFLAG(IS_APPLE)
+    // TODO: Move this to the PlatformThreadApple class.
     // The interval at which the thread expects to have work to do. Zero if
     // unknown. (Example: audio buffer duration for real-time audio.) Is used to
     // optimize the thread real-time behavior. Is called on the newly created
@@ -151,15 +150,13 @@ class BASE_EXPORT PlatformThread {
     virtual TimeDelta GetRealtimePeriod();
 #endif
 
-    virtual void ThreadMain() = 0;
-
    protected:
     virtual ~Delegate() = default;
   };
 
-  PlatformThread() = delete;
-  PlatformThread(const PlatformThread&) = delete;
-  PlatformThread& operator=(const PlatformThread&) = delete;
+  PlatformThreadBase() = delete;
+  PlatformThreadBase(const PlatformThreadBase&) = delete;
+  PlatformThreadBase& operator=(const PlatformThreadBase&) = delete;
 
   // Gets the current thread id, which may be useful for logging purposes.
   static PlatformThreadId CurrentId();
@@ -267,7 +264,37 @@ class BASE_EXPORT PlatformThread {
   // Returns the override of task leeway if any.
   static absl::optional<TimeDelta> GetThreadLeewayOverride();
 
+  // Returns the default thread stack size set by chrome. If we do not
+  // explicitly set default size then returns 0.
+  static size_t GetDefaultThreadStackSize();
+
+  static ThreadPriorityForTest GetCurrentThreadPriorityForTest();
+
+  protected:
+  static void SetNameCommon(const std::string& name);
+};
+
+#if BUILDFLAG(IS_APPLE)
+class BASE_EXPORT PlatformThreadApple : public PlatformThreadBase {
+ public:
+  // Stores the period value in TLS.
+  static void SetCurrentThreadRealtimePeriodValue(TimeDelta realtime_period);
+
+  // Signals that the feature list has been initialized which allows to check
+  // the feature's value now and initialize state. This prevents race
+  // conditions where the feature is being checked while it is being
+  // initialized, which can cause a crash.
+  static void InitFeaturesPostFieldTrial();
+};
+#endif  // BUILDFLAG(IS_APPLE)
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+class ThreadTypeDelegate;
+
+class BASE_EXPORT PlatformThreadLinux : public PlatformThreadBase {
+ public:
+  static constexpr struct sched_param kRealTimePrio = {8};
+
   // Sets a delegate which handles thread type changes for this process. This
   // must be externally synchronized with any call to SetCurrentThreadType.
   static void SetThreadTypeDelegate(ThreadTypeDelegate* delegate);
@@ -284,27 +311,40 @@ class BASE_EXPORT PlatformThread {
   static void SetThreadType(PlatformThreadId process_id,
                             PlatformThreadId thread_id,
                             ThreadType thread_type);
-#endif
 
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_APPLE)
-  // Signals that the feature list has been initialized which allows to check
-  // the feature's value now and initialize state. This prevents race
-  // conditions where the feature is being checked while it is being
-  // initialized, which can cause a crash.
-  static void InitFeaturesPostFieldTrial();
-#endif
-
-  // Returns the default thread stack size set by chrome. If we do not
-  // explicitly set default size then returns 0.
-  static size_t GetDefaultThreadStackSize();
-
-#if BUILDFLAG(IS_APPLE)
-  // Stores the period value in TLS.
-  static void SetCurrentThreadRealtimePeriodValue(TimeDelta realtime_period);
-#endif
-
-  static ThreadPriorityForTest GetCurrentThreadPriorityForTest();
+  // For a given thread id and thread type, setup the cpuset and schedtune
+  // CGroups for the thread.
+  static void SetThreadCgroupsForThreadType(PlatformThreadId thread_id,
+                                            ThreadType thread_type);
 };
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS)
+class BASE_EXPORT PlatformThreadChromeOS : public PlatformThreadLinux {
+ public:
+  // Signals that the feature list has been initialized. Used for preventing
+  // race conditions and crashes, see comments in PlatformThreadApple.
+  static void InitFeaturesPostFieldTrial();
+
+  // Toggles a specific thread's type at runtime. This is the ChromeOS-specific
+  // version and includes Linux's functionality but does slightly more. See
+  // PlatformThreadLinux's SetThreadType() header comment for Linux details.
+  static void SetThreadType(PlatformThreadId process_id,
+                            PlatformThreadId thread_id,
+                            ThreadType thread_type);
+};
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+// Alias to the correct platform-specific class based on preprocessor directives
+#if BUILDFLAG(IS_APPLE)
+using PlatformThread = PlatformThreadApple;
+#elif BUILDFLAG(IS_CHROMEOS)
+using PlatformThread = PlatformThreadChromeOS;
+#elif BUILDFLAG(IS_LINUX)
+using PlatformThread = PlatformThreadLinux;
+#else
+using PlatformThread = PlatformThreadBase;
+#endif
 
 namespace internal {
 

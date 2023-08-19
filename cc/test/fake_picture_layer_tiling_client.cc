@@ -24,7 +24,7 @@ FakePictureLayerTilingClient::FakePictureLayerTilingClient()
 
 FakePictureLayerTilingClient::FakePictureLayerTilingClient(
     viz::ClientResourceProvider* resource_provider,
-    viz::ContextProvider* context_provider)
+    viz::RasterContextProvider* context_provider)
     : resource_pool_(std::make_unique<ResourcePool>(
           resource_provider,
           context_provider,

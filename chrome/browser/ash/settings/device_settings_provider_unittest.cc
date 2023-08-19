@@ -109,12 +109,14 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
     proto->set_report_print_jobs(enable_reporting);
     proto->set_report_login_logout(enable_reporting);
     proto->set_report_crd_sessions(enable_reporting);
+    proto->set_report_runtime_counters(enable_reporting);
     proto->set_device_activity_heartbeat_enabled(enable_reporting);
     proto->set_report_network_events(enable_reporting);
     proto->set_report_network_telemetry_collection_rate_ms(frequency);
     proto->set_report_network_telemetry_event_checking_rate_ms(frequency);
     proto->set_device_status_frequency(frequency);
     proto->set_report_device_audio_status_checking_rate_ms(frequency);
+    proto->set_device_report_runtime_counters_checking_rate_ms(frequency);
     proto->set_device_activity_heartbeat_collection_rate_ms(frequency);
     BuildAndInstallDevicePolicy();
   }
@@ -176,9 +178,9 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
   void VerifyReportingSettings(bool expected_enable_state,
                                int expected_frequency) {
     const char* reporting_settings[] = {
-        kReportDeviceVersionInfo, kReportDeviceActivityTimes,
-        kReportDeviceAudioStatus, kReportDeviceBoardStatus,
-        kReportDeviceBootMode,
+        kDeviceReportRuntimeCounters, kReportDeviceVersionInfo,
+        kReportDeviceActivityTimes, kReportDeviceAudioStatus,
+        kReportDeviceBoardStatus, kReportDeviceBootMode,
         // Device location reporting is not currently supported.
         // kReportDeviceLocation,
         kReportDeviceNetworkConfiguration, kReportDeviceNetworkStatus,
@@ -197,9 +199,11 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
     }
 
     const char* const reporting_frequency_settings[] = {
-        kReportUploadFrequency, kReportDeviceNetworkTelemetryCollectionRateMs,
+        kReportUploadFrequency,
+        kReportDeviceNetworkTelemetryCollectionRateMs,
         kReportDeviceNetworkTelemetryEventCheckingRateMs,
         kReportDeviceAudioStatusCheckingRateMs,
+        kDeviceReportRuntimeCountersCheckingRateMs,
         kDeviceActivityHeartbeatCollectionRateMs};
     const base::Value expected_frequency_value(expected_frequency);
     for (auto* frequency_setting : reporting_frequency_settings) {
@@ -805,7 +809,7 @@ TEST_F(DeviceSettingsProviderTest, DecodeDeviceState) {
 TEST_F(DeviceSettingsProviderTest, DecodeReportingSettings) {
   // Turn on all reporting and verify that the reporting settings have been
   // decoded correctly.
-  const int status_frequency = 50000;
+  constexpr int status_frequency = 500000000;
   SetReportingSettings(true, status_frequency);
   VerifyReportingSettings(true, status_frequency);
 

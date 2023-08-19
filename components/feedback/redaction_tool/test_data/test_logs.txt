@@ -1,0 +1,8 @@
+# Crash ID
+2023-06-09T22:26:32.950700Z INFO crash_sender[8484]: Response: 200 ()
+2023-06-09T22:26:32.951219Z INFO crash_sender[8484]: Crash report receipt ID 153c963587d8d8d4
+2023-06-09T22:26:32.951439Z INFO crash_sender[8484]: Successfully sent crash /var/spool/crash/kernel.20230609.222531.43530.0.meta and removing.
+# SSID
+2022-04-12T18:45:47.193157Z DEBUG wpa_supplicant[944]:   * freq=5805
+2022-04-12T18:45:47.193173Z DEBUG wpa_supplicant[944]:   * SSID=c7ec04d2bef3
+2022-04-12T18:45:47.193183Z DEBUG wpa_supplicant[944]:   * IEs - hexdump(len=0): [NULL]

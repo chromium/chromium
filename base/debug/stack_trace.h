@@ -64,6 +64,16 @@ BASE_EXPORT uintptr_t GetStackEnd();
 // can later see where the given object was created from.
 class BASE_EXPORT StackTrace {
  public:
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(https://crbug.com/925525): Testing indicates that Android has issues
+  // with a larger value here, so leave Android at 62.
+  static constexpr size_t kMaxTraces = 62;
+#else
+  // For other platforms, use 250. This seems reasonable without
+  // being huge.
+  static constexpr size_t kMaxTraces = 250;
+#endif
+
   // Creates a stacktrace from the current location.
   StackTrace();
 
@@ -122,16 +132,6 @@ class BASE_EXPORT StackTrace {
  private:
 #if BUILDFLAG(IS_WIN)
   void InitTrace(const _CONTEXT* context_record);
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(https://crbug.com/925525): Testing indicates that Android has issues
-  // with a larger value here, so leave Android at 62.
-  static constexpr int kMaxTraces = 62;
-#else
-  // For other platforms, use 250. This seems reasonable without
-  // being huge.
-  static constexpr int kMaxTraces = 250;
 #endif
 
   void* trace_[kMaxTraces];

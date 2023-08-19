@@ -8,11 +8,15 @@ import collections
 import itertools
 import logging
 import sys
+from typing import Dict
 
 import gold_inexact_matching.iterative_parameter_optimizer\
     as iterative_optimizer
 from gold_inexact_matching import common_typing as ct
 from gold_inexact_matching import parameter_set
+
+
+Sparse2DIntArray = Dict[int, Dict[int, int]]
 
 
 class LocalMinimaParameterOptimizer(
@@ -34,11 +38,11 @@ class LocalMinimaParameterOptimizer(
     # to prune combinations we don't care about, similar to skipping
     # combinations that produce a higher weight than our smallest.
     # Delta -> Edge -> Max Diff
-    self._permissive_max_diff_map = {}
+    self._permissive_max_diff_map: Sparse2DIntArray = {}
     # Max Diff -> Edge -> Delta
-    self._permissive_delta_map = {}
+    self._permissive_delta_map: Sparse2DIntArray = {}
     # Max Diff -> Delta -> Edge
-    self._permissive_edge_map = {}
+    self._permissive_edge_map: Sparse2DIntArray = {}
 
   @classmethod
   def AddArguments(cls, parser: ct.CmdArgParser) -> ct.ArgumentGroupTuple:

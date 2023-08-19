@@ -88,7 +88,20 @@
         "id": "CreateType",
         "type": "string",
         "description": "Specifies what type of browser window to create. 'panel' is deprecated and is available only to existing allowlisted extensions on Chrome OS.",
-        "enum": ["normal", "popup", "panel"]
+        "enum": [
+        {
+          "name": "normal",
+          "description": "Specifies the window as a standard window."
+        },
+        {
+          "name": "popup",
+          "description": "Specifies the window as a popup window."
+        },
+        {
+          "name": "panel",
+          "description": "Specifies the window as a panel."
+        }
+        ]
       },
       {
         "id": "QueryOptions",

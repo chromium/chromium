@@ -41,6 +41,8 @@ class ASH_EXPORT DragWindowResizer : public WindowResizer {
  private:
   FRIEND_TEST_ALL_PREFIXES(DragWindowResizerTest, DragWindowController);
   FRIEND_TEST_ALL_PREFIXES(DragWindowResizerTest,
+                           DragWindowControllerLatchesTargetOpacity);
+  FRIEND_TEST_ALL_PREFIXES(DragWindowResizerTest,
                            DragWindowControllerAcrossThreeDisplays);
 
   // Updates the bounds of the drag window for window dragging.

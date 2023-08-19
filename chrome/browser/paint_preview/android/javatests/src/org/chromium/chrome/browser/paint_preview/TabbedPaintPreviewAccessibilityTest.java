@@ -9,7 +9,6 @@ import android.view.MotionEvent;
 
 import androidx.test.filters.MediumTest;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -48,11 +47,6 @@ public class TabbedPaintPreviewAccessibilityTest {
         mActivityTestRule.startMainActivityWithURL(
                 mActivityTestRule.getTestServer().getURL(TEST_URL));
         PaintPreviewTabService.setAccessibilityEnabledForTesting(true);
-    }
-
-    @After
-    public void tearDown() {
-        PaintPreviewTabService.setAccessibilityEnabledForTesting(false);
     }
 
     /**

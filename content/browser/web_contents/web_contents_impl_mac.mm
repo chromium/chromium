@@ -13,18 +13,18 @@ namespace content {
 
 void WebContentsImpl::Resize(const gfx::Rect& new_bounds) {
   NSView* view = GetNativeView().GetNativeNSView();
-  NSRect old_wcv_frame = [view frame];
+  NSRect old_wcv_frame = view.frame;
   CGFloat new_x = old_wcv_frame.origin.x;
   CGFloat new_y = old_wcv_frame.origin.y +
                   (old_wcv_frame.size.height - new_bounds.size().height());
   NSRect new_wcv_frame = NSMakeRect(new_x, new_y, new_bounds.size().width(),
                                     new_bounds.size().height());
-  [view setFrame:new_wcv_frame];
+  view.frame = new_wcv_frame;
 }
 
 gfx::Size WebContentsImpl::GetSize() {
   NSView* view = GetNativeView().GetNativeNSView();
-  NSRect frame = [view frame];
+  NSRect frame = view.frame;
   return gfx::Size(NSWidth(frame), NSHeight(frame));
 }
 

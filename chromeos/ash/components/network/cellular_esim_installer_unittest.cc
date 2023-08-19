@@ -47,6 +47,8 @@ const char kTestEid[] = "12345678901234567890123456789012";
 const char kTestCellularServicePath[] = "/service/cellular101";
 const char kInstallViaQrCodeHistogram[] =
     "Network.Cellular.ESim.InstallViaQrCode.Result";
+const char kInstallViaQrCodeDBusResultHistogram[] =
+    "Network.Cellular.ESim.InstallViaQrCode.DBusResult";
 const char kESimInstallNonUserErrorSuccessRate[] =
     "Network.Cellular.ESim.Installation.NonUserErrorSuccessRate";
 
@@ -158,7 +160,7 @@ class CellularESimInstallerTest : public testing::Test {
     absl::optional<std::string> out_service_path;
 
     base::RunLoop run_loop;
-    cellular_esim_installer_->InstallProfileFromActivationCode(
+    cellular_esim_installer_->LockAndInstallProfileFromActivationCode(
         activation_code, confirmation_code, euicc_path,
         std::move(new_shill_properties),
         base::BindLambdaForTesting(
@@ -248,6 +250,10 @@ class CellularESimInstallerTest : public testing::Test {
     } else {
       HistogramTesterPtr()->ExpectBucketCount(
           kESimInstallNonUserErrorSuccessRate, expected_hermes_status, 0);
+    }
+    if (expected_hermes_status != HermesResponseStatus::kErrorUnknownResponse) {
+      HistogramTesterPtr()->ExpectTotalCount(
+          kInstallViaQrCodeDBusResultHistogram, 0);
     }
   }
 
@@ -352,6 +358,25 @@ TEST_F(CellularESimInstallerTest, InstallProfileInvalidActivationCode) {
       /*is_managed=*/true);
   HistogramTesterPtr()->ExpectTotalCount(
       kInstallViaPolicyRetryOperationHistogram, 0);
+}
+
+TEST_F(CellularESimInstallerTest, InstallProfileDBusError) {
+  InstallResultTuple result_tuple = InstallProfileFromActivationCode(
+      HermesEuiccClient::Get()
+          ->GetTestInterface()
+          ->GetDBusErrorActivationCode(),
+      /*confirmation_code=*/std::string(),
+      /*euicc_path=*/dbus::ObjectPath(kTestEuiccPath),
+      /*new_shill_properties=*/base::Value::Dict(),
+      /*wait_for_connect=*/false, /*fail_connect=*/false);
+
+  HistogramTesterPtr()->ExpectTotalCount(kInstallViaQrCodeDBusResultHistogram,
+                                         1);
+  HistogramTesterPtr()->ExpectBucketCount(kInstallViaQrCodeDBusResultHistogram,
+                                          dbus::DBusResult::kErrorNoMemory, 1);
+  HistogramTesterPtr()->ExpectBucketCount(
+      kInstallViaQrCodeHistogram, HermesResponseStatus::kErrorUnknownResponse,
+      1);
 }
 
 TEST_F(CellularESimInstallerTest, InstallProfileConnectFailure) {

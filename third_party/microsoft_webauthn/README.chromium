@@ -1,11 +1,12 @@
 Name: Headers for the Windows 10 WebAuthn API (webauthn.dll)
 Short Name: Windows webauthn.h
 URL: https://github.com/Microsoft/webauthn/
-Version: 4
-Revision: cca242b37ce56746d2fe4be270fe22e3e469b85d
+Version: 7
+Revision: c4d6cdf14be7b9fdaafde20278b6975f1c163fc0
 License: MIT
 License File: LICENSE
 Security Critical: no
+Shipped: yes
 
 Description:
 This project contains a header file (webauthn.h) for the native Windows 10 & 11

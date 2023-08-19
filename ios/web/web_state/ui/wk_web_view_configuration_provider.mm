@@ -26,10 +26,6 @@
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider_observer.h"
 #import "ios/web/webui/crw_web_ui_scheme_handler.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace web {
 
 namespace {
@@ -71,6 +67,11 @@ WKWebViewConfigurationProvider::FromBrowserState(BrowserState* browser_state) {
   }
   return *(static_cast<WKWebViewConfigurationProvider*>(
       browser_state->GetUserData(kWKWebViewConfigProviderKeyName)));
+}
+
+base::WeakPtr<WKWebViewConfigurationProvider>
+WKWebViewConfigurationProvider::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 WKWebViewConfigurationProvider::WKWebViewConfigurationProvider(
@@ -123,7 +124,7 @@ void WKWebViewConfigurationProvider::ResetWithWebViewConfiguration(
 
 #if defined(__IPHONE_16_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_16_0
   if (@available(iOS 16.0, *)) {
-    if (web::features::IsFullscreenAPIEnabled()) {
+    if (GetWebClient()->EnableFullscreenAPI()) {
       [[configuration_ preferences] setElementFullscreenEnabled:YES];
     }
   }

@@ -19,6 +19,12 @@ found in the LICENSE file.
       overflow: hidden;
       width: 380px;
   }
+
+  :host-context(.jelly-enabled) .slide-view {
+    /* TODO(b/289793104): Define new size for the carousel/slide. */
+    border: none;
+    border-radius: 20px;
+  }
 </style>
 <oobe-adaptive-dialog id="progressDialog" for-step="progress" id="dialog"
                       role="dialog">
@@ -37,14 +43,16 @@ found in the LICENSE file.
   </div>
   <div slot="content" class="flex layout vertical center center-justified"
        hidden="[[lowBatteryStatus_]]" id="updating">
-    <img src="/images/update_boot.svg"
-        class="oobe-illustration" aria-hidden="true">
+    <iron-icon icon="oobe-illos:update-boot-illo"
+        class="illustration-jelly">
+    </iron-icon>
   </div>
   <div hidden="[[!lowBatteryStatus_]]" class="slide-view"
        slot="content", id="lowBattery">
     <oobe-slide is-warning>
-      <img slot="slide-img" class="update-illustration oobe-illustration"
-           srcset="images/update-charge.svg" aria-hidden="true">
+      <iron-icon slot="slide-img" icon="oobe-illos:update-charge-illo"
+          class="illustration-jelly">
+      </iron-icon>
       <div slot="title">
         [[i18nDynamic(locale, 'batteryWarningTitle')]]
       </div>
@@ -81,8 +89,8 @@ found in the LICENSE file.
     </p>
   </div>
   <div slot="content" class="flex layout vertical center center-justified">
-    <img src="/images/error.svg"
-         class="oobe-illustration" aria-hidden="true">
+    <iron-icon icon="oobe-illos:error-illo" class="illustration-jelly">
+    </iron-icon>
   </div>
 
   <!-- Cancel button -->

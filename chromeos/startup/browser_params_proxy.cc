@@ -16,6 +16,11 @@ BrowserParamsProxy* BrowserParamsProxy::Get() {
   return browser_params_proxy.get();
 }
 
+// static
+void BrowserParamsProxy::WaitForLogin() {
+  BrowserPostLoginParams::WaitForLogin();
+}
+
 bool BrowserParamsProxy::DisableCrosapiForTesting() const {
   return BrowserInitParams::disable_crosapi_for_testing();
 }
@@ -33,8 +38,9 @@ bool BrowserParamsProxy::AshMetricsEnabled() const {
 }
 
 crosapi::mojom::SessionType BrowserParamsProxy::SessionType() const {
-  if (IsLaunchedWithPostLoginParams())
+  if (IsLaunchedWithPostLoginParams()) {
     return BrowserPostLoginParams::Get()->session_type;
+  }
   return BrowserInitParams::Get()->session_type;
 }
 
@@ -49,8 +55,9 @@ BrowserParamsProxy::InterfaceVersions() const {
 
 const crosapi::mojom::DefaultPathsPtr& BrowserParamsProxy::DefaultPaths()
     const {
-  if (IsLaunchedWithPostLoginParams())
+  if (IsLaunchedWithPostLoginParams()) {
     return BrowserPostLoginParams::Get()->default_paths;
+  }
   return BrowserInitParams::Get()->default_paths;
 }
 
@@ -64,21 +71,24 @@ crosapi::mojom::ExoImeSupport BrowserParamsProxy::ExoImeSupport() const {
 }
 
 const absl::optional<std::string>& BrowserParamsProxy::CrosUserIdHash() const {
-  if (IsLaunchedWithPostLoginParams())
+  if (IsLaunchedWithPostLoginParams()) {
     return BrowserPostLoginParams::Get()->cros_user_id_hash;
+  }
   return BrowserInitParams::Get()->cros_user_id_hash;
 }
 
 const absl::optional<std::vector<uint8_t>>&
 BrowserParamsProxy::DeviceAccountPolicy() const {
-  if (IsLaunchedWithPostLoginParams())
+  if (IsLaunchedWithPostLoginParams()) {
     return BrowserPostLoginParams::Get()->device_account_policy;
+  }
   return BrowserInitParams::Get()->device_account_policy;
 }
 
 uint64_t BrowserParamsProxy::LastPolicyFetchAttemptTimestamp() const {
-  if (IsLaunchedWithPostLoginParams())
+  if (IsLaunchedWithPostLoginParams()) {
     return BrowserPostLoginParams::Get()->last_policy_fetch_attempt_timestamp;
+  }
   return BrowserInitParams::Get()->last_policy_fetch_attempt_timestamp;
 }
 
@@ -88,26 +98,30 @@ const crosapi::mojom::IdleInfoPtr& BrowserParamsProxy::IdleInfo() const {
 
 crosapi::mojom::InitialBrowserAction BrowserParamsProxy::InitialBrowserAction()
     const {
-  if (IsLaunchedWithPostLoginParams())
+  if (IsLaunchedWithPostLoginParams()) {
     return BrowserPostLoginParams::Get()->initial_browser_action;
+  }
   return BrowserInitParams::Get()->initial_browser_action;
 }
 
 const crosapi::mojom::AccountPtr& BrowserParamsProxy::DeviceAccount() const {
-  if (IsLaunchedWithPostLoginParams())
+  if (IsLaunchedWithPostLoginParams()) {
     return BrowserPostLoginParams::Get()->device_account;
+  }
   return BrowserInitParams::Get()->device_account;
 }
 
 bool BrowserParamsProxy::WebAppsEnabled() const {
-  if (IsLaunchedWithPostLoginParams())
+  if (IsLaunchedWithPostLoginParams()) {
     return BrowserPostLoginParams::Get()->web_apps_enabled;
+  }
   return BrowserInitParams::Get()->web_apps_enabled;
 }
 
 bool BrowserParamsProxy::StandaloneBrowserIsPrimary() const {
-  if (IsLaunchedWithPostLoginParams())
+  if (IsLaunchedWithPostLoginParams()) {
     return BrowserPostLoginParams::Get()->standalone_browser_is_primary;
+  }
   return BrowserInitParams::Get()->standalone_browser_is_primary;
 }
 
@@ -132,8 +146,9 @@ BrowserParamsProxy::BuildFlags() const {
 }
 
 crosapi::mojom::OpenUrlFrom BrowserParamsProxy::StartupUrlsFrom() const {
-  if (IsLaunchedWithPostLoginParams())
+  if (IsLaunchedWithPostLoginParams()) {
     return BrowserPostLoginParams::Get()->startup_urls_from;
+  }
   return BrowserInitParams::Get()->startup_urls_from;
 }
 
@@ -152,20 +167,23 @@ uint64_t BrowserParamsProxy::UkmClientId() const {
 }
 
 bool BrowserParamsProxy::StandaloneBrowserIsOnlyBrowser() const {
-  if (IsLaunchedWithPostLoginParams())
+  if (IsLaunchedWithPostLoginParams()) {
     return BrowserPostLoginParams::Get()->standalone_browser_is_only_browser;
+  }
   return BrowserInitParams::Get()->standalone_browser_is_only_browser;
 }
 
 bool BrowserParamsProxy::PublishChromeApps() const {
-  if (IsLaunchedWithPostLoginParams())
+  if (IsLaunchedWithPostLoginParams()) {
     return BrowserPostLoginParams::Get()->publish_chrome_apps;
+  }
   return BrowserInitParams::Get()->publish_chrome_apps;
 }
 
 bool BrowserParamsProxy::PublishHostedApps() const {
-  if (IsLaunchedWithPostLoginParams())
+  if (IsLaunchedWithPostLoginParams()) {
     return BrowserPostLoginParams::Get()->publish_hosted_apps;
+  }
   return BrowserInitParams::Get()->publish_hosted_apps;
 }
 
@@ -188,18 +206,6 @@ BrowserParamsProxy::AcceptedInternalAshUrls() const {
   return BrowserInitParams::Get()->accepted_internal_ash_urls;
 }
 
-bool BrowserParamsProxy::IsHoldingSpaceIncognitoProfileIntegrationEnabled()
-    const {
-  return BrowserInitParams::Get()
-      ->is_holding_space_incognito_profile_integration_enabled;
-}
-
-bool BrowserParamsProxy::
-    IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled() const {
-  return BrowserInitParams::Get()
-      ->is_holding_space_in_progress_downloads_notification_suppression_enabled;
-}
-
 bool BrowserParamsProxy::IsDeviceEnterprisedManaged() const {
   return BrowserInitParams::Get()->is_device_enterprised_managed;
 }
@@ -215,8 +221,9 @@ bool BrowserParamsProxy::IsOndeviceSpeechSupported() const {
 
 const absl::optional<base::flat_map<policy::PolicyNamespace, base::Value>>&
 BrowserParamsProxy::DeviceAccountComponentPolicy() const {
-  if (IsLaunchedWithPostLoginParams())
+  if (IsLaunchedWithPostLoginParams()) {
     return BrowserPostLoginParams::Get()->device_account_component_policy;
+  }
   return BrowserInitParams::Get()->device_account_component_policy;
 }
 
@@ -233,7 +240,14 @@ bool BrowserParamsProxy::UseFlossBluetooth() const {
   return BrowserInitParams::Get()->use_floss_bluetooth;
 }
 
+bool BrowserParamsProxy::IsFlossAvailable() const {
+  return BrowserInitParams::Get()->is_floss_available;
+}
+
 bool BrowserParamsProxy::IsCurrentUserDeviceOwner() const {
+  if (IsLaunchedWithPostLoginParams()) {
+    return BrowserPostLoginParams::Get()->is_current_user_device_owner;
+  }
   return BrowserInitParams::Get()->is_current_user_device_owner;
 }
 
@@ -244,11 +258,10 @@ bool BrowserParamsProxy::IsCurrentUserEphemeral() const {
   return BrowserInitParams::Get()->is_current_user_ephemeral;
 }
 
-bool BrowserParamsProxy::DoNotMuxExtensionAppIds() const {
-  return BrowserInitParams::Get()->do_not_mux_extension_app_ids;
-}
-
 bool BrowserParamsProxy::EnableLacrosTtsSupport() const {
+  if (IsLaunchedWithPostLoginParams()) {
+    return BrowserPostLoginParams::Get()->enable_lacros_tts_support;
+  }
   return BrowserInitParams::Get()->enable_lacros_tts_support;
 }
 
@@ -304,6 +317,22 @@ bool BrowserParamsProxy::EnableClipboardHistoryRefresh() const {
 
 bool BrowserParamsProxy::IsVariableRefreshRateEnabled() const {
   return BrowserInitParams::Get()->is_variable_refresh_rate_enabled;
+}
+
+bool BrowserParamsProxy::IsPdfOcrEnabled() const {
+  return BrowserInitParams::Get()->is_pdf_ocr_enabled;
+}
+
+bool BrowserParamsProxy::IsDriveFsBulkPinningEnabled() const {
+  return BrowserInitParams::Get()->is_drivefs_bulk_pinning_enabled;
+}
+
+bool BrowserParamsProxy::IsSysUiDownloadsIntegrationV2Enabled() const {
+  return BrowserInitParams::Get()->is_sys_ui_downloads_integration_v2_enabled;
+}
+
+bool BrowserParamsProxy::IsCrosBatterySaverAvailable() const {
+  return BrowserInitParams::Get()->is_cros_battery_saver_available;
 }
 
 }  // namespace chromeos

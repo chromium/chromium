@@ -133,6 +133,13 @@ Also add new settings to site_settings_preferences.xml!
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
         android:key="automatic_downloads" />
+    <!-- Zoom -->
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:fragment="org.chromium.components.browser_ui.site_settings.AllSiteSettings"
+        android:key="zoom"
+        android:title="@string/page_zoom_menu_title"
+        android:icon="@drawable/ic_zoom"
+        app:iconTint="@macro/default_icon_color" />
 
     <!-- Storage -->
     <!-- TODO(finnur): Move this over to the new Usage screen, once it exists.

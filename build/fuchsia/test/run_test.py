@@ -90,6 +90,7 @@ def main():
     with ExitStack() as stack:
         if running_unattended():
             # Updating configurations to meet the requirement of isolate.
+            os.environ['FUCHSIA_ANALYTICS_DISABLED'] = '1'
             stop_ffx_daemon()
             if runner_args.extra_path:
                 os.environ['PATH'] += os.pathsep + os.pathsep.join(

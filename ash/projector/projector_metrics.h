@@ -97,19 +97,6 @@ enum class ProjectorCreationFlowError {
 // These enum values represent potential error that occurs at policy value
 // change handling and log to UMA. Entries should not be renumbered and numeric
 // values should never be reused. Please keep in sync with
-// "ProjectorPolicyChangeHandlingError" in
-// src/tools/metrics/histograms/enums.xml.
-enum class ProjectorPolicyChangeHandlingError {
-  kSwaManager = 0,
-  kWebAppProvider = 1,
-  kWebAppProviderOnRegistryReady = 2,
-  kSyncBridge = 3,
-  kMaxValue = kSyncBridge
-};
-
-// These enum values represent potential error that occurs at policy value
-// change handling and log to UMA. Entries should not be renumbered and numeric
-// values should never be reused. Please keep in sync with
 // "OnDeviceToServerSpeechRecognitionFallbackReason" in
 // src/tools/metrics/histograms/enums.xml.
 // This enum is the smiliar to the `OnDeviceRecognitionAvailability` because
@@ -169,11 +156,6 @@ void RecordPendingScreencastBatchIOTaskDuration(const base::TimeDelta duration);
 
 // Records the interval between the UI changes of pending screencasts.
 void RecordPendingScreencastChangeInterval(const base::TimeDelta interval);
-
-// Records potential error occurs at policy change.
-// TODO(b/240497023): remove this once confirmed the nullptr should never
-// occurs and the nullptr check is converted to DCEHCK.
-void RecordPolicyChangeHandlingError(ProjectorPolicyChangeHandlingError error);
 
 void RecordOnDeviceToServerSpeechRecognitionFallbackReason(
     OnDeviceToServerSpeechRecognitionFallbackReason reason);

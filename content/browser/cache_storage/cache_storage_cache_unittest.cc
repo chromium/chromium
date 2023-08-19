@@ -25,6 +25,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -568,8 +569,8 @@ class CacheStorageCacheTest : public testing::Test {
         std::vector<uint8_t>(expected_blob_data_.begin(),
                              expected_blob_data_.end()));
 
-    auto bucket_locator = GetOrCreateDefaultBucket(kTestUrl);
-    ASSERT_TRUE(bucket_locator.has_value());
+    ASSERT_OK_AND_ASSIGN(auto bucket_locator,
+                         GetOrCreateDefaultBucket(kTestUrl));
     // Use a mock CacheStorage object so we can use real
     // CacheStorageCacheHandle reference counting.  A CacheStorage
     // must be present to be notified when a cache becomes unreferenced.
@@ -578,9 +579,9 @@ class CacheStorageCacheTest : public testing::Test {
         base::SingleThreadTaskRunner::GetCurrentDefault().get(),
         base::SingleThreadTaskRunner::GetCurrentDefault(), quota_manager_proxy_,
         blob_storage_context_, /* cache_storage_manager = */ nullptr,
-        *bucket_locator, storage::mojom::CacheStorageOwner::kCacheAPI);
+        bucket_locator, storage::mojom::CacheStorageOwner::kCacheAPI);
 
-    InitCache(mock_cache_storage_.get(), *bucket_locator);
+    InitCache(mock_cache_storage_.get(), bucket_locator);
   }
 
   void TearDown() override {
@@ -2087,9 +2088,8 @@ TEST_P(CacheStorageCacheTestP, PutObeysBucketQuotaLimits) {
   quota_manager_proxy_->UpdateOrCreateBucket(
       bucket, base::SingleThreadTaskRunner::GetCurrentDefault(),
       future.GetCallback());
-  auto value = future.Take();
-  ASSERT_TRUE(value.has_value());
-  InitCache(nullptr, value->ToBucketLocator());
+  ASSERT_OK_AND_ASSIGN(storage::BucketInfo value, future.Take());
+  InitCache(nullptr, value.ToBucketLocator());
 
   EXPECT_FALSE(Put(body_request_, CreateBlobBodyResponse()));
   EXPECT_EQ(CacheStorageError::kErrorQuotaExceeded, callback_error_);
@@ -2419,9 +2419,8 @@ TEST_P(CacheStorageCacheTestP, UnfinishedPutsShouldNotBeReusable) {
   base::RunLoop().RunUntilIdle();
 
   // Create a new Cache in the same space.
-  auto bucket = GetOrCreateDefaultBucket(kTestUrl);
-  ASSERT_TRUE(bucket.has_value());
-  InitCache(nullptr, *std::move(bucket));
+  ASSERT_OK_AND_ASSIGN(auto bucket, GetOrCreateDefaultBucket(kTestUrl));
+  InitCache(nullptr, std::move(bucket));
 
   // Now attempt to read the same response from the cache. It should fail.
   EXPECT_FALSE(Match(body_request_));

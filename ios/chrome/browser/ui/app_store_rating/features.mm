@@ -7,14 +7,18 @@
 #import "base/feature_list.h"
 #import "ios/chrome/browser/promos_manager/features.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 BASE_FEATURE(kAppStoreRating,
              "AppStoreRating",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAppStoreRatingLoosenedTriggers,
+             "AppStoreRatingLoosenedTriggers",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsAppStoreRatingEnabled() {
   return base::FeatureList::IsEnabled(kAppStoreRating);
+}
+
+bool IsAppStoreRatingLoosenedTriggersEnabled() {
+  return base::FeatureList::IsEnabled(kAppStoreRatingLoosenedTriggers);
 }

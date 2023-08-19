@@ -3,7 +3,9 @@ URL: source.chromium.org/chromium/chromium/src/+/master:v8/src/base/ieee754.cc
 Revision: c512d6173f33c6b8301d3fba9384edc9fc1f9e45
 Version: 0
 Security Critical: yes
+Shipped: yes
 License: fdlibm license
+License File: LICENSE
 License Android Compatible: yes
 
 Description:

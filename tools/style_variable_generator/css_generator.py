@@ -46,6 +46,7 @@ class CSSStyleGenerator(BaseGenerator):
             'colors': colors,
             'legacy_mappings': legacy_mappings,
             'typefaces': self.model.typefaces,
+            'font_faces': self.model.font_faces,
             'font_families': self.model.font_families,
             'untyped_css': self.model.untyped_css,
         }
@@ -103,6 +104,9 @@ class CSSStyleGenerator(BaseGenerator):
                 '$css_name-font-weight',
                 '$css_name-line-height',
             ])
+        elif variable_type == VariableType.FONT_FACE:
+            # Font faces are not individual attributes
+            pass
         elif variable_type == VariableType.LEGACY_MAPPING:
             # No Clients should be directly using any of the legacy mappings.
             pass

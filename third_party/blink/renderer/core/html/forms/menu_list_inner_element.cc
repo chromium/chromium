@@ -59,24 +59,30 @@ MenuListInnerElement::CustomStyleForLayoutObject(
         ItemPosition::kStart, OverflowAlignment::kDefault));
   }
 
-  // We set margin-left/right instead of padding-left/right to clip text by
-  // 'overflow: hidden'.
+  // We set margin-* instead of padding-* to clip text by 'overflow: hidden'.
+  LogicalToPhysicalSetter margin_setter(style_builder.GetWritingDirection(),
+                                        style_builder,
+                                        &ComputedStyleBuilder::SetMarginTop,
+                                        &ComputedStyleBuilder::SetMarginRight,
+                                        &ComputedStyleBuilder::SetMarginBottom,
+                                        &ComputedStyleBuilder::SetMarginLeft);
   LayoutTheme& theme = LayoutTheme::GetTheme();
   Length margin_start =
       Length::Fixed(theme.PopupInternalPaddingStart(parent_style));
   Length margin_end = Length::Fixed(
       theme.PopupInternalPaddingEnd(GetDocument().GetFrame(), parent_style));
-  if (parent_style.IsLeftToRightDirection()) {
-    style_builder.SetMarginLeft(margin_start);
-    style_builder.SetMarginRight(margin_end);
-  } else {
-    style_builder.SetMarginLeft(margin_end);
-    style_builder.SetMarginRight(margin_start);
-  }
+  margin_setter.SetInlineEnd(margin_end);
+  margin_setter.SetInlineStart(margin_start);
   style_builder.SetTextAlign(parent_style.GetTextAlign(true));
-  style_builder.SetPaddingTop(
+  LogicalToPhysicalSetter padding_setter(
+      style_builder.GetWritingDirection(), style_builder,
+      &ComputedStyleBuilder::SetPaddingTop,
+      &ComputedStyleBuilder::SetPaddingRight,
+      &ComputedStyleBuilder::SetPaddingBottom,
+      &ComputedStyleBuilder::SetPaddingLeft);
+  padding_setter.SetBlockStart(
       Length::Fixed(theme.PopupInternalPaddingTop(parent_style)));
-  style_builder.SetPaddingBottom(
+  padding_setter.SetBlockEnd(
       Length::Fixed(theme.PopupInternalPaddingBottom(parent_style)));
 
   if (const ComputedStyle* option_style =

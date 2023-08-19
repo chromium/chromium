@@ -9,6 +9,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/location.h"
+#include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -132,9 +134,13 @@ void LogLockRequest(
 
 }  // namespace
 
-WebAppLockManager::WebAppLockManager(WebAppProvider& provider)
-    : provider_(provider) {}
+WebAppLockManager::WebAppLockManager() = default;
 WebAppLockManager::~WebAppLockManager() = default;
+
+void WebAppLockManager::SetProvider(base::PassKey<WebAppCommandManager>,
+                                    WebAppProvider& provider) {
+  provider_ = &provider;
+}
 
 bool WebAppLockManager::IsSharedWebContentsLockFree() {
   return lock_manager_.TestLock(GetSharedWebContentsLock()) ==
@@ -149,7 +155,8 @@ void WebAppLockManager::AcquireLock(
   CHECK(lock_description.type() == LockDescription::Type::kNoOp);
 
   auto lock = base::WrapUnique(
-      new NoopLock(std::make_unique<content::PartitionedLockHolder>()));
+      new NoopLock(std::make_unique<content::PartitionedLockHolder>(),
+                   weak_factory_.GetWeakPtr()));
   base::WeakPtr<content::PartitionedLockHolder> holder =
       lock->holder_->AsWeakPtr();
   AcquireLock(holder, lock_description,

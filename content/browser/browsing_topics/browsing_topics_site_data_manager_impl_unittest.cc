@@ -37,8 +37,8 @@ TEST_F(BrowsingTopicsSiteDataManagerImplTest, GetBrowsingTopicsApiUsage) {
 
   topics_manager_->OnBrowsingTopicsApiUsed(
       /*hashed_main_frame_host=*/browsing_topics::HashedHost(123),
-      /*hashed_context_domains=*/{browsing_topics::HashedDomain(456)},
-      initial_time);
+      /*hashed_context_domain=*/browsing_topics::HashedDomain(456),
+      /*context_domain=*/"456.com", initial_time);
 
   size_t query_result_count = 0;
 
@@ -83,6 +83,53 @@ TEST_F(BrowsingTopicsSiteDataManagerImplTest, GetBrowsingTopicsApiUsage) {
           }));
 
   get_usage_waiter.Run();
+
+  EXPECT_EQ(query_result_count, 2u);
+}
+
+TEST_F(BrowsingTopicsSiteDataManagerImplTest,
+       GetContextDomainsFromHashedContextDomains) {
+  size_t query_result_count = 0;
+
+  base::RunLoop get_domains_waiter;
+
+  topics_manager_->OnBrowsingTopicsApiUsed(
+      /*hashed_main_frame_host=*/browsing_topics::HashedHost(123),
+      /*hashed_context_domain=*/browsing_topics::HashedDomain(456),
+      /*context_domain=*/"456.com", base::Time::Now());
+
+  topics_manager_->GetContextDomainsFromHashedContextDomains(
+      {browsing_topics::HashedDomain(456), browsing_topics::HashedDomain(789)},
+      base::BindLambdaForTesting(
+          [&](std::map<browsing_topics::HashedDomain, std::string> result) {
+            // Queries are handled in order. The first callback has to be first
+            // invoked.
+            EXPECT_EQ(query_result_count, 0u);
+            ++query_result_count;
+
+            std::map<browsing_topics::HashedDomain, std::string>
+                expected_result(
+                    {{browsing_topics::HashedDomain(456), "456.com"}});
+            EXPECT_EQ(result, expected_result);
+          }));
+
+  topics_manager_->GetContextDomainsFromHashedContextDomains(
+      {browsing_topics::HashedDomain(789)},
+      base::BindLambdaForTesting(
+          [&](std::map<browsing_topics::HashedDomain, std::string> result) {
+            // Queries are handled in order. The second callback has to be
+            // invoked after the first one.
+            EXPECT_EQ(query_result_count, 1u);
+            ++query_result_count;
+
+            std::map<browsing_topics::HashedDomain, std::string>
+                expected_result({});
+            EXPECT_EQ(result, expected_result);
+
+            get_domains_waiter.Quit();
+          }));
+
+  get_domains_waiter.Run();
 
   EXPECT_EQ(query_result_count, 2u);
 }

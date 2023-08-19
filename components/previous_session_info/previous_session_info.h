@@ -149,6 +149,9 @@ enum class DeviceBatteryState {
 // The breadcrumbs from the previous session.
 @property(atomic, readonly) NSString* breadcrumbs;
 
+// Number of warm starts in the previous session.
+@property(nonatomic, readonly) NSInteger warmStartCount;
+
 // Singleton PreviousSessionInfo. During the lifetime of the app, the returned
 // object is the same, and describes the previous session, even after a new
 // session has started (by calling beginRecordingCurrentSession).
@@ -198,6 +201,12 @@ enum class DeviceBatteryState {
 
 // Empties the list of connected session.
 - (void)resetConnectedSceneSessionIDs;
+
+// Increments the warm start count by one.
+- (void)incrementWarmStartCount;
+
+// Resets the warm start count to zero.
+- (void)resetWarmStartCount;
 
 // Must be called when Chrome starts session restoration. The returned closure
 // runner will clear up the flag when destroyed. Can be used on different

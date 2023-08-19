@@ -21,6 +21,9 @@ GoogleGroupsUpdaterServiceFactory::GetInstance() {
 GoogleGroupsUpdaterService*
 GoogleGroupsUpdaterServiceFactory::GetForBrowserContext(
     content::BrowserContext* context) {
+  if (!base::FeatureList::IsEnabled(kVariationsGoogleGroupFiltering)) {
+    return nullptr;
+  }
   return static_cast<GoogleGroupsUpdaterService*>(
       GetInstance()->GetServiceForBrowserContext(context, /*create=*/true));
 }
@@ -44,6 +47,7 @@ GoogleGroupsUpdaterServiceFactory::GoogleGroupsUpdaterServiceFactory()
 std::unique_ptr<KeyedService>
 GoogleGroupsUpdaterServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+  CHECK(base::FeatureList::IsEnabled(kVariationsGoogleGroupFiltering));
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<GoogleGroupsUpdaterService>(
       *g_browser_process->local_state(),
@@ -53,10 +57,19 @@ GoogleGroupsUpdaterServiceFactory::BuildServiceInstanceForBrowserContext(
 
 bool GoogleGroupsUpdaterServiceFactory::ServiceIsCreatedWithBrowserContext()
     const {
+  return base::FeatureList::IsEnabled(kVariationsGoogleGroupFiltering);
+}
+
+bool GoogleGroupsUpdaterServiceFactory::ServiceIsNULLWhileTesting() const {
+  // Many unit test don't initialize g_browser_process->local_state(), so
+  // disable this service in unit tests.
   return true;
 }
 
 void GoogleGroupsUpdaterServiceFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
+  if (!base::FeatureList::IsEnabled(kVariationsGoogleGroupFiltering)) {
+    return;
+  }
   GoogleGroupsUpdaterService::RegisterProfilePrefs(registry);
 }

@@ -149,8 +149,9 @@ void CalendarModel::RemoveObserver(Observer* observer) {
 
 void CalendarModel::PromoteMonth(base::Time start_of_month) {
   // If this month is non-prunable, nothing to do.
-  if (non_prunable_months_.find(start_of_month) != non_prunable_months_.end())
+  if (base::Contains(non_prunable_months_, start_of_month)) {
     return;
+  }
 
   // If start_of_month is already most-recently-used, nothing to do.
   if (!mru_months_.empty() && mru_months_.front() == start_of_month)
@@ -230,8 +231,8 @@ void CalendarModel::FetchEvents(base::Time start_of_month) {
     return;
 
   // Bail out early if this is a prunable month that's already been fetched.
-  if (non_prunable_months_.find(start_of_month) == non_prunable_months_.end() &&
-      months_fetched_.find(start_of_month) != months_fetched_.end()) {
+  if (!base::Contains(non_prunable_months_, start_of_month) &&
+      base::Contains(months_fetched_, start_of_month)) {
     PromoteMonth(start_of_month);
     return;
   }
@@ -431,8 +432,10 @@ void CalendarModel::InsertEventInMonth(
   DCHECK(event);
 
   // Check the event is in the month we're trying to insert it into.
-  if (start_of_month != calendar_utils::GetStartOfMonthUTC(start_time_midnight))
+  if (start_of_month !=
+      calendar_utils::GetStartOfMonthUTC(start_time_midnight)) {
     return;
+  }
 
   // Month is now the most-recently-used.
   PromoteMonth(start_of_month);

@@ -19,14 +19,17 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/borealis/borealis_context.h"
 #include "chrome/browser/ash/borealis/borealis_disk_manager.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_launch_options.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_wayland_server.h"
+#include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
@@ -270,31 +273,37 @@ void StartBorealisVm::OnStartBorealisVm(
                " (code " + base::NumberToString(response->status()) + ")");
 }
 
-AwaitBorealisStartup::AwaitBorealisStartup(Profile* profile,
-                                           std::string vm_name)
-    : BorealisTask("AwaitBorealisStartup"), watcher_(profile, vm_name) {}
+AwaitBorealisStartup::AwaitBorealisStartup()
+    : BorealisTask("AwaitBorealisStartup") {}
 AwaitBorealisStartup::~AwaitBorealisStartup() = default;
 
 void AwaitBorealisStartup::RunInternal(BorealisContext* context) {
-  watcher_.AwaitLaunch(
-      base::BindOnce(&AwaitBorealisStartup::OnAwaitBorealisStartup,
-                     weak_factory_.GetWeakPtr(), context));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&AwaitBorealisStartup::OnTimeout,
+                     weak_factory_.GetWeakPtr()),
+      base::Seconds(30));
+  // TODO(b/292020283): make hard-coded "penguin"s into a constant.
+  guest_os::GuestId id(guest_os::VmType::BOREALIS, context->vm_name(),
+                       "penguin");
+  // It is safe to BindOnce() the context* since it is guaranteed to be alive
+  // until this task calls Complete().
+  subscription_ =
+      guest_os::GuestOsSessionTracker::GetForProfile(context->profile())
+          ->RunOnceContainerStarted(
+              id, base::BindOnce(&AwaitBorealisStartup::OnContainerStarted,
+                                 weak_factory_.GetWeakPtr(), context));
 }
 
-BorealisLaunchWatcher& AwaitBorealisStartup::GetWatcherForTesting() {
-  return watcher_;
-}
-
-void AwaitBorealisStartup::OnAwaitBorealisStartup(
-    BorealisContext* context,
-    absl::optional<std::string> container) {
-  if (!container) {
-    Complete(BorealisStartupResult::kAwaitBorealisStartupFailed,
-             "Awaiting for Borealis launch failed: timed out");
-    return;
-  }
-  context->set_container_name(container.value());
+void AwaitBorealisStartup::OnContainerStarted(BorealisContext* context,
+                                              guest_os::GuestInfo info) {
+  context->set_container_name(info.guest_id.container_name);
   Complete(BorealisStartupResult::kSuccess, "");
+}
+
+void AwaitBorealisStartup::OnTimeout() {
+  Complete(BorealisStartupResult::kAwaitBorealisStartupFailed,
+           "Awaiting for Borealis launch failed: timed out");
 }
 
 namespace {

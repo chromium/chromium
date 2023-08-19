@@ -7,7 +7,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {emptyState, GooglePhotosEnablementState, kDefaultImageSymbol, PersonalizationRouter, WallpaperActionName, WallpaperCollection, WallpaperCollections, WallpaperGridItem, WallpaperImage} from 'chrome://personalization/js/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertDeepEquals, assertEquals, assertGE, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertGE, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
@@ -37,6 +37,7 @@ suite('WallpaperCollectionsTest', function() {
   }
 
   setup(function() {
+    loadTimeData.overrideValues({isGooglePhotosIntegrationEnabled: true});
     const mocks = baseSetup();
     wallpaperProvider = mocks.wallpaperProvider;
     personalizationStore = mocks.personalizationStore;
@@ -111,6 +112,13 @@ suite('WallpaperCollectionsTest', function() {
             'id_1': false,
             'id_2': false,
             '_time_of_day_chromebook_collection': false,
+          },
+          local: {
+            data: {
+              'LocalImage0.png': false,
+              'LocalImage1.png': false,
+            },
+            images: false,
           },
         },
         personalizationStore.data.wallpaper.loading,
@@ -208,8 +216,20 @@ suite('WallpaperCollectionsTest', function() {
         localTile.src, 'all three images are displayed');
   });
 
+  test('no Google Photos tile for ineligible users', async () => {
+    loadTimeData.overrideValues({isGooglePhotosIntegrationEnabled: false});
+    wallpaperCollectionsElement = initElement(WallpaperCollections);
+    await waitAfterNextRender(wallpaperCollectionsElement);
+
+    const googlePhotosTile =
+        wallpaperCollectionsElement.shadowRoot!
+            .querySelector<WallpaperGridItem>(
+                `${WallpaperGridItem.is}[data-google-photos]`);
+    assertFalse(!!googlePhotosTile, 'google photos tile is not present');
+  });
+
   test('customizes text for managed google photos', async () => {
-    const managedIconSelector = `iron-icon[icon='personalization:managed']`;
+    const managedIconSelector = `iron-icon[icon^='personalization:managed']`;
 
     personalizationStore.data.wallpaper.googlePhotos.enabled =
         GooglePhotosEnablementState.kEnabled;
@@ -237,6 +257,11 @@ suite('WallpaperCollectionsTest', function() {
   });
 
   test('sets collection description text', async () => {
+    // The mock set of collections created for this test does not contain the
+    // time of day collection. If time of day wallpaper happens to be enabled,
+    // the test will fail because the time of day collection is missing, which
+    // is irrelevant for this test case. It must explicitly be disabled here.
+    loadTimeData.overrideValues({isTimeOfDayWallpaperEnabled: false});
     wallpaperProvider.setCollections([
       {
         id: 'asdf',
@@ -421,7 +446,7 @@ suite('WallpaperCollectionsTest', function() {
         type: 'image_online',
       },
       {id: 'local_', type: 'image_local'},
-      {id: 'google_photos_', 'type': 'loading'},
+      {id: 'google_photos_', 'type': 'image_google_photos'},
       {id: 'id_0', type: 'image_online'},
       {id: 'id_1', type: 'image_online'},
       {id: 'id_2', type: 'image_online'},

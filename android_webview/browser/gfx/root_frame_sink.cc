@@ -14,6 +14,7 @@
 #include "components/viz/common/surfaces/frame_sink_id_allocator.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
+#include "components/viz/service/surfaces/frame_index_constants.h"
 #include "components/viz/service/surfaces/surface.h"
 
 namespace android_webview {
@@ -218,10 +219,10 @@ void RootFrameSink::RemoveChildFrameSinkId(
 void RootFrameSink::SetContainedSurfaces(
     const base::flat_set<viz::SurfaceId>& ids) {
   contained_surfaces_ = ids;
-  for (auto it = last_invalidated_frame_id_.begin();
-       it != last_invalidated_frame_id_.end();) {
+  for (auto it = last_invalidated_frame_index_.begin();
+       it != last_invalidated_frame_index_.end();) {
     if (!contained_surfaces_.contains(it->first))
-      it = last_invalidated_frame_id_.erase(it);
+      it = last_invalidated_frame_index_.erase(it);
     else
       ++it;
   }
@@ -295,17 +296,19 @@ bool RootFrameSink::ProcessVisibleSurfacesInvalidation() {
     auto* surface =
         GetFrameSinkManager()->surface_manager()->GetSurfaceForId(surface_id);
     if (surface) {
-      // Track last frame_id that we invalidated for. Note, that this doesn't
+      // Track last frame_index that we invalidated for. Note, that this doesn't
       // take into account what current frame is or what display compositor will
-      // draw. The intent here is to invalidate once for each surface we see.
-      auto& last_invalidated_id = last_invalidated_frame_id_[surface_id];
-      auto uncommited_frame_id =
-          last_invalidated_id.IsSequenceValid()
-              ? surface->GetUncommitedFrameIdNewerThan(last_invalidated_id)
-              : surface->GetFirstUncommitedFrameId();
-      if (uncommited_frame_id.has_value()) {
+      // draw. The intent here is to invalidate once for each CompositorFrame in
+      // the Surface we see.
+      auto& last_invalidated_index = last_invalidated_frame_index_[surface_id];
+      auto uncommited_frame_index =
+          last_invalidated_index > viz::kInvalidFrameIndex
+              ? surface->GetUncommitedFrameIndexNewerThan(
+                    last_invalidated_index)
+              : surface->GetFirstUncommitedFrameIndex();
+      if (uncommited_frame_index.has_value()) {
         invalidate = true;
-        last_invalidated_id = uncommited_frame_id.value();
+        last_invalidated_index = uncommited_frame_index.value();
       }
     }
   }

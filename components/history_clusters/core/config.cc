@@ -352,16 +352,6 @@ Config::Config() {
         base::FeatureList::IsEnabled(internal::kJourneysNamedNewTabGroups);
   }
 
-  // The `kUseUrlForDisplayCache` feature and child params.
-  {
-    use_url_for_display_cache =
-        base::FeatureList::IsEnabled(internal::kUseUrlForDisplayCache);
-
-    url_for_display_cache_size = GetFieldTrialParamByFeatureAsInt(
-        internal::kUseUrlForDisplayCache, "url_for_display_cache_size",
-        url_for_display_cache_size);
-  }
-
   // The `kJourneysZeroStateFiltering` feature and child params.
   {
     apply_zero_state_filtering =

@@ -108,7 +108,7 @@ class DlcserviceClientTest : public testing::Test {
 
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  raw_ptr<DlcserviceClient, ExperimentalAsh> client_;
+  raw_ptr<DlcserviceClient, DanglingUntriaged | ExperimentalAsh> client_;
   scoped_refptr<dbus::MockBus> mock_bus_;
   scoped_refptr<dbus::MockObjectProxy> mock_proxy_;
   std::deque<std::unique_ptr<dbus::Response>> responses_;

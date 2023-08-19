@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -65,12 +66,13 @@ class ManagePasswordsStateTest : public testing::Test {
     saved_match_.username_element = u"username_element";
     saved_match_.password_value = u"12345";
     saved_match_.password_element = u"password_element";
+    saved_match_.match_type = PasswordForm::MatchType::kExact;
 
     psl_match_ = saved_match_;
     psl_match_.url = GURL(kTestPSLOrigin);
     psl_match_.signon_realm = kTestPSLOrigin;
     psl_match_.username_value = u"username_psl";
-    psl_match_.is_public_suffix_match = true;
+    psl_match_.match_type = PasswordForm::MatchType::kPSL;
 
     local_federated_form_ = saved_match_;
     local_federated_form_.federation_origin =
@@ -78,6 +80,7 @@ class ManagePasswordsStateTest : public testing::Test {
     local_federated_form_.password_value.clear();
     local_federated_form_.signon_realm =
         "federation://example.com/accounts.com";
+    local_federated_form_.match_type = PasswordForm::MatchType::kExact;
 
     passwords_data_.set_client(&mock_client_);
   }
@@ -544,7 +547,7 @@ TEST_F(ManagePasswordsStateTest, AndroidPasswordUpdateSubmitted) {
   android_form.url = GURL(android_form.signon_realm);
   android_form.username_value = u"username";
   android_form.password_value = u"old pass";
-  android_form.is_affiliation_based_match = true;
+  android_form.match_type = PasswordForm::MatchType::kAffiliated;
   std::vector<const PasswordForm*> best_matches = {&android_form};
   std::unique_ptr<MockPasswordFormManagerForUI> test_form_manager(
       CreateFormManager(&best_matches, {}));

@@ -26,7 +26,6 @@
 <translation id="2060505056492490888">Znak "<ph name="DOT" />" upotrebljava se na pogrešnom položaju u domeni "<ph name="INVALIDDOMAIN" />".</translation>
 <translation id="2148716181193084225">Danas</translation>
 <translation id="2226276347425096477">Skratite taj tekst na <ph name="MAX_CHARACTERS" /> znakova ili manje (trenutačno upotrebljavate <ph name="CURRENT_LENGTH" /> znakova).</translation>
-<translation id="2246498165605549352">Lokalna datoteka</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />. tjedan, <ph name="YEAR" />. godina</translation>
 <translation id="2277199496770840904">Zapis <ph name="NUMBER" /></translation>
 <translation id="2393030564806080191">Heksadecimalna vrijednost boje</translation>
@@ -89,6 +88,7 @@
 <translation id="5425179576310518467">trenutačni datum</translation>
 <translation id="5466621249238537318">Izaberite jednu ili više datoteka.</translation>
 <translation id="5468998798572797635">izlazak iz cijelog zaslona</translation>
+<translation id="5514612371225420585">Datoteka na vašem uređaju</translation>
 <translation id="5516235301412634559">0,75</translation>
 <translation id="5537725057119320332">Emitiraj</translation>
 <translation id="5546461542133609677">uključivanje zvuka</translation>
@@ -113,6 +113,7 @@
 <translation id="6398862346408813489">Prikaži ploču za odabir mjeseca</translation>
 <translation id="6404546809543547843">klizač vremena audiozapisa</translation>
 <translation id="6443871981718447451">prikaži izbornik titlova</translation>
+<translation id="6484738902856791350">Lijepi ispis</translation>
 <translation id="6550675742724504774">Opcije</translation>
 <translation id="6572309429103589720">Netočna gramatika</translation>
 <translation id="658823671542763450">otvaranje na cijelom zaslonu</translation>

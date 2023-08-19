@@ -78,6 +78,10 @@ class WebGraphicsContext3DProviderForTests
   viz::RasterContextProvider* RasterContextProvider() const override {
     return nullptr;
   }
+  unsigned int GetGrGLTextureFormat(
+      viz::SharedImageFormat format) const override {
+    return 0;
+  }
 
  private:
   cc::StubDecodeCache image_decode_cache_;
@@ -306,7 +310,14 @@ class GLES2InterfaceForTests : public gpu::gles2::GLES2InterfaceStub,
     // Not unit tested yet. Tested with end-to-end tests.
     return false;
   }
-  void DrawingBufferClientForceLostContextWithAutoRecovery() override {
+  void DrawingBufferClientForceLostContextWithAutoRecovery(
+      const char* reason) override {
+    // Not unit tested yet. Tested with end-to-end tests.
+  }
+  void DrawingBufferClientInterruptPixelLocalStorage() override {
+    // Not unit tested yet. Tested with end-to-end tests.
+  }
+  void DrawingBufferClientRestorePixelLocalStorage() override {
     // Not unit tested yet. Tested with end-to-end tests.
   }
 
@@ -434,6 +445,7 @@ class DrawingBufferForTests : public DrawingBuffer {
             std::move(extensions_util),
             client,
             false /* discardFramebufferSupported */,
+            false /* textureStorageEnabled */,
             true /* wantAlphaChannel */,
             true /* premultipliedAlpha */,
             preserve,

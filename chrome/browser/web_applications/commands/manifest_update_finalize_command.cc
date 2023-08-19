@@ -40,7 +40,10 @@ ManifestUpdateFinalizeCommand::ManifestUpdateFinalizeCommand(
       install_info_(std::move(install_info)),
       write_callback_(std::move(write_callback)),
       keep_alive_(std::move(keep_alive)),
-      profile_keep_alive_(std::move(profile_keep_alive)) {}
+      profile_keep_alive_(std::move(profile_keep_alive)) {
+  CHECK(install_info_.manifest_id.is_valid());
+  CHECK(install_info_.start_url.is_valid());
+}
 
 ManifestUpdateFinalizeCommand::~ManifestUpdateFinalizeCommand() = default;
 

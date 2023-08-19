@@ -45,7 +45,6 @@
 #include "third_party/blink/renderer/core/dom/cdata_section.h"
 #include "third_party/blink/renderer/core/dom/child_list_mutation_scope.h"
 #include "third_party/blink/renderer/core/dom/comment.h"
-#include "third_party/blink/renderer/core/dom/context_features.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
@@ -468,7 +467,6 @@ DocumentFragment* CreateFragmentFromMarkupWithContext(
       DocumentInit::Create()
           .WithExecutionContext(document.GetExecutionContext())
           .WithAgent(document.GetAgent()));
-  tagged_document->SetContextFeatures(document.GetContextFeatures());
 
   auto* root =
       MakeGarbageCollected<Element>(QualifiedName::Null(), tagged_document);

@@ -22,10 +22,6 @@
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // `kDataExpirationWindow` is the window of time (inclusive) that usage history
 // is stored for a given user. Usage history older than `kDataExpirationWindow`
@@ -52,21 +48,6 @@ const char kRankingKey[] = "ranking";
 base::TimeDelta TodaysDay() {
   return base::Days(
       (base::Time::Now() - base::Time::UnixEpoch()).InDaysFloored());
-}
-
-// Ingests base::Value::List of destination names (strings) (`from` list),
-// converts each string to an overflow_menu::Destination, then adds each
-// destination to a set (`to` set). Skips over invalid or malformed list
-// items.
-void AddDestinationsToSet(const base::Value::List& from,
-                          std::set<overflow_menu::Destination>& to) {
-  for (const auto& value : from) {
-    if (!value.is_string()) {
-      continue;
-    }
-
-    to.insert(overflow_menu::DestinationForStringName(value.GetString()));
-  }
 }
 
 // Sort `ranking` in ascending or descending (indicated by
@@ -100,10 +81,6 @@ DestinationRanking SortByUsage(
   // (int) ] ]
   std::map<base::TimeDelta, std::map<overflow_menu::Destination, int>>
       _usageHistory;
-
-  // New destinations recently added to the overflow menu carousel that have not
-  // yet been clicked by the user.
-  std::set<overflow_menu::Destination> _untappedDestinations;
 }
 
 #pragma mark - Public methods
@@ -172,12 +149,6 @@ DestinationRanking SortByUsage(
                        clicks.GetIfInt().value_or(0);
     }
   }
-
-  // Fetch the stored list of newly-added, unclicked destinations, then update
-  // `_untappedDestinations` with its data.
-  AddDestinationsToSet(
-      _prefService->GetList(prefs::kOverflowMenuNewDestinations),
-      _untappedDestinations);
 }
 
 - (void)stop {
@@ -186,22 +157,9 @@ DestinationRanking SortByUsage(
 
 - (DestinationRanking)
     sortedDestinationsFromCurrentRanking:(DestinationRanking)currentRanking
-                    carouselDestinations:(NSArray<OverflowMenuDestination*>*)
-                                             carouselDestinations {
-  [self seedUsageHistoryForNewDestinations:carouselDestinations];
-
-  // Exit early if there's no `currentRanking`, which only happens if the device
-  // hasn't used Smart Sorting before.
-  if (currentRanking.empty()) {
-    // Given there's no existing `currentRanking`, the current carousel sort
-    // order will be used as the default ranking.
-    for (OverflowMenuDestination* destination in carouselDestinations) {
-      currentRanking.push_back(
-          static_cast<overflow_menu::Destination>(destination.destination));
-    }
-
-    return currentRanking;
-  }
+                   availableDestinations:
+                       (DestinationRanking)availableDestinations {
+  [self seedUsageHistoryForNewDestinations:availableDestinations];
 
   DestinationRanking sortedRanking =
       [self calculateNewRankingFromCurrentRanking:currentRanking];
@@ -212,6 +170,11 @@ DestinationRanking SortByUsage(
 - (void)recordClickForDestination:(overflow_menu::Destination)destination {
   _usageHistory[TodaysDay()][destination] += 1;
 
+  [self flushToPrefs];
+}
+
+- (void)clearStoredClickData {
+  _usageHistory = {};
   [self flushToPrefs];
 }
 
@@ -295,16 +258,12 @@ DestinationRanking SortByUsage(
 // clicks. This method skips seeding history for any `destinations` that
 // already exist in `_usageHistory`.
 - (void)seedUsageHistoryForNewDestinations:
-    (NSArray<OverflowMenuDestination*>*)destinations {
+    (DestinationRanking)availableDestinations {
   DCHECK_GT(kDampening, 1.0);
   DCHECK_GT(kInitialUsageThreshold, 1);
 
-  std::set<overflow_menu::Destination> newDestinations;
-
-  for (OverflowMenuDestination* destination in destinations) {
-    newDestinations.insert(
-        static_cast<overflow_menu::Destination>(destination.destination));
-  }
+  std::set<overflow_menu::Destination> newDestinations(
+      availableDestinations.begin(), availableDestinations.end());
 
   std::set<overflow_menu::Destination> existingDestinations;
 
@@ -372,12 +331,6 @@ DestinationRanking SortByUsage(
       historyUpdate->SetByDottedPath(dottedPathForPrefEntry, clickCount);
     }
   }
-
-  // Flush the new untapped destinations to Prefs.
-  ScopedListPrefUpdate untappedDestinationsUpdate(
-      _prefService, prefs::kOverflowMenuNewDestinations);
-
-  untappedDestinationsUpdate->clear();
 }
 
 @end

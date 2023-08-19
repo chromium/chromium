@@ -10,7 +10,8 @@ source_set("cpp") {
 
   deps = [
     "//base",
-    "//components/services/language_detection/public/mojom",
     "//content/public/browser",
   ]
+
+  public_deps = [ "//components/services/language_detection/public/mojom" ]
 }

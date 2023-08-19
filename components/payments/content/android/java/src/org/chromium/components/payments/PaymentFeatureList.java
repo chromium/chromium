@@ -41,7 +41,7 @@ public abstract class PaymentFeatureList {
      * @return Whether the feature is enabled or not.
      */
     public static boolean isEnabled(String featureName) {
-        return PaymentFeatureMap.getInstance().isEnabled(featureName);
+        return PaymentFeatureMap.isEnabled(featureName);
     }
 
     /**

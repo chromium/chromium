@@ -168,11 +168,6 @@ public class FakeTranslateBridgeJni implements TranslateBridge.Natives {
     }
 
     @Override
-    public void translateToLanguage(WebContents webContents, String targetLanguageCode) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public boolean canManuallyTranslate(WebContents webContents, boolean menuLogging) {
         throw new UnsupportedOperationException();
     }
@@ -189,32 +184,17 @@ public class FakeTranslateBridgeJni implements TranslateBridge.Natives {
     }
 
     @Override
-    public String getSourceLanguage(WebContents webContents) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public String getCurrentLanguage(WebContents webContents) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public void moveAcceptLanguage(String language, int offset) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean getExplicitLanguageAskPromptShown() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void setExplicitLanguageAskPromptShown(boolean shown) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public void setIgnoreMissingKeyForTesting(boolean ignore) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String getCurrentLanguage(WebContents webContents) {
         throw new UnsupportedOperationException();
     }
 

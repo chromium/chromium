@@ -27,7 +27,7 @@
     // public/common/permissions_policy/permissions_policy_features.h
     feature_default: {
       default: "EnableForSelf",
-      valid_values: ["EnableForAll", "EnableForSelf"]
+      valid_values: ["EnableForAll", "EnableForSelf", "EnableForNone"]
     },
 
     // "default_value_behind_flag" specifies default_value override values

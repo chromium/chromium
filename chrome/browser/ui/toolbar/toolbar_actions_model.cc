@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model_factory.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_action_manager.h"
@@ -226,6 +227,11 @@ const std::u16string ToolbarActionsModel::GetExtensionName(
     const ActionId& action_id) const {
   return base::UTF8ToUTF16(
       extension_registry_->enabled_extensions().GetByID(action_id)->name());
+}
+
+bool ToolbarActionsModel::CanShowActionsInToolbar(const Browser& browser) {
+  // Pinning extensions is not available in PWAs.
+  return !web_app::AppBrowserController::IsWebApp(&browser);
 }
 
 bool ToolbarActionsModel::IsRestrictedUrl(const GURL& url) const {

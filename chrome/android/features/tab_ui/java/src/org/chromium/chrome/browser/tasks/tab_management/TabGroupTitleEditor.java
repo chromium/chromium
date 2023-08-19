@@ -51,7 +51,6 @@ public abstract class TabGroupTitleEditor {
                 String sourceGroupTitle = getTabGroupTitle(getRootId(movedTab));
                 String targetGroupTitle = getTabGroupTitle(newRootId);
                 if (sourceGroupTitle == null) return;
-                deleteTabGroupTitle(getRootId(movedTab));
                 // If the target group has no title but the source group has a title, handover the
                 // stored title to the group after merge.
                 if (targetGroupTitle == null) {

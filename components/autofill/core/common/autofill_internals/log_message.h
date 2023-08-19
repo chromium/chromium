@@ -61,7 +61,8 @@ class LogBuffer;
   T(JavaScriptChangedAutofilledValue,                                          \
     "JavaScript set value of autofilled "                                      \
     "field: ")                                                                 \
-  T(FastCheckout, "Fast Checkout: ")
+  T(FastCheckout, "Fast Checkout: ")                                           \
+  T(TouchToFill, "Touch To Fill: ")
 
 // Log messages for chrome://autofill-internals.
 

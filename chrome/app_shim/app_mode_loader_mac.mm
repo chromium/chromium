@@ -12,12 +12,12 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "base/allocator/early_zone_registration_mac.h"
+#include "base/allocator/early_zone_registration_apple.h"
+#include "base/apple/foundation_util.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
 #include "base/process/launch.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
@@ -25,10 +25,6 @@
 #include "chrome/common/chrome_switches.h"
 #import "chrome/common/mac/app_mode_chrome_locator.h"
 #include "chrome/common/mac/app_mode_common.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -47,10 +43,10 @@ int LoadFrameworkAndStart(int argc, char** argv) {
       return kErrorReturnValue;
     }
     const base::FilePath app_mode_bundle_path =
-        base::mac::NSStringToFilePath([app_bundle bundlePath]);
+        base::apple::NSStringToFilePath([app_bundle bundlePath]);
 
     // Get the bundle ID of the browser that created this app bundle.
-    NSString* cr_bundle_id = base::mac::ObjCCast<NSString>(
+    NSString* cr_bundle_id = base::apple::ObjCCast<NSString>(
         [app_bundle objectForInfoDictionaryKey:app_mode::kBrowserBundleIDKey]);
     if (!cr_bundle_id) {
       NSLog(@"Couldn't get browser bundle ID");
@@ -83,7 +79,7 @@ int LoadFrameworkAndStart(int argc, char** argv) {
     {
       // The user_data_dir for shims actually contains the app_data_path.
       // I.e. <user_data_dir>/<profile_dir>/Web Applications/_crx_extensionid/
-      base::FilePath app_data_dir = base::mac::NSStringToFilePath([app_bundle
+      base::FilePath app_data_dir = base::apple::NSStringToFilePath([app_bundle
           objectForInfoDictionaryKey:app_mode::kCrAppModeUserDataDirKey]);
       user_data_dir = app_data_dir.DirName().DirName().DirName();
       NSLog(@"Using user data dir %s", user_data_dir.value().c_str());
@@ -174,10 +170,10 @@ int LoadFrameworkAndStart(int argc, char** argv) {
     const std::string app_mode_url =
         base::SysNSStringToUTF8(info_plist[app_mode::kCrAppModeShortcutURLKey]);
 
-    base::FilePath plist_user_data_dir = base::mac::NSStringToFilePath(
+    base::FilePath plist_user_data_dir = base::apple::NSStringToFilePath(
         info_plist[app_mode::kCrAppModeUserDataDirKey]);
 
-    base::FilePath profile_dir = base::mac::NSStringToFilePath(
+    base::FilePath profile_dir = base::apple::NSStringToFilePath(
         info_plist[app_mode::kCrAppModeProfileDirKey]);
 
     // ** 5: Open the framework.

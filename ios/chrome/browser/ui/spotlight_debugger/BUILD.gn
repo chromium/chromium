@@ -17,7 +17,6 @@ swift_source_set("spotlight_debugger_swift") {
 }
 
 source_set("spotlight_debugger") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "spotlight_debugger_coordinator.h",
     "spotlight_debugger_coordinator.mm",

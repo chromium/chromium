@@ -8,8 +8,6 @@ export class TestPowerBookmarksDelegate extends TestBrowserProxy {
   constructor() {
     super([
       'setCurrentUrl',
-      'setCompactDescription',
-      'setExpandedDescription',
       'setImageUrl',
       'onBookmarksLoaded',
       'onBookmarkChanged',
@@ -23,16 +21,6 @@ export class TestPowerBookmarksDelegate extends TestBrowserProxy {
 
   setCurrentUrl(url: string|undefined) {
     this.methodCalled('setCurrentUrl', url);
-  }
-
-  setCompactDescription(
-      bookmark: chrome.bookmarks.BookmarkTreeNode, description: string) {
-    this.methodCalled('setCompactDescription', bookmark, description);
-  }
-
-  setExpandedDescription(
-      bookmark: chrome.bookmarks.BookmarkTreeNode, description: string) {
-    this.methodCalled('setExpandedDescription', bookmark, description);
   }
 
   setImageUrl(bookmark: chrome.bookmarks.BookmarkTreeNode, url: string) {

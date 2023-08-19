@@ -46,6 +46,7 @@ const ComputedStyle* SVGElementRareData::OverrideComputedStyle(
     // The style computed here contains no CSS Animations/Transitions or SMIL
     // induced rules - this is needed to compute the "base value" for the SMIL
     // animation sandwhich model.
+    element->GetDocument().GetStyleEngine().UpdateViewportSize();
     override_computed_style_ =
         element->GetDocument().GetStyleResolver().ResolveStyle(
             element, style_recalc_context, style_request);

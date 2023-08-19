@@ -1,0 +1,40 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package commerce;
+
+message ShoppingPageTypes {
+  enum ShoppingPageType {
+    TYPE_UNSPECIFIED = 0;
+    // Aggregation of all signals below.
+    SHOPPING_PAGE = 1;
+    // Whether this page belongs to a merchant domain.
+    MERCHANT_DOMAIN_PAGE = 2;
+    // Whether this page has multiple products.
+    MULTI_PRODUCT_PAGE = 3;
+    // Whether this page is a product page with one product.
+    SINGLE_PRODUCT_PAGE = 4;
+    // Whether this page provides analysis or opinions of one specific product.
+    PRODUCT_REVIEW_PAGE = 5;
+    // Whether this page provides comparison between two or more specific
+    // products, and focuses on multiple specific products individually.
+    PRODUCT_COMPARISON_PAGE = 6;
+    // Whether this page provides analysis, opinions of a list of
+    // top-recommended products, and focuses on multiple specific products
+    // individually
+    PRODUCT_TOP_N_PAGE = 7;
+    // Whether this page is a product page where the product has been sold out.
+    SOLD_OUT_PAGE = 8;
+    // Whether this page provides guidance about a product category to help
+    // users make buying decisions.
+    BUYING_GUIDE_PAGE = 9;
+  }
+
+  // The shopping types of the page.
+  repeated ShoppingPageType shopping_page_types = 1;
+}

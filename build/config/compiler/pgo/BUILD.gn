@@ -6,6 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/clang/clang.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/compiler/pgo/pgo.gni")
+import("//build/config/features.gni")
 import("//build/toolchain/toolchain.gni")
 
 # Configuration that enables PGO instrumentation.
@@ -40,7 +41,9 @@ config("pgo_optimization_flags") {
     inputs = []
 
     if (is_win) {
-      if (target_cpu == "x64") {
+      if (target_cpu == "arm64") {
+        _pgo_target = "win-arm64"
+      } else if (target_cpu == "x64") {
         _pgo_target = "win64"
       } else {
         _pgo_target = "win32"
@@ -62,8 +65,15 @@ config("pgo_optimization_flags") {
         _pgo_target = "lacros64"
       }
     } else if (is_android) {
-      # Temporarily use mac-arm profile until Android native PGO support works.
-      # TODO(crbug.com/1308749): fix this.
+      # Use |current_cpu| and not |target_cpu|; for Android we may built both.
+      if (current_cpu == "arm64") {
+        _pgo_target = "android-arm64"
+      } else {
+        _pgo_target = "android-arm32"
+      }
+
+      # Continue to use mac-arm profile until Android native PGO autoroll works.
+      # TODO(crbug.com/1308749): Remove the following.
       _pgo_target = "mac-arm"
     } else if (is_fuchsia) {
       if (target_cpu == "arm64") {
@@ -71,9 +81,17 @@ config("pgo_optimization_flags") {
       } else {
         _pgo_target = "mac"
       }
+    } else if (is_ios && use_blink) {
+      if (target_cpu == "arm64") {
+        _pgo_target = "mac-arm"
+      } else {
+        _pgo_target = "mac"
+      }
     }
 
-    if (_pgo_target == "win64") {
+    if (_pgo_target == "win-arm64") {
+      inputs = [ "//chrome/build/win-arm64.pgo.txt" ]
+    } else if (_pgo_target == "win64") {
       inputs = [ "//chrome/build/win64.pgo.txt" ]
     } else if (_pgo_target == "win32") {
       inputs = [ "//chrome/build/win32.pgo.txt" ]
@@ -89,6 +107,10 @@ config("pgo_optimization_flags") {
       inputs = [ "//chrome/build/lacros-arm.pgo.txt" ]
     } else if (_pgo_target == "lacros-arm64") {
       inputs = [ "//chrome/build/lacros-arm64.pgo.txt" ]
+    } else if (_pgo_target == "android-arm32") {
+      inputs = [ "//chrome/build/android-arm32.pgo.txt" ]
+    } else if (_pgo_target == "android-arm64") {
+      inputs = [ "//chrome/build/android-arm64.pgo.txt" ]
     }
 
     if (_pgo_target != "" && pgo_data_path == "") {

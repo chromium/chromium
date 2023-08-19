@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+PRECONDITION_FAILED Testing BFCache support for page with open WebTransport connection and "Cache-Control: no-store" header. BFCache not supported.
+Harness: the test ran to completion.
+

@@ -68,16 +68,14 @@ public class ToastHWATest implements CustomMainActivityStart {
         mDownloadTestRule.deleteFilesInDownloadDirectory(TEST_FILES);
         mTestServer = EmbeddedTestServer.createAndStartServer(
                 ApplicationProvider.getApplicationContext());
-        ToastManager.setEnabledForTesting(false);
     }
 
     @After
     public void tearDown() {
         TestThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(false));
 
-        mTestServer.stopAndDestroyServer();
         mDownloadTestRule.deleteFilesInDownloadDirectory(TEST_FILES);
-        ToastManager.setEnabledForTesting(null);
+        ToastManager.resetForTesting();
     }
 
     @Override
@@ -181,6 +179,7 @@ public class ToastHWATest implements CustomMainActivityStart {
         });
 
         listenerCalled.waitForCallback(0);
+        ToastManager.resetForTesting();
         return accelerated.get();
     }
 }

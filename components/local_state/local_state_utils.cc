@@ -11,15 +11,10 @@
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_service.h"
+#include "extensions/buildflags/buildflags.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#define ENABLE_FILTERING true
-#else
-#define ENABLE_FILTERING false
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
+namespace local_state_utils {
 namespace {
 
 // Returns true if |pref_name| starts with one of the |valid_prefixes|.
@@ -33,35 +28,104 @@ bool HasValidPrefix(const std::string& pref_name,
   return false;
 }
 
-}  // namespace
-
-namespace internal {
-
-void FilterPrefs(const std::vector<std::string>& valid_prefixes,
-                 base::Value::Dict& prefs) {
-  std::vector<std::string> prefs_to_remove;
-  for (auto it : prefs) {
-    if (!HasValidPrefix(it.first, valid_prefixes)) {
-      prefs_to_remove.push_back(it.first);
-    }
+base::Value::List GetPrefsMetadata(
+    PrefValueStore::PrefStoreType pref_value_store_type) {
+  base::Value::List metadata;
+  switch (pref_value_store_type) {
+    case PrefValueStore::PrefStoreType::MANAGED_STORE:
+      metadata.Append("managed");
+      break;
+    case PrefValueStore::PrefStoreType::SUPERVISED_USER_STORE:
+      metadata.Append("managed_by_custodian");
+      break;
+    case PrefValueStore::PrefStoreType::EXTENSION_STORE:
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+      metadata.Append("extension_controlled");
+      metadata.Append("extension_modifiable");
+#else
+      NOTREACHED();
+#endif
+      break;
+    case PrefValueStore::PrefStoreType::STANDALONE_BROWSER_STORE:
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      metadata.Append("standalone_browser_controlled");
+      metadata.Append("standalone_browser_modifiable");
+#endif
+      metadata.Append("extension_modifiable");
+      break;
+    case PrefValueStore::PrefStoreType::COMMAND_LINE_STORE:
+      metadata.Append("command_line_controlled");
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+      metadata.Append("extension_modifiable");
+#endif
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      metadata.Append("standalone_browser_modifiable");
+#endif
+      break;
+    case PrefValueStore::PrefStoreType::USER_STORE:
+      metadata.Append("user_controlled");
+      metadata.Append("user_modifiable");
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+      metadata.Append("extension_modifiable");
+#endif
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      metadata.Append("standalone_browser_modifiable");
+#endif
+      break;
+    case PrefValueStore::PrefStoreType::RECOMMENDED_STORE:
+      metadata.Append("recommended");
+      metadata.Append("user_modifiable");
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+      metadata.Append("extension_modifiable");
+#endif
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      metadata.Append("standalone_browser_modifiable");
+#endif
+      break;
+    case PrefValueStore::PrefStoreType::DEFAULT_STORE:
+      metadata.Append("default");
+      metadata.Append("user_modifiable");
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+      metadata.Append("extension_modifiable");
+#endif
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      metadata.Append("standalone_browser_modifiable");
+#endif
+      break;
+    case PrefValueStore::PrefStoreType::INVALID_STORE:
+      metadata.Append("user_modifiable");
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+      metadata.Append("extension_modifiable");
+#endif
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      metadata.Append("standalone_browser_modifiable");
+#endif
+      break;
   }
-  for (const std::string& pref_to_remove : prefs_to_remove) {
-    bool successfully_removed = prefs.RemoveByDottedPath(pref_to_remove);
-    DCHECK(successfully_removed);
-  }
+  return metadata;
 }
 
-}  // namespace internal
+}  // namespace
 
-absl::optional<std::string> GetPrefsAsJson(PrefService* pref_service) {
-  base::Value::Dict local_state_values =
-      pref_service->GetPreferenceValues(PrefService::EXCLUDE_DEFAULTS);
-  if (ENABLE_FILTERING) {
+absl::optional<std::string> GetPrefsAsJson(
+    PrefService* pref_service,
+    const std::vector<std::string>& accepted_prefixes) {
+  std::vector<PrefService::PreferenceValueAndStore> values =
+      pref_service->GetPreferencesValueAndStore();
+
+  base::Value::Dict local_state_values;
+  for (const auto& [name, value, pref_value_store_type] : values) {
     // Filter out the prefs to only include variations and UMA related fields,
     // which don't contain PII.
-    std::vector<std::string> allowed_prefixes = {"variations",
-                                                 "user_experience_metrics"};
-    internal::FilterPrefs(allowed_prefixes, local_state_values);
+    if (!accepted_prefixes.empty() &&
+        !HasValidPrefix(name, accepted_prefixes)) {
+      continue;
+    }
+
+    base::Value::Dict pref_details;
+    pref_details.Set("value", value.Clone());
+    pref_details.Set("metadata", GetPrefsMetadata(pref_value_store_type));
+    local_state_values.SetByDottedPath(name, std::move(pref_details));
   }
 
   std::string result;
@@ -72,3 +136,5 @@ absl::optional<std::string> GetPrefsAsJson(PrefService* pref_service) {
   }
   return result;
 }
+
+}  // namespace local_state_utils

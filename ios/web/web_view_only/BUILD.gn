@@ -5,8 +5,6 @@
 import("//ios/build/config.gni")
 
 source_set("web_view_only") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   sources = [ "wk_web_view_configuration_util.mm" ]
 
   deps = [
@@ -24,7 +22,6 @@ source_set("web_view_only") {
 }
 
 source_set("unittests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
 
   sources = [ "wk_web_view_configuration_util_unittests.mm" ]

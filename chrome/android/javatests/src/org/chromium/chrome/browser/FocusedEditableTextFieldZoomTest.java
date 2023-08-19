@@ -12,7 +12,6 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -59,11 +58,6 @@ public class FocusedEditableTextFieldZoomTest {
                 mTestServer.getURL("/chrome/test/data/android/focused_editable_zoom.html"));
         mCoordinates = Coordinates.createFor(mActivityTestRule.getWebContents());
         waitForInitialZoom();
-    }
-
-    @After
-    public void tearDown() {
-        mTestServer.stopAndDestroyServer();
     }
 
     private void waitForInitialZoom() {

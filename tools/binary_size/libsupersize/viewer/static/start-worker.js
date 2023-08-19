@@ -79,6 +79,7 @@ class TreeWorker {
    * @returns {Promise<BuildTreeResults>}
    */
   buildTree() {
+    state.stFocus.set('');
     const buildOptions = state.exportToBuildOptions();
     return this._waitForResponse('buildTree', {
       buildOptions,
@@ -94,6 +95,14 @@ class TreeWorker {
    */
   openNode(idPath) {
     return this._waitForResponse('open', idPath);
+  }
+
+  /**
+   * @param {number} id
+   * @return {Promise<QueryAncestryResults>}
+   */
+  queryAncestryById(id) {
+    return this._waitForResponse('queryAncestryById', id);
   }
 }
 /**

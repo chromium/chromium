@@ -25,6 +25,7 @@
 #include "components/webapps/browser/android/shortcut_info.h"
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
 #include "components/webapps/browser/features.h"
+#include "components/webapps/browser/installable/ml_installability_promoter.h"
 #include "components/webapps/browser/webapps_client.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -59,10 +60,12 @@ AmbientBadgeManager::~AmbientBadgeManager() {
 void AmbientBadgeManager::MaybeShow(
     const GURL& validated_url,
     const std::u16string& app_name,
+    const std::string& app_identifier,
     std::unique_ptr<AddToHomescreenParams> a2hs_params,
     base::OnceClosure show_banner_callback) {
   validated_url_ = validated_url;
   app_name_ = app_name;
+  app_identifier_ = app_identifier;
   a2hs_params_ = std::move(a2hs_params);
   show_banner_callback_ = std::move(show_banner_callback);
 
@@ -94,7 +97,7 @@ void AmbientBadgeManager::AddToHomescreenFromBadge() {
 
 void AmbientBadgeManager::BadgeDismissed() {
   AppBannerSettingsHelper::RecordBannerEvent(
-      web_contents_.get(), validated_url_, a2hs_params_->GetAppIdentifier(),
+      web_contents_.get(), validated_url_, app_identifier_,
       AppBannerSettingsHelper::APP_BANNER_EVENT_DID_BLOCK,
       AppBannerManager::GetCurrentTime());
 
@@ -106,7 +109,7 @@ void AmbientBadgeManager::BadgeDismissed() {
 
 void AmbientBadgeManager::BadgeIgnored() {
   AppBannerSettingsHelper::RecordBannerEvent(
-      web_contents_.get(), validated_url_, a2hs_params_->GetAppIdentifier(),
+      web_contents_.get(), validated_url_, app_identifier_,
       AppBannerSettingsHelper::APP_BANNER_EVENT_DID_SHOW,
       AppBannerManager::GetCurrentTime());
 
@@ -141,8 +144,18 @@ void AmbientBadgeManager::UpdateState(State state) {
 void AmbientBadgeManager::MaybeShowAmbientBadgeLegacy() {
   // Do not show the ambient badge if it was recently dismissed.
   if (AppBannerSettingsHelper::WasBannerRecentlyBlocked(
-          web_contents_.get(), validated_url_, a2hs_params_->GetAppIdentifier(),
+          web_contents_.get(), validated_url_, app_identifier_,
           AppBannerManager::GetCurrentTime())) {
+    UpdateState(State::kBlocked);
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kBlockInstallPromptIfIgnoreRecently) &&
+      AppBannerSettingsHelper::WasBannerRecentlyIgnored(
+          web_contents_.get(), validated_url_, app_identifier_,
+          AppBannerManager::GetCurrentTime())) {
+    LOG(ERROR) << "block";
     UpdateState(State::kBlocked);
     return;
   }
@@ -155,7 +168,6 @@ void AmbientBadgeManager::MaybeShowAmbientBadgeLegacy() {
   // if it's showing for web app (not native app), only show if the worker check
   // already passed.
   if (a2hs_params_->app_type == AddToHomescreenParams::AppType::WEBAPK &&
-      features::SkipServiceWorkerForInstallPromotion() &&
       !passed_worker_check_) {
     InstallableParams params = ParamsToPerformWorkerCheck();
     params.wait_for_worker = true;
@@ -176,11 +188,11 @@ bool AmbientBadgeManager::ShouldSuppressAmbientBadgeOnFirstVisit() {
 
   absl::optional<base::Time> last_could_show_time =
       AppBannerSettingsHelper::GetSingleBannerEvent(
-          web_contents_.get(), validated_url_, a2hs_params_->GetAppIdentifier(),
+          web_contents_.get(), validated_url_, app_identifier_,
           AppBannerSettingsHelper::APP_BANNER_EVENT_COULD_SHOW_AMBIENT_BADGE);
 
   AppBannerSettingsHelper::RecordBannerEvent(
-      web_contents_.get(), validated_url_, a2hs_params_->GetAppIdentifier(),
+      web_contents_.get(), validated_url_, app_identifier_,
       AppBannerSettingsHelper::APP_BANNER_EVENT_COULD_SHOW_AMBIENT_BADGE,
       AppBannerManager::GetCurrentTime());
 
@@ -203,7 +215,7 @@ void AmbientBadgeManager::PerformWorkerCheckForAmbientBadge(
 }
 
 void AmbientBadgeManager::OnWorkerCheckResult(const InstallableData& data) {
-  if (!data.NoBlockingErrors()) {
+  if (!data.errors.empty()) {
     return;
   }
   passed_worker_check_ = true;
@@ -215,6 +227,10 @@ void AmbientBadgeManager::OnWorkerCheckResult(const InstallableData& data) {
 
 void AmbientBadgeManager::MaybeShowAmbientBadgeSmart(
     const InstallableData& data) {
+  if (data.errors.empty()) {
+    passed_worker_check_ = true;
+  }
+
   if (!segmentation_platform_service_) {
     return;
   }
@@ -227,23 +243,33 @@ void AmbientBadgeManager::MaybeShowAmbientBadgeSmart(
   auto input_context =
       base::MakeRefCounted<segmentation_platform::InputContext>();
   input_context->metadata_args.emplace("url", validated_url_);
-  input_context->metadata_args.emplace("maskable_icon",
-                                       a2hs_params_->HasMaskablePrimaryIcon());
+  input_context->metadata_args.emplace(
+      "origin", url::Origin::Create(validated_url_).GetURL());
+  input_context->metadata_args.emplace(
+      "maskable_icon",
+      segmentation_platform::processing::ProcessedValue::FromFloat(
+          a2hs_params_->HasMaskablePrimaryIcon()));
+  input_context->metadata_args.emplace(
+      "app_type", segmentation_platform::processing::ProcessedValue::FromFloat(
+                      (float)a2hs_params_->app_type));
   segmentation_platform_service_->GetClassificationResult(
       segmentation_platform::kWebAppInstallationPromoKey, prediction_options,
       input_context,
       base::BindOnce(&AmbientBadgeManager::OnGotClassificationResult,
-                     base::Unretained(this)));
+                     weak_factory_.GetWeakPtr()));
 }
 
 void AmbientBadgeManager::OnGotClassificationResult(
     const segmentation_platform::ClassificationResult& result) {
   if (result.status != segmentation_platform::PredictionStatus::kSucceeded) {
+    // If the classification is not ready yet, fallback to the legacy logic.
+    MaybeShowAmbientBadgeLegacy();
     return;
   }
 
-  // TODO(eirage): replace this with label type.
-  if (result.ordered_labels[0] == "ShowMessage") {
+  if (!result.ordered_labels.empty() &&
+      result.ordered_labels[0] ==
+          MLInstallabilityPromoter::kShowInstallPromptLabel) {
     if (ShouldMessageBeBlockedByGuardrail()) {
       UpdateState(State::kBlocked);
     } else {
@@ -254,13 +280,13 @@ void AmbientBadgeManager::OnGotClassificationResult(
 
 bool AmbientBadgeManager::ShouldMessageBeBlockedByGuardrail() {
   if (AppBannerSettingsHelper::WasBannerRecentlyBlocked(
-          web_contents(), validated_url_, a2hs_params_->GetAppIdentifier(),
+          web_contents(), validated_url_, app_identifier_,
           AppBannerManager::GetCurrentTime())) {
     return true;
   }
 
   if (AppBannerSettingsHelper::WasBannerRecentlyIgnored(
-          web_contents(), validated_url_, a2hs_params_->GetAppIdentifier(),
+          web_contents(), validated_url_, app_identifier_,
           AppBannerManager::GetCurrentTime())) {
     return true;
   }

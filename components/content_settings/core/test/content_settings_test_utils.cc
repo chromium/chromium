@@ -46,7 +46,7 @@ base::Time TestUtils::GetLastModified(
   content_settings::RuleMetaData metadata;
   content_settings::TestUtils::GetContentSetting(
       provider, primary_url, secondary_url, type, false, &metadata);
-  return metadata.last_modified;
+  return metadata.last_modified();
 }
 
 // static

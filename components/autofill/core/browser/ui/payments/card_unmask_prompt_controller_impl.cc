@@ -416,7 +416,7 @@ CardUnmaskPromptControllerImpl::GetVerificationResult() const {
 }
 
 bool CardUnmaskPromptControllerImpl::IsVirtualCard() const {
-  return card_.record_type() == CreditCard::VIRTUAL_CARD;
+  return card_.record_type() == CreditCard::RecordType::kVirtualCard;
 }
 
 #if !BUILDFLAG(IS_IOS)

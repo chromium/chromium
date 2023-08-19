@@ -234,7 +234,7 @@ class GWP_ASAN_EXPORT GuardedPageAllocator {
 
   // Same as the above, but used exclusively by the lightweight UAF detector.
   // Empty if the feature is disabled.
-  std::unique_ptr<AllocatorState::SlotMetadata[]>
+  std::unique_ptr<AllocatorState::LightweightSlotMetadata[]>
       lightweight_detector_metadata_;
 
   // Maps a slot index to a metadata index (or kInvalidMetadataIdx if no such

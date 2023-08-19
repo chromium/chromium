@@ -170,15 +170,15 @@ void RecordCapability(base::OnceClosure done_closure,
 base::Value::Dict GetValueFromCustomPaper(
     const PrinterSemanticCapsAndDefaults::Paper& paper) {
   base::Value::Dict paper_value;
-  paper_value.Set("custom_display_name", paper.display_name);
-  paper_value.Set("height_microns", paper.size_um.height());
-  paper_value.Set("width_microns", paper.size_um.width());
-  int imageable_area_left_microns = paper.printable_area_um.x();
-  int imageable_area_bottom_microns = paper.printable_area_um.y();
+  paper_value.Set("custom_display_name", paper.display_name());
+  paper_value.Set("height_microns", paper.size_um().height());
+  paper_value.Set("width_microns", paper.size_um().width());
+  int imageable_area_left_microns = paper.printable_area_um().x();
+  int imageable_area_bottom_microns = paper.printable_area_um().y();
   int imageable_area_right_microns =
-      paper.printable_area_um.x() + paper.printable_area_um.width();
+      paper.printable_area_um().x() + paper.printable_area_um().width();
   int imageable_area_top_microns =
-      paper.printable_area_um.y() + paper.printable_area_um.height();
+      paper.printable_area_um().y() + paper.printable_area_um().height();
   paper_value.Set("imageable_area_left_microns", imageable_area_left_microns);
   paper_value.Set("imageable_area_bottom_microns",
                   imageable_area_bottom_microns);

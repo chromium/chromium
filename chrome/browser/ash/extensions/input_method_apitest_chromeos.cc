@@ -20,6 +20,7 @@
 #include "extensions/common/switches.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/ash/input_method_descriptor.h"
@@ -44,7 +45,8 @@ const InputMethodDescriptor CreateInputMethodDescriptor(
     const std::vector<std::string>& language_codes) {
   return InputMethodDescriptor(GetInputMethodIDByEngineID(engineId), "",
                                indicator, {layout}, language_codes, true,
-                               GURL(), GURL());
+                               GURL(), GURL(),
+                               /*handwriting_language=*/absl::nullopt);
 }
 
 class ExtensionInputMethodApiTest : public extensions::ExtensionApiTest {
@@ -106,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInputMethodApiTest, DISABLED_Typing) {
   std::vector<std::string> extension_ime_ids = {
       "_ext_ime_ilanclmaeigfpnmdlgelmhkpkegdioiptest"};
   InputMethodManager::Get()->GetActiveIMEState()->SetEnabledExtensionImes(
-      &extension_ime_ids);
+      extension_ime_ids);
 
   GURL test_url = ui_test_utils::GetTestUrl(
       base::FilePath("extensions/api_test/input_method/typing/"),
@@ -150,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInputMethodApiTest, ImeMenuAPITest) {
   extension_ime_ids.push_back(kTestIMEID);
   extension_ime_ids.push_back(kTestIMEID2);
   InputMethodManager::Get()->GetActiveIMEState()->SetEnabledExtensionImes(
-      &extension_ime_ids);
+      extension_ime_ids);
   ash::input_method::InputMethodDescriptors extension_imes;
   InputMethodManager::Get()->GetActiveIMEState()->GetInputMethodExtensions(
       &extension_imes);

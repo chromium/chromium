@@ -15,7 +15,7 @@
 #include "third_party/skia/include/core/SkSurfaceProps.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 
-class SkPromiseImageTexture;
+class GrPromiseImageTexture;
 
 namespace gpu {
 
@@ -61,7 +61,7 @@ class RawDrawImageBacking : public ClearTrackingSharedImageBacking {
   void EndRasterWriteAccess(base::OnceClosure callback);
   cc::PaintOpBuffer* BeginRasterReadAccess(
       absl::optional<SkColor4f>& clear_color);
-  sk_sp<SkPromiseImageTexture> BeginSkiaReadAccess();
+  sk_sp<GrPromiseImageTexture> BeginSkiaReadAccess();
   void EndReadAccess();
 
   int32_t final_msaa_count_ GUARDED_BY_CONTEXT(thread_checker_) = 0;
@@ -74,7 +74,7 @@ class RawDrawImageBacking : public ClearTrackingSharedImageBacking {
   scoped_refptr<SharedContextState> context_state_
       GUARDED_BY_CONTEXT(thread_checker_);
   GrBackendTexture backend_texture_ GUARDED_BY(lock_);
-  sk_sp<SkPromiseImageTexture> promise_texture_
+  sk_sp<GrPromiseImageTexture> promise_texture_
       GUARDED_BY_CONTEXT(thread_checker_);
 
   bool is_write_ GUARDED_BY(lock_) = false;

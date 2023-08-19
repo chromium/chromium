@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/login/screens/network_screen.h"
-
 #include <memory>
 
 #include "ash/constants/ash_features.h"
@@ -17,7 +15,9 @@
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/login_wizard.h"
 #include "chrome/browser/ash/login/mock_network_state_helper.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_target_device_connection_broker.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+#include "chrome/browser/ash/login/screens/network_screen.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
@@ -41,6 +41,18 @@ using ::testing::ElementsAre;
 using ::testing::Return;
 using ::testing::ReturnRef;
 using ::views::Button;
+
+constexpr char kCancelButton[] = "cancelButton";
+constexpr char kLoadingDialog[] = "loadingDialog";
+constexpr char kQuickStartButton[] = "quickStart";
+constexpr char kNextButton[] = "nextButton";
+constexpr test::UIPath kCancelButtonLoadingDialog = {
+    QuickStartView::kScreenId.name, kLoadingDialog, kCancelButton};
+constexpr test::UIPath kQuickStartNetworkButtonPath = {
+    NetworkScreenView::kScreenId.name /*"network-selection"*/,
+    kQuickStartButton};
+constexpr test::UIPath kNextNetworkButtonPath = {
+    NetworkScreenView::kScreenId.name /*"network-selection"*/, kNextButton};
 
 class NetworkScreenTest : public OobeBaseTest {
  public:
@@ -123,6 +135,11 @@ class NetworkScreenTest : public OobeBaseTest {
 
   NetworkScreen* network_screen() { return network_screen_; }
 
+  void EnableQuickStartFeature() {
+    feature_list_.Reset();
+    feature_list_.InitAndEnableFeature(features::kOobeQuickStart);
+  }
+
   base::HistogramTester histogram_tester_;
 
  private:
@@ -133,14 +150,93 @@ class NetworkScreenTest : public OobeBaseTest {
       std::move(screen_exit_callback_).Run();
   }
 
-  raw_ptr<login::MockNetworkStateHelper, ExperimentalAsh>
+  raw_ptr<login::MockNetworkStateHelper, DanglingUntriaged | ExperimentalAsh>
       mock_network_state_helper_;
-  raw_ptr<NetworkScreen, ExperimentalAsh> network_screen_;
+  raw_ptr<NetworkScreen, DanglingUntriaged | ExperimentalAsh> network_screen_;
   bool screen_exited_ = false;
   base::test::ScopedFeatureList feature_list_;
   absl::optional<NetworkScreen::Result> last_screen_result_;
   base::RepeatingClosure screen_exit_callback_;
 };
+
+class NetworkScreenQuickStartEnabled : public NetworkScreenTest {
+ public:
+  NetworkScreenQuickStartEnabled() {
+    this->EnableQuickStartFeature();
+    connection_broker_factory_.set_initial_feature_support_status(
+        quick_start::TargetDeviceConnectionBroker::FeatureSupportStatus::
+            kUndetermined);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    OobeBaseTest::SetUpInProcessBrowserTestFixture();
+    quick_start::TargetDeviceConnectionBrokerFactory::SetFactoryForTesting(
+        &connection_broker_factory_);
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    quick_start::TargetDeviceConnectionBrokerFactory::SetFactoryForTesting(
+        nullptr);
+    OobeBaseTest::TearDownInProcessBrowserTestFixture();
+  }
+
+  void EnterQuickStartFlowFromNetworkScreen() {
+    // Open network screen
+    ShowNetworkScreen();
+    WaitForScreenShown();
+    test::OobeJS().ExpectHiddenPath(kQuickStartNetworkButtonPath);
+
+    connection_broker_factory_.instances().front()->set_feature_support_status(
+        quick_start::TargetDeviceConnectionBroker::FeatureSupportStatus::
+            kSupported);
+
+    // Check that QuickStart button is visible since QuickStart feature is
+    // enabled
+    test::OobeJS()
+        .CreateVisibilityWaiter(/*visibility=*/true,
+                                kQuickStartNetworkButtonPath)
+        ->Wait();
+
+    test::OobeJS().ClickOnPath(kQuickStartNetworkButtonPath);
+
+    WaitForScreenExit();
+
+    CheckResult(NetworkScreen::Result::QUICK_START);
+  }
+
+  quick_start::FakeTargetDeviceConnectionBroker::Factory
+      connection_broker_factory_;
+};
+
+IN_PROC_BROWSER_TEST_F(NetworkScreenQuickStartEnabled,
+                       QuickStartButtonNotShownByDefault) {
+  // Open network screen
+  ShowNetworkScreen();
+  WaitForScreenShown();
+
+  test::OobeJS().CreateVisibilityWaiter(true, kNextNetworkButtonPath)->Wait();
+
+  // Check that QuickStart button is hidden since QuickStart feature is not
+  // enabled
+  test::OobeJS().ExpectHiddenPath(kQuickStartNetworkButtonPath);
+}
+
+IN_PROC_BROWSER_TEST_F(NetworkScreenQuickStartEnabled,
+                       QuickStartButtonFunctionalWhenFeatureEnabled) {
+  EnterQuickStartFlowFromNetworkScreen();
+}
+
+IN_PROC_BROWSER_TEST_F(NetworkScreenQuickStartEnabled,
+                       ClickingCancelReturnsToNetwork) {
+  EnterQuickStartFlowFromNetworkScreen();
+
+  // Cancel button must be present.
+  test::OobeJS()
+      .CreateVisibilityWaiter(/*visibility=*/true, kCancelButtonLoadingDialog)
+      ->Wait();
+  test::OobeJS().ClickOnPath(kCancelButtonLoadingDialog);
+  OobeScreenWaiter(NetworkScreenView::kScreenId).Wait();
+}
 
 IN_PROC_BROWSER_TEST_F(NetworkScreenTest, CanConnect) {
   ShowNetworkScreen();
@@ -254,7 +350,8 @@ IN_PROC_BROWSER_TEST_F(NetworkScreenTest, EthernetConnection_Skipped) {
   EXPECT_THAT(
       histogram_tester_.GetAllSamples("OOBE.StepShownStatus.Network-selection"),
       ElementsAre(base::Bucket(
-          static_cast<int>(WizardController::ScreenShownStatus::kSkipped), 1)));
+          static_cast<int>(OobeMetricsHelper::ScreenShownStatus::kSkipped),
+          1)));
   // Showing screen again to test skip doesn't work now.
   ShowNetworkScreen();
   WaitForScreenShown();

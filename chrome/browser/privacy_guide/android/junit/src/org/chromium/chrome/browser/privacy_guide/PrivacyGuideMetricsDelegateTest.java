@@ -29,10 +29,11 @@ import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridgeJni;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridgeJni;
-import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.content_settings.PrefNames;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
@@ -75,7 +76,7 @@ public class PrivacyGuideMetricsDelegateTest {
     public void setUp() {
         Profile.setLastUsedProfileForTesting(mProfile);
         mocker.mock(UnifiedConsentServiceBridgeJni.TEST_HOOKS, mNativeMock);
-        SyncService.overrideForTests(mSyncService);
+        SyncServiceFactory.setInstanceForTesting(mSyncService);
         when(mSyncService.getSelectedTypes()).thenReturn(mSyncTypes);
         mocker.mock(SafeBrowsingBridgeJni.TEST_HOOKS, mSafeBrowsingNativeMock);
         mocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNativesMock);
@@ -543,5 +544,26 @@ public class PrivacyGuideMetricsDelegateTest {
         PrivacyGuideMetricsDelegate.recordMetricsOnBackForCard(
                 PrivacyGuideFragment.FragmentType.COOKIES);
         assertTrue(mActionTester.getActions().contains("Settings.PrivacyGuide.BackClickCookies"));
+    }
+
+    @Test
+    public void testDone_backClickUserAction() {
+        PrivacyGuideMetricsDelegate.recordMetricsOnBackForCard(
+                PrivacyGuideFragment.FragmentType.DONE);
+        assertTrue(
+                mActionTester.getActions().contains("Settings.PrivacyGuide.BackClickCompletion"));
+    }
+
+    @Test
+    public void testMSBB_backClickUserAction() {
+        PrivacyGuideMetricsDelegate.recordMetricsOnBackForCard(
+                PrivacyGuideFragment.FragmentType.MSBB);
+        assertTrue(mActionTester.getActions().contains("Settings.PrivacyGuide.BackClickMSBB"));
+    }
+
+    @Test(expected = AssertionError.class)
+    public void testWelcome_backClickUserAction() {
+        PrivacyGuideMetricsDelegate.recordMetricsOnBackForCard(
+                PrivacyGuideFragment.FragmentType.WELCOME);
     }
 }

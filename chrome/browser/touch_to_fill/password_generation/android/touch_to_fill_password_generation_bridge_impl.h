@@ -21,13 +21,18 @@ class TouchToFillPasswordGenerationBridgeImpl
       const TouchToFillPasswordGenerationBridgeImpl&) = delete;
   ~TouchToFillPasswordGenerationBridgeImpl() override;
 
-  bool Show(
-      content::WebContents* web_contents,
-      base::WeakPtr<TouchToFillPasswordGenerationDelegate> delegate) override;
+  bool Show(content::WebContents* web_contents,
+            base::WeakPtr<TouchToFillPasswordGenerationDelegate> delegate,
+            std::u16string password,
+            std::string account) override;
 
   void Hide() override;
 
   void OnDismissed(JNIEnv* env) override;
+
+  void OnGeneratedPasswordAccepted(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jstring>& password) override;
 
  private:
   // The corresponding Java TouchToFillCreditCardViewBridge.

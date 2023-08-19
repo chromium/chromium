@@ -69,22 +69,11 @@ class TestConfigInjectGetTaskAllow(TestConfig):
         return True
 
 
-class TestConfigNotarizationToolOverride(TestConfig):
-
-    @property
-    def notarization_tool_path(self):
-        return f'/fun/bin/{self.notarization_tool}.custom'
-
-
 class TestInvoker(standard_invoker.Invoker):
 
     @staticmethod
     def factory_with_args(**kwargs):
-        args = argparse.Namespace()
-        args.notary_user = '[NOTARY-USER]'
-        args.notary_password = '[NOTARY-PASSWORD]'
-        args.notary_team_id = '[NOTARY-TEAM]'
-        args.notary_asc_provider = None
-        args.notarization_tool = model.NotarizationTool.ALTOOL
-        args.__dict__.update(**kwargs)
+        if 'notary_arg' not in kwargs:
+            kwargs['notary_arg'] = []
+        args = argparse.Namespace(**kwargs)
         return lambda config: TestInvoker(args, config)

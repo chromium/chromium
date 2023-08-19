@@ -441,8 +441,8 @@ export class RateLimiter {
    */
   runImmediately() {
     this.cancelScheduledRuns_();
-    this.closure_();
     this.lastRunTime_ = Date.now();
+    this.closure_();
   }
 
   /**

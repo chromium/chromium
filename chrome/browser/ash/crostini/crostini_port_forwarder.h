@@ -36,6 +36,8 @@ class CrostiniPortForwarder : public KeyedService {
    public:
     // Called when a port's active state changes.
     virtual void OnActivePortsChanged(const base::Value::List& activePorts) = 0;
+    virtual void OnActiveNetworkChanged(const base::Value& interface,
+                                        const base::Value& ipAddress) = 0;
   };
 
   enum class Protocol {
@@ -106,11 +108,13 @@ class CrostiniPortForwarder : public KeyedService {
   void DeactivateAllActivePorts(const guest_os::GuestId& container_id);
 
   base::Value::List GetActivePorts();
+  base::Value::List GetActiveNetworkInfo();
 
   size_t GetNumberOfForwardedPortsForTesting();
   absl::optional<base::Value> ReadPortPreferenceForTesting(
       const PortRuleKey& key);
-  void ActiveNetworksChanged(const std::string& interface);
+  void ActiveNetworksChanged(const std::string& interface,
+                             const std::string& ip_address);
 
   static CrostiniPortForwarder* GetForProfile(Profile* profile);
 
@@ -157,6 +161,7 @@ class CrostiniPortForwarder : public KeyedService {
 
   // Current interface to forward ports on.
   std::string current_interface_;
+  std::string ip_address_;
 
   base::ObserverList<Observer> observers_;
 

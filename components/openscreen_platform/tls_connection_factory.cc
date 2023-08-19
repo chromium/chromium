@@ -23,11 +23,12 @@
 
 namespace openscreen {
 
+class TaskRunner;
+
 std::unique_ptr<TlsConnectionFactory> TlsConnectionFactory::CreateFactory(
     Client* client,
-    TaskRunner* task_runner) {
-  return std::make_unique<openscreen_platform::TlsConnectionFactory>(
-      client, task_runner);
+    TaskRunner& task_runner) {
+  return std::make_unique<openscreen_platform::TlsConnectionFactory>(client);
 }
 
 }  // namespace openscreen
@@ -108,9 +109,8 @@ void TlsConnectionFactory::Listen(const IPEndpoint& local_address,
 }
 
 TlsConnectionFactory::TlsConnectionFactory(
-    openscreen::TlsConnectionFactory::Client* client,
-    openscreen::TaskRunner* task_runner)
-    : client_(client), task_runner_(task_runner) {}
+    openscreen::TlsConnectionFactory::Client* client)
+    : client_(client) {}
 
 TlsConnectionFactory::TcpConnectRequest::TcpConnectRequest(
     openscreen::TlsConnectOptions options_in,
@@ -201,9 +201,9 @@ void TlsConnectionFactory::OnTlsUpgrade(
   }
 
   auto tls_connection = std::make_unique<TlsClientConnection>(
-      task_runner_, request.local_address, request.remote_address,
-      std::move(receive_stream), std::move(send_stream),
-      std::move(request.tcp_socket), std::move(request.tls_socket));
+      request.local_address, request.remote_address, std::move(receive_stream),
+      std::move(send_stream), std::move(request.tcp_socket),
+      std::move(request.tls_socket));
 
   CRYPTO_BUFFER* der_buffer = ssl_info.value().unverified_cert->cert_buffer();
   const uint8_t* data = CRYPTO_BUFFER_data(der_buffer);

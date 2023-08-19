@@ -16,7 +16,7 @@ FAIL canonicalize('/\\server/file') should be file://server/file. Was http://ser
 PASS canonicalize('file:c:foo/bar.html') is 'file:///C:/foo/bar.html'
 PASS canonicalize('file:/\\/\\C:\\\\//foo\\bar.html') is 'file:///C:////foo/bar.html'
 PASS canonicalize('file:///foo/bar.txt') is 'file:///foo/bar.txt'
-PASS canonicalize('FILE:/\\/\\7:\\\\//foo\\bar.html') is 'file://7:////foo/bar.html'
+FAIL canonicalize('FILE:/\\/\\7:\\\\//foo\\bar.html') should be file://7:////foo/bar.html. Was FILE:/\/\7:\\//foo\bar.html.
 PASS canonicalize('file:filer/home\\me') is 'file://filer/home/me'
 PASS canonicalize('file:///C:/foo/../../../bar.html') is 'file:///C:/bar.html'
 PASS canonicalize('file:///C:/asdf#\xc2') is 'file:///C:/asdf#%C3%82'
@@ -24,8 +24,8 @@ PASS canonicalize('file:///C:/asdf#Â') is 'file:///C:/asdf#%C3%82'
 PASS canonicalize('file:///home/me') is 'file:///home/me'
 FAIL canonicalize('file:c:\\foo\\bar.html') should be file:///c:/foo/bar.html. Was file:///C:/foo/bar.html.
 FAIL canonicalize('file:c|//foo\\bar.html') should be file:///c%7C//foo/bar.html. Was file:///C://foo/bar.html.
-FAIL canonicalize('//') should be file:///. Was http:.
-FAIL canonicalize('///') should be file:///. Was http:.
+PASS canonicalize('//') is '//'
+PASS canonicalize('///') is '///'
 FAIL canonicalize('///test') should be file:///test. Was http://test/.
 PASS canonicalize('file://test') is 'file://test/'
 PASS canonicalize('file://localhost') is 'file://localhost/'

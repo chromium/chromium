@@ -73,6 +73,10 @@ COMPONENT_EXPORT(CHROMEOS_UI_BASE)
 gfx::ImageSkia GetChipIconForPath(const base::FilePath& filepath,
                                   bool dark_background);
 
+// Returns the file type vector icon for the specified `icon_type`.
+COMPONENT_EXPORT(CHROMEOS_UI_BASE)
+const gfx::VectorIcon& GetIconFromType(const std::string& icon_type);
+
 // Returns the file type icon for the specified `icon_type`.
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)
 gfx::ImageSkia GetIconFromType(const std::string& icon_type,

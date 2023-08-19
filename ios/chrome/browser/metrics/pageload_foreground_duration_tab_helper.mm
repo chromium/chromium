@@ -10,10 +10,6 @@
 #import "ios/web/public/navigation/navigation_context.h"
 #import "services/metrics/public/cpp/ukm_builders.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 WEB_STATE_USER_DATA_KEY_IMPL(PageloadForegroundDurationTabHelper)
 
 PageloadForegroundDurationTabHelper::PageloadForegroundDurationTabHelper(

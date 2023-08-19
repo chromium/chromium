@@ -720,7 +720,7 @@ class AuditorTest(unittest.TestCase):
     """|self.sample_annotations| should include all those inside
     test_data/test_sample_annotations.cc"""
     expected = [
-        "ok_annotation", "syntax_error_annotation",
+        "ok_annotation", "ok_annotation_only_owner", "syntax_error_annotation",
         "incomplete_error_annotation", "invalid_assignment_annotation",
         "partially_populated_safe_listed", "missing_all_new_field_safe_listed",
         "ok_new_fields_safe_listed", "missing_new_fields_not_safe_listed",
@@ -810,7 +810,8 @@ class AuditorTest(unittest.TestCase):
     errors = self.auditor.run_all_checks([], True, Exporter.GROUPING_XML_PATH)
     self.assertTrue(errors)
     self.assertEqual(ErrorType.MISSING_NEW_FIELDS, errors[0].type)
-    self.assertTrue(errors[0].message.find('internal::contacts::email') >= 0)
+    self.assertTrue(errors[0].message.find(
+        'internal::contacts::email or internal::contacts::owners') >= 0)
 
   def test_user_data_unspecified(self) -> None:
     """Annotation user_data::type contains UNSPECIFIED value. Annotation Check
@@ -832,14 +833,8 @@ class AuditorTest(unittest.TestCase):
     auditor.parse_extractor_output(
         [self.sample_annotations["missing_all_new_field_safe_listed"]])
     self.assertTrue(auditor.extracted_annotations)
-    errors = auditor.run_all_checks([], True, Exporter.GROUPING_XML_PATH)
-    self.assertTrue(errors)
-    error_type = []
-    for error in errors:
-      self.assertTrue(error.type not in [
-          ErrorType.MISSING_NEW_FIELDS, ErrorType.INVALID_DATE_FORMAT,
-          ErrorType.INVALID_USER_DATA_TYPE, ErrorType.REMOVE_FROM_SAFE_LIST
-      ])
+    errors = auditor.run_all_checks([], False, Exporter.GROUPING_XML_PATH)
+    self.assertFalse(errors)
 
   def test_partially_populated_safe_listed_file(self) -> None:
     """Check annotation with last_reviewed but missing email fields,
@@ -895,6 +890,18 @@ supervised_user_refresh_token_fetcher\t\tSupervised Users\tFetches an OAuth2 ref
 * The device name, to identify the refresh token in account management."\tGoogle\tNo\t\tUsers can disable this feature by toggling 'Let anyone add a person to Chrome' in Chromium settings, under People.\tSupervisedUserCreationEnabled: false, external_policy: ""\t\thttps://cs.chromium.org/chromium/src/?l=0
 """
     self.assertEqual(expected_contents, tsv_contents)
+
+  def test_result_ok_only_owner(self) -> None:
+    """Annotation is complete with all new fields, and uses an owners file
+    instead of email for contact info. Check returns no errors related to
+    contact email or other new fields."""
+    self.auditor.parse_extractor_output(
+        [self.sample_annotations["ok_annotation_only_owner"]])
+    errors = self.auditor.run_all_checks([], False, Exporter.GROUPING_XML_PATH)
+
+    # Assert that correct annotation has been extracted and is OK (no errors).
+    self.assertTrue(self.auditor.extracted_annotations)
+    self.assertFalse(errors)
 
 
 if __name__ == "__main__":

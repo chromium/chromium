@@ -10,6 +10,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -101,11 +102,13 @@ class NET_EXPORT SSLClientContext : public SSLConfigService::Observer,
     // Called when SSL configuration for all hosts changed. Newly-created
     // SSLClientSockets will pick up the new configuration. Note that changes
     // which only apply to one server will result in a call to
-    // OnSSLConfigForServerChanged() instead.
+    // OnSSLConfigForServersChanged() instead.
     virtual void OnSSLConfigChanged(SSLConfigChangeType change_type) = 0;
-    // Called when SSL configuration for |server| changed. Newly-created
-    // SSLClientSockets to |server| will pick up the new configuration.
-    virtual void OnSSLConfigForServerChanged(const HostPortPair& server) = 0;
+    // Called when SSL configuration for |servers| changed. Newly-created
+    // SSLClientSockets to any server in |servers| will pick up the new
+    // configuration.
+    virtual void OnSSLConfigForServersChanged(
+        const base::flat_set<HostPortPair>& servers) = 0;
   };
 
   // Creates a new SSLClientContext with the specified parameters. The
@@ -164,7 +167,7 @@ class NET_EXPORT SSLClientContext : public SSLConfigService::Observer,
   // |private_key| may be null to indicate that no client certificate should be
   // sent to |server|.
   //
-  // Note this method will synchronously call OnSSLConfigForServerChanged() on
+  // Note this method will synchronously call OnSSLConfigForServersChanged() on
   // observers.
   void SetClientCertificate(const HostPortPair& server,
                             scoped_refptr<X509Certificate> client_cert,
@@ -174,9 +177,14 @@ class NET_EXPORT SSLClientContext : public SSLConfigService::Observer,
   // SetClientCertificate(). Returns true if one was removed and false
   // otherwise.
   //
-  // Note this method will synchronously call OnSSLConfigForServerChanged() on
+  // Note this method will synchronously call OnSSLConfigForServersChanged() on
   // observers.
   bool ClearClientCertificate(const HostPortPair& server);
+
+  base::flat_set<HostPortPair> GetClientCertificateCachedServersForTesting()
+      const {
+    return ssl_client_auth_cache_.GetCachedServers();
+  }
 
   // Add an observer to be notified when configuration has changed.
   // RemoveObserver() must be called before |observer| is destroyed.
@@ -192,11 +200,13 @@ class NET_EXPORT SSLClientContext : public SSLConfigService::Observer,
   void OnCertVerifierChanged() override;
 
   // CertDatabase::Observer:
-  void OnCertDBChanged() override;
+  void OnTrustStoreChanged() override;
+  void OnClientCertStoreChanged() override;
 
  private:
   void NotifySSLConfigChanged(SSLConfigChangeType change_type);
-  void NotifySSLConfigForServerChanged(const HostPortPair& server);
+  void NotifySSLConfigForServersChanged(
+      const base::flat_set<HostPortPair>& servers);
 
   SSLContextConfig config_;
 

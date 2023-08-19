@@ -54,8 +54,9 @@ bool IsItemRelevant(const TokenizedString& query,
         match.Relevance(query, *(tag.second), true /* use_weighted_ratio */);
     if (relevance >= relevance_threshold) {
       *relevance_score = relevance;
-      Position position;
-      position.content_id = tag.first;
+      // Initialize the `length` and `start` to 0, as they are currently not
+      // in-use by linear map search.
+      Position position(tag.first, 0, 0);
       positions->push_back(position);
       return true;
     }

@@ -53,7 +53,7 @@ class NetworkServiceDevToolsObserver : public network::mojom::DevToolsObserver {
   void OnTrustTokenOperationDone(
       const std::string& devtools_request_id,
       network::mojom::TrustTokenOperationResultPtr result) override;
-  void OnLocalNetworkRequest(
+  void OnPrivateNetworkRequest(
       const absl::optional<std::string>& devtools_request_id,
       const GURL& url,
       bool is_warning,
@@ -78,6 +78,8 @@ class NetworkServiceDevToolsObserver : public network::mojom::DevToolsObserver {
                    const GURL& url,
                    const network::CorsErrorStatus& status,
                    bool is_warning) override;
+  void OnCorbError(const absl::optional<std::string>& devtools_request_id,
+                   const GURL& url) override;
   void OnSubresourceWebBundleMetadata(const std::string& devtools_request_id,
                                       const std::vector<GURL>& urls) override;
   void OnSubresourceWebBundleMetadataError(

@@ -5,6 +5,7 @@
 #include "content/browser/preloading/prerenderer_impl.h"
 
 #include "content/browser/preloading/preloading.h"
+#include "content/browser/preloading/preloading_attempt_impl.h"
 #include "content/browser/preloading/prerender/prerender_attributes.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
@@ -139,7 +140,7 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
     // For now, start the first candidate for a URL only if there are no
     // matching prerenders. We could be cleverer in the future.
     if (matching_prerenders.empty()) {
-      DCHECK_GT(matching_candidates.size(), 0u);
+      CHECK_GT(matching_candidates.size(), 0u);
       candidates_to_start.push_back(std::move(matching_candidates[0]));
     }
 
@@ -148,9 +149,9 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
     started_it = equal_prerender_end;
   }
 
-  registry_->CancelHosts(
-      removed_prerender_rules,
-      PrerenderCancellationReason(PrerenderFinalStatus::kTriggerDestroyed));
+  registry_->CancelHosts(removed_prerender_rules,
+                         PrerenderCancellationReason(
+                             PrerenderFinalStatus::kSpeculationRuleRemoved));
   {
     base::flat_set<int> removed_prerender_rules_set(
         removed_prerender_rules.begin(), removed_prerender_rules.end());
@@ -179,7 +180,11 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
 
 bool PrerendererImpl::MaybePrerender(
     const blink::mojom::SpeculationCandidatePtr& candidate) {
-  DCHECK_EQ(candidate->action, blink::mojom::SpeculationAction::kPrerender);
+  CHECK_EQ(candidate->action, blink::mojom::SpeculationAction::kPrerender);
+
+  // Prerendering frames should not trigger any prerender request.
+  CHECK(!render_frame_host_->IsInLifecycleState(
+      RenderFrameHost::LifecycleState::kPrerendering));
 
   if (!registry_)
     return false;
@@ -195,9 +200,11 @@ bool PrerendererImpl::MaybePrerender(
   // this prerendering attempt.
   PreloadingURLMatchCallback same_url_matcher =
       PreloadingData::GetSameURLMatcher(candidate->url);
-  PreloadingAttempt* preloading_attempt = preloading_data->AddPreloadingAttempt(
-      GetPredictorForSpeculationRules(candidate->injection_world),
-      PreloadingType::kPrerender, std::move(same_url_matcher));
+  auto* preloading_attempt =
+      static_cast<PreloadingAttemptImpl*>(preloading_data->AddPreloadingAttempt(
+          GetPredictorForSpeculationRules(candidate->injection_world),
+          PreloadingType::kPrerender, std::move(same_url_matcher)));
+  preloading_attempt->SetSpeculationEagerness(candidate->eagerness);
 
   auto [begin, end] = base::ranges::equal_range(
       started_prerenders_.begin(), started_prerenders_.end(), candidate->url,
@@ -218,8 +225,7 @@ bool PrerendererImpl::MaybePrerender(
         blink::mojom::ConsoleMessageLevel::kWarning,
         base::StringPrintf(
             "The SpeculationRules API does not support cross-site prerender "
-            "yet (kSameSiteCrossOriginForSpeculationRulesPrerender2 is "
-            "enabled). (initiator origin: %s, prerender origin: %s). "
+            "yet (initiator origin: %s, prerender origin: %s). "
             "https://crbug.com/1176054 tracks cross-site support.",
             rfhi.GetLastCommittedOrigin().Serialize().c_str(),
             url::Origin::Create(candidate->url).Serialize().c_str()));
@@ -228,10 +234,11 @@ bool PrerendererImpl::MaybePrerender(
   Referrer referrer(*(candidate->referrer));
   PrerenderAttributes attributes(
       candidate->url, GetTriggerType(candidate->injection_world),
-      /*embedder_histogram_suffix=*/"", referrer, rfhi.GetLastCommittedOrigin(),
-      rfhi.GetProcess()->GetID(), web_contents->GetWeakPtr(),
-      rfhi.GetFrameToken(), rfhi.GetFrameTreeNodeId(),
-      rfhi.GetPageUkmSourceId(), ui::PAGE_TRANSITION_LINK,
+      /*embedder_histogram_suffix=*/"", referrer, candidate->eagerness,
+      rfhi.GetLastCommittedOrigin(), rfhi.GetProcess()->GetID(),
+      web_contents->GetWeakPtr(), rfhi.GetFrameToken(),
+      rfhi.GetFrameTreeNodeId(), rfhi.GetPageUkmSourceId(),
+      ui::PAGE_TRANSITION_LINK,
       /*url_match_predicate=*/absl::nullopt, rfhi.GetDevToolsNavigationToken());
 
   // TODO(crbug.com/1354049): Handle the case where multiple speculation rules

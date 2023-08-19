@@ -471,7 +471,7 @@ void OfflinePageRequestHandler::Redirect(const GURL& redirected_url) {
       "Non-Authoritative-Reason: offline redirects",
       // 302 is used to remove response bodies in order to
       // avoid leak when going online.
-      net::RedirectUtil::ResponseCode::REDIRECT_302_FOUND,
+      static_cast<int>(net::RedirectUtil::ResponseCode::REDIRECT_302_FOUND),
       redirected_url.spec().c_str());
 
   fake_headers_for_redirect_ = base::MakeRefCounted<net::HttpResponseHeaders>(

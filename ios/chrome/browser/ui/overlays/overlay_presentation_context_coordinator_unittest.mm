@@ -17,10 +17,6 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForUIElementTimeout;
 
@@ -40,6 +36,7 @@ class OverlayPresentationContextCoordinatorTest : public PlatformTest {
     scoped_window_.Get().rootViewController = root_view_controller_;
   }
   ~OverlayPresentationContextCoordinatorTest() override {
+    [coordinator_ stop];
     // The browser needs to be destroyed before `context_` so that observers
     // can be unhooked due to BrowserDestroyed().  This is not a problem for
     // non-test OverlayPresentationContextImpls since they're owned by the

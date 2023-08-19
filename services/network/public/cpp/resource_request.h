@@ -10,8 +10,10 @@
 
 #include "base/component_export.h"
 #include "base/debug/crash_logging.h"
+#include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/unguessable_token.h"
+#include "build/buildflag.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/isolation_info.h"
 #include "net/base/request_priority.h"
@@ -32,6 +34,7 @@
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
+#include "services/network/public/mojom/shared_dictionary_access_observer.mojom.h"
 #include "services/network/public/mojom/trust_token_access_observer.mojom-forward.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
@@ -73,6 +76,8 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
     mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer;
     mojom::ClientSecurityStatePtr client_security_state;
     mojo::PendingRemote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer;
+    mojo::PendingRemote<mojom::SharedDictionaryAccessObserver>
+        shared_dictionary_observer;
   };
 
   // Typemapped to network.mojom.WebBundleTokenParams, see comments there
@@ -107,7 +112,11 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
     int32_t render_process_id = -1;
   };
 
+#if BUILDFLAG(IS_ANDROID)
+  explicit ResourceRequest(const base::Location& = base::Location::Current());
+#else
   ResourceRequest();
+#endif
   ResourceRequest(const ResourceRequest& request);
   ~ResourceRequest();
 
@@ -149,6 +158,11 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   bool originated_from_service_worker = false;
   bool skip_service_worker = false;
   bool corb_detachable = false;
+  // `kNoCors` mode is the default request mode for legacy reasons, however this
+  // mode is highly discouraged for new requests made on the web platform;
+  // please consider using another mode like `kCors` instead, and only use
+  // `kNoCors` with strong rationale and approval from security experts. See
+  // https://fetch.spec.whatwg.org/#concept-request-mode.
   mojom::RequestMode mode = mojom::RequestMode::kNoCors;
   mojom::IPAddressSpace target_address_space = mojom::IPAddressSpace::kUnknown;
   mojom::CredentialsMode credentials_mode = mojom::CredentialsMode::kInclude;
@@ -178,6 +192,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   absl::optional<std::string> devtools_request_id;
   absl::optional<std::string> devtools_stack_id;
   bool is_fetch_like_api = false;
+  bool is_fetch_later_api = false;
   bool is_favicon = false;
   absl::optional<base::UnguessableToken> recursive_prefetch_token;
   absl::optional<TrustedParams> trusted_params;
@@ -203,6 +218,11 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   network::AttributionReportingRuntimeFeatures
       attribution_reporting_runtime_features;
   bool shared_dictionary_writer_enabled = false;
+  absl::optional<base::UnguessableToken> attribution_reporting_src_token;
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(https://crbug.com/1456586): Remove this once the issue is fixed.
+  std::string created_location;
+#endif
 };
 
 // This does not accept |kDefault| referrer policy.

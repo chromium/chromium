@@ -8,6 +8,7 @@
 
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_keyframe_rule.h"
+#include "third_party/blink/renderer/core/css/css_try_rule.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_fast_paths.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_impl.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
@@ -52,9 +53,11 @@ base::span<CSSSelector> CSSParser::ParseSelector(
     HeapVector<CSSSelector>& arena) {
   CSSTokenizer tokenizer(selector);
   const auto tokens = tokenizer.TokenizeToEOF();
-  return CSSSelectorParser::ParseSelector(CSSParserTokenRange(tokens), context,
-                                          nesting_type, parent_rule_for_nesting,
-                                          style_sheet_contents, arena);
+  return CSSSelectorParser::ParseSelector(
+      CSSParserTokenRange(tokens), context, nesting_type,
+      parent_rule_for_nesting,
+      /* semicolon_aborts_nested_selector */ false, style_sheet_contents,
+      arena);
 }
 
 CSSSelectorList* CSSParser::ParsePageSelector(
@@ -274,6 +277,13 @@ StyleRuleKeyframe* CSSParser::ParseKeyframeRule(const CSSParserContext* context,
   return To<StyleRuleKeyframe>(keyframe);
 }
 
+StyleRuleTry* CSSParser::ParseTryRule(const CSSParserContext* context,
+                                      const String& rule) {
+  StyleRuleBase* try_rule = CSSParserImpl::ParseRule(
+      rule, context, CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr,
+      nullptr, CSSParserImpl::kTryRules);
+  return To<StyleRuleTry>(try_rule);
+}
 bool CSSParser::ParseSupportsCondition(
     const String& condition,
     const ExecutionContext* execution_context) {

@@ -19,6 +19,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -74,10 +75,6 @@ enum class KeyStatus : uint32_t {
   KEY_STATUS_INTERNAL_ERROR = 4,
   KEY_STATUS_USABLE_IN_FUTURE = 5,  // Added in API level 29.
 };
-
-const uint8_t kWidevineUuid[16] = {
-    0xED, 0xEF, 0x8B, 0xA9, 0x79, 0xD6, 0x4A, 0xCE,  //
-    0xA3, 0xC8, 0x27, 0xDC, 0xD5, 0x1D, 0x21, 0xED};
 
 // Convert |init_data_type| to a string supported by MediaDRM.
 // "audio"/"video" does not matter, so use "video".
@@ -180,9 +177,11 @@ KeySystemManager::KeySystemManager() {
   // Widevine is always supported in Android.
   key_system_uuid_map_[kWidevineKeySystem] =
       UUID(kWidevineUuid, kWidevineUuid + std::size(kWidevineUuid));
-  // ClearKey is always supported in Android.
-  key_system_uuid_map_[kExternalClearKeyKeySystem] =
-      UUID(kClearKeyUuid, kClearKeyUuid + std::size(kClearKeyUuid));
+  // External Clear Key is supported only for testing.
+  if (base::FeatureList::IsEnabled(media::kExternalClearKeyForTesting)) {
+    key_system_uuid_map_[kExternalClearKeyKeySystem] =
+        UUID(kClearKeyUuid, kClearKeyUuid + std::size(kClearKeyUuid));
+  }
   MediaDrmBridgeClient* client = GetMediaDrmBridgeClient();
   if (client)
     client->AddKeySystemUUIDMappings(&key_system_uuid_map_);
@@ -392,6 +391,7 @@ void MediaDrmBridge::SetServerCertificate(
     ResolvePromise(promise_id);
   } else {
     RejectPromise(promise_id, CdmPromise::Exception::TYPE_ERROR,
+                  MediaDrmSystemCode::SET_SERVER_CERTIFICATE_FAILED,
                   "Set server certificate failed.");
   }
 }
@@ -422,6 +422,7 @@ void MediaDrmBridge::CreateSessionAndGenerateRequest(
                                      &init_data_from_delegate,
                                      &optional_parameters_from_delegate)) {
         RejectPromise(promise_id, CdmPromise::Exception::TYPE_ERROR,
+                      MediaDrmSystemCode::CREATE_SESSION_FAILED,
                       "Invalid init data.");
         return;
       }
@@ -467,6 +468,7 @@ void MediaDrmBridge::LoadSession(
 
   if (session_type != CdmSessionType::kPersistentLicense) {
     RejectPromise(promise_id, CdmPromise::Exception::NOT_SUPPORTED_ERROR,
+                  MediaDrmSystemCode::NOT_PERSISTENT_LICENSE,
                   "LoadSession() is only supported for 'persistent-license'.");
     return;
   }
@@ -558,6 +560,12 @@ bool MediaDrmBridge::IsSecureCodecRequired() {
   if (base::ranges::equal(scheme_uuid_, kWidevineUuid))
     return SECURITY_LEVEL_1 == GetSecurityLevel();
 
+  // If UUID is ClearKey, we should automatically return false since secure
+  // codecs should not be required.
+  if (base::ranges::equal(scheme_uuid_, kClearKeyUuid)) {
+    return false;
+  }
+
   // For other key systems, assume true.
   return true;
 }
@@ -593,9 +601,11 @@ void MediaDrmBridge::ResolvePromiseWithSession(uint32_t promise_id,
 
 void MediaDrmBridge::RejectPromise(uint32_t promise_id,
                                    CdmPromise::Exception exception_code,
+                                   MediaDrmSystemCode system_code,
                                    const std::string& error_message) {
   DVLOG(2) << __func__;
-  cdm_promise_adapter_.RejectPromise(promise_id, exception_code, 0,
+  cdm_promise_adapter_.RejectPromise(promise_id, exception_code,
+                                     base::checked_cast<uint32_t>(system_code),
                                      error_message);
 }
 
@@ -698,11 +708,15 @@ void MediaDrmBridge::OnPromiseRejected(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_media_drm,
     jint j_promise_id,
+    jint j_system_code,
     const JavaParamRef<jstring>& j_error_message) {
+  CHECK(j_system_code >= static_cast<jint>(MediaDrmSystemCode::MIN_VALUE) &&
+        j_system_code <= static_cast<jint>(MediaDrmSystemCode::MAX_VALUE));
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&MediaDrmBridge::RejectPromise, weak_factory_.GetWeakPtr(),
                      j_promise_id, CdmPromise::Exception::NOT_SUPPORTED_ERROR,
+                     static_cast<MediaDrmSystemCode>(j_system_code),
                      ConvertJavaStringToUTF8(env, j_error_message)));
 }
 

@@ -4,19 +4,14 @@
 
 #include "media/gpu/v4l2/test/vp8_decoder.h"
 
-// ChromeOS specific header; does not exist upstream
-#if BUILDFLAG(IS_CHROMEOS)
-#include <linux/media/vp8-ctrls-upstream.h>
-#endif
-
 #include <linux/v4l2-controls.h>
+#include <linux/videodev2.h>
 
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "media/base/video_types.h"
 #include "media/filters/ivf_parser.h"
 #include "media/gpu/macros.h"
-#include "media/gpu/v4l2/test/upstream_pix_fmt.h"
 #include "media/gpu/v4l2/test/v4l2_ioctl_shim.h"
 #include "media/parsers/vp8_parser.h"
 
@@ -514,11 +509,11 @@ Vp8Decoder::ParseResult Vp8Decoder::ReadNextFrame(
   return result ? Vp8Decoder::kOk : Vp8Decoder::kError;
 }
 
-VideoDecoder::Result Vp8Decoder::DecodeNextFrame(std::vector<uint8_t>& y_plane,
+VideoDecoder::Result Vp8Decoder::DecodeNextFrame(const int frame_number,
+                                                 std::vector<uint8_t>& y_plane,
                                                  std::vector<uint8_t>& u_plane,
                                                  std::vector<uint8_t>& v_plane,
-                                                 gfx::Size& size,
-                                                 const int frame_number) {
+                                                 gfx::Size& size) {
   Vp8FrameHeader frame_hdr{};
 
   Vp8Decoder::ParseResult parser_res = ReadNextFrame(frame_hdr);
@@ -579,8 +574,7 @@ VideoDecoder::Result Vp8Decoder::DecodeNextFrame(std::vector<uint8_t>& y_plane,
   // dimensions and format will be ready. Specifying V4L2_CTRL_WHICH_CUR_VAL
   // when VIDIOC_S_EXT_CTRLS processes the request immediately so that the frame
   // is parsed by the driver and the state is readied.
-  v4l2_ioctl_->SetExtCtrls(OUTPUT_queue_, &ext_ctrls,
-                           is_OUTPUT_queue_new && cur_val_is_supported_);
+  v4l2_ioctl_->SetExtCtrls(OUTPUT_queue_, &ext_ctrls, is_OUTPUT_queue_new);
   v4l2_ioctl_->MediaRequestIocQueue(OUTPUT_queue_);
 
   if (!CAPTURE_queue_) {

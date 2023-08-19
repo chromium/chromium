@@ -12,6 +12,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/gestures/wm_gesture_handler.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/delayed_animation_observer_impl.h"
 #include "ash/wm/overview/overview_constants.h"
@@ -20,6 +21,7 @@
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/overview/overview_wallpaper_controller.h"
 #include "ash/wm/screen_pinning_controller.h"
+#include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
@@ -32,6 +34,8 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/presentation_time_recorder.h"
 #include "ui/wm/core/window_util.h"
 #include "ui/wm/public/activation_client.h"
 
@@ -49,6 +53,8 @@ constexpr base::TimeDelta kOcclusionPauseDurationForStart =
 // overview mode immediately, contents are ready.
 constexpr base::TimeDelta kOcclusionPauseDurationForEnd =
     base::Milliseconds(500);
+
+constexpr base::TimeDelta kEnterExitPresentationMaxLatency = base::Seconds(2);
 
 bool IsSplitViewDividerDraggedOrAnimated() {
   SplitViewController* split_view_controller =
@@ -157,6 +163,28 @@ bool OverviewController::EndOverview(OverviewEndAction action,
 
 bool OverviewController::InOverviewSession() const {
   return overview_session_ && !overview_session_->is_shutting_down();
+}
+
+bool OverviewController::HandleContinuousScroll(float y_offset,
+                                                OverviewEnterExitType type) {
+  // We enter with type `kNormal` if a fast scroll happened and we want to enter
+  // overview mode immediately, using ToggleOverview().
+  CHECK((type ==
+         OverviewEnterExitType::kContinuousAnimationEnterOnScrollUpdate) ||
+        (type == OverviewEnterExitType::kNormal));
+
+  // Determine if this is the last scroll update in this continuous scroll.
+  is_continuous_scroll_in_progress_ =
+      y_offset != WmGestureHandler::kVerticalThresholdDp &&
+      type != OverviewEnterExitType::kNormal;
+
+  if (!overview_session_) {
+    ToggleOverview(type);
+    return true;
+  }
+
+  overview_session_->set_enter_exit_overview_type(type);
+  return overview_session_->HandleContinuousScrollIntoOverview(y_offset);
 }
 
 void OverviewController::IncrementSelection(bool forward) {
@@ -312,6 +340,12 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("ui", "OverviewController::ExitOverview",
                                       this);
 
+    auto presentation_time_recorder = CreatePresentationTimeHistogramRecorder(
+        Shell::GetPrimaryRootWindow()->layer()->GetCompositor(),
+        kExitOverviewPresentationHistogram, "",
+        kEnterExitPresentationMaxLatency);
+    presentation_time_recorder->RequestNext();
+
     // Suspend occlusion tracker until the exit animation is complete.
     PauseOcclusionTracker();
 
@@ -371,6 +405,13 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
     DCHECK(CanEnterOverview());
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("ui", "OverviewController::EnterOverview",
                                       this);
+
+    auto presentation_time_recorder = CreatePresentationTimeHistogramRecorder(
+        Shell::GetPrimaryRootWindow()->layer()->GetCompositor(),
+        kEnterOverviewPresentationHistogram, "",
+        kEnterExitPresentationMaxLatency);
+    presentation_time_recorder->RequestNext();
+
     if (auto* active_window = window_util::GetActiveWindow(); active_window) {
       auto* active_widget =
           views::Widget::GetWidgetForNativeView(active_window);
@@ -469,12 +510,19 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
 }
 
 bool OverviewController::CanEnterOverview() {
-  // Prevent entering overview while the divider is dragged or animated.
-  if (IsSplitViewDividerDraggedOrAnimated())
+  if (!DesksController::Get()->CanEnterOverview()) {
     return false;
+  }
 
-  if (!DesksController::Get()->CanEnterOverview())
+  if (SnapGroupController* snap_group_controller = SnapGroupController::Get();
+      snap_group_controller && !snap_group_controller->CanEnterOverview()) {
     return false;
+  }
+
+  // Prevent entering overview while the divider is dragged or animated.
+  if (IsSplitViewDividerDraggedOrAnimated()) {
+    return false;
+  }
 
   // Don't allow a window overview if the user session is not active (e.g.
   // locked or in user-adding screen) or a modal dialog is open or running in
@@ -539,11 +587,14 @@ void OverviewController::OnEndingAnimationComplete(bool canceled) {
 
   // Unblur when animation is completed (or right away if there was no
   // delayed animation) unless it's canceled, in which case, we should keep
-  // the blur. Also resume the activation frame state. No need to unblur the
-  // wallpaper if the feature `kJellyroll` is enabled, since it's not blurred
-  // on overview started.
+  // the blur. No need to unblur the wallpaper if the feature `kJellyroll` is
+  // enabled, since it's not blurred on overview started.
   if (!canceled && !chromeos::features::IsJellyrollEnabled()) {
     overview_wallpaper_controller_->Unblur();
+  }
+
+  // Resume the activation frame state.
+  if (!canceled) {
     paint_as_active_lock_.reset();
   }
 

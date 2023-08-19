@@ -51,8 +51,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
@@ -65,13 +63,12 @@ import org.chromium.chrome.browser.password_manager.settings.PasswordAccessReaut
 import org.chromium.chrome.browser.password_manager.settings.PasswordAccessReauthenticationHelper.ReauthReason;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.widget.Toast;
 
 /**
  * Tests verifying that the credential edit mediator modifies the model correctly.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {CredentialEditControllerTest.ShadowToast.class})
+@Config(manifest = Config.NONE)
 public class CredentialEditControllerTest {
     private static final String TEST_URL = "https://m.a.xyz/signin";
     private static final String TEST_USERNAME = "TestUsername";
@@ -90,16 +87,6 @@ public class CredentialEditControllerTest {
 
     @Mock
     private Runnable mHelpLauncher;
-
-    /** Shadow for the {@link Toast} class to make sure we don't try to run it's native code. */
-    @Implements(Toast.class)
-    public static class ShadowToast {
-        public ShadowToast() {}
-
-        /** Ignore show(). */
-        @Implementation
-        protected void show() {}
-    }
 
     CredentialEditMediator mMediator;
     PropertyModel mModel;

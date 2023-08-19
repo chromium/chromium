@@ -45,6 +45,7 @@ class StrikeDatabaseIntegratorTestStrikeDatabaseTest : public ::testing::Test {
   void TearDown() override {
     // The destruction of |strike_database_service_|'s components is posted
     // to a task runner, requires running the loop to complete.
+    no_expiry_strike_database_.reset();
     strike_database_.reset();
     strike_database_service_.reset();
     db_provider_.reset();

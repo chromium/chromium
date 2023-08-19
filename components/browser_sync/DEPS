@@ -13,6 +13,7 @@ include_rules = [
   "+components/reading_list/core",
   "+components/reading_list/features",
   "+components/send_tab_to_self",
+  "+components/supervised_user",
   "+components/sync",
   "+components/sync_bookmarks",
   "+components/sync_device_info",

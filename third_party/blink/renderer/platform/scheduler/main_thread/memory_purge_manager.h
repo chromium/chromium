@@ -10,7 +10,6 @@
 #include "base/timer/timer.h"
 #include "third_party/blink/public/common/page/launching_process_state.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/scheduler/public/page_lifecycle_state.h"
 
 namespace blink {
 
@@ -24,9 +23,10 @@ class PLATFORM_EXPORT MemoryPurgeManager {
   ~MemoryPurgeManager();
 
   // Called when a page is created or destroyed, to maintain the total count of
-  // pages owned by a renderer.
-  void OnPageCreated(PageLifecycleState state);
-  void OnPageDestroyed(PageLifecycleState state);
+  // pages owned by a renderer. MemoryPurgeManager assumes that a page is *not*
+  // frozen on creation.
+  void OnPageCreated();
+  void OnPageDestroyed(bool frozen);
 
   // Called when a page is frozen. If all pages are frozen or
   // |kFreezePurgeMemoryAllPagesFrozen| is disabled, and the renderer is

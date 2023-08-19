@@ -34,11 +34,16 @@ several frames and accelerated VideoDecoder needs to successfully decode them.
       };
       if (arg.codec.startsWith('avc1')) {
         encoder_config.avc = { format: 'annexb' };
+      } else if (arg.codec.startsWith('hvc1')) {
+        encoder_config.hevc = { format: 'annexb' };
       }
 
       TEST.log('Starting test with arguments: ' + JSON.stringify(arg));
-      let support = await VideoEncoder.isConfigSupported(encoder_config);
-      if (!support.supported) {
+      let supported = false;
+      try {
+        supported = (await VideoEncoder.isConfigSupported(encoder_config)).supported;
+      } catch (e) {}
+      if (!supported) {
         TEST.skip('Unsupported codec: ' + arg.codec);
         return;
       }

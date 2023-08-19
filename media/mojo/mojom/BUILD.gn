@@ -46,6 +46,7 @@ mojom("mojom") {
     "video_decoder.mojom",
     "video_encode_accelerator.mojom",
     "video_encoder_info.mojom",
+    "video_encoder_metrics_provider.mojom",
     "watch_time_recorder.mojom",
     "webrtc_video_perf.mojom",
   ]
@@ -88,6 +89,7 @@ mojom("mojom") {
     "//services/service_manager/public/mojom",
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/mojom",
+    "//ui/gfx/mojom:hdr_metadata",
     "//ui/gl/mojom",
     "//url/mojom:url_mojom_gurl",
     "//url/mojom:url_mojom_origin",
@@ -451,12 +453,16 @@ mojom("mojom") {
           cpp = "::media::VideoEncodeAccelerator::Error"
         },
         {
+          mojom = "media.mojom.VideoEncodeOptions"
+          cpp = "::media::VideoEncoder::EncodeOptions"
+        },
+        {
           mojom = "media.mojom.VideoEncodeAcceleratorConfig"
           cpp = "::media::VideoEncodeAccelerator::Config"
         },
         {
-          mojom = "media.mojom.InterLayerPredMode"
-          cpp = "::media::VideoEncodeAccelerator::Config::InterLayerPredMode"
+          mojom = "media.mojom.SVCInterLayerPredMode"
+          cpp = "::media::SVCInterLayerPredMode"
         },
         {
           mojom = "media.mojom.SpatialLayer"

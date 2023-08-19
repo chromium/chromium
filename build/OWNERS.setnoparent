@@ -40,12 +40,14 @@ file://extensions/common/api/API_OWNERS
 # we don't want them.
 file://ui/android/java/res/LAYOUT_OWNERS
 
-# Updating policy_templates.json can have drastic effects for systems depending
+# Enterprise policies
+# Updating policy templates can have drastic effects for systems depending
 # on policy definitions (for example, Google's cloud management tools for
 # Chrome and Chrome OS).
 # The rules are documented at:
 # https://sites.google.com/a/chromium.org/dev/developers/how-tos/enterprise/adding-new-policies
 file://components/policy/ENTERPRISE_POLICY_OWNERS
+file://components/policy/resources/templates/OWNERS
 
 # This restriction is in place due to the complicated compliance regulations
 # around this code.
@@ -74,7 +76,7 @@ file://infra/config/groups/sheriff-rotations/CHROMIUM_OWNERS
 # completed manually.
 file://third_party/blink/common/origin_trials/OT_OWNERS
 
-# New notifiers added to //ash/constants/notifier_catalogs.h and 
+# New notifiers added to //ash/constants/notifier_catalogs.h and
 # //ash/constants/quick_settings_catalogs.h should be reviewed
 # by //ash/system owners to ensure that the correct notifier is being used.
 file://ash/system/OWNERS

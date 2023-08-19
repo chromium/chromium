@@ -195,19 +195,11 @@ testcase.searchHidingViaTab = async () => {
   // Wait for the search box to expand.
   await remoteCall.waitForElementLost(appId, '#search-wrapper[collapsed]');
 
-  // Returns $i18n{} label if code coverage is enabled.
-  let expectedLabelText = 'Search';
-  const isDevtoolsCoverageActive =
-      await sendTestMessage({name: 'isDevtoolsCoverageActive'});
-  if (isDevtoolsCoverageActive === 'true') {
-    expectedLabelText = '$i18n{SEARCH_TEXT_LABEL}';
-  }
-
   // Verify the search input has focus.
   const input =
       await remoteCall.callRemoteTestUtil('deepGetActiveElement', appId, []);
   chrome.test.assertEq(input.attributes['id'], 'input');
-  chrome.test.assertEq(input.attributes['aria-label'], expectedLabelText);
+  chrome.test.assertEq(input.attributes['aria-label'], 'Search');
 
   // Send Tab key to focus the next element.
   const result = await sendTestMessage({name: 'dispatchTabKey'});
@@ -717,39 +709,39 @@ testcase.selectionPath = async () => {
     ENTRIES.deeplyBurriedSmallJpeg,
   ]));
   await remoteCall.waitUntilSelected(appId, ENTRIES.hello.nameText);
-  const singleSelectionPath = await remoteCall.waitForElement(appId, [
-    'xf-path-display',
+  const breadcrumbSingleSelection = await remoteCall.waitForElement(appId, [
+    '#search-breadcrumb',
   ]);
-  chrome.test.assertFalse(singleSelectionPath.hidden);
+  chrome.test.assertFalse(breadcrumbSingleSelection.hidden);
   chrome.test.assertEq(
       'My files/Downloads/' + ENTRIES.hello.nameText,
-      singleSelectionPath.attributes.path);
+      breadcrumbSingleSelection.attributes.path);
   // Select now the desktop entry, too. Two or more selected files,
   // regardless of the directory in which they sit, result in no path.
   await remoteCall.waitAndClickElement(
       appId, `#file-list [file-name="${ENTRIES.desktop.nameText}"]`,
       {ctrl: true});
-  const twoFilesSelectedPath = await remoteCall.waitForElement(appId, [
-    'xf-path-display',
+  const breadcrumbDoubleSelection = await remoteCall.waitForElement(appId, [
+    '#search-breadcrumb',
   ]);
-  chrome.test.assertTrue(twoFilesSelectedPath.hidden);
-  chrome.test.assertEq('', twoFilesSelectedPath.attributes.path);
+  chrome.test.assertTrue(breadcrumbDoubleSelection.hidden);
+  chrome.test.assertEq('', breadcrumbDoubleSelection.attributes.path);
   await remoteCall.waitAndClickElement(
       appId,
       `#file-list [file-name="${ENTRIES.deeplyBurriedSmallJpeg.nameText}"]`,
       {ctrl: true});
-  const threeFilesSelectedPath = await remoteCall.waitForElement(appId, [
-    'xf-path-display',
+  const breadcrumbTripleSelection = await remoteCall.waitForElement(appId, [
+    '#search-breadcrumb',
   ]);
-  chrome.test.assertTrue(threeFilesSelectedPath.hidden);
-  chrome.test.assertEq('', threeFilesSelectedPath.attributes.path);
+  chrome.test.assertTrue(breadcrumbTripleSelection.hidden);
+  chrome.test.assertEq('', breadcrumbTripleSelection.attributes.path);
 
   // Close search. Select any file. Confirm that the path display is not shown,
   // now that the search is inactive.
   await remoteCall.waitAndClickElement(appId, '#search-box .clear');
   await remoteCall.waitUntilSelected(appId, ENTRIES.hello.nameText);
   const pathDisplayWhileNotSearching = await remoteCall.waitForElement(appId, [
-    'xf-path-display',
+    '#search-breadcrumb',
   ]);
   chrome.test.assertTrue(pathDisplayWhileNotSearching.hidden);
 };
@@ -1062,4 +1054,78 @@ testcase.searchDocumentsProviderWithRecencyOptions = async () => {
   // Expect all rececent hello files to be present.
   await remoteCall.waitForFiles(
       appId, TestEntryInfo.getExpectedRows(recentHellos));
+};
+
+/**
+ * Checks that search works on volumes mounted via fileSystemProvider.
+ */
+testcase.searchFileSystemProvider = async () => {
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  await sendTestMessage({
+    name: 'launchProviderExtension',
+    manifest: 'manifest_source_device.json',
+  });
+  await remoteCall.waitForElement(
+      appId, '.tree-row .icon[volume-type-icon="provided"]');
+  await navigateWithDirectoryTree(appId, '/Test (1)');
+  await remoteCall.waitForElement(
+      appId, '.tree-row[selected] .icon[volume-type-icon="provided"]');
+  await remoteCall.typeSearchText(appId, 'folder');
+  const expectedFolder = new TestEntryInfo({
+    type: EntryType.DIRECTORY,
+    targetPath: 'folder',
+    lastModifiedTime: 'Jan 1, 2000, 1:00 PM',
+    nameText: 'folder',
+    sizeText: '--',
+    typeText: 'Folder',
+  });
+  await remoteCall.waitForFiles(
+      appId, TestEntryInfo.getExpectedRows([expectedFolder]),
+      {ignoreLastModifiedTime: true});
+};
+
+/**
+ * Test searching images by content. There are two modes supported: search by
+ * text contained in the image and search by keywords associtated with
+ * objects detected in the image. The first search is known as optical character
+ * recorgnition (OCR), the second as image content annotation (ICA). However,
+ * from the Files app point of view there is no difference and all it knows is
+ * that there are "terms" associated with images processed by the local image
+ * search service. So that's all we test: that we can find images by terms
+ * associated with them.
+ */
+testcase.searchImageByContent = async () => {
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.hello, ENTRIES.desktop, ENTRIES.image3]);
+
+  // Pretend that the desktop image was processed by the local search service
+  // and was assigned the keywords 'marsupial' and 'duck'.
+  await sendTestMessage({
+    name: 'setupImageTerms',
+    path: ENTRIES.desktop.targetPath,
+    terms: 'marsupial,duck',
+  });
+  // The second image, image2, had 'ghost' assigned to it.
+  await sendTestMessage({
+    name: 'setupImageTerms',
+    path: ENTRIES.image3.targetPath,
+    terms: 'ghost',
+  });
+
+  await remoteCall.typeSearchText(appId, 'marsupial');
+  await remoteCall.waitForFiles(
+      appId, TestEntryInfo.getExpectedRows([ENTRIES.desktop]),
+      {ignoreLastModifiedTime: true});
+
+  // Search again, using the second term 'duck'.
+  await remoteCall.typeSearchText(appId, 'duck');
+  await remoteCall.waitForFiles(
+      appId, TestEntryInfo.getExpectedRows([ENTRIES.desktop]),
+      {ignoreLastModifiedTime: true});
+
+  // Search, using the term 'ghost', assigned to image3.
+  await remoteCall.typeSearchText(appId, 'ghost');
+  await remoteCall.waitForFiles(
+      appId, TestEntryInfo.getExpectedRows([ENTRIES.image3]),
+      {ignoreLastModifiedTime: true});
 };

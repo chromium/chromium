@@ -44,7 +44,6 @@ export function createBackgroundImage(url: string): BackgroundImage {
     snapshotUrl: {url},
     isUploadedImage: false,
     title: '',
-    mainColor: undefined,
     collectionId: '',
     dailyRefreshEnabled: false,
   };
@@ -58,17 +57,14 @@ export function createThirdPartyThemeInfo(
   };
 }
 
-export function createTheme(systemDarkMode = false): Theme {
+export function createTheme(): Theme {
   return {
     backgroundImage: undefined,
     thirdPartyThemeInfo: undefined,
-    systemDarkMode,
-    seedColor: {value: 0xff0000ff},
     backgroundColor: {value: 0xffff0000},
     foregroundColor: undefined,
-    colorPickerIconColor: {value: 0xffff0000},
-    colorsManagedByPolicy: false,
     backgroundManagedByPolicy: false,
+    followDeviceTheme: false,
   };
 }
 

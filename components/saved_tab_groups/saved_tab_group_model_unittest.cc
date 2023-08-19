@@ -136,6 +136,10 @@ class SavedTabGroupModelObserverTest : public ::testing::Test,
   }
 
   void SavedTabGroupReorderedLocally() override { reordered_called_ = true; }
+  void SavedTabGroupTabsReorderedLocally(
+      const base::Uuid& group_guid) override {
+    tabs_reodered_called_ = true;
+  }
 
   void ClearSignals() {
     retrieved_group_.clear();
@@ -143,6 +147,7 @@ class SavedTabGroupModelObserverTest : public ::testing::Test,
     retrieved_old_index_ = -1;
     retrieved_new_index_ = -1;
     reordered_called_ = false;
+    tabs_reodered_called_ = false;
     retrieved_guid_ = base::Uuid::GenerateRandomV4();
   }
 
@@ -152,6 +157,8 @@ class SavedTabGroupModelObserverTest : public ::testing::Test,
   int retrieved_old_index_ = -1;
   int retrieved_new_index_ = -1;
   bool reordered_called_ = false;
+  bool tabs_reodered_called_ = false;
+
   base::Uuid retrieved_guid_ = base::Uuid::GenerateRandomV4();
   std::string base_path_ = "file:///c:/tmp/";
 };
@@ -925,7 +932,24 @@ TEST_F(SavedTabGroupModelObserverTest, MoveElement) {
   saved_tab_group_model_->ReorderGroupLocally(stg_2.saved_guid(), 2);
 
   EXPECT_TRUE(reordered_called_);
+  EXPECT_EQ(0, saved_tab_group_model_->GetIndexOf(stg_1.saved_guid()));
+  EXPECT_EQ(1, saved_tab_group_model_->GetIndexOf(stg_3.saved_guid()));
   EXPECT_EQ(2, saved_tab_group_model_->GetIndexOf(stg_2.saved_guid()));
+}
+
+TEST_F(SavedTabGroupModelObserverTest, ReordedTabsUpdatePositions) {
+  SavedTabGroup group = CreateTestSavedTabGroup();
+  base::Uuid group_id = group.saved_guid();
+  base::Uuid tab1_id = group.saved_tabs()[0].saved_tab_guid();
+  base::Uuid tab2_id = group.saved_tabs()[1].saved_tab_guid();
+  saved_tab_group_model_->Add(group);
+
+  // Move the first tab to the second position.
+  saved_tab_group_model_->MoveTabInGroupTo(group_id, tab1_id, 1);
+
+  EXPECT_TRUE(tabs_reodered_called_);
+  EXPECT_EQ(0, saved_tab_group_model_->Get(group_id)->GetIndexOfTab(tab2_id));
+  EXPECT_EQ(1, saved_tab_group_model_->Get(group_id)->GetIndexOfTab(tab1_id));
 }
 
 TEST_F(SavedTabGroupModelObserverTest, GetGroupContainingTab) {

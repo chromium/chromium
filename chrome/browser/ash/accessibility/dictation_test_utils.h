@@ -1,0 +1,128 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_ASH_ACCESSIBILITY_DICTATION_TEST_UTILS_H_
+#define CHROME_BROWSER_ASH_ACCESSIBILITY_DICTATION_TEST_UTILS_H_
+
+#include <memory>
+#include <string>
+
+#include "base/memory/raw_ptr.h"
+#include "chrome/browser/speech/speech_recognition_test_helper.h"
+
+class Browser;
+class Profile;
+
+namespace content {
+class WebContents;
+}  // namespace content
+
+namespace speech {
+enum class SpeechRecognitionType;
+}  // namespace speech
+
+namespace ui {
+class InputMethod;
+namespace test {
+class EventGenerator;
+}  // namespace test
+}  // namespace ui
+
+namespace ash {
+
+class ExtensionConsoleErrorObserver;
+class MockIMEInputContextHandler;
+
+// A class that can be used to exercise Dictation in browsertests.
+class DictationTestUtils {
+ public:
+  // The type of editable field to use in Dictation tests.
+  enum class EditableType {
+    kContentEditable,
+    kFormattedContentEditable,
+    kInput,
+    kTextArea
+  };
+
+  DictationTestUtils(speech::SpeechRecognitionType speech_recognition_type,
+                     EditableType editable_type);
+  ~DictationTestUtils();
+  DictationTestUtils(const DictationTestUtils&) = delete;
+  DictationTestUtils& operator=(const DictationTestUtils&) = delete;
+
+  // Enables and sets up Dictation.
+  void EnableDictation(Browser* browser);
+  // Toggles Dictation on or off depending on Dictation's current state.
+  void ToggleDictationWithKeystroke();
+
+  // Convenience methods for faking speech and waiting for a condition.
+  void SendFinalResultAndWaitForEditableValue(
+      content::WebContents* web_contents,
+      const std::string& result,
+      const std::string& value);
+  void SendFinalResultAndWaitForSelectionChanged(
+      content::WebContents* web_contents,
+      const std::string& result);
+  void SendFinalResultAndWaitForCaretBoundsChanged(
+      content::WebContents* web_contents,
+      ui::InputMethod* input_method,
+      const std::string& result);
+  void SendFinalResultAndWaitForClipboardChanged(const std::string& result);
+
+  // Routers to SpeechRecognitionTestHelper methods.
+  void WaitForRecognitionStarted();
+  void WaitForRecognitionStopped();
+  void SendInterimResultAndWait(const std::string& transcript);
+  void SendFinalResultAndWait(const std::string& transcript);
+  void SendErrorAndWait();
+  std::vector<base::test::FeatureRef> GetEnabledFeatures();
+  std::vector<base::test::FeatureRef> GetDisabledFeatures();
+
+  // Script-related methods.
+  std::string ExecuteAccessibilityCommonScript(const std::string& script);
+  void DisablePumpkin();
+
+  // Methods for interacting with the editable.
+  std::string GetEditableValue(content::WebContents* web_contents);
+  void WaitForEditableValue(const std::string& value);
+  void WaitForSelection(int start, int end);
+
+  // IME-related methods.
+  void InstallMockInputContextHandler();
+  // Retrieves the number of times commit text is updated.
+  int GetCommitTextCallCount();
+  void WaitForCommitText(const std::u16string& value);
+
+  // Sets whether or not we should wait for the accessibility common extension
+  // to load when enabling Dictation. This should be true in almost all cases.
+  // However, there are times when we don't want to wait for accessibility
+  // common to load (e.g. if it's already loaded because another accessibility
+  // common extension is active). This only has an effect if EnableDictation()
+  // hasn't been called yet.
+  void set_wait_for_accessibility_common_extension_load_(bool wait) {
+    wait_for_accessibility_common_extension_load_ = wait;
+  }
+
+  ui::test::EventGenerator* generator() { return generator_.get(); }
+
+ private:
+  // Set up helper methods.
+  void SetUpPumpkinDir();
+  void SetUpTestSupport();
+  void WaitForPumpkinTaggerReady();
+  void WaitForFocusHandler();
+
+  bool wait_for_accessibility_common_extension_load_;
+  speech::SpeechRecognitionType speech_recognition_type_;
+  EditableType editable_type_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
+  std::unique_ptr<SpeechRecognitionTestHelper> test_helper_;
+  std::unique_ptr<ExtensionConsoleErrorObserver> console_observer_;
+  std::unique_ptr<ui::test::EventGenerator> generator_;
+  std::unique_ptr<MockIMEInputContextHandler> input_context_handler_;
+};
+
+}  // namespace ash
+
+#endif  // CHROME_BROWSER_ASH_ACCESSIBILITY_DICTATION_TEST_UTILS_H_

@@ -35,7 +35,7 @@ class PolicyCheck : public PreloadCheck {
   std::u16string GetErrorMessage() const override;
 
  private:
-  raw_ptr<content::BrowserContext, FlakyDanglingUntriaged> context_;
+  raw_ptr<content::BrowserContext, AcrossTasksDanglingUntriaged> context_;
   std::u16string error_;
 };
 

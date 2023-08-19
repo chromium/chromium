@@ -19,8 +19,6 @@ component("media_message_center") {
     "media_notification_util.cc",
     "media_notification_util.h",
     "media_notification_view.h",
-    "media_notification_view_ash_impl.cc",
-    "media_notification_view_ash_impl.h",
     "media_notification_view_impl.cc",
     "media_notification_view_impl.h",
     "media_notification_view_modern_impl.cc",
@@ -29,6 +27,7 @@ component("media_message_center") {
     "media_notification_volume_slider_view.h",
     "media_squiggly_progress_view.cc",
     "media_squiggly_progress_view.h",
+    "notification_theme.cc",
     "notification_theme.h",
   ]
 
@@ -62,7 +61,6 @@ source_set("unit_tests") {
     "media_controls_progress_view_unittest.cc",
     "media_notification_background_ash_impl_unittest.cc",
     "media_notification_background_impl_unittest.cc",
-    "media_notification_view_ash_impl_unittest.cc",
     "media_notification_view_impl_unittest.cc",
     "media_notification_view_modern_impl_unittest.cc",
     "media_notification_volume_slider_view_unittest.cc",

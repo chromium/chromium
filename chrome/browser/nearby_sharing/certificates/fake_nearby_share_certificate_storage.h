@@ -52,7 +52,8 @@ class FakeNearbyShareCertificateStorage : public NearbyShareCertificateStorage {
         const base::FilePath& profile_path) override;
 
     std::vector<FakeNearbyShareCertificateStorage*> instances_;
-    raw_ptr<PrefService, ExperimentalAsh> latest_pref_service_ = nullptr;
+    raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh>
+        latest_pref_service_ = nullptr;
     raw_ptr<leveldb_proto::ProtoDatabaseProvider, ExperimentalAsh>
         latest_proto_database_provider_ = nullptr;
     base::FilePath latest_profile_path_;

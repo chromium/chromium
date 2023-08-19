@@ -4,6 +4,7 @@
 
 #include "ash/public/cpp/system/anchored_nudge_manager.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/check_op.h"
 
 namespace ash {
@@ -16,6 +17,7 @@ AnchoredNudgeManager* g_instance = nullptr;
 
 // static
 AnchoredNudgeManager* AnchoredNudgeManager::Get() {
+  DCHECK(features::IsSystemNudgeV2Enabled());
   return g_instance;
 }
 

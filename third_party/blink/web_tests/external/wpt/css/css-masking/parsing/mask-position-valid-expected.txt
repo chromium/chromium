@@ -17,5 +17,10 @@ FAIL e.style['mask-position'] = "top center" should set the property value asser
 FAIL e.style['mask-position'] = "center" should set the property value assert_not_equals: property should be set got disallowed value ""
 FAIL e.style['mask-position'] = "bottom left, right 20%" should set the property value assert_not_equals: property should be set got disallowed value ""
 FAIL e.style['mask-position'] = "top, center, left" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['mask-position'] = "20% 0%" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['mask-position'] = "0% 0%" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['mask-position'] = "0%" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['mask-position'] = "0% center" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['mask-position'] = "center 0%" should set the property value assert_not_equals: property should be set got disallowed value ""
 Harness: the test ran to completion.
 

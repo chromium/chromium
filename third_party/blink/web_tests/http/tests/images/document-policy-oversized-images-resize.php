@@ -4,6 +4,7 @@ header("Document-Policy: oversized-images=2.0");
 <!DOCTYPE html>
 
 <head>
+  <script src='/resources/testharness.js'></script>
   <script src='/resources/run-after-layout-and-paint.js'></script>
 </head>
 
@@ -29,31 +30,64 @@ header("Document-Policy: oversized-images=2.0");
   <img src="resources/green-256x256.jpg?id=3" width="100" height="100">
   <img src="resources/green-256x256.jpg?id=4" style="height: 100px; width: 100px">
 
-  <script>
-    function changeImageSize() {
-      var images = document.getElementsByTagName('img');
-      for (var i = 0; i < images.length; i++) {
-        var image = images[i];
-        if (image.hasAttribute('width') || image.hasAttribute('height')) {
-          image.width = "150";
-          image.height = "150";
-        } else {
-          image.style.width = "150px";
-          image.style.height = "150px";
+  <script type="module">
+    if (window.testRunner) {
+      window.testRunner.waitUntilDone();
+    }
+
+    const reports = new Promise(resolve => {
+      let num_reports = 0;
+      const observer = new ReportingObserver((reports, observer) => {
+        for (const report of reports) {
+          if (report.body.featureId != "oversized-images") {
+            continue;
+          }
+          num_reports++;
+          assert_less_than_equal(num_reports, 4);
+          if (num_reports == 4) {
+            resolve();
+          }
         }
+      })
+      observer.observe();
+    });
+
+    const images = document.getElementsByTagName('img');
+
+    // Wait for every image to load:
+    for(const image of images) {
+      if (!image.complete) {
+        await new Promise(r => image.onload = r);
       }
     }
 
-    const imgs = document.getElementsByTagName('img');
-    let unloaded_image_count = imgs.length;
-    for (const img of imgs) {
-      img.onload = () => {
-        unloaded_image_count--;
-        // Change image size after all images are loaded and painted.
-        if (unloaded_image_count === 0) {
-          runAfterLayoutAndPaint(changeImageSize, true);
-        }
-      };
+    // Wait for them to be painted on screen a first time:
+    await new Promise(r => runAfterLayoutAndPaint(r));
+
+    // Resize them:
+    for(const image of images) {
+      if (image.hasAttribute('width') || image.hasAttribute('height')) {
+        image.width = "150";
+        image.height = "150";
+      } else {
+        image.style.width = "150px";
+        image.style.height = "150px";
+      }
+    }
+
+    // Wait for them to be painted on screen again:
+    await new Promise(r => runAfterLayoutAndPaint(r));
+
+    // We are expecting exactly 4 reports to be sent:
+    await reports;
+
+    // Wait more to give the opportunity for an unexpected reports to be sent:
+    // Note: This potentially help avoiding this test to be flaky. See
+    // https://crbug.com/1367514.
+    await new Promise(r => step_timeout(r, 500));
+
+    if (window.testRunner) {
+      window.testRunner.notifyDone();
     }
   </script>
 </body>

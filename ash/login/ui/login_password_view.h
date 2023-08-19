@@ -27,7 +27,7 @@ class ToggleImageButton;
 
 namespace ash {
 class ArrowButtonView;
-enum class EasyUnlockIconState;
+class LoginArrowNavigationDelegate;
 
 // Contains a textfield and a submit button. When the display password button
 // is visible, the textfield contains a button in the form of an eye icon that
@@ -73,7 +73,6 @@ class ASH_EXPORT LoginPasswordView
     views::Textfield* textfield() const;
     views::View* submit_button() const;
     views::ToggleImageButton* display_password_button() const;
-    void set_immediately_hover_easy_unlock_icon();
 
     bool is_capslock_highlight_for_testing() {
       return view_->is_capslock_higlight_;
@@ -86,7 +85,6 @@ class ASH_EXPORT LoginPasswordView
   using OnPasswordSubmit =
       base::RepeatingCallback<void(const std::u16string& password)>;
   using OnPasswordTextChanged = base::RepeatingCallback<void(bool is_empty)>;
-  using OnEasyUnlockIconHovered = base::RepeatingClosure;
 
   // Must call |Init| after construction.
   LoginPasswordView();
@@ -101,15 +99,10 @@ class ASH_EXPORT LoginPasswordView
   // |on_password_text_changed| is called when the text in the password field
   // changes.
   void Init(const OnPasswordSubmit& on_submit,
-            const OnPasswordTextChanged& on_password_text_changed,
-            const OnEasyUnlockIconHovered& on_easy_unlock_icon_hovered);
+            const OnPasswordTextChanged& on_password_text_changed);
 
   // Whether or not the password field is enabled when there is no text.
   void SetEnabledOnEmptyPassword(bool enabled);
-
-  // Change the active icon for easy unlock.
-  void SetEasyUnlockIcon(EasyUnlockIconState icon_state,
-                         const std::u16string& accessibility_label);
 
   // Enable or disable focus on the child elements (i.e.: password field and
   // submit button, or display password button if it is shown).
@@ -169,12 +162,13 @@ class ASH_EXPORT LoginPasswordView
   // field.
   void SubmitPassword();
 
+  // Sets the delegate of the arrow keys navigation.
+  void SetLoginArrowNavigationDelegate(LoginArrowNavigationDelegate* delegate);
+
  private:
-  class EasyUnlockIcon;
   class DisplayPasswordButton;
   class LoginPasswordRow;
   class LoginTextfield;
-  class AlternateIconsView;
   friend class TestApi;
 
   // Increases/decreases the contrast of the capslock icon.
@@ -196,6 +190,10 @@ class ASH_EXPORT LoginPasswordView
   // Is the password field enabled when there is no text?
   bool enabled_on_empty_password_ = false;
 
+  // Arrow keystrokes delegate.
+  raw_ptr<LoginArrowNavigationDelegate, DanglingUntriaged | ExperimentalAsh>
+      arrow_navigation_delegate_ = nullptr;
+
   // Clears the password field after a time without action if the display
   // password button is visible.
   base::RetainingOneShotTimer clear_password_timer_;
@@ -210,12 +208,7 @@ class ASH_EXPORT LoginPasswordView
   raw_ptr<ArrowButtonView, ExperimentalAsh> submit_button_ = nullptr;
   raw_ptr<DisplayPasswordButton, ExperimentalAsh> display_password_button_ =
       nullptr;
-  // Could show either the caps lock icon or the easy unlock icon.
-  raw_ptr<AlternateIconsView, ExperimentalAsh> left_icon_ = nullptr;
   raw_ptr<views::ImageView, ExperimentalAsh> capslock_icon_ = nullptr;
-  bool should_show_capslock_ = false;
-  raw_ptr<EasyUnlockIcon, ExperimentalAsh> easy_unlock_icon_ = nullptr;
-  bool should_show_easy_unlock_ = false;
 
   bool is_capslock_higlight_ = false;
 };

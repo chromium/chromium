@@ -45,12 +45,11 @@ if (is_android) {
   }
 
   android_library("native_task_java") {
+    srcjar_deps = [ ":jni_headers" ]
     sources = [
       "android/java/src/org/chromium/components/background_task_scheduler/internal/NativeTaskScheduler.java",
       "android/java/src/org/chromium/components/background_task_scheduler/internal/TaskInfoBridge.java",
     ]
-
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
     deps = [
       "//base:base_java",

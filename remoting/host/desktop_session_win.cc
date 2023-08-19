@@ -63,7 +63,7 @@ const wchar_t kDaemonIpcSecurityDescriptor[] =
 
 // The command line parameters that should be copied from the service's command
 // line to the desktop process.
-const char* kCopiedSwitchNames[] = {switches::kV, switches::kVModule};
+const char* const kCopiedSwitchNames[] = {switches::kV, switches::kVModule};
 
 // The default screen dimensions for an RDP session.
 const int kDefaultRdpScreenWidth = 1280;
@@ -647,7 +647,7 @@ void DesktopSessionWin::OnSessionAttached(uint32_t session_id) {
   target->AppendSwitchASCII(kProcessTypeSwitchName, kProcessTypeDesktop);
   // Copy the command line switches enabling verbose logging.
   target->CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
-                           kCopiedSwitchNames, std::size(kCopiedSwitchNames));
+                           kCopiedSwitchNames);
 
   // Create a delegate capable of launching a process in a different session.
   // Launch elevated to enable injection of Alt+Tab and Ctrl+Alt+Del.

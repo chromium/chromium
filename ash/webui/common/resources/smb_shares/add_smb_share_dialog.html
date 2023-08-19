@@ -157,6 +157,10 @@
         --cr-checkbox-ripple-ring: 2px solid var(--cros-sys-focus_ring);
       }
 
+      #saveCredentialsCheckboxJelly {
+        --cros-checkbox-reserve-inline-start: 0px;
+      }
+
       :host-context([theme='legacy']) cr-button {
         --active-bg: transparent;
         --active-shadow:
@@ -327,9 +331,18 @@
               label="[[i18n('smbSharePassword')]]" value="{{password_}}"
               invalid="[[shouldShowCredentialError_(currentMountError_)]]">
           </cr-input>
-          <cr-checkbox id="saveCredentialsCheckbox" checked>
-            [[i18n('smbShareSaveCredentials')]]
-          </cr-checkbox>
+          <template is="dom-if" if="[[isCrosComponentsEnabled_()]]">
+            <label>
+              <cros-checkbox id="saveCredentialsCheckboxJelly" checked>
+              </cros-checkbox>
+              [[i18n('smbShareSaveCredentials')]]
+            </label>
+          </template>
+          <template is="dom-if" if="[[!isCrosComponentsEnabled_()]]">
+            <cr-checkbox id="saveCredentialsCheckbox" checked>
+              [[i18n('smbShareSaveCredentials')]]
+            </cr-checkbox>
+          </template>
         </div>
       </div>
       <div slot="button-container">

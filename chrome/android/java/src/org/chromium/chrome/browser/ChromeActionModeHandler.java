@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser;
 
+import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.graphics.Rect;
 import android.os.Handler;
@@ -13,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -23,6 +25,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.locale.LocaleManager;
+import org.chromium.chrome.browser.selection.ChromeSelectionDropdownMenuDelegate;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
@@ -33,6 +36,7 @@ import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.content_public.browser.ActionModeCallback;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
@@ -63,9 +67,10 @@ public class ChromeActionModeHandler {
     public ChromeActionModeHandler(ActivityTabProvider activityTabProvider,
             Callback<String> searchCallback, Supplier<ShareDelegate> shareDelegateSupplier) {
         mInitWebContentsObserver = (webContents) -> {
-            SelectionPopupController.fromWebContents(webContents)
-                    .setActionModeCallback(new ActionModeCallback(mActiveTab, webContents,
-                            searchCallback, shareDelegateSupplier));
+            SelectionPopupController spc = SelectionPopupController.fromWebContents(webContents);
+            spc.setActionModeCallback(new ChromeActionModeCallback(
+                    mActiveTab, webContents, searchCallback, shareDelegateSupplier));
+            spc.setDropdownMenuDelegate(new ChromeSelectionDropdownMenuDelegate());
         };
 
         mActivityTabTabObserver =
@@ -90,7 +95,7 @@ public class ChromeActionModeHandler {
     }
 
     @VisibleForTesting
-    static class ActionModeCallback extends ActionMode.Callback2 {
+    static class ChromeActionModeCallback extends ActionModeCallback {
         /**
          * Android Intent size limitations prevent sending over a megabyte of data. Limit
          * query lengths to 100kB because other things may be added to the Intent.
@@ -105,7 +110,7 @@ public class ChromeActionModeHandler {
         // Used for recording UMA histograms.
         private long mContextMenuStartTime;
 
-        ActionModeCallback(Tab tab, WebContents webContents, Callback<String> searchCallback,
+        ChromeActionModeCallback(Tab tab, WebContents webContents, Callback<String> searchCallback,
                 Supplier<ShareDelegate> shareDelegateSupplier) {
             mTab = tab;
             mHelper = getActionModeCallbackHelper(webContents);
@@ -181,17 +186,31 @@ public class ChromeActionModeHandler {
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             if (!mHelper.isActionModeValid()) return true;
+            return handleItemClick(item.getItemId()) || mHelper.onActionItemClicked(mode, item);
+        }
 
-            if (item.getItemId() == R.id.select_action_menu_web_search) {
+        @Override
+        public boolean onDropdownItemClicked(int groupId, int id, @Nullable Intent intent,
+                @Nullable View.OnClickListener clickListener) {
+            boolean res = handleItemClick(id)
+                    || mHelper.onDropdownItemClicked(groupId, id, intent, clickListener);
+            // We will always dismiss the drop-down menu here.
+            mHelper.dismissMenu();
+            return res;
+        }
+
+        private boolean handleItemClick(int id) {
+            if (id == R.id.select_action_menu_web_search) {
                 final String selectedText = mHelper.getSelectedText();
                 Callback<Boolean> callback = result -> {
                     if (result != null && result) search(selectedText);
                 };
                 LocaleManager.getInstance().showSearchEnginePromoIfNeeded(
                         TabUtils.getActivity(mTab), callback);
-                mHelper.finishActionMode();
+                mHelper.dismissMenu();
+                return true;
             } else if (mShareDelegateSupplier.get() != null
-                    && item.getItemId() == R.id.select_action_menu_share) {
+                    && id == R.id.select_action_menu_share) {
                 RecordUserAction.record(SelectionPopupController.UMA_MOBILE_ACTION_MODE_SHARE);
                 RecordHistogram.recordMediumTimesHistogram("ContextMenu.TimeToSelectShare",
                         System.currentTimeMillis() - mContextMenuStartTime);
@@ -206,10 +225,9 @@ public class ChromeActionModeHandler {
                                         ChromeShareExtras.DetailedContentType.HIGHLIGHTED_TEXT)
                                 .build(),
                         ShareOrigin.MOBILE_ACTION_MODE);
-            } else {
-                return mHelper.onActionItemClicked(mode, item);
+                return true;
             }
-            return true;
+            return false;
         }
 
         @Override

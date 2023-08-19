@@ -8,7 +8,7 @@ from typing import Iterable
 from flake_suppressor_common import common_typing as ct
 from flake_suppressor_common import tag_utils
 
-WEB_TESTS_TAGS_TO_IGNORE = set(['trusty', 'x86_64', 'x86', 'arm', 'arm64'])
+WEB_TESTS_TAGS_TO_IGNORE = set(['x86_64', 'x86', 'arm', 'arm64'])
 
 
 class WebTestsTagUtils(tag_utils.BaseTagUtils):

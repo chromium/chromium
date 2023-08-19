@@ -4,6 +4,7 @@
 
 #include "content/browser/first_party_sets/first_party_sets_handler_impl.h"
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -28,7 +29,6 @@
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/global_first_party_sets.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace net {
 class SchemefulSite;
@@ -129,13 +129,12 @@ FirstPartySetsHandlerImpl::FirstPartySetsHandlerImpl(
     bool embedder_will_provide_public_sets)
     : enabled_(enabled),
       embedder_will_provide_public_sets_(enabled &&
-                                         embedder_will_provide_public_sets) {
-  sets_loader_ = std::make_unique<FirstPartySetsLoader>(
-      base::BindOnce(&FirstPartySetsHandlerImpl::SetCompleteSets,
-                     // base::Unretained(this) is safe here because
-                     // this is a static singleton.
-                     base::Unretained(this)));
-}
+                                         embedder_will_provide_public_sets),
+      sets_loader_(std::make_unique<FirstPartySetsLoader>(
+          base::BindOnce(&FirstPartySetsHandlerImpl::SetCompleteSets,
+                         // base::Unretained(this) is safe here because
+                         // this is a static singleton.
+                         base::Unretained(this)))) {}
 
 FirstPartySetsHandlerImpl::~FirstPartySetsHandlerImpl() = default;
 
@@ -161,6 +160,7 @@ void FirstPartySetsHandlerImpl::Init(const base::FilePath& user_data_dir,
                                      const LocalSetDeclaration& local_set) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!initialized_);
+  CHECK(sets_loader_);
 
   initialized_ = true;
   SetDatabase(user_data_dir);
@@ -186,6 +186,7 @@ void FirstPartySetsHandlerImpl::SetPublicFirstPartySets(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(enabled_);
   CHECK(embedder_will_provide_public_sets_);
+  CHECK(sets_loader_);
 
   // TODO(crbug.com/1219656): Use the version to compute sets diff.
   sets_loader_->SetComponentSets(version, std::move(sets_file));
@@ -230,7 +231,9 @@ void FirstPartySetsHandlerImpl::SetCompleteSets(
     net::GlobalFirstPartySets sets) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!global_sets_.has_value());
+  CHECK(sets_loader_);
   global_sets_ = std::move(sets);
+  sets_loader_.reset();
 
   InvokePendingQueries();
 }
@@ -432,7 +435,6 @@ void FirstPartySetsHandlerImpl::DidClearSiteDataOnChangedSetsForContext(
 void FirstPartySetsHandlerImpl::ComputeFirstPartySetMetadata(
     const net::SchemefulSite& site,
     const net::SchemefulSite* top_frame_site,
-    const std::set<net::SchemefulSite>& party_context,
     const net::FirstPartySetsContextConfig& config,
     base::OnceCallback<void(net::FirstPartySetMetadata)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -440,19 +442,17 @@ void FirstPartySetsHandlerImpl::ComputeFirstPartySetMetadata(
     EnqueuePendingTask(base::BindOnce(
         &FirstPartySetsHandlerImpl::ComputeFirstPartySetMetadataInternal,
         base::Unretained(this), site, base::OptionalFromPtr(top_frame_site),
-        party_context, config.Clone(), base::ElapsedTimer(),
-        std::move(callback)));
+        config.Clone(), base::ElapsedTimer(), std::move(callback)));
     return;
   }
 
-  std::move(callback).Run(global_sets_->ComputeMetadata(site, top_frame_site,
-                                                        party_context, config));
+  std::move(callback).Run(
+      global_sets_->ComputeMetadata(site, top_frame_site, config));
 }
 
 void FirstPartySetsHandlerImpl::ComputeFirstPartySetMetadataInternal(
     const net::SchemefulSite& site,
     const absl::optional<net::SchemefulSite>& top_frame_site,
-    const std::set<net::SchemefulSite>& party_context,
     const net::FirstPartySetsContextConfig& config,
     const base::ElapsedTimer& timer,
     base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const {
@@ -464,7 +464,7 @@ void FirstPartySetsHandlerImpl::ComputeFirstPartySetMetadataInternal(
       timer.Elapsed());
 
   std::move(callback).Run(global_sets_->ComputeMetadata(
-      site, base::OptionalToPtr(top_frame_site), party_context, config));
+      site, base::OptionalToPtr(top_frame_site), config));
 }
 
 net::FirstPartySetsContextConfig

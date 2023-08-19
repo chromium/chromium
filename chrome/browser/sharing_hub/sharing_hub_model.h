@@ -53,13 +53,13 @@ class SharingHubModel {
   explicit SharingHubModel(content::BrowserContext* context);
   SharingHubModel(const SharingHubModel&) = delete;
   SharingHubModel& operator=(const SharingHubModel&) = delete;
-  virtual ~SharingHubModel();
+  ~SharingHubModel();
 
-  // Populates the vector with first party Sharing Hub actions, ordered by
+  // Returns a vector with the first party Sharing Hub actions, ordered by
   // appearance in the dialog. Some actions (i.e. send tab to self) may not be
   // shown for some URLs.
-  void GetFirstPartyActionList(content::WebContents* web_contents,
-                               std::vector<SharingHubAction>* list);
+  std::vector<SharingHubAction> GetFirstPartyActionList(
+      content::WebContents* web_contents) const;
 
   // Executes the third party action indicated by |id|, i.e. opens a popup to
   // the corresponding webpage. The |url| is the URL to share, and the |title|

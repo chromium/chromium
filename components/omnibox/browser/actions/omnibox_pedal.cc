@@ -4,7 +4,6 @@
 
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
 
-#include <cctype>
 #include <numeric>
 
 #include "base/metrics/histogram_functions.h"
@@ -253,7 +252,9 @@ void OmniboxPedal::SetNavigationUrl(const GURL& url) {
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
 // static
 const gfx::VectorIcon& OmniboxPedal::GetDefaultVectorIcon() {
-  return omnibox::kPedalIcon;
+  return OmniboxFieldTrial::IsChromeRefreshActionChipIconsEnabled()
+             ? omnibox::kProductChromeRefreshIcon
+             : omnibox::kPedalIcon;
 }
 
 const gfx::VectorIcon& OmniboxPedal::GetVectorIcon() const {

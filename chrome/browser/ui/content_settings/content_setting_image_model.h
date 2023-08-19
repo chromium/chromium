@@ -49,6 +49,7 @@ class ContentSettingImageModel {
     SENSORS = 16,
     NOTIFICATIONS_QUIET_PROMPT = 17,
     CLIPBOARD_READ_WRITE = 18,
+    STORAGE_ACCESS = 19,
 
     NUM_IMAGE_TYPES
   };
@@ -140,11 +141,6 @@ class ContentSettingImageModel {
       ContentSettingBubbleModel::Delegate* delegate,
       content::WebContents* web_contents) = 0;
 
-  void set_icon(const gfx::VectorIcon& icon, const gfx::VectorIcon& badge) {
-    icon_ = &icon;
-    icon_badge_ = &badge;
-  }
-
   void set_accessibility_string_id(int id) { accessibility_string_id_ = id; }
 
   void set_tooltip(const std::u16string& tooltip) { tooltip_ = tooltip; }
@@ -154,6 +150,15 @@ class ContentSettingImageModel {
   void set_should_show_promo(const bool should_show_promo) {
     should_show_promo_ = should_show_promo;
   }
+
+  // Sets an icon based on the content setting type, and whether the setting is
+  // blocked. We use ContentSettingsType rather than ImageType because some
+  // ImageTypes may have multiple icons.
+  void SetIcon(ContentSettingsType type, bool blocked);
+
+  // A special case for framebusting since that does not have a
+  // ContentSettingsType.
+  void SetFramebustBlockedIcon();
 
  private:
   bool is_visible_ = false;

@@ -74,7 +74,7 @@ TEST_F(MenuItemViewUnitTest, TestMenuItemViewWithFlexibleWidthChild) {
   views::MenuItemView* flexible_view = root_menu.AppendMenuItem(2);
   flexible_view->AddChildView(new SquareView());
   // Set margins to 0 so that we know width should match height.
-  flexible_view->SetMargins(0, 0);
+  flexible_view->set_vertical_margin(0);
 
   views::SubmenuView* submenu = root_menu.GetSubmenu();
 
@@ -93,14 +93,15 @@ TEST_F(MenuItemViewUnitTest, TestMenuItemViewWithFlexibleWidthChild) {
   EXPECT_EQ(label_size.width(), flex_height);
 
   // The submenu should be tall enough to allow for both menu items at the
-  // given width.
-  EXPECT_EQ(label_size.height() + flex_height,
-            submenu->GetPreferredSize().height());
+  // given width. (It may be taller if there is padding between/around the
+  // items.)
+  EXPECT_GE(submenu->GetPreferredSize().height(),
+            label_size.height() + flex_height);
 }
 
-// Tests that the top-level menu item with hidden children should contain the
-// "(empty)" menu item to display.
-TEST_F(MenuItemViewUnitTest, TestEmptyTopLevelWhenAllItemsAreHidden) {
+// Tests that a menu item with hidden children should contain the "(empty)" menu
+// item to display.
+TEST_F(MenuItemViewUnitTest, TestEmptyWhenAllItemsAreHidden) {
   views::TestMenuItemView root_menu;
   views::MenuItemView* item1 = root_menu.AppendMenuItem(1, u"item 1");
   views::MenuItemView* item2 = root_menu.AppendMenuItem(2, u"item 2");
@@ -115,7 +116,7 @@ TEST_F(MenuItemViewUnitTest, TestEmptyTopLevelWhenAllItemsAreHidden) {
   EXPECT_EQ(2u, submenu->children().size());
 
   // Adds any empty menu items to the menu, if needed.
-  root_menu.AddEmptyMenus();
+  root_menu.UpdateEmptyMenusAndMetrics();
 
   // Because all of the submenu's children are hidden, an empty menu item should
   // have been added.
@@ -123,41 +124,6 @@ TEST_F(MenuItemViewUnitTest, TestEmptyTopLevelWhenAllItemsAreHidden) {
   const auto* empty_item =
       AsViewClass<EmptyMenuMenuItem>(submenu->children().front());
   ASSERT_TRUE(empty_item);
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_APP_MENU_EMPTY_SUBMENU),
-            empty_item->title());
-}
-
-// Tests that submenu with hidden children should contain the "(empty)" menu
-// item to display.
-TEST_F(MenuItemViewUnitTest, TestEmptySubmenuWhenAllChildItemsAreHidden) {
-  views::TestMenuItemView root_menu;
-  MenuItemView* submenu_item = root_menu.AppendSubMenu(1, u"My Submenu");
-  MenuItemView* child1 = submenu_item->AppendMenuItem(1, u"submenu item 1");
-  MenuItemView* child2 = submenu_item->AppendMenuItem(2, u"submenu item 2");
-
-  // Set submenu children to hidden.
-  child1->SetVisible(false);
-  child2->SetVisible(false);
-
-  SubmenuView* submenu = submenu_item->GetSubmenu();
-  ASSERT_TRUE(submenu);
-
-  EXPECT_EQ(2u, submenu->children().size());
-
-  // Adds any empty menu items to the menu, if needed.
-  EXPECT_FALSE(submenu->HasEmptyMenuItemView());
-  root_menu.AddEmptyMenus();
-  EXPECT_TRUE(submenu->HasEmptyMenuItemView());
-  // Because all of the submenu's children are hidden, an empty menu item should
-  // have been added.
-  ASSERT_EQ(3u, submenu->children().size());
-  const auto* empty_item =
-      AsViewClass<EmptyMenuMenuItem>(submenu->children().front());
-  ASSERT_TRUE(empty_item);
-  // Not allowed to add an duplicated empty menu item
-  // if it already has an empty menu item.
-  root_menu.AddEmptyMenus();
-  ASSERT_EQ(3u, submenu->children().size());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_APP_MENU_EMPTY_SUBMENU),
             empty_item->title());
 }

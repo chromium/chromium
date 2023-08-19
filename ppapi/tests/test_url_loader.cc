@@ -513,9 +513,10 @@ std::string TestURLLoader::TestUntrustedSameOriginRestriction() {
 }
 
 // Trusted, unintended cross-origin requests should succeed.
+// Use a CORB/ORB-passing resource, so ORB doesn't interfere with the test.
 std::string TestURLLoader::TestTrustedSameOriginRestriction() {
   pp::URLRequestInfo request(instance_);
-  std::string cross_origin_url = GetReachableCrossOriginURL("test_case.html");
+  std::string cross_origin_url = GetReachableCrossOriginURL("test_image.png");
   request.SetURL(cross_origin_url);
 
   int32_t rv = OpenTrusted(request, NULL);
@@ -541,9 +542,10 @@ std::string TestURLLoader::TestUntrustedCrossOriginRequest() {
 }
 
 // Trusted, intended cross-origin requests should use CORS and succeed.
+// Use a CORB/ORB-passing resource, so ORB doesn't interfere with the test.
 std::string TestURLLoader::TestTrustedCrossOriginRequest() {
   pp::URLRequestInfo request(instance_);
-  std::string cross_origin_url = GetReachableCrossOriginURL("test_case.html");
+  std::string cross_origin_url = GetReachableCrossOriginURL("test_image.png");
   request.SetURL(cross_origin_url);
   request.SetAllowCrossOriginRequests(true);
 
@@ -605,8 +607,12 @@ std::string TestURLLoader::TestTrustedCorbEligibleRequest() {
 
   std::string response_body;
   int32_t rv = OpenTrusted(request, &response_body);
-  if (rv != PP_OK)
-    return ReportError("Trusted CORB-eligible request failed", rv);
+  // CORB + ORB "v0.1" return an empty response; ORB "v0.2" returns an error
+  // code for CORB/ORB-blocked requests. This test needs to work with both.
+  if (rv != PP_OK && rv != PP_ERROR_FAILED) {
+    return ReportError("Trusted CORB-eligible request failed unexpectedly ",
+                       rv);
+  }
 
   // Main verification - CORB should block the response where the
   // `request_initiator` is cross-origin wrt the target URL.
@@ -735,9 +741,12 @@ std::string TestURLLoader::TestTrustedHttpRequests() {
   // referrer has to be from the same origin as the plugin (this matches the
   // behavior of the PDF plugin, which after Flash removal is the only plugin
   // that depends on custom referrers).
+  // Use a CORB/ORB-passing resource, so ORB doesn't interfere with the test.
   {
     pp::URLRequestInfo request(instance_);
+    std::string url = GetReachableAbsoluteURL("test_image.png");
     std::string referrer = GetReachableAbsoluteURL("");
+    request.SetURL(url);
     request.SetCustomReferrerURL(referrer);
     request.SetHeaders(referrer);
 
@@ -748,6 +757,8 @@ std::string TestURLLoader::TestTrustedHttpRequests() {
   // Trusted requests with custom transfer encodings should succeed.
   {
     pp::URLRequestInfo request(instance_);
+    std::string url = GetReachableAbsoluteURL("test_image.png");
+    request.SetURL(url);
     request.SetCustomContentTransferEncoding("foo");
 
     int32_t rv = OpenTrusted(request, NULL);

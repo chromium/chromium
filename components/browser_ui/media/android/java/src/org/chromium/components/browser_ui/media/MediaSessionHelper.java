@@ -43,8 +43,6 @@ import java.util.Set;
  * WebContents to a delegate (ultimately, to {@link MediaNotificationController}).
  */
 public class MediaSessionHelper implements MediaImageCallback {
-    private static final String TAG = "MediaSession";
-
     private static final String UNICODE_PLAY_CHARACTER = "\u25B6";
     @VisibleForTesting
     public static final int HIDE_NOTIFICATION_DELAY_MILLIS = 2500;
@@ -104,9 +102,6 @@ public class MediaSessionHelper implements MediaImageCallback {
         public void onPause(int actionSource) {
             if (isNotificationHidingOrHidden()) return;
 
-            MediaSessionUma.recordPause(
-                    MediaSessionHelper.convertMediaActionSourceToUMA(actionSource));
-
             if (mMediaSessionObserver.getMediaSession() == null) return;
 
             mMediaSessionObserver.getMediaSession().suspend();
@@ -115,9 +110,6 @@ public class MediaSessionHelper implements MediaImageCallback {
         @Override
         public void onStop(int actionSource) {
             if (isNotificationHidingOrHidden()) return;
-
-            MediaSessionUma.recordStop(
-                    MediaSessionHelper.convertMediaActionSourceToUMA(actionSource));
 
             if (mMediaSessionObserver.getMediaSession() != null) {
                 mMediaSessionObserver.getMediaSession().stop();

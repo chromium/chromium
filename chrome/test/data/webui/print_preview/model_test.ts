@@ -6,9 +6,7 @@ import {ColorOption, Destination, DestinationOrigin, DpiOption, DuplexMode, Dupl
 // <if expr="is_chromeos">
 import {GooglePromotedDestinationId, PrinterStatusReason} from 'chrome://print/print_preview.js';
 // </if>
-// <if expr="is_chromeos">
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-// </if>
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -200,6 +198,7 @@ suite(model_test.suiteName, function() {
       layout: true,
       color: false,
       mediaSize: testDestination.capabilities!.printer!.media_size!.option[1]!,
+      mediaType: testDestination.capabilities!.printer!.media_type!.option[1]!,
       margins: MarginsType.CUSTOM,
       customMargins: {
         marginTop: 100,
@@ -282,6 +281,7 @@ suite(model_test.suiteName, function() {
     // Make device managed. It's used for testing pin setting behavior.
     loadTimeData.overrideValues({isEnterpriseManaged: true});
     // </if>
+    loadTimeData.overrideValues({isBorderlessPrintingEnabled: true});
     initializeModel();
     model.destination = testDestination;
     const defaultTicket =
@@ -289,6 +289,8 @@ suite(model_test.suiteName, function() {
 
     const expectedDefaultTicketObject: PrintTicket = {
       mediaSize: testDestination.capabilities!.printer!.media_size!.option[0]!,
+      mediaType: testDestination.capabilities!.printer!.media_type!.option[0]!
+                     .vendor_id,
       pageCount: 3,
       landscape: false,
       color: testDestination.getNativeColorModel(true),
@@ -329,6 +331,8 @@ suite(model_test.suiteName, function() {
     const newTicket = model.createPrintTicket(testDestination, false, false);
     const expectedNewTicketObject: PrintTicket = {
       mediaSize: testDestination.capabilities!.printer!.media_size!.option[1]!,
+      mediaType: testDestination.capabilities!.printer!.media_type!.option[1]!
+                     .vendor_id,
       pageCount: 1,
       landscape: true,
       color: testDestination.getNativeColorModel(false),

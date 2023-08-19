@@ -1,0 +1,38 @@
+CONSOLE ERROR: EventSource's response has a MIME type ("text/html") that is not "text/event-stream". Aborting the connection.
+CONSOLE ERROR: EventSource's response has a MIME type ("text/html") that is not "text/event-stream". Aborting the connection.
+CONSOLE ERROR: EventSource's response has a MIME type ("text/html") that is not "text/event-stream". Aborting the connection.
+CONSOLE ERROR: EventSource's response has a MIME type ("text/html") that is not "text/event-stream". Aborting the connection.
+CONSOLE ERROR: EventSource's response has a MIME type ("text/html") that is not "text/event-stream". Aborting the connection.
+Test EventSource with an event-stream with a Content-Type with a charset is still recognized.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS es = new EventSource("/eventsource/resources/response-content-type-charset.php?contentType=text/event-stream%3B%20charset%3DUTF-8") did not throw exception.
+Content type: text/event-stream; charset=UTF-8
+FAIL !!es.sawError should be false. Was true.
+FAIL es.sawMessage should be true (of type boolean). Was undefined (of type undefined).
+FAIL es.sawOpen should be true (of type boolean). Was undefined (of type undefined).
+PASS es = new EventSource("/eventsource/resources/response-content-type-charset.php?contentType=text/event-stream%3B%20charset%3Dwindows-1251") did not throw exception.
+Content type: text/event-stream; charset=windows-1251
+PASS es.sawError is true
+PASS !!es.sawMessage is false
+PASS !!es.sawOpen is false
+PASS es = new EventSource("/eventsource/resources/response-content-type-charset.php?contentType=text/event-stream%3B%20charset%3Dutf-8") did not throw exception.
+Content type: text/event-stream; charset=utf-8
+FAIL !!es.sawError should be false. Was true.
+FAIL es.sawMessage should be true (of type boolean). Was undefined (of type undefined).
+FAIL es.sawOpen should be true (of type boolean). Was undefined (of type undefined).
+PASS es = new EventSource("/eventsource/resources/response-content-type-charset.php?contentType=text/event-stream%3B%20charset%3D%22UTF-8%22") did not throw exception.
+Content type: text/event-stream; charset="UTF-8"
+FAIL !!es.sawError should be false. Was true.
+FAIL es.sawMessage should be true (of type boolean). Was undefined (of type undefined).
+FAIL es.sawOpen should be true (of type boolean). Was undefined (of type undefined).
+PASS es = new EventSource("/eventsource/resources/response-content-type-charset.php?contentType=text/event-stream-foobar%3B") did not throw exception.
+Content type: text/event-stream-foobar;
+PASS es.sawError is true
+PASS !!es.sawMessage is false
+PASS !!es.sawOpen is false
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

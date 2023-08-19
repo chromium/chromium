@@ -64,7 +64,7 @@ class ExecutionContext;
 class V8UnionStringOrStringSequence;
 
 class MODULES_EXPORT DOMWebSocket
-    : public EventTargetWithInlineData,
+    : public EventTarget,
       public ActiveScriptWrappable<DOMWebSocket>,
       public ExecutionContextLifecycleStateObserver,
       public WebSocketChannelClient {
@@ -238,6 +238,11 @@ class MODULES_EXPORT DOMWebSocket
 
   void ReleaseChannel();
   void RecordSendTypeHistogram(WebSocketSendType);
+
+  // Called on web socket message activity (sending or receiving a message) that
+  // the execution context may want to handle, such as to extend its own
+  // lifetime.
+  void NotifyWebSocketActivity();
 
   Member<WebSocketChannel> channel_;
 

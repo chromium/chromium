@@ -27,6 +27,8 @@ using segmentation_platform::SegmentationUkmHelper;
 using segmentation_platform::proto::SegmentId;
 using ukm::builders::Segmentation_ModelExecution;
 
+namespace segmentation_platform {
+
 namespace {
 using UkmMemberFn =
     Segmentation_ModelExecution& (Segmentation_ModelExecution::*)(int64_t);
@@ -124,9 +126,24 @@ void AddPredictionResultToUkmModelExecution(
     (SegmentationUkmHelper::FloatToInt64(results[i]));
   }
 }
-}  // namespace
 
-namespace segmentation_platform {
+std::string GetDebugString(const ModelProvider::Request& input_tensor,
+                           const ModelProvider::Response& outputs) {
+  std::stringstream out;
+  out << "Inputs: ";
+  int j = 0;
+  for (const auto& i : input_tensor) {
+    out << j++ << ":" << i << " ";
+  }
+  out << " Outputs: ";
+  j = 0;
+  for (const auto& i : outputs) {
+    out << j++ << ":" << i << " ";
+  }
+  return out.str();
+}
+
+}  // namespace
 
 SegmentationUkmHelper::SegmentationUkmHelper() {
   Initialize();
@@ -221,6 +238,9 @@ ukm::SourceId SegmentationUkmHelper::RecordTrainingData(
         (base::Time::Now() - selected_segment->selection_time).InSeconds());
   }
 
+  VLOG(1) << "Recording training data " << proto::SegmentId_Name(segment_id)
+          << " " << GetDebugString(input_tensor, outputs);
+
   execution_result.Record(ukm::UkmRecorder::Get());
   return source_id;
 }
@@ -267,7 +287,7 @@ bool SegmentationUkmHelper::AddOutputsToUkm(
   return true;
 }
 
-bool SegmentationUkmHelper::CanUploadTensors(
+bool SegmentationUkmHelper::IsUploadRequested(
     const proto::SegmentInfo& segment_info) const {
   return segment_info.model_metadata().upload_tensors() ||
          allowed_segment_ids_.contains(segment_info.segment_id());
@@ -288,9 +308,19 @@ bool SegmentationUkmHelper::AllowedToUploadData(
   // If the local state is never set, return false.
   if (most_recent_allowed.is_null() ||
       most_recent_allowed == base::Time::Max()) {
+    VLOG(1) << "UKM consent not granted";
     return false;
   }
-  return most_recent_allowed + signal_storage_length < clock->Now();
+
+  if (most_recent_allowed + signal_storage_length < clock->Now()) {
+    return true;
+  } else {
+    VLOG(1) << "UKM consent granted on: " << most_recent_allowed
+            << ". Waiting for the model's storage period ("
+            << most_recent_allowed + signal_storage_length
+            << ") to avoid uploading data collected pre-consent";
+    return false;
+  }
 }
 
 }  // namespace segmentation_platform

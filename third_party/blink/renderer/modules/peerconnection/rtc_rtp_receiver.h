@@ -92,7 +92,8 @@ class RTCRtpReceiver final : public ScriptWrappable,
   void UnregisterEncodedAudioStreamCallback();
   void InitializeEncodedAudioStreams(ScriptState*);
   void OnAudioFrameFromDepacketizer(
-      std::unique_ptr<webrtc::TransformableFrameInterface> encoded_audio_frame);
+      std::unique_ptr<webrtc::TransformableAudioFrameInterface>
+          encoded_audio_frame);
   void RegisterEncodedVideoStreamCallback();
   void UnregisterEncodedVideoStreamCallback();
   void InitializeEncodedVideoStreams(ScriptState*);
@@ -109,6 +110,7 @@ class RTCRtpReceiver final : public ScriptWrappable,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   void SetVideoUnderlyingSink(
       RTCEncodedVideoUnderlyingSink* new_underlying_sink);
+  void LogMessage(const std::string& message);
 
   Member<RTCPeerConnection> pc_;
   std::unique_ptr<RTCRtpReceiverPlatform> receiver_;

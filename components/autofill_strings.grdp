@@ -12,6 +12,17 @@
     </message>
   </if>
 
+  <if expr="not is_ios">
+    <message name="IDS_AUTOFILL_UNDO_MENU_ITEM" desc="The entry in the suggestions dropdown that undoes the last filling operation on a field.">
+      Undo autofill
+    </message>
+  </if>
+  <if expr="is_ios">
+    <message name="IDS_AUTOFILL_UNDO_MENU_ITEM" desc="iOS: The entry in the suggestions keyboard accessory that undoes the last filling operation on a field. Title-cased.">
+      Undo Autofill
+    </message>
+  </if>
+
   <if expr="is_android or is_ios">
     <message name="IDS_AUTOFILL_CLEAR_LOCAL_COPY_BUTTON" desc="The label of the button that clears the local copy of a Wallet Credit Card." formatter_data="android_java">
       Clear copy
@@ -98,9 +109,40 @@
   <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM" desc="Screen reader announcement indicating that current form was autofilled.">
     The form was filled in
   </message>
+  <!--TODO(crbug.com/1459990): Align with writers about this string and remove translateable=false-->
+  <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_EDIT_ADDRESS_PROFILE_POPUP_OPTION_SELECTED" desc="Screen reader announcement indicating that edit autofill profile option was selected." translateable="false">
+    The edit address option was selected
+  </message>
+
+  <!--TODO(crbug.com/1459990): Align with writers about this string and remove translateable=false-->
+  <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_DELETE_ADDRESS_PROFILE_POPUP_OPTION_SELECTED" desc="Screen reader announcement indicating that delete autofill profile option was selected." translateable="false">
+    The delete address option was selected
+  </message>
 
   <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_CLEARED_FORM" desc="Screen reader announcement indicating that current form autofilled values were cleared.">
     The autofilled info was cleared from the form
+  </message>
+
+  <!--TODO(crbug.com/1459990): Align with writers about this string and remove translateable=false-->
+  <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_FILL_ADDRESS_GROUP_POPUP_OPTION_SELECTED" desc="Screen reader announcement indicating that filling address fields option was selected." translateable="false">
+    The fill address fields option was selected
+  </message>
+
+  <message name="IDS_AUTOFILL_FILL_ADDRESS_GROUP_POPUP_OPTION_SELECTED" desc="The text displayed at one of the autofill submenus options allowing the users to fill all address related fields at once." meaning="Fills all address related fields" translateable="false">
+    Fill address
+  </message>
+
+  <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_FILL_NAME_GROUP_POPUP_OPTION_SELECTED" desc="Screen reader announcement indicating that filling name fields option was selected." translateable="false">
+    The fill full name option was selected
+  </message>
+
+  <message name="IDS_AUTOFILL_FILL_NAME_GROUP_POPUP_OPTION_SELECTED" desc="The text displayed at one of the autofill submenus options allowing the users to fill all name related fields at once." meaning="Fills all name related fields" translateable="false">
+    Fill full name
+  </message>
+
+  <!--TODO(crbug.com/1459990): Align with writers about this string and remove translateable=false-->
+  <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_FILL_EVERYTHING_FROM_ADDRESS_PROFILE_POPUP_OPTION_SELECTED" desc="Screen reader announcement indicating that the fill everything option was selected." translateable="false">
+    The fill everything option was selected
   </message>
 
   <message name="IDS_AUTOFILL_HIDE_SUGGESTIONS" desc="The text displayed at the Autofill popup to allow the user to hide the suggestions menu." meaning="Hides the suggestion list.">
@@ -109,6 +151,21 @@
 
   <message name="IDS_AUTOFILL_MANAGE" desc="The text displayed at the bottom of the Autofill popup to allow the user to manage their Autofill preferences for addresses, credit cards, and passwords. Imperative. When the user clicks on it, opens the Autofill settings page." meaning="Manage addresses, credit cards and passwords in the user profile that can be used by Chrome Autofill.">
     Manage...
+  </message>
+
+  <!--TODO(crbug.com/1459990): Align with writers about this string and remove translateable=false-->
+  <message name="IDS_AUTOFILL_EDIT_ADDRESS_PROFILE_POPUP_OPTION_SELECTED" desc="The text displayed at the bottom of the Autofill sub meny to open the edit address profile dialog." meaning="Entry point to address profile deletion." translateable="false">
+    Edit address
+  </message>
+
+  <!--TODO(crbug.com/1459990): Align with writers about this string and remove translateable=false-->
+  <message name="IDS_AUTOFILL_DELETE_ADDRESS_PROFILE_POPUP_OPTION_SELECTED" desc="The text displayed at the bottom of the Autofill sub menu to open the delete address profile dialog." meaning="Entry point to address profile deletion." translateable="false">
+    Delete address
+  </message>
+
+  <!--TODO(crbug.com/1459990): Align with writers about this string and remove translateable=false-->
+  <message name="IDS_AUTOFILL_FILL_EVERYTHING_FROM_ADDRESS_PROFILE_POPUP_OPTION_SELECTED" desc="The text displayed at the footer of the Autofill sub menu to fill everything from the address profile." meaning="Fill every available information from the address profile." translateable="false">
+    Fill everything
   </message>
 
   <if expr="not use_titlecase">
@@ -314,16 +371,34 @@
       </message>
     </else>
   </if>
+  <if expr="is_android">
+    <!-- TODO(crbug.com/1469795): Use finalized string.-->
+    <message translateable="false" name="IDS_AUTOFILL_THIRD_PARTY_FILLING_DEFAULT" desc="Title of the option to use the default Chrome autofill experience." formatter_data="android_java">
+      Default
+    </message>
+    <!-- TODO(crbug.com/1469795): Use finalized string.-->
+    <message translateable="false" name="IDS_AUTOFILL_THIRD_PARTY_FILLING_OPT_IN" desc="Title of the option to use third-party autofill in Chrome." formatter_data="android_java">
+      Use other providers
+    </message>
+    <!-- TODO(crbug.com/1469795): Use finalized string.-->
+    <message translateable="false" name="IDS_AUTOFILL_THIRD_PARTY_FILLING_DEFAULT_DESCRIPTION" desc="Description shown on the option to use the default Chrome autofill experience." formatter_data="android_java">
+      Use Google Password Manager and Chrome Autofill to save and fill passwords, passkeys, payment methods, and addresses
+    </message>
+    <!-- TODO(crbug.com/1469795): Use finalized string.-->
+    <message translateable="false" name="IDS_AUTOFILL_THIRD_PARTY_FILLING_OPT_IN_DESCRIPTION" desc="Description shown on the option enabling the use of third-party autofill in Chrome." formatter_data="android_java">
+      Use password managers and autofill services that are turned on in Android Settings
+    </message>
+  </if>
 
   <!-- Autofill/Wallet integration preferences -->
   <if expr="not is_ios">
     <then>
-      <message name="IDS_AUTOFILL_ENABLE_PAYMENTS_INTEGRATION_CHECKBOX_LABEL" desc="Label for the checkbox that controls the Autofill/Payments integration feature used for Autofill Home. 'Google Pay' should not be translated as it is the product name. Sentence-Cased.">
+      <message name="IDS_SYNC_DATATYPE_PAYMENTS" desc="Label for the checkbox that controls the Autofill/Payments integration feature used for Autofill Home. 'Google Pay' should not be translated as it is the product name. Sentence-Cased.">
         Payment methods, offers, and addresses using Google Pay
       </message>
     </then>
     <else>
-      <message name="IDS_AUTOFILL_ENABLE_PAYMENTS_INTEGRATION_CHECKBOX_LABEL" desc="Label for the checkbox that controls the Autofill/Payments integration feature used for Autofill Home. 'Google Pay' should not be translated as it is the product name. Title-Cased.">
+      <message name="IDS_SYNC_DATATYPE_PAYMENTS" desc="Label for the checkbox that controls the Autofill/Payments integration feature used for Autofill Home. 'Google Pay' should not be translated as it is the product name. Title-Cased.">
         Payment Methods, Offers, and Addresses Using Google Pay
       </message>
     </else>

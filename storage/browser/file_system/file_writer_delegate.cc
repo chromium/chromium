@@ -299,6 +299,7 @@ void FileWriterDelegate::MaybeFlushForCompletion(
   DCHECK(flush_policy_ == FlushPolicy::FLUSH_ON_COMPLETION);
 
   int flush_error = file_stream_writer_->Flush(
+      FlushMode::kEndOfFile,
       base::BindOnce(&FileWriterDelegate::OnFlushed, weak_factory_.GetWeakPtr(),
                      error, bytes_written, progress_status));
   if (flush_error != net::ERR_IO_PENDING)

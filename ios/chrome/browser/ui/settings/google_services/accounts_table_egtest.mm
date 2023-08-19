@@ -6,14 +6,17 @@
 
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
+#import "components/bookmarks/common/storage_type.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_egtest_util.h"
 #import "ios/chrome/browser/shared/ui/elements/elements_constants.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey_ui.h"
 #import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller_constants.h"
+#import "ios/chrome/browser/ui/settings/signin_settings_app_interface.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -24,15 +27,11 @@
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using chrome_test_util::Omnibox;
-using chrome_test_util::PrimarySignInButton;
 using chrome_test_util::SettingsAccountButton;
 using chrome_test_util::SettingsCollectionView;
 using chrome_test_util::SettingsDoneButton;
+using chrome_test_util::SettingsSignInRowMatcher;
 using chrome_test_util::SignOutAccountsButton;
 
 namespace {
@@ -48,8 +47,8 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 @implementation AccountsTableTestCase
 
 - (void)tearDown {
-  [ChromeEarlGrey waitForBookmarksToFinishLoading];
-  [ChromeEarlGrey clearBookmarks];
+  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
+  [BookmarkEarlGrey clearBookmarks];
   [BookmarkEarlGrey clearBookmarksPositionCache];
 
   [ChromeEarlGrey clearSyncServerData];
@@ -59,11 +58,13 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 - (void)setUp {
   [super setUp];
 
-  [ChromeEarlGrey waitForBookmarksToFinishLoading];
-  [ChromeEarlGrey clearBookmarks];
+  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
+  [BookmarkEarlGrey clearBookmarks];
   GREYAssertEqual(
       [ChromeEarlGrey numberOfSyncEntitiesWithType:syncer::BOOKMARKS], 0,
       @"No bookmarks should exist before tests start.");
+  // TODO(crbug.com/1450472): Remove when kHideSettingsSyncPromo is launched.
+  [SigninSettingsAppInterface setSettingsSigninPromoDisplayedCount:INT_MAX];
 }
 
 // Tests that the Sync and Account Settings screen are correctly popped if the
@@ -80,7 +81,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   [ChromeEarlGreyUI waitForAppToIdle];
   [SigninEarlGrey forgetFakeIdentity:fakeIdentity];
 
-  [[EarlGrey selectElementWithMatcher:PrimarySignInButton()]
+  [[EarlGrey selectElementWithMatcher:SettingsSignInRowMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
   [SigninEarlGrey verifySignedOut];
 
@@ -105,7 +106,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   [SigninEarlGrey forgetFakeIdentity:fakeIdentity];
 
   [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:PrimarySignInButton()];
+      waitForSufficientlyVisibleElementWithMatcher:SettingsSignInRowMatcher()];
   [SigninEarlGrey verifySignedOut];
 
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
@@ -204,7 +205,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   [SigninEarlGreyUI tapRemoveAccountFromDeviceWithFakeIdentity:fakeIdentity];
 
   // Check that the user is signed out and the Main Settings screen is shown.
-  [[EarlGrey selectElementWithMatcher:PrimarySignInButton()]
+  [[EarlGrey selectElementWithMatcher:SettingsSignInRowMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
   [SigninEarlGrey verifySignedOut];
 
@@ -223,8 +224,9 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   // Add a bookmark after sync is initialized.
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:kSyncOperationTimeout];
-  [ChromeEarlGrey waitForBookmarksToFinishLoading];
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
 
   // Sign out.
   [SigninEarlGreyUI
@@ -251,8 +253,9 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   // Add a bookmark after sync is initialized.
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:kSyncOperationTimeout];
-  [ChromeEarlGrey waitForBookmarksToFinishLoading];
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
 
   // Sign out.
   [SigninEarlGreyUI
@@ -277,8 +280,9 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   // Add a bookmark after sync is initialized.
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:kSyncOperationTimeout];
-  [ChromeEarlGrey waitForBookmarksToFinishLoading];
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
 
   // Sign out.
   [SigninEarlGreyUI
@@ -349,8 +353,9 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   // Add a bookmark after sync is initialized.
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:kSyncOperationTimeout];
-  [ChromeEarlGrey waitForBookmarksToFinishLoading];
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey waitForBookmarkModelsLoaded];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
 
   // Simulate that the user remove their primary account from another Google
   // app.
@@ -388,9 +393,8 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   // Remove the primary accounts.
   [SigninEarlGrey forgetFakeIdentity:fakeIdentity];
   [ChromeEarlGreyUI waitForAppToIdle];
-  [SigninEarlGreyUI
-      verifySigninPromoVisibleWithMode:SigninPromoViewModeNoAccounts
-                           closeButton:YES];
+  [[EarlGrey selectElementWithMatcher:SettingsSignInRowMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
 
   // Closes the settings.
   [[EarlGrey selectElementWithMatcher:SettingsCollectionView()]
@@ -506,7 +510,8 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
 
   // Add a bookmark.
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
 
   // Sign out.
   [SigninEarlGreyUI
@@ -526,7 +531,8 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeManagedIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
 
-  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
 
   // Sign out.
   [SigninEarlGreyUI

@@ -446,13 +446,6 @@ mojom::NetworkStatePropertiesPtr NetworkStateToMojo(
                 NetworkHandler::GetUiProxyConfigService()->ProxyModeForNetwork(
                     network))
           : mojom::ProxyMode::kDirect;
-  result->dns_queries_monitored =
-      NetworkHandler::IsInitialized() &&
-              NetworkHandler::Get()->network_metadata_store()
-          ? NetworkHandler::Get()
-                ->network_metadata_store()
-                ->secure_dns_templates_with_identifiers_active()
-          : false;
 
   switch (type) {
     case mojom::NetworkType::kCellular: {
@@ -522,6 +515,7 @@ mojom::NetworkStatePropertiesPtr NetworkStateToMojo(
       wifi->signal_strength = network->signal_strength();
       wifi->ssid = network->name();
       wifi->hidden_ssid = network->hidden_ssid();
+      wifi->passpoint_id = network->passpoint_id();
       result->type_state =
           mojom::NetworkTypeStateProperties::NewWifi(std::move(wifi));
       break;
@@ -1635,7 +1629,19 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
       cellular->sim_locked = cellular_device &&
                              cellular_device->iccid() == cellular->iccid &&
                              cellular_device->IsSimLocked();
+      if (features::IsSuppressTextMessagesEnabled()) {
+        UserTextMessageSuppressionState state =
+            NetworkHandler::Get()
+                ->network_metadata_store()
+                ->GetUserTextMessageSuppressionState(network_state->guid());
+        cellular->allow_text_messages = mojom::ManagedBoolean::New();
+        cellular->allow_text_messages->active_value =
+            state != UserTextMessageSuppressionState::kSuppress;
 
+        // TODO(b/293432140) Map the policy value from
+        // |ManagedNetworkConfigurationHandler| to the policy_value of the
+        // |allow_text_messages| property.
+      }
       result->type_properties =
           mojom::NetworkTypeManagedProperties::NewCellular(std::move(cellular));
       break;
@@ -2168,6 +2174,26 @@ mojom::TrafficCounterSource ConvertToTrafficCounterSourceEnum(
   return mojom::TrafficCounterSource::kUnknown;
 }
 
+bool GetDnsQueriesMonitoredValue() {
+  if (!NetworkHandler::IsInitialized() ||
+      !NetworkHandler::Get()->network_metadata_store()) {
+    return false;
+  }
+
+  NetworkMetadataStore* store = NetworkHandler::Get()->network_metadata_store();
+  return store->secure_dns_templates_with_identifiers_active();
+}
+
+bool GetReportXdrEventsEnabledValue() {
+  if (!NetworkHandler::IsInitialized() ||
+      !NetworkHandler::Get()->network_metadata_store()) {
+    return false;
+  }
+
+  NetworkMetadataStore* store = NetworkHandler::Get()->network_metadata_store();
+  return store->report_xdr_events_enabled();
+}
+
 }  // namespace
 
 CrosNetworkConfig::CrosNetworkConfig()
@@ -2488,6 +2514,20 @@ void CrosNetworkConfig::SetProperties(const std::string& guid,
       network->type() == shill::kTypeCellular &&
       properties->type_config->is_cellular()) {
     UpdateCustomApnList(network, properties.get());
+  }
+
+  if (features::IsSuppressTextMessagesEnabled() &&
+      properties->type_config->is_cellular() &&
+      properties->type_config->get_cellular()->text_message_allow_state) {
+    const bool allow_text_messages =
+        properties->type_config->get_cellular()
+            ->text_message_allow_state->allow_text_messages;
+    UserTextMessageSuppressionState state =
+        allow_text_messages ? UserTextMessageSuppressionState::kAllow
+                            : UserTextMessageSuppressionState::kSuppress;
+    NetworkHandler::Get()
+        ->network_metadata_store()
+        ->SetUserTextMessageSuppressionState(guid, state);
   }
 
   absl::optional<base::Value::Dict> onc =
@@ -2934,6 +2974,9 @@ void CrosNetworkConfig::GetGlobalPolicy(GetGlobalPolicyCallback callback) {
   result->allow_cellular_sim_lock = GetBoolean(
       global_policy_dict, ::onc::global_network_config::kAllowCellularSimLock,
       /*value_if_key_missing_from_dict=*/result->allow_cellular_sim_lock);
+  result->allow_cellular_hotspot = GetBoolean(
+      global_policy_dict, ::onc::global_network_config::kAllowCellularHotspot,
+      /*value_if_key_missing_from_dict=*/result->allow_cellular_hotspot);
   result->allow_only_policy_cellular_networks =
       GetBoolean(global_policy_dict,
                  ::onc::global_network_config::kAllowOnlyPolicyCellularNetworks,
@@ -2954,6 +2997,9 @@ void CrosNetworkConfig::GetGlobalPolicy(GetGlobalPolicyCallback callback) {
       ::onc::global_network_config::kAllowOnlyPolicyWiFiToConnectIfAvailable,
       /*value_if_key_missing_from_dict=*/
       result->allow_only_policy_wifi_networks_to_connect_if_available);
+  result->dns_queries_monitored = GetDnsQueriesMonitoredValue();
+  result->report_xdr_events_enabled = GetReportXdrEventsEnabledValue();
+
   absl::optional<std::vector<std::string>> blocked_hex_ssids = GetStringList(
       global_policy_dict, ::onc::global_network_config::kBlockedHexSSIDs);
   if (blocked_hex_ssids) {

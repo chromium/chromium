@@ -12,8 +12,6 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.Callback;
 import org.chromium.base.SysUtils;
 import org.chromium.base.supplier.Supplier;
@@ -281,9 +279,22 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
     /**
      * @return The WebContents that this Ephemeral tab currently holds.
      */
-    @VisibleForTesting
     public WebContents getWebContentsForTesting() {
         return mWebContents;
+    }
+
+    /**
+     * @return The current url that this Ephemeral tab is displaying.
+     */
+    public GURL getUrlForTesting() {
+        return mUrl;
+    }
+
+    /**
+     * @return The current full page url that this Ephemeral tab is displaying.
+     */
+    public GURL getFullPageUrlForTesting() {
+        return mFullPageUrl;
     }
 
     /**

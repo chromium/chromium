@@ -25,7 +25,11 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
@@ -34,6 +38,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/profiles/profile_view_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -54,12 +59,13 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/feature_switch.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/accelerators/menu_label_accelerator_util.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/layout.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -76,6 +82,7 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/scoped_canvas.h"
+#include "ui/gfx/text_elider.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
@@ -124,14 +131,19 @@ const int kZoomLabelHorizontalPadding = 2;
 
 // Returns true if |command_id| identifies a bookmark menu item.
 bool IsBookmarkCommand(int command_id) {
-  return command_id >= IDC_FIRST_UNBOUNDED_MENU &&
-         (command_id % AppMenuModel::kNumUnboundedMenuTypes == 0);
+  return command_id == IDC_SHOW_BOOKMARK_SIDE_PANEL ||
+         (command_id >= IDC_FIRST_UNBOUNDED_MENU &&
+          ((command_id - IDC_FIRST_UNBOUNDED_MENU) %
+               AppMenuModel::kNumUnboundedMenuTypes ==
+           0));
 }
 
 // Returns true if |command_id| identifies a recent tabs menu item.
 bool IsRecentTabsCommand(int command_id) {
   return command_id >= IDC_FIRST_UNBOUNDED_MENU &&
-         (command_id % AppMenuModel::kNumUnboundedMenuTypes == 1);
+         ((command_id - IDC_FIRST_UNBOUNDED_MENU) %
+              AppMenuModel::kNumUnboundedMenuTypes ==
+          1);
 }
 
 // Combination border/background for the buttons contained in the menu. The
@@ -162,37 +174,34 @@ class InMenuButtonBackground : public views::Background {
       : type_(type), shape_(shape) {}
   InMenuButtonBackground(const InMenuButtonBackground&) = delete;
   InMenuButtonBackground& operator=(const InMenuButtonBackground&) = delete;
+  ~InMenuButtonBackground() override = default;
 
   // Overridden from views::Background.
   void Paint(gfx::Canvas* canvas, View* view) const override {
-    Button* button = views::AsViewClass<views::Button>(view);
-    int h = view->height();
-
     // Draw leading border if desired.
-    gfx::Rect bounds(view->GetLocalBounds());
+    gfx::Rect bounds = view->GetLocalBounds();
     if (type_ == ButtonType::kLeadingBorder) {
       // We need to flip the canvas for RTL iff the button is not auto-flipping
       // already, so we end up flipping exactly once.
       gfx::ScopedCanvas scoped_canvas(canvas);
       if (!view->GetFlipCanvasOnPaintForRTLUI())
         scoped_canvas.FlipIfRTL(view->width());
-      ui::NativeTheme::ExtraParams params;
-      gfx::Rect separator_bounds =
-          gfx::Rect(0, 0, MenuConfig::instance().separator_thickness, h);
-      params.menu_separator.paint_rect = &separator_bounds;
-      params.menu_separator.type = ui::VERTICAL_SEPARATOR;
+      ui::NativeTheme::MenuSeparatorExtraParams menu_separator;
+      const gfx::Rect separator_bounds(gfx::Size(
+          MenuConfig::instance().separator_thickness, view->height()));
+      menu_separator.paint_rect = &separator_bounds;
+      menu_separator.type = ui::VERTICAL_SEPARATOR;
       view->GetNativeTheme()->Paint(
           canvas->sk_canvas(), view->GetColorProvider(),
           ui::NativeTheme::kMenuPopupSeparator, ui::NativeTheme::kNormal,
-          separator_bounds, params);
+          separator_bounds, ui::NativeTheme::ExtraParams(menu_separator));
       bounds.Inset(gfx::Insets::TLBR(
           0, MenuConfig::instance().separator_thickness, 0, 0));
     }
 
     // Fill in background for state.
-    views::Button::ButtonState state =
-        button ? button->GetState() : views::Button::STATE_NORMAL;
-    DrawBackground(canvas, view, view->GetMirroredRect(bounds), state);
+    DrawBackground(canvas, view, view->GetMirroredRect(bounds),
+                   views::AsViewClass<views::Button>(view)->GetState());
   }
 
  private:
@@ -200,34 +209,38 @@ class InMenuButtonBackground : public views::Background {
                       const views::View* view,
                       const gfx::Rect& bounds,
                       views::Button::ButtonState state) const {
-    if (state == views::Button::STATE_HOVERED ||
-        state == views::Button::STATE_PRESSED ||
-        state == views::Button::STATE_NORMAL) {
-      gfx::Rect bounds_rect = bounds;
-      ui::NativeTheme::ExtraParams params;
-      if (type_ == ButtonType::kRoundedButton) {
-        // Consistent with a hover corner radius (kInkDropSmallCornerRadius).
-        const int kBackgroundCornerRadius = 2;
-        params.menu_item.corner_radius = kBackgroundCornerRadius;
-      } else if (shape_ == ButtonShape::kCircular) {
-        constexpr int kCircularButtonSize = 28;
-        bounds_rect.ClampToCenteredSize(
-            gfx::Size(kCircularButtonSize, kCircularButtonSize));
-        params.menu_item.corner_radius = kCircularButtonSize / 2;
-      }
-      auto* provider = view->GetColorProvider();
-      if (features::IsChromeRefresh2023() &&
-          views::IsViewClass<views::Button>(view)) {
-        cc::PaintFlags flags;
-        flags.setColor(provider->GetColor(ui::kColorMenuButtonBackground));
-        canvas->DrawRoundRect(gfx::RectF(bounds_rect),
-                              params.menu_item.corner_radius, flags);
-      }
-      if (state != views::Button::STATE_NORMAL) {
-        view->GetNativeTheme()->Paint(
-            canvas->sk_canvas(), provider, ui::NativeTheme::kMenuItemBackground,
-            ui::NativeTheme::kHovered, bounds_rect, params);
-      }
+    if (state == views::Button::STATE_DISABLED) {
+      return;
+    }
+
+    gfx::Rect bounds_rect = bounds;
+    ui::NativeTheme::MenuItemExtraParams menu_item;
+    if (type_ == ButtonType::kRoundedButton) {
+      // Consistent with a hover corner radius (kInkDropSmallCornerRadius).
+      const int kBackgroundCornerRadius = 2;
+      menu_item.corner_radius = kBackgroundCornerRadius;
+    } else if (shape_ == ButtonShape::kCircular) {
+      constexpr int kCircularButtonSize = 28;
+      bounds_rect.ClampToCenteredSize(
+          gfx::Size(kCircularButtonSize, kCircularButtonSize));
+      menu_item.corner_radius = kCircularButtonSize / 2;
+    }
+    const auto* const color_provider = view->GetColorProvider();
+    if (features::IsChromeRefresh2023()) {
+      cc::PaintFlags flags;
+      flags.setColor(color_provider->GetColor(
+          state == views::Button::STATE_NORMAL
+              ? ui::kColorMenuButtonBackground
+              : ui::kColorMenuButtonBackgroundSelected));
+      canvas->DrawRoundRect(gfx::RectF(bounds_rect), menu_item.corner_radius,
+                            flags);
+      return;
+    }
+    if (state != views::Button::STATE_NORMAL) {
+      view->GetNativeTheme()->Paint(canvas->sk_canvas(), color_provider,
+                                    ui::NativeTheme::kMenuItemBackground,
+                                    ui::NativeTheme::kHovered, bounds_rect,
+                                    ui::NativeTheme::ExtraParams(menu_item));
     }
   }
 
@@ -259,8 +272,7 @@ std::u16string GetAccessibleNameForAppMenuItem(ButtonMenuItemModel* model,
 class InMenuButton : public LabelButton {
  public:
   METADATA_HEADER(InMenuButton);
-  InMenuButton(PressedCallback callback, const std::u16string& text)
-      : LabelButton(std::move(callback), text) {}
+  using LabelButton::LabelButton;
   InMenuButton(const InMenuButton&) = delete;
   InMenuButton& operator=(const InMenuButton&) = delete;
   ~InMenuButton() override = default;
@@ -281,10 +293,10 @@ class InMenuButton : public LabelButton {
     node_data->role = ax::mojom::Role::kMenuItem;
   }
 
-  // views::LabelButton
+  // views::LabelButton:
   void OnThemeChanged() override {
     LabelButton::OnThemeChanged();
-    const ui::ColorProvider* color_provider = GetColorProvider();
+    const auto* const color_provider = GetColorProvider();
     SetTextColor(
         views::Button::STATE_DISABLED,
         color_provider->GetColor(ui::kColorMenuItemForegroundDisabled));
@@ -306,12 +318,12 @@ END_METADATA
 class InMenuImageButton : public ImageButton {
  public:
   METADATA_HEADER(InMenuImageButton);
-  explicit InMenuImageButton(PressedCallback callback)
-      : ImageButton(callback) {}
+  using ImageButton::ImageButton;
 
   void Init(InMenuButtonBackground::ButtonType type,
             InMenuButtonBackground::ButtonShape shape,
             const ui::ImageModel& image_model) {
+    SetFocusBehavior(FocusBehavior::ALWAYS);
     SetImageModel(views::Button::STATE_NORMAL, image_model);
     SetImageHorizontalAlignment(ImageButton::ALIGN_CENTER);
     SetImageVerticalAlignment(ImageButton::ALIGN_MIDDLE);
@@ -319,10 +331,84 @@ class InMenuImageButton : public ImageButton {
     SetBorder(views::CreateEmptyBorder(
         gfx::Insets::TLBR(0, kHorizontalPadding, 0, kHorizontalPadding)));
   }
+
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
+    ImageButton::GetAccessibleNodeData(node_data);
+    node_data->role = ax::mojom::Role::kMenuItem;
+  }
 };
 
 BEGIN_METADATA(InMenuImageButton, ImageButton)
 END_METADATA
+
+// Helper method that adds a bespoke chip to the profile related menu items.
+void AddChipToProfileMenuItem(Browser* browser,
+                              views::MenuItemView* item,
+                              const std::u16string& chip_label,
+                              const int horizontal_padding,
+                              std::vector<base::CallbackListSubscription>&
+                                  profile_menu_subscription_list) {
+  constexpr int profile_chip_corner_radii = 100;
+  raw_ptr<views::Label> profile_chip_label;
+  const MenuConfig& config = MenuConfig::instance();
+  // Truncate in the same way that app_menu_model does for the menu
+  // title.
+  if (!chip_label.empty() && !browser->profile()->IsIncognitoProfile()) {
+    std::u16string local_name =
+        ui::EscapeMenuLabelAmpersands(gfx::TruncateString(
+            chip_label, GetLayoutConstant(APP_MENU_MAXIMUM_CHARACTER_LENGTH),
+            gfx::CHARACTER_BREAK));
+    // We need to have the label of the profile chip within a
+    // BoxLayoutView and inside border insets because MenuItemView will
+    // layout the child items to the full height of the menu item in
+    // MenuItemView::Layout().
+    auto profile_chip =
+        views::Builder<views::BoxLayoutView>()
+            .SetInsideBorderInsets(
+                gfx::Insets::VH(config.item_vertical_margin, 0))
+            .AddChildren(
+                views::Builder<views::Label>()
+                    .SetText(local_name)
+                    .CopyAddressTo(&profile_chip_label)
+                    .SetBackground(views::CreateThemedRoundedRectBackground(
+                        item->IsSelected()
+                            ? ui::kColorAppMenuProfileRowChipHovered
+                            : ui::kColorAppMenuProfileRowChipBackground,
+                        profile_chip_corner_radii))
+                    // Add additional horizontal padding. Vertical
+                    // padding depends on menu margins to get alignment
+                    // with other items in the menu.
+                    .SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
+                        0, views::LayoutProvider::Get()
+                               ->GetInsetsMetric(views::INSETS_LABEL_BUTTON)
+                               .left()))))
+            .Build();
+
+    // MenuItemView has specific layout logic for child views in
+    // MenuItemView::Layout() which does not work very well with more
+    // custom menu items. We use this view to add the correct spacing
+    // between the profile chip and the edge of the menu.
+    auto profile_chip_edge_spacing_view =
+        views::Builder<views::View>()
+            .SetPreferredSize(gfx::Size(horizontal_padding, 0))
+            .Build();
+    profile_menu_subscription_list.push_back(
+        item->AddSelectedChangedCallback(base::BindRepeating(
+            [](MenuItemView* menu_item_view, View* child_view,
+               int corner_radius) {
+              child_view->SetBackground(
+                  views::CreateThemedRoundedRectBackground(
+                      menu_item_view->IsSelected()
+                          ? ui::kColorAppMenuProfileRowChipHovered
+                          : ui::kColorAppMenuProfileRowChipBackground,
+                      corner_radius));
+            },
+            item, profile_chip_label, profile_chip_corner_radii)));
+    item->AddChildView(std::move(profile_chip));
+    item->AddChildView(std::move(profile_chip_edge_spacing_view));
+    item->SetHighlightWhenSelectedWithChildViews(true);
+  }
+}
 
 // AppMenuView is a view that can contain label buttons.
 class AppMenuView : public views::View {
@@ -576,8 +662,6 @@ class AppMenu::ZoomView : public AppMenuView {
     zoom_label->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
     zoom_label->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
         0, kZoomLabelHorizontalPadding, 0, kZoomLabelHorizontalPadding)));
-    zoom_label->SetBackground(std::make_unique<InMenuButtonBackground>(
-        InMenuButtonBackground::ButtonType::kNoBorder));
 
     // Need to set a font list for the zoom label width calculations.
     zoom_label->SetFontList(MenuConfig::instance().font_list);
@@ -875,8 +959,6 @@ AppMenu::AppMenu(Browser* browser, ui::MenuModel* model, int run_types)
 
   DCHECK(!root_);
   root_ = new MenuItemView(this);
-  root_->set_has_icons(true);  // We have checks, radios and icons, set this
-                               // so we get the taller menu style.
   PopulateMenu(root_, model);
 
   int32_t types = views::MenuRunner::HAS_MNEMONICS;
@@ -1194,7 +1276,14 @@ bool AppMenu::ShouldExecuteCommandWithoutClosingMenu(int command_id,
            WindowOpenDisposition::NEW_BACKGROUND_TAB)) ||
          (IsBookmarkCommand(command_id) &&
           bookmark_menu_delegate_->ShouldExecuteCommandWithoutClosingMenu(
-              command_id, event));
+              command_id, event)) ||
+         // TODO(https://crbug.com/1454311) Currently the UI for
+         // OtherProfileCommand has bespoke child views which will block
+         // activation in ui/views/controls/menu/menu_controller.cc. The correct
+         // fix will be to have the child view as part of
+         // ui/views/controls/menu/menu_item_view.cc but we will currently
+         // bypass this by using this method to allow the command to trigger.
+         (IsOtherProfileCommand(command_id) && event.IsMouseEvent());
 }
 
 void AppMenu::BookmarkModelChanged() {
@@ -1220,29 +1309,41 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
         AddMenuItem(parent, menu_index, model, i, model->GetTypeAt(i));
 
 #if BUILDFLAG(IS_CHROMEOS)
-    if (model->GetCommandIdAt(i) == IDC_EDIT_MENU ||
-        model->GetCommandIdAt(i) == IDC_ZOOM_MENU) {
+    if (!features::IsChromeRefresh2023() &&
+        (model->GetCommandIdAt(i) == IDC_EDIT_MENU ||
+         model->GetCommandIdAt(i) == IDC_ZOOM_MENU)) {
       // ChromeOS adds extra vertical space for the menu buttons.
       const MenuConfig& config = views::MenuConfig::instance();
-      int top_margin = config.item_top_margin + config.separator_height / 2 + 4;
-      int bottom_margin =
-          config.item_bottom_margin + config.separator_height / 2 + 5;
-
-      item->SetMargins(top_margin, bottom_margin);
+      item->set_vertical_margin(config.item_vertical_margin * 2 +
+                                config.separator_height / 2);
     }
 #endif
-
-    if (model->GetTypeAt(i) == MenuModel::TYPE_SUBMENU)
+    if (model->GetTypeAt(i) == MenuModel::TYPE_SUBMENU) {
       PopulateMenu(item, model->GetSubmenuModelAt(i));
-
+    }
     switch (model->GetCommandIdAt(i)) {
       case IDC_PROFILE_MENU_IN_APP_MENU: {
         if (features::IsChromeRefresh2023()) {
+          constexpr int background_corner_radii = 12;
           // Profile row margins are different from the menu config item
           // margins.
-          int vertical_margin = ChromeLayoutProvider::Get()->GetDistanceMetric(
-              DISTANCE_CONTENT_LIST_VERTICAL_MULTI);
-          item->SetMargins(vertical_margin, vertical_margin);
+          item->set_vertical_margin(
+              ChromeLayoutProvider::Get()->GetDistanceMetric(
+                  DISTANCE_CONTENT_LIST_VERTICAL_MULTI));
+          item->SetMenuItemBackground(MenuItemView::MenuItemBackground(
+              ui::kColorAppMenuProfileRowBackground, background_corner_radii));
+          item->SetSelectedColorId(
+              ui::kColorAppMenuProfileRowBackgroundHovered);
+          ProfileAttributesEntry* profile_attributes =
+              GetProfileAttributesFromProfile(browser_->profile());
+          if (profile_attributes &&
+              !profile_attributes->GetLocalProfileName().empty()) {
+            const MenuConfig& config = MenuConfig::instance();
+            AddChipToProfileMenuItem(
+                browser_, item, profile_attributes->GetLocalProfileName(),
+                config.arrow_to_edge_padding + views::kSubmenuArrowSize,
+                profile_menu_item_selected_subscription_list_);
+          }
         }
         break;
       }
@@ -1254,6 +1355,7 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
         item->SetTitle(l10n_util::GetStringUTF16(IDS_EDIT2));
         item->AddChildView(
             std::make_unique<CutCopyPasteView>(this, submodel, 0, 1, 2));
+        item->set_children_use_full_width(true);
         break;
       }
 
@@ -1264,6 +1366,7 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
         DCHECK_EQ(IDC_FULLSCREEN, submodel->GetCommandIdAt(2));
         item->SetTitle(l10n_util::GetStringUTF16(IDS_ZOOM_MENU2));
         item->AddChildView(std::make_unique<ZoomView>(this, submodel, 0, 1, 2));
+        item->set_children_use_full_width(true);
         break;
       }
 
@@ -1293,8 +1396,36 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
                 this, model->GetSubmenuModelAt(i), item);
         break;
 
-      default:
+      default: {
+        if (features::IsChromeRefresh2023() &&
+            IsOtherProfileCommand(model->GetCommandIdAt(i))) {
+          // Other profile command ids are dynamic and can change depending on
+          // the number of profiles in the browser. Because it's dynamic, check
+          // in the default section by verifying if the command matches what was
+          // assigned during initialization and whether the profile entry has
+          // a matching name.
+          std::u16string chip_label;
+          std::u16string gaia_name = model->GetLabelAt(i);
+          auto all_profile_entries =
+              GetAllOtherProfileEntriesForProfileSubMenu(browser_->profile());
+          size_t profile_index = (model->GetCommandIdAt(i) -
+                                  AppMenuModel::kMinOtherProfileCommandId) /
+                                 AppMenuModel::kNumUnboundedMenuTypes;
+          if (profile_index < all_profile_entries.size() &&
+              GetProfileMenuDisplayName(all_profile_entries[profile_index]) ==
+                  gaia_name) {
+            chip_label =
+                all_profile_entries[profile_index]->GetLocalProfileName();
+          }
+
+          if (!chip_label.empty()) {
+            AddChipToProfileMenuItem(
+                browser_, item, chip_label, 0 /*horizontal_padding*/,
+                profile_menu_item_selected_subscription_list_);
+          }
+        }
         break;
+      }
     }
   }
 }
@@ -1321,11 +1452,9 @@ MenuItemView* AppMenu::AddMenuItem(MenuItemView* parent,
       model, model_index, parent, menu_index, command_id);
 
   if (menu_item) {
-    // Flush all buttons to the right side of the menu for the new menu type.
-    menu_item->set_use_right_margin(false);
     menu_item->SetVisible(model->IsVisibleAt(model_index));
 
-    if (menu_type == MenuModel::TYPE_COMMAND && model->HasIcons()) {
+    if (menu_type == MenuModel::TYPE_COMMAND) {
       menu_item->SetIcon(model->GetIconAt(model_index));
     }
   }

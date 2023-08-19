@@ -54,10 +54,6 @@ absl_cc_library(
     ${ABSL_DEFAULT_COPTS}
 )
 
-if(APPLE)
-  find_library(CoreFoundation CoreFoundation)
-endif()
-
 absl_cc_library(
   NAME
     time_zone
@@ -84,7 +80,10 @@ absl_cc_library(
   COPTS
     ${ABSL_DEFAULT_COPTS}
   DEPS
-    $<$<PLATFORM_ID:Darwin>:${CoreFoundation}>
+    Threads::Threads
+    # TODO(#1495): Use $<LINK_LIBRARY:FRAMEWORK,CoreFoundation> once our
+    # minimum CMake version >= 3.24
+    $<$<PLATFORM_ID:Darwin>:-Wl,-framework,CoreFoundation>
 )
 
 # Internal-only target, do not depend on directly.

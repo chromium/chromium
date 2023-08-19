@@ -23,13 +23,6 @@ namespace {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 bool g_enable_hosted_apps_in_lacros_for_testing = false;
 #endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Kill switch in case the feature causes problems.
-BASE_FEATURE(kStopMuxingLacrosExtensionAppIds,
-             "StopMuxingLacrosExtensionAppIds",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
 }  // namespace
 
 namespace apps {
@@ -46,51 +39,6 @@ void EnableHostedAppsInLacrosForTesting() {
   g_enable_hosted_apps_in_lacros_for_testing = true;
 }
 #endif  // IS_CHROMEOS_LACROS
-
-#if BUILDFLAG(IS_CHROMEOS)
-bool ShouldMuxExtensionIds() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Lacros uses the value passed from ash.
-  return !chromeos::BrowserParamsProxy::Get()->DoNotMuxExtensionAppIds();
-#else
-  bool keeplist_enabled =
-      crosapi::browser_util::IsLacrosPrimaryBrowser() &&
-      base::FeatureList::IsEnabled(
-          ash::features::kEnforceAshExtensionKeeplist) &&
-      base::FeatureList::IsEnabled(kStopMuxingLacrosExtensionAppIds);
-  // Muxing is only necessary if the keeplist is disabled.
-  return !keeplist_enabled;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-}
-
-std::string MuxId(const Profile* profile, const std::string& extension_id) {
-  DCHECK(profile);
-  if (ShouldMuxExtensionIds()) {
-    return profile->GetBaseName().value() + kExtensionAppMuxedIdDelimiter +
-           extension_id;
-  } else {
-    return extension_id;
-  }
-}
-
-std::vector<std::string> DemuxId(const std::string& muxed_id) {
-  if (ShouldMuxExtensionIds()) {
-    return base::SplitStringUsingSubstr(
-        muxed_id, apps::kExtensionAppMuxedIdDelimiter, base::KEEP_WHITESPACE,
-        base::SPLIT_WANT_ALL);
-  } else {
-    return std::vector<std::string>{"", muxed_id};
-  }
-}
-std::string GetStandaloneBrowserExtensionAppId(const std::string& app_id) {
-  std::vector<std::string> splits = DemuxId(app_id);
-  return (splits.size() == 2) ? splits[1] : app_id;
-}
-
-// TODO(https://crbug.com/1225848): This logic can be removed once ash is past
-// M105.
-const char kExtensionAppMuxedIdDelimiter[] = "###";
-#endif  // IS_CHROMEOS
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 std::string GetEscapedAppId(const std::string& app_id, AppType app_type) {

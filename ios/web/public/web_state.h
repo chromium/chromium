@@ -5,7 +5,7 @@
 #ifndef IOS_WEB_PUBLIC_WEB_STATE_H_
 #define IOS_WEB_PUBLIC_WEB_STATE_H_
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 #include <stdint.h>
 
@@ -48,6 +48,10 @@ class RectF;
 }
 
 namespace web {
+namespace proto {
+class WebStateStorage;
+class WebStateMetadataStorage;
+}  // namespace proto
 
 class BrowserState;
 struct FaviconStatus;
@@ -69,6 +73,14 @@ void IgnoreOverRealizationCheck();
 // Core interface for interaction with the web.
 class WebState : public base::SupportsUserData {
  public:
+  // Callback used to load the full information for the WebState when
+  // it will become realized.
+  using WebStateStorageLoader =
+      base::OnceCallback<void(proto::WebStateStorage&)>;
+
+  // Callback used to fetch the native session for the WebState.
+  using NativeSessionFetcher = base::OnceCallback<NSData*()>;
+
   // Parameters for the Create() method.
   struct CreateParams {
     explicit CreateParams(web::BrowserState* browser_state);
@@ -181,26 +193,48 @@ class WebState : public base::SupportsUserData {
 
   // Creates a new WebState from a serialized representation of the session.
   // `session_storage` must not be nil.
+  // TODO(crbug.com/1383087): remove when the optimised serialisation feature
+  // has been fully launched.
   static std::unique_ptr<WebState> CreateWithStorageSession(
       const CreateParams& params,
       CRWSessionStorage* session_storage);
+
+  // Creates a new WebState from a serialized representation of the session.
+  // The callbacks are used to load the complete serialized data from disk
+  // when the WebState transition to the realized state.
+  static std::unique_ptr<WebState> CreateWithStorage(
+      BrowserState* browser_state,
+      SessionID unique_identifier,
+      proto::WebStateMetadataStorage metadata,
+      WebStateStorageLoader storage_loader,
+      NativeSessionFetcher session_fetcher);
 
   WebState(const WebState&) = delete;
   WebState& operator=(const WebState&) = delete;
 
   ~WebState() override {}
 
+  // Serializes the object to `storage`. It is an error to call this method
+  // on a WebState that is not realized.
+  virtual void SerializeToProto(proto::WebStateStorage& storage) const = 0;
+
   // Gets/Sets the delegate.
   virtual WebStateDelegate* GetDelegate() = 0;
   virtual void SetDelegate(WebStateDelegate* delegate) = 0;
 
+  // Clones the current WebState. The newly returned WebState is realized and
+  // is a copy to the current instance but will have distinct identifiers. It
+  // is used to implement prerendering or preview as this allow to have a new
+  // WebState that shares the same navigation history.
+  virtual std::unique_ptr<WebState> Clone() const = 0;
+
   // Returns whether the WebState is realized.
   //
   // What does "realized" mean? When creating a WebState from session storage
-  // with `CreateWithStorageSession()`, it may not yet have been fully created.
-  // Instead, it has all information to fully instantiate it and its history
-  // available, but the underlying objects (WKWebView, NavigationManager, ...)
-  // have not been created.
+  // with `CreateWithStorageSession()` or `CreateWithStorage()`, it may not
+  // yet have been fully created. Instead, it has all information to fully
+  // instantiate it and its history available, but the underlying objects
+  // (WKWebView, NavigationManager, ...) have not been created.
   //
   // This is an optimisation to reduce the amount of memory consumed by tabs
   // that have been restored after the browser has been shutdown. If the user
@@ -307,7 +341,7 @@ class WebState : public base::SupportsUserData {
 
   // Creates a serializable representation of the session. The returned value
   // is autoreleased.
-  virtual CRWSessionStorage* BuildSessionStorage() = 0;
+  virtual CRWSessionStorage* BuildSessionStorage() const = 0;
 
   // Loads `data` of type `mime_type` and replaces last committed URL with the
   // given `url`.
@@ -496,6 +530,9 @@ class WebState : public base::SupportsUserData {
   // Get an opaque activity item that can be passed to a
   // UIActivityViewController to share the current URL.
   virtual id GetActivityItem() API_AVAILABLE(ios(16.4)) = 0;
+
+  // Returns the page theme color.
+  virtual UIColor* GetThemeColor() = 0;
 
  protected:
   friend class WebStatePolicyDecider;

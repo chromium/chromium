@@ -331,6 +331,7 @@ void AuctionWorkletManager::WorkletOwner::OnProcessAssigned() {
       base::BindRepeating(&Delegate::GetTrustedURLLoaderFactory,
                           base::Unretained(delegate)),
       base::BindOnce(&Delegate::PreconnectSocket, base::Unretained(delegate)),
+      /*force_reload=*/rfh->reload_type() == ReloadType::BYPASSING_CACHE,
       worklet_manager_->top_window_origin(), worklet_manager_->frame_origin(),
       // NOTE: `rfh` can be null in tests.
       /*renderer_process_id=*/
@@ -344,7 +345,7 @@ void AuctionWorkletManager::WorkletOwner::OnProcessAssigned() {
       mojo::PendingReceiver<auction_worklet::mojom::BidderWorklet>
           worklet_receiver = bidder_worklet_.BindNewPipeAndPassReceiver();
       worklet_debug_ = base::WrapUnique(new DebuggableAuctionWorklet(
-          delegate->GetFrame(), &process_handle_, worklet_info_.script_url,
+          delegate->GetFrame(), process_handle_, worklet_info_.script_url,
           bidder_worklet_.get()));
       process_handle_.GetService()->LoadBidderWorklet(
           std::move(worklet_receiver),
@@ -368,7 +369,7 @@ void AuctionWorkletManager::WorkletOwner::OnProcessAssigned() {
       mojo::PendingReceiver<auction_worklet::mojom::SellerWorklet>
           worklet_receiver = seller_worklet_.BindNewPipeAndPassReceiver();
       worklet_debug_ = base::WrapUnique(new DebuggableAuctionWorklet(
-          delegate->GetFrame(), &process_handle_, worklet_info_.script_url,
+          delegate->GetFrame(), process_handle_, worklet_info_.script_url,
           seller_worklet_.get()));
       process_handle_.GetService()->LoadSellerWorklet(
           std::move(worklet_receiver),

@@ -12,6 +12,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -58,9 +59,9 @@ class SignedWebBundleIdValidTest
 };
 
 TEST_P(SignedWebBundleIdValidTest, ParseValidIDs) {
-  const auto parsed_id = SignedWebBundleId::Create(raw_id_);
-  ASSERT_TRUE(parsed_id.has_value());
-  EXPECT_EQ(parsed_id->type(), type_);
+  EXPECT_THAT(SignedWebBundleId::Create(raw_id_),
+              base::test::ValueIs(
+                  ::testing::Property(&SignedWebBundleId::type, type_)));
 }
 
 INSTANTIATE_TEST_SUITE_P(

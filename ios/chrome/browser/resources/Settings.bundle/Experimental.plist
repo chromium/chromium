@@ -118,31 +118,13 @@
 		</dict>
 		<dict>
 			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
+			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
-			<string>Force Language</string>
+			<string>Force Upgrade Promo</string>
 			<key>Key</key>
-			<string>UILanguageOverride</string>
+			<string>UpgradePromoForceEnabled</string>
 			<key>DefaultValue</key>
-			<string></string>
-			<key>Values</key>
-			<array>
-				<string></string>
-				<string>ar</string>
-				<string>en</string>
-				<string>fr</string>
-				<string>he</string>
-				<string>hi</string>
-			</array>
-			<key>Titles</key>
-			<array>
-				<string>Default</string>
-				<string>Arabic</string>
-				<string>English</string>
-				<string>French</string>
-				<string>Hebrew</string>
-				<string>Hindi</string>
-			</array>
+			<false/>
 		</dict>
 		<dict>
 			<key>Type</key>
@@ -158,12 +140,16 @@
 				<string></string>
 				<string>promos_manager::Promo::AppStoreRating</string>
 				<string>promos_manager::Promo::DefaultBrowser</string>
+				<string>promos_manager::Promo::Choice</string>
+				<string>promos_manager::Promo::PostRestoreDefaultBrowserAlert</string>
 			</array>
 			<key>Titles</key>
 			<array>
 				<string>Disabled (No Promos Forced)</string>
 				<string>App Store Rating</string>
 				<string>Default Browser</string>
+				<string>Waffle</string>
+				<string>Post Restore Default Browser Alert</string>
 			</array>
 		</dict>
 		<dict>
@@ -187,6 +173,16 @@
 				<string>Android Phone</string>
 				<string>Synced And First Device</string>
 			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Simulate Post Phone Restore</string>
+			<key>Key</key>
+			<string>SimulatePostDeviceRestore</string>
+			<key>DefaultValue</key>
+			<false/>
 		</dict>
 		<dict>
 			<key>Type</key>

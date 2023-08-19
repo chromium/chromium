@@ -70,6 +70,19 @@ generate_grd("build_grd") {
     "shimless_rma_types.js",
     "shimless_rma_util.js",
   ]
+
+  # Project Simon strings cannot be made public until after the feature is
+  # released. Thus, they are currently hosted in CIPD and downloaded to
+  # this directory only if an internal chrome-branded checkout is being used.
+  if (is_chrome_branded) {
+    input_files += [
+      "project_simon_strings/device_compliant.txt",
+      "project_simon_strings/device_not_compliant.txt",
+      "project_simon_strings/question_does_meet_requirements.txt",
+      "project_simon_strings/question_is_branded.txt",
+    ]
+  }
+
   input_files_base_dir = rebase_path(".", "//")
   deps = [
     ":preprocess_external_mojo",

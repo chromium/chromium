@@ -10,16 +10,19 @@
 #include "ash/ambient/ambient_controller.h"
 #include "ash/ambient/managed/screensaver_images_policy_handler.h"
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/app_list/views/app_list_nudge_controller.h"
+#include "ash/app_list/views/search_notifier_controller.h"
 #include "ash/assistant/assistant_controller_impl.h"
 #include "ash/calendar/calendar_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
-#include "ash/clipboard/clipboard_nudge_controller.h"
+#include "ash/clipboard/clipboard_history_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/controls/contextual_tooltip.h"
 #include "ash/detachable_base/detachable_base_handler.h"
 #include "ash/display/display_prefs.h"
 #include "ash/display/privacy_screen_controller.h"
+#include "ash/glanceables/glanceables_v2_controller.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/login/login_screen_controller.h"
 #include "ash/login/ui/login_expanded_public_account_view.h"
@@ -42,6 +45,7 @@
 #include "ash/system/hotspot/hotspot_info_cache.h"
 #include "ash/system/human_presence/snooping_protection_controller.h"
 #include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
+#include "ash/system/input_device_settings/input_device_settings_notification_controller.h"
 #include "ash/system/input_device_settings/input_device_tracker.h"
 #include "ash/system/input_device_settings/keyboard_modifier_metrics_recorder.h"
 #include "ash/system/keyboard_brightness/keyboard_backlight_color_controller.h"
@@ -53,6 +57,8 @@
 #include "ash/system/palette/palette_tray.h"
 #include "ash/system/palette/palette_welcome_bubble.h"
 #include "ash/system/pcie_peripheral/pcie_peripheral_notification_controller.h"
+#include "ash/system/phonehub/onboarding_nudge_controller.h"
+#include "ash/system/power/battery_saver_controller.h"
 #include "ash/system/power/power_prefs.h"
 #include "ash/system/power/power_sounds_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
@@ -63,6 +69,8 @@
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/usb_peripheral/usb_peripheral_notification_controller.h"
 #include "ash/touch/touch_devices_controller.h"
+#include "ash/user_education/user_education_controller.h"
+#include "ash/wallpaper/wallpaper_daily_refresh_scheduler.h"
 #include "ash/wallpaper/wallpaper_pref_manager.h"
 #include "ash/wm/desks/desks_restore_util.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
@@ -83,9 +91,12 @@ namespace ash {
 namespace {
 
 // Registers prefs whose default values are same in user and signin prefs.
-void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
+void RegisterProfilePrefs(PrefRegistrySimple* registry,
+                          std::string_view country,
+                          bool for_test) {
   AccessibilityControllerImpl::RegisterProfilePrefs(registry);
   AppListControllerImpl::RegisterProfilePrefs(registry);
+  AppListNudgeController::RegisterProfilePrefs(registry);
   AshAcceleratorConfiguration::RegisterProfilePrefs(registry);
   AssistantControllerImpl::RegisterProfilePrefs(registry);
   AutozoomControllerImpl::RegisterProfilePrefs(registry);
@@ -98,7 +109,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
   CellularSetupNotifier::RegisterProfilePrefs(registry);
   chromeos::MultitaskMenuNudgeController::RegisterProfilePrefs(registry);
   contextual_tooltip::RegisterProfilePrefs(registry);
-  ClipboardNudgeController::RegisterProfilePrefs(registry);
+  ClipboardHistoryControllerImpl::RegisterProfilePrefs(registry);
   ColorPaletteController::RegisterPrefs(registry);
   DarkLightModeControllerImpl::RegisterProfilePrefs(registry);
   desks_restore_util::RegisterProfilePrefs(registry);
@@ -109,36 +120,41 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
   GeolocationController::RegisterProfilePrefs(registry);
   GestureEducationNotificationController::RegisterProfilePrefs(registry,
                                                                for_test);
+  GlanceablesV2Controller::RegisterUserProfilePrefs(registry);
   holding_space_prefs::RegisterProfilePrefs(registry);
   HotspotInfoCache::RegisterProfilePrefs(registry);
   InputDeviceSettingsControllerImpl::RegisterProfilePrefs(registry);
+  InputDeviceSettingsNotificationController::RegisterProfilePrefs(registry);
   InputDeviceTracker::RegisterProfilePrefs(registry);
   LoginScreenController::RegisterProfilePrefs(registry, for_test);
   LogoutButtonTray::RegisterProfilePrefs(registry);
   LogoutConfirmationController::RegisterProfilePrefs(registry);
   KeyboardBacklightColorController::RegisterPrefs(registry);
-  KeyboardControllerImpl::RegisterProfilePrefs(registry);
+  KeyboardControllerImpl::RegisterProfilePrefs(registry, country);
   KeyboardModifierMetricsRecorder::RegisterProfilePrefs(registry, for_test);
   MediaControllerImpl::RegisterProfilePrefs(registry);
   MessageCenterController::RegisterProfilePrefs(registry);
   NightLightControllerImpl::RegisterProfilePrefs(registry);
+  OnboardingNudgeController::RegisterProfilePrefs(registry);
   PaletteTray::RegisterProfilePrefs(registry);
   PaletteWelcomeBubble::RegisterProfilePrefs(registry);
   PciePeripheralNotificationController::RegisterProfilePrefs(registry);
-  PowerSoundsController::RegisterPrefs(registry);
   PrivacyHubController::RegisterProfilePrefs(registry);
   PrivacyScreenController::RegisterProfilePrefs(registry);
   ProjectorControllerImpl::RegisterProfilePrefs(registry);
   quick_pair::Mediator::RegisterProfilePrefs(registry);
   ScreensaverImagesPolicyHandler::RegisterPrefs(registry);
+  SearchNotifierController::RegisterProfilePrefs(registry);
   ShelfController::RegisterProfilePrefs(registry);
   SnoopingProtectionController::RegisterProfilePrefs(registry);
   TabletModeTuckEducation::RegisterProfilePrefs(registry);
   TouchDevicesController::RegisterProfilePrefs(registry, for_test);
   UnifiedSystemTrayController::RegisterProfilePrefs(registry);
+  UserEducationController::RegisterProfilePrefs(registry);
   MediaTray::RegisterProfilePrefs(registry);
   UsbPeripheralNotificationController::RegisterProfilePrefs(registry);
   VpnDetailedView::RegisterProfilePrefs(registry);
+  WallpaperDailyRefreshScheduler::RegisterProfilePrefs(registry);
   WallpaperPrefManager::RegisterProfilePrefs(registry);
   WindowCycleController::RegisterProfilePrefs(registry);
 
@@ -173,6 +189,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry, bool for_test) {
   PaletteTray::RegisterLocalStatePrefs(registry);
   WallpaperPrefManager::RegisterLocalStatePrefs(registry);
+  ColorPaletteController::RegisterLocalStatePrefs(registry);
   DetachableBaseHandler::RegisterPrefs(registry);
   PowerPrefs::RegisterLocalStatePrefs(registry);
   PrivacyHubController::RegisterLocalStatePrefs(registry);
@@ -186,6 +203,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry, bool for_test) {
     TopShortcutsView::RegisterLocalStatePrefs(registry);
   }
   KeyboardBacklightColorController::RegisterPrefs(registry);
+  BatterySaverController::RegisterLocalStatePrefs(registry);
+  PowerSoundsController::RegisterLocalStatePrefs(registry);
 
   if (for_test) {
     registry->RegisterBooleanPref(prefs::kOwnerPrimaryMouseButtonRight, false);
@@ -193,13 +212,17 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry, bool for_test) {
   }
 }
 
-void RegisterSigninProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
-  RegisterProfilePrefs(registry, for_test);
+void RegisterSigninProfilePrefs(PrefRegistrySimple* registry,
+                                std::string_view country,
+                                bool for_test) {
+  RegisterProfilePrefs(registry, country, for_test);
   PowerPrefs::RegisterSigninProfilePrefs(registry);
 }
 
-void RegisterUserProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
-  RegisterProfilePrefs(registry, for_test);
+void RegisterUserProfilePrefs(PrefRegistrySimple* registry,
+                              std::string_view country,
+                              bool for_test) {
+  RegisterProfilePrefs(registry, country, for_test);
   PowerPrefs::RegisterUserProfilePrefs(registry);
   SessionControllerImpl::RegisterUserProfilePrefs(registry);
 }

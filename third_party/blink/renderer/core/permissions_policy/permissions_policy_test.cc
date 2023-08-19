@@ -614,10 +614,10 @@ const PermissionsPolicyParserTestCase
             /* test_name */ "ImproperWildcardsIncluded",
             /* feature_policy_string */
             "fullscreen *://example.com https://foo.*.example.com "
-            "https://*.*.example.com https://example.com:*",
+            "https://*.*.example.com",
             /* permissions_policy_string */
             "fullscreen=(\"*://example.com\" \"https://foo.*.example.com\" "
-            "\"https://*.*.example.com\"  \"https://example.com:*\")",
+            "\"https://*.*.example.com\")",
             /* self_origin */ ORIGIN_A,
             /* src_origin */ ORIGIN_B,
             /* expected_parse_result */
@@ -1046,14 +1046,14 @@ class FeaturePolicyMutationTest : public testing::Test {
   ParsedPermissionsPolicy test_policy = {
       {mojom::blink::PermissionsPolicyFeature::kFullscreen,
        /*allowed_origins=*/
-       {blink::OriginWithPossibleWildcards::FromOrigin(url_origin_a_),
-        blink::OriginWithPossibleWildcards::FromOrigin(url_origin_b_)},
+       {*blink::OriginWithPossibleWildcards::FromOrigin(url_origin_a_),
+        *blink::OriginWithPossibleWildcards::FromOrigin(url_origin_b_)},
        /*self_if_matches=*/absl::nullopt,
        /*matches_all_origins=*/false,
        /*matches_opaque_src=*/false},
       {mojom::blink::PermissionsPolicyFeature::kGeolocation,
        /*=allowed_origins*/
-       {blink::OriginWithPossibleWildcards::FromOrigin(url_origin_a_)},
+       {*blink::OriginWithPossibleWildcards::FromOrigin(url_origin_a_)},
        /*self_if_matches=*/absl::nullopt,
        /*matches_all_origins=*/false,
        /*matches_opaque_src=*/false}};

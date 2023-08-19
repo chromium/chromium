@@ -19,6 +19,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
+#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom.h"
 #include "ui/accessibility/ax_event.h"
 
 namespace content {
@@ -64,7 +65,11 @@ class CONTENT_EXPORT BackForwardCacheCanStoreDocumentResult {
       BackForwardCacheMetrics::NotRestoredReason reason) const;
 
   void No(BackForwardCacheMetrics::NotRestoredReason reason);
-  void NoDueToFeatures(BlockListedFeatures features);
+
+  using BlockingDetailsMap =
+      std::map<blink::scheduler::WebSchedulerTrackedFeature,
+               std::vector<blink::mojom::BlockingDetailsPtr>>;
+  void NoDueToFeatures(BlockingDetailsMap map);
 
   void NoDueToRelatedActiveContents(
       absl::optional<ShouldSwapBrowsingInstance> browsing_instance_swap_result);
@@ -83,11 +88,14 @@ class CONTENT_EXPORT BackForwardCacheCanStoreDocumentResult {
   bool CanStore() const;
   bool CanRestore() const;
 
+  const BlockListedFeatures blocklisted_features() const;
+
   const NotRestoredReasons& not_restored_reasons() const {
     return not_restored_reasons_;
   }
-  BlockListedFeatures blocklisted_features() const {
-    return blocklisted_features_;
+
+  const BlockingDetailsMap& blocking_details_map() const {
+    return blocking_details_map_;
   }
 
   const DisabledReasonsMap& disabled_reasons() const {
@@ -123,7 +131,7 @@ class CONTENT_EXPORT BackForwardCacheCanStoreDocumentResult {
       BackForwardCacheMetrics::NotRestoredReason reason) const;
 
   NotRestoredReasons not_restored_reasons_;
-  BlockListedFeatures blocklisted_features_;
+  BlockingDetailsMap blocking_details_map_;
   DisabledReasonsMap disabled_reasons_;
   absl::optional<ShouldSwapBrowsingInstance> browsing_instance_swap_result_;
   std::set<uint64_t> disallow_activation_reasons_;

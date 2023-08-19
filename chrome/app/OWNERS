@@ -14,7 +14,7 @@ per-file generated_resources.grd=*
 per-file google_chrome_strings.grd=*
 per-file extensions_strings.grdp=*
 per-file os_settings_strings.grdp=*
-per-file os_settings_search_tag_strings.grdp=file://chrome/browser/resources/settings/chromeos/OWNERS
+per-file os_settings_search_tag_strings.grdp=file://chrome/browser/resources/ash/settings/OWNERS
 
 per-file access_code_cast_strings.grdp=file://chrome/browser/ui/webui/access_code_cast/OWNERS
 
@@ -38,6 +38,8 @@ per-file *settings*strings*.grdp=file://chrome/browser/resources/settings/OWNERS
 per-file *settings*strings*.grdp=file://ui/webui/PLATFORM_OWNERS
 per-file *settings*strings*.grdp=sauski@google.com
 
+per-file support_tool_strings.grdp=file://chrome/browser/support_tool/OWNERS
+
 per-file vr_strings.grdp=file://chrome/browser/vr/OWNERS
 
 per-file password_manager_ui_strings.grdp=file://chrome/browser/password_manager/OWNERS
@@ -56,6 +58,9 @@ per-file chrome_exe_main_mac.cc=rsesek@chromium.org
 
 per-file main_dll_loader_win.cc=brucedawson@chromium.org
 per-file main_dll_loader_win.cc=wfh@chromium.org
+
+per-file framework.exports=file://build/mac/OWNERS
+per-file framework.order=file://build/mac/OWNERS
 
 # Security-review owners for Fuchsia Component Manifests.
 per-file *.cml=set noparent

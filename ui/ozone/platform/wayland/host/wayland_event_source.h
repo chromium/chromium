@@ -7,6 +7,7 @@
 
 #include <deque>
 #include <memory>
+#include <ostream>
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
@@ -91,6 +92,8 @@ class WaylandEventSource : public PlatformEventSource,
   // wl_display_roundtrip_queue.
   void RoundTripQueue();
 
+  void DumpState(std::ostream& out) const;
+
  protected:
   // WaylandKeyboard::Delegate
   void OnKeyboardFocusChanged(WaylandWindow* window, bool focused) override;
@@ -160,6 +163,11 @@ class WaylandEventSource : public PlatformEventSource,
                     base::TimeTicks timestamp,
                     int device_id,
                     absl::optional<float> scale_delta) override;
+  void OnHoldEvent(EventType event_type,
+                   uint32_t finger_count,
+                   base::TimeTicks timestamp,
+                   int device_id,
+                   wl::EventDispatchPolicy dispatch_policy) override;
 
   // WaylandZwpRelativePointerManager::Delegate:
   void SetRelativePointerMotionEnabled(bool enabled) override;
@@ -180,6 +188,8 @@ class WaylandEventSource : public PlatformEventSource,
     float dy = 0.0f;
     base::TimeDelta dt;
     bool is_axis_stop = false;
+
+    void DumpState(std::ostream& out) const;
   };
 
   struct FrameData {
@@ -190,6 +200,8 @@ class WaylandEventSource : public PlatformEventSource,
 
     std::unique_ptr<Event> event;
     base::OnceCallback<void()> completion_cb;
+
+    void DumpState(std::ostream& out) const;
   };
 
   // PlatformEventSource:

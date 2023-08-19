@@ -15,10 +15,6 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "third_party/metrics_proto/user_demographics.pb.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 const metrics::UserDemographicsProto::Gender kTestGender =

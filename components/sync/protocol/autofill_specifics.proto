@@ -315,7 +315,7 @@ message WalletMaskedCreditCard {
   // The product description for the card. Used to be shown in the UI.
   optional string product_description = 18;
 
-  // The type of virtual card enrollment. TYPE_UNSPECIFIED indicates that the
+  // The type of virtual card enrollment. kTypeUnspecified indicates that the
   // card is unenrolled.
   optional VirtualCardEnrollmentType virtual_card_enrollment_type = 19;
 }

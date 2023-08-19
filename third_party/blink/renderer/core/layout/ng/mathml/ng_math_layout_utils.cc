@@ -135,6 +135,7 @@ bool IsValidMathMLScript(const NGBlockNode& node) {
     case MathScriptType::kMultiscripts:
       return IsValidMultiscript(node);
     default:
+      NOTREACHED();
       return false;
   }
 }

@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
+#include "extensions/common/extension_id.h"
 
 class GlobalConfirmInfoBar;
 
@@ -57,7 +58,7 @@ class ExtensionDevToolsInfoBarDelegate : public ConfirmInfoBarDelegate {
   base::CallbackListSubscription RegisterDestroyedCallback(
       base::OnceClosure destroyed_callback);
 
-  const std::string extension_id_;
+  const ExtensionId extension_id_;
   const std::u16string extension_name_;
   // infobar_ is set after attaching an extension and is deleted 5 seconds after
   // detaching the extension. |infobar_| owns this object and is therefore

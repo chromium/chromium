@@ -17,9 +17,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/apple/mach_logging.h"
+#include "base/apple/scoped_mach_port.h"
 #include "base/logging.h"
-#include "base/mac/mach_logging.h"
-#include "base/mac/scoped_mach_port.h"
 #include "base/strings/stringprintf.h"
 #include "client/settings.h"
 #include "handler/mac/file_limit_annotation.h"
@@ -200,8 +200,8 @@ kern_return_t CrashReportExceptionHandler::CatchMachException(
     // processes that haven’t actually crashed, and could result in reports not
     // actually associated with crashes being sent to the operating system
     // vendor.
-    base::mac::ScopedMachSendRight
-        system_crash_reporter_handler(SystemCrashReporterHandler());
+    base::apple::ScopedMachSendRight system_crash_reporter_handler(
+        SystemCrashReporterHandler());
     if (system_crash_reporter_handler.get()) {
       // Make copies of mutable out parameters so that the system crash reporter
       // can’t influence the state returned by this method.

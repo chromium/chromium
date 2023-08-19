@@ -116,21 +116,20 @@ void HelpAppZeroStateResult::Open(int event_flags) {
 HelpAppZeroStateProvider::HelpAppZeroStateProvider(
     Profile* profile,
     ash::AppListNotifier* notifier)
-    : profile_(profile), notifier_(notifier) {
+    : profile_(profile) {
   DCHECK(profile_);
 
-  app_service_proxy_ = apps::AppServiceProxyFactory::GetForProfile(profile_);
-  Observe(&app_service_proxy_->AppRegistryCache());
+  app_registry_cache_observer_.Observe(
+      &apps::AppServiceProxyFactory::GetForProfile(profile)
+           ->AppRegistryCache());
   LoadIcon();
 
-  if (notifier_)
-    notifier_->AddObserver(this);
+  if (notifier) {
+    notifier_observer_.Observe(notifier);
+  }
 }
 
-HelpAppZeroStateProvider::~HelpAppZeroStateProvider() {
-  if (notifier_)
-    notifier_->RemoveObserver(this);
-}
+HelpAppZeroStateProvider::~HelpAppZeroStateProvider() = default;
 
 void HelpAppZeroStateProvider::StartZeroState() {
   SearchProvider::Results search_results;
@@ -170,7 +169,7 @@ void HelpAppZeroStateProvider::OnAppUpdate(const apps::AppUpdate& update) {
 
 void HelpAppZeroStateProvider::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {
-  Observe(nullptr);
+  app_registry_cache_observer_.Reset();
 }
 
 void HelpAppZeroStateProvider::OnImpression(
@@ -198,8 +197,9 @@ void HelpAppZeroStateProvider::OnLoadIcon(apps::IconValuePtr icon_value) {
 }
 
 void HelpAppZeroStateProvider::LoadIcon() {
-  app_service_proxy_->LoadIcon(
-      app_service_proxy_->AppRegistryCache().GetAppType(web_app::kHelpAppId),
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
+  proxy->LoadIcon(
+      proxy->AppRegistryCache().GetAppType(web_app::kHelpAppId),
       web_app::kHelpAppId, apps::IconType::kStandard,
       ash::SharedAppListConfig::instance().suggestion_chip_icon_dimension(),
       /*allow_placeholder_icon=*/false,

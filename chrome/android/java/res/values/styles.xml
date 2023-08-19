@@ -470,8 +470,12 @@ found in the LICENSE file.
     <style name="TextAppearance.ShoppingPriceDropText" parent="TextAppearance.TextMedium.Secondary">
         <item name="android:textColor">@color/price_drop_annotation_text_green</item>
     </style>
+    <style name="TextAppearance.FolderChildCount" parent="TextAppearance.TextLarge.Primary" tools:ignore="SpUsage">
+        <!-- The same as the regular style, but using dp instead of sp. -->
+        <item name="android:textSize">16dp</item>
+    </style>
 
-    <!-- 
+    <!--
         TODO(crbug.com/1429043): Tinting the drawable for the popup theme doesn't work in clank.
         The "colorAccent" attribute works in a standalone Android project, but it doesn't have any
         effect in clank.

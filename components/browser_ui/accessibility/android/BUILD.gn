@@ -34,6 +34,7 @@ android_library("constants_java") {
 }
 
 android_library("java") {
+  srcjar_deps = [ ":accessibility_jni_headers" ]
   sources = [
     "java/src/org/chromium/components/browser_ui/accessibility/AccessibilitySettings.java",
     "java/src/org/chromium/components/browser_ui/accessibility/AccessibilitySettingsDelegate.java",
@@ -49,7 +50,7 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomViewBinder.java",
     "java/src/org/chromium/components/browser_ui/accessibility/TextScalePreference.java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
   deps = [
     ":constants_java",
     ":java_resources",
@@ -89,6 +90,8 @@ android_resources("java_resources") {
 }
 
 robolectric_library("junit") {
+  testonly = true
+
   sources = [
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomMediatorUnitTest.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomUtilsUnitTest.java",
@@ -99,11 +102,34 @@ robolectric_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//base:jni_java",
     "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_no_recycler_view_java",
+  ]
+}
+
+android_library("unit_device_javatests") {
+  testonly = true
+  resources_package = "org.chromium.components.browser_ui.accessibility"
+
+  sources = [ "java/src/org/chromium/components/browser_ui/accessibility/PageZoomViewTest.java" ]
+
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java_test_support",
+    "//base:jni_java",
+    "//content/public/android:content_java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:espresso_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
   ]
 }
 

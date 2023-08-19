@@ -99,15 +99,20 @@ void InstallTracker::OnDownloadProgress(const std::string& extension_id,
   }
 }
 
-void InstallTracker::OnBeginCrxInstall(const std::string& extension_id) {
-  for (auto& observer : observers_)
-    observer.OnBeginCrxInstall(browser_context_, extension_id);
+void InstallTracker::OnBeginCrxInstall(const CrxInstaller& installer,
+                                       const std::string& extension_id) {
+  for (auto& observer : observers_) {
+    observer.OnBeginCrxInstall(browser_context_, installer, extension_id);
+  }
 }
 
-void InstallTracker::OnFinishCrxInstall(const std::string& extension_id,
+void InstallTracker::OnFinishCrxInstall(const CrxInstaller& installer,
+                                        const std::string& extension_id,
                                         bool success) {
-  for (auto& observer : observers_)
-    observer.OnFinishCrxInstall(browser_context_, extension_id, success);
+  for (auto& observer : observers_) {
+    observer.OnFinishCrxInstall(browser_context_, installer, extension_id,
+                                success);
+  }
 }
 
 void InstallTracker::OnInstallFailure(

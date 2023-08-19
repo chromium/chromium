@@ -13,6 +13,8 @@ if (current_cpu == "pnacl") {
   nacl_toolchain_variant = "pnacl"
 } else if (is_nacl_glibc) {
   nacl_toolchain_variant = "glibc"
+} else if (is_nacl_saigo) {
+  nacl_toolchain_variant = "test_irt"
 } else {
   nacl_toolchain_variant = "newlib"
 }
@@ -86,6 +88,9 @@ template("nacl_test_data") {
     if (defined(extra_nmf_cpu)) {
       extra_suffix = "newlib_${extra_nmf_cpu}"
       newlib_tc = "//build/toolchain/nacl:clang_newlib"
+      if (is_nacl_saigo) {
+        newlib_tc = "//build/toolchain/nacl:test_irt"
+      }
       assert(current_toolchain == "${newlib_tc}_${current_cpu}")
       extra_toolchain = "${newlib_tc}_${extra_tc_cpu}"
     }

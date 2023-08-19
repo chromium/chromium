@@ -53,29 +53,38 @@ absl::optional<base::win::RegKey> ClientStateAppKeyCreate(
   return key;
 }
 
-bool RegRenameValue(base::win::RegKey& key,
-                    const std::wstring& old_value_name,
-                    const std::wstring& new_value_name) {
+bool RegCopyValue(base::win::RegKey& from_key,
+                  const std::wstring& from_value_name,
+                  base::win::RegKey& to_key,
+                  const std::wstring& to_value_name) {
   DWORD size = 0;
-  if (key.ReadValue(old_value_name.c_str(), nullptr, &size, nullptr) !=
+  if (from_key.ReadValue(from_value_name.c_str(), nullptr, &size, nullptr) !=
       ERROR_SUCCESS) {
     return false;
   }
 
   std::vector<char> raw_value(size);
   DWORD dtype = 0;
-  if (key.ReadValue(old_value_name.c_str(), raw_value.data(), &size, &dtype) !=
-      ERROR_SUCCESS) {
+  if (from_key.ReadValue(from_value_name.c_str(), raw_value.data(), &size,
+                         &dtype) != ERROR_SUCCESS) {
     return false;
   }
 
-  if (key.WriteValue(new_value_name.c_str(), raw_value.data(), size, dtype) !=
+  if (to_key.WriteValue(to_value_name.c_str(), raw_value.data(), size, dtype) !=
       ERROR_SUCCESS) {
-    PLOG(WARNING) << "could not write: " << new_value_name;
+    PLOG(WARNING) << "could not write: " << to_value_name;
     return false;
   }
+  return true;
+}
 
-  PLOG_IF(WARNING, key.DeleteValue(old_value_name.c_str()) != ERROR_SUCCESS);
+bool RegRenameValue(base::win::RegKey& key,
+                    const std::wstring& from_value_name,
+                    const std::wstring& to_value_name) {
+  if (!RegCopyValue(key, from_value_name, key, to_value_name)) {
+    return false;
+  }
+  key.DeleteValue(from_value_name.c_str());
   return true;
 }
 
@@ -87,23 +96,44 @@ void PersistLastInstallerResultValues(UpdaterScope updater_scope,
     return;
   }
 
-  // Rename InstallerResultXXX values to LastXXX.
-  RegRenameValue(key.value(), kRegValueInstallerResult,
-                 kRegValueLastInstallerResult);
-  RegRenameValue(key.value(), kRegValueInstallerError,
-                 kRegValueLastInstallerError);
-  RegRenameValue(key.value(), kRegValueInstallerExtraCode1,
-                 kRegValueLastInstallerExtraCode1);
-  RegRenameValue(key.value(), kRegValueInstallerResultUIString,
-                 kRegValueLastInstallerResultUIString);
-  RegRenameValue(key.value(), kRegValueInstallerSuccessLaunchCmdLine,
-                 kRegValueLastInstallerSuccessLaunchCmdLine);
+  // Rename `InstallerResultXXX` values to `LastXXX`.
+  for (const auto& [rename_from, rename_to] : {
+           std::make_pair(kRegValueInstallerResult,
+                          kRegValueLastInstallerResult),
+           std::make_pair(kRegValueInstallerError, kRegValueLastInstallerError),
+           std::make_pair(kRegValueInstallerExtraCode1,
+                          kRegValueLastInstallerExtraCode1),
+           std::make_pair(kRegValueInstallerResultUIString,
+                          kRegValueLastInstallerResultUIString),
+           std::make_pair(kRegValueInstallerSuccessLaunchCmdLine,
+                          kRegValueLastInstallerSuccessLaunchCmdLine),
+       }) {
+    RegRenameValue(key.value(), rename_from, rename_to);
+  }
+
+  // The updater copies and retains the last installer result values as a backup
+  // under the `UPDATER_KEY`, and the values under the `UPDATER_KEY` are not
+  // deleted when the updater uninstalls itself. The MSI installer uses this
+  // information to display the installer result in cases where an error occurs
+  // during app installation and no other apps are installed, and the updater
+  // immediately uninstalls itself and deletes the `ClientState` registry key
+  // under which the last installer results are usually stored.
+  if (base::win::RegKey updater_key(UpdaterScopeToHKeyRoot(updater_scope),
+                                    UPDATER_KEY, Wow6432(KEY_WRITE));
+      updater_key.Valid()) {
+    for (const wchar_t* const reg_value_last_installer :
+         kRegValuesLastInstaller) {
+      RegCopyValue(key.value(), reg_value_last_installer, updater_key,
+                   reg_value_last_installer);
+    }
+  }
 }
 
 bool ClientStateAppKeyExists(UpdaterScope updater_scope,
                              const std::string& app_id) {
   return base::win::RegKey(UpdaterScopeToHKeyRoot(updater_scope),
-                           CLIENT_STATE_KEY, Wow6432(KEY_QUERY_VALUE))
+                           GetAppClientStateKey(app_id).c_str(),
+                           Wow6432(KEY_QUERY_VALUE))
       .Valid();
 }
 

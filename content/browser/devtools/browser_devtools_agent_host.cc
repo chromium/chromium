@@ -133,6 +133,9 @@ class BrowserDevToolsAgentHost::BrowserAutoAttacher final
     if (host->GetType() == DevToolsAgentHost::kTypeSharedWorker) {
       return true;
     }
+    if (host->GetType() == DevToolsAgentHost::kTypeSharedStorageWorklet) {
+      return true;
+    }
     if (host->GetType() == DevToolsAgentHost::kTypeTab) {
       return true;
     }
@@ -209,7 +212,7 @@ bool BrowserDevToolsAgentHost::AttachSession(DevToolsSession* session,
         socket_callback_, tethering_task_runner_);
   }
   session->CreateAndAddHandler<protocol::TracingHandler>(
-      protocol::TracingHandler::kBrowser, GetIOContext());
+      this, GetIOContext(), /* root_session */ nullptr);
 
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX) && BUILDFLAG(CLANG_PGO)
   session->CreateAndAddHandler<protocol::NativeProfilingHandler>();

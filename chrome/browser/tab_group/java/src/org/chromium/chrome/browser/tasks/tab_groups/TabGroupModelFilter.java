@@ -109,9 +109,10 @@ public class TabGroupModelFilter extends TabModelFilter {
          * @param tabs The list of modified {@link Tab}s.
          * @param tabOriginalIndex The original tab index for each modified tab.
          * @param tabOriginalRootId The original root id for each modified tab.
+         * @param destinationGroupTitle The original destination group title.
          */
-        void didCreateGroup(
-                List<Tab> tabs, List<Integer> tabOriginalIndex, List<Integer> tabOriginalRootId);
+        void didCreateGroup(List<Tab> tabs, List<Integer> tabOriginalIndex,
+                List<Integer> tabOriginalRootId, String destinationGroupTitle);
     }
 
     /**
@@ -195,16 +196,8 @@ public class TabGroupModelFilter extends TabModelFilter {
     private boolean mIsResetting;
     private boolean mIsUndoing;
 
-    // Create group automatically for target_blank links.
-    private final boolean mGroupAutoCreation;
-
     public TabGroupModelFilter(TabModel tabModel) {
-        this(tabModel, true);
-    }
-
-    public TabGroupModelFilter(TabModel tabModel, boolean autoCreation) {
         super(tabModel);
-        mGroupAutoCreation = autoCreation;
     }
 
     /**
@@ -311,6 +304,7 @@ public class TabGroupModelFilter extends TabModelFilter {
         int destinationIndexInTabModel = getTabModelDestinationIndex(destinationTab);
         List<Integer> originalIndexes = new ArrayList<>();
         List<Integer> originalRootIds = new ArrayList<>();
+        String destinationGroupTitle = TabGroupTitleUtils.getTabGroupTitle(destinationGroupId);
 
         if (skipUpdateTabModel || !needToUpdateTabModel(tabsToMerge, destinationIndexInTabModel)) {
             for (Observer observer : mGroupFilterObserver) {
@@ -340,7 +334,8 @@ public class TabGroupModelFilter extends TabModelFilter {
                 // Since the undo group merge logic is unsupported when called from the tab strip,
                 // skip notifying the UndoGroupSnackbarController observer which shows the snackbar.
                 if (!skipUpdateTabModel) {
-                    observer.didCreateGroup(tabsToMerge, originalIndexes, originalRootIds);
+                    observer.didCreateGroup(
+                            tabsToMerge, originalIndexes, originalRootIds, destinationGroupTitle);
                 }
             }
         } else {
@@ -367,6 +362,7 @@ public class TabGroupModelFilter extends TabModelFilter {
         int destinationIndexInTabModel = getTabModelDestinationIndex(destinationTab);
         List<Integer> originalIndexes = new ArrayList<>();
         List<Integer> originalRootIds = new ArrayList<>();
+        String destinationGroupTitle = TabGroupTitleUtils.getTabGroupTitle(destinationGroupId);
 
         for (int i = 0; i < tabs.size(); i++) {
             Tab tab = tabs.get(i);
@@ -404,7 +400,8 @@ public class TabGroupModelFilter extends TabModelFilter {
 
         if (notify) {
             for (Observer observer : mGroupFilterObserver) {
-                observer.didCreateGroup(tabs, originalIndexes, originalRootIds);
+                observer.didCreateGroup(
+                        tabs, originalIndexes, originalRootIds, destinationGroupTitle);
             }
         }
     }
@@ -634,13 +631,11 @@ public class TabGroupModelFilter extends TabModelFilter {
 
     private int getParentId(Tab tab) {
         if (isTabModelRestored() && !mIsResetting
-                && (mGroupAutoCreation
-                        || (tab.getLaunchType() == TabLaunchType.FROM_TAB_GROUP_UI
-                                || tab.getLaunchType()
-                                        == TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP
-                                // TODO(https://crbug.com/1194287): Investigates a better solution
-                                // without adding the TabLaunchType.FROM_START_SURFACE.
-                                || tab.getLaunchType() == TabLaunchType.FROM_START_SURFACE))) {
+                && ((tab.getLaunchType() == TabLaunchType.FROM_TAB_GROUP_UI
+                        || tab.getLaunchType() == TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP
+                        // TODO(https://crbug.com/1194287): Investigates a better solution
+                        // without adding the TabLaunchType.FROM_START_SURFACE.
+                        || tab.getLaunchType() == TabLaunchType.FROM_START_SURFACE))) {
             Tab parentTab = TabModelUtils.getTabById(
                     getTabModel(), CriticalPersistedTabData.from(tab).getParentId());
             if (parentTab != null) {
@@ -667,13 +662,8 @@ public class TabGroupModelFilter extends TabModelFilter {
                 mActualGroupCount++;
                 // TODO(crbug.com/1188370): Update UMA for Context menu creation.
                 if (mShouldRecordUma
-                        && ((mGroupAutoCreation
-                                    && tab.getLaunchType()
-                                            == TabLaunchType.FROM_LONGPRESS_BACKGROUND)
-                                || (!mGroupAutoCreation
-                                        && tab.getLaunchType()
-                                                == TabLaunchType
-                                                           .FROM_LONGPRESS_BACKGROUND_IN_GROUP))) {
+                        && (tab.getLaunchType()
+                                == TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP)) {
                     RecordUserAction.record("TabGroup.Created.OpenInNewTab");
                 }
             }
@@ -1106,7 +1096,6 @@ public class TabGroupModelFilter extends TabModelFilter {
         return mGroupIdToGroupIndexMap.get(groupId);
     }
 
-    @VisibleForTesting
     int getGroupLastShownTabIdForTesting(int groupId) {
         return mGroupIdToGroupMap.get(groupId).getLastShownTabId();
     }

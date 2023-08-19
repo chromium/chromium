@@ -46,6 +46,7 @@ android_library("javatests") {
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
     "//url:gurl_java",

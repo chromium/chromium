@@ -147,12 +147,10 @@ void PrintCompositorImpl::AddSubframeContent(
   UpdateRequestsWithSubframeInfo(frame_guid, pending_subframes);
 }
 
-#if BUILDFLAG(ENABLE_TAGGED_PDF)
 void PrintCompositorImpl::SetAccessibilityTree(
     const ui::AXTreeUpdate& accessibility_tree) {
   accessibility_tree_ = accessibility_tree;
 }
-#endif
 
 void PrintCompositorImpl::CompositePageToPdf(
     uint64_t frame_guid,
@@ -355,9 +353,12 @@ mojom::PrintCompositor::Status PrintCompositorImpl::CompositeToPdf(
     return mojom::PrintCompositor::Status::kContentFormatError;
   }
 
+  // Create PDF document providing accessibility data early if concurrent
+  // document composition is not in effect, i.e. when handling
+  // CompositeDocumentToPdf() call.
   SkDynamicMemoryWStream wstream;
-  sk_sp<SkDocument> doc =
-      MakePdfDocument(creator_, ui::AXTreeUpdate(), &wstream);
+  sk_sp<SkDocument> doc = MakePdfDocument(
+      creator_, docinfo_ ? ui::AXTreeUpdate() : accessibility_tree_, &wstream);
 
   for (const auto& page : pages) {
     TRACE_EVENT0("print", "PrintCompositorImpl::CompositeToPdf draw page");

@@ -4,7 +4,7 @@
 
 #include <jni.h>
 
-#include "chrome/android/chrome_test_util_jni_headers/FederatedIdentityTestUtils_jni.h"
+#include "chrome/android/chrome_test_util_jni/FederatedIdentityTestUtils_jni.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "content/public/browser/federated_identity_api_permission_context_delegate.h"

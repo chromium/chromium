@@ -16,8 +16,6 @@
  * [android-pixel2_webview-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel2_webview-perf): Android OPM1.171019.021.
  * [android-pixel4-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel4-perf): Android R.
  * [android-pixel4_webview-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel4_webview-perf): Android R.
- * [android-pixel4a_power-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel4a_power-perf): Android QD4A.200102.001.A1.
- * [android-pixel4a_power-perf-pgo](https://ci.chromium.org/p/chrome/builders/ci/android-pixel4a_power-perf-pgo): Android QD4A.200102.001.A1.
  * [android-pixel6-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel6-perf): Android T.
  * [android-pixel6-pro-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel6-pro-perf): Android T.
 
@@ -89,12 +87,7 @@
 
 ### Fuchsia
 
- * [fuchsia-perf-ast](https://ci.chromium.org/p/chrome/builders/ci/fuchsia-perf-ast).
- * [fuchsia-perf-atlas-fyi](https://ci.chromium.org/p/chrome/builders/ci/fuchsia-perf-atlas-fyi).
- * [fuchsia-perf-fyi](https://ci.chromium.org/p/chrome/builders/ci/fuchsia-perf-fyi).
  * [fuchsia-perf-nsn](https://ci.chromium.org/p/chrome/builders/ci/fuchsia-perf-nsn).
- * [fuchsia-perf-nuc-fyi](https://ci.chromium.org/p/chrome/builders/ci/fuchsia-perf-nuc-fyi).
- * [fuchsia-perf-sherlock-fyi](https://ci.chromium.org/p/chrome/builders/ci/fuchsia-perf-sherlock-fyi).
  * [fuchsia-perf-shk](https://ci.chromium.org/p/chrome/builders/ci/fuchsia-perf-shk).
 
 ### Linux

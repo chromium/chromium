@@ -9,7 +9,6 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -71,12 +70,8 @@ class ScreenshotCapturedBubble : public LocationBarBubbleDelegateView {
   raw_ptr<Profile> profile_;
 
   // Pointers to view widgets; weak.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION views::ImageView* image_view_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION views::MdTextButton* download_button_ = nullptr;
+  raw_ptr<views::ImageView> image_view_ = nullptr;
+  raw_ptr<views::MdTextButton> download_button_ = nullptr;
 
   base::WeakPtrFactory<ScreenshotCapturedBubble> weak_factory_{this};
 };

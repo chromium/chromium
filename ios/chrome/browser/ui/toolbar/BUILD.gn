@@ -7,10 +7,10 @@ source_set("toolbar") {
     "adaptive_toolbar_coordinator+subclassing.h",
     "adaptive_toolbar_coordinator.h",
     "adaptive_toolbar_coordinator.mm",
+    "adaptive_toolbar_mediator.h",
+    "adaptive_toolbar_mediator.mm",
     "primary_toolbar_coordinator.h",
     "primary_toolbar_coordinator.mm",
-    "primary_toolbar_mediator.h",
-    "primary_toolbar_mediator.mm",
     "secondary_toolbar_coordinator.h",
     "secondary_toolbar_coordinator.mm",
     "toolbar_coordinatee.h",
@@ -19,8 +19,6 @@ source_set("toolbar") {
     "toolbar_mediator.h",
     "toolbar_mediator.mm",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
     ":toolbar_ui",
@@ -32,11 +30,14 @@ source_set("toolbar") {
     "//components/prefs",
     "//components/prefs/ios",
     "//components/search_engines",
+    "//components/segmentation_platform/embedder/default_model",
+    "//components/segmentation_platform/public",
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autocomplete",
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/feature_engagement",
+    "//ios/chrome/browser/first_run",
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/ntp",
     "//ios/chrome/browser/ntp:util",
@@ -46,20 +47,24 @@ source_set("toolbar") {
     "//ios/chrome/browser/reading_list",
     "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/search_engines:search_engines_util",
+    "//ios/chrome/browser/segmentation_platform",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/layout_guide",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/bookmarks:core",
     "//ios/chrome/browser/ui/broadcaster",
     "//ios/chrome/browser/ui/fullscreen",
-    "//ios/chrome/browser/ui/gestures",
+    "//ios/chrome/browser/ui/lens:lens_availability",
+    "//ios/chrome/browser/ui/lens:lens_entrypoint",
     "//ios/chrome/browser/ui/location_bar",
     "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/ui/ntp",
@@ -69,8 +74,10 @@ source_set("toolbar") {
     "//ios/chrome/browser/ui/omnibox/popup",
     "//ios/chrome/browser/ui/orchestrator",
     "//ios/chrome/browser/ui/popup_menu/public",
+    "//ios/chrome/browser/ui/settings/utils",
     "//ios/chrome/browser/ui/toolbar/buttons",
     "//ios/chrome/browser/ui/toolbar/public",
+    "//ios/chrome/browser/ui/toolbar/public:constants",
     "//ios/chrome/browser/ui/voice",
     "//ios/chrome/browser/url_loading",
     "//ios/chrome/browser/url_loading:url_loading_params_header",
@@ -78,6 +85,7 @@ source_set("toolbar") {
     "//ios/chrome/common",
     "//ios/chrome/common/ui/colors",
     "//ios/components/webui:url_constants",
+    "//ios/public/provider/chrome/browser/lens:lens_api",
     "//ios/public/provider/chrome/browser/voice_search:voice_search_api",
     "//ios/web",
     "//ui/base",
@@ -99,6 +107,7 @@ source_set("toolbar_ui") {
     "primary_toolbar_view_controller.h",
     "primary_toolbar_view_controller.mm",
     "primary_toolbar_view_controller_delegate.h",
+    "secondary_toolbar_keyboard_state_provider.h",
     "secondary_toolbar_view.h",
     "secondary_toolbar_view.mm",
     "secondary_toolbar_view_controller.h",
@@ -114,15 +123,14 @@ source_set("toolbar_ui") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/fullscreen",
     "//ios/chrome/browser/ui/fullscreen:ui",
-    "//ios/chrome/browser/ui/gestures",
     "//ios/chrome/browser/ui/keyboard",
     "//ios/chrome/browser/ui/ntp:ntp",
     "//ios/chrome/browser/ui/omnibox:features",
     "//ios/chrome/browser/ui/orchestrator",
     "//ios/chrome/browser/ui/popup_menu/public",
     "//ios/chrome/browser/ui/sharing",
-    "//ios/chrome/browser/ui/thumb_strip:feature_flags",
     "//ios/chrome/browser/ui/toolbar/buttons",
     "//ios/chrome/browser/ui/toolbar/public",
     "//ios/chrome/browser/ui/toolbar/public:constants",
@@ -133,13 +141,12 @@ source_set("toolbar_ui") {
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "toolbar_mediator_unittest.mm" ]
+  sources = [ "adaptive_toolbar_mediator_unittest.mm" ]
   deps = [
     ":toolbar",
     ":toolbar_ui",
@@ -181,14 +188,10 @@ source_set("unit_tests") {
     "//third_party/ocmock",
     "//ui/base",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("eg_app_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "adaptive_toolbar_app_interface.h",
@@ -203,10 +206,7 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("eg_test_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
 
   sources = [
@@ -218,10 +218,7 @@ source_set("eg_test_support+eg2") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "adaptive_toolbar_egtest.mm",

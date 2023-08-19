@@ -8,7 +8,7 @@
 #include <CoreFoundation/CFArray.h>
 #include <Security/Security.h>
 
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/base/hash_value.h"
 #include "net/base/net_export.h"

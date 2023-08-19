@@ -96,8 +96,7 @@ public class CurrentPageVerifier implements NativeInitObserver {
      * @return the {@link VerificationState} of the page we are currently on.
      * Since verification may require native, may return null before native is loaded.
      */
-    @Nullable
-    public VerificationState getState() {
+    public @Nullable VerificationState getState() {
         return mState;
     }
 

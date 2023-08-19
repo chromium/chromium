@@ -44,7 +44,10 @@ class SigninProfileAttributesUpdater
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event) override;
 
-  raw_ptr<signin::IdentityManager> identity_manager_;
+  // This dangling raw_ptr occurred in:
+  // unit_tests: All/IsolatedWebAppReaderRegistryFactoryTest.GuardedBehindFeatureFlag/1
+  // https://ci.chromium.org/ui/p/chromium/builders/try/win-rel/237392/test-results?q=ExactID%3Aninja%3A%2F%2Fchrome%2Ftest%3Aunit_tests%2FIsolatedWebAppReaderRegistryFactoryTest.GuardedBehindFeatureFlag%2FAll.1+VHash%3Ad3d9eb66b4bd136c
+  raw_ptr<signin::IdentityManager, FlakyDanglingUntriaged> identity_manager_;
   raw_ptr<ProfileAttributesStorage> profile_attributes_storage_;
   const base::FilePath profile_path_;
   raw_ptr<PrefService> prefs_;

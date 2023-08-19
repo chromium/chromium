@@ -62,7 +62,7 @@ GEOMETRY_SKIA_EXPORT AxisTransform2d WindowTransform(int x,
                                                      int width,
                                                      int height);
 
-// Compute 2D scale if possible; return whether it was set.
+// Compute 2D scale if possible, clamped with ClampFloatGeometry().
 GEOMETRY_SKIA_EXPORT absl::optional<Vector2dF>
 TryComputeTransform2dScaleComponents(const Transform& transform);
 

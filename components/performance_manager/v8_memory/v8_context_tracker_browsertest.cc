@@ -121,6 +121,8 @@ IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, SameSiteNavigation) {
   // Get pointers to the RFHs for each frame.
   content::RenderFrameHost* rfha = contents->GetPrimaryMainFrame();
   content::RenderFrameHost* rfhb = ChildFrameAt(rfha, 0);
+  bool rfh_should_change =
+      rfhb->ShouldChangeRenderFrameHostOnSameSiteNavigation();
 
   // Execute a same site navigation in the child frame. This causes a
   // v8 context to be detached, and new context attached to the execution
@@ -130,7 +132,7 @@ IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, SameSiteNavigation) {
       rfhb, base::StringPrintf("location.href = \"%s\"", urlb.spec().c_str())));
   WaitForLoad(contents);
 
-  if (content::WillSameSiteNavigationsChangeRenderFrameHosts()) {
+  if (rfh_should_change) {
     // When RenderDocument is enabled, a new RenderFrameHost will be created for
     // the navigation to `urlb`. Both a new V8 context and ExecutionContext are
     // created, and the old ExecutionContext is destroyed.

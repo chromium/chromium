@@ -269,9 +269,9 @@ suite('CheckupDetailsSectionTest', function() {
     Router.getInstance().navigateTo(
         Page.CHECKUP_DETAILS, CheckupSubpage.REUSED);
     const insecurePasswords = [
-      makeInsecureCredential({url: 'test.com', username: 'viking', id: 0}),
+      makeInsecureCredential({url: 'Some app', username: 'viking', id: 0}),
       makeInsecureCredential({url: 'example.com', username: 'user', id: 1}),
-      makeInsecureCredential({url: 'Some app', username: 'Lalala', id: 2}),
+      makeInsecureCredential({url: 'test.com', username: 'Lalala', id: 2}),
       makeInsecureCredential(
           {url: 'accounts.google.com', username: 'corporateEmail', id: 3}),
       makeInsecureCredential(
@@ -279,10 +279,10 @@ suite('CheckupDetailsSectionTest', function() {
     ];
     passwordManager.data.groups = insecurePasswords.map(
         entry => createCredentialGroup(
-            {name: entry.urls.shown, credentials: [entry]}));
+            {name: entry.affiliatedDomains[0]!.name, credentials: [entry]}));
     passwordManager.data.credentialWithReusedPassword = [
-      {entries: insecurePasswords.slice(0, 3)},
-      {entries: insecurePasswords.slice(3, 5)},
+      {entries: insecurePasswords.slice(0, 3).sort(() => Math.random() - 0.5)},
+      {entries: insecurePasswords.slice(3, 5).sort(() => Math.random() - 0.5)},
     ];
 
     const section = document.createElement('checkup-details-section');
@@ -305,7 +305,7 @@ suite('CheckupDetailsSectionTest', function() {
 
       assertTrue(!!listItemElement);
       assertEquals(
-          expectedCredential.urls.shown,
+          expectedCredential.affiliatedDomains[0]!.name,
           listItemElement.$.shownUrl.textContent!.trim());
       assertEquals(
           expectedCredential.username,
@@ -776,7 +776,7 @@ suite('CheckupDetailsSectionTest', function() {
     deleteDialog.$.delete.click();
     const interaction =
         await passwordManager.whenCalled('recordPasswordCheckInteraction');
-    const params = await passwordManager.whenCalled('removeSavedPassword');
+    const params = await passwordManager.whenCalled('removeCredential');
     assertEquals(params.id, credential.id);
     assertEquals(params.fromStores, credential.storedIn);
     assertEquals(PasswordCheckInteraction.REMOVE_PASSWORD, interaction);

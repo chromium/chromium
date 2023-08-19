@@ -3,6 +3,8 @@ Tests access of cached DOMWindow properties after the associated frame is remove
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
 PASS window.cached_cookieStore.onchange is null
+PASS window.cached_documentPictureInPicture.onenter is null
+PASS window.cached_documentPictureInPicture.window is null
 PASS window.cached_location.hash is ''
 PASS window.cached_location.host is ''
 PASS window.cached_location.hostname is ''

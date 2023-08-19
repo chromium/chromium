@@ -15,21 +15,40 @@
 
 namespace ash {
 
-AuthHubImpl::AuthHubImpl() {
+AuthHubImpl::AuthHubImpl(AuthFactorPresenceCache* factor_cache)
+    : cache_(factor_cache) {
   mode_lifecycle_ = std::make_unique<AuthHubModeLifecycle>(this);
 }
 
 AuthHubImpl::~AuthHubImpl() = default;
 
 void AuthHubImpl::InitializeForMode(AuthHubMode target) {
+  CHECK_NE(target, AuthHubMode::kNone);
+  SwitchToModeImpl(target);
+}
+
+void AuthHubImpl::Shutdown() {
+  SwitchToModeImpl(AuthHubMode::kNone);
+}
+
+void AuthHubImpl::SwitchToModeImpl(AuthHubMode target) {
   if (vector_lifecycle_ && !vector_lifecycle_->IsIdle()) {
     target_mode_ = target;
     // Eventually, after the current attempt gets canceled, `OnIdle()` will be
     // triggered, which then switches the mode to `target_mode_`.
+    if (attempt_handler_->HasOngoingAttempt()) {
+      attempt_handler_->PrepareForShutdown(base::BindOnce(
+          &AuthHubImpl::OnFactorAttemptFinished, weak_factory_.GetWeakPtr()));
+      return;
+    }
     vector_lifecycle_->CancelAttempt();
     return;
   }
   mode_lifecycle_->SwitchToMode(target);
+}
+
+void AuthHubImpl::OnFactorAttemptFinished() {
+  vector_lifecycle_->CancelAttempt();
 }
 
 void AuthHubImpl::EnsureInitialized(base::OnceClosure on_initialized) {
@@ -61,6 +80,11 @@ void AuthHubImpl::StartAuthentication(AccountId account_id,
       LOG(WARNING) << "Overriding ongoing attempt";
       pending_attempt_ = attempt;
       pending_consumer_ = consumer;
+      if (attempt_handler_->HasOngoingAttempt()) {
+        attempt_handler_->PrepareForShutdown(base::BindOnce(
+            &AuthHubImpl::OnFactorAttemptFinished, weak_factory_.GetWeakPtr()));
+        return;
+      }
       vector_lifecycle_->CancelAttempt();
       return;
     }
@@ -100,18 +124,30 @@ void AuthHubImpl::StartAuthentication(AccountId account_id,
   }
 
   CHECK(!attempt_consumer_);
+  CHECK(!attempt_handler_);
   attempt_consumer_ = consumer;
   current_attempt_ = attempt;
-  vector_lifecycle_->StartAttempt(attempt);
+
+  AuthFactorsSet cached_factors =
+      cache_->GetExpectedFactorsPresence(*current_attempt_);
+
+  attempt_handler_ = std::make_unique<AuthHubAttemptHandler>(
+      this, *current_attempt_, engines_, cached_factors);
+  raw_ptr<AuthFactorStatusConsumer> status_consumer;
+  attempt_consumer_->OnUserAuthAttemptConfirmed(
+      attempt_handler_->GetConnector(), status_consumer);
+  attempt_handler_->SetConsumer(status_consumer);
+
+  vector_lifecycle_->StartAttempt(*current_attempt_);
 }
 
 bool AuthHubImpl::PurposeMatchesMode(AuthPurpose purpose, AuthHubMode mode) {
   switch (mode) {
-    case kLoginScreen:
+    case AuthHubMode::kLoginScreen:
       return purpose == AuthPurpose::kLogin;
-    case kInSession:
+    case AuthHubMode::kInSession:
       return purpose != AuthPurpose::kLogin;
-    case kNone:
+    case AuthHubMode::kNone:
       NOTREACHED_NORETURN();
   }
 }
@@ -153,27 +189,34 @@ void AuthHubImpl::OnReadyForMode(AuthHubMode mode,
   on_initialized_listeners_.Notify();
 }
 
-void AuthHubImpl::OnExitedMode(AuthHubMode mode) {}
+void AuthHubImpl::OnExitedMode(AuthHubMode mode) {
+  engines_.clear();
+  vector_lifecycle_.reset();
+}
 
 void AuthHubImpl::OnModeShutdown() {}
 
 // AuthHubVectorLifecycle::Owner:
 
 AuthFactorEngine::FactorEngineObserver* AuthHubImpl::AsEngineObserver() {
-  return this;
+  CHECK(attempt_handler_);
+  return attempt_handler_.get();
 }
 
 void AuthHubImpl::OnAttemptStarted(const AuthAttemptVector& attempt,
                                    AuthFactorsSet available_factors,
                                    AuthFactorsSet failed_factors) {
-  base::raw_ptr<AuthFactorStatusConsumer> status_consumer;
-  attempt_consumer_->OnUserAuthAttemptConfirmed(nullptr, status_consumer);
+  CHECK(attempt == *current_attempt_);
+  CHECK(attempt_handler_);
+  attempt_handler_->OnFactorsChecked(available_factors, failed_factors);
 }
 
 void AuthHubImpl::OnAttemptFinished(const AuthAttemptVector& attempt) {
   CHECK(attempt == *current_attempt_);
+  attempt_consumer_->OnUserAuthAttemptCancelled();
   attempt_consumer_ = nullptr;
-  current_attempt_ = absl::nullopt;
+  current_attempt_.reset();
+  attempt_handler_.reset();
 }
 
 void AuthHubImpl::OnIdle() {
@@ -181,13 +224,23 @@ void AuthHubImpl::OnIdle() {
     if (pending_attempt_.has_value()) {
       // Cancel pending attempt.
       pending_consumer_->OnUserAuthAttemptRejected();
-      target_mode_ = absl::nullopt;
+      target_mode_.reset();
       pending_consumer_ = nullptr;
     }
-    vector_lifecycle_.release();
+    // We can get into this branch if attempt was never
+    // started/finished, e.g. if Mode change was requested before
+    // one of the engines started.
+    if (attempt_consumer_) {
+      CHECK(current_attempt_);
+      CHECK(attempt_handler_);
+      attempt_consumer_->OnUserAuthAttemptCancelled();
+      attempt_consumer_ = nullptr;
+      current_attempt_.reset();
+      attempt_handler_.reset();
+    }
     AuthHubMode mode = *target_mode_;
-    target_mode_ = absl::nullopt;
-    InitializeForMode(mode);
+    target_mode_.reset();
+    SwitchToModeImpl(mode);
     return;
   }
 
@@ -196,26 +249,31 @@ void AuthHubImpl::OnIdle() {
     AuthAttemptConsumer* consumer = pending_consumer_.get();
 
     pending_consumer_ = nullptr;
-    pending_attempt_ = absl::nullopt;
+    pending_attempt_.reset();
 
     StartAuthentication(attempt.account, attempt.purpose, consumer);
     return;
   }
 }
 
-// AuthFactorEngine::FactorEngineObserver:
-void AuthHubImpl::OnFactorPresenceChecked(AshAuthFactor factor,
-                                          bool factor_present) {
-  // Ignored, checked by AuthHubVectorLifecycle, results are
-  // passed to OnAttemptStarted.
+void AuthHubImpl::UpdateFactorUiCache(const AuthAttemptVector& attempt,
+                                      AuthFactorsSet available_factors) {
+  CHECK(attempt == *current_attempt_);
+  cache_->StoreFactorPresenceCache(attempt, available_factors);
 }
 
-void AuthHubImpl::OnFactorAttempt(AshAuthFactor factor) {}
-void AuthHubImpl::OnFactorAttemptResult(AshAuthFactor factor, bool success) {}
-void AuthHubImpl::OnPolicyChanged(AshAuthFactor factor) {}
-void AuthHubImpl::OnLockoutChanged(AshAuthFactor factor) {}
-void AuthHubImpl::OnOrientationRestrictionsChanged(AshAuthFactor factor) {}
-void AuthHubImpl::OnCriticalError(AshAuthFactor factor) {}
-void AuthHubImpl::OnFactorCustomSignal(AshAuthFactor factor) {}
+void AuthHubImpl::OnFactorAttemptFailed(const AuthAttemptVector& attempt,
+                                        AshAuthFactor factor) {
+  CHECK(attempt == *current_attempt_);
+  attempt_consumer_->OnFactorAttemptFailed(factor);
+}
+
+void AuthHubImpl::OnAuthenticationSuccess(const AuthAttemptVector& attempt,
+                                          AshAuthFactor factor) {
+  CHECK(attempt == *current_attempt_);
+  CHECK(engines_.contains(factor));
+  AuthProofToken token = engines_[factor]->StoreAuthenticationContext();
+  attempt_consumer_->OnUserAuthSuccess(factor, token);
+}
 
 }  // namespace ash

@@ -3,9 +3,6 @@
 // found in the LICENSE file.
 
 // spec: https://drafts.csswg.org/css-font-loading/#font-face-source
-
-[
-  LegacyTreatAsPartialInterface
-] interface mixin FontFaceSource {
+interface mixin FontFaceSource {
   [MeasureAs=DocumentFonts] readonly attribute FontFaceSet fonts;
 };

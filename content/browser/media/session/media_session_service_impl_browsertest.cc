@@ -57,7 +57,6 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   void OnSetVolumeMultiplier(int player_id, double volume_multiplier) override {
   }
   void OnEnterPictureInPicture(int player_id) override {}
-  void OnExitPictureInPicture(int player_id) override {}
   void OnSetAudioSinkId(int player_id,
                         const std::string& raw_device_id) override {}
   void OnSetMute(int player_id, bool mute) override {}
@@ -82,7 +81,7 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   }
 
   media::MediaContentType GetMediaContentType() const override {
-    return media::MediaContentType::Persistent;
+    return media::MediaContentType::kPersistent;
   }
 
   RenderFrameHost* render_frame_host() const override {

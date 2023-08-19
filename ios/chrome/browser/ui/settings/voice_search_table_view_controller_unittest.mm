@@ -6,8 +6,8 @@
 
 #import <memory>
 
+#import "base/apple/foundation_util.h"
 #import "base/files/file_path.h"
-#import "base/mac/foundation_util.h"
 #import "base/test/task_environment.h"
 #import "components/prefs/pref_member.h"
 #import "components/prefs/pref_registry_simple.h"
@@ -22,10 +22,6 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "ui/base/l10n/l10n_util_mac.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -54,7 +50,7 @@ class VoiceSearchTableViewControllerTest
   }
 
   TableViewSwitchCell* GetSwitchCell() {
-    return base::mac::ObjCCastStrict<TableViewSwitchCell>(
+    return base::apple::ObjCCastStrict<TableViewSwitchCell>(
         [controller().tableView
             cellForRowAtIndexPath:[NSIndexPath indexPathForItem:0
                                                       inSection:0]]);

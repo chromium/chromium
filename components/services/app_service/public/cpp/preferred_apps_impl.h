@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent.h"
@@ -124,6 +125,8 @@ class PreferredAppsImpl {
   base::OnceClosure write_completed_for_testing_;
 
   base::queue<base::OnceClosure> pending_preferred_apps_tasks_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<PreferredAppsImpl> weak_ptr_factory_{this};
 };

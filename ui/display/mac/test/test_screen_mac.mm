@@ -16,7 +16,7 @@ namespace display {
 namespace test {
 
 TestScreenMac::TestScreenMac(const gfx::Size& size)
-    : TestScreen(/* create_display = */ false) {
+    : TestScreen(/*create_display=*/false) {
   NSScreen* screen = [[NSScreen screens] firstObject];
   CGDirectDisplayID display_id =
       [[screen deviceDescription][@"NSScreenNumber"] unsignedIntValue];

@@ -1,0 +1,9 @@
+{
+  "aggregation_service_payloads": [
+    {
+      "key_id": "example_id",
+      "payload": "G2hpq0MdCwCGaN5P4iXLqcl2CoTulrNYDna4tNG6cTldnxSML/YMfliAUhRNHzADUWI+fpiQCF5qefdc/ZkRy0kMpmc4zuu20R40jE+Kv5XVn/cz6soPYt7IwovidPvm56N1LolaLMD2IMQa8nuX"
+    }
+  ],
+  "shared_info": "{\"api\":\"attribution-reporting\",\"attribution_destination\":\"https://conversion.test\",\"report_id\":\"21abd97f-73e8-4b88-9389-a9fee6abda5e\",\"reporting_origin\":\"https://report.test\",\"scheduled_report_time\":\"1234486400\",\"source_registration_time\":\"0\",\"version\":\"0.1\"}"
+}

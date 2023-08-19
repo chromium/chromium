@@ -245,8 +245,9 @@ void SupervisedUserNavigationObserver::OnRequestBlockedInternal(
   // (where it gets via a different mechanism unrelated to history).
   history::HistoryAddPageArgs add_page_args(
       url, timestamp, history::ContextIDForWebContents(web_contents()),
-      /*nav_entry_id=*/0, /*referrer=*/url, history::RedirectList(),
-      ui::PAGE_TRANSITION_BLOCKED, /*hidden=*/false, history::SOURCE_BROWSED,
+      /*nav_entry_id=*/0, /*local_navigation_id=*/absl::nullopt,
+      /*referrer=*/url, history::RedirectList(), ui::PAGE_TRANSITION_BLOCKED,
+      /*hidden=*/false, history::SOURCE_BROWSED,
       /*did_replace_entry=*/false, /*consider_for_ntp_most_visited=*/true);
 
   // Add the entry to the history database.
@@ -404,14 +405,6 @@ void SupervisedUserNavigationObserver::RequestUrlAccessLocal(
   supervised_user::SupervisedUserInterstitial* interstitial =
       supervised_user_interstitials_[id].get();
   interstitial->RequestUrlAccessLocal(std::move(callback));
-}
-
-void SupervisedUserNavigationObserver::Feedback() {
-  auto* render_frame_host = receivers_.GetCurrentTargetFrame();
-  int id = render_frame_host->GetFrameTreeNodeId();
-
-  if (base::Contains(supervised_user_interstitials_, id))
-    supervised_user_interstitials_[id]->ShowFeedback();
 }
 
 void SupervisedUserNavigationObserver::RequestCreated(

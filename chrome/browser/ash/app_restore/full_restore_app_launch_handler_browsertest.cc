@@ -38,9 +38,9 @@
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/system_web_apps/apps/os_url_handler_system_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
-#include "chrome/browser/ash/web_applications/os_url_handler_system_web_app_info.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
@@ -288,7 +288,7 @@ class FullRestoreAppLaunchHandlerBrowserTest
   }
 
   void CreateWebApp() {
-    auto web_app_install_info = std::make_unique<WebAppInstallInfo>();
+    auto web_app_install_info = std::make_unique<web_app::WebAppInstallInfo>();
     web_app_install_info->start_url = GURL("https://example.org");
     web_app::AppId app_id = web_app::test::InstallWebApp(
         profile(), std::move(web_app_install_info));
@@ -508,6 +508,29 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
 
   // Verify there is a new browser launched.
   EXPECT_EQ(count + 1, BrowserList::GetInstance()->size());
+}
+
+IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
+                       FullRestoreMetrics) {
+  base::HistogramTester histogram_tester;
+
+  // Add app launch infos.
+  ::full_restore::SaveAppLaunchInfo(
+      profile()->GetPath(), std::make_unique<::app_restore::AppLaunchInfo>(
+                                app_constants::kChromeAppId, kWindowId1));
+  ::full_restore::SaveAppLaunchInfo(
+      profile()->GetPath(), std::make_unique<::app_restore::AppLaunchInfo>(
+                                app_constants::kChromeAppId, kWindowId2));
+  WaitForAppLaunchInfoSaved();
+
+  // Create FullRestoreAppLaunchHandler and launch the browser.
+  auto app_launch_handler =
+      std::make_unique<FullRestoreAppLaunchHandler>(profile());
+  app_launch_handler->LaunchBrowserWhenReady(/*first_run_full_restore=*/false);
+  SetShouldRestore(app_launch_handler.get());
+  content::RunAllTasksUntilIdle();
+
+  histogram_tester.ExpectBucketCount("Apps.FullRestoreWindowCount", 2, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest, NotRestore) {
@@ -1568,7 +1591,8 @@ class FullRestoreAppLaunchHandlerArcAppBrowserTest
   }
 
  protected:
-  raw_ptr<app_restore::ArcAppQueueRestoreHandler, ExperimentalAsh>
+  raw_ptr<app_restore::ArcAppQueueRestoreHandler,
+          DanglingUntriaged | ExperimentalAsh>
       arc_app_queue_restore_handler_ = nullptr;
   AppRestoreArcTestHelper arc_helper_;
 

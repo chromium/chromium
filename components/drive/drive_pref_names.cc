@@ -36,8 +36,13 @@ const char kDriveFsEnableMirrorSync[] = "drivefs.enable_mirror_sync";
 const char kDriveFsMirrorSyncMachineRootId[] =
     "drivefs.mirror_sync_machine_root_id";
 
-// A boolean pref that maintains whether the feature is enabled or disabled by
-// the user.
+// A boolean pref indicating whether the DriveFS bulk-pinning feature is visible
+// in Files App and Settings page. If the bulk-pinning feature is visible, then
+// it can be enabled by the user.
+const char kDriveFsBulkPinningVisible[] = "drivefs.bulk_pinning.visible";
+
+// A boolean pref indicating whether the DriveFS bulk-pinning feature is enabled
+// or disabled by the user.
 const char kDriveFsBulkPinningEnabled[] = "drivefs.bulk_pinning_enabled";
 
 }  // namespace drive::prefs

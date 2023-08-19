@@ -35,8 +35,10 @@ class TranslateLanguageListTest : public testing::Test {
 TEST_F(TranslateLanguageListTest, SetSupportedLanguages) {
   const std::string language_list(
       "{"
-      "\"sl\":{\"en\":\"English\",\"ja\":\"Japanese\"},"
-      "\"tl\":{\"en\":\"English\",\"ja\":\"Japanese\"}"
+      "\"sl\":{\"en\":\"English\",\"ja\":\"Japanese\",\"tl\":\"Tagalog\","
+      "\"xx\":\"NotALanguage\"},"
+      "\"tl\":{\"en\":\"English\",\"ja\":\"Japanese\",\"tl\":\"Tagalog\","
+      "\"xx\":\"NotALanguage\"}"
       "}");
 
   base::test::TaskEnvironment task_environment;
@@ -52,9 +54,10 @@ TEST_F(TranslateLanguageListTest, SetSupportedLanguages) {
   std::vector<std::string> results;
   manager->language_list()->GetSupportedLanguages(true /* translate_allowed */,
                                                   &results);
-  ASSERT_EQ(2u, results.size());
+  ASSERT_EQ(3u, results.size());
   EXPECT_EQ("en", results[0]);
   EXPECT_EQ("ja", results[1]);
+  EXPECT_EQ("tl", results[2]);
   manager->ResetForTesting();
 }
 

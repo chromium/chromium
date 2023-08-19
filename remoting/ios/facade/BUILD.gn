@@ -40,8 +40,6 @@ source_set("facade") {
     "//remoting/base",
     "//remoting/proto/remoting/v1:directory_proto",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("unit_tests") {
@@ -58,6 +56,4 @@ source_set("unit_tests") {
     "//ui/base",
     "//ui/display",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

@@ -122,6 +122,9 @@ class InputInjectorChromeos::Core {
   void InjectTextEvent(const TextEvent& event);
   void InjectMouseEvent(const MouseEvent& event);
   void Start(std::unique_ptr<protocol::ClipboardStub> client_clipboard);
+  void StartWithDelegate(
+      std::unique_ptr<ui::SystemInputInjector> delegate,
+      std::unique_ptr<protocol::ClipboardStub> client_clipboard);
 
  private:
   void SetLockStates(uint32_t states);
@@ -230,16 +233,24 @@ void InputInjectorChromeos::Core::InjectMouseMove(const MouseEvent& event) {
 
 void InputInjectorChromeos::Core::Start(
     std::unique_ptr<protocol::ClipboardStub> client_clipboard) {
-  delegate_ = ui::OzonePlatform::GetInstance()->CreateSystemInputInjector();
-  if (!delegate_ && !base::SysInfo::IsRunningOnChromeOS()) {
+  auto delegate = ui::OzonePlatform::GetInstance()->CreateSystemInputInjector();
+  if (!delegate && !base::SysInfo::IsRunningOnChromeOS()) {
     // This happens when directly running the Chrome binary on linux.
     // We'll simply ignore all input there (instead of crashing).
     // Note: it would be nicer to swap this out with input_injector_x11.cc
     // on linux instead (and properly handle the input), but that runs into
     // dependency issues.
-    delegate_ = std::make_unique<SystemInputInjectorStub>();
+    delegate = std::make_unique<SystemInputInjectorStub>();
   }
-  DCHECK(delegate_);
+  DCHECK(delegate);
+
+  StartWithDelegate(std::move(delegate), std::move(client_clipboard));
+}
+
+void InputInjectorChromeos::Core::StartWithDelegate(
+    std::unique_ptr<ui::SystemInputInjector> delegate,
+    std::unique_ptr<protocol::ClipboardStub> client_clipboard) {
+  delegate_ = std::move(delegate);
 
   delegate_->SetDeviceId(ui::ED_REMOTE_INPUT_DEVICE);
 
@@ -300,6 +311,15 @@ void InputInjectorChromeos::Start(
   input_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&Core::Start, base::Unretained(core_.get()),
                                 std::move(client_clipboard)));
+}
+
+void InputInjectorChromeos::StartForTesting(
+    std::unique_ptr<ui::SystemInputInjector> input_injector,
+    std::unique_ptr<protocol::ClipboardStub> client_clipboard) {
+  input_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&Core::StartWithDelegate, base::Unretained(core_.get()),
+                     std::move(input_injector), std::move(client_clipboard)));
 }
 
 // static

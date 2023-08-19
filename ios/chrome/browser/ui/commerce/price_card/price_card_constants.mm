@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ui/commerce/price_card/price_card_constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 const CGFloat kPriceCardCornerRadius = 4.0f;
 const CGFloat kPriceCardTopIndent = 4.0f;
 const CGFloat kPriceCardLeadingIndent = 10.0f;

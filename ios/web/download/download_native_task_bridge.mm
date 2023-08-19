@@ -4,19 +4,14 @@
 
 #import "ios/web/download/download_native_task_bridge.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/files/file_util.h"
 #import "base/functional/callback.h"
-#import "base/mac/foundation_util.h"
-#import "base/strings/sys_string_conversions.h"
 #import "base/task/thread_pool.h"
 #import "ios/web/download/download_result.h"
 #import "ios/web/web_view/error_translation_util.h"
 #import "net/base/net_errors.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -124,8 +119,7 @@ void DownloadDidFinishWithSize(
   _progressCallback = std::move(progressCallback);
   _responseCallback = std::move(responseCallback);
   _completeCallback = std::move(completeCallback);
-  _urlForDownload =
-      [NSURL fileURLWithPath:base::SysUTF8ToNSString(path.AsUTF8Unsafe())];
+  _urlForDownload = base::apple::FilePathToNSURL(path);
 
   if (_resumeData) {
     DCHECK(!_startDownloadBlock);
@@ -223,9 +217,8 @@ void DownloadDidFinishWithSize(
     // See https://crbug.com/1346030 for examples of truncation.
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
-        base::BindOnce(
-            &FileSizeForFileAtPath,
-            base::FilePath(base::SysNSStringToUTF8(_urlForDownload.path))),
+        base::BindOnce(&FileSizeForFileAtPath,
+                       base::apple::NSStringToFilePath(_urlForDownload.path)),
         base::BindOnce(&DownloadDidFinishWithSize, std::move(_progressCallback),
                        std::move(_completeCallback)));
   }
@@ -273,7 +266,7 @@ void DownloadDidFinishWithSize(
   int http_error = -1;
   if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
     http_error =
-        base::mac::ObjCCastStrict<NSHTTPURLResponse>(response).statusCode;
+        base::apple::ObjCCastStrict<NSHTTPURLResponse>(response).statusCode;
   }
 
   std::move(_responseCallback).Run(http_error, response.MIMEType);

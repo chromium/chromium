@@ -40,20 +40,20 @@ java_prebuilt("jacococli_java") {
 
 java_prebuilt("org_jacocoagent_java") {
   testonly = true
-  jar_path = "lib/org.jacoco.agent-0.8.3.202305300511.jar"
+  jar_path = "lib/org.jacoco.agent-0.8.8.202306091247.jar"
 }
 
 java_prebuilt("org_jacocoant_java") {
   testonly = true
-  jar_path = "lib/org.jacoco.ant-0.8.3.202305300511.jar"
+  jar_path = "lib/org.jacoco.ant-0.8.8.202306091247.jar"
 }
 
 java_prebuilt("org_jacococore_java") {
   testonly = true
-  jar_path = "lib/org.jacoco.core-0.8.3.202305300511.jar"
+  jar_path = "lib/org.jacoco.core-0.8.8.202306091247.jar"
 }
 
 java_prebuilt("org_jacocoreport_java") {
   testonly = true
-  jar_path = "lib/org.jacoco.report-0.8.3.202305300511.jar"
+  jar_path = "lib/org.jacoco.report-0.8.8.202306091247.jar"
 }

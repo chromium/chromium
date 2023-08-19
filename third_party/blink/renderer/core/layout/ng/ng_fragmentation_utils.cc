@@ -113,12 +113,29 @@ EBreakBetween CalculateBreakBetweenValue(NGLayoutInputNode child,
                                          const NGBoxFragmentBuilder& builder) {
   if (child.IsInline())
     return EBreakBetween::kAuto;
+
+  // Since it's not an inline node, if we have a fragment at all, it has to be a
+  // box fragment.
+  const NGPhysicalBoxFragment* box_fragment = nullptr;
+  if (layout_result.Status() == NGLayoutResult::kSuccess) {
+    box_fragment = &To<NGPhysicalBoxFragment>(layout_result.PhysicalFragment());
+    if (!box_fragment->IsFirstForNode()) {
+      // If the node is resumed after a break, we are not *before* it anymore,
+      // so ignore values. We normally don't even consider breaking before a
+      // resumed node, since there normally is no container separation. The
+      // normal place to resume is at the very start of the fragmentainer -
+      // cannot break there!  However, there are cases where a node is resumed
+      // at a location past the start of the fragmentainer, e.g. when printing
+      // monolithic overflowing content.
+      return EBreakBetween::kAuto;
+    }
+  }
+
   EBreakBetween break_before = JoinFragmentainerBreakValues(
       child.Style().BreakBefore(), layout_result.InitialBreakBefore());
   break_before = builder.JoinedBreakBetweenValue(break_before);
   const NGConstraintSpace& space = builder.ConstraintSpace();
-  if (space.IsPaginated() &&
-      layout_result.Status() == NGLayoutResult::kSuccess &&
+  if (space.IsPaginated() && box_fragment &&
       !IsForcedBreakValue(builder.ConstraintSpace(), break_before)) {
     AtomicString current_name = builder.PageName();
     if (current_name == g_null_atom) {
@@ -126,9 +143,7 @@ EBreakBetween CalculateBreakBetweenValue(NGLayoutInputNode child,
     }
     // If the page name propagated from the child differs from what we already
     // have, we need to break before the child.
-    const auto& fragment =
-        To<NGPhysicalBoxFragment>(layout_result.PhysicalFragment());
-    if (fragment.PageName() != current_name) {
+    if (box_fragment->PageName() != current_name) {
       return EBreakBetween::kPage;
     }
   }
@@ -429,6 +444,25 @@ void SetupFragmentBuilderForFragmentation(
     builder->PropagateTallestUnbreakableBlockSize(unbreakable.block_start);
     builder->PropagateTallestUnbreakableBlockSize(unbreakable.block_end);
   }
+}
+
+bool ShouldIncludeBlockEndBorderPadding(const NGBoxFragmentBuilder& builder) {
+  if (builder.PreviousBreakToken() &&
+      builder.PreviousBreakToken()->IsAtBlockEnd()) {
+    // Past the block-end, and therefore past block-end border+padding.
+    return false;
+  }
+  if (!builder.ShouldBreakInside() || builder.IsKnownToFitInFragmentainer()) {
+    return true;
+  }
+
+  // We're going to break inside.
+  if (builder.ConstraintSpace().IsNewFormattingContext()) {
+    return false;
+  }
+  // Not being a formatting context root, only in-flow child breaks will have an
+  // effect on where the block ends.
+  return !builder.HasInflowChildBreakInside();
 }
 
 NGBreakStatus FinishFragmentation(NGBlockNode node,
@@ -742,6 +776,32 @@ NGBreakStatus FinishFragmentationForFragmentainer(
     builder->SetIsEmptySpannerParent(false);
 
   return NGBreakStatus::kContinue;
+}
+
+bool HasBreakOpportunityBeforeNextChild(
+    const NGPhysicalFragment& child_fragment,
+    const NGBreakToken* incoming_child_break_token) {
+  // Once we have added a child, there'll be a valid class A/B breakpoint [1]
+  // before consecutive siblings, which implies that we have container
+  // separation, which means that we may break before such siblings. Exclude
+  // children in parallel flows, since they shouldn't affect this flow.
+  //
+  // [1] https://www.w3.org/TR/css-break-3/#possible-breaks
+  if (const auto* box_fragment =
+          DynamicTo<NGPhysicalBoxFragment>(&child_fragment)) {
+    const auto* block_break_token =
+        To<NGBlockBreakToken>(incoming_child_break_token);
+    return !block_break_token || !block_break_token->IsAtBlockEnd();
+  }
+
+  // Only establish a valid break opportunity after a line box if it has
+  // non-zero height. When there's a block inside an inline, a zero-height line
+  // may be created before and after the block, but for the sake of
+  // fragmentation, pretend that they're not there.
+  DCHECK(child_fragment.IsLineBox());
+  NGFragment fragment(child_fragment.Style().GetWritingDirection(),
+                      child_fragment);
+  return fragment.BlockSize() != LayoutUnit();
 }
 
 NGBreakStatus BreakBeforeChildIfNeeded(

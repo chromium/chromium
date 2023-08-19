@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("follow") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "followed_web_channel.h",
     "followed_web_channel.mm",
@@ -16,7 +15,6 @@ source_set("follow") {
 }
 
 source_set("follow_iph") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "follow_iph_coordinator.h",
     "follow_iph_coordinator.mm",
@@ -33,7 +31,6 @@ source_set("follow_iph") {
 }
 
 source_set("first_follow") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "first_follow_coordinator.h",
     "first_follow_coordinator.mm",
@@ -62,7 +59,6 @@ source_set("first_follow_ui") {
     "first_follow_view_controller.h",
     "first_follow_view_controller.mm",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     ":follow",
     "//base",

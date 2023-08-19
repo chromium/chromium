@@ -16,11 +16,25 @@ class PrefRegistrySyncable;
 
 namespace prefs {
 
-extern const char kAccessibilityReadAnythingFontName[];
-extern const char kAccessibilityReadAnythingFontScale[];
-extern const char kAccessibilityReadAnythingColorInfo[];
-extern const char kAccessibilityReadAnythingLineSpacing[];
-extern const char kAccessibilityReadAnythingLetterSpacing[];
+// String to represent the user's preferred font name for the read anything UI.
+inline constexpr char kAccessibilityReadAnythingFontName[] =
+    "settings.a11y.read_anything.font_name";
+
+// Double to represent the user's preferred font size scaling factor.
+inline constexpr char kAccessibilityReadAnythingFontScale[] =
+    "settings.a11y.read_anything.font_scale";
+
+// Int value to represent the user's preferred color settings.
+inline constexpr char kAccessibilityReadAnythingColorInfo[] =
+    "settings.a11y.read_anything.color_info";
+
+// Int value to represent the user's preferred line spacing setting.
+inline constexpr char kAccessibilityReadAnythingLineSpacing[] =
+    "settings.a11y.read_anything.line_spacing";
+
+// Int value to represent the user's preferred letter spacing setting.
+inline constexpr char kAccessibilityReadAnythingLetterSpacing[] =
+    "settings.a11y.read_anything.letter_spacing";
 
 }  // namespace prefs
 

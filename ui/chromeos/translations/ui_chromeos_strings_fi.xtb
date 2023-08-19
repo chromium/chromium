@@ -35,8 +35,10 @@
 <translation id="1280820357415527819">Haetaan mobiiliverkkoja</translation>
 <translation id="1293556467332435079">Tiedostot</translation>
 <translation id="1297922636971898492">Google Drive ei ole juuri nyt käytettävissä. Lähetys käynnistyy automaattisesti, kun Google Drive on taas käytettävissä.</translation>
+<translation id="1306130176943817227">Ei voida poistaa. Kohde on käytössä.</translation>
 <translation id="1307931752636661898">Linux-tiedostoja ei voi näyttää</translation>
 <translation id="1313405956111467313">Automaattinen välityspalvelimen määritys</translation>
+<translation id="134645005685694099">Laitteella ei ole tarpeeksi tallennustilaa tiedostojen synkronoinnin käyttöä varten. Uusia tiedostoja ei enää synkronoida automaattisesti.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Tiedosto tai hakemisto ei ole käytettävissä.</translation>
 <translation id="1363028406613469049">Raita</translation>
@@ -113,7 +115,6 @@
 <translation id="1920798810075583923">Vesimeloni</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> alustettu</translation>
 <translation id="1931134289871235022">slovakki</translation>
-<translation id="1933345018156373194">Siirto epäonnistui odottamattoman virheen vuoksi: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">suomi</translation>
 <translation id="1942765061641586207">Kuvan resoluutio</translation>
 <translation id="1972984168337863910">Laajenna tiedostojen palautepaneelit</translation>
@@ -130,7 +131,7 @@
 <translation id="2084108471225856927">Laiteasetukset</translation>
 <translation id="2084809735218147718">Kiitos viittomakielellä</translation>
 <translation id="2088690981887365033">VPN-verkko</translation>
-<translation id="2089751716171649322">Käytä Google Drive ‐tiedostoja helposti offline-tilassa</translation>
+<translation id="209653272837065803">Tallennustila ei riitä tiedostojen synkronointiin</translation>
 <translation id="2111134541987263231">Laita päälle <ph name="BEGIN_BOLD" />Salli incognito-tilassa<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> kohdetta poistetaan, eikä niitä voi palauttaa.</translation>
 <translation id="2122305276694332719">Automaattinen yhdistäminen piilotettuihin verkkoihin antaa muiden nähdä laitteesi ja joitain verkkoasetuksia. Sitä ei suositella.</translation>
@@ -147,9 +148,11 @@
 <translation id="2198315389084035571">yksinkertaistettu kiina</translation>
 <translation id="22085916256174561">korea</translation>
 <translation id="2208919847696382164">Asenna Linux-versio</translation>
+<translation id="2215692307449050019">Akkuvirta on vähissä. Tiedostojen synkronointia jatketaan, kun olet yhdistettynä virtalähteeseen.</translation>
 <translation id="2225536596944493418">Haluatko varmasti poistaa <ph name="NUMBER_OF_ITEMS" /> kohdetta?</translation>
 <translation id="2230062665678605299">Kansiota <ph name="FOLDER_NAME" /> ei voi luoda. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">Henkilö ja kahvikuppi</translation>
+<translation id="2247561763838186830">Sinut on kirjattu ulos</translation>
 <translation id="2251368349685848079">Palauta roskakorista</translation>
 <translation id="2278133026967558505">Pääsy tiedostoon kaikilta sivustoilta ja kaikista URL-osoitteista</translation>
 <translation id="2282155092769082568">Automaattisen määrityksen URL-osoite:</translation>
@@ -163,7 +166,7 @@
 <translation id="2312704192806647271">{COUNT,plural, =1{Laajennusta, jonka tunnus on <ph name="BEGIN_LIST" /><ph name="END_LIST" />, ei löydy. Ota yhteyttä järjestelmänvalvojaan.}other{Laajennuksia, joiden tunnukset ovat <ph name="BEGIN_LIST" /><ph name="END_LIST" />, ei löydy. Ota yhteyttä järjestelmänvalvojaan.}}</translation>
 <translation id="2325650632570794183">Tätä tiedostotyyppiä ei tueta. Etsi tämäntyyppisiä tiedostoja avaava sovellus Chrome Web Storesta.</translation>
 <translation id="2326539130272988168">bulgaria</translation>
-<translation id="2337715497728194187">Jaa Bruschettalle</translation>
+<translation id="233822363739146957">Tallennustila ei riitä kaikkien tiedostojen synkronointiin</translation>
 <translation id="23721837607121582">Lataa mobiiliprofiili, verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Vaihda luettelonäkymään</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> kansiota jaettu Linuxille</translation>
@@ -181,6 +184,7 @@
 <translation id="2464089476039395325">HTTP-välityspalvelin</translation>
 <translation id="2467267713099745100"><ph name="NETWORK_TYPE" /> verkko, pois käytöstä</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
+<translation id="2468470447085858632">Käytä Google Drive ‐tiedostojasi offline-tilassa tiedostojen synkronoinnin avulla</translation>
 <translation id="2470939964922472929">Väärä PIN-koodi on syötetty liian monta kertaa. Lisää operaattorilta saamasi 8-numeroinen PUK-koodi, jotta voit luoda uuden PIN-koodin.</translation>
 <translation id="2500392669976258912">foneettinen gudžarati</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -192,7 +196,6 @@
 <translation id="2544853746127077729">Verkko on hylännyt todennusvarmenteen</translation>
 <translation id="255937426064304553">USA (kansainvälinen)</translation>
 <translation id="2563185590376525700">Sammakko</translation>
-<translation id="2574327434504608656">1 kansio jaettu Bruschettalle</translation>
 <translation id="2578394532502990878">foneettinen tamil</translation>
 <translation id="2579959351793446050">orija</translation>
 <translation id="2587195714949534472">Valmistellaan <ph name="FILE_NAME" />-tiedoston synkronointia…</translation>
@@ -216,6 +219,7 @@
 <translation id="2782104745158847185">Virhe Linux-sovelluksen asennuksessa</translation>
 <translation id="2802583107108007218">Lue lisää näistä rajoituksista</translation>
 <translation id="2803375539583399270">Lisää PIN-koodi</translation>
+<translation id="2819519502129272135">Tiedostojen synkronointi on pois päältä</translation>
 <translation id="2820957248982571256">Etsitään…</translation>
 <translation id="2830077785865012357">kiina (zhuyin)</translation>
 <translation id="2843806747483486897">Muuta oletusta...</translation>
@@ -291,7 +295,6 @@
 <translation id="3408072735282270043">Aktivoi, <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">saksa (Saksa), Neo 2 ‑näppäimistö</translation>
 <translation id="3414856743105198592">Siirrettävän tietovälineen alustaminen poistaa kaikki sen tiedot. Haluatko jatkaa?</translation>
-<translation id="3435143625481187092">Myönnä Bruschettalle pääsy kansiossa <ph name="FOLDER_NAME" /> oleviin tiedostoihin</translation>
 <translation id="3437801641691368414">Luontiaika</translation>
 <translation id="343907260260897561">Pikakamera</translation>
 <translation id="3455931012307786678">viro</translation>
@@ -299,7 +302,6 @@
 <translation id="3479552764303398839">Ei nyt</translation>
 <translation id="3486821258960016770">mongoli</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> virhettä.</translation>
-<translation id="3501954296166022751">Google Drive ‐tiedostosi ovat saatavilla offline-tilassa</translation>
 <translation id="3509680540198371098">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" /> %, lisätietoja</translation>
 <translation id="3511705761158917664">Valmistellaan <ph name="NUMBER_OF_ITEMS" /> tiedoston synkronointia…</translation>
 <translation id="3522708245912499433">portugali</translation>
@@ -356,8 +358,10 @@
 <translation id="3906232975181435906">Asennetaan mobiiliprofiilia, verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Liitä</translation>
+<translation id="3950820424414687140">Kirjaudu sisään</translation>
 <translation id="3952872973865944257">foneettinen telugu</translation>
 <translation id="3958548648197196644">Kiivi</translation>
+<translation id="397105322502079400">Lasketaan...</translation>
 <translation id="3971140002794351170">Lataa mobiiliprofiili, verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">englanti (Yhdistynyt kuningaskunta)</translation>
 <translation id="3975895378829046965">foneettinen bangla</translation>
@@ -368,6 +372,7 @@
 <translation id="4040753847560036377">Väärä PUK-koodi</translation>
 <translation id="4057991113334098539">Aktivoidaan...</translation>
 <translation id="4092890906744441904">iiri</translation>
+<translation id="4124731372776320263">Synkronoidaan 1 Drive-tiedosto</translation>
 <translation id="4124935795427217608">Yksisarvinen</translation>
 <translation id="4131235941541910880">Siirrä tarpeettomat kohteet roskakoriin</translation>
 <translation id="4134804435730168042">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, aktivoi laitteen käyttöönoton jälkeen</translation>
@@ -377,7 +382,6 @@
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> siirretty.</translation>
 <translation id="4176286497474237543">Tyhjennä roskakori nyt</translation>
 <translation id="4179621117429069925">Tämä kohde on roskakorissasi</translation>
-<translation id="4181839429935094755"><ph name="NUMBER_OF_ITEMS" /> kansiota jaettu Bruschettalle</translation>
 <translation id="4186579485882418952">Ota Docs Offline käyttöön</translation>
 <translation id="4193154014135846272">Google-dokumentti</translation>
 <translation id="4197674956721858839">Pakkaa valitut</translation>
@@ -417,6 +421,7 @@
 <translation id="4432921877815220091">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, aktivoi laitteen käyttöönoton jälkeen, järjestelmänvalvojan ylläpitämä</translation>
 <translation id="4439427728133035643">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" /> %, yhdistä</translation>
 <translation id="4442424173763614572">DNS-haku epäonnistui</translation>
+<translation id="4445896958353114391">Synkronoidaan tiedostoja</translation>
 <translation id="4462159676511157176">Omat nimipalvelimet</translation>
 <translation id="4465725236958772856">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, järjestelmänvalvojan hallinnoima, yhdistä</translation>
 <translation id="4470564870223067757">Hangul 2-set</translation>
@@ -438,11 +443,11 @@
 <translation id="4599600860674643278">Suodatin on nollattu.</translation>
 <translation id="4603392156942865207">Kopioidaan <ph name="FILE_NAME" /> kansioon <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">Esittäjä</translation>
+<translation id="4635373743001040938">Tallennustila oli erittäin vähissä. Tiedostojen synkronointi on laitettu pois päältä.</translation>
 <translation id="4642769377300286600">Asennetaan mobiiliprofiilia, verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">tšekki, qwerty-näppäimistö</translation>
 <translation id="4656777537938206294">Muuta tiedostot käytettäviksi ilman verkkoyhteyttä</translation>
 <translation id="4658782175094886150">Henkilö lumessa</translation>
-<translation id="466782788172479199">Myönnä Bruschettalle pääsy Google Driveesi tallennettuihin tiedostoihin. Muutokset synkronoidaan muille laitteillesi.</translation>
 <translation id="4669606053856530811">Jäsenet (<ph name="SOURCE_NAME" />) menettävät käyttöoikeuden, ellei näitä kohteita jaeta heille.</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">ruotsi</translation>
@@ -491,8 +496,8 @@
 <translation id="4961158930123534723">1 kansio jaettu Parallels Desktopille</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> palautettu</translation>
 <translation id="4969785127455456148">Albumi</translation>
+<translation id="4972330214479971536">Tiedostojen synkronoinnin käyttöönottoa ei voitu suorittaa loppuun</translation>
 <translation id="4973523518332075481">Käytä nimeä, jonka pituus on enintään <ph name="MAX_LENGTH" /> merkkiä.</translation>
-<translation id="4973970068702235170">Pakkaus epäonnistui odottamattoman virheen vuoksi: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">japani</translation>
 <translation id="4987699874727873250">englanti (Intia)</translation>
 <translation id="4988205478593450158">Haluatko varmasti poistaa tiedoston <ph name="FILE_NAME" />?</translation>
@@ -514,6 +519,7 @@
 <translation id="5102922915594634436">Ylläpidä synkronoituja kansioita</translation>
 <translation id="5109254780565519649">Tapahtui virhe. Kaikkia kohteita ei välttämättä palautettu.</translation>
 <translation id="5110329002213341433">englanti (Kanada)</translation>
+<translation id="5119780910075847424">Synkronointi keskeytetty</translation>
 <translation id="5123433949759960244">Koripallo</translation>
 <translation id="5129662217315786329">puola</translation>
 <translation id="5144820558584035333">Hangul 3-set (390)</translation>
@@ -532,6 +538,7 @@
 <translation id="5218183485292899140">ranska (Sveitsi)</translation>
 <translation id="5234764350956374838">Hylkää</translation>
 <translation id="5253070652067921974">Tekijä</translation>
+<translation id="5254207638927440400">Tiedostoa ei voida siirtää. Tiedosto on käytössä.</translation>
 <translation id="5257456363153333584">Sudenkorento</translation>
 <translation id="5262311848634918433"><ph name="MARKUP_1" />Käytä tiedostojasi missä vain, myös offline-tilassa.<ph name="MARKUP_2" />
         Google Drivessa tiedostot ovat ajan tasalla ja käytettävissä kaikilla laitteillasi.<ph name="MARKUP_3" />
@@ -552,7 +559,6 @@
 <translation id="5323213332664049067">Latinalainen Amerikka</translation>
 <translation id="5330145655348521461">Nämä tiedostot avattiin toisella työpöydällä. Näet tiedostot siirtymällä profiiliin <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="5330512191124428349">Näytä tiedot</translation>
-<translation id="5344246330454251646">Hallinnoi Bruschettalle jakamista</translation>
 <translation id="535792325654997756">Henkilö ja kissoja</translation>
 <translation id="5358764674931277">Kuvanopeus</translation>
 <translation id="5363339716524495120">Syöttökieli on kiina</translation>
@@ -564,6 +570,7 @@
 <translation id="5422221874247253874">Piste</translation>
 <translation id="5428105026674456456">espanja</translation>
 <translation id="5438282218546237410">Ei tuloksia haulla <ph name="SEARCH_TERM" /></translation>
+<translation id="5447680084201416734">Tallennustila ei riitä.</translation>
 <translation id="5449551289610225147">Virheellinen salasana</translation>
 <translation id="5459064203055649751">Tiedosto nimeltä <ph name="FILENAME" /> on jo olemassa. Haluatko korvata sen siirrettävällä tiedostolla?</translation>
 <translation id="5463231940765244860">Syötä</translation>
@@ -574,7 +581,6 @@
 <translation id="5494920125229734069">Valitse kaikki</translation>
 <translation id="5500122897333236901">islanti</translation>
 <translation id="5508696409934741614">Pisteet</translation>
-<translation id="5519161320735100193">Google Driven asetukset</translation>
 <translation id="5522908512596376669">Tiedostot näkyvät nyt luettelona.</translation>
 <translation id="5524517123096967210">Tiedostoa ei voi lukea.</translation>
 <translation id="5533102081734025921">Kuva, jonka tyyppi on <ph name="IMAGE_TYPE" /></translation>
@@ -602,6 +608,7 @@
 <translation id="5720028165859493293"><ph name="FILE_NAME" /> siirretty roskakoriin</translation>
 <translation id="5724172041621205163">thai, pattachote-näppäimistö</translation>
 <translation id="57383366388012121">Viime kuukausi</translation>
+<translation id="575175778971367197">Tätä tiedostoa ei voida synkronoida juuri nyt</translation>
 <translation id="5756666464756035725">Unkarilainen QWERTY</translation>
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> kohdetta valittu</translation>
 <translation id="5763377084591234761">saksa (Sveitsi)</translation>
@@ -627,7 +634,6 @@
 <translation id="5896749729057314184">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ei aktivoitu, signaalin voimakkuus <ph name="SIGNAL_STRENGTH" /> %, tiedot</translation>
 <translation id="5911887972742538906">Linux-sovellusta asennettaessa tapahtui virhe.</translation>
 <translation id="5912396950572065471">Muoto</translation>
-<translation id="5913638992615760742">Kopiointi epäonnistui odottamattoman virheen vuoksi: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5918480239180455431">Uusia hakuominaisuuksia saatavilla</translation>
 <translation id="5926082595146149752">hollanti (Alankomaat), Yhdysvaltain kansainvälinen PC-näppäimistö</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -635,7 +641,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> kohdetta</translation>
 <translation id="5957366693331451795">Chromeboxit</translation>
 <translation id="5982621672636444458">Lajitteluasetukset</translation>
-<translation id="6007237601604674381">Siirto epäonnistui. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Ethernet-verkko</translation>
 <translation id="60357267506638014">tšekki, QWERTY</translation>
 <translation id="603895874132768835">Et voi käyttää tätä verkkoa ennen kuin luot uuden PIN-koodin</translation>
@@ -691,6 +696,7 @@
 <translation id="6423031066725912715">vietnam, TCVN-näppäimistö</translation>
 <translation id="6430271654280079150">Sinulla on 1 yritys jäljellä.</translation>
 <translation id="643243556292470964">Poistetut tiedostot siirretään roskakoriin</translation>
+<translation id="6438480100790416671">Tarkistetaan tallennustilaa…</translation>
 <translation id="6485131920355264772">Tilatietojen noutaminen epäonnistui</translation>
 <translation id="6495925982925244349">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" /> %, järjestelmänvalvojan hallinnoima, lisätietoja</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> puretaan tänne: <ph name="FOLDER_NAME" /></translation>
@@ -703,6 +709,7 @@
 <translation id="6558280019477628686">Tapahtui virhe. Kaikkia kohteita ei välttämättä poistettu.</translation>
 <translation id="656398493051028875">Poistetaan tiedostoa <ph name="FILENAME" />…</translation>
 <translation id="6581162200855843583">Google Drive -linkki</translation>
+<translation id="6588648400954570689">Tiedostojen synkronointiasetukset</translation>
 <translation id="6594855146910089723">Tämä kansio on jaettu Linuxille ja Parallels Desktopille</translation>
 <translation id="6607272825297743757">Tiedoston tiedot</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> kansiota jaettu Parallels Desktopille</translation>
@@ -717,7 +724,6 @@
 <translation id="6710213216561001401">Edellinen</translation>
 <translation id="6732801395666424405">Varmenteita ei ole ladattu</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
-<translation id="6740270213273127264">Jaa kansio Bruschettalle</translation>
 <translation id="6750737795876287924">Nykyinen hakemisto</translation>
 <translation id="6751256176799620176">1 kansio valittu</translation>
 <translation id="6755827872271341378">ChromeOS Flex ‑laite</translation>
@@ -794,6 +800,7 @@
 <translation id="7256405249507348194">Tunnistamaton virhe: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Käytettävissä olevat palvelut</translation>
 <translation id="7291818353625820805">Haluatko näppäinten toistuvan? Laita aksenttimerkit pois päältä näppäimistön asetuksista</translation>
+<translation id="729236380049459563">Tiedostojen synkronointi on päällä</translation>
 <translation id="7292816689782057017">Järjestelmänvalvojakäytäntö rajoittaa tallentamista joihinkin sijainteihin.</translation>
 <translation id="7294063083760278948">translitteroitu telugu</translation>
 <translation id="7295662345261934369">Jaa muille</translation>
@@ -801,6 +808,7 @@
 <translation id="7309413087278791451">saksa (Belgia)</translation>
 <translation id="7339898014177206373">Uusi ikkuna</translation>
 <translation id="7343393116438664539">vietnam (telex)</translation>
+<translation id="7347346221088620549">Salattu tiedosto</translation>
 <translation id="7357762654218998920">Tätä tiedostotyyppiä ei tueta. <ph name="BEGIN_LINK_HELP" />Lue lisää<ph name="END_LINK_HELP" /> tiedostojen avaamisesta Chrome-käyttöjärjestelmällä.</translation>
 <translation id="7359359531237882347">Kopioidaan <ph name="NUMBER_OF_ITEMS" /> kohdetta…</translation>
 <translation id="7375951387215729722">Tiedostoluettelo lajiteltu laskevassa järjestyksessä (<ph name="COLUMN_NAME" />).</translation>
@@ -827,6 +835,7 @@
 <translation id="7547811415869834682">hollanti</translation>
 <translation id="7551643184018910560">Kiinnitä hyllyyn</translation>
 <translation id="7553492409867692754">Myönnä Linux-sovelluksille pääsy kansiossa <ph name="FOLDER_NAME" /> oleviin tiedostoihin</translation>
+<translation id="7555339735447658365">Olet tällä hetkellä offline-tilassa. Tiedostojen synkronointia jatketaan, kun olet yhteydessä internetiin</translation>
 <translation id="7589661784326793847">Odota hetki</translation>
 <translation id="7592775719802218421">Otetaan <ph name="FILE_NAME" /> käyttöön offline-tilassa</translation>
 <translation id="7600126690270271294">serbia</translation>
@@ -845,6 +854,7 @@
 <translation id="76959938259365003">Roskakorin tyhjentäminen epäonnistui.</translation>
 <translation id="770015031906360009">kreikka</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> kopioitu.</translation>
+<translation id="7707941139430559579">Tiedostoa ei voida siirtää. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="7708271999969613024">Jos haluat käyttää tätä verkkoa, sinun on lisättävä operaattorilta saamasi 8-numeroinen PUK-koodi.</translation>
 <translation id="7711920809702896782">Kuvan tiedot</translation>
 <translation id="7724603315864178912">Leikkaa</translation>
@@ -890,10 +900,10 @@
 <translation id="7972920761225148017">ranska (Sveitsi)</translation>
 <translation id="7973962044839454485">PPP-todennus epäonnistui virheellisen käyttäjänimen tai salasanan vuoksi</translation>
 <translation id="7980421588063892270">englanti (Yhdysvallat), Colemak-näppäimistö</translation>
-<translation id="7985008041109611710">Synkronoidaan <ph name="NUMBER_OF_FILES_SYNCING" /> tiedostoa</translation>
 <translation id="8000066093800657092">Ei verkkoa</translation>
 <translation id="8008366997883261463">Jackrussellinterrieri</translation>
 <translation id="8028993641010258682">Koko</translation>
+<translation id="8034974485549318493">Käyttöönoton yhteydessä sinun on muodostettava yhteys internetiin, jotta tiedostot voidaan synkronoida.</translation>
 <translation id="803771048473350947">Tiedosto</translation>
 <translation id="8038111231936746805">(oletus)</translation>
 <translation id="8042602468072383151">Äänitiedosto, jonka tyyppi on <ph name="AUDIO_TYPE" /></translation>
@@ -904,6 +914,7 @@
 <translation id="8087576439476816834">Lataa, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Jaettu minulle</translation>
 <translation id="8116072619078571545">Jäävesi</translation>
+<translation id="8124093710070495550">Synkronointiongelma</translation>
 <translation id="8128733386027980860">englanti (Yhdistynyt kuningaskunta), Dvorak-näppäimistö</translation>
 <translation id="8137331602592933310"><ph name="FILENAME" /> on jaettu sinulle. Et voi poistaa sitä, koska et ole tiedoston omistaja.</translation>
 <translation id="8138705869659070104">Aktivoi käyttöönoton jälkeen</translation>
@@ -913,9 +924,11 @@
 <translation id="8154842056504218462">Kaikki kohteet valittiin.</translation>
 <translation id="8157684860301034423">Sovellustietojen noutaminen epäonnistui.</translation>
 <translation id="8175731104491895765">ranska (Belgia)</translation>
+<translation id="8175799081768705361">Synkronoidaan <ph name="NUMBER_OF_FILES_SYNCING" /> Drive-tiedostoa</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Laitteen malli</translation>
 <translation id="8223479393428528563">Jos haluat tallentaa nämä tiedostot offline-käyttöä varten, siirry online-tilaan, klikkaa tiedostoja hiiren kakkospainikkeella ja valitse vaihtoehto <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
+<translation id="8241139360630443550">Näytä tallennustila</translation>
 <translation id="8249296373107784235">Keskeytä</translation>
 <translation id="8250690786522693009">Latin</translation>
 <translation id="8250920743982581267">Dokumentit</translation>
@@ -946,6 +959,7 @@
 <translation id="8404498045299006085">Säilytä kaikki</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> verkko, yhdistetään</translation>
 <translation id="8425213833346101688">Vaihda</translation>
+<translation id="8428213095426709021">Asetukset</translation>
 <translation id="8431909052837336408">Vaihda SIM-kortin PIN-koodi</translation>
 <translation id="8437209419043462667">USA</translation>
 <translation id="8452135315243592079">SIM-kortti puuttuu.</translation>
@@ -982,6 +996,7 @@
 <translation id="8609695766746872526">islanti</translation>
 <translation id="863903787380594467">Väärä PIN-koodi. Sinulla on <ph name="RETRIES" /> yritystä jäljellä.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – portti</translation>
+<translation id="8656407365183407932">Offline-tiedostot oli poistettava</translation>
 <translation id="8656768832129462377">Älä tarkista</translation>
 <translation id="8688591111840995413">Virheellinen salasana</translation>
 <translation id="8698464937041809063">Google-piirros</translation>
@@ -1012,10 +1027,12 @@
 <translation id="8919081441417203123">tanska</translation>
 <translation id="8949925099261528566">Yhdistetty, ei internetyhteyttä</translation>
 <translation id="8965697826696209160">Tallennustila ei riitä.</translation>
+<translation id="8970887620466824814">Tapahtui virhe.</translation>
 <translation id="8971742885766657349">Synkronoidaan – <ph name="PERCENT" /> %</translation>
 <translation id="8997962250644902079">kiina (perinteinen, pinyin)</translation>
 <translation id="8998871447376656508">Google Drivessasi ei ole tarpeeksi tilaa latausta varten.</translation>
 <translation id="9003940392834790328">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" /> %, järjestelmänvalvojan hallinnoima, lisätietoja</translation>
+<translation id="9007990314804111233">Kirjaudu Microsoft-tilillesi</translation>
 <translation id="9017798300203431059">venäjä, foneettinen</translation>
 <translation id="9034924485347205037">Linux-tiedostot</translation>
 <translation id="9035012421917565900">Kohteita ei voi siirtää takaisin paikkaan <ph name="DESTINATION_NAME" />, joten tätä toimintoa ei voi kumota.</translation>
@@ -1046,7 +1063,6 @@
 <translation id="9213073329713032541">Asennus käynnistyi.</translation>
 <translation id="9219103736887031265">Kuvat</translation>
 <translation id="9219908252191632183">Kuu</translation>
-<translation id="937795003075802289">Synkronoidaan yksi tiedosto</translation>
 <translation id="938470336146445890">Asenna käyttäjävarmenne.</translation>
 <translation id="939736085109172342">Uusi kansio</translation>
 <translation id="943972244133411984">Muokkaaja</translation>

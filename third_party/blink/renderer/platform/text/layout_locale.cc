@@ -79,6 +79,23 @@ scoped_refptr<QuotesData> GetQuotesDataForLanguage(const char* locale) {
   return QuotesData::Create(open1[0], close1[0], open2[0], close2[0]);
 }
 
+// Returns the Unicode Line Break Style Identifier (key "lb") value.
+// https://www.unicode.org/reports/tr35/#UnicodeLineBreakStyleIdentifier
+inline const char* LbValueFromStrictness(LineBreakStrictness strictness) {
+  switch (strictness) {
+    case LineBreakStrictness::kDefault:
+      return nullptr;  // nullptr removes any existing values.
+    case LineBreakStrictness::kNormal:
+      return "normal";
+    case LineBreakStrictness::kStrict:
+      return "strict";
+    case LineBreakStrictness::kLoose:
+      return "loose";
+  }
+  NOTREACHED();
+  return nullptr;
+}
+
 }  // namespace
 
 static hb_language_t ToHarfbuzLanguage(const AtomicString& locale) {
@@ -325,7 +342,8 @@ scoped_refptr<QuotesData> LayoutLocale::GetQuotesData() const {
 }
 
 AtomicString LayoutLocale::LocaleWithBreakKeyword(
-    LineBreakIteratorMode mode) const {
+    LineBreakStrictness strictness,
+    bool use_phrase) const {
   if (string_.empty())
     return string_;
 
@@ -334,28 +352,9 @@ AtomicString LayoutLocale::LocaleWithBreakKeyword(
   if (string_.Contains('@'))
     return string_;
 
-  const char* keyword_value = nullptr;
-  switch (mode) {
-    default:
-      NOTREACHED();
-      [[fallthrough]];
-    case LineBreakIteratorMode::kDefault:
-      // nullptr will cause any existing values to be removed.
-      break;
-    case LineBreakIteratorMode::kNormal:
-      keyword_value = "normal";
-      break;
-    case LineBreakIteratorMode::kStrict:
-      keyword_value = "strict";
-      break;
-    case LineBreakIteratorMode::kLoose:
-      keyword_value = "loose";
-      break;
-  }
   constexpr wtf_size_t kMaxLbValueLen = 6;
-  DCHECK(!keyword_value || strlen(keyword_value) <= kMaxLbValueLen);
   constexpr wtf_size_t kMaxKeywordsLen =
-      /* strlen("@lb=") */ 4 + kMaxLbValueLen;
+      /* strlen("@lb=") */ 4 + kMaxLbValueLen + /* strlen("@lw=phrase") */ 10;
   class ULocaleKeywordBuilder {
    public:
     explicit ULocaleKeywordBuilder(const std::string& utf8_locale)
@@ -369,6 +368,12 @@ AtomicString LayoutLocale::LocaleWithBreakKeyword(
 
     AtomicString ToAtomicString() const {
       return AtomicString::FromUTF8(buffer_.data(), length_);
+    }
+
+    bool SetStrictness(LineBreakStrictness strictness) {
+      const char* const lb_value = LbValueFromStrictness(strictness);
+      DCHECK(!lb_value || strlen(lb_value) <= kMaxLbValueLen);
+      return SetKeywordValue("lb", lb_value);
     }
 
     bool SetKeywordValue(const char* keyword_name, const char* value) {
@@ -390,7 +395,8 @@ AtomicString LayoutLocale::LocaleWithBreakKeyword(
     Vector<char> buffer_;
   } builder(string_);
 
-  if (builder.SetKeywordValue("lb", keyword_value)) {
+  if (builder.SetStrictness(strictness) &&
+      (!use_phrase || builder.SetKeywordValue("lw", "phrase"))) {
     return builder.ToAtomicString();
   }
   NOTREACHED();

@@ -229,7 +229,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
         mCustomTabNavigationDelegate = new InterceptNavigationDelegate() {
             @Override
             public boolean shouldIgnoreNavigation(NavigationHandle navigationHandle,
-                    GURL escapedUrl, boolean crossFrame, boolean isSandboxedFrame) {
+                    GURL escapedUrl, boolean hiddenCrossFrame, boolean isSandboxedFrame) {
                 if (DomDistillerUrlUtils.isDistilledPage(navigationHandle.getUrl())
                         || navigationHandle.isExternalProtocol()) {
                     return false;
@@ -713,12 +713,10 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
         return mDistillationStatus;
     }
 
-    @VisibleForTesting
     void muteSiteForTesting(GURL url) {
         sMutedSites.add(urlToHash(url));
     }
 
-    @VisibleForTesting
     void clearSavedSitesForTesting() {
         sMutedSites.clear();
     }

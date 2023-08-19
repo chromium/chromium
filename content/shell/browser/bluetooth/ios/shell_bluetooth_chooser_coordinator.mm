@@ -9,10 +9,6 @@
 #import "content/shell/browser/bluetooth/ios/shell_bluetooth_device_list_view_controller.h"
 #import "ui/gfx/native_widget_types.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation ShellBluetoothChooserCoordinator
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
                                      title:(NSString*)title
@@ -49,7 +45,7 @@ ShellBluetoothChooserCoordinatorHolder::ShellBluetoothChooserCoordinatorHolder(
     content::ShellBluetoothChooserIOS* bluetooth_chooser_ios,
     const std::u16string& title) {
   coordinator_ = [[ShellBluetoothChooserCoordinator alloc]
-      initWithBaseViewController:native_window.rootViewController
+      initWithBaseViewController:native_window.Get().rootViewController
                            title:base::SysUTF16ToNSString(title)
                 bluetoothChooser:bluetooth_chooser_ios];
 }

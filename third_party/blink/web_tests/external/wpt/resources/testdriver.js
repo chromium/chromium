@@ -296,12 +296,6 @@
                                         inline: "nearest"});
             }
 
-            var pointerInteractablePaintTree = getPointerInteractablePaintTree(element);
-            if (pointerInteractablePaintTree.length === 0 ||
-                !element.contains(pointerInteractablePaintTree[0])) {
-                return Promise.reject(new Error("element send_keys intercepted error"));
-            }
-
             return window.test_driver_internal.send_keys(element, keys);
         },
 
@@ -334,9 +328,9 @@
          *                                to run the call, or null for the current
          *                                browsing context.
          *
-         * @returns {Promise} fulfilled with the previous {@link
-         *                    https://www.w3.org/TR/webdriver/#dfn-windowrect-object|WindowRect}
-         *                      value, after the window is minimized.
+         * @returns {Promise} fulfilled with the previous `WindowRect
+         *                    <https://www.w3.org/TR/webdriver/#dfn-windowrect-object>`_
+         *                    value, after the window is minimized.
          */
         minimize_window: function(context=null) {
             return window.test_driver_internal.minimize_window(context);
@@ -349,8 +343,8 @@
          * <https://www.w3.org/TR/webdriver/#set-window-rect>`_
          * WebDriver command
          *
-         * @param {Object} rect - A {@link
-         *                           https://www.w3.org/TR/webdriver/#dfn-windowrect-object|WindowRect}
+         * @param {Object} rect - A `WindowRect
+         *                        <https://www.w3.org/TR/webdriver/#dfn-windowrect-object>`_
          * @param {WindowProxy} context - Browsing context in which
          *                                to run the call, or null for the current
          *                                browsing context.

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-NOTRUN Eligibility (BroadcastChannel) Could have been BFCached but actually wasn't
+PRECONDITION_FAILED Eligibility (BroadcastChannel) Could have been BFCached but actually wasn't
 PASS Eligibility (BroadcastChannel closed in the pagehide event)
 Harness: the test ran to completion.
 

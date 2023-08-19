@@ -1,0 +1,119 @@
+<style include="settings-shared input-device-settings-shared"></style>
+<template is="dom-if" if="[[!hasKeyboards(keyboards.length)]]">
+  <div id="noKeyboardsConnectedContainer" class="settings-box start first">
+    <h2 id="noKeyboardsConnectedMessage">
+      $i18n{noKeyboardsConnected}
+    </h2>
+  </div>
+</template>
+<template is="dom-if" if="[[hasKeyboards(keyboards.length)]]">
+  <template is="dom-repeat" items="[[keyboards]]"
+      as="keyboard" index-as="index" restamp>
+    <settings-per-device-keyboard-subsection
+        keyboard="[[keyboard]]"
+        keyboard-policies="[[keyboardPolicies]]"
+        keyboard-index="[[index]]"
+        is-last-device="[[computeIsLastDevice(index, keyboards.length)]]">
+    </settings-per-device-keyboard-subsection>
+  </template>
+</template>
+
+<template is=dom-if if="[[shouldShowDiacriticSetting]]">
+<h2 class="subsection-header">$i18n{keyboardHoldingKeys}</h2>
+<div class="subsection">
+    <settings-toggle-button
+        class="hr continuation"
+        pref="{{prefs.settings.language.physical_keyboard_enable_diacritics_on_longpress}}"
+        label="$i18n{keyboardAccentMarks}"
+        sub-label="$i18n{keyboardAccentMarksSubLabel}"
+        deep-link-focus-id$="[[Setting.kShowDiacritic]]"
+        >
+    </settings-toggle-button>
+  <settings-toggle-button
+      class="hr continuation"
+      pref="{{prefs.settings.language.xkb_auto_repeat_enabled_r2}}"
+      label="$i18n{keyboardEnableAutoRepeat}"
+      sub-label="$i18n{keyboardEnableAutoRepeatSubLabel}"
+      deep-link-focus-id$="[[Setting.kKeyboardAutoRepeat]]">
+  </settings-toggle-button>
+  <iron-collapse
+      opened="[[prefs.settings.language.xkb_auto_repeat_enabled_r2.value]]">
+    <div class="settings-box continuation">
+      <div class="start" id="repeatDelayLabel" aria-hidden="true">
+        $i18n{keyRepeatDelay}
+      </div>
+      <settings-slider id="delaySlider"
+          pref="{{prefs.settings.language.xkb_auto_repeat_delay_r2}}"
+          ticks="[[autoRepeatDelays]]"
+          disabled="[[
+              !prefs.settings.language.xkb_auto_repeat_enabled_r2.value]]"
+          label-aria="$i18n{keyRepeatDelay}"
+          label-min="$i18n{keyRepeatDelayLong}"
+          label-max="$i18n{keyRepeatDelayShort}">
+      </settings-slider>
+    </div>
+    <div class="settings-box continuation">
+      <div class="start" id="repeatRateLabel" aria-hidden="true">
+        $i18n{keyRepeatRate}
+      </div>
+      <settings-slider id="repeatRateSlider"
+          pref="{{
+              prefs.settings.language.xkb_auto_repeat_interval_r2}}"
+          ticks="[[autoRepeatIntervals]]"
+          disabled="[[
+              !prefs.settings.language.xkb_auto_repeat_enabled_r2.value]]"
+          label-aria="$i18n{keyRepeatRate}"
+          label-min="$i18n{keyRepeatRateSlow}"
+          label-max="$i18n{keyRepeatRateFast}">
+      </settings-slider>
+    </div>
+  </iron-collapse>
+</div>
+</template>
+<template is=dom-if if="[[!shouldShowDiacriticSetting]]">
+  <settings-toggle-button class="hr"
+      pref="{{prefs.settings.language.xkb_auto_repeat_enabled_r2}}"
+      label="$i18n{keyboardEnableAutoRepeat}"
+      deep-link-focus-id$="[[Setting.kKeyboardAutoRepeat]]">
+  </settings-toggle-button>
+  <iron-collapse
+      opened="[[prefs.settings.language.xkb_auto_repeat_enabled_r2.value]]">
+    <div class="settings-box continuation embedded">
+      <div class="start" id="repeatDelayLabel" aria-hidden="true">
+        $i18n{keyRepeatDelay}
+      </div>
+      <settings-slider id="delaySlider"
+          pref="{{prefs.settings.language.xkb_auto_repeat_delay_r2}}"
+          ticks="[[autoRepeatDelays]]"
+          disabled="[[!prefs.settings.language.xkb_auto_repeat_enabled_r2.value]]"
+          label-aria="$i18n{keyRepeatDelay}"
+          label-min="$i18n{keyRepeatDelayLong}"
+          label-max="$i18n{keyRepeatDelayShort}">
+      </settings-slider>
+    </div>
+    <div class="settings-box continuation embedded">
+      <div class="start" id="repeatRateLabel" aria-hidden="true">
+        $i18n{keyRepeatRate}
+      </div>
+      <settings-slider id="repeatRateSlider"
+          pref="{{prefs.settings.language.xkb_auto_repeat_interval_r2}}"
+          ticks="[[autoRepeatIntervals]]"
+          disabled="[[!prefs.settings.language.xkb_auto_repeat_enabled_r2.value]]"
+          label-aria="$i18n{keyRepeatRate}"
+          label-min="$i18n{keyRepeatRateSlow}"
+          label-max="$i18n{keyRepeatRateFast}">
+      </settings-slider>
+    </div>
+  </iron-collapse>
+</template>
+<cr-link-row id="keyboardShortcutViewer" class="hr"
+    on-click="onShowKeyboardShortcutViewerClick"
+    label="$i18n{showKeyboardShortcutViewer}"
+    external
+    deep-link-focus-id$="[[Setting.kKeyboardShortcuts]]">
+</cr-link-row>
+<cr-link-row id="showLanguagesInput"
+    class="hr" on-click="onShowInputSettingsClick"
+    label="$i18n{keyboardShowInputSettings}"
+    role-description="$i18n{subpageArrowRoleDescription}">
+</cr-link-row>

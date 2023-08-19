@@ -19,6 +19,7 @@
 
 namespace content {
 
+class BrowserContext;
 class PolicyContainerHost;
 
 // A service that stores bound SharedURLLoaderFactory mojo pipes and the loaders
@@ -44,7 +45,7 @@ class PolicyContainerHost;
 // https://docs.google.com/document/d/1ZzxMMBvpqn8VZBZKnb7Go8TWjnrGcXuLS_USwVVRUvY
 class CONTENT_EXPORT KeepAliveURLLoaderService {
  public:
-  explicit KeepAliveURLLoaderService();
+  explicit KeepAliveURLLoaderService(BrowserContext* browser_context);
   ~KeepAliveURLLoaderService();
 
   // Not Copyable.
@@ -70,6 +71,9 @@ class CONTENT_EXPORT KeepAliveURLLoaderService {
   size_t NumDisconnectedLoadersForTesting() const;
   void SetLoaderObserverForTesting(
       scoped_refptr<KeepAliveURLLoader::TestObserver> observer);
+  void SetURLLoaderThrottlesGetterForTesting(
+      KeepAliveURLLoader::URLLoaderThrottlesGetter
+          url_loader_throttles_getter_for_testing);
 
  private:
   class KeepAliveURLLoaderFactory;
@@ -81,6 +85,9 @@ class CONTENT_EXPORT KeepAliveURLLoaderService {
   // `loader_receivers_` or `disconnected_loaders_`.
   void RemoveLoader(mojo::ReceiverId loader_receiver_id);
 
+  // The browsing session that owns this instance of the service.
+  const raw_ptr<BrowserContext> browser_context_;
+
   // Many-to-one mojo receiver of URLLoaderFactory.
   std::unique_ptr<KeepAliveURLLoaderFactory> factory_;
 
@@ -89,19 +96,21 @@ class CONTENT_EXPORT KeepAliveURLLoaderService {
   // Once a receiver is disconnected, its context should be moved to
   // `disconnected_loaders_`.
   mojo::ReceiverSet<network::mojom::URLLoader,
-                    std::unique_ptr<network::mojom::URLLoader>>
+                    std::unique_ptr<KeepAliveURLLoader>>
       loader_receivers_;
 
   // Holds all the KeepAliveURLLoader that has been disconnected from renderers.
   // They should be kept alive until the request completes or fails.
   // The key is the mojo::ReceiverId assigned by `loader_receivers_`.
-  std::map<mojo::ReceiverId, std::unique_ptr<network::mojom::URLLoader>>
+  std::map<mojo::ReceiverId, std::unique_ptr<KeepAliveURLLoader>>
       disconnected_loaders_;
 
   // For testing only:
   // Not owned.
   scoped_refptr<KeepAliveURLLoader::TestObserver> loader_test_observer_ =
       nullptr;
+  KeepAliveURLLoader::URLLoaderThrottlesGetter
+      url_loader_throttles_getter_for_testing_ = base::NullCallback();
 };
 
 }  // namespace content

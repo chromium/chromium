@@ -338,10 +338,6 @@ const char* SearchResultListView::GetClassName() const {
   return "SearchResultListView";
 }
 
-void SearchResultListView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kListBox;
-}
-
 int SearchResultListView::GetHeightForWidth(int w) const {
   return results_container_->GetHeightForWidth(w);
 }

@@ -4,7 +4,9 @@ URL: https://github.com/leeoniya/uPlot/blob/a8854465fe44248980a675656ca544823d4f
 Version: 1.6.21
 Date: 2022-08-8
 License: MIT
+License File: LICENSE
 Security Critical: No
+Shipped: yes
 Description: This snapshot of uPlot is used to generate realtime plots/charts of WiFi related performance metrics.
 Local Modifications:
 Disable eslint on library file given it is purposely minified to improve space efficiency and, therefore, not human readable.

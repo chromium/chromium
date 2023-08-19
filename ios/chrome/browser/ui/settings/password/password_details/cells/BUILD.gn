@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("cells") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "table_view_stacked_details_item.h",
     "table_view_stacked_details_item.mm",
@@ -18,7 +17,6 @@ source_set("cells") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "table_view_stacked_details_item_unittest.mm" ]
   deps = [

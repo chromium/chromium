@@ -34,7 +34,7 @@ class CoverPhoto {
    * @param file File entry of cover photo.
    * @param url Url to its cover photo. Might be null if the cover is failed to
    *     load.
-   * @param draggable If the file type support share by dragg/drop cover photo.
+   * @param draggable If the file type support share by drag/drop cover photo.
    */
   constructor(
       readonly file: FileAccessEntry,

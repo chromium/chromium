@@ -17,8 +17,8 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/service/trusted_vault_client.h"
 #include "components/trusted_vault/trusted_vault_access_token_fetcher_frontend.h"
+#include "components/trusted_vault/trusted_vault_client.h"
 
 struct CoreAccountInfo;
 
@@ -35,7 +35,7 @@ class StandaloneTrustedVaultBackend;
 // platform-dependent crypto mechanisms (OSCrypt).
 //
 // Reading of the file is done lazily.
-class StandaloneTrustedVaultClient : public syncer::TrustedVaultClient {
+class StandaloneTrustedVaultClient : public TrustedVaultClient {
  public:
   // |identity_manager| must not be null and must outlive this object.
   // |url_loader_factory| must not be null.

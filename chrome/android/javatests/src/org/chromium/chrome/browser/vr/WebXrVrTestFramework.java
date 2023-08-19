@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.vr;
 
 import androidx.annotation.IntDef;
 
-import org.junit.Assert;
-
 import org.chromium.chrome.browser.vr.util.PermissionUtils;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.content_public.browser.WebContents;
@@ -28,12 +26,10 @@ public class WebXrVrTestFramework extends WebXrTestFramework {
     public static final int PERMISSION_PROMPT_ACTION_ALLOW = 1;
     public static final int PERMISSION_PROMPT_ACTION_DENY = 2;
 
-    @PermissionPromptAction
-    protected int mPermissionPromptAction = PERMISSION_PROMPT_ACTION_ALLOW;
+    protected @PermissionPromptAction int mPermissionPromptAction = PERMISSION_PROMPT_ACTION_ALLOW;
 
     public WebXrVrTestFramework(ChromeActivityTestRule rule) {
         super(rule);
-        Assert.assertFalse("Test started in VR", VrShellDelegate.isInVr());
     }
 
     /**

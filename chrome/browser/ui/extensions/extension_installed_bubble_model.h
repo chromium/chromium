@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "extensions/common/extension_id.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -42,7 +43,7 @@ class ExtensionInstalledBubbleModel {
 
   gfx::ImageSkia MakeIconOfSize(const gfx::Size& size) const;
 
-  const std::string& extension_id() const { return extension_id_; }
+  const extensions::ExtensionId& extension_id() const { return extension_id_; }
   const std::string& extension_name() const { return extension_name_; }
 
  private:
@@ -66,7 +67,7 @@ class ExtensionInstalledBubbleModel {
 
   const SkBitmap icon_;
 
-  const std::string extension_id_;
+  const extensions::ExtensionId extension_id_;
   const std::string extension_name_;
 };
 

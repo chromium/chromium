@@ -5,6 +5,8 @@
 #include "base/fuchsia/filtered_service_directory.h"
 
 #include <lib/async/default.h>
+#include <lib/vfs/cpp/pseudo_dir.h>
+#include <lib/vfs/cpp/service.h>
 #include <utility>
 
 #include "base/fuchsia/fuchsia_logging.h"

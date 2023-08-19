@@ -9,10 +9,6 @@
 #import "components/translate/core/browser/mock_translate_infobar_delegate.h"
 #import "components/translate/core/browser/mock_translate_ranker.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using translate::testing::MockTranslateClient;
 using translate::testing::MockTranslateRanker;
 using translate::testing::MockLanguageModel;
@@ -61,6 +57,10 @@ std::u16string FakeTranslateInfoBarDelegate::source_language_name() const {
 
 std::u16string FakeTranslateInfoBarDelegate::target_language_name() const {
   return target_language_;
+}
+
+bool FakeTranslateInfoBarDelegate::IsTranslatableLanguageByPrefs() const {
+  return translatable_language_;
 }
 
 FakeTranslateInfoBarDelegateFactory::FakeTranslateInfoBarDelegateFactory() {

@@ -207,6 +207,14 @@ class TestFederatedIdentityModalDialogViewDelegate
     std::move(closure_).Run();
     closed_ = true;
   }
+
+  base::WeakPtr<TestFederatedIdentityModalDialogViewDelegate> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<TestFederatedIdentityModalDialogViewDelegate>
+      weak_ptr_factory_{this};
 };
 
 }  // namespace
@@ -306,7 +314,7 @@ class WebIdBrowserTest : public ContentBrowserTest {
     test_modal_dialog_view_delegate_ =
         std::make_unique<TestFederatedIdentityModalDialogViewDelegate>();
     test_browser_client_->SetIdentityRegistry(
-        shell()->web_contents(), test_modal_dialog_view_delegate_.get(),
+        shell()->web_contents(), test_modal_dialog_view_delegate_->GetWeakPtr(),
         url::Origin::Create(GURL(BaseIdpUrl())));
   }
 
@@ -324,9 +332,8 @@ class WebIdBrowserTest : public ContentBrowserTest {
 class WebIdIdpSigninStatusBrowserTest : public WebIdBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kFedCm,
-        {{features::kFedCmIdpSigninStatusFieldTrialParamName, "true"}});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kFedCmIdpSigninStatusEnabled);
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
@@ -560,7 +567,24 @@ IN_PROC_BROWSER_TEST_F(WebIdIdpSigninStatusBrowserTest, IdPClose) {
         }) ()
     )";
 
-  // Check that modal dialog is not closed.
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, IdentityProvider.close() should invoke CloseModalDialog() on
+  // the dialog controller.
+  auto controller = std::make_unique<MockIdentityRequestDialogController>();
+  base::RunLoop run_loop;
+  EXPECT_CALL(*controller, CloseModalDialog).WillOnce([&run_loop]() {
+    run_loop.Quit();
+  });
+  test_browser_client_->SetIdentityRequestDialogController(
+      std::move(controller));
+
+  // Run the script.
+  EXPECT_EQ(true, EvalJs(shell(), script));
+  run_loop.Run();
+#else
+  // On desktop, IdentityProvider.close() should invoke NotifyClose() on the
+  // delegate set on the identity registry. Check that modal dialog is not
+  // closed.
   EXPECT_FALSE(test_modal_dialog_view_delegate_->closed_);
 
   // Run the script.
@@ -573,6 +597,7 @@ IN_PROC_BROWSER_TEST_F(WebIdIdpSigninStatusBrowserTest, IdPClose) {
 
   // Check that modal dialog is closed.
   EXPECT_TRUE(test_modal_dialog_view_delegate_->closed_);
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 class WebIdMDocsBrowserTest : public WebIdBrowserTest {
@@ -797,8 +822,8 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_openPopUpWindow) {
   auto config_url = GURL(BaseIdpUrl());
 
   // Expects the account chooser to be opened. Selects the first account.
-  EXPECT_CALL(*controller, ShowAccountsDialog(_, _, _, _, _, _, _, _))
-      .WillOnce(::testing::WithArg<6>([&config_url](auto on_selected) {
+  EXPECT_CALL(*controller, ShowAccountsDialog(_, _, _, _, _, _, _))
+      .WillOnce(::testing::WithArg<5>([&config_url](auto on_selected) {
         std::move(on_selected)
             .Run(config_url,
                  /* account_id=*/"not_real_account",

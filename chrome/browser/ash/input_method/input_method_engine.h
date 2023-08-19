@@ -24,6 +24,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "extensions/common/extension_id.h"
 #include "ui/base/ime/ash/input_method_descriptor.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/ash/text_input_method.h"
@@ -376,7 +377,7 @@ class InputMethodEngine : virtual public TextInputMethod,
   std::string active_component_id_;
 
   // The IME extension ID.
-  std::string extension_id_;
+  extensions::ExtensionId extension_id_;
 
   raw_ptr<Profile> profile_;
 

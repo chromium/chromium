@@ -1,0 +1,20 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module search_engine_choice.mojom;
+
+// Lives in the browser process. A renderer uses this to link itself with
+// a page handler.
+interface PageHandlerFactory {
+  // Creates a page handler for the file manager and link it to the UI.
+  CreatePageHandler(pending_receiver<PageHandler> handler);
+};
+
+// Browser-side handler for requests from WebUI page.
+interface PageHandler {
+  // Displays the Search Engine Choice dialog using the height of its content.
+  // Triggered by the `displayDialog()` call in
+  // `chrome/browser/resources/search_engine_choice/app.ts`
+  DisplayDialog(uint32 content_height);
+};

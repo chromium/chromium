@@ -111,7 +111,7 @@ class ExtensionPrefsLastPingDay : public ExtensionPrefsTest {
  private:
   Time extension_time_;
   Time blocklist_time_;
-  std::string extension_id_;
+  ExtensionId extension_id_;
 };
 TEST_F(ExtensionPrefsLastPingDay, LastPingDay) {}
 
@@ -309,7 +309,7 @@ class ExtensionPrefsGrantedPermissions : public ExtensionPrefsTest {
   }
 
  private:
-  std::string extension_id_;
+  ExtensionId extension_id_;
   APIPermissionSet api_perm_set1_;
   APIPermissionSet api_perm_set2_;
   URLPatternSet ehost_perm_set1_;
@@ -378,7 +378,7 @@ class ExtensionPrefsActivePermissions : public ExtensionPrefsTest {
   }
 
  private:
-  std::string extension_id_;
+  ExtensionId extension_id_;
   std::unique_ptr<const PermissionSet> active_perms_;
 };
 TEST_F(ExtensionPrefsActivePermissions, SetAndGetDesiredActivePermissions) {}

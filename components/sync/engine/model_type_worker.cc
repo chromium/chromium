@@ -790,7 +790,7 @@ std::unique_ptr<CommitContribution> ModelTypeWorker::GetContribution(
       CommitOnlyTypes().Has(type_));
 }
 
-bool ModelTypeWorker::HasLocalChangesForTest() const {
+bool ModelTypeWorker::HasLocalChanges() const {
   return has_local_changes_state_ != kNoNudgedLocalChanges;
 }
 
@@ -1229,6 +1229,10 @@ bool ModelTypeWorker::HasPendingInvalidations() const {
 
 void ModelTypeWorker::SendPendingInvalidationsToProcessor() {
   DCHECK(base::FeatureList::IsEnabled(kSyncPersistInvalidations));
+
+  CHECK(model_type_processor_);
+  DVLOG(1) << "Storing pending invalidations for "
+           << ModelTypeToDebugString(type_);
   UpdateModelTypeStateInvalidations();
   model_type_processor_->StorePendingInvalidations(
       std::vector<sync_pb::ModelTypeState::Invalidation>(

@@ -192,7 +192,7 @@ class PLATFORM_EXPORT Font {
 
   // Access the NG shape cache associated with this particular font object.
   // Should *not* be retained across layout calls as it may become invalid.
-  NGShapeCache* GetNGShapeCache() const;
+  NGShapeCache& GetNGShapeCache() const;
 
   // Access the shape cache associated with this particular font object.
   // Should *not* be retained across layout calls as it may become invalid.

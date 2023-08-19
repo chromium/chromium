@@ -7,10 +7,6 @@
 #import "ios/chrome/browser/shared/ui/list_model/list_item.h"
 #import "testing/platform_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 typedef NS_ENUM(NSInteger, SectionIdentifier) {

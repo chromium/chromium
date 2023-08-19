@@ -6,16 +6,20 @@
 #define SERVICES_ACCESSIBILITY_ASSISTIVE_TECHNOLOGY_CONTROLLER_IMPL_H_
 
 #include <memory>
-#include <set>
+#include <string>
+#include <vector>
 
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
+#include "services/accessibility/public/mojom/user_interface.mojom-forward.h"
 
 namespace ax {
-class V8Manager;
+
 class InterfaceBinder;
+class V8Manager;
 
 // Implementation of the assistive technology controller interface
 // for Chrome OS. This tracks which features are enabled and will
@@ -38,13 +42,16 @@ class AssistiveTechnologyControllerImpl
       mojo::PendingRemote<mojom::AccessibilityServiceClient>
           accessibility_client_remote);
 
-  // Called by AutomationInternalBindings owned by a V8 instance
-  // to request binding of mojo interfaces in the OS.
+  // Called by a bindings class owned by a V8 instance to request binding of
+  // mojo interfaces in the OS.
   // mojom::AccessibilityServiceClient:
-  void BindAutomation(mojo::PendingRemote<mojom::Automation> automation,
-                      mojo::PendingReceiver<mojom::AutomationClient>
-                          automation_client) override;
+  void BindAutomation(
+      mojo::PendingAssociatedRemote<mojom::Automation> automation,
+      mojo::PendingReceiver<mojom::AutomationClient> automation_client)
+      override;
   void BindTts(mojo::PendingReceiver<mojom::Tts> tts_receiver) override;
+  void BindUserInterface(mojo::PendingReceiver<mojom::UserInterface>
+                             user_interface_receiver) override;
 
   // mojom::AssistiveTechnologyController:
   void EnableAssistiveTechnology(
@@ -57,15 +64,15 @@ class AssistiveTechnologyControllerImpl
   void RunScriptForTest(mojom::AssistiveTechnologyType type,
                         const std::string& script,
                         base::OnceClosure on_complete);
-  void SetTestInterface(mojom::AssistiveTechnologyType type,
-                        std::unique_ptr<InterfaceBinder> test_interface);
+  void AddInterfaceForTest(mojom::AssistiveTechnologyType type,
+                           std::unique_ptr<InterfaceBinder> test_interface);
+
+  V8Manager* GetV8Manager(mojom::AssistiveTechnologyType type);
 
  private:
-  scoped_refptr<V8Manager> GetOrMakeV8Manager(
-      mojom::AssistiveTechnologyType type);
+  void CreateV8ManagerForType(mojom::AssistiveTechnologyType type);
 
-  std::map<mojom::AssistiveTechnologyType, scoped_refptr<V8Manager>>
-      enabled_ATs_;
+  std::map<mojom::AssistiveTechnologyType, V8Manager> enabled_ATs_;
 
   // Whether V8 has been initialized once. Allows us to only
   // initialize V8 for the service one time. Assumes this class has the same
@@ -80,9 +87,6 @@ class AssistiveTechnologyControllerImpl
   // The remote to the Accessibility Service Client in the OS.
   mojo::Remote<mojom::AccessibilityServiceClient>
       accessibility_service_client_remote_;
-
-  base::WeakPtrFactory<AssistiveTechnologyControllerImpl> weak_ptr_factory_{
-      this};
 };
 
 }  // namespace ax

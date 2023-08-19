@@ -489,7 +489,7 @@ suite('scanningAppTest', function() {
   });
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML = trustedTypes.emptyHTML;
     linkEl = /**@type {HTMLLinkElement}*/ (document.createElement('link'));
     linkEl.href = disabledUrl;
     document.head.appendChild(linkEl);

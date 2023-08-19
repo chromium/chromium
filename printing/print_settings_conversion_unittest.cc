@@ -93,7 +93,7 @@ const char kPrinterSettingsWithImageableArea[] = R"({
 })";
 
 #if !BUILDFLAG(IS_MAC)
-const char kPrinterSettingsWithNonSquareDpi[] = R"({
+const char kPrinterSettingsWithNonSquarePixels[] = R"({
   "headerFooterEnabled": false,
   "title": "Test Doc",
   "url": "http://localhost/",
@@ -273,14 +273,14 @@ TEST(PrintSettingsConversionTest, WithCustomMarginsAndImageableArea) {
 }
 
 #if !BUILDFLAG(IS_MAC)
-TEST(PrintSettingsConversionTest, WithNonSquareDpi) {
+TEST(PrintSettingsConversionTest, WithNonSquarePixels) {
   // Check that physical size and printable area are scaled by the max DPI
-  // value. Not needed for macOS, which always has a square DPI.
+  // value. Not needed for macOS, which always has square pixels.
   static constexpr gfx::Size kExpectedSize{6614, 9354};
   static constexpr gfx::Rect kExpectedPrintableArea{0, 0, 5669, 9323};
 
   base::Value::Dict dict =
-      base::test::ParseJsonDict(kPrinterSettingsWithNonSquareDpi);
+      base::test::ParseJsonDict(kPrinterSettingsWithNonSquarePixels);
   std::unique_ptr<PrintSettings> settings = PrintSettingsFromJobSettings(dict);
   ASSERT_TRUE(settings);
   EXPECT_EQ(settings->dpi_horizontal(), 800);

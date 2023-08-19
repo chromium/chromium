@@ -3,11 +3,12 @@
 <head>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 </head>
 <body>
 <script type="module">
 import {MockMIDIService} from './resources/mock-midiservice.js';
-import {setMidiPermission} from './resources/permissions-helper.js';
 
 const mock = new MockMIDIService();
 function checkInputMap(inputs) {
@@ -95,7 +96,7 @@ function checkOutputMap(outputs) {
 }
 
 promise_test(async t => {
-  await setMidiPermission({}, 'granted');
+  await test_driver.set_permission({name: 'midi'}, 'granted');
   const access = await navigator.requestMIDIAccess();
 
   // Validate the values of the attributes on the access.

@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/strings/string_piece.h"
 #include "components/enterprise/browser/reporting/browser_report_generator.h"
+#include "components/enterprise/browser/reporting/real_time_report_controller.h"
 #include "components/enterprise/browser/reporting/report_util.h"
 #include "components/enterprise/browser/reporting/reporting_delegate_factory.h"
 #include "components/version_info/channel.h"
@@ -79,19 +80,22 @@ class FakeReportingDelegateFactory : public ReportingDelegateFactory {
   ~FakeReportingDelegateFactory() override;
 
   std::unique_ptr<BrowserReportGenerator::Delegate>
-  GetBrowserReportGeneratorDelegate() override;
+  GetBrowserReportGeneratorDelegate() const override;
 
   std::unique_ptr<ProfileReportGenerator::Delegate>
-  GetProfileReportGeneratorDelegate() override;
+  GetProfileReportGeneratorDelegate() const override;
 
   std::unique_ptr<ReportGenerator::Delegate> GetReportGeneratorDelegate()
-      override;
+      const override;
 
   std::unique_ptr<ReportScheduler::Delegate> GetReportSchedulerDelegate()
-      override;
+      const override;
 
   std::unique_ptr<RealTimeReportGenerator::Delegate>
-  GetRealTimeReportGeneratorDelegate() override;
+  GetRealTimeReportGeneratorDelegate() const override;
+
+  std::unique_ptr<RealTimeReportController::Delegate>
+  GetRealTimeReportControllerDelegate() const override;
 
  private:
   const std::string executable_path_;

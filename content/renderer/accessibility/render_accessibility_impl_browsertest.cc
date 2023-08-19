@@ -1098,6 +1098,7 @@ TEST_F(BlinkAXActionTargetTest, TestMethods) {
   // and the keyup event is delayed 100ms to look more natural. We need to wait
   // for them to happen to finish the test cleanly in the TearDown phase.
   task_environment_.FastForwardBy(base::Seconds(1));
+  GetRenderAccessibilityImpl()->GetAXContext()->UpdateAXForAllDocuments();
 
   gfx::RectF expected_bounds;
   blink::WebAXObject offset_container;

@@ -121,7 +121,7 @@ template("trichrome_library_apk_tmpl") {
       if (_is_64_bit_browser) {
         shared_libraries = [ "//chrome/android:libmonochrome_64" ]
         if (_include_32_bit_webview) {
-          secondary_native_lib_placeholders = [ "libdummy.so" ]
+          secondary_native_lib_placeholders = [ "libplaceholder.so" ]
         }
         if (build_hwasan_splits) {
           _hwasan_toolchain =
@@ -133,7 +133,7 @@ template("trichrome_library_apk_tmpl") {
         secondary_abi_shared_libraries =
             [ "//chrome/android:monochrome_secondary_abi_lib" ]
         if (invoker.include_64_bit_webview) {
-          native_lib_placeholders = [ "libdummy.so" ]
+          native_lib_placeholders = [ "libplaceholder.so" ]
         }
       }
     } else {

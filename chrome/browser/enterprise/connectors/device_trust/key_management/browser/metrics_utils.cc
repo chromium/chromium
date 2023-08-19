@@ -5,7 +5,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/metrics_utils.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "components/policy/proto/device_management_backend.pb.h"
+#include "base/strings/stringprintf.h"
 #include "crypto/signature_verifier.h"
 
 using BPKUR = enterprise_management::BrowserPublicKeyUploadRequest;
@@ -42,6 +42,20 @@ DTKeyType AlgorithmToType(
       return DTKeyType::kRsa;
     case crypto::SignatureVerifier::ECDSA_SHA256:
       return DTKeyType::kEc;
+  }
+}
+
+std::string GetHistogramVariant(BPKUR::KeyTrustLevel trust_level) {
+  switch (trust_level) {
+    case BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED:
+      static constexpr char kUnknown[] = "Unknown";
+      return kUnknown;
+    case BPKUR::CHROME_BROWSER_HW_KEY:
+      static constexpr char kHardware[] = "Hardware";
+      return kHardware;
+    case BPKUR::CHROME_BROWSER_OS_KEY:
+      static constexpr char kOS[] = "OS";
+      return kOS;
   }
 }
 
@@ -88,6 +102,16 @@ void LogSynchronizationError(DTSynchronizationError error) {
   static constexpr char kSynchronizationErrorHistogram[] =
       "Enterprise.DeviceTrust.SyncSigningKey.ClientError";
   base::UmaHistogramEnumeration(kSynchronizationErrorHistogram, error);
+}
+
+void LogSignatureLatency(BPKUR::KeyTrustLevel trust_level,
+                         base::TimeTicks start_time) {
+  static constexpr char kSigningLatencyHistogramFormat[] =
+      "Enterprise.DeviceTrust.Key.Signing.Latency.%s";
+  base::UmaHistogramTimes(
+      base::StringPrintf(kSigningLatencyHistogramFormat,
+                         GetHistogramVariant(trust_level).c_str()),
+      base::TimeTicks::Now() - start_time);
 }
 
 }  // namespace enterprise_connectors

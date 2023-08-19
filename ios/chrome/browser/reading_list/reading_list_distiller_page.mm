@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/reading_list/reading_list_distiller_page.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
-#import "base/mac/foundation_util.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -25,10 +25,6 @@
 #import "net/base/mac/url_conversions.h"
 #import "net/cert/cert_status_flags.h"
 #import "url/url_constants.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 // The delay given to the web page to render after the PageLoaded callback.

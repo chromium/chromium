@@ -6,10 +6,6 @@
 
 #import "ios/chrome/browser/ui/overlays/overlay_request_coordinator.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 OverlayRequestUIState::OverlayRequestUIState(OverlayRequest* request)
     : request_(request) {
   DCHECK(request_);

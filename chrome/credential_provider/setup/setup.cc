@@ -97,7 +97,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance,
   logging::SetEventSource("GCPW", GCPW_CATEGORY, MSG_LOG_MESSAGE);
 
   if (GetGlobalFlagOrDefault(kRegEnableVerboseLogging, 1))
-    logging::SetMinLogLevel(logging::LOG_VERBOSE);
+    logging::SetMinLogLevel(logging::LOGGING_VERBOSE);
 
   // Set GCPW as the default credential provider for the end user.
   MakeGcpwDefaultCP();

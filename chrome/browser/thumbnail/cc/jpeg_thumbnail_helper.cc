@@ -6,12 +6,14 @@
 
 #include <algorithm>
 
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/thumbnail/cc/features.h"
 #include "skia/ext/image_operations.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 
@@ -27,10 +29,17 @@ SkBitmap ResizeBitmap(double jpeg_aspect_ratio, const SkBitmap& bitmap) {
   constexpr int kScale = 2;
   double aspect_ratio = std::clamp(jpeg_aspect_ratio, 0.5, 2.0);
 
-  int width = std::min(bitmap.width() / kScale,
-                       (int)(bitmap.height() * aspect_ratio / kScale));
-  int height = std::min(bitmap.height() / kScale,
-                        (int)(bitmap.width() / aspect_ratio / kScale));
+  int width = 0;
+  int height = 0;
+  if (!base::FeatureList::IsEnabled(thumbnail::kThumbnailCacheRefactor)) {
+    width = std::min(bitmap.width() / kScale,
+                     (int)(bitmap.height() * aspect_ratio / kScale));
+    height = std::min(bitmap.height() / kScale,
+                      (int)(bitmap.width() / aspect_ratio / kScale));
+  } else {
+    width = bitmap.width() / kScale;
+    height = bitmap.height() / kScale;
+  }
   // When cropping the thumbnails, we want to keep the top center portion.
   int begin_x = (bitmap.width() / kScale - width) / 2;
   int end_x = begin_x + width;

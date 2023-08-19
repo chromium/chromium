@@ -59,7 +59,6 @@ public class MSBBFragmentTest {
         if (mScenario != null) {
             mScenario.close();
         }
-        Profile.setLastUsedProfileForTesting(null);
         mActionTester.tearDown();
     }
 

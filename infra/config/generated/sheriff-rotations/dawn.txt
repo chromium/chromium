@@ -1,4 +1,8 @@
+ci/Dawn Android arm Builder
+ci/Dawn Android arm DEPS Builder
+ci/Dawn Android arm DEPS Release (Nexus 5X)
 ci/Dawn Android arm DEPS Release (Pixel 4)
+ci/Dawn Android arm Release (Nexus 5X)
 ci/Dawn Android arm Release (Pixel 4)
 ci/Dawn Android arm64 DEPS Release (Pixel 6)
 ci/Dawn Android arm64 Release (Pixel 6)
@@ -19,7 +23,9 @@ ci/Dawn Mac x64 Experimental Release (AMD)
 ci/Dawn Mac x64 Experimental Release (Intel)
 ci/Dawn Mac x64 Release (AMD)
 ci/Dawn Mac x64 Release (Intel)
-ci/Dawn Win10 x64 ASAN Release
+ci/Dawn Win10 x64 ASAN Builder
+ci/Dawn Win10 x64 ASAN Release (Intel)
+ci/Dawn Win10 x64 ASAN Release (NVIDIA)
 ci/Dawn Win10 x64 Builder
 ci/Dawn Win10 x64 DEPS Builder
 ci/Dawn Win10 x64 DEPS Release (Intel)

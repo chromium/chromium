@@ -1,5 +1,5 @@
 {% from 'templates/macros.tmpl' import license, print_if, source_files_for_generated_file %}
-{% from 'templates/fields/field.tmpl' import encode, const_ref, getter_expression, getter_method_name, setter_expression, fieldwise_debug_diff, fieldwise_copy, fieldwise_diff %}
+{% from 'templates/fields/field.tmpl' import encode, const_ref, getter_expression, getter_method_name, setter_expression, fieldwise_debug_diff, fieldwise_initialize, fieldwise_diff %}
 {% from 'templates/fields/group.tmpl' import define_field_group_class %}
 {% import 'templates/fields/derived_flag.tmpl' as derived_flag %}
 {{license()}}
@@ -8,7 +8,10 @@
 
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/computed_style_base.h"
+#include "third_party/blink/renderer/core/style/content_data.h"  // For the logging operator to be visible.
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
+
+#include <utility>
 
 namespace blink {
 
@@ -31,13 +34,39 @@ ASSERT_SIZE(ComputedStyleBase, SameSizeVerifierForComputedStyleBase);
 // can instantiate this class.
 ComputedStyleBase::ComputedStyleBase() :
 {% set comma = joiner(", ") %}
+{% for subgroup in computed_style.subgroups %}
+    {{comma()}}{{subgroup.member_name}}({{subgroup.type_name}}::Create())
+{% endfor %}
 {% for field in computed_style.fields %}
     {{comma()}}{{field.name}}({{encode(field, field.default_value)}})
 {% endfor %}
 {
-  {% for subgroup in computed_style.subgroups %}
-  {{subgroup.member_name}}.Init();
-  {% endfor %}
+}
+
+ComputedStyleBase::ComputedStyleBase(const ComputedStyleBase &source_for_noninherited,
+                                     const ComputedStyleBase &parent_style,
+                                     ComputedStyleAccessFlags &access_) :
+{{fieldwise_initialize(computed_style)}}
+{
+{% for subgroup in computed_style.subgroups %}
+  {% if subgroup.all_fields|rejectattr("is_inherited")|list|length != 0 and
+     subgroup.all_fields|selectattr("is_inherited")|list|length != 0 -%}
+  if (parent_style.{{subgroup.member_name}} != source_for_noninherited.{{subgroup.member_name}}) {
+    // We created this object fresh ourselves, so we do not need to clone it
+    // if we wish to do further changes later on.
+    access_.{{subgroup.member_name}} = true;
+  }
+  {% endif %}
+{% endfor %}
+{% for subgroup in computed_style.subgroups %}
+  {% for field in subgroup.all_fields|selectattr("reset_on_new_style") -%}
+    if ({{getter_expression(field)}} != {{encode(field, field.default_value)}}) {
+      // We need to reset this value, since it was part of a subgroup
+      // that was copied wholesale.
+      {{setter_expression(field)}} = {{encode(field, field.default_value)}};
+    }
+  {% endfor %}
+{% endfor %}
 }
 
 {% for name, groups_to_diff in diff_functions_map.items() %}
@@ -66,9 +95,51 @@ String ComputedStyleBase::DebugFieldToString(DebugField field) {
   }
 }
 
-Vector<ComputedStyleBase::DebugField>
+template<typename, typename = void>
+constexpr bool HasLogging {};
+
+template<typename T>
+constexpr bool HasLogging<
+  T,
+  std::void_t<decltype(std::stringstream() << std::declval<T>())>
+> = true;
+
+template<typename> constexpr bool IsPersistent = false;
+template<typename T> constexpr bool IsPersistent<Persistent<T>> = true;
+
+template <typename> constexpr bool IsScopedRefPtr = false;
+template <typename T> constexpr bool IsScopedRefPtr<scoped_refptr<T>> = true;
+
+template<class T>
+static std::string DebugStringForField(const T& t) {
+  if constexpr (std::is_same_v<T, bool>) {
+    return t ? "true" : "false";
+  }
+  if constexpr (IsPersistent<T>) {
+    if constexpr (HasLogging<typename T::PointeeType>) {
+      std::stringstream ss;
+      ss << *t;
+      return ss.str();
+    }
+  }
+  if constexpr (IsScopedRefPtr<T>) {
+    if constexpr (HasLogging<typename T::element_type>) {
+      std::stringstream ss;
+      ss << *t;
+      return ss.str();
+    }
+  }
+  if constexpr (HasLogging<T>) {
+    std::stringstream ss;
+    ss << t;
+    return ss.str();
+  }
+  return "<unable to print>";
+}
+
+Vector<ComputedStyleBase::DebugDiff>
 ComputedStyleBase::DebugDiffFields(const ComputedStyleBase& o) const {
-  Vector<DebugField> diff;
+  Vector<DebugDiff> diff;
   {{fieldwise_debug_diff(computed_style, computed_style.all_fields)|indent(2)}}
   return diff;
 }
@@ -79,26 +150,6 @@ ComputedStyleBase::DebugDiffFields(const ComputedStyleBase& o) const {
 {{define_field_group_class(group)}}
 
 {% endfor %}
-
-void ComputedStyleBuilderBase::InheritFrom(const ComputedStyleBase& other,
-                                    IsAtShadowBoundary isAtShadowBoundary) {
-  ComputedStyleBase& style = *style_;
-  {{fieldwise_copy(computed_style, computed_style.all_fields
-      |selectattr("is_property")
-      |selectattr("is_inherited")
-      |list
-    )|indent(2)}}
-}
-
-void ComputedStyleBuilderBase::CopyNonInheritedFromCached(
-    const ComputedStyleBase& other) {
-  ComputedStyleBase& style = *style_;
-  {{fieldwise_copy(computed_style, computed_style.all_fields
-      |rejectattr("has_custom_compare_and_copy")
-      |rejectattr("is_inherited")
-      |list
-    )|indent(2)}}
-}
 
 void ComputedStyleBuilderBase::PropagateIndependentInheritedProperties(
     const ComputedStyleBase& parent_style) {

@@ -62,6 +62,18 @@ class AshStructuredMetricsRecorderTest : public MixinBasedInProcessBrowserTest {
         ->SetOnEventsRecordClosure(delegate);
   }
 
+  void AddProfile() {
+    structured_metrics_mixin_.GetTestStructuredMetricsProvider()
+        ->AddProfilePath(base::FilePath(FILE_PATH_LITERAL("structured_metrics"))
+                             .Append(FILE_PATH_LITERAL("user_keys")));
+  }
+
+  void WaitUntilInit() {
+    // Wait for keys to be initialized and state to be propagated async.
+    structured_metrics_mixin_.GetTestStructuredMetricsProvider()
+        ->WaitUntilReady();
+  }
+
  protected:
   StructuredMetricsMixin structured_metrics_mixin_{&mixin_host_};
 
@@ -72,6 +84,11 @@ class AshStructuredMetricsRecorderTest : public MixinBasedInProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(AshStructuredMetricsRecorderTest,
                        SendValidEventAndSuccessfullyRecords) {
+  // Add a profile otherwise event will not be hashed. Then wait for
+  // initialization to occur.
+  AddProfile();
+  WaitUntilInit();
+
   events::v2::test_project_one::TestEventOne test_event;
   test_event.SetTestMetricOne("hash").SetTestMetricTwo(1);
 

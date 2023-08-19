@@ -14,7 +14,7 @@
 #include "chrome/browser/ash/printing/cups_printers_manager_factory.h"
 #include "chrome/browser/ash/printing/printer_configurer.h"
 #include "chrome/browser/printing/print_preview_sticky_settings.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -24,9 +24,8 @@ namespace ash {
 
 using ::chromeos::Printer;
 
-// TODO(crbug.com/945409): Decide on correct profile/s to use.
-CupsProxyServiceDelegateImpl::CupsProxyServiceDelegateImpl()
-    : profile_(ProfileManager::GetPrimaryUserProfile()),
+CupsProxyServiceDelegateImpl::CupsProxyServiceDelegateImpl(Profile* profile)
+    : profile_(profile),
       printers_manager_(
           CupsPrintersManagerFactory::GetForBrowserContext(profile_)) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
@@ -69,13 +68,6 @@ bool CupsProxyServiceDelegateImpl::IsPrinterInstalled(const Printer& printer) {
   return printers_manager_->IsPrinterInstalled(printer);
 }
 
-// Expects |printer| is known by the printers_manager_.
-void CupsProxyServiceDelegateImpl::PrinterInstalled(const Printer& printer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(GetPrinter(printer.id()));
-  printers_manager_->PrinterInstalled(printer, false /* unused */);
-}
-
 scoped_refptr<base::SingleThreadTaskRunner>
 CupsProxyServiceDelegateImpl::GetIOTaskRunner() {
   return content::GetIOThreadTaskRunner({});
@@ -101,14 +93,10 @@ void CupsProxyServiceDelegateImpl::SetupPrinterOnUIThread(
     cups_proxy::SetupPrinterCallback cb) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // Lazily grab the configurer while on the UI thread.
-  if (!printer_configurer_) {
-    printer_configurer_ = PrinterConfigurer::Create(profile_);
-  }
-
-  printer_configurer_->SetUpPrinter(
-      printer, base::BindOnce(&CupsProxyServiceDelegateImpl::OnSetupPrinter,
-                              weak_factory_.GetWeakPtr(), std::move(cb)));
+  printers_manager_->SetUpPrinter(
+      printer, /*is_automatic_installation=*/true,
+      base::BindOnce(&CupsProxyServiceDelegateImpl::OnSetupPrinter,
+                     weak_factory_.GetWeakPtr(), std::move(cb)));
 }
 
 void CupsProxyServiceDelegateImpl::OnSetupPrinter(

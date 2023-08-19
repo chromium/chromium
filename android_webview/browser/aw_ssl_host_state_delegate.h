@@ -101,6 +101,11 @@ class AwSSLHostStateDelegate : public content::SSLHostStateDelegate {
   bool HasAllowException(const std::string& host,
                          content::StoragePartition* storage_partition) override;
 
+  // Returns whether the user has allowed any certificate error exception or
+  // HTTP exception for any host in |storage_partition|.
+  bool HasAllowExceptionForAnyHost(
+      content::StoragePartition* storage_partition) override;
+
  private:
   // Certificate policies for each host.
   std::map<std::string, internal::CertPolicy> cert_policy_for_host_;

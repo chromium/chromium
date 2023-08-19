@@ -22,9 +22,10 @@ extern const char kInvalidRedirect[];
 extern const char kOffTheRecord[];
 extern const char kPageLoadFailure[];
 extern const char kPageLoadTimedOut[];
-extern const char kSetAccountsInCookieFailure[];
 extern const char kInvalidConsentResult[];
 extern const char kCanceled[];
+extern const char kCannotCreateWindow[];
+extern const char kInvalidURLScheme[];
 
 extern const int kCachedRemoteConsentTTLSeconds;
 }  // namespace identity_constants

@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/time/default_tick_clock.h"
 #include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_context_core_observer.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
@@ -166,6 +167,18 @@ void AdvanceClockAfterRequestTimeout(ServiceWorkerContext* context,
       // A little past that.
       base::Minutes(1);
   tick_clock->Advance(timeout_beyond_request_timeout);
+}
+
+void ResetTickClockToDefaultForAllLiveServiceWorkerVersions(
+    ServiceWorkerContext* context) {
+  content::ServiceWorkerContextWrapper* context_wrapper =
+      static_cast<content::ServiceWorkerContextWrapper*>(context);
+  for (const auto& version_info : context_wrapper->GetAllLiveVersionInfo()) {
+    content::ServiceWorkerVersion* version =
+        context_wrapper->GetLiveVersion(version_info.version_id);
+    DCHECK(version);
+    version->SetTickClockForTesting(base::DefaultTickClock::GetInstance());
+  }
 }
 
 bool TriggerTimeoutAndCheckRunningState(ServiceWorkerContext* context,

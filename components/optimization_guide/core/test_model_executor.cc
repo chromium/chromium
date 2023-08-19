@@ -29,4 +29,15 @@ void TestModelExecutor::SendForBatchExecution(
   std::move(callback_on_complete).Run(std::move(results));
 }
 
+std::vector<absl::optional<std::vector<float>>>
+TestModelExecutor::SendForBatchExecutionSync(
+    const std::vector<std::vector<float>>& args) {
+  std::vector<absl::optional<std::vector<float>>> results;
+  results.reserve(args.size());
+  for (const std::vector<float>& arg : args) {
+    results.push_back(arg);
+  }
+  return results;
+}
+
 }  // namespace optimization_guide

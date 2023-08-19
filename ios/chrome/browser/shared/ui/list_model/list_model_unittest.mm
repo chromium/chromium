@@ -4,18 +4,14 @@
 
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
-#import "base/mac/foundation_util.h"
 #import "base/strings/string_piece.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_item.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 // Category adding convenience method to add ListItem* to the ListModel* with a
 // specific type. This helps keep the test methods short and to the point.

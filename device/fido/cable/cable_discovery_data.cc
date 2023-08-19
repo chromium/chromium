@@ -139,7 +139,7 @@ absl::optional<std::unique_ptr<Pairing>> Pairing::Parse(
     return absl::nullopt;
   }
 
-  pairing->tunnel_server_domain = tunnelserver::DecodeDomain(domain);
+  pairing->tunnel_server_domain = domain;
   pairing->contact_id = its[0]->second.GetBytestring();
   pairing->id = its[1]->second.GetBytestring();
   pairing->secret = its[2]->second.GetBytestring();
@@ -193,6 +193,9 @@ bool Pairing::EqualPublicKeys(const std::unique_ptr<Pairing>& a,
                               const std::unique_ptr<Pairing>& b) {
   return a->peer_public_key_x962 == b->peer_public_key_x962;
 }
+
+Pairing::Pairing(const Pairing&) = default;
+Pairing& Pairing::operator=(const Pairing&) = default;
 
 }  // namespace cablev2
 

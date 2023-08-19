@@ -58,7 +58,7 @@ class CryptohomeRecoverySetupScreen : public BaseScreen {
   base::WeakPtr<CryptohomeRecoverySetupScreenView> view_ = nullptr;
   ScreenExitCallback exit_callback_;
   AuthPerformer auth_performer_;
-  CryptohomePinEngine cryptohome_pin_engine_;
+  legacy::CryptohomePinEngine cryptohome_pin_engine_;
   base::WeakPtrFactory<CryptohomeRecoverySetupScreen> weak_ptr_factory_{this};
 };
 

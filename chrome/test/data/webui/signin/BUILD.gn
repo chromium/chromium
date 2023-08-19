@@ -17,8 +17,6 @@ build_webui_tests("build") {
     "profile_picker_main_view_test.ts",
     "test_manage_profiles_browser_proxy.ts",
     "enterprise_profile_welcome_test.ts",
-    "local_profile_customization_focus_test.ts",
-    "local_profile_customization_test.ts",
     "profile_customization_test.ts",
     "profile_switch_test.ts",
     "profile_type_choice_test.ts",
@@ -26,14 +24,14 @@ build_webui_tests("build") {
     "test_enterprise_profile_welcome_browser_proxy.ts",
     "test_profile_customization_browser_proxy.ts",
     "test_sync_confirmation_browser_proxy.ts",
+    "test_signin_reauth_browser_proxy.ts",
+    "signin_reauth_test.ts",
   ]
 
   if (enable_dice_support) {
     files += [
       "dice_web_signin_intercept_test.ts",
-      "signin_reauth_test.ts",
       "test_dice_web_signin_intercept_browser_proxy.ts",
-      "test_signin_reauth_browser_proxy.ts",
     ]
   }
 

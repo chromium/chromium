@@ -139,8 +139,7 @@ public class FeedSurfaceLifecycleManager implements ApplicationStatus.ActivitySt
      * @return The saved feed instance state, or null if it is not previously
      *         saved.
      */
-    @Nullable
-    protected String restoreInstanceState() {
+    protected @Nullable String restoreInstanceState() {
         return null;
     }
 }

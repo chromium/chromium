@@ -10,7 +10,7 @@
 #include "base/path_service.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
-#include "components/services/screen_ai/proto/test_proto_loader.h"
+#include "base/test/test_proto_loader.h"
 #include "components/services/screen_ai/proto/view_hierarchy.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -225,6 +225,30 @@ void ExpectViewHierarchyProtos(screenai::ViewHierarchy& generated,
   }
 }
 
+bool LoadTextProto(const base::FilePath& proto_file_path,
+                   const char* proto_descriptor_relative_file_path,
+                   google::protobuf::MessageLite& proto) {
+  std::string file_content;
+  if (!base::ReadFileToString(proto_file_path, &file_content)) {
+    LOG(ERROR) << "Failed to read expected proto from: " << proto_file_path;
+    return false;
+  }
+
+  base::FilePath descriptor_full_path;
+  if (!base::PathService::Get(base::DIR_GEN_TEST_DATA_ROOT,
+                              &descriptor_full_path)) {
+    LOG(ERROR) << "Generated test data root not found!";
+    return false;
+  }
+  descriptor_full_path =
+      descriptor_full_path.AppendASCII(proto_descriptor_relative_file_path);
+
+  base::TestProtoLoader loader(descriptor_full_path, proto.GetTypeName());
+  std::string serialized_message;
+  loader.ParseFromText(file_content, serialized_message);
+  return proto.ParseFromString(serialized_message);
+}
+
 }  // namespace
 
 namespace screen_ai {
@@ -326,9 +350,9 @@ TEST_P(ProtoConvertorViewHierarchyTest, AxTreeJsonToProtoTest) {
 
   // Load expected Proto.
   screenai::ViewHierarchy expected_view_hierarchy;
-  ASSERT_TRUE(test_proto_loader::TestProtoLoader::LoadTextProto(
+  ASSERT_TRUE(LoadTextProto(
       kExpectedProtoPath,
-      "gen/components/services/screen_ai/proto/view_hierarchy.descriptor",
+      "components/services/screen_ai/proto/view_hierarchy.descriptor",
       expected_view_hierarchy));
 
   // Compare protos.

@@ -5,6 +5,7 @@ CPEPrefix: cpe:/a:libusb:libusb:1.0.17:rc1
 License: LGPL 2.1
 License File: src/COPYING
 Security Critical: yes
+Shipped: yes
 
 Description:
 libusbx provides a platform-agnostic API for accessing the USB subsystem on Mac,

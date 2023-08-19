@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/native_library.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "remoting/proto/event.pb.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
@@ -188,6 +189,8 @@ void TouchInjectorWin::Deinitialize() {
   // Same reason as TouchInjectorWin::Init(). For injecting mock delegates for
   // tests, a new delegate is created here.
   delegate_ = TouchInjectorWinDelegate::Create();
+  last_injected_time_ = base::TimeTicks();
+  keep_alive_timer_.Stop();
 }
 
 void TouchInjectorWin::InjectTouchEvent(const TouchEvent& event) {
@@ -241,7 +244,7 @@ void TouchInjectorWin::AddNewTouchPoints(const TouchEvent& event) {
     touches_in_contact_[touch_point.id()] = pointer_touch_info;
   }
 
-  if (delegate_->InjectTouchInput(touches.size(), touches.data()) == 0) {
+  if (!InjectTouchInput(touches)) {
     PLOG(ERROR) << "Failed to inject a touch start event.";
   }
 }
@@ -261,7 +264,7 @@ void TouchInjectorWin::MoveTouchPoints(const TouchEvent& event) {
   std::vector<POINTER_TOUCH_INFO> touches;
   // Must inject already touching points as move events.
   AppendMapValuesToVector(&touches_in_contact_, &touches);
-  if (delegate_->InjectTouchInput(touches.size(), touches.data()) == 0) {
+  if (!InjectTouchInput(touches)) {
     PLOG(ERROR) << "Failed to inject a touch move event.";
   }
 }
@@ -280,7 +283,7 @@ void TouchInjectorWin::EndTouchPoints(const TouchEvent& event) {
   }
 
   AppendMapValuesToVector(&touches_in_contact_, &touches);
-  if (delegate_->InjectTouchInput(touches.size(), touches.data()) == 0) {
+  if (!InjectTouchInput(touches)) {
     PLOG(ERROR) << "Failed to inject a touch end event.";
   }
 }
@@ -300,8 +303,41 @@ void TouchInjectorWin::CancelTouchPoints(const TouchEvent& event) {
   }
 
   AppendMapValuesToVector(&touches_in_contact_, &touches);
-  if (delegate_->InjectTouchInput(touches.size(), touches.data()) == 0) {
+  if (!InjectTouchInput(touches)) {
     PLOG(ERROR) << "Failed to inject a touch cancel event.";
+  }
+}
+
+bool TouchInjectorWin::InjectTouchInput(
+    const std::vector<POINTER_TOUCH_INFO>& touches) {
+  if (delegate_->InjectTouchInput(touches.size(), touches.data()) == 0) {
+    return false;
+  }
+  last_injected_time_ = base::TimeTicks::Now();
+  UpdateKeepAliveTimer();
+  return true;
+}
+
+void TouchInjectorWin::UpdateKeepAliveTimer() {
+  if (touches_in_contact_.empty()) {
+    keep_alive_timer_.Stop();
+    return;
+  }
+  if (!keep_alive_timer_.IsRunning()) {
+    keep_alive_timer_.Start(FROM_HERE, kKeepAliveInterval, this,
+                            &TouchInjectorWin::OnKeepAlive);
+  }
+}
+
+void TouchInjectorWin::OnKeepAlive() {
+  if ((base::TimeTicks::Now() - last_injected_time_) < kKeepAliveInterval) {
+    return;
+  }
+  DCHECK(!touches_in_contact_.empty());
+  std::vector<POINTER_TOUCH_INFO> touches;
+  AppendMapValuesToVector(&touches_in_contact_, &touches);
+  if (!InjectTouchInput(touches)) {
+    PLOG(ERROR) << "Failed to inject a keep-alive touch move event.";
   }
 }
 

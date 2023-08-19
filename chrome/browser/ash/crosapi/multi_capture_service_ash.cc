@@ -11,10 +11,7 @@
 namespace crosapi {
 
 MultiCaptureServiceAsh::MultiCaptureServiceAsh() {
-  if (ash::Shell::HasInstance()) {
-    multi_capture_client_ = ash::Shell::Get()->multi_capture_service_client();
-    DCHECK(multi_capture_client_);
-  } else {
+  if (!ash::Shell::HasInstance()) {
     CHECK_IS_TEST();
   }
 }
@@ -30,13 +27,21 @@ void MultiCaptureServiceAsh::MultiCaptureStarted(const std::string& label,
   // TODO(crbug.com/1399594): Origin cannot be used in a crosapi interface as it
   // is not stable. Currently, only the host of the origin is used. Pass the
   // complete origin when the `Origin` interface becomes stable.
-  multi_capture_client_->MultiCaptureStarted(
+  GetMultiCaptureClient()->MultiCaptureStarted(
       label, url::Origin::CreateFromNormalizedTuple(/*scheme=*/"https", host,
                                                     /*port=*/443));
 }
 
 void MultiCaptureServiceAsh::MultiCaptureStopped(const std::string& label) {
-  multi_capture_client_->MultiCaptureStopped(label);
+  GetMultiCaptureClient()->MultiCaptureStopped(label);
+}
+
+ash::MultiCaptureServiceClient*
+MultiCaptureServiceAsh::GetMultiCaptureClient() {
+  auto* multi_capture_client =
+      ash::Shell::Get()->multi_capture_service_client();
+  CHECK(multi_capture_client);
+  return multi_capture_client;
 }
 
 }  // namespace crosapi

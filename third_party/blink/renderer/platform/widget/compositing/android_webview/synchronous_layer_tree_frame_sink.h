@@ -19,11 +19,11 @@
 #include "base/time/time.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "cc/trees/managed_memory_policy.h"
-#include "components/power_scheduler/power_mode_voter.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/frame_timing_details_map.h"
 #include "components/viz/common/quads/compositor_frame.h"
+#include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/service/display/display_client.h"
@@ -42,10 +42,10 @@ class SkCanvas;
 namespace viz {
 class BeginFrameSource;
 class CompositorFrameSinkSupport;
-class ContextProvider;
 class Display;
 class FrameSinkManagerImpl;
 class ParentLocalSurfaceIdAllocator;
+class RasterContextProvider;
 }  // namespace viz
 
 namespace blink {
@@ -82,7 +82,7 @@ class SynchronousLayerTreeFrameSink
       public viz::ExternalBeginFrameSourceClient {
  public:
   SynchronousLayerTreeFrameSink(
-      scoped_refptr<viz::ContextProvider> context_provider,
+      scoped_refptr<viz::RasterContextProvider> context_provider,
       scoped_refptr<cc::RasterContextProviderWrapper>
           worker_context_provider_wrapper,
       scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
@@ -213,6 +213,8 @@ class SynchronousLayerTreeFrameSink
   gfx::Size child_size_;
   gfx::Size display_size_;
   float device_scale_factor_ = 0;
+  float root_device_scale_factor_ = 0;
+  viz::FrameTokenGenerator root_next_frame_token_;
   std::unique_ptr<viz::mojom::CompositorFrameSinkClient>
       software_frame_sink_client_;
   // Uses frame_sink_manager_.
@@ -236,13 +238,6 @@ class SynchronousLayerTreeFrameSink
   bool begin_frames_paused_ = false;
   bool needs_begin_frames_ = false;
   const bool use_zero_copy_sw_draw_;
-
-  // Marks the beginning of the period between BeginFrame() and
-  // SubmitCompositorFrame(). Used for detecting no-op animations when this time
-  // period exceeds a given timeout.
-  base::TimeTicks nop_animation_timeout_start_;
-
-  power_scheduler::FrameProductionPowerModeVoter power_mode_voter_;
 };
 
 }  // namespace blink

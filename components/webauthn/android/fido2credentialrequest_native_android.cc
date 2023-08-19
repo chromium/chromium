@@ -14,6 +14,7 @@
 #include "components/webauthn/json/value_conversions.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 
+namespace webauthn {
 namespace {
 
 // MojoClassToJSON takes a serialized Mojo object and returns a Java String
@@ -49,7 +50,7 @@ static base::android::ScopedJavaLocalRef<jbyteArray> MojoClassFromJSON(
     LOG(ERROR) << __func__ << " failed to parse JSON";
     return nullptr;
   }
-  const auto pair = parse_func(*parsed);
+  const auto pair = parse_func(*parsed, webauthn::JSONUser::kAndroid);
   if (!pair.first) {
     LOG(ERROR) << __func__ << " failed to convert JSON: " << pair.second;
     return nullptr;
@@ -90,3 +91,5 @@ JNI_Fido2CredentialRequest_GetCredentialResponseFromJson(
   return MojoClassFromJSON<blink::mojom::GetAssertionAuthenticatorResponse>(
       env, webauthn::GetAssertionResponseFromValue, jjson);
 }
+
+}  // namespace webauthn

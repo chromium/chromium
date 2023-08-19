@@ -9,9 +9,9 @@ import android.content.Intent;
 import android.speech.RecognizerIntent;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.PackageManagerUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.MutableFlagWithSafeDefault;
@@ -99,14 +99,15 @@ public class VoiceRecognitionUtil {
      * finished.
      * @param isVoiceSearchEnabled
      */
-    @VisibleForTesting
     public static void setIsVoiceSearchEnabledForTesting(@Nullable Boolean isVoiceSearchEnabled) {
         sIsVoiceSearchEnabledForTesting = isVoiceSearchEnabled;
+        ResettersForTesting.register(() -> sIsVoiceSearchEnabledForTesting = null);
     }
 
-    @VisibleForTesting
     static void setHasRecognitionIntentHandlerForTesting(@Nullable Boolean hasIntentHandler) {
+        var oldValue = sHasRecognitionIntentHandler;
         sHasRecognitionIntentHandler = hasIntentHandler;
+        ResettersForTesting.register(() -> sHasRecognitionIntentHandler = oldValue);
     }
 
     /** Returns the PrefService for the active Profile, or null if no profile has been loaded. */

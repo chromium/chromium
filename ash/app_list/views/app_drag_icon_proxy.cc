@@ -81,6 +81,7 @@ AppDragIconProxy::AppDragIconProxy(
   drag_image->AddLayerToRegion(shadow_->GetLayer(), views::LayerRegion::kBelow);
 
   shadow_->SetContentBounds(gfx::Rect(shadow_offset, scaled_shadow_size));
+  shadow_->ObserveColorProviderSource(drag_image_widget_.get());
 
   if (is_folder_icon) {
     ui::Layer* blurred_layer;

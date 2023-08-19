@@ -19,8 +19,8 @@ ExtensionFrameHost::~ExtensionFrameHost() = default;
 
 void ExtensionFrameHost::BindLocalFrameHost(
     mojo::PendingAssociatedReceiver<mojom::LocalFrameHost> receiver,
-    content::RenderFrameHost* rfh) {
-  receivers_.Bind(rfh, std::move(receiver));
+    content::RenderFrameHost* render_frame_host) {
+  receivers_.Bind(render_frame_host, std::move(receiver));
 }
 
 void ExtensionFrameHost::RequestScriptInjectionPermission(
@@ -44,6 +44,12 @@ void ExtensionFrameHost::Request(mojom::RequestParamsPtr params,
   ExtensionWebContentsObserver::GetForWebContents(web_contents_)
       ->dispatcher()
       ->Dispatch(std::move(params), *render_frame_host, std::move(callback));
+}
+
+void ExtensionFrameHost::ResponseAck(const base::Uuid& request_uuid) {
+  ExtensionWebContentsObserver::GetForWebContents(web_contents_)
+      ->dispatcher()
+      ->ProcessResponseAck(request_uuid);
 }
 
 void ExtensionFrameHost::WatchedPageChange(

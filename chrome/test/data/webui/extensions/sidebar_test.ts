@@ -10,18 +10,7 @@ import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {testVisible} from './test_util.js';
 
-const extension_sidebar_tests = {
-  suiteName: 'ExtensionSidebarTest',
-  TestNames: {
-    HrefVerification: 'href link verification',
-    LayoutAndClickHandlers: 'layout and click handlers',
-    SetSelected: 'set selected',
-  },
-};
-
-Object.assign(window, {extension_sidebar_tests});
-
-suite(extension_sidebar_tests.suiteName, function() {
+suite('ExtensionSidebarTest', function() {
   let sidebar: ExtensionsSidebarElement;
 
   setup(function() {
@@ -31,8 +20,8 @@ suite(extension_sidebar_tests.suiteName, function() {
     document.body.appendChild(sidebar);
   });
 
-  test(extension_sidebar_tests.TestNames.SetSelected, function() {
-    const selector = '.section-item.iron-selected';
+  test('SetSelected', function() {
+    const selector = '.cr-nav-menu-item.iron-selected';
     assertFalse(!!sidebar.shadowRoot!.querySelector(selector));
 
     window.history.replaceState(undefined, '', '/shortcuts');
@@ -64,7 +53,7 @@ suite(extension_sidebar_tests.suiteName, function() {
   });
 
   test(
-      extension_sidebar_tests.TestNames.LayoutAndClickHandlers, function(done) {
+      'LayoutAndClickHandlers', function(done) {
         const boundTestVisible = testVisible.bind(null, sidebar);
         boundTestVisible('#sectionsExtensions', true);
 
@@ -98,7 +87,7 @@ suite(extension_sidebar_tests.suiteName, function() {
       });
 
 
-  test(extension_sidebar_tests.TestNames.HrefVerification, function(done) {
+  test('HrefVerification', function(done) {
     sidebar.enableEnhancedSiteControls = true;
     flush();
     assertEquals('/', sidebar.$.sectionsExtensions.getAttribute('href'));
@@ -107,8 +96,8 @@ suite(extension_sidebar_tests.suiteName, function() {
         sidebar.$.sectionsSitePermissions.getAttribute('href'));
     assertEquals(
         '/shortcuts', sidebar.$.sectionsShortcuts.getAttribute('href'));
-    assertTrue(sidebar.$.moreExtensions.getAttribute('href')!.includes(
-        'utm_source=ext_sidebar'));
+    assertTrue(sidebar.$.moreExtensions.querySelector('a')!
+                   .getAttribute('href')!.includes('utm_source=ext_sidebar'));
     done();
   });
 });

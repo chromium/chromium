@@ -23,7 +23,7 @@ namespace base::internal {
 bool EndOfAliveAllocation(const volatile void* ptr, bool is_adjustable_ptr);
 bool LikelySmuggledScalar(const volatile void* ptr);
 
-template <bool IsAdjustablePtr>
+template <bool IsAdjustablePtr, bool MayDangle>
 struct RawPtrAsanUnownedImpl {
   // The first two are needed for correctness. The last one isn't technically a
   // must, but better to set it.
@@ -118,7 +118,7 @@ struct RawPtrAsanUnownedImpl {
 
   template <typename T>
   static void ProbeForLowSeverityLifetimeIssue(T* wrapped_ptr) {
-    if (wrapped_ptr) {
+    if (!MayDangle && wrapped_ptr) {
       const volatile void* probe_ptr =
           reinterpret_cast<const volatile void*>(wrapped_ptr);
       if (!LikelySmuggledScalar(probe_ptr) &&

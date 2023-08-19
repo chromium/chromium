@@ -50,18 +50,6 @@ class SingleClientUserEventsSyncTest : public SyncTest {
   }
 };
 
-class SingleClientUserEventsSyncTestWithEnabledThrottling
-    : public SingleClientUserEventsSyncTest {
- public:
-  SingleClientUserEventsSyncTestWithEnabledThrottling() {
-    features_override_.InitAndEnableFeature(
-        syncer::kSyncExtensionTypesThrottling);
-  }
-
- private:
-  base::test::ScopedFeatureList features_override_;
-};
-
 IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, Sanity) {
   ASSERT_TRUE(SetupSync());
   EXPECT_EQ(
@@ -248,8 +236,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest,
 
 // This is an analogy to SingleClientBookmarksSyncTest.DepleteQuota, tested on
 // a datatype that has no quota restrictions.
-IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTestWithEnabledThrottling,
-                       NoQuotaApplied) {
+IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, NoQuotaApplied) {
   ASSERT_TRUE(SetupSync());
   // Add enough user events that would deplete quota in the initial cycle.
   syncer::UserEventService* event_service =
@@ -277,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTestWithEnabledThrottling,
   EXPECT_TRUE(ExpectUserEvents(expected_specifics));
 
   // Make sure the histogram gets propagated from the sync engine sequence.
-  base::StatisticsRecorder::ImportProvidedHistograms();
+  base::StatisticsRecorder::ImportProvidedHistogramsSync();
   // There is no record in the depleted quota histogram.
   histogram_tester.ExpectTotalCount("Sync.ModelTypeCommitWithDepletedQuota", 0);
 }

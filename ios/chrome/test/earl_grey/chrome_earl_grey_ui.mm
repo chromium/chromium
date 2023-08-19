@@ -16,10 +16,6 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Redefine EarlGrey macro to use line number and file name taken from the place
 // of ChromeEarlGreyUI macro instantiation, rather than local line number
 // inside test helper method. Original EarlGrey macro definition also expands to
@@ -68,6 +64,17 @@ id<GREYAction> PageSheetScrollDown() {
   UIWindow* currentWindow = chrome_test_util::GetAnyKeyWindow();
   if (currentWindow.rootViewController.view.frame.size.height < 600)
     menu_scroll_displacement = 250;
+
+  // On iOS 17.0, the default origin position doesn't properly maximize the
+  // distance that an interaction can scroll. Therefore, we set the origin
+  // position to the middle which ensures scrolling works properly.
+  if (@available(iOS 17.0, *)) {
+    return grey_scrollInDirectionWithStartPoint(
+        kGREYDirectionDown, /*amount=*/menu_scroll_displacement,
+        /*xOriginStartPercentage=*/0.5,
+        /*yOriginStartPercentage=*/0.5);
+  }
+
   return grey_scrollInDirection(kGREYDirectionDown, menu_scroll_displacement);
 }
 
@@ -370,7 +377,7 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
 
   if (text.length) {
     [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-        performAction:grey_typeText(text)];
+        performAction:grey_replaceText(text)];
   }
 }
 
@@ -572,7 +579,7 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
 
     // Type the text.
     [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-        performAction:grey_typeText(base::SysUTF8ToNSString(text))];
+        performAction:grey_replaceText(base::SysUTF8ToNSString(text))];
     numberOfAttemptsPerformed++;
 
     // Check that the omnibox contains the typed text.
@@ -599,8 +606,9 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
 
   if (textHasBeenTypedProperly && shouldPressEnter) {
     // Press enter to navigate.
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-        performAction:grey_typeText(@"\n")];
+    // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
+    // replaceText can properly handle \n.
+    [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
   }
 
   // Assert the text has been typed properly.

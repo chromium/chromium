@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -276,7 +277,16 @@ void AccountFetcherService::StartFetchingAccountCapabilities(
 void AccountFetcherService::RefreshAccountInfo(const CoreAccountId& account_id,
                                                bool only_fetch_if_invalid) {
   DCHECK(network_fetches_enabled_);
+
+  // TODO(msarda): It seems quite suspect account tracker needs to start
+  // tracking the account when refreshing the account info. Understand why this
+  // is needed and ideally remove this call (it may have been added just for
+  // tests).
+  base::UmaHistogramBoolean(
+      "Signin.AccountTracker.RefreshAccountInfo.IsAlreadyTrackingAccount",
+      account_tracker_service_->IsTrackingAccount(account_id));
   account_tracker_service_->StartTrackingAccount(account_id);
+
   const AccountInfo& info =
       account_tracker_service_->GetAccountInfo(account_id);
 

@@ -4,11 +4,14 @@
 
 static_library("redaction_tool") {
   sources = [
+    "inprocess_metrics_recorder.cc",
+    "inprocess_metrics_recorder.h",
     "ip_address.cc",
     "ip_address.h",
     "pii_types.h",
     "redaction_tool.cc",
     "redaction_tool.h",
+    "redaction_tool_metrics_recorder.h",
     "url_canon.h",
     "url_canon_internal.cc",
     "url_canon_internal.h",
@@ -33,7 +36,16 @@ static_library("redaction_tool") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "redaction_tool_unittest.cc" ]
+  data = [
+    "test_data/test_logs.txt",
+    "test_data/test_logs_redacted.txt",
+  ]
+  sources = [
+    "inprocess_metrics_tester.cc",
+    "inprocess_metrics_tester.h",
+    "metrics_tester.h",
+    "redaction_tool_unittest.cc",
+  ]
   deps = [
     ":redaction_tool",
     "//base/test:test_support",

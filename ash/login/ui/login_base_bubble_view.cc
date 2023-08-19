@@ -12,11 +12,14 @@
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/system_shadow.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/raw_ptr.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/client/focus_client.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -24,6 +27,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
@@ -95,6 +99,11 @@ class LoginBubbleHandler : public ui::EventHandler {
       return;
     }
 
+    views::View* anchor = bubble_->GetAnchorView();
+    if (anchor && login_views_utils::HasFocusInAnyChildView(anchor)) {
+      return;
+    }
+
     if (!bubble_->is_persistent()) {
       bubble_->Hide();
     }
@@ -144,8 +153,21 @@ LoginBaseBubbleView::LoginBaseBubbleView(base::WeakPtr<views::View> anchor_view,
   layout_manager->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
 
-  SetBackground(views::CreateThemedRoundedRectBackground(
-      kColorAshShieldAndBase80, kBubbleBorderRadius));
+  ui::ColorId background_color_id =
+      chromeos::features::IsJellyrollEnabled()
+          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemBaseElevated)
+          : kColorAshShieldAndBase80;
+
+  SetBackground(views::CreateThemedRoundedRectBackground(background_color_id,
+                                                         kBubbleBorderRadius));
+  SetBorder(std::make_unique<views::HighlightBorder>(
+      kBubbleBorderRadius, views::HighlightBorder::Type::kHighlightBorder1));
+  // Set shadow
+  if (chromeos::features::IsJellyrollEnabled()) {
+    shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
+        this, SystemShadow::Type::kElevation12);
+    shadow_->SetRoundedCornerRadius(kBubbleBorderRadius);
+  }
   SetVisible(false);
 }
 
@@ -155,10 +177,6 @@ void LoginBaseBubbleView::EnsureLayer() {
   }
   // Layer rendering is needed for animation.
   SetPaintToLayer();
-  SkColor background_color = AshColorProvider::Get()->GetBaseLayerColor(
-      AshColorProvider::BaseLayerType::kTransparent80);
-  SetBackground(views::CreateRoundedRectBackground(background_color,
-                                                   kBubbleBorderRadius));
   layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
   layer()->SetFillsBoundsOpaquely(false);
 }

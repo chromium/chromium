@@ -56,13 +56,17 @@ namespace {
 const int kInputFrameFillY = 12;
 const int kInputFrameFillU = 23;
 const int kInputFrameFillV = 34;
-// 360p is a valid HW resolution.
+// 360p is a valid HW resolution (unless `kForcingSoftwareIncludes360` is
+// enabled).
 const uint16_t kInputFrameWidth = 480;
 const uint16_t kInputFrameHeight = 360;
 const uint16_t kStartBitrate = 100;
+
+#if !BUILDFLAG(IS_ANDROID)
 // Less than 360p should result in SW fallback.
 const uint16_t kSoftwareFallbackInputFrameWidth = 479;
 const uint16_t kSoftwareFallbackInputFrameHeight = 359;
+#endif
 
 const webrtc::VideoEncoder::Capabilities kVideoEncoderCapabilities(
     /* loss_notification= */ false);
@@ -597,6 +601,9 @@ TEST_P(RTCVideoEncoderInitTest, RepeatedInitSucceeds) {
             rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
 }
 
+// Software fallback for low resolution is not applicable on Android.
+#if !BUILDFLAG(IS_ANDROID)
+
 TEST_P(RTCVideoEncoderInitTest, SoftwareFallbackForLowResolution) {
   const webrtc::VideoCodecType codec_type = GetParam().codec_type;
   CreateEncoder(codec_type);
@@ -607,6 +614,21 @@ TEST_P(RTCVideoEncoderInitTest, SoftwareFallbackForLowResolution) {
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE,
             rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
 }
+
+TEST_P(RTCVideoEncoderInitTest, SoftwareFallbackForLowResolutionIncludes360p) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kForcingSoftwareIncludes360);
+  const webrtc::VideoCodecType codec_type = GetParam().codec_type;
+  CreateEncoder(codec_type);
+  webrtc::VideoCodec codec = GetDefaultCodec();
+  codec.width = kInputFrameWidth;
+  codec.height = kInputFrameHeight;
+  codec.codecType = codec_type;
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE,
+            rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
+}
+
+#endif
 
 TEST_P(RTCVideoEncoderInitTest, CreateAndInitSucceedsForTemporalLayer) {
   const webrtc::VideoCodecType codec_type = GetParam().codec_type;

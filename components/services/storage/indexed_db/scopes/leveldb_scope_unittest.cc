@@ -64,8 +64,7 @@ TEST_F(LevelDBScopeTest, BasicUsage) {
 
   leveldb::Status s = scopes.Initialize();
   EXPECT_TRUE(s.ok());
-  scopes.StartRecoveryAndCleanupTasks(
-      LevelDBScopes::TaskRunnerMode::kNewCleanupAndRevertSequences);
+  scopes.StartRecoveryAndCleanupTasks();
   auto scope = scopes.CreateScope(
       AcquireLocksSync(&lock_manager, {CreateSimpleExclusiveLock()}), {});
 
@@ -96,8 +95,7 @@ TEST_F(LevelDBScopeTest, InMemoryAbort) {
 
   leveldb::Status s = scopes.Initialize();
   EXPECT_TRUE(s.ok());
-  scopes.StartRecoveryAndCleanupTasks(
-      LevelDBScopes::TaskRunnerMode::kNewCleanupAndRevertSequences);
+  scopes.StartRecoveryAndCleanupTasks();
   auto scope = scopes.CreateScope(
       AcquireLocksSync(&lock_manager, {CreateSimpleExclusiveLock()}), {});
 
@@ -139,8 +137,7 @@ TEST_F(LevelDBScopeTest, AbortWithRevertTask) {
 
   leveldb::Status s = scopes.Initialize();
   EXPECT_TRUE(s.ok());
-  scopes.StartRecoveryAndCleanupTasks(
-      LevelDBScopes::TaskRunnerMode::kNewCleanupAndRevertSequences);
+  scopes.StartRecoveryAndCleanupTasks();
 
   std::string value = "12345";
   leveldb::WriteOptions woptions;
@@ -181,8 +178,7 @@ TEST_F(LevelDBScopeTest, ManyScopes) {
 
   leveldb::Status s = scopes.Initialize();
   EXPECT_TRUE(s.ok());
-  scopes.StartRecoveryAndCleanupTasks(
-      LevelDBScopes::TaskRunnerMode::kNewCleanupAndRevertSequences);
+  scopes.StartRecoveryAndCleanupTasks();
 
   std::string value;
   for (int i = 0; i < 20; ++i) {
@@ -223,8 +219,7 @@ TEST_F(LevelDBScopeTest, DeleteRangeExclusive) {
 
   leveldb::Status s = scopes.Initialize();
   EXPECT_TRUE(s.ok());
-  scopes.StartRecoveryAndCleanupTasks(
-      LevelDBScopes::TaskRunnerMode::kNewCleanupAndRevertSequences);
+  scopes.StartRecoveryAndCleanupTasks();
 
   // Create values for keys 0-20, inclusive.
   std::string value;
@@ -278,8 +273,7 @@ TEST_F(LevelDBScopeTest, DeleteRangeInclusive) {
 
   leveldb::Status s = scopes.Initialize();
   EXPECT_TRUE(s.ok());
-  scopes.StartRecoveryAndCleanupTasks(
-      LevelDBScopes::TaskRunnerMode::kNewCleanupAndRevertSequences);
+  scopes.StartRecoveryAndCleanupTasks();
 
   // Create values for keys 0-20, inclusive.
   std::string value;
@@ -327,8 +321,7 @@ TEST_F(LevelDBScopeTest, DeleteRangeDeferred) {
 
   leveldb::Status s = scopes.Initialize();
   EXPECT_TRUE(s.ok());
-  scopes.StartRecoveryAndCleanupTasks(
-      LevelDBScopes::TaskRunnerMode::kNewCleanupAndRevertSequences);
+  scopes.StartRecoveryAndCleanupTasks();
 
   std::string value;
   auto scope = scopes.CreateScope(
@@ -378,8 +371,7 @@ TEST_F(LevelDBScopeTest, DeleteRangeCompact) {
 
   leveldb::Status s = scopes.Initialize();
   EXPECT_TRUE(s.ok());
-  scopes.StartRecoveryAndCleanupTasks(
-      LevelDBScopes::TaskRunnerMode::kNewCleanupAndRevertSequences);
+  scopes.StartRecoveryAndCleanupTasks();
 
   std::string value;
   auto scope = scopes.CreateScope(
@@ -428,8 +420,7 @@ TEST_F(LevelDBScopeTest, RevertWithDeferredDelete) {
           [&failure_status](leveldb::Status s) { failure_status = s; }));
   leveldb::Status s = scopes.Initialize();
   EXPECT_TRUE(s.ok());
-  scopes.StartRecoveryAndCleanupTasks(
-      LevelDBScopes::TaskRunnerMode::kNewCleanupAndRevertSequences);
+  scopes.StartRecoveryAndCleanupTasks();
 
   // This test makes sure that the cleanup scheduled after the revert doesn't
   // execute it's cleanup tasks.
@@ -501,8 +492,7 @@ TEST_F(LevelDBScopeTest, EmptyRangeRevert) {
       {CreateKey(0), CreateKey(10)}, {CreateKey(30), CreateKey(50)}};
   leveldb::Status s = scopes.Initialize();
   EXPECT_TRUE(s.ok());
-  scopes.StartRecoveryAndCleanupTasks(
-      LevelDBScopes::TaskRunnerMode::kNewCleanupAndRevertSequences);
+  scopes.StartRecoveryAndCleanupTasks();
   auto scope = scopes.CreateScope(
       AcquireLocksSync(&lock_manager, {CreateSimpleExclusiveLock()}),
       std::move(empty_ranges));
@@ -556,8 +546,7 @@ TEST_F(LevelDBScopeTest, BrokenDBForCommit) {
 
   leveldb::Status s = scopes.Initialize();
   EXPECT_TRUE(s.ok());
-  scopes.StartRecoveryAndCleanupTasks(
-      LevelDBScopes::TaskRunnerMode::kNewCleanupAndRevertSequences);
+  scopes.StartRecoveryAndCleanupTasks();
   auto scope = scopes.CreateScope(
       AcquireLocksSync(&lock_manager, {CreateSimpleExclusiveLock()}), {});
 
@@ -585,8 +574,7 @@ TEST_F(LevelDBScopeTest, BrokenDBForCleanup) {
 
   leveldb::Status s = scopes.Initialize();
   EXPECT_TRUE(s.ok());
-  scopes.StartRecoveryAndCleanupTasks(
-      LevelDBScopes::TaskRunnerMode::kNewCleanupAndRevertSequences);
+  scopes.StartRecoveryAndCleanupTasks();
   auto scope = scopes.CreateScope(
       AcquireLocksSync(&lock_manager, {CreateSimpleExclusiveLock()}), {});
 
@@ -622,8 +610,7 @@ TEST_F(LevelDBScopeTest, BrokenDBForRevert) {
 
   leveldb::Status s = scopes.Initialize();
   EXPECT_TRUE(s.ok());
-  scopes.StartRecoveryAndCleanupTasks(
-      LevelDBScopes::TaskRunnerMode::kNewCleanupAndRevertSequences);
+  scopes.StartRecoveryAndCleanupTasks();
   auto scope = scopes.CreateScope(
       AcquireLocksSync(&lock_manager, {CreateSimpleExclusiveLock()}), {});
 
@@ -656,8 +643,7 @@ TEST_F(LevelDBScopeTest, DeleteNonExistentRangeDoesNotWrite) {
 
   leveldb::Status s = scopes.Initialize();
   EXPECT_TRUE(s.ok());
-  scopes.StartRecoveryAndCleanupTasks(
-      LevelDBScopes::TaskRunnerMode::kNewCleanupAndRevertSequences);
+  scopes.StartRecoveryAndCleanupTasks();
 
   auto scope = scopes.CreateScope(
       AcquireLocksSync(&lock_manager, {CreateSimpleExclusiveLock()}), {});

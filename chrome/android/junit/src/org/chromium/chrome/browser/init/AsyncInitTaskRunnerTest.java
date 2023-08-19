@@ -42,8 +42,6 @@ import java.util.concurrent.TimeUnit;
 @Config(manifest = Config.NONE, shadows = {ShadowAsyncTask.class})
 @LooperMode(LooperMode.Mode.LEGACY)
 public class AsyncInitTaskRunnerTest {
-    private static final int THREAD_WAIT_TIME_MS = 1000;
-
     private LibraryLoader mLoader;
     private AsyncInitTaskRunner mRunner;
     private CountDownLatch mLatch;

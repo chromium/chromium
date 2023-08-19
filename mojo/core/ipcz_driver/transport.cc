@@ -8,9 +8,9 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/containers/stack_container.h"
 #include "base/functional/overloaded.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/process.h"
 #include "base/task/single_thread_task_runner.h"
@@ -25,6 +25,7 @@
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
+#include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "third_party/ipcz/include/ipcz/ipcz.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -442,10 +443,10 @@ IpczResult Transport::SerializeObject(ObjectBase& object,
 
   // A small amount of stack storage is reserved to avoid heap allocation in the
   // most common cases.
-  base::StackVector<PlatformHandle, 2> platform_handles;
-  platform_handles->resize(object_num_handles);
+  absl::InlinedVector<PlatformHandle, 2> platform_handles;
+  platform_handles.resize(object_num_handles);
   if (!object.Serialize(*this, object_data,
-                        base::make_span(platform_handles.container()))) {
+                        base::make_span(platform_handles))) {
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
 
@@ -500,8 +501,8 @@ IpczResult Transport::DeserializeObject(
 
   // A small amount of stack storage is reserved to avoid heap allocation in the
   // most common cases.
-  base::StackVector<PlatformHandle, 2> platform_handles;
-  platform_handles->resize(num_handles);
+  absl::InlinedVector<PlatformHandle, 2> platform_handles;
+  platform_handles.resize(num_handles);
   for (size_t i = 0; i < num_handles; ++i) {
 #if BUILDFLAG(IS_WIN)
     platform_handles[i] =
@@ -515,7 +516,7 @@ IpczResult Transport::DeserializeObject(
     }
   }
 
-  auto object_handles = base::make_span(platform_handles.container());
+  auto object_handles = base::make_span(platform_handles);
   switch (header.type) {
     case ObjectBase::kTransport: {
       object = Deserialize(*this, object_data, object_handles);

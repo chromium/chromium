@@ -136,8 +136,8 @@ gfx::Rect LoadPaperPrintableAreaUm(const wchar_t* printer, DEVMODE* devmode) {
   gfx::Rect printable_area_device_units =
       GetPrintableAreaDeviceUnits(hdc.get());
 
-  // Device units can be non-square, so scale for non-square DPIs and convert to
-  // microns.
+  // Device units can be non-square, so scale for non-square pixels and convert
+  // to microns.
   gfx::Rect printable_area_um =
       gfx::Rect(ConvertUnit(printable_area_device_units.x(),
                             default_dpi.width(), kMicronsPerInch),
@@ -183,23 +183,25 @@ void LoadPaper(const wchar_t* printer,
     names.clear();
 
   for (size_t i = 0; i < sizes.size(); ++i) {
-    PrinterSemanticCapsAndDefaults::Paper paper;
-    paper.size_um.SetSize(sizes[i].x * kToUm, sizes[i].y * kToUm);
-
+    const gfx::Size size_um(sizes[i].x * kToUm, sizes[i].y * kToUm);
     // Skip papers with empty paper sizes.
-    if (paper.size_um.IsEmpty()) {
+    if (size_um.IsEmpty()) {
       continue;
     }
 
+    std::string display_name;
     if (!names.empty()) {
       const wchar_t* name_start = names[i].chars;
       std::wstring tmp_name(name_start, kMaxPaperName);
       // Trim trailing zeros.
       tmp_name = tmp_name.c_str();
-      paper.display_name = base::WideToUTF8(tmp_name);
+      display_name = base::WideToUTF8(tmp_name);
     }
+
+    std::string vendor_id;
+    gfx::Rect printable_area_um;
     if (!ids.empty()) {
-      paper.vendor_id = base::NumberToString(ids[i]);
+      vendor_id = base::NumberToString(ids[i]);
 
       // `LoadPaperPrintableAreaUm()` has to create a new device context, which
       // is very expensive for some printer drivers.  Since this is in an
@@ -218,7 +220,7 @@ void LoadPaper(const wchar_t* printer,
       // paper sizes can be done without a huge performance penalty.  For
       // now this workaround is only made for in-browser queries.
       if (devmode && (devmode->dmPaperSize == ids[i])) {
-        paper.printable_area_um = LoadPaperPrintableAreaUm(printer, devmode);
+        printable_area_um = LoadPaperPrintableAreaUm(printer, devmode);
       }
     }
 
@@ -226,13 +228,14 @@ void LoadPaper(const wchar_t* printer,
     // We've seen some drivers have a printable area that goes out of bounds of
     // the paper size. In those cases, set the printable area to be the size.
     // (See crbug.com/1412305.)
-    const gfx::Rect size_um_rect = gfx::Rect(paper.size_um);
-    if (paper.printable_area_um.IsEmpty() ||
-        !size_um_rect.Contains(paper.printable_area_um)) {
-      paper.printable_area_um = size_um_rect;
+    const gfx::Rect size_um_rect(size_um);
+    if (printable_area_um.IsEmpty() ||
+        !size_um_rect.Contains(printable_area_um)) {
+      printable_area_um = size_um_rect;
     }
 
-    caps->papers.push_back(paper);
+    caps->papers.push_back(PrinterSemanticCapsAndDefaults::Paper(
+        display_name, vendor_id, size_um, printable_area_um));
   }
 
   if (!devmode)
@@ -242,7 +245,7 @@ void LoadPaper(const wchar_t* printer,
   if (devmode->dmFields & DM_PAPERSIZE) {
     std::string default_vendor_id = base::NumberToString(devmode->dmPaperSize);
     for (const PrinterSemanticCapsAndDefaults::Paper& paper : caps->papers) {
-      if (paper.vendor_id == default_vendor_id) {
+      if (paper.vendor_id() == default_vendor_id) {
         caps->default_paper = paper;
         break;
       }
@@ -255,14 +258,12 @@ void LoadPaper(const wchar_t* printer,
   if (devmode->dmFields & DM_PAPERLENGTH)
     default_size.set_height(devmode->dmPaperLength * kToUm);
 
-  if (!default_size.IsEmpty()) {
-    // Reset default paper if `dmPaperWidth` or `dmPaperLength` does not
-    // match default paper set by.
-    if (default_size != caps->default_paper.size_um) {
-      caps->default_paper = PrinterSemanticCapsAndDefaults::Paper();
-      caps->default_paper.printable_area_um = gfx::Rect(default_size);
-    }
-    caps->default_paper.size_um = default_size;
+  // Reset default paper if `dmPaperWidth` or `dmPaperLength` does not match
+  // default paper set by `dmPaperSize`.
+  if (!default_size.IsEmpty() &&
+      default_size != caps->default_paper.size_um()) {
+    caps->default_paper = PrinterSemanticCapsAndDefaults::Paper(
+        /*display_name=*/"", /*vendor_id=*/"", default_size);
   }
 }
 
@@ -318,7 +319,8 @@ class PrintBackendWin : public PrintBackend {
       const std::string& printer_name,
       const std::string& paper_vendor_id,
       const gfx::Size& paper_size_um) override;
-  std::string GetPrinterDriverInfo(const std::string& printer_name) override;
+  std::vector<std::string> GetPrinterDriverInfo(
+      const std::string& printer_name) override;
   bool IsValidPrinter(const std::string& printer_name) override;
 
  protected:
@@ -591,10 +593,11 @@ absl::optional<gfx::Rect> PrintBackendWin::GetPaperPrintableArea(
 }
 
 // Gets the information about driver for a specific printer.
-std::string PrintBackendWin::GetPrinterDriverInfo(
+std::vector<std::string> PrintBackendWin::GetPrinterDriverInfo(
     const std::string& printer_name) {
   ScopedPrinterHandle printer = GetPrinterHandle(printer_name);
-  return printer.IsValid() ? GetDriverInfo(printer.Get()) : std::string();
+  return printer.IsValid() ? GetDriverInfo(printer.Get())
+                           : std::vector<std::string>();
 }
 
 bool PrintBackendWin::IsValidPrinter(const std::string& printer_name) {

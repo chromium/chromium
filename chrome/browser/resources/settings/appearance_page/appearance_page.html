@@ -62,6 +62,24 @@
           </div>
 </if>
         </div>
+        <div id="colorSchemeModeRow" class="cr-row"
+            hidden$="[[!showColorSchemeMode_]]">
+          <div id="colorSchemeModeLabel" class="flex cr-padded-text"
+              aria-hidden="true">
+            $i18n{colorSchemeMode}
+          </div>
+          <select id="colorSchemeModeSelect" class="md-select"
+              on-change="onColorSchemeModeChange_"
+              aria-labelledby="colorSchemeModeLabel">
+            <template is="dom-repeat" items="[[colorSchemeModeOptions_]]">
+              <option value="[[item.value]]"
+                  selected="[[isSelectedColorSchemeMode_(
+                      item.value, selectedColorSchemeMode_)]]">
+                [[item.name]]
+              </option>
+            </template>
+          </select>
+        </div>
         <div
             class="hr"
             hidden="[[!showHr_(
@@ -116,6 +134,18 @@
             pref="{{prefs.bookmark_bar.show_on_all_tabs}}"
             label="$i18n{showBookmarksBar}">
         </settings-toggle-button>
+
+        <template is="dom-if" if="[[showHoverCardImagesOption_]]">
+          <div id="hoverCardImagesHr" class="hr"
+              hidden="[[!pageVisibility.hoverCardImages]]">
+          </div>
+          <settings-toggle-button id="hoverCardImagesToggle"
+              on-settings-boolean-control-change="onHoverCardImagesEnabledChange_"
+              hidden="[[!pageVisibility.hoverCardImages]]"
+              pref="{{prefs.browser.hovercard.image_previews_enabled}}"
+              label="$i18n{showHoverCardImages}">
+          </settings-toggle-button>
+        </template>
 
         <template is="dom-if" if="[[showSidePanelOptions_]]">
           <div class="cr-row">$i18n{sidePanel}</div>

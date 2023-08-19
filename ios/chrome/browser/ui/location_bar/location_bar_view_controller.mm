@@ -13,7 +13,7 @@
 #import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/default_browser/utils.h"
-#import "ios/chrome/browser/infobars/infobar_metrics_recorder.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
@@ -23,19 +23,15 @@
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
-#import "ios/chrome/browser/ui/badges/badge_item.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_animator.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_constants.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_steady_view.h"
 #import "ios/chrome/browser/ui/orchestrator/location_bar_offset_provider.h"
+#import "ios/chrome/browser/ui/toolbar/public/toolbar_type.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
 #import "ui/base/l10n/l10n_util.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using base::UserMetricsAction;
 
@@ -83,36 +79,13 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 // icon (in iPad multitasking).
 @property(nonatomic, assign) BOOL shareButtonEnabled;
 
-// Stores whether the clipboard currently stores copied content.
-@property(nonatomic, assign) BOOL hasCopiedContent;
-// Stores the current content type in the clipboard. This is only valid if
-// `hasCopiedContent` is YES.
-@property(nonatomic, assign) ClipboardContentType copiedContentType;
-// Stores whether the cached clipboard state is currently being updated. See
-// `-updateCachedClipboardState` for more information.
-@property(nonatomic, assign) BOOL isUpdatingCachedClipboardState;
-
 // Starts voice search, updating the layout guide to be constrained to the
 // trailing button.
 - (void)startVoiceSearch;
 
-// Displays the long press menu.
-- (void)showLongPressMenu:(UILongPressGestureRecognizer*)sender;
-
 @end
 
 @implementation LocationBarViewController
-@synthesize editView = _editView;
-@synthesize locationBarSteadyView = _locationBarSteadyView;
-@synthesize incognito = _incognito;
-@synthesize delegate = _delegate;
-@synthesize dispatcher = _dispatcher;
-@synthesize voiceSearchEnabled = _voiceSearchEnabled;
-@synthesize trailingButtonState = _trailingButtonState;
-@synthesize hideShareButtonWhileOnIncognitoNTP =
-    _hideShareButtonWhileOnIncognitoNTP;
-@synthesize shareButtonEnabled = _shareButtonEnabled;
-@synthesize offsetProvider = _offsetProvider;
 
 #pragma mark - public
 
@@ -200,16 +173,8 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
                 action:@selector(locationBarSteadyViewTapped)
       forControlEvents:UIControlEventTouchUpInside];
 
-  if (base::FeatureList::IsEnabled(kIOSLocationBarUseNativeContextMenu)) {
-    [_locationBarSteadyView addInteraction:[[UIContextMenuInteraction alloc]
-                                               initWithDelegate:self]];
-  } else {
-    UILongPressGestureRecognizer* recognizer =
-        [[UILongPressGestureRecognizer alloc]
-            initWithTarget:self
-                    action:@selector(showLongPressMenu:)];
-    [_locationBarSteadyView.locationButton addGestureRecognizer:recognizer];
-  }
+  [_locationBarSteadyView
+      addInteraction:[[UIContextMenuInteraction alloc] initWithDelegate:self]];
 
   UIIndirectScribbleInteraction* scribbleInteraction =
       [[UIIndirectScribbleInteraction alloc] initWithDelegate:self];
@@ -537,150 +502,152 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   [self.delegate recordShareButtonPressed];
 }
 
-// Updates the cached clipboard content type and calls `completion` when the
-// update process is finished.  If this is called while an update is already in
-// progress, it will return NO and the completion will never be called.
-// Otherwise, returns YES.
-- (BOOL)updateCachedClipboardStateWithCompletion:(void (^)(void))completion {
-  // Sometimes, checking the clipboard state itself causes the clipboard to
-  // emit a UIPasteboardChangedNotification, leading to an infinite loop. For
-  // now, just prevent re-checking the clipboard state, but hopefully this will
-  // be fixed in a future iOS version (see crbug.com/1049053 for crash details).
-  if (self.isUpdatingCachedClipboardState) {
-    return NO;
-  }
-  self.isUpdatingCachedClipboardState = YES;
-  self.hasCopiedContent = NO;
-  ClipboardRecentContent* clipboardRecentContent =
-      ClipboardRecentContent::GetInstance();
-  std::set<ClipboardContentType> desired_types;
-  desired_types.insert(ClipboardContentType::URL);
-  desired_types.insert(ClipboardContentType::Text);
-  desired_types.insert(ClipboardContentType::Image);
-  __weak __typeof(self) weakSelf = self;
-  clipboardRecentContent->HasRecentContentFromClipboard(
-      desired_types, base::BindOnce(^(std::set<ClipboardContentType> types) {
-        [weakSelf onClipboardContentTypeReceived:types];
-        completion();
-      }));
-  return YES;
-}
-
 - (BOOL)shouldUseLensInLongPressMenu {
   return ios::provider::IsLensSupported() &&
          base::FeatureList::IsEnabled(kEnableLensInOmniboxCopiedImage) &&
          self.lensImageEnabled;
 }
 
-#pragma mark - UIMenu
-
-- (void)showLongPressMenu:(UILongPressGestureRecognizer*)sender {
-  DCHECK(!base::FeatureList::IsEnabled(kIOSLocationBarUseNativeContextMenu));
-  if (sender.state == UIGestureRecognizerStateBegan) {
-    [self.locationBarSteadyView becomeFirstResponder];
-
-    UIMenuController* menu = [UIMenuController sharedMenuController];
-    RegisterEditMenuItem([[UIMenuItem alloc]
-        initWithTitle:l10n_util::GetNSString(
-                          (IDS_IOS_SEARCH_COPIED_IMAGE_WITH_LENS))
-               action:@selector(lensCopiedImage:)]);
-    RegisterEditMenuItem([[UIMenuItem alloc]
-        initWithTitle:l10n_util::GetNSString((IDS_IOS_SEARCH_COPIED_IMAGE))
-               action:@selector(searchCopiedImage:)]);
-    RegisterEditMenuItem([[UIMenuItem alloc]
-        initWithTitle:l10n_util::GetNSString(IDS_IOS_VISIT_COPIED_LINK)
-               action:@selector(visitCopiedLink:)]);
-    RegisterEditMenuItem([[UIMenuItem alloc]
-        initWithTitle:l10n_util::GetNSString(IDS_IOS_SEARCH_COPIED_TEXT)
-               action:@selector(searchCopiedText:)]);
-
-    BOOL updateSuccessful = [self updateCachedClipboardStateWithCompletion:^() {
-      [menu showMenuFromView:self.view rect:self.locationBarSteadyView.frame];
-      // When the menu is manually presented, it doesn't get focused by
-      // Voiceover. This notification forces voiceover to select the
-      // presented menu.
-      UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
-                                      menu);
-    }];
-    DCHECK(updateSuccessful);
-  }
-}
-
 #pragma mark - UIContextMenuInteractionDelegate
 
 - (UIMenu*)contextMenuUIMenu:(NSArray<UIMenuElement*>*)suggestedActions {
-    NSMutableArray<UIMenuElement*>* menuElements =
-        [[NSMutableArray alloc] initWithArray:suggestedActions
-                                    copyItems:YES];
+  NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
 
-    absl::optional<std::set<ClipboardContentType>>
-        clipboard_content_types =
-            ClipboardRecentContent::GetInstance()
-                ->GetCachedClipboardContentTypes();
+  __weak __typeof__(self) weakSelf = self;
+  UIImage* pasteImage = nil;
+  if (IsBottomOmniboxSteadyStateEnabled()) {
+    pasteImage =
+        DefaultSymbolWithPointSize(kPasteActionSymbol, kSymbolActionPointSize);
 
-    if (clipboard_content_types.has_value()) {
-      std::set<ClipboardContentType>
-          clipboard_content_types_values =
-              clipboard_content_types.value();
-      __weak LocationBarViewController* weakSelf = self;
-      if (clipboard_content_types_values.find(
-              ClipboardContentType::Image) !=
-          clipboard_content_types_values.end()) {
-        // Either add an option to search the copied image with Lens, or via the
-        // default search engine's reverse image search functionality.
-        if (self.shouldUseLensInLongPressMenu) {
-          id lensCopiedImageHandler = ^(UIAction* action) {
-            [weakSelf lensCopiedImage:nil];
-          };
-          UIAction* lensCopiedImageAction = [UIAction
-              actionWithTitle:l10n_util::GetNSString(
-                                  (IDS_IOS_SEARCH_COPIED_IMAGE_WITH_LENS))
-                        image:nil
-                   identifier:nil
-                      handler:lensCopiedImageHandler];
-          [menuElements addObject:lensCopiedImageAction];
-        } else {
-          id searchCopiedImageHandler = ^(UIAction* action) {
-            [weakSelf searchCopiedImage:nil];
-          };
-          UIAction* searchCopiedImageAction =
-              [UIAction actionWithTitle:l10n_util::GetNSString(
-                                            (IDS_IOS_SEARCH_COPIED_IMAGE))
-                                  image:nil
-                             identifier:nil
-                                handler:searchCopiedImageHandler];
-          [menuElements addObject:searchCopiedImageAction];
-        }
-      } else if (clipboard_content_types_values.find(
-                     ClipboardContentType::URL) !=
-                 clipboard_content_types_values.end()) {
-        id visitCopiedLinkHandler = ^(UIAction* action) {
-          [self visitCopiedLink:nil];
+    // Copy link action.
+    if (!self.locationBarSteadyView.hidden) {
+      UIAction* copyAction = [UIAction
+          actionWithTitle:l10n_util::GetNSString(IDS_IOS_COPY_LINK_ACTION_TITLE)
+                    image:DefaultSymbolWithPointSize(kCopyActionSymbol,
+                                                     kSymbolActionPointSize)
+               identifier:nil
+                  handler:^(UIAction* action) {
+                    [weakSelf.delegate locationBarCopyTapped];
+                  }];
+      [menuElements addObject:copyAction];
+    }
+  } else {
+    // Keep the suggested actions to have the copy action in a separate section.
+    [menuElements addObjectsFromArray:suggestedActions];
+  }
+
+  absl::optional<std::set<ClipboardContentType>> clipboard_content_types =
+      ClipboardRecentContent::GetInstance()->GetCachedClipboardContentTypes();
+
+  if (clipboard_content_types.has_value()) {
+    std::set<ClipboardContentType> clipboard_content_types_values =
+        clipboard_content_types.value();
+    if (clipboard_content_types_values.find(ClipboardContentType::Image) !=
+        clipboard_content_types_values.end()) {
+      // Either add an option to search the copied image with Lens, or via the
+      // default search engine's reverse image search functionality.
+      if (self.shouldUseLensInLongPressMenu) {
+        id lensCopiedImageHandler = ^(UIAction* action) {
+          [weakSelf lensCopiedImage:nil];
         };
-        UIAction* visitCopiedLinkAction = [UIAction
+        UIAction* lensCopiedImageAction = [UIAction
             actionWithTitle:l10n_util::GetNSString(
-                                (IDS_IOS_VISIT_COPIED_LINK))
-                      image:nil
+                                (IDS_IOS_SEARCH_COPIED_IMAGE_WITH_LENS))
+                      image:pasteImage
                  identifier:nil
-                    handler:visitCopiedLinkHandler];
-        [menuElements addObject:visitCopiedLinkAction];
-      } else if (clipboard_content_types_values.find(
-                     ClipboardContentType::Text) !=
-                 clipboard_content_types_values.end()) {
-        id searchCopiedTextHandler = ^(UIAction* action) {
-          [self searchCopiedText:nil];
+                    handler:lensCopiedImageHandler];
+        [menuElements addObject:lensCopiedImageAction];
+      } else {
+        id searchCopiedImageHandler = ^(UIAction* action) {
+          [weakSelf searchCopiedImage:nil];
         };
-        UIAction* searchCopiedTextAction = [UIAction
-            actionWithTitle:l10n_util::GetNSString(
-                                (IDS_IOS_SEARCH_COPIED_TEXT))
-                      image:nil
-                 identifier:nil
-                    handler:searchCopiedTextHandler];
-        [menuElements addObject:searchCopiedTextAction];
+        UIAction* searchCopiedImageAction =
+            [UIAction actionWithTitle:l10n_util::GetNSString(
+                                          (IDS_IOS_SEARCH_COPIED_IMAGE))
+                                image:pasteImage
+                           identifier:nil
+                              handler:searchCopiedImageHandler];
+        [menuElements addObject:searchCopiedImageAction];
+      }
+    } else if (clipboard_content_types_values.find(ClipboardContentType::URL) !=
+               clipboard_content_types_values.end()) {
+      id visitCopiedLinkHandler = ^(UIAction* action) {
+        [self visitCopiedLink:nil];
+      };
+      UIAction* visitCopiedLinkAction = [UIAction
+          actionWithTitle:l10n_util::GetNSString((IDS_IOS_VISIT_COPIED_LINK))
+                    image:pasteImage
+               identifier:nil
+                  handler:visitCopiedLinkHandler];
+      [menuElements addObject:visitCopiedLinkAction];
+    } else if (clipboard_content_types_values.find(
+                   ClipboardContentType::Text) !=
+               clipboard_content_types_values.end()) {
+      id searchCopiedTextHandler = ^(UIAction* action) {
+        [self searchCopiedText:nil];
+      };
+      UIAction* searchCopiedTextAction = [UIAction
+          actionWithTitle:l10n_util::GetNSString((IDS_IOS_SEARCH_COPIED_TEXT))
+                    image:pasteImage
+               identifier:nil
+                  handler:searchCopiedTextHandler];
+      [menuElements addObject:searchCopiedTextAction];
+    }
+  }
+
+  // Show Top or Bottom Address Bar action.
+  if (IsBottomOmniboxSteadyStateEnabled() && _prefService &&
+      IsSplitToolbarMode(self)) {
+    NSString* title = nil;
+    UIImage* image = nil;
+    ToolbarType targetToolbarType;
+    if (_prefService->GetBoolean(prefs::kBottomOmnibox)) {
+      title = l10n_util::GetNSString(IDS_IOS_TOOLBAR_MENU_TOP_OMNIBOX);
+      if (@available(iOS 15.1, *)) {
+        image = DefaultSymbolWithPointSize(kMovePlatterToTopPhoneSymbol,
+                                           kSymbolActionPointSize);
+      } else {
+        image = CustomSymbolWithPointSize(kCustomMovePlatterToTopPhoneSymbol,
+                                          kSymbolActionPointSize);
+      }
+      targetToolbarType = ToolbarType::kPrimary;
+    } else {
+      title = l10n_util::GetNSString(IDS_IOS_TOOLBAR_MENU_BOTTOM_OMNIBOX);
+      if (@available(iOS 15.1, *)) {
+        image = DefaultSymbolWithPointSize(kMovePlatterToBottomPhoneSymbol,
+                                           kSymbolActionPointSize);
+      } else {
+        image = CustomSymbolWithPointSize(kCustomMovePlatterToBottomPhoneSymbol,
+                                          kSymbolActionPointSize);
+      }
+      targetToolbarType = ToolbarType::kSecondary;
+    }
+    UIAction* moveAddressBarAction = [UIAction
+        actionWithTitle:title
+                  image:image
+             identifier:nil
+                handler:^(UIAction* action) {
+                  [weakSelf moveOmniboxToToolbarType:targetToolbarType];
+                }];
+
+    UIMenu* divider = [UIMenu menuWithTitle:@""
+                                      image:nil
+                                 identifier:nil
+                                    options:UIMenuOptionsDisplayInline
+                                   children:@[ moveAddressBarAction ]];
+    [menuElements addObject:divider];
+  }
+
+  // Reverse the array manually when preferredMenuElementOrder is not available.
+  if (IsBottomOmniboxSteadyStateEnabled() && _prefService) {
+    if (!base::ios::IsRunningOnIOS16OrLater()) {
+      if (_prefService->GetBoolean(prefs::kBottomOmnibox)) {
+        menuElements =
+            [[[menuElements reverseObjectEnumerator] allObjects] mutableCopy];
       }
     }
-
-    return [UIMenu menuWithTitle:@"" children:menuElements];
+  }
+  return [UIMenu menuWithTitle:@"" children:menuElements];
 }
 
 - (UITargetedPreview*)contextMenuInteraction:
@@ -697,16 +664,23 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 - (UIContextMenuConfiguration*)contextMenuInteraction:
                                    (UIContextMenuInteraction*)interaction
                        configurationForMenuAtLocation:(CGPoint)location {
-  DCHECK(base::FeatureList::IsEnabled(kIOSLocationBarUseNativeContextMenu));
   __weak LocationBarViewController* weakSelf = self;
 
-  return [UIContextMenuConfiguration
+  UIContextMenuConfiguration* configuration = [UIContextMenuConfiguration
       configurationWithIdentifier:nil
                   previewProvider:nil
                    actionProvider:^UIMenu*(
                        NSArray<UIMenuElement*>* suggestedActions) {
                      return [weakSelf contextMenuUIMenu:suggestedActions];
                    }];
+
+  if (IsBottomOmniboxSteadyStateEnabled()) {
+    if (@available(iOS 16, *)) {
+      configuration.preferredMenuElementOrder =
+          UIContextMenuConfigurationElementOrderPriority;
+    }
+  }
+  return configuration;
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
@@ -715,28 +689,6 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
     return YES;
   }
 
-  BOOL isClipboardAction = action == @selector(searchCopiedImage:) ||
-                           action == @selector(lensCopiedImage:) ||
-                           action == @selector(visitCopiedLink:) ||
-                           action == @selector(searchCopiedText:);
-  if (self.locationBarSteadyView.isFirstResponder && isClipboardAction) {
-    if (!self.hasCopiedContent) {
-      return NO;
-    }
-    if (self.copiedContentType == ClipboardContentType::Image) {
-      if ([self shouldUseLensInLongPressMenu]) {
-        return action == @selector(lensCopiedImage:);
-      }
-      return action == @selector(searchCopiedImage:);
-    }
-    if (self.copiedContentType == ClipboardContentType::URL) {
-      return action == @selector(visitCopiedLink:);
-    }
-    if (self.copiedContentType == ClipboardContentType::Text) {
-      return action == @selector(searchCopiedText:);
-    }
-    return NO;
-  }
   return NO;
 }
 
@@ -758,7 +710,7 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 - (void)visitCopiedLink:(id)sender {
   // A search using clipboard link is activity that should indicate a user
   // that would be interested in setting Chrome as the default browser.
-  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
+  LogCopyPasteInOmniboxForDefaultBrowserPromo();
   [self.delegate locationBarVisitCopyLinkTapped];
   ClipboardRecentContent::GetInstance()->GetRecentURLFromClipboard(
       base::BindOnce(^(absl::optional<GURL> optionalURL) {
@@ -776,7 +728,7 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 - (void)searchCopiedText:(id)sender {
   // A search using clipboard text is activity that should indicate a user
   // that would be interested in setting Chrome as the default browser.
-  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
+  LogCopyPasteInOmniboxForDefaultBrowserPromo();
   RecordAction(UserMetricsAction("Mobile.OmniboxContextMenu.SearchCopiedText"));
   ClipboardRecentContent::GetInstance()->GetRecentTextFromClipboard(
       base::BindOnce(^(absl::optional<std::u16string> optionalText) {
@@ -791,18 +743,20 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
       }));
 }
 
-- (void)onClipboardContentTypeReceived:
-    (const std::set<ClipboardContentType>&)types {
-  self.hasCopiedContent = !types.empty();
-  if (base::Contains(types, ClipboardContentType::Image) &&
-      (self.searchByImageEnabled || self.shouldUseLensInLongPressMenu)) {
-    self.copiedContentType = ClipboardContentType::Image;
-  } else if (base::Contains(types, ClipboardContentType::URL)) {
-    self.copiedContentType = ClipboardContentType::URL;
-  } else if (base::Contains(types, ClipboardContentType::Text)) {
-    self.copiedContentType = ClipboardContentType::Text;
+/// Set the preferred omnibox position to `toolbarType`.
+- (void)moveOmniboxToToolbarType:(ToolbarType)toolbarType {
+  if (_prefService) {
+    _prefService->SetBoolean(prefs::kBottomOmnibox,
+                             toolbarType == ToolbarType::kSecondary);
+
+    if (toolbarType == ToolbarType::kPrimary) {
+      RecordAction(
+          UserMetricsAction("Mobile.OmniboxContextMenu.MoveAddressBarToTop"));
+    } else {
+      RecordAction(UserMetricsAction(
+          "Mobile.OmniboxContextMenu.MoveAddressBarToBottom"));
+    }
   }
-  self.isUpdatingCachedClipboardState = NO;
 }
 
 @end

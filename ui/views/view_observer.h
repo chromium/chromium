@@ -36,8 +36,9 @@ class VIEWS_EXPORT ViewObserver {
   // Called when the bounds of |observed_view| change.
   virtual void OnViewBoundsChanged(View* observed_view) {}
 
-  // Called when the bounds of |observed_view|'s layer change.
-  virtual void OnLayerTargetBoundsChanged(View* observed_view) {}
+  // Called when the view layer's bounds are set, whether or not the bounds have
+  // changed.
+  virtual void OnViewLayerBoundsSet(View* observed_view) {}
 
   // Called when the `observed_view`'s layer transform changes.
   // TODO(crbug.com/1203386): This is temporarily added to support a migration.

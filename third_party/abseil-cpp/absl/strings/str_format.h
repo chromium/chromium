@@ -259,6 +259,7 @@ class FormatCountCapture {
 // *   Characters: `char`, `signed char`, `unsigned char`
 // *   Integers: `int`, `short`, `unsigned short`, `unsigned`, `long`,
 //         `unsigned long`, `long long`, `unsigned long long`
+// *   Enums: printed as their underlying integral value
 // *   Floating-point: `float`, `double`, `long double`
 //
 // However, in the `str_format` library, a format conversion specifies a broader

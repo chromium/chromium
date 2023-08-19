@@ -7,28 +7,39 @@ module extensions.mojom;
 import "mojo/public/mojom/base/values.mojom";
 import "url/mojom/url.mojom";
 
-union EventListenerParam {
+// The context that owns the event listener. This can either be an extension,
+// indicated by `extension_id`, or a web page, indicated by `listener_url`.
+union EventListenerOwner {
   string extension_id;
   url.mojom.Url listener_url;
+};
+
+// Details about a running javascript context for an extension service worker.
+struct ServiceWorkerContext {
+  // The scope associated with the extension service worker.
+  // This should generally be the extension root scope.
+  url.mojom.Url scope_url;
+  // The service worker version.
+  int64 version_id;
+  // The thread ID for the worker running in the renderer.
+  int32 thread_id;
 };
 
 // Implemented in the browser, this interface defines methods for handling
 // event router messages from the main thread or service worker.
 interface EventRouter {
-  // Notifies the browser that the given |extension_id| or |listener_url| added
-  // a listener to an event. If it has |extension_id| in |param|, the listener
-  // is added for the extension. Otherwise, it has a |listener_url| in |param|
-  // and the listener is added for the URL.
-  AddListenerForMainThread(EventListenerParam param,
+  // Notifies the browser that the given `extension_id` or `listener_url` added
+  // a listener to an event. If it has `extension_id` in `listener_owner`, the
+  // listener is added for the extension. Otherwise, it has a `listener_url` in
+  // `listener_owner` and the listener is added for the URL.
+  AddListenerForMainThread(EventListenerOwner listener_owner,
                            string event_name);
 
   // Notifies the browser that the given extension added a listener to an event
   // in a service worker.
   AddListenerForServiceWorker(string extension_id,
-                              url.mojom.Url worker_scope_url,
                               string event_name,
-                              int64 service_worker_version_id,
-                              int32 worker_thread_id);
+                              ServiceWorkerContext service_worker_context);
 
   // Notifies the browser that the given extension added a listener to an event
   // from a lazy background page.
@@ -41,13 +52,13 @@ interface EventRouter {
                                   url.mojom.Url worker_scope_url,
                                   string event_name);
 
-  // Notifies the browser that the given |extension_id| or |listener_url| added
+  // Notifies the browser that the given `extension_id` or `listener_url` added
   // a listener to instances of the named event that satisfy the filter. If it
-  // has |extension_id| in |param|, the listener is added for the extension.
-  // Otherwise, it has a |listener_url| in |param|  and the listener is added
-  // for the URL.
+  // has `extension_id` in `listener_owner`, the listener is added for the
+  // extension. Otherwise, it has a `listener_url` in `listener_owner` and the
+  // listener is added for the URL.
   AddFilteredListenerForMainThread(
-      EventListenerParam param,
+      EventListenerOwner listener_owner,
       string event_name,
       mojo_base.mojom.DictionaryValue filter,
       bool add_lazy_listener);
@@ -56,27 +67,24 @@ interface EventRouter {
   // service worker to instances of the named event that satisfy the filter.
   AddFilteredListenerForServiceWorker(
       string extension_id,
-      url.mojom.Url worker_scope_url,
       string event_name,
-      int64 service_worker_version_id,
-      int32 worker_thread_id,
+      ServiceWorkerContext service_worker_context,
       mojo_base.mojom.DictionaryValue filter,
       bool add_lazy_listener);
 
-  // Notifies the browser that the given |extension_id| or |listener_url|
-  // removed a listener to an event. If it has |extension_id| in |param|, the
-  // listener is removed for the extension. Otherwise, it has a |listener_url|
-  // in |param| and the listener is removed for the URL.
-  RemoveListenerForMainThread(EventListenerParam param,
+  // Notifies the browser that the given `extension_id` or `listener_url`
+  // removed a listener to an event. If it has `extension_id` in
+  // `listener_owner`, the listener is removed for the extension. Otherwise, it
+  // has a `listener_url` in `listener_owner` and the listener is removed for
+  // the URL.
+  RemoveListenerForMainThread(EventListenerOwner listener_owner,
                               string event_name);
 
   // Notifies the browser that the given extension removed a listener from an
   // event in a service worker.
   RemoveListenerForServiceWorker(string extension_id,
-                                 url.mojom.Url worker_scope_url,
                                  string event_name,
-                                 int64 service_worker_version_id,
-                                 int32 worker_thread_id);
+                                 ServiceWorkerContext service_worker_context);
 
   // Notifies the browser that the given extension is no longer interested in
   // receiving the given event from a lazy background page.
@@ -89,13 +97,13 @@ interface EventRouter {
                                      url.mojom.Url worker_scope_url,
                                      string event_name);
 
-  // Notifies the browser that the given |extension_id| or |listener_url| is no
+  // Notifies the browser that the given `extension_id` or `listener_url` is no
   // longer interested in instances of the named event that satisfy the filter.
-  // If it has |extension_id| in |param|, the listener is removed for the
-  // extension. Otherwise, it has a |listener_url| in |param| and the listener
-  // is removed for the URL.
+  // If it has `extension_id` in `listener_owner`, the listener is removed for
+  // the extension. Otherwise, it has a `listener_url` in `listener_owner` and
+  // the listener is removed for the URL.
   RemoveFilteredListenerForMainThread(
-      EventListenerParam param,
+      EventListenerOwner listener_owner,
       string event_name,
       mojo_base.mojom.DictionaryValue filter,
       bool remove_lazy_listener);
@@ -105,10 +113,8 @@ interface EventRouter {
   // service worker.
   RemoveFilteredListenerForServiceWorker(
       string extension_id,
-      url.mojom.Url worker_scope_url,
       string event_name,
-      int64 service_worker_version_id,
-      int32 worker_thread_id,
+      ServiceWorkerContext service_worker_context,
       mojo_base.mojom.DictionaryValue filter,
       bool remove_lazy_listener);
 

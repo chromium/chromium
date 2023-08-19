@@ -20,6 +20,7 @@
 
 namespace net {
 class SchemefulSite;
+class CookieInclusionStatus;
 }  // namespace net
 
 namespace network {
@@ -76,7 +77,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceNetworkDelegate
       net::CookieAccessResultList& excluded_cookies) override;
   bool OnCanSetCookie(const net::URLRequest& request,
                       const net::CanonicalCookie& cookie,
-                      net::CookieOptions* options) override;
+                      net::CookieOptions* options,
+                      net::CookieInclusionStatus* inclusion_status) override;
   net::NetworkDelegate::PrivacySetting OnForcePrivacyMode(
       const net::URLRequest& request) const override;
   bool OnCancelURLRequestWithPolicyViolatingReferrerHeader(

@@ -49,21 +49,30 @@
         text-decoration: none;
       }
 
+      :host-context(.jelly-enabled) .oobe-local-link {
+        color: var(--cros-sys-primary);
+      }
+
       .oobe-local-link:focus {
         outline-color: var(--cros-focus-ring-color);
         transition: outline-color 200ms;
       }
 
+      :host-context(.jelly-enabled) .oobe-local-link:focus {
+        outline-color: var(--cros-sys-focus_ring);
+      }
+
       .oobe-optin-row {
-        border-top: 1px solid var(--cros-color-primary-inverted);
-        font-size: 13px;
+        border-top: 1px solid var(--cros-sys-separator);
+        font-size: var(--oobe-optin-row-font-size);
         margin-top: 12px;
         padding-top: 12px;
       }
 
       .oobe-optin-title {
         color: var(--oobe-header-text-color);
-        font-weight: var(--oobe-header-font-weight);
+        font-family: var(--oobe-optin-title-font-family);
+        font-weight: var(--oobe-optin-title-font-weight);
       }
 
       .oobe-optin-content {

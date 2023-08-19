@@ -6,7 +6,7 @@ import("//build/config/android/rules.gni")
 
 generate_jni("site_settings_jni_headers") {
   sources = [
-    "java/src/org/chromium/components/browser_ui/site_settings/SiteSettingsFeatureList.java",
+    "java/src/org/chromium/components/browser_ui/site_settings/SiteSettingsFeatureMap.java",
     "java/src/org/chromium/components/browser_ui/site_settings/WebsitePreferenceBridge.java",
   ]
 }
@@ -15,7 +15,7 @@ source_set("android") {
   sources = [
     "features.cc",
     "features.h",
-    "site_settings_feature_list.cc",
+    "site_settings_feature_map.cc",
     "storage_info_fetcher.cc",
     "storage_info_fetcher.h",
     "website_preference_bridge.cc",
@@ -27,6 +27,7 @@ source_set("android") {
     "//base",
     "//components/browsing_data/content",
     "//components/cdm/browser",
+    "//components/content_settings/browser/ui",
     "//components/content_settings/core/browser",
     "//components/permissions",
     "//components/subresource_filter/android",
@@ -81,6 +82,7 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/site_settings/NotificationCategory.java",
     "java/src/org/chromium/components/browser_ui/site_settings/PermissionInfo.java",
     "java/src/org/chromium/components/browser_ui/site_settings/SettingsNavigationSource.java",
+    "java/src/org/chromium/components/browser_ui/site_settings/SharedDictionaryInfo.java",
     "java/src/org/chromium/components/browser_ui/site_settings/SingleCategorySettings.java",
     "java/src/org/chromium/components/browser_ui/site_settings/SingleWebsiteSettings.java",
     "java/src/org/chromium/components/browser_ui/site_settings/SiteDataCleaner.java",
@@ -88,6 +90,7 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/site_settings/SiteSettingsCategory.java",
     "java/src/org/chromium/components/browser_ui/site_settings/SiteSettingsDelegate.java",
     "java/src/org/chromium/components/browser_ui/site_settings/SiteSettingsFeatureList.java",
+    "java/src/org/chromium/components/browser_ui/site_settings/SiteSettingsFeatureMap.java",
     "java/src/org/chromium/components/browser_ui/site_settings/SiteSettingsPreferenceFragment.java",
     "java/src/org/chromium/components/browser_ui/site_settings/SiteSettingsUtil.java",
     "java/src/org/chromium/components/browser_ui/site_settings/StorageInfo.java",
@@ -102,7 +105,7 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/site_settings/WebsitePreferenceBridge.java",
     "java/src/org/chromium/components/browser_ui/site_settings/WebsiteRowPreference.java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
   resources_package = "org.chromium.components.browser_ui.site_settings"
   deps = [
     ":java_resources",
@@ -139,8 +142,10 @@ android_library("java") {
     "//ui/android:ui_utils_java",
     "//url:gurl_java",
   ]
-  srcjar_deps =
-      [ "//components/content_settings/android:java_pref_names_srcjar" ]
+  srcjar_deps = [
+    ":site_settings_jni_headers",
+    "//components/content_settings/android:java_pref_names_srcjar",
+  ]
 }
 
 android_library("javatests") {
@@ -154,6 +159,7 @@ android_library("javatests") {
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//base:jni_java",
     "//components/browser_ui/settings/android:test_support_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_test_runner_java",
@@ -176,6 +182,7 @@ robolectric_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//base:jni_java",
     "//components/content_settings/android:content_settings_enums_java",
     "//content/public/android:content_java",
     "//third_party/junit",
@@ -239,6 +246,7 @@ android_resources("java_resources") {
     "java/res/layout/tri_state_cookie_settings_preference.xml",
     "java/res/layout/tri_state_site_settings_preference.xml",
     "java/res/layout/website_features.xml",
+    "java/res/layout/zoom_preferences_view.xml",
     "java/res/menu/website_preferences_menu.xml",
     "java/res/values/dimens.xml",
     "java/res/values/ids.xml",
@@ -253,6 +261,7 @@ android_resources("java_resources") {
   ]
 
   deps = [
+    "//components/browser_ui/accessibility/android:java_resources",
     "//components/browser_ui/settings/android:java_resources",
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/browser_ui/styles/android:java_resources",

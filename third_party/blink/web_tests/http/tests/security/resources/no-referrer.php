@@ -1,7 +1,7 @@
 <?php
 header("Cache: no-cache, no-store");
 
-$refer = $_SERVER['HTTP_REFERER'];
+$refer = $_SERVER['HTTP_REFERER'] ?? null;
 if ($refer && $refer != "")
     print("log('External script (HTTP Referer): FAIL');\n");
 else

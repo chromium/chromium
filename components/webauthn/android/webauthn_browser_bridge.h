@@ -7,6 +7,8 @@
 
 #include "base/android/scoped_java_ref.h"
 
+namespace webauthn {
+
 class WebAuthnBrowserBridge {
  public:
   WebAuthnBrowserBridge(JNIEnv* env,
@@ -41,9 +43,19 @@ class WebAuthnBrowserBridge {
       const base::android::JavaParamRef<jobject>& jframe_host,
       jboolean jsuccess);
 
+  void OnPasswordCredentialReceived(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jframe_host,
+      const base::android::JavaParamRef<jstring>& jusername,
+      const base::android::JavaParamRef<jstring>& jpassword);
+
+  void Destroy(JNIEnv* env);
+
  private:
   // Java object that owns this WebAuthnBrowserBridge.
   base::android::ScopedJavaGlobalRef<jobject> owner_;
 };
+
+}  // namespace webauthn
 
 #endif  // COMPONENTS_WEBAUTHN_ANDROID_WEBAUTHN_BROWSER_BRIDGE_H_

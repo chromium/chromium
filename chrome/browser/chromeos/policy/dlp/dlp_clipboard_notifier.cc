@@ -48,6 +48,7 @@ ui::DataTransferEndpoint CloneEndpoint(
   return ui::DataTransferEndpoint(*data_endpoint);
 }
 
+// TODO(b/293442668): Fix SynthesizePaste on Lacros.
 void SynthesizePaste() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   auto* host = ash::GetWindowTreeHostForDisplay(

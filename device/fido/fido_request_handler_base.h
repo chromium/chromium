@@ -58,6 +58,19 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
   // components of TransportAvailabilityInfo is set,
   // AuthenticatorRequestClientDelegate should be notified.
   struct COMPONENT_EXPORT(DEVICE_FIDO) TransportAvailabilityInfo {
+    enum class ConditionalUITreatment {
+      kDefault = 0,
+      // kDontShowEmptyConditionalUI requests that, if there are no matching
+      // credentials for conditional UI, that the option to use a passkey from
+      // another device not be offered. This is for measurement and
+      // experimentation.
+      kDontShowEmptyConditionalUI,
+      // kNeverOfferPasskeyFromAnotherDevice requests that the option to use a
+      // passkey from another device is never offered in conditional UI. This is
+      // for measurement and experimentation.
+      kNeverOfferPasskeyFromAnotherDevice,
+    };
+
     TransportAvailabilityInfo();
     TransportAvailabilityInfo(const TransportAvailabilityInfo& other);
     TransportAvailabilityInfo& operator=(
@@ -93,12 +106,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
     RecognizedCredential has_icloud_keychain_credential =
         RecognizedCredential::kNoRecognizedCredential;
 
-    // The set of recognized platform credential user entities that can fulfill
-    // a GetAssertion request. Not all platform authenticators report this, so
-    // the set might be empty even if
-    // |has_platform_authenticator_credential| is |kHasRecognizedCredential|.
-    std::vector<DiscoverableCredentialMetadata>
-        recognized_platform_authenticator_credentials;
+    // The set of recognized credential user entities that can fulfill a
+    // GetAssertion request. Not all authenticators report this, so the set
+    // might be empty even if |has_platform_authenticator_credential| is
+    // |kHasRecognizedCredential|.
+    std::vector<DiscoverableCredentialMetadata> recognized_credentials;
 
     bool is_ble_powered = false;
     bool can_power_on_ble_adapter = false;
@@ -136,6 +148,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
     ResidentKeyRequirement resident_key_requirement =
         ResidentKeyRequirement::kDiscouraged;
 
+    // Indicates the UserVerificationRequirement of the current request.
+    UserVerificationRequirement user_verification_requirement =
+        UserVerificationRequirement::kDiscouraged;
+
     // transport_list_did_include_internal is set to true during a getAssertion
     // request if at least one element of the allowList included the "internal"
     // transport, or didn't have any transports.
@@ -157,6 +173,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
     // makeCredential requests. See also `request_is_internal_only`, which isn't
     // specific to makeCredential requests.
     absl::optional<AuthenticatorAttachment> make_credential_attachment;
+
+    // conditional_ui_treatment_ controls how conditional UI will be handled for
+    // this request.
+    ConditionalUITreatment conditional_ui_treatment =
+        ConditionalUITreatment::kDefault;
   };
 
   class COMPONENT_EXPORT(DEVICE_FIDO) Observer {

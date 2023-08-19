@@ -10,18 +10,9 @@
 
 #include "net/base/net_export.h"
 
-namespace base {
-class Time;
-}
-
 namespace net::der {
 
 struct GeneralizedTime;
-
-// Encodes |time|, a UTC-based time, to DER |generalized_time|, for comparing
-// against other GeneralizedTime objects.
-NET_EXPORT bool EncodeTimeAsGeneralizedTime(const base::Time& time,
-                                            GeneralizedTime* generalized_time);
 
 // Encodes |posix_time|, a posix time in seconds, to DER |generalized_time|, for
 // comparing against other GeneralizedTime objects, returning true on success or
@@ -29,12 +20,6 @@ NET_EXPORT bool EncodeTimeAsGeneralizedTime(const base::Time& time,
 NET_EXPORT bool EncodePosixTimeAsGeneralizedTime(
     int64_t posix_time,
     GeneralizedTime* generalized_time);
-
-// Converts a GeneralizedTime struct to a base::Time, returning true on success
-// or false if |generalized| was invalid or cannot be represented by
-// base::Time.
-NET_EXPORT bool GeneralizedTimeToTime(const der::GeneralizedTime& generalized,
-                                      base::Time* result);
 
 // Converts a GeneralizedTime struct to a posix time in seconds in |result|,
 // returning true on success or false if |generalized| was invalid or cannot be

@@ -7,16 +7,22 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
+#include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox.mojom-shared.h"
 #include "components/omnibox/browser/omnibox_navigation_observer.h"
 #include "components/omnibox/common/omnibox_focus_state.h"
+#include "components/url_formatter/spoof_checks/idna_metrics.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 
 class AutocompleteResult;
 class GURL;
+class LocationBarModel;
 class SessionID;
 class SkBitmap;
 class TemplateURL;
@@ -34,6 +40,7 @@ struct VectorIcon;
 }
 
 class AutocompleteControllerEmitter;
+class PrefService;
 
 using BitmapFetchedCallback =
     base::RepeatingCallback<void(int result_index, const SkBitmap& bitmap)>;
@@ -44,9 +51,10 @@ using FaviconFetchedCallback =
 // (e.g., getting information about the current page, retrieving objects
 // associated with the current tab, or performing operations that rely on such
 // objects under the hood).
-class OmniboxClient {
+class OmniboxClient : public base::SupportsWeakPtr<OmniboxClient> {
  public:
-  virtual ~OmniboxClient() {}
+  OmniboxClient() = default;
+  virtual ~OmniboxClient() = default;
 
   // Returns an AutocompleteProviderClient specific to the embedder context.
   virtual std::unique_ptr<AutocompleteProviderClient>
@@ -86,6 +94,7 @@ class OmniboxClient {
       const AutocompleteMatch& match,
       omnibox::mojom::NavigationPredictor navigation_predictor) {}
 
+  virtual PrefService* GetPrefs() = 0;
   virtual bookmarks::BookmarkModel* GetBookmarkModel();
   virtual AutocompleteControllerEmitter* GetAutocompleteControllerEmitter() = 0;
   virtual TemplateURLService* GetTemplateURLService();
@@ -188,6 +197,28 @@ class OmniboxClient {
 
   // Focuses the `WebContents`, i.e. the web page of the current tab.
   virtual void FocusWebContents() {}
+
+  virtual void OnAutocompleteAccept(
+      const GURL& destination_url,
+      TemplateURLRef::PostContent* post_content,
+      WindowOpenDisposition disposition,
+      ui::PageTransition transition,
+      AutocompleteMatchType::Type match_type,
+      base::TimeTicks match_selection_timestamp,
+      bool destination_url_entered_without_scheme,
+      bool destination_url_entered_with_http_scheme,
+      const std::u16string& text,
+      const AutocompleteMatch& match,
+      const AutocompleteMatch& alternative_nav_match,
+      IDNA2008DeviationCharacter deviation_char_in_hostname) = 0;
+
+  // Called when the view should update itself without restoring any tab state.
+  virtual void OnInputInProgress(bool in_progress) {}
+
+  // Called when the omnibox popup is shown or hidden.
+  virtual void OnPopupVisibilityChanged() {}
+
+  virtual LocationBarModel* GetLocationBarModel() = 0;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_CLIENT_H_

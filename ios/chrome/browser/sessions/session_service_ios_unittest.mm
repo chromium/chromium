@@ -6,22 +6,22 @@
 
 #import <memory>
 
+#import "base/apple/foundation_util.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
 #import "base/files/scoped_temp_dir.h"
 #import "base/path_service.h"
 #import "base/run_loop.h"
-#import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/single_thread_task_runner.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
-#import "ios/chrome/browser/paths/paths.h"
 #import "ios/chrome/browser/sessions/session_ios.h"
 #import "ios/chrome/browser/sessions/session_ios_factory.h"
 #import "ios/chrome/browser/sessions/session_service_ios.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
+#import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
@@ -32,16 +32,19 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+// To get access to web::features::kEnableSessionSerializationOptimizations.
+// TODO(crbug.com/1383087): remove once the feature is fully launched.
+#import "ios/web/common/features.h"
 
 namespace {
 
 // Fixture Class. Takes care of deleting the directory used to store test data.
 class SessionServiceTest : public PlatformTest {
  public:
-  SessionServiceTest() = default;
+  SessionServiceTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        web::features::kEnableSessionSerializationOptimizations);
+  }
 
   SessionServiceTest(const SessionServiceTest&) = delete;
   SessionServiceTest& operator=(const SessionServiceTest&) = delete;
@@ -94,7 +97,7 @@ class SessionServiceTest : public PlatformTest {
     if (!base::PathExists(session_path))
       return nil;
 
-    return base::SysUTF8ToNSString(session_path.AsUTF8Unsafe());
+    return base::apple::FilePathToNSString(session_path);
   }
 
   SessionServiceIOS* session_service() { return session_service_; }
@@ -102,12 +105,13 @@ class SessionServiceTest : public PlatformTest {
   const base::FilePath& directory() const { return directory_; }
 
   NSString* directory_as_nsstring() const {
-    return base::SysUTF8ToNSString(directory().AsUTF8Unsafe());
+    return base::apple::FilePathToNSString(directory());
   }
 
  private:
   base::ScopedTempDir scoped_temp_directory_;
   base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   SessionServiceIOS* session_service_ = nil;
   FakeWebStateListDelegate web_state_list_delegate_;
   base::FilePath directory_;

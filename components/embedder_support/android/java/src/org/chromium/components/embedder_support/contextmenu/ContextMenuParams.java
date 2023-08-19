@@ -10,7 +10,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.blink_public.common.ContextMenuDataMediaType;
-import org.chromium.content_public.browser.Impression;
+import org.chromium.content_public.browser.AdditionalNavigationParams;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.content_public.common.Referrer;
 import org.chromium.ui.base.MenuSourceType;
@@ -43,7 +43,7 @@ public class ContextMenuParams {
 
     private final boolean mOpenedFromHighlight;
 
-    private final @Nullable Impression mImpression;
+    private final @Nullable AdditionalNavigationParams mAdditionalNavigationParams;
 
     @CalledByNative
     private long getNativePointer() {
@@ -177,10 +177,10 @@ public class ContextMenuParams {
     }
 
     /**
-     * @return The attribution impresssion associated with this Context Menu.
+     * @return The additional navigation params associated with this Context Menu.
      */
-    public Impression getImpression() {
-        return mImpression;
+    public AdditionalNavigationParams getAdditionalNavigationParams() {
+        return mAdditionalNavigationParams;
     }
 
     @VisibleForTesting
@@ -188,7 +188,7 @@ public class ContextMenuParams {
             GURL linkUrl, String linkText, GURL unfilteredLinkUrl, GURL srcUrl, String titleText,
             Referrer referrer, boolean canSaveMedia, int triggeringTouchXDp, int triggeringTouchYDp,
             @MenuSourceType int sourceType, boolean openedFromHighlight,
-            @Nullable Impression impression) {
+            @Nullable AdditionalNavigationParams additionalNavigationParams) {
         mNativePtr = nativePtr;
         mPageUrl = pageUrl;
         mLinkUrl = linkUrl;
@@ -206,7 +206,7 @@ public class ContextMenuParams {
         mTriggeringTouchYDp = triggeringTouchYDp;
         mSourceType = sourceType;
         mOpenedFromHighlight = openedFromHighlight;
-        mImpression = impression;
+        mAdditionalNavigationParams = additionalNavigationParams;
     }
 
     @CalledByNative
@@ -214,13 +214,14 @@ public class ContextMenuParams {
             GURL pageUrl, GURL linkUrl, String linkText, GURL unfilteredLinkUrl, GURL srcUrl,
             String titleText, GURL sanitizedReferrer, int referrerPolicy, boolean canSaveMedia,
             int triggeringTouchXDp, int triggeringTouchYDp, @MenuSourceType int sourceType,
-            boolean openedFromHighlight, @Nullable Impression impression) {
+            boolean openedFromHighlight,
+            @Nullable AdditionalNavigationParams additionalNavigationParams) {
         // TODO(https://crbug.com/783819): Convert Referrer to use GURL.
         Referrer referrer = sanitizedReferrer.isEmpty()
                 ? null
                 : new Referrer(sanitizedReferrer.getSpec(), referrerPolicy);
         return new ContextMenuParams(nativePtr, mediaType, pageUrl, linkUrl, linkText,
                 unfilteredLinkUrl, srcUrl, titleText, referrer, canSaveMedia, triggeringTouchXDp,
-                triggeringTouchYDp, sourceType, openedFromHighlight, impression);
+                triggeringTouchYDp, sourceType, openedFromHighlight, additionalNavigationParams);
     }
 }

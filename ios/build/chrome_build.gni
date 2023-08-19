@@ -23,7 +23,7 @@ declare_args() {
   ios_enable_credential_provider_extension = true
 
   # Enable intents extension.
-  ios_enable_intents_extension = false
+  ios_enable_intents_extension = true
 
   # Enable iOS 14, WidgetKit extension.
   ios_enable_widget_kit_extension = true
@@ -33,6 +33,9 @@ declare_args() {
 
   # Enable iOS shortcut widget in WidgetKit extension.
   ios_enable_shortcuts_widget = true
+
+  # Enable iOS search passwords widget in WidgetKit extension.
+  ios_enable_search_passwords_widget = false
 
   # Label of the target providing implementation for AccountVerificationProvider.
   # Overridden when using the Google-internal repository to build Chrome on iOS.

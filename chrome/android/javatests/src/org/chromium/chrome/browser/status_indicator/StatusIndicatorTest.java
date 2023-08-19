@@ -14,6 +14,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build.VERSION_CODES;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -24,17 +25,18 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -46,6 +48,7 @@ import org.chromium.chrome.features.start_surface.StartSurfaceTestUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.RecentTabsPageTestUtils;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
@@ -59,14 +62,20 @@ import org.chromium.ui.test.util.UiRestriction;
  */
 // clang-format off
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 // TODO(crbug.com/1035584): Enable for tablets once we support them.
 @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
 public class StatusIndicatorTest {
     // clang-format on
 
+    @ClassRule
+    public static ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
+
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
+            new BlankCTATabInitialStateRule(sActivityTestRule, true);
 
     private StatusIndicatorCoordinator mStatusIndicatorCoordinator;
     private StatusIndicatorSceneLayer mStatusIndicatorSceneLayer;
@@ -76,18 +85,12 @@ public class StatusIndicatorTest {
     @Before
     public void setUp() throws InterruptedException {
         TabbedRootUiCoordinator.setDisableStatusIndicatorAnimationsForTesting(true);
-        mActivityTestRule.startMainActivityOnBlankPage();
-        mStatusIndicatorCoordinator = ((TabbedRootUiCoordinator) mActivityTestRule.getActivity()
+        mStatusIndicatorCoordinator = ((TabbedRootUiCoordinator) sActivityTestRule.getActivity()
                                                .getRootUiCoordinatorForTesting())
                                               .getStatusIndicatorCoordinatorForTesting();
         mStatusIndicatorSceneLayer = mStatusIndicatorCoordinator.getSceneLayer();
-        mControlContainer = mActivityTestRule.getActivity().findViewById(R.id.control_container);
-        mBrowserControlsStateProvider = mActivityTestRule.getActivity().getBrowserControlsManager();
-    }
-
-    @After
-    public void tearDown() {
-        TabbedRootUiCoordinator.setDisableStatusIndicatorAnimationsForTesting(false);
+        mControlContainer = sActivityTestRule.getActivity().findViewById(R.id.control_container);
+        mBrowserControlsStateProvider = sActivityTestRule.getActivity().getBrowserControlsManager();
     }
 
     @Test
@@ -98,7 +101,7 @@ public class StatusIndicatorTest {
         Assert.assertNull("Status indicator shouldn't be in the hierarchy initially.",
                 getStatusIndicator());
         Assert.assertNotNull("Status indicator stub should be in the hierarchy initially.",
-                mActivityTestRule.getActivity().findViewById(R.id.status_indicator_stub));
+                sActivityTestRule.getActivity().findViewById(R.id.status_indicator_stub));
         Assert.assertFalse("Wrong initial composited view visibility.",
                 mStatusIndicatorSceneLayer.isSceneOverlayTreeShowing());
         Assert.assertEquals("Wrong initial control container top margin.", 0,
@@ -107,6 +110,8 @@ public class StatusIndicatorTest {
 
     @Test
     @MediumTest
+    @DisableIf.Build(message = "https://crbug.com/1473240", sdk_is_greater_than = VERSION_CODES.M,
+            sdk_is_less_than = VERSION_CODES.P)
     public void testShowAndHide() {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
@@ -153,7 +158,6 @@ public class StatusIndicatorTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1188377")
     public void testShowAfterHide() {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
@@ -210,9 +214,9 @@ public class StatusIndicatorTest {
     @DisableFeatures(ChromeFeatureList.START_SURFACE_REFACTOR)
     public void testShowAndHideOnStartSurface() {
         // clang-format on
-        TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
+        TabUiTestHelper.enterTabSwitcher(sActivityTestRule.getActivity());
 
-        StartSurfaceTestUtils.waitForTabSwitcherVisible(mActivityTestRule.getActivity());
+        StartSurfaceTestUtils.waitForTabSwitcherVisible(sActivityTestRule.getActivity());
         // R.id.status_indicator won't be in the View tree until the indicator is shown for the
         // first time and the corresponding ViewStub is inflated.
         onView(withId(R.id.status_indicator)).check(doesNotExist());
@@ -274,8 +278,8 @@ public class StatusIndicatorTest {
     @Test
     @MediumTest
     public void testShowAndHideOnNTP() {
-        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        sActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        Tab tab = sActivityTestRule.getActivity().getActivityTab();
         NewTabPageTestUtils.waitForNtpLoaded(tab);
         final int viewId = View.generateViewId();
         final View view = tab.getNativePage().getView();
@@ -337,8 +341,8 @@ public class StatusIndicatorTest {
     @Test
     @MediumTest
     public void testShowAndHideOnRecentTabsPage() {
-        mActivityTestRule.loadUrl(UrlConstants.RECENT_TABS_URL);
-        final Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        sActivityTestRule.loadUrl(UrlConstants.RECENT_TABS_URL);
+        final Tab tab = sActivityTestRule.getActivity().getActivityTab();
         RecentTabsPageTestUtils.waitForRecentTabsPageLoaded(tab);
 
         // R.id.status_indicator won't be in the View tree until the indicator is shown for the
@@ -400,7 +404,7 @@ public class StatusIndicatorTest {
     }
 
     private View getStatusIndicator() {
-        return mActivityTestRule.getActivity().findViewById(R.id.status_indicator);
+        return sActivityTestRule.getActivity().findViewById(R.id.status_indicator);
     }
 
     private static Matcher<View> withTopMargin(final int expected) {

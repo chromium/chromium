@@ -18,9 +18,10 @@ import subprocess
 import sys
 import threading
 import time
+import urllib
 
-from six.moves import BaseHTTPServer, urllib
-
+from http.server import BaseHTTPRequestHandler
+from http.server import HTTPServer
 
 SERVER_TYPES = {
     'http': '',
@@ -303,7 +304,7 @@ class TestServerThread(threading.Thread):
     self.wait_event.wait()
 
 
-class SpawningServerRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
+class SpawningServerRequestHandler(BaseHTTPRequestHandler):
   """A handler used to process http GET/POST request."""
 
   def _SendResponse(self, response_code, response_reason, additional_headers,
@@ -444,8 +445,8 @@ class SpawningServer(object):
   """The class used to start/stop a http server."""
 
   def __init__(self, test_server_spawner_port, port_forwarder, max_instances):
-    self.server = BaseHTTPServer.HTTPServer(('', test_server_spawner_port),
-                                            SpawningServerRequestHandler)
+    self.server = HTTPServer(('', test_server_spawner_port),
+                             SpawningServerRequestHandler)
     self.server_port = self.server.server_port
     _logger.info('Started test server spawner on port: %d.', self.server_port)
 

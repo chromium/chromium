@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
+class AuthenticationExtensionsClientInputs;
 class AuthenticationExtensionsDevicePublicKeyInputs;
 class AuthenticationExtensionsPRFInputs;
 class AuthenticationExtensionsPRFValues;
@@ -176,10 +177,19 @@ struct TypeConverter<blink::mojom::blink::CableAuthenticationPtr,
 };
 
 template <>
-struct TypeConverter<blink::mojom::blink::PublicKeyCredentialRequestOptionsPtr,
-                     blink::PublicKeyCredentialRequestOptions> {
+struct MODULES_EXPORT
+    TypeConverter<blink::mojom::blink::PublicKeyCredentialRequestOptionsPtr,
+                  blink::PublicKeyCredentialRequestOptions> {
   static blink::mojom::blink::PublicKeyCredentialRequestOptionsPtr Convert(
       const blink::PublicKeyCredentialRequestOptions&);
+};
+
+template <>
+struct MODULES_EXPORT
+    TypeConverter<blink::mojom::blink::AuthenticationExtensionsClientInputsPtr,
+                  blink::AuthenticationExtensionsClientInputs> {
+  static blink::mojom::blink::AuthenticationExtensionsClientInputsPtr Convert(
+      const blink::AuthenticationExtensionsClientInputs&);
 };
 
 template <>

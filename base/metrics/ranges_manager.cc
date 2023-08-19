@@ -41,7 +41,7 @@ const BucketRanges* RangesManager::RegisterOrDeleteDuplicateRanges(
   return registered;
 }
 
-std::vector<const BucketRanges*> RangesManager::GetBucketRanges() {
+std::vector<const BucketRanges*> RangesManager::GetBucketRanges() const {
   std::vector<const BucketRanges*> out;
   out.reserve(ranges_.size());
   out.assign(ranges_.begin(), ranges_.end());

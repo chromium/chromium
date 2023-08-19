@@ -25,8 +25,10 @@
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller_mock.h"
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
+#include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/device_reauth/device_authenticator.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
@@ -289,6 +291,7 @@ void ManagePasswordsUIControllerTest::SetUp() {
   test_local_form_.username_element = u"username_element";
   test_local_form_.password_value = u"12345";
   test_local_form_.password_element = u"password_element";
+  test_local_form_.match_type = PasswordForm::MatchType::kExact;
 
   test_federated_form_.url = GURL("http://example.com/login");
   test_federated_form_.signon_realm =
@@ -296,6 +299,7 @@ void ManagePasswordsUIControllerTest::SetUp() {
   test_federated_form_.username_value = u"username";
   test_federated_form_.federation_origin =
       url::Origin::Create(GURL("https://federation.test/"));
+  test_federated_form_.match_type = PasswordForm::MatchType::kExact;
 
   submitted_form_ = test_local_form_;
   submitted_form_.username_value = u"submitted_username";
@@ -882,7 +886,7 @@ TEST_F(ManagePasswordsUIControllerTest, ChooseCredentialPrefetch) {
 }
 
 TEST_F(ManagePasswordsUIControllerTest, ChooseCredentialPSL) {
-  test_local_form().is_public_suffix_match = true;
+  test_local_form().match_type = PasswordForm::MatchType::kPSL;
   std::vector<std::unique_ptr<PasswordForm>> local_credentials;
   local_credentials.emplace_back(new PasswordForm(test_local_form()));
   url::Origin origin = url::Origin::Create(GURL(kExampleUrl));
@@ -1000,7 +1004,7 @@ TEST_F(ManagePasswordsUIControllerTest, InactiveOnPSLMatched) {
   std::u16string kTestUsername = u"test_username";
   std::vector<const PasswordForm*> forms;
   PasswordForm psl_matched_test_form(test_local_form());
-  psl_matched_test_form.is_public_suffix_match = true;
+  psl_matched_test_form.match_type = PasswordForm::MatchType::kPSL;
   forms.push_back(&psl_matched_test_form);
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
   controller()->OnPasswordAutofilled(
@@ -2008,3 +2012,86 @@ TEST_F(ManagePasswordsUIControllerTest, OnBiometricAuthBeforeFillingDeclined) {
 }
 
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
+class ManagePasswordsUIControllerWithBrowserTest
+    : public BrowserWithTestWindowTest {
+ public:
+  void SetUp() override;
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  ManagePasswordsUIController* controller() {
+    return ManagePasswordsUIController::FromWebContents(web_contents());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      password_manager::features::kSharedPasswordNotificationUI};
+  TestPasswordManagerClient client_;
+};
+
+void ManagePasswordsUIControllerWithBrowserTest::SetUp() {
+  BrowserWithTestWindowTest::SetUp();
+  AddTab(browser(), GURL(kExampleUrl));
+  ManagePasswordsUIController::CreateForWebContents(web_contents());
+  controller()->set_client(&client_);
+}
+
+TEST_F(ManagePasswordsUIControllerWithBrowserTest,
+       OnAutofillingSharedPasswordNotNotifiedYet) {
+  // Simulate two candidates in the dropdown menu where one of them is shared.
+  PasswordForm non_shared_credentials;
+  non_shared_credentials.url = GURL("http://example.com/login");
+  non_shared_credentials.signon_realm = non_shared_credentials.url.spec();
+  non_shared_credentials.username_value = u"username";
+  non_shared_credentials.password_value = u"12345";
+  non_shared_credentials.match_type = PasswordForm::MatchType::kExact;
+
+  PasswordForm shared_credentials = non_shared_credentials;
+  shared_credentials.type = PasswordForm::Type::kReceivedViaSharing;
+  non_shared_credentials.username_value = u"username2";
+  shared_credentials.sharing_notification_displayed = false;
+
+  std::vector<const PasswordForm*> forms = {&shared_credentials,
+                                            &non_shared_credentials};
+  controller()->OnPasswordAutofilled(
+      forms, url::Origin::Create(forms.front()->url), nullptr);
+
+  ASSERT_EQ(2u, controller()->GetCurrentForms().size());
+  EXPECT_EQ(controller()->GetState(),
+            password_manager::ui::NOTIFY_RECEIVED_SHARED_CREDENTIALS);
+  EXPECT_TRUE(controller()->IsAutomaticallyOpeningBubble());
+  // All interactions with the bubble will close it and invoke OnBubbleHidden().
+  controller()->OnBubbleHidden();
+  // The bubble should transition to the manage state upon any interaction.
+  EXPECT_EQ(controller()->GetState(), password_manager::ui::MANAGE_STATE);
+}
+
+TEST_F(ManagePasswordsUIControllerWithBrowserTest,
+       OnAutofillingSharedPasswordNotifiedAlready) {
+  // Simulate two candidates in the dropdown menu where one of them is shared,
+  // while the user has been notified about the shared password already.
+  PasswordForm non_shared_credentials;
+  non_shared_credentials.url = GURL("http://example.com/login");
+  non_shared_credentials.signon_realm = non_shared_credentials.url.spec();
+  non_shared_credentials.username_value = u"username";
+  non_shared_credentials.password_value = u"12345";
+  non_shared_credentials.match_type = PasswordForm::MatchType::kExact;
+
+  PasswordForm shared_credentials = non_shared_credentials;
+  shared_credentials.type = PasswordForm::Type::kReceivedViaSharing;
+  non_shared_credentials.username_value = u"username2";
+  shared_credentials.sharing_notification_displayed = true;
+
+  std::vector<const PasswordForm*> forms = {&shared_credentials,
+                                            &non_shared_credentials};
+  controller()->OnPasswordAutofilled(
+      forms, url::Origin::Create(forms.front()->url), nullptr);
+
+  ASSERT_EQ(2u, controller()->GetCurrentForms().size());
+  // Shared password notification was displayed already, so the state should be
+  // MANAGE_STATE.
+  EXPECT_EQ(controller()->GetState(), password_manager::ui::MANAGE_STATE);
+  EXPECT_FALSE(controller()->IsAutomaticallyOpeningBubble());
+}

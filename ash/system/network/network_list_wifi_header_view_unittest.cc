@@ -109,7 +109,7 @@ class NetworkListWifiHeaderViewTest : public AshTestBase {
   network_config::CrosNetworkConfigTestHelper network_config_helper_;
   FakeNetworkListNetworkHeaderViewDelegate
       fake_network_list_network_header_delegate_;
-  raw_ptr<NetworkListWifiHeaderViewImpl, ExperimentalAsh>
+  raw_ptr<NetworkListWifiHeaderViewImpl, DanglingUntriaged | ExperimentalAsh>
       network_list_wifi_header_view_;
 };
 

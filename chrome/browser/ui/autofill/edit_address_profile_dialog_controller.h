@@ -10,7 +10,7 @@
 namespace autofill {
 
 // Interface that exposes controller functionality to EditAddressProfileView
-// bubble.
+// dialog.
 class EditAddressProfileDialogController {
  public:
   virtual ~EditAddressProfileDialogController() = default;

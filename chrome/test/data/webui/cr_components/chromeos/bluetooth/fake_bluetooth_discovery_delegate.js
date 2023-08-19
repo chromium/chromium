@@ -24,7 +24,6 @@ export class FakeBluetoothDiscoveryDelegate {
   }
 
   /**
-   * @override
    * @param {!Array<!BluetoothDeviceProperties>}
    *     discoveredDevices
    */
@@ -33,12 +32,10 @@ export class FakeBluetoothDiscoveryDelegate {
     this.notifyCallbacksDiscoveredDevicesListChanged_();
   }
 
-  /** @override */
   onBluetoothDiscoveryStarted() {
     // TODO(crbug.com/1010321): Implement this function.
   }
 
-  /** @override */
   onBluetoothDiscoveryStopped() {
     // TODO(crbug.com/1010321): Implement this function.
   }

@@ -44,7 +44,7 @@ class BLINK_MODULES_EXPORT AudioDeviceFactory {
   AudioDeviceFactory& operator=(const AudioDeviceFactory&) = delete;
 
   // Maps the source type to the audio latency it requires.
-  static media::AudioLatency::LatencyType GetSourceLatencyType(
+  static media::AudioLatency::Type GetSourceLatencyType(
       WebAudioDeviceSourceType source);
 
   // Creates an AudioRendererSink bound to an AudioOutputDevice.

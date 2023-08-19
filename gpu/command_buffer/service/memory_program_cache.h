@@ -20,7 +20,7 @@
 
 namespace gpu {
 
-class GpuProcessActivityFlags;
+class GpuProcessShmCount;
 
 namespace gles2 {
 
@@ -30,7 +30,7 @@ class GPU_GLES2_EXPORT MemoryProgramCache : public ProgramCache {
   MemoryProgramCache(size_t max_cache_size_bytes,
                      bool disable_gpu_shader_disk_cache,
                      bool disable_program_caching_for_transform_feedback,
-                     GpuProcessActivityFlags* activity_flags);
+                     GpuProcessShmCount* use_shader_cache_shm_count);
 
   MemoryProgramCache(const MemoryProgramCache&) = delete;
   MemoryProgramCache& operator=(const MemoryProgramCache&) = delete;
@@ -178,7 +178,7 @@ class GPU_GLES2_EXPORT MemoryProgramCache : public ProgramCache {
   const bool compress_program_binaries_;
   size_t curr_size_bytes_;
   ProgramLRUCache store_;
-  raw_ptr<GpuProcessActivityFlags> activity_flags_;
+  raw_ptr<GpuProcessShmCount> use_shader_cache_shm_count_;
 };
 
 }  // namespace gles2

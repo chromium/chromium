@@ -7,6 +7,9 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 import {getKeyModifiers} from '../../common/js/dom_utils.js';
 import {util} from '../../common/js/util.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
+import {XfTree} from '../../widgets/xf_tree.js';
+import {XfTreeItem} from '../../widgets/xf_tree_item.js';
+import {isTreeItem} from '../../widgets/xf_tree_util.js';
 
 import {DirectoryModel} from './directory_model.js';
 import {renameEntry, validateEntryName} from './file_rename.js';
@@ -19,20 +22,20 @@ import {FilesAlertDialog} from './ui/files_alert_dialog.js';
 export class DirectoryTreeNamingController {
   /**
    * @param {!DirectoryModel} directoryModel
-   * @param {!DirectoryTree} directoryTree
+   * @param {!DirectoryTree|!XfTree} directoryTree
    * @param {!FilesAlertDialog} alertDialog
    */
   constructor(directoryModel, directoryTree, alertDialog) {
     /** @private @const {!DirectoryModel} */
     this.directoryModel_ = directoryModel;
 
-    /** @private @const {!DirectoryTree} */
+    /** @private @const {!DirectoryTree|!XfTree} */
     this.directoryTree_ = directoryTree;
 
     /** @private @const {!FilesAlertDialog} */
     this.alertDialog_ = alertDialog;
 
-    /** @private {?DirectoryItem} */
+    /** @private {?(DirectoryItem|XfTreeItem)} */
     this.currentDirectoryItem_ = null;
 
     /** @private {boolean} */
@@ -83,8 +86,8 @@ export class DirectoryTreeNamingController {
 
   /**
    * Attaches naming controller to specified directory item and start rename.
-   * @param {!DirectoryItem} directoryItem An html element of a node of the
-   *     target.
+   * @param {!(DirectoryItem|XfTreeItem)} directoryItem An html element of a
+   *     node of the target.
    * @param {boolean} isRemovableRoot Indicates whether the target is a
    *     removable volume root or not.
    * @param {VolumeInfo} volumeInfo A volume information about the target entry.
@@ -102,15 +105,20 @@ export class DirectoryTreeNamingController {
     this.currentDirectoryItem_ = directoryItem;
     this.currentDirectoryItem_.setAttribute('renaming', true);
 
-    const renameInputElementPlaceholder =
-        this.currentDirectoryItem_.firstElementChild.getElementsByClassName(
-            'rename-placeholder');
+    if (isTreeItem(directoryItem)) {  // XfTreeItem instance
+      this.inputElement_.slot = 'rename';
+      this.currentDirectoryItem_.appendChild(this.inputElement_);
+    } else {  // DirectoryItem instance
+      const renameInputElementPlaceholder =
+          this.currentDirectoryItem_.firstElementChild.getElementsByClassName(
+              'rename-placeholder');
 
-    if (this.isRemovableRoot_ && renameInputElementPlaceholder.length === 1) {
-      renameInputElementPlaceholder[0].appendChild(this.inputElement_);
-    } else {
-      const label = this.getLabelElement_();
-      label.insertAdjacentElement('afterend', this.inputElement_);
+      if (this.isRemovableRoot_ && renameInputElementPlaceholder.length === 1) {
+        renameInputElementPlaceholder[0].appendChild(this.inputElement_);
+      } else {
+        const label = this.getLabelElement_();
+        label.insertAdjacentElement('afterend', this.inputElement_);
+      }
     }
 
     this.inputElement_.value = this.currentDirectoryItem_.label;
@@ -174,7 +182,11 @@ export class DirectoryTreeNamingController {
 
       // Put the new name in the .label element before detaching the
       // <input> to prevent showing the old name.
-      this.getLabelElement_().textContent = newName;
+      if (util.isFilesAppExperimental()) {
+        this.currentDirectoryItem_.label = newName;
+      } else {
+        this.getLabelElement_().textContent = newName;
+      }
 
       // We currently don't have promises/callbacks for when removableRoots are
       // successfully renamed, so we can't update their subdirectories or
@@ -183,8 +195,10 @@ export class DirectoryTreeNamingController {
         return;
       }
 
-      this.currentDirectoryItem_.entry = newEntry;
-      this.currentDirectoryItem_.updateSubDirectories(/* recursive= */ true);
+      if (!util.isFilesAppExperimental()) {
+        this.currentDirectoryItem_.entry = newEntry;
+        this.currentDirectoryItem_.updateSubDirectories(/* recursive= */ true);
+      }
       if (window.IN_TEST) {
         this.currentDirectoryItem_.setAttribute('entry-label', newName);
       }

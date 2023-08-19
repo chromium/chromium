@@ -5,7 +5,8 @@
 
 load("//lib/args.star", "args")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "os", "reclient", "sheriff_rotations", "xcode")
+load("//lib/builder_health_indicators.star", "health_spec")
+load("//lib/builders.star", "builders", "os", "reclient", "sheriff_rotations", "xcode")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
@@ -17,17 +18,18 @@ ci.defaults.set(
     os = os.LINUX_DEFAULT,
     sheriff_rotations = sheriff_rotations.CHROMIUM,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
+    health_spec = health_spec.DEFAULT,
     notifies = ["chromesec-lkgr-failures"],
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.DEFAULT,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
+    shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
 )
 
 consoles.console_view(
     name = "chromium.fuzz",
     ordering = {
         None: [
-            "afl",
             "centipede",
             "win asan",
             "mac asan",
@@ -199,19 +201,6 @@ ci.builder(
         short_name = "med",
     ),
     reclient_jobs = 250,
-)
-
-ci.builder(
-    name = "Afl Upload Linux ASan",
-    executable = "recipe:chromium/fuzz",
-    triggering_policy = scheduler.greedy_batching(
-        max_concurrent_invocations = 4,
-    ),
-    cores = 16,
-    console_view_entry = consoles.console_view_entry(
-        category = "afl",
-        short_name = "afl",
-    ),
 )
 
 ci.builder(
@@ -589,7 +578,7 @@ ci.builder(
 
 ci.builder(
     name = "Libfuzzer Upload Chrome OS ASan",
-    executable = "recipe:chromium_libfuzzer",
+    executable = "recipe:chromium/fuzz",
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 3,
     ),
@@ -603,7 +592,7 @@ ci.builder(
 
 ci.builder(
     name = "Libfuzzer Upload iOS Catalyst Debug",
-    executable = "recipe:chromium_libfuzzer",
+    executable = "recipe:chromium/fuzz",
     cores = 12,
     os = os.MAC_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -616,7 +605,7 @@ ci.builder(
 
 ci.builder(
     name = "Libfuzzer Upload Linux ASan",
-    executable = "recipe:chromium_libfuzzer",
+    executable = "recipe:chromium/fuzz",
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 5,
     ),
@@ -629,10 +618,11 @@ ci.builder(
 
 ci.builder(
     name = "Libfuzzer Upload Linux ASan Debug",
-    executable = "recipe:chromium_libfuzzer",
+    executable = "recipe:chromium/fuzz",
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 5,
     ),
+    free_space = builders.free_space.high,
     console_view_entry = consoles.console_view_entry(
         category = "libfuzz",
         short_name = "linux-dbg",
@@ -643,7 +633,7 @@ ci.builder(
 
 ci.builder(
     name = "Libfuzzer Upload Linux MSan",
-    executable = "recipe:chromium_libfuzzer",
+    executable = "recipe:chromium/fuzz",
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 5,
     ),
@@ -657,7 +647,7 @@ ci.builder(
 
 ci.builder(
     name = "Libfuzzer Upload Linux UBSan",
-    executable = "recipe:chromium_libfuzzer",
+    executable = "recipe:chromium/fuzz",
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 5,
     ),
@@ -673,7 +663,7 @@ ci.builder(
 
 ci.builder(
     name = "Libfuzzer Upload Linux V8-ARM64 ASan",
-    executable = "recipe:chromium_libfuzzer",
+    executable = "recipe:chromium/fuzz",
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 1,
     ),
@@ -685,7 +675,7 @@ ci.builder(
 
 ci.builder(
     name = "Libfuzzer Upload Linux V8-ARM64 ASan Debug",
-    executable = "recipe:chromium_libfuzzer",
+    executable = "recipe:chromium/fuzz",
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 1,
     ),
@@ -697,7 +687,7 @@ ci.builder(
 
 ci.builder(
     name = "Libfuzzer Upload Linux32 ASan",
-    executable = "recipe:chromium_libfuzzer",
+    executable = "recipe:chromium/fuzz",
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 3,
     ),
@@ -710,7 +700,7 @@ ci.builder(
 
 ci.builder(
     name = "Libfuzzer Upload Linux32 V8-ARM ASan",
-    executable = "recipe:chromium_libfuzzer",
+    executable = "recipe:chromium/fuzz",
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 1,
     ),
@@ -723,7 +713,7 @@ ci.builder(
 
 ci.builder(
     name = "Libfuzzer Upload Linux32 V8-ARM ASan Debug",
-    executable = "recipe:chromium_libfuzzer",
+    executable = "recipe:chromium/fuzz",
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 1,
     ),
@@ -735,8 +725,8 @@ ci.builder(
 
 ci.builder(
     name = "Libfuzzer Upload Mac ASan",
-    executable = "recipe:chromium_libfuzzer",
-    cores = 24,
+    executable = "recipe:chromium/fuzz",
+    cores = 12,
     os = os.MAC_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "libfuzz",
@@ -747,7 +737,7 @@ ci.builder(
 
 ci.builder(
     name = "Libfuzzer Upload Windows ASan",
-    executable = "recipe:chromium_libfuzzer",
+    executable = "recipe:chromium/fuzz",
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 3,
     ),

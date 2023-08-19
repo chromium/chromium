@@ -15,6 +15,8 @@
 #include "base/values.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/mock_signals_decorator.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/signals_decorator.h"
+#include "chrome/browser/enterprise/connectors/device_trust/signals/mock_signals_filterer.h"
+#include "chrome/browser/enterprise/connectors/device_trust/signals/signals_filterer.h"
 #include "components/device_signals/core/common/signals_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,6 +24,7 @@
 namespace enterprise_connectors {
 
 using test::MockSignalsDecorator;
+using test::MockSignalsFilterer;
 using ::testing::_;
 
 namespace {
@@ -58,7 +61,13 @@ TEST(SignalsServiceImplTest, CollectSignals_CallsAllDecorators) {
   decorators.push_back(std::move(first_decorator));
   decorators.push_back(std::move(second_decorator));
 
-  SignalsServiceImpl service(std::move(decorators));
+  std::unique_ptr<MockSignalsFilterer> signals_filterer =
+      std::make_unique<MockSignalsFilterer>();
+  EXPECT_CALL(*signals_filterer.get(), Filter(_))
+      .WillOnce([](base::Value::Dict& signals) { return; });
+
+  SignalsServiceImpl service(std::move(decorators),
+                             std::move(signals_filterer));
 
   bool callback_called = false;
   auto callback =

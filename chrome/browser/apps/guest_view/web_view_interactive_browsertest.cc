@@ -31,7 +31,6 @@
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
 #include "components/guest_view/browser/guest_view_manager_factory.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -142,9 +141,7 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
         embedder_web_contents_(nullptr),
         corner_(gfx::Point()),
         mouse_click_result_(false),
-        first_click_(true) {
-    GuestViewManager::set_factory_for_testing(&factory_);
-  }
+        first_click_(true) {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     extensions::PlatformAppBrowserTest::SetUpCommandLine(command_line);
@@ -159,18 +156,9 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
   }
 
   TestGuestViewManager* GetGuestViewManager() {
-    TestGuestViewManager* manager = static_cast<TestGuestViewManager*>(
-        TestGuestViewManager::FromBrowserContext(browser()->profile()));
-    // Test code may access the TestGuestViewManager before it would be created
-    // during creation of the first guest.
-    if (!manager) {
-      manager = static_cast<TestGuestViewManager*>(
-          GuestViewManager::CreateWithDelegate(
-              browser()->profile(),
-              ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate(
-                  browser()->profile())));
-    }
-    return manager;
+    return factory_.GetOrCreateTestGuestViewManager(
+        browser()->profile(),
+        ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate());
   }
 
   void MoveMouseInsideWindowWithListener(gfx::Point point,
@@ -512,8 +500,9 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
  protected:
   TestGuestViewManagerFactory factory_;
   // Only set if `SetupTest` or `TestHelper` are called.
-  raw_ptr<guest_view::GuestViewBase, DanglingUntriaged> guest_view_;
-  raw_ptr<content::WebContents, DanglingUntriaged> embedder_web_contents_;
+  raw_ptr<guest_view::GuestViewBase, AcrossTasksDanglingUntriaged> guest_view_;
+  raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged>
+      embedder_web_contents_;
 
   gfx::Point corner_;
   bool mouse_click_result_;

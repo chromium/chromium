@@ -104,7 +104,8 @@ class PermissionAuditingService
   // Lives on the |backend_task_runner_|, and must only be accessed on that
   // sequence. It is safe to assume the database is alive as long as |db_| is
   // non-null.
-  raw_ptr<PermissionAuditingDatabase, DanglingUntriaged> db_ = nullptr;
+  raw_ptr<PermissionAuditingDatabase, AcrossTasksDanglingUntriaged> db_ =
+      nullptr;
 
   base::RepeatingTimer timer_;
 };

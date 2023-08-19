@@ -34,6 +34,7 @@ class AnnotationsTextManagerImpl : public AnnotationsTextManager,
                            base::Value& annotations,
                            int seq_id) override;
   void RemoveDecorations() override;
+  void RemoveDecorationsWithType(const std::string& type) override;
   void RemoveHighlight() override;
 
   // JS callback methods.

@@ -109,7 +109,7 @@ class TpmManagerClientTest : public testing::Test {
   scoped_refptr<dbus::MockObjectProxy> proxy_;
 
   // Convenience pointer to the global instance.
-  raw_ptr<TpmManagerClient, ExperimentalAsh> client_;
+  raw_ptr<TpmManagerClient, DanglingUntriaged | ExperimentalAsh> client_;
 
   // The expected replies to the respective D-Bus calls.
   ::tpm_manager::GetTpmNonsensitiveStatusReply expected_status_reply_;

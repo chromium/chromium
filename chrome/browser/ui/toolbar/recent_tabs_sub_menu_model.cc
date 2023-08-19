@@ -48,6 +48,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -215,16 +216,24 @@ bool RecentTabsSubMenuModel::GetAcceleratorForCommandId(
 }
 
 void RecentTabsSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
-  UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction",
-                             menu_opened_timer_.Elapsed());
   if (command_id == IDC_SHOW_HISTORY) {
     UMA_HISTOGRAM_ENUMERATION("WrenchMenu.RecentTabsSubMenu", SHOW_MORE,
                               LIMIT_RECENT_TAB_ACTION);
-    UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.ShowHistory",
-                               menu_opened_timer_.Elapsed());
+    if (log_menu_metrics_callback_) {
+      log_menu_metrics_callback_.Run(command_id);
+    }
     LogWrenchMenuAction(MENU_ACTION_SHOW_HISTORY);
     // We show all "other devices" on the history page.
-    chrome::ExecuteCommandWithDisposition(browser_, IDC_SHOW_HISTORY,
+    chrome::ExecuteCommandWithDisposition(
+        browser_, IDC_SHOW_HISTORY, ui::DispositionFromEventFlags(event_flags));
+    return;
+  }
+  if (command_id == IDC_RECENT_TABS_LOGIN_FOR_DEVICE_TABS) {
+    if (log_menu_metrics_callback_) {
+      log_menu_metrics_callback_.Run(command_id);
+    }
+    chrome::ExecuteCommandWithDisposition(
+        browser_, IDC_RECENT_TABS_LOGIN_FOR_DEVICE_TABS,
         ui::DispositionFromEventFlags(event_flags));
     return;
   }
@@ -254,20 +263,22 @@ void RecentTabsSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
       }
     } else {  // Restore tab of session from other devices.
       sync_sessions::OpenTabsUIDelegate* open_tabs = GetOpenTabsUIDelegate();
-      if (!open_tabs)
+      if (!open_tabs) {
         return;
+      }
       const sessions::SessionTab* tab;
       if (!open_tabs->GetForeignTab(item.session_tag, item.tab_id, &tab))
         return;
-      if (tab->navigations.empty())
+      if (tab->navigations.empty()) {
         return;
+      }
       base::RecordAction(
           base::UserMetricsAction("WrenchMenu_OpenRecentTabFromDevice"));
       UMA_HISTOGRAM_ENUMERATION("WrenchMenu.RecentTabsSubMenu",
                                 OTHER_DEVICE_TAB, LIMIT_RECENT_TAB_ACTION);
       SessionRestore::RestoreForeignSessionTab(
-          browser_->tab_strip_model()->GetActiveWebContents(),
-          *tab, disposition);
+          browser_->tab_strip_model()->GetActiveWebContents(), *tab,
+          disposition);
     }
   } else if (IsWindowModelCommandId(command_id)) {
     if (service && context) {
@@ -285,18 +296,23 @@ void RecentTabsSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
     service->RestoreEntryById(context, local_group_items_.at(command_id),
                               disposition);
   } else {
-    CHECK(IsSubMenuModelCommandId(command_id));
+    CHECK(IsSubMenuModelCommandId(command_id) ||
+          IsDeviceSubMenuModelCommandId(command_id));
     return;
   }
 
-  UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.OpenRecentTab",
-                             menu_opened_timer_.Elapsed());
-  UMA_HISTOGRAM_ENUMERATION("WrenchMenu.MenuAction", MENU_ACTION_RECENT_TAB,
-                             LIMIT_MENU_ACTION);
+  if (log_menu_metrics_callback_) {
+    log_menu_metrics_callback_.Run(IDC_OPEN_RECENT_TAB);
+  }
 }
 
 int RecentTabsSubMenuModel::GetFirstRecentTabsCommandId() {
   return local_window_items_.begin()->first;
+}
+
+void RecentTabsSubMenuModel::RegisterLogMenuMetricsCallback(
+    LogMenuMetricsCallback callback) {
+  log_menu_metrics_callback_ = std::move(callback);
 }
 
 void RecentTabsSubMenuModel::Build() {
@@ -313,6 +329,10 @@ void RecentTabsSubMenuModel::Build() {
   // recently closed tabs and tabs from other devices respectively.
   // |local_window_items_| contains the local recently closed windows.
   InsertItemWithStringIdAt(0, IDC_SHOW_HISTORY, IDS_HISTORY_SHOW_HISTORY);
+  if (features::IsChromeRefresh2023()) {
+    SetCommandIcon(this, IDC_SHOW_HISTORY,
+                   vector_icons::kHistoryChromeRefreshIcon);
+  }
   InsertSeparatorAt(1, ui::NORMAL_SEPARATOR);
   BuildLocalEntries();
   BuildTabsFromOtherDevices();
@@ -331,19 +351,25 @@ void RecentTabsSubMenuModel::BuildLocalEntries() {
   if (!service || service->entries().empty()) {
     // This is to show a disabled restore tab entry with the accelerator to
     // teach users about this command.
-    InsertItemWithStringIdAt(++last_local_model_index_,
-                             kDisabledRecentlyClosedHeaderCommandId,
-                             IDS_RECENTLY_CLOSED);
+    InsertItemWithStringIdAt(
+        ++last_local_model_index_, kDisabledRecentlyClosedHeaderCommandId,
+        features::IsChromeRefresh2023() ? IDS_RECENT_TABS
+                                        : IDS_RECENTLY_CLOSED);
   } else {
     recently_closed_title_index_ = ++last_local_model_index_;
     InsertTitleWithStringIdAt(recently_closed_title_index_.value(),
-                              IDS_RECENTLY_CLOSED);
-    SetIcon(last_local_model_index_, CreateFavicon(kTabIcon));
+                              features::IsChromeRefresh2023()
+                                  ? IDS_RECENT_TABS
+                                  : IDS_RECENTLY_CLOSED);
+    if (!features::IsChromeRefresh2023()) {
+      SetIcon(last_local_model_index_, CreateFavicon(kTabIcon));
+    }
 
     int added_count = 0;
     for (const auto& entry : service->entries()) {
-      if (added_count == kMaxLocalEntries)
+      if (added_count == kMaxLocalEntries) {
         break;
+      }
       switch (entry->type) {
         case sessions::TabRestoreService::TAB: {
           auto& tab =
@@ -381,19 +407,34 @@ void RecentTabsSubMenuModel::BuildTabsFromOtherDevices() {
   // All other devices' items (device headers or tabs) use AddItem*() to append
   // a menu item, because they take always place in the end of menu.
 
+  if (features::IsChromeRefresh2023()) {
+    AddSeparator(ui::NORMAL_SEPARATOR);
+    AddTitleWithStringId(IDS_YOUR_DEVICES);
+  }
+
   sync_sessions::OpenTabsUIDelegate* open_tabs = GetOpenTabsUIDelegate();
   std::vector<const sync_sessions::SyncedSession*> sessions;
   if (!open_tabs || !open_tabs->GetAllForeignSessions(&sessions)) {
-    AddSeparator(ui::NORMAL_SEPARATOR);
-    AddItemWithStringId(IDC_RECENT_TABS_NO_DEVICE_TABS,
-                        IDS_RECENT_TABS_NO_DEVICE_TABS);
+    if (!features::IsChromeRefresh2023()) {
+      AddSeparator(ui::NORMAL_SEPARATOR);
+    }
+    if (open_tabs || !features::IsChromeRefresh2023()) {
+      AddItemWithStringId(IDC_RECENT_TABS_NO_DEVICE_TABS,
+                          IDS_RECENT_TABS_NO_DEVICE_TABS);
+    } else {
+      AddItemWithStringIdAndIcon(IDC_RECENT_TABS_LOGIN_FOR_DEVICE_TABS,
+                                 IDS_RECENT_TABS_LOGIN_FOR_DEVICE_TABS,
+                                 ui::ImageModel::FromVectorIcon(
+                                     kSyncRefreshIcon, ui::kColorMenuIcon,
+                                     ui::SimpleMenuModel::kDefaultIconSize));
+    }
     return;
   }
 
   // Sort sessions from most recent to least recent.
   std::sort(sessions.begin(), sessions.end(), SortSessionsByRecency);
 
-  const size_t kMaxSessionsToShow = 3;
+  const size_t kMaxSessionsToShow = features::IsChromeRefresh2023() ? 8 : 3;
   size_t num_sessions_added = 0;
   for (size_t i = 0;
        i < sessions.size() && num_sessions_added < kMaxSessionsToShow; ++i) {
@@ -408,17 +449,30 @@ void RecentTabsSubMenuModel::BuildTabsFromOtherDevices() {
 
     // Add the header for the device session.
     DCHECK(!session->GetSessionName().empty());
-    AddSeparator(ui::NORMAL_SEPARATOR);
-    AddTitle(base::UTF8ToUTF16(session->GetSessionName()));
-    AddDeviceFavicon(GetItemCount() - 1, session->GetDeviceFormFactor());
+    if (features::IsChromeRefresh2023()) {
+      std::unique_ptr<ui::SimpleMenuModel> device_menu_model =
+          CreateOtherDeviceSubMenu(session, tabs_in_session);
+      const int command_id = GetAndIncrementNextMenuID();
+      AddSubMenu(command_id, base::UTF8ToUTF16(session->GetSessionName()),
+                 device_menu_model.get());
+      AddDeviceFavicon(this, GetItemCount() - 1,
+                       session->GetDeviceFormFactor());
+      device_sub_menu_items_.emplace(
+          command_id, SubMenuItem(command_id, std::move(device_menu_model)));
+    } else {
+      AddSeparator(ui::NORMAL_SEPARATOR);
+      AddTitle(base::UTF8ToUTF16(session->GetSessionName()));
+      AddDeviceFavicon(this, GetItemCount() - 1,
+                       session->GetDeviceFormFactor());
 
-    // Build tab menu items from sorted session tabs.
-    const size_t kMaxTabsPerSessionToShow = 4;
-    for (size_t k = 0;
-         k < std::min(tabs_in_session.size(), kMaxTabsPerSessionToShow);
-         ++k) {
-      BuildOtherDevicesTabItem(session_tag, *tabs_in_session[k]);
-    }  // for all tabs in one session
+      // Build tab menu items from sorted session tabs.
+      const size_t kMaxTabsPerSessionToShow = 4;
+      for (size_t k = 0;
+           k < std::min(tabs_in_session.size(), kMaxTabsPerSessionToShow);
+           ++k) {
+        BuildOtherDevicesTabItem(this, session_tag, *tabs_in_session[k]);
+      }  // for all tabs in one session
+    }
     ++num_sessions_added;
   }  // for all sessions
 
@@ -498,6 +552,7 @@ void RecentTabsSubMenuModel::BuildLocalGroupItem(
 }
 
 void RecentTabsSubMenuModel::BuildOtherDevicesTabItem(
+    SimpleMenuModel* containing_model,
     const std::string& session_tag,
     const sessions::SessionTab& tab) {
   const sessions::SerializedNavigationEntry& current_navigation =
@@ -507,11 +562,23 @@ void RecentTabsSubMenuModel::BuildOtherDevicesTabItem(
   const int command_id = GetAndIncrementNextMenuID();
   // See comments in BuildTabsFromOtherDevices() about usage of AddItem*().
   // There may be no tab title, in which case, use the url as tab title.
-  AddItem(command_id,
-          current_navigation.title().empty() ?
-              base::UTF8ToUTF16(item.url.spec()) : current_navigation.title());
+  containing_model->AddItem(command_id, current_navigation.title().empty()
+                                            ? base::UTF8ToUTF16(item.url.spec())
+                                            : current_navigation.title());
   other_devices_tab_navigation_items_.emplace(command_id, item);
-  AddTabFavicon(command_id, this, item.url);
+  AddTabFavicon(command_id, containing_model, item.url);
+}
+
+std::unique_ptr<ui::SimpleMenuModel>
+RecentTabsSubMenuModel::CreateOtherDeviceSubMenu(
+    const sync_sessions::SyncedSession* session,
+    const std::vector<const sessions::SessionTab*>& tabs_in_session) {
+  auto other_device_submenu = std::make_unique<ui::SimpleMenuModel>(this);
+  const std::string& session_tag = session->GetSessionTag();
+  for (auto* tab : tabs_in_session) {
+    BuildOtherDevicesTabItem(other_device_submenu.get(), session_tag, *tab);
+  }
+  return other_device_submenu;
 }
 
 std::unique_ptr<ui::SimpleMenuModel>
@@ -524,6 +591,9 @@ RecentTabsSubMenuModel::CreateWindowSubMenuModel(
       restore_all_command_id, IDS_RESTORE_WINDOW,
       ui::ImageModel::FromVectorIcon(vector_icons::kLaunchIcon));
   local_window_items_.emplace(restore_all_command_id, window.id);
+  if (features::IsChromeRefresh2023()) {
+    window_model->AddSeparator(ui::NORMAL_SEPARATOR);
+  }
 
   absl::optional<tab_groups::TabGroupId> last_group;
   tab_groups::TabGroupVisualData current_group_visual_data;
@@ -648,6 +718,7 @@ int RecentTabsSubMenuModel::GetParentCommandId(int command_id) const {
 }
 
 void RecentTabsSubMenuModel::AddDeviceFavicon(
+    SimpleMenuModel* containing_model,
     size_t index_in_menu,
     syncer::DeviceInfo::FormFactor device_form_factor) {
   const gfx::VectorIcon* favicon = nullptr;
@@ -665,7 +736,7 @@ void RecentTabsSubMenuModel::AddDeviceFavicon(
       break;
   }
 
-  SetIcon(index_in_menu, CreateFavicon(*favicon));
+  containing_model->SetIcon(index_in_menu, CreateFavicon(*favicon));
 }
 
 void RecentTabsSubMenuModel::AddTabFavicon(int command_id,
@@ -685,8 +756,9 @@ void RecentTabsSubMenuModel::AddTabFavicon(int command_id,
         FaviconServiceFactory::GetForProfile(
             browser_->profile(), ServiceAccessType::EXPLICIT_ACCESS);
     // Can be null for tests.
-    if (!favicon_service)
+    if (!favicon_service) {
       return;
+    }
     favicon_service->GetFaviconImageForPageURL(
         url,
         base::BindOnce(&RecentTabsSubMenuModel::OnFaviconDataAvailable,
@@ -698,8 +770,9 @@ void RecentTabsSubMenuModel::AddTabFavicon(int command_id,
             HistoryUiFaviconRequestHandlerFactory::GetForBrowserContext(
                 browser_->profile());
     // Can be null for tests.
-    if (!history_ui_favicon_request_handler)
+    if (!history_ui_favicon_request_handler) {
       return;
+    }
     history_ui_favicon_request_handler->GetFaviconImageForPageURL(
         url,
         base::BindOnce(&RecentTabsSubMenuModel::OnFaviconDataAvailable,
@@ -724,8 +797,9 @@ void RecentTabsSubMenuModel::OnFaviconDataAvailable(
   menu_model->SetIcon(index_in_menu.value(),
                       ui::ImageModel::FromImage(image_result.image));
   ui::MenuModelDelegate* delegate = menu_model_delegate();
-  if (delegate)
+  if (delegate) {
     delegate->OnIconChanged(command_id);
+  }
   return;
 }
 
@@ -782,8 +856,9 @@ void RecentTabsSubMenuModel::TabRestoreServiceChanged(
   BuildLocalEntries();
 
   ui::MenuModelDelegate* delegate = menu_model_delegate();
-  if (delegate)
+  if (delegate) {
     delegate->OnMenuStructureChanged();
+  }
 }
 
 void RecentTabsSubMenuModel::TabRestoreServiceDestroyed(
@@ -797,8 +872,9 @@ void RecentTabsSubMenuModel::OnForeignSessionUpdated() {
   BuildTabsFromOtherDevices();
 
   ui::MenuModelDelegate* delegate = menu_model_delegate();
-  if (delegate)
+  if (delegate) {
     delegate->OnMenuStructureChanged();
+  }
 }
 
 int RecentTabsSubMenuModel::GetAndIncrementNextMenuID() {
@@ -831,4 +907,9 @@ bool RecentTabsSubMenuModel::IsGroupModelCommandId(int command_id) const {
 
 bool RecentTabsSubMenuModel::IsSubMenuModelCommandId(int command_id) const {
   return local_sub_menu_items_.count(command_id) > 0;
+}
+
+bool RecentTabsSubMenuModel::IsDeviceSubMenuModelCommandId(
+    int command_id) const {
+  return device_sub_menu_items_.count(command_id) > 0;
 }

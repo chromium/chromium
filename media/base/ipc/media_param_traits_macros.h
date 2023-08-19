@@ -56,8 +56,8 @@ IPC_ENUM_TRAITS_MAX_VALUE(media::AudioCodec, media::AudioCodec::kMaxValue)
 IPC_ENUM_TRAITS_MAX_VALUE(media::AudioCodecProfile,
                           media::AudioCodecProfile::kMaxValue)
 
-IPC_ENUM_TRAITS_MAX_VALUE(media::AudioLatency::LatencyType,
-                          media::AudioLatency::LATENCY_COUNT)
+IPC_ENUM_TRAITS_MAX_VALUE(media::AudioLatency::Type,
+                          media::AudioLatency::Type::kMaxValue)
 
 IPC_ENUM_TRAITS_MAX_VALUE(media::AudioParameters::Format,
                           media::AudioParameters::AUDIO_FORMAT_LAST)
@@ -100,7 +100,7 @@ IPC_ENUM_TRAITS_MAX_VALUE(media::EncryptionScheme,
 IPC_ENUM_TRAITS_MAX_VALUE(media::HdcpVersion,
                           media::HdcpVersion::kMaxValue)
 
-IPC_ENUM_TRAITS_MAX_VALUE(media::MediaContentType, media::MediaContentType::Max)
+IPC_ENUM_TRAITS_MAX_VALUE(media::MediaContentType, media::MediaContentType::kMax)
 
 IPC_ENUM_TRAITS_MAX_VALUE(media::MediaLogRecord::Type,
                           media::MediaLogRecord::Type::kMaxValue)

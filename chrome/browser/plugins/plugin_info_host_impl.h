@@ -76,7 +76,7 @@ class PluginInfoHostImpl : public chrome::mojom::PluginInfoHost {
     raw_ptr<extensions::ExtensionRegistry, DanglingUntriaged>
         extension_registry_;
 #endif
-    raw_ptr<const HostContentSettingsMap, DanglingUntriaged>
+    raw_ptr<const HostContentSettingsMap, AcrossTasksDanglingUntriaged>
         host_content_settings_map_;
     scoped_refptr<PluginPrefs> plugin_prefs_;
   };

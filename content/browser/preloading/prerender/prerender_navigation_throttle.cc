@@ -178,7 +178,20 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
       // cross-site to the initial prerendering URL.
       if (prerender_navigation_utils::IsCrossSite(
               navigation_url, initial_prerendering_origin)) {
-        CHECK(is_redirection);
+        // TODO(crbug.com/1456866): Remove this crash key when investigation is
+        // completed.
+        if (!is_redirection) {
+          SCOPED_CRASH_KEY_BOOL("Bug1456866", "scheme",
+                                navigation_origin.scheme() !=
+                                    initial_prerendering_origin.scheme());
+          SCOPED_CRASH_KEY_BOOL(
+              "Bug1456866", "host",
+              navigation_origin.host() != initial_prerendering_origin.host());
+          SCOPED_CRASH_KEY_BOOL(
+              "Bug1456866", "port",
+              navigation_origin.port() != initial_prerendering_origin.port());
+          NOTREACHED_NORETURN();
+        }
         AnalyzeCrossOriginRedirection(
             navigation_origin, initial_prerendering_origin,
             prerender_host_->trigger_type(),

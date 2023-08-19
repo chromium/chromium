@@ -74,14 +74,14 @@ class ASH_EXPORT DisplayAlignmentIndicator {
 
   // View and Widget for showing the blue indicator highlights on the edge of
   // the display.
-  raw_ptr<IndicatorHighlightView, ExperimentalAsh> indicator_view_ =
-      nullptr;  // NOT OWNED
+  raw_ptr<IndicatorHighlightView, DanglingUntriaged | ExperimentalAsh>
+      indicator_view_ = nullptr;  // NOT OWNED
   views::Widget indicator_widget_;
 
   // View and Widget for showing a pill with name of the neighboring display and
   // an arrow pointing towards it. May not be initialized if ctor without
   // |target_name| is used (for preview indicator).
-  raw_ptr<IndicatorPillView, ExperimentalAsh> pill_view_ =
+  raw_ptr<IndicatorPillView, DanglingUntriaged | ExperimentalAsh> pill_view_ =
       nullptr;  // NOT OWNED
   std::unique_ptr<views::Widget> pill_widget_;
 };

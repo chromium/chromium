@@ -6,7 +6,9 @@
 #define CONTENT_BROWSER_MEDIA_SESSION_MEDIA_SESSION_CONTROLLER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "content/browser/media/media_devices_util.h"
 #include "content/browser/media/session/media_session_player_observer.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/media_player_id.h"
@@ -61,7 +63,6 @@ class CONTENT_EXPORT MediaSessionController
   void OnSeekTo(int player_id, base::TimeDelta seek_time) override;
   void OnSetVolumeMultiplier(int player_id, double volume_multiplier) override;
   void OnEnterPictureInPicture(int player_id) override;
-  void OnExitPictureInPicture(int player_id) override;
   void OnSetAudioSinkId(int player_id,
                         const std::string& raw_device_id) override;
   void OnSetMute(int player_id, bool mute) override;
@@ -112,6 +113,8 @@ class CONTENT_EXPORT MediaSessionController
   // accordingly.
   bool AddOrRemovePlayer();
 
+  void OnHashedSinkIdReceived(const std::string& hashed_sink_id);
+
   const MediaPlayerId id_;
 
   // Outlives |this|.
@@ -136,7 +139,9 @@ class CONTENT_EXPORT MediaSessionController
       media::AudioDeviceDescription::kDefaultDeviceId;
   bool supports_audio_output_device_switching_ = true;
   media::MediaContentType media_content_type_ =
-      media::MediaContentType::Persistent;
+      media::MediaContentType::kPersistent;
+
+  base::WeakPtrFactory<MediaSessionController> weak_factory_{this};
 };
 
 }  // namespace content

@@ -48,8 +48,11 @@ async function main(args) {
   }
   let decoder_config = null;
 
-  let support = await AudioEncoder.isConfigSupported(config);
-  if (!support.supported) {
+  let supported = false;
+  try {
+    supported = (await AudioEncoder.isConfigSupported(config)).supported;
+  } catch (e) {}
+  if (!supported) {
     TEST.skip('Unsupported codec: ' + args.codec);
     return;
   }

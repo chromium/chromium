@@ -25,20 +25,12 @@
 #include "ui/views/controls/textfield/textfield.h"
 
 namespace ash {
-namespace {
-
-constexpr int kIconDipSize = 24;
-
-}  // namespace
 
 using AssistantDialogPlateTest = AssistantAshTestBase;
 
 TEST_F(AssistantDialogPlateTest, DarkAndLightTheme) {
   auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
-  dark_light_mode_controller->OnActiveUserPrefServiceChanged(
-      Shell::Get()->session_controller()->GetActivePrefService());
-  const bool initial_dark_mode_status =
-      dark_light_mode_controller->IsDarkModeEnabled();
+  dark_light_mode_controller->SetDarkModeEnabledForTest(false);
 
   ShowAssistantUi();
 
@@ -51,31 +43,22 @@ TEST_F(AssistantDialogPlateTest, DarkAndLightTheme) {
           AssistantViewID::kKeyboardInputToggle));
 
   const SkBitmap light_keyboard_toggle =
-      *gfx::CreateVectorIcon(vector_icons::kKeyboardIcon, kIconDipSize,
-                             gfx::kGoogleGrey900)
-           .bitmap();
-  const SkBitmap dark_keyboard_toggle =
-      *gfx::CreateVectorIcon(vector_icons::kKeyboardIcon, kIconDipSize,
-                             gfx::kGoogleGrey200)
-           .bitmap();
+      *keyboard_input_toggle->GetImage(views::Button::STATE_NORMAL).bitmap();
+
   auto* color_provider = assistant_dialog_plate->GetColorProvider();
   EXPECT_EQ(assistant_text_field->GetTextColor(),
             color_provider->GetColor(kColorAshTextColorPrimary));
 
-  EXPECT_TRUE(gfx::test::AreBitmapsEqual(
-      initial_dark_mode_status ? dark_keyboard_toggle : light_keyboard_toggle,
-      *keyboard_input_toggle->GetImage(views::Button::STATE_NORMAL).bitmap()));
-
-  // Switch the color mode.
+  // Switch to dark mode. The color that the AssistantButton uses depends on
+  // light/dark mode. Confirm that the dark and light bitmaps are different.
   dark_light_mode_controller->ToggleColorMode();
   color_provider = assistant_dialog_plate->GetColorProvider();
-  ASSERT_NE(initial_dark_mode_status,
-            dark_light_mode_controller->IsDarkModeEnabled());
+  ASSERT_TRUE(dark_light_mode_controller->IsDarkModeEnabled());
 
   EXPECT_EQ(assistant_text_field->GetTextColor(),
             color_provider->GetColor(kColorAshTextColorPrimary));
-  EXPECT_TRUE(gfx::test::AreBitmapsEqual(
-      !initial_dark_mode_status ? dark_keyboard_toggle : light_keyboard_toggle,
+  EXPECT_FALSE(gfx::test::AreBitmapsEqual(
+      light_keyboard_toggle,
       *keyboard_input_toggle->GetImage(views::Button::STATE_NORMAL).bitmap()));
 }
 

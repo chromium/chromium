@@ -4,21 +4,26 @@
 
 #import "ios/web/public/test/web_state_test_util.h"
 
-#import "base/logging.h"
+#import "base/check.h"
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/web/navigation/crw_wk_navigation_states.h"
 #import "ios/web/public/navigation/navigation_manager.h"
+#import "ios/web/public/session/crw_session_storage.h"
+#import "ios/web/public/session/proto/metadata.pb.h"
+#import "ios/web/public/session/proto/navigation.pb.h"
+#import "ios/web/public/session/proto/proto_util.h"
+#import "ios/web/public/session/proto/storage.pb.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/web_state/ui/crw_web_controller.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
 #import "ios/web/web_state/web_state_impl.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+// To get access to UseSessionSerializationOptimizations().
+// TODO(crbug.com/1383087): remove once the feature is fully launched.
+#import "ios/web/common/features.h"
 
 using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForJSCompletionTimeout;
@@ -145,6 +150,77 @@ bool LoadHtmlWithoutSubresources(NSString* html, web::WebState* web_state) {
   web::test::LoadHtml(html, web_state);
   [configuration.userContentController removeContentRuleList:content_rule_list];
   return true;
+}
+
+std::unique_ptr<WebState> CreateUnrealizedWebStateWithItems(
+    BrowserState* browser_state,
+    size_t last_committed_item_index,
+    const std::vector<PageInfo>& items) {
+  DCHECK_LT(last_committed_item_index, items.size());
+  DCHECK_LT(last_committed_item_index, static_cast<size_t>(INT_MAX));
+
+  // Create the protobuf storage representing a session with a single
+  // navigation. This takes care of creating data and metadata as the
+  // optimised session serialization format needs both to be in sync.
+  proto::WebStateStorage storage;
+
+  // Use a block to limit the scope of the objects used to create the
+  // protobuf message representation.
+  {
+    storage.set_user_agent(UserAgentTypeToProto(UserAgentType::MOBILE));
+
+    proto::NavigationStorage* navigation_storage = storage.mutable_navigation();
+    for (const PageInfo& info : items) {
+      proto::NavigationItemStorage* item_storage =
+          navigation_storage->add_items();
+      item_storage->set_virtual_url(info.url.spec());
+      item_storage->set_user_agent(storage.user_agent());
+      item_storage->set_title(info.title);
+    }
+    navigation_storage->set_last_committed_item_index(
+        static_cast<int>(last_committed_item_index));
+
+    proto::WebStateMetadataStorage* metadata_storage =
+        storage.mutable_metadata();
+    metadata_storage->set_navigation_item_count(
+        navigation_storage->items_size());
+
+    const PageInfo& active_info = items[last_committed_item_index];
+    proto::PageMetadataStorage* page_storage =
+        metadata_storage->mutable_active_page();
+    page_storage->set_page_url(active_info.url.spec());
+    page_storage->set_page_title(active_info.title);
+  }
+
+  // If the optimised session serialisation is not enabled, convert the
+  // protobuf message representation to the legacy Objective-C format.
+  // TODO(crbug.com/1383087): remove when the feature has launched.
+  if (!features::UseSessionSerializationOptimizations()) {
+    CRWSessionStorage* session_storage =
+        [[CRWSessionStorage alloc] initWithProto:storage];
+    session_storage.stableIdentifier = [[NSUUID UUID] UUIDString];
+    session_storage.uniqueIdentifier = SessionID::NewUnique();
+
+    std::unique_ptr<WebState> web_state = WebState::CreateWithStorageSession(
+        WebState::CreateParams(browser_state), session_storage);
+    DCHECK(!web_state->IsRealized());
+    return web_state;
+  }
+
+  proto::WebStateMetadataStorage metadata;
+  metadata.Swap(storage.mutable_metadata());
+
+  std::unique_ptr<WebState> web_state = WebState::CreateWithStorage(
+      browser_state, SessionID::NewUnique(), std::move(metadata),
+      base::BindOnce(
+          [](proto::WebStateStorage storage,
+             proto::WebStateStorage& out_storage) {
+            out_storage = std::move(storage);
+          },
+          std::move(storage)),
+      base::BindOnce([]() -> NSData* { return nil; }));
+  DCHECK(!web_state->IsRealized());
+  return web_state;
 }
 
 }  // namespace test

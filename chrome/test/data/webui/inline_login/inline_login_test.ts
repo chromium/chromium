@@ -15,19 +15,7 @@ import {isChildVisible} from 'chrome://webui-test/test_util.js';
 
 import {fakeAuthExtensionData, getFakeAccountsList, TestAuthenticator, TestInlineLoginBrowserProxy} from './inline_login_test_util.js';
 
-const inline_login_test = {
-  suiteName: 'InlineLoginTest',
-  TestNames: {
-    Initialize: 'Initialize',
-    WebUICallbacks: 'WebUICallbacks',
-    AuthExtHostCallbacks: 'AuthExtHostCallbacks',
-    BackButton: 'BackButton',
-    OkButton: 'OkButton',
-  },
-};
-Object.assign(window, {inline_login_test});
-
-suite(inline_login_test.suiteName, () => {
+suite('InlineLoginTest', () => {
   let inlineLoginComponent: InlineLoginAppElement;
   let testBrowserProxy: TestInlineLoginBrowserProxy;
   let testAuthenticator: TestAuthenticator;
@@ -60,7 +48,7 @@ suite(inline_login_test.suiteName, () => {
     flush();
   });
 
-  test(inline_login_test.TestNames.Initialize, () => {
+  test('Initialize', () => {
     webUIListenerCallback('load-auth-extension', fakeAuthExtensionData);
     // 'Add account' screen should be shown.
     assertTrue(isVisible(`#${View.ADD_ACCOUNT}`));
@@ -77,7 +65,7 @@ suite(inline_login_test.suiteName, () => {
     assertEquals(1, testBrowserProxy.getCallCount('initialize'));
   });
 
-  test(inline_login_test.TestNames.WebUICallbacks, () => {
+  test('WebUICallbacks', () => {
     webUIListenerCallback('load-auth-extension', fakeAuthExtensionData);
     assertEquals(1, testAuthenticator.loadCalls);
     assertEquals(fakeAuthExtensionData, testAuthenticator.data);
@@ -94,7 +82,7 @@ suite(inline_login_test.suiteName, () => {
     });
   });
 
-  test(inline_login_test.TestNames.AuthExtHostCallbacks, async () => {
+  test('AuthExtHostCallbacks', async () => {
     const fakeUrl = 'www.google.com/fake';
 
     assertTrue(inlineLoginComponent.$.spinner.active);
@@ -139,7 +127,7 @@ suite(inline_login_test.suiteName, () => {
   });
 
   // <if expr="not chromeos_ash">
-  test(inline_login_test.TestNames.BackButton, () => {
+  test('BackButton', () => {
     const backButton =
         inlineLoginComponent.shadowRoot!.querySelector('.back-button');
     // Back button should only exist on ChromeOS.
@@ -149,7 +137,7 @@ suite(inline_login_test.suiteName, () => {
 
 
   // <if expr="chromeos_ash">
-  test(inline_login_test.TestNames.BackButton, () => {
+  test('BackButton', () => {
     const backButton =
         inlineLoginComponent.shadowRoot!.querySelector<HTMLElement>(
             '.back-button');
@@ -173,7 +161,7 @@ suite(inline_login_test.suiteName, () => {
     assertEquals(1, backInWebviewCalls);
   });
 
-  test(inline_login_test.TestNames.OkButton, () => {
+  test('OkButton', () => {
     // 'OK' button should be hidden.
     assertTrue(inlineLoginComponent.shadowRoot!
                    .querySelector<HTMLElement>('.next-button')!.hidden);

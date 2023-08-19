@@ -16,7 +16,6 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUPS_FOR_TABLETS;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.content.Context;
@@ -78,7 +77,6 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@Features.EnableFeatures({TAB_GROUPS_FOR_TABLETS})
 @Batch(Batch.PER_CLASS)
 public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
     private static final int TAB_COUNT = 3;
@@ -95,7 +93,7 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
     public RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(Component.UI_BROWSER_MOBILE_TAB_SWITCHER_GRID)
-                    .setRevision(4)
+                    .setRevision(5)
                     .setDescription("New selection icons")
                     .build();
 
@@ -478,7 +476,7 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             NumberRollView numberRoll =
                     (NumberRollView) mToolbar.getActionViewLayout().getChildAt(0);
-            numberRoll.setStringForZero(R.string.close_all_tabs_dialog_message);
+            numberRoll.setStringForZero(R.string.close_all_tabs_dialog_message_incognito);
             actions.add(new FakeTabSelectionEditorAction(getActivity(),
                     R.id.tab_selection_editor_close_menu_item, ShowMode.MENU_ONLY, ButtonType.TEXT,
                     IconPosition.START, R.plurals.tab_selection_editor_close_tabs,

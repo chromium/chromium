@@ -35,6 +35,10 @@ class WebContentsCollection::ForwardingWebContentsObserver
     observer_->DidFinishNavigation(web_contents(), navigation_handle);
   }
 
+  void DidStartLoading() override {
+    observer_->DidStartLoading(web_contents());
+  }
+
   // The observer that callbacks should forward to, annotating the
   // web contents they were fired in.
   raw_ptr<WebContentsCollection::Observer> observer_;

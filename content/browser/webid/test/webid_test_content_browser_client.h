@@ -29,7 +29,7 @@ class WebIdTestContentBrowserClient
       const WebIdTestContentBrowserClient&) = delete;
 
   std::unique_ptr<IdentityRequestDialogController>
-  CreateIdentityRequestDialogController() override;
+  CreateIdentityRequestDialogController(WebContents* web_contents) override;
 
   std::unique_ptr<MDocProvider> CreateMDocProvider() override;
 
@@ -40,9 +40,10 @@ class WebIdTestContentBrowserClient
 
   void SetMDocProvider(std::unique_ptr<MDocProvider> provider);
 
-  void SetIdentityRegistry(WebContents* web_contents,
-                           FederatedIdentityModalDialogViewDelegate* delegate,
-                           const url::Origin& url);
+  void SetIdentityRegistry(
+      WebContents* web_contents,
+      base::WeakPtr<FederatedIdentityModalDialogViewDelegate> delegate,
+      const url::Origin& url);
 
   IdentityRequestDialogController*
   GetIdentityRequestDialogControllerForTests() {

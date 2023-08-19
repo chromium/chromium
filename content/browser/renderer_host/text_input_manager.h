@@ -58,9 +58,15 @@ class CONTENT_EXPORT TextInputManager {
         TextInputManager* text_input_manager,
         RenderWidgetHostViewBase* updated_view) {}
     // Called when |updated_view| has changed its CompositionRangeInfo.
+    // |character_bounds_changed| marks whether the current
+    // CompositionRangeInfo::character_bounds should be updated.
+    // |line_bounds| (used by Android) is an optional list of line rectangles.
+    // If it has no value, no update is required.
     virtual void OnImeCompositionRangeChanged(
         TextInputManager* text_input_manager,
-        RenderWidgetHostViewBase* updated_view) {}
+        RenderWidgetHostViewBase* updated_view,
+        bool character_bounds_changed,
+        const absl::optional<std::vector<gfx::Rect>>& line_bounds) {}
     // Called when the text selection for the |updated_view_| has changed.
     virtual void OnTextSelectionChanged(
         TextInputManager* text_input_manager,
@@ -222,7 +228,8 @@ class CONTENT_EXPORT TextInputManager {
   void ImeCompositionRangeChanged(
       RenderWidgetHostViewBase* view,
       const gfx::Range& range,
-      const std::vector<gfx::Rect>& character_bounds);
+      const absl::optional<std::vector<gfx::Rect>>& character_bounds,
+      const absl::optional<std::vector<gfx::Rect>>& line_bounds);
 
   // Updates the new text selection information for the |view|.
   void SelectionChanged(RenderWidgetHostViewBase* view,

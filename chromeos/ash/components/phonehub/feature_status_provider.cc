@@ -23,4 +23,11 @@ void FeatureStatusProvider::NotifyStatusChanged() {
     observer.OnFeatureStatusChanged();
 }
 
+void FeatureStatusProvider::NotifyEligibleDevicesFound(
+    const multidevice::RemoteDeviceRefList devices) {
+  for (auto& observer : observer_list_) {
+    observer.OnEligiblePhoneHubHostFound(devices);
+  }
+}
+
 }  // namespace ash::phonehub

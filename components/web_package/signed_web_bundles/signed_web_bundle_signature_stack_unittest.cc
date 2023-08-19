@@ -7,6 +7,7 @@
 #include <array>
 
 #include "base/containers/span.h"
+#include "base/test/gmock_expected_support.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/signed_web_bundles/ed25519_signature.h"
@@ -44,16 +45,16 @@ TEST(SignedWebBundleSignatureStack,
      CreateFromEmptyVectorOfSignedWebBundleSignatureStackEntry) {
   std::vector<SignedWebBundleSignatureStackEntry> entries;
   auto result = SignedWebBundleSignatureStack::Create(entries);
-  ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), "The signature stack needs at least one entry.");
+  EXPECT_THAT(result, base::test::ErrorIs(
+                          "The signature stack needs at least one entry."));
 }
 
 TEST(SignedWebBundleSignatureStack,
      CreateFromEmptyVectorOfBundleIntegrityBlockSignatureStackEntryPtr) {
   std::vector<mojom::BundleIntegrityBlockSignatureStackEntryPtr> entries;
   auto result = SignedWebBundleSignatureStack::Create(std::move(entries));
-  ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), "The signature stack needs at least one entry.");
+  EXPECT_THAT(result, base::test::ErrorIs(
+                          "The signature stack needs at least one entry."));
 }
 
 TEST(SignedWebBundleSignatureStack,
@@ -64,11 +65,11 @@ TEST(SignedWebBundleSignatureStack,
       Ed25519Signature::Create(base::make_span(kTestSignature1)));
 
   std::vector<SignedWebBundleSignatureStackEntry> entries = {entry};
-  auto result = SignedWebBundleSignatureStack::Create(entries);
-  ASSERT_TRUE(result.has_value()) << result.error();
-  EXPECT_EQ(result->size(), 1ul);
-  EXPECT_EQ(result->entries()[0], entry);
-  EXPECT_EQ(result->derived_web_bundle_id(),
+  ASSERT_OK_AND_ASSIGN(auto result,
+                       SignedWebBundleSignatureStack::Create(entries));
+  EXPECT_EQ(result.size(), 1u);
+  EXPECT_EQ(result.entries()[0], entry);
+  EXPECT_EQ(result.derived_web_bundle_id(),
             SignedWebBundleId::Create(kEd25519SignedWebBundleId1));
 }
 
@@ -84,11 +85,11 @@ TEST(SignedWebBundleSignatureStack,
       Ed25519Signature::Create(base::make_span(kTestSignature2)));
 
   std::vector<SignedWebBundleSignatureStackEntry> entries = {entry1, entry2};
-  auto result = SignedWebBundleSignatureStack::Create(entries);
-  ASSERT_TRUE(result.has_value()) << result.error();
-  EXPECT_EQ(result->size(), 2ul);
-  EXPECT_EQ(result->entries()[0], entry1);
-  EXPECT_EQ(result->entries()[1], entry2);
+  ASSERT_OK_AND_ASSIGN(auto result,
+                       SignedWebBundleSignatureStack::Create(entries));
+  EXPECT_EQ(result.size(), 2u);
+  EXPECT_EQ(result.entries()[0], entry1);
+  EXPECT_EQ(result.entries()[1], entry2);
 }
 
 TEST(SignedWebBundleSignatureStack,
@@ -102,14 +103,14 @@ TEST(SignedWebBundleSignatureStack,
 
   std::vector<mojom::BundleIntegrityBlockSignatureStackEntryPtr> entries;
   entries.push_back(entry->Clone());
-  auto result = SignedWebBundleSignatureStack::Create(std::move(entries));
-  ASSERT_TRUE(result.has_value()) << result.error();
-  EXPECT_EQ(result->size(), 1ul);
-  EXPECT_EQ(result->entries()[0].complete_entry_cbor(),
+  ASSERT_OK_AND_ASSIGN(
+      auto result, SignedWebBundleSignatureStack::Create(std::move(entries)));
+  EXPECT_EQ(result.size(), 1u);
+  EXPECT_EQ(result.entries()[0].complete_entry_cbor(),
             entry->complete_entry_cbor);
-  EXPECT_EQ(result->entries()[0].attributes_cbor(), entry->attributes_cbor);
-  EXPECT_EQ(result->entries()[0].public_key(), entry->public_key);
-  EXPECT_EQ(result->entries()[0].signature(), entry->signature);
+  EXPECT_EQ(result.entries()[0].attributes_cbor(), entry->attributes_cbor);
+  EXPECT_EQ(result.entries()[0].public_key(), entry->public_key);
+  EXPECT_EQ(result.entries()[0].signature(), entry->signature);
 }
 
 TEST(SignedWebBundleSignatureStack, Comparators) {

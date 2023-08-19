@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_breaker.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_info.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/text_auto_space.h"
 #include "third_party/blink/renderer/core/layout/ng/legacy_layout_tree_walking.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_inline_list_item.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_item.h"
@@ -114,9 +115,9 @@ class ReusingTextShaper final {
     ShapeCacheEntry* entry = nullptr;
     if (allow_shape_cache_) {
       DCHECK(RuntimeEnabledFeatures::LayoutNGShapeCacheEnabled());
-      NGShapeCache* cache = font.GetNGShapeCache();
+      NGShapeCache& cache = font.GetNGShapeCache();
       const TextDirection direction = start_item.Direction();
-      entry = cache->Add(shaper_.GetText(), direction);
+      entry = cache.Add(shaper_.GetText(), direction);
       if (entry && *entry) {
         return *entry;
       }
@@ -484,8 +485,9 @@ NGInlineNode::NGInlineNode(LayoutBlockFlow* block)
     : NGLayoutInputNode(block, kInline) {
   DCHECK(block);
   DCHECK(block->IsLayoutNGObject());
-  if (!block->HasNGInlineNodeData())
+  if (!block->GetNGInlineNodeData()) {
     block->ResetNGInlineNodeData();
+  }
 }
 
 bool NGInlineNode::IsPrepareLayoutFinished() const {
@@ -526,6 +528,12 @@ void NGInlineNode::PrepareLayout(NGInlineNodeData* previous_data) const {
   SegmentText(data);
   ShapeTextIncludingFirstLine(
       data, previous_data ? &previous_data->text_content : nullptr, nullptr);
+
+  // TODO(https://crbug.com/1463890): Update the likelihood condition.
+  if (UNLIKELY(RuntimeEnabledFeatures::CSSTextAutoSpaceEnabled())) {
+    TextAutoSpace::ApplyIfNeeded(*data);
+  }
+
   AssociateItemsWithInlines(data);
   DCHECK_EQ(data, MutableData());
 
@@ -1236,6 +1244,40 @@ void NGInlineNode::SegmentBidiRuns(NGInlineNodeData* data) const {
 #endif
 }
 
+bool NGInlineNode::IsNGShapeCacheAllowed(
+    const String& text_content,
+    const Font* override_font,
+    const HeapVector<NGInlineItem>& items,
+    ShapeResultSpacing<String>& spacing) const {
+  if (!RuntimeEnabledFeatures::LayoutNGShapeCacheEnabled()) {
+    return false;
+  }
+  // For consistency with similar usages of ShapeCache (e.g. canvas) and in
+  // order to avoid caching bugs (e.g. with scripts having Arabic joining)
+  // NGShapeCache is only enabled when the IFC is made of a single text item. To
+  // be efficient, NGShapeCache only stores entries for short strings and
+  // without memory copy, so don't allow it if the text item is too long or if
+  // the start/end offsets match a substring. Don't allow it either if a call to
+  // ApplySpacing is needed to avoid a costly copy of the ShapeResult in the
+  // loop below. Finally, check that the font meet requirements on the font
+  // family list to avoid expensive hash key calculations.
+  if (items.size() != 1) {
+    return false;
+  }
+  if (text_content.length() > NGShapeCache::MaxTextLengthOfEntries()) {
+    return false;
+  }
+  const NGInlineItem& single_item = items[0];
+  if (!(single_item.Type() == NGInlineItem::kText &&
+        single_item.StartOffset() == 0 &&
+        single_item.EndOffset() == text_content.length())) {
+    return false;
+  }
+  const Font& font =
+      override_font ? *override_font : single_item.FontWithSvgScaling();
+  return !spacing.SetSpacing(font.GetFontDescription());
+}
+
 void NGInlineNode::ShapeText(NGInlineItemsData* data,
                              const String* previous_text,
                              const HeapVector<NGInlineItem>* previous_items,
@@ -1246,30 +1288,8 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
 
   ShapeResultSpacing<String> spacing(text_content, IsSvgText());
 
-  // For consistency with similar usages of ShapeCache (e.g. canvas) and in
-  // order to avoid caching bugs (e.g. with scripts having Arabic joining)
-  // NGShapeCache is only enabled when the IFC is made of a single text item. To
-  // be efficient, NGShapeCache only stores entries for short strings and
-  // without memory copy, so don't allow it if the text item is too long or if
-  // the start/end offsets match a substring. Don't allow it either if a call to
-  // ApplySpacing is needed to avoid a costly copy of the ShapeResult in the
-  // loop below.
-  auto ShapeCacheAllowedFor = [&override_font, &spacing,
-                               &text_content](const NGInlineItem& single_item) {
-    if (!(single_item.Type() == NGInlineItem::kText &&
-          single_item.StartOffset() == 0 &&
-          single_item.EndOffset() == text_content.length())) {
-      return false;
-    }
-    const Font& font =
-        override_font ? *override_font : single_item.FontWithSvgScaling();
-    return !spacing.SetSpacing(font.GetFontDescription());
-  };
-
   const bool allow_shape_cache =
-      RuntimeEnabledFeatures::LayoutNGShapeCacheEnabled() &&
-      text_content.length() <= NGShapeCache::MaxTextLengthOfEntries() &&
-      items->size() == 1 && ShapeCacheAllowedFor((*items)[0]);
+      IsNGShapeCacheAllowed(text_content, override_font, *items, spacing);
 
   // Provide full context of the entire node to the shaper.
   ReusingTextShaper shaper(data, previous_items, allow_shape_cache);
@@ -1632,12 +1652,12 @@ static LayoutUnit ComputeContentSize(
       mode == NGLineBreakerMode::kMaxContent ? LayoutUnit::Max() : LayoutUnit();
 
   NGExclusionSpace empty_exclusion_space;
-  NGPositionedFloatVector empty_leading_floats;
+  NGLeadingFloats empty_leading_floats;
   NGLineLayoutOpportunity line_opportunity(available_inline_size);
   LayoutUnit result;
   NGLineBreaker line_breaker(
       node, mode, space, line_opportunity, empty_leading_floats,
-      /* handled_leading_floats_index */ 0u, /* break_token */ nullptr,
+      /* break_token */ nullptr,
       /* column_spanner_path */ nullptr, &empty_exclusion_space);
   line_breaker.SetIntrinsicSizeOutputs(max_size_cache,
                                        depends_on_block_constraints_out);

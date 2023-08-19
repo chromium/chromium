@@ -34,6 +34,7 @@ class WebSocketSBHandshakeThrottle : public blink::WebSocketHandshakeThrottle,
   ~WebSocketSBHandshakeThrottle() override;
 
   void ThrottleHandshake(const blink::WebURL& url,
+                         const blink::WebSecurityOrigin& creator_origin,
                          blink::WebSocketHandshakeThrottle::OnCompletion
                              completion_callback) override;
 
@@ -47,17 +48,12 @@ class WebSocketSBHandshakeThrottle : public blink::WebSocketHandshakeThrottle,
   };
 
   // mojom::UrlCheckNotifier implementation.
-  void OnCompleteCheck(bool proceed,
-                       bool showed_interstitial,
-                       bool did_perform_url_real_time_check,
-                       bool did_check_url_real_time_allowlist) override;
+  void OnCompleteCheck(bool proceed, bool showed_interstitial) override;
 
   void OnCheckResult(
       mojo::PendingReceiver<mojom::UrlCheckNotifier> slow_check_notifier,
       bool proceed,
-      bool showed_interstitial,
-      bool did_perform_url_real_time_check,
-      bool did_check_url_real_time_allowlist);
+      bool showed_interstitial);
   void OnMojoDisconnect();
 
   const int render_frame_id_;

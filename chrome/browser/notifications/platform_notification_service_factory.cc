@@ -24,7 +24,8 @@ PlatformNotificationServiceFactory::GetForProfile(Profile* profile) {
 // static
 PlatformNotificationServiceFactory*
 PlatformNotificationServiceFactory::GetInstance() {
-  return base::Singleton<PlatformNotificationServiceFactory>::get();
+  static base::NoDestructor<PlatformNotificationServiceFactory> instance;
+  return instance.get();
 }
 
 PlatformNotificationServiceFactory::PlatformNotificationServiceFactory()

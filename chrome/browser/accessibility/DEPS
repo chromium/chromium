@@ -5,3 +5,9 @@ include_rules = [
   "+testing/gmock",
   "+testing/gtest",
 ]
+
+specific_include_rules = {
+  'accessibility_extension_api_chromeos.cc': [
+    "+services/accessibility/public/mojom/assistive_technology_type.mojom.h",
+  ]
+}

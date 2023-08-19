@@ -9,13 +9,10 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.view.View;
 
-import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
-import org.chromium.base.ThreadUtils;
-import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.feed.ScrollListener.ScrollState;
+import org.chromium.chrome.browser.xsurface.LoggingParameters;
+import org.chromium.chrome.browser.xsurface.PersistentKeyValueCache;
 import org.chromium.chrome.browser.xsurface.SurfaceHeaderOffsetObserver;
-import org.chromium.chrome.browser.xsurface.SurfaceScopeDependencyProvider;
 
 /**
  * Provides activity, darkmode and logging context for a single surface.
@@ -23,11 +20,12 @@ import org.chromium.chrome.browser.xsurface.SurfaceScopeDependencyProvider;
 public class FeedSurfaceScopeDependencyProviderImpl
         implements org.chromium.chrome.browser.xsurface.feed.FeedSurfaceScopeDependencyProvider,
                    ScrollListener {
-    private static final String TAG = "Feed";
     private final Activity mActivity;
     private final Context mActivityContext;
     private final boolean mDarkMode;
     private final ObserverList<SurfaceHeaderOffsetObserver> mObserverList = new ObserverList<>();
+    private final FeedPersistentKeyValueCache mPersistentKeyValueCache =
+            new FeedPersistentKeyValueCache();
 
     public FeedSurfaceScopeDependencyProviderImpl(
             Activity activity, Context activityContext, boolean darkMode) {
@@ -49,65 +47,6 @@ public class FeedSurfaceScopeDependencyProviderImpl
     @Override
     public boolean isDarkModeEnabled() {
         return mDarkMode;
-    }
-
-    @Deprecated
-    @Override
-    public SurfaceScopeDependencyProvider.AutoplayPreference getAutoplayPreference() {
-        assert ThreadUtils.runningOnUiThread();
-        @VideoPreviewsType
-        int videoPreviewsType = FeedServiceBridge.getVideoPreviewsTypePreference();
-        switch (videoPreviewsType) {
-            case VideoPreviewsType.NEVER:
-                return SurfaceScopeDependencyProvider.AutoplayPreference.AUTOPLAY_DISABLED;
-            case VideoPreviewsType.WIFI_AND_MOBILE_DATA:
-                return SurfaceScopeDependencyProvider.AutoplayPreference
-                        .AUTOPLAY_ON_WIFI_AND_MOBILE_DATA;
-            case VideoPreviewsType.WIFI:
-            default:
-                return SurfaceScopeDependencyProvider.AutoplayPreference.AUTOPLAY_ON_WIFI_ONLY;
-        }
-    }
-
-    @Override
-    public AutoplayPreference getAutoplayPreference2() {
-        assert ThreadUtils.runningOnUiThread();
-        @VideoPreviewsType
-        int videoPreviewsType = FeedServiceBridge.getVideoPreviewsTypePreference();
-        switch (videoPreviewsType) {
-            case VideoPreviewsType.NEVER:
-                return AutoplayPreference.AUTOPLAY_DISABLED;
-            case VideoPreviewsType.WIFI_AND_MOBILE_DATA:
-                return AutoplayPreference.AUTOPLAY_ON_WIFI_AND_MOBILE_DATA;
-            case VideoPreviewsType.WIFI:
-            default:
-                return AutoplayPreference.AUTOPLAY_ON_WIFI_ONLY;
-        }
-    }
-
-    @Override
-    public void reportVideoPlayEvent(boolean isMutedAutoplay, @VideoPlayEvent int event) {
-        Log.i(TAG, "Feed video event %d", event);
-        RecordHistogram.recordEnumeratedHistogram(
-                getVideoHistogramName(isMutedAutoplay, "PlayEvent"), event,
-                VideoPlayEvent.NUM_ENTRIES);
-    }
-
-    @Override
-    public void reportVideoInitializationError(
-            boolean isMutedAutoplay, @VideoInitializationError int error) {
-        Log.i(TAG, "Feed video initialization error %d", error);
-        RecordHistogram.recordEnumeratedHistogram(
-                getVideoHistogramName(isMutedAutoplay, "InitializationError"), error,
-                VideoInitializationError.NUM_ENTRIES);
-    }
-
-    @Override
-    public void reportVideoPlayError(boolean isMutedAutoplay, @VideoPlayError int error) {
-        Log.i(TAG, "Feed video play error %d", error);
-        RecordHistogram.recordEnumeratedHistogram(
-                getVideoHistogramName(isMutedAutoplay, "PlayError"), error,
-                VideoPlayError.NUM_ENTRIES);
     }
 
     @Override
@@ -144,10 +83,14 @@ public class FeedSurfaceScopeDependencyProviderImpl
         mObserverList.removeObserver(observer);
     }
 
-    private static String getVideoHistogramName(boolean isMutedAutoplay, String partName) {
-        String name = "ContentSuggestions.Feed.";
-        name += (isMutedAutoplay ? "AutoplayMutedVideo." : "NormalUnmutedVideo.");
-        name += partName;
-        return name;
+    @Override
+    public void processViewAction(byte[] data, LoggingParameters loggingParameters) {
+        FeedProcessScopeDependencyProviderJni.get().processViewAction(
+                data, FeedLoggingParameters.convertToProto(loggingParameters).toByteArray());
+    }
+
+    @Override
+    public PersistentKeyValueCache getPersistentKeyValueCache() {
+        return mPersistentKeyValueCache;
     }
 }

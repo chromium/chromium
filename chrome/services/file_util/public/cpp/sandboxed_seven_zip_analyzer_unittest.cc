@@ -170,7 +170,7 @@ TEST_F(SandboxedSevenZipAnalyzerTest, NestedArchive) {
   safe_browsing::ArchiveAnalyzerResults results;
   RunAnalyzer(dir_test_data_.Append(FILE_PATH_LITERAL("inner_archive.7z")),
               &results);
-  ASSERT_TRUE(results.success);
+  EXPECT_FALSE(results.success);
   EXPECT_FALSE(results.has_executable);
   EXPECT_TRUE(results.has_archive);
   EXPECT_EQ(1, results.file_count);

@@ -11,14 +11,12 @@
 #include <set>
 #include <vector>
 
-#include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
 using proto::SegmentId;
@@ -64,44 +62,16 @@ class DefaultModelManager {
       SegmentInfoDatabase* segment_database,
       MultipleSegmentInfoCallback callback);
 
-  // Called to get the segment info from the default model for a given set of
-  // segment IDs.
-  virtual void GetAllSegmentInfoFromDefaultModel(
-      const base::flat_set<SegmentId>& segment_ids,
-      MultipleSegmentInfoCallback callback);
-
   // Returns the default provider or `nulllptr` when unavailable.
-  ModelProvider* GetDefaultProvider(SegmentId segment_id);
+  DefaultModelProvider* GetDefaultProvider(SegmentId segment_id);
 
   void SetDefaultProvidersForTesting(
-      std::map<SegmentId, std::unique_ptr<ModelProvider>>&& providers);
+      std::map<SegmentId, std::unique_ptr<DefaultModelProvider>>&& providers);
 
  private:
-  void GetNextSegmentInfoFromDefaultModel(
-      std::unique_ptr<SegmentInfoList> result,
-      std::deque<SegmentId> remaining_segment_ids,
-      MultipleSegmentInfoCallback callback);
-
-  void OnFetchDefaultModel(std::unique_ptr<SegmentInfoList> result,
-                           std::deque<SegmentId> remaining_segment_ids,
-                           MultipleSegmentInfoCallback callback,
-                           SegmentId segment_id,
-                           proto::SegmentationModelMetadata metadata,
-                           int64_t model_version);
-
-  void OnGetAllSegmentInfoFromDatabase(
-      const base::flat_set<SegmentId>& segment_ids,
-      MultipleSegmentInfoCallback callback,
-      std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> segment_infos);
-
-  void OnGetAllSegmentInfoFromDefaultModel(
-      MultipleSegmentInfoCallback callback,
-      std::unique_ptr<SegmentInfoDatabase::SegmentInfoList>
-          segment_infos_from_db,
-      SegmentInfoList segment_infos_from_default_model);
-
   // Default model providers.
-  std::map<SegmentId, std::unique_ptr<ModelProvider>> default_model_providers_;
+  std::map<SegmentId, std::unique_ptr<DefaultModelProvider>>
+      default_model_providers_;
   const raw_ptr<ModelProviderFactory, DanglingUntriaged>
       model_provider_factory_;
 

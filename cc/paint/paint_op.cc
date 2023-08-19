@@ -29,8 +29,9 @@
 #include "third_party/skia/include/core/SkRegion.h"
 #include "third_party/skia/include/core/SkSerialProcs.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
+#include "third_party/skia/include/core/SkTiledImageUtils.h"
 #include "third_party/skia/include/docs/SkPDFDocument.h"
-#include "third_party/skia/include/private/chromium/GrSlug.h"
+#include "third_party/skia/include/private/chromium/Slug.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 namespace cc {
@@ -99,11 +100,12 @@ void DrawImageRect(SkCanvas* canvas,
     m.setRectToRect(src, dst, SkMatrix::ScaleToFit::kFill_ScaleToFit);
     canvas->save();
     canvas->concat(m);
-    canvas->drawImage(image, 0, 0, options, paint);
+    SkTiledImageUtils::DrawImage(canvas, image, 0, 0, options, paint);
     canvas->restore();
     return;
   }
-  canvas->drawImageRect(image, src, dst, options, paint, constraint);
+  SkTiledImageUtils::DrawImageRect(canvas, image, src, dst, options, paint,
+                                   constraint);
 }
 
 #define TYPES(M)      \
@@ -633,11 +635,12 @@ void DrawSkottieOp::Serialize(PaintOpWriter& writer,
       });
 }
 
-void DrawSlugOp::SerializeSlugs(const sk_sp<GrSlug>& slug,
-                                const std::vector<sk_sp<GrSlug>>& extra_slugs,
-                                PaintOpWriter& writer,
-                                const PaintFlags* flags_to_serialize,
-                                const SkM44& current_ctm) {
+void DrawSlugOp::SerializeSlugs(
+    const sk_sp<sktext::gpu::Slug>& slug,
+    const std::vector<sk_sp<sktext::gpu::Slug>>& extra_slugs,
+    PaintOpWriter& writer,
+    const PaintFlags* flags_to_serialize,
+    const SkM44& current_ctm) {
   writer.Write(*flags_to_serialize, current_ctm);
   unsigned int count = extra_slugs.size() + 1;
   writer.Write(count);
@@ -1130,7 +1133,8 @@ void DrawImageOp::RasterWithFlags(const DrawImageOp* op,
     if (!sk_image)
       sk_image = op->image.GetSwSkImage();
 
-    canvas->drawImage(sk_image.get(), op->left, op->top, op->sampling, &paint);
+    SkTiledImageUtils::DrawImage(canvas, sk_image.get(), op->left, op->top,
+                                 op->sampling, &paint);
     return;
   }
 
@@ -1157,10 +1161,11 @@ void DrawImageOp::RasterWithFlags(const DrawImageOp* op,
     canvas->scale(1.f / scale_adjustment.width(),
                   1.f / scale_adjustment.height());
   }
-  canvas->drawImage(decoded_image.image().get(), op->left, op->top,
-                    PaintFlags::FilterQualityToSkSamplingOptions(
-                        decoded_image.filter_quality()),
-                    &paint);
+  SkTiledImageUtils::DrawImage(canvas, decoded_image.image().get(), op->left,
+                               op->top,
+                               PaintFlags::FilterQualityToSkSamplingOptions(
+                                   decoded_image.filter_quality()),
+                               &paint);
 }
 
 void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
@@ -1389,7 +1394,7 @@ void DrawTextBlobOp::RasterWithFlags(const DrawTextBlobOp* op,
     DCHECK(op->blob);
     c->drawTextBlob(op->blob.get(), op->x, op->y, p);
     if (params.is_analyzing) {
-      auto s = GrSlug::ConvertBlob(c, *op->blob, {op->x, op->y}, p);
+      auto s = sktext::gpu::Slug::ConvertBlob(c, *op->blob, {op->x, op->y}, p);
       if (i == 0) {
         op->slug = std::move(s);
       } else {
@@ -2130,7 +2135,7 @@ DrawTextBlobOp::~DrawTextBlobOp() = default;
 
 DrawSlugOp::DrawSlugOp() : PaintOpWithFlags(kType) {}
 
-DrawSlugOp::DrawSlugOp(sk_sp<GrSlug> slug, const PaintFlags& flags)
+DrawSlugOp::DrawSlugOp(sk_sp<sktext::gpu::Slug> slug, const PaintFlags& flags)
     : PaintOpWithFlags(kType, flags), slug(std::move(slug)) {}
 
 DrawSlugOp::~DrawSlugOp() = default;

@@ -71,20 +71,22 @@ _RE_NON_LANGUAGE_PAK = re.compile(r'^assets/.*(resources|percent)\.pak$')
 _READELF_SIZES_METRICS = {
     'text': ['.text'],
     'data': ['.data', '.rodata', '.data.rel.ro', '.data.rel.ro.local'],
-    'relocations': ['.rel.dyn', '.rel.plt', '.rela.dyn', '.rela.plt'],
+    'relocations':
+    ['.rel.dyn', '.rel.plt', '.rela.dyn', '.rela.plt', '.relr.dyn'],
     'unwind': [
         '.ARM.extab', '.ARM.exidx', '.eh_frame', '.eh_frame_hdr',
         '.ARM.exidxsentinel_section_after_text'
     ],
     'symbols': [
-        '.dynsym', '.dynstr', '.dynamic', '.shstrtab', '.got', '.plt',
+        '.dynsym', '.dynstr', '.dynamic', '.shstrtab', '.got', '.plt', '.iplt',
         '.got.plt', '.hash', '.gnu.hash'
     ],
     'other': [
         '.init_array', '.preinit_array', '.ctors', '.fini_array', '.comment',
         '.note.gnu.gold-version', '.note.crashpad.info', '.note.android.ident',
         '.ARM.attributes', '.note.gnu.build-id', '.gnu.version',
-        '.gnu.version_d', '.gnu.version_r', '.interp', '.gcc_except_table'
+        '.gnu.version_d', '.gnu.version_r', '.interp', '.gcc_except_table',
+        '.note.gnu.property'
     ]
 }
 
@@ -459,7 +461,8 @@ def _AnalyzeInternal(apk_path,
     elif filename.endswith('.arsc'):
       arsc.AddZipInfo(member)
     elif filename.startswith('META-INF') or filename in (
-        'AndroidManifest.xml', 'assets/webapk_dex_version.txt'):
+        'AndroidManifest.xml', 'assets/webapk_dex_version.txt',
+        'stamp-cert-sha256'):
       metadata.AddZipInfo(member)
     elif filename.endswith('.notice'):
       notices.AddZipInfo(member)
@@ -543,6 +546,9 @@ def _AnalyzeInternal(apk_path,
   main_lib_info = native_code.FindLargest()
   native_code_unaligned_size = 0
   for lib_info in native_code.AllEntries():
+    # Skip placeholders.
+    if lib_info.file_size == 0:
+      continue
     section_sizes = _ExtractLibSectionSizesFromApk(apk_path, lib_info.filename)
     native_code_unaligned_size += sum(v for k, v in section_sizes.items()
                                       if k != 'bss')

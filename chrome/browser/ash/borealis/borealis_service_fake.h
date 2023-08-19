@@ -55,15 +55,18 @@ class BorealisServiceFake : public BorealisService {
   raw_ptr<BorealisAppLauncher, ExperimentalAsh> app_launcher_ = nullptr;
   raw_ptr<BorealisAppUninstaller, ExperimentalAsh> app_uninstaller_ = nullptr;
   raw_ptr<BorealisContextManager, ExperimentalAsh> context_manager_ = nullptr;
-  raw_ptr<BorealisDiskManagerDispatcher, ExperimentalAsh>
+  raw_ptr<BorealisDiskManagerDispatcher, DanglingUntriaged | ExperimentalAsh>
       borealis_disk_manager_dispatcher_ = nullptr;
-  raw_ptr<BorealisFeatures, ExperimentalAsh> features_ = nullptr;
+  raw_ptr<BorealisFeatures, DanglingUntriaged | ExperimentalAsh> features_ =
+      nullptr;
   raw_ptr<BorealisInstaller, ExperimentalAsh> installer_ = nullptr;
   raw_ptr<BorealisInstallUrlHandler, ExperimentalAsh> install_url_handler_ =
       nullptr;
   raw_ptr<BorealisLaunchOptions, ExperimentalAsh> launch_options_ = nullptr;
-  raw_ptr<BorealisShutdownMonitor, ExperimentalAsh> shutdown_monitor_ = nullptr;
-  raw_ptr<BorealisWindowManager, ExperimentalAsh> window_manager_ = nullptr;
+  raw_ptr<BorealisShutdownMonitor, DanglingUntriaged | ExperimentalAsh>
+      shutdown_monitor_ = nullptr;
+  raw_ptr<BorealisWindowManager, DanglingUntriaged | ExperimentalAsh>
+      window_manager_ = nullptr;
   raw_ptr<BorealisSurveyHandler, ExperimentalAsh> survey_handler_ = nullptr;
 };
 

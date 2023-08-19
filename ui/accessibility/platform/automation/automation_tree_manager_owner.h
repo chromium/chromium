@@ -7,6 +7,11 @@
 
 #include <vector>
 #include "base/component_export.h"
+#include "build/build_config.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "services/accessibility/public/mojom/automation.mojom.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_event.h"
 #include "ui/accessibility/ax_event_generator.h"
@@ -24,10 +29,11 @@ class AutomationV8Bindings;
 // Virtual class that owns one or more AutomationAXTreeWrappers.
 // TODO(crbug.com/1357889): Merge some of this interface with
 // AXTreeManager if possible.
-class COMPONENT_EXPORT(AX_PLATFORM) AutomationTreeManagerOwner {
+class COMPONENT_EXPORT(AX_PLATFORM) AutomationTreeManagerOwner
+    : public ax::mojom::Automation {
  public:
   AutomationTreeManagerOwner();
-  virtual ~AutomationTreeManagerOwner();
+  ~AutomationTreeManagerOwner() override;
 
   virtual AutomationV8Bindings* GetAutomationV8Bindings() const = 0;
   virtual void NotifyTreeEventListenersChanged() = 0;
@@ -183,6 +189,30 @@ class COMPONENT_EXPORT(AX_PLATFORM) AutomationTreeManagerOwner {
   bool HasTreesWithEventListeners() const;
 
   void MaybeSendOnAllAutomationEventListenersRemoved();
+
+  // ax::mojom::Automation:
+  void DispatchTreeDestroyedEvent(const ui::AXTreeID& tree_id) override;
+  void DispatchAccessibilityEvents(
+      const ui::AXTreeID& tree_id,
+      const std::vector<ui::AXTreeUpdate>& updates,
+      const gfx::Point& mouse_location,
+      const std::vector<ui::AXEvent>& events) override;
+  void DispatchAccessibilityLocationChange(
+      const ui::AXTreeID& tree_id,
+      int32_t node_id,
+      const ui::AXRelativeBounds& bounds) override;
+  void DispatchActionResult(const ui::AXActionData& data, bool result) override;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void DispatchGetTextLocationResult(
+      const ui::AXActionData& data,
+      const absl::optional<gfx::Rect>& rect) override;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Mojo receiver to the Automation interface, implemented by this class.
+  // Listed as a protected member so that derived classes can reset its status
+  // depending on their use cases.
+  mojo::AssociatedReceiver<ax::mojom::Automation> receiver_;
 
  private:
   // Gets the root(s) of a node's child tree. Multiple roots can occur when the

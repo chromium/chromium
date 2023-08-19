@@ -33,6 +33,9 @@ class UninstallDialog;
 
 namespace apps {
 
+using OnUninstallForTestingCallback = base::OnceCallback<void(bool)>;
+using OnDialogCreatedCallback = base::OnceCallback<void(views::Widget*)>;
+
 // Currently, app uninstallation on Chrome OS invokes a specific dialog per app
 // type, Chrome Apps / PWAs, ARC apps and Crostini. There are 3 separate views
 // for app uninstalling, which are subtly different from each other.
@@ -60,18 +63,19 @@ class UninstallDialog {
     UiBase& operator=(const UiBase&) = delete;
     virtual ~UiBase() = default;
 
-    static views::Widget* Create(Profile* profile,
-                                 apps::AppType app_type,
-                                 const std::string& app_id,
-                                 const std::string& app_name,
-                                 gfx::ImageSkia image,
-                                 gfx::NativeWindow parent_window,
-                                 UninstallDialog* uninstall_dialog);
+    static void Create(Profile* profile,
+                       apps::AppType app_type,
+                       const std::string& app_id,
+                       const std::string& app_name,
+                       gfx::ImageSkia image,
+                       gfx::NativeWindow parent_window,
+                       OnDialogCreatedCallback callback,
+                       UninstallDialog* uninstall_dialog);
 
     UninstallDialog* uninstall_dialog() const { return uninstall_dialog_; }
 
    private:
-    raw_ptr<UninstallDialog, DanglingUntriaged> uninstall_dialog_;
+    raw_ptr<UninstallDialog, AcrossTasksDanglingUntriaged> uninstall_dialog_;
   };
 
   // Called when the dialog closes after the user has made a decision about
@@ -84,8 +88,6 @@ class UninstallDialog {
                               bool clear_site_data,
                               bool report_rebuse,
                               UninstallDialog* uninstall_dialog)>;
-
-  using OnUninstallForTestingCallback = base::OnceCallback<void(bool)>;
 
   UninstallDialog(Profile* profile,
                   apps::AppType app_type,
@@ -119,6 +121,8 @@ class UninstallDialog {
   // Callback invoked when the icon is loaded.
   void OnLoadIcon(IconValuePtr icon_value);
 
+  void OnUninstallDialogCreated(views::Widget* widget);
+
   const raw_ptr<Profile> profile_;
   const apps::AppType app_type_;
   const std::string app_id_;
@@ -128,7 +132,7 @@ class UninstallDialog {
 
   OnUninstallForTestingCallback uninstall_dialog_created_callback_;
 
-  raw_ptr<views::Widget, DanglingUntriaged> widget_ = nullptr;
+  raw_ptr<views::Widget, AcrossTasksDanglingUntriaged> widget_ = nullptr;
 
   // Tracks whether |parent_window_| got destroyed.
   std::unique_ptr<views::NativeWindowTracker> parent_window_tracker_;

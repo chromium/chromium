@@ -16,13 +16,13 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/base/sync_prefs.h"
 #include "components/sync/engine/configure_reason.h"
 #include "components/sync/engine/events/protocol_event_observer.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
@@ -34,6 +34,7 @@
 #include "components/sync/service/data_type_manager_observer.h"
 #include "components/sync/service/data_type_status_table.h"
 #include "components/sync/service/sync_client.h"
+#include "components/sync/service/sync_prefs.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_crypto.h"
 #include "components/sync/service/sync_stopped_reporter.h"
@@ -42,6 +43,10 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_ANDROID)
+class SyncServiceAndroidBridge;
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace network {
 class NetworkConnectionTracker;
@@ -100,6 +105,9 @@ class SyncServiceImpl : public SyncService,
   void Initialize();
 
   // SyncService implementation
+#if BUILDFLAG(IS_ANDROID)
+  base::android::ScopedJavaLocalRef<jobject> GetJavaObject() override;
+#endif  // BUILDFLAG(IS_ANDROID)
   void SetSyncFeatureRequested() override;
   SyncUserSettings* GetUserSettings() override;
   const SyncUserSettings* GetUserSettings() const override;
@@ -126,15 +134,6 @@ class SyncServiceImpl : public SyncService,
   void TriggerRefresh(const ModelTypeSet& types) override;
   void DataTypePreconditionChanged(ModelType type) override;
   void SetInvalidationsForSessionsEnabled(bool enabled) override;
-  void AddTrustedVaultDecryptionKeysFromWeb(
-      const std::string& gaia_id,
-      const std::vector<std::vector<uint8_t>>& keys,
-      int last_key_version) override;
-  void AddTrustedVaultRecoveryMethodFromWeb(
-      const std::string& gaia_id,
-      const std::vector<uint8_t>& public_key,
-      int method_type_hint,
-      base::OnceClosure callback) override;
   void AddObserver(SyncServiceObserver* observer) override;
   void RemoveObserver(SyncServiceObserver* observer) override;
   bool HasObserver(const SyncServiceObserver* observer) const override;
@@ -154,6 +153,8 @@ class SyncServiceImpl : public SyncService,
   void GetAllNodesForDebugging(
       base::OnceCallback<void(base::Value::List)> callback) override;
   ModelTypeDownloadStatus GetDownloadStatusFor(ModelType type) const override;
+  void GetTypesWithUnsyncedData(
+      base::OnceCallback<void(ModelTypeSet)> callback) const override;
 
   // SyncEngineHost implementation.
   void OnEngineInitialized(bool success,
@@ -175,8 +176,10 @@ class SyncServiceImpl : public SyncService,
   void CryptoStateChanged() override;
   void CryptoRequiredUserActionChanged() override;
   void ReconfigureDataTypesDueToCrypto() override;
+  void SetPassphraseType(PassphraseType passphrase_type) override;
+  absl::optional<PassphraseType> GetPassphraseType() const override;
   void SetEncryptionBootstrapToken(const std::string& bootstrap_token) override;
-  std::string GetEncryptionBootstrapToken() override;
+  std::string GetEncryptionBootstrapToken() const override;
 
   // IdentityManager::Observer implementation.
   void OnAccountsInCookieUpdated(
@@ -197,11 +200,15 @@ class SyncServiceImpl : public SyncService,
   void OnSyncManagedPrefChange(bool is_sync_managed) override;
   void OnFirstSetupCompletePrefChange(
       bool is_initial_sync_feature_setup_complete) override;
-  void OnPreferredDataTypesPrefChange() override;
+  void OnPreferredDataTypesPrefChange(
+      bool payments_integration_enabled_changed) override;
 
   // KeyedService implementation.  This must be called exactly
   // once (before this object is destroyed).
   void Shutdown() override;
+
+  // Records the reason if the `type` is waiting for updates to be downloaded.
+  void RecordReasonIfWaitingForUpdates(ModelType type);
 
   // Returns whether or not the underlying sync engine has made any
   // local changes to items that have not yet been synced with the
@@ -264,7 +271,7 @@ class SyncServiceImpl : public SyncService,
   // Records UMA histograms related to download status during browser startup.
   class DownloadStatusRecorder : public SyncServiceObserver {
    public:
-    DownloadStatusRecorder(SyncService* sync_service,
+    DownloadStatusRecorder(SyncServiceImpl* sync_service,
                            base::OnceClosure on_finished_callback,
                            ModelTypeSet data_types_to_track);
     DownloadStatusRecorder(const DownloadStatusRecorder&) = delete;
@@ -278,7 +285,7 @@ class SyncServiceImpl : public SyncService,
    private:
     void OnTimeout();
 
-    raw_ptr<SyncService> sync_service_ = nullptr;
+    raw_ptr<SyncServiceImpl> sync_service_ = nullptr;
 
     // Set on browser startup to report metrics related to sync configuration.
     base::OneShotTimer startup_metrics_timer_;
@@ -319,11 +326,6 @@ class SyncServiceImpl : public SyncService,
   // Returns the ModelTypes allowed in transport-only mode (i.e. those that are
   // not tied to sync-the-feature).
   ModelTypeSet GetModelTypesForTransportOnlyMode() const;
-
-  // If in transport-only mode, returns only preferred data types which are
-  // allowed in transport-only mode. Otherwise, returns all preferred data
-  // types.
-  ModelTypeSet GetDataTypesToConfigure() const;
 
   void UpdateDataTypesForInvalidations();
 
@@ -387,6 +389,13 @@ class SyncServiceImpl : public SyncService,
   // Clean up download status recorder.
   void OnDownloadStatusRecorderFinished();
 
+  // Returns current download status for `type`. Records a histogram if the data
+  // type is waiting for updates and `record_waiting_for_updates_metrics` is set
+  // to true.
+  ModelTypeDownloadStatus GetDownloadStatusForImpl(
+      ModelType type,
+      bool record_waiting_for_updates_metrics) const;
+
   // This profile's SyncClient, which abstracts away non-Sync dependencies and
   // the Sync API component factory.
   const std::unique_ptr<SyncClient> sync_client_;
@@ -432,7 +441,7 @@ class SyncServiceImpl : public SyncService,
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // The global NetworkConnectionTracker instance.
-  raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_;
+  const raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_;
 
   // Indicates if this is the first time sync is being configured.
   // This is set to true if last synced time is not set at the time of
@@ -511,6 +520,15 @@ class SyncServiceImpl : public SyncService,
 
   // Used to track download status changes during browser startup.
   std::unique_ptr<DownloadStatusRecorder> download_status_recorder_;
+
+  base::ScopedObservation<SyncPrefs, SyncPrefObserver> sync_prefs_observation_{
+      this};
+
+#if BUILDFLAG(IS_ANDROID)
+  // Manage and fetch the java object that wraps this SyncService on
+  // android.
+  std::unique_ptr<SyncServiceAndroidBridge> sync_service_android_;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // This weak factory invalidates its issued pointers when Sync is disabled.
   base::WeakPtrFactory<SyncServiceImpl> sync_enabled_weak_factory_{this};

@@ -11,6 +11,7 @@ android_library("java") {
 
   deps = [
     ":java_resources",
+    "//base:base_java",
     "//chrome/browser/contextmenu:java",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -34,6 +35,7 @@ android_library("delegate_java") {
   deps = [
     ":java_resources",
     ":util_java",
+    "//base:base_java",
     "//chrome/browser/contextmenu:java",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//third_party/androidx:androidx_annotation_annotation_java",

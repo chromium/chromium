@@ -9,13 +9,14 @@
 </head>
 <body>
 
-<h2>Links</h2>
+<h2 id="h-links">Links</h2>
 <ul>
 <li><a href="chrome://drive-internals/">chrome://drive-internals/</a>
 <li><a href="debug.json">debug.json</a>
+<li><a href="downloads_fsurls.html">downloads_fsurls.html</a> if you just want a valid FileSystemURL (in string form)
 </ul>
 
-<h2>SMB</h2>
+<h2 id="h-smb">SMB</h2>
 <div style="display: flex; flex-direction: row">
 <label>
   <b>Enable verbose logging</b>
@@ -32,7 +33,16 @@
 </span>
 </div>
 
-<h2>Office file handlers</h2>
+<h2 id="h-file-tasks">File Tasks</h2>
+<p>Get the File Tasks ('actions' and 'apps', roughly) for a FileSystemURL.</p>
+
+<form action="/getFileTasks.html">
+<label>FileSystemURL:</label>
+<input type="text" name="fsurl">
+<button type="submit">Get File Tasks</button>
+</form>
+
+<h2 id="h-office-file-handlers">Office file handlers</h2>
 <p>Office default file handlers: <span id="office-default-file-handlers"></span></p>
 <p>Move confirmation shown for Drive?: <span id="move-confirmation-shown-for-drive-status"></span></p>
 <p>Move confirmation shown for OneDrive?: <span id="move-confirmation-shown-for-onedrive-status"></span></p>

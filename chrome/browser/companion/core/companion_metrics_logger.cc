@@ -13,6 +13,7 @@
 #include "base/strings/strcat.h"
 #include "chrome/browser/companion/core/constants.h"
 #include "chrome/browser/companion/core/features.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "url/gurl.h"
@@ -26,6 +27,9 @@ const int kMaxNumChildElements = 10;
 
 // The max count of text queries to report up to for UKM.
 const int kMaxNumTextSearches = 10;
+
+// Bucket spacing param to add noise to |VisualSuggestionsMetrics|.
+const double kBucketSpacing = 1.3;
 
 // Helper method to determine whether a UI surface is a list surface. List
 // surfaces are surfaces that take the form of a list with one or more items
@@ -43,6 +47,7 @@ bool IsListSurface(UiSurface ui_surface) {
     case UiSurface::kRelQr:
     case UiSurface::kRelQs:
     case UiSurface::kPageEntities:
+    case UiSurface::kPHResult:
       return true;
   }
 }
@@ -70,6 +75,8 @@ std::string UiSurfaceToHistogramVariant(UiSurface ui_surface) {
       return "PageEntities";
     case UiSurface::kATX:
       return "ATX";
+    case UiSurface::kPHResult:
+      return "PHResult";
     default:
       NOTREACHED();
       return "Unknown";
@@ -133,23 +140,30 @@ void CompanionMetricsLogger::RecordOpenTrigger(
 
 void CompanionMetricsLogger::RecordUiSurfaceShown(
     UiSurface ui_surface,
-    uint32_t ui_surface_position,
-    uint32_t child_element_available_count,
-    uint32_t child_element_shown_count) {
+    int32_t ui_surface_position,
+    int32_t child_element_available_count,
+    int32_t child_element_shown_count) {
   UiSurfaceMetrics& surface = ui_surface_metrics_[ui_surface];
   surface.last_event = UiEvent::kShown;
   // Clamped to record as having max 10 child elements.
   surface.ui_surface_position = ui_surface_position;
   surface.child_element_available_count =
-      std::clamp(child_element_available_count, 0u,
-                 static_cast<unsigned int>(kMaxNumChildElements));
+      std::clamp(child_element_available_count, 0, kMaxNumChildElements);
   surface.child_element_shown_count =
-      std::clamp(child_element_shown_count, 0u,
-                 static_cast<unsigned int>(kMaxNumChildElements));
+      std::clamp(child_element_shown_count, 0, kMaxNumChildElements);
 
   DCHECK(!IsListSurface(ui_surface) || child_element_shown_count > 0);
   base::UmaHistogramBoolean(
       "Companion." + UiSurfaceToHistogramVariant(ui_surface) + ".Shown", true);
+  // For surfaces that aren't in the form of a list, the child element count
+  // should be -1. Regardless, don't record histograms when the count is -1.
+  if (!IsListSurface(ui_surface) || child_element_shown_count < 0) {
+    return;
+  }
+  base::UmaHistogramExactLinear(
+      "Companion." + UiSurfaceToHistogramVariant(ui_surface) +
+          ".ChildElementCount",
+      surface.child_element_shown_count, kMaxNumChildElements);
 }
 
 void CompanionMetricsLogger::RecordUiSurfaceClicked(UiSurface ui_surface,
@@ -187,6 +201,21 @@ void CompanionMetricsLogger::OnExpsOptInStatusAvailable(
   base::UmaHistogramBoolean("Companion.IsUserOptedInToExps", is_exps_opted_in);
 }
 
+void CompanionMetricsLogger::OnVisualSuggestionsResult(
+    const VisualSuggestionsMetrics& metrics) {
+  visual_suggestions_ = metrics;
+  visual_suggestions_->eligible_count =
+      ukm::GetExponentialBucketMin(metrics.eligible_count, kBucketSpacing);
+  visual_suggestions_->shoppy_count =
+      ukm::GetExponentialBucketMin(metrics.shoppy_count, kBucketSpacing);
+  visual_suggestions_->sensitive_count =
+      ukm::GetExponentialBucketMin(metrics.sensitive_count, kBucketSpacing);
+  visual_suggestions_->shoppy_nonsensitive_count = ukm::GetExponentialBucketMin(
+      metrics.shoppy_nonsensitive_count, kBucketSpacing);
+  visual_suggestions_->results_count =
+      ukm::GetExponentialBucketMin(metrics.results_count, kBucketSpacing);
+}
+
 void CompanionMetricsLogger::FlushStats() {
   ukm::builders::Companion_PageView ukm_builder(ukm_source_id_);
 
@@ -199,8 +228,7 @@ void CompanionMetricsLogger::FlushStats() {
   auto iter = ui_surface_metrics_.find(UiSurface::kSearchBox);
   if (iter != ui_surface_metrics_.end()) {
     ukm_builder.SetTextSearchCount(
-        std::clamp(iter->second.click_count, 0u,
-                   static_cast<unsigned int>(kMaxNumTextSearches)));
+        std::clamp(iter->second.click_count, 0, kMaxNumTextSearches));
   }
 
   // Region search.
@@ -214,16 +242,49 @@ void CompanionMetricsLogger::FlushStats() {
     ukm_builder.SetPromoEvent(static_cast<int>(last_promo_event_.value()));
   }
 
-  // PH surface.
+  // PH surface shown before requesting PH to be genenerated.
   iter = ui_surface_metrics_.find(UiSurface::kPH);
   if (iter != ui_surface_metrics_.end()) {
     ukm_builder.SetPH_ComponentPosition(iter->second.ui_surface_position);
     ukm_builder.SetPH_LastEvent(static_cast<int64_t>(iter->second.last_event));
   }
 
+  // PHResult surface shown after PH request was made by clicking the
+  // generate button.
+  iter = ui_surface_metrics_.find(UiSurface::kPHResult);
+  if (iter != ui_surface_metrics_.end()) {
+    ukm_builder.SetPHResult_LastEvent(
+        static_cast<int64_t>(iter->second.last_event));
+    ukm_builder.SetPHResult_ComponentPosition(iter->second.ui_surface_position);
+    ukm_builder.SetPHResult_NumEntriesAvailable(
+        iter->second.child_element_available_count);
+    ukm_builder.SetPHResult_NumEntriesShown(
+        iter->second.child_element_shown_count);
+
+    auto click_position = iter->second.click_position;
+    if (click_position != kInvalidPosition) {
+      ukm_builder.SetPHResult_ClickPosition(click_position);
+    }
+  }
+
   // PH feedback.
   if (last_ph_feedback_.has_value()) {
     ukm_builder.SetPH_Feedback(static_cast<int>(last_ph_feedback_.value()));
+    base::UmaHistogramEnumeration("Companion.PHFeedback.Result",
+                                  last_ph_feedback_.value());
+  }
+
+  if (visual_suggestions_.has_value()) {
+    ukm_builder.SetVQS_VisualSearchTriggeredCount(
+        static_cast<unsigned int>(visual_suggestions_.value().results_count));
+    ukm_builder.SetVQS_VisualEligibleImagesCount(
+        static_cast<unsigned int>(visual_suggestions_.value().eligible_count));
+    ukm_builder.SetVQS_ImageSensitiveCount(
+        static_cast<unsigned int>(visual_suggestions_.value().sensitive_count));
+    ukm_builder.SetVQS_ImageShoppyCount(
+        static_cast<unsigned int>(visual_suggestions_.value().shoppy_count));
+    ukm_builder.SetVQS_ImageShoppyNotSensitiveCount(static_cast<unsigned int>(
+        visual_suggestions_.value().shoppy_nonsensitive_count));
   }
 
   // CQ surface.

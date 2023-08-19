@@ -51,6 +51,9 @@ enum LoadingBehaviorFlag {
   // Indicates that the main resource fetch for the page controlled by
   // a service worker at the navigation time fallback to network.
   kLoadingBehaviorServiceWorkerMainResourceFetchFallback = 1 << 11,
+  // Indicates that the RaceNetworkRequest is dispatched for the main and
+  // subresources. crbug.com/1420517 for more details.
+  kLoadingBehaviorServiceWorkerRaceNetworkRequest = 1 << 12,
 };
 
 }  // namespace blink

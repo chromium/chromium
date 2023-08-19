@@ -30,7 +30,7 @@ HWND DesktopScreenWin::GetHWNDFromNativeWindow(gfx::NativeWindow window) const {
 gfx::NativeWindow DesktopScreenWin::GetNativeWindowFromHWND(HWND hwnd) const {
   return ::IsWindow(hwnd)
              ? DesktopWindowTreeHostWin::GetContentWindowForHWND(hwnd)
-             : gfx::kNullNativeWindow;
+             : gfx::NativeWindow();
 }
 
 bool DesktopScreenWin::IsNativeWindowOccluded(gfx::NativeWindow window) const {

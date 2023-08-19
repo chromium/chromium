@@ -19,7 +19,7 @@ MerchantPromoCodeManager::MerchantPromoCodeManager() = default;
 MerchantPromoCodeManager::~MerchantPromoCodeManager() = default;
 
 bool MerchantPromoCodeManager::OnGetSingleFieldSuggestions(
-    AutoselectFirstSuggestion autoselect_first_suggestion,
+    AutofillSuggestionTriggerSource trigger_source,
     const FormFieldData& field,
     const AutofillClient& client,
     base::WeakPtr<SuggestionsHandler> handler,
@@ -38,10 +38,9 @@ bool MerchantPromoCodeManager::OnGetSingleFieldSuggestions(
         personal_data_manager_->GetActiveAutofillPromoCodeOffersForOrigin(
             context.form_structure->main_frame_origin().GetURL());
     if (!promo_code_offers.empty()) {
-      SendPromoCodeSuggestions(
-          promo_code_offers, field.global_id(),
-          QueryHandler(field.global_id(), autoselect_first_suggestion,
-                       field.value, handler));
+      SendPromoCodeSuggestions(promo_code_offers, field.global_id(),
+                               QueryHandler(field.global_id(), trigger_source,
+                                            field.value, handler));
       return true;
     }
   }
@@ -58,12 +57,12 @@ void MerchantPromoCodeManager::CancelPendingQueries(
 void MerchantPromoCodeManager::OnRemoveCurrentSingleFieldSuggestion(
     const std::u16string& field_name,
     const std::u16string& value,
-    Suggestion::FrontendId frontend_id) {}
+    PopupItemId popup_item_id) {}
 
 void MerchantPromoCodeManager::OnSingleFieldSuggestionSelected(
     const std::u16string& value,
-    Suggestion::FrontendId frontend_id) {
-  uma_recorder_.OnOfferSuggestionSelected(frontend_id);
+    PopupItemId popup_item_id) {
+  uma_recorder_.OnOfferSuggestionSelected(popup_item_id);
 }
 
 void MerchantPromoCodeManager::Init(PersonalDataManager* personal_data_manager,
@@ -106,8 +105,8 @@ void MerchantPromoCodeManager::UMARecorder::OnOffersSuggestionsShown(
 }
 
 void MerchantPromoCodeManager::UMARecorder::OnOfferSuggestionSelected(
-    Suggestion::FrontendId frontend_id) {
-  if (frontend_id == PopupItemId::kMerchantPromoCodeEntry) {
+    PopupItemId popup_item_id) {
+  if (popup_item_id == PopupItemId::kMerchantPromoCodeEntry) {
     // We log every time an individual offer suggestion is selected, regardless
     // if the user is repeatedly autofilling the same field.
     autofill_metrics::LogIndividualOfferSuggestionEvent(
@@ -123,7 +122,7 @@ void MerchantPromoCodeManager::UMARecorder::OnOfferSuggestionSelected(
               kOfferSuggestionSelectedOnce,
           AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER);
     }
-  } else if (frontend_id == PopupItemId::kSeePromoCodeDetails) {
+  } else if (popup_item_id == PopupItemId::kSeePromoCodeDetails) {
     // We log every time the see offer details suggestion in the footer is
     // selected, regardless if the user is repeatedly autofilling the same
     // field.
@@ -165,15 +164,14 @@ void MerchantPromoCodeManager::SendPromoCodeSuggestions(
       // Return empty suggestions to query handler. This will result in no
       // suggestions being displayed.
       query_handler.handler_->OnSuggestionsReturned(
-          query_handler.field_id_, query_handler.autoselect_first_suggestion_,
-          {});
+          query_handler.field_id_, query_handler.trigger_source_, {});
       return;
     }
   }
 
   // Return suggestions to query handler.
   query_handler.handler_->OnSuggestionsReturned(
-      query_handler.field_id_, query_handler.autoselect_first_suggestion_,
+      query_handler.field_id_, query_handler.trigger_source_,
       AutofillSuggestionGenerator::GetPromoCodeSuggestionsFromPromoCodeOffers(
           promo_code_offers));
 

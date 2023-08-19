@@ -4,16 +4,16 @@
 
 module blink.mojom;
 
-import "services/device/public/mojom/screen_orientation_lock_types.mojom";
 import "mojo/public/mojom/base/string16.mojom";
-import "third_party/blink/public/mojom/url_pattern.mojom";
-import "third_party/blink/public/mojom/manifest/display_mode.mojom";
+import "services/device/public/mojom/screen_orientation_lock_types.mojom";
 import "third_party/blink/public/mojom/manifest/capture_links.mojom";
+import "third_party/blink/public/mojom/manifest/display_mode.mojom";
 import "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom";
 import "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom";
+import "third_party/blink/public/mojom/safe_url_pattern.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
-import "url/mojom/url.mojom";
 import "url/mojom/origin.mojom";
+import "url/mojom/url.mojom";
 
 
 // The Manifest structure is an internal representation of the Manifest file
@@ -32,6 +32,11 @@ struct Manifest {
   // This is empty if the start_url is empty.
   url.mojom.Url id;
 
+  // TODO(crbug.com/1466730): Investigate if this should return the
+  // document_url_ if ManifestParser fails to parse the start_url as per
+  // the spec. This can sometimes be an empty KURL, which can be
+  // intentional so that the non existence of a start URL can be handled
+  // further down the callstack.
   url.mojom.Url start_url;
 
   DisplayMode display;
@@ -359,7 +364,7 @@ struct ManifestUserPreferenceOverrides {
 // Structure representing customizations to the tab strip.
 struct ManifestTabStrip {
   HomeTabUnion home_tab;
-  NewTabButtonUnion new_tab_button;
+  NewTabButtonParams new_tab_button;
 };
 
 // Represents whether a particular tab strip customization is present or not.
@@ -374,11 +379,6 @@ union HomeTabUnion {
   HomeTabParams params;
 };
 
-union NewTabButtonUnion {
-  TabStripMemberVisibility visibility;
-  NewTabButtonParams params;
-};
-
 // Structure representing the home tab customization to the tab strip.
 struct HomeTabParams {
   // If the array is empty, the platform can choose what icon to use. This is
@@ -386,7 +386,7 @@ struct HomeTabParams {
   array<ManifestImageResource> icons;
 
   // TODO(crbug.com/1381374): Use URLPatternList once available.
-  array<UrlPattern> scope_patterns;
+  array<SafeUrlPattern> scope_patterns;
 };
 
 // Structure representing the new tab button customization to the tab strip.

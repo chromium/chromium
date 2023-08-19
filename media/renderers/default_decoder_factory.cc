@@ -91,8 +91,9 @@ void DefaultDecoderFactory::CreateVideoDecoders(
     const gfx::ColorSpace& target_color_space,
     std::vector<std::unique_ptr<VideoDecoder>>* video_decoders) {
   base::AutoLock auto_lock(shutdown_lock_);
-  if (is_shutdown_)
+  if (is_shutdown_) {
     return;
+  }
 
 #if !BUILDFLAG(IS_ANDROID)
   video_decoders->push_back(

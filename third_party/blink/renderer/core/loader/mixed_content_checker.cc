@@ -538,9 +538,9 @@ bool MixedContentChecker::ShouldBlockFetch(
   // TODO(lyf): check the IP address space for initiator, only skip when the
   // initiator is more public.
   if (RuntimeEnabledFeatures::PrivateNetworkAccessPermissionPromptEnabled()) {
-    if (target_address_space == network::mojom::blink::IPAddressSpace::kLocal ||
-        target_address_space ==
-            network::mojom::blink::IPAddressSpace::kLoopback) {
+    if (target_address_space ==
+            network::mojom::blink::IPAddressSpace::kPrivate ||
+        target_address_space == network::mojom::blink::IPAddressSpace::kLocal) {
       allowed = true;
     }
   }
@@ -798,19 +798,21 @@ bool MixedContentChecker::ShouldAutoupgrade(
   // autoupgrade because it might not make sense to request a certificate for
   // an IP address.
   if (GURL(request_url).HostIsIPAddress()) {
-    if (auto* window =
-            DynamicTo<LocalDOMWindow>(execution_context_for_logging)) {
-      window->AddConsoleMessage(
-          MixedContentChecker::
-              CreateConsoleMessageAboutFetchIPAddressNoAutoupgrade(
-                  fetch_client_settings_object->GlobalObjectUrl(),
-                  request_url));
-      AuditsIssue::ReportMixedContentIssue(
-          fetch_client_settings_object->GlobalObjectUrl(),
-          resource_request.Url(), resource_request.GetRequestContext(),
-          window->document()->GetFrame(),
-          MixedContentResolutionStatus::kMixedContentWarning,
-          resource_request.GetDevToolsId());
+    if (!request_url.ProtocolIs("https")) {
+      if (auto* window =
+              DynamicTo<LocalDOMWindow>(execution_context_for_logging)) {
+        window->AddConsoleMessage(
+            MixedContentChecker::
+                CreateConsoleMessageAboutFetchIPAddressNoAutoupgrade(
+                    fetch_client_settings_object->GlobalObjectUrl(),
+                    request_url));
+        AuditsIssue::ReportMixedContentIssue(
+            fetch_client_settings_object->GlobalObjectUrl(),
+            resource_request.Url(), resource_request.GetRequestContext(),
+            window->document()->GetFrame(),
+            MixedContentResolutionStatus::kMixedContentWarning,
+            resource_request.GetDevToolsId());
+      }
     }
     return false;
   }

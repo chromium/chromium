@@ -41,7 +41,7 @@ TEST_F(ForceDarkTest, ForcedColorScheme) {
   };
 
   auto run_test = [&document = GetDocument()](const TestCase& test_case) {
-    auto* element = document.getElementById(test_case.id);
+    auto* element = document.getElementById(AtomicString(test_case.id));
     ASSERT_TRUE(element);
 
     const auto* style = element->GetComputedStyle();
@@ -101,7 +101,7 @@ TEST_F(ForceDarkTest, ForcedColorSchemeInvalidation) {
   };
 
   auto run_test = [&document = GetDocument()](const TestCase& test_case) {
-    auto* element = document.getElementById(test_case.id);
+    auto* element = document.getElementById(AtomicString(test_case.id));
     ASSERT_TRUE(element);
 
     const auto* style = element->GetComputedStyle();
@@ -117,7 +117,7 @@ TEST_F(ForceDarkTest, ForcedColorSchemeInvalidation) {
 
   ASSERT_TRUE(GetDocument().GetSettings()->GetForceDarkModeEnabled());
   GetDocument().GetSettings()->SetForceDarkModeEnabled(false);
-  auto* t3 = GetDocument().getElementById("t3");
+  auto* t3 = GetDocument().getElementById(AtomicString("t3"));
   t3->SetInlineStyleProperty(CSSPropertyID::kColorScheme, "dark");
   GetDocument().UpdateStyleAndLayoutTree();
 

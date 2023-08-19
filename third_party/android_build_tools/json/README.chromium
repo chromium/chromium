@@ -2,8 +2,9 @@ Name: Android's org.json implementation
 Short Name: org.json
 Version: fac974ff3c27a5d77ee5338ae9594787119eb3e4
 License: Apache Version 2.0
-License File: NOT_SHIPPED
+License File: LICENSE
 Security Critical: No
+Shipped: no
 URL: https://android.googlesource.com/platform/libcore/+/refs/heads/master/json/src/main/java/org/json
 
 Description:

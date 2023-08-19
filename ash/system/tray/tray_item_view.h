@@ -97,6 +97,10 @@ class ASH_EXPORT TrayItemView : public views::View,
   // user session starts). It should reload any strings the view is using.
   virtual void HandleLocaleChange() = 0;
 
+  // For Material Next: Updates the color of `label_` or `image_view_` based on
+  // whether the view is active or not.
+  virtual void UpdateLabelOrImageViewColor(bool active);
+
   // Temporarily disables the use of animation on visibility changes. Animation
   // will be disabled until the returned scoped closure is run.
   [[nodiscard]] base::ScopedClosureRunner DisableAnimation();
@@ -127,6 +131,8 @@ class ASH_EXPORT TrayItemView : public views::View,
   IconizedLabel* label() const { return label_; }
   views::ImageView* image_view() const { return image_view_; }
 
+  bool is_active() { return is_active_; }
+
   // views::View.
   void SetVisible(bool visible) override;
   gfx::Size CalculatePreferredSize() const override;
@@ -151,13 +157,19 @@ class ASH_EXPORT TrayItemView : public views::View,
     return disable_animation_count_ == 0u;
   }
 
+  // views::AnimationDelegateViews.
+  void AnimationEnded(const gfx::Animation* animation) override;
+
+  bool target_visible() { return target_visible_; }
+
+  const Shelf* shelf() { return shelf_; }
+
  private:
   // views::View.
   void ChildPreferredSizeChanged(View* child) override;
 
   // views::AnimationDelegateViews.
   void AnimationProgressed(const gfx::Animation* animation) override;
-  void AnimationEnded(const gfx::Animation* animation) override;
   void AnimationCanceled(const gfx::Animation* animation) override;
 
   // Return true if the animation is in resize animation stage, which
@@ -173,7 +185,7 @@ class ASH_EXPORT TrayItemView : public views::View,
   double GetItemScaleProgressFromAnimationProgress(
       double animation_value) const;
 
-  const raw_ptr<Shelf, ExperimentalAsh> shelf_;
+  const raw_ptr<Shelf, DanglingUntriaged | ExperimentalAsh> shelf_;
 
   // When showing the item in tray, the animation is executed with 2 stages:
   // 1. Resize: The size reserved for tray item view gradually increases.
@@ -191,12 +203,21 @@ class ASH_EXPORT TrayItemView : public views::View,
   // Use scale in animating in the item to the tray.
   bool use_scale_in_animation_ = true;
 
-  // Only one of |label_| and |image_view_| should be non-null.
-  raw_ptr<IconizedLabel, ExperimentalAsh> label_ = nullptr;
-  raw_ptr<views::ImageView, ExperimentalAsh> image_view_ = nullptr;
+  // For Material Next: if this view is active or not in `UnifiedSystemTray`.
+  // This is used for coloring and is set in `UpdateLabelOrImageViewColor()`.
+  // Note: the value is only accurate when the Jelly flag is set.
+  bool is_active_ = false;
 
-  // Measure animation smoothness metrics for `animation_`.
-  absl::optional<ui::ThroughputTracker> throughput_tracker_;
+  // Only one of |label_| and |image_view_| should be non-null.
+  raw_ptr<IconizedLabel, DanglingUntriaged | ExperimentalAsh> label_ = nullptr;
+  raw_ptr<views::ImageView, DanglingUntriaged | ExperimentalAsh> image_view_ =
+      nullptr;
+
+  // Measures animation smoothness metrics for "show" animation.
+  absl::optional<ui::ThroughputTracker> show_throughput_tracker_;
+
+  // Measures animation smoothness metrics for "hide" animation.
+  absl::optional<ui::ThroughputTracker> hide_throughput_tracker_;
 
   // Number of active requests to disable animation.
   size_t disable_animation_count_ = 0u;

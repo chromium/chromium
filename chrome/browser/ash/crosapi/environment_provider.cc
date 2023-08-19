@@ -39,7 +39,7 @@ mojom::SessionType EnvironmentProvider::GetSessionType() {
   if (profile->IsGuestSession()) {
     return mojom::SessionType::kGuestSession;
   }
-  if (profiles::IsPublicSession()) {
+  if (profiles::IsManagedGuestSession()) {
     return mojom::SessionType::kPublicSession;
   }
   if (user->GetType() == user_manager::USER_TYPE_WEB_KIOSK_APP) {
@@ -67,8 +67,6 @@ mojom::DeviceMode EnvironmentProvider::GetDeviceMode() {
       return mojom::DeviceMode::kConsumer;
     case policy::DEVICE_MODE_ENTERPRISE:
       return mojom::DeviceMode::kEnterprise;
-    case policy::DEVICE_MODE_ENTERPRISE_AD:
-      return mojom::DeviceMode::kEnterpriseActiveDirectory;
     case policy::DEPRECATED_DEVICE_MODE_LEGACY_RETAIL_MODE:
       return mojom::DeviceMode::kLegacyRetailMode;
     case policy::DEVICE_MODE_CONSUMER_KIOSK_AUTOLAUNCH:

@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/status_area_widget.h"
@@ -19,6 +20,8 @@
 #include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "components/prefs/pref_service.h"
@@ -35,35 +38,51 @@ constexpr int kSpeakOnMuteOptInNudgeMaxShownCount = 3;
 constexpr char kVideoConferenceTraySpeakOnMuteDetectedNudgeId[] =
     "video_conference_tray_nudge_ids.speak_on_mute_detected";
 
-constexpr char kVideoConferenceTrayUseWhileDisabledNudgeId[] =
-    "video_conference_tray_nudge_ids.use_while_disabled";
-
 constexpr char kVideoConferenceTraySpeakOnMuteOptInNudgeId[] =
     "video_conference_tray_nudge_ids.speak_on_mute_opt_in";
 
+constexpr char kVideoConferenceTraySpeakOnMuteOptInConfirmationNudgeId[] =
+    "video_conference_tray_nudge_ids.speak_on_mute_opt_in_confirmation";
+
+constexpr char kVideoConferenceTrayMicrophoneUseWhileHWDisabledNudgeId[] =
+    "video_conference_tray_nudge_ids.microphone_use_while_hw_disabled";
+constexpr char kVideoConferenceTrayMicrophoneUseWhileSWDisabledNudgeId[] =
+    "video_conference_tray_nudge_ids.microphone_use_while_sw_disabled";
+constexpr char kVideoConferenceTrayCameraUseWhileHWDisabledNudgeId[] =
+    "video_conference_tray_nudge_ids.camera_use_while_hw_disabled";
+constexpr char kVideoConferenceTrayCameraUseWhileSWDisabledNudgeId[] =
+    "video_conference_tray_nudge_ids.camera_use_while_sw_disabled";
+constexpr char kVideoConferenceTrayBothUseWhileDisabledNudgeId[] =
+    "video_conference_tray_nudge_ids.camera_microphone_use_while_disabled";
+
 constexpr char kRepeatedShowsHistogramName[] =
     "Ash.VideoConference.NumberOfRepeatedShows";
+
+constexpr auto kHandleDeviceUsedWhileDisabledWaitTime = base::Milliseconds(200);
 
 bool IsNudgeShown(const std::string& id) {
   return Shell::Get()->anchored_nudge_manager()->IsNudgeShown(id);
 }
 
 const std::u16string& GetNudgeText(const std::string& id) {
-  return Shell::Get()->anchored_nudge_manager()->GetNudgeTextForTest(id);
+  return Shell::Get()->anchored_nudge_manager()->GetNudgeBodyTextForTest(id);
 }
 
 views::View* GetNudgeAnchorView(const std::string& id) {
   return Shell::Get()->anchored_nudge_manager()->GetNudgeAnchorViewForTest(id);
 }
 
-views::LabelButton* GetNudgeDismissButton(const std::string& id) {
-  return Shell::Get()->anchored_nudge_manager()->GetNudgeDismissButtonForTest(
-      id);
+views::LabelButton* GetNudgeFirstButton(const std::string& id) {
+  return Shell::Get()->anchored_nudge_manager()->GetNudgeFirstButtonForTest(id);
 }
 
 views::LabelButton* GetNudgeSecondButton(const std::string& id) {
   return Shell::Get()->anchored_nudge_manager()->GetNudgeSecondButtonForTest(
       id);
+}
+
+AnchoredNudge* GetShownNudge(const std::string& id) {
+  return Shell::Get()->anchored_nudge_manager()->GetShownNudgeForTest(id);
 }
 
 }  // namespace
@@ -80,9 +99,10 @@ class VideoConferenceTrayControllerTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kVideoConference);
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kCameraEffectsSupportedByHardware);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kVideoConference,
+         features::kCameraEffectsSupportedByHardware},
+        {});
 
     // Instantiates a fake controller (the real one is created in
     // ChromeBrowserMainExtraPartsAsh::PreProfileInit() which is not called in
@@ -121,6 +141,14 @@ class VideoConferenceTrayControllerTest : public AshTestBase {
     state.has_microphone_permission = true;
     state.is_capturing_screen = true;
     state.is_capturing_microphone = true;
+    controller()->UpdateWithMediaState(state);
+    return state;
+  }
+
+  // Make the tray and buttons invisible by setting `VideoConferenceMediaState`,
+  // and return the state so it can be modified.
+  VideoConferenceMediaState SetTrayAndButtonsInvisible() {
+    VideoConferenceMediaState state;
     controller()->UpdateWithMediaState(state);
     return state;
   }
@@ -226,7 +254,7 @@ TEST_F(VideoConferenceTrayControllerTest,
   auto* app_name = u"app_name";
   auto camera_device_name =
       l10n_util::GetStringUTF16(IDS_ASH_VIDEO_CONFERENCE_CAMERA_NAME);
-  auto* nudge_id = kVideoConferenceTrayUseWhileDisabledNudgeId;
+  auto* nudge_id = kVideoConferenceTrayCameraUseWhileSWDisabledNudgeId;
 
   SetTrayAndButtonsVisible();
 
@@ -239,14 +267,20 @@ TEST_F(VideoConferenceTrayControllerTest,
   controller()->HandleDeviceUsedWhileDisabled(
       crosapi::mojom::VideoConferenceMediaDevice::kCamera, app_name);
 
-  // Nudge should be displayed. Showing that app is accessing while camera is
-  // software-muted.
+  // After `kHandleDeviceUsedWhileDisabledWaitTime`, nudge should be displayed.
+  // Showing that app is accessing while camera is software-muted.
+  task_environment()->FastForwardBy(kHandleDeviceUsedWhileDisabledWaitTime);
   ASSERT_TRUE(IsNudgeShown(nudge_id));
   EXPECT_EQ(GetNudgeAnchorView(nudge_id), camera_icon());
   EXPECT_EQ(GetNudgeText(nudge_id),
             l10n_util::GetStringFUTF16(
-                IDS_ASH_VIDEO_CONFERENCE_TOAST_USE_WHILE_SOFTWARE_DISABLED,
-                app_name, camera_device_name));
+                IDS_ASH_VIDEO_CONFERENCE_TOAST_USE_WHILE_DISABLED, app_name,
+                camera_device_name));
+
+  // Unmute camera through SW. Nudge should be dismissed.
+  controller()->OnCameraSWPrivacySwitchStateChanged(
+      cros::mojom::CameraPrivacySwitchState::OFF);
+  EXPECT_FALSE(IsNudgeShown(nudge_id));
 }
 
 TEST_F(VideoConferenceTrayControllerTest,
@@ -254,7 +288,7 @@ TEST_F(VideoConferenceTrayControllerTest,
   auto* app_name = u"app_name";
   auto microphone_device_name =
       l10n_util::GetStringUTF16(IDS_ASH_VIDEO_CONFERENCE_MICROPHONE_NAME);
-  auto* nudge_id = kVideoConferenceTrayUseWhileDisabledNudgeId;
+  auto* nudge_id = kVideoConferenceTrayMicrophoneUseWhileSWDisabledNudgeId;
 
   SetTrayAndButtonsVisible();
 
@@ -267,14 +301,20 @@ TEST_F(VideoConferenceTrayControllerTest,
   controller()->HandleDeviceUsedWhileDisabled(
       crosapi::mojom::VideoConferenceMediaDevice::kMicrophone, app_name);
 
-  // Nudge should be displayed. Showing that app is accessing while microphone
-  // is software-muted.
+  // After `kHandleDeviceUsedWhileDisabledWaitTime`, nudge should be displayed.
+  // Showing that app is accessing while microphone is software-muted.
+  task_environment()->FastForwardBy(kHandleDeviceUsedWhileDisabledWaitTime);
   ASSERT_TRUE(IsNudgeShown(nudge_id));
   EXPECT_EQ(GetNudgeAnchorView(nudge_id), audio_icon());
   EXPECT_EQ(GetNudgeText(nudge_id),
             l10n_util::GetStringFUTF16(
-                IDS_ASH_VIDEO_CONFERENCE_TOAST_USE_WHILE_SOFTWARE_DISABLED,
-                app_name, microphone_device_name));
+                IDS_ASH_VIDEO_CONFERENCE_TOAST_USE_WHILE_DISABLED, app_name,
+                microphone_device_name));
+
+  // Unmute microphone through SW. Nudge should be dismissed.
+  controller()->OnInputMuteChanged(
+      /*mute_on=*/false, CrasAudioHandler::InputMuteChangeMethod::kOther);
+  EXPECT_FALSE(IsNudgeShown(nudge_id));
 }
 
 TEST_F(VideoConferenceTrayControllerTest,
@@ -282,7 +322,7 @@ TEST_F(VideoConferenceTrayControllerTest,
   auto* app_name = u"app_name";
   auto camera_device_name =
       l10n_util::GetStringUTF16(IDS_ASH_VIDEO_CONFERENCE_CAMERA_NAME);
-  auto* nudge_id = kVideoConferenceTrayUseWhileDisabledNudgeId;
+  auto* nudge_id = kVideoConferenceTrayCameraUseWhileHWDisabledNudgeId;
 
   SetTrayAndButtonsVisible();
 
@@ -295,14 +335,20 @@ TEST_F(VideoConferenceTrayControllerTest,
   controller()->HandleDeviceUsedWhileDisabled(
       crosapi::mojom::VideoConferenceMediaDevice::kCamera, app_name);
 
-  // Nudge should be displayed. Showing that app is accessing while camera is
-  // hardware-muted.
+  // After `kHandleDeviceUsedWhileDisabledWaitTime`, nudge should be displayed.
+  // Showing that app is accessing while camera is hardware-muted.
+  task_environment()->FastForwardBy(kHandleDeviceUsedWhileDisabledWaitTime);
   ASSERT_TRUE(IsNudgeShown(nudge_id));
   EXPECT_EQ(GetNudgeAnchorView(nudge_id), camera_icon());
   EXPECT_EQ(GetNudgeText(nudge_id),
             l10n_util::GetStringFUTF16(
                 IDS_ASH_VIDEO_CONFERENCE_TOAST_USE_WHILE_HARDWARE_DISABLED,
                 app_name, camera_device_name));
+
+  // Unmute camera through HW. Nudge should be dismissed.
+  controller()->OnCameraHWPrivacySwitchStateChanged(
+      /*device_id=*/"device_id", cros::mojom::CameraPrivacySwitchState::OFF);
+  EXPECT_FALSE(IsNudgeShown(nudge_id));
 }
 
 TEST_F(VideoConferenceTrayControllerTest,
@@ -310,7 +356,7 @@ TEST_F(VideoConferenceTrayControllerTest,
   auto* app_name = u"app_name";
   auto microphone_device_name =
       l10n_util::GetStringUTF16(IDS_ASH_VIDEO_CONFERENCE_MICROPHONE_NAME);
-  auto* nudge_id = kVideoConferenceTrayUseWhileDisabledNudgeId;
+  auto* nudge_id = kVideoConferenceTrayMicrophoneUseWhileHWDisabledNudgeId;
 
   SetTrayAndButtonsVisible();
 
@@ -324,14 +370,125 @@ TEST_F(VideoConferenceTrayControllerTest,
   controller()->HandleDeviceUsedWhileDisabled(
       crosapi::mojom::VideoConferenceMediaDevice::kMicrophone, app_name);
 
-  // Nudge should be displayed. Showing that app is accessing while microphone
-  // is hardware-muted.
+  // After `kHandleDeviceUsedWhileDisabledWaitTime`, nudge should be displayed.
+  // Showing that app is accessing while microphone is hardware-muted.
+  task_environment()->FastForwardBy(kHandleDeviceUsedWhileDisabledWaitTime);
   ASSERT_TRUE(IsNudgeShown(nudge_id));
   EXPECT_EQ(GetNudgeAnchorView(nudge_id), audio_icon());
   EXPECT_EQ(GetNudgeText(nudge_id),
             l10n_util::GetStringFUTF16(
                 IDS_ASH_VIDEO_CONFERENCE_TOAST_USE_WHILE_HARDWARE_DISABLED,
                 app_name, microphone_device_name));
+
+  // Unmute microphone through HW. Nudge should be dismissed.
+  controller()->OnInputMuteChanged(
+      /*mute_on=*/false,
+      CrasAudioHandler::InputMuteChangeMethod::kPhysicalShutter);
+  EXPECT_FALSE(IsNudgeShown(nudge_id));
+}
+
+TEST_F(VideoConferenceTrayControllerTest,
+       HandleCameraMicrophoneUsedWhileDisabled) {
+  auto* app_name = u"app_name";
+  auto device_name = l10n_util::GetStringUTF16(
+      IDS_ASH_VIDEO_CONFERENCE_CAMERA_MICROPHONE_NAME);
+  auto* nudge_id = kVideoConferenceTrayBothUseWhileDisabledNudgeId;
+
+  SetTrayAndButtonsVisible();
+
+  controller()->OnInputMuteChanged(
+      /*mute_on=*/true, CrasAudioHandler::InputMuteChangeMethod::kOther);
+  controller()->OnCameraHWPrivacySwitchStateChanged(
+      /*device_id=*/"device_id", cros::mojom::CameraPrivacySwitchState::ON);
+
+  // No nudge is shown before `HandleDeviceUsedWhileDisabled()` is called.
+  EXPECT_FALSE(IsNudgeShown(nudge_id));
+
+  controller()->HandleDeviceUsedWhileDisabled(
+      crosapi::mojom::VideoConferenceMediaDevice::kMicrophone, app_name);
+
+  task_environment()->FastForwardBy(base::Milliseconds(20));
+
+  // No nudge is shown yet since we are waiting for more signal for
+  // `HandleDeviceUsedWhileDisabled`.
+  EXPECT_FALSE(IsNudgeShown(nudge_id));
+
+  controller()->HandleDeviceUsedWhileDisabled(
+      crosapi::mojom::VideoConferenceMediaDevice::kCamera, app_name);
+
+  // Nudge should be displayed when receiving signal for both camera and
+  // microphone.
+  ASSERT_TRUE(IsNudgeShown(nudge_id));
+  EXPECT_EQ(GetNudgeAnchorView(nudge_id), audio_icon());
+  EXPECT_EQ(GetNudgeText(nudge_id),
+            l10n_util::GetStringFUTF16(
+                IDS_ASH_VIDEO_CONFERENCE_TOAST_USE_WHILE_DISABLED, app_name,
+                device_name));
+}
+
+TEST_F(VideoConferenceTrayControllerTest,
+       UnmuteCameraWithCameraMicrophoneUsedWhileDisabledNudge) {
+  auto* app_name = u"app_name";
+  auto* nudge_id = kVideoConferenceTrayBothUseWhileDisabledNudgeId;
+
+  SetTrayAndButtonsVisible();
+
+  controller()->HandleDeviceUsedWhileDisabled(
+      crosapi::mojom::VideoConferenceMediaDevice::kMicrophone, app_name);
+  controller()->HandleDeviceUsedWhileDisabled(
+      crosapi::mojom::VideoConferenceMediaDevice::kCamera, app_name);
+
+  ASSERT_TRUE(IsNudgeShown(nudge_id));
+
+  // Now unmute camera. Nudge should also be dismissed.
+  controller()->OnCameraSWPrivacySwitchStateChanged(
+      cros::mojom::CameraPrivacySwitchState::OFF);
+  EXPECT_FALSE(IsNudgeShown(nudge_id));
+
+  // Test the same thing for hw-unmuting camera.
+  controller()->HandleDeviceUsedWhileDisabled(
+      crosapi::mojom::VideoConferenceMediaDevice::kMicrophone, app_name);
+  controller()->HandleDeviceUsedWhileDisabled(
+      crosapi::mojom::VideoConferenceMediaDevice::kCamera, app_name);
+
+  ASSERT_TRUE(IsNudgeShown(nudge_id));
+
+  controller()->OnCameraHWPrivacySwitchStateChanged(
+      /*device_id=*/"device_id", cros::mojom::CameraPrivacySwitchState::OFF);
+  EXPECT_FALSE(IsNudgeShown(nudge_id));
+}
+
+TEST_F(VideoConferenceTrayControllerTest,
+       UnmuteMicrophoneWithCameraMicrophoneUsedWhileDisabledNudge) {
+  auto* app_name = u"app_name";
+  auto* nudge_id = kVideoConferenceTrayBothUseWhileDisabledNudgeId;
+
+  SetTrayAndButtonsVisible();
+
+  controller()->HandleDeviceUsedWhileDisabled(
+      crosapi::mojom::VideoConferenceMediaDevice::kMicrophone, app_name);
+  controller()->HandleDeviceUsedWhileDisabled(
+      crosapi::mojom::VideoConferenceMediaDevice::kCamera, app_name);
+
+  ASSERT_TRUE(IsNudgeShown(nudge_id));
+
+  // Now unmute microphone. Nudge should also be dismissed.
+  controller()->OnInputMuteChanged(
+      /*mute_on=*/false, CrasAudioHandler::InputMuteChangeMethod::kOther);
+  EXPECT_FALSE(IsNudgeShown(nudge_id));
+
+  // Test the same thing for hw-unmuting microphone.
+  controller()->HandleDeviceUsedWhileDisabled(
+      crosapi::mojom::VideoConferenceMediaDevice::kMicrophone, app_name);
+  controller()->HandleDeviceUsedWhileDisabled(
+      crosapi::mojom::VideoConferenceMediaDevice::kCamera, app_name);
+
+  ASSERT_TRUE(IsNudgeShown(nudge_id));
+
+  controller()->OnInputMuteChanged(
+      /*mute_on=*/false,
+      CrasAudioHandler::InputMuteChangeMethod::kPhysicalShutter);
+  EXPECT_FALSE(IsNudgeShown(nudge_id));
 }
 
 TEST_F(VideoConferenceTrayControllerTest, SpeakOnMuteNudge) {
@@ -350,9 +507,12 @@ TEST_F(VideoConferenceTrayControllerTest, SpeakOnMuteNudge) {
             l10n_util::GetStringUTF16(
                 IDS_ASH_VIDEO_CONFERENCE_TOAST_SPEAK_ON_MUTE_DETECTED));
 
-  Shell::Get()->anchored_nudge_manager()->Cancel(nudge_id);
+  AnchoredNudgeManager::Get()->Cancel(nudge_id);
 
-  // Nudge should not be displayed as there is a cool down period for the nudge.
+  // Waits for 60 seconds to simulate that the cool down has passed.
+  task_environment()->AdvanceClock(base::Seconds(60));
+
+  // Nudge should not be displayed as nudge can show only once per session.
   controller()->OnSpeakOnMuteDetected();
   EXPECT_FALSE(IsNudgeShown(nudge_id));
 
@@ -363,10 +523,60 @@ TEST_F(VideoConferenceTrayControllerTest, SpeakOnMuteNudge) {
       /*mute_on=*/true,
       CrasAudioHandler::InputMuteChangeMethod::kPhysicalShutter);
 
-  // Nudge should be displayed again as the mute action will reset the nudge
-  // cool down timer.
+  // Nudge should not be displayed as there is 60-second cool down for the nudge
+  // to show after the mute action.
+  controller()->OnSpeakOnMuteDetected();
+  EXPECT_FALSE(IsNudgeShown(nudge_id));
+
+  // Waits for 60 seconds to simulate that the cool down has passed.
+  task_environment()->AdvanceClock(base::Seconds(60));
+
+  // Nudge should be displayed again as the nudge cool down has passed.
   controller()->OnSpeakOnMuteDetected();
   EXPECT_TRUE(IsNudgeShown(nudge_id));
+
+  // Unmute microphone through HW. Nudge should be dismissed.
+  controller()->OnInputMuteChanged(
+      /*mute_on=*/false,
+      CrasAudioHandler::InputMuteChangeMethod::kPhysicalShutter);
+  EXPECT_FALSE(IsNudgeShown(nudge_id));
+
+  // Mute microphone through SW and show nudge again.
+  controller()->OnInputMuteChanged(
+      /*mute_on=*/true, CrasAudioHandler::InputMuteChangeMethod::kOther);
+
+  // Waits for 60 seconds to simulate that the cool down has passed.
+  task_environment()->AdvanceClock(base::Seconds(60));
+
+  controller()->OnSpeakOnMuteDetected();
+  EXPECT_TRUE(IsNudgeShown(nudge_id));
+
+  // Unmute microphone through SW. Nudge should be dismissed.
+  controller()->OnInputMuteChanged(
+      /*mute_on=*/false, CrasAudioHandler::InputMuteChangeMethod::kOther);
+  EXPECT_FALSE(IsNudgeShown(nudge_id));
+
+  // Hides and displays the VC tray. Nudge can be displayed immediately.
+  SetTrayAndButtonsInvisible();
+  SetTrayAndButtonsVisible();
+
+  controller()->OnSpeakOnMuteDetected();
+  EXPECT_TRUE(IsNudgeShown(nudge_id));
+}
+
+TEST_F(VideoConferenceTrayControllerTest, SpeakOnMuteNudgeClick) {
+  auto* nudge_id = kVideoConferenceTraySpeakOnMuteDetectedNudgeId;
+
+  SetTrayAndButtonsVisible();
+
+  // Nudge should be displayed. Showing that client is speaking while on mute.
+  controller()->OnSpeakOnMuteDetected();
+  ASSERT_TRUE(IsNudgeShown(nudge_id));
+
+  // Clicks on the nudge should open the settings page.
+  EXPECT_EQ(GetSystemTrayClient()->show_speak_on_mute_detection_count(), 0);
+  LeftClickOn(GetShownNudge(nudge_id));
+  EXPECT_EQ(GetSystemTrayClient()->show_speak_on_mute_detection_count(), 1);
 }
 
 TEST_F(VideoConferenceTrayControllerTest, RecordRepeatedShows) {
@@ -503,10 +713,14 @@ TEST_F(VideoConferenceTrayControllerTest, SpeakOnMuteOptInNudge_OptOut) {
   EXPECT_TRUE(IsNudgeShown(nudge_id));
 
   // Opt out of speak-on-mute. Nudge should be dismissed and never shown again.
-  LeftClickOn(GetNudgeDismissButton(nudge_id));
+  LeftClickOn(GetNudgeFirstButton(nudge_id));
   EXPECT_FALSE(IsNudgeShown(nudge_id));
   EXPECT_FALSE(prefs->GetBoolean(prefs::kShouldShowSpeakOnMuteOptInNudge));
   EXPECT_FALSE(prefs->GetBoolean(prefs::kUserSpeakOnMuteDetectionEnabled));
+
+  // Expect confirmation nudge to be shown.
+  EXPECT_TRUE(
+      IsNudgeShown(kVideoConferenceTraySpeakOnMuteOptInConfirmationNudgeId));
 
   // Unmute and mute again, user opted out so nudge should not be shown.
   controller()->SetMicrophoneMuted(false);
@@ -541,10 +755,71 @@ TEST_F(VideoConferenceTrayControllerTest, SpeakOnMuteOptInNudge_OptIn) {
   EXPECT_FALSE(prefs->GetBoolean(prefs::kShouldShowSpeakOnMuteOptInNudge));
   EXPECT_TRUE(prefs->GetBoolean(prefs::kUserSpeakOnMuteDetectionEnabled));
 
+  // Expect confirmation nudge to be shown.
+  EXPECT_TRUE(
+      IsNudgeShown(kVideoConferenceTraySpeakOnMuteOptInConfirmationNudgeId));
+
   // Unmute and mute again, user opted in so nudge should not be shown.
   controller()->SetMicrophoneMuted(false);
   controller()->SetMicrophoneMuted(true);
   EXPECT_FALSE(IsNudgeShown(nudge_id));
+}
+
+// Tests that the speak on mute opt-in nudge cancels other VC nudges, and other
+// VC nudge requests are blocked if a nudge is shown on screen.
+TEST_F(VideoConferenceTrayControllerTest, NudgeBlocksOtherNudges) {
+  const auto* opt_in_nudge_id = kVideoConferenceTraySpeakOnMuteOptInNudgeId;
+  const auto* speak_on_mute_nudge_id =
+      kVideoConferenceTraySpeakOnMuteDetectedNudgeId;
+  const auto* opt_in_confirmation_nudge =
+      kVideoConferenceTraySpeakOnMuteOptInConfirmationNudgeId;
+  const auto* use_while_disabled_nudge_id =
+      kVideoConferenceTrayCameraUseWhileHWDisabledNudgeId;
+
+  const auto* app_name = u"app_name";
+  const auto camera_device_name =
+      l10n_util::GetStringUTF16(IDS_ASH_VIDEO_CONFERENCE_CAMERA_NAME);
+
+  SetTrayAndButtonsVisible();
+
+  // Show a "use while disabled nudge".
+  controller()->OnCameraHWPrivacySwitchStateChanged(
+      /*device_id=*/"device_id", cros::mojom::CameraPrivacySwitchState::ON);
+  controller()->HandleDeviceUsedWhileDisabled(
+      crosapi::mojom::VideoConferenceMediaDevice::kCamera, app_name);
+  task_environment()->FastForwardBy(kHandleDeviceUsedWhileDisabledWaitTime);
+  EXPECT_TRUE(IsNudgeShown(use_while_disabled_nudge_id));
+
+  // Show opt-in nudge by muting the microphone, "use while disabled" nudge
+  // should have been cancelled.
+  controller()->SetMicrophoneMuted(true);
+  EXPECT_TRUE(controller()->GetMicrophoneMuted());
+  EXPECT_TRUE(IsNudgeShown(opt_in_nudge_id));
+  EXPECT_FALSE(IsNudgeShown(use_while_disabled_nudge_id));
+
+  // Opt in to speak-on-mute. Opt-in nudge should be dismissed and confirmation
+  // nudge should be showing.
+  LeftClickOn(GetNudgeSecondButton(opt_in_nudge_id));
+  EXPECT_FALSE(IsNudgeShown(opt_in_nudge_id));
+  EXPECT_TRUE(IsNudgeShown(opt_in_confirmation_nudge));
+
+  // Wait for 60 seconds to simulate that the mic mute cool down has passed. The
+  // speak on mute nudge should be ready to show.
+  task_environment()->AdvanceClock(base::Seconds(60));
+
+  // Speak on mute, but nudge should not be shown since the confirmation nudge
+  // is currently visible.
+  controller()->OnSpeakOnMuteDetected();
+  EXPECT_FALSE(IsNudgeShown(speak_on_mute_nudge_id));
+
+  // Dismiss the confirmation nudge.
+  AnchoredNudgeManager::Get()->Cancel(opt_in_confirmation_nudge);
+  EXPECT_FALSE(IsNudgeShown(opt_in_confirmation_nudge));
+
+  // Speak on mute, nudge should be shown since there are no other blocking
+  // nudges.
+  controller()->OnSpeakOnMuteDetected();
+  EXPECT_TRUE(IsNudgeShown(speak_on_mute_nudge_id));
 }
 
 }  // namespace ash

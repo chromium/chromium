@@ -20,6 +20,7 @@ import com.google.android.gms.common.GoogleApiAvailability;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.task.PostTask;
@@ -248,7 +249,6 @@ public class ExternalAuthUtils {
     /**
      * @return this object's {@link ExternalAuthGoogleDelegate} instance.
      */
-    @VisibleForTesting
     public ExternalAuthGoogleDelegate getGoogleDelegateForTesting() {
         return mGoogleDelegate;
     }
@@ -294,6 +294,8 @@ public class ExternalAuthUtils {
      * @param externalAuthUtils The instance to set for testing.
      */
     public static void setInstanceForTesting(ExternalAuthUtils externalAuthUtils) {
+        var oldValue = sInstance;
         sInstance = externalAuthUtils;
+        ResettersForTesting.register(() -> sInstance = oldValue);
     }
 }

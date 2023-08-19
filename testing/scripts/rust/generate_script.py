@@ -47,19 +47,19 @@ def _find_test_executables(args):
     with open(input_filepath) as f:
         for line in f:
             exe_name = line.strip()
-            # TODO(https://crbug.com/1271215): Append ".exe" extension when
-            # *targeting* Windows.  (The "targeting" part means that we can't
-            # just detect whether the build is *hosted* on Windows.)
+            # Append ".exe" extension when *targeting* Windows, not when this
+            # script is running on windows. We do that by using `args.make_bat`
+            # as a signal.
             if exe_name in exes:
-                raise ValueError("Duplicate entry ('{}') in {}".format(
-                    exe_name, input_filepath))
-            if sys.platform == 'win32':
+                raise ValueError(
+                    f'Duplicate entry "{exe_name}" in {input_filepath}')
+            if args.make_bat:
                 suffix = ".exe"
             else:
                 suffix = ""
             exes.add(f'{exe_name}{suffix}')
     if not exes:
-        raise ValueError("Unexpectedly empty file: {}".format(input_filepath))
+        raise ValueError(f'Unexpectedly empty file: {input_filepath}')
     exes = sorted(exes)  # For stable results in unit tests.
     return exes
 
@@ -67,7 +67,7 @@ def _find_test_executables(args):
 def _validate_if_test_executables_exist(exes):
     for exe in exes:
         if not os.path.isfile(exe):
-            raise ValueError("File not found: {}".format(exe))
+            raise ValueError(f'File not found: {exe}')
 
 
 def _generate_script(args, should_validate_if_exes_exist=True):

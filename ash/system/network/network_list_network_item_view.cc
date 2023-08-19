@@ -194,7 +194,8 @@ gfx::ImageSkia GetNetworkImageForNetwork(
       // disconnected.
       const SkColor icon_color =
           chromeos::features::IsJellyrollEnabled()
-              ? color_provider->GetColor(cros_tokens::kCrosSysPrimary)
+              ? network_icon::GetDefaultColorForIconType(
+                    color_provider, network_icon::ICON_TYPE_LIST)
               : AshColorProvider::Get()->GetContentLayerColor(
                     AshColorProvider::ContentLayerType::kIconColorPrimary);
       network_image = gfx::ImageSkiaOperations::CreateSuperimposedImage(
@@ -248,11 +249,6 @@ NetworkListNetworkItemView::~NetworkListNetworkItemView() {
 
 void NetworkListNetworkItemView::UpdateViewForNetwork(
     const NetworkStatePropertiesPtr& network_properties) {
-  const bool was_connecting = network_properties_
-                                  ? network_properties_->connection_state ==
-                                        chromeos::network_config::mojom::
-                                            ConnectionStateType::kConnecting
-                                  : false;
   network_properties_ = mojo::Clone(network_properties);
 
   Reset();
@@ -300,9 +296,9 @@ void NetworkListNetworkItemView::UpdateViewForNetwork(
       network_properties_->connection_state ==
       chromeos::network_config::mojom::ConnectionStateType::kConnecting;
 
-  if (!was_connecting && is_connecting) {
+  if (is_connecting) {
     network_icon::NetworkIconAnimation::GetInstance()->AddObserver(this);
-  } else if (is_connecting) {
+  } else {
     network_icon::NetworkIconAnimation::GetInstance()->RemoveObserver(this);
   }
 
@@ -394,13 +390,14 @@ void NetworkListNetworkItemView::AddPowerStatusView() {
       AshColorProvider::ContentLayerType::kIconColorPrimary);
   image_icon->SetPreferredSize(gfx::Size(kMenuIconSize, kMenuIconSize));
   image_icon->SetFlipCanvasOnPaintForRTLUI(true);
-  PowerStatus::BatteryImageInfo icon_info;
 
   int battery_percentage =
       network_properties()->type_state->get_tether()->battery_percentage;
+  PowerStatus::BatteryImageInfo icon_info(icon_color);
   icon_info.charge_percent = battery_percentage;
-  image_icon->SetImage(PowerStatus::GetBatteryImage(
-      icon_info, kMobileNetworkBatteryIconSize, icon_color));
+  image_icon->SetImage(
+      PowerStatus::GetBatteryImage(icon_info, kMobileNetworkBatteryIconSize,
+                                   image_icon->GetColorProvider()));
 
   // Show the numeric battery percentage on hover.
   image_icon->SetTooltipText(base::FormatPercent(battery_percentage));

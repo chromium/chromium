@@ -156,7 +156,7 @@ public class HiddenTabHolder {
         Tab tab = new TabBuilder()
                           .setWindow(new WindowAndroid(context))
                           .setLaunchType(TabLaunchType.FROM_SPECULATIVE_BACKGROUND_CREATION)
-                          .setDelegateFactory(CustomTabDelegateFactory.createDummy())
+                          .setDelegateFactory(CustomTabDelegateFactory.createEmpty())
                           .setInitiallyHidden(true)
                           .build();
 
@@ -235,7 +235,6 @@ public class HiddenTabHolder {
         return mSpeculation != null;
     }
 
-    @VisibleForTesting
     @Nullable SpeculationParams getSpeculationParamsForTesting() {
         return mSpeculation;
     }

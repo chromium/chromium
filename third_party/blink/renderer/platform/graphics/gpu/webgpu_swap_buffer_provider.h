@@ -45,8 +45,7 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
       WGPUTextureUsage usage,
       WGPUTextureFormat format,
       PredefinedColorSpace color_space,
-      gfx::HDRMode hdr_mode,
-      absl::optional<gfx::HDRMetadata> hdr_metadata);
+      const gfx::HDRMetadata& hdr_metadata);
   ~WebGPUSwapBufferProvider() override;
 
   viz::SharedImageFormat Format() const;

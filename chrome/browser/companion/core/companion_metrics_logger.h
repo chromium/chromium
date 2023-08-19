@@ -48,22 +48,51 @@ struct UiSurfaceMetrics {
   UiEvent last_event = UiEvent::kNotAvailable;
 
   // The position of the UI surface relative to the companion page.
-  size_t ui_surface_position = kInvalidPosition;
+  int ui_surface_position = kInvalidPosition;
 
   // The number of child elements that were considered to be shown within the
   // surface, e.g. number of candidate queries inside related queries component.
-  size_t child_element_available_count = kInvalidNumChildren;
+  int child_element_available_count = kInvalidNumChildren;
 
   // The number of child elements shown within the surface, e.g. number of
   // related queries inside related queries component.
-  size_t child_element_shown_count = kInvalidNumChildren;
+  int child_element_shown_count = kInvalidNumChildren;
 
   // The number of times user clicked on the surface.
-  uint32_t click_count = 0;
+  int click_count = 0;
 
   // The position of the clicked UI element within its parent list. Applicable
   // to surfaces that show a list.
-  int32_t click_position = kInvalidPosition;
+  int click_position = kInvalidPosition;
+};
+
+// Tracks visual suggestion metrics for a single page.
+struct VisualSuggestionsMetrics {
+  VisualSuggestionsMetrics() = default;
+  VisualSuggestionsMetrics(const VisualSuggestionsMetrics& other) = default;
+  VisualSuggestionsMetrics& operator=(const VisualSuggestionsMetrics& other) =
+      default;
+  ~VisualSuggestionsMetrics() = default;
+
+  // The number of images that pass visual suggestion requirements.
+  // This metric is exponientially bucketed (1.3) and rounded for privacy.
+  uint32_t results_count;
+
+  // The number of images eligible for visual classification.
+  // This metric is exponientially bucketed (1.3) and rounded for privacy.
+  uint32_t eligible_count;
+
+  // The number of images classified as sensitive.
+  // This metric is exponientially bucketed (1.3) and rounded for privacy.
+  uint32_t sensitive_count;
+
+  // The number of images classifier as shoppy.
+  // This metric is exponientially bucketed (1.3) and rounded for privacy.
+  uint32_t shoppy_count;
+
+  // The number of images classifier as shoppy and nonsensitive.
+  // This metric is exponientially bucketed (1.3) and rounded for privacy.
+  uint32_t shoppy_nonsensitive_count;
 };
 
 // Various types of events happening on the promo surfaces on the companion
@@ -101,9 +130,9 @@ class CompanionMetricsLogger {
 
   // Logging method corresponding to `RecordUiSurfaceShown` in companion.mojom.
   void RecordUiSurfaceShown(UiSurface ui_surface,
-                            uint32_t ui_surface_position,
-                            uint32_t child_element_available_count,
-                            uint32_t child_element_shown_count);
+                            int32_t ui_surface_position,
+                            int32_t child_element_available_count,
+                            int32_t child_element_shown_count);
 
   // Logging method corresponding to `RecordUiSurfaceClicked` in
   // companion.mojom.
@@ -117,6 +146,9 @@ class CompanionMetricsLogger {
 
   // Logging method recording the status of whether user is opted-in to exps.
   void OnExpsOptInStatusAvailable(bool is_exps_opted_in) const;
+
+  // Logging method corresponding to visual query suggestions.
+  void OnVisualSuggestionsResult(const VisualSuggestionsMetrics& metrics);
 
  private:
   // Meant to be called at destruction. Flushes the UKM metrics.
@@ -137,6 +169,9 @@ class CompanionMetricsLogger {
   // Indicates how the companion side panel was opened. Non-empty for the first
   // navigation.
   absl::optional<SidePanelOpenTrigger> open_trigger_;
+
+  // Stores metrics for visual query suggestions.
+  absl::optional<VisualSuggestionsMetrics> visual_suggestions_;
 };
 
 }  // namespace companion

@@ -29,14 +29,15 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ApnMigrator
   ApnMigrator(
       ManagedCellularPrefHandler* managed_cellular_pref_handler,
       ManagedNetworkConfigurationHandler* managed_network_configuration_handler,
-      NetworkStateHandler* network_state_handler,
-      NetworkMetadataStore* network_metadata_store);
+      NetworkStateHandler* network_state_handler);
   ApnMigrator() = delete;
   ApnMigrator(const ApnMigrator&) = delete;
   ApnMigrator& operator=(const ApnMigrator&) = delete;
   ~ApnMigrator() override;
 
  private:
+  friend class ApnMigratorTest;
+
   // NetworkStateHandlerObserver:
   void NetworkListChanged() override;
 
@@ -68,6 +69,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ApnMigrator
                               absl::optional<base::Value::Dict> properties,
                               absl::optional<std::string> error);
 
+  NetworkMetadataStore* GetNetworkMetadataStore();
+
+  void set_network_metadata_store_for_testing(
+      NetworkMetadataStore* network_metadata_store_for_testing) {
+    network_metadata_store_for_testing_ = network_metadata_store_for_testing;
+  }
+
   // ICCIDs that are currently being migrated.
   base::flat_set<std::string> iccids_in_migration_;
 
@@ -82,8 +90,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ApnMigrator
       network_configuration_handler_ = nullptr;
   raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_ =
       nullptr;
-  raw_ptr<NetworkMetadataStore, ExperimentalAsh> network_metadata_store_ =
-      nullptr;
+
+  // NetworkMetadataStore may be created and destroyed multiple times
+  // in ApnMigrator's lifetime, so a reference to NetworkMetadataStore
+  // should not be held. See http://b/285014794#comment19 for more info.
+  // Note that this should only be non-nullptr in unit tests.
+  raw_ptr<NetworkMetadataStore, ExperimentalAsh>
+      network_metadata_store_for_testing_ = nullptr;
 
   // Remote for sending requests to the CrosNetworkConfig service.
   mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>

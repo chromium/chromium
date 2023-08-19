@@ -4,6 +4,7 @@
 
 #include "content/renderer/java/gin_java_bridge_object.h"
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "content/common/gin_java_bridge_messages.h"
 #include "content/public/renderer/render_thread.h"
@@ -85,9 +86,7 @@ gin::ObjectTemplateBuilder GinJavaBridgeObject::GetObjectTemplateBuilder(
 v8::Local<v8::Value> GinJavaBridgeObject::GetNamedProperty(
     v8::Isolate* isolate,
     const std::string& property) {
-  std::map<std::string, bool>::iterator method_pos =
-      known_methods_.find(property);
-  if (method_pos == known_methods_.end()) {
+  if (!base::Contains(known_methods_, property)) {
     if (!dispatcher_) {
       return v8::Local<v8::Value>();
     }

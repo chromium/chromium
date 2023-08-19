@@ -78,7 +78,11 @@ class PrimaryAccountMutator {
   // The account state changes will be recorded in UMA, attributed to the
   // provided `access_point`.
   // TODO(crbug.com/1261772): Don't set a default `access_point`. All callsites
-  // should provide a valid value.
+  //     should provide a valid value.
+  // TODO(crbug.com/1462858): ConsentLevel::kSync is being migrated away from,
+  //     please see ConsentLevel::kSync documentation before adding new calls
+  //     with ConsentLevel::kSync. Also, update this documentation when the
+  //     deprecation process advances.
   virtual PrimaryAccountError SetPrimaryAccount(
       const CoreAccountId& account_id,
       ConsentLevel consent_level,

@@ -16,46 +16,29 @@ namespace page_info {
 BASE_FEATURE(kPageInfoStoreInfo,
              "PageInfoStoreInfo",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kPageInfoAboutThisSiteImprovedBottomSheet,
-             "PageInfoAboutThisSiteImprovedBottomSheet",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-const char* pfings[]{"pt", "fr", "it", "nl", "de", "es"};
+const char* default_langs[]{"en", "pt", "fr", "it", "nl", "de", "es"};
 
 extern bool IsAboutThisSiteFeatureEnabled(const std::string& locale) {
   std::string lang = l10n_util::GetLanguage(locale);
-  if (lang == "en") {
-    return base::FeatureList::IsEnabled(kPageInfoAboutThisSiteEn);
-  } else {
-#if BUILDFLAG(IS_ANDROID)
-    if (base::Contains(pfings, lang)) {
-      return base::FeatureList::IsEnabled(kPageInfoAboutThisSiteEn);
-    }
-#endif
-    return base::FeatureList::IsEnabled(kPageInfoAboutThisSiteNonEn);
+  if (base::Contains(default_langs, lang)) {
+    return base::FeatureList::IsEnabled(kPageInfoAboutThisSite);
   }
+  return base::FeatureList::IsEnabled(kPageInfoAboutThisSiteMoreLangs);
 }
 
-BASE_FEATURE(kPageInfoAboutThisSiteNewIcon,
-             "PageInfoAboutThisSiteNewIcon",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kPageInfoAboutThisSiteEn,
-             "PageInfoAboutThisSiteEn",
+BASE_FEATURE(kPageInfoAboutThisSite,
+             "PageInfoAboutThisSite",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kPageInfoAboutThisSiteNonEn,
-             "PageInfoAboutThisSiteNonEn",
+BASE_FEATURE(kPageInfoAboutThisSiteMoreLangs,
+             "PageInfoAboutThisSiteMoreLangs",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<bool> kShowSampleContent{&kPageInfoAboutThisSiteEn,
+const base::FeatureParam<bool> kShowSampleContent{&kPageInfoAboutThisSite,
                                                   "ShowSampleContent", false};
 
 #if !BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kPageInfoAboutThisSiteKeepSidePanelOnSameTabNavs,
-             "PageInfoAboutThisSiteKeepSidePanelOnSameTabNavs",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPageInfoHistoryDesktop,
              "PageInfoHistoryDesktop",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -63,14 +46,6 @@ BASE_FEATURE(kPageInfoHistoryDesktop,
 BASE_FEATURE(kPageInfoHideSiteSettings,
              "PageInfoHideSiteSettings",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kPageInfoCookiesSubpage,
-             "PageInfoCookiesSubpage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kPageSpecificSiteDataDialog,
-             "PageSpecificSiteDataDialog",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #endif
 

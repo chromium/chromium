@@ -11,8 +11,6 @@
 
 namespace customtabs {
 
-const size_t kMaxNumLookupPerPage = 15;
-
 class TextFragmentLookupStateTracker
     : public content::WebContentsObserver,
       public content::WebContentsUserData<TextFragmentLookupStateTracker> {
@@ -49,6 +47,8 @@ class TextFragmentLookupStateTracker
 
   // Implements `content::WebContentsObserver`:
   void PrimaryPageChanged(content::Page& page) override;
+
+  size_t max_lookups_per_page() const;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

@@ -169,11 +169,6 @@ class CORE_EXPORT NGPhysicalAnchorQuery
  public:
   using Base = NGAnchorQueryBase<NGPhysicalAnchorReference>;
 
-  // Returns NGPhysicalAnchorQuery on the containing block of the element.
-  // TODO(crbug.com/1309178): This doesn't work if the containing block is
-  // fragmented or inline. Fix it.
-  static const NGPhysicalAnchorQuery* GetFromLayoutResult(const LayoutObject&);
-
   const NGPhysicalAnchorReference* AnchorReference(
       const LayoutObject& query_object,
       const NGAnchorKey&) const;
@@ -257,12 +252,6 @@ class CORE_EXPORT NGAnchorEvaluatorImpl : public Length::AnchorEvaluator {
   STACK_ALLOCATED();
 
  public:
-  // Builds an evaluator for the passed element after layout. Allows
-  // `getComputedStyle()` to resolve anchor functions.
-  // TODO(crbug.com/1309178): This doesn't work if the containing block is
-  // fragmented or inline. Fix it.
-  static NGAnchorEvaluatorImpl BuildFromLayoutResult(const LayoutObject&);
-
   // An empty evaluator that always return `nullopt`. This instance can still
   // compute `HasAnchorFunctions()`.
   NGAnchorEvaluatorImpl() = default;
@@ -323,6 +312,10 @@ class CORE_EXPORT NGAnchorEvaluatorImpl : public Length::AnchorEvaluator {
   // (e.g., no target or wrong axis).
   absl::optional<LayoutUnit> Evaluate(
       const CalculationExpressionNode&) const override;
+
+  // Finds the rect of the element referenced by the `position-fallback-bounds`
+  // property, or nullopt if there's no such element.
+  absl::optional<LogicalRect> GetAdditionalFallbackBoundsRect() const;
 
  private:
   const NGLogicalAnchorQuery* AnchorQuery() const;

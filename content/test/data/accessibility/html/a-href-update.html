@@ -1,0 +1,26 @@
+<!--
+@WAIT-FOR:done
+-->
+<!DOCTYPE html>
+<html>
+
+<body>
+  <div>
+    <span>pending</span>
+    <a id="link1" target="_blank">Link set without delay</a>
+    <a id="link2" target="_blank">Link set with delay</a>
+  </div>
+
+  <script>
+    const link1 = document.getElementById('link1');
+    const link2 = document.getElementById('link2');
+
+    link1.setAttribute('href', '#');
+    window.setTimeout(() => {
+      link2.setAttribute('href', '#');
+      document.querySelector('span').innerText = 'done';
+    }, 300);
+  </script>
+</body>
+
+</html>

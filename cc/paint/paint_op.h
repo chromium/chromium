@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/containers/stack_container.h"
 #include "base/debug/alias.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -42,6 +41,9 @@
 
 class SkImage;
 class SkTextBlob;
+namespace sktext::gpu {
+class Slug;
+}
 
 namespace cc {
 
@@ -764,13 +766,14 @@ class CC_PAINT_EXPORT DrawSlugOp final : public PaintOpWithFlags {
  public:
   static constexpr PaintOpType kType = PaintOpType::DrawSlug;
   static constexpr bool kIsDrawOp = true;
-  DrawSlugOp(sk_sp<GrSlug> slug, const PaintFlags& flags);
+  DrawSlugOp(sk_sp<sktext::gpu::Slug> slug, const PaintFlags& flags);
   ~DrawSlugOp();
-  static void SerializeSlugs(const sk_sp<GrSlug>& slug,
-                             const std::vector<sk_sp<GrSlug>>& extra_slugs,
-                             PaintOpWriter& writer,
-                             const PaintFlags* flags_to_serialize,
-                             const SkM44& current_ctm);
+  static void SerializeSlugs(
+      const sk_sp<sktext::gpu::Slug>& slug,
+      const std::vector<sk_sp<sktext::gpu::Slug>>& extra_slugs,
+      PaintOpWriter& writer,
+      const PaintFlags* flags_to_serialize,
+      const SkM44& current_ctm);
   static void RasterWithFlags(const DrawSlugOp* op,
                               const PaintFlags* flags,
                               SkCanvas* canvas,
@@ -780,8 +783,8 @@ class CC_PAINT_EXPORT DrawSlugOp final : public PaintOpWithFlags {
   bool EqualsForTesting(const DrawSlugOp& other) const;
   HAS_SERIALIZATION_FUNCTIONS();
 
-  sk_sp<GrSlug> slug;
-  std::vector<sk_sp<GrSlug>> extra_slugs;
+  sk_sp<sktext::gpu::Slug> slug;
+  std::vector<sk_sp<sktext::gpu::Slug>> extra_slugs;
 
  private:
   DrawSlugOp();
@@ -811,8 +814,8 @@ class CC_PAINT_EXPORT DrawTextBlobOp final : public PaintOpWithFlags {
   HAS_SERIALIZATION_FUNCTIONS();
 
   sk_sp<SkTextBlob> blob;
-  mutable sk_sp<GrSlug> slug;
-  mutable std::vector<sk_sp<GrSlug>> extra_slugs;
+  mutable sk_sp<sktext::gpu::Slug> slug;
+  mutable std::vector<sk_sp<sktext::gpu::Slug>> extra_slugs;
   SkScalar x;
   SkScalar y;
   // This field isn't serialized.

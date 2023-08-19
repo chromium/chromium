@@ -8,9 +8,7 @@
 #include "chrome/browser/prefetch/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/preloading.h"
-#include "content/public/common/content_features.h"
 
 namespace prefetch {
 void RegisterPredictionOptionsProfilePrefs(
@@ -60,18 +58,6 @@ void SetPreloadPagesState(PrefService* prefs, PreloadPagesState state) {
 }
 
 content::PreloadingEligibility IsSomePreloadingEnabled(
-    const PrefService& prefs,
-    content::WebContents* web_contents) {
-  // Override kPreloadingHoldback when DevTools is opened to mitigate the cases
-  // in which developers are affected by kPreloadingHoldback.
-  if (!(web_contents && content::DevToolsAgentHost::HasFor(web_contents)) &&
-      base::FeatureList::IsEnabled(features::kPreloadingHoldback)) {
-    return content::PreloadingEligibility::kPreloadingDisabled;
-  }
-  return IsSomePreloadingEnabledIgnoringFinch(prefs);
-}
-
-content::PreloadingEligibility IsSomePreloadingEnabledIgnoringFinch(
     const PrefService& prefs) {
   // Arrange the results roughly in order of decreasing transience.
   if (GetPreloadPagesState(prefs) == PreloadPagesState::kNoPreloading) {

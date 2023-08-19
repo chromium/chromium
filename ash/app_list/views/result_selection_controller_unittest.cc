@@ -5,7 +5,7 @@
 #include "ash/app_list/views/result_selection_controller.h"
 
 #include <gtest/gtest.h>
-#include <cctype>
+
 #include <map>
 #include <memory>
 #include <string>

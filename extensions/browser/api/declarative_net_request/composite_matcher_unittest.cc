@@ -476,7 +476,8 @@ TEST_F(CompositeMatcherTest, NotifyWithholdFromPageAccess) {
     SCOPED_TRACE(base::StringPrintf(
         "request_url=%s, access=%d, expected_final_url=%s, "
         "should_notify_withheld=%d",
-        test_case.request_url->spec().c_str(), test_case.access,
+        test_case.request_url->spec().c_str(),
+        static_cast<int>(test_case.access),
         test_case.expected_final_url.value_or(GURL()).spec().c_str(),
         test_case.should_notify_withheld));
 

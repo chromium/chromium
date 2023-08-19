@@ -14,8 +14,8 @@ namespace blink {
 
 const char DOMWindowLaunchQueue::kSupplementName[] = "DOMWindowLaunchQueue";
 
-DOMWindowLaunchQueue::DOMWindowLaunchQueue()
-    : Supplement(nullptr), launch_queue_(MakeGarbageCollected<LaunchQueue>()) {}
+DOMWindowLaunchQueue::DOMWindowLaunchQueue(LocalDOMWindow& window)
+    : Supplement(window), launch_queue_(MakeGarbageCollected<LaunchQueue>()) {}
 
 Member<LaunchQueue> DOMWindowLaunchQueue::launchQueue(LocalDOMWindow& window) {
   return FromState(&window)->launch_queue_;
@@ -44,7 +44,7 @@ DOMWindowLaunchQueue* DOMWindowLaunchQueue::FromState(LocalDOMWindow* window) {
   DOMWindowLaunchQueue* supplement =
       Supplement<LocalDOMWindow>::From<DOMWindowLaunchQueue>(window);
   if (!supplement) {
-    supplement = MakeGarbageCollected<DOMWindowLaunchQueue>();
+    supplement = MakeGarbageCollected<DOMWindowLaunchQueue>(*window);
     ProvideTo(*window, supplement);
   }
   return supplement;

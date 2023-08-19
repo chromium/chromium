@@ -24,10 +24,6 @@
 #import "ios/web_view/public/cwv_credential_provider_extension_utils.h"
 #include "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Typedefs of |completionHandler| in |fetchProfilesWithCompletionHandler:|,
 // |fetchCreditCardsWithCompletionHandler:|, and
 // |fetchPasswordsWithCompletionHandler|.

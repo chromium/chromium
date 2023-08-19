@@ -124,7 +124,7 @@ const AtomicString& XRSpace::InterfaceName() const {
 void XRSpace::Trace(Visitor* visitor) const {
   visitor->Trace(session_);
   ScriptWrappable::Trace(visitor);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
 }
 
 }  // namespace blink

@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/shared/ui/util/optional_property_animator.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface OptionalPropertyAnimator ()
 
 // Redefine property as readwrite.

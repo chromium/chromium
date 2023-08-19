@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("password_auto_fill_api") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "password_auto_fill_api.h" ]
   frameworks = [ "Foundation.framework" ]
 }

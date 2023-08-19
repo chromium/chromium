@@ -339,10 +339,7 @@
         icon-aria-label="$i18n{parentDisabledPermissions}">
     </cr-tooltip-icon>
     <cr-toggle id="enableToggle"
-        aria-label$="[[appOrExtension(
-            data.type,
-            '$i18nPolymer{appEnabled}',
-            '$i18nPolymer{extensionEnabled}')]]"
+        aria-label$="[[getEnableToggleAriaLabel_(data.*)]]"
         aria-describedby="a11yAssociation"
         checked="[[isEnabled_(data.state)]]"
         on-change="onEnableToggleChange_"

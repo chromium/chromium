@@ -61,6 +61,8 @@
 #include "ui/color/color_provider_manager.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/manager/display_manager.h"
+#include "ui/display/manager/test/fake_display_delegate.h"
+#include "ui/display/manager/util/display_manager_test_util.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/display/util/display_util.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
@@ -343,6 +345,8 @@ void AshTestHelper::SetUp(InitParams init_params) {
     shell_init_params.quick_pair_mediator_factory =
         std::make_unique<quick_pair::FakeQuickPairMediatorFactory>();
   }
+  shell_init_params.native_display_delegate =
+      std::make_unique<display::FakeDisplayDelegate>();
   Shell::CreateInstance(std::move(shell_init_params));
   Shell* shell = Shell::Get();
 
@@ -440,12 +444,18 @@ display::Display AshTestHelper::GetSecondaryDisplay() const {
 }
 
 void AshTestHelper::SimulateUserLogin(const AccountId& account_id,
-                                      user_manager::UserType user_type) {
+                                      user_manager::UserType user_type,
+                                      bool is_new_profile) {
   session_controller_client_->AddUserSession(
-      account_id, account_id.GetUserEmail(), user_type);
+      account_id, account_id.GetUserEmail(), user_type,
+      /*provide_pref_service=*/true, is_new_profile);
   session_controller_client_->SwitchActiveUser(account_id);
   session_controller_client_->SetSessionState(
       session_manager::SessionState::ACTIVE);
+
+  if (pixel_test_helper_) {
+    pixel_test_helper_->StabilizeUi();
+  }
 }
 
 void AshTestHelper::StabilizeUIForPixelTest() {

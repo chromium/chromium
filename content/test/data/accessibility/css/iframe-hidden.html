@@ -1,0 +1,35 @@
+<!--
+@WIN-ALLOW:ia2_hypertext=*
+@NO-LOAD-EXPECTED:nested-frame.html
+@NO-LOAD-EXPECTED:box.html
+@WAIT-FOR:done
+-->
+<main>
+  <p>Before visibility:collapse iframes</p>
+  <div style="visibility:collapse">
+    <iframe src="accessibility/html/frame/nested-frame.html">
+    </iframe>
+  </div>
+  <p>After visibility:collapse iframes</p>
+</main>
+<div>
+  <hr>
+</div>
+<footer>
+  <p>Before display:none iframes</p>
+  <div style="display:none">
+    <iframe src="accessibility/html/frame/nested-frame.html">
+    </iframe>
+  </div>
+  <p>After display:none iframes</p>
+</footer>
+
+<script>
+  document.querySelector('iframe').addEventListener('load', () => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        document.title = 'done';
+      });
+    });
+  });
+</script>

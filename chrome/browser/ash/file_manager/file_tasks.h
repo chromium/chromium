@@ -126,18 +126,16 @@ class PrefRegistrySyncable;
 
 namespace file_manager::file_tasks {
 
-extern const char kActionIdView[];
-extern const char kActionIdSend[];
-extern const char kActionIdSendMultiple[];
-extern const char kActionIdWebDriveOfficeWord[];
-extern const char kActionIdWebDriveOfficeExcel[];
-extern const char kActionIdWebDriveOfficePowerPoint[];
-extern const char kActionIdOpenInOffice[];
-extern const char kActionIdOpenWeb[];
-
-// Checks which extension is installed and return the latest one installed or ""
-// if none is installed
-std::string GetODFSExtensionId(Profile* profile);
+constexpr char kActionIdView[] = "view";
+constexpr char kActionIdSend[] = "send";
+constexpr char kActionIdSendMultiple[] = "send_multiple";
+constexpr char kActionIdQuickOffice[] = "qo_documents";
+constexpr char kActionIdWebDriveOfficeWord[] = "open-web-drive-office-word";
+constexpr char kActionIdWebDriveOfficeExcel[] = "open-web-drive-office-excel";
+constexpr char kActionIdWebDriveOfficePowerPoint[] =
+    "open-web-drive-office-powerpoint";
+constexpr char kActionIdOpenInOffice[] = "open-in-office";
+constexpr char kActionIdOpenWeb[] = "OPEN_WEB";
 
 // Task types as explained in the comment above. Search for <task-type>.
 enum TaskType {
@@ -161,34 +159,37 @@ TaskType StringToTaskType(const std::string& str);
 std::string TaskTypeToString(TaskType task_type);
 
 constexpr char kDriveErrorMetricName[] = "FileBrowser.OfficeFiles.Errors.Drive";
-constexpr char kDriveTaskResultMetricName[] =
-    "FileBrowser.OfficeFiles.TaskResult.Drive";
-
-// List of UMA enum value for Web Drive Office task results. The enum values
-// must be kept in sync with OfficeTaskResult in
-// tools/metrics/histograms/enums.xml.
-enum class OfficeTaskResult {
-  FALLBACK_QUICKOFFICE = 0,
-  FALLBACK_OTHER = 1,
-  OPENED = 2,
-  MOVED = 3,
-  CANCELLED = 4,
-  FAILED = 5,
-  kMaxValue = FAILED,
-};
+constexpr char kOneDriveErrorMetricName[] =
+    "FileBrowser.OfficeFiles.Errors.OneDrive";
 
 // List of UMA enum values for Office File Handler task results for Drive. The
-// enum values must be kept in sync with OfficeDriveErrors in
+// enum values must be kept in sync with OfficeDriveOpenErrors in
 // tools/metrics/histograms/enums.xml.
-enum class OfficeDriveErrors {
-  OFFLINE = 0,
-  DRIVEFS_INTERFACE = 1,
-  TIMEOUT = 2,
-  NO_METADATA = 3,
-  INVALID_ALTERNATE_URL = 4,
-  DRIVE_ALTERNATE_URL = 5,
-  UNEXPECTED_ALTERNATE_URL = 6,
-  kMaxValue = UNEXPECTED_ALTERNATE_URL,
+enum class OfficeDriveOpenErrors {
+  kOffline = 0,
+  kDriveFsInterface = 1,
+  kTimeout = 2,
+  kNoMetadata = 3,
+  kInvalidAlternateUrl = 4,
+  kDriveAlternateUrl = 5,
+  kUnexpectedAlternateUrl = 6,
+  kSuccess = 7,
+  kMaxValue = kSuccess,
+};
+
+// List of UMA enum values for opening Office files from OneDrive, with the
+// MS365 PWA. The enum values must be kept in sync with OfficeOneDriveOpenErrors
+// in tools/metrics/histograms/enums.xml.
+enum class OfficeOneDriveOpenErrors {
+  kSuccess = 0,
+  kOffline = 1,
+  kNoProfile = 2,
+  kNoFileSystemURL = 3,
+  kInvalidFileSystemURL = 4,
+  kGetActionsGenericError = 5,
+  kGetActionsReauthRequired = 6,
+  kGetActionsInvalidUrl = 7,
+  kMaxValue = kGetActionsInvalidUrl,
 };
 
 // UMA metric name that tracks the result of using a MS Office file outside
@@ -206,6 +207,41 @@ enum class OfficeFilesUseOutsideDriveHook {
   ZIP = 3,
   OPEN_FROM_FILES_APP = 4,
   kMaxValue = OPEN_FROM_FILES_APP,
+};
+
+// UMA metric name that tracks the result of using a MS Office file outside
+// of Drive.
+constexpr char kOfficeOpenExtensionOneDriveMetricName[] =
+    "FileBrowser.OfficeFiles.Open.FileType.OneDrive";
+
+// List of file extensions that are used when opening a file with the
+// "open-in-office" task. The enum values must be kept in sync with
+// OfficeOpenExtensions in tools/metrics/histograms/enums.xml.
+enum class OfficeOpenExtensions {
+  kOther,
+  kDoc,
+  kDocm,
+  kDocx,
+  kDotm,
+  kDotx,
+  kOdp,
+  kOds,
+  kOdt,
+  kPot,
+  kPotm,
+  kPotx,
+  kPpam,
+  kPps,
+  kPpsm,
+  kPpsx,
+  kPpt,
+  kPptm,
+  kPptx,
+  kXls,
+  kXlsb,
+  kXlsm,
+  kXlsx,
+  kMaxValue = kXlsx,
 };
 
 // Describes a task.
@@ -350,6 +386,13 @@ bool ExecuteFileTask(Profile* profile,
                      const std::vector<storage::FileSystemURL>& file_urls,
                      gfx::NativeWindow modal_parent,
                      FileTaskFinishedCallback done);
+
+// See ash::FilesInternalsDebugJSONProvider::FunctionPointerType in
+// chrome/browser/ash/system_web_apps/apps/files_internals_debug_json_provider.h
+void GetDebugJSONForKeyForExecuteFileTask(
+    std::string_view key,
+    base::OnceCallback<void(std::pair<std::string_view, base::Value>)>
+        callback);
 
 // Executes QuickOffice file handler for each element of |file_urls|.
 void LaunchQuickOffice(Profile* profile,

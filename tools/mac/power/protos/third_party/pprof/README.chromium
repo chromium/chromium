@@ -5,6 +5,7 @@ Version: 44fc4e887b6b0cfb196973bcdb1fab95f0b3a75b
 License: Apache 2.0
 License File: LICENSE
 Security Critical: no
+Shipped: yes
 Description:
 Profile proto definitions used by pprof.
 

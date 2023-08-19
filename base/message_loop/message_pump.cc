@@ -12,7 +12,7 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_APPLE)
-#include "base/message_loop/message_pump_mac.h"
+#include "base/message_loop/message_pump_apple.h"
 #endif
 
 namespace base {
@@ -26,9 +26,6 @@ MessagePump::MessagePumpFactory* message_pump_for_ui_factory_ = nullptr;
 MessagePump::MessagePump() = default;
 
 MessagePump::~MessagePump() = default;
-
-void MessagePump::SetTimerSlack(TimerSlack) {
-}
 
 // static
 void MessagePump::OverrideMessagePumpForUIFactory(MessagePumpFactory* factory) {
@@ -48,7 +45,7 @@ std::unique_ptr<MessagePump> MessagePump::Create(MessagePumpType type) {
       if (message_pump_for_ui_factory_)
         return message_pump_for_ui_factory_();
 #if BUILDFLAG(IS_APPLE)
-      return MessagePumpMac::Create();
+      return message_pump_apple::Create();
 #elif BUILDFLAG(IS_NACL) || BUILDFLAG(IS_AIX)
       // Currently NaCl and AIX don't have a UI MessagePump.
       // TODO(abarth): Figure out if we need this.

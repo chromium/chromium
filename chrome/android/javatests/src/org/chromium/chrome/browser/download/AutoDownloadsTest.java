@@ -9,7 +9,7 @@ import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
-import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,13 +19,13 @@ import org.chromium.base.test.util.CloseableOnMainThread;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.download.DownloadTestRule.CustomMainActivityStart;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.permissions.PermissionTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.browser_ui.modaldialog.ModalDialogView;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -44,6 +44,11 @@ public class AutoDownloadsTest implements CustomMainActivityStart {
     private static final String TEST_FILE =
             "/content/test/data/android/auto_downloads_permissions.html";
     private EmbeddedTestServer mTestServer;
+
+    @BeforeClass
+    public static void beforeClass() {
+        ModalDialogView.overrideEnableButtonTapProtectionForTesting(false);
+    }
 
     @Override
     public void customMainActivityStart() throws InterruptedException {
@@ -70,7 +75,6 @@ public class AutoDownloadsTest implements CustomMainActivityStart {
     @Test
     @MediumTest
     @Feature({"AutoDownloads"})
-    @DisabledTest(message = "https://crbug.com/1108800")
     public void testAutoDownloadsDialog() throws Exception {
         try (CloseableOnMainThread ignored = CloseableOnMainThread.StrictMode.allowDiskWrites()) {
             ArrayList<DirectoryOption> dirOptions = new ArrayList<>();
@@ -87,9 +91,11 @@ public class AutoDownloadsTest implements CustomMainActivityStart {
         PermissionTestRule.waitForDialog(activity);
         PermissionTestRule.replyToDialog(true, activity);
 
-        int currentCallCount = mDownloadTestRule.getChromeDownloadCallCount();
-        Assert.assertTrue(mDownloadTestRule.waitForChromeDownloadToFinish(currentCallCount));
-        Assert.assertTrue(mDownloadTestRule.hasDownload("test-image0.png", null));
-        Assert.assertTrue(mDownloadTestRule.hasDownload("test-image1.png", null));
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(
+                    mDownloadTestRule.hasDownloaded("test-image0.png", null), Matchers.is(true));
+            Criteria.checkThat(
+                    mDownloadTestRule.hasDownloaded("test-image1.png", null), Matchers.is(true));
+        });
     }
 }

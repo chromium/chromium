@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/containers/flat_tree.h"
 #include "base/logging.h"
 #include "base/observer_list.h"
 #include "net/socket/ssl_client_socket_impl.h"
@@ -103,9 +104,9 @@ void SSLClientContext::SetClientCertificate(
   if (ssl_client_session_cache_) {
     // Session resumption bypasses client certificate negotiation, so flush all
     // associated sessions when preferences change.
-    ssl_client_session_cache_->FlushForServer(server);
+    ssl_client_session_cache_->FlushForServers({server});
   }
-  NotifySSLConfigForServerChanged(server);
+  NotifySSLConfigForServersChanged({server});
 }
 
 bool SSLClientContext::ClearClientCertificate(const HostPortPair& server) {
@@ -116,9 +117,9 @@ bool SSLClientContext::ClearClientCertificate(const HostPortPair& server) {
   if (ssl_client_session_cache_) {
     // Session resumption bypasses client certificate negotiation, so flush all
     // associated sessions when preferences change.
-    ssl_client_session_cache_->FlushForServer(server);
+    ssl_client_session_cache_->FlushForServers({server});
   }
-  NotifySSLConfigForServerChanged(server);
+  NotifySSLConfigForServersChanged({server});
   return true;
 }
 
@@ -142,13 +143,18 @@ void SSLClientContext::OnCertVerifierChanged() {
   NotifySSLConfigChanged(SSLConfigChangeType::kCertVerifierChanged);
 }
 
-void SSLClientContext::OnCertDBChanged() {
-  // Both the trust store and client certificate store may have changed.
+void SSLClientContext::OnTrustStoreChanged() {
+  NotifySSLConfigChanged(SSLConfigChangeType::kCertDatabaseChanged);
+}
+
+void SSLClientContext::OnClientCertStoreChanged() {
+  base::flat_set<HostPortPair> servers =
+      ssl_client_auth_cache_.GetCachedServers();
   ssl_client_auth_cache_.Clear();
   if (ssl_client_session_cache_) {
-    ssl_client_session_cache_->Flush();
+    ssl_client_session_cache_->FlushForServers(servers);
   }
-  NotifySSLConfigChanged(SSLConfigChangeType::kCertDatabaseChanged);
+  NotifySSLConfigForServersChanged(servers);
 }
 
 void SSLClientContext::NotifySSLConfigChanged(SSLConfigChangeType change_type) {
@@ -157,10 +163,10 @@ void SSLClientContext::NotifySSLConfigChanged(SSLConfigChangeType change_type) {
   }
 }
 
-void SSLClientContext::NotifySSLConfigForServerChanged(
-    const HostPortPair& server) {
+void SSLClientContext::NotifySSLConfigForServersChanged(
+    const base::flat_set<HostPortPair>& servers) {
   for (Observer& observer : observers_) {
-    observer.OnSSLConfigForServerChanged(server);
+    observer.OnSSLConfigForServersChanged(servers);
   }
 }
 

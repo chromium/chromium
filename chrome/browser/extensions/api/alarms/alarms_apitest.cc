@@ -112,25 +112,8 @@ IN_PROC_BROWSER_TEST_P(AlarmsApiTest, IncognitoSpanning) {
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
-// Test that the histogram for counting the number of alarms for an extension
-// is working properly. The PRE step installs the alarms and we'll check the
-// histogram in the main part of the test.
-IN_PROC_BROWSER_TEST_P(AlarmsApiTest, PRE_Count) {
+IN_PROC_BROWSER_TEST_P(AlarmsApiTest, Count) {
   EXPECT_TRUE(RunExtensionTest("alarms/count")) << message_;
-}
-
-// TODO(crbug.com/1405713): Fix failing test on Mac builders.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_Count DISABLED_Count
-#else
-#define MAYBE_Count Count
-#endif
-IN_PROC_BROWSER_TEST_P(AlarmsApiTest, MAYBE_Count) {
-  // The histogram will be updated when the extension is loaded during
-  // startup. This will happen before we enter the test, so just check
-  // that the update is present.
-  histogram_tester_->ExpectUniqueSample(
-      "Extensions.AlarmManager.AlarmsLoadedCount", 100, 1);
 }
 
 }  // namespace extensions

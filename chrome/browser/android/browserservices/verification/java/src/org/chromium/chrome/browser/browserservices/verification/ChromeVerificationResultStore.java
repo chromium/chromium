@@ -50,7 +50,6 @@ public class ChromeVerificationResultStore extends VerificationResultStore {
                 ChromePreferenceKeys.VERIFIED_DIGITAL_ASSET_LINKS, relationships);
     }
 
-    @VisibleForTesting
     public static ChromeVerificationResultStore getInstanceForTesting() {
         return getInstance();
     }

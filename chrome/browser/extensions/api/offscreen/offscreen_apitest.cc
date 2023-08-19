@@ -10,6 +10,8 @@
 #include "base/test/bind.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/ui/extensions/extension_action_test_helper.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/version_info/channel.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api/offscreen/audio_lifetime_enforcer.h"
@@ -25,6 +27,7 @@
 #include "extensions/test/extension_background_page_waiter.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
+#include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -124,6 +127,12 @@ class OffscreenApiTest : public ExtensionApiTest {
     // Add the kOffscreenDocumentTesting switch to allow the use of the
     // `TESTING` reason in offscreen document creation.
     command_line->AppendSwitch(switches::kOffscreenDocumentTesting);
+  }
+
+  void SetUpOnMainThread() override {
+    ExtensionApiTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(StartEmbeddedTestServer());
   }
 
   // Creates a new offscreen document through an API call, expecting success.
@@ -431,6 +440,44 @@ IN_PROC_BROWSER_TEST_F(OffscreenApiTest, LifetimeEnforcement) {
   EXPECT_FALSE(manager->GetOffscreenDocumentForExtension(*extension));
 }
 
+// Tests opening and immediately closing an offscreen document (so that the
+// close happens before it's fully loaded). Regression test for
+// https://crbug.com/1450784.
+IN_PROC_BROWSER_TEST_F(OffscreenApiTest, OpenAndImmediatelyCloseDocument) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Test",
+           "manifest_version": 3,
+           "version": "0.1",
+           "background": {"service_worker": "background.js"},
+           "permissions": ["offscreen"]
+         })";
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.test.runTests([
+           async function openAndRapidlyClose() {
+             let openResult =
+                 chrome.offscreen.createDocument(
+                     {
+                       url: 'offscreen.html',
+                       reasons: ['TESTING'],
+                       justification: 'Testing'
+                     });
+             chrome.offscreen.closeDocument();
+             await chrome.test.assertPromiseRejects(
+                 openResult,
+                 'Error: Offscreen document closed before fully loading.');
+             chrome.test.succeed();
+           },
+         ]);)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+  test_dir.WriteFile(FILE_PATH_LITERAL("offscreen.html"), "<html></html>");
+
+  ASSERT_TRUE(RunExtensionTest(test_dir.UnpackedPath(), {}, {})) << message_;
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 class GetAllScreensMediaOffscreenApiTest : public OffscreenApiTest {
  public:
@@ -474,7 +521,6 @@ IN_PROC_BROWSER_TEST_F(GetAllScreensMediaOffscreenApiTest,
   EXPECT_CALL(content_browser_client(),
               IsGetAllScreensMediaAllowed(testing::_, testing::_))
       .WillOnce(testing::Return(true));
-
   static constexpr char kManifest[] =
       R"({
            "name": "Offscreen Document Test",
@@ -576,6 +622,28 @@ IN_PROC_BROWSER_TEST_F(GetAllScreensMediaOffscreenApiTest,
   // screen capture with `getAllScreensMedia` is stopped.
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// TODO(https://crbug.com/1453966): Failing on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_TabCaptureStreams DISABLED_TabCaptureStreams
+#else
+#define MAYBE_TabCaptureStreams TabCaptureStreams
+#endif
+IN_PROC_BROWSER_TEST_F(OffscreenApiTest, MAYBE_TabCaptureStreams) {
+  const Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("offscreen/tab_capture_streams"));
+  ASSERT_TRUE(extension);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("example.com", "/simple.html")));
+
+  // Tab capture requires active tab, so click on the action to grant permission
+  // and kick off the tests.
+  ResultCatcher result_catcher;
+  ExtensionActionTestHelper::Create(browser())->Press(extension->id());
+  ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
 
 class OffscreenApiTestWithoutCommandLineFlag : public OffscreenApiTest {
  public:

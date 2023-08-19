@@ -202,7 +202,9 @@ class HardwareDisplayPlaneManager {
 
   // Cache the most updated connectors found in DRM resources. This needs to be
   // called whenever a DRM hotplug event is received via UDEV.
-  void ResetConnectorsCache(const ScopedDrmResourcesPtr& resources);
+  // Return a list of the valid Connector IDs that we got.
+  base::flat_set<uint32_t> ResetConnectorsCacheAndGetValidIds(
+      const ScopedDrmResourcesPtr& resources);
 
   // Get Immutable CRTC State.
   const CrtcState& GetCrtcStateForCrtcId(uint32_t crtc_id);

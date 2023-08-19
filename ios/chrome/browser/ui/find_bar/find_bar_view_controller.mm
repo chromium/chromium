@@ -4,15 +4,11 @@
 
 #import "ios/chrome/browser/ui/find_bar/find_bar_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_view.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 @interface FindBarViewController ()
 
@@ -41,7 +37,7 @@
 #pragma mark - Property Getters
 
 - (FindBarView*)findBarView {
-  return base::mac::ObjCCastStrict<FindBarView>(self.view);
+  return base::apple::ObjCCastStrict<FindBarView>(self.view);
 }
 
 #pragma mark - UIResponder

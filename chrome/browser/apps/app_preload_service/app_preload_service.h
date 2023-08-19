@@ -80,12 +80,10 @@ class AppPreloadService : public KeyedService {
   void OnGetAppsForFirstLoginCompleted(
       base::TimeTicks start_time,
       absl::optional<std::vector<PreloadAppDefinition>> apps);
-  void OnAllAppInstallationFinished(base::TimeTicks start_time,
-                                    const std::vector<bool>& results);
   // Called when the installation flow started by
   // `StartAppInstallationForFirstLogin` is complete, with `success` indicating
   // whether the overall flow was successful.
-  void OnFirstLoginFlowComplete(bool success, base::TimeTicks start_time);
+  void OnFirstLoginFlowComplete(base::TimeTicks start_time, bool success);
 
   bool ShouldInstallApp(const PreloadAppDefinition& app);
 

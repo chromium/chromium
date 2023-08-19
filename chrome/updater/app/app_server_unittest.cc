@@ -53,6 +53,8 @@ class AppServerTest : public AppServer {
               (base::RepeatingCallback<void(const RegistrationRequest&)>),
               (override));
   MOCK_METHOD(void, UninstallSelf, (), (override));
+  MOCK_METHOD(bool, ShutdownIfIdleAfterTask, (), (override));
+  MOCK_METHOD(void, OnDelayedTaskComplete, (), (override));
 
  protected:
   ~AppServerTest() override = default;

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("clear_browsing_data") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "browsing_data_counter_wrapper_producer.h",
     "browsing_data_counter_wrapper_producer.mm",
@@ -66,11 +65,11 @@ source_set("clear_browsing_data") {
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/public/provider/chrome/browser/branded_images:branded_images_api",
     "//ui/base",
+    "//ui/strings",
   ]
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "clear_browsing_data_manager_unittest.mm",
@@ -119,7 +118,6 @@ source_set("unit_tests") {
 }
 
 source_set("test_support") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "fake_browsing_data_counter_wrapper_producer.h",
@@ -132,10 +130,7 @@ source_set("test_support") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "clear_browsing_data_egtest.mm" ]
   deps = [

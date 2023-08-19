@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/strcat.h"
+#include "build/build_config.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/portal/portal_navigation_throttle.h"
 #include "content/browser/preloading/prerender/prerender_navigation_throttle.h"
@@ -23,6 +24,10 @@
 #include "content/public/browser/navigation_handle.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "content/browser/picture_in_picture/document_picture_in_picture_navigation_throttle.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace content {
 
@@ -159,6 +164,14 @@ void NavigationThrottleRunner::RegisterNavigationThrottles() {
   // navigation altogether.
   AddThrottle(
       BlockedSchemeNavigationThrottle::CreateThrottleForNavigation(request));
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Prevent cross-document navigations from document picture-in-picture
+  // windows.
+  AddThrottle(
+      DocumentPictureInPictureNavigationThrottle::MaybeCreateThrottleFor(
+          request));
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   AddThrottle(AncestorThrottle::MaybeCreateThrottleFor(request));
 

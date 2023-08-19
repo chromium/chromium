@@ -108,10 +108,58 @@ END_INTERFACE
 BEGIN_INTERFACE(
   {
     "uuid": {
+      "user":"PLACEHOLDER-GUID-028FEB84-44BC-4A73-A0CD-603678155CC3",
+      "system":"PLACEHOLDER-GUID-92631531-8044-46F4-B645-CDFBCCC7FA3B"
+    },
+    "tokensToSuffix": ["IUpdaterAppState"]
+  }
+)
+[
+  object,
+  dual,
+  uuid(PLACEHOLDER-GUID-A22AFC54-2DEF-4578-9187-DB3B24381090),
+  helpstring("IUpdaterAppState Interface"),
+  pointer_default(unique)
+]
+interface IUpdaterAppState : IDispatch {
+  [propget] HRESULT appId([out, retval] BSTR*);
+  [propget] HRESULT version([out, retval] BSTR*);
+  [propget] HRESULT ap([out, retval] BSTR*);
+  [propget] HRESULT brandCode([out, retval] BSTR*);
+  [propget] HRESULT brandPath([out, retval] BSTR*);
+  [propget] HRESULT ecp([out, retval] BSTR*);
+};
+END_INTERFACE
+
+BEGIN_INTERFACE(
+  {
+    "uuid": {
+      "user":"PLACEHOLDER-GUID-BCFCF95C-DE48-4F42-B0E9-D50DB407DB53",
+      "system":"PLACEHOLDER-GUID-2CB8867E-495E-459F-B1B6-2DD7FFDBD462"
+    },
+    "tokensToSuffix": ["IUpdaterAppStatesCallback"]
+  }
+)
+[
+  object,
+  oleautomation,
+  uuid(PLACEHOLDER-GUID-EFE903C0-E820-4136-9FAE-FDCD7F256302),
+  helpstring("IUpdaterAppStatesCallback Interface"),
+  pointer_default(unique)
+]
+interface IUpdaterAppStatesCallback : IUnknown {
+  HRESULT Run([in] VARIANT app_states);
+};
+END_INTERFACE
+
+BEGIN_INTERFACE(
+  {
+    "uuid": {
       "user":"PLACEHOLDER-GUID-02AFCB67-0899-4676-91A9-67D92B3B7918",
       "system":"PLACEHOLDER-GUID-FCE335F3-A55C-496E-814F-85971C9FA6F1"
     },
-    "tokensToSuffix": ["IUpdater", "IUpdaterCallback", "IUpdaterObserver"]
+    "tokensToSuffix": ["IUpdater", "IUpdaterCallback",
+                       "IUpdaterAppStatesCallback", "IUpdaterObserver"]
   }
 )
 [
@@ -160,6 +208,7 @@ interface IUpdater : IUnknown {
       [in, string] const WCHAR* install_data,
       [in, string] const WCHAR* install_settings,
       [in] IUpdaterObserver* observer);
+  HRESULT GetAppStates([in] IUpdaterAppStatesCallback* callback);
 };
 END_INTERFACE
 
@@ -203,4 +252,11 @@ library UpdaterLib {
 
   interface IUpdaterCallbackUser;
   interface IUpdaterCallbackSystem;
+
+  interface IUpdaterAppState;
+  interface IUpdaterAppStateUser;
+  interface IUpdaterAppStateSystem;
+
+  interface IUpdaterAppStatesCallbackUser;
+  interface IUpdaterAppStatesCallbackSystem;
 };

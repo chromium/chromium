@@ -4,7 +4,7 @@
 
 import os.path
 
-from signing.model import Distribution, NotarizeAndStapleLevel, NotarizationTool
+from signing.model import Distribution, NotarizeAndStapleLevel
 
 
 class ConfigError(Exception):
@@ -107,19 +107,6 @@ class CodeSignConfig(object):
         PKG file products.
         """
         return self._installer_identity
-
-    # TODO(rsesek): Remove from here and below after internal_config module
-    # stops needing them.
-    # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-    @property
-    def notary_team_id(self):
-        """Returns the Apple Developer Team ID for authenticating to Apple's
-        notary service. Mandatory when notarization_tool is `NOTARYTOOL`. This
-        is the default team ID if one is not specified on the command line.
-        """
-        return None
-    # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    # TODO(rsesek): Remove from here and above.
 
     @property
     def notarize(self):

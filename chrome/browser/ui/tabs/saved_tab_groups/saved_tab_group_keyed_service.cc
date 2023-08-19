@@ -252,8 +252,6 @@ void SavedTabGroupKeyedService::ResumeTrackingLocalTabGroup(
     const base::Uuid& saved_group_guid,
     const tab_groups::TabGroupId& group_id) {
   listener_.ResumeTrackingLocalTabGroup(group_id);
-  model_.OnGroupOpenedInTabStrip(saved_group_guid, group_id);
-  UpdateGroupVisualData(saved_group_guid, group_id);
 }
 
 void SavedTabGroupKeyedService::DisconnectLocalTabGroup(
@@ -300,11 +298,11 @@ void SavedTabGroupKeyedService::ConnectLocalTabGroup(
                                             tab_range);
 
   model_.OnGroupOpenedInTabStrip(saved_guid, local_group_id);
+  UpdateGroupVisualData(saved_guid, local_group_id);
+
   listener_.ConnectToLocalTabGroup(
       *model_.Get(saved_guid), GetWebContentsToTabGuidMappingForSavedGroup(
                                    tab_strip_model, saved_group, tab_range));
-
-  UpdateGroupVisualData(saved_guid, local_group_id);
 }
 
 void SavedTabGroupKeyedService::SavedTabGroupModelLoaded() {
@@ -349,8 +347,6 @@ void SavedTabGroupKeyedService::SavedTabGroupUpdatedFromSync(
     return;
   }
 
-  // Update the local group's metadata to match the saved group's.
-  UpdateGroupVisualData(group_guid, saved_group->local_group_id().value());
   // Update the local group's contents to match the saved group's.
   listener_.UpdateLocalGroupFromSync(saved_group->local_group_id().value());
 }

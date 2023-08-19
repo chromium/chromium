@@ -8,10 +8,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/policy/policy_app_interface.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // Returns a JSON-encoded string representing the given `base::Value`. If
 // `value` is nullptr, returns a string representing a `base::Value` of type

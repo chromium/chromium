@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.password_manager.settings;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 
@@ -20,7 +18,7 @@ import org.chromium.base.ThreadUtils;
  * managed PasswordManagerHandler instances need to refer to it as an observer. For that reason, the
  * provider is a singleton.
  */
-public class PasswordManagerHandlerProvider implements PasswordManagerHandler.PasswordListObserver {
+public class PasswordManagerHandlerProvider implements PasswordListObserver {
     private static final class LazyHolder {
         private static final PasswordManagerHandlerProvider INSTANCE =
                 new PasswordManagerHandlerProvider();
@@ -41,8 +39,8 @@ public class PasswordManagerHandlerProvider implements PasswordManagerHandler.Pa
 
     // This class is itself a PasswordListObserver, listening directly to a PasswordManagerHandler
     // implementation. But it also keeps a list of other observers, to which it forwards the events.
-    private final ObserverList<PasswordManagerHandler.PasswordListObserver> mObservers =
-            new ObserverList<PasswordManagerHandler.PasswordListObserver>();
+    private final ObserverList<PasswordListObserver> mObservers =
+            new ObserverList<PasswordListObserver>();
 
     /**
      * Sets a testing implementation of PasswordManagerHandler to be used. It overrides the
@@ -51,7 +49,6 @@ public class PasswordManagerHandlerProvider implements PasswordManagerHandler.Pa
      * observers in |mObservers|, because of special handling of the production implementation of
      * PasswordManagerHandler on removing the last observer.
      */
-    @VisibleForTesting
     public void setPasswordManagerHandlerForTest(PasswordManagerHandler passwordManagerHandler) {
         ThreadUtils.assertOnUiThread();
         assert mObservers.isEmpty();
@@ -62,7 +59,6 @@ public class PasswordManagerHandlerProvider implements PasswordManagerHandler.Pa
      * Resets the testing implementation of PasswordManagerHandler, clears all observers and ensures
      * that the view is cleaned up properly.
      */
-    @VisibleForTesting
     public void resetPasswordManagerHandlerForTest() {
         ThreadUtils.assertOnUiThread();
         mObservers.clear();
@@ -96,13 +92,13 @@ public class PasswordManagerHandlerProvider implements PasswordManagerHandler.Pa
     /**
      * Starts forwarding events from the PasswordManagerHandler implementation to |observer|.
      */
-    public void addObserver(PasswordManagerHandler.PasswordListObserver observer) {
+    public void addObserver(PasswordListObserver observer) {
         ThreadUtils.assertOnUiThread();
         if (getPasswordManagerHandler() == null) createPasswordManagerHandler();
         mObservers.addObserver(observer);
     }
 
-    public void removeObserver(PasswordManagerHandler.PasswordListObserver observer) {
+    public void removeObserver(PasswordListObserver observer) {
         ThreadUtils.assertOnUiThread();
         mObservers.removeObserver(observer);
         // If this was the last observer of the production implementation of PasswordManagerHandler,
@@ -116,7 +112,7 @@ public class PasswordManagerHandlerProvider implements PasswordManagerHandler.Pa
     @Override
     public void passwordListAvailable(int count) {
         ThreadUtils.assertOnUiThread();
-        for (PasswordManagerHandler.PasswordListObserver observer : mObservers) {
+        for (PasswordListObserver observer : mObservers) {
             observer.passwordListAvailable(count);
         }
     }
@@ -124,7 +120,7 @@ public class PasswordManagerHandlerProvider implements PasswordManagerHandler.Pa
     @Override
     public void passwordExceptionListAvailable(int count) {
         ThreadUtils.assertOnUiThread();
-        for (PasswordManagerHandler.PasswordListObserver observer : mObservers) {
+        for (PasswordListObserver observer : mObservers) {
             observer.passwordExceptionListAvailable(count);
         }
     }

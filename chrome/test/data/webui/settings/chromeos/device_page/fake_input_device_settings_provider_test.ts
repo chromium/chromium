@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FakeInputDeviceSettingsProvider, fakeKeyboards, fakeMice, fakePointingSticks, fakeTouchpads, ModifierKey} from 'chrome://os-settings/os_settings.js';
-import {assertDeepEquals} from 'chrome://webui-test/chai_assert.js';
+import {fakeGraphicsTabletButtonActions, fakeGraphicsTablets, FakeInputDeviceSettingsProvider, fakeKeyboards, fakeMice, fakeMouseButtonActions, fakePointingSticks, fakeStyluses, fakeTouchpads, Keyboard, ModifierKey, SixPackKeyInfo, SixPackShortcutModifier} from 'chrome://os-settings/os_settings.js';
+import {assertDeepEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('FakeInputDeviceSettings', () => {
   let provider: FakeInputDeviceSettingsProvider;
@@ -34,6 +34,18 @@ suite('FakeInputDeviceSettings', () => {
     provider.setFakePointingSticks(fakePointingSticks);
     const result = await provider.getConnectedPointingStickSettings();
     assertDeepEquals(fakePointingSticks, result);
+  });
+
+  test('setFakeStyluses', async () => {
+    provider.setFakeStyluses(fakeStyluses);
+    const result = await provider.getConnectedStylusSettings();
+    assertDeepEquals(fakeStyluses, result);
+  });
+
+  test('setFakeGraphicsTablets', async () => {
+    provider.setFakeGraphicsTablets(fakeGraphicsTablets);
+    const result = await provider.getConnectedGraphicsTabletSettings();
+    assertDeepEquals(fakeGraphicsTablets, result);
   });
 
   test('setKeyboardSettings', async () => {
@@ -93,15 +105,31 @@ suite('FakeInputDeviceSettings', () => {
     assertDeepEquals(updatedFirstPointingStick, result[0]);
   });
 
-  test('restoreDefaultKeyboardModifierRemappings', async () => {
+  test('restoreDefaultKeyboardRemappings', async () => {
     provider.setFakeKeyboards(fakeKeyboards);
-    // Restore the default modifier remappings for the first keyboard settings.
-    provider.restoreDefaultKeyboardModifierRemappings(fakeKeyboards[0]!.id!);
+    // Restore the default remappings for the first keyboard settings.
+    provider.restoreDefaultKeyboardRemappings(fakeKeyboards[0]!.id!);
     // Verify if the first keyboard settings are updated.
-    const result = await provider.getConnectedKeyboardSettings();
-    assertDeepEquals(result[0]!.settings!.modifierRemappings, {
+    const keyboards: Keyboard[] = await provider.getConnectedKeyboardSettings();
+    const keyboard = keyboards[0] as Keyboard;
+    assertDeepEquals(keyboard.settings.modifierRemappings, {
       [ModifierKey.kControl]: ModifierKey.kMeta,
       [ModifierKey.kMeta]: ModifierKey.kControl,
     });
+    assertTrue(
+        Object
+            .values((keyboard.settings.sixPackKeyRemappings as SixPackKeyInfo))
+            .every(modifier => modifier === SixPackShortcutModifier.kSearch));
+  });
+
+  test('getActionsForButtonCustomization', async () => {
+    provider.setFakeActionsForMouseButtonCustomization(fakeMouseButtonActions);
+    const mouseActions = await provider.getActionsForMouseButtonCustomization();
+    assertDeepEquals(mouseActions, fakeMouseButtonActions);
+    provider.setFakeActionsForGraphicsTabletButtonCustomization(
+        fakeGraphicsTabletButtonActions);
+    const graphicsTabletActions =
+        await provider.getActionsForGraphicsTabletButtonCustomization();
+    assertDeepEquals(graphicsTabletActions, fakeGraphicsTabletButtonActions);
   });
 });

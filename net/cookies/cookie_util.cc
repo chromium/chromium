@@ -32,7 +32,6 @@
 #include "net/cookies/cookie_monster.h"
 #include "net/cookies/cookie_options.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
-#include "net/first_party_sets/same_party_context.h"
 #include "net/http/http_util.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -354,6 +353,9 @@ bool GetCookieDomainWithString(const GURL& url,
        (base::EqualsCaseInsensitiveASCII(url_host, domain_string) ||
         base::EqualsCaseInsensitiveASCII("." + url_host, domain_string)))) {
     *result = url_host;
+    // TODO(crbug.com/1453416): Once empty label support is implemented we can
+    // CHECK our assumptions here. For now, we DCHECK as DUMP_WILL_BE_CHECK is
+    // generating too many crash reports and already know why this is failing.
     DCHECK(DomainIsHostOnly(*result));
     return true;
   }
@@ -905,7 +907,7 @@ absl::optional<FirstPartySetMetadata> ComputeFirstPartySetMetadataMaybeAsync(
             ? nullptr
             : base::OptionalToPtr(
                   isolation_info.network_isolation_key().GetTopFrameSite()),
-        isolation_info.party_context().value(), std::move(callback));
+        std::move(callback));
   }
 
   return FirstPartySetMetadata();
@@ -935,23 +937,6 @@ HttpMethodStringToEnum(const std::string& in) {
     return HttpMethod::kPatch;
 
   return HttpMethod::kUnknown;
-}
-
-CookieSamePartyStatus GetSamePartyStatus(
-    const CanonicalCookie& cookie,
-    const CookieOptions& options,
-    const bool same_party_attribute_enabled) {
-  if (!same_party_attribute_enabled || !cookie.IsSameParty() ||
-      !options.is_in_nontrivial_first_party_set()) {
-    return CookieSamePartyStatus::kNoSamePartyEnforcement;
-  }
-
-  switch (options.same_party_context().context_type()) {
-    case SamePartyContext::Type::kCrossParty:
-      return CookieSamePartyStatus::kEnforceSamePartyExclude;
-    case SamePartyContext::Type::kSameParty:
-      return CookieSamePartyStatus::kEnforceSamePartyInclude;
-  };
 }
 
 bool IsCookieAccessResultInclude(CookieAccessResult cookie_access_result) {
@@ -1003,7 +988,9 @@ NET_EXPORT void DCheckIncludedAndExcludedCookieLists(
 }
 
 NET_EXPORT bool IsForceThirdPartyCookieBlockingEnabled() {
-  return base::FeatureList::IsEnabled(features::kForceThirdPartyCookieBlocking);
+  return base::FeatureList::IsEnabled(
+             features::kForceThirdPartyCookieBlocking) &&
+         base::FeatureList::IsEnabled(features::kThirdPartyStoragePartitioning);
 }
 
 }  // namespace net::cookie_util

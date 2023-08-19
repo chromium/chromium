@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_PRIVACY_HUB_PRIVACY_HUB_UTIL_H_
 #define CHROME_BROWSER_ASH_PRIVACY_HUB_PRIVACY_HUB_UTIL_H_
 
-#include "ash/public/cpp/privacy_hub_delegate.h"
+#include <string>
+
+class AppAccessNotifier;
 
 namespace ash {
 
@@ -21,6 +23,31 @@ bool MicrophoneSwitchState();
 
 // Needs to be called for the Privacy Hub to be aware of the camera count.
 void SetUpCameraCountObserver();
+
+// Notifies the Privacy Hub controller.
+void TrackGeolocationAttempted(const std::string& name);
+
+// Notifies the Privacy Hub controller.
+void TrackGeolocationRelinquished(const std::string& name);
+
+// Checks if we use the fallback solution for the camera LED
+// (go/privacy-hub:camera-led-fallback).
+// TODO(b/289510726): remove when all cameras fully support the software
+// switch.
+bool UsingCameraLEDFallback();
+
+// Used to override the value of the LED Fallback value in tests.
+// Should not be nested.
+// TODO(b/289510726): remove when all cameras fully support the software
+// switch.
+class ScopedCameraLedFallbackForTesting {
+ public:
+  explicit ScopedCameraLedFallbackForTesting(bool value);
+  ~ScopedCameraLedFallbackForTesting();
+};
+
+// Sets an AppAccessNotifier instance to be used by the privacy hub
+void SetAppAccessNotifier(AppAccessNotifier* app_access_notifier);
 
 }  // namespace privacy_hub_util
 

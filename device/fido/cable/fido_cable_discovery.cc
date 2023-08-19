@@ -25,6 +25,7 @@
 #include "device/bluetooth/bluetooth_discovery_session.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "device/fido/cable/fido_ble_uuids.h"
+#include "device/fido/cable/fido_cable_device.h"
 #include "device/fido/cable/fido_cable_handshake_handler.h"
 #include "device/fido/cable/fido_tunnel_device.h"
 #include "device/fido/features.h"
@@ -33,6 +34,11 @@
 #if BUILDFLAG(IS_MAC)
 #include "device/fido/mac/util.h"
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "device/bluetooth/bluetooth_low_energy_scan_filter.h"
+#include "device/bluetooth/floss/floss_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace device {
 
@@ -107,29 +113,6 @@ std::unique_ptr<BluetoothAdvertisement::Data> ConstructAdvertisementData(
 
 }  // namespace
 
-// FidoCableDiscovery::CableV1DiscoveryEvent  ---------------------------------
-
-// CableV1DiscoveryEvent enumerates several things that can occur during a caBLE
-// v1 discovery. Do not change assigned values since they are used in
-// histograms, only append new values. Keep synced with enums.xml.
-enum class FidoCableDiscovery::CableV1DiscoveryEvent : int {
-  kStarted = 0,
-  kAdapterPresent = 1,
-  kAdapterAlreadyPowered = 2,
-  kAdapterAutomaticallyPowered = 3,
-  kAdapterManuallyPowered = 4,
-  kAdapterPoweredOff = 5,
-  kScanningStarted = 6,
-  kStartScanningFailed = 12,
-  kScanningStoppedUnexpectedly = 13,
-  kAdvertisementRegistered = 7,
-  kFirstCableDeviceFound = 8,
-  kFirstCableDeviceGATTConnected = 9,
-  kFirstCableHandshakeSucceeded = 10,
-  kFirstCableDeviceTimeout = 11,
-  kMaxValue = kScanningStoppedUnexpectedly,
-};
-
 // FidoCableDiscovery::ObservedDeviceData -------------------------------------
 
 FidoCableDiscovery::ObservedDeviceData::ObservedDeviceData() = default;
@@ -156,7 +139,6 @@ FidoCableDiscovery::FidoCableDiscovery(
       continue;
     }
     has_v1_discovery_data_ = true;
-    RecordCableV1DiscoveryEventOnce(CableV1DiscoveryEvent::kStarted);
     break;
   }
 }
@@ -234,10 +216,6 @@ void FidoCableDiscovery::OnGetAdapter(scoped_refptr<BluetoothAdapter> adapter) {
     return;
   }
 
-  if (has_v1_discovery_data_) {
-    RecordCableV1DiscoveryEventOnce(CableV1DiscoveryEvent::kAdapterPresent);
-  }
-
   DCHECK(!adapter_);
   adapter_ = std::move(adapter);
   DCHECK(adapter_);
@@ -245,10 +223,6 @@ void FidoCableDiscovery::OnGetAdapter(scoped_refptr<BluetoothAdapter> adapter) {
 
   adapter_->AddObserver(this);
   if (adapter_->IsPowered()) {
-    if (has_v1_discovery_data_) {
-      RecordCableV1DiscoveryEventOnce(
-          CableV1DiscoveryEvent::kAdapterAlreadyPowered);
-    }
     OnSetPowered();
   }
 
@@ -321,14 +295,6 @@ void FidoCableDiscovery::DeviceRemoved(BluetoothAdapter* adapter,
 
 void FidoCableDiscovery::AdapterPoweredChanged(BluetoothAdapter* adapter,
                                                bool powered) {
-  if (has_v1_discovery_data_) {
-    RecordCableV1DiscoveryEventOnce(
-        powered ? (adapter->CanPower()
-                       ? CableV1DiscoveryEvent::kAdapterAutomaticallyPowered
-                       : CableV1DiscoveryEvent::kAdapterManuallyPowered)
-                : CableV1DiscoveryEvent::kAdapterPoweredOff);
-  }
-
   if (!powered) {
     // In order to prevent duplicate client EIDs from being advertised when
     // BluetoothAdapter is powered back on, unregister all existing client
@@ -363,27 +329,83 @@ void FidoCableDiscovery::AdapterDiscoveringChanged(BluetoothAdapter* adapter,
   if (!discovery_session_) {
     return;
   }
+}
 
-  if (has_v1_discovery_data_ && !is_scanning) {
-    RecordCableV1DiscoveryEventOnce(
-        CableV1DiscoveryEvent::kScanningStoppedUnexpectedly);
+#if BUILDFLAG(IS_CHROMEOS)
+void FidoCableDiscovery::OnDeviceFound(
+    device::BluetoothLowEnergyScanSession* scan_session,
+    device::BluetoothDevice* device) {
+  DeviceAdded(adapter_.get(), device);
+}
+
+void FidoCableDiscovery::OnDeviceLost(
+    device::BluetoothLowEnergyScanSession* scan_session,
+    device::BluetoothDevice* device) {
+  DeviceRemoved(adapter_.get(), device);
+}
+
+void FidoCableDiscovery::OnSessionStarted(
+    device::BluetoothLowEnergyScanSession* scan_session,
+    absl::optional<device::BluetoothLowEnergyScanSession::ErrorCode>
+        error_code) {
+  if (error_code) {
+    FIDO_LOG(ERROR) << "Failed to start caBLE LE scan session, error_code = "
+                    << static_cast<int>(error_code.value());
+    le_scan_session_.reset();
+    return;
   }
+
+  FIDO_LOG(DEBUG) << "LE scan session started.";
+
+  // Advertising is delayed by 500ms to ensure that any UI has a chance to
+  // appear as we don't want to start broadcasting without the user being
+  // aware.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&FidoCableDiscovery::StartAdvertisement,
+                     weak_factory_.GetWeakPtr()),
+      base::Milliseconds(500));
 }
 
-void FidoCableDiscovery::FidoCableDeviceConnected(FidoCableDevice* device,
-                                                  bool success) {
-  if (success) {
-    RecordCableV1DiscoveryEventOnce(
-        CableV1DiscoveryEvent::kFirstCableDeviceGATTConnected);
-  }
+void FidoCableDiscovery::OnSessionInvalidated(
+    device::BluetoothLowEnergyScanSession* scan_session) {
+  FIDO_LOG(EVENT) << "LE scan session invalidated";
+  le_scan_session_.reset();
 }
-
-void FidoCableDiscovery::FidoCableDeviceTimeout(FidoCableDevice* device) {
-  RecordCableV1DiscoveryEventOnce(
-      CableV1DiscoveryEvent::kFirstCableDeviceTimeout);
-}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void FidoCableDiscovery::StartCableDiscovery() {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (floss::features::IsFlossEnabled()) {
+    device::BluetoothLowEnergyScanFilter::Pattern google_pattern(
+        /*start_position=*/0,
+        device::BluetoothLowEnergyScanFilter::AdvertisementDataType::
+            kServiceData,
+        /* kServiceData takes the 16-bit UUID as a little endian byte vector. */
+        std::vector<uint8_t>{kGoogleCableUUID[3], kGoogleCableUUID[2]});
+    device::BluetoothLowEnergyScanFilter::Pattern fido_pattern(
+        /*start_position=*/0,
+        device::BluetoothLowEnergyScanFilter::AdvertisementDataType::
+            kServiceData,
+        std::vector<uint8_t>{kFIDOCableUUID[3], kFIDOCableUUID[2]});
+    auto filter = device::BluetoothLowEnergyScanFilter::Create(
+        device::BluetoothLowEnergyScanFilter::Range::kFar,
+        /*device_found_timeout=*/base::Seconds(1),
+        /*device_lost_timeout=*/base::Seconds(7),
+        {google_pattern, fido_pattern},
+        /*rssi_sampling_period=*/base::Seconds(1));
+    if (!filter) {
+      FIDO_LOG(ERROR)
+          << "Failed to start LE scanning due to failure to create filter.";
+      return;
+    }
+
+    le_scan_session_ = adapter_->StartLowEnergyScanSession(
+        std::move(filter), weak_factory_.GetWeakPtr());
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   adapter()->StartDiscoverySessionWithFilter(
       std::make_unique<BluetoothDiscoveryFilter>(
           BluetoothTransport::BLUETOOTH_TRANSPORT_LE),
@@ -397,9 +419,6 @@ void FidoCableDiscovery::StartCableDiscovery() {
 void FidoCableDiscovery::OnStartDiscoverySession(
     std::unique_ptr<BluetoothDiscoverySession> session) {
   FIDO_LOG(DEBUG) << "Discovery session started.";
-  if (has_v1_discovery_data_) {
-    RecordCableV1DiscoveryEventOnce(CableV1DiscoveryEvent::kScanningStarted);
-  }
   SetDiscoverySession(std::move(session));
   // Advertising is delayed by 500ms to ensure that any UI has a chance to
   // appear as we don't want to start broadcasting without the user being
@@ -413,10 +432,6 @@ void FidoCableDiscovery::OnStartDiscoverySession(
 
 void FidoCableDiscovery::OnStartDiscoverySessionError() {
   FIDO_LOG(ERROR) << "Failed to start caBLE discovery";
-  if (has_v1_discovery_data_) {
-    RecordCableV1DiscoveryEventOnce(
-        CableV1DiscoveryEvent::kStartScanningFailed);
-  }
 }
 
 void FidoCableDiscovery::StartAdvertisement() {
@@ -478,8 +493,6 @@ void FidoCableDiscovery::OnAdvertisementRegistered(
     const CableEidArray& client_eid,
     scoped_refptr<BluetoothAdvertisement> advertisement) {
   FIDO_LOG(DEBUG) << "Advertisement registered";
-  RecordCableV1DiscoveryEventOnce(
-      CableV1DiscoveryEvent::kAdvertisementRegistered);
   advertisements_.emplace(client_eid, std::move(advertisement));
 }
 
@@ -503,8 +516,6 @@ void FidoCableDiscovery::CableDeviceFound(BluetoothAdapter* adapter,
   active_devices_.insert(device_address);
 
   FIDO_LOG(EVENT) << "Found new caBLEv1 device.";
-  RecordCableV1DiscoveryEventOnce(
-      CableV1DiscoveryEvent::kFirstCableDeviceFound);
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   // Speed up GATT service discovery on ChromeOS/BlueZ.
@@ -518,7 +529,6 @@ void FidoCableDiscovery::CableDeviceFound(BluetoothAdapter* adapter,
 
   auto cable_device =
       std::make_unique<FidoCableDevice>(adapter, device_address);
-  cable_device->set_observer(this);
 
   std::unique_ptr<FidoCableHandshakeHandler> handshake_handler =
       CreateV1HandshakeHandler(cable_device.get(), v1_match->first,
@@ -567,10 +577,6 @@ void FidoCableDiscovery::ValidateAuthenticatorHandshakeMessage(
 
   if (ok) {
     FIDO_LOG(DEBUG) << "Authenticator handshake validated";
-    if (cable_version == CableDiscoveryData::Version::V1) {
-      RecordCableV1DiscoveryEventOnce(
-          CableV1DiscoveryEvent::kFirstCableHandshakeSucceeded);
-    }
   } else {
     FIDO_LOG(DEBUG) << "Authenticator handshake invalid";
   }
@@ -697,17 +703,6 @@ FidoCableDiscovery::GetCableDiscoveryDataFromAuthenticatorEid(
   }
 
   return absl::nullopt;
-}
-
-void FidoCableDiscovery::RecordCableV1DiscoveryEventOnce(
-    CableV1DiscoveryEvent event) {
-  DCHECK(has_v1_discovery_data_);
-  if (base::Contains(recorded_events_, event)) {
-    return;
-  }
-  recorded_events_.insert(event);
-  base::UmaHistogramEnumeration("WebAuthentication.CableV1DiscoveryEvent",
-                                event);
 }
 
 void FidoCableDiscovery::StartInternal() {

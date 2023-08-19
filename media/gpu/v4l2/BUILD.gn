@@ -9,23 +9,13 @@ import("//media/gpu/args.gni")
 import("//media/media_options.gni")
 import("//testing/test.gni")
 import("//third_party/libgav1/options.gni")
-import("//tools/generate_stubs/rules.gni")
 import("//ui/gl/features.gni")
 
 assert(use_v4l2_codec)
 
-generate_stubs("libv4l2_stubs") {
-  extra_header = "v4l2_stub_header.fragment"
-  sigs = [ "v4l2.sig" ]
-  output_name = "v4l2_stubs"
-  deps = [ "//base" ]
-}
-
 source_set("v4l2") {
   defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
   sources = [
-    "legacy/v4l2_slice_video_decode_accelerator.cc",
-    "legacy/v4l2_slice_video_decode_accelerator.h",
     "legacy/v4l2_stateful_workaround.cc",
     "legacy/v4l2_stateful_workaround.h",
     "legacy/v4l2_video_decode_accelerator.cc",
@@ -74,6 +64,14 @@ source_set("v4l2") {
     ]
   }
 
+  if (current_cpu == "arm" || current_cpu == "arm64") {
+    sources += [
+      "mt21/mt21_decompressor.cc",
+      "mt21/mt21_decompressor.h",
+      "mt21/mt21_util.h",
+    ]
+  }
+
   if (is_chromeos) {
     sources += [
       # AV1 delegate depends on header files only in ChromeOS SDK
@@ -97,7 +95,6 @@ source_set("v4l2") {
   public_deps = [ "//ui/gl" ]
 
   deps = [
-    ":libv4l2_stubs",
     ":v4l2_status",
     "//base",
     "//gpu/command_buffer/service:gles2",
@@ -106,6 +103,7 @@ source_set("v4l2") {
     "//media",
     "//media/gpu:buildflags",
     "//media/gpu:common",
+    "//media/gpu:video_frame_mapper_common",
     "//media/gpu/chromeos:common",
     "//media/parsers",
     "//third_party/libyuv",
@@ -150,7 +148,7 @@ source_set("unit_test") {
   testonly = true
   sources = [
     "legacy/v4l2_stateful_workaround_unittest.cc",
-    "v4l2_device_unittest.cc",
+    "v4l2_utils_unittest.cc",
   ]
   deps = [
     ":v4l2",
@@ -181,6 +179,15 @@ executable("v4l2_stateless_decoder") {
     "test/vp9_decoder.cc",
     "test/vp9_decoder.h",
   ]
+
+  if (enable_hevc_parser_and_hw_decoder) {
+    sources += [
+      "test/h265_decoder.cc",
+      "test/h265_decoder.h",
+      "test/h265_dpb.cc",
+      "test/h265_dpb.h",
+    ]
+  }
 
   if (is_chromeos) {
     sources += [
@@ -213,5 +220,40 @@ test("v4l2_unittest") {
     "//build/config/linux/libdrm",
     "//media:test_support",
     "//testing/gtest",
+    "//ui/gfx/linux:gbm",
   ]
+}
+
+if (current_cpu == "arm" || current_cpu == "arm64") {
+  test("mt21_util_unittest") {
+    testonly = true
+    sources = [
+      "mt21/mt21_util.h",
+      "mt21/mt21_util_unittest.cc",
+    ]
+    deps = [
+      "//base:base",
+      "//base/test:test_support",
+      "//testing/gtest",
+    ]
+  }
+
+  test("mt21_decompressor_unittest") {
+    testonly = true
+    sources = [
+      "mt21/mt21_decompressor.cc",
+      "mt21/mt21_decompressor.h",
+      "mt21/mt21_decompressor_unittest.cc",
+      "mt21/mt21_util.h",
+    ]
+    deps = [
+      "//base:base",
+      "//base/test:test_support",
+      "//base/test:test_trace_processor",
+      "//testing/gtest",
+      "//testing/perf",
+      "//third_party/libyuv",
+      "//ui/gfx/geometry",
+    ]
+  }
 }

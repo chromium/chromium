@@ -79,11 +79,3 @@ source_set("profile") {
     deps += [ "//chrome/browser/profiles/android:jni_headers" ]
   }
 }
-
-if (is_android) {
-  import("//build/config/android/rules.gni")
-
-  java_cpp_enum("profile_metrics_enum_java") {
-    sources = [ "profile_metrics.h" ]
-  }
-}

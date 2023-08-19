@@ -25,4 +25,12 @@ found in the LICENSE file.
         android:src="@drawable/ic_selection_check_24dp"
         android:scaleType="center"
         android:importantForAccessibility="no" />
+
+    <ImageView
+        android:id="@+id/end_image"
+        android:layout_width="@dimen/min_touch_target_size"
+        android:layout_height="@dimen/min_touch_target_size"
+        android:scaleType="center"
+        android:importantForAccessibility="no"
+        android:focusable="false" />
 </merge>

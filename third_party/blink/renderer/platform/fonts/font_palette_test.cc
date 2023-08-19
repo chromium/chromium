@@ -26,70 +26,40 @@ TEST(FontPaletteTest, HashingAndComparison) {
   EXPECT_NE(a, b);
 }
 
+TEST(FontPaletteTest, MixPaletteValue) {
+  ScopedFontPaletteAnimationForTest scoped_feature(true);
+  scoped_refptr<FontPalette> palette =
+      FontPalette::Mix(FontPalette::Create(FontPalette::kLightPalette),
+                       FontPalette::Create(FontPalette::kDarkPalette), 30, 70,
+                       0.7, 1.0, Color::ColorSpace::kSRGB, absl::nullopt);
+  EXPECT_EQ("palette-mix(in srgb, light, dark 70%)", palette->ToString());
+}
+
 TEST(FontPaletteTest, NestedMixPaletteValue) {
   ScopedFontPaletteAnimationForTest scoped_feature(true);
   scoped_refptr<FontPalette> palette_start = FontPalette::Create();
   scoped_refptr<FontPalette> palette_end =
       FontPalette::Mix(FontPalette::Create(FontPalette::kLightPalette),
-                       FontPalette::Create(FontPalette::kDarkPalette), 0.3);
+                       FontPalette::Create(FontPalette::kDarkPalette), 70, 30,
+                       0.3, 1.0, Color::ColorSpace::kSRGB, absl::nullopt);
   scoped_refptr<FontPalette> palette =
-      FontPalette::Mix(palette_start, palette_end, 0.7);
-  EXPECT_EQ("palette-mix(normal, palette-mix(light, dark, 0.3), 0.7)",
-            palette->ToString());
-}
-
-TEST(FontPaletteTest, NestedMixAndScaledValue) {
-  ScopedFontPaletteAnimationForTest scoped_feature(true);
-  scoped_refptr<FontPalette> palette_start =
-      FontPalette::Scale(FontPalette::Create(FontPalette::kDarkPalette), 0.3);
-  scoped_refptr<FontPalette> palette_end =
-      FontPalette::Mix(FontPalette::Scale(FontPalette::Create(), 0.6),
-                       FontPalette::Create(FontPalette::kLightPalette), 0.3);
-  scoped_refptr<FontPalette> palette =
-      FontPalette::Mix(palette_start, palette_end, 0.7);
+      FontPalette::Mix(palette_start, palette_end, 30, 70, 0.7, 1.0,
+                       Color::ColorSpace::kOklab, absl::nullopt);
   EXPECT_EQ(
-      "palette-mix(palette-scale(dark, 0.3), palette-mix(palette-scale(normal, "
-      "0.6), light, 0.3), 0.7)",
+      "palette-mix(in oklab, normal, palette-mix(in srgb, light, dark 30%) "
+      "70%)",
       palette->ToString());
 }
 
-TEST(FontPaletteTest, NestedAddAndScaleValue) {
+TEST(FontPaletteTest, InterpolablePalettesNotEqual) {
   ScopedFontPaletteAnimationForTest scoped_feature(true);
   scoped_refptr<FontPalette> palette1 =
-      FontPalette::Scale(FontPalette::Create(FontPalette::kLightPalette), 0.3);
-  scoped_refptr<FontPalette> palette2 =
       FontPalette::Mix(FontPalette::Create(FontPalette::kDarkPalette),
-                       FontPalette::Create(FontPalette::kLightPalette), 0.1);
-  scoped_refptr<FontPalette> palette = FontPalette::Add(palette1, palette2);
-  EXPECT_EQ(
-      "palette-add(palette-scale(light, 0.3), palette-mix(dark, light, 0.1))",
-      palette->ToString());
-}
-
-TEST(FontPaletteTest, InterpolablePalettesWithSameOperationsNotEqual) {
-  ScopedFontPaletteAnimationForTest scoped_feature(true);
-  scoped_refptr<FontPalette> palette1 = FontPalette::Scale(
-      FontPalette::Add(
-          FontPalette::Create(FontPalette::kLightPalette),
-          FontPalette::Mix(FontPalette::Create(FontPalette::kLightPalette),
-                           FontPalette::Create(), 0.3)),
-      0.1);
-  scoped_refptr<FontPalette> palette2 = FontPalette::Scale(
-      FontPalette::Add(
-          FontPalette::Create(FontPalette::kLightPalette),
-          FontPalette::Mix(FontPalette::Create(FontPalette::kDarkPalette),
-                           FontPalette::Create(), 0.3)),
-      0.1);
-  EXPECT_FALSE(*palette1.get() == *palette2.get());
-}
-
-TEST(FontPaletteTest, InterpolablePalettesWithDifferentOperationsNotEqual) {
-  ScopedFontPaletteAnimationForTest scoped_feature(true);
-  scoped_refptr<FontPalette> palette1 =
-      FontPalette::Scale(FontPalette::Create(FontPalette::kLightPalette), 0.1);
-  scoped_refptr<FontPalette> palette2 =
-      FontPalette::Mix(FontPalette::Create(FontPalette::kDarkPalette),
-                       FontPalette::Create(), 0.3);
+                       FontPalette::Create(FontPalette::kLightPalette), 90, 10,
+                       0.1, 1.0, Color::ColorSpace::kOklab, absl::nullopt);
+  scoped_refptr<FontPalette> palette2 = FontPalette::Mix(
+      FontPalette::Create(FontPalette::kDarkPalette), FontPalette::Create(), 90,
+      10, 0.1, 1.0, Color::ColorSpace::kOklab, absl::nullopt);
   EXPECT_FALSE(*palette1.get() == *palette2.get());
 }
 
@@ -98,7 +68,9 @@ TEST(FontPaletteTest, InterpolableAndNonInterpolablePalettesNotEqual) {
   scoped_refptr<FontPalette> palette1 =
       FontPalette::Create(FontPalette::kDarkPalette);
   scoped_refptr<FontPalette> palette2 =
-      FontPalette::Scale(FontPalette::Create(FontPalette::kDarkPalette), 0.1);
+      FontPalette::Mix(FontPalette::Create(FontPalette::kDarkPalette),
+                       FontPalette::Create(FontPalette::kLightPalette), 90, 10,
+                       0.1, 1.0, Color::ColorSpace::kSRGB, absl::nullopt);
   EXPECT_FALSE(*palette1.get() == *palette2.get());
 }
 
@@ -106,10 +78,10 @@ TEST(FontPaletteTest, NonInterpolablePalettesNotEqual) {
   ScopedFontPaletteAnimationForTest scoped_feature(true);
   scoped_refptr<FontPalette> palette1 =
       FontPalette::Create(FontPalette::kDarkPalette);
-  palette1->SetMatchFamilyName("family1");
+  palette1->SetMatchFamilyName(AtomicString("family1"));
   scoped_refptr<FontPalette> palette2 =
       FontPalette::Create(FontPalette::kDarkPalette);
-  palette1->SetMatchFamilyName("family2");
+  palette1->SetMatchFamilyName(AtomicString("family2"));
   EXPECT_FALSE(*palette1.get() == *palette2.get());
 }
 
@@ -117,12 +89,32 @@ TEST(FontPaletteTest, PalettesEqual) {
   ScopedFontPaletteAnimationForTest scoped_feature(true);
   scoped_refptr<FontPalette> palette1 =
       FontPalette::Mix(FontPalette::Create(FontPalette::kDarkPalette),
-                       FontPalette::Create(FontPalette::kLightPalette), 0.1);
+                       FontPalette::Create(FontPalette::kLightPalette), 90, 10,
+                       0.1, 1.0, Color::ColorSpace::kOklab, absl::nullopt);
   scoped_refptr<FontPalette> palette2 =
       FontPalette::Mix(FontPalette::Create(FontPalette::kDarkPalette),
-                       FontPalette::Create(FontPalette::kLightPalette), 0.1);
-  scoped_refptr<FontPalette> palette = FontPalette::Add(palette1, palette2);
+                       FontPalette::Create(FontPalette::kLightPalette), 90, 10,
+                       0.1, 1.0, Color::ColorSpace::kOklab, absl::nullopt);
   EXPECT_TRUE(*palette1.get() == *palette2.get());
+}
+
+TEST(FontPaletteTest, ComputeEndpointPercentagesFromNormalized) {
+  ScopedFontPaletteAnimationForTest scoped_feature(true);
+  FontPalette::NonNormalizedPercentages expected_percentages_1({50, 50});
+  FontPalette::NonNormalizedPercentages actual_percentages_1 =
+      FontPalette::ComputeEndpointPercentagesFromNormalized(0.5);
+
+  FontPalette::NonNormalizedPercentages expected_percentages_2({70, 30});
+  FontPalette::NonNormalizedPercentages actual_percentages_2 =
+      FontPalette::ComputeEndpointPercentagesFromNormalized(0.3);
+
+  FontPalette::NonNormalizedPercentages expected_percentages_3({0, 100});
+  FontPalette::NonNormalizedPercentages actual_percentages_3 =
+      FontPalette::ComputeEndpointPercentagesFromNormalized(1.0);
+
+  EXPECT_EQ(expected_percentages_1, actual_percentages_1);
+  EXPECT_EQ(expected_percentages_2, actual_percentages_2);
+  EXPECT_EQ(expected_percentages_3, actual_percentages_3);
 }
 
 }  // namespace blink

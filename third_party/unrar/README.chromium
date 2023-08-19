@@ -6,6 +6,7 @@ Version: 6.0.3
 License: Non-standard
 License File: src/license.txt
 Security Critical: yes
+Shipped: yes
 
 Description:
 This library is used to decompress and analyze .RAR and other related files that

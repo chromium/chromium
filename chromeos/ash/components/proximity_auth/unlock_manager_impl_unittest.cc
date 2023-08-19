@@ -133,7 +133,8 @@ class TestUnlockManager : public UnlockManagerImpl {
   void OnProximityMonitorDestroyed() { proximity_monitor_destroyed_ = true; }
 
   // Owned by the super class.
-  raw_ptr<MockProximityMonitor, ExperimentalAsh> proximity_monitor_ = nullptr;
+  raw_ptr<MockProximityMonitor, DanglingUntriaged | ExperimentalAsh>
+      proximity_monitor_ = nullptr;
   bool proximity_monitor_destroyed_ = false;
 };
 
@@ -228,7 +229,7 @@ class ProximityAuthUnlockManagerImplTest : public testing::Test {
   NiceMock<MockProximityAuthClient> proximity_auth_client_;
   NiceMock<MockMessenger> messenger_;
   std::unique_ptr<TestUnlockManager> unlock_manager_;
-  raw_ptr<base::MockOneShotTimer, ExperimentalAsh>
+  raw_ptr<base::MockOneShotTimer, DanglingUntriaged | ExperimentalAsh>
       mock_bluetooth_suspension_recovery_timer_ = nullptr;
 
  private:

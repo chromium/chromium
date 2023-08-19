@@ -50,6 +50,20 @@ void DownloadMessageBridge::ShowIncognitoDownloadMessage(
                                                           callback_id);
 }
 
+void DownloadMessageBridge::ShowUnsupportedDownloadMessage(
+    content::WebContents* web_contents) {
+  DCHECK(web_contents);
+  JNIEnv* env = base::android::AttachCurrentThread();
+  ui::WindowAndroid* window_android = web_contents->GetTopLevelNativeWindow();
+
+  if (!window_android) {
+    return;
+  }
+
+  Java_DownloadMessageBridge_showUnsupportedDownloadMessage(
+      env, java_object_, window_android->GetJavaObject());
+}
+
 void DownloadMessageBridge::OnConfirmed(JNIEnv* env,
                                         jlong callback_id,
                                         jboolean accepted) {

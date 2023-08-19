@@ -293,7 +293,7 @@ PasswordCheckDelegate::GetCredentialsWithReusedPassword() {
 bool PasswordCheckDelegate::MuteInsecureCredential(
     const api::passwords_private::PasswordUiEntry& credential) {
   // Try to obtain the original CredentialUIEntry. Return false if fails.
-  const CredentialUIEntry* entry = FindMatchingEntry(credential);
+  const CredentialUIEntry* entry = id_generator_->TryGetKey(credential.id);
   if (!entry)
     return false;
 
@@ -303,23 +303,11 @@ bool PasswordCheckDelegate::MuteInsecureCredential(
 bool PasswordCheckDelegate::UnmuteInsecureCredential(
     const api::passwords_private::PasswordUiEntry& credential) {
   // Try to obtain the original CredentialUIEntry. Return false if fails.
-  const CredentialUIEntry* entry = FindMatchingEntry(credential);
+  const CredentialUIEntry* entry = id_generator_->TryGetKey(credential.id);
   if (!entry)
     return false;
 
   return insecure_credentials_manager_.UnmuteCredential(*entry);
-}
-
-// Records that a change password flow was started for |credential|.
-void PasswordCheckDelegate::RecordChangePasswordFlowStarted(
-    const api::passwords_private::PasswordUiEntry& credential) {
-  // If the |credential| does not have a |change_password_url|, skip it.
-  if (!credential.change_password_url)
-    return;
-
-  GetPasswordChangeSuccessTracker()->OnManualChangePasswordFlowStarted(
-      GURL(*credential.change_password_url), credential.username,
-      PasswordChangeSuccessTracker::EntryPoint::kLeakCheckInSettings);
 }
 
 void PasswordCheckDelegate::StartPasswordCheck(
@@ -347,12 +335,9 @@ void PasswordCheckDelegate::StartPasswordAnalyses(
   insecure_credentials_manager_.StartWeakCheck(base::BindOnce(
       &PasswordCheckDelegate::RecordAndNotifyAboutCompletedWeakPasswordCheck,
       weak_ptr_factory_.GetWeakPtr()));
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordManagerRedesign)) {
-    insecure_credentials_manager_.StartReuseCheck(
-        base::BindOnce(&PasswordCheckDelegate::NotifyPasswordCheckStatusChanged,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
+  insecure_credentials_manager_.StartReuseCheck(
+      base::BindOnce(&PasswordCheckDelegate::NotifyPasswordCheckStatusChanged,
+                     weak_ptr_factory_.GetWeakPtr()));
   auto progress = base::MakeRefCounted<PasswordCheckProgress>();
   for (const auto& password : saved_passwords_presenter_->GetSavedPasswords())
     progress->IncrementCounts(password);
@@ -364,16 +349,6 @@ void PasswordCheckDelegate::StartPasswordAnalyses(
   DCHECK(is_check_running_);
   std::move(callback).Run(
       bulk_leak_check_service_adapter_.GetBulkLeakCheckState());
-}
-
-void PasswordCheckDelegate::StopPasswordCheck() {
-  if (!is_initialized_) {
-    for (auto&& callback : std::exchange(start_check_callbacks_, {}))
-      std::move(callback).Run(State::kIdle);
-    return;
-  }
-
-  bulk_leak_check_service_adapter_.StopBulkLeakCheck();
 }
 
 api::passwords_private::PasswordCheckStatus
@@ -481,22 +456,6 @@ void PasswordCheckDelegate::OnCredentialDone(
   }
 }
 
-const CredentialUIEntry* PasswordCheckDelegate::FindMatchingEntry(
-    const api::passwords_private::PasswordUiEntry& credential) const {
-  const CredentialUIEntry* entry = id_generator_->TryGetKey(credential.id);
-  if (!entry)
-    return nullptr;
-
-  if (credential.urls.signon_realm != entry->GetFirstSignonRealm() ||
-      credential.username != base::UTF16ToUTF8(entry->username) ||
-      (credential.password &&
-       *credential.password != base::UTF16ToUTF8(entry->password))) {
-    return nullptr;
-  }
-
-  return entry;
-}
-
 void PasswordCheckDelegate::
     RecordAndNotifyAboutCompletedCompromisedPasswordCheck() {
   profile_->GetPrefs()->SetDouble(
@@ -534,10 +493,7 @@ api::passwords_private::PasswordUiEntry
 PasswordCheckDelegate::ConstructInsecureCredentialUiEntry(
     CredentialUIEntry entry) {
   api::passwords_private::PasswordUiEntry api_credential;
-  api_credential.is_android_credential =
-      password_manager::IsValidAndroidFacetURI(entry.GetFirstSignonRealm());
   api_credential.username = base::UTF16ToUTF8(entry.username);
-  api_credential.urls = CreateUrlCollectionFromCredential(entry);
   api_credential.stored_in = StoreSetFromCredential(entry);
   api_credential.compromised_info = CreateCompromiseInfo(entry);
   absl::optional<GURL> change_password_url = entry.GetChangePasswordURL();

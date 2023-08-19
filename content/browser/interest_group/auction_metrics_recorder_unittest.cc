@@ -250,6 +250,14 @@ TEST_F(AuctionMetricsRecorderTest, KAnonymityBidMode) {
                 auction_worklet::mojom::KAnonymityBidMode::kEnforce));
 }
 
+TEST_F(AuctionMetricsRecorderTest, NumConfigPromises) {
+  recorder().SetNumConfigPromises(14);
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  // 14 becomes 13 because of bucketing
+  EXPECT_EQ(GetMetricValue(UkmEntry::kNumConfigPromisesName), 13);
+}
+
 TEST_F(AuctionMetricsRecorderTest, NumInterestGroupsWithNoBids) {
   for (size_t i = 0; i < 14; ++i) {
     recorder().RecordInterestGroupWithNoBids();
@@ -1061,6 +1069,387 @@ TEST_F(AuctionMetricsRecorderTest,
       GetMetricValue(
           UkmEntry::kMeanTimeBidsQueuedWaitingForSellerWorkletInMillisName),
       400);
+}
+
+TEST_F(AuctionMetricsRecorderTest,
+       ScoreAdLatencyMetricsHaveNoValuesForNoGenerateBids) {
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  EXPECT_FALSE(HasMetric(UkmEntry::kMeanScoreAdLatencyInMillisName));
+  EXPECT_FALSE(HasMetric(UkmEntry::kMaxScoreAdLatencyInMillisName));
+}
+
+TEST_F(AuctionMetricsRecorderTest, ScoreAdLatencyWithOneRecord) {
+  recorder().RecordScoreAdLatency(base::Milliseconds(305));
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  // 305 becomes 300 because of bucketing
+  EXPECT_EQ(GetMetricValue(UkmEntry::kMeanScoreAdLatencyInMillisName), 300);
+  EXPECT_EQ(GetMetricValue(UkmEntry::kMaxScoreAdLatencyInMillisName), 300);
+}
+
+TEST_F(AuctionMetricsRecorderTest, ScoreAdLatencyWithTwoRecords) {
+  recorder().RecordScoreAdLatency(base::Milliseconds(405));
+  recorder().RecordScoreAdLatency(base::Milliseconds(605));
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  // 505 becomes 500 because of bucketing
+  EXPECT_EQ(GetMetricValue(UkmEntry::kMeanScoreAdLatencyInMillisName), 500);
+  // 605 becomes 600 because of bucketing
+  EXPECT_EQ(GetMetricValue(UkmEntry::kMaxScoreAdLatencyInMillisName), 600);
+}
+
+TEST_F(AuctionMetricsRecorderTest, ScoreAdLatencyIgnoresNegativeValues) {
+  recorder().RecordScoreAdLatency(base::Milliseconds(405));
+  recorder().RecordScoreAdLatency(base::Milliseconds(605));
+  recorder().RecordScoreAdLatency(base::Milliseconds(-400));
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  // 505 becomes 500 because of bucketing
+  EXPECT_EQ(GetMetricValue(UkmEntry::kMeanScoreAdLatencyInMillisName), 500);
+  // 605 becomes 600 because of bucketing
+  EXPECT_EQ(GetMetricValue(UkmEntry::kMaxScoreAdLatencyInMillisName), 600);
+}
+
+TEST_F(AuctionMetricsRecorderTest,
+       ScoreAdFlowLatencyMetricsHaveNoValuesForNoGenerateBids) {
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  EXPECT_FALSE(HasMetric(UkmEntry::kMeanScoreAdFlowLatencyInMillisName));
+  EXPECT_FALSE(HasMetric(UkmEntry::kMaxScoreAdFlowLatencyInMillisName));
+}
+
+TEST_F(AuctionMetricsRecorderTest, ScoreAdFlowLatencyWithOneRecord) {
+  recorder().RecordScoreAdFlowLatency(base::Milliseconds(405));
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  // 405 becomes 400 because of bucketing
+  EXPECT_EQ(GetMetricValue(UkmEntry::kMeanScoreAdFlowLatencyInMillisName), 400);
+  EXPECT_EQ(GetMetricValue(UkmEntry::kMaxScoreAdFlowLatencyInMillisName), 400);
+}
+
+TEST_F(AuctionMetricsRecorderTest, ScoreAdFlowLatencyWithTwoRecords) {
+  recorder().RecordScoreAdFlowLatency(base::Milliseconds(505));
+  recorder().RecordScoreAdFlowLatency(base::Milliseconds(705));
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  // 605 becomes 600 because of bucketing
+  EXPECT_EQ(GetMetricValue(UkmEntry::kMeanScoreAdFlowLatencyInMillisName), 600);
+  // 705 becomes 700 because of bucketing
+  EXPECT_EQ(GetMetricValue(UkmEntry::kMaxScoreAdFlowLatencyInMillisName), 700);
+}
+
+TEST_F(AuctionMetricsRecorderTest, ScoreAdFlowLatencyIgnoresNegativeValues) {
+  recorder().RecordScoreAdFlowLatency(base::Milliseconds(505));
+  recorder().RecordScoreAdFlowLatency(base::Milliseconds(705));
+  recorder().RecordScoreAdFlowLatency(base::Milliseconds(-500));
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  // 605 becomes 600 because of bucketing
+  EXPECT_EQ(GetMetricValue(UkmEntry::kMeanScoreAdFlowLatencyInMillisName), 600);
+  // 705 becomes 700 because of bucketing
+  EXPECT_EQ(GetMetricValue(UkmEntry::kMaxScoreAdFlowLatencyInMillisName), 700);
+}
+
+TEST_F(AuctionMetricsRecorderTest,
+       ScoreAdDependencyLatencyMetricsHaveNoValuesForNoScoreAds) {
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  EXPECT_FALSE(HasMetric(UkmEntry::kMeanScoreAdCodeReadyLatencyInMillisName));
+  EXPECT_FALSE(HasMetric(UkmEntry::kMaxScoreAdCodeReadyLatencyInMillisName));
+  EXPECT_FALSE(HasMetric(
+      UkmEntry::kMeanScoreAdDirectFromSellerSignalsLatencyInMillisName));
+  EXPECT_FALSE(HasMetric(
+      UkmEntry::kMaxScoreAdDirectFromSellerSignalsLatencyInMillisName));
+  EXPECT_FALSE(HasMetric(
+      UkmEntry::kMeanScoreAdTrustedScoringSignalsLatencyInMillisName));
+  EXPECT_FALSE(
+      HasMetric(UkmEntry::kMaxScoreAdTrustedScoringSignalsLatencyInMillisName));
+}
+
+TEST_F(AuctionMetricsRecorderTest,
+       ScoreAdDependencyLatencyMetricsHaveNoValuesForNullOptLatencies) {
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+  recorder().RecordScoreAdDependencyLatencies(
+      {/*code_ready_latency=*/absl::nullopt,
+       /*direct_from_seller_signals_latency=*/absl::nullopt,
+       /*trusted_scoring_signals_latency=*/absl::nullopt});
+
+  EXPECT_FALSE(HasMetric(UkmEntry::kMeanScoreAdCodeReadyLatencyInMillisName));
+  EXPECT_FALSE(HasMetric(UkmEntry::kMaxScoreAdCodeReadyLatencyInMillisName));
+  EXPECT_FALSE(HasMetric(
+      UkmEntry::kMeanScoreAdDirectFromSellerSignalsLatencyInMillisName));
+  EXPECT_FALSE(HasMetric(
+      UkmEntry::kMaxScoreAdDirectFromSellerSignalsLatencyInMillisName));
+  EXPECT_FALSE(HasMetric(
+      UkmEntry::kMeanScoreAdTrustedScoringSignalsLatencyInMillisName));
+  EXPECT_FALSE(
+      HasMetric(UkmEntry::kMaxScoreAdTrustedScoringSignalsLatencyInMillisName));
+}
+
+TEST_F(AuctionMetricsRecorderTest,
+       ScoreAdDependencyLatencyMetricsWithOneRecord) {
+  recorder().RecordScoreAdDependencyLatencies(
+      {/*code_ready_latency=*/base::Milliseconds(105),
+       /*direct_from_seller_signals_latency=*/base::Milliseconds(305),
+       /*trusted_scoring_signals_latency=*/base::Milliseconds(405)});
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  // 105 becomes 100 because of bucketing
+  EXPECT_EQ(GetMetricValue(UkmEntry::kMeanScoreAdCodeReadyLatencyInMillisName),
+            100);
+  EXPECT_EQ(GetMetricValue(UkmEntry::kMaxScoreAdCodeReadyLatencyInMillisName),
+            100);
+
+  // 305 becomes 300 because of bucketing
+  EXPECT_EQ(
+      GetMetricValue(
+          UkmEntry::kMeanScoreAdDirectFromSellerSignalsLatencyInMillisName),
+      300);
+  EXPECT_EQ(
+      GetMetricValue(
+          UkmEntry::kMaxScoreAdDirectFromSellerSignalsLatencyInMillisName),
+      300);
+
+  // 405 becomes 400 because of bucketing
+  EXPECT_EQ(GetMetricValue(
+                UkmEntry::kMeanScoreAdTrustedScoringSignalsLatencyInMillisName),
+            400);
+  EXPECT_EQ(GetMetricValue(
+                UkmEntry::kMaxScoreAdTrustedScoringSignalsLatencyInMillisName),
+            400);
+}
+
+TEST_F(AuctionMetricsRecorderTest,
+       ScoreAdDependencyLatencyMetricsWithTwoRecords) {
+  recorder().RecordScoreAdDependencyLatencies(
+      {/*code_ready_latency=*/base::Milliseconds(105),
+       /*direct_from_seller_signals_latency=*/base::Milliseconds(305),
+       /*trusted_scoring_signals_latency=*/base::Milliseconds(405)});
+  recorder().RecordScoreAdDependencyLatencies(
+      {/*code_ready_latency=*/base::Milliseconds(305),
+       /*direct_from_seller_signals_latency=*/base::Milliseconds(505),
+       /*trusted_scoring_signals_latency=*/base::Milliseconds(605)});
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  // 205 becomes 200 because of bucketing
+  EXPECT_EQ(GetMetricValue(UkmEntry::kMeanScoreAdCodeReadyLatencyInMillisName),
+            200);
+  EXPECT_EQ(GetMetricValue(UkmEntry::kMaxScoreAdCodeReadyLatencyInMillisName),
+            300);
+
+  // 405 becomes 400 because of bucketing
+  EXPECT_EQ(
+      GetMetricValue(
+          UkmEntry::kMeanScoreAdDirectFromSellerSignalsLatencyInMillisName),
+      400);
+  // 505 becomes 500 because of bucketing
+  EXPECT_EQ(
+      GetMetricValue(
+          UkmEntry::kMaxScoreAdDirectFromSellerSignalsLatencyInMillisName),
+      500);
+
+  // 505 becomes 500 because of bucketing
+  EXPECT_EQ(GetMetricValue(
+                UkmEntry::kMeanScoreAdTrustedScoringSignalsLatencyInMillisName),
+            500);
+  // 605 becomes 600 because of bucketing
+  EXPECT_EQ(GetMetricValue(
+                UkmEntry::kMaxScoreAdTrustedScoringSignalsLatencyInMillisName),
+            600);
+}
+
+TEST_F(AuctionMetricsRecorderTest,
+       ScoreAdDependencyLatencyMetricsIgnoresNegativeValues) {
+  recorder().RecordScoreAdDependencyLatencies(
+      {/*code_ready_latency=*/base::Milliseconds(105),
+       /*direct_from_seller_signals_latency=*/base::Milliseconds(305),
+       /*trusted_scoring_signals_latency=*/base::Milliseconds(405)});
+  recorder().RecordScoreAdDependencyLatencies(
+      {/*code_ready_latency=*/base::Milliseconds(305),
+       /*direct_from_seller_signals_latency=*/base::Milliseconds(505),
+       /*trusted_scoring_signals_latency=*/base::Milliseconds(605)});
+  recorder().RecordScoreAdDependencyLatencies(
+      {/*code_ready_latency=*/base::Milliseconds(-200),
+       /*direct_from_seller_signals_latency=*/base::Milliseconds(-400),
+       /*trusted_scoring_signals_latency=*/base::Milliseconds(-500)});
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  // 205 becomes 200 because of bucketing
+  EXPECT_EQ(GetMetricValue(UkmEntry::kMeanScoreAdCodeReadyLatencyInMillisName),
+            200);
+  // 305 becomes 300 because of bucketing
+  EXPECT_EQ(GetMetricValue(UkmEntry::kMaxScoreAdCodeReadyLatencyInMillisName),
+            300);
+
+  // 405 becomes 400 because of bucketing
+  EXPECT_EQ(
+      GetMetricValue(
+          UkmEntry::kMeanScoreAdDirectFromSellerSignalsLatencyInMillisName),
+      400);
+  // 505 becomes 500 because of bucketing
+  EXPECT_EQ(
+      GetMetricValue(
+          UkmEntry::kMaxScoreAdDirectFromSellerSignalsLatencyInMillisName),
+      500);
+
+  // 505 becomes 500 because of bucketing
+  EXPECT_EQ(GetMetricValue(
+                UkmEntry::kMeanScoreAdTrustedScoringSignalsLatencyInMillisName),
+            500);
+  // 605 becomes 600 because of bucketing
+  EXPECT_EQ(GetMetricValue(
+                UkmEntry::kMaxScoreAdTrustedScoringSignalsLatencyInMillisName),
+            600);
+}
+
+TEST_F(AuctionMetricsRecorderTest,
+       ScoreAdCriticalPathMetricsHasNoValuesWhenNoneAreRecorded) {
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  EXPECT_EQ(GetMetricValue(UkmEntry::kNumScoreAdCodeReadyOnCriticalPathName),
+            0);
+  EXPECT_FALSE(HasMetric(
+      UkmEntry::kMeanScoreAdCodeReadyCriticalPathLatencyInMillisName));
+
+  EXPECT_EQ(GetMetricValue(
+                UkmEntry::kNumScoreAdDirectFromSellerSignalsOnCriticalPathName),
+            0);
+  EXPECT_FALSE(HasMetric(
+      UkmEntry::
+          kMeanScoreAdDirectFromSellerSignalsCriticalPathLatencyInMillisName));
+
+  EXPECT_EQ(GetMetricValue(
+                UkmEntry::kNumScoreAdTrustedScoringSignalsOnCriticalPathName),
+            0);
+  EXPECT_FALSE(HasMetric(
+      UkmEntry::
+          kMeanScoreAdTrustedScoringSignalsCriticalPathLatencyInMillisName));
+}
+
+TEST_F(AuctionMetricsRecorderTest,
+       ScoreAdCriticalPathMetricsRecordedManyTimes) {
+  using auction_worklet::mojom::ScoreAdDependencyLatencies;
+  for (int i = 0; i < 12; ++i) {
+    recorder().RecordScoreAdDependencyLatencies(
+        {/*code_ready_latency=*/base::Milliseconds(305),
+         /*direct_from_seller_signals_latency=*/base::Milliseconds(50),
+         /*trusted_scoring_signals_latency=*/absl::nullopt});
+  }
+  for (int i = 0; i < 18; ++i) {
+    recorder().RecordScoreAdDependencyLatencies(
+        {/*code_ready_latency=*/base::Milliseconds(50),
+         /*direct_from_seller_signals_latency=*/base::Milliseconds(505),
+         /*trusted_scoring_signals_latency=*/base::Milliseconds(100)});
+  }
+  for (int i = 0; i < 21; ++i) {
+    recorder().RecordScoreAdDependencyLatencies(
+        {/*code_ready_latency=*/absl::nullopt,
+         /*direct_from_seller_signals_latency=*/base::Milliseconds(50),
+         /*trusted_scoring_signals_latency=*/base::Milliseconds(605)});
+  }
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  // 12 becomes 11 because of bucketing
+  EXPECT_EQ(GetMetricValue(UkmEntry::kNumScoreAdCodeReadyOnCriticalPathName),
+            11);
+  // 255 becomes 200 because of bucketing
+  EXPECT_EQ(GetMetricValue(
+                UkmEntry::kMeanScoreAdCodeReadyCriticalPathLatencyInMillisName),
+            200);
+
+  // 18 becomes 17 because of bucketing
+  EXPECT_EQ(GetMetricValue(
+                UkmEntry::kNumScoreAdDirectFromSellerSignalsOnCriticalPathName),
+            17);
+  // 405 becomes 400 because of bucketing
+  EXPECT_EQ(
+      GetMetricValue(
+          UkmEntry::
+              kMeanScoreAdDirectFromSellerSignalsCriticalPathLatencyInMillisName),
+      400);
+
+  // 21 becomes 19 because of bucketing
+  EXPECT_EQ(GetMetricValue(
+                UkmEntry::kNumScoreAdTrustedScoringSignalsOnCriticalPathName),
+            19);
+  // 555 becomes 500 because of bucketing
+  EXPECT_EQ(
+      GetMetricValue(
+          UkmEntry::
+              kMeanScoreAdTrustedScoringSignalsCriticalPathLatencyInMillisName),
+      500);
+}
+
+TEST_F(AuctionMetricsRecorderTest, ScoreAdCriticalPathMetricsComputeMean) {
+  recorder().RecordScoreAdDependencyLatencies(
+      {/*code_ready_latency=*/base::Milliseconds(205),
+       /*direct_from_seller_signals_latency=*/absl::nullopt,
+       /*trusted_scoring_signals_latency=*/absl::nullopt});
+  recorder().RecordScoreAdDependencyLatencies(
+      {/*code_ready_latency=*/base::Milliseconds(405),
+       /*direct_from_seller_signals_latency=*/absl::nullopt,
+       /*trusted_scoring_signals_latency=*/absl::nullopt});
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  EXPECT_EQ(GetMetricValue(UkmEntry::kNumScoreAdCodeReadyOnCriticalPathName),
+            2);
+  // 305 becomes 300 because of bucketing
+  EXPECT_EQ(GetMetricValue(
+                UkmEntry::kMeanScoreAdCodeReadyCriticalPathLatencyInMillisName),
+            300);
+
+  EXPECT_EQ(GetMetricValue(
+                UkmEntry::kNumScoreAdDirectFromSellerSignalsOnCriticalPathName),
+            0);
+  EXPECT_FALSE(HasMetric(
+      UkmEntry::
+          kMeanScoreAdDirectFromSellerSignalsCriticalPathLatencyInMillisName));
+
+  EXPECT_EQ(GetMetricValue(
+                UkmEntry::kNumScoreAdTrustedScoringSignalsOnCriticalPathName),
+            0);
+  EXPECT_FALSE(HasMetric(
+      UkmEntry::
+          kMeanScoreAdTrustedScoringSignalsCriticalPathLatencyInMillisName));
+}
+
+TEST_F(AuctionMetricsRecorderTest,
+       ScoreAdCriticalPathMetricsIgnoreNegativeValues) {
+  recorder().RecordScoreAdDependencyLatencies(
+      {/*code_ready_latency=*/base::Milliseconds(205),
+       /*direct_from_seller_signals_latency=*/absl::nullopt,
+       /*trusted_scoring_signals_latency=*/absl::nullopt});
+  recorder().RecordScoreAdDependencyLatencies(
+      {/*code_ready_latency=*/base::Milliseconds(405),
+       /*direct_from_seller_signals_latency=*/absl::nullopt,
+       /*trusted_scoring_signals_latency=*/absl::nullopt});
+  recorder().RecordScoreAdDependencyLatencies(
+      {/*code_ready_latency=*/base::Milliseconds(-100),
+       /*direct_from_seller_signals_latency=*/absl::nullopt,
+       /*trusted_scoring_signals_latency=*/absl::nullopt});
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  EXPECT_EQ(GetMetricValue(UkmEntry::kNumScoreAdCodeReadyOnCriticalPathName),
+            2);
+  // 305 becomes 300 because of bucketing
+  EXPECT_EQ(GetMetricValue(
+                UkmEntry::kMeanScoreAdCodeReadyCriticalPathLatencyInMillisName),
+            300);
+
+  EXPECT_EQ(GetMetricValue(
+                UkmEntry::kNumScoreAdDirectFromSellerSignalsOnCriticalPathName),
+            0);
+  EXPECT_FALSE(HasMetric(
+      UkmEntry::
+          kMeanScoreAdDirectFromSellerSignalsCriticalPathLatencyInMillisName));
+
+  EXPECT_EQ(GetMetricValue(
+                UkmEntry::kNumScoreAdTrustedScoringSignalsOnCriticalPathName),
+            0);
+  EXPECT_FALSE(HasMetric(
+      UkmEntry::
+          kMeanScoreAdTrustedScoringSignalsCriticalPathLatencyInMillisName));
 }
 
 }  // namespace

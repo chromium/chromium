@@ -454,6 +454,13 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
     if (details.reporting_upload_depth > kMaxNestedReportDepth)
       return;
 
+    // include_subdomains policies are only allowed to report on DNS resolution
+    // errors.
+    if (phase_string != kDnsPhase &&
+        IsMismatchingSubdomainReport(*policy, report_origin)) {
+      return;
+    }
+
     // If the server that handled the request is different than the server that
     // delivered the NEL policy (as determined by their IP address), then we
     // have to "downgrade" the NEL report, so that it only includes information
@@ -464,13 +471,6 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
       type_string = kDnsAddressChangedType;
       details.elapsed_time = base::TimeDelta();
       details.status_code = 0;
-    }
-
-    // include_subdomains policies are only allowed to report on DNS resolution
-    // errors.
-    if (phase_string != kDnsPhase &&
-        IsMismatchingSubdomainReport(*policy, report_origin)) {
-      return;
     }
 
     bool success = (type == OK) && !IsHttpError(details);

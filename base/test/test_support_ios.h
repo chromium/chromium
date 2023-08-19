@@ -24,7 +24,7 @@ void InitIOSArgs(int argc, char* argv[]);
 // InitIOSRunHook.
 int RunTestsFromIOSApp();
 
-// Returns true if unittests should be run by the XCTest runnner.
+// Returns true if unittests should be run by the XCTest runner.
 bool ShouldRunIOSUnittestsWithXCTest();
 
 }  // namespace base

@@ -22,7 +22,7 @@ namespace {
 
 // A small-ish size that it should probably be able to get most manifests in
 // a single chunk. Chosen somewhat arbitrarily otherwise.
-constexpr size_t kDefaultReadSize = 0xFFFF;
+constexpr size_t kDefaultReadSize = 1024 * 16;
 
 }  // namespace
 
@@ -42,7 +42,7 @@ class MEDIA_EXPORT HlsDataSource {
   using ReadStatus = TypedStatus<ReadStatusTraits>;
   using ReadCb = base::OnceCallback<void(ReadStatus::Or<size_t>)>;
 
-  explicit HlsDataSource(absl::optional<uint64_t> size) : size_(size) {}
+  explicit HlsDataSource(absl::optional<size_t> size) : size_(size) {}
   virtual ~HlsDataSource();
 
   // Issues a read to the underlying data source, writing the results to

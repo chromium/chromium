@@ -11,10 +11,6 @@
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_keyboard_accessory_view.h"
 #import "ui/base/device_form_factor.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 OmniboxKeyboardAccessoryView* ConfigureAssistiveKeyboardViews(
     UITextField* textField,
     NSString* dotComTLD,

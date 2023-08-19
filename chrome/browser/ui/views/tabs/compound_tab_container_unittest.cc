@@ -200,7 +200,7 @@ class CompoundTabContainerTest : public ChromeViewsTestBase {
 
   void SetTabContainerWidth(int width) {
     tab_container_width_ = width;
-    gfx::Size size(tab_container_width_, GetLayoutConstant(TAB_HEIGHT));
+    gfx::Size size(tab_container_width_, GetLayoutConstant(TAB_STRIP_HEIGHT));
     widget_->SetSize(size);
     drag_context_->SetSize(size);
     tab_container_->SetSize(size);

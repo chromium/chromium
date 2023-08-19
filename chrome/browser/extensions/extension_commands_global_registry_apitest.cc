@@ -16,11 +16,6 @@
 #include "ui/base/test/ui_controls.h"
 #include "ui/events/event_constants.h"
 
-#if BUILDFLAG(IS_MAC)
-#include <Carbon/Carbon.h>
-#include "base/mac/mac_util.h"
-#endif
-
 namespace extensions {
 
 typedef ExtensionApiTest GlobalCommandsApiTest;
@@ -64,29 +59,10 @@ IN_PROC_BROWSER_TEST_F(GlobalCommandsApiTest, MAYBE_GlobalCommand) {
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
       incognito_browser, ui::VKEY_8, true, true, false, false));
 #elif BUILDFLAG(IS_MAC)
-  // ui_test_utils::SendGlobalKeyEventsAndWait() hangs the test on macOS 10.14 -
-  // https://crbug.com/904403
-  if (base::mac::IsAtLeastOS10_14())
-    return;
-
-  // Create an incognito browser to capture the focus.
-  Browser* incognito_browser = CreateIncognitoBrowser();
-  // Activate Chrome.app so that events are seen on [NSApplication sendEvent:].
-  // This is not necessary to detect these system events in release code, but is
-  // a necessary trade-off to ensure all parts of the generated events have been
-  // consumed. Without that, the test can leave the system in a state with the
-  // Shift key permanently pressed and cause other tests to fail. But since it
-  // is an incognito window that has focus, we still get good coverage of the
-  // global hotkey logic.
-  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(incognito_browser));
-
-  // Send some native mac key events.
-  ui_test_utils::SendGlobalKeyEventsAndWait(
-      kVK_ANSI_1, ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN);
-  ui_test_utils::SendGlobalKeyEventsAndWait(
-      kVK_ANSI_A, ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN);
-  ui_test_utils::SendGlobalKeyEventsAndWait(
-      kVK_ANSI_8, ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN);
+  // As of macOS 10.14 (i.e. every supported macOS release), global event
+  // injection requires user permission, which is something that can't happen in
+  // the context of an automated test. Therefore, skip.
+  GTEST_SKIP() << "macOS does not allow global event injection";
 #endif
 
   // If this fails, it might be because the global shortcut failed to work,

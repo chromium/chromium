@@ -19,10 +19,10 @@
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
-#include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/gpu/GrContextThreadSafeProxy.h"
 #include "third_party/skia/include/gpu/graphite/Recorder.h"
 #include "third_party/skia/include/gpu/graphite/Surface.h"
+#include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 
 namespace {
 
@@ -40,6 +40,7 @@ SkColor4f GetFallbackColorForPlane(viz::SharedImageFormat format,
   if (format.is_single_plane())
     return SkColors::kWhite;
   switch (format.plane_config()) {
+    case viz::SharedImageFormat::PlaneConfig::kY_U_V:
     case viz::SharedImageFormat::PlaneConfig::kY_V_U:
       return plane_index == 0 ? SkColors::kWhite : SkColors::kGray;
     case viz::SharedImageFormat::PlaneConfig::kY_UV:
@@ -92,7 +93,7 @@ void ImageContextImpl::OnContextLost() {
 }
 
 void ImageContextImpl::SetPromiseImageTextures(
-    std::vector<sk_sp<SkPromiseImageTexture>> promise_image_textures) {
+    std::vector<sk_sp<GrPromiseImageTexture>> promise_image_textures) {
   owned_promise_image_textures_ = std::move(promise_image_textures);
   promise_image_textures_.clear();
   for (auto& owned_texture : owned_promise_image_textures_) {
@@ -169,7 +170,7 @@ void ImageContextImpl::CreateFallbackImage(
   }
 
   // We can't allocate a fallback texture as the original texture was externally
-  // allocated. Skia will skip drawing a null SkPromiseImageTexture, do nothing
+  // allocated. Skia will skip drawing a null GrPromiseImageTexture, do nothing
   // and leave it null.
   const auto& formats = backend_formats();
   if (formats.empty() || formats[0].textureType() == GrTextureType::kExternal)
@@ -178,7 +179,7 @@ void ImageContextImpl::CreateFallbackImage(
   DCHECK(!fallback_context_state_);
   fallback_context_state_ = context_state;
 
-  std::vector<sk_sp<SkPromiseImageTexture>> promise_textures;
+  std::vector<sk_sp<GrPromiseImageTexture>> promise_textures;
   for (int plane_index = 0; plane_index < num_planes; plane_index++) {
     DCHECK_NE(formats[plane_index].textureType(), GrTextureType::kExternal);
     auto fallback_texture =
@@ -192,7 +193,7 @@ void ImageContextImpl::CreateFallbackImage(
       DLOG(ERROR) << "Could not create backend texture.";
       return;
     }
-    auto promise_texture = SkPromiseImageTexture::Make(fallback_texture);
+    auto promise_texture = GrPromiseImageTexture::Make(fallback_texture);
     promise_textures.push_back(std::move(promise_texture));
     fallback_textures_.push_back(fallback_texture);
   }
@@ -265,22 +266,22 @@ void ImageContextImpl::BeginAccessIfNecessary(
   }
 
   // Legacy mailboxes support only single planar formats.
-  DCHECK(format().is_single_plane());
+  CHECK(format().is_single_plane());
   bool angle_rgbx_internal_format =
       context_state->feature_info()->feature_flags().angle_rgbx_internal_format;
   GrBackendTexture backend_texture;
-  GLenum gl_storage_internal_format =
-      gpu::TextureStorageFormat(format(), angle_rgbx_internal_format);
+  gpu::GLFormatDesc format_desc = gpu::ToGLFormatDesc(
+      format(), /*plane_index=*/0, angle_rgbx_internal_format);
   gpu::GetGrBackendTexture(
       context_state->feature_info(), texture_base->target(), size(),
-      texture_base->service_id(), gl_storage_internal_format,
+      texture_base->service_id(), format_desc.storage_internal_format,
       context_state->gr_context()->threadSafeProxy(), &backend_texture);
   if (!backend_texture.isValid()) {
     DLOG(ERROR) << "Failed to fulfill the promise texture.";
     CreateFallbackImage(context_state);
     return;
   }
-  SetPromiseImageTextures({SkPromiseImageTexture::Make(backend_texture)});
+  SetPromiseImageTextures({GrPromiseImageTexture::Make(backend_texture)});
 
   // Hold onto a reference to legacy GL textures while still in use, see
   // https://crbug.com/1118166 for why this is necessary.

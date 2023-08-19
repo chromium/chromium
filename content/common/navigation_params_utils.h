@@ -13,8 +13,7 @@ class NavigationTypeUtils {
  public:
   static bool IsReload(blink::mojom::NavigationType value) {
     return value == blink::mojom::NavigationType::RELOAD ||
-           value == blink::mojom::NavigationType::RELOAD_BYPASSING_CACHE ||
-           value == blink::mojom::NavigationType::RELOAD_ORIGINAL_REQUEST_URL;
+           value == blink::mojom::NavigationType::RELOAD_BYPASSING_CACHE;
   }
 
   static bool IsSameDocument(blink::mojom::NavigationType value) {

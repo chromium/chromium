@@ -81,6 +81,9 @@ class HeadlessShell {
   void OnBrowserStart(HeadlessBrowser* browser);
 
  private:
+#if defined(HEADLESS_ENABLE_COMMANDS)
+  void OnProcessCommandsDone(HeadlessCommandHandler::Result result);
+#endif
   void ShutdownSoon();
   void Shutdown();
 
@@ -155,9 +158,22 @@ void HeadlessShell::OnBrowserStart(HeadlessBrowser* browser) {
   HeadlessCommandHandler::ProcessCommands(
       HeadlessWebContentsImpl::From(web_contents)->web_contents(),
       std::move(target_url),
-      base::BindOnce(&HeadlessShell::ShutdownSoon, base::Unretained(this)));
+      base::BindOnce(&HeadlessShell::OnProcessCommandsDone,
+                     base::Unretained(this)));
 #endif
 }
+
+#if defined(HEADLESS_ENABLE_COMMANDS)
+void HeadlessShell::OnProcessCommandsDone(
+    HeadlessCommandHandler::Result result) {
+  if (result != HeadlessCommandHandler::Result::kSuccess) {
+    static_cast<HeadlessBrowserImpl*>(browser_)->ShutdownWithExitCode(
+        static_cast<int>(result));
+    return;
+  }
+  browser_->Shutdown();
+}
+#endif
 
 void HeadlessShell::ShutdownSoon() {
   browser_->BrowserMainThread()->PostTask(

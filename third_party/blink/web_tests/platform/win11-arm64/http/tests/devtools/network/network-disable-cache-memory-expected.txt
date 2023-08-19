@@ -1,0 +1,9 @@
+Tests disabling cache from inspector.
+
+Page reloaded.
+Page reloaded.
+PROMISE FAILURE: Error: Failure (First and second scripts should be equal.): expected <true> found <false>
+    at assertEquals (http://debug-frontend.test:8000/inspector-sources/legacy_test_runner/test_runner/test_runner.js:767:9)
+    at Object.assertTrue (http://debug-frontend.test:8000/inspector-sources/legacy_test_runner/test_runner/test_runner.js:770:3)
+    at step6 (http://debug-frontend.test:8000/devtools/network/network-disable-cache-memory.js:57:16)
+

@@ -16,9 +16,10 @@ android_library("java") {
     "//url:gurl_java",
   ]
 
-  srcjar_deps = [ "//components/favicon_base:favicon_base_enums_java" ]
-
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  srcjar_deps = [
+    ":jni_headers",
+    "//components/favicon_base:favicon_base_enums_java",
+  ]
 }
 
 generate_jni("jni_headers") {

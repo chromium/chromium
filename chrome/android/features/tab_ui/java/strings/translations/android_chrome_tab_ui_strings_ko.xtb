@@ -3,8 +3,6 @@
 <translationbundle lang="ko">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" />개의 탭을 최근 사용하지 않았습니다. 탭을 닫을까요?</translation>
 <translation id="125153950246128346">다른 탭을 보려면 탭하세요.</translation>
-<translation id="1403228085774130835">Chrome 기본 메뉴의 최근 탭에서 종료된 탭을 확인할 수 있습니다.</translation>
-<translation id="1455506303394048917">시크릿 탭의 활동 내역이 기기에서 삭제됩니다.</translation>
 <translation id="1499635324672558517">시크릿 탭을 모두 닫으시겠습니까?</translation>
 <translation id="1657719826150349398">탭을 아래로 이동</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{탭 <ph name="TABS_COUNT_ONE" />개}other{탭 <ph name="TABS_COUNT_MANY" />개}}</translation>
@@ -47,6 +45,7 @@
 <translation id="5073204694187207510">전체화면 그리드 숨기기</translation>
 <translation id="5076161749301278626">매장 리뷰를 확인하시겠습니까?</translation>
 <translation id="5082793167783849073">그룹을 만들어서 페이지를 빠르게 비교하세요. 시작하려면 링크를 길게 터치합니다.</translation>
+<translation id="5339733443032484186">마지막 탭</translation>
 <translation id="5490235265819901748">탭 그룹 펼침</translation>
 <translation id="5494920125229734069">모두 선택</translation>
 <translation id="5556417849629758491">스토어 정보 보기, 화면 상단에 옵션 있음</translation>
@@ -62,10 +61,12 @@
 <translation id="6228793724645064692">(매장 평점)</translation>
 <translation id="6333260925957816943">매장에 관한 정보</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{선택한 탭 <ph name="TABS_COUNT_ONE" />개 그룹 해제}other{선택한 탭 <ph name="TABS_COUNT_MANY" />개 그룹 해제}}</translation>
+<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Chrome 기본 메뉴의 최근 탭에서 종료된 탭을 확인할 수 있습니다. 시크릿 탭은 확인할 수 없습니다.}other{Chrome 기본 메뉴의 최근 탭에서 종료된 탭을 확인할 수 있습니다. 시크릿 탭 #개는 확인할 수 없습니다.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{탭 <ph name="TABS_COUNT_ONE" />개}other{탭 <ph name="TABS_COUNT_MANY" />개}}</translation>
 <translation id="6549021453810473782">매장 정보 보기</translation>
 <translation id="6562820390860419811">탭을 왼쪽으로 이동</translation>
 <translation id="6615455863669487791">보기</translation>
+<translation id="661742612106409204">Chrome 기본 메뉴의 최근 탭에서 종료된 탭을 확인할 수 있습니다.</translation>
 <translation id="6840760312327750441">탭을 그룹화하려면 탭을 길게 터치한 다음 다른 탭으로 드래그하세요.</translation>
 <translation id="6856809498882026482">다중 선택 모드 숨기기</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{탭 공유}other{탭 공유}}</translation>

@@ -4,16 +4,13 @@
 
 #import "ios/web/navigation/crw_error_page_helper.h"
 
+#import "base/apple/bundle_locations.h"
 #import "base/strings/sys_string_conversions.h"
 #import "net/base/mac/url_conversions.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "url/gurl.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using CRWErrorPageHelperTest = PlatformTest;
 
@@ -76,7 +73,7 @@ TEST_F(CRWErrorPageHelperTest, IsErrorPageFileURLWrong) {
 // URL.
 TEST_F(CRWErrorPageHelperTest, FailedNavigationURLFromErrorPageFileURLCorrect) {
   std::string expected_url = "http://expected-url.com";
-  std::string path = base::SysNSStringToUTF8([NSBundle.mainBundle
+  std::string path = base::SysNSStringToUTF8([base::apple::FrameworkBundle()
       pathForResource:@"error_page_loaded"
                ofType:@"html"]);
 
@@ -92,7 +89,7 @@ TEST_F(CRWErrorPageHelperTest, FailedNavigationURLFromErrorPageFileURLCorrect) {
 // isn't present in the page URL.
 TEST_F(CRWErrorPageHelperTest, FailedNavigationURLFromErrorPageFileURLNoQuery) {
   std::string expected_url = "http://expected-url.com";
-  std::string path = base::SysNSStringToUTF8([NSBundle.mainBundle
+  std::string path = base::SysNSStringToUTF8([base::apple::FrameworkBundle()
       pathForResource:@"error_page_loaded"
                ofType:@"html"]);
 
@@ -120,7 +117,7 @@ TEST_F(CRWErrorPageHelperTest,
 // current page isn't file://.
 TEST_F(CRWErrorPageHelperTest,
        FailedNavigationURLFromErrorPageFileURLWrongScheme) {
-  std::string path = base::SysNSStringToUTF8([NSBundle.mainBundle
+  std::string path = base::SysNSStringToUTF8([base::apple::FrameworkBundle()
       pathForResource:@"error_page_loaded"
                ofType:@"html"]);
 

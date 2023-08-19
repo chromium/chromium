@@ -48,8 +48,6 @@ source_set("inttests") {
     "//testing/gtest",
     "//third_party/ocmock",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("test_support") {
@@ -77,6 +75,4 @@ source_set("test_support") {
     "//testing/gtest",
     "//ui/base",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

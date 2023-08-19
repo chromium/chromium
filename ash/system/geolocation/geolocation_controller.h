@@ -20,6 +20,7 @@
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+class PrefChangeRegistrar;
 class PrefRegistrySimple;
 class PrefService;
 
@@ -28,6 +29,8 @@ class Clock;
 }  // namespace base
 
 namespace ash {
+
+class LocalTimeConverter;
 
 // Represents a geolocation position fix. It's "simple" because it doesn't
 // expose all the parameters of the position interface as defined by the
@@ -56,6 +59,8 @@ class ASH_EXPORT GeolocationController
       public SessionObserver,
       public SimpleGeolocationProvider::Delegate {
  public:
+  static constexpr base::Time kNoSunRiseSet = base::Time::Min();
+
   class Observer : public base::CheckedObserver {
    public:
     // Emitted when the Geoposition is updated with
@@ -76,6 +81,12 @@ class ASH_EXPORT GeolocationController
   static GeolocationController* Get();
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
+  // This class should respect the system geolocation permission. When the
+  // permission is disabled, no requests should be dispatched and no responses
+  // processed.
+  // Called from `ash::Preferences::ApplyPreferences()`.
+  void OnSystemGeolocationPermissionChanged(bool enabled);
+
   const base::OneShotTimer& timer() const { return *timer_; }
 
   const std::u16string& current_timezone_id() const {
@@ -92,20 +103,21 @@ class ASH_EXPORT GeolocationController
   void SuspendDone(base::TimeDelta sleep_duration) override;
 
   // SimpleGeolocationProvider::Delegate:
-  bool IsPreciseGeolocationAllowed() const override;
+  bool IsSystemGeolocationAllowed() const override;
 
   // SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
   // Returns sunset and sunrise time calculated from the most recently observed
   // geoposition. If a geoposition has not been observed, defaults to sunset
-  // 6 PM and sunrise 6 AM.
+  // 6 PM and sunrise 6 AM. If the current geolocation has no sunrise/sunset
+  // (24 hours of daylight or darkness), both methods return `kNoSunRiseSet`.
   base::Time GetSunsetTime() const { return GetSunRiseSet(/*sunrise=*/false); }
   base::Time GetSunriseTime() const { return GetSunRiseSet(/*sunrise=*/true); }
 
   static base::TimeDelta GetNextRequestDelayAfterSuccessForTesting();
 
-  network::SharedURLLoaderFactory* GetFactoryForTesting() { return factory_; }
+  network::SharedURLLoaderFactory* GetSharedURLLoaderFactoryForTesting();
 
   base::OneShotTimer* GetTimerForTesting() { return timer_.get(); }
 
@@ -116,7 +128,10 @@ class ASH_EXPORT GeolocationController
   void SetTimerForTesting(std::unique_ptr<base::OneShotTimer> timer);
 
   void SetClockForTesting(base::Clock* clock);
-
+  void SetLocalTimeConverterForTesting(
+      const LocalTimeConverter* local_time_converter);
+  void SetGeolocationProviderForTesting(
+      std::unique_ptr<SimpleGeolocationProvider> geolocation_provider);
   void SetCurrentTimezoneIdForTesting(const std::u16string& timezone_id);
 
  protected:
@@ -161,13 +176,12 @@ class ASH_EXPORT GeolocationController
   // being able to retrieve a valid geoposition.
   void StoreCachedGeoposition() const;
 
-  const raw_ptr<network::SharedURLLoaderFactory, ExperimentalAsh> factory_;
-
   // May be null if a user has not logged in yet.
   raw_ptr<PrefService> active_user_pref_service_ = nullptr;
+  std::unique_ptr<PrefChangeRegistrar> registrar_;
 
   // The IP-based geolocation provider.
-  SimpleGeolocationProvider provider_;
+  std::unique_ptr<SimpleGeolocationProvider> simple_geolocation_provider_;
 
   // Delay after which a new request is retried after a failed one.
   base::TimeDelta backoff_delay_;
@@ -176,6 +190,10 @@ class ASH_EXPORT GeolocationController
 
   // Optional Used in tests to override the time of "Now".
   raw_ptr<base::Clock, ExperimentalAsh> clock_ = nullptr;  // Not owned.
+
+  // Optional Used in tests to override all local time operations.
+  raw_ptr<const LocalTimeConverter, ExperimentalAsh> local_time_converter_ =
+      nullptr;  // Not owned.
 
   // The ID of the current timezone in the format similar to "America/Chicago".
   std::u16string current_timezone_id_;

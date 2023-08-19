@@ -1,0 +1,6 @@
+# Only run go/rusty-qr-code-generator tests, because:
+# 1. JSON-related tests trigger RunUntilIdle-related flakiness
+#    (see https://crrev.com/c/4571966).
+# 2. We want to limit the resource used by the Rust bots
+*QR*
+

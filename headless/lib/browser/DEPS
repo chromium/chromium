@@ -36,6 +36,9 @@ specific_include_rules = {
   "headless_browser_main_parts_posix.cc": [
     "+device/bluetooth",
   ],
+  "headless_browser_impl_unittest.cc": [
+    "+third_party/blink/public/common/features.h",
+  ],
   "headless_browser_context_impl.cc": [
     "+components/keyed_service/content",
     "+components/origin_trials",

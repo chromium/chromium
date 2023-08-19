@@ -37,6 +37,10 @@
 // The subtitle text string.
 @property(nonatomic, copy) NSString* subtitle;
 
+// If true, aligns the header/footer with the section items by ensure that there
+// are leading/trailing margins. By default, this is false.
+@property(nonatomic, assign) BOOL forceIndents;
+
 @end
 
 // TableViewTextHeaderFooterView is a clone of the
@@ -45,7 +49,7 @@
 @interface TableViewTextHeaderFooterView : UITableViewHeaderFooterView
 
 // The UILabel containing the text stored in `text`.
-//@property(nonatomic, readonly, strong) UILabel* textLabel;
+@property(nonatomic, readonly, strong) UILabel* textLabel;
 
 // UITextView corresponding to `subtitle` from the item.
 @property(nonatomic, readonly, strong) UITextView* subtitleLabel;
@@ -59,6 +63,10 @@
 // Sets the `text` displayed by this cell. If the `text` contains a link, the
 // link is appropriately colored.
 - (void)setSubtitle:(NSString*)subtitle;
+
+// If forceIndents is YES, activates the constraint to align the header/footer
+// with section items.
+- (void)setForceIndents:(BOOL)forceIndents;
 
 @end
 

@@ -50,6 +50,8 @@ extern NSString* const kTextfieldPlaceholderColor;
 extern NSString* const kToolbarButtonColor;
 // Color used for a shadow/separator next to a toolbar.
 extern NSString* const kToolbarShadowColor;
+// Background color for omnibox keyboard buttons.
+extern NSString* const kOmniboxKeyboardButtonColor;
 
 // ***************
 // Standard Colors
@@ -68,6 +70,7 @@ extern NSString* const kBlueColor;
 extern NSString* const kBlueHaloColor;
 
 // Blue palette.
+extern NSString* const kBlue300Color;
 extern NSString* const kBlue400Color;
 extern NSString* const kBlue500Color;
 extern NSString* const kBlue600Color;

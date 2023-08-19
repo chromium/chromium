@@ -4,3 +4,9 @@ include_rules = [
   "+content/public/test",
   "+net",
 ]
+
+specific_include_rules = {
+  "dips_bounce_detector_browsertest\.cc": [
+    "+device/fido/virtual_fido_device_factory.h",
+  ],
+}

@@ -41,6 +41,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher.AccessPoint;
+import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
@@ -62,6 +63,10 @@ public class SyncPromoControllerUITest {
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams =
             new NightModeTestUtils.NightModeParams().getParameters();
+
+    @Rule
+    public AutomotiveContextWrapperTestRule mAutomotiveContextWrapperTestRule =
+            new AutomotiveContextWrapperTestRule();
 
     private static final String TEST_EMAIL = "john.doe@gmail.com";
 
@@ -222,6 +227,30 @@ public class SyncPromoControllerUITest {
         onView(withText(R.string.sync_promo_title_recent_tabs)).check(matches(isDisplayed()));
         onView(withText(R.string.sync_promo_description_recent_tabs)).check(matches(isDisplayed()));
         onView(withId(R.id.sync_promo_close_button)).check(matches(not(isDisplayed())));
+    }
+
+    @Test
+    @MediumTest
+    public void testSetUpSyncPromoView_onNonAutomotive_secondaryButtonShown() throws Throwable {
+        mAutomotiveContextWrapperTestRule.setIsAutomotive(false);
+        mSigninTestRule.addAccount(TEST_EMAIL);
+        ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
+        setUpSyncPromoView(SigninAccessPoint.RECENT_TABS, profileDataCache,
+                R.layout.sync_promo_view_recent_tabs);
+
+        onView(withId(R.id.sync_promo_choose_account_button)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    public void testSetUpSyncPromoView_onAutomotive_secondaryButtonHidden() throws Throwable {
+        mAutomotiveContextWrapperTestRule.setIsAutomotive(true);
+        mSigninTestRule.addAccount(TEST_EMAIL);
+        ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
+        setUpSyncPromoView(SigninAccessPoint.RECENT_TABS, profileDataCache,
+                R.layout.sync_promo_view_recent_tabs);
+
+        onView(withId(R.id.sync_promo_choose_account_button)).check(matches(not(isDisplayed())));
     }
 
     @Test

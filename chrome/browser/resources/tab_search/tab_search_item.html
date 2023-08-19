@@ -11,6 +11,11 @@
     }
   }
 
+  :host-context([chrome-refresh-2023]):host {
+     --audio-icon-color: var(--color-tab-search-media-icon);
+     --media-recording-icon-color:  var(--color-tab-search-media-recording-icon);
+   }
+
   :host(:focus) {
     outline: none;
   }
@@ -45,7 +50,6 @@
     background-size: var(--mwb-icon-size);
     flex-shrink: 0;
     height: var(--mwb-icon-size);
-    margin-inline-end: var(--mwb-list-item-horizontal-margin);
     width: var(--mwb-icon-size);
   }
 
@@ -66,6 +70,7 @@
   #primaryText {
     color: var(--cr-primary-text-color);
     font-size: var(--mwb-primary-text-font-size);
+    font-weight: var(--mwb-primary-text-font-weight);
     margin-bottom: 3px;
   }
 
@@ -74,6 +79,7 @@
     color: var(--cr-secondary-text-color);
     display: flex;
     font-size: var(--mwb-secondary-text-font-size);
+    font-weight: var(--mwb-secondary-text-font-weight);
   }
 
   #primaryContainer {
@@ -140,9 +146,27 @@
   -webkit-mask-image: url(alert_indicators/tab_audio_muting_rounded.svg);
     background-color:  var(--audio-icon-color);
   }
+
+  #iconContainer {
+    margin-inline-end: 16px;
+  }
+
+  :host-context([chrome-refresh-2023]) #iconContainer {
+    align-items: center;
+    background: var(--color-list-item-url-favicon-background);
+    border-radius: 8px;
+    display: flex;
+    flex-shrink: 0;
+    height: 40px;
+    justify-content: center;
+    overflow: hidden;
+    width: 40px;
+  }
 </style>
 
-<div class="favicon" style="background-image:[[faviconUrl_(data.tab)]]"></div>
+<div id="iconContainer">
+  <div class="favicon" style="background-image:[[faviconUrl_(data.tab)]]"></div>
+</div>
 <div id="textAriaLabel" title="[[ariaLabelForText_(data)]]"></div>
 <div class="text-container" aria-hidden="true">
   <div id="primaryContainer">

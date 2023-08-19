@@ -18,12 +18,14 @@ build_webui("build") {
     "network_error.svg",
     "no_results_dark.svg",
     "no_results.svg",
+    "nudge_icon.svg",
   ]
 
   web_component_files = [
     "emoji_button.ts",
     "emoji_category_button.ts",
     "emoji_error.ts",
+    "emoji_gif_nudge_overlay.ts",
     "emoji_group.ts",
     "emoji_group_button.ts",
     "emoji_image.ts",
@@ -48,7 +50,10 @@ build_webui("build") {
 
   mojo_files_deps =
       [ "//chrome/browser/ui/webui/ash/emoji:mojo_bindings_ts__generator" ]
-  mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom-webui.ts" ]
+  mojo_files = [
+    "$root_gen_dir/chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/ui/webui/ash/emoji/new_window_proxy.mojom-webui.ts",
+  ]
 
   ts_composite = true
   ts_definitions = [ "$preprocess_folder/fuse.d.ts" ]

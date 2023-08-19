@@ -15,7 +15,7 @@ enum RequestCache { "default", "no-store", "reload", "no-cache", "force-cache",
                     "only-if-cached" };
 enum FetchPriority {"low", "auto", "high"};
 enum RequestDuplex {"half"};
-enum IPAddressSpace {"loopback", "local", "public", "unknown"};
+enum IPAddressSpace {"local", "private", "public", "unknown"};
 
 // https://w3c.github.io/webappsec-referrer-policy/#referrer-policies
 

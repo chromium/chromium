@@ -126,16 +126,16 @@ int64_t DateToMillis(Cronet_DateTimePtr date_time) {
   return value;
 }
 
-// Sanity check that the date isn't wildly off, somehow (perhaps due to read of
-// used memory, wild pointer, etc.).
+// Verification check that the date isn't wildly off, somehow (perhaps due to
+// read of used memory, wild pointer, etc.).
 //
 // Interpreted as milliseconds after the UNIX timestamp, this timestamp occurs
 // at 37,648 C.E.
 constexpr int64_t kDateOverrunThreshold = 1LL << 50;
 
-// Basic sanity checking of all Cronet_Metrics fields. For optional fields, we
-// allow the field to be non-present. Start/end pairs should be monotonic (end
-// not less than start).
+// Basic verification checking of all Cronet_Metrics fields. For optional
+// fields, we allow the field to be non-present. Start/end pairs should be
+// monotonic (end not less than start).
 //
 // Ordering of events is also checked.
 void VerifyRequestMetrics(Cronet_MetricsPtr metrics) {
@@ -254,7 +254,7 @@ Cronet_RequestFinishedInfo_FINISHED_REASON MapFinishedReason(
   }
 }
 
-// Basic sanity checking of all Cronet_RequestFinishedInfo,
+// Basic verification checking of all Cronet_RequestFinishedInfo,
 // Cronet_UrlResponseInfoPtr, and Cronet_ErrorPtr fields passed to
 // RequestFinishedInfoListener.OnRequestFinished().
 //

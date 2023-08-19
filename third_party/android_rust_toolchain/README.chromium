@@ -5,6 +5,7 @@ License: Apache License, Version 2 and the MIT License
 License File: toolchain/share/doc/rust/LICENSE-MIT
 License File: toolchain/share/doc/rust/LICENSE-APACHE
 Security Critical: yes
+Shipped: no
 CPEPrefix: cpe:/a:rust-lang:rust:1.64.0
 Description:
 This is the Rust toolchain produced by the Android team.

@@ -118,7 +118,7 @@ config("compiler") {
         cflags += [ "--target=x86_64-windows" ]
       }
     } else if (current_cpu == "arm64") {
-      cflags += [ "--target=arm64-windows" ]
+      cflags += [ "--target=aarch64-pc-windows" ]
     } else {
       assert(false, "unknown current_cpu " + current_cpu)
     }
@@ -375,18 +375,32 @@ config("cfi_linker") {
 }
 
 # This is a superset of all the delayloads needed for chrome.exe, chrome.dll,
-# chrome_child.dll, and chrome_elf.dll. The linker will automatically ignore
-# anything which is not linked to the binary at all.
-# Most of the dlls are simply not required at startup (or at all, depending
-# on how the browser is used). The following dlls are interconnected and need to
-# be delayloaded together to ensure user32 does not load too early or at all,
-# depending on the process type: user32, gdi32, comctl32, comdlg32, cryptui,
-# d3d9, dwmapi, imm32, msi, ole32, oleacc, rstrtmgr, shell32, shlwapi, and
-# uxtheme.
-# There are some exceptions to this list which need to be declared separately.
-# Some dlls cannot be delayloaded by chrome_child.dll due to the sandbox
-# restrictions that prevent them from being loaded properly. Those dlls are
-# specified in the separate config below.
+# and chrome_elf.dll. The linker will automatically ignore anything which is not
+# linked to the binary at all (it is harmless to have an unmatched /delayload).
+#
+# We delayload most libraries as the dlls are simply not required at startup (or
+# at all, depending on the process type). In unsandboxed process they will load
+# when first needed.
+#
+# Some dlls open handles when they are loaded, and we may not want them to be
+# loaded in renderers or other sandboxed processes. Conversely, some dlls must
+# be loaded before sandbox lockdown.
+#
+# Some dlls themselves load others - in particular, to avoid unconditionally
+# loading user32.dll - we require that the following dlls are all delayloaded:
+# user32, gdi32, comctl32, comdlg32, cryptui, d3d9, dwmapi, imm32, msi, ole32,
+# oleacc, rstrtmgr, shell32, shlwapi, and uxtheme.
+#
+# Advapi32.dll is unconditionally loaded at process startup on Windows 10, but
+# on Windows 11 it is not, which makes it worthwhile to delay load it.
+# Additionally, advapi32.dll exports several functions that are forwarded to
+# other DLLs such as cryptbase.dll. If calls to those functions are present but
+# there are some processes where the functions are never called then delay
+# loading of advapi32.dll avoids pulling in those DLLs (such as cryptbase.dll)
+# unnecessarily, even if advapi32.dll itself is loaded.
+#
+# This config applies to chrome.exe, chrome.dll, chrome_elf.dll (& others).
+#
 # This config should also be used for any test binary whose goal is to run
 # tests with the full browser.
 config("delayloads") {
@@ -394,6 +408,7 @@ config("delayloads") {
     "/DELAYLOAD:api-ms-win-core-winrt-error-l1-1-0.dll",
     "/DELAYLOAD:api-ms-win-core-winrt-l1-1-0.dll",
     "/DELAYLOAD:api-ms-win-core-winrt-string-l1-1-0.dll",
+    "/DELAYLOAD:advapi32.dll",
     "/DELAYLOAD:comctl32.dll",
     "/DELAYLOAD:comdlg32.dll",
     "/DELAYLOAD:credui.dll",
@@ -434,9 +449,10 @@ config("delayloads") {
   ]
 }
 
+# This config (along with `:delayloads`) applies to chrome.exe & chrome_elf.dll.
+# Entries should not appear in both configs.
 config("delayloads_not_for_child_dll") {
   ldflags = [
-    "/DELAYLOAD:advapi32.dll",
     "/DELAYLOAD:crypt32.dll",
     "/DELAYLOAD:dbghelp.dll",
     "/DELAYLOAD:dhcpcsvc.dll",
@@ -444,7 +460,6 @@ config("delayloads_not_for_child_dll") {
     "/DELAYLOAD:iphlpapi.dll",
     "/DELAYLOAD:oleaut32.dll",
     "/DELAYLOAD:secur32.dll",
-    "/DELAYLOAD:uiautomationcore.dll",
     "/DELAYLOAD:userenv.dll",
     "/DELAYLOAD:winhttp.dll",
     "/DELAYLOAD:winmm.dll",
@@ -629,6 +644,10 @@ config("default_incremental_linking") {
       # TODO(thakis): /INCREMENTAL is on by default in link.exe, but not in
       # lld.
       ldflags += [ "/OPT:NOREF" ]
+
+      # TODO(crbug.com/1444129): Mixing incrememntal and icf produces an error
+      # in lld-link.
+      ldflags += [ "/OPT:NOICF" ]
     }
   } else {
     ldflags = [ "/INCREMENTAL:NO" ]

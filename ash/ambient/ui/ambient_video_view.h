@@ -50,7 +50,7 @@ class ASH_EXPORT AmbientVideoView : public views::View {
 
  private:
   const AmbientVideo video_;
-  base::raw_ptr<AshWebView> ash_web_view_ = nullptr;
+  raw_ptr<AshWebView> ash_web_view_ = nullptr;
   // Per UX: Uses the exact same spec for peripheral UI elements (weather, time,
   // etc) as the slideshow theme.
   const std::unique_ptr<AmbientSlideshowPeripheralUi> peripheral_ui_;

@@ -7,6 +7,7 @@ import("//build/apple/tweak_info_plist.gni")
 import("//build/config/ios/ios_sdk.gni")
 import("//build/config/ios/rules.gni")
 import("//ios/build/chrome_build.gni")
+import("//ios/chrome/app/chrome_app.gni")
 import("//ios/public/provider/chrome/browser/build_config.gni")
 import("//ios/third_party/earl_grey2/ios_eg2_test.gni")
 
@@ -78,6 +79,8 @@ template("chrome_ios_eg2_test_app_host") {
                            ])
 
     testonly = true
+    target_type = "chrome_app"
+
     _output_name = target_name
     if (defined(output_name)) {
       _output_name = output_name

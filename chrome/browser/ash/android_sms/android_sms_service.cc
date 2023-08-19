@@ -6,6 +6,7 @@
 
 #include "base/time/default_clock.h"
 #include "base/timer/timer.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/android_sms/android_sms_app_setup_controller_impl.h"
 #include "chrome/browser/ash/android_sms/android_sms_urls.h"
 #include "chrome/browser/ash/android_sms/connection_manager.h"
@@ -55,6 +56,7 @@ void AndroidSmsService::Shutdown() {
 }
 
 void AndroidSmsService::OnSessionStateChanged() {
+  TRACE_EVENT0("login", "AndroidSmsService::OnSessionStateChanged");
   // ConnectionManager should not be created for blocked sessions.
   if (session_manager::SessionManager::Get()->IsUserSessionBlocked()) {
     return;

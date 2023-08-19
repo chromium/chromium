@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
+#include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
 #include "components/autofill/core/browser/payments/wait_for_signal_or_timeout.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -261,13 +262,11 @@ class CreditCardAccessManager : public CreditCardCvcAuthenticator::Requester,
       AutofillClient::PaymentsRpcResult result,
       payments::PaymentsClient::UnmaskDetails& unmask_details);
 
-  // Determines what type of authentication is required. |fido_auth_enabled|
+  // Determines what type of authentication is required. `fido_auth_enabled`
   // suggests whether the server has offered FIDO auth as an option.
-  // TODO(crbug.com/1449351): Prefix these functions with
-  // "StartAuthenticationFlow" instead of "GetAuthenticationType".
-  void GetAuthenticationType(bool fido_auth_enabled);
-  void GetAuthenticationTypeForVirtualCard(bool fido_auth_enabled);
-  void GetAuthenticationTypeForMaskedServerCard(bool fido_auth_enabled);
+  void StartAuthenticationFlow(bool fido_auth_enabled);
+  void StartAuthenticationFlowForVirtualCard(bool fido_auth_enabled);
+  void StartAuthenticationFlowForMaskedServerCard(bool fido_auth_enabled);
 
   // Starts the authentication process and delegates the task to authenticators
   // based on the `unmask_auth_flow_type`. Also logs authentication type if
@@ -408,6 +407,8 @@ class CreditCardAccessManager : public CreditCardCvcAuthenticator::Requester,
   // a card that does not have a CVC saved (for example, a local card). This
   // function should only be called on platforms where DeviceAuthenticator is
   // present.
+  // TODO(crbug.com/1447084): Move authentication logic for re-auth into
+  // MandatoryReauthManager.
   void StartDeviceAuthenticationForFilling(base::WeakPtr<Accessor> accessor,
                                            const CreditCard* card,
                                            const std::u16string& cvc);
@@ -416,15 +417,16 @@ class CreditCardAccessManager : public CreditCardCvcAuthenticator::Requester,
   // re-auth authentication in a flow where we might fill the card after the
   // response. If it is successful, we will fill `card` and `cvc` into the form
   // using `accessor`, otherwise we will handle the error. `successful_auth` is
-  // true if the authentication waas successful, false otherwise.
+  // true if the authentication waas successful, false otherwise. Pass
+  // `authenticate_method` for logging purpose.
+  // TODO(crbug.com/1447084): Move authentication logic for re-auth into
+  // MandatoryReauthManager.
   void OnDeviceAuthenticationResponseForFilling(
       base::WeakPtr<Accessor> accessor,
+      payments::MandatoryReauthAuthenticationMethod authentication_method,
       const CreditCard* card,
       const std::u16string& cvc,
       bool successful_auth);
-
-  // Callback that resets `device_authenticator_` after an authentication.
-  void OnReauthCompleted();
 
   // The current form of authentication in progress.
   UnmaskAuthFlowType unmask_auth_flow_type_ = UnmaskAuthFlowType::kNone;
@@ -434,23 +436,21 @@ class CreditCardAccessManager : public CreditCardCvcAuthenticator::Requester,
   bool is_authentication_in_progress_ = false;
 
   // The associated autofill driver. Weak reference.
-  const raw_ptr<AutofillDriver, DanglingUntriaged> driver_;
+  const raw_ptr<AutofillDriver> driver_;
 
   // The associated autofill client. Weak reference.
   const raw_ptr<AutofillClient> client_;
 
   // Client to interact with Payments servers.
-  raw_ptr<payments::PaymentsClient> payments_client_;
+  const raw_ptr<payments::PaymentsClient> payments_client_;
 
   // The personal data manager, used to save and load personal data to/from the
   // web database.
   // Weak reference.
-  // May be NULL. NULL indicates OTR.
-  raw_ptr<PersonalDataManager> personal_data_manager_;
+  const raw_ptr<PersonalDataManager> personal_data_manager_;
 
   // For logging metrics.
-  raw_ptr<autofill_metrics::CreditCardFormEventLogger, DanglingUntriaged>
-      form_event_logger_;
+  const raw_ptr<autofill_metrics::CreditCardFormEventLogger> form_event_logger_;
 
   // Timestamp used for preflight call metrics.
   absl::optional<base::TimeTicks> preflight_call_timestamp_;
@@ -521,13 +521,6 @@ class CreditCardAccessManager : public CreditCardCvcAuthenticator::Requester,
   // Cached data of cards which have been unmasked. This is cleared upon page
   // navigation. Map key is the card's server_id.
   std::unordered_map<std::string, CachedServerCardInfo> unmasked_card_cache_;
-
-  // Used to authenticate autofills when there was no interactive
-  // authentication. This class must keep this reference to
-  // `device_authenticator_` alive while an authentication is in progress. Set
-  // when we initiate a re-auth using `DeviceAuthenticator`, and reset once the
-  // authentication has finished.
-  scoped_refptr<device_reauth::DeviceAuthenticator> device_authenticator_;
 
   base::WeakPtrFactory<CreditCardAccessManager> weak_ptr_factory_{this};
 };

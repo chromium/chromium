@@ -1,0 +1,18 @@
+<style include="settings-shared input-device-settings-shared">
+  .settings-box {
+    justify-content: space-between;
+    padding-inline-start: 0;
+  }
+</style>
+<div class="settings-box" id="sixPackKeyRow">
+  <div>
+    <div class="start key-container">
+      <div id="keyLabel" aria-hidden="true">[[keyLabel]]</div>
+    </div>
+  </div>
+  <settings-dropdown-menu id="keyDropdown"
+    label="[[keyLabel]]"
+    pref="{{pref}}"
+    menu-options="[[computeMenuOptions(key)]]">
+  </settings-dropdown-menu>
+</div>

@@ -1,0 +1,25 @@
+{
+  // See //chrome/common/chromeos/extensions/api/_manifest_features.json
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAt2CwI94nqAQzLTBHSIwtkMlkoRyhu27rmkDsBneMprscOzl4524Y0bEA+0RSjNZB+kZgP6M8QAZQJHCpAzULXa49MooDDIdzzmqQswswguAALm2FS7XP2N0p2UYQneQce4Wehq/C5Yr65mxasAgjXgDWlYBwV3mgiISDPXI/5WG94TM2Z3PDQePJ91msDAjN08jdBme3hAN976yH3Q44M7cP1r+OWRkZGwMA6TSQjeESEuBbkimaLgPIyzlJp2k6jwuorG5ujmbAGFiTQoSDFBFCjwPEtywUMLKcZjH4fD76pcIQIdkuuzRQCVyuImsGzm1cmGosJ/Z4iyb80c1ytwIDAQAB",
+  "name": "Test chromeos extension",
+  "version": "1.0",
+  "manifest_version": 3,
+  "permissions": [
+    "os.attached_device_info",
+    "os.diagnostics",
+    "os.events",
+    "os.telemetry"
+  ],
+  "optional_permissions": [
+    "os.telemetry.serial_number",
+    "os.telemetry.network_info"
+  ],
+  "chromeos_system_extension": {},
+  "externally_connectable": {
+    "matches": [
+      "*://googlechromelabs.github.io/*",
+      "isolated-app://pt2jysa7yu326m2cbu5mce4rrajvguagronrsqwn5dhbaris6eaaaaic/*"
+    ]
+  },
+  "options_page": "options.html"
+}

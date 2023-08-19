@@ -11,5 +11,5 @@ found in the LICENSE file.
     android:gravity="center"
     android:layout_height="wrap_content"
     android:layout_width="wrap_content"
-    app:iconWidth="@dimen/keyboard_accessory_bar_item_cc_icon_width"
+    app:iconWidth="@dimen/keyboard_accessory_bar_item_icon_width"
     style="@style/AssistiveChip" />

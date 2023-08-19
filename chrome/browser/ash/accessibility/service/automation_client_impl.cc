@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/accessibility/service/automation_client_impl.h"
-#include "chrome/browser/accessibility/service/accessibility_service_router.h"
 #include "chrome/browser/ui/aura/accessibility/automation_manager_aura.h"
 #include "extensions/browser/api/automation_internal/automation_event_router.h"
 #include "extensions/browser/api/automation_internal/automation_internal_api.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 
 namespace ash {
 
@@ -21,7 +21,7 @@ AutomationClientImpl::~AutomationClientImpl() {
 }
 
 void AutomationClientImpl::Bind(
-    mojo::PendingRemote<ax::mojom::Automation> automation,
+    mojo::PendingAssociatedRemote<ax::mojom::Automation> automation,
     mojo::PendingReceiver<ax::mojom::AutomationClient> automation_client) {
   // Launches the service if it wasn't running yet.
   // Development note (crbug.com/1355633): Using the remote router means
@@ -52,13 +52,13 @@ void AutomationClientImpl::DispatchAccessibilityEvents(
 }
 
 void AutomationClientImpl::DispatchAccessibilityLocationChange(
-    const ExtensionMsg_AccessibilityLocationChangeParams& params) {
-  ui::AXTreeID tree_id = params.tree_id;
+    const content::AXLocationChangeNotificationDetails& details) {
+  ui::AXTreeID tree_id = details.ax_tree_id;
   if (tree_id == ui::AXTreeIDUnknown())
     return;
   for (auto& remote : automation_remotes_) {
-    remote->DispatchAccessibilityLocationChange(tree_id, params.id,
-                                                params.new_location);
+    remote->DispatchAccessibilityLocationChange(tree_id, details.id,
+                                                details.new_location);
   }
 }
 void AutomationClientImpl::DispatchTreeDestroyedEvent(ui::AXTreeID tree_id) {

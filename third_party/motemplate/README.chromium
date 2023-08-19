@@ -5,8 +5,9 @@ Version: 0
 Date: August 22, 2014
 Revision: commit 76237c8ece0272dc02d104eef24b66365b4feaf3
 License: Apache 2.0
-License File: NOT_SHIPPED
+License File: LICENSE
 Security Critical: no
+Shipped: no
 
 Description:
 A data binding template language for Python inspired by ctemplate.

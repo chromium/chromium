@@ -10,6 +10,8 @@ import {
 import * as error from '../error.js';
 import * as expert from '../expert.js';
 import {Point} from '../geometry.js';
+import * as metrics from '../metrics.js';
+import {isLocalDev} from '../models/load_time_data.js';
 import {ChromeHelper} from '../mojo/chrome_helper.js';
 import {ScreenState} from '../mojo/type.js';
 import * as nav from '../nav.js';
@@ -78,7 +80,7 @@ class ResumeStateWatchdog {
 }
 
 /**
- * Manges usage of all camera operations.
+ * Manages usages of all camera operations.
  * TODO(b/209726472): Move more camera logic in camera view to here.
  */
 export class CameraManager implements EventListener {
@@ -119,19 +121,24 @@ export class CameraManager implements EventListener {
         modeConstraints,
     );
 
-    // Monitor the states to stop camera when locked/minimized.
-    const idleDetector = new IdleDetector();
-    idleDetector.addEventListener('change', () => {
-      this.locked = idleDetector.screenState === 'locked';
-      if (this.locked) {
-        this.reconfigure();
-      }
-    });
-    idleDetector.start().catch((e) => {
-      error.reportError(
-          ErrorType.IDLE_DETECTOR_FAILURE, ErrorLevel.ERROR,
-          assertInstanceof(e, Error));
-    });
+    // Monitors the states to stop camera when locked/minimized.
+    // TODO(pihsun): The IdleDetector permission is auto-granted on CrOS. For
+    // local dev, we can request it by IdleDetector.requestPermission(), but
+    // that needs to be done in a user gesture and can't be done here.
+    if (!isLocalDev()) {
+      const idleDetector = new IdleDetector();
+      idleDetector.addEventListener('change', () => {
+        this.locked = idleDetector.screenState === 'locked';
+        if (this.locked) {
+          this.reconfigure();
+        }
+      });
+      idleDetector.start().catch((e) => {
+        error.reportError(
+            ErrorType.IDLE_DETECTOR_FAILURE, ErrorLevel.ERROR,
+            assertInstanceof(e, Error));
+      });
+    }
 
     document.addEventListener('visibilitychange', () => {
       const recording = state.get(state.State.TAKING) && state.get(Mode.VIDEO);
@@ -310,23 +317,26 @@ export class CameraManager implements EventListener {
   switchCamera(): Promise<void>|null {
     const promise = this.tryReconfigure(() => {
       state.set(PerfEvent.CAMERA_SWITCHING, true);
-      const devices = this.getCameraInfo().devicesInfo;
+      const deviceIds =
+          this.scheduler.reconfigurer.getDeviceIdsSortedbyPreferredFacing(
+              this.getCameraInfo());
+      if (deviceIds.length === 0) {
+        return;
+      }
       let index =
-          devices.findIndex((entry) => entry.deviceId === this.getDeviceId());
-      if (index === -1) {
-        index = 0;
-      }
-      if (devices.length > 0) {
-        index = (index + 1) % devices.length;
-        assert(this.scheduler.reconfigurer.config !== null);
-        this.scheduler.reconfigurer.config.deviceId = devices[index].deviceId;
-      }
+          deviceIds.findIndex((deviceId) => deviceId === this.getDeviceId());
+      // findIndex() may return -1, which means the device is not in the list.
+      // In this case, we will try to switch to the preferred facing device.
+      index = (index + 1) % deviceIds.length;
+      assertExists(this.scheduler.reconfigurer.config).deviceId =
+          deviceIds[index];
     });
     if (promise === null) {
       return null;
     }
     return promise.then((succeed) => {
       state.set(PerfEvent.CAMERA_SWITCHING, false, {hasError: !succeed});
+      metrics.sendOpenCameraEvent(this.getVidPid());
     });
   }
 
@@ -452,7 +462,7 @@ export class CameraManager implements EventListener {
   }
 
   /**
-   * Apply point of interest to the stream.
+   * Applies point of interest to the stream.
    *
    * @param point The point in normalize coordidate system, which means both
    *     |x| and |y| are in range [0, 1).
@@ -538,7 +548,7 @@ export class CameraManager implements EventListener {
       // reconfigure result which may not reflect the setting before calling it.
       // Thus still fallthrough here to start another reconfigure.
     }
-
+    this.scheduler.reconfigurer.resetFailedDevices();
     return this.doReconfigure();
   }
 

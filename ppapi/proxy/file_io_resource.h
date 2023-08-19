@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <memory>
-#include <string>
 
 #include "base/files/file.h"
 #include "base/memory/ref_counted.h"

@@ -17,7 +17,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "extensions/browser/api/api_resource_manager.h"
-#include "extensions/browser/api/async_api_function.h"
 #include "extensions/browser/api/bluetooth_socket/bluetooth_api_socket.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"

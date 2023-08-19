@@ -162,7 +162,8 @@ class NavigationHandler implements TouchEventObserver {
 
     @Override
     public void handleTouchEvent(MotionEvent e) {
-        if (!shouldProcessTouchEvents()) return;
+        assert e != null : "The motion event in NavigationHandler shouldn't be null!";
+        if (e == null || !shouldProcessTouchEvents()) return;
         mDetector.onTouchEvent(e);
         if (e.getAction() == MotionEvent.ACTION_UP) release(true);
     }

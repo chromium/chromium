@@ -14,7 +14,7 @@ namespace segmentation_platform {
 struct Config;
 
 // Model to predict if a user uses password manager features.
-class PasswordManagerUserModel : public ModelProvider {
+class PasswordManagerUserModel : public DefaultModelProvider {
  public:
   PasswordManagerUserModel();
   ~PasswordManagerUserModel() override = default;
@@ -25,11 +25,10 @@ class PasswordManagerUserModel : public ModelProvider {
   static std::unique_ptr<Config> GetConfig();
 
   // ModelProvider implementation.
-  void InitAndFetchModel(
-      const ModelUpdatedCallback& model_updated_callback) override;
+  std::unique_ptr<ModelConfig> GetModelConfig() override;
+
   void ExecuteModelWithInput(const ModelProvider::Request& inputs,
                              ExecutionCallback callback) override;
-  bool ModelAvailable() override;
 };
 
 }  // namespace segmentation_platform

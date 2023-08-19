@@ -105,9 +105,6 @@ class BASE_EXPORT BuildInfo {
     return package_name_;
   }
 
-  // Will be empty string if no app id is assigned.
-  const char* firebase_app_id() const { return firebase_app_id_; }
-
   const char* custom_themes() const { return custom_themes_; }
 
   const char* resources_version() const { return resources_version_; }
@@ -152,6 +149,9 @@ class BASE_EXPORT BuildInfo {
 
   const char* codename() const { return codename_; }
 
+  // Available only on Android T+.
+  int32_t vulkan_deqp_level() const { return vulkan_deqp_level_; }
+
  private:
   friend struct BuildInfoSingletonTraits;
 
@@ -179,7 +179,6 @@ class BASE_EXPORT BuildInfo {
   const char* const gms_version_code_;
   const char* const installer_package_name_;
   const char* const abi_name_;
-  const char* const firebase_app_id_;
   const char* const custom_themes_;
   const char* const resources_version_;
   // Not needed by breakpad.
@@ -193,6 +192,7 @@ class BASE_EXPORT BuildInfo {
   const bool is_at_least_u_;
   const bool targets_at_least_u_;
   const char* const codename_;
+  const int32_t vulkan_deqp_level_;
 };
 
 }  // namespace android

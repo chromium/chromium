@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element_controls_list.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
+#include "third_party/blink/renderer/core/html/time_ranges.h"
 #include "third_party/blink/renderer/core/html/track/text_track.h"
 #include "third_party/blink/renderer/core/html/track/text_track_container.h"
 #include "third_party/blink/renderer/core/html/track/text_track_list.h"
@@ -472,6 +473,7 @@ MediaControlsImpl* MediaControlsImpl::Create(HTMLMediaElement& media_element,
 //     |  |    (-webkit-media-controls-current-time-display)
 //     |  +-MediaControlRemainingTimeDisplayElement
 //     |  |    (-webkit-media-controls-time-remaining-display)
+//     |  |    {if !IsLivePlayback}
 //     |  +-HTMLDivElement
 //     |  |    (-internal-media-controls-button-spacer)
 //     |  |    {if is video element}
@@ -489,6 +491,7 @@ MediaControlsImpl* MediaControlsImpl::Create(HTMLMediaElement& media_element,
 //     |  |    (-webkit-media-controls-fullscreen-button)
 //     \-MediaControlTimelineElement
 //          (-webkit-media-controls-timeline)
+//          {if !IsLivePlayback}
 // +-MediaControlTextTrackListElement
 // |    (-internal-media-controls-text-track-list)
 // | {for each renderable text track}
@@ -1164,8 +1167,10 @@ void MediaControlsImpl::EndScrubbing() {
 }
 
 void MediaControlsImpl::UpdateCurrentTimeDisplay() {
-  if (panel_->IsWanted())
+  timeline_->SetIsWanted(!IsLivePlayback());
+  if (panel_->IsWanted()) {
     current_time_display_->SetCurrentValue(MediaElement().currentTime());
+  }
 }
 
 void MediaControlsImpl::ToggleTextTrackList() {
@@ -2067,6 +2072,12 @@ bool MediaControlsImpl::ShouldShowAudioControls() const {
 
 bool MediaControlsImpl::ShouldShowVideoControls() const {
   return IsA<HTMLVideoElement>(MediaElement()) && !ShouldShowAudioControls();
+}
+
+bool MediaControlsImpl::IsLivePlayback() const {
+  // It can't be determined whether a player with no source element is a live
+  // playback or not, similarly with an unloaded player.
+  return MediaElement().seekable()->length() == 0 && (State() >= kStopped);
 }
 
 void MediaControlsImpl::NetworkStateChanged() {

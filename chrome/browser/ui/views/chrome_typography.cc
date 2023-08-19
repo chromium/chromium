@@ -4,19 +4,22 @@
 
 #include "chrome/browser/ui/views/chrome_typography.h"
 
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "ui/base/default_style.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/platform_font.h"
 
 int GetFontSizeDeltaBoundedByAvailableHeight(int available_height,
                                              int desired_font_size) {
   int size_delta =
-      GetFontSizeDeltaIgnoringUserOrLocaleSettings(desired_font_size);
+      gfx::PlatformFont::GetFontSizeDeltaIgnoringUserOrLocaleSettings(
+          desired_font_size);
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
   gfx::FontList base_font = bundle.GetFontListWithDelta(size_delta);
 
@@ -27,28 +30,6 @@ int GetFontSizeDeltaBoundedByAvailableHeight(int available_height,
       size_delta + gfx::PlatformFont::kDefaultBaseFontSize - desired_font_size;
   base_font = base_font.DeriveWithHeightUpperBound(available_height);
 
-  return base_font.GetFontSize() - gfx::PlatformFont::kDefaultBaseFontSize +
-         user_or_locale_delta;
-}
-
-int GetFontSizeDeltaIgnoringUserOrLocaleSettings(int desired_font_size) {
-  int size_delta = desired_font_size - gfx::PlatformFont::kDefaultBaseFontSize;
-  ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
-  gfx::FontList base_font = bundle.GetFontListWithDelta(size_delta);
-
-  // The ResourceBundle's default font may not actually be kDefaultBaseFontSize
-  // if, for example, the user has changed their system font sizes or the
-  // current locale has been overridden to use a different default font size.
-  // Adjust for the difference in default font sizes.
-  int user_or_locale_delta = 0;
-  if (base_font.GetFontSize() != desired_font_size) {
-    user_or_locale_delta = desired_font_size - base_font.GetFontSize();
-    base_font = bundle.GetFontListWithDelta(size_delta + user_or_locale_delta);
-  }
-  DCHECK_EQ(desired_font_size, base_font.GetFontSize());
-
-  // To ensure a subsequent request from the ResourceBundle ignores the delta
-  // due to user or locale settings, include it here.
   return base_font.GetFontSize() - gfx::PlatformFont::kDefaultBaseFontSize +
          user_or_locale_delta;
 }
@@ -68,7 +49,8 @@ void ApplyCommonFontStyles(int context,
       break;
     }
     case CONTEXT_TAB_COUNTER: {
-      details.size_delta = GetFontSizeDeltaIgnoringUserOrLocaleSettings(14);
+      details.size_delta =
+          gfx::PlatformFont::GetFontSizeDeltaIgnoringUserOrLocaleSettings(14);
       details.weight = gfx::Font::Weight::BOLD;
       break;
     }
@@ -113,17 +95,23 @@ void ApplyCommonFontStyles(int context,
 #if BUILDFLAG(IS_WIN)
     case CONTEXT_WINDOWS10_NATIVE:
       // Adjusts default font size up to match Win10 modern UI.
-      details.size_delta = 15 - gfx::PlatformFont::kDefaultBaseFontSize;
+      details.size_delta = gfx::PlatformFont::GetFontSizeDelta(15);
       break;
 #endif
     case CONTEXT_IPH_BUBBLE_TITLE:
-      details.size_delta = GetFontSizeDeltaIgnoringUserOrLocaleSettings(18);
+      details.size_delta =
+          gfx::PlatformFont::GetFontSizeDeltaIgnoringUserOrLocaleSettings(18);
+      if (features::IsChromeRefresh2023()) {
+        details.weight = gfx::Font::Weight::MEDIUM;
+      }
       break;
     case CONTEXT_IPH_BUBBLE_BODY:
-      details.size_delta = GetFontSizeDeltaIgnoringUserOrLocaleSettings(14);
+      details.size_delta =
+          gfx::PlatformFont::GetFontSizeDeltaIgnoringUserOrLocaleSettings(14);
       break;
     case CONTEXT_SIDE_PANEL_TITLE:
-      details.size_delta = GetFontSizeDeltaIgnoringUserOrLocaleSettings(13);
+      details.size_delta =
+          gfx::PlatformFont::GetFontSizeDeltaIgnoringUserOrLocaleSettings(13);
       break;
   }
 }

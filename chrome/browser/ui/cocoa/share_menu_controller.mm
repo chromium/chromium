@@ -4,7 +4,7 @@
 
 #import "chrome/browser/ui/cocoa/share_menu_controller.h"
 
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/sys_string_conversions.h"
@@ -26,10 +26,6 @@
 #include "ui/gfx/mac/coordinate_conversion.h"
 #include "ui/snapshot/snapshot.h"
 #include "ui/views/view.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 // Private method, used to identify instantiated services.
 @interface NSSharingService (ExposeName)
@@ -193,19 +189,11 @@ bool CanShare() {
   NSString* title = base::SysUTF16ToNSString(contents->GetTitle());
 
   NSSharingService* service =
-      base::mac::ObjCCastStrict<NSSharingService>([sender representedObject]);
+      base::apple::ObjCCastStrict<NSSharingService>([sender representedObject]);
   service.delegate = self;
   service.subject = title;
 
   NSArray* itemsToShare = @[ url ];
-  if (@available(macOS 10.14, *)) {
-  } else {
-    if ([[service name] isEqual:NSSharingServiceNamePostOnTwitter]) {
-      // The Twitter share service expects the title as an additional share
-      // item. This is the same approach system apps use.
-      itemsToShare = @[ url, title ];
-    }
-  }
   if ([[service name] isEqual:kRemindersSharingServiceName]) {
     _activity = [[NSUserActivity alloc]
         initWithActivityType:NSUserActivityTypeBrowsingWeb];

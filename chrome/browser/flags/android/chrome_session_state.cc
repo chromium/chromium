@@ -14,14 +14,11 @@
 
 using chrome::android::ActivityType;
 using chrome::android::DarkModeState;
-using chrome::android::MultipleUserProfilesState;
 
 namespace {
 ActivityType activity_type = ActivityType::kPreFirstTab;
 bool is_in_multi_window_mode = false;
 DarkModeState dark_mode_state = DarkModeState::kUnknown;
-MultipleUserProfilesState multiple_user_profiles_state =
-    MultipleUserProfilesState::kUnknown;
 
 // Name of local state pref to persist the last |chrome::android::ActivityType|.
 const char kLastActivityTypePref[] =
@@ -113,12 +110,10 @@ void SaveActivityTypeToLocalState(PrefService* local_state,
 }
 
 MultipleUserProfilesState GetMultipleUserProfilesState() {
-  if (multiple_user_profiles_state != MultipleUserProfilesState::kUnknown) {
-    return multiple_user_profiles_state;
-  }
-  multiple_user_profiles_state = static_cast<MultipleUserProfilesState>(
-      Java_ChromeSessionState_getMultipleUserProfilesState(
-          base::android::AttachCurrentThread()));
+  static MultipleUserProfilesState multiple_user_profiles_state =
+      static_cast<MultipleUserProfilesState>(
+          Java_ChromeSessionState_getMultipleUserProfilesState(
+              base::android::AttachCurrentThread()));
   return multiple_user_profiles_state;
 }
 

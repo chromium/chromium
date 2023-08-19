@@ -191,24 +191,31 @@ WebMColorMetadata WebMColourParser::GetWebMColorMetadata() const {
   color_metadata.color_space = VideoColorSpace(
       primaries_, transfer_characteristics_, matrix_coefficients_, range_id);
 
-  if (max_content_light_level_ != -1 || max_frame_average_light_level_ != -1 ||
-      color_volume_metadata_parsed_) {
-    color_metadata.hdr_metadata = gfx::HDRMetadata();
+  if (max_content_light_level_ != -1 || max_frame_average_light_level_ != -1) {
+    if (!color_metadata.hdr_metadata.has_value()) {
+      color_metadata.hdr_metadata.emplace();
+    }
 
+    gfx::HdrMetadataCta861_3 cta_861_3;
     if (max_content_light_level_ != -1) {
-      color_metadata.hdr_metadata->cta_861_3.max_content_light_level =
-          max_content_light_level_;
+      cta_861_3.max_content_light_level = max_content_light_level_;
     }
-
     if (max_frame_average_light_level_ != -1) {
-      color_metadata.hdr_metadata->cta_861_3.max_frame_average_light_level =
-          max_frame_average_light_level_;
+      cta_861_3.max_frame_average_light_level = max_frame_average_light_level_;
     }
 
-    if (color_volume_metadata_parsed_) {
-      color_metadata.hdr_metadata->smpte_st_2086 =
-          color_volume_metadata_parser_.GetColorVolumeMetadata();
+    // TODO(https://crbug.com/1446302): Consider rejecting metadata that does
+    // not specify all values.
+    color_metadata.hdr_metadata->cta_861_3 = cta_861_3;
+  }
+
+  if (color_volume_metadata_parsed_) {
+    if (!color_metadata.hdr_metadata.has_value()) {
+      color_metadata.hdr_metadata.emplace();
     }
+
+    color_metadata.hdr_metadata->smpte_st_2086 =
+        color_volume_metadata_parser_.GetColorVolumeMetadata();
   }
 
   return color_metadata;

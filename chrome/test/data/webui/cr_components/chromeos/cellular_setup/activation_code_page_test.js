@@ -86,6 +86,29 @@ suite('CrComponentsActivationCodePageTest', function() {
     await enumerateDeviceResolvedPromise;
   }
 
+  test('Page description', async function () {
+    const description = activationCodePage.$$('#description');
+    assertTrue(!!description);
+
+    // Mock camera on
+    activationCodePage.showNoProfilesFound = true;
+    assertEquals(description.innerText.trim(),
+      loadTimeData.getString('scanQRCodeNoProfilesFound'));
+    activationCodePage.showNoProfilesFound = false;
+    assertEquals(description.innerText.trim(),
+      loadTimeData.getString('scanQRCode'));
+
+    // Clearing devices to test without camera
+    mediaDevices.removeDevice();
+    await resolveEnumeratedDevicesPromise();
+    activationCodePage.showNoProfilesFound = true;
+    assertEquals(description.innerText.trim(),
+      loadTimeData.getString('enterActivationCodeNoProfilesFound'));
+    activationCodePage.showNoProfilesFound = false;
+    assertEquals(description.innerText.trim(),
+      loadTimeData.getString('enterActivationCode'));
+  });
+
   test('UI states', async function() {
     let qrCodeDetectorContainer = activationCodePage.$$('#esimQrCodeDetection');
     const activationCodeContainer =

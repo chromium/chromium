@@ -41,7 +41,7 @@ import java.util.List;
 public class BasicListMenu implements ListMenu, OnItemClickListener {
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({ListMenuItemType.DIVIDER, ListMenuItemType.MENU_ITEM})
-    public static @interface ListMenuItemType {
+    public @interface ListMenuItemType {
         int DIVIDER = 0;
         int MENU_ITEM = 1;
     }

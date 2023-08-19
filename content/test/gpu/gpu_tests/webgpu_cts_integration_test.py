@@ -2,18 +2,21 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import collections
 import fnmatch
 import json
 import os
 import sys
 import time
-from typing import Any, Dict, List, Set
+from typing import Any, Dict, List, Optional, Set
 import unittest
+
+import dataclasses  # Built-in, but pylint gives an ordering false positive.
 
 from gpu_tests import common_browser_args as cba
 from gpu_tests import common_typing as ct
 from gpu_tests import gpu_integration_test
-from gpu_tests.util import websocket_server
+from gpu_tests.util import websocket_server as wss
 from typ import expectations_parser
 
 import gpu_path_util
@@ -57,12 +60,11 @@ MESSAGE_TYPE_TEST_LOG = 'TEST_LOG'
 MESSAGE_TYPE_TEST_FINISHED = 'TEST_FINISHED'
 
 
+@dataclasses.dataclass
 class WebGpuTestResult():
   """Struct-like object for holding a single test result."""
-
-  def __init__(self):
-    self.status = None
-    self.log_pieces = []
+  status: Optional[str] = None
+  log_pieces: List[str] = ct.EmptyList()
 
 
 class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
@@ -74,31 +76,33 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   _test_timeout = DEFAULT_TEST_TIMEOUT
   _is_asan = False
   _enable_dawn_backend_validation = False
-  _use_webgpu_adapter = None  # use the default
-  _original_environ = None
-  _use_webgpu_power_preference = None
-  _os_name = None
+  _use_webgpu_adapter: Optional[str] = None  # use the default
+  _original_environ: Optional[collections.abc.Mapping] = None
+  _use_webgpu_power_preference: Optional[str] = None
+  _use_webgpu_compat_mode = False
+  _os_name: Optional[str] = None
 
-  _build_dir = None
+  _build_dir: Optional[str] = None
 
-  _test_list = None
-  _worker_test_globs = None
+  _test_list: Optional[List[str]] = None
+  _worker_test_globs: Optional[List[str]] = None
 
   total_tests_run = 0
 
-  websocket_server = None
+  websocket_server: Optional[wss.WebsocketServer] = None
 
-  _slow_tests = None
+  _slow_tests: Optional[expectations_parser.TestExpectations] = None
 
   def __init__(self, *args, **kwargs):
     super().__init__(*args, **kwargs)
-    self._query = None
+    self._query: Optional[str] = None
     self._run_in_worker = False
 
   # Only perform the pre/post test cleanup every X tests instead of every test
   # to reduce overhead.
   def ShouldPerformMinidumpCleanupOnSetUp(self) -> bool:
-    return self.total_tests_run % TEST_RUNS_BETWEEN_CLEANUP == 0
+    return (self.total_tests_run % TEST_RUNS_BETWEEN_CLEANUP == 0
+            and super().ShouldPerformMinidumpCleanupOnSetUp())
 
   def ShouldPerformMinidumpCleanupOnTearDown(self) -> bool:
     return self.ShouldPerformMinidumpCleanupOnSetUp()
@@ -223,6 +227,11 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         type=str,
         default=None,
         help=('Runs the browser with a particular WebGPU power preference'))
+    parser.add_option(
+        '--use-webgpu-compat-mode',
+        action='store_true',
+        default=False,
+        help=('Passes compatibility=true to the tests via URL parameters'))
 
   @classmethod
   def StartBrowser(cls) -> None:
@@ -244,6 +253,10 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     browser_args.extend([
         '--enable-dawn-features=allow_unsafe_apis',
     ])
+    if sys.platform == 'win32':
+      browser_args.extend([
+          '--disable-dawn-features=use_dxc',
+      ])
     browser_args.extend(cba.ENABLE_WEBGPU_FOR_TESTING)
     if cls._use_webgpu_adapter:
       browser_args.append('--use-webgpu-adapter=%s' % cls._use_webgpu_adapter)
@@ -261,7 +274,7 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   def SetUpProcess(cls) -> None:
     super(WebGpuCtsIntegrationTest, cls).SetUpProcess()
 
-    cls.websocket_server = websocket_server.WebsocketServer()
+    cls.websocket_server = wss.WebsocketServer()
     cls.websocket_server.StartServer()
 
     cls.CustomizeBrowserArgs([])
@@ -281,11 +294,13 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
   @classmethod
   def _SetClassVariablesFromOptions(cls, options: ct.ParsedCmdArgs) -> None:
+    super()._SetClassVariablesFromOptions(options)
     if options.override_timeout:
       cls._test_timeout = options.override_timeout
     cls._enable_dawn_backend_validation = options.enable_dawn_backend_validation
     cls._use_webgpu_adapter = options.use_webgpu_adapter
     cls._use_webgpu_power_preference = options.use_webgpu_power_preference
+    cls._use_webgpu_compat_mode = options.use_webgpu_compat_mode
 
   @classmethod
   def _ModifyBrowserEnvironment(cls) -> None:
@@ -358,6 +373,9 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     if MAY_EXONERATE in self.additionalTags:
       del self.additionalTags[MAY_EXONERATE]
 
+    if self._use_webgpu_compat_mode:
+      self._query += '&compatibility=1'
+
     try:
       first_load = self._NavigateIfNecessary(test_path)
       WebGpuCtsIntegrationTest.websocket_server.Send(
@@ -374,7 +392,7 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
                       log_str)
       elif status == 'fail':
         self.fail(log_str)
-    except websocket_server.ClientClosedConnectionError as e:
+    except wss.ClientClosedConnectionError as e:
       raise RuntimeError(
           'Detected closed websocket - likely caused by renderer crash') from e
     except WebGpuMessageTimeoutError as e:
@@ -502,7 +520,7 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         else:
           raise WebGpuMessageProtocolError('Received unknown message type %s' %
                                            response_type)
-      except websocket_server.WebsocketReceiveMessageTimeoutError as e:
+      except wss.WebsocketReceiveMessageTimeoutError as e:
         self.HandleDurationTagOnFailure(message_state, global_timeout)
         raise WebGpuMessageTimeoutError(
             'Timed out waiting %.3f seconds for a message. Message state: %s' %
@@ -567,6 +585,10 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       tags.append('webgpu-adapter-' + cls._use_webgpu_adapter)
     else:
       tags.append('webgpu-adapter-default')
+    if cls._use_webgpu_compat_mode:
+      tags.append('webgpu-compat')
+    else:
+      tags.append('webgpu-not-compat')
     # No need to tag _use_webgpu_power_preference here,
     # since Telemetry already reports the GPU vendorID
 

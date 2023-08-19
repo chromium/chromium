@@ -38,10 +38,9 @@
       <div class="oobe-vertical-margin"></div>
       <div id="oobe" class="faded">
         <div id="inner-container" class="down">
-          <if expr="_google_chrome">
-            <img id="welcome-backdrop" aria-hidden="true" decoding="sync"
-                src="internal_assets/welcome_backdrop.svg">
-          </if>
+          <!-- Unconditionally load assets for unbranded test bots -->
+          <img id="welcome-backdrop" aria-hidden="true" decoding="sync"
+              src="internal_assets/welcome_backdrop.svg">
           <!-- SCREENS ARE ADDED HERE DYNAMICALLY -->
         </div>
       </div>

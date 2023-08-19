@@ -34,7 +34,6 @@
 #include <utility>
 
 #include "base/types/expected.h"
-#include "third_party/blink/public/common/indexeddb/web_idb_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_stringsequence.h"
@@ -108,23 +107,22 @@ base::expected<LocalFrame*, protocol::Response> ResolveFrame(
     InspectedFrames* inspected_frames,
     const protocol::Maybe<String>& security_origin,
     const protocol::Maybe<String>& storage_key,
-    const protocol::Maybe<protocol::Storage::StorageBucket>& storage_bucket) {
-  if (security_origin.isJust() + storage_key.isJust() +
-          storage_bucket.isJust() !=
+    protocol::Maybe<protocol::Storage::StorageBucket>& storage_bucket) {
+  if (security_origin.has_value() + storage_key.has_value() +
+          storage_bucket.has_value() !=
       1) {
     return base::unexpected(protocol::Response::InvalidParams(
         "At least and at most one of security_origin, "
         "storage_key, and storage_bucket must be specified."));
   }
   LocalFrame* frame;
-  if (storage_bucket.isJust()) {
-    frame = inspected_frames->FrameWithStorageKey(
-        storage_bucket.fromJust()->getStorageKey());
-  } else if (storage_key.isJust()) {
-    frame = inspected_frames->FrameWithStorageKey(storage_key.fromJust());
-  } else {
+  if (storage_bucket.has_value()) {
     frame =
-        inspected_frames->FrameWithSecurityOrigin(security_origin.fromJust());
+        inspected_frames->FrameWithStorageKey(storage_bucket->getStorageKey());
+  } else if (storage_key.has_value()) {
+    frame = inspected_frames->FrameWithStorageKey(storage_key.value());
+  } else {
+    frame = inspected_frames->FrameWithSecurityOrigin(security_origin.value());
   }
   if (!frame) {
     return base::unexpected(protocol::Response::ServerError(kNoDocumentError));
@@ -159,8 +157,8 @@ class ExecutableWithIdbFactory
  private:
   void SetUp(LocalFrame* frame,
              protocol::Maybe<protocol::Storage::StorageBucket> storage_bucket) {
-    if (storage_bucket.isJust() && storage_bucket.fromJust()->hasName()) {
-      GetBucketIDBFactory(frame, storage_bucket.fromJust()->getName(""));
+    if (storage_bucket.has_value() && storage_bucket->hasName()) {
+      GetBucketIDBFactory(frame, storage_bucket->getName(""));
     } else {
       GetDefaultIDBFactory(frame);
     }
@@ -873,9 +871,8 @@ void InspectorIndexedDBAgent::requestDatabaseNames(
                   protocol::Response::InternalError());
               return;
             }
-            idb_factory->GetDatabaseInfoForDevTools(
-                script_state, WTF::BindOnce(&OnGotDatabaseNames,
-                                            std::move(request_callback)));
+            idb_factory->GetDatabaseInfoForDevTools(WTF::BindOnce(
+                &OnGotDatabaseNames, std::move(request_callback)));
           },
           std::move(request_callback), WrapPersistent(frame)));
 }
@@ -910,10 +907,10 @@ void InspectorIndexedDBAgent::requestData(
     int page_size,
     Maybe<protocol::IndexedDB::KeyRange> key_range,
     std::unique_ptr<RequestDataCallback> request_callback) {
-  IDBKeyRange* idb_key_range =
-      key_range.isJust() ? IdbKeyRangeFromKeyRange(key_range.fromJust())
-                         : nullptr;
-  if (key_range.isJust() && !idb_key_range) {
+  IDBKeyRange* idb_key_range = key_range.has_value()
+                                   ? IdbKeyRangeFromKeyRange(&key_range.value())
+                                   : nullptr;
+  if (key_range.has_value() && !idb_key_range) {
     request_callback->sendFailure(
         protocol::Response::ServerError("Can not parse key range."));
     return;

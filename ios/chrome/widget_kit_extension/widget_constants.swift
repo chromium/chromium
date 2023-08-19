@@ -40,4 +40,7 @@ struct WidgetConstants {
     static let open =
       URL(string: "chromewidgetkit://shortcuts-widget/open")!
   }
+  struct SearchPasswordsWidget {
+    static let url = URL(string: "chromewidgetkit://search-passwords-widget/search-passwords")!
+  }
 }

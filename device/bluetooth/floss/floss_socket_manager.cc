@@ -332,6 +332,12 @@ std::unique_ptr<FlossSocketManager> FlossSocketManager::Create() {
 FlossSocketManager::FlossSocketManager() = default;
 
 FlossSocketManager::~FlossSocketManager() {
+  if (callback_id_ != kInvalidCallbackId) {
+    CallSocketMethod(
+        base::BindOnce(&FlossSocketManager::CompleteUnregisterCallback,
+                       weak_ptr_factory_.GetWeakPtr()),
+        socket_manager::kUnregisterCallback, callback_id_);
+  }
   if (bus_) {
     bus_->UnregisterExportedObject(dbus::ObjectPath(kExportedCallbacksPath));
   }
@@ -589,6 +595,12 @@ void FlossSocketManager::CompleteRegisterCallback(
     if (on_ready_) {
       std::move(on_ready_).Run();
     }
+  }
+}
+
+void FlossSocketManager::CompleteUnregisterCallback(DBusResult<bool> result) {
+  if (!result.has_value() || *result == false) {
+    LOG(WARNING) << __func__ << "Failed to unregister callback";
   }
 }
 

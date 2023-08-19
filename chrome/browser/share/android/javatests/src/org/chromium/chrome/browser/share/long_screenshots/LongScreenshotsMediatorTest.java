@@ -46,7 +46,6 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 @Batch(Batch.PER_CLASS)
 public class LongScreenshotsMediatorTest {
     /** Some screenshot dimension that's supposed to be reasonable. */
-    private static final int NOMINAL_SCREENSHOT_DIMENSION = 1000;
     /**
      * The largest screen dimension that will be accepted by Android in a View.
      * This is evidently due to an Android total bytes limit of 100M bytes.

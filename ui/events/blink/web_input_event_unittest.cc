@@ -410,8 +410,8 @@ TEST(WebInputEventTest, KeyEvent) {
   } tests[] = {
       {ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_NONE),
        blink::WebInputEvent::Type::kRawKeyDown, 0x0},
-      {ui::KeyEvent(L'B', ui::VKEY_B, ui::DomCode::NONE,
-                    ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN),
+      {ui::KeyEvent::FromCharacter(L'B', ui::VKEY_B, ui::DomCode::NONE,
+                                   ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN),
        blink::WebInputEvent::Type::kChar,
        blink::WebInputEvent::kShiftKey | blink::WebInputEvent::kControlKey},
       {ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_C, ui::EF_ALT_DOWN),

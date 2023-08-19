@@ -33,13 +33,13 @@ class TestMenuDelegate : public MenuDelegate {
 
   ~TestMenuDelegate() override;
 
-  int show_context_menu_count() { return show_context_menu_count_; }
+  int show_context_menu_count() const { return show_context_menu_count_; }
   MenuItemView* show_context_menu_source() { return show_context_menu_source_; }
   int execute_command_id() const { return execute_command_id_; }
   int on_menu_closed_called() const { return on_menu_closed_called_count_; }
   MenuItemView* on_menu_closed_menu() const { return on_menu_closed_menu_; }
-  bool is_drop_performed() { return is_drop_performed_; }
-  int will_hide_menu_count() { return will_hide_menu_count_; }
+  bool is_drop_performed() const { return is_drop_performed_; }
+  int will_hide_menu_count() const { return will_hide_menu_count_; }
   MenuItemView* will_hide_menu() { return will_hide_menu_; }
   void set_should_execute_command_without_closing_menu(bool val) {
     should_execute_command_without_closing_menu_ = val;

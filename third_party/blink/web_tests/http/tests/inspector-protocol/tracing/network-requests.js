@@ -7,29 +7,45 @@
   const tracingHelper = new TracingHelper(testRunner, session);
 
   await dp.Page.enable();
-  await tracingHelper.startTracing('devtools.timeline');
-  dp.Page.navigate({
-    url: 'http://127.0.0.1:8000/inspector-protocol/resources/basic.html'
-  });
 
-  // Wait for the DOM to be interactive.
-  await dp.Page.onceLoadEventFired();
+  let resourceSendRequest;
+  let resourceWillSendRequest;
+  let resourceReceiveResponse;
+  let resourceReceivedData;
+  let resourceFinish;
 
-  const timelineEvents = await tracingHelper.stopTracing(/devtools.timeline/);
+  const MAX_ATTEMPTS = 3;
+  for (let attempts = 0; attempts < MAX_ATTEMPTS; attempts++) {
+    await tracingHelper.startTracing('devtools.timeline');
+    dp.Page.navigate(
+        {url: 'http://127.0.0.1:8000/inspector-protocol/resources/basic.html'});
 
-  // Find and test all events of the lifecycle of the request for the
-  // HTML document.
-  const resourceSendRequest = timelineEvents.find(
-      event => event.name === 'ResourceSendRequest' &&
-          event.args.data.url.includes('basic.html'));
-  const resourceWillSendRequest = timelineEvents.find(
-      event => eventBelongsToDocumentRequest(event, 'ResourceWillSendRequest'));
-  const resourceReceiveResponse = timelineEvents.find(
-      event => eventBelongsToDocumentRequest(event, 'ResourceReceiveResponse'));
-  const resourceReceivedData = timelineEvents.find(
-      event => eventBelongsToDocumentRequest(event, 'ResourceReceivedData'));
-  const resourceFinish = timelineEvents.find(
-      event => eventBelongsToDocumentRequest(event, 'ResourceFinish'));
+    // Wait for the DOM to be interactive.
+    await dp.Page.onceLoadEventFired();
+
+    const timelineEvents = await tracingHelper.stopTracing(/devtools.timeline/);
+
+    // Find and test all events of the lifecycle of the request for the
+    // HTML document.
+    resourceSendRequest = timelineEvents.find(
+        event => event.name === 'ResourceSendRequest' &&
+            event.args.data.url.includes('basic.html'));
+    resourceWillSendRequest = timelineEvents.find(
+        event =>
+            eventBelongsToDocumentRequest(event, 'ResourceWillSendRequest'));
+    resourceReceiveResponse = timelineEvents.find(
+        event =>
+            eventBelongsToDocumentRequest(event, 'ResourceReceiveResponse'));
+    resourceReceivedData = timelineEvents.find(
+        event => eventBelongsToDocumentRequest(event, 'ResourceReceivedData'));
+    resourceFinish = timelineEvents.find(
+        event => eventBelongsToDocumentRequest(event, 'ResourceFinish'));
+
+    if (resourceSendRequest && resourceWillSendRequest &&
+        resourceReceiveResponse && resourceReceivedData && resourceFinish) {
+      break;
+    }
+  }
 
   testRunner.log('Got ResourceWillSendRequest event:');
   tracingHelper.logEventShape(resourceWillSendRequest)

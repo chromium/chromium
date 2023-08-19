@@ -59,7 +59,7 @@ void SiteSettingsCounter::Count() {
           if (content_setting.source == "preference" ||
               content_setting.source == "notification_android" ||
               content_setting.source == "ephemeral") {
-            base::Time last_modified = content_setting.metadata.last_modified;
+            base::Time last_modified = content_setting.metadata.last_modified();
             if (last_modified >= period_start && last_modified < period_end) {
               if (content_setting.primary_pattern.GetHost().empty())
                 empty_host_pattern++;
@@ -73,17 +73,12 @@ void SiteSettingsCounter::Count() {
   auto* registry = content_settings::ContentSettingsRegistry::GetInstance();
   for (const content_settings::ContentSettingsInfo* info : *registry) {
     ContentSettingsType type = info->website_settings_info()->type();
-    ContentSettingsForOneType content_settings_list;
-    map_->GetSettingsForOneType(type, &content_settings_list);
-    iterate_content_settings_list(type, content_settings_list);
+    iterate_content_settings_list(type, map_->GetSettingsForOneType(type));
   }
 
-  ContentSettingsForOneType content_settings_list_for_usb_chooser;
-  map_->GetSettingsForOneType(ContentSettingsType::USB_CHOOSER_DATA,
-
-                              &content_settings_list_for_usb_chooser);
-  iterate_content_settings_list(ContentSettingsType::USB_CHOOSER_DATA,
-                                content_settings_list_for_usb_chooser);
+  iterate_content_settings_list(
+      ContentSettingsType::USB_CHOOSER_DATA,
+      map_->GetSettingsForOneType(ContentSettingsType::USB_CHOOSER_DATA));
 
 #if !BUILDFLAG(IS_ANDROID)
   for (const auto& zoom_level : zoom_map_->GetAllZoomLevels()) {

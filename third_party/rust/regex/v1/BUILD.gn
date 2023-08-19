@@ -2,6 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# @generated from third_party/rust/BUILD.gn.hbs by tools/crates/gnrt.
+# Do not edit!
+
 import("//build/rust/cargo_crate.gni")
 
 cargo_crate("lib") {
@@ -13,10 +16,81 @@ cargo_crate("lib") {
   # third_party.toml to use it from first-party code.
   visibility = [ "//third_party/rust/*" ]
   crate_root = "crate/src/lib.rs"
+  sources = [
+    "//third_party/rust/regex/v1/crate/examples/shootout-regex-dna-bytes.rs",
+    "//third_party/rust/regex/v1/crate/examples/shootout-regex-dna-cheat.rs",
+    "//third_party/rust/regex/v1/crate/examples/shootout-regex-dna-replace.rs",
+    "//third_party/rust/regex/v1/crate/examples/shootout-regex-dna-single-cheat.rs",
+    "//third_party/rust/regex/v1/crate/examples/shootout-regex-dna-single.rs",
+    "//third_party/rust/regex/v1/crate/examples/shootout-regex-dna.rs",
+    "//third_party/rust/regex/v1/crate/src/backtrack.rs",
+    "//third_party/rust/regex/v1/crate/src/compile.rs",
+    "//third_party/rust/regex/v1/crate/src/dfa.rs",
+    "//third_party/rust/regex/v1/crate/src/error.rs",
+    "//third_party/rust/regex/v1/crate/src/exec.rs",
+    "//third_party/rust/regex/v1/crate/src/expand.rs",
+    "//third_party/rust/regex/v1/crate/src/find_byte.rs",
+    "//third_party/rust/regex/v1/crate/src/freqs.rs",
+    "//third_party/rust/regex/v1/crate/src/input.rs",
+    "//third_party/rust/regex/v1/crate/src/lib.rs",
+    "//third_party/rust/regex/v1/crate/src/literal/imp.rs",
+    "//third_party/rust/regex/v1/crate/src/literal/mod.rs",
+    "//third_party/rust/regex/v1/crate/src/pattern.rs",
+    "//third_party/rust/regex/v1/crate/src/pikevm.rs",
+    "//third_party/rust/regex/v1/crate/src/pool.rs",
+    "//third_party/rust/regex/v1/crate/src/prog.rs",
+    "//third_party/rust/regex/v1/crate/src/re_builder.rs",
+    "//third_party/rust/regex/v1/crate/src/re_bytes.rs",
+    "//third_party/rust/regex/v1/crate/src/re_set.rs",
+    "//third_party/rust/regex/v1/crate/src/re_trait.rs",
+    "//third_party/rust/regex/v1/crate/src/re_unicode.rs",
+    "//third_party/rust/regex/v1/crate/src/sparse.rs",
+    "//third_party/rust/regex/v1/crate/src/utf8.rs",
+    "//third_party/rust/regex/v1/crate/tests/api.rs",
+    "//third_party/rust/regex/v1/crate/tests/api_str.rs",
+    "//third_party/rust/regex/v1/crate/tests/bytes.rs",
+    "//third_party/rust/regex/v1/crate/tests/consistent.rs",
+    "//third_party/rust/regex/v1/crate/tests/crates_regex.rs",
+    "//third_party/rust/regex/v1/crate/tests/crazy.rs",
+    "//third_party/rust/regex/v1/crate/tests/flags.rs",
+    "//third_party/rust/regex/v1/crate/tests/fowler.rs",
+    "//third_party/rust/regex/v1/crate/tests/macros.rs",
+    "//third_party/rust/regex/v1/crate/tests/macros_bytes.rs",
+    "//third_party/rust/regex/v1/crate/tests/macros_str.rs",
+    "//third_party/rust/regex/v1/crate/tests/misc.rs",
+    "//third_party/rust/regex/v1/crate/tests/multiline.rs",
+    "//third_party/rust/regex/v1/crate/tests/noparse.rs",
+    "//third_party/rust/regex/v1/crate/tests/regression.rs",
+    "//third_party/rust/regex/v1/crate/tests/regression_fuzz.rs",
+    "//third_party/rust/regex/v1/crate/tests/replace.rs",
+    "//third_party/rust/regex/v1/crate/tests/searcher.rs",
+    "//third_party/rust/regex/v1/crate/tests/set.rs",
+    "//third_party/rust/regex/v1/crate/tests/shortest_match.rs",
+    "//third_party/rust/regex/v1/crate/tests/suffix_reverse.rs",
+    "//third_party/rust/regex/v1/crate/tests/test_backtrack.rs",
+    "//third_party/rust/regex/v1/crate/tests/test_backtrack_bytes.rs",
+    "//third_party/rust/regex/v1/crate/tests/test_backtrack_utf8bytes.rs",
+    "//third_party/rust/regex/v1/crate/tests/test_crates_regex.rs",
+    "//third_party/rust/regex/v1/crate/tests/test_default.rs",
+    "//third_party/rust/regex/v1/crate/tests/test_default_bytes.rs",
+    "//third_party/rust/regex/v1/crate/tests/test_nfa.rs",
+    "//third_party/rust/regex/v1/crate/tests/test_nfa_bytes.rs",
+    "//third_party/rust/regex/v1/crate/tests/test_nfa_utf8bytes.rs",
+    "//third_party/rust/regex/v1/crate/tests/unicode.rs",
+    "//third_party/rust/regex/v1/crate/tests/word_boundary.rs",
+    "//third_party/rust/regex/v1/crate/tests/word_boundary_ascii.rs",
+    "//third_party/rust/regex/v1/crate/tests/word_boundary_unicode.rs",
+  ]
+  inputs = [
+    "//third_party/rust/regex/v1/crate/CHANGELOG.md",
+    "//third_party/rust/regex/v1/crate/HACKING.md",
+    "//third_party/rust/regex/v1/crate/PERFORMANCE.md",
+    "//third_party/rust/regex/v1/crate/README.md",
+    "//third_party/rust/regex/v1/crate/UNICODE.md",
+  ]
 
   # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
-  sources = [ "crate/src/lib.rs" ]
   edition = "2018"
   cargo_pkg_version = "1.6.0"
   cargo_pkg_authors = "The Rust Project Developers"
@@ -63,10 +137,81 @@ cargo_crate("buildrs_support") {
   # third_party.toml to use it from first-party code.
   visibility = [ "//third_party/rust/*" ]
   crate_root = "crate/src/lib.rs"
+  sources = [
+    "//third_party/rust/regex/v1/crate/examples/shootout-regex-dna-bytes.rs",
+    "//third_party/rust/regex/v1/crate/examples/shootout-regex-dna-cheat.rs",
+    "//third_party/rust/regex/v1/crate/examples/shootout-regex-dna-replace.rs",
+    "//third_party/rust/regex/v1/crate/examples/shootout-regex-dna-single-cheat.rs",
+    "//third_party/rust/regex/v1/crate/examples/shootout-regex-dna-single.rs",
+    "//third_party/rust/regex/v1/crate/examples/shootout-regex-dna.rs",
+    "//third_party/rust/regex/v1/crate/src/backtrack.rs",
+    "//third_party/rust/regex/v1/crate/src/compile.rs",
+    "//third_party/rust/regex/v1/crate/src/dfa.rs",
+    "//third_party/rust/regex/v1/crate/src/error.rs",
+    "//third_party/rust/regex/v1/crate/src/exec.rs",
+    "//third_party/rust/regex/v1/crate/src/expand.rs",
+    "//third_party/rust/regex/v1/crate/src/find_byte.rs",
+    "//third_party/rust/regex/v1/crate/src/freqs.rs",
+    "//third_party/rust/regex/v1/crate/src/input.rs",
+    "//third_party/rust/regex/v1/crate/src/lib.rs",
+    "//third_party/rust/regex/v1/crate/src/literal/imp.rs",
+    "//third_party/rust/regex/v1/crate/src/literal/mod.rs",
+    "//third_party/rust/regex/v1/crate/src/pattern.rs",
+    "//third_party/rust/regex/v1/crate/src/pikevm.rs",
+    "//third_party/rust/regex/v1/crate/src/pool.rs",
+    "//third_party/rust/regex/v1/crate/src/prog.rs",
+    "//third_party/rust/regex/v1/crate/src/re_builder.rs",
+    "//third_party/rust/regex/v1/crate/src/re_bytes.rs",
+    "//third_party/rust/regex/v1/crate/src/re_set.rs",
+    "//third_party/rust/regex/v1/crate/src/re_trait.rs",
+    "//third_party/rust/regex/v1/crate/src/re_unicode.rs",
+    "//third_party/rust/regex/v1/crate/src/sparse.rs",
+    "//third_party/rust/regex/v1/crate/src/utf8.rs",
+    "//third_party/rust/regex/v1/crate/tests/api.rs",
+    "//third_party/rust/regex/v1/crate/tests/api_str.rs",
+    "//third_party/rust/regex/v1/crate/tests/bytes.rs",
+    "//third_party/rust/regex/v1/crate/tests/consistent.rs",
+    "//third_party/rust/regex/v1/crate/tests/crates_regex.rs",
+    "//third_party/rust/regex/v1/crate/tests/crazy.rs",
+    "//third_party/rust/regex/v1/crate/tests/flags.rs",
+    "//third_party/rust/regex/v1/crate/tests/fowler.rs",
+    "//third_party/rust/regex/v1/crate/tests/macros.rs",
+    "//third_party/rust/regex/v1/crate/tests/macros_bytes.rs",
+    "//third_party/rust/regex/v1/crate/tests/macros_str.rs",
+    "//third_party/rust/regex/v1/crate/tests/misc.rs",
+    "//third_party/rust/regex/v1/crate/tests/multiline.rs",
+    "//third_party/rust/regex/v1/crate/tests/noparse.rs",
+    "//third_party/rust/regex/v1/crate/tests/regression.rs",
+    "//third_party/rust/regex/v1/crate/tests/regression_fuzz.rs",
+    "//third_party/rust/regex/v1/crate/tests/replace.rs",
+    "//third_party/rust/regex/v1/crate/tests/searcher.rs",
+    "//third_party/rust/regex/v1/crate/tests/set.rs",
+    "//third_party/rust/regex/v1/crate/tests/shortest_match.rs",
+    "//third_party/rust/regex/v1/crate/tests/suffix_reverse.rs",
+    "//third_party/rust/regex/v1/crate/tests/test_backtrack.rs",
+    "//third_party/rust/regex/v1/crate/tests/test_backtrack_bytes.rs",
+    "//third_party/rust/regex/v1/crate/tests/test_backtrack_utf8bytes.rs",
+    "//third_party/rust/regex/v1/crate/tests/test_crates_regex.rs",
+    "//third_party/rust/regex/v1/crate/tests/test_default.rs",
+    "//third_party/rust/regex/v1/crate/tests/test_default_bytes.rs",
+    "//third_party/rust/regex/v1/crate/tests/test_nfa.rs",
+    "//third_party/rust/regex/v1/crate/tests/test_nfa_bytes.rs",
+    "//third_party/rust/regex/v1/crate/tests/test_nfa_utf8bytes.rs",
+    "//third_party/rust/regex/v1/crate/tests/unicode.rs",
+    "//third_party/rust/regex/v1/crate/tests/word_boundary.rs",
+    "//third_party/rust/regex/v1/crate/tests/word_boundary_ascii.rs",
+    "//third_party/rust/regex/v1/crate/tests/word_boundary_unicode.rs",
+  ]
+  inputs = [
+    "//third_party/rust/regex/v1/crate/CHANGELOG.md",
+    "//third_party/rust/regex/v1/crate/HACKING.md",
+    "//third_party/rust/regex/v1/crate/PERFORMANCE.md",
+    "//third_party/rust/regex/v1/crate/README.md",
+    "//third_party/rust/regex/v1/crate/UNICODE.md",
+  ]
 
   # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
-  sources = [ "crate/src/lib.rs" ]
   edition = "2018"
   cargo_pkg_version = "1.6.0"
   cargo_pkg_authors = "The Rust Project Developers"

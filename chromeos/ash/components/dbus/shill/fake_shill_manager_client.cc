@@ -414,7 +414,8 @@ void FakeShillManagerClient::ConfigureService(
       if (!hex_name.empty()) {
         std::vector<uint8_t> bytes;
         if (base::HexStringToBytes(hex_name, &bytes)) {
-          name.assign(reinterpret_cast<const char*>(&bytes[0]), bytes.size());
+          name.assign(reinterpret_cast<const char*>(bytes.data()),
+                      bytes.size());
         }
       }
     }
@@ -1211,11 +1212,13 @@ void FakeShillManagerClient::CallNotifyObserversPropertyChanged(
 void FakeShillManagerClient::NotifyObserversPropertyChanged(
     const std::string& property) {
   VLOG(1) << "NotifyObserversPropertyChanged: " << property;
-  base::Value* value = stub_properties_.Find(property);
-  if (!value) {
+  if (!stub_properties_.contains(property)) {
     LOG(ERROR) << "Notify for unknown property: " << property;
     return;
   }
+  // Notify using a clone instead of a pointer to the property to avoid the
+  // situation where an observer invalidates our pointer when notified.
+  const base::Value value = stub_properties_.Find(property)->Clone();
   if (property == shill::kServiceCompleteListProperty) {
     base::Value services(GetEnabledServiceList());
     for (auto& observer : observer_list_) {
@@ -1223,8 +1226,9 @@ void FakeShillManagerClient::NotifyObserversPropertyChanged(
     }
     return;
   }
-  for (auto& observer : observer_list_)
-    observer.OnPropertyChanged(property, *value);
+  for (auto& observer : observer_list_) {
+    observer.OnPropertyChanged(property, value);
+  }
 }
 
 base::Value::List& FakeShillManagerClient::GetListProperty(

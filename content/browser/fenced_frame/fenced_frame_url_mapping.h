@@ -183,7 +183,7 @@ class CONTENT_EXPORT FencedFrameURLMapping {
       const GURL& urn_uuid,
       const std::vector<std::pair<std::string, std::string>>& substitutions);
 
-  Id unique_id() { return unique_id_; }
+  Id unique_id() { return id_for_testing_.value_or(unique_id_); }
 
  private:
   friend class FencedFrameURLMappingTestPeer;
@@ -216,6 +216,8 @@ class CONTENT_EXPORT FencedFrameURLMapping {
       pending_urn_uuid_to_url_map_;
 
   const Id unique_id_;
+
+  absl::optional<Id> id_for_testing_;
 };
 
 }  // namespace content

@@ -27,7 +27,7 @@ PortalHost::PortalHost(LocalDOMWindow& window)
     : Supplement<LocalDOMWindow>(window), portal_host_(&window) {}
 
 void PortalHost::Trace(Visitor* visitor) const {
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   Supplement<LocalDOMWindow>::Trace(visitor);
   visitor->Trace(portal_host_);
 }

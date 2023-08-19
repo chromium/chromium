@@ -9,9 +9,9 @@
 
 #include <memory>
 
+#include "base/apple/scoped_objc_class_swizzler.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
-#include "base/mac/scoped_objc_class_swizzler.h"
 #include "base/strings/sys_string_conversions.h"
 #import "content/app_shim_remote_cocoa/render_widget_host_view_cocoa.h"
 #include "content/browser/renderer_host/render_widget_host_view_mac.h"
@@ -35,7 +35,7 @@
 
 namespace content {
 
-using base::mac::ScopedObjCClassSwizzler;
+using base::apple::ScopedObjCClassSwizzler;
 
 // static
 constexpr char RenderWidgetHostViewCocoaObserver::kDidAddSubview[];
@@ -43,7 +43,7 @@ constexpr char
     RenderWidgetHostViewCocoaObserver::kShowDefinitionForAttributedString[];
 
 // static
-std::map<std::string, std::unique_ptr<base::mac::ScopedObjCClassSwizzler>>
+std::map<std::string, std::unique_ptr<base::apple::ScopedObjCClassSwizzler>>
     RenderWidgetHostViewCocoaObserver::rwhvcocoa_swizzlers_;
 
 // static
@@ -68,7 +68,7 @@ content::RenderWidgetHostViewMac* GetRenderWidgetHostViewMac(NSObject* object) {
 
 }  // namespace
 
-base::mac::ScopedObjCClassSwizzler*
+base::apple::ScopedObjCClassSwizzler*
 RenderWidgetHostViewCocoaObserver::GetSwizzler(const std::string& method_name) {
   return rwhvcocoa_swizzlers_.count(method_name)
              ? rwhvcocoa_swizzlers_.at(method_name).get()
@@ -119,8 +119,8 @@ void RenderWidgetHostViewCocoaObserver::SetUpSwizzlers() {
 
 void SetWindowBounds(gfx::NativeWindow window, const gfx::Rect& bounds) {
   NSRect new_bounds = NSRectFromCGRect(bounds.ToCGRect());
-  if ([[NSScreen screens] count] > 0) {
-    new_bounds.origin.y = [[[NSScreen screens] firstObject] frame].size.height -
+  if (NSScreen.screens.count > 0) {
+    new_bounds.origin.y = NSScreen.screens.firstObject.frame.size.height -
                           new_bounds.origin.y - new_bounds.size.height;
   }
 
@@ -135,18 +135,17 @@ void GetStringAtPointForRenderWidget(
   TextInputClientMac::GetInstance()->GetStringAtPoint(
       rwh, point,
       base::BindOnce(
-          base::RetainBlock(^(
-              base::OnceCallback<void(const std::string&, const gfx::Point&)>
-                  callback,
-              ui::mojom::AttributedStringPtr attributed_string,
-              const gfx::Point& baseline_point) {
+          [](base::OnceCallback<void(const std::string&, const gfx::Point&)>
+                 callback,
+             ui::mojom::AttributedStringPtr attributed_string,
+             const gfx::Point& baseline_point) {
             std::string string =
                 attributed_string
                     ? base::SysCFStringRefToUTF8(CFAttributedStringGetString(
                           attributed_string.To<CFAttributedStringRef>()))
                     : std::string();
             std::move(callback).Run(string, baseline_point);
-          }),
+          },
           std::move(result_callback)));
 }
 
@@ -158,18 +157,17 @@ void GetStringFromRangeForRenderWidget(
   TextInputClientMac::GetInstance()->GetStringFromRange(
       rwh, range,
       base::BindOnce(
-          base::RetainBlock(^(
-              base::OnceCallback<void(const std::string&, const gfx::Point&)>
-                  callback,
-              ui::mojom::AttributedStringPtr attributed_string,
-              const gfx::Point& baseline_point) {
+          [](base::OnceCallback<void(const std::string&, const gfx::Point&)>
+                 callback,
+             ui::mojom::AttributedStringPtr attributed_string,
+             const gfx::Point& baseline_point) {
             std::string string =
                 attributed_string
                     ? base::SysCFStringRefToUTF8(CFAttributedStringGetString(
                           attributed_string.To<CFAttributedStringRef>()))
                     : std::string();
             std::move(callback).Run(string, baseline_point);
-          }),
+          },
           std::move(result_callback)));
 }
 
@@ -214,7 +212,7 @@ void GetStringFromRangeForRenderWidget(
                       eventNumber:0
                        clickCount:1
                          pressure:1.0];
-  [[NSApplication sharedApplication] postEvent:dismissal_event atStart:false];
+  [NSApplication.sharedApplication postEvent:dismissal_event atStart:false];
 }
 
 - (void)showDefinitionForAttributedString:(NSAttributedString*)attrString
@@ -233,6 +231,6 @@ void GetStringFromRangeForRenderWidget(
   if (!observer)
     return;
   observer->OnShowDefinitionForAttributedString(
-      base::SysNSStringToUTF8([attrString string]));
+      base::SysNSStringToUTF8(attrString.string));
 }
 @end

@@ -1,0 +1,29 @@
+Verify that nested at-rules are reported with the correct order.
+[
+    [0] : MediaRule
+]
+[
+    [0] : SupportsRule
+    [1] : MediaRule
+]
+[
+    [0] : SupportsRule
+]
+[
+    [0] : MediaRule
+    [1] : SupportsRule
+]
+[
+    [0] : SupportsRule
+    [1] : MediaRule
+    [2] : SupportsRule
+    [3] : MediaRule
+    [4] : SupportsRule
+]
+[
+    [0] : StyleRule
+]
+[
+    [0] : html
+]
+

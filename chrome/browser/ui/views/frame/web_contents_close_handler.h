@@ -43,7 +43,8 @@ class WebContentsCloseHandler {
   // close was canceled.
   void OnStillHaventClosed();
 
-  raw_ptr<WebContentsCloseHandlerDelegate, DanglingUntriaged> delegate_;
+  raw_ptr<WebContentsCloseHandlerDelegate, AcrossTasksDanglingUntriaged>
+      delegate_;
 
   // If true, WillCloseAllTabs() has been invoked.
   bool in_close_;

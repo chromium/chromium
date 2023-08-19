@@ -13,6 +13,9 @@ enum LayoutConstant {
   // The size of the avatar icon in the profile row of the app menu.
   APP_MENU_PROFILE_ROW_AVATAR_ICON_SIZE,
 
+  // The maximum character length for strings in the app menu.
+  APP_MENU_MAXIMUM_CHARACTER_LENGTH,
+
   // The height of Bookmarks Bar when attached to the toolbar. The height of the
   // Bookmarks Bar is larger than the BOOKMARK_BAR_BUTTON_HEIGHT by a fixed
   // amount.
@@ -47,6 +50,9 @@ enum LayoutConstant {
   // The internal padding to use inside children of the location bar.
   LOCATION_BAR_CHILD_INTERIOR_PADDING,
 
+  // The corner radius to use for children of the location bar.
+  LOCATION_BAR_CHILD_CORNER_RADIUS,
+
   // The vertical and horizontal padding inside the border.
   LOCATION_BAR_ELEMENT_PADDING,
 
@@ -71,6 +77,9 @@ enum LayoutConstant {
   // `LOCATION_BAR_TRAILING_ICON_SIZE`
   LOCATION_BAR_ICON_SIZE,
 
+  // The size of icons within chips inside the LocationBar.
+  LOCATION_BAR_CHIP_ICON_SIZE,
+
   // The size of the leading icons used inside the LocationBar.
   LOCATION_BAR_LEADING_ICON_SIZE,
 
@@ -90,10 +99,23 @@ enum LayoutConstant {
   // used for all 3 states of normal, hovered and pressed.
   TAB_ALERT_INDICATOR_ICON_WIDTH,
 
+  // Width and height of the tab close button.
+  TAB_CLOSE_BUTTON_SIZE,
+
   // The height of a tab, including outer strokes.  In non-100% scales this is
   // slightly larger than the apparent height of the tab, as the top stroke is
   // drawn as a 1-px line flush with the bottom of the tab's topmost DIP.
   TAB_HEIGHT,
+
+  // The total tab strip height, including all interior padding.
+  TAB_STRIP_HEIGHT,
+
+  // The padding value shared between the area above the tab, the bottom of the
+  // detached tab, and on all sides of the controls padding.
+  TAB_STRIP_PADDING,
+
+  // The height of a separator in the tabstrip.
+  TAB_SEPARATOR_HEIGHT,
 
   // Padding before the tab title.
   TAB_PRE_TITLE_PADDING,
@@ -163,6 +185,12 @@ enum LayoutInset {
 
   // The padding inside the border of a toolbar button (around the image).
   TOOLBAR_BUTTON,
+
+  // The padding around the browser app menu chip.
+  BROWSER_APP_MENU_CHIP_PADDING,
+
+  // The padding around the profile menu chip.
+  AVATAR_CHIP_PADDING,
 
   // The padding between the edges of the toolbar and its content.
   TOOLBAR_INTERIOR_MARGIN,

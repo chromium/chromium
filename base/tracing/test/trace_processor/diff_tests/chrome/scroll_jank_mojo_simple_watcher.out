@@ -1,0 +1,5 @@
+
+"trace_id","jank","dur_overlapping_ns","metric_name"
+34577,0,6000000,"InputLatency.LatencyInfo.Flow.QueuingDelay.NoJank.BlockingTasksUs.task-subtask"
+34578,1,29000000,"InputLatency.LatencyInfo.Flow.QueuingDelay.Jank.BlockingTasksUs.task-subtask"
+34579,0,29000000,"InputLatency.LatencyInfo.Flow.QueuingDelay.NoJank.BlockingTasksUs.task-foo"

@@ -8,7 +8,6 @@
 #include "components/user_education/webui/help_bubble_handler.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "ui/base/interaction/element_identifier.h"
-#include "ui/base/layout.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/webui/mojo_bubble_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
@@ -37,6 +36,7 @@ class PasswordManagerUI : public ui::MojoBubbleWebUIController,
 
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSettingsMenuItemElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAddShortcutElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOverflowMenuElementId);
   DECLARE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(kAddShortcutCustomEventId);
 
   void BindInterface(

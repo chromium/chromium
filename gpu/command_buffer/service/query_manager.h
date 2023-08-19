@@ -200,6 +200,9 @@ class GPU_GLES2_EXPORT QueryManager {
   // Removes a query info for the given query.
   void RemoveQuery(GLuint client_id);
 
+  // Removes a query info for all pending queries.
+  void RemoveAllQueries();
+
   // Returns false if any query is pointing to invalid shared memory.
   void BeginQuery(Query* query);
 

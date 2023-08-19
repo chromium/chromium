@@ -23,7 +23,6 @@
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"
-#include "components/webapps/common/web_page_metadata.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
@@ -95,6 +94,7 @@ struct IconSizes {
   IconSizes(IconSizes&&) noexcept;
   IconSizes& operator=(const IconSizes&);
   IconSizes& operator=(IconSizes&&) noexcept;
+  base::Value AsDebugValue() const;
 
   const std::vector<SquareSizePx>& GetSizesForPurpose(
       IconPurpose purpose) const;
@@ -169,7 +169,12 @@ struct WebAppShortcutsMenuItemInfo {
   // designed for monochrome contexts.
   // See https://www.w3.org/TR/appmanifest/#purpose-member
   std::vector<Icon> monochrome;
+
+  // Sizes of successfully downloaded icons for this shortcut menu item.
+  IconSizes downloaded_icon_sizes{};
 };
+
+namespace web_app {
 
 // Structure used when installing a web page as an app.
 struct WebAppInstallInfo {
@@ -179,26 +184,39 @@ struct WebAppInstallInfo {
     MOBILE_CAPABLE_APPLE
   };
 
-  // Returns a copy of the |other| that has only the fields that should be
-  // copied/derived from various sources (e.g generated icons, manifest
-  // properties). This will strip out app-like fields such as file handlers etc.
+  // Returns a copy of `other` retaining only the fields that are needed for
+  // a shortcut (e.g icons), and using the document title and URL instead of
+  // manifest properties. This will strip out app-like fields (e.g. file
+  // handlers).
   static WebAppInstallInfo CreateInstallInfoForCreateShortcut(
       const GURL& document_url,
+      const std::u16string& document_title,
       const WebAppInstallInfo& other);
 
+  // This creates a WebAppInstallInfo where the `manifest_id` is derived from
+  // the `start_url` using `GenerateManifestIdFromStartUrlOnly`.
+  static std::unique_ptr<WebAppInstallInfo> CreateWithStartUrlForTesting(
+      const GURL& start_url);
+
   // TODO(b/280862254): Remove this constructor to force users to use specify
-  // the manifest_id.
+  // the manifest_id and start_url (or call `CreateWithStartUrlForTesting`).
   WebAppInstallInfo();
 
+  // TODO(b/280862254): Remove this constructor to force users to use specify
+  // both the manifest_id and start_url (or call
+  // `CreateWithStartUrlForTesting`).
   explicit WebAppInstallInfo(const web_app::ManifestId& manifest_id);
+
+  // The `manifest_id` and the `start_url` MUST be valid. The `manifest_id` MUST
+  // be created properly, and cannot contain refs (e.g. '#refs').
+  WebAppInstallInfo(const web_app::ManifestId& manifest_id,
+                    const GURL& start_url);
 
   // Deleted to prevent accidental copying. Use Clone() to deep copy explicitly.
   WebAppInstallInfo& operator=(const WebAppInstallInfo&) = delete;
 
   WebAppInstallInfo(WebAppInstallInfo&&);
   WebAppInstallInfo& operator=(WebAppInstallInfo&&);
-
-  explicit WebAppInstallInfo(const webapps::mojom::WebPageMetadata& metadata);
   ~WebAppInstallInfo();
 
   // Creates a deep copy of this struct.
@@ -378,6 +396,8 @@ struct WebAppInstallInfo {
   // Used this method in Clone() method. Use Clone() to deep copy explicitly.
   WebAppInstallInfo(const WebAppInstallInfo& other);
 };
+
+}  // namespace web_app
 
 bool operator==(const IconSizes& icon_sizes1, const IconSizes& icon_sizes2);
 

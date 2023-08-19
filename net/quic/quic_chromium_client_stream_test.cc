@@ -89,13 +89,6 @@ class MockQuicClientSessionBase : public quic::QuicSpdyClientSessionBase {
                     const spdy::SpdyStreamPrecedence& precedence));
   MOCK_METHOD3(OnStreamHeadersComplete,
                void(quic::QuicStreamId stream_id, bool fin, size_t frame_len));
-  MOCK_METHOD2(OnPromiseHeaders,
-               void(quic::QuicStreamId stream_id,
-                    absl::string_view headers_data));
-  MOCK_METHOD3(OnPromiseHeadersComplete,
-               void(quic::QuicStreamId stream_id,
-                    quic::QuicStreamId promised_stream_id,
-                    size_t frame_len));
   MOCK_CONST_METHOD0(OneRttKeysAvailable, bool());
   // Methods taking non-copyable types like spdy::Http2HeaderBlock by value
   // cannot be mocked directly.

@@ -11,6 +11,78 @@ import {FakeTask} from './tasks.js';
 import {BASIC_ANDROID_ENTRY_SET, BASIC_LOCAL_ENTRY_SET} from './test_data.js';
 
 /**
+ * Copies or moves a file to provided location.
+ * @param {string} appId ID of the Files app window.
+ * @param {TestEntryInfo} file Test entry info to be copied/cut.
+ * @param {string} destination Name of the destination folder.
+ * @param {boolean} isCopy Whether it should copy or move the file.
+ * @return {Promise} Promise fulfilled on success.
+ */
+async function copyOrMove(appId, file, destination, isCopy) {
+  if (!file || !file.nameText || !destination) {
+    chrome.test.assertTrue(false, 'copyOrMove invalid parameters');
+  }
+
+  await remoteCall.waitForFiles(appId, [file.getExpectedRow()]);
+
+  await remoteCall.waitUntilSelected(appId, file.nameText);
+
+  const command = isCopy ? 'copy' : 'cut';
+  await remoteCall.callRemoteTestUtil('execCommand', appId, [command]);
+
+  await navigateWithDirectoryTree(appId, destination);
+
+  await remoteCall.callRemoteTestUtil('execCommand', appId, ['paste']);
+}
+
+/**
+ * Checks that the panel item with provided parameters exists.
+ * @param {string} appId ID of the Files app window.
+ * @param {string} primaryText Expected primary text.
+ * @param {string} secondaryText Expected secondary text.
+ * @param {string} status Expected status indicator (failure or warning).
+ * @return {Promise} Promise fulfilled on success.
+ */
+async function verifyPanelItem(appId, primaryText, secondaryText, status) {
+  const panel = await remoteCall.waitForElement(
+      appId, ['#progress-panel', 'xf-panel-item']);
+
+  chrome.test.assertEq(primaryText, panel.attributes['primary-text']);
+  chrome.test.assertEq(secondaryText, panel.attributes['secondary-text']);
+
+  chrome.test.assertEq('status', panel.attributes['indicator']);
+  chrome.test.assertEq(status, panel.attributes['status']);
+}
+
+/**
+ * Checks that the panel item's primary and secondary buttons have expected type
+ * and text, and then clicks the button defined by selectedButton.
+ * @param {string} appId ID of the Files app window.
+ * @param {string} secondaryButtonCategory Expected secondary button category
+ *     (dismiss or cancel).
+ * @param {string} selectedButton The button to click (primary or secondary).
+ */
+async function verifyPanelButtonsAndClick(
+    appId, secondaryButtonCategory, selectedButton) {
+  const primaryButton = await remoteCall.waitForElement(
+      appId, ['#progress-panel', 'xf-panel-item', 'xf-button#primary-action']);
+  chrome.test.assertEq(
+      'extra-button', primaryButton.attributes['data-category']);
+
+  const secondaryButton = await remoteCall.waitForElement(
+      appId,
+      ['#progress-panel', 'xf-panel-item', 'xf-button#secondary-action']);
+  chrome.test.assertEq(
+      secondaryButtonCategory, secondaryButton.attributes['data-category']);
+
+  await remoteCall.waitAndClickElement(appId, [
+    '#progress-panel',
+    'xf-panel-item',
+    `xf-button#${selectedButton}-action`,
+  ]);
+}
+
+/**
  * Tests that DLP block toast is shown when a restricted file is cut.
  */
 testcase.transferShowDlpToast = async () => {
@@ -32,19 +104,8 @@ testcase.transferShowDlpToast = async () => {
   const usbVolumeQuery = '#directory-tree [volume-type-icon="removable"]';
   await remoteCall.waitForElement(appId, usbVolumeQuery);
 
-  // Select the file.
-  await remoteCall.waitUntilSelected(appId, entry.nameText);
-
-  // Cut the file.
-  chrome.test.assertTrue(
-      await remoteCall.callRemoteTestUtil('execCommand', appId, ['cut']));
-
-  // Select USB volume.
-  await navigateWithDirectoryTree(appId, '/fake-usb');
-
-  // Paste the file.
-  chrome.test.assertTrue(
-      await remoteCall.callRemoteTestUtil('execCommand', appId, ['paste']));
+  // Cut and paste the file.
+  await copyOrMove(appId, entry, '/fake-usb', /*isCopy=*/ false);
 
   // Check: a toast should be displayed because cut is disallowed.
   await remoteCall.waitForElement(appId, '#toast');
@@ -81,7 +142,7 @@ testcase.dlpShowManagedIcon = async () => {
   // Open Files app.
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
-  const dlpManagedIcon = '#file-list .dlp-managed-icon';
+  const dlpManagedIcon = '#file-list .dlp-managed-icon.is-dlp-restricted';
 
   // Check: only three of the five files should have the 'dlp-managed-icon'
   // class, which means that the icon is displayed.
@@ -123,7 +184,7 @@ testcase.dlpContextMenuRestrictionDetails = async () => {
   // Wait for the DLP managed icon to be shown - this also means metadata has
   // been cached and can be used to show the context menu command.
   await remoteCall.waitForElementsCount(
-      appId, ['#file-list .dlp-managed-icon'], 1);
+      appId, ['#file-list .dlp-managed-icon.is-dlp-restricted'], 1);
 
   // Select the file.
   await remoteCall.waitUntilSelected(appId, entry.nameText);
@@ -506,7 +567,7 @@ testcase.openDlpRestrictedFile = async () => {
     // been fetched, including the disabled status. Three are managed, but only
     // two disabled.
     await remoteCall.waitForElementsCount(
-        dialog, ['#file-list .dlp-managed-icon'], 3);
+        dialog, ['#file-list .dlp-managed-icon.is-dlp-restricted'], 3);
 
     await remoteCall.waitForElementsCount(
         dialog, ['#file-list .file[disabled]'], 2);
@@ -579,7 +640,7 @@ testcase.openFolderDlpRestricted = async () => {
 
     // Verify that the DLP managed icon for the image file is shown.
     await remoteCall.waitForElementsCount(
-        dialog, ['#file-list .dlp-managed-icon'], 1);
+        dialog, ['#file-list .dlp-managed-icon.is-dlp-restricted'], 1);
 
     // Verify that the image file is disabled.
     await remoteCall.waitForElementsCount(
@@ -669,4 +730,192 @@ testcase.fileTasksDlpRestricted = async () => {
       ['#tasks-menu:not([hidden]) cr-menu-item:not([disabled]):nth-child(2)']);
   await remoteCall.waitForElement(
       appId, ['#tasks-menu:not([hidden]) cr-menu-item[disabled]:nth-child(3)']);
+};
+
+
+/**
+ * Tests that extraction works when the scoped file access delegate exists and
+ * correct output files are generated.
+ */
+testcase.zipExtractRestrictedArchiveCheckContent = async () => {
+  const entry = ENTRIES.zipArchive;
+
+  // Add entries to Downloads and setup the fake source URLs.
+  await addEntries(['local'], [entry]);
+  await sendTestMessage({
+    name: 'setGetFilesSourcesMock',
+    fileNames: [entry.nameText],
+    sourceUrls: ['https://blocked.com'],
+  });
+
+  // Setup the restrictions.
+  await sendTestMessage({name: 'setIsRestrictedByAnyRuleBlocked'});
+
+  // Setup the scoped file access delegate.
+  await sendTestMessage({name: 'setupScopedFileAccessDelegateAllowed'});
+
+  // Open Files app.
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
+
+  // Wait for the DLP managed icon to be shown.
+  await remoteCall.waitForElementsCount(
+      appId, ['#file-list .dlp-managed-icon.is-dlp-restricted'], 1);
+
+  const targetDirectoryName = entry.nameText.split('.')[0];
+
+  // Expect newly extracted files to be added to the DLP daemon.
+  await sendTestMessage({
+    name: 'expectFilesAdditionToDaemon',
+    fileNames:
+        [targetDirectoryName + '/image.png', targetDirectoryName + '/text.txt'],
+    sourceUrls: ['https://blocked.com', 'https://blocked.com'],
+  });
+
+  // Make sure the test extension handles the new window creation properly.
+  await sendTestMessage({
+    name: 'expectFileTask',
+    fileNames: [targetDirectoryName],
+    openType: 'launch',
+  });
+
+  // Select the file.
+  await remoteCall.waitUntilSelected(appId, entry.nameText);
+
+  // Right-click the selected file.
+  await remoteCall.waitAndRightClick(appId, '.table-row[selected]');
+
+  // Check: the context menu should appear.
+  await remoteCall.waitForElement(appId, '#file-context-menu:not([hidden])');
+
+  // Click the 'Extract all' menu command.
+  await remoteCall.waitAndClickElement(
+      appId, '[command="#extract-all"]:not([hidden])');
+
+  const directoryQuery = '#file-list [file-name="' + targetDirectoryName + '"]';
+  // Check: the extract directory should appear.
+  await remoteCall.waitForElement(appId, directoryQuery);
+
+  // Double click the created directory to open it.
+  chrome.test.assertTrue(
+      !!await remoteCall.callRemoteTestUtil(
+          'fakeMouseDoubleClick', appId, [directoryQuery]),
+      'fakeMouseDoubleClick failed');
+
+  // Check: File content in the ZIP should appear.
+  await remoteCall.waitForFiles(
+      appId,
+      [
+        ['folder', '--', 'Folder'],
+        ['text.txt', '--', 'Plain text'],
+        ['image.png', '--', 'PNG image'],
+      ],
+      {ignoreFileSize: true, ignoreLastModifiedTime: true});
+};
+
+/**
+ * Tests that a copy or move IO task that completed with error due to block
+ * restriction properly updates the task state and shows a correct panel item.
+ */
+testcase.blockShowsPanelItem = async () => {
+  // Add entry to Downloads.
+  const entry = ENTRIES.hello;
+  await addEntries(['local'], [entry]);
+
+  // Open Files app.
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
+
+  // Setup the restrictions.
+  await sendTestMessage({
+    name: 'setBlockedFilesTransfer',
+    fileNames: [entry.nameText],
+  });
+
+  // Mount a USB volume.
+  await sendTestMessage({name: 'mountFakeUsbEmpty'});
+
+  // Wait for the USB volume to mount.
+  const usbVolumeQuery = '#directory-tree [volume-type-icon="removable"]';
+  await remoteCall.waitForElement(appId, usbVolumeQuery);
+
+  // Copy and paste the file to USB.
+  await copyOrMove(appId, entry, '/fake-usb', /*isCopy=*/ true);
+
+  // Check that the error panel is open with correct primary and secondary text,
+  // and has the expected button types.
+  await verifyPanelItem(
+      appId, 'File blocked from copying',
+      `${entry.nameText} was blocked because of policy`, 'failure');
+  await verifyPanelButtonsAndClick(appId, 'dismiss', 'secondary');
+
+  // Navigate back to Downloads.
+  await navigateWithDirectoryTree(appId, '/My files/Downloads');
+
+  // Cut and paste the file to USB.
+  await copyOrMove(appId, entry, '/fake-usb', /*isCopy=*/ false);
+
+  // Check that the error panel is open with correct primary and secondary text,
+  // and has the expected button types.
+  await verifyPanelItem(
+      appId, 'File blocked from moving',
+      `${entry.nameText} was blocked because of policy`, 'failure');
+  await verifyPanelButtonsAndClick(appId, 'dismiss', 'primary');
+};
+
+/**
+ * Tests that a copy or move IO task that is paused due to warn restriction
+ * properly updates the task state and shows a correct panel item.
+ */
+testcase.warnShowsPanelItem = async () => {
+  // Add entry to Downloads.
+  const entry = ENTRIES.hello;
+  await addEntries(['local'], [entry]);
+
+  // Open Files app.
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
+
+  // Set the mock to pause the first task.
+  await sendTestMessage({
+    name: 'setCheckFilesTransferMockToPause',
+    taskId: 1,
+    fileNames: [entry.nameText],
+    action: 'copy',
+  });
+
+  // Mount a USB volume.
+  await sendTestMessage({name: 'mountFakeUsbEmpty'});
+
+  // Wait for the USB volume to mount.
+  const usbVolumeQuery = '#directory-tree [volume-type-icon="removable"]';
+  await remoteCall.waitForElement(appId, usbVolumeQuery);
+
+  // Copy and paste the file to USB.
+  await copyOrMove(appId, entry, '/fake-usb', /*isCopy=*/ true);
+
+  // Check that the warning panel is open with correct primary and secondary
+  // text, and has the expected button types.
+  await verifyPanelItem(
+      appId, 'Review is required before copying',
+      `${entry.nameText} may contain sensitive content`, 'warning');
+  await verifyPanelButtonsAndClick(appId, 'cancel', 'secondary');
+
+  // Navigate back to Downloads.
+  await navigateWithDirectoryTree(appId, '/My files/Downloads');
+
+  // Set the first mock to pause the task.
+  await sendTestMessage({
+    name: 'setCheckFilesTransferMockToPause',
+    taskId: 2,
+    fileNames: [entry.nameText],
+    action: 'move',
+  });
+
+  // Cut and paste the file to USB.
+  await copyOrMove(appId, entry, '/fake-usb', /*isCopy=*/ false);
+
+  // Check that the warning panel is open with correct primary and secondary
+  // text, and has the expected button types.
+  await verifyPanelItem(
+      appId, 'Review is required before moving',
+      `${entry.nameText} may contain sensitive content`, 'warning');
+  await verifyPanelButtonsAndClick(appId, 'cancel', 'primary');
 };

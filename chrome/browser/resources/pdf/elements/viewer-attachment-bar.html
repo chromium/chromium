@@ -1,0 +1,20 @@
+<style include="pdf-shared">
+  :host {
+    display: block;
+    padding-inline-end: 20px;
+    padding-top: 20px;
+  }
+
+  #warning {
+    align-items: flex-start;
+    padding: 5px 28px 15px;
+    position: relative;
+  }
+</style>
+<div id="warning" hidden="[[!exceedSizeLimit_]]">
+  $i18n{oversizeAttachmentWarning}
+</div>
+<template is="dom-repeat" items="[[attachments]]">
+  <viewer-attachment attachment="[[item]]" index="{{index}}">
+  </viewer-attachment>
+</template>

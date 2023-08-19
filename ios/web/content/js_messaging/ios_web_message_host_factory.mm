@@ -14,10 +14,6 @@
 #import "components/js_injection/browser/web_message_host.h"
 #import "third_party/abseil-cpp/absl/types/variant.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace web {
 namespace {
 

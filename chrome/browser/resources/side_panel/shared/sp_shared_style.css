@@ -44,20 +44,18 @@
 :host-context([chrome-refresh-2023]) .sp-scroller::-webkit-scrollbar-thumb {
   background: var(--color-side-panel-scrollbar-thumb);
   background-clip: content-box;
-  border: solid 2px transparent;
+  border: solid 1.5px transparent;
   border-radius: 100px;
 }
 
-:host-context([chrome-refresh-2023]) .sp-card:has(.sp-scroller) {
-  padding-block-end: 0;
+:host-context([chrome-refresh-2023])
+    .sp-scroller-top-of-page::-webkit-scrollbar-track {
+  margin-block-start: var(--sp-body-padding);
 }
 
-:host-context([chrome-refresh-2023]) .sp-card .sp-scroller {
-  border-bottom-left-radius: 12px;
-  border-bottom-right-radius: 12px;
-  box-sizing: border-box;
-  margin-inline-end: calc(-1 * var(--sp-body-padding));
-  padding-block-end: var(--sp-card-block-padding);
+:host-context([chrome-refresh-2023])
+    .sp-scroller-bottom-of-page::-webkit-scrollbar-track {
+  margin-block-end: var(--sp-body-padding);
 }
 
 :host-context([chrome-refresh-2023]) .sp-scroller .sp-card,
@@ -90,7 +88,7 @@
 .sp-icon-buttons-row {
   align-items: center;
   display: grid;
-  gap: 8px;
+  gap: 12px;
   grid-auto-columns: 16px;
   grid-auto-flow: column;
   justify-items: center;
@@ -124,4 +122,20 @@
   height: 8px;
   margin: 0;
   width: 100%;
+}
+
+:host-context([chrome-refresh-2023]) cr-dialog {
+  --cr-dialog-background-color: var(--color-side-panel-dialog-background);
+  --cr-primary-text-color: var(--color-side-panel-dialog-primary-foreground);
+  --cr-secondary-text-color: var(
+      --color-side-panel-dialog-secondary-foreground);
+  --cr-dialog-title-font-size: 16px;
+  --cr-dialog-title-slot-padding-bottom: 8px;
+  font-weight: 500;
+}
+
+:host-context([chrome-refresh-2023]) cr-dialog::part(dialog) {
+  --scroll-border-color: var(--color-side-panel-dialog-divider);
+  border-radius: 12px;
+  box-shadow: var(--cr-elevation-3);
 }

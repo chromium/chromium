@@ -45,6 +45,7 @@ class AccessibilityHandler : public ::settings::SettingsPageUIHandler,
   void HandleSetStartupSoundEnabled(const base::Value::List& args);
   void HandleUpdateBluetoothBrailleDisplayAddress(
       const base::Value::List& args);
+  void HandleGetStartupSoundEnabled(const base::Value::List& args);
 
   void OpenExtensionOptionsPage(const char extension_id[]);
 

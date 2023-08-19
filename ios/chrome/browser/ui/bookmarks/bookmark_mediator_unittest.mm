@@ -28,10 +28,6 @@
 #import "testing/gtest_mac.h"
 #import "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface BookmarkMediator ()
 - (NSString*)messageForAddingBookmarksInFolder:(BOOL)addFolder
                              folderStorageType:
@@ -69,8 +65,7 @@ enum class SignInStatus {
 
 class BookmarkMediatorUnitTest
     : public BookmarkIOSUnitTestSupport,
-      public testing::WithParamInterface<
-          std::tuple<int, bool, bool, SignInStatus>> {
+      public testing::WithParamInterface<std::tuple<int, bool, SignInStatus>> {
  public:
   void SetUp() override {
     BookmarkIOSUnitTestSupport::SetUp();
@@ -81,21 +76,21 @@ class BookmarkMediatorUnitTest
     sync_setup_service_ = std::make_unique<FakeSyncSetupService>(sync_service_);
 
     mediator_ = [[BookmarkMediator alloc]
-        initWithWithProfileBookmarkModel:local_or_syncable_bookmark_model_
-                    accountBookmarkModel:nullptr
-                                   prefs:chrome_browser_state_->GetPrefs()
-                   authenticationService:authentication_service_
-                             syncService:sync_service_
-                        syncSetupService:sync_setup_service_.get()];
+        initWithWithLocalOrSyncableBookmarkModel:
+            local_or_syncable_bookmark_model_
+                            accountBookmarkModel:nullptr
+                                           prefs:chrome_browser_state_
+                                                     ->GetPrefs()
+                           authenticationService:authentication_service_
+                                     syncService:sync_service_
+                                syncSetupService:sync_setup_service_.get()];
   }
 
   // Number of bookmark saved.
   int GetBookmarkCountParam() { return std::get<0>(GetParam()); }
-  // Weather kEnableEmailInBookmarksReadingListSnackbar flag should be enabled.
-  bool GetShouldEnableSnackbarFeatureParam() { return std::get<1>(GetParam()); }
   // Weather the bookmarks are saved in the default folder or not.
-  bool GetDefaultFolderSetParam() { return std::get<2>(GetParam()); }
-  SignInStatus GetSignInStatusParam() { return std::get<3>(GetParam()); }
+  bool GetDefaultFolderSetParam() { return std::get<1>(GetParam()); }
+  SignInStatus GetSignInStatusParam() { return std::get<2>(GetParam()); }
 
  protected:
   // Signs in using `fakeIdentity1`.
@@ -117,16 +112,6 @@ class BookmarkMediatorUnitTest
     authentication_service_->GrantSyncConsent(
         fake_identity,
         signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER);
-  }
-
-  // Enable or disable `kEnableEmailInBookmarksReadingListSnackbar` flag,
-  // according to `enabled`.
-  void SetEmailInSnackbarFlag(bool enabled) {
-    if (enabled) {
-      scope_.InitWithFeatures({kEnableEmailInBookmarksReadingListSnackbar}, {});
-    } else {
-      scope_.InitWithFeatures({}, {kEnableEmailInBookmarksReadingListSnackbar});
-    }
   }
 
   // Returns `IDS_IOS_BOOKMARK_PAGE_SAVED` string with `count` value.
@@ -186,8 +171,6 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(
         // Number of bookmarked saved.
         testing::Values(1, 2),
-        // kEnableEmailInBookmarksReadingListSnackbar enabled or disabled.
-        testing::Bool(),
         // Bookmark saved in the default folder or not.
         testing::Bool(),
         // Sign-in status.
@@ -198,14 +181,12 @@ INSTANTIATE_TEST_SUITE_P(
 
 // Tests the snackbar message with all the different combinaisons with:
 // * One or two saved bookmarks
-// * kEnableEmailInBookmarksReadingListSnackbar enabled/disabled.
 // * Using the default folder or not
 // * Being signed-out/signed in/signed in with account storage/signed in + sync.
 TEST_P(BookmarkMediatorUnitTest, TestSnackBarMessage) {
   const int bookmark_count = GetBookmarkCountParam();
   const SignInStatus signed_in_status = GetSignInStatusParam();
   const bool default_folder_set = GetDefaultFolderSetParam();
-  const bool snackbar_feature_set = GetShouldEnableSnackbarFeatureParam();
   bookmarks::StorageType bookmark_storage_type =
       bookmarks::StorageType::kLocalOrSyncable;
   switch (signed_in_status) {
@@ -222,16 +203,14 @@ TEST_P(BookmarkMediatorUnitTest, TestSnackBarMessage) {
       SignInAndSync();
       break;
   }
-  SetEmailInSnackbarFlag(snackbar_feature_set);
   NSString* const snackbar_message =
       [mediator_ messageForAddingBookmarksInFolder:default_folder_set
                                  folderStorageType:bookmark_storage_type
                                              title:kFolderName
                                              count:bookmark_count];
   NSString* expected_snackbar_message = nil;
-  if (((signed_in_status == SignInStatus::KSignedInAndSync) ||
-       (bookmark_storage_type == bookmarks::StorageType::kAccount)) &&
-      snackbar_feature_set) {
+  if (signed_in_status == SignInStatus::KSignedInAndSync ||
+      bookmark_storage_type == bookmarks::StorageType::kAccount) {
     if (default_folder_set) {
       expected_snackbar_message =
           GetSavedToFolderToAccountText(bookmark_count, kFolderName, kEmail);

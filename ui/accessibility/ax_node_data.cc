@@ -106,7 +106,7 @@ FindInVectorOfPairs(
 bool IsNodeIdIntAttribute(ax::mojom::IntAttribute attr) {
   switch (attr) {
     case ax::mojom::IntAttribute::kActivedescendantId:
-    case ax::mojom::IntAttribute::kErrormessageId:
+    case ax::mojom::IntAttribute::kErrormessageIdDeprecated:
     case ax::mojom::IntAttribute::kInPageLinkTargetId:
     case ax::mojom::IntAttribute::kMemberOfId:
     case ax::mojom::IntAttribute::kNextOnLineId:
@@ -190,6 +190,7 @@ bool IsNodeIdIntListAttribute(ax::mojom::IntListAttribute attr) {
     case ax::mojom::IntListAttribute::kControlsIds:
     case ax::mojom::IntListAttribute::kDetailsIds:
     case ax::mojom::IntListAttribute::kDescribedbyIds:
+    case ax::mojom::IntListAttribute::kErrormessageIds:
     case ax::mojom::IntListAttribute::kFlowtoIds:
     case ax::mojom::IntListAttribute::kLabelledbyIds:
     case ax::mojom::IntListAttribute::kRadioGroupIds:
@@ -213,6 +214,11 @@ bool IsNodeIdIntListAttribute(ax::mojom::IntListAttribute attr) {
     case ax::mojom::IntListAttribute::kWordStarts:
     case ax::mojom::IntListAttribute::kWordEnds:
     case ax::mojom::IntListAttribute::kCustomActionIds:
+    case ax::mojom::IntListAttribute::kTextOperationStartOffsets:
+    case ax::mojom::IntListAttribute::kTextOperationEndOffsets:
+    case ax::mojom::IntListAttribute::kTextOperationEndAnchorIds:
+    case ax::mojom::IntListAttribute::kTextOperationStartAnchorIds:
+    case ax::mojom::IntListAttribute::kTextOperations:
       return false;
   }
 }
@@ -1394,7 +1400,7 @@ std::string AXNodeData::ToString(bool verbose) const {
       case ax::mojom::IntAttribute::kActivedescendantId:
         result += " activedescendant=" + value;
         break;
-      case ax::mojom::IntAttribute::kErrormessageId:
+      case ax::mojom::IntAttribute::kErrormessageIdDeprecated:
         result += " errormessage=" + value;
         break;
       case ax::mojom::IntAttribute::kInPageLinkTargetId:
@@ -1889,6 +1895,9 @@ std::string AXNodeData::ToString(bool verbose) const {
       case ax::mojom::IntListAttribute::kDescribedbyIds:
         result += " describedby_ids=" + IntVectorToString(values);
         break;
+      case ax::mojom::IntListAttribute::kErrormessageIds:
+        result += " errormessage_ids=" + IntVectorToString(values);
+        break;
       case ax::mojom::IntListAttribute::kFlowtoIds:
         result += " flowto_ids=" + IntVectorToString(values);
         break;
@@ -1974,6 +1983,22 @@ std::string AXNodeData::ToString(bool verbose) const {
         break;
       case ax::mojom::IntListAttribute::kCustomActionIds:
         result += " custom_action_ids=" + IntVectorToString(values);
+        break;
+      case ax::mojom::IntListAttribute::kTextOperationStartOffsets:
+        result += " text_operation_start_offsets=" + IntVectorToString(values);
+        break;
+      case ax::mojom::IntListAttribute::kTextOperationEndOffsets:
+        result += " text_operation_end_offsets=" + IntVectorToString(values);
+        break;
+      case ax::mojom::IntListAttribute::kTextOperationStartAnchorIds:
+        result +=
+            " text_operation_start_anchor_ids=" + IntVectorToString(values);
+        break;
+      case ax::mojom::IntListAttribute::kTextOperationEndAnchorIds:
+        result += " text_operation_end_anchor_ids=" + IntVectorToString(values);
+        break;
+      case ax::mojom::IntListAttribute::kTextOperations:
+        result += " text_operations=" + IntVectorToString(values);
         break;
     }
   }

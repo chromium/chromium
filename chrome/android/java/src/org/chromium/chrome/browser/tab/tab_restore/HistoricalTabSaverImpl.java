@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.tab.tab_restore;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.annotations.JNINamespace;
@@ -126,7 +125,7 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
                     HistoricalSaverCloseType.COUNT);
             HistoricalTabSaverImplJni.get().createHistoricalGroup(mTabModel, groupTitles.get(0),
                     allTabs.toArray(new Tab[0]), byteBuffers.toArray(new ByteBuffer[0]),
-                    CollectionUtil.integerListToIntArray(savedStateVersions));
+                    CollectionUtil.integerCollectionToIntArray(savedStateVersions));
             return;
         }
 
@@ -134,10 +133,11 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
         RecordHistogram.recordEnumeratedHistogram("Tabs.RecentlyClosed.HistoricalSaverCloseType",
                 HistoricalSaverCloseType.BULK, HistoricalSaverCloseType.COUNT);
         HistoricalTabSaverImplJni.get().createHistoricalBulkClosure(mTabModel,
-                CollectionUtil.integerListToIntArray(groupIds), groupTitles.toArray(new String[0]),
-                CollectionUtil.integerListToIntArray(perTabGroupId), allTabs.toArray(new Tab[0]),
-                byteBuffers.toArray(new ByteBuffer[0]),
-                CollectionUtil.integerListToIntArray(savedStateVersions));
+                CollectionUtil.integerCollectionToIntArray(groupIds),
+                groupTitles.toArray(new String[0]),
+                CollectionUtil.integerCollectionToIntArray(perTabGroupId),
+                allTabs.toArray(new Tab[0]), byteBuffers.toArray(new ByteBuffer[0]),
+                CollectionUtil.integerCollectionToIntArray(savedStateVersions));
     }
 
     private void createHistoricalTabInternal(Tab tab) {
@@ -218,7 +218,6 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
         return (state == null) ? tempState : state;
     }
 
-    @VisibleForTesting
     void ignoreUrlSchemesForTesting(boolean ignore) {
         mIgnoreUrlSchemesForTesting = ignore;
     }

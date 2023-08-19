@@ -25,10 +25,6 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using scanner::CameraState;
 
 // Override a QRScannerViewController voice over check, simulating voice
@@ -152,14 +148,17 @@ void TapButton(id<GREYMatcher> button) {
 // Appends the given `editText` to the `text` already in the omnibox and presses
 // the keyboard return key.
 void EditOmniboxTextAndTapKeyboardReturn(std::string text, NSString* editText) {
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(text)]
-      performAction:grey_typeText([editText stringByAppendingString:@"\n"])];
+  // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
+  // replaceText can properly handle \n.
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:editText flags:0];
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 }
 
 // Presses the keyboard return key.
 void TapKeyboardReturnKeyInOmniboxWithText(std::string text) {
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(text)]
-      performAction:grey_typeText(@"\n")];
+  // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
+  // replaceText can properly handle \n.
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 }
 
 // Provides responses for the test page URLs.

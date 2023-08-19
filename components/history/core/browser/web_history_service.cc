@@ -186,7 +186,7 @@ class RequestImpl : public WebHistoryService::Request {
       signin::ScopeSet oauth_scopes;
       oauth_scopes.insert(kHistoryOAuthScope);
       identity_manager_->RemoveAccessTokenFromCache(
-          identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSync),
+          identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
           oauth_scopes, access_token_);
 
       access_token_.clear();

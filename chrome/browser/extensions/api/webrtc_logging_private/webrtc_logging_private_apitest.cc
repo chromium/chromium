@@ -995,7 +995,7 @@ class WebrtcLoggingPrivateApiStartEventLoggingTestInIncognitoMode
   bool WebRtcEventLogCollectionPolicy() const override { return true; }
 
  private:
-  raw_ptr<Browser, DanglingUntriaged> browser_{
+  raw_ptr<Browser, AcrossTasksDanglingUntriaged> browser_{
       nullptr};  // Does not own the object.
 };
 

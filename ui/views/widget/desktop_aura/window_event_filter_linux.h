@@ -63,12 +63,13 @@ class VIEWS_EXPORT WindowEventFilterLinux : public ui::EventHandler {
   // ui::EventHandler overrides:
   void OnGestureEvent(ui::GestureEvent* event) override;
 
-  const raw_ptr<DesktopWindowTreeHostPlatform> desktop_window_tree_host_;
+  const raw_ptr<DesktopWindowTreeHostPlatform, DanglingUntriaged>
+      desktop_window_tree_host_;
 
   // A handler, which is used for interactive move/resize events if set and
   // unless MaybeDispatchHostWindowDragMovement is overridden by a derived
   // class.
-  const raw_ptr<ui::WmMoveResizeHandler> handler_;
+  const raw_ptr<ui::WmMoveResizeHandler, DanglingUntriaged> handler_;
 
   // The non-client component for the target of a MouseEvent. Mouse events can
   // be destructive to the window tree, which can cause the component of a

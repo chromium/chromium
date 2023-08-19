@@ -15,15 +15,12 @@
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 class Profile;
 
 namespace ash::cloud_upload {
-
-// TODO(b/254586358): i18n this string.
-const char kReauthenticationRequiredMessage[] =
-    "Sign in to your Microsoft account and then try again";
 
 // Creates, updates and deletes cloud upload system notifications. Ensures that
 // notifications stay in the "in progress" state for a minimum of 5 seconds, and
@@ -36,13 +33,12 @@ class CloudUploadNotificationManager
   using HandleCompleteNotificationClickCallback =
       base::OnceCallback<void(base::FilePath)>;
 
-  CloudUploadNotificationManager(
-      Profile* profile,
-      const std::string& file_name,
-      const std::string& cloud_provider_name,
-      const std::string& target_app_name,
-      int num_files,
-      file_manager::io_task::OperationType operation_type);
+  CloudUploadNotificationManager(Profile* profile,
+                                 const std::string& file_name,
+                                 const std::string& cloud_provider_name,
+                                 const std::string& target_app_name,
+                                 int num_files,
+                                 UploadType upload_type);
 
   // Creates the notification with "in progress" state if it doesn't exist, or
   // updates the progress bar if it does. |progress| is within the 0-100 range.
@@ -66,6 +62,10 @@ class CloudUploadNotificationManager
 
   void SetDestinationPath(base::FilePath destination_path) {
     destination_path_ = destination_path;
+  }
+
+  void SetCancelCallback(base::OnceClosure cancel_callback) {
+    cancel_callback_ = std::move(cancel_callback);
   }
 
   // Used in tests to set a callback to check if
@@ -106,6 +106,9 @@ class CloudUploadNotificationManager
   // closed, timers are interrupted and the completion callback has been called.
   void CloseNotification();
 
+  // "Cancel" click handler for upload progress notification.
+  void HandleProgressNotificationClick(absl::optional<int> button_index);
+
   // "Sign in" click handler for authentication error notification.
   void HandleErrorNotificationClick(absl::optional<int> button_index);
 
@@ -124,6 +127,9 @@ class CloudUploadNotificationManager
     kComplete
   };
 
+  // Returns true if upload is still in progress.
+  bool CanCancel();
+
   // Counts the total number of notification manager instances. This counter is
   // never decremented.
   static inline int notification_manager_counter_ = 0;
@@ -136,9 +142,11 @@ class CloudUploadNotificationManager
   std::string target_app_name_;
   std::u16string display_source_;
   int num_files_;
-  file_manager::io_task::OperationType operation_type_;
+  int progress_;
+  UploadType upload_type_;
   base::FilePath destination_path_;
   base::OnceClosure callback_;
+  base::OnceClosure cancel_callback_;
   HandleCompleteNotificationClickCallback callback_for_testing_;
   base::OneShotTimer in_progress_timer_;
   base::OneShotTimer complete_notification_timer_;

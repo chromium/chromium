@@ -6,9 +6,13 @@
 
 #include <utility>
 
+#include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
+#include "third_party/skia/include/gpu/graphite/Context.h"
+#include "third_party/skia/include/gpu/graphite/Surface.h"
+#include "third_party/skia/include/gpu/graphite/TextureInfo.h"
 
 namespace viz {
 
@@ -58,6 +62,7 @@ bool SkiaOutputDeviceOffscreen::Reshape(const SkImageInfo& image_info,
                                         float device_scale_factor,
                                         gfx::OverlayTransform transform) {
   DCHECK_EQ(transform, gfx::OVERLAY_TRANSFORM_NONE);
+  CHECK_EQ(image_info.colorType(), SkColorType::kRGBA_8888_SkColorType);
 
   DiscardBackbuffer();
   size_ = gfx::SkISizeToSize(image_info.dimensions());
@@ -73,7 +78,7 @@ void SkiaOutputDeviceOffscreen::Present(
     BufferPresentedCallback feedback,
     OutputSurfaceFrame frame) {
   // Reshape should have been called first.
-  DCHECK(backend_texture_.isValid());
+  DCHECK(backend_texture_.isValid() || graphite_texture_.isValid());
 
   StartSwapBuffers(std::move(feedback));
   FinishSwapBuffers(gfx::SwapCompletionResult(gfx::SwapResult::SWAP_ACK),
@@ -82,33 +87,51 @@ void SkiaOutputDeviceOffscreen::Present(
 
 void SkiaOutputDeviceOffscreen::EnsureBackbuffer() {
   // Ignore EnsureBackbuffer if Reshape has not been called yet.
-  if (size_.IsEmpty())
+  if (size_.IsEmpty()) {
     return;
-
-  if (has_alpha_) {
-    backend_texture_ = context_state_->gr_context()->createBackendTexture(
-        size_.width(), size_.height(), sk_color_type_, GrMipMapped::kNo,
-        GrRenderable::kYes);
-  } else {
-    is_emulated_rgbx_ = true;
-    // Initialize alpha channel to opaque.
-    backend_texture_ = context_state_->gr_context()->createBackendTexture(
-        size_.width(), size_.height(), sk_color_type_, SkColors::kBlack,
-        GrMipMapped::kNo, GrRenderable::kYes);
   }
-  DCHECK(backend_texture_.isValid());
 
-  DCHECK(!backbuffer_estimated_size_);
-  if (backend_texture_.backend() == GrBackendApi::kVulkan) {
+  CHECK(!backbuffer_estimated_size_);
+  if (gr_context_) {
+    if (has_alpha_) {
+      backend_texture_ = context_state_->gr_context()->createBackendTexture(
+          size_.width(), size_.height(), sk_color_type_, GrMipMapped::kNo,
+          GrRenderable::kYes);
+    } else {
+      is_emulated_rgbx_ = true;
+      // Initialize alpha channel to opaque.
+      backend_texture_ = context_state_->gr_context()->createBackendTexture(
+          size_.width(), size_.height(), sk_color_type_, SkColors::kBlack,
+          GrMipMapped::kNo, GrRenderable::kYes);
+    }
+    DCHECK(backend_texture_.isValid());
+
+    if (backend_texture_.backend() == GrBackendApi::kVulkan) {
 #if BUILDFLAG(ENABLE_VULKAN)
-    GrVkImageInfo vk_image_info;
-    bool result = backend_texture_.getVkImageInfo(&vk_image_info);
-    DCHECK(result);
-    backbuffer_estimated_size_ = vk_image_info.fAlloc.fSize;
+      GrVkImageInfo vk_image_info;
+      bool result = backend_texture_.getVkImageInfo(&vk_image_info);
+      DCHECK(result);
+      backbuffer_estimated_size_ = vk_image_info.fAlloc.fSize;
 #else
-    DCHECK(false);
+      DCHECK(false);
 #endif
+    } else {
+      auto info = SkImageInfo::Make(size_.width(), size_.height(),
+                                    kSurfaceColorType, kUnpremul_SkAlphaType);
+      size_t estimated_size = info.computeMinByteSize();
+      backbuffer_estimated_size_ = estimated_size;
+    }
   } else {
+    CHECK(graphite_context_);
+    if (!has_alpha_) {
+      is_emulated_rgbx_ = true;
+    }
+    skgpu::graphite::TextureInfo texture_info = gpu::GetGraphiteTextureInfo(
+        context_state_->gr_context_type(), SinglePlaneFormat::kRGBA_8888);
+    graphite_texture_ =
+        context_state_->gpu_main_graphite_recorder()->createBackendTexture(
+            gfx::SizeToSkISize(size_), texture_info);
+    CHECK(graphite_texture_.isValid());
     auto info = SkImageInfo::Make(size_.width(), size_.height(),
                                   kSurfaceColorType, kUnpremul_SkAlphaType);
     size_t estimated_size = info.computeMinByteSize();
@@ -124,20 +147,34 @@ void SkiaOutputDeviceOffscreen::DiscardBackbuffer() {
     backend_texture_ = GrBackendTexture();
     memory_type_tracker_->TrackMemFree(backbuffer_estimated_size_);
     backbuffer_estimated_size_ = 0u;
+  } else if (graphite_texture_.isValid()) {
+    CHECK(graphite_context_);
+    sk_surface_.reset();
+    graphite_context_->deleteBackendTexture(graphite_texture_);
+    graphite_texture_ = skgpu::graphite::BackendTexture();
+    memory_type_tracker_->TrackMemFree(backbuffer_estimated_size_);
+    backbuffer_estimated_size_ = 0u;
   }
 }
 
 SkSurface* SkiaOutputDeviceOffscreen::BeginPaint(
     std::vector<GrBackendSemaphore>* end_semaphores) {
-  DCHECK(backend_texture_.isValid());
+  DCHECK(backend_texture_.isValid() || graphite_texture_.isValid());
   if (!sk_surface_) {
     SkSurfaceProps surface_props{0, kUnknown_SkPixelGeometry};
-    sk_surface_ = SkSurfaces::WrapBackendTexture(
-        context_state_->gr_context(), backend_texture_,
-        capabilities_.output_surface_origin == gfx::SurfaceOrigin::kTopLeft
-            ? kTopLeft_GrSurfaceOrigin
-            : kBottomLeft_GrSurfaceOrigin,
-        sample_count_, kSurfaceColorType, sk_color_space_, &surface_props);
+    if (gr_context_) {
+      sk_surface_ = SkSurfaces::WrapBackendTexture(
+          context_state_->gr_context(), backend_texture_,
+          capabilities_.output_surface_origin == gfx::SurfaceOrigin::kTopLeft
+              ? kTopLeft_GrSurfaceOrigin
+              : kBottomLeft_GrSurfaceOrigin,
+          sample_count_, kSurfaceColorType, sk_color_space_, &surface_props);
+    } else {
+      CHECK(graphite_context_);
+      sk_surface_ = SkSurfaces::WrapBackendTexture(
+          context_state_->gpu_main_graphite_recorder(), graphite_texture_,
+          sk_color_type_, sk_color_space_, &surface_props);
+    }
   }
   return sk_surface_.get();
 }

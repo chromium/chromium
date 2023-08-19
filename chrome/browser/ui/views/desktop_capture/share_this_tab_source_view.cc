@@ -8,10 +8,13 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_utils.h"
+#include "chrome/browser/ui/views/desktop_capture/rounded_corner_image_view.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "media/base/video_util.h"
+#include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/layout/box_layout.h"
@@ -82,7 +85,7 @@ ShareThisTabSourceView::ShareThisTabSourceView(
   throbber_->SetBoundsRect(kThrobberRect);
   throbber_->Start();
 
-  image_view_ = AddChildView(std::make_unique<views::ImageView>());
+  image_view_ = AddChildView(std::make_unique<RoundedCornerImageView>());
   image_view_->SetVisible(false);
   image_view_->SetBoundsRect(kPreviewRect);
 

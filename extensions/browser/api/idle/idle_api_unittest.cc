@@ -49,7 +49,7 @@ class ScopedListen {
 
  private:
   raw_ptr<IdleManager> idle_manager_;
-  const std::string extension_id_;
+  const ExtensionId extension_id_;
 };
 
 ScopedListen::ScopedListen(IdleManager* idle_manager,

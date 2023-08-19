@@ -12,6 +12,8 @@ source_set("headless") {
     "headless_mode_util.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base",
     "//chrome/common:non_code_constants",
@@ -32,6 +34,8 @@ source_set("metrics") {
     "headless_mode_metrics.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     ":headless",
     "//base",
@@ -46,9 +50,12 @@ source_set("command_processor") {
     "headless_command_processor.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     ":headless",
     "//base",
+    "//chrome/common:non_code_constants",
     "//components/headless/command_handler",
     "//content/public/browser",
   ]
@@ -94,6 +101,7 @@ if (!is_android) {
       "//chrome/browser",
       "//chrome/test:test_support",
       "//content/test:test_support",
+      "//pdf",
       "//testing/gtest",
     ]
 
@@ -105,6 +113,7 @@ if (!is_android) {
         "//components/headless/clipboard",
         "//components/headless/command_handler",
         "//components/headless/command_handler:switches",
+        "//components/headless/select_file_dialog",
         "//components/headless/test",
         "//content/public/browser",
         "//ui/display",

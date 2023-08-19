@@ -9,7 +9,6 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -68,59 +67,15 @@
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/arc/arc_util.h"
-#include "ash/components/arc/mojom/intent_helper.mojom.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/arc_service_manager.h"
-#include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
-#include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-const char kPlayIntentPrefix[] =
-    "https://play.google.com/store/apps/details?id=";
-const char kChromeWebStoreReferrer[] = "&referrer=chrome_web_store";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-using InstallAndroidAppCallback =
-    extensions::ManagementAPIDelegate::InstallAndroidAppCallback;
-using AndroidAppInstallStatusCallback =
-    extensions::ManagementAPIDelegate::AndroidAppInstallStatusCallback;
 using InstallOrLaunchWebAppCallback =
     extensions::ManagementAPIDelegate::InstallOrLaunchWebAppCallback;
 using InstallOrLaunchWebAppResult =
     extensions::ManagementAPIDelegate::InstallOrLaunchWebAppResult;
 using InstallableCheckResult = web_app::InstallableCheckResult;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-void OnDidCheckForIntentToPlayStore(const std::string& intent,
-                                    InstallAndroidAppCallback callback,
-                                    bool installable) {
-  if (!installable) {
-    std::move(callback).Run(false);
-    return;
-  }
-
-  auto* arc_service_manager = arc::ArcServiceManager::Get();
-  if (!arc_service_manager) {
-    std::move(callback).Run(false);
-    return;
-  }
-
-  auto* instance = ARC_GET_INSTANCE_FOR_METHOD(
-      arc_service_manager->arc_bridge_service()->intent_helper(), HandleUrl);
-  if (!instance) {
-    std::move(callback).Run(false);
-    return;
-  }
-
-  instance->HandleUrl(intent, arc::kPlayStorePackage);
-  std::move(callback).Run(true);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class ManagementSetEnabledFunctionInstallPromptDelegate
     : public extensions::InstallPromptDelegate {
@@ -266,7 +221,7 @@ class ChromeAppForLinkDelegate : public extensions::AppForLinkDelegate {
     }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
+    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
     web_app_info->title = base::UTF8ToUTF16(title);
     web_app_info->start_url = launch_url;
     web_app_info->display_mode = web_app::DisplayMode::kBrowser;
@@ -610,66 +565,6 @@ void ChromeManagementAPIDelegate::InstallOrLaunchReplacementWebApp(
       web_app_url, web_contents_ptr,
       base::BindOnce(&OnWebAppInstallabilityChecked, profile->GetWeakPtr(),
                      std::move(callback), std::move(web_contents)));
-}
-
-bool ChromeManagementAPIDelegate::CanContextInstallAndroidApps(
-    content::BrowserContext* context) const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return arc::IsArcAllowedForProfile(Profile::FromBrowserContext(context));
-#else
-  return false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-}
-
-void ChromeManagementAPIDelegate::CheckAndroidAppInstallStatus(
-    const std::string& package_name,
-    AndroidAppInstallStatusCallback callback) const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  auto* arc_service_manager = arc::ArcServiceManager::Get();
-  if (!arc_service_manager) {
-    std::move(callback).Run(false);
-    return;
-  }
-
-  auto* instance = ARC_GET_INSTANCE_FOR_METHOD(
-      arc_service_manager->arc_bridge_service()->app(), IsInstallable);
-  if (!instance) {
-    std::move(callback).Run(false);
-    return;
-  }
-
-  instance->IsInstallable(package_name, std::move(callback));
-#else
-  std::move(callback).Run(false);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-}
-
-void ChromeManagementAPIDelegate::InstallReplacementAndroidApp(
-    const std::string& package_name,
-    InstallAndroidAppCallback callback) const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::string intent =
-      base::StrCat({kPlayIntentPrefix, package_name, kChromeWebStoreReferrer});
-
-  auto* arc_service_manager = arc::ArcServiceManager::Get();
-  if (!arc_service_manager) {
-    std::move(callback).Run(false);
-    return;
-  }
-
-  auto* instance = ARC_GET_INSTANCE_FOR_METHOD(
-      arc_service_manager->arc_bridge_service()->app(), IsInstallable);
-  if (!instance) {
-    std::move(callback).Run(false);
-    return;
-  }
-
-  instance->IsInstallable(
-      package_name, base::BindOnce(&OnDidCheckForIntentToPlayStore, intent,
-                                   std::move(callback)));
-#else
-  std::move(callback).Run(false);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void ChromeManagementAPIDelegate::EnableExtension(

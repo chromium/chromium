@@ -25,10 +25,6 @@ namespace signin {
 class IdentityManager;
 }  // namespace signin
 
-namespace syncer {
-class SyncService;
-}  // namespace syncer
-
 namespace ash {
 
 class CupsPrintersManager;
@@ -92,7 +88,6 @@ class OsSettingsManager : public KeyedService {
       local_search_service::LocalSearchServiceProxy* local_search_service_proxy,
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
       phonehub::PhoneHubManager* phone_hub_manager,
-      syncer::SyncService* sync_service,
       KerberosCredentialsManager* kerberos_credentials_manager,
       ArcAppListPrefs* arc_app_list_prefs,
       signin::IdentityManager* identity_manager,

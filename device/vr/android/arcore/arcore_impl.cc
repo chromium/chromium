@@ -18,7 +18,7 @@
 #include "base/types/pass_key.h"
 #include "device/vr/android/arcore/arcore_math_utils.h"
 #include "device/vr/android/arcore/arcore_plane_manager.h"
-#include "device/vr/android/arcore/type_converters.h"
+#include "device/vr/android/arcore/vr_service_type_converters.h"
 #include "device/vr/create_anchor_request.h"
 #include "device/vr/public/mojom/pose.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"

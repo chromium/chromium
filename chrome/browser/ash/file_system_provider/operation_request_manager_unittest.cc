@@ -19,6 +19,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/file_system_provider/notification_manager_interface.h"
 #include "chrome/browser/ash/file_system_provider/request_manager.h"
 #include "chrome/browser/ash/file_system_provider/request_value.h"
@@ -84,6 +85,30 @@ class FakeNotificationManager : public NotificationManagerInterface {
   }
 
   CallbackMap callbacks_;
+};
+
+class TimeoutWaiter : public RequestManager::Observer {
+ public:
+  explicit TimeoutWaiter(RequestManager* request_manager) {
+    scoped_observation_.Observe(request_manager);
+  }
+  void OnRequestCreated(int request_id, RequestType type) override {}
+  void OnRequestDestroyed(int request_id,
+                          OperationCompletion completion) override {}
+  void OnRequestExecuted(int request_id) override {}
+  void OnRequestFulfilled(int request_id,
+                          const RequestValue& result,
+                          bool has_more) override {}
+  void OnRequestRejected(int request_id,
+                         const RequestValue& result,
+                         base::File::Error error) override {}
+  void OnRequestTimedOut(int request_id) override { run_loop_.Quit(); }
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  base::RunLoop run_loop_;
+  base::ScopedObservation<RequestManager, RequestManager::Observer>
+      scoped_observation_{this};
 };
 
 // Logs calls of the success and error callbacks on requests.
@@ -382,7 +407,7 @@ class FileSystemProviderRequestManagerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<FakeNotificationManager> notification_manager_;
-  std::unique_ptr<RequestManager> request_manager_;
+  std::unique_ptr<OperationRequestManager> request_manager_;
 };
 
 TEST_F(FileSystemProviderRequestManagerTest, CreateFailure) {
@@ -888,6 +913,54 @@ TEST_F(FileSystemProviderRequestManagerTest, ContinueOnTimeout) {
             observer.destroyed()[0].completion());
 
   request_manager_->RemoveObserver(&observer);
+}
+
+TEST_F(FileSystemProviderRequestManagerTest, NoNotificationWhileInteractive) {
+  EventLogger logger;
+  RequestObserver observer;
+  base::ScopedObservation<RequestManager, RequestManager::Observer> observation(
+      &observer);
+  observation.Observe(request_manager_.get());
+
+  request_manager_->StartUserInteraction();
+
+  request_manager_->SetTimeoutForTesting(base::Seconds(0));
+  int request_id = request_manager_->CreateRequest(
+      kTestRequestType,
+      base::WrapUnique<RequestManager::HandlerInterface>(
+          new FakeHandler(logger.GetWeakPtr(), /*execute_reply=*/true)));
+  EXPECT_EQ(1, request_id);
+  EXPECT_EQ(0u, logger.success_events().size());
+  EXPECT_EQ(0u, logger.error_events().size());
+  EXPECT_EQ(0u, logger.abort_events().size());
+  EXPECT_EQ(0u, notification_manager_->size());
+
+  ASSERT_EQ(1u, observer.created().size());
+  EXPECT_EQ(request_id, observer.created()[0].request_id());
+  EXPECT_EQ(kTestRequestType, observer.created()[0].type());
+
+  ASSERT_EQ(1u, observer.executed().size());
+  EXPECT_EQ(request_id, observer.executed()[0].request_id());
+
+  // Wait until the request is timed out.
+  TimeoutWaiter(request_manager_.get()).Wait();
+
+  // Should not have shown a notification.
+  EXPECT_EQ(0u, notification_manager_->size());
+
+  // The request is still active.
+  EXPECT_EQ(0u, logger.success_events().size());
+  EXPECT_EQ(0u, logger.error_events().size());
+  EXPECT_EQ(0u, logger.abort_events().size());
+
+  // No longer interacting with the user.
+  request_manager_->EndUserInteraction();
+
+  // Wait until the request is timed out again.
+  TimeoutWaiter(request_manager_.get()).Wait();
+
+  // Shown a notification.
+  EXPECT_EQ(1u, notification_manager_->size());
 }
 
 }  // namespace file_system_provider

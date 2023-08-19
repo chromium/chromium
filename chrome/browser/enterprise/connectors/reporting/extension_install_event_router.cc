@@ -17,7 +17,6 @@ namespace enterprise_connectors {
 // reporting API.
 const char kKeyId[] = "id";
 const char kKeyName[] = "name";
-const char kKeyProfileUserName[] = "profileUserName";
 const char kKeyDescription[] = "description";
 
 ExtensionInstallEventRouter::ExtensionInstallEventRouter(
@@ -27,16 +26,12 @@ ExtensionInstallEventRouter::ExtensionInstallEventRouter(
 }
 
 ExtensionInstallEventRouter::~ExtensionInstallEventRouter() {
-  if (extension_registry_ &&
-      base::FeatureList::IsEnabled(kExtensionEventsEnabled)) {
+  if (extension_registry_) {
     extension_registry_->RemoveObserver(this);
   }
 }
 
 void ExtensionInstallEventRouter::StartObserving() {
-  if (!base::FeatureList::IsEnabled(kExtensionEventsEnabled)) {
-    return;
-  }
   if (!extension_registry_) {
     DLOG(ERROR) << "extension_registry_ is null. Observer not added.";
     return;
@@ -60,7 +55,6 @@ void ExtensionInstallEventRouter::OnExtensionInstalled(
   event.Set(kKeyId, extension->id());
   event.Set(kKeyName, extension->name());
   event.Set(kKeyDescription, extension->description());
-  event.Set(kKeyProfileUserName, reporting_client_->GetProfileUserName());
 
   reporting_client_->ReportRealtimeEvent(
       ReportingServiceSettings::kExtensionInstallEvent,

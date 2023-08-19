@@ -1003,11 +1003,6 @@ TEST_F(LockContentsViewUnitTest, ShowErrorBubbleOnAuthFailure) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(test_api.auth_error_bubble()->GetVisible());
-
-  // The error bubble is expected to close on a user action - e.g. if they start
-  // typing the password again.
-  PressAndReleaseKey(ui::KeyboardCode::VKEY_B);
-  EXPECT_FALSE(test_api.auth_error_bubble()->GetVisible());
 }
 
 TEST_F(LockContentsViewUnitTest, AuthErrorLockscreenLearnMoreButton) {
@@ -1553,12 +1548,11 @@ TEST_F(LockContentsViewUnitTest, AuthErrorDoesNotRemoveDetachableBaseError) {
   EXPECT_TRUE(test_api.auth_error_bubble()->GetVisible());
   EXPECT_TRUE(test_api.detachable_base_error_bubble()->GetVisible());
 
-  // User action, like pressing a key should close the auth error bubble, but
-  // not the detachable base error bubble.
+  // User action, like pressing a key, should not close the detachable base
+  // error bubble.
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A);
 
   EXPECT_TRUE(test_api.detachable_base_error_bubble()->GetVisible());
-  EXPECT_FALSE(test_api.auth_error_bubble()->GetVisible());
 }
 
 TEST_F(LockContentsViewKeyboardUnitTest, SwitchPinAndVirtualKeyboard) {
@@ -2679,7 +2673,7 @@ TEST_F(LockContentsViewUnitTest, RemoveUserFocusMovesBackToPrimaryUser) {
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   base::RunLoop().RunUntilIdle();
   // Focus the remove user bubble, tap twice to remove the user.
-  user_test_api.remove_account_dialog()->RequestFocus();
+  secondary_test_api.remove_account_dialog()->RequestFocus();
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   base::RunLoop().RunUntilIdle();
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
@@ -3387,8 +3381,8 @@ class LockContentsViewWithKioskLicenseTest : public LoginTestBase {
     GetSessionControllerClient()->FlushForTest();
   }
 
-  raw_ptr<LoginShelfView, ExperimentalAsh> login_shelf_view_ =
-      nullptr;  // Unowned.
+  raw_ptr<LoginShelfView, DanglingUntriaged | ExperimentalAsh>
+      login_shelf_view_ = nullptr;  // Unowned.
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -3407,8 +3401,7 @@ TEST_F(LockContentsViewWithKioskLicenseTest,
   lock_contents_view->SetKioskLicenseModeForTesting(is_kiosk_license_mode);
   LockContentsViewTestApi test_api(lock_contents_view);
   SetUserCount(0);
-  std::unique_ptr<views::Widget> widget =
-      CreateWidgetWithContent(lock_contents_view);
+  SetWidget(CreateWidgetWithContent(lock_contents_view));
 
   NotifySessionStateChanged(session_manager::SessionState::LOGIN_PRIMARY);
   SetNumberOfKioskApps(1);
@@ -3430,8 +3423,7 @@ TEST_F(LockContentsViewWithKioskLicenseTest, ShouldHideKioskDefaultMessage) {
   lock_contents_view->SetKioskLicenseModeForTesting(is_kiosk_license_mode);
   LockContentsViewTestApi test_api(lock_contents_view);
   SetUserCount(0);
-  std::unique_ptr<views::Widget> widget =
-      CreateWidgetWithContent(lock_contents_view);
+  SetWidget(CreateWidgetWithContent(lock_contents_view));
 
   NotifySessionStateChanged(session_manager::SessionState::LOGIN_PRIMARY);
   SetNumberOfKioskApps(0);
@@ -3453,8 +3445,7 @@ TEST_F(LockContentsViewWithKioskLicenseTest,
   lock_contents_view->SetKioskLicenseModeForTesting(is_kiosk_license_mode);
   LockContentsViewTestApi test_api(lock_contents_view);
   SetUserCount(0);
-  std::unique_ptr<views::Widget> widget =
-      CreateWidgetWithContent(lock_contents_view);
+  SetWidget(CreateWidgetWithContent(lock_contents_view));
 
   NotifySessionStateChanged(session_manager::SessionState::LOGIN_PRIMARY);
   SetNumberOfKioskApps(0);
@@ -3477,8 +3468,7 @@ TEST_F(LockContentsViewWithKioskLicenseTest,
   lock_contents_view->SetKioskLicenseModeForTesting(is_kiosk_license_mode);
   LockContentsViewTestApi test_api(lock_contents_view);
   SetUserCount(1);
-  std::unique_ptr<views::Widget> widget =
-      CreateWidgetWithContent(lock_contents_view);
+  SetWidget(CreateWidgetWithContent(lock_contents_view));
 
   NotifySessionStateChanged(session_manager::SessionState::LOGIN_PRIMARY);
   SetNumberOfKioskApps(0);
@@ -3502,8 +3492,7 @@ TEST_F(LockContentsViewWithKioskLicenseTest,
   lock_contents_view->SetKioskLicenseModeForTesting(is_kiosk_license_mode);
   LockContentsViewTestApi test_api(lock_contents_view);
   SetUserCount(0);
-  std::unique_ptr<views::Widget> widget =
-      CreateWidgetWithContent(lock_contents_view);
+  SetWidget(CreateWidgetWithContent(lock_contents_view));
 
   NotifySessionStateChanged(session_manager::SessionState::LOGIN_PRIMARY);
   SetNumberOfKioskApps(0);

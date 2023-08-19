@@ -22,31 +22,38 @@
         Measure
     ] Promise<File> getFile();
 
+    // TODO(crbug/1382215): Combine createSyncAccessHandle overloads into one
+    // with options as an optional param that defaults to {}.
     [
         CallWith=ScriptState,
         RaisesException,
         Measure,
-        Exposed=DedicatedWorker,
-        RuntimeEnabled=FileSystemAccessAccessHandle
+        Exposed=DedicatedWorker
     ] Promise<FileSystemSyncAccessHandle> createSyncAccessHandle();
 
     [
         CallWith=ScriptState,
         RaisesException,
-        MeasureAs=FileSystemAccessMoveRename,
-        RuntimeEnabled=FileSystemAccessAccessHandle
+        Measure,
+        Exposed=DedicatedWorker,
+        RuntimeEnabled=FileSystemAccessAccessHandleLockingScheme
+    ] Promise<FileSystemSyncAccessHandle> createSyncAccessHandle(
+      FileSystemCreateSyncAccessHandleOptions options);
+
+    [
+        CallWith=ScriptState,
+        RaisesException,
+        MeasureAs=FileSystemAccessMoveRename
     ]  Promise<void> move(USVString new_entry_name);
     [
         CallWith=ScriptState,
         RaisesException,
-        MeasureAs=FileSystemAccessMoveReparent,
-        RuntimeEnabled=FileSystemAccessAccessHandle
+        MeasureAs=FileSystemAccessMoveReparent
     ]  Promise<void> move(FileSystemDirectoryHandle destination_directory);
     [
         CallWith=ScriptState,
         RaisesException,
-        MeasureAs=FileSystemAccessMoveReparentAndRename,
-        RuntimeEnabled=FileSystemAccessAccessHandle
+        MeasureAs=FileSystemAccessMoveReparentAndRename
     ]  Promise<void> move(FileSystemDirectoryHandle destination_directory,
                           USVString new_entry_name);
 };

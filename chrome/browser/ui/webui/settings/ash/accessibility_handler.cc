@@ -97,6 +97,10 @@ void AccessibilityHandler::RegisterMessages() {
       base::BindRepeating(
           &AccessibilityHandler::HandleUpdateBluetoothBrailleDisplayAddress,
           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getStartupSoundEnabled",
+      base::BindRepeating(&AccessibilityHandler::HandleGetStartupSoundEnabled,
+                          base::Unretained(this)));
 }
 
 void AccessibilityHandler::HandleShowBrowserAppearanceSettings(
@@ -166,6 +170,14 @@ void AccessibilityHandler::HandleUpdateBluetoothBrailleDisplayAddress(
   CHECK_EQ(1U, args.size());
   const std::string address = args[0].GetString();
   AccessibilityManager::Get()->UpdateBluetoothBrailleDisplayAddress(address);
+}
+
+void AccessibilityHandler::HandleGetStartupSoundEnabled(
+    const base::Value::List& args) {
+  AllowJavascript();
+  FireWebUIListener(
+      "startup-sound-setting-retrieved",
+      base::Value(AccessibilityManager::Get()->GetStartupSoundEnabled()));
 }
 
 void AccessibilityHandler::OpenExtensionOptionsPage(const char extension_id[]) {

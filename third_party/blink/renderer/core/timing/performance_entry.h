@@ -174,7 +174,7 @@ class CORE_EXPORT PerformanceEntry : public ScriptWrappable {
   const String navigation_id_;
   // source_ will be null if the PerformanceEntry did not originate from a
   // Window context.
-  const Member<DOMWindow> source_;
+  const WeakMember<DOMWindow> source_;
   const bool is_triggered_by_soft_navigation_;
 };
 

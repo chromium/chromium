@@ -18,14 +18,14 @@ TEST_F(ComputedStyleCSSValueMappingTest, GetVariablesOnOldStyle) {
   GetDocument().body()->setInnerHTML("<div id=target style='--x:red'></div>");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* target = GetDocument().getElementById("target");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
   ASSERT_TRUE(target);
 
   auto before = ComputedStyleCSSValueMapping::GetVariables(
       target->ComputedStyleRef(), GetDocument().GetPropertyRegistry());
   EXPECT_EQ(1u, before.size());
-  EXPECT_TRUE(before.Contains("--x"));
-  EXPECT_FALSE(before.Contains("--y"));
+  EXPECT_TRUE(before.Contains(AtomicString("--x")));
+  EXPECT_FALSE(before.Contains(AtomicString("--y")));
 
   RegisterProperty(GetDocument(), "--y", "<length>", "0px", false);
 
@@ -34,8 +34,8 @@ TEST_F(ComputedStyleCSSValueMappingTest, GetVariablesOnOldStyle) {
   auto after = ComputedStyleCSSValueMapping::GetVariables(
       target->ComputedStyleRef(), GetDocument().GetPropertyRegistry());
   EXPECT_EQ(1u, after.size());
-  EXPECT_TRUE(after.Contains("--x"));
-  EXPECT_FALSE(after.Contains("--y"));
+  EXPECT_TRUE(after.Contains(AtomicString("--x")));
+  EXPECT_FALSE(after.Contains(AtomicString("--y")));
 }
 
 }  // namespace blink

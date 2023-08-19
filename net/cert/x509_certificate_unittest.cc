@@ -12,6 +12,7 @@
 #include "base/files/file_util.h"
 #include "base/hash/sha1.h"
 #include "base/pickle.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -1397,17 +1398,15 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::ValuesIn(kNameVerifyTestData));
 
 const struct PublicKeyInfoTestData {
-  const char* cert_file;
+  const char* file_name;
   size_t expected_bits;
   X509Certificate::PublicKeyType expected_type;
 } kPublicKeyInfoTestData[] = {
-    {"768-rsa-ee-by-768-rsa-intermediate.pem", 768,
-     X509Certificate::kPublicKeyTypeRSA},
-    {"1024-rsa-ee-by-768-rsa-intermediate.pem", 1024,
-     X509Certificate::kPublicKeyTypeRSA},
-    {"prime256v1-ecdsa-ee-by-1024-rsa-intermediate.pem", 256,
-     X509Certificate::kPublicKeyTypeECDSA},
-    {"large_key.pem", 8200, X509Certificate::kPublicKeyTypeRSA},
+    {"rsa-768", 768, X509Certificate::kPublicKeyTypeRSA},
+    {"rsa-1024", 1024, X509Certificate::kPublicKeyTypeRSA},
+    {"rsa-2048", 2048, X509Certificate::kPublicKeyTypeRSA},
+    {"rsa-8200", 8200, X509Certificate::kPublicKeyTypeRSA},
+    {"ec-prime256v1", 256, X509Certificate::kPublicKeyTypeECDSA},
 };
 
 class X509CertificatePublicKeyInfoTest
@@ -1417,15 +1416,16 @@ class X509CertificatePublicKeyInfoTest
 TEST_P(X509CertificatePublicKeyInfoTest, GetPublicKeyInfo) {
   PublicKeyInfoTestData data = GetParam();
 
-  scoped_refptr<X509Certificate> cert(
-      ImportCertFromFile(GetTestCertsDirectory(), data.cert_file));
-  ASSERT_TRUE(cert.get());
+  auto [leaf, root] = CertBuilder::CreateSimpleChain2();
+
+  ASSERT_TRUE(leaf->UseKeyFromFile(GetTestCertsDirectory().AppendASCII(
+      base::StrCat({data.file_name, "-1.key"}))));
 
   size_t actual_bits = 0;
   X509Certificate::PublicKeyType actual_type =
       X509Certificate::kPublicKeyTypeUnknown;
 
-  X509Certificate::GetPublicKeyInfo(cert->cert_buffer(), &actual_bits,
+  X509Certificate::GetPublicKeyInfo(leaf->GetCertBuffer(), &actual_bits,
                                     &actual_type);
 
   EXPECT_EQ(data.expected_bits, actual_bits);

@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/prefs/pref_change_registrar.h"
 
 class Profile;
 
@@ -71,7 +72,8 @@ class GlanceablesKeyedService : public KeyedService {
   const raw_ptr<Profile, ExperimentalAsh> profile_;
 
   // Identity manager associated with `profile_`.
-  const raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_;
+  const raw_ptr<signin::IdentityManager, DanglingUntriaged | ExperimentalAsh>
+      identity_manager_;
 
   // Account id associated with the primary profile.
   const AccountId account_id_;
@@ -81,6 +83,9 @@ class GlanceablesKeyedService : public KeyedService {
 
   // Instance of the `GlanceablesTasksClient` interface implementation.
   std::unique_ptr<GlanceablesTasksClientImpl> tasks_client_;
+
+  // The registrar used to watch prefs changes.
+  PrefChangeRegistrar pref_change_registrar_;
 };
 
 }  // namespace ash

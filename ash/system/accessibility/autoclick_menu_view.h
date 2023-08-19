@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_ACCESSIBILITY_AUTOCLICK_MENU_VIEW_H_
 
 #include "ash/public/cpp/accessibility_controller_enums.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/metadata/view_factory.h"
@@ -49,14 +50,14 @@ class AutoclickMenuView : public views::BoxLayoutView {
   void OnPositionButtonPressed();
 
   // Unowned. Owned by views hierarchy.
-  FloatingMenuButton* left_click_button_ = nullptr;
-  FloatingMenuButton* right_click_button_ = nullptr;
-  FloatingMenuButton* double_click_button_ = nullptr;
-  FloatingMenuButton* drag_button_ = nullptr;
-  FloatingMenuButton* scroll_button_ = nullptr;
-  FloatingMenuButton* pause_button_ = nullptr;
-  FloatingMenuButton* position_button_ = nullptr;
-  views::Separator* separator_ = nullptr;
+  raw_ptr<FloatingMenuButton, ExperimentalAsh> left_click_button_ = nullptr;
+  raw_ptr<FloatingMenuButton, ExperimentalAsh> right_click_button_ = nullptr;
+  raw_ptr<FloatingMenuButton, ExperimentalAsh> double_click_button_ = nullptr;
+  raw_ptr<FloatingMenuButton, ExperimentalAsh> drag_button_ = nullptr;
+  raw_ptr<FloatingMenuButton, ExperimentalAsh> scroll_button_ = nullptr;
+  raw_ptr<FloatingMenuButton, ExperimentalAsh> pause_button_ = nullptr;
+  raw_ptr<FloatingMenuButton, ExperimentalAsh> position_button_ = nullptr;
+  raw_ptr<views::Separator, ExperimentalAsh> separator_ = nullptr;
 
   // The most recently selected event_type_ excluding kNoAction. This is used
   // when the pause button is selected in order to unpause and reset to the

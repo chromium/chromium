@@ -34,8 +34,9 @@ scoped_refptr<SerializedScriptValue> PostMessageHelper::SerializeMessageByMove(
   scoped_refptr<SerializedScriptValue> serialized_message =
       SerializedScriptValue::Serialize(isolate, message.V8Value(),
                                        serialize_options, exception_state);
-  if (exception_state.HadException())
+  if (exception_state.HadException()) {
     return nullptr;
+  }
 
   serialized_message->UnregisterMemoryAllocatedWithCurrentScriptContext();
   return serialized_message;

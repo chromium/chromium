@@ -126,6 +126,12 @@ bool StructTraits<
     return false;
   out->set_page_setup_device_units(page_setup);
 
+  std::string media_type;
+  if (!data.ReadMediaType(&media_type)) {
+    return false;
+  }
+  out->set_media_type(media_type);
+
   gfx::Size dpi;
   if (!data.ReadDpi(&dpi))
     return false;
@@ -134,7 +140,6 @@ bool StructTraits<
   out->set_scale_factor(data.scale_factor());
   out->set_rasterize_pdf(data.rasterize_pdf());
 
-  out->set_supports_alpha_blend(data.supports_alpha_blend());
 #if BUILDFLAG(IS_WIN)
   out->set_printer_language_type(data.printer_language_type());
 #endif  // BUILDFLAG(IS_WIN)

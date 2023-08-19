@@ -12,6 +12,18 @@ if (is_android) {
   import("//build/config/android/config.gni")
 }
 
+static_library("url_constants") {
+  sources = [ "url_constants.h" ]
+
+  if (is_chrome_branded && is_official_build) {
+    sources += [ "internal/url_constants.cc" ]
+  } else {
+    sources += [ "url_constants.cc" ]
+  }
+
+  deps = [ "//build:branding_buildflags" ]
+}
+
 source_set("lib") {
   visibility = [
     ":*",
@@ -24,8 +36,8 @@ source_set("lib") {
   ]
 
   deps = [
+    ":url_constants",
     "//base",
-    "//build:branding_buildflags",
   ]
 }
 
@@ -128,10 +140,6 @@ static_library("app") {
       "//third_party/crashpad/crashpad/minidump",
       "//third_party/crashpad/crashpad/util",
     ]
-  }
-
-  if (is_apple) {
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_mac) {
@@ -318,8 +326,6 @@ source_set("unit_tests") {
     ]
   }
   if (is_ios) {
-    configs += [ "//build/config/compiler:enable_arc" ]
-
     sources += [ "crashpad_ios_unittest.mm" ]
     deps += [
       ":app",

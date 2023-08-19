@@ -4,15 +4,29 @@
 
 #import "ios/chrome/browser/ui/settings/privacy/safe_browsing/safe_browsing_constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 NSString* const kSafeBrowsingEnhancedProtectionTableViewId =
     @"kSafeBrowsingEnhancedProtectionTableViewId";
 
+NSString* const kSafeBrowsingEnhancedProtectionTableViewFirstHeaderId =
+    @"kSafeBrowsingEnhancedProtectionTableViewFirstHeaderId";
+
+NSString* const kSafeBrowsingEnhancedProtectionTableViewSecondHeaderId =
+    @"kSafeBrowsingEnhancedProtectionTableViewSecondHeaderId";
+
+NSString* const kSafeBrowsingEnhancedProtectionTableViewFooterId =
+    @"kSafeBrowsingEnhancedProtectionTableViewFooterId";
+
 NSString* const kSafeBrowsingStandardProtectionTableViewId =
     @"kSafeBrowsingStandardProtectionTableViewId";
+
+NSString* const kSafeBrowsingEnhancedProtectionDataCellId =
+    @"kSafeBrowsingEnhancedProtectionDataCellId";
+
+NSString* const kSafeBrowsingEnhancedProtectionAccountCellId =
+    @"kSafeBrowsingEnhancedProtectionAccountCellId";
+
+NSString* const kSafeBrowsingEnhancedProtectionDownloadCellId =
+    @"kSafeBrowsingEnhancedProtectionDownloadCellId";
 
 NSString* const kSafeBrowsingEnhancedProtectionShieldCellId =
     @"kSafeBrowsingEnhancedProtectionShieldCellId";
@@ -26,8 +40,14 @@ NSString* const kSafeBrowsingEnhancedProtectionGlobeCellId =
 NSString* const kSafeBrowsingEnhancedProtectionKeyCellId =
     @"kSafeBrowsingEnhancedProtectionKeyCellId";
 
+NSString* const kSafeBrowsingEnhancedProtectionLinkCellId =
+    @"kSafeBrowsingEnhancedProtectionLinkCellId";
+
 NSString* const kSafeBrowsingEnhancedProtectionMetricCellId =
     @"kSafeBrowsingEnhancedProtectionMetricCellId";
+
+NSString* const kSafeBrowsingEnhancedProtectionPerformanceCellId =
+    @"kSafeBrowsingEnhancedProtectionPerformanceCellId";
 
 NSString* const kSafeBrowsingStandardProtectionShieldCellId =
     @"kSafeBrowsingStandardProtectionShieldCellId";

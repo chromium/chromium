@@ -245,12 +245,18 @@ void PrePaintTreeWalk::InvalidatePaintForHitTesting(
     return;
 
   if (!context.effective_allowed_touch_action_changed &&
-      !context.blocking_wheel_event_handler_changed)
+      !context.blocking_wheel_event_handler_changed &&
+      !object.ShouldInvalidatePaintForHitTestOnly()) {
     return;
+  }
 
   context.paint_invalidator_context.painting_layer->SetNeedsRepaint();
-  ObjectPaintInvalidator(object).InvalidateDisplayItemClient(
-      object, PaintInvalidationReason::kHitTest);
+  // We record hit test data when the painting layer repaints. No need to
+  // invalidate the display item client.
+  if (!RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
+    ObjectPaintInvalidator(object).InvalidateDisplayItemClient(
+        object, PaintInvalidationReason::kHitTest);
+  }
 }
 
 bool PrePaintTreeWalk::NeedsTreeBuilderContextUpdate(

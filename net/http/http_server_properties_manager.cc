@@ -765,7 +765,7 @@ void HttpServerPropertiesManager::WriteToPrefs(
       recently_broken_alternative_services, http_server_properties_dict);
 
   net_log_.AddEvent(NetLogEventType::HTTP_SERVER_PROPERTIES_UPDATE_PREFS,
-                    [&] { return std::move(http_server_properties_dict); });
+                    [&] { return http_server_properties_dict.Clone(); });
 
   pref_delegate_->SetServerProperties(std::move(http_server_properties_dict),
                                       std::move(callback));

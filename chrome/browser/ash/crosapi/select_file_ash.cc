@@ -75,7 +75,7 @@ class SelectFileDialogHolder : public ui::SelectFileDialog::Listener {
     owner.window = owner_window;
     owner.lacros_window_id = options->owning_shell_window_id;
     if (options->caller.has_value()) {
-      owner.dialog_caller.emplace(options->caller.value().spec());
+      owner.dialog_caller.emplace(options->caller.value());
     }
 
     int file_type_index = 0;

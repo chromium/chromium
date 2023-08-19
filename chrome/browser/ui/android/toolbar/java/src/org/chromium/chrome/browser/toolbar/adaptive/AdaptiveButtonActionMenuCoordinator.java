@@ -93,7 +93,6 @@ public class AdaptiveButtonActionMenuCoordinator {
         return itemList;
     }
 
-    @VisibleForTesting
     public View getContentViewForTesting() {
         return mListMenu.getContentView();
     }

@@ -98,12 +98,14 @@ class PartitionAllocator : public Allocator {
   void* Alloc(size_t size) override {
     return alloc_.AllocWithFlagsNoHooks(0, size, PartitionPageSize());
   }
-  void Free(void* data) override { ThreadSafePartitionRoot::FreeNoHooks(data); }
+  void Free(void* data) override {
+    // Even though it's easy to invoke the fast path with alloc_.FreeNoHooks(),
+    // we chose to use the slower path, because it's more common with PA-E.
+    PartitionRoot::FreeNoHooksInUnknownRoot(data);
+  }
 
  private:
-  ThreadSafePartitionRoot alloc_{PartitionOptions{
-      .cookie = PartitionOptions::Cookie::kAllowed,
-  }};
+  PartitionRoot alloc_{PartitionOptions{}};
 };
 
 class PartitionAllocatorWithThreadCache : public Allocator {
@@ -123,17 +125,19 @@ class PartitionAllocatorWithThreadCache : public Allocator {
     return allocator_.root()->AllocWithFlagsNoHooks(0, size,
                                                     PartitionPageSize());
   }
-  void Free(void* data) override { allocator_.root()->Free(data); }
+  void Free(void* data) override {
+    // Even though it's easy to invoke the fast path with alloc_.Free(),
+    // we chose to use the slower path, because it's more common with PA-E.
+    PartitionRoot::FreeInUnknownRoot(data);
+  }
 
  private:
   static constexpr partition_alloc::PartitionOptions kOpts = {
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     .thread_cache = PartitionOptions::ThreadCache::kEnabled,
 #endif
-    .cookie = PartitionOptions::Cookie::kAllowed,
   };
-  PartitionAllocatorForTesting<internal::ThreadSafe, internal::DisallowLeaks>
-      allocator_{kOpts};
+  PartitionAllocatorForTesting<internal::DisallowLeaks> allocator_{kOpts};
   internal::ThreadCacheProcessScopeForTesting scope_;
 };
 
@@ -158,13 +162,15 @@ class PartitionAllocatorWithAllocationStackTraceRecorder : public Allocator {
     return alloc_.AllocWithFlags(0, size, nullptr);
   }
 
-  void Free(void* data) override { ThreadSafePartitionRoot::Free(data); }
+  void Free(void* data) override {
+    // Even though it's easy to invoke the fast path with alloc_.Free(),
+    // we chose to use the slower path, because it's more common with PA-E.
+    PartitionRoot::FreeInUnknownRoot(data);
+  }
 
  private:
   bool const register_hooks_;
-  ThreadSafePartitionRoot alloc_{PartitionOptions{
-      .cookie = PartitionOptions::Cookie::kAllowed,
-  }};
+  PartitionRoot alloc_{PartitionOptions{}};
   ::base::allocator::dispatcher::Dispatcher& dispatcher_ =
       ::base::allocator::dispatcher::Dispatcher::GetInstance();
   ::base::debug::tracer::AllocationTraceRecorder recorder_;

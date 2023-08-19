@@ -38,12 +38,21 @@ class NetworkContext;
 // Deleting a SimpleHostResolver cancels outstanding resolve requests.
 class COMPONENT_EXPORT(NETWORK_CPP) SimpleHostResolver {
  public:
+  using NetworkContextFactory =
+      base::RepeatingCallback<mojom::NetworkContext*()>;
+
   using ResolveHostCallback = base::OnceCallback<void(
       int result,
       const net::ResolveErrorInfo& resolve_error_info,
       const absl::optional<net::AddressList>& resolved_addresses,
       const absl::optional<net::HostResolverEndpointResults>&
           endpoint_results_with_metadata)>;
+
+  // Creates a SimpleHostResolver using the |network_context_factory|.
+  // Use this if the associated network context might change over time (for
+  // instance, when getting it from StoragePartition).
+  static std::unique_ptr<SimpleHostResolver> Create(
+      NetworkContextFactory network_context_factory);
 
   // Creates a SimpleHostResolver from the given |network_context|.
   // |network_context| must outlive SimpleHostResolver.

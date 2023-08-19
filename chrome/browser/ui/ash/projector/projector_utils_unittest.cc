@@ -64,7 +64,6 @@ class ScopedLogIn {
 
     switch (user_type) {
       case user_manager::USER_TYPE_REGULAR:  // fallthrough
-      case user_manager::USER_TYPE_ACTIVE_DIRECTORY:
         LogIn();
         break;
       case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
@@ -123,7 +122,7 @@ class ScopedLogIn {
 
 class ProjectorUtilsTest : public testing::Test {
  public:
-  ProjectorUtilsTest() : scoped_feature_list_(features::kProjector) {}
+  ProjectorUtilsTest() = default;
   ProjectorUtilsTest(const ProjectorUtilsTest&) = delete;
   ProjectorUtilsTest& operator=(const ProjectorUtilsTest&) = delete;
   ~ProjectorUtilsTest() override = default;
@@ -168,7 +167,6 @@ class ProjectorUtilsTest : public testing::Test {
   base::ScopedTempDir data_dir_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   std::unique_ptr<TestingProfile> profile_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class ProjectorUtilsChildTest : public ProjectorUtilsTest {
@@ -208,14 +206,6 @@ TEST_F(ProjectorUtilsManagedTest, IsProjectorAllowedForProfile_ManagedAccount) {
       AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kEnterpriseUser1,
                                      FakeGaiaMixin::kEnterpriseUser1GaiaId));
   EXPECT_TRUE(IsProjectorAllowedForProfile(profile()));
-}
-
-TEST_F(ProjectorUtilsTest, IsProjectorAllowedForProfile_ActiveDirectory) {
-  ScopedLogIn login(GetFakeUserManager(),
-                    AccountId::AdFromUserEmailObjGuid(
-                        profile()->GetProfileUserName(), "<obj_guid>"),
-                    user_manager::USER_TYPE_ACTIVE_DIRECTORY);
-  EXPECT_FALSE(IsProjectorAllowedForProfile(profile()));
 }
 
 TEST_F(ProjectorUtilsChildTest, IsProjectorAllowedForProfile_ChildUser) {
@@ -260,14 +250,6 @@ TEST_F(ProjectorUtilsManagedTest, IsProjectorAppEnabled_ManagedAccount) {
       AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kEnterpriseUser1,
                                      FakeGaiaMixin::kEnterpriseUser1GaiaId));
   EXPECT_TRUE(IsProjectorAppEnabled(profile()));
-}
-
-TEST_F(ProjectorUtilsTest, IsProjectorAppEnabled_ActiveDirectory) {
-  ScopedLogIn login(GetFakeUserManager(),
-                    AccountId::AdFromUserEmailObjGuid(
-                        profile()->GetProfileUserName(), "<obj_guid>"),
-                    user_manager::USER_TYPE_ACTIVE_DIRECTORY);
-  EXPECT_FALSE(IsProjectorAppEnabled(profile()));
 }
 
 TEST_F(ProjectorUtilsChildTest, IsProjectorAppEnabled_ChildUser) {

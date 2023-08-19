@@ -160,10 +160,10 @@ void SubscriberCrosapi::LoadIcon(const std::string& app_id,
                               std::move(callback));
 }
 
-void SubscriberCrosapi::AddPreferredApp(const std::string& app_id,
-                                        crosapi::mojom::IntentPtr intent) {
-  proxy_->AddPreferredApp(
-      app_id, apps_util::CreateAppServiceIntentFromCrosapi(intent, profile_));
+void SubscriberCrosapi::AddPreferredAppDeprecated(
+    const std::string& app_id,
+    crosapi::mojom::IntentPtr intent) {
+  NOTIMPLEMENTED();
 }
 
 void SubscriberCrosapi::ShowAppManagementPage(const std::string& app_id) {

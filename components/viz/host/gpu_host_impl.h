@@ -25,7 +25,7 @@
 #include "components/discardable_memory/public/mojom/discardable_shared_memory_manager.mojom.h"
 #include "components/viz/common/buildflags.h"
 #include "components/viz/host/viz_host_export.h"
-#include "gpu/command_buffer/common/activity_flags.h"
+#include "gpu/command_buffer/common/shm_count.h"
 #include "gpu/config/gpu_domain_guilt.h"
 #include "gpu/ipc/common/gpu_disk_cache_type.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -289,7 +289,7 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost
       info_collection_gpu_service_remote_;
 #endif
   mojo::Receiver<mojom::GpuHost> gpu_host_receiver_{this};
-  gpu::GpuProcessHostActivityFlags activity_flags_;
+  gpu::GpuProcessHostShmCount use_shader_cache_shm_count_;
 
 #if BUILDFLAG(USE_VIZ_DEBUGGER)
   mojo::Receiver<mojom::VizDebugOutput> viz_debug_output_{this};

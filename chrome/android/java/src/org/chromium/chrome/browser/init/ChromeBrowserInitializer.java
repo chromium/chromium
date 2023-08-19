@@ -15,6 +15,7 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
@@ -208,7 +209,7 @@ public class ChromeBrowserInitializer {
         ThreadUtils.assertOnUiThread();
         if (mPreInflationStartupComplete) return;
 
-        new Thread(SafeBrowsingApiBridge::ensureInitialized).start();
+        new Thread(SafeBrowsingApiBridge::ensureSafetyNetApiInitialized).start();
 
         // Ensure critical files are available, so they aren't blocked on the file-system
         // behind long-running accesses in next phase.
@@ -223,6 +224,9 @@ public class ChromeBrowserInitializer {
 
         DeviceUtils.addDeviceSpecificUserAgentSwitch();
         ApplicationStatus.registerStateListenerForAllActivities(createActivityStateListener());
+
+        ChromeStartupDelegate startupDelegate = AppHooks.get().createChromeStartupDelegate();
+        startupDelegate.initGlobals();
 
         mPreInflationStartupComplete = true;
     }
@@ -463,17 +467,21 @@ public class ChromeBrowserInitializer {
 
     /**
      * For unit testing of clients.
-     * @param initializer The (dummy or mocked) initializer to use.
+     * @param initializer The (placeholder or mocked) initializer to use.
      */
     public static void setForTesting(ChromeBrowserInitializer initializer) {
+        var oldValue = sChromeBrowserInitializer;
         sChromeBrowserInitializer = initializer;
+        ResettersForTesting.register(() -> sChromeBrowserInitializer = oldValue);
     }
 
     /**
-     * Set {@link BrowserStartupController) to use for unit testing.
-     * @param controller The (dummy or mocked) {@link BrowserStartupController) instance.
+     * Set {@link BrowserStartupController ) to use for unit testing.
+     * @param controller The (placeholder or mocked) {@link BrowserStartupController) instance.
      */
     public static void setBrowserStartupControllerForTesting(BrowserStartupController controller) {
+        var oldValue = sBrowserStartupController;
         sBrowserStartupController = controller;
+        ResettersForTesting.register(() -> sBrowserStartupController = oldValue);
     }
 }

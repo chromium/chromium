@@ -133,8 +133,7 @@ FileBrowserHandlerExecutor::SetupFileAccessPermissions(
     const std::vector<FileSystemURL>& file_urls) {
   DCHECK(handler_extension.get());
 
-  storage::ExternalFileSystemBackend* backend =
-      file_system_context_handler->external_backend();
+  auto* backend = ash::FileSystemBackend::Get(*file_system_context_handler);
 
   std::unique_ptr<FileDefinitionList> file_definition_list(
       new FileDefinitionList);
@@ -147,9 +146,7 @@ FileBrowserHandlerExecutor::SetupFileAccessPermissions(
     base::FilePath local_path = url.path();
     base::FilePath virtual_path = url.virtual_path();
 
-    const bool is_native_file =
-        url.type() == storage::kFileSystemTypeLocal ||
-        url.type() == storage::kFileSystemTypeRestrictedLocal;
+    const bool is_native_file = url.type() == storage::kFileSystemTypeLocal;
 
     // If the file is from a physical volume, actual file must be found.
     if (is_native_file) {

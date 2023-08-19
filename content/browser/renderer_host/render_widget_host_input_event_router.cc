@@ -28,7 +28,6 @@
 #include "content/public/browser/render_widget_host_iterator.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/base/cursor/cursor.h"
-#include "ui/base/layout.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/geometry/dip_util.h"
 
@@ -367,8 +366,9 @@ void RenderWidgetHostInputEventRouter::OnRenderWidgetHostViewBaseDestroyed(
   if (view == mouse_capture_target_)
     mouse_capture_target_ = nullptr;
 
-  if (view == touchscreen_gesture_target_.get())
-    SetTouchscreenGestureTarget(nullptr);
+  if (view == touchscreen_gesture_target_.get()) {
+    ClearTouchscreenGestureTarget();
+  }
 
   if (view == touchpad_gesture_target_)
     touchpad_gesture_target_ = nullptr;
@@ -848,16 +848,6 @@ void RenderWidgetHostInputEventRouter::DispatchTouchEvent(
 
   bool is_sequence_start = !touch_target_ && target;
   if (is_sequence_start) {
-    // TODO(wjmaclean): Remove this once investigation for
-    // https://crbug.com/1197154 is complete.
-    if (RenderWidgetHostViewBase::IsValidRWHVBPointer(target) != 1 &&
-        !has_dumped_) {
-      has_dumped_ = true;
-      SCOPED_CRASH_KEY_NUMBER(
-          "DispatchTouchEvent", "ptr_status",
-          RenderWidgetHostViewBase::IsValidRWHVBPointer(target));
-      base::debug::DumpWithoutCrashing();
-    }
     touch_target_ = target;
     DCHECK(touchscreen_gesture_target_map_.find(
                touch_event.unique_touch_event_id) ==
@@ -1593,18 +1583,25 @@ void RenderWidgetHostInputEventRouter::DispatchTouchscreenGestureEvent(
 
   if (gesture_event.unique_touch_event_id == 0 || is_gesture_start) {
     bool moved_recently = touchscreen_gesture_target_moved_recently_;
+    bool moved_recently_for_iov2 =
+        touchscreen_gesture_target_moved_recently_for_iov2_;
     // It seem that |target| can be nullptr here, not sure why. Until we know
     // why, let's avoid dereferencing it in that case.
     // https://bugs.chromium.org/p/chromium/issues/detail?id=1155297
-    if (is_gesture_start && target)
+    if (is_gesture_start && target) {
       moved_recently = target->ScreenRectIsUnstableFor(gesture_event);
-    SetTouchscreenGestureTarget(target, moved_recently);
+      moved_recently_for_iov2 =
+          target->ScreenRectIsUnstableForIOv2For(gesture_event);
+    }
+    SetTouchscreenGestureTarget(target, moved_recently,
+                                moved_recently_for_iov2);
   }
 
   // If we set a target and it's not in the map, we won't get notified if the
   // target goes away, so drop the target and the resulting events.
-  if (!IsViewInMap(touchscreen_gesture_target_.get()))
-    SetTouchscreenGestureTarget(nullptr);
+  if (!IsViewInMap(touchscreen_gesture_target_.get())) {
+    ClearTouchscreenGestureTarget();
+  }
 
   if (!touchscreen_gesture_target_) {
     root_view->GestureEventAck(
@@ -1614,8 +1611,12 @@ void RenderWidgetHostInputEventRouter::DispatchTouchscreenGestureEvent(
   }
 
   blink::WebGestureEvent event(gesture_event);
-  if (touchscreen_gesture_target_moved_recently_)
+  if (touchscreen_gesture_target_moved_recently_) {
     event.SetTargetFrameMovedRecently();
+  }
+  if (touchscreen_gesture_target_moved_recently_for_iov2_) {
+    event.SetTargetFrameMovedRecentlyForIOv2();
+  }
 
   gfx::PointF point_in_target;
   // This |fallback_target_location| is fast path when
@@ -1655,8 +1656,9 @@ void RenderWidgetHostInputEventRouter::DispatchTouchscreenGestureEvent(
           blink::WebInputEvent::Type::kGestureScrollEnd ||
       gesture_event.GetType() == blink::WebInputEvent::Type::kGestureFlingStart;
 
-  if (is_gesture_end)
-    SetTouchscreenGestureTarget(nullptr);
+  if (is_gesture_end) {
+    ClearTouchscreenGestureTarget();
+  }
 }
 
 void RenderWidgetHostInputEventRouter::RouteTouchscreenGestureEvent(
@@ -1854,9 +1856,15 @@ void RenderWidgetHostInputEventRouter::SetEventsBeingFlushed(
 
 void RenderWidgetHostInputEventRouter::SetTouchscreenGestureTarget(
     RenderWidgetHostViewBase* target,
-    bool moved_recently) {
+    bool moved_recently,
+    bool moved_recently_for_iov2) {
   touchscreen_gesture_target_ = target ? target->GetWeakPtr() : nullptr;
   touchscreen_gesture_target_moved_recently_ = moved_recently;
+  touchscreen_gesture_target_moved_recently_for_iov2_ = moved_recently_for_iov2;
+}
+
+void RenderWidgetHostInputEventRouter::ClearTouchscreenGestureTarget() {
+  SetTouchscreenGestureTarget(nullptr, false, false);
 }
 
 void RenderWidgetHostInputEventRouter::DispatchEventToTarget(

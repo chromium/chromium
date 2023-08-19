@@ -14,7 +14,6 @@
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -42,7 +41,6 @@
 #include "ui/aura/window.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
-#include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
@@ -56,10 +54,6 @@ constexpr char kMimeTypeArcUriList[] = "application/x-arc-uri-list";
 constexpr char kMimeTypeTextUriList[] = "text/uri-list";
 constexpr char kUriListSeparator[] = "\r\n";
 constexpr char kVmFileScheme[] = "vmfile";
-
-// Mime types used in FilesApp to copy/paste files to clipboard.
-constexpr char16_t kFilesAppMimeSources[] = u"fs/sources";
-constexpr char16_t kFilesAppSeparator16[] = u"\n";
 
 storage::FileSystemContext* GetFileSystemContext() {
   Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
@@ -433,43 +427,7 @@ void ChromeDataExchangeDelegate::SendPickle(ui::EndpointType target,
 std::vector<ui::FileInfo> ChromeDataExchangeDelegate::ParseFileSystemSources(
     const ui::DataTransferEndpoint* source,
     const base::Pickle& pickle) const {
-  std::vector<ui::FileInfo> file_info;
-  // We only promote 'fs/sources' custom data pickle to be filenames which can
-  // be shared and read by clients if it came from the trusted FilesApp.
-  if (!source || !source->GetURL() ||
-      !file_manager::util::IsFileManagerURL(*source->GetURL())) {
-    return file_info;
-  }
-
-  std::u16string file_system_url_list;
-  ui::ReadCustomDataForType(pickle.data(), pickle.size(), kFilesAppMimeSources,
-                            &file_system_url_list);
-  if (file_system_url_list.empty())
-    return file_info;
-
-  storage::ExternalMountPoints* mount_points =
-      storage::ExternalMountPoints::GetSystemInstance();
-
-  for (const base::StringPiece16& line : base::SplitStringPiece(
-           file_system_url_list, kFilesAppSeparator16, base::TRIM_WHITESPACE,
-           base::SPLIT_WANT_NONEMPTY)) {
-    if (line.empty() || line[0] == '#')
-      continue;
-    const GURL gurl(line);
-    storage::FileSystemURL url = mount_points->CrackURL(
-        gurl, blink::StorageKey::CreateFirstParty(url::Origin::Create(gurl)));
-    if (!url.is_valid()) {
-      LOG(WARNING) << "Invalid clipboard FileSystemURL: " << line;
-      continue;
-    } else if (url.TypeImpliesPathIsReal()) {
-      file_info.emplace_back(std::move(url.path()), base::FilePath());
-    } else if (base::FilePath path =
-                   fusebox::Server::SubstituteFuseboxFilePath(url);
-               !path.empty()) {
-      file_info.emplace_back(std::move(path), base::FilePath());
-    }
-  }
-  return file_info;
+  return file_manager::util::ParseFileSystemSources(source, pickle);
 }
 
 }  // namespace ash

@@ -173,7 +173,7 @@ constexpr TaskType kAllFrameTaskTypes[] = {
     TaskType::kInternalNavigationCancellation};
 
 static_assert(
-    static_cast<int>(TaskType::kMaxValue) == 83,
+    static_cast<int>(TaskType::kMaxValue) == 84,
     "When adding a TaskType, make sure that kAllFrameTaskTypes is updated.");
 
 void AppendToVectorTestTask(Vector<String>* vector, String value) {
@@ -190,8 +190,8 @@ class FrameSchedulerDelegateForTesting : public FrameScheduler::Delegate {
 
   ukm::SourceId GetUkmSourceId() override { return ukm::kInvalidSourceId; }
 
-  void UpdateTaskTime(base::TimeDelta task_time) override {
-    update_task_time_calls_++;
+  void UpdateTaskTime(base::TimeDelta unreported_task_time) override {
+    update_unreported_task_time_calls_++;
   }
 
   void OnTaskCompleted(base::TimeTicks,
@@ -202,17 +202,18 @@ class FrameSchedulerDelegateForTesting : public FrameScheduler::Delegate {
   }
   MOCK_METHOD(void, UpdateBackForwardCacheDisablingFeatures, (BlockingDetails));
 
-  int update_task_time_calls_ = 0;
+  int update_unreported_task_time_calls_ = 0;
 };
 
 MATCHER(BlockingDetailsHasCCNS, "Blocking details has CCNS.") {
-  bool vector_empty = arg.non_sticky_features_and_js_locations.empty();
+  bool vector_empty =
+      arg.non_sticky_features_and_js_locations.details_list.empty();
   bool vector_has_ccns =
-      arg.sticky_features_and_js_locations.Contains(
+      arg.sticky_features_and_js_locations.details_list.Contains(
           FeatureAndJSLocationBlockingBFCache(
               SchedulingPolicy::Feature::kMainResourceHasCacheControlNoStore,
               nullptr)) &&
-      arg.sticky_features_and_js_locations.Contains(
+      arg.sticky_features_and_js_locations.details_list.Contains(
           FeatureAndJSLocationBlockingBFCache(
               SchedulingPolicy::Feature::kMainResourceHasCacheControlNoCache,
               nullptr));
@@ -226,14 +227,15 @@ MATCHER_P(BlockingDetailsHasWebSocket,
       (handle->GetFeatureAndJSLocationBlockingBFCache() ==
        FeatureAndJSLocationBlockingBFCache(
            SchedulingPolicy::Feature::kWebSocket, nullptr));
-  bool vector_empty = arg.sticky_features_and_js_locations.empty();
+  bool vector_empty = arg.sticky_features_and_js_locations.details_list.empty();
   return handle_has_web_socket && vector_empty;
 }
 
 MATCHER(BlockingDetailsIsEmpty, "BlockingDetails is empty.") {
   bool non_sticky_vector_empty =
-      arg.non_sticky_features_and_js_locations.empty();
-  bool sticky_vector_empty = arg.sticky_features_and_js_locations.empty();
+      arg.non_sticky_features_and_js_locations.details_list.empty();
+  bool sticky_vector_empty =
+      arg.sticky_features_and_js_locations.details_list.empty();
   return non_sticky_vector_empty && sticky_vector_empty;
 }
 class FrameSchedulerImplTest : public testing::Test {
@@ -409,14 +411,16 @@ class FrameSchedulerImplTest : public testing::Test {
     frame_scheduler->ResetForNavigation();
   }
 
-  base::TimeDelta GetTaskTime() { return frame_scheduler_->task_time_; }
+  base::TimeDelta GetUnreportedTaskTime() {
+    return frame_scheduler_->unreported_task_time_;
+  }
 
   int GetTotalUpdateTaskTimeCalls() {
-    return frame_scheduler_delegate_->update_task_time_calls_;
+    return frame_scheduler_delegate_->update_unreported_task_time_calls_;
   }
 
   void ResetTotalUpdateTaskTimeCalls() {
-    frame_scheduler_delegate_->update_task_time_calls_ = 0;
+    frame_scheduler_delegate_->update_unreported_task_time_calls_ = 0;
   }
 
   // Fast-forwards to the next time aligned on |interval|.
@@ -426,12 +430,6 @@ class FrameSchedulerImplTest : public testing::Test {
         now.SnappedToNextTick(base::TimeTicks(), interval);
     if (aligned != now)
       task_environment_.FastForwardBy(aligned - now);
-  }
-
-  static uint64_t GetActiveFeaturesTrackedForBackForwardCacheMetricsMask(
-      FrameSchedulerImpl* frame_scheduler) {
-    return frame_scheduler
-        ->GetActiveFeaturesTrackedForBackForwardCacheMetricsMask();
   }
 
  protected:
@@ -531,7 +529,8 @@ class FrameSchedulerImplTest : public testing::Test {
   void DidCommitProvisionalLoad(
       FrameScheduler::NavigationType navigation_type) {
     frame_scheduler_->DidCommitProvisionalLoad(
-        /*is_web_history_inert_commit=*/false, navigation_type);
+        /*is_web_history_inert_commit=*/false, navigation_type,
+        {GetUnreportedTaskTime()});
   }
 
   base::test::ScopedFeatureList& scoped_feature_list() { return feature_list_; }
@@ -1022,19 +1021,19 @@ TEST_F(FrameSchedulerImplTest, PageFreezeAndPageVisible) {
 }
 
 TEST_F(FrameSchedulerImplTest, PagePostsCpuTasks) {
-  EXPECT_TRUE(GetTaskTime().is_zero());
+  EXPECT_TRUE(GetUnreportedTaskTime().is_zero());
   EXPECT_EQ(0, GetTotalUpdateTaskTimeCalls());
   UnpausableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE, base::BindOnce(&RunTaskOfLength, &task_environment_,
                                 base::Milliseconds(10)));
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(GetTaskTime().is_zero());
+  EXPECT_FALSE(GetUnreportedTaskTime().is_zero());
   EXPECT_EQ(0, GetTotalUpdateTaskTimeCalls());
   UnpausableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE, base::BindOnce(&RunTaskOfLength, &task_environment_,
                                 base::Milliseconds(100)));
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(GetTaskTime().is_zero());
+  EXPECT_TRUE(GetUnreportedTaskTime().is_zero());
   EXPECT_EQ(1, GetTotalUpdateTaskTimeCalls());
 }
 
@@ -1043,7 +1042,7 @@ TEST_F(FrameSchedulerImplTest, FramePostsCpuTasksThroughReloadRenavigate) {
     bool embedded_frame_tree;
     FrameScheduler::FrameType frame_type;
     FrameScheduler::NavigationType navigation_type;
-    bool expect_task_time_zero;
+    bool expect_unreported_task_time_zero;
     int expected_total_calls;
   } kTestCases[] = {{false, FrameScheduler::FrameType::kMainFrame,
                      FrameScheduler::NavigationType::kOther, false, 0},
@@ -1066,10 +1065,12 @@ TEST_F(FrameSchedulerImplTest, FramePostsCpuTasksThroughReloadRenavigate) {
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(String::Format(
         "FrameType: %d, NavigationType: %d : TaskTime.is_zero %d, CallCount %d",
-        test_case.frame_type, test_case.navigation_type,
-        test_case.expect_task_time_zero, test_case.expected_total_calls));
+        static_cast<int>(test_case.frame_type),
+        static_cast<int>(test_case.navigation_type),
+        test_case.expect_unreported_task_time_zero,
+        test_case.expected_total_calls));
     ResetFrameScheduler(test_case.embedded_frame_tree, test_case.frame_type);
-    EXPECT_TRUE(GetTaskTime().is_zero());
+    EXPECT_TRUE(GetUnreportedTaskTime().is_zero());
     EXPECT_EQ(0, GetTotalUpdateTaskTimeCalls());
 
     // Check the rest of the values after different types of commit.
@@ -1077,7 +1078,7 @@ TEST_F(FrameSchedulerImplTest, FramePostsCpuTasksThroughReloadRenavigate) {
         FROM_HERE, base::BindOnce(&RunTaskOfLength, &task_environment_,
                                   base::Milliseconds(60)));
     base::RunLoop().RunUntilIdle();
-    EXPECT_FALSE(GetTaskTime().is_zero());
+    EXPECT_FALSE(GetUnreportedTaskTime().is_zero());
     EXPECT_EQ(0, GetTotalUpdateTaskTimeCalls());
 
     DidCommitProvisionalLoad(test_case.navigation_type);
@@ -1086,7 +1087,8 @@ TEST_F(FrameSchedulerImplTest, FramePostsCpuTasksThroughReloadRenavigate) {
         FROM_HERE, base::BindOnce(&RunTaskOfLength, &task_environment_,
                                   base::Milliseconds(60)));
     base::RunLoop().RunUntilIdle();
-    EXPECT_EQ(test_case.expect_task_time_zero, GetTaskTime().is_zero());
+    EXPECT_EQ(test_case.expect_unreported_task_time_zero,
+              GetUnreportedTaskTime().is_zero());
     EXPECT_EQ(test_case.expected_total_calls, GetTotalUpdateTaskTimeCalls());
   }
 }
@@ -1575,29 +1577,10 @@ TEST_F(FrameSchedulerImplTest,
   EXPECT_EQ(TaskPriority::kBestEffortPriority, task_queue->GetQueuePriority());
 }
 
-namespace {
-
-// Mask is a preferred way of plumbing the list of features, but a list
-// is more convenient to read in the tests.
-// Here we ensure that these two methods are equivalent.
-uint64_t ComputeMaskFromFeatures(FrameSchedulerImpl* frame_scheduler) {
-  uint64_t result = 0;
-  for (SchedulingPolicy::Feature feature :
-       frame_scheduler->GetActiveFeaturesTrackedForBackForwardCacheMetrics()) {
-    result |= (1 << static_cast<size_t>(feature));
-  }
-  return result;
-}
-
-}  // namespace
-
 TEST_F(FrameSchedulerImplTest, BackForwardCacheOptOut) {
   EXPECT_THAT(
       frame_scheduler_->GetActiveFeaturesTrackedForBackForwardCacheMetrics(),
       testing::UnorderedElementsAre());
-  EXPECT_EQ(ComputeMaskFromFeatures(frame_scheduler_.get()),
-            GetActiveFeaturesTrackedForBackForwardCacheMetricsMask(
-                frame_scheduler_.get()));
 
   auto feature_handle1 = frame_scheduler_->RegisterFeature(
       SchedulingPolicy::Feature::kWebSocket,
@@ -1606,9 +1589,6 @@ TEST_F(FrameSchedulerImplTest, BackForwardCacheOptOut) {
   EXPECT_THAT(
       frame_scheduler_->GetActiveFeaturesTrackedForBackForwardCacheMetrics(),
       testing::UnorderedElementsAre(SchedulingPolicy::Feature::kWebSocket));
-  EXPECT_EQ(ComputeMaskFromFeatures(frame_scheduler_.get()),
-            GetActiveFeaturesTrackedForBackForwardCacheMetricsMask(
-                frame_scheduler_.get()));
 
   auto feature_handle2 = frame_scheduler_->RegisterFeature(
       SchedulingPolicy::Feature::kWebRTC,
@@ -1618,36 +1598,24 @@ TEST_F(FrameSchedulerImplTest, BackForwardCacheOptOut) {
       frame_scheduler_->GetActiveFeaturesTrackedForBackForwardCacheMetrics(),
       testing::UnorderedElementsAre(SchedulingPolicy::Feature::kWebSocket,
                                     SchedulingPolicy::Feature::kWebRTC));
-  EXPECT_EQ(ComputeMaskFromFeatures(frame_scheduler_.get()),
-            GetActiveFeaturesTrackedForBackForwardCacheMetricsMask(
-                frame_scheduler_.get()));
 
   feature_handle1.reset();
 
   EXPECT_THAT(
       frame_scheduler_->GetActiveFeaturesTrackedForBackForwardCacheMetrics(),
       testing::UnorderedElementsAre(SchedulingPolicy::Feature::kWebRTC));
-  EXPECT_EQ(ComputeMaskFromFeatures(frame_scheduler_.get()),
-            GetActiveFeaturesTrackedForBackForwardCacheMetricsMask(
-                frame_scheduler_.get()));
 
   feature_handle2.reset();
 
   EXPECT_THAT(
       frame_scheduler_->GetActiveFeaturesTrackedForBackForwardCacheMetrics(),
       testing::UnorderedElementsAre());
-  EXPECT_EQ(ComputeMaskFromFeatures(frame_scheduler_.get()),
-            GetActiveFeaturesTrackedForBackForwardCacheMetricsMask(
-                frame_scheduler_.get()));
 }
 
 TEST_F(FrameSchedulerImplTest, BackForwardCacheOptOut_FrameNavigated) {
   EXPECT_THAT(
       frame_scheduler_->GetActiveFeaturesTrackedForBackForwardCacheMetrics(),
       testing::UnorderedElementsAre());
-  EXPECT_EQ(ComputeMaskFromFeatures(frame_scheduler_.get()),
-            GetActiveFeaturesTrackedForBackForwardCacheMetricsMask(
-                frame_scheduler_.get()));
 
   auto feature_handle = frame_scheduler_->RegisterFeature(
       SchedulingPolicy::Feature::kWebSocket,
@@ -1656,9 +1624,6 @@ TEST_F(FrameSchedulerImplTest, BackForwardCacheOptOut_FrameNavigated) {
   EXPECT_THAT(
       frame_scheduler_->GetActiveFeaturesTrackedForBackForwardCacheMetrics(),
       testing::UnorderedElementsAre(SchedulingPolicy::Feature::kWebSocket));
-  EXPECT_EQ(ComputeMaskFromFeatures(frame_scheduler_.get()),
-            GetActiveFeaturesTrackedForBackForwardCacheMetricsMask(
-                frame_scheduler_.get()));
 
   frame_scheduler_->RegisterStickyFeature(
       SchedulingPolicy::Feature::kMainResourceHasCacheControlNoStore,
@@ -1669,9 +1634,6 @@ TEST_F(FrameSchedulerImplTest, BackForwardCacheOptOut_FrameNavigated) {
       testing::UnorderedElementsAre(
           SchedulingPolicy::Feature::kWebSocket,
           SchedulingPolicy::Feature::kMainResourceHasCacheControlNoStore));
-  EXPECT_EQ(ComputeMaskFromFeatures(frame_scheduler_.get()),
-            GetActiveFeaturesTrackedForBackForwardCacheMetricsMask(
-                frame_scheduler_.get()));
 
   // Same document navigations don't affect anything.
   frame_scheduler_->DidCommitProvisionalLoad(
@@ -1681,9 +1643,6 @@ TEST_F(FrameSchedulerImplTest, BackForwardCacheOptOut_FrameNavigated) {
       testing::UnorderedElementsAre(
           SchedulingPolicy::Feature::kWebSocket,
           SchedulingPolicy::Feature::kMainResourceHasCacheControlNoStore));
-  EXPECT_EQ(ComputeMaskFromFeatures(frame_scheduler_.get()),
-            GetActiveFeaturesTrackedForBackForwardCacheMetricsMask(
-                frame_scheduler_.get()));
 
   // Regular navigations reset all features.
   frame_scheduler_->DidCommitProvisionalLoad(
@@ -1691,9 +1650,6 @@ TEST_F(FrameSchedulerImplTest, BackForwardCacheOptOut_FrameNavigated) {
   EXPECT_THAT(
       frame_scheduler_->GetActiveFeaturesTrackedForBackForwardCacheMetrics(),
       testing::UnorderedElementsAre());
-  EXPECT_EQ(ComputeMaskFromFeatures(frame_scheduler_.get()),
-            GetActiveFeaturesTrackedForBackForwardCacheMetricsMask(
-                frame_scheduler_.get()));
 
   // Resetting a feature handle after navigation shouldn't do anything.
   feature_handle.reset();
@@ -1701,9 +1657,6 @@ TEST_F(FrameSchedulerImplTest, BackForwardCacheOptOut_FrameNavigated) {
   EXPECT_THAT(
       frame_scheduler_->GetActiveFeaturesTrackedForBackForwardCacheMetrics(),
       testing::UnorderedElementsAre());
-  EXPECT_EQ(ComputeMaskFromFeatures(frame_scheduler_.get()),
-            GetActiveFeaturesTrackedForBackForwardCacheMetricsMask(
-                frame_scheduler_.get()));
 }
 
 TEST_F(FrameSchedulerImplTest, FeatureUpload) {

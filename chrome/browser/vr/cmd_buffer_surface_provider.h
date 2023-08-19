@@ -17,12 +17,12 @@ class VR_UI_EXPORT CmdBufferSurfaceProvider : public SkiaSurfaceProvider {
   CmdBufferSurfaceProvider();
   ~CmdBufferSurfaceProvider() override;
 
-  sk_sp<SkSurface> MakeSurface(const gfx::Size& size) override;
-  GLuint FlushSurface(SkSurface* surface, GLuint reuse_texture_id) override;
+  std::unique_ptr<Texture> CreateTextureWithSkia(
+      const gfx::Size& size,
+      base::FunctionRef<void(SkCanvas*)> paint) override;
 
  private:
   sk_sp<GrDirectContext> gr_context_;
-  GLint main_fbo_ = 0;
 };
 
 }  // namespace vr

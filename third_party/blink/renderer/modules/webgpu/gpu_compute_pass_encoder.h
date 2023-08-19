@@ -27,8 +27,9 @@ class GPUComputePassEncoder : public DawnObject<WGPUComputePassEncoder>,
   // gpu_compute_pass_encoder.idl
   void setBindGroup(uint32_t index,
                     const DawnObject<WGPUBindGroup>* bindGroup) {
-    GetProcs().computePassEncoderSetBindGroup(
-        GetHandle(), index, bindGroup->GetHandle(), 0, nullptr);
+    WGPUBindGroupImpl* bgImpl = bindGroup ? bindGroup->GetHandle() : nullptr;
+    GetProcs().computePassEncoderSetBindGroup(GetHandle(), index, bgImpl, 0,
+                                              nullptr);
   }
   void setBindGroup(uint32_t index,
                     GPUBindGroup* bindGroup,

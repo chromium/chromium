@@ -53,9 +53,10 @@ ContextResult WebGPUInProcessContext::Initialize(
   command_buffer_ =
       std::make_unique<InProcessCommandBuffer>(task_executor, GURL());
 
-  auto result = command_buffer_->Initialize(attribs, client_task_runner_,
-                                            /*gr_shader_cache=*/nullptr,
-                                            /*activity_flags=*/nullptr);
+  auto result =
+      command_buffer_->Initialize(attribs, client_task_runner_,
+                                  /*gr_shader_cache=*/nullptr,
+                                  /*use_shader_cache_shm_count=*/nullptr);
   if (result != ContextResult::kSuccess) {
     DLOG(ERROR) << "Failed to initialize InProcessCommmandBuffer";
     return result;

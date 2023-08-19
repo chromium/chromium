@@ -30,6 +30,9 @@ bool IsCloudGamingDevice();
 // management module.
 bool IsFeatureAwareDevice();
 
+// Builds and returns a DemoModeDimensions proto from the individual dimension
+// values
+enterprise_management::DemoModeDimensions GetDemoModeDimensions();
 }  // namespace demo_mode
 }  // namespace ash
 

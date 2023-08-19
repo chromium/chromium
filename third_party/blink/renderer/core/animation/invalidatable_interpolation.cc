@@ -109,11 +109,9 @@ bool InvalidatableInterpolation::IsNeutralKeyframeActive() const {
 
 void InvalidatableInterpolation::ClearConversionCache(
     InterpolationEnvironment& environment) const {
-  if (is_conversion_cached_) {
-    if (auto* css_environment =
-            DynamicTo<CSSInterpolationEnvironment>(environment)) {
-      css_environment->GetState().SetAffectsCompositorSnapshots();
-    }
+  if (auto* css_environment =
+          DynamicTo<CSSInterpolationEnvironment>(environment)) {
+    css_environment->GetState().SetAffectsCompositorSnapshots();
   }
 
   is_conversion_cached_ = false;
@@ -133,12 +131,14 @@ bool InvalidatableInterpolation::IsConversionCacheValid(
     // Pairwise interpolation can never happen between different
     // InterpolationTypes, neutral values always represent the underlying value.
     if (!underlying_value_owner || !cached_value_ ||
-        cached_value_->GetType() != underlying_value_owner.GetType())
+        cached_value_->GetType() != underlying_value_owner.GetType()) {
       return false;
+    }
   }
   for (const auto& checker : conversion_checkers_) {
-    if (!checker->IsValid(environment, underlying_value_owner.Value()))
+    if (!checker->IsValid(environment, underlying_value_owner.Value())) {
       return false;
+    }
   }
   return true;
 }
@@ -168,7 +168,6 @@ InvalidatableInterpolation::EnsureValidConversion(
                               underlying_value_owner));
   }
   cached_pair_conversion_->InterpolateValue(current_fraction_, cached_value_);
-
   is_conversion_cached_ = true;
   return cached_value_.get();
 }

@@ -3,9 +3,10 @@ Short Name: asm-analysis
 URL: http://asm.ow2.io/
 Version: 9.5
 License: BSD
-License File: NOT_SHIPPED
+License File: LICENSE
 CPEPrefix: unknown
 Security Critical: no
+Shipped: no
 
 Description:
 Static code analysis API of ASM, a very small and fast Java bytecode manipulation framework

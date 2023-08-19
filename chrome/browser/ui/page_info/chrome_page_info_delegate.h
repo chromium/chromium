@@ -48,9 +48,10 @@ class ChromePageInfoDelegate : public PageInfoDelegate {
   void OnUserActionOnPasswordUi(safe_browsing::WarningAction action) override;
   std::u16string GetWarningDetailText() override;
 #endif
-  permissions::PermissionResult GetPermissionResult(
+  content::PermissionResult GetPermissionResult(
       blink::PermissionType permission,
-      const url::Origin& origin) override;
+      const url::Origin& origin,
+      const absl::optional<url::Origin>& requesting_origin) override;
 #if !BUILDFLAG(IS_ANDROID)
   absl::optional<std::u16string> GetFpsOwner(const GURL& site_url) override;
   bool IsFpsManaged() override;
@@ -111,7 +112,7 @@ class ChromePageInfoDelegate : public PageInfoDelegate {
   raw_ptr<TrustSafetySentimentService> sentiment_service_;
 #endif
 
-  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
+  raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> web_contents_;
   security_state::SecurityLevel security_level_for_tests_;
   security_state::VisibleSecurityState visible_security_state_for_tests_;
   bool security_state_for_tests_set_ = false;

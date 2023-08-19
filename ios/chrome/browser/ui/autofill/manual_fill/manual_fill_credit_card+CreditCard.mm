@@ -12,10 +12,6 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation ManualFillCreditCard (CreditCardForm)
 
 - (instancetype)initWithCreditCard:(const autofill::CreditCard&)creditCard {
@@ -27,7 +23,8 @@
   NSString* cardHolder = autofill::GetCreditCardName(
       creditCard, GetApplicationContext()->GetApplicationLocale());
   NSString* number = nil;
-  if (creditCard.record_type() != autofill::CreditCard::MASKED_SERVER_CARD) {
+  if (creditCard.record_type() !=
+      autofill::CreditCard::RecordType::kMaskedServerCard) {
     number = base::SysUTF16ToNSString(autofill::CreditCard::StripSeparators(
         creditCard.GetRawInfo(autofill::CREDIT_CARD_NUMBER)));
   }

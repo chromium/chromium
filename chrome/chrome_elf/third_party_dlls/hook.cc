@@ -6,10 +6,16 @@
 
 #include <atomic>
 #include <limits>
+#include <string>
+
+#include <windows.h>
 
 #include <assert.h>
 #include <ntstatus.h>
+#include <psapi.h>
+#include <winternl.h>
 
+#include "base/compiler_specific.h"
 #include "chrome/chrome_elf/crash/crash_helper.h"
 #include "chrome/chrome_elf/hook_util/hook_util.h"
 #include "chrome/chrome_elf/pe_image_safe/pe_image_safe.h"
@@ -20,9 +26,6 @@
 #include "chrome/chrome_elf/third_party_dlls/packed_list_file.h"
 #include "chrome/chrome_elf/third_party_dlls/packed_list_format.h"
 #include "chrome/chrome_elf/third_party_dlls/public_api.h"
-#include "sandbox/win/src/interception_internal.h"
-#include "sandbox/win/src/internal_types.h"
-#include "sandbox/win/src/nt_internals.h"
 #include "sandbox/win/src/service_resolver.h"
 
 // http://blogs.msdn.com/oldnewthing/archive/2004/10/25/247180.aspx
@@ -30,23 +33,27 @@ extern "C" IMAGE_DOS_HEADER __ImageBase;
 
 namespace third_party_dlls {
 
-// Allocate storage for the hook thunk in a page of this module to save on doing
-// an extra allocation at run time.
-#pragma section(".crthunk", read, execute)
-__declspec(allocate(".crthunk")) sandbox::ThunkData g_thunk_storage;
-
-#if defined(_WIN64)
-// Allocate storage for the pointer to the old NtMapViewOfSectionFunction.
-#pragma section(".oldntmap", write, read)
-__declspec(allocate(".oldntmap"))
-    NtMapViewOfSectionFunction g_nt_map_view_of_section_func = nullptr;
-#endif
-
 namespace {
 
-NtQuerySectionFunction g_nt_query_section_func = nullptr;
-NtQueryVirtualMemoryFunction g_nt_query_virtual_memory_func = nullptr;
-NtUnmapViewOfSectionFunction g_nt_unmap_view_of_section_func = nullptr;
+typedef ULONG SECTION_INHERIT;
+
+typedef NTSTATUS(WINAPI* NtMapViewOfSectionFunction)(
+    IN HANDLE SectionHandle,
+    IN HANDLE ProcessHandle,
+    IN OUT PVOID* BaseAddress,
+    IN ULONG_PTR ZeroBits,
+    IN SIZE_T CommitSize,
+    IN OUT PLARGE_INTEGER SectionOffset OPTIONAL,
+    IN OUT PSIZE_T ViewSize,
+    IN SECTION_INHERIT InheritDisposition,
+    IN ULONG AllocationType,
+    IN ULONG Win32Protect);
+
+// Allocate storage for the hook thunk in a page of this module to save on doing
+// an extra allocation at run time. We chose a reasonable size value (128) and
+// check that it's sufficient later when performing the hooks.
+#pragma section(".crthunk", read, execute)
+static __declspec(allocate(".crthunk")) BYTE g_thunk_storage[128];
 
 // Set if and when ApplyHook() has been successfully executed.
 bool g_hook_active = false;
@@ -57,82 +64,37 @@ std::atomic<bool> g_hook_disabled(false);
 // Set to a different NTSTATUS if an error occured while applying the hook.
 std::atomic<int32_t> g_apply_hook_result(STATUS_SUCCESS);
 
-// Set up NTDLL function pointers.
-bool InitImports() {
-  HMODULE ntdll = ::GetModuleHandleW(sandbox::kNtdllName);
-
-  g_nt_query_section_func = reinterpret_cast<NtQuerySectionFunction>(
-      ::GetProcAddress(ntdll, "NtQuerySection"));
-  g_nt_query_virtual_memory_func =
-      reinterpret_cast<NtQueryVirtualMemoryFunction>(
-          ::GetProcAddress(ntdll, "NtQueryVirtualMemory"));
-  g_nt_unmap_view_of_section_func =
-      reinterpret_cast<NtUnmapViewOfSectionFunction>(
-          ::GetProcAddress(ntdll, "NtUnmapViewOfSection"));
-
-  return g_nt_query_section_func && g_nt_query_virtual_memory_func &&
-         g_nt_unmap_view_of_section_func;
-}
-
 // Check if a given |process| handle references THIS process.
 bool IsTargetCurrentProcess(HANDLE process) {
-  return process == NtCurrentProcess ||
+  return process == ::GetCurrentProcess() ||
          ::GetProcessId(process) == ::GetCurrentProcessId();
 }
 
-// Check if a given memory |section| is marked as an image.
-bool IsSectionImage(HANDLE section) {
-  assert(section && section != INVALID_HANDLE_VALUE);
-
-  SECTION_BASIC_INFORMATION basic_info;
-  SIZE_T bytes_returned;
-  NTSTATUS ret =
-      g_nt_query_section_func(section, SectionBasicInformation, &basic_info,
-                              sizeof(basic_info), &bytes_returned);
-
-  if (!NT_SUCCESS(ret) || sizeof(basic_info) != bytes_returned)
+// Check if a given memory |section_base| is marked as an image.
+bool IsSectionImage(PVOID section_base) {
+  assert(section_base);
+  MEMORY_BASIC_INFORMATION info = {};
+  if (!::VirtualQuery(section_base, &info, sizeof(info))) {
     return false;
+  }
 
-  return !!(basic_info.Attributes & SEC_IMAGE);
+  return (info.Type & MEM_IMAGE) == MEM_IMAGE;
 }
 
 // Query the full path backing the section.
 // - Returned system wstring (UTF-16) will be empty() if anything fails.
 std::wstring GetSectionName(PVOID section_base) {
   assert(section_base);
-  assert(g_nt_query_virtual_memory_func);
 
-  // NtQueryVirtualMemory MemorySectionName returns a UNICODE_STRING.
-  std::vector<BYTE> buffer_data(MAX_PATH * sizeof(wchar_t));
+  constexpr DWORD kMaxNameSize = MAX_PATH + 1;
+  WCHAR name[kMaxNameSize];
 
-  for (;;) {
-    MEMORY_SECTION_NAME* memory_section_name =
-        reinterpret_cast<MEMORY_SECTION_NAME*>(buffer_data.data());
-
-    SIZE_T returned_bytes;
-    NTSTATUS ret = g_nt_query_virtual_memory_func(
-        NtCurrentProcess, section_base, MemorySectionName, memory_section_name,
-        buffer_data.size(), &returned_bytes);
-
-    if (STATUS_BUFFER_OVERFLOW == ret) {
-      // Retry the call with the given buffer size.
-      buffer_data.resize(returned_bytes);
-      continue;
-    }
-    if (!NT_SUCCESS(ret))
-      break;
-
-    // Got it.
-    // Note: UNICODE_STRING::Length is number of bytes, with no terminating null
-    // char.
-    UNICODE_STRING* unicode_string =
-        reinterpret_cast<UNICODE_STRING*>(memory_section_name);
-
-    return std::wstring(unicode_string->Buffer, 0,
-                        unicode_string->Length / sizeof(wchar_t));
+  DWORD size = ::GetMappedFileName(::GetCurrentProcess(), section_base, name,
+                                   kMaxNameSize);
+  if (size == 0 || size >= kMaxNameSize) {
+    return std::wstring();
   }
-
-  return std::wstring();
+  return name;
 }
 
 // Utility function for converting UTF-16 to UTF-8.
@@ -286,7 +248,7 @@ NTSTATUS NewNtMapViewOfSectionImpl(
   // process, or if the section is not a (valid) Portable Executable,
   // we're not interested.  Return the OS-level result code.
   if (!NT_SUCCESS(ret) || !IsTargetCurrentProcess(process) ||
-      !IsSectionImage(section)) {
+      !IsSectionImage(*base)) {
     return ret;
   }
 
@@ -343,8 +305,7 @@ NTSTATUS NewNtMapViewOfSectionImpl(
 
   // UNMAP the view.  This image is being blocked.
   if (block) {
-    assert(g_nt_unmap_view_of_section_func);
-    g_nt_unmap_view_of_section_func(process, *base);
+    ::UnmapViewOfFile(*base);
     *base = nullptr;
     ret = STATUS_UNSUCCESSFUL;
   }
@@ -368,7 +329,7 @@ NTSTATUS NewNtMapViewOfSectionImpl(
 // Interception of NtMapViewOfSection within the current process.
 // - This/these replacement functions should never be called directly.  They are
 //   called from the hook patch.
-SANDBOX_INTERCEPT NTSTATUS WINAPI
+NTSTATUS WINAPI
 NewNtMapViewOfSection(NtMapViewOfSectionFunction orig_MapViewOfSection,
                       HANDLE section,
                       HANDLE process,
@@ -405,21 +366,22 @@ NTSTATUS WINAPI NewNtMapViewOfSection64(HANDLE section,
                                         SECTION_INHERIT inherit,
                                         ULONG allocation_type,
                                         ULONG protect) {
-  return NewNtMapViewOfSection(g_nt_map_view_of_section_func, section, process,
-                               base, zero_bits, commit_size, offset, view_size,
-                               inherit, allocation_type, protect);
+  return NewNtMapViewOfSection(
+      reinterpret_cast<NtMapViewOfSectionFunction>(g_thunk_storage), section,
+      process, base, zero_bits, commit_size, offset, view_size, inherit,
+      allocation_type, protect);
 }
 #endif
 
 ThirdPartyStatus ApplyHook() {
+  constexpr wchar_t kNtdllName[] = L"ntdll.dll";
+
   // Debug check: ApplyHook() should not be called more than once.
   assert(!g_hook_active);
 
-  if (!InitImports())
-    return ThirdPartyStatus::kHookInitImportsFailure;
-
   // Prep system-service thunk via the appropriate ServiceResolver instance.
   sandbox::ServiceResolverThunk thunk(::GetCurrentProcess(), /*relaxed=*/false);
+  assert(sizeof(g_thunk_storage) >= thunk.GetThunkSize());
 
   // Set target process to self.
   thunk.AllowLocalPatches();
@@ -427,44 +389,25 @@ ThirdPartyStatus ApplyHook() {
   // Mark the thunk storage as readable and writeable, since we
   // are ready to write to it now.
   DWORD old_protect = 0;
-  if (!::VirtualProtect(&g_thunk_storage, sizeof(g_thunk_storage),
+  if (!::VirtualProtect(g_thunk_storage, sizeof(g_thunk_storage),
                         PAGE_EXECUTE_READWRITE, &old_protect)) {
     return ThirdPartyStatus::kHookVirtualProtectFailure;
   }
 
   // Replace the default NtMapViewOfSection system service with our patched
   // version.
-  BYTE* thunk_storage = reinterpret_cast<BYTE*>(&g_thunk_storage);
-  NTSTATUS ntstatus = STATUS_UNSUCCESSFUL;
 #if defined(_WIN64)
-  // Setup() applies the system-service patch, and stores a copy of the original
-  // system service coded in |thunk_storage|.
-  ntstatus =
-      thunk.Setup(::GetModuleHandle(sandbox::kNtdllName),
-                  reinterpret_cast<void*>(&__ImageBase), "NtMapViewOfSection",
-                  nullptr, reinterpret_cast<void*>(&NewNtMapViewOfSection64),
-                  thunk_storage, sizeof(sandbox::ThunkData), nullptr);
-
-  // Keep a pointer to the original system-service code, which is now in
-  // |thunk_storage|.  Use this pointer for passing off execution from new shim.
-  // - Only needed on x64.
-  g_nt_map_view_of_section_func =
-      reinterpret_cast<NtMapViewOfSectionFunction>(thunk_storage);
-
-  // Ensure that the pointer to the old function can't be changed.
-  // - Do not treat this as a fatal error on failure.
-  if (!VirtualProtect(&g_nt_map_view_of_section_func,
-                      sizeof(g_nt_map_view_of_section_func), PAGE_EXECUTE_READ,
-                      &old_protect)) {
-    assert(false);
-  }
-#else   // x86
-  ntstatus =
-      thunk.Setup(::GetModuleHandle(sandbox::kNtdllName),
-                  reinterpret_cast<void*>(&__ImageBase), "NtMapViewOfSection",
-                  nullptr, reinterpret_cast<void*>(&NewNtMapViewOfSection),
-                  thunk_storage, sizeof(sandbox::ThunkData), nullptr);
+  void* entry_point = reinterpret_cast<void*>(&NewNtMapViewOfSection64);
+#else
+  void* entry_point = reinterpret_cast<void*>(&NewNtMapViewOfSection);
 #endif  // defined(_WIN64)
+
+  // Setup() applies the system-service patch, and stores a copy of the original
+  // system service coded in |g_thunk_storage|.
+  NTSTATUS ntstatus = thunk.Setup(
+      ::GetModuleHandle(kNtdllName), reinterpret_cast<void*>(&__ImageBase),
+      "NtMapViewOfSection", nullptr, entry_point, g_thunk_storage,
+      sizeof(g_thunk_storage), nullptr);
 
   if (!NT_SUCCESS(ntstatus)) {
     // Remember the status code.
@@ -476,8 +419,8 @@ ThirdPartyStatus ApplyHook() {
   // Mark the thunk storage (original system service) as executable and prevent
   // any future writes to it.
   // - Do not treat this as a fatal error on failure.
-  if (!VirtualProtect(&g_thunk_storage, sizeof(g_thunk_storage),
-                      PAGE_EXECUTE_READ, &old_protect)) {
+  if (!::VirtualProtect(g_thunk_storage, sizeof(g_thunk_storage),
+                        PAGE_EXECUTE_READ, &old_protect)) {
     assert(false);
   }
 
@@ -492,9 +435,6 @@ bool GetDataFromImageForTesting(PVOID mapped_image,
                                 std::string* image_name,
                                 std::string* section_path,
                                 std::string* section_basename) {
-  if (!g_nt_query_virtual_memory_func)
-    InitImports();
-
   return GetDataFromImage(mapped_image, pe_image_safe::kImageSizeNotSet,
                           time_date_stamp, image_size, image_name, section_path,
                           section_basename);

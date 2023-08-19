@@ -25,6 +25,9 @@
 
 #include "third_party/blink/renderer/platform/graphics/color.h"
 
+#include <math.h>
+#include <tuple>
+
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
@@ -189,15 +192,19 @@ Color Color::FromColorSpace(ColorSpace color_space,
   result.param0_ = param0.value_or(0.f);
   result.param1_ = param1.value_or(0.f);
   result.param2_ = param2.value_or(0.f);
-  result.alpha_ = ClampTo(alpha.value_or(0.f), 0.f, 1.f);
+  if (alpha) {
+    // Alpha is clamped to the range [0,1], no matter what colorspace.
+    result.alpha_ = isfinite(alpha.value()) ? ClampTo(alpha.value(), 0.f, 1.f)
+                                            : alpha.value();
+  } else {
+    result.alpha_ = 0.0f;
+  }
 
-  if (color_space == ColorSpace::kLab || color_space == ColorSpace::kOklab ||
-      color_space == ColorSpace::kLch || color_space == ColorSpace::kOklch) {
+  if (IsLightnessFirstComponent(color_space) && !isnan(result.param0_)) {
     // param0_ is luminance which cannot be negative or above 100%.
     result.param0_ = std::min(100.f, std::max(result.param0_, 0.f));
   }
-  if (color_space == ColorSpace::kLch || color_space == ColorSpace::kOklch) {
-    // param1_ is chroma, which cannot be negative.
+  if (IsChromaSecondComponent(color_space)) {
     result.param1_ = std::max(result.param1_, 0.f);
   }
 
@@ -305,13 +312,6 @@ void Color::CarryForwardAnalogousMissingComponents(
            color_space == Color::ColorSpace::kSRGBLegacy;
   };
 
-  auto IsLightnessFirstComponent = [](Color::ColorSpace color_space) {
-    return color_space == Color::ColorSpace::kLab ||
-           color_space == Color::ColorSpace::kOklab ||
-           color_space == Color::ColorSpace::kLch ||
-           color_space == Color::ColorSpace::kOklch;
-  };
-
   const auto cur_color_space = color.GetColorSpace();
   if (cur_color_space == prev_color_space) {
     return;
@@ -416,8 +416,7 @@ Color Color::InterpolateColors(
       (color1.param2_is_none_ || color2.param2_is_none_)
           ? HandleNoneInterpolation(color1.param2_, color1.param2_is_none_,
                                     color2.param2_, color2.param2_is_none_)
-      : (interpolation_space == ColorSpace::kLch ||
-         interpolation_space == ColorSpace::kOklch)
+      : (IsChromaSecondComponent(interpolation_space))
           ? HueInterpolation(color1.param2_, color2.param2_, percentage,
                              hue_method.value())
           : blink::Blend(color1.param2_, color2.param2_, percentage);
@@ -703,8 +702,9 @@ float Color::PremultiplyColor() {
   if (color_space_ != ColorSpace::kHSL && color_space_ != ColorSpace::kHWB)
     param0_ = param0_ * alpha_;
   param1_ = param1_ * alpha_;
-  if (color_space_ != ColorSpace::kLch && color_space_ != ColorSpace::kOklch)
+  if (!IsChromaSecondComponent(color_space_)) {
     param2_ = param2_ * alpha_;
+  }
   alpha_ = 1.0f;
   return alpha;
 }
@@ -719,8 +719,9 @@ void Color::UnpremultiplyColor() {
   if (color_space_ != ColorSpace::kHSL && color_space_ != ColorSpace::kHWB)
     param0_ = param0_ / alpha_;
   param1_ = param1_ / alpha_;
-  if (color_space_ != ColorSpace::kLch && color_space_ != ColorSpace::kOklch)
+  if (!IsChromaSecondComponent(color_space_)) {
     param2_ = param2_ / alpha_;
+  }
 }
 
 // static
@@ -839,6 +840,25 @@ String Color::ColorSpaceToString(Color::ColorSpace color_space) {
   }
 }
 
+static String ColorParamToString(float param, int precision = 6) {
+  StringBuilder result;
+  if (!isfinite(param)) {
+    // https://www.w3.org/TR/css-values-4/#calc-serialize
+    result.Append("calc(");
+    if (isinf(param)) {
+      // "Infinity" gets capitalized, so we can't use AppendNumber().
+      (param < 0) ? result.Append("-infinity") : result.Append("infinity");
+    } else {
+      result.AppendNumber(param, precision);
+    }
+    result.Append(")");
+    return result.ToString();
+  }
+
+  result.AppendNumber(param, precision);
+  return result.ToString();
+}
+
 String Color::SerializeAsCanvasColor() const {
   if (IsOpaque() && IsLegacyColor()) {
     return String::Format("#%02x%02x%02x", Red(), Green(), Blue());
@@ -847,42 +867,60 @@ String Color::SerializeAsCanvasColor() const {
   return SerializeAsCSSColor();
 }
 
-static String SerializeLegacyColorAsCSSColor(SkColor4f color) {
-  auto ColorChannelToInt = [](float x) {
-    // Channels that have a value of exactly 0.5 can get incorrectly rounded
-    // down to 127 when being converted to an integer. Add a small epsilon to
-    // avoid this. See crbug.com/1425856.
-    float epsilon = 1e-07;
-    return ClampTo(round((x + epsilon) * 255), 0, 255);
-  };
-
+String Color::SerializeLegacyColorAsCSSColor() const {
   StringBuilder result;
-  result.ReserveCapacity(28);
-  bool has_transparency = !color.isOpaque();
-  if (has_transparency) {
-    result.Append("rgba(");
-  } else {
+  if (IsOpaque() && isfinite(alpha_)) {
     result.Append("rgb(");
+  } else {
+    result.Append("rgba(");
   }
 
-  result.AppendNumber(ColorChannelToInt(color.fR));
-  result.Append(", ");
-  result.AppendNumber(ColorChannelToInt(color.fG));
-  result.Append(", ");
-  result.AppendNumber(ColorChannelToInt(color.fB));
+  // hsl and hwb colors need to be serialized in srgb.
+  SkColor4f rgb_color = toSkColor4f();
 
-  if (has_transparency) {
+  // Legacy color channels get serialized with integers in the range [0,255].
+  // Channels that have a value of exactly 0.5 can get incorrectly rounded
+  // down to 127 when being converted to an integer. Add a small epsilon to
+  // avoid this. See crbug.com/1425856.
+  constexpr float kEpsilon = 1e-07;
+  result.Append(ColorParamToString(
+      isfinite(rgb_color.fR)
+          ? ClampTo(round((rgb_color.fR + kEpsilon) * 255.0), 0.0, 255.0)
+          : rgb_color.fR));
+  result.Append(", ");
+  result.Append(ColorParamToString(
+      isfinite(rgb_color.fG)
+          ? ClampTo(round((rgb_color.fG + kEpsilon) * 255.0), 0.0, 255.0)
+          : rgb_color.fG));
+  result.Append(", ");
+  result.Append(ColorParamToString(
+      isfinite(rgb_color.fB)
+          ? ClampTo(round((rgb_color.fB + kEpsilon) * 255.0), 0.0, 255.0)
+          : rgb_color.fB));
+
+  if (!IsOpaque() && isfinite(alpha_)) {
     result.Append(", ");
+
     // See <alphavalue> section in
     // https://drafts.csswg.org/cssom/#serializing-css-values
-    int int_alpha = ColorChannelToInt(color.fA);
-    float rounded = round(int_alpha * 100 / 255.0f) / 100;
-    if (round(rounded * 255) == int_alpha) {
-      result.AppendNumber(rounded, 2);
+    // First we need an 8-bit integer alpha to begin the algorithm described in
+    // the link above.
+    int int_alpha = ClampTo(round((alpha_ + kEpsilon) * 255.0), 0.0, 255.0);
+
+    // If there exists a two decimal float in [0,1] that is exactly equal to the
+    // integer we calculated above, used that.
+    float two_decimal_rounded_alpha = round(int_alpha * 100.0 / 255.0) / 100.0;
+    if (round(two_decimal_rounded_alpha * 255) == int_alpha) {
+      result.Append(ColorParamToString(two_decimal_rounded_alpha, 2));
     } else {
-      rounded = round(int_alpha * 1000 / 255.0f) / 1000;
-      result.AppendNumber(rounded, 3);
+      // Otherwise, round to 3 decimals.
+      float three_decimal_rounded_alpha =
+          round(int_alpha * 1000.0 / 255.0) / 1000.0;
+      result.Append(ColorParamToString(three_decimal_rounded_alpha, 3));
     }
+  } else if (!isfinite(alpha_)) {
+    result.Append(", ");
+    result.Append(ColorParamToString(alpha_));
   }
 
   result.Append(')');
@@ -891,13 +929,11 @@ static String SerializeLegacyColorAsCSSColor(SkColor4f color) {
 
 String Color::SerializeAsCSSColor() const {
   if (IsLegacyColor()) {
-    return SerializeLegacyColorAsCSSColor(toSkColor4f());
+    return SerializeLegacyColorAsCSSColor();
   }
 
   StringBuilder result;
-  result.ReserveCapacity(28);
-  if (color_space_ == ColorSpace::kLab || color_space_ == ColorSpace::kOklab ||
-      color_space_ == ColorSpace::kLch || color_space_ == ColorSpace::kOklch) {
+  if (IsLightnessFirstComponent(color_space_)) {
     result.Append(ColorSpaceToString(color_space_));
     result.Append("(");
   } else {
@@ -912,11 +948,14 @@ String Color::SerializeAsCSSColor() const {
     p0 /= 100.0f;
   }
 
-  param0_is_none_ ? result.Append("none") : result.AppendNumber(p0);
+  param0_is_none_ ? result.Append("none")
+                  : result.Append(ColorParamToString(p0));
   result.Append(" ");
-  param1_is_none_ ? result.Append("none") : result.AppendNumber(param1_);
+  param1_is_none_ ? result.Append("none")
+                  : result.Append(ColorParamToString(param1_));
   result.Append(" ");
-  param2_is_none_ ? result.Append("none") : result.AppendNumber(param2_);
+  param2_is_none_ ? result.Append("none")
+                  : result.Append(ColorParamToString(param2_));
 
   if (alpha_ != 1.0 || alpha_is_none_) {
     result.Append(" / ");
@@ -1204,10 +1243,7 @@ String Color::SerializeInterpolationSpace(
       break;
   }
 
-  if (color_space == Color::ColorSpace::kLch ||
-      color_space == Color::ColorSpace::kOklch ||
-      color_space == Color::ColorSpace::kHSL ||
-      color_space == Color::ColorSpace::kHWB) {
+  if (ColorSpaceHasHue(color_space)) {
     switch (hue_interpolation_method) {
       case Color::HueInterpolationMethod::kDecreasing:
         result.Append(" decreasing hue");
@@ -1225,6 +1261,58 @@ String Color::SerializeInterpolationSpace(
   }
 
   return result.ReleaseString();
+}
+
+static float ResolveNonFiniteChannel(float value,
+                                     float negative_infinity_substitution,
+                                     float positive_infinity_substitution) {
+  // Finite values should be unchanged, even if they are out-of-gamut.
+  if (isfinite(value)) {
+    return value;
+  } else {
+    if (isnan(value)) {
+      return 0.0f;
+    } else {
+      if (value < 0) {
+        return negative_infinity_substitution;
+      }
+      return positive_infinity_substitution;
+    }
+  }
+}
+
+void Color::ResolveNonFiniteValues() {
+  // calc(NaN) and calc(Infinity) need to be serialized for colors at parse
+  // time, but eventually their true values need to be computed. calc(NaN) will
+  // always become zero and +/-infinity become the upper/lower bound of the
+  // channel, respectively, if it exists.
+  // Crucially, this function does not clamp channels that are finite, this is
+  // to allow for things like blending out-of-gamut colors.
+  // See: https://github.com/w3c/csswg-drafts/issues/8629
+
+  // Lightness is clamped to [0, 100].
+  if (IsLightnessFirstComponent(color_space_)) {
+    param0_ = ResolveNonFiniteChannel(param0_, 0.0f, 100.0f);
+  }
+
+  // Chroma cannot be negative.
+  if (IsChromaSecondComponent(color_space_) && isinf(param1_) &&
+      param1_ < 0.0f) {
+    param1_ = 0.0f;
+  }
+
+  // Legacy sRGB does not respresent out-of-gamut colors.
+  if (color_space_ == Color::ColorSpace::kSRGBLegacy) {
+    param0_ = ResolveNonFiniteChannel(param0_, 0.0f, 1.0f);
+    param1_ = ResolveNonFiniteChannel(param1_, 0.0f, 1.0f);
+    param2_ = ResolveNonFiniteChannel(param2_, 0.0f, 1.0f);
+  }
+
+  // Parsed values are `calc(NaN)` but computed values are 0 for NaN.
+  param0_ = isnan(param0_) ? 0.0f : param0_;
+  param1_ = isnan(param1_) ? 0.0f : param1_;
+  param2_ = isnan(param2_) ? 0.0f : param2_;
+  alpha_ = ResolveNonFiniteChannel(alpha_, 0.0f, 1.0f);
 }
 
 std::ostream& operator<<(std::ostream& os, const Color& color) {

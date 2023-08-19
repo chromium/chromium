@@ -31,10 +31,6 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using content::BrowserThread;
 
 namespace {

@@ -46,15 +46,13 @@ var CertificateViewerUIInvalidCertTest = class extends CertificateViewerUITest {
 // Helper for loading the Mocha test file as a JS module. Not using
 // test_loader.html, as the test code needs to be loaded in the context of the
 // dialog triggered with the ShowCertificateViewer() C++ call above.
-function loadTestModule() {
-  const scriptPolicy =
-      window.trustedTypes.createPolicy('certificate-test-script', {
-        createScriptURL: () =>
-            'chrome://webui-test/certificate_viewer_dialog_test.js',
-      });
+async function loadTestModule() {
+  const {getTrustedScriptURL} =
+      await import('chrome://resources/js/static_types.js');
   const s = document.createElement('script');
   s.type = 'module';
-  s.src = scriptPolicy.createScriptURL('');
+  s.src =
+      getTrustedScriptURL`chrome://webui-test/certificate_viewer_dialog_test.js`;
   document.body.appendChild(s);
   return new Promise(function(resolve, reject) {
     s.addEventListener('load', () => resolve());

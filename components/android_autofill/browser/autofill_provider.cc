@@ -35,7 +35,7 @@ void AutofillProvider::FillOrPreviewForm(AndroidAutofillManager* manager,
                                          const FormData& form_data,
                                          FieldTypeGroup field_type_group,
                                          const url::Origin& triggered_origin) {
-  manager->FillOrPreviewForm(mojom::RendererFormDataAction::kFill, form_data,
+  manager->FillOrPreviewForm(mojom::AutofillActionPersistence::kFill, form_data,
                              field_type_group, triggered_origin);
 }
 
@@ -43,7 +43,7 @@ void AutofillProvider::RendererShouldAcceptDataListSuggestion(
     AndroidAutofillManager* manager,
     const FieldGlobalId& field_id,
     const std::u16string& value) {
-  manager->driver()->RendererShouldAcceptDataListSuggestion(field_id, value);
+  manager->driver().RendererShouldAcceptDataListSuggestion(field_id, value);
 }
 
 }  // namespace autofill

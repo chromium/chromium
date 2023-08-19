@@ -4,10 +4,15 @@
 
 #include "chrome/browser/webid/federated_identity_permission_context.h"
 
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/webid/federated_identity_account_keyed_permission_context.h"
 #include "chrome/browser/webid/federated_identity_identity_provider_registration_context.h"
 #include "chrome/browser/webid/federated_identity_identity_provider_signin_status_context.h"
+#include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "content/public/browser/browser_context.h"
+#include "google_apis/gaia/gaia_urls.h"
+#include "url/origin.h"
 
 namespace {
 const char kActiveSessionIdpKey[] = "identity-provider";
@@ -31,10 +36,23 @@ FederatedIdentityPermissionContext::FederatedIdentityPermissionContext(
               browser_context)),
       idp_registration_context_(
           new FederatedIdentityIdentityProviderRegistrationContext(
-              browser_context)) {}
+              browser_context)) {
+  if (!browser_context->IsOffTheRecord()) {
+    Profile* profile = Profile::FromBrowserContext(browser_context);
+    signin::IdentityManager* mgr =
+        IdentityManagerFactory::GetForProfile(profile);
+    if (mgr) {
+      obs_.Observe(mgr);
+    }
+  }
+}
 
 FederatedIdentityPermissionContext::~FederatedIdentityPermissionContext() =
     default;
+
+void FederatedIdentityPermissionContext::Shutdown() {
+  obs_.Reset();
+}
 
 void FederatedIdentityPermissionContext::AddIdpSigninStatusObserver(
     IdpSigninStatusObserver* observer) {
@@ -134,4 +152,13 @@ void FederatedIdentityPermissionContext::FlushScheduledSaveSettingsCalls() {
   sharing_context_->FlushScheduledSaveSettingsCalls();
   idp_signin_context_->FlushScheduledSaveSettingsCalls();
   idp_registration_context_->FlushScheduledSaveSettingsCalls();
+}
+
+void FederatedIdentityPermissionContext::OnAccountsInCookieUpdated(
+    const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
+    const GoogleServiceAuthError& error) {
+  bool logged_in = !accounts_in_cookie_jar_info.signed_in_accounts.empty();
+  GURL gaia_url = GaiaUrls::GetInstance()->gaia_url();
+  url::Origin origin = url::Origin::Create(gaia_url);
+  SetIdpSigninStatus(origin, logged_in);
 }

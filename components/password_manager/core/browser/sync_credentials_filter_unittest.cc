@@ -18,6 +18,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/mock_webauthn_credentials_delegate.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
@@ -55,6 +56,9 @@ class FakePasswordManagerClient : public StubPasswordManagerClient {
     }
     ON_CALL(webauthn_credentials_delegate_, GetPasskeys)
         .WillByDefault(testing::ReturnRef(passkeys_));
+    ON_CALL(webauthn_credentials_delegate_,
+            OfferPasskeysFromAnotherDeviceOption)
+        .WillByDefault(testing::Return(true));
 
     // Initializes and configures prefs.
     prefs_ = std::make_unique<TestingPrefServiceSimple>();

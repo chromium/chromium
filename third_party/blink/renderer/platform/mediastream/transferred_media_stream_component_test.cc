@@ -54,7 +54,6 @@ class MockMediaStreamComponent
                     const VideoCaptureDeliverFrameCB&,
                     MediaStreamVideoSink::IsSecure,
                     MediaStreamVideoSink::UsesAlpha));
-  MOCK_CONST_METHOD0(HasClones, bool());
   MOCK_CONST_METHOD0(ToString, String());
 };
 

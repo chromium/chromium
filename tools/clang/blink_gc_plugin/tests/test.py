@@ -18,14 +18,11 @@ from clang import plugin_testing
 class BlinkGcPluginTest(plugin_testing.ClangPluginTest):
   """Test harness for the Blink GC plugin."""
 
-  def __init__(self, use_cppgc, *args, **kwargs):
+  def __init__(self, *args, **kwargs):
     super(BlinkGcPluginTest, self).__init__(*args, **kwargs)
-    self.use_cppgc = use_cppgc
 
   def AdjustClangArguments(self, clang_cmd):
     clang_cmd.append('-Wno-inaccessible-base')
-    if self.use_cppgc:
-      clang_cmd.append('-DUSE_V8_OILPAN')
 
   def ProcessOneResult(self, test_name, actual):
     # Some Blink GC plugins dump a JSON representation of the object graph, and
@@ -47,11 +44,6 @@ class BlinkGcPluginTest(plugin_testing.ClangPluginTest):
         # Clean up the .graph.json file to prevent false passes from stale
         # results from a previous run.
         os.remove('%s.graph.json' % test_name)
-    if self.use_cppgc:
-      if os.path.exists('%s.cppgc.txt' % test_name):
-        # Some tests include namespace names in the output and thus require a
-        # different output file for comparison.
-        test_name = '%s.cppgc' % test_name
     return super(BlinkGcPluginTest, self).ProcessOneResult(test_name, actual)
 
 
@@ -66,24 +58,8 @@ def main():
 
   dir_name = os.path.dirname(os.path.realpath(__file__))
 
-  num_failures_blink = BlinkGcPluginTest(
-      False,  # USE_V8_OILPAN
-      dir_name,
-      args.clang_path,
-      'blink-gc-plugin',
-      args.reset_results).Run()
-
-  num_failures_cppgc = BlinkGcPluginTest(
-      True,  # USE_V8_OILPAN
-      dir_name,
-      args.clang_path,
-      'blink-gc-plugin',
-      args.reset_results).Run()
-
-  print("\nBlink GC Plugin Summary: %d tests failed without USE_V8_OILPAN, " \
-   "%d tests failed with USE_V8_OILPAN" % (
-      num_failures_blink, num_failures_cppgc))
-  return num_failures_blink + num_failures_cppgc
+  return BlinkGcPluginTest(dir_name, args.clang_path, 'blink-gc-plugin',
+                           args.reset_results).Run()
 
 
 if __name__ == '__main__':

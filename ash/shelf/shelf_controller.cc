@@ -15,6 +15,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/launcher_nudge_controller.h"
 #include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -74,9 +75,24 @@ void SetShelfAlignmentFromPrefs() {
   if (!prefs || !session_controller->IsActiveUserSessionStarted())
     return;
 
+  // Tablet mode uses bottom aligned shelf, don't override it if the shelf
+  // prefs change.
+  if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+    return;
+  }
+
   for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
     if (Shelf* shelf = GetShelfForDisplay(display.id()))
       shelf->SetAlignment(GetShelfAlignmentPref(prefs, display.id()));
+  }
+}
+
+// Re-layouts the shelf on every display.
+void LayoutShelves() {
+  for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
+    if (Shelf* shelf = GetShelfForDisplay(display.id())) {
+      shelf->shelf_layout_manager()->LayoutShelf(true);
+    }
   }
 }
 
@@ -143,6 +159,12 @@ void ShelfController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
     registry->RegisterStringPref(prefs::kShelfAutoHideTabletModeBehaviorLocal,
                                  std::string());
   }
+  if (base::FeatureList::IsEnabled(features::kDeskButton)) {
+    registry->RegisterStringPref(
+        prefs::kShowDeskButtonInShelf, std::string(),
+        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+    registry->RegisterBooleanPref(prefs::kDeviceUsesDesks, false);
+  }
   registry->RegisterStringPref(
       prefs::kShelfAlignment, kShelfAlignmentBottom,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
@@ -166,6 +188,12 @@ void ShelfController::OnActiveUserPrefServiceChanged(
         prefs::kShelfAutoHideTabletModeBehaviorLocal,
         base::BindRepeating(&SetShelfAutoHideFromPrefs));
   }
+  if (base::FeatureList::IsEnabled(features::kDeskButton)) {
+    pref_change_registrar_->Add(prefs::kShowDeskButtonInShelf,
+                                base::BindRepeating(&LayoutShelves));
+    pref_change_registrar_->Add(prefs::kDeviceUsesDesks,
+                                base::BindRepeating(&LayoutShelves));
+  }
   pref_change_registrar_->Add(prefs::kShelfPreferences,
                               base::BindRepeating(&SetShelfBehaviorsFromPrefs));
 
@@ -179,7 +207,11 @@ void ShelfController::OnActiveUserPrefServiceChanged(
   AccountId account_id =
       Shell::Get()->session_controller()->GetActiveAccountId();
   cache_ = apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(account_id);
-  Observe(cache_);
+
+  app_registry_cache_observer_.Reset();
+  if (cache_) {
+    app_registry_cache_observer_.Observe(cache_);
+  }
 
   // Resetting the recorded pref forces the next call to
   // UpdateAppNotificationBadging() to update notification badging for every
@@ -205,9 +237,6 @@ void ShelfController::OnTabletModeStarted() {
   // on exit.
   for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
     if (Shelf* shelf = GetShelfForDisplay(display.id())) {
-      // Only animate into tablet mode if the shelf alignment will not change.
-      if (shelf->IsHorizontalAlignment())
-        shelf->set_is_tablet_mode_animation_running(true);
       shelf->SetAlignment(ShelfAlignment::kBottom);
     }
   }
@@ -219,13 +248,6 @@ void ShelfController::OnTabletModeEnded() {
     return;
 
   SetShelfBehaviorsFromPrefs();
-  // Only animate out of tablet mode if the shelf alignment will not change.
-  for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
-    if (Shelf* shelf = GetShelfForDisplay(display.id())) {
-      if (shelf->IsHorizontalAlignment())
-        shelf->set_is_tablet_mode_animation_running(true);
-    }
-  }
 }
 
 void ShelfController::OnDisplayConfigurationChanged() {
@@ -249,7 +271,7 @@ void ShelfController::OnAppUpdate(const apps::AppUpdate& update) {
 
 void ShelfController::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {
-  Observe(nullptr);
+  app_registry_cache_observer_.Reset();
 }
 
 void ShelfController::ShelfItemAdded(int index) {

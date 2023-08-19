@@ -12,7 +12,6 @@
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 
 namespace ash {
@@ -23,7 +22,15 @@ namespace {
 std::string ToResultHistogram(WallpaperType type) {
   switch (type) {
     case WallpaperType::kOnline:
-      return "Ash.Wallpaper.Online.Result";
+      return "Ash.Wallpaper.Online.Result2";
+    case WallpaperType::kCustomized:
+      return "Ash.Wallpaper.Customized.Result2";
+    case WallpaperType::kOnceGooglePhotos:
+      return "Ash.Wallpaper.OnceGooglePhotos.Result2";
+    case WallpaperType::kDaily:
+      return "Ash.Wallpaper.Daily.Result2";
+    case WallpaperType::kDailyGooglePhotos:
+      return "Ash.Wallpaper.DailyGooglePhotos.Result2";
     default:
       // TODO(b/285387348): Implement other WallpaperType.
       NOTIMPLEMENTED_LOG_ONCE();
@@ -55,7 +62,7 @@ void WallpaperMetricsManager::OnOnlineWallpaperSet(
 }
 
 void WallpaperMetricsManager::OnWallpaperChanged() {
-  UMA_HISTOGRAM_ENUMERATION(
+  base::UmaHistogramEnumeration(
       "Ash.Wallpaper.Type",
       Shell::Get()->wallpaper_controller()->GetWallpaperType(),
       WallpaperType::kCount);
@@ -72,7 +79,7 @@ void WallpaperMetricsManager::LogSettingTimeOfDayWallpaperAfterOobe(
 
 void WallpaperMetricsManager::LogWallpaperResult(WallpaperType type,
                                                  SetWallpaperResult result) {
-  UMA_HISTOGRAM_ENUMERATION(ToResultHistogram(type), result);
+  base::UmaHistogramEnumeration(ToResultHistogram(type), result);
 }
 
 }  // namespace ash

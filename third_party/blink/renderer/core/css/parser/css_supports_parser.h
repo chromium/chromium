@@ -77,7 +77,8 @@ class CORE_EXPORT CSSSupportsParser {
   // <supports-decl> = ( <declaration> )
   Result ConsumeSupportsDecl(const CSSParserToken&, CSSParserTokenStream&);
 
-  // <general-enclosed>
+  // <general-enclosed> = [ <function-token> <any-value>? ) ]
+  //                  | ( <any-value>? )
   Result ConsumeGeneralEnclosed(const CSSParserToken&, CSSParserTokenStream&);
 
   // Parsing helpers.

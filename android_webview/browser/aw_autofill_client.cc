@@ -24,8 +24,10 @@
 #include "components/autofill/core/browser/autofill_download_manager.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
+#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#include "components/autofill/core/common/aliases.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_service_factory.h"
@@ -204,6 +206,10 @@ void AwAutofillClient::ConfirmSaveCreditCardLocally(
   NOTIMPLEMENTED();
 }
 
+void AwAutofillClient::ShowDeleteAddressProfileDialog() {
+  NOTREACHED();
+}
+
 void AwAutofillClient::ConfirmSaveCreditCardToCloud(
     const autofill::CreditCard& card,
     const autofill::LegalMessageLines& legal_message_lines,
@@ -287,15 +293,16 @@ void AwAutofillClient::PinPopupView() {
   NOTIMPLEMENTED();
 }
 
-autofill::AutofillClient::PopupOpenArgs AwAutofillClient::GetReopenPopupArgs()
-    const {
+autofill::AutofillClient::PopupOpenArgs AwAutofillClient::GetReopenPopupArgs(
+    autofill::AutofillSuggestionTriggerSource trigger_source) const {
   NOTIMPLEMENTED();
   return {};
 }
 
 void AwAutofillClient::UpdatePopup(
     const std::vector<autofill::Suggestion>& suggestions,
-    autofill::PopupType popup_type) {
+    autofill::PopupType popup_type,
+    autofill::AutofillSuggestionTriggerSource trigger_source) {
   NOTIMPLEMENTED();
 }
 
@@ -327,12 +334,12 @@ bool AwAutofillClient::IsPasswordManagerEnabled() {
   return false;
 }
 
-void AwAutofillClient::PropagateAutofillPredictions(
+void AwAutofillClient::PropagateAutofillPredictionsDeprecated(
     autofill::AutofillDriver* driver,
     const std::vector<autofill::FormStructure*>& forms) {}
 
 void AwAutofillClient::DidFillOrPreviewForm(
-    autofill::mojom::RendererFormDataAction action,
+    autofill::mojom::AutofillActionPersistence action_persistence,
     autofill::AutofillTriggerSource trigger_source,
     bool is_refill) {}
 
@@ -356,10 +363,6 @@ bool AwAutofillClient::IsContextSecure() const {
          !net::IsCertStatusError(ssl_status.cert_status) &&
          !(ssl_status.content_status &
            content::SSLStatus::RAN_INSECURE_CONTENT);
-}
-
-void AwAutofillClient::ExecuteCommand(autofill::Suggestion::FrontendId id) {
-  NOTIMPLEMENTED();
 }
 
 void AwAutofillClient::OpenPromoCodeOfferDetailsURL(const GURL& url) {
@@ -387,7 +390,9 @@ void AwAutofillClient::SuggestionSelected(JNIEnv* env,
                                           const JavaParamRef<jobject>& object,
                                           jint position) {
   if (delegate_) {
-    delegate_->DidAcceptSuggestion(suggestions_[position], position);
+    delegate_->DidAcceptSuggestion(
+        suggestions_[position], position,
+        autofill::AutofillSuggestionTriggerSource::kAndroidWebView);
   }
 }
 
@@ -445,7 +450,7 @@ void AwAutofillClient::ShowAutofillPopupImpl(
 
     Java_AwAutofillClient_addToAutofillSuggestionArray(
         env, data_array, i, name, label,
-        base::to_underlying(suggestions[i].frontend_id.as_popup_item_id()));
+        base::to_underlying(suggestions[i].popup_item_id));
   }
   ui::ViewAndroid* view_android = GetWebContents().GetNativeView();
   if (!view_android)

@@ -145,7 +145,8 @@ class AuctionV8DevToolsSession::IOSession
                                 std::move(io_session_receiver));
   }
 
-  const raw_ptr<DebugCommandQueue, DanglingUntriaged> debug_command_queue_;
+  const raw_ptr<DebugCommandQueue, AcrossTasksDanglingUntriaged>
+      debug_command_queue_;
   RunDispatch v8_thread_dispatch_;
 
   SEQUENCE_CHECKER(io_session_receiver_sequence_checker_);

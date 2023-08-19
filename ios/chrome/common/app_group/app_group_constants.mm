@@ -4,15 +4,12 @@
 
 #import "ios/chrome/common/app_group/app_group_constants.h"
 
+#import "base/apple/bundle_locations.h"
 #import "base/check.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/version_info/version_info.h"
 #import "ios/chrome/common/app_group/app_group_helper.h"
 #import "ios/chrome/common/ios_app_bundle_id_prefix_buildflags.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace app_group {
 
@@ -44,6 +41,7 @@ const char kChromeAppGroupFocusOmniboxCommand[] = "focusomnibox";
 const char kChromeAppGroupIncognitoSearchCommand[] = "incognitosearch";
 const char kChromeAppGroupQRScannerCommand[] = "qrscanner";
 const char kChromeAppGroupLensCommand[] = "lens";
+const char kChromeAppGroupSearchPasswordsCommand[] = "searchpasswords";
 
 const char kChromeAppGroupSupportsSearchByImage[] = "supportsSearchByImage";
 const char kChromeAppGroupIsGoogleDefaultSearchEngine[] =
@@ -78,7 +76,7 @@ NSString* ApplicationGroup() {
 }
 
 NSString* CommonApplicationGroup() {
-  NSBundle* bundle = [NSBundle mainBundle];
+  NSBundle* bundle = base::apple::FrameworkBundle();
   NSString* group =
       [bundle objectForInfoDictionaryKey:@"KSCommonApplicationGroup"];
   if (![group length]) {

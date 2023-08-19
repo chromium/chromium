@@ -330,7 +330,7 @@ A usage example for two-process synchronization is to sequence access to a
 globally shared drawable such as an AHardwareBuffer on Android, where the
 writer uses a local GL context and the reader is a command buffer context in
 the GPU process. The writer process draws into an AHardwareBuffer-backed
-GLImage in the local GL context, then creates a gpu fence to mark the end of
+SharedImage in the local GL context, then creates a gpu fence to mark the end of
 drawing operations:
 
 ```c++

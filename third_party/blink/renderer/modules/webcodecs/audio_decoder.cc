@@ -134,6 +134,24 @@ absl::optional<media::AudioType> AudioDecoder::IsValidAudioDecoderConfig(
     String* js_error_message) {
   media::AudioType audio_type;
 
+  if (config.numberOfChannels() == 0) {
+    *js_error_message = String::Format(
+        "Invalid channel count; channel count must be non-zero, received %d.",
+        config.numberOfChannels());
+    return absl::nullopt;
+  }
+
+  if (config.sampleRate() == 0) {
+    *js_error_message = String::Format(
+        "Invalid sample rate; sample rate must be non-zero, received %d.",
+        config.sampleRate());
+    return absl::nullopt;
+  }
+
+  if (config.codec().LengthWithStrippedWhiteSpace() == 0) {
+    *js_error_message = "Invalid codec; codec is required.";
+    return absl::nullopt;
+  }
   // Match codec strings from the codec registry:
   // https://www.w3.org/TR/webcodecs-codec-registry/#audio-codec-registry
   if (config.codec() == "ulaw") {
@@ -160,14 +178,10 @@ absl::optional<media::AudioType> AudioDecoder::IsValidAudioDecoderConfig(
   const bool parse_succeeded = ParseAudioCodecString(
       "", config.codec().Utf8(), &is_codec_ambiguous, &codec);
 
-  if (!parse_succeeded) {
-    *js_error_message = "Failed to parse codec string.";
-    return absl::nullopt;
-  }
-
-  if (is_codec_ambiguous) {
-    *js_error_message = "Codec string is ambiguous.";
-    return absl::nullopt;
+  if (!parse_succeeded || is_codec_ambiguous) {
+    *js_error_message = "Unknown or ambiguous codec name.";
+    audio_type = {media::AudioCodec::kUnknown};
+    return audio_type;
   }
 
   audio_type = {codec};
@@ -180,8 +194,14 @@ AudioDecoder::MakeMediaAudioDecoderConfig(const ConfigType& config,
                                           String* js_error_message) {
   absl::optional<media::AudioType> audio_type =
       IsValidAudioDecoderConfig(config, js_error_message);
-  if (!audio_type)
+  if (!audio_type) {
+    // Checked by IsValidConfig().
+    NOTREACHED();
     return absl::nullopt;
+  }
+  if (audio_type->codec == media::AudioCodec::kUnknown) {
+    return absl::nullopt;
+  }
 
   std::vector<uint8_t> extra_data;
   if (config.hasDescription()) {
@@ -206,6 +226,10 @@ AudioDecoder::MakeMediaAudioDecoderConfig(const ConfigType& config,
       audio_type->codec, media::kSampleFormatPlanarF32, channel_layout,
       config.sampleRate(), extra_data, media::EncryptionScheme::kUnencrypted,
       base::TimeDelta() /* seek preroll */, 0 /* codec delay */);
+  if (!media_config.IsValidConfig()) {
+    *js_error_message = "Unsupported config.";
+    return absl::nullopt;
+  }
 
   return media_config;
 }

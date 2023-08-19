@@ -96,10 +96,15 @@ void TestAgainstCloneOrSelf(pid_t pid) {
 
   ProcessMemoryLinux memory(&connection);
 
+// AT_PLATFORM is null for RISC-V:
+// https://elixir.bootlin.com/linux/v6.4-rc4/C/ident/ELF_PLATFORM
+#if !defined(ARCH_CPU_RISCV64)
   LinuxVMAddress platform_addr;
   ASSERT_TRUE(aux.GetValue(AT_PLATFORM, &platform_addr));
   std::string platform;
   ASSERT_TRUE(memory.ReadCStringSizeLimited(platform_addr, 10, &platform));
+#endif  // ARCH_CPU_RISCV64
+
 #if defined(ARCH_CPU_X86)
   EXPECT_STREQ(platform.c_str(), "i686");
 #elif defined(ARCH_CPU_X86_64)

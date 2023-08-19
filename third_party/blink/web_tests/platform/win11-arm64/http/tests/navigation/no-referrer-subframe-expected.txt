@@ -1,0 +1,4 @@
+This tests behavior of "noreferrer" links in subframes. A referrer should not be sent and window.opener should remain null.
+Load subframe 
+Referrer: Warning: Undefined array key "HTTP_REFERER" in C:\b\s\w\ir\third_party\blink\web_tests\http\tests\navigation\resources\no-referrer-helper.php on line 10
+window.opener:

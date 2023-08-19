@@ -184,6 +184,10 @@ class LaunchCommand(object):
         if self.cert_path:
           iossim_util.copy_trusted_certificate(self.cert_path, self.uuid)
 
+        # ideally this should be the last step before running tests, because
+        # it boots the simulator.
+        iossim_util.disable_simulator_keyboard_tutorial(self.udid)
+
       outdir_attempt = os.path.join(self.out_dir, 'attempt_%d' % attempt)
       cmd_list = self.egtests_app.command(outdir_attempt, 'id=%s' % self.udid,
                                           shards)
@@ -191,12 +195,6 @@ class LaunchCommand(object):
       LOGGER.info('Start test attempt #%d for command [%s]' % (
           attempt, ' '.join(cmd_list)))
       output = self.launch_attempt(cmd_list)
-
-      if hasattr(self, 'use_clang_coverage') and self.use_clang_coverage:
-        # out_dir of LaunchCommand object is the TestRunner out_dir joined with
-        # UDID. Use os.path.dirname to retrieve the TestRunner out_dir.
-        file_util.move_raw_coverage_data(self.udid,
-                                         os.path.dirname(self.out_dir))
 
       result = self._log_parser.collect_test_results(outdir_attempt, output)
 
@@ -286,10 +284,6 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
     self.logs = collections.OrderedDict()
     self.release = kwargs.get('release') or False
     self.test_results['path_delimiter'] = '/'
-    # Do not enable parallel testing when code coverage is enabled, because raw
-    # coverage data won't be produced with parallel testing.
-    if hasattr(self, 'use_clang_coverage') and self.use_clang_coverage:
-      self.shards = 1
 
     # initializing test plugin service
     self.test_plugin_service = None
@@ -452,6 +446,7 @@ class DeviceXcodeTestRunner(SimulatorParallelTestRunner,
     """Performs setup actions which must occur prior to every test launch."""
     self.uninstall_apps()
     self.wipe_derived_data()
+    self.restart_usbmuxd()
 
   def tear_down(self):
     """Performs cleanup actions which must occur after every test launch."""

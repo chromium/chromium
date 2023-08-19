@@ -113,8 +113,8 @@ namespace audio {
     //     audio devices. If the filter is not set or set to <code>{}</code>,
     //     returned device list will contain all available audio devices.
     // |callback|: Reports the requested list of audio devices.
-    static void getDevices(optional DeviceFilter filter,
-                           GetDevicesCallback callback);
+    [supportsPromises] static void getDevices(optional DeviceFilter filter,
+                                              GetDevicesCallback callback);
 
     // Sets lists of active input and/or output devices.
     // |ids|: <p>Specifies IDs of devices that should be active. If either the
@@ -122,27 +122,28 @@ namespace audio {
     //     unaffected.
     //     </p>
     //     <p>It is an error to pass in a non-existent device ID.</p>
-    static void setActiveDevices(DeviceIdLists ids,
-                                 EmptyCallback callback);
+    [supportsPromises] static void setActiveDevices(DeviceIdLists ids,
+                                                    EmptyCallback callback);
 
     // Sets the properties for the input or output device.
-    static void setProperties(DOMString id,
-                              DeviceProperties properties,
-                              EmptyCallback callback);
+    [supportsPromises] static void setProperties(DOMString id,
+                                                 DeviceProperties properties,
+                                                 EmptyCallback callback);
 
     // Gets the system-wide mute state for the specified stream type.
     // |streamType|: Stream type for which mute state should be fetched.
     // |callback|: Callback reporting whether mute is set or not for specified
     // stream type.
-    static void getMute(StreamType streamType, GetMuteCallback callback);
+    [supportsPromises] static void getMute(StreamType streamType,
+                                           GetMuteCallback callback);
 
     // Sets mute state for a stream type. The mute state will apply to all audio
     // devices with the specified audio stream type.
     // |streamType|: Stream type for which mute state should be set.
     // |isMuted|: New mute value.
-    static void setMute(StreamType streamType,
-                        boolean isMuted,
-                        optional EmptyCallback callback);
+    [supportsPromises] static void setMute(StreamType streamType,
+                                           boolean isMuted,
+                                           optional EmptyCallback callback);
   };
 
   interface Events {

@@ -19,7 +19,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   FuzzedDataProvider provider(data, size);
 
   std::string der = provider.ConsumeRandomLengthString();
-  net::der::Parser parser = net::der::Parser(net::der::Input(&der));
+  net::der::Parser parser = net::der::Parser(net::der::Input(der));
   while (provider.remaining_bytes()) {
     switch (provider.ConsumeIntegralInRange<int>(0, 13)) {
       case 0: {

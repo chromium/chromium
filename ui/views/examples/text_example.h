@@ -78,6 +78,9 @@ class VIEWS_EXAMPLES_EXPORT TextExample : public ExampleBase {
 
   // Check box to enable/disable underline style.
   raw_ptr<Checkbox> underline_checkbox_;
+
+  // Check box to enable/disable underline style.
+  raw_ptr<Checkbox> strike_checkbox_;
 };
 
 }  // namespace examples

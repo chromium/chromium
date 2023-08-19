@@ -73,8 +73,7 @@ public class ReparentingTask implements UserData {
         return reparentingTask;
     }
 
-    @Nullable
-    public static ReparentingTask get(Tab tab) {
+    public static @Nullable ReparentingTask get(Tab tab) {
         return tab.getUserDataHost().getUserData(USER_DATA_KEY);
     }
 

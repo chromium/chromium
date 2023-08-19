@@ -22,6 +22,7 @@ bool FeatureHasExpiryGracePeriod(OriginTrialFeature feature) {
       OriginTrialFeature::kOriginTrialsSampleAPIPersistentExpiryGracePeriod,
       // Production grace period trials start here:
       OriginTrialFeature::kWebViewXRequestedWithDeprecation,
+      OriginTrialFeature::kRTCEncodedFrameSetMetadata,
   };
   return base::Contains(kHasExpiryGracePeriod, feature);
 }

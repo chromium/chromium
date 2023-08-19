@@ -22,10 +22,6 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using autofill_address_profile_infobar_overlays::
     SaveAddressProfileBannerRequestConfig;
 
@@ -50,7 +46,7 @@ TEST_F(SaveAddressProfileInfobarBannerOverlayMediatorTest, SetUpConsumer) {
       passed_delegate = std::make_unique<
           autofill::AutofillSaveUpdateAddressProfileDelegateIOS>(
           profile, /*original_profile=*/nullptr,
-          /*syncing_user_email=*/absl::nullopt,
+          /*user_email=*/absl::nullopt,
           /*locale=*/"en-US",
           autofill::AutofillClient::SaveAddressProfilePromptOptions{},
           base::DoNothing());
@@ -90,7 +86,7 @@ TEST_F(SaveAddressProfileInfobarBannerOverlayMediatorTest,
       passed_delegate = std::make_unique<
           autofill::AutofillSaveUpdateAddressProfileDelegateIOS>(
           profile, /*original_profile=*/nullptr,
-          /*syncing_user_email=*/absl::nullopt,
+          /*user_email=*/absl::nullopt,
           /*locale=*/"en-US",
           autofill::AutofillClient::SaveAddressProfilePromptOptions{},
           base::DoNothing());

@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/metrics/quality_metrics.h"
 
 #include "base/containers/contains.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
@@ -43,11 +44,10 @@ void LogQualityMetrics(
   autofill_metrics::FormGroupFillingStats address_field_stats;
   autofill_metrics::FormGroupFillingStats cc_field_stats;
 
-  // Count the number of filled (and corrected) fields which used to not get a
-  // type prediction due to autocomplete=unrecognized. Note that credit card
-  // related fields are excluded from this since an unrecognized autocomplete
-  // attribute has no effect for them even if
-  // |kAutofillFillAndImportFromMoreFields| is disabled.
+  // Count the number of autofilled and corrected non-credit card fields with
+  // ac=unrecognized.
+  // Note that this can be misleading, since autocompleted fields count as
+  // autofilled.
   size_t num_of_accepted_autofilled_fields_with_autocomplete_unrecognized = 0;
   size_t num_of_corrected_autofilled_fields_with_autocomplete_unrecognized = 0;
 
@@ -236,12 +236,12 @@ void LogQualityMetrics(
     // launched.
     if (field->is_autofilled) {
       ++num_of_accepted_autofilled_fields;
-      if (field->HasPredictionDespiteUnrecognizedAutocompleteAttribute()) {
+      if (field->ShouldSuppressSuggestionsAndFillingByDefault()) {
         ++num_of_accepted_autofilled_fields_with_autocomplete_unrecognized;
       }
     } else if (field->previously_autofilled()) {
       ++num_of_corrected_autofilled_fields;
-      if (field->HasPredictionDespiteUnrecognizedAutocompleteAttribute()) {
+      if (field->ShouldSuppressSuggestionsAndFillingByDefault()) {
         ++num_of_corrected_autofilled_fields_with_autocomplete_unrecognized;
       }
     }
@@ -265,15 +265,19 @@ void LogQualityMetrics(
       }
     }
 
-    // If the form was submitted, record if field types have been filled and
-    // subsequently edited by the user.
     if (observed_submission) {
+      // If the form was submitted, record if field types have been filled and
+      // subsequently edited by the user.
       if (field->is_autofilled || field->previously_autofilled()) {
         // TODO(crbug.com/1368096): This metric is defective because it is
         // conditioned on having a possible field type. Remove after M112.
         AutofillMetrics::LogEditedAutofilledFieldAtSubmissionDeprecated(
             form_interactions_ukm_logger, form_structure, *field);
       }
+
+      base::UmaHistogramEnumeration(
+          "Autofill.LabelInference.InferredLabelSource.AtSubmission",
+          field->label_source);
     }
   }
 

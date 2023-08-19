@@ -38,6 +38,16 @@ std::string NearbyConnectionsManager::ConnectionsStatusToString(
       return "kWifiLanError";
     case ConnectionsStatus::kPayloadUnknown:
       return "kPayloadUnknown";
+    case ConnectionsStatus::kAlreadyListening:
+      return "kAlreadyListening";
+    case ConnectionsStatus::kReset:
+      return "kReset";
+    case ConnectionsStatus::kTimeout:
+      return "kTimeout";
+    case ConnectionsStatus::kUnknown:
+      return "kUnknown";
+    case ConnectionsStatus::kNextValue:
+      return "kNextValue";
   }
 }
 

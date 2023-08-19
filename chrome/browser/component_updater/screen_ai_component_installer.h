@@ -44,9 +44,14 @@ class ScreenAIComponentInstallerPolicy : public ComponentInstallerPolicy {
 };
 
 // Call once during startup to make the component update service aware of
-// the ScreenAI component.
-void RegisterScreenAIComponent(ComponentUpdateService* cus,
-                               PrefService* local_state);
+// the ScreenAI component. Only registers the component if the component is
+// expected to be used, otherwise removes it if it exists from before.
+void ManageScreenAIComponentRegistration(ComponentUpdateService* cus,
+                                         PrefService* local_state);
+
+// Called if ScreenAI component should be installed based on a user trigger of
+// a required functionality.
+void RegisterScreenAIComponent(ComponentUpdateService* cus);
 
 }  // namespace component_updater
 

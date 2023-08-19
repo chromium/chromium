@@ -11,7 +11,6 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/default_tick_clock.h"
@@ -46,15 +45,6 @@ const int kMaxResultAgeMs = 5000;
 // connectivity.
 const uint8_t kGooglePublicDns1[] = {8, 8, 8, 8};
 const uint8_t kGooglePublicDns2[] = {8, 8, 4, 4};
-
-void HistogramProbe(error_page::DnsProbeStatus status,
-                    base::TimeDelta elapsed) {
-  DCHECK(error_page::DnsProbeStatusIsFinished(status));
-
-  UMA_HISTOGRAM_ENUMERATION("DnsProbe.ProbeResult", status,
-                            error_page::DNS_PROBE_MAX);
-  UMA_HISTOGRAM_MEDIUM_TIMES("DnsProbe.ProbeDuration2", elapsed);
-}
 
 network::mojom::NetworkContext* GetNetworkContextForProfile(
     content::BrowserContext* context) {
@@ -282,8 +272,6 @@ void DnsProbeServiceImpl::OnProbeComplete() {
   cached_result_ = EvaluateResults(current_config_runner_->result(),
                                    google_config_runner_->result());
   state_ = STATE_RESULT_CACHED;
-
-  HistogramProbe(cached_result_, tick_clock_->NowTicks() - probe_start_time_);
 
   CallCallbacks();
 }

@@ -28,7 +28,7 @@ class WindowDeleter : public aura::WindowObserver {
   }
 
  private:
-  raw_ptr<aura::Window, ExperimentalAsh> target_;
+  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> target_;
 };
 
 }  // namespace

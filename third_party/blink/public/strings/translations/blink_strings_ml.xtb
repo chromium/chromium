@@ -26,7 +26,6 @@
 <translation id="2060505056492490888">'<ph name="DOT" />', '<ph name="INVALIDDOMAIN" />' എന്നതിൽ തെറ്റായ സ്ഥാനത്താണ് ഉപയോഗിച്ചിരിക്കുന്നത്.</translation>
 <translation id="2148716181193084225">ഇന്ന്</translation>
 <translation id="2226276347425096477">ഈ വാചകത്തെ <ph name="MAX_CHARACTERS" /> അല്ലെങ്കില്‍ അതില്‍‌ക്കുറവ് പ്രതീകങ്ങളായി ദയവായി കുറയ്ക്കുക (നിങ്ങള്‍ നിലവില്‍ <ph name="CURRENT_LENGTH" /> പ്രതീകങ്ങള്‍ ഉപയോഗിക്കുകയാണ്).</translation>
-<translation id="2246498165605549352">ലോക്കൽ ഫയൽ</translation>
 <translation id="2247351761944213033">ആഴ്‌ച <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ട്രാക്ക് <ph name="NUMBER" /></translation>
 <translation id="2393030564806080191">ഹെക്‌സാഡെസിമല്‍ വർണ മൂല്യം</translation>
@@ -89,6 +88,7 @@
 <translation id="5425179576310518467">നിലവിലെ തീയതി</translation>
 <translation id="5466621249238537318">ഒന്നോ അതില്‍ക്കൂടുതലോ ഫയലുകള്‍ ദയവായി തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="5468998798572797635">പൂർണ്ണ സ്‌ക്രീനിൽ നിന്ന് പുറത്തുകടക്കുക</translation>
+<translation id="5514612371225420585">നിങ്ങളുടെ ഉപകരണത്തിലെ ഫയൽ</translation>
 <translation id="5516235301412634559">0.75</translation>
 <translation id="5537725057119320332">കാസ്റ്റ്</translation>
 <translation id="5546461542133609677">ശബ്‌ദമുള്ളതാക്കുക</translation>
@@ -113,6 +113,7 @@
 <translation id="6398862346408813489">മാസം തിരഞ്ഞെടുക്കുന്ന പാനൽ കാണിക്കുക</translation>
 <translation id="6404546809543547843">ഓഡിയോ സമയ സ്‌ക്രബർ</translation>
 <translation id="6443871981718447451">സബ്‌ടൈറ്റിൽ മെനു കാണിക്കുക</translation>
+<translation id="6484738902856791350">പ്രെറ്റി പ്രിന്റ്</translation>
 <translation id="6550675742724504774">ഓപ്ഷനുകൾ</translation>
 <translation id="6572309429103589720">അസാധുവായ വ്യാകരണം</translation>
 <translation id="658823671542763450">പൂർണ്ണ സ്‌ക്രീനിലേക്ക് പോവുക</translation>

@@ -28,29 +28,6 @@ bool WebTouchEventTraits::AllTouchPointsHaveState(
   return true;
 }
 
-bool WebTouchEventTraits::IsTouchSequenceStart(const WebTouchEvent& event) {
-  DCHECK(event.touches_length ||
-         event.GetType() == WebInputEvent::Type::kTouchScrollStarted);
-  if (event.GetType() != WebInputEvent::Type::kTouchStart)
-    return false;
-  return AllTouchPointsHaveState(event,
-                                 blink::WebTouchPoint::State::kStatePressed);
-}
-
-bool WebTouchEventTraits::IsTouchSequenceEnd(const WebTouchEvent& event) {
-  if (event.GetType() != WebInputEvent::Type::kTouchEnd &&
-      event.GetType() != WebInputEvent::Type::kTouchCancel)
-    return false;
-  if (!event.touches_length)
-    return true;
-  for (size_t i = 0; i < event.touches_length; ++i) {
-    if (event.touches[i].state != blink::WebTouchPoint::State::kStateReleased &&
-        event.touches[i].state != blink::WebTouchPoint::State::kStateCancelled)
-      return false;
-  }
-  return true;
-}
-
 void WebTouchEventTraits::ResetType(WebInputEvent::Type type,
                                     base::TimeTicks timestamp,
                                     WebTouchEvent* event) {

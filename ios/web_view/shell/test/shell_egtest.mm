@@ -14,10 +14,6 @@
 #import "ios/web_view/test/web_view_test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Returns current web view for root view controller.
@@ -79,7 +75,7 @@ void WaitForWebViewContainingText(NSString* text) {
   std::string URLSpec = _testServer->GetURL("/destination.html").spec();
 
   [[EarlGrey selectElementWithMatcher:ios_web_view::AddressField()]
-      performAction:grey_typeText(base::SysUTF8ToNSString(URLSpec))];
+      performAction:grey_replaceText(base::SysUTF8ToNSString(URLSpec))];
 
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Go")]
       performAction:grey_tap()];

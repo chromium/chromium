@@ -17,6 +17,7 @@ class COMPONENT_EXPORT(VR_CARDBOARD) CardboardSdkImpl : public CardboardSdk {
   ~CardboardSdkImpl() override;
 
   void Initialize(jobject context) override;
+  void SwitchViewer() override;
 
   CardboardSdkImpl(const CardboardSdkImpl&) = delete;
   CardboardSdkImpl& operator=(const CardboardSdkImpl&) = delete;

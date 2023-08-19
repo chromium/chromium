@@ -38,6 +38,11 @@ DlpContentObserver* DlpContentObserver::Get() {
   return g_dlp_content_observer;
 }
 
+// static
+bool DlpContentObserver::HasInstance() {
+  return g_dlp_content_observer != nullptr;
+}
+
 /* static */
 void DlpContentObserver::SetDlpContentObserverForTesting(
     DlpContentObserver* dlp_content_observer) {

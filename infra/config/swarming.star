@@ -44,7 +44,7 @@ swarming.task_triggerers(
     builder_realm = "@root",
     pool_realm = "@root",
     groups = [
-        "mdb/chrome-troopers",
+        "mdb/chrome-browser-infra",
     ],
 )
 

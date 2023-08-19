@@ -8,16 +8,13 @@
 
 #include "base/containers/fixed_flat_set.h"
 #import "skia/ext/skia_utils_mac.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
-#include "ui/color/color_provider_manager.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/color/color_recipe.h"
 #include "ui/gfx/color_palette.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace ui {
 
@@ -43,16 +40,14 @@ struct AppearanceProperties {
   bool high_contrast;
 };
 
-AppearanceProperties AppearancePropertiesForKey(
-    const ColorProviderManager::Key& key) {
+AppearanceProperties AppearancePropertiesForKey(const ColorProviderKey& key) {
   return AppearanceProperties{
-      .dark = key.color_mode == ColorProviderManager::ColorMode::kDark,
+      .dark = key.color_mode == ColorProviderKey::ColorMode::kDark,
       .high_contrast =
-          key.contrast_mode == ColorProviderManager::ContrastMode::kHigh};
+          key.contrast_mode == ColorProviderKey::ContrastMode::kHigh};
 }
 
-NSAppearance* AppearanceForKey(const ColorProviderManager::Key& key)
-    API_AVAILABLE(macos(10.14)) {
+NSAppearance* AppearanceForKey(const ColorProviderKey& key) {
   AppearanceProperties properties = AppearancePropertiesForKey(key);
 
   // TODO(crbug.com/1420707): How does this work? The documentation says that
@@ -76,25 +71,21 @@ NSAppearance* AppearanceForKey(const ColorProviderManager::Key& key)
 }  // namespace
 
 void AddNativeCoreColorMixer(ColorProvider* provider,
-                             const ColorProviderManager::Key& key) {
+                             const ColorProviderKey& key) {
   auto load_colors = ^{
     ColorMixer& mixer = provider->AddMixer();
     mixer[kColorItemHighlight] = {SkColorSetA(
         skia::NSSystemColorToSkColor(NSColor.keyboardFocusIndicatorColor),
         0x66)};
-    mixer[kColorTextSelectionBackground] = {
-        skia::NSSystemColorToSkColor(NSColor.selectedTextBackgroundColor)};
   };
 
   if (@available(macOS 11, *)) {
     [AppearanceForKey(key) performAsCurrentDrawingAppearance:load_colors];
-  } else if (@available(macOS 10.14, *)) {
+  } else {
     NSAppearance* saved_appearance = NSAppearance.currentAppearance;
     NSAppearance.currentAppearance = AppearanceForKey(key);
     load_colors();
     NSAppearance.currentAppearance = saved_appearance;
-  } else {
-    load_colors();
   }
 }
 
@@ -107,32 +98,32 @@ void AddNativeColorSetInColorMixer(ColorMixer& mixer) {
 }
 
 void AddNativeUiColorMixer(ColorProvider* provider,
-                           const ColorProviderManager::Key& key) {
+                           const ColorProviderKey& key) {
   auto load_colors = ^{
     AppearanceProperties properties = AppearancePropertiesForKey(key);
 
     ColorMixer& mixer = provider->AddMixer();
 
-    // TODO(crbug.com/1268521): Investigate native color set behaviour for dark
-    // windows on macOS versions running < 10.14.
-    if (@available(macOS 10.14, *)) {
-      AddNativeColorSetInColorMixer(mixer);
-    } else if (!properties.dark) {
-      AddNativeColorSetInColorMixer(mixer);
+    AddNativeColorSetInColorMixer(mixer);
+
+    mixer[kColorTableBackgroundAlternate] = {skia::NSSystemColorToSkColor(
+        NSColor.alternatingContentBackgroundColors[1])};
+    if (!key.user_color.has_value()) {
+      mixer[kColorSysStateFocusRing] = {SkColorSetA(
+          skia::NSSystemColorToSkColor(NSColor.keyboardFocusIndicatorColor),
+          0x66)};
+    }
+    if (!features::IsChromeRefresh2023()) {
+      SkColor menu_separator_color =
+          properties.dark ? SkColorSetA(gfx::kGoogleGrey800, 0xCC)
+                          : SkColorSetA(SK_ColorBLACK, 0x26);
+      mixer[kColorMenuSeparator] = {menu_separator_color};
     }
 
-    if (@available(macOS 10.14, *)) {
-      mixer[kColorTableBackgroundAlternate] = {skia::NSSystemColorToSkColor(
-          NSColor.alternatingContentBackgroundColors[1])};
-    } else {
-      mixer[kColorTableBackgroundAlternate] = {skia::NSSystemColorToSkColor(
-          NSColor.controlAlternatingRowBackgroundColors[1])};
+    if (!features::IsChromeRefresh2023() || !key.user_color.has_value()) {
+      mixer[kColorTextSelectionBackground] = {
+          skia::NSSystemColorToSkColor(NSColor.selectedTextBackgroundColor)};
     }
-
-    SkColor menu_separator_color = properties.dark
-                                       ? SkColorSetA(gfx::kGoogleGrey800, 0xCC)
-                                       : SkColorSetA(SK_ColorBLACK, 0x26);
-    mixer[kColorMenuSeparator] = {menu_separator_color};
 
     if (!properties.high_contrast) {
       return;
@@ -146,18 +137,16 @@ void AddNativeUiColorMixer(ColorProvider* provider,
 
   if (@available(macOS 11, *)) {
     [AppearanceForKey(key) performAsCurrentDrawingAppearance:load_colors];
-  } else if (@available(macOS 10.14, *)) {
+  } else {
     NSAppearance* saved_appearance = NSAppearance.currentAppearance;
     NSAppearance.currentAppearance = AppearanceForKey(key);
     load_colors();
     NSAppearance.currentAppearance = saved_appearance;
-  } else {
-    load_colors();
   }
 }
 
 void AddNativePostprocessingMixer(ColorProvider* provider,
-                                  const ColorProviderManager::Key& key) {
+                                  const ColorProviderKey& key) {
   ColorMixer& mixer = provider->AddPostprocessingMixer();
 
   for (ColorId id = kUiColorsStart; id < kUiColorsEnd; ++id) {

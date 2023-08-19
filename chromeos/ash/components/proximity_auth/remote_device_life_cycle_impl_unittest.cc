@@ -161,7 +161,8 @@ class ProximityAuthRemoteDeviceLifeCycleImplTest
       fake_secure_channel_client_;
   TestableRemoteDeviceLifeCycleImpl life_cycle_;
 
-  raw_ptr<ash::secure_channel::FakeConnectionAttempt, ExperimentalAsh>
+  raw_ptr<ash::secure_channel::FakeConnectionAttempt,
+          DanglingUntriaged | ExperimentalAsh>
       fake_connection_attempt_;
 
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;

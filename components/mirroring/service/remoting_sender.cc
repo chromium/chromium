@@ -44,7 +44,7 @@ constexpr char kHistogramAudioFrameDropped[] =
 constexpr char kHistogramVideoFrameDropped[] =
     "CastStreaming.Sender.Remoting.Video.FrameDropped";
 
-// Maximum number of consecuitive EnqueueFrame() calls that may be made before
+// Maximum number of consecutive EnqueueFrame() calls that may be made before
 // frames begin being dropped.
 constexpr int kMaxEnqueueFrameFailures = 3;
 
@@ -52,8 +52,12 @@ constexpr int kMaxEnqueueFrameFailures = 3;
 
 class RemotingSender::SenderEncodedFrameFactory {
  public:
-  explicit SenderEncodedFrameFactory(int rtp_timebase)
-      : rtp_timebase_(rtp_timebase) {
+  SenderEncodedFrameFactory(int rtp_timebase,
+                            media::cast::FrameSender& frame_sender,
+                            const base::TickClock& clock)
+      : rtp_timebase_(rtp_timebase),
+        frame_sender_(frame_sender),
+        clock_(clock) {
     // TODO(crbug.com/1413561): validate that we can use an arbitrary timebase
     // here. Some receivers may require us to use the hardcoded remoting RTP
     // timebase.
@@ -77,32 +81,37 @@ class RemotingSender::SenderEncodedFrameFactory {
     remoting_frame->data =
         std::string(reinterpret_cast<const char*>(data.data()), data.size());
 
-    // Handle End Of Stream events differently, because they fail DCHECK in most
-    // accessor methods.
-    base::TimeDelta pts;
-    if (decoder_buffer.end_of_stream()) {
-      remoting_frame->dependency = Dependency::kDependent;
-      pts = last_frame_pts_ + base::Microseconds(1);
-    } else {
-      remoting_frame->dependency = decoder_buffer.is_key_frame()
-                                       ? Dependency::kKeyFrame
-                                       : Dependency::kDependent;
-      pts = decoder_buffer.timestamp();
-    }
-    last_frame_pts_ = pts;
-
+    const bool is_key_frame =
+        !decoder_buffer.end_of_stream() && decoder_buffer.is_key_frame();
+    remoting_frame->dependency =
+        is_key_frame ? Dependency::kKeyFrame : Dependency::kDependent;
     remoting_frame->referenced_frame_id =
-        remoting_frame->dependency == Dependency::kKeyFrame ? frame_id
-                                                            : frame_id - 1;
+        is_key_frame ? frame_id : frame_id - 1;
+    remoting_frame->reference_time = clock_->NowTicks();
+    remoting_frame->encode_completion_time = remoting_frame->reference_time;
 
-    // TODO(crbug.com/1409620): Use duration for reference_time and
-    // encode_completion_time instead of timestamp.
-    const auto timestamp = base::TimeTicks() + pts;
-    remoting_frame->reference_time = timestamp;
-    remoting_frame->encode_completion_time = timestamp;
-    remoting_frame->rtp_timestamp =
-        media::cast::RtpTimeTicks() +
-        media::cast::ToRtpTimeDelta(pts, rtp_timebase_);
+    base::TimeTicks last_frame_reference_time;
+    media::cast::RtpTimeTicks last_frame_rtp_timestamp;
+    const bool is_first_frame = (frame_id == media::cast::FrameId::first());
+    if (is_first_frame) {
+      last_frame_reference_time = remoting_frame->reference_time;
+      last_frame_rtp_timestamp =
+          media::cast::RtpTimeTicks() - media::cast::RtpTimeDelta::FromTicks(1);
+    } else {
+      last_frame_reference_time = frame_sender_->LastSendTime();
+      last_frame_rtp_timestamp =
+          frame_sender_->GetRecordedRtpTimestamp(frame_id - 1);
+    }
+
+    // Ensure each successive frame's RTP timestamp is unique, but otherwise
+    // just base it on the reference time.
+    const media::cast::RtpTimeTicks rtp_timestamp =
+        last_frame_rtp_timestamp +
+        std::max(media::cast::RtpTimeDelta::FromTicks(1),
+                 media::cast::ToRtpTimeDelta(
+                     remoting_frame->reference_time - last_frame_reference_time,
+                     rtp_timebase_));
+    remoting_frame->rtp_timestamp = rtp_timestamp;
 
     return remoting_frame;
   }
@@ -113,13 +122,14 @@ class RemotingSender::SenderEncodedFrameFactory {
   // The RTP timebase for this sender, set from the FrameSenderConfig.
   const int rtp_timebase_;
 
-  // The totan number of times CreateEncodedFrame() has been called.
-  int64_t frames_created_ = 0;
+  // The frame sender for this frame creator.
+  raw_ref<media::cast::FrameSender> const frame_sender_;
 
-  // The PTS of the last frame processed by the CreateEncodedFrame() function.
-  // Used only to "fake" a pts value for an EOS buffer, for which
-  // DecoderBuffer::timestamp() cannot be called.
-  base::TimeDelta last_frame_pts_ = base::Seconds(0);
+  // The clock.
+  raw_ref<const base::TickClock> const clock_;
+
+  // The total number of times CreateEncodedFrame() has been called.
+  int64_t frames_created_ = 0;
 };
 
 RemotingSender::RemotingSender(
@@ -176,7 +186,9 @@ RemotingSender::RemotingSender(
       is_audio_(config.rtp_payload_type <=
                 media::cast::RtpPayloadType::REMOTE_AUDIO),
       frame_factory_(
-          std::make_unique<SenderEncodedFrameFactory>(config.rtp_timebase)) {
+          std::make_unique<SenderEncodedFrameFactory>(config.rtp_timebase,
+                                                      *frame_sender_,
+                                                      *clock_)) {
   stream_sender_.set_disconnect_handler(base::BindOnce(
       &RemotingSender::OnRemotingDataStreamError, base::Unretained(this)));
 
@@ -277,10 +289,13 @@ void RemotingSender::TrySendFrame() {
 
     flow_restart_pending_ = false;
     next_frame_id_++;
-    consecuitive_enqueue_frame_failure_count_ = 0;
+    consecutive_enqueue_frame_failure_count_ = 0;
 
     ClearCurrentFrame();
     return;
+  } else {
+    DLOG(WARNING) << "Dropped a frame for reason code="
+                  << static_cast<int>(reason);
   }
 
   // If EnqueueFrame() has been failing repeatedly or the failure was due to the
@@ -291,7 +306,7 @@ void RemotingSender::TrySendFrame() {
   // By only dropping frames in such edge cases, all determinations about what
   // frames can / can't be dropped are delegated to the Renderer process and the
   // DemuxerStream::Read() function, rather than trying to "guess" here.
-  if (++consecuitive_enqueue_frame_failure_count_ > kMaxEnqueueFrameFailures) {
+  if (++consecutive_enqueue_frame_failure_count_ > kMaxEnqueueFrameFailures) {
     DLOG(WARNING) << "Dropped frame due to repeated EnqueueFrame() failures.";
     ClearCurrentFrame();
   } else if (reason ==

@@ -12,8 +12,10 @@
 #include "base/check.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
+#include "components/viz/service/debugger/viz_debugger.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/codec/SkCodec.h"
+#include "third_party/skia/include/codec/SkPngDecoder.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 #if VIZ_DEBUGGER_IS_ON()
@@ -93,17 +95,14 @@ void VisualDebuggerTestBase::SetFilter(std::vector<TestFilter> filters) {
 void VisualDebuggerTestBase::GetFrameData(bool clear_cache) {
   if (clear_cache) {
     sources_cache_.clear();
-    draw_rect_calls_cache_.clear();
+    draw_calls_cache_.clear();
     log_calls_cache_.clear();
-    draw_text_calls_cache_.clear();
     buffers_.clear();
   }
 
   GetInternal()->GetRWLock()->WriteLock();
   size_t const kNumDrawCallSubmission = static_cast<size_t>(std::min(
       GetInternal()->GetRectCallsTailIdx(), GetInternal()->GetRectCallsSize()));
-  size_t const kNumTextCallSubmission = static_cast<size_t>(std::min(
-      GetInternal()->GetTextCallsTailIdx(), GetInternal()->GetTextCallsSize()));
   size_t const kNumLogSubmission = static_cast<size_t>(
       std::min(GetInternal()->GetLogsTailIdx(), GetInternal()->GetLogsSize()));
 
@@ -177,8 +176,8 @@ void VisualDebuggerTestBase::GetFrameData(bool clear_cache) {
 
     const base::Value::List* list_size = local_dict.FindList("size");
     EXPECT_TRUE(list_size);
-    int size_x = (*list_size)[0].GetIfInt().value_or(kNoVal);
-    int size_y = (*list_size)[1].GetIfInt().value_or(kNoVal);
+    float size_x = (*list_size)[0].GetIfDouble().value_or(kNoVal);
+    float size_y = (*list_size)[1].GetIfDouble().value_or(kNoVal);
 
     const base::Value::List* list_pos = local_dict.FindList("pos");
     EXPECT_TRUE(list_pos);
@@ -200,12 +199,14 @@ void VisualDebuggerTestBase::GetFrameData(bool clear_cache) {
     }
 
     const absl::optional<int> buffer_id = local_dict.FindInt("buff_id");
+    const std::string* text_str = local_dict.FindString("text");
     VizDebuggerInternal::DrawCall draw_call(
-        draw_index, source_index, thread_id, option, gfx::Size(size_x, size_y),
+        draw_index, source_index, thread_id, option, gfx::SizeF(size_x, size_y),
         gfx::Vector2dF(pos_x, pos_y), buffer_id ? buffer_id.value() : -1,
-        gfx::RectF(uv_pos_x, uv_pos_y, uv_size_w, uv_size_h));
+        gfx::RectF(uv_pos_x, uv_pos_y, uv_size_w, uv_size_h),
+        text_str ? (*text_str) : std::string());
 
-    draw_rect_calls_cache_.push_back(draw_call);
+    draw_calls_cache_.push_back(draw_call);
   }
 
   const base::Value::Dict* buffer_map_dict = global_dict.FindDict("buff_map");
@@ -230,12 +231,16 @@ void VisualDebuggerTestBase::GetFrameData(bool clear_cache) {
       // into |buff.bitmap| before we release |image_bytes|.
       sk_sp<SkData> data =
           SkData::MakeWithoutCopy(image_bytes->data(), image_bytes->size());
-      std::unique_ptr<SkCodec> codec = SkCodec::MakeFromData(data);
+      SkCodec::Result decode_result;
+      std::unique_ptr<SkCodec> codec =
+          SkPngDecoder::Decode(data, &decode_result);
+      EXPECT_EQ(SkCodec::Result::kSuccess, decode_result);
 
       VizDebuggerInternal::BufferInfo buff;
       buff.bitmap.allocPixels(codec->getInfo());
-      const SkCodec::Result result = codec->getPixels(buff.bitmap.pixmap());
-      EXPECT_EQ(SkCodec::Result::kSuccess, result);
+      const SkCodec::Result read_result =
+          codec->getPixels(buff.bitmap.pixmap());
+      EXPECT_EQ(SkCodec::Result::kSuccess, read_result);
 
       int id;
       base::StringToInt(itr->first, &id);
@@ -244,31 +249,6 @@ void VisualDebuggerTestBase::GetFrameData(bool clear_cache) {
       buffer.buffer_info = buff;
       buffers_.push_back(buffer);
     }
-  }
-
-  const base::Value::List* text_call_list = global_dict.FindList("text");
-  EXPECT_TRUE(text_call_list);
-
-  for (size_t i = 0; i < kNumTextCallSubmission; i++) {
-    const base::Value::Dict& local_dict = (*text_call_list)[i].GetDict();
-    int draw_index;
-    int source_index;
-    int thread_id;
-    VizDebugger::DrawOption option;
-
-    func_common_call(local_dict, &draw_index, &source_index, &thread_id,
-                     &option);
-
-    const base::Value::List* list_pos = local_dict.FindList("pos");
-    EXPECT_TRUE(list_pos);
-    float pos_x = (*list_pos)[0].GetIfDouble().value_or(kNoVal);
-    float pos_y = (*list_pos)[1].GetIfDouble().value_or(kNoVal);
-
-    VizDebuggerInternal::DrawTextCall text_call(
-        draw_index, source_index, thread_id, option,
-        gfx::Vector2dF(pos_x, pos_y), *local_dict.FindString("text"));
-
-    draw_text_calls_cache_.push_back(text_call);
   }
 
   const base::Value::List* log_call_list = global_dict.FindList("logs");

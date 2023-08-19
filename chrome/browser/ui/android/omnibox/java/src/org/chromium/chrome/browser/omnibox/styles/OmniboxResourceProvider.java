@@ -17,7 +17,6 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Px;
 import androidx.annotation.StringRes;
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import com.google.android.material.color.MaterialColors;
@@ -28,6 +27,7 @@ import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.util.ColorUtils;
 
@@ -89,12 +89,10 @@ public class OmniboxResourceProvider {
         sDrawableCache.clear();
     }
 
-    @VisibleForTesting
     public static SparseArray<ConstantState> getDrawableCacheForTesting() {
         return sDrawableCache;
     }
 
-    @VisibleForTesting
     public static SparseArray<String> getStringCacheForTesting() {
         return sStringCache;
     }
@@ -349,6 +347,17 @@ public class OmniboxResourceProvider {
     }
 
     /**
+     * Returns the background color for suggestions in a "standard" (non-incognito) TabModel with
+     * the given context.
+     */
+    public static @ColorInt int getStandardSuggestionBackgroundColor(Context context) {
+        return OmniboxFeatures.shouldShowModernizeVisualUpdate(context)
+                ? ChromeColors.getSurfaceColor(
+                        context, R.dimen.omnibox_suggestion_bg_elevation_modern)
+                : ChromeColors.getSurfaceColor(context, R.dimen.omnibox_suggestion_bg_elevation);
+    }
+
+    /**
      * Wraps the context if necessary to force dark resources for incognito.
      *
      * @param context The {@link Context} to be wrapped.
@@ -388,44 +397,6 @@ public class OmniboxResourceProvider {
                         R.dimen.omnibox_suggestion_side_spacing_smallest));
     }
 
-    /** Gets the start padding for an omnibox suggestion's decoration icon. */
-    public static @Px int getIconStartPadding(Context context) {
-        if (!OmniboxFeatures.shouldShowModernizeVisualUpdate(context)) {
-            return context.getResources().getDimensionPixelSize(
-                    R.dimen.omnibox_suggestion_24dp_icon_margin_start);
-        }
-        return context.getResources().getDimensionPixelSize(selectMarginDimen(context,
-                R.dimen.omnibox_suggestion_24dp_icon_margin_start_modern_bigger,
-                R.dimen.omnibox_suggestion_24dp_icon_margin_start,
-                R.dimen.omnibox_suggestion_24dp_icon_margin_start));
-    }
-
-    /** Gets the start padding for a large omnibox suggestion decoration icon. */
-    public static @Px int getLargeIconStartPadding(Context context) {
-        if (!OmniboxFeatures.shouldShowModernizeVisualUpdate(context)) {
-            return context.getResources().getDimensionPixelSize(
-                    R.dimen.omnibox_suggestion_36dp_icon_margin_start);
-        }
-
-        return context.getResources().getDimensionPixelSize(selectMarginDimen(context,
-                R.dimen.omnibox_suggestion_36dp_icon_margin_start_smallest,
-                R.dimen.omnibox_suggestion_36dp_icon_margin_start,
-                R.dimen.omnibox_suggestion_36dp_icon_margin_start));
-    }
-
-    /** Gets the end padding for a large omnibox suggestion decoration icon. */
-    public static @Px int getLargeIconEndPadding(Context context) {
-        if (!OmniboxFeatures.shouldShowModernizeVisualUpdate(context)) {
-            return context.getResources().getDimensionPixelSize(
-                    R.dimen.omnibox_suggestion_36dp_icon_margin_end);
-        }
-
-        return context.getResources().getDimensionPixelSize(
-                selectMarginDimen(context, R.dimen.omnibox_suggestion_36dp_icon_margin_end_smallest,
-                        R.dimen.omnibox_suggestion_36dp_icon_margin_end,
-                        R.dimen.omnibox_suggestion_36dp_icon_margin_end));
-    }
-
     /** Get the top margin for a suggestion that is the beginning of a group. */
     public static int getSuggestionGroupTopMargin(Context context) {
         return context.getResources().getDimensionPixelSize(
@@ -449,15 +420,15 @@ public class OmniboxResourceProvider {
 
     /** Get the bottom padding for the MV carousel. */
     public static @Px int getCarouselBottomPadding(Context context) {
-        if (OmniboxFeatures.shouldShowSmallerMargins(context)) {
-            return 0;
+        if (!OmniboxFeatures.shouldShowModernizeVisualUpdate(context)) {
+            return context.getResources().getDimensionPixelSize(
+                    R.dimen.omnibox_carousel_suggestion_padding);
         }
 
-        @DimenRes
-        int dimenRes = OmniboxFeatures.shouldShowModernizeVisualUpdate(context)
-                ? R.dimen.omnibox_carousel_suggestion_small_bottom_padding
-                : R.dimen.omnibox_carousel_suggestion_padding;
-        return context.getResources().getDimensionPixelSize(dimenRes);
+        return context.getResources().getDimensionPixelSize(
+                selectMarginDimen(context, R.dimen.omnibox_carousel_suggestion_small_bottom_padding,
+                        R.dimen.omnibox_carousel_suggestion_small_bottom_padding,
+                        R.dimen.omnibox_carousel_suggestion_padding));
     }
 
     /** Get the top margin for first suggestion in the omnibox with "active color" enabled. */
@@ -476,11 +447,31 @@ public class OmniboxResourceProvider {
                         R.dimen.omnibox_suggestion_header_padding_start_modern_smallest));
     }
 
+    /** Gets the top padding for a header suggestion. */
+    public static int getHeaderTopPadding(Context context) {
+        return context.getResources().getDimensionPixelSize(
+                selectMarginDimen(context, R.dimen.omnibox_suggestion_header_padding_top,
+                        R.dimen.omnibox_suggestion_header_padding_top_smaller,
+                        R.dimen.omnibox_suggestion_header_padding_top_smallest));
+    }
+
+    /** Returns the min height of the header view. */
+    public static int getHeaderMinHeight(Context context) {
+        return context.getResources().getDimensionPixelSize(
+                selectMarginDimen(context, R.dimen.omnibox_suggestion_header_height_modern_phase2,
+                        R.dimen.omnibox_suggestion_header_height_modern_phase2_smaller,
+                        R.dimen.omnibox_suggestion_header_height_modern_phase2_smallest));
+    }
+
     /**
      * Returns the size of the spacer on the left side of the status view when the omnibox is
      * focused.
      */
     public static @Px int getFocusedStatusViewLeftSpacing(Context context) {
+        if (!OmniboxFeatures.shouldShowModernizeVisualUpdate(context)) {
+            return 0;
+        }
+
         return context.getResources().getDimensionPixelSize(
                 selectMarginDimen(context, R.dimen.location_bar_status_view_left_space_width,
                         R.dimen.location_bar_status_view_left_space_width_bigger,
@@ -511,6 +502,15 @@ public class OmniboxResourceProvider {
                                 R.dimen.toolbar_edge_padding_modern_smaller,
                                 R.dimen.toolbar_edge_padding)
                         : R.dimen.toolbar_edge_padding);
+    }
+
+    /** Return the width of the Omnibox Suggestion decoration icon. */
+    public static @Px int getSuggestionDecorationIconSizeWidth(Context context) {
+        return context.getResources().getDimensionPixelSize(
+                (OmniboxFeatures.shouldShowModernizeVisualUpdate(context)
+                        && OmniboxFeatures.shouldShowSmallBottomMargin())
+                        ? R.dimen.omnibox_suggestion_icon_area_size_modern
+                        : R.dimen.omnibox_suggestion_icon_area_size);
     }
 
     /** */

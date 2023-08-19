@@ -235,7 +235,6 @@ class ManualFillingComponentBridge {
                 webContents, available);
     }
 
-    @VisibleForTesting
     public static void disableServerPredictionsForTesting() {
         ManualFillingComponentBridgeJni.get().disableServerPredictionsForTesting();
     }
@@ -311,6 +310,7 @@ class ManualFillingComponentBridge {
             case AccessoryAction.MANAGE_ADDRESSES:
             case AccessoryAction.MANAGE_CREDIT_CARDS:
             case AccessoryAction.MANAGE_PASSWORDS:
+            case AccessoryAction.CROSS_DEVICE_PASSKEY:
                 assert false : "No caption defined for accessory action: " + actionType;
         }
         assert false : "Define a title for accessory action: " + actionType;

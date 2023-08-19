@@ -144,7 +144,7 @@ std::unique_ptr<ScopedLockImpl> ScopedLockImpl::TryCreate(
 ScopedLockImpl::~ScopedLockImpl() {
   if (mutex_) {
     pthread_mutex_unlock(mutex_.get());
-    munmap(mutex_.get(), sizeof(pthread_mutex_t));
+    munmap(mutex_.ExtractAsDangling().get(), sizeof(pthread_mutex_t));
     close(shm_fd_);
   }
 }

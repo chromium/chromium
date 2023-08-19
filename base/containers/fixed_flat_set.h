@@ -75,6 +75,25 @@ template <class Key, size_t N, class Compare = std::less<>>
 using fixed_flat_set = base::flat_set<Key, Compare, std::array<const Key, N>>;
 
 // Utility function to simplify constructing a fixed_flat_set from a fixed list
+// of keys and values. Requires that the passed in `data` contains unique keys
+// and be sorted by key. See `MakeFixedFlatSet` for a variant that sorts the
+// input automatically.
+//
+// Example usage:
+//   constexpr auto kSet = base::MakeFixedFlatSetSorted<base::StringPiece>(
+//       {"bar", "baz", "foo", "qux"});
+template <class Key, size_t N, class Compare = std::less<>>
+constexpr fixed_flat_set<Key, N, Compare> MakeFixedFlatSetSorted(
+    std::common_type_t<Key> (&&data)[N],
+    const Compare& comp = Compare()) {
+  CHECK(internal::is_sorted_and_unique(data, comp));
+  // Specify the value_type explicitly to ensure that the returned array has
+  // immutable keys.
+  return fixed_flat_set<Key, N, Compare>(
+      sorted_unique, internal::ToArray<const Key>(data), comp);
+}
+
+// Utility function to simplify constructing a fixed_flat_set from a fixed list
 // of keys. Requires that the passed in `data` contains unique keys.
 //
 // Example usage:

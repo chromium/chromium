@@ -9,7 +9,7 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
-#include "components/viz/common/gpu/dawn_context_provider.h"
+#include "gpu/command_buffer/service/dawn_context_provider.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "third_party/skia/include/gpu/graphite/BackendTexture.h"
 #include "third_party/skia/include/gpu/graphite/Surface.h"

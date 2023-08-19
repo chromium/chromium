@@ -37,8 +37,9 @@ enum class TriggerType {
   DEPRECATED_AD_POPUP = 6,
   // Deprecated in M93.
   DEPRECATED_AD_REDIRECT = 7,
+  PHISHY_SITE_INTERACTION = 8,
   kMinTriggerType = SECURITY_INTERSTITIAL,
-  kMaxTriggerType = DEPRECATED_AD_REDIRECT,
+  kMaxTriggerType = PHISHY_SITE_INTERACTION,
 };
 
 struct TriggerTypeHash {

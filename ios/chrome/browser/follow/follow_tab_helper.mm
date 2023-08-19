@@ -19,7 +19,6 @@
 #import "components/history/core/browser/history_types.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
-#import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/follow/follow_action_state.h"
 #import "ios/chrome/browser/follow/follow_features.h"
 #import "ios/chrome/browser/follow/follow_iph_presenter.h"
@@ -32,6 +31,7 @@
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -40,10 +40,6 @@
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -65,13 +61,27 @@ FollowTabHelper::FollowTabHelper(web::WebState* web_state)
   web_state_observation_.Observe(web_state_);
 }
 
+void FollowTabHelper::set_follow_iph_presenter(
+    id<FollowIPHPresenter> presenter) {
+  if (!IsWebChannelsEnabled()) {
+    return;
+  }
+  follow_iph_presenter_ = presenter;
+}
+
 void FollowTabHelper::SetFollowMenuUpdater(
     id<FollowMenuUpdater> follow_menu_updater) {
+  if (!IsWebChannelsEnabled()) {
+    return;
+  }
   DCHECK(web_state_);
   follow_menu_updater_ = follow_menu_updater;
 }
 
 void FollowTabHelper::UpdateFollowMenuItem() {
+  if (!IsWebChannelsEnabled()) {
+    return;
+  }
   if (should_update_follow_item_) {
     FollowJavaScriptFeature::GetInstance()->GetWebPageURLs(
         web_state_,
@@ -81,6 +91,9 @@ void FollowTabHelper::UpdateFollowMenuItem() {
 }
 
 void FollowTabHelper::RemoveFollowMenuUpdater() {
+  if (!IsWebChannelsEnabled()) {
+    return;
+  }
   follow_menu_updater_ = nil;
   should_update_follow_item_ = true;
 }
@@ -109,13 +122,15 @@ void FollowTabHelper::PageLoaded(
     return;
   }
 
+  if (!IsWebChannelsEnabled()) {
+    return;
+  }
+
   // Do not show Follow IPH if it is disabled.
   if (!base::FeatureList::IsEnabled(
           feature_engagement::kIPHFollowWhileBrowsingFeature)) {
     return;
   }
-
-  DCHECK(IsWebChannelsEnabled());
 
   // Record when the page was successfully loaded. Computing whether the
   // IPH needs to be displayed is done asynchronously and the time used

@@ -12,6 +12,7 @@
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/dlcservice/fake_dlcservice_client.h"
+#include "components/session_manager/core/session_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -27,12 +28,14 @@ namespace {
 
 constexpr char kFakeDlcId[] = "FakeDlc";
 constexpr char kSupportedLocale[] = "es";
-constexpr char kHistogramInstallPackSuccess[] =
-    "ChromeOS.LanguagePacks.InstallPack.Success";
 constexpr char kHistogramGetPackStateFeatureId[] =
     "ChromeOS.LanguagePacks.GetPackState.FeatureId";
+constexpr char kHistogramInstallPackSuccess[] =
+    "ChromeOS.LanguagePacks.InstallPack.Success";
 constexpr char kHistogramInstallBasePackFeatureId[] =
     "ChromeOS.LanguagePacks.InstallBasePack.FeatureId";
+constexpr char kHistogramOobeValidLocale[] =
+    "ChromeOS.LanguagePacks.Oobe.ValidLocale";
 constexpr char kHistogramUninstallCompleteSuccess[] =
     "ChromeOS.LanguagePacks.UninstallComplete.Success";
 
@@ -50,6 +53,11 @@ class CallbackForTesting {
   }
 
   OnUninstallCompleteCallback GetRemoveCallback() {
+    return base::BindOnce(&CallbackForTesting::Callback,
+                          base::Unretained(this));
+  }
+
+  OnUpdatePacksForOobeCallback GetOobeCallback() {
     return base::BindOnce(&CallbackForTesting::Callback,
                           base::Unretained(this));
   }
@@ -83,6 +91,8 @@ class LanguagePackManagerTest : public testing::Test {
     dlcservice_client_ =
         static_cast<FakeDlcserviceClient*>(DlcserviceClient::Get());
 
+    session_manager_ = std::make_unique<session_manager::SessionManager>();
+
     manager_ = LanguagePackManager::GetInstance();
     manager_->Initialize();
     ResetPackResult();
@@ -107,10 +117,16 @@ class LanguagePackManagerTest : public testing::Test {
     pack_result_ = pack_result;
   }
 
+  void OobeTestCallback(const PackResult& pack_result) {
+    pack_result_ = pack_result;
+  }
+
  protected:
   raw_ptr<LanguagePackManager, ExperimentalAsh> manager_;
   PackResult pack_result_;
-  raw_ptr<FakeDlcserviceClient, ExperimentalAsh> dlcservice_client_;
+  raw_ptr<FakeDlcserviceClient, DanglingUntriaged | ExperimentalAsh>
+      dlcservice_client_;
+  std::unique_ptr<session_manager::SessionManager> session_manager_;
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -139,8 +155,8 @@ TEST_F(LanguagePackManagerTest, InstallSuccessTest) {
                      base::Unretained(this)));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(pack_result_.operation_error, dlcservice::kErrorNone);
-  EXPECT_EQ(pack_result_.pack_state, PackResult::INSTALLED);
+  EXPECT_EQ(pack_result_.operation_error, PackResult::ErrorCode::kNone);
+  EXPECT_EQ(pack_result_.pack_state, PackResult::StatusCode::kInstalled);
   EXPECT_EQ(pack_result_.path, "/path");
   EXPECT_EQ(pack_result_.language_code, kSupportedLocale);
 
@@ -168,8 +184,8 @@ TEST_F(LanguagePackManagerTest, InstallFailureTest) {
                      base::Unretained(this)));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(pack_result_.operation_error, dlcservice::kErrorInternal);
-  EXPECT_NE(pack_result_.pack_state, PackResult::INSTALLED);
+  EXPECT_EQ(pack_result_.operation_error, PackResult::ErrorCode::kOther);
+  EXPECT_EQ(pack_result_.pack_state, PackResult::StatusCode::kUnknown);
 
   // Test UMA metrics: post-condition.
   histogram_tester.ExpectBucketCount(
@@ -188,8 +204,8 @@ TEST_F(LanguagePackManagerTest, InstallWrongIdTest) {
                      base::Unretained(this)));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(pack_result_.operation_error, dlcservice::kErrorInvalidDlc);
-  EXPECT_EQ(pack_result_.pack_state, PackResult::WRONG_ID);
+  EXPECT_EQ(pack_result_.operation_error, PackResult::ErrorCode::kWrongId);
+  EXPECT_EQ(pack_result_.pack_state, PackResult::StatusCode::kUnknown);
 }
 
 // Check that the callback is actually called.
@@ -225,8 +241,8 @@ TEST_F(LanguagePackManagerTest, GetPackStateSuccessTest) {
                      base::Unretained(this)));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(pack_result_.operation_error, dlcservice::kErrorNone);
-  EXPECT_EQ(pack_result_.pack_state, PackResult::INSTALLED);
+  EXPECT_EQ(pack_result_.operation_error, PackResult::ErrorCode::kNone);
+  EXPECT_EQ(pack_result_.pack_state, PackResult::StatusCode::kInstalled);
   EXPECT_EQ(pack_result_.path, "/path");
   EXPECT_EQ(pack_result_.language_code, kSupportedLocale);
 
@@ -250,8 +266,8 @@ TEST_F(LanguagePackManagerTest, GetPackStateFailureTest) {
                      base::Unretained(this)));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(pack_result_.operation_error, dlcservice::kErrorInternal);
-  EXPECT_NE(pack_result_.pack_state, PackResult::INSTALLED);
+  EXPECT_EQ(pack_result_.operation_error, PackResult::ErrorCode::kOther);
+  EXPECT_EQ(pack_result_.pack_state, PackResult::StatusCode::kUnknown);
 
   // Test UMA metrics: post-condition.
   histogram_tester.ExpectBucketCount(kHistogramGetPackStateFeatureId,
@@ -268,8 +284,8 @@ TEST_F(LanguagePackManagerTest, GetPackStateWrongIdTest) {
                      base::Unretained(this)));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(pack_result_.operation_error, dlcservice::kErrorInvalidDlc);
-  EXPECT_EQ(pack_result_.pack_state, PackResult::WRONG_ID);
+  EXPECT_EQ(pack_result_.operation_error, PackResult::ErrorCode::kWrongId);
+  EXPECT_EQ(pack_result_.pack_state, PackResult::StatusCode::kUnknown);
 }
 
 // Check that the callback is actually called.
@@ -301,8 +317,8 @@ TEST_F(LanguagePackManagerTest, RemovePackSuccessTest) {
                      base::Unretained(this)));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(pack_result_.operation_error, dlcservice::kErrorNone);
-  EXPECT_EQ(pack_result_.pack_state, PackResult::NOT_INSTALLED);
+  EXPECT_EQ(pack_result_.operation_error, PackResult::ErrorCode::kNone);
+  EXPECT_EQ(pack_result_.pack_state, PackResult::StatusCode::kNotInstalled);
   EXPECT_EQ(pack_result_.language_code, kSupportedLocale);
 
   // Test UMA metrics: post-condition.
@@ -329,7 +345,8 @@ TEST_F(LanguagePackManagerTest, RemovePackFailureTest) {
                      base::Unretained(this)));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(pack_result_.operation_error, dlcservice::kErrorInternal);
+  EXPECT_EQ(pack_result_.operation_error, PackResult::ErrorCode::kOther);
+  EXPECT_EQ(pack_result_.pack_state, PackResult::StatusCode::kUnknown);
 
   // Test UMA metrics: post-condition.
   histogram_tester.ExpectBucketCount(kHistogramUninstallCompleteSuccess,
@@ -348,8 +365,8 @@ TEST_F(LanguagePackManagerTest, RemovePackWrongIdTest) {
                      base::Unretained(this)));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(pack_result_.operation_error, dlcservice::kErrorInvalidDlc);
-  EXPECT_EQ(pack_result_.pack_state, PackResult::WRONG_ID);
+  EXPECT_EQ(pack_result_.operation_error, PackResult::ErrorCode::kWrongId);
+  EXPECT_EQ(pack_result_.pack_state, PackResult::StatusCode::kUnknown);
 }
 
 // Check that the callback is actually called.
@@ -414,6 +431,18 @@ TEST_F(LanguagePackManagerTest, CheckAllLocalesAvailable) {
   for (const auto& locale : handwriting) {
     EXPECT_TRUE(manager_->IsPackAvailable(kHandwritingFeatureId, locale));
   }
+
+  // TTS.
+  const std::vector<std::string> tts({
+      "bn-bd", "cs-cz", "da-dk", "de-de", "el-gr",  "en-au", "en-gb",
+      "en-us", "es-es", "es-us", "fi-fi", "fil-ph", "fr-fr", "hi-in",
+      "hu-hu", "id-id", "it-it", "ja-jp", "km-kh",  "ko-kr", "nb-no",
+      "ne-np", "nl-nl", "pl-pl", "pt-br", "si-lk",  "sk-sk", "sv-se",
+      "th-th", "tr-tr", "uk-ua", "vi-vn", "yue-hk",
+  });
+  for (const auto& locale : tts) {
+    EXPECT_TRUE(manager_->IsPackAvailable(kTtsFeatureId, locale));
+  }
 }
 
 TEST_F(LanguagePackManagerTest, IsPackAvailableFalseTest) {
@@ -442,8 +471,8 @@ TEST_F(LanguagePackManagerTest, InstallBasePackSuccess) {
                      base::Unretained(this)));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(pack_result_.operation_error, dlcservice::kErrorNone);
-  EXPECT_EQ(pack_result_.pack_state, PackResult::INSTALLED);
+  EXPECT_EQ(pack_result_.operation_error, PackResult::ErrorCode::kNone);
+  EXPECT_EQ(pack_result_.pack_state, PackResult::StatusCode::kInstalled);
   EXPECT_EQ(pack_result_.path, "/path");
 
   // Test UMA metrics: post-condition.
@@ -466,12 +495,128 @@ TEST_F(LanguagePackManagerTest, InstallBasePackFailureTestFailure) {
                      base::Unretained(this)));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(pack_result_.operation_error, dlcservice::kErrorInternal);
-  EXPECT_NE(pack_result_.pack_state, PackResult::INSTALLED);
+  EXPECT_EQ(pack_result_.operation_error, PackResult::ErrorCode::kOther);
+  EXPECT_EQ(pack_result_.pack_state, PackResult::StatusCode::kUnknown);
 
   // Test UMA metrics: post-condition.
   histogram_tester.ExpectBucketCount(kHistogramInstallBasePackFeatureId,
                                      FeatureIdsEnum::kHandwriting, 1);
+}
+
+// If we are not in OOBE nothing should happen.
+TEST_F(LanguagePackManagerTest, UpdatePacksForOobeNotOobeTest) {
+  // Set session as user logged in.
+  session_manager_->SetSessionState(session_manager::SessionState::ACTIVE);
+  dlcservice_client_->set_install_error(dlcservice::kErrorNone);
+  dlcservice_client_->set_install_root_path("/path");
+
+  testing::StrictMock<CallbackForTesting> callback;
+  EXPECT_CALL(callback, Callback(_)).Times(0);
+
+  manager_->UpdatePacksForOobe(kSupportedLocale, callback.GetInstallCallback());
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(LanguagePackManagerTest, UpdatePacksForOobeSuccessTest) {
+  session_manager_->SetSessionState(session_manager::SessionState::OOBE);
+
+  dlcservice_client_->set_install_error(dlcservice::kErrorNone);
+  dlcservice_client_->set_install_root_path("/path");
+
+  // Test UMA metrics: pre-condition.
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(kHistogramOobeValidLocale, 1 /* True */,
+                                     0);
+  histogram_tester.ExpectBucketCount(kHistogramOobeValidLocale, 0 /* False */,
+                                     0);
+
+  manager_->UpdatePacksForOobe(
+      "en-au", base::BindOnce(&LanguagePackManagerTest::OobeTestCallback,
+                              base::Unretained(this)));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(pack_result_.operation_error, PackResult::ErrorCode::kNone);
+  EXPECT_EQ(pack_result_.pack_state, PackResult::StatusCode::kInstalled);
+  EXPECT_EQ(pack_result_.path, "/path");
+  EXPECT_EQ(pack_result_.language_code, "en-au");
+
+  // Test UMA metrics: post-condition.
+  histogram_tester.ExpectBucketCount(kHistogramOobeValidLocale, 1 /* True */,
+                                     1);
+  histogram_tester.ExpectBucketCount(kHistogramOobeValidLocale, 0 /* False */,
+                                     0);
+}
+
+TEST_F(LanguagePackManagerTest, UpdatePacksForOobeSuccess2Test) {
+  session_manager_->SetSessionState(session_manager::SessionState::OOBE);
+
+  dlcservice_client_->set_install_error(dlcservice::kErrorNone);
+  dlcservice_client_->set_install_root_path("/path");
+
+  // Test UMA metrics: pre-condition.
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(kHistogramOobeValidLocale, 1 /* True */,
+                                     0);
+  histogram_tester.ExpectBucketCount(kHistogramOobeValidLocale, 0 /* False */,
+                                     0);
+
+  manager_->UpdatePacksForOobe(
+      "it-it", base::BindOnce(&LanguagePackManagerTest::OobeTestCallback,
+                              base::Unretained(this)));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(pack_result_.operation_error, PackResult::ErrorCode::kNone);
+  EXPECT_EQ(pack_result_.pack_state, PackResult::StatusCode::kInstalled);
+  EXPECT_EQ(pack_result_.path, "/path");
+  EXPECT_EQ(pack_result_.language_code, "it");
+
+  // Test UMA metrics: post-condition.
+  histogram_tester.ExpectBucketCount(kHistogramOobeValidLocale, 1 /* True */,
+                                     1);
+  histogram_tester.ExpectBucketCount(kHistogramOobeValidLocale, 0 /* False */,
+                                     0);
+}
+
+TEST_F(LanguagePackManagerTest, UpdatePacksForOobeWrongLocaleTest) {
+  session_manager_->SetSessionState(session_manager::SessionState::OOBE);
+
+  dlcservice_client_->set_install_error(dlcservice::kErrorNone);
+  dlcservice_client_->set_install_root_path("/path");
+
+  // Test UMA metrics: pre-condition.
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(kHistogramOobeValidLocale, 1 /* True */,
+                                     0);
+  histogram_tester.ExpectBucketCount(kHistogramOobeValidLocale, 0 /* False */,
+                                     0);
+
+  manager_->UpdatePacksForOobe(
+      "xxx", base::BindOnce(&LanguagePackManagerTest::OobeTestCallback,
+                            base::Unretained(this)));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(pack_result_.operation_error, PackResult::ErrorCode::kWrongId);
+  EXPECT_EQ(pack_result_.pack_state, PackResult::StatusCode::kUnknown);
+
+  // Test UMA metrics: post-condition.
+  histogram_tester.ExpectBucketCount(kHistogramOobeValidLocale, 1 /* True */,
+                                     0);
+  histogram_tester.ExpectBucketCount(kHistogramOobeValidLocale, 0 /* False */,
+                                     1);
+}
+
+TEST_F(LanguagePackManagerTest, UpdatePacksForOobeFailureTest) {
+  session_manager_->SetSessionState(session_manager::SessionState::OOBE);
+
+  dlcservice_client_->set_install_error(dlcservice::kErrorInternal);
+
+  manager_->UpdatePacksForOobe(
+      "es-es", base::BindOnce(&LanguagePackManagerTest::OobeTestCallback,
+                              base::Unretained(this)));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(pack_result_.operation_error, PackResult::ErrorCode::kOther);
+  EXPECT_EQ(pack_result_.pack_state, PackResult::StatusCode::kUnknown);
 }
 
 }  // namespace ash::language_packs

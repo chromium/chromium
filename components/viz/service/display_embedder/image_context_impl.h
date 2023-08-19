@@ -23,10 +23,10 @@
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
 #include "third_party/skia/include/gpu/graphite/BackendTexture.h"
+#include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 #include "ui/gfx/geometry/size.h"
 
 class SkColorSpace;
-class SkPromiseImageTexture;
 
 namespace gpu {
 class MailboxManager;
@@ -66,7 +66,7 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
   bool maybe_concurrent_reads() const { return maybe_concurrent_reads_; }
 
   // Return the vector of promise image textures.
-  const std::vector<raw_ptr<SkPromiseImageTexture>>& promise_image_textures()
+  const std::vector<raw_ptr<GrPromiseImageTexture>>& promise_image_textures()
       const {
     return promise_image_textures_;
   }
@@ -86,7 +86,7 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
   }
 
   void SetPromiseImageTextures(
-      std::vector<sk_sp<SkPromiseImageTexture>> promise_image_textures);
+      std::vector<sk_sp<GrPromiseImageTexture>> promise_image_textures);
 
   void BeginAccessIfNecessary(
       gpu::SharedContextState* context_state,
@@ -132,13 +132,13 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
   std::unique_ptr<gpu::RasterImageRepresentation::ScopedReadAccess>
       representation_raster_scoped_access_;
 
-  // For holding SkPromiseImageTexture create from |fallback_texture| or legacy
+  // For holding GrPromiseImageTexture create from |fallback_texture| or legacy
   // mailboxes.
-  std::vector<sk_sp<SkPromiseImageTexture>> owned_promise_image_textures_;
+  std::vector<sk_sp<GrPromiseImageTexture>> owned_promise_image_textures_;
 
   // The |promise_image_textures| are used for fulfilling the promise images.
   // They are used on GPU thread.
-  std::vector<raw_ptr<SkPromiseImageTexture>> promise_image_textures_;
+  std::vector<raw_ptr<GrPromiseImageTexture>> promise_image_textures_;
 
   // Graphite backend textures used for fulfilling Graphite promise images.
   // Owned by the shared image representation / scoped access.

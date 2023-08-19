@@ -29,14 +29,20 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler.MinimizeAppAndCloseTabType;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishHandler;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason;
 import org.chromium.chrome.browser.customtabs.shadows.ShadowExternalNavigationDelegateImpl;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.url.GURL;
+
+import java.util.Map;
 
 /**
  * Unit tests for {@link CustomTabActivityNavigationController}.
@@ -73,9 +79,40 @@ public class CustomTabActivityNavigationControllerTest {
 
     @Test
     public void finishes_IfBackNavigationClosesTheOnlyTabWithNoUnloadEvents() {
-        HistogramWatcher histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
-                MinimizeAppAndCloseTabBackPressHandler.getHistogramNameForTesting(),
-                MinimizeAppAndCloseTabType.MINIMIZE_APP);
+        CachedFeatureFlags.setFeaturesForTesting(
+                Map.of(ChromeFeatureList.BACK_GESTURE_REFACTOR, false));
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                MinimizeAppAndCloseTabBackPressHandler.getHistogramNameForTesting(),
+                                MinimizeAppAndCloseTabType.MINIMIZE_APP)
+                        .expectIntRecord(BackPressManager.getHistogramForTesting(),
+                                BackPressManager.getHistogramValueForTesting(
+                                        BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB))
+                        .build();
+        when(mTabController.onlyOneTabRemaining()).thenReturn(true);
+        when(mTabController.dispatchBeforeUnloadIfNeeded()).thenReturn(false);
+        Assert.assertTrue(mNavigationController.getHandleBackPressChangedSupplier().get());
+
+        mNavigationController.navigateOnBack();
+        histogramWatcher.assertExpected();
+        verify(mFinishHandler).onFinish(eq(FinishReason.USER_NAVIGATION));
+        env.tabProvider.removeTab();
+        Assert.assertNull(env.tabProvider.getTab());
+        Assert.assertFalse(mNavigationController.getHandleBackPressChangedSupplier().get());
+    }
+
+    @Test
+    public void finishes_IfBackNavigationClosesTheOnlyTabWithNoUnloadEvents_BackPressRefactor() {
+        CachedFeatureFlags.setFeaturesForTesting(
+                Map.of(ChromeFeatureList.BACK_GESTURE_REFACTOR, true));
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                MinimizeAppAndCloseTabBackPressHandler.getHistogramNameForTesting(),
+                                MinimizeAppAndCloseTabType.MINIMIZE_APP)
+                        .expectNoRecords(BackPressManager.getHistogramForTesting())
+                        .build();
         when(mTabController.onlyOneTabRemaining()).thenReturn(true);
         when(mTabController.dispatchBeforeUnloadIfNeeded()).thenReturn(false);
         Assert.assertTrue(mNavigationController.getHandleBackPressChangedSupplier().get());
@@ -90,9 +127,41 @@ public class CustomTabActivityNavigationControllerTest {
 
     @Test
     public void doesntFinish_IfBackNavigationReplacesTabWithPreviousOne() {
-        HistogramWatcher histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
-                MinimizeAppAndCloseTabBackPressHandler.getHistogramNameForTesting(),
-                MinimizeAppAndCloseTabType.CLOSE_TAB);
+        CachedFeatureFlags.setFeaturesForTesting(
+                Map.of(ChromeFeatureList.BACK_GESTURE_REFACTOR, false));
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                MinimizeAppAndCloseTabBackPressHandler.getHistogramNameForTesting(),
+                                MinimizeAppAndCloseTabType.CLOSE_TAB)
+                        .expectIntRecord(BackPressManager.getHistogramForTesting(),
+                                BackPressManager.getHistogramValueForTesting(
+                                        BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB))
+                        .build();
+        doAnswer((Answer<Void>) invocation -> {
+            env.tabProvider.swapTab(env.prepareTab());
+            return null;
+        })
+                .when(mTabController)
+                .closeTab();
+        Assert.assertTrue(mNavigationController.getHandleBackPressChangedSupplier().get());
+
+        mNavigationController.navigateOnBack();
+        histogramWatcher.assertExpected();
+        verify(mFinishHandler, never()).onFinish(anyInt());
+    }
+
+    @Test
+    public void doesntFinish_IfBackNavigationReplacesTabWithPreviousOne_BackPressRefactor() {
+        CachedFeatureFlags.setFeaturesForTesting(
+                Map.of(ChromeFeatureList.BACK_GESTURE_REFACTOR, true));
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                MinimizeAppAndCloseTabBackPressHandler.getHistogramNameForTesting(),
+                                MinimizeAppAndCloseTabType.CLOSE_TAB)
+                        .expectNoRecords(BackPressManager.getHistogramForTesting())
+                        .build();
         doAnswer((Answer<Void>) invocation -> {
             env.tabProvider.swapTab(env.prepareTab());
             return null;
@@ -106,9 +175,37 @@ public class CustomTabActivityNavigationControllerTest {
 
     @Test
     public void doesntFinish_IfBackNavigationHappensWithBeforeUnloadHandler() {
-        HistogramWatcher histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
-                MinimizeAppAndCloseTabBackPressHandler.getHistogramNameForTesting(),
-                MinimizeAppAndCloseTabType.CLOSE_TAB);
+        CachedFeatureFlags.setFeaturesForTesting(
+                Map.of(ChromeFeatureList.BACK_GESTURE_REFACTOR, false));
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                MinimizeAppAndCloseTabBackPressHandler.getHistogramNameForTesting(),
+                                MinimizeAppAndCloseTabType.CLOSE_TAB)
+                        .expectIntRecord(BackPressManager.getHistogramForTesting(),
+                                BackPressManager.getHistogramValueForTesting(
+                                        BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB))
+                        .build();
+
+        when(mTabController.dispatchBeforeUnloadIfNeeded()).thenReturn(true);
+
+        mNavigationController.navigateOnBack();
+        histogramWatcher.assertExpected();
+        verify(mFinishHandler, never()).onFinish(anyInt());
+    }
+
+    @Test
+    public void doesntFinish_IfBackNavigationHappensWithBeforeUnloadHandler_BackPressRefactor() {
+        CachedFeatureFlags.setFeaturesForTesting(
+                Map.of(ChromeFeatureList.BACK_GESTURE_REFACTOR, true));
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                MinimizeAppAndCloseTabBackPressHandler.getHistogramNameForTesting(),
+                                MinimizeAppAndCloseTabType.CLOSE_TAB)
+                        .expectNoRecords(BackPressManager.getHistogramForTesting())
+                        .build();
+
         when(mTabController.dispatchBeforeUnloadIfNeeded()).thenReturn(true);
 
         mNavigationController.navigateOnBack();

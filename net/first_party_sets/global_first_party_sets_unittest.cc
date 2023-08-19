@@ -48,7 +48,7 @@ base::flat_map<SchemefulSite, FirstPartySetEntry> CollectEffectiveSetEntries(
   base::flat_map<SchemefulSite, FirstPartySetEntry> got;
   sets.ForEachEffectiveSetEntry(
       config, [&](const SchemefulSite& site, const FirstPartySetEntry& entry) {
-        DCHECK(!got.contains(site));
+        EXPECT_FALSE(got.contains(site));
         got[site] = entry;
         return true;
       });
@@ -56,7 +56,7 @@ base::flat_map<SchemefulSite, FirstPartySetEntry> CollectEffectiveSetEntries(
   // Consistency check: verify that all of the returned entries are what we'd
   // get if we called FindEntry directly.
   for (const auto& [site, entry] : got) {
-    DCHECK_EQ(sets.FindEntry(site, config).value(), entry);
+    EXPECT_EQ(sets.FindEntry(site, config).value(), entry);
   }
   return got;
 }
@@ -130,7 +130,7 @@ TEST_F(GlobalFirstPartySetsTest, FindEntry_Exists) {
               Optional(entry));
 }
 
-TEST_F(GlobalFirstPartySetsTest, FindEntry_ExistsWhenNormalized) {
+TEST_F(GlobalFirstPartySetsTest, FindEntry_NoNormalization) {
   SchemefulSite https_example(GURL("https://example.test"));
   SchemefulSite wss_example(GURL("wss://example.test"));
   FirstPartySetEntry entry(https_example, SiteType::kPrimary, absl::nullopt);
@@ -141,7 +141,7 @@ TEST_F(GlobalFirstPartySetsTest, FindEntry_ExistsWhenNormalized) {
                                    },
                                    {})
                   .FindEntry(wss_example, FirstPartySetsContextConfig()),
-              Optional(entry));
+              absl::nullopt);
 }
 
 TEST_F(GlobalFirstPartySetsTest, FindEntry_ExistsViaOverride) {
@@ -720,349 +720,33 @@ TEST_F(
                                             absl::nullopt))));
 }
 
-TEST_F(PopulatedGlobalFirstPartySetsTest, ComputeMetadata_EmptyContext) {
-  SchemefulSite nonmember(GURL("https://nonmember.test"));
-
-  for (const SchemefulSite* top_frame :
-       std::initializer_list<const SchemefulSite*>{&kPrimary, nullptr}) {
-    EXPECT_EQ(global_sets()
-                  .ComputeMetadata(nonmember, top_frame, {},
-                                   FirstPartySetsContextConfig())
-                  .context()
-                  .context_type(),
-              SamePartyContext::Type::kCrossParty);
-
-    EXPECT_EQ(global_sets()
-                  .ComputeMetadata(kPrimary, top_frame, {},
-                                   FirstPartySetsContextConfig())
-                  .context()
-                  .context_type(),
-              SamePartyContext::Type::kSameParty);
-
-    EXPECT_EQ(global_sets()
-                  .ComputeMetadata(SchemefulSite(GURL("http://primary.test")),
-                                   top_frame, {}, FirstPartySetsContextConfig())
-                  .context()
-                  .context_type(),
-              SamePartyContext::Type::kCrossParty);
-  }
-
-  EXPECT_EQ(global_sets()
-                .ComputeMetadata(kPrimary, &nonmember, {},
-                                 FirstPartySetsContextConfig())
-                .context()
-                .context_type(),
-            SamePartyContext::Type::kCrossParty);
-  EXPECT_EQ(global_sets()
-                .ComputeMetadata(nonmember, &kPrimary, {},
-                                 FirstPartySetsContextConfig())
-                .context()
-                .context_type(),
-            SamePartyContext::Type::kCrossParty);
-}
-
-TEST_F(PopulatedGlobalFirstPartySetsTest, ComputeMetadata_ContextIsNonmember) {
-  SchemefulSite nonmember(GURL("https://nonmember.test"));
-  std::set<SchemefulSite> context({nonmember});
-
-  for (const SchemefulSite* top_frame :
-       std::initializer_list<const SchemefulSite*>{&kPrimary, nullptr}) {
-    for (const SchemefulSite& site : std::initializer_list<SchemefulSite>{
-             kPrimary,
-             SchemefulSite(GURL("http://primary.test")),
-             SchemefulSite(GURL("http://associated1.test")),
-             SchemefulSite(GURL("http://primary2.test")),
-             SchemefulSite(GURL("http://associated3.test")),
-             nonmember,
-         }) {
-      EXPECT_EQ(global_sets()
-                    .ComputeMetadata(site, top_frame, context,
-                                     FirstPartySetsContextConfig())
-                    .context()
-                    .context_type(),
-                SamePartyContext::Type::kCrossParty)
-          << site;
-    }
-  }
-}
-
-TEST_F(PopulatedGlobalFirstPartySetsTest, ComputeMetadata_ContextIsPrimary) {
-  std::set<SchemefulSite> context({kPrimary});
-
-  for (const SchemefulSite* top_frame :
-       std::initializer_list<const SchemefulSite*>{&kPrimary, nullptr}) {
-    for (const SchemefulSite& site : std::initializer_list<SchemefulSite>{
-             SchemefulSite(GURL("http://primary.test")),
-             kPrimary2,
-             kAssociated3,
-             SchemefulSite(GURL("https://nonmember.test")),
-         }) {
-      EXPECT_EQ(global_sets()
-                    .ComputeMetadata(site, top_frame, context,
-                                     FirstPartySetsContextConfig())
-                    .context()
-                    .context_type(),
-                SamePartyContext::Type::kCrossParty)
-          << site;
-    }
-    EXPECT_EQ(global_sets()
-                  .ComputeMetadata(kPrimary, top_frame, context,
-                                   FirstPartySetsContextConfig())
-                  .context()
-                  .context_type(),
-              SamePartyContext::Type::kSameParty);
-
-    EXPECT_EQ(global_sets()
-                  .ComputeMetadata(kAssociated1, top_frame, context,
-                                   FirstPartySetsContextConfig())
-                  .context()
-                  .context_type(),
-              SamePartyContext::Type::kSameParty);
-  }
-}
-
-TEST_F(PopulatedGlobalFirstPartySetsTest, ComputeMetadata_ContextIsNonprimary) {
-  std::set<SchemefulSite> context({kAssociated1});
-
-  for (const SchemefulSite* top_frame :
-       std::initializer_list<const SchemefulSite*>{&kPrimary, nullptr}) {
-    for (const SchemefulSite& site : std::initializer_list<SchemefulSite>{
-             SchemefulSite(GURL("http://primary.test")),
-             kPrimary2,
-             kAssociated3,
-             SchemefulSite(GURL("https://nonmember.test")),
-         }) {
-      EXPECT_EQ(global_sets()
-                    .ComputeMetadata(site, top_frame, context,
-                                     FirstPartySetsContextConfig())
-                    .context()
-                    .context_type(),
-                SamePartyContext::Type::kCrossParty)
-          << site;
-    }
-    EXPECT_EQ(global_sets()
-                  .ComputeMetadata(kPrimary, top_frame, context,
-                                   FirstPartySetsContextConfig())
-                  .context()
-                  .context_type(),
-              SamePartyContext::Type::kSameParty);
-
-    EXPECT_EQ(global_sets()
-                  .ComputeMetadata(kPrimary, top_frame, context,
-                                   FirstPartySetsContextConfig())
-                  .context()
-                  .context_type(),
-              SamePartyContext::Type::kSameParty);
-
-    EXPECT_EQ(global_sets()
-                  .ComputeMetadata(kAssociated1, top_frame, context,
-                                   FirstPartySetsContextConfig())
-                  .context()
-                  .context_type(),
-              SamePartyContext::Type::kSameParty);
-  }
-}
-
-TEST_F(PopulatedGlobalFirstPartySetsTest,
-       ComputeMetadata_ContextIsPrimaryAndNonprimary) {
-  std::set<SchemefulSite> context({kPrimary, kAssociated1});
-
-  for (const SchemefulSite* top_frame :
-       std::initializer_list<const SchemefulSite*>{&kPrimary, nullptr}) {
-    for (const SchemefulSite& site : std::initializer_list<SchemefulSite>{
-             SchemefulSite(GURL("http://primary.test")),
-             kPrimary2,
-             kAssociated3,
-             SchemefulSite(GURL("https://nonmember.test")),
-         }) {
-      EXPECT_EQ(global_sets()
-                    .ComputeMetadata(site, top_frame, context,
-                                     FirstPartySetsContextConfig())
-                    .context()
-                    .context_type(),
-                SamePartyContext::Type::kCrossParty)
-          << site;
-    }
-    EXPECT_EQ(global_sets()
-                  .ComputeMetadata(kPrimary, top_frame, context,
-                                   FirstPartySetsContextConfig())
-                  .context()
-                  .context_type(),
-              SamePartyContext::Type::kSameParty);
-
-    EXPECT_EQ(global_sets()
-                  .ComputeMetadata(kAssociated1, top_frame, context,
-                                   FirstPartySetsContextConfig())
-                  .context()
-                  .context_type(),
-              SamePartyContext::Type::kSameParty);
-
-    EXPECT_EQ(global_sets()
-                  .ComputeMetadata(kAssociated2, top_frame, context,
-                                   FirstPartySetsContextConfig())
-                  .context()
-                  .context_type(),
-              SamePartyContext::Type::kSameParty);
-  }
-}
-
-TEST_F(PopulatedGlobalFirstPartySetsTest, ComputeMetadata_ContextMixesParties) {
-  std::set<SchemefulSite> context({kPrimary, kAssociated1, kPrimary2});
-
-  for (const SchemefulSite* top_frame :
-       std::initializer_list<const SchemefulSite*>{&kPrimary, nullptr}) {
-    for (const SchemefulSite& site : std::initializer_list<SchemefulSite>{
-             kPrimary,
-             SchemefulSite(GURL("http://primary.test")),
-             kAssociated1,
-             kPrimary2,
-             kAssociated3,
-             SchemefulSite(GURL("https://nonmember.test")),
-         }) {
-      EXPECT_EQ(global_sets()
-                    .ComputeMetadata(site, top_frame, context,
-                                     FirstPartySetsContextConfig())
-                    .context()
-                    .context_type(),
-                SamePartyContext::Type::kCrossParty)
-          << site;
-    }
-  }
-}
-
-TEST_F(PopulatedGlobalFirstPartySetsTest,
-       ComputeMetadata_ContextMixesMembersAndNonmembers) {
-  std::set<SchemefulSite> context({
-      kPrimary,
-      kAssociated1,
-      SchemefulSite(GURL("http://nonmember.test")),
-  });
-
-  for (const SchemefulSite* top_frame :
-       std::initializer_list<const SchemefulSite*>{&kPrimary, nullptr}) {
-    for (const SchemefulSite& site : std::initializer_list<SchemefulSite>{
-             kPrimary,
-             SchemefulSite(GURL("http://primary.test")),
-             kAssociated1,
-             kPrimary2,
-             kAssociated3,
-             SchemefulSite(GURL("https://nonmember.test")),
-         }) {
-      EXPECT_EQ(global_sets()
-                    .ComputeMetadata(site, top_frame, context,
-                                     FirstPartySetsContextConfig())
-                    .context()
-                    .context_type(),
-                SamePartyContext::Type::kCrossParty)
-          << site;
-    }
-  }
-}
-
-TEST_F(PopulatedGlobalFirstPartySetsTest, ComputeMetadata_ContextMixesSchemes) {
-  SchemefulSite primary_http(GURL("http://primary.test"));
-  std::set<SchemefulSite> context({kPrimary, kAssociated1, primary_http});
-
-  for (const SchemefulSite* top_frame :
-       std::initializer_list<const SchemefulSite*>{&kPrimary, nullptr}) {
-    for (const SchemefulSite& site : std::initializer_list<SchemefulSite>{
-             kPrimary,
-             primary_http,
-             kAssociated1,
-             kPrimary2,
-             kAssociated3,
-             SchemefulSite(GURL("https://nonmember.test")),
-         }) {
-      EXPECT_EQ(global_sets()
-                    .ComputeMetadata(site, top_frame, context,
-                                     FirstPartySetsContextConfig())
-                    .context()
-                    .context_type(),
-                SamePartyContext::Type::kCrossParty)
-          << site;
-    }
-  }
-}
-
 TEST_F(PopulatedGlobalFirstPartySetsTest, ComputeMetadata) {
   SchemefulSite nonmember(GURL("https://nonmember.test"));
   SchemefulSite nonmember1(GURL("https://nonmember1.test"));
-  SchemefulSite wss_associated1(GURL("wss://associated1.test"));
-  SchemefulSite wss_nonmember(GURL("wss://nonmember.test"));
   FirstPartySetEntry primary_entry(kPrimary, SiteType::kPrimary, absl::nullopt);
   FirstPartySetEntry associated_entry(kPrimary, SiteType::kAssociated, 0);
 
   // Works as usual for sites that are in First-Party sets.
-  EXPECT_EQ(
-      global_sets().ComputeMetadata(kAssociated1, &kAssociated1, {kAssociated1},
-                                    FirstPartySetsContextConfig()),
-      FirstPartySetMetadata(
-          SamePartyContext(SamePartyContext::Type::kSameParty),
-          &associated_entry, &associated_entry));
-  EXPECT_EQ(
-      global_sets().ComputeMetadata(kPrimary, &kAssociated1, {kAssociated1},
-                                    FirstPartySetsContextConfig()),
-      FirstPartySetMetadata(
-          SamePartyContext(SamePartyContext::Type::kSameParty), &primary_entry,
-          &associated_entry));
-  EXPECT_EQ(
-      global_sets().ComputeMetadata(kAssociated1, &kPrimary, {kAssociated1},
-                                    FirstPartySetsContextConfig()),
-      FirstPartySetMetadata(
-          SamePartyContext(SamePartyContext::Type::kSameParty),
-          &associated_entry, &primary_entry));
-  EXPECT_EQ(
-      global_sets().ComputeMetadata(kAssociated1, &kAssociated1, {kPrimary},
-                                    FirstPartySetsContextConfig()),
-      FirstPartySetMetadata(
-          SamePartyContext(SamePartyContext::Type::kSameParty),
-          &associated_entry, &associated_entry));
   EXPECT_EQ(global_sets().ComputeMetadata(kAssociated1, &kAssociated1,
-                                          {kAssociated1, kPrimary},
                                           FirstPartySetsContextConfig()),
-            FirstPartySetMetadata(
-                SamePartyContext(SamePartyContext::Type::kSameParty),
-                &associated_entry, &associated_entry));
+            FirstPartySetMetadata(&associated_entry, &associated_entry));
+  EXPECT_EQ(global_sets().ComputeMetadata(kPrimary, &kAssociated1,
+                                          FirstPartySetsContextConfig()),
+            FirstPartySetMetadata(&primary_entry, &associated_entry));
+  EXPECT_EQ(global_sets().ComputeMetadata(kAssociated1, &kPrimary,
+                                          FirstPartySetsContextConfig()),
+            FirstPartySetMetadata(&associated_entry, &primary_entry));
 
-  // Works if the site is provided with WSS scheme instead of HTTPS.
-  EXPECT_EQ(global_sets().ComputeMetadata(wss_associated1, &kAssociated1,
-                                          {kAssociated1, kPrimary},
+  EXPECT_EQ(global_sets().ComputeMetadata(nonmember, &kAssociated1,
                                           FirstPartySetsContextConfig()),
-            FirstPartySetMetadata(
-                SamePartyContext(SamePartyContext::Type::kSameParty),
-                &associated_entry, &associated_entry));
+            FirstPartySetMetadata(nullptr, &associated_entry));
+  EXPECT_EQ(global_sets().ComputeMetadata(kAssociated1, &nonmember,
+                                          FirstPartySetsContextConfig()),
+            FirstPartySetMetadata(&associated_entry, nullptr));
 
-  EXPECT_EQ(
-      global_sets().ComputeMetadata(nonmember, &kAssociated1, {kAssociated1},
-                                    FirstPartySetsContextConfig()),
-      FirstPartySetMetadata(
-          SamePartyContext(SamePartyContext::Type::kCrossParty), nullptr,
-          &associated_entry));
-  EXPECT_EQ(
-      global_sets().ComputeMetadata(kAssociated1, &nonmember, {kAssociated1},
-                                    FirstPartySetsContextConfig()),
-      FirstPartySetMetadata(
-          SamePartyContext(SamePartyContext::Type::kCrossParty),
-          &associated_entry, nullptr));
-  EXPECT_EQ(global_sets().ComputeMetadata(wss_nonmember, &wss_associated1,
-                                          {kAssociated1, kPrimary},
+  EXPECT_EQ(global_sets().ComputeMetadata(nonmember, &nonmember,
                                           FirstPartySetsContextConfig()),
-            FirstPartySetMetadata(
-                SamePartyContext(SamePartyContext::Type::kCrossParty), nullptr,
-                &associated_entry));
-
-  EXPECT_EQ(global_sets().ComputeMetadata(nonmember, &nonmember, {nonmember},
-                                          FirstPartySetsContextConfig()),
-            FirstPartySetMetadata(
-                SamePartyContext(SamePartyContext::Type::kCrossParty), nullptr,
-                nullptr));
-
-  EXPECT_EQ(global_sets().ComputeMetadata(kAssociated1, &kAssociated1,
-                                          {kAssociated1, nonmember},
-                                          FirstPartySetsContextConfig()),
-            FirstPartySetMetadata(
-                SamePartyContext(SamePartyContext::Type::kCrossParty),
-                &associated_entry, &associated_entry));
+            FirstPartySetMetadata(nullptr, nullptr));
 }
 
 TEST_F(GlobalFirstPartySetsTest, ComputeConfig_Empty) {
@@ -1647,18 +1331,14 @@ TEST_F(GlobalFirstPartySetsWithConfigTest, ComputeMetadata) {
   FirstPartySetEntry foo_associated_entry(kPrimary3, SiteType::kAssociated, 0);
 
   // kAssociated1 has been removed from its set.
-  EXPECT_EQ(
-      global_sets().ComputeMetadata(kAssociated1, &kPrimary, {}, config()),
-      FirstPartySetMetadata(
-          SamePartyContext(SamePartyContext::Type::kCrossParty), nullptr,
-          &example_primary_entry));
+  EXPECT_EQ(global_sets().ComputeMetadata(kAssociated1, &kPrimary, config()),
+            FirstPartySetMetadata(nullptr, &example_primary_entry));
 
   // kAssociated3 and kPrimary3 are sites in a new set.
-  EXPECT_EQ(
-      global_sets().ComputeMetadata(kAssociated3, &kPrimary3, {}, config()),
-      FirstPartySetMetadata(
-          SamePartyContext(SamePartyContext::Type::kSameParty),
-          &foo_associated_entry, &foo_primary_entry));
+  EXPECT_EQ(global_sets().ComputeMetadata(kAssociated3, &kPrimary3, config()),
+            FirstPartySetMetadata(
+
+                &foo_associated_entry, &foo_primary_entry));
 }
 
 }  // namespace net

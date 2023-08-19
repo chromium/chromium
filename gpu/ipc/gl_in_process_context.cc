@@ -58,8 +58,6 @@ ContextResult GLInProcessContext::Initialize(
     const ContextCreationAttribs& attribs,
     const SharedMemoryLimits& mem_limits) {
   DCHECK(base::SingleThreadTaskRunner::GetCurrentDefault());
-  DCHECK_GE(attribs.offscreen_framebuffer_size.width(), 0);
-  DCHECK_GE(attribs.offscreen_framebuffer_size.height(), 0);
 
   command_buffer_ = std::make_unique<InProcessCommandBuffer>(
       task_executor, GURL("chrome://gpu/GLInProcessContext::Initialize"));
@@ -67,7 +65,7 @@ ContextResult GLInProcessContext::Initialize(
   auto result = command_buffer_->Initialize(
       attribs, base::SingleThreadTaskRunner::GetCurrentDefault(),
       /*gr_shader_cache=*/nullptr,
-      /*activity_flags=*/nullptr);
+      /*use_shader_cache_shm_count=*/nullptr);
   if (result != ContextResult::kSuccess) {
     DLOG(ERROR) << "Failed to initialize InProcessCommmandBuffer";
     return result;

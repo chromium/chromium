@@ -87,7 +87,9 @@ TrustStoreChrome::TrustStoreChrome(base::span<const ChromeRootCertInfo> certs,
     CertErrors errors;
     auto parsed = ParsedCertificate::Create(
         std::move(cert), x509_util::DefaultParseCertificateOptions(), &errors);
-    DCHECK(parsed);
+    // There should always be a valid cert, because we should be parsing Chrome
+    // Root Store static data compiled in.
+    CHECK(parsed);
     trust_store_.AddTrustAnchor(std::move(parsed));
   }
   version_ = version;

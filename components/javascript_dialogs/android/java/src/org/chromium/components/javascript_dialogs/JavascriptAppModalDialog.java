@@ -6,8 +6,6 @@ package org.chromium.components.javascript_dialogs;
 
 import android.content.Context;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -102,7 +100,6 @@ public class JavascriptAppModalDialog extends JavascriptModalDialog {
     /**
      * Returns the currently showing dialog, null if none is showing.
      */
-    @VisibleForTesting
     public static JavascriptAppModalDialog getCurrentDialogForTest() {
         return JavascriptAppModalDialogJni.get().getCurrentModalDialog();
     }

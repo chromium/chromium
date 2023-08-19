@@ -10,13 +10,10 @@
 #include "chrome/browser/ash/drive/drivefs_native_message_host_ash.h"
 #include "chrome/browser/ash/guest_os/vm_sk_forwarding_native_message_host.h"
 #include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_messaging.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/drivefs/drivefs_native_message_host_origins.h"
 #include "chrome/browser/extensions/api/messaging/native_message_built_in_host.h"
 #include "chrome/browser/extensions/api/messaging/native_message_echo_host.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "remoting/host/it2me/it2me_native_messaging_host_allowed_origins.h"
 #include "remoting/host/it2me/it2me_native_messaging_host_chromeos.h"
@@ -27,9 +24,7 @@ namespace {
 
 std::unique_ptr<NativeMessageHost> CreateIt2MeHost(
     content::BrowserContext* browser_context) {
-  return remoting::CreateIt2MeNativeMessagingHostForChromeOS(
-      content::GetIOThreadTaskRunner({}), content::GetUIThreadTaskRunner({}),
-      g_browser_process->policy_service());
+  return remoting::CreateIt2MeNativeMessagingHostForChromeOS();
 }
 
 }  // namespace

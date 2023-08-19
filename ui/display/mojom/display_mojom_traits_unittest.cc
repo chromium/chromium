@@ -51,13 +51,6 @@ void CheckDisplaysEqual(const Display& input, const Display& output) {
   EXPECT_EQ(input.is_monochrome(), output.is_monochrome());
   EXPECT_EQ(input.display_frequency(), output.display_frequency());
   EXPECT_EQ(input.label(), output.label());
-
-#if BUILDFLAG(IS_CHROMEOS)
-  EXPECT_EQ(input.GetDRMFormatsAndModifiers(),
-            output.GetDRMFormatsAndModifiers());
-#else
-  EXPECT_EQ(output.GetDRMFormatsAndModifiers(), DrmFormatsAndModifiers());
-#endif
 }
 
 void CheckDisplayLayoutsEqual(const DisplayLayout& input,
@@ -120,13 +113,6 @@ void CheckDisplaySnapShotMojoEqual(const DisplaySnapshot& input,
   EXPECT_EQ(input.color_space(), output.color_space());
   EXPECT_EQ(input.bits_per_channel(), output.bits_per_channel());
   EXPECT_EQ(input.hdr_static_metadata(), output.hdr_static_metadata());
-
-#if BUILDFLAG(IS_CHROMEOS)
-  EXPECT_EQ(input.GetDRMFormatsAndModifiers(),
-            output.GetDRMFormatsAndModifiers());
-#else
-  EXPECT_EQ(output.GetDRMFormatsAndModifiers(), DrmFormatsAndModifiers());
-#endif
 }
 
 // Test StructTrait serialization and deserialization for copyable type. |input|
@@ -170,11 +156,6 @@ TEST(DisplayStructTraitsTest, SetAllDisplayValues) {
   input.set_is_monochrome(!input.is_monochrome());
   input.set_display_frequency(input.display_frequency() + 1);
   input.set_label("Internal Display");
-
-  DrmFormatsAndModifiers drm_formats_and_modifiers;
-  drm_formats_and_modifiers.emplace(
-      DRM_FORMAT_ARGB8888, std::vector<uint64_t>({DRM_FORMAT_MOD_INVALID}));
-  input.SetDRMFormatsAndModifiers(drm_formats_and_modifiers);
 
   Display output;
   SerializeAndDeserialize<mojom::Display>(input, &output);

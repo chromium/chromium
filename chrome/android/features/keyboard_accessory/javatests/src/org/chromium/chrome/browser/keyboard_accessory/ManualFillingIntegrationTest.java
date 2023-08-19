@@ -44,7 +44,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.infobar.InfoBarIdentifier;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
@@ -55,8 +54,6 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.InfoBarTestAnimationListener;
-import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
@@ -67,7 +64,6 @@ import java.util.concurrent.atomic.AtomicReference;
  * Integration tests for keyboard accessory and accessory sheet with other Chrome components.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@EnableFeatures({ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class ManualFillingIntegrationTest {
     @Rule
@@ -145,7 +141,6 @@ public class ManualFillingIntegrationTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.AUTOFILL_MANUAL_FALLBACK_ANDROID})
     public void testAccessorySheetShown() throws TimeoutException {
         mHelper.loadTestPage(false);
         // Register a sheet data provider so that sheet is available when needed.
@@ -198,7 +193,7 @@ public class ManualFillingIntegrationTest {
 
     @Test
     @SmallTest
-    @Features.DisableFeatures(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)
+    @DisabledTest(message = "https://crbug.com/1466461")
     public void testAccessoryHiddenAfterTappingAutoGenerationButton() throws TimeoutException {
         mHelper.loadTestPage(false);
 
@@ -220,8 +215,7 @@ public class ManualFillingIntegrationTest {
 
     @Test
     @SmallTest
-    @Features.DisableFeatures(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)
-    @DisabledTest(message = "https://crbug.com/1406328")
+    @DisabledTest(message = "https://crbug.com/1406328,https://crbug.com/1466461")
     public void testHidingSheetBringsBackKeyboard() throws TimeoutException {
         mHelper.loadTestPage(false);
 
@@ -243,7 +237,7 @@ public class ManualFillingIntegrationTest {
 
     @Test
     @SmallTest
-    @Features.DisableFeatures({ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY})
+    @DisabledTest(message = "https://crbug.com/1466461")
     public void testSelectingNonPasswordInputDismissesAccessory() throws TimeoutException {
         mHelper.loadTestPage(false);
 

@@ -11,7 +11,6 @@
 #include "base/strings/string_piece.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/types/expected.h"
-#include "net/base/features.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/features.h"
@@ -301,5 +300,110 @@ NoVarySearchTestData response_headers_tests[] = {
 INSTANTIATE_TEST_SUITE_P(NoVarySearchPrefetchEnabledTest,
                          NoVarySearchPrefetchEnabledTest,
                          testing::ValuesIn(response_headers_tests));
+
+TEST(ParseHeadersClientHintsTest, AcceptCHAndClearCHWithoutClearSiteDataTest) {
+  const base::StringPiece& headers =
+      "HTTP/1.1 200 OK\r\n"
+      "Accept-CH: sec-ch-dpr\r\n"
+      "Critical-CH: sec-ch-dpr\r\n\r\n";
+  const auto parsed_headers = ParseHeaders(headers);
+
+  EXPECT_TRUE(parsed_headers);
+  EXPECT_FALSE(
+      parsed_headers->client_hints_ignored_due_to_clear_site_data_header);
+  EXPECT_TRUE(parsed_headers->accept_ch);
+  EXPECT_EQ(parsed_headers->accept_ch->size(), 1u);
+  EXPECT_EQ(parsed_headers->accept_ch->at(0),
+            network::mojom::WebClientHintsType::kDpr);
+  EXPECT_TRUE(parsed_headers->critical_ch);
+  EXPECT_EQ(parsed_headers->critical_ch->size(), 1u);
+  EXPECT_EQ(parsed_headers->critical_ch->at(0),
+            network::mojom::WebClientHintsType::kDpr);
+}
+
+TEST(ParseHeadersClientHintsTest,
+     AcceptCHAndClearCHWithClearSiteDataCacheTest) {
+  const base::StringPiece& headers =
+      "HTTP/1.1 200 OK\r\n"
+      "Accept-CH: sec-ch-dpr\r\n"
+      "Critical-CH: sec-ch-dpr\r\n"
+      "Clear-Site-Data: \"cache\"\r\n\r\n";
+  const auto parsed_headers = ParseHeaders(headers);
+
+  EXPECT_TRUE(parsed_headers);
+  EXPECT_TRUE(
+      parsed_headers->client_hints_ignored_due_to_clear_site_data_header);
+  EXPECT_FALSE(parsed_headers->accept_ch);
+  EXPECT_FALSE(parsed_headers->critical_ch);
+}
+
+TEST(ParseHeadersClientHintsTest,
+     AcceptCHAndClearCHWithClearSiteDataClientHintsTest) {
+  const base::StringPiece& headers =
+      "HTTP/1.1 200 OK\r\n"
+      "Accept-CH: sec-ch-dpr\r\n"
+      "Critical-CH: sec-ch-dpr\r\n"
+      "Clear-Site-Data: \"clientHints\"\r\n\r\n";
+  const auto parsed_headers = ParseHeaders(headers);
+
+  EXPECT_TRUE(parsed_headers);
+  EXPECT_TRUE(
+      parsed_headers->client_hints_ignored_due_to_clear_site_data_header);
+  EXPECT_FALSE(parsed_headers->accept_ch);
+  EXPECT_FALSE(parsed_headers->critical_ch);
+}
+
+TEST(ParseHeadersClientHintsTest,
+     AcceptCHAndClearCHWithClearSiteDataCookiesTest) {
+  const base::StringPiece& headers =
+      "HTTP/1.1 200 OK\r\n"
+      "Accept-CH: sec-ch-dpr\r\n"
+      "Critical-CH: sec-ch-dpr\r\n"
+      "Clear-Site-Data: \"cookies\"\r\n\r\n";
+  const auto parsed_headers = ParseHeaders(headers);
+
+  EXPECT_TRUE(parsed_headers);
+  EXPECT_TRUE(
+      parsed_headers->client_hints_ignored_due_to_clear_site_data_header);
+  EXPECT_FALSE(parsed_headers->accept_ch);
+  EXPECT_FALSE(parsed_headers->critical_ch);
+}
+
+TEST(ParseHeadersClientHintsTest,
+     AcceptCHAndClearCHWithClearSiteDataStorageTest) {
+  const base::StringPiece& headers =
+      "HTTP/1.1 200 OK\r\n"
+      "Accept-CH: sec-ch-dpr\r\n"
+      "Critical-CH: sec-ch-dpr\r\n"
+      "Clear-Site-Data: \"storage\"\r\n\r\n";
+  const auto parsed_headers = ParseHeaders(headers);
+
+  EXPECT_TRUE(parsed_headers);
+  EXPECT_FALSE(
+      parsed_headers->client_hints_ignored_due_to_clear_site_data_header);
+  EXPECT_TRUE(parsed_headers->accept_ch);
+  EXPECT_EQ(parsed_headers->accept_ch->size(), 1u);
+  EXPECT_EQ(parsed_headers->accept_ch->at(0),
+            network::mojom::WebClientHintsType::kDpr);
+  EXPECT_TRUE(parsed_headers->critical_ch);
+  EXPECT_EQ(parsed_headers->critical_ch->size(), 1u);
+  EXPECT_EQ(parsed_headers->critical_ch->at(0),
+            network::mojom::WebClientHintsType::kDpr);
+}
+
+TEST(ParseHeadersClientHintsTest, AcceptCHAndClearCHWithClearSiteDataAllTest) {
+  const base::StringPiece& headers =
+      "HTTP/1.1 200 OK\r\n"
+      "Accept-CH: sec-ch-dpr\r\n"
+      "Critical-CH: sec-ch-dpr\r\n"
+      "Clear-Site-Data: \"*\"\r\n\r\n";
+  const auto parsed_headers = ParseHeaders(headers);
+
+  EXPECT_TRUE(parsed_headers);
+  EXPECT_TRUE(
+      parsed_headers->client_hints_ignored_due_to_clear_site_data_header);
+  EXPECT_FALSE(parsed_headers->accept_ch);
+  EXPECT_FALSE(parsed_headers->critical_ch);
+}
 }  // namespace
 }  // namespace network

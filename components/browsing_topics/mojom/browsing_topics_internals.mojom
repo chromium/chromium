@@ -27,6 +27,18 @@ struct WebUIBrowsingTopicsConfiguration {
   // enabled.
   bool browsing_topics_bypass_ip_is_publicly_routable_check_enabled;
 
+  // Whether the deprecatedBrowsingTopics XHR attribute is allowed.
+  bool browsing_topics_xhr_enabled;
+
+  // Whether document.browsingTopics() is allowed.
+  bool browsing_topics_document_api_enabled;
+
+  // The configuration version derived from topics parameters.
+  int32 config_version;
+
+  // Whether the `BrowsingTopicsParameters` feature is enabled.
+  bool browsing_topics_parameters_enabled;
+
   // The number of epochs from where to calculate the topics to give to a
   // requesting contexts.
   int32 number_of_epochs_to_expose;
@@ -43,6 +55,11 @@ struct WebUIBrowsingTopicsConfiguration {
   // `use_random_topic_probability_percent`% chance to see the random topic
   // instead of one of the top topics.
   int32 use_random_topic_probability_percent;
+
+  // Maximum duration between when a epoch is calculated and when a site starts
+  // using that new epoch's topics. The time chosen is a per-site random point
+  // in time between [calculation time, calculation time + max duration).
+  mojo_base.mojom.TimeDelta max_epoch_introduction_delay;
 
   // How many epochs of API usage data (i.e. topics observations) will be based
   // off for the filtering of topics for a calling context.
@@ -62,13 +79,14 @@ struct WebUIBrowsingTopicsConfiguration {
   // load.
   int32 max_number_of_api_usage_context_domains_to_store_per_page_load;
 
-  // The configuration version applicable to all epochs.
-  int32 config_version;
-
   // The taxonomy version. This only affects the topics classification that
   // occurs during this browser session, and doesn't affect the pre-existing
   // epochs.
   int32 taxonomy_version;
+
+  // Comma separated Topic IDs to be blocked. Descendant topics of each blocked
+  // topic will be blocked as well.
+  string disabled_topics_list;
 };
 
 // Struct representing the state of one topic that will be displayed by WebUI.

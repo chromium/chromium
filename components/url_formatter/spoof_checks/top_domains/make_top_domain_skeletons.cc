@@ -24,7 +24,7 @@
 #include "third_party/icu/source/common/unicode/utypes.h"
 #include "third_party/icu/source/i18n/unicode/uspoof.h"
 
-const char* kTop500Separator = "###END_TOP_500###";
+const char* kTopBucketSeparator = "###END_TOP_BUCKET###";
 
 base::FilePath GetPath(base::StringPiece basename) {
   base::FilePath path;
@@ -44,9 +44,10 @@ bool WriteToFile(const std::string& content, base::StringPiece basename) {
   return succeeded;
 }
 
-std::string GenerateTop500OutputLine(const Skeletons& skeletons,
-                                     const Skeletons& no_separators_skeletons,
-                                     const std::string& domain) {
+std::string GenerateTopBucketOutputLine(
+    const Skeletons& skeletons,
+    const Skeletons& no_separators_skeletons,
+    const std::string& domain) {
   std::string output;
   for (const std::string& skeleton : skeletons) {
     for (const std::string& no_separators_skeleton : no_separators_skeletons) {
@@ -59,8 +60,8 @@ std::string GenerateTop500OutputLine(const Skeletons& skeletons,
   return output;
 }
 
-std::string GenerateTop5kOutputLine(const Skeletons& skeletons,
-                                    const std::string& domain) {
+std::string GenerateNormalOutputLine(const Skeletons& skeletons,
+                                     const std::string& domain) {
   std::string output;
   for (const std::string& skeleton : skeletons) {
     DCHECK(!skeleton.empty()) << "Empty skeleton for " << domain;
@@ -94,14 +95,14 @@ int GenerateSkeletons(const char* input_file_name,
 # components/url_formatter/spoof_checks/make_top_domain_skeletons.cc
 # DO NOT MANUALLY EDIT!
 
-# This list contains top 500 domains followed by the top 5000 domains. These are
-# separated by ###END_TOP_500### line.
+# This list contains top bucket domains followed by the remaining domains.
+# These are separated by ###END_TOP_BUCKET### line.
 
-# For top 500 domains, each row has three columns: full skeleton, skeleton
-# without label separators (e.g. '.' and '-'), and the domain itself.
+# For the top bucket domains, each row has three columns: full skeleton,
+# skeleton without label separators (e.g. '.' and '-'), and the domain itself.
 
-# For top 5000 domains, each row has two columns: full skeleton and the domain
-# itself.
+# For the remaining domains, each row has two columns: full skeleton and the
+# domain itself.
 
 # Each entry is the skeleton of a top domain for the confusability check
 # in components/url_formatter/url_formatter.cc.
@@ -113,22 +114,29 @@ int GenerateSkeletons(const char* input_file_name,
   std::string domain;
   size_t max_labels = 0;
   std::string domain_with_max_labels;
-  bool is_top_500 = true;
+  bool is_top_bucket = true;
   while (std::getline(input, domain)) {
     base::TrimWhitespaceASCII(domain, base::TRIM_ALL, &domain);
 
-    if (domain == kTop500Separator) {
-      output += std::string(kTop500Separator) + "\n";
-      is_top_500 = false;
+    if (domain == kTopBucketSeparator) {
+      output += std::string(kTopBucketSeparator) + "\n";
+      is_top_bucket = false;
       continue;
     }
 
-    if (domain[0] == '#')
+    if (domain.empty() || domain[0] == '#') {
       continue;
+    }
 
     const std::u16string domain16 = base::UTF8ToUTF16(domain);
     const Skeletons skeletons = skeleton_generator.GetSkeletons(domain16);
-    DCHECK(!skeletons.empty()) << "Failed to generate skeletons of " << domain;
+    if (skeletons.empty()) {
+      // The rest of the code assumes that we can always extract a skeleton
+      // from a hostname. Some real world domains fail this assumption and
+      // unfortunately we have to skip them for now.
+      LOG(ERROR) << "Failed to generate skeletons of " << domain;
+      continue;
+    }
 
     // Generate skeletons for domains without their separators (e.g. googlecom).
     // These skeletons are used in target embedding lookalikes.
@@ -140,11 +148,11 @@ int GenerateSkeletons(const char* input_file_name,
     DCHECK(!no_separators_skeletons.empty())
         << "No skeletons generated for " << domain16_with_no_separators;
 
-    if (is_top_500) {
-      output +=
-          GenerateTop500OutputLine(skeletons, no_separators_skeletons, domain);
+    if (is_top_bucket) {
+      output += GenerateTopBucketOutputLine(skeletons, no_separators_skeletons,
+                                            domain);
     } else {
-      output += GenerateTop5kOutputLine(skeletons, domain);
+      output += GenerateNormalOutputLine(skeletons, domain);
     }
 
     std::vector<base::StringPiece> labels = base::SplitStringPiece(

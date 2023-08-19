@@ -4,7 +4,6 @@
 
 #include "courgette/disassembler_elf_32_x86.h"
 
-#include <ctype.h>
 #include <stddef.h>
 #include <stdint.h>
 

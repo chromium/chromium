@@ -20,9 +20,9 @@
 #include "ash/shelf/window_scale_animation.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wallpaper/views/wallpaper_view.h"
+#include "ash/wallpaper/views/wallpaper_widget_controller.h"
 #include "ash/wallpaper/wallpaper_constants.h"
-#include "ash/wallpaper/wallpaper_view.h"
-#include "ash/wallpaper/wallpaper_widget_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -38,6 +38,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/wm/features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/window_parenting_client.h"
@@ -489,9 +490,18 @@ TEST_F(DragWindowFromShelfControllerTest, FlingInOverview) {
   EXPECT_TRUE(WindowState::Get(window.get())->IsMinimized());
 }
 
+// TODO(crbug.com/1473400): Re-enable the test once the bug is fixed.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_VerifyHomeLauncherAnimationMetrics \
+  DISABLED_VerifyHomeLauncherAnimationMetrics
+#else
+#define MAYBE_VerifyHomeLauncherAnimationMetrics \
+  VerifyHomeLauncherAnimationMetrics
+#endif
 // Verify that metrics of home launcher animation are recorded correctly when
 // swiping up from shelf with sufficient velocity.
-TEST_F(DragWindowFromShelfControllerTest, VerifyHomeLauncherAnimationMetrics) {
+TEST_F(DragWindowFromShelfControllerTest,
+       MAYBE_VerifyHomeLauncherAnimationMetrics) {
   // Set non-zero animation duration to report animation metrics.
   ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
@@ -603,7 +613,10 @@ TEST_F(DragWindowFromShelfControllerTest, WallpaperBlurDuringDragging) {
       RootWindowController::ForWindow(window->GetRootWindow())
           ->wallpaper_widget_controller()
           ->wallpaper_view();
-  EXPECT_EQ(wallpaper_view->blur_sigma(), wallpaper_constants::kOverviewBlur);
+  EXPECT_EQ(wallpaper_view->blur_sigma(),
+            chromeos::features::IsJellyrollEnabled()
+                ? wallpaper_constants::kClear
+                : wallpaper_constants::kOverviewBlur);
 
   EndDrag(shelf_bounds.CenterPoint(), /*velocity_y=*/absl::nullopt);
   EXPECT_EQ(wallpaper_view->blur_sigma(), wallpaper_constants::kClear);

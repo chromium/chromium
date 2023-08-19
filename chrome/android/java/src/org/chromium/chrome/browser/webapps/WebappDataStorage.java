@@ -11,11 +11,11 @@ import android.graphics.Bitmap;
 import android.text.format.DateUtils;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -173,17 +173,19 @@ public class WebappDataStorage {
     /**
      * Sets the clock used to get the current time.
      */
-    @VisibleForTesting
     public static void setClockForTests(Clock clock) {
+        var oldValue = sClock;
         sClock = clock;
+        ResettersForTesting.register(() -> sClock = oldValue);
     }
 
     /**
      * Sets the factory used to generate WebappDataStorage objects.
      */
-    @VisibleForTesting
     public static void setFactoryForTests(Factory factory) {
+        var oldValue = sFactory;
         sFactory = factory;
+        ResettersForTesting.register(() -> sFactory = oldValue);
     }
 
     /**
@@ -386,7 +388,6 @@ public class WebappDataStorage {
      * @param splashScreenImage The image encoded as a string which should be shown on the splash
      *                          screen of the web app.
      */
-    @VisibleForTesting
     void updateSplashScreenImageForTests(String splashScreenImage) {
         mPreferences.edit().putString(KEY_SPLASH_ICON, splashScreenImage).apply();
     }
@@ -395,7 +396,6 @@ public class WebappDataStorage {
      * Update the package name of the WebAPK. Used for testing.
      * @param webApkPackageName The package name of the WebAPK.
      */
-    @VisibleForTesting
     void updateWebApkPackageNameForTests(String webApkPackageName) {
         mPreferences.edit().putString(KEY_WEBAPK_PACKAGE_NAME, webApkPackageName).apply();
     }

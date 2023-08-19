@@ -60,7 +60,7 @@ std::map<GURL, std::vector<TimestampedSetting>> GetAllSettingsForProfile(
         site_settings::GetSingleOriginExceptionsForContentType(
             content_settings_map, content_type);
     for (const auto& e : exceptions_for_type) {
-      auto last_modified = e.metadata.last_modified;
+      auto last_modified = e.metadata.last_modified();
       if (last_modified.is_null()) {
         continue;
       }

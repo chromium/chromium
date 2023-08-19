@@ -65,6 +65,7 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.version_info.VersionInfo;
 import org.chromium.content_public.browser.ChildProcessImportance;
 import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
@@ -86,8 +87,6 @@ public class TabImpl implements Tab {
     private static final String TAG = "Tab";
 
     private static final String PRODUCT_VERSION = VersionInfo.getProductVersion();
-
-    private static final String REQUEST_DESKTOP_ENABLED_PARAM = "enabled";
 
     private long mNativeTabAndroid;
 
@@ -595,9 +594,12 @@ public class TabImpl implements Tab {
             return true;
         }
 
-        RequestDesktopUtils.maybeRestoreUserAgentOnSiteSettingsDowngrade(this);
-        switchUserAgentIfNeeded(UseDesktopUserAgentCaller.LOAD_IF_NEEDED + caller);
-        restoreIfNeeded();
+        // If desktop mode window setting is enabled, move switchUserAgentIfNeeded() from
+        // loadIfNeeded() to restoreIfNeeded(); to avoid reload without explicit user intent.
+        if (!ContentFeatureMap.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING)) {
+            switchUserAgentIfNeeded(UseDesktopUserAgentCaller.LOAD_IF_NEEDED + caller);
+        }
+        restoreIfNeeded(caller);
         return true;
     }
 
@@ -827,28 +829,11 @@ public class TabImpl implements Tab {
         return null;
     }
 
-    /**
-     * @param tab {@link Tab} instance being checked.
-     * @return Whether the tab is detached from any Activity and its {@link WindowAndroid}.
-     * Certain functionalities will not work until it is attached to an activity
-     * with {@link ReparentingTask#finish}.
-     */
-    static boolean isDetached(Tab tab) {
-        if (tab.getWebContents() == null) return true;
-        // Should get WindowAndroid from WebContents since the one from |getWindowAndroid()|
-        // is always non-null even when the tab is in detached state. See the comment in |detach()|.
-        WindowAndroid window = tab.getWebContents().getTopLevelNativeWindow();
-        if (window == null) return true;
-        Activity activity = ContextUtils.activityFromContext(window.getContext().get());
-        return !(activity instanceof ChromeActivity);
-    }
-
     @Override
     public void setIsTabSaveEnabled(boolean isTabSaveEnabled) {
         mIsTabSaveEnabledSupplier.set(isTabSaveEnabled);
     }
 
-    @VisibleForTesting
     public ObservableSupplierImpl<Boolean> getIsTabSaveEnabledSupplierForTesting() {
         return mIsTabSaveEnabledSupplier;
     }
@@ -1222,7 +1207,7 @@ public class TabImpl implements Tab {
         // While detached for reparenting we don't have an owning Activity, or TabModelSelector,
         // so we can't create the native page. The native page will be created once reparenting is
         // completed.
-        if (isDetached(this)) return false;
+        if (TabUtils.isDetached(this)) return false;
         NativePage candidateForReuse = forceReload ? null : getNativePage();
         NativePage nativePage = mDelegateFactory.createNativePage(url, candidateForReuse, this);
         if (nativePage != null) {
@@ -1360,7 +1345,7 @@ public class TabImpl implements Tab {
      * Builds the native counterpart to this class.
      */
     private void initializeNative() {
-        if (mNativeTabAndroid == 0) TabImplJni.get().init(TabImpl.this);
+        if (mNativeTabAndroid == 0) TabImplJni.get().init(TabImpl.this, mId);
         assert mNativeTabAndroid != 0;
     }
 
@@ -1444,8 +1429,8 @@ public class TabImpl implements Tab {
             mWebContentsDelegate = createWebContentsDelegate();
 
             assert mNativeTabAndroid != 0;
-            TabImplJni.get().initWebContents(mNativeTabAndroid, mIncognito, isDetached(this),
-                    webContents, mWebContentsDelegate,
+            TabImplJni.get().initWebContents(mNativeTabAndroid, mIncognito,
+                    TabUtils.isDetached(this), webContents, mWebContentsDelegate,
                     new TabContextMenuPopulatorFactory(
                             mDelegateFactory.createContextMenuPopulatorFactory(this), this));
 
@@ -1538,7 +1523,7 @@ public class TabImpl implements Tab {
      */
     private void updateInteractableState() {
         boolean currentState =
-                !mIsHidden && !isFrozen() && mIsViewAttachedToWindow && !isDetached(this);
+                !mIsHidden && !isFrozen() && mIsViewAttachedToWindow && !TabUtils.isDetached(this);
 
         if (currentState == mInteractableState) return;
 
@@ -1554,13 +1539,18 @@ public class TabImpl implements Tab {
      * the load codepath is the same (run in loadIfNecessary()) and the same caching policies of
      * history load are used.
      */
-    private final void restoreIfNeeded() {
+    private final void restoreIfNeeded(@LoadIfNeededCaller int caller) {
         // Attempts to display the Paint Preview representation of this Tab. Please note that this
         // is behind an experimental flag (crbug.com/1008520).
         if (isFrozen()) StartupPaintPreviewHelper.showPaintPreviewOnRestore(this);
 
         try {
             TraceEvent.begin("Tab.restoreIfNeeded");
+            if (isFrozen()) {
+                assert CriticalPersistedTabData.from(this).getWebContentsState()
+                        != null
+                    : "crbug/1393848: A frozen tab must have WebContentsState to restore from.";
+            }
             // Restore is needed for a tab that is loaded for the first time. WebContents will
             // be restored from a saved state.
             if ((isFrozen() && CriticalPersistedTabData.from(this).getWebContentsState() != null
@@ -1569,7 +1559,16 @@ public class TabImpl implements Tab {
                 return;
             }
 
-            if (mWebContents != null) mWebContents.getNavigationController().loadIfNecessary();
+            if (mWebContents != null) {
+                // If desktop mode window setting is enabled, move switchUserAgentIfNeeded() from
+                // loadIfNeeded() to restoreIfNeeded(); to avoid reload without explicit user
+                // intent.
+                if (ContentFeatureMap.isEnabled(
+                            ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING)) {
+                    switchUserAgentIfNeeded(UseDesktopUserAgentCaller.LOAD_IF_NEEDED + caller);
+                }
+                mWebContents.getNavigationController().loadIfNecessary();
+            }
             mIsBeingRestored = true;
             for (TabObserver observer : mObservers) observer.onRestoreStarted(this);
         } finally {
@@ -1738,8 +1737,7 @@ public class TabImpl implements Tab {
                 TabUtils.readRequestDesktopSiteContentSettings(profile, url)
                 || alwaysRequestDesktopSite;
         if (!shouldRequestDesktopSite
-                && ContentFeatureList.isEnabled(
-                        ContentFeatureList.REQUEST_DESKTOP_SITE_ADDITIONS)) {
+                && ContentFeatureMap.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_ADDITIONS)) {
             // TODO(shuyng): Make additional setting compatible with site level setting.
             PrefService prefService = UserPrefs.get(profile);
             boolean peripheralPref =
@@ -1778,7 +1776,7 @@ public class TabImpl implements Tab {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
         TabImpl fromWebContents(WebContents webContents);
-        void init(TabImpl caller);
+        void init(TabImpl caller, int id);
         void destroy(long nativeTabAndroid);
         void initWebContents(long nativeTabAndroid, boolean incognito, boolean isBackgroundTab,
                 WebContents webContents, TabWebContentsDelegateAndroidImpl delegate,

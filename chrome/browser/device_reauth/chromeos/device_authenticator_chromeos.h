@@ -21,6 +21,8 @@ class DeviceAuthenticatorChromeOS : public ChromeDeviceAuthenticatorCommon {
 
   bool CanAuthenticateWithBiometrics() override;
 
+  bool CanAuthenticateWithBiometricOrScreenLock() override;
+
   void Authenticate(device_reauth::DeviceAuthRequester requester,
                     AuthenticateCallback callback,
                     bool use_last_valid_auth) override;
@@ -39,10 +41,12 @@ class DeviceAuthenticatorChromeOS : public ChromeDeviceAuthenticatorCommon {
 
   // Records authentication status and executes |callback| with |success|
   // parameter.
-  void OnAuthenticationCompleted(base::OnceCallback<void(bool)> callback,
-                                 bool success);
+  void OnAuthenticationCompleted(bool success);
 
   std::unique_ptr<AuthenticatorChromeOSInterface> authenticator_;
+
+  // Callback to be executed after the authentication completes.
+  AuthenticateCallback callback_;
 
   // Factory for weak pointers to this class.
   base::WeakPtrFactory<DeviceAuthenticatorChromeOS> weak_ptr_factory_{this};

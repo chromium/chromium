@@ -79,10 +79,10 @@ void StreamTextureWrapperImpl::CreateVideoFrame(
   // The pixel format doesn't matter here as long as it's valid for texture
   // frames. But SkiaRenderer wants to ensure that the format of the resource
   // used here which will eventually create a promise image must match the
-  // format of the resource(SharedImageVideo) used to create fulfill image.
-  // crbug.com/1028746. Since we create all the textures/abstract textures as
-  // well as shared images for video to be of format RGBA, we need to use the
-  // pixel format as ABGR here(which corresponds to 32bpp RGBA).
+  // format of the resource(AndroidVideoImageBacking) used to create fulfill
+  // image. crbug.com/1028746. Since we create all the textures/abstract
+  // textures as well as shared images for video to be of format RGBA, we need
+  // to use the pixel format as ABGR here(which corresponds to 32bpp RGBA).
   scoped_refptr<media::VideoFrame> new_frame =
       media::VideoFrame::WrapNativeTextures(
           media::PIXEL_FORMAT_ABGR, holders,

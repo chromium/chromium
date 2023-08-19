@@ -49,6 +49,7 @@ import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.JUnitTestGURLs;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -258,13 +259,6 @@ public class ShareHelperUnitTest {
         assertEquals("Custom action callback not called.", 1, callbackHelper.getCallCount());
     }
 
-    @Test(expected = AssertionError.class)
-    public void customActionShouldNotUsedWhenNotSupported() {
-        ChromeCustomShareAction.Provider provider =
-                new SingleCustomActionProvider("key", new CallbackHelper());
-        ShareHelper.shareWithSystemShareSheetUi(emptyShareParams(), null, false, provider);
-    }
-
     @Test
     public void shareWithPreviewUri() {
         ShareParams params = new ShareParams.Builder(mWindow, "title", JUnitTestGURLs.EXAMPLE_URL)
@@ -283,6 +277,28 @@ public class ShareHelperUnitTest {
         assertEquals("Intent is not a SEND intent.", Intent.ACTION_SEND, sharingIntent.getAction());
         assertEquals("Preview image Uri not set correctly.", mImageUri,
                 sharingIntent.getClipData().getItemAt(0).getUri());
+    }
+
+    @Test
+    public void shareMultipleImage() {
+        ShareParams params = new ShareParams.Builder(mWindow, "", "")
+                                     .setFileUris(new ArrayList<>(List.of(mImageUri, mImageUri)))
+                                     .setFileContentType("image/png")
+                                     .setBypassFixingDomDistillerUrl(true)
+                                     .build();
+        ShareHelper.shareWithSystemShareSheetUi(params, null, true);
+
+        Intent nextIntent = Shadows.shadowOf(mActivity).peekNextStartedActivity();
+        assertNotNull("Shared intent is null.", nextIntent);
+        assertEquals(
+                "Intent is not a chooser intent.", Intent.ACTION_CHOOSER, nextIntent.getAction());
+
+        // Verify sharing intent has the right image.
+        Intent sharingIntent = nextIntent.getParcelableExtra(Intent.EXTRA_INTENT);
+        assertEquals("Intent is not a SEND_MULTIPLE intent.", Intent.ACTION_SEND_MULTIPLE,
+                sharingIntent.getAction());
+        assertNotNull("Images should be shared as file list.",
+                sharingIntent.getParcelableArrayListExtra(Intent.EXTRA_STREAM));
     }
 
     private void selectComponentFromChooserIntent(Intent chooserIntent, ComponentName componentName)

@@ -11,17 +11,17 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/values.h"
-#include "components/autofill/core/common/gaia_id_hash.h"
-#include "components/password_manager/core/common/password_manager_features.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/signin/public/base/gaia_id_hash.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/service/sync_service.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
-using autofill::GaiaIdHash;
 using password_manager::metrics_util::PasswordAccountStorageUsageLevel;
 using password_manager::metrics_util::PasswordAccountStorageUserState;
+using signin::GaiaIdHash;
 
 namespace password_manager::features_util {
 

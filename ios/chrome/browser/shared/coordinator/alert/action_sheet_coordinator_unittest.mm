@@ -6,7 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -15,10 +15,6 @@
 #import "testing/platform_test.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/strings/grit/ui_strings.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 class ActionSheetCoordinatorTest : public PlatformTest {
  protected:
@@ -49,7 +45,7 @@ class ActionSheetCoordinatorTest : public PlatformTest {
   UIAlertController* GetAlertController() {
     EXPECT_TRUE([base_view_controller_.presentedViewController
         isKindOfClass:[UIAlertController class]]);
-    return base::mac::ObjCCastStrict<UIAlertController>(
+    return base::apple::ObjCCastStrict<UIAlertController>(
         base_view_controller_.presentedViewController);
   }
 
@@ -152,6 +148,7 @@ TEST_F(ActionSheetCoordinatorTest, Start_AddCancel) {
   UIAlertAction* cancelAction = alertController.actions[1];
   EXPECT_NSEQ(l10n_util::GetNSString(IDS_APP_CANCEL), cancelAction.title);
   EXPECT_EQ(UIAlertActionStyleCancel, cancelAction.style);
+  [coordinator stop];
 }
 
 // Tests that a Cancel action is not added upon starting when another Cancel
@@ -180,4 +177,5 @@ TEST_F(ActionSheetCoordinatorTest, Start_SkipCancel_IfAdded) {
   UIAlertAction* cancelAction = alertController.actions[0];
   EXPECT_EQ(cancelActionTitle, cancelAction.title);
   EXPECT_EQ(UIAlertActionStyleCancel, cancelAction.style);
+  [coordinator stop];
 }

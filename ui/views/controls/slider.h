@@ -147,7 +147,7 @@ class VIEWS_EXPORT Slider : public View, public gfx::AnimationDelegate {
   virtual SkColor GetTroughColor() const;
   int GetSliderExtraPadding() const;
 
-  raw_ptr<SliderListener, DanglingUntriaged> listener_;
+  raw_ptr<SliderListener, AcrossTasksDanglingUntriaged> listener_;
 
   std::unique_ptr<gfx::SlideAnimation> move_animation_;
 

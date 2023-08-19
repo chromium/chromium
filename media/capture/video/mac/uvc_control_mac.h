@@ -15,6 +15,8 @@
 #include "base/trace_event/trace_event.h"
 #include "media/capture/capture_export.h"
 #include "media/capture/mojom/image_capture_types.h"
+#include "media/capture/video/video_capture_device_descriptor.h"
+#include "media/capture/video_capture_types.h"
 
 using ScopedIOUSBInterfaceInterface =
     base::mac::ScopedIOPluginInterface<IOUSBInterfaceInterface220>;
@@ -153,6 +155,21 @@ class CAPTURE_EXPORT UvcControl {
         << std::hex << ret << ")";
     VLOG_IF(1, ret == kIOReturnSuccess) << control_name << " set to " << value;
   }
+
+  static void SetPowerLineFrequency(
+      const VideoCaptureDeviceDescriptor& device_descriptor,
+      const VideoCaptureParams& params);
+  static void GetPhotoState(
+      media::mojom::PhotoStatePtr& photo_state,
+      const VideoCaptureDeviceDescriptor& device_descriptor);
+  static void SetPhotoState(
+      mojom::PhotoSettingsPtr& settings,
+      const VideoCaptureDeviceDescriptor& device_descriptor);
+  static VideoCaptureControlSupport GetControlSupport(
+      const std::string& device_model);
+  static std::string GetDeviceModelId(const std::string& device_id,
+                                      VideoCaptureApi capture_api,
+                                      VideoCaptureTransportType transport_type);
 
  private:
   template <typename ValueType>

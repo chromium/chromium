@@ -5,7 +5,7 @@
 import {assertInstanceof} from '../assert.js';
 import * as dom from '../dom.js';
 import {I18nString} from '../i18n_string.js';
-import {pictureURL} from '../models/file_system.js';
+import {getObjectURL} from '../models/file_system.js';
 import {FileAccessEntry} from '../models/file_system_access_entry.js';
 import * as nav from '../nav.js';
 import {ViewName} from '../type.js';
@@ -23,7 +23,7 @@ interface UIArgs {
 }
 
 /**
- * Available option show in this view.
+ * Available option shown in this view.
  */
 export class Option<T> {
   readonly exitValue?: T;
@@ -90,9 +90,6 @@ export class Review extends View {
 
   private primaryBtn: HTMLButtonElement|null;
 
-  /**
-   * Constructs the review view.
-   */
   constructor(private readonly viewName: ViewName = ViewName.REVIEW) {
     super(viewName, {defaultFocusSelector: '.primary', dismissByEsc: true});
 
@@ -101,9 +98,6 @@ export class Review extends View {
     this.primaryBtn = null;
   }
 
-  /**
-   * Load the image element with given blob.
-   */
   protected async loadImage(image: HTMLImageElement, blob: Blob):
       Promise<void> {
     try {
@@ -121,9 +115,6 @@ export class Review extends View {
     }
   }
 
-  /**
-   * Sets the photo to be reviewed.
-   */
   async setReviewPhoto(blob: Blob): Promise<void> {
     this.image.hidden = false;
     this.video.hidden = true;
@@ -132,19 +123,13 @@ export class Review extends View {
     URL.revokeObjectURL(image.src);
   }
 
-  /**
-   * Sets the video to be reviewed.
-   */
   async setReviewVideo(video: FileAccessEntry): Promise<void> {
     this.image.hidden = true;
     this.video.hidden = false;
-    const url = await pictureURL(video);
+    const url = await getObjectURL(video);
     this.video.src = url;
   }
 
-  /**
-   * Starts review.
-   */
   async startReview<T>(...optionGroups: Array<OptionGroup<T>>):
       Promise<T|null> {
     // Remove all existing button groups and buttons.

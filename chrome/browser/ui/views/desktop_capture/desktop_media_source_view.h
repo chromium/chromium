@@ -97,9 +97,9 @@ class DesktopMediaSourceView : public views::View {
   raw_ptr<DesktopMediaListView> parent_;
   content::DesktopMediaID source_id_;
 
-  raw_ptr<views::ImageView> icon_view_ = new views::ImageView;
-  raw_ptr<views::ImageView> image_view_ = new views::ImageView;
-  raw_ptr<views::Label> label_ = new views::Label;
+  raw_ptr<views::ImageView> icon_view_;
+  raw_ptr<views::ImageView> image_view_;
+  raw_ptr<views::Label> label_;
 
   bool selected_;
 };

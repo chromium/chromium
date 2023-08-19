@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("thread") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   deps = [ "//base" ]
   sources = [
     "web_task_traits.h",

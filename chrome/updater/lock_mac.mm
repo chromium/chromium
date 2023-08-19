@@ -6,24 +6,22 @@
 
 #include <mach/mach.h>
 #include <servers/bootstrap.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
 
+#include "base/apple/mach_logging.h"
+#include "base/apple/scoped_mach_port.h"
 #include "base/logging.h"
-#include "base/mac/mach_logging.h"
-#include "base/mac/scoped_mach_port.h"
 #include "base/strings/strcat.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -43,12 +41,14 @@ constexpr base::TimeDelta kLockPollingInterval = base::Seconds(3);
 //
 // Returns the receive right if the right was successfully acquired. If the
 // right cannot be acquired for any reason, returns an invalid right instead.
-base::mac::ScopedMachReceiveRight TryAcquireReceive(
+base::apple::ScopedMachReceiveRight TryAcquireReceive(
+    const base::apple::ScopedMachSendRight& bootstrap_right,
     const std::string& service_name) {
-  base::mac::ScopedMachReceiveRight target_right;
+  VLOG(2) << __func__;
+  base::apple::ScopedMachReceiveRight target_right;
   kern_return_t check_in_result = bootstrap_check_in(
-      bootstrap_port, service_name.c_str(),
-      base::mac::ScopedMachReceiveRight::Receiver(target_right).get());
+      bootstrap_right.get(), service_name.c_str(),
+      base::apple::ScopedMachReceiveRight::Receiver(target_right).get());
   if (check_in_result != KERN_SUCCESS) {
     // Log error reports for all errors other than BOOTSTRAP_NOT_PRIVILEGED.
     // BOOTSTRAP_NOT_PRIVILEGED is not logged because it just means that another
@@ -60,7 +60,7 @@ base::mac::ScopedMachReceiveRight TryAcquireReceive(
       BOOTSTRAP_VLOG(2, check_in_result)
           << " lock already held: " << service_name;
     }
-    return base::mac::ScopedMachReceiveRight();
+    return base::apple::ScopedMachReceiveRight();
   }
   return target_right;
 }
@@ -78,7 +78,7 @@ namespace updater {
 class ScopedLockImpl {
  public:
   // Constructs a ScopedLockImpl from a receive right.
-  explicit ScopedLockImpl(base::mac::ScopedMachReceiveRight receive_right);
+  explicit ScopedLockImpl(base::apple::ScopedMachReceiveRight receive_right);
 
   // Releases the receive right (and therefore releases the lock).
   ~ScopedLockImpl() = default;
@@ -89,10 +89,11 @@ class ScopedLockImpl {
  private:
   // The Mach port representing the held lock itself. We only care about
   // service ownership; no messages are transferred with this port.
-  base::mac::ScopedMachReceiveRight receive_right_;
+  base::apple::ScopedMachReceiveRight receive_right_;
 };
 
-ScopedLockImpl::ScopedLockImpl(base::mac::ScopedMachReceiveRight receive_right)
+ScopedLockImpl::ScopedLockImpl(
+    base::apple::ScopedMachReceiveRight receive_right)
     : receive_right_(std::move(receive_right)) {
   mach_port_type_t port_type = 0;
   kern_return_t port_check_result =
@@ -116,25 +117,53 @@ std::unique_ptr<ScopedLock> ScopedLock::Create(const std::string& name,
       base::StrCat({kLockMachServiceNamePrefix, name,
                     UpdaterScopeToString(scope), kLockMachServiceNameSuffix}));
 
-  // First, try to acquire the lock. If the timeout is zero or negative,
-  // this is the only attempt we will make.
-  base::mac::ScopedMachReceiveRight receive_right(
-      TryAcquireReceive(service_name.c_str()));
+  // Find the right namespace for the lock. Non-privileged processes cannot
+  // climb "up" out of their namespace, but the user updater runs with the right
+  // namespace (the interactive user session) anyway. The system updater needs
+  // the system namespace, which is the root of macOS' "tree" of Mach bootstrap
+  // namespaces. Daemons (including LaunchDaemons) and system services naturally
+  // run under this namespace, but `sudo` -- a POSIX utility that is not aware
+  // of the Mach portions of the macOS kernel -- runs targets without changing
+  // their bootstrap port (and therefore their namespace). The system namespace
+  // is the only one guaranteed to be shared between users.
+  //
+  // mac/launcher_main.c uses an equivalent algorithm to find this namespace
+  // when launching a privileged process. It's repeated here so processes
+  // launched via sudo (such as the integration test helper) can reach the
+  // system-scope locks.
+  base::apple::ScopedMachSendRight bootstrap_right =
+      base::apple::RetainMachSendRight(bootstrap_port);
+  if (!geteuid()) {
+    // Move the initial bootstrap right into `next_right` so the first loop is
+    // not a special case. base::ScopedGeneric calls `abort()` if you `reset` it
+    // to what it already holds, so this has to be a move, not a retain.
+    base::apple::ScopedMachSendRight next_right(bootstrap_right.release());
+    while (bootstrap_right.get() != next_right.get()) {
+      bootstrap_right.reset(next_right.release());
+      kern_return_t bootstrap_err = bootstrap_parent(
+          bootstrap_right.get(),
+          base::apple::ScopedMachSendRight::Receiver(next_right).get());
+      if (bootstrap_err != KERN_SUCCESS) {
+        BOOTSTRAP_LOG(ERROR, bootstrap_err)
+            << "can't bootstrap_parent in ScopedLock::Create (for euid 0)";
+        break;  // Use last known bootstrap_right.
+      }
+      CHECK(next_right.is_valid())
+          << "bootstrap_parent yielded invalid port without error";
+    }
+  }
 
-  // Set up time limits.
+  // Make one try to acquire the lock, even if the timeout is zero or negative.
+  base::apple::ScopedMachReceiveRight receive_right(
+      TryAcquireReceive(bootstrap_right, service_name.c_str()));
+
   base::TimeTicks deadline = base::TimeTicks::Now() + timeout;
   constexpr base::TimeDelta kDeltaZero;
-
-  // Loop until we acquire the lock or time out. Note that we have already
-  // tried once to acquire the lock, so this loop will execute zero times
-  // if we have already succeeded (or if the timeout was zero). Therefore,
-  // this loop waits for retry *before* attempting to acquire the lock;
-  // the special case of the first try was handled outside the loop.
   for (base::TimeDelta remain = deadline - base::TimeTicks::Now();
        !receive_right.is_valid() && remain > kDeltaZero;
        remain = deadline - base::TimeTicks::Now()) {
     WaitToRetryLock(remain);
-    receive_right = TryAcquireReceive(service_name);
+    receive_right = TryAcquireReceive(bootstrap_right, service_name);
   }
 
   if (!receive_right.is_valid()) {

@@ -8,9 +8,9 @@
 
 #include <vector>
 
+#include "base/apple/scoped_mach_port.h"
 #include "base/clang_profiling_buildflags.h"
 #include "base/functional/callback.h"
-#include "base/mac/scoped_mach_port.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
@@ -122,9 +122,9 @@ TEST_F(ChildProcessTaskPortProviderTest, ChildLifecycle) {
   EXPECT_EQ(kMachPortNull, provider()->TaskForPid(99));
 
   // Create a fake task port for the fake process.
-  base::mac::ScopedMachReceiveRight receive_right;
-  base::mac::ScopedMachSendRight send_right;
-  ASSERT_TRUE(base::mac::CreateMachPort(&receive_right, &send_right));
+  base::apple::ScopedMachReceiveRight receive_right;
+  base::apple::ScopedMachSendRight send_right;
+  ASSERT_TRUE(base::apple::CreateMachPort(&receive_right, &send_right));
 
   EXPECT_EQ(1u, GetSendRightRefCount(send_right.get()));
   EXPECT_EQ(0u, GetDeadNameRefCount(send_right.get()));
@@ -135,7 +135,7 @@ TEST_F(ChildProcessTaskPortProviderTest, ChildLifecycle) {
       .WillOnce(WithArgs<0>(
           [&send_right](mojom::ChildProcess::GetTaskPortCallback callback) {
             std::move(callback).Run(mojo::PlatformHandle(
-                base::mac::RetainMachSendRight(send_right.get())));
+                base::apple::RetainMachSendRight(send_right.get())));
           }));
 
   provider()->OnChildProcessLaunched(99, &child_process);
@@ -169,9 +169,9 @@ TEST_F(ChildProcessTaskPortProviderTest, DeadTaskPort) {
   EXPECT_EQ(kMachPortNull, provider()->TaskForPid(6));
 
   // Create a fake task port for the fake process.
-  base::mac::ScopedMachReceiveRight receive_right;
-  base::mac::ScopedMachSendRight send_right;
-  ASSERT_TRUE(base::mac::CreateMachPort(&receive_right, &send_right));
+  base::apple::ScopedMachReceiveRight receive_right;
+  base::apple::ScopedMachSendRight send_right;
+  ASSERT_TRUE(base::apple::CreateMachPort(&receive_right, &send_right));
 
   scoped_refptr<base::SequencedTaskRunner> task_runner =
       base::ThreadPool::CreateSequencedTaskRunner({});
@@ -182,12 +182,12 @@ TEST_F(ChildProcessTaskPortProviderTest, DeadTaskPort) {
           WithArgs<0>([&task_runner, &receive_right, &send_right](
                           mojom::ChildProcess::GetTaskPortCallback callback) {
             mojo::PlatformHandle mach_handle(
-                base::mac::RetainMachSendRight(send_right.get()));
+                base::apple::RetainMachSendRight(send_right.get()));
 
             // Destroy the receive right.
             task_runner->PostTask(
                 FROM_HERE,
-                base::BindOnce(&base::mac::ScopedMachReceiveRight::reset,
+                base::BindOnce(&base::apple::ScopedMachReceiveRight::reset,
                                base::Unretained(&receive_right),
                                kMachPortNull));
             // And then return a send right to the now-dead name.
@@ -199,9 +199,9 @@ TEST_F(ChildProcessTaskPortProviderTest, DeadTaskPort) {
   provider()->OnChildProcessLaunched(6, &child_process);
 
   // Create a second fake process.
-  base::mac::ScopedMachReceiveRight receive_right2;
-  base::mac::ScopedMachSendRight send_right2;
-  ASSERT_TRUE(base::mac::CreateMachPort(&receive_right2, &send_right2));
+  base::apple::ScopedMachReceiveRight receive_right2;
+  base::apple::ScopedMachSendRight send_right2;
+  ASSERT_TRUE(base::apple::CreateMachPort(&receive_right2, &send_right2));
 
   MockChildProcess child_contol2;
   EXPECT_CALL(child_contol2, GetTaskPort(_))
@@ -213,7 +213,7 @@ TEST_F(ChildProcessTaskPortProviderTest, DeadTaskPort) {
                 base::BindOnce(
                     std::move(callback),
                     mojo::PlatformHandle(
-                        base::mac::RetainMachSendRight(send_right2.get()))));
+                        base::apple::RetainMachSendRight(send_right2.get()))));
           }));
 
   provider()->OnChildProcessLaunched(123, &child_contol2);
@@ -239,9 +239,9 @@ TEST_F(ChildProcessTaskPortProviderTest, ReplacePort) {
   EXPECT_EQ(kMachPortNull, provider()->TaskForPid(42));
 
   // Create a fake task port for the fake process.
-  base::mac::ScopedMachReceiveRight receive_right;
-  base::mac::ScopedMachSendRight send_right;
-  ASSERT_TRUE(base::mac::CreateMachPort(&receive_right, &send_right));
+  base::apple::ScopedMachReceiveRight receive_right;
+  base::apple::ScopedMachSendRight send_right;
+  ASSERT_TRUE(base::apple::CreateMachPort(&receive_right, &send_right));
 
   EXPECT_EQ(1u, GetSendRightRefCount(send_right.get()));
   EXPECT_EQ(0u, GetDeadNameRefCount(send_right.get()));
@@ -253,7 +253,7 @@ TEST_F(ChildProcessTaskPortProviderTest, ReplacePort) {
       .WillRepeatedly(WithArgs<0>(
           [&receive_right](mojom::ChildProcess::GetTaskPortCallback callback) {
             std::move(callback).Run(mojo::PlatformHandle(
-                base::mac::RetainMachSendRight(receive_right.get())));
+                base::apple::RetainMachSendRight(receive_right.get())));
           }));
 
   provider()->OnChildProcessLaunched(42, &child_process);
@@ -274,9 +274,9 @@ TEST_F(ChildProcessTaskPortProviderTest, ReplacePort) {
   EXPECT_EQ(receive_right.get(), provider()->TaskForPid(42));
 
   // Now simulate PID reuse by replacing the task port with a new one.
-  base::mac::ScopedMachReceiveRight receive_right2;
-  base::mac::ScopedMachSendRight send_right2;
-  ASSERT_TRUE(base::mac::CreateMachPort(&receive_right2, &send_right2));
+  base::apple::ScopedMachReceiveRight receive_right2;
+  base::apple::ScopedMachSendRight send_right2;
+  ASSERT_TRUE(base::apple::CreateMachPort(&receive_right2, &send_right2));
   EXPECT_EQ(1u, GetSendRightRefCount(send_right2.get()));
 
   MockChildProcess child_process2;
@@ -284,7 +284,7 @@ TEST_F(ChildProcessTaskPortProviderTest, ReplacePort) {
       .WillOnce(
           [&send_right2](mojom::ChildProcess::GetTaskPortCallback callback) {
             std::move(callback).Run(mojo::PlatformHandle(
-                base::mac::RetainMachSendRight(send_right2.get())));
+                base::apple::RetainMachSendRight(send_right2.get())));
           });
 
   provider()->OnChildProcessLaunched(42, &child_process2);

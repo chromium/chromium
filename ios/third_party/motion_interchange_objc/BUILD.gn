@@ -62,7 +62,6 @@ source_set("motion_interchange_objc") {
   ]
   configs += [
     ":private_config",
-    "//build/config/compiler:enable_arc",
     "//build/config/compiler:no_chromium_code",
     "//build/config/gcc:symbol_visibility_default",
   ]

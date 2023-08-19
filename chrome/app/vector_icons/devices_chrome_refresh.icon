@@ -66,4 +66,6 @@ R_MOVE_TO, 0.48f, -2.03f,
 R_H_LINE_TO, 2.54f,
 V_LINE_TO, 6.8f,
 R_H_LINE_TO, -2.54f,
+CLOSE,
+R_MOVE_TO, 0, 0,
 CLOSE

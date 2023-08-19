@@ -45,6 +45,9 @@ class SyncInvalidationsService : public KeyedService {
   // previously received messages will be immediately replayed.
   virtual void AddListener(InvalidationsListener* listener) = 0;
 
+  // Returns whether `listener` was added.
+  virtual bool HasListener(InvalidationsListener* listener) = 0;
+
   // Removes |listener|, does nothing if it wasn't added before. |listener| must
   // not be nullptr.
   virtual void RemoveListener(InvalidationsListener* listener) = 0;

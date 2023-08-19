@@ -6,10 +6,7 @@
 
 #import "components/password_manager/core/browser/password_session_durations_metrics_recorder.h"
 #import "components/sync/service/sync_session_durations_metrics_recorder.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+#import "components/unified_consent/msbb_session_durations_metrics_recorder.h"
 
 IOSProfileSessionDurationsService::IOSProfileSessionDurationsService(
     syncer::SyncService* sync_service,
@@ -22,6 +19,10 @@ IOSProfileSessionDurationsService::IOSProfileSessionDurationsService(
   sync_metrics_recorder_ =
       std::make_unique<syncer::SyncSessionDurationsMetricsRecorder>(
           sync_service, identity_manager);
+
+  msbb_metrics_recorder_ =
+      std::make_unique<unified_consent::MsbbSessionDurationsMetricsRecorder>(
+          pref_service);
 
   password_metrics_recorder_ = std::make_unique<
       password_manager::PasswordSessionDurationsMetricsRecorder>(pref_service,
@@ -37,6 +38,7 @@ IOSProfileSessionDurationsService::~IOSProfileSessionDurationsService() =
 
 void IOSProfileSessionDurationsService::Shutdown() {
   sync_metrics_recorder_.reset();
+  msbb_metrics_recorder_.reset();
   password_metrics_recorder_.reset();
 }
 
@@ -44,12 +46,14 @@ void IOSProfileSessionDurationsService::OnSessionStarted(
     base::TimeTicks session_start) {
   is_session_active_ = true;
   sync_metrics_recorder_->OnSessionStarted(session_start);
+  msbb_metrics_recorder_->OnSessionStarted(session_start);
   password_metrics_recorder_->OnSessionStarted(session_start);
 }
 
 void IOSProfileSessionDurationsService::OnSessionEnded(
     base::TimeDelta session_length) {
   sync_metrics_recorder_->OnSessionEnded(session_length);
+  msbb_metrics_recorder_->OnSessionEnded(session_length);
   password_metrics_recorder_->OnSessionEnded(session_length);
   is_session_active_ = false;
 }

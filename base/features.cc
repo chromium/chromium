@@ -15,6 +15,16 @@ BASE_FEATURE(kEnforceNoExecutableFileHandles,
              "EnforceNoExecutableFileHandles",
              FEATURE_ENABLED_BY_DEFAULT);
 
+// TODO(crbug.com/851128): Roll out this to 100% before replacing existing
+// NOTREACHED()s with NOTREACHED_NORETURN() as part of NOTREACHED() migration.
+// Note that a prerequisite for rolling out this experiment is that existing
+// NOTREACHED reports are at a very low rate. Once this rolls out we should
+// monitor that crash rates for the experiment population is within a 1-5% or
+// lower than the control group.
+BASE_FEATURE(kNotReachedIsFatal,
+             "NotReachedIsFatal",
+             FEATURE_DISABLED_BY_DEFAULT);
+
 // Optimizes parsing and loading of data: URLs.
 BASE_FEATURE(kOptimizeDataUrls, "OptimizeDataUrls", FEATURE_ENABLED_BY_DEFAULT);
 

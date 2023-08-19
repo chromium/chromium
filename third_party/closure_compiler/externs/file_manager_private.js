@@ -458,14 +458,15 @@ chrome.fileManagerPrivate.PolicyDefaultHandlerStatus = {
  */
 chrome.fileManagerPrivate.BulkPinStage = {
   STOPPED: 'stopped',
-  PAUSED: 'paused',
+  PAUSED_OFFLINE: 'paused_offline',
+  PAUSED_BATTERY_SAVER: 'paused_battery_saver',
   GETTING_FREE_SPACE: 'getting_free_space',
   LISTING_FILES: 'listing_files',
   SYNCING: 'syncing',
   SUCCESS: 'success',
+  NOT_ENOUGH_SPACE: 'not_enough_space',
   CANNOT_GET_FREE_SPACE: 'cannot_get_free_space',
   CANNOT_LIST_FILES: 'cannot_list_files',
-  NOT_ENOUGH_SPACE: 'not_enough_space',
   CANNOT_ENABLE_DOCS_OFFLINE: 'cannot_enable_docs_offline',
 };
 
@@ -725,7 +726,7 @@ chrome.fileManagerPrivate.SearchParams;
  *   query: string,
  *   types: !chrome.fileManagerPrivate.SearchType,
  *   maxResults: number,
- *   timestamp: (number|undefined),
+ *   modifiedTimestamp: (number|undefined),
  *   category: (!chrome.fileManagerPrivate.FileCategory|undefined)
  * }}
  */
@@ -874,6 +875,15 @@ chrome.fileManagerPrivate.IOTaskParams;
 
 /**
  * @typedef {{
+ *   type: !chrome.fileManagerPrivate.PolicyErrorType,
+ *   policyFileCount: number,
+ *   fileName: string
+ * }}
+ */
+chrome.fileManagerPrivate.PolicyError;
+
+/**
+ * @typedef {{
  *   conflictName: (string|undefined),
  *   conflictIsDirectory: (boolean|undefined),
  *   conflictMultiple: (boolean|undefined),
@@ -884,7 +894,9 @@ chrome.fileManagerPrivate.ConflictPauseParams;
 
 /**
  * @typedef {{
- *   type: !chrome.fileManagerPrivate.PolicyErrorType
+ *   type: !chrome.fileManagerPrivate.PolicyErrorType,
+ *   policyFileCount: number,
+ *   fileName: string
  * }}
  */
 chrome.fileManagerPrivate.PolicyPauseParams;
@@ -924,7 +936,7 @@ chrome.fileManagerPrivate.ResumeParams;
  * @typedef {{
  *   type: !chrome.fileManagerPrivate.IOTaskType,
  *   state: !chrome.fileManagerPrivate.IOTaskState,
- *   policyError: (!chrome.fileManagerPrivate.PolicyErrorType|undefined),
+ *   policyError: (!chrome.fileManagerPrivate.PolicyError|undefined),
  *   sourceName: string,
  *   numRemainingItems: number,
  *   itemCount: number,
@@ -994,7 +1006,9 @@ chrome.fileManagerPrivate.ParsedTrashInfoFile;
  *   requiredSpaceBytes: number,
  *   bytesToPin: number,
  *   pinnedBytes: number,
- *   filesToPin: number
+ *   filesToPin: number,
+ *   remainingSeconds: number,
+ *   emptiedQueue: boolean
  * }}
  */
 chrome.fileManagerPrivate.BulkPinProgress;
@@ -1537,43 +1551,6 @@ chrome.fileManagerPrivate.installLinuxPackage = function(entry, callback) {};
  * @param {Entry} entry
  */
 chrome.fileManagerPrivate.importCrostiniImage = function(entry) {};
-
-/**
- * For a file in DriveFS, retrieves its thumbnail. If |cropToSquare| is true,
- * returns a thumbnail appropriate for file list or grid views; otherwise,
- * returns a thumbnail appropriate for quickview.
- * @param {FileEntry} entry
- * @param {boolean} cropToSquare
- * @param {function(string): void} callback |thumbnailDataUrl| A data URL for
- *     the thumbnail; |thumbnailDataUrl| is empty if no thumbnail was available.
- */
-chrome.fileManagerPrivate.getDriveThumbnail = function(entry, cropToSquare, callback) {};
-
-/**
- * For a local PDF file, retrieves its thumbnail with a given |width| and
- * |height|.
- * @param {FileEntry} entry
- * @param {number} width
- * @param {number} height
- * @param {function(string): void} callback |thumbnailDataUrl| A data URL for
- *     the thumbnail; |thumbnailDataUrl| is empty if no thumbnail was available.
- */
-chrome.fileManagerPrivate.getPdfThumbnail = function(entry, width, height, callback) {};
-
-/**
- * Retrieves a thumbnail of an ARC DocumentsProvider file, closely matching the
- * hinted size specified by |widthHint| and |heightHint|, but not necessarily
- * the exact size. |callback| is called with thumbnail data encoded as a data
- * URL. If the document does not support thumbnails, |callback| is called with
- * an empty string. Note: The thumbnail data may originate from third-party
- * application code, and is untrustworthy (Security).
- * @param {FileEntry} entry
- * @param {number} widthHint
- * @param {number} heightHint
- * @param {function(string): void} callback |thumbnailDataUrl| A data URL for
- *     the thumbnail; |thumbnailDataUrl| is empty if no thumbnail was available.
- */
-chrome.fileManagerPrivate.getArcDocumentsProviderThumbnail = function(entry, widthHint, heightHint, callback) {};
 
 /**
  * Returns a list of Android picker apps to be shown in file selector.

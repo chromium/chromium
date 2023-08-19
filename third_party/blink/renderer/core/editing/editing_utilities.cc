@@ -195,11 +195,6 @@ static bool HasEditableLevel(const Node& node, EditableLevel editable_level) {
     if (!(ancestor.IsHTMLElement() || ancestor.IsDocumentNode()))
       continue;
 
-    if (auto* element = DynamicTo<Element>(&ancestor)) {
-      if (element->editContext())
-          return true;
-    }
-
     const ComputedStyle* style = ancestor.GetComputedStyle();
     if (!style)
       continue;
@@ -1676,6 +1671,14 @@ AtomicString GetUrlStringFromNode(const Node& node) {
   return AtomicString();
 }
 
+void WriteImageToClipboard(SystemClipboard& system_clipboard,
+                           const scoped_refptr<Image>& image,
+                           const KURL& url_string,
+                           const String& title) {
+  system_clipboard.WriteImageWithTag(image.get(), url_string, title);
+  system_clipboard.CommitWrite();
+}
+
 void WriteImageNodeToClipboard(SystemClipboard& system_clipboard,
                                const Node& node,
                                const String& title) {
@@ -1684,8 +1687,7 @@ void WriteImageNodeToClipboard(SystemClipboard& system_clipboard,
     return;
   const KURL url_string = node.GetDocument().CompleteURL(
       StripLeadingAndTrailingHTMLSpaces(GetUrlStringFromNode(node)));
-  system_clipboard.WriteImageWithTag(image.get(), url_string, title);
-  system_clipboard.CommitWrite();
+  WriteImageToClipboard(system_clipboard, image, url_string, title);
 }
 
 Element* FindEventTargetFrom(LocalFrame& frame,

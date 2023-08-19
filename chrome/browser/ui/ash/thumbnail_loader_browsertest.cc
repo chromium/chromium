@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/open_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/ash/fileapi/file_system_backend.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -21,7 +22,6 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension.h"
 #include "storage/browser/file_system/external_mount_points.h"
-#include "storage/browser/file_system/file_system_backend.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "url/origin.h"
@@ -61,9 +61,9 @@ class ScopedExternalMountPoint {
         temp_dir_.GetPath());
     GURL image_loader_url = extensions::Extension::GetBaseURLFromExtensionId(
         file_manager::kImageLoaderExtensionId);
-    file_manager::util::GetFileSystemContextForSourceURL(profile,
-                                                         image_loader_url)
-        ->external_backend()
+    ash::FileSystemBackend::Get(
+        *file_manager::util::GetFileSystemContextForSourceURL(profile,
+                                                              image_loader_url))
         ->GrantFileAccessToOrigin(url::Origin::Create(image_loader_url),
                                   base::FilePath(name_));
   }

@@ -12,7 +12,22 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 
-using ChromeBrowserMainWinTest = InProcessBrowserTest;
+class ChromeBrowserMainWinTest : public InProcessBrowserTest {
+ public:
+  // InProcessBrowserTest
+  void SetUpLocalStatePrefService(PrefService* local_state) override {
+    InProcessBrowserTest::SetUpLocalStatePrefService(local_state);
+    if (GetTestPreCount() > 0) {
+      // Clear the migration version pref set by
+      // InProcessBrowserTest::SetUpLocalStatePrefService.
+      local_state->ClearPref(prefs::kShortcutMigrationVersion);
+    } else {
+      // Set the version back to kLastVersionNeedingMigration and
+      // `ShortcutsAreMigratedOnce` will verify that it's not migrated again.
+      local_state->SetString(prefs::kShortcutMigrationVersion, "86.0.4231.0");
+    }
+  }
+};
 
 IN_PROC_BROWSER_TEST_F(ChromeBrowserMainWinTest, PRE_ShortcutsAreMigratedOnce) {
   // Wait for all startup tasks to run.
@@ -23,11 +38,6 @@ IN_PROC_BROWSER_TEST_F(ChromeBrowserMainWinTest, PRE_ShortcutsAreMigratedOnce) {
       g_browser_process->local_state()->GetString(
           prefs::kShortcutMigrationVersion);
   EXPECT_EQ(last_version_migrated, version_info::GetVersionNumber());
-
-  // Set the version back as far as kLastVersionNeedingMigration and ensure it's
-  // not migrated again.
-  g_browser_process->local_state()->SetString(prefs::kShortcutMigrationVersion,
-                                              "86.0.4231.0");
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeBrowserMainWinTest, ShortcutsAreMigratedOnce) {

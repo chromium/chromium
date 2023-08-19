@@ -24,8 +24,8 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_child_process_host_delegate.h"
 #include "content/public/browser/gpu_data_manager.h"
-#include "gpu/command_buffer/common/activity_flags.h"
 #include "gpu/command_buffer/common/constants.h"
+#include "gpu/command_buffer/common/shm_count.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/config/gpu_mode.h"
@@ -76,11 +76,11 @@ class GpuProcessHost : public BrowserChildProcessHostDelegate,
   // Returns whether there is an active GPU process or not.
   static void GetHasGpuProcess(base::OnceCallback<void(bool)> callback);
 
-  // Helper function to run a callback on the IO thread. The callback receives
+  // Helper function to run a callback on the UI thread. The callback receives
   // the appropriate GpuProcessHost instance. Note that the callback can be
   // called with a null host (e.g. when |force_create| is false, and no
   // GpuProcessHost instance exists).
-  CONTENT_EXPORT static void CallOnIO(
+  CONTENT_EXPORT static void CallOnUI(
       const base::Location& location,
       GpuProcessKind kind,
       bool force_create,

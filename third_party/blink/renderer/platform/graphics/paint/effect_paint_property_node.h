@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/view_transition_element_id.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/region_capture_crop_id.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rrect_f.h"
 
@@ -123,6 +124,19 @@ class PLATFORM_EXPORT EffectPaintPropertyNode
     // elements.
     viz::ViewTransitionElementResourceId view_transition_element_resource_id;
 
+    // Used to associate this effect node with its originating Element.
+    // TODO(https://crbug.com/1418194): rename crop ID type to a name suitable
+    // for both element-level and region capture.
+    RegionCaptureCropId element_capture_id;
+
+    // When set, the affected elements should avoid doing clipping for
+    // optimization purposes (like off-screen clipping). This is set by view
+    // transition code to ensure that the element is fully painted since it will
+    // likely be drawn by pseudo elements that themselves can reposition and
+    // resize the painted output of the element. Note that this bit is
+    // propagated to the subtree of the effect tree.
+    bool self_or_ancestor_participates_in_view_transition = false;
+
     PaintPropertyChangeType ComputeChange(
         const State& other,
         const AnimationState& animation_state) const;
@@ -181,19 +195,14 @@ class PLATFORM_EXPORT EffectPaintPropertyNode
     return state_.output_clip.get();
   }
 
-  SkBlendMode BlendMode() const {
-    return state_.blend_mode;
-  }
-  float Opacity() const {
-    return state_.opacity;
-  }
-  const CompositorFilterOperations& Filter() const {
-    return state_.filter;
-  }
+  SkBlendMode BlendMode() const { return state_.blend_mode; }
+  float Opacity() const { return state_.opacity; }
+  const CompositorFilterOperations& Filter() const { return state_.filter; }
 
   const CompositorFilterOperations* BackdropFilter() const {
-    if (!state_.backdrop_filter_info)
+    if (!state_.backdrop_filter_info) {
       return nullptr;
+    }
     DCHECK(!state_.backdrop_filter_info->operations.IsEmpty());
     return &state_.backdrop_filter_info->operations;
   }
@@ -295,7 +304,7 @@ class PLATFORM_EXPORT EffectPaintPropertyNode
   // is entirely empty.
   bool DrawsContent() const {
     return MayHaveFilter() || MayHaveBackdropEffect() ||
-           ViewTransitionElementId().valid();
+           ViewTransitionElementId().valid() || !ElementCaptureId()->is_zero();
   }
 
   CompositingReasons DirectCompositingReasonsForDebugging() const {
@@ -313,6 +322,14 @@ class PLATFORM_EXPORT EffectPaintPropertyNode
   const viz::ViewTransitionElementResourceId& ViewTransitionElementResourceId()
       const {
     return state_.view_transition_element_resource_id;
+  }
+
+  const RegionCaptureCropId& ElementCaptureId() const {
+    return state_.element_capture_id;
+  }
+
+  bool SelfOrAncestorParticipatesInViewTransition() const {
+    return state_.self_or_ancestor_participates_in_view_transition;
   }
 
   std::unique_ptr<JSONObject> ToJSON() const;

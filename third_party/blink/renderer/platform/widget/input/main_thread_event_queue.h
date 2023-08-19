@@ -138,6 +138,8 @@ class PLATFORM_EXPORT MainThreadEventQueue
       mojom::blink::InputEventResultState ack_state) {
     return ack_state == mojom::blink::InputEventResultState::kNotConsumed ||
            ack_state ==
+               mojom::blink::InputEventResultState::kNotConsumedBlocking ||
+           ack_state ==
                mojom::blink::InputEventResultState::kSetNonBlockingDueToFling;
   }
 

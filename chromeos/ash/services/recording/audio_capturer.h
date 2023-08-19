@@ -6,10 +6,13 @@
 #define CHROMEOS_ASH_SERVICES_RECORDING_AUDIO_CAPTURER_H_
 
 #include <memory>
-#include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
+#include "media/audio/audio_bus_pool.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_capturer_source.h"
 #include "media/base/audio_parameters.h"
@@ -36,7 +39,7 @@ using OnAudioCapturedCallback =
 // capturer. `callback` will be invoked according to the rules specified above.
 class AudioCapturer : public media::AudioCapturerSource::CaptureCallback {
  public:
-  AudioCapturer(const std::string& device_id,
+  AudioCapturer(base::StringPiece device_id,
                 mojo::PendingRemote<media::mojom::AudioStreamFactory>
                     audio_stream_factory,
                 const media::AudioParameters& audio_params,
@@ -60,9 +63,30 @@ class AudioCapturer : public media::AudioCapturerSource::CaptureCallback {
   void OnCaptureMuted(bool is_muted) override;
 
  private:
+  // Will be called when the audio bus that we send to the client via
+  // `on_audio_captured_callback_` (which in turn wraps the `backing_audio_bus`)
+  // is destroyed. The `backing_audio_bus` can then be inserted back into the
+  // `audio_bus_pool_`.
+  void OnAudioBusDone(std::unique_ptr<media::AudioBus> backing_audio_bus);
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
   scoped_refptr<media::AudioCapturerSource> audio_capturer_;
 
   const OnAudioCapturedCallback on_audio_captured_callback_;
+
+  // An audio bus pool which we use to avoid allocating audio buses on the real-
+  // time audio thread when `Capture()` above is called.
+  media::AudioBusPoolImpl audio_bus_pool_;
+
+  // This will be initialized in the ctor as a weak ptr to `this`, and will be
+  // used to bind a callback to `OnAudioBusDone()`. The creation of this weak
+  // ptr, its invalidation, and the invocation of the callback bound to
+  // `OnAudioBusDone()` will all be done on the same sequence guarded by the
+  // above `sequence_checker_`.
+  base::WeakPtr<AudioCapturer> weak_ptr_this_;
+
+  base::WeakPtrFactory<AudioCapturer> weak_ptr_factory_{this};
 };
 
 }  // namespace recording

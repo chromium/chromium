@@ -17,7 +17,6 @@ import android.widget.TextView;
 
 import androidx.test.filters.MediumTest;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -60,7 +59,7 @@ import java.util.List;
  */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH})
+@EnableFeatures(ChromeFeatureList.BOOKMARKS_REFRESH)
 public class PowerBookmarkShoppingItemRowRenderTest {
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams = new NightModeParams().getParameters();
@@ -150,11 +149,6 @@ public class PowerBookmarkShoppingItemRowRenderTest {
                     mImageFetcher, mBookmarkModel, mSnackbarManager, mProfile);
             mPowerBookmarkShoppingItemRow.setCurrencyFormatterForTesting(mCurrencyFormatter);
         });
-    }
-
-    @After
-    public void tearDown() {
-        ShoppingFeatures.setShoppingListEligibleForTesting(null);
     }
 
     @Test

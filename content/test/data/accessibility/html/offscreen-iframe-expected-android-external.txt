@@ -1,6 +1,6 @@
 WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
 ++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
 ++++View actions:[AX_FOCUS] bundle:[chromeRole="iframe"]
-++++++View scrollable actions:[AX_FOCUS, PAGE_DOWN] bundle:[chromeRole="rootWebArea"]
+++++++View scrollable actions:[AX_FOCUS] bundle:[chromeRole="rootWebArea"]
 ++++++++View text:"iframe_onscreen" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="group"]
 ++++++++View text:"iframe_offscreen" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="group"]

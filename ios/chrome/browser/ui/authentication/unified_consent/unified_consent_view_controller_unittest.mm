@@ -6,14 +6,10 @@
 
 #import <memory>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "ios/chrome/common/string_util.h"
 #import "testing/platform_test.h"
 #import "ui/base/l10n/l10n_util_mac.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -56,13 +52,13 @@ class UnifiedConsentViewControllerTest : public PlatformTest {
   // Returns the first UITextView in the unified consent UI hierarchy.
   UITextView* GetSyncSettingsView(UIView* view) {
     UIScrollView* scroll_view =
-        base::mac::ObjCCast<UIScrollView>([[view subviews] firstObject]);
+        base::apple::ObjCCast<UIScrollView>([[view subviews] firstObject]);
     UIView* container =
-        base::mac::ObjCCast<UIView>([[scroll_view subviews] firstObject]);
+        base::apple::ObjCCast<UIView>([[scroll_view subviews] firstObject]);
 
     for (UIView* subview in [container subviews]) {
       if ([subview isKindOfClass:[UITextView class]]) {
-        return base::mac::ObjCCast<UITextView>(subview);
+        return base::apple::ObjCCast<UITextView>(subview);
       }
     }
     return nil;

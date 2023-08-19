@@ -19,7 +19,7 @@ window.onload = function() {
             document.body.textContent = 'PASS';
             testRunner.notifyDone();
         };
-        iframeElement.src = 'data:text/html,PASS';
+        iframeElement.srcdoc = '<html><body>PASS</body></html>';
     }
 };
 

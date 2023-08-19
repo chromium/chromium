@@ -7,7 +7,6 @@ found in the LICENSE file.
 <!-- Do not replace this with TextViewWithCompoundDrawables
      https://crbug.com/1053448 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground"
@@ -17,9 +16,8 @@ found in the LICENSE file.
 
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/menu_item_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:tint="@color/default_icon_color_secondary_tint_list"
+        style="@style/ListMenuItemIconStyle.Start"
+        android:visibility="gone"
         android:importantForAccessibility="no" />
 
     <TextView
@@ -33,10 +31,8 @@ found in the LICENSE file.
 
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/menu_item_end_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@style/ListMenuItemIconStyle"
         android:visibility="gone"
-        app:tint="@color/default_icon_color_secondary_tint_list"
         android:importantForAccessibility="no" />
 
 </LinearLayout>

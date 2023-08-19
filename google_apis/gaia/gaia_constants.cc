@@ -93,10 +93,6 @@ extern const char kSecureConnectOAuth2Scope[] =
 const char kCastBackdropOAuth2Scope[] =
     "https://www.googleapis.com/auth/cast.backdrop";
 
-// OAuth scope for access to Cloud Translation API.
-const char kCloudTranslationOAuth2Scope[] =
-    "https://www.googleapis.com/auth/cloud-translation";
-
 // OAuth2 scope for access to passwords leak checking API.
 const char kPasswordsLeakCheckOAuth2Scope[] =
     "https://www.googleapis.com/auth/identity.passwords.leak.check";
@@ -140,6 +136,10 @@ const char kCloudPlatformProjectsOAuth2Scope[] =
 // OAuth2 scope for access to nearby sharing.
 const char kNearbyShareOAuth2Scope[] =
     "https://www.googleapis.com/auth/nearbysharing-pa";
+
+// OAuth2 scope for access to nearby sharing.
+const char kNearbyPresenceOAuth2Scope[] =
+    "https://www.googleapis.com/auth/nearbypresence-pa";
 
 // OAuth2 scopes for access to GCM account tracker.
 const char kGCMGroupServerOAuth2Scope[] = "https://www.googleapis.com/auth/gcm";

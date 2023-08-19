@@ -370,7 +370,8 @@ class BookmarkBarView : public views::AccessiblePaneView,
   PrefChangeRegistrar profile_pref_registrar_;
 
   // Used for opening urls.
-  raw_ptr<content::PageNavigator, DanglingUntriaged> page_navigator_ = nullptr;
+  raw_ptr<content::PageNavigator, AcrossTasksDanglingUntriaged>
+      page_navigator_ = nullptr;
 
   // BookmarkModel that owns the entries and folders that are shown in this
   // view. This is owned by the Profile.

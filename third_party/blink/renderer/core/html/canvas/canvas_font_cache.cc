@@ -51,7 +51,7 @@ CanvasFontCache::~CanvasFontCache() {
 
 unsigned CanvasFontCache::MaxFonts() {
   return MemoryPressureListenerRegistry::
-                 IsLowEndDeviceOrPartialLowEndModeEnabled()
+                 IsLowEndDeviceOrPartialLowEndModeEnabledIncludingCanvasFontCache()
              ? CanvasFontCacheMaxFontsLowEnd
              : CanvasFontCacheMaxFonts;
 }
@@ -60,7 +60,7 @@ unsigned CanvasFontCache::HardMaxFonts() {
   return document_->hidden()
              ? CanvasFontCacheHiddenMaxFonts
              : (MemoryPressureListenerRegistry::
-                        IsLowEndDeviceOrPartialLowEndModeEnabled()
+                        IsLowEndDeviceOrPartialLowEndModeEnabledIncludingCanvasFontCache()
                     ? CanvasFontCacheHardMaxFontsLowEnd
                     : CanvasFontCacheHardMaxFonts);
 }

@@ -5,8 +5,8 @@
 #include "content/shell/app/paths_mac.h"
 
 #include "base/apple/bundle_locations.h"
+#include "base/apple/foundation_util.h"
 #include "base/base_paths.h"
-#include "base/mac/foundation_util.h"
 #include "base/path_service.h"
 #include "content/public/common/content_paths.h"
 
@@ -18,7 +18,7 @@ base::FilePath GetContentsPath() {
   base::PathService::Get(base::FILE_EXE, &path);
 
   // Up to Contents.
-  if (base::mac::IsBackgroundOnlyProcess()) {
+  if (base::apple::IsBackgroundOnlyProcess()) {
     // The running executable is the helper, located at:
     // Content Shell.app/Contents/Frameworks/
     // Content Shell Framework.framework/Versions/C/Helpers/Content Shell
@@ -69,7 +69,9 @@ void OverrideChildProcessPath() {
                                    .Append("MacOS")
                                    .Append("Content Shell Helper");
 
-  base::PathService::Override(content::CHILD_PROCESS_EXE, helper_path);
+  base::PathService::OverrideAndCreateIfNeeded(
+      content::CHILD_PROCESS_EXE, helper_path, /*is_absolute=*/true,
+      /*create=*/false);
 }
 
 void OverrideSourceRootPath() {

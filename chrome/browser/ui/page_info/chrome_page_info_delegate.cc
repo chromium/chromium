@@ -34,7 +34,6 @@
 #include "components/permissions/contexts/bluetooth_chooser_context.h"
 #include "components/permissions/object_permission_context_base.h"
 #include "components/permissions/permission_manager.h"
-#include "components/permissions/permission_result.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
@@ -175,14 +174,19 @@ std::u16string ChromePageInfoDelegate::GetWarningDetailText() {
 }
 #endif
 
-permissions::PermissionResult ChromePageInfoDelegate::GetPermissionResult(
+content::PermissionResult ChromePageInfoDelegate::GetPermissionResult(
     blink::PermissionType permission,
-    const url::Origin& origin) {
-  content::PermissionResult permission_result =
-      GetProfile()
-          ->GetPermissionController()
-          ->GetPermissionResultForOriginWithoutContext(permission, origin);
-  return permissions::PermissionUtil::ToPermissionResult(permission_result);
+    const url::Origin& origin,
+    const absl::optional<url::Origin>& requesting_origin) {
+  auto* controller = GetProfile()->GetPermissionController();
+
+  if (requesting_origin.has_value()) {
+    return controller->GetPermissionResultForOriginWithoutContext(
+        permission, *requesting_origin, origin);
+  } else {
+    return controller->GetPermissionResultForOriginWithoutContext(permission,
+                                                                  origin);
+  }
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -219,7 +223,8 @@ ChromePageInfoDelegate::CreateCookieControlsController() {
       CookieSettingsFactory::GetForProfile(profile),
       profile->IsOffTheRecord()
           ? CookieSettingsFactory::GetForProfile(profile->GetOriginalProfile())
-          : nullptr);
+          : nullptr,
+      HostContentSettingsMapFactory::GetForProfile(profile));
 }
 
 bool ChromePageInfoDelegate::IsIsolatedWebApp() {
@@ -368,8 +373,15 @@ ChromePageInfoDelegate::GetVisibleSecurityState() {
 }
 
 void ChromePageInfoDelegate::OnCookiesPageOpened() {
-  GetProfile()->GetPrefs()->SetBoolean(prefs::kInContextCookieControlsOpened,
-                                       true);
+  auto* profile = GetProfile();
+  auto cookie_settings = CookieSettingsFactory::GetForProfile(profile);
+  // Don't record the preference if 3PC are allowed by default. Since then
+  // cookie controls are not available in the cookies page.
+  if (!cookie_settings || !cookie_settings->ShouldBlockThirdPartyCookies()) {
+    return;
+  }
+
+  profile->GetPrefs()->SetBoolean(prefs::kInContextCookieControlsOpened, true);
 }
 
 std::unique_ptr<content_settings::PageSpecificContentSettings::Delegate>

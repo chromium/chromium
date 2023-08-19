@@ -151,8 +151,8 @@ class ViewportAwareRootTest : public testing::Test {
     return changed;
   }
 
-  raw_ptr<ViewportAwareRootForTesting> viewport_root;
-  raw_ptr<UiElement> viewport_element;
+  raw_ptr<ViewportAwareRootForTesting, DanglingUntriaged> viewport_root;
+  raw_ptr<UiElement, DanglingUntriaged> viewport_element;
 
  private:
   std::unique_ptr<UiScene> scene_;

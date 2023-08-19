@@ -177,21 +177,23 @@ suite('NetworkListItemTest', function() {
     assertEquals(providerName, getTitle());
   });
 
-  test('Network title is escaped', async () => {
+  test('Network title does not allow XSS', async () => {
     init();
 
-    listItem.item = {
-      customItemType: NetworkList.CustomItemType.ESIM_PENDING_PROFILE,
-      customItemName: '<a>Bad Name</a>',
-      customItemSubtitle: '<a>Bad Subtitle</a>',
-      polymerIcon: 'network:cellular-0',
-      showBeforeNetworksList: false,
-      customData: {
-        iccid: 'iccid',
-      },
+    const getTitle = () => {
+      const element = listItem.$$('#itemTitle');
+      return element ? element.textContent.trim() : '';
     };
+
+    eSimManagerRemote.addEuiccForTest(/*numProfiles=*/ 1);
+
+    const badName = '<script>alert("Bad Name");</script>';
+    listItem.item = initCellularNetwork(
+        /*iccid=*/ '1', /*eid=*/ '1', /*simlock=*/ false,
+        /*name=*/ badName);
     await flushAsync();
-    assertFalse(!!listItem.$$('a'));
+    assertTrue(!!listItem);
+    assertTrue(getTitle().startsWith(badName));
   });
 
   test('Pending activation pSIM UI visibility', async () => {

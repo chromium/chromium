@@ -4,16 +4,12 @@
 
 #import <Foundation/Foundation.h>
 
-#import "base/mac/scoped_objc_class_swizzler.h"
+#import "base/apple/scoped_objc_class_swizzler.h"
 #include "base/test/task_environment.h"
 #import "chrome/browser/mac/keystone_glue.h"
 #import "chrome/browser/mac/keystone_registration.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace ksr = keystone_registration;
 
@@ -181,10 +177,10 @@ class KeystoneGlueTest : public PlatformTest {
 
 TEST_F(KeystoneGlueTest, BasicGlobalCreate) {
   // Allow creation of a KeystoneGlue by mocking out a couple calls.
-  base::mac::ScopedObjCClassSwizzler infoDictionarySwizzler(
+  base::apple::ScopedObjCClassSwizzler infoDictionarySwizzler(
       [KeystoneGlue class], [FakeKeystoneGlue class],
       @selector(infoDictionary));
-  base::mac::ScopedObjCClassSwizzler loadRegistrationSwizzler(
+  base::apple::ScopedObjCClassSwizzler loadRegistrationSwizzler(
       [KeystoneGlue class], [FakeKeystoneGlue class],
       @selector(loadKeystoneRegistration));
 

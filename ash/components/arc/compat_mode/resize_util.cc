@@ -137,7 +137,7 @@ void TurnOffResizeLockWithConfirmationIfNeeded(
   // Set target app window as parent so that the dialog will be destroyed
   // together when the app window is destroyed (e.g. app crashed).
   ResizeConfirmationDialogView::Show(
-      /*parent=*/target_widget->GetNativeWindow(),
+      /*parent=*/target_widget,
       base::BindOnce(
           [](views::Widget* widget, ArcResizeLockPrefDelegate* delegate,
              bool accepted, bool do_not_ask_again) {

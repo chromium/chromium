@@ -41,6 +41,8 @@
 
 namespace WTF {
 
+class CodePointIterator;
+
 #define DISPATCH_CASE_OP(caseSensitivity, op, args)     \
   ((caseSensitivity == kTextCaseSensitive)              \
        ? op args                                        \
@@ -181,6 +183,11 @@ class WTF_EXPORT String {
       return 0;
     return (*impl_)[index];
   }
+
+  // `begin()` and `end()` return iterators for `UChar32`, neither `UChar` nor
+  // `LChar`. If you'd like to iterate code units, use `[]` and `length()`.
+  CodePointIterator begin() const;
+  CodePointIterator end() const;
 
   template <typename IntegerType>
   static String Number(IntegerType number) {

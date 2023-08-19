@@ -2,28 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/bind.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
-#include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
-#include "components/user_education/common/help_bubble.h"
 #include "components/user_education/common/help_bubble_params.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
-#include "ui/base/interaction/interaction_sequence.h"
-#include "ui/events/base_event_utils.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/widget_test.h"
-#include "ui/views/view_utils.h"
 
 using user_education::HelpBubbleArrow;
 using user_education::HelpBubbleParams;
@@ -51,7 +44,8 @@ class HelpBubbleViewInteractiveUiTest : public InteractiveBrowserTest {
                    new HelpBubbleView(GetHelpBubbleDelegate(), {anchor},
                                       std::move(params));
                  }),
-        WaitForShow(HelpBubbleView::kHelpBubbleElementIdForTesting),
+        std::move(WaitForShow(HelpBubbleView::kHelpBubbleElementIdForTesting)
+                      .SetTransitionOnlyOnEvent(true)),
         // Prevent direct chaining off the show event.
         FlushEvents());
   }
@@ -61,7 +55,8 @@ class HelpBubbleViewInteractiveUiTest : public InteractiveBrowserTest {
     return Steps(
         WithView(HelpBubbleView::kHelpBubbleElementIdForTesting,
                  [](HelpBubbleView* bubble) { bubble->GetWidget()->Close(); }),
-        WaitForHide(HelpBubbleView::kHelpBubbleElementIdForTesting),
+        std::move(WaitForHide(HelpBubbleView::kHelpBubbleElementIdForTesting)
+                      .SetTransitionOnlyOnEvent(true)),
         // Prevent direct chaining off the hide event.
         FlushEvents());
   }
@@ -176,3 +171,91 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest,
       PressButton(HelpBubbleView::kDefaultButtonIdForTesting),
       WaitForHide(HelpBubbleView::kHelpBubbleElementIdForTesting));
 }
+
+// This is a combined test for both help bubbles anchored to menus and menu
+// annotation.
+//
+// This test does work on Linux, however, because of the way events are routed
+// on Wayland specifically (and on Linux in general) the test itself isn't
+// reliable on Linux. It has been manually tested, and based on the way the
+// annotation event routing works, if it did not work (a) it would not work on
+// any platform, and (b) it would not be possible to close a menu by clicking
+// away from it and into e.g. the omnibox.
+#if !BUILDFLAG(IS_LINUX)
+IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest, AnnotateMenu) {
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, default_button_clicked);
+  constexpr char16_t kButton1Text[] = u"button 1";
+
+  user_education::HelpBubbleParams params = GetBubbleParams();
+
+  params.arrow = user_education::HelpBubbleArrow::kRightCenter;
+
+  user_education::HelpBubbleButtonParams button1;
+  button1.text = kButton1Text;
+  button1.is_default = true;
+  button1.callback = default_button_clicked.Get();
+  params.buttons.emplace_back(std::move(button1));
+
+  EXPECT_CALL(default_button_clicked, Run).Times(1);
+
+  RunTestSequence(
+      // Show the application menu and attach a bubble to a menu item.
+      PressButton(kAppMenuButtonElementId),
+      ShowHelpBubble(AppMenuModel::kDownloadsMenuItem, std::move(params)),
+
+      // Hover the default button and verify that the inkdrop is highlighted.
+      MoveMouseTo(HelpBubbleView::kDefaultButtonIdForTesting),
+
+      // TODO(dfried): figure out if we can determine if an inkdrop is in a
+      // hovered state; currently that information can't be accessed.
+
+      // Click the default button and verify that the help bubble closes but the
+      // menu does not.
+      ClickMouse(), WaitForHide(HelpBubbleView::kHelpBubbleElementIdForTesting),
+      EnsurePresent(AppMenuModel::kDownloadsMenuItem));
+}
+
+// Verifies that we can safely show and then close two help bubbles attached to
+// the same menu. This may happen transiently during tutorials.
+IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest, TwoMenuHelpBubbles) {
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, button_clicked);
+  constexpr char16_t kButtonText[] = u"button";
+
+  // First bubble has no buttons.
+  auto params1 = GetBubbleParams();
+  params1.arrow = user_education::HelpBubbleArrow::kRightCenter;
+
+  // Second bubble has a default button.
+  auto params2 = GetBubbleParams();
+  params2.arrow = user_education::HelpBubbleArrow::kRightCenter;
+
+  user_education::HelpBubbleButtonParams button;
+  button.text = kButtonText;
+  button.is_default = true;
+  button.callback = button_clicked.Get();
+  params2.buttons.emplace_back(std::move(button));
+
+  EXPECT_CALL(button_clicked, Run).Times(1);
+
+  RunTestSequence(
+      // Show the application menu and attach a bubble to two different menu
+      // items.
+      PressButton(kAppMenuButtonElementId),
+      ShowHelpBubble(AppMenuModel::kDownloadsMenuItem, std::move(params1)),
+      ShowHelpBubble(AppMenuModel::kMoreToolsMenuItem, std::move(params2)),
+
+      // Use the mouse to click the default button on the second bubble and wait
+      // for the bubble to disappear.
+      //
+      // The default button should be targetable because it is at the bottom of
+      // the lower of the two help bubbles.
+      MoveMouseTo(HelpBubbleView::kDefaultButtonIdForTesting), ClickMouse(),
+      WaitForHide(HelpBubbleView::kHelpBubbleElementIdForTesting)
+          .SetTransitionOnlyOnEvent(true),
+      FlushEvents(),
+
+      // Close the remaining help bubble.
+      CloseHelpBubble());
+}
+
+#endif

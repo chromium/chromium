@@ -45,18 +45,17 @@ namespace blink {
 
 class LocalDOMWindow;
 
-class CORE_EXPORT Screen : public EventTargetWithInlineData,
+class CORE_EXPORT Screen : public EventTarget,
                            public ExecutionContextClient,
                            public Supplementable<Screen> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  Screen(LocalDOMWindow*, int64_t display_id, bool use_size_override);
+  Screen(LocalDOMWindow*, int64_t display_id);
 
   static bool AreWebExposedScreenPropertiesEqual(
       const display::ScreenInfo& prev,
-      const display::ScreenInfo& current,
-      bool use_size_override);
+      const display::ScreenInfo& current);
 
   int height() const;
   int width() const;
@@ -69,7 +68,7 @@ class CORE_EXPORT Screen : public EventTargetWithInlineData,
 
   void Trace(Visitor*) const override;
 
-  // EventTargetWithInlineData:
+  // EventTarget:
   const WTF::AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;
 
@@ -92,13 +91,6 @@ class CORE_EXPORT Screen : public EventTargetWithInlineData,
 
   // The internal id of the underlying display, to support multi-screen devices.
   int64_t display_id_;
-
-  // A flag controlling whether to respect ScreenInfo's size override, which is
-  // set to viewport dimensions while the frame is fullscreen, as a speculative
-  // site compatibility measure, because web authors may assume that screen
-  // dimensions match window.innerWidth/innerHeight while a page is fullscreen,
-  // but that is not always true. crbug.com/1367416
-  const bool use_size_override_;
 };
 
 }  // namespace blink

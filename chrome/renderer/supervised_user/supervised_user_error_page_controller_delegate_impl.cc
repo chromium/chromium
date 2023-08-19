@@ -39,11 +39,6 @@ void SupervisedUserErrorPageControllerDelegateImpl::RequestUrlAccessLocal(
     supervised_user_interface_->RequestUrlAccessLocal(std::move(callback));
 }
 
-void SupervisedUserErrorPageControllerDelegateImpl::Feedback() {
-  if (supervised_user_interface_)
-    supervised_user_interface_->Feedback();
-}
-
 void SupervisedUserErrorPageControllerDelegateImpl::OnDestruct() {
   delete this;
 }

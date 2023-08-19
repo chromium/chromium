@@ -48,6 +48,7 @@ TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.bmp
 TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.sxg
 TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.wbn
 TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.avif
+TRAILING WHITESPACE, INDENT TABS, CR AT EOL: *.annexb
 
 ## .gitignore
 W3C-TEST.ORG: .gitignore
@@ -225,7 +226,11 @@ SET TIMEOUT: service-workers/service-worker/activation.https.html
 SET TIMEOUT: service-workers/service-worker/fetch-frame-resource.https.html
 SET TIMEOUT: service-workers/service-worker/fetch-request-redirect.https.html
 SET TIMEOUT: service-workers/service-worker/fetch-waits-for-activate.https.html
+SET TIMEOUT: service-workers/service-worker/postMessage-client-worker.js
 SET TIMEOUT: service-workers/service-worker/update-recovery.https.html
+SET TIMEOUT: service-workers/service-worker/resources/controlled-frame-postMessage.html
+SET TIMEOUT: service-workers/service-worker/resources/controlled-worker-late-postMessage.js
+SET TIMEOUT: service-workers/service-worker/resources/controlled-worker-postMessage.js
 SET TIMEOUT: service-workers/service-worker/resources/extendable-event-async-waituntil.js
 SET TIMEOUT: service-workers/service-worker/resources/fetch-event-async-respond-with-worker.js
 SET TIMEOUT: service-workers/service-worker/resources/fetch-event-test-worker.js
@@ -247,12 +252,16 @@ SET TIMEOUT: webaudio/the-audio-api/the-mediaelementaudiosourcenode-interface/me
 SET TIMEOUT: webauthn/*timeout.https.html
 SET TIMEOUT: webdriver/*
 SET TIMEOUT: webmessaging/*
+SET TIMEOUT: webrtc-encoded-transform/script-metadata-transform-worker.js
+SET TIMEOUT: webrtc-encoded-transform/script-transform-generateKeyFrame.js
+SET TIMEOUT: webrtc-encoded-transform/script-transform-sendKeyFrameRequest.js
 SET TIMEOUT: webstorage/eventTestHarness.js
 SET TIMEOUT: webvtt/*
 SET TIMEOUT: workers/*
 SET TIMEOUT: xhr/resources/init.htm
 SET TIMEOUT: xhr/resources/xmlhttprequest-timeout.js
 SET TIMEOUT: fenced-frame/resolve-to-config-promise.https.html
+SET TIMEOUT: credential-management/support/fedcm-iframe.html
 
 # generate_tests implementation and sample usage
 GENERATE_TESTS: resources/test/tests/functional/generate-callback.html
@@ -597,7 +606,7 @@ AHEM SYSTEM FONT: acid/acid3/test.html
 AHEM SYSTEM FONT: resource-timing/font-timestamps.html
 AHEM SYSTEM FONT: resource-timing/initiator-type/style.html
 AHEM SYSTEM FONT: resource-timing/resources/iframe-reload-TAO.sub.html
-AHEM SYSTEM FONT: html/canvas/element/drawing-text-to-the-canvas/2d.text.measure.fontBoundingBox.ahem.html
+AHEM SYSTEM FONT: html/canvas/element/text/2d.text.measure.fontBoundingBox.ahem.html
 AHEM SYSTEM FONT: css/css-font-loading/fontface-override-descriptors.html
 AHEM SYSTEM FONT: css/css-font-loading/fontface-size-adjust-descriptor.html
 AHEM SYSTEM FONT: css/css-font-loading/fontface-size-adjust-descriptor-ref.html
@@ -606,7 +615,12 @@ AHEM SYSTEM FONT: css/css-fonts/font-size-adjust-012.html
 AHEM SYSTEM FONT: css/css-fonts/font-size-adjust-012-ref.html
 AHEM SYSTEM FONT: css/css-fonts/font-size-adjust-013.html
 AHEM SYSTEM FONT: css/css-fonts/font-size-adjust-013-ref.html
+AHEM SYSTEM FONT: css/css-fonts/font-size-adjust-014.html
+AHEM SYSTEM FONT: css/css-fonts/font-size-adjust-014-ref.html
+AHEM SYSTEM FONT: css/css-fonts/font-size-adjust-metrics-override.html
+AHEM SYSTEM FONT: css/css-fonts/font-size-adjust-metrics-override-ref.html
 AHEM SYSTEM FONT: css/css-fonts/line-gap-override.html
+AHEM SYSTEM FONT: css/css-fonts/parsing/font-size-adjust-computed.html
 AHEM SYSTEM FONT: html/dom/render-blocking/remove-attr-unblocks-rendering.optional.html
 AHEM SYSTEM FONT: html/dom/render-blocking/remove-element-unblocks-rendering.optional.html
 
@@ -672,6 +686,10 @@ DUPLICATE-BASENAME-PATH: svg/struct/reftests/reference/green-100x100.html
 DUPLICATE-BASENAME-PATH: svg/struct/reftests/reference/green-100x100.svg
 
 SET TIMEOUT: mediacapture-insertable-streams/MediaStreamTrackProcessor-video.https.html
+
+# This is a subresource which cannot use step_timeout without becoming a test
+# itself. See https://github.com/web-platform-tests/wpt/issues/16933
+SET TIMEOUT: scroll-to-text-fragment/iframe-target.html
 
 # Ported crashtests from Mozilla
 SET TIMEOUT: editing/crashtests/backcolor-in-nested-editing-host-td-from-DOMAttrModified.html

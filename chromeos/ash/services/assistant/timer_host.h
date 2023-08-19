@@ -53,7 +53,8 @@ class TimerHost {
   bool IsStopped() const;
 
   // Owned by our parent |AssistantManagerServiceImpl|.
-  raw_ptr<libassistant::mojom::TimerController, ExperimentalAsh>
+  raw_ptr<libassistant::mojom::TimerController,
+          DanglingUntriaged | ExperimentalAsh>
       libassistant_controller_ = nullptr;
   std::unique_ptr<TimerDelegateImpl> timer_delegate_;
 

@@ -9,10 +9,6 @@
 #import "base/metrics/histogram_functions.h"
 #import "components/omnibox/browser/page_classification_functions.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 std::string HistogramPageClassSuffix(

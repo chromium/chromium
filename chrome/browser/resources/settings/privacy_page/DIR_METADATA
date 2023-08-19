@@ -1,0 +1,4 @@
+monorail {
+  component: "UI>Settings>Privacy"
+}
+team_email: "chrome-privacy-controls@google.com"

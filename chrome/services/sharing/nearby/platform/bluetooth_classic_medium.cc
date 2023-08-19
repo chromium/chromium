@@ -133,6 +133,10 @@ std::unique_ptr<api::BluetoothSocket> BluetoothClassicMedium::ConnectToService(
     api::BluetoothDevice& remote_device,
     const std::string& service_uuid,
     CancellationFlag* cancellation_flag) {
+  if (cancellation_flag && cancellation_flag->Cancelled()) {
+    return nullptr;
+  }
+
   const std::string& address = remote_device.GetMacAddress();
 
   auto start_time = base::TimeTicks::Now();

@@ -16,9 +16,6 @@
 namespace ash {
 namespace debug {
 
-// Returns true if there is a floating window that can be tucked.
-ASH_EXPORT bool CanTuckFloatedWindow();
-
 // Print the views::View, ui::Layer and aura::Window hierarchies. This may be
 // useful in debugging user reported bugs.
 ASH_EXPORT void PrintUIHierarchies();

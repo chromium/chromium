@@ -9,6 +9,8 @@ import org.mockito.stubbing.Answer;
 import org.mockito.stubbing.Stubber;
 
 import org.chromium.base.Callback;
+import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.ScalableTimeout;
 
 /** Simplifies common interactions with Mockito. */
 public class MockitoHelper {
@@ -47,5 +49,12 @@ public class MockitoHelper {
             runnable.run();
             return null;
         }));
+    }
+
+    /** Mockito.verify but with a timeout to reduce flakes. */
+    public static <T> T waitForEvent(T mock) {
+        return Mockito.verify(mock,
+                Mockito.timeout(
+                        ScalableTimeout.scaleTimeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL)));
     }
 }

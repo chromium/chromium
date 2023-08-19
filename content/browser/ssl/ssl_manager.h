@@ -92,6 +92,10 @@ class SSLManager {
   // An error occurred with the certificate in an SSL connection.
   void OnCertError(std::unique_ptr<SSLErrorHandler> handler);
 
+  // Returns true if any HTTPS-related warning exceptions has been allowed by
+  // the user for any host.
+  bool HasAllowExceptionForAnyHost();
+
  private:
   // Helper method for handling certificate errors.
   void OnCertErrorInternal(std::unique_ptr<SSLErrorHandler> handler);

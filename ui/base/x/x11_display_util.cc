@@ -7,10 +7,12 @@
 #include <dlfcn.h>
 
 #include <bitset>
+#include <queue>
+#include <unordered_set>
 
 #include "base/bits.h"
-#include "base/compiler_specific.h"
 #include "base/logging.h"
+#include "base/numerics/clamped_math.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -18,9 +20,10 @@
 #include "ui/display/util/display_util.h"
 #include "ui/display/util/edid_parser.h"
 #include "ui/gfx/color_space.h"
-#include "ui/gfx/geometry/matrix3_f.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/vector3d_f.h"
+#include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/x/randr.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto_util.h"
@@ -53,8 +56,7 @@ std::map<x11::RandR::Output, int> GetMonitors(int version,
 // must already be initialized to the display bounds.  At most one display out
 // of |displays| will be affected.
 void ClipWorkArea(std::vector<display::Display>* displays,
-                  int64_t primary_display_index,
-                  float scale) {
+                  int64_t primary_display_index) {
   x11::Window x_root_window = ui::GetX11RootWindow();
 
   std::vector<int32_t> value;
@@ -62,13 +64,18 @@ void ClipWorkArea(std::vector<display::Display>* displays,
       value.size() < 4) {
     return;
   }
-  gfx::Rect work_area = gfx::ScaleToEnclosingRect(
-      gfx::Rect(value[0], value[1], value[2], value[3]), 1.0f / scale);
+  auto get_work_area = [&](const display::Display& display) {
+    float scale = display::Display::HasForceDeviceScaleFactor()
+                      ? display::Display::GetForcedDeviceScaleFactor()
+                      : display.device_scale_factor();
+    return gfx::ScaleToEnclosingRect(
+        gfx::Rect(value[0], value[1], value[2], value[3]), 1.0f / scale);
+  };
 
   // If the work area entirely contains exactly one display, assume it's meant
   // for that display (and so do nothing).
   if (base::ranges::count_if(*displays, [&](const display::Display& display) {
-        return work_area.Contains(display.bounds());
+        return get_work_area(display).Contains(display.bounds());
       }) == 1) {
     return;
   }
@@ -78,7 +85,7 @@ void ClipWorkArea(std::vector<display::Display>* displays,
   // display.
   const auto found =
       base::ranges::find_if(*displays, [&](const display::Display& display) {
-        return display.bounds().Contains(work_area);
+        return display.bounds().Contains(get_work_area(display));
       });
 
   // If the work area spans multiple displays, intersect the work area with the
@@ -86,6 +93,7 @@ void ClipWorkArea(std::vector<display::Display>* displays,
   display::Display& primary =
       found == displays->end() ? (*displays)[primary_display_index] : *found;
 
+  gfx::Rect work_area = get_work_area(primary);
   work_area.Intersect(primary.work_area());
   if (!work_area.IsEmpty())
     primary.set_work_area(work_area);
@@ -152,6 +160,45 @@ std::vector<uint8_t> GetEDIDProperty(x11::RandR* randr,
   return edid;
 }
 
+float GetDisplayScale(const gfx::Rect& bounds,
+                      const DisplayConfig& display_config) {
+  constexpr auto kMaxDist = std::make_pair(INT_MAX, INT_MAX);
+  auto min_dist_scale = std::make_pair(kMaxDist, display_config.primary_scale);
+  for (const auto& geometry : display_config.display_geometries) {
+    const auto dist_scale = std::make_pair(
+        RectDistance(geometry.bounds_px, bounds), geometry.scale);
+    min_dist_scale = std::min(min_dist_scale, dist_scale);
+  }
+  return min_dist_scale.second;
+}
+
+gfx::PointF DisplayOriginPxToDip(const display::Display& parent,
+                                 const display::Display& child,
+                                 const gfx::PointF& parent_origin_dip) {
+  const gfx::Rect parent_px = parent.bounds();
+  const gfx::Rect child_px = child.bounds();
+  const float parent_scale = parent.device_scale_factor();
+  const float child_scale = child.device_scale_factor();
+  // Given a range [parent_l_px, parent_r_px) with scale factor `parent_scale`
+  // and with `parent_l_px` mapping to `parent_l_dip`, and another range
+  // [child_l_px, child_r_px) with scale factor `child_scale`, converts
+  // `child_l_px` to DIPs in the child's coordinate system.
+  auto map_coordinate = [&](int parent_l_px, int parent_r_px, int child_l_px,
+                            int child_r_px, float parent_l_dip) {
+    const base::ClampedNumeric<int> l = std::max(parent_l_px, child_l_px);
+    const base::ClampedNumeric<int> r = std::min(parent_r_px, child_r_px);
+    const float mid_px = (l + r) / 2.0f;
+    const float mid_dip = (mid_px - parent_l_px) / parent_scale + parent_l_dip;
+    return (child_l_px - mid_px) / child_scale + mid_dip;
+  };
+  const float x = map_coordinate(parent_px.x(), parent_px.right(), child_px.x(),
+                                 child_px.right(), parent_origin_dip.x());
+  const float y =
+      map_coordinate(parent_px.y(), parent_px.bottom(), child_px.y(),
+                     child_px.bottom(), parent_origin_dip.y());
+  return {x, y};
+}
+
 }  // namespace
 
 int GetXrandrVersion() {
@@ -179,9 +226,11 @@ std::vector<display::Display> GetFallbackDisplayList(float scale) {
   if (!display::Display::HasForceDeviceScaleFactor() &&
       display::IsDisplaySizeValid(physical_size)) {
     DCHECK_LE(1.0f, scale);
-    gfx_display.SetScaleAndBounds(scale, bounds_in_pixels);
-    gfx_display.set_work_area(
-        gfx::ScaleToEnclosingRect(bounds_in_pixels, 1.0f / scale));
+    gfx_display.set_size_in_pixels(bounds_in_pixels.size());
+    gfx_display.SetScale(scale);
+    auto bounds_dip = gfx::ScaleToEnclosingRect(bounds_in_pixels, 1.0f / scale);
+    gfx_display.set_bounds(bounds_dip);
+    gfx_display.set_work_area(bounds_dip);
   } else {
     scale = 1;
   }
@@ -190,16 +239,18 @@ std::vector<display::Display> GetFallbackDisplayList(float scale) {
   gfx_display.set_depth_per_component(DefaultBitsPerComponent());
 
   std::vector<display::Display> displays{gfx_display};
-  ClipWorkArea(&displays, 0, scale);
+  ClipWorkArea(&displays, 0);
   return displays;
 }
 
 std::vector<display::Display> BuildDisplaysFromXRandRInfo(
     int version,
-    float scale,
+    const DisplayConfig& display_config,
     int64_t* primary_display_index_out) {
   DCHECK(primary_display_index_out);
   DCHECK_GE(version, kMinVersionXrandr);
+  const float primary_scale = display_config.primary_scale;
+
   auto* connection = x11::Connection::Get();
   auto& randr = connection->randr();
   auto x_root_window = ui::GetX11RootWindow();
@@ -207,7 +258,7 @@ std::vector<display::Display> BuildDisplaysFromXRandRInfo(
   auto resources = randr.GetScreenResourcesCurrent({x_root_window}).Sync();
   if (!resources) {
     LOG(ERROR) << "XRandR returned no displays; falling back to root window";
-    return GetFallbackDisplayList(scale);
+    return GetFallbackDisplayList(primary_scale);
   }
 
   const int depth = connection->default_screen().root_depth;
@@ -218,14 +269,12 @@ std::vector<display::Display> BuildDisplaysFromXRandRInfo(
   *primary_display_index_out = 0;
   auto output_primary = randr.GetOutputPrimary({x_root_window}).Sync();
   if (!output_primary)
-    return GetFallbackDisplayList(scale);
+    return GetFallbackDisplayList(primary_scale);
   x11::RandR::Output primary_display_id = output_primary->output;
 
   int explicit_primary_display_index = -1;
   int monitor_order_primary_display_index = -1;
 
-  // As per-display scale factor is not supported right now,
-  // the X11 root window's scale factor is always used.
   for (size_t i = 0; i < resources->outputs.size(); i++) {
     x11::RandR::Output output_id = resources->outputs[i];
     auto output_info =
@@ -259,12 +308,7 @@ std::vector<display::Display> BuildDisplaysFromXRandRInfo(
 
     gfx::Rect crtc_bounds(crtc->x, crtc->y, crtc->width, crtc->height);
     display::Display display(display_id, crtc_bounds);
-
-    if (!display::Display::HasForceDeviceScaleFactor()) {
-      display.SetScaleAndBounds(scale, crtc_bounds);
-      display.set_work_area(
-          gfx::ScaleToEnclosingRect(crtc_bounds, 1.0f / scale));
-    }
+    display.set_native_origin(crtc_bounds.origin());
 
     display.set_audio_formats(edid_parser.audio_formats());
     switch (crtc->rotation) {
@@ -315,7 +359,7 @@ std::vector<display::Display> BuildDisplaysFromXRandRInfo(
       if (bits_per_component > 8 && !color_space.IsValid())
         color_space = display::GetColorSpaceFromEdid(edid_parser);
 
-      display.set_color_spaces(
+      display.SetColorSpaces(
           gfx::DisplayColorSpaces(color_space, gfx::BufferFormat::BGRA_8888));
     }
 
@@ -336,9 +380,18 @@ std::vector<display::Display> BuildDisplaysFromXRandRInfo(
     *primary_display_index_out = monitor_order_primary_display_index;
 
   if (displays.empty())
-    return GetFallbackDisplayList(scale);
+    return GetFallbackDisplayList(primary_scale);
 
-  ClipWorkArea(&displays, *primary_display_index_out, scale);
+  if (!display::Display::HasForceDeviceScaleFactor()) {
+    for (auto& display : displays) {
+      display.set_device_scale_factor(
+          GetDisplayScale(display.bounds(), display_config));
+    }
+
+    ConvertDisplayBoundsToDips(&displays, *primary_display_index_out);
+  }
+
+  ClipWorkArea(&displays, *primary_display_index_out);
   return displays;
 }
 
@@ -389,6 +442,71 @@ base::TimeDelta GetPrimaryDisplayRefreshIntervalFromXrandr() {
     return base::Seconds(1. / refresh_rate);
   }
   return kDefaultInterval;
+}
+
+int RangeDistance(int min1, int max1, int min2, int max2) {
+  base::ClampedNumeric<int> l1 = min1;
+  base::ClampedNumeric<int> r1 = max1;
+  base::ClampedNumeric<int> l2 = min2;
+  base::ClampedNumeric<int> r2 = max2;
+  return std::max(std::min(l2 - r1, r2 - l1), std::min(l1 - r2, r1 - l2));
+}
+
+std::pair<int, int> RectDistance(const gfx::Rect& p, const gfx::Rect& q) {
+  const int dx = RangeDistance(p.x(), p.right(), q.x(), q.right());
+  const int dy = RangeDistance(p.y(), p.bottom(), q.y(), q.bottom());
+  return {std::max(dx, dy), std::min(dx, dy)};
+}
+
+void ConvertDisplayBoundsToDips(std::vector<display::Display>* displays,
+                                size_t primary_display_index) {
+  // Position displays starting with the primary display, which will have it's
+  // origin directly converted from pixels to DIPs.
+  std::vector<gfx::PointF> origins_dip(displays->size());
+  const auto& primary_display = displays->at(primary_display_index);
+  origins_dip[primary_display_index] =
+      gfx::ScalePoint(gfx::PointF(primary_display.bounds().origin()),
+                      1.0f / primary_display.device_scale_factor());
+
+  // Construct a minimum spanning tree of displays using Prim's algorithm.  The
+  // root of the tree is the primary display, and every other display will be
+  // positioned relative to it's parent display.
+  using EdgeDistance = std::tuple<std::pair<int, int>, size_t, size_t>;
+  std::priority_queue<EdgeDistance, std::vector<EdgeDistance>, std::greater<>>
+      queue;
+  std::unordered_set<size_t> fringe;
+  for (size_t i = 0; i < displays->size(); i++) {
+    fringe.insert(i);
+  }
+  auto remove_from_fringe = [&](size_t parent) {
+    fringe.erase(parent);
+    for (size_t child : fringe) {
+      const auto dist = RectDistance(displays->at(parent).bounds(),
+                                     displays->at(child).bounds());
+      queue.emplace(dist, parent, child);
+    }
+  };
+  remove_from_fringe(primary_display_index);
+  while (!queue.empty()) {
+    auto [_, parent, child] = queue.top();
+    queue.pop();
+    if (fringe.contains(child)) {
+      origins_dip[child] = DisplayOriginPxToDip(
+          displays->at(parent), displays->at(child), origins_dip[parent]);
+      remove_from_fringe(child);
+    }
+  }
+
+  // Update the displays with the converted origins.
+  for (size_t i = 0; i < displays->size(); i++) {
+    auto& display = displays->at(i);
+    gfx::SizeF size_dip = gfx::ScaleSize(gfx::SizeF(display.size()),
+                                         1.0f / display.device_scale_factor());
+    gfx::Rect bounds_dip =
+        gfx::ToEnclosingRect(gfx::RectF(origins_dip[i], size_dip));
+    display.set_bounds(bounds_dip);
+    display.set_work_area(bounds_dip);
+  }
 }
 
 }  // namespace ui

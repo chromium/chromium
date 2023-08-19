@@ -5047,6 +5047,33 @@ TEST_F(ExtensionServiceTest, CanAddDisableReasonToBlocklistedExtension) {
       good1, disable_reason::DISABLE_BLOCKED_BY_POLICY));
 }
 
+// Tests the Extension Telemetry service verdict to remotely disable an
+// extension for malware.
+TEST_F(ExtensionServiceTest,
+       DisableRemotelyForMalwareFromExtensionTelemetryServiceVerdict) {
+  InitializeEmptyExtensionService();
+
+  InstallCRX(data_dir().AppendASCII("good.crx"), INSTALL_NEW);
+  EXPECT_TRUE(registry()->enabled_extensions().GetByID(good_crx));
+  EXPECT_EQ(1u, registry()->enabled_extensions().size());
+
+  Blocklist::BlocklistStateMap state_map;
+  state_map[good_crx] = BlocklistState::BLOCKLISTED_MALWARE;
+  service()->PerformActionBasedOnExtensionTelemetryServiceVerdicts(state_map);
+
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
+  EXPECT_EQ(blocklist_prefs::GetExtensionTelemetryServiceBlocklistState(
+                good_crx, prefs),
+            BitMapBlocklistState::BLOCKLISTED_MALWARE);
+  EXPECT_TRUE(blocklist_prefs::IsExtensionBlocklisted(good_crx, prefs));
+
+  state_map[good_crx] = BlocklistState::NOT_BLOCKLISTED;
+  service()->PerformActionBasedOnExtensionTelemetryServiceVerdicts(state_map);
+  EXPECT_EQ(1u, registry()->enabled_extensions().size());
+  EXPECT_EQ(0, prefs->GetDisableReasons(good_crx));
+  EXPECT_FALSE(blocklist_prefs::IsExtensionBlocklisted(good_crx, prefs));
+}
+
 TEST_F(ExtensionServiceTest, TerminateExtension) {
   InitializeEmptyExtensionService();
 
@@ -5863,6 +5890,42 @@ TEST_F(ExtensionServiceTest, LoadExtension) {
   service()->UninstallExtension(good_id, UNINSTALL_REASON_FOR_TESTING, nullptr);
   task_environment()->RunUntilIdle();
   EXPECT_TRUE(registry()->GenerateInstalledExtensionsSet().empty());
+}
+
+// Tests that --load-extension is ignored for users opted in to Enhanced Safe
+// Browsing (ESB).
+TEST_F(ExtensionServiceTest, WillNotLoadFromCommandLineForESBUsers) {
+  InitializeEmptyExtensionServiceWithTestingPrefs();
+  // Enable ESB.
+  profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
+  profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
+  // Try to load an extension from command line.
+  base::FilePath path =
+      base::MakeAbsoluteFilePath(data_dir().AppendASCII("good_unpacked"));
+  base::CommandLine::ForCurrentProcess()->AppendSwitchPath(
+      switches::kLoadExtension, path);
+  service()->Init();
+  task_environment()->RunUntilIdle();
+  ASSERT_EQ(0u, loaded_extensions().size());
+  ValidatePrefKeyCount(0);
+}
+
+// Tests --load-extension works for non-ESB users.
+TEST_F(ExtensionServiceTest, LoadsFromCommandLineForNonESBUsers) {
+  InitializeEmptyExtensionServiceWithTestingPrefs();
+  // Disable ESB.
+  profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, false);
+  profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, false);
+  // Try to load an extension from command line.
+  base::FilePath path =
+      base::MakeAbsoluteFilePath(data_dir().AppendASCII("good_unpacked"));
+  base::CommandLine::ForCurrentProcess()->AppendSwitchPath(
+      switches::kLoadExtension, path);
+  service()->Init();
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(0u, GetErrors().size());
+  ASSERT_EQ(1u, loaded_extensions().size());
+  ValidatePrefKeyCount(1);
 }
 
 // Tests that we generate IDs when they are not specified in the manifest for

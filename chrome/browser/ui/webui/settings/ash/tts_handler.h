@@ -23,6 +23,8 @@ class TtsHandler : public SettingsWithTtsPreviewHandler {
 
   void HandleGetAllTtsVoiceData(const base::Value::List& args);
   void HandleGetTtsExtensions(const base::Value::List& args);
+  void HandleGetDisplayNameForLocale(const base::Value::List& args);
+  void HandleGetApplicationLocale(const base::Value::List& args);
 
   // SettingsPageUIHandler implementation.
   void RegisterMessages() override;

@@ -20,19 +20,18 @@ class GPU_GLES2_EXPORT DawnEGLImageRepresentation
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
-      WGPUDevice device);
+      const wgpu::Device& device);
   ~DawnEGLImageRepresentation() override;
 
  private:
-  WGPUTexture BeginAccess(WGPUTextureUsage usage) override;
+  wgpu::Texture BeginAccess(wgpu::TextureUsage usage) override;
   void EndAccess() override;
 
  private:
   std::unique_ptr<GLTextureImageRepresentationBase> gl_representation_;
   raw_ptr<void> egl_image_ = nullptr;  // EGLImageKHR
-  WGPUDevice device_;
-  DawnProcTable dawn_procs_;
-  WGPUTexture texture_ = nullptr;
+  const wgpu::Device device_;
+  wgpu::Texture texture_;
 };
 
 }  // namespace gpu

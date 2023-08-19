@@ -210,7 +210,7 @@ if (is_android) {
       ":cast_version",
       ":jni_headers",
       "//base",
-      "//chromecast/browser:jni_headers",
+      "//chromecast/browser/android:jni_headers",
       "//chromecast/public",
     ]
     public_deps = [ ":cast_sys_info_util" ]
@@ -312,6 +312,7 @@ if (is_android) {
 
   android_library("base_java") {
     java_src_dir = "//chromecast/base/java/src"
+    srcjar_deps = [ ":jni_headers" ]
     sources = [
       "$java_src_dir/org/chromium/chromecast/base/Both.java",
       "$java_src_dir/org/chromium/chromecast/base/Box.java",
@@ -340,7 +341,6 @@ if (is_android) {
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_core_core_java",
     ]
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 
   android_library("cast_base_test_utils_java") {

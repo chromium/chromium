@@ -41,6 +41,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
+#include "third_party/nearby/src/internal/platform/nsd_service_info.h"
 
 namespace nearby {
 namespace chrome {
@@ -139,6 +140,9 @@ class WifiLanMediumTest : public ::testing::Test {
         std::move(fake_firewall_hole_factory),
         firewall_hole_factory_shared_remote_.BindNewPipeAndPassReceiver());
 
+    nsd_service_info_.SetIPAddress(kRemoteIpString);
+    nsd_service_info_.SetPort(kRemotePort);
+
     wifi_lan_medium_ = std::make_unique<WifiLanMedium>(
         socket_factory_shared_remote_, cros_network_config_,
         firewall_hole_factory_shared_remote_);
@@ -165,7 +169,8 @@ class WifiLanMediumTest : public ::testing::Test {
       size_t num_threads,
       size_t expected_num_calls_sent_to_socket_factory,
       bool expected_success,
-      base::OnceClosure on_connect_calls_finished) {
+      base::OnceClosure on_connect_calls_finished,
+      CancellationFlag* cancellation_flag = nullptr) {
     // The run loop quits when TcpSocketFactory receives all of the expected
     // CreateTCPConnectedSocket() calls.
     base::RunLoop run_loop;
@@ -179,7 +184,8 @@ class WifiLanMediumTest : public ::testing::Test {
       base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
           ->PostTask(FROM_HERE,
                      base::BindOnce(&WifiLanMediumTest::CallConnect,
-                                    base::Unretained(this), expected_success));
+                                    base::Unretained(this), expected_success,
+                                    cancellation_flag));
     }
     run_loop.Run();
   }
@@ -282,11 +288,12 @@ class WifiLanMediumTest : public ::testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  void CallConnect(bool expected_success) {
+  void CallConnect(bool expected_success, CancellationFlag* cancellation_flag) {
     base::ScopedAllowBaseSyncPrimitivesForTesting allow;
     std::unique_ptr<api::WifiLanSocket> connected_socket =
-        wifi_lan_medium_->ConnectToService(kRemoteIpString, kRemotePort,
-                                           /*cancellation_flag=*/nullptr);
+        wifi_lan_medium_->ConnectToService(
+            /*remote_service_info=*/nsd_service_info_,
+            /*cancellation_flag=*/cancellation_flag);
 
     ASSERT_EQ(expected_success, connected_socket != nullptr);
     if (--num_running_connect_calls_ == 0) {
@@ -337,6 +344,7 @@ class WifiLanMediumTest : public ::testing::Test {
       cros_network_config_helper_;
   mojo::SharedRemote<chromeos::network_config::mojom::CrosNetworkConfig>
       cros_network_config_;
+  NsdServiceInfo nsd_service_info_;
 
   // Firewall hole factory:
   raw_ptr<ash::nearby::FakeFirewallHoleFactory, ExperimentalAsh>
@@ -360,6 +368,32 @@ TEST_F(WifiLanMediumTest, Connect_Success) {
       /*expected_success=*/true,
       /*on_connect_calls_finished=*/run_loop.QuitClosure());
   fake_socket_factory_->FinishNextCreateConnectedSocket(net::OK);
+  run_loop.Run();
+}
+
+TEST_F(WifiLanMediumTest, Connect_Cancelled) {
+  Initialize(WifiInitState::kComplete);
+
+  auto flag = std::make_unique<CancellationFlag>();
+  flag->Cancel();
+  CallConnect(
+      /*expected_success=*/false,
+      /*cancellation_flag=*/flag.get());
+}
+
+TEST_F(WifiLanMediumTest, Connect_CancelledDuringCall) {
+  Initialize(WifiInitState::kComplete);
+
+  auto flag = std::make_unique<CancellationFlag>();
+  base::RunLoop run_loop;
+  CallConnectToServiceFromThreads(
+      /*num_threads=*/1u,
+      /*expected_num_calls_sent_to_socket_factory=*/1u,
+      /*expected_success=*/false,
+      /*on_connect_calls_finished=*/run_loop.QuitClosure(),
+      /*cancellation_flag=*/flag.get());
+  fake_socket_factory_->FinishNextCreateConnectedSocket(net::OK);
+  flag->Cancel();
   run_loop.Run();
 }
 

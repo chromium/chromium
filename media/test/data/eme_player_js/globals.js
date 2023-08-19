@@ -75,7 +75,8 @@ var MEDIA_TYPES = {
   'WebM - Audio Only': 'video/webm; codecs="vorbis"',
   'MP4 - Video Only': 'video/mp4; codecs="avc1.4D000C"',
   'MP4 - Audio Only': 'audio/mp4; codecs="mp4a.40.2"',
-  'MP4 - Video Only': 'video/mp4; codecs="avc1.64001E"'
+  'MP4 - Video Only': 'video/mp4; codecs="avc1.64001E"',
+  'MP4 - Audio Video': 'video/mp4; codecs="mp4a.40.2, avc1.64001E"'
 };
 
 // Global document elements ID's.

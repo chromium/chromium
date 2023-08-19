@@ -6,9 +6,11 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/synchronization/waitable_event.h"
 #include "gpu/command_buffer/client/webgpu_interface.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
@@ -152,7 +154,7 @@ void GPU::ContextDestroyed() {
   // short amount of JS can still execute after the ContextDestroyed event
   // is received.
   if (!mappable_buffers_.empty()) {
-    v8::Isolate* isolate = ThreadState::Current()->GetIsolate();
+    v8::Isolate* isolate = GetExecutionContext()->GetIsolate();
     v8::HandleScope scope(isolate);
     for (GPUBuffer* buffer : mappable_buffers_) {
       buffer->DetachMappedArrayBuffers(isolate);
@@ -340,11 +342,23 @@ void GPU::RequestAdapterImpl(ScriptState* script_state,
   dawn_control_client_->EnsureFlush(
       *execution_context->GetAgent()->event_loop());
 
-  UseCounter::Count(execution_context, WebFeature::kWebGPU);
+  UseCounter::Count(execution_context, WebFeature::kWebGPURequestAdapter);
 }
 
 ScriptPromise GPU::requestAdapter(ScriptState* script_state,
                                   const GPURequestAdapterOptions* options) {
+  // Remind developers when they are using WebGPU on unsupported platforms.
+  ExecutionContext* execution_context = GetExecutionContext();
+  if (execution_context &&
+      !base::FeatureList::IsEnabled(features::kWebGPUService)) {
+    execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kJavaScript,
+        mojom::blink::ConsoleMessageLevel::kInfo,
+        "WebGPU is experimental on this platform. See "
+        "https://github.com/gpuweb/gpuweb/wiki/"
+        "Implementation-Status#implementation-status"));
+  }
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
   RequestAdapterImpl(script_state, options, resolver);

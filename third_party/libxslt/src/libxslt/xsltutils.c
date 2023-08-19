@@ -305,6 +305,66 @@ error:
     return(-1);
 }
 
+/**
+ * xsltGetUTF8CharZ:
+ * @utf:  a sequence of UTF-8 encoded bytes
+ * @len:  a pointer to @bytes len
+ *
+ * Read one UTF8 Char from a null-terminated string.
+ *
+ * Returns the char value or -1 in case of error and update @len with the
+ *        number of bytes used
+ */
+int
+xsltGetUTF8CharZ(const unsigned char *utf, int *len) {
+    unsigned int c;
+
+    if (utf == NULL)
+	goto error;
+    if (len == NULL)
+	goto error;
+
+    c = utf[0];
+    if (c & 0x80) {
+	if ((utf[1] & 0xc0) != 0x80)
+	    goto error;
+	if ((c & 0xe0) == 0xe0) {
+	    if ((utf[2] & 0xc0) != 0x80)
+		goto error;
+	    if ((c & 0xf0) == 0xf0) {
+		if ((c & 0xf8) != 0xf0 || (utf[3] & 0xc0) != 0x80)
+		    goto error;
+		*len = 4;
+		/* 4-byte code */
+		c = (utf[0] & 0x7) << 18;
+		c |= (utf[1] & 0x3f) << 12;
+		c |= (utf[2] & 0x3f) << 6;
+		c |= utf[3] & 0x3f;
+	    } else {
+	      /* 3-byte code */
+		*len = 3;
+		c = (utf[0] & 0xf) << 12;
+		c |= (utf[1] & 0x3f) << 6;
+		c |= utf[2] & 0x3f;
+	    }
+	} else {
+	  /* 2-byte code */
+	    *len = 2;
+	    c = (utf[0] & 0x1f) << 6;
+	    c |= utf[1] & 0x3f;
+	}
+    } else {
+	/* 1-byte code */
+	*len = 1;
+    }
+    return(c);
+
+error:
+    if (len != NULL)
+	*len = 0;
+    return(-1);
+}
+
 #ifdef XSLT_REFACTORED
 
 /**
@@ -1432,7 +1492,7 @@ xsltSetCtxtSortFunc(xsltTransformContextPtr ctxt, xsltSortFunc handler) {
  * @ctxt:  an XSLT transform context
  * @newLocale:  locale constructor
  * @freeLocale:  locale destructor
- * @genSortKey  sort key generator
+ * @genSortKey:  sort key generator
  *
  * Set the locale handlers.
  */

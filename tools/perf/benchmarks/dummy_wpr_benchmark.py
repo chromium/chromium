@@ -15,8 +15,7 @@ from telemetry import benchmark
 from telemetry.web_perf import timeline_based_measurement
 
 
-@benchmark.Info(emails=['maxqli@googl.com'],
-                component='Test>Telemetry')
+@benchmark.Info(emails=['maxqli@google.com'], component='Test>Telemetry')
 class DummyWprLoadBenchmark(perf_benchmark.PerfBenchmark):
   options = {'pageset_repeat': 2}
   page_set = dummy_wpr_story_set.DummyWprStorySet

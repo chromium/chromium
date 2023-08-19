@@ -152,20 +152,21 @@ void MimeHandlerViewAttachHelper::ResumeAttachOrDestroy(
     std::unique_ptr<MimeHandlerViewGuest> guest_view,
     int32_t element_instance_id,
     bool is_full_page_plugin,
-    content::RenderFrameHost* plugin_rfh) {
+    content::RenderFrameHost* plugin_render_frame_host) {
   if (resume_attach_callback_for_testing_) {
     std::move(resume_attach_callback_for_testing_)
         .Run(base::BindOnce(&MimeHandlerViewAttachHelper::ResumeAttachOrDestroy,
                             weak_factory_.GetWeakPtr(), std::move(guest_view),
                             element_instance_id, is_full_page_plugin,
-                            plugin_rfh));
+                            plugin_render_frame_host));
     return;
   }
 
-  DCHECK(!plugin_rfh || (plugin_rfh->GetProcess() == render_process_host_));
+  DCHECK(!plugin_render_frame_host ||
+         (plugin_render_frame_host->GetProcess() == render_process_host_));
   if (!guest_view)
     return;
-  if (!plugin_rfh) {
+  if (!plugin_render_frame_host) {
     auto* embedder_frame = guest_view->GetEmbedderFrame();
     if (embedder_frame && embedder_frame->IsRenderFrameLive()) {
       mojo::AssociatedRemote<mojom::MimeHandlerViewContainerManager>
@@ -180,7 +181,7 @@ void MimeHandlerViewAttachHelper::ResumeAttachOrDestroy(
 
   auto* raw_guest_view = guest_view.get();
   raw_guest_view->AttachToOuterWebContentsFrame(
-      std::move(guest_view), plugin_rfh, element_instance_id,
+      std::move(guest_view), plugin_render_frame_host, element_instance_id,
       is_full_page_plugin, base::NullCallback());
 }
 }  // namespace extensions

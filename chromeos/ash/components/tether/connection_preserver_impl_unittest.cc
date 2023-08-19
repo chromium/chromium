@@ -193,7 +193,8 @@ class ConnectionPreserverImplTest : public testing::Test {
   std::unique_ptr<FakeActiveHost> fake_active_host_;
   std::unique_ptr<NiceMock<MockTetherHostResponseRecorder>>
       mock_tether_host_response_recorder_;
-  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> mock_timer_;
+  raw_ptr<base::MockOneShotTimer, DanglingUntriaged | ExperimentalAsh>
+      mock_timer_;
 
   std::unique_ptr<ConnectionPreserverImpl> connection_preserver_;
 

@@ -7,6 +7,13 @@
 
 #import <UIKit/UIKit.h>
 
+namespace PriceNotificationsImageView {
+
+// The width and height of the Price Notifications ImageView.
+const CGFloat kPriceNotificationsImageLength = 64;
+
+}  // namespace PriceNotificationsImageView
+
 // A UIView that contains the PriceNotification item's image.
 @interface PriceNotificationsImageContainerView : UIView
 

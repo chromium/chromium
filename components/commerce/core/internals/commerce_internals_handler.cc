@@ -5,7 +5,9 @@
 #include "components/commerce/core/internals/commerce_internals_handler.h"
 
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/shopping_service.h"
+#include "components/prefs/pref_service.h"
 
 namespace commerce {
 
@@ -32,6 +34,11 @@ void CommerceInternalsHandler::GetShoppingListEligibleDetails(
     GetShoppingListEligibleDetailsCallback callback) {
   mojom::ShoppingListEligibleDetailPtr detail =
       mojom::ShoppingListEligibleDetail::New();
+
+  if (!shopping_service_) {
+    std::move(callback).Run(std::move(detail));
+    return;
+  }
 
   detail->is_region_locked_feature_enabled = mojom::EligibleEntry::New(
       IsRegionLockedFeatureEnabled(kShoppingList, kShoppingListRegionLaunched,
@@ -65,6 +72,13 @@ void CommerceInternalsHandler::GetShoppingListEligibleDetails(
       account_checker->IsSubjectToParentalControls(), /*expected_value=*/false);
 
   std::move(callback).Run(std::move(detail));
+}
+
+void CommerceInternalsHandler::ResetPriceTrackingEmailPref() {
+  if (!shopping_service_) {
+    return;
+  }
+  shopping_service_->pref_service_->ClearPref(kPriceEmailNotificationsEnabled);
 }
 
 }  // namespace commerce

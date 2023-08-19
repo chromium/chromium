@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_leaky_relu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pad_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_split_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_test_base.h"
@@ -195,6 +196,104 @@ TEST_P(MLGraphTest, ElementWiseBinaryTest) {
                 .dimensions = {1, 2, 2, 1},
                 .values = {2.0, 3.0, 6.0, 7.0}},
         .expected = {2.0, 4.0, 6.0, 8.0}}
+        .Test(*this, scope);
+  }
+}
+
+template <typename T>
+struct ElementWiseUnaryTester {
+  ElementWiseUnaryKind kind;
+  OperandInfo<T> input;
+  Vector<T> expected;
+
+  void Test(MLGraphTest& helper, V8TestingScope& scope) {
+    // Build the graph.
+    auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+    auto* input_operand = BuildInput(builder, "input", input.dimensions,
+                                     input.type, scope.GetExceptionState());
+    MLOperand* output_operand = nullptr;
+    switch (kind) {
+      case ElementWiseUnaryKind::kAbs:
+        output_operand = builder->abs(input_operand, scope.GetExceptionState());
+        break;
+      case ElementWiseUnaryKind::kCeil:
+        output_operand =
+            builder->ceil(input_operand, scope.GetExceptionState());
+        break;
+      case ElementWiseUnaryKind::kFloor:
+        output_operand =
+            builder->floor(input_operand, scope.GetExceptionState());
+        break;
+      case ElementWiseUnaryKind::kNeg:
+        output_operand = builder->neg(input_operand, scope.GetExceptionState());
+        break;
+    }
+    auto [graph, build_exception] =
+        helper.BuildGraph(scope, builder, {{"output", output_operand}});
+    EXPECT_NE(graph, nullptr);
+
+    // Compute the graph.
+    MLNamedArrayBufferViews inputs(
+        {{"input",
+          CreateArrayBufferViewForOperand(input_operand, input.values)}});
+    MLNamedArrayBufferViews outputs(
+        {{"output", CreateArrayBufferViewForOperand(output_operand)}});
+    auto* compute_exception =
+        helper.ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_EQ(compute_exception, nullptr);
+    auto results = GetArrayBufferViewValues<T>(outputs[0].second);
+    EXPECT_EQ(results, expected);
+  }
+};
+
+TEST_P(MLGraphTest, ElementWiseUnaryTest) {
+  V8TestingScope scope;
+  {
+    // Test element-wise abs operator for a 1-D tensor.
+    // The expected results should be the absolute value of the input tensor,
+    // element-wise.
+    ElementWiseUnaryTester<float>{
+        .kind = ElementWiseUnaryKind::kAbs,
+        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {2},
+                  .values = {-1.0, -2.0}},
+        .expected = {1.0, 2.0}}
+        .Test(*this, scope);
+  }
+  {
+    // Test element-wise ceil operator for a 2-D tensor.
+    // The expected results should be the ceiling of the input tensor,
+    // element-wise.
+    ElementWiseUnaryTester<float>{
+        .kind = ElementWiseUnaryKind::kCeil,
+        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {1, 2},
+                  .values = {1.1, -2.2}},
+        .expected = {2.0, -2.0}}
+        .Test(*this, scope);
+  }
+  {
+    // Test element-wise floor operator for a 3-D tensor.
+    // The expected results should be the floor of the input tensor,
+    // element-wise.
+    ElementWiseUnaryTester<float>{
+        .kind = ElementWiseUnaryKind::kFloor,
+        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {1, 2, 2},
+                  .values = {1.1, -2.2, 3.3, -4.4}},
+        .expected = {1.0, -3.0, 3.0, -5.0}}
+        .Test(*this, scope);
+  }
+  {
+    // Test element-wise neg operator for a 4-D tensor.
+    // The expected results should be the numerical negative value of the input
+    // tensor, element-wise.
+    ElementWiseUnaryTester<float>{
+        .kind = ElementWiseUnaryKind::kNeg,
+        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {1, 2, 2, 1},
+                  .values = {1.0, -2.0, 3.0, -4.0}},
+        .expected = {-1.0, 2.0, -3.0, 4.0}}
         .Test(*this, scope);
   }
 }
@@ -1162,6 +1261,103 @@ TEST_P(MLGraphTest, ReshapeTest) {
   }
 }
 
+template <typename T, typename S>
+struct SplitTester {
+  OperandInfo<T> input;
+  S splits;
+  Vector<Vector<T>> expected;
+
+  void Test(MLGraphTest& helper,
+            V8TestingScope& scope,
+            MLGraphBuilder* builder,
+            MLSplitOptions* options = MLSplitOptions::Create()) {
+    auto* input_operand = BuildInput(builder, "input", input.dimensions,
+                                     input.type, scope.GetExceptionState());
+    auto output_operands = builder->split(input_operand, splits, options,
+                                          scope.GetExceptionState());
+    MLNamedOperands named_operands;
+    for (uint32_t i = 0; i < output_operands.size(); ++i) {
+      named_operands.push_back(
+          std::pair<WTF::String, blink::Member<blink::MLOperand>>{
+              "output" + String::Number(i), output_operands[i]});
+    }
+    auto [graph, build_exception] =
+        helper.BuildGraph(scope, builder, named_operands);
+    ASSERT_NE(graph, nullptr);
+
+    MLNamedArrayBufferViews inputs(
+        {{"input",
+          CreateArrayBufferViewForOperand(input_operand, input.values)}});
+    MLNamedArrayBufferViews outputs;
+    for (uint32_t i = 0; i < output_operands.size(); ++i) {
+      outputs.push_back(
+          std::pair<WTF::String, blink::NotShared<blink::DOMArrayBufferView>>{
+              "output" + String::Number(i),
+              CreateArrayBufferViewForOperand(output_operands[i])});
+    }
+    auto* compute_exception =
+        helper.ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_EQ(compute_exception, nullptr);
+    for (uint32_t i = 0; i < outputs.size(); ++i) {
+      auto result = GetArrayBufferViewValues<T>(outputs[i].second);
+      EXPECT_EQ(result, expected[i]);
+    }
+  }
+};
+
+TEST_P(MLGraphTest, SplitTest) {
+  V8TestingScope scope;
+  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  {
+    // Test split operator with default options.
+    auto* options = MLSplitOptions::Create();
+    SplitTester<float, uint32_t>{
+        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {2, 2},
+                  .values = {0.0, 1.0, 2.0, 3.0}},
+        .splits = 2u,
+        .expected = {{0.0, 1.0}, {2.0, 3.0}}}
+        .Test(*this, scope, builder, options);
+  }
+  {
+    // Test split operator with axis = 1 when splits is an unsigned long.
+    auto* options = MLSplitOptions::Create();
+    options->setAxis(1);
+    SplitTester<float, uint32_t>{
+        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {2, 4},
+                  .values = {0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0}},
+        .splits = 2u,
+        .expected = {{0.0, 1.0, 4.0, 5.0}, {2.0, 3.0, 6.0, 7.0}}}
+        .Test(*this, scope, builder, options);
+  }
+  {
+    // Test split operator with default options when splits is a sequence of
+    // unsigned long.
+    auto* options = MLSplitOptions::Create();
+    SplitTester<float, Vector<uint32_t>>{
+        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {2, 2},
+                  .values = {0.0, 1.0, 2.0, 3.0}},
+        .splits = {1, 1},
+        .expected = {{0.0, 1.0}, {2.0, 3.0}}}
+        .Test(*this, scope, builder, options);
+  }
+  {
+    // Test split operator with axis = 1 when splits is a sequence of unsigned
+    // long.
+    auto* options = MLSplitOptions::Create();
+    options->setAxis(1);
+    SplitTester<float, Vector<uint32_t>>{
+        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {2, 4},
+                  .values = {0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0}},
+        .splits = {1, 2, 1},
+        .expected = {{0.0, 4.0}, {1.0, 2.0, 5.0, 6.0}, {3.0, 7.0}}}
+        .Test(*this, scope, builder, options);
+  }
+}
+
 template <typename T>
 struct TransposeTester {
   OperandInfo<T> input;
@@ -1418,6 +1614,59 @@ TEST_P(MLGraphTest, PadTest) {
         .expected = {8., 8., 8., 8., 8., 8., 8., 8., 8., 1., 2., 3., 8., 8.,
                      8., 8., 4., 5., 6., 8., 8., 8., 8., 8., 8., 8., 8., 8.}}
         .Test(*this, scope, builder, options);
+  }
+}
+
+template <typename T>
+struct SliceTester {
+  OperandInfo<T> input;
+  Vector<uint32_t> starts;
+  Vector<uint32_t> sizes;
+  Vector<T> expected;
+
+  void Test(MLGraphTest& helper,
+            V8TestingScope& scope,
+            MLGraphBuilder* builder) {
+    auto* input_operand = BuildInput(builder, "input", input.dimensions,
+                                     input.type, scope.GetExceptionState());
+    auto* output_operand =
+        builder->slice(input_operand, starts, sizes, scope.GetExceptionState());
+    auto [graph, build_exception] =
+        helper.BuildGraph(scope, builder, {{"output", output_operand}});
+    EXPECT_NE(graph, nullptr);
+
+    MLNamedArrayBufferViews inputs(
+        {{"input",
+          CreateArrayBufferViewForOperand(input_operand, input.values)}});
+    MLNamedArrayBufferViews outputs(
+        {{"output", CreateArrayBufferViewForOperand(output_operand)}});
+    auto* compute_exception =
+        helper.ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_EQ(compute_exception, nullptr);
+    auto results = GetArrayBufferViewValues<T>(outputs[0].second);
+    EXPECT_EQ(results, expected);
+  }
+};
+
+TEST_P(MLGraphTest, SliceTest) {
+  V8TestingScope scope;
+  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  {
+    // Test slice with input_shape = {3, 4, 5}, starts = {0, 0, 1} and sizes =
+    // {2, 3, 4}.
+    SliceTester<float>{
+        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {3, 4, 5},
+                  .values = {1,  4,  4,  -6, -3, -1, 7,  3,  1,  -8, 1,  -1,
+                             -2, -3, 6,  7,  6,  1,  -5, -7, 1,  1,  5,  3,
+                             3,  3,  -3, -8, 2,  -1, 8,  -1, -6, 1,  -7, 1,
+                             4,  1,  -5, 1,  -8, 4,  1,  -1, 9,  -4, 1,  -5,
+                             -4, -1, 4,  -1, -3, 7,  1,  9,  -4, -9, -8, -9}},
+        .starts = {0, 0, 1},
+        .sizes = {2, 3, 4},
+        .expected = {4, 4, -6, -3, 7,  3,  1, -8, -1, -2, -3, 6,
+                     1, 5, 3,  3,  -3, -8, 2, -1, -1, -6, 1,  -7}}
+        .Test(*this, scope, builder);
   }
 }
 

@@ -20,6 +20,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "chrome/browser/ash/printing/oauth2/authorization_server_session.h"
 #include "chrome/browser/ash/printing/oauth2/client_ids_database.h"
 #include "chrome/browser/ash/printing/oauth2/constants.h"
@@ -191,14 +192,12 @@ void AuthorizationZoneImpl::FinishAuthorization(const GURL& redirect_url,
   const auto query = uri.GetQueryAsMap();
 
   // Extract the parameter "state".
-  base::expected<std::string, std::string> val_or_err =
-      ExtractParameter(query, "state");
-  if (!val_or_err.has_value()) {
-    std::move(callback).Run(StatusCode::kInvalidResponse,
-                            "Authorization Request: " + val_or_err.error());
-    return;
-  }
-  const std::string state = std::move(val_or_err.value());
+  ASSIGN_OR_RETURN(const std::string state, ExtractParameter(query, "state"),
+                   [&](std::string error) {
+                     std::move(callback).Run(
+                         StatusCode::kInvalidResponse,
+                         "Authorization Request: " + std::move(error));
+                   });
 
   // Use `state` to match pending authorization.
   base::flat_set<std::string> scopes;
@@ -212,13 +211,12 @@ void AuthorizationZoneImpl::FinishAuthorization(const GURL& redirect_url,
   // Check if the parameter "error" is present. If yes, try to extract the error
   // message.
   if (query.contains("error")) {
-    val_or_err = ExtractParameter(query, "error");
-    if (!val_or_err.has_value()) {
-      std::move(callback).Run(StatusCode::kInvalidResponse,
-                              "Authorization Request: " + val_or_err.error());
-      return;
-    }
-    const std::string error = std::move(val_or_err.value());
+    ASSIGN_OR_RETURN(const std::string error, ExtractParameter(query, "error"),
+                     [&](std::string error) {
+                       std::move(callback).Run(
+                           StatusCode::kInvalidResponse,
+                           "Authorization Request: " + std::move(error));
+                     });
 
     StatusCode status;
     if (error == "server_error") {
@@ -233,13 +231,12 @@ void AuthorizationZoneImpl::FinishAuthorization(const GURL& redirect_url,
   }
 
   // Extract the parameter "code".
-  val_or_err = ExtractParameter(query, "code");
-  if (!val_or_err.has_value()) {
-    std::move(callback).Run(StatusCode::kInvalidResponse,
-                            "Authorization Request: " + val_or_err.error());
-    return;
-  }
-  const std::string code = std::move(val_or_err.value());
+  ASSIGN_OR_RETURN(const std::string code, ExtractParameter(query, "code"),
+                   [&](std::string error) {
+                     std::move(callback).Run(
+                         StatusCode::kInvalidResponse,
+                         "Authorization Request: " + std::move(error));
+                   });
 
   // Create and add a new session.
   if (sessions_.size() == kMaxNumberOfSessions) {

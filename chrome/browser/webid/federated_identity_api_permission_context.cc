@@ -11,7 +11,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
-#include "components/permissions/permission_result.h"
 #include "content/public/common/content_features.h"
 #include "url/origin.h"
 
@@ -39,17 +38,6 @@ FederatedIdentityApiPermissionContext::GetApiPermissionStatus(
 
   const GURL rp_embedder_url = relying_party_embedder.GetURL();
 
-  // TODO(npm): FedCM is currently restricted to contexts where third party
-  // cookies are not blocked unless the FedCmWithoutThirdPartyCookies flag is
-  // enabled.  Once the privacy improvements for the API are implemented, remove
-  // this restriction. See https://crbug.com/13043
-  if (cookie_settings_->ShouldBlockThirdPartyCookies() &&
-      !cookie_settings_->IsThirdPartyAccessAllowed(rp_embedder_url,
-                                                   /*source=*/nullptr) &&
-      !base::FeatureList::IsEnabled(features::kFedCmWithoutThirdPartyCookies)) {
-    return PermissionStatus::BLOCKED_THIRD_PARTY_COOKIES_BLOCKED;
-  }
-
   const ContentSetting setting = host_content_settings_map_->GetContentSetting(
       rp_embedder_url, rp_embedder_url,
       ContentSettingsType::FEDERATED_IDENTITY_API);
@@ -67,6 +55,19 @@ FederatedIdentityApiPermissionContext::GetApiPermissionStatus(
           rp_embedder_url, ContentSettingsType::FEDERATED_IDENTITY_API)) {
     return PermissionStatus::BLOCKED_EMBARGO;
   }
+  // TODO(npm): FedCM is currently restricted to contexts where third party
+  // cookies are not blocked unless the FedCmWithoutThirdPartyCookies flag or
+  // FedCmIdpSigninStatusEnabled flag is enabled. The IDP signin status API
+  // override is implemented in the caller because it can be enabled through
+  // origin trials. This block can be removed when the IDP Signin status API
+  // ships.
+  // See https://crbug.com/1451396
+  if (cookie_settings_->ShouldBlockThirdPartyCookies() &&
+      !cookie_settings_->IsThirdPartyAccessAllowed(rp_embedder_url) &&
+      !base::FeatureList::IsEnabled(features::kFedCmWithoutThirdPartyCookies)) {
+    return PermissionStatus::BLOCKED_THIRD_PARTY_COOKIES_BLOCKED;
+  }
+
   return PermissionStatus::GRANTED;
 }
 

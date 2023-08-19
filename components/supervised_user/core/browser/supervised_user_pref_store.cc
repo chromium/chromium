@@ -15,7 +15,6 @@
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_value_map.h"
@@ -27,6 +26,8 @@
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "components/sync/base/user_selectable_type.h"
+#include "components/sync/service/sync_prefs.h"
 #include "extensions/buildflags/buildflags.h"
 
 namespace {
@@ -69,7 +70,15 @@ SupervisedUserSettingsPrefMappingEntry kSupervisedUserSettingsPrefMapping[] = {
 
 }  // namespace
 
+SupervisedUserPrefStore::SupervisedUserPrefStore() = default;
+
 SupervisedUserPrefStore::SupervisedUserPrefStore(
+    supervised_user::SupervisedUserSettingsService*
+        supervised_user_settings_service) {
+  Init(supervised_user_settings_service);
+}
+
+void SupervisedUserPrefStore::Init(
     supervised_user::SupervisedUserSettingsService*
         supervised_user_settings_service) {
   user_settings_subscription_ =
@@ -126,11 +135,18 @@ void SupervisedUserPrefStore::OnNewSettingsAvailable(
     prefs_->SetInteger(policy::policy_prefs::kForceYouTubeRestrict,
                        safe_search_api::YOUTUBE_RESTRICT_MODERATE);
     prefs_->SetBoolean(policy::policy_prefs::kHideWebStoreIcon, false);
+
+// TODO(b/290004926): Modifying `prefs::kSigninAllowed` causes check failures on
+// iOS.
+#if !BUILDFLAG(IS_IOS)
     prefs_->SetBoolean(prefs::kSigninAllowed, false);
+#endif  // !BUILDFLAG(IS_IOS)
+
     prefs_->SetBoolean(feed::prefs::kEnableSnippets, false);
 
 #if BUILDFLAG(IS_ANDROID)
-    prefs_->SetBoolean(autofill::prefs::kAutofillWalletImportEnabled, false);
+    syncer::SyncPrefs::SetTypeDisabledByCustodian(
+        prefs_.get(), syncer::UserSelectableType::kPayments);
 #endif
 
     // Copy supervised user settings to prefs.
@@ -172,7 +188,7 @@ void SupervisedUserPrefStore::OnNewSettingsAvailable(
       // being disallowed.
       bool permissions_disallowed =
           settings.FindBool(supervised_user::kGeolocationDisabled)
-              .value_or(true);
+              .value_or(false);
       prefs_->SetBoolean(prefs::kSupervisedUserExtensionsMayRequestPermissions,
                          !permissions_disallowed);
       base::UmaHistogramBoolean(

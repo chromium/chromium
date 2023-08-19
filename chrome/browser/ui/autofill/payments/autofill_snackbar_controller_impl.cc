@@ -6,7 +6,7 @@
 #include <string>
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
-#include "chrome/browser/android/preferences/autofill/autofill_profile_bridge.h"
+#include "chrome/browser/android/preferences/autofill/settings_launcher_helper.h"
 #include "chrome/browser/autofill/manual_filling_controller.h"
 #include "chrome/browser/autofill/manual_filling_controller_impl.h"
 #include "chrome/browser/ui/android/autofill/snackbar/autofill_snackbar_view_android.h"
@@ -27,18 +27,15 @@ AutofillSnackbarControllerImpl::~AutofillSnackbarControllerImpl() {
 void AutofillSnackbarControllerImpl::Show(
     AutofillSnackbarType autofill_snackbar_type) {
   CHECK_NE(autofill_snackbar_type, AutofillSnackbarType::kUnspecified);
-  autofill_snackbar_type_ = autofill_snackbar_type;
-  if (!autofill_snackbar_view_) {
-    autofill_snackbar_view_ = AutofillSnackbarView::Create(this);
+  if (autofill_snackbar_view_) {
+    // A snackbar is already showing. Ignore the new request.
+    return;
   }
+  autofill_snackbar_type_ = autofill_snackbar_type;
+  autofill_snackbar_view_ = AutofillSnackbarView::Create(this);
   autofill_snackbar_view_->Show();
   base::UmaHistogramBoolean(
       "Autofill.Snackbar." + GetSnackbarTypeForLogging() + ".Shown", true);
-}
-
-void AutofillSnackbarControllerImpl::SetViewForTesting(
-    AutofillSnackbarView* view) {
-  autofill_snackbar_view_ = view;
 }
 
 void AutofillSnackbarControllerImpl::OnActionClicked() {

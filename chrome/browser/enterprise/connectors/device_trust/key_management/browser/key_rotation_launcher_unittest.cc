@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -58,13 +59,13 @@ constexpr char kSynchronizationErrorHistogram[] =
 constexpr char kSynchronizationUploadHistogram[] =
     "Enterprise.DeviceTrust.SyncSigningKey.UploadCode";
 
-std::unique_ptr<SigningKeyPair> CreateFakeKeyPair() {
+scoped_refptr<SigningKeyPair> CreateFakeKeyPair() {
   ECSigningKeyProvider provider;
   auto algorithm = {crypto::SignatureVerifier::ECDSA_SHA256};
   auto signing_key = provider.GenerateSigningKeySlowly(algorithm);
   DCHECK(signing_key);
-  return std::make_unique<SigningKeyPair>(std::move(signing_key),
-                                          BPKUR::CHROME_BROWSER_OS_KEY);
+  return base::MakeRefCounted<SigningKeyPair>(std::move(signing_key),
+                                              BPKUR::CHROME_BROWSER_OS_KEY);
 }
 
 }  // namespace
@@ -99,8 +100,9 @@ class KeyRotationLauncherTest : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
-  absl::optional<int> RunSynchronizePublicKey(const SigningKeyPair& key_pair,
-                                              bool fast_forward = false) {
+  absl::optional<int> RunSynchronizePublicKey(
+      scoped_refptr<SigningKeyPair> key_pair,
+      bool fast_forward = false) {
     base::test::TestFuture<absl::optional<int>> future;
     launcher_->SynchronizePublicKey(key_pair, future.GetCallback());
 
@@ -125,7 +127,7 @@ class KeyRotationLauncherTest : public testing::Test {
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_ =
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory_);
-  std::unique_ptr<SigningKeyPair> test_key_pair_;
+  scoped_refptr<SigningKeyPair> test_key_pair_;
   std::unique_ptr<KeyRotationLauncher> launcher_;
 };
 
@@ -164,10 +166,10 @@ TEST_F(KeyRotationLauncherTest, LaunchKeyRotation_InvalidDMToken) {
 }
 
 TEST_F(KeyRotationLauncherTest, SynchronizePublicKey_EmptyKey) {
-  auto empty_key_pair = std::make_unique<SigningKeyPair>(
+  auto empty_key_pair = base::MakeRefCounted<SigningKeyPair>(
       nullptr, BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED);
 
-  auto response_code = RunSynchronizePublicKey(*empty_key_pair);
+  auto response_code = RunSynchronizePublicKey(empty_key_pair);
 
   EXPECT_FALSE(response_code);
   histogram_tester_.ExpectUniqueSample(kSynchronizationErrorHistogram,
@@ -178,7 +180,7 @@ TEST_F(KeyRotationLauncherTest, SynchronizePublicKey_EmptyKey) {
 TEST_F(KeyRotationLauncherTest, SynchronizePublicKey_InvalidDmToken) {
   fake_dm_token_storage_.SetDMToken("");
 
-  auto response_code = RunSynchronizePublicKey(*test_key_pair_);
+  auto response_code = RunSynchronizePublicKey(test_key_pair_);
 
   EXPECT_FALSE(response_code);
   histogram_tester_.ExpectUniqueSample(kSynchronizationErrorHistogram,
@@ -192,7 +194,7 @@ TEST_F(KeyRotationLauncherTest, SynchronizePublicKey_Success) {
   auto expected_code = net::HTTP_OK;
   SetUploadResponseCode(expected_code);
 
-  auto response_code = RunSynchronizePublicKey(*test_key_pair_);
+  auto response_code = RunSynchronizePublicKey(test_key_pair_);
 
   histogram_tester_.ExpectUniqueSample(kSynchronizationUploadHistogram,
                                        static_cast<int>(expected_code), 1);
@@ -205,7 +207,7 @@ TEST_F(KeyRotationLauncherTest, SynchronizePublicKey_Timeout) {
   SetDMToken();
 
   auto response_code =
-      RunSynchronizePublicKey(*test_key_pair_, /*fast_forward=*/true);
+      RunSynchronizePublicKey(test_key_pair_, /*fast_forward=*/true);
 
   // Zero is the http response code returned by the network service when hitting
   // a timeout.

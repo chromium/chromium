@@ -6,9 +6,9 @@
 
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
+#import "base/apple/foundation_util.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_forward.h"
-#import "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -23,10 +23,6 @@
 #include "testing/gtest_mac.h"
 #include "testing/platform_test.h"
 #include "ui/shell_dialogs/select_file_policy.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 #define EXPECT_EQ_BOOL(a, b) \
   EXPECT_EQ(static_cast<bool>(a), static_cast<bool>(b))
@@ -418,7 +414,7 @@ TEST_F(SelectFileDialogMacTest, SelectionType) {
     EXPECT_EQ(test_cases[i].prompt, base::SysNSStringToUTF8([panel prompt]));
 
     if (args.type != SelectFileDialog::SELECT_SAVEAS_FILE) {
-      NSOpenPanel* open_panel = base::mac::ObjCCast<NSOpenPanel>(panel);
+      NSOpenPanel* open_panel = base::apple::ObjCCast<NSOpenPanel>(panel);
       // Verify that for types other than save file dialogs, an NSOpenPanel is
       // created.
       ASSERT_TRUE(open_panel);
@@ -457,15 +453,11 @@ TEST_F(SelectFileDialogMacTest, MultipleDialogs) {
 
   // In 10.15, file picker dialogs are remote, and the restriction of apps not
   // being allowed to OK their own file requests has been extended from just
-  // sandboxed apps to all apps. If we can test OK-ing our own dialogs, sure,
-  // but if not, at least try to close them all.
+  // sandboxed apps to all apps. Since the dialogs can't be OKed, at least close
+  // them all.
   base::RunLoop run_loop2;
   SetDialogClosedCallback(run_loop2.QuitClosure());
-  if (base::mac::IsAtMostOS10_14()) {
-    [panel2 ok:nil];
-  } else {
-    [panel2 cancel:nil];
-  }
+  [panel2 cancel:nil];
   run_loop2.Run();
   EXPECT_EQ(0lu, GetActivePanelCount());
 
@@ -482,9 +474,9 @@ TEST_F(SelectFileDialogMacTest, DefaultPath) {
   panel.extensionHidden = NO;
 
   EXPECT_EQ(args.default_path.DirName(),
-            base::mac::NSStringToFilePath(panel.directoryURL.path));
+            base::apple::NSStringToFilePath(panel.directoryURL.path));
   EXPECT_EQ(args.default_path.BaseName(),
-            base::mac::NSStringToFilePath(panel.nameFieldStringValue));
+            base::apple::NSStringToFilePath(panel.nameFieldStringValue));
 }
 
 // Verify that the file dialog does not hide extension for filenames with

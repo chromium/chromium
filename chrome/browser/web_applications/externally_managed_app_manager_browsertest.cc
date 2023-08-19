@@ -51,18 +51,17 @@ class ExternallyManagedAppManagerBrowserTest
     WebAppControllerBrowserTest::SetUpOnMainThread();
     // Allow different origins to be handled by the embedded_test_server.
     host_resolver()->AddRule("*", "127.0.0.1");
-    test::WaitUntilReady(WebAppProvider::GetForTest(profile()));
+    test::WaitUntilWebAppProviderAndSubsystemsReady(provider());
   }
 
   Profile* profile() { return browser()->profile(); }
 
-  WebAppRegistrar& registrar() {
-    return WebAppProvider::GetForTest(profile())->registrar_unsafe();
-  }
+  WebAppRegistrar& registrar() { return provider()->registrar_unsafe(); }
+
+  WebAppProvider* provider() { return WebAppProvider::GetForTest(profile()); }
 
   ExternallyManagedAppManager& externally_managed_app_manager() {
-    return WebAppProvider::GetForTest(profile())
-        ->externally_managed_app_manager();
+    return provider()->externally_managed_app_manager();
   }
 
   void InstallApp(ExternalInstallOptions install_options) {
@@ -85,46 +84,9 @@ class ExternallyManagedAppManagerBrowserTest
   absl::optional<webapps::InstallResultCode> result_code_;
 };
 
-class ExternallyManagedBrowserTestWithPrefMigrationRead
-    : public ExternallyManagedAppManagerBrowserTest,
-      public testing::WithParamInterface<test::ExternalPrefMigrationTestCases> {
- public:
-  ExternallyManagedBrowserTestWithPrefMigrationRead() {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-
-    switch (GetParam()) {
-      case test::ExternalPrefMigrationTestCases::kDisableMigrationReadPref:
-        disabled_features.push_back(features::kMigrateExternalPrefsToWebAppDB);
-        disabled_features.push_back(
-            features::kUseWebAppDBInsteadOfExternalPrefs);
-        break;
-      case test::ExternalPrefMigrationTestCases::kDisableMigrationReadDB:
-        disabled_features.push_back(features::kMigrateExternalPrefsToWebAppDB);
-        enabled_features.push_back(
-            features::kUseWebAppDBInsteadOfExternalPrefs);
-        break;
-      case test::ExternalPrefMigrationTestCases::kEnableMigrationReadPref:
-        enabled_features.push_back(features::kMigrateExternalPrefsToWebAppDB);
-        disabled_features.push_back(
-            features::kUseWebAppDBInsteadOfExternalPrefs);
-        break;
-      case test::ExternalPrefMigrationTestCases::kEnableMigrationReadDB:
-        enabled_features.push_back(features::kMigrateExternalPrefsToWebAppDB);
-        enabled_features.push_back(
-            features::kUseWebAppDBInsteadOfExternalPrefs);
-        break;
-    }
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Basic integration test to make sure the whole flow works. Each step in the
 // flow is unit tested separately.
-IN_PROC_BROWSER_TEST_P(ExternallyManagedBrowserTestWithPrefMigrationRead,
+IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
                        InstallSucceeds) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/banners/manifest_test_page.html"));
@@ -137,7 +99,7 @@ IN_PROC_BROWSER_TEST_P(ExternallyManagedBrowserTestWithPrefMigrationRead,
 }
 
 // If install URL redirects, install should still succeed.
-IN_PROC_BROWSER_TEST_P(ExternallyManagedBrowserTestWithPrefMigrationRead,
+IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
                        InstallSucceedsWithRedirect) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL start_url =
@@ -159,7 +121,7 @@ IN_PROC_BROWSER_TEST_P(ExternallyManagedBrowserTestWithPrefMigrationRead,
 }
 
 // If install URL redirects, install should still succeed.
-IN_PROC_BROWSER_TEST_P(ExternallyManagedBrowserTestWithPrefMigrationRead,
+IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
                        InstallSucceedsWithRedirectNoManifest) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL final_url =
@@ -183,7 +145,7 @@ IN_PROC_BROWSER_TEST_P(ExternallyManagedBrowserTestWithPrefMigrationRead,
 }
 
 // Installing a placeholder app with shortcuts should succeed.
-IN_PROC_BROWSER_TEST_P(ExternallyManagedBrowserTestWithPrefMigrationRead,
+IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
                        PlaceholderInstallSucceedsWithShortcuts) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -211,7 +173,7 @@ IN_PROC_BROWSER_TEST_P(ExternallyManagedBrowserTestWithPrefMigrationRead,
 #if BUILDFLAG(IS_CHROMEOS)
 // Installing a placeholder app with a custom name should succeed.
 // This feature is ChromeOS-only.
-IN_PROC_BROWSER_TEST_P(ExternallyManagedBrowserTestWithPrefMigrationRead,
+IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
                        PlaceholderInstallSucceedsWithCustomName) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -242,7 +204,7 @@ IN_PROC_BROWSER_TEST_P(ExternallyManagedBrowserTestWithPrefMigrationRead,
 
 // Installing a placeholder app with a custom icon should succeed.
 // This feature is ChromeOS-only.
-IN_PROC_BROWSER_TEST_P(ExternallyManagedBrowserTestWithPrefMigrationRead,
+IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
                        PlaceholderInstallSucceedsWithCustomIcon) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -277,9 +239,8 @@ IN_PROC_BROWSER_TEST_P(ExternallyManagedBrowserTestWithPrefMigrationRead,
   EXPECT_EQ(1u + kGeneratedSizes.size(), downloaded_sizes.size());
   EXPECT_TRUE(downloaded_sizes.find(kIconSize) != downloaded_sizes.end());
   EXPECT_EQ(kIconColor,
-            IconManagerReadAppIconPixel(
-                WebAppProvider::GetForTest(profile())->icon_manager(),
-                app_id.value(), kIconSize, 0, 0));
+            IconManagerReadAppIconPixel(provider()->icon_manager(),
+                                        app_id.value(), kIconSize, 0, 0));
 }
 
 // This RequestHandler returns HTTP_NOT_FOUND the first time a URL containing
@@ -343,9 +304,8 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
   EXPECT_EQ(1u + kGeneratedSizes.size(), downloaded_sizes.size());
   EXPECT_TRUE(downloaded_sizes.find(kIconSize) != downloaded_sizes.end());
   EXPECT_EQ(kIconColor,
-            IconManagerReadAppIconPixel(
-                WebAppProvider::GetForTest(profile())->icon_manager(),
-                app_id.value(), kIconSize, 0, 0));
+            IconManagerReadAppIconPixel(provider()->icon_manager(),
+                                        app_id.value(), kIconSize, 0, 0));
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -360,9 +320,8 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
       embedded_test_server()->GetURL("/banners/manifest_test_page.html"));
 
   // Start an installation but don't wait for it to finish.
-  WebAppProvider::GetForTest(profile())
-      ->externally_managed_app_manager()
-      .Install(std::move(install_options), base::DoNothing());
+  provider()->externally_managed_app_manager().Install(
+      std::move(install_options), base::DoNothing());
 
   // The browser should shutdown cleanly even if there is a pending
   // installation.
@@ -456,7 +415,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
 
 // Test that adding a manifest that points to a chrome:// URL does not actually
 // install a web app that points to a chrome:// URL.
-IN_PROC_BROWSER_TEST_P(ExternallyManagedBrowserTestWithPrefMigrationRead,
+IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
                        InstallChromeURLFails) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL(
@@ -475,7 +434,7 @@ IN_PROC_BROWSER_TEST_P(ExternallyManagedBrowserTestWithPrefMigrationRead,
 
 // Test that adding a web app without a manifest while using the
 // |require_manifest| flag fails.
-IN_PROC_BROWSER_TEST_P(ExternallyManagedBrowserTestWithPrefMigrationRead,
+IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
                        RequireManifestFailsIfNoManifest) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(
@@ -646,7 +605,6 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
 IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
                        RegistrationTimeout) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  ExternallyManagedAppRegistrationTask::SetTimeoutForTesting(0);
   GURL url(embedded_test_server()->GetURL(
       "/banners/manifest_no_service_worker.html"));
   CheckServiceWorkerStatus(url,
@@ -654,6 +612,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
 
   ExternalInstallOptions install_options = CreateInstallOptions(url);
   install_options.bypass_service_worker_check = true;
+  install_options.service_worker_registration_timeout = base::Seconds(0);
   InstallApp(std::move(install_options));
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
             result_code_.value());
@@ -661,7 +620,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
       .AwaitNextRegistration(url, RegistrationResultCode::kTimeout);
 }
 
-IN_PROC_BROWSER_TEST_P(ExternallyManagedBrowserTestWithPrefMigrationRead,
+IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
                        ReinstallPolicyAppWithLocallyInstalledApp) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/banners/manifest_test_page.html"));
@@ -701,16 +660,6 @@ IN_PROC_BROWSER_TEST_P(ExternallyManagedBrowserTestWithPrefMigrationRead,
   ForceInstallWebApp(profile(), url);
   ASSERT_TRUE(registrar().GetAppById(app_id)->IsPolicyInstalledApp());
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ExternallyManagedBrowserTestWithPrefMigrationRead,
-    ::testing::Values(
-        test::ExternalPrefMigrationTestCases::kDisableMigrationReadPref,
-        test::ExternalPrefMigrationTestCases::kDisableMigrationReadDB,
-        test::ExternalPrefMigrationTestCases::kEnableMigrationReadPref,
-        test::ExternalPrefMigrationTestCases::kEnableMigrationReadDB),
-    test::GetExternalPrefMigrationTestName);
 
 class ExternallyManagedAppManagerBrowserTestShortcut
     : public ExternallyManagedAppManagerBrowserTest,

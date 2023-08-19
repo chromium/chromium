@@ -46,7 +46,6 @@ namespace blink {
 class ExceptionState;
 class HTMLFormElement;
 class ImageCandidate;
-class LayoutSize;
 class ShadowRoot;
 
 class CORE_EXPORT HTMLImageElement final
@@ -195,6 +194,10 @@ class CORE_EXPORT HTMLImageElement final
   // as script being disabled (see: `LazyImageHelper::ShouldDeferImageLoad`).
   bool HasLazyLoadingAttribute() const;
 
+  // Returns script urls that were in execution while this element was being
+  // created, if LCPScriptObserver was active.
+  const HashSet<String>& creator_scripts() const { return creator_scripts_; }
+
  protected:
   // Controls how an image element appears in the layout. See:
   // https://html.spec.whatwg.org/C/#image-request
@@ -256,7 +259,7 @@ class CORE_EXPORT HTMLImageElement final
   void ResetFormOwner();
   ImageCandidate FindBestFitImageFromPictureParent();
   void SetBestFitURLAndDPRFromImageCandidate(const ImageCandidate&);
-  LayoutSize DensityCorrectedIntrinsicDimensions() const;
+  PhysicalSize DensityCorrectedIntrinsicDimensions() const;
   HTMLImageLoader& GetImageLoader() const override { return *image_loader_; }
   void NotifyViewportChanged();
   void CreateMediaQueryListIfDoesNotExist();
@@ -283,6 +286,7 @@ class CORE_EXPORT HTMLImageElement final
   bool is_lcp_element_ : 1;
   bool is_changed_shortly_after_mouseover_ : 1;
   bool has_sizes_attribute_in_img_or_sibling_ : 1;
+  HashSet<String> creator_scripts_;
 
   std::unique_ptr<LazyLoadImageObserver::VisibleLoadTimeMetrics>
       visible_load_time_metrics_;

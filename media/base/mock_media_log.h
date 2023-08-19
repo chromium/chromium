@@ -106,6 +106,9 @@ class MockMediaLog : public MediaLog {
     return std::move(most_recent_event_);
   }
 
+  // Disable console logging since the mock log is used in spammy tests.
+  bool ShouldLogToDebugConsole() const override;
+
  private:
   std::unique_ptr<MediaLogRecord> most_recent_event_;
 };

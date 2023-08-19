@@ -449,7 +449,7 @@ class LoadSignificantUrls : public history::HistoryDBTask {
 
  private:
   Node node_;
-  raw_ptr<base::WaitableEvent, DanglingUntriaged> wait_event_;
+  raw_ptr<base::WaitableEvent, AcrossTasksDanglingUntriaged> wait_event_;
   Callback callback_;
 };
 
@@ -459,10 +459,10 @@ class LoadSignificantUrls : public history::HistoryDBTask {
 void HistoryFuzzyProvider::RecordOpenMatchMetrics(
     const AutocompleteResult& result,
     const AutocompleteMatch& match_opened) {
-  if (base::Contains(result, AutocompleteProvider::TYPE_HISTORY_FUZZY,
-                     [](const AutocompleteMatch& match) {
-                       return match.provider->type();
-                     })) {
+  if (base::ranges::any_of(result, [](const AutocompleteMatch& match) {
+        return match.provider && match.provider->type() ==
+                                     AutocompleteProvider::TYPE_HISTORY_FUZZY;
+      })) {
     const bool opened_fuzzy_match = match_opened.provider->type() ==
                                     AutocompleteProvider::TYPE_HISTORY_FUZZY;
     UMA_HISTOGRAM_BOOLEAN(kMetricPrecision, opened_fuzzy_match);
@@ -565,6 +565,15 @@ size_t HistoryFuzzyProvider::EstimateMemoryUsage() const {
   res += base::trace_event::EstimateMemoryUsage(autocomplete_input_);
   res += base::trace_event::EstimateMemoryUsage(root_);
   return res;
+}
+
+// static
+void HistoryFuzzyProvider::ApplyRelevancePenalty(AutocompleteMatch& match,
+                                                 int penalty) {
+  DCHECK_GE(penalty, 0);
+  DCHECK_LE(penalty, 100);
+  match.relevance -= match.relevance * penalty / 100;
+  match.fuzzy_match_penalty = penalty;
 }
 
 HistoryFuzzyProvider::~HistoryFuzzyProvider() = default;
@@ -698,9 +707,7 @@ int HistoryFuzzyProvider::AddConvertedMatches(const ACMatches& matches,
 
   // Apply relevance penalty; all corrections are equal and we only apply this
   // to the most relevant result, so edit distance isn't needed.
-  DCHECK_GE(penalty, 0);
-  DCHECK_LE(penalty, 100);
-  match.relevance = match.relevance * (100 - penalty) / 100;
+  ApplyRelevancePenalty(match, penalty);
 
   return 1;
 }

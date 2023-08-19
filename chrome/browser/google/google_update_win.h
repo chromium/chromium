@@ -11,7 +11,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "google_update/google_update_idl.h"
+#include "chrome/updater/app/server/win/updater_legacy_idl.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
 

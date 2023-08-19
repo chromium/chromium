@@ -12,14 +12,13 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/web/public/web_state.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 SafeBrowsingClientImpl::SafeBrowsingClientImpl(
     safe_browsing::RealTimeUrlLookupService* lookup_service,
+    safe_browsing::HashRealTimeService* hash_real_time_service,
     PrerenderService* prerender_service)
-    : lookup_service_(lookup_service), prerender_service_(prerender_service) {}
+    : lookup_service_(lookup_service),
+      hash_real_time_service_(hash_real_time_service),
+      prerender_service_(prerender_service) {}
 
 SafeBrowsingClientImpl::~SafeBrowsingClientImpl() = default;
 
@@ -34,6 +33,11 @@ SafeBrowsingService* SafeBrowsingClientImpl::GetSafeBrowsingService() {
 safe_browsing::RealTimeUrlLookupService*
 SafeBrowsingClientImpl::GetRealTimeUrlLookupService() {
   return lookup_service_;
+}
+
+safe_browsing::HashRealTimeService*
+SafeBrowsingClientImpl::GetHashRealTimeService() {
+  return hash_real_time_service_;
 }
 
 bool SafeBrowsingClientImpl::ShouldBlockUnsafeResource(

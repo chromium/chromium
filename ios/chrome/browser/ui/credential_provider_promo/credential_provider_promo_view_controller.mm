@@ -12,13 +12,8 @@
 #import "ios/public/provider/chrome/browser/lottie/lottie_animation_configuration.h"
 #import "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
-constexpr CGFloat kCustomSpacingBeforeImageIfNoNavigationBar = 2;
-constexpr CGFloat kCustomSpacingAfterImageWithAnimation = 24;
+constexpr CGFloat kCustomSpacingAtTopIfNoNavigationBar = 24;
 constexpr CGFloat kCustomSpacingAfterImageWithoutAnimation = 0;
 constexpr CGFloat kPreferredCornerRadius = 20;
 NSString* const kDarkModeAnimationSuffix = @"_darkmode";
@@ -75,6 +70,7 @@ NSString* const kCredentialProviderPromoAccessibilityId =
       hidden || !darkModeEnabled;
 
   [self updateAnimationsPlaying];
+  [self updateAlertScreenTopAnchorConstraint];
 }
 
 #pragma mark - CredentialProviderPromoConsumer
@@ -138,12 +134,15 @@ NSString* const kCredentialProviderPromoAccessibilityId =
   self.alertScreen.imageHasFixedSize = YES;
   self.alertScreen.showDismissBarButton = NO;
   self.alertScreen.titleTextStyle = UIFontTextStyleTitle2;
-  self.alertScreen.customSpacingBeforeImageIfNoNavigationBar =
-      kCustomSpacingBeforeImageIfNoNavigationBar;
   self.alertScreen.topAlignedLayout = YES;
-  self.alertScreen.customSpacingAfterImage =
-      self.shouldShowAnimation ? kCustomSpacingAfterImageWithAnimation
-                               : kCustomSpacingAfterImageWithoutAnimation;
+
+  if (self.shouldShowAnimation) {
+    self.alertScreen.customSpacingBeforeImageIfNoNavigationBar =
+        kCustomSpacingAtTopIfNoNavigationBar;
+  } else {
+    self.alertScreen.customSpacingAfterImage =
+        kCustomSpacingAfterImageWithoutAnimation;
+  }
 
   [self addChildViewController:self.alertScreen];
   [self.view addSubview:self.alertScreen.view];

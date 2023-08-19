@@ -74,11 +74,10 @@ ThreadDelegate::GetDefaultTaskRunner() {
   return default_task_queue_->task_runner();
 }
 
-void ThreadDelegate::BindToCurrentThread(base::TimerSlack timer_slack) {
+void ThreadDelegate::BindToCurrentThread() {
   thread_local_delegate = this;
   sequence_manager_->BindToMessagePump(
       base::MessagePump::Create(message_pump_type_));
-  sequence_manager_->SetTimerSlack(timer_slack);
 }
 
 }  // namespace network

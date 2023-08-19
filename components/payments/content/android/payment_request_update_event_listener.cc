@@ -6,7 +6,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "components/payments/content/android/jni_headers/PaymentRequestUpdateEventListener_jni.h"
+#include "components/payments/content/android/service_jni/PaymentRequestUpdateEventListener_jni.h"
 
 namespace payments {
 namespace android {

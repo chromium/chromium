@@ -4,15 +4,20 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<style include="oobe-dialog-host-styles">
+<style include="oobe-dialog-host-styles cros-color-overrides">
   :host {
-    --oobe-dialog-list-item-border: 1px solid var(--google-grey-200);
-    --oobe-a11y-dialog-list-item-border: 1px solid var(--google-grey-200);
+    --oobe-dialog-list-item-border: 1px solid var(--cros-sys-separator);
+    --oobe-a11y-dialog-list-item-border: 1px solid var(--cros-sys-separator);
     color: var(--oobe-text-color);
     font-family: var(--oobe-default-font-family);
     font-size: var(--oobe-default-font-size);
     font-weight: var(--oobe-default-font-weight);
     line-height: var(--oobe-default-line-height);
+  }
+
+  /************* Edit Requisition Dialog **************/
+  :host-context(.jelly-enabled) cr-input#editRequisitionInput {
+    --cr-input-background-color: var(--cros-sys-input_field_on_shaded);
   }
 
   /************* Language Screen **************/

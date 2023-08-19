@@ -14,6 +14,10 @@
 #include <libxml/xmlstring.h>
 #include "xsltexports.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 XSLTPUBFUN void * XSLTCALL
 	xsltNewLocale			(const xmlChar *langName,
 					 int lowerFirst);
@@ -32,5 +36,9 @@ XSLTPUBFUN int XSLTCALL
 	xsltLocaleStrcmp		(void *locale,
 					 const xmlChar *str1,
 					 const xmlChar *str2);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __XML_XSLTLOCALE_H__ */

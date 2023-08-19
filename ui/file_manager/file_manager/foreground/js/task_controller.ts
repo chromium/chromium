@@ -93,21 +93,20 @@ export class TaskController {
   onStateChanged(newState: State) {
     const keys = newState.currentDirectory?.selection.keys ?? [];
     const tasks = newState.currentDirectory?.selection.fileTasks;
+    // If the selection changed.
     if (keys !== this.selectionKeys_ &&
         (keys.length > 0 || this.selectionKeys_.length > 0)) {
       this.selectionKeys_ = keys;
       this.selectionFilesData_ = getFilesData(newState, keys ?? []);
       // Kickoff the async/ActionsProducer to fetch the tasks for the new
-      // selection.
+      // selection. If the new selection is empty, still need to update the
+      // store so no old file task lingers.
       this.tasks_ = null;
-      // Only fetch if there is anything to fetch.
-      if (keys.length > 0) {
-        this.store_.dispatch(fetchFileTasks(this.selectionFilesData_));
-      }
+      this.store_.dispatch(fetchFileTasks(this.selectionFilesData_));
       // Hides the button while fetching the tasks.
       this.maybeHideButton();
     }
-
+    // If the file tasks changed.
     if (tasks !== this.selectionTasks_) {
       this.selectionTasks_ = tasks;
       if (tasks?.status === PropStatus.SUCCESS) {

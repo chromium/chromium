@@ -20,9 +20,9 @@
 namespace base {
 class FilePath;
 
-namespace mac {
+namespace apple {
 class ScopedObjCClassSwizzler;
-}  // namespace mac
+}  // namespace apple
 }  // namespace base
 
 namespace gfx {
@@ -166,7 +166,7 @@ class ShellAddedObserver {
  private:
   void ShellCreated(Shell* shell);
 
-  raw_ptr<Shell, DanglingUntriaged> shell_ = nullptr;
+  raw_ptr<Shell, AcrossTasksDanglingUntriaged> shell_ = nullptr;
   std::unique_ptr<base::RunLoop> runner_;
 };
 
@@ -182,7 +182,7 @@ class RenderWidgetHostViewCocoaObserver {
 
   // Returns the method swizzler for the given |method_name|. This is useful
   // when the original implementation of the method is needed.
-  static base::mac::ScopedObjCClassSwizzler* GetSwizzler(
+  static base::apple::ScopedObjCClassSwizzler* GetSwizzler(
       const std::string& method_name);
 
   // Returns the unique RenderWidgetHostViewCocoaObserver instance (if any) for
@@ -216,7 +216,7 @@ class RenderWidgetHostViewCocoaObserver {
   static void SetUpSwizzlers();
 
   static std::map<std::string,
-                  std::unique_ptr<base::mac::ScopedObjCClassSwizzler>>
+                  std::unique_ptr<base::apple::ScopedObjCClassSwizzler>>
       rwhvcocoa_swizzlers_;
   static std::map<WebContents*, RenderWidgetHostViewCocoaObserver*> observers_;
 

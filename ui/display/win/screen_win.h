@@ -163,6 +163,12 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
   // have the right scale factors for the screens.
   static void UpdateDisplayInfos();
 
+  // Updates the display infos if it appears that Windows state has changed
+  // in a way that requires the display infos to be updated. This currently
+  // only detects when the primary monitor changes, which it does when a monitor
+  // is added or removed.
+  static void UpdateDisplayInfosIfNeeded();
+
   // Returns the HWND associated with the NativeWindow.
   virtual HWND GetHWNDFromNativeWindow(gfx::NativeWindow view) const;
 
@@ -225,6 +231,7 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
   void Initialize();
   void OnWndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam);
   void UpdateAllDisplaysAndNotify();
+  void UpdateAllDisplaysIfPrimaryMonitorChanged();
 
   // Returns the ScreenWinDisplay closest to or enclosing |hwnd|.
   ScreenWinDisplay GetScreenWinDisplayNearestHWND(HWND hwnd) const;
@@ -301,6 +308,11 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
 
   // Used to avoid calling GetSystemMetricsForDpi in unit tests.
   bool per_process_dpi_awareness_disabled_for_testing_ = false;
+
+  // Used to track if primary_monitor_ changes, which is used as a signal that
+  // screen_win_displays_ needs to be updated. This should be updated when
+  // screen_win_displays_ is updated.
+  HMONITOR primary_monitor_ = nullptr;
 };
 
 }  // namespace win

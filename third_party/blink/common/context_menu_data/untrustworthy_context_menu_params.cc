@@ -73,6 +73,7 @@ void UntrustworthyContextMenuParams::Assign(
     custom_items.push_back(item.Clone());
   source_type = other.source_type;
   input_field_type = other.input_field_type;
+  is_password_type_by_heuristics = other.is_password_type_by_heuristics;
   selection_rect = other.selection_rect;
   selection_start_offset = other.selection_start_offset;
   opened_from_highlight = other.opened_from_highlight;

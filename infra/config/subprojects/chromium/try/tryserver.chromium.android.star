@@ -5,7 +5,7 @@
 
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "os", "reclient")
+load("//lib/builders.star", "os", "reclient", "siso")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
 load("//project.star", "settings")
@@ -22,6 +22,10 @@ try_.defaults.set(
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
+    siso_configs = ["remote_all"],
+    siso_enable_cloud_profiler = True,
+    siso_enable_cloud_trace = True,
+    siso_project = siso.project.DEFAULT_UNTRUSTED,
 )
 
 consoles.list_view(
@@ -83,6 +87,36 @@ try_.compilator_builder(
     main_list_view = "try",
 )
 
+# TODO(b/277863839): remove Siso experimental builders after migrate
+# android-12-x64-rel to Siso.
+try_.orchestrator_builder(
+    name = "android-12-x64-siso-rel",
+    mirrors = builder_config.copy_from("try/android-12-x64-rel"),
+    try_settings = builder_config.try_settings(
+        is_compile_only = True,
+        rts_config = builder_config.rts_config(
+            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
+        ),
+    ),
+    compilator = "android-12-x64-siso-rel-compilator",
+    coverage_test_types = ["unit", "overall"],
+    experiments = {
+        "chromium_rts.inverted_rts": 100,
+    },
+    main_list_view = "try",
+    tryjob = try_.job(
+        # TODO(b/277863839): increase percentage.
+        experiment_percentage = 20,
+    ),
+    use_java_coverage = True,
+)
+
+try_.compilator_builder(
+    name = "android-12-x64-siso-rel-compilator",
+    main_list_view = "try",
+    siso_enabled = True,
+)
+
 try_.builder(
     name = "android-12l-x64-dbg",
     mirrors = [
@@ -112,7 +146,6 @@ try_.orchestrator_builder(
             condition = builder_config.rts_condition.QUICK_RUN_ONLY,
         ),
     ),
-    check_for_flakiness = True,
     compilator = "android-arm64-rel-compilator",
     coverage_test_types = ["unit", "overall"],
     experiments = {
@@ -129,8 +162,38 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "android-arm64-rel-compilator",
     branch_selector = branches.selector.ANDROID_BRANCHES,
-    check_for_flakiness = True,
     main_list_view = "try",
+)
+
+# TODO(b/277863839): remove Siso experimental builders after migrate
+# android-arm64-rel to Siso.
+try_.orchestrator_builder(
+    name = "android-arm64-siso-rel",
+    description_html = "This builder may trigger tests on multiple Android versions.",
+    mirrors = builder_config.copy_from("try/android-arm64-rel"),
+    try_settings = builder_config.try_settings(
+        is_compile_only = True,
+        rts_config = builder_config.rts_config(
+            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
+        ),
+    ),
+    compilator = "android-arm64-siso-rel-compilator",
+    coverage_test_types = ["unit", "overall"],
+    experiments = {
+        "chromium_rts.inverted_rts": 100,
+    },
+    main_list_view = "try",
+    tryjob = try_.job(
+        # TODO(b/277863839): increase percentage.
+        experiment_percentage = 20,
+    ),
+    use_clang_coverage = True,
+)
+
+try_.compilator_builder(
+    name = "android-arm64-siso-rel-compilator",
+    main_list_view = "try",
+    siso_enabled = True,
 )
 
 # TODO(crbug.com/1367523): Reeanble this builder once the reboot issue is resolved.
@@ -213,6 +276,60 @@ try_.builder(
 )
 
 try_.builder(
+    name = "android-cronet-mainline-clang-arm64-dbg",
+    mirrors = ["ci/android-cronet-mainline-clang-arm64-dbg"],
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
+    name = "android-cronet-mainline-clang-arm64-rel",
+    mirrors = ["ci/android-cronet-mainline-clang-arm64-rel"],
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
+    name = "android-cronet-mainline-clang-x86-dbg",
+    mirrors = ["ci/android-cronet-mainline-clang-x86-dbg"],
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
+    name = "android-cronet-mainline-clang-x86-rel",
+    mirrors = ["ci/android-cronet-mainline-clang-x86-rel"],
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
+    name = "android-cronet-x64-rel",
+    mirrors = ["ci/android-cronet-x64-rel"],
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
+    name = "android-cronet-x64-dbg",
+    mirrors = ["ci/android-cronet-arm64-dbg"],
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
+    name = "android-cronet-x64-dbg-12-tests",
+    mirrors = [
+        "ci/android-cronet-x64-dbg",
+        "ci/android-cronet-x64-dbg-12-tests",
+    ],
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
+    name = "android-cronet-x64-dbg-13-tests",
+    mirrors = [
+        "ci/android-cronet-x64-dbg",
+        "ci/android-cronet-x64-dbg-13-tests",
+    ],
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
     name = "android-cronet-x86-dbg",
     mirrors = [
         "ci/android-cronet-x86-dbg",
@@ -233,7 +350,6 @@ try_.builder(
         "ci/android-cronet-x86-dbg",
         "ci/android-cronet-x86-dbg-10-tests",
     ],
-    check_for_flakiness = True,
     main_list_view = "try",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
     tryjob = try_.job(
@@ -275,10 +391,10 @@ try_.builder(
 )
 
 try_.builder(
-    name = "android-cronet-x86-rel-kitkat-tests",
+    name = "android-cronet-x86-dbg-nougat-tests",
     mirrors = [
-        "ci/android-cronet-x86-rel",
-        "ci/android-cronet-x86-rel-kitkat-tests",
+        "ci/android-cronet-x86-dbg",
+        "ci/android-cronet-x86-dbg-nougat-tests",
     ],
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
@@ -305,6 +421,38 @@ try_.builder(
     mirrors = builder_config.copy_from("try/android-pie-x86-rel"),
 )
 
+# TODO(b/277863839): remove Siso experimental builders after migrate
+# android-nougat-x86-rel to Siso.
+try_.orchestrator_builder(
+    name = "android-nougat-x86-siso-rel",
+    mirrors = builder_config.copy_from("try/android-nougat-x86-rel"),
+    try_settings = builder_config.try_settings(
+        is_compile_only = True,
+        rts_config = builder_config.rts_config(
+            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
+        ),
+    ),
+    compilator = "android-nougat-x86-siso-rel-compilator",
+    coverage_test_types = ["unit", "overall"],
+    experiments = {
+        "chromium_rts.inverted_rts": 100,
+        "chromium.add_one_test_shard": 10,
+    },
+    main_list_view = "try",
+    tryjob = try_.job(
+        # TODO(b/277863839): increase percentage.
+        experiment_percentage = 20,
+    ),
+    use_java_coverage = True,
+)
+
+try_.compilator_builder(
+    name = "android-nougat-x86-siso-rel-compilator",
+    cores = 64,
+    main_list_view = "try",
+    siso_enabled = True,
+)
+
 try_.orchestrator_builder(
     name = "android-nougat-x86-rel",
     branch_selector = branches.selector.ANDROID_BRANCHES,
@@ -316,9 +464,6 @@ try_.orchestrator_builder(
             condition = builder_config.rts_condition.QUICK_RUN_ONLY,
         ),
     ),
-    # crbug/1434778 - disabling due to high flake rate. See crbug/1422481 for
-    # root cause.
-    # check_for_flakiness = True,
     compilator = "android-nougat-x86-rel-compilator",
     coverage_test_types = ["unit", "overall"],
     experiments = {
@@ -337,7 +482,6 @@ try_.compilator_builder(
     name = "android-nougat-x86-rel-compilator",
     branch_selector = branches.selector.ANDROID_BRANCHES,
     cores = 64 if settings.is_main else 32,
-    check_for_flakiness = True,
     main_list_view = "try",
 )
 
@@ -349,6 +493,13 @@ try_.builder(
         "ci/Oreo Phone Tester",
     ],
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
+    name = "android-oreo-x86-rel",
+    mirrors = [
+        "ci/android-oreo-x86-rel",
+    ],
 )
 
 try_.builder(
@@ -367,7 +518,6 @@ try_.builder(
     ],
     builderless = False,
     cores = 16,
-    check_for_flakiness = True,
     main_list_view = "try",
     tryjob = try_.job(
         location_filters = [
@@ -401,11 +551,6 @@ try_.builder(
         "ci/android-x86-rel",
         "ci/android-webview-10-x86-rel-tests",
     ],
-)
-
-try_.builder(
-    name = "android-pie-arm64-wpt-rel-non-cq",
-    mirrors = ["ci/android-pie-arm64-wpt-rel-non-cq"],
 )
 
 try_.builder(
@@ -652,7 +797,6 @@ try_.gpu.optional_tests_builder(
     try_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
-    check_for_flakiness = True,
     main_list_view = "try",
     tryjob = try_.job(
         location_filters = [
@@ -695,7 +839,6 @@ try_.gpu.optional_tests_builder(
     try_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
-    check_for_flakiness = True,
     main_list_view = "try",
     tryjob = try_.job(
         location_filters = [

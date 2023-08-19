@@ -53,22 +53,16 @@ blink::protocol::String InspectorIssueCodeValue(
           ContentSecurityPolicyIssue;
     case mojom::blink::InspectorIssueCode::kSharedArrayBufferIssue:
       return protocol::Audits::InspectorIssueCodeEnum::SharedArrayBufferIssue;
-    case mojom::blink::InspectorIssueCode::kHeavyAdIssue:
-      CHECK(false);
-      return "";
     case mojom::blink::InspectorIssueCode::kLowTextContrastIssue:
       return protocol::Audits::InspectorIssueCodeEnum::LowTextContrastIssue;
+    case mojom::blink::InspectorIssueCode::kHeavyAdIssue:
     case mojom::blink::InspectorIssueCode::kFederatedAuthRequestIssue:
-      CHECK(false);
-      return "";
+    case mojom::blink::InspectorIssueCode::kFederatedAuthUserInfoRequestIssue:
     case mojom::blink::InspectorIssueCode::kBounceTrackingIssue:
-      NOTREACHED_NORETURN();
     case mojom::blink::InspectorIssueCode::kGenericIssue:
-      NOTREACHED();
-      return "";
     case mojom::blink::InspectorIssueCode::kDeprecationIssue:
-      NOTREACHED();
-      return "";
+    case mojom::blink::InspectorIssueCode::kAttributionReportingIssue:
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -89,6 +83,9 @@ protocol::String BuildCookieExclusionReason(
       return protocol::Audits::CookieExclusionReasonEnum::ExcludeSameSiteStrict;
     case blink::mojom::blink::CookieExclusionReason::kExcludeDomainNonASCII:
       return protocol::Audits::CookieExclusionReasonEnum::ExcludeDomainNonASCII;
+    case blink::mojom::blink::CookieExclusionReason::kExcludeThirdPartyPhaseout:
+      return protocol::Audits::CookieExclusionReasonEnum::
+          ExcludeThirdPartyPhaseout;
   }
 }
 
@@ -143,6 +140,8 @@ protocol::String BuildCookieWarningReason(
           WarnAttributeValueExceedsMaxSize;
     case blink::mojom::blink::CookieWarningReason::kWarnDomainNonASCII:
       return protocol::Audits::CookieWarningReasonEnum::WarnDomainNonASCII;
+    case blink::mojom::blink::CookieWarningReason::kWarnThirdPartyPhaseout:
+      return protocol::Audits::CookieWarningReasonEnum::WarnThirdPartyPhaseout;
   }
 }
 

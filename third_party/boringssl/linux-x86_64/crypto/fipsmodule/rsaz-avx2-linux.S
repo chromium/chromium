@@ -1,16 +1,9 @@
 // This file is generated from a similarly-named Perl script in the BoringSSL
 // source tree. Do not edit by hand.
 
-#if defined(__has_feature)
-#if __has_feature(memory_sanitizer) && !defined(OPENSSL_NO_ASM)
-#define OPENSSL_NO_ASM
-#endif
-#endif
+#include <openssl/asm_base.h>
 
-#if defined(__x86_64__) && !defined(OPENSSL_NO_ASM) && defined(__ELF__)
-#if defined(BORINGSSL_PREFIX)
-#include <boringssl_prefix_symbols_asm.h>
-#endif
+#if !defined(OPENSSL_NO_ASM) && defined(OPENSSL_X86_64) && defined(__ELF__)
 .text	
 
 .globl	rsaz_1024_sqr_avx2
@@ -19,6 +12,7 @@
 .align	64
 rsaz_1024_sqr_avx2:
 .cfi_startproc	
+_CET_ENDBR
 	leaq	(%rsp),%rax
 .cfi_def_cfa_register	%rax
 	pushq	%rbx
@@ -673,6 +667,7 @@ rsaz_1024_sqr_avx2:
 .align	64
 rsaz_1024_mul_avx2:
 .cfi_startproc	
+_CET_ENDBR
 	leaq	(%rsp),%rax
 .cfi_def_cfa_register	%rax
 	pushq	%rbx
@@ -1229,6 +1224,7 @@ rsaz_1024_mul_avx2:
 .align	32
 rsaz_1024_red2norm_avx2:
 .cfi_startproc	
+_CET_ENDBR
 	subq	$-128,%rsi
 	xorq	%rax,%rax
 	movq	-128(%rsi),%r8
@@ -1429,6 +1425,7 @@ rsaz_1024_red2norm_avx2:
 .align	32
 rsaz_1024_norm2red_avx2:
 .cfi_startproc	
+_CET_ENDBR
 	subq	$-128,%rdi
 	movq	(%rsi),%r8
 	movl	$0x1fffffff,%eax
@@ -1589,6 +1586,7 @@ rsaz_1024_norm2red_avx2:
 .align	32
 rsaz_1024_scatter5_avx2:
 .cfi_startproc	
+_CET_ENDBR
 	vzeroupper
 	vmovdqu	.Lscatter_permd(%rip),%ymm5
 	shll	$4,%edx
@@ -1617,6 +1615,7 @@ rsaz_1024_scatter5_avx2:
 .align	32
 rsaz_1024_gather5_avx2:
 .cfi_startproc	
+_CET_ENDBR
 	vzeroupper
 	movq	%rsp,%r11
 .cfi_def_cfa_register	%r11
@@ -1747,8 +1746,4 @@ rsaz_1024_gather5_avx2:
 .long	4,4,4,4, 4,4,4,4
 .align	64
 .text	
-#endif
-#if defined(__ELF__)
-// See https://www.airs.com/blog/archives/518.
-.section .note.GNU-stack,"",%progbits
 #endif

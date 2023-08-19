@@ -17,7 +17,7 @@ class MockSingleFieldFormFillRouter : public SingleFieldFormFillRouter {
  public:
   explicit MockSingleFieldFormFillRouter(
       AutocompleteHistoryManager* autocomplete_history_manager,
-      IBANManager* iban_manager,
+      IbanManager* iban_manager,
       MerchantPromoCodeManager* merchant_promo_code_manager);
   ~MockSingleFieldFormFillRouter() override;
 
@@ -29,7 +29,7 @@ class MockSingleFieldFormFillRouter : public SingleFieldFormFillRouter {
               (override));
   MOCK_METHOD(bool,
               OnGetSingleFieldSuggestions,
-              (AutoselectFirstSuggestion autoselect_first_suggestion,
+              (AutofillSuggestionTriggerSource trigger_source,
                const FormFieldData& field,
                const AutofillClient& client,
                base::WeakPtr<SingleFieldFormFiller::SuggestionsHandler> handler,
@@ -46,13 +46,11 @@ class MockSingleFieldFormFillRouter : public SingleFieldFormFillRouter {
               (override));
   MOCK_METHOD(void,
               OnRemoveCurrentSingleFieldSuggestion,
-              (const std::u16string&,
-               const std::u16string&,
-               Suggestion::FrontendId),
+              (const std::u16string&, const std::u16string&, PopupItemId),
               (override));
   MOCK_METHOD(void,
               OnSingleFieldSuggestionSelected,
-              (const std::u16string&, Suggestion::FrontendId),
+              (const std::u16string&, PopupItemId),
               (override));
 };
 

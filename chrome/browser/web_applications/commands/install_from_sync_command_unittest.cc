@@ -14,9 +14,11 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
+#include "base/test/test_future.h"
+#include "base/types/expected.h"
+#include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
-#include "chrome/browser/web_applications/test/mock_data_retriever.h"
-#include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
+#include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
@@ -24,6 +26,7 @@
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -33,6 +36,8 @@
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_manager.h"
+#include "components/webapps/common/web_page_metadata.mojom-forward.h"
+#include "components/webapps/common/web_page_metadata.mojom.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -66,17 +71,21 @@ SkBitmap CreateTestBitmap(SkColor color, int size) {
 class InstallFromSyncTest : public WebAppTest {
  public:
   const int kIconSize = 96;
-  const GURL kWebAppUrl = GURL("https://example.com/path/index.html");
-  const GURL kOtherWebAppUrl = GURL("https://example.com/path2/index.html");
-
-  const GURL kWebAppManifestStartUrl =
+  const GURL kWebAppStartUrl = GURL("https://example.com/path/index.html");
+  const ManifestId kWebAppManifestId =
       GURL("https://example.com/path/index.html");
+
+  const GURL kOtherWebAppStartUrl =
+      GURL("https://example.com/path2/index.html");
+  const ManifestId kOtherWebAppManifestId =
+      GURL("https://example.com/path2/index.html");
+
   const std::u16string kManifestName = u"Manifest Name";
   const GURL kWebAppManifestUrl =
       GURL("https://example.com/path/manifest.json");
   const GURL kManifestIconUrl =
       GURL("https://example.com/path/manifest_icon.png");
-  const SkColor kManifestIconColor = SK_ColorBLACK;
+  const SkColor kManifestIconColor = SK_ColorCYAN;
 
   const std::string kFallbackTitle = "Fallback Title";
   const GURL kFallbackIconUrl =
@@ -93,63 +102,51 @@ class InstallFromSyncTest : public WebAppTest {
 
   void SetUp() override {
     WebAppTest::SetUp();
-    FakeWebAppProvider* provider = FakeWebAppProvider::Get(profile());
-    auto command_url_loader = std::make_unique<TestWebAppUrlLoader>();
-    command_manager_url_loader_ = command_url_loader.get();
-    provider->GetCommandManager().SetUrlLoaderForTesting(
-        std::move(command_url_loader));
-    url_loader_ = std::make_unique<TestWebAppUrlLoader>();
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
-  void TearDown() override { WebAppTest::TearDown(); }
+  void TearDown() override {
+    provider()->Shutdown();
+    WebAppTest::TearDown();
+  }
 
  protected:
   struct InstallResult {
+    bool callback_triggered = false;
     AppId installed_app_id;
     webapps::InstallResultCode install_code;
     absl::optional<webapps::InstallResultCode> install_code_before_fallback;
   };
 
-  InstallFromSyncCommand::Params CreateParams(AppId app_id, GURL url) {
+  InstallFromSyncCommand::Params CreateParams(AppId app_id,
+                                              ManifestId manifest_id,
+                                              GURL start_url) {
     return InstallFromSyncCommand::Params(
-        app_id, GenerateManifestIdFromStartUrlOnly(url), url, kFallbackTitle,
-        url.GetWithoutFilename(), /*theme_color=*/absl::nullopt,
+        app_id, manifest_id, start_url, kFallbackTitle,
+        start_url.GetWithoutFilename(), /*theme_color=*/absl::nullopt,
         mojom::UserDisplayMode::kStandalone, /*icons=*/
         {apps::IconInfo(kFallbackIconUrl, kIconSize)});
   }
 
-  std::unique_ptr<InstallFromSyncCommand> CreateCommand(
-      std::unique_ptr<WebAppDataRetriever> data_retriever,
-      InstallFromSyncCommand::Params params,
-      OnceInstallCallback install_callback) {
-    return std::make_unique<InstallFromSyncCommand>(
-        &url_loader(), profile(), std::move(data_retriever), params,
-        std::move(install_callback));
-  }
-
-  InstallResult InstallFromSyncAndWait(
-      std::unique_ptr<WebAppDataRetriever> data_retriever,
-      absl::optional<GURL> opt_url = absl::nullopt) {
-    GURL url = opt_url.value_or(kWebAppUrl);
-    const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, url);
-
+  InstallResult InstallFromSyncAndWait(GURL start_url, ManifestId manifest_id) {
+    const AppId app_id = GenerateAppIdFromManifestId(manifest_id);
     InstallResult result;
-    base::RunLoop run_loop;
-    std::unique_ptr<InstallFromSyncCommand> command = CreateCommand(
-        std::move(data_retriever), CreateParams(app_id, url),
-        base::BindLambdaForTesting(
-            [&](const AppId& id, webapps::InstallResultCode code) {
-              result.installed_app_id = id;
-              result.install_code = code;
-              run_loop.Quit();
-            }));
+    base::test::TestFuture<const AppId&, webapps::InstallResultCode> future;
+    std::unique_ptr<InstallFromSyncCommand> command =
+        std::make_unique<InstallFromSyncCommand>(
+            profile(), CreateParams(app_id, manifest_id, start_url),
+            future.GetCallback());
     command->SetFallbackTriggeredForTesting(
         base::BindLambdaForTesting([&](webapps::InstallResultCode code) {
           result.install_code_before_fallback = code;
         }));
     command_manager().ScheduleCommand(std::move(command));
-    run_loop.Run();
+    result.callback_triggered = future.Wait();
+    if (!result.callback_triggered) {
+      return result;
+    }
+    result.installed_app_id = future.Get<AppId>();
+    result.install_code = future.Get<webapps::InstallResultCode>();
     return result;
   }
 
@@ -161,68 +158,22 @@ class InstallFromSyncTest : public WebAppTest {
 
   WebAppRegistrar& registrar() { return provider()->registrar_unsafe(); }
 
-  TestWebAppUrlLoader& command_manager_url_loader() const {
-    return *command_manager_url_loader_;
+  FakeWebContentsManager& web_contents_manager() {
+    return static_cast<FakeWebContentsManager&>(
+        provider()->web_contents_manager());
   }
 
-  TestWebAppUrlLoader& url_loader() const { return *url_loader_; }
-
-  enum class IconFetchSource { kFallback, kDocument, kManifest };
-
-  void ExpectGetIcons(MockDataRetriever* data_retriever,
-                      bool skip_page_favicons,
-                      IconFetchSource source) {
-    GURL icon_url;
-    SkColor color;
-    switch (source) {
-      case IconFetchSource::kFallback:
-        icon_url = kFallbackIconUrl;
-        color = kFallbackIconColor;
-        break;
-      case IconFetchSource::kDocument:
-        icon_url = kDocumentIconUrl;
-        color = kDocumentIconColor;
-
-        break;
-      case IconFetchSource::kManifest:
-        icon_url = kManifestIconUrl;
-        color = kManifestIconColor;
-        break;
-    }
-
-    IconsMap icons = {{icon_url, {CreateTestBitmap(color, kIconSize)}}};
-    DownloadedIconsHttpResults http_result = {
-        {icon_url, net::HttpStatusCode::HTTP_OK}};
-    EXPECT_CALL(*data_retriever,
-                GetIcons(testing::_, ElementsAre(icon_url), skip_page_favicons,
-                         base::test::IsNotNullCallback()))
-        .WillOnce(base::test::RunOnceCallback<3>(
-            IconsDownloadedResult::kCompleted, std::move(icons), http_result));
-  }
-
-  std::unique_ptr<WebAppInstallInfo> CreateSiteInstallInfo(
-      absl::optional<GURL> opt_url = absl::nullopt) {
-    GURL url = opt_url.value_or(kWebAppUrl);
-    std::unique_ptr<WebAppInstallInfo> info =
-        std::make_unique<WebAppInstallInfo>();
-    info->title = kDocumentTitle;
-    info->start_url = url;
-    info->manifest_icons = {apps::IconInfo(kDocumentIconUrl, kIconSize)};
-    return info;
-  }
-
-  blink::mojom::ManifestPtr CreateManifest(
-      bool icons,
-      absl::optional<GURL> opt_url = absl::nullopt) {
-    GURL url = opt_url.value_or(kWebAppManifestStartUrl);
+  blink::mojom::ManifestPtr CreateManifest(GURL start_url,
+                                           ManifestId manifest_id,
+                                           bool icons) {
     blink::mojom::ManifestPtr manifest = blink::mojom::Manifest::New();
     manifest->name = kManifestName;
-    manifest->start_url = url;
-    manifest->id = GenerateManifestIdFromStartUrlOnly(url);
+    manifest->start_url = start_url;
+    manifest->id = manifest_id;
     if (icons) {
       blink::Manifest::ImageResource primary_icon;
       primary_icon.type = u"image/png";
-      primary_icon.sizes.emplace_back(gfx::Size(kIconSize, kIconSize));
+      primary_icon.sizes.emplace_back(kIconSize, kIconSize);
       primary_icon.purpose.push_back(
           blink::mojom::ManifestImageResource_Purpose::ANY);
       primary_icon.src = GURL(kManifestIconUrl);
@@ -234,37 +185,28 @@ class InstallFromSyncTest : public WebAppTest {
   std::u16string GetAppName(const AppId& app_id) {
     return base::UTF8ToUTF16(registrar().GetAppShortName(app_id));
   }
-
-  raw_ptr<TestWebAppUrlLoader, DanglingUntriaged> command_manager_url_loader_;
-  std::unique_ptr<TestWebAppUrlLoader> url_loader_;
 };
 
 TEST_F(InstallFromSyncTest, SuccessWithManifest) {
-  const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, kWebAppUrl);
+  const AppId app_id = GenerateAppIdFromManifestId(kWebAppManifestId);
 
-  auto data_retriever =
-      std::make_unique<testing::StrictMock<MockDataRetriever>>();
+  // Page with manifest.
+  auto& fake_page_state =
+      web_contents_manager().GetOrCreatePageState(kWebAppStartUrl);
+  fake_page_state.url_load_result = WebAppUrlLoaderResult::kUrlLoaded;
+  fake_page_state.opt_metadata =
+      FakeWebContentsManager::CreateMetadataWithIconAndTitle(
+          kDocumentTitle, kDocumentIconUrl, kIconSize);
+  fake_page_state.opt_manifest =
+      CreateManifest(kWebAppStartUrl, kWebAppManifestId, /*icons=*/true);
 
-  command_manager_url_loader().AddPrepareForLoadResults(
-      {WebAppUrlLoader::Result::kUrlLoaded});
-  url_loader().SetNextLoadUrlResult(kWebAppUrl,
-                                    WebAppUrlLoader::Result::kUrlLoaded);
-  testing::InSequence sequence;
-  EXPECT_CALL(*data_retriever,
-              GetWebAppInstallInfo(testing::_, base::test::IsNotNullCallback()))
-      .WillOnce(base::test::RunOnceCallback<1>(CreateSiteInstallInfo()));
+  // Icon state.
+  web_contents_manager().GetOrCreateIconState(kManifestIconUrl).bitmaps = {
+      CreateTestBitmap(kManifestIconColor, kIconSize)};
 
-  EXPECT_CALL(*data_retriever, CheckInstallabilityAndRetrieveManifest(
-                                   testing::_, true,
-                                   base::test::IsNotNullCallback(), testing::_))
-      .WillOnce(base::test::RunOnceCallback<2>(
-          CreateManifest(true), kWebAppManifestUrl, true,
-          webapps::InstallableStatusCode::NO_ERROR_DETECTED));
-
-  ExpectGetIcons(data_retriever.get(), /*skip_page_favicons=*/true,
-                 IconFetchSource::kManifest);
-
-  InstallResult result = InstallFromSyncAndWait(std::move(data_retriever));
+  InstallResult result =
+      InstallFromSyncAndWait(kWebAppStartUrl, kWebAppManifestId);
+  ASSERT_TRUE(result.callback_triggered);
 
   EXPECT_FALSE(result.install_code_before_fallback.has_value());
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
@@ -282,31 +224,23 @@ TEST_F(InstallFromSyncTest, SuccessWithManifest) {
 }
 
 TEST_F(InstallFromSyncTest, SuccessWithoutManifest) {
-  const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, kWebAppUrl);
+  const AppId app_id = GenerateAppIdFromManifestId(kWebAppManifestId);
 
-  auto data_retriever =
-      std::make_unique<testing::StrictMock<MockDataRetriever>>();
+  // Page without manifest.
+  auto& fake_page_state =
+      web_contents_manager().GetOrCreatePageState(kWebAppStartUrl);
+  fake_page_state.url_load_result = WebAppUrlLoaderResult::kUrlLoaded;
+  fake_page_state.opt_metadata =
+      FakeWebContentsManager::CreateMetadataWithIconAndTitle(
+          kDocumentTitle, kDocumentIconUrl, kIconSize);
 
-  command_manager_url_loader().AddPrepareForLoadResults(
-      {WebAppUrlLoader::Result::kUrlLoaded});
-  url_loader().SetNextLoadUrlResult(kWebAppUrl,
-                                    WebAppUrlLoader::Result::kUrlLoaded);
-  testing::InSequence sequence;
-  EXPECT_CALL(*data_retriever,
-              GetWebAppInstallInfo(testing::_, base::test::IsNotNullCallback()))
-      .WillOnce(base::test::RunOnceCallback<1>(CreateSiteInstallInfo()));
+  // Icon state.
+  web_contents_manager().GetOrCreateIconState(kDocumentIconUrl).bitmaps = {
+      CreateTestBitmap(kDocumentIconColor, kIconSize)};
 
-  EXPECT_CALL(*data_retriever, CheckInstallabilityAndRetrieveManifest(
-                                   testing::_, true,
-                                   base::test::IsNotNullCallback(), testing::_))
-      .WillOnce(base::test::RunOnceCallback<2>(
-          nullptr, kWebAppManifestUrl, true,
-          webapps::InstallableStatusCode::NO_ERROR_DETECTED));
-
-  ExpectGetIcons(data_retriever.get(), /*skip_page_favicons=*/true,
-                 IconFetchSource::kDocument);
-
-  InstallResult result = InstallFromSyncAndWait(std::move(data_retriever));
+  InstallResult result =
+      InstallFromSyncAndWait(kWebAppStartUrl, kWebAppManifestId);
+  ASSERT_TRUE(result.callback_triggered);
 
   EXPECT_FALSE(result.install_code_before_fallback.has_value());
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
@@ -324,31 +258,25 @@ TEST_F(InstallFromSyncTest, SuccessWithoutManifest) {
 }
 
 TEST_F(InstallFromSyncTest, SuccessManifestNoIcons) {
-  const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, kWebAppUrl);
+  const AppId app_id = GenerateAppIdFromManifestId(kWebAppManifestId);
 
-  auto data_retriever =
-      std::make_unique<testing::StrictMock<MockDataRetriever>>();
+  // Page with manifest, no icons.
+  auto& fake_page_state =
+      web_contents_manager().GetOrCreatePageState(kWebAppStartUrl);
+  fake_page_state.url_load_result = WebAppUrlLoaderResult::kUrlLoaded;
+  fake_page_state.opt_metadata =
+      FakeWebContentsManager::CreateMetadataWithIconAndTitle(
+          kDocumentTitle, kDocumentIconUrl, kIconSize);
+  fake_page_state.opt_manifest =
+      CreateManifest(kWebAppStartUrl, kWebAppManifestId, /*icons=*/false);
 
-  command_manager_url_loader().AddPrepareForLoadResults(
-      {WebAppUrlLoader::Result::kUrlLoaded});
-  url_loader().SetNextLoadUrlResult(kWebAppUrl,
-                                    WebAppUrlLoader::Result::kUrlLoaded);
-  testing::InSequence sequence;
-  EXPECT_CALL(*data_retriever,
-              GetWebAppInstallInfo(testing::_, base::test::IsNotNullCallback()))
-      .WillOnce(base::test::RunOnceCallback<1>(CreateSiteInstallInfo()));
+  // Document icon state.
+  web_contents_manager().GetOrCreateIconState(kDocumentIconUrl).bitmaps = {
+      CreateTestBitmap(kDocumentIconColor, kIconSize)};
 
-  EXPECT_CALL(*data_retriever, CheckInstallabilityAndRetrieveManifest(
-                                   testing::_, true,
-                                   base::test::IsNotNullCallback(), testing::_))
-      .WillOnce(base::test::RunOnceCallback<2>(
-          CreateManifest(/*icons=*/false), kWebAppManifestUrl, true,
-          webapps::InstallableStatusCode::NO_ERROR_DETECTED));
-
-  ExpectGetIcons(data_retriever.get(), /*skip_page_favicons=*/true,
-                 IconFetchSource::kDocument);
-
-  InstallResult result = InstallFromSyncAndWait(std::move(data_retriever));
+  InstallResult result =
+      InstallFromSyncAndWait(kWebAppStartUrl, kWebAppManifestId);
+  ASSERT_TRUE(result.callback_triggered);
 
   EXPECT_FALSE(result.install_code_before_fallback.has_value());
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
@@ -365,20 +293,21 @@ TEST_F(InstallFromSyncTest, SuccessManifestNoIcons) {
   EXPECT_THAT(icon_color, Eq(kDocumentIconColor));
 }
 
-TEST_F(InstallFromSyncTest, FallbackUrlRedirect) {
-  const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, kWebAppUrl);
+TEST_F(InstallFromSyncTest, UrlRedirectUseFallback) {
+  const AppId app_id = GenerateAppIdFromManifestId(kWebAppManifestId);
 
-  auto data_retriever =
-      std::make_unique<testing::StrictMock<MockDataRetriever>>();
+  // Page redirects.
+  auto& fake_page_state =
+      web_contents_manager().GetOrCreatePageState(kWebAppStartUrl);
+  fake_page_state.url_load_result = WebAppUrlLoaderResult::kRedirectedUrlLoaded;
 
-  command_manager_url_loader().AddPrepareForLoadResults(
-      {WebAppUrlLoader::Result::kUrlLoaded});
-  url_loader().SetNextLoadUrlResult(
-      kWebAppUrl, WebAppUrlLoader::Result::kRedirectedUrlLoaded);
-  ExpectGetIcons(data_retriever.get(), /*skip_page_favicons=*/true,
-                 IconFetchSource::kFallback);
+  // Fallback icon state.
+  web_contents_manager().GetOrCreateIconState(kFallbackIconUrl).bitmaps = {
+      CreateTestBitmap(kFallbackIconColor, kIconSize)};
 
-  InstallResult result = InstallFromSyncAndWait(std::move(data_retriever));
+  InstallResult result =
+      InstallFromSyncAndWait(kWebAppStartUrl, kWebAppManifestId);
+  ASSERT_TRUE(result.callback_triggered);
 
   // Error occurred.
   ASSERT_TRUE(result.install_code_before_fallback.has_value());
@@ -399,23 +328,21 @@ TEST_F(InstallFromSyncTest, FallbackUrlRedirect) {
 }
 
 TEST_F(InstallFromSyncTest, FallbackWebAppInstallInfo) {
-  const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, kWebAppUrl);
+  const AppId app_id = GenerateAppIdFromManifestId(kWebAppManifestId);
 
-  auto data_retriever =
-      std::make_unique<testing::StrictMock<MockDataRetriever>>();
+  // Page redirects.
+  auto& fake_page_state =
+      web_contents_manager().GetOrCreatePageState(kWebAppStartUrl);
+  fake_page_state.url_load_result = WebAppUrlLoaderResult::kUrlLoaded;
+  fake_page_state.return_null_info = true;
 
-  command_manager_url_loader().AddPrepareForLoadResults(
-      {WebAppUrlLoader::Result::kUrlLoaded});
-  url_loader().SetNextLoadUrlResult(kWebAppUrl,
-                                    WebAppUrlLoader::Result::kUrlLoaded);
-  testing::InSequence sequence;
-  EXPECT_CALL(*data_retriever,
-              GetWebAppInstallInfo(testing::_, base::test::IsNotNullCallback()))
-      .WillOnce(base::test::RunOnceCallback<1>(nullptr));
-  ExpectGetIcons(data_retriever.get(), /*skip_page_favicons=*/true,
-                 IconFetchSource::kFallback);
+  // Fallback icon state.
+  web_contents_manager().GetOrCreateIconState(kFallbackIconUrl).bitmaps = {
+      CreateTestBitmap(kFallbackIconColor, kIconSize)};
 
-  InstallResult result = InstallFromSyncAndWait(std::move(data_retriever));
+  InstallResult result =
+      InstallFromSyncAndWait(kWebAppStartUrl, kWebAppManifestId);
+  ASSERT_TRUE(result.callback_triggered);
 
   // Error occurred.
   ASSERT_TRUE(result.install_code_before_fallback.has_value());
@@ -436,34 +363,26 @@ TEST_F(InstallFromSyncTest, FallbackWebAppInstallInfo) {
 }
 
 TEST_F(InstallFromSyncTest, FallbackManifestIdMismatch) {
-  const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, kWebAppUrl);
+  const AppId app_id = GenerateAppIdFromManifestId(kWebAppManifestId);
 
-  auto data_retriever =
-      std::make_unique<testing::StrictMock<MockDataRetriever>>();
+  // Page with manifest.
+  auto& fake_page_state =
+      web_contents_manager().GetOrCreatePageState(kWebAppStartUrl);
+  fake_page_state.url_load_result = WebAppUrlLoaderResult::kUrlLoaded;
+  fake_page_state.opt_metadata =
+      FakeWebContentsManager::CreateMetadataWithIconAndTitle(
+          kDocumentTitle, kDocumentIconUrl, kIconSize);
+  fake_page_state.opt_manifest =
+      CreateManifest(kWebAppStartUrl, kWebAppManifestId, /*icons=*/true);
+  fake_page_state.opt_manifest->id = kOtherWebAppManifestId;
 
-  command_manager_url_loader().AddPrepareForLoadResults(
-      {WebAppUrlLoader::Result::kUrlLoaded});
-  url_loader().SetNextLoadUrlResult(kWebAppUrl,
-                                    WebAppUrlLoader::Result::kUrlLoaded);
-  testing::InSequence sequence;
-  EXPECT_CALL(*data_retriever,
-              GetWebAppInstallInfo(testing::_, base::test::IsNotNullCallback()))
-      .WillOnce(base::test::RunOnceCallback<1>(CreateSiteInstallInfo()));
+  // Icon state.
+  web_contents_manager().GetOrCreateIconState(kDocumentIconUrl).bitmaps = {
+      CreateTestBitmap(kDocumentIconColor, kIconSize)};
 
-  auto manifest = CreateManifest(true);
-  manifest->id = kWebAppManifestStartUrl.Resolve(u"other_path/index.html");
-
-  EXPECT_CALL(*data_retriever, CheckInstallabilityAndRetrieveManifest(
-                                   testing::_, true,
-                                   base::test::IsNotNullCallback(), testing::_))
-      .WillOnce(base::test::RunOnceCallback<2>(
-          std::move(manifest), kWebAppManifestUrl, true,
-          webapps::InstallableStatusCode::NO_ERROR_DETECTED));
-
-  ExpectGetIcons(data_retriever.get(), /*skip_page_favicons=*/true,
-                 IconFetchSource::kDocument);
-
-  InstallResult result = InstallFromSyncAndWait(std::move(data_retriever));
+  InstallResult result =
+      InstallFromSyncAndWait(kWebAppStartUrl, kWebAppManifestId);
+  ASSERT_TRUE(result.callback_triggered);
 
   // Error occurred.
   ASSERT_TRUE(result.install_code_before_fallback.has_value());
@@ -484,64 +403,11 @@ TEST_F(InstallFromSyncTest, FallbackManifestIdMismatch) {
 }
 
 TEST_F(InstallFromSyncTest, TwoInstalls) {
-  auto data_retriever1 =
-      std::make_unique<testing::StrictMock<MockDataRetriever>>();
-  auto data_retriever2 =
-      std::make_unique<testing::StrictMock<MockDataRetriever>>();
+  const AppId app_id1 = GenerateAppIdFromManifestId(kWebAppManifestId);
+  const AppId app_id2 = GenerateAppIdFromManifestId(kOtherWebAppManifestId);
 
-  // The test url loader requires all expectations up front, so set it for both
-  // installs.
-  command_manager_url_loader().AddPrepareForLoadResults(
-      {WebAppUrlLoader::Result::kUrlLoaded,
-       WebAppUrlLoader::Result::kUrlLoaded});
-  {
-    testing::InSequence sequence;
-
-    // Set expectations for kWebAppUrl.
-    url_loader().SetNextLoadUrlResult(kWebAppUrl,
-                                      WebAppUrlLoader::Result::kUrlLoaded);
-    EXPECT_CALL(
-        *data_retriever1,
-        GetWebAppInstallInfo(testing::_, base::test::IsNotNullCallback()))
-        .WillOnce(
-            base::test::RunOnceCallback<1>(CreateSiteInstallInfo(kWebAppUrl)));
-
-    EXPECT_CALL(
-        *data_retriever1,
-        CheckInstallabilityAndRetrieveManifest(
-            testing::_, true, base::test::IsNotNullCallback(), testing::_))
-        .WillOnce(base::test::RunOnceCallback<2>(
-            CreateManifest(true, kWebAppUrl), kWebAppManifestUrl, true,
-            webapps::InstallableStatusCode::NO_ERROR_DETECTED));
-
-    ExpectGetIcons(data_retriever1.get(), /*skip_page_favicons=*/true,
-                   IconFetchSource::kManifest);
-
-    // Set expectations for kOtherWebAppUrl.
-    url_loader().SetNextLoadUrlResult(kOtherWebAppUrl,
-                                      WebAppUrlLoader::Result::kUrlLoaded);
-    EXPECT_CALL(
-        *data_retriever2,
-        GetWebAppInstallInfo(testing::_, base::test::IsNotNullCallback()))
-        .WillOnce(base::test::RunOnceCallback<1>(
-            CreateSiteInstallInfo(kOtherWebAppUrl)));
-
-    EXPECT_CALL(
-        *data_retriever2,
-        CheckInstallabilityAndRetrieveManifest(
-            testing::_, true, base::test::IsNotNullCallback(), testing::_))
-        .WillOnce(base::test::RunOnceCallback<2>(
-            CreateManifest(true, kOtherWebAppUrl), kWebAppManifestUrl, true,
-            webapps::InstallableStatusCode::NO_ERROR_DETECTED));
-
-    ExpectGetIcons(data_retriever2.get(), /*skip_page_favicons=*/true,
-                   IconFetchSource::kManifest);
-  }
-
-  const AppId app_id1 =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, kWebAppUrl);
-  const AppId app_id2 =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, kOtherWebAppUrl);
+  // No need to set up our FakeWebContentsManager state, as the sync
+  // installation will succeed even if the network is down.
 
   base::RunLoop loop1;
   base::RunLoop loop2;
@@ -576,22 +442,26 @@ TEST_F(InstallFromSyncTest, TwoInstalls) {
         }
       }));
 
-  command_manager().ScheduleCommand(CreateCommand(
-      std::move(data_retriever1), CreateParams(app_id1, kWebAppUrl),
-      base::BindLambdaForTesting(
-          [&](const AppId& id, webapps::InstallResultCode code) {
-            events.push_back(Event::kApp1Installed);
-            codes.push_back(code);
-            loop1.Quit();
-          })));
-  command_manager().ScheduleCommand(CreateCommand(
-      std::move(data_retriever2), CreateParams(app_id2, kOtherWebAppUrl),
+  std::unique_ptr<InstallFromSyncCommand> command =
+      std::make_unique<InstallFromSyncCommand>(
+          profile(), CreateParams(app_id1, kWebAppManifestId, kWebAppStartUrl),
+          base::BindLambdaForTesting(
+              [&](const AppId& id, webapps::InstallResultCode code) {
+                events.push_back(Event::kApp1Installed);
+                codes.push_back(code);
+                loop1.Quit();
+              }));
+  command_manager().ScheduleCommand(std::move(command));
+  command = std::make_unique<InstallFromSyncCommand>(
+      profile(),
+      CreateParams(app_id2, kOtherWebAppManifestId, kOtherWebAppStartUrl),
       base::BindLambdaForTesting(
           [&](const AppId& id, webapps::InstallResultCode code) {
             events.push_back(Event::kApp2Installed);
             codes.push_back(code);
             loop2.Quit();
-          })));
+          }));
+  command_manager().ScheduleCommand(std::move(command));
   loop1.Run();
   EXPECT_TRUE(command_manager().has_web_contents_for_testing());
   loop2.Run();
@@ -623,110 +493,31 @@ TEST_F(InstallFromSyncTest, TwoInstalls) {
 }
 
 TEST_F(InstallFromSyncTest, Shutdown) {
-  auto data_retriever =
-      std::make_unique<testing::StrictMock<MockDataRetriever>>();
+  const AppId app_id = GenerateAppIdFromManifestId(kWebAppManifestId);
 
-  command_manager_url_loader().AddPrepareForLoadResults(
-      {WebAppUrlLoader::Result::kUrlLoaded});
-  url_loader().SetNextLoadUrlResult(kWebAppUrl,
-                                    WebAppUrlLoader::Result::kUrlLoaded);
+  // Page with manifest, but have the manifest fetch cause the system to shut
+  // down.
+  auto& fake_page_state =
+      web_contents_manager().GetOrCreatePageState(kWebAppStartUrl);
+  fake_page_state.url_load_result = WebAppUrlLoaderResult::kUrlLoaded;
+  fake_page_state.opt_metadata =
+      FakeWebContentsManager::CreateMetadataWithIconAndTitle(
+          kDocumentTitle, kDocumentIconUrl, kIconSize);
+  fake_page_state.opt_manifest =
+      CreateManifest(kWebAppStartUrl, kWebAppManifestId, /*icons=*/true);
+  fake_page_state.on_manifest_fetch =
+      base::BindLambdaForTesting([&]() { command_manager().Shutdown(); });
 
-  base::RunLoop loop;
-  WebAppDataRetriever::GetWebAppInstallInfoCallback callback;
-  EXPECT_CALL(*data_retriever,
-              GetWebAppInstallInfo(testing::_, base::test::IsNotNullCallback()))
-      .WillOnce(
-          [&](content::WebContents* web_contents,
-              WebAppDataRetriever::GetWebAppInstallInfoCallback arg_callback) {
-            callback = std::move(arg_callback);
-            loop.Quit();
-          });
-
-  const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, kWebAppUrl);
-  bool result_populated = false;
-  InstallResult result;
-  auto command =
-      CreateCommand(std::move(data_retriever), CreateParams(app_id, kWebAppUrl),
-                    base::BindLambdaForTesting(
-                        [&](const AppId& id, webapps::InstallResultCode code) {
-                          result_populated = true;
-                          result.installed_app_id = id;
-                          result.install_code = code;
-                        }));
+  base::test::TestFuture<const AppId&, webapps::InstallResultCode> future;
+  std::unique_ptr<InstallFromSyncCommand> command =
+      std::make_unique<InstallFromSyncCommand>(
+          profile(), CreateParams(app_id, kWebAppManifestId, kWebAppStartUrl),
+          future.GetCallback());
   command_manager().ScheduleCommand(std::move(command));
-  loop.Run();
-  command_manager().Shutdown();
-
-  // Running this should do nothing.
-  ASSERT_FALSE(callback.is_null());
-  std::move(callback).Run(CreateSiteInstallInfo());
-
-  ASSERT_TRUE(result_populated);
-  EXPECT_EQ(webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown,
-            result.install_code);
-  EXPECT_EQ(result.installed_app_id, app_id);
-  EXPECT_FALSE(registrar().IsInstalled(app_id));
-}
-
-TEST_F(InstallFromSyncTest, ShutdownDoesNotCrash) {
-  class CustomInstallableManager : public webapps::InstallableManager {
-   public:
-    CustomInstallableManager(content::WebContents* web_contents,
-                             WebAppCommandManager* command_manager)
-        : webapps::InstallableManager(web_contents),
-          command_manager_(command_manager) {}
-    ~CustomInstallableManager() override = default;
-
-   private:
-    // webapps::InstallableManager:
-    void GetData(const webapps::InstallableParams& params,
-                 webapps::InstallableCallback callback) override {
-      command_manager_->Shutdown();
-    }
-
-    const raw_ptr<WebAppCommandManager> command_manager_;
-  };
-
-  class CustomWebAppDataRetriever : public WebAppDataRetriever {
-   public:
-    explicit CustomWebAppDataRetriever(WebAppCommandManager* command_manager)
-        : command_manager_(command_manager) {}
-    ~CustomWebAppDataRetriever() override = default;
-
-   private:
-    void GetWebAppInstallInfo(content::WebContents* web_contents,
-                              GetWebAppInstallInfoCallback callback) override {
-      web_contents->SetUserData(content::WebContentsUserData<
-                                    webapps::InstallableManager>::UserDataKey(),
-                                std::make_unique<CustomInstallableManager>(
-                                    web_contents, command_manager_));
-
-      std::move(callback).Run(std::make_unique<WebAppInstallInfo>());
-    }
-
-    const raw_ptr<WebAppCommandManager> command_manager_;
-  };
-
-  const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, kWebAppUrl);
-  command_manager_url_loader().AddPrepareForLoadResults(
-      {WebAppUrlLoader::Result::kUrlLoaded});
-  url_loader().SetNextLoadUrlResult(kWebAppUrl,
-                                    WebAppUrlLoader::Result::kUrlLoaded);
-
-  base::RunLoop loop;
-  auto data_retriever =
-      std::make_unique<CustomWebAppDataRetriever>(&command_manager());
-  auto command = CreateCommand(
-      std::move(data_retriever), CreateParams(app_id, kWebAppUrl),
-      base::BindLambdaForTesting([&](const AppId& id,
-                                     webapps::InstallResultCode code) {
-        EXPECT_EQ(
-            code,
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(future.Get<webapps::InstallResultCode>(),
             webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown);
-        loop.Quit();
-      }));
-  command_manager().ScheduleCommand(std::move(command));
-  loop.Run();
+  EXPECT_FALSE(registrar().IsInstalled(app_id));
 }
 
 }  // namespace

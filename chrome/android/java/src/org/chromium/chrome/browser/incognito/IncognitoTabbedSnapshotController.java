@@ -4,8 +4,7 @@
 
 package org.chromium.chrome.browser.incognito;
 
-import android.content.Context;
-import android.view.Window;
+import android.app.Activity;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -35,27 +34,24 @@ public class IncognitoTabbedSnapshotController
 
     /**
      * Creates and registers a new {@link IncognitoTabbedSnapshotController}.
-     * @param context The activity context.
-     * @param window The {@link Window} containing the flags to which the secure flag will be added
-     *               and cleared.
+     * @param activity The {@link Activity} on which the snapshot capability needs to be controlled.
      * @param layoutManager The {@link LayoutManagerChrome} where this controller will be added.
      * @param tabModelSelector The {@link TabModelSelector} from where tab information will be
      *         fetched.
      * @param activityLifecycleDispatcher The {@link ActivityLifecycleDispatcher} which would allow
      *         to register as {@link DestroyObserver}.
      */
-    public static void createIncognitoTabSnapshotController(@NonNull Context context,
-            @NonNull Window window, @NonNull LayoutManagerChrome layoutManager,
-            @NonNull TabModelSelector tabModelSelector,
+    public static void createIncognitoTabSnapshotController(@NonNull Activity activity,
+            @NonNull LayoutManagerChrome layoutManager, @NonNull TabModelSelector tabModelSelector,
             @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher) {
         Supplier<Boolean> isGTSEnabledSupplier =
-                () -> TabUiFeatureUtilities.isGridTabSwitcherEnabled(context);
+                () -> TabUiFeatureUtilities.isGridTabSwitcherEnabled(activity);
         Supplier<Boolean> isOverviewModeSupplier =
                 () -> layoutManager.getActiveLayoutType() == LayoutType.TAB_SWITCHER;
         Supplier<Boolean> isShowingIncognitoSupplier = getIsShowingIncognitoSupplier(
                 tabModelSelector, isGTSEnabledSupplier, isOverviewModeSupplier);
 
-        new IncognitoTabbedSnapshotController(window, layoutManager, tabModelSelector,
+        new IncognitoTabbedSnapshotController(activity, layoutManager, tabModelSelector,
                 activityLifecycleDispatcher, isGTSEnabledSupplier, isShowingIncognitoSupplier);
     }
 
@@ -89,8 +85,7 @@ public class IncognitoTabbedSnapshotController
     }
 
     /**
-     * @param window The {@link Window} containing the flags to which the secure flag will be added
-     *               and cleared.
+     * @param activity The {@link Activity} on which the snapshot capability needs to be controlled.
      * @param layoutManager The {@link LayoutManagerChrome} where this controller will be added.
      * @param tabModelSelector The {@link TabModelSelector} from where tab information will be
      *         fetched.
@@ -102,12 +97,12 @@ public class IncognitoTabbedSnapshotController
      *         information if we are showing Incognito currently.
      */
     @VisibleForTesting
-    IncognitoTabbedSnapshotController(@NonNull Window window,
+    IncognitoTabbedSnapshotController(@NonNull Activity activity,
             @NonNull LayoutManagerChrome layoutManager, @NonNull TabModelSelector tabModelSelector,
             @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
             @NonNull Supplier<Boolean> isGTSEnabledSupplier,
             @NonNull Supplier<Boolean> isShowingIncognitoSupplier) {
-        super(window, isShowingIncognitoSupplier);
+        super(activity, isShowingIncognitoSupplier);
 
         mLayoutManager = layoutManager;
         mTabModelSelector = tabModelSelector;

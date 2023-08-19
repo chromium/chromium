@@ -24,13 +24,23 @@ static_library("browser") {
     "password_requirements_service_factory.h",
   ]
 
-  public_deps = [
+  if (is_android) {
+    sources += [
+      "keyboard_replacing_surface_visibility_controller.h",
+      "keyboard_replacing_surface_visibility_controller_impl.cc",
+      "keyboard_replacing_surface_visibility_controller_impl.h",
+    ]
+  }
+
+  public_deps = [ "//components/autofill/content/common/mojom" ]
+
+  deps = [
     "//base",
     "//components/autofill/content/browser",
-    "//components/autofill/content/common/mojom",
     "//components/autofill/core/common",
     "//components/keyed_service/content",
     "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/common",
     "//components/prefs",
     "//components/user_prefs",
@@ -39,20 +49,25 @@ static_library("browser") {
     "//mojo/public/cpp/system",
     "//net",
   ]
-
-  if (is_android) {
-    public_deps += [ "//components/webauthn/android" ]
-  }
 }
 
 source_set("test_support") {
   testonly = true
+  deps = [ "//base" ]
+  public_deps = [ ":browser" ]
   sources = [
     "content_password_manager_driver_factory_test_api.cc",
     "content_password_manager_driver_factory_test_api.h",
   ]
 
-  public_deps = [ ":browser" ]
+  if (is_android) {
+    sources += [
+      "mock_keyboard_replacing_surface_visibility_controller.cc",
+      "mock_keyboard_replacing_surface_visibility_controller.h",
+    ]
+
+    deps += [ "//testing/gmock" ]
+  }
 }
 
 source_set("unit_tests") {
@@ -64,6 +79,12 @@ source_set("unit_tests") {
     "password_change_success_tracker_factory_unittest.cc",
     "password_manager_log_router_factory_unittest.cc",
   ]
+
+  if (is_android) {
+    sources +=
+        [ "keyboard_replacing_surface_visibility_controller_impl_unittest.cc" ]
+  }
+
   deps = [
     ":browser",
     ":test_support",
@@ -72,6 +93,7 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/safe_browsing:buildflags",
     "//components/ukm:test_support",
+    "//components/user_prefs",
     "//content/test:test_support",
     "//services/metrics/public/cpp:metrics_cpp",
     "//testing/gmock",

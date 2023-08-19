@@ -30,8 +30,7 @@ void MediaControlScrubbingMessageElement::PopulateChildren() {
   // This stylesheet element will contain rules that are specific to the
   // scrubbing message. The shadow DOM protects these rules from bleeding
   // across to the parent DOM.
-  auto* style = MakeGarbageCollected<HTMLStyleElement>(GetDocument(),
-                                                       CreateElementFlags());
+  auto* style = MakeGarbageCollected<HTMLStyleElement>(GetDocument());
   style->setTextContent(
       MediaControlsResourceLoader::GetScrubbingMessageStyleSheet());
   shadow_root->ParserAppendChild(style);

@@ -5,11 +5,13 @@
 #include "ash/app_list/app_list_bubble_event_filter.h"
 
 #include "ash/bubble/bubble_utils.h"
+#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shelf/hotseat_widget.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
+#include "ash/wm/container_finder.h"
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "ui/aura/window.h"
@@ -71,9 +73,8 @@ void AppListBubbleEventFilter::ProcessPressedEvent(
       return;
   }
 
-  // Ignore clicks in the shelf area containing app icons.
-  aura::Window* target = static_cast<aura::Window*>(event.target());
-  if (target) {
+  if (aura::Window* const target = static_cast<aura::Window*>(event.target())) {
+    // Ignore clicks in the shelf area containing app icons.
     Shelf* shelf = Shelf::ForWindow(target);
     if (target == shelf->hotseat_widget()->GetNativeWindow() &&
         shelf->hotseat_widget()->EventTargetsShelfView(event)) {
@@ -84,8 +85,15 @@ void AppListBubbleEventFilter::ProcessPressedEvent(
     // the event can still be propagated.
     const aura::Window* status_window =
         shelf->shelf_widget()->status_area_widget()->GetNativeWindow();
-    if (status_window && status_window->Contains(target))
+    if (status_window && status_window->Contains(target)) {
       return;
+    }
+
+    // Ignore clicks in the help bubble container.
+    if (aura::Window* const container = GetContainerForWindow(target);
+        container && container->GetId() == kShellWindowId_HelpBubbleContainer) {
+      return;
+    }
   }
 
   on_click_outside_.Run();

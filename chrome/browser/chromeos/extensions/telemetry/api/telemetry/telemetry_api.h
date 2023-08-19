@@ -87,6 +87,19 @@ class OsTelemetryGetCpuInfoFunction : public TelemetryApiFunctionBase {
   void OnResult(crosapi::mojom::ProbeTelemetryInfoPtr ptr);
 };
 
+class OsTelemetryGetDisplayInfoFunction : public TelemetryApiFunctionBase {
+  DECLARE_EXTENSION_FUNCTION("os.telemetry.getDisplayInfo",
+                             OS_TELEMETRY_GETDISPLAYINFO)
+
+ private:
+  ~OsTelemetryGetDisplayInfoFunction() override = default;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+
+  void OnResult(crosapi::mojom::ProbeTelemetryInfoPtr ptr);
+};
+
 class OsTelemetryGetInternetConnectivityInfoFunction
     : public TelemetryApiFunctionBase {
   DECLARE_EXTENSION_FUNCTION("os.telemetry.getInternetConnectivityInfo",

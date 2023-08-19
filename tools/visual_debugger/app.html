@@ -362,28 +362,47 @@
           const json = JSON.parse(file.result);
           const traceEvents = json.traceEvents;
 
-          let src_frame = {
-            "drawcalls": [], "frame": "80631", "logs": [], "new_sources": [{ "anno": "frame.root.display_rect", "file": "x", "func": "x", "index": 0, "line": 0 }], "text": [], "time": "0",
-            "version": 1, "windowx": 2400, "windowy": 1600
-          };
-          processIncomingFrame(src_frame);
           curr_frame = "0";
           curr_draws = [];
+          sources_this_frame = []
+          global_sources_mapping = []
           for (const event of traceEvents) {
-            if (event.name == "VisualDebuggerSync") {
-              single_frame = { "drawcalls": [], "frame": "80631", "logs": [], "new_sources": [], "text": [], "time": "0", "version": 1, "windowx": 2400, "windowy": 1600 };
+            if(!event.cat.includes("viz.visual_debugger"))
+              continue;
+
+            if (event.name == "visual_debugger_sync") {
+              single_frame = { "drawcalls": [], "frame": "none", "logs": [], "new_sources": [], "time": "0", "version": 1, "windowx": 2400, "windowy": 1600, "threads": [ {"thread_id": "1" , "thread_name": "allthreads"}]};
               single_frame.drawcalls = curr_draws;
               curr_frame = event.args.last_presented_trace_id;
               single_frame.frame = curr_frame;
+              single_frame.new_sources = sources_this_frame;
+              single_frame.windowx =  parseInt(event.args.display_size.split("x")[0]);
+              single_frame.windowy =  parseInt(event.args.display_size.split("x")[1]);
               processIncomingFrame(single_frame);
-              curr_draws = []
+              curr_draws = [];
+              sources_this_frame = [];
             }
-            if (event.name == "VizTestRootRect") {
-              let single_call = { "drawindex": curr_draws.length, "option": { "alpha": 0, "color": "#ff0000" }, "pos": [832, 670], "size": [112, 112], "source_index": 0 };
-              single_call.pos[0] = parseInt(event.args.args.pos_x);
-              single_call.pos[1] = parseInt(event.args.args.pos_y);
-              single_call.size[0] = parseInt(event.args.args.size_x);
-              single_call.size[1] = parseInt(event.args.args.size_y);
+            else {
+              const single_call = { "drawindex": curr_draws.length, "option": { "alpha": 5, "color": "#ff0000" }, "pos": [-1, -1], "size": [-1, -1], "source_index": -1,"thread_id":1, "buff_id":-1};
+
+              single_call.pos[0] = parseFloat(event.args.args.pos_x);
+              single_call.pos[1] = parseFloat(event.args.args.pos_y);
+              single_call.size[0] = parseFloat(event.args.args.size_x);
+              single_call.size[1] = parseFloat(event.args.args.size_y);
+              single_call.text = event.args.args.text;
+
+              found_source_index = global_sources_mapping.indexOf(event.name);
+              if(found_source_index == -1)
+              {
+                new_source = { "anno": "frame.root.display_rect", "file": "none", "func": "none", "index": -1, "line": -1 };
+                new_source.anno = event.name;
+                global_sources_mapping.push(event.name);
+                found_source_index = global_sources_mapping.indexOf(event.name);
+                new_source.index = found_source_index;
+                sources_this_frame.push(new_source);
+              }
+
+              single_call.source_index = found_source_index;
               curr_draws.push(single_call);
             }
           }

@@ -1307,6 +1307,13 @@ void ShelfLayoutManager::OnSplitViewStateChanged(
 }
 
 void ShelfLayoutManager::OnOverviewModeWillStart() {
+  // If a shelf window is active before overview starts, deactivate it to avoid
+  // overview window activation issues.
+  // TODO(b/289287310): Consolidate behavior: shelf and overview.
+  auto* active_window = window_util::GetActiveWindow();
+  if (active_window && IsShelfWindow(active_window)) {
+    wm::DeactivateWindow(active_window);
+  }
   overview_mode_will_start_ = true;
 }
 
@@ -1459,8 +1466,11 @@ void ShelfLayoutManager::OnDeskSwitchAnimationLaunching() {
 void ShelfLayoutManager::OnDeskSwitchAnimationFinished() {
   --suspend_visibility_update_;
   DCHECK_GE(suspend_visibility_update_, 0);
-  if (!suspend_visibility_update_)
-    UpdateVisibilityState(/*force_layout=*/false);
+  if (!suspend_visibility_update_) {
+    // Force layout so the desk button will show after a desk switch from
+    // overview.
+    UpdateVisibilityState(/*force_layout=*/true);
+  }
 }
 
 float ShelfLayoutManager::GetOpacity() const {
@@ -1947,7 +1957,11 @@ void ShelfLayoutManager::UpdateTargetBounds(const State& state,
   if (features::IsDeskButtonEnabled() && desk_button->ShouldBeVisible()) {
     shelf_->hotseat_widget()->ReserveSpaceForAdjacentWidgets(
         shelf_->IsHorizontalAlignment()
-            ? gfx::Insets::TLBR(0, desk_button->GetPreferredLength(), 0, 0)
+            ? (base::i18n::IsRTL()
+                   ? gfx::Insets::TLBR(0, 0, 0,
+                                       desk_button->GetPreferredLength())
+                   : gfx::Insets::TLBR(0, desk_button->GetPreferredLength(), 0,
+                                       0))
             : gfx::Insets::TLBR(desk_button->GetPreferredLength(), 0, 0, 0));
   } else {
     shelf_->hotseat_widget()->ReserveSpaceForAdjacentWidgets(gfx::Insets());
@@ -1999,11 +2013,29 @@ void ShelfLayoutManager::UpdateWorkAreaInsetsAndNotifyObservers(
 }
 
 void ShelfLayoutManager::HandleScrollableShelfContainerBoundsChange() const {
-  if (ash::features::IsDeskButtonEnabled()) {
+  if (DeskButtonWidget* desk_button = shelf_widget_->desk_button_widget()) {
     // The desk button widget bounds depend on the scrollable shelf container
     // bounds.
-    shelf_widget_->desk_button_widget()->CalculateTargetBounds();
-    shelf_widget_->desk_button_widget()->UpdateLayout(true);
+    ScrollableShelfView* scrollable_shelf_view =
+        shelf_->hotseat_widget()->scrollable_shelf_view();
+
+    // In horizontal shelf we shrink the button if it causes shelf overflow when
+    // expanded. We calculate this hypothetically before we recalculate target
+    // bounds because we want to avoid a cycle where the button shrinks, the
+    // shelf is no longer overflown, the button expands because the shelf is no
+    // longer overflown, the shelf is overflown again, etc.
+    if (shelf_->IsHorizontalAlignment()) {
+      desk_button->SetExpanded(
+          !scrollable_shelf_view->CalculateShelfOverflowForAvailableLength(
+              scrollable_shelf_view->GetLocalBounds().width() +
+              desk_button->GetPreferredLength() -
+              desk_button->GetPreferredExpandedWidth()));
+    } else {
+      // `SetExpanded` already calculates and sets the target bounds, so we only
+      // have to do this when the shelf is vertical.
+      desk_button->CalculateTargetBounds();
+      desk_button->UpdateLayout(true);
+    }
   }
 }
 
@@ -2391,13 +2423,22 @@ bool ShelfLayoutManager::IsShelfWindow(aura::Window* window) {
         (login_shelf_window && login_shelf_window->Contains(window));
   }
 
+  // Calculate whether `window` is contained by the desk button widget.
+  bool window_in_desk_button_widget = false;
+  if (features::IsDeskButtonEnabled()) {
+    const aura::Window* desk_button_window =
+        shelf_->desk_button_widget()->GetNativeWindow();
+    window_in_desk_button_widget =
+        (desk_button_window && desk_button_window->Contains(window));
+  }
+
   return (shelf_window && shelf_window->Contains(window)) ||
          (navigation_window && navigation_window->Contains(window)) ||
          (hotseat_window && hotseat_window->Contains(window)) ||
          (status_area_window && status_area_window->Contains(window)) ||
          (drag_handle_nudge_window &&
           drag_handle_nudge_window->Contains(window)) ||
-         window_in_login_shelf_widget;
+         window_in_login_shelf_widget || window_in_desk_button_widget;
 }
 
 bool ShelfLayoutManager::IsStatusAreaWindow(aura::Window* window) {
@@ -3119,6 +3160,14 @@ void ShelfLayoutManager::UpdateVisibilityStateForTrayBubbleChange(
 void ShelfLayoutManager::HandleShelfAlignmentChange() {
   base::AutoReset<bool> immediate_transition(&state_change_animation_disabled_,
                                              true);
+
+  // The desk button widget needs to know that the alignment is changing early
+  // so that it can calculate the correct preferred length.
+  if (features::IsDeskButtonEnabled()) {
+    shelf_->desk_button_widget()->PrepareForAlignmentChange(
+        shelf_->alignment());
+  }
+
   UpdateVisibilityState(/*force_layout=*/true);
 }
 

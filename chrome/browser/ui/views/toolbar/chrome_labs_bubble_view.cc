@@ -7,7 +7,7 @@
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/about_flags.h"
@@ -82,12 +82,8 @@ class ChromeLabsFooter : public views::View {
   }
 
  private:
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION views::MdTextButton* restart_button_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION views::Label* restart_label_;
+  raw_ptr<views::MdTextButton> restart_button_;
+  raw_ptr<views::Label> restart_label_;
 };
 
 BEGIN_METADATA(ChromeLabsFooter, views::View)

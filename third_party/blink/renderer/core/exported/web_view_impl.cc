@@ -84,7 +84,6 @@
 #include "third_party/blink/renderer/core/content_capture/content_capture_manager.h"
 #include "third_party/blink/renderer/core/core_initializer.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
-#include "third_party/blink/renderer/core/dom/context_features_client_impl.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
@@ -159,6 +158,7 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
+#include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
@@ -175,7 +175,6 @@
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
 #include "third_party/blink/renderer/platform/loader/fetch/unique_identifier.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/scheduler/public/page_lifecycle_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/page_scheduler.h"
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
 #include "third_party/blink/renderer/platform/weborigin/known_ports.h"
@@ -401,6 +400,20 @@ ui::mojom::blink::WindowOpenDisposition NavigationPolicyToDisposition(
   }
   NOTREACHED() << "Unexpected NavigationPolicy";
   return ui::mojom::blink::WindowOpenDisposition::IGNORE_ACTION;
+}
+
+// Records the queuing duration for activation IPC.
+void RecordPrerenderActivationSignalDelay() {
+  auto* task = base::TaskAnnotator::CurrentTaskForThread();
+
+  // It should be a Mojo call, so `RunTask` executes it as a non-delayed task.
+  CHECK(task);
+  CHECK(task->delayed_run_time.is_null());
+  base::TimeDelta queueing_time =
+      !task->queue_time.is_null() ? base::TimeTicks::Now() - task->queue_time
+                                  : base::TimeDelta();
+  base::UmaHistogramTimes("Prerender.Experimental.ActivationIPCDelay",
+                          queueing_time);
 }
 
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
@@ -1445,8 +1458,14 @@ void WebViewImpl::PaintContent(cc::PaintCanvas* canvas, const gfx::Rect& rect) {
     return;
 
   LocalFrameView& main_view = *MainFrameImpl()->GetFrame()->View();
-  DCHECK(main_view.GetLayoutView()->GetDocument().Lifecycle().GetState() ==
-         DocumentLifecycle::kPaintClean);
+  // TODO(crbug.com/1442088): Investigate the reason.
+  if (!main_view.GetLayoutView()
+           ->FirstFragment()
+           .HasLocalBorderBoxProperties()) {
+    return;
+  }
+  DCHECK_EQ(main_view.GetLayoutView()->GetDocument().Lifecycle().GetState(),
+            DocumentLifecycle::kPaintClean);
 
   auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
   main_view.PaintOutsideOfLifecycleWithThrottlingAllowed(
@@ -1510,7 +1529,6 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
   settings->SetHyperlinkAuditingEnabled(prefs.hyperlink_auditing_enabled);
   settings->SetCookieEnabled(prefs.cookie_enabled);
   settings->SetNavigateOnDragDrop(prefs.navigate_on_drag_drop);
-  settings->SetThreadedScrollingEnabled(prefs.threaded_scrolling_enabled);
 
   // By default, allow_universal_access_from_file_urls is set to false and thus
   // we mitigate attacks from local HTML files by not granting file:// URLs
@@ -1575,6 +1593,8 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
       prefs.should_clear_document_background);
   settings->SetEnableScrollAnimator(prefs.enable_scroll_animator);
   settings->SetPrefersReducedMotion(prefs.prefers_reduced_motion);
+  settings->SetPrefersReducedTransparency(prefs.prefers_reduced_transparency);
+  settings->SetInvertedColors(prefs.inverted_colors);
 
   RuntimeEnabledFeatures::SetTouchEventFeatureDetectionEnabled(
       prefs.touch_event_feature_detection_enabled);
@@ -2482,6 +2502,17 @@ void WebViewImpl::SetPageLifecycleStateInternal(
     if (MainFrame()->IsWebLocalFrame()) {
       LocalFrame* local_frame = To<LocalFrame>(page->MainFrame());
       probe::DidRestoreFromBackForwardCache(local_frame);
+
+      if (base::FeatureList::IsEnabled(
+              blink::features::kRetriggerPreloadingOnBFCacheRestoration)) {
+        if (local_frame->IsOutermostMainFrame()) {
+          Document* document = local_frame->GetDocument();
+          if (auto* document_rules =
+                  DocumentSpeculationRules::FromIfExists(*document)) {
+            document_rules->DocumentRestoredFromBFCache();
+          }
+        }
+      }
     }
   }
 
@@ -3302,6 +3333,8 @@ void WebViewImpl::ActivatePrerenderedPage(
     mojom::blink::PrerenderPageActivationParamsPtr
         prerender_page_activation_params,
     ActivatePrerenderedPageCallback callback) {
+  TRACE_EVENT0("navigation", "WebViewImpl::ActivatePrerenderedPage");
+
   // From here all new documents will have prerendering false.
   GetPage()->SetIsPrerendering(false);
 
@@ -3313,6 +3346,9 @@ void WebViewImpl::ActivatePrerenderedPage(
   Member<Document> main_frame_document;
   if (auto* local_frame = DynamicTo<LocalFrame>(GetPage()->MainFrame())) {
     main_frame_document = local_frame->GetDocument();
+  }
+  if (main_frame_document) {
+    RecordPrerenderActivationSignalDelay();
   }
 
   for (Frame* frame = GetPage()->MainFrame(); frame;
@@ -3706,7 +3742,7 @@ WebHitTestResult WebViewImpl::HitTestResultForTap(
               scaled_event, HitTestRequest::kReadOnly | HitTestRequest::kActive)
           .GetHitTestResult();
 
-  result.SetToShadowHostIfInRestrictedShadowRoot();
+  result.SetToShadowHostIfInUAShadowRoot();
   return result;
 }
 
@@ -3942,6 +3978,14 @@ void WebViewImpl::CreateRemoteMainFrame(
 
 scheduler::WebAgentGroupScheduler& WebViewImpl::GetWebAgentGroupScheduler() {
   return web_agent_group_scheduler_;
+}
+
+void WebViewImpl::UpdatePageBrowsingContextGroup(
+    const BrowsingContextGroupInfo& browsing_context_group_info) {
+  Page* page = GetPage();
+  CHECK(page);
+
+  page->UpdateBrowsingContextGroup(browsing_context_group_info);
 }
 
 }  // namespace blink

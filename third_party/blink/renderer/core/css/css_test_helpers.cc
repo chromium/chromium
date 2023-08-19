@@ -170,8 +170,8 @@ scoped_refptr<CSSVariableData> CreateVariableData(String s) {
                                  needs_variable_resolution);
 }
 
-const CSSValue* CreateCustomIdent(AtomicString s) {
-  return MakeGarbageCollected<CSSCustomIdentValue>(s);
+const CSSValue* CreateCustomIdent(const char* s) {
+  return MakeGarbageCollected<CSSCustomIdentValue>(AtomicString(s));
 }
 
 const CSSValue* ParseLonghand(Document& document,
@@ -235,7 +235,8 @@ CSSSelectorList* ParseSelectorList(const String& string,
   CSSParserTokenRange range(tokens);
   HeapVector<CSSSelector> arena;
   base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
-      range, context, nesting_type, parent_rule_for_nesting, sheet, arena);
+      range, context, nesting_type, parent_rule_for_nesting,
+      /* semicolon_aborts_nested_selector */ false, sheet, arena);
   return CSSSelectorList::AdoptSelectorVector(vector);
 }
 

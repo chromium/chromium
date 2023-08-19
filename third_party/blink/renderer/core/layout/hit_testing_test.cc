@@ -46,8 +46,8 @@ TEST_F(HitTestingTest, OcclusionHitTest) {
     <div id=occluder></div>
   )HTML");
 
-  Element* target = GetDocument().getElementById("target");
-  Element* occluder = GetDocument().getElementById("occluder");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* occluder = GetDocument().getElementById(AtomicString("occluder"));
   HitTestResult result = target->GetLayoutObject()->HitTestForOcclusion();
   EXPECT_EQ(result.InnerNode(), target);
 
@@ -79,8 +79,8 @@ TEST_F(HitTestingTest, OcclusionHitTestWithClipPath) {
     <div id=occluder></div>
   )HTML");
 
-  Element* target = GetDocument().getElementById("target");
-  Element* occluder = GetDocument().getElementById("occluder");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* occluder = GetDocument().getElementById(AtomicString("occluder"));
 
   // target and occluder don't overlap, no occlusion.
   HitTestResult result = target->GetLayoutObject()->HitTestForOcclusion();

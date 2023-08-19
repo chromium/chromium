@@ -11,9 +11,9 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/task_environment.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using autofill::AutofillWebDataService;
@@ -41,14 +41,15 @@ class AwFormDatabaseServiceTest : public Test {
     task_environment_.RunUntilIdle();
   }
 
+  content::BrowserTaskEnvironment task_environment_;
   // The path to the temporary directory used for the test operations.
-  base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   raw_ptr<JNIEnv> env_;
   std::unique_ptr<AwFormDatabaseService> service_;
 };
 
-TEST_F(AwFormDatabaseServiceTest, HasAndClearFormData) {
+// TODO(https://crbug.com/1472844): Fix flakes.
+TEST_F(AwFormDatabaseServiceTest, DISABLED_HasAndClearFormData) {
   EXPECT_FALSE(service_->HasFormData());
   std::vector<FormFieldData> fields;
   FormFieldData field;

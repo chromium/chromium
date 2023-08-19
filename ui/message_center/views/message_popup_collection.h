@@ -5,6 +5,7 @@
 #ifndef UI_MESSAGE_CENTER_VIEWS_MESSAGE_POPUP_COLLECTION_H_
 #define UI_MESSAGE_CENTER_VIEWS_MESSAGE_POPUP_COLLECTION_H_
 
+#include <cstddef>
 #include <memory>
 #include <vector>
 
@@ -100,7 +101,31 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
       views::Widget* widget,
       views::Widget::InitParams* init_params) = 0;
 
+  size_t GetPopupItemsCount();
+
+  gfx::Rect popup_collection_bounds() { return popup_collection_bounds_; }
+
  protected:
+  // Stores animation related state of a popup.
+  struct PopupItem {
+    // Notification ID.
+    std::string id;
+
+    // The bounds that the popup starts animating from.
+    // If |is_animating| is false, it is ignored. Also the value is only used
+    // when the animation type is FADE_IN or MOVE_DOWN.
+    gfx::Rect start_bounds;
+
+    // The final bounds of the popup.
+    gfx::Rect bounds;
+
+    // If the popup is animating.
+    bool is_animating = false;
+
+    // Unowned.
+    raw_ptr<MessagePopupView, DanglingUntriaged> popup = nullptr;
+  };
+
   // Returns the x-origin for the given popup bounds in the current work area.
   virtual int GetPopupOriginX(const gfx::Rect& popup_bounds) const = 0;
 
@@ -139,6 +164,9 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
   // Called with |notification_id| when a popup is marked to be removed.
   virtual void NotifyPopupRemoved(const std::string& notification_id) {}
 
+  // Called when the entire popup collection change its height.
+  virtual void NotifyPopupCollectionHeightChanged() {}
+
   // Called when popup animation is started/finished.
   virtual void AnimationStarted() {}
   virtual void AnimationFinished() {}
@@ -147,11 +175,25 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
   // places.
   virtual MessagePopupView* CreatePopup(const Notification& notification);
 
+  // Returns true if the edge is outside work area.
+  bool IsNextEdgeOutsideWorkArea(const PopupItem& item) const;
+
+  // Called to close a particular popup item.
+  virtual void ClosePopupItem(const PopupItem& item);
+
+  // Marks `is_animating` flag of all popups for `MOVE_DOWN` animation.
+  void MoveDownPopups();
+
   // virtual for testing.
   virtual void RestartPopupTimers();
   virtual void PausePopupTimers();
 
+  // Stops all the animation and closes all the popups immediately.
+  void CloseAllPopupsNow();
+
   gfx::LinearAnimation* animation() { return animation_.get(); }
+
+  const std::vector<PopupItem>& popup_items() { return popup_items_; }
 
  private:
   // MessagePopupCollection always runs single animation at one time.
@@ -174,26 +216,6 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
     MOVE_DOWN,
   };
 
-  // Stores animation related state of a popup.
-  struct PopupItem {
-    // Notification ID.
-    std::string id;
-
-    // The bounds that the popup starts animating from.
-    // If |is_animating| is false, it is ignored. Also the value is only used
-    // when the animation type is FADE_IN or MOVE_DOWN.
-    gfx::Rect start_bounds;
-
-    // The final bounds of the popup.
-    gfx::Rect bounds;
-
-    // If the popup is animating.
-    bool is_animating = false;
-
-    // Unowned.
-    raw_ptr<MessagePopupView, DanglingUntriaged> popup = nullptr;
-  };
-
   // Transition from animation state (FADE_IN, FADE_OUT, and MOVE_DOWN) to
   // IDLE state or next animation state (MOVE_DOWN).
   void TransitionFromAnimation();
@@ -205,8 +227,9 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
   // Pause or restart popup timers depending on |state_|.
   void UpdatePopupTimers();
 
-  // Calculate |bounds| of all popups and moves old |bounds| to |start_bounds|.
-  void CalculateBounds();
+  // Calculate and update the bounds for all popups, including moving old
+  // `bounds` to `start_bounds` and updating `popup_collection_bounds_`.
+  void CalculateAndUpdateBounds();
 
   // Update bounds and opacity of popups during animation.
   void UpdateByAnimation();
@@ -223,23 +246,14 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
   // Mark |is_animating| flag of removed popup to true for FADE_OUT animation.
   void MarkRemovedPopup();
 
-  // Mark |is_animating| flag of all popups for MOVE_DOWN animation.
-  void MoveDownPopups();
-
   // Get the y-axis edge of the new popup. In usual bottom-to-top layout, it
   // means the topmost y-axis when |item| is added.
   int GetNextEdge(const PopupItem& item) const;
-
-  // Returns true if the edge is outside work area.
-  bool IsNextEdgeOutsideWorkArea(const PopupItem& item) const;
 
   void CloseAnimatingPopups();
   bool CloseTransparentPopups();
   void ClosePopupsOutsideWorkArea();
   void RemoveClosedPopupItems();
-
-  // Stops all the animation and closes all the popups immediately.
-  void CloseAllPopupsNow();
 
   // Collapse all existing popups. Return true if size of any popup is actually
   // changed.
@@ -283,6 +297,9 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
   // If true, popup sizes are resized on the next time Update() is called with
   // IDLE state.
   bool resize_requested_ = false;
+
+  // The bounds of the entire popup collection.
+  gfx::Rect popup_collection_bounds_;
 
   base::ScopedObservation<MessageCenter, MessageCenterObserver>
       message_center_observation_{this};

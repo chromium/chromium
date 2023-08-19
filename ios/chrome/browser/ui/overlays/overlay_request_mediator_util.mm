@@ -7,10 +7,6 @@
 #import "ios/chrome/browser/overlays/public/overlay_request_support.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_mediator.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 std::unique_ptr<OverlayRequestSupport> CreateAggregateSupportForMediators(
     NSArray<Class>* mediator_classes) {
   std::vector<const OverlayRequestSupport*> supports(mediator_classes.count);

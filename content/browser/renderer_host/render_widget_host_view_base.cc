@@ -34,7 +34,6 @@
 #include "content/public/common/page_visibility_state.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom.h"
-#include "ui/base/layout.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/display_util.h"
 #include "ui/display/screen.h"
@@ -45,32 +44,14 @@
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/size_f.h"
 
-namespace {
-using RenderWidgetHostViewBaseAllocMap = std::unordered_map<const void*, int>;
-base::LazyInstance<RenderWidgetHostViewBaseAllocMap>::DestructorAtExit
-    g_alloc_dealloc_tracker_map = LAZY_INSTANCE_INITIALIZER;
-}  // namespace
-
 namespace content {
-
-// static
-int RenderWidgetHostViewBase::IsValidRWHVBPointer(
-    const RenderWidgetHostViewBase* view) {
-  if (!base::Contains(g_alloc_dealloc_tracker_map.Get(),
-                      static_cast<const void*>(view))) {
-    return -1;
-  }
-  return g_alloc_dealloc_tracker_map.Get()[view];
-}
 
 RenderWidgetHostViewBase::RenderWidgetHostViewBase(RenderWidgetHost* host)
     : host_(RenderWidgetHostImpl::From(host)),
       // `screen_infos_` must be initialized, to permit unconditional access to
       // its current display. A placeholder ScreenInfo is used here, so the
       // first call to UpdateScreenInfo will trigger the expected updates.
-      screen_infos_(display::ScreenInfos(display::ScreenInfo())) {
-  g_alloc_dealloc_tracker_map.Get()[this]++;
-}
+      screen_infos_(display::ScreenInfos(display::ScreenInfo())) {}
 
 RenderWidgetHostViewBase::~RenderWidgetHostViewBase() {
   DCHECK(!keyboard_locked_);
@@ -87,7 +68,6 @@ RenderWidgetHostViewBase::~RenderWidgetHostViewBase() {
   // so that the |text_input_manager_| will free its state.
   if (text_input_manager_)
     text_input_manager_->Unregister(this);
-  g_alloc_dealloc_tracker_map.Get()[this]--;
 }
 
 RenderWidgetHostImpl* RenderWidgetHostViewBase::GetFocusedWidget() const {
@@ -194,7 +174,6 @@ uint32_t RenderWidgetHostViewBase::GetCaptureSequenceNumber() const {
 }
 
 ui::TextInputClient* RenderWidgetHostViewBase::GetTextInputClient() {
-  NOTREACHED();
   return nullptr;
 }
 
@@ -295,6 +274,14 @@ void RenderWidgetHostViewBase::CopyFromSurface(
   std::move(callback).Run(SkBitmap());
 }
 
+void RenderWidgetHostViewBase::CopyFromExactSurface(
+    const gfx::Rect& src_rect,
+    const gfx::Size& output_size,
+    base::OnceCallback<void(const SkBitmap&)> callback) {
+  NOTIMPLEMENTED_LOG_ONCE();
+  std::move(callback).Run(SkBitmap());
+}
+
 std::unique_ptr<viz::ClientFrameSinkVideoCapturer>
 RenderWidgetHostViewBase::CreateVideoCapturer() {
   std::unique_ptr<viz::ClientFrameSinkVideoCapturer> video_capturer =
@@ -374,6 +361,10 @@ bool RenderWidgetHostViewBase::GetIsMouseLockedUnadjustedMovementForTesting() {
 }
 
 bool RenderWidgetHostViewBase::CanBeMouseLocked() {
+  return HasFocus();
+}
+
+bool RenderWidgetHostViewBase::AccessibilityHasFocus() {
   return HasFocus();
 }
 
@@ -685,8 +676,7 @@ void RenderWidgetHostViewBase::TransformPointToRootSurface(gfx::PointF* point) {
   return;
 }
 
-void RenderWidgetHostViewBase::OnDidNavigateMainFrameToNewPage() {
-}
+void RenderWidgetHostViewBase::DidNavigateMainFramePreCommit() {}
 
 void RenderWidgetHostViewBase::OnFrameTokenChangedForView(
     uint32_t frame_token,
@@ -696,6 +686,11 @@ void RenderWidgetHostViewBase::OnFrameTokenChangedForView(
 }
 
 bool RenderWidgetHostViewBase::ScreenRectIsUnstableFor(
+    const blink::WebInputEvent& event) {
+  return false;
+}
+
+bool RenderWidgetHostViewBase::ScreenRectIsUnstableForIOv2For(
     const blink::WebInputEvent& event) {
   return false;
 }
@@ -794,10 +789,11 @@ void RenderWidgetHostViewBase::ImeCancelComposition() {
 
 void RenderWidgetHostViewBase::ImeCompositionRangeChanged(
     const gfx::Range& range,
-    const std::vector<gfx::Rect>& character_bounds) {
+    const absl::optional<std::vector<gfx::Rect>>& character_bounds,
+    const absl::optional<std::vector<gfx::Rect>>& line_bounds) {
   if (GetTextInputManager()) {
-    GetTextInputManager()->ImeCompositionRangeChanged(this, range,
-                                                      character_bounds);
+    GetTextInputManager()->ImeCompositionRangeChanged(
+        this, range, character_bounds, line_bounds);
   }
 }
 

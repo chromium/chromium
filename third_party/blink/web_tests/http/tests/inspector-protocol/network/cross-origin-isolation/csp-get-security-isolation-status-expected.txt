@@ -1,0 +1,14 @@
+Tests that CSP is reported along with isolation status
+CSP status[
+    [0] : {
+        effectiveDirectives : frame-src 'self'; img-src 'self'; object-src 'self'; script-src 'unsafe-inline'; style-src google.com
+        isEnforced : true
+        source : Meta
+    }
+    [1] : {
+        effectiveDirectives : worker-src 'self'
+        isEnforced : true
+        source : Meta
+    }
+]
+

@@ -173,6 +173,13 @@ base::OnceClosure ShowSSLClientCertificateSelector(
         std::move(delegate));
   }
 
+  // Don't bother prompting the user if there are no certs to choose from.
+  // Just continue with no certificate.
+  if (client_certs.empty()) {
+    delegate->ContinueWithCertificate(nullptr, nullptr);
+    return base::OnceClosure();
+  }
+
   // Not all WebContentses can show modal dialogs.
   //
   // TODO(davidben): Move this hook to the WebContentsDelegate and only try to

@@ -35,11 +35,8 @@ source_set("android") {
   ]
 }
 
-generate_jni("jni_headers") {
-  sources = [
-    "internal/java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillCreditCardControllerBridge.java",
-    "internal/java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillCreditCardViewBridge.java",
-  ]
+group("jni_headers") {
+  public_deps = [ "//chrome/browser/touch_to_fill/payments/android/internal:jni" ]
 }
 
 android_library("public_java") {

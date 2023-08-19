@@ -9,7 +9,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/test/test_support_android.h"
-#include "components/cronet/android/cronet_tests_jni_headers/MockCertVerifier_jni.h"
+#include "components/cronet/android/cronet_test_apk_jni/MockCertVerifier_jni.h"
 #include "crypto/sha2.h"
 #include "net/base/net_errors.h"
 #include "net/cert/asn1_util.h"

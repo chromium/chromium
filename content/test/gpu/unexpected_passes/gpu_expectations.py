@@ -8,9 +8,11 @@ from __future__ import print_function
 import collections
 import logging
 import os
-from typing import FrozenSet, List, Set
+from typing import FrozenSet, List, Optional, Set
 
 import validate_tag_consistency
+
+from gpu_tests import gpu_integration_test
 
 from unexpected_passes_common import data_types
 from unexpected_passes_common import expectations
@@ -23,7 +25,8 @@ EXPECTATIONS_DIR = os.path.realpath(
 class GpuExpectations(expectations.Expectations):
   def __init__(self):
     super().__init__()
-    self._known_tags = None
+    self._known_tags: Optional[Set[str]] = None
+    self._expectation_files: Optional[List[str]] = None
 
   def CreateTestExpectationMap(self, *args,
                                **kwargs) -> data_types.TestExpectationMap:
@@ -45,11 +48,12 @@ class GpuExpectations(expectations.Expectations):
     return expectation_map
 
   def GetExpectationFilepaths(self) -> List[str]:
-    filepaths = []
-    for f in os.listdir(EXPECTATIONS_DIR):
-      if f.endswith('_expectations.txt'):
-        filepaths.append(os.path.join(EXPECTATIONS_DIR, f))
-    return filepaths
+    if self._expectation_files is None:
+      self._expectation_files = []
+      name_mapping = gpu_integration_test.GenerateTestNameMapping()
+      for suite_class in name_mapping.values():
+        self._expectation_files.extend(suite_class.ExpectationsFiles())
+    return self._expectation_files
 
   def _GetExpectationFileTagHeader(self, _: str) -> str:
     return validate_tag_consistency.TAG_HEADER

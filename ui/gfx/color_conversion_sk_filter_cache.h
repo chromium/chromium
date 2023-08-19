@@ -19,6 +19,10 @@ class SkColorFilter;
 class SkRuntimeEffect;
 struct SkGainmapInfo;
 
+namespace skgpu::graphite {
+class Recorder;
+}
+
 namespace gfx {
 
 class ColorTransform;
@@ -60,7 +64,8 @@ class COLOR_SPACE_EXPORT ColorConversionSkFilterCache {
                               float sdr_max_luminance_nits,
                               float dst_max_luminance_relative,
                               bool enable_tone_mapping,
-                              GrDirectContext* context);
+                              GrDirectContext* gr_context,
+                              skgpu::graphite::Recorder* graphite_recorder);
 
   // Apply the gainmap in `gainmap_image` to `base_image`, using the parameters
   // in `gainmap_info` and `dst_max_luminance_relative`, and return the
@@ -74,7 +79,8 @@ class COLOR_SPACE_EXPORT ColorConversionSkFilterCache {
                               sk_sp<SkImage> gainmap_image,
                               const SkGainmapInfo& gainmap_info,
                               float dst_max_luminance_relative,
-                              GrDirectContext* context);
+                              GrDirectContext* gr_context,
+                              skgpu::graphite::Recorder* graphite_recorder);
 
  public:
   struct Key {

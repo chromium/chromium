@@ -19,8 +19,7 @@
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/managed_ui.h"
-#include "chrome/browser/ui/profile_picker.h"
-#include "chrome/browser/ui/webui/signin/profile_creation_customize_themes_handler.h"
+#include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/pref_names.h"
@@ -43,7 +42,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/webui/web_ui_util.h"
-#include "ui/webui/mojo_web_ui_controller.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -157,35 +155,10 @@ void AddStrings(content::WebUIDataSource* html_source) {
     },
     {"notNowButtonLabel",
      IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_NOT_NOW_BUTTON_LABEL},
-    {"localProfileCreationTitle",
-     IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_TITLE},
-    {"localProfileCreationCustomizeAvatarLabel",
-     IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_CUSTOMIZE_AVATAR_BUTTON_LABEL},
-    {"localProfileCreationThemeText",
-     IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_THEME_TEXT},
-    {"createProfileNamePlaceholder",
-     IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_INPUT_NAME},
-    {"createDesktopShortcutLabel",
-     IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_SHORTCUT_TEXT},
-    {"createProfileConfirm",
-     IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_DONE},
-    {"defaultAvatarLabel", IDS_DEFAULT_AVATAR_LABEL_26},
-    {"selectAnAvatarDialogTitle",
-     IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_AVATAR_TEXT},
-    {"selectAvatarDoneButtonLabel",
-     IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_AVATAR_DONE},
     {"profileSwitchTitle", IDS_PROFILE_PICKER_PROFILE_SWITCH_TITLE},
     {"profileSwitchSubtitle", IDS_PROFILE_PICKER_PROFILE_SWITCH_SUBTITLE},
     {"switchButtonLabel",
      IDS_PROFILE_PICKER_PROFILE_SWITCH_SWITCH_BUTTON_LABEL},
-
-    // Color picker.
-    {"colorPickerLabel", IDS_NTP_CUSTOMIZE_COLOR_PICKER_LABEL},
-    {"defaultThemeLabel", IDS_NTP_CUSTOMIZE_DEFAULT_LABEL},
-    {"themesContainerLabel",
-     IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_THEME_TEXT},
-    {"thirdPartyThemeDescription", IDS_NTP_CUSTOMIZE_3PT_THEME_DESC},
-    {"uninstallThirdPartyThemeButton", IDS_NTP_CUSTOMIZE_3PT_THEME_UNINSTALL},
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     {"accountSelectionLacrosTitle",
@@ -222,6 +195,8 @@ void AddStrings(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("askOnStartup",
                           g_browser_process->local_state()->GetBoolean(
                               prefs::kBrowserShowProfilePickerOnStartup));
+  html_source->AddBoolean("profilesReorderingEnabled",
+                          base::FeatureList::IsEnabled(kProfilesReordering));
   html_source->AddBoolean("signInProfileCreationFlowSupported",
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
                           AccountConsistencyModeManager::IsDiceSignInAllowed());
@@ -277,9 +252,6 @@ void AddStrings(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("profileShortcutsEnabled",
                           ProfileShortcutManager::IsFeatureEnabled());
   html_source->AddBoolean("isAskOnStartupAllowed", ask_on_startup_allowed);
-  html_source->AddBoolean(
-      "isLocalProfileCreationDialogEnabled",
-      base::FeatureList::IsEnabled(kSyncPromoAfterSigninIntercept));
 
   html_source->AddResourcePath("images/left_banner.svg",
                                IDR_SIGNIN_IMAGES_SHARED_LEFT_BANNER_SVG);
@@ -294,8 +266,7 @@ void AddStrings(content::WebUIDataSource* html_source) {
 }  // namespace
 
 ProfilePickerUI::ProfilePickerUI(content::WebUI* web_ui)
-    : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true),
-      customize_themes_factory_receiver_(this) {
+    : content::WebUIController(web_ui) {
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::CreateAndAdd(
@@ -333,28 +304,8 @@ gfx::Size ProfilePickerUI::GetMinimumSize() {
   return gfx::Size(kMinimumPickerSizePx, kMinimumPickerSizePx);
 }
 
-void ProfilePickerUI::BindInterface(
-    mojo::PendingReceiver<
-        customize_themes::mojom::CustomizeThemesHandlerFactory>
-        pending_receiver) {
-  if (customize_themes_factory_receiver_.is_bound()) {
-    customize_themes_factory_receiver_.reset();
-  }
-  customize_themes_factory_receiver_.Bind(std::move(pending_receiver));
-}
-
 ProfilePickerHandler* ProfilePickerUI::GetProfilePickerHandlerForTesting() {
   return profile_picker_handler_;
-}
-
-void ProfilePickerUI::CreateCustomizeThemesHandler(
-    mojo::PendingRemote<customize_themes::mojom::CustomizeThemesClient>
-        pending_client,
-    mojo::PendingReceiver<customize_themes::mojom::CustomizeThemesHandler>
-        pending_handler) {
-  customize_themes_handler_ =
-      std::make_unique<ProfileCreationCustomizeThemesHandler>(
-          std::move(pending_client), std::move(pending_handler));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ProfilePickerUI)

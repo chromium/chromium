@@ -23,7 +23,6 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding_macros.h"
 #include "third_party/blink/renderer/platform/bindings/v8_object_constructor.h"
-#include "third_party/blink/renderer/platform/scheduler/common/features.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 #include "v8/include/v8.h"
@@ -50,10 +49,7 @@ AnimationWorkletGlobalScope::AnimationWorkletGlobalScope(
     WorkerThread* thread)
     : WorkletGlobalScope(std::move(creation_params),
                          thread->GetWorkerReportingProxy(),
-                         thread,
-                         /*create_microtask_queue=*/
-                         base::FeatureList::IsEnabled(
-                             scheduler::kMicrotaskQueuePerAnimationWorklet)) {}
+                         thread) {}
 
 AnimationWorkletGlobalScope::~AnimationWorkletGlobalScope() = default;
 

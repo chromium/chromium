@@ -5,6 +5,7 @@
 #include "remoting/protocol/input_event_tracker.h"
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "remoting/proto/event.pb.h"
 
 namespace remoting::protocol {
@@ -17,7 +18,7 @@ InputEventTracker::InputEventTracker(InputStub* input_stub)
 InputEventTracker::~InputEventTracker() = default;
 
 bool InputEventTracker::IsKeyPressed(ui::DomCode usb_keycode) const {
-  return pressed_keys_.find(usb_keycode) != pressed_keys_.end();
+  return base::Contains(pressed_keys_, usb_keycode);
 }
 
 int InputEventTracker::PressedKeyCount() const {
@@ -72,18 +73,14 @@ void InputEventTracker::ReleaseAllIfModifiersStuck(bool alt_expected,
                                                    bool ctrl_expected,
                                                    bool os_expected,
                                                    bool shift_expected) {
-  bool alt_down =
-      pressed_keys_.find(ui::DomCode::ALT_LEFT) != pressed_keys_.end() ||
-      pressed_keys_.find(ui::DomCode::ALT_RIGHT) != pressed_keys_.end();
-  bool ctrl_down =
-      pressed_keys_.find(ui::DomCode::CONTROL_LEFT) != pressed_keys_.end() ||
-      pressed_keys_.find(ui::DomCode::CONTROL_RIGHT) != pressed_keys_.end();
-  bool os_down =
-      pressed_keys_.find(ui::DomCode::META_LEFT) != pressed_keys_.end() ||
-      pressed_keys_.find(ui::DomCode::META_RIGHT) != pressed_keys_.end();
-  bool shift_down =
-      pressed_keys_.find(ui::DomCode::SHIFT_LEFT) != pressed_keys_.end() ||
-      pressed_keys_.find(ui::DomCode::SHIFT_RIGHT) != pressed_keys_.end();
+  bool alt_down = base::Contains(pressed_keys_, ui::DomCode::ALT_LEFT) ||
+                  base::Contains(pressed_keys_, ui::DomCode::ALT_RIGHT);
+  bool ctrl_down = base::Contains(pressed_keys_, ui::DomCode::CONTROL_LEFT) ||
+                   base::Contains(pressed_keys_, ui::DomCode::CONTROL_RIGHT);
+  bool os_down = base::Contains(pressed_keys_, ui::DomCode::META_LEFT) ||
+                 base::Contains(pressed_keys_, ui::DomCode::META_RIGHT);
+  bool shift_down = base::Contains(pressed_keys_, ui::DomCode::SHIFT_LEFT) ||
+                    base::Contains(pressed_keys_, ui::DomCode::SHIFT_RIGHT);
 
   if ((alt_down && !alt_expected) || (ctrl_down && !ctrl_expected) ||
       (os_down && !os_expected) || (shift_down && !shift_expected)) {
@@ -143,16 +140,14 @@ void InputEventTracker::InjectTouchEvent(const TouchEvent& event) {
   switch (event.event_type()) {
     case TouchEvent::TOUCH_POINT_START:
       for (const TouchEventPoint& touch_point : event.touch_points()) {
-        DCHECK(touch_point_ids_.find(touch_point.id()) ==
-               touch_point_ids_.end());
+        DCHECK(!base::Contains(touch_point_ids_, touch_point.id()));
         touch_point_ids_.insert(touch_point.id());
       }
       break;
     case TouchEvent::TOUCH_POINT_END:
     case TouchEvent::TOUCH_POINT_CANCEL:
       for (const TouchEventPoint& touch_point : event.touch_points()) {
-        DCHECK(touch_point_ids_.find(touch_point.id()) !=
-               touch_point_ids_.end());
+        DCHECK(base::Contains(touch_point_ids_, touch_point.id()));
         touch_point_ids_.erase(touch_point.id());
       }
       break;

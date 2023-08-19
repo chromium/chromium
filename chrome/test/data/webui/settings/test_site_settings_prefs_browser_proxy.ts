@@ -5,7 +5,7 @@
 // clang-format off
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {AppProtocolEntry, ChooserType, ContentSetting, ContentSettingsTypes, HandlerEntry, NotificationPermission, FileSystemGrantsForOrigin, ProtocolEntry, RawChooserException, RawSiteException, RecentSitePermissions, SiteGroup, SiteSettingSource, SiteSettingsPrefsBrowserProxy, ZoomLevelEntry} from 'chrome://settings/lazy_load.js';
+import {StorageAccessSiteException, AppProtocolEntry, ChooserType, ContentSetting, ContentSettingsTypes, HandlerEntry, OriginFileSystemGrants, ProtocolEntry, RawChooserException, RawSiteException, RecentSitePermissions, SiteGroup, SiteSettingSource, SiteSettingsPrefsBrowserProxy, ZoomLevelEntry} from 'chrome://settings/lazy_load.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 import {createOriginInfo, createSiteGroup,createSiteSettingsPrefs, getContentSettingsTypeFromChooserType, SiteSettingsPref} from './test_util.js';
@@ -30,8 +30,8 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
   private isPatternValidForType_: boolean = true;
   private cookieSettingDesciption_: string = '';
   private recentSitePermissions_: RecentSitePermissions[] = [];
-  private reviewNotificationList_: NotificationPermission[] = [];
-  private fileSystemGrantsList_: FileSystemGrantsForOrigin[] = [];
+  private fileSystemGrantsList_: OriginFileSystemGrants[] = [];
+  private storageAccessExceptionList_: StorageAccessSiteException[] = [];
 
   constructor() {
     super([
@@ -43,6 +43,7 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
       'getDefaultValueForContentType',
       'getFormattedBytes',
       'getExceptionList',
+      'getStorageAccessExceptionList',
       'getOriginPermissions',
       'isOriginValid',
       'isPatternValidForType',
@@ -68,12 +69,6 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
       'recordAction',
       'getCookieSettingDescription',
       'getRecentSitePermissions',
-      'getNotificationPermissionReview',
-      'blockNotificationPermissionForOrigins',
-      'ignoreNotificationPermissionForOrigins',
-      'resetNotificationPermissionForOrigins',
-      'allowNotificationPermissionForOrigins',
-      'undoIgnoreNotificationPermissionForOrigins',
       'getFpsMembershipLabel',
       'getNumCookiesString',
       'getExtensionName',
@@ -612,36 +607,6 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
     this.methodCalled('setProtocolHandlerDefault', value);
   }
 
-  getNotificationPermissionReview(): Promise<NotificationPermission[]> {
-    this.methodCalled('getNotificationPermissionReview');
-    return Promise.resolve(this.reviewNotificationList_.slice());
-  }
-
-  setNotificationPermissionReview(reviewNotificationList:
-                                      NotificationPermission[]) {
-    this.reviewNotificationList_ = reviewNotificationList;
-  }
-
-  blockNotificationPermissionForOrigins(origins: string[]): void {
-    this.methodCalled('blockNotificationPermissionForOrigins', origins);
-  }
-
-  ignoreNotificationPermissionForOrigins(origins: string[]): void {
-    this.methodCalled('ignoreNotificationPermissionForOrigins', origins);
-  }
-
-  resetNotificationPermissionForOrigins(origins: string[]): void {
-    this.methodCalled('resetNotificationPermissionForOrigins', origins);
-  }
-
-  allowNotificationPermissionForOrigins(origins: string[]): void {
-    this.methodCalled('allowNotificationPermissionForOrigins', origins);
-  }
-
-  undoIgnoreNotificationPermissionForOrigins(origins: string[]): void {
-    this.methodCalled('undoIgnoreNotificationPermissionForOrigins', origins);
-  }
-
   getFpsMembershipLabel(fpsNumMembers: number, fpsOwner: string) {
     this.methodCalled('getFpsMembershipLabel', fpsNumMembers, fpsOwner);
     return Promise.resolve([
@@ -662,14 +627,28 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
     return Promise.resolve(`Test Extension ${id}`);
   }
 
-  setFileSystemGrants(fileSystemGrantsForOriginList:
-                          FileSystemGrantsForOrigin[]): void {
+  setFileSystemGrants(fileSystemGrantsForOriginList: OriginFileSystemGrants[]):
+      void {
     this.fileSystemGrantsList_ = fileSystemGrantsForOriginList;
   }
 
-  getFileSystemGrants(): Promise<FileSystemGrantsForOrigin[]> {
+  getFileSystemGrants(): Promise<OriginFileSystemGrants[]> {
     this.methodCalled('getFileSystemGrants');
     return Promise.resolve(this.fileSystemGrantsList_);
+  }
+
+  setStorageAccessExceptionList(storageAccessExceptionList:
+                                    StorageAccessSiteException[]) {
+    this.storageAccessExceptionList_ = storageAccessExceptionList;
+  }
+
+  /** @override */
+  getStorageAccessExceptionList(categorySubtype: ContentSetting):
+      Promise<StorageAccessSiteException[]> {
+    this.methodCalled('getStorageAccessExceptionList', categorySubtype);
+
+    return Promise.resolve(this.storageAccessExceptionList_.filter(
+        site => site.setting === categorySubtype));
   }
 
   revokeFileSystemGrant(origin: string, filePath: string): void {

@@ -5,7 +5,6 @@
 #ifndef ASH_CAPTURE_MODE_CAPTURE_MODE_OBSERVER_H_
 #define ASH_CAPTURE_MODE_CAPTURE_MODE_OBSERVER_H_
 
-#include "ash/capture_mode/capture_mode_controller.h"
 #include "base/observer_list_types.h"
 
 namespace aura {

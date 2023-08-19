@@ -29,9 +29,9 @@ android_library("settings_java") {
     "//build/android:build_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
+  srcjar_deps = [ ":jni_headers" ]
   sources =
       [ "java/src/org/chromium/components/location/LocationSettings.java" ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 generate_jni("jni_headers") {

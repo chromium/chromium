@@ -101,10 +101,6 @@ class CORE_EXPORT ScopedStyleResolver final
   void SetNeedsAppendAllSheets() { needs_append_all_sheets_ = true; }
   static void KeyframesRulesAdded(const TreeScope&);
   static Element& InvalidationRootForTreeScope(const TreeScope&);
-  void ClearSuperRuleset();
-  void RebuildSuperRuleset(const ActiveStyleSheetVector& new_style_sheets);
-  void AppendToSuperRuleset(const ActiveStyleSheet& new_sheet);
-  bool HasSuperRuleset() const { return super_rule_set_.Get(); }
 
   void Trace(Visitor*) const;
 
@@ -121,6 +117,7 @@ class CORE_EXPORT ScopedStyleResolver final
       const StyleRuleKeyframes* new_rule,
       const StyleRuleKeyframes* existing_rule) const;
   void AddPositionFallbackRules(const RuleSet&);
+  void AddViewTransitionsRules(const RuleSet&);
 
   CounterStyleMap& EnsureCounterStyleMap();
 
@@ -146,21 +143,6 @@ class CORE_EXPORT ScopedStyleResolver final
 
   Member<CounterStyleMap> counter_style_map_;
   Member<CascadeLayerMap> cascade_layer_map_;
-
-  // We may choose to merge all of the active RuleSets for this scope
-  // into a superruleset, containing all of the rules. This can be cheaper
-  // to match against than doing each of them separately, since we get
-  // fewer hash table lookups and similar -- but it can also have a cost
-  // in terms of memory and time to build the superruleset. Currently,
-  // this is an all-or-nothing affair; if we have more than one active
-  // stylesheet, we merge them all into super_rule_set_. (Otherwise,
-  // it is nullptr.) This may change in the future.
-  //
-  // Use of superrulesets is gated on the CSSSuperRulesets Finch flag.
-  Member<RuleSet> super_rule_set_;
-
-  // See comment on LayerMap.
-  LayerMap super_rule_set_mapping_;
 
   bool has_unresolved_keyframes_rule_ = false;
   bool needs_append_all_sheets_ = false;

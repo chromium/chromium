@@ -23,10 +23,6 @@
 #import "ios/chrome/grit/ios_theme_resources.h"
 #import "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // The size of the symbol image.
@@ -50,9 +46,8 @@ const CGFloat kSymbolToolbarPointSize = 24;
 - (ToolbarButton*)backButton {
   UIImage* backImage =
       DefaultSymbolWithPointSize(kBackSymbol, kSymbolToolbarPointSize);
-  ToolbarButton* backButton = [ToolbarButton
-      toolbarButtonWithImage:[backImage
-                                 imageFlippedForRightToLeftLayoutDirection]];
+  ToolbarButton* backButton = [[ToolbarButton alloc]
+      initWithImage:[backImage imageFlippedForRightToLeftLayoutDirection]];
   [self configureButton:backButton width:kAdaptiveToolbarButtonWidth];
   backButton.accessibilityLabel = l10n_util::GetNSString(IDS_ACCNAME_BACK);
   [backButton addTarget:self.actionHandler
@@ -66,9 +61,8 @@ const CGFloat kSymbolToolbarPointSize = 24;
 - (ToolbarButton*)forwardButton {
   UIImage* forwardImage =
       DefaultSymbolWithPointSize(kForwardSymbol, kSymbolToolbarPointSize);
-  ToolbarButton* forwardButton = [ToolbarButton
-      toolbarButtonWithImage:[forwardImage
-                                 imageFlippedForRightToLeftLayoutDirection]];
+  ToolbarButton* forwardButton = [[ToolbarButton alloc]
+      initWithImage:[forwardImage imageFlippedForRightToLeftLayoutDirection]];
   [self configureButton:forwardButton width:kAdaptiveToolbarButtonWidth];
   forwardButton.visibilityMask =
       self.visibilityConfiguration.forwardButtonVisibility;
@@ -84,7 +78,7 @@ const CGFloat kSymbolToolbarPointSize = 24;
   UIImage* tabGridImage =
       CustomSymbolWithPointSize(kSquareNumberSymbol, kSymbolToolbarPointSize);
   ToolbarTabGridButton* tabGridButton =
-      [ToolbarTabGridButton toolbarButtonWithImage:tabGridImage];
+      [[ToolbarTabGridButton alloc] initWithImage:tabGridImage];
   [self configureButton:tabGridButton width:kAdaptiveToolbarButtonWidth];
   SetA11yLabelAndUiAutomationName(tabGridButton, IDS_IOS_TOOLBAR_SHOW_TABS,
                                   kToolbarStackButtonIdentifier);
@@ -100,9 +94,9 @@ const CGFloat kSymbolToolbarPointSize = 24;
 }
 
 - (ToolbarButton*)toolsMenuButton {
-  ToolbarButton* toolsMenuButton = [ToolbarButton
-      toolbarButtonWithImage:DefaultSymbolWithPointSize(
-                                 kMenuSymbol, kSymbolToolbarPointSize)];
+  ToolbarButton* toolsMenuButton = [[ToolbarButton alloc]
+      initWithImage:DefaultSymbolWithPointSize(kMenuSymbol,
+                                               kSymbolToolbarPointSize)];
 
   SetA11yLabelAndUiAutomationName(toolsMenuButton, IDS_IOS_TOOLBAR_SETTINGS,
                                   kToolbarToolsMenuButtonIdentifier);
@@ -121,8 +115,7 @@ const CGFloat kSymbolToolbarPointSize = 24;
 - (ToolbarButton*)shareButton {
   UIImage* shareImage =
       DefaultSymbolWithPointSize(kShareSymbol, kSymbolToolbarPointSize);
-  ToolbarButton* shareButton =
-      [ToolbarButton toolbarButtonWithImage:shareImage];
+  ToolbarButton* shareButton = [[ToolbarButton alloc] initWithImage:shareImage];
   [self configureButton:shareButton width:kAdaptiveToolbarButtonWidth];
   SetA11yLabelAndUiAutomationName(shareButton, IDS_IOS_TOOLS_MENU_SHARE,
                                   kToolbarShareButtonIdentifier);
@@ -138,9 +131,8 @@ const CGFloat kSymbolToolbarPointSize = 24;
 - (ToolbarButton*)reloadButton {
   UIImage* reloadImage =
       CustomSymbolWithPointSize(kArrowClockWiseSymbol, kSymbolToolbarPointSize);
-  ToolbarButton* reloadButton = [ToolbarButton
-      toolbarButtonWithImage:[reloadImage
-                                 imageFlippedForRightToLeftLayoutDirection]];
+  ToolbarButton* reloadButton = [[ToolbarButton alloc]
+      initWithImage:[reloadImage imageFlippedForRightToLeftLayoutDirection]];
   [self configureButton:reloadButton width:kAdaptiveToolbarButtonWidth];
   reloadButton.accessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_ACCNAME_RELOAD);
@@ -155,7 +147,7 @@ const CGFloat kSymbolToolbarPointSize = 24;
 - (ToolbarButton*)stopButton {
   UIImage* stopImage =
       DefaultSymbolWithPointSize(kXMarkSymbol, kSymbolToolbarPointSize);
-  ToolbarButton* stopButton = [ToolbarButton toolbarButtonWithImage:stopImage];
+  ToolbarButton* stopButton = [[ToolbarButton alloc] initWithImage:stopImage];
   [self configureButton:stopButton width:kAdaptiveToolbarButtonWidth];
   stopButton.accessibilityLabel = l10n_util::GetNSString(IDS_IOS_ACCNAME_STOP);
   [stopButton addTarget:self.actionHandler
@@ -166,23 +158,23 @@ const CGFloat kSymbolToolbarPointSize = 24;
 }
 
 - (ToolbarButton*)openNewTabButton {
-  ToolbarButton* newTabButton;
-  if (@available(iOS 15, *)) {
-    NSString* symbolName = base::FeatureList::IsEnabled(kSFSymbolsFollowUp)
-                               ? kPlusCircleFillSymbol
-                               : kLegacyPlusCircleFillSymbol;
-    UIImage* image = SymbolWithPalette(
-        CustomSymbolWithPointSize(symbolName, kSymbolToolbarPointSize), @[
-          [UIColor colorNamed:kGrey600Color],
-          [self.toolbarConfiguration locationBarBackgroundColorWithVisibility:1]
-        ]);
-    newTabButton = [ToolbarButton toolbarButtonWithImage:image];
-  } else {
-    newTabButton = [ToolbarButton
-        toolbarButtonWithImage:
-            [[UIImage imageNamed:@"plus_circle_fill_ios14"]
-                imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];
-  }
+  UIImage* image = SymbolWithPalette(
+      CustomSymbolWithPointSize(kPlusCircleFillSymbol, kSymbolToolbarPointSize),
+      @[
+        [UIColor colorNamed:kGrey600Color],
+        [self.toolbarConfiguration locationBarBackgroundColorWithVisibility:1]
+      ]);
+  UIImage* IPHHighlightedImage = SymbolWithPalette(
+      CustomSymbolWithPointSize(kPlusCircleFillSymbol, kSymbolToolbarPointSize),
+      @[
+        // The color of the 'plus'.
+        _toolbarConfiguration.buttonsTintColorIPHHighlighted,
+        // The filling color of the circle.
+        _toolbarConfiguration.buttonsIPHHighlightColor
+      ]);
+  ToolbarButton* newTabButton =
+      [[ToolbarButton alloc] initWithImage:image
+                       IPHHighlightedImage:IPHHighlightedImage];
 
   [newTabButton addTarget:self.actionHandler
                    action:@selector(newTabAction:)
@@ -204,28 +196,31 @@ const CGFloat kSymbolToolbarPointSize = 24;
 
 - (UIButton*)cancelButton {
   UIButton* cancelButton = [UIButton buttonWithType:UIButtonTypeSystem];
-  cancelButton.titleLabel.font = [UIFont systemFontOfSize:kLocationBarFontSize];
   cancelButton.tintColor = [UIColor colorNamed:kBlueColor];
-  [cancelButton setTitle:l10n_util::GetNSString(IDS_CANCEL)
-                forState:UIControlStateNormal];
   [cancelButton setContentHuggingPriority:UILayoutPriorityRequired
                                   forAxis:UILayoutConstraintAxisHorizontal];
   [cancelButton
       setContentCompressionResistancePriority:UILayoutPriorityRequired
                                       forAxis:UILayoutConstraintAxisHorizontal];
 
-  // TODO(crbug.com/1418068): Simplify after minimum version required is >=
-  // iOS 15.
-  if (base::ios::IsRunningOnIOS15OrLater() &&
-      IsUIButtonConfigurationEnabled()) {
-    if (@available(iOS 15, *)) {
-      UIButtonConfiguration* buttonConfiguration =
-          [UIButtonConfiguration plainButtonConfiguration];
-      buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-          0, kCancelButtonHorizontalInset, 0, kCancelButtonHorizontalInset);
-      cancelButton.configuration = buttonConfiguration;
-    }
+  if (IsUIButtonConfigurationEnabled()) {
+    UIButtonConfiguration* buttonConfiguration =
+        [UIButtonConfiguration plainButtonConfiguration];
+    buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+        0, kCancelButtonHorizontalInset, 0, kCancelButtonHorizontalInset);
+    UIFont* font = [UIFont systemFontOfSize:kLocationBarFontSize];
+    NSDictionary* attributes = @{NSFontAttributeName : font};
+    NSMutableAttributedString* attributedString =
+        [[NSMutableAttributedString alloc]
+            initWithString:l10n_util::GetNSString(IDS_CANCEL)
+                attributes:attributes];
+    buttonConfiguration.attributedTitle = attributedString;
+    cancelButton.configuration = buttonConfiguration;
   } else {
+    cancelButton.titleLabel.font =
+        [UIFont systemFontOfSize:kLocationBarFontSize];
+    [cancelButton setTitle:l10n_util::GetNSString(IDS_CANCEL)
+                  forState:UIControlStateNormal];
     UIEdgeInsets contentInsets = UIEdgeInsetsMake(
         0, kCancelButtonHorizontalInset, 0, kCancelButtonHorizontalInset);
     SetContentEdgeInsets(cancelButton, contentInsets);

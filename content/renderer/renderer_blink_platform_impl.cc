@@ -36,7 +36,6 @@
 #include "components/url_formatter/url_formatter.h"
 #include "components/viz/common/features.h"
 #include "content/child/child_process.h"
-#include "content/common/android/sync_compositor_statics.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/features.h"
 #include "content/public/common/content_features.h"
@@ -120,6 +119,10 @@
 
 #if BUILDFLAG(IS_POSIX)
 #include "base/file_descriptor_posix.h"
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+#include "content/common/android/sync_compositor_statics.h"
 #endif
 
 using blink::Platform;
@@ -286,22 +289,6 @@ blink::WebString RendererBlinkPlatformImpl::UserAgent() {
   if (!render_thread)
     return WebString();
   return render_thread->GetUserAgent();
-}
-
-blink::WebString RendererBlinkPlatformImpl::FullUserAgent() {
-  auto* render_thread = RenderThreadImpl::current();
-  // RenderThreadImpl is null in some tests.
-  if (!render_thread)
-    return WebString();
-  return render_thread->GetFullUserAgent();
-}
-
-blink::WebString RendererBlinkPlatformImpl::ReducedUserAgent() {
-  auto* render_thread = RenderThreadImpl::current();
-  // RenderThreadImpl is null in some tests.
-  if (!render_thread)
-    return WebString();
-  return render_thread->GetReducedUserAgent();
 }
 
 blink::UserAgentMetadata RendererBlinkPlatformImpl::UserAgentMetadata() {
@@ -530,8 +517,7 @@ RendererBlinkPlatformImpl::NewAudioRendererSink(
       source_type, web_frame->GetLocalFrameToken(), params);
 }
 
-media::AudioLatency::LatencyType
-RendererBlinkPlatformImpl::GetAudioSourceLatencyType(
+media::AudioLatency::Type RendererBlinkPlatformImpl::GetAudioSourceLatencyType(
     blink::WebAudioDeviceSourceType source_type) {
   return blink::AudioDeviceFactory::GetSourceLatencyType(source_type);
 }
@@ -665,11 +651,6 @@ RendererBlinkPlatformImpl::CreateOffscreenGraphicsContext3DProvider(
   Collect3DContextInformation(gl_info, gpu_channel_host->gpu_info());
 
   gpu::ContextCreationAttribs attributes;
-  attributes.alpha_size = -1;
-  attributes.depth_size = 0;
-  attributes.stencil_size = 0;
-  attributes.samples = 0;
-  attributes.sample_buffers = 0;
   attributes.bind_generates_resource = false;
   attributes.enable_raster_interface = web_attributes.enable_raster_interface;
   attributes.enable_oop_rasterization =
@@ -865,11 +846,16 @@ void RendererBlinkPlatformImpl::CreateServiceWorkerSubresourceLoaderFactory(
     std::unique_ptr<network::PendingSharedURLLoaderFactory> fallback_factory,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  // TODO(crbug.com/1371756): plumb `router_rules` with the function callers
+  // if there is such use case. As of 2023-06-01, only
+  // `DedicatedOrSharedWorkerFetchContextImpl` calls the function, and
+  // no need to allow it set the `router_rules`.
   ServiceWorkerSubresourceLoaderFactory::Create(
       base::MakeRefCounted<ControllerServiceWorkerConnector>(
           std::move(service_worker_container_host),
           /*remote_controller=*/mojo::NullRemote(), client_id.Utf8(),
-          blink::mojom::ServiceWorkerFetchHandlerBypassOption::kDefault),
+          blink::mojom::ServiceWorkerFetchHandlerBypassOption::kDefault,
+          /*router_rules=*/absl::nullopt, blink::EmbeddedWorkerStatus::STOPPED),
       network::SharedURLLoaderFactory::Create(std::move(fallback_factory)),
       std::move(receiver), std::move(task_runner));
 }

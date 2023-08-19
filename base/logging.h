@@ -11,6 +11,7 @@
 #include <cstdint>
 #include <sstream>
 #include <string>
+#include <string_view>
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
@@ -19,6 +20,7 @@
 #include "base/logging_buildflags.h"
 #include "base/scoped_clear_last_error.h"
 #include "base/strings/string_piece_forward.h"
+#include "base/strings/utf_ostream_operators.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
@@ -768,29 +770,5 @@ BASE_EXPORT std::wstring GetLogFileFullPath();
 #endif
 
 }  // namespace logging
-
-// Note that "The behavior of a C++ program is undefined if it adds declarations
-// or definitions to namespace std or to a namespace within namespace std unless
-// otherwise specified." --C++11[namespace.std]
-//
-// We've checked that this particular definition has the intended behavior on
-// our implementations, but it's prone to breaking in the future, and please
-// don't imitate this in your own definitions without checking with some
-// standard library experts.
-namespace std {
-// These functions are provided as a convenience for logging, which is where we
-// use streams (it is against Google style to use streams in other places). It
-// is designed to allow you to emit non-ASCII Unicode strings to the log file,
-// which is normally ASCII. It is relatively slow, so try not to use it for
-// common cases. Non-ASCII characters will be converted to UTF-8 by these
-// operators.
-BASE_EXPORT std::ostream& operator<<(std::ostream& out, const wchar_t* wstr);
-BASE_EXPORT std::ostream& operator<<(std::ostream& out,
-                                     const std::wstring& wstr);
-
-BASE_EXPORT std::ostream& operator<<(std::ostream& out, const char16_t* str16);
-BASE_EXPORT std::ostream& operator<<(std::ostream& out,
-                                     const std::u16string& str16);
-}  // namespace std
 
 #endif  // BASE_LOGGING_H_

@@ -28,10 +28,6 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForUIElementTimeout;
 
@@ -40,7 +36,7 @@ namespace {
 // Returns the absolute path for the test file in the test data directory.
 base::FilePath GetTestFilePath() {
   base::FilePath file_path;
-  base::PathService::Get(base::DIR_MODULE, &file_path);
+  base::PathService::Get(base::DIR_ASSETS, &file_path);
   file_path = file_path.Append(FILE_PATH_LITERAL(testing::kUsdzFilePath));
   return file_path;
 }

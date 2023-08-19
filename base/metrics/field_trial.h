@@ -74,6 +74,7 @@
 #include <functional>
 #include <map>
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -145,8 +146,8 @@ class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
   // FieldTrial object. Does not use StringPiece to avoid conversions back to
   // std::string.
   struct BASE_EXPORT PickleState {
-    raw_ptr<const std::string, DanglingUntriaged> trial_name = nullptr;
-    raw_ptr<const std::string, DanglingUntriaged> group_name = nullptr;
+    raw_ptr<const std::string> trial_name = nullptr;
+    raw_ptr<const std::string> group_name = nullptr;
     bool activated = false;
 
     PickleState();
@@ -516,18 +517,12 @@ class BASE_EXPORT FieldTrialList {
   static void GetActiveFieldTrialGroups(
       FieldTrial::ActiveGroups* active_groups);
 
-  // Returns the field trials that are marked active in |trials_string|.
-  static void GetActiveFieldTrialGroupsFromString(
-      const std::string& trials_string,
-      FieldTrial::ActiveGroups* active_groups);
-
-  // Returns the field trials that were active when the process was
-  // created. Either parses the field trial string or the shared memory
-  // holding field trial information.
-  // Must be called only after a call to CreateTrialsFromCommandLine().
-  static void GetInitiallyActiveFieldTrials(
-      const CommandLine& command_line,
-      FieldTrial::ActiveGroups* active_groups);
+  // Returns the names of field trials that are active in the parent process.
+  // If this process is not a child process with inherited field trials passed
+  // to it through PopulateLaunchOptionsWithFieldTrialState(), an empty set will
+  // be returned.
+  // Must be called only after a call to CreateTrialsInChildProcess().
+  static std::set<std::string> GetActiveTrialsOfParentProcess();
 
   // Use a state string (re: AllStatesToString()) to augment the current list of
   // field trials to include the supplied trials, and using a 100% probability
@@ -539,22 +534,23 @@ class BASE_EXPORT FieldTrialList {
   // if they are prefixed with |kActivationMarker|.
   static bool CreateTrialsFromString(const std::string& trials_string);
 
-  // Achieves the same thing as CreateTrialsFromString, except wraps the logic
-  // by taking in the trials from the command line, either via shared memory
-  // handle or command line argument.
-  // On non-Mac POSIX platforms, we simply get the trials from opening |fd_key|
-  // if using shared memory. The argument is needed here since //base can't
-  // depend on //content. |fd_key| is unused on other platforms.
-  // On other platforms, we expect the |cmd_line| switch for kFieldTrialHandle
-  // to contain the shared memory handle that contains the field trial
-  // allocator.
-  static void CreateTrialsFromCommandLine(const CommandLine& cmd_line,
-                                          uint32_t fd_key);
+  // Creates trials in a child process from a command line that was produced
+  // via PopulateLaunchOptionsWithFieldTrialState() in the parent process.
+  // Trials are retrieved from a shared memory segment that has been shared with
+  // the child process.
+  //
+  // `fd_key` is used on non-Mac POSIX platforms to access the shared memory
+  // segment and ignored on other platforms. The argument is needed here since
+  // //base can't depend on //content. On other platforms, we expect the
+  // `cmd_line` switch for kFieldTrialHandle to contain the shared memory handle
+  // that contains the field trial allocator.
+  static void CreateTrialsInChildProcess(const CommandLine& cmd_line,
+                                         uint32_t fd_key);
 
-  // Creates base::Feature overrides from the command line by first trying to
-  // use shared memory and then falling back to the command line if it fails.
-  static void CreateFeaturesFromCommandLine(const CommandLine& command_line,
-                                            FeatureList* feature_list);
+  // Creates base::Feature overrides in a child process using shared memory.
+  // Requires CreateTrialsInChildProcess() to have been called first which
+  // initializes access to the shared memory segment.
+  static void ApplyFeatureOverridesInChildProcess(FeatureList* feature_list);
 
 #if BUILDFLAG(USE_BLINK)
   // Populates |command_line| and |launch_options| with the handles and command
@@ -565,13 +561,13 @@ class BASE_EXPORT FieldTrialList {
       LaunchOptions* launch_options);
 #endif  // !BUILDFLAG(USE_BLINK)
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_NACL)
+#if BUILDFLAG(USE_BLINK) && BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
   // On POSIX, we also need to explicitly pass down this file descriptor that
   // should be shared with the child process. Returns -1 if it was not
-  // initialized properly. The current process remains the onwer of the passed
+  // initialized properly. The current process remains the owner of the passed
   // descriptor.
   static int GetFieldTrialDescriptor();
-#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_NACL)
+#endif  // BUILDFLAG(USE_BLINK) && BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
 
   static ReadOnlySharedMemoryRegion DuplicateFieldTrialSharedMemoryForTesting();
 
@@ -689,7 +685,7 @@ class BASE_EXPORT FieldTrialList {
   // this class to its friends.
   friend class FieldTrialListIncludingLowAnonymity;
 
-#if !BUILDFLAG(IS_NACL) && BUILDFLAG(USE_BLINK)
+#if BUILDFLAG(USE_BLINK)
   // Serialization is used to pass information about the shared memory handle
   // to child processes. This is achieved by passing a stringified reference to
   // the relevant OS resources to the child process.
@@ -721,7 +717,7 @@ class BASE_EXPORT FieldTrialList {
   // down to the child process for the shared memory region.
   static bool CreateTrialsFromSwitchValue(const std::string& switch_value,
                                           uint32_t fd_key);
-#endif  // !BUILDFLAG(IS_NACL) && BUILDFLAG(USE_BLINK)
+#endif  // BUILDFLAG(USE_BLINK)
 
   // Takes an unmapped ReadOnlySharedMemoryRegion, maps it with the correct size
   // and creates field trials via CreateTrialsFromSharedMemoryMapping(). Returns
@@ -829,8 +825,8 @@ class BASE_EXPORT FieldTrialList {
   // because it's needed from multiple methods.
   ReadOnlySharedMemoryRegion readonly_allocator_region_;
 
-  // Tracks whether CreateTrialsFromCommandLine() has been called.
-  bool create_trials_from_command_line_called_ = false;
+  // Tracks whether CreateTrialsInChildProcess() has been called.
+  bool create_trials_in_child_process_called_ = false;
 };
 
 }  // namespace base

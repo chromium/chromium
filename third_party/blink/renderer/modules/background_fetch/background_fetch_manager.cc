@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "services/network/public/mojom/ip_address_space.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -158,10 +157,6 @@ ScriptPromise BackgroundFetchManager::fetch(
     return ScriptPromise();
   }
 
-  // A HashSet to find whether there are any duplicate requests within the
-  // fetch. https://bugs.chromium.org/p/chromium/issues/detail?id=871174.
-  HashSet<KURL> kurls;
-
   // Based on security steps from https://fetch.spec.whatwg.org/#main-fetch
   // TODO(crbug.com/757441): Remove all this duplicative code once Fetch (and
   // all its security checks) are implemented in the Network Service, such that
@@ -215,12 +210,7 @@ ScriptPromise BackgroundFetchManager::fetch(
                                  "it contains dangling markup",
                                  exception_state);
     }
-
-    kurls.insert(request_url);
   }
-
-  UMA_HISTOGRAM_BOOLEAN("BackgroundFetch.HasDuplicateRequests",
-                        kurls.size() != fetch_api_requests.size());
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
       script_state, exception_state.GetContext());

@@ -174,6 +174,8 @@ export function drawSingleReport(
       const date = new Date(stats.timestamp);
       graphViews[graphViewId].setDateRange(date, date);
     }
+    // Ensures the stats graph title is up-to-date.
+    ensureStatsGraphContainer(peerConnectionElement, report);
     // Adds the new dataSeries to the graphView. We have to do it here to cover
     // both the simple and compound graph cases.
     const dataSeries =
@@ -184,6 +186,10 @@ export function drawSingleReport(
     }
     graphViews[graphViewId].updateEndDate();
   }
+  // Add a synthetic data series for the timestamp.
+  addDataSeriesPoints(
+    peerConnectionElement, reportType, reportId + '-timestamp',
+    reportId + '-timestamp', [stats.timestamp], [stats.timestamp]);
 
   const childrenAfter = peerConnectionElement.hasChildNodes() ?
       Array.from(peerConnectionElement.childNodes) :
@@ -282,8 +288,6 @@ function ensureStatsGraphContainer(peerConnectionElement, report) {
     container.appendChild($('summary-span-template').content.cloneNode(true));
     container.firstChild.firstChild.className =
         STATS_GRAPH_CONTAINER_HEADING_CLASS;
-    container.firstChild.firstChild.textContent =
-        'Stats graphs for ' + generateStatsLabel(report);
     const statsType = getLegacySsrcReportType(report);
     if (statsType !== '') {
       container.firstChild.firstChild.textContent += ' (' + statsType + ')';
@@ -295,8 +299,11 @@ function ensureStatsGraphContainer(peerConnectionElement, report) {
       ssrcInfoManager.populateSsrcInfo(
           ssrcInfoElement, GetSsrcFromReport(report));
     }
+    topContainer.appendChild(container);
   }
-  topContainer.appendChild(container);
+  // Update the label all the time to account for new information.
+  container.firstChild.firstChild.textContent ='Stats graphs for ' +
+    generateStatsLabel(report);
   return container;
 }
 

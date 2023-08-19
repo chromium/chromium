@@ -13,15 +13,15 @@ dictionary IdentityUserInfo {
 [
     Exposed=Window,
     SecureContext,
-    RuntimeEnabled=FedCmIdentityProviderInterface
+    RuntimeEnabled=FedCm
 ] interface IdentityProvider {
     // Allows an IDP to request user info from its own iframe embeded on an RP.
-    [RuntimeEnabled=FedCmUserInfo, CallWith=ScriptState, RaisesException, MeasureAs=FedCmUserInfo]
+    [CallWith=ScriptState, RaisesException, MeasureAs=FedCmUserInfo]
     static Promise<sequence<IdentityUserInfo>> getUserInfo(IdentityProviderConfig config);
 
-    [RuntimeEnabled=FedCmIdpSigninStatus, CallWith=ScriptState]
+    [RuntimeEnabled=FedCmIdpSigninStatus, CallWith=ScriptState, MeasureAs=FedCmIdpSigninStatusJsApi]
     static void login();
-    [RuntimeEnabled=FedCmIdpSigninStatus, CallWith=ScriptState]
+    [RuntimeEnabled=FedCmIdpSigninStatus, CallWith=ScriptState, MeasureAs=FedCmIdpSigninStatusJsApi]
     static void logout();
     [RuntimeEnabled=FedCmIdpSigninStatus, CallWith=ScriptState]
     static void close();

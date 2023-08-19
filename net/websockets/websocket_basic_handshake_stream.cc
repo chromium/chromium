@@ -436,6 +436,14 @@ std::unique_ptr<WebSocketStream> WebSocketBasicHandshakeStream::Upgrade() {
   return basic_stream;
 }
 
+bool WebSocketBasicHandshakeStream::CanReadFromStream() const {
+  auto* connection = state_.connection();
+  if (!connection) {
+    return false;
+  }
+  return connection->socket();
+}
+
 base::WeakPtr<WebSocketHandshakeStreamBase>
 WebSocketBasicHandshakeStream::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();

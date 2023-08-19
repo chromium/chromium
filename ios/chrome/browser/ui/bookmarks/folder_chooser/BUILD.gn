@@ -12,7 +12,6 @@ group("folder_chooser") {
 # This target is only used for internal builds in bookmark.
 # Contains coordinator headers.
 source_set("coordinator_headers") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   visibility = [
     ":coordinator_impl",
     ":folder_chooser",
@@ -29,7 +28,6 @@ source_set("coordinator_headers") {
 # This target is only used for internal builds in bookmark.
 # Contains coordinator implementation.
 source_set("coordinator_impl") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   visibility = [ ":folder_chooser" ]
   sources = [ "bookmarks_folder_chooser_coordinator.mm" ]
   deps = [
@@ -50,7 +48,6 @@ source_set("coordinator_impl") {
 # Private to this coordinator.
 # Contains folder chooser ui implementation.
 source_set("ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   visibility = [
     ":coordinator_impl",
     ":unit_tests",
@@ -70,6 +67,7 @@ source_set("ui") {
   deps = [
     "//base",
     "//components/bookmarks/browser",
+    "//components/sync/base:features",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/shared/model/browser",
@@ -88,7 +86,6 @@ source_set("ui") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "bookmarks_folder_chooser_sub_data_source_impl_unittest.mm" ]
   deps = [
@@ -96,6 +93,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/bookmarks/browser",
     "//components/bookmarks/test",
+    "//components/sync/base:features",
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/signin",
@@ -110,15 +108,13 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "bookmarks_folder_chooser_egtest.mm" ]
   deps = [
     "//components/bookmarks/common",
     "//components/strings",
+    "//components/sync/base:features",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/ui/bookmarks:constants",
     "//ios/chrome/browser/ui/bookmarks:eg_test_support+eg2",

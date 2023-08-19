@@ -99,11 +99,8 @@ void OnListVmDisks(
 // DiskSliderTicks spanning from min to max. Ensures that one of the ticks
 // matches the current value and will write the index of that value to
 // out_default_index.
-std::vector<crostini::mojom::DiskSliderTickPtr> GetTicks(
-    int64_t min,
-    int64_t current,
-    int64_t max,
-    int* out_default_index);
+std::vector<crostini::mojom::DiskSliderTickPtr>
+GetTicks(int64_t min, int64_t current, int64_t max, int* out_default_index);
 
 // Requests the disk for |vm_name| to be resized to |size_bytes|.
 // Once complete |callback| is called with true (succeeded resizing) or false

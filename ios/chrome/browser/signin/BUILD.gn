@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("signin") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "about_signin_internals_factory.cc",
     "about_signin_internals_factory.h",
@@ -81,10 +80,10 @@ source_set("signin") {
     "//components/signin/public/identity_manager/ios",
     "//components/sync",
     "//google_apis",
+    "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/bookmarks:bookmarks_utils",
     "//ios/chrome/browser/content_settings",
     "//ios/chrome/browser/crash_report",
-    "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/reading_list:reading_list_remover",
     "//ios/chrome/browser/shared/model/application_context",
@@ -93,6 +92,7 @@ source_set("signin") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/authentication/signin:signin_headers",
     "//ios/chrome/browser/web",
@@ -118,7 +118,6 @@ source_set("signin") {
 }
 
 source_set("signin_util") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "signin_util.h",
     "signin_util.mm",
@@ -132,12 +131,12 @@ source_set("signin_util") {
     "//components/signin/public/identity_manager",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/public/provider/chrome/browser/signin:signin_error_api",
   ]
 }
 
 source_set("capabilities_types") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "capabilities_dict.h",
     "capabilities_types.h",
@@ -146,7 +145,6 @@ source_set("capabilities_types") {
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "constants.h",
     "constants.mm",
@@ -155,7 +153,6 @@ source_set("constants") {
 }
 
 source_set("signin_util_internal") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "signin_util_internal.h",
     "signin_util_internal.mm",
@@ -167,18 +164,17 @@ source_set("signin_util_internal") {
   deps = [
     "//base",
     "//components/signin/public/identity_manager",
-    "//ios/chrome/browser/paths",
+    "//ios/chrome/browser/shared/model/paths",
+    "//ios/chrome/browser/shared/public/features:system_flags",
   ]
 }
 
 source_set("system_identity") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "system_identity.h" ]
   frameworks = [ "Foundation.framework" ]
 }
 
 source_set("system_identity_manager") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "refresh_access_token_error.h",
     "system_identity_interaction_manager.h",
@@ -200,7 +196,6 @@ source_set("system_identity_manager") {
 
 source_set("fake_system_identity_manager") {
   testonly = true
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "fake_refresh_access_token_error.h",
     "fake_refresh_access_token_error.mm",
@@ -226,6 +221,8 @@ source_set("fake_system_identity_manager") {
     ":system_identity",
     ":system_identity_manager",
     ":test_constants",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
     "//google_apis",
     "//ios/public/provider/chrome/browser/signin:signin_error_api",
   ]
@@ -235,7 +232,6 @@ source_set("fake_system_identity_manager") {
 source_set("fake_account_details_view_controller") {
   testonly = true
   visibility = [ ":fake_system_identity_manager" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "fake_account_details_view_controller.h",
     "fake_account_details_view_controller.mm",
@@ -246,7 +242,6 @@ source_set("fake_account_details_view_controller") {
 
 source_set("fake_system_identity") {
   testonly = true
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "fake_system_identity.h",
     "fake_system_identity.mm",
@@ -259,7 +254,6 @@ source_set("fake_system_identity") {
 }
 
 source_set("trusted_vault") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "trusted_vault_client_backend.h",
     "trusted_vault_client_backend.mm",
@@ -269,7 +263,7 @@ source_set("trusted_vault") {
   deps = [
     "//base",
     "//components/keyed_service/core",
-    "//components/sync/service",
+    "//components/trusted_vault",
     "//ios/public/provider/chrome/browser/signin:signin_sso_api",
   ]
   frameworks = [
@@ -279,7 +273,6 @@ source_set("trusted_vault") {
 }
 
 source_set("trusted_vault_factory") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "trusted_vault_client_backend_factory.h",
     "trusted_vault_client_backend_factory.mm",
@@ -296,7 +289,6 @@ source_set("trusted_vault_factory") {
 }
 
 source_set("test_constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "test_constants.h",
@@ -306,11 +298,12 @@ source_set("test_constants") {
 }
 
 source_set("test_support") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "fake_authentication_service_delegate.h",
     "fake_authentication_service_delegate.mm",
+    "identity_test_environment_browser_state_adaptor.h",
+    "identity_test_environment_browser_state_adaptor.mm",
   ]
   deps = [
     ":signin",
@@ -328,7 +321,6 @@ source_set("test_support") {
 }
 
 source_set("signin_util_internal_unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "signin_util_internal_unittest.mm" ]
   deps = [
@@ -340,7 +332,6 @@ source_set("signin_util_internal_unit_tests") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "account_capabilities_fetcher_ios_unittest.mm",
@@ -379,7 +370,6 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//google_apis",
     "//ios/chrome/browser/content_settings",
-    "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/lens",
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/shared/model/application_context",
@@ -390,6 +380,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/sync:test_support",
     "//ios/chrome/browser/web",
@@ -406,10 +397,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "authentication_service_egtest.mm" ]
   deps = [

@@ -6,6 +6,7 @@
  * @fileoverview Polymer element for displaying material design offline login.
  */
 
+import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_dialog/cr_dialog.js';
@@ -26,7 +27,8 @@ import {OobeContentDialog} from '../../components/dialogs/oobe_content_dialog.js
 
 
 const DEFAULT_EMAIL_DOMAIN = '@gmail.com';
-const INPUT_EMAIL_PATTERN = '^[a-zA-Z0-9.!#$%&\'*+=?^_`{|}~-]+(@[^\\s@]+)?$';
+const INPUT_EMAIL_PATTERN =
+    '^[a-zA-Z0-9.!#$%&\'*+=?^_`\\{\\|\\}~\\-]+(@[^\\s@]+)?$';
 
 const LOGIN_SECTION = {
   EMAIL: 'emailSection',

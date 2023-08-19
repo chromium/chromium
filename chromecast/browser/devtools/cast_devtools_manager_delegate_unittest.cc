@@ -7,6 +7,7 @@
 #include <memory>
 #include <unordered_set>
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/web_contents.h"
@@ -46,8 +47,8 @@ class CastDevToolsManagerDelegateTest
     EXPECT_EQ(enabled_web_contents.size(), targets.size());
 
     for (const auto& target : targets) {
-      EXPECT_TRUE(enabled_web_contents.find(target->GetWebContents()) !=
-                  enabled_web_contents.end())
+      EXPECT_TRUE(
+          base::Contains(enabled_web_contents, target->GetWebContents()))
           << "Discovered target not found in enabled WebContents.";
     }
   }
@@ -64,14 +65,16 @@ TEST_F(CastDevToolsManagerDelegateTest, TestSingletonGetter) {
 
 TEST_F(CastDevToolsManagerDelegateTest, DisabledWebContents) {
   TestDiscoveredTargets(WebContentsSet(),
-                        devtools_manager_delegate_->RemoteDebuggingTargets());
+                        devtools_manager_delegate_->RemoteDebuggingTargets(
+                            content::DevToolsManagerDelegate::kFrame));
 }
 
 TEST_F(CastDevToolsManagerDelegateTest, EnabledWebContents) {
   devtools_manager_delegate_->EnableWebContentsForDebugging(web_contents());
   WebContentsSet enabled_web_contents({web_contents()});
   TestDiscoveredTargets(enabled_web_contents,
-                        devtools_manager_delegate_->RemoteDebuggingTargets());
+                        devtools_manager_delegate_->RemoteDebuggingTargets(
+                            content::DevToolsManagerDelegate::kFrame));
 }
 
 }  // namespace shell

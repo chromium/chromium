@@ -199,18 +199,18 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
     // |expect_readonly| must match to is_readonly() (when set to false,
     // the file is expected to be writeable; this only happens when scanning
     // files restarting the queue).
-    StatusOr<base::StringPiece> Read(uint32_t pos,
-                                     uint32_t size,
-                                     size_t max_buffer_size,
-                                     bool expect_readonly = true);
+    StatusOr<std::string_view> Read(uint32_t pos,
+                                    uint32_t size,
+                                    size_t max_buffer_size,
+                                    bool expect_readonly = true);
 
     // Appends data to the file.
-    StatusOr<uint32_t> Append(base::StringPiece data);
+    StatusOr<uint32_t> Append(std::string_view data);
 
     bool is_opened() const { return handle_.get() != nullptr; }
     bool is_readonly() const {
       DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-      DCHECK(is_opened());
+      CHECK(is_opened());
       return is_readonly_.value();
     }
     uint64_t size() const { return size_; }
@@ -315,7 +315,7 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
   // asynchronously deletes all other files with lower sequencing id
   // (multiple Writes can see the same files and attempt to delete them, and
   // that is not an error).
-  Status WriteMetadata(base::StringPiece current_record_digest);
+  Status WriteMetadata(std::string_view current_record_digest);
 
   // Helper method for RestoreMetadata(): loads and verifies metadata file
   // contents. If accepted, adds the file to the set.
@@ -340,8 +340,8 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
   // Helper method for Write(): composes record header and writes it to the
   // file, followed by data. Stores record digest in the queue, increments
   // next sequencing id.
-  Status WriteHeaderAndBlock(base::StringPiece data,
-                             base::StringPiece current_record_digest,
+  Status WriteHeaderAndBlock(std::string_view data,
+                             std::string_view current_record_digest,
                              scoped_refptr<SingleFile> file);
 
   // Helper method for Upload: if the last file is not empty (has at least one

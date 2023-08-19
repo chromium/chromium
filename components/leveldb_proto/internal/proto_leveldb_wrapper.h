@@ -151,7 +151,7 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) ProtoLevelDBWrapper {
   // Used to run blocking tasks in-order, must be the TaskRunner that |db_|
   // relies on.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  raw_ptr<LevelDB, DanglingUntriaged> db_ = nullptr;
+  raw_ptr<LevelDB, AcrossTasksDanglingUntriaged> db_ = nullptr;
 
   // The identifier used when recording metrics to determine the source of the
   // LevelDB calls, likely the database client name.

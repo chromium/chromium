@@ -32,11 +32,32 @@
 #include "net/base/network_change_notifier.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "services/network/broker_helper_win.h"
+#endif
+
 using net::test::IsError;
 using net::test::IsOk;
 using testing::Not;
 
 namespace network {
+
+#if BUILDFLAG(IS_WIN)
+// A BrokerHelper delegate to manually set whether a socket needs to be
+// brokered. This is necessary to make sure we can test connecting unbrokered
+// sockets on Windows, since otherwise ShouldBroker would return true for
+// localhost addresses.
+class TestBrokerHelperDelegate : public BrokerHelperWin::Delegate {
+ public:
+  explicit TestBrokerHelperDelegate(bool should_broker)
+      : should_broker_(should_broker) {}
+
+  bool ShouldBroker() const override { return should_broker_; }
+
+ private:
+  bool should_broker_;
+};
+#endif
 
 // This class's only purpose is to return a BrokeredUdpClientSocket instead of a
 // DatagramClientSocket. This is necessary as BrokeredUdpClientSocket has
@@ -155,11 +176,11 @@ class BrokeredUdpClientSocketTest : public testing::Test,
 
 const int BrokeredUdpClientSocketTest::kMaxRead;
 
-TEST_F(BrokeredUdpClientSocketTest, FailedConnect) {
+TEST_F(BrokeredUdpClientSocketTest, FailedConnectAsync) {
   net::TestCompletionCallback callback;
   base::test::ScopedDisableRunLoopTimeout disable_timeout;
   net::IPEndPoint server_address(net::IPAddress::IPv4Localhost(),
-                                 8080 /* port */);
+                                 /*port=*/8080);
 
   socket_broker_impl_.SetConnectionFailure(true);
 
@@ -170,11 +191,11 @@ TEST_F(BrokeredUdpClientSocketTest, FailedConnect) {
   EXPECT_EQ(rv, net::ERR_CONNECTION_FAILED);
 }
 
-TEST_F(BrokeredUdpClientSocketTest, Connect) {
+TEST_F(BrokeredUdpClientSocketTest, ConnectAsync) {
   ASSERT_EQ(0, net::GetGlobalUDPSocketCountForTesting());
   net::TestCompletionCallback callback;
   net::IPEndPoint server_address(net::IPAddress::IPv4Localhost(),
-                                 8080 /* port */);
+                                 /*port=*/8080);
 
   int rv = socket_->ConnectAsync(server_address, callback.callback());
 
@@ -187,10 +208,69 @@ TEST_F(BrokeredUdpClientSocketTest, Connect) {
   ASSERT_EQ(0, net::GetGlobalUDPSocketCountForTesting());
 }
 
+TEST_F(BrokeredUdpClientSocketTest, Connect) {
+  ASSERT_EQ(0, net::GetGlobalUDPSocketCountForTesting());
+  net::TestCompletionCallback callback;
+  net::IPEndPoint server_address(net::IPAddress::IPv4Localhost(),
+                                 /*port=*/8080);
+  int rv = net::OK;
+
+#if BUILDFLAG(IS_WIN)
+  // Pretending we don't need to broker a localhost address to be able to
+  // reliably test connecting synchronously.
+  socket_->SetBrokerHelperDelegateForTesting(
+      std::make_unique<TestBrokerHelperDelegate>(false));
+  rv = socket_->Connect(server_address);
+  ASSERT_EQ(rv, net::OK);
+  EXPECT_EQ(net::handles::kInvalidNetworkHandle, socket_->GetBoundNetwork());
+
+  // ConnectUsingNetwork and ConnectUsingDefaultNetwork should return
+  // ERR_NOT_IMPLEMENTED even if brokering is not required on windows.
+  auto socket2 = client_socket_factory_.CreateBrokeredUdpClientSocket(
+      net::DatagramSocket::DEFAULT_BIND, net::NetLog::Get(),
+      net::NetLogSource());
+  socket2->SetBrokerHelperDelegateForTesting(
+      std::make_unique<TestBrokerHelperDelegate>(false));
+  rv = socket2->ConnectUsingNetwork(net::handles::kInvalidNetworkHandle,
+                                    server_address);
+  ASSERT_EQ(rv, net::ERR_NOT_IMPLEMENTED);
+  EXPECT_EQ(net::handles::kInvalidNetworkHandle, socket2->GetBoundNetwork());
+
+  auto socket3 = client_socket_factory_.CreateBrokeredUdpClientSocket(
+      net::DatagramSocket::DEFAULT_BIND, net::NetLog::Get(),
+      net::NetLogSource());
+  socket3->SetBrokerHelperDelegateForTesting(
+      std::make_unique<TestBrokerHelperDelegate>(false));
+  rv = socket3->ConnectUsingDefaultNetwork(server_address);
+  ASSERT_EQ(rv, net::ERR_NOT_IMPLEMENTED);
+  EXPECT_EQ(net::handles::kInvalidNetworkHandle, socket3->GetBoundNetwork());
+#else
+  rv = socket_->Connect(server_address);
+  ASSERT_EQ(rv, net::ERR_NOT_IMPLEMENTED);
+  EXPECT_EQ(net::handles::kInvalidNetworkHandle, socket_->GetBoundNetwork());
+#endif
+
+  // ConnectUsingNetwork and ConnectUsingDefaultNetwork should also return
+  // ERR_NOT_IMPLEMENTED on all platforms.
+  auto socket4 = client_socket_factory_.CreateDatagramClientSocket(
+      net::DatagramSocket::DEFAULT_BIND, net::NetLog::Get(),
+      net::NetLogSource());
+  rv = socket4->ConnectUsingNetwork(net::handles::kInvalidNetworkHandle,
+                                    server_address);
+  ASSERT_EQ(rv, net::ERR_NOT_IMPLEMENTED);
+  EXPECT_EQ(net::handles::kInvalidNetworkHandle, socket4->GetBoundNetwork());
+  auto socket5 = client_socket_factory_.CreateDatagramClientSocket(
+      net::DatagramSocket::DEFAULT_BIND, net::NetLog::Get(),
+      net::NetLogSource());
+  rv = socket5->ConnectUsingDefaultNetwork(server_address);
+  ASSERT_EQ(rv, net::ERR_NOT_IMPLEMENTED);
+  EXPECT_EQ(net::handles::kInvalidNetworkHandle, socket5->GetBoundNetwork());
+}
+
 TEST_F(BrokeredUdpClientSocketTest, SetOptions) {
   net::TestCompletionCallback callback;
   net::IPEndPoint server_address(net::IPAddress::IPv4Localhost(),
-                                 8080 /* port */);
+                                 /*port=*/8080);
   EXPECT_THAT(socket_->SetMulticastInterface(1), IsOk());
   socket_->SetMsgConfirm(true);
   socket_->EnableRecvOptimization();
@@ -219,7 +299,7 @@ TEST_F(BrokeredUdpClientSocketTest, SetOptions) {
 
   net::TestCompletionCallback callback2;
   net::IPEndPoint server_address2(net::IPAddress::IPv4AllZeros(),
-                                  8080 /* port */);
+                                  /*port=*/8080);
   EXPECT_THAT(new_socket->SetMulticastInterface(1), IsOk());
   new_socket->UseNonBlockingIO();
   rv = new_socket->ConnectAsync(server_address2, callback2.callback());
@@ -250,12 +330,12 @@ TEST_F(BrokeredUdpClientSocketTest, SimpleReadWrite) {
   SimpleReadAndWrite(&server);
 }
 
-TEST_F(BrokeredUdpClientSocketTest, ConnectUsingNetwork) {
+TEST_F(BrokeredUdpClientSocketTest, ConnectUsingNetworkAsync) {
   // The specific value of this address doesn't really matter, and no
   // server needs to be running here. The test only needs to call
   // ConnectUsingNetworkAsync() and won't send any datagrams.
   net::IPEndPoint server_address(net::IPAddress::IPv4Localhost(),
-                                 8080 /* port */);
+                                 /*port=*/8080);
   const net::handles::NetworkHandle wrong_network_handle = 65536;
   net::TestCompletionCallback callback;
 #if BUILDFLAG(IS_ANDROID)

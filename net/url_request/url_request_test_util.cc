@@ -521,9 +521,11 @@ NetworkDelegate::PrivacySetting TestNetworkDelegate::OnForcePrivacyMode(
   return NetworkDelegate::PrivacySetting::kStateAllowed;
 }
 
-bool TestNetworkDelegate::OnCanSetCookie(const URLRequest& request,
-                                         const net::CanonicalCookie& cookie,
-                                         CookieOptions* options) {
+bool TestNetworkDelegate::OnCanSetCookie(
+    const URLRequest& request,
+    const net::CanonicalCookie& cookie,
+    CookieOptions* options,
+    CookieInclusionStatus* inclusion_status) {
   RecordCookieSettingOverrides(request.cookie_setting_overrides());
   bool allow = true;
   if (cookie_options_bit_mask_ & NO_SET_COOKIE)
@@ -570,7 +572,8 @@ FilteringTestNetworkDelegate::~FilteringTestNetworkDelegate() = default;
 bool FilteringTestNetworkDelegate::OnCanSetCookie(
     const URLRequest& request,
     const net::CanonicalCookie& cookie,
-    CookieOptions* options) {
+    CookieOptions* options,
+    CookieInclusionStatus* inclusion_status) {
   // Filter out cookies with the same name as |cookie_name_filter_| and
   // combine with |allowed_from_caller|.
   bool allowed = cookie.Name() != cookie_name_filter_;
@@ -581,7 +584,8 @@ bool FilteringTestNetworkDelegate::OnCanSetCookie(
     ++blocked_set_cookie_count_;
 
   // Call the nested delegate's method first to avoid a short circuit.
-  return TestNetworkDelegate::OnCanSetCookie(request, cookie, options) &&
+  return TestNetworkDelegate::OnCanSetCookie(request, cookie, options,
+                                             inclusion_status) &&
          allowed;
 }
 

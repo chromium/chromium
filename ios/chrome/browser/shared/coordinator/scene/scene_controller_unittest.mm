@@ -7,10 +7,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "testing/platform_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 class SceneControllerTest : public PlatformTest {
@@ -20,6 +16,8 @@ class SceneControllerTest : public PlatformTest {
     scene_controller_ =
         [[SceneController alloc] initWithSceneState:scene_state_];
   }
+
+  ~SceneControllerTest() override { [scene_controller_ teardownUI]; }
 
   SceneController* scene_controller_;
   SceneState* scene_state_;

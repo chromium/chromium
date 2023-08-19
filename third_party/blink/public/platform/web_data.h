@@ -55,6 +55,7 @@ class BLINK_PLATFORM_EXPORT WebData {
   WebData(const char* data, size_t size) { Assign(data, size); }
 
   template <int N>
+  // NOLINTNEXTLINE(google-explicit-constructor)
   WebData(const char (&data)[N]) {
     Assign(data, N - 1);
   }
@@ -110,6 +111,7 @@ class BLINK_PLATFORM_EXPORT WebData {
   operator const SharedBuffer&() const;
 #else
   template <class C>
+  // NOLINTNEXTLINE(google-explicit-constructor)
   WebData(const C& c) {
     Assign(c.data(), c.size());
   }
@@ -122,7 +124,7 @@ class BLINK_PLATFORM_EXPORT WebData {
 #endif
 
  private:
-  WebPrivatePtr<SharedBuffer> private_;
+  WebPrivatePtrForRefCounted<SharedBuffer> private_;
 };
 
 }  // namespace blink

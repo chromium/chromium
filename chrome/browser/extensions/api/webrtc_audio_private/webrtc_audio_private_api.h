@@ -52,31 +52,40 @@ class WebrtcAudioPrivateEventService
 // Common base for WebrtcAudioPrivate functions, that provides a
 // couple of optionally-used common implementations.
 class WebrtcAudioPrivateFunction : public ExtensionFunction {
- protected:
-  WebrtcAudioPrivateFunction();
-
+ public:
   WebrtcAudioPrivateFunction(const WebrtcAudioPrivateFunction&) = delete;
   WebrtcAudioPrivateFunction& operator=(const WebrtcAudioPrivateFunction&) =
       delete;
 
+ protected:
+  WebrtcAudioPrivateFunction();
   ~WebrtcAudioPrivateFunction() override;
 
- protected:
-  // Calculates a single HMAC, using the extension ID as the security origin.
-  std::string CalculateHMAC(const std::string& raw_id);
+  using SaltAndDeviceDescriptionsCallback =
+      base::OnceCallback<void(const std::string&,
+                              media::AudioDeviceDescriptions)>;
+  // Calculates the HMAC for `raw_id` using extension ID as the security origin.
+  // `extension_salt` must be the salt for the extension ID.
+  std::string CalculateHMAC(const std::string& extension_salt,
+                            const std::string& raw_id);
 
-  // Initializes |device_id_salt_|. Must be called on the UI thread,
-  // before any calls to |device_id_salt()|.
-  void InitDeviceIDSalt();
+  // Returns the extension ID as an origin.
+  url::Origin GetExtensionOrigin() const;
 
-  // Callable from any thread. Must previously have called
-  // |InitDeviceIDSalt()|.
-  std::string device_id_salt() const;
+  void GetSalt(const url::Origin&,
+               base::OnceCallback<void(const std::string&)> salt_callback);
+
+  // Returns the device ID salt and device descriptions.
+  void GetSaltAndDeviceDescriptions(const url::Origin& security_origin,
+                                    bool is_input_devices,
+                                    SaltAndDeviceDescriptionsCallback callback);
 
   media::AudioSystem* GetAudioSystem();
 
  private:
-  std::string device_id_salt_;
+  void GotSaltForDeviceDescriptions(bool is_input_devices,
+                                    SaltAndDeviceDescriptionsCallback callback,
+                                    const std::string& device_id_salt);
   std::unique_ptr<media::AudioSystem> audio_system_;
 };
 
@@ -95,6 +104,7 @@ class WebrtcAudioPrivateGetSinksFunction : public WebrtcAudioPrivateFunction {
   // Receives output device descriptions, calculates HMACs for them and sends
   // the response.
   void ReceiveOutputDeviceDescriptions(
+      const std::string& extension_salt,
       media::AudioDeviceDescriptions sink_devices);
 };
 
@@ -116,10 +126,16 @@ class WebrtcAudioPrivateGetAssociatedSinkFunction
   // Receives the input device descriptions, looks up the raw source device ID
   // basing on |params|, and requests the associated raw sink ID for it.
   void ReceiveInputDeviceDescriptions(
+      const url::Origin& origin,
+      const std::string& salt,
       media::AudioDeviceDescriptions source_devices);
 
-  // Receives the raw sink ID, calculates HMAC and calls Reply().
-  void CalculateHMACAndReply(const absl::optional<std::string>& raw_sink_id);
+  void GotExtensionSalt(const std::string& raw_source_id,
+                        const std::string& extension_salt);
+
+  // Calculates HMAC and calls Reply().
+  void CalculateHMACAndReply(const std::string& extension_salt,
+                             const absl::optional<std::string>& raw_sink_id);
 
   // Receives the associated sink ID as HMAC and sends the response.
   void Reply(const std::string& hmac);

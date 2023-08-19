@@ -24,6 +24,10 @@ enum class SetUpListItemType;
 // Called when the height of the SetUpListView did change.
 - (void)setUpListViewHeightDidChange;
 
+// Called when the view presented from the "See More" button in the Set Up List
+// multi-row Magic Stack module should be dismissed.
+- (void)dismissSeeMoreViewController;
+
 @end
 
 // A view that displays the Set Up List, a list of tasks a new user may want

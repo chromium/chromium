@@ -17,8 +17,8 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 #include "components/optimization_guide/core/hint_cache.h"
+#include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_store.h"
 #include "components/optimization_guide/core/push_notification_manager.h"
 #include "url/android/gurl_android.h"
@@ -224,34 +224,17 @@ void OptimizationGuideBridge::RegisterOptimizationTypes(
       {opt_types_set.begin(), opt_types_set.end()});
 }
 
-void OptimizationGuideBridge::CanApplyOptimizationAsync(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& java_gurl,
-    jint optimization_type,
-    const JavaParamRef<jobject>& java_callback) {
-  DCHECK(optimization_guide_keyed_service_->GetHintsManager());
-  optimization_guide_keyed_service_->GetHintsManager()
-      ->CanApplyOptimizationAsync(
-          *url::GURLAndroid::ToNativeGURL(env, java_gurl),
-          static_cast<optimization_guide::proto::OptimizationType>(
-              optimization_type),
-          base::BindOnce(&OnOptimizationGuideDecision,
-                         ScopedJavaGlobalRef<jobject>(env, java_callback)));
-}
-
 void OptimizationGuideBridge::CanApplyOptimization(
     JNIEnv* env,
     const JavaParamRef<jobject>& java_gurl,
     jint optimization_type,
     const JavaParamRef<jobject>& java_callback) {
-  OptimizationMetadata optimization_metadata;
-  optimization_guide::OptimizationGuideDecision decision =
-      optimization_guide_keyed_service_->CanApplyOptimization(
-          *url::GURLAndroid::ToNativeGURL(env, java_gurl),
-          static_cast<optimization_guide::proto::OptimizationType>(
-              optimization_type),
-          &optimization_metadata);
-  OnOptimizationGuideDecision(java_callback, decision, optimization_metadata);
+  optimization_guide_keyed_service_->CanApplyOptimization(
+      *url::GURLAndroid::ToNativeGURL(env, java_gurl),
+      static_cast<optimization_guide::proto::OptimizationType>(
+          optimization_type),
+      base::BindOnce(&OnOptimizationGuideDecision,
+                     ScopedJavaGlobalRef<jobject>(env, java_callback)));
 }
 
 void OptimizationGuideBridge::CanApplyOptimizationOnDemand(

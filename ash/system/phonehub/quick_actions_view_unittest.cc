@@ -9,6 +9,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/phonehub/fake_phone_hub_manager.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/events/test/test_event.h"
 #include "ui/views/test/button_test_api.h"
 
@@ -82,6 +83,11 @@ TEST_F(QuickActionsViewTest, EnableHotspotToggle) {
   views::test::ButtonTestApi test_api(
       actions_view()->GetEnableHotspotQuickActionItem()->icon_button());
   test_api.NotifyClick(ui::test::TestEvent());
+  // The color provider is null in tests causing toggle to not be set
+  // so setting here.
+  if (chromeos::features::IsJellyrollEnabled()) {
+    actions_view()->GetEnableHotspotQuickActionItem()->SetToggled(true);
+  }
   EXPECT_EQ(TetherController::Status::kConnecting,
             tether_controller()->GetStatus());
 

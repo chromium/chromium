@@ -32,6 +32,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 // TODO(crbug.com/1402145): Remove or at least isolate circular dependencies on
 // app service by moving this code to //c/b/web_applications/adjustments, or
 // flip entire dependency so web_applications depends on app_service.
@@ -40,7 +41,6 @@
 #include "chrome/browser/apps/user_type_filter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
-#include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
@@ -49,6 +49,7 @@
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
 #include "chrome/browser/web_applications/user_uninstalled_preinstalled_web_app_prefs.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
@@ -90,6 +91,7 @@ namespace web_app {
 namespace {
 
 bool g_skip_startup_for_testing_ = false;
+bool g_bypass_awaiting_dependencies_for_testing_ = false;
 bool g_bypass_offline_manifest_requirement_for_testing_ = false;
 bool g_override_previous_user_uninstall_for_testing_ = false;
 const base::Value::List* g_configs_for_testing = nullptr;
@@ -153,6 +155,16 @@ bool IsTabletFormFactor() {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+absl::optional<bool> HasStylusEnabledTouchscreen() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return chromeos::BrowserParamsProxy::Get()
+      ->DeviceProperties()
+      ->has_stylus_enabled_touchscreen;
+#else
+  return DeviceHasStylusEnabledTouchscreen();
+#endif
+}
 
 LoadedConfigs LoadConfigsBlocking(
     const std::vector<base::FilePath>& config_dirs) {
@@ -239,13 +251,16 @@ absl::optional<std::string> GetDisableReason(
           .LookUpAppIdByInstallUrl(options.install_url)
           .has_value();
   bool ignore_user_uninstalled_prefs = [&]() {
+    // TODO(crbug.com/1363027): Use LookUpAppByInstallSourceInstallUrl() instead
+    // of LookupExternalAppId() throughout this file.
     absl::optional<AppId> app_id =
         registrar->LookupExternalAppId(options.install_url);
     return app_id.has_value() &&
            registrar->IsInstalledByDefaultManagement(app_id.value());
   }();
-  if (in_user_uninstalled_prefs && ignore_user_uninstalled_prefs)
+  if (in_user_uninstalled_prefs && ignore_user_uninstalled_prefs) {
     ++corrupt_user_uninstall_prefs_count;
+  }
   bool was_previously_uninstalled_by_user =
       in_user_uninstalled_prefs && !ignore_user_uninstalled_prefs;
 
@@ -332,8 +347,9 @@ absl::optional<std::string> GetDisableReason(
     bool was_previously_preinstalled = false;
     if (app_id.has_value()) {
       const WebApp* web_app = registrar->GetAppById(app_id.value());
-      if (web_app && web_app->IsPreinstalledApp())
+      if (web_app && web_app->IsPreinstalledApp()) {
         was_previously_preinstalled = true;
+      }
     }
 
     if (!was_previously_preinstalled) {
@@ -426,7 +442,9 @@ absl::optional<std::string> GetDisableReason(
 
   // Only install if device has a built-in touch screen with stylus support.
   if (options.disable_if_touchscreen_with_stylus_not_supported) {
-    if (!ui::DeviceDataManager::HasInstance()) {
+    absl::optional<bool> has_stylus = HasStylusEnabledTouchscreen();
+
+    if (!has_stylus.has_value()) {
       base::UmaHistogramEnumeration(
           kHistogramMigrationDisabledReason,
           DisabledReason::kStylusRequiredNoDeviceData);
@@ -434,17 +452,7 @@ absl::optional<std::string> GetDisableReason(
              " disabled because touchscreen device information is unavailable";
     }
 
-    DCHECK(ui::DeviceDataManager::GetInstance()->AreDeviceListsComplete());
-    bool have_touchscreen_with_stylus = false;
-    for (const ui::TouchscreenDevice& device :
-         ui::DeviceDataManager::GetInstance()->GetTouchscreenDevices()) {
-      if (device.has_stylus &&
-          device.type == ui::InputDeviceType::INPUT_DEVICE_INTERNAL) {
-        have_touchscreen_with_stylus = true;
-        break;
-      }
-    }
-    if (!have_touchscreen_with_stylus) {
+    if (!has_stylus.value()) {
       base::UmaHistogramEnumeration(kHistogramMigrationDisabledReason,
                                     DisabledReason::kStylusRequired);
       return options.install_url.spec() +
@@ -469,6 +477,38 @@ absl::optional<std::string> GetDisableReason(
   base::UmaHistogramEnumeration(kHistogramMigrationDisabledReason,
                                 DisabledReason::kNotDisabled);
   return absl::nullopt;
+}
+
+bool IsReinstallPastMilestoneNeededSinceLastSync(
+    const PrefService& prefs,
+    int force_reinstall_for_milestone) {
+  std::string last_preinstall_synchronize_milestone =
+      prefs.GetString(prefs::kWebAppsLastPreinstallSynchronizeVersion);
+
+  return IsReinstallPastMilestoneNeeded(last_preinstall_synchronize_milestone,
+                                        version_info::GetMajorVersionNumber(),
+                                        force_reinstall_for_milestone);
+}
+
+bool ShouldForceReinstall(const ExternalInstallOptions& options,
+                          const PrefService& prefs,
+                          const WebAppRegistrar& registrar) {
+  if (options.force_reinstall_for_milestone &&
+      IsReinstallPastMilestoneNeededSinceLastSync(
+          prefs, options.force_reinstall_for_milestone.value())) {
+    return true;
+  }
+
+  if (base::FeatureList::IsEnabled(features::kWebAppDedupeInstallUrls)) {
+    // TODO(crbug.com/1427340): Add metrics for this event.
+    const WebApp* app = registrar.LookUpAppByInstallSourceInstallUrl(
+        WebAppManagement::Type::kDefault, options.install_url);
+    if (app && LooksLikePlaceholder(*app)) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 }  // namespace
@@ -561,20 +601,30 @@ void PreinstalledWebAppManager::SkipStartupForTesting() {
   g_skip_startup_for_testing_ = true;
 }
 
+// static
+base::AutoReset<bool>
+PreinstalledWebAppManager::BypassAwaitingDependenciesForTesting() {
+  return {&g_bypass_awaiting_dependencies_for_testing_, true};
+}
+
+// static
 void PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting() {
   g_bypass_offline_manifest_requirement_for_testing_ = true;
 }
 
+// static
 void PreinstalledWebAppManager::
     OverridePreviousUserUninstallConfigForTesting() {
   g_override_previous_user_uninstall_for_testing_ = true;
 }
 
+// static
 void PreinstalledWebAppManager::SetConfigsForTesting(
     const base::Value::List* configs) {
   g_configs_for_testing = configs;
 }
 
+// static
 void PreinstalledWebAppManager::SetFileUtilsForTesting(
     FileUtilsWrapper* file_utils) {
   g_file_utils_for_testing = file_utils;
@@ -598,16 +648,13 @@ PreinstalledWebAppManager::~PreinstalledWebAppManager() {
   }
 }
 
-void PreinstalledWebAppManager::SetSubsystems(
-    WebAppRegistrar* registrar,
-    const WebAppUiManager* ui_manager,
-    ExternallyManagedAppManager* externally_managed_app_manager) {
-  registrar_ = registrar;
-  ui_manager_ = ui_manager;
-  externally_managed_app_manager_ = externally_managed_app_manager;
+void PreinstalledWebAppManager::SetProvider(base::PassKey<WebAppProvider>,
+                                            WebAppProvider& provider) {
+  provider_ = &provider;
 }
 
 void PreinstalledWebAppManager::Start(base::OnceClosure on_done) {
+  DCHECK(provider_);
   if (g_skip_startup_for_testing_ || skip_startup_for_testing_) {  // IN-TEST
     std::move(on_done).Run();                                      // IN-TEST
     return;                                                        // IN-TEST
@@ -656,13 +703,19 @@ void PreinstalledWebAppManager::LoadAndSynchronizeForTesting(
 
 void PreinstalledWebAppManager::LoadAndSynchronize(
     SynchronizeCallback callback) {
+  base::OnceClosure load_and_synchronize = base::BindOnce(
+      &PreinstalledWebAppManager::Load, weak_ptr_factory_.GetWeakPtr(),
+      base::BindOnce(&PreinstalledWebAppManager::Synchronize,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+
+  if (g_bypass_awaiting_dependencies_for_testing_) {
+    std::move(load_and_synchronize).Run();
+    return;
+  }
+
   int num_barriers_issued = 2;
   base::RepeatingClosure barrier_closure = base::BarrierClosure(
-      num_barriers_issued,
-      base::BindOnce(
-          &PreinstalledWebAppManager::Load, weak_ptr_factory_.GetWeakPtr(),
-          base::BindOnce(&PreinstalledWebAppManager::Synchronize,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
+      num_barriers_issued, std::move(load_and_synchronize));
   device_data_initialized_event_->Post(barrier_closure);
 
   // Make sure ExtensionSystem is ready to know if default apps new installation
@@ -676,8 +729,9 @@ void PreinstalledWebAppManager::Load(ConsumeInstallOptions callback) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // With Lacros, web apps are not installed using the Ash browser.
-  if (IsWebAppsCrosapiEnabled())
+  if (IsWebAppsCrosapiEnabled()) {
     preinstalling_enabled = false;
+  }
 #endif
 
   if (!preinstalling_enabled) {
@@ -747,8 +801,9 @@ void PreinstalledWebAppManager::PostProcessConfigs(
     ConsumeInstallOptions callback,
     ParsedConfigs parsed_configs) {
   // Add hard coded configs.
-  for (ExternalInstallOptions& options : GetPreinstalledWebApps())
+  for (ExternalInstallOptions& options : GetPreinstalledWebApps()) {
     parsed_configs.options_list.push_back(std::move(options));
+  }
 
   // Set common install options.
   for (ExternalInstallOptions& options : parsed_configs.options_list) {
@@ -793,9 +848,10 @@ void PreinstalledWebAppManager::PostProcessConfigs(
   size_t corrupt_user_uninstall_prefs_count = 0;
   base::EraseIf(
       parsed_configs.options_list, [&](const ExternalInstallOptions& options) {
-        absl::optional<std::string> disable_reason = GetDisableReason(
-            options, profile_, registrar_, preinstalled_apps_enabled_in_prefs,
-            is_new_user, user_type, corrupt_user_uninstall_prefs_count);
+        absl::optional<std::string> disable_reason =
+            GetDisableReason(options, profile_, &provider_->registrar_unsafe(),
+                             preinstalled_apps_enabled_in_prefs, is_new_user,
+                             user_type, corrupt_user_uninstall_prefs_count);
         if (disable_reason) {
           VLOG(1) << *disable_reason;
           ++disabled_count;
@@ -813,12 +869,9 @@ void PreinstalledWebAppManager::PostProcessConfigs(
     debug_info_->enabled_configs = parsed_configs.options_list;
   }
 
-  // Triggers |force_reinstall| in ExternallyManagedAppManager if milestone
-  // increments across |force_reinstall_for_milestone|.
   for (ExternalInstallOptions& options : parsed_configs.options_list) {
-    if (options.force_reinstall_for_milestone &&
-        IsReinstallPastMilestoneNeededSinceLastSync(
-            options.force_reinstall_for_milestone.value())) {
+    if (ShouldForceReinstall(options, *profile_->GetPrefs(),
+                             provider_->registrar_unsafe())) {
       options.force_reinstall = true;
     }
   }
@@ -837,15 +890,16 @@ void PreinstalledWebAppManager::PostProcessConfigs(
 void PreinstalledWebAppManager::Synchronize(
     ExternallyManagedAppManager::SynchronizeCallback callback,
     std::vector<ExternalInstallOptions> desired_apps_install_options) {
-  DCHECK(externally_managed_app_manager_);
+  DCHECK(provider_);
 
   std::map<InstallUrl, std::vector<AppId>> desired_uninstalls;
   for (const auto& entry : desired_apps_install_options) {
-    if (!entry.uninstall_and_replace.empty())
+    if (!entry.uninstall_and_replace.empty()) {
       desired_uninstalls.emplace(entry.install_url,
                                  entry.uninstall_and_replace);
+    }
   }
-  externally_managed_app_manager_->SynchronizeInstalledApps(
+  provider_->externally_managed_app_manager().SynchronizeInstalledApps(
       std::move(desired_apps_install_options),
       ExternalInstallSource::kExternalDefault,
       base::BindOnce(&PreinstalledWebAppManager::OnExternalWebAppsSynchronized,
@@ -882,14 +936,16 @@ void PreinstalledWebAppManager::OnExternalWebAppsSynchronized(
       ++uninstall_and_replace_count;
     }
 
-    if (!IsSuccess(result.code))
+    if (!IsSuccess(result.code)) {
       continue;
+    }
 
     DCHECK(result.app_id.has_value());
 
     auto iter = desired_uninstalls.find(url_and_result.first);
-    if (iter == desired_uninstalls.end())
+    if (iter == desired_uninstalls.end()) {
       continue;
+    }
 
     for (const AppId& replace_id : iter->second) {
       // We mark the app as migrated to a web app as long as the
@@ -909,17 +965,21 @@ void PreinstalledWebAppManager::OnExternalWebAppsSynchronized(
               is_installed = apps_util::IsInstalled(app.Readiness());
             });
 
-        if (!is_installed)
+        if (!is_installed) {
           continue;
+        }
 
         ++app_to_replace_still_installed_count;
 
-        if (extensions::IsExtensionDefaultInstalled(profile_, replace_id))
+        if (extensions::IsExtensionDefaultInstalled(profile_, replace_id)) {
           ++app_to_replace_still_default_installed_count;
+        }
 
-        if (ui_manager_->CanAddAppToQuickLaunchBar()) {
-          if (ui_manager_->IsAppInQuickLaunchBar(result.app_id.value()))
+        if (provider_->ui_manager().CanAddAppToQuickLaunchBar()) {
+          if (provider_->ui_manager().IsAppInQuickLaunchBar(
+                  result.app_id.value())) {
             ++app_to_replace_still_installed_in_shelf_count;
+          }
         }
       }
     }
@@ -966,17 +1026,6 @@ bool PreinstalledWebAppManager::IsNewUser() {
   PrefService* prefs = profile_->GetPrefs();
   return prefs->GetString(prefs::kWebAppsLastPreinstallSynchronizeVersion)
       .empty();
-}
-
-bool PreinstalledWebAppManager::IsReinstallPastMilestoneNeededSinceLastSync(
-    int force_reinstall_for_milestone) {
-  PrefService* prefs = profile_->GetPrefs();
-  std::string last_preinstall_synchronize_milestone =
-      prefs->GetString(prefs::kWebAppsLastPreinstallSynchronizeVersion);
-
-  return IsReinstallPastMilestoneNeeded(last_preinstall_synchronize_milestone,
-                                        version_info::GetMajorVersionNumber(),
-                                        force_reinstall_for_milestone);
 }
 
 PreinstalledWebAppManager::DebugInfo::DebugInfo() = default;

@@ -4,12 +4,18 @@
 
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+// <if expr="is_chromeos">
+import './printer_setup_info_cros.js';
+// </if>
 import './print_preview_vars.css.js';
 import '../strings.m.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {hasKeyModifiers} from 'chrome://resources/js/util_ts.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+// <if expr="is_chromeos">
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+// </if>
+import {hasKeyModifiers} from 'chrome://resources/js/util_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DarkModeMixin} from '../dark_mode_mixin.js';
@@ -27,6 +33,9 @@ import {areRangesEqual} from '../print_preview_utils.js';
 import {MARGIN_KEY_MAP, PrintPreviewMarginControlContainerElement} from './margin_control_container.js';
 import {PluginProxy, PluginProxyImpl} from './plugin_proxy.js';
 import {getTemplate} from './preview_area.html.js';
+// <if expr="is_chromeos">
+import {PrinterSetupInfoMessageType, PrinterSetupInfoMetricsSource} from './printer_setup_info_cros.js';
+// </if>
 import {SettingsMixin} from './settings_mixin.js';
 
 export type PreviewTicket = Ticket&{
@@ -102,6 +111,35 @@ export class PrintPreviewPreviewAreaElement extends
         notify: true,
         computed: 'computePreviewLoaded_(documentReady_, pluginLoadComplete_)',
       },
+
+      // <if expr="is_chromeos">
+      isPrintPreviewSetupAssistanceEnabled_: {
+        type: Boolean,
+        value: () => {
+          return loadTimeData.getBoolean(
+              'isPrintPreviewSetupAssistanceEnabled');
+        },
+        readOnly: true,
+      },
+
+      printerOffline_: {
+        type: Number,
+        value: PrinterSetupInfoMessageType.PRINTER_OFFLINE,
+        readOnly: true,
+      },
+
+      previewAreaSource_: {
+        type: Number,
+        value: PrinterSetupInfoMetricsSource.PREVIEW_AREA,
+        readOnly: true,
+      },
+      // </if>
+
+      showCrosPrinterSetupInfo_: {
+        type: Boolean,
+        computed: 'computeShowCrosPrinterSetupInfo(state, error)',
+        reflectToAttribute: true,
+      },
     };
   }
 
@@ -124,7 +162,11 @@ export class PrintPreviewPreviewAreaElement extends
   private pluginLoadComplete_: boolean;
   private documentReady_: boolean;
   private previewLoaded_: boolean;
+  // <if expr="is_chromeos">
+  private isPrintPreviewSetupAssistanceEnabled_: boolean;
+  // </if>
 
+  private showCrosPrinterSetupInfo_: boolean = false;
   private nativeLayer_: NativeLayer|null = null;
   private lastTicket_: PreviewTicket|null = null;
   private inFlightRequestId_: number = -1;
@@ -756,6 +798,21 @@ export class PrintPreviewPreviewAreaElement extends
       default:
         return window.trustedTypes!.emptyHTML;
     }
+  }
+
+  /**
+   * Determines if setup info element should be shown instead of the preview
+   * area message. For ChromeOS, setup assistance is shown if the flag is
+   * enabled and the `INVALID_PRINTER` error has occurred. All other platforms
+   * `computeShowCrosPrinterSetupInfo` will return false.
+   */
+  private computeShowCrosPrinterSetupInfo(): boolean {
+    // <if expr="is_chromeos">
+    if (this.isPrintPreviewSetupAssistanceEnabled_) {
+      return this.state === State.ERROR && this.error === Error.INVALID_PRINTER;
+    }
+    // </if>
+    return false;
   }
 }
 

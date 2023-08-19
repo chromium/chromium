@@ -21,10 +21,6 @@
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface LocationBarSteadyViewMediator () <CRWWebStateObserver,
                                              WebStateListObserving,
                                              OverlayPresenterObserving> {
@@ -66,7 +62,7 @@
 }
 
 - (void)dealloc {
-  [self disconnect];
+  CHECK(!self.webStateList);
 }
 
 - (void)disconnect {
@@ -167,16 +163,15 @@
   [self notifyConsumerOfChangedSecurityIcon];
 }
 
-#pragma mark - WebStateListObserver
+#pragma mark - WebStateListObserving
 
-- (void)webStateList:(WebStateList*)webStateList
-    didChangeActiveWebState:(web::WebState*)newWebState
-                oldWebState:(web::WebState*)oldWebState
-                    atIndex:(int)atIndex
-                     reason:(ActiveWebStateChangeReason)reason {
-  [self notifyConsumerOfChangedLocation];
-
-  [self notifyConsumerOfChangedSecurityIcon];
+- (void)didChangeWebStateList:(WebStateList*)webStateList
+                       change:(const WebStateListChange&)change
+                       status:(const WebStateListStatus&)status {
+  if (status.active_web_state_change()) {
+    [self notifyConsumerOfChangedLocation];
+    [self notifyConsumerOfChangedSecurityIcon];
+  }
 }
 
 #pragma mark - OverlayPresenterObserving

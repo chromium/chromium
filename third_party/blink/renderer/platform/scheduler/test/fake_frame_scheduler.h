@@ -137,7 +137,8 @@ class FakeFrameScheduler : public FrameSchedulerImpl {
   void DidStartProvisionalLoad() override {}
   void DidCommitProvisionalLoad(
       bool is_web_history_inert_commit,
-      FrameScheduler::NavigationType navigation_type) override {}
+      FrameScheduler::NavigationType navigation_type,
+      DidCommitProvisionalLoadParams params) override {}
   void OnFirstMeaningfulPaint() override {}
   // |source_location| is nullptr when JS is not running.
   // |handle| is nullptr when sticky feature starts to be used.

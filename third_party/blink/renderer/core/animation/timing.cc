@@ -183,7 +183,6 @@ ComputedEffectTiming* Timing::getComputedTiming(
 
 Timing::CalculatedTiming Timing::CalculateTimings(
     absl::optional<AnimationTimeDelta> local_time,
-    bool at_progress_timeline_boundary,
     bool is_idle,
     const NormalizedTiming& normalized_timing,
     AnimationDirection animation_direction,
@@ -193,8 +192,7 @@ Timing::CalculatedTiming Timing::CalculateTimings(
   const AnimationTimeDelta duration = normalized_timing.iteration_duration;
 
   Timing::Phase current_phase =
-      CalculatePhase(normalized_timing, local_time,
-                     at_progress_timeline_boundary, animation_direction);
+      CalculatePhase(normalized_timing, local_time, animation_direction);
 
   const absl::optional<AnimationTimeDelta> active_time = CalculateActiveTime(
       normalized_timing, ResolvedFillMode(is_keyframe_effect), local_time,

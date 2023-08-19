@@ -751,12 +751,27 @@ void ShimlessRmaService::GetOriginalDramPartNumber(
       state_proto_.update_device_info().original_dram_part_number());
 }
 
+void ShimlessRmaService::GetOriginalFeatureLevel(
+    GetOriginalFeatureLevelCallback callback) {
+  if (state_proto_.state_case() != rmad::RmadState::kUpdateDeviceInfo) {
+    LOG(ERROR) << "GetOriginalFeatureLevel called from incorrect state "
+               << state_proto_.state_case();
+    std::move(callback).Run(
+        rmad::UpdateDeviceInfoState::RMAD_FEATURE_LEVEL_UNSUPPORTED);
+    return;
+  }
+  std::move(callback).Run(
+      state_proto_.update_device_info().original_feature_level());
+}
+
 void ShimlessRmaService::SetDeviceInformation(
     const std::string& serial_number,
     int32_t region_index,
     int32_t sku_index,
     int32_t white_label_index,
     const std::string& dram_part_number,
+    bool is_chassis_branded,
+    int32_t hw_compliance_version,
     SetDeviceInformationCallback callback) {
   if (state_proto_.state_case() != rmad::RmadState::kUpdateDeviceInfo) {
     LOG(ERROR) << "SetDeviceInformation called from incorrect state "
@@ -771,6 +786,10 @@ void ShimlessRmaService::SetDeviceInformation(
       white_label_index);
   state_proto_.mutable_update_device_info()->set_dram_part_number(
       dram_part_number);
+  state_proto_.mutable_update_device_info()->set_is_chassis_branded(
+      is_chassis_branded);
+  state_proto_.mutable_update_device_info()->set_hw_compliance_version(
+      hw_compliance_version);
   TransitionNextStateGeneric(std::move(callback));
 }
 

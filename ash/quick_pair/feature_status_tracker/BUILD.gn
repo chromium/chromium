@@ -100,6 +100,6 @@ source_set("unit_tests") {
     "//device/bluetooth:mocks",
     "//skia",
     "//testing/gtest",
-    "//ui/display/fake",
+    "//ui/display:test_support",
   ]
 }

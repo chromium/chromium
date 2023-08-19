@@ -12,11 +12,14 @@
 #include "base/time/time.h"
 #include "chrome/browser/webauthn/cablev2_devices.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info.h"
 #include "content/public/test/browser_task_environment.h"
 #include "device/fido/cable/cable_discovery_data.h"
+#include "device/fido/cable/v2_constants.h"
 #include "device/fido/cable/v2_handshake.h"
 #include "device/fido/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -186,6 +189,7 @@ TEST_F(CableV2DevicesProfileTest, InitiallyEmpty) {
 
 std::unique_ptr<Pairing> PairingWithAllFields() {
   auto ret = std::make_unique<Pairing>();
+  ret->tunnel_server_domain = device::cablev2::tunnelserver::KnownDomainID(1);
   ret->contact_id = {1, 2, 3, 4, 5};
   ret->id = {6, 7, 8, 9, 10};
   ret->secret = {11, 12, 13, 14, 15};
@@ -207,6 +211,7 @@ TEST_F(CableV2DevicesProfileTest, StoreAndFetch) {
 
   std::unique_ptr<Pairing> expected = PairingWithAllFields();
   const Pairing* const found = known_devices->linked_devices[0].get();
+  EXPECT_EQ(found->tunnel_server_domain, expected->tunnel_server_domain);
   EXPECT_EQ(found->contact_id, expected->contact_id);
   EXPECT_EQ(found->id, expected->id);
   EXPECT_EQ(found->secret, expected->secret);
@@ -369,6 +374,37 @@ TEST_F(CableV2DevicesProfileTest, UpdateLinkCollidingName) {
             [](auto&& a, auto&& b) -> bool { return a->name < b->name; });
   EXPECT_EQ(known_devices->linked_devices[0]->name, "two");
   EXPECT_EQ(known_devices->linked_devices[1]->name, "two (1)");
+}
+
+TEST_F(CableV2DevicesProfileTest, InvalidTunnelServerDomain) {
+  TestingProfile profile;
+  std::unique_ptr<Pairing> pairing = PairingWithAllFields();
+  pairing->tunnel_server_domain =
+      device::cablev2::tunnelserver::KnownDomainID(42);
+  cablev2::AddPairing(&profile, std::move(pairing));
+  std::unique_ptr<KnownDevices> known_devices =
+      KnownDevices::FromProfile(&profile);
+  EXPECT_TRUE(known_devices->linked_devices.empty());
+}
+
+TEST_F(CableV2DevicesProfileTest, MissingTunnelServerDomain) {
+  TestingProfile profile;
+  std::unique_ptr<Pairing> pairing = PairingWithAllFields();
+  cablev2::AddPairing(&profile, std::move(pairing));
+
+  {
+    ScopedListPrefUpdate update(profile.GetPrefs(),
+                                "webauthn.cablev2_pairings");
+    for (base::Value& val : *update) {
+      val.GetDict().Remove("encoded_tunnel_server");
+    }
+  }
+
+  std::unique_ptr<KnownDevices> known_devices =
+      KnownDevices::FromProfile(&profile);
+  ASSERT_EQ(known_devices->linked_devices.size(), 1u);
+  EXPECT_EQ(known_devices->linked_devices.at(0)->tunnel_server_domain,
+            device::cablev2::kTunnelServer);
 }
 
 struct TestDeviceInfoConfig {

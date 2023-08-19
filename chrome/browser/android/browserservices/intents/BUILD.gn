@@ -54,6 +54,7 @@ robolectric_library("junit") {
     "//third_party/android_deps:espresso_java",
     "//third_party/androidx:androidx_browser_browser_java",
     "//third_party/blink/public/mojom:mojom_platform_java",
+    "//third_party/hamcrest:hamcrest_java",
     "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/junit",
     "//ui/android:ui_no_recycler_view_java",

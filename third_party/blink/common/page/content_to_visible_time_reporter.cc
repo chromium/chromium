@@ -49,15 +49,19 @@ void RecordBackForwardCacheRestoreMetric(
       base::Milliseconds(10), base::Minutes(10), 100);
 }
 
+bool IsLatencyTraceCategoryEnabled() {
+  // Avoid unnecessary work to compute a track.
+  bool category_enabled;
+  TRACE_EVENT_CATEGORY_GROUP_ENABLED("latency", &category_enabled);
+  return category_enabled;
+}
+
 void RecordTabSwitchTraceEvent(base::TimeTicks start_time,
                                base::TimeTicks end_time,
                                TabSwitchResult result,
                                bool has_saved_frames,
                                bool destination_is_loaded) {
-  // Avoid unnecessary work to compute a track.
-  bool category_enabled;
-  TRACE_EVENT_CATEGORY_GROUP_ENABLED("latency", &category_enabled);
-  if (!category_enabled) {
+  if (!IsLatencyTraceCategoryEnabled()) {
     return;
   }
 
@@ -94,6 +98,24 @@ void RecordTabSwitchTraceEvent(base::TimeTicks start_time,
         }
       });
   TRACE_EVENT_END("latency", track, end_time);
+}
+
+// Records histogram and trace event for the unfolding latency.
+void RecordUnfoldHistogramAndTraceEvent(
+    base::TimeTicks begin_timestamp,
+    base::TimeTicks presentation_timestamp) {
+  DCHECK((begin_timestamp != base::TimeTicks()));
+
+  if (IsLatencyTraceCategoryEnabled()) {
+    const perfetto::Track track(base::trace_event::GetNextGlobalTraceId(),
+                                perfetto::ProcessTrack::Current());
+    TRACE_EVENT_BEGIN("latency", "Unfold.Latency", track, begin_timestamp);
+    TRACE_EVENT_END("latency", track, presentation_timestamp);
+  }
+
+  // Record the latency histogram.
+  base::UmaHistogramTimes("Android.UnfoldToTablet.Latency",
+                          (presentation_timestamp - begin_timestamp));
 }
 
 }  // namespace
@@ -152,7 +174,13 @@ ContentToVisibleTimeReporter::TabWasShown(bool has_saved_frames,
       has_saved_frames,
       mojom::RecordContentToVisibleTimeRequest::New(
           event_start_time, destination_is_loaded, show_reason_tab_switching,
-          show_reason_bfcache_restore));
+          show_reason_bfcache_restore, /*show_reason_unfold=*/false));
+}
+
+ContentToVisibleTimeReporter::SuccessfulPresentationTimeCallback
+ContentToVisibleTimeReporter::GetCallbackForNextFrameAfterUnfold(
+    base::TimeTicks begin_timestamp) {
+  return base::BindOnce(&RecordUnfoldHistogramAndTraceEvent, begin_timestamp);
 }
 
 void ContentToVisibleTimeReporter::TabWasHidden() {

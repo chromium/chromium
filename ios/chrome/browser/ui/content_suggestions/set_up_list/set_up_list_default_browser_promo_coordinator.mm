@@ -19,10 +19,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_default_browser_promo_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/first_run/default_browser/default_browser_screen_view_controller.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using base::RecordAction;
 using base::UmaHistogramEnumeration;
 using base::UserMetricsAction;
@@ -82,7 +78,7 @@ using base::UserMetricsAction;
 - (void)didTapPrimaryActionButton {
   RecordAction(UserMetricsAction("IOS.DefaultBrowserPromo.SetUpList.Accepted"));
   [self logDefaultBrowserFullscreenPromoHistogramForAction:
-            IOSDefaultBrowserFullscreenPromoAction::kActionButton];
+            IOSDefaultBrowserPromoAction::kActionButton];
   [_application openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]
                 options:{}
       completionHandler:nil];
@@ -93,7 +89,7 @@ using base::UserMetricsAction;
 - (void)didTapSecondaryActionButton {
   RecordAction(UserMetricsAction("IOS.DefaultBrowserPromo.SetUpList.Dismiss"));
   [self logDefaultBrowserFullscreenPromoHistogramForAction:
-            IOSDefaultBrowserFullscreenPromoAction::kCancel];
+            IOSDefaultBrowserPromoAction::kCancel];
   _markItemComplete = YES;
   [self.delegate setUpListDefaultBrowserPromoDidFinish:NO];
 }
@@ -104,14 +100,14 @@ using base::UserMetricsAction;
     (UIPresentationController*)presentationController {
   RecordAction(UserMetricsAction("IOS.DefaultBrowserPromo.SetUpList.Dismiss"));
   [self logDefaultBrowserFullscreenPromoHistogramForAction:
-            IOSDefaultBrowserFullscreenPromoAction::kCancel];
+            IOSDefaultBrowserPromoAction::kCancel];
   [self.delegate setUpListDefaultBrowserPromoDidFinish:NO];
 }
 
 #pragma mark - Metrics Helpers
 
 - (void)logDefaultBrowserFullscreenPromoHistogramForAction:
-    (IOSDefaultBrowserFullscreenPromoAction)action {
+    (IOSDefaultBrowserPromoAction)action {
   UmaHistogramEnumeration("IOS.DefaultBrowserPromo.SetUpList.Action", action);
 }
 

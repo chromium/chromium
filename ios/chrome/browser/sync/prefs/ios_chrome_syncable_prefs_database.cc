@@ -17,10 +17,10 @@ namespace {
 namespace syncable_prefs_ids {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. When adding a new entry, append the
-// enumerator to the end. When removing an unused enumerator, comment it out,
-// making it clear the value was previously used.
-// Please also add new entries to `SyncablePref` enum in
-// tools/metrics/histograms/enums.xml.
+// enumerator to the end and add it to the `SyncablePref` enum in
+// tools/metrics/histograms/enums.xml. When removing an unused enumerator,
+// comment it out here, making it clear the value was previously used, and
+// add "(obsolete)" to the corresponding entry in enums.xml.
 enum {
   // Starts with 200000 to avoid clash with prefs listed in
   // common_syncable_prefs_database.cc and
@@ -36,6 +36,12 @@ enum {
   kSearchSuggestEnabled = 200008,
   kTrackPricesOnTabsEnabled = 200009,
   kVoiceSearchLocale = 200010
+  // See components/sync_preferences/README.md about adding new entries here.
+  // vvvvv IMPORTANT! vvvvv
+  // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
+  // prefs follow privacy guidelines! See the readme file linked above for
+  // guidance and escalation path in case anything is unclear.
+  // ^^^^^ IMPORTANT! ^^^^^
 };
 }  // namespace syncable_prefs_ids
 
@@ -44,29 +50,35 @@ const auto& SyncablePreferences() {
   static const auto kIOSChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       base::StringPiece, sync_preferences::SyncablePrefMetadata>(
       {{prefs::kArticlesForYouEnabled,
-        {syncable_prefs_ids::kArticlesForYouEnabled, syncer::PREFERENCES}},
+        {syncable_prefs_ids::kArticlesForYouEnabled, syncer::PREFERENCES,
+         false}},
        {prefs::kContextualSearchEnabled,
-        {syncable_prefs_ids::kContextualSearchEnabled, syncer::PREFERENCES}},
+        {syncable_prefs_ids::kContextualSearchEnabled, syncer::PREFERENCES,
+         false}},
        {prefs::kDefaultCharset,
-        {syncable_prefs_ids::kDefaultCharset, syncer::PREFERENCES}},
+        {syncable_prefs_ids::kDefaultCharset, syncer::PREFERENCES, false}},
        {prefs::kEnableDoNotTrack,
-        {syncable_prefs_ids::kEnableDoNotTrack, syncer::PREFERENCES}},
+        {syncable_prefs_ids::kEnableDoNotTrack, syncer::PREFERENCES, false}},
        {prefs::kIosHandoffToOtherDevices,
-        {syncable_prefs_ids::kIosHandoffToOtherDevices, syncer::PREFERENCES}},
+        {syncable_prefs_ids::kIosHandoffToOtherDevices, syncer::PREFERENCES,
+         false}},
        {prefs::kNetworkPredictionSetting,
-        {syncable_prefs_ids::kNetworkPredictionSetting, syncer::PREFERENCES}},
+        {syncable_prefs_ids::kNetworkPredictionSetting, syncer::PREFERENCES,
+         false}},
        {prefs::kNTPContentSuggestionsEnabled,
-        {syncable_prefs_ids::kNTPContentSuggestionsEnabled,
-         syncer::PREFERENCES}},
+        {syncable_prefs_ids::kNTPContentSuggestionsEnabled, syncer::PREFERENCES,
+         false}},
        {prefs::kNTPContentSuggestionsForSupervisedUserEnabled,
         {syncable_prefs_ids::kNTPContentSuggestionsForSupervisedUserEnabled,
-         syncer::PREFERENCES}},
+         syncer::PREFERENCES, false}},
        {prefs::kSearchSuggestEnabled,
-        {syncable_prefs_ids::kSearchSuggestEnabled, syncer::PREFERENCES}},
+        {syncable_prefs_ids::kSearchSuggestEnabled, syncer::PREFERENCES,
+         false}},
        {prefs::kTrackPricesOnTabsEnabled,
-        {syncable_prefs_ids::kTrackPricesOnTabsEnabled, syncer::PREFERENCES}},
+        {syncable_prefs_ids::kTrackPricesOnTabsEnabled, syncer::PREFERENCES,
+         false}},
        {prefs::kVoiceSearchLocale,
-        {syncable_prefs_ids::kVoiceSearchLocale, syncer::PREFERENCES}}});
+        {syncable_prefs_ids::kVoiceSearchLocale, syncer::PREFERENCES, false}}});
   return kIOSChromeSyncablePrefsAllowlist;
 }
 }  // namespace

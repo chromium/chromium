@@ -14,7 +14,6 @@ All changes to this list should go through Blink's feature review process: http:
     -webkit-box-pack
     -webkit-box-reflect
     -webkit-font-smoothing
-    -webkit-highlight
     -webkit-line-break
     -webkit-line-clamp
     -webkit-locale
@@ -200,6 +199,7 @@ All changes to this list should go through Blink's feature review process: http:
     font-variant-east-asian
     font-variant-ligatures
     font-variant-numeric
+    font-variant-position
     font-variation-settings
     font-weight
     forced-color-adjust
@@ -265,8 +265,10 @@ All changes to this list should go through Blink's feature review process: http:
     object-fit
     object-position
     object-view-box
+    offset-anchor
     offset-distance
     offset-path
+    offset-position
     offset-rotate
     opacity
     order
@@ -280,6 +282,7 @@ All changes to this list should go through Blink's feature review process: http:
     overflow-wrap
     overflow-x
     overflow-y
+    overlay
     overscroll-behavior-block
     overscroll-behavior-inline
     overscroll-behavior-x
@@ -372,12 +375,14 @@ All changes to this list should go through Blink's feature review process: http:
     text-underline-offset
     text-underline-position
     text-wrap
+    timeline-scope
     top
     touch-action
     transform
     transform-box
     transform-origin
     transform-style
+    transition-behavior
     transition-delay
     transition-duration
     transition-property
@@ -611,6 +616,7 @@ All changes to this list should go through Blink's feature review process: http:
         font-variant-east-asian
         font-variant-ligatures
         font-variant-numeric
+        font-variant-position
         font-variation-settings
         font-weight
         line-height
@@ -624,6 +630,7 @@ All changes to this list should go through Blink's feature review process: http:
         font-variant-east-asian
         font-variant-ligatures
         font-variant-numeric
+        font-variant-position
     gap
         column-gap
         row-gap
@@ -687,8 +694,10 @@ All changes to this list should go through Blink's feature review process: http:
         marker-mid
         marker-start
     offset
+        offset-anchor
         offset-distance
         offset-path
+        offset-position
         offset-rotate
     outline
         outline-color
@@ -760,6 +769,7 @@ All changes to this list should go through Blink's feature review process: http:
         text-emphasis-color
         text-emphasis-style
     transition
+        transition-behavior
         transition-delay
         transition-duration
         transition-property

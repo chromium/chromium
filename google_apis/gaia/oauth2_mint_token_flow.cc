@@ -43,9 +43,9 @@ const char kOAuth2IssueTokenBodyFormat[] =
     "&scope=%s"
     "&enable_granular_permissions=%s"
     "&client_id=%s"
-    "&origin=%s"
     "&lib_ver=%s"
     "&release_channel=%s";
+const char kOAuth2IssueTokenBodyFormatExtensionIdAddendum[] = "&origin=%s";
 const char kOAuth2IssueTokenBodyFormatSelectedUserIdAddendum[] =
     "&selected_user_id=%s";
 const char kOAuth2IssueTokenBodyFormatDeviceIdAddendum[] =
@@ -59,6 +59,10 @@ const char kExpiresInKey[] = "expiresIn";
 const char kGrantedScopesKey[] = "grantedScopes";
 const char kError[] = "error";
 const char kMessage[] = "message";
+
+const char kTokenBindingResponseKey[] = "tokenBindingResponse";
+const char kRetryResponseKey[] = "retryResponse";
+const char kChallengeKey[] = "challenge";
 
 static GoogleServiceAuthError CreateAuthError(
     int net_error,
@@ -100,6 +104,22 @@ static GoogleServiceAuthError CreateAuthError(
   return GoogleServiceAuthError::FromServiceError(*message);
 }
 
+std::string* FindTokenBindingChallenge(base::Value::Dict& dict) {
+  base::Value::Dict* token_binding_response =
+      dict.FindDict(kTokenBindingResponseKey);
+  if (!token_binding_response) {
+    return nullptr;
+  }
+
+  base::Value::Dict* retry_response =
+      token_binding_response->FindDict(kRetryResponseKey);
+  if (!retry_response) {
+    return nullptr;
+  }
+
+  return retry_response->FindString(kChallengeKey);
+}
+
 bool AreCookiesEqual(const net::CanonicalCookie& lhs,
                      const net::CanonicalCookie& rhs) {
   return lhs.IsEquivalent(rhs);
@@ -129,37 +149,68 @@ bool RemoteConsentResolutionData::operator==(
 
 OAuth2MintTokenFlow::Parameters::Parameters() : mode(MODE_ISSUE_ADVICE) {}
 
-OAuth2MintTokenFlow::Parameters::Parameters(
-    const std::string& eid,
-    const std::string& cid,
-    const std::vector<std::string>& scopes_arg,
+// static
+OAuth2MintTokenFlow::Parameters
+OAuth2MintTokenFlow::Parameters::CreateForExtensionFlow(
+    base::StringPiece extension_id,
+    base::StringPiece client_id,
+    base::span<const base::StringPiece> scopes,
+    Mode mode,
     bool enable_granular_permissions,
-    const std::string& device_id,
-    const std::string& selected_user_id,
-    const std::string& consent_result,
-    const std::string& version,
-    const std::string& channel,
-    Mode mode_arg)
-    : extension_id(eid),
-      client_id(cid),
-      scopes(scopes_arg),
-      enable_granular_permissions(enable_granular_permissions),
-      device_id(device_id),
-      selected_user_id(selected_user_id),
-      consent_result(consent_result),
-      version(version),
-      channel(channel),
-      mode(mode_arg) {}
+    base::StringPiece version,
+    base::StringPiece channel,
+    base::StringPiece device_id,
+    base::StringPiece selected_user_id,
+    base::StringPiece consent_result) {
+  Parameters parameters;
+  parameters.extension_id = extension_id;
+  parameters.client_id = client_id;
+  parameters.scopes = std::vector<std::string>(scopes.begin(), scopes.end());
+  parameters.mode = mode;
+  parameters.enable_granular_permissions = enable_granular_permissions;
+  parameters.version = version;
+  parameters.channel = channel;
+  parameters.device_id = device_id;
+  parameters.selected_user_id = selected_user_id;
+  parameters.consent_result = consent_result;
+  return parameters;
+}
+
+// static
+OAuth2MintTokenFlow::Parameters
+OAuth2MintTokenFlow::Parameters::CreateForClientFlow(
+    base::StringPiece client_id,
+    base::span<const base::StringPiece> scopes,
+    base::StringPiece version,
+    base::StringPiece channel,
+    base::StringPiece device_id) {
+  Parameters parameters;
+  parameters.client_id = client_id;
+  parameters.scopes = std::vector<std::string>(scopes.begin(), scopes.end());
+  parameters.mode = MODE_MINT_TOKEN_NO_FORCE;
+  parameters.version = version;
+  parameters.channel = channel;
+  parameters.device_id = device_id;
+  return parameters;
+}
+
+OAuth2MintTokenFlow::Parameters::Parameters(Parameters&& other) noexcept =
+    default;
+OAuth2MintTokenFlow::Parameters& OAuth2MintTokenFlow::Parameters::operator=(
+    Parameters&& other) noexcept = default;
 
 OAuth2MintTokenFlow::Parameters::Parameters(const Parameters& other) = default;
+OAuth2MintTokenFlow::Parameters::~Parameters() = default;
 
-OAuth2MintTokenFlow::Parameters::~Parameters() {}
+OAuth2MintTokenFlow::Parameters OAuth2MintTokenFlow::Parameters::Clone() {
+  return Parameters(*this);
+}
 
 OAuth2MintTokenFlow::OAuth2MintTokenFlow(Delegate* delegate,
-                                         const Parameters& parameters)
-    : delegate_(delegate), parameters_(parameters) {}
+                                         Parameters parameters)
+    : delegate_(delegate), parameters_(std::move(parameters)) {}
 
-OAuth2MintTokenFlow::~OAuth2MintTokenFlow() { }
+OAuth2MintTokenFlow::~OAuth2MintTokenFlow() = default;
 
 void OAuth2MintTokenFlow::ReportSuccess(
     const std::string& access_token,
@@ -212,9 +263,13 @@ std::string OAuth2MintTokenFlow::CreateApiCallBody() {
       base::EscapeUrlEncodedData(enable_granular_permissions_value, true)
           .c_str(),
       base::EscapeUrlEncodedData(parameters_.client_id, true).c_str(),
-      base::EscapeUrlEncodedData(parameters_.extension_id, true).c_str(),
       base::EscapeUrlEncodedData(parameters_.version, true).c_str(),
       base::EscapeUrlEncodedData(parameters_.channel, true).c_str());
+  if (!parameters_.extension_id.empty()) {
+    body.append(base::StringPrintf(
+        kOAuth2IssueTokenBodyFormatExtensionIdAddendum,
+        base::EscapeUrlEncodedData(parameters_.extension_id, true).c_str()));
+  }
   if (!parameters_.device_id.empty()) {
     body.append(base::StringPrintf(
         kOAuth2IssueTokenBodyFormatDeviceIdAddendum,
@@ -250,6 +305,16 @@ void OAuth2MintTokenFlow::ProcessApiCallSuccess(
   }
 
   base::Value::Dict& dict = value->GetDict();
+
+  std::string* challenge = FindTokenBindingChallenge(dict);
+  if (challenge) {
+    RecordApiCallResult(
+        OAuth2MintTokenApiCallResult::kChallengeResponseRequiredFailure);
+    ReportFailure(
+        GoogleServiceAuthError::FromTokenBindingChallenge(*challenge));
+    return;
+  }
+
   std::string* issue_advice_value = dict.FindString(kIssueAdviceKey);
   if (!issue_advice_value) {
     RecordApiCallResult(

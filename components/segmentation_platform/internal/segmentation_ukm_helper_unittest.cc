@@ -204,11 +204,11 @@ TEST_F(SegmentationUkmHelperTest, TestDefaultAllowedList) {
   proto::SegmentInfo segment_info =
       CreateTestSegmentInfo(proto::OPTIMIZATION_TARGET_UNKNOWN, false);
   EXPECT_FALSE(
-      SegmentationUkmHelper::GetInstance()->CanUploadTensors(segment_info));
+      SegmentationUkmHelper::GetInstance()->IsUploadRequested(segment_info));
   segment_info = CreateTestSegmentInfo(
       proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, false);
   EXPECT_TRUE(
-      SegmentationUkmHelper::GetInstance()->CanUploadTensors(segment_info));
+      SegmentationUkmHelper::GetInstance()->IsUploadRequested(segment_info));
 }
 
 // Tests that tensor uploading if default allowed list is disabled.
@@ -219,7 +219,7 @@ TEST_F(SegmentationUkmHelperTest, TestDisallowDefaultAllowedList) {
   proto::SegmentInfo segment_info = CreateTestSegmentInfo(
       proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, false);
   EXPECT_FALSE(
-      SegmentationUkmHelper::GetInstance()->CanUploadTensors(segment_info));
+      SegmentationUkmHelper::GetInstance()->IsUploadRequested(segment_info));
 }
 
 // Tests that tensor uploading is enabled through metadata.
@@ -227,7 +227,7 @@ TEST_F(SegmentationUkmHelperTest, TestUploadTensorsAllowedFromMetadata) {
   proto::SegmentInfo segment_info = CreateTestSegmentInfo(
       proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, true);
   EXPECT_TRUE(
-      SegmentationUkmHelper::GetInstance()->CanUploadTensors(segment_info));
+      SegmentationUkmHelper::GetInstance()->IsUploadRequested(segment_info));
 }
 
 // Tests that float encoding works properly.

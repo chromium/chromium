@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <algorithm>
-#include <cctype>
 #include <initializer_list>
 #include <map>
 #include <sstream>
@@ -18,6 +17,7 @@
 #include "base/check_op.h"
 #include "components/zucchini/address_translator.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/strings/ascii.h"
 
 namespace zucchini {
 
@@ -104,14 +104,14 @@ static bool SplitBits(const std::string& pattern,
     if (token == "0" || token == "1") {
       if (token[0] != static_cast<char>('0' + bit))
         return false;  // Fail: Mismatch.
-    } else if (isupper(token[0])) {
+    } else if (absl::ascii_isupper(static_cast<unsigned char>(token[0]))) {
       if (temp_components.count(token)) {
         if (temp_components[token] != bit)
           return false;  // Fail: Singleton bit not uniform.
       } else {
         temp_components[token] = bit;
       }
-    } else if (islower(token[0])) {
+    } else if (absl::ascii_islower(static_cast<unsigned char>(token[0]))) {
       temp_components[token] = (temp_components[token] << 1) | bit;
     } else if (token != ".") {
       return false;  // Fail: Unrecognized token.

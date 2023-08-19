@@ -6,6 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/clipboard/data_object_item.h"
+#include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/file_metadata.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
@@ -31,6 +32,7 @@ class DataObjectObserver : public GarbageCollected<DataObjectObserver>,
 };
 
 TEST_F(DataObjectTest, DataObjectObserver) {
+  ScopedNullExecutionContext context;
   DataObjectObserver* observer = MakeGarbageCollected<DataObjectObserver>();
   data_object_->AddObserver(observer);
 
@@ -65,7 +67,8 @@ TEST_F(DataObjectTest, DataObjectObserver) {
 
   String file_path =
       test::BlinkRootDir() + "/renderer/core/clipboard/dat_aobject_test.cc";
-  data_object_->AddFilename(file_path, String(), String());
+  data_object_->AddFilename(&context.GetExecutionContext(), file_path, String(),
+                            String());
   EXPECT_EQ(2U, data_object_->length());
   EXPECT_EQ(4U, observer->call_count());
   EXPECT_EQ(1U, observer2->call_count());
@@ -82,10 +85,12 @@ TEST_F(DataObjectTest, DataObjectObserver) {
 }
 
 TEST_F(DataObjectTest, addItemWithFilenameAndNoTitle) {
+  ScopedNullExecutionContext context;
   String file_path =
       test::BlinkRootDir() + "/renderer/core/clipboard/data_object_test.cc";
 
-  data_object_->AddFilename(file_path, String(), String());
+  data_object_->AddFilename(&context.GetExecutionContext(), file_path, String(),
+                            String());
   EXPECT_EQ(1U, data_object_->length());
 
   DataObjectItem* item = data_object_->Item(0);
@@ -101,10 +106,12 @@ TEST_F(DataObjectTest, addItemWithFilenameAndNoTitle) {
 }
 
 TEST_F(DataObjectTest, addItemWithFilenameAndTitle) {
+  ScopedNullExecutionContext context;
   String file_path =
       test::BlinkRootDir() + "/renderer/core/clipboard/data_object_test.cc";
 
-  data_object_->AddFilename(file_path, "name.cpp", String());
+  data_object_->AddFilename(&context.GetExecutionContext(), file_path,
+                            "name.cpp", String());
   EXPECT_EQ(1U, data_object_->length());
 
   DataObjectItem* item = data_object_->Item(0);
@@ -120,12 +127,15 @@ TEST_F(DataObjectTest, addItemWithFilenameAndTitle) {
 }
 
 TEST_F(DataObjectTest, fileSystemId) {
+  ScopedNullExecutionContext context;
   String file_path =
       test::BlinkRootDir() + "/renderer/core/clipboard/data_object_test.cpp";
   KURL url;
 
-  data_object_->AddFilename(file_path, String(), String());
-  data_object_->AddFilename(file_path, String(), "fileSystemIdForFilename");
+  data_object_->AddFilename(&context.GetExecutionContext(), file_path, String(),
+                            String());
+  data_object_->AddFilename(&context.GetExecutionContext(), file_path, String(),
+                            "fileSystemIdForFilename");
   FileMetadata metadata;
   metadata.length = 0;
   data_object_->Add(

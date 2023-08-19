@@ -16,11 +16,15 @@ namespace content {
 
 OsRegistration::OsRegistration(
     GURL registration_url,
+    bool debug_reporting,
     url::Origin top_level_origin,
-    absl::optional<AttributionInputEvent> input_event)
+    absl::optional<AttributionInputEvent> input_event,
+    bool is_within_fenced_frame)
     : registration_url(std::move(registration_url)),
+      debug_reporting(debug_reporting),
       top_level_origin(std::move(top_level_origin)),
-      input_event(std::move(input_event)) {}
+      input_event(std::move(input_event)),
+      is_within_fenced_frame(is_within_fenced_frame) {}
 
 OsRegistration::~OsRegistration() = default;
 
@@ -32,11 +36,10 @@ OsRegistration::OsRegistration(OsRegistration&&) = default;
 
 OsRegistration& OsRegistration::operator=(OsRegistration&&) = default;
 
-attribution_reporting::mojom::OsRegistrationType OsRegistration::GetType()
-    const {
+attribution_reporting::mojom::RegistrationType OsRegistration::GetType() const {
   return input_event.has_value()
-             ? attribution_reporting::mojom::OsRegistrationType::kSource
-             : attribution_reporting::mojom::OsRegistrationType::kTrigger;
+             ? attribution_reporting::mojom::RegistrationType::kSource
+             : attribution_reporting::mojom::RegistrationType::kTrigger;
 }
 
 }  // namespace content

@@ -6,7 +6,7 @@
 
 #import <memory>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -25,10 +25,6 @@
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/web_state.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using autofill::FieldRendererId;
 using autofill::FormRendererId;
 // Block types for `RunSearchPipeline`.
@@ -39,12 +35,7 @@ namespace {
 
 // Struct that describes suggestion state.
 struct AutofillSuggestionState {
-  AutofillSuggestionState(const std::string& form_name,
-                          FormRendererId unique_form_id,
-                          const std::string& field_identifier,
-                          FieldRendererId unique_field_id,
-                          const std::string& frame_identifier,
-                          const std::string& typed_value);
+  AutofillSuggestionState(const autofill::FormActivityParams& params);
   // The name of the form for autofill.
   std::string form_name;
   // The unique numeric identifier of the form for autofill.
@@ -62,18 +53,13 @@ struct AutofillSuggestionState {
 };
 
 AutofillSuggestionState::AutofillSuggestionState(
-    const std::string& form_name,
-    FormRendererId unique_form_id,
-    const std::string& field_identifier,
-    FieldRendererId unique_field_id,
-    const std::string& frame_identifier,
-    const std::string& typed_value)
-    : form_name(form_name),
-      unique_form_id(unique_form_id),
-      field_identifier(field_identifier),
-      unique_field_id(unique_field_id),
-      frame_identifier(frame_identifier),
-      typed_value(typed_value) {}
+    const autofill::FormActivityParams& params)
+    : form_name(params.form_name),
+      unique_form_id(params.unique_form_id),
+      field_identifier(params.field_identifier),
+      unique_field_id(params.unique_field_id),
+      frame_identifier(params.frame_id),
+      typed_value(params.value) {}
 
 // Executes each PipelineBlock in `blocks` in order until one invokes its
 // completion with YES, in which case `on_complete` will be invoked with the
@@ -320,29 +306,19 @@ void RunSearchPipeline(NSArray<PipelineBlock>* blocks,
   }
 }
 
+#pragma mark - FormSuggestionClient
+
 - (void)didSelectSuggestion:(FormSuggestion*)suggestion {
-  // If a suggestion was selected, reset the password bottom sheet dismiss count
-  // to 0.
-  [self resetPasswordBottomSheetDismissCount];
+  const AutofillSuggestionState* suggestionState = _suggestionState.get();
+  if (suggestionState) {
+    [self didSelectSuggestion:suggestion state:(*suggestionState)];
+  }
+}
 
-  if (!_suggestionState)
-    return;
-
-  // Send the suggestion to the provider. Upon completion advance the cursor
-  // for single-field Autofill, or close the keyboard for full-form Autofill.
-  __weak FormSuggestionController* weakSelf = self;
-  [_provider
-      didSelectSuggestion:suggestion
-                     form:base::SysUTF8ToNSString(_suggestionState->form_name)
-             uniqueFormID:_suggestionState->unique_form_id
-          fieldIdentifier:base::SysUTF8ToNSString(
-                              _suggestionState->field_identifier)
-            uniqueFieldID:_suggestionState->unique_field_id
-                  frameID:base::SysUTF8ToNSString(
-                              _suggestionState->frame_identifier)
-        completionHandler:^{
-          [[weakSelf formInputNavigator] closeKeyboardWithoutButtonPress];
-        }];
+- (void)didSelectSuggestion:(FormSuggestion*)suggestion
+                     params:(const autofill::FormActivityParams&)params {
+  AutofillSuggestionState suggestionState(params);
+  [self didSelectSuggestion:suggestion state:suggestionState];
 }
 
 #pragma mark - FormInputSuggestionsProvider
@@ -352,9 +328,7 @@ void RunSearchPipeline(NSArray<PipelineBlock>* blocks,
           accessoryViewUpdateBlock:
               (FormSuggestionsReadyCompletion)accessoryViewUpdateBlock {
   [self processPage:webState];
-  _suggestionState.reset(new AutofillSuggestionState(
-      params.form_name, params.unique_form_id, params.field_identifier,
-      params.unique_field_id, params.frame_id, params.value));
+  _suggestionState.reset(new AutofillSuggestionState(params));
   _accessoryViewUpdateBlock = [accessoryViewUpdateBlock copy];
   [self retrieveSuggestionsForForm:params webState:webState];
 }
@@ -374,6 +348,30 @@ void RunSearchPipeline(NSArray<PipelineBlock>* blocks,
 }
 
 #pragma mark - Private
+
+// Performs the suggestion selection based on the provided suggestion state.
+- (void)didSelectSuggestion:(FormSuggestion*)suggestion
+                      state:(const AutofillSuggestionState&)suggestionState {
+  // If a suggestion was selected, reset the password bottom sheet dismiss count
+  // to 0.
+  [self resetPasswordBottomSheetDismissCount];
+
+  // Send the suggestion to the provider. Upon completion advance the cursor
+  // for single-field Autofill, or close the keyboard for full-form Autofill.
+  __weak FormSuggestionController* weakSelf = self;
+  [_provider
+      didSelectSuggestion:suggestion
+                     form:base::SysUTF8ToNSString(suggestionState.form_name)
+             uniqueFormID:suggestionState.unique_form_id
+          fieldIdentifier:base::SysUTF8ToNSString(
+                              suggestionState.field_identifier)
+            uniqueFieldID:suggestionState.unique_field_id
+                  frameID:base::SysUTF8ToNSString(
+                              suggestionState.frame_identifier)
+        completionHandler:^{
+          [[weakSelf formInputNavigator] closeKeyboardWithoutButtonPress];
+        }];
+}
 
 // Resets the password bottom sheet dismiss count to 0.
 - (void)resetPasswordBottomSheetDismissCount {

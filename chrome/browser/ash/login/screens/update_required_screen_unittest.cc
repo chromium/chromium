@@ -108,10 +108,11 @@ class UpdateRequiredScreenUnitTest : public testing::Test {
   std::unique_ptr<MockErrorScreen> mock_error_screen_;
   std::unique_ptr<WizardContext> wizard_context_;
   // Will be deleted in `network_portal_detector::Shutdown()`.
-  raw_ptr<MockNetworkPortalDetector, ExperimentalAsh>
+  raw_ptr<MockNetworkPortalDetector, DanglingUntriaged | ExperimentalAsh>
       mock_network_portal_detector_;
   // Will be deleted in `DBusThreadManager::Shutdown()`.
-  raw_ptr<FakeUpdateEngineClient, ExperimentalAsh> fake_update_engine_client_;
+  raw_ptr<FakeUpdateEngineClient, DanglingUntriaged | ExperimentalAsh>
+      fake_update_engine_client_;
   // Initializes NetworkHandler and required DBus clients.
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
 

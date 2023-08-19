@@ -37,10 +37,6 @@
 #include "sandbox/policy/mac/utility.sb.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace sandbox::policy {
 
 base::FilePath GetCanonicalPath(const base::FilePath& path) {

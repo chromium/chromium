@@ -4,10 +4,6 @@
 
 #import "ios/web/public/js_messaging/web_frames_manager_observer_bridge.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace web {
 
 WebFramesManagerObserverBridge::WebFramesManagerObserverBridge(

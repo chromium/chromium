@@ -91,7 +91,7 @@ KeyedService* AndroidSessionDurationsServiceFactory::BuildServiceInstanceFor(
     service->InitializeForIncognitoProfile();
   } else {
     service->InitializeForRegularProfile(
-        SyncServiceFactory::GetForProfile(profile),
+        profile->GetPrefs(), SyncServiceFactory::GetForProfile(profile),
         IdentityManagerFactory::GetForProfile(profile));
   }
   return service;

@@ -9,18 +9,14 @@
 
 #include "base/apple/bridging.h"
 #include "base/apple/bundle_locations.h"
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/strings/sys_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "chrome/common/channel_info.h"
 #include "components/version_info/version_info.h"
 #import "net/base/mac/url_conversions.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace shell_integration {
 
@@ -191,14 +187,14 @@ std::vector<base::FilePath> GetAllApplicationPathsForURL(const GURL& url) {
   std::vector<base::FilePath> app_paths;
   app_paths.reserve(app_urls.count);
   for (NSURL* app_url in app_urls) {
-    app_paths.push_back(base::mac::NSURLToFilePath(app_url));
+    app_paths.push_back(base::apple::NSURLToFilePath(app_url));
   }
   return app_paths;
 }
 
 bool CanApplicationHandleURL(const base::FilePath& app_path, const GURL& url) {
   NSURL* ns_item_url = net::NSURLWithGURL(url);
-  NSURL* ns_app_url = base::mac::FilePathToNSURL(app_path);
+  NSURL* ns_app_url = base::apple::FilePathToNSURL(app_path);
   Boolean result = FALSE;
   LSCanURLAcceptURL(base::apple::NSToCFPtrCast(ns_item_url),
                     base::apple::NSToCFPtrCast(ns_app_url), kLSRolesAll,

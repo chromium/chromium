@@ -75,6 +75,7 @@ class MediaFileSystemBackend : public storage::FileSystemBackend {
       storage::FileSystemType type,
       base::File::Error* error_code) override;
   std::unique_ptr<storage::FileSystemOperation> CreateFileSystemOperation(
+      storage::OperationType type,
       const storage::FileSystemURL& url,
       storage::FileSystemContext* context,
       base::File::Error* error_code) const override;

@@ -72,7 +72,7 @@ LoginPublicAccountUserView::LoginPublicAccountUserView(
       LoginDisplayStyle::kLarge, false /*show_dropdown*/,
       base::BindRepeating(&LoginPublicAccountUserView::OnUserViewTap,
                           base::Unretained(this)),
-      base::RepeatingClosure(), base::RepeatingClosure());
+      base::RepeatingClosure());
   auto arrow_button = std::make_unique<ArrowButtonView>(
       base::BindRepeating(&LoginPublicAccountUserView::ArrowButtonPressed,
                           base::Unretained(this)),

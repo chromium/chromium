@@ -70,12 +70,11 @@ class LaunchAsMojoClientBrowserTest : public ContentBrowserTest {
                                   temp_dir_.GetPath());
 #if BUILDFLAG(IS_OZONE)
     const base::CommandLine& cmdline = *base::CommandLine::ForCurrentProcess();
-    const char* kSwitchesToCopy[] = {
+    static const char* const kSwitchesToCopy[] = {
         // Keep the kOzonePlatform switch that the Ozone must use.
         switches::kOzonePlatform,
     };
-    command_line.CopySwitchesFrom(cmdline, kSwitchesToCopy,
-                                  std::size(kSwitchesToCopy));
+    command_line.CopySwitchesFrom(cmdline, kSwitchesToCopy);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

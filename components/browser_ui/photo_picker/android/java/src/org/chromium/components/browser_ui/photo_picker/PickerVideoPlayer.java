@@ -33,6 +33,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.math.MathUtils;
 import androidx.core.view.GestureDetectorCompat;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.ui.UiUtils;
@@ -833,17 +834,15 @@ public class PickerVideoPlayer
     }
 
     /** Sets whether to use shorter timeouts and durations. For testing use only. */
-    @VisibleForTesting
     public static void setShortAnimationTimesForTesting(boolean value) {
         sShortAnimationTimesForTesting = value;
+        ResettersForTesting.register(() -> sShortAnimationTimesForTesting = false);
     }
 
-    @VisibleForTesting
     public void singleTapForTesting() {
         onSingleTapVideo();
     }
 
-    @VisibleForTesting
     public void doubleTapForTesting(float x) {
         onDoubleTapVideo(x);
     }

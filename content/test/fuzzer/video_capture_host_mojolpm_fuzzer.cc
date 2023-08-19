@@ -14,7 +14,9 @@
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread.h"
+#include "content/browser/media/media_devices_util.h"  // nogncheck
 #include "content/browser/renderer_host/media/fake_video_capture_provider.h"
 #include "content/browser/renderer_host/media/in_process_video_capture_provider.h"  // nogncheck
 #include "content/browser/renderer_host/media/media_stream_manager.h"  // nogncheck
@@ -23,6 +25,8 @@
 #include "content/browser/renderer_host/media/video_capture_manager.h"  // nogncheck
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/media_device_id.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/test/fuzzer/mojolpm_fuzzer_support.h"
@@ -377,7 +381,8 @@ void VideoCaptureHostTestcase::OpenSession(int render_process_id,
                                            int requester_id,
                                            int page_request_id) {
   // We get `salt_and_origin` on the UI Thread, and use it on the IO thread.
-  content::MediaDeviceSaltAndOrigin salt_and_origin;
+  content::MediaDeviceSaltAndOrigin salt_and_origin =
+      content::MediaDeviceSaltAndOrigin::Empty();
   {
     base::RunLoop run_loop{base::RunLoop::Type::kNestableTasksAllowed};
     content::GetUIThreadTaskRunner({})->PostTaskAndReply(
@@ -404,8 +409,11 @@ void VideoCaptureHostTestcase::OpenSessionOnUIThread(
     int render_process_id,
     int render_frame_id,
     content::MediaDeviceSaltAndOrigin* out_salt_and_origin) {
-  *out_salt_and_origin =
-      content::GetMediaDeviceSaltAndOrigin(render_process_id, render_frame_id);
+  base::test::TestFuture<const content::MediaDeviceSaltAndOrigin&> future;
+  content::GetMediaDeviceSaltAndOrigin(
+      content::GlobalRenderFrameHostId(render_process_id, render_frame_id),
+      future.GetCallback());
+  *out_salt_and_origin = future.Get();
 }
 
 void VideoCaptureHostTestcase::OpenSessionOnIOThread(
@@ -426,8 +434,8 @@ void VideoCaptureHostTestcase::OpenSessionOnIOThread(
         devices_to_enumerate,
         base::BindOnce(&VideoCaptureHostTestcase::VideoInputDevicesEnumerated,
                        base::Unretained(this), run_loop.QuitClosure(),
-                       salt_and_origin.device_id_salt, salt_and_origin.origin,
-                       &video_devices));
+                       salt_and_origin.device_id_salt(),
+                       salt_and_origin.origin(), &video_devices));
 
     run_loop.Run();
   }
@@ -495,8 +503,7 @@ void VideoCaptureHostTestcase::VideoInputDevicesEnumerated(
   for (const auto& info :
        enumeration[static_cast<size_t>(MediaDeviceType::MEDIA_VIDEO_INPUT)]) {
     std::string device_id =
-        content::MediaStreamManager::GetHMACForMediaDeviceID(
-            salt, security_origin, info.device_id);
+        content::GetHMACForMediaDeviceID(salt, security_origin, info.device_id);
     out->push_back(
         blink::WebMediaDeviceInfo(device_id, info.label, std::string()));
   }

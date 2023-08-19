@@ -18,7 +18,7 @@
 #include "chrome/browser/ui/webui/settings/ash/files_page/one_drive_page_handler_factory.h"
 #include "chrome/browser/ui/webui/settings/ash/input_device_settings/input_device_settings_provider.mojom.h"
 #include "chrome/browser/ui/webui/settings/ash/os_apps_page/mojom/app_notification_handler.mojom-forward.h"
-#include "chrome/browser/ui/webui/settings/ash/search/user_action_recorder.mojom-forward.h"
+#include "chrome/browser/ui/webui/settings/ash/search/mojom/user_action_recorder.mojom-forward.h"
 #include "chrome/browser/ui/webui/webui_load_timer.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/components/audio/public/mojom/cros_audio_config.mojom-forward.h"
@@ -162,6 +162,8 @@ class OSSettingsUI : public ui::MojoWebUIController {
       mojo::PendingReceiver<auth::mojom::RecoveryFactorEditor> receiver);
   void BindInterface(
       mojo::PendingReceiver<auth::mojom::PinFactorEditor> receiver);
+  void BindInterface(
+      mojo::PendingReceiver<auth::mojom::PasswordFactorEditor> receiver);
 
   // Binds to the Jelly dynamic color Mojo
   void BindInterface(

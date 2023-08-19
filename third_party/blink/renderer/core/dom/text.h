@@ -82,12 +82,11 @@ class CORE_EXPORT Text : public CharacterData {
 
  private:
   String nodeName() const override;
-  Node* Clone(Document&, CloneChildrenFlag) const override;
 
-  bool IsTextNode() const =
-      delete;  // This will catch anyone doing an unnecessary check.
+  // This will catch anyone doing an unnecessary check.
+  bool IsTextNode() const = delete;
 
-  virtual Text* CloneWithData(Document&, const String&) const;
+  CharacterData* CloneWithData(Document&, const String&) const override;
 };
 
 template <>

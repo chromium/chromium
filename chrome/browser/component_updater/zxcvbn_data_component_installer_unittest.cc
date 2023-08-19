@@ -7,11 +7,11 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/logging.h"
 #include "base/strings/string_piece.h"
-#include "base/test/scoped_feature_list.h"
+#include "base/strings/string_split.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -28,6 +28,34 @@ using ::testing::UnorderedElementsAre;
 constexpr char kTextfilesOnlyVersion[] = "1";
 constexpr char kMemoryMappedVersion[] = "2";
 constexpr char kFutureVersion[] = "2.1";
+
+// Use this function to generate a new combined file from the updated
+// dictionaries.
+zxcvbn::RankedDicts ParseRankedDictionaries(const base::FilePath& install_dir) {
+  std::vector<std::string> raw_dicts;
+  for (const auto& file_name : ZxcvbnDataComponentInstallerPolicy::kFileNames) {
+    base::FilePath dictionary_path = install_dir.Append(file_name);
+    DVLOG(1) << "Reading Dictionary from file: " << dictionary_path;
+
+    std::string dictionary;
+    if (base::ReadFileToString(dictionary_path, &dictionary)) {
+      raw_dicts.push_back(std::move(dictionary));
+    } else {
+      DVLOG(1) << "Failed reading from " << dictionary_path;
+    }
+  }
+
+  // The contained StringPieces hold references to the strings in raw_dicts.
+  std::vector<std::vector<base::StringPiece>> dicts;
+  for (const auto& raw_dict : raw_dicts) {
+    dicts.push_back(base::SplitStringPiece(
+        raw_dict, "\r\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
+  }
+
+  // This copies the words; after this call, the original strings can be
+  // discarded.
+  return zxcvbn::RankedDicts(dicts);
+}
 
 }  // namespace
 
@@ -57,30 +85,9 @@ class ZxcvbnDataComponentInstallerPolicyTest : public ::testing::Test {
   }
 
   void CreateEmptyTextFiles() {
-    base::WriteFile(
-        GetPath().Append(
-            ZxcvbnDataComponentInstallerPolicy::kEnglishWikipediaTxtFileName),
-        "");
-    base::WriteFile(
-        GetPath().Append(
-            ZxcvbnDataComponentInstallerPolicy::kFemaleNamesTxtFileName),
-        "");
-    base::WriteFile(
-        GetPath().Append(
-            ZxcvbnDataComponentInstallerPolicy::kMaleNamesTxtFileName),
-        "");
-    base::WriteFile(
-        GetPath().Append(
-            ZxcvbnDataComponentInstallerPolicy::kPasswordsTxtFileName),
-        "");
-    base::WriteFile(
-        GetPath().Append(
-            ZxcvbnDataComponentInstallerPolicy::kSurnamesTxtFileName),
-        "");
-    base::WriteFile(
-        GetPath().Append(
-            ZxcvbnDataComponentInstallerPolicy::kUsTvAndFilmTxtFileName),
-        "");
+    for (auto filename : ZxcvbnDataComponentInstallerPolicy::kFileNames) {
+      base::WriteFile(GetPath().Append(filename), "");
+    }
   }
 
   void CreateEmptyCombinedBinaryFile() {
@@ -120,38 +127,12 @@ class ZxcvbnDataComponentInstallerPolicyTest : public ::testing::Test {
   }
 
   void CreateCombinedBinaryFile() {
-    // This replicates the internal data structure of `zxcvbn::RankedDicts`.
-    std::vector<uint8_t> binary_data;
-    constexpr uint8_t MARKER_BIT = 0x80;
-    auto add_entry = [&binary_data](uint16_t rank, base::StringPiece word) {
-      ASSERT_LT(rank, 1 << 15);
-      binary_data.push_back((rank >> 8) | MARKER_BIT);
-      binary_data.push_back(rank & 0xff);
-      for (const char letter : word) {
-        binary_data.push_back(letter);
-      }
-    };
-
-    // The entries must be ordered alphabetically to replicate the internal
-    // structure of `RankedDicts`.
-    add_entry(3UL, "and");
-    add_entry(1UL, "english");
-    add_entry(1UL, "female");
-    add_entry(4UL, "film");
-    add_entry(2UL, "fnames");
-    add_entry(1UL, "male");
-    add_entry(2UL, "mnames");
-    add_entry(1UL, "passwords");
-    add_entry(1UL, "surnames");
-    add_entry(2UL, "tv");
-    add_entry(1UL, "us");
-    add_entry(2UL, "wikipedia");
-    binary_data.push_back(MARKER_BIT);
+    zxcvbn::RankedDicts dicts = ParseRankedDictionaries(GetPath());
 
     ASSERT_TRUE(base::WriteFile(
         GetPath().Append(
             ZxcvbnDataComponentInstallerPolicy::kCombinedRankedDictsFileName),
-        std::move(binary_data)));
+        dicts.DataForTesting()));
   }
 
   void VerifyRankedDicts() {
@@ -178,22 +159,6 @@ class ZxcvbnDataComponentInstallerPolicyTest : public ::testing::Test {
   base::ScopedTempDir component_install_dir_;
 };
 
-// Tests that VerifyInstallation only returns true when all expected text files
-// are present.
-TEST_F(ZxcvbnDataComponentInstallerPolicyTest,
-       VerifyInstallationForTextfileOnlyVersion) {
-  // An empty directory lacks all required files.
-  EXPECT_FALSE(policy().VerifyInstallation(manifest(), GetPath()));
-
-  CreateEmptyTextFiles();
-  // All files should exist.
-  EXPECT_TRUE(policy().VerifyInstallation(manifest(), GetPath()));
-
-  base::DeleteFile(GetPath().Append(
-      ZxcvbnDataComponentInstallerPolicy::kEnglishWikipediaTxtFileName));
-  EXPECT_FALSE(policy().VerifyInstallation(manifest(), GetPath()));
-}
-
 // Tests that VerifyInstallation only returns true when both the text files and
 // the combined binary file are present in the case of the version with support
 // for memory mapping.
@@ -217,9 +182,6 @@ TEST_F(ZxcvbnDataComponentInstallerPolicyTest,
 
 TEST_F(ZxcvbnDataComponentInstallerPolicyTest,
        VerifyInstallationExpectsValidVersion) {
-  CreateEmptyTextFiles();
-  EXPECT_TRUE(policy().VerifyInstallation(manifest(), GetPath()));
-
   // Verification fails for a missing version.
   EXPECT_FALSE(policy().VerifyInstallation(base::Value::Dict(), GetPath()));
 
@@ -237,42 +199,12 @@ TEST_F(ZxcvbnDataComponentInstallerPolicyTest, ComponentReadyForMissingFiles) {
 }
 
 // Tests that ComponentReady reads in the file contents and properly populates
-// zxcvbn::default_ranked_dicts().
-TEST_F(ZxcvbnDataComponentInstallerPolicyTest,
-       ComponentReadyForTextfileOnlyVersion) {
-  CreateTextFiles();
-
-  policy().ComponentReady(version(), GetPath(), manifest().Clone());
-  task_env().RunUntilIdle();
-
-  VerifyRankedDicts();
-}
-
-// Tests that ComponentReady reads in the file contents and properly populates
 // zxcvbn::default_ranked_dicts() when using a memory mapped file.
 TEST_F(ZxcvbnDataComponentInstallerPolicyTest,
        ComponentReadyForMemoryMappedVersion) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      password_manager::features::kMemoryMapWeaknessCheckDictionaries);
-  SetVersion(kMemoryMappedVersion);
-  CreateEmptyTextFiles();
-  CreateCombinedBinaryFile();
-
-  policy().ComponentReady(version(), GetPath(), manifest().Clone());
-  task_env().RunUntilIdle();
-
-  VerifyRankedDicts();
-}
-
-TEST_F(ZxcvbnDataComponentInstallerPolicyTest,
-       ComponentReadyForMemoryMappedVersionWithDisabledFeature) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      password_manager::features::kMemoryMapWeaknessCheckDictionaries);
   SetVersion(kMemoryMappedVersion);
   CreateTextFiles();
-  CreateEmptyCombinedBinaryFile();
+  CreateCombinedBinaryFile();
 
   policy().ComponentReady(version(), GetPath(), manifest().Clone());
   task_env().RunUntilIdle();
@@ -284,12 +216,8 @@ TEST_F(ZxcvbnDataComponentInstallerPolicyTest,
 // behavior while closing a memory mapped file.
 TEST_F(ZxcvbnDataComponentInstallerPolicyTest,
        ComponentReadyHandlesUpdateProperly) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      password_manager::features::kMemoryMapWeaknessCheckDictionaries);
-
   SetVersion(kMemoryMappedVersion);
-  CreateEmptyTextFiles();
+  CreateTextFiles();
   CreateCombinedBinaryFile();
 
   policy().ComponentReady(version(), GetPath(), manifest().Clone());

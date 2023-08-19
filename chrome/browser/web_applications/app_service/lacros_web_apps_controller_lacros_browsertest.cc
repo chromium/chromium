@@ -5,6 +5,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/lacros/browser_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chromeos/crosapi/mojom/app_service_types.mojom.h"
-#include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "content/public/test/browser_test.h"
@@ -44,12 +44,12 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, DefaultContextMenu) {
   ASSERT_TRUE(browser_test_util::WaitForShelfItem(app_id, /*exists=*/true));
 
   // Get the context menu.
-  crosapi::mojom::TestControllerAsyncWaiter waiter(
-      chromeos::LacrosService::Get()
-          ->GetRemote<crosapi::mojom::TestController>()
-          .get());
-  std::vector<std::string> items;
-  waiter.GetContextMenuForShelfItem(app_id, &items);
+  base::test::TestFuture<const std::vector<std::string>&> items_future;
+  chromeos::LacrosService::Get()
+      ->GetRemote<crosapi::mojom::TestController>()
+      ->GetContextMenuForShelfItem(app_id, items_future.GetCallback());
+
+  auto items = items_future.Take();
   ASSERT_EQ(5u, items.size());
   EXPECT_EQ(items[0], "New window");
   EXPECT_EQ(items[1], "Pin");
@@ -91,15 +91,11 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, AppManagement) {
   ASSERT_TRUE(
       browser_test_util::WaitForShelfItem(kOsSettingsAppId, /*exists=*/true));
 
-  base::RunLoop run_loop;
-  auto* const lacros_service = chromeos::LacrosService::Get();
-  lacros_service->GetRemote<crosapi::mojom::TestController>()
-      ->CloseAllBrowserWindows(
-          base::BindLambdaForTesting([&run_loop](bool success) {
-            EXPECT_TRUE(success);
-            run_loop.Quit();
-          }));
-  run_loop.Run();
+  base::test::TestFuture<bool> success_future;
+  chromeos::LacrosService::Get()
+      ->GetRemote<crosapi::mojom::TestController>()
+      ->CloseAllBrowserWindows(success_future.GetCallback());
+  EXPECT_TRUE(success_future.Take());
 
   // Settings should no longer exist in the shelf.
   ASSERT_TRUE(

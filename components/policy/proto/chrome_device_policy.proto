@@ -167,6 +167,7 @@ message DeviceReportingProto {
   optional bool report_crd_sessions = 36 [default = false];
   optional bool report_peripherals = 37 [default = false];
   optional bool report_network_events = 41 [default = false];
+  optional bool report_runtime_counters = 42 [default = false];
 
   // Frequency to report device status, default to 3 hours.
   // If changed, the default value has to be updated in
@@ -188,6 +189,10 @@ message DeviceReportingProto {
   // Audio telemetry policy
   optional int64 report_device_audio_status_checking_rate_ms = 35
       [default = 600000];
+
+  // Runtime counters telemetry policy.
+  optional int64 device_report_runtime_counters_checking_rate_ms = 43
+      [default = 86400000];
 
   optional StringList report_signal_strength_event_driven_telemetry = 38;
 
@@ -1806,6 +1811,14 @@ message DeviceReportXDREventsProto {
   optional bool enabled = 1 [default = false];
 }
 
+message DeviceLowBatterySoundProto {
+  optional bool enabled = 1;
+}
+
+message DeviceChargingSoundsProto {
+  optional bool enabled = 1;
+}
+
 message ChromeDeviceSettingsProto {
   reserved 61, 71, 90;
   optional DevicePolicyRefreshRateProto device_policy_refresh_rate = 1;
@@ -2004,4 +2017,10 @@ message ChromeDeviceSettingsProto {
   optional DeviceSystemAecEnabledProto device_system_aec_enabled = 146;
   optional DeviceLoginScreenGeolocationAccessLevelProto
       device_login_screen_geolocation_access_level = 147;
+  optional StringPolicyProto device_login_screen_webhid_allow_devices_for_urls =
+      148;
+  optional DeviceLowBatterySoundProto device_low_battery_sound = 149;
+  optional DeviceChargingSoundsProto device_charging_sounds = 150;
+  optional StringListPolicyProto device_authentication_url_blocklist = 151;
+  optional StringListPolicyProto device_authentication_url_allowlist = 152;
 }

@@ -151,8 +151,8 @@ TEST_F(HTMLSlotElementInDocumentTest, RecalcAssignedNodeStyleForReattach) {
     <div id='host'><span id='span'></span></div>
   )HTML");
 
-  Element& host = *GetDocument().getElementById("host");
-  Element& span = *GetDocument().getElementById("span");
+  Element& host = *GetDocument().getElementById(AtomicString("host"));
+  Element& span = *GetDocument().getElementById(AtomicString("span"));
 
   ShadowRoot& shadow_root =
       host.AttachShadowRootInternal(ShadowRootType::kOpen);
@@ -162,7 +162,8 @@ TEST_F(HTMLSlotElementInDocumentTest, RecalcAssignedNodeStyleForReattach) {
   auto* shadow_span = To<Element>(shadow_root.firstChild());
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
-  shadow_span->setAttribute(html_names::kStyleAttr, "display:block");
+  shadow_span->setAttribute(html_names::kStyleAttr,
+                            AtomicString("display:block"));
 
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
   GetDocument().GetStyleEngine().RecalcStyle();
@@ -176,7 +177,7 @@ TEST_F(HTMLSlotElementInDocumentTest, SlotableFallback) {
     <div id='host'></div>
   )HTML");
 
-  Element& host = *GetDocument().getElementById("host");
+  Element& host = *GetDocument().getElementById(AtomicString("host"));
   ShadowRoot& shadow_root =
       host.AttachShadowRootInternal(ShadowRootType::kOpen);
 

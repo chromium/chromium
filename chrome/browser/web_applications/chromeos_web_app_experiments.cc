@@ -6,9 +6,9 @@
 
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "content/public/browser/web_contents.h"
 
 namespace web_app {
 
@@ -28,30 +28,6 @@ constexpr const char* kMicrosoftOfficeWebAppExperimentScopeExtensions[] = {
 };
 
 const char kOneDriveBusinessDomain[] = "sharepoint.com";
-
-struct FallbackPageThemeColor {
-  std::vector<std::string> page_url_pieces;
-  SkColor page_theme_color;
-};
-
-const std::vector<FallbackPageThemeColor>&
-GetMicrosoftOfficeWebAppExperimentFallbackPageThemeColors() {
-  static base::NoDestructor<std::vector<FallbackPageThemeColor>>
-      page_theme_colours({
-          // Word theme color.
-          {.page_url_pieces = {"file%2cdocx", "app=Word"},
-           .page_theme_color = SkColorSetRGB(0x18, 0x5A, 0xBD)},
-
-          // Excel theme color.
-          {.page_url_pieces = {"file%2cxlsx", "app=Excel"},
-           .page_theme_color = SkColorSetRGB(0x10, 0x7C, 0x41)},
-
-          // PowerPoint theme color.
-          {.page_url_pieces = {"file%2cpptx", "app=PowerPoint"},
-           .page_theme_color = SkColorSetRGB(0xC4, 0x3E, 0x1C)},
-      });
-  return *page_theme_colours;
-}
 
 bool g_always_enabled_for_testing = false;
 
@@ -104,32 +80,9 @@ size_t ChromeOsWebAppExperiments::GetExtendedScopeScore(
   return best_score;
 }
 
-absl::optional<SkColor> ChromeOsWebAppExperiments::GetFallbackPageThemeColor(
-    const AppId& app_id,
-    content::WebContents* web_contents) {
+bool ChromeOsWebAppExperiments::IgnoreManifestColor(const AppId& app_id) {
   DCHECK(chromeos::features::IsUploadOfficeToCloudEnabled());
-
-  if (!IsExperimentEnabled(app_id))
-    return absl::nullopt;
-
-  if (!web_contents)
-    return absl::nullopt;
-
-  const GURL& url = web_contents->GetLastCommittedURL();
-  if (!url.is_valid())
-    return absl::nullopt;
-
-  for (const FallbackPageThemeColor& fallback_theme_color :
-       GetMicrosoftOfficeWebAppExperimentFallbackPageThemeColors()) {
-    for (const std::string& page_url_piece :
-         fallback_theme_color.page_url_pieces) {
-      if (base::Contains(url.spec(), page_url_piece)) {
-        return fallback_theme_color.page_theme_color;
-      }
-    }
-  }
-
-  return absl::nullopt;
+  return IsExperimentEnabled(app_id);
 }
 
 void ChromeOsWebAppExperiments::SetAlwaysEnabledForTesting() {

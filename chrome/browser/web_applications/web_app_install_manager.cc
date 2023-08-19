@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_internals_utils.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -128,10 +128,9 @@ void WebAppInstallManager::NotifyWebAppInstalledWithOsHooks(
   }
 }
 
-void WebAppInstallManager::NotifyWebAppSourceRemovedForTesting(
-    const AppId& app_id) {
+void WebAppInstallManager::NotifyWebAppSourceRemoved(const AppId& app_id) {
   for (WebAppInstallManagerObserver& observer : observers_) {
-    observer.OnWebAppSourceRemovedForTesting(app_id);
+    observer.OnWebAppSourceRemoved(app_id);
   }
 }
 

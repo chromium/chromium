@@ -7,16 +7,19 @@
 
 #include <memory>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/navigation_throttle.h"
 
+class GURL;
+
 namespace content {
 class NavigationHandle;
-}
+}  // namespace content
 
 namespace profile_management {
 
-extern const char kTestHost[];
+class SAMLResponseParser;
 
 // This throttle looks for profile management data in certain HTTP responses
 // from supported hosts. If a response from a supported host is received, the
@@ -25,45 +28,57 @@ extern const char kTestHost[];
 // interception.
 class ProfileManagementNavigationThrottle : public content::NavigationThrottle {
  public:
-  class TokenInfoGetter {
-   public:
-    virtual ~TokenInfoGetter();
-    // Gets the profile id and enrollment token from `navigation_handle` and
-    // and calls `callback` with them. Both values will be empty strings if no
-    // info is found.
-    virtual void GetTokenInfo(
-        content::NavigationHandle* navigation_handle,
-        base::OnceCallback<void(const std::string&, const std::string&)>
-            callback) = 0;
-  };
-
   // Create a navigation throttle for the given navigation if third-party
   // profile management is enabled. Returns nullptr if no throttling should be
   // done.
   static std::unique_ptr<ProfileManagementNavigationThrottle>
   MaybeCreateThrottleFor(content::NavigationHandle* navigation_handle);
 
-  ProfileManagementNavigationThrottle(
-      content::NavigationHandle* navigation_handle,
-      std::unique_ptr<TokenInfoGetter> token_info_getter);
-  ~ProfileManagementNavigationThrottle() override;
+  explicit ProfileManagementNavigationThrottle(
+      content::NavigationHandle* navigation_handle);
+
   ProfileManagementNavigationThrottle(
       const ProfileManagementNavigationThrottle&) = delete;
   ProfileManagementNavigationThrottle& operator=(
       const ProfileManagementNavigationThrottle&) = delete;
+  ~ProfileManagementNavigationThrottle() override;
 
   // content::NavigationThrottle implementation:
   // Looks for profile management data in the navigation response if the host is
   // supported.
-  content::NavigationThrottle::ThrottleCheckResult WillProcessResponse()
-      override;
-
+  ThrottleCheckResult WillProcessResponse() override;
   const char* GetNameForLogging() override;
 
+  // Setting a non-empty URL causes the throttle to navigate to a test URL
+  // instead of triggering profile separation (`token_url`) or resuming the
+  // throttle (`unmanaged_url`). Used by unit tests to verify the various code
+  // paths taken by the throttle.
+  void SetURLsForTesting(const std::string& token_url,
+                         const std::string& unmanaged_url);
+
+  // The attribute map is not destructed for performance reasons. This allows
+  // the map to be cleared and re-populated on a per-test basis.
+  void ClearAttributeMapForTesting();
+
  private:
-  void OnTokenInfoReceived(const std::string& id,
-                           const std::string& management_token);
-  std::unique_ptr<TokenInfoGetter> token_info_getter_;
+  void OnResponseBodyReady(const std::string& body);
+
+  void OnManagementDataReceived(
+      const base::flat_map<std::string, std::string>& attributes);
+
+  // `NavigateTo()` can synchronously delete the NavigationThrottle, so
+  // `PostNavigateTo()` posts the method to the current thread. This allows code
+  // to be safely added after `NavigateTo()` calls.
+  void PostNavigateTo(const GURL& url);
+  // Don't use directly. Use `PostNavigateTo()` instead.
+  void NavigateTo(const GURL& url);
+
+  void RegisterWithDomain(const std::string& domain);
+  void RegisterWithToken(const std::string& name, const std::string& token);
+
+  std::string token_url_for_testing_;
+  std::string unmanaged_url_for_testing_;
+  std::unique_ptr<SAMLResponseParser> saml_response_parser_;
   base::WeakPtrFactory<ProfileManagementNavigationThrottle> weak_ptr_factory_{
       this};
 };

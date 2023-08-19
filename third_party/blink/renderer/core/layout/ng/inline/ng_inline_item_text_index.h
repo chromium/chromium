@@ -13,6 +13,7 @@ namespace blink {
 
 // Represents an index of `NGInlineItem`, along with the text offset.
 struct CORE_EXPORT NGInlineItemTextIndex {
+  explicit operator bool() const { return text_offset || item_index; }
   bool IsZero() const { return !text_offset && !item_index; }
 
   bool operator==(const NGInlineItemTextIndex& other) const {

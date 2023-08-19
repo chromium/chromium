@@ -154,19 +154,6 @@ class OverlayProposedCandidateTest
     texture_quad->rounded_display_masks_info = rounded_display_masks_info;
   }
 
-  OverlayCandidateFactory CreateCandidateFactory(
-      const AggregatedRenderPass& render_pass,
-      const gfx::RectF& primary_rect,
-      bool has_clip_support = true,
-      bool has_arbitrary_transform_support = false,
-      bool supports_rounded_display_masks = true) {
-    return OverlayCandidateFactory(
-        &render_pass, &resource_provider_, &surface_damage_list_, &identity_,
-        primary_rect, &render_pass_filters_, /*is_delegated_context=*/false,
-        has_clip_support, has_arbitrary_transform_support,
-        supports_rounded_display_masks);
-  }
-
   ClientResourceProvider child_resource_provider_;
   DisplayResourceProviderNull resource_provider_;
   SurfaceDamageRectList surface_damage_list_;
@@ -190,8 +177,11 @@ TEST_P(OverlayProposedCandidateTest, CorrectRoundedDisplayMaskBounds) {
                                  /*is_overlay_candidate=*/true, identity,
                                  mask_info_, &render_pass);
 
-  OverlayCandidateFactory factory =
-      CreateCandidateFactory(render_pass, gfx::RectF(render_pass.output_rect));
+  OverlayCandidateFactory factory = OverlayCandidateFactory(
+      &render_pass, &resource_provider_, &surface_damage_list_, &identity_,
+      gfx::RectF(render_pass.output_rect), &render_pass_filters_,
+      OverlayCandidateFactory::OverlayContext{.supports_rounded_display_masks =
+                                                  true});
 
   OverlayCandidate candidate;
   OverlayCandidateFactory::CandidateStatus status =

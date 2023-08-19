@@ -18,9 +18,7 @@ scoped_refptr<BitmapCursor> BitmapCursor::FromPlatformCursor(
       static_cast<BitmapCursor*>(platform_cursor.get()));
 }
 
-BitmapCursor::BitmapCursor(mojom::CursorType type,
-                           float cursor_image_scale_factor)
-    : type_(type), cursor_image_scale_factor_(cursor_image_scale_factor) {}
+BitmapCursor::BitmapCursor(mojom::CursorType type) : type_(type) {}
 
 BitmapCursor::BitmapCursor(mojom::CursorType type,
                            const SkBitmap& bitmap,

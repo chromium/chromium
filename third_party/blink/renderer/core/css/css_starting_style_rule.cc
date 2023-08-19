@@ -14,7 +14,7 @@ namespace blink {
 CSSStartingStyleRule::CSSStartingStyleRule(
     StyleRuleStartingStyle* starting_style_rule,
     CSSStyleSheet* parent)
-    : CSSConditionRule(starting_style_rule, parent) {}
+    : CSSGroupingRule(starting_style_rule, parent) {}
 
 String CSSStartingStyleRule::cssText() const {
   StringBuilder result;

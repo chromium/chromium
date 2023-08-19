@@ -22,6 +22,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -31,6 +32,7 @@ import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -38,6 +40,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -56,6 +59,8 @@ import java.util.Map;
 import java.util.Set;
 
 class MultiInstanceManagerApi31 extends MultiInstanceManager implements ActivityStateListener {
+    private static final String TAG = "MIMApi31";
+
     public static final int INVALID_INSTANCE_ID = MultiWindowUtils.INVALID_INSTANCE_ID;
     public static final int INVALID_TASK_ID = MultiWindowUtils.INVALID_TASK_ID;
 
@@ -118,23 +123,35 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
     protected void moveTabToOtherWindow(Tab tab) {
         TargetSelectorCoordinator.showDialog(mActivity, mModalDialogManagerSupplier.get(),
                 new LargeIconBridge(getProfile()),
-                (instanceInfo) -> moveTabAction(instanceInfo, tab), getInstanceInfo());
+                (instanceInfo)
+                        -> moveTabAction(instanceInfo, tab, TabList.INVALID_TAB_INDEX),
+                getInstanceInfo());
     }
 
-    private void moveTabAction(InstanceInfo info, Tab tab) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    void moveTabAction(InstanceInfo info, Tab tab, int tabAtIndex) {
         Activity targetActivity = getActivityById(info.instanceId);
         if (targetActivity != null) {
-            reparentTabToRunningActivity((ChromeTabbedActivity) targetActivity, tab);
+            reparentTabToRunningActivity((ChromeTabbedActivity) targetActivity, tab, tabAtIndex);
         } else {
-            onMultiInstanceModeStarted();
-            Intent intent = MultiWindowUtils.createNewWindowIntent(mActivity, info.instanceId,
-                    /*preferNew=*/false, /*openAdjacently=*/true, /*addTrustedIntentExtras=*/true);
-            ReparentingTask.from(tab).begin(mActivity, intent,
-                    mMultiWindowModeStateDispatcher.getOpenInOtherWindowActivityOptions(), null);
+            moveAndReparentTabToNewWindow(tab, info.instanceId, /*preferNew=*/false,
+                    /*openAdjacently=*/true, /*addTrustedIntentExtras=*/true);
         }
     }
 
-    private void reparentTabToRunningActivity(ChromeTabbedActivity targetActivity, Tab tab) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    void moveAndReparentTabToNewWindow(Tab tab, int instanceId, boolean preferNew,
+            boolean openAdjacently, boolean addTrustedIntentExtras) {
+        onMultiInstanceModeStarted();
+        Intent intent = MultiWindowUtils.createNewWindowIntent(
+                mActivity, instanceId, preferNew, openAdjacently, addTrustedIntentExtras);
+        beginReparenting(tab, intent,
+                mMultiWindowModeStateDispatcher.getOpenInOtherWindowActivityOptions(), null);
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    void reparentTabToRunningActivity(
+            ChromeTabbedActivity targetActivity, Tab tab, int tabAtIndex) {
         assert targetActivity != null;
         Intent intent = new Intent();
         Context appContext = ContextUtils.getApplicationContext();
@@ -144,7 +161,10 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         onMultiInstanceModeStarted();
         RecordUserAction.record("MobileMenuMoveToOtherWindow");
 
-        ReparentingTask.from(tab).setupIntent(mActivity, intent, null);
+        if (tabAtIndex != TabList.INVALID_TAB_INDEX) {
+            intent.putExtra(IntentHandler.EXTRA_TAB_INDEX, tabAtIndex);
+        }
+        setupIntentForReparenting(tab, intent, null);
 
         targetActivity.onNewIntent(intent);
         bringTaskForeground(targetActivity.getTaskId());
@@ -258,6 +278,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
     public void initialize(int instanceId, int taskId) {
         mInstanceId = instanceId;
         updateTaskMap(instanceId, taskId);
+        installTabModelObserver();
         recordInstanceCountHistogram();
         recordActivityCountHistogram();
         ActivityManager activityManager =
@@ -275,7 +296,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
 
     @Override
     public void onTabStateInitialized() {
-        installTabModelObserver();
         TabModelSelector selector = mTabModelOrchestratorSupplier.get().getTabModelSelector();
         writeTabCount(mInstanceId, selector);
     }
@@ -378,7 +398,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         return results;
     }
 
-    private static Activity getActivityById(int id) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    static Activity getActivityById(int id) {
         TabWindowManager windowManager = TabWindowManagerSingleton.getInstance();
         for (Activity activity : getAllRunningActivities()) {
             if (id == windowManager.getIndexForWindow(activity)) return activity;
@@ -490,6 +511,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     static void writeTabCount(int index, TabModelSelector selector) {
+        if (!selector.isTabStateInitialized()) return;
         SharedPreferencesManager prefs = SharedPreferencesManager.getInstance();
         int tabCount = selector.getModel(false).getCount();
         prefs.writeInt(tabCountKey(index), tabCount);
@@ -605,9 +627,21 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         if (activity != null) activity.finishAndRemoveTask();
     }
 
-    private void bringTaskForeground(int taskId) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    void bringTaskForeground(int taskId) {
         ActivityManager am = (ActivityManager) mActivity.getSystemService(Context.ACTIVITY_SERVICE);
         am.moveTaskToFront(taskId, 0);
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    void setupIntentForReparenting(Tab tab, Intent intent, Runnable finalizeCallback) {
+        ReparentingTask.from(tab).setupIntent(mActivity, intent, finalizeCallback);
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    void beginReparenting(
+            Tab tab, Intent intent, Bundle startActivityOptions, Runnable finalizeCallback) {
+        ReparentingTask.from(tab).begin(mActivity, intent, startActivityOptions, finalizeCallback);
     }
 
     private Profile getProfile() {
@@ -692,5 +726,72 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
                     "Android.MultiInstance.TotalDuration", current - startTime);
             prefs.writeLong(ChromePreferenceKeys.MULTI_INSTANCE_START_TIME, 0);
         }
+    }
+
+    /**
+     * Open a new instance of the ChromeTabbedActivity window and move the
+     * specified tab from existing instance to the new one.
+     * @param tab Tab that is to be moved to a new Chrome instance.
+     */
+    @Override
+    public void moveTabToNewWindow(Tab tab) {
+        if (!ChromeFeatureList.sTabDragDropAndroid.isEnabled()) return;
+
+        // Check if the new Chrome instance can be opened.
+        if (MultiWindowUtils.getInstanceCount() < mMaxInstances) {
+            moveAndReparentTabToNewWindow(tab, INVALID_INSTANCE_ID, /*preferNew=*/true,
+                    /*openAdjacently=*/false, /*addTrustedIntentExtras=*/true);
+        } else {
+            // Just try to launch a Chrome window to inform user that maximum number of instances
+            // limit is exceeded. This will pop up a toast message and the tab will not be removed
+            // from the exiting window.
+            openNewWindow("Android.WindowManager.NewWindow");
+        }
+    }
+
+    /**
+     * Move the specified tab to the current instance of the ChromeTabbedActivity window.
+     * @param activity Activity of the Chrome Window in which the tab is to be moved.
+     * @param tab Tab that is to be moved to the current instance.
+     * @param atIndex Tab position index in the destination window instance.
+     */
+    @Override
+    public void moveTabToWindow(Activity activity, Tab tab, int atIndex) {
+        if (!ChromeFeatureList.sTabDragDropAndroid.isEnabled()) return;
+
+        // Get the current instance and move tab there.
+        InstanceInfo info = getInstanceInfoFor(activity);
+        if (info != null) {
+            moveTabAction(info, tab, atIndex);
+        } else {
+            Log.w(TAG, "DnD: InstanceInfo of Chrome Window not found.");
+        }
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    InstanceInfo getInstanceInfoFor(Activity activity) {
+        // Loop thru all instances to determine if the destination activity is present.
+        int destinationWindowTaskId = INVALID_TASK_ID;
+        for (int i = 0; i < mMaxInstances; ++i) {
+            if (!instanceEntryExists(i)) continue;
+            Activity activityById = getActivityById(i);
+            if (activityById != null) {
+                // The task for the activity must match the one found in our mapping.
+                assert getTaskFromMap(i) == activityById.getTaskId();
+                if (activityById == activity) {
+                    destinationWindowTaskId = activityById.getTaskId();
+                    break;
+                }
+            }
+        }
+        if (destinationWindowTaskId == INVALID_TASK_ID) return null;
+
+        List<InstanceInfo> allInstances = getInstanceInfo();
+        for (InstanceInfo instanceInfo : allInstances) {
+            if (instanceInfo.taskId == destinationWindowTaskId) {
+                return instanceInfo;
+            }
+        }
+        return null;
     }
 }

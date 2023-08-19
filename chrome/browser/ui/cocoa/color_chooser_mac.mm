@@ -96,4 +96,4 @@ std::unique_ptr<content::ColorChooser> ShowColorChooser(
   return ColorChooserMac::Create(web_contents, initial_color,
                                  base::DoNothing());
 }
-}  // namepace chrome
+}  // namespace chrome

@@ -6,15 +6,12 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/apple/bundle_locations.h"
 #import "base/functional/bind.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/app/startup/ios_enable_sandbox_dump_buildflags.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "third_party/zlib/google/zip.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 #if !BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
 #error "This file should only be compiled with IOS_ENABLE_SANDBOX_DUMP flag."
@@ -44,8 +41,8 @@ void DumpSandboxIfRequested() {
 
   NSString* application_zip = [dump_directory
       stringByAppendingPathComponent:
-          [NSString stringWithFormat:@"%@.zip",
-                                     [[NSBundle mainBundle] bundleIdentifier]]];
+          [NSString stringWithFormat:@"%@.zip", [base::apple::FrameworkBundle()
+                                                    bundleIdentifier]]];
 
   zip::FilterCallback callback =
       base::BindRepeating(^(const base::FilePath& path) {

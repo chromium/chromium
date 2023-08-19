@@ -415,6 +415,9 @@ VAStatus FakeCreateBuffer(VADriverContextP ctx,
 
   CHECK(fdrv->ContextExists(context));
 
+  *buf_id = fdrv->CreateBuffer(context, type, /*size_per_element=*/size,
+                               num_elements, data);
+
   return VA_STATUS_SUCCESS;
 }
 
@@ -425,6 +428,9 @@ VAStatus FakeBufferSetNumElements(VADriverContextP ctx,
 }
 
 VAStatus FakeMapBuffer(VADriverContextP ctx, VABufferID buf_id, void** pbuf) {
+  media::internal::FakeDriver* fdrv =
+      static_cast<media::internal::FakeDriver*>(ctx->pDriverData);
+  *pbuf = fdrv->GetBuffer(buf_id).GetData();
   return VA_STATUS_SUCCESS;
 }
 
@@ -433,6 +439,11 @@ VAStatus FakeUnmapBuffer(VADriverContextP ctx, VABufferID buf_id) {
 }
 
 VAStatus FakeDestroyBuffer(VADriverContextP ctx, VABufferID buffer_id) {
+  media::internal::FakeDriver* fdrv =
+      static_cast<media::internal::FakeDriver*>(ctx->pDriverData);
+
+  fdrv->DestroyBuffer(buffer_id);
+
   return VA_STATUS_SUCCESS;
 }
 

@@ -65,7 +65,7 @@ struct objc_typeinfo {
   Class cls_unremapped;
 };
 struct objc_exception {
-  id obj;
+  id __unsafe_unretained obj;
   objc_typeinfo tinfo;
 };
 
@@ -219,7 +219,7 @@ class ExceptionPreprocessorState {
   // preprocessor didn't catch anything, so pass the frames or just the context
   // to the exception_delegate.
   void FinalizeUncaughtNSException(id exception) {
-    if (last_exception() == exception &&
+    if (last_exception() == (__bridge void*)exception &&
         !last_handled_intermediate_dump_.empty() &&
         exception_delegate_->MoveIntermediateDumpAtPathToPending(
             last_handled_intermediate_dump_)) {
@@ -331,10 +331,10 @@ id ObjcExceptionPreprocessor(id exception) {
   // ignore it.
   ExceptionPreprocessorState* preprocessor_state =
       ExceptionPreprocessorState::Get();
-  if (preprocessor_state->last_exception() == exception) {
+  if (preprocessor_state->last_exception() == (__bridge void*)exception) {
     return preprocessor_state->MaybeCallNextPreprocessor(exception);
   }
-  preprocessor_state->set_last_exception(exception);
+  preprocessor_state->set_last_exception((__bridge void*)exception);
 
   static bool seen_first_exception;
 

@@ -11,8 +11,8 @@ import "url/mojom/url.mojom";
 // Note: When you add a new value, please add a test case accordingly in:
 // chrome/browser/feedback/show_feedback_page_lacros_browertest.cc.
 //
-// Next MinVersion: 4
-// Next ID: 8
+// Next MinVersion: 5
+// Next ID: 9
 //
 [Stable, Extensible]
 enum LacrosFeedbackSource {
@@ -25,6 +25,7 @@ enum LacrosFeedbackSource {
   [MinVersion=2] kLacrosQuickAnswers = 6,
   // Deprecated as the window layout menu feedback button has been removed.
   [MinVersion=3] kDeprecatedLacrosWindowLayoutMenu = 7,
+  [MinVersion=4] kFeedbackSourceCookieControls = 8,
 };
 
 [Stable]

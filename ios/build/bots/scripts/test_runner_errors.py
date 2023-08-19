@@ -37,6 +37,22 @@ class XcodeMacToolchainMismatchError(XcodeInstallError):
         'Legacy mac_toolchain cannot work with Xcode: %s' % xcode_build_version)
 
 
+class MacToolchainNotFoundError(XcodeInstallError):
+  """The mac_toolchain is not specified."""
+
+  def __init__(self, mac_toolchain):
+    super(MacToolchainNotFoundError, self).__init__(
+        'mac_toolchain is not specified or not found: "%s"' % mac_toolchain)
+
+
+class XcodePathNotFoundError(XcodeInstallError):
+  """The path to Xcode.app is not specified."""
+
+  def __init__(self, xcode_path):
+    super(XcodePathNotFoundError, self).__init__(
+        'xcode_path is not specified or does not exist: "%s"' % xcode_path)
+
+
 class SimRuntimeDeleteTimeoutError(Error):
   """When deleting a simulator runtime exceeds timeout."""
 

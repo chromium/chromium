@@ -26,10 +26,6 @@ class PowerMetricsReporter : public chromeos::PowerManagerClient::Observer {
  public:
   // Histogram names.
   static const char kDailyEventIntervalName[];
-  static const char kIdleScreenDimCountName[];
-  static const char kIdleScreenOffCountName[];
-  static const char kIdleSuspendCountName[];
-  static const char kLidClosedSuspendCountName[];
 
   // Registers prefs used by PowerMetricsReporter in |registry|.
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
@@ -44,23 +40,10 @@ class PowerMetricsReporter : public chromeos::PowerManagerClient::Observer {
   ~PowerMetricsReporter() override;
 
   // PowerManagerClient::Observer:
-  void ScreenIdleStateChanged(
-      const power_manager::ScreenIdleState& state) override;
-  void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
   void SuspendDone(base::TimeDelta duration) override;
 
  private:
   friend class PowerMetricsReporterTest;
-
-  class DailyEventObserver;
-
-  // Called by DailyEventObserver whenever a day has elapsed according to
-  // |daily_event_|.
-  void ReportDailyMetrics(metrics::DailyEvent::IntervalType type);
-
-  // Adds |num| to |pref_name|'s count in |daily_counts_| and updates the
-  // corresponding pref.
-  void AddToCount(const std::string& pref_name, int num);
 
   raw_ptr<chromeos::PowerManagerClient, ExperimentalAsh>
       power_manager_client_;                            // Not owned.
@@ -70,9 +53,6 @@ class PowerMetricsReporter : public chromeos::PowerManagerClient::Observer {
 
   // Instructs |daily_event_| to check if a day has passed.
   base::RepeatingTimer timer_;
-
-  // Last-received screen-idle state from powerd.
-  power_manager::ScreenIdleState old_screen_idle_state_;
 
   // Map from local store pref name backing a daily count to the count itself.
   std::map<std::string, int> daily_counts_;

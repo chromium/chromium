@@ -34,14 +34,23 @@
   <message name="IDS_NEARBY_CONTACT_VISIBILITY_OWN_ALL" desc="Describes who can see the local device when the Nearby Share visibility setting is set to 'All contacts'.">
     Your contacts can share with you when they are nearby. Transfers won't start until you accept.
   </message>
+  <message name="IDS_NEARBY_CONTACT_VISIBILITY_OWN_ALL_SELF_SHARE" desc="Describes who can see the local device when the Nearby Share visibility setting is set to 'Contacts' and 'Visible to all contacts' is toggled on.">
+   Contacts can share with you when they're nearby. You'll be asked to approve these requests. You won't need to approve sharing between devices that are signed into <ph name="USER_EMAIL">$1<ex>example@gmail.com</ex></ph>.
+  </message>
   <message name="IDS_NEARBY_CONTACT_VISIBILITY_OWN_NONE" desc="Describes who can see the local device when the Nearby Share visibility setting is set to 'Hidden'.">
     No one can share with you until you make yourself visible.<ph name="BR">&lt;br&gt;</ph><ph name="BR">&lt;br&gt;</ph>To make yourself visible temporarily, open the status area, then turn on Nearby visibility.
   </message>
   <message name="IDS_NEARBY_CONTACT_VISIBILITY_OWN_SOME" desc="Describes who can see the local device when the Nearby Share visibility setting is set to 'Some contacts'.">
     Selected contacts can share with you when nearby. Transfers won't start until you accept.
   </message>
+  <message name="IDS_NEARBY_CONTACT_VISIBILITY_OWN_SOME_SELF_SHARE" desc="Describes who can see the local device when the Nearby Share visibility setting is set to 'Contacts' and 'Visible to all contacts' is toggled off.">
+    Selected contacts can share with you when they're nearby. You'll be asked to approve these requests. You won't need to approve sharing between devices that are signed into <ph name="USER_EMAIL">$1<ex>example@gmail.com</ex></ph>.
+  </message>
   <message name="IDS_NEARBY_CONTACT_VISIBILITY_ZERO_STATE_TEXT" desc="Zero state help text to explain how the visibility settings control the Nearby Share feature.">
     Your device visibility controls who can share with you while your screen is unlocked. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_NEARBY_CONTACT_VISIBILITY_OWN_YOUR_DEVICES" desc="Describes who can see the local device when the Nearby Share visibility setting is set to 'Your Devices'.">
+    Only devices that are signed into <ph name="USER_EMAIL">$1<ex>example@gmail.com</ex></ph> can share with this device. You won't need to approve sharing between your devices.
   </message>
 
   <!-- Device name validation -->
@@ -268,8 +277,11 @@
   <message name="IDS_NEARBY_ACCOUNT_ROW_LABEL" desc="Label to describe the account row which displays the user's full name and their email which will identify them when using the Nearby Share feature." is_accessibility_with_no_ui="true">
       Nearby Share settings for <ph name="USER_NAME">$1<ex>Jane Doe</ex></ph>'s device, sharing under the account <ph name="USER_EMAIL">$2<ex>example@gmail.com</ex></ph>.
   </message>
-  <message name="IDS_NEARBY_SETTINGS_HELP_CAPTION" desc="Brief explanation shown at the bottom of the settings page. Meant to give context on what conditions have to be met to use Nearby Share, and how to toggle the high visibility state in the system tray. Provides a link with more detailed information.">
-    To use Nearby Share, make sure both devices are unlocked, close together, and have Bluetooth turned on. If you’re sharing with a Chromebook that is not in your contacts, make sure it has Nearby visibility turned on (open the status area by selecting the time, then turn on Nearby visibility) <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+  <message name="IDS_NEARBY_SETTINGS_HELP_CAPTION_TOP" desc="Brief explanation shown at the bottom of the settings page. Meant to give context on what conditions have to be met to use Nearby Share, and how to toggle the high visibility state in the system tray. Provides a link with more detailed information.">
+    Nearby Share uses Bluetooth scanning to find nearby devices.
+  </message>
+  <message name="IDS_NEARBY_SETTINGS_HELP_CAPTION_BOTTOM" desc="Brief explanation shown at the bottom of the settings page. Meant to give context on what conditions have to be met to use Nearby Share, and how to toggle the high visibility state in the system tray. Provides a link with more detailed information.">
+    If you're sharing with a Chromebook that is not in your contacts, make sure the Chromebook has “Nearby visibility” turned on. To turn on “Nearby visibility,” select the bottom right corner and then select to turn on “Nearby visibility.” <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_NEARBY_VISIBLITY_ALL_CONTACTS" desc="Describes the user preference state for the user to be visibile to all their contacts in the Nearby Share feature.">
     All contacts
@@ -277,11 +289,20 @@
   <message name="IDS_NEARBY_VISIBLITY_ALL_CONTACTS_DESCRIPTION" desc="Accessibility description that explains to the user that their current visibility setting is all contacts for the Nearby Share feature." is_accessibility_with_no_ui="true">
     Current visibility setting is all contacts
   </message>
+  <message name="IDS_NEARBY_VISIBILITY_CONTACTS_BUTTON" desc="Button text for Contacts tab in the nearby visibility dialog.">
+    Contacts
+  </message>
   <message name="IDS_NEARBY_VISIBLITY_SOME_CONTACTS" desc="Describes the user preference state for the user to be visibile to some selected set of their contacts in the Nearby Share feature.">
     Some contacts
   </message>
   <message name="IDS_NEARBY_VISIBLITY_SOME_CONTACTS_DESCRIPTION" desc="Accessibility description that explains to the user that their current visibility setting is some contacts for the Nearby Share feature." is_accessibility_with_no_ui="true">
     Current visibility setting is some contacts
+  </message>
+  <message name="IDS_NEARBY_VISIBILITY_YOUR_DEVICES" desc="Describes the user preference state for the user to be visible to only their devices in the Nearby Share feature.">
+    Your devices
+  </message>
+  <message name="IDS_NEARBY_VISIBILITY_YOUR_DEVICES_DESCRIPTION" desc="Accessibility description that explains to the user that their current visibility setting is Your Devices for the Nearby Share feature." is_accessibility_with_no_ui="true">
+    Current visibility setting is your devices
   </message>
   <message name="IDS_NEARBY_VISIBLITY_HIDDEN" desc="Describes the user preference state for the user to be visibile to none of their contacts (hidden) in the Nearby Share feature.">
     Hidden

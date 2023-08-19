@@ -449,7 +449,6 @@ to the classpath for downstream development. See "additional_entries" below.
     <classpathentry kind="src" path="device/vr/android/java/src"/>
     <classpathentry kind="src" path="gpu/config/android/java/src"/>
     <classpathentry kind="src" path="media/base/android/java/src"/>
-    <classpathentry kind="src" path="media/capture/content/android/java/src"/>
     <classpathentry kind="src" path="media/capture/video/android/java/src"/>
     <classpathentry kind="src" path="media/midi/java/src"/>
     <classpathentry kind="src" path="mojo/public/java/base/src"/>

@@ -7,14 +7,10 @@
 #include <vector>
 
 #include "ash/constants/app_types.h"
-#include "ash/constants/ash_features.h"
 #include "ash/game_dashboard/game_dashboard_test_base.h"
 #include "ash/game_dashboard/test_game_dashboard_delegate.h"
-#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/test/ash_test_base.h"
-#include "base/system/sys_info.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/wm/window_util.h"
 #include "extensions/common/constants.h"

@@ -444,7 +444,6 @@ struct PasswordGenerationUIData {
   FieldRendererId generation_element_id;
   bool is_generation_element_password_type;
   mojo_base.mojom.TextDirection text_direction;
-  mojo_base.mojom.String16 user_typed_password;
   FormData form_data;
 };
 
@@ -470,19 +469,71 @@ enum AutofillState {
   kAutocompleteAvailable,
 };
 
-// The possible actions that the renderer can take on receiving form data.
-enum RendererFormDataAction {
-  kFill,     // The renderer should fill the form data.
-  kPreview,  // The renderer should preview the form data.
+// Represents whether an autofill action, which is an operation that changes a
+// form, will persist (kFill) or will be cleared later (kPreview)
+enum AutofillActionPersistence {
+  kFill,     // The action is filled.
+  kPreview,  // The action is previewed and will be cleared afterwards.
 };
 
-// autofill::AutoselectFirstSuggestion
-// (components/autofill/core/common/aliases.h)
-struct AutoselectFirstSuggestion {
-  bool autoselect_first_suggestion;
+// The possible actions that Autofill can perform on forms.
+enum AutofillActionType {
+  kFill,  // Autofill should fill the form.
+  kUndo,  // Autofill should undo some previous fill operation on the form.
 };
 
-// autofill::FormElementWasClicked (components/autofill/core/common/aliases.h)
-struct FormElementWasClicked {
-  bool form_element_was_clicked;
+// Describes which action triggered Autofill suggestions. This has implications
+// how the suggestions behave, as described below.
+// Some further properties of suggestions are implied by the source. See
+// components/autofill/content/renderer/suggestion_properties.h.
+// Suggestions are primarily triggered through Blink events in the renderer.
+// This then invokes `AutofillManager::OnAskForValuesToFill()` in the browser
+// process. In some cases, suggestions get updated. This happens solely in the
+// browser process.
+enum AutofillSuggestionTriggerSource {
+  // Used as a default value and cannot be used to trigger suggestions.
+  kUnspecified,
+  // Suggestions triggered by either:
+  // - Clicking or tapping a text input (TAB key doesn't count).
+  // - Focusing a text input using a screen reader.
+  // Suggestion of this type can trigger FastCheckout or TouchToFill.
+  kFormControlElementClicked,
+  // Suggestions triggered by modifying the content of a text input.
+  kTextFieldDidChange,
+  // Suggestions triggered by pressing the down key on a text input. This auto
+  // selects the first suggestion.
+  kTextFieldDidReceiveKeyDown,
+  // Suggestions triggered by the clicking onto the "triangle" on an
+  // <input list=...> to show <datalist> suggestions. While this also counts
+  // as a kFormControlElementClicked event, it is triggered slightly later.
+  // As of crrev.com/c/107353005, prefix matching for such suggestions is
+  // skipped, to make them behave more like a <select>.
+  // TODO(crbug.com/1007974): It's unclear if this is still necessary.
+  kOpenTextDataListChooser,
+  // Credit card suggestions offer users with Sync transport eligiblity an
+  // option to display cards from their account. This causes the suggestions to
+  // update. The updated suggested are considered to have this trigger source.
+  kShowCardsFromAccount,
+  // The suggestion triggering logic through Blink events (e.g.
+  // `kFormControlElementClicked`) is shared with the password manager. However,
+  // the trigger source is not propagated to the password manager specific
+  // code (password_autofill_agent.cc and onwards to the browser process).
+  // On the browser process side, all password suggestions are treated as
+  // `kPasswordManager`. On the renderer side, `kPasswordManager` is unused.
+  kPasswordManager,
+  // WebView doesn't have Autofill suggestion, but autocomplete suggestions are
+  // merged into and displayed in <datalist>s. When a suggestion from a datalist
+  // is accepted, this counts as trigger source `kAndroidWebView`.
+  // In theory, since the suggestions are triggered through the Autofill
+  // renderer code, a more specific trigger source is available. This has little
+  // value for Autofill and would require passing the trigger source back and
+  // forth between WebView Java code.
+  kAndroidWebView,
+  // Since iOS has no renderer, it has separate suggestion triggering logic.
+  // This code currently doesn't distinguish between different suggestion
+  // trigger sources. They are all treated as `kiOS`. See crbug.com/1448447.
+  kiOS,
+  // Suggestions triggered by selecting the manual fallback entry for
+  // autocomplete=unrecognized fields in the context menu.
+  kManualFallbackForAutocompleteUnrecognized,
 };

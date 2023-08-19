@@ -10,6 +10,7 @@
 #include "url/gurl.h"
 
 @protocol GREYMatcher;
+@class SetUpListItemView;
 
 namespace ntp_home {
 // Returns the primary collection view of the new tab page. Returns nil if it is
@@ -27,6 +28,11 @@ UIView* FakeOmnibox();
 // Returns the label corresponding to the Discover header label. Returns nil if
 // it is not in the view hierarchy.
 UILabel* DiscoverHeaderLabel();
+
+// Returns the SetUpListItemView with the given `accessibility_id`.
+SetUpListItemView* SetUpListItemViewWithAccessibilityId(
+    NSString* accessibility_id);
+
 }  // namespace ntp_home
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_NTP_HOME_TEST_UTILS_H_

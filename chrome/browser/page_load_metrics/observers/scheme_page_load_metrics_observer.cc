@@ -8,21 +8,6 @@
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/browser/navigation_handle.h"
 
-namespace {
-
-// Must remain synchronized with the enum of the same name in enums.xml.
-enum class PageLoadTimingUnderStat {
-  kTotal = 0,
-  kLessThan1Second = 1,
-  kLessThan2Seconds = 2,
-  kLessThan5Seconds = 3,
-  kLessThan8Seconds = 4,
-  kLessThan10Seconds = 5,
-  kMaxValue = kLessThan10Seconds
-};
-
-}  // namespace
-
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 SchemePageLoadMetricsObserver::OnStart(
     content::NavigationHandle* navigation_handle,
@@ -109,64 +94,6 @@ void SchemePageLoadMetricsObserver::OnFirstContentfulPaintInPage(
         "PageLoad.Clients.Scheme.HTTPS.PaintTiming."
         "ParseStartToFirstContentfulPaint",
         parse_start_to_fcp);
-  }
-
-  static constexpr char kUnderStatHistogramHttp[] =
-      "PageLoad.Clients.Scheme.HTTP.PaintTiming.UnderStat";
-  static constexpr char kUnderStatHistogramHttps[] =
-      "PageLoad.Clients.Scheme.HTTPS.PaintTiming.UnderStat";
-  static constexpr char kUnderStatHistogramHttpUserNewNav[] =
-      "PageLoad.Clients.Scheme.HTTP.PaintTiming.UnderStat.UserInitiated."
-      "NewNavigation";
-  static constexpr char kUnderStatHistogramHttpsUserNewNav[] =
-      "PageLoad.Clients.Scheme.HTTPS.PaintTiming.UnderStat.UserInitiated."
-      "NewNavigation";
-
-  bool is_user_initiated =
-      GetDelegate().GetUserInitiatedInfo().browser_initiated ||
-      GetDelegate().GetUserInitiatedInfo().user_gesture;
-  bool is_user_initiated_new_navigation =
-      is_user_initiated && ui::PageTransitionIsNewNavigation(transition_);
-
-  // Record understat metrics for the time to first contentful paint.
-  static constexpr const int kUnderStatRecordingIntervalsSeconds[] = {1, 2, 5,
-                                                                      8, 10};
-  static_assert(std::size(kUnderStatRecordingIntervalsSeconds) ==
-                    static_cast<int>(PageLoadTimingUnderStat::kMaxValue),
-                " mismatch in  array length and enum size");
-
-  // Record the total count bucket first.
-  base::UmaHistogramEnumeration(
-      GetDelegate().GetUrl().scheme() == url::kHttpScheme
-          ? kUnderStatHistogramHttp
-          : kUnderStatHistogramHttps,
-      PageLoadTimingUnderStat::kTotal);
-  if (is_user_initiated_new_navigation) {
-    base::UmaHistogramEnumeration(
-        GetDelegate().GetUrl().scheme() == url::kHttpScheme
-            ? kUnderStatHistogramHttpUserNewNav
-            : kUnderStatHistogramHttpsUserNewNav,
-        PageLoadTimingUnderStat::kTotal);
-  }
-
-  for (size_t index = 0; index < std::size(kUnderStatRecordingIntervalsSeconds);
-       ++index) {
-    base::TimeDelta threshold(
-        base::Seconds(kUnderStatRecordingIntervalsSeconds[index]));
-    if (fcp <= threshold) {
-      base::UmaHistogramEnumeration(
-          GetDelegate().GetUrl().scheme() == url::kHttpScheme
-              ? kUnderStatHistogramHttp
-              : kUnderStatHistogramHttps,
-          static_cast<PageLoadTimingUnderStat>(index + 1));
-      if (is_user_initiated_new_navigation) {
-        base::UmaHistogramEnumeration(
-            GetDelegate().GetUrl().scheme() == url::kHttpScheme
-                ? kUnderStatHistogramHttpUserNewNav
-                : kUnderStatHistogramHttpsUserNewNav,
-            static_cast<PageLoadTimingUnderStat>(index + 1));
-      }
-    }
   }
 }
 

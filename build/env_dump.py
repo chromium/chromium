@@ -9,7 +9,7 @@
 import json
 import optparse
 import os
-import pipes
+import shlex
 import subprocess
 import sys
 
@@ -32,7 +32,7 @@ def main():
     if not options.output_json:
       parser.error('Requires --output-json option.')
 
-    envsetup_cmd = ' '.join(map(pipes.quote, args))
+    envsetup_cmd = ' '.join(map(shlex.quote, args))
     full_cmd = [
         'bash', '-c',
         '. %s > /dev/null; %s -d' % (envsetup_cmd, os.path.abspath(__file__))

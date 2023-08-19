@@ -8,13 +8,13 @@
 
 #include <numeric>
 
+#include "base/apple/foundation_util.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/path_service.h"
 #include "skia/ext/skia_utils_mac.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -113,7 +113,7 @@ TEST(IcnsEncoderTest, RoundTrip) {
   // Now use Image I/O methods to load the .icns file back in.
   base::ScopedCFTypeRef<CFDictionaryRef> empty_dict(
       CFDictionaryCreate(nullptr, nullptr, nullptr, 0, nullptr, nullptr));
-  base::ScopedCFTypeRef<CFURLRef> url = base::mac::FilePathToCFURL(icon_path);
+  base::ScopedCFTypeRef<CFURLRef> url = base::apple::FilePathToCFURL(icon_path);
   base::ScopedCFTypeRef<CGImageSourceRef> source(
       CGImageSourceCreateWithURL(url, nullptr));
 
@@ -139,19 +139,9 @@ TEST(IcnsEncoderTest, RoundTrip) {
         SkColor expected_c = reference.getColor(x, y);
         uint8_t alpha = SkColorGetA(expected_c);
         expected_a.push_back(testing::Eq(alpha));
-        // Mac OS older than 10.14 slightly messes up pixel values of pixels
-        // that aren't fully opaque nor fully transparent. So in that case
-        // don't test for equality, but rather check if they are somewhere in
-        // the ballpark.
-        if (!base::mac::IsOS10_13() || alpha == 0xff || alpha == 0) {
-          expected_r.push_back(testing::Eq(SkColorGetR(expected_c)));
-          expected_g.push_back(testing::Eq(SkColorGetG(expected_c)));
-          expected_b.push_back(testing::Eq(SkColorGetB(expected_c)));
-        } else {
-          expected_r.push_back(ValueIsNear(SkColorGetR(expected_c)));
-          expected_g.push_back(ValueIsNear(SkColorGetG(expected_c)));
-          expected_b.push_back(ValueIsNear(SkColorGetB(expected_c)));
-        }
+        expected_r.push_back(testing::Eq(SkColorGetR(expected_c)));
+        expected_g.push_back(testing::Eq(SkColorGetG(expected_c)));
+        expected_b.push_back(testing::Eq(SkColorGetB(expected_c)));
 
         SkColor bitmap_c = bitmap.getColor(x, y);
         bitmap_a.push_back(SkColorGetA(bitmap_c));

@@ -1,0 +1,38 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+import "services/network/public/mojom/shared_dictionary_isolation_key.mojom";
+import "url/mojom/origin.mojom";
+import "url/mojom/url.mojom";
+
+struct SharedDictionaryAccessDetails {
+  enum Type {
+    kRead,
+    kWrite,
+  };
+
+  Type type;
+
+  // The `url` parameter specifies the URL of the resource or dictionary.
+  //   - When `type` is `kRead`, `url` is the URL of the resource for
+  //     which a dictionary will be used.
+  //   - When `type` is `kWrite`, `url` is the URL of the dictionary.
+  url.mojom.Url url;
+
+  SharedDictionaryIsolationKey isolation_key;
+
+  // Indicates that the access was blocked by the user's Site Settings.
+  bool is_blocked = false;
+};
+
+// Cloneable interface to observe the shared dictionary reads or writes.
+interface SharedDictionaryAccessObserver {
+  // Called when an attempt has been made to access a shared dictionary.
+  OnSharedDictionaryAccessed(SharedDictionaryAccessDetails details);
+
+  // Used by the NetworkService to create a copy of this observer.
+  Clone(pending_receiver<SharedDictionaryAccessObserver> observer);
+};

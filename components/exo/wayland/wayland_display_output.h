@@ -57,7 +57,7 @@ class WaylandDisplayOutput {
 
  private:
   const int64_t id_;
-  raw_ptr<wl_global, ExperimentalAsh> global_ = nullptr;
+  raw_ptr<wl_global, DanglingUntriaged | ExperimentalAsh> global_ = nullptr;
   base::flat_map<wl_client*, wl_resource*> output_ids_;
   bool had_registered_output_ = false;
   bool is_destructing_ = false;

@@ -44,6 +44,12 @@ typedef (CSSImageValue or
 
 enum CanvasFillRule { "nonzero", "evenodd" };
 enum ImageSmoothingQuality {"low", "medium", "high"};
+enum CanvasTextRendering {"auto", "optimizeSpeed", "optimizeLegibility", "geometricPrecision"};
+enum CanvasFontStretch {"ultra-condensed", "extra-condensed", "condensed", "semi-condensed", "normal", "semi-expanded", "expanded", "extra-expanded", "ultra-expanded"};
+
+dictionary BeginLayerOptions {
+  CanvasFilterInput? filter = null;
+};
 
 [
     ActiveScriptWrappable,
@@ -55,9 +61,9 @@ interface CanvasRenderingContext2D {
 
     // state
     void save(); // push state on state stack
-    [NoAllocDirectCall] void restore(); // pop state stack if top state was pushed by save, and restore state
-    [RuntimeEnabled=Canvas2dLayers, CallWith=ExecutionContext, RaisesException] void beginLayer(optional CanvasFilterInput? filter = null); // push state on state stack and creates bitmap for subsequent draw ops
-    [RuntimeEnabled=Canvas2dLayers] void endLayer(); // pop state stack if top state was pushed by beginLayer, restore state and draw the bitmap
+    [NoAllocDirectCall, RaisesException] void restore(); // pop state stack if top state was pushed by save, and restore state
+    [RuntimeEnabled=Canvas2dLayers, CallWith=ScriptState, RaisesException] void beginLayer(optional BeginLayerOptions options = {}); // push state on state stack and creates bitmap for subsequent draw ops
+    [NoAllocDirectCall, RuntimeEnabled=Canvas2dLayers, RaisesException] void endLayer(); // pop state stack if top state was pushed by beginLayer, restore state and draw the bitmap
     // Clear the canvas and reset the path
     void reset();
 
@@ -74,7 +80,7 @@ interface CanvasRenderingContext2D {
     // compositing
     attribute unrestricted double globalAlpha; // (default 1.0)
     [HighEntropy] attribute DOMString globalCompositeOperation; // (default source-over)
-    [MeasureAs=Canvas2DFilter, SetterCallWith=ExecutionContext] attribute (DOMString or CanvasFilter)? filter; // (default 'none')
+    [MeasureAs=Canvas2DFilter, SetterCallWith=ScriptState] attribute (DOMString or CanvasFilter)? filter; // (default 'none')
 
     // image smoothing
     attribute boolean imageSmoothingEnabled; // (default True)
@@ -163,10 +169,10 @@ interface CanvasRenderingContext2D {
     attribute DOMString textBaseline; // "top", "hanging", "middle", "alphabetic", "ideographic", "bottom" (default: "alphabetic")
     attribute DOMString direction; // "inherit", "rtl", "ltr" (default: "inherit")
     attribute DOMString fontKerning; // "auto", "normal", "none" (default: "auto")
-    attribute DOMString fontStretch; // "ultra-condensed", "extra-condensed", "condensed", "semi-condensed", "normal", "semi-expanded", "expanded", "extra-expanded", "ultra-expanded" (default: normal)
+    attribute CanvasFontStretch fontStretch; // "ultra-condensed", "extra-condensed", "condensed", "semi-condensed", "normal", "semi-expanded", "expanded", "extra-expanded", "ultra-expanded" (default: normal)
     attribute DOMString fontVariantCaps; // "normal", "small-caps", "all-small-caps", "petite-caps", "all-petite-caps", "unicase", "titling-caps" (default: "normal")
     attribute DOMString letterSpacing; // length in pixel (default: "0px")
-    attribute DOMString textRendering; // "auto", "optimizeSpeed", "optimizeLegibility", "geometricPrecision" (default: auto)
+    attribute CanvasTextRendering textRendering; // "auto", "optimizeSpeed", "optimizeLegibility", "geometricPrecision" (default: "auto")
     attribute DOMString wordSpacing; // length in pixel (default: "0px")
 };
 

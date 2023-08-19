@@ -14,6 +14,7 @@ class WebContents;
 }
 
 namespace views {
+class FlexLayoutView;
 class Label;
 class MdTextButton;
 class WebView;
@@ -59,6 +60,9 @@ class SadTabView : public SadTab, public views::View {
   // Set this View as the crashed overlay view for the WebView associated
   // with this object's WebContents.
   void AttachToWebView();
+
+  // Enable help link if needed.
+  void EnableHelpLink(views::FlexLayoutView* actions_container);
 
   bool painted_ = false;
   raw_ptr<views::Label> message_;

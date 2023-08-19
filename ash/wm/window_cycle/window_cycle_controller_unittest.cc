@@ -850,11 +850,11 @@ TEST_F(WindowCycleControllerTest, CycleShowsAllDesksWindows) {
   desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
   desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
   ASSERT_EQ(3u, desks_controller->desks().size());
-  const Desk* desk_2 = desks_controller->desks()[1].get();
+  const Desk* desk_2 = desks_controller->GetDeskAtIndex(1);
   ActivateDesk(desk_2);
   EXPECT_EQ(desk_2, desks_controller->active_desk());
   auto win2 = CreateAppWindow(gfx::Rect(0, 0, 300, 200));
-  const Desk* desk_3 = desks_controller->desks()[2].get();
+  const Desk* desk_3 = desks_controller->GetDeskAtIndex(2);
   ActivateDesk(desk_3);
   EXPECT_EQ(desk_3, desks_controller->active_desk());
   auto win3 = CreateAppWindow(gfx::Rect(10, 30, 400, 200));
@@ -879,7 +879,7 @@ TEST_F(WindowCycleControllerTest, CycleShowsAllDesksWindows) {
     cycle_controller->HandleCycleWindow(
         WindowCycleController::WindowCyclingDirection::kForward);
     CompleteCyclingAndDeskSwitching(cycle_controller);
-    Desk* desk_1 = desks_controller->desks()[0].get();
+    Desk* desk_1 = desks_controller->GetDeskAtIndex(0);
     EXPECT_EQ(desk_1, desks_controller->active_desk());
     EXPECT_EQ(win1.get(), window_util::GetActiveWindow());
     histogram_tester.ExpectUniqueSample(
@@ -948,8 +948,8 @@ TEST_F(WindowCycleControllerTest, DoubleAltTabWithDeskSwitch) {
   auto* desks_controller = DesksController::Get();
   desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
   ASSERT_EQ(2u, desks_controller->desks().size());
-  const Desk* desk_0 = desks_controller->desks()[0].get();
-  const Desk* desk_1 = desks_controller->desks()[1].get();
+  const Desk* desk_0 = desks_controller->GetDeskAtIndex(0);
+  const Desk* desk_1 = desks_controller->GetDeskAtIndex(1);
   ActivateDesk(desk_1);
   EXPECT_EQ(desk_1, desks_controller->active_desk());
   auto win1 = CreateAppWindow(gfx::Rect(300, 200));
@@ -1120,6 +1120,7 @@ TEST_F(WindowCycleControllerTest, MouseEventWhenCycleViewDoesNotExist) {
 // If a user clicks on an item, it should complete cycling and activate
 // the hovered item.
 TEST_F(WindowCycleControllerTest, MouseHoverAndSelect) {
+  UpdateDisplay("1200x800");
   std::unique_ptr<Window> w0 = CreateTestWindow();
   std::unique_ptr<Window> w1 = CreateTestWindow();
   std::unique_ptr<Window> w2 = CreateTestWindow();
@@ -1292,6 +1293,7 @@ TEST_F(WindowCycleControllerTest, RapidConfirmSelection) {
 // preventing the mouse from unexpectedly triggering events.
 // See crbug.com/1143275.
 TEST_F(WindowCycleControllerTest, FilterMouseEventsUntilUsed) {
+  UpdateDisplay("1200x800");
   std::unique_ptr<Window> w0 = CreateTestWindow();
   std::unique_ptr<Window> w1 = CreateTestWindow();
   std::unique_ptr<Window> w2 = CreateTestWindow();
@@ -1546,6 +1548,7 @@ TEST_F(WindowCycleControllerTest, VerticalScroll) {
 
 // Tests that touch continuous scrolls for the window cycle list.
 TEST_F(WindowCycleControllerTest, TouchScroll) {
+  UpdateDisplay("900x600");
   const gfx::Rect bounds(0, 0, 200, 200);
   std::unique_ptr<aura::Window> window5 = CreateTestWindow(bounds);
   std::unique_ptr<aura::Window> window4 = CreateTestWindow(bounds);
@@ -1896,8 +1899,8 @@ TEST_F(ReverseGestureWindowCycleControllerTest,
   EXPECT_TRUE(wm::IsActiveWindow(window2.get()));
 }
 
-// Tests that natural scroll doesn't affect two and three finger horizontal
-// scroll gestures for cycling window cycle list.
+// Tests that natural scroll affects two finger horizontal scrolling for the
+// window cycle list, and doesn't affect three finger scrolling.
 TEST_F(ReverseGestureWindowCycleControllerTest,
        WindowCycleListTrackpadGestures) {
   const gfx::Rect bounds(0, 0, 400, 400);
@@ -1918,14 +1921,16 @@ TEST_F(ReverseGestureWindowCycleControllerTest,
     CompleteCycling(controller);
   };
 
-  // Start cycle, scroll right with two finger gesture.
+  // Start cycle, scroll right with two finger gesture. Note: two finger swipes
+  // are negated, so negate in tests to mimic how this actually behaves on
+  // devices.
   // Current order is [5,4,3,2,1].
-  scroll_until_window_highlighted_and_confirm(horizontal_scroll, 0,
+  scroll_until_window_highlighted_and_confirm(-horizontal_scroll, 0,
                                               kNumFingersForMouseWheel);
-  EXPECT_TRUE(wm::IsActiveWindow(window4.get()));
+  EXPECT_TRUE(wm::IsActiveWindow(window1.get()));
 
   // Start cycle, scroll right with three finger gesture.
-  // Current order is [4,5,3,2,1].
+  // Current order is [1,5,4,3,2].
   scroll_until_window_highlighted_and_confirm(horizontal_scroll, 0,
                                               kNumFingersForTrackpad);
   EXPECT_TRUE(wm::IsActiveWindow(window5.get()));
@@ -1938,13 +1943,13 @@ TEST_F(ReverseGestureWindowCycleControllerTest,
   // Start cycle, scroll right with two finger gesture. Note: two finger swipes
   // are negated, so negate in tests to mimic how this actually behaves on
   // devices.
-  // Current order is [5,4,3,2,1].
+  // Current order is [5,1,4,3,2].
   scroll_until_window_highlighted_and_confirm(-horizontal_scroll, 0,
                                               kNumFingersForMouseWheel);
-  EXPECT_TRUE(wm::IsActiveWindow(window4.get()));
+  EXPECT_TRUE(wm::IsActiveWindow(window1.get()));
 
   // Start cycle, scroll right with three finger gesture.
-  // Current order is [4,5,3,2,1].
+  // Current order is [1,5,4,3,2].
   scroll_until_window_highlighted_and_confirm(horizontal_scroll, 0,
                                               kNumFingersForTrackpad);
   EXPECT_TRUE(wm::IsActiveWindow(window5.get()));
@@ -1987,7 +1992,8 @@ class ModeSelectionWindowCycleControllerTest
   }
 
  private:
-  raw_ptr<ui::test::EventGenerator, ExperimentalAsh> generator_;
+  raw_ptr<ui::test::EventGenerator, DanglingUntriaged | ExperimentalAsh>
+      generator_;
 };
 
 // Tests that when user taps tab slider buttons, the active mode should
@@ -2002,7 +2008,7 @@ TEST_F(ModeSelectionWindowCycleControllerTest, ModeChangesOnTap) {
   auto* desks_controller = DesksController::Get();
   desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
   ASSERT_EQ(2u, desks_controller->desks().size());
-  const Desk* desk_2 = desks_controller->desks()[1].get();
+  const Desk* desk_2 = desks_controller->GetDeskAtIndex(1);
   ActivateDesk(desk_2);
   EXPECT_EQ(desk_2, desks_controller->active_desk());
   auto win1 = CreateAppWindow(gfx::Rect(0, 0, 300, 200));
@@ -2073,7 +2079,7 @@ TEST_F(ModeSelectionWindowCycleControllerTest,
   auto* desks_controller = DesksController::Get();
   desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
   ASSERT_EQ(2u, desks_controller->desks().size());
-  const Desk* desk_2 = desks_controller->desks()[1].get();
+  const Desk* desk_2 = desks_controller->GetDeskAtIndex(1);
   ActivateDesk(desk_2);
   EXPECT_EQ(desk_2, desks_controller->active_desk());
   auto win1 = CreateAppWindow(gfx::Rect(0, 0, 300, 200));
@@ -2165,7 +2171,7 @@ TEST_F(ModeSelectionWindowCycleControllerTest, SingleDeskHidesInteractiveMode) {
 
   // Create an empty desk_2 and start alt-tab to enter the all-desks mode.
   desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
-  const Desk* desk_2 = desks_controller->desks()[1].get();
+  const Desk* desk_2 = desks_controller->GetDeskAtIndex(1);
   ActivateDesk(desk_2);
   EXPECT_EQ(desk_2, desks_controller->active_desk());
   cycle_controller->StartCycling(/*same_app_only=*/false);
@@ -2207,7 +2213,7 @@ TEST_F(ModeSelectionWindowCycleControllerTest, CycleShowsWindowsPerMode) {
   auto* desks_controller = DesksController::Get();
   desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
   ASSERT_EQ(2u, desks_controller->desks().size());
-  const Desk* desk_2 = desks_controller->desks()[1].get();
+  const Desk* desk_2 = desks_controller->GetDeskAtIndex(1);
   ActivateDesk(desk_2);
   EXPECT_EQ(desk_2, desks_controller->active_desk());
   auto win2 = CreateAppWindow(gfx::Rect(0, 0, 300, 200));
@@ -2241,7 +2247,7 @@ TEST_F(ModeSelectionWindowCycleControllerTest, CycleShowsWindowsPerMode) {
   CompleteCycling(cycle_controller);
 
   // Activate desk1 and start alt-tab.
-  const Desk* desk_1 = desks_controller->desks()[0].get();
+  const Desk* desk_1 = desks_controller->GetDeskAtIndex(0);
   ActivateDesk(desk_1);
   cycle_controller->StartCycling(/*same_app_only=*/false);
   // Should start alt-tab with the current-desk mode and show only two windows
@@ -2275,7 +2281,7 @@ TEST_F(ModeSelectionWindowCycleControllerTest, OneWindowInActiveDesk) {
   auto* desks_controller = DesksController::Get();
   desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
   ASSERT_EQ(2u, desks_controller->desks().size());
-  const Desk* desk_2 = desks_controller->desks()[1].get();
+  const Desk* desk_2 = desks_controller->GetDeskAtIndex(1);
   ActivateDesk(desk_2);
   EXPECT_EQ(desk_2, desks_controller->active_desk());
   auto win1 = CreateAppWindow(gfx::Rect(0, 0, 300, 200));
@@ -2318,7 +2324,7 @@ TEST_F(ModeSelectionWindowCycleControllerTest, OneWindowTotalInActiveDesk) {
   auto* desks_controller = DesksController::Get();
   desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
   ASSERT_EQ(2u, desks_controller->desks().size());
-  const Desk* desk_2 = desks_controller->desks()[1].get();
+  const Desk* desk_2 = desks_controller->GetDeskAtIndex(1);
   ActivateDesk(desk_2);
   EXPECT_EQ(desk_2, desks_controller->active_desk());
   auto win0 = CreateAppWindow(gfx::Rect(0, 0, 300, 200));
@@ -2358,7 +2364,7 @@ TEST_F(ModeSelectionWindowCycleControllerTest, NoWindowInActiveDesk) {
   auto* desks_controller = DesksController::Get();
   desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
   ASSERT_EQ(2u, desks_controller->desks().size());
-  const Desk* desk_2 = desks_controller->desks()[1].get();
+  const Desk* desk_2 = desks_controller->GetDeskAtIndex(1);
 
   // Activate desk2.
   ActivateDesk(desk_2);
@@ -2414,7 +2420,7 @@ TEST_F(ModeSelectionWindowCycleControllerTest, NoWindowTotalInActiveDesk) {
   auto* desks_controller = DesksController::Get();
   desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
   ASSERT_EQ(2u, desks_controller->desks().size());
-  const Desk* desk_2 = desks_controller->desks()[1].get();
+  const Desk* desk_2 = desks_controller->GetDeskAtIndex(1);
 
   // Activate desk2.
   ActivateDesk(desk_2);
@@ -2444,7 +2450,7 @@ TEST_F(ModeSelectionWindowCycleControllerTest,
   auto* desks_controller = DesksController::Get();
   desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
   ASSERT_EQ(2u, desks_controller->desks().size());
-  const Desk* desk_2 = desks_controller->desks()[1].get();
+  const Desk* desk_2 = desks_controller->GetDeskAtIndex(1);
   ActivateDesk(desk_2);
   EXPECT_EQ(desk_2, desks_controller->active_desk());
   auto win2 = CreateAppWindow(gfx::Rect(0, 0, 300, 200));
@@ -2511,7 +2517,7 @@ TEST_F(ModeSelectionWindowCycleControllerTest,
   auto* desks_controller = DesksController::Get();
   desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
   ASSERT_EQ(2u, desks_controller->desks().size());
-  const Desk* desk_2 = desks_controller->desks()[1].get();
+  const Desk* desk_2 = desks_controller->GetDeskAtIndex(1);
   ActivateDesk(desk_2);
   EXPECT_EQ(desk_2, desks_controller->active_desk());
   auto win2 = CreateAppWindow(gfx::Rect(0, 0, 300, 200));
@@ -2583,7 +2589,7 @@ TEST_F(ModeSelectionWindowCycleControllerTest, KeyboardNavigation) {
   auto* desks_controller = DesksController::Get();
   desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
   ASSERT_EQ(2u, desks_controller->desks().size());
-  const Desk* desk_2 = desks_controller->desks()[1].get();
+  const Desk* desk_2 = desks_controller->GetDeskAtIndex(1);
   ActivateDesk(desk_2);
   EXPECT_EQ(desk_2, desks_controller->active_desk());
   auto win2 = CreateAppWindow(gfx::Rect(0, 0, 300, 200));
@@ -2690,7 +2696,7 @@ TEST_F(ModeSelectionWindowCycleControllerTest, KeyboardNavigationAfterClick) {
   auto* desks_controller = DesksController::Get();
   desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
   ASSERT_EQ(2u, desks_controller->desks().size());
-  const Desk* desk_2 = desks_controller->desks()[1].get();
+  const Desk* desk_2 = desks_controller->GetDeskAtIndex(1);
   ActivateDesk(desk_2);
   EXPECT_EQ(desk_2, desks_controller->active_desk());
   auto win2 = CreateAppWindow(gfx::Rect(0, 0, 300, 200));
@@ -2794,7 +2800,7 @@ TEST_F(ModeSelectionWindowCycleControllerTest, ChromeVox) {
   auto* desks_controller = DesksController::Get();
   desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
   ASSERT_EQ(2u, desks_controller->desks().size());
-  const Desk* desk_2 = desks_controller->desks()[1].get();
+  const Desk* desk_2 = desks_controller->GetDeskAtIndex(1);
   ActivateDesk(desk_2);
   EXPECT_EQ(desk_2, desks_controller->active_desk());
   auto win0 = CreateAppWindow(gfx::Rect(10, 30, 400, 200));
@@ -2974,7 +2980,7 @@ TEST_F(ModeSelectionWindowCycleControllerTest, ChromeVoxNoWindow) {
   auto* desks_controller = DesksController::Get();
   desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
   ASSERT_EQ(2u, desks_controller->desks().size());
-  const Desk* desk_2 = desks_controller->desks()[1].get();
+  const Desk* desk_2 = desks_controller->GetDeskAtIndex(1);
   ActivateDesk(desk_2);
   EXPECT_EQ(desk_2, desks_controller->active_desk());
 
@@ -3066,7 +3072,7 @@ TEST_F(ModeSelectionWindowCycleControllerTest, WindowDestruction) {
   auto* desks_controller = DesksController::Get();
   desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
   ASSERT_EQ(2u, desks_controller->desks().size());
-  const Desk* desk_2 = desks_controller->desks()[1].get();
+  const Desk* desk_2 = desks_controller->GetDeskAtIndex(1);
   ActivateDesk(desk_2);
   EXPECT_EQ(desk_2, desks_controller->active_desk());
   std::unique_ptr<Window> w4 = CreateAppWindow(default_rect);
@@ -3104,7 +3110,7 @@ TEST_F(ModeSelectionWindowCycleControllerTest,
 
   // Put one window on each desk.
   auto win0 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
-  ActivateDesk(desks_controller->desks()[1].get());
+  ActivateDesk(desks_controller->GetDeskAtIndex(1));
   auto win1 = CreateAppWindow(gfx::Rect(0, 0, 300, 200));
 
   // Start cycle. Verify the slider buttons are present.
@@ -3161,10 +3167,12 @@ class MultiUserWindowCycleControllerTest
     // desks restore data before the user signs in.
     auto user_1_prefs = std::make_unique<TestingPrefServiceSimple>();
     user_1_prefs_ = user_1_prefs.get();
-    RegisterUserProfilePrefs(user_1_prefs_->registry(), /*for_test=*/true);
+    RegisterUserProfilePrefs(user_1_prefs_->registry(), /*country=*/"",
+                             /*for_test=*/true);
     auto user_2_prefs = std::make_unique<TestingPrefServiceSimple>();
     user_2_prefs_ = user_2_prefs.get();
-    RegisterUserProfilePrefs(user_2_prefs_->registry(), /*for_test=*/true);
+    RegisterUserProfilePrefs(user_2_prefs_->registry(), /*country=*/"",
+                             /*for_test=*/true);
     session_controller->AddUserSession(kUser1Email,
                                        user_manager::USER_TYPE_REGULAR,
                                        /*provide_pref_service=*/false);
@@ -3272,14 +3280,17 @@ class MultiUserWindowCycleControllerTest
   }
 
  private:
-  raw_ptr<ui::test::EventGenerator, ExperimentalAsh> generator_;
+  raw_ptr<ui::test::EventGenerator, DanglingUntriaged | ExperimentalAsh>
+      generator_;
 
   std::unique_ptr<ShelfViewTestAPI> shelf_view_test_;
 
   std::unique_ptr<MultiUserWindowManager> multi_user_window_manager_;
 
-  raw_ptr<TestingPrefServiceSimple, ExperimentalAsh> user_1_prefs_ = nullptr;
-  raw_ptr<TestingPrefServiceSimple, ExperimentalAsh> user_2_prefs_ = nullptr;
+  raw_ptr<TestingPrefServiceSimple, DanglingUntriaged | ExperimentalAsh>
+      user_1_prefs_ = nullptr;
+  raw_ptr<TestingPrefServiceSimple, DanglingUntriaged | ExperimentalAsh>
+      user_2_prefs_ = nullptr;
 };
 
 // Tests that when the active user prefs' |prefs::kAltTabPerDesk| is updated,
@@ -3296,7 +3307,7 @@ TEST_F(MultiUserWindowCycleControllerTest, AltTabModePrefsUpdateUI) {
   desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
   ASSERT_EQ(2u, desks_controller->desks().size());
   // Activate desk2 and create two windows.
-  const Desk* desk_2 = desks_controller->desks()[1].get();
+  const Desk* desk_2 = desks_controller->GetDeskAtIndex(1);
   ActivateDesk(desk_2);
   EXPECT_EQ(desk_2, desks_controller->active_desk());
   auto win1 = CreateAppWindow(gfx::Rect(50, 50, 200, 200));
@@ -3333,7 +3344,7 @@ TEST_F(MultiUserWindowCycleControllerTest, AltTabModePrefsUpdateUI) {
 
   // Switch to the secondary user_2 and setup the profile with four windows.
   SwitchActiveUser(GetUser2AccountId());
-  const Desk* desk_1 = desks_controller->desks()[0].get();
+  const Desk* desk_1 = desks_controller->GetDeskAtIndex(0);
   EXPECT_TRUE(desk_1->is_active());
   auto win3 = CreateAppWindow(gfx::Rect(0, 0, 250, 200));
   multi_user_window_manager()->SetWindowOwner(win3.get(), GetUser2AccountId());
@@ -3391,7 +3402,7 @@ TEST_F(MultiUserWindowCycleControllerTest,
   auto* desks_controller = DesksController::Get();
   desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
   ASSERT_EQ(2u, desks_controller->desks().size());
-  const Desk* desk_2 = desks_controller->desks()[1].get();
+  const Desk* desk_2 = desks_controller->GetDeskAtIndex(1);
   ActivateDesk(desk_2);
   EXPECT_EQ(desk_2, desks_controller->active_desk());
   auto win1 = CreateAppWindow(gfx::Rect(50, 50, 200, 200));
@@ -3413,7 +3424,7 @@ TEST_F(MultiUserWindowCycleControllerTest,
 
   // Switch to user_2 and open up two windows out of four in the current desk.
   SwitchActiveUser(GetUser2AccountId());
-  const Desk* desk_1 = desks_controller->desks()[0].get();
+  const Desk* desk_1 = desks_controller->GetDeskAtIndex(0);
   EXPECT_TRUE(desk_1->is_active());
   auto win3 = CreateAppWindow(gfx::Rect(0, 0, 250, 200));
   multi_user_window_manager()->SetWindowOwner(win3.get(), GetUser2AccountId());
@@ -3665,7 +3676,7 @@ TEST_F(SameAppWindowCycleControllerTest, PerDeskMode) {
   auto* desks_controller = DesksController::Get();
   desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
   ASSERT_EQ(2u, desks_controller->desks().size());
-  const Desk* desk_2 = desks_controller->desks()[1].get();
+  const Desk* desk_2 = desks_controller->GetDeskAtIndex(1);
   ActivateDesk(desk_2);
   EXPECT_EQ(desk_2, desks_controller->active_desk());
   std::unique_ptr<aura::Window> w4(CreateTestWindowWithAppID(std::string("A")));
@@ -3709,7 +3720,7 @@ TEST_F(SameAppWindowCycleControllerTest, PerDeskMode) {
 
   // Go to desk 1 and start cycling, we should still be on current-desk mode and
   // see 3 windows of app B.
-  ActivateDesk(desks_controller->desks()[0].get());
+  ActivateDesk(desks_controller->GetDeskAtIndex(0));
   generator->PressKey(ui::VKEY_MENU, ui::EF_NONE);
   generator->PressAndReleaseKey(ui::VKEY_OEM_3, ui::EF_ALT_DOWN);
   EXPECT_TRUE(cycle_controller->IsAltTabPerActiveDesk());

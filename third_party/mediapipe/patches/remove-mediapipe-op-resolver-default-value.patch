@@ -1,0 +1,26 @@
+From 06541975ff9831725cca097ca92c4964208e6f35 Mon Sep 17 00:00:00 2001
+From: Robert Ogden <robertogden@chromium.org>
+Date: Tue, 18 Jul 2023 15:43:33 -0700
+Subject: [PATCH] remove mediapipe op resolver default value
+
+---
+ .../mediapipe/src/mediapipe/tasks/cc/core/base_options.h       | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/third_party/mediapipe/src/mediapipe/tasks/cc/core/base_options.h b/third_party/mediapipe/src/mediapipe/tasks/cc/core/base_options.h
+index 738d71093bab9..877d17e741ccc 100644
+--- a/third_party/mediapipe/src/mediapipe/tasks/cc/core/base_options.h
++++ b/third_party/mediapipe/src/mediapipe/tasks/cc/core/base_options.h
+@@ -92,8 +92,7 @@ struct BaseOptions {
+ 
+   // A non-default OpResolver to support custom Ops or specify a subset of
+   // built-in Ops.
+-  std::unique_ptr<tflite::OpResolver> op_resolver =
+-      absl::make_unique<MediaPipeBuiltinOpResolver>();
++  std::unique_ptr<tflite::OpResolver> op_resolver;
+ 
+   // Options for the chosen delegate. If not set, the default delegate options
+   // is used.
+-- 
+2.41.0.255.g8b1d071c50-goog
+

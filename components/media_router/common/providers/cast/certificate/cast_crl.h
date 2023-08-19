@@ -49,7 +49,8 @@ class CastCRL {
 // Output:
 // Returns the CRL object if success, nullptr otherwise.
 std::unique_ptr<CastCRL> ParseAndVerifyCRL(const std::string& crl_proto,
-                                           const base::Time& time);
+                                           const base::Time& time,
+                                           const bool is_fallback_crl);
 
 // This is an overloaded version of ParseAndVerifyCRL that allows
 // the input of a custom TrustStore.
@@ -58,6 +59,11 @@ std::unique_ptr<CastCRL> ParseAndVerifyCRL(const std::string& crl_proto,
 // store.
 std::unique_ptr<CastCRL> ParseAndVerifyCRLUsingCustomTrustStore(
     const std::string& crl_proto,
+    const base::Time& time,
+    net::TrustStore* trust_store,
+    const bool is_fallback_crl);
+
+std::unique_ptr<CastCRL> ParseAndVerifyFallbackCRLUsingCustomTrustStore(
     const base::Time& time,
     net::TrustStore* trust_store);
 

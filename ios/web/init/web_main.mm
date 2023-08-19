@@ -6,10 +6,6 @@
 
 #import "ios/web/public/init/web_main_runner.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace web {
 
 WebMainParams::WebMainParams() : WebMainParams(nullptr) {}

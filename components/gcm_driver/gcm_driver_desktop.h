@@ -49,15 +49,11 @@ class GCMDelayedTaskController;
 class GCMDriverDesktop : public GCMDriver,
                          protected InstanceIDHandler {
  public:
-  // |remove_account_mappings_with_email_key| indicates whether account mappings
-  // having email as account key should be removed while loading. This is
-  // required during the migration of account identifier from email to Gaia ID.
   GCMDriverDesktop(
       std::unique_ptr<GCMClientFactory> gcm_client_factory,
       const GCMClient::ChromeBuildInfo& chrome_build_info,
       PrefService* prefs,
       const base::FilePath& store_path,
-      bool remove_account_mappings_with_email_key,
       base::RepeatingCallback<void(
           mojo::PendingReceiver<network::mojom::ProxyResolvingSocketFactory>)>
           get_socket_factory_callback,

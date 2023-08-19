@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
 #include "components/sync_bookmarks/bookmark_model_type_processor.h"
 
 class BookmarkUndoService;
@@ -34,12 +35,10 @@ class BookmarkModelTypeProcessor;
 // This service owns the BookmarkModelTypeProcessor.
 class BookmarkSyncService : public KeyedService {
  public:
-  // If `wipe_model_on_stopping_sync_with_clear_data` is `true`, then the
   // `bookmark_undo_service` must not be null and must outlive this object.
-  // lifetime of bookmarks in the associated storage is coupled with sync
-  // metadata's, so disabling sync will delete bookmarks in the storage.
   BookmarkSyncService(BookmarkUndoService* bookmark_undo_service,
-                      bool wipe_model_on_stopping_sync_with_clear_data);
+                      syncer::WipeModelUponSyncDisabledBehavior
+                          wipe_model_upon_sync_disabled_behavior);
 
   BookmarkSyncService(const BookmarkSyncService&) = delete;
   BookmarkSyncService& operator=(const BookmarkSyncService&) = delete;

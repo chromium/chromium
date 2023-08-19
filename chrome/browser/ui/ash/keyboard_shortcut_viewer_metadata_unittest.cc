@@ -24,9 +24,9 @@
 namespace {
 
 // The total number of Ash accelerators.
-constexpr int kAshAcceleratorsTotalNum = 148;
+constexpr int kAshAcceleratorsTotalNum = 147;
 // The hash of Ash accelerators.
-constexpr char kAshAcceleratorsHash[] = "f7a44d1ca086c9feb1910632c2691b1a";
+constexpr char kAshAcceleratorsHash[] = "6b946ad3ceb8263615f2c47dc7e240a8";
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Internal builds add an extra accelerator for the Feedback app.
 // The total number of Chrome accelerators (available on Chrome OS).
@@ -231,6 +231,7 @@ TEST_F(KeyboardShortcutViewerMetadataTest,
   }
 }
 
+// TODO (http://b/291803593): Remove the test.
 // Test that modifying Ash/Chrome accelerator should update
 // KeyboardShortcutViewerMetadata. (https://crbug.com/826037).
 // 1. If you are adding/deleting/modifying shortcuts, please also
@@ -242,7 +243,7 @@ TEST_F(KeyboardShortcutViewerMetadataTest,
 // 3. If there is no corrensponding item in the Keyboard Shortcut Viewer, please
 //    consider adding the shortcut to it or only update 2.
 TEST_F(KeyboardShortcutViewerMetadataTest,
-       ModifyAcceleratorShouldUpdateMetadata) {
+       DISABLED_ModifyAcceleratorShouldUpdateMetadata) {
   std::vector<ash::AcceleratorData> ash_accelerators;
   std::vector<AcceleratorMapping> chrome_accelerators;
   for (size_t i = 0; i < ash::kAcceleratorDataLength; ++i)

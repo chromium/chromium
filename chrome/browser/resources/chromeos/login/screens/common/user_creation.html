@@ -4,19 +4,32 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<style include="oobe-dialog-host-styles cr-card-radio-group-styles">
+<style include="oobe-dialog-host-styles cr-card-radio-group-styles
+    cros-color-overrides">
   @media screen and (max-width: 920px) {
   :host {
       --radio-button-height: 155px;
     }
   }
-  .help-text {
-    color: var(--oobe-subheader-text-color);
-    margin-top: 16px;
+
+  #enroll-description{
+    margin-top: 10px;
   }
+
+  .title{
+    font-weight: bold;
+    margin-top: 10px;
+  }
+
+  #learnMoreDialog p {
+    margin-bottom: 10px;
+  }
+
 </style>
-<oobe-adaptive-dialog id="userCreationDialog" for-step="create"
-    role="presentation" aria-live="polite">
+<oobe-adaptive-dialog id="userCreationDialog"
+    for-step="create"
+    role="dialog"
+    aria-label$="[[i18nDynamic(locale, titleKey_)]]">
   <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
   <h1 slot="title">
     [[i18nDynamic(locale, titleKey_)]]
@@ -33,10 +46,10 @@ found in the LICENSE file.
           </hd-iron-icon>
           <div class="card-content">
             <div class="card-label">
-              [[i18nDynamic(locale, 'createForSelfLabel')]]
+              [[getPersonalCardLabel_(locale)]]
             </div>
             <div class="card-text">
-              [[i18nDynamic(locale, 'createForSelfDescription')]]
+              [[getPersonalCardText_(locale)]]
             </div>
           </div>
         </div>
@@ -48,10 +61,27 @@ found in the LICENSE file.
           </hd-iron-icon>
           <div class="card-content">
             <div class="card-label">
-              [[i18nDynamic(locale, 'createForChildLabel')]]
+              [[getChildCardLabel_(locale)]]
             </div>
             <div class="card-text">
-              [[i18nDynamic(locale, 'createForChildDescription')]]
+              [[getChildCardText_(locale)]]
+            </div>
+          </div>
+        </div>
+      </cr-card-radio-button>
+      <cr-card-radio-button id="enrollButton"
+          hidden="[[!isOobeSoftwareUpdateEnabled_]]"
+          class="flex" name="enroll">
+        <div class="card-container">
+          <hd-iron-icon class="card-icon" icon1x="oobe-48:add-work"
+            icon2x="oobe-96:add-work">
+          </hd-iron-icon>
+          <div class="card-content">
+            <div class="card-label">
+              [[i18nDynamic(locale, 'userCreationEnrollButtonTitle')]]
+            </div>
+            <div class="card-text">
+              [[i18nDynamic(locale, 'userCreationEnrollButtonDescription')]]
             </div>
           </div>
         </div>
@@ -61,71 +91,154 @@ found in the LICENSE file.
   </div>
   <div slot="back-navigation">
     <oobe-back-button id="backButton" on-click="onBackClicked_"
-        hidden="[[!isBackButtonVisible_]]">
+        hidden="[[!isBackButtonVisible_]]" disabled="[[!isOobeLoaded_]]">
     </oobe-back-button>
   </div>
   <div slot="bottom-buttons">
-    <oobe-next-button id="nextButton" class="focus-on-show"
-        on-click="onNextClicked_">
+    <oobe-next-button id="nextButton"
+        class="focus-on-show" on-click="onNextClicked_"
+        disabled="[[!isNextButtonEnabled_(selectedUserType, isOobeLoaded_)]]">
     </oobe-next-button>
   </div>
 </oobe-adaptive-dialog>
-<oobe-adaptive-dialog id="childSignInDialog" role="dialog" for-step="child"
-    aria-label$="[[i18nDynamic(locale, 'childSignInTitle')]]">
-  <iron-icon slot="icon" icon="oobe-32:family"></iron-icon>
+<oobe-adaptive-dialog id="enrollTriageDialog"
+    role="dialog"
+    for-step="enroll-triage"
+    aria-label$="[[i18nDynamic(locale, 'userCreationEnrollTriageTitle')]]">
+  <iron-icon slot="icon" icon="oobe-32:work"></iron-icon>
   <h1 slot="title">
-    [[i18nDynamic(locale, 'childSignInTitle')]]
+    [[i18nDynamic(locale, 'userCreationEnrollTriageTitle')]]
   </h1>
   <div slot="subtitle">
-    [[i18nDynamic(locale, 'childSignInSubtitle')]]
-    <a id="learnMoreLink" class="oobe-local-link"
-        on-click="onLearnMoreClicked_" is="action-link">
-      [[i18nDynamic(locale, 'childSignInLearnMore')]]
-    </a>
+    <div>
+      [[i18nDynamic(locale, 'userCreationEnrollTriageSubtitle')]]
+      <a id="learnMoreLink" class="oobe-local-link"
+          aria-label$="[[i18nDynamic(locale, 'userCreationLearnMoreAria')]]"
+          on-click="onLearnMoreClicked_" is="action-link">
+        [[i18nDynamic(locale, 'userCreationEnrollLearnMore')]]
+      </a>
+    </div>
+    <div id="enroll-description">
+      <span class="title">
+        [[i18nDynamic(locale, 'userCreationEnrollTriageDescriptionTitle')]]
+      </span>
+      <span>
+        [[i18nDynamic(locale, 'userCreationEnrollTriageDescription')]]
+      </span>
+    </div>
   </div>
   <div slot="content" class="layout vertical landscape-vertical-centered">
-    <cr-radio-group id="childSignInMethod"
-        selected="{{selectedSignInMethod}}">
-      <cr-card-radio-button id="childCreateButton" name="create"
-          class="flex focus-on-show">
+    <cr-radio-group id="enrollTriageMethod"
+        selected="{{selectedEnrollTriageMethod}}">
+      <cr-card-radio-button id="triageEnrollButton" name="enroll"
+          class="flex">
         <div class="card-container">
-          <hd-iron-icon class="card-icon" icon1x="oobe-48:person-add"
-              icon2x="oobe-96:person-add">
+          <hd-iron-icon class="card-icon" icon1x="oobe-48:managed"
+              icon2x="oobe-96:managed">
           </hd-iron-icon>
-          <div class="card-content card-label">
-            [[i18nDynamic(locale, 'createAccountForChildLabel')]]
+          <div class="card-content">
+            <div class="card-label">
+              [[i18nDynamic(locale,
+                  'userCreationEnrollTriageAcceptEnrollButtonLabel')]]
+            </div>
           </div>
         </div>
       </cr-card-radio-button>
-      <cr-card-radio-button id="childSignInButton" name="signin"
+      <cr-card-radio-button id="triageNotEnrollButton" name="signin"
           class="flex">
         <div class="card-container">
-          <hd-iron-icon class="card-icon" icon1x="oobe-48:supervised-user"
-              icon2x="oobe-96:supervised-user">
+          <hd-iron-icon class="card-icon" icon1x="oobe-48:avatar"
+              icon2x="oobe-96:avatar">
           </hd-iron-icon>
-          <div class="card-content card-label">
-            [[i18nDynamic(locale, 'signInForChildLabel')]]
+          <div class="card-content">
+            <div class="card-label">
+              [[i18nDynamic(locale,
+                  'userCreationEnrollTriageDeclineEnrollButtonLabel')]]
+            </div>
           </div>
         </div>
       </cr-card-radio-button>
     </cr-radio-group>
-    <div class="help-text">
-      [[i18nDynamic(locale, 'childSignInParentNotificationText')]]
-    </div>
   </div>
   <div slot="back-navigation">
-    <oobe-back-button id="childBackButton" on-click="onBackClicked_">
+    <oobe-back-button id="enrollTriageBackButton" on-click="onBackClicked_"
+        disabled="[[!isOobeLoaded_]]">
     </oobe-back-button>
   </div>
   <div slot="bottom-buttons">
-    <oobe-next-button id="childNextButton" on-click="onNextClicked_"
-        disabled="[[!selectedSignInMethod]]">
+    <oobe-next-button id="enrollTriageNextButton"
+        on-click="onTriageNextClicked_"
+        disabled="[[!isNextButtonEnabled_(selectedEnrollTriageMethod,
+            isOobeLoaded_)]]">
+    </oobe-next-button>
+  </div>
+</oobe-adaptive-dialog>
+<oobe-adaptive-dialog id="childSetupDialog"
+    role="dialog"
+    for-step="child-setup"
+    aria-label$="[[i18nDynamic(locale, 'userCreationChildSetupTitle')]]">
+  <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+  <h1 slot="title">
+    [[i18nDynamic(locale, 'userCreationChildSetupTitle')]]
+  </h1>
+  <div slot="content" class="layout vertical landscape-vertical-centered">
+    <cr-radio-group id="childSetupMethod"
+        selected="{{selectedChildSetupMethod}}">
+      <cr-card-radio-button id="childAccountButton" name="child-account"
+          class="flex">
+        <div class="card-container">
+          <hd-iron-icon class="card-icon" icon1x="oobe-48:child-account"
+              icon2x="oobe-96:child-account">
+          </hd-iron-icon>
+          <div class="card-content">
+            <div class="card-label">
+              [[i18nDynamic(locale,
+                  'userCreationChildSetupChildAccountButtonText')]]
+            </div>
+            <div class="card-text">
+              [[i18nDynamic(locale,
+                  'userCreationChildSetupChildAccountButtonLabel')]]
+            </div>
+          </div>
+        </div>
+      </cr-card-radio-button>
+      <cr-card-radio-button id="schoolAccountButton" name="school-account"
+          class="flex">
+        <div class="card-container">
+          <hd-iron-icon class="card-icon" icon1x="oobe-48:school-account"
+              icon2x="oobe-96:school-account">
+          </hd-iron-icon>
+          <div class="card-content">
+            <div class="card-label">
+              [[i18nDynamic(locale,
+                  'userCreationChildSetupSchoolAccountButtonText')]]
+            </div>
+            <div class="card-text">
+              [[i18nDynamic(locale,
+                  'userCreationChildSetupSchoolAccountButtonLabel')]]
+            </div>
+          </div>
+        </div>
+      </cr-card-radio-button>
+    </cr-radio-group>
+  </div>
+  <div slot="back-navigation">
+    <oobe-back-button id="childSetupBackButton" on-click="onBackClicked_"
+        disabled="[[!isOobeLoaded_]]">
+    </oobe-back-button>
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-next-button id="childSetupNextButton"
+        on-click="onChildSetupNextClicked_"
+        disabled="[[!isNextButtonEnabled_(selectedChildSetupMethod,
+            isOobeLoaded_)]]">
     </oobe-next-button>
   </div>
 </oobe-adaptive-dialog>
 <oobe-modal-dialog id="learnMoreDialog" on-close="focusLearnMoreLink_"
-    title-key="childSignInLearnMoreDialogTitle">
-  <div slot="content" class="card-text">
-    [[i18nDynamic(locale, 'childSignInLearnMoreDialogText')]]
-  </div>
+    title-key="userCreationEnrollLearnMoreTitle">
+  <span slot="content"
+    inner-h-t-m-l="[[i18nAdvancedDynamic(
+      locale, 'userCreationEnrollLearnMoreText')]]">
+  </span>
 </oobe-modal-dialog>

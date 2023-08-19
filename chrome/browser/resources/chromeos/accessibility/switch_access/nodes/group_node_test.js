@@ -8,9 +8,11 @@ GEN_INCLUDE(['../switch_access_e2e_test_base.js']);
 SwitchAccessGroupNodeTest = class extends SwitchAccessE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
-    await importModule(
-        ['BasicNode', 'BasicRootNode'], '/switch_access/nodes/basic_node.js');
-    await importModule('GroupNode', '/switch_access/nodes/group_node.js');
+    await Promise.all([
+      importModule(
+          ['BasicNode', 'BasicRootNode'], '/switch_access/nodes/basic_node.js'),
+      importModule('GroupNode', '/switch_access/nodes/group_node.js'),
+    ]);
   }
 };
 

@@ -13,6 +13,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/services/speech/audio_source_consumer.h"
+#include "chrome/services/speech/speech_recognition_service_impl.h"
 #include "components/soda/constants.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -26,14 +27,16 @@ namespace speech {
 
 class SpeechRecognitionRecognizerImpl
     : public media::mojom::SpeechRecognitionRecognizer,
-      public AudioSourceConsumer {
+      public AudioSourceConsumer,
+      public SpeechRecognitionServiceImpl::Observer {
  public:
   using OnRecognitionEventCallback =
       base::RepeatingCallback<void(media::SpeechRecognitionResult event)>;
 
   using OnLanguageIdentificationEventCallback = base::RepeatingCallback<void(
       const std::string& language,
-      const media::mojom::ConfidenceLevel confidence_level)>;
+      const media::mojom::ConfidenceLevel confidence_level,
+      const media::mojom::AsrSwitchResult asr_switch_result)>;
 
   using OnSpeechRecognitionStoppedCallback = base::RepeatingCallback<void()>;
 
@@ -43,7 +46,10 @@ class SpeechRecognitionRecognizerImpl
       media::mojom::SpeechRecognitionOptionsPtr options,
       const base::FilePath& binary_path,
       const base::flat_map<std::string, base::FilePath>& config_paths,
-      const std::string& primary_language_name);
+      const std::string& primary_language_name,
+      const bool mask_offensive_words,
+      base::WeakPtr<SpeechRecognitionServiceImpl> speech_recognition_service =
+          nullptr);
 
   SpeechRecognitionRecognizerImpl(const SpeechRecognitionRecognizerImpl&) =
       delete;
@@ -55,6 +61,10 @@ class SpeechRecognitionRecognizerImpl
   static const char kCaptionBubbleVisibleHistogramName[];
   static const char kCaptionBubbleHiddenHistogramName[];
 
+  // SpeechRecognitionServiceImpl::Observer:
+  void OnLanguagePackInstalled(
+      base::flat_map<std::string, base::FilePath> config_paths) override;
+
   static void Create(
       mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizer> receiver,
       mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient>
@@ -62,7 +72,9 @@ class SpeechRecognitionRecognizerImpl
       media::mojom::SpeechRecognitionOptionsPtr options,
       const base::FilePath& binary_path,
       const base::flat_map<std::string, base::FilePath>& config_paths,
-      const std::string& primary_language_name);
+      const std::string& primary_language_name,
+      const bool mask_offensive_words,
+      base::WeakPtr<SpeechRecognitionServiceImpl> speech_recognition_service);
 
   static bool IsMultichannelSupported();
 
@@ -104,7 +116,8 @@ class SpeechRecognitionRecognizerImpl
 
   void OnLanguageIdentificationEvent(
       const std::string& language,
-      const media::mojom::ConfidenceLevel confidence_level);
+      const media::mojom::ConfidenceLevel confidence_level,
+      const media::mojom::AsrSwitchResult asr_switch_result);
 
   void OnRecognitionStoppedCallback();
 
@@ -117,6 +130,8 @@ class SpeechRecognitionRecognizerImpl
 
  private:
   void OnLanguageChanged(const std::string& language) final;
+
+  void OnMaskOffensiveWordsChanged(bool mask_offensive_words) final;
 
   void ResetSodaWithNewLanguage(base::FilePath config_path,
                                 std::string language_name,
@@ -153,6 +168,7 @@ class SpeechRecognitionRecognizerImpl
   std::string primary_language_name_;
   int sample_rate_ = 0;
   int channel_count_ = 0;
+  bool mask_offensive_words_ = false;
 
   base::TimeDelta caption_bubble_visible_duration_;
   base::TimeDelta caption_bubble_hidden_duration_;
@@ -160,11 +176,17 @@ class SpeechRecognitionRecognizerImpl
   // Whether the client is still requesting speech recognition.
   bool is_client_requesting_speech_recognition_ = true;
 
+  // Time the most recent nonzero data was processed.
+  // Used when options_->skip_continuously_empty_audio == true.
+  base::Time last_non_empty_audio_time_ = base::Time::Now();
+
   // Whether the speech recognition session contains any recognized speech. Used
   // for logging purposes only.
   bool session_contains_speech_ = false;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  base::WeakPtr<SpeechRecognitionServiceImpl> speech_recognition_service_;
 
   base::WeakPtrFactory<SpeechRecognitionRecognizerImpl> weak_factory_{this};
 };

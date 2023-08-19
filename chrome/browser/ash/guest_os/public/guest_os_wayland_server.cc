@@ -62,7 +62,14 @@ void GuestOsWaylandServer::CloseSocket(
 }
 
 GuestOsWaylandServer::GuestOsWaylandServer(Profile* profile)
-    : profile_(profile) {}
+    : profile_(profile), concierge_observer_(this) {
+  auto* concierge_client = ash::ConciergeClient::Get();
+  // Cleanup is best-effort, so don't bother if for some reason we
+  // can't get a handle to the service (like tests).
+  if (concierge_client) {
+    concierge_observer_.Observe(concierge_client);
+  }
+}
 
 GuestOsWaylandServer::~GuestOsWaylandServer() = default;
 
@@ -154,6 +161,14 @@ void GuestOsWaylandServer::OnServerCreated(
       std::move(name),
       std::make_unique<ScopedServer>(std::move(handle), delegate));
   std::move(callback).Run(absl::nullopt);
+}
+
+void GuestOsWaylandServer::ConciergeServiceStarted() {
+  // Do nothing.
+}
+
+void GuestOsWaylandServer::ConciergeServiceStopped() {
+  servers_.clear();
 }
 
 }  // namespace guest_os

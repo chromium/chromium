@@ -53,10 +53,11 @@ class CrostiniThrottleTest : public testing::Test {
     ~TestDelegateImpl() override = default;
 
     void SetCpuRestriction(bool restrict) override {
-      if (restrict)
+      if (restrict) {
         ++(test_->enable_cpu_restriction_counter_);
-      else
+      } else {
         ++(test_->disable_cpu_restriction_counter_);
+      }
     }
 
     raw_ptr<CrostiniThrottleTest, ExperimentalAsh> test_;

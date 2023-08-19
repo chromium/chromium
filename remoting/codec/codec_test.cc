@@ -171,7 +171,8 @@ class VideoDecoderTester {
 // the message to other subprograms for validaton.
 class VideoEncoderTester {
  public:
-  VideoEncoderTester() : decoder_tester_(nullptr), data_available_(0) {}
+  explicit VideoEncoderTester(VideoDecoderTester* decoder_tester)
+      : decoder_tester_(decoder_tester) {}
 
   VideoEncoderTester(const VideoEncoderTester&) = delete;
   VideoEncoderTester& operator=(const VideoEncoderTester&) = delete;
@@ -186,13 +187,9 @@ class VideoEncoderTester {
     }
   }
 
-  void set_decoder_tester(VideoDecoderTester* decoder_tester) {
-    decoder_tester_ = decoder_tester;
-  }
-
  private:
-  raw_ptr<VideoDecoderTester> decoder_tester_;
-  int data_available_;
+  const raw_ptr<VideoDecoderTester> decoder_tester_;
+  int data_available_ = 0;
 };
 
 std::unique_ptr<DesktopFrame> PrepareFrame(const DesktopSize& size) {
@@ -218,7 +215,7 @@ static void TestEncodingRects(VideoEncoder* encoder,
 void TestVideoEncoder(VideoEncoder* encoder, bool strict) {
   const int kSizes[] = {80, 79, 77, 54};
 
-  VideoEncoderTester tester;
+  VideoEncoderTester tester(nullptr);
 
   for (size_t xi = 0; xi < std::size(kSizes); ++xi) {
     for (size_t yi = 0; yi < std::size(kSizes); ++yi) {
@@ -291,16 +288,13 @@ void TestVideoEncoderDecoder(VideoEncoder* encoder,
                              VideoDecoder* decoder,
                              bool strict) {
   DesktopSize kSize = DesktopSize(160, 120);
-
-  VideoEncoderTester encoder_tester;
-
   std::unique_ptr<DesktopFrame> frame = PrepareFrame(kSize);
 
   VideoDecoderTester decoder_tester(decoder, kSize);
   decoder_tester.set_strict(strict);
   decoder_tester.set_expected_frame(frame.get());
-  encoder_tester.set_decoder_tester(&decoder_tester);
 
+  VideoEncoderTester encoder_tester(&decoder_tester);
   for (const DesktopRegion& region : MakeTestRegionLists(kSize)) {
     TestEncodeDecodeRects(encoder, &encoder_tester, &decoder_tester,
                           frame.get(), region);

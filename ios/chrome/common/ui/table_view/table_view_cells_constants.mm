@@ -5,10 +5,6 @@
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/common/ui/util/device_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 const CGFloat kTableViewHeaderFooterViewHeight = 48.0;
 const CGFloat kChromeTableViewCellHeight = 48.0;
 const CGFloat kTableViewHorizontalSpacing = 16.0;
@@ -33,6 +29,9 @@ NSString* const kTableViewTabsSearchSuggestedHistoryItemId =
 
 NSString* const kTableViewURLCellFaviconBadgeViewID =
     @"TableViewURLCellFaviconBadgeView";
+
+NSString* const kTableViewURLCellMetadataImageID =
+    @"TableViewURLCellMetadataImageID";
 
 NSString* const kImproveChromeItemAccessibilityIdentifier =
     @"ImproveChromeItemAccessibilityIdentifier";

@@ -57,6 +57,9 @@ struct ASH_PUBLIC_EXPORT UserInfo {
 
   // True if should display managed ui.
   bool should_display_managed_ui = false;
+
+  // True if the account specified by `account_id` is under policy management.
+  bool is_managed = false;
 };
 
 ASH_PUBLIC_EXPORT bool operator==(const UserInfo& a, const UserInfo& b);

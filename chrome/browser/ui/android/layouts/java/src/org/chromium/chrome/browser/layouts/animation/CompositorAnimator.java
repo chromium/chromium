@@ -20,7 +20,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.components.browser_ui.widget.animation.Interpolators;
+import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
 
@@ -99,8 +99,7 @@ public class CompositorAnimator extends Animator {
     private long mStartDelayMs;
 
     /** The current state of the animation. */
-    @AnimationState
-    private int mAnimationState = AnimationState.ENDED;
+    private @AnimationState int mAnimationState = AnimationState.ENDED;
 
     /**
      * Whether the animation ended because of frame updates. This is used to determine if any

@@ -72,10 +72,10 @@ class MacPortTest(port_testcase.PortTestCase):
 
     def test_driver_name_option(self):
         self.assertTrue(
-            self.make_port()._path_to_driver().endswith('Content Shell'))
+            self.make_port().path_to_driver().endswith('Content Shell'))
         port = self.make_port(
             options=optparse.Values(dict(driver_name='OtherDriver')))
-        self.assertTrue(port._path_to_driver().endswith('OtherDriver'))  # pylint: disable=protected-access
+        self.assertTrue(port.path_to_driver().endswith('OtherDriver'))
 
     def test_path_to_image_diff(self):
         self.assertEqual(self.make_port()._path_to_image_diff(),
@@ -98,20 +98,6 @@ class MacPortTest(port_testcase.PortTestCase):
         self.assertFalse(port.default_smoke_test_only())
         all_tests_platform = MockPlatformInfo('mac', 'mac11')
 
-        port = self.make_port(os_version='mac10.13')
-        port.host.platform = all_tests_platform
-        self.assertTrue(port.default_smoke_test_only())
-
-        port = self.make_port(os_version='mac10.14')
-        port.host.platform = all_tests_platform
-        self.assertTrue(port.default_smoke_test_only())
-
     def test_default_timeout_ms(self):
         port = self.make_port(os_version='mac11')
         default_timeout = port._default_timeout_ms()
-
-        port = self.make_port(os_version='mac10.13')
-        self.assertEquals(4 * default_timeout, port._default_timeout_ms())
-
-        port = self.make_port(os_version='mac10.14')
-        self.assertEquals(4 * default_timeout, port._default_timeout_ms())

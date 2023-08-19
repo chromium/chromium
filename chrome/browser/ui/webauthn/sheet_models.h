@@ -538,10 +538,19 @@ class AuthenticatorQRSheetModel : public AuthenticatorSheetModelBase {
       AuthenticatorRequestDialogModel* dialog_model);
   ~AuthenticatorQRSheetModel() override;
 
+  // Returns true if a label indicating the user that a security key may be used
+  // should be shown.
+  bool ShowSecurityKeyLabel() const;
+
+  // Returns the label that indicates the user they can insert and activate a
+  // hardware security key.
+  std::u16string GetSecurityKeyLabel() const;
+
  private:
   // AuthenticatorSheetModelBase:
   std::u16string GetStepTitle() const override;
   std::u16string GetStepDescription() const override;
+  std::u16string GetOtherMechanismButtonLabel() const override;
 };
 
 class AuthenticatorConnectingSheetModel : public AuthenticatorSheetModelBase {
@@ -580,6 +589,7 @@ class AuthenticatorCableErrorSheetModel : public AuthenticatorSheetModelBase {
   bool IsOtherMechanismButtonVisible() const override;
   std::u16string GetStepTitle() const override;
   std::u16string GetStepDescription() const override;
+  std::u16string GetCancelButtonLabel() const override;
 };
 
 class AuthenticatorCreatePasskeySheetModel
@@ -620,6 +630,63 @@ class AuthenticatorPhoneConfirmationSheet : public AuthenticatorSheetModelBase {
   bool IsAcceptButtonEnabled() const override;
   void OnAccept() override;
   std::u16string GetAcceptButtonLabel() const override;
+};
+
+// An account and mechanism picker that combines passkeys from multiple sources.
+// Passkeys are grouped in two lists:
+// * "Primary" passkeys. These are local passkeys if available, or GPM passkeys
+//   if no local passkeys are available. Can be empty.
+// * "Secondary" passkeys. These are all the other passkeys & mechanisms.
+// AuthenticatorMultiSourcePickerSheetModel will filter these lists and
+// present them as indices of AuthenticatorRequestDialogModel's `mechanisms()`
+// member.
+class AuthenticatorMultiSourcePickerSheetModel
+    : public AuthenticatorSheetModelBase {
+ public:
+  explicit AuthenticatorMultiSourcePickerSheetModel(
+      AuthenticatorRequestDialogModel* dialog_model);
+  ~AuthenticatorMultiSourcePickerSheetModel() override;
+
+  // Returns a vector of indices to the "Primary" passkey mechanisms. Indices
+  // correspond to AuthenticatorRequestDialogModel's mechanisms().
+  std::vector<int>& primary_passkey_indices() {
+    return primary_passkey_indices_;
+  }
+
+  // Returns a vector of indices to the "Secondary" passkey mechanisms. Indices
+  // correspond to AuthenticatorRequestDialogModel's mechanisms().
+  std::vector<int>& secondary_passkey_indices() {
+    return secondary_passkey_indices_;
+  }
+
+  // Returns the user-visible label for the "Primary" passkey mechanisms.
+  std::u16string& primary_passkeys_label() { return primary_passkeys_label_; }
+
+ private:
+  // AuthenticatorSheetModelbase:
+  std::u16string GetStepTitle() const override;
+  std::u16string GetStepDescription() const override;
+
+  std::vector<int> primary_passkey_indices_;
+  std::vector<int> secondary_passkey_indices_;
+  std::u16string primary_passkeys_label_;
+};
+
+class AuthenticatorPriorityMechanismSheetModel
+    : public AuthenticatorSheetModelBase {
+ public:
+  explicit AuthenticatorPriorityMechanismSheetModel(
+      AuthenticatorRequestDialogModel* dialog_model);
+  ~AuthenticatorPriorityMechanismSheetModel() override;
+
+ private:
+  // AuthenticatorSheetModelbase:
+  std::u16string GetStepTitle() const override;
+  std::u16string GetStepDescription() const override;
+  bool IsAcceptButtonEnabled() const override;
+  bool IsAcceptButtonVisible() const override;
+  std::u16string GetAcceptButtonLabel() const override;
+  void OnAccept() override;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBAUTHN_SHEET_MODELS_H_

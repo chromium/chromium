@@ -13,7 +13,6 @@
 #include "chrome/browser/android/vr/vr_shell.h"
 #include "chrome/browser/android/vr/vrcore_install_helper.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/vr/assets_loader.h"
 #include "content/public/browser/browser_xr_runtime.h"
 #include "content/public/browser/xr_runtime_manager.h"
 #include "device/vr/android/gvr/gvr_delegate_provider_factory.h"

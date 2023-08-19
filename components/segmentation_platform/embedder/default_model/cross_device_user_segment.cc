@@ -11,6 +11,7 @@
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/constants.h"
+#include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 #include "ui/base/device_form_factor.h"
@@ -109,11 +110,16 @@ std::string CrossDeviceUserSubsegmentToString(
 
 // static
 std::unique_ptr<Config> CrossDeviceUserSegment::GetConfig() {
+  if (!base::FeatureList::IsEnabled(
+          features::kSegmentationPlatformCrossDeviceUser)) {
+    return nullptr;
+  }
   auto config = std::make_unique<Config>();
   config->segmentation_key = kCrossDeviceUserKey;
   config->segmentation_uma_name = kCrossDeviceUserUmaName;
   config->AddSegmentId(SegmentId::CROSS_DEVICE_USER_SEGMENT,
                        std::make_unique<CrossDeviceUserSegment>());
+  config->auto_execute_and_cache = true;
   config->segment_selection_ttl =
       base::Days(kCrossDeviceUserSegmentSelectionTTLDays);
   config->unknown_selection_ttl =
@@ -123,7 +129,7 @@ std::unique_ptr<Config> CrossDeviceUserSegment::GetConfig() {
 }
 
 CrossDeviceUserSegment::CrossDeviceUserSegment()
-    : ModelProvider(kCrossDeviceUserSegmentId) {}
+    : DefaultModelProvider(kCrossDeviceUserSegmentId) {}
 
 absl::optional<std::string> CrossDeviceUserSegment::GetSubsegmentName(
     int subsegment_rank) {
@@ -134,8 +140,8 @@ absl::optional<std::string> CrossDeviceUserSegment::GetSubsegmentName(
   return CrossDeviceUserSubsegmentToString(subgroup);
 }
 
-void CrossDeviceUserSegment::InitAndFetchModel(
-    const ModelUpdatedCallback& model_updated_callback) {
+std::unique_ptr<DefaultModelProvider::ModelConfig>
+CrossDeviceUserSegment::GetModelConfig() {
   proto::SegmentationModelMetadata chrome_start_metadata;
   MetadataWriter writer(&chrome_start_metadata);
   writer.SetDefaultSegmentationMetadataConfig(
@@ -150,10 +156,8 @@ void CrossDeviceUserSegment::InitAndFetchModel(
                         kCrossDeviceUserUMAFeatures.size());
 
   constexpr int kModelVersion = 1;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindRepeating(model_updated_callback, kCrossDeviceUserSegmentId,
-                          std::move(chrome_start_metadata), kModelVersion));
+  return std::make_unique<ModelConfig>(std::move(chrome_start_metadata),
+                                       kModelVersion);
 }
 
 void CrossDeviceUserSegment::ExecuteModelWithInput(
@@ -216,10 +220,6 @@ void CrossDeviceUserSegment::ExecuteModelWithInput(
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), ModelProvider::Response(1, result)));
-}
-
-bool CrossDeviceUserSegment::ModelAvailable() {
-  return true;
 }
 
 }  // namespace segmentation_platform

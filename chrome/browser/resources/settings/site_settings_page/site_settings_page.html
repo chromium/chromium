@@ -67,3 +67,13 @@
           focus-config="[[focusConfig]]">
       </settings-site-settings-list>
     </iron-collapse>
+    <template is="dom-if" if="[[enableSafetyHub_]]">
+      <settings-toggle-button
+          id="unusedSitePermissionsRevocationToggle"
+          pref="{{
+              prefs.safety_hub.unused_site_permissions_revocation.enabled}}"
+          label=$i18n{safetyCheckUnusedSitePermissionsSettingLabel}
+          sub-label=
+              $i18n{safetyCheckUnusedSitePermissionsSettingSublabel}>
+      </settings-toggle-button>
+    </template>

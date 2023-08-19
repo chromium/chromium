@@ -16,9 +16,9 @@
 #include "chromeos/ui/frame/caption_buttons/frame_back_button.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/default_frame_header.h"
+#include "chromeos/ui/frame/frame_utils.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 #include "ui/views/controls/image_view.h"
@@ -163,6 +163,10 @@ void HeaderView::SetWidthInPixels(int width_in_pixels) {
           : views::PaintInfo::ScaleType::kScaleWithEdgeSnapping);
 }
 
+void HeaderView::SetHeaderCornerRadius(int radius) {
+  frame_header_->SetHeaderCornerRadius(radius);
+}
+
 void HeaderView::Layout() {
   did_layout_ = true;
   header_content_view_->SetBoundsRect(GetLocalBounds());
@@ -191,6 +195,7 @@ void HeaderView::OnWindowPropertyChanged(aura::Window* window,
     return;
 
   DCHECK_EQ(target_widget_->GetNativeWindow(), window);
+
   if (key == aura::client::kAvatarIconKey) {
     gfx::ImageSkia* const avatar_icon =
         window->GetProperty(aura::client::kAvatarIconKey);

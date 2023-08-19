@@ -18,6 +18,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -33,7 +34,7 @@ using RemotePage = DevToolsDeviceDiscovery::RemotePage;
 
 namespace {
 
-const char kPageListRequest[] = "/json";
+const char kPageListRequest[] = "/json/list";
 const char kVersionRequest[] = "/json/version";
 const char kClosePageRequest[] = "/json/close/%s";
 const char kActivatePageRequest[] = "/json/activate/%s";
@@ -462,8 +463,12 @@ void DevToolsDeviceDiscovery::DiscoveryRequest::ReceivedVersion(
     const std::string& response) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  std::string url = kPageListRequest;
+  if (base::FeatureList::IsEnabled(::features::kDevToolsTabTarget)) {
+    url += "?for_tab";
+  }
   device->SendJsonRequest(
-      browser->socket(), kPageListRequest,
+      browser->socket(), url,
       base::BindOnce(&DiscoveryRequest::ReceivedPages, this, device, browser));
 
   if (result < 0) {

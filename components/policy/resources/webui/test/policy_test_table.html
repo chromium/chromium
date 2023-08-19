@@ -1,0 +1,74 @@
+<style>
+  /* Shared styles for both table and card views */
+  .table {
+    width: 100%;
+  }
+
+  button {
+    font-size: 125%;
+    font-weight: bold;
+    padding: 5px;
+    margin-top: 5px;
+    border: 1px solid rgba(0, 0, 0, .06);
+    width: 100%;
+  }
+
+  button:hover {
+    filter: brightness(90%);
+  }
+
+  button:active {
+    filter: brightness(85%);
+  }
+
+  /* Table view for wide screen */
+  @media only screen and (min-width: 711px) {
+    .table {
+      display: table;
+      border: 1px solid rgba(0, 0, 0, .06);
+    }
+
+    header {
+      display: table-row;
+      background-color: rgb(240, 240, 240);
+      font-size: 100%;
+      font-weight: bold;
+    }
+
+    .cell {
+      display: table-cell;
+      padding: 7px;
+    }
+
+    #name-header {
+      border-right: 1px solid rgba(0, 0, 0, .06);
+    }
+  }
+
+  /* Card view for narrow screen / mobile */
+  @media only screen and (max-width: 710px) {
+    header {
+      display: none;
+    }
+
+    .cell {
+      display: block;
+      border: none;
+      padding: none;
+    }
+  }
+
+</style>
+<div class="table" role="table">
+  <header role="row">
+    <div class="cell" id="name-header">$i18n{testTableName}</div>
+    <div class="cell">$i18n{testTableValue}</div>
+    <div class="cell">$i18n{testTablePreset}</div>
+    <div class="cell">$i18n{testTableSource}</div>
+    <div class="cell">$i18n{testTableScope}</div>
+    <div class="cell">$i18n{testTableLevel}</div>
+    <div class="cell"></div>
+  </header>
+  <policy-test-row></policy-test-row>
+</div>
+<button id="add-policy-btn">+</button>

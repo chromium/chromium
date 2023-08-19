@@ -29,10 +29,12 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_restore_data.h"
+#include "components/app_restore/app_restore_utils.h"
 #include "components/app_restore/desk_template_read_handler.h"
 #include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_info.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/types_util.h"
 #include "components/tab_groups/tab_group_info.h"
 #include "extensions/common/extension.h"
 
@@ -169,9 +171,9 @@ void DesksTemplatesAppLaunchHandler::LaunchBrowsers() {
   const auto& launch_list = restore_data()->app_id_to_launch_list();
   for (const auto& iter : launch_list) {
     const std::string& app_id = iter.first;
-    if (app_id != app_constants::kChromeAppId)
+    if (app_id != app_constants::kChromeAppId) {
       continue;
-
+    }
     for (const auto& window_iter : iter.second) {
       const std::unique_ptr<app_restore::AppRestoreData>& app_restore_data =
           window_iter.second;
@@ -184,6 +186,9 @@ void DesksTemplatesAppLaunchHandler::LaunchBrowsers() {
       const gfx::Rect current_bounds =
           app_restore_data->current_bounds.value_or(gfx::Rect());
       const std::string app_name = GetBrowserAppName(app_restore_data, app_id);
+      if (!app_name.empty() && !IsBrowserAppInstalled(app_name)) {
+        continue;
+      }
 
       Browser::CreateParams create_params =
           !app_name.empty()
@@ -263,16 +268,17 @@ void DesksTemplatesAppLaunchHandler::MaybeLaunchArcApps() {
       });
 
   // For each ARC app, check and see if there is an existing instance. We will
-  // move this instance over instead of launching a new one. Remove the app from
-  // the restore data if it was successfully moved so that the ARC launch
+  // move this instance over instead of launching a new one. Remove the app
+  // from the restore data if it was successfully moved so that the ARC launch
   // handler does not try to launch it later.
   for (const std::string& app_id : app_ids) {
     auto it = app_id_to_launch_list.find(app_id);
     DCHECK(it != app_id_to_launch_list.end());
     if (!ash::DesksController::Get()->OnSingleInstanceAppLaunchingFromSavedDesk(
             app_id, it->second)) {
-      for (auto& window : it->second)
+      for (auto& window : it->second) {
         NotifyMovedSingleInstanceApp(window.first);
+      }
       restore_data()->RemoveApp(app_id);
     }
   }
@@ -299,11 +305,25 @@ void DesksTemplatesAppLaunchHandler::MaybeLaunchLacrosBrowsers() {
     if (app_id != app_constants::kLacrosAppId)
       continue;
 
+    // Count the number of lacros windows ash intends to launch. Will be
+    // checked at lacros side to see if anything is missing between ash and
+    // lacros when restoring saved desk.
+    // TODO(crbug.com/1442076): Remove after issue is root caused.
+    int windows_count = 0;
+
     for (const auto& [restore_window_id, app_restore_data] : iter.second) {
-      if (!app_restore_data->active_tab_index.has_value() ||
-          app_restore_data->urls.empty()) {
+      if (app_restore_data->urls.empty()) {
         continue;
       }
+      const std::string app_name = GetBrowserAppName(app_restore_data, app_id);
+      if (!app_name.empty() && !IsBrowserAppInstalled(app_name)) {
+        continue;
+      }
+
+      // TODO(crbug.com/1442076): Remove after issue is root caused.
+      windows_count++;
+      LOG(ERROR) << "window " << restore_window_id << " launched by Ash with "
+                 << app_restore_data->urls.size() << " tabs";
 
       crosapi::BrowserManager::Get()->CreateBrowserWithRestoredData(
           app_restore_data->urls,
@@ -312,12 +332,15 @@ void DesksTemplatesAppLaunchHandler::MaybeLaunchLacrosBrowsers() {
           chromeos::ToWindowShowState(
               app_restore_data->window_state_type.value_or(
                   chromeos::WindowStateType::kDefault)),
-          app_restore_data->active_tab_index.value(),
+          app_restore_data->active_tab_index.value_or(0),
           // Values of 0 will be ignored, other type constraints are
           // enforced on the browser side.
-          app_restore_data->first_non_pinned_tab_index.value_or(0),
-          GetBrowserAppName(app_restore_data, app_id), restore_window_id);
+          app_restore_data->first_non_pinned_tab_index.value_or(0), app_name,
+          restore_window_id);
     }
+    // TODO(crbug.com/1442076): Remove after issue is root caused.
+    LOG(ERROR) << windows_count
+               << " windows launched by Ash in total for this desk";
   }
   restore_data()->RemoveApp(app_constants::kLacrosAppId);
 }
@@ -331,4 +354,21 @@ void DesksTemplatesAppLaunchHandler::RecordRestoredAppLaunch(
 void DesksTemplatesAppLaunchHandler::NotifyMovedSingleInstanceApp(
     int32_t window_id) {
   DesksClient::Get()->NotifyMovedSingleInstanceApp(window_id);
+}
+
+bool DesksTemplatesAppLaunchHandler::IsBrowserAppInstalled(
+    const std::string& app_name) {
+  apps::AppRegistryCache& cache =
+      apps::AppServiceProxyFactory::GetForProfile(profile())
+          ->AppRegistryCache();
+
+  std::string app_id = app_restore::GetAppIdFromAppName(app_name);
+  bool result = false;
+  cache.ForOneApp(app_id, [&result](const apps::AppUpdate& update) {
+    if (apps_util::IsInstalled(update.Readiness()) &&
+        update.AppType() != apps::AppType::kUnknown) {
+      result = true;
+    }
+  });
+  return result;
 }

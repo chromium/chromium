@@ -135,7 +135,8 @@ TEST_F(FileManagerCrosapiTest, OpenFile) {
   EXPECT_EQ(future2.Get(), mojom::OpenResult::kFailedInvalidType);
 }
 
-TEST_F(FileManagerCrosapiTest, OpenFileWithAppInstalled) {
+// TODO(crbug.com/1463936): Re-enable this test
+TEST_F(FileManagerCrosapiTest, DISABLED_OpenFileWithAppInstalled) {
   const base::FilePath pakfile_path = GetMyFilesPath().Append("test_file.pak");
   {
     base::ScopedAllowBlockingForTesting scoped_allow_blocking;

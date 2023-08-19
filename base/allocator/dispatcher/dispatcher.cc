@@ -4,9 +4,7 @@
 
 #include "base/allocator/dispatcher/dispatcher.h"
 
-#include "base/allocator/buildflags.h"
 #include "base/allocator/dispatcher/internal/dispatch_data.h"
-#include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/shim/allocator_shim.h"
 #include "base/check.h"
@@ -15,6 +13,10 @@
 
 #if DCHECK_IS_ON()
 #include <atomic>
+#endif
+
+#if BUILDFLAG(USE_PARTITION_ALLOC)
+#include "base/allocator/partition_allocator/partition_alloc_hooks.h"
 #endif
 
 namespace base::allocator::dispatcher {

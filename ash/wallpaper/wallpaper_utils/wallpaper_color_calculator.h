@@ -26,11 +26,9 @@ namespace ash {
 // Calculates colors based on a wallpaper image.
 class ASH_EXPORT WallpaperColorCalculator {
  public:
-  // |image|, |color_profiles| are the input parameters to the color calculation
-  // that is executed on the |task_runner|.
-  WallpaperColorCalculator(
-      const gfx::ImageSkia& image,
-      const std::vector<color_utils::ColorProfile>& color_profiles);
+  // Passes `image` as a param to the color calculation. Uses the default color
+  // profiles provided from GetProminentColorProfiles().
+  explicit WallpaperColorCalculator(const gfx::ImageSkia& image);
 
   WallpaperColorCalculator(const WallpaperColorCalculator&) = delete;
   WallpaperColorCalculator& operator=(const WallpaperColorCalculator&) = delete;
@@ -55,6 +53,10 @@ class ASH_EXPORT WallpaperColorCalculator {
 
   // Explicitly sets the |task_runner_| for testing.
   void SetTaskRunnerForTest(scoped_refptr<base::TaskRunner> task_runner);
+
+  // Overrides the default color profiles.
+  void SetColorProfiles(
+      const std::vector<color_utils::ColorProfile>& color_profiles);
 
  private:
   // Handles asynchronous calculation results. |async_start_time| is used to

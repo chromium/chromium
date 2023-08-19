@@ -15,6 +15,8 @@
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/ios/browser/account_consistency_service.h"
+#import "components/supervised_user/core/browser/supervised_user_service.h"
+#import "components/supervised_user/core/common/supervised_user_utils.h"
 #import "ios/chrome/browser/app_launcher/app_launcher_tab_helper.h"
 #import "ios/chrome/browser/crash_report/crash_report_helper.h"
 #import "ios/chrome/browser/download/mime_type_util.h"
@@ -25,6 +27,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/account_consistency_service_factory.h"
+#import "ios/chrome/browser/supervised_user/supervised_user_service_factory.h"
 #import "ios/chrome/browser/tabs/tab_helper_util.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -36,10 +39,6 @@
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "net/base/mac/url_conversions.h"
 #import "ui/base/page_transition_types.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using web::WebStatePolicyDecider;
 
@@ -87,6 +86,15 @@ bool IsPrerenderTabEvictionExperimentalGroup() {
   base::FieldTrial* trial =
       base::FieldTrialList::Find(kTabEvictionFieldTrialName);
   return trial && trial->group_name() == kPrerenderTabEvictionTrialGroup;
+}
+
+// Returns true if the primary account is subject to parental controls and the
+// URL filtering control has been enabled.
+bool IsSubjectToParentalControls(ChromeBrowserState* browserState) {
+  supervised_user::SupervisedUserService* supervised_user_service =
+      SupervisedUserServiceFactory::GetForBrowserState(browserState);
+  return supervised_user_service &&
+         supervised_user_service->IsURLFilteringEnabled();
 }
 
 // Returns whether `url` can be prerendered.
@@ -373,7 +381,8 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
   if (IsPrerenderTabEvictionExperimentalGroup() ||
       ios::device_util::IsSingleCoreDevice() ||
       !ios::device_util::RamIsAtLeast512Mb() ||
-      net::NetworkChangeNotifier::IsOffline()) {
+      net::NetworkChangeNotifier::IsOffline() ||
+      IsSubjectToParentalControls(_browserState)) {
     return false;
   }
 
@@ -681,20 +690,10 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
     return;
   }
 
-  // Use web::WebState::CreateWithStorageSession to clone the
-  // webStateToReplace navigation history. This may create an
-  // unrealized WebState, however, PreloadController needs a realized
-  // one, so force the realization.
-  // TODO(crbug.com/1291626): remove when there is a way to
-  // clone a WebState navigation history.
-  web::WebState::CreateParams createParams(self.browserState);
-  createParams.last_active_time = base::Time::Now();
-  _webState = web::WebState::CreateWithStorageSession(
-      createParams, webStateToReplace->BuildSessionStorage());
-  // Do not trigger a CheckForOverRealization here, as it's expected
-  // that typing fast may trigger multiple prerenders.
-  web::IgnoreOverRealizationCheck();
-  _webState->ForceRealized();
+  // To avoid losing the navigation history when the user navigates to the
+  // pre-rendered tab, clone the tab that will be replaced, and start the
+  // pre-rendered navigation in the new tab.
+  _webState = webStateToReplace->Clone();
 
   // Add the preload controller as a policyDecider before other tab helpers, so
   // that it can block the navigation if needed before other policy deciders

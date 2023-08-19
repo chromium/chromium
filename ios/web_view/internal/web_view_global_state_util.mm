@@ -12,10 +12,6 @@
 #import "ios/web_view/internal/web_view_web_main_delegate.h"
 #import "testing/coverage_util_ios.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace ios_web_view {
 
 void InitializeGlobalState() {

@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
@@ -24,8 +25,8 @@
 #include "gpu/command_buffer/service/shared_image/skia_gl_image_representation.h"
 #include "gpu/command_buffer/service/shared_memory_region_wrapper.h"
 #include "gpu/command_buffer/service/skia_utils.h"
-#include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
+#include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
@@ -125,21 +126,28 @@ scoped_refptr<gfx::NativePixmap> OzoneImageBacking::GetNativePixmap() {
   return pixmap_;
 }
 
+gfx::GpuMemoryBufferHandle OzoneImageBacking::GetGpuMemoryBufferHandle() {
+  gfx::GpuMemoryBufferHandle handle;
+  handle.type = gfx::GpuMemoryBufferType::NATIVE_PIXMAP;
+  handle.native_pixmap_handle = pixmap_->ExportHandle();
+  return handle;
+}
+
 std::unique_ptr<DawnImageRepresentation> OzoneImageBacking::ProduceDawn(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
-    WGPUDevice device,
-    WGPUBackendType backend_type,
-    std::vector<WGPUTextureFormat> view_formats) {
+    const wgpu::Device& device,
+    wgpu::BackendType backend_type,
+    std::vector<wgpu::TextureFormat> view_formats) {
 #if BUILDFLAG(USE_DAWN)
-  DCHECK(dawn_procs_);
-  WGPUTextureFormat webgpu_format = ToWGPUFormat(format());
-  if (webgpu_format == WGPUTextureFormat_Undefined) {
+  wgpu::TextureFormat webgpu_format = ToDawnFormat(format());
+  if (webgpu_format == wgpu::TextureFormat::Undefined) {
     return nullptr;
   }
+
   return std::make_unique<DawnOzoneImageRepresentation>(
       manager, this, tracker, device, webgpu_format, std::move(view_formats),
-      pixmap_, dawn_procs_);
+      pixmap_);
 #else  // !BUILDFLAG(USE_DAWN)
   return nullptr;
 #endif
@@ -245,9 +253,9 @@ OzoneImageBacking::OzoneImageBacking(
     uint32_t usage,
     scoped_refptr<SharedContextState> context_state,
     scoped_refptr<gfx::NativePixmap> pixmap,
-    scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs,
     const GpuDriverBugWorkarounds& workarounds,
-    bool use_passthrough)
+    bool use_passthrough,
+    absl::optional<gfx::BufferUsage> buffer_usage)
     : ClearTrackingSharedImageBacking(mailbox,
                                       format,
                                       size,
@@ -256,10 +264,10 @@ OzoneImageBacking::OzoneImageBacking(
                                       alpha_type,
                                       usage,
                                       GetPixmapSizeInBytes(*pixmap),
-                                      false),
+                                      false,
+                                      std::move(buffer_usage)),
       plane_(plane),
       pixmap_(std::move(pixmap)),
-      dawn_procs_(std::move(dawn_procs)),
       context_state_(std::move(context_state)),
       workarounds_(workarounds),
       use_passthrough_(use_passthrough) {
@@ -502,7 +510,7 @@ void OzoneImageBacking::EndAccess(bool readonly,
       read_fences_[access_stream] = std::move(fence);
     }
   } else {
-    DCHECK(read_fences_.find(access_stream) == read_fences_.end());
+    DCHECK(!base::Contains(read_fences_, access_stream));
     write_fence_ = std::move(fence);
     last_write_stream_ = access_stream;
   }

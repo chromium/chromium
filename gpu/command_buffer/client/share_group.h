@@ -186,7 +186,7 @@ class GLES2_IMPL_EXPORT ShareGroup
   uint64_t tracing_guid_;
 
   mutable base::Lock lost_lock_;
-  bool lost_ = false;
+  bool lost_ GUARDED_BY(lost_lock_) = false;
 };
 
 }  // namespace gles2

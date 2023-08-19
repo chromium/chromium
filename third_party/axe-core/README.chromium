@@ -7,6 +7,7 @@ Revision: 281653df3794f429b71327fe3afa37ca0fadb1c7
 License: MPL 2.0
 License File: LICENSE
 Security Critical: no
+Shipped: yes
 
 Description:
 Accessibility engine for automated Web UI testing. This will be used to run

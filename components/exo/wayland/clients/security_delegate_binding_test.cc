@@ -34,8 +34,8 @@ class SecurityDelegateBindingTest : public test::WaylandServerTest {
     ASSERT_NE(server_security_delegate_, nullptr);
   }
 
-  raw_ptr<SecurityDelegate, ExperimentalAsh> server_security_delegate_ =
-      nullptr;
+  raw_ptr<SecurityDelegate, DanglingUntriaged | ExperimentalAsh>
+      server_security_delegate_ = nullptr;
 };
 
 TEST_F(SecurityDelegateBindingTest, ShellSurfaceHasSecurityDelegate) {

@@ -150,6 +150,9 @@ class AX_EXPORT AXTreeObserver : public base::CheckedObserver {
   // remove themselves from the list, if needed.
   virtual void OnTreeManagerWillBeRemoved(AXTreeID previous_tree_id) {}
 
+  virtual void OnTextDeletionOrInsertion(const AXNode& node,
+                                         const AXNodeData& new_data) {}
+
   enum ChangeType {
     NODE_CREATED,
     SUBTREE_CREATED,

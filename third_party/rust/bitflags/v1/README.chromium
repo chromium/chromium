@@ -4,4 +4,5 @@ Description: A macro to generate structures which behave like bitflags.
 
 Version: 1.3.2
 Security Critical: no
+Shipped: yes
 License: Apache 2.0

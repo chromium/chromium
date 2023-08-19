@@ -13,12 +13,12 @@ found in the LICENSE file.
         <item name="colorControlHighlight">@color/filled_button_bg_color</item>
     </style>
 
-    <style name="TabThumbnailPlaceHolderStyle">
+    <style name="TabThumbnailPlaceholderStyle">
         <item name="colorTileBase">?attr/colorSurface</item>
         <item name="elevationTileBase">@dimen/default_elevation_1</item>
     </style>
 
-    <style name="TabThumbnailPlaceHolderStyle.Selected">
+    <style name="TabThumbnailPlaceholderStyle.Selected">
         <item name="colorTileBase">?attr/colorOnPrimary</item>
         <item name="elevationTileBase">@dimen/default_elevation_0</item>
     </style>

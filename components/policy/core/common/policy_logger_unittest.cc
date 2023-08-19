@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/policy/core/common/policy_logger.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -35,6 +36,9 @@ class PolicyLoggerTest : public PlatformTest {
 #elif BUILDFLAG(IS_IOS)
     scoped_feature_list_.InitWithFeatureState(
         policy::features::kPolicyLogsPageIOS, true);
+#else
+    scoped_feature_list_.InitWithFeatureState(
+        policy::features::kPolicyLogsPageDesktop, true);
 #endif
   }
 
@@ -99,6 +103,35 @@ TEST_F(PolicyLoggerTest, DeleteOldLogs) {
   EXPECT_EQ(policy_logger->GetAsList().size(), size_t(0));
 }
 
+// Checks that the first log  added is deleted when `PolicyLogger::kMaxLogSize`
+// is exceeded.
+TEST_F(PolicyLoggerTest, MaxSizeExceededDeletesOldestLog) {
+  PolicyLogger* policy_logger = policy::PolicyLogger::GetInstance();
+
+  AddLogs("First log that will be removed.", policy_logger);
+
+  // Adds kMaxLogsSize` - 1 more elements until `kMaxLogsSize` is reached.
+  for (int i = 0; i < static_cast<int>(policy::PolicyLogger::kMaxLogsSize) - 1;
+       i++) {
+    AddLogs(base::NumberToString(i + 1), policy_logger);
+  }
+  EXPECT_EQ(policy_logger->GetPolicyLogsSizeForTesting(),
+            policy::PolicyLogger::kMaxLogsSize);
+
+  AddLogs("Last log added and size is exceeded.", policy_logger);
+
+  size_t current_size = policy_logger->GetPolicyLogsSizeForTesting();
+  base::Value::List current_logs = policy_logger->GetAsList();
+
+  EXPECT_EQ(current_size, policy::PolicyLogger::kMaxLogsSize);
+
+  EXPECT_EQ(*(current_logs[0].GetDict().FindString("message")),
+            "Element added: 1");
+
+  EXPECT_EQ(*(current_logs[current_size - 1].GetDict().FindString("message")),
+            "Element added: Last log added and size is exceeded.");
+}
+
 // Checks that no logs are added when the feature is disabled.
 TEST(PolicyLoggerDisabledTest, PolicyLoggingDisabled) {
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -108,6 +141,9 @@ TEST(PolicyLoggerDisabledTest, PolicyLoggingDisabled) {
 #elif BUILDFLAG(IS_IOS)
   scoped_feature_list_.InitWithFeatureState(
       policy::features::kPolicyLogsPageIOS, false);
+#else
+  scoped_feature_list_.InitWithFeatureState(
+      policy::features::kPolicyLogsPageDesktop, false);
 #endif
 
   PolicyLogger* policy_logger = policy::PolicyLogger::GetInstance();

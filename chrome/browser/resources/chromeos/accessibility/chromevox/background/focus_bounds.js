@@ -18,11 +18,14 @@ export const FocusBounds = {
   /** @param {!Array<!chrome.accessibilityPrivate.ScreenRect>} bounds */
   set(bounds) {
     FocusBounds.current_ = bounds;
-    chrome.accessibilityPrivate.setFocusRings([{
-      rects: bounds,
-      type: chrome.accessibilityPrivate.FocusType.GLOW,
-      color: constants.FOCUS_COLOR,
-    }]);
+    chrome.accessibilityPrivate.setFocusRings(
+        [{
+          rects: bounds,
+          type: chrome.accessibilityPrivate.FocusType.GLOW,
+          color: constants.FOCUS_COLOR,
+        }],
+        chrome.accessibilityPrivate.AssistiveTechnologyType.CHROME_VOX,
+    );
   },
 };
 

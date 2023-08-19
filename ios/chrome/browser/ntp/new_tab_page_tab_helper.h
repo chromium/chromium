@@ -12,6 +12,7 @@
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
+@class NewTabPageState;
 @protocol NewTabPageTabHelperDelegate;
 
 namespace web {
@@ -31,9 +32,6 @@ class NewTabPageTabHelper : public web::WebStateObserver,
   // string and chrome://newtab respectively.
   static void UpdateItem(web::NavigationItem* item);
 
-  // Returns the default selected feed for the NTP.
-  static FeedType DefaultFeedType();
-
   // Sets the delegate. The delegate is not owned by the tab helper.
   void SetDelegate(id<NewTabPageTabHelperDelegate> delegate);
 
@@ -45,23 +43,11 @@ class NewTabPageTabHelper : public web::WebStateObserver,
   // controllers have been created.
   bool IsActive() const;
 
-  // Returns the selected feed for the next NTP.
-  FeedType GetNextNTPFeedType();
-
-  // Sets the default feed for the next NTP.
-  void SetNextNTPFeedType(FeedType feed_type);
-
-  // Returns whether the next NTP should be initially scrolled to the feed.
-  bool GetNextNTPScrolledToFeed();
-
-  // Sets whether the next NTP should be initially scrolled to the feed.
-  void SetNextNTPScrolledToFeed(bool scrolled_to_feed);
-
   // Saves the NTP state for when users navigate back to it.
-  void SaveNTPState(CGFloat scroll_position, FeedType feed_type);
+  void SetNTPState(NewTabPageState* ntpState);
 
-  // Returns the saved scroll position of the NTP from `SaveNTPState`.
-  CGFloat ScrollPositionFromSavedState();
+  // Returns the saved state of the associated NTP.
+  NewTabPageState* GetNTPState();
 
  private:
   friend class web::WebStateUserData<NewTabPageTabHelper>;
@@ -94,14 +80,8 @@ class NewTabPageTabHelper : public web::WebStateObserver,
   // Surface.
   BOOL show_start_surface_ = false;
 
-  // The default feed type of the next NTP.
-  FeedType next_ntp_feed_type_;
-
-  // Whether the next NTP should be initially scrolled to the feed.
-  BOOL next_ntp_scrolled_to_feed_ = NO;
-
-  // The saved scroll position for navigating back to the NTP.
-  CGFloat saved_scroll_position_ = -CGFLOAT_MAX;
+  // The saved state of the associated NTP.
+  NewTabPageState* ntp_state_ = nil;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 };

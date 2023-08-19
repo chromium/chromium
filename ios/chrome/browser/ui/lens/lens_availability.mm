@@ -13,16 +13,16 @@
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
 #import "ui/base/device_form_factor.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 const char kIOSLensContextMenuSupportStatusHistogramName[] =
     "Mobile.ContextMenu.LensSupportStatus";
 const char kIOSLensKeyboardSupportStatusHistogramName[] =
     "Mobile.Keyboard.LensSupportStatus";
 const char kIOSLensNewTabPageSupportStatusHistogramName[] =
     "Mobile.NewTabPage.LensSupportStatus";
+const char kIOSSpotlightSupportStatusHistogramName[] =
+    "Mobile.Spotlight.LensSupportStatus";
+const char kIOSPlusButtonSupportStatusHistogramName[] =
+    "Mobile.PlusButton.LensSupportStatus";
 
 namespace lens_availability {
 bool CheckAndLogAvailabilityForLensEntryPoint(
@@ -67,7 +67,14 @@ bool CheckAndLogAvailabilityForLensEntryPoint(
       if (!base::FeatureList::IsEnabled(kEnableLensInHomeScreenWidget)) {
         flag_enabled = NO;
       }
-      // Spotlight cannot log availailability.
+      availability_metric_name = kIOSSpotlightSupportStatusHistogramName;
+      break;
+    case LensEntrypoint::PlusButton:
+      // Plus Button entrypoint is controlled by the ntp flag.
+      if (!base::FeatureList::IsEnabled(kEnableLensInNTP)) {
+        flag_enabled = NO;
+      }
+      availability_metric_name = kIOSPlusButtonSupportStatusHistogramName;
       break;
     default:
       NOTREACHED() << "Unsupported Lens Entry Point.";

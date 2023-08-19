@@ -19,9 +19,17 @@ constexpr base::TimeDelta kTransition = base::Milliseconds(300);
 constexpr base::TimeDelta kWindowRestoreDurationCrOSNext =
     base::Milliseconds(350);
 
-// In the conceptual overview table, the space between two adjacent items
-// horizontally and vertically.
-constexpr int kSpaceBetweenItemsDp = 10;
+// Number of overview items needed to trigger the overview scroll layout.
+constexpr int kMinimumItemsForNewLayoutInTablet = 6;
+// TODO(b/286568408): Get clamshell layout number from UX.
+constexpr int kMinimumItemsForNewLayoutInClamshell = 10;
+
+// In the conceptual overview table, the horizontal space between two adjacent
+// items.
+constexpr int kHorizontalSpaceBetweenItemsDp = 10;
+
+// The vertical space between two adjacent items.
+constexpr int kVerticalSpaceBetweenItemsDp = 15;
 
 // The amount we want to enlarge the dragged overview window.
 constexpr int kDraggingEnlargeDp = 10;

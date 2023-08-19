@@ -63,7 +63,6 @@ TEST(URLRequestContextConfigTest, TestExperimentalOptionParsing) {
   // Create JSON for experimental options.
   base::Value::Dict options;
   options.SetByDottedPath("QUIC.max_server_configs_stored_in_properties", 2);
-  options.SetByDottedPath("QUIC.user_agent_id", "Custom QUIC UAID");
   options.SetByDottedPath("QUIC.idle_connection_timeout_seconds", 300);
   options.SetByDottedPath("QUIC.close_sessions_on_ip_change", true);
   options.SetByDottedPath("QUIC.connection_options", "TIME,TBBR,REJ");
@@ -151,8 +150,6 @@ TEST(URLRequestContextConfigTest, TestExperimentalOptionParsing) {
       URLRequestContextConfig::CreateURLRequestContextConfig(
           // Enable QUIC.
           true,
-          // QUIC User Agent ID.
-          "Default QUIC User Agent ID",
           // Enable SPDY.
           true,
           // Enable Brotli.
@@ -201,9 +198,6 @@ TEST(URLRequestContextConfigTest, TestExperimentalOptionParsing) {
   // Check QUIC flags.
   EXPECT_TRUE(FLAGS_quic_reloadable_flag_quic_testonly_default_false);
   EXPECT_FALSE(FLAGS_quic_restart_flag_quic_testonly_default_true);
-
-  // Check Custom QUIC User Agent Id.
-  EXPECT_EQ("Custom QUIC UAID", quic_params->user_agent_id);
 
   // Check max_server_configs_stored_in_properties.
   EXPECT_EQ(2u, quic_params->max_server_configs_stored_in_properties);
@@ -333,7 +327,7 @@ TEST(URLRequestContextConfigTest, TestExperimentalOptionParsing) {
   EXPECT_EQ(base::FeatureList::IsEnabled(net::features::kUseDnsHttpsSvcbAlpn),
             params->use_dns_https_svcb_alpn);
 
-  EXPECT_FALSE(config->enable_telemetry);
+  EXPECT_TRUE(config->enable_telemetry);
 }
 
 TEST(URLRequestContextConfigTest, SetSupportedQuicVersionByAlpn) {
@@ -349,8 +343,6 @@ TEST(URLRequestContextConfigTest, SetSupportedQuicVersionByAlpn) {
       URLRequestContextConfig::CreateURLRequestContextConfig(
           // Enable QUIC.
           true,
-          // QUIC User Agent ID.
-          "Default QUIC User Agent ID",
           // Enable SPDY.
           true,
           // Enable Brotli.
@@ -399,8 +391,6 @@ TEST(URLRequestContextConfigTest, SetUnsupportedQuicVersion) {
       URLRequestContextConfig::CreateURLRequestContextConfig(
           // Enable QUIC.
           true,
-          // QUIC User Agent ID.
-          "Default QUIC User Agent ID",
           // Enable SPDY.
           true,
           // Enable Brotli.
@@ -451,8 +441,6 @@ TEST(URLRequestContextConfigTest, SetObsoleteQuicVersion) {
       URLRequestContextConfig::CreateURLRequestContextConfig(
           // Enable QUIC.
           true,
-          // QUIC User Agent ID.
-          "Default QUIC User Agent ID",
           // Enable SPDY.
           true,
           // Enable Brotli.
@@ -504,8 +492,6 @@ TEST(URLRequestContextConfigTest, SetQuicServerMigrationOptions) {
       URLRequestContextConfig::CreateURLRequestContextConfig(
           // Enable QUIC.
           true,
-          // QUIC User Agent ID.
-          "Default QUIC User Agent ID",
           // Enable SPDY.
           true,
           // Enable Brotli.
@@ -564,8 +550,6 @@ TEST(URLRequestContextConfigTest,
       URLRequestContextConfig::CreateURLRequestContextConfig(
           // Enable QUIC.
           true,
-          // QUIC User Agent ID.
-          "Default QUIC User Agent ID",
           // Enable SPDY.
           true,
           // Enable Brotli.
@@ -625,8 +609,6 @@ TEST(URLRequestContextConfigTest,
       URLRequestContextConfig::CreateURLRequestContextConfig(
           // Enable QUIC.
           true,
-          // QUIC User Agent ID.
-          "Default QUIC User Agent ID",
           // Enable SPDY.
           true,
           // Enable Brotli.
@@ -686,8 +668,6 @@ TEST(URLRequestContextConfigTest,
       URLRequestContextConfig::CreateURLRequestContextConfig(
           // Enable QUIC.
           true,
-          // QUIC User Agent ID.
-          "Default QUIC User Agent ID",
           // Enable SPDY.
           true,
           // Enable Brotli.
@@ -737,8 +717,6 @@ TEST(URLRequestContextConfigTest, SetQuicConnectionMigrationV2Options) {
       URLRequestContextConfig::CreateURLRequestContextConfig(
           // Enable QUIC.
           true,
-          // QUIC User Agent ID.
-          "Default QUIC User Agent ID",
           // Enable SPDY.
           true,
           // Enable Brotli.
@@ -811,8 +789,6 @@ TEST(URLRequestContextConfigTest, SetQuicAllowPortMigration) {
       URLRequestContextConfig::CreateURLRequestContextConfig(
           // Enable QUIC.
           true,
-          // QUIC User Agent ID.
-          "Default QUIC User Agent ID",
           // Enable SPDY.
           true,
           // Enable Brotli.
@@ -860,8 +836,6 @@ TEST(URLRequestContextConfigTest, DisableQuicRetryWithoutAltSvcOnQuicErrors) {
       URLRequestContextConfig::CreateURLRequestContextConfig(
           // Enable QUIC.
           true,
-          // QUIC User Agent ID.
-          "Default QUIC User Agent ID",
           // Enable SPDY.
           true,
           // Enable Brotli.
@@ -909,8 +883,6 @@ TEST(URLRequestContextConfigTest, BrokenAlternativeServiceDelayParams1) {
       URLRequestContextConfig::CreateURLRequestContextConfig(
           // Enable QUIC.
           true,
-          // QUIC User Agent ID.
-          "Default QUIC User Agent ID",
           // Enable SPDY.
           true,
           // Enable Brotli.
@@ -965,8 +937,6 @@ TEST(URLRequestContextConfigTest, BrokenAlternativeServiceDelayParams2) {
       URLRequestContextConfig::CreateURLRequestContextConfig(
           // Enable QUIC.
           true,
-          // QUIC User Agent ID.
-          "Default QUIC User Agent ID",
           // Enable SPDY.
           true,
           // Enable Brotli.
@@ -1021,8 +991,6 @@ TEST(URLRequestContextConfigTest, DelayMainJobWithAvailableSpdySession) {
       URLRequestContextConfig::CreateURLRequestContextConfig(
           // Enable QUIC.
           true,
-          // QUIC User Agent ID.
-          "Default QUIC User Agent ID",
           // Enable SPDY.
           true,
           // Enable Brotli.
@@ -1070,8 +1038,6 @@ TEST(URLRequestContextConfigTest, SetDisableTlsZeroRtt) {
       URLRequestContextConfig::CreateURLRequestContextConfig(
           // Enable QUIC.
           true,
-          // QUIC User Agent ID.
-          "Default QUIC User Agent ID",
           // Enable SPDY.
           true,
           // Enable Brotli.
@@ -1120,8 +1086,6 @@ TEST(URLRequestContextConfigTest, SetQuicHostWhitelist) {
       URLRequestContextConfig::CreateURLRequestContextConfig(
           // Enable QUIC.
           true,
-          // QUIC User Agent ID.
-          "Default QUIC User Agent ID",
           // Enable SPDY.
           true,
           // Enable Brotli.
@@ -1172,8 +1136,6 @@ TEST(URLRequestContextConfigTest, SetQuicMaxTimeBeforeCryptoHandshake) {
       URLRequestContextConfig::CreateURLRequestContextConfig(
           // Enable QUIC.
           true,
-          // QUIC User Agent ID.
-          "Default QUIC User Agent ID",
           // Enable SPDY.
           true,
           // Enable Brotli.
@@ -1224,8 +1186,6 @@ TEST(URLURLRequestContextConfigTest, SetQuicConnectionOptions) {
       URLRequestContextConfig::CreateURLRequestContextConfig(
           // Enable QUIC.
           true,
-          // QUIC User Agent ID.
-          "Default QUIC User Agent ID",
           // Enable SPDY.
           true,
           // Enable Brotli.
@@ -1284,8 +1244,6 @@ TEST(URLURLRequestContextConfigTest, SetAcceptLanguageAndUserAgent) {
       URLRequestContextConfig::CreateURLRequestContextConfig(
           // Enable QUIC.
           true,
-          // QUIC User Agent ID.
-          "Default QUIC User Agent ID",
           // Enable SPDY.
           true,
           // Enable Brotli.
@@ -1334,8 +1292,6 @@ TEST(URLURLRequestContextConfigTest, TurningOffQuic) {
       URLRequestContextConfig::CreateURLRequestContextConfig(
           // Enable QUIC.
           false,
-          // QUIC User Agent ID.
-          "Default QUIC User Agent ID",
           // Enable SPDY.
           true,
           // Enable Brotli.
@@ -1402,8 +1358,6 @@ TEST(URLRequestContextConfigTest, SetSpdyGoAwayOnIPChange) {
       URLRequestContextConfig::CreateURLRequestContextConfig(
           // Enable QUIC.
           true,
-          // QUIC User Agent ID.
-          "Default QUIC User Agent ID",
           // Enable SPDY.
           true,
           // Enable Brotli.
@@ -1452,8 +1406,6 @@ TEST(URLRequestContextConfigTest, WrongSpdyGoAwayOnIPChangeValue) {
       URLRequestContextConfig::CreateURLRequestContextConfig(
           // Enable QUIC.
           true,
-          // QUIC User Agent ID.
-          "Default QUIC User Agent ID",
           // Enable SPDY.
           true,
           // Enable Brotli.
@@ -1496,8 +1448,6 @@ TEST(URLRequestContextConfigTest, BidiStreamDetectBrokenConnection) {
       URLRequestContextConfig::CreateURLRequestContextConfig(
           // Enable QUIC.
           true,
-          // QUIC User Agent ID.
-          "Default QUIC User Agent ID",
           // Enable SPDY.
           true,
           // Enable Brotli.
@@ -1542,8 +1492,6 @@ TEST(URLRequestContextConfigTest, WrongBidiStreamDetectBrokenConnectionValue) {
       URLRequestContextConfig::CreateURLRequestContextConfig(
           // Enable QUIC.
           true,
-          // QUIC User Agent ID.
-          "Default QUIC User Agent ID",
           // Enable SPDY.
           true,
           // Enable Brotli.
@@ -1586,8 +1534,6 @@ TEST(URLRequestContextConfigTest, HttpsSvcbOptions) {
       URLRequestContextConfig::CreateURLRequestContextConfig(
           // Enable QUIC.
           true,
-          // QUIC User Agent ID.
-          "Default QUIC User Agent ID",
           // Enable SPDY.
           true,
           // Enable Brotli.
@@ -1648,7 +1594,7 @@ TEST(URLRequestContextConfigTest, HttpsSvcbOptions) {
   EXPECT_TRUE(params->use_dns_https_svcb_alpn);
 }
 
-TEST(URLRequestContextConfigTest, SkipLogging) {
+TEST(URLRequestContextConfigTest, DisableTelemetry) {
   base::test::TaskEnvironment task_environment_(
       base::test::TaskEnvironment::MainThreadType::IO);
 
@@ -1656,8 +1602,6 @@ TEST(URLRequestContextConfigTest, SkipLogging) {
       URLRequestContextConfig::CreateURLRequestContextConfig(
           // Enable QUIC.
           true,
-          // QUIC User Agent ID.
-          "Default QUIC User Agent ID",
           // Enable SPDY.
           true,
           // Enable Brotli.
@@ -1676,7 +1620,7 @@ TEST(URLRequestContextConfigTest, SkipLogging) {
           // User-Agent request header field.
           "fake agent",
           // JSON encoded experimental options.
-          "{\"enable_telemetry\":true}",
+          "{\"enable_telemetry\":false}",
           // MockCertVerifier to use for testing purposes.
           std::unique_ptr<net::CertVerifier>(),
           // Enable network quality estimator.
@@ -1689,10 +1633,10 @@ TEST(URLRequestContextConfigTest, SkipLogging) {
   config->ConfigureURLRequestContextBuilder(&builder);
   EXPECT_TRUE(
       config->effective_experimental_options.contains("enable_telemetry"));
-  EXPECT_TRUE(config->enable_telemetry);
+  EXPECT_FALSE(config->enable_telemetry);
 }
 
-TEST(URLRequestContextConfigTest, WrongSkipLoggingValue) {
+TEST(URLRequestContextConfigTest, WrongEnableTelemetryValue) {
   base::test::TaskEnvironment task_environment_(
       base::test::TaskEnvironment::MainThreadType::IO);
 
@@ -1700,8 +1644,6 @@ TEST(URLRequestContextConfigTest, WrongSkipLoggingValue) {
       URLRequestContextConfig::CreateURLRequestContextConfig(
           // Enable QUIC.
           true,
-          // QUIC User Agent ID.
-          "Default QUIC User Agent ID",
           // Enable SPDY.
           true,
           // Enable Brotli.
@@ -1734,7 +1676,7 @@ TEST(URLRequestContextConfigTest, WrongSkipLoggingValue) {
   config->ConfigureURLRequestContextBuilder(&builder);
   EXPECT_FALSE(
       config->effective_experimental_options.contains("enable_telemetry"));
-  EXPECT_FALSE(config->enable_telemetry);
+  EXPECT_TRUE(config->enable_telemetry);
 }
 
 // See stale_host_resolver_unittest.cc for test of StaleDNS options.

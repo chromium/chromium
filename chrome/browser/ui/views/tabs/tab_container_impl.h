@@ -336,7 +336,7 @@ class TabContainerImpl : public TabContainer,
 
   const raw_ref<TabContainerController, DanglingUntriaged> controller_;
 
-  const raw_ptr<TabHoverCardController, DanglingUntriaged>
+  const raw_ptr<TabHoverCardController, AcrossTasksDanglingUntriaged>
       hover_card_controller_;
 
   // May be nullptr in tests.
@@ -351,7 +351,7 @@ class TabContainerImpl : public TabContainer,
   // This view is animated by `bounds_animator_` to guarantee that this
   // container's bounds change smoothly when tabs are animated into or out of
   // this container.
-  const raw_ref<views::View, DanglingUntriaged> overall_bounds_view_;
+  const raw_ref<views::View, AcrossTasksDanglingUntriaged> overall_bounds_view_;
 
   // Responsible for animating tabs in response to model changes.
   views::BoundsAnimator bounds_animator_;

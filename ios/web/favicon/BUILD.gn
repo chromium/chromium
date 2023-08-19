@@ -7,7 +7,6 @@ import("//ios/web/public/js_messaging/compile_ts.gni")
 import("//ios/web/public/js_messaging/optimize_js.gni")
 
 source_set("favicon") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     ":favicon_event_listeners_js",
     ":favicon_js",
@@ -56,7 +55,6 @@ optimize_js("favicon_event_listeners_js") {
 }
 
 source_set("unittests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   deps = [
     "//base",
@@ -69,7 +67,6 @@ source_set("unittests") {
 }
 
 source_set("inttests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   deps = [
     "//base",

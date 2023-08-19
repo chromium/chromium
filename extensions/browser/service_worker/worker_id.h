@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include <ostream>
+
 #include "extensions/common/extension_id.h"
 
 namespace extensions {
@@ -22,6 +24,8 @@ struct WorkerId {
   bool operator==(const WorkerId& other) const;
   bool operator!=(const WorkerId& other) const;
 };
+
+std::ostream& operator<<(std::ostream& out, const WorkerId& id);
 
 }  // namespace extensions
 

@@ -118,7 +118,7 @@ class DataTypeController : public base::SupportsWeakPtr<DataTypeController> {
       base::OnceCallback<void(const TypeEntitiesCount&)> callback) const = 0;
 
   // Records entities count and estimated memory usage of the type into
-  // histograms. Can be called only if state() != NOT_RUNNING.
+  // histograms. May do nothing if state() is NOT_RUNNING or FAILED.
   virtual void RecordMemoryUsageAndCountsHistograms() = 0;
 
  protected:

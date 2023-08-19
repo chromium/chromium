@@ -1,15 +1,15 @@
-layer at (0,0) scrollHeight 1598
-  LayoutNGView at (0,0) size 1066x799
+layer at (0,0) scrollHeight 1200
+  LayoutNGView at (0,0) size 800x600
 layer at (0,0)
-  LayoutNGBlockFlow {HTML} at (0,0) size 1066x825
-    LayoutNGBlockFlow {BODY} at (8,16) size 1050x801
-      LayoutNGBlockFlow {P} at (0,0) size 1050x36
-        LayoutText {#text} at (0,0) size 1035x36
-          text run at (0,0) width 1035: "This is a test that only dumps the layout tree, and doesn't actually display the page. This tests some peculiarities in the test framework for printing. To run this test"
-          text run at (0,18) width 325: "manually, run it with content_shell --run-web-tests"
-      LayoutNGBlockFlow {DIV} at (0,52) size 1050x18
+  LayoutNGBlockFlow {HTML} at (0,0) size 800x626
+    LayoutNGBlockFlow {BODY} at (8,16) size 784x602
+      LayoutNGBlockFlow {P} at (0,0) size 784x36
+        LayoutText {#text} at (0,0) size 781x36
+          text run at (0,0) width 781: "This is a test that only dumps the layout tree, and doesn't actually display the page. This tests some peculiarities in the test"
+          text run at (0,18) width 579: "framework for printing. To run this test manually, run it with content_shell --run-web-tests"
+      LayoutNGBlockFlow {DIV} at (0,52) size 784x18
         LayoutText {#text} at (0,0) size 165x18
           text run at (0,0) width 165: "This should be on page 1."
-      LayoutNGBlockFlow {DIV} at (0,783) size 1050x18
+      LayoutNGBlockFlow {DIV} at (0,584) size 784x18
         LayoutText {#text} at (0,0) size 165x18
           text run at (0,0) width 165: "This should be on page 2."

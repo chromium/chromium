@@ -15,9 +15,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
+#include "base/uuid.h"
 #include "extensions/browser/api/messaging/message_port.h"
 #include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/common/api/messaging/port_id.h"
+#include "extensions/common/extension_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
@@ -46,7 +48,7 @@ class ExtensionMessagePort : public MessagePort {
   ExtensionMessagePort(base::WeakPtr<ChannelDelegate> channel_delegate,
                        const PortId& port_id,
                        const std::string& extension_id,
-                       content::RenderFrameHost* rfh,
+                       content::RenderFrameHost* render_frame_host,
                        bool include_child_frames);
 
   // Create a port that is tied to all frames and service workers of an
@@ -78,7 +80,7 @@ class ExtensionMessagePort : public MessagePort {
 
   // MessagePort:
   void RemoveCommonFrames(const MessagePort& port) override;
-  bool HasFrame(content::RenderFrameHost* rfh) const override;
+  bool HasFrame(content::RenderFrameHost* render_frame_host) const override;
   bool IsValidPort() override;
   void RevalidatePort() override;
   void DispatchOnConnect(ChannelType channel_type,
@@ -104,11 +106,11 @@ class ExtensionMessagePort : public MessagePort {
   struct IPCTarget;
 
   // Registers a frame as a receiver / sender.
-  void RegisterFrame(content::RenderFrameHost* rfh);
+  void RegisterFrame(content::RenderFrameHost* render_frame_host);
 
   // Unregisters a frame as a receiver / sender. When there are no registered
   // frames any more, the port closes via CloseChannel().
-  void UnregisterFrame(content::RenderFrameHost* rfh);
+  void UnregisterFrame(content::RenderFrameHost* render_frame_host);
 
   // Returns whether or not a live frame or Service Worker is present for this
   // port.
@@ -157,7 +159,7 @@ class ExtensionMessagePort : public MessagePort {
   base::WeakPtr<ChannelDelegate> weak_channel_delegate_;
 
   const PortId port_id_;
-  std::string extension_id_;
+  ExtensionId extension_id_;
   raw_ptr<content::BrowserContext> browser_context_ = nullptr;
 
   // Whether this port corresponds to *all* extension contexts. Should only be
@@ -175,7 +177,7 @@ class ExtensionMessagePort : public MessagePort {
   std::set<WorkerId> service_workers_;
 
   // GUIDs of Service Workers that have pending keepalive requests inflight.
-  std::map<WorkerId, std::vector<std::string>> pending_keepalive_uuids_;
+  std::map<WorkerId, std::vector<base::Uuid>> pending_keepalive_uuids_;
 
   // Whether the renderer acknowledged creation of the port. This is used to
   // distinguish abnormal port closure (e.g. no receivers) from explicit port

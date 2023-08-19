@@ -27,6 +27,12 @@ class WebContents;
 class DownloadItemModel : public DownloadUIModel,
                           public download::DownloadItem::Observer {
  public:
+#if !BUILDFLAG(IS_ANDROID)
+  // How long an ephemeral warning is displayed on the download bubble.
+  static constexpr base::TimeDelta kEphemeralWarningLifetimeOnBubble =
+      base::Minutes(5);
+#endif
+
   static DownloadUIModelPtr Wrap(download::DownloadItem* download);
   static DownloadUIModelPtr Wrap(
       download::DownloadItem* download,

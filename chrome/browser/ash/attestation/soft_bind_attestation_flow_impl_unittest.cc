@@ -130,7 +130,7 @@ class SoftBindAttestationFlowImplTest : public ::testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  raw_ptr<StrictMock<MockAttestationFlow>, ExperimentalAsh>
+  raw_ptr<StrictMock<MockAttestationFlow>, DanglingUntriaged | ExperimentalAsh>
       mock_attestation_flow_;
   ScopedCrosSettingsTestHelper settings_helper_;
   std::unique_ptr<SoftBindAttestationFlowImpl> soft_bind_attestation_flow_;

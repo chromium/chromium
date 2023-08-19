@@ -10,9 +10,9 @@
 
 #include <vector>
 
+#include "base/apple/scoped_dispatch_object.h"
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
-#include "base/mac/scoped_dispatch_object.h"
 #include "base/memory/weak_ptr.h"
 
 namespace base {

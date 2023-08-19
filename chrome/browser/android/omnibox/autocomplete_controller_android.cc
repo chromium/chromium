@@ -41,9 +41,11 @@
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_result.h"
+#include "components/omnibox/browser/history_fuzzy_provider.h"
 #include "components/omnibox/browser/omnibox_event_global_tracker.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_log.h"
+#include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/browser/voice_suggest_provider.h"
@@ -320,6 +322,8 @@ void AutocompleteControllerAndroid::OnSuggestionSelected(
   }
 
   RecordClipboardMetrics(match.type);
+  HistoryFuzzyProvider::RecordOpenMatchMetrics(
+      autocomplete_controller_->result(), match);
 
   // The following histogram should be recorded for both TYPED and pasted
   // URLs, but should still exclude reloads.
@@ -341,7 +345,7 @@ void AutocompleteControllerAndroid::OnSuggestionSelected(
           : input_.text(),
       false,                /* don't know */
       input_.type(), false, /* not keyword mode */
-      OmniboxEventProto::INVALID, true, match_index,
+      OmniboxEventProto::INVALID, true, OmniboxPopupSelection(match_index),
       static_cast<WindowOpenDisposition>(j_window_open_disposition), false,
       sessions::SessionTabHelper::IdForTab(web_contents),
       OmniboxEventProto::PageClassification(j_page_classification),

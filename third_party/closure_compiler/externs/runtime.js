@@ -168,6 +168,7 @@ chrome.runtime.ContextType = {
   POPUP: 'POPUP',
   BACKGROUND: 'BACKGROUND',
   OFFSCREEN_DOCUMENT: 'OFFSCREEN_DOCUMENT',
+  SIDE_PANEL: 'SIDE_PANEL',
 };
 
 /**
@@ -266,7 +267,7 @@ chrome.runtime.getURL = function(path) {};
 
 /**
  * Sets the URL to be visited upon uninstallation. This may be used to clean up
- * server-side data, do analytics, and implement surveys. Maximum 255
+ * server-side data, do analytics, and implement surveys. Maximum 1023
  * characters.
  * @param {string} url URL to be opened after the extension is uninstalled. This
  *     URL must have an http: or https: scheme. Set an empty string to not open

@@ -19,7 +19,7 @@ class AudioSystem;
 namespace content {
 
 class MediaStreamManager;
-class RenderFrameHostImpl;
+class RenderFrameHost;
 
 // This class is related to ForwardingAudioStreamFactory as follows:
 //
@@ -38,22 +38,15 @@ class RenderFrameHostImpl;
 // This class takes care of stream requests from a render frame. It verifies
 // that the stream creation is allowed and then forwards the request to the
 // appropriate ForwardingAudioStreamFactory. It should be constructed and
-// destructed on the UI thread, but will process Mojo messages on the IO thread
-// unless it is running in the restricted mode.
+// destructed on the UI thread, but will process Mojo messages on the IO thread.
 class CONTENT_EXPORT RenderFrameAudioOutputStreamFactory final {
  public:
-  // Initializing it with a non-null `restricted_callback` indicates that
-  // `this` should run in the restricted mode until `ReleaseRestriction` is
-  // called. In this mode, frames requests for output devices are not granted.
-  // The given `restricted_callback` will be invoked if the frame requests an
-  // output device.
   RenderFrameAudioOutputStreamFactory(
-      RenderFrameHostImpl* frame,
+      RenderFrameHost* frame,
       media::AudioSystem* audio_system,
       MediaStreamManager* media_stream_manager,
       mojo::PendingReceiver<blink::mojom::RendererAudioOutputStreamFactory>
-          receiver,
-      absl::optional<base::OnceClosure> restricted_callback);
+          receiver);
 
   RenderFrameAudioOutputStreamFactory(
       const RenderFrameAudioOutputStreamFactory&) = delete;
@@ -65,19 +58,11 @@ class CONTENT_EXPORT RenderFrameAudioOutputStreamFactory final {
   void SetAuthorizedDeviceIdForGlobalMediaControls(
       std::string hashed_device_id);
 
-  // Called when the frame is allowed to request output devices, e.g., when the
-  // prerendering frame is about to be activated.
-  void ReleaseRestriction();
-
   size_t CurrentNumberOfProvidersForTesting();
 
  private:
   class Core;
-  class RestrictedModeCore;
   std::unique_ptr<Core> core_;
-
-  // Used while the frame is disallowed to request output devices.
-  std::unique_ptr<RestrictedModeCore> restricted_mode_core_;
 };
 
 }  // namespace content

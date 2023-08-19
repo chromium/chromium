@@ -13,8 +13,8 @@
 
 #include "base/base64.h"
 #include "base/values.h"
-#include "chrome/browser/ash/platform_keys/key_permissions/key_permissions.pb.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/components/kcer/key_permissions.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 

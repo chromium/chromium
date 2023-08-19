@@ -163,7 +163,7 @@ class MediaEngagementAutoplayBrowserTest
     // Get the generated root. The protobuf-generated files are in here.
     base::FilePath gen_root;
     EXPECT_TRUE(
-        base::PathService::Get(base::DIR_GEN_TEST_DATA_ROOT, &gen_root));
+        base::PathService::Get(base::DIR_OUT_TEST_DATA_ROOT, &gen_root));
 
     // Launch the generator and wait for it to finish.
     base::CommandLine cmd(GetPythonPath());

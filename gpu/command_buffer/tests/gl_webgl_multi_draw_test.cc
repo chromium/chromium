@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"
 #include "gpu/command_buffer/client/shared_memory_limits.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
@@ -66,16 +67,16 @@ TEST_F(GLWebGLMultiDrawTest, MultiDrawLargerThanTransferBuffer) {
 
   // This test is only valid if the multi draw extension is supported
   if (!GLTestHelper::HasExtension("GL_ANGLE_multi_draw")) {
-    if (requestable_extensions_string.find("GL_ANGLE_multi_draw ") ==
-        std::string::npos) {
+    if (!base::Contains(requestable_extensions_string,
+                        "GL_ANGLE_multi_draw ")) {
       return;
     }
     glRequestExtensionCHROMIUM("GL_ANGLE_multi_draw");
   }
 
   if (!GLTestHelper::HasExtension("GL_WEBGL_multi_draw")) {
-    if (requestable_extensions_string.find("GL_WEBGL_multi_draw ") ==
-        std::string::npos) {
+    if (!base::Contains(requestable_extensions_string,
+                        "GL_WEBGL_multi_draw ")) {
       return;
     }
     glRequestExtensionCHROMIUM("GL_WEBGL_multi_draw");
@@ -85,62 +86,62 @@ TEST_F(GLWebGLMultiDrawTest, MultiDrawLargerThanTransferBuffer) {
       "#define SIZE " + std::to_string(canvas_size()) + "\n";
   vertex_source += "#extension GL_ANGLE_multi_draw : require\n";
   vertex_source += R"(
-      attribute vec2 a_position;
-      varying vec4 v_color;
+    attribute vec2 a_position;
+    varying vec4 v_color;
 
-      int mod(int x, int y) {
-        int q = x / y;
-        return x - q * y;
+    int mod(int x, int y) {
+      int q = x / y;
+      return x - q * y;
+    }
+
+    int rshift8(int x) {
+      int result = x;
+      for (int i = 0; i < 8; ++i) {
+        result = result / 2;
       }
+      return result;
+    }
 
-      int rshift8(int x) {
-        int result = x;
-        for (int i = 0; i < 8; ++i) {
-          result = result / 2;
-        }
-        return result;
+    int rshift16(int x) {
+      int result = x;
+      for (int i = 0; i < 16; ++i) {
+        result = result / 2;
       }
+      return result;
+    }
 
-      int rshift16(int x) {
-        int result = x;
-        for (int i = 0; i < 16; ++i) {
-          result = result / 2;
-        }
-        return result;
+    int rshift24(int x) {
+      int result = x;
+      for (int i = 0; i < 24; ++i) {
+        result = result / 2;
       }
+      return result;
+    }
 
-      int rshift24(int x) {
-        int result = x;
-        for (int i = 0; i < 24; ++i) {
-          result = result / 2;
-        }
-        return result;
-      }
+    void main() {
+      int x_int = mod(gl_DrawID, SIZE);
+      int y_int = gl_DrawID / SIZE;
 
-      void main() {
-        int x_int = mod(gl_DrawID, SIZE);
-        int y_int = gl_DrawID / SIZE;
-
-        float s = 1.0 / float(SIZE);
-        float x = float(x_int) / float(SIZE);
-        float y = float(y_int) / float(SIZE);
-        float z = 0.0;
-        mat4 m = mat4(s, 0, 0, 0, 0, s, 0, 0, 0, 0, s, 0, x, y, z, 1);
-        vec2 position01 = a_position * 0.5 + 0.5;
-        gl_Position = (m * vec4(position01, 0.0, 1.0)) * 2.0 - 1.0;
-        int r = mod(rshift24(gl_DrawID), 256);
-        int g = mod(rshift16(gl_DrawID), 256);
-        int b = mod(rshift8(gl_DrawID), 256);
-        int a = mod(gl_DrawID, 256);
-        float denom = 1.0 / 255.0;
-        v_color = vec4(r, g, b, a) * denom;
-      })";
+      float s = 1.0 / float(SIZE);
+      float x = float(x_int) / float(SIZE);
+      float y = float(y_int) / float(SIZE);
+      float z = 0.0;
+      mat4 m = mat4(s, 0, 0, 0, 0, s, 0, 0, 0, 0, s, 0, x, y, z, 1);
+      vec2 position01 = a_position * 0.5 + 0.5;
+      gl_Position = (m * vec4(position01, 0.0, 1.0)) * 2.0 - 1.0;
+      int r = mod(rshift24(gl_DrawID), 256);
+      int g = mod(rshift16(gl_DrawID), 256);
+      int b = mod(rshift8(gl_DrawID), 256);
+      int a = mod(gl_DrawID, 256);
+      float denom = 1.0 / 255.0;
+      v_color = vec4(r, g, b, a) * denom;
+    })";
 
   GLuint program = GLTestHelper::LoadProgram(vertex_source.c_str(), R"(
-          precision mediump float;
-          varying vec4 v_color;
-          void main() { gl_FragColor = v_color; }
-  )");
+      precision mediump float;
+      varying vec4 v_color;
+      void main() { gl_FragColor = v_color; }
+)");
   ASSERT_NE(program, 0u);
   GLint position_loc = glGetAttribLocation(program, "a_position");
   ASSERT_NE(position_loc, -1);

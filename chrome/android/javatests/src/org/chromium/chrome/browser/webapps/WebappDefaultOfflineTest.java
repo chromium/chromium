@@ -48,7 +48,7 @@ public class WebappDefaultOfflineTest {
     @Test
     @SmallTest
     @Feature({"Webapps"})
-    @EnableFeatures({ChromeFeatureList.PWA_DEFAULT_OFFLINE_PAGE})
+    @EnableFeatures(ChromeFeatureList.PWA_DEFAULT_OFFLINE_PAGE)
     public void testDefaultOffline() throws Exception {
         // Make sure the navigations to the test app result in a 404 error.
         final String testAppUrl =

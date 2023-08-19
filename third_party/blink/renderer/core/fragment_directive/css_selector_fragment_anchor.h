@@ -40,8 +40,6 @@ class CORE_EXPORT CssSelectorFragmentAnchor final
 
   bool InvokeSelector() override;
 
-  void PerformScriptableActions() override;
-
   void Trace(Visitor*) const override;
 
   bool IsSelectorFragmentAnchor() override { return true; }

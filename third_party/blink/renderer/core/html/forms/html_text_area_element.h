@@ -140,7 +140,7 @@ class CORE_EXPORT HTMLTextAreaElement final : public TextControlElement {
 
   bool MatchesReadOnlyPseudoClass() const override;
   bool MatchesReadWritePseudoClass() const override;
-  void CloneNonAttributePropertiesFrom(const Element&, CloneChildrenFlag) final;
+  void CloneNonAttributePropertiesFrom(const Element&, NodeCloningData&) final;
 
   // If the String* argument is 0, apply value().
   bool ValueMissing(const String*) const;

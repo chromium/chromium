@@ -137,18 +137,7 @@ class HashtablezInfoHandle {
     UnsampleSlow(info_);
   }
 
-  HashtablezInfoHandle(const HashtablezInfoHandle&) = delete;
-  HashtablezInfoHandle& operator=(const HashtablezInfoHandle&) = delete;
-
-  HashtablezInfoHandle(HashtablezInfoHandle&& o) noexcept
-      : info_(absl::exchange(o.info_, nullptr)) {}
-  HashtablezInfoHandle& operator=(HashtablezInfoHandle&& o) noexcept {
-    if (ABSL_PREDICT_FALSE(info_ != nullptr)) {
-      UnsampleSlow(info_);
-    }
-    info_ = absl::exchange(o.info_, nullptr);
-    return *this;
-  }
+  inline bool IsSampled() const { return ABSL_PREDICT_FALSE(info_ != nullptr); }
 
   inline void RecordStorageChanged(size_t size, size_t capacity) {
     if (ABSL_PREDICT_TRUE(info_ == nullptr)) return;
@@ -198,6 +187,7 @@ class HashtablezInfoHandle {
   explicit HashtablezInfoHandle(std::nullptr_t) {}
 
   inline void Unregister() {}
+  inline bool IsSampled() const { return false; }
   inline void RecordStorageChanged(size_t /*size*/, size_t /*capacity*/) {}
   inline void RecordRehash(size_t /*total_probe_length*/) {}
   inline void RecordReservation(size_t /*target_capacity*/) {}

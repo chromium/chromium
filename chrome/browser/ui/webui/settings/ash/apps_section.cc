@@ -197,14 +197,14 @@ const std::vector<SearchConcept>& GetOnStartupSearchConcepts() {
 void AddAppManagementStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"appManagementAppDetailsTitle", IDS_APP_MANAGEMENT_APP_DETAILS_TITLE},
+      {"appManagementAppDetailsTooltipCrosSystem",
+       IDS_APP_MANAGEMENT_APP_DETAILS_TOOLTIP_CROS_SYSTEM},
       {"appManagementAppDetailsTypeAndroid",
        IDS_APP_MANAGEMENT_APP_DETAILS_TYPE_ANDROID},
       {"appManagementAppDetailsTypeChrome",
        IDS_APP_MANAGEMENT_APP_DETAILS_TYPE_CHROME},
       {"appManagementAppDetailsTypeWeb",
        IDS_APP_MANAGEMENT_APP_DETAILS_TYPE_WEB},
-      {"appManagementAppDetailsTypeSystem",
-       IDS_APP_MANAGEMENT_APP_DETAILS_TYPE_SYSTEM},
       {"appManagementAppDetailsTypeCrosSystem",
        IDS_APP_MANAGEMENT_APP_DETAILS_TYPE_CROS_SYSTEM},
       {"appManagementAppDetailsInstallSourceWebStore",
@@ -272,6 +272,8 @@ void AddAppManagementStrings(content::WebUIDataSource* html_source) {
       {"appManagementNoPermissions",
        IDS_APPLICATION_INFO_APP_NO_PERMISSIONS_TEXT},
       {"appManagementNotificationsLabel", IDS_APP_MANAGEMENT_NOTIFICATIONS},
+      {"appManagementParentAppPermissionExplanation",
+       IDS_APP_MANAGEMENT_PARENT_APP_PERMISSION_EXPLANATION},
       {"appManagementPermissionAllowed", IDS_APP_MANAGEMENT_PERMISSION_ALLOWED},
       {"appManagementPermissionAllowedWithDetails",
        IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_WITH_DETAILS},
@@ -288,6 +290,8 @@ void AddAppManagementStrings(content::WebUIDataSource* html_source) {
       {"appManagementStoragePermissionLabel", IDS_APP_MANAGEMENT_STORAGE},
       {"appManagementSubAppsListHeading",
        IDS_APP_MANAGEMENT_SUB_APPS_LIST_HEADING},
+      {"appManagementSubAppPermissionExplanation",
+       IDS_APP_MANAGEMENT_SUB_APP_PERMISSION_EXPLANATION},
       {"appManagementUninstallLabel", IDS_APP_MANAGEMENT_UNINSTALL_APP},
       {"close", IDS_CLOSE},
       {"fileHandlingOverflowDialogTitle",
@@ -489,7 +493,7 @@ mojom::SearchResultIcon AppsSection::GetSectionIcon() const {
   return mojom::SearchResultIcon::kAppsGrid;
 }
 
-std::string AppsSection::GetSectionPath() const {
+const char* AppsSection::GetSectionPath() const {
   return mojom::kAppsSectionPath;
 }
 

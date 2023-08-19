@@ -2,9 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import dataclasses
 import functools
 import multiprocessing
 import sys
+import typing
 
 from .package_initializer import package_initializer
 
@@ -14,6 +16,13 @@ class TaskQueue(object):
     Represents a task queue to run tasks with using a worker pool.  Scheduled
     tasks will be executed in parallel.
     """
+
+    @dataclasses.dataclass
+    class _Task(object):
+        workload: int
+        func: callable
+        args: typing.List[typing.Any]
+        kwargs: typing.Dict[str, typing.Any]
 
     def __init__(self, single_process=False):
         """
@@ -36,8 +45,7 @@ class TaskQueue(object):
                 self._pool_size = min(self._pool_size, 56)
             self._pool = multiprocessing.Pool(self._pool_size,
                                               package_initializer().init)
-        self._requested_tasks = []  # List of (workload, func, args, kwargs)
-        self._worker_tasks = []  # List of multiprocessing.pool.AsyncResult
+        self._requested_tasks = []  # List of _Task
         self._did_run = False
 
     def post_task(self, func, *args, **kwargs):
@@ -60,7 +68,7 @@ class TaskQueue(object):
         multiprocessor systems.
         """
         assert not self._did_run
-        self._requested_tasks.append((workload, func, args, kwargs))
+        self._requested_tasks.append(self._Task(workload, func, args, kwargs))
 
     def run(self, report_progress=None):
         """
@@ -72,32 +80,28 @@ class TaskQueue(object):
         """
         assert report_progress is None or callable(report_progress)
         assert not self._did_run
-        assert not self._worker_tasks
         self._did_run = True
+
+        self._requested_tasks = sorted(self._requested_tasks,
+                                       key=lambda task: task.workload,
+                                       reverse=True)
 
         if self._single_process:
             self._run_in_sequence(report_progress)
         else:
             self._run_in_parallel(report_progress)
 
-    def _tasks_by_workload(self):
-        return sorted(
-            self._requested_tasks,
-            key=lambda task: task[0],  # workload
-            reverse=True)
-
     def _run_in_sequence(self, report_progress):
-        for index, task in enumerate(self._tasks_by_workload()):
-            _, func, args, kwargs = task
+        for index, task in enumerate(self._requested_tasks):
             report_progress(len(self._requested_tasks), index)
-            func(*args, **kwargs)
+            task.func(*task.args, **task.kwargs)
         report_progress(len(self._requested_tasks), len(self._requested_tasks))
 
     def _run_in_parallel(self, report_progress):
-        for task in self._tasks_by_workload():
-            _, func, args, kwargs = task
-            self._worker_tasks.append(
-                self._pool.apply_async(func, args, kwargs))
+        worker_tasks = []  # List of multiprocessing.pool.AsyncResult
+        for task in self._requested_tasks:
+            worker_tasks.append(
+                self._pool.apply_async(task.func, task.args, task.kwargs))
         self._pool.close()
 
         def report_worker_task_progress():
@@ -105,13 +109,13 @@ class TaskQueue(object):
                 return
             done_count = functools.reduce(
                 lambda count, worker_task: count + bool(worker_task.ready()),
-                self._worker_tasks, 0)
-            report_progress(len(self._worker_tasks), done_count)
+                worker_tasks, 0)
+            report_progress(len(worker_tasks), done_count)
 
         timeout_in_sec = 1
         while True:
             report_worker_task_progress()
-            for worker_task in self._worker_tasks:
+            for worker_task in worker_tasks:
                 if not worker_task.ready():
                     worker_task.wait(timeout_in_sec)
                     break

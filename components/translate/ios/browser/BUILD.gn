@@ -6,7 +6,6 @@ import("//build/config/features.gni")
 import("//ios/web/public/js_messaging/optimize_ts.gni")
 
 source_set("browser") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "ios_translate_driver.h",
     "ios_translate_driver.mm",
@@ -55,7 +54,6 @@ optimize_ts("injected_js") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "ios_translate_driver_unittest.mm",

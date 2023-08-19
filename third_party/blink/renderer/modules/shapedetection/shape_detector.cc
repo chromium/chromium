@@ -115,8 +115,7 @@ ScriptPromise ShapeDetector::detect(ScriptState* script_state,
   SkBitmap n32_bitmap;
   if (!sk_image || !sk_image->asLegacyBitmap(&sk_bitmap) ||
       !skia::SkBitmapToN32OpaqueOrPremul(sk_bitmap, &n32_bitmap)) {
-    // TODO(mcasas): retrieve the pixels from elsewhere.
-    NOTREACHED();
+    // TODO(crbug.com/1467598): retrieve the pixels from elsewhere.
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "Failed to get pixels for current frame.");

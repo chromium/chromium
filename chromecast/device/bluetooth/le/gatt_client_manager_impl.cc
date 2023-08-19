@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -239,7 +240,7 @@ void GattClientManagerImpl::DisconnectAll(StatusCallback cb) {
 bool GattClientManagerImpl::IsConnectedLeDevice(
     const bluetooth_v2_shlib::Addr& addr) {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
-  return connected_devices_.find(addr) != connected_devices_.end();
+  return base::Contains(connected_devices_, addr);
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
@@ -570,7 +571,7 @@ void GattClientManagerImpl::OnConnectTimeout(
   LOG(ERROR) << "Connect (" << addr_str << ")"
              << " timed out. Disconnecting";
 
-  if (connected_devices_.find(addr) != connected_devices_.end()) {
+  if (base::Contains(connected_devices_, addr)) {
     // Connect times out before OnGetServices is received.
     gatt_client_->Disconnect(addr);
   } else {

@@ -66,32 +66,30 @@ SyncCycleSnapshot::SyncCycleSnapshot(const SyncCycleSnapshot& other) = default;
 SyncCycleSnapshot::~SyncCycleSnapshot() = default;
 
 base::Value::Dict SyncCycleSnapshot::ToValue() const {
-  base::Value::Dict value;
-  value.Set("birthday", birthday_);
   std::string encoded_bag_of_chips;
   base::Base64Encode(bag_of_chips_, &encoded_bag_of_chips);
-  value.Set("bagOfChips", encoded_bag_of_chips);
-  value.Set("numSuccessfulCommits",
-            model_neutral_state_.num_successful_commits);
-  value.Set("numSuccessfulBookmarkCommits",
-            model_neutral_state_.num_successful_bookmark_commits);
-  value.Set("numUpdatesDownloadedTotal",
-            model_neutral_state_.num_updates_downloaded_total);
-  value.Set("numTombstoneUpdatesDownloadedTotal",
-            model_neutral_state_.num_tombstone_updates_downloaded_total);
-  value.Set("downloadProgressMarkers",
-            ProgressMarkerMapToValueDict(download_progress_markers_));
-  value.Set("isSilenced", is_silenced_);
-  // We don't care too much if we lose precision here, also.
-  value.Set("numServerConflicts", num_server_conflicts_);
-  value.Set("getUpdatesOrigin", ProtoEnumToString(get_updates_origin_));
-  value.Set("notificationsEnabled", notifications_enabled_);
 
-  value.Set("hasRemainingLocalChanges", has_remaining_local_changes_);
-  value.Set("poll_interval", FormatTimeDelta(poll_interval_));
-  value.Set("poll_finish_time",
-            base::TimeFormatShortDateAndTimeWithTimeZone(poll_finish_time_));
-  return value;
+  return base::Value::Dict()
+      .Set("birthday", birthday_)
+      .Set("bagOfChips", encoded_bag_of_chips)
+      .Set("numSuccessfulCommits", model_neutral_state_.num_successful_commits)
+      .Set("numSuccessfulBookmarkCommits",
+           model_neutral_state_.num_successful_bookmark_commits)
+      .Set("numUpdatesDownloadedTotal",
+           model_neutral_state_.num_updates_downloaded_total)
+      .Set("numTombstoneUpdatesDownloadedTotal",
+           model_neutral_state_.num_tombstone_updates_downloaded_total)
+      .Set("downloadProgressMarkers",
+           ProgressMarkerMapToValueDict(download_progress_markers_))
+      .Set("isSilenced", is_silenced_)
+      // We don't care too much if we lose precision here, also.
+      .Set("numServerConflicts", num_server_conflicts_)
+      .Set("getUpdatesOrigin", ProtoEnumToString(get_updates_origin_))
+      .Set("notificationsEnabled", notifications_enabled_)
+      .Set("hasRemainingLocalChanges", has_remaining_local_changes_)
+      .Set("poll_interval", FormatTimeDelta(poll_interval_))
+      .Set("poll_finish_time",
+           base::TimeFormatShortDateAndTimeWithTimeZone(poll_finish_time_));
 }
 
 std::string SyncCycleSnapshot::ToString() const {

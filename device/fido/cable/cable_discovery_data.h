@@ -132,8 +132,8 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) Pairing {
 
   Pairing();
   ~Pairing();
-  Pairing(const Pairing&) = delete;
-  Pairing& operator=(const Pairing&) = delete;
+  Pairing(const Pairing&);
+  Pairing& operator=(const Pairing&);
 
   // Parse builds a `Pairing` from an authenticator message. The signature
   // within the structure is validated by using `local_identity_seed` and
@@ -154,10 +154,8 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) Pairing {
   static bool EqualPublicKeys(const std::unique_ptr<Pairing>&,
                               const std::unique_ptr<Pairing>&);
 
-  // tunnel_server_domain is known to be a valid hostname as it's constructed
-  // from the 22-bit value in the BLE advert rather than being parsed as a
-  // string from the authenticator.
-  std::string tunnel_server_domain;
+  // tunnel_server_domain is the encoded 16-bit value in the BLE advert.
+  tunnelserver::KnownDomainID tunnel_server_domain = kTunnelServer;
   // contact_id is an opaque value that is sent to the tunnel service in order
   // to identify the caBLEv2 authenticator.
   std::vector<uint8_t> contact_id;
@@ -168,7 +166,7 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) Pairing {
   // authenticator.
   std::vector<uint8_t> secret;
   // peer_public_key_x962 is the authenticator's public key.
-  std::array<uint8_t, kP256X962Length> peer_public_key_x962;
+  std::array<uint8_t, kP256X962Length> peer_public_key_x962{};
   // name is a human-friendly name for the authenticator, specified by that
   // authenticator. (For example "Pixel 3".)
   std::string name;

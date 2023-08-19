@@ -40,17 +40,6 @@ class GenericDeviceOperation;
 class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
     : public FidoAuthenticator {
  public:
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class LargeBlobKeyWriteResult {
-    kSuccess = 0,
-    kNotEnoughSpace = 1,
-    kCompressionError = 2,
-    kCredentialHasNoLargeBlobKey = 3,
-    kCtapError = 4,
-    kMaxValue = kCtapError,
-  };
-
   explicit FidoDeviceAuthenticator(std::unique_ptr<FidoDevice> device);
 
   FidoDeviceAuthenticator(const FidoDeviceAuthenticator&) = delete;
@@ -136,6 +125,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
 
   void Reset(ResetCallback callback) override;
   void Cancel() override;
+  AuthenticatorType GetType() const override;
   std::string GetId() const override;
   std::string GetDisplayName() const override;
   ProtocolVersion SupportedProtocol() const override;
@@ -279,7 +269,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
       base::OnceCallback<void(CtapDeviceResponseCode)> callback,
       CtapDeviceResponseCode status,
       absl::optional<LargeBlobArrayReader> large_blob_array_reader);
-  void LogLargeBlobResult(LargeBlobKeyWriteResult result);
 
   template <typename... Args>
   void TaskClearProxy(base::OnceCallback<void(Args...)> callback, Args... args);

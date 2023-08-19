@@ -361,6 +361,12 @@ void BluetoothAdapter::NotifyDeviceIsBlockedByPolicyChanged(
   for (auto& observer : observers_)
     observer.DeviceBlockedByPolicyChanged(this, device, new_blocked_status);
 }
+
+void BluetoothAdapter::NotifyGattNeedsDiscovery(BluetoothDevice* device) {
+  for (auto& observer : observers_) {
+    observer.GattNeedsDiscovery(device);
+  }
+}
 #endif
 
 void BluetoothAdapter::NotifyGattServiceAdded(

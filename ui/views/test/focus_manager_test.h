@@ -49,13 +49,15 @@ class FocusManagerTest : public ViewsTestBase, public WidgetDelegate {
   virtual void InitContentView();
 
   void AddFocusChangeListener(FocusChangeListener* listener);
+  void RemoveFocusChangeListener(FocusChangeListener* listener);
   void AddWidgetFocusChangeListener(WidgetFocusChangeListener* listener);
+  void RemoveWidgetFocusChangeListener(WidgetFocusChangeListener* listener);
 
   // For testing FocusManager::RotatePaneFocus().
   void SetAccessiblePanes(const std::vector<View*>& panes);
 
  private:
-  raw_ptr<View, DanglingUntriaged> contents_view_;
+  raw_ptr<View, AcrossTasksDanglingUntriaged> contents_view_;
   raw_ptr<FocusChangeListener> focus_change_listener_ = nullptr;
   raw_ptr<WidgetFocusChangeListener> widget_focus_change_listener_ = nullptr;
   std::vector<View*> accessible_panes_;

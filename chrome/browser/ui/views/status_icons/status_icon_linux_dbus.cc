@@ -361,6 +361,13 @@ void StatusIconLinuxDbus::OnInitialized(bool success) {
     return;
   }
 
+  watcher_->SetNameOwnerChangedCallback(
+      base::BindRepeating(&StatusIconLinuxDbus::OnNameOwnerChangedReceived,
+                          weak_factory_.GetWeakPtr()));
+  RegisterStatusNotifierItem();
+}
+
+void StatusIconLinuxDbus::RegisterStatusNotifierItem() {
   dbus::MethodCall method_call(kInterfaceStatusNotifierWatcher,
                                kMethodRegisterStatusNotifierItem);
   dbus::MessageWriter writer(&method_call);
@@ -374,6 +381,15 @@ void StatusIconLinuxDbus::OnRegistered(dbus::Response* response) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!response)
     delegate_->OnImplInitializationFailed();
+}
+
+void StatusIconLinuxDbus::OnNameOwnerChangedReceived(
+    const std::string& old_owner,
+    const std::string& new_owner) {
+  // Re-register the item when the StatusNotifierWatcher has a new owner.
+  if (!new_owner.empty()) {
+    RegisterStatusNotifierItem();
+  }
 }
 
 void StatusIconLinuxDbus::OnActivate(

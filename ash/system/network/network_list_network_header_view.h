@@ -78,7 +78,8 @@ class ASH_EXPORT NetworkListNetworkHeaderView : public NetworkListHeaderView {
   int const enabled_label_id_;
 
   // `ToggleButton` to toggle section on or off.
-  raw_ptr<views::ToggleButton, ExperimentalAsh> toggle_ = nullptr;
+  raw_ptr<views::ToggleButton, DanglingUntriaged | ExperimentalAsh> toggle_ =
+      nullptr;
   // `KnobSwitch` to toggle section on or off.
   raw_ptr<Switch, ExperimentalAsh> qs_toggle_ = nullptr;
 

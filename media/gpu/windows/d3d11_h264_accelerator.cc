@@ -51,9 +51,8 @@ D3D11H264Picture::~D3D11H264Picture() {
 }
 
 D3D11H264Accelerator::D3D11H264Accelerator(D3D11VideoDecoderClient* client,
-                                           MediaLog* media_log,
-                                           ComD3D11VideoDevice video_device)
-    : D3DAccelerator(client, media_log, std::move(video_device)) {}
+                                           MediaLog* media_log)
+    : D3DAccelerator(client, media_log) {}
 
 D3D11H264Accelerator::~D3D11H264Accelerator() {}
 

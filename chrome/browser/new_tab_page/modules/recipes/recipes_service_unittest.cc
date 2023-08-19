@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/barrier_closure.h"
 #include "base/hash/hash.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
@@ -63,6 +64,7 @@ class RecipesServiceTest : public testing::Test {
 
 // Verifies correct parsing of well-formed JSON.
 TEST_F(RecipesServiceTest, GoodRecipeResponse) {
+  auto quit_closure = task_environment_.QuitClosure();
   auto fiveMonthsAgoTimestamp =
       (base::Time::Now() - base::Days(165) - base::Time::UnixEpoch())
           .InSeconds();
@@ -141,11 +143,13 @@ TEST_F(RecipesServiceTest, GoodRecipeResponse) {
   base::MockCallback<RecipesService::RecipesCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [&result](recipes::mojom::TaskPtr arg) { result = std::move(arg); }));
+      .WillOnce(testing::Invoke([&](recipes::mojom::TaskPtr arg) {
+        result = std::move(arg);
+        quit_closure.Run();
+      }));
 
   service_->GetPrimaryTask(callback.Get());
-  base::RunLoop().RunUntilIdle();
+  task_environment_.RunUntilQuit();
 
   ASSERT_TRUE(result);
   EXPECT_EQ("hello world", result->title);
@@ -176,6 +180,9 @@ TEST_F(RecipesServiceTest, GoodRecipeResponse) {
 
 // Verifies service can handle multiple in flight requests.
 TEST_F(RecipesServiceTest, MultiRequest) {
+  auto quit_closure = task_environment_.QuitClosure();
+  auto barrier_closure = base::BarrierClosure(2, quit_closure);
+
   test_url_loader_factory_.AddResponse(
       "https://www.google.com/async/newtab_recipe_tasks?hl=en-US",
       R"()]}'
@@ -211,8 +218,9 @@ TEST_F(RecipesServiceTest, MultiRequest) {
   base::MockCallback<RecipesService::RecipesCallback> callback1;
   EXPECT_CALL(callback1, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke([&result1](recipes::mojom::TaskPtr arg) {
+      .WillOnce(testing::Invoke([&](recipes::mojom::TaskPtr arg) {
         result1 = std::move(arg);
+        barrier_closure.Run();
       }));
   service_->GetPrimaryTask(callback1.Get());
 
@@ -220,12 +228,13 @@ TEST_F(RecipesServiceTest, MultiRequest) {
   base::MockCallback<RecipesService::RecipesCallback> callback2;
   EXPECT_CALL(callback2, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke([&result2](recipes::mojom::TaskPtr arg) {
+      .WillOnce(testing::Invoke([&](recipes::mojom::TaskPtr arg) {
         result2 = std::move(arg);
+        barrier_closure.Run();
       }));
   service_->GetPrimaryTask(callback2.Get());
 
-  base::RunLoop().RunUntilIdle();
+  task_environment_.RunUntilQuit();
 
   EXPECT_TRUE(result1);
   EXPECT_TRUE(result2);
@@ -236,6 +245,7 @@ TEST_F(RecipesServiceTest, MultiRequest) {
 
 // Verifies error if JSON is malformed.
 TEST_F(RecipesServiceTest, BadRecipeResponse) {
+  auto quit_closure = task_environment_.QuitClosure();
   test_url_loader_factory_.AddResponse(
       "https://www.google.com/async/newtab_recipe_tasks?hl=en-US",
       ")]}'{\"update\":{\"promotions\":{}}}");
@@ -244,11 +254,13 @@ TEST_F(RecipesServiceTest, BadRecipeResponse) {
   base::MockCallback<RecipesService::RecipesCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [&result](recipes::mojom::TaskPtr arg) { result = std::move(arg); }));
+      .WillOnce(testing::Invoke([&](recipes::mojom::TaskPtr arg) {
+        result = std::move(arg);
+        quit_closure.Run();
+      }));
 
   service_->GetPrimaryTask(callback.Get());
-  base::RunLoop().RunUntilIdle();
+  task_environment_.RunUntilQuit();
 
   ASSERT_FALSE(result);
   ASSERT_EQ(1, histogram_tester_.GetBucketCount(
@@ -258,6 +270,7 @@ TEST_F(RecipesServiceTest, BadRecipeResponse) {
 
 // Verifies error if no products.
 TEST_F(RecipesServiceTest, NoRecipes) {
+  auto quit_closure = task_environment_.QuitClosure();
   test_url_loader_factory_.AddResponse(
       "https://www.google.com/async/newtab_recipe_tasks?hl=en-US",
       R"()]}'
@@ -283,11 +296,13 @@ TEST_F(RecipesServiceTest, NoRecipes) {
   base::MockCallback<RecipesService::RecipesCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [&result](recipes::mojom::TaskPtr arg) { result = std::move(arg); }));
+      .WillOnce(testing::Invoke([&](recipes::mojom::TaskPtr arg) {
+        result = std::move(arg);
+        quit_closure.Run();
+      }));
 
   service_->GetPrimaryTask(callback.Get());
-  base::RunLoop().RunUntilIdle();
+  task_environment_.RunUntilQuit();
 
   ASSERT_FALSE(result);
   ASSERT_EQ(1, histogram_tester_.GetBucketCount(
@@ -297,6 +312,7 @@ TEST_F(RecipesServiceTest, NoRecipes) {
 
 // Verifies error if download fails.
 TEST_F(RecipesServiceTest, ErrorResponse) {
+  auto quit_closure = task_environment_.QuitClosure();
   test_url_loader_factory_.AddResponse(
       GURL("https://www.google.com/async/newtab_recipe_tasks?hl=en-US"),
       network::mojom::URLResponseHead::New(), std::string(),
@@ -306,11 +322,13 @@ TEST_F(RecipesServiceTest, ErrorResponse) {
   base::MockCallback<RecipesService::RecipesCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [&result](recipes::mojom::TaskPtr arg) { result = std::move(arg); }));
+      .WillOnce(testing::Invoke([&](recipes::mojom::TaskPtr arg) {
+        result = std::move(arg);
+        quit_closure.Run();
+      }));
 
   service_->GetPrimaryTask(callback.Get());
-  base::RunLoop().RunUntilIdle();
+  task_environment_.RunUntilQuit();
 
   ASSERT_FALSE(result);
   ASSERT_EQ(1, histogram_tester_.GetBucketCount(
@@ -321,6 +339,7 @@ TEST_F(RecipesServiceTest, ErrorResponse) {
 // Verifies recipe tasks can be dismissed and restored and that the service
 // remembers not to return dismissed tasks.
 TEST_F(RecipesServiceTest, DismissTasks) {
+  auto quit_closure = task_environment_.QuitClosure();
   test_url_loader_factory_.AddResponse(
       "https://www.google.com/async/newtab_recipe_tasks?hl=en-US",
       R"()]}'
@@ -377,66 +396,75 @@ TEST_F(RecipesServiceTest, DismissTasks) {
   base::MockCallback<RecipesService::RecipesCallback> callback1;
   EXPECT_CALL(callback1, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke([&result1](recipes::mojom::TaskPtr arg) {
+      .WillOnce(testing::Invoke([&](recipes::mojom::TaskPtr arg) {
         result1 = std::move(arg);
+        quit_closure.Run();
       }));
   service_->GetPrimaryTask(callback1.Get());
-  base::RunLoop().RunUntilIdle();
+  task_environment_.RunUntilQuit();
   ASSERT_TRUE(result1);
   EXPECT_EQ("task 1 name", result1->name);
 
   service_->DismissTask("task 1 name");
 
+  quit_closure = task_environment_.QuitClosure();
   recipes::mojom::TaskPtr result2;
   base::MockCallback<RecipesService::RecipesCallback> callback2;
   EXPECT_CALL(callback2, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke([&result2](recipes::mojom::TaskPtr arg) {
+      .WillOnce(testing::Invoke([&](recipes::mojom::TaskPtr arg) {
         result2 = std::move(arg);
+        quit_closure.Run();
       }));
   service_->GetPrimaryTask(callback2.Get());
-  base::RunLoop().RunUntilIdle();
+  task_environment_.RunUntilQuit();
   ASSERT_TRUE(result2);
   EXPECT_EQ("task 2 name", result2->name);
 
   service_->DismissTask("task 2 name");
 
+  quit_closure = task_environment_.QuitClosure();
   recipes::mojom::TaskPtr result3;
   base::MockCallback<RecipesService::RecipesCallback> callback3;
   EXPECT_CALL(callback3, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke([&result3](recipes::mojom::TaskPtr arg) {
+      .WillOnce(testing::Invoke([&](recipes::mojom::TaskPtr arg) {
         result3 = std::move(arg);
+        quit_closure.Run();
       }));
   service_->GetPrimaryTask(callback3.Get());
-  base::RunLoop().RunUntilIdle();
+  task_environment_.RunUntilQuit();
   ASSERT_FALSE(result3);
 
   service_->RestoreTask("task 2 name");
 
+  quit_closure = task_environment_.QuitClosure();
   recipes::mojom::TaskPtr result4;
   base::MockCallback<RecipesService::RecipesCallback> callback4;
   EXPECT_CALL(callback4, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke([&result4](recipes::mojom::TaskPtr arg) {
+      .WillOnce(testing::Invoke([&](recipes::mojom::TaskPtr arg) {
         result4 = std::move(arg);
+        quit_closure.Run();
       }));
   service_->GetPrimaryTask(callback4.Get());
-  base::RunLoop().RunUntilIdle();
+  task_environment_.RunUntilQuit();
   ASSERT_TRUE(result4);
   EXPECT_EQ("task 2 name", result4->name);
 
   service_->RestoreTask("task 1 name");
 
+  quit_closure = task_environment_.QuitClosure();
   recipes::mojom::TaskPtr result5;
   base::MockCallback<RecipesService::RecipesCallback> callback5;
   EXPECT_CALL(callback5, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke([&result5](recipes::mojom::TaskPtr arg) {
+      .WillOnce(testing::Invoke([&](recipes::mojom::TaskPtr arg) {
         result5 = std::move(arg);
+        quit_closure.Run();
       }));
   service_->GetPrimaryTask(callback5.Get());
-  base::RunLoop().RunUntilIdle();
+  task_environment_.RunUntilQuit();
   ASSERT_TRUE(result5);
   EXPECT_EQ("task 1 name", result5->name);
 
@@ -492,6 +520,7 @@ TEST_F(RecipesServiceTest, ExperimentGroupParam) {
 
 // Verifies that no data request is logged if load comes from cache.
 TEST_F(RecipesServiceTest, NoLogIfCached) {
+  auto quit_closure = task_environment_.QuitClosure();
   network::URLLoaderCompletionStatus status;
   status.exists_in_cache = true;
   test_url_loader_factory_.AddResponse(
@@ -531,12 +560,12 @@ TEST_F(RecipesServiceTest, NoLogIfCached) {
   base::MockCallback<RecipesService::RecipesCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(
-          testing::Invoke([&received_response](recipes::mojom::TaskPtr arg) {
-            received_response = static_cast<bool>(arg);
-          }));
+      .WillOnce(testing::Invoke([&](recipes::mojom::TaskPtr arg) {
+        received_response = static_cast<bool>(arg);
+        quit_closure.Run();
+      }));
   service_->GetPrimaryTask(callback.Get());
-  base::RunLoop().RunUntilIdle();
+  task_environment_.RunUntilQuit();
 
   EXPECT_TRUE(received_response);
   EXPECT_EQ(0, histogram_tester_.GetBucketCount(
@@ -556,6 +585,7 @@ class RecipesServiceModulesRedesignedTest : public RecipesServiceTest {
 
 // Verifies that dismiss is ignored.
 TEST_F(RecipesServiceModulesRedesignedTest, IgnoresDismiss) {
+  auto quit_closure = task_environment_.QuitClosure();
   test_url_loader_factory_.AddResponse(
       "https://www.google.com/async/newtab_recipe_tasks?hl=en-US",
       R"()]}'
@@ -591,13 +621,14 @@ TEST_F(RecipesServiceModulesRedesignedTest, IgnoresDismiss) {
   base::MockCallback<RecipesService::RecipesCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke([&passed_data](recipes::mojom::TaskPtr arg) {
+      .WillOnce(testing::Invoke([&](recipes::mojom::TaskPtr arg) {
         passed_data = (arg.get() != nullptr);
+        quit_closure.Run();
       }));
 
   service_->DismissTask("task name");
   service_->GetPrimaryTask(callback.Get());
-  base::RunLoop().RunUntilIdle();
+  task_environment_.RunUntilQuit();
 
   ASSERT_TRUE(passed_data);
 }

@@ -11,8 +11,13 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/device_notifications/device_pinned_notification_renderer.h"
+#include "chrome/browser/device_notifications/device_status_icon_renderer.h"
+#include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -20,8 +25,11 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/usb/chrome_usb_delegate.h"
+#include "chrome/browser/usb/usb_browser_test_utils.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
 #include "chrome/browser/usb/usb_chooser_controller.h"
+#include "chrome/browser/usb/usb_pinned_notification.h"
+#include "chrome/browser/usb/usb_status_icon.h"
 #include "chrome/browser/usb/web_usb_chooser.h"
 #include "chrome/browser/usb/web_usb_histograms.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
@@ -66,8 +74,10 @@ namespace {
 
 using ::base::test::TestFuture;
 using ::content::JsReplace;
+using ::extensions::Extension;
 using ::testing::Return;
 
+constexpr uint8_t kUsbPrinterClass = 7;
 constexpr char kNonAppHost[] = "nonapp.com";
 constexpr char kNonAppHost2[] = "nonapp2.com";
 constexpr char OpenAndClaimDeviceScript[] = R"((async () => {
@@ -93,106 +103,6 @@ const AccountId kManagedUserAccountId =
     AccountId::FromUserEmail("example@example.com");
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(IS_CHROMEOS_ASH)
 
-class FakeChooserView : public permissions::ChooserController::View {
- public:
-  explicit FakeChooserView(
-      std::unique_ptr<permissions::ChooserController> controller)
-      : controller_(std::move(controller)) {
-    controller_->set_view(this);
-  }
-
-  FakeChooserView(const FakeChooserView&) = delete;
-  FakeChooserView& operator=(const FakeChooserView&) = delete;
-
-  ~FakeChooserView() override { controller_->set_view(nullptr); }
-
-  void OnOptionsInitialized() override {
-    if (controller_->NumOptions())
-      controller_->Select({0});
-    else
-      controller_->Cancel();
-    delete this;
-  }
-
-  void OnOptionAdded(size_t index) override { NOTREACHED(); }
-  void OnOptionRemoved(size_t index) override { NOTREACHED(); }
-  void OnOptionUpdated(size_t index) override { NOTREACHED(); }
-  void OnAdapterEnabledChanged(bool enabled) override { NOTREACHED(); }
-  void OnRefreshStateChanged(bool refreshing) override { NOTREACHED(); }
-
- private:
-  std::unique_ptr<permissions::ChooserController> controller_;
-};
-
-class FakeUsbChooser : public WebUsbChooser {
- public:
-  FakeUsbChooser() = default;
-  FakeUsbChooser(const FakeUsbChooser&) = delete;
-  FakeUsbChooser& operator=(const FakeUsbChooser&) = delete;
-  ~FakeUsbChooser() override = default;
-
-  void ShowChooser(content::RenderFrameHost* frame,
-                   std::unique_ptr<UsbChooserController> controller) override {
-    // Device list initialization in UsbChooserController may complete before
-    // having a valid view in which case OnOptionsInitialized() has no chance to
-    // be triggered, so select the first option directly if options are ready.
-    if (controller->NumOptions())
-      controller->Select({0});
-    else
-      new FakeChooserView(std::move(controller));
-  }
-};
-
-class TestUsbDelegate : public ChromeUsbDelegate {
- public:
-  TestUsbDelegate() = default;
-  TestUsbDelegate(const TestUsbDelegate&) = delete;
-  TestUsbDelegate& operator=(const TestUsbDelegate&) = delete;
-  ~TestUsbDelegate() override = default;
-
-  std::unique_ptr<content::UsbChooser> RunChooser(
-      content::RenderFrameHost& frame,
-      std::vector<device::mojom::UsbDeviceFilterPtr> filters,
-      blink::mojom::WebUsbService::GetPermissionCallback callback) override {
-    if (use_fake_chooser_) {
-      auto chooser = std::make_unique<FakeUsbChooser>();
-      chooser->ShowChooser(
-          &frame, std::make_unique<UsbChooserController>(
-                      &frame, std::move(filters), std::move(callback)));
-      return chooser;
-    } else {
-      return ChromeUsbDelegate::RunChooser(frame, std::move(filters),
-                                           std::move(callback));
-    }
-  }
-
-  void UseFakeChooser() { use_fake_chooser_ = true; }
-
- private:
-  bool use_fake_chooser_ = false;
-};
-
-class TestContentBrowserClient : public ChromeContentBrowserClient {
- public:
-  TestContentBrowserClient()
-      : usb_delegate_(std::make_unique<TestUsbDelegate>()) {}
-  TestContentBrowserClient(const TestContentBrowserClient&) = delete;
-  TestContentBrowserClient& operator=(const TestContentBrowserClient&) = delete;
-  ~TestContentBrowserClient() override = default;
-
-  // ChromeContentBrowserClient:
-  content::UsbDelegate* GetUsbDelegate() override {
-    return usb_delegate_.get();
-  }
-
-  TestUsbDelegate& delegate() { return *usb_delegate_; }
-
-  void ResetUsbDelegate() { usb_delegate_.reset(); }
-
- private:
-  std::unique_ptr<TestUsbDelegate> usb_delegate_;
-};
-
 class ChromeWebUsbTest : public InProcessBrowserTest {
  public:
   void SetUpOnMainThread() override {
@@ -207,8 +117,7 @@ class ChromeWebUsbTest : public InProcessBrowserTest {
     UsbChooserContextFactory::GetForProfile(browser()->profile())
         ->SetDeviceManagerForTesting(std::move(device_manager));
 
-    original_content_browser_client_ =
-        content::SetBrowserClientForTesting(&test_content_browser_client_);
+    test_content_browser_client_.SetAsBrowserClient();
 
     GURL url = embedded_test_server()->GetURL("localhost", "/simple_page.html");
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -222,8 +131,7 @@ class ChromeWebUsbTest : public InProcessBrowserTest {
   }
 
   void TearDownOnMainThread() override {
-    test_content_browser_client_.ResetUsbDelegate();
-    content::SetBrowserClientForTesting(original_content_browser_client_);
+    test_content_browser_client_.UnsetAsBrowserClient();
   }
 
   void AddFakeDevice(const std::string& serial_number) {
@@ -251,8 +159,7 @@ class ChromeWebUsbTest : public InProcessBrowserTest {
  private:
   device::FakeUsbDeviceManager device_manager_;
   device::mojom::UsbDeviceInfoPtr fake_device_info_;
-  TestContentBrowserClient test_content_browser_client_;
-  raw_ptr<content::ContentBrowserClient> original_content_browser_client_;
+  TestUsbContentBrowserClient test_content_browser_client_;
   GURL origin_;
 };
 
@@ -620,7 +527,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUsbBrowserTest, ClaimInterface) {
                                            *smart_card_device_info);
 
   const uint16_t kPrinterProductId = 0x5678;
-  auto fake_printer_device_info = CreateUsbDevice(0x7, kPrinterProductId);
+  auto fake_printer_device_info =
+      CreateUsbDevice(kUsbPrinterClass, kPrinterProductId);
   auto printer_device_info =
       device_manager().AddDevice(std::move(fake_printer_device_info));
   chooser_context()->GrantDevicePermission(
@@ -651,9 +559,10 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUsbBrowserTest, ClaimInterface) {
 
   EXPECT_EQ("Success", EvalJs(delegated_non_app_iframe,
                               JsReplace(kClaimInterface, kPrinterProductId)));
-  // TODO(b/280497768): This should fail with a "protected class" error.
-  EXPECT_EQ("Success", EvalJs(delegated_non_app_iframe,
-                              JsReplace(kClaimInterface, kSmartCardProductId)));
+  EXPECT_THAT(
+      EvalJs(delegated_non_app_iframe,
+             JsReplace(kClaimInterface, kSmartCardProductId)),
+      FailedWithSubstr("requested interface implements a protected class"));
 }
 
 class IsolatedWebAppPermissionsPolicyBrowserTest
@@ -758,7 +667,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   web_app::CreateIframe(app_frame, "child", non_app_url, permissions_policy);
   auto* iframe = ChildFrameAt(app_frame, 0);
 
-  auto fake_device_info = CreateUsbDevice(device::mojom::kUsbSmartCardClass);
+  auto fake_device_info = CreateUsbDevice(kUsbPrinterClass);
   auto device_info = device_manager().AddDevice(std::move(fake_device_info));
   chooser_context()->GrantDevicePermission(app_frame->GetLastCommittedOrigin(),
                                            *device_info);
@@ -827,7 +736,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   web_app::CreateIframe(app_frame, "child", non_app_url, permissions_policy);
   auto* iframe = ChildFrameAt(app_frame, 0);
 
-  auto fake_device_info = CreateUsbDevice(device::mojom::kUsbSmartCardClass);
+  auto fake_device_info = CreateUsbDevice(kUsbPrinterClass);
   auto device_info = device_manager().AddDevice(std::move(fake_device_info));
   chooser_context()->GrantDevicePermission(app_frame->GetLastCommittedOrigin(),
                                            *device_info);
@@ -936,7 +845,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   web_app::CreateIframe(app_frame, "child", app_url, permissions_policy);
   auto* iframe = ChildFrameAt(app_frame, 0);
 
-  auto fake_device_info = CreateUsbDevice(device::mojom::kUsbSmartCardClass);
+  auto fake_device_info = CreateUsbDevice(kUsbPrinterClass);
   auto device_info = device_manager().AddDevice(std::move(fake_device_info));
   chooser_context()->GrantDevicePermission(app_frame->GetLastCommittedOrigin(),
                                            *device_info);
@@ -983,6 +892,12 @@ class WebUsbExtensionBrowserTest : public extensions::ExtensionBrowserTest {
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(fake_user_manager));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS)
+    display_service_for_system_notification_ =
+        std::make_unique<NotificationDisplayServiceTester>(
+            /*profile=*/nullptr);
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   void TearDownOnMainThread() override {
@@ -1020,7 +935,7 @@ class WebUsbExtensionBrowserTest : public extensions::ExtensionBrowserTest {
             kPolicyTemplate, extension->url().spec().c_str())));
   }
 
-  void LoadExtensionAndRunTest(base::StringPiece background_js) {
+  const Extension* LoadExtensionAndRunTest(base::StringPiece background_js) {
     constexpr char kManifestTemplate[] =
         R"({
               "name": "Test Extension",
@@ -1049,6 +964,8 @@ class WebUsbExtensionBrowserTest : public extensions::ExtensionBrowserTest {
     EXPECT_TRUE(ready_listener.WaitUntilSatisfied());
     ready_listener.Reply("ok");
     EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+
+    return extension;
   }
 
   void AddFakeDevice() {
@@ -1056,8 +973,64 @@ class WebUsbExtensionBrowserTest : public extensions::ExtensionBrowserTest {
                                        "Test Device", "123456");
   }
 
+  void SimulateClickOnSystemTrayIconButton(Browser* browser,
+                                           const Extension* extension) {
+#if BUILDFLAG(IS_CHROMEOS)
+    auto* usb_pinned_notification = static_cast<UsbPinnedNotification*>(
+        g_browser_process->usb_system_tray_icon());
+
+    auto* device_pinned_notification_renderer =
+        static_cast<DevicePinnedNotificationRenderer*>(
+            usb_pinned_notification->GetIconRendererForTesting());
+
+    auto expected_pinned_notification_id =
+        device_pinned_notification_renderer->GetNotificationId(
+            browser->profile());
+    auto maybe_indicator_notification =
+        display_service_for_system_notification_->GetNotification(
+            expected_pinned_notification_id);
+    ASSERT_TRUE(maybe_indicator_notification);
+    EXPECT_TRUE(maybe_indicator_notification->pinned());
+    display_service_for_system_notification_->SimulateClick(
+        NotificationHandler::Type::TRANSIENT, expected_pinned_notification_id,
+        /*action_index=*/0, /*reply=*/absl::nullopt);
+    auto* web_contents = browser->tab_strip_model()->GetActiveWebContents();
+    EXPECT_EQ(web_contents->GetURL(), "chrome://settings/content/usbDevices");
+#else
+    // On non-ChromeOS platforms, as they use status icon and there isn't good
+    // test infra to simulate click on the status icon button, so simulate the
+    // click event by invoking ExecuteCommand of UsbConnectionTracker directly.
+    auto* usb_status_icon =
+        static_cast<UsbStatusIcon*>(g_browser_process->usb_system_tray_icon());
+
+    auto* status_icon_renderer = static_cast<DeviceStatusIconRenderer*>(
+        usb_status_icon->GetIconRendererForTesting());
+
+    status_icon_renderer->ExecuteCommandForTesting(
+        IDC_DEVICE_SYSTEM_TRAY_ICON_FIRST, 0);
+    EXPECT_EQ(browser->tab_strip_model()->GetActiveWebContents()->GetURL(),
+              "https://support.google.com/chrome?p=webusb");
+
+    status_icon_renderer->ExecuteCommandForTesting(
+        IDC_DEVICE_SYSTEM_TRAY_ICON_FIRST + 1, 0);
+    EXPECT_EQ(browser->tab_strip_model()->GetActiveWebContents()->GetURL(),
+              "chrome://settings/content/usbDevices");
+
+    status_icon_renderer->ExecuteCommandForTesting(
+        IDC_DEVICE_SYSTEM_TRAY_ICON_FIRST + 2, 0);
+    EXPECT_EQ(
+        browser->tab_strip_model()->GetActiveWebContents()->GetURL(),
+        "chrome://settings/content/siteDetails?site=chrome-extension%3A%2F%2F" +
+            extension->id());
+#endif
+  }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+#if BUILDFLAG(IS_CHROMEOS)
+  std::unique_ptr<NotificationDisplayServiceTester>
+      display_service_for_system_notification_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
  private:
   device::FakeUsbDeviceManager device_manager_;
@@ -1144,6 +1117,34 @@ IN_PROC_BROWSER_TEST_F(WebUsbExtensionFeatureEnabledBrowserTest,
     });
   )";
   LoadExtensionAndRunTest(kBackgroundJs);
+}
+
+IN_PROC_BROWSER_TEST_F(WebUsbExtensionFeatureEnabledBrowserTest,
+                       UsbConnectionTracker) {
+  constexpr char kBackgroundJs[] = R"(
+    // |device| is a global variable to store UsbDevice object being tested in
+    // case the local one is garbage collected, which can close the connection.
+    var device;
+    chrome.test.sendMessage("ready", async () => {
+      try {
+        const devices = await navigator.usb.getDevices();
+        device = devices[0];
+        chrome.test.assertEq(1, devices.length);
+        // Bounce device a few times to make sure nothing unexpected happens.
+        await device.open();
+        await device.close();
+        await device.open();
+        await device.close();
+        await device.open();
+        chrome.test.notifyPass();
+      } catch (e) {
+        chrome.test.fail(e.name + ':' + e.message);
+      }
+    });
+  )";
+  AddFakeDevice();
+  const auto* extension = LoadExtensionAndRunTest(kBackgroundJs);
+  SimulateClickOnSystemTrayIconButton(browser(), extension);
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 

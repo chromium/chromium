@@ -1,5 +1,5 @@
 <!--
-Copyright 2023 The Chromium Authors
+Copyright 2024 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
@@ -8,8 +8,21 @@ found in the LICENSE file.
 
 <histograms>
 
+<histogram name="StructuredMetrics.ExternalMetricsDropped" units="count"
+    expires_after="2024-07-14">
+  <owner>andrewbregger@google.com</owner>
+  <owner>jongahn@google.com</owner>
+  <owner>chromeos-data-eng@google.com</owner>
+  <owner>chrome-metrics-team@google.com</owner>
+  <summary>
+    The number of events that are dropped when processing External Metrics.
+    Events are dropped once a threshold, 50 by default, is reached. This field
+    is only recorded when recording is enabled.
+  </summary>
+</histogram>
+
 <histogram name="StructuredMetrics.InitSequence" enum="UmaInitSequence"
-    expires_after="2023-07-31">
+    expires_after="2024-07-14">
   <owner>andrewbregger@google.com</owner>
   <owner>jongahn@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
@@ -24,7 +37,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="StructuredMetrics.LogStore.CompressionRatio" units="%"
-    expires_after="2023-07-31">
+    expires_after="2024-07-14">
   <owner>andrewbregger@google.com</owner>
   <owner>jongahn@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
@@ -36,7 +49,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="StructuredMetrics.LogStore.Dropped" units="logs"
-    expires_after="2023-07-31">
+    expires_after="2024-07-14">
   <owner>andrewbregger@google.com</owner>
   <owner>jongahn@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
@@ -49,7 +62,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="StructuredMetrics.LogStore.DroppedSize" units="KB"
-    expires_after="2023-07-31">
+    expires_after="2024-07-14">
   <owner>andrewbregger@google.com</owner>
   <owner>jongahn@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
@@ -62,7 +75,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="StructuredMetrics.Reporting.ActualUploadInterval"
-    units="minutes" expires_after="2023-07-31">
+    units="minutes" expires_after="2024-07-14">
   <owner>andrewbregger@google.com</owner>
   <owner>jongahn@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
@@ -75,7 +88,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="StructuredMetrics.Reporting.HTTPErrorCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-07-31">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-07-14">
   <owner>andrewbregger@google.com</owner>
   <owner>jongahn@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
@@ -87,7 +100,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="StructuredMetrics.Reporting.HTTPResponseCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-07-31">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-07-14">
   <owner>andrewbregger@google.com</owner>
   <owner>jongahn@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
@@ -99,7 +112,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="StructuredMetrics.Reporting.LogSize.OnSuccess" units="KB"
-    expires_after="2023-07-31">
+    expires_after="2024-07-14">
   <owner>andrewbregger@google.com</owner>
   <owner>jongahn@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
@@ -111,13 +124,26 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="StructuredMetrics.Reporting.LogSize.RejectedSize" units="KB"
-    expires_after="2023-07-31">
+    expires_after="2024-07-14">
   <owner>andrewbregger@google.com</owner>
   <owner>jongahn@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
   <owner>chrome-metrics-team@google.com</owner>
   <summary>
     Size in kilobytes (after compression) of a log rejected for being to large.
+  </summary>
+</histogram>
+
+<histogram name="StructuredMetrics.UploadSize" units="bytes"
+    expires_after="2024-07-14">
+  <owner>andrewbregger@google.com</owner>
+  <owner>jongahn@google.com</owner>
+  <owner>chromeos-data-eng@google.com</owner>
+  <owner>chrome-metrics-team@google.com</owner>
+  <summary>
+    The serialized size in bytes of the Structured Metrics payload attached to
+    UMA. This correlates to the amount of memory Structured Metrics uses during
+    an upload by UMA.
   </summary>
 </histogram>
 

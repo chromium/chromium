@@ -116,19 +116,20 @@ void NotificationSurface::OnWindowRemovingFromRootWindow(
     aura::Env::GetInstance()
         ->context_factory()
         ->GetHostFrameSinkManager()
-        ->EvictSurfaces({host_window()->GetSurfaceId()});
+        ->EvictSurfaces({GetSurfaceId()});
 
-    // Allocate a new local surface id for the next compositor frame.
+    // Allocate a new local surface id, with a new parent portion for the next
+    // compositor frame.
     host_window()->AllocateLocalSurfaceId();
+    UpdateLocalSurfaceIdFromParent(host_window()->GetLocalSurfaceId());
 
     is_embedded_ = false;
 
-    // Set the deadline to default so Viz waits a while for the notification
-    // compositor frame to arrive before showing the message center.
-    host_window()->layer()->SetShowSurface(
-        host_window()->GetSurfaceId(), host_window()->bounds().size(),
-        SK_ColorWHITE, cc::DeadlinePolicy::UseDefaultDeadline(),
-        /*stretch_content_to_fill_bounds=*/false);
+    // Upon closing the message center, there is layer cloning which ends up
+    // setting the deadline to 0 frames. Set the deadline to default so Viz
+    // waits a while for the notification compositor frame to arrive before
+    // showing the message center.
+    MaybeActivateSurface();
   }
 }
 

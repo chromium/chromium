@@ -9,16 +9,19 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/core/clipboard/data_object.h"
+#include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/file_metadata.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
 TEST(WebDragDataTest, items) {
+  ScopedNullExecutionContext context;
   DataObject* data_object = DataObject::Create();
 
   // Native file.
-  data_object->Add(MakeGarbageCollected<File>("/native/path"));
+  data_object->Add(MakeGarbageCollected<File>(&context.GetExecutionContext(),
+                                              "/native/path"));
   // Blob file.
   data_object->Add(MakeGarbageCollected<File>("name", base::Time::UnixEpoch(),
                                               BlobDataHandle::Create()));

@@ -1,0 +1,14 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+blink_core_sources_lcp_critical_path_predictor = [
+  "element_locator.cc",
+  "element_locator.h",
+  "lcp_critical_path_predictor.cc",
+  "lcp_critical_path_predictor.h",
+  "lcp_script_observer.cc",
+  "lcp_script_observer.h",
+]
+
+blink_core_tests_lcp_critical_path_predictor = [ "element_locator_test.cc" ]

@@ -43,7 +43,10 @@
   },
   "$build/reclient": {
     "bootstrap_env": {
-      "GOMA_COMPILER_PROXY_ENABLE_CRASH_DUMP": "true"
+      "GOMA_COMPILER_PROXY_ENABLE_CRASH_DUMP": "true",
+      "GOMA_DEPS_CACHE_TABLE_THRESHOLD": "40000",
+      "RBE_fast_log_collection": "true",
+      "RBE_use_unified_uploads": "true"
     },
     "instance": "rbe-chromium-trusted",
     "metrics_project": "chromium-reclient-metrics",

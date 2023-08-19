@@ -3,8 +3,6 @@
 <translationbundle lang="no">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> av fanene dine er ikke brukt i det siste. Vil du lukke dem?</translation>
 <translation id="125153950246128346">Trykk for å se en annen fane</translation>
-<translation id="1403228085774130835">Du finner de lukkede fanene dine under Nylige faner på hovedmenyen i Chrome</translation>
-<translation id="1455506303394048917">Aktiviteten din på disse inkognitofanene blir fjernet fra enheten</translation>
 <translation id="1499635324672558517">Vil du lukke alle inkognitofaner?</translation>
 <translation id="1657719826150349398">Flytt fanen nedover</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> fane}other{<ph name="TABS_COUNT_MANY" /> faner}}</translation>
@@ -47,6 +45,7 @@
 <translation id="5073204694187207510">Skjul fullskjermrutenett</translation>
 <translation id="5076161749301278626">Vil du se butikkanmeldelser?</translation>
 <translation id="5082793167783849073">Sammenlign sider raskt ved å lage en gruppe. For å begynne, trykk og hold på en link.</translation>
+<translation id="5339733443032484186">Den siste fanen du brukte</translation>
 <translation id="5490235265819901748">Fanegruppen er utvidet</translation>
 <translation id="5494920125229734069">Velg alle</translation>
 <translation id="5556417849629758491">Vis butikkinformasjon – alternativet er tilgjengelig nær toppen av skjermen</translation>
@@ -62,10 +61,12 @@
 <translation id="6228793724645064692">(butikkvurdering)</translation>
 <translation id="6333260925957816943">Informasjon om denne butikken</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Opphev grupperingen av <ph name="TABS_COUNT_ONE" /> valgt fane}other{Opphev grupperingen av <ph name="TABS_COUNT_MANY" /> valgte faner}}</translation>
+<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Du finner de lukkede fanene dine under Nylige faner på hovedmenyen i Chrome. Inkognitofanen din kommer ikke til å være tilgjengelig.}other{Du finner de lukkede fanene dine under Nylige faner på hovedmenyen i Chrome. De # inkognitofanene dine kommer ikke til å være tilgjengelige.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> fane}other{<ph name="TABS_COUNT_MANY" /> faner}}</translation>
 <translation id="6549021453810473782">Se butikkinformasjon</translation>
 <translation id="6562820390860419811">Flytt fanen mot venstre</translation>
 <translation id="6615455863669487791">Vis meg</translation>
+<translation id="661742612106409204">Du finner de lukkede fanene dine under Nylige faner på hovedmenyen i Chrome.</translation>
 <translation id="6840760312327750441">For å gruppere faner, trykk og hold på en fane. Dra den deretter oppå en annen fane.</translation>
 <translation id="6856809498882026482">Skjul flervalgsmodus</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Del fanen}other{Del fanene}}</translation>
@@ -89,6 +90,7 @@
 <translation id="8398929769197326728">Ny mappe – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">Utvid fanegruppen med <ph name="NUMBER_OF_TABS" /> faner.</translation>
 <translation id="8714939927607906138">Lavere pris</translation>
+<translation id="8730999928494395583">Aktiviteten din på disse inkognitofanene blir fjernet fra denne enheten</translation>
 <translation id="8820741577754260431">Se avslag på fanene dine</translation>
 <translation id="9090098097337832354">Informasjon om denne butikken er lukket</translation>
 <translation id="9150694013019234766">Bytt mellom faner i fanegruppen på nedre del av skjermen</translation>

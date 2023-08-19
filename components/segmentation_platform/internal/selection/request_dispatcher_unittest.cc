@@ -11,10 +11,19 @@
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/segmentation_platform/internal/constants.h"
+#include "components/segmentation_platform/internal/database/cached_result_writer.h"
 #include "components/segmentation_platform/internal/database/config_holder.h"
+#include "components/segmentation_platform/internal/database/signal_database.h"
+#include "components/segmentation_platform/internal/database/signal_storage_config.h"
+#include "components/segmentation_platform/internal/database/storage_service.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
+#include "components/segmentation_platform/internal/mock_ukm_data_manager.h"
 #include "components/segmentation_platform/internal/post_processor/post_processing_test_utils.h"
 #include "components/segmentation_platform/internal/selection/request_handler.h"
 #include "components/segmentation_platform/internal/selection/segment_result_provider.h"
@@ -87,13 +96,27 @@ class RequestDispatcherTest : public testing::Test {
     configs.emplace_back(test_utils::CreateTestConfig(
         kDeviceSwitcherClient,
         SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_DEVICE_SWITCHER));
+    configs.back()->auto_execute_and_cache = false;
     configs.emplace_back(test_utils::CreateTestConfig(
         kAdaptiveToolbarClient,
         SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_ADAPTIVE_TOOLBAR));
-    config_holder_ = std::make_unique<ConfigHolder>(std::move(configs));
+    configs.back()->auto_execute_and_cache = false;
+    auto config_holder = std::make_unique<ConfigHolder>(std::move(configs));
+
+    prefs_.registry()->RegisterStringPref(kSegmentationClientResultPrefs,
+                                          std::string());
+    client_result_prefs_ = std::make_unique<ClientResultPrefs>(&prefs_);
+    auto cached_result_writer = std::make_unique<CachedResultWriter>(
+        std::make_unique<ClientResultPrefs>(&prefs_), &clock_);
+    cached_result_writer_ = cached_result_writer.get();
+    storage_service_ = std::make_unique<StorageService>(
+        nullptr, nullptr, nullptr, nullptr, nullptr, std::move(config_holder),
+        &ukm_data_manager_);
+    storage_service_->set_cached_result_writer_for_testing(
+        std::move(cached_result_writer));
 
     request_dispatcher_ =
-        std::make_unique<RequestDispatcher>(config_holder_.get(), nullptr);
+        std::make_unique<RequestDispatcher>(storage_service_.get());
 
     auto handler1 = std::make_unique<MockRequestHandler>();
     request_handler1_ = handler1.get();
@@ -125,9 +148,14 @@ class RequestDispatcherTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  std::unique_ptr<ConfigHolder> config_holder_;
+  base::SimpleTestClock clock_;
+  TestingPrefServiceSimple prefs_;
+  std::unique_ptr<ClientResultPrefs> client_result_prefs_;
+  MockUkmDataManager ukm_data_manager_;
+  std::unique_ptr<StorageService> storage_service_;
   raw_ptr<MockRequestHandler, DanglingUntriaged> request_handler1_ = nullptr;
   raw_ptr<MockRequestHandler, DanglingUntriaged> request_handler2_ = nullptr;
+  raw_ptr<CachedResultWriter> cached_result_writer_;
   std::unique_ptr<RequestDispatcher> request_dispatcher_;
 };
 
@@ -302,6 +330,18 @@ TEST_F(RequestDispatcherTest,
   // The last request should be dispatched.
   run_loop_2.Run();
   EXPECT_EQ(0, request_dispatcher_->GetPendingActionCountForTesting());
+
+  absl::optional<proto::ClientResult> result1_from_pref =
+      client_result_prefs_->ReadClientResultFromPrefs(kDeviceSwitcherClient);
+  ASSERT_TRUE(result1_from_pref);
+  EXPECT_EQ(result1_from_pref->client_result().SerializeAsString(),
+            raw_result1.result.SerializeAsString());
+
+  absl::optional<proto::ClientResult> result2_from_pref =
+      client_result_prefs_->ReadClientResultFromPrefs(kAdaptiveToolbarClient);
+  ASSERT_TRUE(result2_from_pref);
+  EXPECT_EQ(result2_from_pref->client_result().SerializeAsString(),
+            raw_result2.result.SerializeAsString());
 }
 
 TEST_F(RequestDispatcherTest, TestRequestAfterInitSuccessAndModelsLoaded) {

@@ -65,13 +65,13 @@ struct EnrollmentConfig {
     // Forced enrollment triggered as a fallback to attestation re-enrollment,
     // user can't skip.
     MODE_ATTESTATION_MANUAL_FALLBACK = 11,
-    // Deprecated: Demo mode does not support offline enrollment.
+    // Deprecated. Demo mode does not support offline enrollment.
     // Enrollment for offline demo mode with locally stored policy data.
-    MODE_OFFLINE_DEMO_DEPRECATED = 12,
-    // Obsolete. Flow that happens when already enrolled device undergoes
+    DEPRECATED_MODE_OFFLINE_DEMO = 12,
+    // Deprecated. Flow that happens when already enrolled device undergoes
     // version rollback. Enrollment information is preserved during rollback,
     // but some steps have to be repeated as stateful partition was wiped.
-    OBSOLETE_MODE_ENROLLED_ROLLBACK = 13,
+    DEPRECATED_MODE_ENROLLED_ROLLBACK = 13,
     // Server-backed-state-triggered forced initial enrollment, user can't
     // skip.
     MODE_INITIAL_SERVER_FORCED = 14,
@@ -246,6 +246,10 @@ struct EnrollmentConfig {
   // The path for the device policy blob data for the offline demo mode. This
   // should be empty and never used for other modes.
   base::FilePath offline_policy_path;
+
+  // User's email which can be passed from the Gaia screen in the enrollment
+  // nudge flow.
+  std::string enrollment_nudge_email;
 };
 
 }  // namespace policy

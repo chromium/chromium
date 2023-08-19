@@ -16,6 +16,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/models/image_model.h"
+#include "ui/gfx/text_constants.h"
 
 namespace ash {
 
@@ -64,8 +65,22 @@ class ASH_EXPORT ClipboardHistoryItem {
     return display_image_;
   }
   const std::u16string& display_text() const { return display_text_; }
-  const absl::optional<ui::ImageModel>& icon() const { return icon_; }
+  const absl::optional<gfx::ElideBehavior>& display_text_elide_behavior()
+      const {
+    return display_text_elide_behavior_;
+  }
+  const absl::optional<size_t>& display_text_max_lines() const {
+    return display_text_max_lines_;
+  }
   size_t file_count() const { return file_count_; }
+  const absl::optional<ui::ImageModel>& icon() const { return icon_; }
+  const absl::optional<std::u16string>& secondary_display_text() const {
+    return secondary_display_text_;
+  }
+  void set_secondary_display_text(
+      const absl::optional<std::u16string>& secondary_display_text) {
+    secondary_display_text_ = secondary_display_text;
+  }
 
  private:
   // Unique identifier.
@@ -94,12 +109,26 @@ class ASH_EXPORT ClipboardHistoryItem {
   // The text that should be displayed on this item's menu entry.
   const std::u16string display_text_;
 
+  // TODO(http://b/275629173): Consider a new display format for URLs instead.
+  // If present, overrides elide behavior for the text that should be displayed
+  // on this item's menu entry.
+  const absl::optional<gfx::ElideBehavior> display_text_elide_behavior_;
+
+  // TODO(http://b/275629173): Consider a new display format for URLs instead.
+  // If present, overrides max lines for the text that should be displayed on
+  // this item's menu entry.
+  const absl::optional<size_t> display_text_max_lines_;
+
+  // Indicates the count of copied files in the underlying clipboard data.
+  const size_t file_count_;
+
   // Cached image model for the item's icon. Currently, there will be no value
   // for non-file items.
   const absl::optional<ui::ImageModel> icon_;
 
-  // Indicates the count of copied files in the underlying clipboard data.
-  const size_t file_count_;
+  // The text, if any, that should be displayed underneath `display_text_` on
+  // this item's menu entry.
+  absl::optional<std::u16string> secondary_display_text_;
 
   // Mutable to allow const access from `AddDisplayImageUpdatedCallback()`.
   mutable base::RepeatingClosureList display_image_updated_callbacks_;

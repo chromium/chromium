@@ -9,24 +9,29 @@
 #include "base/check_op.h"
 #include "components/user_manager/user_manager.h"
 
-namespace user_manager {
+namespace user_manager::internal {
 
-ScopedUserManager::ScopedUserManager(std::unique_ptr<UserManager> user_manager)
-    : user_manager_(std::move(user_manager)) {
-  if (UserManager::GetForTesting())
-    UserManager::GetForTesting()->Shutdown();
+ScopedUserManagerImpl::ScopedUserManagerImpl() = default;
+ScopedUserManagerImpl::~ScopedUserManagerImpl() = default;
 
-  previous_user_manager_ = UserManager::SetForTesting(user_manager_.get());
+void ScopedUserManagerImpl::Reset(std::unique_ptr<UserManager> user_manager) {
+  if (user_manager_) {
+    // This already overwrites the global UserManager, restore the original one.
+    DCHECK_EQ(UserManager::Get(), user_manager_.get());
+    user_manager_->Shutdown();
+    user_manager_.reset();
+    UserManager::SetForTesting(std::exchange(previous_user_manager_, nullptr));
+  }
+
+  DCHECK(!previous_user_manager_);
+  if (user_manager) {
+    previous_user_manager_ = UserManager::GetForTesting();
+    if (previous_user_manager_) {
+      previous_user_manager_->Shutdown();
+    }
+    user_manager_ = std::move(user_manager);
+    UserManager::SetForTesting(user_manager_.get());
+  }
 }
 
-ScopedUserManager::~ScopedUserManager() {
-  DCHECK_EQ(UserManager::Get(), user_manager_.get());
-
-  // Shutdown and destroy current UserManager instance that we track.
-  UserManager::Get()->Shutdown();
-  UserManager::Get()->Destroy();
-
-  UserManager::SetForTesting(previous_user_manager_);
-}
-
-}  // namespace user_manager
+}  // namespace user_manager::internal

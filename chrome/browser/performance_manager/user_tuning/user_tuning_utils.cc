@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -21,11 +22,11 @@ bool IsRefreshRateThrottled() {
   return false;
 #else
   // This can be false in unit tests.
-  if (!UserPerformanceTuningManager::HasInstance()) {
+  if (!BatterySaverModeManager::HasInstance()) {
     return false;
   }
 
-  return UserPerformanceTuningManager::GetInstance()->IsBatterySaverActive();
+  return BatterySaverModeManager::GetInstance()->IsBatterySaverActive();
 #endif
 }
 

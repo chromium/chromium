@@ -8,10 +8,7 @@ import("//build/config/ios/swift_source_set.gni")
 
 source_set("objc_interop_tests") {
   testonly = true
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   sources = [ "objc_xctest.mm" ]
   deps = [ "//base" ]
   frameworks = [ "Foundation.framework" ]
@@ -60,7 +57,6 @@ swift_source_set("swift_interop_tests") {
 ios_app_bundle("ios_swift_interop_xcuitests") {
   testonly = true
   info_plist = "host-Info.plist"
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "test_host.mm" ]
   frameworks = [ "UIKit.framework" ]
 }

@@ -26,7 +26,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -135,12 +134,6 @@ public class MostVisitedMediatorUnitTest {
         Profile.setLastUsedProfileForTesting(mProfile);
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
-    }
-
-    @After
-    public void tearDown() {
-        Profile.setLastUsedProfileForTesting(null);
-        TemplateUrlServiceFactory.setInstanceForTesting(null);
     }
 
     @Test
@@ -274,7 +267,7 @@ public class MostVisitedMediatorUnitTest {
     public void testSetPortraitPaddings_NonScrollableMVT() {
         mConfiguration.orientation = Configuration.ORIENTATION_PORTRAIT;
         createMediator(/*isScrollableMVTEnabled=*/false,
-                /*isMultiColumnFeedOnTabletEnabled=*/false);
+                /*isNtpAsHomeSurfaceEnabled=*/false);
         mMediator.onTileDataChanged();
         Assert.assertNull(mModel.get(HORIZONTAL_EDGE_PADDINGS));
         Assert.assertNull(mModel.get(HORIZONTAL_INTERVAL_PADDINGS));
@@ -296,7 +289,7 @@ public class MostVisitedMediatorUnitTest {
     public void testSetLandscapePaddings_NonScrollableMVT() {
         mConfiguration.orientation = Configuration.ORIENTATION_LANDSCAPE;
         createMediator(/*isScrollableMVTEnabled=*/false,
-                /*isMultiColumnFeedOnTabletEnabled=*/false);
+                /*isNtpAsHomeSurfaceEnabled=*/false);
         mMediator.onTileDataChanged();
 
         Assert.assertNull(mModel.get(HORIZONTAL_EDGE_PADDINGS));
@@ -316,7 +309,7 @@ public class MostVisitedMediatorUnitTest {
     @Test
     public void testUpdateTilesViewForCarouselLayout() {
         mConfiguration.orientation = Configuration.ORIENTATION_PORTRAIT;
-        createMediator(/*isScrollableMVTEnabled=*/true, /*isMultiColumnFeedOnTabletEnabled=*/true);
+        createMediator(/*isScrollableMVTEnabled=*/true, /*isNtpAsHomeSurfaceEnabled=*/true);
         mMediator.onTileDataChanged();
         Assert.assertEquals("The horizontal edge padding passed to the model is wrong", 0,
                 (int) mModel.get(HORIZONTAL_EDGE_PADDINGS));
@@ -325,7 +318,7 @@ public class MostVisitedMediatorUnitTest {
                 mModel.get(UPDATE_INTERVAL_PADDINGS_TABLET));
 
         mConfiguration.orientation = Configuration.ORIENTATION_LANDSCAPE;
-        createMediator(/*isScrollableMVTEnabled=*/true, /*isMultiColumnFeedOnTabletEnabled=*/true);
+        createMediator(/*isScrollableMVTEnabled=*/true, /*isNtpAsHomeSurfaceEnabled=*/true);
         mMediator.onTileDataChanged();
         Assert.assertEquals("The horizontal edge padding passed to the model is wrong", 0,
                 (int) mModel.get(HORIZONTAL_EDGE_PADDINGS));
@@ -338,8 +331,7 @@ public class MostVisitedMediatorUnitTest {
         createMediator(true, false);
     }
 
-    private void createMediator(
-            boolean isScrollableMVTEnabled, boolean isMultiColumnFeedOnTabletEnabled) {
+    private void createMediator(boolean isScrollableMVTEnabled, boolean isNtpAsHomeSurfaceEnabled) {
         if (!isScrollableMVTEnabled) {
             mMvTilesLayout = Mockito.mock(MostVisitedTilesGridLayout.class);
         } else {
@@ -354,7 +346,7 @@ public class MostVisitedMediatorUnitTest {
         mMediator = new MostVisitedTilesMediator(mResources, mUiConfig, mMvTilesLayout,
                 mNoMvPlaceholderStub, mTileRenderer, mModel, false, isScrollableMVTEnabled, false,
                 mSnapshotTileGridChangedRunnable, mTileCountChangedRunnable,
-                isMultiColumnFeedOnTabletEnabled);
+                isNtpAsHomeSurfaceEnabled);
         mMediator.initWithNative(mSuggestionsUiDelegate, mContextMenuManager, mTileGroupDelegate,
                 mOfflinePageBridge, mTileRenderer);
     }

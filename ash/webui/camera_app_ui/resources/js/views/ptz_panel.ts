@@ -7,7 +7,6 @@ import {ClearableAsyncJobQueue} from '../async_job_queue.js';
 import * as dom from '../dom.js';
 import {SvgWrapper} from '../lit/svg_wrapper.js';
 import * as metrics from '../metrics.js';
-import * as nav from '../nav.js';
 import * as state from '../state.js';
 import * as tooltip from '../tooltip.js';
 import {ViewName} from '../type.js';
@@ -156,14 +155,10 @@ export class PTZPanel extends View {
   private isDigitalZoom = false;
 
   constructor() {
-    super(
-        ViewName.PTZ_PANEL,
-        {dismissByEsc: true, dismissByBackgroundClick: true});
-
-    state.addObserver(state.State.STREAMING, (streaming) => {
-      if (!streaming && state.get(this.name)) {
-        nav.close(this.name);
-      }
+    super(ViewName.PTZ_PANEL, {
+      dismissByEsc: true,
+      dismissByBackgroundClick: true,
+      dismissOnStopStreaming: true,
     });
 
     for (const btn

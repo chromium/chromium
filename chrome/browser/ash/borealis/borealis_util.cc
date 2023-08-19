@@ -10,6 +10,9 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
+#include "chrome/browser/ash/borealis/borealis_window_manager.h"
+#include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
+#include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "components/crx_file/id_util.h"
 #include "components/exo/shell_surface_util.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -24,16 +27,14 @@ const char kBorealisDlcName[] = "borealis-dlc";
 const char kAllowedScheme[] = "steam";
 const re2::LazyRE2 kURLAllowlistRegex[] = {{"//store/[0-9]{1,32}"},
                                            {"//run/[0-9]{1,32}"}};
-const char kBorealisAppIdRegex[] = "(?:steam:\\/\\/rungameid\\/)(\\d+)";
 const char kCompatToolVersionGameMismatch[] = "UNKNOWN (GameID mismatch)";
 const char kDeviceInformationKey[] = "entry.1613887985";
+const re2::LazyRE2 kSpuriousGameBlocklist[] = {
+    {"Proton [0-9.]+"},
+    {"Steam Linux Runtime - [a-zA-Z]*"},
+    {"Steam Linux Runtime"}};
 
 namespace {
-
-// App IDs prefixed with this are identified with a numeric "Borealis ID".
-const base::StringPiece kBorealisWindowWithIdPrefix(
-    "org.chromium.guest_os.borealis.xprop.");
-
 // Windows with these app IDs are not games. Don't prompt for feedback for them.
 //
 // Some Steam updater windows use Zenity to show dialog boxes, and use its
@@ -46,27 +47,59 @@ static constexpr char kSteamClientId[] =
 // 769 is the Steam App ID assigned to the Steam Big Picture client as of 2023.
 static constexpr char kSteamBigPictureId[] =
     "borealis_anon:org.chromium.guest_os.borealis.xprop.769";
-}  // namespace
 
-absl::optional<int> GetBorealisAppId(std::string exec) {
+// The regex used for extracting the "steam game id" of a .desktop's "Exec="
+// field.
+const re2::LazyRE2 kSteamGameIdFromExecRegex = {
+    "steam:\\/\\/rungameid\\/(\\d+)"};
+// The regex used for extracting the "steam game id" of a borealis window (or
+// anonymous app).
+const re2::LazyRE2 kSteamGameIdFromWindowRegex = {
+    "org\\.chromium\\.guest_os\\.borealis\\.xprop\\.(\\d+)"};
+
+// Works for window-data either in the exo_id form, or the anonymous app_id
+// form.
+absl::optional<int> ParseGameIdFromWindowData(const std::string& data) {
   int app_id;
-  if (RE2::PartialMatch(exec, kBorealisAppIdRegex, &app_id)) {
+  if (RE2::PartialMatch(data, *kSteamGameIdFromWindowRegex, &app_id)) {
     return app_id;
-  } else {
-    return absl::nullopt;
-  }
-}
-
-absl::optional<int> GetBorealisAppId(const aura::Window* window) {
-  const std::string* id = exo::GetShellApplicationId(window);
-  if (id && base::StartsWith(*id, kBorealisWindowWithIdPrefix)) {
-    int borealis_id;
-    if (base::StringToInt(id->substr(kBorealisWindowWithIdPrefix.size()),
-                          &borealis_id)) {
-      return borealis_id;
-    }
   }
   return absl::nullopt;
+}
+
+}  // namespace
+
+absl::optional<int> ParseSteamGameId(std::string exec) {
+  int app_id;
+  if (RE2::PartialMatch(exec, *kSteamGameIdFromExecRegex, &app_id)) {
+    return app_id;
+  }
+  return absl::nullopt;
+}
+
+absl::optional<int> SteamGameId(const aura::Window* window) {
+  const std::string* id = exo::GetShellApplicationId(window);
+  if (!id) {
+    return absl::nullopt;
+  }
+  return ParseGameIdFromWindowData(*id);
+}
+
+absl::optional<int> SteamGameId(Profile* profile, const std::string& app_id) {
+  if (BorealisWindowManager::IsAnonymousAppId(app_id)) {
+    return ParseGameIdFromWindowData(app_id);
+  }
+  guest_os::GuestOsRegistryService* registry =
+      guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile);
+  if (!registry) {
+    return absl::nullopt;
+  }
+  absl::optional<guest_os::GuestOsRegistryService::Registration> reg =
+      registry->GetRegistration(app_id);
+  if (!reg) {
+    return absl::nullopt;
+  }
+  return ParseSteamGameId(reg->Exec());
 }
 
 bool IsNonGameBorealisApp(const std::string& app_id) {
@@ -78,6 +111,15 @@ bool IsNonGameBorealisApp(const std::string& app_id) {
   if (app_id == kZenityId || app_id == kSteamClientId ||
       app_id == kSteamBigPictureId) {
     return true;
+  }
+  return false;
+}
+
+bool ShouldHideIrrelevantApp(const std::string& desktop_name) {
+  for (auto& blocklist_regex : kSpuriousGameBlocklist) {
+    if (re2::RE2::FullMatch(desktop_name, *blocklist_regex)) {
+      return true;
+    }
   }
   return false;
 }

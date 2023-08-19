@@ -38,7 +38,7 @@ const destination_store_test = {
     LoadAndSelectDestination: 'select loaded destination',
     // <if expr="is_chromeos">
     LoadSaveToDriveCros: 'load Save to Drive Cros',
-    DriveNotMounted: 'drive not mounted',
+    SaveToDriveDisabled: 'Save to Drive disabled',
     // </if>
   },
 };
@@ -103,8 +103,10 @@ suite(destination_store_test.suiteName, function() {
     const whenCapabilitiesReady = eventToPromise(
         DestinationStoreEventType.SELECTED_DESTINATION_CAPABILITIES_READY,
         destinationStore);
+    const saveToDriveDisabled =
+        initialSettings.pdfPrinterDisabled || !initialSettings.isDriveMounted;
     destinationStore.init(
-        initialSettings.pdfPrinterDisabled, !!initialSettings.isDriveMounted,
+        initialSettings.pdfPrinterDisabled, saveToDriveDisabled,
         initialSettings.printerName,
         initialSettings.serializedDefaultDestinationSelectionRulesStr,
         recentDestinations);
@@ -424,9 +426,10 @@ suite(destination_store_test.suiteName, function() {
       });
 
   // Tests that the SAVE_TO_DRIVE_CROS destination is not loaded on Chrome OS
-  // when Google Drive is not mounted.
-  test(destination_store_test.TestNames.DriveNotMounted, function() {
-    initialSettings.isDriveMounted = false;
+  // when saving to Google Drive is disabled.
+  test(destination_store_test.TestNames.SaveToDriveDisabled, function() {
+    initialSettings.isDriveMounted =
+        false;  // This setting disables saving to Google Drive.
     return setInitialSettings(false).then(() => {
       assertFalse(!!destinationStore.destinations().find(
           destination => destination.id ===

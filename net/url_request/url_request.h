@@ -61,6 +61,7 @@
 namespace net {
 
 class CookieOptions;
+class CookieInclusionStatus;
 class IOBuffer;
 struct LoadTimingInfo;
 struct RedirectInfo;
@@ -792,6 +793,11 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // is received from the remote party.
   void SetEarlyResponseHeadersCallback(ResponseHeadersCallback callback);
 
+  // Set a callback that will be invoked when a matching shared dictionary is
+  // available to determine whether it is allowed to use the dictionary.
+  void SetIsSharedDictionaryReadAllowedCallback(
+      base::RepeatingCallback<bool()> callback);
+
   // Sets socket tag to be applied to all sockets used to execute this request.
   // Must be set before Start() is called.  Only currently supported for HTTP
   // and HTTPS requests on Android; UID tagging requires
@@ -830,22 +836,6 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
 
   void SetIdempotency(Idempotency idempotency) { idempotency_ = idempotency; }
   Idempotency GetIdempotency() const { return idempotency_; }
-
-  int pervasive_payloads_index_for_logging() const {
-    return pervasive_payloads_index_for_logging_;
-  }
-
-  void set_pervasive_payloads_index_for_logging(int index) {
-    pervasive_payloads_index_for_logging_ = index;
-  }
-
-  const std::string& expected_response_checksum() const {
-    return expected_response_checksum_;
-  }
-
-  void set_expected_response_checksum(base::StringPiece checksum) {
-    expected_response_checksum_ = std::string(checksum);
-  }
 
   void set_has_storage_access(bool has_storage_access) {
     DCHECK(!is_pending_);
@@ -937,7 +927,8 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // Otherwise, cookies can be used unless SetDefaultCookiePolicyToBlock() has
   // been called.
   bool CanSetCookie(const net::CanonicalCookie& cookie,
-                    CookieOptions* options) const;
+                    CookieOptions* options,
+                    CookieInclusionStatus* inclusion_status) const;
 
   // Called just before calling a delegate that may block a request. |type|
   // should be the delegate's event type,
@@ -1109,16 +1100,8 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   ResponseHeadersCallback early_response_headers_callback_;
   ResponseHeadersCallback response_headers_callback_;
 
-  // The index of the request URL in Cache Transparency's Pervasive Payloads
-  // List. This is only used for logging purposes. It is initialized as -1 to
-  // signify that the index has not been set.
-  int pervasive_payloads_index_for_logging_ = -1;
-
-  // A SHA-256 checksum of the response and selected headers, stored as
-  // upper-case hexadecimal. If this is set to a non-empty value the transaction
-  // will attempt to use the single-keyed cache. On failure to match the cache
-  // entry will be marked as unusable and will not be re-used.
-  std::string expected_response_checksum_;
+  // See SetIsSharedDictionaryReadAllowedCallback() above for details.
+  base::RepeatingCallback<bool()> is_shared_dictionary_read_allowed_callback_;
 
   bool upgrade_if_insecure_ = false;
 

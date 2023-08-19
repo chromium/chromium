@@ -347,32 +347,19 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, RecordNavigationScheme) {
     int expected_bucket;
   } test_cases[] = {
       {kHttpUrl, 0}, {kHttpsUrl, 0}, {kChromeUrl, 1},
-      {kFileUrl, 3}, {kOtherUrl, 4},
+      {kFileUrl, 2}, {kOtherUrl, 4},
   };
   std::string error;
   GURL url;
 
   const Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("simple_with_file"));
-
-  for (const auto& test_case : test_cases) {
-    base::HistogramTester histogram_tester;
-    auto result_url = ExtensionTabUtil::PrepareURLForNavigation(
-        test_case.url, extension, profile());
-    histogram_tester.ExpectBucketCount("Extensions.Navigation.Scheme",
-                                       test_case.expected_bucket, 1);
-  }
-
-  // Allow file access. This will reload the extension, so we need to reset the
-  // extension pointer.
   ExtensionId id = extension->id();
   TestExtensionRegistryObserver observer(ExtensionRegistry::Get(profile()), id);
+  // Allow file access. This will reload the extension, so we need to reset the
+  // extension pointer.
   util::SetAllowFileAccess(id, profile(), true);
   extension = observer.WaitForExtensionLoaded().get();
-
-  // The extension has file access. Change expected result to
-  // NavigationScheme::kFileWithPermission.
-  test_cases[3].expected_bucket = 2;
 
   for (const auto& test_case : test_cases) {
     base::HistogramTester histogram_tester;

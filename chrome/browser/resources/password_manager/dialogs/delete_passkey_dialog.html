@@ -1,0 +1,23 @@
+<style include="shared-style cr-shared-style">
+   a[href] {
+    color: var(--cr-link-color);
+  }
+</style>
+<cr-dialog id="dialog" close-text="$i18n{close}" ignore-enter-key
+           show-on-attach>
+  <div slot="title" class="dialog-title">
+    $i18n{deletePasskeyConfirmationTitle}
+  </div>
+  <div slot="body">
+    <span id="link" inner-h-t-m-l="[[getDescriptionHtml_(passkey)]]"></span>
+  </div>
+  <div slot="button-container">
+    <cr-button class="cancel-button" on-click="onCancel_" id="cancelButton"
+        autofocus>
+      $i18n{cancel}
+    </cr-button>
+    <cr-button class="action-button" on-click="onDelete_" id="deleteButton">
+      $i18n{delete}
+    </cr-button>
+  </div>
+</cr-dialog>

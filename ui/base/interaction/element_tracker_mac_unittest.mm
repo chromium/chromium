@@ -23,9 +23,9 @@ namespace ui {
 
 namespace {
 
-NSMenu* const kFakeMenu1 = reinterpret_cast<NSMenu*>(1);
-NSMenu* const kFakeMenu2 = reinterpret_cast<NSMenu*>(2);
-NSMenu* const kFakeMenu3 = reinterpret_cast<NSMenu*>(3);
+NSMenu* const kFakeMenu1 = [[NSMenu alloc] initWithTitle:@"1"];
+NSMenu* const kFakeMenu2 = [[NSMenu alloc] initWithTitle:@"2"];
+NSMenu* const kFakeMenu3 = [[NSMenu alloc] initWithTitle:@"3"];
 
 constexpr gfx::Rect kScreenBounds1(30, 50, 100, 200);
 constexpr gfx::Rect kScreenBounds2(60, 70, 120, 220);

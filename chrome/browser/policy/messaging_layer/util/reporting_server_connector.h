@@ -56,9 +56,6 @@ class ReportingServerConnector : public ::policy::CloudPolicyCore::Observer {
                                     ResponseCallback callback);
 
  private:
-  using ResponseCallbackInternal =
-      base::OnceCallback<void(absl::optional<base::Value::Dict>)>;
-
   friend struct base::DefaultSingletonTraits<ReportingServerConnector>;
 
   // Manages reporting accumulated payload sizes per hour via UMA.
@@ -127,7 +124,7 @@ class ReportingServerConnector : public ::policy::CloudPolicyCore::Observer {
 
   void UploadEncryptedReportInternal(base::Value::Dict merging_payload,
                                      absl::optional<base::Value::Dict> context,
-                                     ResponseCallbackInternal callback);
+                                     ResponseCallback callback);
 
   // Manages reporting accumulated payload sizes per hour via UMA.
   PayloadSizePerHourUmaReporter payload_size_per_hour_uma_reporter_;

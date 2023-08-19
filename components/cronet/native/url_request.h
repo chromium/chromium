@@ -112,11 +112,11 @@ class Cronet_UrlRequestImpl : public Cronet_UrlRequest {
   base::Lock lock_;
   // NetworkTask object lives on the network thread. Owned by |request_|.
   // Outlives this.
-  raw_ptr<NetworkTasks, DanglingUntriaged> network_tasks_ GUARDED_BY(lock_) =
-      nullptr;
+  raw_ptr<NetworkTasks, AcrossTasksDanglingUntriaged> network_tasks_
+      GUARDED_BY(lock_) = nullptr;
   // Cronet URLRequest used for this operation.
-  raw_ptr<CronetURLRequest, DanglingUntriaged> request_ GUARDED_BY(lock_) =
-      nullptr;
+  raw_ptr<CronetURLRequest, AcrossTasksDanglingUntriaged> request_
+      GUARDED_BY(lock_) = nullptr;
   bool started_ GUARDED_BY(lock_) = false;
   bool waiting_on_redirect_ GUARDED_BY(lock_) = false;
   bool waiting_on_read_ GUARDED_BY(lock_) = false;

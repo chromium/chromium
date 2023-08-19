@@ -59,7 +59,8 @@ class PowerButtonPixelTest : public NoSessionAshTestBase {
   raw_ptr<PowerButton, ExperimentalAsh> button_ = nullptr;
 };
 
-TEST_F(PowerButtonPixelTest, NoSession) {
+// TODO(http://b/291573477): Re-enable this test.
+TEST_F(PowerButtonPixelTest, DISABLED_NoSession) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_power_button",
       /*revision_number=*/2, GetPowerButton()));
@@ -67,10 +68,11 @@ TEST_F(PowerButtonPixelTest, NoSession) {
   SimulatePowerButtonPress();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_menu",
-      /*revision_number=*/0, GetMenuView()));
+      /*revision_number=*/2, GetMenuView()));
 }
 
-TEST_F(PowerButtonPixelTest, LoginSession) {
+// TODO(crbug.com/1451244): Re-enable this test.
+TEST_F(PowerButtonPixelTest, DISABLED_LoginSession) {
   CreateUserSessions(1);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
@@ -80,10 +82,11 @@ TEST_F(PowerButtonPixelTest, LoginSession) {
   SimulatePowerButtonPress();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_menu",
-      /*revision_number=*/0, GetMenuView()));
+      /*revision_number=*/2, GetMenuView()));
 }
 
-TEST_F(PowerButtonPixelTest, LockScreenSession) {
+// TODO(crbug.com/1451244): Re-enable this test.
+TEST_F(PowerButtonPixelTest, DISABLED_LockScreenSession) {
   CreateUserSessions(1);
   BlockUserSession(BLOCKED_BY_LOCK_SCREEN);
 
@@ -94,10 +97,11 @@ TEST_F(PowerButtonPixelTest, LockScreenSession) {
   SimulatePowerButtonPress();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_menu",
-      /*revision_number=*/0, GetMenuView()));
+      /*revision_number=*/2, GetMenuView()));
 }
 
-TEST_F(PowerButtonPixelTest, GuestMode) {
+// TODO(crbug.com/1451244): Re-enable this test.
+TEST_F(PowerButtonPixelTest, DISABLED_GuestMode) {
   SimulateGuestLogin();
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
@@ -107,6 +111,6 @@ TEST_F(PowerButtonPixelTest, GuestMode) {
   SimulatePowerButtonPress();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_menu",
-      /*revision_number=*/0, GetMenuView()));
+      /*revision_number=*/2, GetMenuView()));
 }
 }  // namespace ash

@@ -28,6 +28,7 @@
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/user_education/common/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo_specification.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/browser_thread.h"
@@ -129,9 +130,9 @@ void PwaInstallView::UpdateImpl() {
       IsDrawn()) {
     const bool iph_shown = browser_->window()->MaybeShowFeaturePromo(
         feature_engagement::kIPHDesktopPwaInstallFeature,
-        {webapps::AppBannerManager::GetInstallableWebAppName(web_contents)},
         base::BindOnce(&PwaInstallView::OnIphClosed,
-                       weak_ptr_factory_.GetWeakPtr()));
+                       weak_ptr_factory_.GetWeakPtr()),
+        webapps::AppBannerManager::GetInstallableWebAppName(web_contents));
     if (iph_shown) {
       // Reset the iph flag when it's shown again.
       install_icon_clicked_after_iph_shown_ = false;

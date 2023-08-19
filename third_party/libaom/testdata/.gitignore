@@ -1,0 +1,4 @@
+# Test files for libaom tests can be placed in this directory.
+# Set download_libaom_testdata to True in your gclient config and
+# run "gclient runhooks" to download the test files.
+*

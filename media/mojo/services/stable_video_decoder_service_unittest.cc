@@ -614,9 +614,9 @@ TEST_F(StableVideoDecoderServiceTest, StableVideoDecoderCanDecode) {
   ASSERT_TRUE(auxiliary_endpoints->mojo_decoder_buffer_reader);
 
   constexpr uint8_t kEncodedData[] = {1, 2, 3};
-  constexpr uint8_t kSideData[] = {5, 6, 7, 8};
-  scoped_refptr<DecoderBuffer> decoder_buffer_to_send = DecoderBuffer::CopyFrom(
-      kEncodedData, std::size(kEncodedData), kSideData, std::size(kSideData));
+  scoped_refptr<DecoderBuffer> decoder_buffer_to_send =
+      DecoderBuffer::CopyFrom(kEncodedData, std::size(kEncodedData));
+  decoder_buffer_to_send->WritableSideData().secure_handle = 42;
   ASSERT_TRUE(decoder_buffer_to_send);
   mojom::DecoderBufferPtr received_decoder_buffer_ptr;
   scoped_refptr<DecoderBuffer> received_decoder_buffer;
@@ -670,9 +670,8 @@ TEST_F(StableVideoDecoderServiceTest,
   ASSERT_TRUE(stable_video_decoder_remote.is_connected());
 
   constexpr uint8_t kEncodedData[] = {1, 2, 3};
-  constexpr uint8_t kSideData[] = {5, 6, 7, 8};
-  scoped_refptr<DecoderBuffer> decoder_buffer_to_send = DecoderBuffer::CopyFrom(
-      kEncodedData, std::size(kEncodedData), kSideData, std::size(kSideData));
+  scoped_refptr<DecoderBuffer> decoder_buffer_to_send =
+      DecoderBuffer::CopyFrom(kEncodedData, std::size(kEncodedData));
   ASSERT_TRUE(decoder_buffer_to_send);
   StrictMock<base::MockOnceCallback<void(const media::DecoderStatus& status)>>
       decode_cb_to_send;

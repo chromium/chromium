@@ -890,7 +890,7 @@ void SpeechRecognizerImpl::CreateAudioCapturerSource() {
       std::move(stream_factory), device_id_,
       audio::DeadStreamDetection::kEnabled,
       MediaInternals::GetInstance()->CreateMojoAudioLog(
-          media::AudioLogFactory::AUDIO_INPUT_CONTROLLER,
+          media::AudioLogFactory::AudioComponent::kAudioInputController,
           0 /* component_id */));
 }
 

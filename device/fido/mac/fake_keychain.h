@@ -10,8 +10,8 @@
 
 #import <Foundation/Foundation.h>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/component_export.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "device/fido/mac/keychain.h"
 
 namespace device::fido::mac {

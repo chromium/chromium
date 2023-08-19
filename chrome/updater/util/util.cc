@@ -4,18 +4,23 @@
 
 #include "chrome/updater/util/util.h"
 
-#include <cctype>
 #include <string>
 #include <vector>
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
+
+#include <initguid.h>
+
+#include "base/logging_win.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 #include "base/base_paths.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/files/file.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -179,13 +184,11 @@ TagParsingResult GetTagArgs() {
   return GetTagArgsForCommandLine(*base::CommandLine::ForCurrentProcess());
 }
 
-absl::optional<tagging::AppArgs> GetAppArgsForCommandLine(
-    const base::CommandLine& command_line,
-    const std::string& app_id) {
-  const absl::optional<tagging::TagArgs> tag_args =
-      GetTagArgsForCommandLine(command_line).tag_args;
-  if (!tag_args || tag_args->apps.empty())
+absl::optional<tagging::AppArgs> GetAppArgs(const std::string& app_id) {
+  const absl::optional<tagging::TagArgs> tag_args = GetTagArgs().tag_args;
+  if (!tag_args || tag_args->apps.empty()) {
     return absl::nullopt;
+  }
 
   const std::vector<tagging::AppArgs>& apps_args = tag_args->apps;
   std::vector<tagging::AppArgs>::const_iterator it = base::ranges::find_if(
@@ -196,18 +199,11 @@ absl::optional<tagging::AppArgs> GetAppArgsForCommandLine(
                                    : absl::nullopt;
 }
 
-absl::optional<tagging::AppArgs> GetAppArgs(const std::string& app_id) {
-  return GetAppArgsForCommandLine(*base::CommandLine::ForCurrentProcess(),
-                                  app_id);
-}
-
-std::string GetDecodedInstallDataFromAppArgsForCommandLine(
-    const base::CommandLine& command_line,
-    const std::string& app_id) {
-  const absl::optional<tagging::AppArgs> app_args =
-      GetAppArgsForCommandLine(command_line, app_id);
-  if (!app_args)
+std::string GetDecodedInstallDataFromAppArgs(const std::string& app_id) {
+  const absl::optional<tagging::AppArgs> app_args = GetAppArgs(app_id);
+  if (!app_args) {
     return std::string();
+  }
 
   std::string decoded_installer_data;
   const bool result = base::UnescapeBinaryURLComponentSafe(
@@ -221,22 +217,9 @@ std::string GetDecodedInstallDataFromAppArgsForCommandLine(
   return decoded_installer_data;
 }
 
-std::string GetDecodedInstallDataFromAppArgs(const std::string& app_id) {
-  return GetDecodedInstallDataFromAppArgsForCommandLine(
-      *base::CommandLine::ForCurrentProcess(), app_id);
-}
-
-std::string GetInstallDataIndexFromAppArgsForCommandLine(
-    const base::CommandLine& command_line,
-    const std::string& app_id) {
-  const absl::optional<tagging::AppArgs> app_args =
-      GetAppArgsForCommandLine(command_line, app_id);
-  return app_args ? app_args->install_data_index : std::string();
-}
-
 std::string GetInstallDataIndexFromAppArgs(const std::string& app_id) {
-  return GetInstallDataIndexFromAppArgsForCommandLine(
-      *base::CommandLine::ForCurrentProcess(), app_id);
+  const absl::optional<tagging::AppArgs> app_args = GetAppArgs(app_id);
+  return app_args ? app_args->install_data_index : std::string();
 }
 
 // The log file is created in DIR_LOCAL_APP_DATA or DIR_ROAMING_APP_DATA.
@@ -269,6 +252,18 @@ void InitLogging(UpdaterScope updater_scope) {
                        /*enable_thread_id=*/true,
                        /*enable_timestamp=*/true,
                        /*enable_tickcount=*/false);
+
+#if BUILDFLAG(IS_WIN)
+  // Enable Event Tracing for Windows.
+  // {4D7D9607-78B6-4583-A188-2136AB85F5F1}
+  constexpr GUID kUpdaterETWProviderName = {
+      0x4d7d9607,
+      0x78b6,
+      0x4583,
+      {0xa1, 0x88, 0x21, 0x36, 0xab, 0x85, 0xf5, 0xf1}};
+  logging::LogEventProvider::Initialize(kUpdaterETWProviderName);
+#endif
+
   VLOG(1) << "Log initialized for " <<
       [] {
         base::FilePath file_exe;
@@ -300,7 +295,7 @@ GURL AppendQueryParameter(const GURL& url,
 
 std::wstring GetTaskNamePrefix(UpdaterScope scope) {
   std::wstring task_name = GetTaskDisplayName(scope);
-  task_name.erase(base::ranges::remove_if(task_name, isspace), task_name.end());
+  base::EraseIf(task_name, base::IsAsciiWhitespace<wchar_t>);
   return task_name;
 }
 
@@ -314,12 +309,6 @@ base::CommandLine GetCommandLineLegacyCompatible() {
   absl::optional<base::CommandLine> cmd_line =
       CommandLineForLegacyFormat(::GetCommandLine());
   return cmd_line ? *cmd_line : *base::CommandLine::ForCurrentProcess();
-}
-
-#else  // BUILDFLAG(IS_WIN)
-
-base::CommandLine GetCommandLineLegacyCompatible() {
-  return *base::CommandLine::ForCurrentProcess();
 }
 
 #endif  // BUILDFLAG(IS_WIN)
@@ -363,6 +352,28 @@ void InitializeThreadPool(const char* name) {
       InitParams::CommonThreadPoolEnvironment::COM_MTA;
 #endif
   base::ThreadPoolInstance::Get()->Start(init_params);
+}
+
+bool DeleteExcept(const absl::optional<base::FilePath>& except) {
+  if (!except) {
+    return false;
+  }
+
+  bool delete_success = true;
+  base::FileEnumerator(
+      except->DirName(), false,
+      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES)
+      .ForEach([&except, &delete_success](const base::FilePath& item) {
+        if (item != *except) {
+          VLOG(2) << __func__ << ": Deleting: " << item;
+          if (!base::DeletePathRecursively(item)) {
+            LOG(ERROR) << __func__ << ": Failed to delete: " << item;
+            delete_success = false;
+          }
+        }
+      });
+
+  return delete_success;
 }
 
 }  // namespace updater

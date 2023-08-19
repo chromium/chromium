@@ -63,6 +63,10 @@ static_library("renderer") {
   if (enable_printing) {
     deps += [ "//components/printing/renderer" ]
   }
+
+  if (enable_screen_ai_service) {
+    deps += [ "//components/language/core/common" ]
+  }
 }
 
 source_set("unit_tests") {

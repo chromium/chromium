@@ -33,7 +33,6 @@ class HeadlessCompositorBrowserTest : public HeadlessProtocolBrowserTest {
         // https://goo.gle/chrome-headless-rendering.
         cc::switches::kDisableThreadedAnimation,
         cc::switches::kDisableCheckerImaging,
-        blink::switches::kDisableThreadedScrolling,
 
         // Ensure that image animations don't resync their animation timestamps
         // when looping back around.

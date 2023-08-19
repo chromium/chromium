@@ -1,6 +1,0 @@
-Test that tracing model correctly finds the main browser thread in the trace.
-
-chrome: main browser thread is CrBrowserMain (#4)
-headless: main browser thread is CrBrowserMain (#4)
-weird-names: main browser thread is Bar (#4)
-

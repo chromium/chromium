@@ -9,31 +9,37 @@
 #include <vector>
 
 #include "base/metrics/histogram_functions.h"
-#include "base/task/sequenced_task_runner.h"
 #include "content/browser/indexed_db/indexed_db_callback_helpers.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
-#include "content/browser/indexed_db/indexed_db_dispatcher_host.h"
 #include "content/browser/indexed_db/indexed_db_factory.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
 #include "content/browser/indexed_db/indexed_db_value.h"
+#include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 
 namespace content {
 
+// static
+void TransactionImpl::CreateAndBind(
+    const storage::BucketLocator& bucket_locator,
+    scoped_refptr<IndexedDBContextImpl> indexed_db_context,
+    mojo::PendingAssociatedReceiver<blink::mojom::IDBTransaction> pending,
+    base::WeakPtr<IndexedDBTransaction> transaction) {
+  mojo::MakeSelfOwnedAssociatedReceiver(
+      base::WrapUnique(
+          new TransactionImpl(transaction, bucket_locator, indexed_db_context)),
+      std::move(pending));
+}
+
 TransactionImpl::TransactionImpl(
     base::WeakPtr<IndexedDBTransaction> transaction,
     const storage::BucketLocator& bucket_locator,
-    base::WeakPtr<IndexedDBDispatcherHost> dispatcher_host,
-    scoped_refptr<base::SequencedTaskRunner> idb_runner)
-    : dispatcher_host_(dispatcher_host),
-      indexed_db_context_(dispatcher_host->context()),
+    scoped_refptr<IndexedDBContextImpl> indexed_db_context)
+    : indexed_db_context_(indexed_db_context),
       transaction_(std::move(transaction)),
-      bucket_locator_(bucket_locator),
-      idb_runner_(std::move(idb_runner)) {
-  DCHECK(idb_runner_->RunsTasksInCurrentSequence());
-  DCHECK(dispatcher_host_);
+      bucket_locator_(bucket_locator) {
   DCHECK(transaction_);
 }
 
@@ -116,7 +122,6 @@ void TransactionImpl::Put(
     const std::vector<blink::IndexedDBIndexKeys>& index_keys,
     blink::mojom::IDBTransaction::PutCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(dispatcher_host_);
 
   if (!transaction_) {
     IndexedDBDatabaseError error(blink::mojom::IDBException::kUnknownError,

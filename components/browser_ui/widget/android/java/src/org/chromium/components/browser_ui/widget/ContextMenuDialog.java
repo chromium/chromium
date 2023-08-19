@@ -23,15 +23,13 @@ import android.view.animation.ScaleAnimation;
 import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
-import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.ui.UiUtils;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.dragdrop.DragEventDispatchHelper;
 import org.chromium.ui.dragdrop.DragEventDispatchHelper.DragEventDispatchDestination;
-import org.chromium.ui.util.AccessibilityUtil;
+import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.RectProvider;
@@ -71,10 +69,6 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
      * view will be used to dispatch touch events other than ACTION_DOWN.
      */
     private @Nullable View mTouchEventDelegateView;
-    /**
-     * A11y information that is used for popup setup (e.g. whether popup can be focused).
-     */
-    private @Nullable AccessibilityUtil mAccessibilityUtil;
 
     /**
      * Creates an instance of the ContextMenuDialog.
@@ -97,13 +91,11 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
      *         dispatch touch events other than ACTION_DOWN.
      * @param rect Rect location where context menu is triggered. If this menu is a popup, the
      *         coordinates are expected to be screen coordinates.
-     * @param accessibilityUtil Class that used to provider a11y information used for popup setup.
      */
     public ContextMenuDialog(Activity ownerActivity, int theme, int topMarginPx, int bottomMarginPx,
             View layout, View contentView, boolean isPopup, boolean shouldRemoveScrim,
             @Nullable Integer popupMargin, @Nullable Integer desiredPopupContentWidth,
-            @Nullable View touchEventDelegateView, Rect rect,
-            @Nullable AccessibilityUtil accessibilityUtil) {
+            @Nullable View touchEventDelegateView, Rect rect) {
         super(ownerActivity, theme);
         mActivity = ownerActivity;
         mTopMarginPx = topMarginPx;
@@ -116,7 +108,6 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
         mDesiredPopupContentWidth = desiredPopupContentWidth;
         mTouchEventDelegateView = touchEventDelegateView;
         mRect = rect;
-        mAccessibilityUtil = accessibilityUtil;
     }
 
     @Override
@@ -138,9 +129,8 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
                         mActivity.getResources().getBoolean(R.bool.window_light_navigation_bar));
             }
             // Apply the status bar color in case the website had override them.
-            ApiCompatibilityUtils.setStatusBarColor(
-                    dialogWindow, mActivity.getWindow().getStatusBarColor());
-            ApiCompatibilityUtils.setStatusBarIconColor(dialogWindow.getDecorView().getRootView(),
+            UiUtils.setStatusBarColor(dialogWindow, mActivity.getWindow().getStatusBarColor());
+            UiUtils.setStatusBarIconColor(dialogWindow.getDecorView().getRootView(),
                     !ColorUtils.shouldUseLightForegroundOnBackground(
                             mActivity.getWindow().getStatusBarColor()));
         }
@@ -191,8 +181,7 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
                     mPopupWindow.setOutsideTouchable(false);
                     mPopupWindow.setAnimateFromAnchor(true);
                     // Set popup focusable so the screen reader can announce the popup properly.
-                    if (mAccessibilityUtil != null
-                            && mAccessibilityUtil.isTouchExplorationEnabled()) {
+                    if (AccessibilityState.isScreenReaderEnabled()) {
                         mPopupWindow.setFocusable(true);
                     }
                     // If the popup is dismissed, dismiss this dialog as well. This is required when
@@ -342,7 +331,6 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
         return mIsPopup && mShouldRemoveScrim && mTouchEventDelegateView != null;
     }
 
-    @VisibleForTesting
     OnDragListener getOnDragListenerForTesting() {
         return mDragEventDispatchHelper;
     }

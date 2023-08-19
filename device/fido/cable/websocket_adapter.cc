@@ -83,7 +83,8 @@ void WebSocketAdapter::OnFailure(const std::string& message,
   // This contact ID has been marked as inactive. The pairing information for
   // this device should be dropped.
   if (on_tunnel_ready_) {
-    std::move(on_tunnel_ready_).Run(Result::GONE, absl::nullopt);
+    std::move(on_tunnel_ready_)
+        .Run(Result::GONE, absl::nullopt, ConnectSignalSupport::NO);
     // `this` may be invalid now.
   }
 }
@@ -102,6 +103,7 @@ void WebSocketAdapter::OnConnectionEstablished(
   }
 
   absl::optional<std::array<uint8_t, kRoutingIdSize>> routing_id;
+  ConnectSignalSupport connect_signal_support = ConnectSignalSupport::NO;
   for (const auto& header : response->headers) {
     if (base::EqualsCaseInsensitiveASCII(header->name.c_str(),
                                          kCableRoutingIdHeader)) {
@@ -111,6 +113,10 @@ void WebSocketAdapter::OnConnectionEstablished(
                         << header->value;
         return;
       }
+    }
+    if (base::EqualsCaseInsensitiveASCII(header->name.c_str(),
+                                         kCableSignalConnectionHeader)) {
+      connect_signal_support = ConnectSignalSupport::YES;
     }
   }
 
@@ -132,7 +138,8 @@ void WebSocketAdapter::OnConnectionEstablished(
 
   socket_remote_->StartReceiving();
 
-  std::move(on_tunnel_ready_).Run(Result::OK, routing_id);
+  std::move(on_tunnel_ready_)
+      .Run(Result::OK, routing_id, connect_signal_support);
   // `this` may be invalid now.
 }
 
@@ -230,7 +237,8 @@ void WebSocketAdapter::OnMojoPipeDisconnect() {
   // If disconnection happens before |OnConnectionEstablished| then report a
   // failure to establish the tunnel.
   if (on_tunnel_ready_) {
-    std::move(on_tunnel_ready_).Run(Result::FAILED, absl::nullopt);
+    std::move(on_tunnel_ready_)
+        .Run(Result::FAILED, absl::nullopt, ConnectSignalSupport::NO);
     // `this` may be invalid now.
     return;
   }

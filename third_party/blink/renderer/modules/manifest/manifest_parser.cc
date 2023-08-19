@@ -15,8 +15,8 @@
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
+#include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
-#include "third_party/blink/public/common/url_pattern.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
@@ -2120,14 +2120,13 @@ mojom::blink::ManifestTabStripPtr ManifestParser::ParseTabStrip(
         ParseTabStripMemberVisibility(home_tab_value));
   }
 
-  JSONValue* new_tab_button_value = tab_strip_object->Get("new_tab_button");
-  if (new_tab_button_value &&
-      new_tab_button_value->GetType() == JSONValue::kTypeObject) {
-    JSONObject* new_tab_button_object =
-        tab_strip_object->GetJSONObject("new_tab_button");
+  auto new_tab_button_params = mojom::blink::NewTabButtonParams::New();
+
+  JSONObject* new_tab_button_object =
+      tab_strip_object->GetJSONObject("new_tab_button");
+  if (new_tab_button_object) {
     JSONValue* new_tab_button_url = new_tab_button_object->Get("url");
 
-    auto new_tab_button_params = mojom::blink::NewTabButtonParams::New();
     String string_value;
     if (new_tab_button_url && !(new_tab_button_url->AsString(&string_value) &&
                                 string_value.LowerASCII() == "auto")) {
@@ -2136,12 +2135,8 @@ mojom::blink::ManifestTabStripPtr ManifestParser::ParseTabStrip(
       if (!url.IsNull())
         new_tab_button_params->url = url;
     }
-    result->new_tab_button = mojom::blink::NewTabButtonUnion::NewParams(
-        std::move(new_tab_button_params));
-  } else {
-    result->new_tab_button = mojom::blink::NewTabButtonUnion::NewVisibility(
-        ParseTabStripMemberVisibility(new_tab_button_value));
   }
+  result->new_tab_button = std::move(new_tab_button_params);
 
   return result;
 }
@@ -2160,9 +2155,9 @@ ManifestParser::ParseTabStripMemberVisibility(const JSONValue* json_value) {
   return mojom::blink::TabStripMemberVisibility::kAuto;
 }
 
-Vector<UrlPattern> ManifestParser::ParseScopePatterns(
+Vector<SafeUrlPattern> ManifestParser::ParseScopePatterns(
     const JSONObject* object) {
-  Vector<UrlPattern> result;
+  Vector<SafeUrlPattern> result;
 
   if (!object->Get("scope_patterns")) {
     return result;
@@ -2174,7 +2169,7 @@ Vector<UrlPattern> ManifestParser::ParseScopePatterns(
   }
 
   for (wtf_size_t i = 0; i < scope_patterns_list->size(); ++i) {
-    UrlPattern url_pattern;
+    SafeUrlPattern url_pattern;
 
     JSONObject* pattern_object = JSONObject::Cast(scope_patterns_list->at(i));
     if (!pattern_object) {

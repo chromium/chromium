@@ -4,7 +4,6 @@
 # found in the LICENSE file.
 
 from .config import CodeSignConfig
-from .model import NotarizationTool
 
 
 class BuildPropsCodeSignConfig(CodeSignConfig):
@@ -35,8 +34,3 @@ class BuildPropsCodeSignConfig(CodeSignConfig):
     @property
     def base_bundle_id(self):
         return '@MAC_BUNDLE_ID@'
-
-    @property
-    def notary_team_id(self):
-        return super(BuildPropsCodeSignConfig,
-                     self).notary_team_id or '@MAC_TEAM_ID@'

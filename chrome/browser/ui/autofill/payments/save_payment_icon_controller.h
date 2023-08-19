@@ -61,6 +61,10 @@ class SavePaymentIconController {
 
   // Returns the tooltip message for the save payment icon.
   virtual std::u16string GetSavePaymentIconTooltipText() const = 0;
+
+  // Returns the id of the string to show in the save animation upon a
+  // successful save.
+  virtual int GetSaveSuccessAnimationStringId() const = 0;
 };
 
 }  // namespace autofill

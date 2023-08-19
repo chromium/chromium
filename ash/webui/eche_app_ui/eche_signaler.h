@@ -69,10 +69,10 @@ class EcheSignaler : public mojom::SignalingMessageExchanger,
   FRIEND_TEST_ALL_PREFIXES(EcheSignalerTest,
                            TestConnectionFailWhenRemoteDeviceOnCellular);
   FRIEND_TEST_ALL_PREFIXES(EcheSignalerTest,
-                           OnRequestCloseConnnectionDoesNotStreamEventFailures);
+                           OnRequestCloseConnectionDoesNotStreamEventFailures);
 
   // EcheConnectionStatusHandler::Observer
-  void OnRequestCloseConnnection() override;
+  void OnConnectionClosed() override;
 
   void RecordSignalingTimeout();
   void ProcessAndroidNetworkInfo(const proto::ExoMessage& message);

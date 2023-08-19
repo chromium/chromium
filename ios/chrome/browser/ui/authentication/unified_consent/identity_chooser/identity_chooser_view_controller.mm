@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check_op.h"
-#import "base/mac/foundation_util.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_item+Controller.h"
@@ -15,10 +15,6 @@
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_header_item.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_view_controller_presentation_delegate.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -68,7 +64,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   switch ((ItemType)item.type) {
     case IdentityItemType: {
       TableViewIdentityItem* tableViewIdentityItem =
-          base::mac::ObjCCastStrict<TableViewIdentityItem>(item);
+          base::apple::ObjCCastStrict<TableViewIdentityItem>(item);
       DCHECK(tableViewIdentityItem);
       [self.presentationDelegate
           identityChooserViewController:self
@@ -127,7 +123,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     if (item.type != IdentityItemType)
       continue;
     TableViewIdentityItem* identityItem =
-        base::mac::ObjCCastStrict<TableViewIdentityItem>(item);
+        base::apple::ObjCCastStrict<TableViewIdentityItem>(item);
     if ([identityItem.gaiaID isEqualToString:gaiaID])
       return identityItem;
   }

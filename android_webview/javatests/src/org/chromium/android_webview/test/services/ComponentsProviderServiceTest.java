@@ -33,7 +33,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.PathUtils;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.component_updater.IComponentsProviderService;
@@ -284,7 +283,6 @@ public class ComponentsProviderServiceTest {
 
         @Test
         @SmallTest
-        @DisabledTest(message = "https://crbug.com/1428048")
         public void testOnCreateSchedulesUpdater() throws Exception {
             JobScheduler jobScheduler =
                     (JobScheduler) ContextUtils.getApplicationContext().getSystemService(

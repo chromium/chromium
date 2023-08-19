@@ -17,8 +17,6 @@ class WebState;
 @protocol NewTabPageControllerDelegate;
 @protocol NewTabPageDelegate;
 @protocol NewTabPageMetricsDelegate;
-@protocol ThumbStripSupporting;
-@class ViewRevealingVerticalPanHandler;
 
 // Coordinator to manage the Suggestions UI via a
 // ContentSuggestionsViewController.
@@ -41,10 +39,6 @@ class WebState;
 @property(nonatomic, strong, readonly)
     ContentSuggestionsMediator* contentSuggestionsMediator;
 
-// Allows for the in-flight enabling/disabling of the thumb strip.
-@property(nonatomic, weak, readonly) id<ThumbStripSupporting>
-    thumbStripSupporting;
-
 // Delegate for NTP related actions.
 @property(nonatomic, weak) id<NewTabPageDelegate> NTPDelegate;
 
@@ -54,9 +48,6 @@ class WebState;
 // Delegate for reporting content suggestions actions to the NTP metrics
 // recorder.
 @property(nonatomic, weak) id<NewTabPageMetricsDelegate> NTPMetricsDelegate;
-
-// Reloads the suggestions.
-- (void)reload;
 
 // Configure Content Suggestions if showing the Start Surface. NOTE: this should
 // only be called once for every Start configuration. Calling it multiple times

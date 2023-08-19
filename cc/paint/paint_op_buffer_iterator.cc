@@ -112,18 +112,18 @@ void PaintOpBuffer::PlaybackFoldingIterator::FindNextOp() {
 
     // If we get here, then we could not find a foldable sequence after
     // this SaveLayerAlpha, so store any peeked at ops.
-    stack_->push_back(second);
+    stack_.push_back(second);
     if (third)
-      stack_->push_back(third);
+      stack_.push_back(third);
     break;
   }
 }
 
 const PaintOp* PaintOpBuffer::PlaybackFoldingIterator::NextUnfoldedOp() {
-  if (stack_->size()) {
-    const PaintOp* op = stack_->front();
+  if (stack_.size()) {
+    const PaintOp* op = stack_.front();
     // Shift paintops forward.
-    stack_->erase(stack_->begin());
+    stack_.erase(stack_.begin());
     return op;
   }
   if (!iter_)

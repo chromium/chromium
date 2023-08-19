@@ -260,6 +260,10 @@ quic::HandshakeState MockCryptoClientStream::GetHandshakeState() const {
                               : quic::HANDSHAKE_START;
 }
 
+void MockCryptoClientStream::setHandshakeConfirmedForce(bool state) {
+  handshake_confirmed_ = state;
+}
+
 bool MockCryptoClientStream::EarlyDataAccepted() const {
   // This value is only used for logging. The return value doesn't matter.
   return false;

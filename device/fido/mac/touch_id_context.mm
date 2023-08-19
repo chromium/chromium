@@ -9,10 +9,10 @@
 #include <Security/Security.h>
 
 #include "base/apple/bridging.h"
+#include "base/apple/foundation_util.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
@@ -23,10 +23,6 @@
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/mac/authenticator_config.h"
 #include "device/fido/mac/keychain.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace device::fido::mac {
 
@@ -51,7 +47,7 @@ bool ExecutableHasKeychainAccessGroupEntitlement(
   }
 
   NSArray* entitlement_value_nsarray = base::apple::CFToNSPtrCast(
-      base::mac::CFCast<CFArrayRef>(entitlement_value_cftype));
+      base::apple::CFCast<CFArrayRef>(entitlement_value_cftype));
   if (!entitlement_value_nsarray) {
     return false;
   }

@@ -531,40 +531,6 @@ std::vector<IntentLaunchInfo> AppServiceProxyBase::GetAppsForFiles(
                           false, false);
 }
 
-void AppServiceProxyBase::AddPreferredApp(const std::string& app_id,
-                                          const GURL& url) {
-  AddPreferredApp(app_id,
-                  std::make_unique<Intent>(apps_util::kIntentActionView, url));
-}
-
-void AppServiceProxyBase::AddPreferredApp(const std::string& app_id,
-                                          const IntentPtr& intent) {
-  DCHECK(!app_id.empty());
-  DCHECK(preferred_apps_impl_);
-
-  auto intent_filter = FindBestMatchingFilter(intent);
-  if (!intent_filter) {
-    return;
-  }
-
-  // Treat kUseBrowserForLink like an app with a single supported link, so
-  // that any apps with overlapping supported links will have their preference
-  // removed correctly.
-  if (app_id == apps_util::kUseBrowserForLink) {
-    std::vector<IntentFilterPtr> filters;
-    filters.push_back(std::move(intent_filter));
-    preferred_apps_impl_->SetSupportedLinksPreference(app_id,
-                                                      std::move(filters));
-    return;
-  }
-
-  // AddPreferredApp currently only supports adding preferences for link
-  // intents.
-  DCHECK(apps_util::IsSupportedLinkForApp(app_id, intent_filter));
-
-  SetSupportedLinksPreference(app_id);
-}
-
 void AppServiceProxyBase::SetSupportedLinksPreference(
     const std::string& app_id) {
   IntentFilters filters;

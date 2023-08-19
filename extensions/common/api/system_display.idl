@@ -130,6 +130,14 @@ namespace system.display {
     long yearOfManufacture;
   };
 
+  // An enum to tell if the display is detected and used by the
+  // system. The display is considered 'inactive', if it is not
+  // detected by the system (maybe disconnected, or considered
+  // disconnected due to sleep mode, etc). This state is used to keep
+  // existing display when the all displays are disconnected, for
+  // example.
+  enum ActiveState { active, inactive };
+
   dictionary DisplayUnitInfo {
     // The unique identifier of the display.
     DOMString id;
@@ -159,6 +167,9 @@ namespace system.display {
 
     // True if this display is enabled.
     boolean isEnabled;
+
+    // Active if the display is detected and used by the system.
+    ActiveState activeState;
 
     // True for all displays when in unified desktop mode. See documentation
     // for $(ref:enableUnifiedDesktop).
@@ -283,14 +294,16 @@ namespace system.display {
   // Mirror mode, i.e. different ways of how a display is mirrored to other
   // displays.
   enum MirrorMode {
-    // Use the default mode (extended or unified desktop).
+    // Specifies the default mode (extended or unified desktop).
     off,
 
-    // The default source display will be mirrored to all other displays.
+    // Specifies that the default source display will be mirrored to all other
+    // displays.
     normal,
 
-    // The specified source display will be mirrored to the provided
-    // destination displays. All other connected displays will be extended.
+    // Specifies that the specified source display will be mirrored to the
+    // provided destination displays. All other connected displays will be
+    //  extended.
     mixed
   };
 

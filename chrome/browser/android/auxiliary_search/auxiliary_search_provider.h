@@ -7,8 +7,12 @@
 
 #include <jni.h>
 
+#include <memory>
+
 #include "base/android/scoped_java_ref.h"
+#include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace auxiliary_search {
@@ -18,6 +22,7 @@ namespace bookmarks {
 class BookmarkModel;
 }
 class Profile;
+class TabAndroid;
 
 // AuxiliarySearchProvider is responsible for providing the necessary
 // information for the auxiliary search..
@@ -29,16 +34,35 @@ class AuxiliarySearchProvider : public KeyedService {
   base::android::ScopedJavaLocalRef<jbyteArray> GetBookmarksSearchableData(
       JNIEnv* env) const;
 
+  void GetNonSensitiveTabs(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobjectArray>& j_tabs_android,
+      const base::android::JavaParamRef<jobject>& j_callback_obj) const;
+
   static void EnsureFactoryBuilt();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AuxiliarySearchProviderTest, QueryBookmarks);
+  FRIEND_TEST_ALL_PREFIXES(AuxiliarySearchProviderBrowserTest,
+                           QuerySensitiveTab);
+  FRIEND_TEST_ALL_PREFIXES(AuxiliarySearchProviderBrowserTest,
+                           QueryNonSensitiveTab);
+  FRIEND_TEST_ALL_PREFIXES(AuxiliarySearchProviderBrowserTest,
+                           QueryEmptyTabList);
 
-  void GetBookmarks(
-      bookmarks::BookmarkModel* model,
-      auxiliary_search::AuxiliarySearchBookmarkGroup* group) const;
+  using NonSensitiveTabsCallback =
+      base::OnceCallback<void(std::unique_ptr<std::vector<TabAndroid*>>)>;
+
+  auxiliary_search::AuxiliarySearchBookmarkGroup GetBookmarks(
+      bookmarks::BookmarkModel* model) const;
+
+  void GetNonSensitiveTabsInternal(
+      std::unique_ptr<std::vector<TabAndroid*>> all_tabs,
+      NonSensitiveTabsCallback callback) const;
 
   raw_ptr<Profile> profile_;
+
+  base::WeakPtrFactory<AuxiliarySearchProvider> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_ANDROID_AUXILIARY_SEARCH_AUXILIARY_SEARCH_PROVIDER_H_

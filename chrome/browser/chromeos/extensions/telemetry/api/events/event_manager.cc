@@ -4,66 +4,32 @@
 
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/event_manager.h"
 
+#include <string>
+#include <utility>
+
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/common/app_ui_observer.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/common/util.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/event_router.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/remote_event_service_strategy.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
 #include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_extension_exception.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
-#include "extensions/common/url_pattern.h"
+#include "extensions/common/manifest_handlers/externally_connectable.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "url/gurl.h"
 
 namespace chromeos {
 
 namespace {
 
 namespace crosapi = ::crosapi::mojom;
-
-bool IsRelatedPwaUrl(const std::string& related_pwa, GURL url_to_compare) {
-  URLPattern pattern(URLPattern::SCHEME_ALL);
-  return pattern.Parse(related_pwa) == URLPattern::ParseResult::kSuccess &&
-         pattern.MatchesURL(url_to_compare);
-}
-
-bool IsPwaOpenForExtensionId(extensions::ExtensionId extension_id,
-                             content::BrowserContext* context) {
-  if (!IsChromeOSSystemExtension(extension_id)) {
-    return false;
-  }
-  auto related_pwa = GetChromeOSExtensionInfoForId(extension_id).pwa_origin;
-
-  Profile* profile = Profile::FromBrowserContext(context);
-  for (auto* target_browser : *BrowserList::GetInstance()) {
-    // Ignore incognito.
-    if (target_browser->profile() != profile) {
-      continue;
-    }
-
-    TabStripModel* target_tab_strip = target_browser->tab_strip_model();
-    for (int i = 0; i < target_tab_strip->count(); ++i) {
-      content::WebContents* target_contents =
-          target_tab_strip->GetWebContentsAt(i);
-
-      if (IsRelatedPwaUrl(related_pwa,
-                          target_contents->GetLastCommittedURL())) {
-        return true;
-      }
-    }
-  }
-
-  return false;
-}
 
 }  // namespace
 
@@ -83,89 +49,28 @@ EventManager* EventManager::Get(content::BrowserContext* browser_context) {
 }
 
 EventManager::EventManager(content::BrowserContext* context)
-    : event_router_(context), browser_context_(context) {
-  // Register this class as an observer of the correct tab strip models.
-  auto* profile = Profile::FromBrowserContext(context);
-  auto* browser_list = BrowserList::GetInstance();
-  browser_list->AddObserver(this);
+    : event_router_(context), browser_context_(context) {}
 
-  for (auto* target_browser : *browser_list) {
-    if (target_browser->profile() != profile) {
-      continue;
-    }
-
-    TabStripModel* tab_strip = target_browser->tab_strip_model();
-    tab_strip->AddObserver(this);
-  }
-}
-
-EventManager::~EventManager() {
-  BrowserList::RemoveObserver(this);
-  for (auto* target_browser : *BrowserList::GetInstance()) {
-    if (target_browser->profile() != target_browser->profile()) {
-      continue;
-    }
-
-    TabStripModel* tab_strip = target_browser->tab_strip_model();
-    tab_strip->RemoveObserver(this);
-  }
-}
-
-void EventManager::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
-  if (tab_strip_model->profile() !=
-      Profile::FromBrowserContext(browser_context_)) {
-    return;
-  }
-
-  for (auto& [extension_id, open] : open_pwas_) {
-    auto related_pwa = GetChromeOSExtensionInfoForId(extension_id).pwa_origin;
-    if (change.type() == TabStripModelChange::kRemoved) {
-      for (auto& removed_tab : change.GetRemove()->contents) {
-        if (IsRelatedPwaUrl(related_pwa,
-                            removed_tab.contents->GetLastCommittedURL())) {
-          // The PWA has been closed, safe that state and cut all connections.
-          open = false;
-          event_router_.ResetReceiversForExtension(extension_id);
-        }
-      }
-    } else if (change.type() == TabStripModelChange::kInserted) {
-      for (auto& inserted_tab : change.GetInsert()->contents) {
-        if (IsRelatedPwaUrl(related_pwa,
-                            inserted_tab.contents->GetLastCommittedURL())) {
-          // The PWA is now open.
-          open = true;
-        }
-      }
-    }
-  }
-}
-
-void EventManager::OnBrowserAdded(Browser* browser) {
-  // Add ourselves as an observer in case a new browser is opened.
-  if (browser->profile() == Profile::FromBrowserContext(browser_context_)) {
-    browser->tab_strip_model()->AddObserver(this);
-  }
-}
+EventManager::~EventManager() = default;
 
 EventManager::RegisterEventResult EventManager::RegisterExtensionForEvent(
     extensions::ExtensionId extension_id,
     crosapi::TelemetryEventCategoryEnum category) {
-  auto is_related_pwa_open =
-      IsPwaOpenForExtensionId(extension_id, browser_context_);
-  // This is a noop in case the pwa is closed or there is already an existing
-  // observation.
-  if (!is_related_pwa_open) {
-    return kPwaClosed;
-  }
+  // This is a noop in case there is already an existing observation.
   if (event_router_.IsExtensionObservingForCategory(extension_id, category)) {
     // Early return in case the category is already observed by the extension.
     return kSuccess;
   }
 
-  open_pwas_.emplace(extension_id, is_related_pwa_open);
+  if (app_ui_observers_.find(extension_id) == app_ui_observers_.end()) {
+    auto observer = CreateAppUiObserver(extension_id);
+    if (!observer) {
+      return kAppUiClosed;
+    }
+
+    app_ui_observers_.emplace(extension_id, std::move(observer));
+  }
+
   GetRemoteService()->AddEventObserver(
       category, event_router_.GetPendingRemoteForCategoryAndExtension(
                     category, extension_id));
@@ -176,6 +81,9 @@ void EventManager::RemoveObservationsForExtensionAndCategory(
     extensions::ExtensionId extension_id,
     crosapi::TelemetryEventCategoryEnum category) {
   event_router_.ResetReceiversOfExtensionByCategory(extension_id, category);
+  if (!event_router_.IsExtensionObserving(extension_id)) {
+    app_ui_observers_.erase(extension_id);
+  }
 }
 
 void EventManager::IsEventSupported(
@@ -189,6 +97,43 @@ mojo::Remote<crosapi::TelemetryEventService>& EventManager::GetRemoteService() {
     remote_event_service_strategy_ = RemoteEventServiceStrategy::Create();
   }
   return remote_event_service_strategy_->GetRemoteService();
+}
+
+void EventManager::OnAppUiClosed(extensions::ExtensionId extension_id) {
+  // Try to find another open UI.
+  auto observer = CreateAppUiObserver(extension_id);
+  if (observer) {
+    app_ui_observers_.insert_or_assign(extension_id, std::move(observer));
+    return;
+  }
+
+  app_ui_observers_.erase(extension_id);
+  event_router_.ResetReceiversForExtension(extension_id);
+}
+
+std::unique_ptr<AppUiObserver> EventManager::CreateAppUiObserver(
+    extensions::ExtensionId extension_id) {
+  const extensions::Extension* extension =
+      extensions::ExtensionRegistry::Get(browser_context_)
+          ->GetExtensionById(extension_id,
+                             extensions::ExtensionRegistry::EVERYTHING);
+  if (!extension) {
+    // If the extension has been unloaded from the registry, there
+    // won't be any related app UI.
+    return nullptr;
+  }
+  content::WebContents* contents =
+      FindTelemetryExtensionOpenAndSecureAppUi(browser_context_, extension);
+  if (!contents) {
+    return nullptr;
+  }
+
+  return std::make_unique<AppUiObserver>(
+      contents,
+      extensions::ExternallyConnectableInfo::Get(extension)->matches.Clone(),
+      // Unretained is safe here because `this` will own the observer.
+      base::BindOnce(&EventManager::OnAppUiClosed, base::Unretained(this),
+                     extension_id));
 }
 
 }  // namespace chromeos

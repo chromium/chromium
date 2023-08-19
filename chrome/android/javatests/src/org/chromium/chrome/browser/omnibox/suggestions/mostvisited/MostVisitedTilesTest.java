@@ -23,10 +23,8 @@ import android.view.View;
 import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 import androidx.test.filters.MediumTest;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,7 +43,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.LocationBarLayout;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerJni;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionView;
 import org.chromium.chrome.browser.tab.Tab;
@@ -110,9 +107,6 @@ public class MostVisitedTilesTest {
     private SuggestTile mTile2;
     private SuggestTile mTile3;
 
-    @BeforeClass
-    public static void setUpClass() throws Exception {}
-
     @Before
     public void setUp() throws Exception {
         mJniMocker.mock(AutocompleteControllerJni.TEST_HOOKS, mAutocompleteControllerJniMock);
@@ -139,11 +133,6 @@ public class MostVisitedTilesTest {
         setUpSuggestionsToShow();
 
         mCarousel = mOmnibox.findSuggestionWithType(OmniboxSuggestionUiType.TILE_NAVSUGGEST);
-    }
-
-    @After
-    public void tearDown() {
-        AutocompleteControllerProvider.setControllerForTesting(null);
     }
 
     /**
@@ -195,7 +184,7 @@ public class MostVisitedTilesTest {
 
     private void clickTileAtPosition(int position) {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            LayoutManager manager = mCarousel.view.getRecyclerViewForTest().getLayoutManager();
+            LayoutManager manager = mCarousel.view.getLayoutManager();
             Assert.assertTrue(position < manager.getItemCount());
             manager.scrollToPosition(position);
             View view = manager.findViewByPosition(position);
@@ -206,7 +195,7 @@ public class MostVisitedTilesTest {
 
     private void longClickTileAtPosition(int position) {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            LayoutManager manager = mCarousel.view.getRecyclerViewForTest().getLayoutManager();
+            LayoutManager manager = mCarousel.view.getLayoutManager();
             Assert.assertTrue(position < manager.getItemCount());
             manager.scrollToPosition(position);
             View view = manager.findViewByPosition(position);

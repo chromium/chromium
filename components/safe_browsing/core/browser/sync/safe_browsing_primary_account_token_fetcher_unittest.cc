@@ -57,6 +57,9 @@ TEST_F(SafeBrowsingPrimaryAccountTokenFetcherTest, Failure) {
 
 TEST_F(SafeBrowsingPrimaryAccountTokenFetcherTest,
        SuccessWithConsentedPrimaryAccount) {
+  // TODO(https://crbug.com/1462552): Delete this test after UNO phase 3
+  // migration is complete. See `ConsentLevel::kSync` documentation for more
+  // details.
   identity_test_environment_.MakePrimaryAccountAvailable(
       "test@example.com", signin::ConsentLevel::kSync);
   std::string access_token;

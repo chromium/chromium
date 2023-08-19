@@ -11,10 +11,14 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/mock_callback.h"
+#include "base/test/test_future.h"
+#include "content/browser/media/media_devices_util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/media_device_id.h"
+#include "content/public/common/content_client.h"
 #include "content/public/test/mock_render_process_host.h"
-#include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/audio_system_impl.h"
@@ -43,19 +47,20 @@ const char kInvalidDeviceId[] = "invalid-device-id";
 using MockAuthorizationCallback = base::MockCallback<
     AudioOutputAuthorizationHandler::AuthorizationCompletedCallback>;
 
-// TestBrowserContext has a URLRequestContextGetter which uses a NullTaskRunner.
-// This causes it to be destroyed on the wrong thread. This BrowserContext
-// instead uses the IO thread task runner for the URLRequestContextGetter.
-class TestBrowserContextWithRealURLRequestContextGetter
-    : public TestBrowserContext {
+class TestBrowserClient : public ContentBrowserClient {
  public:
-  TestBrowserContextWithRealURLRequestContextGetter() {
-    salt_ = TestBrowserContext::GetMediaDeviceIDSalt();
+  TestBrowserClient() : salt_(CreateRandomMediaDeviceIDSalt()) {}
+  ~TestBrowserClient() override = default;
+
+  void GetMediaDeviceIDSalt(
+      content::RenderFrameHost* rfh,
+      const net::SiteForCookies& site_for_cookies,
+      const blink::StorageKey& storage_key,
+      base::OnceCallback<void(bool, const std::string&)> callback) override {
+    std::move(callback).Run(true, salt_);
   }
 
-  ~TestBrowserContextWithRealURLRequestContextGetter() override {}
-
-  std::string GetMediaDeviceIDSalt() override { return salt_; }
+  const std::string& media_device_id_salt() const { return salt_; }
 
   void set_media_device_id_salt(std::string salt) { salt_ = std::move(salt); }
 
@@ -84,15 +89,10 @@ class AudioOutputAuthorizationHandlerTest : public RenderViewHostTestHarness {
     audio_manager_->Shutdown();
   }
 
-  std::unique_ptr<BrowserContext> CreateBrowserContext() override {
-    return std::make_unique<
-        TestBrowserContextWithRealURLRequestContextGetter>();
-  }
-
   void SetUp() override {
     // Starts thread bundle:
     RenderViewHostTestHarness::SetUp();
-
+    SetBrowserClientForTesting(&test_browser_client_);
     audio_manager_ = std::make_unique<media::FakeAudioManager>(
         std::make_unique<media::TestAudioThread>(true), &log_factory_);
     audio_system_ =
@@ -141,6 +141,8 @@ class AudioOutputAuthorizationHandlerTest : public RenderViewHostTestHarness {
     return id;
   }
 
+  TestBrowserClient& test_browser_client() { return test_browser_client_; }
+
  private:
   void SyncWith(scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
     CHECK(task_runner);
@@ -179,6 +181,7 @@ class AudioOutputAuthorizationHandlerTest : public RenderViewHostTestHarness {
   std::unique_ptr<media::AudioManager> audio_manager_;
   std::unique_ptr<media::AudioSystem> audio_system_;
   std::unique_ptr<MediaStreamManager> media_stream_manager_;
+  TestBrowserClient test_browser_client_;
 };
 
 TEST_F(AudioOutputAuthorizationHandlerTest, DoNothing) {}
@@ -229,11 +232,11 @@ TEST_F(AudioOutputAuthorizationHandlerTest,
 TEST_F(AudioOutputAuthorizationHandlerTest,
        AuthorizeNondefaultDeviceIdWithoutPermission_NotAuthorized) {
   std::string raw_nondefault_id = GetRawNondefaultId();
-  MediaDeviceSaltAndOrigin salt_and_origin = GetMediaDeviceSaltAndOrigin(
-      process()->GetID(), main_rfh()->GetRoutingID());
-  std::string hashed_id = MediaStreamManager::GetHMACForMediaDeviceID(
-      salt_and_origin.device_id_salt, salt_and_origin.origin,
-      raw_nondefault_id);
+  base::test::TestFuture<const MediaDeviceSaltAndOrigin&> future;
+  GetMediaDeviceSaltAndOrigin(main_rfh()->GetGlobalId(), future.GetCallback());
+  MediaDeviceSaltAndOrigin salt_and_origin = future.Get();
+  std::string hashed_id =
+      GetHMACForRawMediaDeviceID(salt_and_origin, raw_nondefault_id);
 
   MockAuthorizationCallback listener;
   std::unique_ptr<AudioOutputAuthorizationHandler> handler =
@@ -265,11 +268,11 @@ TEST_F(AudioOutputAuthorizationHandlerTest,
 TEST_F(AudioOutputAuthorizationHandlerTest,
        AuthorizeNondefaultDeviceIdWithPermission_Ok) {
   std::string raw_nondefault_id = GetRawNondefaultId();
-  MediaDeviceSaltAndOrigin salt_and_origin = GetMediaDeviceSaltAndOrigin(
-      process()->GetID(), main_rfh()->GetRoutingID());
-  std::string hashed_id = MediaStreamManager::GetHMACForMediaDeviceID(
-      salt_and_origin.device_id_salt, salt_and_origin.origin,
-      raw_nondefault_id);
+  base::test::TestFuture<const MediaDeviceSaltAndOrigin&> future;
+  GetMediaDeviceSaltAndOrigin(main_rfh()->GetGlobalId(), future.GetCallback());
+  MediaDeviceSaltAndOrigin salt_and_origin = future.Get();
+  std::string hashed_id =
+      GetHMACForRawMediaDeviceID(salt_and_origin, raw_nondefault_id);
   MockAuthorizationCallback listener;
   std::unique_ptr<AudioOutputAuthorizationHandler> handler =
       std::make_unique<AudioOutputAuthorizationHandler>(
@@ -327,10 +330,11 @@ TEST_F(AudioOutputAuthorizationHandlerTest,
   // Note that other urls may also fail the permissions check, e.g. when a
   // navigation is done during stream creation.
   GURL url("about:blank");
-  url::Origin origin = url::Origin::Create(url);
+  MediaDeviceSaltAndOrigin salt_and_origin(
+      test_browser_client().media_device_id_salt(), url::Origin::Create(url));
   std::string raw_nondefault_id = GetRawNondefaultId();
-  std::string hashed_id = MediaStreamManager::GetHMACForMediaDeviceID(
-      browser_context()->GetMediaDeviceIDSalt(), origin, raw_nondefault_id);
+  std::string hashed_id =
+      GetHMACForRawMediaDeviceID(salt_and_origin, raw_nondefault_id);
   MockAuthorizationCallback listener;
   std::unique_ptr<AudioOutputAuthorizationHandler> handler =
       std::make_unique<AudioOutputAuthorizationHandler>(
@@ -380,11 +384,11 @@ TEST_F(AudioOutputAuthorizationHandlerTest,
 TEST_F(AudioOutputAuthorizationHandlerTest,
        AuthorizeNondefaultDeviceIdAfterSaltChange_NotFound) {
   std::string raw_nondefault_id = GetRawNondefaultId();
-  MediaDeviceSaltAndOrigin salt_and_origin = GetMediaDeviceSaltAndOrigin(
-      process()->GetID(), main_rfh()->GetRoutingID());
-  std::string hashed_id = MediaStreamManager::GetHMACForMediaDeviceID(
-      salt_and_origin.device_id_salt, salt_and_origin.origin,
-      raw_nondefault_id);
+  base::test::TestFuture<const MediaDeviceSaltAndOrigin&> future;
+  GetMediaDeviceSaltAndOrigin(main_rfh()->GetGlobalId(), future.GetCallback());
+  MediaDeviceSaltAndOrigin salt_and_origin = future.Get();
+  std::string hashed_id =
+      GetHMACForRawMediaDeviceID(salt_and_origin, raw_nondefault_id);
   MockAuthorizationCallback listener;
   std::unique_ptr<AudioOutputAuthorizationHandler> handler =
       std::make_unique<AudioOutputAuthorizationHandler>(
@@ -407,10 +411,7 @@ TEST_F(AudioOutputAuthorizationHandlerTest,
 
   // Reset the salt and expect authorization of the device ID hashed with
   // the old salt to fail.
-  auto* context =
-      static_cast<TestBrowserContextWithRealURLRequestContextGetter*>(
-          browser_context());
-  context->set_media_device_id_salt("new salt");
+  test_browser_client().set_media_device_id_salt("new salt");
   EXPECT_CALL(listener, Run(media::OUTPUT_DEVICE_STATUS_ERROR_NOT_FOUND, _, _,
                             std::string()));
   GetIOThreadTaskRunner({})->PostTask(

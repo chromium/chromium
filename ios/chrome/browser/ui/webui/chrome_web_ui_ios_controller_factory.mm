@@ -12,10 +12,11 @@
 #import "components/commerce/core/commerce_constants.h"
 #import "components/commerce/ios/browser/commerce_internals_ui.h"
 #import "components/optimization_guide/optimization_guide_internals/webui/url_constants.h"
+#import "components/version_info/channel.h"
 #import "ios/chrome/browser/commerce/shopping_service_factory.h"
-#import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/ui/webui/about_ui.h"
 #import "ios/chrome/browser/ui/webui/autofill_and_password_manager_internals/autofill_internals_ui_ios.h"
 #import "ios/chrome/browser/ui/webui/autofill_and_password_manager_internals/password_manager_internals_ui_ios.h"
@@ -38,15 +39,14 @@
 #import "ios/chrome/browser/ui/webui/translate_internals/translate_internals_ui.h"
 #import "ios/chrome/browser/ui/webui/ukm_internals_ui.h"
 #import "ios/chrome/browser/ui/webui/user_actions_ui.h"
+#import "ios/chrome/browser/ui/webui/userdefaults_internals_ui.h"
 #import "ios/chrome/browser/ui/webui/version_ui.h"
+#import "ios/chrome/common/channel_info.h"
 #import "ios/components/webui/sync_internals/sync_internals_ui.h"
 #import "ios/components/webui/web_ui_url_constants.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
+using ::version_info::Channel;
 using web::WebUIIOS;
 using web::WebUIIOSController;
 
@@ -139,6 +139,10 @@ WebUIIOSFactoryFunction GetWebUIIOSFactoryFunction(const GURL& url) {
     return &NewWebUIIOS<VersionUI>;
   if (url_host == kChromeUIPolicyHost)
     return &NewWebUIIOS<PolicyUI>;
+  if (url_host == kChromeUIUserDefaultsInternalsHost &&
+      GetChannel() != Channel::STABLE) {
+    return &NewWebUIIOS<UserDefaultsInternalsUI>;
+  }
 
   return nullptr;
 }

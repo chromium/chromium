@@ -74,6 +74,21 @@ class GmbVideoFramePoolContext
         size, format, usage, gpu::kNullSurfaceHandle, nullptr);
   }
 
+  void CreateSharedImage(gfx::GpuMemoryBuffer* gpu_memory_buffer,
+                         const SharedImageFormat& si_format,
+                         const gfx::ColorSpace& color_space,
+                         GrSurfaceOrigin surface_origin,
+                         SkAlphaType alpha_type,
+                         uint32_t usage,
+                         gpu::Mailbox& mailbox,
+                         gpu::SyncToken& sync_token) override {
+    mailbox = sii_in_process_->CreateSharedImage(
+        si_format, gpu_memory_buffer->GetSize(), color_space, surface_origin,
+        alpha_type, usage, "VizGmbVideoFramePool",
+        gpu_memory_buffer->CloneHandle());
+    sync_token = sii_in_process_->GenVerifiedSyncToken();
+  }
+
   // Create a SharedImage representation of a plane of a GpuMemoryBuffer
   // allocated by this interface. Populate `mailbox` and `sync_token`.
   void CreateSharedImage(gfx::GpuMemoryBuffer* gpu_memory_buffer,

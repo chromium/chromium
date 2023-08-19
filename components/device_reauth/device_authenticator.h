@@ -65,7 +65,11 @@ enum class DeviceAuthRequester {
   // and re-auth is triggered.
   kVirtualCardAutofill = 11,
 
-  kMaxValue = kVirtualCardAutofill,
+  // The prompt displayed while we were trying to opt the user into payments
+  // autofill re-auth.
+  kPaymentsAutofillOptIn = 12,
+
+  kMaxValue = kPaymentsAutofillOptIn,
 };
 
 // This interface encapsulates operations related to biometric authentication.
@@ -82,10 +86,8 @@ class DeviceAuthenticator : public base::RefCounted<DeviceAuthenticator> {
   // Returns whether biometrics are available for a given device.
   virtual bool CanAuthenticateWithBiometrics() = 0;
 
-#if BUILDFLAG(IS_ANDROID)
   // Returns whether biometrics or screenlock are available for a given device.
   virtual bool CanAuthenticateWithBiometricOrScreenLock() = 0;
-#endif
 
   // Asks the user to authenticate. Invokes |callback| asynchronously when
   // the auth flow returns with the result.

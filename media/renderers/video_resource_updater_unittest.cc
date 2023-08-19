@@ -13,12 +13,15 @@
 #include "base/test/task_environment.h"
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/client/shared_bitmap_reporter.h"
+#include "components/viz/common/quads/compositor_render_pass.h"
+#include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/test/fake_output_surface.h"
 #include "components/viz/test/test_gles2_interface.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "media/base/video_frame.h"
+#include "skia/ext/skcolorspace_primaries.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -92,16 +95,16 @@ class VideoResourceUpdaterTest : public testing::Test {
   std::unique_ptr<VideoResourceUpdater> CreateUpdaterForHardware(
       bool use_stream_video_draw_quad = false) {
     return std::make_unique<VideoResourceUpdater>(
-        context_provider_.get(), /*raster_context_provider=*/nullptr, nullptr,
-        resource_provider_.get(), use_stream_video_draw_quad,
+        context_provider_.get(), nullptr, resource_provider_.get(),
+        use_stream_video_draw_quad,
         /*use_gpu_memory_buffer_resources=*/false,
         /*use_r16_texture=*/use_r16_texture_, /*max_resource_size=*/10000);
   }
 
   std::unique_ptr<VideoResourceUpdater> CreateUpdaterForSoftware() {
     return std::make_unique<VideoResourceUpdater>(
-        /*context_provider=*/nullptr, /*raster_context_provider=*/nullptr,
-        &shared_bitmap_reporter_, resource_provider_.get(),
+        /*context_provider=*/nullptr, &shared_bitmap_reporter_,
+        resource_provider_.get(),
         /*use_stream_video_draw_quad=*/false,
         /*use_gpu_memory_buffer_resources=*/false,
         /*use_r16_texture=*/false,
@@ -295,6 +298,15 @@ class VideoResourceUpdaterTest : public testing::Test {
     video_frame->metadata().copy_required = needs_copy;
     return video_frame;
   }
+
+#if BUILDFLAG(IS_WIN)
+  scoped_refptr<VideoFrame> CreateTestDCompSurfaceVideoFrame() {
+    scoped_refptr<VideoFrame> video_frame = CreateTestHardwareVideoFrame(
+        PIXEL_FORMAT_ARGB, GL_TEXTURE_EXTERNAL_OES);
+    video_frame->metadata().dcomp_surface = true;
+    return video_frame;
+  }
+#endif
 
   scoped_refptr<VideoFrame> CreateTestYuvHardwareVideoFrame(
       VideoPixelFormat format,
@@ -860,7 +872,7 @@ TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_SharedImageFormat) {
   EXPECT_EQ(VideoFrameResourceType::RGB, resources.type);
   EXPECT_EQ(1u, resources.resources.size());
   EXPECT_EQ(1u, resources.release_callbacks.size());
-  EXPECT_EQ(viz::MultiPlaneFormat::kYV12, resources.resources[0].format);
+  EXPECT_EQ(viz::MultiPlaneFormat::kI420, resources.resources[0].format);
   EXPECT_EQ(resources.resources[0].synchronization_type,
             viz::TransferableResource::SynchronizationType::kSyncToken);
 
@@ -921,6 +933,52 @@ TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_TextureQuad) {
   EXPECT_EQ(1u, resources.release_callbacks.size());
   EXPECT_EQ(0u, GetSharedImageCount());
 }
+
+#if BUILDFLAG(IS_WIN)
+// Check that a video frame marked as containing a DComp surface turns into a
+// texture draw quad that is required for overlay.
+TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_DCompSurface) {
+  std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
+  EXPECT_EQ(0u, GetSharedImageCount());
+  scoped_refptr<VideoFrame> video_frame = CreateTestDCompSurfaceVideoFrame();
+
+  VideoFrameExternalResources resources =
+      updater->CreateExternalResourcesFromVideoFrame(video_frame);
+  EXPECT_EQ(VideoFrameResourceType::STREAM_TEXTURE, resources.type);
+  EXPECT_EQ(1u, resources.resources.size());
+  EXPECT_EQ((GLenum)GL_TEXTURE_EXTERNAL_OES,
+            resources.resources[0].mailbox_holder.texture_target);
+  EXPECT_EQ(1u, resources.release_callbacks.size());
+  EXPECT_EQ(0u, GetSharedImageCount());
+
+  updater->ObtainFrameResources(video_frame);
+
+  std::unique_ptr<viz::CompositorRenderPass> pass =
+      viz::CompositorRenderPass::Create();
+  pass->SetNew(/*pass_id=*/viz::CompositorRenderPassId{1},
+               /*output_rect=*/gfx::Rect(video_frame->coded_size()),
+               /*damage_rect=*/gfx::Rect(),
+               /*transform_to_root_target=*/gfx::Transform());
+  updater->AppendQuads(
+      /*render_pass=*/pass.get(), video_frame,
+      /*transform=*/gfx::Transform(),
+      /*quad_rect=*/gfx::Rect(video_frame->coded_size()),
+      /*visible_quad_rect=*/gfx::Rect(video_frame->coded_size()),
+      gfx::MaskFilterInfo(), /*clip_rect=*/absl::nullopt,
+      /*context_opaque=*/true, /*draw_opacity=*/1.0,
+      /*sorting_context_id=*/0);
+
+  EXPECT_EQ(1u, pass->quad_list.size());
+
+  const viz::TextureDrawQuad* quad =
+      pass->quad_list.ElementAt(0)->DynamicCast<viz::TextureDrawQuad>();
+  EXPECT_NE(nullptr, quad);
+  EXPECT_EQ(true, quad->is_stream_video);
+  EXPECT_EQ(viz::OverlayPriority::kRequired, quad->overlay_priority_hint);
+
+  updater->ReleaseFrameResources();
+}
+#endif
 
 // Passthrough the sync token returned by the compositor if we don't have an
 // existing release sync token.
@@ -1022,8 +1080,7 @@ TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_SingleNV12) {
   EXPECT_EQ(1u, resources.resources.size());
   EXPECT_EQ((GLenum)GL_TEXTURE_EXTERNAL_OES,
             resources.resources[0].mailbox_holder.texture_target);
-  EXPECT_EQ(viz::YUV_420_BIPLANAR,
-            resources.resources[0].format.resource_format());
+  EXPECT_EQ(viz::LegacyMultiPlaneFormat::kNV12, resources.resources[0].format);
   EXPECT_EQ(0u, GetSharedImageCount());
 }
 
@@ -1098,7 +1155,10 @@ TEST_F(VideoResourceUpdaterTest,
 TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_SingleP016HDR) {
   constexpr auto kHDR10ColorSpace = gfx::ColorSpace::CreateHDR10();
   gfx::HDRMetadata hdr_metadata{};
-  hdr_metadata.smpte_st_2086.luminance_max = 1000;
+  hdr_metadata.smpte_st_2086 =
+      gfx::HdrMetadataSmpteSt2086(SkNamedPrimariesExt::kP3,
+                                  /*luminance_max=*/1000,
+                                  /*luminance_min=*/0);
   std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
   EXPECT_EQ(0u, GetSharedImageCount());
   scoped_refptr<VideoFrame> video_frame = CreateTestHardwareVideoFrame(
@@ -1112,8 +1172,7 @@ TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_SingleP016HDR) {
   EXPECT_EQ(1u, resources.resources.size());
   EXPECT_EQ(static_cast<GLenum>(GL_TEXTURE_EXTERNAL_OES),
             resources.resources[0].mailbox_holder.texture_target);
-  EXPECT_EQ(viz::ResourceFormat::P010,
-            resources.resources[0].format.resource_format());
+  EXPECT_EQ(viz::LegacyMultiPlaneFormat::kP010, resources.resources[0].format);
   EXPECT_EQ(kHDR10ColorSpace, resources.resources[0].color_space);
   EXPECT_EQ(hdr_metadata, resources.resources[0].hdr_metadata);
   EXPECT_EQ(0u, GetSharedImageCount());

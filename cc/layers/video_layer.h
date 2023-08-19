@@ -31,7 +31,7 @@ class CC_EXPORT VideoLayer : public Layer {
 
   std::unique_ptr<LayerImpl> CreateLayerImpl(
       LayerTreeImpl* tree_impl) const override;
-
+  bool RequiresSetNeedsDisplayOnHdrHeadroomChange() const override;
   bool Update() override;
 
   // Clears |provider_| to ensure it is not used after destruction.

@@ -18,7 +18,6 @@ import android.view.View;
 import androidx.activity.OnBackPressedCallback;
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -91,14 +90,6 @@ public class FullScreenIncognitoReauthCoordinatorTest {
         mFullScreenIncognitoReauthCoordinator.setModelChangeProcessorForTesting(
                 mPropertyModelChangeProcessorMock);
         mFullScreenIncognitoReauthCoordinator.setPropertyModelForTesting(mPropertyModelMock);
-    }
-
-    @After
-    public void tearDown() {
-        mFullScreenIncognitoReauthCoordinator.setIncognitoReauthDialogForTesting(null);
-        mFullScreenIncognitoReauthCoordinator.setIncognitoReauthViewForTesting(null);
-        mFullScreenIncognitoReauthCoordinator.setModelChangeProcessorForTesting(null);
-        mFullScreenIncognitoReauthCoordinator.setPropertyModelForTesting(null);
     }
 
     @Test(expected = AssertionError.class)

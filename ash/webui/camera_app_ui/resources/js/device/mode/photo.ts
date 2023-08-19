@@ -92,11 +92,11 @@ export class Photo extends ModeBase {
   }
 
   private async waitPreviewReady(): Promise<void> {
-    // Chrome use muted state on video track representing no frame input
-    // returned from preview video for a while and call |takePhoto()| with
+    // Chrome using muted state on video track representing no frame input
+    // returned from preview video for a while and calling |takePhoto()| with
     // video track in muted state will fail with |kInvalidStateError| exception.
     // To mitigate chance of hitting this error, here we ensure frame inputs
-    // from the preview and checked video muted state before taking photo.
+    // from the preview and check video muted state before taking photo.
     const track = this.video.getVideoTrack();
     const videoEl = this.video.video;
     const waitFrame = async () => {

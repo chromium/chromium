@@ -4,11 +4,14 @@
 
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 
+#include <algorithm>
 #include <unordered_set>
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -28,6 +31,7 @@
 #include "chrome/browser/profiles/profile_avatar_downloader.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_metrics.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/account_id/account_id.h"
@@ -214,20 +218,6 @@ profile_metrics::AvatarState GetAvatarState(ProfileAttributesEntry* entry) {
                    : profile_metrics::AvatarState::kSignedInOld;
 }
 
-profile_metrics::NameState GetNameState(ProfileAttributesEntry* entry) {
-  bool has_default_name = entry->IsUsingDefaultName();
-  switch (entry->GetNameForm()) {
-    case NameForm::kGaiaName:
-      return profile_metrics::NameState::kGaiaName;
-    case NameForm::kLocalName:
-      return has_default_name ? profile_metrics::NameState::kDefaultName
-                              : profile_metrics::NameState::kCustomName;
-    case NameForm::kGaiaAndLocalName:
-      return has_default_name ? profile_metrics::NameState::kGaiaAndDefaultName
-                              : profile_metrics::NameState::kGaiaAndCustomName;
-  }
-}
-
 profile_metrics::UnconsentedPrimaryAccountType GetUnconsentedPrimaryAccountType(
     ProfileAttributesEntry* entry) {
   if (entry->GetSigninState() == SigninState::kNotSignedIn)
@@ -251,7 +241,6 @@ profile_metrics::UnconsentedPrimaryAccountType GetUnconsentedPrimaryAccountType(
 void RecordProfileState(ProfileAttributesEntry* entry,
                         profile_metrics::StateSuffix suffix) {
   profile_metrics::LogProfileAvatar(GetAvatarState(entry), suffix);
-  profile_metrics::LogProfileName(GetNameState(entry), suffix);
   profile_metrics::LogProfileAccountType(
       GetUnconsentedPrimaryAccountType(entry), suffix);
   profile_metrics::LogProfileSyncEnabled(
@@ -260,6 +249,29 @@ void RecordProfileState(ProfileAttributesEntry* entry,
       suffix);
   profile_metrics::LogProfileDaysSinceLastUse(
       (base::Time::Now() - entry->GetActiveTime()).InDays(), suffix);
+}
+
+// Rotating between `from_index` to `to_index` by 1 step. Rotation is done to
+// the left or the right based on the index comparison.
+void Rotate(base::Value::List& list, size_t from_index, size_t to_index) {
+  CHECK_LT(from_index, list.size());
+  CHECK_LT(to_index, list.size());
+
+  // Rotating left.
+  if (from_index <= to_index) {
+    std::rotate(list.begin() + from_index, list.begin() + from_index + 1,
+                list.begin() + to_index + 1);
+    return;
+  }
+
+  // Rotating right;
+  // We invert the indices and work with the reverse iterator.
+  size_t inv_from_index = list.size() - from_index - 1;
+  size_t inv_to_index = list.size() - to_index - 1;
+
+  std::rotate(list.rbegin() + inv_from_index,
+              list.rbegin() + inv_from_index + 1,
+              list.rbegin() + inv_to_index + 1);
 }
 
 }  // namespace
@@ -343,6 +355,8 @@ ProfileAttributesStorage::ProfileAttributesStorage(
       base::BindRepeating(&ProfileMetrics::LogNumberOfProfiles, this));
   repeating_timer_->Start();
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+
+  EnsureProfilesOrderPrefIsInitialized();
 }
 
 ProfileAttributesStorage::~ProfileAttributesStorage() = default;
@@ -350,6 +364,7 @@ ProfileAttributesStorage::~ProfileAttributesStorage() = default;
 // static
 void ProfileAttributesStorage::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kProfileAttributes);
+  registry->RegisterListPref(prefs::kProfilesOrder);
   registry->RegisterTimePref(kProfileCountLastUpdatePref, base::Time());
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterBooleanPref(kLegacyProfileNameMigrated, false);
@@ -413,6 +428,10 @@ void ProfileAttributesStorage::AddProfile(ProfileAttributesInitParams params) {
 
   attributes.Set(key, std::move(info));
 
+  ScopedListPrefUpdate ordered_list_update(prefs_, prefs::kProfilesOrder);
+  base::Value::List& ordered_list = ordered_list_update.Get();
+  ordered_list.Append(key);
+
   ProfileAttributesEntry* entry = InitEntryWithKey(key, params.is_omitted);
   entry->InitializeLastNameToDisplay();
 
@@ -467,6 +486,10 @@ void ProfileAttributesStorage::RemoveProfile(
   attributes.Remove(key);
   profile_attributes_entries_.erase(profile_path.value());
 
+  ScopedListPrefUpdate ordered_list_update(prefs_, prefs::kProfilesOrder);
+  base::Value::List& ordered_list = ordered_list_update.Get();
+  ordered_list.EraseValue(base::Value(key));
+
   // `OnProfileWasRemoved()` must be the first observer method being called
   // right after a profile was removed from the storage.
   for (auto& observer : observer_list_) {
@@ -508,6 +531,109 @@ ProfileAttributesStorage::GetAllProfilesAttributesSorted(
   return ret;
 }
 
+bool ProfileAttributesStorage::IsProfilesOrderPrefValid() const {
+  const base::Value::List& profile_keys_order =
+      prefs_->GetList(prefs::kProfilesOrder);
+
+  // We use this map to validate the values in the prefs.
+  base::flat_map<std::string, ProfileAttributesEntry*> key_entry_map =
+      GetStorageKeyEntryMap();
+
+  // Make sure the sizes are equal to proceed.
+  if (profile_keys_order.size() != key_entry_map.size()) {
+    return false;
+  }
+
+  base::flat_set<ProfileAttributesEntry*> entries_set;
+  for (const base::Value& keyValue : profile_keys_order) {
+    const std::string& key = keyValue.GetString();
+
+    auto key_entry_it = key_entry_map.find(key);
+    // If the entry is not found, there is a mismatch.
+    if (key_entry_it == key_entry_map.end()) {
+      return false;
+    }
+
+    ProfileAttributesEntry* found_entry = key_entry_it->second;
+    CHECK(found_entry);
+    auto inserted_entry = entries_set.insert(found_entry);
+    // We do not expect the same entry to be repeated or be invalid.
+    // `inserted_entry.second` is false if the element already exists.
+    if (!inserted_entry.second) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+void ProfileAttributesStorage::EnsureProfilesOrderPrefIsInitialized() {
+  ScopedListPrefUpdate update(prefs_, prefs::kProfilesOrder);
+  base::Value::List& profile_keys_order = update.Get();
+
+  // If the saved order pref is not valid, we recover by reseting the whole list
+  // and re-populate it with the profiles ordered by local profile name.
+  if (!IsProfilesOrderPrefValid()) {
+    profile_keys_order.clear();
+
+    std::vector<ProfileAttributesEntry*> entries =
+        GetAllProfilesAttributesSortedByLocalProfileName();
+    for (ProfileAttributesEntry* entry : entries) {
+      profile_keys_order.Append(StorageKeyFromProfilePath(entry->GetPath()));
+    }
+  }
+
+  DCHECK_EQ(profile_keys_order.size(), GetNumberOfProfiles());
+}
+
+void ProfileAttributesStorage::UpdateProfilesOrderPref(size_t from_index,
+                                                       size_t to_index) {
+  ScopedListPrefUpdate update(prefs_, prefs::kProfilesOrder);
+  base::Value::List& profile_keys_order = update.Get();
+
+  // Apply the shift by rotating the element based on the indices.
+  // Element at `from_index` will be placed at `to_index` and the rest will
+  // shift left or right based on the index comparison.
+  Rotate(profile_keys_order, from_index, to_index);
+}
+
+base::flat_map<std::string, ProfileAttributesEntry*>
+ProfileAttributesStorage::GetStorageKeyEntryMap() const {
+  base::flat_map<std::string, ProfileAttributesEntry*> key_entry_map;
+  for (auto& path_and_entry : profile_attributes_entries_) {
+    auto key = StorageKeyFromProfilePath(base::FilePath(path_and_entry.first));
+    key_entry_map[key] = &path_and_entry.second;
+  }
+  return key_entry_map;
+}
+
+std::vector<ProfileAttributesEntry*>
+ProfileAttributesStorage::GetAllProfilesAttributesSortedForDisplay() const {
+  std::vector<ProfileAttributesEntry*> ret_ordered_entries;
+
+  const base::Value::List& ordered_keys =
+      prefs_->GetList(prefs::kProfilesOrder);
+  DCHECK_EQ(ordered_keys.size(), GetNumberOfProfiles());
+
+  base::flat_map<std::string, ProfileAttributesEntry*> key_entry_map =
+      GetStorageKeyEntryMap();
+  for (const base::Value& key : ordered_keys) {
+    ProfileAttributesEntry* entry = key_entry_map[key.GetString()];
+    DCHECK(entry);
+    ret_ordered_entries.emplace_back(entry);
+  }
+
+  return ret_ordered_entries;
+}
+
+std::vector<ProfileAttributesEntry*>
+ProfileAttributesStorage::GetAllProfilesAttributesSortedWithCheck() const {
+  if (base::FeatureList::IsEnabled(kProfilesReordering)) {
+    return GetAllProfilesAttributesSortedForDisplay();
+  }
+  return GetAllProfilesAttributesSortedByLocalProfileName();
+}
+
 std::vector<ProfileAttributesEntry*>
 ProfileAttributesStorage::GetAllProfilesAttributesSortedByName() const {
   return GetAllProfilesAttributesSorted(false);
@@ -522,8 +648,9 @@ ProfileAttributesStorage::GetAllProfilesAttributesSortedByLocalProfileName()
 ProfileAttributesEntry* ProfileAttributesStorage::GetProfileAttributesWithPath(
     const base::FilePath& path) {
   const auto entry_iter = profile_attributes_entries_.find(path.value());
-  if (entry_iter == profile_attributes_entries_.end())
+  if (entry_iter == profile_attributes_entries_.end()) {
     return nullptr;
+  }
 
   return &entry_iter->second;
 }
@@ -535,7 +662,7 @@ size_t ProfileAttributesStorage::GetNumberOfProfiles() const {
 std::u16string ProfileAttributesStorage::ChooseNameForNewProfile(
     size_t icon_index) const {
   std::u16string name;
-  for (int name_index = 1; ; ++name_index) {
+  for (int name_index = 1;; ++name_index) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
     // Using native digits will break IsDefaultProfileName() below because
     // it uses sscanf.
@@ -575,14 +702,15 @@ bool ProfileAttributesStorage::IsDefaultProfileName(
     const std::u16string& name,
     bool include_check_for_legacy_profile_name) const {
   // Check whether it's one of the "Person %d" style names.
-  std::string default_name_format =
-      l10n_util::GetStringFUTF8(IDS_NEW_NUMBERED_PROFILE_NAME, u"%d");
-  int generic_profile_number;  // Unused. Just a placeholder for sscanf.
-  int assignments =
-      sscanf(base::UTF16ToUTF8(name).c_str(), default_name_format.c_str(),
-             &generic_profile_number);
-  if (assignments == 1)
-    return true;
+  std::u16string default_name_prefix =
+      l10n_util::GetStringFUTF16(IDS_NEW_NUMBERED_PROFILE_NAME, u"");
+  if (base::StartsWith(name, default_name_prefix)) {
+    int generic_profile_number;  // Unused. Just a placeholder for StringToInt.
+    if (base::StringToInt(name.substr(default_name_prefix.length()),
+                          &generic_profile_number)) {
+      return true;
+    }
+  }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
   if (!include_check_for_legacy_profile_name)
@@ -1032,4 +1160,9 @@ void ProfileAttributesStorage::SaveAvatarImageAtPathNoCallback(
     const base::FilePath& image_path) {
   SaveAvatarImageAtPath(profile_path, image, key, image_path,
                         base::OnceClosure());
+}
+
+void ProfileAttributesStorage::
+    EnsureProfilesOrderPrefIsInitializedForTesting() {
+  EnsureProfilesOrderPrefIsInitialized();
 }

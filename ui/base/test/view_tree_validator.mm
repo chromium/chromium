@@ -5,6 +5,7 @@
 #include "ui/base/test/view_tree_validator.h"
 
 #include <Cocoa/Cocoa.h>
+
 #include "base/mac/mac_util.h"
 #include "base/strings/sys_string_conversions.h"
 
@@ -35,7 +36,7 @@ bool IgnoreChildBoundsChecks(NSView* view) {
   // On macOS 10.14+, NSButton has a subview of a private helper class whose
   // bounds extend a bit outside the NSButton itself. We don't care about this
   // helper class's bounds being outside the button.
-  return base::mac::IsAtLeastOS10_14() && [view isKindOfClass:[NSButton class]];
+  return [view isKindOfClass:[NSButton class]];
 }
 
 }  // namespace
@@ -52,7 +53,8 @@ absl::optional<ViewTreeProblemDetails> ValidateViewTree(NSView* root) {
       if (!NSContainsRect(view.bounds, child.frame) &&
           !IgnoreChildBoundsChecks(view)) {
         return absl::optional<ViewTreeProblemDetails>(
-            {ViewTreeProblemDetails::VIEW_OUTSIDE_PARENT, child, view});
+            {ViewTreeProblemDetails::ProblemType::kViewOutsideParent, child,
+             view});
       }
     }
 
@@ -71,7 +73,7 @@ absl::optional<ViewTreeProblemDetails> ValidateViewTree(NSView* root) {
       if ([view isDescendantOf:other] || [other isDescendantOf:view])
         continue;
       return absl::optional<ViewTreeProblemDetails>(
-          {ViewTreeProblemDetails::VIEWS_OVERLAP, view, other});
+          {ViewTreeProblemDetails::ProblemType::kViewsOverlap, view, other});
     }
   }
 
@@ -81,12 +83,12 @@ absl::optional<ViewTreeProblemDetails> ValidateViewTree(NSView* root) {
 std::string ViewTreeProblemDetails::ToString() {
   NSString* s;
   switch (type) {
-    case VIEW_OUTSIDE_PARENT:
+    case ProblemType::kViewOutsideParent:
       s = [NSString stringWithFormat:@"View %@ [%@] outside parent %@ [%@]",
                                      view_a, NSStringFromRect(view_a.frame),
                                      view_b, NSStringFromRect(view_b.frame)];
       break;
-    case VIEWS_OVERLAP:
+    case ProblemType::kViewsOverlap:
       s = [NSString stringWithFormat:@"Views %@ [%@] and %@ [%@] overlap",
                                      view_a, NSStringFromRect(view_a.frame),
                                      view_b, NSStringFromRect(view_b.frame)];

@@ -15,10 +15,6 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface ActionFactory ()
 
 // Histogram to record executed actions.
@@ -163,9 +159,12 @@
 }
 
 - (UIAction*)actionToMoveFolderWithBlock:(ProceduralBlock)block {
+  // Use multi color to make sure the arrow is visible.
+  UIImage* image = MakeSymbolMulticolor(
+      CustomSymbolWithPointSize(kMoveFolderSymbol, kSymbolActionPointSize));
   return [self
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_BOOKMARK_CONTEXT_MENU_MOVE)
-                image:[UIImage imageNamed:@"move_folder"]
+                image:image
                  type:MenuActionType::Move
                 block:block];
 }

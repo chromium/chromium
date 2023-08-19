@@ -73,7 +73,7 @@ void SVGLinearGradientElement::SvgAttributeChanged(
       attr_name == svg_names::kY1Attr || attr_name == svg_names::kY2Attr) {
     SVGElement::InvalidationGuard invalidation_guard(this);
     UpdateRelativeLengthsInformation();
-    InvalidateGradient(layout_invalidation_reason::kAttributeChanged);
+    InvalidateGradient();
     return;
   }
 
@@ -172,14 +172,10 @@ SVGAnimatedPropertyBase* SVGLinearGradientElement::PropertyFromAttribute(
   }
 }
 
-void SVGLinearGradientElement::SynchronizeSVGAttribute(
-    const QualifiedName& name) const {
-  if (name == AnyQName()) {
-    SVGAnimatedPropertyBase* attrs[]{x1_.Get(), y1_.Get(), x2_.Get(),
-                                     y2_.Get()};
-    SynchronizeAllSVGAttributes(attrs);
-  }
-  SVGGradientElement::SynchronizeSVGAttribute(name);
+void SVGLinearGradientElement::SynchronizeAllSVGAttributes() const {
+  SVGAnimatedPropertyBase* attrs[]{x1_.Get(), y1_.Get(), x2_.Get(), y2_.Get()};
+  SynchronizeListOfSVGAttributes(attrs);
+  SVGGradientElement::SynchronizeAllSVGAttributes();
 }
 
 }  // namespace blink

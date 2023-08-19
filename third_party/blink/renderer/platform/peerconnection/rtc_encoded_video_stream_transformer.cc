@@ -236,15 +236,15 @@ void RTCEncodedVideoStreamTransformer::TransformFrame(
 
 void RTCEncodedVideoStreamTransformer::SendFrameToSink(
     std::unique_ptr<webrtc::TransformableVideoFrameInterface> frame) {
-  // TODO(crbug.com/1069275): Remove this section once WebRTC reports ssrc in
-  // all sink callback registrations.
   base::AutoLock locker(sink_lock_);
-  if (send_frame_to_sink_callbacks_.size() == 1 &&
-      send_frame_to_sink_callbacks_[0].first == 0) {
+  if (send_frame_to_sink_callbacks_.size() == 1) {
+    // Only a single sink callback registered, so this frame must use it.
     send_frame_to_sink_callbacks_[0].second->OnTransformedFrame(
         std::move(frame));
     return;
   }
+  // Multiple sink callbacks registered, eg for simulcast. Find the correct
+  // callback based on the ssrc of the written frame.
   for (const auto& sink_callback : send_frame_to_sink_callbacks_) {
     if (sink_callback.first == frame->GetSsrc()) {
       sink_callback.second->OnTransformedFrame(std::move(frame));

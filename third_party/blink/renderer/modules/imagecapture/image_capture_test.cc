@@ -1207,6 +1207,64 @@ TEST_F(ImageCaptureConstraintTest,
   EXPECT_EQ(capture_error->Constraint(), "pan");
 }
 
+TEST_F(ImageCaptureConstraintTest, ApplyAdvancedBareValueConstraints) {
+  V8TestingScope scope;
+  image_capture_->SetExecutionContext(scope.GetExecutionContext());
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
+
+  // Create constraints:
+  //   {advanced: [
+  //     {},
+  //     {
+  //       whiteBalanceMode: "...",
+  //       exposureMode: ["...", ...],
+  //       focusMode: ["...", ...],
+  //       exposureCompensation: ...,
+  //       ...
+  //     }
+  //   ]}
+  auto* constraint_set = MediaTrackConstraintSet::Create();
+  PopulateConstraintSet<ConstrainWithBareValueCreator>(constraint_set,
+                                                       all_capabilities_);
+  auto* constraints = MediaTrackConstraints::Create();
+  constraints->setAdvanced({MediaTrackConstraintSet::Create(), constraint_set});
+  auto settings = media::mojom::blink::PhotoSettings::New();
+  // Should apply the constraints to the settings as is and succeed.
+  EXPECT_TRUE(image_capture_->CheckAndApplyMediaTrackConstraintsToSettings(
+      &*settings, constraints, resolver));
+  CheckExactValues(settings, all_capabilities_);
+}
+
+TEST_F(ImageCaptureConstraintTest, ApplyAdvancedExactConstraints) {
+  V8TestingScope scope;
+  image_capture_->SetExecutionContext(scope.GetExecutionContext());
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
+
+  // Create constraints:
+  //   {advanced: [
+  //     {},
+  //     {
+  //       whiteBalanceMode: {exact: "..."},
+  //       exposureMode: {exact: ["...", ...]},
+  //       focusMode: {exact: ["...", ...]},
+  //       exposureCompensation: {exact: ...},
+  //       ...
+  //     }
+  //   ]}
+  auto* constraint_set = MediaTrackConstraintSet::Create();
+  PopulateConstraintSet<ConstrainWithExactDictionaryCreator>(constraint_set,
+                                                             all_capabilities_);
+  auto* constraints = MediaTrackConstraints::Create();
+  constraints->setAdvanced({MediaTrackConstraintSet::Create(), constraint_set});
+  auto settings = media::mojom::blink::PhotoSettings::New();
+  // Should apply the constraints to the settings as is and succeed.
+  EXPECT_TRUE(image_capture_->CheckAndApplyMediaTrackConstraintsToSettings(
+      &*settings, constraints, resolver));
+  CheckExactValues(settings, all_capabilities_);
+}
+
 TEST_F(ImageCaptureConstraintTest, ApplyAdvancedIdealConstraints) {
   V8TestingScope scope;
   image_capture_->SetExecutionContext(scope.GetExecutionContext());
@@ -1417,10 +1475,11 @@ TEST_F(ImageCaptureConstraintTest, ApplySecurityErrorConstraints) {
       MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
   resolver->Promise().Then(nullptr, MakeGarbageCollected<ScriptFunction>(
                                         scope.GetScriptState(), capture_error));
-  // TODO(crbug.com/1408091): This is not spec compliant. This should fail with
-  // a `SecurityError`.
-  EXPECT_TRUE(image_capture_->CheckAndApplyMediaTrackConstraintsToSettings(
+  EXPECT_FALSE(image_capture_->CheckAndApplyMediaTrackConstraintsToSettings(
       &*settings, constraints, resolver));
+  scope.PerformMicrotaskCheckpoint();  // Resolve/reject promises.
+  EXPECT_TRUE(capture_error->WasCalled());
+  EXPECT_EQ(capture_error->Name(), "SecurityError");
 }
 
 }  // namespace blink

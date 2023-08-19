@@ -33,6 +33,7 @@ namespace network {
 
 class URLLoaderFactory;
 class NetworkContext;
+class SharedDictionary;
 class SharedDictionaryStorage;
 class SharedDictionaryDataPipeWriter;
 
@@ -54,6 +55,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   using DeleteCallback = base::OnceCallback<void(CorsURLLoader* loader)>;
 
   // Raw pointer arguments must outlive the returned instance.
+  // note: `url_loader_network_service_observer` must not be null.
   CorsURLLoader(
       mojo::PendingReceiver<mojom::URLLoader> loader_receiver,
       int32_t process_id,
@@ -73,8 +75,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
       const net::IsolationInfo& isolation_info,
       mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
       const mojom::ClientSecurityState* factory_client_security_state,
+      mojo::Remote<mojom::URLLoaderNetworkServiceObserver>*
+          url_loader_network_service_observer,
       const CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
       scoped_refptr<SharedDictionaryStorage> shared_dictionary_storage,
+      raw_ptr<mojom::SharedDictionaryAccessObserver> shared_dictionary_observer,
       NetworkContext* context);
 
   CorsURLLoader(const CorsURLLoader&) = delete;
@@ -148,6 +153,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   // If `is_warning` is true, then the error is only reported as a warning.
   void ReportCorsErrorToDevTools(const CorsErrorStatus& status,
                                  bool is_warning = false);
+
+  // Reports a Corb/ORB error for `request_` to DevTools, if possible.
+  void ReportCorbErrorToDevTools();
 
   // Handles OnComplete() callback.
   void HandleComplete(URLLoaderCompletionStatus status);
@@ -296,6 +304,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   // from `memory_cache_`.
   bool memory_cache_was_used_ = false;
 
+  // Observer for this request and any preflight requests we send ahead of it.
+  // Owned by the parent `CorsURLLoaderFactory`, never nullptr - though the
+  // pointee remote itself may be unbound.
+  raw_ptr<mojo::Remote<mojom::URLLoaderNetworkServiceObserver>>
+      url_loader_network_service_observer_;
+
   const CrossOriginEmbedderPolicy cross_origin_embedder_policy_;
 
   bool has_authorization_covered_by_wildcard_ = false;
@@ -334,6 +348,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   const raw_ptr<NetworkContext> context_;
 
   scoped_refptr<SharedDictionaryStorage> shared_dictionary_storage_;
+  std::unique_ptr<SharedDictionary> shared_dictionary_;
+  raw_ptr<mojom::SharedDictionaryAccessObserver> shared_dictionary_observer_;
   std::unique_ptr<SharedDictionaryDataPipeWriter>
       shared_dictionary_data_pipe_writer_;
   absl::optional<URLLoaderCompletionStatus> deferred_completion_status_;

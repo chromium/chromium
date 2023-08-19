@@ -1,0 +1,229 @@
+<style include="settings-shared">
+  .restore-defaults-button {
+    border-radius: 16px;
+    height: 32px;
+    margin-inline: 16px;
+  }
+
+  .restore-defaults-icon {
+    --iron-icon-fill-color: currentColor;
+    margin-inline-end: 8px;
+  }
+</style>
+<os-settings-animated-pages id="pages" section="[[section_]]">
+  <div id="main" route-path="default">
+    <settings-card header-text="$i18n{devicePageTitle}">
+      <template is="dom-if"
+          if="[[showPointersRow_(hasMouse_, hasPointingStick_,
+                                hasTouchpad_, isDeviceSettingsSplitEnabled_)]]">
+        <cr-link-row id="pointersRow"
+            label="[[getPointersTitle_(hasMouse_, hasPointingStick_,
+                                      hasTouchpad_)]]"
+            on-click="onPointersClick_"
+            role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
+      </template>
+      <template is="dom-if"
+          if="[[showPerDeviceMouseRow_(mice,
+                                      isDeviceSettingsSplitEnabled_)]]">
+        <cr-link-row class="hr" id="perDeviceMouseRow" label="$i18n{mouseTitle}"
+            on-click="onPerDeviceMouseClick_" aria-label="$i18n{mouseTitle}"
+            role-description="$i18n{subpageArrowRoleDescription}">
+        </cr-link-row>
+      </template>
+      <template is="dom-if"
+          if="[[showPerDeviceTouchpadRow_(touchpads,
+                                          isDeviceSettingsSplitEnabled_)]]">
+        <cr-link-row class="hr" id="perDeviceTouchpadRow"
+            aria-label="$i18n{touchpadTitle}"
+            label="$i18n{touchpadTitle}" on-click="onPerDeviceTouchpadClick_"
+            role-description="$i18n{subpageArrowRoleDescription}">
+        </cr-link-row>
+      </template>
+      <template is="dom-if"
+          if="[[showPerDevicePointingStickRow_(pointingSticks,
+                                              isDeviceSettingsSplitEnabled_)]]">
+        <cr-link-row class="hr" id="perDevicePointingStickRow"
+            aria-label="$i18n{pointingStickTitle}"
+            label="$i18n{pointingStickTitle}"
+            on-click="onPerDevicePointingStickClick_"
+            role-description="$i18n{subpageArrowRoleDescription}">
+        </cr-link-row>
+      </template>
+      <template is="dom-if" if="[[isDeviceSettingsSplitEnabled_]]">
+        <cr-link-row class="hr" id="perDeviceKeyboardRow"
+            label="$i18n{keyboardTitle}" aria-label="$i18n{keyboardTitle}"
+            on-click="onPerDeviceKeyboardClick_"
+            role-description="$i18n{subpageArrowRoleDescription}">
+        </cr-link-row>
+      </template>
+      <template is="dom-if" if="[[!isDeviceSettingsSplitEnabled_]]">
+        <cr-link-row class="hr" id="keyboardRow" label="$i18n{keyboardTitle}"
+            on-click="onKeyboardClick_"
+            role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
+      </template>
+      <template is="dom-if" if="[[hasStylus_]]">
+        <cr-link-row class="hr" id="stylusRow" label="$i18n{stylusTitle}"
+            on-click="onStylusClick_"
+            role-description="$i18n{subpageArrowRoleDescription}">
+        </cr-link-row>
+      </template>
+      <template is="dom-if" if="[[isPeripheralCustomizationEnabled]]">
+        <cr-link-row class="hr" id="tabletRow" label="$i18n{tabletTitle}"
+            on-click="onGraphicsTabletClick"
+            role-description="$i18n{subpageArrowRoleDescription}">
+        </cr-link-row>
+      </template>
+      <cr-link-row class="hr" id="displayRow" label="$i18n{displayTitle}"
+          on-click="onDisplayClick_"
+          role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
+      <cr-link-row class="hr" id="audioRow" label="$i18n{audioTitle}"
+          on-click="onAudioClick_"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+      <cr-link-row class="hr" hidden="[[hideStorageInfo_]]" id="storageRow"
+          label="$i18n{storageTitle}" on-click="onStorageClick_"
+          role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
+      <cr-link-row class="hr" id="powerRow" label="$i18n{powerTitle}"
+          on-click="onPowerClick_"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+    </settings-card>
+  </div>
+
+  <template is="dom-if" route-path="/pointer-overlay">
+    <os-settings-subpage
+        page-title="[[getPointersTitle_(hasMouse_, hasPointingStick_,
+                                        hasTouchpad_)]]">
+      <settings-pointers prefs="{{prefs}}"
+          has-mouse="[[hasMouse_]]"
+          has-pointing-stick="[[hasPointingStick_]]"
+          has-touchpad="[[hasTouchpad_]]"
+          has-haptic-touchpad="[[hasHapticTouchpad_]]">
+      </settings-pointers>
+    </os-settings-subpage>
+  </template>
+  <template is="dom-if" route-path="/per-device-mouse">
+    <os-settings-subpage page-title="$i18n{mouseTitle}">
+      <settings-per-device-mouse
+          mice="[[mice]]"
+          mouse-policies="[[mousePolicies]]">
+      </settings-per-device-mouse>
+    </os-settings-subpage>
+  </template>
+  <template is="dom-if" route-path="/per-device-keyboard">
+    <os-settings-subpage page-title="$i18n{keyboardTitle}">
+      <settings-per-device-keyboard
+          prefs="{{prefs}}"
+          keyboards="[[keyboards]]"
+          keyboard-policies="[[keyboardPolicies]]">
+      </settings-per-device-keyboard>
+    </os-settings-subpage>
+  </template>
+  <template is="dom-if" route-path="/per-device-touchpad">
+    <os-settings-subpage page-title="$i18n{touchpadTitle}">
+      <settings-per-device-touchpad
+          touchpads="[[touchpads]]">
+      </settings-per-device-touchpad>
+    </os-settings-subpage>
+  </template>
+  <template is="dom-if" route-path="/per-device-pointing-stick">
+    <os-settings-subpage page-title="$i18n{pointingStickTitle}">
+      <settings-per-device-pointing-stick
+          pointing-sticks="[[pointingSticks]]">
+      </settings-per-device-pointing-stick>
+    </os-settings-subpage>
+  </template>
+  <template is="dom-if" route-path="/keyboard-overlay">
+    <os-settings-subpage page-title="$i18n{keyboardTitle}">
+      <settings-keyboard prefs="{{prefs}}">
+      </settings-keyboard>
+    </os-settings-subpage>
+  </template>
+  <template is="dom-if" route-path="/stylus">
+    <os-settings-subpage page-title="$i18n{stylusTitle}">
+      <settings-stylus prefs="{{prefs}}"></settings-stylus>
+    </os-settings-subpage>
+  </template>
+  <template is="dom-if" route-path="/graphics-tablet">
+    <os-settings-subpage page-title="$i18n{tabletTitle}">
+      <settings-graphics-tablet-subpage
+          graphics-tablets="[[graphicsTablets]]">
+      </settings-graphics-tablet-subpage>
+    </os-settings-subpage>
+  </template>
+  <template is="dom-if"
+      route-path="/graphics-tablet/customizeTabletButtons">
+    <os-settings-subpage id="customizeTabletButtonsSubpage"
+        page-title="$i18n{customizeTabletButtonsLabel}">
+      <settings-customize-tablet-buttons-subpage
+          graphics-tablets="[[graphicsTablets]]">
+      </settings-customize-tablet-buttons-subpage>
+    </os-settings-subpage>
+  </template>
+  <template is="dom-if"
+      route-path="/graphics-tablet/customizePenButtons">
+    <os-settings-subpage id="customizePenButtonsSubpage"
+        page-title="$i18n{customizePenButtonsLabel}">
+      <settings-customize-pen-buttons-subpage
+          graphics-tablets="[[graphicsTablets]]">
+      </settings-customize-pen-buttons-subpage>
+    </os-settings-subpage>
+  </template>
+  <template is="dom-if" route-path="/display">
+    <os-settings-subpage page-title="$i18n{displayTitle}">
+      <settings-display prefs="{{prefs}}"></settings-display>
+    </os-settings-subpage>
+  </template>
+  <template is="dom-if" route-path="/audio">
+    <os-settings-subpage page-title="$i18n{audioTitle}">
+      <settings-audio prefs="{{prefs}}">
+      </settings-audio>
+    </os-settings-subpage>
+  </template>
+  <template is="dom-if" route-path="/storage">
+    <os-settings-subpage page-title="$i18n{storageTitle}">
+      <settings-storage prefs="{{prefs}}"
+          android-enabled="[[androidEnabled_]]">
+      </settings-storage>
+    </os-settings-subpage>
+  </template>
+  <template is="dom-if" if="[[androidEnabled_]]">
+    <template is="dom-if" route-path="/storage/externalStoragePreferences">
+      <os-settings-subpage
+          page-title="$i18n{storageExternal}">
+        <settings-storage-external prefs="{{prefs}}">
+        </settings-storage-external>
+      </os-settings-subpage>
+    </template>
+  </template>
+  <template is="dom-if"
+      route-path="/per-device-keyboard/remap-keys">
+    <os-settings-subpage id="perDeviceKeyboardRemapKeysRow"
+        page-title="$i18n{remapKeyboardKeysRowLabel}">
+        <cr-button id="restoreDefaultsButton" slot="subpage-title-extra"
+            on-click="restoreDefaults"
+            class="restore-defaults-button">
+        <iron-icon icon="os-settings:refresh" class="restore-defaults-icon">
+        </iron-icon>
+        <span>$i18n{keyboardRemapRestoreDefaultsLabel}</span>
+    </cr-button>
+      <settings-per-device-keyboard-remap-keys keyboards="[[keyboards]]"
+          id="remap-keys">
+      </settings-per-device-keyboard-remap-keys>
+    </os-settings-subpage>
+  </template>
+  <template is="dom-if"
+      route-path="/per-device-mouse/customizeButtons">
+    <os-settings-subpage id="customizeMouseButtonsRow"
+        page-title="$i18n{customizeMouseButtonsTitle}">
+      <settings-customize-mouse-buttons-subpage mice="[[mice]]">
+      </settings-customize-mouse-buttons-subpage>
+    </os-settings-subpage>
+  </template>
+  <template is="dom-if" route-path="/power">
+    <os-settings-subpage
+        page-title="$i18n{powerTitle}">
+      <settings-power prefs="{{prefs}}"></settings-power>
+    </os-settings-subpage>
+  </template>
+</os-settings-animated-pages>

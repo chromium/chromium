@@ -21,6 +21,8 @@ blink_modules_sources("indexeddb") {
     "idb_event_dispatcher.h",
     "idb_factory.cc",
     "idb_factory.h",
+    "idb_factory_client.cc",
+    "idb_factory_client.h",
     "idb_index.cc",
     "idb_index.h",
     "idb_key.cc",
@@ -56,18 +58,16 @@ blink_modules_sources("indexeddb") {
     "indexed_db_dispatcher.h",
     "inspector_indexed_db_agent.cc",
     "inspector_indexed_db_agent.h",
-    "web_idb_callbacks.h",
-    "web_idb_callbacks_impl.cc",
-    "web_idb_callbacks_impl.h",
     "web_idb_cursor.cc",
     "web_idb_cursor.h",
     "web_idb_database.cc",
     "web_idb_database.h",
-    "web_idb_transaction.cc",
-    "web_idb_transaction.h",
   ]
 
-  public_deps = [ "//third_party/blink/public/mojom:mojom_modules_blink" ]
+  public_deps = [
+    "//third_party/blink/public/mojom:mojom_modules_blink",
+    "//third_party/snappy",
+  ]
 }
 
 source_set("unit_tests") {
@@ -84,10 +84,7 @@ source_set("unit_tests") {
     "mock_idb_database.h",
     "mock_idb_transaction.cc",
     "mock_idb_transaction.h",
-    "mock_web_idb_callbacks.cc",
-    "mock_web_idb_callbacks.h",
     "web_idb_cursor_unittest.cc",
-    "web_idb_transaction_unittest.cc",
   ]
 
   configs += [

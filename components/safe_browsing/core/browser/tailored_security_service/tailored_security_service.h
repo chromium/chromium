@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -25,12 +26,16 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
 
+namespace network {
+class SharedURLLoaderFactory;
+}
+
 namespace signin {
 class IdentityManager;
 }
 
-namespace network {
-class SharedURLLoaderFactory;
+namespace syncer {
+class SyncService;
 }
 
 namespace safe_browsing {
@@ -79,6 +84,7 @@ class TailoredSecurityService : public KeyedService {
   using CompletionCallback = base::OnceCallback<void(Request*, bool success)>;
 
   TailoredSecurityService(signin::IdentityManager* identity_manager,
+                          syncer::SyncService* sync_service,
                           PrefService* prefs);
   ~TailoredSecurityService() override;
 
@@ -161,11 +167,25 @@ class TailoredSecurityService : public KeyedService {
   GetURLLoaderFactory() = 0;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(
+      TailoredSecurityServiceTest,
+      RetryEnabledTimestampUpdateCallbackSetsStateToRetryNeeded);
+  FRIEND_TEST_ALL_PREFIXES(TailoredSecurityServiceTest,
+                           RetryEnabledTimestampUpdateCallbackRecordsStartTime);
+  FRIEND_TEST_ALL_PREFIXES(
+      TailoredSecurityServiceTest,
+      RetryDisabledTimestampUpdateCallbackDoesNotRecordStartTime);
+  FRIEND_TEST_ALL_PREFIXES(TailoredSecurityServiceTest,
+                           RetryDisabledStateRemainsUnset);
   friend class TailoredSecurityTabHelperTest;
 
-  // Stores pointer to IdentityManager instance. It must outlive the
-  // TailoredSecurityService and can be null during tests.
+  // Stores pointer to `IdentityManager` instance. It must outlive the
+  // `TailoredSecurityService` and can be null during tests.
   raw_ptr<signin::IdentityManager> identity_manager_;
+
+  // Stores pointer to `SyncService` instance. It must outlive the
+  // `TailoredSecurityService` and can be null during tests.
+  raw_ptr<syncer::SyncService> sync_service_;
 
   // Pending TailoredSecurity queries to be canceled if not complete by
   // profile shutdown.
@@ -197,7 +217,11 @@ class TailoredSecurityService : public KeyedService {
   QueryTailoredSecurityBitCallback saved_callback_;
 
   // The preferences for the given profile.
-  raw_ptr<PrefService> prefs_;
+  // This dangling raw_ptr occurred in:
+  // unit_tests:
+  // All/IsolatedWebAppReaderRegistryFactoryTest.GuardedBehindFeatureFlag/1
+  // https://ci.chromium.org/ui/p/chromium/builders/try/linux-rel/1428246/test-results?q=ExactID%3Aninja%3A%2F%2Fchrome%2Ftest%3Aunit_tests%2FIsolatedWebAppReaderRegistryFactoryTest.GuardedBehindFeatureFlag%2FAll.1+VHash%3A728d3f3a440b40c1
+  raw_ptr<PrefService, FlakyDanglingUntriaged> prefs_;
 
   // This is used to observe when sync users update their Tailored Security
   // setting.

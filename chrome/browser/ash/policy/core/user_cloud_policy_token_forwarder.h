@@ -90,7 +90,8 @@ class UserCloudPolicyTokenForwarder : public KeyedService,
                                    signin::AccessTokenInfo token_info);
 
   raw_ptr<UserCloudPolicyManagerAsh, ExperimentalAsh> manager_;
-  raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_;
+  raw_ptr<signin::IdentityManager, DanglingUntriaged | ExperimentalAsh>
+      identity_manager_;
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
       access_token_fetcher_;
 

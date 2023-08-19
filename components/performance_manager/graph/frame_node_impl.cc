@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/graph_impl_util.h"
+#include "components/performance_manager/graph/initializing_frame_node_observer.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/graph/worker_node_impl.h"
@@ -310,6 +311,11 @@ void FrameNodeImpl::SetViewportIntersection(
   viewport_intersection_.SetAndMaybeNotify(this, viewport_intersection);
 }
 
+void FrameNodeImpl::SetInitialVisibility(Visibility visibility) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  visibility_.Set(this, visibility);
+}
+
 void FrameNodeImpl::SetVisibility(Visibility visibility) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   visibility_.SetAndMaybeNotify(this, visibility);
@@ -377,6 +383,14 @@ void FrameNodeImpl::RemoveChildWorker(WorkerNodeImpl* worker_node) {
 void FrameNodeImpl::SetPriorityAndReason(
     const PriorityAndReason& priority_and_reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // This is also called during initialization to set the initial value. In this
+  // case, do not notify the observers as they aren't even aware of this frame
+  // node anyways.
+  if (CanSetProperty()) {
+    priority_and_reason_.Set(this, priority_and_reason);
+    return;
+  }
   priority_and_reason_.SetAndMaybeNotify(this, priority_and_reason);
 }
 
@@ -577,11 +591,6 @@ bool FrameNodeImpl::VisitChildDedicatedWorkers(
   return true;
 }
 
-const PriorityAndReason& FrameNodeImpl::GetPriorityAndReason() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return priority_and_reason();
-}
-
 bool FrameNodeImpl::HadFormInteraction() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return had_form_interaction();
@@ -618,6 +627,11 @@ uint64_t FrameNodeImpl::GetPrivateFootprintKbEstimate() const {
   return private_footprint_kb_estimate();
 }
 
+const PriorityAndReason& FrameNodeImpl::GetPriorityAndReason() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return priority_and_reason();
+}
+
 void FrameNodeImpl::AddChildFrame(FrameNodeImpl* child_frame_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(child_frame_node);
@@ -649,11 +663,8 @@ void FrameNodeImpl::OnJoiningGraph() {
   graph()->RegisterFrameNodeForId(process_node_->GetRenderProcessId(),
                                   render_frame_id_, this);
 
-  // Set the initial frame visibility. This is done on the graph because the
-  // page node must be accessed. OnFrameNodeAdded() has not been called yet for
-  // this frame, so it is important to avoid sending a notification for this
-  // property change.
-  visibility_.Set(this, GetInitialFrameVisibility());
+  // Notify the initializing observers.
+  graph()->NotifyFrameNodeInitializing(this);
 
   // Wire this up to the other nodes in the graph.
   if (parent_frame_node_)
@@ -682,6 +693,9 @@ void FrameNodeImpl::OnBeforeLeavingGraph() {
   // And leave the process.
   DCHECK(graph()->NodeInGraph(process_node_));
   process_node_->RemoveFrame(this);
+
+  // Notify the initializing observers for cleanup.
+  graph()->NotifyFrameNodeTearingDown(this);
 
   // Disable querying this node using process and frame routing ids.
   graph()->UnregisterFrameNodeForId(process_node_->GetRenderProcessId(),
@@ -765,25 +779,6 @@ bool FrameNodeImpl::HasFrameNodeInDescendants(FrameNodeImpl* frame_node) const {
 bool FrameNodeImpl::HasFrameNodeInTree(FrameNodeImpl* frame_node) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return GetFrameTreeRoot() == frame_node->GetFrameTreeRoot();
-}
-
-FrameNode::Visibility FrameNodeImpl::GetInitialFrameVisibility() const {
-  DCHECK(!viewport_intersection_.value());
-
-  // If the page hosting this frame is not visible, then the frame is also not
-  // visible.
-  if (!page_node()->is_visible())
-    return FrameNode::Visibility::kNotVisible;
-
-  // The visibility of the frame depends on the viewport intersection of said
-  // frame. Since a main frame has no viewport intersection, it is always
-  // visible in the page.
-  if (IsMainFrame())
-    return FrameNode::Visibility::kVisible;
-
-  // Since the viewport intersection of a frame is not initially available, the
-  // visibility of a child frame is initially unknown.
-  return FrameNode::Visibility::kUnknown;
 }
 
 FrameNodeImpl::DocumentProperties::DocumentProperties() = default;

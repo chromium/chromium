@@ -14,6 +14,7 @@ import org.chromium.android_webview.AwContentsClient;
 import org.chromium.android_webview.AwContentsStatics;
 import org.chromium.android_webview.AwDevToolsServer;
 import org.chromium.android_webview.AwSettings;
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.MemoryPressureLevel;
@@ -32,6 +33,7 @@ import java.util.List;
  * implementation between different glue layers without needing to depend on the webkit-glue layer
  * (right now there are dependencies from this class on the webkit-glue layer though).
  */
+@Lifetime.Singleton
 public class SharedStatics {
     private AwDevToolsServer mDevToolsServer;
 

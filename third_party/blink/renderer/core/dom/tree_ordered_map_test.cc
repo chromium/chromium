@@ -40,7 +40,7 @@ class TreeOrderedMapTest : public EditingTestBase {
 
 TEST_F(TreeOrderedMapTest, Basic) {
   auto* map = MakeGarbageCollected<TreeOrderedMap>();
-  AtomicString key = "test";
+  AtomicString key("test");
   auto& element = *AddElement(key);
   map->Add(key, element);
   EXPECT_TRUE(map->Contains(key));
@@ -52,7 +52,7 @@ TEST_F(TreeOrderedMapTest, Basic) {
 
 TEST_F(TreeOrderedMapTest, DuplicateKeys) {
   auto* map = MakeGarbageCollected<TreeOrderedMap>();
-  AtomicString key = "test";
+  AtomicString key("test");
   auto& element1 = *AddElement(key);
   auto& element2 = *AddElement(key);
   map->Add(key, element1);
@@ -86,8 +86,8 @@ TEST_F(TreeOrderedMapTest, DuplicateKeys) {
 
 TEST_F(TreeOrderedMapTest, ManyKeys) {
   auto* map = MakeGarbageCollected<TreeOrderedMap>();
-  AtomicString key1 = "test1";
-  AtomicString key2 = "";  // Empty should be handled as a unique key
+  AtomicString key1("test1");
+  AtomicString key2 = g_empty_atom;  // Empty should be handled as a unique key
   auto& element1 = *AddElement(key1);
   auto& element2 = *AddElement(key1);
   auto& element3 = *AddElement(key2);
@@ -120,7 +120,7 @@ TEST_F(TreeOrderedMapTest, ManyKeys) {
 
 TEST_F(TreeOrderedMapTest, RemovedDuplicateKeys) {
   auto* map = MakeGarbageCollected<TreeOrderedMap>();
-  AtomicString key = "test";
+  AtomicString key("test");
   auto& outer = *AddElement(key);
   auto& inner = *AddElement(key);
   outer.appendChild(&inner);

@@ -24,6 +24,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/printing/print_backend_service_manager.h"
 #include "chrome/browser/printing/print_backend_service_test_impl.h"
 #include "chrome/browser/printing/print_test_utils.h"
 #include "chrome/common/chrome_paths.h"
@@ -141,6 +142,7 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::TearDown();
     PrintingContext::SetPrintingContextFactoryForTest(/*factory=*/nullptr);
     PrintBackend::SetPrintBackendForTesting(/*print_backend=*/nullptr);
+    PrintBackendServiceManager::ResetForTesting();
   }
 
   // Load the test backend with a default printer driver.
@@ -590,22 +592,22 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, GetPaperPrintableArea) {
     }
   }
   ASSERT_TRUE(non_default_paper.has_value());
-  EXPECT_EQ(non_default_paper->printable_area_um,
-            gfx::Rect(non_default_paper->size_um));
+  EXPECT_EQ(non_default_paper->printable_area_um(),
+            gfx::Rect(non_default_paper->size_um()));
 
   // Request the printable area for this paper size, which should no longer
   // match the physical size but have real printable area values.
   gfx::Rect printable_area_um;
   PrintSettings::RequestedMedia media(
-      /*.size_microns =*/non_default_paper->size_um,
-      /*.vendor_id = */ non_default_paper->vendor_id);
+      /*.size_microns =*/non_default_paper->size_um(),
+      /*.vendor_id = */ non_default_paper->vendor_id());
   GetPrintBackendService()->GetPaperPrintableArea(
       kDefaultPrinterName, media,
       base::BindOnce(&PrintBackendBrowserTest::OnDidGetPaperPrintableArea,
                      base::Unretained(this), std::ref(printable_area_um)));
   WaitUntilCallbackReceived();
   ASSERT_TRUE(!printable_area_um.IsEmpty());
-  EXPECT_NE(printable_area_um, non_default_paper->printable_area_um);
+  EXPECT_NE(printable_area_um, non_default_paper->printable_area_um());
 }
 #endif  // BUILDFLAG(IS_WIN)
 

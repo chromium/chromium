@@ -108,13 +108,58 @@ IN_PROC_BROWSER_TEST_F(DesksExtensionApiLacrosTest,
       base::MakeRefCounted<WmDesksPrivateRemoveDeskFunction>();
   api_test_utils::RunFunctionAndReturnSingleResult(
       remove_desk_function.get(),
-      R"([")" + desk_id->GetString() + R"(", { "combineDesks": false }])",
+      R"([")" + desk_id->GetString() +
+          R"(", { "combineDesks": false, "allowUndo": false }])",
       profile());
 
   // Wait for remove desk animation to settle.
   SPIN_FOR_TIMEDELTA_OR_UNTIL_TRUE(
       TestTimeouts::action_max_timeout(),
       CheckAreDesksModified(lacros_service) == false);
+  histogram_tester.ExpectBucketCount("Ash.DeskApi.RemoveDesk.Result", 1, 1);
+}
+
+// Tests launch and removes desk. Waits for undo toast to expire.
+// Disabled due to flakiness
+IN_PROC_BROWSER_TEST_F(DesksExtensionApiLacrosTest,
+                       DISABLED_LaunchAndAttemptUndo) {
+  auto* lacros_service = chromeos::LacrosService::Get();
+  if (!lacros_service->IsAvailable<crosapi::mojom::Desk>()) {
+    GTEST_SKIP() << "Unsupported ash version.";
+  }
+
+  // Launch a desk.
+  auto launch_desk_function =
+      base::MakeRefCounted<WmDesksPrivateLaunchDeskFunction>();
+  base::HistogramTester histogram_tester;
+  // The RunFunctionAndReturnSingleResult already asserts no error
+  auto desk_id = api_test_utils::RunFunctionAndReturnSingleResult(
+      launch_desk_function.get(), R"([{"deskName":"test"}])", profile());
+  EXPECT_TRUE(desk_id->is_string());
+  EXPECT_TRUE(
+      base::Uuid::ParseCaseInsensitive(desk_id->GetString()).is_valid());
+
+  // Wait for launch desk animation to settle.
+  SPIN_FOR_TIMEDELTA_OR_UNTIL_TRUE(
+      TestTimeouts::action_max_timeout(),
+      CheckAreDesksModified(lacros_service) == false);
+
+  histogram_tester.ExpectBucketCount("Ash.DeskApi.LaunchDesk.Result", 1, 1);
+
+  // Remove a desk.
+  auto remove_desk_function =
+      base::MakeRefCounted<WmDesksPrivateRemoveDeskFunction>();
+  api_test_utils::RunFunctionAndReturnSingleResult(
+      remove_desk_function.get(),
+      R"([")" + desk_id->GetString() +
+          R"(", { "combineDesks": false, "allowUndo": true }])",
+      profile());
+
+  // Wait for remove desk animation to settle.
+  SPIN_FOR_TIMEDELTA_OR_UNTIL_TRUE(
+      TestTimeouts::action_max_timeout(),
+      CheckAreDesksModified(lacros_service) == false);
+
   histogram_tester.ExpectBucketCount("Ash.DeskApi.RemoveDesk.Result", 1, 1);
 }
 

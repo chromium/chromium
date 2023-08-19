@@ -27,6 +27,8 @@ class ASH_EXPORT MicrophonePrivacySwitchController
       const MicrophonePrivacySwitchController&) = delete;
   ~MicrophonePrivacySwitchController() override;
 
+  static MicrophonePrivacySwitchController* Get();
+
   // CrasAudioHandler::AudioObserver
   void OnInputMuteChanged(
       bool mute_on,

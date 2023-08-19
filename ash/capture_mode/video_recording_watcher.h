@@ -235,10 +235,12 @@ class ASH_EXPORT VideoRecordingWatcher
   const raw_ptr<CaptureModeController, ExperimentalAsh> controller_;
 
   // The currently active behavior which is passed from capture mode session.
-  const raw_ptr<CaptureModeBehavior, ExperimentalAsh> active_behavior_;
+  const raw_ptr<CaptureModeBehavior, DanglingUntriaged | ExperimentalAsh>
+      active_behavior_;
   const raw_ptr<wm::CursorManager, ExperimentalAsh> cursor_manager_;
-  const raw_ptr<aura::Window, ExperimentalAsh> window_being_recorded_;
-  raw_ptr<aura::Window, ExperimentalAsh> current_root_;
+  const raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh>
+      window_being_recorded_;
+  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> current_root_;
   const CaptureModeSource recording_source_;
 
   // The end point of the overlay owned by the video capturer on Viz, which is

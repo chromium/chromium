@@ -783,7 +783,6 @@ name_parse(u8 *packet, int length, int *idx, char *name_out, int name_out_len) {
 
 	for(;;) {
 		u8 label_len;
-		if (j >= length) return -1;
 		GET8(label_len);
 		if (!label_len) break;
 		if (label_len & 0xc0) {
@@ -804,6 +803,7 @@ name_parse(u8 *packet, int length, int *idx, char *name_out, int name_out_len) {
 			*cp++ = '.';
 		}
 		if (cp + label_len >= end) return -1;
+		if (j + label_len > length) return -1;
 		memcpy(cp, packet + j, label_len);
 		cp += label_len;
 		j += label_len;

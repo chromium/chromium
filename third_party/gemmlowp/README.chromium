@@ -6,6 +6,7 @@ Date: 2021/01/13
 License: Apache 2
 License File: LICENSE
 Security Critical: Yes
+Shipped: yes
 
 Description:
 gemmlowp: a small self-contained low-precision GEMM library.

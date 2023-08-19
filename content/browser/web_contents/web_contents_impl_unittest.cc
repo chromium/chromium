@@ -521,7 +521,7 @@ TEST_F(WebContentsImplTest, NavigateToExcessivelyLongURL) {
 // Test that we reject NavigateToEntry if the url is invalid.
 TEST_F(WebContentsImplTest, NavigateToInvalidURL) {
   // Invalid URLs should not trigger a navigation.
-  const GURL invalid_url("view-source:http://example.org/%00");
+  const GURL invalid_url("view-source:http://example%00.com/");
   controller().LoadURL(
       invalid_url, Referrer(), ui::PAGE_TRANSITION_GENERATED, std::string());
   EXPECT_EQ(nullptr, controller().GetPendingEntry());

@@ -45,21 +45,21 @@ void RestoreSharedSecret(const uint8_t private_key[kKeySize],
 }
 
 void PerformSymmetricDecryption(const uint8_t symmetric_key[kKeySize],
-                                base::StringPiece input_data,
+                                std::string_view input_data,
                                 std::string* output_data) {
   // Make sure OpenSSL is initialized, in order to avoid data races later.
   crypto::EnsureOpenSSLInit();
 
   // Decrypt the data with symmetric key using AEAD interface.
   crypto::Aead aead(crypto::Aead::CHACHA20_POLY1305);
-  DCHECK_EQ(aead.KeyLength(), kKeySize);
+  CHECK_EQ(aead.KeyLength(), kKeySize);
 
   // Use the symmetric key for data decryption.
   aead.Init(base::make_span(symmetric_key, kKeySize));
 
   // Get nonce at the head of input_data.
-  DCHECK_EQ(aead.NonceLength(), kNonceSize);
-  base::StringPiece nonce = input_data.substr(0, kNonceSize);
+  CHECK_EQ(aead.NonceLength(), kNonceSize);
+  std::string_view nonce = input_data.substr(0, kNonceSize);
 
   // Decrypt collected record.
   std::string decrypted;
@@ -76,7 +76,7 @@ void GenerateSigningKeyPair(uint8_t private_key[kSignKeySize],
 }
 
 void SignMessage(const uint8_t signing_key[kSignKeySize],
-                 base::StringPiece message,
+                 std::string_view message,
                  uint8_t signature[kSignatureSize]) {
   // Make sure OpenSSL is initialized, in order to avoid data races later.
   crypto::EnsureOpenSSLInit();

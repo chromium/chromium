@@ -183,6 +183,12 @@ class NET_EXPORT HttpResponseInfo {
   // |InitFromPickle()| then use it to replace |was_fetched_via_proxy|.
   ProxyServer proxy_server;
 
+  // Whether this request was covered by IP protection. This may be true even if
+  // the IP Protection proxy server is `direct://`. It is false if `was_cached`.
+  // This field is not persisted by `Persist()` and not restored by
+  // `InitFromPickle()`.
+  bool was_ip_protected = false;
+
   // Whether the request use http proxy or server authentication.
   bool did_use_http_auth = false;
 
@@ -199,10 +205,6 @@ class NET_EXPORT HttpResponseInfo {
   // This value is not persisted by Persist(); it is only ever set when the
   // response is retrieved from the cache.
   bool async_revalidation_requested = false;
-
-  // True if this entry in the single-keyed cache is unusable due to a checksum
-  // mismatch.
-  bool single_keyed_cache_entry_unusable = false;
 
   // stale-while-revalidate, if any, will be honored until time given by
   // |stale_revalidate_timeout|. This value is latched the first time
@@ -271,6 +273,9 @@ class NET_EXPORT HttpResponseInfo {
   // If not null, this indicates the response is stored during a certain browser
   // session. Used for filtering cache access.
   absl::optional<int64_t> browser_run_id;
+
+  // True if the response used a shared dictionary for decoding its body.
+  bool did_use_shared_dictionary = false;
 
   static std::string ConnectionInfoToString(ConnectionInfo connection_info);
 };

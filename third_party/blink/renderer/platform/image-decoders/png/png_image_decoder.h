@@ -37,7 +37,7 @@ class PLATFORM_EXPORT PNGImageDecoder final : public ImageDecoder {
  public:
   PNGImageDecoder(AlphaOption,
                   HighBitDepthDecodingOption,
-                  const ColorBehavior&,
+                  ColorBehavior,
                   wtf_size_t max_decoded_bytes,
                   wtf_size_t offset = 0);
   PNGImageDecoder(const PNGImageDecoder&) = delete;
@@ -45,11 +45,12 @@ class PLATFORM_EXPORT PNGImageDecoder final : public ImageDecoder {
   ~PNGImageDecoder() override;
 
   // ImageDecoder:
-  String FilenameExtension() const override { return "png"; }
+  String FilenameExtension() const override;
   const AtomicString& MimeType() const override;
   bool SetSize(unsigned, unsigned) override;
   int RepetitionCount() const override;
   bool ImageIsHighBitDepth() override;
+  absl::optional<gfx::HDRMetadata> GetHDRMetadata() const override;
   bool FrameIsReceivedAtIndex(wtf_size_t) const override;
   base::TimeDelta FrameDurationAtIndex(wtf_size_t) const override;
   bool SetFailed() override;
@@ -67,7 +68,7 @@ class PLATFORM_EXPORT PNGImageDecoder final : public ImageDecoder {
   using ParseQuery = PNGImageReader::ParseQuery;
 
   // ImageDecoder:
-  void DecodeSize() override { Parse(ParseQuery::kSize); }
+  void DecodeSize() override;
   void Decode(wtf_size_t) override;
   void Parse(ParseQuery);
   wtf_size_t DecodeFrameCount() override;
@@ -83,6 +84,7 @@ class PLATFORM_EXPORT PNGImageDecoder final : public ImageDecoder {
   bool current_buffer_saw_alpha_;
   bool decode_to_half_float_;
   wtf_size_t bit_depth_;
+  absl::optional<gfx::HDRMetadata> hdr_metadata_;
   std::unique_ptr<ImageFrame::PixelData[]> color_transform_scanline_;
 };
 

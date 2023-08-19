@@ -11,8 +11,11 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {flushTasks, waitAfterNextRender, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
+
+const DEUTERANOMALY_VALUE = 1;
+const GREYSCALE_VALUE = 3;
 
 suite('<settings-display-and-magnification-subpage>', () => {
   let page: SettingsDisplayAndMagnificationSubpageElement;
@@ -30,8 +33,6 @@ suite('<settings-display-and-magnification-subpage>', () => {
   }
 
   setup(() => {
-    loadTimeData.overrideValues(
-        {isAccessibilityOSSettingsVisibilityEnabled: true});
     Router.getInstance().navigateTo(routes.A11Y_DISPLAY_AND_MAGNIFICATION);
   });
 
@@ -63,7 +64,7 @@ suite('<settings-display-and-magnification-subpage>', () => {
           const popStateEventPromise = eventToPromise('popstate', window);
           router.navigateToPreviousRoute();
           await popStateEventPromise;
-          await waitBeforeNextRender(page);
+          await waitAfterNextRender(page);
 
           assertEquals(
               routes.A11Y_DISPLAY_AND_MAGNIFICATION, router.currentRoute);
@@ -140,5 +141,18 @@ suite('<settings-display-and-magnification-subpage>', () => {
         amount,
         page.prefs.settings.a11y.color_filtering.color_vision_correction_amount
             .value);
+
+    // Try changing the color filtering type.
+    const filterSelectElement =
+        colorDeficiencyDropdown.shadowRoot!.querySelector('select');
+    assert(filterSelectElement);
+    assertEquals(String(DEUTERANOMALY_VALUE), filterSelectElement.value);
+
+    // Change the filtering type.
+    filterSelectElement.value = String(GREYSCALE_VALUE);
+    filterSelectElement.dispatchEvent(new CustomEvent('change'));
+    const new_filter = page.prefs.settings.a11y.color_filtering
+                           .color_vision_deficiency_type.value;
+    assertEquals(new_filter, GREYSCALE_VALUE);
   });
 });

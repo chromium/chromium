@@ -6,10 +6,16 @@ import {TestRunner} from 'test_runner';
 import {ApplicationTestRunner} from 'application_test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as Common from 'devtools/core/common/common.js';
+
 (async function() {
   TestRunner.addResult(`Tests refreshing the database information and data views.\n`);
   await TestRunner.loadLegacyModule('console');
-    // Note: every test that uses a storage API must manually clean-up state from previous tests.
+  await TestRunner.navigatePromise('http://127.0.0.1:8000/devtools/indexeddb/resources/without-indexed-db.html');
+  await ApplicationTestRunner.setupIndexedDBHelpers();
+
+  // Note: every test that uses a storage API must manually clean-up state from
+  // previous tests.
   await ApplicationTestRunner.resetState();
 
   await TestRunner.loadLegacyModule('console');
@@ -93,11 +99,24 @@ import {ConsoleTestRunner} from 'console_test_runner';
   TestRunner.addResult('Added ' + objectStoreName1 + ' entry.');
   ApplicationTestRunner.dumpObjectStores();
 
+  let onUpdate = () => {};
+
+  TestRunner.addSniffer(
+      Resources.IDBDataView.prototype, 'updatedDataForTests', function() {
+        onUpdate(this);
+      }, true);
+
+  const NUM_EXPECTED_VIEWS = 4;  // Two object store views and two index views
   // Refresh database view
+  let updates = new Promise(resolve => {
+    const updated = new Set();
+    onUpdate = (view) => {
+      updated.add(view);
+      if (updated.size === NUM_EXPECTED_VIEWS) resolve();
+    };
+  });
   await waitRefreshDatabase();
-  await waitUpdateDataView();  // Wait for indexes and second object store to refresh.
-  await waitUpdateDataView();
-  await waitUpdateDataView();
+  await updates;
   TestRunner.addResult('Refreshed database view.');
   ApplicationTestRunner.dumpObjectStores();
 
@@ -107,10 +126,15 @@ import {ConsoleTestRunner} from 'console_test_runner';
   ApplicationTestRunner.dumpObjectStores();
 
   // Right-click refresh database view
+  updates = new Promise(resolve => {
+    const updated = new Set();
+    onUpdate = (view) => {
+      updated.add(view);
+      if (updated.size === NUM_EXPECTED_VIEWS) resolve();
+    };
+  });
   await waitRefreshDatabaseRightClick();
-  await waitUpdateDataView();  // Wait for indexes and second object store to refresh.
-  await waitUpdateDataView();
-  await waitUpdateDataView();
+  await updates;
   TestRunner.addResult('Right-click refreshed database.');
   ApplicationTestRunner.dumpObjectStores();
 

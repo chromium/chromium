@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/time/time.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -166,10 +167,6 @@ struct ExternalInstallOptions {
   //  - |url| as the app name (unless fallback_app_name has been specified)
   bool install_placeholder = false;
 
-  // Whether we should try to reinstall the app if there is a placeholder for
-  // it.
-  bool reinstall_placeholder = false;
-
   // Optional query parameters to add to the start_url when launching the app.
   absl::optional<std::string> launch_query_params;
 
@@ -183,6 +180,11 @@ struct ExternalInstallOptions {
   // install_url separate from the service worker registration step. Defaults to
   // install_url if unset.
   absl::optional<GURL> service_worker_registration_url;
+
+  // The time to wait for the service worker registration before it times out.
+  // This is currently default at 40 seconds, override this value if more or
+  // less time is required.
+  base::TimeDelta service_worker_registration_timeout = base::Seconds(40);
 
   // A list of app_ids that the Web App System should attempt to uninstall and
   // replace with this app (e.g maintain shelf pins, app list positions).

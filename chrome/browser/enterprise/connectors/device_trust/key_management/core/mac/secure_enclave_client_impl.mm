@@ -12,8 +12,8 @@
 #include <vector>
 
 #include "base/apple/bridging.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/containers/span.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/sys_string_conversions.h"
@@ -31,49 +31,16 @@ namespace enterprise_connectors {
 
 namespace {
 
-// Enum for the operation being performed on the Secure Enclave key. This is
-// used for recording the key operation status.
-enum Operation {
-  CREATE,
-  COPY,
-  DELETE,
-  UPDATE,
-};
+bool IsSuccess(OSStatus status) {
+  return status == errSecSuccess;
+}
 
-// Logs a SecureEnclaveOperationStatus metric for the type of `operation` being
-// performed and the key storage `type`.
-void LogKeyOperationFailure(Operation operation,
-                            SecureEnclaveClient::KeyType type) {
-  SecureEnclaveOperationStatus status;
-  bool data_protection_keychain = false;
-  if (@available(macOS 10.15, *))
-    data_protection_keychain = true;
-
-  switch (operation) {
-    case Operation::CREATE:
-      status = SecureEnclaveOperationStatus::kCreateSecureKeyFailed;
-      break;
-    case Operation::COPY:
-      status = data_protection_keychain
-                   ? SecureEnclaveOperationStatus::
-                         kCopySecureKeyRefDataProtectionKeychainFailed
-                   : SecureEnclaveOperationStatus::kCopySecureKeyRefFailed;
-      break;
-    case Operation::DELETE:
-      status = data_protection_keychain
-                   ? SecureEnclaveOperationStatus::
-                         kDeleteSecureKeyDataProtectionKeychainFailed
-                   : SecureEnclaveOperationStatus::kDeleteSecureKeyFailed;
-      break;
-    case Operation::UPDATE:
-      status = data_protection_keychain
-                   ? SecureEnclaveOperationStatus::
-                         kUpdateSecureKeyLabelDataProtectionKeychainFailed
-                   : SecureEnclaveOperationStatus::kUpdateSecureKeyLabelFailed;
-      break;
-  }
-
-  RecordKeyOperationStatus(status, type);
+// Logs UMA metrics on the type of `operation` being performed, the key storage
+// `type` and the `error_code` returned by Keychain APIs.
+void LogKeyOperationFailure(KeychainOperation operation,
+                            SecureEnclaveClient::KeyType type,
+                            OSStatus error_code) {
+  RecordKeyOperationStatus(operation, type, error_code);
 }
 
 // Returns the key label based on the key `type` if the key type is not
@@ -138,13 +105,7 @@ base::ScopedCFTypeRef<CFMutableDictionaryRef> CreateQueryForKey(
   CFDictionarySetValue(query, kSecAttrLabel,
                        base::SysUTF8ToCFStringRef(GetLabelFromKeyType(type)));
   CFDictionarySetValue(query, kSecReturnRef, kCFBooleanTrue);
-
-  // Specifying to query the data protection keychain is only available on
-  // macOS 10.15 or newer. This forces a query to the correct keychain since
-  // Secure Enclave keys are stored in the data protection keychain.
-  if (@available(macOS 10.15, *)) {
-    CFDictionarySetValue(query, kSecUseDataProtectionKeychain, kCFBooleanTrue);
-  }
+  CFDictionarySetValue(query, kSecUseDataProtectionKeychain, kCFBooleanTrue);
   return query;
 }
 
@@ -165,18 +126,24 @@ base::ScopedCFTypeRef<SecKeyRef> SecureEnclaveClientImpl::CreatePermanentKey() {
   // Deletes a permanent Secure Enclave key if it exists from a previous
   // key rotation.
   DeleteKey(KeyType::kPermanent);
-  auto key = helper_->CreateSecureKey(attributes);
-  if (!key)
-    LogKeyOperationFailure(Operation::CREATE, KeyType::kPermanent);
+
+  OSStatus status;
+  auto key = helper_->CreateSecureKey(attributes, &status);
+  if (!key) {
+    LogKeyOperationFailure(KeychainOperation::kCreate, KeyType::kPermanent,
+                           status);
+  }
 
   return key;
 }
 
 base::ScopedCFTypeRef<SecKeyRef> SecureEnclaveClientImpl::CopyStoredKey(
     KeyType type) {
-  auto key_ref = helper_->CopyKey(CreateQueryForKey(type));
-  if (!key_ref)
-    LogKeyOperationFailure(Operation::COPY, type);
+  OSStatus status;
+  auto key_ref = helper_->CopyKey(CreateQueryForKey(type), &status);
+  if (!key_ref) {
+    LogKeyOperationFailure(KeychainOperation::kCopy, type, status);
+  }
 
   return key_ref;
 }
@@ -197,26 +164,34 @@ bool SecureEnclaveClientImpl::UpdateStoredKeyLabel(KeyType current_key_type,
   CFDictionarySetValue(attributes_to_update, kSecAttrLabel,
                        base::SysUTF8ToCFStringRef(label));
 
-  bool success = helper_->Update(CreateQueryForKey(current_key_type),
-                                 attributes_to_update);
-  if (!success)
-    LogKeyOperationFailure(Operation::UPDATE, current_key_type);
+  OSStatus status = helper_->Update(CreateQueryForKey(current_key_type),
+                                    attributes_to_update);
+
+  bool success = IsSuccess(status);
+  if (!success) {
+    LogKeyOperationFailure(KeychainOperation::kUpdate, current_key_type,
+                           status);
+  }
 
   return success;
 }
 
 bool SecureEnclaveClientImpl::DeleteKey(KeyType type) {
-  bool success = helper_->Delete(CreateQueryForKey(type));
-  if (!success)
-    LogKeyOperationFailure(Operation::DELETE, type);
+  OSStatus status = helper_->Delete(CreateQueryForKey(type));
+
+  bool success = IsSuccess(status);
+  if (!success) {
+    LogKeyOperationFailure(KeychainOperation::kDelete, type, status);
+  }
 
   return success;
 }
 
 bool SecureEnclaveClientImpl::GetStoredKeyLabel(KeyType type,
                                                 std::vector<uint8_t>& output) {
-  if (!helper_->CopyKey(CreateQueryForKey(type))) {
-    LogKeyOperationFailure(Operation::COPY, type);
+  OSStatus status;
+  if (!helper_->CopyKey(CreateQueryForKey(type), &status)) {
+    LogKeyOperationFailure(KeychainOperation::kCopy, type, status);
     return false;
   }
 

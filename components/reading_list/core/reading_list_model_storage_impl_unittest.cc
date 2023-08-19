@@ -7,6 +7,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "components/reading_list/core/reading_list_entry.h"
@@ -63,11 +64,10 @@ class ReadingListModelStorageImplTest : public testing::Test {
 TEST_F(ReadingListModelStorageImplTest, LoadEmpty) {
   ReadingListModelStorageImpl storage(shared_store_factory_);
 
-  const ReadingListModelStorage::LoadResultOrError result_or_error =
-      LoadStorageAndWait(&storage, &clock_);
-  ASSERT_TRUE(result_or_error.has_value());
-  EXPECT_TRUE(result_or_error->first.empty());
-  EXPECT_THAT(result_or_error->second, syncer::IsEmptyMetadataBatch());
+  ASSERT_OK_AND_ASSIGN(const ReadingListModelStorage::LoadResult result,
+                       LoadStorageAndWait(&storage, &clock_));
+  EXPECT_TRUE(result.first.empty());
+  EXPECT_THAT(result.second, syncer::IsEmptyMetadataBatch());
 }
 
 TEST_F(ReadingListModelStorageImplTest, SaveEntry) {
@@ -83,10 +83,9 @@ TEST_F(ReadingListModelStorageImplTest, SaveEntry) {
   // leveldb.
   ReadingListModelStorageImpl other_storage(shared_store_factory_);
 
-  const ReadingListModelStorage::LoadResultOrError load_result_or_error =
-      LoadStorageAndWait(&other_storage, &clock_);
-  ASSERT_TRUE(load_result_or_error.has_value());
-  EXPECT_THAT(load_result_or_error->first,
+  ASSERT_OK_AND_ASSIGN(const ReadingListModelStorage::LoadResult load_result,
+                       LoadStorageAndWait(&other_storage, &clock_));
+  EXPECT_THAT(load_result.first,
               ElementsAre(EntryHasUrl(GURL("http://example.com/"))));
 }
 

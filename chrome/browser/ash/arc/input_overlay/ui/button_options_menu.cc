@@ -5,103 +5,39 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/button_options_menu.h"
 
 #include "ash/bubble/bubble_utils.h"
-#include "ash/components/arc/compat_mode/style/arc_color_provider.h"
 #include "ash/login/ui/views_utils.h"
 #include "ash/public/cpp/ash_view_ids.h"
-#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/icon_button.h"
+#include "ash/style/rounded_container.h"
 #include "ash/style/typography.h"
 #include "ash/system/unified/feature_tile.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
+#include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/action_type_button_group.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/edit_labels.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/name_tag.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/ui_utils.h"
-#include "components/vector_icons/vector_icons.h"
+#include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
-#include "ui/gfx/canvas.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
-#include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/layout/table_layout.h"
-#include "ui/views/vector_icons.h"
 
 namespace arc::input_overlay {
-
-namespace {
-
-// Whole Menu measurements.
-constexpr int kMenuWidth = 316;
-
-// Triangle.
-constexpr int kTriangleLength = 20;
-constexpr int kTriangleHeight = 14;
-constexpr int kCornerRadius = 16;
-constexpr int kBorderThickness = 2;
-
-// Draws the dialog shape path with round corner. It starts after the corner
-// radius on line #0 and draws clockwise.
-//  _0>__________
-// |             |
-// |             |
-// |             |
-// |              >
-// |             |
-// |             |
-// |_____________|
-//
-SkPath BackgroundPath(int height) {
-  SkPath path;
-  auto short_length = kMenuWidth - kTriangleHeight - 2 * kCornerRadius;
-  auto short_height = height - 2 * kCornerRadius;
-  path.moveTo(kCornerRadius, 0);
-  // Top left after corner radius to top right corner radius.
-  path.rLineTo(short_length, 0);
-  path.rArcTo(kCornerRadius, kCornerRadius, 0, SkPath::kSmall_ArcSize,
-              SkPathDirection::kCW, +kCornerRadius, +kCornerRadius);
-  // Top right after corner radius to midway point.
-  path.rLineTo(0, short_height / 2 - kTriangleLength / 2);
-  // Triangle shape.
-  path.rLineTo(kTriangleHeight, kTriangleLength / 2);
-  path.rLineTo(-kTriangleHeight, kTriangleLength / 2);
-  // After midway point to bottom right corner radius.
-  path.rLineTo(0, short_height / 2 - kTriangleLength / 2);
-  path.rArcTo(kCornerRadius, kCornerRadius, 0, SkPath::kSmall_ArcSize,
-              SkPathDirection::kCW, -kCornerRadius, +kCornerRadius);
-  // Bottom right after corner radius to bottom left corner radius.
-  path.rLineTo(-short_length, 0);
-  path.rArcTo(kCornerRadius, kCornerRadius, 0, SkPath::kSmall_ArcSize,
-              SkPathDirection::kCW, -kCornerRadius, -kCornerRadius);
-  // Bottom left after corner radius to top left corner radius.
-  path.rLineTo(0, -short_height);
-  path.rArcTo(kCornerRadius, kCornerRadius, 0, SkPath::kSmall_ArcSize,
-              SkPathDirection::kCW, +kCornerRadius, -kCornerRadius);
-  // Path finish.
-  path.close();
-  return path;
-}
-
-}  // namespace
-
-// static
-ButtonOptionsMenu* ButtonOptionsMenu::Show(DisplayOverlayController* controller,
-                                           Action* action) {
-  auto* parent = controller->GetOverlayWidgetContentsView();
-  auto* button_options_menu = parent->AddChildView(
-      std::make_unique<ButtonOptionsMenu>(controller, action));
-  button_options_menu->Init();
-  return button_options_menu;
-}
 
 ButtonOptionsMenu::ButtonOptionsMenu(DisplayOverlayController* controller,
                                      Action* action)
     : TouchInjectorObserver(), controller_(controller), action_(action) {
   controller_->AddTouchInjectorObserver(this);
+  Init();
 }
 
 ButtonOptionsMenu::~ButtonOptionsMenu() {
@@ -112,17 +48,11 @@ void ButtonOptionsMenu::Init() {
   SetUseDefaultFillLayout(true);
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
-  SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::TLBR(16, 16, 16, 16 + kTriangleHeight)));
-
   AddHeader();
   AddEditTitle();
   AddActionSelection();
   AddActionEdit();
   AddActionNameLabel();
-
-  SizeToPreferredSize();
-  CalculatePosition();
 }
 
 void ButtonOptionsMenu::AddHeader() {
@@ -190,52 +120,13 @@ void ButtonOptionsMenu::AddActionSelection() {
   auto* container = AddChildView(std::make_unique<ash::RoundedContainer>(
       ash::RoundedContainer::Behavior::kTopRounded));
   // Create a 1x2 table with a column padding of 8.
-  container->SetLayoutManager(std::make_unique<views::TableLayout>())
-      ->AddColumn(views::LayoutAlignment::kStretch,
-                  views::LayoutAlignment::kStretch,
-                  /*horizontal_resize=*/1.0f,
-                  views::TableLayout::ColumnSize::kUsePreferred,
-                  /*fixed_width=*/0, /*min_width=*/0)
-      .AddPaddingColumn(/*horizontal_resize=*/views::TableLayout::kFixedSize,
-                        /*width=*/8)
-      .AddColumn(views::LayoutAlignment::kStretch,
-                 views::LayoutAlignment::kStretch,
-                 /*horizontal_resize=*/1.0f,
-                 views::TableLayout::ColumnSize::kUsePreferred,
-                 /*fixed_width=*/0, /*min_width=*/0)
-      .AddRows(1, views::TableLayout::kFixedSize, 0);
+  container->SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kHorizontal)
+      .SetMainAxisAlignment(views::LayoutAlignment::kCenter);
   container->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, 2, 0));
 
-  auto* tap_button = container->AddChildView(std::make_unique<ash::FeatureTile>(
-      base::BindRepeating(&ButtonOptionsMenu::OnTapButtonPressed,
-                          base::Unretained(this)),
-      /*is_togglable=*/true,
-      /*type=*/ash::FeatureTile::TileType::kCompact));
-  tap_button->SetID(ash::VIEW_ID_ACCESSIBILITY_FEATURE_TILE);
-  tap_button->SetAccessibleName(
-      // TODO(b/279117180): Replace placeholder names with a11y strings.
-      l10n_util::GetStringUTF16(IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER));
-  // TODO(b/274690042): Replace placeholder text with localized strings.
-  tap_button->SetLabel(u"Single button");
-  tap_button->SetVectorIcon(vector_icons::kCloseIcon);
-  tap_button->SetVisible(true);
-  tap_button->SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
-
-  auto* move_button =
-      container->AddChildView(std::make_unique<ash::FeatureTile>(
-          base::BindRepeating(&ButtonOptionsMenu::OnMoveButtonPressed,
-                              base::Unretained(this)),
-          /*is_togglable=*/true,
-          /*type=*/ash::FeatureTile::TileType::kCompact));
-  move_button->SetID(ash::VIEW_ID_ACCESSIBILITY_FEATURE_TILE);
-  move_button->SetAccessibleName(
-      // TODO(b/279117180): Replace placeholder names with a11y strings.
-      l10n_util::GetStringUTF16(IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER));
-  // TODO(b/274690042): Replace placeholder text with localized strings.
-  move_button->SetLabel(u"Dpad");
-  move_button->SetVectorIcon(kGameControlsDpadKeyboardIcon);
-  move_button->SetVisible(true);
-  move_button->SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
+  button_group_ = container->AddChildView(
+      ActionTypeButtonGroup::CreateButtonGroup(controller_, action_));
 }
 
 void ButtonOptionsMenu::AddActionEdit() {
@@ -243,9 +134,10 @@ void ButtonOptionsMenu::AddActionEdit() {
   // ||"Selected key" |key labels||
   // ||"key"                      |
   // ------------------------------
-  auto* container = AddChildView(std::make_unique<ash::RoundedContainer>(
+  action_edit_container_ = AddChildView(std::make_unique<ash::RoundedContainer>(
       ash::RoundedContainer::Behavior::kBottomRounded));
-  container->SetLayoutManager(std::make_unique<views::TableLayout>())
+  action_edit_container_
+      ->SetLayoutManager(std::make_unique<views::TableLayout>())
       ->AddColumn(views::LayoutAlignment::kStart,
                   views::LayoutAlignment::kCenter,
                   /*horizontal_resize=*/1.0f,
@@ -256,21 +148,16 @@ void ButtonOptionsMenu::AddActionEdit() {
                  views::TableLayout::ColumnSize::kUsePreferred,
                  /*fixed_width=*/0, /*min_width=*/0)
       .AddRows(1, views::TableLayout::kFixedSize, 0);
-  container->SetBorderInsets(gfx::Insets::VH(14, 16));
-  container->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, 8, 0));
+  action_edit_container_->SetBorderInsets(gfx::Insets::VH(14, 16));
+  action_edit_container_->SetProperty(views::kMarginsKey,
+                                      gfx::Insets::TLBR(0, 0, 8, 0));
 
   // TODO(b/274690042): Replace placeholder text with localized strings.
-  container->AddChildView(CreateNameTag(u"Selected key", u"Key"));
-  switch (action_->GetType()) {
-    case ActionType::TAP:
-      container->AddChildView(CreateActionTapEditForKeyboard(action_));
-      break;
-    case ActionType::MOVE:
-      container->AddChildView(CreateActionMoveEditForKeyboard(action_));
-      break;
-    default:
-      NOTREACHED();
-  }
+  key_name_tag_ = action_edit_container_->AddChildView(
+      NameTag::CreateNameTag(u"Selected key"));
+  labels_view_ =
+      action_edit_container_->AddChildView(EditLabels::CreateEditLabels(
+          controller_, action_, key_name_tag_, /*set_title=*/false));
 }
 
 void ButtonOptionsMenu::AddActionNameLabel() {
@@ -282,102 +169,68 @@ void ButtonOptionsMenu::AddActionNameLabel() {
   container->SetUseDefaultFillLayout(true);
   container->SetBorderInsets(gfx::Insets::VH(14, 16));
 
-  auto* action_name_feature_tile =
+  action_name_tile_ =
       container->AddChildView(std::make_unique<ash::FeatureTile>(
           base::BindRepeating(
               &ButtonOptionsMenu::OnButtonLabelAssignmentPressed,
               base::Unretained(this)),
           /*is_togglable=*/false));
-  action_name_feature_tile->SetID(ash::VIEW_ID_ACCESSIBILITY_FEATURE_TILE);
-  action_name_feature_tile->SetAccessibleName(
+  action_name_tile_->SetID(ash::VIEW_ID_ACCESSIBILITY_FEATURE_TILE);
+  action_name_tile_->SetAccessibleName(
       // TODO(b/279117180): Replace placeholder names with a11y strings.
       l10n_util::GetStringUTF16(IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER));
   // TODO(b/274690042): Replace placeholder text with localized strings.
-  action_name_feature_tile->SetLabel(u"Button label");
-  action_name_feature_tile->SetSubLabel(u"Unassigned");
-  action_name_feature_tile->SetSubLabelVisibility(true);
-  action_name_feature_tile->CreateDecorativeDrillInArrow();
-  action_name_feature_tile->SetBackground(
+  action_name_tile_->SetLabel(u"Button label");
+  action_name_tile_->SetSubLabel(GetActionNameAtIndex(
+      controller_->action_name_list(), action_->name_label_index()));
+  action_name_tile_->SetSubLabelVisibility(true);
+  action_name_tile_->CreateDecorativeDrillInArrow();
+  action_name_tile_->SetBackground(
       views::CreateSolidBackground(SK_ColorTRANSPARENT));
-  action_name_feature_tile->SetVisible(true);
-}
-
-void ButtonOptionsMenu::CalculatePosition() {
-  auto position = action_->GetUICenterPosition();
-  auto x = position.x();
-  auto y = position.y();
-  auto parent_size = controller_->GetOverlayWidgetContentsView()->size();
-
-  // Set the menu at the middle if there is not enough margin on the right
-  // or left side.
-  if (x + width() > parent_size.width() || x < 0) {
-    x = std::max(0, parent_size.width() - width());
-  }
-
-  // Set the menu at the bottom if there is not enough margin on the bottom
-  // side.
-  if (y + height() > parent_size.height()) {
-    y = std::max(0, parent_size.height() - height());
-  }
-
-  SetPosition(gfx::Point(x, y));
+  action_name_tile_->SetVisible(true);
 }
 
 void ButtonOptionsMenu::OnTrashButtonPressed() {
-  // TODO(b/270969760): Implement close menu functionality.
-  controller_->RemoveButtonOptionsMenu();
+  controller_->RemoveAction(action_);
 }
 
 void ButtonOptionsMenu::OnDoneButtonPressed() {
-  // TODO(b/270969760): Implement save menu functionality.
-  controller_->RemoveButtonOptionsMenu();
-}
-
-void ButtonOptionsMenu::OnTapButtonPressed() {
-  // TODO(b/270969760): Implement tap button functionality.
-}
-
-void ButtonOptionsMenu::OnMoveButtonPressed() {
-  // TODO(b/270969760): Implement move button functionality.
+  controller_->SaveToProtoFile();
+  controller_->RemoveButtonOptionsMenuWidget();
 }
 
 void ButtonOptionsMenu::OnButtonLabelAssignmentPressed() {
-  // TODO(b/270969760): Implement key binding change functionality.
-}
-
-void ButtonOptionsMenu::OnPaintBackground(gfx::Canvas* canvas) {
-  cc::PaintFlags flags;
-  // Draw the shape.
-  flags.setAntiAlias(true);
-  flags.setStyle(cc::PaintFlags::kFill_Style);
-  ui::ColorProvider* color_provider = GetColorProvider();
-  flags.setColor(color_provider->GetColor(cros_tokens::kCrosSysBaseElevated));
-  int height = GetHeightForWidth(kMenuWidth);
-  canvas->DrawPath(BackgroundPath(height), flags);
-  // Draw the border.
-  flags.setStyle(cc::PaintFlags::kStroke_Style);
-  // TODO(b/270969760): Change to "sys.BorderHighlight1" when added.
-  flags.setColor(color_provider->GetColor(cros_tokens::kCrosSysSystemBorder1));
-  flags.setStrokeWidth(kBorderThickness);
-  canvas->DrawPath(BackgroundPath(height), flags);
-}
-
-gfx::Size ButtonOptionsMenu::CalculatePreferredSize() const {
-  // TODO(b/270969760): Dynamically calculate height based on action selection.
-  return gfx::Size(kMenuWidth, GetHeightForWidth(kMenuWidth));
+  controller_->OnButtonOptionsMenuButtonLabelPressed(action_);
 }
 
 void ButtonOptionsMenu::OnActionRemoved(const Action& action) {
-  NOTIMPLEMENTED();
+  DCHECK_EQ(action_, &action);
+  controller_->RemoveButtonOptionsMenuWidget();
 }
 
-void ButtonOptionsMenu::OnActionTypeChanged(const Action& action,
-                                            const Action& new_action) {
-  NOTIMPLEMENTED();
+void ButtonOptionsMenu::OnActionTypeChanged(Action* action,
+                                            Action* new_action) {
+  DCHECK_EQ(action_, action);
+  action_ = new_action;
+  button_group_->set_action(new_action);
+  action_edit_container_->RemoveChildViewT(labels_view_);
+  labels_view_ =
+      action_edit_container_->AddChildView(EditLabels::CreateEditLabels(
+          controller_, action_, key_name_tag_, /*set_title=*/false));
+  controller_->UpdateButtonOptionsMenuWidgetBounds(action_);
 }
 
-void ButtonOptionsMenu::OnActionUpdated(const Action& action) {
-  NOTIMPLEMENTED();
+void ButtonOptionsMenu::OnActionInputBindingUpdated(const Action& action) {
+  if (action_ == &action) {
+    labels_view_->OnActionInputBindingUpdated();
+  }
+}
+
+void ButtonOptionsMenu::OnActionNameUpdated(const Action& action) {
+  if (action_ == &action) {
+    action_name_tile_->SetSubLabel(GetActionNameAtIndex(
+        controller_->action_name_list(), action_->name_label_index()));
+  }
 }
 
 }  // namespace arc::input_overlay

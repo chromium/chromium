@@ -96,15 +96,19 @@ WaylandWindow* WaylandWindowManager::GetCurrentFocusedWindow() const {
 
 WaylandWindow* WaylandWindowManager::GetCurrentPointerOrTouchFocusedWindow()
     const {
-  // In case there is an ongoing window dragging session, favor the window
-  // according to the active drag source.
-  //
-  // TODO(https://crbug.com/1317063): Apply the same logic to data drag sessions
-  // too?
-  if (auto drag_source = connection_->window_drag_controller()->drag_source()) {
-    return *drag_source == mojom::DragEventSource::kMouse
-               ? GetCurrentPointerFocusedWindow()
-               : GetCurrentTouchFocusedWindow();
+  // Might be nullptr if no input devices are available.
+  if (connection_->window_drag_controller()) {
+    // In case there is an ongoing window dragging session, favor the window
+    // according to the active drag source.
+    //
+    // TODO(https://crbug.com/1317063): Apply the same logic to data drag
+    // sessions too?
+    if (auto drag_source =
+            connection_->window_drag_controller()->drag_source()) {
+      return *drag_source == mojom::DragEventSource::kMouse
+                 ? GetCurrentPointerFocusedWindow()
+                 : GetCurrentTouchFocusedWindow();
+    }
   }
 
   for (const auto& entry : window_map_) {
@@ -240,15 +244,26 @@ gfx::AcceleratedWidget WaylandWindowManager::AllocateAcceleratedWidget() {
   return ++last_accelerated_widget_;
 }
 
+void WaylandWindowManager::DumpState(std::ostream& out) const {
+  int i = 0;
+  out << "WaylandWindowManager:" << std::endl;
+  for (const auto& window : window_map_) {
+    out << "  wayland_window[" << i++ << "]:";
+    window.second->DumpState(out);
+    out << std::endl;
+  }
+}
+
 std::vector<WaylandWindow*> WaylandWindowManager::GetAllWindows() const {
   std::vector<WaylandWindow*> result;
-  for (auto entry : window_map_)
+  for (auto& entry : window_map_) {
     result.push_back(entry.second);
+  }
   return result;
 }
 
 bool WaylandWindowManager::IsWindowValid(const WaylandWindow* window) const {
-  for (auto pair : window_map_) {
+  for (auto& pair : window_map_) {
     if (pair.second == window)
       return true;
   }

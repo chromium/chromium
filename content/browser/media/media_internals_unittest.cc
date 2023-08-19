@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "content/browser/media/session/media_session_impl.h"
 #include "content/public/browser/media_session_service.h"
@@ -256,7 +257,7 @@ TEST_P(MediaInternalsAudioLogTest, AudioLogCreateStartStopErrorClose) {
   ExpectString("effects", "ECHO_CANCELLER | DUCKING");
   ExpectString("device_id", kTestDeviceID);
   ExpectInt("component_id", kTestComponentID);
-  ExpectInt("component_type", test_component_);
+  ExpectInt("component_type", base::to_underlying(test_component_));
   ExpectStatus("created");
 
   // Verify OnStarted().
@@ -295,9 +296,10 @@ TEST_P(MediaInternalsAudioLogTest, AudioLogCreateClose) {
 INSTANTIATE_TEST_SUITE_P(
     MediaInternalsAudioLogTest,
     MediaInternalsAudioLogTest,
-    testing::Values(media::AudioLogFactory::AUDIO_INPUT_CONTROLLER,
-                    media::AudioLogFactory::AUDIO_OUTPUT_CONTROLLER,
-                    media::AudioLogFactory::AUDIO_OUTPUT_STREAM));
+    testing::Values(
+        media::AudioLogFactory::AudioComponent::kAudioInputController,
+        media::AudioLogFactory::AudioComponent::kAudioOuputController,
+        media::AudioLogFactory::AudioComponent::kAudioOutputStream));
 
 // TODO(https://crbug.com/873320): AudioFocusManager is not available on
 // Android.

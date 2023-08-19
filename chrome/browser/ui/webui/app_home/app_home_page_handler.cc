@@ -31,7 +31,6 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow.h"
 #include "chrome/browser/ui/tab_dialogs.h"
-#include "chrome/browser/ui/web_applications/web_app_dialog_manager.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
 #include "chrome/browser/ui/webui/app_home/app_home.mojom-shared.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
@@ -526,10 +525,9 @@ void AppHomePageHandler::UninstallWebApp(const std::string& web_app_id) {
   Browser* browser = GetCurrentBrowser();
   CHECK(browser);
   web_app::WebAppUiManagerImpl::Get(web_app_provider_)
-      ->dialog_manager()
-      .UninstallWebApp(web_app_id, webapps::WebappUninstallSource::kAppsPage,
-                       browser->window(),
-                       std::move(uninstall_success_callback));
+      ->PresentUserUninstallDialog(
+          web_app_id, webapps::WebappUninstallSource::kAppsPage,
+          browser->window(), std::move(uninstall_success_callback));
   return;
 }
 

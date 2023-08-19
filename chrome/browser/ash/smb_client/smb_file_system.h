@@ -123,6 +123,10 @@ class SmbFileSystem : public file_system_provider::ProvidedFileSystemInterface,
       int length,
       storage::AsyncFileUtil::StatusCallback callback) override;
 
+  file_system_provider::AbortCallback FlushFile(
+      int file_handle,
+      storage::AsyncFileUtil::StatusCallback callback) override;
+
   file_system_provider::AbortCallback AddWatcher(
       const GURL& origin,
       const base::FilePath& entry_path,
@@ -164,6 +168,8 @@ class SmbFileSystem : public file_system_provider::ProvidedFileSystemInterface,
   void Configure(storage::AsyncFileUtil::StatusCallback callback) override;
 
   base::WeakPtr<ProvidedFileSystemInterface> GetWeakPtr() override;
+  std::unique_ptr<file_system_provider::ScopedUserInteraction>
+  StartUserInteraction() override;
 
  private:
   const file_system_provider::ProvidedFileSystemInfo file_system_info_;

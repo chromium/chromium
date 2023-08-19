@@ -218,6 +218,7 @@ source_set("browser_sources") {
     "installability_error.cc",
     "installability_error.h",
     "installed_payment_apps_finder.h",
+    "interest_group_api_operation.h",
     "interest_group_manager.h",
     "invalidate_type.h",
     "isolated_web_apps_policy.cc",
@@ -227,7 +228,6 @@ source_set("browser_sources") {
     "javascript_dialog_manager.h",
     "k_anonymity_service_delegate.h",
     "keyboard_event_processing_result.h",
-    "load_notification_details.h",
     "login_delegate.h",
     "manifest_icon_downloader.h",
     "media_capture_devices.h",
@@ -242,6 +242,8 @@ source_set("browser_sources") {
     "media_request_state.h",
     "media_service.h",
     "media_session.h",
+    "media_session_client.cc",
+    "media_session_client.h",
     "media_session_service.h",
     "media_stream_request.cc",
     "media_stream_request.h",
@@ -250,7 +252,7 @@ source_set("browser_sources") {
     "mhtml_generation_result.cc",
     "mhtml_generation_result.h",
     "mojo_binder_policy_map.h",
-    "native_web_keyboard_event.h",
+    "mojom_devtools_agent_host_delegate.h",
     "navigation_controller.cc",
     "navigation_controller.h",
     "navigation_details.cc",
@@ -311,12 +313,17 @@ source_set("browser_sources") {
     "preloading_data.h",
     "prerender_handle.h",
     "prerender_trigger_type.h",
+    "prerender_web_contents_delegate.h",
     "presentation_observer.h",
     "presentation_receiver_flags.h",
     "presentation_request.cc",
     "presentation_request.h",
     "presentation_screen_availability_listener.h",
     "presentation_service_delegate.h",
+    "privacy_sandbox_invoking_api.h",
+    "private_aggregation_data_model.cc",
+    "private_aggregation_data_model.h",
+    "private_network_device_delegate.h",
     "process_visibility_util.h",
     "provision_fetcher_factory.h",
     "provision_fetcher_impl.cc",
@@ -400,6 +407,7 @@ source_set("browser_sources") {
     "storage_partition.h",
     "storage_partition_config.cc",
     "storage_partition_config.h",
+    "storage_partition_user_data.h",
     "storage_usage_info.h",
     "stored_payment_app.cc",
     "stored_payment_app.h",
@@ -457,6 +465,9 @@ source_set("browser_sources") {
     "web_ui_controller_interface_binder.cc",
     "web_ui_controller_interface_binder.h",
     "web_ui_data_source.h",
+    "web_ui_js_bridge_traits.h",
+    "web_ui_managed_interface.cc",
+    "web_ui_managed_interface.h",
     "web_ui_message_handler.h",
     "web_ui_url_loader_factory.h",
     "webauthn_security_utils.cc",
@@ -584,6 +595,7 @@ source_set("browser_sources") {
       "//ui/android",
     ]
     sources += [
+      "android/additional_navigation_params_android.h",
       "android/android_overlay_provider.h",
       "android/browser_context_handle.h",
       "android/child_process_importance.h",
@@ -609,10 +621,6 @@ source_set("browser_sources") {
 
   if (use_aura || is_mac) {
     sources += [ "context_factory.h" ]
-  }
-
-  if (is_apple) {
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_mac) {

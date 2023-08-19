@@ -22,6 +22,8 @@
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
+#include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
+#include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -78,9 +80,7 @@ InstallFromSyncCommand::Params::Params(
 InstallFromSyncCommand::Params::Params(const Params&) = default;
 
 InstallFromSyncCommand::InstallFromSyncCommand(
-    WebAppUrlLoader* url_loader,
     Profile* profile,
-    std::unique_ptr<WebAppDataRetriever> data_retriever,
     const Params& params,
     OnceInstallCallback install_callback)
     : WebAppCommandTemplate<SharedWebContentsWithAppLock>(
@@ -88,9 +88,7 @@ InstallFromSyncCommand::InstallFromSyncCommand(
       lock_description_(
           std::make_unique<SharedWebContentsWithAppLockDescription,
                            base::flat_set<AppId>>({params.app_id})),
-      url_loader_(url_loader),
       profile_(profile),
-      data_retriever_(std::move(data_retriever)),
       params_(params),
       install_callback_(std::move(install_callback)),
       install_error_log_entry_(true, webapps::WebappInstallSource::SYNC) {
@@ -139,6 +137,8 @@ const LockDescription& InstallFromSyncCommand::lock_description() const {
 void InstallFromSyncCommand::StartWithLock(
     std::unique_ptr<SharedWebContentsWithAppLock> lock) {
   lock_ = std::move(lock);
+  url_loader_ = lock_->web_contents_manager().CreateUrlLoader();
+  data_retriever_ = lock_->web_contents_manager().CreateDataRetriever();
 
   url_loader_->LoadUrl(
       params_.start_url, &lock_->shared_web_contents(),
@@ -248,6 +248,7 @@ void InstallFromSyncCommand::OnDidPerformInstallableCheck(
   data_retriever_->GetIcons(
       &lock_->shared_web_contents(), std::move(icon_urls),
       /*skip_page_favicons=*/true,
+      /*fail_all_if_any_fail=*/false,
       base::BindOnce(&InstallFromSyncCommand::OnIconsRetrievedFinalizeInstall,
                      weak_ptr_factory_.GetWeakPtr(),
                      FinalizeMode::kNormalWebAppInfo));
@@ -311,6 +312,7 @@ void InstallFromSyncCommand::InstallFallback(webapps::InstallResultCode code) {
   data_retriever_->GetIcons(
       &lock_->shared_web_contents(), std::move(icon_urls),
       /*skip_page_favicons=*/true,
+      /*fail_all_if_any_fail=*/false,
       base::BindOnce(&InstallFromSyncCommand::OnIconsRetrievedFinalizeInstall,
                      weak_ptr_factory_.GetWeakPtr(),
                      FinalizeMode::kFallbackWebAppInfo));

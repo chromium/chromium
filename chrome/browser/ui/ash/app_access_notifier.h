@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/public/cpp/sensor_disabled_notification_delegate.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/account_id/account_id.h"
@@ -30,13 +29,9 @@ class SessionManager;
 }  // namespace session_manager
 
 // This class is responsible for observing AppCapabilityAccessCache, notifying
-// to appropriate entities when an app is accessing camera/microphone. This is
-// also the concrete implementation of SensorDisabledNotificationDelegate, which
-// allows code relevant to microphone and camera notifications that resides
-// under //ash to invoke functions/objects that actually reside under //chrome.
+// to appropriate entities when an app is accessing camera/microphone.
 class AppAccessNotifier
-    : public ash::SensorDisabledNotificationDelegate,
-      public apps::AppCapabilityAccessCache::Observer,
+    : public apps::AppCapabilityAccessCache::Observer,
       public session_manager::SessionManagerObserver,
       public user_manager::UserManager::UserSessionStateObserver {
  public:
@@ -44,9 +39,6 @@ class AppAccessNotifier
   AppAccessNotifier(const AppAccessNotifier&) = delete;
   AppAccessNotifier& operator=(const AppAccessNotifier&) = delete;
   ~AppAccessNotifier() override;
-
-  // ash::SensorDisabledNotificationDelegate
-  std::vector<std::u16string> GetAppsAccessingSensor(Sensor sensor) override;
 
   // apps::AppCapabilityAccessCache::Observer
   void OnCapabilityAccessUpdate(
@@ -66,6 +58,12 @@ class AppAccessNotifier
 
   // Launch the native settings page of the app with `app_id`.
   static void LaunchAppSettings(const std::string& app_id);
+
+  // Returns names of apps accessing camera.
+  std::vector<std::u16string> GetAppsAccessingCamera();
+
+  // Returns names of apps accessing microphone.
+  std::vector<std::u16string> GetAppsAccessingMicrophone();
 
  protected:
   // Returns the active user's account ID if we have an active user, an empty
@@ -95,6 +93,12 @@ class AppAccessNotifier
   // multiple logouts/logins, and we specifically don't ever clear it. This is
   // used for the microphone and camera mute notifications.
   using MruAppIdMap = std::map<AccountId, MruAppIdList>;
+
+  // A helper function for implementation of GetAppsAccessing*.
+  std::vector<std::u16string> GetAppsAccessingSensor(
+      const MruAppIdList* app_id_list,
+      base::OnceCallback<std::set<std::string>(apps::AppCapabilityAccessCache&)>
+          app_getter);
 
   // A helper to check if `app_id` can be found in `id_map` for the active user.
   bool MapContainsAppId(const MruAppIdMap& id_map, const std::string& app_id);

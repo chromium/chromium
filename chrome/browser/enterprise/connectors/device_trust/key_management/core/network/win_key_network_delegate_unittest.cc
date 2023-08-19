@@ -118,7 +118,8 @@ class WinKeyNetworkDelegateTest : public testing::Test {
     EXPECT_EQ(response_code, future.Get());
   }
 
-  raw_ptr<MockWinNetworkFetcherFactory> mock_network_fetcher_factory_ = nullptr;
+  raw_ptr<MockWinNetworkFetcherFactory, DanglingUntriaged>
+      mock_network_fetcher_factory_ = nullptr;
   std::unique_ptr<WinKeyNetworkDelegate> network_delegate_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};

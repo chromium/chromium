@@ -64,6 +64,8 @@ class BrowserTabStripModelDelegate : public TabStripModelDelegate {
   void UnfollowSite(content::WebContents* web_contents) override;
   bool IsForWebApp() override;
   void CopyURL(content::WebContents* web_contents) override;
+  void GoBack(content::WebContents* web_contents) override;
+  bool CanGoBack(content::WebContents* web_contents) override;
 
   void CloseFrame();
 

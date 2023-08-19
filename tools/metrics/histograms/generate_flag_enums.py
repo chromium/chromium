@@ -9,6 +9,7 @@ import os
 import re
 import subprocess
 import sys
+import typing
 
 # Import the UKM codegen library for its hashing function, which is the same
 # hashing function as used for flag names.
@@ -25,7 +26,7 @@ import path_utils
 import pretty_print
 
 
-def get_entries_from_unit_test(outdir: str) -> list[str]:
+def get_entries_from_unit_test(outdir: str) -> typing.List[str]:
   """Returns `<int>` entries reported missing by the 'CheckHistograms' unittest.
   """
   subprocess.run(['autoninja', '-C', outdir, 'unit_tests'])
@@ -38,7 +39,7 @@ def get_entries_from_unit_test(outdir: str) -> list[str]:
   return re.findall('<int [^>]*>', run_test_command.stdout)
 
 
-def get_entries_from_feature_string(feature: str) -> list[str]:
+def get_entries_from_feature_string(feature: str) -> typing.List[str]:
   """Generates entries for `feature`."""
   entries = []
   for suffix in ['disabled', 'enabled']:
@@ -49,7 +50,7 @@ def get_entries_from_feature_string(feature: str) -> list[str]:
   return entries
 
 
-def add_entries_to_xml(enums_xml: str, entries: list[str]) -> str:
+def add_entries_to_xml(enums_xml: str, entries: typing.List[str]) -> str:
   """Adds each of `entries` to `enums_xml` and pretty prints it."""
   # Only add entries not already present.
   entries = [entry for entry in entries if enums_xml.find(entry) == -1]

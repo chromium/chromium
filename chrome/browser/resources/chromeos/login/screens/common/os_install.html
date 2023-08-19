@@ -16,6 +16,9 @@ found in the LICENSE file.
     color: var(--cros-color-secondary);
     font-size: 18px;
   }
+  :host-context(.jelly-enabled) ul li::marker {
+    color: var(--cros-sys-on_surface);
+  }
   li:not(:last-child) {
     margin-bottom: 14px;
   }
@@ -35,6 +38,9 @@ found in the LICENSE file.
   }
   .intro-footer {
     color: var(--cros-color-primary);
+  }
+  :host-context(.jelly-enabled) .intro-footer {
+    color: var(--oobe-header-text-color);
   }
 </style>
 
@@ -127,8 +133,8 @@ found in the LICENSE file.
   </div>
   <div slot="content" for-step="failed"
       class="flex layout vertical center center-justified">
-    <img src="images/error.svg"
-        class="oobe-illustration" aria-hidden="true">
+    <iron-icon icon="oobe-illos:error-illo" class="illustration-jelly">
+    </iron-icon>
   </div>
   <div slot="bottom-buttons">
     <oobe-text-button
@@ -151,8 +157,9 @@ found in the LICENSE file.
   <div slot="subtitle" id="osInstallDialogSuccessSubtitile">
       [[osInstallDialogSuccessSubtitile_]]</div>
   <div slot="content" class="flex layout vertical center center-justified">
-    <img src="images/os-install-success.svg"
-        class="oobe-illustration" aria-hidden="true">
+    <iron-icon icon="oobe-illos:os-install-illo"
+        class="illustration-jelly">
+    </iron-icon>
   </div>
 </oobe-adaptive-dialog>
 

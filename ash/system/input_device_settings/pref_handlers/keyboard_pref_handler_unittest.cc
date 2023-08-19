@@ -14,6 +14,7 @@
 #include "ash/system/input_device_settings/input_device_tracker.h"
 #include "ash/test/ash_test_base.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -586,6 +587,30 @@ TEST_F(KeyboardPrefHandlerTest, KeyboardObserveredInTransitionPeriod) {
             kDefaultSuppressMetaFKeyRewrites);
 }
 
+TEST_F(KeyboardPrefHandlerTest,
+       KeyboardSendFunctionKeysTransitionPrefAlwaysConsistent) {
+  mojom::Keyboard keyboard;
+  keyboard.is_external = true;
+  keyboard.meta_key = mojom::MetaKey::kExternalMeta;
+  keyboard.device_key = kKeyboardKey1;
+  {
+    base::test::ScopedFeatureList disable_settings_split_feature_list;
+    disable_settings_split_feature_list.InitAndDisableFeature(
+        features::kInputDeviceSettingsSplit);
+    Shell::Get()->input_device_tracker()->OnKeyboardConnected(keyboard);
+  }
+
+  // Initialize keyboard settings for the device and check that the global
+  // prefs were used as defaults even though the `kSendFunctionKeys` pref was
+  // never changed and it goes against the default since the keyboard is
+  // external.
+  mojom::KeyboardSettingsPtr settings =
+      CallInitializeKeyboardSettings(keyboard);
+  ASSERT_EQ(settings->top_row_are_fkeys, kGlobalSendFunctionKeys);
+  ASSERT_EQ(settings->suppress_meta_fkey_rewrites,
+            kDefaultSuppressMetaFKeyRewrites);
+}
+
 TEST_F(KeyboardPrefHandlerTest, ModifierRemappingsFromGlobalPrefs) {
   // Disable flag in this test since `InputDeviceTracker` only records
   // connected devices when the settings split flag is disabled.
@@ -842,7 +867,7 @@ class KeyboardSettingsPrefConversionTest
 
  protected:
   std::string device_key_;
-  const mojom::KeyboardSettings* settings_;
+  raw_ptr<const mojom::KeyboardSettings, ExperimentalAsh> settings_;
 };
 
 INSTANTIATE_TEST_SUITE_P(

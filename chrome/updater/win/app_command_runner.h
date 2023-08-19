@@ -101,15 +101,14 @@ class AppCommandRunner {
   base::FilePath executable_;
   std::vector<std::wstring> parameters_;
 
-  FRIEND_TEST_ALL_PREFIXES(AppCommandRunnerTest,
-                           GetAppCommandFormatComponents_InvalidPaths);
-  FRIEND_TEST_ALL_PREFIXES(AppCommandRunnerTest,
-                           GetAppCommandFormatComponents_ProgramFilesPaths);
-  FRIEND_TEST_ALL_PREFIXES(AppCommandRunnerTest, FormatParameter);
-  FRIEND_TEST_ALL_PREFIXES(
-      AppCommandRunnerTest,
-      GetAppCommandFormatComponents_And_FormatAppCommandLine);
-  FRIEND_TEST_ALL_PREFIXES(AppCommandRunnerTest, ExecuteAppCommand);
+  FRIEND_TEST_ALL_PREFIXES(AppCommandFormatComponentsInvalidPathsTest,
+                           TestCases);
+  FRIEND_TEST_ALL_PREFIXES(AppCommandFormatComponentsProgramFilesPathsTest,
+                           TestCases);
+  FRIEND_TEST_ALL_PREFIXES(AppCommandFormatParameterTest, TestCases);
+  FRIEND_TEST_ALL_PREFIXES(AppCommandFormatComponentsAndCommandLineTest,
+                           TestCases);
+  FRIEND_TEST_ALL_PREFIXES(AppCommandExecuteTest, TestCases);
 };
 
 }  // namespace updater

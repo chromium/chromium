@@ -14,17 +14,7 @@ source_set("infobar_banner") {
     "infobar_banner_placeholder_request_config.mm",
     "save_address_profile_infobar_banner_overlay_request_config.h",
     "save_address_profile_infobar_banner_overlay_request_config.mm",
-    "save_card_infobar_banner_overlay_request_config.h",
-    "save_card_infobar_banner_overlay_request_config.mm",
-    "sync_error_infobar_banner_overlay_request_config.h",
-    "sync_error_infobar_banner_overlay_request_config.mm",
-    "tailored_security_service_infobar_banner_overlay_request_config.h",
-    "tailored_security_service_infobar_banner_overlay_request_config.mm",
-    "translate_infobar_banner_overlay_request_config.h",
-    "translate_infobar_banner_overlay_request_config.mm",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
     "//base",
@@ -42,8 +32,8 @@ source_set("infobar_banner") {
     "//ios/chrome/browser/passwords:infobar_delegates",
     "//ios/chrome/browser/permissions:infobar_delegate",
     "//ios/chrome/browser/safe_browsing/tailored_security:infobar_delegates",
+    "//ios/chrome/browser/settings/sync/utils",
     "//ios/chrome/browser/ui/authentication",
-    "//ios/chrome/browser/ui/settings/sync/utils",
     "//ios/chrome/browser/web/",
     "//ios/web/public/permissions",
     "//ui/base",
@@ -51,12 +41,8 @@ source_set("infobar_banner") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [
-    "confirm_infobar_banner_overlay_request_config_unittest.mm",
-    "sync_error_infobar_banner_overlay_request_config_unittest.mm",
-  ]
+  sources = [ "confirm_infobar_banner_overlay_request_config_unittest.mm" ]
   deps = [
     ":infobar_banner",
     "//base/test:test_support",
@@ -64,11 +50,11 @@ source_set("unit_tests") {
     "//ios/chrome/browser/infobars/test",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/infobar_banner",
+    "//ios/chrome/browser/settings/sync/utils",
+    "//ios/chrome/browser/settings/sync/utils/test",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/infobars/test",
-    "//ios/chrome/browser/ui/settings/sync/utils",
-    "//ios/chrome/browser/ui/settings/sync/utils/test",
     "//ios/chrome/common/ui/colors",
     "//ios/web/public/test",
     "//testing/gmock",

@@ -17,12 +17,12 @@ message SendRemoteCommandRequest {
 }
 
 message SendRemoteCommandResponse {
-  optional int32 command_id = 1;
+  optional int64 command_id = 1;
 }
 
 message WaitRemoteCommandResultRequest {
   // A command_id that has been previously returned by SendRemoteCommand.
-  optional int32 command_id = 1;
+  optional int64 command_id = 1;
 }
 
 message WaitRemoteCommandResultResponse {

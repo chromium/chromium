@@ -47,6 +47,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) NameValuePairsParser {
   // The obtained info will be written into the given map.
   explicit NameValuePairsParser(NameValueMap* map);
 
+  ~NameValuePairsParser();
+
   NameValuePairsParser(const NameValuePairsParser&) = delete;
   NameValuePairsParser& operator=(const NameValuePairsParser&) = delete;
 

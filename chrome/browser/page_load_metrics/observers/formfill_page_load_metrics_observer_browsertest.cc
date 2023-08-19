@@ -111,8 +111,9 @@ IN_PROC_BROWSER_TEST_F(FormfillPageLoadMetricsObserverBrowserTest,
       blink::mojom::WebFeature::kUserDataFieldFilledPreviously, 0);
 }
 
+// TODO(crbug.com/1373542): test is flaky across platforms.
 IN_PROC_BROWSER_TEST_F(FormfillPageLoadMetricsObserverBrowserTest,
-                       UserDataFieldFilledPreviouslyUseCounter) {
+                       DISABLED_UserDataFieldFilledPreviouslyUseCounter) {
   base::HistogramTester histogram_tester;
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(

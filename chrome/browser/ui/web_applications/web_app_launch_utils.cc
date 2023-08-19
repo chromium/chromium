@@ -292,7 +292,8 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
 
   if (web_app->launch_handler()
           .value_or(LaunchHandler{})
-          .TargetsExistingClients()) {
+          .TargetsExistingClients() ||
+      registrar.IsPreventCloseEnabled(web_app->app_id())) {
     if (Browser* browser =
             AppBrowserController::FindForWebApp(*profile, app_id)) {
       // TODO(crbug.com/1385226): Use apps::AppServiceProxy::LaunchAppWithUrl()
@@ -320,6 +321,11 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
     browser = Browser::Create(Browser::CreateParams::CreateForApp(
         GenerateApplicationNameFromAppId(app_id), true /* trusted_source */,
         gfx::Rect(), profile, true /* user_gesture */));
+
+    // If the current url isn't in scope, then set the initial url on the
+    // AppBrowserController so that the 'x' button still shows up.
+    CHECK(browser->app_controller());
+    browser->app_controller()->MaybeSetInitialUrlOnReparentTab();
   }
 
   bool as_pinned_home_tab =

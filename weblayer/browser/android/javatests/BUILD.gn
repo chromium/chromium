@@ -14,7 +14,6 @@ android_library("webengine_java_tests") {
     "src/org/chromium/webengine/test/ExecuteScriptTest.java",
     "src/org/chromium/webengine/test/ExternalIntentsTest.java",
     "src/org/chromium/webengine/test/FaviconTest.java",
-    "src/org/chromium/webengine/test/FullscreenCallbackTest.java",
     "src/org/chromium/webengine/test/PostMessageTest.java",
     "src/org/chromium/webengine/test/ProfileManagerTest.java",
     "src/org/chromium/webengine/test/StatePersistenceTest.java",

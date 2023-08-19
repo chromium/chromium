@@ -4,10 +4,6 @@
 
 #import "components/autofill/ios/browser/form_suggestion.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation FormSuggestion
 
 - (instancetype)initWithValue:(NSString*)value

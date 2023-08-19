@@ -109,6 +109,7 @@ void RequestSender::SendInternal() {
                        base::Unretained(this),
                        static_cast<int>(ProtocolError::URL_FETCHER_FAILED),
                        std::string(), std::string(), std::string(), 0));
+    return;
   }
   network_fetcher_->PostRequest(
       url, request_body_, kContentType, request_extra_headers_,

@@ -177,14 +177,12 @@ StartAuthSessionReply BuildStartReply(const std::string& auth_session_id,
 
 AuthenticateAuthFactorReply BuildAuthenticateFactorSuccessReply() {
   AuthenticateAuthFactorReply reply;
-  reply.set_authenticated(true);
   reply.add_authorized_for(user_data_auth::AUTH_INTENT_DECRYPT);
   return reply;
 }
 
 AuthenticateAuthFactorReply BuildAuthenticateFactorFailureReply() {
   AuthenticateAuthFactorReply reply;
-  reply.set_authenticated(false);
   reply.set_error(user_data_auth::CRYPTOHOME_ERROR_AUTHORIZATION_KEY_FAILED);
   reply.mutable_error_info()->set_primary_action(
       user_data_auth::PRIMARY_INCORRECT_AUTH);

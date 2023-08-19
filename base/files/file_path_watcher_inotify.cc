@@ -840,10 +840,8 @@ ScopedMaxNumberOfInotifyWatchesOverrideForTest::
   g_override_max_inotify_watches = 0u;
 }
 
-FilePathWatcher::FilePathWatcher() {
-  DETACH_FROM_SEQUENCE(sequence_checker_);
-  impl_ = std::make_unique<FilePathWatcherImpl>();
-}
+FilePathWatcher::FilePathWatcher()
+    : FilePathWatcher(std::make_unique<FilePathWatcherImpl>()) {}
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // Put inside "BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)" because Android

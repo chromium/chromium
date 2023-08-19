@@ -21,6 +21,7 @@
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -168,7 +169,7 @@ class SavedFilesService::SavedFiles {
   void LoadSavedFileEntriesFromPreferences();
 
   raw_ptr<content::BrowserContext> context_;
-  const std::string extension_id_;
+  const extensions::ExtensionId extension_id_;
 
   // Contains all file entries that have been registered, keyed by ID.
   std::unordered_map<std::string, std::unique_ptr<SavedFileEntry>>

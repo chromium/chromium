@@ -3,7 +3,7 @@
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    height: 375px;
+    height: 379px;
     width: 512px;
   }
 
@@ -14,6 +14,8 @@
   #title {
     color: var(--cros-text-color-primary);
     font: var(--cros-headline-1-font);
+    /* override the default margin for H1. */
+    margin: 0;
     padding-block-end: 8px;
     padding-block-start: 24px;
     padding-inline: 24px;
@@ -21,6 +23,8 @@
 
   #content {
     border-top: 1px solid transparent;
+    display: flex;
+    flex-direction: column;
     flex-grow: 1;
     overflow: scroll;
     padding-inline: 24px;
@@ -115,18 +119,15 @@
   }
 </style>
 
-<!-- TODO(b:251046594): Use localized strings -->
 <!-- autofocus for screen reader to read header on dialog open-->
 <div id="dialog" role="dialog" autofocus tabindex="-1" aria-labelledby="title">
   <div id="header">
-    <div id="title">
-      Choose an app to open <span id="file-type"></span> files
-    </div>
+    <h1 id="title"></h1>
   </div>
   <div id="content" role="listbox" aria-multiselectable="false" tabindex="-1"
     aria-label="Application options"></div>
   <div id="button-container">
-    <cr-button class="cancel-button">Cancel</cr-button>
-    <cr-button class="action-button">Open</cr-button>
+    <cr-button class="cancel-button">$i18n{cancel}</cr-button>
+    <cr-button class="action-button">$i18n{open}</cr-button>
   </div>
 </div>

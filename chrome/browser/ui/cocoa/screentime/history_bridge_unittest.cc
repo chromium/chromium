@@ -98,7 +98,7 @@ class HistoryBridgeTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir history_dir_;
   std::unique_ptr<history::HistoryService> service_;
-  raw_ptr<TestHistoryDeleter> deleter_;
+  raw_ptr<TestHistoryDeleter, DanglingUntriaged> deleter_;
   std::unique_ptr<HistoryBridge> bridge_;
   base::RunLoop history_teardown_loop_;
 };

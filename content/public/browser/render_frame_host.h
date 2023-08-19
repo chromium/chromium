@@ -21,6 +21,7 @@
 #include "content/public/common/isolated_world_ids.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sender.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -179,6 +180,11 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   static void LogSandboxedIframesIsolationMetrics();
 
   ~RenderFrameHost() override = default;
+
+  // Returns the storage key for the last committed document in this
+  // RenderFrameHost. It is used for partitioning storage by the various
+  // storage APIs.
+  virtual const blink::StorageKey& GetStorageKey() const = 0;
 
   // Returns the route id for this frame.
   virtual int GetRoutingID() const = 0;
@@ -449,10 +455,18 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // Returns true if the frame is out of process relative to its parent.
   virtual bool IsCrossProcessSubframe() = 0;
 
-  // Returns the web-exposed isolation level of a frame's agent cluster.
+  // Returns the cross-origin isolation capability of this frame.
   //
-  // Note that this is a property of the document so can change as the frame
+  // Note that this is a property of the document and can change as the frame
   // navigates.
+  //
+  // Unlike RenderProcessHost::GetWebExposedIsolationLevel(), this takes the
+  // currently document's Permissions Policy into account and may return a
+  // lower isolation level than RenderProcessHost if the
+  // "cross-origin-isolated" feature is not delegated to this frame. Because
+  // of this, this function should generally be used instead of
+  // RenderProcessHost::GetWebExposedIsolationLevel() when making decisions
+  // based on the isolation level, such as API availability.
   //
   // TODO(https://936696): Once RenderDocument ships this should be exposed as
   // an invariant of the document host.
@@ -947,6 +961,10 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // fenced frames is the same as the id for the outermost main frame. For
   // portals, this id for frames inside a portal is the same as the id for the
   // main frame for the portal.
+  // Should not be called while prerendering as our data collection policy
+  // disallow recording UKMs until the page activation.
+  // See //content/browser/preloading/prerender/README.md#ukm-source-ids for
+  // more details to record UKMS for prerendering.
   virtual ukm::SourceId GetPageUkmSourceId() = 0;
 
   // Report an inspector issue to devtools. Note that the issue is stored on the
@@ -1025,6 +1043,19 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // browser (e.g. typing on the location bar) or from the renderer while having
   // transient user activation
   virtual bool IsLastCrossDocumentNavigationStartedByUser() const = 0;
+
+  // Checks Blink runtime-enabled features (BREF) to create and return
+  // a CookieSettingOverrides pertaining to the last committed document in the
+  // frame. Can only be called on a frame with a committed navigation.
+  virtual net::CookieSettingOverrides GetCookieSettingOverrides() = 0;
+
+  // Whether a same-site navigation that happens when this RenderFrameHost is
+  // the current RenderFrameHost should initiate a RenderFrameHost change, due
+  // to RenderDocument. the result may differ depending on whether the
+  // RenderFrameHost is a main/local root/non-local-root frame, whether it has
+  // committed any navigations or not, and whether it's a crashed frame that
+  // must be replaced or not.
+  virtual bool ShouldChangeRenderFrameHostOnSameSiteNavigation() const = 0;
 
  private:
   // This interface should only be implemented inside content.

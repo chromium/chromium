@@ -32,10 +32,6 @@
 #import "net/url_request/url_request_context_builder.h"
 #import "net/url_request/url_request_job_factory.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Called by the notification center on memory warnings.

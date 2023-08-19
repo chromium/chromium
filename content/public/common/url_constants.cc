@@ -45,6 +45,9 @@ const char kChromeUITracingHost[] = "tracing";
 const char kChromeUIUkmHost[] = "ukm";
 const char kChromeUIUntrustedResourcesURL[] = "chrome-untrusted://resources/";
 const char kChromeUIWebRTCInternalsHost[] = "webrtc-internals";
+#if BUILDFLAG(ENABLE_VR)
+const char kChromeUIWebXrInternalsHost[] = "webxr-internals";
+#endif
 
 // This error URL is loaded in normal web renderer processes, so it should not
 // have a chrome:// scheme that might let it be confused with a WebUI page.

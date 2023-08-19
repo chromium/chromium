@@ -114,11 +114,8 @@ class DmServerUploader : public TaskRunnerContext<CompletionResponse> {
   // to upload to DmServer.
   void HandleRecords();
 
-  // Processes |completion_response| and call |Response|.
+  // Processes |completion_response| and calls |Response|.
   void Finalize(CompletionResponse completion_response);
-
-  // Complete schedules |Finalize| with the provided |completion_response|.
-  void Complete(CompletionResponse completion_response);
 
   // Helper function for determining if an EncryptedRecord is valid.
   Status IsRecordValid(const EncryptedRecord& encrypted_record,
@@ -131,7 +128,10 @@ class DmServerUploader : public TaskRunnerContext<CompletionResponse> {
   ScopedReservation scoped_reservation_ GUARDED_BY_CONTEXT(sequence_checker_);
   const ReportSuccessfulUploadCallback report_success_upload_cb_;
   const EncryptionKeyAttachedCallback encryption_key_attached_cb_;
-  const raw_ptr<RecordHandler> handler_;
+  // This dangling raw_ptr occurred in:
+  // unit_tests: NeedOrNoNeedKey/DmServerUploaderTest.ReprotWithZeroRecords/2
+  // https://ci.chromium.org/ui/p/chromium/builders/try/linux-rel/1425192/test-results?q=ExactID%3Aninja%3A%2F%2Fchrome%2Ftest%3Aunit_tests%2FDmServerUploaderTest.ReprotWithZeroRecords%2FNeedOrNoNeedKey.2+VHash%3A728d3f3a440b40c1
+  const raw_ptr<RecordHandler, FlakyDanglingUntriaged> handler_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

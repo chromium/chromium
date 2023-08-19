@@ -148,10 +148,6 @@ struct XRDepthConfig {
 // This structure contains a description of the device's active configuration
 // for the session being established.
 struct XRSessionDeviceConfig {
-  // Indicates whether the device backing this session sends input events solely
-  // via eventing (as opposed to polling).
-  bool uses_input_eventing;
-
   // The default scale that should be applied to the native framebuffer size
   // unless overridden by the developer.
   float default_framebuffer_scale = 1.0;
@@ -821,10 +817,7 @@ struct XRFrameData {
   array<XRView> views;
 
   // For immersive sessions only, reports the state of all active input devices
-  // at the time of this frame. If a session has indicated that it
-  // |uses_input_eventing|, then these input states should not fire select,
-  // squeeze, or similar events, but all controller state, including current
-  // button states, should still be updated.
+  // at the time of this frame. all controller state, including current
   array<XRInputSourceState>? input_state;
 
   // Stage parameters may be provided per-frame, or only re-computed
@@ -1082,13 +1075,6 @@ interface XREnvironmentIntegrationProvider {
   DetachAnchor(uint64 anchor_id);
 };
 
-// Provides a mechanism for a channel to plumb up any button click events
-// separately from polling, to provide better latency/position tracking for
-// those events.
-interface XRInputSourceButtonListener {
-  OnButtonEvent(XRInputSourceState input_source);
-};
-
 struct XRFrameDataRequestOptions {
   // Controls whether |XRFrameData.light_estimation_data| should be populated
   // by the request to |XRFrameDataProvider.GetFrameData()|.
@@ -1113,8 +1099,6 @@ interface XRFrameDataProvider {
   GetEnvironmentIntegrationProvider(
       pending_associated_receiver<XREnvironmentIntegrationProvider>
           environment_provider);
-  SetInputSourceButtonListener(
-      pending_associated_remote<XRInputSourceButtonListener>? event_listener);
 };
 
 // Provides the necessary functionality for sending frames to a headset.

@@ -15,6 +15,7 @@
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
@@ -85,11 +86,8 @@ std::set<std::string> GetMimeTypesFromFileHandlingProto(
 
 FileHandlingSubManager::FileHandlingSubManager(
     const base::FilePath& profile_path,
-    WebAppRegistrar& registrar,
-    WebAppSyncBridge& sync_bridge)
-    : profile_path_(profile_path),
-      registrar_(registrar),
-      sync_bridge_(sync_bridge) {}
+    WebAppProvider& provider)
+    : profile_path_(profile_path), provider_(provider) {}
 
 FileHandlingSubManager::~FileHandlingSubManager() = default;
 
@@ -99,8 +97,8 @@ void FileHandlingSubManager::Configure(
     base::OnceClosure configure_done) {
   DCHECK(!desired_state.has_file_handling());
 
-  if (!registrar_->IsLocallyInstalled(app_id) ||
-      registrar_->GetAppFileHandlerApprovalState(app_id) ==
+  if (!provider_->registrar_unsafe().IsLocallyInstalled(app_id) ||
+      provider_->registrar_unsafe().GetAppFileHandlerApprovalState(app_id) ==
           ApiApprovalState::kDisallowed ||
       !ShouldRegisterFileHandlersWithOs()) {
     std::move(configure_done).Run();
@@ -108,9 +106,10 @@ void FileHandlingSubManager::Configure(
   }
 
   proto::FileHandling* os_file_handling = desired_state.mutable_file_handling();
-  // GetAppFileHandlers should never return a nullptr because of the registrar
+  // GetAppFileHandlers should never return a nullptr because of the provider
   // checks above.
-  for (const auto& file_handler : *registrar_->GetAppFileHandlers(app_id)) {
+  for (const auto& file_handler :
+       *provider_->registrar_unsafe().GetAppFileHandlers(app_id)) {
     proto::FileHandling::FileHandler* file_handler_proto =
         os_file_handling->add_file_handlers();
     DCHECK(file_handler.action.is_valid());
@@ -182,7 +181,7 @@ void FileHandlingSubManager::Unregister(
   // TODO(https://crbug.com/1295044): remove after fully deprecate old
   // `InstallOsHooks/UninstallOsHooks` paths.
   if (!HasFileHandling(desired_state)) {
-    ScopedRegistryUpdate update(&sync_bridge_.get());
+    ScopedRegistryUpdate update = provider_->sync_bridge_unsafe().BeginUpdate();
     update->UpdateApp(app_id)->SetFileHandlerOsIntegrationState(
         OsIntegrationState::kDisabled);
   }
@@ -209,13 +208,14 @@ void FileHandlingSubManager::Register(
   // TODO(https://crbug.com/1295044): remove after fully deprecate old
   // `InstallOsHooks/UninstallOsHooks` paths.
   {
-    ScopedRegistryUpdate update(&sync_bridge_.get());
+    ScopedRegistryUpdate update = provider_->sync_bridge_unsafe().BeginUpdate();
     update->UpdateApp(app_id)->SetFileHandlerOsIntegrationState(
         OsIntegrationState::kEnabled);
   }
 
   RegisterFileHandlersWithOs(
-      app_id, registrar_->GetAppShortName(app_id), profile_path_,
+      app_id, provider_->registrar_unsafe().GetAppShortName(app_id),
+      profile_path_,
       ConvertFileHandlingProtoToFileHandlers(desired_state.file_handling()),
       std::move(metrics_callback));
 }

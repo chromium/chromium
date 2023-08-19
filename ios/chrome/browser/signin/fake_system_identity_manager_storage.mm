@@ -8,10 +8,6 @@
 #import "ios/chrome/browser/signin/fake_system_identity_details.h"
 #import "ios/chrome/browser/signin/system_identity.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation FakeSystemIdentityManagerStorage {
   // Stores the key in insertion order.
   __strong NSMutableArray<NSString*>* _orderedKeys;

@@ -10,11 +10,13 @@ namespace storage {
 // Option for specifying if flush or disk sync operation is wanted after
 // writing.
 enum class FlushPolicy {
-  // Specify this policy if flushing is required in order to commit written
-  // data. Note, that syncing is only invoked via FileStreamWriter::Flush() and
-  // via base::File::Flush() for native files. Hence, syncing will not be
-  // performed for copying within non-native file systems as well as for
-  // non-native copies performed with snapshots.
+  // Specify this policy if flushing (with FlushMode::kEndOfFile) is required
+  // in order to commit written data.
+  //
+  // Note that syncing is only invoked via FileStreamWriter::Flush() and via
+  // base::File::Flush() for native files. Hence, syncing will not be performed
+  // for copying within non-native file systems as well as for non-native
+  // copies performed with snapshots.
   FLUSH_ON_COMPLETION,
 
   // Specify this policy if no flushing is required after a writing operation is

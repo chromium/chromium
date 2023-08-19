@@ -245,7 +245,7 @@ class TypedURLSyncBridge : public syncer::ModelTypeSyncBridge,
 
   // A non-owning pointer to the database, which is for storing typed urls sync
   // metadata and state.
-  raw_ptr<TypedURLSyncMetadataDatabase, DanglingUntriaged>
+  raw_ptr<TypedURLSyncMetadataDatabase, AcrossTasksDanglingUntriaged>
       sync_metadata_database_;
 
   // Since HistoryBackend use SequencedTaskRunner, so should use SequenceChecker

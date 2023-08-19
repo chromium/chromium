@@ -216,7 +216,7 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
 
     // Determine storage_key_quota differently depending on type.
     if (is_unlimited_) {
-      SetDesiredStorageKeyQuota(blink::mojom::QuotaStatusCode::kOk, kNoLimit);
+      SetDesiredStorageKeyQuota(kNoLimit);
       manager()->GetStorageCapacity(
           base::BindOnce(&UsageAndQuotaInfoGatherer::OnGotCapacity,
                          weak_factory_.GetWeakPtr(), barrier));
@@ -262,8 +262,10 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
       }
     }
 
-    std::move(callback_).Run(blink::mojom::QuotaStatusCode::kOk, usage_, quota,
-                             quota_override_size.has_value(),
+    std::move(callback_).Run(usage_ >= 0
+                                 ? blink::mojom::QuotaStatusCode::kOk
+                                 : blink::mojom::QuotaStatusCode::kUnknown,
+                             usage_, quota, quota_override_size.has_value(),
                              std::move(usage_breakdown_));
     if (type_ == StorageType::kTemporary && !is_incognito_ && !is_unlimited_ &&
         !bucket_info_) {
@@ -293,7 +295,7 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
     const int64_t quota =
         manager()->GetQuotaForStorageKey(storage_key_, type_, settings);
     if (quota != kNoLimit) {
-      SetDesiredStorageKeyQuota(blink::mojom::QuotaStatusCode::kOk, quota);
+      SetDesiredStorageKeyQuota(quota);
     }
 
     barrier_closure.Run();
@@ -331,8 +333,7 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
     std::move(barrier_closure).Run();
   }
 
-  void SetDesiredStorageKeyQuota(blink::mojom::QuotaStatusCode status,
-                                 int64_t quota) {
+  void SetDesiredStorageKeyQuota(int64_t quota) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK_GE(quota, 0);
 
@@ -1554,6 +1555,26 @@ void QuotaManagerImpl::DeleteHostData(const std::string& host,
                     buckets_deleter_ptr->GetBucketDeletionCallback());
 }
 
+void QuotaManagerImpl::DeleteStorageKeyData(
+    const blink::StorageKey& storage_key,
+    blink::mojom::StorageType type,
+    StatusCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  EnsureDatabaseOpened();
+
+  DCHECK(client_types_.contains(type));
+  if (client_types_[type].empty()) {
+    return;
+  }
+  auto buckets_deleter = std::make_unique<BucketSetDataDeleter>(
+      this, base::BindOnce(&QuotaManagerImpl::DidDeleteBuckets,
+                           weak_factory_.GetWeakPtr(), std::move(callback)));
+  auto* buckets_deleter_ptr = buckets_deleter.get();
+  bucket_set_data_deleters_[buckets_deleter_ptr] = std::move(buckets_deleter);
+  GetBucketsForStorageKey(storage_key, type,
+                          buckets_deleter_ptr->GetBucketDeletionCallback());
+}
+
 // static
 void QuotaManagerImpl::DidDeleteBuckets(
     base::WeakPtr<QuotaManagerImpl> quota_manager,
@@ -1835,6 +1856,10 @@ void QuotaManagerImpl::EnsureDatabaseOpened() {
     return;
   }
 
+  MaybeBootstrapDatabase();
+}
+
+void QuotaManagerImpl::MaybeBootstrapDatabase() {
   is_bootstrapping_database_ = true;
   db_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
@@ -2140,9 +2165,9 @@ void QuotaManagerImpl::OnDbError(int error_code) {
   // Wipe the database before triggering another bootstrap.
   db_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&QuotaDatabase::RazeAndReopen,
-                     base::Unretained(database_.get())),
-      base::BindOnce(&QuotaManagerImpl::DidRazeForReBootstrap,
+      base::BindOnce(&QuotaDatabase::RecoverOrRaze,
+                     base::Unretained(database_.get()), error_code),
+      base::BindOnce(&QuotaManagerImpl::DidRecoverOrRazeForReBootstrap,
                      weak_factory_.GetWeakPtr()));
 }
 
@@ -2807,10 +2832,9 @@ void QuotaManagerImpl::DidGetStorageCapacity(
   DetermineStoragePressure(total_space, available_space);
 }
 
-void QuotaManagerImpl::DidRazeForReBootstrap(
-    QuotaError raze_and_reopen_result) {
-  if (raze_and_reopen_result == QuotaError::kNone) {
-    BootstrapDatabase();
+void QuotaManagerImpl::DidRecoverOrRazeForReBootstrap(bool success) {
+  if (success) {
+    MaybeBootstrapDatabase();
     return;
   }
 

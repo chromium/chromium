@@ -60,8 +60,12 @@ class FakePageLoadMetricsObserverDelegate
   // returned.
   const NormalizedCLSData& GetNormalizedCLSData(
       BfcacheStrategy bfcache_strategy) const override;
+  const NormalizedCLSData& GetSoftNavigationIntervalNormalizedCLSData()
+      const override;
   const NormalizedResponsivenessMetrics& GetNormalizedResponsivenessMetrics()
       const override;
+  const NormalizedResponsivenessMetrics&
+  GetSoftNavigationIntervalNormalizedResponsivenessMetrics() const override;
   const mojom::InputTiming& GetPageInputTiming() const override;
   const absl::optional<blink::SubresourceLoadMetrics>&
   GetSubresourceLoadMetrics() const override;
@@ -73,7 +77,9 @@ class FakePageLoadMetricsObserverDelegate
   const LargestContentfulPaintHandler&
   GetExperimentalLargestContentfulPaintHandler() const override;
   ukm::SourceId GetPageUkmSourceId() const override;
-  uint32_t GetSoftNavigationCount() const override;
+  mojom::SoftNavigationMetrics& GetSoftNavigationMetrics() const override;
+  ukm::SourceId GetUkmSourceIdForSoftNavigation() const override;
+  ukm::SourceId GetPreviousUkmSourceIdForSoftNavigation() const override;
   bool IsFirstNavigationInWebContents() const override;
 
   // Helpers to add a BackForwardCacheRestore to this fake.
@@ -83,7 +89,7 @@ class FakePageLoadMetricsObserverDelegate
 
   // These instance variables will be returned by calls to the method with the
   // corresponding name. Tests should set these variables appropriately.
-  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
   UserInitiatedInfo user_initiated_info_;
   GURL url_;
   GURL start_url_;

@@ -42,14 +42,12 @@ class FastSharedBufferReader;
 // This class decodes the BMP image format.
 class PLATFORM_EXPORT BMPImageDecoder final : public ImageDecoder {
  public:
-  BMPImageDecoder(AlphaOption,
-                  const ColorBehavior&,
-                  wtf_size_t max_decoded_bytes);
+  BMPImageDecoder(AlphaOption, ColorBehavior, wtf_size_t max_decoded_bytes);
 
   ~BMPImageDecoder() override;
 
   // ImageDecoder:
-  String FilenameExtension() const override { return "bmp"; }
+  String FilenameExtension() const override;
   const AtomicString& MimeType() const override;
   void OnSetData(SegmentReader*) override;
   // CAUTION: SetFailed() deletes |reader_|.  Be careful to avoid
@@ -59,8 +57,8 @@ class PLATFORM_EXPORT BMPImageDecoder final : public ImageDecoder {
 
  private:
   // ImageDecoder:
-  void DecodeSize() override { Decode(true); }
-  void Decode(wtf_size_t) override { Decode(false); }
+  void DecodeSize() override;
+  void Decode(wtf_size_t) override;
 
   // Decodes the image.  If |only_size| is true, stops decoding after
   // calculating the image size. If decoding fails but there is no more

@@ -42,10 +42,10 @@ class IbanBubbleControllerImplTest : public BrowserWithTestWindowTest {
     TestIbanBubbleControllerImpl::CreateForTesting(web_contents);
   }
 
-  void ShowLocalSaveBubble(const IBAN& iban) {
+  void ShowLocalSaveBubble(const Iban& iban) {
     controller()->OfferLocalSave(
         iban, /*should_show_prompt=*/true,
-        base::BindOnce(&IbanBubbleControllerImplTest::LocalSaveIBANCallback,
+        base::BindOnce(&IbanBubbleControllerImplTest::LocalSaveIbanCallback,
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
@@ -71,8 +71,8 @@ class IbanBubbleControllerImplTest : public BrowserWithTestWindowTest {
   }
 
  private:
-  void LocalSaveIBANCallback(
-      AutofillClient::SaveIBANOfferUserDecision user_decision,
+  void LocalSaveIbanCallback(
+      AutofillClient::SaveIbanOfferUserDecision user_decision,
       const absl::optional<std::u16string>& nickname) {
     saved_nickname_ = nickname.value_or(u"");
   }
@@ -83,7 +83,7 @@ class IbanBubbleControllerImplTest : public BrowserWithTestWindowTest {
 
 TEST_F(IbanBubbleControllerImplTest, LocalIbanSavedSuccessfully) {
   std::u16string nickname = u"My doctor's IBAN";
-  ShowLocalSaveBubble(autofill::test::GetIBAN());
+  ShowLocalSaveBubble(autofill::test::GetIban());
   ClickSaveButton(nickname);
 
   EXPECT_EQ(nickname, saved_nickname());
@@ -91,7 +91,7 @@ TEST_F(IbanBubbleControllerImplTest, LocalIbanSavedSuccessfully) {
 
 TEST_F(IbanBubbleControllerImplTest, Metrics_LocalIbanOffered) {
   base::HistogramTester histogram_tester;
-  ShowLocalSaveBubble(autofill::test::GetIBAN());
+  ShowLocalSaveBubble(autofill::test::GetIban());
 
   histogram_tester.ExpectBucketCount(
       "Autofill.SaveIbanPromptOffer.Local.FirstShow",
@@ -100,7 +100,7 @@ TEST_F(IbanBubbleControllerImplTest, Metrics_LocalIbanOffered) {
 
 TEST_F(IbanBubbleControllerImplTest, Metrics_LocalIbanResult_Accepted) {
   base::HistogramTester histogram_tester;
-  ShowLocalSaveBubble(autofill::test::GetIBAN());
+  ShowLocalSaveBubble(autofill::test::GetIban());
   CloseBubble(PaymentsBubbleClosedReason::kAccepted);
 
   histogram_tester.ExpectBucketCount(
@@ -110,7 +110,7 @@ TEST_F(IbanBubbleControllerImplTest, Metrics_LocalIbanResult_Accepted) {
 
 TEST_F(IbanBubbleControllerImplTest, Metrics_LocalIbanResult_Cancelled) {
   base::HistogramTester histogram_tester;
-  ShowLocalSaveBubble(autofill::test::GetIBAN());
+  ShowLocalSaveBubble(autofill::test::GetIban());
   CloseBubble(PaymentsBubbleClosedReason::kCancelled);
 
   histogram_tester.ExpectBucketCount(
@@ -120,7 +120,7 @@ TEST_F(IbanBubbleControllerImplTest, Metrics_LocalIbanResult_Cancelled) {
 
 TEST_F(IbanBubbleControllerImplTest, Metrics_LocalIbanResult_NotInteracted) {
   base::HistogramTester histogram_tester;
-  ShowLocalSaveBubble(autofill::test::GetIBAN());
+  ShowLocalSaveBubble(autofill::test::GetIban());
   CloseBubble(PaymentsBubbleClosedReason::kNotInteracted);
 
   histogram_tester.ExpectBucketCount(
@@ -130,7 +130,7 @@ TEST_F(IbanBubbleControllerImplTest, Metrics_LocalIbanResult_NotInteracted) {
 
 TEST_F(IbanBubbleControllerImplTest, Metrics_LocalIbanResult_LostFocus) {
   base::HistogramTester histogram_tester;
-  ShowLocalSaveBubble(autofill::test::GetIBAN());
+  ShowLocalSaveBubble(autofill::test::GetIban());
   CloseBubble(PaymentsBubbleClosedReason::kLostFocus);
 
   histogram_tester.ExpectBucketCount(
@@ -140,7 +140,7 @@ TEST_F(IbanBubbleControllerImplTest, Metrics_LocalIbanResult_LostFocus) {
 
 TEST_F(IbanBubbleControllerImplTest, Metrics_LocalIbanSaved_WithNickname) {
   base::HistogramTester histogram_tester;
-  ShowLocalSaveBubble(autofill::test::GetIBAN());
+  ShowLocalSaveBubble(autofill::test::GetIban());
   ClickSaveButton(u"My doctor's IBAN");
 
   histogram_tester.ExpectUniqueSample(
@@ -149,7 +149,7 @@ TEST_F(IbanBubbleControllerImplTest, Metrics_LocalIbanSaved_WithNickname) {
 
 TEST_F(IbanBubbleControllerImplTest, Metrics_LocalIbanSaved_NoNickname) {
   base::HistogramTester histogram_tester;
-  ShowLocalSaveBubble(autofill::test::GetIBAN());
+  ShowLocalSaveBubble(autofill::test::GetIban());
   ClickSaveButton(u"");
 
   histogram_tester.ExpectUniqueSample(

@@ -19,7 +19,9 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_testing_support.h"
+#include "third_party/blink/public/web/web_view.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkPicture.h"
@@ -76,6 +78,8 @@ class PaintPreviewRecorderRenderViewTest
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     RenderViewTest::SetUp();
+    // Hide scrollbars so that they don't affect the bitmap color results.
+    web_view_->GetSettings()->SetHideScrollbars(true);
   }
 
   base::FilePath MakeTestFilePath(const std::string& filename) {
@@ -114,16 +118,7 @@ class PaintPreviewRecorderRenderViewTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/1448918): The color returned on iOS is incorrect.
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_TestCaptureMainFrameAndClipping \
-  DISABLED_TestCaptureMainFrameAndClipping
-#else
-#define MAYBE_TestCaptureMainFrameAndClipping TestCaptureMainFrameAndClipping
-#endif
-
-TEST_P(PaintPreviewRecorderRenderViewTest,
-       MAYBE_TestCaptureMainFrameAndClipping) {
+TEST_P(PaintPreviewRecorderRenderViewTest, TestCaptureMainFrameAndClipping) {
   LoadHTML(
       "<!doctype html>"
       "<body>"

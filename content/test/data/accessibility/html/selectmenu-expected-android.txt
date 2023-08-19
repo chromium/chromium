@@ -1,6 +1,0 @@
-android.webkit.WebView focusable focused scrollable
-++android.view.View
-++++android.view.View
-++++++android.widget.Spinner clickable collapsed focusable name='Option 1'
-++++android.view.View
-++++++android.widget.Spinner clickable collapsed name='Custom selectmenu button'

@@ -26,6 +26,20 @@ symbolset("checkermark_shield") {
   ]
 }
 
+symbolset("custom_platter_filled_bottom_and_arrow_down_iphone") {
+  sources = [
+    "custom_platter_filled_bottom_and_arrow_down_iphone.symbolset/Contents.json",
+    "custom_platter_filled_bottom_and_arrow_down_iphone.symbolset/custom.platter.filled.bottom.and.arrow.down.iphone.cr.svg",
+  ]
+}
+
+symbolset("custom_platter_filled_top_and_arrow_up_iphone") {
+  sources = [
+    "custom_platter_filled_top_and_arrow_up_iphone.symbolset/Contents.json",
+    "custom_platter_filled_top_and_arrow_up_iphone.symbolset/custom.platter.filled.top.and.arrow.up.iphone.cr.svg",
+  ]
+}
+
 symbolset("dino") {
   sources = [
     "dino.symbolset/Contents.json",
@@ -123,23 +137,6 @@ symbolset("plus_circle_fill") {
   sources = [
     "plus_circle_fill.symbolset/Contents.json",
     "plus_circle_fill.symbolset/plus.circle.fill.cr.svg",
-  ]
-}
-
-symbolset("legacy_plus_circle_fill") {
-  sources = [
-    "legacy_plus_circle_fill.symbolset/Contents.json",
-    "legacy_plus_circle_fill.symbolset/legacy.plus.circle.fill.cr.svg",
-  ]
-}
-
-imageset("plus_circle_fill_ios14") {
-  sources = [
-    "plus_circle_fill_ios14.imageset/Contents.json",
-    "plus_circle_fill_ios14.imageset/plus_circle_fill_ios14@2x.png",
-    "plus_circle_fill_ios14.imageset/plus_circle_fill_ios14@3x.png",
-    "plus_circle_fill_ios14.imageset/plus_circle_fill_ios14_dark@2x.png",
-    "plus_circle_fill_ios14.imageset/plus_circle_fill_ios14_dark@3x.png",
   ]
 }
 
@@ -242,38 +239,6 @@ imageset("legacy_cloud_and_arrow_up") {
   ]
 }
 
-imageset("tab_grid_new_tab_button_ios14") {
-  sources = [
-    "tab_grid_new_tab_button_ios14.imageset/Contents.json",
-    "tab_grid_new_tab_button_ios14.imageset/tab_grid_new_tab_button_ios14@2x.png",
-    "tab_grid_new_tab_button_ios14.imageset/tab_grid_new_tab_button_ios14@3x.png",
-  ]
-}
-
-imageset("tab_grid_new_tab_button_incognito_ios14") {
-  sources = [
-    "tab_grid_new_tab_button_incognito_ios14.imageset/Contents.json",
-    "tab_grid_new_tab_button_incognito_ios14.imageset/tab_grid_new_tab_button_incognito_ios14@2x.png",
-    "tab_grid_new_tab_button_incognito_ios14.imageset/tab_grid_new_tab_button_incognito_ios14@3x.png",
-  ]
-}
-
-imageset("tab_grid_new_tab_floating_button_ios14") {
-  sources = [
-    "tab_grid_new_tab_floating_button_ios14.imageset/Contents.json",
-    "tab_grid_new_tab_floating_button_ios14.imageset/tab_grid_new_tab_floating_button_ios14@2x.png",
-    "tab_grid_new_tab_floating_button_ios14.imageset/tab_grid_new_tab_floating_button_ios14@3x.png",
-  ]
-}
-
-imageset("tab_grid_new_tab_floating_button_incognito_ios14") {
-  sources = [
-    "tab_grid_new_tab_floating_button_incognito_ios14.imageset/Contents.json",
-    "tab_grid_new_tab_floating_button_incognito_ios14.imageset/tab_grid_new_tab_floating_button_incognito_ios14@2x.png",
-    "tab_grid_new_tab_floating_button_incognito_ios14.imageset/tab_grid_new_tab_floating_button_incognito_ios14@3x.png",
-  ]
-}
-
 symbolset("chrome_product") {
   sources = [
     "chrome_product.symbolset/Contents.json",
@@ -285,5 +250,26 @@ symbolset("tuner") {
   sources = [
     "tuner.symbolset/Contents.json",
     "tuner.symbolset/tuner.cr.svg",
+  ]
+}
+
+symbolset("folder_badge_arrow_forward") {
+  sources = [
+    "folder_badge_arrow_forward.symbolset/Contents.json",
+    "folder_badge_arrow_forward.symbolset/folder.badge.arrow.forward.cr.svg",
+  ]
+}
+
+symbolset("top_omnibox_option") {
+  sources = [
+    "top_omnibox_option.symbolset/Contents.json",
+    "top_omnibox_option.symbolset/top.omnibox.cr.svg",
+  ]
+}
+
+symbolset("bottom_omnibox_option") {
+  sources = [
+    "bottom_omnibox_option.symbolset/Contents.json",
+    "bottom_omnibox_option.symbolset/bottom.omnibox.cr.svg",
   ]
 }

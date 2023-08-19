@@ -24,10 +24,6 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using autofill_address_profile_infobar_overlays::
     SaveAddressProfileModalRequestConfig;
 using save_address_profile_infobar_modal_responses::CancelViewAction;
@@ -52,7 +48,7 @@ class SaveAddressProfileInfobarModalOverlayMediatorTest : public PlatformTest {
         delegate = std::make_unique<
             autofill::AutofillSaveUpdateAddressProfileDelegateIOS>(
             profile, /*original_profile=*/nullptr,
-            /*syncing_user_email=*/absl::nullopt,
+            /*user_email=*/absl::nullopt,
             /*locale=*/"en-US",
             autofill::AutofillClient::SaveAddressProfilePromptOptions{},
             base::DoNothing());

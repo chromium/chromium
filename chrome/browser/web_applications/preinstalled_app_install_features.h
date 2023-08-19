@@ -16,8 +16,6 @@ namespace web_app {
 
 #if BUILDFLAG(IS_CHROMEOS)
 BASE_DECLARE_FEATURE(kCursiveManagedStylusPreinstall);
-
-BASE_DECLARE_FEATURE(kMessagesPreinstall);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Returns the base::Feature in |kPreinstalledAppInstallFeatures| that

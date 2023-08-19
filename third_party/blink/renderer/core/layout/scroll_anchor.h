@@ -105,6 +105,9 @@ class CORE_EXPORT ScrollAnchor final {
   // Notifies us that an object will be removed from the layout tree.
   void NotifyRemoved(LayoutObject*);
 
+  // This anchor is not active because we are applying scroll-start.
+  void CancelAdjustment() { queued_ = false; }
+
  private:
   enum WalkStatus { kSkip = 0, kConstrain, kContinue, kReturn };
 

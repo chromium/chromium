@@ -56,14 +56,14 @@ void AutomationManagerLacros::DispatchAccessibilityEvents(
 }
 
 void AutomationManagerLacros::DispatchAccessibilityLocationChange(
-    const ExtensionMsg_AccessibilityLocationChangeParams& params) {
-  ui::AXTreeID tree_id = params.tree_id;
+    const content::AXLocationChangeNotificationDetails& details) {
+  ui::AXTreeID tree_id = details.ax_tree_id;
   if (!tree_id.token())
     return;
 
   DCHECK(automation_remote_);
   automation_remote_->DispatchAccessibilityLocationChange(
-      *tree_id.token(), params.id, params.new_location);
+      *tree_id.token(), details.id, details.new_location);
 }
 
 void AutomationManagerLacros::DispatchTreeDestroyedEvent(ui::AXTreeID tree_id) {

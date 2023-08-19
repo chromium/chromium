@@ -6,12 +6,16 @@
 
 #include <memory>
 
+#include "base/system/sys_info.h"
 #include "chrome/browser/ash/input_method/accessibility.h"
 #include "chrome/browser/ash/input_method/component_extension_ime_manager_delegate_impl.h"
 #include "chrome/browser/ash/input_method/input_method_delegate_impl.h"
 #include "chrome/browser/ash/input_method/input_method_manager_impl.h"
 #include "chrome/browser/ash/input_method/input_method_persistence.h"
+#include "ui/base/ime/ash/fake_ime_keyboard.h"
+#include "ui/base/ime/ash/ime_keyboard_impl.h"
 #include "ui/base/ime/ash/input_method_manager.h"
+#include "ui/ozone/public/ozone_platform.h"
 
 namespace ash {
 namespace input_method {
@@ -25,10 +29,18 @@ InputMethodPersistence* g_input_method_persistence = nullptr;
 }  // namespace
 
 void Initialize() {
+  std::unique_ptr<ImeKeyboard> ime_keyboard;
+  if (base::SysInfo::IsRunningOnChromeOS()) {
+    ime_keyboard = std::make_unique<ImeKeyboardImpl>(
+        ui::OzonePlatform::GetInstance()->GetInputController());
+  } else {
+    ime_keyboard = std::make_unique<FakeImeKeyboard>();
+  }
+
   auto* impl = new InputMethodManagerImpl(
       std::make_unique<InputMethodDelegateImpl>(),
       std::make_unique<ComponentExtensionIMEManagerDelegateImpl>(),
-      !g_disable_extension_loading);
+      !g_disable_extension_loading, std::move(ime_keyboard));
   InputMethodManager::Initialize(impl);
   DCHECK(InputMethodManager::Get());
 

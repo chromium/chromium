@@ -16,7 +16,7 @@ MockUsbDelegate::~MockUsbDelegate() = default;
 
 std::unique_ptr<UsbChooser> MockUsbDelegate::RunChooser(
     RenderFrameHost& frame,
-    std::vector<device::mojom::UsbDeviceFilterPtr> filters,
+    blink::mojom::WebUsbRequestDeviceOptionsPtr options,
     blink::mojom::WebUsbService::GetPermissionCallback callback) {
   std::move(callback).Run(RunChooserInternal());
   return nullptr;

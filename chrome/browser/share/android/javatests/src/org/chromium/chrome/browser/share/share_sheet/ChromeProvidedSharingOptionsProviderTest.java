@@ -74,7 +74,7 @@ import java.util.List;
  * Instrumentation Unit tests {@link ChromeProvidedSharingOptionsProvider}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({ChromeFeatureList.WEBNOTES_STYLIZE})
+@EnableFeatures(ChromeFeatureList.WEBNOTES_STYLIZE)
 @DisableFeatures({ChromeFeatureList.SEND_TAB_TO_SELF_SIGNIN_PROMO,
         ChromeFeatureList.SHARE_SHEET_CUSTOM_ACTIONS_POLISH})
 @Config(shadows = ShadowGURL.class)
@@ -145,7 +145,6 @@ public class ChromeProvidedSharingOptionsProviderTest {
 
     @After
     public void tearDown() throws Exception {
-        TrackerFactory.setTrackerForTests(null);
         if (mActionTester != null) mActionTester.tearDown();
     }
 

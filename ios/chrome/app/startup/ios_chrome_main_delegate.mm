@@ -7,10 +7,6 @@
 #import "base/logging.h"
 #import "third_party/skia/include/core/SkGraphics.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 IOSChromeMainDelegate::IOSChromeMainDelegate() {}
 
 IOSChromeMainDelegate::~IOSChromeMainDelegate() {}

@@ -45,12 +45,12 @@ class InputElement {
 
   // Return true if there is key overlapped or the mouse action is overlapped.
   bool IsOverlapped(const InputElement& input_element) const;
-  // Set key in the |keys_| list at the |index| to |code|.
+  // Set key in the `keys_` list at the `index` to `code`.
   void SetKey(size_t index, ui::DomCode code);
-  // Set keys to |keys|.
+  // Set keys to `keys`.
   void SetKeys(std::vector<ui::DomCode>& keys);
-  // If it is keyboard-binded input and there is |key| binded, return the index
-  // of the |key|. Otherwise, return -1;
+  // If it is keyboard-binded input and there is `key` binded, return the index
+  // of the `key`. Otherwise, return -1;
   int GetIndexOfKey(ui::DomCode key) const;
   std::unique_ptr<InputElementProto> ConvertToProto();
 
@@ -73,10 +73,10 @@ class InputElement {
 
   // For key binding.
   std::vector<ui::DomCode> keys_;
-  // |is_modifier_key_| == true is especially for modifier keys (Only Ctrl,
+  // `is_modifier_key_` == true is especially for modifier keys (Only Ctrl,
   // Shift and Alt are supported for now) because EventRewriterAsh handles
   // specially on modifier key released event by skipping the following event
-  // rewriters on key released event. If |is_modifier_key_| == true, touch
+  // rewriters on key released event. If `is_modifier_key_` == true, touch
   // release event is sent right after touch pressed event for original key
   // pressed event and original modifier key pressed event is also sent as it
   // is. This is only suitable for some UI buttons which don't require keeping

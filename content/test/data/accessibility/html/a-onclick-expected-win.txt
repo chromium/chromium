@@ -1,5 +1,8 @@
 ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE action_name='doDefault'
+++IA2_ROLE_SECTION name='Done' FOCUSABLE action_name='doDefault'
 ++ROLE_SYSTEM_LINK name='link with no href but onclick' LINKED default_action='jump' action_name='jump'
 ++++ROLE_SYSTEM_STATICTEXT name='link with no href but onclick' default_action='click ancestor' action_name='clickAncestor'
 ++ROLE_SYSTEM_LINK name='link with no href and click handler added via script' LINKED default_action='jump' action_name='jump'
 ++++ROLE_SYSTEM_STATICTEXT name='link with no href and click handler added via script' default_action='click ancestor' action_name='clickAncestor'
+++IA2_ROLE_SECTION action_name='doDefault'
+++++ROLE_SYSTEM_STATICTEXT name='Link with no event handler' action_name='doDefault'

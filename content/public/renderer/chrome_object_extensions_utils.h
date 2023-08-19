@@ -6,11 +6,11 @@
 #define CONTENT_PUBLIC_RENDERER_CHROME_OBJECT_EXTENSIONS_UTILS_H_
 
 #include "content/common/content_export.h"
+#include "v8/include/v8-local-handle.h"
 
 #include <string>
 
 namespace v8 {
-template<class T> class Local;
 class Context;
 class Object;
 class Isolate;

@@ -48,15 +48,6 @@
       RaisesException
     ] IDBRequest delete(any key);
 
-    [
-      CallWith = ScriptState,
-      MeasureAs=IndexedDBRead,
-      NewObject,
-      RaisesException,
-      RuntimeEnabled=IDBBatchGetAll
-    ] IDBRequest batchGetAll(optional sequence<any> keys = [],
-                           optional [EnforceRange] unsigned long count);
-
     [CallWith=ScriptState, MeasureAs=IndexedDBWrite, NewObject, RaisesException]
     IDBRequest clear();
 

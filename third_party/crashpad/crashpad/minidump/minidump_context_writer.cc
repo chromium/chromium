@@ -102,6 +102,13 @@ MinidumpContextWriter::CreateFromSnapshot(const CPUContext* context_snapshot) {
       break;
     }
 
+    case kCPUArchitectureRISCV64: {
+      context = std::make_unique<MinidumpContextRISCV64Writer>();
+      reinterpret_cast<MinidumpContextRISCV64Writer*>(context.get())
+          ->InitializeFromSnapshot(context_snapshot->riscv64);
+      break;
+    }
+
     default: {
       LOG(ERROR) << "unknown context architecture "
                  << context_snapshot->architecture;
@@ -552,6 +559,44 @@ bool MinidumpContextMIPS64Writer::WriteObject(
 }
 
 size_t MinidumpContextMIPS64Writer::ContextSize() const {
+  DCHECK_GE(state(), kStateFrozen);
+  return sizeof(context_);
+}
+
+MinidumpContextRISCV64Writer::MinidumpContextRISCV64Writer()
+    : MinidumpContextWriter(), context_() {
+  context_.context_flags = kMinidumpContextRISCV64;
+  context_.version = MinidumpContextRISCV64::kVersion;
+}
+
+MinidumpContextRISCV64Writer::~MinidumpContextRISCV64Writer() = default;
+
+void MinidumpContextRISCV64Writer::InitializeFromSnapshot(
+    const CPUContextRISCV64* context_snapshot) {
+  DCHECK_EQ(state(), kStateMutable);
+  DCHECK_EQ(context_.context_flags, kMinidumpContextRISCV64);
+
+  context_.context_flags = kMinidumpContextRISCV64All;
+  context_.version = MinidumpContextRISCV64::kVersion;
+  context_.pc = context_snapshot->pc;
+
+  static_assert(sizeof(context_.regs) == sizeof(context_snapshot->regs),
+                "GPRs size mismatch");
+  memcpy(context_.regs, context_snapshot->regs, sizeof(context_.regs));
+
+  static_assert(sizeof(context_.fpregs) == sizeof(context_snapshot->fpregs),
+                "FPRs size mismatch");
+  memcpy(context_.fpregs, context_snapshot->fpregs, sizeof(context_.fpregs));
+  context_.fcsr = context_snapshot->fcsr;
+}
+
+bool MinidumpContextRISCV64Writer::WriteObject(
+    FileWriterInterface* file_writer) {
+  DCHECK_EQ(state(), kStateWritable);
+  return file_writer->Write(&context_, sizeof(context_));
+}
+
+size_t MinidumpContextRISCV64Writer::ContextSize() const {
   DCHECK_GE(state(), kStateFrozen);
   return sizeof(context_);
 }

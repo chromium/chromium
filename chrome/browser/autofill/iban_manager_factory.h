@@ -17,22 +17,22 @@ class Profile;
 
 namespace autofill {
 
-class IBANManager;
+class IbanManager;
 
-// Singleton that owns all IBANManagers and associates them with Profiles.
-class IBANManagerFactory : public ProfileKeyedServiceFactory {
+// Singleton that owns all IbanManagers and associates them with Profiles.
+class IbanManagerFactory : public ProfileKeyedServiceFactory {
  public:
-  // Returns the IBANManager for |profile|, creating it if it is not yet
+  // Returns the IbanManager for |profile|, creating it if it is not yet
   // created.
-  static IBANManager* GetForProfile(Profile* profile);
+  static IbanManager* GetForProfile(Profile* profile);
 
-  static IBANManagerFactory* GetInstance();
+  static IbanManagerFactory* GetInstance();
 
  private:
-  friend base::NoDestructor<IBANManagerFactory>;
+  friend base::NoDestructor<IbanManagerFactory>;
 
-  IBANManagerFactory();
-  ~IBANManagerFactory() override;
+  IbanManagerFactory();
+  ~IbanManagerFactory() override;
 
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(

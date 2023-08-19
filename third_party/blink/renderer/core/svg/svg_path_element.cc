@@ -21,7 +21,6 @@
 #include "third_party/blink/renderer/core/svg/svg_path_element.h"
 
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
-#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_path.h"
 #include "third_party/blink/renderer/core/svg/svg_mpath_element.h"
 #include "third_party/blink/renderer/core/svg/svg_path_query.h"
@@ -122,7 +121,7 @@ void SVGPathElement::CollectStyleForPresentationAttribute(
     // geometry sharing.
     if (const SVGElement* element = CorrespondingElement())
       path = To<SVGPathElement>(element)->GetPath();
-    AddPropertyToPresentationAttributeStyle(style, property->CssPropertyId(),
+    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kD,
                                             path->CssValue());
     return;
   }
@@ -167,17 +166,16 @@ SVGAnimatedPropertyBase* SVGPathElement::PropertyFromAttribute(
   }
 }
 
-void SVGPathElement::SynchronizeSVGAttribute(const QualifiedName& name) const {
-  if (name == AnyQName()) {
-    SVGAnimatedPropertyBase* attrs[]{path_.Get()};
-    SynchronizeAllSVGAttributes(attrs);
-  }
-  SVGGeometryElement::SynchronizeSVGAttribute(name);
+void SVGPathElement::SynchronizeAllSVGAttributes() const {
+  SVGAnimatedPropertyBase* attrs[]{path_.Get()};
+  SynchronizeListOfSVGAttributes(attrs);
+  SVGGeometryElement::SynchronizeAllSVGAttributes();
 }
 
 void SVGPathElement::CollectExtraStyleForPresentationAttribute(
     MutableCSSPropertyValueSet* style) {
-  if (path_->HasPresentationAttributeMapping() && path_->IsAnimating()) {
+  DCHECK(path_->HasPresentationAttributeMapping());
+  if (path_->IsAnimating()) {
     CollectStyleForPresentationAttribute(svg_names::kDAttr, g_empty_atom,
                                          style);
   }

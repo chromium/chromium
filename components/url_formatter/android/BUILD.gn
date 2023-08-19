@@ -12,9 +12,11 @@ android_library("url_formatter_java") {
     "//url:gurl_java",
     "//url:origin_java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
-  srcjar_deps = [ "//components/url_formatter:url_formatter_java_enums_srcjar" ]
+  srcjar_deps = [
+    ":jni_headers",
+    "//components/url_formatter:url_formatter_java_enums_srcjar",
+  ]
 
   sources =
       [ "java/src/org/chromium/components/url_formatter/UrlFormatter.java" ]

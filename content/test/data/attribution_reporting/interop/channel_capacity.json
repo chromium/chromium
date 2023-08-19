@@ -1,0 +1,256 @@
+{
+  "description": "Different configurations surpassing the max info gain bar",
+  "input": {
+    "sources": [
+      {
+        // Should not register due to exceeding max info gain bar.
+        // Value: 14.90655 bits
+        "timestamp": "0",
+        "registration_request": {
+          "source_origin": "https://source.test",
+          "attribution_src_url": "https://reporter.test/register-source",
+          "source_type": "navigation"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-source",
+          "debug_permission": true,
+          "response": {
+            "Attribution-Reporting-Register-Source": {
+              "destination": "https://destination.test",
+              "max_event_level_reports": 5,
+              "source_event_id": "123",
+              "debug_reporting": true
+            }
+          }
+        }]
+      },
+      {
+        // Should not register due to exceeding max info gain bar.
+        // Value: 13.37130 bits
+        "timestamp": "2000",
+        "registration_request": {
+          "source_origin": "https://source.test",
+          "attribution_src_url": "https://reporter.test/register-source",
+          "source_type": "navigation"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-source",
+          "response": {
+            "Attribution-Reporting-Register-Source": {
+              "destination": "https://destination.test",
+              "source_event_id": "123",
+              "event_report_windows": {
+                "start_time":0,
+                "end_times":[3600,7200,10800,14400,18000]
+              }
+            }
+          }
+        }]
+      },
+      {
+        // Should register due to not exceeding max info gain bar.
+        // Value: 9.73440 bits
+        "timestamp": "4000",
+        "registration_request": {
+          "source_origin": "https://source.test",
+          "attribution_src_url": "https://reporter.test/register-source",
+          "source_type": "navigation"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-source",
+          "response": {
+            "Attribution-Reporting-Register-Source": {
+              "destination": "https://destination.test",
+              "source_event_id": "123",
+              "max_event_level_reports": 2,
+              "event_report_windows": {
+                "start_time":0,
+                "end_times":[3600,7200,10800,14400,18000]
+              }
+            }
+          }
+        }]
+      },
+      {
+        // Max values for event_report_windows and max_event_level_reports,
+        // should register. Ensures `combinatorics.cc` doesn't kill the source
+        // registration when max values are provided.
+        // Value: 5.38066e-9 bits
+        "timestamp": "6000",
+        "registration_request": {
+          "source_origin": "https://source.test",
+          "attribution_src_url": "https://reporter2.test/register-source",
+          "source_type": "navigation"
+        },
+        "responses": [{
+          "url": "https://reporter2.test/register-source",
+          "response": {
+            "Attribution-Reporting-Register-Source": {
+              "destination": "https://destination2.test",
+              "source_event_id": "456",
+              "max_event_level_reports": 20,
+              "event_report_windows": {
+                "start_time":0,
+                "end_times":[3600,7200,10800,14400,18000]
+              }
+            }
+          }
+        }]
+      },
+      {
+        // Should not register due to exceeding max info gain bar.
+        // Value: 2.80725 bits
+        "timestamp": "8000",
+        "registration_request": {
+          "source_origin": "https://source.test",
+          "attribution_src_url": "https://reporter3.test/register-source",
+          "source_type": "event"
+        },
+        "responses": [{
+          "url": "https://reporter3.test/register-source",
+          "response": {
+            "Attribution-Reporting-Register-Source": {
+              "destination": "https://destination3.test",
+              "source_event_id": "789",
+              "event_report_windows": {
+                "start_time":0,
+                "end_times":[3600,7200,10800]
+              }
+            }
+          }
+        }]
+      }
+    ],
+    "triggers": [
+      {
+        // Should not match to a source.
+        "timestamp": "1000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "destination_origin": "https://destination.test"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-trigger",
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "event_trigger_data": [
+                {
+                  "trigger_data": "1"
+                }
+              ]
+            }
+          }
+        }]
+      },
+      {
+        // Should not match to a source.
+        "timestamp": "3000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "destination_origin": "https://destination.test"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-trigger",
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "event_trigger_data": [
+                {
+                  "trigger_data": "2"
+                }
+              ]
+            }
+          }
+        }]
+      },
+      {
+        // Should result in an event-level report.
+        "timestamp": "5000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "destination_origin": "https://destination.test"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-trigger",
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "event_trigger_data": [
+                {
+                  "trigger_data": "3"
+                }
+              ]
+            }
+          }
+        }]
+      },
+      {
+        // Should result in an event-level report.
+        "timestamp": "7000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter2.test/register-trigger",
+          "destination_origin": "https://destination2.test"
+        },
+        "responses": [{
+          "url": "https://reporter2.test/register-trigger",
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "event_trigger_data": [
+                {
+                  "trigger_data": "4"
+                }
+              ]
+            }
+          }
+        }]
+      },
+      {
+        // Should not match to a source.
+        "timestamp": "9000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter3.test/register-trigger",
+          "destination_origin": "https://destination3.test"
+        },
+        "responses": [{
+          "url": "https://reporter3.test/register-trigger",
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "event_trigger_data": [
+                {
+                  "trigger_data": "1"
+                }
+              ]
+            }
+          }
+        }]
+      }
+    ]
+  },
+  "output": {
+    "event_level_results": [
+      // No debug reports are generated for exceeding channel capacity.
+      {
+        "payload": {
+          "attribution_destination": "https://destination.test",
+          "randomized_trigger_rate": 0.0007154,
+          "scheduled_report_time": "7204",
+          "source_event_id": "123",
+          "source_type": "navigation",
+          "trigger_data": "3"
+        },
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
+        "report_time": "7204000"
+      },
+      {
+        "payload": {
+          "attribution_destination": "https://destination2.test",
+          "randomized_trigger_rate": 1.0,
+          "scheduled_report_time": "7206",
+          "source_event_id": "456",
+          "source_type": "navigation",
+          "trigger_data": "4"
+        },
+        "report_url": "https://reporter2.test/.well-known/attribution-reporting/report-event-attribution",
+        "report_time": "7206000"
+      }
+    ]
+  }
+}

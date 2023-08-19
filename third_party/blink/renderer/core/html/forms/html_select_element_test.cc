@@ -63,7 +63,7 @@ class HTMLSelectElementTest : public PageTestBase {
 
 void HTMLSelectElementTest::SetUp() {
   PageTestBase::SetUp();
-  GetDocument().SetMimeType("text/html");
+  GetDocument().SetMimeType(AtomicString("text/html"));
   original_delegates_flag_ =
       LayoutTheme::GetTheme().DelegatesMenuListRendering();
 }
@@ -72,6 +72,24 @@ void HTMLSelectElementTest::TearDown() {
   LayoutTheme::GetTheme().SetDelegatesMenuListRenderingForTesting(
       original_delegates_flag_);
   PageTestBase::TearDown();
+}
+
+// Tests that HtmlSelectElement::SetAutofillValue() doesn't change the
+// `user_has_edited_the_field_` attribute of the field.
+TEST_F(HTMLSelectElementTest, SetAutofillValuePreservesEditedState) {
+  SetHtmlInnerHTML(
+      "<!DOCTYPE HTML><select id='sel'>"
+      "<option value='111' selected>111</option>"
+      "<option value='222'>222</option></select>");
+  HTMLSelectElement* select = To<HTMLSelectElement>(GetElementById("sel"));
+
+  select->SetUserHasEditedTheField(false);
+  select->SetAutofillValue("222", WebAutofillState::kAutofilled);
+  EXPECT_EQ(select->UserHasEditedTheField(), false);
+
+  select->SetUserHasEditedTheField(true);
+  select->SetAutofillValue("111", WebAutofillState::kAutofilled);
+  EXPECT_EQ(select->UserHasEditedTheField(), true);
 }
 
 TEST_F(HTMLSelectElementTest, SaveRestoreSelectSingleFormControlState) {
@@ -481,13 +499,13 @@ TEST_F(HTMLSelectElementTest, CrashOnAttachingMenuList) {
   ASSERT_TRUE(select->GetLayoutObject());
 
   // Detach LayoutMenuList.
-  select->setAttribute("style", "display:none;");
+  select->setAttribute(html_names::kStyleAttr, AtomicString("display:none;"));
   GetDocument().UpdateStyleAndLayoutTree();
   ASSERT_FALSE(select->GetLayoutObject());
 
   // Attach LayoutMenuList again.  It triggered null-dereference in
   // LayoutMenuList::AdjustInnerStyle().
-  select->removeAttribute("style");
+  select->removeAttribute(html_names::kStyleAttr);
   GetDocument().UpdateStyleAndLayoutTree();
   ASSERT_TRUE(select->GetLayoutObject());
 }
@@ -500,12 +518,12 @@ TEST_F(HTMLSelectElementTest, CrashOnAttachingMenuList2) {
   select->setTextContent("foo");
 
   // Detach LayoutObject.
-  select->setAttribute("style", "display:none;");
+  select->setAttribute(html_names::kStyleAttr, AtomicString("display:none;"));
   GetDocument().UpdateStyleAndLayoutTree();
 
   // Attach LayoutObject.  It triggered a DCHECK failure in
   // MenuListSelectType::OptionToBeShown()
-  select->removeAttribute("style");
+  select->removeAttribute(html_names::kStyleAttr);
   GetDocument().UpdateStyleAndLayoutTree();
 }
 
@@ -652,9 +670,9 @@ TEST_F(HTMLSelectElementTest, ChangeRenderingCrash3) {
     <div id="green">Green</div>
   )HTML");
 
-  auto* host = GetDocument().getElementById("host");
-  auto* select = GetDocument().getElementById("select");
-  auto* green = GetDocument().getElementById("green");
+  auto* host = GetDocument().getElementById(AtomicString("host"));
+  auto* select = GetDocument().getElementById(AtomicString("select"));
+  auto* green = GetDocument().getElementById(AtomicString("green"));
 
   // Make sure the select is outside the flat tree.
   host->AttachShadowRootInternal(ShadowRootType::kOpen);

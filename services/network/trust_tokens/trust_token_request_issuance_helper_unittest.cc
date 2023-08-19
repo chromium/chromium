@@ -247,7 +247,7 @@ TEST_F(TrustTokenRequestIssuanceHelperTest, RejectsIfKeyCommitmentFails) {
       *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/")));
 
   EXPECT_EQ(ExecuteBeginOperationAndWaitForResult(&helper, request.get()),
-            mojom::TrustTokenOperationStatus::kFailedPrecondition);
+            mojom::TrustTokenOperationStatus::kMissingIssuerKeys);
 }
 
 // Reject if initializing the cryptography delegate fails.

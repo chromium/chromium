@@ -4,7 +4,10 @@
 
 // TODO(b:283833590): Rename this file since it serves for all shopping features
 // now.
-import {BookmarkProductInfo, PageCallbackRouter, ProductInfo, ShoppingListHandlerFactory, ShoppingListHandlerRemote} from '../shopping_list.mojom-webui.js';
+import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
+import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+
+import {BookmarkProductInfo, PageCallbackRouter, PriceInsightsInfo, ProductInfo, ShoppingListHandlerFactory, ShoppingListHandlerRemote} from '../shopping_list.mojom-webui.js';
 
 let instance: ShoppingListApiProxy|null = null;
 
@@ -16,6 +19,16 @@ export interface ShoppingListApiProxy {
   trackPriceForBookmark(bookmarkId: bigint): void;
   untrackPriceForBookmark(bookmarkId: bigint): void;
   getProductInfoForCurrentUrl(): Promise<{productInfo: ProductInfo}>;
+  getPriceInsightsInfoForCurrentUrl():
+      Promise<{priceInsightsInfo: PriceInsightsInfo}>;
+  showInsightsSidePanelUi(): void;
+  isShoppingListEligible(): Promise<{eligible: boolean}>;
+  getPriceTrackingStatusForCurrentUrl(): Promise<{tracked: boolean}>;
+  setPriceTrackingStatusForCurrentUrl(track: boolean): void;
+  openUrlInNewTab(url: Url): void;
+  getParentBookmarkFolderNameForCurrentUrl(): Promise<{name: String16}>;
+  showBookmarkEditorForCurrentUrl(): void;
+  showFeedback(): void;
   getCallbackRouter(): PageCallbackRouter;
 }
 
@@ -52,6 +65,42 @@ export class ShoppingListApiProxyImpl implements ShoppingListApiProxy {
 
   getProductInfoForCurrentUrl() {
     return this.handler.getProductInfoForCurrentUrl();
+  }
+
+  getPriceInsightsInfoForCurrentUrl() {
+    return this.handler.getPriceInsightsInfoForCurrentUrl();
+  }
+
+  showInsightsSidePanelUi() {
+    this.handler.showInsightsSidePanelUI();
+  }
+
+  isShoppingListEligible() {
+    return this.handler.isShoppingListEligible();
+  }
+
+  getPriceTrackingStatusForCurrentUrl() {
+    return this.handler.getPriceTrackingStatusForCurrentUrl();
+  }
+
+  setPriceTrackingStatusForCurrentUrl(track: boolean) {
+    this.handler.setPriceTrackingStatusForCurrentUrl(track);
+  }
+
+  openUrlInNewTab(url: Url) {
+    this.handler.openUrlInNewTab(url);
+  }
+
+  getParentBookmarkFolderNameForCurrentUrl() {
+    return this.handler.getParentBookmarkFolderNameForCurrentUrl();
+  }
+
+  showBookmarkEditorForCurrentUrl() {
+    this.handler.showBookmarkEditorForCurrentUrl();
+  }
+
+  showFeedback() {
+    this.handler.showFeedback();
   }
 
   getCallbackRouter() {

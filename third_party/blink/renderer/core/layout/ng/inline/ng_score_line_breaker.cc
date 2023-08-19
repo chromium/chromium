@@ -9,22 +9,65 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_breaker.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_info_list.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_line_widths.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 
 namespace blink {
+
+namespace {
+
+// Determines whether `NGScoreLineBreaker` should be applied or not from the
+// greedy line break results. Because the `NGScoreLineBreaker` is expensive,
+// and it often produces the similar results to the greedy algorithm, apply
+// it only when its benefit is obvious.
+ALWAYS_INLINE bool ShouldOptimize(const NGLineInfoList& line_info_list,
+                                  NGLineBreaker& line_breaker) {
+  // The optimization benefit is most visible when the last line is short.
+  // Otherwise, the improvement is not worth the performance impact.
+  const NGLineInfo& last_line = line_info_list.Back();
+  constexpr int kShortLineDenominator = 3;
+  if (last_line.Width() < last_line.AvailableWidth() / kShortLineDenominator &&
+      // Similarly, optimize only when the last line has a single word; i.e.,
+      // has no break opportunities. This takes some cost, but the performance
+      // improvement by reducing the applicability wins over the cost.
+      !line_breaker.CanBreakInside(last_line)) {
+    return true;
+  }
+
+  // Hyphenating the second to last line is not desirable, and consecutive
+  // hyphenated lines are not desirable either. For now, apply only if both
+  // occur, to minimize the performance impact.
+  constexpr wtf_size_t kNumLastHyphenatedLines = 2;
+  const wtf_size_t num_lines = line_info_list.Size();
+  if (num_lines >= kNumLastHyphenatedLines + 1 &&
+      line_info_list[num_lines - 2].IsHyphenated() &&
+      line_info_list[num_lines - 3].IsHyphenated()) {
+    return true;
+  }
+
+  return false;
+}
+
+}  // namespace
 
 void NGScoreLineBreaker::SetScoresOutForTesting(Vector<float>* scores_out) {
   scores_out_for_testing_ = scores_out;
 }
 
-void NGScoreLineBreaker::OptimalBreakPoints(NGScoreLineBreakContext& context) {
+void NGScoreLineBreaker::OptimalBreakPoints(
+    const NGLeadingFloats& leading_floats,
+    NGScoreLineBreakContext& context) {
   DCHECK(!is_balanced_ || !break_token_);
   DCHECK(context.LineBreakPoints().empty());
   DCHECK(!node_.IsScoreLineBreakDisabled());
   DCHECK(context.IsActive());
   NGLineInfoList& line_info_list = context.LineInfoList();
-  DCHECK_LT(line_info_list.Size(), NGLineInfoList::kCapacity);
+  const wtf_size_t max_lines = MaxLines();
+  DCHECK_GE(line_info_list.MaxLines(), max_lines);
+  DCHECK_LT(line_info_list.Size(), max_lines);
+  wtf_size_t line_index = 0;
   if (!line_info_list.IsEmpty()) {
+    line_index = line_info_list.Size();
     // To compute the next line after the last cached line, update
     // `break_token_` to the last cached break token.
     const NGLineInfo& last_line = line_info_list.Back();
@@ -36,28 +79,37 @@ void NGScoreLineBreaker::OptimalBreakPoints(NGScoreLineBreakContext& context) {
 
   // Compute line breaks and cache the results (`NGLineInfo`) up to
   // `NGLineInfoList::kCapacity` lines.
-  NGPositionedFloatVector empty_leading_floats;
+  LayoutUnit line_width = line_widths_[line_index];
   NGLineBreaker line_breaker(
-      node_, NGLineBreakerMode::kContent, ConstraintSpace(), line_opportunity_,
-      empty_leading_floats,
-      /* handled_leading_floats_index */ 0u, break_token_,
+      node_, NGLineBreakerMode::kContent, ConstraintSpace(),
+      NGLineLayoutOpportunity(line_width), leading_floats, break_token_,
       /* column_spanner_path */ nullptr, exclusion_space_);
+  const int lines_until_clamp = space_.LinesUntilClamp().value_or(0);
   for (;;) {
     NGLineInfo& line_info = line_info_list.Append();
     line_breaker.NextLine(&line_info);
     break_token_ = line_info.BreakToken();
     if (UNLIKELY(line_breaker.ShouldDisableScoreLineBreak())) {
-      context.SuspendUntilConsumed();
+      context.SuspendUntilEndParagraph();
       return;
     }
-    if (!line_info.BreakToken() || line_info.HasForcedBreak()) {
-      context.SuspendUntilConsumed();
+    if (line_info.IsEndParagraph() ||
+        UNLIKELY(lines_until_clamp > 0 &&
+                 line_info_list.Size() ==
+                     static_cast<wtf_size_t>(lines_until_clamp))) {
+      context.SuspendUntilEndParagraph();
       break;
     }
     DCHECK(!line_info.Results().empty());
     DCHECK(!line_breaker.IsFinished());
-    if (line_info_list.Size() >= NGLineInfoList::kCapacity) {
+    if (line_info_list.Size() >= max_lines) {
       return;
+    }
+
+    const LayoutUnit next_line_width = line_widths_[++line_index];
+    if (next_line_width != line_width) {
+      line_width = next_line_width;
+      line_breaker.SetLineOpportunity(NGLineLayoutOpportunity(line_width));
     }
   }
   DCHECK(!line_info_list.IsEmpty());
@@ -68,10 +120,7 @@ void NGScoreLineBreaker::OptimalBreakPoints(NGScoreLineBreakContext& context) {
     return;  // Optimization not needed for single line paragraphs.
   }
   if (!is_balanced_) {
-    const NGLineInfo& last_line = line_info_list.Back();
-    if (last_line.Width() >= last_line.AvailableWidth() / 3) {
-      // The optimization benefit is most visible when the last line is short.
-      // Otherwise, the improvement is not worth the performance impact.
+    if (!ShouldOptimize(line_info_list, line_breaker)) {
       return;
     }
   }
@@ -95,9 +144,11 @@ void NGScoreLineBreaker::OptimalBreakPoints(NGScoreLineBreakContext& context) {
   }
 }
 
-void NGScoreLineBreaker::BalanceBreakPoints(NGScoreLineBreakContext& context) {
+void NGScoreLineBreaker::BalanceBreakPoints(
+    const NGLeadingFloats& leading_floats,
+    NGScoreLineBreakContext& context) {
   is_balanced_ = true;
-  OptimalBreakPoints(context);
+  OptimalBreakPoints(leading_floats, context);
 }
 
 bool NGScoreLineBreaker::Optimize(const NGLineInfoList& line_info_list,
@@ -174,7 +225,7 @@ bool NGScoreLineBreaker::ComputeCandidates(const NGLineInfoList& line_info_list,
 }
 
 LayoutUnit NGScoreLineBreaker::AvailableWidth(wtf_size_t line_index) const {
-  LayoutUnit available_width = available_width_;
+  LayoutUnit available_width = line_widths_[line_index];
   if (line_index == 0) {
     available_width -= first_line_indent_;
   }
@@ -195,8 +246,8 @@ void NGScoreLineBreaker::ComputeLineWidths(
 void NGScoreLineBreaker::SetupParameters() {
   // Use the same heuristic parameters as Minikin's `computePenalties()`.
   // https://cs.android.com/android/platform/superproject/+/master:frameworks/minikin/libs/minikin/OptimalLineBreaker.cpp
-  available_width_ =
-      line_opportunity_.AvailableInlineSize().ClampNegativeToZero();
+  const LayoutUnit available_width =
+      line_widths_.Default().ClampNegativeToZero();
   const ComputedStyle& block_style = node_.Style();
   const float font_size = block_style.GetFontDescription().ComputedSize();
   zoom_ = block_style.EffectiveZoom();
@@ -204,7 +255,7 @@ void NGScoreLineBreaker::SetupParameters() {
   // Penalties/scores should be a zoomed value. Because both `font_size` and
   // `available_width` are zoomed, unzoom once.
   const float width_times_font_size =
-      available_width_.ToFloat() * font_size / zoom_;
+      available_width.ToFloat() * font_size / zoom_;
   is_justified_ = block_style.GetTextAlign() == ETextAlign::kJustify;
   if (is_justified_) {
     // For justified text, make hyphenation more aggressive and no line penalty.
@@ -302,7 +353,7 @@ void NGScoreLineBreaker::ComputeBreakPoints(
   DCHECK_GE(candidates.size(), 3u);
   DCHECK_EQ(candidates.size(), scores.size());
   DCHECK(break_points.empty());
-  DCHECK_LE(scores.back().line_index, NGLineInfoList::kCapacity);
+  DCHECK_LE(scores.back().line_index, MaxLines());
 
   for (wtf_size_t i = scores.size() - 1, prev_index; i > 0; i = prev_index) {
     prev_index = scores[i].prev_index;

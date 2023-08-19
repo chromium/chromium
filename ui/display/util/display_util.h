@@ -17,9 +17,6 @@ namespace display {
 
 class EdidParser;
 
-// 1 inch in mm.
-constexpr float kInchInMm = 25.4f;
-
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class EdidColorSpaceChecksOutcome {

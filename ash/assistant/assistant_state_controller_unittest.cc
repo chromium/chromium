@@ -114,7 +114,7 @@ class AssistantStateControllerTest : public AshTestBase {
   TestAssistantStateObserver* observer() { return observer_.get(); }
 
  private:
-  raw_ptr<PrefService, ExperimentalAsh> prefs_ = nullptr;
+  raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> prefs_ = nullptr;
   std::unique_ptr<TestAssistantStateObserver> observer_;
 };
 

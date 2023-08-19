@@ -6,15 +6,16 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_SCROLL_START_DATA_H_
 
 #include "third_party/blink/renderer/platform/geometry/length.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
 enum class ScrollStartValueType {
+  kAuto = 0,
   kLengthOrPercentage,
   kStart,
   kCenter,
   kEnd,
-  kAuto,
   kTop,
   kBottom,
   kLeft,
@@ -32,6 +33,10 @@ struct ScrollStartData {
   bool operator!=(const ScrollStartData& other) const {
     return !(*this == other);
   }
+
+#if DCHECK_IS_ON()
+  String ToString() const;
+#endif
 };
 
 }  // namespace blink

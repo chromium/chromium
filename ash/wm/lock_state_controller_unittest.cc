@@ -19,8 +19,8 @@
 #include "ash/system/power/power_button_test_base.h"
 #include "ash/touch/touch_devices_controller.h"
 #include "ash/utility/layer_copy_animator.h"
-#include "ash/wallpaper/wallpaper_view.h"
-#include "ash/wallpaper/wallpaper_widget_controller.h"
+#include "ash/wallpaper/views/wallpaper_view.h"
+#include "ash/wallpaper/views/wallpaper_widget_controller.h"
 #include "ash/wm/lock_state_controller_test_api.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/session_state_animator.h"
@@ -33,9 +33,10 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
-#include "ui/display/fake/fake_display_snapshot.h"
 #include "ui/display/manager/display_configurator.h"
+#include "ui/display/manager/test/fake_display_snapshot.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -336,8 +337,8 @@ class LockStateControllerTest : public PowerButtonTestBase {
   std::unique_ptr<ShutdownController::ScopedResetterForTest>
       shutdown_controller_resetter_;
   std::unique_ptr<TestShutdownController> test_shutdown_controller_;
-  raw_ptr<TestSessionStateAnimator, ExperimentalAsh> test_animator_ =
-      nullptr;  // not owned
+  raw_ptr<TestSessionStateAnimator, DanglingUntriaged | ExperimentalAsh>
+      test_animator_ = nullptr;  // not owned
 
  private:
   // Histogram value verifier.
@@ -933,7 +934,10 @@ TEST_P(LockStateControllerAnimationTest, CancelShouldResetWallpaperBlur) {
 
   // Enter Overview and verify wallpaper properties.
   EnterOverview();
-  EXPECT_EQ(wallpaper_constants::kOverviewBlur, wallpaper_view->blur_sigma());
+  EXPECT_EQ(chromeos::features::IsJellyrollEnabled()
+                ? wallpaper_constants::kClear
+                : wallpaper_constants::kOverviewBlur,
+            wallpaper_view->blur_sigma());
 
   // Start lock animation and verify wallpaper properties.
   PressLockButton();
@@ -948,7 +952,10 @@ TEST_P(LockStateControllerAnimationTest, CancelShouldResetWallpaperBlur) {
   ExpectUnlockedState("4");
 
   // Verify wallpaper blur are restored to overview's.
-  EXPECT_EQ(wallpaper_constants::kOverviewBlur, wallpaper_view->blur_sigma());
+  EXPECT_EQ(chromeos::features::IsJellyrollEnabled()
+                ? wallpaper_constants::kClear
+                : wallpaper_constants::kOverviewBlur,
+            wallpaper_view->blur_sigma());
 }
 
 INSTANTIATE_TEST_SUITE_P(LockStateControllerAnimation,

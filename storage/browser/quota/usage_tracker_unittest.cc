@@ -56,8 +56,9 @@ class UsageTrackerTestQuotaClient : public mojom::QuotaClient {
                              GetStorageKeysForTypeCallback callback) override {
     EXPECT_EQ(StorageType::kTemporary, type);
     std::set<StorageKey> storage_keys;
-    for (const auto& bucket_usage_pair : bucket_usage_map_)
+    for (const auto& bucket_usage_pair : bucket_usage_map_) {
       storage_keys.emplace(bucket_usage_pair.first.storage_key);
+    }
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   std::vector<StorageKey>(storage_keys.begin(),
@@ -79,8 +80,9 @@ class UsageTrackerTestQuotaClient : public mojom::QuotaClient {
 
   int64_t GetUsage(const BucketLocator& bucket) {
     auto it = bucket_usage_map_.find(bucket);
-    if (it == bucket_usage_map_.end())
+    if (it == bucket_usage_map_.end()) {
       return 0;
+    }
     return it->second;
   }
 
@@ -91,6 +93,11 @@ class UsageTrackerTestQuotaClient : public mojom::QuotaClient {
  private:
   std::map<BucketLocator, int64_t> bucket_usage_map_;
 };
+
+std::pair<int64_t, blink::mojom::UsageBreakdownPtr> to_pair(
+    std::tuple<int64_t, blink::mojom::UsageBreakdownPtr> t) {
+  return std::make_pair(std::get<0>(t), std::move(std::get<1>(t)));
+}
 
 }  // namespace
 
@@ -139,16 +146,14 @@ class UsageTrackerTest : public testing::Test {
     base::test::TestFuture<int64_t, blink::mojom::UsageBreakdownPtr> future;
     usage_tracker_->GetStorageKeyUsageWithBreakdown(storage_key,
                                                     future.GetCallback());
-    return std::make_pair(future.Get<0>(),
-                          std::move(std::get<1>(future.Take())));
+    return to_pair(future.Take());
   }
 
   std::pair<int64_t, blink::mojom::UsageBreakdownPtr>
   GetBucketUsageWithBreakdown(const BucketLocator& bucket) {
     base::test::TestFuture<int64_t, blink::mojom::UsageBreakdownPtr> future;
     usage_tracker_->GetBucketUsageWithBreakdown(bucket, future.GetCallback());
-    return std::make_pair(future.Get<0>(),
-                          std::move(std::get<1>(future.Take())));
+    return to_pair(future.Take());
   }
 
   void GrantUnlimitedStoragePolicy(const StorageKey& storage_key) {

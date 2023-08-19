@@ -202,12 +202,13 @@ void P2PSocketUdp::DoRead() {
     const int result = socket_->RecvFrom(
         recv_buffer_.get(), kUdpReadBufferSize, &recv_address_,
         base::BindOnce(&P2PSocketUdp::OnRecv, base::Unretained(this)));
+    // If there's an error, this object is destroyed by the internal call to
+    // P2PSocket::OnError, so do not reference this after `HandleReadResult`
+    // returns false.
     if (!HandleReadResult(result)) {
-      break;
+      return;
     }
   }
-
-  MaybeDrainReceivedPackets(true);
 }
 
 void P2PSocketUdp::OnRecv(int result) {
@@ -284,8 +285,12 @@ bool P2PSocketUdp::HandleReadResult(int result) {
 
     MaybeDrainReceivedPackets(false);
   } else if (result == net::ERR_IO_PENDING) {
+    MaybeDrainReceivedPackets(true);
+
     return false;
   } else if (result < 0 && !IsTransientError(result)) {
+    MaybeDrainReceivedPackets(true);
+
     LOG(ERROR) << "Error when reading from UDP socket: " << result;
     OnError();
     return false;

@@ -130,16 +130,26 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectEmbeddedOptionsPage) {
       profile());
 
   // Verify that dev tools opened.
-  content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
-      view.render_process_id, view.render_view_id);
-  ASSERT_TRUE(rfh);
-  content::WebContents* wc = content::WebContents::FromRenderFrameHost(rfh);
+  content::RenderFrameHost* render_frame_host =
+      content::RenderFrameHost::FromID(view.render_process_id,
+                                       view.render_view_id);
+  ASSERT_TRUE(render_frame_host);
+  content::WebContents* wc =
+      content::WebContents::FromRenderFrameHost(render_frame_host);
   ASSERT_TRUE(wc);
   EXPECT_TRUE(DevToolsWindow::GetInstanceForInspectedWebContents(wc));
 }
 
+// TODO(https://crbug.com/1457154): Test is flaky on MSan builders.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_InspectInactiveServiceWorkerBackground \
+  DISABLED_InspectInactiveServiceWorkerBackground
+#else
+#define MAYBE_InspectInactiveServiceWorkerBackground \
+  InspectInactiveServiceWorkerBackground
+#endif
 IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest,
-                       InspectInactiveServiceWorkerBackground) {
+                       MAYBE_InspectInactiveServiceWorkerBackground) {
   ResultCatcher result_catcher;
   // Load an extension that is service worker-based.
   const Extension* extension =

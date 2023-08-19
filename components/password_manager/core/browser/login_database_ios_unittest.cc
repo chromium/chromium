@@ -10,13 +10,18 @@
 
 #include <tuple>
 
+#include "base/apple/foundation_util.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/mac/foundation_util.h"
-#include "base/mac/scoped_cftyperef.h"
+#include "base/path_service.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/common/passwords_directory_util_ios.h"
+#include "sql/database.h"
+#include "sql/statement.h"
+#include "sql/test/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -84,7 +89,7 @@ size_t LoginDatabaseIOSTest::GetKeychainSize() {
   }
   EXPECT_EQ(errSecSuccess, status);
 
-  return CFArrayGetCount(base::mac::CFCast<CFArrayRef>(result));
+  return CFArrayGetCount(base::apple::CFCast<CFArrayRef>(result));
 }
 
 TEST_F(LoginDatabaseIOSTest, KeychainStorage) {
@@ -215,6 +220,104 @@ TEST_F(LoginDatabaseIOSTest, RemoveLoginsCreatedBetween) {
   EXPECT_STREQ("pass0", UTF16ToUTF8(logins[0]->password_value).c_str());
   EXPECT_STREQ("login2", UTF16ToUTF8(logins[1]->username_element).c_str());
   EXPECT_STREQ("pass2", UTF16ToUTF8(logins[1]->password_value).c_str());
+}
+
+class LoginDatabaseMigrationToOSCryptTest : public LoginDatabaseIOSTest {
+ public:
+  void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    database_path_ = temp_dir_.GetPath().AppendASCII("test.db");
+  }
+
+  // Creates the database from |sql_file|.
+  void CreateDatabase(base::StringPiece sql_file) {
+    base::FilePath database_dump;
+    ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &database_dump));
+    database_dump = database_dump.AppendASCII("components")
+                        .AppendASCII("test")
+                        .AppendASCII("data")
+                        .AppendASCII("password_manager")
+                        .AppendASCII(sql_file);
+    ASSERT_TRUE(
+        sql::test::CreateDatabaseFromSQL(database_path_, database_dump));
+  }
+
+  void AddPasswordToKeycahin(const std::u16string& password,
+                             const std::string& guid) {
+    ScopedCFTypeRef<CFStringRef> item_ref(base::SysUTF8ToCFStringRef(guid));
+    ScopedCFTypeRef<CFMutableDictionaryRef> attributes(
+        CFDictionaryCreateMutable(NULL, 0, &kCFTypeDictionaryKeyCallBacks,
+                                  &kCFTypeDictionaryValueCallBacks));
+    CFDictionarySetValue(attributes, kSecClass, kSecClassGenericPassword);
+    CFDictionarySetValue(attributes, kSecAttrAccount, item_ref);
+    std::string plain_text_utf8 = base::UTF16ToUTF8(password);
+    ScopedCFTypeRef<CFDataRef> data(CFDataCreate(
+        NULL, reinterpret_cast<const UInt8*>(plain_text_utf8.data()),
+        plain_text_utf8.size()));
+    CFDictionarySetValue(attributes, kSecValueData, data);
+    EXPECT_EQ(errSecSuccess, SecItemAdd(attributes, NULL));
+  }
+
+  std::vector<std::string> GetEncryptedPasswordValues() const {
+    sql::Database db;
+    CHECK(db.Open(database_path_));
+
+    sql::Statement s(db.GetCachedStatement(
+        SQL_FROM_HERE, "SELECT password_value FROM logins"));
+    EXPECT_TRUE(s.is_valid());
+
+    std::vector<std::string> results;
+    while (s.Step()) {
+      std::string encrypted_password;
+      s.ColumnBlobAsString(0, &encrypted_password);
+      results.push_back(std::move(encrypted_password));
+    }
+
+    return results;
+  }
+
+  base::FilePath get_database_path() { return database_path_; }
+
+ private:
+  base::ScopedTempDir temp_dir_;
+  base::FilePath database_path_;
+};
+
+// Tests the migration of the login database from version() to
+// kCurrentVersionNumber.
+TEST_F(LoginDatabaseMigrationToOSCryptTest, MigrationToVersion39) {
+  // Add password to keychain with identifier from the testing file.
+  AddPasswordToKeycahin(u"test1", "2572a7dc-5046-429b-b8d4-3696f87dc9c2");
+
+  CreateDatabase("login_db_v38_with_keychain_id.sql");
+  std::vector<std::unique_ptr<PasswordForm>> forms;
+  {
+    // Assert that the database was successfully opened and updated
+    // to current version.
+    LoginDatabase db(get_database_path(), IsAccountStore(false));
+    ASSERT_TRUE(db.Init());
+    // Clear keychain to show that GetAllLogins no longer needs to access the
+    // keychain.
+    ClearKeychain();
+
+    EXPECT_EQ(db.GetAllLogins(&forms), FormRetrievalResult::kSuccess);
+    // Verify that |encrypted_password| is still corresponding to keychain
+    // identifier.
+    EXPECT_EQ("2572a7dc-5046-429b-b8d4-3696f87dc9c2",
+              forms[0]->encrypted_password);
+    EXPECT_EQ(u"test1", forms[0]->password_value);
+  }
+  {
+    // Verify that password_value in the database is now encrypted with OSCrypt
+    // and not equal to keychain identifier.
+    std::vector<std::string> password_values(GetEncryptedPasswordValues());
+    std::string expected_encrypted_password;
+    ASSERT_EQ(1u, password_values.size());
+    EXPECT_EQ(
+        LoginDatabase::ENCRYPTION_RESULT_SUCCESS,
+        LoginDatabase::EncryptedString(u"test1", &expected_encrypted_password));
+    EXPECT_EQ(password_values[0], expected_encrypted_password);
+  }
 }
 
 }  // namespace password_manager

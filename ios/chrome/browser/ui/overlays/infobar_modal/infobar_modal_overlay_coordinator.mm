@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/overlays/infobar_modal/infobar_modal_overlay_coordinator.h"
 #import "ios/chrome/browser/ui/overlays/infobar_modal/infobar_modal_overlay_coordinator+modal_configuration.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/ui/infobars/presentation/infobar_modal_positioner.h"
 #import "ios/chrome/browser/ui/infobars/presentation/infobar_modal_transition_driver.h"
@@ -13,10 +13,6 @@
 #import "ios/chrome/browser/ui/overlays/overlay_presentation_util.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_coordinator+subclassing.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_coordinator_delegate.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 @interface InfobarModalOverlayCoordinator () <InfobarModalPositioner>
 // The navigation controller used to display the modal view.
@@ -66,7 +62,8 @@
 - (CGFloat)modalHeightForWidth:(CGFloat)width {
   UIView* modalView = self.modalViewController.view;
   CGSize modalContentSize = CGSizeZero;
-  if (UIScrollView* scrollView = base::mac::ObjCCast<UIScrollView>(modalView)) {
+  if (UIScrollView* scrollView =
+          base::apple::ObjCCast<UIScrollView>(modalView)) {
     CGRect layoutFrame = self.baseViewController.view.bounds;
     layoutFrame.size.width = width;
     scrollView.frame = layoutFrame;

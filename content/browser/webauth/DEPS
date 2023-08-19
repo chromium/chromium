@@ -7,6 +7,5 @@ specific_include_rules = {
     "+components/webauthn/content/browser/internal_authenticator_impl.h",
     "+third_party/zlib/google/compression_utils.h",
     "+ui/base/resource/resource_bundle.h",
-    "+ui/base/resource/resource_scale_factor.h",
   ]
 }

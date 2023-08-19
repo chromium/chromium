@@ -40,6 +40,7 @@ class Component final : public GarbageCollected<Component> {
     kSearch,
     kHash,
   };
+  Type type() const { return type_; }
 
   // A utility function that takes a given `pattern` and compiles it into a
   // Component structure.  If the `pattern` is null, then it will be defaulted

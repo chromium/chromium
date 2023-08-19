@@ -4,15 +4,21 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/strings/strcat.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen_view.h"
+#include "chrome/browser/ash/login/test/enrollment_ui_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/test_condition_waiter.h"
+#include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
+#include "components/policy/test_support/embedded_policy_test_server.h"
+#include "components/policy/test_support/policy_storage.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -34,14 +40,26 @@ constexpr test::UIPath kSigninNextButton = {
 
 class EnrollmentNudgeTest : public OobeBaseTest {
  public:
-  EnrollmentNudgeTest() {
-    // TODO(b/271104781): replace with policy-based setup after we land DM
-    // server API changes. For now `kEnrollmentNudgingForTesting` feature is
-    // used to enable enrollment nudging for all managed users.
-    feature_list_.InitAndEnableFeature(
-        ash::features::kEnrollmentNudgingForTesting);
-  }
+  // This enum is tied directly to the `EnrollmentNudgeUserAction` UMA enum
+  // defined in //tools/metrics/histograms/enums.xml and to the
+  // `EnrollmentNudgeUserAction` enum defined in
+  // // chrome/browser/resources/chromeos/login/screens/common/gaia_signin.js.
+  // Do not change one without changing the others.
+  enum class UserAction {
+    kEnterpriseEnrollmentButtonClicked = 0,
+    kUseAnotherAccountButtonClicked = 1,
+    kMaxValue = kUseAnotherAccountButtonClicked,
+  };
+
+  EnrollmentNudgeTest() = default;
   ~EnrollmentNudgeTest() override = default;
+
+  void SetUpOnMainThread() override {
+    policy_server_.server()->policy_storage()->add_managed_user(
+        FakeGaiaMixin::kEnterpriseUser1);
+    policy_server_.SetEnrollmentNudgePolicy(true);
+    OobeBaseTest::SetUpOnMainThread();
+  }
 
   void WaitForEnrollmentNudgeDialogToOpen() {
     test::OobeJS()
@@ -60,9 +78,20 @@ class EnrollmentNudgeTest : public OobeBaseTest {
         {kSigninWebview, ".src.indexOf('#challengepassword') != -1"}));
   }
 
+  void CheckUserActionHistogram(const UserAction& expected_user_action) {
+    EXPECT_THAT(
+        histogram_tester.GetAllSamples("Enterprise.EnrollmentNudge.UserAction"),
+        testing::ElementsAre(
+            base::Bucket(static_cast<int>(expected_user_action), 1)));
+  }
+
+  FakeGaiaMixin fake_gaia{&mixin_host_};
+  test::EnrollmentUIMixin enrollment_ui{&mixin_host_};
+  base::HistogramTester histogram_tester;
+
  private:
   base::test::ScopedFeatureList feature_list_;
-  FakeGaiaMixin fake_gaia_{&mixin_host_};
+  EmbeddedPolicyTestServerMixin policy_server_{&mixin_host_};
 };
 
 IN_PROC_BROWSER_TEST_F(EnrollmentNudgeTest, SwitchToEnrollment) {
@@ -80,6 +109,12 @@ IN_PROC_BROWSER_TEST_F(EnrollmentNudgeTest, SwitchToEnrollment) {
   // Clicking on `kEnterpriseEnrollmentButton` should lead to enrollment screen.
   test::OobeJS().ClickOnPath(kEnterpriseEnrollmentButton);
   OobeScreenWaiter(EnrollmentScreenView::kScreenId).Wait();
+  enrollment_ui.WaitForStep(test::ui::kEnrollmentStepSignin);
+
+  // Check that email field on the enrollment screen is prefilled.
+  EXPECT_EQ(fake_gaia.fake_gaia()->prefilled_email(),
+            FakeGaiaMixin::kEnterpriseUser1);
+  CheckUserActionHistogram(UserAction::kEnterpriseEnrollmentButtonClicked);
 }
 
 IN_PROC_BROWSER_TEST_F(EnrollmentNudgeTest, UseAnotherAccountButton) {
@@ -98,6 +133,7 @@ IN_PROC_BROWSER_TEST_F(EnrollmentNudgeTest, UseAnotherAccountButton) {
   // reload.
   test::OobeJS().ClickOnPath(kUseAnotherAccountButton);
   WaitForGaiaPageReload();
+  CheckUserActionHistogram(UserAction::kUseAnotherAccountButtonClicked);
 }
 
 IN_PROC_BROWSER_TEST_F(EnrollmentNudgeTest, NoNudgeForKnownConsumerDomain) {
@@ -118,6 +154,9 @@ IN_PROC_BROWSER_TEST_F(EnrollmentNudgeTest, NoNudgeForKnownConsumerDomain) {
   test::OobeJS().ClickOnPath(kSigninNextButton);
   WaitForGaiaPageBackButtonUpdate();
   ExpectGaiaPasswordPage();
+  EXPECT_TRUE(
+      histogram_tester.GetAllSamples("Enterprise.EnrollmentNudge.UserAction")
+          .empty());
 }
 
 }  // namespace ash

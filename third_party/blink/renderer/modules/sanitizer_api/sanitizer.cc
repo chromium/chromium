@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/dom/dom_implementation.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/dom/node_cloning_data.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
@@ -194,8 +195,8 @@ DocumentFragment* Sanitizer::PrepareFragment(LocalDOMWindow* window,
                         WebFeature::kSanitizerAPIFromDocument);
       DocumentFragment* fragment =
           input->GetAsDocument()->createDocumentFragment();
-      fragment->CloneChildNodesFrom(*(input->GetAsDocument()->body()),
-                                    CloneChildrenFlag::kClone);
+      NodeCloningData data{CloneOption::kIncludeDescendants};
+      fragment->CloneChildNodesFrom(*(input->GetAsDocument()->body()), data);
       return fragment;
     }
     case V8SanitizerInput::ContentType::kDocumentFragment:

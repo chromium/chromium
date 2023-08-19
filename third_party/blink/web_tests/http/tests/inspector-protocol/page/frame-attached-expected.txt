@@ -1,0 +1,12 @@
+Tests Page.frameAttachedevents with different kinds of frame navigation
+Initial navigation
+Navigating same origin
+Navigating cross origin
+http://oopif-a.devtools.test:8000/inspector-protocol/resources/empty.html
+Navigating cross origin again
+http://oopif-b.devtools.test:8000/inspector-protocol/resources/empty.html
+Navigating back to in-process
+main target: Page.frameAttached
+Attaching a local frame
+main target: Page.frameAttached
+

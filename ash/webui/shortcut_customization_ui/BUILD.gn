@@ -20,6 +20,7 @@ static_library("shortcut_customization_ui") {
 
   deps = [
     "//ash/constants",
+    "//ash/webui/common:trusted_types_util",
     "//ash/webui/resources:shortcut_customization_app_resources",
     "//ash/webui/shortcut_customization_ui/backend",
     "//ash/webui/shortcut_customization_ui/backend/search:mojo_bindings",
@@ -28,6 +29,7 @@ static_library("shortcut_customization_ui") {
     "//chromeos/ash/components/local_search_service/public/cpp",
     "//chromeos/strings",
     "//components/keyed_service/content:content",
+    "//components/user_prefs",
     "//content/public/browser",
     "//ui/resources:webui_resources_grd_grit",
     "//ui/webui",
@@ -39,6 +41,7 @@ source_set("unit_tests") {
 
   sources = [
     "backend/accelerator_configuration_provider_unittest.cc",
+    "backend/accelerator_layout_table_unittest.cc",
     "backend/search/search_concept_registry_unittest.cc",
     "backend/search/search_handler_unittest.cc",
     "shortcuts_app_manager_unittest.cc",

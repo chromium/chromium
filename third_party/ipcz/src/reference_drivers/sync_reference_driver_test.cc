@@ -35,7 +35,7 @@ struct TransportHandlers {
 // This is used by tests to conveniently handle driver transport notifications
 // with lambdas.
 class TransportReceiver
-    : public APIObjectImpl<TransportReceiver, APIObject::kTransport> {
+    : public APIObjectImpl<TransportReceiver, APIObject::kTransportListener> {
  public:
   explicit TransportReceiver(TransportHandlers handlers)
       : handlers_(std::move(handlers)) {}
@@ -273,14 +273,14 @@ TEST(SyncReferenceDriverTest, SharedMemory) {
                                                          nullptr, &dupe));
   EXPECT_NE(IPCZ_INVALID_DRIVER_HANDLE, dupe);
 
-  void* addr1;
+  volatile void* addr1;
   IpczDriverHandle mapping1;
   EXPECT_EQ(IPCZ_RESULT_OK, driver.MapSharedMemory(memory, IPCZ_NO_FLAGS,
                                                    nullptr, &addr1, &mapping1));
   EXPECT_NE(IPCZ_INVALID_DRIVER_HANDLE, mapping1);
   EXPECT_NE(nullptr, addr1);
 
-  void* addr2;
+  volatile void* addr2;
   IpczDriverHandle mapping2;
   EXPECT_EQ(IPCZ_RESULT_OK, driver.MapSharedMemory(dupe, IPCZ_NO_FLAGS, nullptr,
                                                    &addr2, &mapping2));

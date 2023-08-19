@@ -38,15 +38,20 @@ NotifierId::NotifierId(NotifierType type, const std::string& id)
 #endif  // IS_CHROMEOS_ASH
 
 NotifierId::NotifierId(const GURL& origin)
-    : NotifierId(origin, /*title=*/absl::nullopt) {}
+    : NotifierId(origin,
+                 /*title=*/absl::nullopt,
+                 /*web_app_id=*/absl::nullopt) {}
 
-NotifierId::NotifierId(const GURL& url, absl::optional<std::u16string> title)
+NotifierId::NotifierId(const GURL& url,
+                       absl::optional<std::u16string> title,
+                       absl::optional<std::string> web_app_id)
     : type(NotifierType::WEB_PAGE),
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       catalog_name(ash::NotificationCatalogName::kNone),
 #endif  // IS_CHROMEOS_ASH
       url(url),
-      title(title) {
+      title(std::move(title)),
+      web_app_id(std::move(web_app_id)) {
 }
 
 NotifierId::NotifierId(const NotifierId& other) = default;
@@ -60,11 +65,12 @@ bool NotifierId::operator==(const NotifierId& other) const {
   if (profile_id != other.profile_id)
     return false;
 
-  if (type == NotifierType::WEB_PAGE)
-    return url == other.url;
+  if (type == NotifierType::WEB_PAGE) {
+    return std::tie(url, web_app_id) == std::tie(other.url, other.web_app_id);
+  }
 
   if (type == NotifierType::ARC_APPLICATION) {
-    return (id == other.id && group_key == other.group_key);
+    return std::tie(id, group_key) == std::tie(other.id, other.group_key);
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -84,8 +90,13 @@ bool NotifierId::operator<(const NotifierId& other) const {
   if (profile_id != other.profile_id)
     return profile_id < other.profile_id;
 
-  if (type == NotifierType::WEB_PAGE)
-    return url < other.url;
+  if (type == NotifierType::WEB_PAGE) {
+    return std::tie(url, web_app_id) < std::tie(other.url, other.web_app_id);
+  }
+
+  if (type == NotifierType::ARC_APPLICATION) {
+    return std::tie(id, group_key) < std::tie(other.id, other.group_key);
+  }
 
   return id < other.id;
 }

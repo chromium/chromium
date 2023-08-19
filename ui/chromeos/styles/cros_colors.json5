@@ -586,7 +586,16 @@
     illustration_elevation_secondary_color: {
       light: "$illustration_secondary_color",
       dark: "$google_grey_700",
-    }
+    },
+    /* Preview colors for color correction settings. */
+    color_preview_red: "$google_red_600",
+    color_preview_orange: "$google_orange_600",
+    color_preview_yellow: "$google_yellow_600",
+    color_preview_green: "$google_green_600",
+    color_preview_cyan: "$google_cyan_600",
+    color_preview_blue: "$google_blue_600",
+    color_preview_purple: "$google_purple_600",
+    color_preview_grey: "$google_grey_600",
   },
   opacities: {
     disabled_opacity: 0.38,

@@ -27,7 +27,7 @@ message BuyableProduct {
     MAIN_PRODUCT = 1;
   }
 
-  // The title of the product.
+  // One offer title of the product in the current page.
   optional string title = 1;
 
   // Direct link to the product image.
@@ -47,6 +47,11 @@ message BuyableProduct {
 
   // Country code of the offer.
   optional string country_code = 7;
+
+  // The title of the product cluster. This differs from above offer title in
+  // that it would exclude attributes (size, color, etc.) and instead describes
+  // a broader range of the same product.
+  optional string gpc_title = 8;
 }
 
 message ProductPriceUpdate {

@@ -30,6 +30,7 @@
 #include "ash/wm/wm_default_layout_manager.h"
 #include "ash/wm/workspace/workspace_types.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -110,7 +111,9 @@ class ASH_EXPORT ShelfLayoutManager : public AppListControllerObserver,
     ~ScopedSuspendWorkAreaUpdate();
 
    private:
-    ShelfLayoutManager* const manager_;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #union
+    RAW_PTR_EXCLUSION ShelfLayoutManager* const manager_;
   };
 
   // Used to maintain a lock for the shelf visibility state. If locked, then we
@@ -385,6 +388,7 @@ class ASH_EXPORT ShelfLayoutManager : public AppListControllerObserver,
       const gfx::Insets& in_session_shelf_insets);
 
   class UpdateShelfObserver;
+  friend class AshMessagePopupCollectionTest;
   friend class DimShelfLayoutManagerTestBase;
   friend class NotificationTrayTest;
   friend class PanelLayoutManagerTest;

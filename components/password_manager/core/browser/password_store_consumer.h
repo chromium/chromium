@@ -15,7 +15,6 @@
 
 namespace password_manager {
 
-struct FieldInfo;
 struct InteractionsStats;
 struct PasswordForm;
 class PasswordStoreInterface;
@@ -44,10 +43,6 @@ class PasswordStoreConsumer {
   // Called when the GetSiteStats() request is finished, with the associated
   // site statistics.
   virtual void OnGetSiteStatistics(std::vector<InteractionsStats> stats);
-
-  // Called when the GetAllFieldInfo() request is finished, with the associated
-  // field info.
-  virtual void OnGetAllFieldInfo(std::vector<FieldInfo> field_info);
 
   // The base::CancelableTaskTracker can be used for cancelling the
   // tasks associated with the consumer.

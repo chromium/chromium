@@ -7,6 +7,10 @@ import("//build/config/locales.gni")
 import("//chrome/common/features.gni")
 import("//tools/grit/grit_rule.gni")
 
+generate_jni("jni") {
+  sources = [ "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionBridge.java" ]
+}
+
 android_library("java") {
   deps = [
     ":java_resources",
@@ -24,17 +28,21 @@ android_library("java") {
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/util/android:java",
     "//components/browser_ui/widget/android:java",
+    "//components/embedder_support/android:simple_factory_key_java",
     "//components/embedder_support/android:util_java",
     "//components/favicon/android:java",
     "//components/image_fetcher:java",
     "//components/url_formatter/android:url_formatter_java",
+    "//content/public/android:content_full_java",
     "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_browser_browser_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//ui/android:ui_java",
     "//url:gurl_java",
   ]
 
+  srcjar_deps = [ ":jni" ]
   sources = [
     "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionBottomSheetContent.java",
     "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionBridge.java",
@@ -45,7 +53,6 @@ android_library("java") {
   ]
 
   resources_package = "org.chromium.chrome.browser.ui.android.webid"
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 android_resources("java_resources") {
@@ -60,6 +67,7 @@ android_resources("java_resources") {
     "java/res/layout/account_selection_data_sharing_consent_item.xml",
     "java/res/layout/account_selection_header_item.xml",
     "java/res/layout/account_selection_sheet.xml",
+    "java/res/layout/idp_signin_text_item.xml",
     "java/res/values/dimens.xml",
   ]
 }
@@ -77,6 +85,7 @@ robolectric_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//chrome/browser/tab:java",
     "//chrome/browser/ui/android/favicon:java",
     "//chrome/browser/ui/android/webid:public_java",
     "//chrome/browser/ui/android/webid/internal:java",
@@ -84,6 +93,7 @@ robolectric_library("junit") {
     "//components/favicon/android:java",
     "//components/image_fetcher:java",
     "//components/url_formatter/android:url_formatter_java",
+    "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_test_core_java",
@@ -92,6 +102,7 @@ robolectric_library("junit") {
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_full_java",
     "//ui/android:ui_java_test_support",
+    "//ui/android:ui_utils_java",
     "//url:gurl_java",
     "//url:gurl_junit_shadows",
     "//url:gurl_junit_test_support",
@@ -115,16 +126,20 @@ android_library("javatests") {
     "//chrome/android:chrome_test_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/webid:public_java",
     "//chrome/test/android:chrome_java_integration_test_support",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/bottomsheet/android/test:java",
+    "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
     "//net/android:net_java_test_support",
     "//third_party/android_deps:espresso_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_core_java",
+    "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_full_java",

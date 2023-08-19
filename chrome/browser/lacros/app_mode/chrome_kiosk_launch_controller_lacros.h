@@ -38,8 +38,8 @@ class ChromeKioskLaunchControllerLacros
 
  private:
   Profile& profile_;
-  std::unique_ptr<ash::ChromeKioskAppInstaller> installer_;
-  std::unique_ptr<ash::ChromeKioskAppLauncher> launcher_;
+  std::unique_ptr<chromeos::ChromeKioskAppInstaller> installer_;
+  std::unique_ptr<chromeos::ChromeKioskAppLauncher> launcher_;
 
   mojo::Receiver<crosapi::mojom::ChromeKioskLaunchController>
       controller_receiver_{this};

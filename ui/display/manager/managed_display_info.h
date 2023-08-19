@@ -164,6 +164,7 @@ class DISPLAY_MANAGER_EXPORT ManagedDisplayInfo {
 
   // True if the display EDID has the overscan flag. This does not create the
   // actual overscan automatically, but used in the message.
+  void set_has_overscan(bool has_overscan) { has_overscan_ = has_overscan; }
   bool has_overscan() const { return has_overscan_; }
 
   void set_touch_support(Display::TouchSupport support) {
@@ -225,6 +226,9 @@ class DISPLAY_MANAGER_EXPORT ManagedDisplayInfo {
   Display::RotationSource active_rotation_source() const {
     return active_rotation_source_;
   }
+
+  bool detected() const { return detected_; }
+  void set_detected(bool detected) { detected_ = detected; }
 
   // Returns the rotation set by a given |source|.
   Display::Rotation GetRotation(Display::RotationSource source) const;
@@ -427,6 +431,11 @@ class DISPLAY_MANAGER_EXPORT ManagedDisplayInfo {
   // to distinguish the empty overscan insets from native display info.
   bool clear_overscan_insets_;
 
+  // True if the display is detected by the system. The system will keep at
+  // least one display available even if all displays are disconnected, and this
+  // field is set to false in such a case.
+  bool detected_ = true;
+
   // The list of modes supported by this display.
   ManagedDisplayModeList display_modes_;
 
@@ -458,21 +467,11 @@ class DISPLAY_MANAGER_EXPORT ManagedDisplayInfo {
   // If you add a new member, you need to update Copy().
 };
 
-// Creates a managed display info for testing purposes only.
+// Creates a managed display info. Note that if a valid |bounds| is not
+// supplied, the returned ManagedDisplayInfo never called UpdateDisplaySize(),
+// which means that transformations, such as rotation, are not properly applied.
 ManagedDisplayInfo DISPLAY_MANAGER_EXPORT
-CreateDisplayInfo(int64_t id, const gfx::Rect& bounds);
-
-// Resets the synthesized display id for testing. This
-// is necessary to avoid overflowing the output index.
-void DISPLAY_MANAGER_EXPORT ResetDisplayIdForTest();
-
-// Generates a fake, synthesized display ID that will be used when the
-// |kInvalidDisplayId| is passed to |ManagedDisplayInfo| constructor.
-int64_t DISPLAY_MANAGER_EXPORT GetNextSynthesizedDisplayId(int64_t id);
-
-// Generates the next fake connector index for displays who's ID was generated
-// by hashing their EDIDs.
-int64_t DISPLAY_MANAGER_EXPORT GetNextSynthesizedEdidDisplayConnectorIndex();
+CreateDisplayInfo(int64_t id, const gfx::Rect& bounds = gfx::Rect());
 
 }  // namespace display
 

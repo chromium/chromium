@@ -12,7 +12,7 @@
 #include "chrome/common/extensions/api/notifications/notification_style.h"
 #include "extensions/renderer/script_context.h"
 #include "gin/data_object_builder.h"
-#include "ui/base/layout.h"
+#include "ui/base/resource/resource_scale_factor.h"
 
 namespace extensions {
 

@@ -17,6 +17,7 @@
 #include "ash/user_education/user_education_feature_controller.h"
 #include "ash/user_education/user_education_help_bubble_controller.h"
 #include "ash/user_education/user_education_ping_controller.h"
+#include "ash/user_education/user_education_tutorial_controller.h"
 #include "ash/user_education/welcome_tour/welcome_tour_controller.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -110,6 +111,13 @@ TEST_P(UserEducationControllerTest, UserEducationHelpBubbleControllerExists) {
 // features are enabled.
 TEST_P(UserEducationControllerTest, UserEducationPingControllerExists) {
   EXPECT_EQ(!!UserEducationPingController::Get(),
+            !!UserEducationController::Get());
+}
+
+// Verifies that the user education tutorial controller exists iff user
+// education features are enabled.
+TEST_P(UserEducationControllerTest, UserEducationTutorialControllerExists) {
+  EXPECT_EQ(!!UserEducationTutorialController::Get(),
             !!UserEducationController::Get());
 }
 
@@ -211,6 +219,11 @@ TEST_P(UserEducationControllerTest, RegistersTutorials) {
   // Add the primary user session and verify expectations.
   SimulateUserLogin(primary_user_account_id);
   testing::Mock::VerifyAndClearExpectations(user_education_delegate);
+
+  // Abort any tutorials that started automatically when the primary user
+  // session started since this test only cares about tutorial registration.
+  user_education_delegate->AbortTutorial(primary_user_account_id,
+                                         /*tutorial_id=*/absl::nullopt);
 
   // Add a secondary user session and verify that *no* tutorials are registered
   // with user education services in the browser.

@@ -55,7 +55,7 @@ void TestFakeSuggestionsService::TearDown(
   fake_suggestions_database_.reset();
 }
 
-void TestFakeSuggestionsService::OnSuggestRequestStarting(
+void TestFakeSuggestionsService::OnSuggestRequestCreated(
     const base::UnguessableToken& request_id,
     const network::ResourceRequest* request) {
   DCHECK(fake_suggestions_database_);

@@ -185,13 +185,10 @@ interface AppServiceProxy {
     IconType icon_type,
     int32 size_hint_in_dip) => (IconValue icon_value);
 
-  // Lacros informs Ash of the preferred app that should be used to handle a
-  // given |intent|. This allows Ash to build an in-memory representation of
-  // the user's preferred apps for a given intent.
+  // Unused and unimplemented as of M117. Use SetSupportedLinksPreference() to
+  // change preferred apps instead.
   [MinVersion=15]
-  AddPreferredApp@3(
-      string app_id,
-      Intent intent);
+  AddPreferredAppDeprecated@3(string app_id, Intent intent);
 
   // In the Settings SWA, show the app management page for |app_id|.
   [MinVersion=16]

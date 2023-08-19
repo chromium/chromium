@@ -1,0 +1,305 @@
+<style include="settings-shared iron-flex">
+  h2 {
+    padding-inline-start: var(--cr-section-padding);
+  }
+
+  cr-policy-pref-indicator {
+    margin-inline-end: var(--cr-controlled-by-spacing);
+  }
+
+  cr-policy-pref-indicator + cr-icon-button {
+    margin-inline-start: 0;
+  }
+
+  .bottom-margin {
+    margin-bottom: var(--cr-section-vertical-margin);
+  }
+
+  .explain-selected {
+    color: var(--cros-text-color-positive);
+    font-weight: initial;
+    margin-top: 4px;
+  }
+
+  .icon-external {
+    margin-inline-end: 0;
+  }
+
+  .name-with-error[disabled] {
+    pointer-events: none;
+  }
+
+  /* Paddings when showing download error */
+  .name-with-error {
+    padding: 14px 0;
+  }
+
+  .name-with-error div {
+    color: var(--cros-text-color-alert);
+    margin-top: 8px;
+  }
+
+  iron-icon[icon='cr:error'] {
+    --iron-icon-fill-color: var(--cros-icon-color-alert);
+    height: var(--cr-icon-size);
+    margin-inline-end: 4px;
+    width: var(--cr-icon-size);
+  }
+
+  iron-icon[icon='cr20:domain'] {
+    margin-inline-end: 10px;
+  }
+
+  /* Used to maintain vertical alignment for the error icon. */
+  iron-icon + span {
+    vertical-align: middle;
+  }
+
+  /* The default implementation of the actionable list item makes the
+    * entire list item row a button such that clicking anywhere will
+    * activate the action of the list item. The input method list behaves
+    * differently in that clicking the list item sets that item as the input
+    * method, and the selected list item should not react to selection after
+    * being selected. Sets the cursor to auto to override the default
+    * implementation which would otherwise make the entire row appear
+    * clickable when it is not.
+    */
+  .selected[actionable] {
+    cursor: auto;
+  }
+
+  .subsection {
+    padding-inline-end: var(--cr-section-padding);
+    padding-inline-start: var(--cr-section-indent-padding);
+  }
+
+  .subsection .list-frame {
+    padding-inline-end: 0;
+    padding-inline-start: 40px;
+  }
+
+  .subsection > settings-toggle-button,
+  .subsection > cr-link-row,
+  #spellCheckLanguagesListV2 > .cr-row {
+    padding-inline-end: 0;
+    padding-inline-start: 0;
+  }
+
+  .internal-wrapper,
+  .external-wrapper {
+    display: flex;
+  }
+
+  #addInputMethod,
+  #addSpellcheckLanguages {
+    --iron-icon-fill-color: var(--cr-link-color);
+    margin-top: 16px;
+  }
+
+  cr-button[disabled] iron-icon {
+    --iron-icon-fill-color: var(--cros-button-icon-color-primary-disabled);
+  }
+</style>
+
+<div route-path="default">
+  <template is="dom-if" if="[[shouldShowLanguagePacksNotice_]]">
+    <div class="cr-row first bottom-margin">
+      <localized-link id="languagePacksNotice"
+          class="cr-secondary-text"
+          localized-string="$i18n{languagePacksNotice}"
+          on-link-clicked="onLanguagePackNoticeLinkClick_">
+      </localized-link>
+    </div>
+  </template>
+  <settings-toggle-button
+      class="first" id="showImeMenu"
+      pref="{{prefs.settings.language.ime_menu_activated}}"
+      label="$i18n{showImeMenu}"
+      on-settings-boolean-control-change="onShowImeMenuChange_"
+      deep-link-focus-id$="[[Setting.kShowInputOptionsInShelf]]">
+  </settings-toggle-button>
+
+  <div class="hr bottom-margin">
+    <template is="dom-if" if="[[shouldShowShortcutReminder_(
+        shortcutReminderBody_.length)]]">
+      <keyboard-shortcut-banner header="$i18n{imeShortcutReminderTitle}"
+          body="[[shortcutReminderBody_]]"
+          on-dismiss="onShortcutReminderDismiss_">
+      </keyboard-shortcut-banner>
+    </template>
+    <h2>$i18n{inputMethodListTitle}</h2>
+    <template is="dom-if" if="[[inputMethodsLimitedByPolicy_(
+        prefs.settings.language.allowed_input_methods.*)]]">
+      <div class="cr-row continuation" id="inputMethodsManagedbyPolicy">
+        <iron-icon icon="cr20:domain"></iron-icon>
+        <div class="secondary">$i18n{inputMethodsManagedbyPolicy}</div>
+      </div>
+    </template>
+    <div class="list-frame vertical-list" id="inputMethodsList">
+      <template is="dom-repeat"
+          items="[[languages.inputMethods.enabled]]">
+        <div class$="list-item [[getInputMethodItemClass_(
+            item.id, languages.inputMethods.currentId)]]"
+            actionable on-click="onInputMethodClick_"
+            on-keypress="onInputMethodKeyPress_"
+            tabindex$="[[getInputMethodTabIndex_(
+                item.id, languages.inputMethods.currentId)]]"
+            aria-labelledby$="language-[[index]]" role="button">
+          <div class="start" id="language-[[index]]" aria-hidden="true">
+            <div class="display-name">[[item.displayName]]</div>
+            <div class="explain-selected"
+                hidden="[[!isCurrentInputMethod_(
+                    item.id, languages.inputMethods.currentId)]]">
+              $i18n{inputMethodEnabled}
+            </div>
+          </div>
+          <template is="dom-if"
+              if="[[hasOptionsPageInSettings_(item.id)]]">
+            <div class="internal-wrapper"
+                hidden="[[!item.hasOptionsPage]]">
+              <cr-icon-button class="subpage-arrow"
+                  aria-label$="[[getOpenOptionsPageLabel_(
+                  item.displayName)]]"
+                  on-click="navigateToOptionsPageInSettings_">
+              </cr-icon-button>
+            </div>
+          </template>
+          <template is="dom-if"
+              if="[[!hasOptionsPageInSettings_(item.id)]]">
+            <div class="external-wrapper"
+                hidden="[[!item.hasOptionsPage]]">
+              <cr-icon-button class="icon-external"
+                  aria-label$="[[getOpenOptionsPageLabel_(
+                  item.displayName)]]"
+                  on-click="openExtensionOptionsPage_">
+              </cr-icon-button>
+            </div>
+          </template>
+          <div class="separator"></div>
+          <cr-icon-button class="icon-clear"
+              disabled$="[[disableRemoveInputMethod_(item,
+                  languages.inputMethods.enabled.*)]]"
+              on-click="onRemoveInputMethodClick_"
+              title="[[getRemoveInputMethodTooltip_(item)]]">
+          </cr-icon-button>
+        </div>
+      </template>
+      <div class="list-item">
+        <cr-button id="addInputMethod" on-click="onAddInputMethodClick_"
+            deep-link-focus-id$="[[Setting.kAddInputMethod]]">
+          <iron-icon icon="cr:add" slot="prefix-icon"></iron-icon>
+          $i18n{addInputMethodLabel}
+        </cr-button>
+      </div>
+    </div>
+  </div>
+  <template is="dom-if" if="[[onDeviceGrammarCheckEnabled_]]">
+    <settings-toggle-button id="enableSpellcheckingToggle" class="hr"
+        label="$i18n{spellAndGrammarCheckTitle}"
+        sub-label="$i18n{spellAndGrammarCheckDescription}"
+        pref="{{prefs.browser.enable_spellchecking}}" no-set-pref
+        on-settings-boolean-control-change="onSpellcheckToggleChange_"
+        deep-link-focus-id$="[[Setting.kSpellCheck]]"
+        aria-describedby="spellAndGrammarCheckDescription">
+    </settings-toggle-button>
+  </template>
+  <template is="dom-if" if="[[!onDeviceGrammarCheckEnabled_]]">
+    <!-- This uses the same id as the toggle above, causing |querySelector|s and
+         |getElementById|s to potentially fail.
+         TODO: b/289955380 - Remove this toggle, or change the id of this
+         toggle. -->
+    <settings-toggle-button id="enableSpellcheckingToggle" class="hr"
+        label="$i18n{spellCheckTitle}"
+        pref="{{prefs.browser.enable_spellchecking}}" no-set-pref
+        on-settings-boolean-control-change="onSpellcheckToggleChange_"
+        deep-link-focus-id$="[[Setting.kSpellCheck]]">
+    </settings-toggle-button>
+  </template>
+  <iron-collapse class="subsection" opened="[[
+      prefs.browser.enable_spellchecking.value]]">
+    <template is="dom-if" if="[[!onDeviceGrammarCheckEnabled_]]">
+      <settings-toggle-button id="enhancedSpellCheckToggle"
+          label="$i18n{spellCheckEnhancedLabel}"
+          pref="{{prefs.spellcheck.use_spelling_service}}"
+          disabled="[[!prefs.browser.enable_spellchecking.value]]">
+      </settings-toggle-button>
+    </template>
+    <cr-link-row class="hr" label="$i18n{editDictionaryLabel}"
+        on-click="onEditDictionaryClick_"
+        id="editDictionarySubpageTrigger"
+        disabled="[[!prefs.browser.enable_spellchecking.value]]"
+        role-description="$i18n{subpageArrowRoleDescription}">
+    </cr-link-row>
+    <div id="spellCheckLanguagesListV2">
+      <div class="cr-row hr">
+        <div>
+          $i18n{spellCheckLanguagesListTitle}
+        </div>
+      </div>
+      <div class="list-frame vertical-list" role="list">
+        <template is="dom-repeat"
+            items="[[spellCheckLanguages_]]"
+            mutable-data>
+          <div class="list-item">
+            <div class="flex name-with-error" aria-hidden="true"
+                disabled$="[[isSpellCheckNameClickDisabled_(item, item.*,
+                    prefs.browser.enable_spellchecking.*)]]">
+              [[item.language.displayName]]
+              <div hidden="[[!item.downloadDictionaryFailureCount]]"
+                  aria-hidden="true">
+                <iron-icon icon="cr:error"></iron-icon>
+                <span>$i18n{languagesDictionaryDownloadError}</span>
+              </div>
+            </div>
+            <cr-button on-click="onRetryDictionaryDownloadClick_"
+                hidden="[[!item.downloadDictionaryFailureCount]]"
+                disabled="[[!prefs.browser.enable_spellchecking.value]]"
+                aria-label$="[[getDictionaryDownloadRetryAriaLabel_(
+                    item)]]">
+              $i18n{languagesDictionaryDownloadRetryLabel}
+            </cr-button>
+            <template is="dom-if" if="[[!item.isManaged]]">
+              <cr-icon-button class="icon-clear"
+                  disabled="[[!prefs.browser.enable_spellchecking.value]]"
+                  on-click="onRemoveSpellcheckLanguageClick_"
+                  title="[[getRemoveSpellcheckLanguageTooltip_(item)]]">
+              </cr-icon-button>
+            </template>
+            <template is="dom-if" if="[[item.isManaged]]">
+              <cr-policy-pref-indicator
+                  pref="[[getIndicatorPrefForManagedSpellcheckLanguage_(
+                      item.spellCheckEnabled)]]">
+              </cr-policy-pref-indicator>
+              <cr-icon-button class="icon-clear managed-button"
+                  disabled="true"
+                  title="[[getRemoveSpellcheckLanguageTooltip_(item)]]">
+              </cr-icon-button>
+            </template>
+          </div>
+        </template>
+        <div class="list-item">
+          <cr-button id="addSpellcheckLanguages"
+              on-click="onAddSpellcheckLanguagesClick_"
+              disabled="[[!prefs.browser.enable_spellchecking.value]]">
+            <iron-icon icon="cr:add" slot="prefix-icon"></iron-icon>
+            $i18n{addLanguages}
+          </cr-button>
+        </div>
+      </div>
+    </div>
+  </iron-collapse>
+</div>
+
+<template is="dom-if" if="[[showAddInputMethodsDialog_]]" restamp>
+  <os-settings-add-input-methods-dialog languages="[[languages]]"
+      language-helper="[[languageHelper]]"
+      on-close="onAddInputMethodsDialogClose_">
+  </os-settings-add-input-methods-dialog>
+</template>
+
+<template is="dom-if" if="[[showAddSpellcheckLanguagesDialog_]]" restamp>
+  <os-settings-add-spellcheck-languages-dialog languages="[[languages]]"
+      language-helper="[[languageHelper]]" prefs="{{prefs}}"
+      on-close="onAddSpellcheckLanguagesDialogClose_">
+  </os-settings-add-spellcheck-languages-dialog>
+</template>

@@ -12,12 +12,12 @@ PASS segments('http://f:/c') is '["http:","f","","/c","",""]'
 PASS segments('http://f:0/c') is '["http:","f","0","/c","",""]'
 PASS segments('http://f:00000000000000/c') is '["http:","f","0","/c","",""]'
 FAIL segments('http://f:00000000000000000000080/c') should be ["http:","f","0","/c","",""]. Was ["http:","f","","/c","",""].
-FAIL segments('http://f:b/c') should be [":","","","","",""]. Was [":","","0","","",""].
-FAIL segments('http://f: /c') should be [":","","","","",""]. Was [":","","0","","",""].
+PASS segments('http://f:b/c') is '[":","","","","",""]'
+PASS segments('http://f: /c') is '[":","","","","",""]'
 FAIL segments('http://f:\n/c') should be [":","","","","",""]. Was ["http:","f","","/c","",""].
-FAIL segments('http://f:fifty-two/c') should be [":","","","","",""]. Was [":","","0","","",""].
-PASS segments('http://f:999999/c') is '[":","","0","","",""]'
-FAIL segments('http://f: 21 / b ? d # e ') should be [":","","","","",""]. Was [":","","0","","",""].
+PASS segments('http://f:fifty-two/c') is '[":","","","","",""]'
+PASS segments('http://f:999999/c') is '[":","","","","",""]'
+PASS segments('http://f: 21 / b ? d # e ') is '[":","","","","",""]'
 PASS segments('') is '["http:","example.org","","/foo/bar","",""]'
 PASS segments('  \t') is '["http:","example.org","","/foo/bar","",""]'
 PASS segments(':foo.com/') is '["http:","example.org","","/foo/:foo.com/","",""]'
@@ -58,10 +58,10 @@ PASS segments('http://foo/path;a??e#f#g') is '["http:","foo","","/path;a","??e",
 PASS segments('http://foo/abcd?efgh?ijkl') is '["http:","foo","","/abcd","?efgh?ijkl",""]'
 PASS segments('http://foo/abcd#foo?bar') is '["http:","foo","","/abcd","","#foo?bar"]'
 PASS segments('[61:24:74]:98') is '["http:","example.org","","/foo/[61:24:74]:98","",""]'
-PASS segments('http://[61:27]:98') is '[":","","0","","",""]'
+PASS segments('http://[61:27]:98') is '[":","","","","",""]'
 PASS segments('http:[61:27]/:foo') is '["http:","example.org","","/foo/[61:27]/:foo","",""]'
-FAIL segments('http://[1::2]:3:4') should be [":","","","","",""]. Was [":","","0","","",""].
-FAIL segments('http://2001::1') should be [":","","","","",""]. Was [":","","0","","",""].
+PASS segments('http://[1::2]:3:4') is '[":","","","","",""]'
+PASS segments('http://2001::1') is '[":","","","","",""]'
 PASS segments('http://[2001::1') is '[":","","","","",""]'
 PASS segments('http://2001::1]') is '[":","","","","",""]'
 PASS segments('http://2001::1]:80') is '[":","","","","",""]'

@@ -198,4 +198,13 @@ mojom::blink::QuotaManagerHost* DeprecatedStorageQuota::GetQuotaHost(
   return quota_host_.get();
 }
 
+STATIC_ASSERT_ENUM(mojom::blink::QuotaStatusCode::kErrorNotSupported,
+                   DOMExceptionCode::kNotSupportedError);
+STATIC_ASSERT_ENUM(mojom::blink::QuotaStatusCode::kErrorInvalidModification,
+                   DOMExceptionCode::kInvalidModificationError);
+STATIC_ASSERT_ENUM(mojom::blink::QuotaStatusCode::kErrorInvalidAccess,
+                   DOMExceptionCode::kInvalidAccessError);
+STATIC_ASSERT_ENUM(mojom::blink::QuotaStatusCode::kErrorAbort,
+                   DOMExceptionCode::kAbortError);
+
 }  // namespace blink

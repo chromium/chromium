@@ -8,9 +8,12 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "ash/style/pill_button.h"
 #include "ash/style/system_shadow.h"
 #include "base/functional/callback_forward.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/metadata/view_factory.h"
@@ -24,11 +27,14 @@ class Label;
 namespace ash {
 
 // The contents of a dialog that displays information or prompts the user input.
-// A dialog may include an icon, a title, a description, additional content, and
-// a button container. The button container typically contains an accept button
-// and a cancel button, but it may also include an additional view. The layout
-// of the dialog with all the elements is shown below:
+// A dialog may include an icon, a title, a description, top and middle contents
+// , and a button container. The button container typically contains an
+// accept button and a cancel button, but it may also include an additional
+// view. The layout of the dialog with all the elements is shown below:
 // +----------------------------------------------------+
+// |  +----------------------------------------------+  |
+// |  |               Top content                    |  |
+// |  +----------------------------------------------+  |
 // |  +----+                                            |
 // |  |    |- Icon                                      |
 // |  +----+                                            |
@@ -37,7 +43,7 @@ namespace ash {
 // |                                                    |
 // |  Description text                                  |
 // |  +----------------------------------------------+  |
-// |  |           Additional content                 |  |
+// |  |             Middle content                   |  |
 // |  +----------------------------------------------+  |
 // |  +-----+                    +--------+ +--------+  |
 // |  |     |- Additional view   | Cancel | |   OK   |  |
@@ -49,6 +55,11 @@ namespace ash {
 class ASH_EXPORT SystemDialogDelegateView : public views::WidgetDelegateView {
  public:
   METADATA_HEADER(SystemDialogDelegateView);
+
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAcceptButtonIdForTesting);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCancelButtonIdForTesting);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDescriptionTextIdForTesting);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTitleTextIdForTesting);
 
   SystemDialogDelegateView();
   SystemDialogDelegateView(const SystemDialogDelegateView&) = delete;
@@ -86,11 +97,19 @@ class ASH_EXPORT SystemDialogDelegateView : public views::WidgetDelegateView {
     close_callback_ = std::move(close_callback);
   }
 
-  // Sets the additional content view.
+  // Sets the top content view.
   template <typename T>
-  T* SetAdditionalContentView(std::unique_ptr<T> view) {
+  T* SetTopContentView(std::unique_ptr<T> view) {
     T* ptr = view.get();
-    SetAdditionalContentInternal(std::move(view));
+    SetContentInternal(std::move(view), ContentType::kTop);
+    return ptr;
+  }
+
+  // Sets the middle content view.
+  template <typename T>
+  T* SetMiddleContentView(std::unique_ptr<T> view) {
+    T* ptr = view.get();
+    SetContentInternal(std::move(view), ContentType::kMiddle);
     return ptr;
   }
 
@@ -102,9 +121,10 @@ class ASH_EXPORT SystemDialogDelegateView : public views::WidgetDelegateView {
     return ptr;
   }
 
-  // Sets the cross axis alignment of current additional content which is center
+  // Sets the cross axis alignment of the existing content which is center
   // aligned by default.
-  void SetAdditionalContentCrossAxisAlignment(views::LayoutAlignment alignment);
+  void SetTopContentAlignment(views::LayoutAlignment alignment);
+  void SetMiddleContentAlignment(views::LayoutAlignment alignment);
 
   // views::WidgetDelegateView:
   gfx::Size CalculatePreferredSize() const override;
@@ -113,14 +133,26 @@ class ASH_EXPORT SystemDialogDelegateView : public views::WidgetDelegateView {
   void OnWidgetInitialized() override;
   void OnWorkAreaChanged() override;
 
+  // Helper function to access buttons for tests.
+  const PillButton* GetAcceptButtonForTesting() const;
+  const PillButton* GetCancelButtonForTesting() const;
+
  protected:
   virtual void UpdateDialogSize();
 
  private:
   class ButtonContainer;
 
+  enum class ContentType {
+    kTop,     // The content at the top of the dialog.
+    kMiddle,  // The content in the middle of description and button container.
+  };
+
+  // Get the index of the content with given type in current layout.
+  size_t GetContentIndex(ContentType type) const;
+
   // Internal methods of adding the additional views into the dialog.
-  void SetAdditionalContentInternal(std::unique_ptr<views::View> view);
+  void SetContentInternal(std::unique_ptr<views::View> view, ContentType type);
   void SetAdditionalViewInButtonRowInternal(std::unique_ptr<views::View> view);
 
   // The actual callbacks of accept and cancel buttons. When the accept/cancel
@@ -145,8 +177,8 @@ class ASH_EXPORT SystemDialogDelegateView : public views::WidgetDelegateView {
   raw_ptr<views::ImageView> icon_ = nullptr;
   raw_ptr<views::Label> title_ = nullptr;
   raw_ptr<views::Label> description_ = nullptr;
-  raw_ptr<views::View> additional_content_ = nullptr;
   raw_ptr<ButtonContainer> button_container_ = nullptr;
+  base::flat_map<ContentType, raw_ptr<views::View>> contents_;
 
   // The dialog shadow.
   std::unique_ptr<SystemShadow> shadow_;
@@ -167,10 +199,12 @@ VIEW_BUILDER_PROPERTY(const std::u16string&, CancelButtonText)
 VIEW_BUILDER_PROPERTY(base::OnceClosure, AcceptCallback)
 VIEW_BUILDER_PROPERTY(base::OnceClosure, CancelCallback)
 VIEW_BUILDER_PROPERTY(base::OnceClosure, CloseCallback)
-VIEW_BUILDER_VIEW_TYPE_PROPERTY(views::View, AdditionalContentView)
+VIEW_BUILDER_VIEW_TYPE_PROPERTY(views::View, TopContentView)
+VIEW_BUILDER_VIEW_TYPE_PROPERTY(views::View, MiddleContentView)
 VIEW_BUILDER_VIEW_TYPE_PROPERTY(views::View, AdditionalViewInButtonRow)
-VIEW_BUILDER_PROPERTY(views::LayoutAlignment,
-                      AdditionalContentCrossAxisAlignment)
+VIEW_BUILDER_PROPERTY(views::LayoutAlignment, TopContentAlignment)
+VIEW_BUILDER_PROPERTY(views::LayoutAlignment, MiddleContentAlignment)
+VIEW_BUILDER_PROPERTY(ui::ModalType, ModalType)
 END_VIEW_BUILDER
 
 }  // namespace ash

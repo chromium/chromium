@@ -28,7 +28,7 @@ import java.util.List;
  *    &#64;Rule
  *    public TestRule mProcessor = new Features.JUnitProcessor();
  *
- *    &#64;Features.EnableFeatures(ChromeFeatureList.CHROME_MODERN_DESIGN)
+ *    &#64;EnableFeatures(ChromeFeatureList.CHROME_MODERN_DESIGN)
  *    public void testFoo() { ... }
  * }
  * </pre>

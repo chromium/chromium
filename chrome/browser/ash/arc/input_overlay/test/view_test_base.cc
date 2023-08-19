@@ -109,11 +109,9 @@ void ViewTestBase::SetUp() {
 }
 
 void ViewTestBase::TearDown() {
-  move_action_view_ = nullptr;
-  move_action_ = nullptr;
+  input_mapping_view_.reset();
   display_overlay_controller_.reset();
   touch_injector_.reset();
-  input_mapping_view_.reset();
   widget_.reset();
   views::ViewsTestBase::TearDown();
 }

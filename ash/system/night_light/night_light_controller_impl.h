@@ -153,9 +153,6 @@ class ASH_EXPORT NightLightControllerImpl
   TimeOfDay GetCustomEndTime() const;
   bool GetAmbientColorEnabled() const;
 
-  // Get whether the current time is after sunset and before sunrise.
-  bool IsNowWithinSunsetSunrise() const;
-
   // Update |ambient_rgb_scaling_factors_| from the current
   // |ambient_temperature_|.
   void UpdateAmbientRgbScalingFactors();

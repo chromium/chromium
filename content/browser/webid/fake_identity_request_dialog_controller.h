@@ -23,7 +23,6 @@ class CONTENT_EXPORT FakeIdentityRequestDialogController
   ~FakeIdentityRequestDialogController() override;
 
   void ShowAccountsDialog(
-      content::WebContents* rp_web_contents,
       const std::string& top_frame_for_display,
       const absl::optional<std::string>& iframe_for_display,
       const std::vector<content::IdentityProviderData>& identity_provider_data,
@@ -31,6 +30,14 @@ class CONTENT_EXPORT FakeIdentityRequestDialogController
       bool show_auto_reauthn_checkbox,
       AccountSelectionCallback on_selected,
       DismissCallback dismmiss_callback) override;
+
+  void ShowFailureDialog(const std::string& top_frame_for_display,
+                         const absl::optional<std::string>& iframe_for_display,
+                         const std::string& idp_for_display,
+                         const blink::mojom::RpContext& rp_context,
+                         const IdentityProviderMetadata& idp_metadata,
+                         DismissCallback dismiss_callback,
+                         SigninToIdPCallback signin_callback) override;
 
   std::string GetTitle() const override;
 

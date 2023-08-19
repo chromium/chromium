@@ -104,7 +104,6 @@ public class ShareSheetUsageRankingHelper {
         mLinkToggleMetricsDetails = linkToggleMetricsDetails;
     }
 
-    @VisibleForTesting
     void setTargetsForTesting(List<String> targets) {
         mDisableBridgeForTesting = true;
         mTargetsForTesting = targets;

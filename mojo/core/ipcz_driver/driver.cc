@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/containers/span.h"
-#include "base/containers/stack_container.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/rand_util.h"
 #include "mojo/core/ipcz_driver/object.h"
@@ -40,7 +39,7 @@ IpczResult IPCZ_API Serialize(IpczDriverHandle handle,
                               IpczDriverHandle transport_handle,
                               uint32_t flags,
                               const void* options,
-                              void* data,
+                              volatile void* data,
                               size_t* num_bytes,
                               IpczDriverHandle* handles,
                               size_t* num_handles) {
@@ -54,8 +53,10 @@ IpczResult IPCZ_API Serialize(IpczDriverHandle handle,
     return IPCZ_RESULT_ABORTED;
   }
 
-  const IpczResult result = transport->SerializeObject(*object, data, num_bytes,
-                                                       handles, num_handles);
+  // TODO(https://crbug.com/1451717): Propagate the volatile qualifier on
+  // `data`.
+  const IpczResult result = transport->SerializeObject(
+      *object, const_cast<void*>(data), num_bytes, handles, num_handles);
   if (result != IPCZ_RESULT_OK) {
     return result;
   }
@@ -65,7 +66,7 @@ IpczResult IPCZ_API Serialize(IpczDriverHandle handle,
   return IPCZ_RESULT_OK;
 }
 
-IpczResult IPCZ_API Deserialize(const void* data,
+IpczResult IPCZ_API Deserialize(const volatile void* data,
                                 size_t num_bytes,
                                 const IpczDriverHandle* handles,
                                 size_t num_handles,
@@ -78,9 +79,13 @@ IpczResult IPCZ_API Deserialize(const void* data,
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
 
+  // TODO(https://crbug.com/1451717): Propagate the volatile qualifier on
+  // `data`.
   scoped_refptr<ObjectBase> object;
   const IpczResult result = transport->DeserializeObject(
-      base::make_span(static_cast<const uint8_t*>(data), num_bytes),
+      base::make_span(
+          static_cast<const uint8_t*>(const_cast<const void*>(data)),
+          num_bytes),
       base::make_span(handles, num_handles), object);
   if (result != IPCZ_RESULT_OK) {
     return result;
@@ -164,7 +169,7 @@ CreateTransports(IpczDriverHandle existing_transport_from_here_to_a,
 
 IpczResult IPCZ_API
 ActivateTransport(IpczDriverHandle transport_handle,
-                  IpczHandle ipcz_transport,
+                  IpczHandle listener,
                   IpczTransportActivityHandler activity_handler,
                   uint32_t flags,
                   const void* options) {
@@ -173,7 +178,7 @@ ActivateTransport(IpczDriverHandle transport_handle,
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
 
-  transport->Activate(ipcz_transport, activity_handler);
+  transport->Activate(listener, activity_handler);
   return IPCZ_RESULT_OK;
 }
 
@@ -269,7 +274,7 @@ IpczResult IPCZ_API DuplicateSharedMemory(IpczDriverHandle driver_memory,
 IpczResult IPCZ_API MapSharedMemory(IpczDriverHandle driver_memory,
                                     uint32_t flags,
                                     const void* options,
-                                    void** address,
+                                    volatile void** address,
                                     IpczDriverHandle* driver_mapping) {
   SharedBuffer* buffer = SharedBuffer::FromHandle(driver_memory);
   if (!buffer || !driver_mapping) {

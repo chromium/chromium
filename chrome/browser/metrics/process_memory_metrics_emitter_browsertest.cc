@@ -229,6 +229,8 @@ void CheckExperimentalMemoryMetrics(
   CheckMemoryMetric("Memory.Experimental.Browser2.Malloc", histogram_tester,
                     count, ValueRestriction::ABOVE_ZERO);
 #endif
+  CheckMemoryMetric("Memory.Experimental.Browser2.Custom.AXPlatformNodeCount",
+                    histogram_tester, count, ValueRestriction::ABOVE_ZERO);
   if (number_of_renderer_processes) {
     CheckExperimentalMemoryMetricsForProcessType(
         histogram_tester, count, "Renderer", number_of_renderer_processes);
@@ -316,7 +318,12 @@ void CheckStableMemoryMetrics(const base::HistogramTester& histogram_tester,
                     histogram_tester, count, ValueRestriction::ABOVE_ZERO);
   CheckMemoryMetric("Memory.Total.RendererMalloc", histogram_tester, count,
                     ValueRestriction::ABOVE_ZERO);
-  // Shared memory footprint can be below 1 MB, which is reported as zero.
+  CheckMemoryMetric("Memory.Total.RendererBlinkGC", histogram_tester, count,
+                    ValueRestriction::ABOVE_ZERO);
+  // Can be below 1 MB, which is reported as zero.
+  CheckMemoryMetric("Memory.Total.RendererBlinkGC.Fragmentation",
+                    histogram_tester, count, ValueRestriction::NONE);
+  // Can be below 1 MB, which is reported as zero.
   CheckMemoryMetric("Memory.Total.SharedMemoryFootprint", histogram_tester,
                     count, ValueRestriction::NONE);
   CheckMemoryMetric("Memory.Total.TileMemory", histogram_tester, count,
@@ -563,14 +570,9 @@ class ProcessMemoryMetricsEmitterTest
 };
 
 // TODO(crbug.com/732501): Re-enable on Win and Mac once not flaky.
-#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
-    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-#define MAYBE_FetchAndEmitMetrics DISABLED_FetchAndEmitMetrics
-#else
-#define MAYBE_FetchAndEmitMetrics FetchAndEmitMetrics
-#endif
 IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
-                       MAYBE_FetchAndEmitMetrics) {
+                       // TODO(crbug.com/1459385): Re-enable this test
+                       DISABLED_FetchAndEmitMetrics) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url = embedded_test_server()->GetURL("foo.com", "/empty.html");
   ui_test_utils::NavigateToURLWithDisposition(
@@ -706,19 +708,14 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // TODO(crbug.com/989810): Re-enable on Win and Mac once not flaky.
-#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
-    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-#define MAYBE_FetchDuringTrace DISABLED_FetchDuringTrace
-#else
-#define MAYBE_FetchDuringTrace FetchDuringTrace
-#endif
 IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
-                       MAYBE_FetchDuringTrace) {
+                       DISABLED_FetchDuringTrace) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url = embedded_test_server()->GetURL("foo.com", "/empty.html");
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  // TODO(crbug.com/1459385): Re-enable this test
 
   base::HistogramTester histogram_tester;
 

@@ -142,8 +142,6 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
   EXPECT_EQ(nullptr, intent_picker_bubble());
 }
 
-// TODO(crbug.com/1252812): Enable the following test on Lacros.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Tests that clicking a link from a tabbed browser to within the scope of an
 // installed app shows the intent picker icon in Omnibox.
 // TODO(crbug.com/1427908): Flaky on Mac.
@@ -173,8 +171,6 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
   views::Button* intent_picker_icon = GetIntentPickerIcon();
   EXPECT_TRUE(intent_picker_icon->GetVisible());
 }
-
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // TODO(crbug.com/1395393): This test is flaky on Mac.
 #if BUILDFLAG(IS_MAC)

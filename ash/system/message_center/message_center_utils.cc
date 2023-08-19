@@ -16,6 +16,7 @@
 #include "ash/system/message_center/session_state_notification_blocker.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
+#include "base/hash/sha1.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "ui/compositor/animation_throughput_reporter.h"
@@ -41,6 +42,27 @@ void ReportAnimationSmoothness(const std::string& animation_histogram_name,
 }  // namespace
 
 namespace ash::message_center_utils {
+
+std::string GenerateGroupParentNotificationIdSuffix(
+    message_center::NotifierId notifier_id) {
+  switch (notifier_id.type) {
+    case message_center::NotifierType::WEB_PAGE:
+      return base::SHA1HashString(notifier_id.url.spec() +
+                                  notifier_id.web_app_id.value_or(""));
+    case message_center::NotifierType::ARC_APPLICATION:
+      return base::SHA1HashString(notifier_id.id +
+                                  notifier_id.group_key.value_or(""));
+    case message_center::NotifierType::SYSTEM_COMPONENT:
+      if (notifier_id.id == ash::kPrivacyIndicatorsNotifierId) {
+        return base::SHA1HashString(notifier_id.id);
+      }
+      ABSL_FALLTHROUGH_INTENDED;
+    case message_center::NotifierType::APPLICATION:
+    case message_center::NotifierType::CROSTINI_APPLICATION:
+    case message_center::NotifierType::PHONE_HUB:
+      NOTREACHED_NORETURN();
+  }
+}
 
 bool CompareNotifications(message_center::Notification* n1,
                           message_center::Notification* n2) {

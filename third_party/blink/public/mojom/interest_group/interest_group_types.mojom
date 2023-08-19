@@ -7,6 +7,7 @@ module blink.mojom;
 import "mojo/public/mojom/base/int128.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "mojo/public/mojom/base/uuid.mojom";
 import "third_party/blink/public/mojom/interest_group/ad_display_size.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
@@ -19,17 +20,25 @@ struct InterestGroupAd {
   // Optional size groups assigned to this Ad.
   string? size_group;
   // Optional identifiers that may be passed to reporting functions, if
-  // sufficiently k-anonymous.
+  // sufficiently k-anonymous. Only meaningful in `InterestGroup.ads`, but
+  // ignored in `InterestGroup.ad_components`.
   string? buyer_reporting_id;
   string? buyer_and_seller_reporting_id;
   // Opaque JSON data, persisted, then passed as object to auction worklet.
   string? metadata;
-  // Optional alias to use with B&A auctions
+  // Optional alias to use with B&A auctions.
   string? ad_render_id;
+  // A list of up to `kMaxAllowedReportingOrigins` reporting origins that can
+  // receive reports with macros. All origins must be HTTPS. Only meaningful in
+  // `InterestGroup.ads`, but ignored in `InterestGroup.ad_components`.
+  array<url.mojom.Origin>? allowed_reporting_origins;
 };
 
 // The maximum size of a valid interest group in bytes.
 const uint32 kMaxInterestGroupSize = 1048576; // 1 * 1024 * 1024
+
+// The maximum number of allowed reporting origins.
+const uint16 kMaxAllowedReportingOrigins = 10;
 
 // Permissions granted by an interest group to sellers.
 struct SellerCapabilities {
@@ -38,6 +47,20 @@ struct SellerCapabilities {
   // Iff true, reports bid and trusted signals fetch latency to the given
   // seller.
   bool allows_latency_stats = false;
+};
+
+// Controls fields sent for Bidding and Auction API server-side auctions.
+struct AuctionServerRequestFlags {
+  // If true, the ads and componentAds fields from the interest group are
+  // omitted in the auction request. The ad render ID (or the full ad if
+  // `include_full_ads` is also specified) would still be sent as part of the
+  // `prevWins` field.
+  bool omit_ads = false;
+  // If true, the full ad object (including adRenderId) will be sent to the
+  // auction server instead of just the ad render ID in all places where an ad
+  // render ID would appear (currently just the ads, componentAds and prevWins
+  // fields).
+  bool include_full_ads = false;
 };
 
 // Interest group description, passed to JoinInterestGroup(). If an entry keyed
@@ -68,7 +91,7 @@ struct InterestGroup {
     // bidding scripts for all interest groups that share a common biddnig
     // script. After the script is loaded, the script context is frozen and
     // checked for any state that may persist between function execution. If any
-    // potentially persistent state is identified, execution abandoned.
+    // potentially persistent state is identified, execution is abandoned.
     kFrozenContext,
   };
 
@@ -114,6 +137,7 @@ struct InterestGroup {
   array<InterestGroupAd>? ad_components;
   map<string, AdSize>? ad_sizes;
   map<string, array<string>>? size_groups;
+  AuctionServerRequestFlags auction_server_request_flags;
 };
 
 // Packages the details necessary for the browser process to retrieve a
@@ -261,6 +285,11 @@ union AuctionAdConfigMaybePromiseDirectFromSellerSignals {
   DirectFromSellerSignals? value;
 };
 
+struct AuctionAdServerResponseConfig {
+  // The response will be filled in later when a promise resolves.
+  mojo_base.mojom.Uuid request_id;
+};
+
 // For each report type, provides the bucket offset and scalar multiplier for
 // that report.
 //
@@ -384,6 +413,15 @@ struct AuctionAdConfigNonSharedParams {
   // fenced frame config as its container size.
   AdSize? requested_size;
 
+  // A unique identifier associated with this and only this invocation of
+  // runAdAuction. This must come from a prior call to createAuctionNonce.
+  // This is only required for auctions that provide additional bids, and each
+  // of those additional bids must use the same auction nonce to ensure that
+  // each of those additional bids was intended for this and only this auction.
+  // In multi-seller auctions, this field is only meaningful for the top-level
+  // auction config; it's ignored in component auction configs.
+  mojo_base.mojom.Uuid? auction_nonce;
+
   // Nested auctions whose results will also be fed to `seller`. Only the top
   // level auction config can have component auctions.
   array<AuctionAdConfig> component_auctions;
@@ -405,8 +443,12 @@ struct AuctionAdConfig {
   // seller and publisher could be different entities, or the same entity.
   url.mojom.Origin seller;
 
+  // Server response and the request ID (for server side auctions). If this
+  // field is present then this auction is assumed to have run on the server.
+  AuctionAdServerResponseConfig? server_response;
+
   // `decision_logic_url`'s origin must match the seller's origin.
-  url.mojom.Url decision_logic_url;
+  url.mojom.Url? decision_logic_url;
 
   // Base URL for per-bid data passed to the seller worklet. Must be same
   // origin with `seller`.
@@ -421,6 +463,22 @@ struct AuctionAdConfig {
   // renderer process. See details in the DirectFromSellerSignals comment.
   AuctionAdConfigMaybePromiseDirectFromSellerSignals direct_from_seller_signals;
 
+  // Like `direct_from_seller_signals`, but passed from the page via a different
+  // mechanism. `direct_from_seller_signals` searches for the contents of
+  // subresource bundles to find signals, whereas
+  // `expects_direct_from_signals_header_ad_slot` looks for the values of
+  // Ad-Auction-Signals response headers provided to fetch() requests with the
+  // {adAuctionHeaders: true} option made by frames on the page.
+  //
+  // The signals are delivered to worklets using the same JavaScript object as
+  // used for `direct_from_seller_signals`, so it is not valid for both
+  // `direct_from_seller_signals` and
+  // `expects_direct_from_seller_signals_header_ad_slot` to be non-null.
+  //
+  // The actual ad slot string is passed via
+  // ResolvedDirectFromSellerSignalsHeaderAdSlotPromise().
+  bool expects_direct_from_seller_signals_header_ad_slot = false;
+
   // Optional identifier for an experiment group, used when getting trusted
   // signals (and as part of AuctionConfig given to worklets).
   // TODO(https://crbug.com/657632): Update when optional integers supported.
@@ -429,4 +487,8 @@ struct AuctionAdConfig {
   bool has_all_buyer_experiment_group_id = false;
   int16 all_buyer_experiment_group_id;
   map<url.mojom.Origin, uint16> per_buyer_experiment_group_ids;
+
+  // Optionally specifies that some bids will be provided as signed exchanges,
+  // via `AbortableAdAuction.ResolvedAdditionalBids()`.
+  bool expects_additional_bids = false;
 };

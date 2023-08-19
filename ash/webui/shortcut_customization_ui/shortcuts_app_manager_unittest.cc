@@ -46,7 +46,8 @@ class ShortcutsAppManagerTest : public AshTestBase {
             /*for_testing=*/true);
 
     manager_ = std::make_unique<ShortcutsAppManager>(
-        local_search_service_proxy_.get());
+        local_search_service_proxy_.get(),
+        Shell::Get()->session_controller()->GetActivePrefService());
 
     // Let the RunLoop so that the AshAcceleratorConfiguration can load its
     // default accelerators.

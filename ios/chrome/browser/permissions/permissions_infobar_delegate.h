@@ -25,6 +25,7 @@ class PermissionsInfobarDelegate : public ConfirmInfoBarDelegate {
   // ConfirmInfoBarDelegate implementation.
   std::u16string GetMessageText() const override;
   InfoBarIdentifier GetIdentifier() const override;
+  bool EqualsDelegate(infobars::InfoBarDelegate* delegate) const override;
 
   // Returns an array containing most recently accessible permissions to be
   // displayed in an infobar banner.

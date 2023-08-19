@@ -16,7 +16,10 @@
     accessKeyChanged,
     activeDescendantChanged,
     alert,
-    ariaAttributeChanged,
+    // TODO(crbug.com/1464633) Fully remove ariaAttributeChangedDeprecated
+    // starting in 122, because although it was removed in 118, it is still
+    // present in earlier versions of LaCros.
+    ariaAttributeChangedDeprecated,
     ariaCurrentChanged,
     atomicChanged,
     autoCompleteChanged,
@@ -89,6 +92,7 @@
     multiselectableStateChanged,
     nameChanged,
     objectAttributeChanged,
+    orientationChanged,
     otherAttributeChanged,
     parentChanged,
     placeholderChanged,
@@ -705,9 +709,6 @@ enum PositionType {
     long focusOffset;
   };
 
-  // Called when the result for a <code>query</code> is available.
-  callback QueryCallback = void(AutomationNode node);
-
   [nocompile, noinline_doc] dictionary AutomationIntent {
     // A command associated with this AutomationIntent.
     IntentCommandType command;
@@ -774,22 +775,6 @@ enum PositionType {
       [nocompile, noinline_doc] dictionary CustomAction {
     long id;
     DOMString description;
-  };
-
-  // The string which the indices are relative to is not included in this
-  // structure. See documentation on $(ref:languageAnnotationForStringAttribute)
-  // for details on how to associate this object with a string.
-  // Also, the start and end indices always point to the first code unit of a
-  // valid code-point.
-    [nocompile, noinline_doc] dictionary LanguageSpan {
-    // Inclusive start index of substring that contains language.
-    long startIndex;
-    // Exclusive end index of substring that contains language.
-    long endIndex;
-    // Detected language for substring.
-    DOMString language;
-    // Probability that language is correct.
-    double probability;
   };
 
     // A marker associated with an AutomationNode.
@@ -1027,8 +1012,8 @@ enum PositionType {
     // A node that provides more details about the current node.
     AutomationNode[]? details;
 
-    // A node that provides an error message for a current node.
-    AutomationNode? errorMessage;
+    // The nodes, if any, that provide an error message for the current node.
+    AutomationNode[]? errorMessages;
 
     // Reverse relationship for details.
     AutomationNode[]? detailsFor;
@@ -1514,22 +1499,6 @@ enum PositionType {
     static void removeEventListener(
         EventType eventType, AutomationListener listener, boolean capture);
 
-    // Gets the first node in this node's subtree which matches the given CSS
-    // selector and is within the same DOM context.
-    //
-    // If this node doesn't correspond directly with an HTML node in the DOM,
-    // querySelector will be run on this node's nearest HTML node ancestor. Note
-    // that this may result in the query returning a node which is not a
-    // descendant of this node.
-    //
-    // If the selector matches a node which doesn't directly correspond to an
-    // automation node (for example an element within an ARIA widget, where the
-    // ARIA widget forms one node of the automation tree, or an element which
-    // is hidden from accessibility via hiding it using CSS or using
-    // aria-hidden), this will return the nearest ancestor which does correspond
-    // to an automation node.
-    static void domQuerySelector(DOMString selector, QueryCallback callback);
-
     // Finds the first AutomationNode in this node's subtree which matches the
     // given search parameters.
     static AutomationNode find(FindParams params);
@@ -1543,17 +1512,6 @@ enum PositionType {
 
     static AutomationNode getNextTextMatch(
         DOMString searchStr, boolean backward);
-
-    // Returns the detected languages for the provided string attribute as an
-    // array of LanguageSpan objects. There are several guarantees about the
-    // format of the LanguageSpan array:
-    // 1. Is either empty or contains LanguageSpans that cover all indices in
-    // the associated string attribute value.
-    // 2. Is sorted by increasing startIndex (those with smaller startIndex
-    // appear first).
-    // 3. LanguageSpans are non-overlapping and contain exactly one language.
-    static LanguageSpan[] languageAnnotationForStringAttribute(
-        DOMString attribute);
 
     // Creates a position object backed by Chrome's accessibility position support.
     static AutomationPosition createPosition(PositionType type, long offset, optional boolean isUpstream);

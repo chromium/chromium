@@ -257,7 +257,7 @@ class DeviceSyncCryptAuthFeatureStatusGetterImplTest
       device_sync_result_code_;
 
   std::unique_ptr<MockCryptAuthClientFactory> client_factory_;
-  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> timer_;
+  raw_ptr<base::MockOneShotTimer, DanglingUntriaged | ExperimentalAsh> timer_;
 
   std::unique_ptr<CryptAuthFeatureStatusGetter> feature_status_getter_;
 };

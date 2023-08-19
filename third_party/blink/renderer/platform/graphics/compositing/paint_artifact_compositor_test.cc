@@ -158,7 +158,10 @@ class PaintArtifactCompositorTest : public testing::Test,
   }
 
   void ClearPropertyTreeChangedState() {
-    paint_artifact_compositor_->ClearPropertyTreeChangedState();
+    if (!RuntimeEnabledFeatures::SimplifiedClearPropertyTreeChangeEnabled()) {
+      paint_artifact_compositor_->ClearPropertyTreeChangedState();
+    }
+    // Otherwise PaintArtifactCompositor::Update() clears the changed state.
   }
 
   void WillBeRemovedFromFrame() {
@@ -1120,17 +1123,9 @@ TEST_P(PaintArtifactCompositorTest, OneScrollNodeNonComposited) {
       .RectDrawing(gfx::Rect(-110, 12, 170, 19), Color::kWhite);
 
   Update(artifact.Build());
-  // Blink scroll nodes not referenced by composited transforms don't create
-  // cc scroll nodes.
-  if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
-    // ScrollUnification also creates transform and scroll nodes for
-    // non-composited scrollers.
-    EXPECT_EQ(3u, GetPropertyTrees().scroll_tree().size());
-    EXPECT_EQ(3u, GetPropertyTrees().transform_tree().size());
-  } else {
-    EXPECT_EQ(2u, GetPropertyTrees().scroll_tree().size());
-    EXPECT_EQ(2u, GetPropertyTrees().transform_tree().size());
-  }
+  // Non-composited scrollers still create cc transform and scroll nodes.
+  EXPECT_EQ(3u, GetPropertyTrees().scroll_tree().size());
+  EXPECT_EQ(3u, GetPropertyTrees().transform_tree().size());
   EXPECT_EQ(1u, LayerCount());
 }
 
@@ -1255,7 +1250,10 @@ TEST_P(PaintArtifactCompositorTest, ScrollHitTestLayerOrder) {
   ASSERT_EQ(scroll.GetCompositorElementId(), scroll_node->element_id);
   EXPECT_EQ(scroll.GetCompositorElementId(),
             ScrollableLayerAt(0)->element_id());
-  EXPECT_TRUE(ScrollableLayerAt(0)->HitTestable());
+  EXPECT_EQ(RuntimeEnabledFeatures::HitTestOpaquenessEnabled()
+                ? cc::HitTestOpaqueness::kOpaque
+                : cc::HitTestOpaqueness::kMixed,
+            ScrollableLayerAt(0)->hit_test_opaqueness());
 
   // The second content layer should appear after the first.
   EXPECT_LT(LayerIndex(ScrollableLayerAt(0)),
@@ -1302,8 +1300,14 @@ TEST_P(PaintArtifactCompositorTest, NestedScrollableLayerOrder) {
   EXPECT_LT(LayerIndex(ScrollableLayerAt(1)),
             LayerIndex(NonScrollableLayerAt(0)));
 
-  EXPECT_TRUE(ScrollableLayerAt(0)->HitTestable());
-  EXPECT_TRUE(ScrollableLayerAt(1)->HitTestable());
+  auto expected_hit_test_opaqueness =
+      RuntimeEnabledFeatures::HitTestOpaquenessEnabled()
+          ? cc::HitTestOpaqueness::kOpaque
+          : cc::HitTestOpaqueness::kMixed;
+  EXPECT_EQ(expected_hit_test_opaqueness,
+            ScrollableLayerAt(0)->hit_test_opaqueness());
+  EXPECT_EQ(expected_hit_test_opaqueness,
+            ScrollableLayerAt(1)->hit_test_opaqueness());
 }
 
 TEST_P(PaintArtifactCompositorTest, AncestorScrollNodes) {
@@ -1322,17 +1326,10 @@ TEST_P(PaintArtifactCompositorTest, AncestorScrollNodes) {
   const cc::ScrollTree& scroll_tree = GetPropertyTrees().scroll_tree();
   const cc::TransformTree& transform_tree = GetPropertyTrees().transform_tree();
   // Node #0 reserved for null; #1 for root render surface. #2 is for scroll_a.
-  if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
-    // ScrollUnification also creates transform and scroll nodes for
-    // non-composited scrollers.
-    ASSERT_EQ(4u, scroll_tree.size());
-    ASSERT_EQ(4u, transform_tree.size());
-  } else {
-    // We don't need to create cc scroll node for scroll_b which doesn't use
-    // composited scrolling.
-    ASSERT_EQ(3u, scroll_tree.size());
-    ASSERT_EQ(3u, transform_tree.size());
-  }
+
+  // Non-composited scrollers still create transform and scroll nodes.
+  ASSERT_EQ(4u, scroll_tree.size());
+  ASSERT_EQ(4u, transform_tree.size());
 
   const cc::ScrollNode& scroll_node_a = *scroll_tree.Node(2);
   EXPECT_EQ(1, scroll_node_a.parent_id);
@@ -1350,21 +1347,19 @@ TEST_P(PaintArtifactCompositorTest, AncestorScrollNodes) {
   EXPECT_EQ(gfx::PointF(-7, -9),
             scroll_tree.current_scroll_offset(scroll_node_a.element_id));
 
-  if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
-    const cc::ScrollNode& scroll_node_b = *scroll_tree.Node(3);
-    EXPECT_EQ(scroll_node_a.id, scroll_node_b.parent_id);
-    EXPECT_EQ(scroll_b.GetCompositorElementId(), scroll_node_b.element_id);
-    EXPECT_EQ(scroll_node_b.id,
-              ElementIdToScrollNodeIndex(scroll_node_b.element_id));
-    EXPECT_FALSE(scroll_node_b.is_composited);
+  const cc::ScrollNode& scroll_node_b = *scroll_tree.Node(3);
+  EXPECT_EQ(scroll_node_a.id, scroll_node_b.parent_id);
+  EXPECT_EQ(scroll_b.GetCompositorElementId(), scroll_node_b.element_id);
+  EXPECT_EQ(scroll_node_b.id,
+            ElementIdToScrollNodeIndex(scroll_node_b.element_id));
+  EXPECT_FALSE(scroll_node_b.is_composited);
 
-    const cc::TransformNode& transform_node_b =
-        *transform_tree.Node(scroll_node_b.transform_id);
-    EXPECT_TRUE(transform_node_b.local.IsIdentity());
-    EXPECT_EQ(gfx::PointF(-39, -31), transform_node_b.scroll_offset);
-    EXPECT_EQ(gfx::PointF(-39, -31),
-              scroll_tree.current_scroll_offset(scroll_node_b.element_id));
-  }
+  const cc::TransformNode& transform_node_b =
+      *transform_tree.Node(scroll_node_b.transform_id);
+  EXPECT_TRUE(transform_node_b.local.IsIdentity());
+  EXPECT_EQ(gfx::PointF(-39, -31), transform_node_b.scroll_offset);
+  EXPECT_EQ(gfx::PointF(-39, -31),
+            scroll_tree.current_scroll_offset(scroll_node_b.element_id));
 }
 
 TEST_P(PaintArtifactCompositorTest, AncestorNonCompositedScrollNode) {
@@ -2926,7 +2921,7 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipRotatedNotSupported) {
 
   EXPECT_EQ(SynthesizedClipLayerAt(0), clip_mask0);
   EXPECT_TRUE(clip_mask0->draws_content());
-  EXPECT_TRUE(clip_mask0->HitTestable());
+  EXPECT_EQ(cc::HitTestOpaqueness::kMixed, clip_mask0->hit_test_opaqueness());
   EXPECT_EQ(gfx::Size(306, 206), clip_mask0->bounds());
   EXPECT_EQ(gfx::Vector2dF(47, 47), clip_mask0->offset_to_transform_parent());
   // c1 should be applied in the clip mask layer.
@@ -3020,7 +3015,7 @@ TEST_P(PaintArtifactCompositorTest,
 
   EXPECT_EQ(SynthesizedClipLayerAt(0), clip_mask0);
   EXPECT_TRUE(clip_mask0->draws_content());
-  EXPECT_TRUE(clip_mask0->HitTestable());
+  EXPECT_EQ(cc::HitTestOpaqueness::kMixed, clip_mask0->hit_test_opaqueness());
   EXPECT_EQ(gfx::Size(304, 204), clip_mask0->bounds());
   EXPECT_EQ(gfx::Vector2dF(48, 48), clip_mask0->offset_to_transform_parent());
   EXPECT_EQ(c0_id, clip_mask0->clip_tree_index());
@@ -4914,10 +4909,6 @@ TEST_P(PaintArtifactCompositorTest, DirectlySetScrollOffset) {
 }
 
 TEST_P(PaintArtifactCompositorTest, AddNonCompositedScrollNodes) {
-  // This test requires scroll unification.
-  if (!base::FeatureList::IsEnabled(::features::kScrollUnification))
-    return;
-
   uint32_t main_thread_scrolling_reason =
       cc::MainThreadScrollingReason::kNotScrollingOnMain;
   if (!RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
@@ -4953,11 +4944,6 @@ TEST_P(PaintArtifactCompositorTest, AddNonCompositedScrollNodes) {
 }
 
 TEST_P(PaintArtifactCompositorTest, AddUnpaintedNonCompositedScrollNodes) {
-  // This test requires scroll unification.
-  if (!base::FeatureList::IsEnabled(::features::kScrollUnification)) {
-    return;
-  }
-
   const uint32_t main_thread_scrolling_reason =
       cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText;
   ASSERT_TRUE(cc::MainThreadScrollingReason::HasNonCompositedScrollReasons(

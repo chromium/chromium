@@ -21,10 +21,10 @@
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_transaction.h"
 #include "content/browser/indexed_db/indexed_db_bucket_state.h"
 #include "content/browser/indexed_db/indexed_db_callback_helpers.h"
-#include "content/browser/indexed_db/indexed_db_callbacks.h"
 #include "content/browser/indexed_db/indexed_db_database.h"
 #include "content/browser/indexed_db/indexed_db_database_callbacks.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
+#include "content/browser/indexed_db/indexed_db_factory_client.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "content/browser/indexed_db/indexed_db_reporting.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_metadata.h"
@@ -106,6 +106,21 @@ class IndexedDBConnectionCoordinator::ConnectionRequest {
   leveldb::Status status() const { return saved_leveldb_status_; }
 
  protected:
+  void ContinueAfterAcquiringLocks(base::OnceClosure next_step) {
+    if (!lock_receiver_.locks.empty()) {
+      std::move(next_step).Run();
+      return;
+    }
+
+    std::vector<PartitionedLockManager::PartitionedLockRequest> lock_requests =
+        {{GetDatabaseLockId(db_->metadata().name),
+          PartitionedLockManager::LockType::kExclusive}};
+    state_ = RequestState::kPendingLocks;
+    db_->lock_manager_->AcquireLocks(std::move(lock_requests),
+                                     lock_receiver_.weak_factory.GetWeakPtr(),
+                                     std::move(next_step));
+  }
+
   RequestState state_ = RequestState::kNotStarted;
 
   IndexedDBBucketStateHandle bucket_state_handle_;
@@ -118,6 +133,8 @@ class IndexedDBConnectionCoordinator::ConnectionRequest {
   TasksAvailableCallback tasks_available_callback_;
 
   leveldb::Status saved_leveldb_status_;
+
+  PartitionedLockHolder lock_receiver_;
 };
 
 class IndexedDBConnectionCoordinator::OpenRequest
@@ -142,32 +159,52 @@ class IndexedDBConnectionCoordinator::OpenRequest
   OpenRequest(const OpenRequest&) = delete;
   OpenRequest& operator=(const OpenRequest&) = delete;
 
-  // Note: the `tasks_available_callback_` is NOT called here because the state
-  // is checked after this method.
   void Perform(bool has_connections) override {
+    // If the metadata is in an uninitialized state, that means one of two
+    // things:
+    //
+    // 1. The `IndexedDBDatabase` was just constructed, or
+    // 2. The database was deleted and a new one was created with the same name
+    //    within the lifespan of a single `IndexedDBDatabase`. Then the metadata
+    //    must have been reset in `DeleteRequest::DoDelete`. `InitDatabase` will
+    //    create the record for the database in the backing store and fill in
+    //    the new metadata.
+    //
+    // Initialization of the metadata occurs here because it requires a lock. If
+    // metadata is read from the database without a lock, then we may get a
+    // stale version. See crbug.com/1472028
     if (db_->metadata().id == kInvalidDatabaseId) {
-      // The database was deleted then immediately re-opened; Open()
-      // recreates it in the backing store.
-      saved_leveldb_status_ = db_->OpenInternal();
-      if (!saved_leveldb_status_.ok()) {
-        // TODO(jsbell): Consider including sanitized leveldb status message.
-        std::u16string message;
-        if (pending_->version == IndexedDBDatabaseMetadata::NO_VERSION) {
-          message =
-              u"Internal error opening database with no version specified.";
-        } else {
-          message = u"Internal error opening database with version " +
-                    NumberToString16(pending_->version);
-        }
-        pending_->callbacks->OnError(IndexedDBDatabaseError(
-            blink::mojom::IDBException::kUnknownError, message));
-        state_ = RequestState::kError;
-        return;
-      }
-
-      DCHECK_EQ(IndexedDBDatabaseMetadata::NO_VERSION, db_->metadata().version);
+      ContinueAfterAcquiringLocks(base::BindOnce(
+          &IndexedDBConnectionCoordinator::OpenRequest::InitDatabase,
+          weak_factory_.GetWeakPtr(), has_connections));
+      return;
     }
 
+    ContinueOpening(has_connections);
+  }
+
+  void InitDatabase(bool has_connections) {
+    saved_leveldb_status_ = db_->OpenInternal();
+    if (!saved_leveldb_status_.ok()) {
+      // TODO(jsbell): Consider including sanitized leveldb status message.
+      std::u16string message;
+      if (pending_->version == IndexedDBDatabaseMetadata::NO_VERSION) {
+        message = u"Internal error opening database with no version specified.";
+      } else {
+        message = u"Internal error opening database with version " +
+                  NumberToString16(pending_->version);
+      }
+      pending_->factory_client->OnError(IndexedDBDatabaseError(
+          blink::mojom::IDBException::kUnknownError, message));
+      state_ = RequestState::kError;
+      tasks_available_callback_.Run();
+      return;
+    }
+
+    ContinueOpening(has_connections);
+  }
+
+  void ContinueOpening(bool has_connections) {
     const int64_t old_version = db_->metadata().version;
     int64_t& new_version = pending_->version;
 
@@ -177,7 +214,7 @@ class IndexedDBConnectionCoordinator::OpenRequest
       // For unit tests only - skip upgrade steps. (Calling from script with
       // DEFAULT_VERSION throws exception.)
       DCHECK(is_new_database);
-      pending_->callbacks->OnSuccess(
+      pending_->factory_client->OnOpenSuccess(
           db_->CreateConnection(std::move(bucket_state_handle_),
                                 pending_->database_callbacks,
                                 std::move(client_state_checker_)),
@@ -189,7 +226,7 @@ class IndexedDBConnectionCoordinator::OpenRequest
     if (!is_new_database &&
         (new_version == old_version ||
          new_version == IndexedDBDatabaseMetadata::NO_VERSION)) {
-      pending_->callbacks->OnSuccess(
+      pending_->factory_client->OnOpenSuccess(
           db_->CreateConnection(std::move(bucket_state_handle_),
                                 pending_->database_callbacks,
                                 std::move(client_state_checker_)),
@@ -206,7 +243,7 @@ class IndexedDBConnectionCoordinator::OpenRequest
     } else if (new_version < old_version) {
       // Requested version is lower than current version - fail the request.
       DCHECK(!is_new_database);
-      pending_->callbacks->OnError(IndexedDBDatabaseError(
+      pending_->factory_client->OnError(IndexedDBDatabaseError(
           blink::mojom::IDBException::kVersionError,
           u"The requested version (" + NumberToString16(pending_->version) +
               u") is less than the existing version (" +
@@ -219,15 +256,7 @@ class IndexedDBConnectionCoordinator::OpenRequest
     DCHECK_GT(new_version, old_version);
 
     if (!has_connections) {
-      std::vector<PartitionedLockManager::PartitionedLockRequest>
-          lock_requests = {{GetDatabaseLockId(db_->metadata_.id),
-                            PartitionedLockManager::LockType::kExclusive}};
-      state_ = RequestState::kPendingLocks;
-      db_->lock_manager_->AcquireLocks(
-          std::move(lock_requests), lock_receiver_.weak_factory.GetWeakPtr(),
-          base::BindOnce(
-              &IndexedDBConnectionCoordinator::OpenRequest::StartUpgrade,
-              weak_factory_.GetWeakPtr()));
+      OnNoConnections();
       return;
     }
 
@@ -246,15 +275,15 @@ class IndexedDBConnectionCoordinator::OpenRequest
 
   void OnVersionChangeIgnored() const override {
     DCHECK(state_ == RequestState::kPendingNoConnections);
-    pending_->callbacks->OnBlocked(db_->metadata_.version);
+    pending_->factory_client->OnBlocked(db_->metadata_.version);
   }
 
   void OnConnectionClosed(IndexedDBConnection* connection) override {
     // This connection closed prematurely; signal an error and complete.
     if (connection == connection_ptr_for_close_comparision_) {
       connection_ptr_for_close_comparision_ = nullptr;
-      if (!pending_->callbacks->is_complete()) {
-        pending_->callbacks->OnError(
+      if (!pending_->factory_client->is_complete()) {
+        pending_->factory_client->OnError(
             IndexedDBDatabaseError(blink::mojom::IDBException::kAbortError,
                                    "The connection was closed."));
       }
@@ -265,16 +294,9 @@ class IndexedDBConnectionCoordinator::OpenRequest
   }
 
   void OnNoConnections() override {
-    DCHECK(state_ == RequestState::kPendingNoConnections);
-    std::vector<PartitionedLockManager::PartitionedLockRequest> lock_requests =
-        {{GetDatabaseLockId(db_->metadata().id),
-          PartitionedLockManager::LockType::kExclusive}};
-    state_ = RequestState::kPendingLocks;
-    db_->lock_manager_->AcquireLocks(
-        std::move(lock_requests), lock_receiver_.weak_factory.GetWeakPtr(),
-        base::BindOnce(
-            &IndexedDBConnectionCoordinator::OpenRequest::StartUpgrade,
-            weak_factory_.GetWeakPtr()));
+    ContinueAfterAcquiringLocks(base::BindOnce(
+        &IndexedDBConnectionCoordinator::OpenRequest::StartUpgrade,
+        weak_factory_.GetWeakPtr()));
   }
 
   // Initiate the upgrade. The bulk of the work actually happens in
@@ -307,9 +329,9 @@ class IndexedDBConnectionCoordinator::OpenRequest
     // function to use later.
     pending_->transaction = transaction->AsWeakPtr();
 
-    transaction->ScheduleTask(BindWeakOperation(
-        &IndexedDBDatabase::VersionChangeOperation, db_->AsWeakPtr(),
-        pending_->version, pending_->callbacks));
+    transaction->ScheduleTask(
+        BindWeakOperation(&IndexedDBDatabase::VersionChangeOperation,
+                          db_->AsWeakPtr(), pending_->version));
     transaction->mutable_locks_receiver()->locks =
         std::move(lock_receiver_.locks);
     transaction->Start();
@@ -326,9 +348,9 @@ class IndexedDBConnectionCoordinator::OpenRequest
   void UpgradeTransactionStarted(int64_t old_version) override {
     DCHECK(state_ == RequestState::kPendingTransactionComplete);
     DCHECK(connection_);
-    pending_->callbacks->OnUpgradeNeeded(old_version, std::move(connection_),
-                                         db_->metadata_,
-                                         pending_->data_loss_info);
+    pending_->factory_client->OnUpgradeNeeded(
+        old_version, std::move(connection_), db_->metadata_,
+        pending_->data_loss_info);
   }
 
   void UpgradeTransactionFinished(bool committed) override {
@@ -336,10 +358,10 @@ class IndexedDBConnectionCoordinator::OpenRequest
     // Ownership of connection was already passed along in OnUpgradeNeeded.
     if (committed) {
       DCHECK_EQ(pending_->version, db_->metadata_.version);
-      pending_->callbacks->OnSuccess(nullptr, db_->metadata());
+      pending_->factory_client->OnOpenSuccess(nullptr, db_->metadata());
     } else {
       DCHECK_NE(pending_->version, db_->metadata_.version);
-      pending_->callbacks->OnError(
+      pending_->factory_client->OnError(
           IndexedDBDatabaseError(blink::mojom::IDBException::kAbortError,
                                  "Version change transaction was aborted in "
                                  "upgradeneeded event handler."));
@@ -350,8 +372,8 @@ class IndexedDBConnectionCoordinator::OpenRequest
 
   std::tuple<bool, leveldb::Status> ShouldPruneForForceClose() override {
     DCHECK(pending_);
-    if (!pending_->callbacks->is_complete()) {
-      pending_->callbacks->OnError(
+    if (!pending_->factory_client->is_complete()) {
+      pending_->factory_client->OnError(
           IndexedDBDatabaseError(blink::mojom::IDBException::kAbortError,
                                  "The connection was closed."));
     }
@@ -374,8 +396,6 @@ class IndexedDBConnectionCoordinator::OpenRequest
   }
 
  private:
-  PartitionedLockHolder lock_receiver_;
-
   std::unique_ptr<IndexedDBPendingConnection> pending_;
 
   // If an upgrade is needed, holds the pending connection until ownership is
@@ -398,7 +418,7 @@ class IndexedDBConnectionCoordinator::DeleteRequest
  public:
   DeleteRequest(IndexedDBBucketStateHandle bucket_state_handle,
                 IndexedDBDatabase* db,
-                scoped_refptr<IndexedDBCallbacks> callbacks,
+                std::unique_ptr<IndexedDBFactoryClient> factory_client,
                 base::OnceClosure on_database_deleted,
                 IndexedDBConnectionCoordinator* connection_coordinator,
                 TasksAvailableCallback tasks_available_callback)
@@ -406,24 +426,39 @@ class IndexedDBConnectionCoordinator::DeleteRequest
                           db,
                           connection_coordinator,
                           std::move(tasks_available_callback)),
-        callbacks_(callbacks),
+        factory_client_(std::move(factory_client)),
         on_database_deleted_(std::move(on_database_deleted)) {}
 
   DeleteRequest(const DeleteRequest&) = delete;
   DeleteRequest& operator=(const DeleteRequest&) = delete;
 
   void Perform(bool has_connections) override {
+    if (db_->metadata().id == kInvalidDatabaseId) {
+      ContinueAfterAcquiringLocks(base::BindOnce(
+          &IndexedDBConnectionCoordinator::DeleteRequest::InitDatabase,
+          weak_factory_.GetWeakPtr(), has_connections));
+      return;
+    }
+    ContinueDeleting(has_connections);
+  }
+
+  void InitDatabase(bool has_connections) {
+    saved_leveldb_status_ = db_->OpenInternal();
+    if (!saved_leveldb_status_.ok()) {
+      IndexedDBDatabaseError error(blink::mojom::IDBException::kUnknownError,
+                                   u"Internal error creating database backend "
+                                   u"for indexedDB.deleteDatabase.");
+      factory_client_->OnError(error);
+      state_ = RequestState::kError;
+      return;
+    }
+
+    ContinueDeleting(has_connections);
+  }
+
+  void ContinueDeleting(bool has_connections) {
     if (!has_connections) {
-      // No connections, so delete immediately.
-      std::vector<PartitionedLockManager::PartitionedLockRequest>
-          lock_requests = {{GetDatabaseLockId(db_->metadata().id),
-                            PartitionedLockManager::LockType::kExclusive}};
-      state_ = RequestState::kPendingLocks;
-      db_->lock_manager_->AcquireLocks(
-          std::move(lock_requests), lock_receiver_.AsWeakPtr(),
-          base::BindOnce(
-              &IndexedDBConnectionCoordinator::DeleteRequest::DoDelete,
-              weak_factory_.GetWeakPtr()));
+      OnNoConnections();
       return;
     }
 
@@ -437,25 +472,18 @@ class IndexedDBConnectionCoordinator::DeleteRequest
 
   void OnVersionChangeIgnored() const override {
     DCHECK(state_ == RequestState::kPendingNoConnections);
-    callbacks_->OnBlocked(db_->metadata_.version);
+    factory_client_->OnBlocked(db_->metadata_.version);
   }
 
   void OnConnectionClosed(IndexedDBConnection* connection) override {}
 
   void OnNoConnections() override {
-    DCHECK(state_ == RequestState::kPendingNoConnections);
-    std::vector<PartitionedLockManager::PartitionedLockRequest> lock_requests =
-        {{GetDatabaseLockId(db_->metadata().id),
-          PartitionedLockManager::LockType::kExclusive}};
-    state_ = RequestState::kPendingLocks;
-    db_->lock_manager_->AcquireLocks(
-        std::move(lock_requests), lock_receiver_.AsWeakPtr(),
+    ContinueAfterAcquiringLocks(
         base::BindOnce(&IndexedDBConnectionCoordinator::DeleteRequest::DoDelete,
                        weak_factory_.GetWeakPtr()));
   }
 
   void DoDelete() {
-    DCHECK(state_ == RequestState::kPendingLocks);
     state_ = RequestState::kPendingTransactionComplete;
     UMA_HISTOGRAM_ENUMERATION(
         indexed_db::kBackingStoreActionUmaName,
@@ -488,7 +516,7 @@ class IndexedDBConnectionCoordinator::DeleteRequest
       // TODO(jsbell): Consider including sanitized leveldb status message.
       IndexedDBDatabaseError error(blink::mojom::IDBException::kUnknownError,
                                    "Internal error deleting database.");
-      callbacks_->OnError(error);
+      factory_client_->OnError(error);
       state_ = RequestState::kError;
       tasks_available_callback_.Run();
       return;
@@ -503,7 +531,7 @@ class IndexedDBConnectionCoordinator::DeleteRequest
     // backing store be a nullptr, so report deleted here.
     if (on_database_deleted_)
       std::move(on_database_deleted_).Run();
-    callbacks_->OnSuccess(old_version);
+    factory_client_->OnDeleteSuccess(old_version);
 
     state_ = RequestState::kDone;
     tasks_available_callback_.Run();
@@ -521,8 +549,7 @@ class IndexedDBConnectionCoordinator::DeleteRequest
   }
 
  private:
-  PartitionedLockHolder lock_receiver_;
-  scoped_refptr<IndexedDBCallbacks> callbacks_;
+  std::unique_ptr<IndexedDBFactoryClient> factory_client_;
   base::OnceClosure on_database_deleted_;
 
   base::WeakPtrFactory<DeleteRequest> weak_factory_{this};
@@ -546,10 +573,10 @@ void IndexedDBConnectionCoordinator::ScheduleOpenConnection(
 
 void IndexedDBConnectionCoordinator::ScheduleDeleteDatabase(
     IndexedDBBucketStateHandle bucket_state_handle,
-    scoped_refptr<IndexedDBCallbacks> callbacks,
+    std::unique_ptr<IndexedDBFactoryClient> factory_client,
     base::OnceClosure on_deletion_complete) {
   request_queue_.push(std::make_unique<DeleteRequest>(
-      std::move(bucket_state_handle), db_, callbacks,
+      std::move(bucket_state_handle), db_, std::move(factory_client),
       std::move(on_deletion_complete), this, tasks_available_callback_));
   tasks_available_callback_.Run();
 }

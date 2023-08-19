@@ -26,7 +26,6 @@
 <translation id="2060505056492490888">„<ph name="DOT" />“ naudojamas netinkamoje „<ph name="INVALIDDOMAIN" />“ vietoje.</translation>
 <translation id="2148716181193084225">Šiandien</translation>
 <translation id="2226276347425096477">Sutrumpinkite šį tekstą iki <ph name="MAX_CHARACTERS" /> simb. ar mažiau (šiuo metu naudojate <ph name="CURRENT_LENGTH" /> simb.).</translation>
-<translation id="2246498165605549352">Vietos failas</translation>
 <translation id="2247351761944213033"><ph name="YEAR" /> m. <ph name="WEEKNUMBER" /> sav.</translation>
 <translation id="2277199496770840904"><ph name="NUMBER" /> takelis</translation>
 <translation id="2393030564806080191">Šešioliktainė spalvos vertė</translation>
@@ -89,6 +88,7 @@
 <translation id="5425179576310518467">dabartinė data</translation>
 <translation id="5466621249238537318">Pasirinkite bent vieną failą.</translation>
 <translation id="5468998798572797635">išeiti iš viso ekrano režimo</translation>
+<translation id="5514612371225420585">Failas įrenginyje</translation>
 <translation id="5516235301412634559">0,75</translation>
 <translation id="5537725057119320332">Perduoti</translation>
 <translation id="5546461542133609677">įjungti garsą</translation>
@@ -113,6 +113,7 @@
 <translation id="6398862346408813489">Rodyti mėnesio pasirinkimo skydelį</translation>
 <translation id="6404546809543547843">garso laiko valdiklis</translation>
 <translation id="6443871981718447451">rodyti subtitrų meniu</translation>
+<translation id="6484738902856791350">Taikyti struktūrinę lygiuotę</translation>
 <translation id="6550675742724504774">Parinktys</translation>
 <translation id="6572309429103589720">Netinkama gramatika</translation>
 <translation id="658823671542763450">įjungti viso ekrano režimą</translation>

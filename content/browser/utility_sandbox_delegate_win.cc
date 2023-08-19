@@ -344,8 +344,16 @@ bool UtilitySandboxedProcessLauncherDelegate::InitializeConfig(
     }
   }
 
-  if (sandbox_type_ == sandbox::mojom::Sandbox::kMediaFoundationCdm ||
-      sandbox_type_ == sandbox::mojom::Sandbox::kWindowsSystemProxyResolver) {
+  if (sandbox_type_ == sandbox::mojom::Sandbox::kMediaFoundationCdm) {
+    auto result = config->SetTokenLevel(sandbox::USER_UNPROTECTED,
+                                        sandbox::USER_UNPROTECTED);
+    if (result != sandbox::SBOX_ALL_OK) {
+      return false;
+    }
+  }
+
+  if (sandbox_type_ == sandbox::mojom::Sandbox::kWindowsSystemProxyResolver) {
+    // LPAC sandbox is enabled, so do not use a restricted token.
     auto result = config->SetTokenLevel(sandbox::USER_UNPROTECTED,
                                         sandbox::USER_UNPROTECTED);
     if (result != sandbox::SBOX_ALL_OK) {

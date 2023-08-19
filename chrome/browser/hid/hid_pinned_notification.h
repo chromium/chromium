@@ -5,13 +5,7 @@
 #ifndef CHROME_BROWSER_HID_HID_PINNED_NOTIFICATION_H_
 #define CHROME_BROWSER_HID_HID_PINNED_NOTIFICATION_H_
 
-#include <memory>
-#include <string>
-#include <vector>
-
-#include "base/containers/flat_set.h"
 #include "chrome/browser/hid/hid_system_tray_icon.h"
-#include "ui/message_center/public/cpp/notification.h"
 
 class HidPinnedNotification : public HidSystemTrayIcon {
  public:
@@ -19,23 +13,6 @@ class HidPinnedNotification : public HidSystemTrayIcon {
   HidPinnedNotification(const HidPinnedNotification&) = delete;
   HidPinnedNotification& operator=(const HidPinnedNotification&) = delete;
   ~HidPinnedNotification() override;
-
-  void NotifyConnectionCountUpdated(Profile* profile) override;
-
-  static std::string GetNotificationId(Profile* profile);
-
- private:
-  void ProfileAdded(Profile* profile) override;
-  void ProfileRemoved(Profile* profile) override;
-
-  // Create a pinned notification for |profile| to indicate at least one HID
-  // device is being accessed.
-  std::unique_ptr<message_center::Notification> CreateNotification(
-      Profile* profile);
-
-  // Display |notification| in the system notification.
-  void DisplayNotification(
-      std::unique_ptr<message_center::Notification> notification);
 };
 
 #endif  // CHROME_BROWSER_HID_HID_PINNED_NOTIFICATION_H_

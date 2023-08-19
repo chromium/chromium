@@ -27,7 +27,6 @@ def main(args):
                       required=True,
                       help='Path to a zip containing release dex files.')
   parser.add_argument('--proguard-mapping',
-                      required=True,
                       help='Path to proguard mapping for release dex.')
   parser.add_argument('--input-profile-path',
                       required=True,
@@ -44,9 +43,14 @@ def main(args):
       options.output_metadata,
       '-a',
       options.dex,
-      '-m',
-      options.proguard_mapping,
   ]
+
+  if options.proguard_mapping:
+    cmd += [
+        '-m',
+        options.proguard_mapping,
+    ]
+
   build_utils.CheckOutput(cmd, env={'JAVA_HOME': build_utils.JAVA_HOME})
   action_helpers.write_depfile(options.depfile,
                                options.output_profile,

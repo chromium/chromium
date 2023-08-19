@@ -11,6 +11,7 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
+#include "ash/public/cpp/holding_space/holding_space_file.h"
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
 #include "base/callback_list.h"
 #include "base/files/file_path.h"
@@ -105,18 +106,22 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   using ImageResolver = base::OnceCallback<
       std::unique_ptr<HoldingSpaceImage>(Type, const base::FilePath&)>;
 
+  // TODO(http://b/288471183): Remove file path and file system URL.
   // Creates a HoldingSpaceItem that's backed by a file system URL.
   // NOTE: `file_system_url` is expected to be non-empty.
   static std::unique_ptr<HoldingSpaceItem> CreateFileBackedItem(
       Type type,
+      const HoldingSpaceFile& file,
       const base::FilePath& file_path,
       const GURL& file_system_url,
       ImageResolver image_resolver);
 
+  // TODO(http://b/288471183): Remove file path and file system URL.
   // Creates a HoldingSpaceItem that's backed by a file system URL.
   // NOTE: `file_system_url` is expected to be non-empty.
   static std::unique_ptr<HoldingSpaceItem> CreateFileBackedItem(
       Type type,
+      const HoldingSpaceFile& file,
       const base::FilePath& file_path,
       const GURL& file_system_url,
       const HoldingSpaceProgress& progress,
@@ -134,6 +139,7 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   // Returns `true` if `type` is a suggestion type, `false` otherwise.
   static bool IsSuggestionType(HoldingSpaceItem::Type type);
 
+  // TODO(http://b/288471183): Update comment after removing file system URL.
   // Deserializes from `base::Value::Dict` to `HoldingSpaceItem`.
   // This creates a partially initialized item with an empty file system URL.
   // The item should be fully initialized using `Initialize()`.
@@ -162,13 +168,16 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   // been called. Non-initialized items should not be shown in holding space UI.
   bool IsInitialized() const;
 
+  // TODO(http://b/288471183): Remove file system URL.
   // Used to fully initialize partially initialized items created by
   // `Deserialize()`.
-  void Initialize(const GURL& file_system_url);
+  void Initialize(const HoldingSpaceFile& file, const GURL& file_system_url);
 
-  // Sets the file backing the item to `file_path` and `file_system_url`,
+  // TODO(http://b/288471183): Remove file path and file system URL.
+  // Sets the `file` backing the item to `file_path` and `file_system_url`,
   // returning `true` if a change occurred or `false` to indicate no-op.
-  bool SetBackingFile(const base::FilePath& file_path,
+  bool SetBackingFile(const HoldingSpaceFile& file,
+                      const base::FilePath& file_path,
                       const GURL& file_system_url);
 
   // Returns `text_`, falling back to the lossy display name of the item's
@@ -229,6 +238,8 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
 
   const HoldingSpaceImage& image() const { return *image_; }
 
+  const HoldingSpaceFile& file() const { return file_; }
+
   const base::FilePath& file_path() const { return file_path_; }
 
   const GURL& file_system_url() const { return file_system_url_; }
@@ -242,9 +253,11 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   HoldingSpaceImage& image_for_testing() { return *image_; }
 
  private:
+  // TODO(http://b/288471183): Remove file path and file system URL.
   // Constructor for file backed items.
   HoldingSpaceItem(Type type,
                    const std::string& id,
+                   const HoldingSpaceFile& file,
                    const base::FilePath& file_path,
                    const GURL& file_system_url,
                    std::unique_ptr<HoldingSpaceImage> image,
@@ -255,9 +268,14 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   // The holding space item ID assigned to the item.
   std::string id_;
 
+  // The file that backs the item.
+  HoldingSpaceFile file_;
+
+  // TODO(http://b/288471183): Move to `HoldingSpaceFile`.
   // The file path by which the item is backed.
   base::FilePath file_path_;
 
+  // TODO(http://b/288471183): Move to `HoldingSpaceFile`.
   // The file system URL of the file that backs the item.
   GURL file_system_url_;
 

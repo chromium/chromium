@@ -181,7 +181,6 @@ class ManualFillingCoordinator implements ManualFillingComponent {
         mMediator.confirmOperation(title, message, confirmedCallback);
     }
 
-    @VisibleForTesting
     ManualFillingMediator getMediatorForTesting() {
         return mMediator;
     }

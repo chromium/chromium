@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
+#import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/shared/public/commands/search_image_with_lens_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -54,10 +55,6 @@
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -98,6 +95,19 @@ const NSUInteger kContextMenuMaxTitleLength = 30;
     _imageCopier = [[ImageCopier alloc] initWithBrowser:self.browser];
   }
   return self;
+}
+
+- (void)stop {
+  _browser = nil;
+  _baseViewController = nil;
+  [_imageSaver stop];
+  _imageSaver = nil;
+  [_imageCopier stop];
+  _imageCopier = nil;
+}
+
+- (void)dealloc {
+  CHECK(!_browser);
 }
 
 // TODO(crbug.com/1318432): rafactor long method.
@@ -294,7 +304,9 @@ const NSUInteger kContextMenuMaxTitleLength = 30;
   ElementsToAddToContextMenu* result =
       ios::provider::GetContextMenuElementsToAdd(
           self.browser->GetBrowserState(), webState, params,
-          self.baseViewController);
+          self.baseViewController,
+          HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                             MiniMapCommands));
   if (result && result.elements) {
     [menuElements addObjectsFromArray:result.elements];
     menuTitle = result.title;

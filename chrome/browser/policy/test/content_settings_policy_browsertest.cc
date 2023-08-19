@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/strings/strcat.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -19,7 +20,8 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/content_settings/core/browser/local_network_settings.h"
+#include "components/content_settings/core/browser/private_network_settings.h"
+#include "components/permissions/features.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "content/public/browser/permission_controller.h"
@@ -278,12 +280,115 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, WebUsbAllowDevicesForUrls) {
   EXPECT_FALSE(context->HasDevicePermission(kTestOrigin, device_info));
 }
 
-IN_PROC_BROWSER_TEST_F(PolicyTest, ShouldAllowInsecureLocalNetworkRequests) {
+class MidiPolicyTest : public PolicyTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // TODO(crbug.com/1420307): Remove this switch once MIDI is blocked by
+    // default
+    feature_list_.InitAndEnableFeature(
+        permissions::features::kBlockMidiByDefault);
+    PolicyTest::SetUpCommandLine(command_line);
+  }
+
+  static constexpr char kMidiCheckPermission[] = R"(
+  (async () => {
+    return (await navigator.permissions.query({name:'midi'})).state;
+  })();
+)";
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(MidiPolicyTest, DefaultMidiSetting) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url(embedded_test_server()->GetURL("/empty.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
+
+  HostContentSettingsMap* host_content_settings_map =
+      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+  EXPECT_EQ(CONTENT_SETTING_ASK,
+            host_content_settings_map->GetDefaultContentSetting(
+                ContentSettingsType::MIDI, nullptr));
+  EXPECT_EQ(CONTENT_SETTING_ASK, host_content_settings_map->GetContentSetting(
+                                     url, url, ContentSettingsType::MIDI));
+  EXPECT_EQ("prompt", EvalJs(tab, kMidiCheckPermission));
+
+  // Update policy to change the default permission value to 'block'.
+  PolicyMap policies;
+  SetPolicy(&policies, key::kDefaultMidiSetting, base::Value(2));
+  UpdateProviderPolicy(policies);
+
+  EXPECT_EQ(CONTENT_SETTING_BLOCK,
+            host_content_settings_map->GetDefaultContentSetting(
+                ContentSettingsType::MIDI, nullptr));
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, host_content_settings_map->GetContentSetting(
+                                       url, url, ContentSettingsType::MIDI));
+  EXPECT_EQ("denied", EvalJs(tab, kMidiCheckPermission));
+
+  // Update policy to change the default permission value to 'ask'.
+  SetPolicy(&policies, key::kDefaultMidiSetting, base::Value(3));
+  UpdateProviderPolicy(policies);
+
+  EXPECT_EQ(CONTENT_SETTING_ASK,
+            host_content_settings_map->GetDefaultContentSetting(
+                ContentSettingsType::MIDI, nullptr));
+  EXPECT_EQ(CONTENT_SETTING_ASK, host_content_settings_map->GetContentSetting(
+                                     url, url, ContentSettingsType::MIDI));
+  EXPECT_EQ("prompt", EvalJs(tab, kMidiCheckPermission));
+}
+
+IN_PROC_BROWSER_TEST_F(MidiPolicyTest, MidiAllowedForUrls) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url(embedded_test_server()->GetURL("/empty.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
+
+  PolicyMap policies;
+  base::Value::List list;
+  list.Append(url.spec());
+  SetPolicy(&policies, key::kMidiAllowedForUrls, base::Value(std::move(list)));
+  UpdateProviderPolicy(policies);
+
+  HostContentSettingsMap* host_content_settings_map =
+      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+  EXPECT_EQ(CONTENT_SETTING_ASK,
+            host_content_settings_map->GetDefaultContentSetting(
+                ContentSettingsType::MIDI, nullptr));
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, host_content_settings_map->GetContentSetting(
+                                       url, url, ContentSettingsType::MIDI));
+  EXPECT_EQ("granted", EvalJs(tab, kMidiCheckPermission));
+}
+
+IN_PROC_BROWSER_TEST_F(MidiPolicyTest, MidiBlockedForUrls) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url(embedded_test_server()->GetURL("/empty.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
+
+  PolicyMap policies;
+  base::Value::List list;
+  list.Append(url.spec());
+  SetPolicy(&policies, key::kMidiBlockedForUrls, base::Value(std::move(list)));
+  UpdateProviderPolicy(policies);
+
+  HostContentSettingsMap* host_content_settings_map =
+      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+  EXPECT_EQ(CONTENT_SETTING_ASK,
+            host_content_settings_map->GetDefaultContentSetting(
+                ContentSettingsType::MIDI, nullptr));
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, host_content_settings_map->GetContentSetting(
+                                       url, url, ContentSettingsType::MIDI));
+  EXPECT_EQ("denied", EvalJs(tab, kMidiCheckPermission));
+}
+
+IN_PROC_BROWSER_TEST_F(PolicyTest, ShouldAllowInsecurePrivateNetworkRequests) {
   const auto* settings_map =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
 
   // By default, we should block requests.
-  EXPECT_FALSE(content_settings::ShouldAllowInsecureLocalNetworkRequests(
+  EXPECT_FALSE(content_settings::ShouldAllowInsecurePrivateNetworkRequests(
       settings_map, url::Origin::Create(GURL("http://bleep.com"))));
 
   PolicyMap policies;
@@ -292,7 +397,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, ShouldAllowInsecureLocalNetworkRequests) {
   UpdateProviderPolicy(policies);
 
   // Explicitly-disallowing is the same as not setting the policy.
-  EXPECT_FALSE(content_settings::ShouldAllowInsecureLocalNetworkRequests(
+  EXPECT_FALSE(content_settings::ShouldAllowInsecurePrivateNetworkRequests(
       settings_map, url::Origin::Create(GURL("http://bleep.com"))));
 
   base::Value::List allowlist;
@@ -303,28 +408,28 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, ShouldAllowInsecureLocalNetworkRequests) {
   UpdateProviderPolicy(policies);
 
   // Domain is not the in allowlist.
-  EXPECT_FALSE(content_settings::ShouldAllowInsecureLocalNetworkRequests(
+  EXPECT_FALSE(content_settings::ShouldAllowInsecurePrivateNetworkRequests(
       settings_map, url::Origin::Create(GURL("http://default.com"))));
 
   // Path does not matter, only the origin.
-  EXPECT_TRUE(content_settings::ShouldAllowInsecureLocalNetworkRequests(
+  EXPECT_TRUE(content_settings::ShouldAllowInsecurePrivateNetworkRequests(
       settings_map, url::Origin::Create(GURL("http://bleep.com/heyo"))));
 
   // Scheme matters: https is not http.
-  EXPECT_FALSE(content_settings::ShouldAllowInsecureLocalNetworkRequests(
+  EXPECT_FALSE(content_settings::ShouldAllowInsecurePrivateNetworkRequests(
       settings_map, url::Origin::Create(GURL("https://bleep.com"))));
 
   // Port is checked too.
-  EXPECT_TRUE(content_settings::ShouldAllowInsecureLocalNetworkRequests(
+  EXPECT_TRUE(content_settings::ShouldAllowInsecurePrivateNetworkRequests(
       settings_map,
       url::Origin::Create(GURL("http://woohoo.com:1234/index.html"))));
 
   // The wrong port does not match (default is 80).
-  EXPECT_FALSE(content_settings::ShouldAllowInsecureLocalNetworkRequests(
+  EXPECT_FALSE(content_settings::ShouldAllowInsecurePrivateNetworkRequests(
       settings_map, url::Origin::Create(GURL("http://woohoo.com/index.html"))));
 
   // Opaque origins never match the allowlist.
-  EXPECT_FALSE(content_settings::ShouldAllowInsecureLocalNetworkRequests(
+  EXPECT_FALSE(content_settings::ShouldAllowInsecurePrivateNetworkRequests(
       settings_map,
       url::Origin::Create(GURL("http://bleep.com")).DeriveNewOpaqueOrigin()));
 }

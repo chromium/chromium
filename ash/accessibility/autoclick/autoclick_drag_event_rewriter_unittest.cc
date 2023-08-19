@@ -30,6 +30,7 @@ class CopyingSink : public ui::EventSink {
   // EventSink override:
   ui::EventDispatchDetails OnEventFromSource(ui::Event* event) override {
     last_event_ = event->Clone();
+    ui::Event::DispatcherApi(last_event_.get()).set_target(event->target());
     return ui::EventDispatchDetails();
   }
 
@@ -164,6 +165,12 @@ TEST_F(AutoclickDragEventRewriterTest, RewritesMouseMovesToDrags) {
   int changed_button_flags = ui::EF_LEFT_MOUSE_BUTTON;  // Set a random flag.
   ui::MouseEvent event(ui::EventType::ET_MOUSE_MOVED, location, root_location,
                        time_stamp, flags, changed_button_flags);
+
+  auto window = CreateToplevelTestWindow(gfx::Rect(50, 50, 400, 300),
+                                         /*shell_window_id=*/0);
+  ASSERT_NE(window.get(), nullptr);
+  ui::Event::DispatcherApi(&event).set_target(window.get());
+
   CopyingSink sink;
   ui::test::TestEventSource source(&sink);
   source.AddEventRewriter(&drag_event_rewriter_);
@@ -176,6 +183,9 @@ TEST_F(AutoclickDragEventRewriterTest, RewritesMouseMovesToDrags) {
 
   // Flags should include left mouse button.
   EXPECT_EQ(flags | ui::EF_LEFT_MOUSE_BUTTON, rewritten_event->flags());
+
+  // Original event target should be honored.
+  EXPECT_EQ(window.get(), rewritten_event->target());
 
   // Everything else should be the same as the original.
   ui::MouseEvent* rewritten_mouse_event = rewritten_event->AsMouseEvent();

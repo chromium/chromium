@@ -10,7 +10,6 @@
 #include <memory>
 #include <set>
 #include <string>
-#include <utility>
 
 #include "base/functional/callback.h"
 #include "base/lazy_instance.h"
@@ -21,7 +20,6 @@
 #include "content/browser/indexed_db/indexed_db_task_helper.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
 #include "content/common/content_export.h"
-#include "third_party/blink/public/common/indexeddb/web_idb_types.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
@@ -56,16 +54,14 @@ class CONTENT_EXPORT IndexedDBClassFactory {
   virtual LevelDBFactory& leveldb_factory();
   virtual TransactionalLevelDBFactory& transactional_leveldb_factory();
 
-  // Returns a constructed database, or a leveldb::Status error if there was a
-  // problem initializing the database. |run_tasks_callback| is called when the
-  // database has tasks to run.
-  virtual std::pair<std::unique_ptr<IndexedDBDatabase>, leveldb::Status>
-  CreateIndexedDBDatabase(
+  // Returns a database that is newly constructed, but which has uninitialized
+  // metadata. |tasks_available_callback| is called when the database has tasks
+  // to run.
+  virtual std::unique_ptr<IndexedDBDatabase> CreateIndexedDBDatabase(
       const std::u16string& name,
       IndexedDBBackingStore* backing_store,
       IndexedDBFactory* factory,
       TasksAvailableCallback tasks_available_callback,
-      std::unique_ptr<IndexedDBMetadataCoding> metadata_coding,
       const IndexedDBDatabase::Identifier& unique_identifier,
       PartitionedLockManager* transaction_lock_manager);
 

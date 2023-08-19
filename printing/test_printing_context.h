@@ -34,10 +34,16 @@ class TestPrintingContextDelegate : public PrintingContext::Delegate {
   std::string GetAppLocale() override;
 };
 
+// Note that TestPrintingContext uses a PrintBackend internally, so tests that
+// want to avoid using a real PrintingContext will also want to use
+// PrintBackend::SetPrintBackendForTesting() to avoid using a real PrintBackend.
 class TestPrintingContext : public PrintingContext {
  public:
-  using OnNewDocumentCallback =
-      base::RepeatingCallback<void(const PrintSettings&)>;
+  using OnNewDocumentCallback = base::RepeatingCallback<void(
+#if BUILDFLAG(IS_MAC)
+      bool destination_is_preview,
+#endif
+      const PrintSettings&)>;
 
   TestPrintingContext(Delegate* delegate, bool skip_system_calls);
   TestPrintingContext(const TestPrintingContext&) = delete;
@@ -113,6 +119,10 @@ class TestPrintingContext : public PrintingContext {
 #endif
 
  private:
+  mojom::ResultCode AskUserForSettingsImpl(int max_pages,
+                                           bool has_selection,
+                                           bool is_scripted);
+
   // Simulation of platform drivers' default settings.
   base::flat_map<std::string, std::unique_ptr<PrintSettings>> device_settings_;
 
@@ -127,6 +137,13 @@ class TestPrintingContext : public PrintingContext {
   // applied to a device context.
   PrintSettings applied_settings_;
 
+#if BUILDFLAG(IS_MAC)
+  // When printing a new document, Preview app is a special macOS destination.
+  // This member is used to track when this was indicated as the destination to
+  // use in `UpdatePrinterSettings()`.
+  bool destination_is_preview_ = false;
+#endif
+
   bool use_default_settings_fails_ = false;
   bool ask_user_for_settings_cancel_ = false;
   bool new_document_cancels_ = false;
@@ -139,7 +156,7 @@ class TestPrintingContext : public PrintingContext {
   bool render_document_blocked_by_permissions_ = false;
   bool document_done_blocked_by_permissions_ = false;
 
-  // Called every time `NewDocument` is called.  Provides a copy of the
+  // Called every time `NewDocument()` is called.  Provides a copy of the
   // effective device context settings.
   OnNewDocumentCallback on_new_document_callback_;
 };

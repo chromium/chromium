@@ -9,7 +9,7 @@ import os
 import sys
 import xml.dom.minidom
 
-import extract_histograms
+import xml_utils
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'ukm'))
 import codegen
@@ -80,7 +80,7 @@ def PopulateEnumsWithUkmEvents(doc, enums, ukm_events):
     enums: The enums node to be iterated.
     ukm_events: A list of ukm event nodes.
   """
-  for enum in extract_histograms.IterElementsWithTag(enums, 'enum', 1):
+  for enum in xml_utils.IterElementsWithTag(enums, 'enum', 1):
     # We only special case 'UkmEventNameHash' currently.
     if enum.getAttribute('name') == 'UkmEventNameHash':
       PopulateEnumWithUkmEvents(doc, enum, ukm_events)

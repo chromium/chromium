@@ -88,6 +88,11 @@ void TestAccessibilityControllerClient::OnSelectToSpeakPanelAction(
 void TestAccessibilityControllerClient::SetA11yOverrideWindow(
     aura::Window* a11y_override_window) {}
 
+std::string TestAccessibilityControllerClient::GetDictationDefaultLocale(
+    bool new_user) {
+  return "";
+}
+
 absl::optional<Sound>
 TestAccessibilityControllerClient::GetPlayedEarconAndReset() {
   return std::exchange(sound_key_, absl::nullopt);

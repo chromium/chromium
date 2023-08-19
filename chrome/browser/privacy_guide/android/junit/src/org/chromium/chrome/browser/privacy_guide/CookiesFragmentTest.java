@@ -76,7 +76,6 @@ public class CookiesFragmentTest {
         if (mScenario != null) {
             mScenario.close();
         }
-        Profile.setLastUsedProfileForTesting(null);
         mActionTester.tearDown();
     }
 

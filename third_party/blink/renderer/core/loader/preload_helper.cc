@@ -218,6 +218,28 @@ bool IsResourceLoadAllowed(PreloadHelper::LoadLinksFromHeaderMode mode,
   }
 }
 
+bool IsDictionaryLoadAllowed(PreloadHelper::LoadLinksFromHeaderMode mode) {
+  // Document header can trigger dictionary load after the page load completes.
+  // Subresources header can trigger dictionary load if it is not from the
+  // memory cache.
+  switch (mode) {
+    case PreloadHelper::LoadLinksFromHeaderMode::kDocumentBeforeCommit:
+      return false;
+    case PreloadHelper::LoadLinksFromHeaderMode::
+        kDocumentAfterCommitWithoutViewport:
+      return false;
+    case PreloadHelper::LoadLinksFromHeaderMode::
+        kDocumentAfterCommitWithViewport:
+      return false;
+    case PreloadHelper::LoadLinksFromHeaderMode::kDocumentAfterLoadCompleted:
+      return true;
+    case PreloadHelper::LoadLinksFromHeaderMode::kSubresourceFromMemoryCache:
+      return false;
+    case PreloadHelper::LoadLinksFromHeaderMode::kSubresourceNotFromMemoryCache:
+      return true;
+  }
+}
+
 }  // namespace
 
 void PreloadHelper::DnsPrefetchIfNeeded(
@@ -737,9 +759,7 @@ void PreloadHelper::LoadLinksFromHeader(
     bool is_network_hint_allowed = IsNetworkHintAllowed(mode);
     bool is_resource_load_allowed =
         IsResourceLoadAllowed(mode, header.IsViewportDependent());
-    // We load compression dictionaries after the page load completes.
-    bool is_dictionary_load_allowed =
-        (mode == LoadLinksFromHeaderMode::kDocumentAfterLoadCompleted);
+    bool is_dictionary_load_allowed = IsDictionaryLoadAllowed(mode);
     if (!is_network_hint_allowed && !is_resource_load_allowed &&
         !is_dictionary_load_allowed) {
       continue;

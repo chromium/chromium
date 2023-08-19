@@ -9,7 +9,9 @@
     box-sizing: border-box;
     min-width: 256px;
     overflow: auto;
-    padding-block-end: 12px;
+  }
+
+  #selector {
     padding-inline-end: 12px;
   }
 
@@ -31,6 +33,18 @@
     overflow: auto;
     padding: 16px;
   }
+
+  #toggleDescription {
+    flex: 1;
+  }
+
+  .cr-row {
+    align-items: center;
+    border-top: var(--cr-separator-line);
+    display: flex;
+    min-height: var(--cr-section-min-height);
+    padding: 0 var(--cr-section-padding);
+  }
 </style>
 <div id="sidebar">
   <h1>WebUI Gallery</h1>
@@ -40,6 +54,13 @@
           class="cr-nav-menu-item">[[item.name]]</a>
     </template>
   </cr-menu-selector>
+
+  <div class="cr-row">
+    <span id="toggleDescription">Follow color pipeline</span>
+    <cr-toggle aria-labeledby="toggleDescription"
+        on-change="onFollowColorPipelineChange_">
+    </cr-toggle>
+  </div>
 </div>
 
 <iron-location path="{{path_}}"></iron-location>

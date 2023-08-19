@@ -13,7 +13,6 @@ rootWebArea
 ++++++++staticText name='Number: '
 ++++++++++inlineTextBox name='Number: '
 ++++++++spinButton editable name='Number:' placeholder='placeholder' value='3' valueForRange=3.00
-++++++++++genericContainer ignored invisible
 ++++++++++genericContainer editable
 ++++++++++++staticText editable name='3'
 ++++++++++++++inlineTextBox editable name='3'
@@ -29,7 +28,6 @@ rootWebArea
 ++++++++staticText name='Search: '
 ++++++++++inlineTextBox name='Search: '
 ++++++++searchBox editable name='Search:' placeholder='placeholder' value='search'
-++++++++++genericContainer ignored invisible
 ++++++++++genericContainer editable
 ++++++++++++staticText editable name='search'
 ++++++++++++++inlineTextBox editable name='search'

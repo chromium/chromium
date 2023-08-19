@@ -5,6 +5,7 @@
 #include "components/safe_browsing/core/browser/user_population.h"
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -18,6 +19,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace safe_browsing {
+
+namespace {
+
+BASE_FEATURE(kTestCookieTheftFeature,
+             "TestCookieTheftFeature",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+}
 
 namespace {
 std::unique_ptr<PrefService> CreatePrefService() {
@@ -109,14 +118,14 @@ TEST(GetUserPopulationTest, PopulatesSync) {
   auto pref_service = CreatePrefService();
 
   ChromeUserPopulation population = GetUserPopulation(
-      pref_service.get(), false, /*is_history_sync_enabled=*/true, false, false,
+      pref_service.get(), false, /*is_history_sync_active=*/true, false, false,
       nullptr, absl::optional<size_t>(), absl::optional<size_t>(),
       absl::optional<size_t>());
   EXPECT_TRUE(population.is_history_sync_enabled());
 
   population = GetUserPopulation(
-      pref_service.get(), false, /*is_history_sync_enabled=*/false, false,
-      false, nullptr, absl::optional<size_t>(), absl::optional<size_t>(),
+      pref_service.get(), false, /*is_history_sync_active=*/false, false, false,
+      nullptr, absl::optional<size_t>(), absl::optional<size_t>(),
       absl::optional<size_t>());
   EXPECT_FALSE(population.is_history_sync_enabled());
 }
@@ -185,6 +194,46 @@ TEST(GetUserPopulationTest, PopulatesProfileRelatedFields) {
   EXPECT_EQ(population.number_of_profiles(), 3);
   EXPECT_EQ(population.number_of_loaded_profiles(), 2);
   EXPECT_EQ(population.number_of_open_profiles(), 1);
+}
+
+TEST(GetExperimentStatusTest, HasEnabled) {
+  base::FieldTrialList::CreateFieldTrial("TestCookieTheftFeature", "Enabled");
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitFromCommandLine(
+      "TestCookieTheftFeature<TestCookieTheftFeature.Enabled", "");
+
+  ChromeUserPopulation population;
+  GetExperimentStatus({&kTestCookieTheftFeature}, &population);
+
+  ASSERT_EQ(population.finch_active_groups_size(), 1);
+  EXPECT_EQ(population.finch_active_groups(0),
+            "TestCookieTheftFeature.Enabled");
+}
+
+TEST(GetExperimentStatusTest, HasControl) {
+  base::FieldTrialList::CreateFieldTrial("TestCookieTheftFeature", "Control");
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitFromCommandLine(
+      "TestCookieTheftFeature<TestCookieTheftFeature.Control", "");
+
+  ChromeUserPopulation population;
+  GetExperimentStatus({&kTestCookieTheftFeature}, &population);
+
+  ASSERT_EQ(population.finch_active_groups_size(), 1);
+  EXPECT_EQ(population.finch_active_groups(0),
+            "TestCookieTheftFeature.Control");
+}
+
+TEST(GetExperimentStatusTest, OmitsDefault) {
+  base::FieldTrialList::CreateFieldTrial("TestCookieTheftFeature", "Default");
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitFromCommandLine(
+      "TestCookieTheftFeature<TestCookieTheftFeature.Default", "");
+
+  ChromeUserPopulation population;
+  GetExperimentStatus({&kTestCookieTheftFeature}, &population);
+
+  ASSERT_EQ(population.finch_active_groups_size(), 0);
 }
 
 }  // namespace safe_browsing

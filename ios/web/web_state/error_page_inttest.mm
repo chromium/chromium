@@ -35,10 +35,6 @@
 #import "net/test/embedded_test_server/request_handler_util.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using base::test::ios::kWaitForPageLoadTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
 
@@ -566,37 +562,30 @@ TEST_F(ErrorPageTest, RestorationFromInvalidURL) {
                                          /*is_post=*/false, /*is_otr=*/false,
                                          /*cert_status=*/0)));
 
-  // Restore the session.
-  WebState::CreateParams params(GetBrowserState());
-  auto restored_web_state = WebState::CreateWithStorageSession(
-      params, web_state()->BuildSessionStorage());
-
-  restored_web_state->GetNavigationManager()->LoadIfNecessary();
+  // Use Clone() to serialize and then load the session.
+  auto cloned_web_state = web_state()->Clone();
+  cloned_web_state->GetNavigationManager()->LoadIfNecessary();
   ASSERT_TRUE(test::WaitForWebViewContainingText(
-      restored_web_state.get(),
-      testing::GetErrorText(restored_web_state.get(), invalid_webui, error,
+      cloned_web_state.get(),
+      testing::GetErrorText(cloned_web_state.get(), invalid_webui, error,
                             /*is_post=*/false, /*is_otr=*/false,
                             /*cert_status=*/0)));
 
   // Check that there is one item in the back list and no forward item.
   EXPECT_EQ(
-      1UL,
-      restored_web_state->GetNavigationManager()->GetBackwardItems().size());
-  EXPECT_EQ(
-      0UL,
-      restored_web_state->GetNavigationManager()->GetForwardItems().size());
+      1UL, cloned_web_state->GetNavigationManager()->GetBackwardItems().size());
+  EXPECT_EQ(0UL,
+            cloned_web_state->GetNavigationManager()->GetForwardItems().size());
 
-  restored_web_state->GetNavigationManager()->GoBack();
+  cloned_web_state->GetNavigationManager()->GoBack();
   ASSERT_TRUE(
-      test::WaitForWebViewContainingText(restored_web_state.get(), "foo"));
+      test::WaitForWebViewContainingText(cloned_web_state.get(), "foo"));
 
   // Check that there is one item in the forward list and no back item.
   EXPECT_EQ(
-      0UL,
-      restored_web_state->GetNavigationManager()->GetBackwardItems().size());
-  EXPECT_EQ(
-      1UL,
-      restored_web_state->GetNavigationManager()->GetForwardItems().size());
+      0UL, cloned_web_state->GetNavigationManager()->GetBackwardItems().size());
+  EXPECT_EQ(1UL,
+            cloned_web_state->GetNavigationManager()->GetForwardItems().size());
 }
 
 }  // namespace web

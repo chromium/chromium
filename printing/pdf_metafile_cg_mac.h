@@ -9,8 +9,8 @@
 #include <CoreGraphics/CoreGraphics.h>
 #include <stdint.h>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/component_export.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "printing/metafile.h"
 
 namespace printing {

@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+PASS Sanity checks
+PASS Page selector is initially the empty string
+PASS Set selectorText to :left pseudo page
+PASS Set selectorText to named page
+PASS Set selectorText to named page with :first pseudo page
+PASS Set selectorText to named page with case insensitive :first pseudo page
+FAIL Set selectorText to named page with two :first pseudo page assert_equals: expected "named:first:first" but got "named:first"
+FAIL Set selectorText to named page with pseudo pages of :first, :left, :right, :first in order. assert_equals: expected "named:first:left:right:first" but got "named:first"
+PASS Cannot set selectorText to named page with pseudo, whitespace between
+PASS Cannot set selectorText to two pseudos, whitespace between
+PASS Cannot set selectorText to invalid pseudo page
+PASS Set selectorText to named page after rule was removed
+Harness: the test ran to completion.
+

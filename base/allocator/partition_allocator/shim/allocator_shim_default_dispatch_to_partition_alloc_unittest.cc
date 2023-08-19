@@ -7,7 +7,6 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/memory/page_size.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
@@ -176,14 +175,14 @@ TEST(PartitionAllocAsMalloc, Realloc) {
 // crbug.com/1141752
 TEST(PartitionAllocAsMalloc, Alignment) {
   EXPECT_EQ(0u, reinterpret_cast<uintptr_t>(PartitionAllocMalloc::Allocator()) %
-                    alignof(partition_alloc::ThreadSafePartitionRoot));
+                    alignof(partition_alloc::PartitionRoot));
   // This works fine even if nullptr is returned.
   EXPECT_EQ(0u, reinterpret_cast<uintptr_t>(
                     PartitionAllocMalloc::OriginalAllocator()) %
-                    alignof(partition_alloc::ThreadSafePartitionRoot));
+                    alignof(partition_alloc::PartitionRoot));
   EXPECT_EQ(0u, reinterpret_cast<uintptr_t>(
                     PartitionAllocMalloc::AlignedAllocator()) %
-                    alignof(partition_alloc::ThreadSafePartitionRoot));
+                    alignof(partition_alloc::PartitionRoot));
 }
 
 // crbug.com/1297945

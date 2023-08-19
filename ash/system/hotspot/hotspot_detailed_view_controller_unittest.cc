@@ -103,7 +103,7 @@ class HotspotDetailedViewControllerTest : public AshTestBase {
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<HotspotDetailedViewController, ExperimentalAsh>
+  raw_ptr<HotspotDetailedViewController, DanglingUntriaged | ExperimentalAsh>
       hotspot_detailed_view_controller_;
   std::unique_ptr<hotspot_config::CrosHotspotConfigTestHelper>
       cros_hotspot_config_test_helper_;

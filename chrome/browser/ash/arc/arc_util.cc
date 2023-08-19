@@ -537,9 +537,9 @@ bool IsArcTermsOfServiceOobeNegotiationNeeded() {
 }
 
 bool IsArcStatsReportingEnabled() {
-  // Public session users never saw the consent for stats reporting even if the
-  // admin forced the pref by a policy.
-  if (profiles::IsPublicSession()) {
+  // Managed guest session users never saw the consent for stats reporting even
+  // if the admin forced the pref by a policy.
+  if (profiles::IsManagedGuestSession()) {
     return false;
   }
 

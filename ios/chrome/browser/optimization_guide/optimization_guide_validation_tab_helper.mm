@@ -15,10 +15,6 @@
 #import "ios/web/public/navigation/navigation_context.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 OptimizationGuideValidationTabHelper::OptimizationGuideValidationTabHelper(
     web::WebState* web_state) {
   if (base::FeatureList::IsEnabled(
@@ -60,11 +56,14 @@ void OptimizationGuideValidationTabHelper::DidFinishNavigation(
   if (!optimization_guide_service)
     return;
 
-  optimization_guide_service->CanApplyOptimizationAsync(
-      navigation_context, optimization_guide::proto::METADATA_FETCH_VALIDATION,
+  // Async.
+  optimization_guide_service->CanApplyOptimization(
+      navigation_context->GetUrl(),
+      optimization_guide::proto::METADATA_FETCH_VALIDATION,
       base::BindOnce(&OptimizationGuideValidationTabHelper::
                          OnMetadataFetchValidationDecisionReceived,
                      weak_factory_.GetWeakPtr(), navigation_context->GetUrl()));
+  // Sync.
   optimization_guide_service->CanApplyOptimization(
       navigation_context->GetUrl(),
       optimization_guide::proto::BLOOM_FILTER_VALIDATION,

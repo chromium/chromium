@@ -20,7 +20,7 @@ namespace content {
 // 1.  Non-isolated contexts.
 //
 // 2.  Cross-origin isolation, as defined in
-//     https://html.spec.whatwg.org/C/#concept-settings-object-cross-origin-isolated-capability.
+//     https://html.spec.whatwg.org/multipage/document-sequences.html#cross-origin-isolation-mode.
 //     This is computed purely by examining Cross-Origin-Opener-Policy and
 //     Cross-Origin-Embedder-Policy headers on a given response.
 //
@@ -63,7 +63,7 @@ class CONTENT_EXPORT WebExposedIsolationInfo {
   // `CreateNonIsolated()`.
   //
   // This corresponds to "cross-origin isolation" as defined in HTML:
-  // https://html.spec.whatwg.org/multipage/webappapis.html#concept-settings-object-cross-origin-isolated-capability
+  // https://html.spec.whatwg.org/multipage/document-sequences.html#cross-origin-isolation-mode
   bool is_isolated() const { return origin_.has_value(); }
 
   // Returns `true` for contexts created via `CreateIsolatedApplication()`, and

@@ -1,0 +1,587 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/flatbuffers/flatbuffer.gni")
+import("//third_party/protobuf/proto_library.gni")
+import("//third_party/tflite/features.gni")
+import("//third_party/tflite/tflite_target.gni")
+
+config("mediapipe_config") {
+  include_dirs = [
+    "src",
+    "shims",
+    "shims/protobuf",
+
+    # TODO(b/283522287): Change the file under this directory to a gn action
+    # instead.
+    "generated",
+  ]
+}
+
+config("mediapipe_flags") {
+  cflags = [
+    # MediaPipe's CHECK macros are redefined from absl's.
+    "-Wno-macro-redefined",
+
+    # TODO(b/283522287): Upstream or patch these.
+    "-Wno-range-loop-bind-reference",
+  ]
+
+  defines = [
+    "MEDIAPIPE_DISABLE_GPU=1",
+    "MEDIAPIPE_PROTO_LITE=1",
+  ]
+}
+
+source_set("any_lite_proto_impl") {
+  visibility = [ ":*" ]
+  sources = [
+    "shims/protobuf/google/protobuf/any_lite.pb.cc",
+    "shims/protobuf/google/protobuf/any_lite.pb.h",
+  ]
+  include_dirs = [ "shims/protobuf" ]
+  public_configs = [ ":mediapipe_config" ]
+  public_deps = [ "//third_party/protobuf:protobuf_lite" ]
+}
+
+proto_library("mediapipe_proto") {
+  proto_in_dir = "src"
+  cc_generator_options = "lite=true:"
+  link_deps = [ ":any_lite_proto_impl" ]
+  sources = [
+    "src/mediapipe/calculators/core/flow_limiter_calculator.proto",
+    "src/mediapipe/calculators/core/split_vector_calculator.proto",
+    "src/mediapipe/calculators/internal/callback_packet_calculator.proto",
+    "src/mediapipe/calculators/tensor/bert_preprocessor_calculator.proto",
+    "src/mediapipe/calculators/tensor/inference_calculator.proto",
+    "src/mediapipe/calculators/tensor/regex_preprocessor_calculator.proto",
+    "src/mediapipe/calculators/tensor/tensors_to_classification_calculator.proto",
+    "src/mediapipe/calculators/tensor/tensors_to_detections_calculator.proto",
+    "src/mediapipe/calculators/tflite/ssd_anchors_calculator.proto",
+    "src/mediapipe/calculators/util/detection_label_id_to_text_calculator.proto",
+    "src/mediapipe/calculators/util/non_max_suppression_calculator.proto",
+    "src/mediapipe/framework/calculator.proto",
+    "src/mediapipe/framework/calculator_options.proto",
+    "src/mediapipe/framework/deps/proto_descriptor.proto",
+    "src/mediapipe/framework/formats/annotation/rasterization.proto",
+    "src/mediapipe/framework/formats/classification.proto",
+    "src/mediapipe/framework/formats/detection.proto",
+    "src/mediapipe/framework/formats/image_format.proto",
+    "src/mediapipe/framework/formats/location_data.proto",
+    "src/mediapipe/framework/formats/object_detection/anchor.proto",
+    "src/mediapipe/framework/mediapipe_options.proto",
+    "src/mediapipe/framework/packet_factory.proto",
+    "src/mediapipe/framework/packet_generator.proto",
+    "src/mediapipe/framework/status_handler.proto",
+    "src/mediapipe/framework/stream_handler.proto",
+    "src/mediapipe/framework/stream_handler/default_input_stream_handler.proto",
+    "src/mediapipe/framework/thread_pool_executor.proto",
+    "src/mediapipe/framework/tool/calculator_graph_template.proto",
+    "src/mediapipe/framework/tool/field_data.proto",
+    "src/mediapipe/framework/tool/packet_generator_wrapper_calculator.proto",
+    "src/mediapipe/gpu/gl_context_options.proto",
+    "src/mediapipe/tasks/cc/components/calculators/classification_aggregation_calculator.proto",
+    "src/mediapipe/tasks/cc/components/calculators/score_calibration_calculator.proto",
+    "src/mediapipe/tasks/cc/components/containers/proto/classifications.proto",
+    "src/mediapipe/tasks/cc/components/processors/proto/classification_postprocessing_graph_options.proto",
+    "src/mediapipe/tasks/cc/components/processors/proto/classifier_options.proto",
+    "src/mediapipe/tasks/cc/components/processors/proto/detection_postprocessing_graph_options.proto",
+    "src/mediapipe/tasks/cc/components/processors/proto/detector_options.proto",
+    "src/mediapipe/tasks/cc/components/processors/proto/text_model_type.proto",
+    "src/mediapipe/tasks/cc/components/processors/proto/text_preprocessing_graph_options.proto",
+    "src/mediapipe/tasks/cc/components/processors/proto/transformer_params.proto",
+    "src/mediapipe/tasks/cc/core/proto/acceleration.proto",
+    "src/mediapipe/tasks/cc/core/proto/base_options.proto",
+    "src/mediapipe/tasks/cc/core/proto/external_file.proto",
+    "src/mediapipe/tasks/cc/core/proto/inference_subgraph.proto",
+    "src/mediapipe/tasks/cc/core/proto/model_resources_calculator.proto",
+    "src/mediapipe/tasks/cc/text/text_classifier/proto/text_classifier_graph_options.proto",
+    "src/mediapipe/util/label_map.proto",
+  ]
+
+  import_dirs = [ "shims/protobuf" ]
+}
+
+flatbuffer("mediapipe_flatbuffer_schema") {
+  sources = [
+    "src/mediapipe/tasks/metadata/metadata_schema.fbs",
+    "src/mediapipe/tasks/metadata/object_detector_metadata_schema.fbs",
+  ]
+
+  # Disable warnings as the flatbuffer uses snakecase for sentencePiece which
+  # now causes a warning message with flatc.
+  args = [ "--no-warnings" ]
+}
+
+source_set("mediapipe_shims") {
+  sources = [ "shims/glog/logging.h" ]
+
+  deps = [ "//third_party/abseil-cpp:absl" ]
+}
+
+# These calculators are found at runtime and must be linked in, despite not
+# being explicitly referenced.
+# See src/docs/getting_started/troubleshooting.md
+tflite_source_set("mediapipe_tasks_always_link") {
+  sources = [
+    "src/mediapipe/calculators/tensor/bert_preprocessor_calculator.cc",
+    "src/mediapipe/calculators/tensor/inference_calculator.cc",
+    "src/mediapipe/calculators/tensor/inference_calculator_cpu.cc",
+    "src/mediapipe/calculators/tensor/inference_calculator_utils.cc",
+    "src/mediapipe/calculators/tensor/inference_calculator_utils.h",
+    "src/mediapipe/calculators/tensor/inference_interpreter_delegate_runner.cc",
+    "src/mediapipe/calculators/tensor/tensors_to_classification_calculator.cc",
+    "src/mediapipe/framework/stream_handler/immediate_input_stream_handler.cc",
+    "src/mediapipe/tasks/cc/components/calculators/classification_aggregation_calculator.cc",
+    "src/mediapipe/tasks/cc/core/model_resources_calculator.cc",
+    "src/mediapipe/tasks/cc/text/text_classifier/text_classifier_graph.cc",
+    "src/mediapipe/util/tflite/tflite_model_loader.cc",
+    "src/mediapipe/util/tflite/tflite_model_loader.h",
+  ]
+
+  # TODO(b/283522287): Enable XNNPACK in MediaPipe on Windows. XNNPACK in TFLite is exposed through a C API and something is not working correctly in linking on Windows.
+  if (build_tflite_with_xnnpack && !is_win) {
+    sources +=
+        [ "src/mediapipe/calculators/tensor/inference_calculator_xnnpack.cc" ]
+  }
+
+  deps = [
+    ":mediapipe_flatbuffer_schema",
+    ":mediapipe_proto",
+    ":mediapipe_shims",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/gemmlowp",
+    "//third_party/protobuf:protobuf_lite",
+    "//third_party/re2",
+    "//third_party/tensorflow-text",
+    "//third_party/zlib",
+  ]
+
+  configs_to_remove = [ "//build/config/compiler:chromium_code" ]
+  configs_to_add = [
+    "//build/config/compiler:no_chromium_code",
+    ":mediapipe_flags",
+    ":mediapipe_config",
+  ]
+
+  conditional_deps = [
+    ":mediapipe_core",
+    ":mediapipe_core_api2",
+    ":mediapipe_tasks",
+    "//third_party/tflite:tflite",
+    "//third_party/tflite:tflite_builtin_op_resolver",
+  ]
+}
+
+# These framework pieces are found at runtime and must be linked in, despite not
+# being explicitly referenced.
+# See src/docs/getting_started/troubleshooting.md
+tflite_source_set("mediapipe_core_always_link") {
+  sources = [
+    "src/mediapipe/framework/stream_handler/default_input_stream_handler.cc",
+    "src/mediapipe/framework/stream_handler/default_input_stream_handler.h",
+    "src/mediapipe/framework/stream_handler/in_order_output_stream_handler.cc",
+    "src/mediapipe/framework/stream_handler/in_order_output_stream_handler.h",
+  ]
+
+  deps = [
+    ":mediapipe_flatbuffer_schema",
+    ":mediapipe_proto",
+    ":mediapipe_shims",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/gemmlowp",
+    "//third_party/protobuf:protobuf_lite",
+    "//third_party/re2",
+    "//third_party/tensorflow-text",
+    "//third_party/zlib",
+  ]
+
+  configs_to_remove = [ "//build/config/compiler:chromium_code" ]
+  configs_to_add = [
+    "//build/config/compiler:no_chromium_code",
+    ":mediapipe_flags",
+    ":mediapipe_config",
+  ]
+
+  conditional_deps = [
+    ":mediapipe_core",
+    "//third_party/tflite:tflite",
+    "//third_party/tflite:tflite_builtin_op_resolver",
+  ]
+}
+
+tflite_static_library("mediapipe_core") {
+  sources = [
+    "src/mediapipe/framework/calculator_base.cc",
+    "src/mediapipe/framework/calculator_base.h",
+    "src/mediapipe/framework/calculator_context.cc",
+    "src/mediapipe/framework/calculator_context.h",
+    "src/mediapipe/framework/calculator_context_manager.cc",
+    "src/mediapipe/framework/calculator_context_manager.h",
+    "src/mediapipe/framework/calculator_contract.cc",
+    "src/mediapipe/framework/calculator_contract.h",
+    "src/mediapipe/framework/calculator_framework.h",
+    "src/mediapipe/framework/calculator_graph.cc",
+    "src/mediapipe/framework/calculator_graph.h",
+    "src/mediapipe/framework/calculator_node.cc",
+    "src/mediapipe/framework/calculator_node.h",
+    "src/mediapipe/framework/calculator_registry.h",
+    "src/mediapipe/framework/calculator_state.cc",
+    "src/mediapipe/framework/calculator_state.h",
+    "src/mediapipe/framework/collection.h",
+    "src/mediapipe/framework/collection_item_id.cc",
+    "src/mediapipe/framework/collection_item_id.h",
+    "src/mediapipe/framework/counter.h",
+    "src/mediapipe/framework/counter_factory.cc",
+    "src/mediapipe/framework/counter_factory.h",
+    "src/mediapipe/framework/delegating_executor.cc",
+    "src/mediapipe/framework/delegating_executor.h",
+    "src/mediapipe/framework/demangle.h",
+    "src/mediapipe/framework/deps/canonical_errors.h",
+    "src/mediapipe/framework/deps/clock.cc",
+    "src/mediapipe/framework/deps/clock.h",
+    "src/mediapipe/framework/deps/file_path.cc",
+    "src/mediapipe/framework/deps/file_path.h",
+    "src/mediapipe/framework/deps/map_util.h",
+    "src/mediapipe/framework/deps/monotonic_clock.cc",
+    "src/mediapipe/framework/deps/monotonic_clock.h",
+    "src/mediapipe/framework/deps/no_destructor.h",
+    "src/mediapipe/framework/deps/registration.cc",
+    "src/mediapipe/framework/deps/registration.h",
+    "src/mediapipe/framework/deps/registration_token.cc",
+    "src/mediapipe/framework/deps/registration_token.h",
+    "src/mediapipe/framework/deps/requires.h",
+    "src/mediapipe/framework/deps/ret_check.cc",
+    "src/mediapipe/framework/deps/ret_check.h",
+    "src/mediapipe/framework/deps/safe_int.h",
+    "src/mediapipe/framework/deps/source_location.h",
+    "src/mediapipe/framework/deps/status.cc",
+    "src/mediapipe/framework/deps/status.h",
+    "src/mediapipe/framework/deps/status_builder.cc",
+    "src/mediapipe/framework/deps/status_builder.h",
+    "src/mediapipe/framework/deps/status_macros.h",
+    "src/mediapipe/framework/deps/strong_int.h",
+    "src/mediapipe/framework/deps/threadpool.h",
+    "src/mediapipe/framework/deps/threadpool_std_thread_impl.cc",
+    "src/mediapipe/framework/deps/topologicalsorter.cc",
+    "src/mediapipe/framework/deps/topologicalsorter.h",
+    "src/mediapipe/framework/executor.cc",
+    "src/mediapipe/framework/executor.h",
+    "src/mediapipe/framework/formats/tensor.cc",
+    "src/mediapipe/framework/formats/tensor.h",
+    "src/mediapipe/framework/formats/tensor_ahwb.cc",
+    "src/mediapipe/framework/graph_output_stream.cc",
+    "src/mediapipe/framework/graph_output_stream.h",
+    "src/mediapipe/framework/graph_service.h",
+    "src/mediapipe/framework/graph_service_manager.cc",
+    "src/mediapipe/framework/graph_service_manager.h",
+    "src/mediapipe/framework/input_side_packet_handler.cc",
+    "src/mediapipe/framework/input_side_packet_handler.h",
+    "src/mediapipe/framework/input_stream.h",
+    "src/mediapipe/framework/input_stream_handler.cc",
+    "src/mediapipe/framework/input_stream_handler.h",
+    "src/mediapipe/framework/input_stream_manager.cc",
+    "src/mediapipe/framework/input_stream_manager.h",
+    "src/mediapipe/framework/input_stream_shard.cc",
+    "src/mediapipe/framework/input_stream_shard.h",
+    "src/mediapipe/framework/legacy_calculator_support.cc",
+    "src/mediapipe/framework/legacy_calculator_support.h",
+    "src/mediapipe/framework/mediapipe_profiling.h",
+    "src/mediapipe/framework/output_side_packet.h",
+    "src/mediapipe/framework/output_side_packet_impl.cc",
+    "src/mediapipe/framework/output_side_packet_impl.h",
+    "src/mediapipe/framework/output_stream.h",
+    "src/mediapipe/framework/output_stream_handler.cc",
+    "src/mediapipe/framework/output_stream_handler.h",
+    "src/mediapipe/framework/output_stream_manager.cc",
+    "src/mediapipe/framework/output_stream_manager.h",
+    "src/mediapipe/framework/output_stream_poller.h",
+    "src/mediapipe/framework/output_stream_shard.cc",
+    "src/mediapipe/framework/output_stream_shard.h",
+    "src/mediapipe/framework/packet.cc",
+    "src/mediapipe/framework/packet.h",
+    "src/mediapipe/framework/packet_generator_graph.cc",
+    "src/mediapipe/framework/packet_generator_graph.h",
+    "src/mediapipe/framework/packet_set.h",
+    "src/mediapipe/framework/packet_type.cc",
+    "src/mediapipe/framework/packet_type.h",
+    "src/mediapipe/framework/platform_specific_profiling.h",
+    "src/mediapipe/framework/port.h",
+    "src/mediapipe/framework/port/any_proto.h",
+    "src/mediapipe/framework/port/canonical_errors.h",
+    "src/mediapipe/framework/port/core_proto_inc.h",
+    "src/mediapipe/framework/port/integral_types.h",
+    "src/mediapipe/framework/port/logging.h",
+    "src/mediapipe/framework/port/map_util.h",
+    "src/mediapipe/framework/port/port.h",
+    "src/mediapipe/framework/port/proto_ns.h",
+    "src/mediapipe/framework/port/requires.h",
+    "src/mediapipe/framework/port/ret_check.h",
+    "src/mediapipe/framework/port/status.h",
+    "src/mediapipe/framework/port/status_builder.h",
+    "src/mediapipe/framework/port/status_macros.h",
+    "src/mediapipe/framework/port/statusor.h",
+    "src/mediapipe/framework/profiler/graph_profiler_stub.h",
+    "src/mediapipe/framework/scheduler.cc",
+    "src/mediapipe/framework/scheduler.h",
+    "src/mediapipe/framework/scheduler_queue.cc",
+    "src/mediapipe/framework/scheduler_queue.h",
+    "src/mediapipe/framework/scheduler_shared.h",
+    "src/mediapipe/framework/status_handler.h",
+    "src/mediapipe/framework/subgraph.cc",
+    "src/mediapipe/framework/subgraph.h",
+    "src/mediapipe/framework/thread_pool_executor.cc",
+    "src/mediapipe/framework/thread_pool_executor.h",
+    "src/mediapipe/framework/timestamp.cc",
+    "src/mediapipe/framework/timestamp.h",
+    "src/mediapipe/framework/tool/fill_packet_set.cc",
+    "src/mediapipe/framework/tool/fill_packet_set.h",
+    "src/mediapipe/framework/tool/name_util.cc",
+    "src/mediapipe/framework/tool/name_util.h",
+    "src/mediapipe/framework/tool/options_field_util.cc",
+    "src/mediapipe/framework/tool/options_field_util.h",
+    "src/mediapipe/framework/tool/options_map.h",
+    "src/mediapipe/framework/tool/options_registry.cc",
+    "src/mediapipe/framework/tool/options_syntax_util.cc",
+    "src/mediapipe/framework/tool/options_syntax_util.h",
+    "src/mediapipe/framework/tool/options_util.cc",
+    "src/mediapipe/framework/tool/options_util.h",
+    "src/mediapipe/framework/tool/proto_util_lite.cc",
+    "src/mediapipe/framework/tool/proto_util_lite.h",
+    "src/mediapipe/framework/tool/sink.cc",
+    "src/mediapipe/framework/tool/sink.h",
+    "src/mediapipe/framework/tool/status_util.cc",
+    "src/mediapipe/framework/tool/status_util.h",
+    "src/mediapipe/framework/tool/subgraph_expansion.cc",
+    "src/mediapipe/framework/tool/subgraph_expansion.h",
+    "src/mediapipe/framework/tool/tag_map.cc",
+    "src/mediapipe/framework/tool/tag_map.h",
+    "src/mediapipe/framework/tool/tag_map_helper.cc",
+    "src/mediapipe/framework/tool/tag_map_helper.h",
+    "src/mediapipe/framework/tool/template_expander.cc",
+    "src/mediapipe/framework/tool/template_expander.h",
+    "src/mediapipe/framework/tool/type_util.h",
+    "src/mediapipe/framework/tool/validate.cc",
+    "src/mediapipe/framework/tool/validate.h",
+    "src/mediapipe/framework/tool/validate_name.cc",
+    "src/mediapipe/framework/tool/validate_name.h",
+    "src/mediapipe/framework/type_map.h",
+    "src/mediapipe/framework/validated_graph_config.cc",
+    "src/mediapipe/framework/validated_graph_config.h",
+    "src/mediapipe/util/cpu_util.cc",
+    "src/mediapipe/util/cpu_util.h",
+    "src/mediapipe/util/label_map_util.cc",
+    "src/mediapipe/util/label_map_util.h",
+    "src/mediapipe/util/resource_util.cc",
+    "src/mediapipe/util/resource_util.h",
+    "src/mediapipe/util/tflite/error_reporter.cc",
+    "src/mediapipe/util/tflite/error_reporter.h",
+  ]
+
+  if (!is_win) {
+    # TODO(b/283522287): Investigate this farther. The .cc file itself reads
+    # like it should be supported on Windows, but it fails to compile. This may
+    # be unneeded code though, as mediapipe links successfully on Windows
+    # without these files.
+    sources += [
+      "src/mediapipe/framework/deps/file_helpers.cc",
+      "src/mediapipe/framework/deps/file_helpers.h",
+    ]
+  }
+
+  if (is_win) {
+    sources += [ "src/mediapipe/util/resource_util_windows.cc" ]
+  } else if (is_apple) {
+    sources += [ "src/mediapipe/util/resource_util_apple.cc" ]
+    cflags = [ "-ObjC++" ]
+  } else if (is_android) {
+    sources += [
+      "src/mediapipe/java/com/google/mediapipe/framework/jni/jni_util.cc",
+      "src/mediapipe/java/com/google/mediapipe/framework/jni/jni_util.h",
+      "src/mediapipe/util/android/asset_manager_util.cc",
+      "src/mediapipe/util/android/asset_manager_util.h",
+      "src/mediapipe/util/android/file/base/file.cc",
+      "src/mediapipe/util/android/file/base/file.h",
+      "src/mediapipe/util/android/file/base/filesystem.cc",
+      "src/mediapipe/util/android/file/base/filesystem.h",
+      "src/mediapipe/util/android/file/base/helpers.cc",
+      "src/mediapipe/util/android/file/base/helpers.h",
+      "src/mediapipe/util/resource_util_android.cc",
+    ]
+  } else {
+    sources += [ "src/mediapipe/util/resource_util_default.cc" ]
+  }
+
+  deps = [
+    ":mediapipe_flatbuffer_schema",
+    ":mediapipe_proto",
+    ":mediapipe_shims",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/gemmlowp",
+    "//third_party/protobuf:protobuf_lite",
+    "//third_party/re2",
+    "//third_party/tensorflow-text",
+    "//third_party/zlib",
+    "//third_party/zlib:minizip",
+  ]
+
+  if (is_android) {
+    deps += [ "//third_party/cpu_features:ndk_compat" ]
+  }
+
+  configs_to_remove = [ "//build/config/compiler:chromium_code" ]
+  configs_to_add = [
+    "//build/config/compiler:no_chromium_code",
+    ":mediapipe_flags",
+    ":mediapipe_config",
+  ]
+
+  conditional_deps = [
+    "//third_party/tflite:tflite",
+    "//third_party/tflite:tflite_builtin_op_resolver",
+  ]
+}
+
+tflite_static_library("mediapipe_core_api2") {
+  sources = [
+    "src/mediapipe/framework/api2/node.cc",
+    "src/mediapipe/framework/api2/node.h",
+    "src/mediapipe/framework/api2/packet.cc",
+    "src/mediapipe/framework/api2/packet.h",
+  ]
+
+  deps = [
+    ":mediapipe_flatbuffer_schema",
+    ":mediapipe_proto",
+    ":mediapipe_shims",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/gemmlowp",
+    "//third_party/protobuf:protobuf_lite",
+    "//third_party/re2",
+    "//third_party/tensorflow-text",
+    "//third_party/zlib",
+    "//third_party/zlib:minizip",
+  ]
+
+  configs_to_remove = [ "//build/config/compiler:chromium_code" ]
+  configs_to_add = [
+    "//build/config/compiler:no_chromium_code",
+    ":mediapipe_flags",
+    ":mediapipe_config",
+  ]
+
+  conditional_deps = [
+    ":mediapipe_core",
+    "//third_party/tflite:tflite",
+    "//third_party/tflite:tflite_builtin_op_resolver",
+  ]
+}
+
+tflite_static_library("mediapipe_tasks") {
+  sources = [
+    "src/mediapipe/calculators/tensor/regex_preprocessor_calculator.cc",
+    "src/mediapipe/tasks/cc/common.cc",
+    "src/mediapipe/tasks/cc/common.h",
+    "src/mediapipe/tasks/cc/components/calculators/score_calibration_utils.cc",
+    "src/mediapipe/tasks/cc/components/calculators/score_calibration_utils.h",
+    "src/mediapipe/tasks/cc/components/containers/category.cc",
+    "src/mediapipe/tasks/cc/components/containers/category.h",
+    "src/mediapipe/tasks/cc/components/containers/classification_result.cc",
+    "src/mediapipe/tasks/cc/components/containers/classification_result.h",
+    "src/mediapipe/tasks/cc/components/processors/classification_postprocessing_graph.cc",
+    "src/mediapipe/tasks/cc/components/processors/classification_postprocessing_graph.h",
+    "src/mediapipe/tasks/cc/components/processors/classifier_options.cc",
+    "src/mediapipe/tasks/cc/components/processors/classifier_options.h",
+    "src/mediapipe/tasks/cc/components/processors/detection_postprocessing_graph.cc",
+    "src/mediapipe/tasks/cc/components/processors/text_preprocessing_graph.cc",
+    "src/mediapipe/tasks/cc/components/processors/text_preprocessing_graph.h",
+    "src/mediapipe/tasks/cc/core/base_options.cc",
+    "src/mediapipe/tasks/cc/core/base_options.h",
+    "src/mediapipe/tasks/cc/core/base_task_api.h",
+    "src/mediapipe/tasks/cc/core/external_file_handler.cc",
+    "src/mediapipe/tasks/cc/core/external_file_handler.h",
+    "src/mediapipe/tasks/cc/core/model_asset_bundle_resources.cc",
+    "src/mediapipe/tasks/cc/core/model_asset_bundle_resources.h",
+    "src/mediapipe/tasks/cc/core/model_resources.cc",
+    "src/mediapipe/tasks/cc/core/model_resources.h",
+    "src/mediapipe/tasks/cc/core/model_resources_cache.cc",
+    "src/mediapipe/tasks/cc/core/model_resources_cache.h",
+    "src/mediapipe/tasks/cc/core/model_task_graph.cc",
+    "src/mediapipe/tasks/cc/core/model_task_graph.h",
+    "src/mediapipe/tasks/cc/core/task_api_factory.h",
+    "src/mediapipe/tasks/cc/core/task_runner.cc",
+    "src/mediapipe/tasks/cc/core/task_runner.h",
+    "src/mediapipe/tasks/cc/core/utils.cc",
+    "src/mediapipe/tasks/cc/core/utils.h",
+    "src/mediapipe/tasks/cc/metadata/metadata_extractor.cc",
+    "src/mediapipe/tasks/cc/metadata/metadata_extractor.h",
+    "src/mediapipe/tasks/cc/metadata/metadata_version_utils.cc",
+    "src/mediapipe/tasks/cc/metadata/metadata_version_utils.h",
+    "src/mediapipe/tasks/cc/metadata/utils/zip_readonly_mem_file.cc",
+    "src/mediapipe/tasks/cc/metadata/utils/zip_readonly_mem_file.h",
+    "src/mediapipe/tasks/cc/metadata/utils/zip_utils.cc",
+    "src/mediapipe/tasks/cc/metadata/utils/zip_utils.h",
+    "src/mediapipe/tasks/cc/text/text_classifier/text_classifier.cc",
+    "src/mediapipe/tasks/cc/text/text_classifier/text_classifier.h",
+    "src/mediapipe/tasks/cc/text/tokenizers/bert_tokenizer.cc",
+    "src/mediapipe/tasks/cc/text/tokenizers/bert_tokenizer.h",
+    "src/mediapipe/tasks/cc/text/tokenizers/regex_tokenizer.cc",
+    "src/mediapipe/tasks/cc/text/tokenizers/regex_tokenizer.h",
+    "src/mediapipe/tasks/cc/text/tokenizers/tokenizer_utils.cc",
+    "src/mediapipe/tasks/cc/text/tokenizers/tokenizer_utils.h",
+    "src/mediapipe/tasks/cc/text/utils/text_model_utils.cc",
+    "src/mediapipe/tasks/cc/text/utils/text_model_utils.h",
+    "src/mediapipe/tasks/cc/text/utils/vocab_utils.cc",
+    "src/mediapipe/tasks/cc/text/utils/vocab_utils.h",
+  ]
+
+  deps = [
+    ":mediapipe_flatbuffer_schema",
+    ":mediapipe_proto",
+    ":mediapipe_shims",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/gemmlowp",
+    "//third_party/protobuf:protobuf_lite",
+    "//third_party/re2",
+    "//third_party/sentencepiece",
+    "//third_party/tensorflow-text",
+    "//third_party/zlib",
+    "//third_party/zlib:minizip",
+  ]
+
+  configs_to_remove = [ "//build/config/compiler:chromium_code" ]
+  configs_to_add = [
+    "//build/config/compiler:no_chromium_code",
+    ":mediapipe_flags",
+    ":mediapipe_config",
+  ]
+
+  conditional_deps = [
+    ":mediapipe_core",
+    ":mediapipe_core_api2",
+    "//third_party/tflite:tflite_builtin_op_resolver",
+  ]
+
+  conditional_public_deps = [ "//third_party/tflite:tflite" ]
+}
+
+tflite_group("mediapipe") {
+  public_deps = [
+    ":mediapipe_flatbuffer_schema",
+    ":mediapipe_proto",
+  ]
+
+  public_configs = [
+    ":mediapipe_config",
+    ":mediapipe_flags",
+  ]
+
+  conditional_public_deps = [
+    ":mediapipe_core",
+    ":mediapipe_core_always_link",
+    ":mediapipe_core_api2",
+    ":mediapipe_tasks",
+    ":mediapipe_tasks_always_link",
+  ]
+}

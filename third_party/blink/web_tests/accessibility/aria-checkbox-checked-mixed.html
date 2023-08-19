@@ -8,9 +8,9 @@
 
 <div id="element1" role="checkbox" aria-checked="mixed"></div>
 <div id="element2" role="menuitemcheckbox" aria-checked="mixed"></div>
+<!-- Radio, menuitemradio, and switch do not support mixed. It's treated as false. -->
 <div id="element3" role="radio" aria-checked="mixed"></div>
 <div id="element4" role="menuitemradio" aria-checked="mixed"></div>
-<!-- Switch specifically does not support mixed -->
 <div id="element5" role="switch" aria-checked="mixed"></div>
 
 <input id="element6" type="checkbox" aria-checked="mixed" checked />
@@ -37,13 +37,13 @@ test((t) => {
                  "AXRole: AXButton"];
     let checked = ["mixed",
                    "mixed",
-                   "mixed",
-                   "mixed",
+                   "false",
+                   "false",
+                   "false",
                    "true",
-                   "mixed",
-                   "mixed",
-                   "mixed",
-                   "mixed",
+                   "false",
+                   "true",
+                   "false",
                    ""];
 
     for (var i = 1; i <= 10; i++) {

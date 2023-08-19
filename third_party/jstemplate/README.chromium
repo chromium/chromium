@@ -1,7 +1,9 @@
 Name: google-jstemplate
 URL: http://code.google.com/p/google-jstemplate/
 License: Apache 2.0
+License File: COPYING
 Security Critical: yes
+Shipped: yes
 Version: unknown
 
 "Template processing that is more suitable for the specific development-time

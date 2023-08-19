@@ -47,7 +47,9 @@
     "bootstrap_env": {
       "GLOG_vmodule": "bridge*=2",
       "GOMA_COMPILER_PROXY_ENABLE_CRASH_DUMP": "true",
-      "RBE_fast_log_collection": "true"
+      "GOMA_DEPS_CACHE_TABLE_THRESHOLD": "40000",
+      "RBE_fast_log_collection": "true",
+      "RBE_use_unified_uploads": "true"
     },
     "instance": "rbe-chromium-trusted-test",
     "metrics_project": "chromium-reclient-metrics",

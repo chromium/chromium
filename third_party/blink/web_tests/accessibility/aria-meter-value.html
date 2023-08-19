@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<body>
+<script>
+    if (window.testRunner)
+        testRunner.dumpAsText();
+
+    function checkValue(id, val, min, max) {
+        if (!window.accessibilityController)
+            return;
+
+        var aria = document.getElementById(id);
+        aria.focus();
+        var focusedElement = accessibilityController.focusedElement;
+        var value = focusedElement.intValue;
+        var minValue = focusedElement.minValue;
+        var maxValue = focusedElement.maxValue;
+
+        var result = document.getElementById("result");
+        if (value == val && minValue == min && maxValue == max)
+            result.innerText += "The " + id + " test PASSES in DumpRenderTree. The value is " + value + ", the minValue is "
+                + minValue + ", and the max value is " + maxValue + ".\n";
+        else
+            result.innerText += "The " + id + " test FAILS in DumpRenderTree. The value, minValue, and/or maxValue of the range must be incorrect.\n";
+    }
+</script>
+
+<div>
+    <p><div tabindex="0" role="meter" id="meter1">X</div></p>
+    <p><div tabindex="0" role="meter" id="meter2" aria-valuemin=10>X</div></p>
+    <p><div tabindex="0" role="meter" id="meter3" aria-valuemin=0 aria-valuemax=10>X</div></p>
+    <p><div tabindex="0" role="meter" id="meter4" aria-valuenow=3 aria-valuemin=0 aria-valuemax=10>X</div></p>
+    <p><div tabindex="0" role="meter" id="meter5" aria-valuenow=5 aria-valuemin=7 aria-valuemax=10>X</div></p>
+    <p><div tabindex="0" role="meter" id="meter6" aria-valuenow=5 aria-valuemin=0 aria-valuemax=3>X</div></p>
+    <span id="result"></span>
+    <script>
+        checkValue('meter1', 0, 0, 100);
+        checkValue('meter2', 10, 10, 100);
+        checkValue('meter3', 0, 0, 10);
+        checkValue('meter4', 3, 0, 10);
+        checkValue('meter5', 7, 7, 10);
+        checkValue('meter6', 3, 0, 3);
+    </script>
+  </div>
+ 
+ </body>
+</html>

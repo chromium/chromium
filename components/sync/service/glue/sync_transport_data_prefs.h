@@ -5,14 +5,11 @@
 #ifndef COMPONENTS_SYNC_SERVICE_GLUE_SYNC_TRANSPORT_DATA_PREFS_H_
 #define COMPONENTS_SYNC_SERVICE_GLUE_SYNC_TRANSPORT_DATA_PREFS_H_
 
-#include <map>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "components/prefs/pref_member.h"
-#include "components/sync/base/model_type.h"
 
 class PrefRegistrySimple;
 class PrefService;

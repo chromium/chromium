@@ -376,6 +376,11 @@ void SearchSuggestionParser::SuggestResult::SetAnswer(
   answer_ = answer;
 }
 
+void SearchSuggestionParser::SuggestResult::SetEntityInfo(
+    const omnibox::EntityInfo& entity_info) {
+  entity_info_ = entity_info;
+}
+
 int SearchSuggestionParser::SuggestResult::CalculateRelevance(
     const AutocompleteInput& input,
     bool keyword_provider_requested) const {

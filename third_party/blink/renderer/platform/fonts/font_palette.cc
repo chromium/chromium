@@ -12,19 +12,6 @@
 
 namespace blink {
 
-static_assert(sizeof(FontPalette::FontPaletteOverride) ==
-                      sizeof(SkFontArguments::Palette::Override) &&
-                  sizeof(FontPalette::FontPaletteOverride::index) ==
-                      sizeof(SkFontArguments::Palette::Override::index) &&
-                  sizeof(FontPalette::FontPaletteOverride::color) ==
-                      sizeof(SkFontArguments::Palette::Override::color) &&
-                  offsetof(FontPalette::FontPaletteOverride, index) ==
-                      offsetof(SkFontArguments::Palette::Override, index) &&
-                  offsetof(FontPalette::FontPaletteOverride, color) ==
-                      offsetof(SkFontArguments::Palette::Override, color),
-              "Struct FontPalette::FontPaletteOverride must match "
-              "SkFontArguments::Palette::Override.");
-
 unsigned FontPalette::GetHash() const {
   unsigned computed_hash = 0;
   WTF::AddIntToHash(computed_hash, palette_keyword_);
@@ -57,20 +44,24 @@ String FontPalette::ToString() const {
       return palette_values_name_.GetString();
     case kInterpolablePalette:
       DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
-      DCHECK(operation_.hasValue());
       StringBuilder builder;
-      builder.Append(operation_.ToString());
-      builder.Append("(");
+      builder.Append("palette-mix(in ");
+      if (hue_interpolation_method_.has_value()) {
+        builder.Append(Color::SerializeInterpolationSpace(
+            color_interpolation_space_, *hue_interpolation_method_));
+      } else {
+        builder.Append(
+            Color::SerializeInterpolationSpace(color_interpolation_space_));
+      }
+      builder.Append(", ");
       builder.Append(start_->ToString());
-      if (operation_.type != kScalePalette) {
-        builder.Append(", ");
-        builder.Append(end_->ToString());
-      }
-      if (operation_.type != kAddPalettes) {
-        builder.Append(", ");
-        builder.Append(String::Number(operation_.param));
-      }
-      builder.Append(")");
+      builder.Append(", ");
+      builder.Append(end_->ToString());
+      DCHECK(normalized_percentage_);
+      builder.Append(" ");
+      double normalized_percentage = normalized_percentage_ * 100;
+      builder.AppendNumber(normalized_percentage);
+      builder.Append("%)");
       return builder.ToString();
   }
 }
@@ -83,7 +74,12 @@ bool FontPalette::operator==(const FontPalette& other) const {
   if (IsInterpolablePalette() && other.IsInterpolablePalette()) {
     DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
     return *start_.get() == *other.start_.get() &&
-           *end_.get() == *other.end_.get() && operation_ == other.operation_;
+           *end_.get() == *other.end_.get() &&
+           percentages_ == other.percentages_ &&
+           normalized_percentage_ == other.normalized_percentage_ &&
+           alpha_multiplier_ == other.alpha_multiplier_ &&
+           color_interpolation_space_ == other.color_interpolation_space_ &&
+           hue_interpolation_method_ == other.hue_interpolation_method_;
   }
   return palette_keyword_ == other.palette_keyword_ &&
          palette_values_name_ == other.palette_values_name_ &&

@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/files/file_util.h"
 #import "base/ios/block_types.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/thread_pool.h"
@@ -27,10 +27,6 @@
 #import "ios/chrome/browser/ui/sharing/sharing_params.h"
 #import "ios/chrome/browser/ui/sharing/sharing_positioner.h"
 #import "ios/web/public/download/crw_web_view_download.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 // The path in the temp directory containing documents that are to be opened in
@@ -73,7 +69,7 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
   NSString* temporary_directory_path = GetTemporaryDocumentDirectory();
   base::File::Error error;
   if (!CreateDirectoryAndGetError(
-          base::mac::NSStringToFilePath(temporary_directory_path), &error)) {
+          base::apple::NSStringToFilePath(temporary_directory_path), &error)) {
     DLOG(ERROR) << "Error creating destination dir: " << error;
     return NO;
   }

@@ -12,6 +12,7 @@
 
 #include "base/functional/callback.h"
 #include "base/time/time.h"
+#include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/service_worker_version_base_info.h"
@@ -27,7 +28,6 @@ class StorageKey;
 namespace content {
 
 class ServiceWorkerClientInfo;
-enum class EmbeddedWorkerStatus;
 
 struct CONTENT_EXPORT ServiceWorkerVersionInfo
     : public ServiceWorkerVersionBaseInfo {
@@ -46,7 +46,8 @@ struct CONTENT_EXPORT ServiceWorkerVersionInfo
       int thread_id,
       int devtools_agent_route_id,
       ukm::SourceId ukm_source_id,
-      blink::mojom::AncestorFrameType ancestor_frame_type);
+      blink::mojom::AncestorFrameType ancestor_frame_type,
+      absl::optional<std::string> router_rules);
   ServiceWorkerVersionInfo(const ServiceWorkerVersionInfo& other);
   ~ServiceWorkerVersionInfo() override;
 
@@ -58,6 +59,7 @@ struct CONTENT_EXPORT ServiceWorkerVersionInfo
   int thread_id;
   int devtools_agent_route_id;
   ukm::SourceId ukm_source_id = ukm::kInvalidSourceId;
+  absl::optional<std::string> router_rules;
   base::Time script_response_time;
   base::Time script_last_modified;
   std::map<std::string, ServiceWorkerClientInfo> clients;

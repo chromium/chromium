@@ -204,6 +204,9 @@ public class ActivityTestUtils {
      * orientation. As a best practice, unset orientation in teardown using
      * {@link #clearActivityOrientation(Activity)}.
      *
+     * Please disable for automotive devices if your test rotates to portrait orientation.
+     * See b/287350212.
+     *
      * @param activity The activity on which to set requested orientation.
      * @param orientation The target orientation we want the screen to rotate to. Expects one of
      *                    either {@link Configuration#ORIENTATION_LANDSCAPE} or

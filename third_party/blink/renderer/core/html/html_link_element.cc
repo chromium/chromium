@@ -86,10 +86,8 @@ void HTMLLinkElement::ParseAttribute(
     }
     rel_list_->DidUpdateAttributeValue(params.old_value, value);
     Process();
-  } else if (name == html_names::kBlockingAttr &&
-             RuntimeEnabledFeatures::BlockingAttributeEnabled()) {
-    blocking_attribute_->DidUpdateAttributeValue(params.old_value, value);
-    blocking_attribute_->CountTokenUsage();
+  } else if (name == html_names::kBlockingAttr) {
+    blocking_attribute_->OnAttributeValueChanged(params.old_value, value);
     if (!IsPotentiallyRenderBlocking()) {
       if (GetLinkStyle() && GetLinkStyle()->StyleSheetIsLoading())
         GetLinkStyle()->UnblockRenderingForPendingSheet();
@@ -124,9 +122,7 @@ void HTMLLinkElement::ParseAttribute(
     Process(LinkLoadParameters::Reason::kMediaChange);
   } else if (name == html_names::kIntegrityAttr) {
     integrity_ = value;
-  } else if (name == html_names::kFetchpriorityAttr &&
-             RuntimeEnabledFeatures::PriorityHintsEnabled(
-                 GetExecutionContext())) {
+  } else if (name == html_names::kFetchpriorityAttr) {
     UseCounter::Count(GetDocument(), WebFeature::kPriorityHints);
     fetch_priority_hint_ = value;
   } else if (name == html_names::kDisabledAttr) {

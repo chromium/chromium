@@ -37,7 +37,7 @@ class ChromeOSMetricsProvider : public metrics::MetricsProvider {
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
   // Records a crash.
-  static void LogCrash(const std::string& crash_type);
+  static void LogCrash(const std::string& crash_type, int num_samples);
 
   // Returns Enterprise Enrollment status.
   static EnrollmentStatus GetEnrollmentStatus();
@@ -73,6 +73,24 @@ class ChromeOSMetricsProvider : public metrics::MetricsProvider {
   raw_ptr<ChromeOSSystemProfileProvider> cros_system_profile_provider_;
 
   base::WeakPtrFactory<ChromeOSMetricsProvider> weak_ptr_factory_{this};
+};
+
+// Provides *histograms* to UMA. Due to the below bug, this cannot be part of
+// |ChromeOSMetricsProvider|.
+// TODO(crbug/1427219): Allow this to be part of the above class.
+class ChromeOSHistogramMetricsProvider : public metrics::MetricsProvider {
+ public:
+  ChromeOSHistogramMetricsProvider();
+
+  ChromeOSHistogramMetricsProvider(const ChromeOSHistogramMetricsProvider&) =
+      delete;
+  ChromeOSHistogramMetricsProvider& operator=(
+      const ChromeOSHistogramMetricsProvider&) = delete;
+
+  ~ChromeOSHistogramMetricsProvider() override;
+
+  // metrics::MetricsProvider:
+  bool ProvideHistograms() override;
 };
 
 #endif  // CHROME_BROWSER_METRICS_CHROMEOS_METRICS_PROVIDER_H_

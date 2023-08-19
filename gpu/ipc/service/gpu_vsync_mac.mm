@@ -91,7 +91,7 @@ void GpuVSyncMac::SetGpuVSyncEnabled(bool enabled) {
 void GpuVSyncMac::AddGpuVSyncCallback() {
   if (display_link_mac_) {
     DCHECK(!vsync_callback_mac_);
-    // Request the callback to be called on the hihg-priority system
+    // Request the callback to be called on the high-priority system
     // VCDisplayLink thread.
     vsync_callback_mac_ = display_link_mac_->RegisterCallback(
         base::BindRepeating(&GpuVSyncMac::OnDisplayLinkCallback,
@@ -101,7 +101,7 @@ void GpuVSyncMac::AddGpuVSyncCallback() {
       // RegisterCallback succeeded.
       return;
     } else {
-      // Failed. Destroy DisplaylinkMac and switch to timer.
+      // Failed. Destroy DisplayLinkMac and switch to timer.
       display_link_mac_ = nullptr;
       LOG(ERROR) << "Fail to start CVDisplayLink callback for DisplayID: "
                  << display_id_ << ". Switch to timer for GpuVSync";

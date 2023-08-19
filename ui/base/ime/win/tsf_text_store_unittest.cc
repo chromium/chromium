@@ -432,6 +432,31 @@ TEST_F(TSFTextStoreTest, GetStatusTest) {
   EXPECT_EQ((ULONG)TS_SD_INPUTPANEMANUALDISPLAYENABLE, status.dwDynamicFlags);
   EXPECT_EQ((ULONG)(TS_SS_TRANSITORY | TS_SS_NOHIDDENTEXT),
             status.dwStaticFlags);
+
+  text_store_->SetUseEmptyTextStore(true);
+  status = {};
+  EXPECT_CALL(text_input_client_, GetTextInputType())
+      .WillRepeatedly(Return(TEXT_INPUT_TYPE_NONE));
+  EXPECT_EQ(S_OK, text_store_->GetStatus(&status));
+  EXPECT_EQ((ULONG)TS_SD_READONLY, status.dwDynamicFlags & TS_SD_READONLY);
+
+  status = {};
+  text_store_->SetUseEmptyTextStore(false);
+  EXPECT_CALL(text_input_client_, GetTextInputType())
+      .WillRepeatedly(Return(TEXT_INPUT_TYPE_TEXT));
+  EXPECT_EQ(S_OK, text_store_->GetStatus(&status));
+  EXPECT_EQ((ULONG)0, status.dwDynamicFlags & TS_SD_READONLY);
+}
+
+TEST_F(TSFTextStoreTest, DummyLockTest) {
+  HRESULT result = kInvalidResult;
+  text_store_->SetUseEmptyTextStore(false);
+  EXPECT_EQ(S_OK,
+            text_store_->RequestLock(TS_LF_READWRITE | TS_LF_SYNC, &result));
+
+  text_store_->SetUseEmptyTextStore(true);
+  EXPECT_EQ(E_FAIL,
+            text_store_->RequestLock(TS_LF_READWRITE | TS_LF_SYNC, &result));
 }
 
 TEST_F(TSFTextStoreTest, QueryInsertTest) {
@@ -1633,6 +1658,14 @@ TEST_F(TSFTextStoreTest, RetrieveRequestedAttrs) {
     EXPECT_HRESULT_FAILED(text_store_->RetrieveRequestedAttrs(
         std::size(buffer), buffer, &num_copied));
   }
+}
+
+TEST_F(TSFTextStoreTest, SendOnUrlChanged) {
+  text_store_->SetUseEmptyTextStore(true);
+  EXPECT_TRUE(text_store_->MaybeSendOnUrlChanged());
+
+  text_store_->SetUseEmptyTextStore(false);
+  EXPECT_FALSE(text_store_->MaybeSendOnUrlChanged());
 }
 
 class KeyEventTestCallback : public TSFTextStoreTestCallback {

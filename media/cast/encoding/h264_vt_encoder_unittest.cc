@@ -22,6 +22,7 @@
 #include "media/base/media.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
+#include "media/base/mock_filters.h"
 #include "media/cast/common/openscreen_conversion_helpers.h"
 #include "media/cast/common/rtp_time.h"
 #include "media/cast/common/sender_encoded_frame.h"
@@ -232,6 +233,7 @@ class H264VideoToolboxEncoderTest : public ::testing::Test {
         task_environment_.GetMainThreadTaskRunner());
     encoder_ = std::make_unique<H264VideoToolboxEncoder>(
         cast_environment_, video_sender_config_,
+        std::make_unique<MockVideoEncoderMetricsProvider>(),
         base::BindRepeating(&SaveOperationalStatus, &operational_status_));
     base::RunLoop().RunUntilIdle();
     EXPECT_EQ(STATUS_INITIALIZED, operational_status_);
@@ -268,7 +270,8 @@ class H264VideoToolboxEncoderTest : public ::testing::Test {
   scoped_refptr<CastEnvironment> cast_environment_;
   std::unique_ptr<VideoEncoder> encoder_;
   OperationalStatus operational_status_;
-  raw_ptr<TestPowerSource> power_source_;  // Owned by the power monitor.
+  raw_ptr<TestPowerSource, DanglingUntriaged>
+      power_source_;  // Owned by the power monitor.
 };
 
 // static

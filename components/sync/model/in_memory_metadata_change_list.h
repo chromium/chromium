@@ -28,6 +28,11 @@ class InMemoryMetadataChangeList : public MetadataChangeList {
   // of |*this| to the default, empty state.
   void TransferChangesTo(MetadataChangeList* other);
 
+  // Allows ignoring metadata changes reported by the processor, for advanced
+  // cases where ignoring a change should also ignore changes to tracked
+  // metadata.
+  void DropMetadataChangeForStorageKey(const std::string& storage_key);
+
   // MetadataChangeList implementation.
   void UpdateModelTypeState(
       const sync_pb::ModelTypeState& model_type_state) override;

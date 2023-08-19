@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
+#import "ios/chrome/browser/ui/tab_switcher/test/tabs_egtest_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -23,23 +24,14 @@
 #import "net/test/embedded_test_server/request_handler_util.h"
 #import "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using base::test::ios::kWaitForUIElementTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
-using chrome_test_util::ButtonWithAccessibilityLabelId;
+using chrome_test_util::ContextMenuItemWithAccessibilityLabelId;
 
 namespace {
 
 NSString* const kRegularTabTitlePrefix = @"RegularTab";
 NSString* const kPinnedTabTitlePrefix = @"PinnedTab";
-
-// Matcher for the overflow pin action.
-id<GREYMatcher> GetMatcherForPinOverflowAction() {
-  return grey_accessibilityID(kToolsMenuPinTabId);
-}
 
 // net::EmbeddedTestServer handler that responds with the request's query as the
 // title and body.
@@ -89,42 +81,9 @@ id<GREYMatcher> GetMatcherForPinnedView() {
                     grey_sufficientlyVisible(), nil);
 }
 
-// Pins a regular tab using overflow menu.
-void PinTabUsingOverfolwMenu() {
-  [ChromeEarlGreyUI openToolsMenu];
-  [ChromeEarlGreyUI tapToolsMenuAction:GetMatcherForPinOverflowAction()];
-}
-
 // Returns the URL for a test page with the given `title`.
 GURL GetURLForTitle(net::EmbeddedTestServer* test_server, NSString* title) {
   return test_server->GetURL("/querytitle?" + base::SysNSStringToUTF8(title));
-}
-
-// Creates a regular tab with `title` using `test_server`.
-void CreateRegularTab(net::EmbeddedTestServer* test_server, NSString* title) {
-  [ChromeEarlGreyUI openNewTab];
-  [ChromeEarlGrey loadURL:GetURLForTitle(test_server, title)];
-}
-
-// Create `tabs_count` of regular tabs.
-void CreateRegularTabs(int tabs_count, net::EmbeddedTestServer* test_server) {
-  for (int index = 0; index < tabs_count; ++index) {
-    NSString* title =
-        [kRegularTabTitlePrefix stringByAppendingFormat:@"%d", index];
-
-    CreateRegularTab(test_server, title);
-  }
-}
-
-// Create `tabs_count` of pinned tabs.
-void CreatePinnedTabs(int tabs_count, net::EmbeddedTestServer* test_server) {
-  for (int index = 0; index < tabs_count; ++index) {
-    NSString* title =
-        [kPinnedTabTitlePrefix stringByAppendingFormat:@"%d", index];
-
-    CreateRegularTab(test_server, title);
-    PinTabUsingOverfolwMenu();
-  }
 }
 
 }  // namespace
@@ -157,15 +116,6 @@ void CreatePinnedTabs(int tabs_count, net::EmbeddedTestServer* test_server) {
       base::BindRepeating(&HandleQueryTitle)));
 
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start");
-}
-
-// Configures flags for the test case.
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.additional_args.push_back(
-      "--enable-features=" + std::string(kEnablePinnedTabs.name) + ":" +
-      kEnablePinnedTabsOverflowParam + "/true");
-  return config;
 }
 
 - (void)setUp {
@@ -329,6 +279,10 @@ void CreatePinnedTabs(int tabs_count, net::EmbeddedTestServer* test_server) {
   // Open the Tab Grid.
   [ChromeEarlGreyUI openTabGrid];
 
+  // The pinned view should be visible when there are pinned tabs created.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:GetMatcherForPinnedView()];
+
   // Verify the pinned tab has a correct title.
   [[EarlGrey
       selectElementWithMatcher:GetMatcherForPinnedCellWithTitle(@"PinnedTab0")]
@@ -382,7 +336,7 @@ void CreatePinnedTabs(int tabs_count, net::EmbeddedTestServer* test_server) {
       performAction:grey_longPress()];
 
   // Tap on "Close Tab" context menu action.
-  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
+  [[EarlGrey selectElementWithMatcher:ContextMenuItemWithAccessibilityLabelId(
                                           IDS_IOS_CONTENT_CONTEXT_CLOSETAB)]
       performAction:grey_tap()];
 
@@ -404,7 +358,7 @@ void CreatePinnedTabs(int tabs_count, net::EmbeddedTestServer* test_server) {
 
   // Tap on "Close Pinned Tab" context menu action.
   [[EarlGrey
-      selectElementWithMatcher:ButtonWithAccessibilityLabelId(
+      selectElementWithMatcher:ContextMenuItemWithAccessibilityLabelId(
                                    IDS_IOS_CONTENT_CONTEXT_CLOSEPINNEDTAB)]
       performAction:grey_tap()];
 
@@ -418,7 +372,7 @@ void CreatePinnedTabs(int tabs_count, net::EmbeddedTestServer* test_server) {
 
   // Tap on "Close Pinned Tab" context menu action.
   [[EarlGrey
-      selectElementWithMatcher:ButtonWithAccessibilityLabelId(
+      selectElementWithMatcher:ContextMenuItemWithAccessibilityLabelId(
                                    IDS_IOS_CONTENT_CONTEXT_CLOSEPINNEDTAB)]
       performAction:grey_tap()];
 
@@ -463,7 +417,7 @@ void CreatePinnedTabs(int tabs_count, net::EmbeddedTestServer* test_server) {
 
   // Tap on "Close Pinned Tab" context menu action.
   [[EarlGrey
-      selectElementWithMatcher:ButtonWithAccessibilityLabelId(
+      selectElementWithMatcher:ContextMenuItemWithAccessibilityLabelId(
                                    IDS_IOS_CONTENT_CONTEXT_CLOSEPINNEDTAB)]
       performAction:grey_tap()];
 
@@ -477,7 +431,7 @@ void CreatePinnedTabs(int tabs_count, net::EmbeddedTestServer* test_server) {
 
   // Tap on "Close Pinned Tab" context menu action.
   [[EarlGrey
-      selectElementWithMatcher:ButtonWithAccessibilityLabelId(
+      selectElementWithMatcher:ContextMenuItemWithAccessibilityLabelId(
                                    IDS_IOS_CONTENT_CONTEXT_CLOSEPINNEDTAB)]
       performAction:grey_tap()];
 
@@ -498,7 +452,7 @@ void CreatePinnedTabs(int tabs_count, net::EmbeddedTestServer* test_server) {
       performAction:grey_longPress()];
 
   // Tap on "Close Tab" context menu action.
-  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
+  [[EarlGrey selectElementWithMatcher:ContextMenuItemWithAccessibilityLabelId(
                                           IDS_IOS_CONTENT_CONTEXT_CLOSETAB)]
       performAction:grey_tap()];
 
@@ -544,7 +498,7 @@ void CreatePinnedTabs(int tabs_count, net::EmbeddedTestServer* test_server) {
       performAction:grey_tap()];
 
   // Tap on "Close All Tabs" menu action.
-  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
+  [[EarlGrey selectElementWithMatcher:ContextMenuItemWithAccessibilityLabelId(
                                           IDS_IOS_CONTENT_CONTEXT_CLOSEALLTABS)]
       performAction:grey_tap()];
 

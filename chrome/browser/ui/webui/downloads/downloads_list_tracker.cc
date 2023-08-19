@@ -76,6 +76,8 @@ const char* GetDangerTypeString(download::DownloadDangerType danger_type) {
       return "SENSITIVE_CONTENT_WARNING";
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK:
       return "SENSITIVE_CONTENT_BLOCK";
+    case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED:
+      return "DEEP_SCANNED_FAILED";
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE:
       return "DEEP_SCANNED_SAFE";
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS:
@@ -231,7 +233,10 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
 
   base::FilePath download_path(download_item->GetTargetFilePath());
   file_value->file_path = download_path.AsUTF8Unsafe();
-  file_value->file_url = net::FilePathToFileURL(download_path).spec();
+  GURL file_url = net::FilePathToFileURL(download_path);
+  if (file_url.is_valid()) {
+    file_value->file_url = file_url.spec();
+  }
 
   extensions::DownloadedByExtension* by_ext =
       extensions::DownloadedByExtension::Get(download_item);

@@ -5,6 +5,8 @@
 package org.chromium.content_public.browser;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.view.Menu;
@@ -34,13 +36,15 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
     public final int showAsActionFlags;
     public final @Nullable CharSequence contentDescription;
     public final @Nullable View.OnClickListener clickListener;
+    public final @Nullable Intent intent;
     public final boolean isEnabled;
+    public final boolean isIconTintable;
 
     private SelectionMenuItem(@IdRes int id, @AttrRes int iconAttr, @Nullable Drawable icon,
             @StringRes int titleRes, @Nullable CharSequence title,
             @Nullable Character alphabeticShortcut, int orderInCategory, int showAsActionFlags,
             @Nullable CharSequence contentDescription, @Nullable View.OnClickListener clickListener,
-            boolean isEnabled) {
+            @Nullable Intent intent, boolean isEnabled, boolean isIconTintable) {
         mIconAttr = iconAttr;
         mIcon = icon;
         mTitleRes = titleRes;
@@ -51,7 +55,9 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
         this.showAsActionFlags = showAsActionFlags;
         this.contentDescription = contentDescription;
         this.clickListener = clickListener;
+        this.intent = intent;
         this.isEnabled = isEnabled;
+        this.isIconTintable = isIconTintable;
     }
 
     /**
@@ -71,12 +77,16 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
     @Nullable
     public Drawable getIcon(Context context) {
         if (mIconAttr != 0) {
-            TypedArray a = context.obtainStyledAttributes(new int[] {mIconAttr});
-            int iconResId = a.getResourceId(0, 0);
-            Drawable icon =
-                    iconResId == 0 ? null : AppCompatResources.getDrawable(context, iconResId);
-            a.recycle();
-            return icon;
+            try {
+                TypedArray a = context.obtainStyledAttributes(new int[] {mIconAttr});
+                int iconResId = a.getResourceId(0, 0);
+                Drawable icon =
+                        iconResId == 0 ? null : AppCompatResources.getDrawable(context, iconResId);
+                a.recycle();
+                return icon;
+            } catch (Resources.NotFoundException e) {
+                return null;
+            }
         }
         return mIcon;
     }
@@ -103,7 +113,9 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
         private int mShowAsActionFlags;
         private @Nullable CharSequence mContentDescription;
         private @Nullable View.OnClickListener mClickListener;
+        private @Nullable Intent mIntent;
         private boolean mIsEnabled;
+        private boolean mIsIconTintable;
 
         /**
          * Pass in a non-null title.
@@ -136,7 +148,9 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
             mShowAsActionFlags = Menu.NONE;
             mContentDescription = null;
             mClickListener = null;
+            mIntent = null;
             mIsEnabled = true;
+            mIsIconTintable = false;
         }
 
         /**
@@ -208,10 +222,26 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
         }
 
         /**
+         * The {@link Intent} for the menu item.
+         */
+        public Builder setIntent(@Nullable Intent intent) {
+            mIntent = intent;
+            return this;
+        }
+
+        /**
          * Pass in true if the item is enabled. Otherwise false.
          */
         public Builder setIsEnabled(boolean isEnabled) {
             mIsEnabled = isEnabled;
+            return this;
+        }
+
+        /**
+         * Pass in true if the icon can be safely tinted. Defaults to false.
+         */
+        public Builder setIsIconTintable(boolean isIconTintable) {
+            mIsIconTintable = isIconTintable;
             return this;
         }
 
@@ -221,7 +251,7 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
         public SelectionMenuItem build() {
             return new SelectionMenuItem(mId, mIconAttr, mIcon, mTitleRes, mTitle,
                     mAlphabeticShortcut, mOrderInCategory, mShowAsActionFlags, mContentDescription,
-                    mClickListener, mIsEnabled);
+                    mClickListener, mIntent, mIsEnabled, mIsIconTintable);
         }
     }
 }

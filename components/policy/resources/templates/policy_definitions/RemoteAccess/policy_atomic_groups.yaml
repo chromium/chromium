@@ -27,3 +27,4 @@ RemoteAccess:
   - RemoteAccessHostClipboardSizeBytes
   - RemoteAccessHostAllowRemoteSupportConnections
   - RemoteAccessHostAllowEnterpriseRemoteSupportConnections
+  - RemoteAccessHostAllowEnterpriseFileTransfer

@@ -1,0 +1,5 @@
+specific_include_rules = {
+  "scan_service\.h": [
+    "+services/device/wake_lock/power_save_blocker/power_save_blocker.h",
+  ],
+}

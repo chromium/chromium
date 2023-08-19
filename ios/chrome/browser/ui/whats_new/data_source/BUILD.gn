@@ -2,15 +2,22 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("data_source") {
-  configs += [ "//build/config/compiler:enable_arc" ]
+source_set("whats_new_item") {
   sources = [
-    "whats_new_data_source.h",
-    "whats_new_data_source.mm",
     "whats_new_item.h",
     "whats_new_item.mm",
   ]
+  deps = [ "//url" ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("data_source") {
+  sources = [
+    "whats_new_data_source.h",
+    "whats_new_data_source.mm",
+  ]
   deps = [
+    ":whats_new_item",
     "resources:add_passwords_manually_banner",
     "resources:autofill_banner",
     "resources:autofill_hero_banner",
@@ -18,14 +25,17 @@ source_set("data_source") {
     "resources:new_overflow_menu_banner",
     "resources:passwords_in_other_apps_banner",
     "resources:passwords_in_other_apps_hero_banner",
+    "resources:screenshots_files",
     "resources:search_tabs_banner",
     "resources:search_tabs_hero_banner",
     "resources:shared_highlighting_banner",
     "resources:use_chrome_by_default_banner",
+    "resources:whats_new_entries_m116_plist",
     "resources:whats_new_entries_plist",
     "//base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/ui/whats_new:util",
     "//ios/chrome/common/ui/colors",
     "//ui/base",
     "//url",
@@ -39,12 +49,13 @@ source_set("unit_tests") {
 
   deps = [
     ":data_source",
+    ":whats_new_item",
     "resources:unit_tests_resources",
     "//base",
     "//base/test:test_support",
-    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/whats_new:util",
     "//testing/gtest",
     "//ui/base",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

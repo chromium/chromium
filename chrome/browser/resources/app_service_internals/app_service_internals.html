@@ -19,6 +19,14 @@
   </ul>
   <li><a href="#promise-apps">Promise Apps</a></li>
   <li><a href="#app-capabilities">App Capabilities</a></li>
+  <li>
+    <a href="#shortcut-list">Shortcut List</a>
+    <ul>
+      <template is="dom-repeat" items="[[shortcutList_]]">
+        <li><a href="#shortcut-[[item.id]]">[[item.name]]</a></li>
+      </template>
+    </ul>
+  </li>
 </ul>
 
 <section>
@@ -55,5 +63,14 @@
   <template is="dom-repeat" items="[[appCapabilityList_]]">
     <h3>[[item.name]]</h3>
     <pre>[[item.debugInfo]]</pre>
+  </template>
+
+  <h2 id="shortcut-list">Shortcut List</h2>
+
+  <template is="dom-repeat" items="[[shortcutList_]]">
+    <div id="shortcut-[[item.id]]">
+      <h3>[[item.name]]</h3>
+      <pre>[[item.debugInfo]]</pre>
+    </div>
   </template>
 </section>

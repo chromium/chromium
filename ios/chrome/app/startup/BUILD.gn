@@ -9,6 +9,7 @@ import("//ios/public/provider/chrome/browser/build_config.gni")
 # Target for sources that don't depend on //ios/chrome/browser:browser
 source_set("startup_basic") {
   sources = [
+    "app_launch_metrics.h",
     "chrome_main_starter.h",
     "chrome_main_starter.mm",
     "ios_chrome_main.h",
@@ -21,13 +22,11 @@ source_set("startup_basic") {
     "setup_debugging.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//base",
     "//components/component_updater",
     "//components/crash/core/common",
-    "//ios/chrome/browser/paths",
+    "//ios/chrome/browser/shared/model/paths",
     "//ios/web/public/init",
     "//skia",
   ]
@@ -48,7 +47,6 @@ buildflag_header("ios_enable_sandbox_dump_buildflags") {
 
 if (ios_enable_sandbox_dump) {
   source_set("sandbox_dump") {
-    configs += [ "//build/config/compiler:enable_arc" ]
     sources = [
       "sandbox_dump.h",
       "sandbox_dump.mm",
@@ -72,8 +70,6 @@ source_set("startup") {
     "provider_registration.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     ":startup_basic",
     "//base",
@@ -96,7 +92,6 @@ source_set("startup") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "chrome_app_startup_parameters_unittest.mm" ]
   deps = [

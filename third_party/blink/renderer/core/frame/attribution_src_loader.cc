@@ -17,8 +17,9 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/types/expected.h"
+#include "base/unguessable_token.h"
 #include "components/attribution_reporting/os_registration.h"
-#include "components/attribution_reporting/registration_type.mojom-shared.h"
+#include "components/attribution_reporting/registration_eligibility.mojom-shared.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_error.mojom-shared.h"
 #include "components/attribution_reporting/suitable_origin.h"
@@ -36,7 +37,6 @@
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-blink.h"
-#include "third_party/blink/public/mojom/conversions/attribution_reporting.mojom-blink.h"
 #include "third_party/blink/public/mojom/conversions/conversions.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
@@ -79,7 +79,7 @@ namespace blink {
 
 namespace {
 
-using ::attribution_reporting::mojom::RegistrationType;
+using ::attribution_reporting::mojom::RegistrationEligibility;
 using ::network::mojom::AttributionReportingEligibility;
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -102,8 +102,9 @@ void LogAuditIssue(ExecutionContext* execution_context,
                    absl::optional<uint64_t> request_id,
                    const String& invalid_parameter) {
   String id_string;
-  if (request_id)
+  if (request_id) {
     id_string = IdentifiersFactory::SubresourceRequestId(*request_id);
+  }
 
   AuditsIssue::ReportAttributionIssue(execution_context, issue_type, element,
                                       id_string, invalid_parameter);
@@ -223,9 +224,11 @@ class AttributionSrcLoader::ResourceClient
  public:
   ResourceClient(
       AttributionSrcLoader* loader,
-      RegistrationType type,
+      RegistrationEligibility eligibility,
       mojo::SharedRemote<mojom::blink::AttributionDataHost> data_host)
-      : loader_(loader), type_(type), data_host_(std::move(data_host)) {
+      : loader_(loader),
+        eligibility_(eligibility),
+        data_host_(std::move(data_host)) {
     DCHECK(loader_);
     DCHECK(loader_->local_frame_);
     DCHECK(loader_->local_frame_->IsAttached());
@@ -248,7 +251,7 @@ class AttributionSrcLoader::ResourceClient
   void HandleResponseHeaders(
       attribution_reporting::SuitableOrigin reporting_origin,
       const AttributionHeaders&,
-      const absl::optional<network::TriggerVerification>& trigger_verification);
+      const Vector<network::TriggerVerification>&);
 
   void Finish();
 
@@ -263,7 +266,7 @@ class AttributionSrcLoader::ResourceClient
   void HandleTriggerRegistration(
       const AttributionHeaders&,
       attribution_reporting::SuitableOrigin reporting_origin,
-      const absl::optional<network::TriggerVerification>& trigger_verification);
+      const Vector<network::TriggerVerification>&);
 
   [[nodiscard]] bool HasEitherWebOrOsHeader(int header_count,
                                             uint64_t request_id);
@@ -280,7 +283,7 @@ class AttributionSrcLoader::ResourceClient
   const Member<AttributionSrcLoader> loader_;
 
   // Type of events this request can register.
-  const RegistrationType type_;
+  const RegistrationEligibility eligibility_;
 
   // Remote used for registering responses with the browser-process.
   GC_PLUGIN_IGNORE("https://crbug.com/1381979")
@@ -318,7 +321,18 @@ void AttributionSrcLoader::Register(const AtomicString& attribution_src,
 absl::optional<Impression> AttributionSrcLoader::RegisterNavigationInternal(
     const KURL& navigation_url,
     Vector<KURL> attribution_src_urls,
-    HTMLAnchorElement* element) {
+    HTMLAnchorElement* element,
+    bool has_transient_user_activation) {
+  if (!has_transient_user_activation) {
+    LogAuditIssue(local_frame_->DomWindow(),
+                  AttributionReportingIssueType::
+                      kNavigationRegistrationWithoutTransientUserActivation,
+                  element,
+                  /*request_id=*/absl::nullopt,
+                  /*invalid_parameter=*/String());
+    return absl::nullopt;
+  }
+
   // TODO(apaseltiner): Add tests to ensure that this method can't be used to
   // register triggers.
 
@@ -326,9 +340,6 @@ absl::optional<Impression> AttributionSrcLoader::RegisterNavigationInternal(
   // operations and DevTools issues.
 
   const Impression impression{
-      .nav_type = element
-                      ? mojom::blink::AttributionNavigationType::kAnchor
-                      : mojom::blink::AttributionNavigationType::kWindowOpen,
       .runtime_features = GetRuntimeFeatures(),
   };
 
@@ -347,23 +358,26 @@ absl::optional<Impression> AttributionSrcLoader::RegisterNavigationInternal(
 absl::optional<Impression> AttributionSrcLoader::RegisterNavigation(
     const KURL& navigation_url,
     const AtomicString& attribution_src,
-    HTMLAnchorElement* element) {
+    HTMLAnchorElement* element,
+    bool has_transient_user_activation) {
   CHECK(!attribution_src.IsNull());
   CHECK(element);
 
   return RegisterNavigationInternal(
-      navigation_url, ParseAttributionSrc(attribution_src, element), element);
+      navigation_url, ParseAttributionSrc(attribution_src, element), element,
+      has_transient_user_activation);
 }
 
 absl::optional<Impression> AttributionSrcLoader::RegisterNavigation(
     const KURL& navigation_url,
-    const WebVector<WebString>& attribution_srcs) {
+    const WebVector<WebString>& attribution_srcs,
+    bool has_transient_user_activation) {
   return RegisterNavigationInternal(
       navigation_url,
       ParseAttributionSrcUrls(*this, *local_frame_->GetDocument(),
                               attribution_srcs,
                               /*element=*/nullptr),
-      /*element=*/nullptr);
+      /*element=*/nullptr, has_transient_user_activation);
 }
 
 bool AttributionSrcLoader::CreateAndSendRequests(
@@ -391,12 +405,13 @@ bool AttributionSrcLoader::DoRegistration(
     const absl::optional<AttributionSrcToken> attribution_src_token) {
   DCHECK(!urls.empty());
 
-  if (!local_frame_->IsAttached())
+  if (!local_frame_->IsAttached()) {
     return false;
+  }
 
-  const auto src_type = attribution_src_token.has_value()
-                            ? RegistrationType::kSource
-                            : RegistrationType::kSourceOrTrigger;
+  const auto eligibility = attribution_src_token.has_value()
+                               ? RegistrationEligibility::kSource
+                               : RegistrationEligibility::kSourceOrTrigger;
 
   mojo::AssociatedRemote<mojom::blink::AttributionHost> conversion_host;
   local_frame_->GetRemoteNavigationAssociatedInterfaces()->GetInterface(
@@ -409,7 +424,7 @@ bool AttributionSrcLoader::DoRegistration(
         data_host.BindNewPipeAndPassReceiver(), *attribution_src_token);
   } else {
     conversion_host->RegisterDataHost(data_host.BindNewPipeAndPassReceiver(),
-                                      src_type);
+                                      eligibility);
   }
 
   for (const KURL& url : urls) {
@@ -426,6 +441,10 @@ bool AttributionSrcLoader::DoRegistration(
         attribution_src_token.has_value()
             ? AttributionReportingEligibility::kNavigationSource
             : AttributionReportingEligibility::kEventSourceOrTrigger);
+    if (attribution_src_token.has_value()) {
+      base::UnguessableToken token = attribution_src_token->value();
+      request.SetAttributionReportingSrcToken(std::move(token));
+    }
 
     FetchParameters params(
         std::move(request),
@@ -434,7 +453,7 @@ bool AttributionSrcLoader::DoRegistration(
         fetch_initiator_type_names::kAttributionsrc;
 
     auto* client =
-        MakeGarbageCollected<ResourceClient>(this, src_type, data_host);
+        MakeGarbageCollected<ResourceClient>(this, eligibility, data_host);
     // TODO(https://crbug.com/1374121): If this registration is
     // `associated_with_navigation`, there is a risk that the navigation will
     // complete before the resource fetch here is complete. In this case, the
@@ -461,8 +480,9 @@ AttributionSrcLoader::ReportingOriginForUrlIfValid(
   auto maybe_log_audit_issue = [&](AttributionReportingIssueType issue_type,
                                    const SecurityOrigin* invalid_origin =
                                        nullptr) {
-    if (!log_issues)
+    if (!log_issues) {
       return;
+    }
 
     LogAuditIssue(window, issue_type, element, request_id,
                   /*invalid_parameter=*/
@@ -578,10 +598,11 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
   absl::optional<attribution_reporting::SuitableOrigin> reporting_origin =
       ReportingOriginForUrlIfValid(response.ResponseUrl(),
                                    /*element=*/nullptr, request_id);
-  if (!reporting_origin)
+  if (!reporting_origin) {
     return false;
+  }
 
-  RegistrationType src_type;
+  RegistrationEligibility registration_eligibility;
 
   switch (request.GetAttributionReportingEligibility()) {
     case AttributionReportingEligibility::kEmpty:
@@ -596,52 +617,54 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
       NOTREACHED();
       return false;
     case AttributionReportingEligibility::kEventSource:
-      src_type = RegistrationType::kSource;
+      registration_eligibility = RegistrationEligibility::kSource;
       break;
     case AttributionReportingEligibility::kUnset:
     case AttributionReportingEligibility::kTrigger:
-      src_type = RegistrationType::kTrigger;
+      registration_eligibility = RegistrationEligibility::kTrigger;
       break;
     case AttributionReportingEligibility::kEventSourceOrTrigger:
-      src_type = RegistrationType::kSourceOrTrigger;
+      registration_eligibility = RegistrationEligibility::kSourceOrTrigger;
       break;
   }
 
   if (Document* document = local_frame_->DomWindow()->document();
       document->IsPrerendering()) {
-    document->AddPostPrerenderingActivationStep(WTF::BindOnce(
-        &AttributionSrcLoader::RegisterAttributionHeaders,
-        WrapPersistentIfNeeded(this), src_type, std::move(*reporting_origin),
-        std::move(headers), response.GetTriggerVerification()));
+    document->AddPostPrerenderingActivationStep(
+        WTF::BindOnce(&AttributionSrcLoader::RegisterAttributionHeaders,
+                      WrapPersistentIfNeeded(this), registration_eligibility,
+                      std::move(*reporting_origin), std::move(headers),
+                      response.GetTriggerVerifications()));
   } else {
-    RegisterAttributionHeaders(src_type, std::move(*reporting_origin), headers,
-                               response.GetTriggerVerification());
+    RegisterAttributionHeaders(registration_eligibility,
+                               std::move(*reporting_origin), headers,
+                               response.GetTriggerVerifications());
   }
 
   return true;
 }
 
 void AttributionSrcLoader::RegisterAttributionHeaders(
-    RegistrationType src_type,
+    RegistrationEligibility registration_eligibility,
     attribution_reporting::SuitableOrigin reporting_origin,
     const AttributionHeaders& headers,
-    const absl::optional<network::TriggerVerification>& trigger_verification) {
+    const Vector<network::TriggerVerification>& trigger_verifications) {
   mojo::AssociatedRemote<mojom::blink::AttributionHost> conversion_host;
   local_frame_->GetRemoteNavigationAssociatedInterfaces()->GetInterface(
       &conversion_host);
 
   mojo::SharedRemote<mojom::blink::AttributionDataHost> data_host;
   conversion_host->RegisterDataHost(data_host.BindNewPipeAndPassReceiver(),
-                                    src_type);
+                                    registration_eligibility);
 
   // Create a client to mimic processing of attributionsrc requests. Note we do
   // not share `AttributionDataHosts` for redirects chains.
   // TODO(johnidel): Consider refactoring this such that we can share clients
   // for redirect chain, or not create the client at all.
-  auto* client = MakeGarbageCollected<ResourceClient>(this, src_type,
-                                                      std::move(data_host));
+  auto* client = MakeGarbageCollected<ResourceClient>(
+      this, registration_eligibility, std::move(data_host));
   client->HandleResponseHeaders(std::move(reporting_origin), headers,
-                                trigger_verification);
+                                trigger_verifications);
   client->Finish();
 }
 
@@ -707,28 +730,29 @@ void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
   absl::optional<attribution_reporting::SuitableOrigin> reporting_origin =
       loader_->ReportingOriginForUrlIfValid(response.ResponseUrl(),
                                             /*element=*/nullptr, request_id);
-  if (!reporting_origin)
+  if (!reporting_origin) {
     return;
+  }
 
   HandleResponseHeaders(std::move(*reporting_origin), headers,
-                        response.GetTriggerVerification());
+                        response.GetTriggerVerifications());
 }
 
 void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
     attribution_reporting::SuitableOrigin reporting_origin,
     const AttributionHeaders& headers,
-    const absl::optional<network::TriggerVerification>& trigger_verification) {
+    const Vector<network::TriggerVerification>& trigger_verifications) {
   DCHECK_GT(headers.count(), 0);
 
-  switch (type_) {
-    case RegistrationType::kSource:
+  switch (eligibility_) {
+    case RegistrationEligibility::kSource:
       HandleSourceRegistration(headers, std::move(reporting_origin));
       break;
-    case RegistrationType::kTrigger:
+    case RegistrationEligibility::kTrigger:
       HandleTriggerRegistration(headers, std::move(reporting_origin),
-                                trigger_verification);
+                                trigger_verifications);
       break;
-    case RegistrationType::kSourceOrTrigger: {
+    case RegistrationEligibility::kSourceOrTrigger: {
       const bool has_source = headers.source_count() > 0;
       const bool has_trigger = headers.trigger_count() > 0;
 
@@ -747,7 +771,7 @@ void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
 
       DCHECK(has_trigger);
       HandleTriggerRegistration(headers, std::move(reporting_origin),
-                                trigger_verification);
+                                trigger_verifications);
       break;
     }
   }
@@ -773,7 +797,7 @@ bool AttributionSrcLoader::ResourceClient::HasEitherWebOrOsHeader(
 void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
     const AttributionHeaders& headers,
     attribution_reporting::SuitableOrigin reporting_origin) {
-  DCHECK_NE(type_, RegistrationType::kTrigger);
+  DCHECK_NE(eligibility_, RegistrationEligibility::kTrigger);
 
   headers.MaybeLogAllTriggerHeadersIgnored(loader_->local_frame_->DomWindow());
 
@@ -811,25 +835,25 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
   UseCounter::Count(loader_->local_frame_->DomWindow(),
                     mojom::blink::WebFeature::kAttributionReportingCrossAppWeb);
 
-  std::vector<GURL> registration_urls =
+  std::vector<attribution_reporting::OsRegistrationItem> registration_items =
       attribution_reporting::ParseOsSourceOrTriggerHeader(
           StringUTF8Adaptor(headers.os_source).AsStringPiece());
-  if (registration_urls.empty()) {
+  if (registration_items.empty()) {
     LogAuditIssue(loader_->local_frame_->DomWindow(),
                   AttributionReportingIssueType::kInvalidRegisterOsSourceHeader,
                   /*element=*/nullptr, headers.request_id,
                   /*invalid_parameter=*/headers.os_source);
     return;
   }
-  data_host_->OsSourceDataAvailable(std::move(registration_urls));
+  data_host_->OsSourceDataAvailable(std::move(registration_items));
   ++num_registrations_;
 }
 
 void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
     const AttributionHeaders& headers,
     attribution_reporting::SuitableOrigin reporting_origin,
-    const absl::optional<network::TriggerVerification>& trigger_verification) {
-  DCHECK_NE(type_, RegistrationType::kSource);
+    const Vector<network::TriggerVerification>& trigger_verifications) {
+  DCHECK_NE(eligibility_, RegistrationEligibility::kSource);
 
   headers.MaybeLogAllSourceHeadersIgnored(loader_->local_frame_->DomWindow());
 
@@ -855,7 +879,7 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
 
     data_host_->TriggerDataAvailable(std::move(reporting_origin),
                                      std::move(*trigger_data),
-                                     std::move(trigger_verification));
+                                     std::move(trigger_verifications));
     ++num_registrations_;
     return;
   }
@@ -869,10 +893,10 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
   UseCounter::Count(loader_->local_frame_->DomWindow(),
                     mojom::blink::WebFeature::kAttributionReportingCrossAppWeb);
 
-  std::vector<GURL> registration_urls =
+  std::vector<attribution_reporting::OsRegistrationItem> registration_items =
       attribution_reporting::ParseOsSourceOrTriggerHeader(
           StringUTF8Adaptor(headers.os_trigger).AsStringPiece());
-  if (registration_urls.empty()) {
+  if (registration_items.empty()) {
     LogAuditIssue(
         loader_->local_frame_->DomWindow(),
         AttributionReportingIssueType::kInvalidRegisterOsTriggerHeader,
@@ -880,7 +904,7 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
         /*invalid_parameter=*/headers.os_trigger);
     return;
   }
-  data_host_->OsTriggerDataAvailable(std::move(registration_urls));
+  data_host_->OsTriggerDataAvailable(std::move(registration_items));
   ++num_registrations_;
 }
 

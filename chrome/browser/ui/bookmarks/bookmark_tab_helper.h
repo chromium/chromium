@@ -104,7 +104,7 @@ class BookmarkTabHelper
 
   // The BookmarkDrag is used to forward bookmark drag and drop events to
   // extensions.
-  raw_ptr<BookmarkDrag, DanglingUntriaged> bookmark_drag_;
+  raw_ptr<BookmarkDrag, AcrossTasksDanglingUntriaged> bookmark_drag_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

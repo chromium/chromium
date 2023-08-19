@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -70,7 +71,8 @@ class EndpointFetcher {
       int64_t timeout_ms,
       const std::string& post_data,
       const net::NetworkTrafficAnnotationTag& annotation_tag,
-      signin::IdentityManager* const identity_manager);
+      signin::IdentityManager* identity_manager,
+      signin::ConsentLevel consent_level);
 
   // Constructor if Chrome API Key is used for authentication
   EndpointFetcher(
@@ -102,7 +104,8 @@ class EndpointFetcher {
       const std::string& post_data,
       const net::NetworkTrafficAnnotationTag& annotation_tag,
       const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
-      signin::IdentityManager* const identity_manager);
+      signin::IdentityManager* identity_manager,
+      signin::ConsentLevel consent_level);
 
   // This Constructor can be used in a background thread.
   EndpointFetcher(
@@ -115,7 +118,7 @@ class EndpointFetcher {
       const std::vector<std::string>& cors_exempt_headers,
       const net::NetworkTrafficAnnotationTag& annotation_tag,
       const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
-      const bool is_oauth_fetch);
+      bool is_oauth_fetch);
 
   EndpointFetcher(const EndpointFetcher& endpoint_fetcher) = delete;
 
@@ -163,7 +166,13 @@ class EndpointFetcher {
 
   // Members set in constructor
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  const raw_ptr<signin::IdentityManager, DanglingUntriaged> identity_manager_;
+  // `identity_manager_` can be null if it is not needed for authentication (in
+  // this case, callers should invoke `PerformRequest` directly).
+  const raw_ptr<signin::IdentityManager, AcrossTasksDanglingUntriaged>
+      identity_manager_;
+  // `consent_level_` is used together with `identity_manager_`, so it can be
+  // null if `identity_manager_` is null.
+  const absl::optional<signin::ConsentLevel> consent_level_;
   bool sanitize_response_;
   bool is_stable_channel_;
 

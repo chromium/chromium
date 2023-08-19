@@ -26,7 +26,6 @@ import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -63,7 +62,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.MenuUtils;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -80,18 +78,15 @@ import java.util.concurrent.TimeoutException;
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 // clang-format off
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        "enable-features=" + ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study,"
-                + ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study",
+        "enable-features=" + ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study",
         "force-fieldtrials=Study/Group"})
-@Features.EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID})
 @Restriction(
         {UiRestriction.RESTRICTION_TYPE_PHONE, Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 public class TabSwitcherAndStartSurfaceLayoutPerfTest {
     // clang-format on
     private static final String TAG = "SSLayoutPerfTest";
     private static final String BASE_PARAMS = "force-fieldtrial-params="
-            + "Study.Group:soft-cleanup-delay/0/cleanup-delay/0/skip-slow-zooming/false"
-            + "/zooming-min-memory-mb/512";
+            + "Study.Group:skip-slow-zooming/false/zooming-min-memory-mb/512";
 
     /** Flip this to {@code true} to run performance tests locally. */
     private static final boolean PERF_RUN = false;
@@ -156,11 +151,6 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
         CriteriaHelper.pollUiThread(cta.getTabModelSelector()::isTabStateInitialized);
     }
 
-    @After
-    public void tearDown() {
-        mTestServer.stopAndDestroyServer();
-    }
-
     @Test
     @EnormousTest
     @UseMethodParameter(RefactorTestParams.class)
@@ -184,7 +174,7 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
     @Test
     @EnormousTest
     @UseMethodParameter(RefactorTestParams.class)
-    @CommandLineFlags.Add({BASE_PARAMS + "/soft-cleanup-delay/10000/cleanup-delay/10000"})
+    @CommandLineFlags.Add({BASE_PARAMS})
     @DisableIf.Build(message = "Flaky on Android P, see https://crbug.com/1161731",
             sdk_is_greater_than = VERSION_CODES.O_MR1, sdk_is_less_than = VERSION_CODES.Q)
     public void
@@ -197,7 +187,7 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
     @Test
     @EnormousTest
     @UseMethodParameter(RefactorTestParams.class)
-    @CommandLineFlags.Add({BASE_PARAMS + "/cleanup-delay/10000"})
+    @CommandLineFlags.Add({BASE_PARAMS})
     @DisableIf.Build(message = "Flaky on Android P, see https://crbug.com/1184787",
             supported_abis_includes = "x86", sdk_is_greater_than = VERSION_CODES.O_MR1,
             sdk_is_less_than = VERSION_CODES.Q)

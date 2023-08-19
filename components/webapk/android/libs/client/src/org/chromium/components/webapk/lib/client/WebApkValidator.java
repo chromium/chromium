@@ -23,6 +23,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -52,7 +53,7 @@ public class WebApkValidator {
     private static byte[] sExpectedSignature;
     private static byte[] sCommentSignedPublicKeyBytes;
     private static PublicKey sCommentSignedPublicKey;
-    private static boolean sOverrideValidationForTesting;
+    private static boolean sOverrideValidation;
 
     @IntDef({ValidationResult.FAILURE, ValidationResult.V1_WEB_APK, ValidationResult.MAPS_LITE,
             ValidationResult.COMMENT_SIGNED})
@@ -248,7 +249,7 @@ public class WebApkValidator {
         if (isNotWebApkQuick(packageInfo)) {
             return ValidationResult.FAILURE;
         }
-        if (sOverrideValidationForTesting) {
+        if (sOverrideValidation) {
             if (DEBUG) {
                 Log.d(TAG, "WebApk validation is disabled for testing.");
             }
@@ -467,7 +468,17 @@ public class WebApkValidator {
      * for development with unsigned WebApks and should never be enabled in a real build.
      */
     public static void setDisableValidationForTesting(boolean disable) {
-        sOverrideValidationForTesting = disable;
+        var oldValue = sOverrideValidation;
+        sOverrideValidation = disable;
+        ResettersForTesting.register(() -> sOverrideValidation = oldValue);
+    }
+
+    /**
+     * Sets whether validation performed by this class should be disabled. This is meant only
+     * for development with unsigned WebApks and should never be enabled in a real build.
+     */
+    public static void setDisableValidation(boolean disable) {
+        sOverrideValidation = disable;
     }
 
     /**

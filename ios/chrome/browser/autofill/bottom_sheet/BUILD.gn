@@ -1,11 +1,10 @@
-# Copyright 2016 The Chromium Authors
+# Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//ios/web/public/js_messaging/optimize_ts.gni")
 
 source_set("bottom_sheet") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "autofill_bottom_sheet_java_script_feature.h",
     "autofill_bottom_sheet_java_script_feature.mm",
@@ -15,7 +14,9 @@ source_set("bottom_sheet") {
   deps = [
     ":bottom_sheet_ts",
     "//base",
+    "//components/autofill/core/browser",
     "//components/autofill/core/common",
+    "//components/autofill/ios/browser",
     "//components/autofill/ios/form_util",
     "//components/password_manager/core/common:features",
     "//components/password_manager/ios",
@@ -23,6 +24,7 @@ source_set("bottom_sheet") {
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/web/public",
     "//ios/web/public:web_state_observer",
     "//ios/web/public/js_messaging",

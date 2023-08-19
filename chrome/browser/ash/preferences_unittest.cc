@@ -40,6 +40,7 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/mock_component_extension_ime_manager_delegate.h"
 #include "ui/base/ime/ash/mock_input_method_manager_impl.h"
@@ -105,7 +106,8 @@ class MyMockInputMethodManager : public MockInputMethodManagerImpl {
                                  TextInputMethod* instance) override {
       InputMethodDescriptor descriptor(
           id, std::string(), std::string(), std::string(),
-          std::vector<std::string>(), false, GURL(), GURL());
+          std::vector<std::string>(), false, GURL(), GURL(),
+          /*handwriting_language=*/absl::nullopt);
       input_method_extensions_->push_back(descriptor);
     }
 
@@ -216,9 +218,11 @@ class PreferencesTest : public testing::Test {
   raw_ptr<TestingProfile, ExperimentalAsh> test_profile_;
   raw_ptr<sync_preferences::TestingPrefServiceSyncable, ExperimentalAsh>
       pref_service_;
-  raw_ptr<input_method::MyMockInputMethodManager, ExperimentalAsh>
+  raw_ptr<input_method::MyMockInputMethodManager,
+          DanglingUntriaged | ExperimentalAsh>
       mock_manager_;
-  raw_ptr<FakeUpdateEngineClient, ExperimentalAsh> fake_update_engine_client_;
+  raw_ptr<FakeUpdateEngineClient, DanglingUntriaged | ExperimentalAsh>
+      fake_update_engine_client_;
 };
 
 TEST_F(PreferencesTest, TestUpdatePrefOnBrowserScreenDetails) {

@@ -14,10 +14,6 @@
 #import "ios/showcase/infobars/sc_infobar_constants.h"
 #import "ios/showcase/infobars/sc_infobar_container_view_controller.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface SCInfobarBannerCoordinator () <InfobarBannerDelegate,
                                           InfobarModalDelegate>
 @property(nonatomic, strong) InfobarBannerViewController* bannerViewController;

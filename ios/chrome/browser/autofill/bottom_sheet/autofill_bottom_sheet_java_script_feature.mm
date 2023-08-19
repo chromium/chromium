@@ -8,10 +8,6 @@
 #import "components/autofill/core/common/password_form_fill_data.h"
 #import "ios/chrome/browser/autofill/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 constexpr char kScriptName[] = "bottom_sheet";
 constexpr char kScriptMessageName[] = "BottomSheetMessage";
@@ -40,20 +36,21 @@ AutofillBottomSheetJavaScriptFeature::GetInstance() {
 }
 
 AutofillBottomSheetJavaScriptFeature::AutofillBottomSheetJavaScriptFeature()
-    : web::JavaScriptFeature(web::ContentWorld::kIsolatedWorld,
-                             {FeatureScript::CreateWithFilename(
-                                 kScriptName,
-                                 FeatureScript::InjectionTime::kDocumentEnd,
-                                 FeatureScript::TargetFrames::kAllFrames,
-                                 FeatureScript::ReinjectionBehavior::
-                                     kReinjectOnDocumentRecreation)}) {}
+    : web::JavaScriptFeature(
+          web::ContentWorld::kIsolatedWorld,
+          {FeatureScript::CreateWithFilename(
+              kScriptName,
+              FeatureScript::InjectionTime::kDocumentStart,
+              FeatureScript::TargetFrames::kAllFrames,
+              FeatureScript::ReinjectionBehavior::kInjectOncePerWindow)}) {}
 
 AutofillBottomSheetJavaScriptFeature::~AutofillBottomSheetJavaScriptFeature() =
     default;
 
 void AutofillBottomSheetJavaScriptFeature::AttachListeners(
     const std::vector<autofill::FieldRendererId>& renderer_ids,
-    web::WebFrame* frame) {
+    web::WebFrame* frame,
+    bool must_be_empty) {
   // TODO(crbug.com/1383214): Properly handle WebFrame destruction.
   if (!frame) {
     return;
@@ -65,14 +62,27 @@ void AutofillBottomSheetJavaScriptFeature::AttachListeners(
   }
   base::Value::List parameters;
   parameters.Append(std::move(renderer_id_list));
+  parameters.Append(must_be_empty);
   CallJavaScriptFunction(frame, "bottomSheet.attachListeners", parameters);
 }
 
-void AutofillBottomSheetJavaScriptFeature::DetachListenersAndRefocus(
-    web::WebFrame* frame) {
+void AutofillBottomSheetJavaScriptFeature::DetachListeners(
+    const std::set<autofill::FieldRendererId>& renderer_ids,
+    web::WebFrame* frame,
+    bool must_be_empty,
+    bool refocus) {
   // TODO(crbug.com/1383214): Properly handle WebFrame destruction.
   if (!frame) {
     return;
   }
-  CallJavaScriptFunction(frame, "bottomSheet.detachListenersAndRefocus", {});
+  base::Value::List renderer_id_list =
+      base::Value::List::with_capacity(renderer_ids.size());
+  for (auto renderer_id : renderer_ids) {
+    renderer_id_list.Append(static_cast<int>(renderer_id.value()));
+  }
+  base::Value::List parameters;
+  parameters.Append(std::move(renderer_id_list));
+  parameters.Append(must_be_empty);
+  parameters.Append(refocus);
+  CallJavaScriptFunction(frame, "bottomSheet.detachListeners", parameters);
 }

@@ -17,11 +17,14 @@ component("clipboard_history") {
   ]
 
   deps = [
+    "//chromeos/constants",
     "//chromeos/crosapi/mojom",
     "//chromeos/ui/base",
     "//chromeos/ui/vector_icons/",
     "//components/vector_icons",
     "//ui/base",
     "//ui/base:constants",
+    "//ui/gfx",
+    "//ui/strings:ui_strings_grit",
   ]
 }

@@ -9,20 +9,16 @@
 #include <ostream>
 
 #include "base/apple/bridging.h"
+#include "base/apple/foundation_util.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/debug/stack_trace.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
 #include "base/memory/scoped_policy.h"
 #include "base/strings/pattern.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ui/accessibility/platform/ax_private_attributes_mac.h"
 #include "ui/accessibility/platform/inspect/ax_element_wrapper_mac.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 // error: 'accessibilityAttributeNames' is deprecated: first deprecated in
 // macOS 10.10 - Use the NSAccessibility protocol methods instead (see
@@ -116,7 +112,7 @@ base::ScopedCFTypeRef<AXUIElementRef> FindAXUIElement(
   for (id child in children) {
     base::ScopedCFTypeRef<AXUIElementRef> found =
         FindAXUIElement((__bridge AXUIElementRef)child, criteria);
-    if (found != nil) {
+    if (found) {
       return found;
     }
   }
@@ -150,10 +146,10 @@ std::pair<base::ScopedCFTypeRef<AXUIElementRef>, int> FindAXUIElement(
           kCGNullWindowID));
 
   for (NSDictionary* window_info in windows) {
-    int pid = base::mac::ObjCCast<NSNumber>(window_info[@"kCGWindowOwnerPID"])
+    int pid = base::apple::ObjCCast<NSNumber>(window_info[@"kCGWindowOwnerPID"])
                   .intValue;
     std::string window_name = base::SysNSStringToUTF8(
-        base::mac::ObjCCast<NSString>(window_info[@"kCGWindowOwnerName"]));
+        base::apple::ObjCCast<NSString>(window_info[@"kCGWindowOwnerName"]));
 
     base::ScopedCFTypeRef<AXUIElementRef> node;
 

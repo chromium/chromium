@@ -102,7 +102,6 @@ public class OfflinePageSavePageLaterEvaluationTest {
     private static final String INPUT_FILE_PATH = "paquete/offline_eval_urls.txt";
     private static final String LOG_OUTPUT_FILE_PATH = "paquete/offline_eval_logs.txt";
     private static final String RESULT_OUTPUT_FILE_PATH = "paquete/offline_eval_results.txt";
-    private static final int GET_PAGES_TIMEOUT_MS = 30000;
     private static final int PAGE_MODEL_LOAD_TIMEOUT_MS = 30000;
     private static final int REMOVE_REQUESTS_TIMEOUT_MS = 30000;
 

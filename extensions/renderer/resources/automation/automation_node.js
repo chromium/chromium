@@ -545,16 +545,6 @@ const GetTableRowCount = natives.GetTableRowCount;
 const GetDetectedLanguage = natives.GetDetectedLanguage;
 
 /**
- * @param {string} axTreeId The id of the accessibility tree.
- * @param {number} nodeID The id of a node.
- * @param {string} attr The name of the string attribute.
- * @return {!Array<{startIndex: number, endIndex: number, language: string,
- * probability: number}>}
- */
-const GetLanguageAnnotationForStringAttribute =
-    natives.GetLanguageAnnotationForStringAttribute;
-
-/**
  * @param {string} axTreeID The id of the accessibility tree.
  * @param {number} nodeID The id of a node.
  * @return {!Array<number>}
@@ -926,11 +916,6 @@ AutomationNodeImpl.prototype = {
     return GetDetectedLanguage(this.treeID, this.id);
   },
 
-  languageAnnotationForStringAttribute: function(attributeName) {
-    return GetLanguageAnnotationForStringAttribute(this.treeID,
-        this.id, attributeName);
-  },
-
   get customActions() {
     return GetCustomActions(this.treeID, this.id);
   },
@@ -1181,17 +1166,6 @@ AutomationNodeImpl.prototype = {
     this.performAction_('longClick');
   },
 
-  domQuerySelector: function(selector, callback) {
-    if (!this.rootImpl) {
-      callback();
-    }
-    automationInternal.querySelector(
-      { treeID: this.rootImpl.treeID,
-        automationNodeID: this.id,
-        selector: selector },
-      $Function.bind(this.domQuerySelectorCallback_, this, callback));
-  },
-
   find: function(params) {
     return this.findInternal_(params);
   },
@@ -1408,23 +1382,6 @@ AutomationNodeImpl.prototype = {
         opt_args || {});
   },
 
-  domQuerySelectorCallback_: function(userCallback, resultAutomationNodeID) {
-    // resultAutomationNodeID could be zero or undefined or (unlikely) null;
-    // they all amount to the same thing here, which is that no node was
-    // returned.
-    if (!resultAutomationNodeID || !this.rootImpl) {
-      userCallback(null);
-      return;
-    }
-    const resultNode = this.rootImpl.get(resultAutomationNodeID);
-    if (!resultNode) {
-      logging.WARNING('Query selector result not in tree: ' +
-                      resultAutomationNodeID);
-      userCallback(null);
-    }
-    userCallback(resultNode);
-  },
-
   findInternal_: function(params, opt_results) {
     let result = null;
     this.forAllDescendants_(function(node) {
@@ -1568,7 +1525,6 @@ const intAttributes = [
 // Int attribute, relation property to expose, reverse relation to expose.
 const nodeRefAttributes = [
   ['activedescendantId', 'activeDescendant', 'activeDescendantFor'],
-  ['errormessageId', 'errorMessage', 'errorMessageFor'],
   ['inPageLinkTargetId', 'inPageLinkTarget', null],
   ['nextFocusId', 'nextFocus', null],
   ['nextOnLineId', 'nextOnLine', null],
@@ -1588,6 +1544,7 @@ const nodeRefListAttributes = [
   ['controlsIds', 'controls', 'controlledBy'],
   ['describedbyIds', 'describedBy', 'descriptionFor'],
   ['detailsIds', 'details', 'detailsFor'],
+  ['errorMessageIds', 'errorMessage', 'errorMessageFor'],
   ['flowtoIds', 'flowTo', 'flowFrom'],
   ['labelledbyIds', 'labelledBy', 'labelFor'],
 ];
@@ -2142,7 +2099,6 @@ utils.expose(AutomationNode, AutomationNodeImpl, {
     'boundsForRange',
     'createPosition',
     'doDefault',
-    'domQuerySelector',
     'find',
     'findAll',
     'focus',

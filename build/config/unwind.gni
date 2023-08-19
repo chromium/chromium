@@ -1,0 +1,7 @@
+import("//build_overrides/build.gni")
+
+declare_args() {
+  # Use in-tree libunwind (buildtools/third_party/libunwind) instead of whatever
+  # system library provides unwind symbols (e.g. libgcc).
+  use_custom_libunwind = is_fuchsia || is_android
+}

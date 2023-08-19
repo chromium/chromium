@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
+#include "chromeos/ash/components/dbus/patchpanel/patchpanel_client.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "content/public/browser/device_service.h"
@@ -171,8 +172,13 @@ void ArcPowerBridge::FlushWakeLocksForTesting() {
 
 void ArcPowerBridge::OnConnectionReady() {
   // ash::Shell may not exist in tests.
-  if (ash::Shell::HasInstance())
+  if (ash::Shell::HasInstance()) {
     ash::Shell::Get()->display_configurator()->AddObserver(this);
+    // Whether display is on is the same signal as whether Android is interactive
+    // or not.
+    IsDisplayOn(base::BindOnce(&ArcPowerBridge::NotifyAndroidInteractiveState,
+                              arc_bridge_service_));
+  }
   chromeos::PowerManagerClient::Get()->AddObserver(this);
   chromeos::PowerManagerClient::Get()->GetScreenBrightnessPercent(
       base::BindOnce(&ArcPowerBridge::OnGetScreenBrightnessPercent,
@@ -314,13 +320,23 @@ void ArcPowerBridge::OnPowerStateChanged(
   if (android_idle_control_disabled_)
     return;
 
+  bool enabled = (power_state != chromeos::DISPLAY_POWER_ALL_OFF);
+  NotifyAndroidInteractiveState(arc_bridge_service_, enabled);
+}
+
+void ArcPowerBridge::NotifyAndroidInteractiveState(ArcBridgeService* bridge,
+                                                   bool enabled) {
+  if (!bridge) {
+    return;
+  }
   mojom::PowerInstance* power_instance =
-      ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->power(), SetInteractive);
+      ARC_GET_INSTANCE_FOR_METHOD(bridge->power(), SetInteractive);
   if (!power_instance)
     return;
-
-  bool enabled = (power_state != chromeos::DISPLAY_POWER_ALL_OFF);
   power_instance->SetInteractive(enabled);
+  // Display power state is the same signal as Android interactive state. When
+  // power state changes, notify Android interactive state change as well.
+  ash::PatchPanelClient::Get()->NotifyAndroidInteractiveState(enabled);
 }
 
 void ArcPowerBridge::OnAcquireDisplayWakeLock(mojom::DisplayWakeLockType type) {

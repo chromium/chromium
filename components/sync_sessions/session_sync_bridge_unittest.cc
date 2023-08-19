@@ -15,7 +15,6 @@
 #include "base/test/task_environment.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync/base/client_tag_hash.h"
-#include "components/sync/base/sync_prefs.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
@@ -28,6 +27,7 @@
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
+#include "components/sync/service/sync_prefs.h"
 #include "components/sync/test/mock_commit_queue.h"
 #include "components/sync/test/mock_model_type_change_processor.h"
 #include "components/sync/test/model_type_store_test_util.h"
@@ -67,11 +67,23 @@ using testing::SizeIs;
 using testing::UnorderedElementsAre;
 using testing::WithArg;
 
+const char kAccountId[] = "TestAccountId";
 const char kLocalCacheGuid[] = "TestLocalCacheGuid";
 
 MATCHER_P(EntityDataHasSpecifics, session_specifics_matcher, "") {
   return session_specifics_matcher.MatchAndExplain(arg->specifics.session(),
                                                    result_listener);
+}
+
+sync_pb::ModelTypeState GetModelTypeStateWithInitialSyncDone() {
+  sync_pb::ModelTypeState state;
+  state.set_initial_sync_state(
+      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+  state.set_cache_guid(kLocalCacheGuid);
+  state.set_authenticated_account_id(kAccountId);
+  state.mutable_progress_marker()->set_data_type_id(
+      GetSpecificsFieldNumberFromModelType(syncer::SESSIONS));
+  return state;
 }
 
 syncer::EntityData SpecificsToEntity(const sync_pb::SessionSpecifics& specifics,
@@ -200,8 +212,7 @@ class SessionSyncBridgeTest : public ::testing::Test {
     syncer::DataTypeActivationRequest request;
     request.error_handler = base::DoNothing();
     request.cache_guid = kLocalCacheGuid;
-    request.authenticated_account_id =
-        CoreAccountId::FromGaiaId("SomeAccountId");
+    request.authenticated_account_id = CoreAccountId::FromGaiaId(kAccountId);
 
     base::RunLoop loop;
     real_processor_->OnSyncStarting(
@@ -217,13 +228,7 @@ class SessionSyncBridgeTest : public ::testing::Test {
     real_processor_->ConnectSync(
         std::make_unique<testing::NiceMock<syncer::MockCommitQueue>>());
 
-    sync_pb::ModelTypeState state;
-    state.set_initial_sync_state(
-        sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
-    state.set_cache_guid(request.cache_guid);
-    state.mutable_progress_marker()->set_data_type_id(
-        GetSpecificsFieldNumberFromModelType(syncer::SESSIONS));
-    state.set_authenticated_account_id("SomeAccountId");
+    sync_pb::ModelTypeState state = GetModelTypeStateWithInitialSyncDone();
     syncer::UpdateResponseDataList initial_updates;
     for (const SessionSpecifics& specifics : remote_data) {
       initial_updates.push_back(SpecificsToUpdateResponse(specifics));
@@ -909,11 +914,8 @@ TEST_F(SessionSyncBridgeTest, ShouldRecycleTabNodeAfterCommitCompleted) {
 
   // Mimic a commit completing for the initial sync.
   ASSERT_TRUE(real_processor()->HasLocalChangesForTest());
-  sync_pb::ModelTypeState state;
-  state.set_initial_sync_state(
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   real_processor()->OnCommitCompleted(
-      state,
+      GetModelTypeStateWithInitialSyncDone(),
       {CreateSuccessResponse(kLocalCacheGuid),
        CreateSuccessResponse(tab_client_tag1)},
       /*error_response_list=*/FailedCommitResponseDataList());
@@ -959,7 +961,8 @@ TEST_F(SessionSyncBridgeTest, ShouldRecycleTabNodeAfterCommitCompleted) {
   // which we do by navigating in one of the open tabs.
   EXPECT_CALL(mock_processor(), Delete(tab_storage_key2, _));
   real_processor()->OnCommitCompleted(
-      state, {CreateSuccessResponse(tab_client_tag2)},
+      GetModelTypeStateWithInitialSyncDone(),
+      {CreateSuccessResponse(tab_client_tag2)},
       /*error_response_list=*/FailedCommitResponseDataList());
   tab1->Navigate("http://foo3.com/");
   EXPECT_THAT(GetAllData(), UnorderedElementsAre(Pair(header_storage_key, _),
@@ -1243,16 +1246,13 @@ TEST_F(SessionSyncBridgeTest, ShouldHandleRemoteDeletion) {
                          kForeignTabNodeId, "http://baz.com/");
   StartSyncing({foreign_header, foreign_tab});
 
-  sync_pb::ModelTypeState state;
-  state.set_initial_sync_state(
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
-
   // Mimic receiving a commit ack for the local header entity, to later be able
   // to verify HasLocalChangesForTest() without interferences from the local
   // session.
   ASSERT_TRUE(real_processor()->HasLocalChangesForTest());
   real_processor()->OnCommitCompleted(
-      state, {CreateSuccessResponse(kLocalCacheGuid)},
+      GetModelTypeStateWithInitialSyncDone(),
+      {CreateSuccessResponse(kLocalCacheGuid)},
       /*error_response_list=*/FailedCommitResponseDataList());
   ASSERT_FALSE(real_processor()->HasLocalChangesForTest());
 
@@ -1280,7 +1280,8 @@ TEST_F(SessionSyncBridgeTest, ShouldHandleRemoteDeletion) {
   syncer::UpdateResponseDataList updates;
   updates.push_back(
       CreateTombstone(SessionStore::GetClientTag(foreign_header)));
-  real_processor()->OnUpdateReceived(state, std::move(updates),
+  real_processor()->OnUpdateReceived(GetModelTypeStateWithInitialSyncDone(),
+                                     std::move(updates),
                                      /*gc_directive=*/absl::nullopt);
 
   foreign_session_tab = nullptr;
@@ -1368,25 +1369,25 @@ TEST_F(SessionSyncBridgeTest, ShouldIgnoreRemoteDeletionOfLocalTab) {
 
   // Mimic receiving a commit ack for both the tab and the header entity,
   // because otherwise it will be treated as conflict, and then local wins.
-  sync_pb::ModelTypeState state;
-  state.set_initial_sync_state(
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   real_processor()->OnCommitCompleted(
-      state,
+      GetModelTypeStateWithInitialSyncDone(),
       {CreateSuccessResponse(tab_client_tag1),
        CreateSuccessResponse(kLocalCacheGuid)},
       /*error_response_list=*/FailedCommitResponseDataList());
   ASSERT_FALSE(real_processor()->HasLocalChangesForTest());
 
   // Mimic receiving a remote deletion of both entities.
+  ASSERT_FALSE(bridge()->IsLocalDataOutOfSyncForTest());
   EXPECT_CALL(mock_processor(), Put).Times(0);
   syncer::UpdateResponseDataList updates;
   updates.push_back(CreateTombstone(kLocalCacheGuid));
   updates.push_back(CreateTombstone(tab_client_tag1));
-  real_processor()->OnUpdateReceived(state, std::move(updates),
+  real_processor()->OnUpdateReceived(GetModelTypeStateWithInitialSyncDone(),
+                                     std::move(updates),
                                      /*gc_directive=*/absl::nullopt);
 
   // State should remain unchanged (deletions ignored).
+  EXPECT_TRUE(bridge()->IsLocalDataOutOfSyncForTest());
   EXPECT_THAT(
       GetAllData(),
       UnorderedElementsAre(
@@ -1452,6 +1453,233 @@ TEST_F(SessionSyncBridgeTest, ShouldIgnoreRemoteDeletionOfLocalTab) {
 
   // Run until idle because PostTask() is used to invoke ResubmitLocalSession().
   base::RunLoop().RunUntilIdle();
+}
+
+// Test that remote deletion of local data will not result in a placeholder tab
+// being lost.
+TEST_F(SessionSyncBridgeTest, ShouldIgnoreRemoteDeletionOfLocalPlaceholderTab) {
+  const int kWindowId1 = 1000001;
+  const int kTabId1 = 1000003;
+  // Zero is the first assigned tab node ID.
+  const int kTabNodeId1 = 0;
+
+  AddWindow(kWindowId1);
+  AddTab(kWindowId1, "http://foo.com/", kTabId1);
+
+  InitializeBridge();
+  StartSyncing();
+
+  const std::string header_storage_key =
+      SessionStore::GetHeaderStorageKey(kLocalCacheGuid);
+  const std::string tab_storage_key1 =
+      SessionStore::GetTabStorageKey(kLocalCacheGuid, kTabNodeId1);
+  const std::string tab_client_tag1 =
+      SessionStore::GetTabClientTagForTest(kLocalCacheGuid, kTabNodeId1);
+
+  ASSERT_THAT(
+      GetAllData(),
+      UnorderedElementsAre(
+          Pair(header_storage_key,
+               EntityDataHasSpecifics(MatchesHeader(kLocalCacheGuid, _, _))),
+          Pair(tab_storage_key1, EntityDataHasSpecifics(MatchesTab(
+                                     kLocalCacheGuid, kWindowId1, kTabId1,
+                                     kTabNodeId1, {"http://foo.com/"})))));
+
+  ASSERT_TRUE(real_processor()->HasLocalChangesForTest());
+
+  // Mimic receiving a commit ack for both the tab and the header entity,
+  // because otherwise it will be treated as conflict, and then local wins.
+  real_processor()->OnCommitCompleted(
+      GetModelTypeStateWithInitialSyncDone(),
+      {CreateSuccessResponse(tab_client_tag1),
+       CreateSuccessResponse(kLocalCacheGuid)},
+      /*error_response_list=*/FailedCommitResponseDataList());
+  ASSERT_FALSE(real_processor()->HasLocalChangesForTest());
+
+  ShutdownBridge();
+
+  // Override the tab with a placeholder tab delegate. Note that, on Android,
+  // tab IDs are persisted by session restore across browser restarts.
+  PlaceholderTabDelegate placeholder_tab1(
+      SessionID::FromSerializedValue(kTabId1));
+  ResetWindows();
+  TestSyncedWindowDelegate* window = AddWindow(kWindowId1);
+  window->OverrideTabAt(0, &placeholder_tab1);
+
+  // Start the bridge again.
+  InitializeBridge();
+  StartSyncing();
+  ASSERT_TRUE(real_processor()->IsTrackingMetadata());
+  ASSERT_FALSE(real_processor()->HasLocalChangesForTest());
+
+  // Mimic receiving a remote deletion of both entities (header and tab).
+  ASSERT_FALSE(bridge()->IsLocalDataOutOfSyncForTest());
+  syncer::UpdateResponseDataList updates;
+  updates.push_back(CreateTombstone(kLocalCacheGuid));
+  updates.push_back(CreateTombstone(tab_client_tag1));
+  real_processor()->OnUpdateReceived(GetModelTypeStateWithInitialSyncDone(),
+                                     std::move(updates),
+                                     /*gc_directive=*/absl::nullopt);
+
+  // State should remain unchanged (deletions ignored), but the local data
+  // should be marked as "out of sync".
+  EXPECT_TRUE(bridge()->IsLocalDataOutOfSyncForTest());
+  EXPECT_THAT(
+      GetAllData(),
+      UnorderedElementsAre(
+          Pair(header_storage_key,
+               EntityDataHasSpecifics(MatchesHeader(kLocalCacheGuid, _, _))),
+          Pair(tab_storage_key1, EntityDataHasSpecifics(MatchesTab(
+                                     kLocalCacheGuid, kWindowId1, kTabId1,
+                                     kTabNodeId1, {"http://foo.com/"})))));
+
+  ShutdownBridge();
+
+  // Start the bridge once again. The state should remain unchanged.
+  InitializeBridge();
+  EXPECT_TRUE(bridge()->IsLocalDataOutOfSyncForTest());
+  StartSyncing();
+  EXPECT_THAT(
+      GetAllData(),
+      UnorderedElementsAre(
+          Pair(header_storage_key,
+               EntityDataHasSpecifics(MatchesHeader(kLocalCacheGuid, _, _))),
+          Pair(tab_storage_key1, EntityDataHasSpecifics(MatchesTab(
+                                     kLocalCacheGuid, kWindowId1, kTabId1,
+                                     kTabNodeId1, {"http://foo.com/"})))));
+
+  // ResubmitLocalSession() should have been posted and the LocalDataOutOfSync
+  // state cleared. However, the data has not yet been sent to the processor.
+  EXPECT_FALSE(bridge()->IsLocalDataOutOfSyncForTest());
+  ASSERT_FALSE(real_processor()->HasLocalChangesForTest());
+
+  // Run until idle because PostTask() is used to invoke ResubmitLocalSession().
+  base::RunLoop().RunUntilIdle();
+
+  // The local data should have been sent for reupload, but no commit has
+  // occurred yet.
+  ASSERT_TRUE(real_processor()->HasLocalChangesForTest());
+}
+
+// Test that while remote deletion will not delete data, local metadata deletion
+// from an action such as toggling sync will properly delete metadata and not
+// reupload it.
+TEST_F(SessionSyncBridgeTest, ShouldNotRestoreLocalSessionWithoutMetadata) {
+  const int kWindowId1 = 1000001;
+  const int kTabId1 = 1000003;
+  const int kTabId2 = 1000004;
+  // Zero is the first assigned tab node ID.
+  const int kTabNodeId1 = 0;
+  const int kTabNodeId2 = 1;
+
+  AddWindow(kWindowId1);
+  AddTab(kWindowId1, "http://foo.com/", kTabId1);
+  AddTab(kWindowId1, "http://bar.com/", kTabId2);
+
+  InitializeBridge();
+  StartSyncing();
+
+  const std::string header_storage_key =
+      SessionStore::GetHeaderStorageKey(kLocalCacheGuid);
+  const std::string tab_storage_key1 =
+      SessionStore::GetTabStorageKey(kLocalCacheGuid, kTabNodeId1);
+  const std::string tab_client_tag1 =
+      SessionStore::GetTabClientTagForTest(kLocalCacheGuid, kTabNodeId1);
+  const std::string tab_storage_key2 =
+      SessionStore::GetTabStorageKey(kLocalCacheGuid, kTabNodeId2);
+  const std::string tab_client_tag2 =
+      SessionStore::GetTabClientTagForTest(kLocalCacheGuid, kTabNodeId2);
+
+  ASSERT_THAT(
+      GetAllData(),
+      UnorderedElementsAre(
+          Pair(header_storage_key,
+               EntityDataHasSpecifics(MatchesHeader(kLocalCacheGuid, _, _))),
+          Pair(tab_storage_key1, EntityDataHasSpecifics(MatchesTab(
+                                     kLocalCacheGuid, kWindowId1, kTabId1,
+                                     kTabNodeId1, {"http://foo.com/"}))),
+          Pair(tab_storage_key2, EntityDataHasSpecifics(MatchesTab(
+                                     kLocalCacheGuid, kWindowId1, kTabId2,
+                                     kTabNodeId2, {"http://bar.com/"})))));
+
+  ASSERT_TRUE(real_processor()->HasLocalChangesForTest());
+
+  // Mimic receiving a commit ack for both the tabs and the header entity,
+  // because otherwise it will be treated as conflict, and then local wins.
+  real_processor()->OnCommitCompleted(
+      GetModelTypeStateWithInitialSyncDone(),
+      {CreateSuccessResponse(tab_client_tag1),
+       CreateSuccessResponse(tab_client_tag2),
+       CreateSuccessResponse(kLocalCacheGuid)},
+      /*error_response_list=*/FailedCommitResponseDataList());
+
+  ASSERT_FALSE(real_processor()->HasLocalChangesForTest());
+  ASSERT_TRUE(real_processor()->IsTrackingMetadata());
+
+  // Mimic receiving a remote deletion of all entities.
+  ASSERT_FALSE(bridge()->IsLocalDataOutOfSyncForTest());
+  syncer::UpdateResponseDataList updates;
+  updates.push_back(CreateTombstone(kLocalCacheGuid));
+  updates.push_back(CreateTombstone(tab_client_tag1));
+  updates.push_back(CreateTombstone(tab_client_tag2));
+  real_processor()->OnUpdateReceived(GetModelTypeStateWithInitialSyncDone(),
+                                     std::move(updates),
+                                     /*gc_directive=*/absl::nullopt);
+
+  // State should remain unchanged (deletions ignored).
+  EXPECT_TRUE(bridge()->IsLocalDataOutOfSyncForTest());
+  EXPECT_THAT(
+      GetAllData(),
+      UnorderedElementsAre(
+          Pair(header_storage_key,
+               EntityDataHasSpecifics(MatchesHeader(kLocalCacheGuid, _, _))),
+          Pair(tab_storage_key1, EntityDataHasSpecifics(MatchesTab(
+                                     kLocalCacheGuid, kWindowId1, kTabId1,
+                                     kTabNodeId1, {"http://foo.com/"}))),
+          Pair(tab_storage_key2, EntityDataHasSpecifics(MatchesTab(
+                                     kLocalCacheGuid, kWindowId1, kTabId2,
+                                     kTabNodeId2, {"http://bar.com/"})))));
+
+  ShutdownBridge();
+
+  // Override tab1 with a placeholder tab delegate. Note that, on Android,
+  // tab IDs are persisted by session restore across browser restarts.
+  PlaceholderTabDelegate placeholder_tab1(
+      SessionID::FromSerializedValue(kTabId1));
+  ResetWindows();
+  TestSyncedWindowDelegate* window = AddWindow(kWindowId1);
+  window->OverrideTabAt(0, &placeholder_tab1);
+  AddTab(kWindowId1, "http://bar.com/", kTabId2);
+
+  // Start the bridge again.
+  InitializeBridge();
+
+  // Clear the metadata. This will lose the placeholder tab permanently.
+  real_processor()->ClearMetadataWhileStopped();
+  EXPECT_TRUE(bridge()->IsLocalDataOutOfSyncForTest());
+
+  StartSyncing();
+  ASSERT_TRUE(real_processor()->IsTrackingMetadata());
+
+  // The TabNodeId gets re-used now that tab1 is gone.
+  const std::string tab_storage_key2_reused =
+      SessionStore::GetTabStorageKey(kLocalCacheGuid, kTabNodeId1);
+  const std::string tab_client_tag2_reused =
+      SessionStore::GetTabClientTagForTest(kLocalCacheGuid, kTabNodeId1);
+
+  // The header and non-placeholder tab should both be restored, but the
+  // placeholder tab got lost.
+  // TODO(crbug/1462305): on Android it should be possible to reupload
+  // placeholder tabs.
+  EXPECT_FALSE(bridge()->IsLocalDataOutOfSyncForTest());
+  EXPECT_THAT(GetAllData(),
+              UnorderedElementsAre(
+                  Pair(header_storage_key, EntityDataHasSpecifics(MatchesHeader(
+                                               kLocalCacheGuid, _, _))),
+                  Pair(tab_storage_key2_reused,
+                       EntityDataHasSpecifics(
+                           MatchesTab(kLocalCacheGuid, kWindowId1, kTabId2,
+                                      kTabNodeId1, {"http://bar.com/"})))));
 }
 
 // Verifies that a foreign session can be deleted by the user from the history
@@ -1542,17 +1770,15 @@ TEST_F(SessionSyncBridgeTest, ShouldNotBroadcastUpdatesIfEmpty) {
   EXPECT_CALL(mock_foreign_session_updated_cb(), Run()).Times(0);
 
   // Mimic receiving an empty list of remote updates.
-  sync_pb::ModelTypeState state;
-  state.set_initial_sync_state(
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
-  real_processor()->OnUpdateReceived(state, {}, /*gc_directive=*/absl::nullopt);
+  real_processor()->OnUpdateReceived(GetModelTypeStateWithInitialSyncDone(), {},
+                                     /*gc_directive=*/absl::nullopt);
 }
 
 TEST_F(SessionSyncBridgeTest, ShouldDoGarbageCollection) {
   // We construct two identical sessions, one modified recently, one modified
-  // more than |kStaleSessionThreshold| ago (14 days ago).
-  const base::Time stale_mtime = base::Time::Now() - base::Days(15);
-  const base::Time recent_mtime = base::Time::Now() - base::Days(13);
+  // more than |kStaleSessionThreshold| ago (28 days ago).
+  const base::Time stale_mtime = base::Time::Now() - base::Days(29);
+  const base::Time recent_mtime = base::Time::Now() - base::Days(27);
   const std::string kStaleSessionTag = "stalesessiontag";
   const std::string kRecentSessionTag = "recentsessiontag";
   const int kWindowId = 2000001;
@@ -1563,9 +1789,6 @@ TEST_F(SessionSyncBridgeTest, ShouldDoGarbageCollection) {
   StartSyncing();
 
   // Construct a remote update.
-  sync_pb::ModelTypeState state;
-  state.set_initial_sync_state(
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   syncer::UpdateResponseDataList updates;
   // Two entities belong to a recent session.
   updates.push_back(SpecificsToUpdateResponse(
@@ -1591,7 +1814,8 @@ TEST_F(SessionSyncBridgeTest, ShouldDoGarbageCollection) {
       Delete(SessionStore::GetTabStorageKey(kStaleSessionTag, kTabNodeId), _));
 
   EXPECT_CALL(mock_foreign_session_updated_cb(), Run()).Times(AtLeast(1));
-  real_processor()->OnUpdateReceived(state, std::move(updates),
+  real_processor()->OnUpdateReceived(GetModelTypeStateWithInitialSyncDone(),
+                                     std::move(updates),
                                      /*gc_directive=*/absl::nullopt);
 }
 

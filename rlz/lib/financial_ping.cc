@@ -39,36 +39,12 @@
 #include "base/time/time.h"
 #endif
 
-#if defined(RLZ_NETWORK_IMPLEMENTATION_WIN_INET)
-
-#include <windows.h>
-#include <wininet.h>
-
-namespace {
-
-class InternetHandle {
- public:
-  InternetHandle(HINTERNET handle) { handle_ = handle; }
-  ~InternetHandle() { if (handle_) InternetCloseHandle(handle_); }
-  operator HINTERNET() const { return handle_; }
-  bool operator!() const { return (handle_ == NULL); }
-
- private:
-  HINTERNET handle_;
-};
-
-}  // namespace
-
-#else
-
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "net/base/load_flags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
-
-#endif
 
 namespace rlz_lib {
 
@@ -165,7 +141,6 @@ bool FinancialPing::FormRequest(Product product,
   return true;
 }
 
-#if defined(RLZ_NETWORK_IMPLEMENTATION_CHROME_NET)
 namespace {
 
 // A waitable event used to detect when either:
@@ -235,8 +210,6 @@ bool send_financial_ping_interrupted_for_test = false;
 
 }  // namespace
 
-#if defined(RLZ_NETWORK_IMPLEMENTATION_CHROME_NET)
-
 // The signal for the current ping request. It can be used to cancel the request
 // in case of a shutdown.
 scoped_refptr<RefCountedWaitableEvent>& GetPingResultEvent() {
@@ -262,8 +235,6 @@ bool FinancialPing::SetURLLoaderFactory(
   return true;
 }
 
-#endif
-
 void PingRlzServer(std::string url,
                    scoped_refptr<RefCountedWaitableEvent> event) {
   // Copy the pointer to stack because g_URLLoaderFactory may be set to NULL
@@ -275,8 +246,10 @@ void PingRlzServer(std::string url,
 
   // Browser shutdown will cause the factory to be reset to NULL.
   // ShutdownCheck will catch this.
-  if (!url_loader_factory)
+  if (!url_loader_factory) {
+    event->SignalFetchComplete(-1, "");
     return;
+  }
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("rlz_ping", R"(
@@ -309,6 +282,13 @@ void PingRlzServer(std::string url,
   auto url_loader = network::SimpleURLLoader::Create(
       std::move(resource_request), traffic_annotation);
 
+  constexpr int kMaxNetworkRetries = 3;
+  url_loader->SetRetryOptions(
+      kMaxNetworkRetries,
+      network::SimpleURLLoader::RetryMode::RETRY_ON_5XX |
+          network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE |
+          network::SimpleURLLoader::RETRY_ON_NAME_NOT_RESOLVED);
+
   // Pass ownership of the loader to the bound function. Otherwise the load will
   // be canceled when the SimpleURLLoader object is destroyed.
   auto* url_loader_ptr = url_loader.get();
@@ -317,7 +297,6 @@ void PingRlzServer(std::string url,
       base::BindOnce(&OnURLLoadComplete, std::move(url_loader),
                      std::move(event)));
 }
-#endif
 
 FinancialPing::PingResponse FinancialPing::PingServer(const char* request,
                                                       std::string* response) {
@@ -326,59 +305,6 @@ FinancialPing::PingResponse FinancialPing::PingServer(const char* request,
 
   response->clear();
 
-#if defined(RLZ_NETWORK_IMPLEMENTATION_WIN_INET)
-  // Initialize WinInet.
-  InternetHandle inet_handle = InternetOpenA(kFinancialPingUserAgent,
-                                             INTERNET_OPEN_TYPE_PRECONFIG,
-                                             NULL, NULL, 0);
-  if (!inet_handle)
-    return PING_FAILURE;
-
-  // Open network connection.
-  InternetHandle connection_handle = InternetConnectA(inet_handle,
-      kFinancialServer, kFinancialPort, "", "", INTERNET_SERVICE_HTTP,
-      INTERNET_FLAG_NO_CACHE_WRITE, 0);
-  if (!connection_handle)
-    return PING_FAILURE;
-
-  // Prepare the HTTP request.
-  const DWORD kFlags = INTERNET_FLAG_NO_CACHE_WRITE | INTERNET_FLAG_NO_COOKIES |
-                       INTERNET_FLAG_SECURE;
-  InternetHandle http_handle =
-      HttpOpenRequestA(connection_handle, "GET", request, NULL, NULL,
-                       kFinancialPingResponseObjects, kFlags, NULL);
-  if (!http_handle)
-    return PING_FAILURE;
-
-  // Timeouts are probably:
-  // INTERNET_OPTION_SEND_TIMEOUT, INTERNET_OPTION_RECEIVE_TIMEOUT
-
-  // Send the HTTP request. Note: Fails if user is working in off-line mode.
-  if (!HttpSendRequest(http_handle, NULL, 0, NULL, 0))
-    return PING_FAILURE;
-
-  // Check the response status.
-  DWORD status;
-  DWORD status_size = sizeof(status);
-  if (!HttpQueryInfo(http_handle, HTTP_QUERY_STATUS_CODE |
-                     HTTP_QUERY_FLAG_NUMBER, &status, &status_size, NULL) ||
-      200 != status)
-    return PING_FAILURE;
-
-  // Get the response text.
-  std::unique_ptr<char[]> buffer(new char[kMaxPingResponseLength]);
-  if (buffer.get() == NULL)
-    return PING_FAILURE;
-
-  DWORD bytes_read = 0;
-  while (InternetReadFile(http_handle, buffer.get(), kMaxPingResponseLength,
-                          &bytes_read) && bytes_read > 0) {
-    response->append(buffer.get(), bytes_read);
-    bytes_read = 0;
-  };
-
-  return PING_SUCCESSFUL;
-#else
   std::string url =
       base::StringPrintf("https://%s%s", kFinancialServer, request);
 
@@ -409,6 +335,7 @@ FinancialPing::PingResponse FinancialPing::PingServer(const char* request,
     return PING_FAILURE;
 
   if (event->GetResponseCode() == -1) {
+    send_financial_ping_interrupted_for_test = true;
     return PING_SHUTDOWN;
   } else if (event->GetResponseCode() != 200) {
     return PING_FAILURE;
@@ -416,7 +343,6 @@ FinancialPing::PingResponse FinancialPing::PingServer(const char* request,
 
   *response = event->TakeResponse();
   return PING_SUCCESSFUL;
-#endif
 }
 
 bool FinancialPing::IsPingTime(Product product, bool no_delay) {
@@ -466,7 +392,6 @@ bool FinancialPing::ClearLastPingTime(Product product) {
   return store->ClearPingTime(product);
 }
 
-#if defined(RLZ_NETWORK_IMPLEMENTATION_CHROME_NET)
 namespace test {
 
 void ResetSendFinancialPingInterrupted() {
@@ -478,6 +403,5 @@ bool WasSendFinancialPingInterrupted() {
 }
 
 }  // namespace test
-#endif
 
 }  // namespace rlz_lib

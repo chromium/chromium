@@ -43,8 +43,7 @@ using CookieAccessResultList = std::vector<CookieWithAccessResult>;
 struct NET_EXPORT CookieAccessParams {
   CookieAccessParams() = delete;
   CookieAccessParams(CookieAccessSemantics access_semantics,
-                     bool delegate_treats_url_as_trustworthy,
-                     CookieSamePartyStatus same_party_status);
+                     bool delegate_treats_url_as_trustworthy);
 
   // |access_semantics| is the access mode of the cookie access check.
   CookieAccessSemantics access_semantics = CookieAccessSemantics::UNKNOWN;
@@ -52,10 +51,6 @@ struct NET_EXPORT CookieAccessParams {
   // CookieAccessDelegate has authorized access to secure cookies from URLs
   // which might not otherwise be able to do so.
   bool delegate_treats_url_as_trustworthy = false;
-  // |same_party_status| indicates whether, and how, SameParty restrictions
-  // should be enforced.
-  CookieSamePartyStatus same_party_status =
-      CookieSamePartyStatus::kNoSamePartyEnforcement;
 };
 
 class NET_EXPORT CanonicalCookie {
@@ -120,6 +115,10 @@ class NET_EXPORT CanonicalCookie {
   // will be unpartitioned even when the cookie line has the Partitioned
   // attribute.
   //
+  // The `block_truncated` argument indicates whether the '\0', '\n', and '\r'
+  // characters should cause the cookie to fail to be created if present
+  // (instead of truncating `cookie_line` at the first occurrence).
+  //
   // If a cookie is returned, |cookie->IsCanonical()| will be true.
   static std::unique_ptr<CanonicalCookie> Create(
       const GURL& url,
@@ -127,6 +126,7 @@ class NET_EXPORT CanonicalCookie {
       const base::Time& creation_time,
       absl::optional<base::Time> server_time,
       absl::optional<CookiePartitionKey> cookie_partition_key,
+      bool block_truncated = true,
       CookieInclusionStatus* status = nullptr);
 
   // Create a canonical cookie based on sanitizing the passed inputs in the
@@ -396,7 +396,7 @@ class NET_EXPORT CanonicalCookie {
                                     const base::Time& server_time);
 
   // Per rfc6265bis the maximum expiry date is no further than 400 days in the
-  // future. Clamping only occurs when kClampCookieExpiryTo400Days is enabled.
+  // future.
   static base::Time ValidateAndAdjustExpiryDate(
       const base::Time& expiry_date,
       const base::Time& creation_date);
@@ -536,14 +536,6 @@ class NET_EXPORT CanonicalCookie {
 
   // Returns whether the cookie was created at most |age_threshold| ago.
   bool IsRecentlyCreated(base::TimeDelta age_threshold) const;
-
-  // Returns true iff the cookie does not violate any rules associated with
-  // creating a cookie with the SameParty attribute. In particular, if a cookie
-  // has SameParty, then it must be Secure and must not be SameSite=Strict.
-  static bool IsCookieSamePartyValid(const ParsedCookie& parsed_cookie);
-  static bool IsCookieSamePartyValid(bool is_same_party,
-                                     bool is_secure,
-                                     CookieSameSite same_site);
 
   // Returns true iff the cookie is a partitioned cookie with a nonce or that
   // does not violate the semantics of the Partitioned attribute:

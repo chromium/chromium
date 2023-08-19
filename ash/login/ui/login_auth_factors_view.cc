@@ -17,8 +17,12 @@
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
@@ -41,8 +45,7 @@ constexpr int kSpacingBetweenIconsAndLabelDp = 8;
 constexpr int kIconTopSpacingDp = 10;
 constexpr int kArrowButtonSizeDp = 32;
 constexpr base::TimeDelta kErrorTimeout = base::Seconds(3);
-constexpr base::TimeDelta kCheckmarkAnimationDuration = base::Milliseconds(450);
-constexpr int kCheckmarkAnimationNumFrames = 13;
+constexpr float kCheckmarkAnimationPlaybackSpeed = 2.25;
 
 // The values of this enum should be nearly the same as the values of
 // AuthFactorState, except instead of kErrorTemporary and kErrorPermanent, we
@@ -132,6 +135,32 @@ AuthFactorModel* GetHighestPriorityAuthFactor(
   auto& max = *std::max_element(auth_factors.begin(), auth_factors.end(),
                                 compare_by_priority);
   return max.get();
+}
+
+std::unique_ptr<lottie::Animation> GetCheckmarkAnimation(
+    ui::ColorProvider* color_provider) {
+  absl::optional<std::vector<uint8_t>> lottie_data =
+      ui::ResourceBundle::GetSharedInstance().GetLottieData(
+          IDR_LOGIN_ARROW_CHECKMARK_ANIMATION);
+  CHECK(lottie_data.has_value());
+
+  cc::SkottieColorMap color_map = cc::SkottieColorMap{
+      cc::SkottieMapColor("cros.sys.illo.color2",
+                          color_provider->GetColor(AuthIconView::GetColorId(
+                              AuthIconView::Status::kPositive))),
+      cc::SkottieMapColor("cros.sys.app_base_shaded",
+                          color_provider->GetColor(AuthIconView::GetColorId(
+                              AuthIconView::Status::kPrimary))),
+  };
+
+  std::unique_ptr<lottie::Animation> animation =
+      std::make_unique<lottie::Animation>(
+          cc::SkottieWrapper::CreateSerializable(lottie_data.value()),
+          std::move(color_map));
+
+  animation->SetPlaybackSpeed(kCheckmarkAnimationPlaybackSpeed);
+
+  return animation;
 }
 
 }  // namespace
@@ -230,8 +259,6 @@ LoginAuthFactorsView::LoginAuthFactorsView(
   // TODO(crbug.com/1233614): Rename kLockScreenFingerprintSuccessIcon once the
   // feature flag is removed and FingerprintView no longer needs this.
   checkmark_icon_ = AddChildView(std::make_unique<AuthIconView>());
-  checkmark_icon_->SetIcon(kLockScreenFingerprintSuccessIcon,
-                           AuthIconView::Color::kPositive);
   checkmark_icon_->SetVisible(false);
 
   label_wrapper_ =
@@ -239,6 +266,9 @@ LoginAuthFactorsView::LoginAuthFactorsView(
   label_wrapper_->SetProperty(
       views::kMarginsKey,
       gfx::Insets::TLBR(kSpacingBetweenIconsAndLabelDp, 0, 0, 0));
+  if (chromeos::features::IsJellyEnabled()) {
+    label_wrapper_->label()->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  }
 }
 
 LoginAuthFactorsView::~LoginAuthFactorsView() = default;
@@ -422,19 +452,15 @@ void LoginAuthFactorsView::ShowReadyAndDisabledAuthFactors() {
 void LoginAuthFactorsView::ShowCheckmark() {
   const bool arrow_button_was_visible = arrow_button_->GetVisible();
   auth_factor_icon_row_->SetVisible(false);
-  checkmark_icon_->SetVisible(true);
   SetArrowVisibility(false);
   if (arrow_button_was_visible) {
-    const auto& resource =
-        DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
-            ? IDR_LOGIN_ARROW_CHECKMARK_SPINNER_DARKMODE
-            : IDR_LOGIN_ARROW_CHECKMARK_SPINNER_LIGHTMODE;
-    checkmark_icon_->SetAnimation(resource, kCheckmarkAnimationDuration,
-                                  kCheckmarkAnimationNumFrames);
+    checkmark_icon_->SetLottieAnimation(
+        GetCheckmarkAnimation(GetColorProvider()));
   } else {
     checkmark_icon_->SetIcon(kLockScreenFingerprintSuccessIcon,
-                             AuthIconView::Color::kPositive);
+                             AuthIconView::Status::kPositive);
   }
+  checkmark_icon_->SetVisible(true);
 }
 
 int LoginAuthFactorsView::GetReadyLabelId() const {

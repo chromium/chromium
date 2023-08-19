@@ -15,6 +15,7 @@
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -108,8 +109,7 @@ ThumbnailCache::ThumbnailCache(size_t default_cache_size,
                                size_t compression_queue_max_size,
                                size_t write_queue_max_size,
                                bool use_approximation_thumbnail,
-                               bool save_jpeg_thumbnails,
-                               double jpeg_aspect_ratio)
+                               bool save_jpeg_thumbnails)
     : etc1_file_sequenced_task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})),
       jpeg_file_sequenced_task_runner_(

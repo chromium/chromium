@@ -7,10 +7,6 @@
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 BROWSER_USER_DATA_KEY_IMPL(WebStateUpdateBrowserAgent)
 
 WebStateUpdateBrowserAgent::WebStateUpdateBrowserAgent(Browser* browser)
@@ -45,30 +41,31 @@ void WebStateUpdateBrowserAgent::UpdateWebStateScrollViewOffset(
 
 #pragma mark - WebStateListObserver
 
-void WebStateUpdateBrowserAgent::WebStateActivatedAt(
+void WebStateUpdateBrowserAgent::WebStateListDidChange(
     WebStateList* web_state_list,
-    web::WebState* old_web_state,
-    web::WebState* new_web_state,
-    int active_index,
-    ActiveWebStateChangeReason reason) {
-  // Inform the old web state that it is no longer visible.
-  if (old_web_state) {
-    old_web_state->WasHidden();
-    old_web_state->SetKeepRenderProcessAlive(false);
+    const WebStateListChange& change,
+    const WebStateListStatus& status) {
+  if (change.type() == WebStateListChange::Type::kDetach) {
+    // Inform the detached web state that it is no longer visible.
+    const WebStateListChangeDetach& detach_change =
+        change.As<WebStateListChangeDetach>();
+    web::WebState* detached_web_state = detach_change.detached_web_state();
+    if (detached_web_state->IsRealized()) {
+      detached_web_state->WasHidden();
+      detached_web_state->SetKeepRenderProcessAlive(false);
+    }
   }
-  if (new_web_state) {
-    new_web_state->GetWebViewProxy().scrollViewProxy.clipsToBounds = NO;
-  }
-}
 
-void WebStateUpdateBrowserAgent::WebStateDetachedAt(
-    WebStateList* web_state_list,
-    web::WebState* web_state,
-    int index) {
-  // Inform the detached web state that it is no longer visible.
-  if (web_state->IsRealized()) {
-    web_state->WasHidden();
-    web_state->SetKeepRenderProcessAlive(false);
+  if (status.active_web_state_change()) {
+    // Inform the old web state that it is no longer visible.
+    if (status.old_active_web_state) {
+      status.old_active_web_state->WasHidden();
+      status.old_active_web_state->SetKeepRenderProcessAlive(false);
+    }
+    if (status.new_active_web_state) {
+      status.new_active_web_state->GetWebViewProxy()
+          .scrollViewProxy.clipsToBounds = NO;
+    }
   }
 }
 

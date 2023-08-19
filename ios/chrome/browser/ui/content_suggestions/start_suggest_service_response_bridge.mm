@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/start_suggest_service_response_bridge.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 StartSuggestServiceResponseBridge::StartSuggestServiceResponseBridge(
     id<StartSuggestServiceResponseDelegating> delegate)
     : delegate_(delegate) {}

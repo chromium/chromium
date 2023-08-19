@@ -1,11 +1,5 @@
-dcheng@chromium.org
-dgozman@chromium.org
-dtapuska@chromium.org
-haraken@chromium.org
-jam@chromium.org
-jbroman@chromium.org
-kinuko@chromium.org
-pfeldman@chromium.org
+file:../public/OWNERS
+file:../public/common/OWNERS
 
 # To ensure security review.
 per-file *_mojom_traits*.*=set noparent

@@ -3,8 +3,6 @@
 <translationbundle lang="fr-CA">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> de vos onglets n'ont pas été utilisés récemment. Les fermer?</translation>
 <translation id="125153950246128346">Touchez pour afficher un autre onglet</translation>
-<translation id="1403228085774130835">Vous trouverez vos onglets fermés dans la section des onglets récents du menu principal de Chrome</translation>
-<translation id="1455506303394048917">Votre activité dans ces onglets de navigation privée sera effacée de cet appareil</translation>
 <translation id="1499635324672558517">Fermer tous les onglets de navigation privée?</translation>
 <translation id="1657719826150349398">Déplacer l'onglet vers le bas</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> onglet}one{<ph name="TABS_COUNT_MANY" /> onglet}other{<ph name="TABS_COUNT_MANY" /> onglets}}</translation>
@@ -47,6 +45,7 @@
 <translation id="5073204694187207510">Masquer la grille plein écran</translation>
 <translation id="5076161749301278626">Afficher les avis sur le magasin?</translation>
 <translation id="5082793167783849073">Comparez rapidement des pages en créant un groupe. Pour commencer, maintenez le doigt sur un lien.</translation>
+<translation id="5339733443032484186">Votre dernier onglet</translation>
 <translation id="5490235265819901748">Groupe d'onglets développé</translation>
 <translation id="5494920125229734069">Tout sélectionner</translation>
 <translation id="5556417849629758491">Afficher les renseignements sur le magasin, option accessible dans le haut de l'écran</translation>
@@ -62,10 +61,12 @@
 <translation id="6228793724645064692">(note du magasin)</translation>
 <translation id="6333260925957816943">Renseignements à propos de ce magasin</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Dégrouper <ph name="TABS_COUNT_ONE" /> onglet sélectionné}one{Dégrouper <ph name="TABS_COUNT_MANY" /> onglet sélectionné}other{Dégrouper <ph name="TABS_COUNT_MANY" /> onglets sélectionnés}}</translation>
+<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Vous trouverez vos onglets fermés dans la section des onglets récents du menu principal de Chrome. Votre onglet de navigation privée ne sera pas accessible.}one{Vous trouverez vos onglets fermés dans la section des onglets récents du menu principal de Chrome. # onglet de navigation privée ne sera pas accessible.}other{Vous trouverez vos onglets fermés dans la section des onglets récents du menu principal de Chrome. Vos # onglets de navigation privée ne seront pas accessibles.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> onglet}one{<ph name="TABS_COUNT_MANY" /> onglet}other{<ph name="TABS_COUNT_MANY" /> onglets}}</translation>
 <translation id="6549021453810473782">Affichez les renseignements sur le magasin</translation>
 <translation id="6562820390860419811">Déplacer l'onglet vers la gauche</translation>
 <translation id="6615455863669487791">Démonstration</translation>
+<translation id="661742612106409204">Vous trouverez vos onglets fermés dans la section des onglets récents du menu principal de Chrome.</translation>
 <translation id="6840760312327750441">Pour regrouper des onglets, maintenez le doigt sur un onglet, puis faites-le glisser vers un autre.</translation>
 <translation id="6856809498882026482">Quitter le mode de sélection multiple</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Partager un onglet}one{Partager un onglet}other{Partager des onglets}}</translation>

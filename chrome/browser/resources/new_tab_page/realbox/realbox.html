@@ -30,6 +30,10 @@
     --cr-realbox-width: var(--cr-realbox-min-width);
   }
 
+  :host([is-tall_]) {
+    --cr-realbox-height: 48px;
+  }
+
   /**
    * Show the secondary side if it can be shown and is currently available to be
    * shown.
@@ -214,9 +218,10 @@
       aria-live="[[inputAriaLive_]]" role="combobox"
       aria-expanded="[[dropdownIsVisible]]" aria-controls="matches"
       placeholder="$i18n{searchBoxHint}" on-copy="onInputCutCopy_"
-      on-cut="onInputCutCopy_" on-focus="onInputFocus_" on-input="onInputInput_"
-      on-keydown="onInputKeydown_" on-keyup="onInputKeyup_"
-      on-mousedown="onInputMouseDown_" on-paste="onInputPaste_">
+      on-cut="onInputCutCopy_" on-focus="onInputFocus_"
+      on-input="onInputInput_" on-keydown="onInputKeydown_"
+      on-keyup="onInputKeyup_" on-mousedown="onInputMouseDown_"
+      on-paste="onInputPaste_">
   <cr-realbox-icon id="icon" match="[[selectedMatch_]]"
       default-icon="[[realboxIcon_]]" in-searchbox>
   </cr-realbox-icon>

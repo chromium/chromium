@@ -88,10 +88,12 @@ class RootWindowDeskSwitchAnimatorTest
 
   // Creates an animator from the given indices on the primary root window.
   // Creates a test api for the animator as well.
-  void InitAnimator(int starting_desk_index, int ending_desk_index) {
+  void InitAnimator(DeskSwitchAnimationType type,
+                    int starting_desk_index,
+                    int ending_desk_index) {
     animator_ = std::make_unique<RootWindowDeskSwitchAnimator>(
-        Shell::GetPrimaryRootWindow(), starting_desk_index, ending_desk_index,
-        this, /*for_remove=*/false);
+        Shell::GetPrimaryRootWindow(), type, starting_desk_index,
+        ending_desk_index, this, /*for_remove=*/false);
     test_api_ =
         std::make_unique<RootWindowDeskSwitchAnimatorTestApi>(animator_.get());
   }
@@ -144,9 +146,91 @@ class RootWindowDeskSwitchAnimatorTest
   int visible_desk_changed_count_ = 0;
 };
 
-// Tests a simple animation from one desk to another.
-TEST_F(RootWindowDeskSwitchAnimatorTest, SimpleAnimation) {
-  InitAnimator(1, 2);
+// Tests a simple animation from one desk to another with quick animation.
+TEST_F(RootWindowDeskSwitchAnimatorTest, SimpleQuickAnimation) {
+  InitAnimator(DeskSwitchAnimationType::kQuickAnimation, 1, 2);
+  TakeStartingDeskScreenshotAndWait();
+  TakeEndingDeskScreenshotAndWait();
+
+  // Tests that a simple animation has 2 screenshots, one for each desk.
+  EXPECT_EQ(1, starting_desk_screenshot_taken_count());
+  EXPECT_EQ(1, ending_desk_screenshot_taken_count());
+
+  // Tests that the animation layer is the expected size.
+  auto* animation_layer = test_api()->GetAnimationLayer();
+  EXPECT_EQ(2u, animation_layer->children().size());
+  // With quick animation, the screenshot lays over each other with a 25%
+  // offset.
+  const gfx::Size root_window_size =
+      Shell::GetPrimaryRootWindow()->bounds().size();
+  const int edge_padding =
+      std::round(kEdgePaddingRatio * root_window_size.width());
+  gfx::Size expected_size = root_window_size;
+  expected_size.set_width(root_window_size.width() * 1.25 + 2 * edge_padding);
+  EXPECT_EQ(expected_size, animation_layer->bounds().size());
+
+  // Tests that the screenshot associated with desk index 1 is the one that is
+  // shown at the beginning of the animation.
+  EXPECT_EQ(Shell::GetPrimaryRootWindow()->bounds(),
+            GetVisibleBounds(test_api()->GetScreenshotLayerOfDeskWithIndex(1),
+                             animation_layer));
+
+  // Tests that the screenshot associated with desk index 2 has 0 opacity at the
+  // beginning of the animation.
+  EXPECT_EQ(test_api()->GetScreenshotLayerOfDeskWithIndex(2)->opacity(), 0);
+
+  // Tests that the screenshot associated with desk index 2 is the one that is
+  // shown at the end of the animation.
+  animator()->StartAnimation();
+  EXPECT_EQ(Shell::GetPrimaryRootWindow()->bounds(),
+            GetVisibleBounds(test_api()->GetScreenshotLayerOfDeskWithIndex(2),
+                             animation_layer));
+  EXPECT_EQ(2, test_api()->GetEndingDeskIndex());
+  // Tests that the screenshot associated with desk index 2 has 1 opacity at the
+  // ending of the animation.
+  EXPECT_EQ(test_api()->GetScreenshotLayerOfDeskWithIndex(2)->opacity(), 1);
+}
+
+// Tests a quick animation with interrupt will not cause crash.
+TEST_F(RootWindowDeskSwitchAnimatorTest, InterruptQuickAnimation) {
+  InitAnimator(DeskSwitchAnimationType::kQuickAnimation, 1, 2);
+  TakeStartingDeskScreenshotAndWait();
+  TakeEndingDeskScreenshotAndWait();
+
+  // Replacing needs to be done while a current animation is underway, otherwise
+  // it will have no effect.
+  ui::ScopedAnimationDurationScaleMode non_zero(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  animator()->StartAnimation();
+  // Replacing with an animation going back to desk index 1. No new screenshot
+  // is needed.
+  bool needs_screenshot = animator()->ReplaceAnimation(1);
+  EXPECT_FALSE(needs_screenshot);
+
+  // Tests that no new screenshot was taken as it already existed.
+  auto* animation_layer = test_api()->GetAnimationLayer();
+  EXPECT_EQ(2u, animation_layer->children().size());
+  EXPECT_EQ(1, starting_desk_screenshot_taken_count());
+  EXPECT_EQ(1, ending_desk_screenshot_taken_count());
+
+  // Tests that the screenshot associated with desk index 1 has 0 opacity at the
+  // beginning of the animation.
+  EXPECT_EQ(test_api()->GetScreenshotLayerOfDeskWithIndex(1)->opacity(), 0);
+
+  // Tests that the screenshot associated with desk index 1 is the one that is
+  // shown at the end of the animation.
+  animator()->StartAnimation();
+
+  EXPECT_EQ(
+      Shell::GetPrimaryRootWindow()->bounds(),
+      GetTargetVisibleBounds(test_api()->GetScreenshotLayerOfDeskWithIndex(1),
+                             animation_layer));
+}
+
+// Tests a simple animation from one desk to another with continuous animation.
+TEST_F(RootWindowDeskSwitchAnimatorTest, SimpleContinuousAnimation) {
+  InitAnimator(DeskSwitchAnimationType::kContinuousAnimation, 1, 2);
   TakeStartingDeskScreenshotAndWait();
   TakeEndingDeskScreenshotAndWait();
 
@@ -180,7 +264,7 @@ TEST_F(RootWindowDeskSwitchAnimatorTest, SimpleAnimation) {
 // screenshot layer stored.
 TEST_F(RootWindowDeskSwitchAnimatorTest,
        DISABLED_ChainedAnimationNoNewScreenshot) {
-  InitAnimator(1, 2);
+  InitAnimator(DeskSwitchAnimationType::kContinuousAnimation, 1, 2);
   TakeStartingDeskScreenshotAndWait();
   TakeEndingDeskScreenshotAndWait();
 
@@ -214,7 +298,7 @@ TEST_F(RootWindowDeskSwitchAnimatorTest,
 // Tests a chained animation where we are adding an animation to the right of
 // the current animating desks, causing the animation layer to shift left.
 TEST_F(RootWindowDeskSwitchAnimatorTest, DISABLED_ChainedAnimationMovingLeft) {
-  InitAnimator(1, 2);
+  InitAnimator(DeskSwitchAnimationType::kContinuousAnimation, 1, 2);
   TakeStartingDeskScreenshotAndWait();
   TakeEndingDeskScreenshotAndWait();
 
@@ -257,7 +341,7 @@ TEST_F(RootWindowDeskSwitchAnimatorTest, DISABLED_ChainedAnimationMovingLeft) {
 // Tests a chained animation where we are adding an animation to the left of
 // the current animating desks, causing the animation layer to shift right.
 TEST_F(RootWindowDeskSwitchAnimatorTest, DISABLED_ChainedAnimationMovingRight) {
-  InitAnimator(3, 2);
+  InitAnimator(DeskSwitchAnimationType::kContinuousAnimation, 3, 2);
   TakeStartingDeskScreenshotAndWait();
   TakeEndingDeskScreenshotAndWait();
 
@@ -296,7 +380,7 @@ TEST_F(RootWindowDeskSwitchAnimatorTest, DISABLED_ChainedAnimationMovingRight) {
 // TODO(b/219068687): Re-enable chained desk animation tests.
 // Tests a complex animation which multiple animations are started and replaced.
 TEST_F(RootWindowDeskSwitchAnimatorTest, DISABLED_MultipleReplacements) {
-  InitAnimator(1, 2);
+  InitAnimator(DeskSwitchAnimationType::kContinuousAnimation, 1, 2);
   TakeStartingDeskScreenshotAndWait();
   TakeEndingDeskScreenshotAndWait();
 
@@ -343,7 +427,7 @@ TEST_F(RootWindowDeskSwitchAnimatorTest, UpdateSwipeAnimationNewScreenshot) {
   DesksController::Get()->NewDesk(DesksCreationRemovalSource::kButton);
   DesksController::Get()->NewDesk(DesksCreationRemovalSource::kButton);
 
-  InitAnimator(0, 1);
+  InitAnimator(DeskSwitchAnimationType::kContinuousAnimation, 0, 1);
   TakeStartingDeskScreenshotAndWait();
   TakeEndingDeskScreenshotAndWait();
 
@@ -365,7 +449,7 @@ TEST_F(RootWindowDeskSwitchAnimatorTest, UpdateSwipeAnimationLimit) {
   // Add one more desk as we need two desks for this test.
   DesksController::Get()->NewDesk(DesksCreationRemovalSource::kButton);
 
-  InitAnimator(0, 1);
+  InitAnimator(DeskSwitchAnimationType::kContinuousAnimation, 0, 1);
   TakeStartingDeskScreenshotAndWait();
   TakeEndingDeskScreenshotAndWait();
 
@@ -399,7 +483,7 @@ TEST_F(RootWindowDeskSwitchAnimatorTest, EndSwipeAnimation) {
   // Add one more desk as we need two desks for this test.
   DesksController::Get()->NewDesk(DesksCreationRemovalSource::kButton);
 
-  InitAnimator(0, 1);
+  InitAnimator(DeskSwitchAnimationType::kContinuousAnimation, 0, 1);
   TakeStartingDeskScreenshotAndWait();
   TakeEndingDeskScreenshotAndWait();
   auto* animation_layer = test_api()->GetAnimationLayer();
@@ -416,7 +500,7 @@ TEST_F(RootWindowDeskSwitchAnimatorTest, EndSwipeAnimation) {
 
   // Reinitialize the animator as each animator only supports one
   // EndSwipeAnimation during its lifetime.
-  InitAnimator(0, 1);
+  InitAnimator(DeskSwitchAnimationType::kContinuousAnimation, 0, 1);
   TakeStartingDeskScreenshotAndWait();
   TakeEndingDeskScreenshotAndWait();
   animation_layer = test_api()->GetAnimationLayer();
@@ -437,7 +521,7 @@ TEST_F(RootWindowDeskSwitchAnimatorTest, FastSwipe) {
   // Add one more desk as we need two desks for this test.
   DesksController::Get()->NewDesk(DesksCreationRemovalSource::kButton);
 
-  InitAnimator(0, 1);
+  InitAnimator(DeskSwitchAnimationType::kContinuousAnimation, 0, 1);
   TakeStartingDeskScreenshotAndWait();
   TakeEndingDeskScreenshotAndWait();
   auto* animation_layer = test_api()->GetAnimationLayer();
@@ -458,13 +542,13 @@ TEST_F(RootWindowDeskSwitchAnimatorTest, FastSwipe) {
 // https://crbug.com/1134390.
 TEST_F(RootWindowDeskSwitchAnimatorTest,
        EndSwipeAnimationBeforeScreenshotTaken) {
-  InitAnimator(0, 1);
+  InitAnimator(DeskSwitchAnimationType::kContinuousAnimation, 0, 1);
   animator()->TakeStartingDeskScreenshot();
   animator()->EndSwipeAnimation(/*is_fast_swipe=*/false);
 
   // Reinitialize the animator as each animator only supports one
   // EndSwipeAnimation during its lifetime.
-  InitAnimator(0, 1);
+  InitAnimator(DeskSwitchAnimationType::kContinuousAnimation, 0, 1);
   TakeStartingDeskScreenshotAndWait();
   animator()->TakeEndingDeskScreenshot();
   animator()->EndSwipeAnimation(/*is_fast_swipe=*/false);

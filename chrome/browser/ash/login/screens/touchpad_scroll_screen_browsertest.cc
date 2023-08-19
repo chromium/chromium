@@ -14,12 +14,14 @@
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
+#include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/touchpad_scroll_screen_handler.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "content/public/test/browser_test.h"
+#include "ui/events/devices/touchpad_device.h"
 
 namespace ash {
 
@@ -66,6 +68,10 @@ class TouchpadScrollScreenTest
   }
 
   void ShowTouchpadScrollScreen() {
+    LoginDisplayHost::default_host()
+        ->GetWizardContextForTesting()
+        ->skip_choobe_for_tests = true;
+
     login_manager_mixin_.LoginAsNewRegularUser();
     OobeScreenExitWaiter(GetFirstSigninScreen()).Wait();
     WizardController::default_controller()->AdvanceToScreen(
@@ -100,7 +106,16 @@ class TouchpadScrollScreenTest
   base::OnceClosure quit_closure_;
 };
 
+// SKip the TouchpadScrollDirection screen if no touchpad device is available.
+IN_PROC_BROWSER_TEST_F(TouchpadScrollScreenTest, SkipNoTouchpadDevice) {
+  ShowTouchpadScrollScreen();
+  WaitForScreenExit();
+
+  EXPECT_EQ(result_.value(), TouchpadScrollScreen::Result::kNotApplicable);
+}
+
 IN_PROC_BROWSER_TEST_F(TouchpadScrollScreenTest, Next) {
+  test::SetFakeTouchpadDevice();
   ShowTouchpadScrollScreen();
 
   // Check Screen is visible
@@ -113,6 +128,7 @@ IN_PROC_BROWSER_TEST_F(TouchpadScrollScreenTest, Next) {
 }
 
 IN_PROC_BROWSER_TEST_F(TouchpadScrollScreenTest, ToggleScrollDirectionOn) {
+  test::SetFakeTouchpadDevice();
   ShowTouchpadScrollScreen();
 
   // Check Screen is visible
@@ -137,6 +153,7 @@ IN_PROC_BROWSER_TEST_F(TouchpadScrollScreenTest, ToggleScrollDirectionOn) {
 }
 
 IN_PROC_BROWSER_TEST_F(TouchpadScrollScreenTest, ToggleScrollDirectionOff) {
+  test::SetFakeTouchpadDevice();
   login_manager_mixin_.LoginAsNewRegularUser();
   OobeScreenExitWaiter(GetFirstSigninScreen()).Wait();
 
@@ -170,6 +187,7 @@ IN_PROC_BROWSER_TEST_F(TouchpadScrollScreenTest, ToggleScrollDirectionOff) {
 }
 
 IN_PROC_BROWSER_TEST_F(TouchpadScrollScreenTest, RetainScrollDirectionOn) {
+  test::SetFakeTouchpadDevice();
   login_manager_mixin_.LoginAsNewRegularUser();
   OobeScreenExitWaiter(GetFirstSigninScreen()).Wait();
 

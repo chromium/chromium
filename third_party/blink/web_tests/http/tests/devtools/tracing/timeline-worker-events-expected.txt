@@ -1,4 +1,0 @@
-Tests that worker events are properly filtered in timeline.
-
-Got 2 worker metadata events
-

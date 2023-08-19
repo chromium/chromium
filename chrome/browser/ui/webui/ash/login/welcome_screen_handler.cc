@@ -188,11 +188,19 @@ void WelcomeScreenHandler::DeclareLocalizedValues(
   // Strings for ChromeVox hint.
   builder->Add("activateChromeVox", IDS_OOBE_ACTIVATE_CHROMEVOX);
   builder->Add("continueWithoutChromeVox", IDS_OOBE_CONTINUE_WITHOUT_CHROMEVOX);
+  builder->Add("chromevoxHintClose", IDS_OOBE_CHROMEVOX_HINT_CLOSE);
+  builder->Add("chromevoxHintTitle", IDS_OOBE_CHROMEVOX_HINT_TITLE);
   builder->Add("chromeVoxHintText", IDS_OOBE_CHROMEVOX_HINT_TEXT);
+  builder->Add("chromeVoxHintTextExpanded",
+               IDS_OOBE_CHROMEVOX_HINT_TEXT_EXPANDED);
   builder->Add("chromeVoxHintAnnouncementTextLaptop",
                IDS_OOBE_CHROMEVOX_HINT_ANNOUNCEMENT_TEXT_LAPTOP);
   builder->Add("chromeVoxHintAnnouncementTextTablet",
                IDS_OOBE_CHROMEVOX_HINT_ANNOUNCEMENT_TEXT_TABLET);
+  builder->Add("chromeVoxHintAnnouncementTextLaptopExpanded",
+               IDS_OOBE_CHROMEVOX_HINT_ANNOUNCEMENT_TEXT_LAPTOP_EXPANDED);
+  builder->Add("chromeVoxHintAnnouncementTextTabletExpanded",
+               IDS_OOBE_CHROMEVOX_HINT_ANNOUNCEMENT_TEXT_TABLET_EXPANDED);
 
   // Strings for the device requisition prompt.
   builder->Add("deviceRequisitionPromptCancel",

@@ -1,0 +1,141 @@
+# This file is generated. DO NOT EDIT.
+
+aom_unit_test_common_intrin_avx2 =
+    [ "//third_party/libaom/source/libaom/test/simd_cmp_avx2.cc" ]
+
+aom_unit_test_common_intrin_neon =
+    [ "//third_party/libaom/source/libaom/test/simd_cmp_neon.cc" ]
+
+aom_unit_test_common_intrin_sse2 =
+    [ "//third_party/libaom/source/libaom/test/simd_cmp_sse2.cc" ]
+
+aom_unit_test_common_intrin_ssse3 =
+    [ "//third_party/libaom/source/libaom/test/simd_cmp_ssse3.cc" ]
+
+aom_unit_test_common_sources = [
+  "//third_party/libaom/source/libaom/test/acm_random.h",
+  "//third_party/libaom/source/libaom/test/aom_image_test.cc",
+  "//third_party/libaom/source/libaom/test/aom_integer_test.cc",
+  "//third_party/libaom/source/libaom/test/aom_mem_test.cc",
+  "//third_party/libaom/source/libaom/test/av1_common_int_test.cc",
+  "//third_party/libaom/source/libaom/test/av1_config_test.cc",
+  "//third_party/libaom/source/libaom/test/av1_key_value_api_test.cc",
+  "//third_party/libaom/source/libaom/test/binary_codes_test.cc",
+  "//third_party/libaom/source/libaom/test/block_test.cc",
+  "//third_party/libaom/source/libaom/test/boolcoder_test.cc",
+  "//third_party/libaom/source/libaom/test/cdef_test.cc",
+  "//third_party/libaom/source/libaom/test/cfl_test.cc",
+  "//third_party/libaom/source/libaom/test/codec_factory.h",
+  "//third_party/libaom/source/libaom/test/convolve_test.cc",
+  "//third_party/libaom/source/libaom/test/decode_test_driver.cc",
+  "//third_party/libaom/source/libaom/test/decode_test_driver.h",
+  "//third_party/libaom/source/libaom/test/divu_small_test.cc",
+  "//third_party/libaom/source/libaom/test/dr_prediction_test.cc",
+  "//third_party/libaom/source/libaom/test/ec_test.cc",
+  "//third_party/libaom/source/libaom/test/ethread_test.cc",
+  "//third_party/libaom/source/libaom/test/film_grain_table_test.cc",
+  "//third_party/libaom/source/libaom/test/function_equivalence_test.h",
+  "//third_party/libaom/source/libaom/test/hiprec_convolve_test.cc",
+  "//third_party/libaom/source/libaom/test/hiprec_convolve_test_util.cc",
+  "//third_party/libaom/source/libaom/test/hiprec_convolve_test_util.h",
+  "//third_party/libaom/source/libaom/test/intrabc_test.cc",
+  "//third_party/libaom/source/libaom/test/intrapred_test.cc",
+  "//third_party/libaom/source/libaom/test/log2_test.cc",
+  "//third_party/libaom/source/libaom/test/lpf_test.cc",
+  "//third_party/libaom/source/libaom/test/md5_helper.h",
+  "//third_party/libaom/source/libaom/test/quant_test.cc",
+  "//third_party/libaom/source/libaom/test/ratectrl_test.cc",
+  "//third_party/libaom/source/libaom/test/rd_test.cc",
+  "//third_party/libaom/source/libaom/test/register_state_check.h",
+  "//third_party/libaom/source/libaom/test/scan_test.cc",
+  "//third_party/libaom/source/libaom/test/segment_binarization_sync.cc",
+  "//third_party/libaom/source/libaom/test/simd_cmp_impl.h",
+  "//third_party/libaom/source/libaom/test/simd_impl.h",
+  "//third_party/libaom/source/libaom/test/temporal_filter_test.cc",
+  "//third_party/libaom/source/libaom/test/test_vectors.cc",
+  "//third_party/libaom/source/libaom/test/test_vectors.h",
+  "//third_party/libaom/source/libaom/test/tile_config_test.cc",
+  "//third_party/libaom/source/libaom/test/transform_test_base.h",
+  "//third_party/libaom/source/libaom/test/util.h",
+  "//third_party/libaom/source/libaom/test/video_source.h",
+]
+
+aom_unit_test_decoder_sources = [
+  "//third_party/libaom/source/libaom/test/decode_api_test.cc",
+  "//third_party/libaom/source/libaom/test/decode_scalability_test.cc",
+  "//third_party/libaom/source/libaom/test/external_frame_buffer_test.cc",
+  "//third_party/libaom/source/libaom/test/invalid_file_test.cc",
+  "//third_party/libaom/source/libaom/test/ivf_video_source.h",
+  "//third_party/libaom/source/libaom/test/test_vector_test.cc",
+]
+
+aom_unit_test_encoder_intrin_sse4_1 =
+    [ "//third_party/libaom/source/libaom/test/simd_cmp_sse4.cc" ]
+
+aom_unit_test_encoder_sources = [
+  "//third_party/libaom/source/libaom/test/active_map_test.cc",
+  "//third_party/libaom/source/libaom/test/aq_segment_test.cc",
+  "//third_party/libaom/source/libaom/test/arf_freq_test.cc",
+  "//third_party/libaom/source/libaom/test/av1_convolve_test.cc",
+  "//third_party/libaom/source/libaom/test/av1_fwd_txfm1d_test.cc",
+  "//third_party/libaom/source/libaom/test/av1_fwd_txfm2d_test.cc",
+  "//third_party/libaom/source/libaom/test/av1_inv_txfm1d_test.cc",
+  "//third_party/libaom/source/libaom/test/av1_inv_txfm2d_test.cc",
+  "//third_party/libaom/source/libaom/test/av1_k_means_test.cc",
+  "//third_party/libaom/source/libaom/test/av1_nn_predict_test.cc",
+  "//third_party/libaom/source/libaom/test/av1_round_shift_array_test.cc",
+  "//third_party/libaom/source/libaom/test/av1_softmax_test.cc",
+  "//third_party/libaom/source/libaom/test/av1_txfm_test.cc",
+  "//third_party/libaom/source/libaom/test/av1_txfm_test.h",
+  "//third_party/libaom/source/libaom/test/av1_wedge_utils_test.cc",
+  "//third_party/libaom/source/libaom/test/avg_test.cc",
+  "//third_party/libaom/source/libaom/test/blend_a64_mask_1d_test.cc",
+  "//third_party/libaom/source/libaom/test/blend_a64_mask_test.cc",
+  "//third_party/libaom/source/libaom/test/comp_avg_pred_test.cc",
+  "//third_party/libaom/source/libaom/test/comp_avg_pred_test.h",
+  "//third_party/libaom/source/libaom/test/comp_mask_pred_test.cc",
+  "//third_party/libaom/source/libaom/test/datarate_test.cc",
+  "//third_party/libaom/source/libaom/test/datarate_test.h",
+  "//third_party/libaom/source/libaom/test/encode_api_test.cc",
+  "//third_party/libaom/source/libaom/test/encode_small_width_height_test.cc",
+  "//third_party/libaom/source/libaom/test/encode_test_driver.cc",
+  "//third_party/libaom/source/libaom/test/encode_test_driver.h",
+  "//third_party/libaom/source/libaom/test/encodemb_test.cc",
+  "//third_party/libaom/source/libaom/test/encodetxb_test.cc",
+  "//third_party/libaom/source/libaom/test/error_block_test.cc",
+  "//third_party/libaom/source/libaom/test/fdct4x4_test.cc",
+  "//third_party/libaom/source/libaom/test/fft_test.cc",
+  "//third_party/libaom/source/libaom/test/forced_max_frame_width_height_test.cc",
+  "//third_party/libaom/source/libaom/test/frame_size_tests.cc",
+  "//third_party/libaom/source/libaom/test/fwht4x4_test.cc",
+  "//third_party/libaom/source/libaom/test/hadamard_test.cc",
+  "//third_party/libaom/source/libaom/test/horver_correlation_test.cc",
+  "//third_party/libaom/source/libaom/test/i420_video_source.h",
+  "//third_party/libaom/source/libaom/test/loopfilter_control_test.cc",
+  "//third_party/libaom/source/libaom/test/masked_sad_test.cc",
+  "//third_party/libaom/source/libaom/test/masked_variance_test.cc",
+  "//third_party/libaom/source/libaom/test/minmax_test.cc",
+  "//third_party/libaom/source/libaom/test/mv_cost_test.cc",
+  "//third_party/libaom/source/libaom/test/noise_model_test.cc",
+  "//third_party/libaom/source/libaom/test/reconinter_test.cc",
+  "//third_party/libaom/source/libaom/test/resize_test.cc",
+  "//third_party/libaom/source/libaom/test/rt_end_to_end_test.cc",
+  "//third_party/libaom/source/libaom/test/sad_test.cc",
+  "//third_party/libaom/source/libaom/test/scalability_test.cc",
+  "//third_party/libaom/source/libaom/test/sse_sum_test.cc",
+  "//third_party/libaom/source/libaom/test/subtract_test.cc",
+  "//third_party/libaom/source/libaom/test/sum_squares_test.cc",
+  "//third_party/libaom/source/libaom/test/svc_datarate_test.cc",
+  "//third_party/libaom/source/libaom/test/time_stamp_test.cc",
+  "//third_party/libaom/source/libaom/test/variance_test.cc",
+  "//third_party/libaom/source/libaom/test/webmenc_test.cc",
+  "//third_party/libaom/source/libaom/test/y4m_test.cc",
+  "//third_party/libaom/source/libaom/test/y4m_video_source.h",
+  "//third_party/libaom/source/libaom/test/yuv_video_source.h",
+]
+
+aom_unit_test_webm_sources =
+    [ "//third_party/libaom/source/libaom/test/webm_video_source.h" ]
+
+aom_unit_test_wrapper_sources =
+    [ "//third_party/libaom/source/libaom/test/test_libaom.cc" ]

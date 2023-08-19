@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.partnerbookmarks;
 
 import android.database.Cursor;
-import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 
 import org.chromium.base.ContextUtils;
@@ -61,7 +60,9 @@ public class PartnerBookmarksProviderIterator implements PartnerBookmark.Bookmar
                     BOOKMARKS_CONTENT_URI, BOOKMARKS_PROJECTION, null, null, BOOKMARKS_SORT_ORDER);
             if (cursor == null) return null;
             return new PartnerBookmarksProviderIterator(cursor);
-        } catch (SQLiteException ex) {
+        } catch (Exception ex) {
+            // Depending on the OEM version of Android query() may throw a variety of different
+            // exception types. See crbug/1466882.
             Log.e(TAG, "Unable to read partner bookmark database", ex);
             return null;
         }

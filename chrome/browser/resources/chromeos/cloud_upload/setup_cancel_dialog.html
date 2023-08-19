@@ -78,14 +78,11 @@
   }
 </style>
 
-<!-- TODO(b/254586358): Use localized strings -->
 <cr-dialog>
-  <div slot="title">Cancel Microsoft 365 setup?</div>
-  <div slot="body">
-    You won’t be able to open files in Microsoft 365 until setup is complete
-  </div>
+  <div slot="title">$i18n{cancelSetupTitle}</div>
+  <div slot="body">$i18n{cancelSetupBodyText}</div>
   <div slot="button-container">
-    <cr-button class="cancel-button">Cancel setup</cr-button>
-    <cr-button class="action-button">Continue setup</cr-button>
+    <cr-button class="cancel-button">$i18n{cancelSetup}</cr-button>
+    <cr-button class="action-button">$i18n{continueSetup}</cr-button>
   </div>
 </cr-dialog>

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/containers/span.h"
-#import "base/mac/scoped_nsobject.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -74,8 +73,8 @@ class BookmarkMenuCocoaControllerTest : public BrowserWithTestWindowTest {
 
     bookmarks::test::WaitForBookmarkModelToLoad(
         BookmarkModelFactory::GetForBrowserContext(profile()));
-    controller_.reset(
-        [[FakeBookmarkMenuController alloc] initWithProfile:profile()]);
+    controller_ =
+        [[FakeBookmarkMenuController alloc] initWithProfile:profile()];
   }
 
   TestingProfile::TestingFactories GetTestingFactories() override {
@@ -83,16 +82,16 @@ class BookmarkMenuCocoaControllerTest : public BrowserWithTestWindowTest {
              BookmarkModelFactory::GetDefaultFactory()}};
   }
 
-  FakeBookmarkMenuController* controller() { return controller_.get(); }
+  FakeBookmarkMenuController* controller() { return controller_; }
 
  private:
   CocoaTestHelper cocoa_test_helper_;
-  base::scoped_nsobject<FakeBookmarkMenuController> controller_;
+  FakeBookmarkMenuController* __strong controller_;
 };
 
 TEST_F(BookmarkMenuCocoaControllerTest, TestOpenItem) {
   FakeBookmarkMenuController* c = controller();
-  NSMenuItem *item = [[[NSMenuItem alloc] init] autorelease];
+  NSMenuItem* item = [[NSMenuItem alloc] init];
   for (int i = 0; i < 2; i++) {
     [item setTag:i];
     ASSERT_EQ(c->_opened[i], NO);

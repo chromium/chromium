@@ -11,12 +11,16 @@
 #include "ash/user_education/user_education_util.h"
 #include "ash/user_education/views/help_bubble_factory_views_ash.h"
 #include "ash/user_education/views/help_bubble_view_ash.h"
+#include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "components/account_id/account_id.h"
 #include "components/user_education/common/help_bubble.h"
 #include "components/user_education/common/help_bubble_params.h"
+#include "ui/aura/window.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/view.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 namespace {
@@ -24,7 +28,22 @@ namespace {
 // The singleton instance owned by the `UserEducationController`.
 UserEducationHelpBubbleController* g_instance = nullptr;
 
+// Helpers ---------------------------------------------------------------------
+
+gfx::Rect GetAnchorBoundsInScreen(const HelpBubbleViewAsh* help_bubble_view) {
+  return help_bubble_view->GetAnchorView()->GetAnchorBoundsInScreen();
+}
+
+aura::Window* GetAnchorRootWindow(const HelpBubbleViewAsh* help_bubble_view) {
+  return help_bubble_view->GetAnchorView()
+      ->GetWidget()
+      ->GetNativeWindow()
+      ->GetRootWindow();
+}
+
 }  // namespace
+
+// UserEducationHelpBubbleController -------------------------------------------
 
 UserEducationHelpBubbleController::UserEducationHelpBubbleController(
     UserEducationDelegate* delegate)
@@ -40,6 +59,10 @@ UserEducationHelpBubbleController::~UserEducationHelpBubbleController() {
 
 // static
 UserEducationHelpBubbleController* UserEducationHelpBubbleController::Get() {
+  // Should only be `nullptr` in testing.
+  if (!g_instance) {
+    CHECK_IS_TEST();
+  }
   return g_instance;
 }
 
@@ -111,6 +134,62 @@ absl::optional<HelpBubbleId> UserEducationHelpBubbleController::GetHelpBubbleId(
     }
   }
   return absl::nullopt;
+}
+
+base::CallbackListSubscription
+UserEducationHelpBubbleController::AddHelpBubbleAnchorBoundsChangedCallback(
+    base::RepeatingClosure callback) {
+  return help_bubble_anchor_bounds_changed_subscribers_.Add(
+      std::move(callback));
+}
+
+base::CallbackListSubscription
+UserEducationHelpBubbleController::AddHelpBubbleClosedCallback(
+    base::RepeatingClosure callback) {
+  return help_bubble_closed_subscribers_.Add(std::move(callback));
+}
+
+base::CallbackListSubscription
+UserEducationHelpBubbleController::AddHelpBubbleShownCallback(
+    base::RepeatingClosure callback) {
+  return help_bubble_shown_subscribers_.Add(std::move(callback));
+}
+
+void UserEducationHelpBubbleController::NotifyHelpBubbleAnchorBoundsChanged(
+    base::PassKey<HelpBubbleViewAsh>,
+    const HelpBubbleViewAsh* help_bubble_view) {
+  // Ignore event if the associated help bubble has not yet been shown.
+  if (auto it = help_bubble_metadata_by_key_.find(help_bubble_view);
+      it != help_bubble_metadata_by_key_.end()) {
+    it->second.anchor_bounds_in_screen =
+        GetAnchorBoundsInScreen(help_bubble_view);
+    help_bubble_anchor_bounds_changed_subscribers_.Notify();
+  }
+}
+
+void UserEducationHelpBubbleController::NotifyHelpBubbleClosed(
+    base::PassKey<HelpBubbleViewAsh>,
+    const HelpBubbleViewAsh* help_bubble_view) {
+  // Ignore event if the associated help bubble has not yet been shown.
+  if (auto it = help_bubble_metadata_by_key_.find(help_bubble_view);
+      it != help_bubble_metadata_by_key_.end()) {
+    help_bubble_metadata_by_key_.erase(it);
+    help_bubble_closed_subscribers_.Notify();
+  }
+}
+
+void UserEducationHelpBubbleController::NotifyHelpBubbleShown(
+    base::PassKey<HelpBubbleViewAsh>,
+    const HelpBubbleViewAsh* help_bubble_view) {
+  // Ignore event if the associated help bubble has already been shown.
+  if (!base::Contains(help_bubble_metadata_by_key_, help_bubble_view)) {
+    help_bubble_metadata_by_key_.emplace(
+        std::piecewise_construct, std::forward_as_tuple(help_bubble_view),
+        std::forward_as_tuple(help_bubble_view,
+                              GetAnchorRootWindow(help_bubble_view),
+                              GetAnchorBoundsInScreen(help_bubble_view)));
+    help_bubble_shown_subscribers_.Notify();
+  }
 }
 
 }  // namespace ash

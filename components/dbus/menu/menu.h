@@ -96,7 +96,7 @@ class COMPONENT_EXPORT(DBUS) DbusMenu {
     dbus::MessageReader& reader() { return reader_; }
 
    private:
-    raw_ptr<dbus::MethodCall, DanglingUntriaged> method_call_;
+    raw_ptr<dbus::MethodCall, AcrossTasksDanglingUntriaged> method_call_;
     dbus::ExportedObject::ResponseSender response_sender_;
 
     // |reader_| is always needed for all methods on this interface, so it's not

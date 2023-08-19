@@ -38,8 +38,8 @@ class ScopedA11yOverrideWindowSetter : public aura::WindowObserver {
  private:
   // Caches the value of the a11y override window. It will be updated when a
   // different window should get focus from the accessibility features.
-  raw_ptr<aura::Window, ExperimentalAsh> current_a11y_override_window_ =
-      nullptr;
+  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh>
+      current_a11y_override_window_ = nullptr;
 };
 
 }  // namespace ash

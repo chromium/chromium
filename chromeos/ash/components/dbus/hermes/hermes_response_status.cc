@@ -78,8 +78,14 @@ HermesResponseStatus HermesResponseStatusFromErrorName(
   if (error_name == hermes::kErrorModemMessageProcessing) {
     return HermesResponseStatus::kErrorModemMessageProcessing;
   }
+  if (error_name == hermes::kErrorUnknown) {
+    return HermesResponseStatus::kErrorUnknown;
+  }
+  if (error_name.empty()) {
+    return HermesResponseStatus::kErrorEmptyResponse;
+  }
 
-  return HermesResponseStatus::kErrorUnknown;
+  return HermesResponseStatus::kErrorUnknownResponse;
 }
 
 std::ostream& operator<<(std::ostream& stream, HermesResponseStatus status) {
@@ -130,6 +136,10 @@ std::ostream& operator<<(std::ostream& stream, HermesResponseStatus status) {
       return stream << "[kErrorUnexpectedModemManagerState]";
     case HermesResponseStatus::kErrorModemMessageProcessing:
       return stream << "[kErrorModemMessageProcessing]";
+    case HermesResponseStatus::kErrorEmptyResponse:
+      return stream << "[kErrorEmptyResponse]";
+    case HermesResponseStatus::kErrorUnknownResponse:
+      return stream << "[kErrorUnknownResponse]";
   }
   return stream << (static_cast<int>(status));
 }

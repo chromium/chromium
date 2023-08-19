@@ -4,9 +4,9 @@
 
 #import "chrome/browser/ui/cocoa/applescript/bookmark_node_applescript.h"
 
+#import "base/apple/foundation_util.h"
 #include "base/check.h"
 #include "base/check_op.h"
-#import "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/uuid.h"
 #import "chrome/browser/app_controller_mac.h"
@@ -19,10 +19,6 @@
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #import "components/bookmarks/common/bookmark_metrics.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;

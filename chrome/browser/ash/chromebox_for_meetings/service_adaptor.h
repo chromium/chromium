@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_SERVICE_ADAPTOR_H_
 #define CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_SERVICE_ADAPTOR_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -80,7 +81,7 @@ class ServiceAdaptor : public chromeos::cfm::mojom::CfmServiceAdaptor {
   // proxying bind request for.
   const std::string interface_name_;
 
-  Delegate* const delegate_;
+  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
 
   mojo::Remote<chromeos::cfm::mojom::CfmServiceContext> context_;
   mojo::Receiver<chromeos::cfm::mojom::CfmServiceAdaptor> adaptor_{this};

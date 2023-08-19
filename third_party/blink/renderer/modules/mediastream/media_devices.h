@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/sequence_checker.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
@@ -52,7 +53,7 @@ enum class EnumerateDevicesResult {
 };
 
 class MODULES_EXPORT MediaDevices final
-    : public EventTargetWithInlineData,
+    : public EventTarget,
       public ActiveScriptWrappable<MediaDevices>,
       public Supplement<Navigator>,
       public ExecutionContextLifecycleObserver,
@@ -107,25 +108,8 @@ class MODULES_EXPORT MediaDevices final
   void OnDevicesChanged(mojom::blink::MediaDeviceType,
                         const Vector<WebMediaDeviceInfo>&) override;
 
-  // Callback for testing only.
-  using EnumerateDevicesTestCallback =
-      base::OnceCallback<void(const MediaDeviceInfoVector&)>;
-
   void SetDispatcherHostForTesting(
       mojo::PendingRemote<mojom::blink::MediaDevicesDispatcherHost>);
-
-  void SetEnumerateDevicesCallbackForTesting(
-      EnumerateDevicesTestCallback test_callback) {
-    enumerate_devices_test_callback_ = std::move(test_callback);
-  }
-
-  void SetConnectionErrorCallbackForTesting(base::OnceClosure test_callback) {
-    connection_error_test_callback_ = std::move(test_callback);
-  }
-
-  void SetDeviceChangeCallbackForTesting(base::OnceClosure test_callback) {
-    device_change_test_callback_ = std::move(test_callback);
-  }
 
   void Trace(Visitor*) const override;
 
@@ -143,6 +127,12 @@ class MODULES_EXPORT MediaDevices final
   void ScheduleDispatchEvent(Event*);
   void DispatchScheduledEvents();
   void StartObserving();
+  void FinalizeStartObserving(
+      const Vector<Vector<WebMediaDeviceInfo>>& enumeration,
+      Vector<mojom::blink::VideoInputDeviceCapabilitiesPtr>
+          video_input_capabilities,
+      Vector<mojom::blink::AudioInputDeviceCapabilitiesPtr>
+          audio_input_capabilities);
   void StopObserving();
   void DevicesEnumerated(
       ScriptPromiseResolverWithTracker<EnumerateDevicesResult>* result_tracker,
@@ -168,6 +158,7 @@ class MODULES_EXPORT MediaDevices final
                                    const WTF::String& crop_id);
 #endif
 
+  SEQUENCE_CHECKER(sequence_checker_);
   bool stopped_;
   // Async runner may be null when there is no valid execution context.
   // No async work may be posted in this scenario.
@@ -197,9 +188,8 @@ class MODULES_EXPORT MediaDevices final
       crop_id_resolvers_;
 #endif
 
-  EnumerateDevicesTestCallback enumerate_devices_test_callback_;
-  base::OnceClosure connection_error_test_callback_;
-  base::OnceClosure device_change_test_callback_;
+  bool starting_observation_ = false;
+  Vector<Vector<WebMediaDeviceInfo>> current_device_infos_;
 };
 
 }  // namespace blink

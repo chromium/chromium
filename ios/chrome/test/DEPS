@@ -13,6 +13,7 @@ include_rules = [
   "+components/network_time",
   "+components/password_manager/core/common",
   "+components/prefs",
+  "+components/signin/internal/identity_manager",
   "+components/signin/public/base",
   "+components/sync",
   "+components/sync_sessions",

@@ -11,6 +11,7 @@ import android.webkit.WebSettings;
 import org.chromium.android_webview.AwDarkMode;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.base.Log;
+import org.chromium.base.TraceEvent;
 import org.chromium.support_lib_boundary.WebSettingsBoundaryInterface;
 import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
 
@@ -29,50 +30,74 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
 
     @Override
     public void setOffscreenPreRaster(boolean enabled) {
-        recordApiCall(ApiCall.WEB_SETTINGS_SET_OFFSCREEN_PRE_RASTER);
-        mAwSettings.setOffscreenPreRaster(enabled);
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.AndroidX.WEB_SETTINGS_SET_OFFSCREEN_PRE_RASTER")) {
+            recordApiCall(ApiCall.WEB_SETTINGS_SET_OFFSCREEN_PRE_RASTER);
+            mAwSettings.setOffscreenPreRaster(enabled);
+        }
     }
 
     @Override
     public boolean getOffscreenPreRaster() {
-        recordApiCall(ApiCall.WEB_SETTINGS_GET_OFFSCREEN_PRE_RASTER);
-        return mAwSettings.getOffscreenPreRaster();
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.AndroidX.WEB_SETTINGS_GET_OFFSCREEN_PRE_RASTER")) {
+            recordApiCall(ApiCall.WEB_SETTINGS_GET_OFFSCREEN_PRE_RASTER);
+            return mAwSettings.getOffscreenPreRaster();
+        }
     }
 
     @Override
     public void setSafeBrowsingEnabled(boolean enabled) {
-        recordApiCall(ApiCall.WEB_SETTINGS_SET_SAFE_BROWSING_ENABLED);
-        mAwSettings.setSafeBrowsingEnabled(enabled);
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.AndroidX.WEB_SETTINGS_SET_SAFE_BROWSING_ENABLED")) {
+            recordApiCall(ApiCall.WEB_SETTINGS_SET_SAFE_BROWSING_ENABLED);
+            mAwSettings.setSafeBrowsingEnabled(enabled);
+        }
     }
 
     @Override
     public boolean getSafeBrowsingEnabled() {
-        recordApiCall(ApiCall.WEB_SETTINGS_GET_SAFE_BROWSING_ENABLED);
-        return mAwSettings.getSafeBrowsingEnabled();
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.AndroidX.WEB_SETTINGS_GET_SAFE_BROWSING_ENABLED")) {
+            recordApiCall(ApiCall.WEB_SETTINGS_GET_SAFE_BROWSING_ENABLED);
+            return mAwSettings.getSafeBrowsingEnabled();
+        }
     }
 
     @Override
     public void setDisabledActionModeMenuItems(int menuItems) {
-        recordApiCall(ApiCall.WEB_SETTINGS_SET_DISABLED_ACTION_MODE_MENU_ITEMS);
-        mAwSettings.setDisabledActionModeMenuItems(menuItems);
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.AndroidX.WEB_SETTINGS_SET_DISABLED_ACTION_MODE_MENU_ITEMS")) {
+            recordApiCall(ApiCall.WEB_SETTINGS_SET_DISABLED_ACTION_MODE_MENU_ITEMS);
+            mAwSettings.setDisabledActionModeMenuItems(menuItems);
+        }
     }
 
     @Override
     public int getDisabledActionModeMenuItems() {
-        recordApiCall(ApiCall.WEB_SETTINGS_GET_DISABLED_ACTION_MODE_MENU_ITEMS);
-        return mAwSettings.getDisabledActionModeMenuItems();
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.AndroidX.WEB_SETTINGS_GET_DISABLED_ACTION_MODE_MENU_ITEMS")) {
+            recordApiCall(ApiCall.WEB_SETTINGS_GET_DISABLED_ACTION_MODE_MENU_ITEMS);
+            return mAwSettings.getDisabledActionModeMenuItems();
+        }
     }
 
     @Override
     public boolean getWillSuppressErrorPage() {
-        recordApiCall(ApiCall.WEB_SETTINGS_GET_WILL_SUPPRESS_ERROR_PAGE);
-        return mAwSettings.getWillSuppressErrorPage();
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.AndroidX.WEB_SETTINGS_GET_WILL_SUPPRESS_ERROR_PAGE")) {
+            recordApiCall(ApiCall.WEB_SETTINGS_GET_WILL_SUPPRESS_ERROR_PAGE);
+            return mAwSettings.getWillSuppressErrorPage();
+        }
     }
 
     @Override
     public void setWillSuppressErrorPage(boolean suppressed) {
-        recordApiCall(ApiCall.WEB_SETTINGS_SET_WILL_SUPPRESS_ERROR_PAGE);
-        mAwSettings.setWillSuppressErrorPage(suppressed);
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.AndroidX.WEB_SETTINGS_SET_WILL_SUPPRESS_ERROR_PAGE")) {
+            recordApiCall(ApiCall.WEB_SETTINGS_SET_WILL_SUPPRESS_ERROR_PAGE);
+            mAwSettings.setWillSuppressErrorPage(suppressed);
+        }
     }
 
     @Override
@@ -81,56 +106,68 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
             Log.w(TAG, "setForceDark() is a no-op in an app with targetSdkVersion>=T");
             return;
         }
-        recordApiCall(ApiCall.WEB_SETTINGS_SET_FORCE_DARK);
-        mAwSettings.setForceDarkMode(forceDarkMode);
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICall.AndroidX.WEB_SETTINGS_SET_FORCE_DARK")) {
+            recordApiCall(ApiCall.WEB_SETTINGS_SET_FORCE_DARK);
+            mAwSettings.setForceDarkMode(forceDarkMode);
+        }
     }
 
     @Override
     public int getForceDark() {
-        recordApiCall(ApiCall.WEB_SETTINGS_GET_FORCE_DARK);
-        if (AwDarkMode.isSimplifiedDarkModeEnabled()) {
-            Log.w(TAG, "getForceDark() is a no-op in an app with targetSdkVersion>=T");
-            return WebSettings.FORCE_DARK_AUTO;
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICall.AndroidX.WEB_SETTINGS_GET_FORCE_DARK")) {
+            recordApiCall(ApiCall.WEB_SETTINGS_GET_FORCE_DARK);
+            if (AwDarkMode.isSimplifiedDarkModeEnabled()) {
+                Log.w(TAG, "getForceDark() is a no-op in an app with targetSdkVersion>=T");
+                return WebSettings.FORCE_DARK_AUTO;
+            }
+            return mAwSettings.getForceDarkMode();
         }
-        return mAwSettings.getForceDarkMode();
     }
 
     @Override
     public void setForceDarkBehavior(int forceDarkBehavior) {
-        recordApiCall(ApiCall.WEB_SETTINGS_SET_FORCE_DARK_BEHAVIOR);
-        if (AwDarkMode.isSimplifiedDarkModeEnabled()) {
-            Log.w(TAG, "setForceDarkBehavior() is a no-op in an app with targetSdkVersion>=T");
-            return;
-        }
-        switch (forceDarkBehavior) {
-            case ForceDarkBehavior.FORCE_DARK_ONLY:
-                mAwSettings.setForceDarkBehavior(AwSettings.FORCE_DARK_ONLY);
-                break;
-            case ForceDarkBehavior.MEDIA_QUERY_ONLY:
-                mAwSettings.setForceDarkBehavior(AwSettings.MEDIA_QUERY_ONLY);
-                break;
-            case ForceDarkBehavior.PREFER_MEDIA_QUERY_OVER_FORCE_DARK:
-                mAwSettings.setForceDarkBehavior(AwSettings.PREFER_MEDIA_QUERY_OVER_FORCE_DARK);
-                break;
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.AndroidX.WEB_SETTINGS_SET_FORCE_DARK_BEHAVIOR")) {
+            recordApiCall(ApiCall.WEB_SETTINGS_SET_FORCE_DARK_BEHAVIOR);
+            if (AwDarkMode.isSimplifiedDarkModeEnabled()) {
+                Log.w(TAG, "setForceDarkBehavior() is a no-op in an app with targetSdkVersion>=T");
+                return;
+            }
+            switch (forceDarkBehavior) {
+                case ForceDarkBehavior.FORCE_DARK_ONLY:
+                    mAwSettings.setForceDarkBehavior(AwSettings.FORCE_DARK_ONLY);
+                    break;
+                case ForceDarkBehavior.MEDIA_QUERY_ONLY:
+                    mAwSettings.setForceDarkBehavior(AwSettings.MEDIA_QUERY_ONLY);
+                    break;
+                case ForceDarkBehavior.PREFER_MEDIA_QUERY_OVER_FORCE_DARK:
+                    mAwSettings.setForceDarkBehavior(AwSettings.PREFER_MEDIA_QUERY_OVER_FORCE_DARK);
+                    break;
+            }
         }
     }
 
     @Override
     public int getForceDarkBehavior() {
-        recordApiCall(ApiCall.WEB_SETTINGS_GET_FORCE_DARK_BEHAVIOR);
-        if (AwDarkMode.isSimplifiedDarkModeEnabled()) {
-            Log.w(TAG, "getForceDarkBehavior() is a no-op in an app with targetSdkVersion>=T");
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.AndroidX.WEB_SETTINGS_GET_FORCE_DARK_BEHAVIOR")) {
+            recordApiCall(ApiCall.WEB_SETTINGS_GET_FORCE_DARK_BEHAVIOR);
+            if (AwDarkMode.isSimplifiedDarkModeEnabled()) {
+                Log.w(TAG, "getForceDarkBehavior() is a no-op in an app with targetSdkVersion>=T");
+                return ForceDarkBehavior.PREFER_MEDIA_QUERY_OVER_FORCE_DARK;
+            }
+            switch (mAwSettings.getForceDarkBehavior()) {
+                case AwSettings.FORCE_DARK_ONLY:
+                    return ForceDarkBehavior.FORCE_DARK_ONLY;
+                case AwSettings.MEDIA_QUERY_ONLY:
+                    return ForceDarkBehavior.MEDIA_QUERY_ONLY;
+                case AwSettings.PREFER_MEDIA_QUERY_OVER_FORCE_DARK:
+                    return ForceDarkBehavior.PREFER_MEDIA_QUERY_OVER_FORCE_DARK;
+            }
             return ForceDarkBehavior.PREFER_MEDIA_QUERY_OVER_FORCE_DARK;
         }
-        switch (mAwSettings.getForceDarkBehavior()) {
-            case AwSettings.FORCE_DARK_ONLY:
-                return ForceDarkBehavior.FORCE_DARK_ONLY;
-            case AwSettings.MEDIA_QUERY_ONLY:
-                return ForceDarkBehavior.MEDIA_QUERY_ONLY;
-            case AwSettings.PREFER_MEDIA_QUERY_OVER_FORCE_DARK:
-                return ForceDarkBehavior.PREFER_MEDIA_QUERY_OVER_FORCE_DARK;
-        }
-        return ForceDarkBehavior.PREFER_MEDIA_QUERY_OVER_FORCE_DARK;
     }
 
     @Override
@@ -167,30 +204,38 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
 
     @Override
     public void setRequestedWithHeaderOriginAllowList(Set<String> allowedOriginRules) {
-        recordApiCall(ApiCall.WEB_SETTINGS_SET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST);
-        mAwSettings.setRequestedWithHeaderOriginAllowList(allowedOriginRules);
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.AndroidX.WEB_SETTINGS_SET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST")) {
+            recordApiCall(ApiCall.WEB_SETTINGS_SET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST);
+            mAwSettings.setRequestedWithHeaderOriginAllowList(allowedOriginRules);
+        }
     }
 
     @Override
     public Set<String> getRequestedWithHeaderOriginAllowList() {
-        recordApiCall(ApiCall.WEB_SETTINGS_GET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST);
-        return mAwSettings.getRequestedWithHeaderOriginAllowList();
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.AndroidX.WEB_SETTINGS_GET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST")) {
+            recordApiCall(ApiCall.WEB_SETTINGS_GET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST);
+            return mAwSettings.getRequestedWithHeaderOriginAllowList();
+        }
     }
 
     @Override
     public void setEnterpriseAuthenticationAppLinkPolicyEnabled(boolean enabled) {
-        recordApiCall(ApiCall.WEB_SETTINGS_SET_ENTERPRISE_AUTHENTICATION_APP_LINK_POLICY_ENABLED);
-        mAwSettings.setEnterpriseAuthenticationAppLinkPolicyEnabled(enabled);
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.AndroidX.WEB_SETTINGS_SET_ENTERPRISE_AUTHENTICATION_APP_LINK_POLICY_ENABLED")) {
+            recordApiCall(
+                    ApiCall.WEB_SETTINGS_SET_ENTERPRISE_AUTHENTICATION_APP_LINK_POLICY_ENABLED);
+            mAwSettings.setEnterpriseAuthenticationAppLinkPolicyEnabled(enabled);
+        }
     }
     @Override
     public boolean getEnterpriseAuthenticationAppLinkPolicyEnabled() {
-        recordApiCall(ApiCall.WEB_SETTINGS_GET_ENTERPRISE_AUTHENTICATION_APP_LINK_POLICY_ENABLED);
-        return mAwSettings.getEnterpriseAuthenticationAppLinkPolicyEnabled();
-    }
-
-    @Override
-    public void enableRestrictSensitiveWebContent() {
-        recordApiCall(ApiCall.RESTRICT_SENSITIVE_WEB_CONTENT);
-        mAwSettings.enableRestrictSensitiveWebContent();
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.AndroidX.WEB_SETTINGS_GET_ENTERPRISE_AUTHENTICATION_APP_LINK_POLICY_ENABLED")) {
+            recordApiCall(
+                    ApiCall.WEB_SETTINGS_GET_ENTERPRISE_AUTHENTICATION_APP_LINK_POLICY_ENABLED);
+            return mAwSettings.getEnterpriseAuthenticationAppLinkPolicyEnabled();
+        }
     }
 }

@@ -325,20 +325,19 @@ bool MediaEngagementService::ShouldRecordEngagement(
 
 std::vector<MediaEngagementScore> MediaEngagementService::GetAllStoredScores()
     const {
-  ContentSettingsForOneType content_settings;
   std::vector<MediaEngagementScore> data;
 
   HostContentSettingsMap* settings =
       HostContentSettingsMapFactory::GetForProfile(profile_);
-  settings->GetSettingsForOneType(ContentSettingsType::MEDIA_ENGAGEMENT,
-                                  &content_settings);
 
   // `GetSettingsForOneType` mixes incognito and non-incognito results in
   // incognito profiles creating duplicates. The incognito results are first so
   // we should discard the results following.
   std::map<url::Origin, const ContentSettingPatternSource*> filtered_results;
 
-  for (const auto& site : content_settings) {
+  ContentSettingsForOneType content_settings =
+      settings->GetSettingsForOneType(ContentSettingsType::MEDIA_ENGAGEMENT);
+  for (const ContentSettingPatternSource& site : content_settings) {
     url::Origin origin =
         url::Origin::Create(GURL(site.primary_pattern.ToString()));
     if (origin.opaque()) {

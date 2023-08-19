@@ -387,7 +387,7 @@ public final class ProfileImpl
                     break; // Skip unrecognized values for forward compatibility.
             }
         }
-        return CollectionUtil.integerListToIntArray(convertedTypes);
+        return CollectionUtil.integerCollectionToIntArray(convertedTypes);
     }
 
     long getNativeProfile() {

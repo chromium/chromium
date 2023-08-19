@@ -18,8 +18,13 @@
 #include "build/branding_buildflags.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/sessions/tab_restore_service_load_waiter.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -32,11 +37,20 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/controls/menu/menu_scroll_view_container.h"
 #include "ui/views/controls/menu/submenu_view.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
+#endif
 
 namespace {
 
@@ -92,6 +106,8 @@ void AppMenuBrowserTest::ShowUi(const std::string& name) {
         {"extensions", IDC_EXTENSIONS_SUBMENU},
         {"find_and_edit", IDC_FIND_AND_EDIT_MENU},
         {"save_and_share", IDC_SAVE_AND_SHARE_MENU},
+        {"profile_menu_in_app", IDC_PROFILE_MENU_IN_APP_MENU},
+        {"signin_not_allowed", IDC_PROFILE_MENU_IN_APP_MENU},
   });
   const auto* const id_entry = kSubmenus.find(name);
   if (id_entry == kSubmenus.end()) {
@@ -119,7 +135,8 @@ bool AppMenuBrowserTest::VerifyUi() {
 
   const auto* const test_info =
       testing::UnitTest::GetInstance()->current_test_info();
-  return VerifyPixelUi(menu_item->GetSubmenu(), test_info->test_case_name(),
+  return VerifyPixelUi(menu_item->GetSubmenu()->GetScrollViewContainer(),
+                       test_info->test_case_name(),
                        test_info->name()) != ui::test::ActionResult::kFailed;
 }
 
@@ -154,12 +171,10 @@ class AppMenuBrowserTestRefreshOnly : public AppMenuBrowserTest {
     // testing that seemed to result in them always being skipped when the
     // default feature state wasn't correct, even when setting the correct state
     // via command-line flags. Probably I was doing something wrong...
-    scoped_feature_list_.InitWithFeatures(
-        {features::kChromeRefresh2023,
-         // Needed for the "extensions" test
-         features::kExtensionsMenuInAppMenu},
-        // Needed for the "passwords_and_autofill" test
-        {password_manager::features::kPasswordManagerRedesign});
+    scoped_feature_list_.InitWithFeatures({features::kChromeRefresh2023,
+                                           // Needed for the "extensions" test
+                                           features::kExtensionsMenuInAppMenu},
+                                          {});
   }
 
  private:
@@ -204,6 +219,25 @@ IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, ShowWithRecentlyClosedWindow) {
 IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, InvokeUi_main) {
   ShowAndVerifyUi();
 }
+
+IN_PROC_BROWSER_TEST_F(AppMenuBrowserTestRefreshOnly, InvokeUi_main) {
+  ShowAndVerifyUi();
+}
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, InvokeUi_main_tablet_mode) {
+  display::Screen::GetScreen()->OverrideTabletStateForTesting(
+      display::TabletState::kInTabletMode);
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(AppMenuBrowserTestRefreshOnly,
+                       InvokeUi_main_tablet_mode) {
+  display::Screen::GetScreen()->OverrideTabletStateForTesting(
+      display::TabletState::kInTabletMode);
+  ShowAndVerifyUi();
+}
+#endif
 
 IN_PROC_BROWSER_TEST_F(AppMenuBrowserTestRefreshOnly, InvokeUi_main_guest) {
 // TODO(crbug.com/1427667): ChromeOS specific profile logic still needs to be
@@ -257,4 +291,26 @@ IN_PROC_BROWSER_TEST_F(AppMenuBrowserTestRefreshOnly, InvokeUi_save_and_share) {
   ShowAndVerifyUi();
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_F(AppMenuBrowserTestRefreshOnly,
+                       InvokeUi_profile_menu_in_app) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser()->profile());
+  signin::SetPrimaryAccount(identity_manager, "user@example.com",
+                            signin::ConsentLevel::kSignin);
+
+  // Create an additional profile.
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  base::FilePath new_path = profile_manager->GenerateNextProfileDirectoryPath();
+  profiles::testing::CreateProfileSync(profile_manager, new_path);
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(AppMenuBrowserTestRefreshOnly,
+                       InvokeUi_signin_not_allowed) {
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
+  ShowAndVerifyUi();
+}
+
+#endif
 }  // namespace

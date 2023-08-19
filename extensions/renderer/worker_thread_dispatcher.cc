@@ -52,8 +52,9 @@ void AddEventListenerOnIO(const std::string& extension_id,
                           int worker_thread_id) {
   auto* dispatcher = WorkerThreadDispatcher::Get();
   dispatcher->GetEventRouterOnIO()->AddListenerForServiceWorker(
-      extension_id, scope, event_name, service_worker_version_id,
-      worker_thread_id);
+      extension_id, event_name,
+      mojom::ServiceWorkerContext::New(scope, service_worker_version_id,
+                                       worker_thread_id));
 }
 
 // Calls mojom::EventRouter::RemoveListenerForServiceWorker(). It should be
@@ -65,8 +66,9 @@ void RemoveEventListenerOnIO(const std::string& extension_id,
                              int worker_thread_id) {
   auto* dispatcher = WorkerThreadDispatcher::Get();
   dispatcher->GetEventRouterOnIO()->RemoveListenerForServiceWorker(
-      extension_id, scope, event_name, service_worker_version_id,
-      worker_thread_id);
+      extension_id, event_name,
+      mojom::ServiceWorkerContext::New(scope, service_worker_version_id,
+                                       worker_thread_id));
 }
 
 // Calls mojom::EventRouter::AddLazyListenerForServiceWorker(). It should be
@@ -100,8 +102,10 @@ void AddEventFilteredListenerOnIO(const std::string& extension_id,
                                   bool add_lazy_listener) {
   auto* dispatcher = WorkerThreadDispatcher::Get();
   dispatcher->GetEventRouterOnIO()->AddFilteredListenerForServiceWorker(
-      extension_id, scope, event_name, service_worker_version_id,
-      worker_thread_id, std::move(filter), add_lazy_listener);
+      extension_id, event_name,
+      mojom::ServiceWorkerContext::New(scope, service_worker_version_id,
+                                       worker_thread_id),
+      std::move(filter), add_lazy_listener);
 }
 
 // Calls mojom::EventRouter::RemoveFilteredListenerForServiceWorker(). It should
@@ -115,8 +119,10 @@ void RemoveEventFilteredListenerOnIO(const std::string& extension_id,
                                      bool remove_lazy_listener) {
   auto* dispatcher = WorkerThreadDispatcher::Get();
   dispatcher->GetEventRouterOnIO()->RemoveFilteredListenerForServiceWorker(
-      extension_id, scope, event_name, service_worker_version_id,
-      worker_thread_id, std::move(filter), remove_lazy_listener);
+      extension_id, event_name,
+      mojom::ServiceWorkerContext::New(scope, service_worker_version_id,
+                                       worker_thread_id),
+      std::move(filter), remove_lazy_listener);
 }
 
 }  // namespace
@@ -564,32 +570,6 @@ void WorkerThreadDispatcher::DidStopContext(const GURL& service_worker_scope,
       service_worker_version_id, thread_id));
 }
 
-void WorkerThreadDispatcher::IncrementServiceWorkerActivity(
-    int64_t service_worker_version_id,
-    const std::string& request_uuid) {
-  PostTaskToIOThread(base::BindOnce(
-      [](int64_t service_worker_version_id, const std::string& request_uuid) {
-        WorkerThreadDispatcher::Get()
-            ->GetServiceWorkerHostOnIO()
-            ->IncrementServiceWorkerActivity(service_worker_version_id,
-                                             request_uuid);
-      },
-      service_worker_version_id, request_uuid));
-}
-
-void WorkerThreadDispatcher::DecrementServiceWorkerActivity(
-    int64_t service_worker_version_id,
-    const std::string& request_uuid) {
-  PostTaskToIOThread(base::BindOnce(
-      [](int64_t service_worker_version_id, const std::string& request_uuid) {
-        WorkerThreadDispatcher::Get()
-            ->GetServiceWorkerHostOnIO()
-            ->DecrementServiceWorkerActivity(service_worker_version_id,
-                                             request_uuid);
-      },
-      service_worker_version_id, request_uuid));
-}
-
 void WorkerThreadDispatcher::RequestWorker(mojom::RequestParamsPtr params) {
   PostTaskToIOThread(base::BindOnce(
       [](mojom::RequestParamsPtr params) {
@@ -600,16 +580,14 @@ void WorkerThreadDispatcher::RequestWorker(mojom::RequestParamsPtr params) {
       std::move(params)));
 }
 
-void WorkerThreadDispatcher::WorkerResponseAck(
-    int request_id,
-    int64_t service_worker_version_id) {
+void WorkerThreadDispatcher::SendResponseAck(const base::Uuid& request_uuid) {
   PostTaskToIOThread(base::BindOnce(
-      [](int request_id, int64_t service_worker_version_id) {
+      [](const base::Uuid& request_uuid) {
         WorkerThreadDispatcher::Get()
             ->GetServiceWorkerHostOnIO()
-            ->WorkerResponseAck(request_id, service_worker_version_id);
+            ->WorkerResponseAck(request_uuid);
       },
-      request_id, service_worker_version_id));
+      request_uuid));
 }
 
 void WorkerThreadDispatcher::RemoveWorkerData(

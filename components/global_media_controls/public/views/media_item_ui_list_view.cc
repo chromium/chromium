@@ -101,14 +101,15 @@ void MediaItemUIListView::HideItem(const std::string& id) {
     contents()->children().at(1)->SetBorder(nullptr);
   }
 
-  // Remove the item. Note that since |RemoveChildView()| does not delete the
-  // item, we now have ownership.
-  contents()->RemoveChildView(items_[id]);
-  delete items_[id];
+  contents()->RemoveChildViewT(items_[id]);
   items_.erase(id);
 
   contents()->InvalidateLayout();
   PreferredSizeChanged();
+}
+
+MediaItemUIView* MediaItemUIListView::GetItem(const std::string& id) {
+  return items_[id];
 }
 
 base::WeakPtr<MediaItemUIListView> MediaItemUIListView::GetWeakPtr() {

@@ -178,8 +178,6 @@ void MainSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("isOSSettings", true);
 
   // Add app-wide feature flags
-  html_source->AddBoolean("searchFeedbackEnabled",
-                          ash::features::IsOsSettingsSearchFeedbackEnabled());
   html_source->AddBoolean("isRevampWayfindingEnabled",
                           ash::features::IsOsSettingsRevampWayfindingEnabled());
 
@@ -187,7 +185,7 @@ void MainSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "isKioskModeActive",
       user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp());
-  html_source->AddBoolean("isChildAccount", profile()->IsChild());
+  html_source->AddBoolean("isChild", IsChildUser());
 
   // Add the System Web App resources for Settings.
   html_source->AddResourcePath("icon-192.png", IDR_SETTINGS_LOGO_192);
@@ -200,6 +198,10 @@ void MainSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddInteger(
       "entryPointEnumSize",
       static_cast<int>(PersonalizationEntryPoint::kMaxValue) + 1);
+
+  html_source->AddString(
+      "chromeRefresh2023Attribute",
+      features::IsOsSettingsTestChromeRefresh() ? "chrome-refresh-2023" : "");
 
   AddSearchInSettingsStrings(html_source);
   AddChromeOSUserStrings(html_source);
@@ -237,9 +239,9 @@ mojom::SearchResultIcon MainSection::GetSectionIcon() const {
   return mojom::SearchResultIcon::kMinValue;
 }
 
-std::string MainSection::GetSectionPath() const {
+const char* MainSection::GetSectionPath() const {
   NOTIMPLEMENTED();
-  return std::string();
+  return "";
 }
 
 bool MainSection::LogMetric(mojom::Setting setting, base::Value& value) const {

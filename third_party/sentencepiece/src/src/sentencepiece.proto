@@ -1,0 +1,73 @@
+// Copyright 2016 Google Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.!
+
+syntax = "proto2";
+
+// TODO(taku): Needs to use LITE RUNTIME in OSS release.
+option optimize_for = LITE_RUNTIME;
+
+package sentencepiece;
+
+// SentencePieceText manages a user-facing source sentence,
+// postprocessed target sentence, and internal segmentation
+// with byte offsets.
+message SentencePieceText {
+  message SentencePiece {
+    // Internal representation for the decoder.
+    // - Decoder can use |piece| as a basic token.
+    // - the piece must be non-empty.
+    // - A whitespace is replaced with a meta symbol.
+    // - Concatenation of pieces is not always the same as the |text|.
+    optional string piece = 1;
+
+    // Vocabulary id.
+    optional uint32 id = 2;
+
+    // External representation for the client.
+    // - It is always guaranteed that
+    //   text.substr(begin, end - begin) == surface.
+    // - Concatenation of surface is always the same as the |text|.
+    // - |surface| may contain whitespaces.
+    // - |surface| may be empty if the piece encodes
+    //   a control vocabulary. e.g., <s>, </s>, <unk>.
+    // - When |surface| is empty, always begin == end. (zero-length span).
+    optional string surface = 3;
+
+    optional uint32 begin = 4;
+    optional uint32 end = 5;
+
+    // Customized extensions: the range of field numbers
+    // are open to third-party extensions.
+    extensions 200 to max;
+  }
+
+  // User input or postprocessed text. This should be immutable
+  // since the byte range in SentencePiece is pointing to a span over this
+  // text. Meta symbols for whitespaces are not included.
+  optional string text = 1;
+
+  // A sequence of sentence pieces.
+  repeated SentencePiece pieces = 2;
+
+  // Score (usually log probability) for MultiSentencePieceText.
+  optional float score = 3;
+
+  // Customized extensions: the range of field numbers
+  // are open to third-party extensions.
+  extensions 200 to max;
+}
+
+message NBestSentencePieceText {
+  repeated SentencePieceText nbests = 1;
+}

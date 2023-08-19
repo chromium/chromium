@@ -21,9 +21,9 @@
 #include <ios>
 #include <iterator>
 
+#include "base/apple/mach_logging.h"
+#include "base/apple/scoped_mach_port.h"
 #include "base/logging.h"
-#include "base/mac/mach_logging.h"
-#include "base/mac/scoped_mach_port.h"
 #include "client/ios_handler/exception_processor.h"
 #include "client/ios_handler/in_process_handler.h"
 #include "util/ios/raw_logging.h"
@@ -393,7 +393,7 @@ class CrashHandler : public Thread,
     Signals::RestoreHandlerAndReraiseSignalOnReturn(siginfo, old_action);
   }
 
-  base::mac::ScopedMachReceiveRight exception_port_;
+  base::apple::ScopedMachReceiveRight exception_port_;
   ExceptionPorts::ExceptionHandlerVector original_handlers_;
   struct sigaction old_action_ = {};
   internal::InProcessHandler in_process_handler_;

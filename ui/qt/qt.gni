@@ -13,7 +13,19 @@ declare_args() {
 }
 
 declare_args() {
+  if (!use_sysroot && use_qt) {
+    moc_qt5_path = ""
+  }
+}
+
+declare_args() {
   use_qt6 = use_qt && use_sysroot
+}
+
+declare_args() {
+  if (!use_sysroot && use_qt6) {
+    moc_qt6_path = ""
+  }
 }
 
 # use_qt6 => use_qt

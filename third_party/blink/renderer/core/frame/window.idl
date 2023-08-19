@@ -38,7 +38,7 @@
     [Replaceable, CrossOrigin, CachedAccessor=kWindowProxy] readonly attribute Window self;
     [LegacyUnforgeable, CachedAccessor=kWindowDocument] readonly attribute Document document;
     attribute DOMString name;
-    [PutForwards=href, LegacyUnforgeable, CrossOrigin=(Getter,Setter), Custom=Getter] readonly attribute Location location;
+    [PutForwards=href, LegacyUnforgeable, CrossOrigin=(Getter,Setter)] readonly attribute Location location;
     [CallWith=ScriptState] readonly attribute CustomElementRegistry customElements;
     readonly attribute History history;
     [Replaceable] readonly attribute Navigation navigation;
@@ -54,15 +54,18 @@
     void stop();
     [CrossOrigin, CallWith=Isolate] void focus();
     [CrossOrigin] void blur();
+    [RuntimeEnabled=DesktopPWAsAdditionalWindowingControls, RaisesException] void maximize();
+    [RuntimeEnabled=DesktopPWAsAdditionalWindowingControls, RaisesException] void minimize();
+    [RuntimeEnabled=DesktopPWAsAdditionalWindowingControls, RaisesException] void restore();
 
     // other browsing contexts
     [Replaceable, CrossOrigin, CachedAccessor=kWindowProxy] readonly attribute Window frames;
     [Replaceable, CrossOrigin] readonly attribute unsigned long length;
     [LegacyUnforgeable, CrossOrigin] readonly attribute Window? top;
     // FIXME: opener should be of type any.
-    [CrossOrigin, Custom=Setter, ImplementedAs=OpenerWithMetrics] attribute Window opener;
+    [CrossOrigin, ImplementedAs=openerForBindings, CallWith=Isolate, RaisesException=Setter] attribute any opener;
     [Replaceable, CrossOrigin] readonly attribute Window? parent;
-    [CheckSecurity=ReturnValue, Custom=Getter] readonly attribute Element? frameElement;
+    [CheckSecurity=ReturnValue] readonly attribute Element? frameElement;
 
     [CallWith=Isolate, RaisesException] Window? open(optional USVString url="", optional DOMString target = "_blank", optional [LegacyNullToEmptyString] DOMString features = "");
 
@@ -71,7 +74,7 @@
     [NotEnumerable, CrossOrigin] getter Window (unsigned long index);
 
     // named properties
-    [Custom, NotEnumerable, CrossOrigin] getter object (DOMString name);
+    [NotEnumerable, CrossOrigin] getter object (DOMString name);
 
     // the user agent
     [LogActivity=GetterOnly] readonly attribute Navigator navigator;

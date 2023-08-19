@@ -53,6 +53,7 @@
 #define ABSL_STRINGS_ASCII_H_
 
 #include <algorithm>
+#include <cstddef>
 #include <string>
 
 #include "absl/base/attributes.h"

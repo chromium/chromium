@@ -125,7 +125,8 @@ class TestOption : public InProcessBrowserTest {
 
   std::unique_ptr<base::RunLoop> run_loop_;
   MockObserver holder_;
-  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_ = nullptr;
+  raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> web_contents_ =
+      nullptr;
   std::unique_ptr<net::test_server::EmbeddedTestServer> https_server_;
 };
 
@@ -269,8 +270,15 @@ IN_PROC_BROWSER_TEST_F(DistillablePageUtilsBrowserTestAllArticles,
       Optional(AllOf(Not(IsDistillable()), IsLast(), Not(IsMobileFriendly()))));
 }
 
+// TODO(crbug.com/1461973): Flaky on Linux MSAN.
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#define MAYBE_ObserverNotCalledAfterRemoval \
+  DISABLED_ObserverNotCalledAfterRemoval
+#else
+#define MAYBE_ObserverNotCalledAfterRemoval ObserverNotCalledAfterRemoval
+#endif
 IN_PROC_BROWSER_TEST_F(DistillablePageUtilsBrowserTestAllArticles,
-                       ObserverNotCalledAfterRemoval) {
+                       MAYBE_ObserverNotCalledAfterRemoval) {
   RemoveObserver(web_contents_, &holder_);
   EXPECT_CALL(holder_, OnResult(_)).Times(0);
   NavigateAndWait(kSimpleArticlePath, kWaitNoExpectedCall);

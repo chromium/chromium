@@ -43,7 +43,7 @@ struct VideoCaptureControlSupport {
 
 enum class VideoCaptureTransportType {
   // For AVFoundation Api, identify devices that are built-in or USB.
-  MACOSX_USB_OR_BUILT_IN,
+  APPLE_USB_OR_BUILT_IN,
   OTHER_TRANSPORT
 };
 

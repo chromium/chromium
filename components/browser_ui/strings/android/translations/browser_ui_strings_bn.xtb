@@ -67,6 +67,7 @@
 <translation id="2238944249568001759">আপনার শেষ ট্যাবের উপর ভিত্তি করে সাজেস্ট করা সার্চ</translation>
 <translation id="2241634353105152135">শুধুমাত্র একবার</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> সরিয়ে দিন</translation>
+<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{১টি সাইট ব্লক করা আছে}one{#টি সাইট ব্লক করা আছে}other{#টি সাইট ব্লক করা আছে}}</translation>
 <translation id="228293613124499805">আপনি বেশিরভাগ যে সাইটগুলিতে যান সেগুলি সম্ভবত আপনার ডিভাইসে ডেটা সেভ করে, প্রায়শই আপনার পছন্দ বা সাইটের সাথে আপনার শেয়ার করা তথ্য সেভ করে আপনার অভিজ্ঞতা উন্নত করতে। আমরা এই সেটিং চালু রাখার পরামর্শ দিই।</translation>
 <translation id="2289270750774289114">কাছাকাছি ব্লুটুথ ডিভাইস আছে কিনা তা কোনও সাইট খুঁজতে চাইলে আমাকে জিজ্ঞাসা করুন (সাজেস্ট করা হচ্ছে)</translation>
 <translation id="2315043854645842844">ক্লায়েন্ট সাইড সার্টিফিকেট নির্বাচন অপারেটিং সিসটেম দ্বারা সমর্থিত নয়।</translation>
@@ -98,6 +99,7 @@
 <translation id="2621115761605608342">একটি নির্দিষ্ট সাইটের জন্য জাভাস্ক্রিপ্ট মঞ্জুর করুন।</translation>
 <translation id="2653659639078652383">জমা দিন</translation>
 <translation id="2677748264148917807">ছেড়ে চলে যান</translation>
+<translation id="2678468611080193228">সাময়িকভাবে থার্ড-পার্টি কুকিকে অনুমতি দিন। এর মানে হল সাইটের ফিচার কাজ করবে কিন্তু আপনার সুরক্ষা কম হয়ে যাবে</translation>
 <translation id="2687403674020088961">সব কুকি ব্লক করুন (সাজেস্ট করা হচ্ছে না)</translation>
 <translation id="2713106313042589954">ক্যামেরা বন্ধ করুন</translation>
 <translation id="2717722538473713889">ইমেল আইডি</translation>
@@ -137,6 +139,7 @@
 <translation id="3362437373201486687">ব্লুটুথ ডিভাইসের জন্য স্ক্যান করা হচ্ছে</translation>
 <translation id="3386292677130313581">সাইটগুলিকে আপনার লোকেশন জানতে দিতে মঞ্জুরি দেওয়ার আগে জিজ্ঞাসা করুন (প্রস্তাবিত)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
+<translation id="344449859752187052">থার্ড-পার্টি কুকি ব্লক করা হয়েছে</translation>
 <translation id="3521663503435878242"><ph name="DOMAIN" />-এর অধীনে সাইট</translation>
 <translation id="3538390592868664640">আপনার আশেপাশের এলাকার একটি 3D ম্যাপ তৈরি করা বা ক্যামেরার অবস্থান ট্র্যাক করার কাজে নিযুক্ত সাইটগুলিকে ব্লক করে দিন</translation>
 <translation id="3544058026430919413">কোম্পানি গ্রুপের মধ্যে আপনার অ্যাক্টিভিটি শেয়ার করতে কুকি ব্যবহার করতে পারে এমন সাইটের গ্রুপ সংজ্ঞায়িত করতে পারে। এটি ছদ্মবেশী মোডে বন্ধ আছে।</translation>
@@ -172,6 +175,7 @@
 <translation id="4002066346123236978">শিরোনাম</translation>
 <translation id="4008040567710660924">কোনও নির্দিষ্ট সাইটের জন্য কুকিকে অনুমতি দিন।</translation>
 <translation id="4046123991198612571">পরবর্তী ট্র্যাক</translation>
+<translation id="4053720452172726777">Google Chrome কাস্টমাইজ ও নিয়ন্ত্রণ করুন</translation>
 <translation id="4149994727733219643">ওয়েব পৃষ্ঠার জন্য সরলীকৃত ভিউ</translation>
 <translation id="4151930093518524179">ডিফল্ট জুম</translation>
 <translation id="4165986682804962316">সাইটের সেটিংস</translation>
@@ -211,6 +215,7 @@
 <translation id="4962975101802056554">ডিভাইসের ক্ষেত্রে সমস্ত অনুমতি সরিয়ে দিন</translation>
 <translation id="497421865427891073">অগ্রবর্তী করুন</translation>
 <translation id="4976702386844183910"><ph name="DATE" />-এ শেষবার দেখেছেন</translation>
+<translation id="4985206706500620449">এই সাইটের জন্য আপনি থার্ড-পার্টি কুকির অনুমতি দিয়েছেন</translation>
 <translation id="4994033804516042629">কোনও পরিচিতি পাওয়া যায়নি</translation>
 <translation id="4996978546172906250">এর মাধ্যমে শেয়ার করুন</translation>
 <translation id="5001526427543320409">থার্ড-পার্টি কুকি</translation>
@@ -249,12 +254,12 @@
 <translation id="5545693483061321551">বিভিন্ন ওয়েবসাইট জুড়ে বিজ্ঞাপন পছন্দ অনুযায়ী দেখানোর মতো ব্রাউজিং অ্যাক্টিভিটি দেখার জন্য সাইট কুকি ব্যবহার করতে পারে না। কিছু সাইটের ফিচার কাজ নাও করতে পারে।</translation>
 <translation id="5553374991681107062">লেটেস্ট</translation>
 <translation id="5556459405103347317">রিলোড করুন</translation>
-<translation id="5596627076506792578">আরও বিকল্পগুলি</translation>
 <translation id="5649053991847567735">অটোমেটিক ডাউনলোডগুলি</translation>
 <translation id="5668404140385795438">কোনো ওয়েবসাইটের জুম ইন প্রতিরোধ করার অনুরোধ উপেক্ষা করুন</translation>
 <translation id="5677928146339483299">অবরুদ্ধ</translation>
 <translation id="5689516760719285838">লোকেশন</translation>
 <translation id="5690795753582697420">Android সেটিংসে ক্যামেরা বন্ধ করা আছে</translation>
+<translation id="5700761515355162635">থার্ড-পার্টি কুকির অনুমতি আছে</translation>
 <translation id="5706552988683188916">এটি <ph name="WEBSITE" />-এর জন্য কুকি এবং অন্যান্য সাইট ডেটা মুছে ফেলে</translation>
 <translation id="5719847187258001597">এটি করলে, আপনার হোম স্ক্রিনে <ph name="ORIGIN" />-এর মাধ্যমে বা এর সাইট ও অ্যাপের মাধ্যমে সেভ হওয়া সব ডেটা এবং কুকি মুছে যাবে।</translation>
 <translation id="5723967018671998714">ছদ্মবেশী মোডে থার্ড-পার্টি কুকি ব্লক করা হয়েছে</translation>
@@ -300,7 +305,9 @@
 <translation id="6439114592976064011">সাইটগুলিকে আপনার ভার্চুয়াল রিয়েলিটি ডিভাইস ও ডেটা ব্যবহার করতে দেবেন না</translation>
 <translation id="6447842834002726250">কুকিজ</translation>
 <translation id="6467852467360539617">ডেটা মুছুন এবং অনুমতি রিসেট করুন</translation>
+<translation id="6500423977866688905">উইন্ডো ছোট হলে, মোবাইল ভিউয়ের জন্য অনুরোধ করুন</translation>
 <translation id="6527303717912515753">শেয়ার করুন</translation>
+<translation id="652937045869844725">থার্ড-পার্টি কুকিকে অনুমতি দিয়ে দেখুন। এর মানে হল সাইটের ফিচার কাজ করবে কিন্তু আপনার সুরক্ষা কম হয়ে যাবে</translation>
 <translation id="6545864417968258051">ব্লুটুথ স্ক্যানিং</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আরও <ph name="NUM_MORE" />টি সুবিধা ব্লক করা হয়েছে}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আরও <ph name="NUM_MORE" />টি সুবিধা ব্লক করা হয়েছে}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আরও <ph name="NUM_MORE" />টি সুবিধা ব্লক করা হয়েছে}}</translation>
 <translation id="6554732001434021288"><ph name="NUM_DAYS" /> দিন আগে শেষবার দেখেছেন</translation>
@@ -383,6 +390,7 @@
 <translation id="8068648041423924542">সার্টিফিকেট বেছে নিতে পারেনি।</translation>
 <translation id="8077120325605624147">আপনি ভিজিট করেন এমন যেকোনও সাইট আপনাকে যেকোনও বিজ্ঞাপন দেখাতে পারে</translation>
 <translation id="8087000398470557479">এই কন্টেন্ট Google দ্বারা বিতরণ করা <ph name="DOMAIN_NAME" /> থেকে এসেছে।</translation>
+<translation id="8088603949666785339"><ph name="BANNER_TITLE" />-এ আরও বিকল্প</translation>
 <translation id="8116925261070264013">মিউট করা আছে</translation>
 <translation id="813082847718468539">সাইটের তথ্য দর্শন করুন</translation>
 <translation id="8131740175452115882">নিশ্চিত হন</translation>
@@ -429,8 +437,10 @@
 <translation id="8719283222052720129"><ph name="BEGIN_LINK" />Android সেটিংসে<ph name="END_LINK" /> <ph name="APP_NAME" />-এর জন্য অনুমতি চালু করুন।</translation>
 <translation id="8725066075913043281">আবার চেষ্টা করুন</translation>
 <translation id="8730621377337864115">হয়ে গেছে</translation>
+<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{১টি সাইটের অনুমতি আছে}one{#টি সাইটের অনুমতি আছে}other{#টি সাইটের অনুমতি আছে}}</translation>
 <translation id="8737217482364735741">এটি করলে, <ph name="ORIGIN" />-এর সেভ করা সমস্ত ডেটা ও কুকি মুছে যাবে।</translation>
 <translation id="8751914237388039244">একটি ছবি বেছে নিন</translation>
+<translation id="8800034312320686233">সাইট কি কাজ করছে না?</translation>
 <translation id="8801436777607969138">একটি নির্দিষ্ট সাইটের জন্য জাভাস্ক্রিপ্ট ব্লক করুন।</translation>
 <translation id="8803526663383843427">যখন চালু থাকে</translation>
 <translation id="8805385115381080995">আপনি একজন প্রকৃত ব্যক্তি তা যাচাই করার জন্য সাইটগুলি আপনাকে জিজ্ঞাসা করার সম্ভাবনা কম, তাই ব্রাউজ করা দ্রুততর হবে</translation>

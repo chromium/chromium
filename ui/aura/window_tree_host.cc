@@ -35,7 +35,6 @@
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/ime/init/input_method_factory.h"
 #include "ui/base/ime/input_method.h"
-#include "ui/base/layout.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/view_prop.h"
 #include "ui/compositor/compositor.h"
@@ -642,7 +641,7 @@ void WindowTreeHost::InitCompositor() {
 
   display::Display display =
       display::Screen::GetScreen()->GetDisplayNearestWindow(window());
-  compositor_->SetDisplayColorSpaces(display.color_spaces());
+  compositor_->SetDisplayColorSpaces(display.GetColorSpaces());
 }
 
 void WindowTreeHost::OnAcceleratedWidgetAvailable() {
@@ -699,7 +698,7 @@ void WindowTreeHost::OnHostDisplayChanged() {
     return;
   display::Display display =
       display::Screen::GetScreen()->GetDisplayNearestWindow(window());
-  compositor_->SetDisplayColorSpaces(display.color_spaces());
+  compositor_->SetDisplayColorSpaces(display.GetColorSpaces());
 }
 
 void WindowTreeHost::OnHostCloseRequested() {
@@ -723,7 +722,7 @@ void WindowTreeHost::OnDisplayMetricsChanged(const display::Display& display,
                                              uint32_t metrics) {
   if (metrics & DisplayObserver::DISPLAY_METRIC_COLOR_SPACE && compositor_ &&
       display.id() == GetDisplayId())
-    compositor_->SetDisplayColorSpaces(display.color_spaces());
+    compositor_->SetDisplayColorSpaces(display.GetColorSpaces());
 
 // Chrome OS is handled in WindowTreeHostManager::OnDisplayMetricsChanged.
 // Chrome OS requires additional handling for the bounds that we do not need to

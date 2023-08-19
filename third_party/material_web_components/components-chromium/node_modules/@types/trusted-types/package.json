@@ -1,6 +1,6 @@
 {
     "name": "@types/trusted-types",
-    "version": "2.0.2",
+    "version": "2.0.3",
     "description": "TypeScript definitions for trusted-types",
     "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/trusted-types",
     "license": "MIT",
@@ -24,6 +24,11 @@
             "name": "Bjarki",
             "url": "https://github.com/bjarkler",
             "githubUsername": "bjarkler"
+        },
+        {
+            "name": "Sebastian Silbermann",
+            "url": "https://github.com/eps1lon",
+            "githubUsername": "eps1lon"
         }
     ],
     "main": "",
@@ -35,6 +40,6 @@
     },
     "scripts": {},
     "dependencies": {},
-    "typesPublisherContentHash": "99d8c3702ecfbc895e9827c063dcce01708c2011a667e0844c3d8a88259efece",
-    "typeScriptVersion": "3.6"
+    "typesPublisherContentHash": "8930bcaa46b5ce655587e1dda387be2e535ec4eeab922f31ee3140b6b68b1226",
+    "typeScriptVersion": "4.2"
 }

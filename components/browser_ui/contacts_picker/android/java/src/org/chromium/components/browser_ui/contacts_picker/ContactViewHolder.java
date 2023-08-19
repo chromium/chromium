@@ -9,9 +9,9 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
-import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.task.AsyncTask;
 
 /**
@@ -107,8 +107,8 @@ public class ContactViewHolder
     }
 
     /** Sets the icon to use when testing. */
-    @VisibleForTesting
     public static void setIconForTesting(Bitmap icon) {
         sIconForTest = icon;
+        ResettersForTesting.register(() -> sIconForTest = null);
     }
 }

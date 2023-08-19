@@ -29,7 +29,8 @@ namespace web_app {
 class WebAppFileHandlerManager;
 class WebAppProtocolHandlerManager;
 class WebApp;
-class WebAppIconManager;
+class WebAppProvider;
+class OsIntegrationManager;
 struct ShortcutInfo;
 
 using ShortcutLocationCallback =
@@ -46,16 +47,14 @@ class WebAppShortcutManager {
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   WebAppShortcutManager(Profile* profile,
-                        WebAppIconManager* icon_manager,
                         WebAppFileHandlerManager* file_handler_manager,
                         WebAppProtocolHandlerManager* protocol_handler_manager);
   WebAppShortcutManager(const WebAppShortcutManager&) = delete;
   WebAppShortcutManager& operator=(const WebAppShortcutManager&) = delete;
   virtual ~WebAppShortcutManager();
 
-  void SetSubsystems(WebAppIconManager* icon_manager,
-                     WebAppRegistrar* registrar);
-
+  void SetProvider(base::PassKey<OsIntegrationManager>,
+                   WebAppProvider& provider);
   void Start();
 
   // Tells the WebAppShortcutManager that no shortcuts should actually be
@@ -172,13 +171,12 @@ class WebAppShortcutManager {
   bool suppress_shortcuts_for_testing_ = false;
 
   const raw_ptr<Profile> profile_;
-
-  raw_ptr<WebAppRegistrar, DanglingUntriaged> registrar_ = nullptr;
-  raw_ptr<WebAppIconManager, DanglingUntriaged> icon_manager_ = nullptr;
   raw_ptr<WebAppFileHandlerManager, DanglingUntriaged> file_handler_manager_ =
       nullptr;
-  raw_ptr<WebAppProtocolHandlerManager, DanglingUntriaged>
+  raw_ptr<WebAppProtocolHandlerManager, AcrossTasksDanglingUntriaged>
       protocol_handler_manager_ = nullptr;
+
+  raw_ptr<WebAppProvider> provider_ = nullptr;
 
   base::WeakPtrFactory<WebAppShortcutManager> weak_ptr_factory_{this};
 };

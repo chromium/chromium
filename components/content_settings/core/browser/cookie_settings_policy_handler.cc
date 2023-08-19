@@ -40,9 +40,10 @@ void CookieSettingsPolicyHandler::ApplyPolicySettings(
                       !third_party_cookie_blocking->GetBool());
   }
 
-  // If there is a Cookie BLOCK default content setting, then Privacy Sandbox
-  // APIs should be disabled, regardless of whether they were enabled along
-  // with third party cookies.
+  // If there is a Cookie BLOCK default content setting, then this implicitly
+  // overrides several other preferences. Pre-M1 Privacy Sandbox should be
+  // disabled, and 3PC are effectively blocked. Setting this here allows the
+  // UI to easily reflect that.
   const base::Value* default_cookie_setting = policies.GetValue(
       policy::key::kDefaultCookiesSetting, base::Value::Type::INTEGER);
   if (default_cookie_setting &&
@@ -50,6 +51,8 @@ void CookieSettingsPolicyHandler::ApplyPolicySettings(
           CONTENT_SETTING_BLOCK) {
     prefs->SetBoolean(prefs::kPrivacySandboxApisEnabled, false);
     prefs->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, false);
+    prefs->SetInteger(prefs::kCookieControlsMode,
+                      static_cast<int>(CookieControlsMode::kBlockThirdParty));
   }
 }
 

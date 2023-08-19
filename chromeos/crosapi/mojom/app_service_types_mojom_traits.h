@@ -303,7 +303,8 @@ struct StructTraits<crosapi::mojom::PermissionDataView, apps::PermissionPtr> {
     return r->permission_type;
   }
 
-  static const apps::PermissionValuePtr& value(const apps::PermissionPtr& r) {
+  static const apps::Permission::PermissionValue& value(
+      const apps::PermissionPtr& r) {
     return r->value;
   }
 
@@ -328,33 +329,33 @@ struct EnumTraits<crosapi::mojom::TriState, apps::TriState> {
 
 template <>
 struct UnionTraits<crosapi::mojom::PermissionValueDataView,
-                   apps::PermissionValuePtr> {
+                   apps::Permission::PermissionValue> {
   static crosapi::mojom::PermissionValueDataView::Tag GetTag(
-      const apps::PermissionValuePtr& r);
+      const apps::Permission::PermissionValue& r);
 
-  static bool IsNull(const apps::PermissionValuePtr& r) {
-    return !absl::holds_alternative<bool>(r->value) &&
-           !absl::holds_alternative<apps::TriState>(r->value);
+  static bool IsNull(const apps::Permission::PermissionValue& r) {
+    return false;
   }
 
-  static void SetToNull(apps::PermissionValuePtr* out) {}
+  static void SetToNull(apps::Permission::PermissionValue* out) {}
 
-  static bool bool_value(const apps::PermissionValuePtr& r) {
-    if (absl::holds_alternative<bool>(r->value)) {
-      return absl::get<bool>(r->value);
+  static bool bool_value(const apps::Permission::PermissionValue& r) {
+    if (absl::holds_alternative<bool>(r)) {
+      return absl::get<bool>(r);
     }
     return false;
   }
 
-  static apps::TriState tristate_value(const apps::PermissionValuePtr& r) {
-    if (absl::holds_alternative<apps::TriState>(r->value)) {
-      return absl::get<apps::TriState>(r->value);
+  static apps::TriState tristate_value(
+      const apps::Permission::PermissionValue& r) {
+    if (absl::holds_alternative<apps::TriState>(r)) {
+      return absl::get<apps::TriState>(r);
     }
     return apps::TriState::kBlock;
   }
 
   static bool Read(crosapi::mojom::PermissionValueDataView data,
-                   apps::PermissionValuePtr* out);
+                   apps::Permission::PermissionValue* out);
 };
 
 template <>

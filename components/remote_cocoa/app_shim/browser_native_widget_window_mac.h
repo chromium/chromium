@@ -7,7 +7,8 @@
 
 #import "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
 
-@interface BrowserNativeWidgetWindow : NativeWidgetMacNSWindow
+REMOTE_COCOA_APP_SHIM_EXPORT @interface BrowserNativeWidgetWindow
+    : NativeWidgetMacNSWindow
 @end
 
 #endif  // COMPONENTS_REMOTE_COCOA_APP_SHIM_BROWSER_NATIVE_WIDGET_WINDOW_MAC_H_

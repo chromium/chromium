@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 """Web test-specific impl of the unexpected passes' queries module."""
 
+import datetime
 import os
 import posixpath
 import typing
@@ -194,7 +195,7 @@ KNOWN_TEST_ID_PREFIXES = [
 
 # The default timeout of most web tests is 6 seconds, so use that if we happen
 # to get a result that doesn't report its own timeout.
-DEFAULT_TIMEOUT = 6
+DEFAULT_TIMEOUT = datetime.timedelta(seconds=6)
 
 
 class WebTestBigQueryQuerier(queries_module.BigQueryQuerier):
@@ -207,8 +208,12 @@ class WebTestBigQueryQuerier(queries_module.BigQueryQuerier):
         # pytype to treat this as the correct type during its static analysis,
         # which doesn't set the the data type.
         result = typing.cast(data_types.WebTestResult, result)
-        result.SetDuration(json_result['duration'], json_result['timeout']
-                           or DEFAULT_TIMEOUT)
+        duration = float(json_result['duration'])
+        duration = datetime.timedelta(seconds=duration)
+        timeout = json_result['timeout']
+        timeout = (datetime.timedelta(
+            seconds=float(timeout)) if timeout else DEFAULT_TIMEOUT)
+        result.SetDuration(duration, timeout)
         return result
 
     def _GetRelevantExpectationFilesForQueryResult(

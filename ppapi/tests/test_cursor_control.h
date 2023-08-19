@@ -6,7 +6,6 @@
 #define PPAPI_TESTS_TEST_CURSOR_CONTROL_H_
 
 #include <string>
-#include <vector>
 
 #include "ppapi/c/dev/ppb_cursor_control_dev.h"
 #include "ppapi/tests/test_case.h"

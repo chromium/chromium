@@ -10,18 +10,14 @@
 #include <stdint.h>
 #include <sys/xattr.h>
 
+#include "base/apple/foundation_util.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/mac/foundation_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/system/sys_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace base::mac {
 
@@ -32,21 +28,21 @@ using MacUtilTest = PlatformTest;
 TEST_F(MacUtilTest, GetUserDirectoryTest) {
   // Try a few keys, make sure they come back with non-empty paths.
   FilePath caches_dir;
-  EXPECT_TRUE(GetUserDirectory(NSCachesDirectory, &caches_dir));
+  EXPECT_TRUE(apple::GetUserDirectory(NSCachesDirectory, &caches_dir));
   EXPECT_FALSE(caches_dir.empty());
 
   FilePath application_support_dir;
-  EXPECT_TRUE(GetUserDirectory(NSApplicationSupportDirectory,
-                               &application_support_dir));
+  EXPECT_TRUE(apple::GetUserDirectory(NSApplicationSupportDirectory,
+                                      &application_support_dir));
   EXPECT_FALSE(application_support_dir.empty());
 
   FilePath library_dir;
-  EXPECT_TRUE(GetUserDirectory(NSLibraryDirectory, &library_dir));
+  EXPECT_TRUE(apple::GetUserDirectory(NSLibraryDirectory, &library_dir));
   EXPECT_FALSE(library_dir.empty());
 }
 
 TEST_F(MacUtilTest, TestLibraryPath) {
-  FilePath library_dir = GetUserLibraryPath();
+  FilePath library_dir = apple::GetUserLibraryPath();
   // Make sure the string isn't empty.
   EXPECT_FALSE(library_dir.value().empty());
 }
@@ -55,7 +51,7 @@ TEST_F(MacUtilTest, TestGetAppBundlePath) {
   FilePath out;
 
   // Make sure it doesn't crash.
-  out = GetAppBundlePath(FilePath());
+  out = apple::GetAppBundlePath(FilePath());
   EXPECT_TRUE(out.empty());
 
   // Some more invalid inputs.
@@ -64,7 +60,7 @@ TEST_F(MacUtilTest, TestGetAppBundlePath) {
     "foo/bar./bazquux", "foo/.app", "//foo",
   };
   for (size_t i = 0; i < std::size(invalid_inputs); i++) {
-    out = GetAppBundlePath(FilePath(invalid_inputs[i]));
+    out = apple::GetAppBundlePath(FilePath(invalid_inputs[i]));
     EXPECT_TRUE(out.empty()) << "loop: " << i;
   }
 
@@ -88,10 +84,64 @@ TEST_F(MacUtilTest, TestGetAppBundlePath) {
         "/Applications/Google Foo.app" },
   };
   for (size_t i = 0; i < std::size(valid_inputs); i++) {
-    out = GetAppBundlePath(FilePath(valid_inputs[i].in));
+    out = apple::GetAppBundlePath(FilePath(valid_inputs[i].in));
     EXPECT_FALSE(out.empty()) << "loop: " << i;
     EXPECT_STREQ(valid_inputs[i].expected_out,
         out.value().c_str()) << "loop: " << i;
+  }
+}
+
+TEST_F(MacUtilTest, TestGetInnermostAppBundlePath) {
+  FilePath out;
+
+  // Make sure it doesn't crash.
+  out = apple::GetInnermostAppBundlePath(FilePath());
+  EXPECT_TRUE(out.empty());
+
+  // Some more invalid inputs.
+  const char* const invalid_inputs[] = {
+      "/",
+      "/foo",
+      "foo",
+      "/foo/bar.",
+      "foo/bar.",
+      "/foo/bar./bazquux",
+      "foo/bar./bazquux",
+      "foo/.app",
+      "//foo",
+  };
+  for (size_t i = 0; i < std::size(invalid_inputs); i++) {
+    SCOPED_TRACE(testing::Message()
+                 << "case #" << i << ", input: " << invalid_inputs[i]);
+    out = apple::GetInnermostAppBundlePath(FilePath(invalid_inputs[i]));
+    EXPECT_TRUE(out.empty());
+  }
+
+  // Some valid inputs; this and |expected_outputs| should be in sync.
+  struct {
+    const char* in;
+    const char* expected_out;
+  } valid_inputs[] = {
+      {"FooBar.app/", "FooBar.app"},
+      {"/FooBar.app", "/FooBar.app"},
+      {"/FooBar.app/", "/FooBar.app"},
+      {"//FooBar.app", "//FooBar.app"},
+      {"/Foo/Bar.app", "/Foo/Bar.app"},
+      {"/Foo/Bar.app/", "/Foo/Bar.app"},
+      {"/F/B.app", "/F/B.app"},
+      {"/F/B.app/", "/F/B.app"},
+      {"/Foo/Bar.app/baz", "/Foo/Bar.app"},
+      {"/Foo/Bar.app/baz/", "/Foo/Bar.app"},
+      {"/Foo/Bar.app/baz/quux.app/quuux", "/Foo/Bar.app/baz/quux.app"},
+      {"/Applications/Google Foo.app/bar/Foo Helper.app/quux/Foo Helper",
+       "/Applications/Google Foo.app/bar/Foo Helper.app"},
+  };
+  for (size_t i = 0; i < std::size(valid_inputs); i++) {
+    SCOPED_TRACE(testing::Message()
+                 << "case #" << i << ", input " << valid_inputs[i].in);
+    out = apple::GetInnermostAppBundlePath(FilePath(valid_inputs[i].in));
+    EXPECT_FALSE(out.empty());
+    EXPECT_STREQ(valid_inputs[i].expected_out, out.value().c_str());
   }
 }
 
@@ -107,30 +157,15 @@ TEST_F(MacUtilTest, IsOSEllipsis) {
   // - FALSE/TRUE/FALSE (it is not the later version, it is "at most" the later
   //   version, it is not "at least" the later version)
 
-#define TEST_FOR_PAST_10_OS(V)      \
-  EXPECT_FALSE(IsOS10_##V());       \
-  EXPECT_FALSE(IsAtMostOS10_##V()); \
-  EXPECT_TRUE(IsAtLeastOS10_##V());
-
 #define TEST_FOR_PAST_OS(V)      \
   EXPECT_FALSE(IsOS##V());       \
   EXPECT_FALSE(IsAtMostOS##V()); \
   EXPECT_TRUE(IsAtLeastOS##V());
 
-#define TEST_FOR_SAME_10_OS(V)     \
-  EXPECT_TRUE(IsOS10_##V());       \
-  EXPECT_TRUE(IsAtMostOS10_##V()); \
-  EXPECT_TRUE(IsAtLeastOS10_##V());
-
 #define TEST_FOR_SAME_OS(V)     \
   EXPECT_TRUE(IsOS##V());       \
   EXPECT_TRUE(IsAtMostOS##V()); \
   EXPECT_TRUE(IsAtLeastOS##V());
-
-#define TEST_FOR_FUTURE_10_OS(V)   \
-  EXPECT_FALSE(IsOS10_##V());      \
-  EXPECT_TRUE(IsAtMostOS10_##V()); \
-  EXPECT_FALSE(IsAtLeastOS10_##V());
 
 #define TEST_FOR_FUTURE_OS(V)   \
   EXPECT_FALSE(IsOS##V());      \
@@ -138,76 +173,45 @@ TEST_F(MacUtilTest, IsOSEllipsis) {
   EXPECT_FALSE(IsAtLeastOS##V());
 
   if (major == 10) {
-    if (minor == 13) {
-      EXPECT_TRUE(IsOS10_13());
-      EXPECT_TRUE(IsAtMostOS10_13());
+    if (minor == 15) {
+      EXPECT_TRUE(IsOS10_15());
 
-      TEST_FOR_FUTURE_10_OS(14);
-      TEST_FOR_FUTURE_10_OS(15);
       TEST_FOR_FUTURE_OS(11);
       TEST_FOR_FUTURE_OS(12);
       TEST_FOR_FUTURE_OS(13);
-
-      EXPECT_FALSE(IsOSLaterThan13_DontCallThis());
-    } else if (minor == 14) {
-      EXPECT_FALSE(IsOS10_13());
-      EXPECT_FALSE(IsAtMostOS10_13());
-
-      TEST_FOR_SAME_10_OS(14);
-      TEST_FOR_FUTURE_10_OS(15);
-      TEST_FOR_FUTURE_OS(11);
-      TEST_FOR_FUTURE_OS(12);
-      TEST_FOR_FUTURE_OS(13);
-
-      EXPECT_FALSE(IsOSLaterThan13_DontCallThis());
-    } else if (minor == 15) {
-      EXPECT_FALSE(IsOS10_13());
-      EXPECT_FALSE(IsAtMostOS10_13());
-
-      TEST_FOR_PAST_10_OS(14);
-      TEST_FOR_SAME_10_OS(15);
-      TEST_FOR_FUTURE_OS(11);
-      TEST_FOR_FUTURE_OS(12);
-      TEST_FOR_FUTURE_OS(13);
-
-      EXPECT_FALSE(IsOSLaterThan13_DontCallThis());
+      TEST_FOR_FUTURE_OS(14);
     } else {
       // macOS 10.15 was the end of the line.
       FAIL() << "Unexpected 10.x macOS.";
     }
   } else if (major == 11) {
-    EXPECT_FALSE(IsOS10_13());
-    EXPECT_FALSE(IsAtMostOS10_13());
+    EXPECT_FALSE(IsOS10_15());
 
-    TEST_FOR_PAST_10_OS(14);
-    TEST_FOR_PAST_10_OS(15);
     TEST_FOR_SAME_OS(11);
     TEST_FOR_FUTURE_OS(12);
     TEST_FOR_FUTURE_OS(13);
-
-    EXPECT_FALSE(IsOSLaterThan13_DontCallThis());
+    TEST_FOR_FUTURE_OS(14);
   } else if (major == 12) {
-    EXPECT_FALSE(IsOS10_13());
-    EXPECT_FALSE(IsAtMostOS10_13());
+    EXPECT_FALSE(IsOS10_15());
 
-    TEST_FOR_PAST_10_OS(14);
-    TEST_FOR_PAST_10_OS(15);
     TEST_FOR_PAST_OS(11);
     TEST_FOR_SAME_OS(12);
     TEST_FOR_FUTURE_OS(13);
-
-    EXPECT_FALSE(IsOSLaterThan13_DontCallThis());
+    TEST_FOR_FUTURE_OS(14);
   } else if (major == 13) {
-    EXPECT_FALSE(IsOS10_13());
-    EXPECT_FALSE(IsAtMostOS10_13());
+    EXPECT_FALSE(IsOS10_15());
 
-    TEST_FOR_PAST_10_OS(14);
-    TEST_FOR_PAST_10_OS(15);
     TEST_FOR_PAST_OS(11);
     TEST_FOR_PAST_OS(12);
     TEST_FOR_SAME_OS(13);
+    TEST_FOR_FUTURE_OS(14);
+  } else if (major == 14) {
+    EXPECT_FALSE(IsOS10_15());
 
-    EXPECT_FALSE(IsOSLaterThan13_DontCallThis());
+    TEST_FOR_PAST_OS(11);
+    TEST_FOR_PAST_OS(12);
+    TEST_FOR_PAST_OS(13);
+    TEST_FOR_SAME_OS(14);
   } else {
     // The spooky future.
     FAIL() << "Time to update the OS macros!";

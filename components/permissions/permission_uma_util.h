@@ -10,11 +10,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/version.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_request.h"
-#include "components/permissions/permission_result.h"
 #include "components/permissions/prediction_service/prediction_service_messages.pb.h"
 #include "components/permissions/request_type.h"
+#include "content/public/browser/permission_result.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 
@@ -40,7 +41,7 @@ class PermissionRequest;
 // When updating, you also need to update:
 //   1) The PermissionRequestType enum in tools/metrics/histograms/enums.xml.
 //   2) The PermissionRequestTypes suffix list in
-//      tools/metrics/histograms/histograms.xml.
+//      tools/metrics/histograms/metadata/histogram_suffixes_list.xml.
 //   3) GetPermissionRequestString below.
 //
 // The usual rules of updating UMA values applies to this enum:
@@ -65,7 +66,7 @@ enum class RequestTypeForUma {
   PERMISSION_ACCESSIBILITY_EVENTS = 15,
   // PERMISSION_CLIPBOARD_READ = 16, // Replaced by
   // PERMISSION_CLIPBOARD_READ_WRITE in M81.
-  PERMISSION_SECURITY_KEY_ATTESTATION = 17,
+  // PERMISSION_SECURITY_KEY_ATTESTATION = 17,
   PERMISSION_PAYMENT_HANDLER = 18,
   PERMISSION_NFC = 19,
   PERMISSION_CLIPBOARD_READ_WRITE = 20,
@@ -77,8 +78,9 @@ enum class RequestTypeForUma {
   PERMISSION_LOCAL_FONTS = 26,
   PERMISSION_IDLE_DETECTION = 27,
   PERMISSION_FILE_HANDLING = 28,
-  PERMISSION_U2F_API_REQUEST = 29,
+  // PERMISSION_U2F_API_REQUEST = 29,
   PERMISSION_TOP_LEVEL_STORAGE_ACCESS = 30,
+  PERMISSION_MIDI = 31,
   // NUM must be the last value in the enum.
   NUM
 };
@@ -264,14 +266,20 @@ enum class OneTimePermissionEvent {
 
   // Recorded when a one time grant expires because all tabs are either closed
   // or discarded.
-
   ALL_TABS_CLOSED_OR_DISCARDED = 2,
 
   // Recorded when a one time grant expires because the permission was unused in
   // the background.
   EXPIRED_IN_BACKGROUND = 3,
 
-  kMaxValue = EXPIRED_IN_BACKGROUND
+  // Revoked because of the maximum one time permission lifetime
+  // `kOneTimePermissionMaximumLifetime`
+  EXPIRED_AFTER_MAXIMUM_LIFETIME = 4,
+
+  // Recorded when a one time grant expires because the device was suspended.
+  EXPIRED_ON_SUSPEND = 5,
+
+  kMaxValue = EXPIRED_ON_SUSPEND
 };
 
 enum class PermissionAutoRevocationHistory {
@@ -373,8 +381,13 @@ enum class PermissionChangeAction {
   // CONTENT_SETTING_DEFAULT.
   RESET_FROM_DENIED = 3,
 
+  // For one time grantable permissions, the user can toggle a remember checkbox
+  // in the secondary page info page which toggles grants between permanent
+  // grant and one time grant.
+  REMEMBER_CHECKBOX_TOGGLED = 4,
+
   // Always keep at the end.
-  kMaxValue = RESET_FROM_DENIED
+  kMaxValue = REMEMBER_CHECKBOX_TOGGLED
 };
 
 // The reason the permission action `PermissionAction::IGNORED` was triggered.
@@ -470,7 +483,7 @@ class PermissionUmaUtil {
       PermissionEmbargoStatus embargo_status);
 
   static void RecordEmbargoPromptSuppressionFromSource(
-      PermissionStatusSource source);
+      content::PermissionStatusSource source);
 
   static void RecordEmbargoStatus(PermissionEmbargoStatus embargo_status);
 
@@ -616,6 +629,12 @@ class PermissionUmaUtil {
       PermissionSourceUI source_ui,
       content::BrowserContext* browser_context,
       base::Time current_time);
+
+  static absl::optional<uint32_t> GetDaysSinceUnusedSitePermissionRevocation(
+      const GURL& origin,
+      ContentSettingsType content_settings_type,
+      base::Time current_time,
+      HostContentSettingsMap* hcsm);
 
   // A scoped class that will check the current resolved content setting on
   // construction and report a revocation metric accordingly if the revocation

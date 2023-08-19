@@ -4,13 +4,16 @@
 
 #include "ash/style/system_shadow_on_texture_layer.h"
 
+#include "ash/style/style_util.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/gfx/skia_paint_util.h"
 
 namespace ash {
 
 SystemShadowOnTextureLayer::SystemShadowOnTextureLayer(SystemShadow::Type type)
-    : shadow_values_(gfx::ShadowValue::MakeChromeOSSystemUIShadowValues(
+    : type_(type),
+      shadow_values_(gfx::ShadowValue::MakeChromeOSSystemUIShadowValues(
           SystemShadow::GetElevationFromType(type))) {
   layer_.SetFillsBoundsOpaquely(false);
   layer_.set_delegate(this);
@@ -20,8 +23,8 @@ SystemShadowOnTextureLayer::SystemShadowOnTextureLayer(SystemShadow::Type type)
 SystemShadowOnTextureLayer::~SystemShadowOnTextureLayer() = default;
 
 void SystemShadowOnTextureLayer::SetType(SystemShadow::Type type) {
-  shadow_values_ = gfx::ShadowValue::MakeChromeOSSystemUIShadowValues(
-      SystemShadow::GetElevationFromType(type));
+  type_ = type;
+  UpdateShadowValues();
   UpdateLayer();
 }
 
@@ -54,8 +57,26 @@ gfx::Rect SystemShadowOnTextureLayer::GetLayerBounds() const {
   return layer_bounds;
 }
 
+const gfx::ShadowValues SystemShadowOnTextureLayer::GetShadowValuesForTesting()
+    const {
+  return shadow_values_;
+}
+
 void SystemShadowOnTextureLayer::UpdateLayer() {
   layer_.SchedulePaint(GetLayerBounds());
+}
+
+void SystemShadowOnTextureLayer::UpdateShadowValues() {
+  const int elevation = SystemShadow::GetElevationFromType(type_);
+  auto iter = colors_map_.find(elevation);
+  if (iter == colors_map_.end()) {
+    shadow_values_ =
+        gfx::ShadowValue::MakeChromeOSSystemUIShadowValues(elevation);
+  } else {
+    shadow_values_ = gfx::ShadowValue::MakeChromeOSSystemUIShadowValues(
+        elevation, /*key_shadow_color=*/iter->second.first,
+        /*second_color=*/iter->second.second);
+  }
 }
 
 void SystemShadowOnTextureLayer::OnPaintLayer(const ui::PaintContext& context) {
@@ -82,5 +103,12 @@ void SystemShadowOnTextureLayer::OnPaintLayer(const ui::PaintContext& context) {
 void SystemShadowOnTextureLayer::OnDeviceScaleFactorChanged(
     float old_device_scale_factor,
     float new_device_scale_factor) {}
+
+void SystemShadowOnTextureLayer::UpdateShadowColors(
+    const ui::ColorProvider* color_provider) {
+  colors_map_ = StyleUtil::CreateShadowElevationToColorsMap(color_provider);
+  UpdateShadowValues();
+  UpdateLayer();
+}
 
 }  // namespace ash

@@ -17,6 +17,9 @@
 #include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
+#include "base/logging.h"
+#include "base/run_loop.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
@@ -31,6 +34,11 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/headless/clipboard/headless_clipboard.h"  // nogncheck
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test_utils.h"
@@ -42,6 +50,7 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/display/display_switches.h"
 #include "ui/gfx/switches.h"
+#include "url/gurl.h"
 
 namespace headless {
 
@@ -174,6 +183,86 @@ MULTIPROCESS_TEST_MAIN(ChromeProcessSingletonChildProcessMain) {
       chrome_process_singleton.NotifyOtherProcessOrCreate();
 
   return static_cast<int>(notify_result);
+}
+
+class HeadlessModeUserAgentBrowserTest : public HeadlessModeBrowserTest {
+ public:
+  HeadlessModeUserAgentBrowserTest() = default;
+  ~HeadlessModeUserAgentBrowserTest() override = default;
+
+  void SetUp() override {
+    embedded_test_server()->RegisterRequestHandler(
+        base::BindRepeating(&HeadlessModeUserAgentBrowserTest::RequestHandler,
+                            base::Unretained(this)));
+
+    ASSERT_TRUE(embedded_test_server()->Start());
+
+    HeadlessModeBrowserTest::SetUp();
+  }
+
+ protected:
+  std::unique_ptr<net::test_server::HttpResponse> RequestHandler(
+      const net::test_server::HttpRequest& request) {
+    if (request.relative_url == "/page.html") {
+      headers_ = request.headers;
+
+      content::GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(&HeadlessModeUserAgentBrowserTest::FinishTest,
+                         base::Unretained(this)));
+
+      auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+      response->set_code(net::HTTP_OK);
+      response->set_content_type("text/html");
+      response->set_content(R"(<div>Hi, I'm headless!</div>)");
+
+      return response;
+    }
+
+    return nullptr;
+  }
+
+  void RunLoop() {
+    if (!test_complete_) {
+      run_loop_ = std::make_unique<base::RunLoop>();
+      run_loop_->Run();
+      run_loop_.reset();
+    }
+  }
+
+  void FinishTest() {
+    test_complete_ = true;
+    if (run_loop_) {
+      run_loop_->Quit();
+    }
+  }
+
+  bool test_complete_ = false;
+  std::unique_ptr<base::RunLoop> run_loop_;
+  net::test_server::HttpRequest::HeaderMap headers_;
+};
+
+IN_PROC_BROWSER_TEST_F(HeadlessModeUserAgentBrowserTest, UserAgentHasHeadless) {
+  content::BrowserContext* browser_context = browser()->profile();
+  DCHECK(browser_context);
+
+  content::WebContents::CreateParams create_params(browser_context);
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(create_params);
+  DCHECK(web_contents);
+
+  GURL url = embedded_test_server()->GetURL("/page.html");
+  content::NavigationController::LoadURLParams params(url);
+  web_contents->GetController().LoadURLWithParams(params);
+
+  RunLoop();
+
+  web_contents->Close();
+  web_contents.reset();
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_THAT(headers_.at("User-Agent"), testing::HasSubstr("HeadlessChrome/"));
 }
 
 // Incognito mode tests ------------------------------------------------------

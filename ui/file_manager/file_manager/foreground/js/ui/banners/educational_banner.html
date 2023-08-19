@@ -118,7 +118,7 @@
   }
 
   :host-context([theme='legacy']) ::slotted(cr-button),
-  :host-context([theme='legacy']) #dismiss-button {
+  :host-context([theme='legacy']) #dismiss-button-old {
     --active-bg: var(--cros-button-background-color-secondary-hover);
     --hover-bg-color: var(--cros-button-background-color-secondary-hover);
     --ink-color: rgba(var(--cros-button-ripple-color-secondary-rgb), var(--cros-button-secondary-ripple-opacity));
@@ -133,7 +133,7 @@
   }
 
   :host-context([theme='refresh23']) ::slotted(cr-button),
-  :host-context([theme='refresh23']) #dismiss-button {
+  :host-context([theme='refresh23']) #dismiss-button-old {
     --active-bg: none;
     --bg-action: var(--cros-sys-primary);
     /* Use the default bg color as hover color because we
@@ -155,10 +155,14 @@
     position: relative;
   }
 
+  #dismiss-button {
+    margin-inline: 4px;
+  }
+
   :host-context([theme='legacy']):host-context(.focus-outline-visible)
       ::slotted(cr-button:focus),
   :host-context([theme='legacy']):host-context(.focus-outline-visible)
-      #dismiss-button:focus {
+      #dismiss-button-old:focus {
     outline: 2px solid var(--cros-focus-ring-color);
     outline-offset: 2px;
   }
@@ -166,7 +170,7 @@
   :host-context([theme='refresh23']):host-context(.focus-outline-visible)
       ::slotted(cr-button:focus),
   :host-context([theme='refresh23']):host-context(.focus-outline-visible)
-      #dismiss-button:focus {
+      #dismiss-button-old:focus {
     outline: 2px solid var(--cros-sys-focus_ring);
     outline-offset: 2px;
   }
@@ -191,9 +195,17 @@
   <div class="button-group">
     <slot name="extra-button"></slot>
     <slot name="dismiss-button">
-      <cr-button id="dismiss-button">
-        $i18n{DRIVE_WELCOME_DISMISS}
-      </cr-button>
+      <xf-jellybean>
+        <cr-button id="dismiss-button-old" slot="old">
+          $i18n{DRIVE_WELCOME_DISMISS}
+        </cr-button>
+        <cros-button
+            label="$i18n{DRIVE_WELCOME_DISMISS}"
+            id="dismiss-button"
+            button-style="floating"
+            slot="jelly">
+        </cros-button>
+      </xf-jellybean>
     </slot>
   </div>
 </div>

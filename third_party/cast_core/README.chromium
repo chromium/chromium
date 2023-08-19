@@ -7,6 +7,7 @@ Revision: 21e7e00e13122d83507449578c6bfe356d7eb266
 License: Apache 2.0
 License File: LICENSE
 Security Critical: yes
+Shipped: yes
 
 Description:
 Public components, such as protos, used by gRPC-based CastCore services and

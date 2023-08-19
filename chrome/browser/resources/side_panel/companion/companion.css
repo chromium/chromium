@@ -14,3 +14,54 @@
 #image-query-form {
   display: none;
 }
+
+#network-error-bottom-line {
+  color: #70757A;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 22px;
+  margin-top: 8px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+#network-error-icon {
+  height: 48px;
+  margin: 156px auto 0px;
+  width: 40px;
+}
+
+#network-error-top-line {
+  color: #202124;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 24px;
+  margin-top: 44px;
+  text-align: center;
+}
+
+#network-error-page {
+  background-color: white;
+  display: none;
+  height: 100%;
+  left: 0;
+  position: fixed;
+  top: 0;
+  width: 100%;
+}
+
+@media (prefers-color-scheme: dark) {
+  #network-error-bottom-line {
+    color: #9AA0A6;
+  }
+
+  #network-error-page {
+    background-color: #202124;
+  }
+
+  #network-error-top-line {
+    color: #E8EAED;
+  }
+}

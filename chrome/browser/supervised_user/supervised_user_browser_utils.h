@@ -27,12 +27,14 @@ bool ShouldContentSkipParentAllowlistFiltering(content::WebContents* contents);
 // should be created.
 ProfileSelections BuildProfileSelectionsForRegularAndGuest();
 
-// Returns how several supervised_user factories are created before the
-// `supervised_user::kUpdateSupervisedUserFactoryCreation` feature is enabled.
-ProfileSelections BuildProfileSelectionsLegacy();
-
 // Returns given name of the primary account associated with the profile.
 std::string GetAccountGivenName(Profile& profile);
+
+// Asserts that `is_child` matches the child status of the primary user.
+// Terminates user session in case of status mismatch in order to prevent
+// supervision incidents. Relevant on Chrome OS platform that has the concept
+// of the user.
+void AssertChildStatusOfTheUser(Profile* profile, bool is_child);
 
 }  // namespace supervised_user
 

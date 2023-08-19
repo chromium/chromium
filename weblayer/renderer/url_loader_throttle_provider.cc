@@ -18,14 +18,14 @@ URLLoaderThrottleProvider::URLLoaderThrottleProvider(
     blink::ThreadSafeBrowserInterfaceBrokerProxy* broker,
     blink::URLLoaderThrottleProviderType type)
     : type_(type) {
-  DETACH_FROM_THREAD(thread_checker_);
+  DETACH_FROM_SEQUENCE(sequence_checker_);
   broker->GetInterface(safe_browsing_remote_.InitWithNewPipeAndPassReceiver());
 }
 
 URLLoaderThrottleProvider::URLLoaderThrottleProvider(
     const URLLoaderThrottleProvider& other)
     : type_(other.type_) {
-  DETACH_FROM_THREAD(thread_checker_);
+  DETACH_FROM_SEQUENCE(sequence_checker_);
   if (other.safe_browsing_) {
     other.safe_browsing_->Clone(
         safe_browsing_remote_.InitWithNewPipeAndPassReceiver());
@@ -34,21 +34,21 @@ URLLoaderThrottleProvider::URLLoaderThrottleProvider(
 
 std::unique_ptr<blink::URLLoaderThrottleProvider>
 URLLoaderThrottleProvider::Clone() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (safe_browsing_remote_)
     safe_browsing_.Bind(std::move(safe_browsing_remote_));
   return base::WrapUnique(new URLLoaderThrottleProvider(*this));
 }
 
 URLLoaderThrottleProvider::~URLLoaderThrottleProvider() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>>
 URLLoaderThrottleProvider::CreateThrottles(
     int render_frame_id,
     const blink::WebURLRequest& request) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
 

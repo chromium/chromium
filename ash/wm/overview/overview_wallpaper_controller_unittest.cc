@@ -7,8 +7,8 @@
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wallpaper/views/wallpaper_widget_controller.h"
 #include "ash/wallpaper/wallpaper_constants.h"
-#include "ash/wallpaper/wallpaper_widget_controller.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
@@ -35,7 +35,11 @@ void CheckWallpaperBlur(float expected) {
 class OverviewWallpaperControllerTest : public AshTestBase {
  public:
   OverviewWallpaperControllerTest() {
-    scoped_feature_list_.InitAndDisableFeature(chromeos::features::kJellyroll);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{chromeos::features::kJelly,
+                               chromeos::features::kJellyroll});
+    ;
   }
 
   OverviewWallpaperControllerTest(const OverviewWallpaperControllerTest&) =

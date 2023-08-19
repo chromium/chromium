@@ -48,6 +48,83 @@ body {
   padding: 20px;
 }
 
+html:has(body.jelly-enabled),
+html:has(body.jelly-enabled) body,
+html:has(body.jelly-enabled) .text-field-container > select,
+html:has(body.jelly-enabled) .content {
+  background-color: var(--feedback-bg-color);
+  color: var(--cros-sys-on_surface_variant);
+  font: var(--cros-body-2-font);
+}
+
+html:has(body.jelly-enabled) textarea,
+html:has(body.jelly-enabled) input {
+  background-color: var(--cros-sys-input_field_on_shaded);
+  font: var(--cros-body-2-font);
+}
+
+html:has(body.jelly-enabled) .checkbox-field-container,
+html:has(body.jelly-enabled) .text-field-container {
+  color: var(--cros-sys-on_surface);
+  font: var(--cros-body-2-font);
+}
+
+html:has(body.jelly-enabled) a {
+  color: var(--cros-sys-primary);
+}
+
+html:has(body.jelly-enabled) .attach-file-notification,
+html:has(body.jelly-enabled) .description-empty-notification {
+  color: var(--cros-sys-error);
+  font: var(--cros-annotation-2-font);
+}
+
+html:has(body.jelly-enabled) textarea[aria-invalid="true"] {
+  color: var(--cros-sys-error);
+  outline: 2px solid var(--cros-sys-error);
+}
+
+html:has(body.jelly-enabled) #free-form-text,
+html:has(body.jelly-enabled) #additional-info-label {
+  font: var(--cros-headline-1-font);
+}
+
+html:has(body.jelly-enabled) .bottom-buttons button {
+  border-radius: 18px;
+  font: var(--cros-button-2-font);
+}
+
+html:has(body.jelly-enabled) #send-report-button {
+  background-color: var(--cros-sys-primary);
+  color: var(--cros-sys-on_primary);
+}
+
+html:has(body.jelly-enabled) #cancel-button {
+  background-color: var(--cros-sys-primary_container);
+  color: var(--cros-sys-on_primary_container);
+}
+
+#cancel-button-hover-bg,
+#send-button-hover-bg {
+  border-radius: 18px;
+  content: '';
+  display: none;
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 1;
+}
+
+html:has(body.jelly-enabled) #send-report-button:hover > #send-button-hover-bg {
+  background-color: var(--cros-sys-hover_on_prominent);
+  display: block;
+}
+
+html:has(body.jelly-enabled) #cancel-button:hover > #cancel-button-hover-bg {
+  background-color: var(--cros-sys-hover_on_subtle);
+  display: block;
+}
+
 .content {
   color: var(--feedback-primary-color);
   font-size: 12px;
@@ -175,7 +252,7 @@ body {
   margin-inline-end: 130px;
 }
 
-.content #privacy-note {
+.content .privacy-note {
   font-size: 12px;
   line-height: 20px;
   margin-bottom: 0;

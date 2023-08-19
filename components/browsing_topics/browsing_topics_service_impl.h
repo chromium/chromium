@@ -78,6 +78,7 @@ class BrowsingTopicsServiceImpl
       content::BrowsingTopicsSiteDataManager* site_data_manager,
       Annotator* annotator,
       const base::circular_deque<EpochTopics>& epochs,
+      bool is_manually_triggered,
       BrowsingTopicsCalculator::CalculateCompletedCallback callback);
 
   // Allow tests to access `browsing_topics_state_`.
@@ -124,8 +125,10 @@ class BrowsingTopicsServiceImpl
   void ScheduleBrowsingTopicsCalculation(base::TimeDelta delay);
 
   // Initialize `topics_calculator_` to start calculating this epoch's top
-  // topics and context observed topics.
-  void CalculateBrowsingTopics();
+  // topics and context observed topics. Set `is_manually_triggered`  to true if
+  // this calculation was triggered via the topics-internals page rather than
+  // the regular schedule.
+  void CalculateBrowsingTopics(bool is_manually_triggered);
 
   // Set `browsing_topics_state_loaded_` to true. Start scheduling the topics
   // calculation.
@@ -134,8 +137,15 @@ class BrowsingTopicsServiceImpl
   // KeyedService:
   void Shutdown() override;
 
-  mojom::WebUIGetBrowsingTopicsStateResultPtr
-  GetBrowsingTopicsStateForWebUiHelper();
+  // Note: There could be a race in topics calculation and this callback, in
+  // which
+  // case `browsing_topics_state_`'s underlying data could be newer than
+  // `hashed_to_unhashed_context_domains`'s data. This is a minor issue, as it's
+  // unlikely to happen, and the worst consequence is that we fail to display
+  // some unhashed domains for the latest epoch.
+  void GetBrowsingTopicsStateForWebUiHelper(
+      mojom::PageHandler::GetBrowsingTopicsStateCallback callback,
+      std::map<HashedDomain, std::string> hashed_to_unhashed_context_domains);
 
   // These pointers are safe to hold and use throughout the lifetime of
   // `this`:

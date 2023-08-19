@@ -11,13 +11,10 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-import static org.chromium.ui.test.util.ViewUtils.waitForView;
-
 import android.view.View;
 
 import androidx.test.filters.LargeTest;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,7 +31,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
-import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -43,7 +40,9 @@ import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.SyncService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -58,7 +57,9 @@ public class ClearBrowsingDataFragmentBasicTest {
             new ChromeTabbedActivityTestRule();
     public final SettingsActivityTestRule<ClearBrowsingDataFragmentBasic>
             mSettingsActivityTestRule =
-                    new SettingsActivityTestRule<>(ClearBrowsingDataFragmentBasic.class);
+                    new SettingsActivityTestRule<>(ClearBrowsingDataFragmentBasic.class,
+                            ClearBrowsingDataFragment.createFragmentArgs(
+                                    /*isFetcherSuppliedFromOutside=*/false));
 
     // SettingsActivity has to be finished before the outer CTA can be finished or trying to finish
     // CTA won't work.
@@ -86,15 +87,9 @@ public class ClearBrowsingDataFragmentBasicTest {
     @Before
     public void setUp() throws InterruptedException {
         initMocks(this);
-        TestThreadUtils.runOnUiThreadBlocking(() -> SyncService.overrideForTests(mMockSyncService));
+        SyncServiceFactory.setInstanceForTesting(mMockSyncService);
         setSyncable(false);
         mActivityTestRule.startMainActivityOnBlankPage();
-    }
-
-    @After
-    public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> SyncService.resetForTests());
-        TemplateUrlServiceFactory.setInstanceForTesting(null);
     }
 
     private void setSyncable(boolean syncable) {
@@ -164,7 +159,6 @@ public class ClearBrowsingDataFragmentBasicTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "https://crbug.com/1446404")
     public void testRenderSearchHistoryLinkSignedInGoogleDSE() throws IOException {
         mSigninTestRule.addTestAccountThenSignin();
         setSyncable(false);
@@ -197,7 +191,7 @@ public class ClearBrowsingDataFragmentBasicTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "crbug.com/1407312")
+    @DisabledTest(message = "https://crbug.com/1446398#c8")
     public void testRenderSearchHistoryLinkSignedInUnknownNonGoogleDSE() throws IOException {
         mSigninTestRule.addTestAccountThenSigninAndEnableSync();
         setSyncable(false);
@@ -210,14 +204,13 @@ public class ClearBrowsingDataFragmentBasicTest {
         View view = mSettingsActivityTestRule.getActivity()
                             .findViewById(android.R.id.content)
                             .getRootView();
-        waitForView(withText("Frees up"));
+        ViewUtils.waitForVisibleView(withText("Frees up"));
         mRenderTestRule.render(view, "clear_browsing_data_basic_shl_unknown_signed_in");
     }
 
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "crbug.com/1407312")
     public void testRenderSearchHistoryLinkSignedOutKnownNonGoogleDSE() throws IOException {
         configureMockSearchEngine();
         Mockito.doReturn(false).when(mMockTemplateUrlService).isDefaultSearchEngineGoogle();
@@ -234,6 +227,7 @@ public class ClearBrowsingDataFragmentBasicTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "Flaky because the rendered page doesn't always finish loading ")
     public void testRenderSearchHistoryLinkSignedOutUnknownNonGoogleDSE() throws IOException {
         configureMockSearchEngine();
         Mockito.doReturn(false).when(mMockTemplateUrlService).isDefaultSearchEngineGoogle();

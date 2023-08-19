@@ -8,9 +8,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/trace_event/typed_macros.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/url_loader_factory_getter.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/url_loader_throttles.h"
+#include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -115,6 +119,9 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactory final
       override;
 
  private:
+  std::vector<std::unique_ptr<blink::URLLoaderThrottle>> CreateThrottles(
+      const network::ResourceRequest& resource_request);
+
   // Guaranteed to exist, as `service_` owns this object.
   raw_ptr<KeepAliveURLLoaderService> service_;
 
@@ -195,7 +202,8 @@ void KeepAliveURLLoaderService::KeepAliveURLLoaderFactory::CreateLoaderAndStart(
       // `context` can be destroyed right at the end of this method if the
       // caller renderer is already unloaded, meaning `loader` also needs to
       // hold another refptr to ensure `PolicyContainerHost` alive.
-      context->policy_container_host,
+      context->policy_container_host, service_->browser_context_,
+      CreateThrottles(resource_request),
       base::PassKey<KeepAliveURLLoaderService>());
   // Adds a new loader receiver to the set, binding the pending `receiver` from
   // a renderer to `raw_loader` with `loader` as its context. The set will keep
@@ -211,6 +219,11 @@ void KeepAliveURLLoaderService::KeepAliveURLLoaderFactory::CreateLoaderAndStart(
     raw_loader->SetObserverForTesting(     // IN-TEST
         service_->loader_test_observer_);  // IN-TEST
   }
+
+  // `loader` must only be started after the above setup.
+  if (!resource_request.is_fetch_later_api) {
+    raw_loader->Start();
+  }
 }
 
 void KeepAliveURLLoaderService::KeepAliveURLLoaderFactory::Clone(
@@ -222,8 +235,34 @@ void KeepAliveURLLoaderService::KeepAliveURLLoaderFactory::Clone(
       std::make_unique<FactoryContext>(current_context()));
 }
 
-KeepAliveURLLoaderService::KeepAliveURLLoaderService() {
+std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
+KeepAliveURLLoaderService::KeepAliveURLLoaderFactory::CreateThrottles(
+    const network::ResourceRequest& resource_request) {
+  if (service_->url_loader_throttles_getter_for_testing_) {
+    return service_->url_loader_throttles_getter_for_testing_.Run();  // IN-TEST
+  }
+
+  // These throttles are also run by `blink::ThrottlingURLLoader`. However, they
+  // have to be re-run here in case of handling in-browser redirects. There is
+  // already a similar use case that also runs throttles in browser in
+  // `SearchPrefetchRequest::StartPrefetchRequest()`. The review discussion in
+  // https://crrev.com/c/2552723/3 suggests that running them again in browser
+  // is fine.
+  return CreateContentBrowserURLLoaderThrottlesForKeepAlive(
+      resource_request, service_->browser_context_,
+      // The renderer might be gone at any point when a throttle is running in
+      // the KeepAliveURLLoader.
+      /*wc_getter=*/base::BindRepeating([]() -> WebContents* {
+        return nullptr;
+      }),
+      FrameTreeNode::kFrameTreeNodeInvalidId);
+}
+
+KeepAliveURLLoaderService::KeepAliveURLLoaderService(
+    BrowserContext* browser_context)
+    : browser_context_(browser_context) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(browser_context_);
 
   factory_ =
       std::make_unique<KeepAliveURLLoaderService::KeepAliveURLLoaderFactory>(
@@ -258,6 +297,15 @@ void KeepAliveURLLoaderService::OnLoaderDisconnected() {
   // The context of `disconnected_loader_receiver_id`, an KeepAliveURLLoader
   // object, has been removed from `loader_receivers_`, but it has to stay alive
   // to handle subsequent updates from network service.
+
+  // First, check if the KeepAliveURLLoader object is pending to start.
+  if (!loader_receivers_.current_context()->IsStarted()) {
+    // Last chance to start a deferred loader here.
+    loader_receivers_.current_context()->Start();
+  }
+
+  // Last, move the KeepAliveURLLoader object into a different loader set to
+  // keep it alive until finish.
   disconnected_loaders_.emplace(disconnected_loader_receiver_id,
                                 std::move(loader_receivers_.current_context()));
 }
@@ -283,6 +331,13 @@ size_t KeepAliveURLLoaderService::NumDisconnectedLoadersForTesting() const {
 void KeepAliveURLLoaderService::SetLoaderObserverForTesting(
     scoped_refptr<KeepAliveURLLoader::TestObserver> observer) {
   loader_test_observer_ = observer;
+}
+
+void KeepAliveURLLoaderService::SetURLLoaderThrottlesGetterForTesting(
+    KeepAliveURLLoader::URLLoaderThrottlesGetter
+        url_loader_throttles_getter_for_testing) {
+  url_loader_throttles_getter_for_testing_ =
+      std::move(url_loader_throttles_getter_for_testing);
 }
 
 }  // namespace content

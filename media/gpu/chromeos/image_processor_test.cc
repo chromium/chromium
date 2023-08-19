@@ -111,14 +111,6 @@ const base::FilePath::CharType* kI420Image360P =
 const base::FilePath::CharType* kI420Image270P =
     FILE_PATH_LITERAL("puppets-480x270.i420.yuv");
 
-// Files for rotation test.
-const base::FilePath::CharType* kNV12Image90 =
-    FILE_PATH_LITERAL("bear_192x320_90.nv12.yuv");
-const base::FilePath::CharType* kNV12Image180 =
-    FILE_PATH_LITERAL("bear_320x192_180.nv12.yuv");
-const base::FilePath::CharType* kNV12Image270 =
-    FILE_PATH_LITERAL("bear_192x320_270.nv12.yuv");
-
 enum class YuvSubsampling {
   kYuv420,
   kYuv422,
@@ -335,27 +327,7 @@ class ImageProcessorParamTest
     ImageProcessor::PortConfig output_config(
         output_fourcc, output_image->Size(), output_layout->planes(),
         output_image->VisibleRect(), output_storage_types);
-    int rotation = (output_image->Rotation() - input_image.Rotation()) % 360;
-    if (rotation < 0)
-      rotation += 360;
-    VideoRotation relative_rotation = VIDEO_ROTATION_0;
-    switch (rotation) {
-      case 0:
-        relative_rotation = VIDEO_ROTATION_0;
-        break;
-      case 90:
-        relative_rotation = VIDEO_ROTATION_90;
-        break;
-      case 180:
-        relative_rotation = VIDEO_ROTATION_180;
-        break;
-      case 270:
-        relative_rotation = VIDEO_ROTATION_270;
-        break;
-      default:
-        NOTREACHED() << "Invalid rotation: " << rotation;
-        return nullptr;
-    }
+
     // TODO(crbug.com/917951): Select more appropriate number of buffers.
     constexpr size_t kNumBuffers = 1;
     LOG_ASSERT(output_image->IsMetadataLoaded());
@@ -399,8 +371,7 @@ class ImageProcessorParamTest
     }
 
     auto ip_client = test::ImageProcessorClient::Create(
-        input_config, output_config, kNumBuffers, relative_rotation,
-        std::move(frame_processors));
+        input_config, output_config, kNumBuffers, std::move(frame_processors));
     return ip_client;
   }
 
@@ -569,17 +540,6 @@ INSTANTIATE_TEST_SUITE_P(NV12CroppingAndScaling,
                          ImageProcessorParamTest,
                          ::testing::Values(std::make_tuple(kNV12Image360PIn480P,
                                                            kNV12Image270P)));
-
-// Rotate frame to specified rotation.
-// Now only VaapiIP maybe support rotaion.
-INSTANTIATE_TEST_SUITE_P(
-    NV12Rotation,
-    ImageProcessorParamTest,
-    ::testing::Values(std::make_tuple(kNV12Image, kNV12Image90),
-                      std::make_tuple(kNV12Image, kNV12Image180),
-                      std::make_tuple(kNV12Image, kNV12Image270),
-                      std::make_tuple(kNV12Image180, kNV12Image90),
-                      std::make_tuple(kNV12Image180, kNV12Image)));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // TODO(hiroh): Add more tests.

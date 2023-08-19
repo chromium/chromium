@@ -13,9 +13,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/login/users/multi_profile_user_controller_delegate.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/policy/networking/policy_cert_service.h"
 #include "chrome/browser/policy/networking/policy_cert_service_factory.h"
@@ -25,7 +25,9 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/user_manager/multi_user/multi_user_sign_in_policy.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -33,74 +35,81 @@
 #include "net/cert/x509_certificate.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
 namespace {
 
+// TODO(b/278643115) Remove the using when moved.
+using user_manager::kMultiProfileUserBehaviorPref;
+using user_manager::MultiUserSignInPolicy;
+using user_manager::MultiUserSignInPolicyToPrefValue;
+using user_manager::ParseMultiUserSignInPolicyPref;
+
 const char* const kUsers[] = {"a@gmail.com", "b@gmail.com"};
 
 struct BehaviorTestCase {
-  const char* primary;
-  const char* secondary;
+  MultiUserSignInPolicy primary;
+  MultiUserSignInPolicy secondary;
   MultiProfileUserController::UserAllowedInSessionReason
       expected_primary_policy;
   MultiProfileUserController::UserAllowedInSessionReason
       expected_secondary_allowed;
 };
 
-const BehaviorTestCase kBehaviorTestCases[] = {
+constexpr BehaviorTestCase kBehaviorTestCases[] = {
     {
-        MultiProfileUserController::kBehaviorUnrestricted,
-        MultiProfileUserController::kBehaviorUnrestricted,
+        MultiUserSignInPolicy::kUnrestricted,
+        MultiUserSignInPolicy::kUnrestricted,
         MultiProfileUserController::ALLOWED,
         MultiProfileUserController::ALLOWED,
     },
     {
-        MultiProfileUserController::kBehaviorUnrestricted,
-        MultiProfileUserController::kBehaviorPrimaryOnly,
-        MultiProfileUserController::ALLOWED,
-        MultiProfileUserController::NOT_ALLOWED_POLICY_FORBIDS,
-    },
-    {
-        MultiProfileUserController::kBehaviorUnrestricted,
-        MultiProfileUserController::kBehaviorNotAllowed,
+        MultiUserSignInPolicy::kUnrestricted,
+        MultiUserSignInPolicy::kPrimaryOnly,
         MultiProfileUserController::ALLOWED,
         MultiProfileUserController::NOT_ALLOWED_POLICY_FORBIDS,
     },
     {
-        MultiProfileUserController::kBehaviorPrimaryOnly,
-        MultiProfileUserController::kBehaviorUnrestricted,
-        MultiProfileUserController::ALLOWED,
-        MultiProfileUserController::ALLOWED,
-    },
-    {
-        MultiProfileUserController::kBehaviorPrimaryOnly,
-        MultiProfileUserController::kBehaviorPrimaryOnly,
+        MultiUserSignInPolicy::kUnrestricted,
+        MultiUserSignInPolicy::kNotAllowed,
         MultiProfileUserController::ALLOWED,
         MultiProfileUserController::NOT_ALLOWED_POLICY_FORBIDS,
     },
     {
-        MultiProfileUserController::kBehaviorPrimaryOnly,
-        MultiProfileUserController::kBehaviorNotAllowed,
+        MultiUserSignInPolicy::kPrimaryOnly,
+        MultiUserSignInPolicy::kUnrestricted,
+        MultiProfileUserController::ALLOWED,
+        MultiProfileUserController::ALLOWED,
+    },
+    {
+        MultiUserSignInPolicy::kPrimaryOnly,
+        MultiUserSignInPolicy::kPrimaryOnly,
         MultiProfileUserController::ALLOWED,
         MultiProfileUserController::NOT_ALLOWED_POLICY_FORBIDS,
     },
     {
-        MultiProfileUserController::kBehaviorNotAllowed,
-        MultiProfileUserController::kBehaviorUnrestricted,
+        MultiUserSignInPolicy::kPrimaryOnly,
+        MultiUserSignInPolicy::kNotAllowed,
+        MultiProfileUserController::ALLOWED,
+        MultiProfileUserController::NOT_ALLOWED_POLICY_FORBIDS,
+    },
+    {
+        MultiUserSignInPolicy::kNotAllowed,
+        MultiUserSignInPolicy::kUnrestricted,
         MultiProfileUserController::NOT_ALLOWED_PRIMARY_USER_POLICY_FORBIDS,
         MultiProfileUserController::NOT_ALLOWED_PRIMARY_USER_POLICY_FORBIDS,
     },
     {
-        MultiProfileUserController::kBehaviorNotAllowed,
-        MultiProfileUserController::kBehaviorPrimaryOnly,
+        MultiUserSignInPolicy::kNotAllowed,
+        MultiUserSignInPolicy::kPrimaryOnly,
         MultiProfileUserController::NOT_ALLOWED_PRIMARY_USER_POLICY_FORBIDS,
         MultiProfileUserController::NOT_ALLOWED_PRIMARY_USER_POLICY_FORBIDS,
     },
     {
-        MultiProfileUserController::kBehaviorNotAllowed,
-        MultiProfileUserController::kBehaviorNotAllowed,
+        MultiUserSignInPolicy::kNotAllowed,
+        MultiUserSignInPolicy::kNotAllowed,
         MultiProfileUserController::NOT_ALLOWED_PRIMARY_USER_POLICY_FORBIDS,
         MultiProfileUserController::NOT_ALLOWED_PRIMARY_USER_POLICY_FORBIDS,
     },
@@ -112,16 +121,18 @@ std::unique_ptr<KeyedService> TestPolicyCertServiceFactory(
       Profile::FromBrowserContext(context));
 }
 
+class MockUserManagerObserver : public user_manager::UserManager::Observer {
+ public:
+  MOCK_METHOD(void, OnUserNotAllowed, (const std::string&), (override));
+};
+
 }  // namespace
 
-class MultiProfileUserControllerTest
-    : public testing::Test,
-      public MultiProfileUserControllerDelegate {
+class MultiProfileUserControllerTest : public testing::Test {
  public:
   MultiProfileUserControllerTest()
       : fake_user_manager_(new FakeChromeUserManager),
-        user_manager_enabler_(base::WrapUnique(fake_user_manager_.get())),
-        user_not_allowed_count_(0) {
+        user_manager_enabler_(base::WrapUnique(fake_user_manager_.get())) {
     for (size_t i = 0; i < std::size(kUsers); ++i) {
       test_users_.push_back(AccountId::FromUserEmail(kUsers[i]));
     }
@@ -139,7 +150,7 @@ class MultiProfileUserControllerTest
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
     controller_ = std::make_unique<MultiProfileUserController>(
-        this, TestingBrowserProcess::GetGlobal()->local_state());
+        TestingBrowserProcess::GetGlobal()->local_state(), fake_user_manager_);
 
     for (const auto& account_id : test_users_) {
       fake_user_manager_->AddUser(account_id);
@@ -178,35 +189,27 @@ class MultiProfileUserControllerTest
     return user_profiles_[user_index]->GetPrefs();
   }
 
-  void SetPrefBehavior(size_t user_index, const std::string& behavior) {
+  void SetPrefBehavior(size_t user_index, MultiUserSignInPolicy policy) {
     GetUserPrefs(user_index)
-        ->SetString(prefs::kMultiProfileUserBehavior, behavior);
+        ->SetString(prefs::kMultiProfileUserBehavior,
+                    MultiUserSignInPolicyToPrefValue(policy));
   }
 
-  std::string GetCachedBehavior(size_t user_index) {
+  MultiUserSignInPolicy GetCachedBehavior(size_t user_index) {
     return controller_->GetCachedValue(test_users_[user_index].GetUserEmail());
   }
 
-  void SetCachedBehavior(size_t user_index, const std::string& behavior) {
-    controller_->SetCachedValue(test_users_[user_index].GetUserEmail(),
-                                behavior);
-  }
-
-  void ResetCounts() { user_not_allowed_count_ = 0; }
-
-  // MultiProfileUserControllerDeleagte overrides:
-  void OnUserNotAllowed(const std::string& user_email) override {
-    ++user_not_allowed_count_;
+  void SetCachedBehavior(size_t user_index, MultiUserSignInPolicy policy) {
+    controller_->SetCachedValue(test_users_[user_index].GetUserEmail(), policy);
   }
 
   MultiProfileUserController* controller() { return controller_.get(); }
-  int user_not_allowed_count() const { return user_not_allowed_count_; }
 
   TestingProfile* profile(int index) { return user_profiles_[index]; }
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<FakeChromeUserManager, ExperimentalAsh>
+  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
       fake_user_manager_;  // Not owned
   user_manager::ScopedUserManager user_manager_enabler_;
 
@@ -214,17 +217,15 @@ class MultiProfileUserControllerTest
 
   std::vector<TestingProfile*> user_profiles_;
 
-  int user_not_allowed_count_;
-
   std::vector<AccountId> test_users_;
 };
 
 // Tests that everyone is allowed before a session starts.
 TEST_F(MultiProfileUserControllerTest, AllAllowedBeforeLogin) {
-  const char* const kTestCases[] = {
-      MultiProfileUserController::kBehaviorUnrestricted,
-      MultiProfileUserController::kBehaviorPrimaryOnly,
-      MultiProfileUserController::kBehaviorNotAllowed,
+  constexpr MultiUserSignInPolicy kTestCases[] = {
+      MultiUserSignInPolicy::kUnrestricted,
+      MultiUserSignInPolicy::kPrimaryOnly,
+      MultiUserSignInPolicy::kNotAllowed,
   };
   for (size_t i = 0; i < std::size(kTestCases); ++i) {
     SetCachedBehavior(0, kTestCases[i]);
@@ -234,55 +235,66 @@ TEST_F(MultiProfileUserControllerTest, AllAllowedBeforeLogin) {
         << "Case " << i;
     EXPECT_EQ(MultiProfileUserController::ALLOWED, reason) << "Case " << i;
     EXPECT_EQ(MultiProfileUserController::ALLOWED,
-              MultiProfileUserController::GetPrimaryUserPolicy())
+              controller()->GetPrimaryUserPolicy())
         << "Case " << i;
   }
 }
 
 // Tests that invalid cache value would become the default "unrestricted".
 TEST_F(MultiProfileUserControllerTest, InvalidCacheBecomesDefault) {
-  const char kBad[] = "some invalid value";
-  SetCachedBehavior(0, kBad);
-  EXPECT_EQ(MultiProfileUserController::kBehaviorUnrestricted,
-            GetCachedBehavior(0));
+  {
+    constexpr char kBad[] = "some invalid value";
+    ScopedDictPrefUpdate update(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        prefs::kCachedMultiProfileUserBehavior);
+    update->Set(test_users_[0].GetUserEmail(), kBad);
+  }
+  EXPECT_EQ(MultiUserSignInPolicy::kUnrestricted, GetCachedBehavior(0));
 }
 
 // Tests that cached behavior value changes with user pref after login.
 TEST_F(MultiProfileUserControllerTest, CachedBehaviorUpdate) {
   LoginUser(0);
 
-  const char* const kTestCases[] = {
-      MultiProfileUserController::kBehaviorUnrestricted,
-      MultiProfileUserController::kBehaviorPrimaryOnly,
-      MultiProfileUserController::kBehaviorNotAllowed,
-      MultiProfileUserController::kBehaviorUnrestricted,
+  constexpr MultiUserSignInPolicy kTestCases[] = {
+      MultiUserSignInPolicy::kUnrestricted,
+      MultiUserSignInPolicy::kPrimaryOnly,
+      MultiUserSignInPolicy::kNotAllowed,
+      MultiUserSignInPolicy::kUnrestricted,
   };
-  for (size_t i = 0; i < std::size(kTestCases); ++i) {
-    SetPrefBehavior(0, kTestCases[i]);
-    EXPECT_EQ(kTestCases[i], GetCachedBehavior(0));
+  for (const auto policy : kTestCases) {
+    SetPrefBehavior(0, policy);
+    EXPECT_EQ(policy, GetCachedBehavior(0));
   }
 }
 
 // Tests that compromised cache value would be fixed and pref value is checked
 // upon login.
 TEST_F(MultiProfileUserControllerTest, CompromisedCacheFixedOnLogin) {
-  SetPrefBehavior(0, MultiProfileUserController::kBehaviorPrimaryOnly);
-  SetCachedBehavior(0, MultiProfileUserController::kBehaviorUnrestricted);
-  EXPECT_EQ(MultiProfileUserController::kBehaviorUnrestricted,
-            GetCachedBehavior(0));
-  LoginUser(0);
-  EXPECT_EQ(MultiProfileUserController::kBehaviorPrimaryOnly,
-            GetCachedBehavior(0));
+  MockUserManagerObserver mock_observer;
+  base::ScopedObservation<user_manager::UserManager,
+                          user_manager::UserManager::Observer>
+      observation(&mock_observer);
+  observation.Observe(fake_user_manager_);
 
-  EXPECT_EQ(0, user_not_allowed_count());
-  SetPrefBehavior(1, MultiProfileUserController::kBehaviorPrimaryOnly);
-  SetCachedBehavior(1, MultiProfileUserController::kBehaviorUnrestricted);
-  EXPECT_EQ(MultiProfileUserController::kBehaviorUnrestricted,
-            GetCachedBehavior(1));
+  SetPrefBehavior(0, MultiUserSignInPolicy::kPrimaryOnly);
+  SetCachedBehavior(0, MultiUserSignInPolicy::kUnrestricted);
+  EXPECT_EQ(MultiUserSignInPolicy::kUnrestricted, GetCachedBehavior(0));
+
+  EXPECT_CALL(mock_observer, OnUserNotAllowed(testing::_)).Times(0);
+  LoginUser(0);
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  EXPECT_EQ(MultiUserSignInPolicy::kPrimaryOnly, GetCachedBehavior(0));
+
+  SetPrefBehavior(1, MultiUserSignInPolicy::kPrimaryOnly);
+  SetCachedBehavior(1, MultiUserSignInPolicy::kUnrestricted);
+  EXPECT_EQ(MultiUserSignInPolicy::kUnrestricted, GetCachedBehavior(1));
+  EXPECT_CALL(mock_observer, OnUserNotAllowed(testing::_)).Times(1);
   LoginUser(1);
-  EXPECT_EQ(MultiProfileUserController::kBehaviorPrimaryOnly,
-            GetCachedBehavior(1));
-  EXPECT_EQ(1, user_not_allowed_count());
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  EXPECT_EQ(MultiUserSignInPolicy::kPrimaryOnly, GetCachedBehavior(1));
 }
 
 // Tests cases before the second user login.
@@ -293,7 +305,7 @@ TEST_F(MultiProfileUserControllerTest, IsSecondaryAllowed) {
     SetPrefBehavior(0, kBehaviorTestCases[i].primary);
     SetCachedBehavior(1, kBehaviorTestCases[i].secondary);
     EXPECT_EQ(kBehaviorTestCases[i].expected_primary_policy,
-              MultiProfileUserController::GetPrimaryUserPolicy())
+              controller()->GetPrimaryUserPolicy())
         << "Case " << i;
     MultiProfileUserController::UserAllowedInSessionReason reason;
     controller()->IsUserAllowedInSession(test_users_[1].GetUserEmail(),
@@ -305,25 +317,32 @@ TEST_F(MultiProfileUserControllerTest, IsSecondaryAllowed) {
 
 // Tests user behavior changes within a two-user session.
 TEST_F(MultiProfileUserControllerTest, PrimaryBehaviorChange) {
+  MockUserManagerObserver mock_observer;
+  base::ScopedObservation<user_manager::UserManager,
+                          user_manager::UserManager::Observer>
+      observation(&mock_observer);
+  observation.Observe(fake_user_manager_);
+  EXPECT_CALL(mock_observer, OnUserNotAllowed(testing::_))
+      .Times(testing::AnyNumber());
   LoginUser(0);
   LoginUser(1);
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
   for (size_t i = 0; i < std::size(kBehaviorTestCases); ++i) {
-    SetPrefBehavior(0, MultiProfileUserController::kBehaviorUnrestricted);
-    SetPrefBehavior(1, MultiProfileUserController::kBehaviorUnrestricted);
-    ResetCounts();
+    EXPECT_CALL(mock_observer, OnUserNotAllowed(testing::_))
+        .Times(testing::AnyNumber());
+    SetPrefBehavior(0, MultiUserSignInPolicy::kUnrestricted);
+    SetPrefBehavior(1, MultiUserSignInPolicy::kUnrestricted);
+    testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
+    EXPECT_CALL(mock_observer, OnUserNotAllowed(testing::_))
+        .Times(kBehaviorTestCases[i].expected_secondary_allowed ==
+                       MultiProfileUserController::ALLOWED
+                   ? testing::Exactly(0)
+                   : testing::AtLeast(1));
     SetPrefBehavior(0, kBehaviorTestCases[i].primary);
     SetPrefBehavior(1, kBehaviorTestCases[i].secondary);
-    if (user_not_allowed_count() == 0) {
-      EXPECT_EQ(kBehaviorTestCases[i].expected_secondary_allowed,
-                MultiProfileUserController::ALLOWED)
-          << "Case " << i;
-    } else {
-      EXPECT_NE(kBehaviorTestCases[i].expected_secondary_allowed,
-                MultiProfileUserController::ALLOWED)
-          << "Case " << i;
-    }
+    testing::Mock::VerifyAndClearExpectations(&mock_observer);
   }
 }
 
@@ -345,7 +364,7 @@ TEST_F(MultiProfileUserControllerTest,
       test_users_[1].GetUserEmail(), &reason));
   EXPECT_EQ(MultiProfileUserController::ALLOWED, reason);
   EXPECT_EQ(MultiProfileUserController::ALLOWED,
-            MultiProfileUserController::GetPrimaryUserPolicy());
+            controller()->GetPrimaryUserPolicy());
 }
 
 TEST_F(MultiProfileUserControllerTest,
@@ -356,7 +375,7 @@ TEST_F(MultiProfileUserControllerTest,
 
   // TODO(xiyuan): Remove the following SetPrefBehavor when default is
   // changed back to enabled.
-  SetPrefBehavior(1, MultiProfileUserController::kBehaviorUnrestricted);
+  SetPrefBehavior(1, MultiUserSignInPolicy::kUnrestricted);
 
   MultiProfileUserController::UserAllowedInSessionReason reason;
   EXPECT_TRUE(controller()->IsUserAllowedInSession(
@@ -390,7 +409,7 @@ TEST_F(MultiProfileUserControllerTest,
       test_users_[1].GetUserEmail(), &reason));
   EXPECT_EQ(MultiProfileUserController::ALLOWED, reason);
   EXPECT_EQ(MultiProfileUserController::ALLOWED,
-            MultiProfileUserController::GetPrimaryUserPolicy());
+            controller()->GetPrimaryUserPolicy());
 
   ASSERT_TRUE(
       policy::PolicyCertServiceFactory::GetInstance()->SetTestingFactoryAndUse(
@@ -402,7 +421,7 @@ TEST_F(MultiProfileUserControllerTest,
       test_users_[1].GetUserEmail(), &reason));
   EXPECT_EQ(MultiProfileUserController::ALLOWED, reason);
   EXPECT_EQ(MultiProfileUserController::ALLOWED,
-            MultiProfileUserController::GetPrimaryUserPolicy());
+            controller()->GetPrimaryUserPolicy());
 
   // Flush tasks posted to IO.
   base::RunLoop().RunUntilIdle();
@@ -416,7 +435,7 @@ TEST_F(MultiProfileUserControllerTest,
 
   // TODO(xiyuan): Remove the following SetPrefBehavor when default is
   // changed back to enabled.
-  SetPrefBehavior(0, MultiProfileUserController::kBehaviorUnrestricted);
+  SetPrefBehavior(0, MultiUserSignInPolicy::kUnrestricted);
 
   ASSERT_TRUE(
       policy::PolicyCertServiceFactory::GetInstance()->SetTestingFactoryAndUse(
@@ -431,7 +450,7 @@ TEST_F(MultiProfileUserControllerTest,
       test_users_[1].GetUserEmail(), &reason));
   EXPECT_EQ(MultiProfileUserController::ALLOWED, reason);
   EXPECT_EQ(MultiProfileUserController::ALLOWED,
-            MultiProfileUserController::GetPrimaryUserPolicy());
+            controller()->GetPrimaryUserPolicy());
 
   net::CertificateList certificates;
   certificates.push_back(
@@ -442,7 +461,7 @@ TEST_F(MultiProfileUserControllerTest,
       test_users_[1].GetUserEmail(), &reason));
   EXPECT_EQ(MultiProfileUserController::ALLOWED, reason);
   EXPECT_EQ(MultiProfileUserController::ALLOWED,
-            MultiProfileUserController::GetPrimaryUserPolicy());
+            controller()->GetPrimaryUserPolicy());
 
   // Flush tasks posted to IO.
   base::RunLoop().RunUntilIdle();

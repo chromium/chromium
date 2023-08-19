@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("password") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "passwords_coordinator.h",
     "passwords_coordinator.mm",
@@ -12,6 +11,7 @@ source_set("password") {
   ]
   deps = [
     ":common",
+    ":features",
     ":password_constants",
     ":password_ui",
     "//components/keyed_service/core",
@@ -38,6 +38,7 @@ source_set("password") {
     "//ios/chrome/browser/ui/settings/password/password_issues",
     "//ios/chrome/browser/ui/settings/password/password_settings",
     "//ios/chrome/browser/ui/settings/password/passwords_in_other_apps",
+    "//ios/chrome/browser/ui/settings/password/reauthentication",
     "//ios/chrome/browser/ui/settings/utils",
     "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/colors",
@@ -51,7 +52,6 @@ source_set("password") {
 }
 
 source_set("common") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "account_storage_utils.cc",
     "account_storage_utils.h",
@@ -61,12 +61,12 @@ source_set("common") {
   deps = [
     "//base",
     "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/common",
   ]
 }
 
 source_set("password_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "password_exporter.h",
     "password_exporter.mm",
@@ -82,6 +82,7 @@ source_set("password_ui") {
   ]
   deps = [
     ":common",
+    ":features",
     ":password_constants",
     ":title_view",
     "//base",
@@ -95,13 +96,11 @@ source_set("password_ui") {
     "//components/sync/base",
     "//components/sync/service",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/passwords:password_checkup_metrics",
     "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view",
@@ -133,7 +132,6 @@ source_set("password_ui") {
 }
 
 source_set("password_constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "passwords_table_view_constants.h",
     "passwords_table_view_constants.mm",
@@ -145,7 +143,6 @@ source_set("password_constants") {
 }
 
 source_set("title_view") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "branded_navigation_item_title_view.h",
     "branded_navigation_item_title_view.mm",
@@ -165,15 +162,21 @@ source_set("title_view") {
   ]
 }
 
+source_set("features") {
+  sources = [
+    "password_manager_ui_features.h",
+    "password_manager_ui_features.mm",
+  ]
+  public_deps = [ "//base" ]
+}
+
 source_set("test_support") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "password_exporter_for_testing.h" ]
   deps = [ ":password_ui" ]
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "password_exporter_unittest.mm",
@@ -205,6 +208,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/ui/table_view:test_support",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/sync:test_support",
     "//ios/chrome/browser/ui/settings/cells",
@@ -222,10 +226,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg_app_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "password_settings_app_interface.h",
@@ -254,10 +255,7 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("eg_test_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
 
   sources = [
@@ -273,10 +271,7 @@ source_set("eg_test_support+eg2") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "password_manager_egtest.mm",
@@ -285,6 +280,7 @@ source_set("eg2_tests") {
   ]
   deps = [
     ":eg_test_support+eg2",
+    ":features",
     ":password_constants",
     "//base:base",
     "//base/test:test_support",
@@ -292,6 +288,7 @@ source_set("eg2_tests") {
     "//components/password_manager/core/common:features",
     "//components/policy:generated",
     "//components/strings",
+    "//components/sync/base:features",
     "//components/sync/service",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/credential_provider_promo:features",
@@ -306,6 +303,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/ui/settings/password/password_details:password_details_table_view_constants",
     "//ios/chrome/browser/ui/settings/password/password_settings:password_settings_constants",
     "//ios/chrome/browser/ui/settings/password/passwords_in_other_apps:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/settings/password/reauthentication:reauthentication_constants",
     "//ios/chrome/common/ui/reauthentication",
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",

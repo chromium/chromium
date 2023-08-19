@@ -124,6 +124,9 @@ class EnrollmentScreen
                           weak_ptr_factory_.GetWeakPtr());
   }
 
+  // Changes network state. Useful for simulating network issues in tests.
+  void SetNetworkStateForTesting(const NetworkState* state);
+
  protected:
   // BaseScreen:
   bool MaybeSkip(WizardContext& context) override;
@@ -163,10 +166,9 @@ class EnrollmentScreen
   void SetConfig();
 
   // Called after account status is fetched.
-  void OnAccountStatusFetched(
-      const std::string& email,
-      bool result,
-      policy::AccountStatusCheckFetcher::AccountStatus status);
+  void OnAccountStatusFetched(const std::string& email,
+                              bool fetch_succeeded,
+                              policy::AccountStatus status);
 
   // Creates an enrollment launcher if needed.
   void CreateEnrollmentLauncher();

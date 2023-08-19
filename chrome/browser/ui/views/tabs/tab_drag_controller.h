@@ -31,6 +31,7 @@
 
 namespace ui {
 class ListSelectionModel;
+class PresentationTimeRecorder;
 }
 namespace views {
 class View;
@@ -760,6 +761,8 @@ class TabDragController : public views::WidgetObserver,
   // the scrolling session that handles scrolling when the tabs are dragged
   // to the scrollable regions of the tab_strip.
   std::unique_ptr<TabStripScrollSession> tab_strip_scroll_session_ = nullptr;
+
+  std::unique_ptr<ui::PresentationTimeRecorder> presentation_time_recorder_;
 
   base::WeakPtrFactory<TabDragController> weak_factory_{this};
 };

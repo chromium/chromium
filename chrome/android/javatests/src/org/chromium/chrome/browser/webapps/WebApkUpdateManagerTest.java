@@ -7,8 +7,12 @@ package org.chromium.chrome.browser.webapps;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 import android.text.format.DateUtils;
+import android.util.Pair;
 
 import androidx.test.filters.MediumTest;
 
@@ -29,6 +33,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -78,11 +83,9 @@ public class WebApkUpdateManagerTest {
     public static class FeatureResolveParams implements ParameterProvider {
         @Override
         public Iterable<ParameterSet> getParameters() {
-            return Arrays.asList(new ParameterSet().value(false, false, false).name("none"),
-                    new ParameterSet().value(true, false, false).name("nameUpdates"),
-                    new ParameterSet().value(false, true, false).name("iconUpdates"),
-                    new ParameterSet().value(true, true, false).name("nameAndIconUpdates"),
-                    new ParameterSet().value(false, false, true).name("allowForShellVersion"));
+            return Arrays.asList(new ParameterSet().value(false, false).name("none"),
+                    new ParameterSet().value(true, false).name("iconUpdates"),
+                    new ParameterSet().value(false, true).name("allowForShellVersion"));
         }
     }
 
@@ -110,6 +113,26 @@ public class WebApkUpdateManagerTest {
     private static final int WEBAPK_SHELL_VERSION = 1000;
     private static final long WEBAPK_THEME_COLOR = 2147483648L;
     private static final long WEBAPK_BACKGROUND_COLOR = 2147483648L;
+    private static final long WEBAPK_DARK_THEME_COLOR = 2147483648L;
+    private static final long WEBAPK_DARK_BACKGROUND_COLOR = 2147483648L;
+
+    private static final String HISTOGRAM = "WebApk.AppIdentityDialog.PendingImageUpdateDiffValue";
+    private static final String HISTOGRAM_SCALED =
+            "WebApk.AppIdentityDialog.PendingImageUpdateDiffValueScaled";
+
+    private static final Bitmap BLACK_1X1 =
+            Bitmap.createBitmap(new int[] {0x00000000, 0x00000000}, 1, 1, Bitmap.Config.ARGB_8888);
+    private static final Bitmap BLACK_2X2 =
+            Bitmap.createBitmap(new int[] {0x00000000, 0x00000000, 0x00000000, 0x00000000}, 2, 2,
+                    Bitmap.Config.ARGB_8888);
+    private static final Bitmap WHITE_2X2 =
+            Bitmap.createBitmap(new int[] {0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff}, 2, 2,
+                    Bitmap.Config.ARGB_8888);
+    private static final Bitmap CHECKERED_2X2 =
+            Bitmap.createBitmap(new int[] {0x00000000, 0xffffffff, 0x00000000, 0xffffffff}, 2, 2,
+                    Bitmap.Config.ARGB_8888);
+    private static final Bitmap CONFIG_MISMATCH_2X2 = Bitmap.createBitmap(
+            new int[] {0x00000000, 0x00000000, 0x00000000, 0x00000000}, 2, 2, Config.ALPHA_8);
 
     private ChromeActivity mActivity;
     private Tab mTab;
@@ -134,10 +157,10 @@ public class WebApkUpdateManagerTest {
         private CallbackHelper mCompleteCallback;
         private boolean mAcceptDialogIfAppears;
 
-        public TestWebApkUpdateManager(CallbackHelper waiter, CallbackHelper complete,
-                ActivityTabProvider tabProvider, ActivityLifecycleDispatcher lifecycleDispatcher,
-                boolean acceptDialogIfAppears) {
-            super(tabProvider, lifecycleDispatcher);
+        public TestWebApkUpdateManager(Activity activity, CallbackHelper waiter,
+                CallbackHelper complete, ActivityTabProvider tabProvider,
+                ActivityLifecycleDispatcher lifecycleDispatcher, boolean acceptDialogIfAppears) {
+            super(activity, tabProvider, lifecycleDispatcher);
             mWaiter = waiter;
             mCompleteCallback = complete;
             mLastUpdateReasons = new ArrayList<>();
@@ -206,6 +229,8 @@ public class WebApkUpdateManagerTest {
         public int shellVersion;
         public long themeColor;
         public long backgroundColor;
+        public long darkThemeColor;
+        public long darkBackgroundColor;
         public boolean isPrimaryIconMaskable;
         public List<WebApkExtras.ShortcutItem> shortcuts;
     }
@@ -228,6 +253,8 @@ public class WebApkUpdateManagerTest {
         creationData.orientation = WEBAPK_ORIENTATION;
         creationData.themeColor = WEBAPK_THEME_COLOR;
         creationData.backgroundColor = WEBAPK_BACKGROUND_COLOR;
+        creationData.darkThemeColor = WEBAPK_DARK_THEME_COLOR;
+        creationData.darkBackgroundColor = WEBAPK_DARK_BACKGROUND_COLOR;
         creationData.shellVersion = WEBAPK_SHELL_VERSION;
         creationData.isPrimaryIconMaskable = false;
         creationData.shortcuts = new ArrayList<>();
@@ -249,7 +276,9 @@ public class WebApkUpdateManagerTest {
         callback.waitForCallback(0);
     }
 
-     /** Checks whether a WebAPK update is needed. */
+    /**
+     * Checks whether a WebAPK update is needed.
+     */
     private boolean checkUpdateNeeded(
             final CreationData creationData, boolean acceptDialogIfAppears) throws Exception {
         return checkUpdateNeeded(creationData, null, acceptDialogIfAppears);
@@ -260,7 +289,7 @@ public class WebApkUpdateManagerTest {
         CallbackHelper waiter = new CallbackHelper();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager(waiter,
+            TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager(mActivity, waiter,
                     completeCallback, mActivity.getActivityTabProvider(),
                     mActivity.getLifecycleDispatcher(), acceptDialogIfAppears);
             WebappDataStorage storage =
@@ -269,7 +298,8 @@ public class WebApkUpdateManagerTest {
                     WebApkIntentDataProviderFactory.create(new Intent(), "", creationData.scope,
                             null, null, creationData.name, creationData.shortName,
                             creationData.displayMode, creationData.orientation, 0,
-                            creationData.themeColor, creationData.backgroundColor, 0,
+                            creationData.themeColor, creationData.backgroundColor,
+                            creationData.darkThemeColor, creationData.darkBackgroundColor, 0,
                             creationData.isPrimaryIconMaskable, false /* isSplashIconMaskable */,
                             "", creationData.shellVersion, creationData.manifestUrl,
                             creationData.startUrl, creationData.manifestId, creationData.appKey,
@@ -302,11 +332,6 @@ public class WebApkUpdateManagerTest {
 
     private void enableUpdateDialogForIcon(boolean enabled) {
         mTestValues.addFeatureFlagOverride(ChromeFeatureList.PWA_UPDATE_DIALOG_FOR_ICON, enabled);
-        FeatureList.setTestValues(mTestValues);
-    }
-
-    private void enableUpdateDialogForName(boolean enabled) {
-        mTestValues.addFeatureFlagOverride(ChromeFeatureList.PWA_UPDATE_DIALOG_FOR_NAME, enabled);
         FeatureList.setTestValues(mTestValues);
     }
 
@@ -412,9 +437,7 @@ public class WebApkUpdateManagerTest {
         Assert.assertFalse(checkUpdateNeeded(creationData, /* acceptDialogIfAppears= */ false));
     }
 
-    private void resolveFeatureParams(
-            boolean nameDialogEnabled, boolean iconDialogEnabled, boolean allowShellVersion) {
-        enableUpdateDialogForName(nameDialogEnabled);
+    private void resolveFeatureParams(boolean iconDialogEnabled, boolean allowShellVersion) {
         enableUpdateDialogForIcon(iconDialogEnabled);
 
         if (allowShellVersion) {
@@ -428,9 +451,9 @@ public class WebApkUpdateManagerTest {
     @MediumTest
     @Feature({"WebApk"})
     @ParameterAnnotations.UseMethodParameter(FeatureResolveParams.class)
-    public void testMultipleUpdateReasons(
-            boolean nameEnabled, boolean iconEnabled, boolean allowShellVersion) throws Exception {
-        resolveFeatureParams(nameEnabled, iconEnabled, allowShellVersion);
+    public void testMultipleUpdateReasons(boolean iconEnabled, boolean allowShellVersion)
+            throws Exception {
+        resolveFeatureParams(iconEnabled, allowShellVersion);
 
         CreationData creationData = defaultCreationData();
         creationData.startUrl =
@@ -439,31 +462,30 @@ public class WebApkUpdateManagerTest {
         creationData.name += "!";
         creationData.shortName += "!";
         creationData.backgroundColor -= 1;
+        creationData.darkBackgroundColor -= 1;
         creationData.iconUrlToMurmur2HashMap.put(
                 mTestServer.getURL(WEBAPK_ICON_URL), WEBAPK_ICON_MURMUR2_HASH + "1");
 
         WebappTestPage.navigateToServiceWorkerPageWithManifest(
                 mTestServer, mTab, WEBAPK_MANIFEST_URL);
         Assert.assertTrue(checkUpdateNeeded(creationData,
-                /* acceptDialogIfAppears= */ nameEnabled || iconEnabled));
+                /* acceptDialogIfAppears= */ true));
 
         List<Integer> expectedUpdateReasons = new ArrayList<Integer>();
         if (iconEnabled || allowShellVersion) {
             expectedUpdateReasons.add(WebApkUpdateReason.PRIMARY_ICON_HASH_DIFFERS);
             expectedUpdateReasons.add(WebApkUpdateReason.SPLASH_ICON_HASH_DIFFERS);
         }
-        if (nameEnabled) {
-            expectedUpdateReasons.add(WebApkUpdateReason.SHORT_NAME_DIFFERS);
-            expectedUpdateReasons.add(WebApkUpdateReason.NAME_DIFFERS);
-        }
+        expectedUpdateReasons.add(WebApkUpdateReason.SHORT_NAME_DIFFERS);
+        expectedUpdateReasons.add(WebApkUpdateReason.NAME_DIFFERS);
         expectedUpdateReasons.add(WebApkUpdateReason.BACKGROUND_COLOR_DIFFERS);
+        expectedUpdateReasons.add(WebApkUpdateReason.DARK_BACKGROUND_COLOR_DIFFERS);
         assertUpdateReasonsEqual(
                 expectedUpdateReasons.toArray(new Integer[expectedUpdateReasons.size()]));
     }
 
-    private void testAppIdentityChange(boolean nameEnabled, boolean iconEnabled,
-            boolean allowShellVersion, boolean changeName, boolean changeShortName,
-            boolean changeIcon) throws Exception {
+    private void testAppIdentityChange(boolean iconEnabled, boolean allowShellVersion,
+            boolean changeName, boolean changeShortName, boolean changeIcon) throws Exception {
         mIconOrNameUpdateDialogShown = false;
         WebappDataStorage storage = WebappRegistry.getInstance().getWebappDataStorage(WEBAPK_ID);
         storage.updateLastWebApkUpdateHashAccepted("");
@@ -476,7 +498,6 @@ public class WebApkUpdateManagerTest {
         List<Integer> expectedUpdateReasons = new ArrayList<Integer>();
 
         boolean expectIconChange = false;
-        boolean expectNameChange = false;
 
         if (changeIcon) {
             creationData.iconUrlToMurmur2HashMap.put(
@@ -490,19 +511,11 @@ public class WebApkUpdateManagerTest {
         }
         if (changeShortName) {
             creationData.shortName += "!";
-
-            expectNameChange = nameEnabled;
-            if (expectNameChange) {
-                expectedUpdateReasons.add(WebApkUpdateReason.SHORT_NAME_DIFFERS);
-            }
+            expectedUpdateReasons.add(WebApkUpdateReason.SHORT_NAME_DIFFERS);
         }
         if (changeName) {
             creationData.name += "!";
-
-            expectNameChange = nameEnabled;
-            if (expectNameChange) {
-                expectedUpdateReasons.add(WebApkUpdateReason.NAME_DIFFERS);
-            }
+            expectedUpdateReasons.add(WebApkUpdateReason.NAME_DIFFERS);
         }
 
         // Always include a trivial change, to ensure there's always an update request.
@@ -510,7 +523,7 @@ public class WebApkUpdateManagerTest {
         expectedUpdateReasons.add(WebApkUpdateReason.BACKGROUND_COLOR_DIFFERS);
 
         boolean requestingChange = changeIcon || changeName || changeShortName;
-        boolean expectingChange = expectIconChange || expectNameChange;
+        boolean expectingChange = expectIconChange || changeName || changeShortName;
         WebappTestPage.navigateToServiceWorkerPageWithManifest(
                 mTestServer, mTab, WEBAPK_MANIFEST_URL);
         Assert.assertTrue(checkUpdateNeeded(
@@ -520,7 +533,8 @@ public class WebApkUpdateManagerTest {
                 expectedUpdateReasons.toArray(new Integer[expectedUpdateReasons.size()]));
         Assert.assertTrue(mUpdateRequested);
 
-        boolean expectingDialog = (expectIconChange && iconEnabled) || expectNameChange;
+        boolean expectingDialog =
+                (expectIconChange && iconEnabled) || changeShortName || changeName;
         Assert.assertEquals(expectingDialog, mIconOrNameUpdateDialogShown);
     }
 
@@ -528,11 +542,11 @@ public class WebApkUpdateManagerTest {
     @MediumTest
     @ParameterAnnotations.UseMethodParameter(FeatureResolveParams.class)
     @Feature({"WebApk"})
-    public void testUpdateWarningOnNoChange(
-            boolean nameEnabled, boolean iconEnabled, boolean allowShellVersion) throws Exception {
-        resolveFeatureParams(nameEnabled, iconEnabled, allowShellVersion);
+    public void testUpdateWarningOnNoChange(boolean iconEnabled, boolean allowShellVersion)
+            throws Exception {
+        resolveFeatureParams(iconEnabled, allowShellVersion);
 
-        testAppIdentityChange(nameEnabled, iconEnabled, allowShellVersion,
+        testAppIdentityChange(iconEnabled, allowShellVersion,
                 /* changeName= */ false,
                 /* changeShortName= */ false,
                 /* changeIcon = */ false);
@@ -542,11 +556,11 @@ public class WebApkUpdateManagerTest {
     @MediumTest
     @ParameterAnnotations.UseMethodParameter(FeatureResolveParams.class)
     @Feature({"WebApk"})
-    public void testUpdateWarningOnIconChange(
-            boolean nameEnabled, boolean iconEnabled, boolean allowShellVersion) throws Exception {
-        resolveFeatureParams(nameEnabled, iconEnabled, allowShellVersion);
+    public void testUpdateWarningOnIconChange(boolean iconEnabled, boolean allowShellVersion)
+            throws Exception {
+        resolveFeatureParams(iconEnabled, allowShellVersion);
 
-        testAppIdentityChange(nameEnabled, iconEnabled, allowShellVersion,
+        testAppIdentityChange(iconEnabled, allowShellVersion,
                 /* changeName= */ false,
                 /* changeShortName= */ false,
                 /* changeIcon = */ true);
@@ -556,10 +570,10 @@ public class WebApkUpdateManagerTest {
     @MediumTest
     @ParameterAnnotations.UseMethodParameter(FeatureResolveParams.class)
     @Feature({"WebApk"})
-    public void testUpdateWarningOnShortnameChange(
-            boolean nameEnabled, boolean iconEnabled, boolean allowShellVersion) throws Exception {
-        resolveFeatureParams(nameEnabled, iconEnabled, allowShellVersion);
-        testAppIdentityChange(nameEnabled, iconEnabled, allowShellVersion,
+    public void testUpdateWarningOnShortnameChange(boolean iconEnabled, boolean allowShellVersion)
+            throws Exception {
+        resolveFeatureParams(iconEnabled, allowShellVersion);
+        testAppIdentityChange(iconEnabled, allowShellVersion,
                 /* changeName= */ false,
                 /* changeShortName= */ true,
                 /* changeIcon = */ false);
@@ -570,9 +584,9 @@ public class WebApkUpdateManagerTest {
     @ParameterAnnotations.UseMethodParameter(FeatureResolveParams.class)
     @Feature({"WebApk"})
     public void testUpdateWarningOnShortnameAndIconChange(
-            boolean nameEnabled, boolean iconEnabled, boolean allowShellVersion) throws Exception {
-        resolveFeatureParams(nameEnabled, iconEnabled, allowShellVersion);
-        testAppIdentityChange(nameEnabled, iconEnabled, allowShellVersion,
+            boolean iconEnabled, boolean allowShellVersion) throws Exception {
+        resolveFeatureParams(iconEnabled, allowShellVersion);
+        testAppIdentityChange(iconEnabled, allowShellVersion,
                 /* changeName= */ false,
                 /* changeShortName= */ true,
                 /* changeIcon = */ true);
@@ -582,10 +596,10 @@ public class WebApkUpdateManagerTest {
     @MediumTest
     @ParameterAnnotations.UseMethodParameter(FeatureResolveParams.class)
     @Feature({"WebApk"})
-    public void testUpdateWarningOnNameChange(
-            boolean nameEnabled, boolean iconEnabled, boolean allowShellVersion) throws Exception {
-        resolveFeatureParams(nameEnabled, iconEnabled, allowShellVersion);
-        testAppIdentityChange(nameEnabled, iconEnabled, allowShellVersion,
+    public void testUpdateWarningOnNameChange(boolean iconEnabled, boolean allowShellVersion)
+            throws Exception {
+        resolveFeatureParams(iconEnabled, allowShellVersion);
+        testAppIdentityChange(iconEnabled, allowShellVersion,
                 /* changeName= */ true,
                 /* changeShortName= */ false,
                 /* changeIcon = */ false);
@@ -595,10 +609,10 @@ public class WebApkUpdateManagerTest {
     @MediumTest
     @ParameterAnnotations.UseMethodParameter(FeatureResolveParams.class)
     @Feature({"WebApk"})
-    public void testUpdateWarningOnNameAndIconChange(
-            boolean nameEnabled, boolean iconEnabled, boolean allowShellVersion) throws Exception {
-        resolveFeatureParams(nameEnabled, iconEnabled, allowShellVersion);
-        testAppIdentityChange(nameEnabled, iconEnabled, allowShellVersion,
+    public void testUpdateWarningOnNameAndIconChange(boolean iconEnabled, boolean allowShellVersion)
+            throws Exception {
+        resolveFeatureParams(iconEnabled, allowShellVersion);
+        testAppIdentityChange(iconEnabled, allowShellVersion,
                 /* changeName= */ true,
                 /* changeShortName= */ false,
                 /* changeIcon = */ true);
@@ -609,9 +623,9 @@ public class WebApkUpdateManagerTest {
     @ParameterAnnotations.UseMethodParameter(FeatureResolveParams.class)
     @Feature({"WebApk"})
     public void testUpdateWarningOnNameAndShortnameChange(
-            boolean nameEnabled, boolean iconEnabled, boolean allowShellVersion) throws Exception {
-        resolveFeatureParams(nameEnabled, iconEnabled, allowShellVersion);
-        testAppIdentityChange(nameEnabled, iconEnabled, allowShellVersion,
+            boolean iconEnabled, boolean allowShellVersion) throws Exception {
+        resolveFeatureParams(iconEnabled, allowShellVersion);
+        testAppIdentityChange(iconEnabled, allowShellVersion,
                 /* changeName= */ true,
                 /* changeShortName= */ true,
                 /* changeIcon = */ false);
@@ -621,10 +635,10 @@ public class WebApkUpdateManagerTest {
     @MediumTest
     @ParameterAnnotations.UseMethodParameter(FeatureResolveParams.class)
     @Feature({"WebApk"})
-    public void testUpdateWarningOnAllChange(
-            boolean nameEnabled, boolean iconEnabled, boolean allowShellVersion) throws Exception {
-        resolveFeatureParams(nameEnabled, iconEnabled, allowShellVersion);
-        testAppIdentityChange(nameEnabled, iconEnabled, allowShellVersion,
+    public void testUpdateWarningOnAllChange(boolean iconEnabled, boolean allowShellVersion)
+            throws Exception {
+        resolveFeatureParams(iconEnabled, allowShellVersion);
+        testAppIdentityChange(iconEnabled, allowShellVersion,
                 /* changeName= */ true,
                 /* changeShortName= */ true,
                 /* changeIcon = */ true);
@@ -813,5 +827,59 @@ public class WebApkUpdateManagerTest {
         WebApkProto.WebApk proto = parseRequestProto(mUpdateRequestPath);
         assertEquals(proto.getAppKey(), mTestServer.getURL(WEBAPK_MANIFEST_URL));
         assertEquals(proto.getManifest().getId(), mTestServer.getURL(WEBAPK_START_URL));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"WebApk"})
+    public void testImageDiff() throws Exception {
+        // A black image compared against a white one should register as all changed.
+        assertEquals(100, TestWebApkUpdateManager.imageDiffValue(BLACK_2X2, WHITE_2X2));
+        // Alternating black and white pixels should show as half changed when compared against all
+        // black image.
+        assertEquals(50, TestWebApkUpdateManager.imageDiffValue(BLACK_2X2, CHECKERED_2X2));
+        // Alternating black and white pixels should show as half changed when compared against all
+        // white image.
+        assertEquals(50, TestWebApkUpdateManager.imageDiffValue(CHECKERED_2X2, WHITE_2X2));
+        // Two all black images should register as unchanged.
+        assertEquals(0, TestWebApkUpdateManager.imageDiffValue(CHECKERED_2X2, CHECKERED_2X2));
+
+        // Two null images register as unchanged.
+        assertEquals(0, TestWebApkUpdateManager.imageDiffValue(null, null));
+        // If 'before' is provided, but 'after' is null, they should register as 100% different.
+        assertEquals(100, TestWebApkUpdateManager.imageDiffValue(BLACK_2X2, null));
+        // If 'after' is provided, but 'before' is null, they should register as 100% different.
+        assertEquals(100, TestWebApkUpdateManager.imageDiffValue(null, WHITE_2X2));
+        // Images with different color configurations should register as 100% different.
+        assertEquals(100, TestWebApkUpdateManager.imageDiffValue(BLACK_2X2, CONFIG_MISMATCH_2X2));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"WebApk"})
+    public void testImageDiffHistograms() throws Exception {
+        // Comparing two identical bitmaps should record a 0% change on the main histogram.
+        HistogramWatcher histograms =
+                HistogramWatcher.newBuilder().expectIntRecord(HISTOGRAM, 0).build();
+        TestWebApkUpdateManager.logIconDiffs(new Pair<>(BLACK_2X2, BLACK_2X2));
+        histograms.assertExpected();
+
+        // Comparing two black bitmaps of different dimensions should procude a 0% change on the
+        // scaled histogram.
+        histograms = HistogramWatcher.newBuilder().expectIntRecord(HISTOGRAM_SCALED, 0).build();
+        TestWebApkUpdateManager.logIconDiffs(new Pair<>(BLACK_1X1, BLACK_2X2));
+        histograms.assertExpected();
+
+        // Comparing a black bitmap to a larger white bitmap should produce a 100% change
+        // on the scaled histogram.
+        histograms = HistogramWatcher.newBuilder().expectIntRecord(HISTOGRAM_SCALED, 100).build();
+        TestWebApkUpdateManager.logIconDiffs(new Pair<>(BLACK_1X1, WHITE_2X2));
+        histograms.assertExpected();
+
+        // A checkered image compared to a white one should produce a 50% change
+        // on the main histogram.
+        histograms = HistogramWatcher.newBuilder().expectIntRecord(HISTOGRAM, 50).build();
+        TestWebApkUpdateManager.logIconDiffs(new Pair<>(CHECKERED_2X2, WHITE_2X2));
+        histograms.assertExpected();
     }
 }

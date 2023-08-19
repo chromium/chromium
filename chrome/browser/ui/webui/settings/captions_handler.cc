@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/webui/settings/captions_handler.h"
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/strings/string_split.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -33,6 +35,31 @@ namespace {
 constexpr char kCodeKey[] = "code";
 constexpr char kDisplayNameKey[] = "displayName";
 constexpr char kNativeDisplayNameKey[] = "nativeDisplayName";
+
+// Gets a list of locales enabled by the Finch flag.
+std::vector<std::string> GetEnabledLanguages() {
+  return base::SplitString(
+      base::GetFieldTrialParamValueByFeature(media::kLiveCaptionMultiLanguage,
+                                             "available_languages"),
+      ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+}
+
+base::Value::List SortByDisplayName(
+    std::vector<base::Value::Dict> language_packs) {
+  std::sort(language_packs.begin(), language_packs.end(),
+            [](const base::Value::Dict& a, const base::Value::Dict& b) {
+              return *(a.Find(kDisplayNameKey)->GetIfString()) <
+                     *(b.Find(kDisplayNameKey)->GetIfString());
+            });
+
+  base::Value::List sorted_language_packs;
+  for (base::Value::Dict& language_pack : language_packs) {
+    sorted_language_packs.Append(std::move(language_pack));
+  }
+
+  return sorted_language_packs;
+}
+
 }  // namespace
 
 namespace settings {
@@ -138,9 +165,11 @@ void CaptionsHandler::HandleInstallLanguagePacks(
 }
 
 base::Value::List CaptionsHandler::GetAvailableLanguagePacks() {
-  base::Value::List available_language_packs;
+  auto enabled_languages = GetEnabledLanguages();
+  std::vector<base::Value::Dict> available_language_packs;
   for (const auto& config : speech::kLanguageComponentConfigs) {
-    if (config.language_code != speech::LanguageCode::kNone) {
+    if (config.language_code != speech::LanguageCode::kNone &&
+        base::Contains(enabled_languages, config.language_name)) {
       base::Value::Dict available_language_pack;
       available_language_pack.Set(kCodeKey, config.language_name);
       available_language_pack.Set(
@@ -151,15 +180,15 @@ base::Value::List CaptionsHandler::GetAvailableLanguagePacks() {
           kNativeDisplayNameKey,
           speech::GetLanguageDisplayName(config.language_name,
                                          config.language_name));
-      available_language_packs.Append(std::move(available_language_pack));
+      available_language_packs.push_back(std::move(available_language_pack));
     }
   }
 
-  return available_language_packs;
+  return SortByDisplayName(std::move(available_language_packs));
 }
 
 base::Value::List CaptionsHandler::GetInstalledLanguagePacks() {
-  base::Value::List installed_language_packs;
+  std::vector<base::Value::Dict> installed_language_packs;
   for (const auto& language : g_browser_process->local_state()->GetList(
            prefs::kSodaRegisteredLanguagePacks)) {
     base::Value::Dict installed_language_pack;
@@ -175,11 +204,11 @@ base::Value::List CaptionsHandler::GetInstalledLanguagePacks() {
           kNativeDisplayNameKey,
           speech::GetLanguageDisplayName(config->language_name,
                                          config->language_name));
-      installed_language_packs.Append(std::move(installed_language_pack));
+      installed_language_packs.push_back(std::move(installed_language_pack));
     }
   }
 
-  return installed_language_packs;
+  return SortByDisplayName(std::move(installed_language_packs));
 }
 
 void CaptionsHandler::OnSodaInstalled(speech::LanguageCode language_code) {

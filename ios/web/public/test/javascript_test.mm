@@ -6,10 +6,6 @@
 
 #import "ios/web/public/test/js_test_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace web {
 
 JavascriptTest::JavascriptTest() : web_view_([[WKWebView alloc] init]) {}

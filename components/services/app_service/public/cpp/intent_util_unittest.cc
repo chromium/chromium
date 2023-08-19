@@ -223,7 +223,7 @@ TEST_F(IntentUtilTest, FilterMatchLevel) {
   auto filter_scheme_and_host_only =
       apps_util::MakeSchemeAndHostOnlyFilter("https", "www.abc.com");
   auto filter_url =
-      apps_util::MakeIntentFilterForUrlScope(GURL("https:://www.google.com/"));
+      apps_util::MakeIntentFilterForUrlScope(GURL("https://www.google.com/"));
   auto filter_empty = std::make_unique<apps::IntentFilter>();
 
   EXPECT_TRUE(filter_scheme_only->IsBrowserFilter());
@@ -233,11 +233,11 @@ TEST_F(IntentUtilTest, FilterMatchLevel) {
 
   EXPECT_EQ(filter_url->GetFilterMatchLevel(),
             static_cast<int>(apps::IntentFilterMatchLevel::kScheme) +
-                static_cast<int>(apps::IntentFilterMatchLevel::kHost) +
+                static_cast<int>(apps::IntentFilterMatchLevel::kAuthority) +
                 static_cast<int>(apps::IntentFilterMatchLevel::kPath));
   EXPECT_EQ(filter_scheme_and_host_only->GetFilterMatchLevel(),
             static_cast<int>(apps::IntentFilterMatchLevel::kScheme) +
-                static_cast<int>(apps::IntentFilterMatchLevel::kHost));
+                static_cast<int>(apps::IntentFilterMatchLevel::kAuthority));
   EXPECT_EQ(filter_scheme_only->GetFilterMatchLevel(),
             static_cast<int>(apps::IntentFilterMatchLevel::kScheme));
   EXPECT_EQ(filter_empty->GetFilterMatchLevel(),
@@ -268,6 +268,73 @@ TEST_F(IntentUtilTest, ActionMatch) {
   send_intent_filter->conditions[0]->condition_values[0]->value =
       apps_util::kIntentActionSend;
   EXPECT_FALSE(intent->MatchFilter(send_intent_filter));
+}
+
+TEST_F(IntentUtilTest, AuthorityMatch) {
+  auto MakeAuthorityFilter = [](const std::string& authority,
+                                apps::PatternMatchType match_type =
+                                    apps::PatternMatchType::kLiteral) {
+    auto intent_filter = std::make_unique<apps::IntentFilter>();
+    intent_filter->AddSingleValueCondition(apps::ConditionType::kAuthority,
+                                           authority, match_type);
+    return intent_filter;
+  };
+
+  auto MakeViewIntent = [](std::string_view url_spec) {
+    return std::make_unique<apps::Intent>(apps_util::kIntentActionView,
+                                          GURL(url_spec));
+  };
+
+  auto explicit_port = MakeAuthorityFilter(
+      apps_util::AuthorityView::Encode(GURL("https://example.com:1234")));
+  EXPECT_TRUE(
+      MakeViewIntent("https://example.com:1234")->MatchFilter(explicit_port));
+  EXPECT_FALSE(
+      MakeViewIntent("https://example.com")->MatchFilter(explicit_port));
+  EXPECT_FALSE(
+      MakeViewIntent("https://example.com:5678")->MatchFilter(explicit_port));
+  EXPECT_FALSE(
+      MakeViewIntent("https://example.org:1234")->MatchFilter(explicit_port));
+
+  auto implicit_port = MakeAuthorityFilter(
+      apps_util::AuthorityView::Encode(GURL("https://example.com")));
+  EXPECT_TRUE(
+      MakeViewIntent("https://example.com")->MatchFilter(implicit_port));
+  EXPECT_TRUE(
+      MakeViewIntent("https://example.com:443")->MatchFilter(implicit_port));
+  EXPECT_FALSE(
+      MakeViewIntent("https://example.com:80")->MatchFilter(implicit_port));
+  EXPECT_FALSE(
+      MakeViewIntent("https://example.com:1234")->MatchFilter(implicit_port));
+  EXPECT_FALSE(
+      MakeViewIntent("https://example.org")->MatchFilter(implicit_port));
+
+  auto portless_scheme = MakeAuthorityFilter(
+      apps_util::AuthorityView::Encode(GURL("file://test")));
+  EXPECT_TRUE(MakeViewIntent("file://test")->MatchFilter(portless_scheme));
+  EXPECT_FALSE(
+      MakeViewIntent("file://test:1234")->MatchFilter(portless_scheme));
+  EXPECT_FALSE(MakeViewIntent("file://other")->MatchFilter(portless_scheme));
+
+  auto host_only = MakeAuthorityFilter("example.com");
+  EXPECT_TRUE(MakeViewIntent("https://example.com")->MatchFilter(host_only));
+  EXPECT_TRUE(MakeViewIntent("https://example.com:80")->MatchFilter(host_only));
+  EXPECT_TRUE(
+      MakeViewIntent("https://example.com:1234")->MatchFilter(host_only));
+  EXPECT_FALSE(MakeViewIntent("https://example.org")->MatchFilter(host_only));
+
+  auto host_suffix = MakeAuthorityFilter(
+      apps_util::AuthorityView::Encode(GURL("https://example.com:1234")),
+      apps::PatternMatchType::kSuffix);
+  EXPECT_TRUE(
+      MakeViewIntent("https://example.com:1234")->MatchFilter(host_suffix));
+  EXPECT_TRUE(MakeViewIntent("https://test.example.com:1234")
+                  ->MatchFilter(host_suffix));
+  EXPECT_FALSE(
+      MakeViewIntent("https://example.com.au:1234")->MatchFilter(host_suffix));
+  EXPECT_FALSE(MakeViewIntent("https://test.example.com.au:1234")
+                   ->MatchFilter(host_suffix));
+  EXPECT_FALSE(MakeViewIntent("https://example.com")->MatchFilter(host_suffix));
 }
 
 TEST_F(IntentUtilTest, MimeTypeMatch) {

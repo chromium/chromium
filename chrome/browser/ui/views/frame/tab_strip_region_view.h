@@ -13,6 +13,7 @@
 
 namespace views {
 class FlexLayout;
+class Button;
 }
 
 class NewTabButton;
@@ -40,7 +41,7 @@ class TabStripRegionView final : public views::AccessiblePaneView {
   // of |this|.
   bool IsPositionInWindowCaption(const gfx::Point& point);
 
-  NewTabButton* new_tab_button() { return new_tab_button_; }
+  views::Button* new_tab_button() { return new_tab_button_; }
 
   TabSearchButton* tab_search_button() { return tab_search_button_; }
 
@@ -49,6 +50,14 @@ class TabStripRegionView final : public views::AccessiblePaneView {
   }
 
   // views::View:
+  // The TabSearchButton and NewTabButton may need to be rendered above the
+  // TabStrip, but FlexLayout needs the children to be stored in the correct
+  // order in the view.
+  views::View::Views GetChildrenInZOrder() override;
+
+  // Calls the parent Layout, but in some cases may also need to manually
+  // position the TabSearchButton to layer over the TabStrip.
+  void Layout() override;
 
   // These system drag & drop methods forward the events to TabDragController to
   // support its fallback tab dragging mode in the case where the platform
@@ -77,13 +86,25 @@ class TabStripRegionView final : public views::AccessiblePaneView {
   void UpdateNewTabButtonBorder();
 
   raw_ptr<views::FlexLayout, DanglingUntriaged> layout_manager_ = nullptr;
-  raw_ptr<views::View, DanglingUntriaged> tab_strip_container_ = nullptr;
+  raw_ptr<views::View, AcrossTasksDanglingUntriaged> tab_strip_container_ =
+      nullptr;
   raw_ptr<views::View, DanglingUntriaged> reserved_grab_handle_space_ = nullptr;
-  raw_ptr<TabStrip, DanglingUntriaged> tab_strip_ = nullptr;
+  raw_ptr<TabStrip, AcrossTasksDanglingUntriaged> tab_strip_ = nullptr;
   raw_ptr<TabStripScrollContainer, DanglingUntriaged>
       tab_strip_scroll_container_ = nullptr;
-  raw_ptr<NewTabButton, DanglingUntriaged> new_tab_button_ = nullptr;
+  raw_ptr<views::Button, DanglingUntriaged> new_tab_button_ = nullptr;
   raw_ptr<TabSearchButton, DanglingUntriaged> tab_search_button_ = nullptr;
+
+  // On some platforms for Chrome Refresh, the TabSearchButton should be
+  // laid out before the TabStrip. Storing this configuration prevents
+  // rechecking the child order on every layout.
+  const bool render_tab_search_before_tab_strip_;
+
+  // For ChromeRefresh2023, the new tab button should be rendered above the
+  // tab strip to support shorter paddings than possible with flexlayout.
+  // if this bool is true then the new tab button will be manually layed out
+  // and rendered to its own layer.
+  const bool render_new_tab_button_over_tab_strip_;
 
   const base::CallbackListSubscription subscription_ =
       ui::TouchUiController::Get()->RegisterCallback(

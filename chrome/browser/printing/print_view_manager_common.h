@@ -31,6 +31,11 @@ void StartPrint(
 // Start printing using the system print dialog.
 void StartBasicPrint(content::WebContents* contents);
 
+// Start printing the node under the context menu using the appropriate
+// PrintViewManagerBase subclass.
+void StartPrintNodeUnderContextMenu(content::RenderFrameHost* rfh,
+                                    bool print_preview_disabled);
+
 // If the user has selected text in the currently focused frame, print only that
 // frame (this makes print selection work for multiple frames).
 content::RenderFrameHost* GetFrameToPrint(content::WebContents* contents);

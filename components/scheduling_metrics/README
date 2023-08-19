@@ -1,9 +1,0 @@
-This directory contains code for scheduling metrics which are shared between
-renderer process and browser process.
-
-These metrics include:
-- Expected queueing time (EQT) calculation.
-- Per-thread task duration metrics.
-
-This component should not have any dependencies other than //base as it 
-should be able to be used from any other place.

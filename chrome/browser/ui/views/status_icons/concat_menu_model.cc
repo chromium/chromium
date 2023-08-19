@@ -9,10 +9,6 @@ ConcatMenuModel::ConcatMenuModel(ui::MenuModel* m1, ui::MenuModel* m2)
 
 ConcatMenuModel::~ConcatMenuModel() = default;
 
-bool ConcatMenuModel::HasIcons() const {
-  return m1_->HasIcons() || m2_->HasIcons();
-}
-
 size_t ConcatMenuModel::GetItemCount() const {
   return m1_->GetItemCount() + m2_->GetItemCount();
 }

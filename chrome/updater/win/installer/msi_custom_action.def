@@ -1,0 +1,3 @@
+EXPORTS
+ShowInstallerResultUIString PRIVATE
+ExtractTagInfoFromInstaller PRIVATE

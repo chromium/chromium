@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_ablation_study.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
+#include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/single_field_form_fill_router.h"
 #include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
@@ -21,11 +22,11 @@ AutofillClient::PopupOpenArgs::PopupOpenArgs(
     const gfx::RectF& element_bounds,
     base::i18n::TextDirection text_direction,
     std::vector<Suggestion> suggestions,
-    AutoselectFirstSuggestion autoselect_first_suggestion)
+    AutofillSuggestionTriggerSource trigger_source)
     : element_bounds(element_bounds),
       text_direction(text_direction),
       suggestions(std::move(suggestions)),
-      autoselect_first_suggestion(autoselect_first_suggestion) {}
+      trigger_source(trigger_source) {}
 AutofillClient::PopupOpenArgs::PopupOpenArgs(
     const AutofillClient::PopupOpenArgs&) = default;
 AutofillClient::PopupOpenArgs::PopupOpenArgs(AutofillClient::PopupOpenArgs&&) =
@@ -48,12 +49,20 @@ AutofillDownloadManager* AutofillClient::GetDownloadManager() {
   return nullptr;
 }
 
+const PersonalDataManager* AutofillClient::GetPersonalDataManager() const {
+  return const_cast<AutofillClient*>(this)->GetPersonalDataManager();
+}
+
 AutofillOptimizationGuide* AutofillClient::GetAutofillOptimizationGuide()
     const {
   return nullptr;
 }
 
-IBANManager* AutofillClient::GetIBANManager() {
+IbanManager* AutofillClient::GetIbanManager() {
+  return nullptr;
+}
+
+plus_addresses::PlusAddressService* AutofillClient::GetPlusAddressService() {
   return nullptr;
 }
 
@@ -64,7 +73,7 @@ MerchantPromoCodeManager* AutofillClient::GetMerchantPromoCodeManager() {
 std::unique_ptr<SingleFieldFormFillRouter>
 AutofillClient::CreateSingleFieldFormFillRouter() {
   return std::make_unique<SingleFieldFormFillRouter>(
-      GetAutocompleteHistoryManager(), GetIBANManager(),
+      GetAutocompleteHistoryManager(), GetIbanManager(),
       GetMerchantPromoCodeManager());
 }
 
@@ -124,10 +133,17 @@ void AutofillClient::ShowVirtualCardEnrollDialog(
   // ChromeAutofillClient (Chrome Desktop and Clank) implements this.
 }
 
+payments::MandatoryReauthManager*
+AutofillClient::GetOrCreatePaymentsMandatoryReauthManager() {
+  return nullptr;
+}
+
 void AutofillClient::ShowMandatoryReauthOptInPrompt(
     base::OnceClosure accept_mandatory_reauth_callback,
     base::OnceClosure cancel_mandatory_reauth_callback,
     base::RepeatingClosure close_mandatory_reauth_callback) {}
+
+void AutofillClient::ShowMandatoryReauthOptInConfirmation() {}
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 void AutofillClient::HideVirtualCardEnrollBubbleAndIconIfVisible() {

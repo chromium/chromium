@@ -6,8 +6,9 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/apple/bundle_locations.h"
+#import "base/apple/foundation_util.h"
 #import "base/check_op.h"
-#import "base/mac/foundation_util.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
@@ -17,10 +18,6 @@
 #import "ios/net/url_scheme_util.h"
 #import "url/gurl.h"
 #import "url/url_constants.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 bool UrlIsExternalFileReference(const GURL& url) {
   return url.SchemeIs(kChromeUIScheme) &&
@@ -92,13 +89,13 @@ bool ShouldLoadUrlInDesktopMode(const GURL& url,
 
 - (NSArray*)allBundleURLSchemes {
   if (!_schemes) {
-    NSDictionary* info = [[NSBundle mainBundle] infoDictionary];
+    NSDictionary* info = [base::apple::FrameworkBundle() infoDictionary];
     NSArray* urlTypes = [info objectForKey:@"CFBundleURLTypes"];
     NSMutableArray* schemes = [[NSMutableArray alloc] init];
     for (NSDictionary* urlType in urlTypes) {
       DCHECK([urlType isKindOfClass:[NSDictionary class]]);
       NSArray* schemesForType =
-          base::mac::ObjCCastStrict<NSArray>(urlType[@"CFBundleURLSchemes"]);
+          base::apple::ObjCCastStrict<NSArray>(urlType[@"CFBundleURLSchemes"]);
       if (schemesForType.count) {
         [schemes addObjectsFromArray:schemesForType];
       }

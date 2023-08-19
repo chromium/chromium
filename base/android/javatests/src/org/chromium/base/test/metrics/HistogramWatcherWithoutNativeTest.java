@@ -237,4 +237,23 @@ public class HistogramWatcherWithoutNativeTest extends HistogramWatcherTestBase 
         }
         Assert.fail("Expected IllegalArgumentException");
     }
+
+    @Test
+    @MediumTest
+    public void testTryWithResources_success() {
+        try (HistogramWatcher ignored = HistogramWatcher.newSingleRecordWatcher(ENUM_HISTOGRAM)) {
+            RecordHistogram.recordEnumeratedHistogram(ENUM_HISTOGRAM, 0, 10);
+        }
+    }
+
+    @Test
+    @MediumTest
+    public void testTryWithResources_failure() {
+        try (HistogramWatcher ignored = HistogramWatcher.newSingleRecordWatcher(ENUM_HISTOGRAM)) {
+        } catch (AssertionError e) {
+            assertContains(ENUM_HISTOGRAM, e.getMessage());
+            return;
+        }
+        Assert.fail("Expected AssertionError");
+    }
 }

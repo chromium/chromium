@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {fakeFeedbackContext, fakeInternalUserFeedbackContext, fakePngData, fakeSearchResponse} from 'chrome://os-feedback/fake_data.js';
+import {fakeFeedbackContext, fakeFeedbackContextWithoutLinkedCrossDevicePhone, fakeInternalUserFeedbackContext, fakePngData, fakeSearchResponse} from 'chrome://os-feedback/fake_data.js';
 import {FakeFeedbackServiceProvider} from 'chrome://os-feedback/fake_feedback_service_provider.js';
 import {FakeHelpContentProvider} from 'chrome://os-feedback/fake_help_content_provider.js';
 import {AdditionalContextQueryParam, FeedbackFlowElement, FeedbackFlowState} from 'chrome://os-feedback/feedback_flow.js';
@@ -29,7 +29,7 @@ export function FeedbackFlowTestSuite() {
   let feedbackServiceProvider = null;
 
   setup(() => {
-    document.body.innerHTML = '';
+    document.body.innerHTML = trustedTypes.emptyHTML;
     // Create helpContentProvider.
     helpContentProvider = new FakeHelpContentProvider();
     // Setup search response.
@@ -124,6 +124,16 @@ export function FeedbackFlowTestSuite() {
     feedbackServiceProvider = new FakeFeedbackServiceProvider();
     feedbackServiceProvider.setFakeFeedbackContext(
         fakeInternalUserFeedbackContext);
+    setFeedbackServiceProviderForTesting(feedbackServiceProvider);
+  }
+
+  /**
+   * @private
+   */
+  function SetupTestWithoutLinkedCrossDevicePhone() {
+    feedbackServiceProvider = new FakeFeedbackServiceProvider();
+    feedbackServiceProvider.setFakeFeedbackContext(
+        fakeFeedbackContextWithoutLinkedCrossDevicePhone);
     setFeedbackServiceProviderForTesting(feedbackServiceProvider);
   }
 
@@ -425,6 +435,221 @@ export function FeedbackFlowTestSuite() {
         activePage.shadowRoot.querySelector('#bluetoothCheckboxContainer');
     assertTrue(!!bluetoothCheckbox);
     assertFalse(isVisible(bluetoothCheckbox));
+  });
+
+  // Test the "Link Cross Device Dogfood Feedback" checkbox will show up if
+  // logged with internal account and input description is related.
+  test(
+      'ShowLinkCrossDeviceDogfoodFeedbackCheckboxsWithRelatedDescription',
+      async () => {
+        testWithInternalAccount();
+        await initializePage();
+
+        // Check the "Link Cross Device Dogfood Feedback" checkbox component is
+        // hidden when input is not related to cross device.
+        let activePage = page.shadowRoot.querySelector('.iron-selected');
+        assertTrue(!!activePage);
+        assertEquals('searchPage', activePage.id);
+
+        activePage.shadowRoot.querySelector('textarea').value = 'abc';
+        activePage.shadowRoot.querySelector('#buttonContinue').click();
+        await flushTasks();
+
+        loadTimeData.overrideValues(
+            {'enableLinkCrossDeviceDogfoodFeedbackFlag': true});
+
+        activePage = page.shadowRoot.querySelector('.iron-selected');
+        assertEquals('shareDataPage', activePage.id);
+        const linkCrossDeviceDogfoodFeedbackCheckbox =
+            activePage.shadowRoot.querySelector(
+                '#linkCrossDeviceDogfoodFeedbackCheckboxContainer');
+        assertTrue(!!linkCrossDeviceDogfoodFeedbackCheckbox);
+        assertFalse(isVisible(linkCrossDeviceDogfoodFeedbackCheckbox));
+
+        activePage.shadowRoot.querySelector('#buttonBack').click();
+        await flushTasks();
+
+        loadTimeData.overrideValues(
+            {'enableLinkCrossDeviceDogfoodFeedbackFlag': true});
+
+        // Go back to search page and set description input related to cross
+        // device.
+        activePage = page.shadowRoot.querySelector('.iron-selected');
+        assertTrue(!!activePage);
+        assertEquals('searchPage', activePage.id);
+
+        // Testing tetherRegEx
+        let descriptionElement =
+            activePage.shadowRoot.querySelector('textarea');
+        descriptionElement.value = 'hotspot';
+
+        activePage.shadowRoot.querySelector('#buttonContinue').click();
+        await flushTasks();
+
+        activePage = page.shadowRoot.querySelector('.iron-selected');
+        assertTrue(!!activePage);
+        assertEquals('shareDataPage', activePage.id);
+
+        assertTrue(!!linkCrossDeviceDogfoodFeedbackCheckbox);
+        assertTrue(isVisible(linkCrossDeviceDogfoodFeedbackCheckbox));
+
+        activePage.shadowRoot.querySelector('#buttonBack').click();
+        await flushTasks();
+
+        loadTimeData.overrideValues(
+            {'enableLinkCrossDeviceDogfoodFeedbackFlag': true});
+
+        // Go back to search page and set description input related to cross
+        // device.
+        activePage = page.shadowRoot.querySelector('.iron-selected');
+        assertTrue(!!activePage);
+        assertEquals('searchPage', activePage.id);
+
+        // Testing phoneHubRegEx
+        descriptionElement = activePage.shadowRoot.querySelector('textarea');
+        descriptionElement.value = 'appstream';
+
+        activePage.shadowRoot.querySelector('#buttonContinue').click();
+        await flushTasks();
+
+        activePage = page.shadowRoot.querySelector('.iron-selected');
+        assertTrue(!!activePage);
+        assertEquals('shareDataPage', activePage.id);
+
+        assertTrue(!!linkCrossDeviceDogfoodFeedbackCheckbox);
+        assertTrue(isVisible(linkCrossDeviceDogfoodFeedbackCheckbox));
+
+        activePage.shadowRoot.querySelector('#buttonBack').click();
+        await flushTasks();
+
+        loadTimeData.overrideValues(
+            {'enableLinkCrossDeviceDogfoodFeedbackFlag': true});
+
+        // Go back to search page and set description input related to cross
+        // device.
+        activePage = page.shadowRoot.querySelector('.iron-selected');
+        assertTrue(!!activePage);
+        assertEquals('searchPage', activePage.id);
+
+        // Testing phoneHubRegEx variation.
+        descriptionElement = activePage.shadowRoot.querySelector('textarea');
+        descriptionElement.value = 'camera roll';
+
+        activePage.shadowRoot.querySelector('#buttonContinue').click();
+        await flushTasks();
+
+        activePage = page.shadowRoot.querySelector('.iron-selected');
+        assertTrue(!!activePage);
+        assertEquals('shareDataPage', activePage.id);
+
+        assertTrue(!!linkCrossDeviceDogfoodFeedbackCheckbox);
+        assertTrue(isVisible(linkCrossDeviceDogfoodFeedbackCheckbox));
+      });
+
+  // Test the "Link Cross Device Dogfood Feedback" checkbox will not show up if
+  // not logged with an Internal google account.
+  test(
+      'LinkCrossDeviceDogfoodFeedbackHiddenWithoutInternalAccount',
+      async () => {
+        await initializePage();
+
+        // Enable flag.
+        loadTimeData.overrideValues(
+            {'enableLinkCrossDeviceDogfoodFeedbackFlag': true});
+
+        // Set input description related to cross device.
+        let activePage = page.shadowRoot.querySelector('.iron-selected');
+        activePage.shadowRoot.querySelector('textarea').value = 'phone';
+        activePage.shadowRoot.querySelector('#buttonContinue').click();
+        await flushTasks();
+
+        activePage = page.shadowRoot.querySelector('.iron-selected');
+        assertEquals('shareDataPage', activePage.id);
+        const linkCrossDeviceDogfoodFeedbackCheckbox =
+            activePage.shadowRoot.querySelector(
+                '#linkCrossDeviceDogfoodFeedbackCheckboxContainer');
+        assertTrue(!!linkCrossDeviceDogfoodFeedbackCheckbox);
+        assertFalse(isVisible(linkCrossDeviceDogfoodFeedbackCheckbox));
+      });
+
+  // Test the "Link Cross Device Dogfood Feedback" checkbox will not show up if
+  // the ChromeOs device is not linked to a phone.
+  test(
+      'LinkCrossDeviceDogfoodFeedbackHiddenWithoutLinkedCrossDevicePhone',
+      async () => {
+        SetupTestWithoutLinkedCrossDevicePhone();
+
+        await initializePage();
+
+        // Enable flag.
+        loadTimeData.overrideValues(
+            {'enableLinkCrossDeviceDogfoodFeedbackFlag': true});
+
+        // Set input description related to cross device.
+        let activePage = page.shadowRoot.querySelector('.iron-selected');
+
+        activePage.shadowRoot.querySelector('textarea').value = 'phone';
+        activePage.shadowRoot.querySelector('#buttonContinue').click();
+        await flushTasks();
+
+        activePage = page.shadowRoot.querySelector('.iron-selected');
+        assertEquals('shareDataPage', activePage.id);
+        const linkCrossDeviceDogfoodFeedbackCheckbox =
+            activePage.shadowRoot.querySelector(
+                '#linkCrossDeviceDogfoodFeedbackCheckboxContainer');
+        assertTrue(!!linkCrossDeviceDogfoodFeedbackCheckbox);
+        assertFalse(isVisible(linkCrossDeviceDogfoodFeedbackCheckbox));
+      });
+
+  // Test the "Link Cross Device Dogfood Feedback" checkbox will only show up
+  // when 'enableLinkCrossDeviceDogfoodFeedbackFlag' is enabled.
+  test('LinkCrossDeviceDogfoodFeedbackTestingFlag', async () => {
+    testWithInternalAccount();
+    await initializePage();
+
+    // Enable flag and check that the checkbox appears.
+    loadTimeData.overrideValues(
+        {'enableLinkCrossDeviceDogfoodFeedbackFlag': true});
+
+    // Set input description related to cross device.
+    let activePage = page.shadowRoot.querySelector('.iron-selected');
+
+    activePage.shadowRoot.querySelector('textarea').value = 'phone';
+    activePage.shadowRoot.querySelector('#buttonContinue').click();
+    await flushTasks();
+
+    activePage = page.shadowRoot.querySelector('.iron-selected');
+    assertEquals('shareDataPage', activePage.id);
+    const linkCrossDeviceDogfoodFeedbackCheckbox =
+        activePage.shadowRoot.querySelector(
+            '#linkCrossDeviceDogfoodFeedbackCheckboxContainer');
+    assertTrue(!!linkCrossDeviceDogfoodFeedbackCheckbox);
+    assertTrue(isVisible(linkCrossDeviceDogfoodFeedbackCheckbox));
+
+    activePage.shadowRoot.querySelector('#buttonBack').click();
+    await flushTasks();
+
+    // Go back to search page and set description input related to cross device.
+    activePage = page.shadowRoot.querySelector('.iron-selected');
+    assertTrue(!!activePage);
+    assertEquals('searchPage', activePage.id);
+
+    const descriptionElement = activePage.shadowRoot.querySelector('textarea');
+    descriptionElement.value = 'phone';
+
+    // Disable flag and check that the checkbox doesn't appear.
+    loadTimeData.overrideValues(
+        {'enableLinkCrossDeviceDogfoodFeedbackFlag': false});
+
+    activePage.shadowRoot.querySelector('#buttonContinue').click();
+    await flushTasks();
+
+    activePage = page.shadowRoot.querySelector('.iron-selected');
+    assertTrue(!!activePage);
+    assertEquals('shareDataPage', activePage.id);
+
+    assertTrue(!!linkCrossDeviceDogfoodFeedbackCheckbox);
+    assertFalse(isVisible(linkCrossDeviceDogfoodFeedbackCheckbox));
   });
 
   // Test the assistant logs will show up if logged with internal account and
@@ -930,7 +1155,7 @@ export function FeedbackFlowTestSuite() {
         assertTrue(link.href.includes(disabledUrl));
 
         // Reset app element.
-        document.body.innerHTML = '';
+        document.body.innerHTML = trustedTypes.emptyHTML;
         page.remove();
         page = null;
 

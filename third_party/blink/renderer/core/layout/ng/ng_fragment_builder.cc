@@ -7,6 +7,7 @@
 #include "base/containers/contains.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_fragment.h"
+#include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 
 namespace blink {
 
@@ -97,6 +98,48 @@ void NGFragmentBuilder::ReplaceChild(wtf_size_t index,
   children_[index] = NGLogicalLink{std::move(&new_child), offset};
 }
 
+HeapVector<Member<LayoutBoxModelObject>>&
+NGFragmentBuilder::EnsureStickyDescendants() {
+  if (!sticky_descendants_) {
+    sticky_descendants_ =
+        MakeGarbageCollected<HeapVector<Member<LayoutBoxModelObject>>>();
+  }
+  return *sticky_descendants_;
+}
+
+void NGFragmentBuilder::PropagateStickyDescendants(
+    const NGPhysicalFragment& child) {
+  if (child.HasStickyConstrainedPosition()) {
+    EnsureStickyDescendants().push_front(
+        To<LayoutBoxModelObject>(child.GetMutableLayoutObject()));
+  }
+
+  if (const auto* child_sticky_descendants =
+          child.PropagatedStickyDescendants()) {
+    EnsureStickyDescendants().AppendVector(*child_sticky_descendants);
+  }
+}
+
+HeapHashSet<Member<LayoutBox>>& NGFragmentBuilder::EnsureSnapAreas() {
+  if (!snap_areas_) {
+    snap_areas_ = MakeGarbageCollected<HeapHashSet<Member<LayoutBox>>>();
+  }
+  return *snap_areas_;
+}
+
+void NGFragmentBuilder::PropagateSnapAreas(const NGPhysicalFragment& child) {
+  if (child.IsSnapArea()) {
+    EnsureSnapAreas().insert(To<LayoutBox>(child.GetMutableLayoutObject()));
+  }
+
+  if (const auto* child_snap_areas = child.PropagatedSnapAreas()) {
+    auto& snap_areas = EnsureSnapAreas();
+    for (auto& child_snap_area : *child_snap_areas) {
+      snap_areas.insert(child_snap_area);
+    }
+  }
+}
+
 NGLogicalAnchorQuery& NGFragmentBuilder::EnsureAnchorQuery() {
   if (!anchor_query_)
     anchor_query_ = MakeGarbageCollected<NGLogicalAnchorQuery>();
@@ -155,6 +198,37 @@ void NGFragmentBuilder::PropagateFromLayoutResult(
       child_result.HasOrthogonalFallbackSizeDescendant();
 }
 
+ScrollStartTargetCandidates& NGFragmentBuilder::EnsureScrollStartTargets() {
+  if (!scroll_start_targets_) {
+    scroll_start_targets_ = MakeGarbageCollected<ScrollStartTargetCandidates>();
+  }
+  return *scroll_start_targets_;
+}
+
+void NGFragmentBuilder::PropagateScrollStartTarget(
+    const NGPhysicalFragment& child) {
+  auto UpdateScrollStartTarget = [](Member<const LayoutBox>& old_target,
+                                    const LayoutBox* new_target) {
+    if (new_target &&
+        (!old_target || old_target->IsBeforeInPreOrder(*new_target))) {
+      old_target = new_target;
+    }
+  };
+  const auto* child_box = DynamicTo<LayoutBox>(child.GetLayoutObject());
+  if (child.Style().ScrollStartTargetY() != EScrollStartTarget::kNone) {
+    UpdateScrollStartTarget(EnsureScrollStartTargets().y, child_box);
+  }
+  if (child.Style().ScrollStartTargetX() != EScrollStartTarget::kNone) {
+    UpdateScrollStartTarget(EnsureScrollStartTargets().x, child_box);
+  }
+
+  // Prefer deeper scroll-start-targets.
+  if (const auto* targets = child.PropagatedScrollStartTargets()) {
+    UpdateScrollStartTarget(EnsureScrollStartTargets().y, targets->y);
+    UpdateScrollStartTarget(EnsureScrollStartTargets().x, targets->x);
+  }
+}
+
 // Propagate data in |child| to this fragment. The |child| will then be added as
 // a child fragment or a child fragment item.
 void NGFragmentBuilder::PropagateFromFragment(
@@ -165,6 +239,12 @@ void NGFragmentBuilder::PropagateFromFragment(
   // Propagate anchors from the |child|. Anchors are in |OutOfFlowData| but the
   // |child| itself may have an anchor.
   PropagateChildAnchors(child, child_offset + relative_offset);
+
+  PropagateStickyDescendants(child);
+  if (RuntimeEnabledFeatures::LayoutNewSnapLogicEnabled()) {
+    PropagateSnapAreas(child);
+  }
+  PropagateScrollStartTarget(child);
 
   if (child.NeedsOOFPositionedInfoPropagation() &&
       !disable_oof_descendants_propagation_) {
@@ -208,10 +288,10 @@ void NGFragmentBuilder::PropagateFromFragment(
   // Compute |has_floating_descendants_for_paint_| to optimize tree traversal
   // in paint.
   if (!has_floating_descendants_for_paint_) {
-    if (child.IsFloating() || child.IsLegacyLayoutRoot() ||
-        (child.HasFloatingDescendantsForPaint() &&
-         !child.IsPaintedAtomically()))
+    if (child.IsFloating() || (child.HasFloatingDescendantsForPaint() &&
+                               !child.IsPaintedAtomically())) {
       has_floating_descendants_for_paint_ = true;
+    }
   }
 
   // The |has_adjoining_object_descendants_| is used to determine if a fragment

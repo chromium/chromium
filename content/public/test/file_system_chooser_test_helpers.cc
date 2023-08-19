@@ -41,7 +41,11 @@ class CancellingSelectFileDialog : public ui::SelectFileDialog {
       out_params_->file_type_index = file_type_index;
       out_params_->default_path = default_path;
       out_params_->title = title;
-      out_params_->caller = caller;
+      if (caller) {
+        out_params_->caller = *caller;
+      } else {
+        out_params_->caller = absl::nullopt;
+      }
     }
     listener_->FileSelectionCanceled(params);
   }
@@ -54,7 +58,7 @@ class CancellingSelectFileDialog : public ui::SelectFileDialog {
 
  private:
   ~CancellingSelectFileDialog() override = default;
-  raw_ptr<SelectFileDialogParams> out_params_;
+  raw_ptr<SelectFileDialogParams, LeakedDanglingUntriaged> out_params_;
 };
 
 class FakeSelectFileDialog : public ui::SelectFileDialog {
@@ -88,7 +92,11 @@ class FakeSelectFileDialog : public ui::SelectFileDialog {
       out_params_->file_type_index = file_type_index;
       out_params_->default_path = default_path;
       out_params_->title = title;
-      out_params_->caller = caller;
+      if (caller) {
+        out_params_->caller = *caller;
+      } else {
+        out_params_->caller = absl::nullopt;
+      }
     }
     // The selected files are passed by reference to the listener. Ensure they
     // outlive the dialog if it is immediately deleted by the listener.
@@ -110,7 +118,7 @@ class FakeSelectFileDialog : public ui::SelectFileDialog {
  private:
   ~FakeSelectFileDialog() override = default;
   std::vector<ui::SelectedFileInfo> result_;
-  raw_ptr<SelectFileDialogParams> out_params_;
+  raw_ptr<SelectFileDialogParams, LeakedDanglingUntriaged> out_params_;
 };
 
 }  // namespace

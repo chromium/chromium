@@ -57,13 +57,13 @@ ArcMemoryPressureBridge::ArcMemoryPressureBridge(
     : arc_bridge_service_(bridge_service),
       arc_metrics_service_(ArcMetricsService::GetForBrowserContext(context)) {
   DCHECK(arc_metrics_service_ != nullptr);
-  ash::ResourcedClient* client = ash::ResourcedClient::Get();
-  DCHECK(client);
-  client->AddArcVmObserver(this);
   arc_bridge_service_->process()->AddObserver(this);
 }
 
 ArcMemoryPressureBridge::~ArcMemoryPressureBridge() {
+  // NB: It is safe to have too many calls to RemoveObserver, so we add one
+  // here just in case we are destructed while the ProcessInstance connection
+  // is up.
   ash::ResourcedClient* client = ash::ResourcedClient::Get();
   if (client)
     client->RemoveArcVmObserver(this);
@@ -125,7 +125,18 @@ void ArcMemoryPressureBridge::OnMemoryPressure(
                 "process_instance or process_instance_deprecated";
 }
 
+void ArcMemoryPressureBridge::OnConnectionReady() {
+  // Only listen to memory pressure signals when ARCVM is running.
+  ash::ResourcedClient* client = ash::ResourcedClient::Get();
+  DCHECK(client);
+  client->AddArcVmObserver(this);
+}
+
 void ArcMemoryPressureBridge::OnConnectionClosed() {
+  ash::ResourcedClient* client = ash::ResourcedClient::Get();
+  DCHECK(client);
+  client->RemoveArcVmObserver(this);
+
   // The connection to ArcProcessService has been closed, there can not be any
   // memory pressure signals in flight.
   memory_pressure_in_flight_ = false;

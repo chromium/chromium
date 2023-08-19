@@ -24,7 +24,7 @@ class KerberosSettingsRedirectElement extends PolymerElement {
   }
 
   private onManageTickets_(): void {
-    chrome.send('openSettings');
+    chrome.send('dialogClose', ['openSettings']);
   }
 }
 

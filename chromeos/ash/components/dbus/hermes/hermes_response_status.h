@@ -40,7 +40,9 @@ enum class HermesResponseStatus {
   kErrorSendHttpsFailure = 20,
   kErrorUnexpectedModemManagerState = 21,
   kErrorModemMessageProcessing = 22,
-  kMaxValue = kErrorModemMessageProcessing
+  kErrorEmptyResponse = 23,
+  kErrorUnknownResponse = 24,
+  kMaxValue = kErrorUnknownResponse
 };
 
 // Hermes codes returned that are possibly a result of user error.

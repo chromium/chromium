@@ -22,10 +22,6 @@
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 const char kUmaDownloadCalendarFileUI[] = "Download.IOSDownloadCalendarFileUI";
 const char kUmaDownloadMobileConfigFileUI[] =
     "Download.IOSDownloadMobileConfigFileUI";
@@ -65,7 +61,7 @@ const char kUmaDownloadMobileConfigFileUI[] =
   _dependencyInstallerBridge.reset();
 
   self.safariViewController = nil;
-  [self.alertCoordinator stop];
+  [self dismissAlertCoordinator];
 }
 
 #pragma mark - Private
@@ -83,6 +79,11 @@ const char kUmaDownloadMobileConfigFileUI[] =
                                       completion:nil];
 }
 
+// Dismisses the alert coordinator.
+- (void)dismissAlertCoordinator {
+  [self.alertCoordinator stop];
+  self.alertCoordinator = nil;
+}
 #pragma mark - DependencyInstalling methods
 
 - (void)installDependencyForWebState:(web::WebState*)webState {
@@ -113,16 +114,17 @@ const char kUmaDownloadMobileConfigFileUI[] =
                              l10n_util::GetNSString(
                                  IDS_IOS_DOWNLOAD_MOBILECONFIG_FILE_WARNING_MESSAGE)];
 
+  __weak SafariDownloadCoordinator* weakSelf = self;
   [self.alertCoordinator
       addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
                 action:^{
                   base::UmaHistogramEnumeration(
                       kUmaDownloadMobileConfigFileUI,
                       SafariDownloadFileUI::kWarningAlertIsDismissed);
+                  [weakSelf dismissAlertCoordinator];
                 }
                  style:UIAlertActionStyleCancel];
 
-  __weak SafariDownloadCoordinator* weakSelf = self;
   [self.alertCoordinator
       addItemWithTitle:l10n_util::GetNSString(
                            IDS_IOS_DOWNLOAD_MOBILECONFIG_CONTINUE)
@@ -131,6 +133,7 @@ const char kUmaDownloadMobileConfigFileUI[] =
                       kUmaDownloadMobileConfigFileUI,
                       SafariDownloadFileUI::kSFSafariViewIsPresented);
                   [weakSelf presentSFSafariViewController:fileURL];
+                  [weakSelf dismissAlertCoordinator];
                 }
                  style:UIAlertActionStyleDefault];
 
@@ -155,16 +158,17 @@ const char kUmaDownloadMobileConfigFileUI[] =
                              l10n_util::GetNSString(
                                  IDS_IOS_DOWNLOAD_CALENDAR_FILE_WARNING_MESSAGE)];
 
+  __weak SafariDownloadCoordinator* weakSelf = self;
   [self.alertCoordinator
       addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
                 action:^{
                   base::UmaHistogramEnumeration(
                       kUmaDownloadCalendarFileUI,
                       SafariDownloadFileUI::kWarningAlertIsDismissed);
+                  [weakSelf dismissAlertCoordinator];
                 }
                  style:UIAlertActionStyleCancel];
 
-  __weak SafariDownloadCoordinator* weakSelf = self;
   [self.alertCoordinator
       addItemWithTitle:l10n_util::GetNSString(
                            IDS_IOS_DOWNLOAD_MOBILECONFIG_CONTINUE)
@@ -173,6 +177,7 @@ const char kUmaDownloadMobileConfigFileUI[] =
                       kUmaDownloadCalendarFileUI,
                       SafariDownloadFileUI::kSFSafariViewIsPresented);
                   [weakSelf presentSFSafariViewController:fileURL];
+                  [weakSelf dismissAlertCoordinator];
                 }
                  style:UIAlertActionStyleDefault];
 

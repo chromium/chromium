@@ -30,8 +30,12 @@ class CORE_EXPORT InterpolableFontPalette final : public InterpolableValue {
                    InterpolableValue& result) const final;
   bool IsFontPalette() const final { return true; }
   bool Equals(const InterpolableValue& other) const final;
-  void Scale(double scale) final;
-  void Add(const InterpolableValue& other) final;
+  // Scale() and Add() methods are only used for additive animations, but
+  // font-palette is not additive, since the <color> type is not additive,
+  // compare https://drafts.csswg.org/css-values-4/#combine-colors. Therefore
+  // these methods should not do anything.
+  void Scale(double scale) final {}
+  void Add(const InterpolableValue& other) final {}
   void AssertCanInterpolateWith(const InterpolableValue& other) const final;
 
  private:

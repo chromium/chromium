@@ -30,19 +30,19 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_DEV_TOOLS_HOST_H_
 
 #include "base/values.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
+class Document;
 class FrontendMenuProvider;
 class InspectorFrontendClient;
 class LocalFrame;
-struct MenuItemInfo;
+class ShowContextMenuItem;
 
 class CORE_EXPORT DevToolsHost final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -59,11 +59,13 @@ class CORE_EXPORT DevToolsHost final : public ScriptWrappable {
   float ConvertLengthForEmbedder(float length);
 
   void copyText(const String& text);
+  String platform() const;
 
-  void ShowContextMenu(LocalFrame* target_frame,
-                       float x,
-                       float y,
-                       WebVector<MenuItemInfo> items);
+  void showContextMenuAtPoint(v8::Isolate*,
+                              float x,
+                              float y,
+                              const HeapVector<Member<ShowContextMenuItem>>&,
+                              Document* = nullptr);
   void sendMessageToEmbedder(base::Value::Dict message);
   void sendMessageToEmbedder(const String& message);
 
@@ -74,8 +76,11 @@ class CORE_EXPORT DevToolsHost final : public ScriptWrappable {
   void ClearMenuProvider() { menu_provider_ = nullptr; }
 
   // kMaxContextMenuAction means no action (e.g. separator), all
-  // actual actions should be less.
-  static const unsigned kMaxContextMenuAction = 1000;
+  // actual actions should be less. This needs to be 1000 because the range
+  // of custom context menu actions is restricted to the difference between
+  // IDC_CONTENT_CONTEXT_CUSTOM_FIRST and IDC_CONTENT_CONTEXT_CUSTOM_LAST, which
+  // is 1000.
+  static const uint32_t kMaxContextMenuAction = 1000;
 
  private:
   friend class FrontendMenuProvider;

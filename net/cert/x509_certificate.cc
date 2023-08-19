@@ -35,8 +35,8 @@
 #include "net/cert/pki/verify_certificate_chain.h"
 #include "net/cert/pki/verify_name_match.h"
 #include "net/cert/pki/verify_signed_data.h"
+#include "net/cert/time_conversions.h"
 #include "net/cert/x509_util.h"
-#include "net/der/encode_values.h"
 #include "net/der/parser.h"
 #include "net/dns/dns_util.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
@@ -119,9 +119,8 @@ bssl::UniquePtr<CRYPTO_BUFFER> CreateCertBufferFromBytesWithSanityCheck(
   der::BitString signature_value;
   // Do a bare minimum of DER parsing here to see if the input looks
   // certificate-ish.
-  if (!ParseCertificate(der::Input(data.data(), data.size()),
-                        &tbs_certificate_tlv, &signature_algorithm_tlv,
-                        &signature_value, nullptr)) {
+  if (!ParseCertificate(der::Input(data), &tbs_certificate_tlv,
+                        &signature_algorithm_tlv, &signature_value, nullptr)) {
     return nullptr;
   }
   return x509_util::CreateCryptoBuffer(data);
@@ -416,7 +415,7 @@ bool X509Certificate::IsIssuedByEncoded(
   for (const auto& raw_issuer : valid_issuers) {
     der::Input issuer_value;
     std::string normalized_issuer;
-    if (!ParseSequenceValue(der::Input(&raw_issuer), &issuer_value) ||
+    if (!ParseSequenceValue(der::Input(raw_issuer), &issuer_value) ||
         !NormalizeName(issuer_value, &normalized_issuer, &errors)) {
       continue;
     }
@@ -770,8 +769,8 @@ bool X509Certificate::ParsedFields::Initialize(
     return false;
   }
 
-  if (!der::GeneralizedTimeToTime(tbs.validity_not_before, &valid_start_) ||
-      !der::GeneralizedTimeToTime(tbs.validity_not_after, &valid_expiry_)) {
+  if (!GeneralizedTimeToTime(tbs.validity_not_before, &valid_start_) ||
+      !GeneralizedTimeToTime(tbs.validity_not_after, &valid_expiry_)) {
     return false;
   }
   serial_number_ = tbs.serial_number.AsString();

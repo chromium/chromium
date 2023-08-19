@@ -12,8 +12,8 @@
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/enterprise/connectors/reporting/reporting_service_settings.h"
+#include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/policy/dm_token_utils.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -81,7 +81,7 @@ class ExtensionInstallEventRouterTest : public testing::Test {
     mockRealtimeReportingClient_ = static_cast<MockRealtimeReportingClient*>(
         RealtimeReportingClientFactory::GetForProfile(profile_));
 
-    safe_browsing::SetOnSecurityEventReporting(
+    test::SetOnSecurityEventReporting(
         profile_->GetPrefs(), /*enabled=*/true,
         /*enabled_event_names=*/std::set<std::string>(),
         /*enabled_opt_in_events=*/
@@ -132,10 +132,7 @@ TEST_F(ExtensionInstallEventRouterTest, CheckEventReported) {
   expectedEvent.Set("id", kFakeExtensionId);
   expectedEvent.Set("name", kFakeExtensionName);
   expectedEvent.Set("description", kFakeExtensionDescription);
-  expectedEvent.Set("profileUserName", kFakeProfileUsername);
 
-  EXPECT_CALL(*mockRealtimeReportingClient_, GetProfileUserName())
-      .WillOnce(Return(kFakeProfileUsername));
   EXPECT_CALL(
       *mockRealtimeReportingClient_,
       ReportRealtimeEvent(ReportingServiceSettings::kExtensionInstallEvent, _,

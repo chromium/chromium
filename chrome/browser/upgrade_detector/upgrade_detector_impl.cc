@@ -43,8 +43,6 @@
 #include "base/enterprise_util.h"
 #include "chrome/installer/util/google_update_settings.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
-#elif BUILDFLAG(IS_MAC)
-#include "chrome/browser/mac/keystone_glue.h"
 #endif
 
 namespace {
@@ -342,9 +340,6 @@ void UpgradeDetectorImpl::NotifyOnUpgradeWithTimePassed(
     // the RelaunchNotificationPeriod) that brought the instance up to or above
     // the "high" annoyance level.
     upgrade_notification_timer_.Stop();
-    // Reset the threshold deltas as we are no longer announcing changes to the
-    // annoyance level.
-    stages_.fill(base::TimeDelta());
   }
 
   // Issue a notification if the stage is above "none" or if it's dropped down
@@ -478,14 +473,6 @@ void UpgradeDetectorImpl::Init() {
   }
 
 #if BUILDFLAG(ENABLE_UPDATE_NOTIFICATIONS)
-
-  // On macOS, only enable upgrade notifications if the updater (Keystone) is
-  // present.
-#if BUILDFLAG(IS_MAC)
-  if (!keystone_glue::KeystoneEnabled())
-    return;
-#endif
-
   // Start checking for outdated builds sometime after startup completes.
   content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
       ->PostTask(

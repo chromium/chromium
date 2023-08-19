@@ -31,6 +31,7 @@ include_rules = [
   "+components/browser_ui/widget/android",
   "+components/crash/android",
   "+components/embedder_support/android",
+  "+components/environment_integrity/android",
   "+components/feature_engagement/public/android/java/src/org/chromium/components/feature_engagement",
   "+components/dom_distiller/core/android/java/src/org/chromium/components/dom_distiller/core",
   "+components/gcm_driver/android/java/src/org/chromium/components/gcm_driver",
@@ -52,6 +53,7 @@ include_rules = [
   "+components/sync/android/java/src/org/chromium/components/sync",
   "+components/sync/test",
   "+components/webauthn/android/java",
+  "+components/webxr/android",
 
   "-content/public/android/java",
   "+content/public/android/java/src/org/chromium/content_public",

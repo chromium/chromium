@@ -26,4 +26,7 @@ public class Lifetime {
 
     @Retention(RetentionPolicy.SOURCE)
     public @interface Temporary {}
+
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface Renderer {}
 }

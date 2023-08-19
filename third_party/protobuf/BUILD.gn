@@ -112,10 +112,10 @@ component("protobuf_lite") {
     configs += [ "//build/config/compiler:optimize_max" ]
   }
 
-  # Remove Sanitizers and coverage for a performance boost when fuzzing. This is
-  # OK because the only fuzzers that use protobuf are libprotobuf-mutator based
-  # fuzzers, and they don't actually target the protobuf code, they just use it.
-  configs -= not_fuzzed_remove_configs
+  # Remove coverage and Sanitizers other than ASan for a performance boost when
+  # fuzzing. ASan can't be removed here because of a bug preventing unsanitized
+  # code from using libc++, which protobuf_full uses.
+  configs -= not_fuzzed_remove_nonasan_configs
   configs += [ "//build/config/sanitizers:not_fuzzed" ]
 
   if (is_win) {
@@ -148,6 +148,9 @@ static_library("protobuf_full") {
   # Prevent people from depending on this outside our file.
   visibility = [
     ":*",
+
+    # Used for testing protobuf generation.
+    "//base/test:proto_test_support",
 
     # requires descriptors & reflection; testonly.
     "//third_party/libprotobuf-mutator:*",
@@ -206,16 +209,21 @@ static_library("protobuf_full") {
 
     # The Cast Core gRPC generator tool.
     "//third_party/cast_core/public/src/build/chromium:cast_core_grpc_generator",
-
-    # Used for testing protobuf generation.
-    "//components/services/screen_ai:test_support",
   ]
 
-  # TODO(crbug.com/1338164): This ends up linking two copies of
-  # protobuf_lite_sources in some targets, which is an ODR violation.
-  sources = protobuf_lite_sources + protobuf_sources + protobuf_headers
-
   deps = [ "//third_party/zlib" ]
+
+  # In component build, protobuf_full can't depend on protobuf_lite because
+  # it uses non-PROTOBUF_EXPORT symbols; in non-component build, protobuf_full
+  # must have protobuf_lite as a dependency instead of building
+  # protobuf_lite_sources to avoid ODR violations in targets that link both.
+  # See crbug.com/1338164.
+  if (is_component_build) {
+    sources = protobuf_lite_sources + protobuf_sources + protobuf_headers
+  } else {
+    sources = protobuf_sources + protobuf_headers
+    deps += [ ":protobuf_lite" ]
+  }
 
   if (is_android) {
     libs = [ "log" ]  # Used by src/google/protobuf/stubs/common.cc

@@ -105,7 +105,6 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{miesiąc temu}few{# miesiące temu}many{# miesięcy temu}other{# miesiąca temu}}</translation>
 <translation id="4289300219472526559">Zacznij mówić</translation>
 <translation id="4289540628985791613">Przegląd</translation>
-<translation id="4306392492252714209">Usuń ze schowka.</translation>
 <translation id="4491109536499578614">Obraz</translation>
 <translation id="4565377596337484307">Ukryj hasło</translation>
 <translation id="4588090240171750605">Przewiń w prawo</translation>
@@ -148,6 +147,7 @@
 <translation id="6142413573757616983"><ph name="QUANTITY" /> B/s</translation>
 <translation id="6237461503717005873">Wybrano: <ph name="ROW_NAME" />.</translation>
 <translation id="6264365405983206840">Wybierz &amp;wszystko</translation>
+<translation id="6346952829206698721">Wklej ze schowka</translation>
 <translation id="6364916375976753737">Przewiń w lewo</translation>
 <translation id="6394627529324717982">Przecinek</translation>
 <translation id="6397363302884558537">Przestań mówić</translation>
@@ -174,6 +174,7 @@
 <translation id="7170202025028120564">Zmiany ustawień wyświetlania aplikacji zostaną wprowadzone po jej ponownym uruchomieniu.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{Pozostała 1 min}few{Pozostały # min}many{Pozostało # min}other{Pozostało # min}}</translation>
+<translation id="7363164521834647158">Wyślij odpowiedź</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{1 min temu}few{# min temu}many{# min temu}other{# min temu}}</translation>
 <translation id="7389409599945284130">– <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{Pozostała 1 minuta}few{Pozostały # minuty}many{Pozostało # minut}other{Pozostało # minuty}}</translation>

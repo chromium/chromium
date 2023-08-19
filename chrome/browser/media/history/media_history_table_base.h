@@ -75,7 +75,7 @@ class MediaHistoryTableBase
   base::AtomicFlag cancelled_;
 
   scoped_refptr<base::UpdateableSequencedTaskRunner> db_task_runner_;
-  raw_ptr<sql::Database, DanglingUntriaged> db_;
+  raw_ptr<sql::Database, AcrossTasksDanglingUntriaged> db_;
 };
 
 }  // namespace media_history

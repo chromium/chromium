@@ -125,7 +125,8 @@ IdentityManager::IdentityManager(IdentityManager::InitParameters&& parameters)
                         std::move(parameters.accounts_cookie_mutator),
                         std::move(parameters.device_accounts_synchronizer)),
       diagnostics_provider_(std::move(parameters.diagnostics_provider)),
-      account_consistency_(parameters.account_consistency) {
+      account_consistency_(parameters.account_consistency),
+      should_verify_scope_access_(parameters.should_verify_scope_access) {
   DCHECK(account_fetcher_service_);
   DCHECK(diagnostics_provider_);
 
@@ -236,7 +237,8 @@ IdentityManager::CreateAccessTokenFetcherForAccount(
     AccessTokenFetcher::Mode mode) {
   return std::make_unique<AccessTokenFetcher>(
       account_id, oauth_consumer_name, token_service_.get(),
-      primary_account_manager_.get(), scopes, std::move(callback), mode);
+      primary_account_manager_.get(), scopes, std::move(callback), mode,
+      should_verify_scope_access_);
 }
 
 std::unique_ptr<AccessTokenFetcher>
@@ -250,7 +252,7 @@ IdentityManager::CreateAccessTokenFetcherForAccount(
   return std::make_unique<AccessTokenFetcher>(
       account_id, oauth_consumer_name, token_service_.get(),
       primary_account_manager_.get(), url_loader_factory, scopes,
-      std::move(callback), mode);
+      std::move(callback), mode, should_verify_scope_access_);
 }
 
 void IdentityManager::RemoveAccessTokenFromCache(
@@ -389,14 +391,6 @@ void IdentityManager::OnNetworkInitialized() {
   gaia_cookie_manager_service_->InitCookieListener();
   account_fetcher_service_->OnNetworkInitialized();
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-IdentityManager::AccountIdMigrationState
-IdentityManager::GetAccountIdMigrationState() const {
-  return static_cast<IdentityManager::AccountIdMigrationState>(
-      account_tracker_service_->GetMigrationState());
-}
-#endif
 
 CoreAccountId IdentityManager::PickAccountIdForAccount(
     const std::string& gaia,

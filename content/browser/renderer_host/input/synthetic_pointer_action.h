@@ -21,8 +21,11 @@ namespace content {
 // It generates and dispatches the synthetic events of touch, mouse and pen
 // inputs. The synthetic events are dispatched to each platform in browser and
 // sent to renderer to manipulate the DOM elements on the web pages.
-class CONTENT_EXPORT SyntheticPointerAction : public SyntheticGesture {
+class CONTENT_EXPORT SyntheticPointerAction
+    : public SyntheticGestureBase<SyntheticPointerActionListParams> {
  public:
+  // SyntheticPointerActionGestureParams contains a list of lists of pointer
+  // actions, that each list of pointer actions will be dispatched together.
   explicit SyntheticPointerAction(
       const SyntheticPointerActionListParams& params);
 
@@ -55,10 +58,6 @@ class CONTENT_EXPORT SyntheticPointerAction : public SyntheticGesture {
                                               SyntheticGestureTarget* target);
 
   SyntheticPointerDriver* PointerDriver() const;
-
-  // params_ contains a list of lists of pointer actions, that each list of
-  // pointer actions will be dispatched together.
-  SyntheticPointerActionListParams params_;
 
   // An internal pointer driver createad and used only when an
   // external_synthetic_pointer_driver_ isn't provided before the gesture is

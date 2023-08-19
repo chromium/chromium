@@ -5,46 +5,46 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_DOWNLOAD_BUBBLE_DOWNLOAD_BUBBLE_ROW_LIST_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_DOWNLOAD_BUBBLE_DOWNLOAD_BUBBLE_ROW_LIST_VIEW_H_
 
+#include <map>
+#include <memory>
+
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/download/download_ui_model.h"
+#include "components/offline_items_collection/core/offline_item.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/flex_layout_view.h"
 
-class Browser;
-namespace views {
-class ImageView;
-}  // namespace views
-
-class DownloadBubbleUIController;
-class DownloadBubbleNavigationHandler;
+class DownloadBubbleRowView;
 
 class DownloadBubbleRowListView : public views::FlexLayoutView {
  public:
   METADATA_HEADER(DownloadBubbleRowListView);
 
-  static std::unique_ptr<views::View> CreateWithScroll(
-      bool is_partial_view,
-      base::WeakPtr<Browser> browser,
-      base::WeakPtr<DownloadBubbleUIController> bubble_controller,
-      base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
-      std::vector<DownloadUIModel::DownloadUIModelPtr> rows,
-      int fixed_width);
-
-  DownloadBubbleRowListView(bool is_partial_view,
-                            base::WeakPtr<Browser> browser);
+  DownloadBubbleRowListView();
   ~DownloadBubbleRowListView() override;
   DownloadBubbleRowListView(const DownloadBubbleRowListView&) = delete;
   DownloadBubbleRowListView& operator=(const DownloadBubbleRowListView&) =
       delete;
 
- private:
-  bool IsIncognitoInfoRowEnabled();
+  // TODO(crbug.com/1344515): Add functionality for adding a new download while
+  // this is already open.
 
-  bool is_partial_view_;
-  base::Time creation_time_;
-  base::WeakPtr<Browser> browser_ = nullptr;
-  raw_ptr<views::ImageView> info_icon_ = nullptr;
+  // Adds a row to the bottom of the list.
+  void AddRow(std::unique_ptr<DownloadBubbleRowView> row);
+
+  // Removes a row and updates the `rows_by_id_` map. Returns ownership of the
+  // row to the caller.
+  std::unique_ptr<DownloadBubbleRowView> RemoveRow(DownloadBubbleRowView* row);
+
+  // Returns the number of rows.
+  size_t NumRows() const;
+
+ private:
+  // Map of download item's ID to child view in the row list.
+  std::map<offline_items_collection::ContentId, DownloadBubbleRowView*>
+      rows_by_id_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_DOWNLOAD_BUBBLE_DOWNLOAD_BUBBLE_ROW_LIST_VIEW_H_

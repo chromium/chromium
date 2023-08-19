@@ -333,7 +333,7 @@ class EventTargetTestDelegate : public aura::client::DragDropDelegate {
     output_drag_op = DragOperation::kMove;
   }
 
-  const raw_ptr<aura::Window, ExperimentalAsh> window_;
+  const raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> window_;
   State state_{State::kNotInvoked};
 };
 
@@ -538,8 +538,8 @@ class DragDropControllerTest : public AshTestBase {
   }
 
   std::unique_ptr<TestDragDropController> drag_drop_controller_;
-  raw_ptr<NiceMock<MockShellDelegate>, ExperimentalAsh> mock_shell_delegate_ =
-      nullptr;
+  raw_ptr<NiceMock<MockShellDelegate>, DanglingUntriaged | ExperimentalAsh>
+      mock_shell_delegate_ = nullptr;
 
   std::unique_ptr<TestNewWindowDelegateProvider>
       test_new_window_delegate_provider_;

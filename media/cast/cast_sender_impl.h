@@ -30,6 +30,7 @@ class CastSenderImpl final : public CastSender {
                        StatusChangeOnceCallback status_change_cb) final;
   void InitializeVideo(
       const FrameSenderConfig& video_config,
+      std::unique_ptr<VideoEncoderMetricsProvider> metrics_provider,
       const StatusChangeCallback& status_change_cb,
       const CreateVideoEncodeAcceleratorCallback& create_vea_cb) final;
 

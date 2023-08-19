@@ -52,7 +52,7 @@ class MediaControlPopupMenuElement : public MediaControlDivElement {
   // Actions called by the EventListener object when specific evenst are
   // received.
   void SelectNextItem();
-  void SelectPreviousitem();
+  void SelectPreviousItem();
   void CloseFromKeyboard();
   void FocusPopupAnchorIfOverflowClosed();
 

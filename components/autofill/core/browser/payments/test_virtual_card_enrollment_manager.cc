@@ -42,4 +42,9 @@ void TestVirtualCardEnrollmentManager::ShowVirtualCardEnrollBubble() {
   VirtualCardEnrollmentManager::ShowVirtualCardEnrollBubble();
 }
 
+void TestVirtualCardEnrollmentManager::
+    OnVirtualCardEnrollmentBubbleCancelled() {
+  VirtualCardEnrollmentManager::OnVirtualCardEnrollmentBubbleCancelled();
+}
+
 }  // namespace autofill

@@ -31,8 +31,8 @@ TEST_F(ProgressShadowElementTest, LayoutObjectIsNeeded) {
     <progress id='prog' style='-webkit-appearance:none' />
   )HTML");
 
-  auto* progress =
-      To<HTMLProgressElement>(GetDocument().getElementById("prog"));
+  auto* progress = To<HTMLProgressElement>(
+      GetDocument().getElementById(AtomicString("prog")));
   ASSERT_TRUE(progress);
 
   auto* shadow_element = To<Element>(progress->GetShadowRoot()->firstChild());
@@ -55,8 +55,8 @@ TEST_F(ProgressShadowElementTest, OnlyChangeDirectionOnShadowElement) {
     <progress id='prog' style='-webkit-appearance:none; writing-mode:vertical-lr; direction: ltr;' />
   )HTML");
 
-  auto* progress =
-      To<HTMLProgressElement>(GetDocument().getElementById("prog"));
+  auto* progress = To<HTMLProgressElement>(
+      GetDocument().getElementById(AtomicString("prog")));
   ASSERT_TRUE(progress);
 
   auto* shadow_element = To<Element>(progress->GetShadowRoot()->firstChild());

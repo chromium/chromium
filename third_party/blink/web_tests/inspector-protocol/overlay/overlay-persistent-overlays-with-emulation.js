@@ -43,30 +43,29 @@
     }]
   });
 
-  // Wait for overlay rendering to finish by requesting an animation frame.
-  await session.evaluate(() => {
-    return new Promise(resolve => requestAnimationFrame(resolve));
-  });
-
-  async function getGridLabelPositions() {
-    return await session.evaluate(() => {
-      return internals.evaluateInInspectorOverlay(`(function () {
-        const labels = document.querySelectorAll('.grid-label-content');
-        const positions = [];
-        for (const label of labels) {
-          const rect = label.getBoundingClientRect();
-          positions.push({
-            left: rect.left,
-            right: rect.right,
-            bottom: rect.bottom,
-            top: rect.top,
-            width: rect.width,
-            height: rect.height,
-          });
-        }
-        return JSON.stringify(positions);
-      })()`);
-    });
+  function getGridLabelPositions() {
+    return session.evaluateAsync(
+        () => new Promise(function tryGetPositions(resolve) {
+          const positions = internals.evaluateInInspectorOverlay(`(function () {
+            const labels = document.querySelectorAll('.grid-label-content');
+            if (!labels.length) return '';
+            const positions = [];
+            for (const label of labels) {
+              const rect = label.getBoundingClientRect();
+              positions.push({
+                left: rect.left,
+                right: rect.right,
+                bottom: rect.bottom,
+                top: rect.top,
+                width: rect.width,
+                height: rect.height,
+              });
+            }
+            return JSON.stringify(positions);
+          })()`);
+          if (positions) resolve(positions);
+          else requestAnimationFrame(() => tryGetPositions(resolve));
+        }));
   }
 
   const labelPositions = JSON.parse(await getGridLabelPositions());

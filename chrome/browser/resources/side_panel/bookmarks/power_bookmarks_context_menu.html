@@ -1,4 +1,4 @@
-<style include="cr-icons cr-hidden-style">
+<style include="cr-icons cr-hidden-style sp-shared-style">
   hr {
     border: none;
     border-top: var(--cr-hairline);
@@ -9,7 +9,7 @@
   }
 </style>
 
-<cr-action-menu id="menu">
+<cr-action-menu id="menu" on-mousedown="onMousedown_">
   <template is="dom-repeat"
       items="[[getMenuItemsForBookmarks_(
                    bookmarks_, priceTracked_, priceTrackingEligible_)]]">

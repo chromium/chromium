@@ -135,6 +135,8 @@ class ChromeContentRendererClient
       base::SingleThreadTaskRunner* compositor_thread_task_runner) override;
   bool RunIdleHandlerWhenWidgetsHidden() override;
   bool AllowPopup() override;
+  bool ShouldNotifyServiceWorkerOnWebSocketActivity(
+      v8::Local<v8::Context> context) override;
   blink::ProtocolHandlerSecurityLevel GetProtocolHandlerSecurityLevel()
       override;
   void WillSendRequest(blink::WebLocalFrame* frame,

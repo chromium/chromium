@@ -7,13 +7,14 @@ import './mojo_api.js';
 import './multidevice_setup_shared.css.js';
 import './ui_page.js';
 import '//resources/ash/common/cr.m.js';
-import '//resources/cr_elements/cr_lottie/cr_lottie.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
+import 'chrome://resources/cros_components/lottie_renderer/lottie-renderer.js';
 
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
 import {WebUIListenerBehavior} from '//resources/ash/common/web_ui_listener_behavior.js';
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {LottieRenderer} from 'chrome://resources/cros_components/lottie_renderer/lottie-renderer.js';
 import {ConnectivityStatus} from 'chrome://resources/mojo/chromeos/ash/services/device_sync/public/mojom/device_sync.mojom-webui.js';
 import {HostDevice} from 'chrome://resources/mojo/chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-webui.js';
 
@@ -24,6 +25,7 @@ import {UiPageContainerBehavior} from './ui_page_container_behavior.js';
 
 /**
  * The multidevice setup animation for light mode.
+ * TODO(b/279667779): Remove when Jelly is fully launched.
  * @type {string}
  */
 const MULTIDEVICE_ANIMATION_DARK_URL =
@@ -31,10 +33,18 @@ const MULTIDEVICE_ANIMATION_DARK_URL =
 
 /**
  * The multidevice setup animation for dark mode.
+ * TODO(b/279667779): Remove when Jelly is fully launched.
  * @type {string}
  */
 const MULTIDEVICE_ANIMATION_LIGHT_URL =
     'chrome://resources/ash/common/multidevice_setup/multidevice_setup_light.json';
+
+/**
+ * The multidevice setup animation for dynamic colors.
+ * @type {string}
+ */
+const MULTIDEVICE_ANIMATION_JELLY_URL =
+    'chrome://resources/ash/common/multidevice_setup/multidevice_setup_jelly.json';
 
 Polymer({
   _template: getTemplate(),
@@ -118,11 +128,24 @@ Polymer({
 
     /**
      * Whether the multidevice setup page is being rendered in dark mode.
+     * TODO(b/279667779): Remove when Jelly is fully launched.
      * @private {boolean}
      */
     isDarkModeActive_: {
       type: Boolean,
       value: false,
+    },
+
+    /**
+     * Whether the multidevice setup page is being rendered with dynamic colors.
+     * @private {boolean}
+     */
+    isJellyEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.valueExists('isJellyEnabled') &&
+            loadTimeData.getBoolean('isJellyEnabled');
+      },
     },
 
     /**
@@ -162,8 +185,11 @@ Polymer({
    * @param {boolean} enabled Whether the animation should play or not.
    */
   setPlayAnimation(enabled) {
-    /** @type {!CrLottieElement} */ (this.$.multideviceSetupAnimation)
-        .setPlay(enabled);
+    if (enabled) {
+      this.$.multideviceSetupAnimation.play();
+    } else {
+      this.$.multideviceSetupAnimation.pause();
+    }
   },
 
   /**
@@ -373,6 +399,11 @@ Polymer({
    * @private
    */
   getAnimationUrl_() {
+    if (this.isJellyEnabled_) {
+      return MULTIDEVICE_ANIMATION_JELLY_URL;
+    }
+
+    // TODO(b/279667779): Remove when Jelly is fully launched.
     return this.isDarkModeActive_ ? MULTIDEVICE_ANIMATION_DARK_URL :
                                     MULTIDEVICE_ANIMATION_LIGHT_URL;
   },

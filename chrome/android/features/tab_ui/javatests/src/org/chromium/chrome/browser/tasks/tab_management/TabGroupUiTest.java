@@ -19,11 +19,11 @@ import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID;
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUPS_ANDROID;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.clickFirstCardFromTabSwitcher;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.clickFirstTabInDialog;
@@ -37,26 +37,29 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.v
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.createTabStateFile;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
-import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.espresso.NoMatchingRootException;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -64,8 +67,9 @@ import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
@@ -74,6 +78,7 @@ import org.chromium.components.browser_ui.bottomsheet.TestBottomSheetContent;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
@@ -83,13 +88,18 @@ import java.util.concurrent.atomic.AtomicReference;
 // clang-format off
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-@Features.EnableFeatures({TAB_GRID_LAYOUT_ANDROID, TAB_GROUPS_ANDROID,
-    TAB_GROUPS_CONTINUATION_ANDROID})
+@EnableFeatures({TAB_GROUPS_CONTINUATION_ANDROID})
+@Batch(Batch.PER_CLASS)
 public class TabGroupUiTest {
     // clang-format on
 
+    @ClassRule
+    public static ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
+
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
+            new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
@@ -98,18 +108,22 @@ public class TabGroupUiTest {
                     .setRevision(1)
                     .build();
 
+    @Mock
+    private BrowserControlsStateProvider mBrowserControlsStateProvider;
+
     @Before
     public void setUp() {
-        mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
-        TabUiTestHelper.verifyTabSwitcherLayoutType(mActivityTestRule.getActivity());
+        MockitoAnnotations.initMocks(this);
+        sActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        TabUiTestHelper.verifyTabSwitcherLayoutType(sActivityTestRule.getActivity());
         CriteriaHelper.pollUiThread(
-                mActivityTestRule.getActivity().getTabModelSelector()::isTabStateInitialized);
+                sActivityTestRule.getActivity().getTabModelSelector()::isTabStateInitialized);
     }
 
     @Test
     @MediumTest
     public void testStripShownOnGroupTabPage() {
-        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         createTabs(cta, false, 2);
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 2);
@@ -127,9 +141,8 @@ public class TabGroupUiTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "https://crbug.com/1208386")
     public void testRenderStrip_Select5thTabIn10Tabs() throws IOException {
-        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         AtomicReference<RecyclerView> recyclerViewReference = new AtomicReference<>();
         TabUiTestHelper.addBlankTabs(cta, false, 9);
         enterTabSwitcher(cta);
@@ -153,7 +166,7 @@ public class TabGroupUiTest {
     @LargeTest
     @Feature({"RenderTest"})
     public void testRenderStrip_Select10thTabIn10Tabs() throws IOException {
-        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         AtomicReference<RecyclerView> recyclerViewReference = new AtomicReference<>();
         TabUiTestHelper.addBlankTabs(cta, false, 9);
         enterTabSwitcher(cta);
@@ -176,9 +189,8 @@ public class TabGroupUiTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "https://crbug.com/1208386")
     public void testRenderStrip_AddTab() throws IOException {
-        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         AtomicReference<RecyclerView> recyclerViewReference = new AtomicReference<>();
         TabUiTestHelper.addBlankTabs(cta, false, 9);
         enterTabSwitcher(cta);
@@ -205,24 +217,24 @@ public class TabGroupUiTest {
     @Test
     @MediumTest
     // clang-format off
-    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
     public void testVisibilityChangeWithOmnibox() throws Exception {
         // clang-format on
 
         // Create a tab group with 2 tabs.
-        finishActivity(mActivityTestRule.getActivity());
-        createThumbnailBitmapAndWriteToFile(0);
-        createThumbnailBitmapAndWriteToFile(1);
+        finishActivity(sActivityTestRule.getActivity());
+        createThumbnailBitmapAndWriteToFile(0, mBrowserControlsStateProvider);
+        createThumbnailBitmapAndWriteToFile(1, mBrowserControlsStateProvider);
         TabAttributeCache.setRootIdForTesting(0, 0);
         TabAttributeCache.setRootIdForTesting(1, 0);
         createTabStateFile(new int[] {0, 1});
 
         // Restart Chrome and make sure tab strip is showing.
-        mActivityTestRule.startMainActivityFromLauncher();
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        sActivityTestRule.startMainActivityFromLauncher();
+        ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         CriteriaHelper.pollUiThread(cta.getTabModelSelector()::isTabStateInitialized);
-        waitForView(allOf(withId(R.id.tab_list_view), isDescendantOfA(withId(R.id.bottom_controls)),
-                isCompletelyDisplayed()));
+        ViewUtils.waitForVisibleView(allOf(withId(R.id.tab_list_view),
+                isDescendantOfA(withId(R.id.bottom_controls)), isCompletelyDisplayed()));
 
         // The strip should be hidden when omnibox is focused.
         onView(withId(R.id.url_bar)).perform(click());
@@ -244,28 +256,27 @@ public class TabGroupUiTest {
                     "event_used/" +
                     "name%3Aiph_tabgroups_strip;comparator%3A==0;window%3A365;storage%3A365/" +
                     "session_rate/<1"})
-    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
-    @DisabledTest(message = "https://crbug.com/1145060")
-    public void testIphSuppressedByBottomSheet() throws Exception {
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
+    public void testIphBottomSheetSuppression() throws Exception {
         // clang-format on
 
         // Create a tab group with 2 tabs, and turn on enable_launch_bug_fix variation.
-        finishActivity(mActivityTestRule.getActivity());
-        createThumbnailBitmapAndWriteToFile(0);
-        createThumbnailBitmapAndWriteToFile(1);
+        finishActivity(sActivityTestRule.getActivity());
+        createThumbnailBitmapAndWriteToFile(0, mBrowserControlsStateProvider);
+        createThumbnailBitmapAndWriteToFile(1, mBrowserControlsStateProvider);
         TabAttributeCache.setRootIdForTesting(0, 0);
         TabAttributeCache.setRootIdForTesting(1, 0);
         createTabStateFile(new int[] {0, 1});
 
         // Restart Chrome and make sure both tab strip and IPH text bubble are showing.
-        mActivityTestRule.startMainActivityFromLauncher();
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        sActivityTestRule.startMainActivityFromLauncher();
+        ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         CriteriaHelper.pollUiThread(cta.getTabModelSelector()::isTabStateInitialized);
-        waitForView(allOf(withId(R.id.tab_list_view), isDescendantOfA(withId(R.id.bottom_controls)),
-                isCompletelyDisplayed()));
-        CriteriaHelper.pollInstrumentationThread(() -> isTabStripIphShowing(cta));
+        ViewUtils.waitForVisibleView(allOf(withId(R.id.tab_list_view),
+                isDescendantOfA(withId(R.id.bottom_controls)), isCompletelyDisplayed()));
+        assertTrue(isTabStripIphShowing(cta));
 
-        // Show a dummy bottom sheet, and the IPH should be hidden.
+        // Show a bottom sheet, and the IPH should be hidden.
         final BottomSheetController bottomSheetController =
                 cta.getRootUiCoordinatorForTesting().getBottomSheetController();
         final BottomSheetTestSupport bottomSheetTestSupport =
@@ -275,28 +286,31 @@ public class TabGroupUiTest {
                     new TestBottomSheetContent(cta, BottomSheetContent.ContentPriority.HIGH, false);
             bottomSheetController.requestShowContent(bottomSheetContent, false);
         });
-        CriteriaHelper.pollUiThread(
-                () -> bottomSheetController.getSheetState() != SheetState.HIDDEN);
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(bottomSheetController.getSheetState(), not(is(SheetState.HIDDEN)));
+        });
         assertFalse(isTabStripIphShowing(cta));
 
-        // Hide the dummy bottom sheet, and the IPH should reshow.
+        // Hide the bottom sheet, and the IPH should reshow.
         runOnUiThreadBlocking(() -> bottomSheetTestSupport.setSheetState(SheetState.HIDDEN, false));
-        CriteriaHelper.pollUiThread(
-                () -> bottomSheetController.getSheetState() == SheetState.HIDDEN);
-        CriteriaHelper.pollInstrumentationThread(() -> isTabStripIphShowing(cta));
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(bottomSheetController.getSheetState(), is(SheetState.HIDDEN));
+        });
+        assertTrue(isTabStripIphShowing(cta));
 
         // When the IPH is clicked and dismissed, opening bottom sheet should never reshow it.
         onView(withText(cta.getString(R.string.iph_tab_groups_tap_to_see_another_tab_text)))
                 .inRoot(withDecorView(not(cta.getWindow().getDecorView())))
                 .perform(click());
-        CriteriaHelper.pollInstrumentationThread(() -> !isTabStripIphShowing(cta));
+        assertFalse(isTabStripIphShowing(cta));
         runOnUiThreadBlocking(() -> {
             TestBottomSheetContent bottomSheetContent =
                     new TestBottomSheetContent(cta, BottomSheetContent.ContentPriority.HIGH, false);
             bottomSheetController.requestShowContent(bottomSheetContent, false);
         });
-        CriteriaHelper.pollUiThread(
-                () -> bottomSheetController.getSheetState() != SheetState.HIDDEN);
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(bottomSheetController.getSheetState(), not(is(SheetState.HIDDEN)));
+        });
         assertFalse(isTabStripIphShowing(cta));
     }
 
@@ -307,10 +321,8 @@ public class TabGroupUiTest {
             onView(withText(iphText))
                     .inRoot(withDecorView(not(cta.getWindow().getDecorView())))
                     .check(matches(isDisplayed()));
-        } catch (NoMatchingRootException e) {
-            isShowing = false;
         } catch (Exception e) {
-            assert false : "error when inspecting IPH text bubble.";
+            isShowing = false;
         }
         return isShowing;
     }

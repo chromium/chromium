@@ -9,6 +9,7 @@
 #include "components/payments/content/test_content_payment_request_delegate.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -72,6 +73,51 @@ TEST_F(PaymentRequestWebContentsManagerTest, SPCTransactionMode) {
   // Check that already-created PaymentRequests were not altered.
   ASSERT_EQ(request1->spc_transaction_mode(), SPCTransactionMode::NONE);
   ASSERT_EQ(request2->spc_transaction_mode(), SPCTransactionMode::AUTOACCEPT);
+}
+
+TEST_F(PaymentRequestWebContentsManagerTest, HadActivationlessShow) {
+  ASSERT_FALSE(manager_->HadActivationlessShow());
+  manager_->RecordActivationlessShow();
+  ASSERT_TRUE(manager_->HadActivationlessShow());
+
+  // A renderer initiated navigation without a user activation should not
+  // reset the activationless show state.
+  {
+    auto navigation_simulator =
+        content::NavigationSimulator::CreateRendererInitiated(
+            GURL("http://example1.test"),
+            web_contents()->GetPrimaryMainFrame());
+    navigation_simulator->SetHasUserGesture(false);
+    navigation_simulator->Start();
+    navigation_simulator->Commit();
+    ASSERT_TRUE(manager_->HadActivationlessShow());
+  }
+
+  // A renderer initiated navigation with a user activation should reset the
+  // activationless show state.
+  {
+    auto navigation_simulator =
+        content::NavigationSimulator::CreateRendererInitiated(
+            GURL("http://example2.test"),
+            web_contents()->GetPrimaryMainFrame());
+    navigation_simulator->SetHasUserGesture(true);
+    navigation_simulator->Start();
+    navigation_simulator->Commit();
+    ASSERT_FALSE(manager_->HadActivationlessShow());
+  }
+
+  manager_->RecordActivationlessShow();
+  ASSERT_TRUE(manager_->HadActivationlessShow());
+
+  // A browser initiated navigation should reset the activationless show state.
+  {
+    auto navigation_simulator =
+        content::NavigationSimulator::CreateBrowserInitiated(
+            GURL("http://example3.test"), web_contents());
+    navigation_simulator->Start();
+    navigation_simulator->Commit();
+    ASSERT_FALSE(manager_->HadActivationlessShow());
+  }
 }
 
 }  // namespace payments

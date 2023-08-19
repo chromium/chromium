@@ -5,9 +5,8 @@
 // Test to ensure that labels and descriptions that come from elsewhere in the
 // tree are updated when the related content changes.
 
-// TODO(aleventhal) why are neither of these working?
+// TODO(aleventhal) why isn't this working?
 //function findById(id) {
-  //return rootNode.domQuerySelector("#" + id);
   //return rootNode.find({ htmlAttributes: { id }});
 //}
 

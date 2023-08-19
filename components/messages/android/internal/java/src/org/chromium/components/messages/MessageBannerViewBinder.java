@@ -4,7 +4,7 @@
 
 package org.chromium.components.messages;
 
-import static org.chromium.components.messages.MessageBannerProperties.ALPHA;
+import static org.chromium.components.messages.MessageBannerProperties.CONTENT_ALPHA;
 import static org.chromium.components.messages.MessageBannerProperties.DESCRIPTION;
 import static org.chromium.components.messages.MessageBannerProperties.DESCRIPTION_ICON;
 import static org.chromium.components.messages.MessageBannerProperties.DESCRIPTION_MAX_LINES;
@@ -31,8 +31,12 @@ import static org.chromium.components.messages.MessageBannerProperties.TITLE;
 import static org.chromium.components.messages.MessageBannerProperties.TITLE_CONTENT_DESCRIPTION;
 import static org.chromium.components.messages.MessageBannerProperties.TRANSLATION_X;
 import static org.chromium.components.messages.MessageBannerProperties.TRANSLATION_Y;
+import static org.chromium.components.messages.MessageBannerProperties.VISUAL_HEIGHT;
 
 import android.annotation.SuppressLint;
+import android.graphics.Outline;
+import android.view.View;
+import android.view.ViewOutlineProvider;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
@@ -87,7 +91,8 @@ public class MessageBannerViewBinder {
         } else if (propertyKey == SECONDARY_MENU_MAX_SIZE) {
             view.setSecondaryMenuMaxSize(model.get(SECONDARY_MENU_MAX_SIZE));
         } else if (propertyKey == SECONDARY_ICON_CONTENT_DESCRIPTION) {
-            view.setSecondaryIconContentDescription(model.get(SECONDARY_ICON_CONTENT_DESCRIPTION));
+            view.setSecondaryIconContentDescription(
+                    model.get(SECONDARY_ICON_CONTENT_DESCRIPTION), false);
         } else if (propertyKey == ON_SECONDARY_BUTTON_CLICK) {
             view.setSecondaryActionCallback(model.get(ON_SECONDARY_BUTTON_CLICK));
         } else if (propertyKey == ON_TOUCH_RUNNABLE) {
@@ -100,8 +105,29 @@ public class MessageBannerViewBinder {
                     return false;
                 });
             }
-        } else if (propertyKey == ALPHA) {
-            view.setAlpha(model.get(ALPHA));
+        } else if (propertyKey == CONTENT_ALPHA) {
+            for (int i = 0; i < view.getChildCount(); i++) {
+                view.getChildAt(i).setAlpha(model.get(CONTENT_ALPHA));
+            }
+        } else if (propertyKey == VISUAL_HEIGHT) {
+            final float p = model.get(VISUAL_HEIGHT);
+            if (p == 1) {
+                view.setClipToOutline(false);
+                // reset to its default outline provider.
+                view.setOutlineProvider(ViewOutlineProvider.BACKGROUND);
+            } else {
+                ViewOutlineProvider mViewOutlineProvider = new ViewOutlineProvider() {
+                    @Override
+                    public void getOutline(final View view, final Outline outline) {
+                        float cornerRadius = view.getResources().getDimensionPixelSize(
+                                R.dimen.message_banner_radius);
+                        outline.setRoundRect(
+                                0, 0, view.getWidth(), (int) (view.getHeight() * p), cornerRadius);
+                    }
+                };
+                view.setOutlineProvider(mViewOutlineProvider);
+                view.setClipToOutline(true);
+            }
         } else if (propertyKey == TRANSLATION_X) {
             view.setTranslationX(model.get(TRANSLATION_X));
         } else if (propertyKey == TRANSLATION_Y) {

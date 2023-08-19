@@ -26,7 +26,6 @@
 <translation id="2060505056492490888">'<ph name="DOT" />' '<ph name="INVALIDDOMAIN" />' मध्ये चुकीच्या स्थितीवर वापरले आहे.</translation>
 <translation id="2148716181193084225">आज</translation>
 <translation id="2226276347425096477">कृपया हा मजकूर <ph name="MAX_CHARACTERS" /> वर्ण लहान किंवा कमी करा (तुम्ही सध्या <ph name="CURRENT_LENGTH" /> वर्ण वापरत आहात).</translation>
-<translation id="2246498165605549352">स्थानिक फाइल</translation>
 <translation id="2247351761944213033">आठवडा <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ट्रॅक <ph name="NUMBER" /></translation>
 <translation id="2393030564806080191">रंगाचे हेक्साडेसिमल मूल्य</translation>
@@ -89,6 +88,7 @@
 <translation id="5425179576310518467">सध्याची तारीख</translation>
 <translation id="5466621249238537318">कृपया एक किंवा अधिक फाइल निवडा.</translation>
 <translation id="5468998798572797635">पूर्ण स्क्रीनमधून निर्गमन करा</translation>
+<translation id="5514612371225420585">तुमच्या डिव्हाइसवरील फाइल</translation>
 <translation id="5516235301412634559">०.७५</translation>
 <translation id="5537725057119320332">कास्ट करा</translation>
 <translation id="5546461542133609677">अनम्यूट करा</translation>
@@ -113,6 +113,7 @@
 <translation id="6398862346408813489">महिना निवड पॅनल दाखवा</translation>
 <translation id="6404546809543547843">ऑडिओ वेळ स्क्रबर</translation>
 <translation id="6443871981718447451">सबटायटल मेनू दाखवा</translation>
+<translation id="6484738902856791350">प्रिटी-प्रिंट</translation>
 <translation id="6550675742724504774">पर्याय</translation>
 <translation id="6572309429103589720">चुकीचे व्याकरण</translation>
 <translation id="658823671542763450">फुल स्क्रीन एंटर करा</translation>

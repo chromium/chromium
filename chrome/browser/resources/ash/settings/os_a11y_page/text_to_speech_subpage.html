@@ -1,0 +1,84 @@
+<style include="settings-shared">
+  :host {
+    --cr-section-indent-width: 60px;
+  }
+
+  .sub-item {
+    padding-inline-start: var(--cr-section-indent-width);
+  }
+
+  .settings-box {
+    padding-inline-start: 0;
+  }
+
+  settings-toggle-button,
+  cr-link-row {
+    padding-inline-end: var(--cr-section-padding);
+    padding-inline-start: var(--cr-section-padding);
+  }
+</style>
+<settings-toggle-button
+    icon="os-settings:chromevox"
+    pref="{{prefs.settings.accessibility}}"
+    label="$i18n{chromeVoxLabel}"
+    sub-label="[[getChromeVoxDescription_(prefs.settings.accessibility.value)]]"
+    deep-link-focus-id$="[[Setting.kChromeVox]]">
+</settings-toggle-button>
+<iron-collapse opened="[[prefs.settings.accessibility.value]]">
+  <div class="sub-item">
+    <template is="dom-if"
+        if="[[isAccessibilityChromeVoxPageMigrationEnabled_]]">
+      <cr-link-row id="chromevoxSubpageTrigger"
+          class="settings-box" on-click="onChromeVoxNewSettingsClick_"
+          label="$i18n{chromeVoxOptionsLabel}"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+    </template>
+    <template is="dom-if"
+        if="[[!isAccessibilityChromeVoxPageMigrationEnabled_]]">
+      <cr-link-row id="chromeVoxSubpageButton"
+          class="settings-box" on-click="onChromeVoxSettingsClick_"
+          label="$i18n{chromeVoxOptionsLabel}"
+          external>
+      </cr-link-row>
+    </template>
+  </div>
+  <div class="sub-item">
+    <cr-link-row id="chromeVoxTutorialButton"
+        class="settings-box" on-click="onChromeVoxTutorialClick_"
+        label="$i18n{chromeVoxTutorialLabel}"
+        external>
+    </cr-link-row>
+  </div>
+</iron-collapse>
+<settings-toggle-button
+    icon="os-settings:select-to-speak"
+    pref="{{prefs.settings.a11y.select_to_speak}}"
+    class="hr"
+    label="$i18n{selectToSpeakTitle}"
+    sub-label="[[getSelectToSpeakDescription_(
+        prefs.settings.a11y.select_to_speak.value, hasKeyboard_)]]"
+    deep-link-focus-id$="[[Setting.kSelectToSpeak]]">
+</settings-toggle-button>
+<iron-collapse opened="[[prefs.settings.a11y.select_to_speak.value]]">
+  <div class="sub-item">
+    <cr-link-row id="select-to-speak-subpage-trigger"
+        class="settings-box" on-click="onSelectToSpeakClick_"
+        label="$i18n{selectToSpeakLinkTitle}"
+        role-description="$i18n{subpageArrowRoleDescription}">
+    </cr-link-row>
+  </div>
+</iron-collapse>
+<settings-toggle-button id="crosPdfOcrToggle"
+    class="hr" hidden$="[[!showPdfOcrToggle_]]"
+    pref="{{prefs.settings.a11y.pdf_ocr_always_active}}"
+    on-change="onPdfOcrToggleChange_"
+    label="$i18n{pdfOcrTitle}"
+    sub-label="[[getPdfOcrToggleSublabel_(pdfOcrStatus_, pdfOcrProgress_)]]">
+</settings-toggle-button>
+
+<cr-link-row id="ttsSubpageButton" class="hr"
+    label="$i18n{manageTtsSettings}" on-click="onManageTtsSettingsClick_"
+    sub-label="$i18n{ttsSettingsLinkDescription}"
+    role-description="$i18n{subpageArrowRoleDescription}" embedded>
+</cr-link-row>

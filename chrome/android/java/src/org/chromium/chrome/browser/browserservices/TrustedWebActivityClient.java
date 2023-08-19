@@ -478,8 +478,7 @@ public class TrustedWebActivityClient {
         return intent;
     }
 
-    @Nullable
-    private static ComponentName searchVerifiedApps(@NonNull PackageManager pm,
+    private static @Nullable ComponentName searchVerifiedApps(@NonNull PackageManager pm,
             @Nullable Set<Token> verifiedPackages, @NonNull List<ResolveInfo> resolveInfosForUrl) {
         if (verifiedPackages == null || verifiedPackages.isEmpty()) return null;
 
@@ -502,9 +501,8 @@ public class TrustedWebActivityClient {
         callback.onExtraCallback(EXTRA_NEW_LOCATION_ERROR_CALLBACK, error);
     }
 
-    @Nullable
-    private Bundle safeSendExtraCommand(Connection service, String commandName, Bundle args,
-            TrustedWebActivityCallback callback) {
+    private @Nullable Bundle safeSendExtraCommand(Connection service, String commandName,
+            Bundle args, TrustedWebActivityCallback callback) {
         try {
             return service.sendExtraCommand(commandName, args, callback);
         } catch (Exception e) {

@@ -6,10 +6,6 @@
 
 #import "ios/chrome/browser/ui/reading_list/text_badge_view.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation SCTextBadgeViewController
 
 - (void)viewDidLoad {

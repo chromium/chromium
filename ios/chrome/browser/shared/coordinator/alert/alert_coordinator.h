@@ -14,6 +14,8 @@
 // and managing a modal alert to be displayed to the user.
 // Calling `-stop` on this coordinator dismisses the current alert with no
 // animation then destroys it.
+// Tapping outside of the view is similar to tapping the item with style
+// UIAlertActionStyleCancel, if there is one, and is a no-op otherwise.
 @interface AlertCoordinator : ChromeCoordinator
 
 // Whether a cancel button has been added.
@@ -25,14 +27,8 @@
 // Whether the alert is visible. This will be true after `-start` is called
 // until a subsequent `-stop`.
 @property(nonatomic, readonly, getter=isVisible) BOOL visible;
-// Handler executed when calling `-executeCancelHandler`. This handler is
-// deleted when the alert is dismissed (user interaction or `-stop`).
-@property(nonatomic, copy) ProceduralBlock cancelAction;
-// Block called when the alert is about to be displayed.
-@property(nonatomic, copy) ProceduralBlock startAction;
 // Block called when the alert is stopped with `stop` or during dealloc. It is
-// called only if no interaction with the alert (user interaction or call to
-// `-executeCancelHandler`) has occurred.
+// called only if no interaction with the alert has occurred.
 @property(nonatomic, copy) ProceduralBlock noInteractionAction;
 
 // Init a coordinator for displaying a alert on this view controller.
@@ -45,11 +41,11 @@
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 
-// Adds an item at the end of the menu. It does nothing if `visible` is true or
-// if trying to add an item with a UIAlertActionStyleCancel while
-// `cancelButtonAdded` is true. If `enabled` is NO, the action appears dimmed
-// and non-interactable. If `preferred` is YES, the action will be in bold
-// letters. Only one item can be preferred.
+// Adds an item at the end of the menu. Asserts that the alert is not yet
+// visible. Asserts that at most one element with style
+// UIAlertActionStyleCancel is added. If `enabled` is NO, the action appears
+// dimmed and non-interactable. If `preferred` is YES, the action will be in
+// bold letters. Only one item can be preferred.
 - (void)addItemWithTitle:(NSString*)title
                   action:(ProceduralBlock)actionBlock
                    style:(UIAlertActionStyle)style
@@ -64,9 +60,6 @@
 - (void)addItemWithTitle:(NSString*)title
                   action:(ProceduralBlock)actionBlock
                    style:(UIAlertActionStyle)style;
-
-// Executes `cancelAction`.
-- (void)executeCancelHandler;
 
 @end
 

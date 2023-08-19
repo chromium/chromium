@@ -6,7 +6,7 @@
 #include "base/test/bind.h"
 #include "base/test/power_monitor_test_utils.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
+#include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/performance_controls/battery_saver_bubble_view.h"
@@ -96,9 +96,9 @@ class BatterySaverHelpPromoTest : public InProcessBrowserTest {
   }
 
  private:
-  raw_ptr<base::test::TestSamplingEventSource, DanglingUntriaged>
+  raw_ptr<base::test::TestSamplingEventSource, AcrossTasksDanglingUntriaged>
       sampling_source_;
-  raw_ptr<base::test::TestBatteryLevelProvider, DanglingUntriaged>
+  raw_ptr<base::test::TestBatteryLevelProvider, AcrossTasksDanglingUntriaged>
       battery_level_provider_;
   // Only used on platforms without a battery level provider implementation.
   std::unique_ptr<base::BatteryStateSampler> battery_state_sampler_;
@@ -217,8 +217,8 @@ IN_PROC_BROWSER_TEST_F(BatterySaverBubbleViewTest, DisableModeForSession) {
   SetBatterySaverModeEnabled(true);
   base::RunLoop().RunUntilIdle();
 
-  auto* manager = performance_manager::user_tuning::
-      UserPerformanceTuningManager::GetInstance();
+  auto* manager =
+      performance_manager::user_tuning::BatterySaverModeManager::GetInstance();
 
   bool is_disabled = manager->IsBatterySaverModeDisabledForSession();
   EXPECT_FALSE(is_disabled);

@@ -19,11 +19,16 @@ def _HasNoHashDuplicates(hashes):
         url_hash_prefix_set.add(url_hash_prefix)
     return True
 
-def _HasValidNumberOfEntries(hashes):
+def _GetNumberOfEntries(hashes):
+    """ Returns the number of hash prefixes fetched from the
+    SB API
+    """
+    return len(hashes)/HASH_PREFIX_SIZE
+
+def _HasValidNumberOfEntries(num_entries):
     """ Returns true if the number of hash prefixes is an
     acceptable number - between 1500 and 4000
     """
-    num_entries = len(hashes)/HASH_PREFIX_SIZE
     return num_entries >= 1500 and num_entries <= 4000
 
 def _ContainsKnownAllowlistedUrl(hashes):
@@ -71,8 +76,10 @@ def CheckHashPrefixesAreValid(new_hash_prefixes):
         " byte prefixes")
     assert _HasNoHashDuplicates(new_hash_prefixes), (
         "Bad url_hashes - contains duplicate hash prefixes")
-    assert _HasValidNumberOfEntries(new_hash_prefixes), (
-        "Bad url_hashes - must have between 1500 and 4000 hash prefixes")
+    num_hashes = _GetNumberOfEntries(new_hash_prefixes)
+    assert _HasValidNumberOfEntries(num_hashes), (
+        "Bad url_hashes - must have between 1500 and 4000 hash prefixes"
+        " and yours contained " + str(int(num_hashes)))
     assert _ContainsKnownAllowlistedUrl(new_hash_prefixes), (
         "Bad url_hashes - does not contain the hash prefix of youtube.com/"
         " which is a known allowlisted URL"

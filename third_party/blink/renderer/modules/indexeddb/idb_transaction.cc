@@ -28,11 +28,11 @@
 #include <memory>
 #include <utility>
 
-#include "base/feature_list.h"
-#include "third_party/blink/public/common/features.h"
+#include "base/auto_reset.h"
+#include "base/format_macros.h"
+#include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable_creation_key.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
-#include "third_party/blink/renderer/core/dom/events/event_queue.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/indexed_db_names.h"
@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_object_store.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_open_db_request.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_request_queue_item.h"
+#include "third_party/blink/renderer/modules/indexeddb/indexed_db_dispatcher.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
@@ -53,68 +54,56 @@ namespace blink {
 
 IDBTransaction* IDBTransaction::CreateNonVersionChange(
     ScriptState* script_state,
-    std::unique_ptr<WebIDBTransaction> transaction_backend,
+    TransactionMojoRemote remote,
     int64_t id,
     const HashSet<String>& scope,
-    mojom::IDBTransactionMode mode,
-    mojom::IDBTransactionDurability durability,
+    mojom::blink::IDBTransactionMode mode,
+    mojom::blink::IDBTransactionDurability durability,
     IDBDatabase* db) {
-  DCHECK_NE(mode, mojom::IDBTransactionMode::VersionChange);
+  DCHECK_NE(mode, mojom::blink::IDBTransactionMode::VersionChange);
   DCHECK(!scope.empty()) << "Non-version transactions should operate on a "
                             "well-defined set of stores";
-  return MakeGarbageCollected<IDBTransaction>(script_state,
-                                              std::move(transaction_backend),
+
+  return MakeGarbageCollected<IDBTransaction>(script_state, std::move(remote),
                                               id, scope, mode, durability, db);
 }
 
 IDBTransaction* IDBTransaction::CreateVersionChange(
     ExecutionContext* execution_context,
-    std::unique_ptr<WebIDBTransaction> transaction_backend,
+    TransactionMojoRemote remote,
     int64_t id,
     IDBDatabase* db,
     IDBOpenDBRequest* open_db_request,
     const IDBDatabaseMetadata& old_metadata) {
-  return MakeGarbageCollected<IDBTransaction>(
-      execution_context, std::move(transaction_backend), id, db,
-      open_db_request, old_metadata);
+  return MakeGarbageCollected<IDBTransaction>(execution_context,
+                                              std::move(remote), id, db,
+                                              open_db_request, old_metadata);
 }
 
 IDBTransaction::IDBTransaction(
     ScriptState* script_state,
-    std::unique_ptr<WebIDBTransaction> transaction_backend,
+    TransactionMojoRemote remote,
     int64_t id,
     const HashSet<String>& scope,
-    mojom::IDBTransactionMode mode,
-    mojom::IDBTransactionDurability durability,
+    mojom::blink::IDBTransactionMode mode,
+    mojom::blink::IDBTransactionDurability durability,
     IDBDatabase* db)
     : ActiveScriptWrappable<IDBTransaction>({}),
       ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
-      transaction_backend_(std::move(transaction_backend)),
+      remote_(std::move(remote)),
       id_(id),
       database_(db),
       mode_(mode),
       durability_(durability),
       scope_(scope),
-      event_queue_(
-          MakeGarbageCollected<EventQueue>(ExecutionContext::From(script_state),
-                                           TaskType::kDatabaseAccess)) {
-  if (!features::IsAllowPageWithIDBConnectionAndTransactionInBFCacheEnabled()) {
-    feature_handle_for_scheduler_ =
-        ExecutionContext::From(script_state)
-            ->GetScheduler()
-            ->RegisterFeature(
-                SchedulingPolicy::Feature::kOutstandingIndexedDBTransaction,
-                {SchedulingPolicy::DisableBackForwardCache()});
-  }
-
+      state_(kActive) {
   DCHECK(database_);
   DCHECK(!scope_.empty()) << "Non-versionchange transactions must operate "
                              "on a well-defined set of stores";
-  DCHECK(mode_ == mojom::IDBTransactionMode::ReadOnly ||
-         mode_ == mojom::IDBTransactionMode::ReadWrite)
+  DCHECK(mode_ == mojom::blink::IDBTransactionMode::ReadOnly ||
+         mode_ == mojom::blink::IDBTransactionMode::ReadWrite)
       << "Invalid transaction mode";
 
-  DCHECK_EQ(state_, kActive);
   ExecutionContext::From(script_state)
       ->GetAgent()
       ->event_loop()
@@ -124,26 +113,22 @@ IDBTransaction::IDBTransaction(
   database_->TransactionCreated(this);
 }
 
-IDBTransaction::IDBTransaction(
-    ExecutionContext* execution_context,
-    std::unique_ptr<WebIDBTransaction> transaction_backend,
-    int64_t id,
-    IDBDatabase* db,
-    IDBOpenDBRequest* open_db_request,
-    const IDBDatabaseMetadata& old_metadata)
+IDBTransaction::IDBTransaction(ExecutionContext* execution_context,
+                               TransactionMojoRemote remote,
+                               int64_t id,
+                               IDBDatabase* db,
+                               IDBOpenDBRequest* open_db_request,
+                               const IDBDatabaseMetadata& old_metadata)
     : ActiveScriptWrappable<IDBTransaction>({}),
       ExecutionContextLifecycleObserver(execution_context),
-      transaction_backend_(std::move(transaction_backend)),
+      remote_(std::move(remote)),
       id_(id),
       database_(db),
       open_db_request_(open_db_request),
-      mode_(mojom::IDBTransactionMode::VersionChange),
-      durability_(mojom::IDBTransactionDurability::Default),
+      mode_(mojom::blink::IDBTransactionMode::VersionChange),
+      durability_(mojom::blink::IDBTransactionDurability::Default),
       state_(kInactive),
-      old_database_metadata_(old_metadata),
-      event_queue_(
-          MakeGarbageCollected<EventQueue>(execution_context,
-                                           TaskType::kDatabaseAccess)) {
+      old_database_metadata_(old_metadata) {
   DCHECK(database_);
   DCHECK(open_db_request_);
   DCHECK(scope_.empty());
@@ -160,6 +145,7 @@ IDBTransaction::~IDBTransaction() {
 }
 
 void IDBTransaction::Trace(Visitor* visitor) const {
+  visitor->Trace(remote_);
   visitor->Trace(database_);
   visitor->Trace(open_db_request_);
   visitor->Trace(error_);
@@ -167,8 +153,7 @@ void IDBTransaction::Trace(Visitor* visitor) const {
   visitor->Trace(object_store_map_);
   visitor->Trace(old_store_metadata_);
   visitor->Trace(deleted_indexes_);
-  visitor->Trace(event_queue_);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
@@ -235,7 +220,7 @@ void IDBTransaction::ObjectStoreCreated(const String& name,
                                         IDBObjectStore* object_store) {
   DCHECK_NE(state_, kFinished)
       << "A finished transaction created an object store";
-  DCHECK_EQ(mode_, mojom::IDBTransactionMode::VersionChange)
+  DCHECK_EQ(mode_, mojom::blink::IDBTransactionMode::VersionChange)
       << "A non-versionchange transaction created an object store";
   DCHECK(!object_store_map_.Contains(name))
       << "An object store was created with the name of an existing store";
@@ -248,7 +233,7 @@ void IDBTransaction::ObjectStoreDeleted(const int64_t object_store_id,
                                         const String& name) {
   DCHECK_NE(state_, kFinished)
       << "A finished transaction deleted an object store";
-  DCHECK_EQ(mode_, mojom::IDBTransactionMode::VersionChange)
+  DCHECK_EQ(mode_, mojom::blink::IDBTransactionMode::VersionChange)
       << "A non-versionchange transaction deleted an object store";
   IDBObjectStoreMap::iterator it = object_store_map_.find(name);
   if (it == object_store_map_.end()) {
@@ -286,7 +271,7 @@ void IDBTransaction::ObjectStoreRenamed(const String& old_name,
                                         const String& new_name) {
   DCHECK_NE(state_, kFinished)
       << "A finished transaction renamed an object store";
-  DCHECK_EQ(mode_, mojom::IDBTransactionMode::VersionChange)
+  DCHECK_EQ(mode_, mojom::blink::IDBTransactionMode::VersionChange)
       << "A non-versionchange transaction renamed an object store";
 
   DCHECK(!object_store_map_.Contains(new_name));
@@ -337,11 +322,13 @@ void IDBTransaction::SetActive(bool new_is_active) {
       << "A finished transaction tried to SetActive(" << new_is_active << ")";
   if (IsFinishing())
     return;
+
   DCHECK_NE(new_is_active, (state_ == kActive));
   state_ = new_is_active ? kActive : kInactive;
 
-  if (!new_is_active && request_list_.empty() && transaction_backend())
-    transaction_backend()->Commit(num_errors_handled_);
+  if (!new_is_active && request_list_.empty()) {
+    remote_->Commit(num_errors_handled_);
+  }
 }
 
 void IDBTransaction::SetActiveDuringSerialization(bool new_is_active) {
@@ -363,17 +350,7 @@ void IDBTransaction::abort(ExceptionState& exception_state) {
         IDBDatabase::kTransactionFinishedErrorMessage);
     return;
   }
-
-  state_ = kAborting;
-
-  if (!GetExecutionContext())
-    return;
-
-  AbortOutstandingRequests();
-  RevertDatabaseMetadata();
-
-  if (BackendDB())
-    BackendDB()->Abort(id_);
+  StartAborting(nullptr);
 }
 
 void IDBTransaction::commit(ExceptionState& exception_state) {
@@ -395,16 +372,7 @@ void IDBTransaction::commit(ExceptionState& exception_state) {
     return;
 
   state_ = kCommitting;
-
-  if (transaction_backend())
-    transaction_backend()->Commit(num_errors_handled_);
-
-  if (!features::IsAllowPageWithIDBConnectionAndTransactionInBFCacheEnabled()) {
-    // Once IDBtransaction.commit() is called, the page should no longer be
-    // prevented from entering back/forward cache for having outstanding IDB
-    // connections. Commit ends the inflight IDB transactions.
-    feature_handle_for_scheduler_.reset();
-  }
+  remote_->Commit(num_errors_handled_);
 }
 
 void IDBTransaction::RegisterRequest(IDBRequest* request) {
@@ -419,7 +387,7 @@ void IDBTransaction::UnregisterRequest(IDBRequest* request) {
 #if DCHECK_IS_ON()
   // Make sure that no pending IDBRequest gets left behind in the result queue.
   DCHECK(!request->QueueItem() || request->QueueItem()->IsReady());
-#endif  // DCHECK_IS_ON()
+#endif
 
   // If we aborted the request, it will already have been removed.
   request_list_.erase(request);
@@ -427,9 +395,6 @@ void IDBTransaction::UnregisterRequest(IDBRequest* request) {
 
 void IDBTransaction::EnqueueResult(
     std::unique_ptr<IDBRequestQueueItem> result) {
-  DCHECK(result);
-  DCHECK(HasQueuedResults() || !result->IsReady());
-
   result_queue_.push_back(std::move(result));
   // StartLoading() may complete post-processing synchronously, so the result
   // needs to be in the queue before StartLoading() is called.
@@ -437,13 +402,15 @@ void IDBTransaction::EnqueueResult(
 }
 
 void IDBTransaction::OnResultReady() {
-  while (!result_queue_.empty()) {
-    IDBRequestQueueItem* result = result_queue_.front().get();
-    if (!result->IsReady())
-      break;
+  // Re-entrancy can occur when sending a result causes the transaction to
+  // abort, which cancels loading on other pending results.
+  if (handling_ready_) {
+    return;
+  }
+  base::AutoReset reset(&handling_ready_, true);
 
-    result->EnqueueResponse();
-    result_queue_.pop_front();
+  while (!result_queue_.empty() && result_queue_.front()->IsReady()) {
+    result_queue_.TakeFirst()->SendResult();
   }
 }
 
@@ -457,21 +424,29 @@ void IDBTransaction::OnAbort(DOMException* error) {
   DCHECK_NE(state_, kFinished);
   if (state_ != kAborting) {
     // Abort was not triggered by front-end.
-    DCHECK(error);
-    SetError(error);
-
-    AbortOutstandingRequests();
-    RevertDatabaseMetadata();
-
-    state_ = kAborting;
+    StartAborting(error, /*from_frontend=*/false);
   }
 
   if (IsVersionChange())
     database_->close();
 
-  // Enqueue events before notifying database, as database may close which
-  // enqueues more events and order matters.
-  EnqueueEvent(Event::CreateBubble(event_type_names::kAbort));
+  // Step 6 of https://w3c.github.io/IndexedDB/#abort-a-transaction
+  // requires that these steps are asynchronous:
+  //
+  //   Queue a task to run these steps:
+  //     1. If transaction is an upgrade transaction, then set transaction’s
+  //     connection's associated database's upgrade transaction to null.
+  //     2. [...]
+  //
+  // However, `OnAbort` is a result of a round trip through the browser, so it
+  // was already queued and we don't have to re-enqueue.
+
+  // First set the database/connection's upgrade transaction to null.
+  database_->TransactionWillFinish(this);
+  // Then fire the abort event. (This will also set the request's transaction to
+  // null after dispatching.)
+  DispatchEvent(*Event::CreateBubble(event_type_names::kAbort));
+  // Now do final cleanup.
   Finished();
 }
 
@@ -485,10 +460,96 @@ void IDBTransaction::OnComplete() {
   DCHECK_NE(state_, kFinished);
   state_ = kCommitting;
 
-  // Enqueue events before notifying database, as database may close which
-  // enqueues more events and order matters.
-  EnqueueEvent(Event::Create(event_type_names::kComplete));
+  // See comments in `OnAbort()` on importance of ordering.
+  database_->TransactionWillFinish(this);
+  DispatchEvent(*Event::Create(event_type_names::kComplete));
   Finished();
+}
+
+void IDBTransaction::StartAborting(DOMException* error, bool from_frontend) {
+  // Backend aborts must always come with an error.
+  DCHECK(error || from_frontend);
+
+  if (error) {
+    SetError(error);
+  }
+  if (IsFinished() || IsFinishing()) {
+    return;
+  }
+
+  state_ = kAborting;
+
+  if (!GetExecutionContext()) {
+    return;
+  }
+
+  // As per the spec, the first step in aborting a transaction is to mark object
+  // stores and indexes as deleted. The (two-step) process of aborting
+  // outstanding requests is later (the 5th step).
+  // https://w3c.github.io/IndexedDB/#abort-a-transaction
+  RevertDatabaseMetadata();
+  // Step 5 of the algorithm requires this step to be queued rather than
+  // executed synchronously, but if the abort was initiated by the backend (e.g.
+  // due to a constraint error), we're already asynchronous.
+  AbortOutstandingRequests(/*queue_tasks=*/from_frontend);
+
+  if (from_frontend && BackendDB()) {
+    BackendDB()->Abort(id_);
+  }
+}
+
+void IDBTransaction::CreateObjectStore(int64_t object_store_id,
+                                       const String& name,
+                                       const IDBKeyPath& key_path,
+                                       bool auto_increment) {
+  remote_->CreateObjectStore(object_store_id, name, key_path, auto_increment);
+}
+
+void IDBTransaction::DeleteObjectStore(int64_t object_store_id) {
+  remote_->DeleteObjectStore(object_store_id);
+}
+
+void IDBTransaction::Put(int64_t object_store_id,
+                         std::unique_ptr<IDBValue> value,
+                         std::unique_ptr<IDBKey> primary_key,
+                         mojom::blink::IDBPutMode put_mode,
+                         Vector<IDBIndexKeys> index_keys,
+                         mojom::blink::IDBTransaction::PutCallback callback) {
+  IndexedDBDispatcher::ResetCursorPrefetchCaches(id_, nullptr);
+
+  size_t index_keys_size = 0;
+  for (const auto& index_key : index_keys) {
+    index_keys_size++;  // Account for index_key.first (int64_t).
+    for (const auto& key : index_key.keys) {
+      // Because all size estimates are based on RAM usage, it is impossible to
+      // overflow index_keys_size.
+      index_keys_size += key->SizeEstimate();
+    }
+  }
+
+  size_t arg_size =
+      value->DataSize() + primary_key->SizeEstimate() + index_keys_size;
+
+  const size_t max_put_value_size = max_put_value_size_override_.value_or(
+      mojom::blink::kIDBMaxMessageSize - mojom::blink::kIDBMaxMessageOverhead);
+  if (arg_size >= max_put_value_size) {
+    std::move(callback).Run(
+        mojom::blink::IDBTransactionPutResult::NewErrorResult(
+            mojom::blink::IDBError::New(
+                mojom::blink::IDBException::kUnknownError,
+                String::Format("The serialized keys and/or value are too large"
+                               " (size=%" PRIuS " bytes, max=%" PRIuS
+                               " bytes).",
+                               arg_size, max_put_value_size))));
+    return;
+  }
+
+  remote_->Put(object_store_id, std::move(value), std::move(primary_key),
+               put_mode, std::move(index_keys), std::move(callback));
+}
+
+void IDBTransaction::FlushForTesting() {
+  remote_.FlushForTesting();
 }
 
 bool IDBTransaction::HasPendingActivity() const {
@@ -499,16 +560,16 @@ bool IDBTransaction::HasPendingActivity() const {
   return has_pending_activity_ && GetExecutionContext();
 }
 
-mojom::IDBTransactionMode IDBTransaction::StringToMode(
+mojom::blink::IDBTransactionMode IDBTransaction::StringToMode(
     const String& mode_string) {
   if (mode_string == indexed_db_names::kReadonly)
-    return mojom::IDBTransactionMode::ReadOnly;
+    return mojom::blink::IDBTransactionMode::ReadOnly;
   if (mode_string == indexed_db_names::kReadwrite)
-    return mojom::IDBTransactionMode::ReadWrite;
+    return mojom::blink::IDBTransactionMode::ReadWrite;
   if (mode_string == indexed_db_names::kVersionchange)
-    return mojom::IDBTransactionMode::VersionChange;
+    return mojom::blink::IDBTransactionMode::VersionChange;
   NOTREACHED();
-  return mojom::IDBTransactionMode::ReadOnly;
+  return mojom::blink::IDBTransactionMode::ReadOnly;
 }
 
 WebIDBDatabase* IDBTransaction::BackendDB() const {
@@ -517,13 +578,13 @@ WebIDBDatabase* IDBTransaction::BackendDB() const {
 
 const String& IDBTransaction::mode() const {
   switch (mode_) {
-    case mojom::IDBTransactionMode::ReadOnly:
+    case mojom::blink::IDBTransactionMode::ReadOnly:
       return indexed_db_names::kReadonly;
 
-    case mojom::IDBTransactionMode::ReadWrite:
+    case mojom::blink::IDBTransactionMode::ReadWrite:
       return indexed_db_names::kReadwrite;
 
-    case mojom::IDBTransactionMode::VersionChange:
+    case mojom::blink::IDBTransactionMode::VersionChange:
       return indexed_db_names::kVersionchange;
   }
 
@@ -533,13 +594,13 @@ const String& IDBTransaction::mode() const {
 
 const String& IDBTransaction::durability() const {
   switch (durability_) {
-    case mojom::IDBTransactionDurability::Default:
+    case mojom::blink::IDBTransactionDurability::Default:
       return indexed_db_names::kDefault;
 
-    case mojom::IDBTransactionDurability::Strict:
+    case mojom::blink::IDBTransactionDurability::Strict:
       return indexed_db_names::kStrict;
 
-    case mojom::IDBTransactionDurability::Relaxed:
+    case mojom::blink::IDBTransactionDurability::Relaxed:
       return indexed_db_names::kRelaxed;
   }
 
@@ -621,21 +682,12 @@ DispatchEventResult IDBTransaction::DispatchEventInternal(Event& event) {
   return dispatch_result;
 }
 
-void IDBTransaction::EnqueueEvent(Event* event) {
-  DCHECK_NE(state_, kFinished)
-      << "A finished transaction tried to enqueue an event of type "
-      << event->type() << ".";
-  if (!GetExecutionContext())
-    return;
-
-  event->SetTarget(this);
-  event_queue_->EnqueueEvent(FROM_HERE, *event);
-}
-
-void IDBTransaction::AbortOutstandingRequests() {
-  for (IDBRequest* request : request_list_)
-    request->Abort();
-  request_list_.clear();
+void IDBTransaction::AbortOutstandingRequests(bool queue_tasks) {
+  decltype(request_list_) request_list;
+  request_list.Swap(request_list_);
+  for (IDBRequest* request : request_list) {
+    request->Abort(queue_tasks);
+  }
 }
 
 void IDBTransaction::RevertDatabaseMetadata() {
@@ -705,8 +757,6 @@ void IDBTransaction::Finished() {
 
   deleted_indexes_.clear();
   deleted_object_stores_.clear();
-
-  feature_handle_for_scheduler_.reset();
 }
 
 }  // namespace blink

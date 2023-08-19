@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_SYNTHETIC_TAP_GESTURE_H_
 #define CONTENT_BROWSER_RENDERER_HOST_INPUT_SYNTHETIC_TAP_GESTURE_H_
 
+#include <memory>
+
 #include "base/time/time.h"
 #include "content/browser/renderer_host/input/synthetic_gesture.h"
 #include "content/browser/renderer_host/input/synthetic_gesture_target.h"
@@ -14,7 +16,8 @@
 
 namespace content {
 
-class CONTENT_EXPORT SyntheticTapGesture : public SyntheticGesture {
+class CONTENT_EXPORT SyntheticTapGesture
+    : public SyntheticGestureBase<SyntheticTapGestureParams> {
  public:
   explicit SyntheticTapGesture(const SyntheticTapGestureParams& params);
 
@@ -43,7 +46,6 @@ class CONTENT_EXPORT SyntheticTapGesture : public SyntheticGesture {
 
   base::TimeDelta GetDuration() const;
 
-  SyntheticTapGestureParams params_;
   std::unique_ptr<SyntheticPointerDriver> synthetic_pointer_driver_;
   base::TimeTicks start_time_;
   content::mojom::GestureSourceType gesture_source_type_;

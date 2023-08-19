@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
@@ -139,6 +140,54 @@ class CONTENT_EXPORT AuctionV8Helper
     size_t size_;
   };
 
+  // Represents a time limit that's shared by a group of operations (so if it's
+  // 50ms and first takes 30ms and second tries to take 25ms, it will be
+  // interrupted at around 20ms).
+  class CONTENT_EXPORT TimeLimit {
+   public:
+    virtual ~TimeLimit();
+
+    // Resumes the timer if it's not already running. Returns true if the timer
+    // was resumed, false if it was already running.
+    //
+    // You do not need to call this directly if you're using `RunScript` or
+    // `CallFunction`.
+    virtual bool Resume() = 0;
+
+    // Pauses the timer (must be running). You do not need to
+    // call it directly if you're using `RunScript` or `CallFunction`.
+    virtual void Pause() = 0;
+
+    AuctionV8Helper* v8_helper() { return v8_helper_; }
+
+   protected:
+    explicit TimeLimit(AuctionV8Helper* v8_helper) : v8_helper_(v8_helper) {}
+
+   private:
+    const raw_ptr<AuctionV8Helper> v8_helper_;
+  };
+
+  // Helper that calls Resume()/Pause() if given a non-nullptr TimeLimit,
+  // and lets v8 know that termination handling is expected.
+  //
+  // v8::TryCatch::HasTerminated() can help detect the timeouts.
+  //
+  // This is safe to use recursively.
+  class CONTENT_EXPORT TimeLimitScope {
+   public:
+    explicit TimeLimitScope(TimeLimit* script_timeout);
+    ~TimeLimitScope();
+
+    bool has_time_limit() const { return script_timeout_; }
+
+   private:
+    raw_ptr<TimeLimit> script_timeout_;
+
+    absl::optional<v8::Isolate::SafeForTerminationScope>
+        safe_for_termination_scope_;
+    bool resumed_ = false;
+  };
+
   explicit AuctionV8Helper(const AuctionV8Helper&) = delete;
   AuctionV8Helper& operator=(const AuctionV8Helper&) = delete;
 
@@ -255,6 +304,18 @@ class CONTENT_EXPORT AuctionV8Helper
   v8::MaybeLocal<v8::WasmModuleObject> CloneWasmModule(
       v8::Local<v8::WasmModuleObject> in);
 
+  // Creates a time limiter for a group of operations. Note that it registers
+  // itself with `this` and must not outlive it, and there shouldn't be more
+  // than one at a time per AuctionV8Helper.
+  //
+  // If `script_timeout` has no value, kScriptTimeout will be used as the
+  // default timeout.
+  std::unique_ptr<TimeLimit> CreateTimeLimit(
+      absl::optional<base::TimeDelta> script_timeout);
+
+  // Returns the currently active time limit, if any.
+  TimeLimit* GetTimeLimit();
+
   // Binds a script and runs it in the passed in context, returning true if it
   // succeeded.
   //
@@ -264,14 +325,15 @@ class CONTENT_EXPORT AuctionV8Helper
   // Assumes passed in context is the active context. Passed in context must be
   // using the Helper's isolate.
   //
-  // If `script_timeout` has no value, kScriptTimeout will be used as the
-  // default timeout.
+  // If `script_timeout` is set, it will be used as a time limit for this
+  // operation. (If nullptr, the script may take an arbitrary amount of time or
+  // might fail to terminate).
   //
   // In case of an error sets `error_out`.
   bool RunScript(v8::Local<v8::Context> context,
                  v8::Local<v8::UnboundScript> script,
                  const DebugId* debug_id,
-                 absl::optional<base::TimeDelta> script_timeout,
+                 TimeLimit* script_timeout,
                  std::vector<std::string>& error_out);
 
   // Calls a bound function (by name) attached to the global context in the
@@ -291,18 +353,18 @@ class CONTENT_EXPORT AuctionV8Helper
   // Assumes passed in context is the active context. Passed in context must be
   // using the Helper's isolate.
   //
-  // If `script_timeout` has no value, kScriptTimeout will be used as the
-  // default timeout.
+  // If `script_timeout` is set, it will be used as a time limit for this
+  // operation. (If nullptr, the function may take an arbitrary amount of time
+  // or might fail to terminate).
   //
   // In case of an error sets `error_out`.
-  v8::MaybeLocal<v8::Value> CallFunction(
-      v8::Local<v8::Context> context,
-      const DebugId* debug_id,
-      const std::string& script_name,
-      base::StringPiece function_name,
-      base::span<v8::Local<v8::Value>> args,
-      absl::optional<base::TimeDelta> script_timeout,
-      std::vector<std::string>& error_out);
+  v8::MaybeLocal<v8::Value> CallFunction(v8::Local<v8::Context> context,
+                                         const DebugId* debug_id,
+                                         const std::string& script_name,
+                                         base::StringPiece function_name,
+                                         base::span<v8::Local<v8::Value>> args,
+                                         TimeLimit* script_timeout,
+                                         std::vector<std::string>& error_out);
 
   // If any debugging session targeting `debug_id` has set an active
   // DOM instrumentation breakpoint `name`, asks for v8 to do a debugger pause
@@ -387,6 +449,10 @@ class CONTENT_EXPORT AuctionV8Helper
   scoped_refptr<base::SequencedTaskRunner> v8_runner_;
   scoped_refptr<base::SequencedTaskRunner> timer_task_runner_;
 
+  // This needs to be invoked after ~IsolateHolder to make sure that V8 is
+  // really shut down.
+  base::ScopedClosureRunner destroyed_callback_run_;
+
   std::unique_ptr<gin::IsolateHolder> isolate_holder_
       GUARDED_BY_CONTEXT(sequence_checker_);
   v8::Global<v8::Context> scratch_context_
@@ -413,8 +479,6 @@ class CONTENT_EXPORT AuctionV8Helper
       GUARDED_BY_CONTEXT(sequence_checker_);
   std::unique_ptr<v8_inspector::V8Inspector> v8_inspector_
       GUARDED_BY_CONTEXT(sequence_checker_);
-
-  base::OnceClosure destroyed_callback_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

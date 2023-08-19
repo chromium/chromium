@@ -8,11 +8,11 @@
 #include "net/base/network_change_notifier.h"
 
 @interface MetricsMediator (TestingAddition)
-+ (void)recordNumTabAtStartup:(int)numTabs;
-+ (void)recordNumTabAtResume:(int)numTabs;
-+ (void)recordNumNTPTabAtStartup:(int)numTabs;
-+ (void)recordNumNTPTabAtResume:(int)numTabs;
-+ (void)recordNumLiveNTPTabAtResume:(int)numTabs;
++ (void)recordStartupTabCount:(int)tabCount;
++ (void)recordResumeTabCount:(int)tabCount;
++ (void)recordStartupNTPTabCount:(int)tabCount;
++ (void)recordResumeNTPTabCount:(int)tabCount;
++ (void)recordResumeLiveNTPTabCount:(int)tabCount;
 @end
 
 #endif  // IOS_CHROME_APP_APPLICATION_DELEGATE_METRICS_MEDIATOR_TESTING_H_

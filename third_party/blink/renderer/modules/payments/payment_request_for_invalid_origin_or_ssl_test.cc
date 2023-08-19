@@ -32,7 +32,7 @@ class MockPaymentProvider : public payments::mojom::blink::PaymentRequest {
     has_closed_ = true;
   }
 
-  void Show(bool wait_for_updated_details) override {}
+  void Show(bool wait_for_updated_details, bool had_user_activation) override {}
   void Retry(
       payments::mojom::blink::PaymentValidationErrorsPtr errors) override {
     NOTREACHED();

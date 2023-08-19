@@ -32,8 +32,9 @@ const int kFirstFrameIndex = 0;
 bool ShouldSkipFile(const base::FilePath& path,
                     blink::ImageDecoderBaseTest::FileSelection file_selection,
                     const int64_t threshold) {
-  if (file_selection == blink::ImageDecoderBaseTest::FileSelection::kAll)
+  if (file_selection == blink::ImageDecoderBaseTest::FileSelection::kAll) {
     return false;
+  }
 
   int64_t image_size = 0;
   base::GetFileSize(path, &image_size);
@@ -133,8 +134,9 @@ Vector<base::FilePath> ImageDecoderBaseTest::GetImageFiles() const {
        !next_file_name.empty(); next_file_name = enumerator.Next()) {
     base::FilePath base_name = next_file_name.BaseName();
     std::string base_name_ascii = base_name.MaybeAsASCII();
-    if (base::MatchPattern(base_name_ascii, pattern))
+    if (base::MatchPattern(base_name_ascii, pattern)) {
       image_files.push_back(next_file_name);
+    }
   }
 
   return image_files;
@@ -151,13 +153,15 @@ bool ImageDecoderBaseTest::ShouldImageFail(const base::FilePath& path) const {
 void ImageDecoderBaseTest::TestDecoding(
     blink::ImageDecoderBaseTest::FileSelection file_selection,
     const int64_t threshold) {
-  if (data_dir_.empty())
+  if (data_dir_.empty()) {
     return;
+  }
   const Vector<base::FilePath> image_files(GetImageFiles());
   for (Vector<base::FilePath>::const_iterator i = image_files.begin();
        i != image_files.end(); ++i) {
-    if (!ShouldSkipFile(*i, file_selection, threshold))
+    if (!ShouldSkipFile(*i, file_selection, threshold)) {
       TestImageDecoder(*i, GetMD5SumPath(*i), kFirstFrameIndex);
+    }
   }
 }
 
@@ -166,8 +170,9 @@ void ImageDecoderBaseTest::TestImageDecoder(const base::FilePath& image_path,
                                             int desired_frame_index) const {
 #if defined(CALCULATE_MD5_SUMS)
   // If we're just calculating the MD5 sums, skip failing images quickly.
-  if (ShouldImageFail(image_path))
+  if (ShouldImageFail(image_path)) {
     return;
+  }
 #endif
 
   Vector<char> image_contents;

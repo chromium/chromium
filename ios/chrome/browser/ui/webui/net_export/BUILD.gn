@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("net_export") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "net_export_ui.h",
     "net_export_ui.mm",

@@ -3,11 +3,16 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {isGooglePhotosIntegrationEnabled} from './load_time_booleans.js';
+import {isGooglePhotosIntegrationEnabled, isPersonalizationJellyEnabled, isTimeOfDayWallpaperEnabled} from './load_time_booleans.js';
 import {Paths, PersonalizationRouter} from './personalization_router_element.js';
 import {PersonalizationStore} from './personalization_store.js';
+import {getThemeProvider} from './theme/theme_interface_provider.js';
+import {DEFAULT_COLOR_SCHEME} from './theme/utils.js';
+import {isNonEmptyArray} from './utils.js';
 import {setFullscreenEnabledAction} from './wallpaper/wallpaper_actions.js';
+import {selectWallpaper} from './wallpaper/wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper/wallpaper_interface_provider.js';
 
 /**
@@ -29,8 +34,29 @@ function makeTransparent() {
 async function reset() {
   const wallpaperProvider = getWallpaperProvider();
   await wallpaperProvider.selectDefaultImage();
+
+  if (isPersonalizationJellyEnabled()) {
+    // Turn on dynamic color with default scheme.
+    const themeProvider = getThemeProvider();
+    themeProvider.setColorScheme(DEFAULT_COLOR_SCHEME);
+    const {colorScheme} = await themeProvider.getColorScheme();
+    assert(
+        colorScheme === DEFAULT_COLOR_SCHEME, 'reset to default color scheme');
+  }
+
   const router = PersonalizationRouter.instance();
   router.goToRoute(Paths.ROOT);
+}
+
+async function selectTimeOfDayWallpaper() {
+  assert(isTimeOfDayWallpaperEnabled(), 'time of day must be enabled');
+  const store = PersonalizationStore.getInstance();
+  assert(!!store);
+  const id = loadTimeData.getString('timeOfDayWallpaperCollectionId');
+  const images = store.data.wallpaper.backdrop.images[id];
+  assert(isNonEmptyArray(images), 'time of day collection images must exist');
+  const image = images[0];
+  await selectWallpaper(image, getWallpaperProvider(), store);
 }
 
 declare global {
@@ -40,6 +66,7 @@ declare global {
       isGooglePhotosIntegrationEnabled: () => boolean,
       makeTransparent: () => void,
       reset: () => Promise<void>,
+      selectTimeOfDayWallpaper: () => Promise<void>,
     };
   }
 }
@@ -49,4 +76,5 @@ window.personalizationTestApi = {
   isGooglePhotosIntegrationEnabled,
   makeTransparent,
   reset,
+  selectTimeOfDayWallpaper,
 };

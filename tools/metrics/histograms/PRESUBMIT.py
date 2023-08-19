@@ -9,6 +9,10 @@ for more details on the presubmit API built into depot_tools.
 
 PRESUBMIT_VERSION = '2.0.0'
 
+import os
+from pathlib import Path
+import sys
+
 
 def GetPrettyPrintErrors(input_api, output_api, cwd, rel_path, results):
   """Runs pretty-print command for specified file."""
@@ -21,6 +25,18 @@ def GetPrettyPrintErrors(input_api, output_api, cwd, rel_path, results):
   if exit_code != 0:
     error_msg = (
         '%s is not formatted correctly; run git cl format to fix.' % rel_path)
+    results.append(output_api.PresubmitError(error_msg))
+
+
+def GetTokenErrors(input_api, output_api, cwd, rel_path, results):
+  """Validates histogram tokens in specified file."""
+  exit_code = input_api.subprocess.call(
+      [input_api.python3_executable, 'validate_token.py', rel_path], cwd=cwd)
+
+  if exit_code != 0:
+    error_msg = (
+        '%s contains histogram(s) using <variants> not defined in the file, '
+        'please run validate_token.py %s to fix.' % (rel_path, rel_path))
     results.append(output_api.PresubmitError(error_msg))
 
 
@@ -72,6 +88,7 @@ def ValidateSingleFile(input_api, output_api, file_obj, cwd, results):
   elif ('histograms.xml' in filepath
         or 'histogram_suffixes_list.xml' in filepath):
     GetPrettyPrintErrors(input_api, output_api, cwd, filepath, results)
+    GetTokenErrors(input_api, output_api, cwd, filepath, results)
     return True
 
   # If the changed file is enums.xml, pretty-print it.
@@ -101,3 +118,19 @@ def CheckHistogramFormatting(input_api, output_api):
     GetValidateHistogramsError(input_api, output_api, cwd, results)
 
   return results
+
+
+def CheckWebViewHistogramsAllowlistOnUpload(input_api, output_api):
+  """Checks that histograms_allowlist.txt contains valid histograms."""
+  xml_filter = lambda f: Path(f.LocalPath()).suffix == '.xml'
+  xml_files = input_api.AffectedFiles(file_filter=xml_filter)
+  if not xml_files:
+    return []
+
+  # src_path should point to chromium/src
+  src_path = os.path.join(input_api.PresubmitLocalPath(), '..', '..', '..')
+  histograms_allowlist_check_path = os.path.join(src_path, 'android_webview',
+                                                 'java', 'res', 'raw')
+  sys.path.append(histograms_allowlist_check_path)
+  from histograms_allowlist_check import CheckWebViewHistogramsAllowlist
+  return CheckWebViewHistogramsAllowlist(src_path, output_api)

@@ -1,0 +1,5 @@
+# Allow dependency on windows headers in //base.
+include_rules = [
+  '+base/win/windows_full.h',
+  '+base/win/windows_types.h',
+]

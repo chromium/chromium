@@ -1,6 +1,7 @@
 include_rules = [
   "+content/public/renderer",
   "+content/public/test",
+  "+components/language/core/common/language_util.h",
   "+components/printing/renderer/print_render_frame_helper.h",
   "+components/services/screen_ai",
   "+components/strings/grit/components_strings.h",
@@ -11,6 +12,7 @@ include_rules = [
   "+pdf/mojom/pdf.mojom.h",
   "+pdf/pdf_accessibility_action_handler.h",
   "+pdf/pdf_accessibility_data_handler.h",
+  "+pdf/pdf_accessibility_image_fetcher.h",
   "+pdf/pdf_features.h",
   "+pdf/pdf_view_web_plugin.h",
   "+printing/buildflags/buildflags.h",

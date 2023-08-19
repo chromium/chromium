@@ -85,10 +85,10 @@ INSTANTIATE_TEST_SUITE_P(
     FilterTest,
     ValuesIn<FilterTestParams>({
         {.testcase_name = "DefaultParams",
-         .filter = "({'filter': 'dropShadow'})",
+         .filter = "({'name': 'dropShadow'})",
          .expected_ops = {GarbageCollectedIs<DropShadowFilterOperation>(
              ShadowData(
-                 /*location=*/{2, 2},
+                 /*offset=*/{2, 2},
                  /*blur=*/{2, 2},
                  /*spread=*/0,
                  ShadowStyle::kNormal,
@@ -97,7 +97,7 @@ INSTANTIATE_TEST_SUITE_P(
 
         {.testcase_name = "AllParamsSpecified",
          .filter = R"js(({
-                     "filter": "dropShadow",
+                     "name": "dropShadow",
                      "dx": 15,
                      "dy": 10,
                      "stdDeviation": 5,
@@ -106,7 +106,7 @@ INSTANTIATE_TEST_SUITE_P(
                     }))js",
          .expected_ops = {GarbageCollectedIs<DropShadowFilterOperation>(
              ShadowData(
-                 /*location=*/{15, 10},
+                 /*offset=*/{15, 10},
                  /*blur=*/{5, 5},
                  /*spread=*/0,
                  ShadowStyle::kNormal,
@@ -115,12 +115,12 @@ INSTANTIATE_TEST_SUITE_P(
 
         {.testcase_name = "XYBlur",
          .filter = R"js(({
-                     "filter": "dropShadow",
+                     "name": "dropShadow",
                      "stdDeviation": [5, 10],
                     }))js",
          .expected_ops = {GarbageCollectedIs<DropShadowFilterOperation>(
              ShadowData(
-                 /*location=*/{2, 2},
+                 /*offset=*/{2, 2},
                  /*blur=*/{5, 10},
                  /*spread=*/0,
                  ShadowStyle::kNormal,
@@ -129,12 +129,12 @@ INSTANTIATE_TEST_SUITE_P(
 
         {.testcase_name = "NegativeBlur",
          .filter = R"js(({
-                     "filter": "dropShadow",
+                     "name": "dropShadow",
                      "stdDeviation": [-5, -10],
                     }))js",
          .expected_ops = {GarbageCollectedIs<DropShadowFilterOperation>(
              ShadowData(
-                 /*location=*/{2, 2},
+                 /*offset=*/{2, 2},
                  /*blur=*/{0, 0},
                  /*spread=*/0,
                  ShadowStyle::kNormal,
@@ -156,9 +156,9 @@ TEST_P(FilterApiTest, RaisesExceptionForInvalidType) {
   EXPECT_THAT(
       CanvasFilterOperationResolver::CreateFilterOperations(
           CHECK_DEREF(ParseFilter(
-              scope, base::StringPrintf("({filter: '%s', %s: %s})",
-                                        filter_name.c_str(), param_key.c_str(),
-                                        param_value.c_str()))),
+              scope,
+              base::StringPrintf("({name: '%s', %s: %s})", filter_name.c_str(),
+                                 param_key.c_str(), param_value.c_str()))),
           CHECK_DEREF(scope.GetExecutionContext()), scope.GetExceptionState())
           .Operations(),
       SizeIs(expected_error == ToExceptionCode(DOMExceptionCode::kNoError)

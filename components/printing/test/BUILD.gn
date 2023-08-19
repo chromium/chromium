@@ -21,6 +21,8 @@ static_library("test_support") {
     "//content/public/renderer",
     "//content/test:test_support",
     "//ipc",
+    "//pdf",
+    "//pdf:buildflags",
     "//printing",
     "//printing:test_support",
     "//printing/mojom",

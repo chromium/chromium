@@ -14,6 +14,8 @@
 #include "ui/base/buildflags.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
@@ -97,6 +99,16 @@ void MoveMouseToCenterAndPress(views::View* view,
                                int button_state,
                                base::OnceClosure closure,
                                int accelerator_state) {
+  MoveMouseToCenterWithOffsetAndPress(view, /*offset=*/{}, button, button_state,
+                                      std::move(closure), accelerator_state);
+}
+
+void MoveMouseToCenterWithOffsetAndPress(views::View* view,
+                                         const gfx::Vector2d& offset,
+                                         ui_controls::MouseButton button,
+                                         int button_state,
+                                         base::OnceClosure closure,
+                                         int accelerator_state) {
   DCHECK(view);
   DCHECK(view->GetWidget());
   // Complete any in-progress animation before sending the events so that the
@@ -110,6 +122,7 @@ void MoveMouseToCenterAndPress(views::View* view,
   }
 
   gfx::Point view_center = GetCenterInScreenCoordinates(view);
+  view_center += offset;
   ui_controls::SendMouseMoveNotifyWhenDone(
       view_center.x(), view_center.y(),
       base::BindOnce(&internal::ClickTask, button, button_state,

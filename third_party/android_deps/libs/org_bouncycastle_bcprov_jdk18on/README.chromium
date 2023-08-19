@@ -3,9 +3,10 @@ Short Name: bcprov-jdk18on
 URL: https://github.com/bcgit/bc-java
 Version: 1.72
 License: MIT
-License File: NOT_SHIPPED
+License File: LICENSE
 CPEPrefix: cpe:/a:bouncycastle:legion-of-the-bouncy-castle:1.72
 Security Critical: no
+Shipped: no
 
 Description:
 The Bouncy Castle Crypto package is a Java implementation of cryptographic algorithms. This jar contains JCE provider and lightweight API for the Bouncy Castle Cryptography APIs for JDK 1.8 and up.

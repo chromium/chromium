@@ -11,37 +11,52 @@
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/updater/constants.h"
 #include "chrome/updater/updater_scope.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace updater {
 
 App::App() = default;
 App::~App() = default;
 
+int App::Initialize() {
+  return kErrorOk;
+}
+
 int App::Run() {
-  Initialize();
-  int exit_code = 0;
-  {
-    base::ScopedDisallowBlocking no_blocking_allowed_on_ui_thread;
-    base::RunLoop runloop;
-    quit_ = base::BindOnce(
-        [](base::OnceClosure quit, int* exit_code_out, int exit_code) {
-          *exit_code_out = exit_code;
-          std::move(quit).Run();
-        },
-        runloop.QuitWhenIdleClosure(), &exit_code);
-    FirstTaskRun();
-    runloop.Run();
+  int exit_code = Initialize();
+  if (exit_code != kErrorOk) {
+    return exit_code;
   }
-  Uninitialize();
+  absl::Cleanup uninitialize = [this] { Uninitialize(); };
+  return RunTasks();
+}
+
+int App::RunTasks() {
+  int exit_code = kErrorOk;
+  base::ScopedDisallowBlocking no_blocking_allowed_on_ui_thread;
+  base::RunLoop runloop;
+  quit_ = base::BindOnce(
+      [](base::OnceClosure quit, int* exit_code_out, int exit_code) {
+        *exit_code_out = exit_code;
+        std::move(quit).Run();
+      },
+      runloop.QuitWhenIdleClosure(), &exit_code);
+  FirstTaskRun();
+  runloop.Run();
   return exit_code;
 }
 
 void App::Shutdown(int exit_code) {
-  CHECK(!quit_.is_null()) << "App was shutdown previously.";
+  if (quit_.is_null()) {
+    // It's possible for shutdown to be called twice, since the runloop exits
+    // only when idle. The exit code of the first shutdown will be used.
+    return;
+  }
 
   // TODO(crbug.com/1422360): for non-silent scenarios where UI is not
-  // otherwise shown, some UI is needed here.
+  // otherwise shown, some UI is needed here if exit_code indicates a failure.
   std::move(quit_).Run(exit_code);
 }
 

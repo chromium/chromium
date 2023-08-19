@@ -10,9 +10,12 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/attribution_reporting/registration_type.mojom-shared.h"
+#include "base/uuid.h"
+#include "components/attribution_reporting/os_registration.h"
+#include "components/attribution_reporting/registration_eligibility.mojom-shared.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/suitable_origin.h"
+#include "components/attribution_reporting/test_utils.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "services/network/public/cpp/features.h"
@@ -104,15 +107,17 @@ class MockDataHost : public mojom::blink::AttributionDataHost {
     return trigger_data_;
   }
 
-  const Vector<absl::optional<network::TriggerVerification>>&
-  trigger_verification() const {
-    return trigger_verification_;
+  const Vector<Vector<network::TriggerVerification>>& trigger_verifications()
+      const {
+    return trigger_verifications_;
   }
 
-  const std::vector<std::vector<GURL>>& os_sources() const {
+  const std::vector<std::vector<attribution_reporting::OsRegistrationItem>>&
+  os_sources() const {
     return os_sources_;
   }
-  const std::vector<std::vector<GURL>>& os_triggers() const {
+  const std::vector<std::vector<attribution_reporting::OsRegistrationItem>>&
+  os_triggers() const {
     return os_triggers_;
   }
 
@@ -133,27 +138,33 @@ class MockDataHost : public mojom::blink::AttributionDataHost {
   void TriggerDataAvailable(
       attribution_reporting::SuitableOrigin reporting_origin,
       attribution_reporting::TriggerRegistration data,
-      absl::optional<network::TriggerVerification> verification) override {
+      Vector<network::TriggerVerification> verifications) override {
     trigger_data_.push_back(std::move(data));
-    trigger_verification_.push_back(std::move(verification));
+    trigger_verifications_.push_back(std::move(verifications));
   }
 
-  void OsSourceDataAvailable(std::vector<GURL> registration_urls) override {
-    os_sources_.emplace_back(std::move(registration_urls));
+  void OsSourceDataAvailable(
+      std::vector<attribution_reporting::OsRegistrationItem> registration_items)
+      override {
+    os_sources_.emplace_back(std::move(registration_items));
   }
 
-  void OsTriggerDataAvailable(std::vector<GURL> registration_urls) override {
-    os_triggers_.emplace_back(std::move(registration_urls));
+  void OsTriggerDataAvailable(
+      std::vector<attribution_reporting::OsRegistrationItem> registration_items)
+      override {
+    os_triggers_.emplace_back(std::move(registration_items));
   }
 
   Vector<attribution_reporting::SourceRegistration> source_data_;
 
   Vector<attribution_reporting::TriggerRegistration> trigger_data_;
 
-  Vector<absl::optional<network::TriggerVerification>> trigger_verification_;
+  Vector<Vector<network::TriggerVerification>> trigger_verifications_;
 
-  std::vector<std::vector<GURL>> os_sources_;
-  std::vector<std::vector<GURL>> os_triggers_;
+  std::vector<std::vector<attribution_reporting::OsRegistrationItem>>
+      os_sources_;
+  std::vector<std::vector<attribution_reporting::OsRegistrationItem>>
+      os_triggers_;
 
   size_t disconnects_ = 0;
   mojo::Receiver<mojom::blink::AttributionDataHost> receiver_{this};
@@ -171,8 +182,9 @@ class MockAttributionHost : public mojom::blink::AttributionHost {
   ~MockAttributionHost() override = default;
 
   void WaitUntilBoundAndFlush() {
-    if (receiver_.is_bound())
+    if (receiver_.is_bound()) {
       return;
+    }
     base::RunLoop wait_loop;
     quit_ = wait_loop.QuitClosure();
     wait_loop.Run();
@@ -186,13 +198,14 @@ class MockAttributionHost : public mojom::blink::AttributionHost {
     receiver_.Bind(
         mojo::PendingAssociatedReceiver<mojom::blink::AttributionHost>(
             std::move(handle)));
-    if (quit_)
+    if (quit_) {
       std::move(quit_).Run();
+    }
   }
 
   void RegisterDataHost(
       mojo::PendingReceiver<mojom::blink::AttributionDataHost> data_host,
-      attribution_reporting::mojom::RegistrationType) override {
+      attribution_reporting::mojom::RegistrationEligibility) override {
     mock_data_host_ = std::make_unique<MockDataHost>(std::move(data_host));
   }
 
@@ -261,7 +274,7 @@ TEST_F(AttributionSrcLoaderTest, RegisterTriggerWithoutEligibleHeader) {
   response.SetHttpStatusCode(200);
   response.SetHttpHeaderField(
       http_names::kAttributionReportingRegisterTrigger,
-      R"({"event_trigger_data":[{"trigger_data": "7"}]})");
+      AtomicString(R"({"event_trigger_data":[{"trigger_data": "7"}]})"));
 
   MockAttributionHost host(
       GetFrame().GetRemoteNavigationAssociatedInterfaces());
@@ -274,8 +287,9 @@ TEST_F(AttributionSrcLoaderTest, RegisterTriggerWithoutEligibleHeader) {
 
   mock_data_host->Flush();
   EXPECT_EQ(mock_data_host->trigger_data().size(), 1u);
-  ASSERT_EQ(mock_data_host->trigger_verification().size(), 1u);
-  ASSERT_FALSE(mock_data_host->trigger_verification().at(0).has_value());
+  ASSERT_EQ(mock_data_host->trigger_verifications().size(), 1u);
+  ASSERT_THAT(mock_data_host->trigger_verifications().at(0),
+              testing::IsEmpty());
 }
 
 // TODO(https://crbug.com/1412566): Improve tests to properly cover the
@@ -291,7 +305,7 @@ TEST_F(AttributionSrcLoaderTest, RegisterTriggerWithTriggerHeader) {
   response.SetHttpStatusCode(200);
   response.SetHttpHeaderField(
       http_names::kAttributionReportingRegisterTrigger,
-      R"({"event_trigger_data":[{"trigger_data": "7"}]})");
+      AtomicString(R"({"event_trigger_data":[{"trigger_data": "7"}]})"));
 
   MockAttributionHost host(
       GetFrame().GetRemoteNavigationAssociatedInterfaces());
@@ -317,7 +331,7 @@ TEST_F(AttributionSrcLoaderTest, RegisterTriggerWithSourceTriggerHeader) {
   response.SetHttpStatusCode(200);
   response.SetHttpHeaderField(
       http_names::kAttributionReportingRegisterTrigger,
-      R"({"event_trigger_data":[{"trigger_data": "7"}]})");
+      AtomicString(R"({"event_trigger_data":[{"trigger_data": "7"}]})"));
 
   MockAttributionHost host(
       GetFrame().GetRemoteNavigationAssociatedInterfaces());
@@ -343,15 +357,15 @@ TEST_F(AttributionSrcLoaderTest, RegisterTriggerOsHeadersIgnored) {
   response.SetHttpStatusCode(200);
   response.SetHttpHeaderField(
       http_names::kAttributionReportingRegisterTrigger,
-      R"({"event_trigger_data":[{"trigger_data": "7"}]})");
+      AtomicString(R"({"event_trigger_data":[{"trigger_data": "7"}]})"));
 
   // These should be ignored because the relevant feature is disabled by
   // default.
   response.SetHttpHeaderField(http_names::kAttributionReportingRegisterOSSource,
-                              R"("https://r.test/x")");
+                              AtomicString(R"("https://r.test/x")"));
   response.SetHttpHeaderField(
       http_names::kAttributionReportingRegisterOSTrigger,
-      R"("https://r.test/y")");
+      AtomicString(R"("https://r.test/y")"));
 
   MockAttributionHost host(
       GetFrame().GetRemoteNavigationAssociatedInterfaces());
@@ -366,7 +380,7 @@ TEST_F(AttributionSrcLoaderTest, RegisterTriggerOsHeadersIgnored) {
   EXPECT_EQ(mock_data_host->trigger_data().size(), 1u);
 }
 
-TEST_F(AttributionSrcLoaderTest, RegisterTriggerWithVerification) {
+TEST_F(AttributionSrcLoaderTest, RegisterTriggerWithVerifications) {
   KURL test_url = ToKURL("https://example1.com/foo.html");
 
   ResourceRequest request(test_url);
@@ -375,12 +389,15 @@ TEST_F(AttributionSrcLoaderTest, RegisterTriggerWithVerification) {
   response.SetHttpStatusCode(200);
   response.SetHttpHeaderField(
       http_names::kAttributionReportingRegisterTrigger,
-      R"({"event_trigger_data":[{"trigger_data": "7"}]})");
+      AtomicString(R"({"event_trigger_data":[{"trigger_data": "7"}]})"));
 
-  absl::optional<network::TriggerVerification> trigger_verification =
-      network::TriggerVerification::Create(
-          "token", "08fa6760-8e5c-4ccb-821d-b5d82bef2b37");
-  response.SetTriggerVerification(trigger_verification);
+  response.SetTriggerVerifications(
+      {*network::TriggerVerification::Create(
+           "token-1",
+           base::Uuid::ParseLowercase("11fa6760-8e5c-4ccb-821d-b5d82bef2b37")),
+       *network::TriggerVerification::Create(
+           "token-2", base::Uuid::ParseLowercase(
+                          "22fa6760-8e5c-4ccb-821d-b5d82bef2b37"))});
 
   MockAttributionHost host(
       GetFrame().GetRemoteNavigationAssociatedInterfaces());
@@ -393,16 +410,16 @@ TEST_F(AttributionSrcLoaderTest, RegisterTriggerWithVerification) {
   ASSERT_TRUE(mock_data_host);
   mock_data_host->Flush();
 
-  ASSERT_EQ(mock_data_host->trigger_verification().size(), 1u);
-  ASSERT_TRUE(mock_data_host->trigger_verification().at(0).has_value());
-  EXPECT_EQ(mock_data_host->trigger_verification().at(0).value().token(),
-            "token");
-  EXPECT_EQ(mock_data_host->trigger_verification()
-                .at(0)
-                .value()
-                .aggregatable_report_id()
-                .AsLowercaseString(),
-            "08fa6760-8e5c-4ccb-821d-b5d82bef2b37");
+  ASSERT_EQ(mock_data_host->trigger_verifications().size(), 1u);
+  const Vector<network::TriggerVerification>& verifications =
+      mock_data_host->trigger_verifications().at(0);
+  ASSERT_EQ(verifications.size(), 2u);
+  EXPECT_EQ(verifications.at(0).token(), "token-1");
+  EXPECT_EQ(verifications.at(0).aggregatable_report_id().AsLowercaseString(),
+            "11fa6760-8e5c-4ccb-821d-b5d82bef2b37");
+  EXPECT_EQ(verifications.at(1).token(), "token-2");
+  EXPECT_EQ(verifications.at(1).aggregatable_report_id().AsLowercaseString(),
+            "22fa6760-8e5c-4ccb-821d-b5d82bef2b37");
 }
 
 TEST_F(AttributionSrcLoaderTest, AttributionSrcRequestsIgnored) {
@@ -415,7 +432,7 @@ TEST_F(AttributionSrcLoaderTest, AttributionSrcRequestsIgnored) {
   response.SetHttpStatusCode(200);
   response.SetHttpHeaderField(
       http_names::kAttributionReportingRegisterTrigger,
-      R"({"event_trigger_data":[{"trigger_data": "7"}]})");
+      AtomicString(R"({"event_trigger_data":[{"trigger_data": "7"}]})"));
 
   EXPECT_FALSE(attribution_src_loader_->MaybeRegisterAttributionHeaders(
       request, response, resource));
@@ -435,7 +452,7 @@ TEST_F(AttributionSrcLoaderTest, AttributionSrcRequestsInvalidEligibleHeaders) {
 
   for (const char* header : header_values) {
     response.SetHttpHeaderField(
-        http_names::kAttributionReportingRegisterTrigger, header);
+        http_names::kAttributionReportingRegisterTrigger, AtomicString(header));
 
     EXPECT_FALSE(attribution_src_loader_->MaybeRegisterAttributionHeaders(
         request, response, resource))
@@ -449,13 +466,13 @@ TEST_F(AttributionSrcLoaderTest, AttributionSrcRequestStatusHistogram) {
   KURL url1 = ToKURL(kUrl);
   RegisterMockedURLLoad(url1, test::CoreTestDataPath("foo.html"));
 
-  attribution_src_loader_->Register(kUrl, /*element=*/nullptr);
+  attribution_src_loader_->Register(AtomicString(kUrl), /*element=*/nullptr);
 
   static constexpr char kUrl2[] = "https://example2.com/foo.html";
   KURL url2 = ToKURL(kUrl2);
   RegisterMockedErrorURLLoad(url2);
 
-  attribution_src_loader_->Register(kUrl2, /*element=*/nullptr);
+  attribution_src_loader_->Register(AtomicString(kUrl2), /*element=*/nullptr);
 
   // kRequested = 0.
   histograms.ExpectUniqueSample("Conversions.AttributionSrcRequestStatus", 0,
@@ -474,7 +491,7 @@ TEST_F(AttributionSrcLoaderTest, Referrer) {
   KURL url = ToKURL("https://example1.com/foo.html");
   RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
 
-  attribution_src_loader_->Register(kUrl, /*element=*/nullptr);
+  attribution_src_loader_->Register(AtomicString(kUrl), /*element=*/nullptr);
 
   url_test_helpers::ServeAsynchronousRequests();
 
@@ -487,15 +504,17 @@ TEST_F(AttributionSrcLoaderTest, EligibleHeader_Register) {
   KURL url = ToKURL(kUrl);
   RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
 
-  attribution_src_loader_->Register(kUrl, /*element=*/nullptr);
+  attribution_src_loader_->Register(AtomicString(kUrl), /*element=*/nullptr);
 
   url_test_helpers::ServeAsynchronousRequests();
 
   EXPECT_EQ(client_->request_head().GetAttributionReportingEligibility(),
             AttributionReportingEligibility::kEventSourceOrTrigger);
 
+  EXPECT_FALSE(client_->request_head().GetAttributionSrcToken());
+
   EXPECT_TRUE(client_->request_head()
-                  .HttpHeaderField(kAttributionReportingSupport)
+                  .HttpHeaderField(AtomicString(kAttributionReportingSupport))
                   .IsNull());
 }
 
@@ -504,16 +523,19 @@ TEST_F(AttributionSrcLoaderTest, EligibleHeader_RegisterNavigation) {
   RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
 
   std::ignore = attribution_src_loader_->RegisterNavigation(
-      /*navigation_url=*/KURL(), /*attribution_src=*/kUrl,
-      /*element=*/MakeGarbageCollected<HTMLAnchorElement>(GetDocument()));
+      /*navigation_url=*/KURL(), /*attribution_src=*/AtomicString(kUrl),
+      /*element=*/MakeGarbageCollected<HTMLAnchorElement>(GetDocument()),
+      /*has_transient_user_activation=*/true);
 
   url_test_helpers::ServeAsynchronousRequests();
 
   EXPECT_EQ(client_->request_head().GetAttributionReportingEligibility(),
             AttributionReportingEligibility::kNavigationSource);
 
+  EXPECT_TRUE(client_->request_head().GetAttributionSrcToken());
+
   EXPECT_TRUE(client_->request_head()
-                  .HttpHeaderField(kAttributionReportingSupport)
+                  .HttpHeaderField(AtomicString(kAttributionReportingSupport))
                   .IsNull());
 }
 
@@ -527,7 +549,7 @@ TEST_F(AttributionSrcLoaderTest, EagerlyClosesRemote) {
 
   MockAttributionHost host(
       GetFrame().GetRemoteNavigationAssociatedInterfaces());
-  attribution_src_loader_->Register(kUrl, /*element=*/nullptr);
+  attribution_src_loader_->Register(AtomicString(kUrl), /*element=*/nullptr);
   host.WaitUntilBoundAndFlush();
   url_test_helpers::ServeAsynchronousRequests();
 
@@ -559,7 +581,7 @@ TEST_F(AttributionSrcLoaderTest, WebDisabled_TriggerNotRegistered) {
     response.SetHttpStatusCode(200);
     response.SetHttpHeaderField(
         http_names::kAttributionReportingRegisterTrigger,
-        R"({"event_trigger_data":[{"trigger_data": "7"}]})");
+        AtomicString(R"({"event_trigger_data":[{"trigger_data": "7"}]})"));
 
     MockAttributionHost host(
         GetFrame().GetRemoteNavigationAssociatedInterfaces());
@@ -601,7 +623,7 @@ TEST_F(AttributionSrcLoaderCrossAppWebRuntimeDisabledTest,
   response.SetHttpStatusCode(200);
   response.SetHttpHeaderField(
       http_names::kAttributionReportingRegisterOSTrigger,
-      R"("https://r.test/x")");
+      AtomicString(R"("https://r.test/x")"));
 
   EXPECT_FALSE(attribution_src_loader_->MaybeRegisterAttributionHeaders(
       request, response, resource));
@@ -631,7 +653,7 @@ TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest, SupportHeader_Register) {
   KURL url = ToKURL(kUrl);
   RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
 
-  attribution_src_loader_->Register(kUrl, /*element=*/nullptr);
+  attribution_src_loader_->Register(AtomicString(kUrl), /*element=*/nullptr);
 
   url_test_helpers::ServeAsynchronousRequests();
 
@@ -649,8 +671,9 @@ TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest,
   RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
 
   std::ignore = attribution_src_loader_->RegisterNavigation(
-      /*navigation_url=*/KURL(), /*attribution_src=*/kUrl,
-      /*element=*/MakeGarbageCollected<HTMLAnchorElement>(GetDocument()));
+      /*navigation_url=*/KURL(), /*attribution_src=*/AtomicString(kUrl),
+      /*element=*/MakeGarbageCollected<HTMLAnchorElement>(GetDocument()),
+      /*has_transient_user_activation=*/true);
 
   url_test_helpers::ServeAsynchronousRequests();
 
@@ -670,7 +693,7 @@ TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest, RegisterOsTrigger) {
   response.SetHttpStatusCode(200);
   response.SetHttpHeaderField(
       http_names::kAttributionReportingRegisterOSTrigger,
-      R"("https://r.test/x")");
+      AtomicString(R"("https://r.test/x")"));
 
   MockAttributionHost host(
       GetFrame().GetRemoteNavigationAssociatedInterfaces());
@@ -682,9 +705,10 @@ TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest, RegisterOsTrigger) {
   ASSERT_TRUE(mock_data_host);
 
   mock_data_host->Flush();
-  EXPECT_THAT(
-      mock_data_host->os_triggers(),
-      ::testing::ElementsAre(::testing::ElementsAre(GURL("https://r.test/x"))));
+  EXPECT_THAT(mock_data_host->os_triggers(),
+              ::testing::ElementsAre(::testing::ElementsAre(
+                  attribution_reporting::OsRegistrationItem{
+                      .url = GURL("https://r.test/x")})));
 }
 
 }  // namespace

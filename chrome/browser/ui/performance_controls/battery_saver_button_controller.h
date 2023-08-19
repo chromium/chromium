@@ -7,16 +7,15 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
+#include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
 
 class BatterySaverButtonControllerDelegate;
 
 // This class controls the visibility of the battery saver toolbar button.
 // It registers for battery saver mode change events with the user performance
 // tuning manager and utilizes the delegate interface to update the visibility.
-class BatterySaverButtonController
-    : public performance_manager::user_tuning::UserPerformanceTuningManager::
-          Observer {
+class BatterySaverButtonController : public performance_manager::user_tuning::
+                                         BatterySaverModeManager::Observer {
  public:
   BatterySaverButtonController();
   ~BatterySaverButtonController() override;
@@ -28,7 +27,7 @@ class BatterySaverButtonController
   // Init starts listening for performance manager events
   void Init(BatterySaverButtonControllerDelegate* delegate);
 
-  // UserPerformanceTuningManager::Observer:
+  // BatterySaverModeManager::Observer:
   void OnBatterySaverModeChanged(bool is_active) override;
 
  private:
@@ -37,8 +36,8 @@ class BatterySaverButtonController
  private:
   raw_ptr<BatterySaverButtonControllerDelegate> delegate_ = nullptr;
   base::ScopedObservation<
-      performance_manager::user_tuning::UserPerformanceTuningManager,
-      performance_manager::user_tuning::UserPerformanceTuningManager::Observer>
+      performance_manager::user_tuning::BatterySaverModeManager,
+      performance_manager::user_tuning::BatterySaverModeManager::Observer>
       battery_saver_observer_{this};
 };
 

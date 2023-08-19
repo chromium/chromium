@@ -5,9 +5,20 @@
     margin: 0 16px 16px 16px;
   }
 
+  :host-context([chrome-refresh-2023]) #showShortcutsToggleContainer {
+    align-items: center;
+    margin: 0;
+    padding: var(--sp-card-padding);
+  }
+
   #showShortcutsToggleTitle {
     font-size: 13px;
     line-height: 20px;
+  }
+
+  :host-context([chrome-refresh-2023]) #showShortcutsToggleTitle {
+    font-size: inherit;
+    line-height: inherit;
   }
 
   #options {
@@ -15,6 +26,11 @@
     display: flex;
     line-height: 20px;
     margin: 0 16px;
+  }
+
+  :host-context([chrome-refresh-2023]) #options {
+    line-height: inherit;
+    margin: 0;
   }
 
   iron-collapse {
@@ -36,6 +52,10 @@
     float: left;
   }
 
+  :host-context([chrome-refresh-2023]) cr-radio-button {
+    margin: var(--sp-card-padding);
+  }
+
   /**
    * Members of this class are accessible text not meant to be seen by the user.
    * Screen readers ignore elements styled with display:none or
@@ -52,11 +72,21 @@
     margin-inline-start: 24px;
   }
 
+  :host-context([chrome-refresh-2023]) customize-chrome-button-label {
+    margin: 0;
+    padding: var(--sp-card-block-padding) 32px;
+  }
+
   hr {
     margin-bottom: 16px;
   }
+
+  :host-context([chrome-refresh-2023]) hr {
+    margin: var(--sp-card-block-padding) var(--sp-card-inline-padding);
+    width: auto;
+  }
 </style>
-<div id="showShortcutsToggleContainer">
+<div id="showShortcutsToggleContainer" class="sp-card-content">
   <div id="showShortcutsToggleTitle">$i18n{showShortcutsToggle}</div>
   <cr-toggle id="showShortcutsToggle" title="$i18n{showShortcutsToggle}"
     checked="[[show_]]" on-change="onShowShortcutsToggleChange_"></cr-toggle>

@@ -9,8 +9,7 @@ import org.chromium.chrome.browser.base.SplitCompatService;
 
 /** See {@link WebApkInstallCoordinatorServiceImpl}. */
 public class WebApkInstallCoordinatorService extends SplitCompatService {
-    @IdentifierNameString
-    private static String sImplClassName =
+    private static @IdentifierNameString String sImplClassName =
             "org.chromium.chrome.browser.webapps.WebApkInstallCoordinatorServiceImpl";
 
     public WebApkInstallCoordinatorService() {

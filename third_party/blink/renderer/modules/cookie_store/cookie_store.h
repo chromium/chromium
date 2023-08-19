@@ -30,7 +30,7 @@ class ExceptionState;
 class ScriptPromiseResolver;
 class ScriptState;
 
-class CookieStore final : public EventTargetWithInlineData,
+class CookieStore final : public EventTarget,
                           public ExecutionContextClient,
                           public network::mojom::blink::CookieChangeListener {
   DEFINE_WRAPPERTYPEINFO();
@@ -65,7 +65,7 @@ class CookieStore final : public EventTargetWithInlineData,
   // GarbageCollected
   void Trace(Visitor* visitor) const override;
 
-  // EventTargetWithInlineData
+  // EventTarget
   DEFINE_ATTRIBUTE_EVENT_LISTENER(change, kChange)
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;

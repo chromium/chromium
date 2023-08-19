@@ -48,21 +48,36 @@ bool ZipAnalyzer::ResumeExtraction() {
       PLOG(WARNING) << "Failed truncate";
     }
     zip::FileWriterDelegate writer(&temp_file_);
-    reader_.ExtractCurrentEntry(&writer, std::numeric_limits<uint64_t>::max());
+    bool extract_success = reader_.ExtractCurrentEntry(
+        &writer, std::numeric_limits<uint64_t>::max());
 
     has_encrypted_ |= entry->is_encrypted;
     has_aes_encrypted_ |= entry->uses_aes_encryption;
 
-    if (!UpdateResultsForEntry(
-            temp_file_.Duplicate(), GetRootPath().Append(entry->path),
-            writer.file_length(), entry->is_encrypted, entry->is_directory)) {
+    if (!extract_success && entry->is_encrypted) {
+      results()->encryption_info.password_status =
+          EncryptionInfo::kKnownIncorrect;
+    }
+
+    if (!UpdateResultsForEntry(temp_file_.Duplicate(),
+                               GetRootPath().Append(entry->path),
+                               writer.file_length(), entry->is_encrypted,
+                               entry->is_directory, extract_success)) {
       return false;
     }
   }
 
+  results()->encryption_info.is_encrypted = has_encrypted_;
   if (has_encrypted_) {
     base::UmaHistogramBoolean("SBClientDownload.EncryptedZipUsesAes",
                               has_aes_encrypted_);
+    if (has_aes_encrypted_ && !password()->empty()) {
+      results()->encryption_info.password_status = EncryptionInfo::kUnknown;
+    } else if (results()->encryption_info.password_status !=
+               EncryptionInfo::kKnownIncorrect) {
+      results()->encryption_info.password_status =
+          EncryptionInfo::kKnownCorrect;
+    }
   }
 
   if (reader_.ok()) {
@@ -70,6 +85,7 @@ bool ZipAnalyzer::ResumeExtraction() {
   } else {
     results()->analysis_result = ArchiveAnalysisResult::kFailedDuringIteration;
   }
+
   results()->success = reader_.ok();
   return true;
 }
@@ -97,6 +113,10 @@ void ZipAnalyzer::OnGetTempFile(base::File temp_file) {
     return;
   }
   temp_file_ = std::move(temp_file);
+
+  if (password().has_value()) {
+    reader_.SetPassword(*password());
+  }
 
   InitComplete(ArchiveAnalysisResult::kValid);
 }

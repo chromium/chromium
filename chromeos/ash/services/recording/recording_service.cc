@@ -11,13 +11,17 @@
 
 #include "base/check.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/notreached.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "chromeos/ash/services/recording/audio_capture_util.h"
 #include "chromeos/ash/services/recording/audio_capturer.h"
+#include "chromeos/ash/services/recording/audio_stream_mixer.h"
 #include "chromeos/ash/services/recording/gif_encoder.h"
 #include "chromeos/ash/services/recording/recording_encoder.h"
 #include "chromeos/ash/services/recording/recording_service_constants.h"
@@ -85,14 +89,6 @@ media::VideoEncoder::Options CreateVideoEncoderOptions(
   // a keyframe if one has not been coded in the last keyframe_interval frames.
   video_encoder_options.keyframe_interval = 100;
   return video_encoder_options;
-}
-
-media::AudioParameters GetAudioParameters() {
-  static_assert(kAudioSampleRate % 100 == 0,
-                "Audio sample rate is not divisible by 100");
-  return media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                                media::ChannelLayoutConfig::Stereo(),
-                                kAudioSampleRate, kAudioSampleRate / 100);
 }
 
 // Extracts a potentially scaled-down RGB image from the given video |frame|,
@@ -171,7 +167,7 @@ base::SequenceBound<RecordingEncoder> CreateEncoder(
 
 RecordingService::RecordingService(
     mojo::PendingReceiver<mojom::RecordingService> receiver)
-    : audio_parameters_(GetAudioParameters()),
+    : audio_parameters_(audio_capture_util::GetAudioCaptureParameters()),
       receiver_(this, std::move(receiver)),
       consumer_receiver_(this),
       main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
@@ -283,10 +279,7 @@ void RecordingService::StopRecording() {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
   refresh_timer_.Stop();
   video_capturer_remote_->Stop();
-  for (auto& capturer : audio_capturers_) {
-    capturer->Stop();
-  }
-  audio_capturers_.clear();
+  MaybeStopAudioRecording();
 }
 
 void RecordingService::OnRecordedWindowChangingRoot(
@@ -481,22 +474,44 @@ void RecordingService::StartNewRecording(
   if (!should_record_audio)
     return;
 
+  audio_stream_mixer_ = AudioStreamMixer::Create(encoding_task_runner_);
+
   if (microphone_stream_factory) {
-    audio_capturers_.emplace_back(std::make_unique<AudioCapturer>(
-        media::AudioDeviceDescription::kDefaultDeviceId,
-        std::move(microphone_stream_factory), audio_parameters_,
-        BindRepeatingToMainThread(&RecordingService::OnAudioCaptured)));
+    // Ideally, we should be able to use echo cancellation with the microphone,
+    // but due to observed distortion to the user's voice that it may cause, we
+    // decided to hold off for now.
+    // We use automatic gain control for the microphone capture since depending
+    // on the users voice and their environment, the strength and clarity may
+    // vary. System audio is just captured as is.
+    audio_stream_mixer_.AsyncCall(&AudioStreamMixer::AddAudioCapturer)
+        .WithArgs(media::AudioDeviceDescription::kDefaultDeviceId,
+                  std::move(microphone_stream_factory),
+                  /*use_automatic_gain_control=*/true,
+                  /*use_echo_canceller=*/false);
   }
 
   if (system_audio_stream_factory) {
-    audio_capturers_.emplace_back(std::make_unique<AudioCapturer>(
-        media::AudioDeviceDescription::kLoopbackInputDeviceId,
-        std::move(system_audio_stream_factory), audio_parameters_,
-        BindRepeatingToMainThread(&RecordingService::OnAudioCaptured)));
+    audio_stream_mixer_.AsyncCall(&AudioStreamMixer::AddAudioCapturer)
+        .WithArgs(media::AudioDeviceDescription::kLoopbackInputDeviceId,
+                  std::move(system_audio_stream_factory),
+                  /*use_automatic_gain_control=*/false,
+                  /*use_echo_canceller=*/false);
   }
 
-  for (auto& capturer : audio_capturers_) {
-    capturer->Start();
+  encoder_muxer_.AsyncCall(&RecordingEncoder::GetEncodeAudioCallback)
+      .Then(base::BindOnce(&RecordingService::OnEncodeAudioCallbackReady,
+                           weak_ptr_factory_.GetWeakPtr()));
+}
+
+void RecordingService::OnEncodeAudioCallbackReady(
+    EncodeAudioCallback callback) {
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
+
+  // This can be triggered after we have stopped recording already, e.g. in
+  // tests.
+  if (audio_stream_mixer_) {
+    audio_stream_mixer_.AsyncCall(&AudioStreamMixer::Start)
+        .WithArgs(std::move(callback));
   }
 }
 
@@ -565,32 +580,8 @@ void RecordingService::OnVideoCapturerDisconnected() {
   // capturer. We will stop the recording and flush whatever video chunks we
   // currently have.
   did_failure_occur_ = true;
-  for (auto& capturer : audio_capturers_) {
-    capturer->Stop();
-  }
-  audio_capturers_.clear();
+  MaybeStopAudioRecording();
   TerminateRecording(mojom::RecordingStatus::kVizVideoCapturerDisconnected);
-}
-
-void RecordingService::OnAudioCaptured(
-    std::unique_ptr<media::AudioBus> audio_bus,
-    base::TimeTicks audio_capture_time) {
-  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
-  DCHECK(encoder_muxer_);
-
-  // We ignore any subsequent frames after a failure.
-  if (did_failure_occur_) {
-    return;
-  }
-
-  if (audio_capturers_.size() > 1) {
-    // Audio mixing has not been implemented yet.
-    NOTIMPLEMENTED_LOG_ONCE();
-    return;
-  }
-
-  encoder_muxer_.AsyncCall(&RecordingEncoder::EncodeAudio)
-      .WithArgs(std::move(audio_bus), audio_capture_time);
 }
 
 void RecordingService::OnEncodingFailure(mojom::RecordingStatus status) {
@@ -625,6 +616,15 @@ void RecordingService::OnRefreshTimerFired() {
 
   if (video_capturer_remote_)
     video_capturer_remote_->RequestRefreshFrame();
+}
+
+void RecordingService::MaybeStopAudioRecording() {
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
+
+  if (audio_stream_mixer_) {
+    audio_stream_mixer_.AsyncCall(&AudioStreamMixer::Stop);
+    audio_stream_mixer_.Reset();
+  }
 }
 
 }  // namespace recording

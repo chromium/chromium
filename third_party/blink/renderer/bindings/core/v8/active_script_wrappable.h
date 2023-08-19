@@ -7,11 +7,10 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable_creation_key.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/active_script_wrappable_base.h"
+
 namespace blink {
-
-class ExecutionContext;
-
 // Derived by wrappable objects which need to remain alive due to ongoing
 // asynchronous activity, even if they are not referenced in the JavaScript or
 // Blink heap.
@@ -50,7 +49,9 @@ class ActiveScriptWrappable : public ActiveScriptWrappableBase {
 
   // See trait below.
   void ActiveScriptWrappableBaseConstructed() {
-    RegisterActiveScriptWrappable();
+    if (auto* context = static_cast<const T*>(this)->GetExecutionContext()) {
+      RegisterActiveScriptWrappable(context->GetIsolate());
+    }
   }
 
  protected:
@@ -80,8 +81,8 @@ class LazyActiveScriptWrappable : public ActiveScriptWrappableBase {
   ~LazyActiveScriptWrappable() override = default;
 
   // Registers the ASW, activating it.
-  void RegisterActiveScriptWrappable() {
-    ActiveScriptWrappableBase::RegisterActiveScriptWrappable();
+  void RegisterActiveScriptWrappable(v8::Isolate* isolate) {
+    ActiveScriptWrappableBase::RegisterActiveScriptWrappable(isolate);
   }
 
   bool IsContextDestroyed() const final {

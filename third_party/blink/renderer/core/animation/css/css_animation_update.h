@@ -211,11 +211,6 @@ class CORE_EXPORT CSSAnimationUpdate final {
     changed_timeline_attachments_ = std::move(attachments);
   }
 
-  // TODO(crbug.com/1446702): Remove scroll/view-timeline-attachment.
-  void SetChangedAttachingTimelines(AttachingTimelineMap timelines) {
-    changed_attaching_timelines_ = std::move(timelines);
-  }
-
   const HeapVector<NewCSSAnimation>& NewAnimations() const {
     return new_animations_;
   }
@@ -275,11 +270,6 @@ class CORE_EXPORT CSSAnimationUpdate final {
     return changed_timeline_attachments_;
   }
 
-  // TODO(crbug.com/1446702): Remove scroll/view-timeline-attachment.
-  const AttachingTimelineMap& ChangedAttachingTimelines() const {
-    return changed_attaching_timelines_;
-  }
-
   void AdoptActiveInterpolationsForAnimations(
       ActiveInterpolationsMap& new_map) {
     new_map.swap(active_interpolations_for_animations_);
@@ -310,8 +300,7 @@ class CORE_EXPORT CSSAnimationUpdate final {
            !changed_scroll_timelines_.empty() ||
            !changed_view_timelines_.empty() ||
            !changed_deferred_timelines_.empty() ||
-           !changed_timeline_attachments_.empty() ||
-           !changed_attaching_timelines_.empty();
+           !changed_timeline_attachments_.empty();
   }
 
   void Trace(Visitor* visitor) const {
@@ -326,9 +315,6 @@ class CORE_EXPORT CSSAnimationUpdate final {
     visitor->Trace(changed_view_timelines_);
     visitor->Trace(changed_deferred_timelines_);
     visitor->Trace(changed_timeline_attachments_);
-
-    // TODO(crbug.com/1446702): Remove scroll/view-timeline-attachment.
-    visitor->Trace(changed_attaching_timelines_);
   }
 
  private:
@@ -356,9 +342,6 @@ class CORE_EXPORT CSSAnimationUpdate final {
   CSSViewTimelineMap changed_view_timelines_;
   CSSDeferredTimelineMap changed_deferred_timelines_;
   TimelineAttachmentMap changed_timeline_attachments_;
-
-  // TODO(crbug.com/1446702): Remove scroll/view-timeline-attachment.
-  AttachingTimelineMap changed_attaching_timelines_;
 
   ActiveInterpolationsMap active_interpolations_for_animations_;
   ActiveInterpolationsMap active_interpolations_for_transitions_;

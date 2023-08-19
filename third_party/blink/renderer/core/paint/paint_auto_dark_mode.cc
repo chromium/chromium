@@ -15,7 +15,7 @@ namespace blink {
 namespace {
 
 // The maximum ratio of image size to screen size that is considered an icon.
-constexpr float kMaxIconRatio = 0.15f;
+constexpr float kMaxIconRatio = 0.13f;
 constexpr int kMaxImageLength = 50;
 // Images with either dimension less than this value are considered separators.
 constexpr int kMaxImageSeparatorLength = 8;
@@ -25,6 +25,8 @@ constexpr int kMaxImageSeparatorLength = 8;
 DarkModeFilter::ImageType GetImageType(float dest_to_device_ratio,
                                        const gfx::Rect& dest_rect,
                                        const gfx::Rect& src_rect) {
+  // TODO: Use a viewport relative threshold for the size check instead of
+  // absolute threshold.
   if (dest_to_device_ratio <= kMaxIconRatio ||
       (dest_rect.width() <= kMaxImageLength &&
        dest_rect.height() <= kMaxImageLength))
@@ -37,9 +39,11 @@ DarkModeFilter::ImageType GetImageType(float dest_to_device_ratio,
   return DarkModeFilter::ImageType::kPhoto;
 }
 
-float GetRatio(LocalFrame& local_frame, const gfx::RectF& dest_rect) {
-  gfx::Rect device_rect =
-      local_frame.GetChromeClient().GetScreenInfo(local_frame).rect;
+float GetRatio(const display::ScreenInfo& screen_info,
+               const gfx::RectF& dest_rect) {
+  const gfx::SizeF& device_rect = gfx::ScaleSize(
+      gfx::SizeF(screen_info.rect.size()), screen_info.device_scale_factor);
+
   return std::max(dest_rect.width() / device_rect.width(),
                   dest_rect.height() / device_rect.height());
 }
@@ -56,18 +60,21 @@ ImageAutoDarkMode ImageClassifierHelper::GetImageAutoDarkMode(
   if (!style.ForceDark())
     return ImageAutoDarkMode::Disabled();
 
+  const display::ScreenInfo& screen_info =
+      local_frame.GetChromeClient().GetScreenInfo(local_frame);
+
   return ImageAutoDarkMode(role, style.ForceDark(),
-                           GetImageType(GetRatio(local_frame, dest_rect),
+                           GetImageType(GetRatio(screen_info, dest_rect),
                                         gfx::ToEnclosingRect(dest_rect),
                                         gfx::ToEnclosingRect(src_rect)));
 }
 
 // static
 DarkModeFilter::ImageType ImageClassifierHelper::GetImageTypeForTesting(
-    LocalFrame& local_frame,
+    display::ScreenInfo& screen_info,
     const gfx::RectF& dest_rect,
     const gfx::RectF& src_rect) {
-  return GetImageType(GetRatio(local_frame, dest_rect),
+  return GetImageType(GetRatio(screen_info, dest_rect),
                       gfx::ToEnclosingRect(dest_rect),
                       gfx::ToEnclosingRect(src_rect));
 }

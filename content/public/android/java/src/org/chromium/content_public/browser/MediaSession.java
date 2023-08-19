@@ -5,7 +5,6 @@
 package org.chromium.content_public.browser;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
 import org.chromium.content.browser.MediaSessionImpl;
@@ -27,7 +26,6 @@ public abstract class MediaSession {
     /**
      * @return The list of observers.
      */
-    @VisibleForTesting
     public abstract ObserverList.RewindableIterator<MediaSessionObserver> getObserversForTesting();
 
     /**

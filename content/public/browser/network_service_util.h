@@ -20,6 +20,7 @@ CONTENT_EXPORT bool IsInProcessNetworkService();
 
 // Sets the flag of whether the network service is forced to be running in the
 // browser process. The flag will be checked in |IsInProcessNetworkService()|.
+CONTENT_EXPORT void ForceOutOfProcessNetworkService();
 CONTENT_EXPORT void ForceInProcessNetworkService();
 }  // namespace content
 

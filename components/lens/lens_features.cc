@@ -55,10 +55,34 @@ BASE_FEATURE(kEnableLensPing,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<std::string> kHomepageURLForLens{
-    &kLensStandalone, "lens-homepage-url", "https://lens.google.com/"};
+    &kLensStandalone, "lens-homepage-url", "https://lens.google.com/v3/"};
 
 constexpr base::FeatureParam<bool> kEnableLensHtmlRedirectFix{
-    &kLensStandalone, "lens-html-redirect-fix", true};
+    &kLensStandalone, "lens-html-redirect-fix", false};
+
+constexpr base::FeatureParam<bool>
+    kDismissLoadingStateOnDocumentOnLoadCompletedInPrimaryMainFrame{
+        &kLensStandalone,
+        "dismiss-loading-state-on-document-on-load-completed-in-primary-main-"
+        "frame",
+        false};
+
+constexpr base::FeatureParam<bool> kDismissLoadingStateOnDomContentLoaded{
+    &kLensStandalone, "dismiss-loading-state-on-dom-content-loaded", false};
+
+constexpr base::FeatureParam<bool> kDismissLoadingStateOnDidFinishNavigation{
+    &kLensStandalone, "dismiss-loading-state-on-did-finish-navigation", false};
+
+constexpr base::FeatureParam<bool>
+    kDismissLoadingStateOnNavigationEntryCommitted{
+        &kLensStandalone, "dismiss-loading-state-on-navigation-entry-committed",
+        true};
+
+constexpr base::FeatureParam<bool> kDismissLoadingStateOnDidFinishLoad{
+    &kLensStandalone, "dismiss-loading-state-on-did-finish-load", false};
+
+constexpr base::FeatureParam<bool> kDismissLoadingStateOnPrimaryPageChanged{
+    &kLensStandalone, "dismiss-loading-state-on-primary-page-changed", false};
 
 constexpr base::FeatureParam<int> kMaxPixelsForRegionSearch{
     &kLensImageCompression, "region-search-dimensions-max-pixels", 1000};
@@ -76,10 +100,10 @@ const base::FeatureParam<bool> kLensContextMenuUseAlternateText{
     &kLensSearchOptimizations, "use-lens-context-menu-alternate-text", false};
 
 const base::FeatureParam<bool> kUseWebpInImageSearch{
-    &kLensImageFormatOptimizations, "use-webp-image-search", false};
+    &kLensImageFormatOptimizations, "use-webp-image-search", true};
 
 const base::FeatureParam<int> kEncodingQualityImageSearch{
-    &kLensImageFormatOptimizations, "encoding-quality-image-search", 90};
+    &kLensImageFormatOptimizations, "encoding-quality-image-search", 45};
 
 const base::FeatureParam<bool> kUseWebpInRegionSearch{
     &kLensImageFormatOptimizations, "use-webp-region-search", false};
@@ -88,7 +112,7 @@ const base::FeatureParam<bool> kUseJpegInRegionSearch{
     &kLensImageFormatOptimizations, "use-jpeg-region-search", true};
 
 const base::FeatureParam<int> kEncodingQualityRegionSearch{
-    &kLensImageFormatOptimizations, "encoding-quality-region-search", 90};
+    &kLensImageFormatOptimizations, "encoding-quality-region-search", 40};
 
 constexpr base::FeatureParam<std::string> kLensPingURL{
     &kEnableLensPing, "lens-ping-url",
@@ -120,6 +144,30 @@ std::string GetHomepageURLForLens() {
 
 bool GetEnableLensHtmlRedirectFix() {
   return kEnableLensHtmlRedirectFix.Get();
+}
+
+bool GetDismissLoadingStateOnDocumentOnLoadCompletedInPrimaryMainFrame() {
+  return kDismissLoadingStateOnDocumentOnLoadCompletedInPrimaryMainFrame.Get();
+}
+
+bool GetDismissLoadingStateOnDomContentLoaded() {
+  return kDismissLoadingStateOnDomContentLoaded.Get();
+}
+
+bool GetDismissLoadingStateOnDidFinishNavigation() {
+  return kDismissLoadingStateOnDidFinishNavigation.Get();
+}
+
+bool GetDismissLoadingStateOnNavigationEntryCommitted() {
+  return kDismissLoadingStateOnNavigationEntryCommitted.Get();
+}
+
+bool GetDismissLoadingStateOnDidFinishLoad() {
+  return kDismissLoadingStateOnDidFinishLoad.Get();
+}
+
+bool GetDismissLoadingStateOnPrimaryPageChanged() {
+  return kDismissLoadingStateOnPrimaryPageChanged.Get();
 }
 
 bool GetEnableImageSearchUnifiedSidePanelFor3PDse() {

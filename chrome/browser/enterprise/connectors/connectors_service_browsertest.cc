@@ -14,14 +14,15 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
+#include "chrome/browser/enterprise/connectors/test/deep_scanning_browsertest_base.h"
+#include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/reporting_util.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_browsertest_base.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/enterprise/browser/enterprise_switches.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/reporting_job_configuration_base.h"
@@ -147,7 +148,7 @@ bool ContainsClientId(const AnalysisSettings& settings) {
 enum class ManagementStatus { AFFILIATED, UNAFFILIATED, UNMANAGED };
 
 class ConnectorsServiceProfileBrowserTest
-    : public safe_browsing::DeepScanningBrowserTestBase {
+    : public test::DeepScanningBrowserTestBase {
  public:
   explicit ConnectorsServiceProfileBrowserTest(
       ManagementStatus management_status)
@@ -170,20 +171,17 @@ class ConnectorsServiceProfileBrowserTest
   }
 
   void SetUpOnMainThread() override {
-    safe_browsing::DeepScanningBrowserTestBase::SetUpOnMainThread();
+    test::DeepScanningBrowserTestBase::SetUpOnMainThread();
 
     SetUpProfileData();
 
-    if (management_status_ != ManagementStatus::UNMANAGED)
+    if (management_status_ != ManagementStatus::UNMANAGED) {
       SetUpDeviceData();
+    }
   }
 
   void TearDownOnMainThread() override {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    // Remove cached user from ProfileHelper so it does not interfere with other
-    // workflows
-    ash::ProfileHelper::Get()->RemoveUserFromListForTesting(
-        AccountId::FromUserEmailGaiaId(kTestEmail, kTestGaiaId));
     user_manager_enabler_.reset();
 #endif
   }
@@ -192,7 +190,7 @@ class ConnectorsServiceProfileBrowserTest
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     EXPECT_TRUE(browser()->profile()->IsMainProfile());
 #elif !BUILDFLAG(IS_CHROMEOS_ASH)
-    safe_browsing::SetProfileDMToken(browser()->profile(), kFakeProfileDMToken);
+    test::SetProfileDMToken(browser()->profile(), kFakeProfileDMToken);
 #endif
 
     enterprise_management::PolicyData profile_policy_data;
@@ -528,13 +526,6 @@ INSTANTIATE_TEST_SUITE_P(
 
 IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
                        DeviceReporting) {
-  // This is not a desktop platform don't try the non-cloud case since it
-  // is not supported.
-#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_LINUX)
-  if (settings_value() == kNormalLocalAnalysisSettingsPref)
-    return;
-#endif
-
   SetPrefs(ConnectorPref(connector()), ConnectorScopePref(connector()),
            settings_value(), /*profile_scope*/ false);
   SetPrefs(ConnectorPref(ReportingConnector::SECURITY_EVENT),
@@ -543,6 +534,15 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
   auto settings =
       ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
           ->GetAnalysisSettings(GURL(kTestUrl), connector());
+
+  // Expect no local analysis settings on platforms where it is unsupported.
+#if !BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
+  if (settings_value() == kNormalLocalAnalysisSettingsPref) {
+    ASSERT_FALSE(settings.has_value());
+    return;
+  }
+#endif
+
   if (management_status() == ManagementStatus::UNMANAGED) {
     if (settings_value() == kNormalLocalAnalysisSettingsPref) {
       ASSERT_TRUE(settings.has_value());
@@ -574,13 +574,6 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
                        ProfileReporting) {
-  // This is not a desktop platform don't try the non-cloud case since it
-  // is not supported.
-#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_LINUX)
-  if (settings_value() == kNormalLocalAnalysisSettingsPref)
-    return;
-#endif
-
   SetPrefs(ConnectorPref(connector()), ConnectorScopePref(connector()),
            settings_value());
   SetPrefs(ConnectorPref(ReportingConnector::SECURITY_EVENT),
@@ -589,6 +582,14 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
   auto settings =
       ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
           ->GetAnalysisSettings(GURL(kTestUrl), connector());
+
+  // Expect no local analysis settings on platforms where it is unsupported.
+#if !BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
+  if (settings_value() == kNormalLocalAnalysisSettingsPref) {
+    ASSERT_FALSE(settings.has_value());
+    return;
+  }
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (management_status() == ManagementStatus::UNMANAGED) {
@@ -661,18 +662,19 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
                        NoReporting) {
-  // This is not a desktop platform don't try the non-cloud case since it
-  // is not supported.
-#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_LINUX)
-  if (settings_value() == kNormalLocalAnalysisSettingsPref)
-    return;
-#endif
-
   SetPrefs(ConnectorPref(connector()), ConnectorScopePref(connector()),
            settings_value());
   auto settings =
       ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
           ->GetAnalysisSettings(GURL(kTestUrl), connector());
+
+  // Expect no local analysis settings on platforms where it is unsupported.
+#if !BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
+  if (settings_value() == kNormalLocalAnalysisSettingsPref) {
+    ASSERT_FALSE(settings.has_value());
+    return;
+  }
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (management_status() == ManagementStatus::UNMANAGED) {
@@ -747,6 +749,74 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
       break;
   }
 #endif
+}
+
+IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
+                       Affiliation) {
+  SetPrefs(ConnectorPref(connector()), ConnectorScopePref(connector()),
+           settings_value());
+  auto settings =
+      ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
+          ->GetAnalysisSettings(GURL(kTestUrl), connector());
+
+  if (settings_value() == kNormalLocalAnalysisSettingsPref) {
+    // Expect no local analysis settings on platforms where it is unsupported.
+#if !BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
+    ASSERT_FALSE(settings.has_value());
+#else
+    // Since they don't use anything tied to DM tokens and rely on a separately
+    // installed agent, local analysis policies are always returned regardless
+    // of the management status.
+    ASSERT_TRUE(settings.has_value());
+    ASSERT_TRUE(settings.value().cloud_or_local_settings.is_local_analysis());
+    ASSERT_TRUE(settings.value().per_profile);
+    ASSERT_EQ("path_user",
+              settings.value().cloud_or_local_settings.local_path());
+    ASSERT_TRUE(settings.value().cloud_or_local_settings.user_specific());
+#endif
+  } else {
+#if BUILDFLAG(IS_CHROMEOS)
+    if (management_status() == ManagementStatus::UNMANAGED) {
+      ASSERT_FALSE(settings.has_value());
+    } else {
+      ASSERT_TRUE(settings.has_value());
+      ASSERT_TRUE(settings.value().cloud_or_local_settings.is_cloud_analysis());
+      ASSERT_EQ(kFakeBrowserDMToken,
+                settings.value().cloud_or_local_settings.dm_token());
+      ASSERT_FALSE(settings.value().per_profile);
+    }
+#else
+    switch (management_status()) {
+      case ManagementStatus::UNAFFILIATED:
+        ASSERT_FALSE(settings.has_value());
+        break;
+      case ManagementStatus::AFFILIATED:
+        EXPECT_TRUE(settings.has_value());
+        ASSERT_TRUE(
+            settings.value().cloud_or_local_settings.is_cloud_analysis());
+        ASSERT_EQ(kFakeProfileDMToken,
+                  settings.value().cloud_or_local_settings.dm_token());
+        if (enterprise_connectors_enabled_on_mgs()) {
+          ASSERT_FALSE(ContainsClientId(settings.value()));
+        } else {
+          ASSERT_FALSE(settings.value().client_metadata);
+        }
+        ASSERT_TRUE(settings.value().per_profile);
+        break;
+      case ManagementStatus::UNMANAGED:
+        EXPECT_TRUE(settings.has_value());
+        ASSERT_EQ(kFakeProfileDMToken,
+                  settings.value().cloud_or_local_settings.dm_token());
+        if (enterprise_connectors_enabled_on_mgs()) {
+          ASSERT_FALSE(ContainsClientId(settings.value()));
+        } else {
+          ASSERT_FALSE(settings.value().client_metadata);
+        }
+        ASSERT_TRUE(settings.value().per_profile);
+        break;
+    }
+#endif
+  }
 }
 
 class ConnectorsServiceRealtimeURLCheckProfileBrowserTest

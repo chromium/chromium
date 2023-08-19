@@ -6,6 +6,8 @@ import("//build/config/chromeos/ui_mode.gni")
 
 component("user_manager") {
   sources = [
+    "multi_user/multi_user_sign_in_policy.cc",
+    "multi_user/multi_user_sign_in_policy.h",
     "user_info.cc",
     "user_info.h",
     "user_info_impl.cc",

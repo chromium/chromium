@@ -898,21 +898,26 @@ void FrameSelection::FocusedOrActiveStateChanged() {
   // Trigger style invalidation from the focused element. Even though
   // the focused element hasn't changed, the evaluation of focus pseudo
   // selectors are dependent on whether the frame is focused and active.
-  if (Element* element = GetDocument().FocusedElement())
+  if (Element* element = GetDocument().FocusedElement()) {
     element->FocusStateChanged();
+  }
 
+  if (!GetDocument().HaveRenderBlockingStylesheetsLoaded()) {
+    return;
+  }
   GetDocument().UpdateStyleAndLayoutTree();
 
   // Because LayoutObject::selectionBackgroundColor() and
   // LayoutObject::selectionForegroundColor() check if the frame is active,
   // we have to update places those colors were painted.
-  auto* view = GetDocument().GetLayoutView();
-  if (view)
+  if (LayoutView* view = GetDocument().GetLayoutView()) {
     layout_selection_->InvalidatePaintForSelection();
+  }
 
   // Caret appears in the active frame.
-  if (active_and_focused)
+  if (active_and_focused) {
     SetSelectionFromNone();
+  }
   frame_caret_->SetCaretEnabled(active_and_focused);
 
   // Update for caps lock state
@@ -971,8 +976,10 @@ static bool IsFrameElement(const Node* n) {
 
 void FrameSelection::SetFocusedNodeIfNeeded() {
   if (ComputeVisibleSelectionInDOMTreeDeprecated().IsNone() ||
-      !FrameIsFocused())
+      !FrameIsFocused() ||
+      !GetDocument().HaveRenderBlockingStylesheetsLoaded()) {
     return;
+  }
 
   if (Element* target =
           ComputeVisibleSelectionInDOMTreeDeprecated().RootEditableElement()) {
@@ -1353,45 +1360,65 @@ EphemeralRange FrameSelection::GetSelectionRangeAroundCaret(
   if (!selection.IsCaret()) {
     return EphemeralRange();
   }
-  const Position position = selection.Start();
-  static const WordSide kWordSideList[2] = {kNextWordIfOnBoundary,
-                                            kPreviousWordIfOnBoundary};
-  for (WordSide word_side : kWordSideList) {
-    Position start;
-    Position end;
-    // Use word granularity by default unless sentence granularity is explicitly
-    // requested.
-    if (text_granularity == TextGranularity::kSentence) {
-      start = StartOfSentencePosition(position);
-      end = EndOfSentence(position, SentenceTrailingSpaceBehavior::kOmitSpace)
-                .GetPosition();
-    } else {
-      start = StartOfWordPosition(position, word_side);
-      end = EndOfWordPosition(position, word_side);
-    }
 
-    // TODO(editing-dev): |StartOfWord()| and |EndOfWord()| should not make null
-    // for non-null parameter.
-    // See http://crbug.com/872443
-    if (start.IsNull() || end.IsNull()) {
-      continue;
-    }
-
-    if (start > end) {
-      // Since word boundaries are computed on flat tree, they can be reversed
-      // when mapped back to DOM.
-      std::swap(start, end);
-    }
-
-    String text = PlainText(EphemeralRange(start, end));
-    if (text.empty() || IsSeparator(text.CharacterStartingAt(0))) {
-      continue;
-    }
-
-    return EphemeralRange(start, end);
+  // Determine the selection range at each side of the caret, then prefer to set
+  // a range that does not start with a separator character.
+  const EphemeralRange next_range = GetSelectionRangeAroundPosition(
+      text_granularity, selection.Start(), kNextWordIfOnBoundary);
+  const String next_text = PlainText(next_range);
+  if (!next_text.empty() && !IsSeparator(next_text.CharacterStartingAt(0))) {
+    return next_range;
   }
 
+  const EphemeralRange previous_range = GetSelectionRangeAroundPosition(
+      text_granularity, selection.Start(), kPreviousWordIfOnBoundary);
+  const String previous_text = PlainText(previous_range);
+  if (!previous_text.empty() &&
+      !IsSeparator(previous_text.CharacterStartingAt(0))) {
+    return previous_range;
+  }
+
+  // Otherwise, select a range if it contains a non-separator character.
+  if (!ContainsOnlySeparatorsOrEmpty(next_text)) {
+    return next_range;
+  } else if (!ContainsOnlySeparatorsOrEmpty(previous_text)) {
+    return previous_range;
+  }
+
+  // Otherwise, don't select anything.
   return EphemeralRange();
+}
+
+EphemeralRange FrameSelection::GetSelectionRangeAroundPosition(
+    TextGranularity text_granularity,
+    Position position,
+    WordSide word_side) const {
+  Position start;
+  Position end;
+  // Use word granularity by default unless sentence granularity is explicitly
+  // requested.
+  if (text_granularity == TextGranularity::kSentence) {
+    start = StartOfSentencePosition(position);
+    end = EndOfSentence(position, SentenceTrailingSpaceBehavior::kOmitSpace)
+              .GetPosition();
+  } else {
+    start = StartOfWordPosition(position, word_side);
+    end = EndOfWordPosition(position, word_side);
+  }
+
+  // TODO(editing-dev): |StartOfWord()| and |EndOfWord()| should not make null
+  // for non-null parameter. See http://crbug.com/872443.
+  if (start.IsNull() || end.IsNull()) {
+    return EphemeralRange();
+  }
+
+  if (start > end) {
+    // Since word boundaries are computed on flat tree, they can be reversed
+    // when mapped back to DOM.
+    std::swap(start, end);
+  }
+
+  return EphemeralRange(start, end);
 }
 
 }  // namespace blink

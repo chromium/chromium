@@ -177,6 +177,8 @@ TEST_F(BluetoothDeviceStatusNotifierImplTest, PairedDevicesChanges) {
   // Initially, observer would receive no updates.
   ASSERT_EQ(0u, observer->paired_device_properties_list().size());
   EXPECT_TRUE(observer->paired_device_properties_list().empty());
+  ASSERT_EQ(0u, observer->disconnected_device_properties_list().size());
+  EXPECT_TRUE(observer->disconnected_device_properties_list().empty());
 
   std::vector<mojom::PairedBluetoothDevicePropertiesPtr> paired_devices;
   paired_devices.push_back(GenerateStubPairedDeviceProperties(
@@ -188,18 +190,21 @@ TEST_F(BluetoothDeviceStatusNotifierImplTest, PairedDevicesChanges) {
   SetPairedDevices(paired_devices, /*ids=*/{"id"});
   ASSERT_EQ(0u, observer->paired_device_properties_list().size());
   EXPECT_TRUE(observer->paired_device_properties_list().empty());
+  ASSERT_EQ(0u, observer->disconnected_device_properties_list().size());
 
   paired_devices.pop_back();
   paired_devices.push_back(GenerateStubPairedDeviceProperties(
       "id1",
       /*connection_state=*/mojom::DeviceConnectionState::kConnected));
 
-  // Add a paired device and verify that the observer was notified.
+  // Remove the paired, disconnected device and add a paired, connected device
+  // and verify that only the paired list observer was notified.
   SetPairedDevices(paired_devices, /*ids=*/{"id1"});
   ASSERT_EQ(1u, observer->paired_device_properties_list().size());
   ASSERT_EQ(
       "id1-Identifier",
       observer->paired_device_properties_list()[0]->device_properties->id);
+  ASSERT_EQ(0u, observer->disconnected_device_properties_list().size());
 
   paired_devices.push_back(GenerateStubPairedDeviceProperties(
       "id2",
@@ -217,11 +222,14 @@ TEST_F(BluetoothDeviceStatusNotifierImplTest, PairedDevicesChanges) {
   ASSERT_EQ(
       "id3-Identifier",
       observer->paired_device_properties_list()[2]->device_properties->id);
+  ASSERT_EQ(0u, observer->disconnected_device_properties_list().size());
 
-  // Simulate device being unpaired, the observer should not be called.
+  // Simulate device being unpaired, the observer should be notified the device
+  // was disconnected.
   paired_devices.pop_back();
   SetPairedDevices(paired_devices, /*ids=*/{"id1", "id2"});
   ASSERT_EQ(3u, observer->paired_device_properties_list().size());
+  ASSERT_EQ(1u, observer->disconnected_device_properties_list().size());
 
   // Add the same device again.
   paired_devices.push_back(GenerateStubPairedDeviceProperties(
@@ -234,6 +242,7 @@ TEST_F(BluetoothDeviceStatusNotifierImplTest, PairedDevicesChanges) {
   ASSERT_EQ(
       "id3-Identifier",
       observer->paired_device_properties_list()[3]->device_properties->id);
+  ASSERT_EQ(1u, observer->disconnected_device_properties_list().size());
 }
 
 TEST_F(BluetoothDeviceStatusNotifierImplTest, ConnectedDevicesChanges) {

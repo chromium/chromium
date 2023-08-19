@@ -317,6 +317,23 @@ def main():
                                  enforce_length=False))
   generate(c, "ipaddress-invalid_addr.pem")
 
+  v4_mapped_prefix = (0, ) * 10 + (255, ) * 2
+  v4_mapped_mask = (255, ) * 12
+  c = NameConstraintsGenerator()
+  c.add_permitted(ip_address_range((192, 168, 1, 0), (255, 255, 255, 0)))
+  c.add_excluded(ip_address_range((192, 168, 1, 1), (255, 255, 255, 255)))
+  c.add_excluded(
+      ip_address_range(v4_mapped_prefix + (192, 168, 1, 2),
+                       v4_mapped_mask + (255, 255, 255, 255)))
+  c.add_permitted(
+      ip_address_range(v4_mapped_prefix + (192, 168, 2, 0),
+                       v4_mapped_mask + (255, 255, 255, 0)))
+  c.add_excluded(
+      ip_address_range(v4_mapped_prefix + (192, 168, 2, 1),
+                       v4_mapped_mask + (255, 255, 255, 255)))
+  c.add_excluded(ip_address_range((192, 168, 2, 2), (255, 255, 255, 255)))
+  generate(c, "ipaddress-mapped_addrs.pem")
+
   n_us = generate_names.NameGenerator()
   n_us.add_rdn().add_attr('countryName', 'PRINTABLESTRING', 'US')
   generate(n_us, "name-us.pem")

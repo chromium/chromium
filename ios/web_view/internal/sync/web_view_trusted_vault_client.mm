@@ -17,10 +17,6 @@
 #import "ios/web_view/public/cwv_identity.h"
 #import "ios/web_view/public/cwv_trusted_vault_provider.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace ios_web_view {
 
 namespace {

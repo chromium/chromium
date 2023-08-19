@@ -67,12 +67,15 @@ namespace {
 // be PRERENDER or PRECONNECT. Due to the current design, the prerender one
 // should be higher than the preconnect one, otherwise preconnect will never
 // run.
+// Android uses lower thresholds determined based on an experiment. For
+// non-Android, we're now running a similar experiment with a different
+// progress. See https://crbug.com/1399401 for the current progress.
 const base::FeatureParam<double> kPrerenderDUIConfidenceCutoff{
     &features::kAutocompleteActionPredictorConfidenceCutoff,
-    "prerender_dui_confidence_cutoff", 0.8};
+    "prerender_dui_confidence_cutoff", BUILDFLAG(IS_ANDROID) ? 0.5 : 0.8};
 const base::FeatureParam<double> kPreconnectConfidenceCutoff{
     &features::kAutocompleteActionPredictorConfidenceCutoff,
-    "preconnect_dui_confidence_cutoff", 0.5};
+    "preconnect_dui_confidence_cutoff", BUILDFLAG(IS_ANDROID) ? 0.3 : 0.5};
 
 const int kMinimumNumberOfHits = 3;
 const size_t kMaximumTransitionalMatchesSize = 1024 * 1024;  // 1 MB.
@@ -296,6 +299,17 @@ void AutocompleteActionPredictor::StartPrerendering(
 }
 
 AutocompleteActionPredictor::Action
+AutocompleteActionPredictor::DecideActionByConfidence(double confidence) {
+  Action action = ACTION_NONE;
+  if (confidence >= kPrerenderDUIConfidenceCutoff.Get()) {
+    action = ACTION_PRERENDER;
+  } else if (confidence >= kPreconnectConfidenceCutoff.Get()) {
+    action = ACTION_PRECONNECT;
+  }
+  return action;
+}
+
+AutocompleteActionPredictor::Action
 AutocompleteActionPredictor::RecommendAction(
     const std::u16string& user_text,
     const AutocompleteMatch& match,
@@ -308,14 +322,10 @@ AutocompleteActionPredictor::RecommendAction(
                             is_in_db);
 
   // Map the confidence to an action.
-  Action action = ACTION_NONE;
-  if (confidence >= kPrerenderDUIConfidenceCutoff.Get()) {
-    action = ACTION_PRERENDER;
-  } else if (confidence >= kPreconnectConfidenceCutoff.Get()) {
-    action = ACTION_PRECONNECT;
-  }
+  Action action = DecideActionByConfidence(confidence);
 
-  // Downgrade prefetch to preconnect if this is a search match.
+  // Downgrade prerender to preconnect if this is a search match.
+  // Default search result engine pre* is managed by `SearchPrefetchService`.
   if (action == ACTION_PRERENDER && AutocompleteMatch::IsSearchType(match.type))
     action = ACTION_PRECONNECT;
 
@@ -369,7 +379,7 @@ void AutocompleteActionPredictor::OnOmniboxOpenedUrl(const OmniboxLog& log) {
   if (!log.is_popup_open || log.is_paste_and_go)
     return;
 
-  const AutocompleteMatch& match = log.result->match_at(log.selected_index);
+  const AutocompleteMatch& match = log.result->match_at(log.selection.line);
   const GURL& opened_url = match.destination_url;
 
   // Abandon the current prefetch. If it is to be used, it will be used very

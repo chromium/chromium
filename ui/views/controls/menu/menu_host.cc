@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/compositor/compositor.h"
 #include "ui/events/gestures/gesture_recognizer.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/controls/menu/menu_controller.h"
@@ -126,21 +127,18 @@ void MenuHost::InitMenuHost(const InitParams& init_params) {
   Widget::InitParams params(Widget::InitParams::TYPE_MENU);
   const MenuController* menu_controller =
       submenu_->GetMenuItem()->GetMenuController();
-  const MenuConfig& menu_config = MenuConfig::instance();
-  bool rounded_border = menu_config.CornerRadiusForMenu(menu_controller) != 0;
   bool bubble_border = submenu_->GetScrollViewContainer() &&
                        submenu_->GetScrollViewContainer()->HasBubbleBorder();
-  params.shadow_type =
-      (bubble_border || (menu_config.use_bubble_border && rounded_border))
-          ? Widget::InitParams::ShadowType::kNone
-          : Widget::InitParams::ShadowType::kDrop;
-  params.opacity = (bubble_border || rounded_border)
+  params.shadow_type = bubble_border ? Widget::InitParams::ShadowType::kNone
+                                     : Widget::InitParams::ShadowType::kDrop;
+  params.opacity = (bubble_border ||
+                    MenuConfig::instance().CornerRadiusForMenu(menu_controller))
                        ? Widget::InitParams::WindowOpacity::kTranslucent
                        : Widget::InitParams::WindowOpacity::kOpaque;
   params.parent = init_params.parent ? init_params.parent->GetNativeView()
-                                     : gfx::kNullNativeView;
+                                     : gfx::NativeView();
   params.context = init_params.context ? init_params.context->GetNativeWindow()
-                                       : gfx::kNullNativeWindow;
+                                       : gfx::NativeWindow();
   params.bounds = init_params.bounds;
 
 #if defined(USE_AURA)
@@ -206,6 +204,16 @@ void MenuHost::ShowMenuHost(bool do_capture) {
     } else {
       GetGestureRecognizer()->CancelActiveTouchesExcept(nullptr);
     }
+
+    if (record_init_to_presentation_time_ && owner_ &&
+        owner_->GetCompositor()) {
+      // Register callback to emit histogram to measure the time from when the
+      // menu host is initialized to when the next frame is successfully
+      // presented.
+      owner_->GetCompositor()->RequestSuccessfulPresentationTimeForNextFrame(
+          std::move(record_init_to_presentation_time_));
+    }
+
     // If MenuHost has no parent widget, it needs to call Show to get focus,
     // so that it will get keyboard events.
     if (owner_ == nullptr)

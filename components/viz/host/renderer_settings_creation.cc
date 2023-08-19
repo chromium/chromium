@@ -52,12 +52,6 @@ RendererSettings CreateRendererSettings() {
   renderer_settings.partial_swap_enabled =
       !command_line->HasSwitch(switches::kUIDisablePartialSwap);
 
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX)
-  // Simple frame rate throttling only works on macOS and Linux
-  renderer_settings.apply_simple_frame_rate_throttling =
-      features::IsSimpleFrameRateThrottlingEnabled();
-#endif
-
 #if BUILDFLAG(IS_APPLE)
   renderer_settings.release_overlay_resources_after_gpu_query = true;
   renderer_settings.auto_resize_output_surface = false;

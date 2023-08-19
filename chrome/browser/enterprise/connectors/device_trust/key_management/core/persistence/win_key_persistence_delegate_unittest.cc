@@ -88,6 +88,7 @@ class WinKeyPersistenceDelegateTest : public testing::Test {
         InstallUtil::GetDeviceTrustSigningKeyLocation(
             InstallUtil::ReadOnly(false));
 
+    ASSERT_TRUE(key.Valid());
     EXPECT_TRUE(key.WriteValue(signingkey_name.c_str(), wrapped.data(),
                                wrapped.size(), REG_BINARY) == ERROR_SUCCESS);
     EXPECT_TRUE(key.WriteValue(trustlevel_name.c_str(), trust_level) ==
@@ -145,6 +146,7 @@ TEST_F(WinKeyPersistenceDelegateTest, LoadKeyPair_InvalidTrustLevel) {
   std::tie(key, signingkey_name, trustlevel_name) =
       InstallUtil::GetDeviceTrustSigningKeyLocation(
           InstallUtil::ReadOnly(false));
+  ASSERT_TRUE(key.Valid());
   EXPECT_TRUE(key.WriteValue(signingkey_name.c_str(), wrapped.data(),
                              wrapped.size(), REG_BINARY) == ERROR_SUCCESS);
   EXPECT_TRUE(key.WriteValue(trustlevel_name.c_str(), 20) == ERROR_SUCCESS);
@@ -170,6 +172,7 @@ TEST_F(WinKeyPersistenceDelegateTest, LoadKeyPair_InvalidSigningKey) {
   std::tie(key, signingkey_name, trustlevel_name) =
       InstallUtil::GetDeviceTrustSigningKeyLocation(
           InstallUtil::ReadOnly(false));
+  ASSERT_TRUE(key.Valid());
   EXPECT_TRUE(key.WriteValue(signingkey_name.c_str(), invalid_key.c_str()) ==
               ERROR_SUCCESS);
   EXPECT_TRUE(key.WriteValue(trustlevel_name.c_str(), trust_level) ==
@@ -203,6 +206,16 @@ TEST_F(WinKeyPersistenceDelegateTest, ValidHardwareKeyPair_Success) {
   // Should expect no failure metrics.
   histogram_tester.ExpectTotalCount(
       base::StringPrintf(kErrorHistogramFormat, "LoadKeyPair"), 0);
+}
+
+// TODO(b/290068551): Add test coverage for this method.
+TEST_F(WinKeyPersistenceDelegateTest, PromoteTemporaryKeyPair) {
+  EXPECT_TRUE(persistence_delegate_->PromoteTemporaryKeyPair());
+}
+
+// TODO(b/290068551): Add test coverage for this method.
+TEST_F(WinKeyPersistenceDelegateTest, DeleteKeyPair) {
+  EXPECT_TRUE(persistence_delegate_->DeleteKeyPair(KeyStorageType::kTemporary));
 }
 
 }  // namespace enterprise_connectors

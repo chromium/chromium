@@ -48,7 +48,7 @@ class LayoutSVGInline : public LayoutInline {
   bool IsChildAllowed(LayoutObject*, const ComputedStyle&) const override;
 
   gfx::RectF ObjectBoundingBox() const final;
-  gfx::RectF StrokeBoundingBox() const final;
+  gfx::RectF DecoratedBoundingBox() const final;
   gfx::RectF VisualRectInLocalSVGCoordinates() const final;
 
   PhysicalRect VisualRectInDocument(

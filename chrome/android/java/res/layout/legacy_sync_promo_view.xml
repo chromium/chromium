@@ -7,11 +7,13 @@ found in the LICENSE file.
 <org.chromium.chrome.browser.signin.LegacySyncPromoView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content" >
+    android:layout_height="wrap_content"
+    android:id="@+id/legacy_sync_promo_view_frame_layout">
 
     <org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/card_view"
         android:layout_marginStart="@dimen/list_item_default_margin"
         android:layout_marginEnd="@dimen/list_item_default_margin"
         style="@style/MaterialCardStyle">
@@ -54,5 +56,13 @@ found in the LICENSE file.
         </LinearLayout>
 
     </org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow>
+
+    <ViewStub
+        android:id="@+id/recent_tab_empty_state_view_stub"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout="@layout/empty_state_view"
+        android:layout_gravity="center"
+        android:padding="@dimen/card_padding" />
 
 </org.chromium.chrome.browser.signin.LegacySyncPromoView>

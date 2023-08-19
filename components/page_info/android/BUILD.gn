@@ -40,13 +40,16 @@ android_resources("java_resources") {
     "java/res/layout/page_info_container.xml",
     "java/res/layout/page_info_row.xml",
     "java/res/layout/page_info_summary.xml",
+    "java/res/layout/page_info_title.xml",
     "java/res/values-night/dimens.xml",
     "java/res/values/dimens.xml",
     "java/res/values/ids.xml",
     "java/res/xml/page_info_ad_personalization_preference.xml",
     "java/res/xml/page_info_cookie_preference.xml",
+    "java/res/xml/page_info_cookie_preference_user_bypass.xml",
   ]
   deps = [
+    "//components/browser_ui/site_settings/android:java_resources",
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/permissions/android:java_resources",
     "//components/strings:components_strings_grd",
@@ -55,6 +58,7 @@ android_resources("java_resources") {
 }
 
 android_library("java") {
+  srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/components/page_info/CertificateChainHelper.java",
     "java/src/org/chromium/components/page_info/CertificateViewer.java",
@@ -68,7 +72,6 @@ android_library("java") {
     "java/src/org/chromium/components/page_info/PageInfoCookiesController.java",
     "java/src/org/chromium/components/page_info/PageInfoCookiesPreference.java",
     "java/src/org/chromium/components/page_info/PageInfoDialog.java",
-    "java/src/org/chromium/components/page_info/PageInfoDiscoverabilityMetrics.java",
     "java/src/org/chromium/components/page_info/PageInfoFeatures.java",
     "java/src/org/chromium/components/page_info/PageInfoHighlight.java",
     "java/src/org/chromium/components/page_info/PageInfoMainController.java",
@@ -90,6 +93,7 @@ android_library("java") {
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/site_settings/android:java",
     "//components/browser_ui/styles/android:java",
+    "//components/browser_ui/util/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/browsing_data/core:java",
     "//components/content_settings/android:content_settings_enums_java",
@@ -100,10 +104,12 @@ android_library("java") {
     "//components/location/android:location_java",
     "//components/omnibox/browser:scheme_classifier_java",
     "//components/permissions/android:java",
+    "//components/prefs/android:java",
     "//components/security_state/content/android:java",
     "//components/security_state/core:security_state_enums_java",
     "//components/strings:components_strings_grd",
     "//components/url_formatter/android:url_formatter_java",
+    "//components/user_prefs/android:java",
     "//content/public/android:content_java",
     "//services/device/public/java:device_feature_list_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -111,13 +117,13 @@ android_library("java") {
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_interpolator_interpolator_java",
     "//third_party/androidx:androidx_preference_preference_java",
     "//ui/android:ui_java",
     "//url:gurl_java",
   ]
 
   resources_package = "org.chromium.components.page_info"
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 generate_jni("jni_headers") {

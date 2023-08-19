@@ -29,7 +29,7 @@ source_set("ipc_client_sources") {
   deps = [
     "//base",
     "//cc/paint",
-    "//components/viz/common:resource_format_utils",
+    "//components/viz/common:shared_image_format",
     "//gpu/command_buffer/client:client_sources",
     "//gpu/command_buffer/common:common_sources",
     "//gpu/config:config_sources",

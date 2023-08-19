@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("tabs") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "background_tab_animation_view.h",
     "background_tab_animation_view.mm",
@@ -41,7 +40,6 @@ source_set("tabs") {
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/drag_and_drop",
     "//ios/chrome/browser/feature_engagement",
-    "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/ntp:util",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
@@ -50,6 +48,7 @@ source_set("tabs") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
@@ -59,7 +58,6 @@ source_set("tabs") {
     "//ios/chrome/browser/ui/bookmarks",
     "//ios/chrome/browser/ui/bubble",
     "//ios/chrome/browser/ui/fullscreen",
-    "//ios/chrome/browser/ui/gestures",
     "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/ui/popup_menu/public",
     "//ios/chrome/browser/ui/tab_switcher:tab_utils",
@@ -83,7 +81,6 @@ source_set("tabs") {
 }
 
 source_set("coordinator") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "tab_strip_legacy_coordinator.h",
     "tab_strip_legacy_coordinator.mm",
@@ -91,17 +88,16 @@ source_set("coordinator") {
   deps = [
     ":tabs",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/coordinator/layout_guide",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/ui/bubble",
-    "//ios/chrome/browser/ui/gestures",
     "//ios/chrome/browser/ui/tabs/requirements",
   ]
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "tab_strip_constants.h",
     "tab_strip_constants.mm",
@@ -109,13 +105,13 @@ source_set("constants") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "tab_strip_controller_unittest.mm" ]
   deps = [
     ":tabs",
     "//base",
     "//ios/chrome/browser/sessions:test_support",
+    "//ios/chrome/browser/shared/coordinator/layout_guide",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
@@ -135,10 +131,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "tab_strip_egtest.mm" ]
   deps = [

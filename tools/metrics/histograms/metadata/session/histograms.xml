@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Session.Background.TotalDuration" units="ms"
-    expires_after="2023-11-12">
+    expires_after="2024-01-14">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -53,7 +53,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.IsActive" enum="BooleanActive"
-    expires_after="2023-11-12">
+    expires_after="2024-01-14">
   <owner>rogerm@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -72,7 +72,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.OpenedTabCounts" units="operations"
-    expires_after="2023-11-19">
+    expires_after="2024-01-28">
   <owner>rohitrao@chromium.org</owner>
   <owner>marq@chromium.org</owner>
   <summary>
@@ -366,7 +366,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.TotalDuration.TouchMode" units="times"
-    expires_after="2023-11-12">
+    expires_after="2024-01-14">
   <owner>collinbaker@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
@@ -764,8 +764,81 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Session.TotalDurationMax1Day.{HistorySyncState}" units="ms"
+    expires_after="2024-06-15">
+  <owner>mastiz@chromium.org</owner>
+  <owner>msarda@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    The amount of active browsing time that was spent with history sync
+    {HistorySyncState}.
+
+    History sync counts as enabled if EITHER the user opted in to sync and did
+    not disable history, OR (on supported platforms) the user is signed-in (but
+    not syncing) and specifically opted in to history. Either way, if history is
+    disabled by enterprise policy, that counts as NOT enabled.
+
+    This time is measured from when the user starts interacting with the browser
+    until either they stopped interacting with the browser or their history sync
+    status changes. These end-points are when the metric is emitted. For details
+    on how &quot;stopped interacting with the browser&quot; is decided, see the
+    description of Session.TotalDuration.
+
+    Because a duration can end either because the user became inactive or
+    because their status changed, the distribution of individual durations
+    measured are unlikely to be helpful. Instead, please compare total
+    durations.
+
+    This metric is recorded on Win/Mac/Linux/iOS/Android.
+
+    One caveat with this metric is that if the user has multiple profiles open
+    at the same time, their session activity will be logged from all the
+    profiles, instead of only from the profile that the user is using at that
+    moment.
+  </summary>
+  <token key="HistorySyncState">
+    <variant name="WithHistorySync" summary="enabled"/>
+    <variant name="WithoutHistorySync" summary="NOT enabled"/>
+  </token>
+</histogram>
+
+<histogram name="Session.TotalDurationMax1Day.{MsbbState}" units="ms"
+    expires_after="2024-06-15">
+  <owner>mastiz@chromium.org</owner>
+  <owner>msarda@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    The amount of active browsing time that was spent with &quot;Make Searches
+    and Browsing Better&quot; {MsbbState}.
+
+    This time is measured from when the user starts interacting with the browser
+    until either they stopped interacting with the browser or their history sync
+    status changes. These end-points are when the metric is emitted. For details
+    on how &quot;stopped interacting with the browser&quot; is decided, see the
+    description of Session.TotalDuration.
+
+    Because a duration can end either because the user became inactive or
+    because their status changed, the distribution of individual durations
+    measured are unlikely to be helpful. Instead, please compare total
+    durations.
+
+    This metric is recorded on Win/Mac/Linux/iOS/Android.
+
+    One caveat with this metric is that if the user has multiple profiles open
+    at the same time, their session activity will be logged from all the
+    profiles, instead of only from the profile that the user is using at that
+    moment.
+  </summary>
+  <token key="MsbbState">
+    <variant name="WithMsbb" summary="enabled"/>
+    <variant name="WithoutMsbb" summary="NOT enabled"/>
+  </token>
+</histogram>
+
 <histogram name="Session.WebState.CustomWebViewSerializedSize" units="KB"
-    expires_after="2023-10-08">
+    expires_after="2023-12-10">
   <owner>justincohen@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>
@@ -815,7 +888,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.WebStates.NativeRestoreSession" enum="BooleanSuccess"
-    expires_after="2023-10-16">
+    expires_after="2024-01-07">
   <owner>justincohen@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>
@@ -826,7 +899,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.WebStates.NativeRestoreSessionFromCache"
-    enum="BooleanSuccess" expires_after="2023-11-19">
+    enum="BooleanSuccess" expires_after="2024-01-28">
   <owner>justincohen@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>

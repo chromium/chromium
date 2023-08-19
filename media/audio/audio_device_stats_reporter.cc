@@ -15,25 +15,6 @@
 #include "base/time/time.h"
 
 namespace media {
-namespace {
-
-const char* LatencyToString(AudioLatency::LatencyType latency) {
-  switch (latency) {
-    case AudioLatency::LATENCY_EXACT_MS:
-      return "LatencyExactMs";
-    case AudioLatency::LATENCY_INTERACTIVE:
-      return "LatencyInteractive";
-    case AudioLatency::LATENCY_RTC:
-      return "LatencyRtc";
-    case AudioLatency::LATENCY_PLAYBACK:
-      return "LatencyPlayback";
-    default:
-      return "LatencyUnknown";
-  }
-}
-
-}  // namespace
-
 AudioDeviceStatsReporter::AudioDeviceStatsReporter(
     const AudioParameters& params,
     Type type)
@@ -43,13 +24,6 @@ AudioDeviceStatsReporter::AudioDeviceStatsReporter(
           params.latency_tag(),
           /*max_value = */ 1000,  // Measured in ms. Allows us to differentiate
                                   // delays up to 1s.
-          /*bucket_count = */ 50,
-          type)),
-      delay_difference_log_callback_(CreateAggregateCallback(
-          "DelayDifference",
-          params.latency_tag(),
-          /*max_value = */ 1000,  // Measured in ms. Allows us to differentiate
-                                  // delay differences up to 1s.
           /*bucket_count = */ 50,
           type)),
       glitch_count_log_callback_(CreateAggregateCallback(
@@ -88,8 +62,6 @@ void AudioDeviceStatsReporter::ReportCallback(
   ++stats_.callback_count;
   stats_.glitch_count += glitch_info.count;
   stats_.glitch_duration += glitch_info.duration;
-  stats_.largest_delay = std::max(delay, stats_.largest_delay);
-  stats_.smallest_delay = std::min(delay, stats_.smallest_delay);
 
   if (stats_.callback_count >= 1000) {
     UploadStats(stats_, SamplingPeriod::kIntervals);
@@ -111,28 +83,20 @@ void AudioDeviceStatsReporter::UploadStats(const Stats& stats,
   int glitch_duration_permille =
       std::round(1000 * stats.glitch_duration / stats_duration);
 
-  DCHECK_NE(stats.largest_delay, base::TimeDelta::Min());
-  DCHECK_NE(stats.smallest_delay, base::TimeDelta::Max());
-  int delay_difference_ms =
-      (stats.largest_delay - stats.smallest_delay).InMilliseconds();
-
   glitch_count_log_callback_.Run(stats.glitch_count, sampling_period);
-  delay_difference_log_callback_.Run(delay_difference_ms, sampling_period);
   glitch_duration_log_callback_.Run(glitch_duration_permille, sampling_period);
 }
 
 // Used to generate callbacks for:
-// Media.AudioOutputDevice.AudioServiceDelayDifference.*.*
 // Media.AudioOutputDevice.AudioServiceGlitchCount.*.*
 // Media.AudioOutputDevice.AudioServiceDroppedAudio.*.*
-// Media.AudioInputDevice.AudioServiceDelayDifference.*
 // Media.AudioInputDevice.AudioServiceGlitchCount.*
 // Media.AudioInputDevice.AudioServiceDroppedAudio.*
 // |latency| is ignored for input.
 AudioDeviceStatsReporter::AggregateLogCallback
 AudioDeviceStatsReporter::CreateAggregateCallback(
     const std::string& stat_name,
-    media::AudioLatency::LatencyType latency,
+    media::AudioLatency::Type latency,
     int max_value,
     size_t bucket_count,
     Type type) {
@@ -161,9 +125,9 @@ AudioDeviceStatsReporter::CreateAggregateCallback(
   }
 
   std::string short_with_latency_name(
-      base::StrCat({short_name, ".", LatencyToString(latency)}));
+      base::StrCat({short_name, ".", AudioLatency::ToString(latency)}));
   std::string intervals_with_latency_name(
-      base::StrCat({intervals_name, ".", LatencyToString(latency)}));
+      base::StrCat({intervals_name, ".", AudioLatency::ToString(latency)}));
 
   return base::BindRepeating(
       [](int max_value, size_t bucket_count, const std::string& short_name,
@@ -195,7 +159,7 @@ AudioDeviceStatsReporter::CreateAggregateCallback(
 AudioDeviceStatsReporter::RealtimeLogCallback
 AudioDeviceStatsReporter::CreateRealtimeCallback(
     const std::string& stat_name,
-    media::AudioLatency::LatencyType latency,
+    media::AudioLatency::Type latency,
     int max_value,
     size_t bucket_count,
     Type type) {
@@ -204,7 +168,7 @@ AudioDeviceStatsReporter::CreateRealtimeCallback(
                              : "Media.AudioInputDevice.AudioService",
        stat_name}));
   std::string base_with_latency_name(
-      base::StrCat({base_name, ".", LatencyToString(latency)}));
+      base::StrCat({base_name, ".", AudioLatency::ToString(latency)}));
 
   // Since this callback will be called on every call to ReportCallback(), we
   // pre-fetch the histograms for efficiency, like the histogram macros do. Note

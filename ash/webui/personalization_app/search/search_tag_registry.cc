@@ -408,8 +408,7 @@ SearchTagRegistry::SearchTagRegistry(
   updates.merge(GetDarkModePrefChangedUpdates(
       pref_service_->GetBoolean(ash::prefs::kDarkModeEnabled)));
 
-  if (::ash::features::IsRgbKeyboardEnabled() &&
-      Shell::Get()->rgb_keyboard_manager()->IsRgbKeyboardSupported()) {
+  if (Shell::Get()->rgb_keyboard_manager()->IsRgbKeyboardSupported()) {
     updates[&GetKeyboardBacklightSearchConcept()] = true;
   }
 

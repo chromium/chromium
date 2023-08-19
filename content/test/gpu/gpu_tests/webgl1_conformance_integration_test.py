@@ -68,7 +68,6 @@ class WebGL1ConformanceIntegrationTest(
         'WEBGL_lose_context',
         'WEBGL_multi_draw',
         'WEBGL_video_texture',
-        'WEBGL_webcodecs_video_frame',
     ]
 
   @classmethod

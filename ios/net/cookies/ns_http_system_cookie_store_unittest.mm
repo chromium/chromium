@@ -11,10 +11,6 @@
 #include "base/test/task_environment.h"
 #include "ios/net/cookies/system_cookie_store_unittest_template.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace net {
 
 // Test class that conforms to SystemCookieStoreTestDelegate to exercise

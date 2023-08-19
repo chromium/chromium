@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/tablet_mode.h"
@@ -14,6 +15,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/app_list/internal_app/internal_app_metadata.h"
@@ -21,6 +23,7 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_shelf_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/shelf/app_service/app_service_promise_app_shelf_context_menu.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_shelf_context_menu.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
@@ -65,6 +68,14 @@ std::unique_ptr<ShelfContextMenu> ShelfContextMenu::Create(
   DCHECK(controller);
   DCHECK(item);
   DCHECK(!item->id.IsNull());
+
+  if (ash::features::ArePromiseIconsEnabled() &&
+      apps::AppServiceProxyFactory::GetForProfile(controller->profile())
+          ->PromiseAppRegistryCache()
+          ->GetPromiseAppForStringPackageId(item->id.app_id)) {
+    return std::make_unique<AppServicePromiseAppShelfContextMenu>(
+        controller, item, display_id);
+  }
 
   auto app_type =
       apps::AppServiceProxyFactory::GetForProfile(controller->profile())

@@ -22,6 +22,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -78,7 +79,7 @@ ArrowButtonView::ArrowButtonView(PressedCallback callback, int size)
   SetPreferredSize(gfx::Size(size + 2 * kBorderForFocusRingDp,
                              size + 2 * kBorderForFocusRingDp));
   SetFocusBehavior(FocusBehavior::ALWAYS);
-
+  SetBackgroundColorId(kColorAshControlBackgroundColorInactive);
   // Layer rendering is needed for animation.
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
@@ -99,26 +100,12 @@ ArrowButtonView::ArrowButtonView(PressedCallback callback, int size)
 ArrowButtonView::~ArrowButtonView() = default;
 
 void ArrowButtonView::PaintButtonContents(gfx::Canvas* canvas) {
-  const gfx::Rect rect(GetContentsBounds());
-
-  // Draw background.
-  cc::PaintFlags flags;
-  flags.setAntiAlias(true);
-  SkColor background_color =
-      background_color_id_ ? GetColorProvider()->GetColor(*background_color_id_)
-                           : AshColorProvider::Get()->GetControlsLayerColor(
-                                 AshColorProvider::ControlsLayerType::
-                                     kControlBackgroundColorInactive);
-
-  flags.setColor(background_color);
-  flags.setStyle(cc::PaintFlags::kFill_Style);
-  canvas->DrawCircle(gfx::PointF(rect.CenterPoint()), rect.width() / 2, flags);
-
   // Draw arrow icon.
   views::ImageButton::PaintButtonContents(canvas);
 
   // Draw the arc of the loading animation.
   if (loading_animation_) {
+    const gfx::Rect rect(GetContentsBounds());
     PaintLoadingArc(canvas, rect, loading_animation_->GetCurrentValue());
   }
 }
@@ -206,6 +193,11 @@ ArrowButtonView::LoadingAnimationDelegate::~LoadingAnimationDelegate() =
 void ArrowButtonView::LoadingAnimationDelegate::AnimationProgressed(
     const gfx::Animation* /*animation*/) {
   owner_->SchedulePaint();
+}
+
+void ArrowButtonView::SetBackgroundColorId(ui::ColorId color_id) {
+  SetBackground(views::CreateThemedRoundedRectBackground(
+      color_id, GetPreferredSize().width() / 2, 2 * kBorderForFocusRingDp));
 }
 
 BEGIN_METADATA(ArrowButtonView, LoginButton)

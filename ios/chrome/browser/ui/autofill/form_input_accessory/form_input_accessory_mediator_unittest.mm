@@ -20,10 +20,6 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 class FormInputAccessoryMediatorTest : public PlatformTest {
  protected:
   FormInputAccessoryMediatorTest()
@@ -61,6 +57,12 @@ class FormInputAccessoryMediatorTest : public PlatformTest {
                                         securityAlertHandler:nil
                                       reauthenticationModule:nil];
   }
+
+  void TearDown() override {
+    [mediator_ disconnect];
+    PlatformTest::TearDown();
+  }
+
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<web::FakeWebState> test_web_state_;
   std::unique_ptr<web::FakeWebFrame> main_frame_;

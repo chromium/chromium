@@ -13,9 +13,9 @@
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "mojo/core/embedder/embedder.h"
 #include "remoting/base/breakpad_utils_linux.h"
 #include "remoting/base/logging.h"
-#include "remoting/base/mojo_util.h"
 #include "remoting/base/url_request_context_getter.h"
 #include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/crash/crash_directory_watcher.h"
@@ -36,7 +36,7 @@ int CrashUploaderMain(int argc, char** argv) {
   base::CommandLine::Init(argc, argv);
   remoting::InitHostLogging();
 
-  InitializeMojo();
+  mojo::core::Init();
 
   auto url_request_context_getter =
       base::MakeRefCounted<URLRequestContextGetter>(task_runner);

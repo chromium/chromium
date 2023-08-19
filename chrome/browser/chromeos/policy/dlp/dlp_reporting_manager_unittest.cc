@@ -12,8 +12,8 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_event.pb.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager_test_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/test/dlp_reporting_manager_test_helper.h"
 #include "components/account_id/account_id.h"
 #include "components/reporting/client/mock_report_queue.h"
 #include "components/reporting/util/status.h"
@@ -237,10 +237,6 @@ TEST_F(DlpReportingManagerTest, UserType) {
   const auto* guest_user = user_manager->AddGuestUser();
   AccountId child_user_id = AccountId::FromUserEmail("child@example.com");
   const auto* child_user = user_manager->AddChildUser(child_user_id);
-  AccountId active_directory_user_id =
-      AccountId::AdFromUserEmailObjGuid("active@example.com", "guid");
-  const auto* active_directory_user =
-      user_manager->AddActiveDirectoryUser(active_directory_user_id);
 
   ReportEventAndCheckUser(user_manager, regular_account_id, regular_user,
                           DlpPolicyEvent_UserType_REGULAR, 0u);
@@ -257,10 +253,7 @@ TEST_F(DlpReportingManagerTest, UserType) {
   ReportEventAndCheckUser(user_manager, child_user_id, child_user,
                           DlpPolicyEvent_UserType_UNDEFINED_USER_TYPE, 6u,
                           true);
-  ReportEventAndCheckUser(user_manager, active_directory_user_id,
-                          active_directory_user,
-                          DlpPolicyEvent_UserType_UNDEFINED_USER_TYPE, 7u);
-  EXPECT_EQ(manager_.events_reported(), 8u);
+  EXPECT_EQ(manager_.events_reported(), 7u);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

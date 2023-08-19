@@ -14,6 +14,7 @@
 #include "base/notreached.h"
 #include "base/syslog_logging.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
@@ -28,6 +29,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom.h"
 #include "components/crx_file/id_util.h"
+
+using chromeos::ChromeKioskAppInstaller;
+using chromeos::ChromeKioskAppLauncher;
 
 namespace ash {
 
@@ -63,7 +67,7 @@ StartupAppLauncher::StartupAppLauncher(
       profile_(profile),
       app_id_(app_id),
       should_skip_install_(should_skip_install) {
-  DCHECK(profile_);
+  CHECK(profile_);
   DCHECK(crx_file::id_util::IdIsValid(app_id_));
 
   // Reduce extension downloader retry backoff to avoid waiting on splash screen
@@ -86,9 +90,9 @@ void StartupAppLauncher::RemoveObserver(KioskAppLauncher::Observer* observer) {
 }
 
 void StartupAppLauncher::Initialize() {
-  DCHECK(state_ != LaunchState::kReadyToLaunch &&
-         state_ != LaunchState::kWaitingForWindow &&
-         state_ != LaunchState::kLaunchSucceeded);
+  CHECK(state_ != LaunchState::kReadyToLaunch &&
+        state_ != LaunchState::kWaitingForWindow &&
+        state_ != LaunchState::kLaunchSucceeded);
 
   if (should_skip_install_) {
     OnInstallSuccess();
@@ -106,9 +110,7 @@ void StartupAppLauncher::Initialize() {
 
 void StartupAppLauncher::ContinueWithNetworkReady() {
   SYSLOG(INFO) << "ContinueWithNetworkReady"
-               << ", state_="
-               << static_cast<typename std::underlying_type<LaunchState>::type>(
-                      state_);
+               << ", state_=" << base::to_underlying(state_);
 
   if (state_ != LaunchState::kInitializingNetwork &&
       state_ != LaunchState::kNotStarted) {
@@ -150,7 +152,7 @@ void StartupAppLauncher::OnKioskExtensionDownloadFailed(
 
 void StartupAppLauncher::OnKioskAppDataLoadStatusChanged(
     const std::string& app_id) {
-  DCHECK(state_ == LaunchState::kWaitingForCache);
+  CHECK_EQ(state_, LaunchState::kWaitingForCache);
 
   if (app_id != app_id_) {
     return;
@@ -191,7 +193,7 @@ void StartupAppLauncher::InstallAppInLacros() {
 
 void StartupAppLauncher::OnInstallComplete(
     ChromeKioskAppInstaller::InstallResult result) {
-  DCHECK(state_ == LaunchState::kInstallingApp);
+  CHECK_EQ(state_, LaunchState::kInstallingApp);
 
   installer_.reset();
 
@@ -246,7 +248,7 @@ void StartupAppLauncher::LaunchApp() {
 
 void StartupAppLauncher::OnLaunchComplete(
     ChromeKioskAppLauncher::LaunchResult result) {
-  DCHECK(state_ == LaunchState::kReadyToLaunch);
+  CHECK_EQ(state_, LaunchState::kReadyToLaunch);
 
   launcher_.reset();
 
@@ -277,7 +279,7 @@ void StartupAppLauncher::OnLaunchSuccess() {
 
 void StartupAppLauncher::OnLaunchFailure(KioskAppLaunchError::Error error) {
   SYSLOG(ERROR) << "App launch failed, error: " << static_cast<int>(error);
-  DCHECK_NE(KioskAppLaunchError::Error::kNone, error);
+  CHECK_NE(KioskAppLaunchError::Error::kNone, error);
 
   observers_.NotifyLaunchFailed(error);
 }

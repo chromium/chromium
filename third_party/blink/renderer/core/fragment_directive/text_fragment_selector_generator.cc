@@ -126,15 +126,7 @@ absl::optional<int> g_exactTextMaxCharsOverride;
 
 TextFragmentSelectorGenerator::TextFragmentSelectorGenerator(
     LocalFrame* main_frame)
-    : frame_(main_frame) {
-  if (base::FeatureList::IsEnabled(
-          shared_highlighting::kSharedHighlightingRefinedMaxContextWords)) {
-    max_context_words_ =
-        shared_highlighting::kSharedHighlightingMaxContextWords.Get();
-  } else {
-    max_context_words_ = kMaxContextWords;
-  }
-}
+    : frame_(main_frame) {}
 
 void TextFragmentSelectorGenerator::Generate(const RangeInFlatTree& range,
                                              GenerateCallback callback) {
@@ -344,8 +336,6 @@ void TextFragmentSelectorGenerator::StartGeneration() {
     return;
   }
 
-  UMA_HISTOGRAM_COUNTS_1000("SharedHighlights.LinkGenerated.SelectionLength",
-                            PlainText(range_->ToEphemeralRange()).length());
   state_ = kNeedsNewCandidate;
   GenerateSelectorCandidate();
 }
@@ -580,7 +570,7 @@ void TextFragmentSelectorGenerator::ExtendContext() {
   DCHECK(selector_);
 
   // Give up if context is already too long.
-  if (num_context_words_ >= max_context_words_) {
+  if (num_context_words_ >= kMaxContextWords) {
     state_ = kFailure;
     error_ = LinkGenerationError::kContextLimitReached;
     return;
@@ -651,17 +641,9 @@ void TextFragmentSelectorGenerator::RecordAllMetrics(
   ukm::SourceId source_id = frame_->GetDocument()->UkmSourceID();
 
   if (selector.Type() != TextFragmentSelector::SelectorType::kInvalid) {
-    UMA_HISTOGRAM_COUNTS_1000("SharedHighlights.LinkGenerated.ParamLength",
-                              selector.ToString().length());
-
-    UMA_HISTOGRAM_EXACT_LINEAR("SharedHighlights.LinkGenerated.Iterations",
-                               iteration_, kMaxIterationCountToRecord);
     UMA_HISTOGRAM_TIMES("SharedHighlights.LinkGenerated.TimeToGenerate",
                         base::DefaultTickClock::GetInstance()->NowTicks() -
                             generation_start_time_);
-    UMA_HISTOGRAM_ENUMERATION(
-        "SharedHighlights.LinkGenerated.SelectorParameters",
-        TextFragmentAnchorMetrics::GetParametersForSelector(selector));
 
     shared_highlighting::LogLinkGeneratedSuccessUkmEvent(recorder, source_id);
   } else {

@@ -6,11 +6,13 @@
 #define CHROME_BROWSER_ASH_ACCESSIBILITY_SPEECH_MONITOR_H_
 
 #include <chrono>
+#include <map>
 
 #include "base/containers/circular_deque.h"
 #include "base/memory/ref_counted.h"
 #include "content/public/browser/tts_platform.h"
 #include "content/public/test/test_utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // TODO(katie): This may need to move into Content as part of the TTS refactor.
 
@@ -57,6 +59,15 @@ class SpeechMonitor : public content::TtsPlatform {
                              const base::Location& location = FROM_HERE);
   void ExpectNextSpeechIsNotPattern(const std::string& pattern,
                                     const base::Location& location = FROM_HERE);
+  void ExpectHadNoRepeatedSpeech(const base::Location& location = FROM_HERE);
+
+  // TTS parameters are harder to match against the entire spoken text, so the
+  // expectations here work a bit more loosely:
+  // * For matching text, use the methods above;
+  // * use this to check if some TTS parameters were set when a specific piece
+  // of text was being spoken.
+  absl::optional<content::UtteranceContinuousParameters>
+  GetParamsForPreviouslySpokenTextPattern(const std::string& pattern);
 
   // Adds a call to be included in replay.
   void Call(std::function<void()> func,
@@ -124,6 +135,9 @@ class SpeechMonitor : public content::TtsPlatform {
   // Queue of expectations already satisfied.
   std::vector<std::string> replayed_queue_;
 
+  // List of parameters for a given text.
+  std::map<std::string, content::UtteranceContinuousParameters> text_params_;
+
   // Blocks this test when replaying expectations.
   scoped_refptr<content::MessageLoopRunner> replay_loop_runner_;
 
@@ -135,6 +149,10 @@ class SpeechMonitor : public content::TtsPlatform {
 
   // The number of times StopSpeaking() has been called.
   int stop_count_ = 0;
+
+  // Indicates if there were two consecutive utterances that match (i.e.
+  // repeated speech).
+  std::vector<std::string> repeated_speech_;
 
   base::WeakPtrFactory<SpeechMonitor> weak_factory_{this};
 };

@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/nearby_sharing/certificates/constants.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_certificate_storage_impl.h"
 #include "chrome/browser/nearby_sharing/client/nearby_share_client.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_profile_info_provider.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_switches.h"
@@ -41,9 +43,10 @@ const char kDeviceIdPrefix[] = "users/me/devices/";
 
 constexpr base::TimeDelta kListPublicCertificatesTimeout = base::Seconds(30);
 
-constexpr std::array<nearby_share::mojom::Visibility, 2> kVisibilities = {
+constexpr std::array<nearby_share::mojom::Visibility, 3> kVisibilities = {
     nearby_share::mojom::Visibility::kAllContacts,
-    nearby_share::mojom::Visibility::kSelectedContacts};
+    nearby_share::mojom::Visibility::kSelectedContacts,
+    nearby_share::mojom::Visibility::kYourDevices};
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -76,7 +79,11 @@ size_t NumPrivateCertificates() {
 }
 
 size_t NumExpectedPrivateCertificates() {
-  return kVisibilities.size() * NumPrivateCertificates();
+  if (features::IsSelfShareEnabled()) {
+    return kVisibilities.size() * NumPrivateCertificates();
+  }
+
+  return (kVisibilities.size() - 1) * NumPrivateCertificates();
 }
 
 absl::optional<std::string> GetBluetoothMacAddress(
@@ -141,8 +148,9 @@ absl::optional<nearbyshare::proto::EncryptedMetadata> BuildMetadata(
       "Nearby.Share.Certificates.Manager."
       "BluetoothMacAddressPresentForPrivateCertificateCreation",
       bluetooth_mac_address.has_value());
-  if (!bluetooth_mac_address)
+  if (!bluetooth_mac_address) {
     return absl::nullopt;
+  }
 
   metadata.set_bluetooth_mac_address(*bluetooth_mac_address);
 
@@ -406,8 +414,9 @@ void NearbyShareCertificateManagerImpl::OnContactsDownloaded(
 
 void NearbyShareCertificateManagerImpl::OnContactsUploaded(
     bool did_contacts_change_since_last_upload) {
-  if (!did_contacts_change_since_last_upload)
+  if (!did_contacts_change_since_last_upload) {
     return;
+  }
 
   // If any of the uploaded contact data--the contact list or the allowlist--has
   // changed since the previous successful upload, recreate certificates. We do
@@ -425,8 +434,9 @@ void NearbyShareCertificateManagerImpl::OnLocalDeviceDataChanged(
     bool did_device_name_change,
     bool did_full_name_change,
     bool did_icon_change) {
-  if (!did_device_name_change && !did_full_name_change && !did_icon_change)
+  if (!did_device_name_change && !did_full_name_change && !did_icon_change) {
     return;
+  }
 
   // Recreate all private certificates to ensure up-to-date metadata.
   certificate_storage_->ClearPrivateCertificates();
@@ -509,15 +519,36 @@ void NearbyShareCertificateManagerImpl::FinishPrivateCertificateRefresh(
   // kNearbyShareNumPrivateCertificates (unless overridden by a command-line
   // switch).
   size_t num_certificates = NumPrivateCertificates();
-  NS_LOG(INFO)
-      << __func__ << ": Creating "
-      << num_certificates -
-             num_valid_certs[nearby_share::mojom::Visibility::kAllContacts]
-      << " all-contacts visibility and "
-      << num_certificates -
-             num_valid_certs[nearby_share::mojom::Visibility::kSelectedContacts]
-      << " selected-contacts visibility private certificates.";
+  if (features::IsSelfShareEnabled()) {
+    NS_LOG(INFO)
+        << __func__ << ": Creating "
+        << num_certificates -
+               num_valid_certs[nearby_share::mojom::Visibility::kAllContacts]
+        << " all-contacts visibility, "
+        << num_certificates -
+               num_valid_certs
+                   [nearby_share::mojom::Visibility::kSelectedContacts]
+        << " selected-contacts visibility, and "
+        << num_certificates -
+               num_valid_certs[nearby_share::mojom::Visibility::kYourDevices]
+        << " your-devices private certificates.";
+  } else {
+    NS_LOG(INFO)
+        << __func__ << ": Creating "
+        << num_certificates -
+               num_valid_certs[nearby_share::mojom::Visibility::kAllContacts]
+        << " all-contacts visibility and "
+        << num_certificates -
+               num_valid_certs
+                   [nearby_share::mojom::Visibility::kSelectedContacts]
+        << " selected-contacts visibility private certificates.";
+  }
+
   for (nearby_share::mojom::Visibility visibility : kVisibilities) {
+    if (visibility == nearby_share::mojom::Visibility::kYourDevices &&
+        !features::IsSelfShareEnabled()) {
+      continue;
+    }
     while (num_valid_certs[visibility] < num_certificates) {
       certs.emplace_back(visibility,
                          /*not_before=*/latest_not_after[visibility],
@@ -564,8 +595,9 @@ NearbyShareCertificateManagerImpl::NextPublicCertificateExpirationTime() {
       certificate_storage_->NextPublicCertificateExpirationTime();
 
   // Supposedly there are no store public certificates.
-  if (!next_expiration_time)
+  if (!next_expiration_time) {
     return absl::nullopt;
+  }
 
   // To account for clock skew between devices, we accept public certificates
   // that are slightly past their validity period. This conforms with the
@@ -593,8 +625,9 @@ void NearbyShareCertificateManagerImpl::OnDownloadPublicCertificatesRequest(
 
   nearbyshare::proto::ListPublicCertificatesRequest request;
   request.set_parent(kDeviceIdPrefix + local_device_data_manager_->GetId());
-  if (page_token)
+  if (page_token) {
     request.set_page_token(*page_token);
+  }
 
   // TODO(b/168701170): One Platform has a length restriction on request URLs.
   // Adding all secret IDs to the request, and subsequently as query parameters,

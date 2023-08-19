@@ -173,7 +173,7 @@ bool HasCjkNameCharacteristics(const std::string& name);
 // name:
 // * Name contains a very common Hispanic/Latinx surname.
 // * Name uses a surname conjunction.
-bool HasHispanicLatinxNameCharaceristics(const std::string& name);
+bool HasHispanicLatinxNameCharacteristics(const std::string& name);
 
 // Returns true if |middle_name| has the characteristics of a containing only
 // initials:

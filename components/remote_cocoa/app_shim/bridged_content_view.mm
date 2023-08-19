@@ -6,11 +6,9 @@
 
 #include <limits>
 
+#import "base/apple/foundation_util.h"
 #include "base/apple/owned_objc.h"
 #include "base/check_op.h"
-#import "base/mac/foundation_util.h"
-#import "base/mac/mac_util.h"
-#import "base/mac/scoped_nsobject.h"
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #import "components/remote_cocoa/app_shim/drag_drop_client.h"
@@ -83,14 +81,15 @@ gfx::Point MovePointToView(const NSPoint& point,
 bool ShouldIgnoreAcceleratorWithMarkedText(NSEvent* event) {
   ui::KeyboardCode key = ui::KeyboardCodeFromNSEvent(event);
   switch (key) {
-    // crbug/883952: Kanji IME completes composition and dismisses itself.
+    // http://crbug.com/883952: Kanji IME completes composition and dismisses
+    // itself.
     case ui::VKEY_RETURN:
     // Kanji IME: select candidate words.
     // Pinyin IME: change tone.
     case ui::VKEY_TAB:
     // Dismiss IME.
     case ui::VKEY_ESCAPE:
-    // crbug/915924: Pinyin IME selects candidate.
+    // http://crbug.com/915924: Pinyin IME selects candidate.
     case ui::VKEY_LEFT:
     case ui::VKEY_RIGHT:
     case ui::VKEY_UP:
@@ -247,7 +246,6 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
   // By the time |self| is dealloc'd, it should never be in an NSWindow, and it
   // should never be the current input context.
   DCHECK_EQ(nil, [self window]);
-  [super dealloc];
 }
 
 - (void)clearView {
@@ -393,12 +391,11 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
     options |= NSTrackingActiveInActiveApp | NSTrackingCursorUpdate;
   }
 
-  base::scoped_nsobject<CrTrackingArea> trackingArea([[CrTrackingArea alloc]
-      initWithRect:NSZeroRect
-           options:options
-             owner:self
-          userInfo:nil]);
-  _cursorTrackingArea.reset(trackingArea.get());
+  CrTrackingArea* trackingArea = [[CrTrackingArea alloc] initWithRect:NSZeroRect
+                                                              options:options
+                                                                owner:self
+                                                             userInfo:nil];
+  _cursorTrackingArea.reset(trackingArea);
   [self addTrackingArea:_cursorTrackingArea.get()];
 }
 
@@ -555,9 +552,9 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
     int flags = ui::EF_NONE;
     if ([_keyDownEvent isARepeat])
       flags |= ui::EF_IS_REPEAT;
-    ui::KeyEvent charEvent([text characterAtIndex:0],
-                           ui::KeyboardCodeFromNSEvent(_keyDownEvent),
-                           ui::DomCodeFromNSEvent(_keyDownEvent), flags);
+    ui::KeyEvent charEvent = ui::KeyEvent::FromCharacter(
+        [text characterAtIndex:0], ui::KeyboardCodeFromNSEvent(_keyDownEvent),
+        ui::DomCodeFromNSEvent(_keyDownEvent), flags);
     [self handleKeyEvent:&charEvent];
     _hasUnhandledKeyDownEvent = NO;
     if (charEvent.handled())
@@ -1446,9 +1443,8 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
 
   return substring.empty()
              ? nil
-             : [[[NSAttributedString alloc]
-                   initWithString:base::SysUTF16ToNSString(substring)]
-                   autorelease];
+             : [[NSAttributedString alloc]
+                   initWithString:base::SysUTF16ToNSString(substring)];
 }
 
 - (NSUInteger)characterIndexForPoint:(NSPoint)aPoint {
@@ -1488,7 +1484,13 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
   }
 
   if ([self respondsToSelector:selector]) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+    // ARC complains about -performSelector re lifetimes. The selectors used
+    // here are from a very small set used for text editing, so there's no
+    // danger of lifetime issues.
     [self performSelector:selector withObject:nil];
+#pragma clang diagnostic pop
     _hasUnhandledKeyDownEvent = NO;
     return;
   }

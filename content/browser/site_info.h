@@ -9,6 +9,8 @@
 #include "content/browser/web_exposed_isolation_info.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/storage_partition_config.h"
+#include "content/public/browser/web_exposed_isolation_level.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -57,7 +59,8 @@ class CONTENT_EXPORT SiteInfo {
       const StoragePartitionConfig storage_partition_config,
       bool is_guest,
       bool is_fenced,
-      const WebExposedIsolationInfo& web_exposed_isolation_info);
+      const WebExposedIsolationInfo& web_exposed_isolation_info,
+      WebExposedIsolationLevel web_exposed_isolation_level);
 
   // Helper to create a SiteInfo for default SiteInstances.  Default
   // SiteInstances are used for non-isolated sites on platforms without strict
@@ -127,6 +130,23 @@ class CONTENT_EXPORT SiteInfo {
       BrowserContext* browser_context,
       const GURL& site_or_regular_url);
 
+  // Computes the web-exposed cross-origin isolation capability that should be
+  // used for a SiteInfo with the given WebExposedIsolationInfo and UrlInfo.
+  // This will be the same as the BrowsingInstance's WebExposedIsolationInfo
+  // except for agents that are cross-origin to an "isolated application"
+  // BrowsingInstance.
+  //
+  // See ProcessLock::GetWebExposedIsolationLevel() for more information.
+  static WebExposedIsolationLevel ComputeWebExposedIsolationLevel(
+      const WebExposedIsolationInfo& web_exposed_isolation_info,
+      const UrlInfo& url_info);
+
+  // Computes the web-exposed cross-origin isolation capability that should be
+  // used for a SiteInfo with the given WebExposedIsolationInfo that isn't
+  // locked to a site.
+  static WebExposedIsolationLevel ComputeWebExposedIsolationLevelForEmptySite(
+      const WebExposedIsolationInfo& web_exposed_isolation_info);
+
   // Initializes |storage_partition_config_| with a value appropriate for
   // |browser_context|.
   explicit SiteInfo(BrowserContext* browser_context);
@@ -142,6 +162,7 @@ class CONTENT_EXPORT SiteInfo {
            int unique_sandbox_id,
            const StoragePartitionConfig storage_partition_config,
            const WebExposedIsolationInfo& web_exposed_isolation_info,
+           WebExposedIsolationLevel web_exposed_isolation_level,
            bool is_guest,
            bool does_site_request_dedicated_process_for_coop,
            bool is_jit_disabled,
@@ -221,13 +242,25 @@ class CONTENT_EXPORT SiteInfo {
   // the per-document grouping parameter.
   int unique_sandbox_id() const { return unique_sandbox_id_; }
 
-  // Returns the web-exposed isolation status of pages hosted by the
-  // SiteInstance. The level of isolation which a page opts-into has
-  // implications for the set of other pages which can live in this
-  // SiteInstance, process allocation decisions, and API exposure in the page's
-  // JavaScript context.
+  // Returns the web-exposed isolation mode of the BrowsingInstance hosting
+  // SiteInstances with this SiteInfo. The level of isolation which a page
+  // opts-into has implications for the set of other pages which can live in
+  // this SiteInstance, process allocation decisions, and API exposure in the
+  // page's JavaScript context.
   const WebExposedIsolationInfo& web_exposed_isolation_info() const {
     return web_exposed_isolation_info_;
+  }
+
+  // Returns the web-exposed isolation capability of agents with this SiteInfo,
+  // ignoring the 'cross-origin-isolated' permissions policy. This should be
+  // used in conjunction with permissions policy to determine whether a frame
+  // can access APIs gated behind cross-origin isolation.
+  //
+  // This may return a lower isolation level than
+  // `web_exposed_isolation_info_` because "Isolated Application" cannot be
+  // delegated cross-origin.
+  WebExposedIsolationLevel web_exposed_isolation_level() const {
+    return web_exposed_isolation_level_;
   }
 
   bool is_guest() const { return is_guest_; }
@@ -393,13 +426,23 @@ class CONTENT_EXPORT SiteInfo {
   // SiteInfo.
   StoragePartitionConfig storage_partition_config_;
 
-  // Indicates the web-exposed isolation status of pages hosted by the
-  // SiteInstance. The level of isolation which a page opts-into has
-  // implications for the set of other pages which can live in this
-  // SiteInstance, process allocation decisions, and API exposure in the page's
-  // JavaScript context.
+  // Indicates the web-exposed isolation mode of the BrowsingInstance that
+  // agents with this SiteInfo belongs to. The level of isolation which a page
+  // opts-into has implications for the set of other pages which can live in
+  // this SiteInstance, process allocation decisions, and API exposure in the
+  // page's JavaScript context.
   WebExposedIsolationInfo web_exposed_isolation_info_ =
       WebExposedIsolationInfo::CreateNonIsolated();
+
+  // Indicates the web-exposed isolation capability of agents with this
+  // SiteInfo, ignoring the 'cross-origin-isolated' permissions policy. This is
+  // a function of `web_exposed_isolation_info_` and the origins belonging to
+  // this SiteInstance.
+  //
+  // This may be a lower isolation level than `web_exposed_isolation_info_`
+  // because "Isolated Application" cannot be delegated cross-origin.
+  WebExposedIsolationLevel web_exposed_isolation_level_ =
+      WebExposedIsolationLevel::kNotIsolated;
 
   // Indicates this SiteInfo is for a <webview> guest.
   bool is_guest_ = false;

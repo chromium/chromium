@@ -8,7 +8,6 @@
 #include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_session.h"
-#include "ash/color_enhancement/color_enhancement_controller.h"
 #include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
@@ -136,7 +135,7 @@ class CursorWindowDelegate : public aura::WindowDelegate {
   void OnBoundsChanged(const gfx::Rect& old_bounds,
                        const gfx::Rect& new_bounds) override {}
   gfx::NativeCursor GetCursor(const gfx::Point& point) override {
-    return gfx::kNullCursor;
+    return gfx::NativeCursor{};
   }
   int GetNonClientComponent(const gfx::Point& point) const override {
     return HTNOWHERE;
@@ -296,11 +295,6 @@ bool CursorWindowController::ShouldEnableCursorCompositing() {
                               displays_ctm_support);
     if (displays_ctm_support != DisplayColorManager::DisplayCtmSupport::kAll)
       return true;
-  }
-
-  if (shell->color_enhancement_controller()
-          ->ShouldEnableCursorCompositingForSepia()) {
-    return true;
   }
 
   return prefs->GetBoolean(prefs::kAccessibilityLargeCursorEnabled) ||

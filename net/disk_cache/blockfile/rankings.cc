@@ -18,15 +18,11 @@
 #include "net/disk_cache/blockfile/disk_format.h"
 #include "net/disk_cache/blockfile/entry_impl.h"
 #include "net/disk_cache/blockfile/errors.h"
-#include "net/disk_cache/blockfile/histogram_macros.h"
 #include "net/disk_cache/blockfile/stress_support.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
-
-// Provide a BackendImpl object to macros from histogram_macros.h.
-#define CACHE_UMA_BACKEND_IMPL_OBJ backend_
 
 using base::Time;
 using base::TimeTicks;
@@ -415,10 +411,8 @@ void Rankings::UpdateRank(CacheRankingsBlock* node, bool modified, List list) {
     return;
   }
 
-  TimeTicks start = TimeTicks::Now();
   Remove(node, list, true);
   Insert(node, modified, list);
-  CACHE_UMA(AGE_MS, "UpdateRank", 0, start);
 }
 
 CacheRankingsBlock* Rankings::GetNext(CacheRankingsBlock* node, List list) {
@@ -589,7 +583,6 @@ bool Rankings::GetRanking(CacheRankingsBlock* rankings) {
   if (!rankings->address().is_initialized())
     return false;
 
-  TimeTicks start = TimeTicks::Now();
   if (!rankings->Load())
     return false;
 
@@ -622,7 +615,6 @@ bool Rankings::GetRanking(CacheRankingsBlock* rankings) {
   // Note that we should not leave this module without deleting rankings first.
   rankings->SetData(entry->rankings()->Data());
 
-  CACHE_UMA(AGE_MS, "GetRankings", 0, start);
   return true;
 }
 

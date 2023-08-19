@@ -39,8 +39,8 @@ export class XfIcon extends XfBase {
 
   static get multiColor() {
     return {
-      [constants.ICON_TYPES.OFFLINE]:
-          svg`<use xlink:href="foreground/images/files/ui/offline.svg#offline"></use>`,
+      [constants.ICON_TYPES.CANT_PIN]:
+          svg`<use xlink:href="foreground/images/files/ui/cant_pin.svg#cant_pin"></use>`,
       [constants.ICON_TYPES.CLOUD_DONE]:
           svg`<use xlink:href="foreground/images/files/ui/cloud_done.svg#cloud_done"></use>`,
       [constants.ICON_TYPES.CLOUD_ERROR]:
@@ -49,12 +49,10 @@ export class XfIcon extends XfBase {
           svg`<use xlink:href="foreground/images/files/ui/cloud_offline.svg#cloud_offline"></use>`,
       [constants.ICON_TYPES.CLOUD_SYNC]:
           svg`<use xlink:href="foreground/images/files/ui/cloud_sync.svg#cloud_sync"></use>`,
-      [constants.ICON_TYPES.CLOUD]:
-          svg`<use xlink:href="foreground/images/files/ui/cloud.svg#cloud"></use>`,
-      [constants.ICON_TYPES.ENCRYPTED]:
-          svg`<use xlink:href="foreground/images/files/ui/encrypted.svg#encrypted"></use>`,
       [constants.ICON_TYPES.ERROR]:
           svg`<use xlink:href="foreground/images/files/ui/error.svg#error"></use>`,
+      [constants.ICON_TYPES.OFFLINE]:
+          svg`<use xlink:href="foreground/images/files/ui/offline.svg#offline"></use>`,
     };
   }
 
@@ -63,6 +61,10 @@ export class XfIcon extends XfBase {
   }
 
   override render() {
+    if (this.type === constants.ICON_TYPES.BLANK) {
+      return html``;
+    }
+
     if (Object.keys(XfIcon.multiColor).includes(this.type)) {
       return html`
         <span class="multi-color keep-color">
@@ -114,6 +116,8 @@ function getCSS() {
       --xf-icon-color: var(--cros-sys-on_surface);
       --xf-icon-base-color: var(--cros-sys-app_base);
       --xf-icon-positive-color: var(--cros-sys-positive);
+      --xf-icon-error-color: var(--cros-sys-error);
+      --xf-icon-progress-color: var(--cros-sys-progress);
       display: inline-block;
     }
 
@@ -186,16 +190,16 @@ function getCSS() {
       -webkit-mask-image: url(../foreground/images/filetype/filetype_audio.svg);
     }
 
-    :host([type="bruschetta"]) span, :host([type="crostini"]) span {
+    :host([type="bruschetta"]) span {
+      -webkit-mask-image: url(../foreground/images/volumes/bruschetta.svg);
+    }
+
+    :host([type="crostini"]) span {
       -webkit-mask-image: url(../foreground/images/volumes/linux_files.svg);
     }
 
     :host([type="camera-folder"]) span {
       -webkit-mask-image: url(../foreground/images/volumes/camera.svg);
-    }
-
-    :host([type="cant-pin"]) span {
-      -webkit-mask-image: url(../foreground/images/files/ui/cant_pin.svg);
     }
 
     :host([type="computer"]) span {
@@ -376,12 +380,20 @@ function getCSS() {
       -webkit-mask-image: url(../foreground/images/files/ui/check.svg);
     }
 
+    :host([type="bulk_pinning_battery_saver"]) span {
+      -webkit-mask-image: url(../foreground/images/files/ui/bulk_pinning_battery_saver.svg);
+    }
+
     :host([type="bulk_pinning_done"]) span {
       -webkit-mask-image: url(../foreground/images/files/ui/bulk_pinning_done.svg);
     }
 
     :host([type="bulk_pinning_offline"]) span {
       -webkit-mask-image: url(../foreground/images/files/ui/bulk_pinning_offline.svg);
+    }
+
+    :host([type="cloud"]) span {
+      -webkit-mask-image: url(../foreground/images/files/ui/cloud.svg);
     }
 
     :host([type="error_banner"]) span {

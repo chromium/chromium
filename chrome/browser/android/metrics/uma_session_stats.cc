@@ -48,7 +48,7 @@ namespace {
 // * onPreCreate was called X times
 // * onResume was called Y times
 // * the counters are capped at 3, so that value means "3 or more".
-enum class ChromeTabbedActivityCounter : int32_t {
+enum class ChromeActivityCounter : int32_t {
   P0R0 = 0,
   P0R1 = 1,
   P0R2 = 2,
@@ -187,10 +187,9 @@ void UmaSessionStats::EmitAndResetCounters() {
       android::shared_preferences::GetAndClearInt("Chrome.UMA.OnResumeCounter");
   int on_create_count = std::min(on_precreate_counter.value_or(0), 3);
   int on_resume_count = std::min(on_resume_counter.value_or(0), 3);
-  ChromeTabbedActivityCounter count_code =
-      static_cast<ChromeTabbedActivityCounter>(4 * on_create_count +
-                                               on_resume_count);
-  UMA_HISTOGRAM_ENUMERATION("UMA.AndroidPreNative.ChromeTabbedActivityCounter",
+  ChromeActivityCounter count_code =
+      static_cast<ChromeActivityCounter>(4 * on_create_count + on_resume_count);
+  UMA_HISTOGRAM_ENUMERATION("UMA.AndroidPreNative.ChromeActivityCounter",
                             count_code);
 }
 

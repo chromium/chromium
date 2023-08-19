@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 namespace {
@@ -344,6 +345,7 @@ TEST_F(RenderFrameMetadataObserverImplTest, DoNotSendExtraRootScrollOffset) {
 // This test verifies that we get an `OnRootScrollOffsetChanged()` when we call
 // `DidEndScroll()`.
 TEST_F(RenderFrameMetadataObserverImplTest, SendRootScrollOffsetOnScrollEnd) {
+  ScopedCCTNewRFMPushBehaviorForTest feature(true);
   const uint32_t expected_frame_token = 1337;
   viz::CompositorFrameMetadata compositor_frame_metadata;
   compositor_frame_metadata.send_frame_token_to_embedder = false;
@@ -361,13 +363,17 @@ TEST_F(RenderFrameMetadataObserverImplTest, SendRootScrollOffsetOnScrollEnd) {
     run_loop.Run();
   }
 
-  // Enable reporting for root scroll changes on scroll-end. This shouldn't
-  // generate a notification.
+  // Enable reporting for root scroll changes on scroll-end. This will generate
+  // a notification.
   observer_impl().UpdateRootScrollOffsetUpdateFrequency(
       cc::mojom::RootScrollOffsetUpdateFrequency::kOnScrollEnd);
-  EXPECT_CALL(client(), OnRenderFrameMetadataChanged(expected_frame_token,
-                                                     render_frame_metadata))
-      .Times(0);
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(client(), OnRenderFrameMetadataChanged(expected_frame_token,
+                                                       render_frame_metadata))
+        .WillOnce(InvokeClosure(run_loop.QuitClosure()));
+    run_loop.Run();
+  }
 
   // Submit with a root scroll change a couple times. This shouldn't generate a
   // notification.
@@ -392,6 +398,53 @@ TEST_F(RenderFrameMetadataObserverImplTest, SendRootScrollOffsetOnScrollEnd) {
     base::RunLoop run_loop;
     EXPECT_CALL(client(), OnRootScrollOffsetChanged(
                               *(render_frame_metadata.root_scroll_offset)))
+        .WillOnce(InvokeClosure(run_loop.QuitClosure()));
+    run_loop.Run();
+  }
+}
+
+// This test verifies that we get an `OnRenderFrameMetadataChanged()` when we
+// update the update frequency.
+TEST_F(RenderFrameMetadataObserverImplTest,
+       SendRenderFrameMetadataOnUpdateFrequency) {
+  ScopedCCTNewRFMPushBehaviorForTest feature(true);
+  const uint32_t expected_frame_token = 1337;
+  viz::CompositorFrameMetadata compositor_frame_metadata;
+  compositor_frame_metadata.send_frame_token_to_embedder = false;
+  compositor_frame_metadata.frame_token = expected_frame_token;
+  cc::RenderFrameMetadata render_frame_metadata;
+
+  observer_impl().OnRenderFrameSubmission(render_frame_metadata,
+                                          &compositor_frame_metadata,
+                                          false /* force_send */);
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(client(), OnRenderFrameMetadataChanged(expected_frame_token,
+                                                       render_frame_metadata))
+        .WillOnce(InvokeClosure(run_loop.QuitClosure()));
+    run_loop.Run();
+  }
+
+  // Update frequency to kNone. This should send a notification since the
+  // frequency was empty before.
+  observer_impl().UpdateRootScrollOffsetUpdateFrequency(
+      cc::mojom::RootScrollOffsetUpdateFrequency::kNone);
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(client(), OnRenderFrameMetadataChanged(expected_frame_token,
+                                                       render_frame_metadata))
+        .WillOnce(InvokeClosure(run_loop.QuitClosure()));
+    run_loop.Run();
+  }
+
+  // Update frequency to on scroll-end. This should send a notification since
+  // the frequency increased.
+  observer_impl().UpdateRootScrollOffsetUpdateFrequency(
+      cc::mojom::RootScrollOffsetUpdateFrequency::kOnScrollEnd);
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(client(), OnRenderFrameMetadataChanged(expected_frame_token,
+                                                       render_frame_metadata))
         .WillOnce(InvokeClosure(run_loop.QuitClosure()));
     run_loop.Run();
   }

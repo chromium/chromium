@@ -63,7 +63,6 @@ class SyncStatusTracker : public SyncEngineEventListener {
           trusted_vault_debug_info);
 
   void SetCacheGuid(const std::string& cache_guid);
-  void SetInvalidatorClientId(const std::string& invalidator_client_id);
   void SetHasPendingInvalidations(ModelType type,
                                   bool has_pending_invalidations);
 

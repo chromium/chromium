@@ -8,7 +8,9 @@
 
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_accelerators.h"
+#include "base/check_deref.h"
 #include "base/check_is_test.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -55,11 +57,6 @@
 
 namespace ash {
 namespace {
-
-// Time of waiting for the network to be ready to start installation. Can be
-// changed in tests.
-constexpr base::TimeDelta kKioskNetworkWaitTime = base::Seconds(10);
-base::TimeDelta g_network_wait_time = kKioskNetworkWaitTime;
 
 // Whether we should skip the wait for minimum screen show time.
 bool g_skip_splash_wait_for_testing = false;
@@ -167,7 +164,7 @@ std::unique_ptr<KioskAppLauncher> BuildKioskAppLauncher(
           profile, kiosk_app_id.app_id.value(), /*should_skip_install=*/false,
           network_delegate);
     case KioskAppType::kWebApp:
-      // TODO(b/242023891): |WebKioskAppServiceLauncher| does not support
+      // TODO(b/242023891): `WebKioskAppServiceLauncher` does not support
       // Lacros until App Service installation API is available.
       if (base::FeatureList::IsEnabled(features::kKioskEnableAppService) &&
           !crosapi::browser_util::IsLacrosEnabled()) {
@@ -179,7 +176,6 @@ std::unique_ptr<KioskAppLauncher> BuildKioskAppLauncher(
             /*should_skip_install=*/false, network_delegate);
       }
   }
-  NOTREACHED();
 }
 
 base::TimeDelta GetSplashScreenMinTime() {
@@ -204,11 +200,49 @@ base::TimeDelta GetSplashScreenMinTime() {
   return base::Seconds(min_time_in_seconds);
 }
 
-template <class T>
-void DeleteSoon(std::unique_ptr<T> pointer) {
-  base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
-      FROM_HERE, std::move(pointer));
+// Returns network name by service path.
+std::string ServicePathToNetworkName(const std::string& service_path) {
+  const ash::NetworkState* network =
+      ash::NetworkHandler::Get()->network_state_handler()->GetNetworkState(
+          service_path);
+  if (!network) {
+    return std::string();
+  }
+  return network->name();
 }
+
+class DefaultNetworkMonitor : public NetworkUiController::NetworkMonitor {
+ public:
+  using State = NetworkStateInformer::State;
+  using Observer = NetworkStateInformer::NetworkStateInformerObserver;
+
+  DefaultNetworkMonitor()
+      : network_state_informer_(base::MakeRefCounted<NetworkStateInformer>()) {
+    network_state_informer_->Init();
+  }
+
+  DefaultNetworkMonitor(const DefaultNetworkMonitor&) = delete;
+  DefaultNetworkMonitor& operator=(const DefaultNetworkMonitor&) = delete;
+  ~DefaultNetworkMonitor() override = default;
+
+  void AddObserver(Observer* observer) override {
+    network_state_informer_->AddObserver(observer);
+  }
+
+  void RemoveObserver(Observer* observer) override {
+    network_state_informer_->RemoveObserver(observer);
+  }
+
+  State GetState() const override { return network_state_informer_->state(); }
+
+  std::string GetNetworkName() const override {
+    return ::ash::ServicePathToNetworkName(
+        network_state_informer_->network_path());
+  }
+
+ private:
+  scoped_refptr<NetworkStateInformer> network_state_informer_;
+};
 
 }  // namespace
 
@@ -241,15 +275,26 @@ void SetKioskLaunchStateCrashKey(KioskLaunchState state) {
 KioskLaunchController::KioskLaunchController(OobeUI* oobe_ui)
     : KioskLaunchController(LoginDisplayHost::default_host(),
                             oobe_ui->GetView<AppLaunchSplashScreenHandler>(),
-                            base::BindRepeating(&BuildKioskAppLauncher)) {}
+                            base::BindRepeating(&BuildKioskAppLauncher),
+                            std::make_unique<DefaultNetworkMonitor>()) {}
 
 KioskLaunchController::KioskLaunchController(
     LoginDisplayHost* host,
     AppLaunchSplashScreenView* splash_screen,
-    KioskAppLauncherFactory app_launcher_factory)
+    KioskAppLauncherFactory app_launcher_factory,
+    std::unique_ptr<NetworkUiController::NetworkMonitor> network_monitor)
     : host_(host),
       splash_screen_view_(splash_screen),
-      app_launcher_factory_(std::move(app_launcher_factory)) {}
+      app_launcher_factory_(std::move(app_launcher_factory)),
+      network_ui_controller_(std::make_unique<NetworkUiController>(
+          *this,
+          host_,
+          CHECK_DEREF(splash_screen_view_.get()),
+          std::move(network_monitor))) {
+  if (!host_) {
+    CHECK_IS_TEST();
+  }
+}
 
 KioskLaunchController::~KioskLaunchController() = default;
 
@@ -265,6 +310,8 @@ void KioskLaunchController::Start(const KioskAppId& kiosk_app_id,
 
   if (host_ && host_->GetWebUILoginView()) {
     host_->GetWebUILoginView()->SetKeyboardEventsAndSystemTrayEnabled(true);
+  } else if (!host_) {
+    CHECK_IS_TEST();
   }
 
   if (kiosk_app_id.type == KioskAppType::kChromeApp) {
@@ -278,8 +325,7 @@ void KioskLaunchController::Start(const KioskAppId& kiosk_app_id,
     }
   }
 
-  network_ui_controller_ =
-      std::make_unique<NetworkUiController>(*this, host_, splash_screen_view_);
+  network_ui_controller_->Start();
 
   splash_screen_view_->Show(GetAppData());
 
@@ -452,7 +498,6 @@ void KioskLaunchController::CleanUp() {
   DCHECK(!cleaned_up_);
   cleaned_up_ = true;
 
-  network_wait_timer_.Stop();
   splash_wait_timer_.Stop();
 
   splash_screen_view_ = nullptr;
@@ -462,9 +507,10 @@ void KioskLaunchController::CleanUp() {
   app_launcher_.reset();
   network_ui_controller_.reset();
 
-  // Can be null in tests.
   if (host_) {
     host_->Finalize(base::OnceClosure());
+  } else {
+    CHECK_IS_TEST();
   }
   RecordKioskLaunchDuration(kiosk_app_id_.type,
                             base::Time::Now() - launcher_start_time_);
@@ -635,7 +681,7 @@ void KioskLaunchController::OnAppWindowCreated(
 
   SetKioskLaunchStateCrashKey(KioskLaunchState::kAppWindowCreated);
 
-  CreateAppSession(kiosk_app_id_, profile_, app_name);
+  CreateKioskSystemSession(kiosk_app_id_, profile_, app_name);
   // If timer is running, do not remove splash screen for a few
   // more seconds to give the user ability to exit kiosk session.
   if (splash_wait_timer_.IsRunning()) {
@@ -663,6 +709,10 @@ void KioskLaunchController::OnOldEncryptionDetected(
     std::unique_ptr<UserContext> user_context) {
   if (kiosk_app_id_.type != KioskAppType::kArcApp) {
     NOTREACHED();
+    return;
+  }
+  if (!host_) {
+    CHECK_IS_TEST();
     return;
   }
   host_->StartWizard(EncryptionMigrationScreenView::kScreenId);
@@ -741,13 +791,6 @@ std::unique_ptr<base::AutoReset<bool>>
 KioskLaunchController::SkipSplashScreenWaitForTesting() {
   return std::make_unique<base::AutoReset<bool>>(
       &g_skip_splash_wait_for_testing, true);
-}
-
-// static
-std::unique_ptr<base::AutoReset<base::TimeDelta>>
-KioskLaunchController::SetNetworkWaitForTesting(base::TimeDelta wait_time) {
-  return std::make_unique<base::AutoReset<base::TimeDelta>>(
-      &g_network_wait_time, wait_time);
 }
 
 // static

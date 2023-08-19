@@ -213,13 +213,13 @@ mojom::KeyboardSettingsPtr GetKeyboardSettingsFromGlobalPrefs(
     ForceKeyboardSettingPersistence& force_persistence) {
   mojom::KeyboardSettingsPtr settings = mojom::KeyboardSettings::New();
 
-  const auto* top_row_are_fkeys_preference =
-      prefs->GetUserPrefValue(prefs::kSendFunctionKeys);
-  settings->top_row_are_fkeys =
-      top_row_are_fkeys_preference
-          ? top_row_are_fkeys_preference->GetBool()
-          : GetDefaultTopRowAreFKeysValue(keyboard_policies, keyboard);
-  force_persistence.top_row_are_fkeys = top_row_are_fkeys_preference != nullptr;
+  // For the transition period, since the default behavior changed for external
+  // keyboards, the value from prefs must always be used even if the user did
+  // not explicitly configure it. Users expect their settings to remain
+  // consistent even if we think they may like the new default better.
+  settings->top_row_are_fkeys = prefs->GetBoolean(prefs::kSendFunctionKeys);
+  force_persistence.top_row_are_fkeys =
+      prefs->GetUserPrefValue(prefs::kSendFunctionKeys) != nullptr;
 
   settings->suppress_meta_fkey_rewrites = kDefaultSuppressMetaFKeyRewrites;
   // Do not persist as default should not be persisted.

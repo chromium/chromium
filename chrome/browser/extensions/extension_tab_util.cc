@@ -16,6 +16,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/expected_macros.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/tab_groups/tab_groups_util.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
@@ -55,6 +56,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
@@ -62,6 +64,7 @@
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "url/gurl.h"
 
 using content::NavigationEntry;
@@ -240,12 +243,9 @@ base::expected<base::Value::Dict, std::string> ExtensionTabUtil::OpenTab(
 
   GURL url(chrome::kChromeUINewTabURL);
   if (params.url) {
-    auto result = ExtensionTabUtil::PrepareURLForNavigation(
-        *params.url, function->extension(), function->browser_context());
-    if (!result.has_value()) {
-      return base::unexpected(result.error());
-    }
-    url = std::move(*result);
+    ASSIGN_OR_RETURN(url, ExtensionTabUtil::PrepareURLForNavigation(
+                              *params.url, function->extension(),
+                              function->browser_context()));
   }
 
   // Default to foreground for the new tab. The presence of 'active' property
@@ -796,17 +796,25 @@ bool ExtensionTabUtil::IsKillURL(const GURL& url) {
     DCHECK(url.IsAboutBlank() || url.IsAboutSrcdoc());
 #endif
 
-  static const char* const kill_hosts[] = {
-      chrome::kChromeUICrashHost,         chrome::kChromeUIDelayedHangUIHost,
-      chrome::kChromeUIHangUIHost,        chrome::kChromeUIKillHost,
+  // Disallow common renderer debug URLs.
+  // Note: this would also disallow JavaScript URLs, but we already explicitly
+  // check for those before calling into here from PrepareURLForNavigation.
+  if (blink::IsRendererDebugURL(url)) {
+    return true;
+  }
+
+  if (!url.SchemeIs(content::kChromeUIScheme)) {
+    return false;
+  }
+
+  // Also disallow a few more hosts which are not covered by the check above.
+  static const char* const kKillHosts[] = {
+      chrome::kChromeUIDelayedHangUIHost, chrome::kChromeUIHangUIHost,
       chrome::kChromeUIQuitHost,          chrome::kChromeUIRestartHost,
       content::kChromeUIBrowserCrashHost, content::kChromeUIMemoryExhaustHost,
   };
 
-  if (!url.SchemeIs(content::kChromeUIScheme))
-    return false;
-
-  return base::Contains(kill_hosts, url.host_piece());
+  return base::Contains(kKillHosts, url.host_piece());
 }
 
 base::expected<GURL, std::string> ExtensionTabUtil::PrepareURLForNavigation(
@@ -826,6 +834,12 @@ base::expected<GURL, std::string> ExtensionTabUtil::PrepareURLForNavigation(
   if (!url.is_valid()) {
     return base::unexpected(ErrorUtils::FormatErrorMessage(
         tabs_constants::kInvalidUrlError, url_string));
+  }
+
+  // Don't let the extension use JavaScript URLs in API triggered navigations.
+  if (url.SchemeIs(url::kJavaScriptScheme)) {
+    return base::unexpected(
+        tabs_constants::kJavaScriptUrlsNotAllowedInExtensionNavigations);
   }
 
   // Don't let the extension crash the browser or renderers.
@@ -849,6 +863,16 @@ base::expected<GURL, std::string> ExtensionTabUtil::PrepareURLForNavigation(
   // Don't let the extension navigate directly to chrome-untrusted scheme pages.
   if (url.SchemeIs(content::kChromeUIUntrustedScheme)) {
     return base::unexpected(tabs_constants::kCannotNavigateToChromeUntrusted);
+  }
+
+  // Don't let the extension navigate directly to file scheme pages, unless
+  // they have file access.
+  if (url.SchemeIsFile() &&
+      !util::AllowFileAccess(extension->id(), browser_context) &&
+      base::FeatureList::IsEnabled(
+          extensions_features::kRestrictFileURLNavigation)) {
+    return base::unexpected(
+        tabs_constants::kFileUrlsNotAllowedInExtensionNavigations);
   }
 
   if (extension && browser_context) {
@@ -963,17 +987,15 @@ bool ExtensionTabUtil::OpenOptionsPage(const Extension* extension,
     url_to_navigate = url_to_navigate.ReplaceComponents(replacements);
   }
 
-  NavigateParams params(
-      GetSingletonTabNavigateParams(browser, url_to_navigate));
   // We need to respect path differences because we don't want opening the
   // options page to close a page that might be open to extension content.
   // However, if the options page opens inside the chrome://extensions page, we
   // can override an existing page.
   // Note: ref behavior is to ignore.
-  params.path_behavior = open_in_tab ? NavigateParams::RESPECT
-                                     : NavigateParams::IGNORE_AND_NAVIGATE;
-  params.url = url_to_navigate;
-  ShowSingletonTabOverwritingNTP(browser, &params);
+  ShowSingletonTabOverwritingNTP(browser, url_to_navigate,
+                                 open_in_tab
+                                     ? NavigateParams::RESPECT
+                                     : NavigateParams::IGNORE_AND_NAVIGATE);
   return true;
 }
 

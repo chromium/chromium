@@ -7,12 +7,10 @@
 
 #include <dbus/dbus.h>
 
-#include "dbus/dbus_export.h"
-
-namespace dbus {
+namespace dbus::internal {
 
 // Utility class to ensure that DBusError is freed.
-class CHROME_DBUS_EXPORT ScopedDBusError {
+class ScopedDBusError {
  public:
   // Do not inline methods that call dbus_error_xxx() functions.
   // See http://crbug.com/416628
@@ -21,13 +19,13 @@ class CHROME_DBUS_EXPORT ScopedDBusError {
 
   DBusError* get() { return &error_; }
   bool is_set() const;
-  const char* name() { return error_.name; }
-  const char* message() { return error_.message; }
+  const char* name() const { return error_.name; }
+  const char* message() const { return error_.message; }
 
  private:
   DBusError error_;
 };
 
-}  // namespace dbus
+}  // namespace dbus::internal
 
 #endif  // DBUS_SCOPED_DBUS_ERROR_H_

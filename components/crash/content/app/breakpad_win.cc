@@ -186,29 +186,29 @@ extern "C" HANDLE __declspec(dllexport) __cdecl InjectDumpForHungInput(
 
 // Returns a string containing a list of all modifiers for the loaded profile.
 std::wstring GetProfileType() {
-  std::wstring profile_type;
   DWORD profile_bits = 0;
-  if (::GetProfileType(&profile_bits)) {
-    static const struct {
-      DWORD bit;
-      const wchar_t* name;
-    } kBitNames[] = {
-      { PT_MANDATORY, L"mandatory" },
-      { PT_ROAMING, L"roaming" },
-      { PT_TEMPORARY, L"temporary" },
-    };
-    for (size_t i = 0; i < std::size(kBitNames); ++i) {
-      const DWORD this_bit = kBitNames[i].bit;
-      if ((profile_bits & this_bit) != 0) {
-        profile_type.append(kBitNames[i].name);
-        profile_bits &= ~this_bit;
-        if (profile_bits != 0)
-          profile_type.append(L", ");
+  if (!::GetProfileType(&profile_bits)) {
+    return base::StringPrintf(L"error %u", ::GetLastError());
+  }
+
+  std::wstring profile_type;
+  static const struct {
+    DWORD bit;
+    const wchar_t* name;
+  } kBitNames[] = {
+      {PT_MANDATORY, L"mandatory"},
+      {PT_ROAMING, L"roaming"},
+      {PT_TEMPORARY, L"temporary"},
+  };
+  for (size_t i = 0; i < std::size(kBitNames); ++i) {
+    const DWORD this_bit = kBitNames[i].bit;
+    if ((profile_bits & this_bit) != 0) {
+      profile_type.append(kBitNames[i].name);
+      profile_bits &= ~this_bit;
+      if (profile_bits != 0) {
+        profile_type.append(L", ");
       }
     }
-  } else {
-    DWORD last_error = ::GetLastError();
-    base::SStringPrintf(&profile_type, L"error %u", last_error);
   }
   return profile_type;
 }
@@ -292,14 +292,6 @@ long WINAPI ChromeExceptionFilter(EXCEPTION_POINTERS* info) {
   if (previous_filter)
     return previous_filter(info);
 
-  return EXCEPTION_EXECUTE_HANDLER;
-}
-
-// Exception filter for the Cloud Print service process used when breakpad is
-// not enabled. We just display the "Do you want to restart" message and then
-// die (without calling the previous filter).
-long WINAPI CloudPrintServiceExceptionFilter(EXCEPTION_POINTERS* info) {
-  DumpDoneCallback(nullptr, nullptr, nullptr, info, nullptr, false);
   return EXCEPTION_EXECUTE_HANDLER;
 }
 
@@ -437,14 +429,11 @@ void InitCrashReporter(const std::string& process_type_switch) {
 
   google_breakpad::ExceptionHandler::MinidumpCallback callback = nullptr;
   LPTOP_LEVEL_EXCEPTION_FILTER default_filter = nullptr;
-  // We install the post-dump callback only for the browser and service
-  // processes. It spawns a new browser/service process.
+  // This installs the post-dump callback only for the browser process. It
+  // spawns a new browser process.
   if (process_type == L"browser") {
     callback = &DumpDoneCallback;
     default_filter = &ChromeExceptionFilter;
-  } else if (process_type == L"service") {
-    callback = &DumpDoneCallback;
-    default_filter = &CloudPrintServiceExceptionFilter;
   }
 
   if (GetCrashReporterClient()->ShouldCreatePipeName(process_type))

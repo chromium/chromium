@@ -457,12 +457,13 @@ bool HasRenderedNonAnonymousDescendantsWithHeight(
     // Note: tests[1][2] require this.
     // [1] editing/style/underline.html
     // [2] editing/inserting/return-with-object-element.html
-    if (block_flow->HasNGInlineNodeData() &&
-        block_flow->GetNGInlineNodeData()
-            ->ItemsData(false)
-            .text_content.empty() &&
-        block_flow->HasLineIfEmpty())
-      return false;
+    if (const NGInlineNodeData* inline_data =
+            block_flow->GetNGInlineNodeData()) {
+      if (inline_data->ItemsData(false).text_content.empty() &&
+          block_flow->HasLineIfEmpty()) {
+        return false;
+      }
+    }
   }
   const LayoutObject* stop = layout_object->NextInPreOrderAfterChildren();
   // TODO(editing-dev): Avoid single-character parameter names.
@@ -717,13 +718,23 @@ static PositionTemplate<Strategy> MostBackwardCaretPosition(
   DCHECK(adjusted_position.IsNotNull()) << position;
 #endif
   PositionIteratorAlgorithm<Strategy> last_visible(adjusted_position);
-  const bool start_editable = IsEditable(*start_node);
-  Node* last_node = start_node;
+  Node* last_node;
+  // If we're snapping the caret to the edges of an inline element rather than
+  // crossing an editing boundary, we want to detect that editable boundary even
+  // if it happens between the position's container and anchor nodes.
+  if (rule == kCannotCrossEditingBoundary &&
+      client == SnapToClient::kLocalCaretRect) {
+    last_node = position.ComputeContainerNode();
+  } else {
+    last_node = start_node;
+  }
+  const bool start_editable = IsEditable(*last_node);
   bool boundary_crossed = false;
   absl::optional<WritingMode> writing_mode;
   for (PositionIteratorAlgorithm<Strategy> current_pos = last_visible;
        !current_pos.AtStart(); current_pos.Decrement()) {
     Node* current_node = current_pos.GetNode();
+    DCHECK(current_node);
     // Don't check for an editability change if we haven't moved to a different
     // node, to avoid the expense of computing IsEditable().
     if (current_node != last_node) {
@@ -776,8 +787,13 @@ static PositionTemplate<Strategy> MostBackwardCaretPosition(
     }
 
     if (boundary_crossed) {
-      if (rule == kCannotCrossEditingBoundary)
+      if (rule == kCannotCrossEditingBoundary) {
+        if (current_node == start_node) {
+          DCHECK(position.IsBeforeAnchor() || position.IsAfterAnchor());
+          return position;
+        }
         return PositionTemplate<Strategy>::AfterNode(*current_node);
+      }
       if (rule == kCanCrossEditingBoundary) {
         last_visible = current_pos;
         break;
@@ -886,13 +902,23 @@ PositionTemplate<Strategy> MostForwardCaretPosition(
                 position.AnchorNode(),
                 Strategy::CaretMaxOffset(*position.AnchorNode()))
           : position);
-  const bool start_editable = IsEditable(*start_node);
-  Node* last_node = start_node;
+  Node* last_node;
+  // If we're snapping the caret to the edges of an inline element rather than
+  // crossing an editing boundary, we want to detect that editable boundary even
+  // if it happens between the position's container and anchor nodes.
+  if (rule == kCannotCrossEditingBoundary &&
+      client == SnapToClient::kLocalCaretRect) {
+    last_node = position.ComputeContainerNode();
+  } else {
+    last_node = start_node;
+  }
+  const bool start_editable = IsEditable(*last_node);
   bool boundary_crossed = false;
   absl::optional<WritingMode> writing_mode;
   for (PositionIteratorAlgorithm<Strategy> current_pos = last_visible;
        !current_pos.AtEnd(); current_pos.Increment()) {
     Node* current_node = current_pos.GetNode();
+    DCHECK(current_node);
     // Don't check for an editability change if we haven't moved to a different
     // node, to avoid the expense of computing IsEditable().
     if (current_node != last_node) {
@@ -954,8 +980,13 @@ PositionTemplate<Strategy> MostForwardCaretPosition(
     }
 
     if (boundary_crossed) {
-      if (rule == kCannotCrossEditingBoundary)
+      if (rule == kCannotCrossEditingBoundary) {
+        if (current_node == start_node) {
+          DCHECK(position.IsBeforeAnchor() || position.IsAfterAnchor());
+          return position;
+        }
         return PositionTemplate<Strategy>::BeforeNode(*current_node);
+      }
       if (rule == kCanCrossEditingBoundary)
         return current_pos.DeprecatedComputePosition();
     }

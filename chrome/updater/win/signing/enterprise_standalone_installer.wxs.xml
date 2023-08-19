@@ -1,0 +1,301 @@
+<?xml version='1.0' encoding='windows-1252'?>
+<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
+  <?define CompanyName = 'Google'?>
+  <?define CompanyFullName = 'Google LLC'?>
+  <?define Copyright = '$(var.ProductOriginalVersionString) Copyright $(var.ProductBuildYear) Google LLC'?>
+  <?define UpdateKeyPath = 'SOFTWARE\$(var.CompanyName)\Update'?>
+  <?define InstallCommandBase='--silent --tag=[ProductTag] --installsource enterprisemsi[OptOmahaArgs]'?>
+
+  <Product
+    Id='$(var.MsiProductId)'
+    Name='$(var.ProductName)'
+    Language='1033'
+    Codepage='1252'
+    UpgradeCode='$(var.MsiUpgradeCode)'
+    Version='$(var.ProductVersion)'
+    Manufacturer='$(var.CompanyFullName)'>
+
+    <Package
+      Id='*'
+      Description='$(var.ProductName) Installer'
+      Comments='$(var.Copyright)'
+      Manufacturer='$(var.CompanyFullName)'
+      Languages='1033'
+      SummaryCodepage='1252'
+      InstallerVersion='150'
+      InstallPrivileges='elevated'
+      Compressed='yes' />
+
+    <Upgrade Id='$(var.MsiUpgradeCode)'>
+      <!-- Allow same-version repair. -->
+      <UpgradeVersion Property='UPGRADEFOUND'
+                      OnlyDetect='no'
+                      Minimum='0.0.0.0' IncludeMinimum='yes'
+                      Maximum='$(var.ProductVersion)' IncludeMaximum='yes' />
+      <!-- Allow downgrade. -->
+      <UpgradeVersion Property='NEWPRODUCTFOUND'
+                      OnlyDetect='no'
+                      Minimum='$(var.ProductVersion)' IncludeMinimum='no' />
+    </Upgrade>
+
+    <!-- Per-machine installation - make sure product appears for all users. -->
+    <Property Id='ALLUSERS' Value='1' />
+
+    <?ifdef ProductIcon ?>
+      <!-- If var.ProductIcon is defined, use that as an icon in the ARP
+           dialog, otherwise rely on the ARP dialog's heuristics:
+           http://blogs.msdn.com/oldnewthing/archive/2004/07/09/178342.aspx -->
+      <Icon Id='icon.ico' SourceFile='$(var.ProductIcon)'/>
+      <Property Id='ARPPRODUCTICON' Value='icon.ico' />
+    <?endif?>
+
+    <!-- ARPNOMODIFY does two things:
+         1) Removes the 'Modify' button from the ARP dialog.
+         2) Causes the 'Remove' command to invoke msiexec /X instead of /I
+            (the intent being that WITH a Modify button, clicking either
+            Modify or Remove command will launch your installer UI). -->
+    <Property Id='ARPNOMODIFY' Value='1' />
+
+    <!-- Find the uninstall string to be used for the product. Only used for
+         uninstallation. -->
+    <Property Id='UNINSTALLCMDLINE'>
+      <RegistrySearch Id='UninstallCmdSearch'
+                      Root='HKLM'
+                      Type='raw'
+                      Key='$(var.UpdateKeyPath)\ClientState\$(var.ProductGuid)'
+                      Name='UninstallString'
+                      Win64='no'/>
+    </Property>
+    <Property Id='UNINSTALLCMDARGS'>
+      <RegistrySearch Id='UninstallArgSearch'
+                      Root='HKLM'
+                      Type='raw'
+                      Key='$(var.UpdateKeyPath)\ClientState\$(var.ProductGuid)'
+                      Name='UninstallArguments'
+                      Win64='no'/>
+    </Property>
+    <Property Id='AllowDowngradeSubstitution' Value='false' />
+
+    <!-- Eliminates "warning LGHT1076 : ICE71: The Media table has no entries."
+    -->
+    <Media Id='1' />
+
+    <Directory Id='TARGETDIR' Name='SourceDir'>
+
+      <!-- Use the ProductCode as the ComponentId since we want the latter to
+           change for each version change in support of major upgrades. -->
+      <Component Id='ProductClientState' Guid='$(var.MsiProductId)' Win64='no'>
+        <!-- Clear the last UI string before running the installer so we know
+             that any value present upon rollback is fresh. -->
+        <RemoveRegistryValue Key='$(var.UpdateKeyPath)\ClientState\$(var.ProductGuid)'
+                             Name='LastInstallerResultUIString'
+                             Root='HKLM' />
+        <RemoveRegistryValue Key='$(var.UpdateKeyPath)'
+                             Name='LastInstallerResultUIString'
+                             Root='HKLM' />
+        <RegistryValue Id='NonEmptyComponent' Action='write'
+                       Root='HKLM'
+                       Key='$(var.UpdateKeyPath)\ClientState\$(var.ProductGuid)'
+                       KeyPath='yes'
+                       Name='EnterpriseProduct$(var.MsiProductId)' Type='string' Value='$(var.ProductVersion)' />
+      </Component>
+
+    </Directory>
+
+    <Feature Id='Complete' Level='1'>
+      <ComponentRef Id='ProductClientState' />
+    </Feature>
+
+    <Binary Id='$(var.ProductNameLegalIdentifier)Installer'
+            SourceFile='$(var.StandaloneInstallerPath)' />
+
+    <Binary Id='MsiInstallerCustomActionDll'
+            SourceFile='$(var.MsiInstallerCADll)' />
+
+    <CustomAction Id='NewerVersionError' Error='A newer version of the $(var.ProductName) enterprise installer is already installed.'/>
+
+    <!-- Custom actions to build the ProductTag property. -->
+    <CustomAction Id='SetProductTagProperty'
+      Property='ProductTag'
+      Value='appguid=$(var.ProductGuid)&amp;appname=$(var.ProductName)&amp;needsAdmin=True'
+      Execute='immediate'
+      Return='check' />
+    <CustomAction Id='AppendCustomParamsToProductTagProperty'
+      Property='ProductTag'
+      Value='[ProductTag]$(var.ProductCustomParams)'
+      Execute='immediate'
+      Return='check' />
+    <CustomAction Id='TaggedMSIOverrideProductTagProperty'
+      Property='ProductTag'
+      Value='[TAGSTRING]'
+      Execute='immediate'
+      Return='check' />
+
+    <CustomAction Id='SetOptArgsProperty'
+      Property='OptOmahaArgs'
+      Value=''
+      Execute='immediate'
+      Return='check' />
+    <CustomAction Id='AppendEnterpriseToOptArgsProperty'
+      Property='OptOmahaArgs'
+      Value='[OptOmahaArgs] --enterprise'
+      Execute='immediate'
+      Return='check' />
+
+    <?ifdef ProductInstallerData ?>
+        <CustomAction Id='BuildInstallCommand'
+                      Property='InstallCommand'
+                      Value='$(var.InstallCommandBase) --appargs="appguid=$(var.ProductGuid)&amp;installerdata=$(var.ProductInstallerData)"'
+                      Execute='immediate'
+                      Return='check' />
+    <?else?>
+        <CustomAction Id='BuildInstallCommand'
+                      Property='InstallCommand'
+                      Value='$(var.InstallCommandBase)'
+                      Execute='immediate'
+                      Return='check' />
+    <?endif?>
+
+    <!-- Send the ProductGuid to the ShowInstallerResultUIString custom action.
+         The value is accessed through the "CustomActionData" property from
+         within the action itself. -->
+    <CustomAction Id='SetAppGuidProperty'
+      Property='ShowInstallerResultUIString'
+      Value='$(var.ProductGuid)' />
+
+    <!-- A custom action to be executed on rollback to log and display the
+         LastInstallerResultUIString. -->
+    <CustomAction Id='ShowInstallerResultUIString'
+      BinaryKey='MsiInstallerCustomActionDll'
+      DllEntry='ShowInstallerResultUIString'
+      Execute='rollback'
+      Impersonate='no' />
+
+    <!-- A custom action to be executed to extract tag information from the MSI
+         package. -->
+    <CustomAction Id='ExtractTagInfoFromInstaller'
+      BinaryKey='MsiInstallerCustomActionDll'
+      DllEntry='ExtractTagInfoFromInstaller'
+      Execute='immediate'
+      Impersonate='no' />
+
+    <CustomAction Id='DoInstall'
+      BinaryKey='$(var.ProductNameLegalIdentifier)Installer'
+      Impersonate='no'
+      Execute='deferred'
+      ExeCommand='[InstallCommand]'
+      Return='check' />
+    <CustomAction Id='CallUninstaller.SetProperty'
+      Property='UninstallCmd'
+      Value='[UNINSTALLCMDLINE]'
+      Execute='immediate'
+      Return='check' />
+    <CustomAction Id='CallUninstallerArgs.SetProperty'
+      Property='UninstallCmdArgs'
+      Value='[UNINSTALLCMDARGS]'
+      Execute='immediate'
+      Return='check' />
+    <CustomAction Id='CallUninstaller'
+      Property='UninstallCmd'
+      ExeCommand='[UninstallCmdArgs] $(var.ProductUninstallerAdditionalArgs)'
+      Impersonate='no'
+      Execute='deferred'
+      Return='check' />
+
+    <!-- Set [AllowDowngradeSubstitution] to true for downgrades. -->
+    <CustomAction Id='DoAllowDowngradeSubstitution'
+      Property='AllowDowngradeSubstitution'
+      Value='true'
+      Execute='immediate'
+      Return='check'/>
+
+    <InstallExecuteSequence>
+      <RemoveExistingProducts After='InstallValidate' />
+
+      <Custom Action='NewerVersionError' After='FindRelatedProducts'>
+        (NEWPRODUCTFOUND AND (ALLOWDOWNGRADE = ""))
+      </Custom>
+
+      <!-- The conditions in the following custom actions trigger the action when either:
+           1) The product is transitioning from absent to present locally OR
+           2) The product is present and being reinstalled. -->
+      <!-- Build tag property. -->
+      <!-- First, read the tag from the .msi. -->
+      <Custom Action='ExtractTagInfoFromInstaller'
+              Before='SetProductTagProperty'>
+        (((?ProductClientState=2) AND ($ProductClientState=3)) OR ((?ProductClientState=3) AND REINSTALL))
+      </Custom>
+      <!-- Now start forming [ProdutTag], first with the appguid and name. -->
+      <Custom Action='SetProductTagProperty'
+              Before='AppendCustomParamsToProductTagProperty'>
+        (((?ProductClientState=2) AND ($ProductClientState=3)) OR ((?ProductClientState=3) AND REINSTALL))
+      </Custom>
+      <!-- Add on the build-time string. -->
+      <Custom Action='AppendCustomParamsToProductTagProperty'
+              Before='TaggedMSIOverrideProductTagProperty'>
+        (((?ProductClientState=2) AND ($ProductClientState=3)) OR ((?ProductClientState=3) AND REINSTALL))
+      </Custom>
+      <!-- Override the tag completely if the MSI is tagged, or if the caller
+           has set the `TAGSTRING` property. Among all actions that change
+           `ProductTag`, this action must be the last one before
+           `BuildInstallCommand`, since this one overrides all previous
+           values.-->
+      <Custom Action='TaggedMSIOverrideProductTagProperty'
+              Before='BuildInstallCommand'>
+        (((?ProductClientState=2) AND ($ProductClientState=3)) OR ((?ProductClientState=3) AND REINSTALL)) AND (TAGSTRING &lt;&gt; "")
+      </Custom>
+      <Custom Action='SetOptArgsProperty'
+              Before='AppendEnterpriseToOptArgsProperty'>
+        (((?ProductClientState=2) AND ($ProductClientState=3)) OR ((?ProductClientState=3) AND REINSTALL))
+      </Custom>
+      <Custom Action='AppendEnterpriseToOptArgsProperty'
+              Before='BuildInstallCommand'>
+        (((?ProductClientState=2) AND ($ProductClientState=3)) OR ((?ProductClientState=3) AND REINSTALL)) AND (NOGOOGLEUPDATEPING &lt;&gt; "")
+      </Custom>
+
+      <!-- Set [AllowDowngradeSubstitution] to true if downgrades are allowed. -->
+      <Custom Action='DoAllowDowngradeSubstitution' Before='BuildInstallCommand'>
+        (((?ProductClientState=2) AND ($ProductClientState=3)) OR ((?ProductClientState=3) AND REINSTALL)) AND (ALLOWDOWNGRADE &lt;&gt; "")
+      </Custom>
+
+      <Custom Action='BuildInstallCommand'
+              Before='SetAppGuidProperty'>
+        (((?ProductClientState=2) AND ($ProductClientState=3)) OR ((?ProductClientState=3) AND REINSTALL))
+      </Custom>
+      <Custom Action='SetAppGuidProperty'
+              Before='ShowInstallerResultUIString'>
+        (((?ProductClientState=2) AND ($ProductClientState=3)) OR ((?ProductClientState=3) AND REINSTALL))
+      </Custom>
+      <Custom Action='ShowInstallerResultUIString'
+              Before='DoInstall'>
+        (((?ProductClientState=2) AND ($ProductClientState=3)) OR ((?ProductClientState=3) AND REINSTALL))
+      </Custom>
+
+      <Custom Action='DoInstall'
+              After='InstallFiles'>
+        (((?ProductClientState=2) AND ($ProductClientState=3)) OR ((?ProductClientState=3) AND REINSTALL))
+      </Custom>
+
+      <!-- The conditions in the following custom actions trigger the action when the product is
+           transitioning from present locally to absent only when not performing an upgrade or
+           downgrade. -->
+      <Custom Action='CallUninstallerArgs.SetProperty'
+              Before='CallUninstaller.SetProperty'>
+        ((?ProductClientState=3) AND ($ProductClientState=2) AND NOT UPGRADINGPRODUCTCODE)
+      </Custom>
+      <Custom Action='CallUninstaller.SetProperty'
+              Before='CallUninstaller'>
+        ((?ProductClientState=3) AND ($ProductClientState=2) AND NOT UPGRADINGPRODUCTCODE)
+      </Custom>
+      <Custom Action='CallUninstaller'
+              Before='RemoveFiles'>
+        ((?ProductClientState=3) AND ($ProductClientState=2) AND NOT UPGRADINGPRODUCTCODE)
+      </Custom>
+
+      <!-- Google Update will uninstall itself if the product is the only app it
+           so no need to have an uninstall operation. -->
+
+    </InstallExecuteSequence>
+
+  </Product>
+</Wix>

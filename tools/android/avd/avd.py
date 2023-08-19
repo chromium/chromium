@@ -161,7 +161,6 @@ def main(raw_args):
       help='Enable graphical window display on the emulator.')
   subparser.add_argument(
       '--gpu-mode',
-      default='swiftshader_indirect',
       help='Override the mode of hardware OpenGL ES emulation indicated by the '
       'AVD. See "emulator -help-gpu" for a full list of modes. Note when set '
       'to "host", it needs a valid DISPLAY env, even if "--emulator-window" is '
@@ -173,6 +172,9 @@ def main(raw_args):
       'disable debug messages from specific parts of the emulator, e.g. '
       'init,snapshot. See "emulator -help-debug-tags" '
       'for a full list of tags.')
+  subparser.add_argument(
+      '--disk-size',
+      help='Override the default disk size for the emulator instance.')
   subparser.add_argument(
       '--require-fast-start',
       action='store_true',
@@ -197,6 +199,7 @@ def main(raw_args):
                gpu_mode=args.gpu_mode,
                wipe_data=args.wipe_data,
                debug_tags=debug_tags,
+               disk_size=args.disk_size,
                require_fast_start=args.require_fast_start)
     print('%s started (pid: %d)' % (str(inst), inst._emulator_proc.pid))
     return 0

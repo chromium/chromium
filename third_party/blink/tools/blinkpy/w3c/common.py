@@ -6,8 +6,6 @@
 import json
 import logging
 
-from blinkpy.common.path_finder import RELATIVE_WPT_TESTS
-
 WPT_GH_ORG = 'web-platform-tests'
 WPT_GH_REPO_NAME = 'wpt'
 WPT_GH_URL = 'https://github.com/%s/%s/' % (WPT_GH_ORG, WPT_GH_REPO_NAME)
@@ -28,6 +26,8 @@ DEFAULT_WPT_COMMITTER_EMAIL = 'blink-w3c-test-autoroller@chromium.org'
 EXPORT_DENYLIST = {
     'third_party/blink/web_tests/external/wpt/config.json',
 }
+
+LEGACY_MAIN_BRANCH_NAME = 'retsam'[::-1]
 
 _log = logging.getLogger(__name__)
 
@@ -97,17 +97,18 @@ def is_basename_skipped(basename):
         'OWNERS',  # https://crbug.com/584660 https://crbug.com/702283
         'reftest.list',  # https://crbug.com/582838
         'DIR_METADATA',  # https://crbug.com/1103374
+        'PRESUBMIT.py',
     ]
     return (basename in skipped_basenames or is_testharness_baseline(basename)
             or basename.startswith('.') or is_disallowed_ini(basename))
 
 
-def is_file_exportable(path):
+def is_file_exportable(path, project_config):
     """Checks whether a file in Chromium WPT should be exported to upstream.
 
     Args:
         path: A relative path from the root of Chromium repository.
     """
-    assert path.startswith(RELATIVE_WPT_TESTS)
+    assert path.startswith(project_config.relative_tests_path)
     basename = path[path.rfind('/') + 1:]
     return path not in EXPORT_DENYLIST and not is_basename_skipped(basename)

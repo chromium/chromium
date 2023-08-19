@@ -14,7 +14,6 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/chrome_extension_browser_constants.h"
 #include "chrome/browser/extensions/context_menu_matcher.h"
 #include "chrome/browser/extensions/extension_management.h"
@@ -29,9 +28,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
-#include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
@@ -54,10 +51,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_separator_types.h"
-#include "ui/base/resource/resource_bundle.h"
-#include "ui/gfx/color_palette.h"
-#include "ui/gfx/image/image.h"
-#include "ui/gfx/paint_vector_icon.h"
 
 namespace extensions {
 
@@ -97,15 +90,14 @@ bool IsExtensionForcePinned(const Extension& extension, Profile* profile) {
 }
 
 // Returns the id for the visibility command for the given |extension|.
-int GetVisibilityStringId(
-    Profile* profile,
-    const Extension* extension,
-    ExtensionContextMenuModel::ButtonVisibility button_visibility) {
-  if (IsExtensionForcePinned(*extension, profile))
+int GetVisibilityStringId(Profile* profile,
+                          const Extension* extension,
+                          bool is_pinned) {
+  if (IsExtensionForcePinned(*extension, profile)) {
     return IDS_EXTENSIONS_PINNED_BY_ADMIN;
-  if (button_visibility == ExtensionContextMenuModel::PINNED)
-    return IDS_EXTENSIONS_UNPIN_FROM_TOOLBAR;
-  return IDS_EXTENSIONS_PIN_TO_TOOLBAR;
+  }
+  return is_pinned ? IDS_EXTENSIONS_UNPIN_FROM_TOOLBAR
+                   : IDS_EXTENSIONS_PIN_TO_TOOLBAR;
 }
 
 // Returns true if the given |extension| is required to remain installed by
@@ -207,6 +199,17 @@ void LogPageAccessAction(int command_id) {
   }
 }
 
+// Logs the action's visibility in the toolbar after it was set to `visible`.
+void LogToggleVisibility(bool visible) {
+  if (visible) {
+    base::RecordAction(
+        base::UserMetricsAction("Extensions.ContextMenu.PinExtension"));
+  } else {
+    base::RecordAction(
+        base::UserMetricsAction("Extensions.ContextMenu.UnpinExtension"));
+  }
+}
+
 void OpenUrl(Browser& browser, const GURL& url) {
   content::OpenURLParams params(
       url, content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -256,7 +259,7 @@ class UninstallDialogHelper : public ExtensionUninstallDialog::Delegate {
 ExtensionContextMenuModel::ExtensionContextMenuModel(
     const Extension* extension,
     Browser* browser,
-    ButtonVisibility button_visibility,
+    bool is_pinned,
     PopupDelegate* delegate,
     bool can_show_icon_in_toolbar,
     ContextMenuSource source)
@@ -266,7 +269,7 @@ ExtensionContextMenuModel::ExtensionContextMenuModel(
       browser_(browser),
       profile_(browser->profile()),
       delegate_(delegate),
-      button_visibility_(button_visibility),
+      is_pinned_(is_pinned),
       source_(source) {
   if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControl)) {
@@ -287,14 +290,9 @@ bool ExtensionContextMenuModel::IsCommandIdChecked(int command_id) const {
   if (command_id == PAGE_ACCESS_RUN_ON_CLICK ||
       command_id == PAGE_ACCESS_RUN_ON_SITE ||
       command_id == PAGE_ACCESS_RUN_ON_ALL_SITES) {
-    content::WebContents* web_contents = GetActiveWebContents();
-    if (!web_contents)
-      return false;
-
     auto* permissions = PermissionsManager::Get(profile_);
     PermissionsManager::UserSiteAccess current_access =
-        permissions->GetUserSiteAccess(*extension,
-                                       web_contents->GetLastCommittedURL());
+        permissions->GetUserSiteAccess(*extension, origin_.GetURL());
     return current_access == CommandIdToSiteAccess(command_id);
   }
 
@@ -351,16 +349,20 @@ bool ExtensionContextMenuModel::IsCommandIdEnabled(int command_id) const {
     case PAGE_ACCESS_CANT_ACCESS:
     case PAGE_ACCESS_ALL_EXTENSIONS_GRANTED:
     case PAGE_ACCESS_ALL_EXTENSIONS_BLOCKED:
+      // When these commands are shown, they are always disabled.
+      return false;
     case PAGE_ACCESS_SUBMENU:
+    case PAGE_ACCESS_PERMISSIONS_PAGE:
+    case PAGE_ACCESS_LEARN_MORE:
+      // When these commands are shown, they are always enabled.
+      return true;
     case PAGE_ACCESS_RUN_ON_CLICK:
     case PAGE_ACCESS_RUN_ON_SITE:
     case PAGE_ACCESS_RUN_ON_ALL_SITES:
-    case PAGE_ACCESS_PERMISSIONS_PAGE:
-    case PAGE_ACCESS_LEARN_MORE: {
-      return IsPageAccessCommandEnabled(*extension, command_id);
-    }
-    // Extension pinning/unpinning is not available for Incognito as this leaves
-    // a trace of user activity.
+      return PermissionsManager::Get(profile_)->CanUserSelectSiteAccess(
+          *extension, origin_.GetURL(), CommandIdToSiteAccess(command_id));
+    // Extension pinning/unpinning is not available for Incognito as this
+    // leaves a trace of user activity.
     case TOGGLE_VISIBILITY:
       return !browser_->profile()->IsOffTheRecord() &&
              !IsExtensionForcePinned(*extension, profile_);
@@ -400,9 +402,10 @@ void ExtensionContextMenuModel::ExecuteCommand(int command_id,
       ExtensionTabUtil::OpenOptionsPage(extension, browser_);
       break;
     case TOGGLE_VISIBILITY: {
-      bool currently_visible = button_visibility_ == PINNED;
+      bool visible = !is_pinned_;
       ToolbarActionsModel::Get(browser_->profile())
-          ->SetActionVisibility(extension->id(), !currently_visible);
+          ->SetActionVisibility(extension->id(), visible);
+      LogToggleVisibility(visible);
       break;
     }
     case UNINSTALL: {
@@ -425,10 +428,30 @@ void ExtensionContextMenuModel::ExecuteCommand(int command_id,
       break;
     case PAGE_ACCESS_RUN_ON_CLICK:
     case PAGE_ACCESS_RUN_ON_SITE:
-    case PAGE_ACCESS_RUN_ON_ALL_SITES:
+    case PAGE_ACCESS_RUN_ON_ALL_SITES: {
+      // If the web contents have navigated to a different origin, do nothing.
+      auto* web_contents = GetActiveWebContents();
+      if (!web_contents ||
+          !origin_.IsSameOriginWith(web_contents->GetLastCommittedURL())) {
+        return;
+      }
+
+      LogPageAccessAction(command_id);
+      SitePermissionsHelper permissions(profile_);
+      permissions.UpdateSiteAccess(*extension, web_contents,
+                                   CommandIdToSiteAccess(command_id));
+      break;
+    }
     case PAGE_ACCESS_PERMISSIONS_PAGE:
+      LogPageAccessAction(command_id);
+      OpenUrl(*browser_,
+              GURL(chrome_extension_constants::kExtensionsSitePermissionsURL));
+      break;
     case PAGE_ACCESS_LEARN_MORE:
-      HandlePageAccessCommand(command_id, extension);
+      LogPageAccessAction(command_id);
+      OpenUrl(*browser_,
+              GURL(chrome_extension_constants::kRuntimeHostPermissionsHelpURL));
+
       break;
     default:
       NOTREACHED() << "Unknown option";
@@ -482,7 +505,8 @@ void ExtensionContextMenuModel::InitMenuWithFeature(
 
   // Show section only when the extension requests host permissions.
   auto* permissions_manager = PermissionsManager::Get(profile_);
-  if (permissions_manager->ExtensionRequestsHostPermissions(*extension)) {
+  if (permissions_manager->ExtensionRequestsHostPermissionsOrActiveTab(
+          *extension)) {
     content::WebContents* web_contents = GetActiveWebContents();
     const GURL& url = web_contents->GetLastCommittedURL();
     // We store the origin to make sure it's the same when executing page access
@@ -581,7 +605,7 @@ void ExtensionContextMenuModel::InitMenuWithFeature(
           ui::ImageModel::FromVectorIcon(vector_icons::kBusinessIcon,
                                          ui::kColorIcon, 16));
     } else {
-      int message_id = button_visibility_ == ExtensionContextMenuModel::PINNED
+      int message_id = is_pinned_
                            ? IDS_EXTENSIONS_CONTEXT_MENU_UNPIN_FROM_TOOLBAR
                            : IDS_EXTENSIONS_CONTEXT_MENU_PIN_TO_TOOLBAR;
       AddItemWithStringId(TOGGLE_VISIBILITY, message_id);
@@ -664,7 +688,7 @@ void ExtensionContextMenuModel::InitMenu(const Extension* extension,
   if (can_show_icon_in_toolbar &&
       source_ == ContextMenuSource::kToolbarAction) {
     int visibility_string_id =
-        GetVisibilityStringId(profile_, extension, button_visibility_);
+        GetVisibilityStringId(profile_, extension, is_pinned_);
     DCHECK_NE(-1, visibility_string_id);
     AddItemWithStringId(TOGGLE_VISIBILITY, visibility_string_id);
     if (IsExtensionForcePinned(*extension, profile_)) {
@@ -707,44 +731,6 @@ void ExtensionContextMenuModel::AppendExtensionItems() {
   extension_items_->AppendExtensionItems(MenuItem::ExtensionKey(extension_id_),
                                          std::u16string(), &index,
                                          true);  // is_action_menu
-}
-
-bool ExtensionContextMenuModel::IsPageAccessCommandEnabled(
-    const Extension& extension,
-    int command_id) const {
-  content::WebContents* web_contents = GetActiveWebContents();
-  if (!web_contents)
-    return false;
-
-  switch (command_id) {
-    case PAGE_ACCESS_CANT_ACCESS:
-    case PAGE_ACCESS_ALL_EXTENSIONS_GRANTED:
-    case PAGE_ACCESS_ALL_EXTENSIONS_BLOCKED:
-      // When these commands are shown, they are always disabled.
-      return false;
-
-    case PAGE_ACCESS_SUBMENU:
-    case PAGE_ACCESS_LEARN_MORE:
-    case PAGE_ACCESS_PERMISSIONS_PAGE:
-      // When these commands are shown, they are always enabled.
-      return true;
-
-    case PAGE_ACCESS_RUN_ON_CLICK:
-    case PAGE_ACCESS_RUN_ON_SITE:
-    case PAGE_ACCESS_RUN_ON_ALL_SITES:
-      // TODO(devlin): This can lead to some fun race-like conditions, where the
-      // menu is constructed during navigation. Since we get the URL both here
-      // and in execution of the command, there's a chance we'll find two
-      // different URLs. This would be solved if we maintained the URL that the
-      // menu was showing for.
-      auto* permissions_manager = PermissionsManager::Get(profile_);
-      return permissions_manager->CanUserSelectSiteAccess(
-          extension, web_contents->GetLastCommittedURL(),
-          CommandIdToSiteAccess(command_id));
-  }
-
-  NOTREACHED() << "Unexpected command id: " << command_id;
-  return false;
 }
 
 void ExtensionContextMenuModel::CreatePageAccessItems(
@@ -795,37 +781,6 @@ void ExtensionContextMenuModel::CreatePageAccessItems(
   AddSubMenuWithStringId(PAGE_ACCESS_SUBMENU,
                          IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS,
                          page_access_submenu_.get());
-}
-
-void ExtensionContextMenuModel::HandlePageAccessCommand(
-    int command_id,
-    const Extension* extension) const {
-  content::WebContents* web_contents = GetActiveWebContents();
-  if (!web_contents) {
-    return;
-  }
-
-  LogPageAccessAction(command_id);
-
-  if (command_id == PAGE_ACCESS_PERMISSIONS_PAGE) {
-    OpenUrl(*browser_,
-            GURL(chrome_extension_constants::kExtensionsSitePermissionsURL));
-    return;
-  }
-  if (command_id == PAGE_ACCESS_LEARN_MORE) {
-    OpenUrl(*browser_,
-            GURL(chrome_extension_constants::kRuntimeHostPermissionsHelpURL));
-    return;
-  }
-
-  // If the web contents have navigated to a different origin, do nothing.
-  if (!origin_.IsSameOriginWith(web_contents->GetLastCommittedURL())) {
-    return;
-  }
-
-  SitePermissionsHelper permissions(profile_);
-  permissions.UpdateSiteAccess(*extension, web_contents,
-                               CommandIdToSiteAccess(command_id));
 }
 
 content::WebContents* ExtensionContextMenuModel::GetActiveWebContents() const {

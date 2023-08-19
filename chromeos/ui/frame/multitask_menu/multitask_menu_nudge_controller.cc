@@ -4,9 +4,12 @@
 
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_nudge_controller.h"
 
+#include "ash/constants/notifier_catalogs.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/ui/base/nudge_util.h"
 #include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/wm/features.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -25,6 +28,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
+#include "base/command_line.h"
 #include "components/user_manager/user_manager.h"
 #endif
 
@@ -169,6 +174,13 @@ void MultitaskMenuNudgeController::MaybeShowNudge(aura::Window* window,
     return;
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ash::switches::kAshNoNudges)) {
+    return;
+  }
+#endif
+
   // If the window is not visible, do not show the nudge.
   if (!window->IsVisible()) {
     return;
@@ -199,6 +211,14 @@ void MultitaskMenuNudgeController::DismissNudge() {
 }
 
 void MultitaskMenuNudgeController::OnMenuOpened(bool tablet_mode) {
+  if (!nudge_shown_time_.is_null()) {
+    base::UmaHistogramEnumeration(
+        GetNudgeTimeToActionHistogramName(GetTime() - nudge_shown_time_),
+        tablet_mode ? ash::NudgeCatalogName::kMultitaskMenuTablet
+                    : ash::NudgeCatalogName::kMultitaskMenuClamshell);
+    nudge_shown_time_ = base::Time();
+  }
+
   // Avoid sending prefs through the cros API or recording user actions if the
   // nudge isn't shown.
   if (!nudge_widget_ || nudge_widget_->IsClosed()) {
@@ -289,7 +309,7 @@ void MultitaskMenuNudgeController::OnDisplayTabletStateChanged(
       DismissNudge();
       break;
     case display::TabletState::kInTabletMode:
-      // Entering tablet mode will call the `TabletModeMultitaskCue`
+      // Entering tablet mode will call the `TabletModeMultitaskCueController`
       // constructor so no work needed.
       // TODO(b/267648014): Combine cue and nudge logic so both are activated in
       // the same place when switching modes.
@@ -349,6 +369,12 @@ void MultitaskMenuNudgeController::OnGetPreferences(
   anchor_view_ = anchor_view;
 
   nudge_widget_->Show();
+
+  base::UmaHistogramEnumeration(
+      kNotifierFrameworkNudgeShownCountHistogram,
+      tablet_mode ? ash::NudgeCatalogName::kMultitaskMenuTablet
+                  : ash::NudgeCatalogName::kMultitaskMenuClamshell);
+  nudge_shown_time_ = GetTime();
 
   // Note that order matters because in some cases, creating the widget may
   // trigger some window observations.

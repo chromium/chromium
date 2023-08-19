@@ -27,6 +27,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "allocator_state_unittest.cc",
+    "lightweight_detector_unittest.cc",
     "pack_stack_trace_unittest.cc",
   ]
   deps = [

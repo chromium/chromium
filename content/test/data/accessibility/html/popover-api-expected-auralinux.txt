@@ -17,22 +17,22 @@
 ++[static] name='Text input pointing to invalid popover value'
 ++[paragraph]
 ++++[static] name='Showing/visible popovers below'
-++[push button] name='Button pointing to showing popover' expanded details details-roles:popover
+++[push button] name='Button pointing to showing popover' expanded details=[panel] details-roles:popover
 ++[push button] name='w/o details' expanded
 ++[entry] selectable-text
 ++[static] name='Tel input pointing to showing popover '
-++[push button] name='Show button pointing to nested popover' expanded details details-roles:popover
+++[push button] name='Show button pointing to nested popover' expanded details=[panel] details-roles:popover
 ++[entry] selectable-text
 ++[static] name='Url input pointing to nested popover '
-++[panel] details-for
+++[panel] details-for=[push button]
 ++++[static] name='Popover (showing)'
-++++[panel] details-for
+++++[panel] details-for=[push button]
 ++++++[static] name='Nested popover (showing)'
-++[push button] name='Hide button pointing to showing manual (should add aria-details)' details details-roles:popover
+++[push button] name='Hide button pointing to showing manual (should add aria-details)' details=[panel] details-roles:popover
 ++[entry] selectable-text
 ++[static] name='Url input pointing to showing manual '
 ++[push button] name='Hide button pointing to showing manual (should NOT add aria-details)'
-++[panel] details-for
+++[panel] details-for=[push button]
 ++++[static] name='Manual (showing)'
 ++[panel]
 ++++[static] name='Popover=hint (showing) '

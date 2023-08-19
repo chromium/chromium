@@ -31,6 +31,7 @@ import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -150,9 +151,9 @@ public class MultiWindowUtils implements ActivityStateListener {
         return ApiCompatibilityUtils.getTargetableDisplayIds(activity).size() == 2;
     }
 
-    @VisibleForTesting
     public void setIsInMultiWindowModeForTesting(boolean isInMultiWindowMode) {
         mIsInMultiWindowModeForTesting = isInMultiWindowMode;
+        ResettersForTesting.register(() -> mIsInMultiWindowModeForTesting = false);
     }
 
     /**

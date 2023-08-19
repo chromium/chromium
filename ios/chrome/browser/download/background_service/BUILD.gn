@@ -24,7 +24,6 @@ source_set("background_service") {
 
 source_set("unit_tests") {
   testonly = true
-  configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     ":background_service",
     "//base",

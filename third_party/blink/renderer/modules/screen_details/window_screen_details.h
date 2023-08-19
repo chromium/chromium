@@ -21,7 +21,7 @@ class ScriptState;
 class ScreenDetails;
 
 // Supplements LocalDOMWindow with a ScreenDetails interface.
-// https://w3c.github.io/window-placement/
+// https://w3c.github.io/window-management/
 class WindowScreenDetails final : public GarbageCollected<WindowScreenDetails>,
                                   public ExecutionContextLifecycleObserver,
                                   public Supplement<LocalDOMWindow> {

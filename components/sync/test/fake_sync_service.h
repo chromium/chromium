@@ -14,6 +14,10 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/scoped_java_ref.h"
+#endif
+
 namespace syncer {
 
 // Minimal fake implementation of SyncService. All methods return inactive/
@@ -26,6 +30,9 @@ class FakeSyncService : public SyncService {
 
   // Dummy methods.
   // SyncService implementation.
+#if BUILDFLAG(IS_ANDROID)
+  base::android::ScopedJavaLocalRef<jobject> GetJavaObject() override;
+#endif  // BUILDFLAG(IS_ANDROID)
   void SetSyncFeatureRequested() override;
   syncer::SyncUserSettings* GetUserSettings() override;
   const syncer::SyncUserSettings* GetUserSettings() const override;
@@ -71,15 +78,8 @@ class FakeSyncService : public SyncService {
       base::OnceCallback<void(base::Value::List)> callback) override;
   ModelTypeDownloadStatus GetDownloadStatusFor(ModelType type) const override;
   void SetInvalidationsForSessionsEnabled(bool enabled) override;
-  void AddTrustedVaultDecryptionKeysFromWeb(
-      const std::string& gaia_id,
-      const std::vector<std::vector<uint8_t>>& keys,
-      int last_key_version) override;
-  void AddTrustedVaultRecoveryMethodFromWeb(
-      const std::string& gaia_id,
-      const std::vector<uint8_t>& public_key,
-      int method_type_hint,
-      base::OnceClosure callback) override;
+  void GetTypesWithUnsyncedData(
+      base::OnceCallback<void(ModelTypeSet)> cb) const override;
 
   // KeyedService implementation.
   void Shutdown() override;

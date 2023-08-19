@@ -7,8 +7,8 @@ import logging
 import optparse
 
 from blinkpy.common.checkout.baseline_optimizer import BaselineOptimizer
+from blinkpy.tool.commands.command import resolve_test_patterns
 from blinkpy.tool.commands.rebaseline import AbstractParallelRebaselineCommand
-from blinkpy.web_tests.models.test_expectations import TestExpectationsCache
 
 _log = logging.getLogger(__name__)
 
@@ -39,16 +39,20 @@ class OptimizeBaselines(AbstractParallelRebaselineCommand):
             self.port_name_option,
             self.all_option,
             self.check_option,
+            self.test_name_file_option,
         ] + self.platform_options + self.wpt_options)
         self._successful = True
-        self._exp_cache = TestExpectationsCache()
 
     def execute(self, options, args, tool):
+        self._tool, self._successful = tool, True
+        if options.test_name_file:
+            tests = self._host_port.tests_from_file(options.test_name_file)
+            args.extend(sorted(tests))
+
         if not args != options.all_tests:
             _log.error('Must provide one of --all or TEST_NAMES')
             return 1
 
-        self._tool, self._successful = tool, True
         port_names = tool.port_factory.all_port_names(options.platform)
         if not port_names:
             _log.error("No port names match '%s'", options.platform)
@@ -78,11 +82,15 @@ class OptimizeBaselines(AbstractParallelRebaselineCommand):
                 return 2
 
     def _get_test_set(self, port, options, args):
-        test_set = set(port.tests() if options.all_tests else port.tests(args))
-        virtual_tests_to_exclude = set([
-            test for test in test_set
+        if options.all_tests:
+            test_set = set(port.tests())
+        else:
+            test_set = resolve_test_patterns(port, args)
+        virtual_tests_to_exclude = {
+            test
+            for test in test_set
             if port.lookup_virtual_test_base(test) in test_set
-        ])
+        }
         test_set -= virtual_tests_to_exclude
         return test_set
 

@@ -5,14 +5,15 @@
 #include "chrome/browser/lacros/views_text_services_context_menu_lacros.h"
 
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/lacros/clipboard_history_lacros.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "chromeos/ui/clipboard_history/clipboard_history_submenu_model.h"
+#include "chromeos/ui/clipboard_history/clipboard_history_util.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/menu_source_utils.h"
 #include "ui/base/pointer/touch_editing_controller.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -52,22 +53,30 @@ ViewsTextServicesContextMenuLacros::ViewsTextServicesContextMenuLacros(
     return;
 
   const size_t target_index = paste_index.value() + 1;
+  const int clipboard_history_string_id = GetClipboardHistoryStringId();
 
   // If the clipboard history refresh feature is enabled, insert a submenu of
   // clipboard history descriptors; otherwise, insert a menu option to trigger
   // the clipboard history menu.
+  // NOTE: The string ID is reused as the command ID when inserting a menu item.
+  // It is because the Ash version of this class does not have access to Chrome
+  // code where the IDC commands are defined.
   if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
+    // `submenu_model_` is a class member. Therefore, it is safe to use `this`
+    // pointer in the callback.
     submenu_model_ = chromeos::clipboard_history::ClipboardHistorySubmenuModel::
         CreateClipboardHistorySubmenuModel(
             crosapi::mojom::ClipboardHistoryControllerShowSource::
-                kTextfieldContextMenu);
-    menu->InsertSubMenuWithStringIdAt(
-        target_index, IDS_APP_SHOW_CLIPBOARD_HISTORY,
-        IDS_APP_SHOW_CLIPBOARD_HISTORY, submenu_model_.get());
+                kTextfieldContextSubmenu,
+            base::BindRepeating(
+                &ViewsTextServicesContextMenuLacros::ShowClipboardHistoryMenu,
+                base::Unretained(this)));
+    menu->InsertSubMenuWithStringIdAt(target_index, clipboard_history_string_id,
+                                      clipboard_history_string_id,
+                                      submenu_model_.get());
   } else {
-    menu->InsertItemAt(
-        target_index, IDS_APP_SHOW_CLIPBOARD_HISTORY,
-        l10n_util::GetStringUTF16(IDS_APP_SHOW_CLIPBOARD_HISTORY));
+    menu->InsertItemWithStringIdAt(target_index, clipboard_history_string_id,
+                                   clipboard_history_string_id);
   }
 }
 
@@ -78,6 +87,10 @@ bool ViewsTextServicesContextMenuLacros::GetAcceleratorForCommandId(
     int command_id,
     ui::Accelerator* accelerator) const {
   if (command_id == IDS_APP_SHOW_CLIPBOARD_HISTORY) {
+    // When the clipboard history refresh feature is enabled,
+    // `IDS_APP_SHOW_CLIPBOARD_HISTORY` is in the clipboard history submenu.
+    // Therefore, the code below should not be executed.
+    CHECK(!chromeos::features::IsClipboardHistoryRefreshEnabled());
     *accelerator = ui::Accelerator(ui::VKEY_V, ui::EF_COMMAND_DOWN);
     return true;
   }
@@ -88,20 +101,21 @@ bool ViewsTextServicesContextMenuLacros::GetAcceleratorForCommandId(
 
 bool ViewsTextServicesContextMenuLacros::IsCommandIdChecked(
     int command_id) const {
-  if (command_id == IDS_APP_SHOW_CLIPBOARD_HISTORY)
+  if (command_id == GetClipboardHistoryStringId()) {
     return true;
+  }
 
   return ViewsTextServicesContextMenuBase::IsCommandIdChecked(command_id);
 }
 
 bool ViewsTextServicesContextMenuLacros::IsCommandIdEnabled(
     int command_id) const {
-  if (command_id == IDS_APP_SHOW_CLIPBOARD_HISTORY) {
+  if (command_id == GetClipboardHistoryStringId()) {
     // If the clipboard history refresh feature is enabled, enable the clipboard
     // history command id if there are clipboard history item descriptors.
     return IsClipboardHistoryLacrosServiceAvailable() &&
            (chromeos::features::IsClipboardHistoryRefreshEnabled()
-                ? !ClipboardHistoryLacros::Get()->cached_descriptors().empty()
+                ? !chromeos::clipboard_history::QueryItemDescriptors().empty()
                 : !IsClipboardHistoryEmpty());
   }
 
@@ -111,24 +125,12 @@ bool ViewsTextServicesContextMenuLacros::IsCommandIdEnabled(
 void ViewsTextServicesContextMenuLacros::ExecuteCommand(int command_id,
                                                         int event_flags) {
   if (command_id == IDS_APP_SHOW_CLIPBOARD_HISTORY) {
-    if (!IsClipboardHistoryLacrosServiceAvailable())
-      return;
+    // This code path is only executed when the clipboard history refresh
+    // feature is disabled. When the feature is enabled, the menu option
+    // corresponding to `IDS_APP_SHOW_CLIPBOARD_HISTORY` is added to a submenu.
+    CHECK(!chromeos::features::IsClipboardHistoryRefreshEnabled());
 
-    // Calculate the menu source type from `event_flags`.
-    ui::MenuSourceType source_type;
-    if (event_flags & ui::EF_LEFT_MOUSE_BUTTON) {
-      source_type = ui::MENU_SOURCE_MOUSE;
-    } else if (event_flags & ui::EF_FROM_TOUCH) {
-      source_type = ui::MENU_SOURCE_TOUCH;
-    } else {
-      source_type = ui::MENU_SOURCE_KEYBOARD;
-    }
-
-    chromeos::LacrosService::Get()
-        ->GetRemote<mojom::ClipboardHistory>()
-        ->ShowClipboard(
-            client()->GetCaretBounds(), source_type,
-            mojom::ClipboardHistoryControllerShowSource::kTextfieldContextMenu);
+    ShowClipboardHistoryMenu(event_flags);
     return;
   }
 
@@ -136,10 +138,22 @@ void ViewsTextServicesContextMenuLacros::ExecuteCommand(int command_id,
 }
 
 bool ViewsTextServicesContextMenuLacros::SupportsCommand(int command_id) const {
-  if (command_id == IDS_APP_SHOW_CLIPBOARD_HISTORY)
+  if (command_id == GetClipboardHistoryStringId()) {
     return true;
+  }
 
   return ViewsTextServicesContextMenuBase::SupportsCommand(command_id);
+}
+
+void ViewsTextServicesContextMenuLacros::ShowClipboardHistoryMenu(
+    int event_flags) {
+  if (IsClipboardHistoryLacrosServiceAvailable()) {
+    chromeos::LacrosService::Get()
+        ->GetRemote<mojom::ClipboardHistory>()
+        ->ShowClipboard(
+            client()->GetCaretBounds(), ui::GetMenuSourceType(event_flags),
+            mojom::ClipboardHistoryControllerShowSource::kTextfieldContextMenu);
+  }
 }
 
 }  // namespace crosapi

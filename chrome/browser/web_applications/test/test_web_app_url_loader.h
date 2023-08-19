@@ -48,10 +48,6 @@ class TestWebAppUrlLoader : public WebAppUrlLoader {
                UrlComparison url_comparison,
                ResultCallback callback) override;
 
-  // Sets the result for PrepareForLoad() to be ok.
-  void SetPrepareForLoadResultLoaded();
-  void AddPrepareForLoadResults(const std::vector<Result>& results);
-
   void TrackLoadUrlCalls(
       base::RepeatingCallback<void(const GURL& url,
                                    content::WebContents* web_contents,

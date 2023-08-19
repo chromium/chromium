@@ -8,7 +8,7 @@
 #include <tuple>
 
 #include "base/functional/callback_forward.h"
-#include "base/test/repeating_test_future.h"
+#include "base/test/test_future.h"
 #include "chromeos/dbus/missive/missive_client.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
@@ -55,7 +55,7 @@ class MissiveClientTestObserver
   bool HasNewEnqueuedRecords();
 
  private:
-  base::test::RepeatingTestFuture<::reporting::Priority, ::reporting::Record>
+  base::test::TestFuture<::reporting::Priority, ::reporting::Record>
       enqueued_records_;
 
   RecordFilterCb record_filter_cb_;

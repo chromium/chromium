@@ -7,6 +7,7 @@
 #include <tuple>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "content/renderer/pepper/host_array_buffer_var.h"
 #include "content/renderer/pepper/host_globals.h"
@@ -163,8 +164,7 @@ int HostVarTracker::TrackSharedMemoryRegion(
   entry.size_in_bytes = size_in_bytes;
 
   // Find a free id for our map.
-  while (shared_memory_map_.find(last_shared_memory_map_id_) !=
-         shared_memory_map_.end()) {
+  while (base::Contains(shared_memory_map_, last_shared_memory_map_id_)) {
     ++last_shared_memory_map_id_;
   }
   shared_memory_map_[last_shared_memory_map_id_] = std::move(entry);

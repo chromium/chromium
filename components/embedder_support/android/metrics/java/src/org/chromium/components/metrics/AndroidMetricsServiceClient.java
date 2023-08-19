@@ -7,8 +7,6 @@ package org.chromium.components.metrics;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
@@ -51,7 +49,6 @@ public class AndroidMetricsServiceClient {
         return ctx.getPackageName();
     }
 
-    @VisibleForTesting
     public static void setInstallerPackageTypeForTesting(@InstallerPackageType int type) {
         ThreadUtils.assertOnUiThread();
         sInstallerPackageTypeForTesting = type;

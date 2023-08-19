@@ -6,6 +6,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
+#include "base/debug/alias.h"
+#include "base/debug/dump_without_crashing.h"
 #include "chromeos/ash/components/device_activity/device_active_use_case.h"
 #include "chromeos/ash/components/device_activity/fresnel_pref_names.h"
 #include "chromeos/ash/components/device_activity/fresnel_service.pb.h"
@@ -1135,6 +1137,55 @@ void DeviceActivityClient::OnCheckMembershipOprfDone(
   int net_code = url_loader->NetError();
   RecordResponseStateMetric(state_, net_code);
   RecordPsmOprfResponseNetErrorCode(net_code);
+
+  // TODO(crbug.com/1441199): Remove logs and crash report dumps used for
+  // debugging purposes. Logs are used to determine why ~15% of devices are
+  // getting back failed Oprf response.
+  Channel device_channel = current_use_case->GetChromeOSChannel();
+  if ((net_code == -105 || net_code == -379 || net_code == -501) &&
+      (device_channel != Channel::CHANNEL_UNKNOWN &&
+       device_channel != Channel::CHANNEL_STABLE)) {
+    // Store variables that will be checked in crash report.
+    std::vector<psm_rlwe::RlwePlaintextId> psm_ids =
+        current_use_case->GetPsmIdentifiersToQuery();
+    std::string psm_use_case_str =
+        psm_rlwe::RlweUseCase_Name(current_use_case->GetPsmUseCase());
+    base::Time last_known_ts = current_use_case->GetLastKnownPingTimestamp();
+    base::Time current_ts = last_transition_out_of_idle_time_;
+    int psm_ids_size = psm_ids.size();
+
+    base::debug::Alias(&net_code);
+    base::debug::Alias(&device_channel);
+    DEBUG_ALIAS_FOR_CSTR(local_psm_use_case_str, psm_use_case_str.c_str(), 64);
+    base::debug::Alias(&last_known_ts);
+    base::debug::Alias(&current_ts);
+    base::debug::Alias(&psm_ids);
+    base::debug::Alias(&psm_ids_size);
+
+    LOG(ERROR) << "Debug log - Net code = " << net_code;
+    LOG(ERROR) << "Debug log - Device Channel = " << device_channel;
+    LOG(ERROR) << "Debug log - Psm use case = " << local_psm_use_case_str;
+    LOG(ERROR) << "Debug log - Last known ts = " << last_known_ts;
+    LOG(ERROR) << "Debug log - number of psm ids being queried = "
+               << psm_ids_size;
+
+    if (psm_ids_size > 0) {
+      LOG(ERROR)
+          << "Debug log - Logging plaintext and window id being queried..";
+      std::string plaintext_id = psm_ids.at(0).sensitive_id();
+      std::string window_id = psm_ids.at(0).non_sensitive_id();
+
+      DEBUG_ALIAS_FOR_CSTR(local_plaintext_id, plaintext_id.c_str(), 64);
+      DEBUG_ALIAS_FOR_CSTR(local_window_id, window_id.c_str(), 64);
+
+      LOG(ERROR) << "Debug log - Psm querying plaintext id (sensitive id) = "
+                 << local_plaintext_id;
+      LOG(ERROR) << "Debug log - Psm querying window id (non sensitive id) = "
+                 << local_window_id;
+    }
+
+    base::debug::DumpWithoutCrashing();
+  }
 
   // Convert serialized response body to oprf response protobuf.
   // Add UMA histogram for diagnostic purposes.

@@ -219,9 +219,7 @@ void MCSClientTest::TearDown() {
 
 void MCSClientTest::BuildMCSClient() {
   gcm_store_ = std::make_unique<GCMStoreImpl>(
-      temp_directory_.GetPath(),
-      /*remove_account_mappings_with_email_key=*/true,
-      task_environment_.GetMainThreadTaskRunner(),
+      temp_directory_.GetPath(), task_environment_.GetMainThreadTaskRunner(),
       base::WrapUnique<Encryptor>(new FakeEncryptor));
   mcs_client_ = std::make_unique<TestMCSClient>(
       &clock_, &connection_factory_, gcm_store_.get(),

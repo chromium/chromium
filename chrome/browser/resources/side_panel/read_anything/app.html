@@ -1,5 +1,23 @@
 <style include="cr-hidden-style">
+  :host-context([chrome-refresh-2023]) #container-parent,
+  :host-context([chrome-refresh-2023]) #empty-state-container {
+    margin: 0 8px;
+    border-radius: 16px;
+    display: block;
+  }
+  :host-context([chrome-refresh-2023]) #empty-state-container {
+    padding: 20px 0;
+  }
+  :host-context([chrome-refresh-2023]) #container {
+    border-radius: 16px;
+    display: block;
+  }
+  #container-parent {
+    background: var(--background-color);
+    height: 100%;
+  }
   #container {
+    background: var(--background-color);
     color: var(--foreground-color);
     font-family: var(--font-family);
     font-size: var(--font-size);
@@ -16,6 +34,8 @@
     color: var(--visited-link-color);
   }
   #empty-state-container {
+    background: var(--background-color);
+    height: 100%;
     padding: 20px;
   }
   sp-empty-state {
@@ -33,7 +53,12 @@
     }
   }
 </style>
-<div id="container" hidden="[[!hasContent_]]"></div>
+<div hidden="[[!isWebUIToolbarVisible_]]">
+  <read-anything-toolbar id="toolbar"></read-anything-toolbar>
+</div>
+<div id="container-parent" hidden="[[!hasContent_]]">
+  <div id="container"></div>
+</div>
 <div id="empty-state-container" hidden="[[hasContent_]]">
   <sp-empty-state
       image-path="[[emptyStateImagePath_]]"

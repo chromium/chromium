@@ -7,11 +7,11 @@ package org.chromium.chrome.browser.browserservices;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
@@ -28,11 +28,16 @@ public class ManageTrustedWebActivityDataActivity extends AppCompatActivity {
 
     private static final String TAG = "TwaDataActivity";
 
-    private static String sMockCallingPackage;
+    private static String sCallingPackageForTesting;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (getIntent().getData() == null) {
+            finish();
+            return;
+        }
 
         String urlToLaunchSettingsFor = getIntent().getData().toString();
         boolean isWebApk = getIntent().getBooleanExtra(WebApkConstants.EXTRA_IS_WEBAPK, false);
@@ -59,15 +64,15 @@ public class ManageTrustedWebActivityDataActivity extends AppCompatActivity {
         }
     }
 
-    @VisibleForTesting
     public static void setCallingPackageForTesting(String packageName) {
-        sMockCallingPackage = packageName;
+        sCallingPackageForTesting = packageName;
+        ResettersForTesting.register(() -> sCallingPackageForTesting = null);
     }
 
-    @Nullable
-    private String getClientPackageName(boolean isWebApk) {
+    private @Nullable String getClientPackageName(boolean isWebApk) {
         if (isWebApk) {
-            return sMockCallingPackage != null ? sMockCallingPackage : getCallingPackage();
+            return sCallingPackageForTesting != null ? sCallingPackageForTesting
+                                                     : getCallingPackage();
         }
 
         CustomTabsSessionToken session =

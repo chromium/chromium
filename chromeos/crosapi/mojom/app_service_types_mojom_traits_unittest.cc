@@ -56,10 +56,10 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTrip) {
 
   input->window_mode = apps::WindowMode::kWindow;
 
-  input->permissions.push_back(std::make_unique<apps::Permission>(
-      apps::PermissionType::kCamera,
-      std::make_unique<apps::PermissionValue>(/*bool_value=*/true),
-      /*is_managed=*/true));
+  input->permissions.push_back(
+      std::make_unique<apps::Permission>(apps::PermissionType::kCamera,
+                                         /*value=*/true,
+                                         /*is_managed=*/true));
 
   input->allow_uninstall = true;
   input->handles_intents = true;
@@ -116,8 +116,8 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTrip) {
   ASSERT_EQ(output->permissions.size(), 1U);
   auto& out_permission = output->permissions[0];
   EXPECT_EQ(out_permission->permission_type, apps::PermissionType::kCamera);
-  ASSERT_TRUE(absl::holds_alternative<bool>(out_permission->value->value));
-  EXPECT_TRUE(absl::get<bool>(out_permission->value->value));
+  ASSERT_TRUE(absl::holds_alternative<bool>(out_permission->value));
+  EXPECT_TRUE(absl::get<bool>(out_permission->value));
   EXPECT_TRUE(out_permission->is_managed);
 
   EXPECT_TRUE(output->allow_uninstall.value());
@@ -584,7 +584,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripIntentFilters) {
   auto intent_filter = std::make_unique<apps::IntentFilter>();
   intent_filter->AddSingleValueCondition(apps::ConditionType::kScheme, "1",
                                          apps::PatternMatchType::kLiteral);
-  intent_filter->AddSingleValueCondition(apps::ConditionType::kHost, "2",
+  intent_filter->AddSingleValueCondition(apps::ConditionType::kAuthority, "2",
                                          apps::PatternMatchType::kLiteral);
   intent_filter->AddSingleValueCondition(apps::ConditionType::kPath, "3",
                                          apps::PatternMatchType::kPrefix);
@@ -596,7 +596,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripIntentFilters) {
                                          apps::PatternMatchType::kMimeType);
   intent_filter->AddSingleValueCondition(
       apps::ConditionType::kFile, "7", apps::PatternMatchType::kFileExtension);
-  intent_filter->AddSingleValueCondition(apps::ConditionType::kHost, "8",
+  intent_filter->AddSingleValueCondition(apps::ConditionType::kAuthority, "8",
                                          apps::PatternMatchType::kSuffix);
   input->intent_filters.push_back(std::move(intent_filter));
 
@@ -617,7 +617,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripIntentFilters) {
   }
   {
     auto& condition = filter->conditions[1];
-    EXPECT_EQ(condition->condition_type, apps::ConditionType::kHost);
+    EXPECT_EQ(condition->condition_type, apps::ConditionType::kAuthority);
     ASSERT_EQ(condition->condition_values.size(), 1U);
     EXPECT_EQ(condition->condition_values[0]->match_type,
               apps::PatternMatchType::kLiteral);
@@ -665,7 +665,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripIntentFilters) {
   }
   {
     auto& condition = filter->conditions[7];
-    EXPECT_EQ(condition->condition_type, apps::ConditionType::kHost);
+    EXPECT_EQ(condition->condition_type, apps::ConditionType::kAuthority);
     ASSERT_EQ(condition->condition_values.size(), 1U);
     EXPECT_EQ(condition->condition_values[0]->match_type,
               apps::PatternMatchType::kSuffix);
@@ -1035,8 +1035,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripLaunchSource) {
 TEST(AppServiceTypesMojomTraitsTest, RoundTripPermissions) {
   {
     auto permission = std::make_unique<apps::Permission>(
-        apps::PermissionType::kUnknown,
-        std::make_unique<apps::PermissionValue>(true),
+        apps::PermissionType::kUnknown, /*value=*/true,
         /*is_managed=*/false);
     apps::PermissionPtr output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::Permission>(
@@ -1045,8 +1044,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripPermissions) {
   }
   {
     auto permission = std::make_unique<apps::Permission>(
-        apps::PermissionType::kCamera,
-        std::make_unique<apps::PermissionValue>(true),
+        apps::PermissionType::kCamera, /*value=*/true,
         /*is_managed=*/true);
     apps::PermissionPtr output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::Permission>(
@@ -1055,8 +1053,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripPermissions) {
   }
   {
     auto permission = std::make_unique<apps::Permission>(
-        apps::PermissionType::kLocation,
-        std::make_unique<apps::PermissionValue>(apps::TriState::kAllow),
+        apps::PermissionType::kLocation, /*value=*/apps::TriState::kAllow,
         /*is_managed=*/false);
     apps::PermissionPtr output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::Permission>(
@@ -1065,8 +1062,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripPermissions) {
   }
   {
     auto permission = std::make_unique<apps::Permission>(
-        apps::PermissionType::kMicrophone,
-        std::make_unique<apps::PermissionValue>(apps::TriState::kBlock),
+        apps::PermissionType::kMicrophone, /*value=*/apps::TriState::kBlock,
         /*is_managed=*/true);
     apps::PermissionPtr output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::Permission>(
@@ -1075,8 +1071,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripPermissions) {
   }
   {
     auto permission = std::make_unique<apps::Permission>(
-        apps::PermissionType::kNotifications,
-        std::make_unique<apps::PermissionValue>(apps::TriState::kAsk),
+        apps::PermissionType::kNotifications, /*value=*/apps::TriState::kAsk,
         /*is_managed=*/false);
     apps::PermissionPtr output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::Permission>(
@@ -1085,8 +1080,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripPermissions) {
   }
   {
     auto permission = std::make_unique<apps::Permission>(
-        apps::PermissionType::kContacts,
-        std::make_unique<apps::PermissionValue>(apps::TriState::kAllow),
+        apps::PermissionType::kContacts, /*value=*/apps::TriState::kAllow,
         /*is_managed=*/true);
     apps::PermissionPtr output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::Permission>(
@@ -1095,8 +1089,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripPermissions) {
   }
   {
     auto permission = std::make_unique<apps::Permission>(
-        apps::PermissionType::kStorage,
-        std::make_unique<apps::PermissionValue>(apps::TriState::kBlock),
+        apps::PermissionType::kStorage, /*value=*/apps::TriState::kBlock,
         /*is_managed=*/false);
     apps::PermissionPtr output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::Permission>(
@@ -1105,8 +1098,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripPermissions) {
   }
   {
     auto permission = std::make_unique<apps::Permission>(
-        apps::PermissionType::kFileHandling,
-        std::make_unique<apps::PermissionValue>(true),
+        apps::PermissionType::kFileHandling, /*value=*/true,
         /*is_managed=*/false);
     apps::PermissionPtr output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::Permission>(
@@ -1138,7 +1130,7 @@ TEST(AppServiceTypesMojomTraitsTest, PreferredAppChanges) {
   intent_filter1->AddSingleValueCondition(apps::ConditionType::kScheme, "1",
                                           apps::PatternMatchType::kLiteral);
   auto intent_filter2 = std::make_unique<apps::IntentFilter>();
-  intent_filter2->AddSingleValueCondition(apps::ConditionType::kHost, "2",
+  intent_filter2->AddSingleValueCondition(apps::ConditionType::kAuthority, "2",
                                           apps::PatternMatchType::kLiteral);
   added_filters.push_back(std::move(intent_filter1));
   added_filters.push_back(std::move(intent_filter2));

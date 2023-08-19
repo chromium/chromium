@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/grpc/grpc_library.gni")
+import("//third_party/cast_core/public/src/proto/proto.gni")
 
 static_library("test_support") {
   testonly = true
@@ -26,6 +26,8 @@ static_library("test_support") {
     "request_handler_for_cert_upload.h",
     "request_handler_for_check_android_management.cc",
     "request_handler_for_check_android_management.h",
+    "request_handler_for_check_user_account.cc",
+    "request_handler_for_check_user_account.h",
     "request_handler_for_chrome_desktop_report.cc",
     "request_handler_for_chrome_desktop_report.h",
     "request_handler_for_client_cert_provisioning.cc",
@@ -82,7 +84,10 @@ static_library("test_support") {
 
   if (is_chromeos) {
     public_deps += [ "//third_party/private_membership" ]
-
+    deps += [
+      ":remote_commands_service_castcore",
+      "//chromecast/cast_core/grpc:grpc",
+    ]
     data = [
       # TODO(crbug/1393862): Script should create binarypb from textpb.
       # Required for policy/enrollment/psm/rlwe_test_support.cc
@@ -92,11 +97,10 @@ static_library("test_support") {
 }
 
 if (is_chromeos) {
-  grpc_library("remote_commands_service") {
+  cast_core_grpc_library("remote_commands_service") {
     testonly = true
-    proto_in_dir = "//"
     sources = [ "remote_commands_service.proto" ]
-    link_deps = [ "//third_party/private_membership:private_membership_proto" ]
+    deps = [ "//third_party/private_membership:private_membership_proto" ]
     extra_configs =
         [ "//third_party/private_membership:private_membership_config" ]
     import_dirs = [
@@ -104,25 +108,18 @@ if (is_chromeos) {
       "//third_party/private_membership/src",
       "//third_party/shell-encryption/src",
     ]
+    proto_deps = [ "//components/policy/proto" ]
+    generate_castcore_stubs = true
   }
 
   executable("fake_dmserver") {
     testonly = true
     output_name = "fake_dmserver"
     sources = [ "fake_dmserver_main.cc" ]
-    public_deps = [
-      "//net:test_support",
-      "//third_party/grpc:grpc++",
-    ]
     deps = [
-      ":remote_commands_service",
       ":test_support",
       "//base",
-      "//google_apis:google_apis",
-      "//net",
       "//third_party/abseil-cpp:absl",
-      "//third_party/private_membership:private_membership_proto",
-      "//third_party/re2:re2",
     ]
   }
 }
@@ -141,6 +138,7 @@ source_set("unittests") {
     "request_handler_for_auto_enrollment_unittest.cc",
     "request_handler_for_cert_upload_unittest.cc",
     "request_handler_for_check_android_management_unittest.cc",
+    "request_handler_for_check_user_account_unittest.cc",
     "request_handler_for_chrome_desktop_report_unittest.cc",
     "request_handler_for_client_cert_provisioning_unittest.cc",
     "request_handler_for_device_attribute_update_permission_unittest.cc",

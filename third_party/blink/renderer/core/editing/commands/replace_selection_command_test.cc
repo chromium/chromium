@@ -63,7 +63,7 @@ TEST_F(ReplaceSelectionCommandTest, pasteSpanInText) {
   GetDocument().setDesignMode("on");
   SetBodyContent("<b>text</b>");
 
-  Element* b_element = GetDocument().QuerySelector("b");
+  Element* b_element = GetDocument().QuerySelector(AtomicString("b"));
   LocalFrame* frame = GetDocument().GetFrame();
   frame->Selection().SetSelection(
       SelectionInDOMTree::Builder()
@@ -106,8 +106,8 @@ TEST_F(ReplaceSelectionCommandTest, TextAutosizingDoesntInflateText) {
   SetBodyContent("<div><span style='font-size: 12px;'>foo bar</span></div>");
   SetTextAutosizingMultiplier(&GetDocument(), 2.0);
 
-  Element* div = GetDocument().QuerySelector("div");
-  Element* span = GetDocument().QuerySelector("span");
+  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  Element* span = GetDocument().QuerySelector(AtomicString("span"));
 
   // Select "bar".
   GetDocument().GetFrame()->Selection().SetSelection(
@@ -138,7 +138,8 @@ TEST_F(ReplaceSelectionCommandTest, TrailingNonVisibleTextCrash) {
                            SetSelectionOptions());
 
   DocumentFragment* fragment = GetDocument().createDocumentFragment();
-  fragment->ParseHTML("<div>bar</div> ", GetDocument().QuerySelector("div"));
+  fragment->ParseHTML("<div>bar</div> ",
+                      GetDocument().QuerySelector(AtomicString("div")));
   ReplaceSelectionCommand::CommandOptions options = 0;
   auto* command = MakeGarbageCollected<ReplaceSelectionCommand>(
       GetDocument(), fragment, options);
@@ -188,7 +189,7 @@ TEST_F(ReplaceSelectionCommandTest, SmartPlainTextPaste) {
 TEST_F(ReplaceSelectionCommandTest, TableAndImages) {
   GetDocument().setDesignMode("on");
   SetBodyContent("<table>&#x20;<tbody></tbody>&#x20;</table>");
-  Element* tbody = GetDocument().QuerySelector("tbody");
+  Element* tbody = GetDocument().QuerySelector(AtomicString("tbody"));
   tbody->AppendChild(GetDocument().CreateRawElement(html_names::kImgTag));
   Selection().SetSelection(
       SelectionInDOMTree::Builder().Collapse(Position(tbody, 1)).Build(),

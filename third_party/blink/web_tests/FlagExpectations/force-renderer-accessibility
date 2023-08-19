@@ -1,4 +1,4 @@
-# tags: [ Android Fuchsia Linux Mac Mac10.13 Mac11 Mac12 Mac13 Mac13-arm64 Win Win10.20h2 Win11 ]
+# tags: [ Android Fuchsia Linux Mac Mac11 Mac12 Mac13 Mac13-arm64 Win Win10.20h2 Win11 Win11-arm64 ]
 # tags: [ Release Debug ]
 # results: [ Skip Crash Pass Failure Slow ]
 
@@ -15,7 +15,8 @@
 # run virtual test suites.
 virtual/* [ Skip ]
 
-# ax_object_cache_impl.cc#1151 -- IsRelevantSlotElement():
+# Crashes
+crbug.com/1401767 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-marker-end-aligned.tentative.html [ Crash ]
 
 # Timeouts
 fast/loader/iframe-navigation-stealing-focus.html [ Skip ]
@@ -86,4 +87,4 @@ wpt_internal/webcodecs/avc_encoder_config.https.any.worker.html [ Skip ]
 crbug.com/1445710 external/wpt/css/css-lists/list-marker-containing-control-char-crash.html [ Failure ]
 
 # Times out
-http/tests/inspector-protocol/runtime/serialization_options.js [ Skip ]
+http/tests/inspector-protocol/runtime/serialization-options.js [ Skip ]

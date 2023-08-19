@@ -3,8 +3,6 @@
 <translationbundle lang="si">
 <translation id="1075622780330595106">ඔබේ පටිතිවලින් <ph name="NUMBER_OF_TABS" /> ක් මෑතදී භාවිත වී නැත. ඒවා වසන්නද?</translation>
 <translation id="125153950246128346">වෙනත් පටිත්තක් බැලීමට තට්ටු කරන්න</translation>
-<translation id="1403228085774130835">Chrome ප්‍රධාන මෙනුව යටතේ ඇති මෑත ටැබ තුළ ඔබට ඔබගේ වසන ලද ටැබ සොයා ගත හැකිය</translation>
-<translation id="1455506303394048917">මෙම අප්‍රකට ටැබවල ඔබගේ ක්‍රියාකාරකම් මෙම උපාංගයෙන් ඉවත් කරනු ඇත</translation>
 <translation id="1499635324672558517">සියලු අප්‍රකට ටැබ වසන්නද?</translation>
 <translation id="1657719826150349398">පටිත්ත පහළට ගෙන යන්න</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> පටිත්තක්}one{පටිති <ph name="TABS_COUNT_MANY" /> ක්}other{පටිති <ph name="TABS_COUNT_MANY" /> ක්}}</translation>
@@ -47,6 +45,7 @@
 <translation id="5073204694187207510">පූර්ණ තිර ජාලකය සඟවන්න</translation>
 <translation id="5076161749301278626">වෙළඳසැල් සමාලෝචන බලන්නද?</translation>
 <translation id="5082793167783849073">කණ්ඩායමක් කිරීමෙන් ඉක්මනින් පිටු සංසන්දන කරන්න. පටන් ගැනීමට, සබැඳියක් ස්පර්ශ කර අල්ලා සිටින්න.</translation>
+<translation id="5339733443032484186">ඔබේ අවසන් පටිත්ත</translation>
 <translation id="5490235265819901748">ටැබ සමූහය දිග හරින ලදි</translation>
 <translation id="5494920125229734069">සියල්ල තෝරන්න</translation>
 <translation id="5556417849629758491">අලෙවිසැල් තොරතුරු බලන්න, තිරයේ ඉහළින්ම ඇති විකල්පය</translation>
@@ -62,10 +61,12 @@
 <translation id="6228793724645064692">(වෙළඳසැල් ඇගයීම)</translation>
 <translation id="6333260925957816943">මෙම වෙළඳසැල පිළිබඳ තොරතුරු</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> තෝරන ලද පටිත්තක් සමූහගත නොකරන්න}one{තෝරන ලද පටිති <ph name="TABS_COUNT_MANY" /> සමූහගත නොකරන්න}other{තෝරන ලද පටිති <ph name="TABS_COUNT_MANY" /> සමූහගත නොකරන්න}}</translation>
+<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Chrome ප්‍රධාන මෙනුව යටතේ ඇති මෑත පටිති තුළ ඔබට ඔබේ වසා ඇති පටිති සොයා ගත හැක. ඔබේ අප්‍රකට පටිත්ත නොතිබෙනු ඇත.}one{Chrome ප්‍රධාන මෙනුව යටතේ ඇති මෑත පටිති තුළ ඔබට ඔබේ වසා ඇති පටිති සොයා ගත හැක. ඔබේ අප්‍රකට පටිති #ක් නොතිබෙනු ඇත.}other{Chrome ප්‍රධාන මෙනුව යටතේ ඇති මෑත පටිති තුළ ඔබට ඔබේ වසා ඇති පටිති සොයා ගත හැක. ඔබේ අප්‍රකට පටිති #ක් නොතිබෙනු ඇත.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> පටිත්තක්}one{පටිති <ph name="TABS_COUNT_MANY" />ක්}other{පටිති <ph name="TABS_COUNT_MANY" />ක්}}</translation>
 <translation id="6549021453810473782">වෙළඳසැල් තොරතුරු බලන්න</translation>
 <translation id="6562820390860419811">පටිත්ත වමට ගෙන යන්න</translation>
 <translation id="6615455863669487791">මට පෙන්වන්න</translation>
+<translation id="661742612106409204">Chrome ප්‍රධාන මෙනුව යටතේ ඇති මෑත පටිති තුළ ඔබට ඔබේ වසා ඇති පටිති සොයා ගත හැක.</translation>
 <translation id="6840760312327750441">පටිති කණ්ඩායම් කිරීමට, පටිත්තක් ස්පර්ශ කර අල්ලා සිටින්න. පසුව, එය වෙනත් පටිත්තකට අදින්න.</translation>
 <translation id="6856809498882026482">බහු-තේරීම් ප්‍රකාරය සඟවන්න</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{පටිත්ත බෙදා ගන්න}one{පටිති බෙදා ගන්න}other{පටිති බෙදා ගන්න}}</translation>
@@ -89,6 +90,7 @@
 <translation id="8398929769197326728">නව ෆෝල්ඩරය - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">ටැබ සමූහය ටැබ <ph name="NUMBER_OF_TABS" />ක් සමග දිග හරින්න.</translation>
 <translation id="8714939927607906138">අඩු මිල</translation>
+<translation id="8730999928494395583">මෙම අප්‍රකට පටිතිවල ඔබේ ක්‍රියාකාරකම් මෙම උපාංගයෙන් ඉවත් කරනු ලැබේ</translation>
 <translation id="8820741577754260431">ඔබගේ ටැබවල මිල පහත වැටීම් බලන්න</translation>
 <translation id="9090098097337832354">මෙම වෙළඳසැල පිළිබඳ තොරතුරු වසා ඇත</translation>
 <translation id="9150694013019234766">තිරයේ පහළ අසල ඔබේ පටිති සමූහයේ පටිති අතර මාරු වන්න</translation>

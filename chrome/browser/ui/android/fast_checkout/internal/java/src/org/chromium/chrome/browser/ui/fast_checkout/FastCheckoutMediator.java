@@ -144,8 +144,7 @@ public class FastCheckoutMediator implements FastCheckoutSheetState {
         FastCheckoutAutofillProfile newSelection = profiles[0];
 
         // Populate all model entries.
-        ModelList profileItems = mModel.get(FastCheckoutProperties.PROFILE_MODEL_LIST);
-        profileItems.clear();
+        ModelList profileItems = new ModelList();
         for (FastCheckoutAutofillProfile profile : profiles) {
             if (previousSelection != null
                     && profile.getGUID().equals(previousSelection.getGUID())) {
@@ -169,6 +168,7 @@ public class FastCheckoutMediator implements FastCheckoutSheetState {
                                     .log();
                         })));
 
+        mModel.set(FastCheckoutProperties.PROFILE_MODEL_LIST, profileItems);
         setSelectedAutofillProfile(newSelection);
     }
 
@@ -224,8 +224,8 @@ public class FastCheckoutMediator implements FastCheckoutSheetState {
         FastCheckoutCreditCard newSelection = creditCards[0];
 
         // Populate all model entries.
-        ModelList cardItems = mModel.get(FastCheckoutProperties.CREDIT_CARD_MODEL_LIST);
-        cardItems.clear();
+        ModelList cardItems = new ModelList();
+
         for (FastCheckoutCreditCard card : creditCards) {
             if (previousSelection != null && card.getGUID().equals(previousSelection.getGUID())) {
                 newSelection = card;
@@ -249,6 +249,7 @@ public class FastCheckoutMediator implements FastCheckoutSheetState {
                                     .log();
                         })));
 
+        mModel.set(FastCheckoutProperties.CREDIT_CARD_MODEL_LIST, cardItems);
         setSelectedCreditCard(newSelection);
     }
 

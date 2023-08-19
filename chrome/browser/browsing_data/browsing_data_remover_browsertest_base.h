@@ -18,7 +18,8 @@ class BrowsingDataRemoverBrowserTestBase : public PlatformBrowserTest {
   BrowsingDataRemoverBrowserTestBase();
   ~BrowsingDataRemoverBrowserTestBase() override;
 
-  void InitFeatureList(std::vector<base::test::FeatureRef> enabled_features);
+  void InitFeatureLists(std::vector<base::test::FeatureRef> enabled_features,
+                        std::vector<base::test::FeatureRef> disabled_features);
 
   void SetUpOnMainThread() override;
   // If `web_contents` is not specified, `GetActiveWebContents` will be used.
@@ -97,7 +98,7 @@ class BrowsingDataRemoverBrowserTestBase : public PlatformBrowserTest {
  private:
   base::test::ScopedFeatureList feature_list_;
 #if !BUILDFLAG(IS_ANDROID)
-  raw_ptr<Browser, DanglingUntriaged> incognito_browser_ = nullptr;
+  raw_ptr<Browser, AcrossTasksDanglingUntriaged> incognito_browser_ = nullptr;
 #endif
 };
 

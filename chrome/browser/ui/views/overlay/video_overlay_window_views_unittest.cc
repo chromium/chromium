@@ -97,6 +97,8 @@ class VideoOverlayWindowViewsTest : public ChromeViewsTestBase {
     SetDisplayWorkArea({0, 0, 1000, 1000});
 
     overlay_window_ = VideoOverlayWindowViews::Create(&pip_window_controller_);
+    // On some platforms, OnNativeWidgetMove is invoked on creation.
+    WaitForMove();
     overlay_window_->set_minimum_size_for_testing(kMinWindowSize);
   }
 
@@ -118,6 +120,13 @@ class VideoOverlayWindowViewsTest : public ChromeViewsTestBase {
 
   TestVideoPictureInPictureWindowController& pip_window_controller() {
     return pip_window_controller_;
+  }
+
+ protected:
+  void WaitForMove() {
+    task_environment()->FastForwardBy(
+        VideoOverlayWindowViews::kControlHideDelayAfterMove +
+        base::Milliseconds(1));
   }
 
  private:
@@ -374,6 +383,7 @@ TEST_F(VideoOverlayWindowViewsTest, HitTestFrameView) {
 // causing the controls to hide.
 TEST_F(VideoOverlayWindowViewsTest, NoMouseExitWithinWindowBounds) {
   overlay_window().UpdateNaturalSize({10, 400});
+  WaitForMove();
 
   const auto close_button_bounds = overlay_window().GetCloseControlsBounds();
   const auto video_bounds =
@@ -454,4 +464,45 @@ TEST_F(VideoOverlayWindowViewsTest, SmallDisplayWorkAreaDoesNotCrash) {
   // The video should still be letterboxed to the correct aspect ratio.
   EXPECT_EQ(gfx::Size(133, 100),
             overlay_window().video_layer_for_testing()->size());
+}
+
+TEST_F(VideoOverlayWindowViewsTest, ControlsAreHiddenDuringMove) {
+  // Set the initial position.
+  overlay_window().SetBounds({0, 0, 100, 100});
+  WaitForMove();
+
+  // Make the controls visible.
+  overlay_window().UpdateControlsVisibility(true);
+  ASSERT_TRUE(overlay_window().AreControlsVisible());
+
+  // Now move the window, this should cause the controls to be hidden.
+  overlay_window().SetBounds({50, 0, 100, 100});
+  EXPECT_FALSE(overlay_window().AreControlsVisible());
+
+  // Should still be hidden with mouse event.
+  overlay_window().UpdateControlsVisibility(true);
+  EXPECT_FALSE(overlay_window().AreControlsVisible());
+
+  // After moving, overlay should be visible again because of the previous
+  // mouse event.
+  WaitForMove();
+  EXPECT_TRUE(overlay_window().AreControlsVisible());
+}
+
+TEST_F(VideoOverlayWindowViewsTest,
+       ControlsAreHiddenDuringMove_MultipleUpdates) {
+  overlay_window().SetBounds({0, 0, 100, 100});
+  WaitForMove();
+
+  // Move the window.
+  overlay_window().SetBounds({50, 0, 100, 100});
+  EXPECT_FALSE(overlay_window().AreControlsVisible());
+
+  overlay_window().UpdateControlsVisibility(true);
+  overlay_window().UpdateControlsVisibility(false);
+  overlay_window().UpdateControlsVisibility(true);
+  overlay_window().UpdateControlsVisibility(false);
+
+  // Only the last one should have any effect.
+  EXPECT_FALSE(overlay_window().AreControlsVisible());
 }

@@ -114,7 +114,6 @@ public class PasswordStoreBridge {
     /**
      * Empties the password store.
      */
-    @VisibleForTesting
     public void clearAllPasswords() {
         PasswordStoreBridgeJni.get().clearAllPasswords(mNativePasswordStoreBridge);
     }

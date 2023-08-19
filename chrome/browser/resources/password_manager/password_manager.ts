@@ -18,6 +18,8 @@ export {PasskeyDetailsCardElement} from './credential_details/passkey_details_ca
 export {PasswordDetailsCardElement} from './credential_details/password_details_card.js';
 export {AddPasswordDialogElement} from './dialogs/add_password_dialog.js';
 export {AuthTimedOutDialogElement} from './dialogs/auth_timed_out_dialog.js';
+export {DeletePasskeyDialogElement} from './dialogs/delete_passkey_dialog.js';
+export {EditPasskeyDialogElement} from './dialogs/edit_passkey_dialog.js';
 export {EditPasswordDialogElement} from './dialogs/edit_password_dialog.js';
 // <if expr="is_win or is_macosx">
 export {PasskeysBrowserProxy, PasskeysBrowserProxyImpl} from './passkeys_browser_proxy.js';
@@ -33,6 +35,10 @@ export {PrefToggleButtonElement} from './prefs/pref_toggle_button.js';
 export {PromoCard, PromoCardsProxy, PromoCardsProxyImpl} from './promo_cards/promo_cards_browser_proxy.js';
 export {CheckupSubpage, Page, Route, RouteObserverMixin, RouteObserverMixinInterface, Router, UrlParam} from './router.js';
 export {SettingsSectionElement} from './settings_section.js';
+export {SharePasswordConfirmationDialogElement} from './sharing/share_password_confirmation_dialog.js';
+export {ShareFlowState, SharePasswordFlowElement} from './sharing/share_password_flow.js';
+export {SharePasswordLoadingDialogElement} from './sharing/share_password_loading_dialog.js';
+export {SharePasswordRecipientElement} from './sharing/share_password_recipient.js';
 export {PasswordManagerSideBarElement} from './side_bar.js';
 export {SiteFaviconElement} from './site_favicon.js';
 export {AccountInfo, SyncBrowserProxy, SyncBrowserProxyImpl, SyncInfo, TrustedVaultBannerState} from './sync_browser_proxy.js';

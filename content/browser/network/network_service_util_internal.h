@@ -15,8 +15,9 @@ namespace content {
 // browser process.
 CONTENT_EXPORT void ForceInProcessNetworkServiceImpl();
 CONTENT_EXPORT void ForceOutOfProcessNetworkServiceImpl();
-// Returns nullopt if no flag is forced.
-CONTENT_EXPORT absl::optional<bool> GetForcedNetworkServiceProcessInOrOut();
+// Returns true if the network service is enabled and it's running in the
+// browser process.
+CONTENT_EXPORT bool IsInProcessNetworkServiceImpl();
 
 }  // namespace content
 

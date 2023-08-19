@@ -6,15 +6,11 @@
 
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/check_op.h"
-#import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/drag_and_drop/drag_item_util.h"
 #import "net/base/mac/url_conversions.h"
 #import "url/gurl.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 @implementation TableViewURLDragDropHandler
 
@@ -44,7 +40,7 @@
     dragSessionWillBegin:(id<UIDragSession>)session {
   DCHECK_EQ(1U, session.items.count);
   UIDragItem* item = session.items.firstObject;
-  URLInfo* info = base::mac::ObjCCastStrict<URLInfo>(item.localObject);
+  URLInfo* info = base::apple::ObjCCastStrict<URLInfo>(item.localObject);
   session.items.firstObject.previewProvider = ^{
     return [UIDragPreview previewForURL:net::NSURLWithGURL(info.URL)
                                   title:info.title];

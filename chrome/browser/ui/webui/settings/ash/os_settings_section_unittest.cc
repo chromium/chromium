@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
 
-#include "chrome/browser/ui/webui/settings/chromeos/constants/setting.mojom.h"
+#include "ash/webui/settings/public/constants/setting.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::settings {

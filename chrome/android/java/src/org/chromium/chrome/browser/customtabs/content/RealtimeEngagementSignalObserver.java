@@ -8,14 +8,17 @@ import static org.chromium.cc.mojom.RootScrollOffsetUpdateFrequency.NONE;
 import static org.chromium.cc.mojom.RootScrollOffsetUpdateFrequency.ON_SCROLL_END;
 
 import android.graphics.Point;
+import android.os.Bundle;
 import android.os.SystemClock;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsSessionToken;
+import androidx.browser.customtabs.EngagementSignalsCallback;
 
 import org.chromium.base.MathUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.UserData;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.cc.mojom.RootScrollOffsetUpdateFrequency;
@@ -26,11 +29,13 @@ import org.chromium.chrome.browser.customtabs.features.TabInteractionRecorder;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
+import org.chromium.chrome.browser.share.link_to_text.LinkToTextHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.content_public.browser.GestureListenerManager;
 import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.content_public.browser.LoadCommittedDetails;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.RenderCoordinates;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
@@ -61,15 +66,16 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
     // Feature param for the time after the scroll-end a scroll update is allowed.
     @VisibleForTesting
     protected static final String TIME_CAN_UPDATE_AFTER_END = "time_can_update_after_end";
-    private static final int DEFAULT_AFTER_SCROLL_END_THRESHOLD_MS = 100;
+    // This value was chosen based on experiment data. 300ms covers about 98% of the scrolls while
+    // trying to increase coverage further would require an unreasonably high threshold.
+    private static final int DEFAULT_AFTER_SCROLL_END_THRESHOLD_MS = 300;
 
     private static final String TIME_SCROLL_UPDATE_RECEIVED_AFTER_SCROLL_END =
             "CustomTabs.TimeScrollUpdateReceivedAfterScrollEnd";
 
     private final CustomTabsConnection mConnection;
     private final TabObserverRegistrar mTabObserverRegistrar;
-
-    @Nullable
+    private final EngagementSignalsCallback mCallback;
     private final CustomTabsSessionToken mSession;
 
     private final boolean mShouldSendRealValues;
@@ -86,6 +92,9 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
     private int mAfterScrollEndThresholdMs;
     // Tracks the user interaction state across multiple tabs and WebContents.
     private boolean mDidGetUserInteraction;
+    // Prevents sending Engagement Signals temporarily.
+    private boolean mSignalsPaused;
+    private boolean mPendingInitialUpdate;
 
     /**
      * A tab observer that will send real time scrolling signals to CustomTabsConnection, if a
@@ -94,13 +103,16 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
      *         BaseCustomTabActivityComponent#resolveTabObserverRegistrar()}.
      * @param connection See {@link ChromeAppComponent#resolveCustomTabsConnection()}.
      * @param session See {@link CustomTabIntentDataProvider#getSession()}.
+     * @param callback The {@link EngagementSignalsCallback} to sends the signals to.
+     * @param hadScrollDown Whether there has been a scroll down gesture.
      */
-    // TODO(https://crbug.com/1378410): Inject this class and implement NativeInitObserver.
     public RealtimeEngagementSignalObserver(TabObserverRegistrar tabObserverRegistrar,
-            CustomTabsConnection connection, @Nullable CustomTabsSessionToken session) {
+            CustomTabsConnection connection, CustomTabsSessionToken session,
+            EngagementSignalsCallback callback, boolean hadScrollDown) {
         mConnection = connection;
         mSession = session;
         mTabObserverRegistrar = tabObserverRegistrar;
+        mCallback = callback;
 
         mScrollOffsetUpdateFrequency =
                 ChromeFeatureList.isEnabled(
@@ -110,11 +122,13 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
         mAfterScrollEndThresholdMs = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                 ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL,
                 TIME_CAN_UPDATE_AFTER_END, DEFAULT_AFTER_SCROLL_END_THRESHOLD_MS);
-
-        // Do not register observer via tab#addObserver, so it can change tabs when necessary.
-        mTabObserverRegistrar.registerActivityTabObserver(this);
-
         mShouldSendRealValues = shouldSendRealValues();
+
+        mPendingInitialUpdate = hadScrollDown;
+        // Do not register observer via tab#addObserver, so it can change tabs when necessary.
+        // If there is an active tab, registering the observer will immediately call
+        // `#onAttachedToInitialTab`.
+        mTabObserverRegistrar.registerActivityTabObserver(this);
     }
 
     public void destroy() {
@@ -141,7 +155,7 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
 
     @Override
     protected void onAllTabsClosed() {
-        mConnection.notifyDidGetUserInteraction(mSession, mDidGetUserInteraction);
+        notifySessionEnded(mDidGetUserInteraction);
         mDidGetUserInteraction = false;
         mConnection.setEngagementSignalsAvailableSupplier(mSession, null);
         removeWebContentsDependencies(mWebContents);
@@ -192,6 +206,7 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
     private void maybeStartSendingRealTimeEngagementSignals(Tab tab) {
         if (!shouldSendEngagementSignal(tab)) {
             mScrollState = null;
+            mPendingInitialUpdate = false;
             return;
         }
 
@@ -213,10 +228,12 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
             @Override
             public void onScrollStarted(
                     int scrollOffsetY, int scrollExtentY, boolean isDirectionUp) {
+                mPendingInitialUpdate = false;
+                // Only send the event if there has been a down scroll.
+                if (!mScrollState.onScrollStarted(isDirectionUp)) return;
                 mScrollState.onScrollStarted(isDirectionUp);
                 // If we shouldn't send the real values, always send false.
-                mConnection.notifyVerticalScrollEvent(
-                        mSession, mShouldSendRealValues && isDirectionUp);
+                notifyVerticalScrollEvent(mShouldSendRealValues && isDirectionUp);
             }
 
             @Override
@@ -228,22 +245,23 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
                             RenderCoordinates.fromWebContents(tab.getWebContents());
                     // We don't care about the return value of #onScrollUpdate here because this
                     // method will always be called before #onScrollEnded.
-                    mScrollState.onScrollUpdate(
-                            rootScrollOffset.y, renderCoordinates.getMaxVerticalScrollPixInt());
+                    mScrollState.onScrollUpdate(rootScrollOffset.y,
+                            renderCoordinates.getMaxVerticalScrollPixInt(), false);
                 }
             }
 
             @Override
             public void onScrollOffsetOrExtentChanged(int scrollOffsetY, int scrollExtentY) {
-                if (mScrollOffsetUpdateFrequency == NONE) return;
+                if (mScrollOffsetUpdateFrequency == NONE && !mPendingInitialUpdate) return;
 
                 assert tab != null;
                 RenderCoordinates renderCoordinates =
                         RenderCoordinates.fromWebContents(tab.getWebContents());
-                boolean validUpdateAfterScrollEnd =
-                        mScrollState.onScrollUpdate(renderCoordinates.getScrollYPixInt(),
-                                renderCoordinates.getMaxVerticalScrollPixInt());
-                if (validUpdateAfterScrollEnd) {
+                boolean validUpdateAfterScrollEnd = mScrollState.onScrollUpdate(
+                        renderCoordinates.getScrollYPixInt(),
+                        renderCoordinates.getMaxVerticalScrollPixInt(), mPendingInitialUpdate);
+                if (validUpdateAfterScrollEnd || mPendingInitialUpdate) {
+                    mPendingInitialUpdate = false;
                     // #onScrollEnded was called before the final #onScrollOffsetOrExtentChanged, so
                     // we need to call #onScrollEnded to make sure the latest scroll percentage is
                     // reported in a timely manner.
@@ -255,8 +273,7 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
             public void onVerticalScrollDirectionChanged(
                     boolean directionUp, float currentScrollRatio) {
                 if (mScrollState.onScrollDirectionChanged(directionUp)) {
-                    mConnection.notifyVerticalScrollEvent(
-                            mSession, mShouldSendRealValues && directionUp);
+                    notifyVerticalScrollEvent(mShouldSendRealValues && directionUp);
                 }
             }
 
@@ -273,8 +290,8 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
             private void onScrollEndedInternal(boolean allowUpdateAfter) {
                 int resultPercentage = mScrollState.onScrollEnded(allowUpdateAfter);
                 if (resultPercentage != SCROLL_STATE_MAX_PERCENTAGE_NOT_INCREASING) {
-                    mConnection.notifyGreatestScrollPercentageIncreased(
-                            mSession, mShouldSendRealValues ? resultPercentage : STUB_PERCENT);
+                    notifyGreatestScrollPercentageIncreased(
+                            mShouldSendRealValues ? resultPercentage : STUB_PERCENT);
                 }
             }
         };
@@ -285,6 +302,11 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
                 if (details.isMainFrame() && !details.isSameDocument()) {
                     mScrollState.resetMaxScrollPercentage();
                 }
+            }
+
+            @Override
+            public void didStartNavigationInPrimaryMainFrame(NavigationHandle navigationHandle) {
+                mSignalsPaused = LinkToTextHelper.hasTextFragment(navigationHandle.getUrl());
             }
         };
 
@@ -330,11 +352,52 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
     }
 
     /**
+     * @param isDirectionUp Whether the scroll direction is up.
+     */
+    private void notifyVerticalScrollEvent(boolean isDirectionUp) {
+        if (mSignalsPaused) return;
+        try {
+            mCallback.onVerticalScrollEvent(isDirectionUp, Bundle.EMPTY);
+        } catch (Exception e) {
+            // Catching all exceptions is really bad, but we need it here,
+            // because Android exposes us to client bugs by throwing a variety
+            // of exceptions. See crbug.com/517023.
+        }
+    }
+
+    /**
+     * @param scrollPercentage The new scroll percentage.
+     */
+    private void notifyGreatestScrollPercentageIncreased(int scrollPercentage) {
+        if (mSignalsPaused) return;
+        try {
+            mCallback.onGreatestScrollPercentageIncreased(scrollPercentage, Bundle.EMPTY);
+        } catch (Exception e) {
+            // Catching all exceptions is really bad, but we need it here,
+            // because Android exposes us to client bugs by throwing a variety
+            // of exceptions. See crbug.com/517023.
+        }
+    }
+
+    /**
+     * @param didGetUserInteraction Whether user had any interaction in the current CCT session.
+     */
+    private void notifySessionEnded(boolean didGetUserInteraction) {
+        try {
+            mCallback.onSessionEnded(didGetUserInteraction, Bundle.EMPTY);
+        } catch (Exception e) {
+            // Catching all exceptions is really bad, but we need it here,
+            // because Android exposes us to client bugs by throwing a variety
+            // of exceptions. See crbug.com/517023.
+        }
+    }
+
+    /**
      * Parameter tracking the entire scrolling journey for the associated tab.
      */
     @VisibleForTesting
     static class ScrollState implements UserData {
-        private static ScrollState sTestInstance;
+        private static ScrollState sInstanceForTesting;
 
         boolean mIsScrollActive;
         boolean mIsDirectionUp;
@@ -344,6 +407,7 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
         int mScrollOffsetUpdateFrequency = NONE;
         int mAfterScrollEndThresholdMs = DEFAULT_AFTER_SCROLL_END_THRESHOLD_MS;
         Long mTimeLastOnScrollEnded;
+        boolean mHadFirstDownScroll;
 
         /**
          * @param frequency The {@link RootScrollOffsetUpdateFrequency.EnumType}, can be |NONE| or
@@ -356,26 +420,38 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
             mAfterScrollEndThresholdMs = afterScrollEndThreshold;
         }
 
-        void onScrollStarted(boolean isDirectionUp) {
+        /**
+         * @param isDirectionUp Whether the scroll direction is up.
+         * @return Whether there has been a down scroll.
+         */
+        boolean onScrollStarted(boolean isDirectionUp) {
             // We shouldn't get an |onScrollStarted()| call while a scroll is still in progress,
             // but it can happen. Call |onScrollEnded()| to make sure we're in a valid state.
             if (mIsScrollActive) onScrollEnded(false);
             mIsScrollActive = true;
             mIsDirectionUp = isDirectionUp;
             mTimeLastOnScrollEnded = null;
+            if (isDirectionUp && !mHadFirstDownScroll) return false;
+            mHadFirstDownScroll = true;
+            return true;
         }
 
         /**
          * Updates internal state and returns whether this was a valid scroll update after a
          * scroll-end.
+         * @param forceUpdate Whether apply the update regardless of the current scroll state.
+         * @return Whether this was a valid update that came after a scroll end event. The
+         *         `forceUpdate` param has no effect on the return value.
          */
-        boolean onScrollUpdate(int verticalScrollOffset, int maxVerticalScrollOffset) {
+        boolean onScrollUpdate(
+                int verticalScrollOffset, int maxVerticalScrollOffset, boolean forceUpdate) {
             if (!mIsScrollActive && mTimeLastOnScrollEnded != null) {
                 RecordHistogram.recordTimesHistogram(TIME_SCROLL_UPDATE_RECEIVED_AFTER_SCROLL_END,
                         timeSinceLastOnScrollEndedMillis());
             }
             boolean validUpdateAfterScrollEnd = isValidUpdateAfterScrollEnd();
-            if (mIsScrollActive || validUpdateAfterScrollEnd) {
+            if (!mHadFirstDownScroll && !forceUpdate) return validUpdateAfterScrollEnd;
+            if (mIsScrollActive || validUpdateAfterScrollEnd || forceUpdate) {
                 int scrollPercentage =
                         Math.round(((float) verticalScrollOffset / maxVerticalScrollOffset) * 100);
                 scrollPercentage = MathUtils.clamp(scrollPercentage, 0, 100);
@@ -392,6 +468,9 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
          */
         boolean onScrollDirectionChanged(boolean isDirectionUp) {
             if (mIsScrollActive && isDirectionUp != mIsDirectionUp) {
+                // If the scroll direction changed, either the previous direction was or the new
+                // direction is a down scroll.
+                mHadFirstDownScroll = true;
                 mIsDirectionUp = isDirectionUp;
                 return true;
             }
@@ -422,10 +501,11 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
         void resetMaxScrollPercentage() {
             mMaxScrollPercentage = 0;
             mMaxReportedScrollPercentage = 0;
+            mHadFirstDownScroll = false;
         }
 
         static @NonNull ScrollState from(Tab tab) {
-            if (sTestInstance != null) return sTestInstance;
+            if (sInstanceForTesting != null) return sInstanceForTesting;
 
             ScrollState scrollState = tab.getUserDataHost().getUserData(ScrollState.class);
             if (scrollState == null) {
@@ -445,9 +525,9 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
             return SystemClock.elapsedRealtime() - mTimeLastOnScrollEnded;
         }
 
-        @VisibleForTesting
         static void setInstanceForTesting(ScrollState instance) {
-            sTestInstance = instance;
+            sInstanceForTesting = instance;
+            ResettersForTesting.register(() -> sInstanceForTesting = null);
         }
     }
 

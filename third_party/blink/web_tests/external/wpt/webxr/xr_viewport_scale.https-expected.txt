@@ -7,12 +7,12 @@ PASS requestViewportScale valid viewport w/ undefined scale for inline session -
 PASS requestViewportScale valid viewport w/ undefined scale for inline session - webgl2
 PASS requestViewportScale valid viewport w/ very small scale for inline session - webgl
 PASS requestViewportScale valid viewport w/ very small scale for inline session - webgl2
-NOTRUN requestViewportScale applied next frame for inline session - webgl requestViewportScale has no effect
-NOTRUN requestViewportScale applied next frame for inline session - webgl2 requestViewportScale has no effect
-NOTRUN requestViewportScale same frame for inline session - webgl requestViewportScale has no effect
-NOTRUN requestViewportScale same frame for inline session - webgl2 requestViewportScale has no effect
-NOTRUN recommendedViewportScale for inline session - webgl recommendedViewportScale not provided
-NOTRUN recommendedViewportScale for inline session - webgl2 recommendedViewportScale not provided
+PRECONDITION_FAILED requestViewportScale applied next frame for inline session - webgl requestViewportScale has no effect
+PRECONDITION_FAILED requestViewportScale applied next frame for inline session - webgl2 requestViewportScale has no effect
+PRECONDITION_FAILED requestViewportScale same frame for inline session - webgl requestViewportScale has no effect
+PRECONDITION_FAILED requestViewportScale same frame for inline session - webgl2 requestViewportScale has no effect
+PRECONDITION_FAILED recommendedViewportScale for inline session - webgl recommendedViewportScale not provided
+PRECONDITION_FAILED recommendedViewportScale for inline session - webgl2 recommendedViewportScale not provided
 PASS requestViewportScale valid viewport for immersive-vr session - webgl
 PASS requestViewportScale valid viewport for immersive-vr session - webgl2
 PASS requestViewportScale valid viewport w/ null scale for immersive-vr session - webgl
@@ -25,7 +25,7 @@ PASS requestViewportScale applied next frame for immersive-vr session - webgl
 PASS requestViewportScale applied next frame for immersive-vr session - webgl2
 PASS requestViewportScale same frame for immersive-vr session - webgl
 PASS requestViewportScale same frame for immersive-vr session - webgl2
-NOTRUN recommendedViewportScale for immersive-vr session - webgl recommendedViewportScale not provided
-NOTRUN recommendedViewportScale for immersive-vr session - webgl2 recommendedViewportScale not provided
+PRECONDITION_FAILED recommendedViewportScale for immersive-vr session - webgl recommendedViewportScale not provided
+PRECONDITION_FAILED recommendedViewportScale for immersive-vr session - webgl2 recommendedViewportScale not provided
 Harness: the test ran to completion.
 

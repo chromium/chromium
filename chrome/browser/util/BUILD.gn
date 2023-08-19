@@ -5,6 +5,7 @@
 import("//build/config/android/rules.gni")
 
 android_library("java") {
+  srcjar_deps = [ ":jni_headers" ]
   sources = [
     "android/java/src/org/chromium/chrome/browser/util/AfterStartupTaskUtils.java",
     "android/java/src/org/chromium/chrome/browser/util/AndroidTaskUtils.java",
@@ -23,10 +24,10 @@ android_library("java") {
     "//components/embedder_support/android:util_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
+    "//ui/accessibility:ax_base_java",
     "//ui/android:ui_full_java",
     "//url:gurl_java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 generate_jni("jni_headers") {

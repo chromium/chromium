@@ -17,10 +17,17 @@
 :root.jelly-enabled {
   --oobe-bg-color: var(--cros-sys-app_base_shaded);
 }
+:root.jelly-enabled,
 :root.simon-enabled {
   --oobe-container-border-radius: 24px;
-  /* TODO(b/268463435) Migrate to cros.sys.app-elevation3 when available */
-  --oobe-container-elevation: 0 12px 12px 0 var(--cros-shadow-color-key);
+}
+@media screen and (min-height:1040px),
+        screen and (min-width:1040px) {
+  :root.jelly-modal-enabled:not([tablet=true]),
+  :root.simon-enabled:not([tablet=true]) {
+    /* TODO(b/268463435) Migrate to cros.sys.app-elevation3 when available */
+    --oobe-container-elevation: 0 12px 12px 0 var(--cros-shadow-color-key);
+  }
 }
 
 html,
@@ -30,9 +37,14 @@ body {
   transition: background-color 250ms linear;
   width: 100%;
 }
-html.simon-enabled,
-:root.simon-enabled body {
-  background-color: transparent;
+@media screen and (min-height:1040px),
+        screen and (min-width:1040px) {
+  html.jelly-modal-enabled:not([tablet=true]),
+  html.simon-enabled:not([tablet=true]),
+  :root.jelly-modal-enabled:not([tablet=true]) body,
+  :root.simon-enabled:not([tablet=true]) body {
+    background-color: transparent;
+  }
 }
 
 html {
@@ -174,7 +186,7 @@ Styles related to the `md-screen-container`
 
 #outer-container {
   display: flex;
-  height: 100%;
+  min-height: 100%;
   z-index: 1;
 }
 
@@ -225,11 +237,16 @@ Styles related to the `md-screen-container`
   object-fit: cover;
   object-position: center;
   position: absolute;
+  /* Property duration curve delay */
+  transition: background-color 900ms cubic-bezier(0.20, 0.00, 0.00, 1.00);
   width: 100%;
   z-index: -1;
 }
 :root.simon-enabled[dir=rtl] #oobe.connect #welcome-backdrop {
   transform: scaleX(-100%);
+}
+:root.simon-enabled #oobe.connect #inner-container.down #welcome-backdrop {
+  background-color: white;
 }
 :root.simon-enabled #oobe.connect #welcome-backdrop:has(~[multistep=greeting]) {
   display: block;

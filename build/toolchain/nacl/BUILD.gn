@@ -262,12 +262,52 @@ template("nacl_irt_toolchain") {
   }
 }
 
+# This is essentially a clone of nacl_irt_toolchain above, except it uses the
+# standard ld. This toolchain can be used to build regular nexes for NaCl
+# browser tests.
+template("nacl_test_irt_toolchain") {
+  toolchain_cpu = target_name
+  assert(defined(invoker.toolchain_tuple), "Must define toolchain_tuple")
+
+  toolchain_package = "saigo_newlib"
+  toolchain_revision = saigo_newlib_rev
+  toolprefix = rebase_path("${nacl_toolchain_dir}/${toolchain_package}/bin/" +
+                               invoker.toolchain_tuple + "-",
+                           root_build_dir)
+
+  if (host_os == "win") {
+    # Flip the slashes so that copy/paste of the commands works.
+    # This is also done throughout build\toolchain\win\BUILD.gn
+    toolprefix = string_replace(toolprefix, "/", "\\")
+  }
+
+  nacl_toolchain("test_irt_" + toolchain_cpu) {
+    cc = toolprefix + "clang" + toolsuffix
+    cxx = toolprefix + "clang++" + toolsuffix
+    ar = toolprefix + "ar" + toolsuffix
+    ld = cxx
+    readelf = toolprefix + "readelf" + toolsuffix
+    nm = toolprefix + "nm" + toolsuffix
+    strip = toolprefix + "strip" + toolsuffix
+
+    toolchain_args = {
+      current_cpu = toolchain_cpu
+      is_clang = true
+      use_lld = false
+      is_nacl_saigo = true
+    }
+  }
+}
+
 template("nacl_clang_toolchains") {
   assert(defined(invoker.toolchain_tuple), "Must define toolchain_tuple")
   nacl_clang_toolchain(target_name) {
     toolchain_tuple = invoker.toolchain_tuple
   }
   nacl_irt_toolchain(target_name) {
+    toolchain_tuple = invoker.toolchain_tuple
+  }
+  nacl_test_irt_toolchain(target_name) {
     toolchain_tuple = invoker.toolchain_tuple
   }
 }

@@ -6,7 +6,9 @@
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/threading/thread_checker.h"
+#include "chromeos/ash/services/recording/audio_stream_mixer.h"
 
 namespace recording {
 
@@ -89,13 +91,31 @@ void RecordingServiceTestApi::RequestAndWaitForVideoFrame(
 bool RecordingServiceTestApi::IsDoingAudioRecording() const {
   DCHECK_CALLED_ON_VALID_THREAD(recording_service_.main_thread_checker_);
 
-  return !recording_service_.audio_capturers_.empty();
+  return !!recording_service_.audio_stream_mixer_;
 }
 
 int RecordingServiceTestApi::GetNumberOfAudioCapturers() const {
   DCHECK_CALLED_ON_VALID_THREAD(recording_service_.main_thread_checker_);
 
-  return recording_service_.audio_capturers_.size();
+  if (recording_service_.audio_stream_mixer_) {
+    base::RunLoop loop;
+    int num_capturers = 0;
+    // Since `audio_stream_mixer_` is bound to the `encoding_task_runner_`, we
+    // can't call into it directly. We must flush all the posted tasks on it to
+    // make sure all the capturers that it was supposed to create have already
+    // been created. Then we can asynchronously get their number.
+    recording_service_.audio_stream_mixer_.FlushPostedTasksForTesting();
+    recording_service_.audio_stream_mixer_
+        .AsyncCall(&AudioStreamMixer::GetNumberOfCapturers)
+        .Then(base::BindLambdaForTesting([&loop, &num_capturers](int num) {
+          num_capturers = num;
+          loop.Quit();
+        }));
+    loop.Run();
+    return num_capturers;
+  }
+
+  return 0;
 }
 
 }  // namespace recording

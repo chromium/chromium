@@ -327,8 +327,17 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, DeveloperToolsDisabledExtensionsDevMode) {
 // blocked or allowed for different pages depending on the
 // DeveloperToolsAvailability policy setting. Note: javascript URLs are always
 // blocked on extension schemes, regardless of the policy setting.
+// TODO(crbug.com/1449633): The loading of a force installed extension in this
+// test runs into an issue on branded Windows builders.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_WIN)
+#define MAYBE_DebugURLsDisabledByDeveloperToolsAvailability \
+  DISABLED_DebugURLsDisabledByDeveloperToolsAvailability
+#else
+#define MAYBE_DebugURLsDisabledByDeveloperToolsAvailability \
+  DebugURLsDisabledByDeveloperToolsAvailability
+#endif
 IN_PROC_BROWSER_TEST_F(PolicyTest,
-                       DebugURLsDisabledByDeveloperToolsAvailability) {
+                       MAYBE_DebugURLsDisabledByDeveloperToolsAvailability) {
   // Get a url for a standard web page.
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL tab_url(embedded_test_server()->GetURL("/empty.html"));
@@ -338,10 +347,10 @@ IN_PROC_BROWSER_TEST_F(PolicyTest,
       base::FilePath().AppendASCII("devtools").AppendASCII("extensions"),
       base::FilePath().AppendASCII("options.crx")));
   extensions::ChromeTestExtensionLoader loader(browser()->profile());
-  // TODO(1447936): We shouldn't need to ignore manifest warnings here, but
-  // there's an issue related to the _metadata folder added for content
-  // verification when force-installing an off-store crx in a branded build,
-  // which produces an install warning.
+  // TODO(crbug.com/1447936): We shouldn't need to ignore manifest warnings
+  // here, but there's an issue related to the _metadata folder added for
+  // content verification when force-installing an off-store crx in a branded
+  // build, which produces an install warning.
   loader.set_ignore_manifest_warnings(true);
   loader.set_location(ManifestLocation::kExternalPolicyDownload);
   scoped_refptr<const extensions::Extension> extension =

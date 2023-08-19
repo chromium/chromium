@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("overscroll_actions") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "overscroll_actions_controller.h",
     "overscroll_actions_controller.mm",
@@ -14,12 +13,14 @@ source_set("overscroll_actions") {
   ]
   deps = [
     "//base",
+    "//build:blink_buildflags",
     "//ios/chrome/app/strings",
     "//ios/chrome/app/theme",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
+    "//ios/chrome/browser/ui/content_suggestions:feature_flags",
     "//ios/chrome/browser/ui/fullscreen",
     "//ios/chrome/browser/ui/ntp:logo",
     "//ios/chrome/browser/ui/page_info:constants",

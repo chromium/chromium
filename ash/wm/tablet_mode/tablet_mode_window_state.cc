@@ -225,7 +225,7 @@ gfx::Rect TabletModeWindowState::GetBoundsInTabletMode(
 
   if (chromeos::wm::features::IsWindowLayoutMenuEnabled() &&
       state_object->IsFloated()) {
-    return FloatController::GetPreferredFloatWindowTabletBounds(window);
+    return FloatController::GetFloatWindowTabletBounds(window);
   }
 
   gfx::Rect bounds_in_parent;
@@ -365,7 +365,7 @@ void TabletModeWindowState::OnWMEvent(WindowState* window_state,
       break;
     case WM_EVENT_SET_BOUNDS: {
       gfx::Rect bounds_in_parent =
-          (static_cast<const SetBoundsWMEvent*>(event))->requested_bounds();
+          event->AsSetBoundsWMEvent()->requested_bounds();
       if (bounds_in_parent.IsEmpty())
         break;
 
@@ -392,20 +392,20 @@ void TabletModeWindowState::OnWMEvent(WindowState* window_state,
         // requested bounds and center it to a fully visible area on the screen.
         bounds_in_parent = GetCenteredBounds(bounds_in_parent, window_state);
         if (bounds_in_parent != window_state->window()->bounds()) {
-          const SetBoundsWMEvent* bounds_event =
-              static_cast<const SetBoundsWMEvent*>(event);
-          if (window_state->window()->IsVisible() && bounds_event->animate())
+          if (window_state->window()->IsVisible() &&
+              event->AsSetBoundsWMEvent()->animate()) {
             window_state->SetBoundsDirectAnimated(bounds_in_parent);
-          else
+          } else {
             window_state->SetBoundsDirect(bounds_in_parent);
+          }
         }
       }
       break;
     }
     case WM_EVENT_ADDED_TO_WORKSPACE:
       // Update the window to maximized or centered if it cannot maximize.
-      // If an already snapped window or pinned window gets added to the
-      // workspace, the window should not be forced maximized, rather retain
+      // If an already snapped window or floated or pinned window gets added to
+      // the workspace, the window should not be forced maximized, rather retain
       // its previous state.
       UpdateWindow(window_state,
                    AdjustStateForTabletMode(window_state, current_state_type_),
@@ -538,7 +538,8 @@ WindowStateType TabletModeWindowState::AdjustStateForTabletMode(
     WindowState* window_state,
     WindowStateType current_state_type) {
   if (chromeos::IsSnappedWindowStateType(current_state_type) ||
-      chromeos::IsPinnedWindowStateType(current_state_type)) {
+      chromeos::IsPinnedWindowStateType(current_state_type) ||
+      current_state_type == chromeos::WindowStateType::kFloated) {
     return window_state->GetStateType();
   }
 

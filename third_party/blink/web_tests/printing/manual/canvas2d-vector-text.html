@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<style>
+@font-face {
+  font-family: lato;
+  src: url(../resources/Lato-Medium-Liga.ttf);
+}
+</style>
+The word "Notion" should appear below.
+It should look blurry in the browser window but sharp in the print preview window.
+The letters "t" and "i" should be connected to each other (i.e. a font ligature).
+The text of the word "Notion" should be selectable in the print preview window.
+If you select and copy (Ctrl-C) the word "Notion" in the print preview window and paste it into a text editor, it should paste the text "Notion".
+If you get "Noon", that's a bug.
+<canvas id='canvas' width="150" style="width:100%"></canvas>
+<script>
+const ctx = document.getElementById('canvas').getContext("2d");
+window.onbeforeprint = () => {
+  ctx.reset();
+  ctx.fillText("Notion", 0, 50);
+};
+window.onload = () => {
+  ctx.font = "48px lato";
+  ctx.fillText(" ", 0, 50); // Trigger font load
+  document.fonts.ready.then(print);
+};
+</script>

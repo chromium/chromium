@@ -62,7 +62,7 @@ class TestAutocompleteScoringModelExecutor
       scoped_refptr<base::SequencedTaskRunner>,
       scoped_refptr<base::SequencedTaskRunner>) override {}
 
-  void UpdateModelFile(const base::FilePath&) override {}
+  void UpdateModelFile(base::optional_ref<const base::FilePath>) override {}
 
   void UnloadModel() override {}
 
@@ -141,32 +141,46 @@ class AutocompleteScoringModelHandlerTest : public testing::Test {
 
 TEST_F(AutocompleteScoringModelHandlerTest,
        ExtractInputFromScoringSignalsTest) {
-  // Metadata with three scoring signal specifications.
+  // Metadata with scoring signal specifications.
   AutocompleteScoringModelMetadata model_metadata;
   *model_metadata.add_scoring_signal_specs() = CreateScoringSignalSpec(
       optimization_guide::proto::SCORING_SIGNAL_TYPE_LENGTH_OF_URL);
+  model_metadata.mutable_scoring_signal_specs(0)->set_norm_upper_boundary(50);
   // Signal with log2 transformation.
   *model_metadata.add_scoring_signal_specs() = CreateScoringSignalSpec(
       optimization_guide::proto::
           SCORING_SIGNAL_TYPE_ELAPSED_TIME_LAST_VISIT_SECS,
       /*transformation=*/optimization_guide::proto::
           SCORING_SIGNAL_TRANSFORMATION_LOG_2);
+  *model_metadata.add_scoring_signal_specs() = CreateScoringSignalSpec(
+      optimization_guide::proto::
+          SCORING_SIGNAL_TYPE_ELAPSED_TIME_LAST_VISIT_DAYS);
   // Invalid signal.
   *model_metadata.add_scoring_signal_specs() = CreateScoringSignalSpec(
       optimization_guide::proto::
           SCORING_SIGNAL_TYPE_ELAPSED_TIME_LAST_SHORTCUT_VISIT_SEC,
       /*transformation=*/absl::nullopt,
       /*min_val=*/0, /*max_val=*/absl::nullopt, /*missing_val=*/-2);
+  // Clamped by upper boundary.
+  *model_metadata.add_scoring_signal_specs() = CreateScoringSignalSpec(
+      optimization_guide::proto::SCORING_SIGNAL_TYPE_TYPED_COUNT);
+  model_metadata.mutable_scoring_signal_specs(4)->set_norm_upper_boundary(100);
 
   // Scoring signals.
   ScoringSignals scoring_signals;
   scoring_signals.set_length_of_url(10);
-  scoring_signals.set_elapsed_time_last_visit_secs(511);
+  scoring_signals.set_elapsed_time_last_visit_secs(32767);
   scoring_signals.set_elapsed_time_last_shortcut_visit_sec(-200);
+  scoring_signals.set_typed_count(150);
 
   const auto input_signals = model_handler_->ExtractInputFromScoringSignals(
       scoring_signals, model_metadata);
-  EXPECT_THAT(input_signals, testing::UnorderedElementsAre(10, 9, -2));
+  ASSERT_EQ(input_signals.size(), 5u);
+  EXPECT_THAT(input_signals[0], 0.2);  // Normalized signal.
+  EXPECT_THAT(input_signals[1], 15);
+  EXPECT_NEAR(input_signals[2], 0.3792, 0.0001);
+  EXPECT_THAT(input_signals[3], -2);
+  EXPECT_NEAR(input_signals[4], 1.0f, 0.0001);  // Clamped and normalized.
 }
 
 TEST_F(AutocompleteScoringModelHandlerTest, GetBatchModelInputTest) {

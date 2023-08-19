@@ -32,8 +32,8 @@ FileSystemAccessFileWriterImpl::FileSystemAccessFileWriterImpl(
     const BindingContext& context,
     const storage::FileSystemURL& url,
     const storage::FileSystemURL& swap_url,
-    scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
-    scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> swap_lock,
+    scoped_refptr<FileSystemAccessLockManager::Lock> lock,
+    scoped_refptr<FileSystemAccessLockManager::Lock> swap_lock,
     const SharedHandleState& handle_state,
     mojo::PendingReceiver<blink::mojom::FileSystemAccessFileWriter> receiver,
     bool has_transient_user_activation,
@@ -50,10 +50,8 @@ FileSystemAccessFileWriterImpl::FileSystemAccessFileWriterImpl(
       auto_close_(auto_close) {
   CHECK_EQ(swap_url.type(), url.type());
   // TODO(https://crbug.com/1382215): Support exclusively-locked writers.
-  CHECK_EQ(lock_->type(),
-           FileSystemAccessWriteLockManager::WriteLockType::kShared);
-  CHECK_EQ(swap_lock_->type(),
-           FileSystemAccessWriteLockManager::WriteLockType::kExclusive);
+  CHECK(!lock_->IsExclusive());
+  CHECK(swap_lock_->IsExclusive());
 
   receiver_.set_disconnect_handler(base::BindOnce(
       &FileSystemAccessFileWriterImpl::OnDisconnect, base::Unretained(this)));
@@ -153,9 +151,10 @@ void FileSystemAccessFileWriterImpl::OnDisconnect() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   receiver_.reset();
 
-  if (is_close_pending())
+  if (is_close_pending()) {
     // Mojo connection lost while Close() in progress.
     return;
+  }
 
   if (auto_close_) {
     // Close the Writer. `this` is deleted via

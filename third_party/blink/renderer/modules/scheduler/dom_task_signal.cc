@@ -108,7 +108,8 @@ DOMTaskSignal::AlgorithmHandle* DOMTaskSignal::AddPriorityChangeAlgorithm(
   }
   auto* callback_algorithm =
       MakeGarbageCollected<RepeatingCallbackAlgorithm>(std::move(algorithm));
-  auto* handle = MakeGarbageCollected<AlgorithmHandle>(callback_algorithm);
+  auto* handle =
+      MakeGarbageCollected<AlgorithmHandle>(callback_algorithm, this);
   // This always appends since `handle` is not already in the collection.
   priority_change_algorithms_.insert(handle);
   return handle;
@@ -186,27 +187,19 @@ AbortSignalCompositionManager* DOMTaskSignal::GetCompositionManager(
 
 void DOMTaskSignal::OnSignalSettled(
     AbortSignalCompositionType composition_type) {
-  if (composition_type != AbortSignalCompositionType::kPriority) {
-    AbortSignal::OnSignalSettled(composition_type);
-    return;
+  if (composition_type == AbortSignalCompositionType::kPriority) {
+    priority_change_algorithms_.clear();
   }
-  priority_change_algorithms_.clear();
+  AbortSignal::OnSignalSettled(composition_type);
 }
 
-bool DOMTaskSignal::HasPendingActivity() const {
-  if (GetSignalType() != SignalType::kComposite) {
-    DCHECK(GetSignalType() == SignalType::kController ||
-           GetSignalType() == SignalType::kInternal);
-    return false;
+bool DOMTaskSignal::IsSettledFor(
+    AbortSignalCompositionType composition_type) const {
+  CHECK(RuntimeEnabledFeatures::AbortSignalCompositionEnabled());
+  if (composition_type == AbortSignalCompositionType::kPriority) {
+    return priority_composition_manager_->IsSettled();
   }
-  DCHECK(RuntimeEnabledFeatures::AbortSignalCompositionEnabled());
-  CHECK(priority_composition_manager_);
-  // True if priority changes for this signal can occur and be observed.
-  bool has_pending_priority_activity =
-      !priority_composition_manager_->IsSettled() &&
-      (HasEventListeners(event_type_names::kPrioritychange) ||
-       !priority_change_algorithms_.empty());
-  return has_pending_priority_activity || AbortSignal::HasPendingActivity();
+  return AbortSignal::IsSettledFor(composition_type);
 }
 
 }  // namespace blink

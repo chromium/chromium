@@ -13,16 +13,26 @@
 
 #include <stddef.h>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 
+class OmniboxController;
+class OmniboxEditModel;
 namespace ui {
 struct AXNodeData;
 }
 
 class OmniboxPopupView {
  public:
+  explicit OmniboxPopupView(OmniboxController* controller);
   virtual ~OmniboxPopupView() = default;
+
+  virtual OmniboxEditModel* model();
+  virtual const OmniboxEditModel* model() const;
+
+  virtual OmniboxController* controller();
+  virtual const OmniboxController* controller() const;
 
   // Returns true if the popup is currently open.
   virtual bool IsOpen() const = 0;
@@ -61,6 +71,14 @@ class OmniboxPopupView {
   // Returns result view button text. This is currently only needed by a single
   // unit test and it would be better to eliminate it than to increase usage.
   virtual std::u16string GetAccessibleButtonTextForResult(size_t line) = 0;
+
+  // Updates the result and header views based on the visibility of their group.
+  virtual void SetSuggestionGroupVisibility(size_t match_index,
+                                            bool suggestion_group_hidden) {}
+
+ private:
+  // Owned by OmniboxView which owns this.
+  raw_ptr<OmniboxController> controller_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_POPUP_VIEW_H_

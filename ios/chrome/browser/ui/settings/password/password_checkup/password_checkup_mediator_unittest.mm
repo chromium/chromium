@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_mediator.h"
 
 #import "base/test/bind.h"
-#import "base/test/scoped_feature_list.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #import "components/password_manager/core/browser/password_form.h"
@@ -23,10 +22,6 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -83,10 +78,6 @@ class PasswordCheckupMediatorTest : public PlatformTest {
     mediator_ = [[PasswordCheckupMediator alloc]
         initWithPasswordCheckManager:password_check_];
     mediator_.consumer = consumer_;
-
-    // Enable Password Grouping feature to get the affiliated groups.
-    feature_list.InitAndEnableFeature(
-        password_manager::features::kPasswordsGrouping);
   }
 
   PasswordCheckupMediator* mediator() { return mediator_; }
@@ -110,7 +101,6 @@ class PasswordCheckupMediatorTest : public PlatformTest {
   scoped_refptr<IOSChromePasswordCheckManager> password_check_;
   id consumer_;
   PasswordCheckupMediator* mediator_;
-  base::test::ScopedFeatureList feature_list;
 };
 
 // Tests that the consumer is correclty notified when the password check state

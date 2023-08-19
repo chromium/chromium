@@ -8,6 +8,7 @@
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_instance.h"
+#include "gpu/vulkan/vulkan_util.h"
 
 namespace gpu {
 
@@ -51,6 +52,29 @@ std::unique_ptr<VulkanDeviceQueue> CreateVulkanDeviceQueue(
   }
 
   return device_queue;
+}
+
+VkSemaphore VulkanImplementation::CreateExternalSemaphore(VkDevice vk_device) {
+  return CreateExternalVkSemaphore(vk_device, GetExternalSemaphoreHandleType());
+}
+
+VkSemaphore VulkanImplementation::ImportSemaphoreHandle(
+    VkDevice vk_device,
+    SemaphoreHandle sync_handle) {
+  return ImportVkSemaphoreHandle(vk_device, std::move(sync_handle));
+}
+
+SemaphoreHandle VulkanImplementation::GetSemaphoreHandle(
+    VkDevice vk_device,
+    VkSemaphore vk_semaphore) {
+  return GetVkSemaphoreHandle(vk_device, vk_semaphore,
+                              GetExternalSemaphoreHandleType());
+}
+
+bool VulkanImplementation::IsExternalSemaphoreSupported(
+    VulkanDeviceQueue* device_queue) {
+  return IsVkExternalSemaphoreHandleTypeSupported(
+      device_queue, GetExternalSemaphoreHandleType());
 }
 
 }  // namespace gpu

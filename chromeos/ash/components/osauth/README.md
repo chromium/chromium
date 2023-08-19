@@ -12,3 +12,6 @@ well as for other in-session authentication, e.g WebAuthN flow.
 
 Eventually authentication-specific logic would be moved from
 `//chromeos/ash/components/login` to this component.
+
+See also `//chrome/browser/ash/login/osauth` for elements that depend on
+browser stack (such as policies).

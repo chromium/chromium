@@ -9,6 +9,7 @@ import {AlbumsSubpage, AmbientActionName, AmbientModeAlbum, AmbientObserver, Amb
 import {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -30,6 +31,14 @@ suite('AmbientSubpageTest', function() {
   let personalizationStore: TestPersonalizationStore;
   const routerOriginal = PersonalizationRouter.instance;
   const routerMock = TestMock.fromClass(PersonalizationRouter);
+
+  const enum DurationOptions {
+    FIVE_MINUTES = '5',
+    TEN_MINUTES = '10',
+    THIRTY_MINUTES = '30',
+    ONE_HOUR = '60',
+    FOREVER = '0',
+  }
 
   setup(() => {
     loadTimeData.overrideValues({
@@ -70,6 +79,12 @@ suite('AmbientSubpageTest', function() {
     personalizationStore.notifyObservers();
     await waitAfterNextRender(ambientSubpage);
     return Promise.resolve(ambientSubpage);
+  }
+
+  function selectDropDownMenuOption(select: HTMLSelectElement, value: string) {
+    select.value = value;
+    select.dispatchEvent(new CustomEvent('change'));
+    flush();
   }
 
   test('displays content', async () => {
@@ -176,6 +191,23 @@ suite('AmbientSubpageTest', function() {
     assertTrue(action.enabled);
   });
 
+  test('sets loading when there is no network', async () => {
+    ambientSubpageElement = await displayMainSettings(
+        TopicSource.kArtGallery, TemperatureUnit.kFahrenheit,
+        /*ambientModeEnabled=*/ true);
+
+    // Simulate going offline.
+    window.dispatchEvent(new CustomEvent('offline'));
+    await waitAfterNextRender(ambientSubpageElement);
+
+    // Shows placeholder for ambient mode toggle row while loading ambient mode
+    // status.
+    const toggleRowPlaceholder =
+        ambientSubpageElement.shadowRoot!.querySelector(
+            '#toggleRowPlaceholder');
+    assertTrue(!!toggleRowPlaceholder);
+  });
+
   test('sets ambient mode when pref value changed', async () => {
     // Make sure state starts as expected.
     assertDeepEquals(emptyState(), personalizationStore.data);
@@ -271,6 +303,9 @@ suite('AmbientSubpageTest', function() {
 
   test(
       'sets animation theme when animation theme item is clicked', async () => {
+        // See "shows video animation theme on supported devices" for expected
+        // behavior when `isTimeOfDayScreenSaverEnabled` is true.
+        loadTimeData.overrideValues({'isTimeOfDayScreenSaverEnabled': false});
         ambientSubpageElement = await displayMainSettings(
             TopicSource.kArtGallery, TemperatureUnit.kFahrenheit,
             /*ambientModeEnabled=*/ true);
@@ -404,34 +439,66 @@ suite('AmbientSubpageTest', function() {
     assertEquals(TemperatureUnit.kFahrenheit, action.temperatureUnit);
   });
 
-  test('sets duration when a new duration list item is clicked', async () => {
+  test('duration is default to ten minutes', async () => {
     ambientSubpageElement = await displayMainSettings(
         TopicSource.kArtGallery, TemperatureUnit.kFahrenheit,
         /*ambientModeEnabled=*/ true);
 
-    const durationList =
-        ambientSubpageElement.shadowRoot!.querySelector('duration-list');
-    assertTrue(!!durationList, 'Duration setting should be renderered');
+    const durationElement =
+        ambientSubpageElement.shadowRoot!.querySelector('ambient-duration');
+    assertTrue(!!durationElement, 'Duration setting should be renderered');
 
     const durationOptions =
-        durationList!.shadowRoot!.querySelectorAll<CrRadioButtonElement>(
-            'cr-radio-button');
+        durationElement!.shadowRoot!.querySelectorAll<HTMLOptionElement>(
+            'option');
     assertEquals(
         5, durationOptions!.length, 'Duration should have exactly 5 options');
 
-    const optionFiveMin = durationOptions[0];
     const optionTenMin = durationOptions[1];
     assertTrue(
-        optionTenMin!.checked, 'Ten minutes option is initially selected');
+        optionTenMin!.selected, 'Ten minutes option is initially selected');
+  });
+
+  test('sets duration when a new duration option is selected', async () => {
+    ambientSubpageElement = await displayMainSettings(
+        TopicSource.kArtGallery, TemperatureUnit.kFahrenheit,
+        /*ambientModeEnabled=*/ true);
+
+    const durationElement =
+        ambientSubpageElement.shadowRoot!.querySelector<HTMLSelectElement>(
+            'ambient-duration');
+    assertTrue(!!durationElement, 'Duration setting should be renderered');
+
+    const durationMenu =
+        durationElement!.shadowRoot!.querySelector<HTMLSelectElement>(
+            '#durationOptions');
+    assertTrue(!!durationMenu, 'Duration drop-down menu should be renderered');
+
+    const durationOptions =
+        durationElement!.shadowRoot!.querySelectorAll<HTMLOptionElement>(
+            'option');
+    const optionFiveMin = durationOptions[0];
+    const optionForever = durationOptions[durationOptions.length - 1];
+
     personalizationStore.expectAction(
         AmbientActionName.SET_SCREEN_SAVER_DURATION);
-
-    optionFiveMin!.click();
-    assertTrue(optionFiveMin!.checked, 'Clicked five minutes option');
-    const action = await personalizationStore.waitForAction(
-                       AmbientActionName.SET_SCREEN_SAVER_DURATION) as
+    selectDropDownMenuOption(durationMenu, DurationOptions.FIVE_MINUTES);
+    await waitAfterNextRender(ambientSubpageElement);
+    assertTrue(optionFiveMin!.selected, 'Five minutes option is selected');
+    let action = await personalizationStore.waitForAction(
+                     AmbientActionName.SET_SCREEN_SAVER_DURATION) as
         SetScreenSaverDurationAction;
-    assertEquals(5, action.minutes, 'Five minutes option should be set');
+    assertEquals(5, action.minutes, 'Duration should be set to five minutes');
+
+    personalizationStore.expectAction(
+        AmbientActionName.SET_SCREEN_SAVER_DURATION);
+    selectDropDownMenuOption(durationMenu, DurationOptions.FOREVER);
+    await waitAfterNextRender(ambientSubpageElement);
+    assertTrue(optionForever!.selected, 'Forever option is selected');
+    action = await personalizationStore.waitForAction(
+                 AmbientActionName.SET_SCREEN_SAVER_DURATION) as
+        SetScreenSaverDurationAction;
+    assertEquals(0, action.minutes, 'Duration should be set to forever');
   });
 
   test('has main settings visible with path ambient', async () => {
@@ -595,6 +662,10 @@ suite('AmbientSubpageTest', function() {
       path: Paths.AMBIENT_ALBUMS,
       queryParams: {topicSource: TopicSource.kArtGallery},
     });
+    personalizationStore.data.ambient.ambientModeEnabled = true;
+    personalizationStore.data.ambient.albums = ambientProvider.albums;
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(ambientSubpageElement);
 
     await ambientProvider.whenCalled('setAmbientObserver');
     ambientProvider.updateAmbientObserver();
@@ -612,21 +683,15 @@ suite('AmbientSubpageTest', function() {
     const albumList = albumsSubpage.shadowRoot!.querySelector('album-list');
     assertTrue(!!albumList, '!!albumList');
 
-    // The grid may not have templated all the items yet since it was just
-    // instantiated. See crbug/1334962.
-    const grid = albumList.shadowRoot!.getElementById('grid');
-    assertTrue(!!grid, 'albums subpage has a grid');
-    await waitAfterNextRender(grid);
-
     const albums = albumList.shadowRoot!.querySelectorAll<WallpaperGridItem>(
         'wallpaper-grid-item:not([hidden])');
     assertEquals(3, albums.length);
-    assertTrue(!!albums[0]);
-    assertTrue(!!albums[1]);
-    assertTrue(!!albums[2]);
-    assertFalse(albums[0].selected!);
-    assertFalse(albums[1].selected!);
-    assertTrue(albums[2].selected!);
+    assertTrue(!!albums[0], '!!albums[0]');
+    assertTrue(!!albums[1], '!!albums[1]');
+    assertTrue(!!albums[2], '!!albums[2]');
+    assertFalse(albums[0].selected!, 'albums[0].selected!');
+    assertFalse(albums[1].selected!, 'albums[1].selected!');
+    assertTrue(albums[2].selected!, 'albums[2].selected!');
     let selectedAlbums = getSelectedAlbums(
         personalizationStore.data.ambient.albums || [],
         personalizationStore.data.ambient.topicSource!);
@@ -635,7 +700,7 @@ suite('AmbientSubpageTest', function() {
 
     personalizationStore.expectAction(AmbientActionName.SET_ALBUM_SELECTED);
     albums[1].click();
-    assertTrue(albums[1].selected!);
+    assertTrue(albums[1].selected!, 'albums[1].selected!');
     await personalizationStore.waitForAction(
         AmbientActionName.SET_ALBUM_SELECTED);
     selectedAlbums = getSelectedAlbums(
@@ -653,6 +718,10 @@ suite('AmbientSubpageTest', function() {
       path: Paths.AMBIENT_ALBUMS,
       queryParams: {topicSource: TopicSource.kArtGallery},
     });
+    personalizationStore.data.ambient.ambientModeEnabled = true;
+    personalizationStore.data.ambient.albums = ambientProvider.albums;
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(ambientSubpageElement);
 
     await ambientProvider.whenCalled('setAmbientObserver');
     ambientProvider.updateAmbientObserver();
@@ -670,32 +739,27 @@ suite('AmbientSubpageTest', function() {
     const albumList = albumsSubpage.shadowRoot!.querySelector('album-list');
     assertTrue(!!albumList);
 
-    // The grid may not have templated all the items yet since it was just
-    // instantiated. See crbug/1334962.
-    const grid = albumList.shadowRoot!.getElementById('grid');
-    assertTrue(!!grid, 'albums subpage has a grid');
-    await waitAfterNextRender(grid);
-
     const albums = albumList.shadowRoot!.querySelectorAll<WallpaperGridItem>(
         'wallpaper-grid-item:not([hidden])');
     assertEquals(3, albums.length);
-    assertTrue(!!albums[0]);
-    assertTrue(!!albums[1]);
-    assertTrue(!!albums[2]);
-    assertFalse(albums[0].selected!);
-    assertFalse(albums[1].selected!);
-    assertTrue(albums[2].selected!);
+    assertTrue(!!albums[0], '!!albums[0]');
+    assertTrue(!!albums[1], '!!albums[1]');
+    assertTrue(!!albums[2], '!!albums[2]');
+    assertFalse(albums[0].selected!, 'albums[0].selected!');
+    assertFalse(albums[1].selected!, 'albums[1].selected!');
+    assertTrue(albums[2].selected!, 'albums[2].selected!');
 
     // Click the last art album item image will not toggle the check and will
     // show a dialog.
     albums[2].click();
-    assertTrue(albums[2].selected);
+    assertTrue(albums[2].selected, 'albums[2].selected');
 
+    await waitAfterNextRender(albumsSubpage);
     const artAlbumDialog =
         albumsSubpage.shadowRoot!.querySelector('art-album-dialog');
-    assertTrue(!!artAlbumDialog);
+    assertTrue(!!artAlbumDialog, '!!artAlbumDialog');
     await waitAfterNextRender(artAlbumDialog);
-    assertTrue(artAlbumDialog.$.dialog.open);
+    assertTrue(artAlbumDialog.$.dialog.open, 'artAlbumDialog.$.dialog.open');
   });
 
   test('has correct album preview information', async () => {
@@ -851,12 +915,6 @@ suite('AmbientSubpageTest', function() {
         ambientSubpageElement.shadowRoot!.querySelector('animation-theme-list');
     assertTrue(!!animationThemeList);
 
-    // The grid may not have templated all the items yet since it was just
-    // instantiated. See crbug/1334962.
-    const grid = animationThemeList.shadowRoot!.getElementById('grid');
-    assertTrue(!!grid, 'animation theme list has a grid');
-    await waitAfterNextRender(grid);
-
     const animationThemeItems =
         animationThemeList!.shadowRoot!.querySelectorAll<AnimationThemeItem>(
             'animation-theme-item:not([hidden])');
@@ -905,6 +963,10 @@ suite('AmbientSubpageTest', function() {
       path: Paths.AMBIENT_ALBUMS,
       queryParams: {topicSource: TopicSource.kVideo},
     });
+    personalizationStore.data.ambient.ambientModeEnabled = true;
+    personalizationStore.data.ambient.albums = ambientProvider.albums;
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(ambientSubpageElement);
 
     await ambientProvider.whenCalled('setAmbientObserver');
     ambientProvider.updateAmbientObserver();
@@ -921,12 +983,6 @@ suite('AmbientSubpageTest', function() {
 
     const albumList = albumsSubpage.shadowRoot!.querySelector('album-list');
     assertTrue(!!albumList);
-
-    // The grid may not have templated all the items yet since it was just
-    // instantiated. See crbug/1334962.
-    const grid = albumList.shadowRoot!.getElementById('grid');
-    assertTrue(!!grid, 'albums subpage has a grid');
-    await waitAfterNextRender(grid);
 
     const albums = albumList.shadowRoot!.querySelectorAll<WallpaperGridItem>(
         'wallpaper-grid-item:not([hidden])');

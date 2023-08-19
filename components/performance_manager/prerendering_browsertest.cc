@@ -204,6 +204,10 @@ IN_PROC_BROWSER_TEST_F(PerformanceManagerPrerenderingBrowserTest,
   // tree is removed from PerformanceManager.
   content::RenderFrameDeletedObserver deleted_observer(
       prerender_helper_.GetPrerenderedMainFrameHost(prerender_host));
+  bool rfh_should_change =
+      web_contents()
+          ->GetPrimaryMainFrame()
+          ->ShouldChangeRenderFrameHostOnSameSiteNavigation();
   ASSERT_TRUE(content::NavigateToURL(web_contents(), kFinalUrl));
   deleted_observer.WaitUntilDeleted();
   RunInGraph([&](Graph*) {
@@ -211,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceManagerPrerenderingBrowserTest,
     EXPECT_EQ(page_node->GetMainFrameNodes().size(), 1U);
     // The RenderFrameHost might change after the navigation if RenderDocument
     // is enabled.
-    EXPECT_EQ(content::WillSameSiteNavigationsChangeRenderFrameHosts(),
+    EXPECT_EQ(rfh_should_change,
               page_node->GetMainFrameNode() != initial_main_frame_node);
     EXPECT_EQ(page_node->GetMainFrameUrl(), kFinalUrl);
     EXPECT_TRUE(page_node->GetMainFrameNode()->IsCurrent());

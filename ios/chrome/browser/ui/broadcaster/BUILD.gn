@@ -12,11 +12,8 @@ source_set("broadcaster") {
   ]
   deps = [
     "//base",
-    "//base/ios",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("unit_tests") {
@@ -31,6 +28,4 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//testing/perf",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

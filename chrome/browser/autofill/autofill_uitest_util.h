@@ -7,6 +7,8 @@
 
 #include <vector>
 
+#include "ui/gfx/geometry/rect_f.h"
+
 class Profile;
 
 namespace autofill {
@@ -27,15 +29,17 @@ void AddTestAutofillData(Profile* base_profile,
 void WaitForPersonalDataChange(Profile* base_profile);
 void WaitForPersonalDataManagerToBeLoaded(Profile* base_profile);
 
-// Displays an Autofill popup with a dummy suggestion.
-// Unlike autofill::test::GenerateTestAutofillPopup(), this function triggers
+// Displays an Autofill popup with a dummy suggestion for an element at
+// `element_bounds`.
+// Unlike `autofill::test::GenerateTestAutofillPopup()`, this function triggers
 // the popup through the `autofill_external_delegate->GetAutofillDriver()`'s
-// AskForValuesToFill(), instead of the |autofill_external_delegate|'s
-// OnQuery() event. This initializes the form's meta data and prepares
+// `AskForValuesToFill()`, instead of the `autofill_external_delegate`'s
+// `OnQuery()` event. This initializes the form's meta data and prepares
 // ContentAutofillDriver's and ContentAutofillRouter's state to process events
-// such as AutofillDriver::PopupHidden() triggered by the popup.
+// such as `AutofillDriver::PopupHidden()` triggered by the popup.
 void GenerateTestAutofillPopup(
-    AutofillExternalDelegate* autofill_external_delegate);
+    AutofillExternalDelegate* autofill_external_delegate,
+    gfx::RectF element_bounds = gfx::RectF(100.0f, 100.0f));
 
 }  // namespace autofill
 

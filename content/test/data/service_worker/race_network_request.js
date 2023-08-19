@@ -17,6 +17,22 @@ const composeCustomResponse = () => {
 };
 
 self.addEventListener('install', e => {
+  if (e.registerRouter) {
+    e.registerRouter([
+      {
+        condition: {
+          urlPattern: {pathname: "/service_worker/race_network_and_fetch"}
+        },
+        source: "race-network-and-fetch-handler"
+      },
+      {
+        condition: {
+          urlPattern: {pathname: "/service_worker/no_race"}
+        },
+        source: "fetch-event"
+      }
+    ]);
+  }
   self.skipWaiting();
 });
 
@@ -24,29 +40,35 @@ self.addEventListener('activate', e => {
   e.waitUntil(clients.claim());
 });
 
-self.addEventListener("fetch", async e => {
+self.addEventListener("fetch", e => {
   const {request} = e;
   const url = new URL(request.url);
 
   // Force slow response
-  let timeout = Promise.resolve();
   if (url.search.includes('sw_slow')) {
-    timeout = new Promise(resolve => setTimeout(resolve, 1500));
+    const start = Date.now();
+    while (true) {
+      if (Date.now() - start > 1500) {
+        break;
+      }
+    }
   }
 
   // Force fallback
   if (url.search.includes('sw_fallback')) {
-    await timeout;
     return;
   }
 
   // Force respond from the cache
   if (url.search.includes('sw_respond')) {
-    e.respondWith(
-      (async () => {
-        await timeout;
-        return composeCustomResponse();
-      })()
-    );
+    e.respondWith(composeCustomResponse());
+  }
+
+  if (url.search.includes('sw_pass_through')) {
+    e.respondWith(fetch(request));
+  }
+
+  if (url.search.includes('sw_clone_pass_through')) {
+    e.respondWith(fetch(request.clone()));
   }
 });

@@ -58,8 +58,11 @@ ContactsManagerImpl::ContactsManagerImpl(
     RenderFrameHostImpl& render_frame_host,
     mojo::PendingReceiver<blink::mojom::ContactsManager> receiver)
     : DocumentService(render_frame_host, std::move(receiver)),
-      contacts_provider_(CreateProvider(render_frame_host)),
-      source_id_(render_frame_host.GetPageUkmSourceId()) {}
+      contacts_provider_(CreateProvider(render_frame_host)) {
+  CHECK(!render_frame_host.IsInLifecycleState(
+      RenderFrameHost::LifecycleState::kPrerendering));
+  source_id_ = render_frame_host.GetPageUkmSourceId();
+}
 
 ContactsManagerImpl::~ContactsManagerImpl() = default;
 

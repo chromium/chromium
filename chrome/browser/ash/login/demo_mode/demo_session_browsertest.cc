@@ -242,7 +242,6 @@ class DemoSessionLoginTest : public LoginManagerTest,
  public:
   DemoSessionLoginTest() {
     login_manager_mixin_.set_should_launch_browser(true);
-    scoped_feature_list_.InitAndEnableFeature(chromeos::features::kDemoModeSWA);
     BrowserList::AddObserver(this);
   }
 
@@ -311,7 +310,6 @@ class DemoSessionLoginTest : public LoginManagerTest,
   DeviceStateMixin device_state_mixin_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_DEMO_MODE};
   LocalStateMixin local_state_mixin_{&mixin_host_, this};
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::OnceClosure on_browser_added_callback_;
   static constexpr double kInitialBrightness = 20.0;
   base::WeakPtrFactory<DemoSessionLoginTest> weak_ptr_factory_{this};

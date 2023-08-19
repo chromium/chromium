@@ -17,6 +17,13 @@ SearchPrefetchService* SearchPrefetchServiceFactory::GetForProfile(
 }
 
 // static
+SearchPrefetchService* SearchPrefetchServiceFactory::GetForProfileIfExists(
+    Profile* profile) {
+  return static_cast<SearchPrefetchService*>(
+      GetInstance()->GetServiceForBrowserContext(profile, false));
+}
+
+// static
 SearchPrefetchServiceFactory* SearchPrefetchServiceFactory::GetInstance() {
   static base::NoDestructor<SearchPrefetchServiceFactory> factory;
   return factory.get();

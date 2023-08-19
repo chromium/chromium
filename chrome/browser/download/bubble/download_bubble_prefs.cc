@@ -51,20 +51,41 @@ bool ShouldShowDownloadBubble(Profile* profile) {
       ->IsDownloadUiEnabled();
 }
 
-bool IsDownloadConnectorEnabled(Profile* profile) {
+bool DoesDownloadConnectorBlock(Profile* profile, const GURL& url) {
   auto* connector_service =
       enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
           profile);
-  return connector_service &&
-         connector_service->IsConnectorEnabled(
-             enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED);
+  if (!connector_service) {
+    return false;
+  }
+
+  absl::optional<enterprise_connectors::AnalysisSettings> settings =
+      connector_service->GetAnalysisSettings(
+          url, enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED);
+  if (!settings) {
+    return false;
+  }
+
+  return settings->block_until_verdict ==
+         enterprise_connectors::BlockUntilVerdict::kBlock;
 }
 
 bool ShouldSuppressDownloadBubbleIph(Profile* profile) {
   return profile->GetPrefs()->GetBoolean(prefs::kDownloadBubbleIphSuppression);
 }
 
+bool IsDownloadBubblePartialViewControlledByPref() {
+#if BUILDFLAG(IS_CHROMEOS)
+  return false;
+#else
+  return true;
+#endif
+}
+
 bool IsDownloadBubblePartialViewEnabled(Profile* profile) {
+  if (!IsDownloadBubblePartialViewControlledByPref()) {
+    return false;
+  }
   return profile->GetPrefs()->GetBoolean(
       prefs::kDownloadBubblePartialViewEnabled);
 }
@@ -74,7 +95,10 @@ void SetDownloadBubblePartialViewEnabled(Profile* profile, bool enabled) {
                                   enabled);
 }
 
-bool IsDownloadBubblePartialViewEnabledDefaultValue(Profile* profile) {
+bool IsDownloadBubblePartialViewEnabledDefaultPrefValue(Profile* profile) {
+  if (!IsDownloadBubblePartialViewControlledByPref()) {
+    return false;
+  }
   return profile->GetPrefs()
       ->FindPreference(prefs::kDownloadBubblePartialViewEnabled)
       ->IsDefaultValue();

@@ -16,9 +16,10 @@ namespace {
 arc::mojom::PrintMediaSizePtr ToMediaSize(
     const printing::PrinterSemanticCapsAndDefaults::Paper& paper) {
   gfx::Size size_mil =
-      gfx::ScaleToRoundedSize(paper.size_um, 1.0f / printing::kMicronsPerMil);
-  return arc::mojom::PrintMediaSize::New(paper.vendor_id, paper.display_name,
-                                         size_mil.width(), size_mil.height());
+      gfx::ScaleToRoundedSize(paper.size_um(), 1.0f / printing::kMicronsPerMil);
+  return arc::mojom::PrintMediaSize::New(paper.vendor_id(),
+                                         paper.display_name(), size_mil.width(),
+                                         size_mil.height());
 }
 
 arc::mojom::PrintDuplexMode ToArcDuplexMode(printing::mojom::DuplexMode mode) {

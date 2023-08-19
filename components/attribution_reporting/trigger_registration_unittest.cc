@@ -12,9 +12,9 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"
-#include "components/aggregation_service/aggregation_service.mojom.h"
 #include "components/aggregation_service/features.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
@@ -22,12 +22,15 @@
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_time_config.mojom.h"
+#include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace attribution_reporting {
 namespace {
@@ -60,16 +63,14 @@ TEST(TriggerRegistrationTest, Parse) {
       {
           "empty",
           R"json({})json",
-          TriggerRegistrationWith([](TriggerRegistration& r) {
-            r.source_registration_time_config =
-                mojom::SourceRegistrationTimeConfig::kExclude;
-          }),
+          TriggerRegistration(),
       },
       {
           "filters_valid",
-          R"json({"filters":{"a":["b"]}})json",
+          R"json({"filters":{"a":["b"], "_lookback_window": 2 }})json",
           TriggerRegistrationWith([](TriggerRegistration& r) {
-            r.filters.positive = FiltersDisjunction({{{"a", {"b"}}}});
+            r.filters.positive = {*FilterConfig::Create(
+                {{{"a", {"b"}}}}, /*lookback_window=*/base::Seconds(2))};
           }),
       },
       {
@@ -81,7 +82,7 @@ TEST(TriggerRegistrationTest, Parse) {
           "not_filters_valid",
           R"json({"not_filters":{"a":["b"]}})json",
           TriggerRegistrationWith([](TriggerRegistration& r) {
-            r.filters.negative = FiltersDisjunction({{{"a", {"b"}}}});
+            r.filters.negative = {*FilterConfig::Create({{{"a", {"b"}}}})};
           }),
       },
       {
@@ -304,7 +305,7 @@ TEST(TriggerRegistrationTest, ToJson) {
       {
           TriggerRegistration(),
           R"json({
-            "aggregatable_source_registration_time": "include",
+            "aggregatable_source_registration_time": "exclude",
             "debug_reporting": false
           })json",
       },
@@ -317,13 +318,14 @@ TEST(TriggerRegistrationTest, ToJson) {
             r.debug_key = 3;
             r.debug_reporting = true;
             r.event_triggers = {EventTriggerData()};
-            r.filters.positive = FiltersDisjunction({{{"b", {}}}});
-            r.filters.negative = FiltersDisjunction({{{"c", {}}}});
+            r.filters.positive = {*FilterConfig::Create({{{"b", {}}}})};
+            r.filters.negative = {*FilterConfig::Create(
+                {{{"c", {}}}}, /*lookback_window=*/base::Seconds(2))};
             r.source_registration_time_config =
-                mojom::SourceRegistrationTimeConfig::kExclude;
+                mojom::SourceRegistrationTimeConfig::kInclude;
           }),
           R"json({
-            "aggregatable_source_registration_time": "exclude",
+            "aggregatable_source_registration_time": "include",
             "aggregatable_deduplication_keys": [{"deduplication_key":"1"}],
             "aggregatable_trigger_data": [{"key_piece":"0x0"}],
             "aggregatable_values": {"a": 2},
@@ -331,7 +333,7 @@ TEST(TriggerRegistrationTest, ToJson) {
             "debug_reporting": true,
             "event_trigger_data": [{"priority":"0","trigger_data":"0"}],
             "filters": [{"b": []}],
-            "not_filters": [{"c": []}]
+            "not_filters": [{"c": [], "_lookback_window": 2}]
           })json",
       },
   };
@@ -349,22 +351,22 @@ TEST(TriggerRegistrationTest, ParseAggregationCoordinator) {
     base::expected<TriggerRegistration, TriggerRegistrationError> expected;
   } kTestCases[] = {
       {
-          "aggregation_coordinator_identifier_valid",
-          R"json({"aggregation_coordinator_identifier":"aws-cloud"})json",
+          "aggregation_coordinator_origin_valid",
+          R"json({"aggregation_coordinator_origin":"https://aws.example.test"})json",
           TriggerRegistrationWith([](TriggerRegistration& r) {
-            r.aggregation_coordinator =
-                aggregation_service::mojom::AggregationCoordinator::kAwsCloud;
+            r.aggregation_coordinator_origin =
+                SuitableOrigin::Create(GURL("https://aws.example.test"));
           }),
       },
       {
-          "aggregation_coordinator_identifier_wrong_type",
-          R"json({"aggregation_coordinator_identifier":123})json",
+          "aggregation_coordinator_origin_wrong_type",
+          R"json({"aggregation_coordinator_origin":123})json",
           base::unexpected(
               TriggerRegistrationError::kAggregationCoordinatorWrongType),
       },
       {
-          "aggregation_coordinator_identifier_invalid_value",
-          R"json({"aggregation_coordinator_identifier":"unknown"})json",
+          "aggregation_coordinator_origin_invalid_value",
+          R"json({"aggregation_coordinator_origin":"https://unknown.example.test"})json",
           base::unexpected(
               TriggerRegistrationError::kAggregationCoordinatorUnknownValue),
       },
@@ -373,8 +375,10 @@ TEST(TriggerRegistrationTest, ParseAggregationCoordinator) {
   static constexpr char kTriggerRegistrationErrorMetric[] =
       "Conversions.TriggerRegistrationError6";
 
-  base::test::ScopedFeatureList scoped_feature_list(
-      aggregation_service::kAggregationServiceMultipleCloudProviders);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      aggregation_service::kAggregationServiceMultipleCloudProviders,
+      {{"aws_cloud", "https://aws.example.test"}});
 
   for (const auto& test_case : kTestCases) {
     base::HistogramTester histograms;
@@ -399,8 +403,18 @@ TEST(TriggerRegistrationTest, SerializeAggregationCoordinator) {
       {
           TriggerRegistration(),
           R"json({
-            "aggregatable_source_registration_time": "include",
-            "aggregation_coordinator_identifier": "aws-cloud",
+            "aggregatable_source_registration_time": "exclude",
+            "debug_reporting": false
+          })json",
+      },
+      {
+          TriggerRegistrationWith([](TriggerRegistration& r) {
+            r.aggregation_coordinator_origin =
+                SuitableOrigin::Create(GURL("https://aws.example.test"));
+          }),
+          R"json({
+            "aggregatable_source_registration_time": "exclude",
+            "aggregation_coordinator_origin": "https://aws.example.test",
             "debug_reporting": false
           })json",
       },

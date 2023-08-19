@@ -4,17 +4,13 @@
 
 #import "ios/web/security/wk_web_view_security_util.h"
 
-#import "base/mac/foundation_util.h"
-#import "base/mac/scoped_cftyperef.h"
+#import "base/apple/foundation_util.h"
+#import "base/apple/scoped_cftyperef.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "net/cert/x509_certificate.h"
 #import "net/cert/x509_util_apple.h"
 #import "net/ssl/ssl_info.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace web {
 
@@ -84,12 +80,12 @@ scoped_refptr<net::X509Certificate> CreateCertFromTrust(SecTrustRef trust) {
         SecTrustCopyCertificateChain(trust));
     for (CFIndex i = 1; i < cert_count; i++) {
       SecCertificateRef secCertificate =
-          base::mac::CFCastStrict<SecCertificateRef>(
+          base::apple::CFCastStrict<SecCertificateRef>(
               CFArrayGetValueAtIndex(certificateChain, i));
       intermediates.emplace_back(secCertificate, base::scoped_policy::RETAIN);
     }
     SecCertificateRef secCertificate =
-        base::mac::CFCastStrict<SecCertificateRef>(
+        base::apple::CFCastStrict<SecCertificateRef>(
             CFArrayGetValueAtIndex(certificateChain, 0));
     return net::x509_util::CreateX509CertificateFromSecCertificate(
         base::ScopedCFTypeRef<SecCertificateRef>(secCertificate,

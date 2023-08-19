@@ -11,6 +11,16 @@ namespace extensions_features {
 // API Features
 ///////////////////////////////////////////////////////////////////////////////
 
+// Controls the availability of the AccessibilityServicePrivate API.
+BASE_FEATURE(kApiAccessibilityServicePrivate,
+             "ApiAccessibilityServicePrivate",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Controls the availability of the ReadingList API.
+BASE_FEATURE(kApiReadingList,
+             "ApiReadingList",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Controls the availability of the runtime.getContexts() API.
 BASE_FEATURE(kApiRuntimeGetContexts,
              "ApiRuntimeGetContexts",
@@ -19,7 +29,17 @@ BASE_FEATURE(kApiRuntimeGetContexts,
 // Controls the availability of the sidePanel.open() API.
 BASE_FEATURE(kApiSidePanelOpen,
              "ApiSidePanelOpen",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Controls the availability of the userScripts API.
+BASE_FEATURE(kApiUserScripts,
+             "ApiUserScripts",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls the availability of navigation to file URLs.
+BASE_FEATURE(kRestrictFileURLNavigation,
+             "RestrictFileURLNavigation",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 ///////////////////////////////////////////////////////////////////////////////
 // Other Features
@@ -173,7 +193,7 @@ BASE_FEATURE(kTelemetryExtensionPendingApprovalApi,
 // for details.
 BASE_FEATURE(kWebviewTagMPArchBehavior,
              "WebviewTagMPArchBehavior",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, extensions installed from .zip files (from dev mode) are changed
 // from installing in base::TEMP_DIR to .../<profile_dir>/UnpackedExtensions and

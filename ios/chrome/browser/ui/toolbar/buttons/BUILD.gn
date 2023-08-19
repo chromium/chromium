@@ -18,7 +18,6 @@ source_set("buttons") {
     "toolbar_style.h",
     "toolbar_tab_grid_button.h",
     "toolbar_tab_grid_button.mm",
-    "toolbar_type.h",
   ]
   deps = [
     "resources:omnibox_incognito_background_color",
@@ -37,6 +36,7 @@ source_set("buttons") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util:util_swift",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
+    "//ios/chrome/browser/ui/toolbar/public",
     "//ios/chrome/browser/ui/toolbar/public:constants",
     "//ios/chrome/browser/web",
     "//ios/chrome/common:button_config",
@@ -47,5 +47,4 @@ source_set("buttons") {
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

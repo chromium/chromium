@@ -42,11 +42,14 @@ struct AllocFlags {
   // allocations return nullptr, such as direct-mapped ones, and even for
   // smaller ones, a nullptr value is common.
   static constexpr unsigned int kFastPathOrReturnNull = 1 << 5;  // Internal.
+  // An allocation override hook should tag the allocated memory for MTE.
+  static constexpr unsigned int kMemoryShouldBeTaggedForMte =
+      1 << 6;  // Internal.
 
-  static constexpr unsigned int kLastFlag = kFastPathOrReturnNull;
+  static constexpr unsigned int kLastFlag = kMemoryShouldBeTaggedForMte;
 };
 
-// Bit flag constants used as `flag` argument of PartitionRoot::FreeWithFlags.
+// Bit flag constants used as `flag` argument of PartitionRoot::Free<flags>.
 struct FreeFlags {
   // See AllocFlags::kNoMemoryToolOverride.
   static constexpr unsigned int kNoMemoryToolOverride = 1 << 0;

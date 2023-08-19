@@ -133,7 +133,7 @@ void RlzLibTestNoMachineStateHelper::SetUp() {
   ASSERT_NO_FATAL_FAILURE(
       InitializeRegistryOverridesForTesting(&override_manager_));
 #elif BUILDFLAG(IS_APPLE)
-  base::mac::ScopedNSAutoreleasePool pool;
+  base::apple::ScopedNSAutoreleasePool pool;
 #endif  // BUILDFLAG(IS_WIN)
 #if BUILDFLAG(IS_POSIX)
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());

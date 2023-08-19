@@ -14,6 +14,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
+#include "chrome/browser/ash/file_manager/volume_manager_observer.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
@@ -39,24 +40,31 @@ class Widget;
 namespace policy {
 
 class DlpFilesEventStorage;
+class DlpExtractIOTaskObserver;
 
 // DlpFilesControllerAsh is responsible for deciding whether file transfers are
 // allowed according to the files sources saved in the DLP daemon and the rules
 // of the Data leak prevention policy set by the admin.
-class DlpFilesControllerAsh : public DlpFilesController {
+class DlpFilesControllerAsh : public DlpFilesController,
+                              public file_manager::VolumeManagerObserver {
  public:
+  // Returns the instance if it exists.
+  static DlpFilesControllerAsh* GetForPrimaryProfile();
+
   // DlpFileMetadata keeps metadata about a file, such as whether it's managed
   // or not and the source URL, if it exists.
   struct DlpFileMetadata {
     DlpFileMetadata() = delete;
     DlpFileMetadata(const std::string& source_url,
+                    const std::string& referrer_url,
                     bool is_dlp_restricted,
                     bool is_restricted_for_destination);
 
     friend bool operator==(const DlpFileMetadata& a, const DlpFileMetadata& b) {
       return a.is_dlp_restricted == b.is_dlp_restricted &&
-             a.source_url == b.source_url &&
-             a.is_restricted_for_destination == b.is_restricted_for_destination;
+             a.is_restricted_for_destination ==
+                 b.is_restricted_for_destination &&
+             a.source_url == b.source_url && a.referrer_url == b.referrer_url;
     }
     friend bool operator!=(const DlpFileMetadata& a, const DlpFileMetadata& b) {
       return !(a == b);
@@ -64,6 +72,8 @@ class DlpFilesControllerAsh : public DlpFilesController {
 
     // Source URL from which the file was downloaded.
     std::string source_url;
+    // Referrer URL from which the download process was initiated.
+    std::string referrer_url;
     // Whether the file is under any DLP rule or not.
     bool is_dlp_restricted;
     // Whether the file is restricted by DLP for a specific destination.
@@ -90,11 +100,9 @@ class DlpFilesControllerAsh : public DlpFilesController {
     std::vector<data_controls::Component> components;
   };
 
-  using GetDisallowedTransfersCallback =
-      base::OnceCallback<void(std::vector<storage::FileSystemURL>)>;
   using CheckIfTransferAllowedCallback =
-      base::OnceCallback<void(std::set<storage::FileSystemURL>)>;
-  using GetFilesRestrictedByAnyRuleCallback = GetDisallowedTransfersCallback;
+      base::OnceCallback<void(std::vector<storage::FileSystemURL>)>;
+  using GetFilesRestrictedByAnyRuleCallback = CheckIfTransferAllowedCallback;
   using FilterDisallowedUploadsCallback =
       base::OnceCallback<void(std::vector<ui::SelectedFileInfo>)>;
   using CheckIfDlpAllowedCallback = base::OnceCallback<void(bool is_allowed)>;
@@ -112,27 +120,19 @@ class DlpFilesControllerAsh : public DlpFilesController {
   // Returns a sublist of |transferred_files| disallowed to be transferred to
   // |destination| in |result_callback|. |is_move| is true if it's a move
   // operation. Otherwise it's false.
-  void GetDisallowedTransfers(
+  virtual void CheckIfTransferAllowed(
+      absl::optional<file_manager::io_task::IOTaskId> task_id,
       const std::vector<storage::FileSystemURL>& transferred_files,
       storage::FileSystemURL destination,
       bool is_move,
-      GetDisallowedTransfersCallback result_callback);
-
-  // Checks whether transferring `transferred_urls` to `destination` is
-  // allowed. Runs `result_callback` with false if the user cancelled the
-  // warning. Otherwise, it'll return the blocked entries.
-  void CheckIfTransferAllowed(
-      file_manager::io_task::IOTaskId task_id,
-      const std::vector<storage::FileSystemURL>& transferred_urls,
-      storage::FileSystemURL destination,
       CheckIfTransferAllowedCallback result_callback);
 
   // Retrieves metadata for each entry in |files| and returns it as a list in
   // |result_callback|. If |destination| is passed, marks the files that are not
   // allowed to be uploaded to that particular destination.
-  void GetDlpMetadata(const std::vector<storage::FileSystemURL>& files,
-                      absl::optional<DlpFileDestination> destination,
-                      GetDlpMetadataCallback result_callback);
+  virtual void GetDlpMetadata(const std::vector<storage::FileSystemURL>& files,
+                              absl::optional<DlpFileDestination> destination,
+                              GetDlpMetadataCallback result_callback);
 
   // Filters files disallowed to be uploaded to `destination`.
   virtual void FilterDisallowedUploads(
@@ -154,35 +154,36 @@ class DlpFilesControllerAsh : public DlpFilesController {
       const base::FilePath& file_path);
 
   // Checks whether launching `app_update` with `intent` is allowed.
-  void CheckIfLaunchAllowed(const apps::AppUpdate& app_update,
-                            apps::IntentPtr intent,
-                            CheckIfDlpAllowedCallback result_callback);
+  virtual void CheckIfLaunchAllowed(const apps::AppUpdate& app_update,
+                                    apps::IntentPtr intent,
+                                    CheckIfDlpAllowedCallback result_callback);
 
   // Returns true if `app_update` is blocked from opening any of the
   // files in `intent`.
   virtual bool IsLaunchBlocked(const apps::AppUpdate& app_update,
                                const apps::IntentPtr& intent);
 
-  // Returns a sublist of |transferred_files| which aren't allowed to be
-  // transferred to either |destination_url| or |destination_component| in
-  // |result_callback|.
-  void IsFilesTransferRestricted(
+  // Returns a sublist of `transferred_files` which aren't allowed to be
+  // transferred to either `destination_url` or `destination_component` in
+  // `result_callback`.
+  virtual void IsFilesTransferRestricted(
+      absl::optional<file_manager::io_task::IOTaskId> task_id,
       const std::vector<FileDaemonInfo>& transferred_files,
       const DlpFileDestination& destination,
       dlp::FileAction files_action,
       IsFilesTransferRestrictedCallback result_callback);
 
   // Returns restriction information for `source_url`.
-  std::vector<DlpFileRestrictionDetails> GetDlpRestrictionDetails(
+  virtual std::vector<DlpFileRestrictionDetails> GetDlpRestrictionDetails(
       const std::string& source_url);
 
   // Returns a list of components to which the transfer of a file with
   // `source_url` is blocked.
-  std::vector<data_controls::Component> GetBlockedComponents(
+  virtual std::vector<data_controls::Component> GetBlockedComponents(
       const std::string& source_url);
 
   // Returns whether a dlp policy matches for the `file`.
-  bool IsDlpPolicyMatched(const FileDaemonInfo& file);
+  virtual bool IsDlpPolicyMatched(const FileDaemonInfo& file);
 
   // Checks whether dropping `dropped_files` to `data_dst` is allowed.
   virtual void CheckIfDropAllowed(
@@ -190,12 +191,16 @@ class DlpFilesControllerAsh : public DlpFilesController {
       const ui::DataTransferEndpoint* data_dst,
       CheckIfDlpAllowedCallback result_callback);
 
+  //  VolumeManagerObserver overrides:
+  void OnShutdownStart(file_manager::VolumeManager* volume_manager) override;
+
   DlpFilesEventStorage* GetEventStorageForTesting();
 
   void SetFileSystemContextForTesting(
       storage::FileSystemContext* file_system_context);
 
  protected:
+  // Maps |file_path| to data_controls::Component if possible.
   absl::optional<data_controls::Component> MapFilePathtoPolicyComponent(
       Profile* profile,
       const base::FilePath& file_path) override;
@@ -220,16 +225,18 @@ class DlpFilesControllerAsh : public DlpFilesController {
       IsFilesTransferRestrictedCallback callback,
       bool should_proceed);
 
-  void ReturnDisallowedTransfers(
+  void ReturnDisallowedFiles(
+      absl::optional<file_manager::io_task::IOTaskId> task_id,
       base::flat_map<std::string, storage::FileSystemURL> files_map,
-      GetDisallowedTransfersCallback result_callback,
+      dlp::FileAction file_action,
+      CheckIfTransferAllowedCallback result_callback,
       ::dlp::CheckFilesTransferResponse response);
 
   void ReturnAllowedUploads(std::vector<ui::SelectedFileInfo> uploaded_files,
                             FilterDisallowedUploadsCallback result_callback,
                             ::dlp::CheckFilesTransferResponse response);
 
-  void ReturnDlpMetadata(std::vector<absl::optional<ino64_t>> inodes,
+  void ReturnDlpMetadata(const std::vector<storage::FileSystemURL>& files,
                          absl::optional<DlpFileDestination> destination,
                          GetDlpMetadataCallback result_callback,
                          const ::dlp::GetFilesSourcesResponse response);
@@ -244,6 +251,7 @@ class DlpFilesControllerAsh : public DlpFilesController {
   // `dst_pattern` is missing, we report `dst.component.value()` instead. When
   // `level` is missing, we report a warning proceeded event.
   void MaybeReportEvent(ino64_t inode,
+                        time_t crtime,
                         const base::FilePath& path,
                         const std::string& source_pattern,
                         const DlpFileDestination& dst,
@@ -253,10 +261,11 @@ class DlpFilesControllerAsh : public DlpFilesController {
 
   // Called when `transferred_files` is ready. Constructs CheckFilesTransfer
   // request and forwards it to the dlp daemon.
-  void ContinueGetDisallowedTransfers(
+  void ContinueCheckIfTransferAllowed(
+      absl::optional<file_manager::io_task::IOTaskId> task_id,
       storage::FileSystemURL destination,
       bool is_move,
-      GetDisallowedTransfersCallback result_callback,
+      CheckIfTransferAllowedCallback result_callback,
       std::vector<storage::FileSystemURL> transferred_files);
 
   // Called when `uploaded_files` is ready. Constructs CheckFilesTransfer
@@ -274,14 +283,13 @@ class DlpFilesControllerAsh : public DlpFilesController {
       CheckIfDlpAllowedCallback result_callback,
       std::vector<storage::FileSystemURL> dropped_files);
 
-  // Gets the component out of |destination| if possible.
-  absl::optional<data_controls::Component> MaybeGetComponent(
-      Profile* profile,
-      const DlpFileDestination& destination);
-
   // Keeps track of events and detects duplicate ones using time based
   // approach.
   std::unique_ptr<DlpFilesEventStorage> event_storage_;
+
+  // Gets notified when an archive is extracted, and notifies the DLP daemon
+  // about newly extracted files.
+  std::unique_ptr<DlpExtractIOTaskObserver> extract_io_task_observer_;
 
   base::WeakPtrFactory<DlpFilesControllerAsh> weak_ptr_factory_{this};
 };

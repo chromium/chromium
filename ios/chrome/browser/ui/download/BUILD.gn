@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("download") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "ar_quick_look_coordinator.h",
     "ar_quick_look_coordinator.mm",
@@ -25,6 +24,8 @@ source_set("download") {
     "radial_progress_view.mm",
     "safari_download_coordinator.h",
     "safari_download_coordinator.mm",
+    "unopened_downloads_tracker.h",
+    "unopened_downloads_tracker.mm",
     "vcard_coordinator.h",
     "vcard_coordinator.mm",
   ]
@@ -75,7 +76,6 @@ source_set("download") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "ar_quick_look_coordinator_unittest.mm",
@@ -121,10 +121,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
 
   sources = [
@@ -156,7 +153,6 @@ source_set("eg2_tests") {
 }
 
 source_set("features") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "features.h",
     "features.mm",

@@ -14,6 +14,7 @@ namespace blink {
 
 class DisplayItemClient;
 class GraphicsContext;
+class HitTestLocation;
 class LayoutObject;
 
 class CORE_EXPORT ClipPathClipper {
@@ -43,6 +44,17 @@ class CORE_EXPORT ClipPathClipper {
   static absl::optional<Path> PathBasedClip(
       const LayoutObject& clip_path_owner,
       const bool is_in_block_fragmentation);
+
+  // Returns true if `location` intersects the LayoutObject's clip-path.
+  // `reference_box` is used to resolve 'objectBoundingBox' units/percentages,
+  // and can differ from the reference box of the passed LayoutObject.
+  static bool HitTest(const LayoutObject&,
+                      const gfx::RectF& reference_box,
+                      const HitTestLocation& location);
+
+  // Like the above, but derives the reference box from the LayoutObject using
+  // `LocalReferenceBox()`.
+  static bool HitTest(const LayoutObject&, const HitTestLocation& location);
 };
 
 }  // namespace blink

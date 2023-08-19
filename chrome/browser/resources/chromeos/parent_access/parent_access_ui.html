@@ -5,7 +5,6 @@
   }
 
   #webviewDiv {
-    background-color: var(--cros-bg-color-elevation-1);
     height: 100vh;
   }
 
@@ -39,15 +38,19 @@
     width: 100%;
   }
 </style>
-</div>
-<div id="webviewDiv" role="dialog"
-    aria-label="$i18n{pageTitle}">    
-  <webview id="webview" hidden$="[[webviewLoading]]"></webview>
-  <div class="spinner-container" hidden$="[[!webviewLoading]]">
-    <paper-spinner-lite class="spinner" active="[[webviewLoading]]">
-    </paper-spinner-lite>
-    <div aria-live="polite" aria-label$="$i18n{webviewLoadingMessage}">
-      $i18n{webviewLoadingMessage}
+
+<parent-access-template>
+  <span slot="main">
+    <div id="webviewDiv" role="dialog"
+        aria-label="$i18n{pageTitle}">
+      <webview id="webview" hidden$="[[webviewLoading]]"></webview>
+      <div class="spinner-container" hidden$="[[!webviewLoading]]">
+        <paper-spinner-lite class="spinner" active="[[webviewLoading]]">
+        </paper-spinner-lite>
+        <div aria-live="polite" aria-label$="$i18n{webviewLoadingMessage}">
+          $i18n{webviewLoadingMessage}
+        </div>
+      </div>
     </div>
-  </div>
-</div>
+  </span>
+</parent-access-template>

@@ -20,6 +20,10 @@ BASE_DECLARE_FEATURE(kEnableCrdAdminRemoteAccessV2);
 // Enable to allow file transfer in CRD video streaming to Kiosk devices.
 BASE_DECLARE_FEATURE(kEnableCrdFileTransferForKiosk);
 
+// Enable to force the file transfer capability in CRD video streaming by
+// overriding the RemoteAccessHostAllowEnterpriseFileTransfer policy check.
+BASE_DECLARE_FEATURE(kForceEnableEnterpriseCrdFileTransfer);
+
 }  // namespace remoting::features
 
 #endif  // REMOTING_HOST_CHROMEOS_FEATURES_H_

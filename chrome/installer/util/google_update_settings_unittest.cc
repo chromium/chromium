@@ -348,8 +348,10 @@ TEST_F(GoogleUpdateSettingsTest, UpdateInstallStatusTest) {
   // key
   // - If we created any reg key path for ap, roll it back
   // - Finally restore the original value of ap key.
-  key.Open(HKEY_CURRENT_USER, reg_key.c_str(), KEY_WOW64_32KEY | KEY_SET_VALUE);
-  key.DeleteValue(google_update::kRegApField);
+  if (key.Open(HKEY_CURRENT_USER, reg_key.c_str(),
+               KEY_WOW64_32KEY | KEY_SET_VALUE) == ERROR_SUCCESS) {
+    key.DeleteValue(google_update::kRegApField);
+  }
   work_item_list->Rollback();
   if (ap_key_deleted) {
     work_item_list.reset(WorkItem::CreateWorkItemList());

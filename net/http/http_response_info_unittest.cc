@@ -277,6 +277,14 @@ TEST_F(HttpResponseInfoTest, EmptyBrowserRunId) {
   EXPECT_FALSE(restored_response_info.browser_run_id.has_value());
 }
 
+// Test that did_use_shared_dictionary is preserved .
+TEST_F(HttpResponseInfoTest, DidUseSharedDictionary) {
+  response_info_.did_use_shared_dictionary = true;
+  net::HttpResponseInfo restored_response_info;
+  PickleAndRestore(response_info_, &restored_response_info);
+  EXPECT_TRUE(restored_response_info.did_use_shared_dictionary);
+}
+
 }  // namespace
 
 }  // namespace net

@@ -120,7 +120,8 @@ class MojoVideoDecoder final : public VideoDecoder,
   // Manages VideoFrame destruction callbacks.
   scoped_refptr<MojoVideoFrameHandleReleaser> mojo_video_frame_handle_releaser_;
 
-  raw_ptr<GpuVideoAcceleratorFactories> gpu_factories_ = nullptr;
+  raw_ptr<GpuVideoAcceleratorFactories, LeakedDanglingUntriaged>
+      gpu_factories_ = nullptr;
 
   // Raw pointer is safe since both `this` and the `media_log` are owned by
   // WebMediaPlayerImpl with the correct declaration order.

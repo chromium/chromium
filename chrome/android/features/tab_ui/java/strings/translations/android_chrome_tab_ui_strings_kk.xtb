@@ -3,8 +3,6 @@
 <translationbundle lang="kk">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> қойынды біраздан бері пайдаланылмады. Олар жабылсын ба?</translation>
 <translation id="125153950246128346">Басқа қойынды көру үшін түртіңіз.</translation>
-<translation id="1403228085774130835">Жабылған қойындыларды Chrome бас мәзіріндегі "Соңғы қойындылар" бөлімінен таба аласыз.</translation>
-<translation id="1455506303394048917">Инкогнито қойындыларындағы әрекеттеріңіз бұл құрылғыдан жойылады.</translation>
 <translation id="1499635324672558517">Барлық инкогнито қойындысы жабылсын ба?</translation>
 <translation id="1657719826150349398">Қойындыны төмен жылжыту</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> қойынды}other{<ph name="TABS_COUNT_MANY" /> қойынды}}</translation>
@@ -47,6 +45,7 @@
 <translation id="5073204694187207510">Толық экрандық торды жасыру</translation>
 <translation id="5076161749301278626">Дүкен туралы пікірлерді көресіз бе?</translation>
 <translation id="5082793167783849073">Топ жасай отырып, беттерді жылдам салыстырыңыз. Бастау үшін сілтемені басып тұрыңыз.</translation>
+<translation id="5339733443032484186">Соңғы қойындыңыз</translation>
 <translation id="5490235265819901748">Қойындылар тобы жайылды</translation>
 <translation id="5494920125229734069">Барлығын таңдау</translation>
 <translation id="5556417849629758491">Дүкен туралы ақпаратты көру (опция экранның жоғарғы жағында орналасқан)</translation>
@@ -62,10 +61,12 @@
 <translation id="6228793724645064692">(дүкен рейтингісі)</translation>
 <translation id="6333260925957816943">Бұл дүкен туралы ақпарат</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Таңдалған <ph name="TABS_COUNT_ONE" /> қойындыны топтан шығару}other{Таңдалған <ph name="TABS_COUNT_MANY" /> қойындыны топтан шығару}}</translation>
+<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Жабылған қойындыларды Chrome бас мәзіріндегі "Соңғы қойындылар" бөлімінен таба аласыз. Инкогнито қойындыңыз қолжетімді болмайды.}other{Жабылған қойындыларды Chrome бас мәзіріндегі "Соңғы қойындылар" бөлімінен таба аласыз. # инкогнито қойындыңыз қолжетімді болмайды.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> қойынды}other{<ph name="TABS_COUNT_MANY" /> қойынды}}</translation>
 <translation id="6549021453810473782">Дүкен туралы ақпаратты көру</translation>
 <translation id="6562820390860419811">Қойындыны солға жылжыту</translation>
 <translation id="6615455863669487791">Маған көрсету</translation>
+<translation id="661742612106409204">Жабылған қойындыларды Chrome бас мәзіріндегі "Соңғы қойындылар" бөлімінен таба аласыз.</translation>
 <translation id="6840760312327750441">Қойындыларды топтау үшін қойындыны басып тұрыңыз. Одан кейін басқа қойындыға сүйреңіз.</translation>
 <translation id="6856809498882026482">Бірнеше нұсқа таңдау режимін жасыру</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Қойындыны бөлісу}other{Қойындыларды бөлісу}}</translation>

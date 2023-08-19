@@ -38,15 +38,14 @@ class PrivateNetworkDeviceChooserControllerTest
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
-    ChromePrivateNetworkDeviceChooser::EventHandler event_handler;
     content::WebContentsTester* web_contents_tester =
         content::WebContentsTester::For(web_contents());
     web_contents_tester->NavigateAndCommit(GURL(kDefaultTestUrl));
 
     private_network_device_chooser_controller_ =
         std::make_unique<PrivateNetworkDeviceChooserController>(
-            main_rfh(), std::make_unique<blink::mojom::PrivateNetworkDevice>(),
-            std::move(event_handler));
+            main_rfh(), blink::mojom::PrivateNetworkDevice::New(),
+            base::OnceCallback<void(bool)>());
     mock_chooser_view_ =
         std::make_unique<NiceMock<permissions::MockChooserControllerView>>();
     private_network_device_chooser_controller_->set_view(
@@ -59,8 +58,7 @@ class PrivateNetworkDeviceChooserControllerTest
                                             const std::string& name,
                                             const net::IPAddress& ip_address) {
     private_network_device_chooser_controller_->ReplaceDeviceForTesting(
-        std::make_unique<blink::mojom::PrivateNetworkDevice>(id, name,
-                                                             ip_address));
+        blink::mojom::PrivateNetworkDevice::New(id, name, ip_address));
   }
 
   std::unique_ptr<PrivateNetworkDeviceChooserController>
@@ -93,3 +91,5 @@ TEST_F(PrivateNetworkDeviceChooserControllerTest, AddDevice) {
   EXPECT_EQ(u"003 (c)",
             private_network_device_chooser_controller_->GetOption(0));
 }
+
+// TODO(https://crbug.com/1455117): add test for Select(), Close() and Cancel().

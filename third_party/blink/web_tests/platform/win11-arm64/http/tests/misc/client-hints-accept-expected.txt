@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Client-Hints sent when Accept-CH header is present assert_unreached: Image should have loaded. Reached unreachable code
+Harness: the test ran to completion.
+

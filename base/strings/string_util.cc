@@ -4,7 +4,6 @@
 
 #include "base/strings/string_util.h"
 
-#include <ctype.h>
 #include <errno.h>
 #include <math.h>
 #include <stdarg.h>
@@ -14,7 +13,6 @@
 #include <string.h>
 #include <time.h>
 #include <wchar.h>
-#include <wctype.h>
 
 #include <limits>
 #include <type_traits>

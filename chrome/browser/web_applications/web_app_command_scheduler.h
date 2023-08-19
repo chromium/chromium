@@ -19,8 +19,10 @@
 #include "chrome/browser/web_applications/commands/manifest_update_check_command.h"
 #include "chrome/browser/web_applications/commands/manifest_update_finalize_command.h"
 #include "chrome/browser/web_applications/commands/navigate_and_trigger_install_dialog_command.h"
+#include "chrome/browser/web_applications/commands/uninstall_all_user_installed_web_apps_command.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
+#include "chrome/browser/web_applications/jobs/uninstall/uninstall_job.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -28,8 +30,6 @@
 
 class GURL;
 class Profile;
-
-struct WebAppInstallInfo;
 
 namespace content {
 class StoragePartitionConfig;
@@ -45,12 +45,13 @@ class ScopedProfileKeepAlive;
 
 namespace web_app {
 
+struct IsolatedWebAppApplyUpdateCommandError;
+struct IsolatedWebAppUpdatePrepareAndStoreCommandError;
 class IsolatedWebAppUrlInfo;
 class WebApp;
 class WebAppDataRetriever;
+struct WebAppInstallInfo;
 class WebAppProvider;
-class WebAppUrlLoader;
-class WebContentsManager;
 enum class ApiApprovalState;
 struct IsolationData;
 struct SynchronizeOsOptions;
@@ -71,11 +72,10 @@ class WebAppCommandScheduler {
       base::expected<InstallIsolatedWebAppCommandSuccess,
                      InstallIsolatedWebAppCommandError>)>;
 
-  WebAppCommandScheduler(Profile& profile, WebAppProvider* provider);
+  explicit WebAppCommandScheduler(Profile& profile);
   virtual ~WebAppCommandScheduler();
 
-  void Start();
-
+  void SetProvider(base::PassKey<WebAppProvider>, WebAppProvider& provider);
   void Shutdown();
 
   // User initiated install that uses current `WebContents` to fetch manifest
@@ -87,6 +87,11 @@ class WebAppCommandScheduler {
                                OnceInstallCallback callback,
                                bool use_fallback,
                                const base::Location& location = FROM_HERE);
+
+  void FetchInstallInfoFromInstallUrl(
+      ManifestId manifest_id,
+      GURL install_url,
+      base::OnceCallback<void(std::unique_ptr<WebAppInstallInfo>)> callback);
 
   // Install with provided `WebAppInstallInfo` instead of fetching data from
   // manifest.
@@ -125,7 +130,6 @@ class WebAppCommandScheduler {
                               bool did_uninstall_and_replace)> install_callback,
       base::WeakPtr<content::WebContents> contents,
       std::unique_ptr<WebAppDataRetriever> data_retriever,
-      WebAppUrlLoader* web_app_url_loader,
       const base::Location& location = FROM_HERE);
 
   // Install a placeholder app, this is used during externally managed install
@@ -191,6 +195,37 @@ class WebAppCommandScheduler {
       InstallIsolatedWebAppCallback callback,
       const base::Location& call_location = FROM_HERE);
 
+  // Schedules a command to prepare the update of an Isolated Web App.
+  // `update_info` specifies the location of the update for the IWA referred to
+  // in `url_info`. This command is safe to run even if the IWA is not installed
+  // or already updated, in which case it will gracefully fail. If a dry-run of
+  // the update succeeds, then the `update_info` is persisted in the
+  // `IsolationData::pending_update_info()` of the IWA in the Web App database.
+  virtual void PrepareAndStoreIsolatedWebAppUpdate(
+      const WebApp::IsolationData::PendingUpdateInfo& update_info,
+      const IsolatedWebAppUrlInfo& url_info,
+      std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
+      std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
+      base::OnceCallback<
+          void(base::expected<void,
+                              IsolatedWebAppUpdatePrepareAndStoreCommandError>)>
+          callback,
+      const base::Location& call_location = FROM_HERE);
+
+  // Schedules a command to apply a prepared pending update of an Isolated Web
+  // App. This command is safe to run even if the IWA is not installed or
+  // already updated, in which case it will gracefully fail. Regardless of
+  // whether the update succeeds or fails, `IsolationData::pending_update_info`
+  // of the IWA in the Web App database will be cleared.
+  virtual void ApplyPendingIsolatedWebAppUpdate(
+      const IsolatedWebAppUrlInfo& url_info,
+      std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
+      std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
+      base::OnceCallback<
+          void(base::expected<void, IsolatedWebAppApplyUpdateCommandError>)>
+          callback,
+      const base::Location& call_location = FROM_HERE);
+
   // Computes the browsing data size of all installed Isolated Web Apps.
   void GetIsolatedWebAppBrowsingData(
       base::OnceCallback<void(base::flat_map<url::Origin, int64_t>)> callback,
@@ -211,12 +246,50 @@ class WebAppCommandScheduler {
                        OnceInstallCallback callback,
                        const base::Location& location = FROM_HERE);
 
-  // Schedules a command that uninstalls a web app.
-  void Uninstall(const AppId& app_id,
-                 absl::optional<WebAppManagement::Type> external_install_source,
-                 webapps::WebappUninstallSource uninstall_source,
-                 WebAppInstallFinalizer::UninstallWebAppCallback callback,
-                 const base::Location& location = FROM_HERE);
+  // Schedules a command that removes `install_source`'s `install_url` from
+  // `app_id`, if `app_id` is unset then the first matching web app that has
+  // `install_url` for `install_source` will be used.
+  // This will remove the install source if there are no remaining install URLs
+  // for that install source which in turn will remove the web app if there are
+  // no remaining install sources for the web app.
+  // Virtual for testing.
+  // TODO(crbug.com/1434692): There could potentially be multiple app matches
+  // for `install_source` and `install_url` when `app_id` is not provided,
+  // handle this case better than "first matching".
+  virtual void RemoveInstallUrl(absl::optional<AppId> app_id,
+                                WebAppManagement::Type install_source,
+                                const GURL& install_url,
+                                webapps::WebappUninstallSource uninstall_source,
+                                UninstallJob::Callback callback,
+                                const base::Location& location = FROM_HERE);
+
+  // Schedules a command that removes an install source from a given web app,
+  // will uninstall the web app if no install sources remain. May cause a web
+  // app to become user uninstallable, will deploy uninstall OS hooks in that
+  // case.
+  // Virtual for testing.
+  virtual void RemoveInstallSource(
+      const AppId& app_id,
+      WebAppManagement::Type install_source,
+      webapps::WebappUninstallSource uninstall_source,
+      UninstallJob::Callback callback,
+      const base::Location& location = FROM_HERE);
+
+  // Schedules a command that removes a web app from the database and cleans up
+  // all assets and OS integrations. Disconnects it from any of its sub apps and
+  // uninstalls them too if they have no other install sources. Adds the
+  // uninstall web app to `UserUninstalledPreinstalledWebAppPrefs` if it was
+  // default installed.
+  void UninstallWebApp(const AppId& app_id,
+                       webapps::WebappUninstallSource uninstall_source,
+                       UninstallJob::Callback callback,
+                       const base::Location& location = FROM_HERE);
+
+  // Schedules a command that uninstalls all user-installed web apps.
+  void UninstallAllUserInstalledWebApps(
+      webapps::WebappUninstallSource uninstall_source,
+      UninstallAllUserInstalledWebAppsCommand::Callback callback,
+      const base::Location& location = FROM_HERE);
 
   // Schedules a command that updates run on os login to provided `login_mode`
   // for a web app.
@@ -309,6 +382,15 @@ class WebAppCommandScheduler {
       absl::optional<SynchronizeOsOptions> synchronize_options = absl::nullopt,
       const base::Location& location = FROM_HERE);
 
+  // Finds web apps that share the same install URLs (possibly across different
+  // install sources) and dedupes the install URL configs into the most
+  // recently installed non-placeholder-like web app.
+  // Placeholder-like web apps are either marked as placeholder or have
+  // their name set to their start URL like a placeholder. This is an erroneous
+  // state some web apps have gotten into, see https://crbug.com/1427340.
+  void ScheduleDedupeInstallUrls(base::OnceClosure callback,
+                                 const base::Location& location = FROM_HERE);
+
   // TODO(https://crbug.com/1298130): expose all commands for web app
   // operations.
 
@@ -329,15 +411,15 @@ class WebAppCommandScheduler {
   bool IsShuttingDown() const;
 
   const raw_ref<Profile> profile_;
-  // Safe because we live on the WebAppProvider.
-  // raw_ptr is required due to the FakeWebAppCommandScheduler not having a
-  // WebAppProvider.
-  const raw_ptr<WebAppProvider> provider_;
+  raw_ptr<WebAppProvider> provider_;
 
   bool is_in_shutdown_ = false;
-  // TODO(http://b/262606416): Remove this when fully transitioned to
-  // WebContentsManager.
-  std::unique_ptr<WebAppUrlLoader> url_loader_;
+
+  // Track how many times ScheduleDedupeInstallUrls() is invoked for metrics to
+  // check that it's not happening excessively.
+  // TODO(crbug.com/1434692): Remove once validating that the numbers look okay
+  // out in the wild.
+  size_t dedupe_install_urls_run_count_ = 0;
 
   base::WeakPtrFactory<WebAppCommandScheduler> weak_ptr_factory_{this};
 };

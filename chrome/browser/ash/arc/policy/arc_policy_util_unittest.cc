@@ -144,6 +144,7 @@ TEST_F(ArcPolicyUtilTest, RecordPolicyMetricsWithKnownKeys) {
       kArcPolicyKeyCredentialsConfigDisabled,
       kArcPolicyKeyCaCerts,
       kArcPolicyKeyRequiredKeyPairs,
+      kArcPolicyKeyEnabledSystemAppPackageNames,
   };
   std::string policy = CreatePolicyWithKeys(test_keys);
 
@@ -202,7 +203,9 @@ TEST_F(ArcPolicyUtilTest, RecordPolicyMetricsWithKnownKeys) {
   tester_.ExpectBucketCount(kArcPolicyKeyHistogram, ArcPolicyKey::kCaCerts, 1);
   tester_.ExpectBucketCount(kArcPolicyKeyHistogram,
                             ArcPolicyKey::kRequiredKeyPairs, 1);
-  tester_.ExpectTotalCount(kArcPolicyKeyHistogram, 26);
+  tester_.ExpectBucketCount(kArcPolicyKeyHistogram,
+                            ArcPolicyKey::kEnabledSystemAppPackageNames, 1);
+  tester_.ExpectTotalCount(kArcPolicyKeyHistogram, 27);
 }
 
 TEST_F(ArcPolicyUtilTest, RecordPolicyMetricsWithOneAppOfEachType) {

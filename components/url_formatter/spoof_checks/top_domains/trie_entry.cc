@@ -35,12 +35,12 @@ bool TopDomainTrieEntry::WriteEntry(
 
   if (entry_->skeleton == entry_->top_domain) {
     writer->WriteBit(1);
-    writer->WriteBit(entry_->is_top_500 ? 1 : 0);
+    writer->WriteBit(entry_->is_top_bucket ? 1 : 0);
     writer->WriteBits(entry_->skeleton_type, kSkeletonTypeBitLength);
     return true;
   }
   writer->WriteBit(0);
-  writer->WriteBit(entry_->is_top_500 ? 1 : 0);
+  writer->WriteBit(entry_->is_top_bucket ? 1 : 0);
   writer->WriteBits(entry_->skeleton_type, kSkeletonTypeBitLength);
 
   std::string top_domain = entry_->top_domain;

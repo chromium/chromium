@@ -44,7 +44,8 @@ cases = [
   ["/foo%41%7a", "/fooAz"],
   // Funny characters that are unescaped should be escaped
   ["/foo\u0009\u0091%91", "/foo%C2%91%91"],
-  // Invalid characters that are escaped should cause a failure.
+  // Null character that is escaped should not cause a failure.
+  // See also https://crbug.com/1252531.
   ["/foo%00%51", "/foo%00Q"],
   // Some characters should be passed through unchanged regardless of esc.
   ["/(%28:%3A%29)", "/(%28:%3A%29)"],
@@ -68,9 +69,8 @@ cases = [
   // ----- encoding tests -----
   // Basic conversions
   ["/\u4f60\u597d\u4f60\u597d", "/%E4%BD%A0%E5%A5%BD%E4%BD%A0%E5%A5%BD"],
-  // Invalid unicode characters should fail. We only do validation on
-  // UTF-16 input, so this doesn't happen on 8-bit.
-  ["/\ufdd0zyx", "/%EF%BF%BDzyx"],
+  // Unicode Noncharacter.
+  ["/\ufdd0zyx", "/%EF%B7%90zyx"],
   // U+2025 TWO DOT LEADER should not be normalized to .. in the path
   ["/\u2025/foo", "/%E2%80%A5/foo"],
   // A half-surrogate is an error by itself U+DEAD
@@ -79,14 +79,18 @@ cases = [
   ["/\uFEFF/foo", "/%EF%BB%BF/foo"],
   // The BIDI override code points RLO and LRO
   ["/\u202E/foo/\u202D/bar", "/%E2%80%AE/foo/%E2%80%AD/bar"],
-  // U+FF0F FULLWIDTH SOLIDUS should normalize to / in a hostname
-  ["\uFF0Ffoo/", "%2Ffoo/"],
-
+  // U+FF0F is an invalid host codepoint.
+  ["\uFF0Ffoo/", ""],
 ];
 
 for (var i = 0; i < cases.length; ++i) {
   test_vector = cases[i][0];
   expected_result = cases[i][1];
+  if (!expected_result) {
+    // The result of `canonicalize` should be same as the input if input is an
+    // invalid URL.
+    expected_result = test_vector;
+  }
   shouldBe("canonicalize('http://example.com" + test_vector + "')",
            "'http://example.com" + expected_result + "'");
 }

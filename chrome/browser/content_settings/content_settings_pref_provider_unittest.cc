@@ -14,12 +14,12 @@
 #include "base/test/simple_test_clock.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/content_settings/content_settings_mock_observer.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/content_settings/core/browser/content_settings_mock_observer.h"
 #include "components/content_settings/core/browser/content_settings_observable_provider.h"
 #include "components/content_settings/core/browser/content_settings_pref.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
@@ -27,6 +27,7 @@
 #include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_metadata.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -146,23 +147,17 @@ TEST_F(PrefProviderTest, Observer) {
   pref_content_settings_provider.ShutdownOnUIThread();
 }
 
-// Tests that fullscreen, obsolete NFC (with the old semantics, see
-// crbug.com/1275576), and obsolete content settings (plugins, mouselock,
-// installed web app metadata) are cleared.
+// Tests that obsolete content settings are cleared.
 TEST_F(PrefProviderTest, DiscardObsoletePreferences) {
-  static const char kNfcPrefPath[] = "profile.content_settings.exceptions.nfc";
 #if !BUILDFLAG(IS_ANDROID)
-  static const char kMouselockPrefPath[] =
-      "profile.content_settings.exceptions.mouselock";
-  const char kObsoletePluginsExceptionsPref[] =
-      "profile.content_settings.exceptions.plugins";
-  const char kObsoletePluginsDataExceptionsPref[] =
-      "profile.content_settings.exceptions.flash_data";
   const char kObsoleteInstalledWebAppMetadataExceptionsPref[] =
       "profile.content_settings.exceptions.installed_web_app_metadata";
 #endif
   static const char kGeolocationPrefPath[] =
       "profile.content_settings.exceptions.geolocation";
+  static const char kGetDisplayMediaSetSelectAllScreensAllowedForUrlsPref[] =
+      "profile.content_settings.exceptions.get_display_media_set_select_all_"
+      "screens";
   static const char kPattern[] = "[*.]example.com";
 
   TestingProfile profile;
@@ -177,17 +172,15 @@ TEST_F(PrefProviderTest, DiscardObsoletePreferences) {
   base::Value::Dict data_for_pattern;
   data_for_pattern.Set("setting", static_cast<int>(CONTENT_SETTING_ALLOW));
   base::Value::Dict pref_data;
+  base::Value::List pref_list;
   pref_data.Set(kPattern, std::move(data_for_pattern));
-  prefs->SetDict(kNfcPrefPath, pref_data.Clone());
 #if !BUILDFLAG(IS_ANDROID)
-  prefs->SetDict(kMouselockPrefPath, pref_data.Clone());
-  prefs->SetDict(kObsoletePluginsExceptionsPref, pref_data.Clone());
   prefs->SetDict(kObsoleteInstalledWebAppMetadataExceptionsPref,
                  pref_data.Clone());
-  prefs->SetDict(kObsoletePluginsDataExceptionsPref,
-                 std::move(plugins_data_pref));
 #endif
   prefs->SetDict(kGeolocationPrefPath, std::move(pref_data));
+  prefs->SetList(kGetDisplayMediaSetSelectAllScreensAllowedForUrlsPref,
+                 std::move(pref_list));
 
   // Instantiate a new PrefProvider here, because we want to test the
   // constructor's behavior after setting the above.
@@ -196,15 +189,12 @@ TEST_F(PrefProviderTest, DiscardObsoletePreferences) {
                         /*restore_session=*/false);
   provider.ShutdownOnUIThread();
 
-  // Check that nfc and mouselock have been deleted.
-  EXPECT_FALSE(prefs->HasPrefPath(kNfcPrefPath));
 #if !BUILDFLAG(IS_ANDROID)
-  EXPECT_FALSE(prefs->HasPrefPath(kMouselockPrefPath));
   EXPECT_FALSE(
       prefs->HasPrefPath(kObsoleteInstalledWebAppMetadataExceptionsPref));
-  EXPECT_FALSE(prefs->HasPrefPath(kObsoletePluginsExceptionsPref));
-  EXPECT_FALSE(prefs->HasPrefPath(kObsoletePluginsDataExceptionsPref));
 #endif
+  EXPECT_FALSE(prefs->HasPrefPath(
+      kGetDisplayMediaSetSelectAllScreensAllowedForUrlsPref));
   EXPECT_TRUE(prefs->HasPrefPath(kGeolocationPrefPath));
   GURL primary_url("http://example.com/");
   EXPECT_EQ(
@@ -425,23 +415,35 @@ TEST_F(PrefProviderTest, IncognitoInheritsValueMap) {
                                /*store_last_modified=*/true,
                                /*restore_session=*/false);
 
-  normal_provider.SetWebsiteSetting(pattern_1, wildcard,
-                                    ContentSettingsType::COOKIES,
-                                    base::Value(CONTENT_SETTING_ALLOW), {});
-  normal_provider.SetWebsiteSetting(pattern_3, pattern_3,
-                                    ContentSettingsType::COOKIES,
-                                    base::Value(CONTENT_SETTING_BLOCK),
-                                    {base::Time(), SessionModel::UserSession});
-  // Durable and not expired
-  normal_provider.SetWebsiteSetting(
-      pattern_4, pattern_4, ContentSettingsType::COOKIES,
-      base::Value(CONTENT_SETTING_BLOCK),
-      {base::Time::Now() + base::Days(1), SessionModel::Durable});
-  // Durable but expired
-  normal_provider.SetWebsiteSetting(
-      pattern_5, pattern_5, ContentSettingsType::COOKIES,
-      base::Value(CONTENT_SETTING_BLOCK),
-      {base::Time::Now() - base::Days(1), SessionModel::Durable});
+  {
+    ContentSettingConstraints constraints;
+    constraints.set_session_model(SessionModel::UserSession);
+
+    normal_provider.SetWebsiteSetting(pattern_1, wildcard,
+                                      ContentSettingsType::COOKIES,
+                                      base::Value(CONTENT_SETTING_ALLOW), {});
+    normal_provider.SetWebsiteSetting(
+        pattern_3, pattern_3, ContentSettingsType::COOKIES,
+        base::Value(CONTENT_SETTING_BLOCK), constraints);
+  }
+  {
+    // Durable and not expired
+    ContentSettingConstraints constraints;
+    constraints.set_lifetime(base::Days(1));
+    constraints.set_session_model(SessionModel::Durable);
+    normal_provider.SetWebsiteSetting(
+        pattern_4, pattern_4, ContentSettingsType::COOKIES,
+        base::Value(CONTENT_SETTING_BLOCK), constraints);
+  }
+  {
+    // Durable but expired
+    ContentSettingConstraints constraints(base::Time::Now() - base::Days(2));
+    constraints.set_lifetime(base::Days(1));
+    constraints.set_session_model(SessionModel::Durable);
+    normal_provider.SetWebsiteSetting(
+        pattern_5, pattern_5, ContentSettingsType::COOKIES,
+        base::Value(CONTENT_SETTING_BLOCK), constraints);
+  }
   // Non-OTR provider, Non-OTR iterator has one setting (pattern 1) using
   // default params and one scoped to a UserSession lifetime model.
   {
@@ -654,10 +656,12 @@ TEST_F(PrefProviderTest, SessionScopeSettingsDontPersist) {
       TestUtils::GetContentSetting(&provider, primary_url, primary_url,
                                    ContentSettingsType::STORAGE_ACCESS, false));
 
+  ContentSettingConstraints constraints;
+  constraints.set_session_model(SessionModel::UserSession);
+
   provider.SetWebsiteSetting(primary_pattern, primary_pattern,
                              ContentSettingsType::STORAGE_ACCESS,
-                             base::Value(CONTENT_SETTING_BLOCK),
-                             {base::Time(), SessionModel::UserSession});
+                             base::Value(CONTENT_SETTING_BLOCK), constraints);
   EXPECT_EQ(
       CONTENT_SETTING_BLOCK,
       TestUtils::GetContentSetting(&provider, primary_url, primary_url,
@@ -672,7 +676,8 @@ TEST_F(PrefProviderTest, SessionScopeSettingsDontPersist) {
   // back.
   provider.ShutdownOnUIThread();
 
-  PrefProvider provider2(testing_profile.GetPrefs(), /*off_the_record=*/false,
+  PrefProvider provider2(testing_profile.GetPrefs(),
+                         /*off_the_record=*/false,
                          /*store_last_modified=*/true,
                          /*restore_session=*/false);
   EXPECT_EQ(
@@ -702,10 +707,12 @@ TEST_F(PrefProviderTest, SessionScopeSettingsRestoreSession) {
       TestUtils::GetContentSetting(&provider, primary_url, primary_url,
                                    ContentSettingsType::STORAGE_ACCESS, false));
 
+  ContentSettingConstraints constraints;
+  constraints.set_session_model(SessionModel::UserSession);
+
   provider.SetWebsiteSetting(primary_pattern, primary_pattern,
                              ContentSettingsType::STORAGE_ACCESS,
-                             base::Value(CONTENT_SETTING_BLOCK),
-                             {base::Time(), SessionModel::UserSession});
+                             base::Value(CONTENT_SETTING_BLOCK), constraints);
   EXPECT_EQ(
       CONTENT_SETTING_BLOCK,
       TestUtils::GetContentSetting(&provider, primary_url, primary_url,
@@ -748,10 +755,12 @@ TEST_F(PrefProviderTest, SessionScopeSettingsRestoreSessionNonRestorable) {
       TestUtils::GetContentSetting(&provider, primary_url, primary_url,
                                    ContentSettingsType::STORAGE_ACCESS, false));
 
-  provider.SetWebsiteSetting(
-      primary_pattern, primary_pattern, ContentSettingsType::STORAGE_ACCESS,
-      base::Value(CONTENT_SETTING_BLOCK),
-      {base::Time(), SessionModel::NonRestorableUserSession});
+  ContentSettingConstraints constraints;
+  constraints.set_session_model(SessionModel::NonRestorableUserSession);
+
+  provider.SetWebsiteSetting(primary_pattern, primary_pattern,
+                             ContentSettingsType::STORAGE_ACCESS,
+                             base::Value(CONTENT_SETTING_BLOCK), constraints);
   EXPECT_EQ(
       CONTENT_SETTING_BLOCK,
       TestUtils::GetContentSetting(&provider, primary_url, primary_url,
@@ -787,12 +796,13 @@ TEST_F(PrefProviderTest, GetContentSettingsExpiry) {
   GURL primary_url("http://example.com/");
   ContentSettingsPattern primary_pattern =
       ContentSettingsPattern::FromString("[*.]example.com");
+  ContentSettingConstraints constraints;
+  constraints.set_lifetime(base::Seconds(123));
+  constraints.set_session_model(SessionModel::Durable);
 
-  provider.SetWebsiteSetting(
-      primary_pattern, primary_pattern, ContentSettingsType::STORAGE_ACCESS,
-      base::Value(CONTENT_SETTING_BLOCK),
-      {content_settings::GetConstraintExpiration(base::Seconds(123)),
-       SessionModel::Durable});
+  provider.SetWebsiteSetting(primary_pattern, primary_pattern,
+                             ContentSettingsType::STORAGE_ACCESS,
+                             base::Value(CONTENT_SETTING_BLOCK), constraints);
   EXPECT_EQ(
       CONTENT_SETTING_BLOCK,
       TestUtils::GetContentSetting(&provider, primary_url, primary_url,
@@ -827,12 +837,13 @@ TEST_F(PrefProviderTest, GetContentSettingsExpiryPersists) {
   GURL primary_url("http://example.com/");
   ContentSettingsPattern primary_pattern =
       ContentSettingsPattern::FromString("[*.]example.com");
+  ContentSettingConstraints constraints;
+  constraints.set_lifetime(base::Seconds(123));
+  constraints.set_session_model(SessionModel::Durable);
 
-  provider.SetWebsiteSetting(
-      primary_pattern, primary_pattern, ContentSettingsType::STORAGE_ACCESS,
-      base::Value(CONTENT_SETTING_BLOCK),
-      {content_settings::GetConstraintExpiration(base::Seconds(123)),
-       SessionModel::Durable});
+  provider.SetWebsiteSetting(primary_pattern, primary_pattern,
+                             ContentSettingsType::STORAGE_ACCESS,
+                             base::Value(CONTENT_SETTING_BLOCK), constraints);
   EXPECT_EQ(
       CONTENT_SETTING_BLOCK,
       TestUtils::GetContentSetting(&provider, primary_url, primary_url,
@@ -878,12 +889,13 @@ TEST_F(PrefProviderTest, GetContentSettingsExpiryAfterRestore) {
   GURL primary_url("http://example.com/");
   ContentSettingsPattern primary_pattern =
       ContentSettingsPattern::FromString("[*.]example.com");
+  ContentSettingConstraints constraints;
+  constraints.set_lifetime(base::Seconds(123));
+  constraints.set_session_model(SessionModel::Durable);
 
-  provider.SetWebsiteSetting(
-      primary_pattern, primary_pattern, ContentSettingsType::STORAGE_ACCESS,
-      base::Value(CONTENT_SETTING_BLOCK),
-      {content_settings::GetConstraintExpiration(base::Seconds(123)),
-       SessionModel::Durable});
+  provider.SetWebsiteSetting(primary_pattern, primary_pattern,
+                             ContentSettingsType::STORAGE_ACCESS,
+                             base::Value(CONTENT_SETTING_BLOCK), constraints);
   EXPECT_EQ(
       CONTENT_SETTING_BLOCK,
       TestUtils::GetContentSetting(&provider, primary_url, primary_url,
@@ -924,21 +936,22 @@ TEST_F(PrefProviderTest, ScopeSessionToDurablePersists) {
   GURL primary_url("http://example.com/");
   ContentSettingsPattern primary_pattern =
       ContentSettingsPattern::FromString("[*.]example.com");
+  ContentSettingConstraints constraints;
+  constraints.set_session_model(SessionModel::UserSession);
 
   provider.SetWebsiteSetting(primary_pattern, primary_pattern,
                              ContentSettingsType::STORAGE_ACCESS,
-                             base::Value(CONTENT_SETTING_BLOCK),
-                             {base::Time(), SessionModel::UserSession});
+                             base::Value(CONTENT_SETTING_BLOCK), constraints);
   EXPECT_EQ(
       CONTENT_SETTING_BLOCK,
       TestUtils::GetContentSetting(&provider, primary_url, primary_url,
                                    ContentSettingsType::STORAGE_ACCESS, false));
 
   // Update to Durable and expect that the setting is still there.
+  constraints.set_session_model(SessionModel::Durable);
   provider.SetWebsiteSetting(primary_pattern, primary_pattern,
                              ContentSettingsType::STORAGE_ACCESS,
-                             base::Value(CONTENT_SETTING_BLOCK),
-                             {base::Time(), SessionModel::Durable});
+                             base::Value(CONTENT_SETTING_BLOCK), constraints);
   EXPECT_EQ(
       CONTENT_SETTING_BLOCK,
       TestUtils::GetContentSetting(&provider, primary_url, primary_url,
@@ -968,21 +981,22 @@ TEST_F(PrefProviderTest, ScopeDurableToSessionDrops) {
   GURL primary_url("http://example.com/");
   ContentSettingsPattern primary_pattern =
       ContentSettingsPattern::FromString("[*.]example.com");
+  ContentSettingConstraints constraints;
+  constraints.set_session_model(SessionModel::Durable);
 
   provider.SetWebsiteSetting(primary_pattern, primary_pattern,
                              ContentSettingsType::STORAGE_ACCESS,
-                             base::Value(CONTENT_SETTING_BLOCK),
-                             {base::Time(), SessionModel::Durable});
+                             base::Value(CONTENT_SETTING_BLOCK), constraints);
   EXPECT_EQ(
       CONTENT_SETTING_BLOCK,
       TestUtils::GetContentSetting(&provider, primary_url, primary_url,
                                    ContentSettingsType::STORAGE_ACCESS, false));
 
   // Update to Durable and expect that the setting is still there.
+  constraints.set_session_model(SessionModel::UserSession);
   provider.SetWebsiteSetting(primary_pattern, primary_pattern,
                              ContentSettingsType::STORAGE_ACCESS,
-                             base::Value(CONTENT_SETTING_BLOCK),
-                             {base::Time(), SessionModel::UserSession});
+                             base::Value(CONTENT_SETTING_BLOCK), constraints);
   EXPECT_EQ(
       CONTENT_SETTING_BLOCK,
       TestUtils::GetContentSetting(&provider, primary_url, primary_url,
@@ -1014,31 +1028,89 @@ TEST_F(PrefProviderTest, LastVisitedTimeIsTracked) {
   ContentSettingsPattern primary_pattern =
       ContentSettingsPattern::FromString("[*.]example.com");
 
+  ContentSettingConstraints constraints;
+  constraints.set_track_last_visit_for_autoexpiration(false);
+
   // Set one setting with track_last_visit_for_autoexpiration enabled and one
   // disabled.
   provider.SetWebsiteSetting(primary_pattern, primary_pattern,
                              ContentSettingsType::MEDIASTREAM_CAMERA,
-                             base::Value(CONTENT_SETTING_ALLOW),
-                             {.track_last_visit_for_autoexpiration = false});
+                             base::Value(CONTENT_SETTING_ALLOW), constraints);
 
+  constraints.set_track_last_visit_for_autoexpiration(true);
   provider.SetWebsiteSetting(primary_pattern, primary_pattern,
                              ContentSettingsType::GEOLOCATION,
-                             base::Value(CONTENT_SETTING_ALLOW),
-                             {.track_last_visit_for_autoexpiration = true});
+                             base::Value(CONTENT_SETTING_ALLOW), constraints);
   RuleMetaData metadata;
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             TestUtils::GetContentSetting(
                 &provider, primary_url, primary_url,
                 ContentSettingsType::MEDIASTREAM_CAMERA, false, &metadata));
-  EXPECT_EQ(metadata.last_visited, base::Time());
+  EXPECT_EQ(metadata.last_visited(), base::Time());
 
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             TestUtils::GetContentSetting(&provider, primary_url, primary_url,
                                          ContentSettingsType::GEOLOCATION,
                                          false, &metadata));
-  EXPECT_NE(metadata.last_visited, base::Time());
-  EXPECT_GE(metadata.last_visited, clock.Now() - base::Days(7));
-  EXPECT_LE(metadata.last_visited, clock.Now());
+  EXPECT_NE(metadata.last_visited(), base::Time());
+  EXPECT_GE(metadata.last_visited(), clock.Now() - base::Days(7));
+  EXPECT_LE(metadata.last_visited(), clock.Now());
+
+  provider.ShutdownOnUIThread();
+}
+
+TEST_F(PrefProviderTest, RenewContentSetting) {
+  TestingProfile testing_profile;
+  PrefProvider provider(testing_profile.GetPrefs(), /*off_the_record=*/false,
+                        /*store_last_modified=*/true,
+                        /*restore_session=*/false);
+  base::SimpleTestClock clock;
+  clock.SetNow(base::Time::Now());
+  provider.SetClockForTesting(&clock);
+
+  GURL primary_url("https://example.com/");
+  ContentSettingsPattern primary_pattern =
+      ContentSettingsPattern::FromString("https://[*.]example.com");
+
+  ContentSettingConstraints constraints;
+  constraints.set_lifetime(base::Days(2));
+
+  ASSERT_TRUE(provider.SetWebsiteSetting(
+      primary_pattern, primary_pattern, ContentSettingsType::STORAGE_ACCESS,
+      base::Value(CONTENT_SETTING_ALLOW), constraints));
+
+  RuleMetaData metadata;
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, TestUtils::GetContentSetting(
+                                       &provider, primary_url, primary_url,
+                                       ContentSettingsType::STORAGE_ACCESS,
+                                       /*include_incognito=*/false, &metadata));
+  EXPECT_EQ(metadata.lifetime(), base::Days(2));
+  EXPECT_EQ(metadata.expiration(), clock.Now() + base::Days(2));
+
+  clock.Advance(base::Days(1));
+
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, TestUtils::GetContentSetting(
+                                       &provider, primary_url, primary_url,
+                                       ContentSettingsType::STORAGE_ACCESS,
+                                       /*include_incognito=*/false, &metadata));
+  EXPECT_EQ(metadata.lifetime(), base::Days(2));
+  EXPECT_EQ(metadata.expiration(), clock.Now() + base::Days(1));
+
+  // Wrong ContentSetting, doesn't match.
+  EXPECT_FALSE(provider.RenewContentSetting(primary_url, primary_url,
+                                            ContentSettingsType::STORAGE_ACCESS,
+                                            CONTENT_SETTING_BLOCK));
+
+  EXPECT_TRUE(provider.RenewContentSetting(primary_url, primary_url,
+                                           ContentSettingsType::STORAGE_ACCESS,
+                                           CONTENT_SETTING_ALLOW));
+
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, TestUtils::GetContentSetting(
+                                       &provider, primary_url, primary_url,
+                                       ContentSettingsType::STORAGE_ACCESS,
+                                       /*include_incognito=*/false, &metadata));
+  EXPECT_EQ(metadata.lifetime(), base::Days(2));
+  EXPECT_EQ(metadata.expiration(), clock.Now() + base::Days(2));
 
   provider.ShutdownOnUIThread();
 }
@@ -1051,17 +1123,18 @@ TEST_F(PrefProviderTest, LastVisitedTimeStoredOnDisk) {
   GURL primary_url("http://example.com/");
   ContentSettingsPattern primary_pattern =
       ContentSettingsPattern::FromString("[*.]example.com");
+  ContentSettingConstraints constraints;
+  constraints.set_track_last_visit_for_autoexpiration(true);
 
   provider.SetWebsiteSetting(primary_pattern, primary_pattern,
                              ContentSettingsType::GEOLOCATION,
-                             base::Value(CONTENT_SETTING_ALLOW),
-                             {.track_last_visit_for_autoexpiration = true});
+                             base::Value(CONTENT_SETTING_ALLOW), constraints);
   RuleMetaData metadata;
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             TestUtils::GetContentSetting(&provider, primary_url, primary_url,
                                          ContentSettingsType::GEOLOCATION,
                                          false, &metadata));
-  EXPECT_NE(metadata.last_visited, base::Time());
+  EXPECT_NE(metadata.last_visited(), base::Time());
 
   // Shutdown our provider and we should still have a setting present.
   provider.ShutdownOnUIThread();
@@ -1074,7 +1147,7 @@ TEST_F(PrefProviderTest, LastVisitedTimeStoredOnDisk) {
             TestUtils::GetContentSetting(&provider, primary_url, primary_url,
                                          ContentSettingsType::GEOLOCATION,
                                          false, &metadata_from_disk));
-  EXPECT_EQ(metadata.last_visited, metadata_from_disk.last_visited);
+  EXPECT_EQ(metadata.last_visited(), metadata_from_disk.last_visited());
 
   provider2.ShutdownOnUIThread();
 }
@@ -1091,18 +1164,19 @@ TEST_F(PrefProviderTest, LastVisitedTimeUpdating) {
   GURL primary_url("http://example.com/");
   ContentSettingsPattern primary_pattern =
       ContentSettingsPattern::FromString("[*.]example.com");
+  ContentSettingConstraints constraints;
+  constraints.set_track_last_visit_for_autoexpiration(true);
 
   provider.SetWebsiteSetting(primary_pattern, primary_pattern,
                              ContentSettingsType::GEOLOCATION,
-                             base::Value(CONTENT_SETTING_ALLOW),
-                             {.track_last_visit_for_autoexpiration = true});
+                             base::Value(CONTENT_SETTING_ALLOW), constraints);
   RuleMetaData metadata;
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             TestUtils::GetContentSetting(&provider, primary_url, primary_url,
                                          ContentSettingsType::GEOLOCATION,
                                          false, &metadata));
-  EXPECT_GE(metadata.last_visited, clock.Now() - base::Days(7));
-  EXPECT_LE(metadata.last_visited, clock.Now());
+  EXPECT_GE(metadata.last_visited(), clock.Now() - base::Days(7));
+  EXPECT_LE(metadata.last_visited(), clock.Now());
 
   clock.Advance(base::Days(20));
   provider.UpdateLastVisitTime(primary_pattern, primary_pattern,
@@ -1111,8 +1185,8 @@ TEST_F(PrefProviderTest, LastVisitedTimeUpdating) {
             TestUtils::GetContentSetting(&provider, primary_url, primary_url,
                                          ContentSettingsType::GEOLOCATION,
                                          false, &metadata));
-  EXPECT_GE(metadata.last_visited, clock.Now() - base::Days(7));
-  EXPECT_LE(metadata.last_visited, clock.Now());
+  EXPECT_GE(metadata.last_visited(), clock.Now() - base::Days(7));
+  EXPECT_LE(metadata.last_visited(), clock.Now());
 
   // Test resetting the last_visited time.
   provider.ResetLastVisitTime(primary_pattern, primary_pattern,
@@ -1121,7 +1195,7 @@ TEST_F(PrefProviderTest, LastVisitedTimeUpdating) {
             TestUtils::GetContentSetting(&provider, primary_url, primary_url,
                                          ContentSettingsType::GEOLOCATION,
                                          false, &metadata));
-  EXPECT_EQ(metadata.last_visited, base::Time());
+  EXPECT_EQ(metadata.last_visited(), base::Time());
   provider.ShutdownOnUIThread();
 }
 

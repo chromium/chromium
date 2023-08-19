@@ -27,12 +27,12 @@ source_set("android") {
 }
 
 android_library("java") {
+  srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/chrome/browser/feedback/AsyncFeedbackSourceAdapter.java",
     "java/src/org/chromium/chrome/browser/feedback/DeviceInfoFeedbackSource.java",
     "java/src/org/chromium/chrome/browser/feedback/FamilyInfoFeedbackSource.java",
     "java/src/org/chromium/chrome/browser/feedback/FeedbackContextFeedbackSource.java",
-    "java/src/org/chromium/chrome/browser/feedback/FeedbackReporter.java",
     "java/src/org/chromium/chrome/browser/feedback/FragmentHelpAndFeedbackLauncher.java",
     "java/src/org/chromium/chrome/browser/feedback/HelpAndFeedbackLauncher.java",
     "java/src/org/chromium/chrome/browser/feedback/IMEFeedbackSource.java",
@@ -65,7 +65,7 @@ android_library("java") {
     ":delegate_java",
     ":feedback_collector_java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
   resources_package = "org.chromium.chrome.browser.feedback"
 }
 

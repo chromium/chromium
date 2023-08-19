@@ -201,7 +201,7 @@ class CloudPolicyInvalidator : public invalidation::InvalidationHandler,
   raw_ptr<base::Clock> clock_;
 
   // The invalidation service.
-  raw_ptr<invalidation::InvalidationService, DanglingUntriaged>
+  raw_ptr<invalidation::InvalidationService, AcrossTasksDanglingUntriaged>
       invalidation_service_;
 
   // Whether the invalidator currently has the ability to receive invalidations.

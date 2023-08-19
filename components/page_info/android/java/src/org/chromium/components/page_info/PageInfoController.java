@@ -213,10 +213,6 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
 
         // Setup View.
         PageInfoView.Params viewParams = new PageInfoView.Params();
-        viewParams.onUiClosingCallback = () -> {
-            // |this| may have already been destroyed by the time this is called.
-            if (mCookiesController != null) mCookiesController.onUiClosing();
-        };
         mDelegate.initOfflinePageUiParams(viewParams, this::runAfterDismiss);
         viewParams.httpsImageCompressionMessageShown = mDelegate.isHttpsImageCompressionApplied();
         mView = new PageInfoView(mContext, viewParams);
@@ -457,12 +453,10 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
         return !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
     }
 
-    @VisibleForTesting
     public View getPageInfoViewForTesting() {
         return mContainer;
     }
 
-    @VisibleForTesting
     public boolean isDialogShowingForTesting() {
         return mDialog != null;
     }
@@ -505,7 +499,6 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
                 delegate, pageInfoHighlight));
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public static PageInfoController getLastPageInfoControllerForTesting() {
         return sLastPageInfoControllerForTesting != null ? sLastPageInfoControllerForTesting.get()
                                                          : null;

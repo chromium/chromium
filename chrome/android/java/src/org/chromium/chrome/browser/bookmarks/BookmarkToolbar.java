@@ -14,7 +14,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 import androidx.core.view.MenuCompat;
 
-import org.chromium.base.Callback;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
@@ -49,8 +48,9 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
     private boolean mSearchButtonVisible;
     private boolean mEditButtonVisible;
     private boolean mNewFolderButtonVisible;
+    private boolean mNewFolderButtonEnabled;
 
-    private Callback<BookmarkId> mOpenFolderCallback;
+    private Runnable mNavigateBackRunnable;
     private Function<Integer, Boolean> mMenuIdClickedFunction;
 
     public BookmarkToolbar(Context context, AttributeSet attrs) {
@@ -88,10 +88,12 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
             showNormalView();
         }
 
-        if (mBookmarkUiMode == BookmarkUiMode.SEARCHING) {
-            showSearchView(mSoftKeyboardVisible);
-        } else {
-            hideSearchView(/*notify=*/false);
+        if (!BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
+            if (mBookmarkUiMode == BookmarkUiMode.SEARCHING) {
+                showSearchView(mSoftKeyboardVisible);
+            } else {
+                hideSearchView(/*notify=*/false);
+            }
         }
     }
 
@@ -127,8 +129,17 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
     }
 
     void setNewFolderButtonVisible(boolean visible) {
+        // The new folder button is only visible when improved bookmarks is enabled.
+        if (!BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) return;
         mNewFolderButtonVisible = visible;
         getMenu().findItem(R.id.create_new_folder_menu_id).setVisible(visible);
+    }
+
+    void setNewFolderButtonEnabled(boolean enabled) {
+        // The new folder button is only visible when improved bookmarks is enabled.
+        if (!BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) return;
+        mNewFolderButtonEnabled = enabled;
+        getMenu().findItem(R.id.create_new_folder_menu_id).setEnabled(enabled);
     }
 
     void setNavigationButtonState(@NavigationButton int navigationButtonState) {
@@ -147,8 +158,8 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
         mCurrentFolder = mBookmarkModel.getBookmarkById(folder);
     }
 
-    void setOpenFolderCallback(Callback<BookmarkId> openFolderCallback) {
-        mOpenFolderCallback = openFolderCallback;
+    void setNavigateBackRunnable(Runnable navigateBackRunnable) {
+        mNavigateBackRunnable = navigateBackRunnable;
     }
 
     void setMenuIdClickedFunction(Function<Integer, Boolean> menuIdClickedFunction) {
@@ -177,7 +188,7 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
         }
 
         // The navigation button shouldn't be visible unless the current folder is non-null.
-        mOpenFolderCallback.onResult(mCurrentFolder.getParentId());
+        mNavigateBackRunnable.run();
     }
 
     @Override
@@ -187,6 +198,8 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
         // SelectableListToolbar will show/hide the entire group.
         setSearchButtonVisible(mSearchButtonVisible);
         setEditButtonVisible(mEditButtonVisible);
+        setNewFolderButtonVisible(mNewFolderButtonVisible);
+        setNewFolderButtonEnabled(mNewFolderButtonEnabled);
     }
 
     @Override

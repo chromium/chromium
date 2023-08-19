@@ -17,6 +17,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
+#include "components/language/core/browser/accept_languages_service.h"
 #include "components/language/core/common/locale_util.h"
 #include "components/translate/core/browser/translate_browser_metrics.h"
 #include "components/translate/core/browser/translate_download_manager.h"
@@ -37,126 +38,138 @@ namespace {
 // We use this list until we receive the list that the server exposes.
 // This list must be sorted in alphabetical order and contain no duplicates.
 const char* const kDefaultSupportedLanguages[] = {
-    "af",     // Afrikaans
-    "ak",     // Twi
-    "am",     // Amharic
-    "ar",     // Arabic
-    "az",     // Azerbaijani
-    "be",     // Belarusian
-    "bg",     // Bulgarian
-    "bn",     // Bengali
-    "bs",     // Bosnian
-    "ca",     // Catalan
-    "ceb",    // Cebuano
-    "ckb",    // Kurdish (Sorani)
-    "co",     // Corsican
-    "cs",     // Czech
-    "cy",     // Welsh
-    "da",     // Danish
-    "de",     // German
-    "ee",     // Ewe
-    "el",     // Greek
-    "en",     // English
-    "eo",     // Esperanto
-    "es",     // Spanish
-    "et",     // Estonian
-    "eu",     // Basque
-    "fa",     // Persian
-    "fi",     // Finnish
-    "fr",     // French
-    "fy",     // Frisian
-    "ga",     // Irish
-    "gd",     // Scots Gaelic
-    "gl",     // Galician
-    "gom",    // Konkani
-    "gu",     // Gujarati
-    "ha",     // Hausa
-    "haw",    // Hawaiian
-    "hi",     // Hindi
-    "hmn",    // Hmong
-    "hr",     // Croatian
-    "ht",     // Haitian Creole
-    "hu",     // Hungarian
-    "hy",     // Armenian
-    "id",     // Indonesian
-    "ig",     // Igbo
-    "is",     // Icelandic
-    "it",     // Italian
-    "iw",     // Hebrew - Chrome uses "he"
-    "ja",     // Japanese
-    "jw",     // Javanese - Chrome uses "jv"
-    "ka",     // Georgian
-    "kk",     // Kazakh
-    "km",     // Khmer
-    "kn",     // Kannada
-    "ko",     // Korean
-    "kri",    // Krio
-    "ku",     // Kurdish
-    "ky",     // Kyrgyz
-    "la",     // Latin
-    "lb",     // Luxembourgish
-    "lg",     // Luganda
-    "ln",     // Lingala
-    "lo",     // Lao
-    "lt",     // Lithuanian
-    "lv",     // Latvian
-    "mg",     // Malagasy
-    "mi",     // Maori
-    "mk",     // Macedonian
-    "ml",     // Malayalam
-    "mn",     // Mongolian
-    "mr",     // Marathi
-    "ms",     // Malay
-    "mt",     // Maltese
-    "my",     // Burmese
-    "ne",     // Nepali
-    "nl",     // Dutch
-    "no",     // Norwegian - Chrome uses "nb"
-    "nso",    // Sepedi
-    "ny",     // Nyanja
-    "om",     // Oromo
-    "or",     // Odia (Oriya)
-    "pa",     // Punjabi
-    "pl",     // Polish
-    "ps",     // Pashto
-    "pt",     // Portuguese
-    "qu",     // Quechua
-    "ro",     // Romanian
-    "ru",     // Russian
-    "rw",     // Kinyarwanda
-    "sd",     // Sindhi
-    "si",     // Sinhala
-    "sk",     // Slovak
-    "sl",     // Slovenian
-    "sm",     // Samoan
-    "sn",     // Shona
-    "so",     // Somali
-    "sq",     // Albanian
-    "sr",     // Serbian
-    "st",     // Southern Sotho
-    "su",     // Sundanese
-    "sv",     // Swedish
-    "sw",     // Swahili
-    "ta",     // Tamil
-    "te",     // Telugu
-    "tg",     // Tajik
-    "th",     // Thai
-    "ti",     // Tigrinya
-    "tk",     // Turkmen
-    "tl",     // Tagalog - Chrome uses "fil"
-    "tr",     // Turkish
-    "tt",     // Tatar
-    "ug",     // Uyghur
-    "uk",     // Ukrainian
-    "ur",     // Urdu
-    "uz",     // Uzbek
-    "vi",     // Vietnamese
-    "xh",     // Xhosa
-    "yi",     // Yiddish
-    "yo",     // Yoruba
-    "zh-CN",  // Chinese (Simplified)
-    "zh-TW",  // Chinese (Traditional)
-    "zu",     // Zulu
+    "af",        // Afrikaans
+    "ak",        // Twi
+    "am",        // Amharic
+    "ar",        // Arabic
+    "as",        // Assamese
+    "ay",        // Aymara
+    "az",        // Azerbaijani
+    "be",        // Belarusian
+    "bg",        // Bulgarian
+    "bho",       // Bhojpuri
+    "bm",        // Bambara
+    "bn",        // Bengali
+    "bs",        // Bosnian
+    "ca",        // Catalan
+    "ceb",       // Cebuano
+    "ckb",       // Kurdish (Sorani)
+    "co",        // Corsican
+    "cs",        // Czech
+    "cy",        // Welsh
+    "da",        // Danish
+    "de",        // German
+    "doi",       // Dogri
+    "dv",        // Dhivehi
+    "ee",        // Ewe
+    "el",        // Greek
+    "en",        // English
+    "eo",        // Esperanto
+    "es",        // Spanish
+    "et",        // Estonian
+    "eu",        // Basque
+    "fa",        // Persian
+    "fi",        // Finnish
+    "fr",        // French
+    "fy",        // Frisian
+    "ga",        // Irish
+    "gd",        // Scots Gaelic
+    "gl",        // Galician
+    "gom",       // Konkani
+    "gu",        // Gujarati
+    "ha",        // Hausa
+    "haw",       // Hawaiian
+    "hi",        // Hindi
+    "hmn",       // Hmong
+    "hr",        // Croatian
+    "ht",        // Haitian Creole
+    "hu",        // Hungarian
+    "hy",        // Armenian
+    "id",        // Indonesian
+    "ig",        // Igbo
+    "ilo",       // Ilocano
+    "is",        // Icelandic
+    "it",        // Italian
+    "iw",        // Hebrew - Chrome uses "he"
+    "ja",        // Japanese
+    "jw",        // Javanese - Chrome uses "jv"
+    "ka",        // Georgian
+    "kk",        // Kazakh
+    "km",        // Khmer
+    "kn",        // Kannada
+    "ko",        // Korean
+    "kri",       // Krio
+    "ku",        // Kurdish
+    "ky",        // Kyrgyz
+    "la",        // Latin
+    "lb",        // Luxembourgish
+    "lg",        // Luganda
+    "ln",        // Lingala
+    "lo",        // Lao
+    "lt",        // Lithuanian
+    "lus",       // Mizo
+    "lv",        // Latvian
+    "mai",       // Maithili
+    "mg",        // Malagasy
+    "mi",        // Maori
+    "mk",        // Macedonian
+    "ml",        // Malayalam
+    "mn",        // Mongolian
+    "mni-Mtei",  // Manipuri (Meitei Mayek)
+    "mr",        // Marathi
+    "ms",        // Malay
+    "mt",        // Maltese
+    "my",        // Burmese
+    "ne",        // Nepali
+    "nl",        // Dutch
+    "no",        // Norwegian - Chrome uses "nb"
+    "nso",       // Sepedi
+    "ny",        // Nyanja
+    "om",        // Oromo
+    "or",        // Odia (Oriya)
+    "pa",        // Punjabi
+    "pl",        // Polish
+    "ps",        // Pashto
+    "pt",        // Portuguese
+    "qu",        // Quechua
+    "ro",        // Romanian
+    "ru",        // Russian
+    "rw",        // Kinyarwanda
+    "sa",        // Sanskrit
+    "sd",        // Sindhi
+    "si",        // Sinhala
+    "sk",        // Slovak
+    "sl",        // Slovenian
+    "sm",        // Samoan
+    "sn",        // Shona
+    "so",        // Somali
+    "sq",        // Albanian
+    "sr",        // Serbian
+    "st",        // Southern Sotho
+    "su",        // Sundanese
+    "sv",        // Swedish
+    "sw",        // Swahili
+    "ta",        // Tamil
+    "te",        // Telugu
+    "tg",        // Tajik
+    "th",        // Thai
+    "ti",        // Tigrinya
+    "tk",        // Turkmen
+    "tl",        // Tagalog - Chrome uses "fil"
+    "tr",        // Turkish
+    "ts",        // Tsonga
+    "tt",        // Tatar
+    "ug",        // Uyghur
+    "uk",        // Ukrainian
+    "ur",        // Urdu
+    "uz",        // Uzbek
+    "vi",        // Vietnamese
+    "xh",        // Xhosa
+    "yi",        // Yiddish
+    "yo",        // Yoruba
+    "zh-CN",     // Chinese (Simplified)
+    "zh-TW",     // Chinese (Traditional)
+    "zu",        // Zulu
 };
 
 // Constant URL string to fetch server supporting language list.
@@ -341,16 +354,13 @@ bool TranslateLanguageList::SetSupportedLanguages(
     return false;
   }
 
-  const std::string& locale =
-      TranslateDownloadManager::GetInstance()->application_locale();
-
   // Now we can clear language list.
   supported_languages_.clear();
   // ... and replace it with the values we just fetched from the server.
   for (auto kv_pair : *target_languages) {
     const std::string& lang = kv_pair.first;
-    if (!l10n_util::IsLocaleNameTranslated(lang.c_str(), locale)) {
-      // Don't include languages not displayable in current UI language.
+    if (!language::AcceptLanguagesService::CanBeAcceptLanguage(lang.c_str())) {
+      // Don't include languages that can not be Accept-Languages
       continue;
     }
     supported_languages_.push_back(lang);

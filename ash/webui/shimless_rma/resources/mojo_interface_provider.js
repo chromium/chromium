@@ -7,7 +7,7 @@ import {CrosNetworkConfig} from 'chrome://resources/mojo/chromeos/services/netwo
 
 import {fakeCalibrationComponentsWithFails, fakeChromeVersion, fakeComponents, fakeDeviceRegions, fakeDeviceSkus, fakeDeviceWhiteLabels, fakeLog, fakeLogSavePath, fakeRsuChallengeCode, fakeRsuChallengeQrCode, fakeStates} from './fake_data.js';
 import {FakeShimlessRmaService} from './fake_shimless_rma_service.js';
-import {CalibrationSetupInstruction, NetworkConfigServiceInterface, RmadErrorCode, ShimlessRmaService, ShimlessRmaServiceInterface, WriteProtectDisableCompleteAction} from './shimless_rma_types.js';
+import {CalibrationSetupInstruction, FeatureLevel, NetworkConfigServiceInterface, RmadErrorCode, ShimlessRmaService, ShimlessRmaServiceInterface, WriteProtectDisableCompleteAction} from './shimless_rma_types.js';
 
 /**
  * @fileoverview
@@ -73,6 +73,8 @@ function setupFakeShimlessRmaService_() {
   service.setGetWhiteLabelListResult(fakeDeviceWhiteLabels);
   service.setGetOriginalWhiteLabelResult(1);
   service.setGetOriginalDramPartNumberResult('dram# 0123');
+  service.setGetOriginalFeatureLevelResult(
+      FeatureLevel.kRmadFeatureLevelUnsupported);
 
   service.setGetCalibrationSetupInstructionsResult(
       CalibrationSetupInstruction.kCalibrationInstructionPlaceLidOnFlatSurface);

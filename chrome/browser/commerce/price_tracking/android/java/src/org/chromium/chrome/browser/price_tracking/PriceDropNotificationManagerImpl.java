@@ -28,6 +28,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
@@ -409,10 +410,10 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
      *
      * @param notificationManager that will be set.
      */
-    @VisibleForTesting
     public static void setNotificationManagerForTesting(
             NotificationManagerProxy notificationManager) {
         sNotificationManagerForTesting = notificationManager;
+        ResettersForTesting.register(() -> sNotificationManagerForTesting = null);
     }
 
     /**
@@ -420,16 +421,15 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
      *
      * @param bookmarkModel The bookmark bridge to use.
      */
-    @VisibleForTesting
     public static void setBookmarkModelForTesting(BookmarkModel bookmarkModel) {
         sBookmarkModelForTesting = bookmarkModel;
+        ResettersForTesting.register(() -> sBookmarkModelForTesting = null);
     }
 
     /**
      * Delete price drop notification channel for testing.
      */
     @Override
-    @VisibleForTesting
     @RequiresApi(Build.VERSION_CODES.O)
     public void deleteChannelForTesting() {
         mNotificationManager.deleteNotificationChannel(

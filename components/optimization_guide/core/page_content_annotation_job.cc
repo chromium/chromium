@@ -54,7 +54,8 @@ PageContentAnnotationJob::~PageContentAnnotationJob() {
 }
 
 void PageContentAnnotationJob::FillWithNullOutputs() {
-  for (size_t i = 0; i < CountOfRemainingNonNullInputs(); i++) {
+  size_t remaining = CountOfRemainingNonNullInputs();
+  for (size_t i = 0; i < remaining; i++) {
     std::string input = *GetNextInput();
     switch (type()) {
       case AnnotationType::kPageEntities:
@@ -64,6 +65,11 @@ void PageContentAnnotationJob::FillWithNullOutputs() {
         break;
       case AnnotationType::kContentVisibility:
         PostNewResult(BatchAnnotationResult::CreateContentVisibilityResult(
+                          input, absl::nullopt),
+                      i);
+        break;
+      case AnnotationType::kTextEmbedding:
+        PostNewResult(BatchAnnotationResult::CreateTextEmbeddingResult(
                           input, absl::nullopt),
                       i);
         break;
@@ -116,6 +122,10 @@ bool PageContentAnnotationJob::HadAnySuccess() const {
     }
     if (result.type() == AnnotationType::kContentVisibility &&
         result.visibility_score()) {
+      return true;
+    }
+    if (result.type() == AnnotationType::kTextEmbedding &&
+        result.embeddings()) {
       return true;
     }
   }

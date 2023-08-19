@@ -5,6 +5,7 @@
 #include "components/remote_cocoa/browser/window.h"
 
 #import <Cocoa/Cocoa.h>
+
 #include <map>
 
 #include "base/check.h"

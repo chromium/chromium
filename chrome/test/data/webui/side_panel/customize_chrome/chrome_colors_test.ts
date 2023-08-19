@@ -2,33 +2,51 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://customize-chrome-side-panel.top-chrome/chrome_colors.js';
 
 import {ChromeColorsElement} from 'chrome://customize-chrome-side-panel.top-chrome/chrome_colors.js';
-import {ColorElement} from 'chrome://customize-chrome-side-panel.top-chrome/color.js';
-import {ChromeColor, CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote, CustomizeChromePageRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
-import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
-import {assertDeepEquals, assertEquals, assertGE, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {ThemeColorPickerBrowserProxy} from 'chrome://resources/cr_components/theme_color_picker/browser_proxy.js';
+import {ThemeColorElement} from 'chrome://resources/cr_components/theme_color_picker/theme_color.js';
+import {ChromeColor, Theme, ThemeColorPickerClientCallbackRouter, ThemeColorPickerClientRemote, ThemeColorPickerHandlerRemote} from 'chrome://resources/cr_components/theme_color_picker/theme_color_picker.mojom-webui.js';
+import {BrowserColorVariant} from 'chrome://resources/mojo/ui/base/mojom/themes.mojom-webui.js';
+import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {createTheme, installMock} from './test_support.js';
+import {installMock} from './test_support.js';
+
+function createTheme(): Theme {
+  return {
+    hasBackgroundImage: false,
+    hasThirdPartyTheme: false,
+    backgroundImageMainColor: undefined,
+    isDarkMode: false,
+    seedColor: {value: 0xff0000ff},
+    seedColorHue: 0,
+    backgroundColor: {value: 0xffff0000},
+    foregroundColor: undefined,
+    colorPickerIconColor: {value: 0xffff0000},
+    colorsManagedByPolicy: false,
+    isGreyBaseline: false,
+    browserColorVariant: BrowserColorVariant.kTonalSpot,
+    followDeviceTheme: false,
+  };
+}
 
 suite('ChromeColorsTest', () => {
   let chromeColorsElement: ChromeColorsElement;
-  let handler: TestMock<CustomizeChromePageHandlerRemote>;
-  let callbackRouter: CustomizeChromePageRemote;
+  let handler: TestMock<ThemeColorPickerHandlerRemote>;
+  let callbackRouter: ThemeColorPickerClientRemote;
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     handler = installMock(
-        CustomizeChromePageHandlerRemote,
-        (mock: CustomizeChromePageHandlerRemote) =>
-            CustomizeChromeApiProxy.setInstance(
-                mock, new CustomizeChromePageCallbackRouter()));
-    callbackRouter = CustomizeChromeApiProxy.getInstance()
+        ThemeColorPickerHandlerRemote,
+        (mock: ThemeColorPickerHandlerRemote) =>
+            ThemeColorPickerBrowserProxy.setInstance(
+                mock, new ThemeColorPickerClientCallbackRouter()));
+    callbackRouter = ThemeColorPickerBrowserProxy.getInstance()
                          .callbackRouter.$.bindNewPipeAndPassRemote();
   });
 
@@ -40,6 +58,8 @@ suite('ChromeColorsTest', () => {
         seed: {value: i},
         background: {value: i + 1},
         foreground: {value: i + 2},
+        base: {value: i + 3},
+        variant: BrowserColorVariant.kTonalSpot,
       });
     }
     handler.setResultFor('getChromeColors', Promise.resolve({colors}));
@@ -62,7 +82,7 @@ suite('ChromeColorsTest', () => {
     await setInitialSettings(2);
 
     const colors =
-        chromeColorsElement.shadowRoot!.querySelectorAll<ColorElement>(
+        chromeColorsElement.shadowRoot!.querySelectorAll<ThemeColorElement>(
             '.chrome-color');
     assertEquals(colors.length, 2);
     assertDeepEquals({value: 1}, colors[0]!.backgroundColor);
@@ -77,12 +97,14 @@ suite('ChromeColorsTest', () => {
     await setInitialSettings(1);
 
     chromeColorsElement.shadowRoot!
-        .querySelector<ColorElement>('.chrome-color')!.click();
+        .querySelector<ThemeColorElement>('.chrome-color')!.click();
 
     // Should remove background image if there is one.
     assertEquals(1, handler.getCallCount('removeBackgroundImage'));
+    const args = handler.getArgs('setSeedColor')[0];
     assertEquals(1, handler.getCallCount('setSeedColor'));
-    assertEquals(0, handler.getArgs('setSeedColor')[0].value);
+    assertEquals(0, args[0].value);
+    assertEquals(BrowserColorVariant.kTonalSpot, args[1]);
   });
 
   test('sets default color', async () => {
@@ -101,9 +123,10 @@ suite('ChromeColorsTest', () => {
     chromeColorsElement.$.colorPicker.dispatchEvent(new Event('change'));
 
     assertEquals(1, handler.getCallCount('removeBackgroundImage'));
-    const args = handler.getArgs('setSeedColor');
-    assertGE(1, args.length);
-    assertEquals(0xffff0000, args.at(-1).value);
+    const args = handler.getArgs('setSeedColor')[0];
+    assertEquals(2, args.length);
+    assertEquals(0xffff0000, args[0].value);
+    assertEquals(BrowserColorVariant.kTonalSpot, args[1]);
   });
 
   test('checks selected color', async () => {
@@ -136,7 +159,8 @@ suite('ChromeColorsTest', () => {
         chromeColorsElement.shadowRoot!.querySelectorAll('[checked]');
     assertEquals(1, checkedColors.length);
     assertEquals('chrome-color tile', checkedColors[0]!.className);
-    assertEquals(3, (checkedColors[0]! as ColorElement).foregroundColor.value);
+    assertEquals(
+        3, (checkedColors[0]! as ThemeColorElement).foregroundColor.value);
     assertEquals('true', checkedColors[0]!.getAttribute('aria-current'));
 
     // Set custom color.
@@ -155,10 +179,7 @@ suite('ChromeColorsTest', () => {
         'true', checkedColors[0]!.parentElement!.getAttribute('aria-current'));
 
     // Set a CWS theme.
-    theme.thirdPartyThemeInfo = {
-      id: '123',
-      name: 'test',
-    };
+    theme.hasThirdPartyTheme = true;
     callbackRouter.setTheme(theme);
     await callbackRouter.$.flushForTesting();
     await waitAfterNextRender(chromeColorsElement);

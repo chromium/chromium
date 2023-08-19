@@ -16,4 +16,5 @@ include_rules = [
   "+components/proxy_config/proxy_config_pref_names.h",
   "+components/qr_code_generator/qr_code_generator.h",
   "+components/sync_preferences/testing_pref_service_syncable.h",
+  "+components/web_package/signed_web_bundles",
 ]

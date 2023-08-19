@@ -18,7 +18,7 @@
                 "resources.pak",
                 "snapshot_blob.bin"
             ],
-            "dirs": ["locales"],
+            "dirs": ["locales", "resources/accessibility"],
             "gcs_bucket": "chromium-browser-snapshots",
             "gcs_path": "linux_lacros/{%position%}/linux_lacros.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP",

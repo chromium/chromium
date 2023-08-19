@@ -11,7 +11,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/locale_utils.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/ui/android/fast_checkout/jni_headers/FastCheckoutBridge_jni.h"
+#include "chrome/browser/ui/android/fast_checkout/internal/jni/FastCheckoutBridge_jni.h"
 #include "chrome/browser/ui/android/fast_checkout/ui_view_android_utils.h"
 #include "chrome/browser/ui/fast_checkout/fast_checkout_controller.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"

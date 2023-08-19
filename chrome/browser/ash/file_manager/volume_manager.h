@@ -27,6 +27,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/storage_monitor/removable_storage_observer.h"
 #include "services/device/public/mojom/mtp_manager.mojom.h"
+#include "ui/base/clipboard/clipboard_observer.h"
 
 class Profile;
 
@@ -59,6 +60,7 @@ class VolumeManager : public KeyedService,
                       public ash::disks::DiskMountManager::Observer,
                       public ash::file_system_provider::Observer,
                       public storage_monitor::RemovableStorageObserver,
+                      public ui::ClipboardObserver,
                       public DocumentsProviderRootManager::Observer {
  public:
   // An alternate to device::mojom::MtpManager::GetStorageInfo.
@@ -250,6 +252,9 @@ class VolumeManager : public KeyedService,
                                       const std::string& root_id,
                                       const std::string& document_id) override;
 
+  // ui::ClipboardObserver:
+  void OnClipboardDataChanged() override;
+
   // For SmbFs.
   void AddSmbFsVolume(const base::FilePath& mount_point,
                       const std::string& display_name);
@@ -352,6 +357,7 @@ class VolumeManager : public KeyedService,
       documents_provider_root_manager_;
   io_task::IOTaskController io_task_controller_;
   bool arc_volumes_mounted_ = false;
+  bool ignore_clipboard_changed_ = false;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

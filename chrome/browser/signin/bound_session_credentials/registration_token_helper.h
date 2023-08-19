@@ -7,14 +7,20 @@
 
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
+#include "crypto/signature_verifier.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
+
+namespace base {
+class Time;
+}
 
 namespace unexportable_keys {
 class UnexportableKeyService;
@@ -31,16 +37,32 @@ class UnexportableKeyService;
 class RegistrationTokenHelper {
  public:
   struct Result {
+    Result(unexportable_keys::UnexportableKeyId binding_key_id,
+           std::vector<uint8_t> wrapped_binding_key,
+           std::string registration_token);
+    ~Result();
+
+    Result(const Result&) = delete;
+    Result& operator=(const Result&) = delete;
+    Result(Result&& other);
+    Result& operator=(Result&& other);
+
     unexportable_keys::UnexportableKeyId binding_key_id;
+    std::vector<uint8_t> wrapped_binding_key;
     std::string registration_token;
   };
 
-  // `unexportable_key_service` must outlive `this`.
   // Invokes `callback` with a `Result` containing a new binding key ID and a
   // corresponding registration token on success. Otherwise, invokes `callback`
   // with `absl::nullopt`.
+  // `unexportable_key_service` must outlive `this`.
   // TODO(alexilin): support timeout.
-  explicit RegistrationTokenHelper(
+  static std::unique_ptr<RegistrationTokenHelper> CreateForSessionBinding(
+      unexportable_keys::UnexportableKeyService& unexportable_key_service,
+      base::StringPiece challenge,
+      const GURL& registration_url,
+      base::OnceCallback<void(absl::optional<Result>)> callback);
+  static std::unique_ptr<RegistrationTokenHelper> CreateForTokenBinding(
       unexportable_keys::UnexportableKeyService& unexportable_key_service,
       base::StringPiece client_id,
       base::StringPiece auth_code,
@@ -52,8 +74,22 @@ class RegistrationTokenHelper {
 
   virtual ~RegistrationTokenHelper();
 
-  // virtual for testing.
+  // Virtual for testing.
   virtual void Start();
+
+ protected:
+  using HeaderAndPayloadGenerator =
+      base::RepeatingCallback<absl::optional<std::string>(
+          crypto::SignatureVerifier::SignatureAlgorithm,
+          base::span<const uint8_t>,
+          base::Time)>;
+
+  // The clients should use static factory methods `CreateFor*` instead.
+  // Protected for testing.
+  explicit RegistrationTokenHelper(
+      unexportable_keys::UnexportableKeyService& unexportable_key_service,
+      HeaderAndPayloadGenerator header_and_payload_generator,
+      base::OnceCallback<void(absl::optional<Result>)> callback);
 
  private:
   // Callback for `GenerateSigningKeySlowlyAsync()`.
@@ -67,9 +103,7 @@ class RegistrationTokenHelper {
 
   const raw_ref<unexportable_keys::UnexportableKeyService>
       unexportable_key_service_;
-  const std::string client_id_;
-  const std::string auth_code_;
-  const GURL registration_url_;
+  HeaderAndPayloadGenerator header_and_payload_generator_;
   base::OnceCallback<void(absl::optional<Result>)> callback_;
 
   bool started_ = false;

@@ -4,6 +4,8 @@
 
 module webnn.mojom;
 
+import "mojo/public/mojom/base/big_buffer.mojom";
+
 // Represents the `MLOperand` which describes not only input and constant
 // operand, but also the output operand of operator.
 struct Operand {
@@ -28,17 +30,96 @@ struct Operand {
   string? name;
 };
 
+// Contains the attributes of clamp operator.
+struct ClampAttributes {
+  // The minimum value of the range.
+  float min_value;
+  // The maximum value of the range.
+  float max_value;
+};
+
+// Represents the `MLInputOperandLayout` that specifies the layout format of
+// the input tensor. `kChannelsFirst` means `nchw` (batches, channels, height,
+// width), `kChannelsLast` means `nhwc` (batches, height, width, channels).
+// The type is used to get the spatial dimension from input tensor, thus safe to
+// represent as enum.
+enum InputOperandLayout { kChannelsFirst, kChannelsLast };
+
+// A size has height and width values.
+struct Size2d {
+  uint32 height;
+  uint32 width;
+};
+
+// The additional rows and columns added to the beginning and ending of each
+// spatial dimension of input.
+struct Padding2d {
+  // The height and width padding at the beginning of input tensor.
+  Size2d beginning;
+  // The height and width padding at the ending of input tensor.
+  Size2d ending;
+};
+
+// Contains the attributes of pool2d operator.
+// The `roundingType` and `outputSizes` array in MLPool2dOptions are not
+// included because they are used to calculate the output dimensions of poo2d in
+// blink side.
+struct Pool2dAttributes {
+  // The dimensions of the sliding window which is supplied by user or the
+  // element of input operand height and width.
+  Size2d window_dimensions;
+  // The padding of input tensor which is the explicit pad or calculated pad
+  // with `MLAutoPad` type, input sizes, window dimensions, strides and
+  // dilations in blink side.
+  Padding2d padding;
+  // The element stride of the sliding window for each spatial dimension of
+  // input.
+  Size2d strides;
+  // The dilation factor for each spatial dimension of input.
+  Size2d dilations;
+  // The layout format of the input.
+  InputOperandLayout layout;
+};
+
+// Contains the attributes of gemm operator.
+struct GemmAttributes {
+  // The optional third tensor in expression alpha * A * B + beta * C.
+  uint64? c_operand_id;
+  // A float scalar multiplier for the `A * B`.
+  float alpha = 1.0;
+  // A float scalar multiplier for the third tensor.
+  float beta = 1.0;
+  // True is to transpose the first tensor before matrix multiplication.
+  bool a_transpose = false;
+  // True is to transpose the second tensor before matrix multiplication.
+  bool b_transpose = false;
+};
+
+// Holds one of operator attributes.
+union OperatorAttributes {
+  ClampAttributes clamp;
+  GemmAttributes gemm;
+  Pool2dAttributes pool2d;
+};
+
 // Represents the operations defined in `MLGraphBuilder` that describes the
 // functional semantics.
 struct Operator {
   enum Kind {
     // Keep the order as the same as build methods of `MLGraphBuilder`.
+    kClamp,
     kAdd,
     kSub,
     kMul,
     kDiv,
     kMax,
     kMin,
+    kGemm,
+    kAveragePool2d,
+    kMaxPool2d,
+    kRelu,
+    kReshape,
+    kSoftmax,
   };
 
   // The kind of this `Operator`.
@@ -49,6 +130,8 @@ struct Operator {
   // The id array from the `GraphInfo.operands` will be used to map the output
   // operands of `Operator`.
   array<uint64> output_operands;
+  // The attributes of `Operator`.
+  OperatorAttributes? attributes;
 };
 
 // Describes an entire WebNN graph information.
@@ -65,10 +148,23 @@ struct GraphInfo {
   array<Operator> operators;
 };
 
+enum ComputeResult {
+  kOk,
+  // The input for inference is invalid.
+  kInvalidInputs,
+  // Something has gone wrong during execution of the graph.
+  kUnknownError,
+};
+
 // WebNNGraph runs in the GPU process and is called by the renderer process to
 // execute the computational graph. Graph execution is performed by calling
 // hardware accelerated OS machine learning APIs.
 interface WebNNGraph {
-  // TODO(crbug.com/1273291): Add `Compute` method to execute computational
-  // graph with system framework.
+  // Called by the renderer process to carry out the computational workload of
+  // the compiled graph. The key of map is the name of input/output to identify
+  // the tensor in the graph, the value is the shared memory to reduce memory
+  // copy for inference.
+  Compute(map<string, mojo_base.mojom.BigBuffer>  named_inputs)
+      => (ComputeResult result,
+          map<string, mojo_base.mojom.BigBuffer>? named_outputs);
 };

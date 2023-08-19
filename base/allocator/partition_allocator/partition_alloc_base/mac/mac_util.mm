@@ -10,12 +10,8 @@
 #include <sys/types.h>
 #include <sys/utsname.h>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/check.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/logging.h"
-#include "base/allocator/partition_allocator/partition_alloc_check.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace partition_alloc::internal::base::mac {
 
@@ -82,7 +78,7 @@ int MacOSVersionInternal() {
 
   // Darwin major versions 6 through 19 corresponded to macOS versions 10.2
   // through 10.15.
-  PA_CHECK(darwin_major_version >= 6);
+  PA_BASE_CHECK(darwin_major_version >= 6);
   if (darwin_major_version <= 19)
     return 1000 + darwin_major_version - 4;
 

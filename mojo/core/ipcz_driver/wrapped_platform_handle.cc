@@ -24,8 +24,8 @@
 #if BUILDFLAG(IS_APPLE)
 #include <mach/mach.h>
 
-#include "base/mac/mach_logging.h"
-#include "base/mac/scoped_mach_port.h"
+#include "base/apple/mach_logging.h"
+#include "base/apple/scoped_mach_port.h"
 #endif
 
 namespace mojo::core::ipcz_driver {
@@ -92,9 +92,9 @@ int fileport_makefd(mach_port_t);
 }  // extern "C"
 
 PlatformHandle MakeFDTransmissible(base::ScopedFD fd) {
-  base::mac::ScopedMachSendRight port;
+  base::apple::ScopedMachSendRight port;
   kern_return_t kr = fileport_makeport(
-      fd.get(), base::mac::ScopedMachSendRight::Receiver(port).get());
+      fd.get(), base::apple::ScopedMachSendRight::Receiver(port).get());
   if (kr != KERN_SUCCESS) {
     MACH_LOG(ERROR, kr) << "fileport_makeport";
     return {};

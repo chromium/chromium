@@ -9,8 +9,8 @@ import static org.chromium.base.ThreadUtils.assertOnUiThread;
 import android.content.Context;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.password_manager.PasswordStoreAndroidBackend.BackendException;
 
 /**
@@ -55,9 +55,10 @@ public abstract class PasswordSyncControllerDelegateFactory {
                 AndroidBackendErrorType.BACKEND_NOT_AVAILABLE);
     }
 
-    @VisibleForTesting
     public static void setFactoryInstanceForTesting(
             @Nullable PasswordSyncControllerDelegateFactory factory) {
+        var oldValue = sInstance;
         sInstance = factory;
+        ResettersForTesting.register(() -> sInstance = oldValue);
     }
 }

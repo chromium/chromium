@@ -23,6 +23,7 @@
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_registration.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
@@ -49,12 +50,13 @@ WebAppFileHandlerManager::WebAppFileHandlerManager(Profile* profile)
 
 WebAppFileHandlerManager::~WebAppFileHandlerManager() = default;
 
-void WebAppFileHandlerManager::SetSubsystems(WebAppSyncBridge* sync_bridge) {
-  sync_bridge_ = sync_bridge;
+void WebAppFileHandlerManager::SetProvider(base::PassKey<OsIntegrationManager>,
+                                           WebAppProvider& provider) {
+  provider_ = &provider;
 }
 
 void WebAppFileHandlerManager::Start() {
-  DCHECK(sync_bridge_);
+  DCHECK(provider_);
 }
 
 // static
@@ -79,9 +81,9 @@ void WebAppFileHandlerManager::EnableAndRegisterOsFileHandlers(
 
   const apps::FileHandlers* file_handlers = GetEnabledFileHandlers(app_id);
   if (file_handlers) {
-    RegisterFileHandlersWithOs(app_id, GetRegistrar()->GetAppShortName(app_id),
-                               profile_->GetPath(), *file_handlers,
-                               std::move(callback));
+    RegisterFileHandlersWithOs(
+        app_id, provider_->registrar_unsafe().GetAppShortName(app_id),
+        profile_->GetPath(), *file_handlers, std::move(callback));
   } else {
     // No file handlers registered.
     std::move(callback).Run(Result::kOk);
@@ -120,7 +122,8 @@ void WebAppFileHandlerManager::DisableAndUnregisterOsFileHandlers(
 const apps::FileHandlers* WebAppFileHandlerManager::GetEnabledFileHandlers(
     const AppId& app_id) const {
   if (ShouldOsIntegrationBeEnabled(app_id) &&
-      !GetRegistrar()->IsAppFileHandlerPermissionBlocked(app_id)) {
+      !provider_->registrar_unsafe().IsAppFileHandlerPermissionBlocked(
+          app_id)) {
     return GetAllFileHandlers(app_id);
   }
 
@@ -136,7 +139,7 @@ bool WebAppFileHandlerManager::IconsEnabled() {
 
 const apps::FileHandlers* WebAppFileHandlerManager::GetAllFileHandlers(
     const AppId& app_id) const {
-  const WebApp* web_app = GetRegistrar()->GetAppById(app_id);
+  const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
   return web_app && !web_app->file_handlers().empty()
              ? &web_app->file_handlers()
              : nullptr;
@@ -152,7 +155,7 @@ WebAppFileHandlerManager::GetMatchingFileHandlerUrls(
     const std::vector<base::FilePath>& launch_files) {
   LaunchInfos launch_infos;
   if (launch_files.empty() ||
-      GetRegistrar()->IsAppFileHandlerPermissionBlocked(app_id)) {
+      provider_->registrar_unsafe().IsAppFileHandlerPermissionBlocked(app_id)) {
     return launch_infos;
   }
 
@@ -199,19 +202,15 @@ WebAppFileHandlerManager::GetMatchingFileHandlerUrls(
 void WebAppFileHandlerManager::SetOsIntegrationState(
     const AppId& app_id,
     OsIntegrationState os_state) {
-  ScopedRegistryUpdate update(sync_bridge_);
+  ScopedRegistryUpdate update = provider_->sync_bridge_unsafe().BeginUpdate();
   update->UpdateApp(app_id)->SetFileHandlerOsIntegrationState(os_state);
 }
 
 bool WebAppFileHandlerManager::ShouldOsIntegrationBeEnabled(
     const AppId& app_id) const {
   return !ShouldRegisterFileHandlersWithOs() ||
-         (GetRegistrar() &&
-          GetRegistrar()->ExpectThatFileHandlersAreRegisteredWithOs(app_id));
-}
-
-const WebAppRegistrar* WebAppFileHandlerManager::GetRegistrar() const {
-  return sync_bridge_ ? &sync_bridge_->registrar() : nullptr;
+         (provider_ && provider_->registrar_unsafe()
+                           .ExpectThatFileHandlersAreRegisteredWithOs(app_id));
 }
 
 }  // namespace web_app

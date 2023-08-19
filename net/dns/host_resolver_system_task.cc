@@ -35,21 +35,6 @@ namespace net {
 
 namespace {
 
-const base::FeatureParam<base::TaskPriority>::Option prio_modes[] = {
-    {base::TaskPriority::USER_VISIBLE, "default"},
-    {base::TaskPriority::USER_BLOCKING, "user_blocking"}};
-BASE_FEATURE(kSystemResolverPriorityExperiment,
-             "SystemResolverPriorityExperiment",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<base::TaskPriority> priority_mode{
-    &kSystemResolverPriorityExperiment, "mode",
-    base::TaskPriority::USER_VISIBLE, &prio_modes};
-
-base::TaskTraits GetSystemDnsResolutionTaskTraits() {
-  return {base::MayBlock(), priority_mode.Get(),
-          base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN};
-}
-
 // Returns nullptr in the common case, or a task runner if the default has
 // been overridden.
 scoped_refptr<base::TaskRunner>& GetSystemDnsResolutionTaskRunnerOverride() {
@@ -59,9 +44,10 @@ scoped_refptr<base::TaskRunner>& GetSystemDnsResolutionTaskRunnerOverride() {
 }
 
 // Posts a synchronous callback to a thread pool task runner created with
-// GetSystemDnsResolutionTaskTraits(). This task runner can be overridden by
-// assigning to GetSystemDnsResolutionTaskRunnerOverride(). `results_cb` will be
-// called later on the current sequence with the results of the DNS resolution.
+// MayBlock, USER_BLOCKING, and CONTINUE_ON_SHUTDOWN. This task runner can be
+// overridden by assigning to GetSystemDnsResolutionTaskRunnerOverride().
+// `results_cb` will be called later on the current sequence with the results of
+// the DNS resolution.
 void PostSystemDnsResolutionTaskAndReply(
     base::OnceCallback<int(AddressList* addrlist, int* os_error)>
         system_dns_resolution_callback,
@@ -88,8 +74,9 @@ void PostSystemDnsResolutionTaskAndReply(
     // leave a stale task runner around after tearing down their task
     // environment. This should not be less performant than the regular
     // base::ThreadPool::PostTask().
-    system_dns_resolution_task_runner =
-        base::ThreadPool::CreateTaskRunner(GetSystemDnsResolutionTaskTraits());
+    system_dns_resolution_task_runner = base::ThreadPool::CreateTaskRunner(
+        {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
   }
   system_dns_resolution_task_runner->PostTaskAndReplyWithResult(
       FROM_HERE,
@@ -177,8 +164,6 @@ SystemDnsResolverOverrideCallback& GetSystemDnsResolverOverride() {
 
 void SetSystemDnsResolverOverride(
     SystemDnsResolverOverrideCallback dns_override) {
-  // TODO(crbug.com/1312224): for now, only allow this override to be set once.
-  DCHECK(!GetSystemDnsResolverOverride());
   GetSystemDnsResolverOverride() = std::move(dns_override);
 }
 

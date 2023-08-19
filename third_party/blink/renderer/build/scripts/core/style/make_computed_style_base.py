@@ -29,7 +29,7 @@ ALIGNMENT_ORDER = [
     'ScaleTransformOperation',
     'RotateTransformOperation',
     'TranslateTransformOperation',
-    'GridTrackList',
+    'NGGridTrackList',
     'ComputedGridTrackList',
     'absl::optional<gfx::Size>',
     'double',
@@ -56,8 +56,8 @@ ALIGNMENT_ORDER = [
     'IntrinsicLength',
     'TextDecorationThickness',
     'StyleAspectRatio',
+    'StyleIntrinsicLength',
     'absl::optional<StyleScrollbarColor>',
-    'absl::optional<StyleIntrinsicLength>',
     'absl::optional<StyleOverflowClipMargin>',
     # Aligns like float
     'absl::optional<Length>',
@@ -165,7 +165,7 @@ def _create_groups(properties):
         # The flag field for this property, if any, should not be part of
         # the same group as the property; since it is not inherited
         # (you cannot inherit the inherit flag), that would always preclude
-        # copy-on-write for the group in InheritFrom().
+        # copy-on-write for the group when calling the inheriting constructor.
         if flag_field is not None:
             root_group_dict[None].append(flag_field)
 
@@ -332,7 +332,7 @@ def _create_property_field(property_):
         size=size,
         default_value=property_.default_value,
         derived_from=property_.derived_from,
-        custom_copy=property_.custom_copy,
+        reset_on_new_style=property_.reset_on_new_style,
         custom_compare=property_.custom_compare,
         mutable=property_.mutable,
         getter_method_name=property_.getter,
@@ -364,7 +364,7 @@ def _create_inherited_flag_field(property_):
         size=1,
         default_value='true',
         derived_from=None,
-        custom_copy=False,
+        reset_on_new_style=False,
         custom_compare=False,
         mutable=False,
         getter_method_name=name_source.to_function_name(),

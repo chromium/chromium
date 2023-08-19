@@ -324,11 +324,6 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   // frame windows.
   void ResetWindowRegion(bool force, bool redraw);
 
-  // Enables or disables rendering of the non-client (glass) area by DWM,
-  // under Vista and above, depending on whether the caller has requested a
-  // custom frame.
-  void UpdateDwmNcRenderingPolicy();
-
   // Calls DefWindowProc, safely wrapping the call in a ScopedRedrawLock to
   // prevent frame flicker. DefWindowProc handling can otherwise render the
   // classic-look window title bar directly.

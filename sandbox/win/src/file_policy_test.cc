@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 #include <algorithm>
-#include <cctype>
 
 #include <ntstatus.h>
 #include <windows.h>
 #include <winioctl.h>
 #include <winternl.h>
 
+#include "base/strings/string_util_win.h"
 #include "base/win/scoped_handle.h"
 #include "sandbox/win/src/filesystem_policy.h"
 #include "sandbox/win/src/nt_internals.h"
@@ -312,8 +312,7 @@ TEST(FilePolicyTest, AllowNtCreateWithNativePath) {
 
   TestRunner runner2;
   runner2.AddFsRule(Semantics::kFilesAllowReadonly, nt_path.c_str());
-  for (wchar_t& c : nt_path)
-    c = std::tolower(c);
+  nt_path = base::ToLowerASCII(nt_path);
   ::wsprintfW(buff, L"File_CreateSys32 %s", nt_path.c_str());
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner2.RunTest(buff));
 }

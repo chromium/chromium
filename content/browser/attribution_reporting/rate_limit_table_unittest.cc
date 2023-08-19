@@ -245,6 +245,13 @@ class RateLimitTableTest : public testing::Test {
         &db_, input.NewSourceBuilder().Build(), input.time);
   }
 
+  [[nodiscard]] RateLimitTable::DestinationRateLimitResult
+  SourceAllowedForDestinationRateLimit(const RateLimitInput& input) {
+    CHECK_EQ(input.scope, RateLimitScope::kSource);
+    return table_.SourceAllowedForDestinationRateLimit(
+        &db_, input.NewSourceBuilder().Build(), input.time);
+  }
+
   [[nodiscard]] RateLimitResult AttributionAllowedForReportingOriginLimit(
       const RateLimitInput& input) {
     return table_.AttributionAllowedForReportingOriginLimit(
@@ -1012,6 +1019,275 @@ TEST_F(RateLimitTableTest, ClearDataForSourceIds) {
 
   ASSERT_THAT(GetRateLimitRows(),
               ElementsAre(Pair(1, _), Pair(3, _), Pair(5, _)));
+}
+
+TEST_F(RateLimitTableTest, DestinationRateLimitSourceLimits) {
+  delegate_.set_destination_rate_limit(
+      {.max_total = 2,
+       .max_per_reporting_site = 100,  // irrelevant
+       .rate_limit_window = base::Minutes(1)});
+
+  const base::Time now = base::Time::Now();
+
+  const struct {
+    RateLimitInput input;
+    RateLimitTable::DestinationRateLimitResult expected;
+  } kRateLimitsToAdd[] = {
+      // First source site:
+      {RateLimitInput::Source("https://source1.test", "https://foo1.test",
+                              "https://report.test", now),
+       RateLimitTable::DestinationRateLimitResult::kAllowed},
+      {RateLimitInput::Source("https://source1.test", "https://foo2.test",
+                              "https://report.test", now),
+       RateLimitTable::DestinationRateLimitResult::kAllowed},
+      {RateLimitInput::Source("https://source1.test", "https://foo3.test",
+                              "https://report.test", now),
+       RateLimitTable::DestinationRateLimitResult::kHitGlobalLimit},
+      // Second source site should be independent:
+      {RateLimitInput::Source("https://source2.test", "https://foo1.test",
+                              "https://report.test", now),
+       RateLimitTable::DestinationRateLimitResult::kAllowed},
+      {RateLimitInput::Source("https://source2.test", "https://foo2.test",
+                              "https://report.test", now),
+       RateLimitTable::DestinationRateLimitResult::kAllowed},
+      {RateLimitInput::Source("https://source2.test", "https://foo3.test",
+                              "https://report.test", now),
+       RateLimitTable::DestinationRateLimitResult::kHitGlobalLimit},
+  };
+
+  for (const auto& rate_limit : kRateLimitsToAdd) {
+    ASSERT_EQ(rate_limit.expected,
+              SourceAllowedForDestinationRateLimit(rate_limit.input))
+        << rate_limit.input;
+
+    if (rate_limit.expected ==
+        RateLimitTable::DestinationRateLimitResult::kAllowed) {
+      ASSERT_TRUE(AddRateLimitForSource(rate_limit.input)) << rate_limit.input;
+    }
+  }
+}
+
+TEST_F(RateLimitTableTest, DestinationRateLimitReportingSitesLimits) {
+  delegate_.set_destination_rate_limit({.max_total = 100,  // irrelevant
+                                        .max_per_reporting_site = 2,
+                                        .rate_limit_window = base::Minutes(1)});
+
+  const base::Time now = base::Time::Now();
+
+  const struct {
+    RateLimitInput input;
+    RateLimitTable::DestinationRateLimitResult expected;
+  } kRateLimitsToAdd[] = {
+      // First reporting site:
+      {RateLimitInput::Source("https://source.test", "https://foo1.test",
+                              "https://report1.test", now),
+       RateLimitTable::DestinationRateLimitResult::kAllowed},
+      {RateLimitInput::Source("https://source.test", "https://foo2.test",
+                              "https://report1.test", now),
+       RateLimitTable::DestinationRateLimitResult::kAllowed},
+      {RateLimitInput::Source("https://source.test", "https://foo3.test",
+                              "https://report1.test", now),
+       RateLimitTable::DestinationRateLimitResult::kHitReportingLimit},
+      // Second reporting site should be independent:
+      {RateLimitInput::Source("https://source.test", "https://foo1.test",
+                              "https://report2.test", now),
+       RateLimitTable::DestinationRateLimitResult::kAllowed},
+      {RateLimitInput::Source("https://source.test", "https://foo2.test",
+                              "https://report2.test", now),
+       RateLimitTable::DestinationRateLimitResult::kAllowed},
+      {RateLimitInput::Source("https://source.test", "https://foo3.test",
+                              "https://report2.test", now),
+       RateLimitTable::DestinationRateLimitResult::kHitReportingLimit},
+  };
+
+  for (const auto& rate_limit : kRateLimitsToAdd) {
+    ASSERT_EQ(rate_limit.expected,
+              SourceAllowedForDestinationRateLimit(rate_limit.input))
+        << rate_limit.input;
+
+    if (rate_limit.expected ==
+        RateLimitTable::DestinationRateLimitResult::kAllowed) {
+      ASSERT_TRUE(AddRateLimitForSource(rate_limit.input)) << rate_limit.input;
+    }
+  }
+}
+
+TEST_F(RateLimitTableTest, DestinationRateLimitMultipleOverLimit) {
+  delegate_.set_destination_rate_limit(
+      {.max_total = 2,
+       .max_per_reporting_site = 100,  // irrelevant
+       .rate_limit_window = base::Minutes(1)});
+
+  const base::Time now = base::Time::Now();
+
+  const struct {
+    const char* description;
+    base::flat_set<net::SchemefulSite> destination_sites;
+    RateLimitTable::DestinationRateLimitResult expected;
+  } kRateLimitsToAdd[] = {
+      {"multiple",
+       {net::SchemefulSite::Deserialize("https://foo1.test"),
+        net::SchemefulSite::Deserialize("https://foo2.test"),
+        net::SchemefulSite::Deserialize("https://foo3.test")},
+       RateLimitTable::DestinationRateLimitResult::kHitGlobalLimit},
+      {"first",
+       {net::SchemefulSite::Deserialize("https://foo1.test")},
+       RateLimitTable::DestinationRateLimitResult::kAllowed},
+      {"second",
+       {net::SchemefulSite::Deserialize("https://foo2.test")},
+       RateLimitTable::DestinationRateLimitResult::kAllowed},
+      {"third",
+       {net::SchemefulSite::Deserialize("https://foo3.test")},
+       RateLimitTable::DestinationRateLimitResult::kHitGlobalLimit},
+  };
+
+  for (const auto& rate_limit : kRateLimitsToAdd) {
+    SCOPED_TRACE(rate_limit.description);
+    auto builder = SourceBuilder(now)
+                       .SetSourceOrigin(
+                           *SuitableOrigin::Deserialize("https://source.test"))
+                       .SetReportingOrigin(
+                           *SuitableOrigin::Deserialize("https://report.test"))
+                       .SetDestinationSites(rate_limit.destination_sites);
+
+    ASSERT_EQ(rate_limit.expected,
+              table_.SourceAllowedForDestinationRateLimit(&db_, builder.Build(),
+                                                          /*source_time=*/now));
+
+    if (rate_limit.expected ==
+        RateLimitTable::DestinationRateLimitResult::kAllowed) {
+      ASSERT_TRUE(table_.AddRateLimitForSource(&db_, builder.BuildStored()));
+    }
+  }
+}
+
+TEST_F(RateLimitTableTest, DestinationRateLimitRollingWindow) {
+  delegate_.set_destination_rate_limit(
+      {.max_total = 2,
+       .max_per_reporting_site = 100,  // irrelevant
+       .rate_limit_window = base::Minutes(1)});
+
+  const base::Time now = base::Time::Now();
+  const base::TimeDelta expiry = base::Minutes(30);
+
+  const struct {
+    RateLimitInput input;
+    RateLimitTable::DestinationRateLimitResult expected;
+  } kRateLimitsToAdd[] = {
+      // Time now.
+      {RateLimitInput::Source("https://source.test", "https://foo1.test",
+                              "https://report.test", now, expiry),
+       RateLimitTable::DestinationRateLimitResult::kAllowed},
+      // Time now + 30s.
+      {RateLimitInput::Source("https://source.test", "https://foo2.test",
+                              "https://report.test", now + base::Seconds(30),
+                              expiry),
+       RateLimitTable::DestinationRateLimitResult::kAllowed},
+      // Time now + 1:01. foo1.test should be outside the window.
+      {RateLimitInput::Source("https://source.test", "https://foo3.test",
+                              "https://report.test", now + base::Seconds(61),
+                              expiry),
+       RateLimitTable::DestinationRateLimitResult::kAllowed},
+      {RateLimitInput::Source("https://source.test", "https://foo4.test",
+                              "https://report.test", now + base::Seconds(61),
+                              expiry),
+       RateLimitTable::DestinationRateLimitResult::kHitGlobalLimit},
+      // Time now + 1:31. foo2.test should be outside the window.
+      {RateLimitInput::Source("https://source.test", "https://foo5.test",
+                              "https://report.test", now + base::Seconds(91),
+                              expiry),
+       RateLimitTable::DestinationRateLimitResult::kAllowed},
+      {RateLimitInput::Source("https://source.test", "https://foo6.test",
+                              "https://report.test", now + base::Seconds(91),
+                              expiry),
+       RateLimitTable::DestinationRateLimitResult::kHitGlobalLimit},
+  };
+
+  for (const auto& rate_limit : kRateLimitsToAdd) {
+    ASSERT_EQ(rate_limit.expected,
+              SourceAllowedForDestinationRateLimit(rate_limit.input))
+        << rate_limit.input;
+
+    if (rate_limit.expected ==
+        RateLimitTable::DestinationRateLimitResult::kAllowed) {
+      ASSERT_TRUE(AddRateLimitForSource(rate_limit.input)) << rate_limit.input;
+    }
+  }
+}
+
+TEST_F(RateLimitTableTest, DestinationRateLimitSourceExpiry) {
+  delegate_.set_destination_rate_limit(
+      {.max_total = 1,
+       .max_per_reporting_site = 100,  // irrelevant
+       .rate_limit_window = base::Minutes(1)});
+
+  const base::Time now = base::Time::Now();
+  const base::TimeDelta expiry = base::Seconds(30);
+
+  const struct {
+    RateLimitInput input;
+    RateLimitTable::DestinationRateLimitResult expected;
+  } kRateLimitsToAdd[] = {
+      // Time now.
+      {RateLimitInput::Source("https://source.test", "https://foo1.test",
+                              "https://report.test", now, expiry),
+       RateLimitTable::DestinationRateLimitResult::kAllowed},
+      // Time now + 29s.
+      {RateLimitInput::Source("https://source.test", "https://foo2.test",
+                              "https://report.test", now + base::Seconds(29),
+                              expiry),
+       RateLimitTable::DestinationRateLimitResult::kHitGlobalLimit},
+      // Time now + 30s. foo1.test should have expired.
+      {RateLimitInput::Source("https://source.test", "https://foo3.test",
+                              "https://report.test", now + base::Seconds(30),
+                              expiry),
+       RateLimitTable::DestinationRateLimitResult::kAllowed},
+  };
+
+  for (const auto& rate_limit : kRateLimitsToAdd) {
+    ASSERT_EQ(rate_limit.expected,
+              SourceAllowedForDestinationRateLimit(rate_limit.input))
+        << rate_limit.input;
+
+    if (rate_limit.expected ==
+        RateLimitTable::DestinationRateLimitResult::kAllowed) {
+      ASSERT_TRUE(AddRateLimitForSource(rate_limit.input)) << rate_limit.input;
+    }
+  }
+}
+
+TEST_F(RateLimitTableTest, DestinationRateLimitHitBothLimits) {
+  delegate_.set_destination_rate_limit({.max_total = 1,
+                                        .max_per_reporting_site = 1,
+                                        .rate_limit_window = base::Minutes(1)});
+
+  const base::Time now = base::Time::Now();
+
+  const struct {
+    RateLimitInput input;
+    RateLimitTable::DestinationRateLimitResult expected;
+  } kRateLimitsToAdd[] = {
+      {RateLimitInput::Source("https://source.test", "https://foo1.test",
+                              "https://report.test", now),
+       RateLimitTable::DestinationRateLimitResult::kAllowed},
+      {RateLimitInput::Source("https://source.test", "https://foo1.test",
+                              "https://report.test", now),
+       RateLimitTable::DestinationRateLimitResult::kAllowed},
+      {RateLimitInput::Source("https://source.test", "https://foo2.test",
+                              "https://report.test", now),
+       RateLimitTable::DestinationRateLimitResult::kHitBothLimits},
+  };
+
+  for (const auto& rate_limit : kRateLimitsToAdd) {
+    ASSERT_EQ(rate_limit.expected,
+              SourceAllowedForDestinationRateLimit(rate_limit.input))
+        << rate_limit.input;
+
+    if (rate_limit.expected ==
+        RateLimitTable::DestinationRateLimitResult::kAllowed) {
+      ASSERT_TRUE(AddRateLimitForSource(rate_limit.input)) << rate_limit.input;
+    }
+  }
 }
 
 TEST_F(RateLimitTableTest, SourceAllowedForDestinationLimit) {

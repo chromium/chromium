@@ -5,8 +5,9 @@ Version: 0
 Date: 2023-02-24
 Revision: 2930ad4b5ca602446ad211b49fb1827303ce9f4b
 License: GPL2 and GPL3
-License File: NOT_SHIPPED
+License File: LICENSE
 Security Critical: no
+Shipped: no
 
 Description:
 WLCS is a test suite which verifies protocol-level conformance for

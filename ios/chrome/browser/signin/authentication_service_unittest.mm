@@ -15,7 +15,6 @@
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_registry_simple.h"
-#import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "components/signin/ios/browser/features.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/identity_manager/device_accounts_synchronizer.h"
@@ -28,13 +27,13 @@
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "ios/chrome/browser/content_settings/cookie_settings_factory.h"
 #import "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
-#import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_observer.h"
@@ -56,10 +55,6 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using testing::_;
 using testing::Invoke;
@@ -307,11 +302,6 @@ TEST_F(AuthenticationServiceTest, TestHandleForgottenIdentityNoPromptSignIn) {
 
   // User is signed out (no corresponding identity), but not prompted for sign
   // in (as the action was user initiated).
-  EXPECT_TRUE(identity_manager()
-                  ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
-                  .email.empty());
-  EXPECT_FALSE(authentication_service()->GetPrimaryIdentity(
-      signin::ConsentLevel::kSignin));
   EXPECT_FALSE(authentication_service()->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));
   EXPECT_FALSE(authentication_service()->ShouldReauthPromptForSignInAndSync());
@@ -334,11 +324,6 @@ TEST_F(AuthenticationServiceTest, TestHandleForgottenIdentityPromptSignIn) {
   base::RunLoop().RunUntilIdle();
 
   // User is signed out (no corresponding identity), and reauth prompt is set.
-  EXPECT_TRUE(identity_manager()
-                  ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
-                  .email.empty());
-  EXPECT_FALSE(authentication_service()->GetPrimaryIdentity(
-      signin::ConsentLevel::kSignin));
   EXPECT_FALSE(authentication_service()->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));
   EXPECT_TRUE(authentication_service()->ShouldReauthPromptForSignInAndSync());
@@ -361,11 +346,6 @@ TEST_F(AuthenticationServiceTest,
 
   // User is signed out (no corresponding identity), and reauth prompt is not
   // set since the user was not syncing.
-  EXPECT_TRUE(identity_manager()
-                  ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
-                  .email.empty());
-  EXPECT_FALSE(authentication_service()->GetPrimaryIdentity(
-      signin::ConsentLevel::kSignin));
   EXPECT_FALSE(authentication_service()->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));
   EXPECT_FALSE(authentication_service()->ShouldReauthPromptForSignInAndSync());
@@ -746,6 +726,8 @@ TEST_F(AuthenticationServiceTest, ShowMDMErrorDialog) {
   EXPECT_EQ(invocation_counter, 1u);
 }
 
+// TODO(crbug.com/1462552): Remove this test after kSync users are migrated in
+// phase 3. See ConsentLevel::kSync documentation for details.
 TEST_F(AuthenticationServiceTest, SigninAndSyncDecoupled) {
   // Sign in.
   SetExpectationsForSignIn();
@@ -806,11 +788,6 @@ TEST_F(AuthenticationServiceTest, TestHandleRestrictedIdentityPromptSignIn) {
   base::RunLoop().RunUntilIdle();
 
   // User is signed out (no corresponding identity), and reauth prompt is set.
-  EXPECT_TRUE(identity_manager()
-                  ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
-                  .gaia.empty());
-  EXPECT_FALSE(authentication_service()->GetPrimaryIdentity(
-      signin::ConsentLevel::kSignin));
   EXPECT_FALSE(authentication_service()->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));
   EXPECT_EQ(1, observer_test.GetOnPrimaryAccountRestrictedCounter());

@@ -341,10 +341,8 @@ TEST_F(BuiltinProviderTest, Subpages) {
   RunTest(settings_subpage_cases, std::size(settings_subpage_cases));
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_F(BuiltinProviderTest, StarterPack) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(omnibox::kSiteSearchStarterPack);
-
   const GURL kBookmarksUrl =
       GURL(TemplateURLStarterPackData::bookmarks.destination_url);
   const GURL kHistoryUrl =
@@ -392,6 +390,7 @@ TEST_F(BuiltinProviderTest, StarterPack) {
 
   RunTest(typing_scheme_cases, std::size(typing_scheme_cases));
 }
+#endif  //! BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 TEST_F(BuiltinProviderTest, Inlining) {
   const std::u16string kAbout = url::kAboutScheme16;

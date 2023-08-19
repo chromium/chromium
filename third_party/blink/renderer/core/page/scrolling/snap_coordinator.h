@@ -48,13 +48,16 @@ class CORE_EXPORT SnapCoordinator final
 
   // Calculate the SnapAreaData for the specific snap area in its snap
   // container.
-  cc::SnapAreaData CalculateSnapAreaData(const LayoutBox& snap_area,
-                                         const LayoutBox& snap_container);
+  static cc::SnapAreaData CalculateSnapAreaData(
+      const LayoutBox& snap_area,
+      const LayoutBox& snap_container);
 
   bool AnySnapContainerDataNeedsUpdate() const {
+    DCHECK(!RuntimeEnabledFeatures::LayoutNewSnapLogicEnabled());
     return any_snap_container_data_needs_update_;
   }
   void SetAnySnapContainerDataNeedsUpdate(bool needs_update) {
+    DCHECK(!RuntimeEnabledFeatures::LayoutNewSnapLogicEnabled());
     any_snap_container_data_needs_update_ = needs_update;
   }
   // Called by Document::PerformScrollSnappingTasks() whenever a style or layout
@@ -62,12 +65,7 @@ class CORE_EXPORT SnapCoordinator final
   // by the style/layout change.
   void UpdateAllSnapContainerDataIfNeeded();
 
-  // Resnaps all snap containers to their current snap target, or to the
-  // closest snap point if there is no target (e.g. on the initial layout or if
-  // the previous snapped target was removed).
-  void ResnapAllContainersIfNeeded();
-
-  void UpdateSnapContainerData(LayoutBox&);
+  static void UpdateSnapContainerData(LayoutBox&);
 
 #ifndef NDEBUG
   void ShowSnapAreaMap();
@@ -80,10 +78,6 @@ class CORE_EXPORT SnapCoordinator final
 
   HeapHashSet<Member<LayoutBox>> snap_containers_;
   bool any_snap_container_data_needs_update_ = true;
-
-  // Used for reporting to UMA when snapping on the initial layout affects the
-  // initial scroll position.
-  bool did_first_resnap_all_containers_ = false;
 };
 
 }  // namespace blink

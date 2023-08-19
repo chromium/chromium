@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
@@ -121,41 +122,63 @@ class TrivialSerializerDelegate : public v8::ValueSerializer::Delegate {
 
 }  // namespace
 
+AuctionV8Helper::TimeLimit::~TimeLimit() = default;
+
+AuctionV8Helper::TimeLimitScope::TimeLimitScope(TimeLimit* script_timeout)
+    : script_timeout_(script_timeout) {
+  if (script_timeout) {
+    resumed_ = script_timeout->Resume();
+    if (!resumed_) {
+      // If we are inside a nested context (e.g. CallFunction -> some binding
+      // -> type conversion), we need to explicitly tell v8 we are
+      // still OK with termination.
+      safe_for_termination_scope_.emplace(
+          script_timeout->v8_helper()->isolate());
+    }
+  }
+}
+
+AuctionV8Helper::TimeLimitScope::~TimeLimitScope() {
+  if (resumed_) {
+    script_timeout_->Pause();
+  }
+}
+
 // Utility class to timeout running a v8::Script or calling a v8::Function.
 // Instantiate a ScriptTimeoutHelper, and it will terminate script if
 // `script_timeout` passes before it is destroyed.
 //
 // Creates a v8::SafeForTerminationScope(), so the caller doesn't have to.
-class AuctionV8Helper::ScriptTimeoutHelper {
+class AuctionV8Helper::ScriptTimeoutHelper : public AuctionV8Helper::TimeLimit {
  public:
   ScriptTimeoutHelper(
       AuctionV8Helper* v8_helper,
       scoped_refptr<base::SequencedTaskRunner> timer_task_runner,
       base::TimeDelta script_timeout)
-      : v8_helper_(v8_helper),
+      : TimeLimit(v8_helper),
         termination_scope_(v8_helper->isolate()),
         remaining_delay_(script_timeout),
+        running_(false),
         timer_task_runner_(std::move(timer_task_runner)) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
     DCHECK(v8_helper->v8_runner()->RunsTasksInCurrentSequence());
-    DCHECK_EQ(v8_helper_->timeout_helper_, nullptr);
-    v8_helper_->timeout_helper_ = this;
-    StartTimer();
+    DCHECK_EQ(v8_helper->timeout_helper_, nullptr);
+    v8_helper->timeout_helper_ = this;
   }
 
   ScriptTimeoutHelper(const ScriptTimeoutHelper&) = delete;
   ScriptTimeoutHelper& operator=(const ScriptTimeoutHelper&) = delete;
 
-  ~ScriptTimeoutHelper() {
+  ~ScriptTimeoutHelper() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
-    StopTimer();
-    DCHECK_EQ(v8_helper_->timeout_helper_, this);
-    v8_helper_->timeout_helper_ = nullptr;
+    DCHECK(!running_);
+    DCHECK_EQ(v8_helper()->timeout_helper_, this);
+    v8_helper()->timeout_helper_ = nullptr;
   }
 
-  // Actual implementation for AuctionV8Helper::PauseTimeoutTimer.
-  void PauseTimeoutTimer() {
+  void Pause() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
+    DCHECK(running_);
     StopTimer();
     // Compute how much of the timeout is left, and clamp from below to 1us
     // to avoid weirdness if it rounds up to 0.
@@ -164,10 +187,14 @@ class AuctionV8Helper::ScriptTimeoutHelper {
       remaining_delay_ = base::Microseconds(1);
   }
 
-  // Actual implementation for AuctionV8Helper::ResumeTimeoutTimer.
-  void ResumeTimeoutTimer() {
+  bool Resume() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
-    StartTimer();
+    if (!running_) {
+      StartTimer();
+      return true;
+    } else {
+      return false;
+    }
   }
 
  private:
@@ -243,7 +270,8 @@ class AuctionV8Helper::ScriptTimeoutHelper {
     DCHECK_GT(remaining_delay_, base::TimeDelta());
     last_start_ = base::TimeTicks::Now();
     off_thread_timer_ = std::make_unique<OffThreadTimer>(
-        timer_task_runner_, v8_helper_->isolate(), remaining_delay_);
+        timer_task_runner_, v8_helper()->isolate(), remaining_delay_);
+    running_ = true;
   }
 
   void StopTimer() {
@@ -251,13 +279,13 @@ class AuctionV8Helper::ScriptTimeoutHelper {
     DCHECK(off_thread_timer_);
     off_thread_timer_->CancelTimer();
     timer_task_runner_->DeleteSoon(FROM_HERE, std::move(off_thread_timer_));
+    running_ = false;
   }
 
-  // `this` exists a local in `v8_helper_`'s method.
-  const raw_ptr<AuctionV8Helper> v8_helper_;
   v8::Isolate::SafeForTerminationScope termination_scope_;
   base::TimeDelta remaining_delay_;
   base::TimeTicks last_start_;
+  bool running_;
 
   const scoped_refptr<base::SequencedTaskRunner> timer_task_runner_;
 
@@ -346,8 +374,8 @@ AuctionV8Helper::CreateTaskRunner() {
 }
 
 void AuctionV8Helper::SetDestroyedCallback(base::OnceClosure callback) {
-  DCHECK(!destroyed_callback_);
-  destroyed_callback_ = std::move(callback);
+  DCHECK(!destroyed_callback_run_);
+  destroyed_callback_run_.ReplaceClosure(std::move(callback));
 }
 
 v8::Local<v8::Context> AuctionV8Helper::CreateContext(
@@ -563,10 +591,22 @@ v8::MaybeLocal<v8::WasmModuleObject> AuctionV8Helper::CloneWasmModule(
                                                   in->GetCompiledModule());
 }
 
+std::unique_ptr<AuctionV8Helper::TimeLimit> AuctionV8Helper::CreateTimeLimit(
+    absl::optional<base::TimeDelta> script_timeout) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return std::make_unique<ScriptTimeoutHelper>(
+      this, timer_task_runner_, script_timeout.value_or(script_timeout_));
+}
+
+AuctionV8Helper::TimeLimit* AuctionV8Helper::GetTimeLimit() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return timeout_helper_;
+}
+
 bool AuctionV8Helper::RunScript(v8::Local<v8::Context> context,
                                 v8::Local<v8::UnboundScript> script,
                                 const DebugId* debug_id,
-                                absl::optional<base::TimeDelta> script_timeout,
+                                TimeLimit* script_timeout,
                                 std::vector<std::string>& error_out) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(isolate(), context->GetIsolate());
@@ -575,8 +615,8 @@ bool AuctionV8Helper::RunScript(v8::Local<v8::Context> context,
   DebugContextScope maybe_debug(inspector(), context, debug_id, script_name);
 
   v8::TryCatch try_catch(isolate());
-  ScriptTimeoutHelper timeout_helper(this, timer_task_runner_,
-                                     script_timeout.value_or(script_timeout_));
+  // Make sure we limit the JS execution time to `script_timeout`.
+  TimeLimitScope time_limit_scope(script_timeout);
 
   TRACE_EVENT1("devtools.timeline", "EvaluateScript", "data",
                [&](perfetto::TracedValue trace_context) {
@@ -586,6 +626,7 @@ bool AuctionV8Helper::RunScript(v8::Local<v8::Context> context,
   v8::Local<v8::Script> local_script = script->BindToCurrentContext();
 
   v8::MaybeLocal<v8::Value> result = local_script->Run(context);
+
   if (try_catch.HasTerminated()) {
     error_out.push_back(
         base::StrCat({script_name, " top-level execution timed out."}));
@@ -610,7 +651,7 @@ v8::MaybeLocal<v8::Value> AuctionV8Helper::CallFunction(
     const std::string& script_name,
     base::StringPiece function_name,
     base::span<v8::Local<v8::Value>> args,
-    absl::optional<base::TimeDelta> script_timeout,
+    TimeLimit* script_timeout,
     std::vector<std::string>& error_out) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(isolate(), context->GetIsolate());
@@ -618,8 +659,8 @@ v8::MaybeLocal<v8::Value> AuctionV8Helper::CallFunction(
   DebugContextScope maybe_debug(inspector(), context, debug_id, script_name);
 
   v8::TryCatch try_catch(isolate());
-  ScriptTimeoutHelper timeout_helper(this, timer_task_runner_,
-                                     script_timeout.value_or(script_timeout_));
+  // Make sure we limit the JS execution time to `script_timeout`.
+  TimeLimitScope time_limit_scope(script_timeout);
 
   v8::Local<v8::String> v8_function_name;
   if (!CreateUtf8String(function_name).ToLocal(&v8_function_name)) {
@@ -696,7 +737,7 @@ int AuctionV8Helper::AllocContextGroupId() {
     int candidate = ++last_context_group_id_;
     DCHECK_GT(candidate, 0);
 
-    if (resume_callbacks_.find(candidate) == resume_callbacks_.end()) {
+    if (!base::Contains(resume_callbacks_, candidate)) {
       resume_callbacks_.emplace(candidate, base::OnceClosure());
       return candidate;
     }
@@ -785,14 +826,16 @@ void AuctionV8Helper::SetV8InspectorForTesting(
 
 void AuctionV8Helper::PauseTimeoutTimer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(timeout_helper_);
-  timeout_helper_->PauseTimeoutTimer();
+  if (timeout_helper_) {
+    timeout_helper_->Pause();
+  }
 }
 
 void AuctionV8Helper::ResumeTimeoutTimer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(timeout_helper_);
-  timeout_helper_->ResumeTimeoutTimer();
+  if (timeout_helper_) {
+    timeout_helper_->Resume();
+  }
 }
 
 scoped_refptr<base::SequencedTaskRunner>
@@ -829,8 +872,6 @@ AuctionV8Helper::~AuctionV8Helper() {
   // destroyed before `devtools_agent_`.
   if (devtools_agent_)
     devtools_agent_->DestroySessions();
-  if (destroyed_callback_)
-    std::move(destroyed_callback_).Run();
 }
 
 void AuctionV8Helper::CreateIsolate() {

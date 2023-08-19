@@ -83,6 +83,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) AudioDevicesPrefHandler
       const std::vector<AudioDevice>& connected_devices,
       size_t keep_devices) = 0;
 
+  // Reads whether input force respect ui gains is on from profile prefs.
+  virtual bool GetForceRespectUiGainsState() = 0;
+  // Sets the input force respect ui gains in profile prefs.
+  virtual void SetForceRespectUiGainsState(bool force_respect_ui_gains) = 0;
+
  protected:
   virtual ~AudioDevicesPrefHandler() = default;
 

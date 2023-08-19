@@ -42,7 +42,6 @@
 #include "components/crx_file/crx_verifier.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_service.h"
 #include "extensions/browser/content_verifier.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
@@ -52,7 +51,6 @@
 #include "extensions/browser/install/extension_install_ui.h"
 #include "extensions/browser/install_flag.h"
 #include "extensions/browser/install_stage.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/browser/policy_check.h"
 #include "extensions/browser/preload_check_group.h"
 #include "extensions/browser/requirements_checker.h"
@@ -979,12 +977,6 @@ void CrxInstaller::ReportFailureFromUIThread(const CrxInstallError& error) {
   if (!service_weak_.get() || service_weak_->browser_terminating())
     return;
 
-  content::NotificationService* service =
-      content::NotificationService::current();
-  service->Notify(NOTIFICATION_EXTENSION_INSTALL_ERROR,
-                  content::Source<CrxInstaller>(this),
-                  content::Details<const CrxInstallError>(&error));
-
   // This isn't really necessary, it is only used because unit tests expect to
   // see errors get reported via this interface.
   //
@@ -1075,8 +1067,8 @@ void CrxInstaller::NotifyCrxInstallBegin() {
   profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
       profile_, ProfileKeepAliveOrigin::kCrxInstaller);
 
-  InstallTrackerFactory::GetForBrowserContext(profile())
-      ->OnBeginCrxInstall(expected_id_);
+  InstallTrackerFactory::GetForBrowserContext(profile())->OnBeginCrxInstall(
+      *this, expected_id_);
 }
 
 void CrxInstaller::NotifyCrxInstallComplete(
@@ -1119,8 +1111,8 @@ void CrxInstaller::NotifyCrxInstallComplete(
     }
   }
 
-  InstallTrackerFactory::GetForBrowserContext(profile())
-      ->OnFinishCrxInstall(success ? extension()->id() : expected_id_, success);
+  InstallTrackerFactory::GetForBrowserContext(profile())->OnFinishCrxInstall(
+      *this, success ? extension()->id() : expected_id_, success);
 
   if (success)
     ConfirmReEnable();

@@ -6,8 +6,8 @@
 
 #include <memory>
 
+#include "ash/public/cpp/ash_view_ids.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/pill_button.h"
 #include "ash/style/typography.h"
 #include "base/functional/bind.h"
 #include "ui/aura/window.h"
@@ -49,7 +49,7 @@ constexpr gfx::Insets kBorderInsets = gfx::Insets::TLBR(32, 32, 28, 32);
 constexpr int kIconSize = 32;
 constexpr int kIconBottomPadding = 20;
 constexpr int kTitleBottomPadding = 16;
-constexpr int kDefaultAdditionalContentTopPadding = 32;
+constexpr int kDefaultContentPadding = 32;
 constexpr int kButtonContainerTopPadding = 32;
 constexpr int kButtonSpacing = 8;
 constexpr int kMinimumAdditionalButtonPadding = 80;
@@ -69,9 +69,6 @@ constexpr int kHostWidthXSmall = 400;
 constexpr int kDialogHostPaddingLarge = 80;
 constexpr int kDialogHostPaddingSmall = 32;
 
-// The position of the additional content in the dialog child views.
-constexpr int kAdditionalContentID = 3;
-
 // The default fonts of the title and description.
 constexpr TypographyToken kTitleFont = TypographyToken::kCrosDisplay7;
 constexpr TypographyToken kBodyFont = TypographyToken::kCrosBody1;
@@ -83,6 +80,16 @@ void SetViewLayoutSpecs(
     const views::FlexSpecification flex_spec = views::FlexSpecification()) {
   view->SetProperty(views::kMarginsKey, margins);
   view->SetProperty(views::kFlexBehaviorKey, flex_spec);
+}
+
+// Sets the cross alignment to the given view.
+void SetViewCrossAxisAlignment(views::View* view,
+                               views::LayoutAlignment alignment) {
+  CHECK(view);
+  auto* cross_alignment = view->GetProperty(views::kCrossAxisAlignmentKey);
+  if (!cross_alignment || *cross_alignment != alignment) {
+    view->SetProperty(views::kCrossAxisAlignmentKey, alignment);
+  }
 }
 
 // Gets the host window of the dialog.
@@ -99,6 +106,15 @@ aura::Window* GetDialogHostWindow(const views::Widget* dialog_widget) {
 }
 
 }  // namespace
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SystemDialogDelegateView,
+                                      kAcceptButtonIdForTesting);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SystemDialogDelegateView,
+                                      kCancelButtonIdForTesting);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SystemDialogDelegateView,
+                                      kDescriptionTextIdForTesting);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SystemDialogDelegateView,
+                                      kTitleTextIdForTesting);
 
 //------------------------------------------------------------------------------
 // SystemDialogDelegateView::ButtonContainer:
@@ -127,11 +143,31 @@ class SystemDialogDelegateView::ButtonContainer : public views::FlexLayoutView {
 
     SetViewLayoutSpecs(cancel_button_,
                        gfx::Insets::TLBR(0, 0, 0, kButtonSpacing));
+
+    cancel_button_->SetID(
+        ViewID::VIEW_ID_STYLE_SYSTEM_DIALOG_DELEGATE_CANCEL_BUTTON);
+    cancel_button_->SetProperty(views::kElementIdentifierKey,
+                                kCancelButtonIdForTesting);
+    cancel_button_->SetBackgroundColorId(cros_tokens::kCrosSysPrimaryContainer);
+    cancel_button_->SetButtonTextColorId(
+        cros_tokens::kCrosSysOnPrimaryContainer);
+    cancel_button_->SetIconColorId(cros_tokens::kCrosSysOnPrimaryContainer);
+
+    accept_button_->SetID(
+        ViewID::VIEW_ID_STYLE_SYSTEM_DIALOG_DELEGATE_ACCEPT_BUTTON);
+    accept_button_->SetProperty(views::kElementIdentifierKey,
+                                kAcceptButtonIdForTesting);
+    accept_button_->SetIsDefault(true);
   }
 
   ButtonContainer(const ButtonContainer&) = delete;
   ButtonContainer& operator=(const ButtonContainer&) = delete;
   ~ButtonContainer() override = default;
+
+  const PillButton* accept_button() const { return accept_button_; }
+  PillButton* accept_button() { return accept_button_; }
+  const PillButton* cancel_button() const { return cancel_button_; }
+  PillButton* cancel_button() { return cancel_button_; }
 
   void SetAcceptText(const std::u16string& accept_text) {
     accept_button_->SetText(accept_text);
@@ -161,12 +197,12 @@ class SystemDialogDelegateView::ButtonContainer : public views::FlexLayoutView {
 
  private:
   // Owned by the container.
-  base::raw_ptr<PillButton> cancel_button_ = nullptr;
-  base::raw_ptr<PillButton> accept_button_ = nullptr;
-  base::raw_ptr<views::View> additional_view_ = nullptr;
+  raw_ptr<PillButton> cancel_button_ = nullptr;
+  raw_ptr<PillButton> accept_button_ = nullptr;
+  raw_ptr<views::View> additional_view_ = nullptr;
   // The view used to fill the free spaces between the additional view and
   // cancel button.
-  base::raw_ptr<views::View> place_holder_view_ = nullptr;
+  raw_ptr<views::View> place_holder_view_ = nullptr;
 };
 
 BEGIN_METADATA(SystemDialogDelegateView, ButtonContainer, views::FlexLayoutView)
@@ -212,6 +248,7 @@ SystemDialogDelegateView::SystemDialogDelegateView() {
   title_->SetAutoColorReadabilityEnabled(false);
   title_->SetEnabledColorId(kTitleColorId);
   title_->SetVisible(false);
+  title_->SetProperty(views::kElementIdentifierKey, kTitleTextIdForTesting);
 
   description_ = AddChildView(std::make_unique<views::Label>());
   SetViewLayoutSpecs(
@@ -227,6 +264,8 @@ SystemDialogDelegateView::SystemDialogDelegateView() {
   description_->SetAutoColorReadabilityEnabled(false);
   description_->SetEnabledColorId(kBodyColorId);
   description_->SetVisible(false);
+  description_->SetProperty(views::kElementIdentifierKey,
+                            kDescriptionTextIdForTesting);
 
   button_container_ = AddChildView(std::make_unique<ButtonContainer>(this));
   SetViewLayoutSpecs(
@@ -235,8 +274,12 @@ SystemDialogDelegateView::SystemDialogDelegateView() {
                                views::MinimumFlexSizeRule::kScaleToMinimum,
                                views::MaximumFlexSizeRule::kUnbounded));
 
+  SetAccessibleWindowRole(ax::mojom::Role::kDialog);
+  // Make dialog initially focus on the accept button.
+  SetInitiallyFocusedView(button_container_->accept_button());
+
   // Register the close callback.
-  RegisterWindowWillCloseCallback(
+  RegisterWindowClosingCallback(
       base::BindOnce(&SystemDialogDelegateView::Close, base::Unretained(this)));
 }
 
@@ -251,6 +294,7 @@ void SystemDialogDelegateView::SetIcon(const gfx::VectorIcon& icon) {
 void SystemDialogDelegateView::SetTitleText(const std::u16string& title) {
   title_->SetText(title);
   title_->SetVisible(!title.empty());
+  SetAccessibleTitle(title);
 }
 
 void SystemDialogDelegateView::SetDescription(
@@ -274,14 +318,14 @@ void SystemDialogDelegateView::SetCancelButtonText(
   button_container_->SetCancelText(cancel_text);
 }
 
-void SystemDialogDelegateView::SetAdditionalContentCrossAxisAlignment(
+void SystemDialogDelegateView::SetTopContentAlignment(
     views::LayoutAlignment alignment) {
-  DCHECK(additional_content_);
-  auto* cross_aligment =
-      additional_content_->GetProperty(views::kCrossAxisAlignmentKey);
-  if (!cross_aligment || *cross_aligment != alignment) {
-    additional_content_->SetProperty(views::kCrossAxisAlignmentKey, alignment);
-  }
+  SetViewCrossAxisAlignment(contents_[ContentType::kTop], alignment);
+}
+
+void SystemDialogDelegateView::SetMiddleContentAlignment(
+    views::LayoutAlignment alignment) {
+  SetViewCrossAxisAlignment(contents_[ContentType::kMiddle], alignment);
 }
 
 gfx::Size SystemDialogDelegateView::CalculatePreferredSize() const {
@@ -336,36 +380,69 @@ void SystemDialogDelegateView::OnWorkAreaChanged() {
   UpdateDialogSize();
 }
 
+const PillButton* SystemDialogDelegateView::GetAcceptButtonForTesting() const {
+  return button_container_->accept_button();
+}
+
+const PillButton* SystemDialogDelegateView::GetCancelButtonForTesting() const {
+  return button_container_->cancel_button();
+}
+
 void SystemDialogDelegateView::UpdateDialogSize() {
   if (auto* widget = GetWidget()) {
     widget->CenterWindow(GetPreferredSize());
   }
 }
 
-void SystemDialogDelegateView::SetAdditionalContentInternal(
-    std::unique_ptr<views::View> view) {
-  // If there is an additional content, remove it.
-  if (additional_content_) {
-    RemoveChildViewT(additional_content_);
+size_t SystemDialogDelegateView::GetContentIndex(ContentType type) const {
+  switch (type) {
+    case ContentType::kTop:
+      return 0u;
+    case ContentType::kMiddle:
+      // The middle content is right after the description.
+      return GetIndexOf(description_).value() + 1u;
+  }
+}
+
+void SystemDialogDelegateView::SetContentInternal(
+    std::unique_ptr<views::View> view,
+    ContentType type) {
+  // If there is an existing content, remove it.
+  views::View* content = contents_[type];
+  if (content) {
+    contents_[type] = nullptr;
+    RemoveChildViewT(content);
   }
 
-  // Add additional content and move it to the specific position.
-  additional_content_ = AddChildView(std::move(view));
-  ReorderChildView(additional_content_, kAdditionalContentID);
+  // Add content and move it to the specific position.
+  content = AddChildViewAt(std::move(view), GetContentIndex(type));
 
-  // If there is no preset margins or the top margin is 0, set the top margin
-  // with the default padding.
-  auto* margins = additional_content_->GetProperty(views::kMarginsKey);
-  if (!margins) {
-    additional_content_->SetProperty(
-        views::kMarginsKey,
-        gfx::Insets::TLBR(kDefaultAdditionalContentTopPadding, 0, 0, 0));
-  } else if (!margins->top()) {
-    margins->set_top(kDefaultAdditionalContentTopPadding);
+  // Set default bottom/top margins to the top/middle content if there is no
+  // preset margins or the corresponding margins are 0.
+  auto* margins = content->GetProperty(views::kMarginsKey);
+  switch (type) {
+    case ContentType::kTop:
+      if (!margins) {
+        content->SetProperty(
+            views::kMarginsKey,
+            gfx::Insets::TLBR(0, 0, kDefaultContentPadding, 0));
+      } else if (!margins->bottom()) {
+        margins->set_bottom(kDefaultContentPadding);
+      }
+      break;
+    case ContentType::kMiddle:
+      if (!margins) {
+        content->SetProperty(
+            views::kMarginsKey,
+            gfx::Insets::TLBR(kDefaultContentPadding, 0, 0, 0));
+      } else if (!margins->top()) {
+        margins->set_top(kDefaultContentPadding);
+      }
+      break;
   }
-
-  additional_content_->SetProperty(views::kCrossAxisAlignmentKey,
-                                   views::LayoutAlignment::kCenter);
+  content->SetProperty(views::kCrossAxisAlignmentKey,
+                       views::LayoutAlignment::kCenter);
+  contents_[type] = content;
 }
 
 void SystemDialogDelegateView::SetAdditionalViewInButtonRowInternal(

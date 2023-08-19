@@ -17,7 +17,6 @@ import androidx.test.filters.MediumTest;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -36,11 +35,12 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.net.test.ServerCertificate;
 
 import java.util.ArrayList;
 
@@ -60,16 +60,11 @@ public class DownloadLocationChangeEnd2EndTest implements CustomMainActivityStar
 
     @Before
     public void setUp() {
-        mTestServer = EmbeddedTestServer.createAndStartServer(
-                ApplicationProvider.getApplicationContext());
+        mTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
+                ApplicationProvider.getApplicationContext(), ServerCertificate.CERT_OK);
 
         // Show the location dialog for the first time.
         promptDownloadLocationDialog(DownloadPromptStatus.SHOW_INITIAL);
-    }
-
-    @After
-    public void tearDown() {
-        mTestServer.stopAndDestroyServer();
     }
 
     // CustomMainActivityStart implementation.
@@ -158,7 +153,7 @@ public class DownloadLocationChangeEnd2EndTest implements CustomMainActivityStar
     @Test
     @MediumTest
     @Feature({"Downloads"})
-    @Features.DisableFeatures(ChromeFeatureList.SMART_SUGGESTION_FOR_LARGE_DOWNLOADS)
+    @DisableFeatures(ChromeFeatureList.SMART_SUGGESTION_FOR_LARGE_DOWNLOADS)
     public void testNoDialogWithoutSDCard() {
         int currentCallCount = mDownloadTestRule.getChromeDownloadCallCount();
         startDownload(/*hasSDCard=*/false);

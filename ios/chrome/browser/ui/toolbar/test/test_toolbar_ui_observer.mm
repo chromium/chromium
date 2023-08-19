@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ui/toolbar/test/test_toolbar_ui_observer.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation TestToolbarUIObserver
 @synthesize broadcaster = _broadcaster;
 @synthesize collapsedTopToolbarHeight = _collapsedTopToolbarHeight;

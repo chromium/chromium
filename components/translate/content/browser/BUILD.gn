@@ -14,8 +14,6 @@ static_library("browser") {
     "content_translate_util.h",
     "partial_translate_manager.cc",
     "partial_translate_manager.h",
-    "per_frame_content_translate_driver.cc",
-    "per_frame_content_translate_driver.h",
   ]
 
   public_deps = [
@@ -46,15 +44,11 @@ static_library("browser") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "partial_translate_manager_unittest.cc",
-    "per_frame_content_translate_driver_unittest.cc",
-  ]
+  sources = [ "partial_translate_manager_unittest.cc" ]
 
   deps = [
     ":browser",
     "//base",
-    "//components/services/language_detection/public/mojom",
     "//content/test:test_support",
     "//testing/gtest",
   ]

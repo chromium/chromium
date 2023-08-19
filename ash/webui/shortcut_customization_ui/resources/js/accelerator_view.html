@@ -17,7 +17,7 @@
   #acceleratorSeparator {
     align-items: center;
     display: flex;
-    padding-inline-end: 5px;
+    padding-inline-end: 8px;
   }
 
   iron-icon[icon='shortcut-customization:lock'] {
@@ -25,45 +25,37 @@
     --iron-icon-width: 16px;
   }
 
-  #editIconContainer {
-    align-items: center;
-    display: flex;
-    margin-inline-start: 8px;
-    opacity: 0;
-    transition: opacity 300ms, transform 100ms;
+  /* Show edit-button when tab on the button itself. */
+  .edit-button:focus-visible {
+    opacity: 1;
   }
 
-  #editIconContainer[hidden] {
-    display: none; /* Required for flexbox hidden. */
-  }
-
-  #editButton {
-    --cr-icon-button-icon-size: 16px;
-    --cr-icon-button-fill-color: var(--cros-text-color-secondary);
-    --cr-icon-button-icon-start-offset: 3px;
-    padding-top: 3px;
-  }
 </style>
 
-<div id="container" class="flex-row" tabindex$="[[getTabIndex()]]">
+<div id="container" class="flex-row" tabindex="-1"
+  aria-label="[[getAriaLabel(acceleratorInfo)]]">
   <template is="dom-if" if="[[!showEditView(viewState)]]">
     <div id="accelerator-keys">
       <template is="dom-repeat" items="[[modifiers]]">
-        <input-key key="[[item]]" key-state="modifier-selected"></input-key>
+        <input-key key="[[item]]" key-state="modifier-selected"
+          highlighted="[[highlighted]]">
+        </input-key>
       </template>
       <input-key
           key="[[acceleratorInfo.layoutProperties.standardAccelerator.keyDisplay]]"
-          key-state="alpha-numeric-selected">
+          key-state="alpha-numeric-selected"
+          highlighted="[[highlighted]]">
       </input-key>
     </div>
     <div class="lock-icon-container"
         hidden="[[!shouldShowLockIcon(acceleratorInfo.locked, sourceIsLocked)]]">
       <iron-icon icon="shortcut-customization:lock"></iron-icon>
     </div>
-    <div id="editIconContainer" part="edit-icon" on-click="onEditIconClicked"
+    <div class="edit-icon-container"
         hidden="[[!shouldShowEditIcon(acceleratorInfo.locked, sourceIsLocked)]]">
-      <cr-icon-button id="editButton" class="clickable-button"
-          iron-icon="shortcut-customization:edit">
+      <cr-icon-button class="edit-button" class="clickable-button" part="edit-icon"
+          iron-icon="shortcut-customization:edit"
+          on-click="onEditIconClicked">
       </cr-icon-button>
     </div>
   </template>
@@ -84,7 +76,7 @@
             pendingAcceleratorInfo.layoutProperties.standardAccelerator.*
             )]]">
       </input-key>
-      <input-key id="searchKey" key="search"
+      <input-key id="searchKey" key="meta"
           key-state="[[getSearchState(
             pendingAcceleratorInfo.layoutProperties.standardAccelerator.*
             )]]"

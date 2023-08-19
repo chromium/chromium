@@ -42,7 +42,7 @@ class DelayedTaskHandleDelegate : public DelayedTaskHandle::Delegate {
 
  private:
   // The TaskQueueImpl where the task was posted.
-  const raw_ptr<TaskQueueImpl, DanglingUntriaged> outer_
+  const raw_ptr<TaskQueueImpl, AcrossTasksDanglingUntriaged> outer_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The HeapHandle to the task, if the task is in the DelayedIncomingQueue,

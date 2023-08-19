@@ -4,6 +4,7 @@ Version: 9801a2c5d6c67c467ffad676ac301379bb877fc3
 License: MIT
 License File: LICENSE
 Security Critical: yes
+Shipped: yes
 
 Description:
 Brotli is a generic byte-level compression algorithm that is used at the

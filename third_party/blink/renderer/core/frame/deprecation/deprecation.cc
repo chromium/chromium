@@ -4,15 +4,19 @@
 
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 
-#include "base/time/time.h"
+#include "base/command_line.h"
 #include "build/build_config.h"
+#include "third_party/blink/public/common/switches.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/mojom/reporting/reporting.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation_info.h"
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation_report_body.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/report.h"
 #include "third_party/blink/renderer/core/frame/reporting_context.h"
 #include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
@@ -23,6 +27,32 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
+
+namespace {
+
+// Send the deprecation info to the browser process, currently only supports
+// frame.
+void SendToBrowser(ExecutionContext* context, const DeprecationInfo& info) {
+  // Command line switch is set when the feature is turned on by the browser
+  // process.
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          blink::switches::kLegacyTechReportPolicyEnabled)) {
+    return;
+  }
+
+  if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
+    if (LocalFrame* frame = window->GetFrame()) {
+      std::unique_ptr<SourceLocation> source_location =
+          CaptureSourceLocation(context);
+      frame->GetLocalFrameHostRemote().SendLegacyTechEvent(
+          info.type_, mojom::blink::LegacyTechEventCodeLocation::New(
+                          source_location->Url(), source_location->LineNumber(),
+                          source_location->ColumnNumber()));
+    }
+  }
+}
+
+}  // namespace
 
 Deprecation::Deprecation() : mute_count_(0) {}
 
@@ -88,6 +118,9 @@ void Deprecation::CountDeprecation(ExecutionContext* context,
 
   // Send the deprecation message as a DevTools issue.
   AuditsIssue::ReportDeprecationIssue(context, info.type_);
+
+  // Send the deprecation message to browser process for enterprise usage.
+  SendToBrowser(context, info);
 
   // Send the deprecation report to the Reporting API and any
   // ReportingObservers.

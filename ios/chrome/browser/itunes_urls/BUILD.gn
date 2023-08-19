@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("itunes_urls") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "itunes_urls_handler_tab_helper.h",
     "itunes_urls_handler_tab_helper.mm",
@@ -21,7 +20,6 @@ source_set("itunes_urls") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "itunes_urls_handler_tab_helper_unittest.mm" ]
   deps = [

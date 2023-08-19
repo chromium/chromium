@@ -11,9 +11,21 @@ import subprocess
 import sys
 
 _RSP_RE = re.compile(r' (@(.+?\.rsp)) ')
-_GOMA_CMD_LINE_RE = re.compile(
-    r'^(?P<gomacc>.*gomacc(\.exe)?"?\s+)?(?P<clang>\S*clang\S*)\s+(?P<args>.*)$'
-)
+_CLANG_WRAPPER_CMD_LINE_RE = re.compile(
+    r'''
+    (
+      (?P<gomacc>.*gomacc(\.exe)?"?\s+)
+      |
+      (?P<rewrapper>.*rewrapper(\.exe)?"?\s+)
+      # rewrapper may have args between it and clang.
+      # Assume the args do not contain spaces.
+      (?P<rewrapper_arg>\-\S+\s+)*
+    )?
+    # Assume the path to clang does not contain spaces.
+    (?P<clang>\S*clang\S*)
+    \s+
+    (?P<args>.*)
+    ''', re.VERBOSE)
 _debugging = False
 
 
@@ -93,22 +105,23 @@ def _ProcessCommand(command, filtered_args, target_os):
   if _IsTargettingWindows(target_os) and '--driver-mode' not in command:
     driver_mode = '--driver-mode=cl'
 
-  # Removes gomacc(.exe). On Windows inserts --driver-mode=cl as the first arg.
+  # Removes gomacc/rewrapper(.exe). On Windows inserts --driver-mode=cl as the
+  # first arg.
   #
-  # Deliberately avoid  shlex.split() here, because it doesn't work predictably
+  # Deliberately avoid shlex.split() here, because it doesn't work predictably
   # for Windows commands (specifically, it doesn't parse args the same way that
   # Clang does on Windows).
   #
   # Instead, use a regex, with the simplifying assumption that the path to
   # clang-cl.exe contains no spaces.
-  match = _GOMA_CMD_LINE_RE.search(command)
+  match = _CLANG_WRAPPER_CMD_LINE_RE.fullmatch(command)
   if match:
     match_dict = match.groupdict()
     command = ' '.join([match_dict['clang'], driver_mode, match_dict['args']])
   elif _debugging:
     print('Compile command didn\'t match expected regex!')
     print('Command:', command)
-    print('Regex:', _GOMA_CMD_LINE_RE.pattern)
+    print('Regex:', _CLANG_WRAPPER_CMD_LINE_RE.pattern)
 
   return _FilterFlags(command, filtered_args)
 

@@ -3,10 +3,10 @@
 # found in the LICENSE file.
 
 source_set("feed_promos") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "feed_sign_in_promo_coordinator.h",
     "feed_sign_in_promo_coordinator.mm",
+    "feed_sign_in_promo_coordinator_delegate.h",
   ]
   deps = [
     ":feed_promos_ui",
@@ -23,7 +23,6 @@ source_set("feed_promos") {
 }
 
 source_set("feed_promos_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "feed_sign_in_promo_view_controller.h",
     "feed_sign_in_promo_view_controller.mm",

@@ -17,8 +17,14 @@ namespace ash {
 
 SearchResultBaseView::SearchResultBaseView() {
   SetGroup(kSearchResultViewGroup);
-  SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   SetInstallFocusRingOnFocus(false);
+
+  // Result views are not expected to be focused - while the results UI is shown
+  // the focus is kept within the `SearchBoxView`, which manages result
+  // selection state in response to keyboard navigation keys, and forwards
+  // all relevant key events (e.g. ENTER key for result activation) to search
+  // result views as needed.
+  SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 }
 
 SearchResultBaseView::~SearchResultBaseView() {
@@ -119,6 +125,30 @@ std::u16string SearchResultBaseView::ComputeAccessibleName() const {
         base::FormatDouble(result()->rating(), 1));
   }
   return accessible_name;
+}
+
+void SearchResultBaseView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  if (!GetVisible()) {
+    return;
+  }
+
+  // Mark the result is a list item in the list of search results.
+  // Also avoids an issue with the nested button case(append and remove
+  // button are child button of SearchResultView), which is not supported by
+  // ChromeVox. see details in crbug.com/924776.
+  node_data->role = ax::mojom::Role::kListBoxOption;
+  node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kClick);
+
+  // It is possible for the view to be visible but lack a result. When this
+  // happens, GetAccessibleName() will return an empty string. Because the
+  // focusable state is set in the constructor and not updated when the
+  // result is removed, the accessibility paint checks will fail.
+  if (!result()) {
+    node_data->SetNameExplicitlyEmpty();
+    return;
+  }
+
+  node_data->SetName(GetAccessibleName());
 }
 
 void SearchResultBaseView::UpdateAccessibleName() {

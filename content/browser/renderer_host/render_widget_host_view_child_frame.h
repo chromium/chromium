@@ -139,6 +139,8 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   const viz::LocalSurfaceId& GetLocalSurfaceId() const override;
   void NotifyHitTestRegionUpdated(const viz::AggregatedHitTestRegion&) override;
   bool ScreenRectIsUnstableFor(const blink::WebInputEvent& event) override;
+  bool ScreenRectIsUnstableForIOv2For(
+      const blink::WebInputEvent& event) override;
   void PreProcessTouchEvent(const blink::WebTouchEvent& event) override;
   viz::FrameSinkId GetRootFrameSinkId() override;
   viz::SurfaceId GetCurrentSurfaceId() const override;
@@ -159,6 +161,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   std::unique_ptr<SyntheticGestureTarget> CreateSyntheticGestureTarget()
       override;
   bool IsRenderWidgetHostViewChildFrame() override;
+  void InvalidateLocalSurfaceIdAndAllocationGroup() override;
 
 #if BUILDFLAG(IS_MAC)
   // RenderWidgetHostView implementation.
@@ -219,6 +222,10 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   void UpdateRenderThrottlingStatus();
 
   ui::TextInputType GetTextInputType() const;
+
+  // Retrieves the UTF-16 code unit range containing accessible text in the
+  // view. Returns false if the information cannot be retrieved right now.
+  bool GetTextRange(gfx::Range* range) const;
 
   RenderWidgetHostViewBase* GetRootRenderWidgetHostView() const;
 
@@ -315,7 +322,9 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   viz::FrameSinkId parent_frame_sink_id_;
 
   gfx::RectF last_stable_screen_rect_;
+  gfx::RectF last_stable_screen_rect_for_iov2_;
   base::TimeTicks screen_rect_stable_since_;
+  base::TimeTicks screen_rect_stable_since_for_iov2_;
 
   gfx::Insets insets_;
 

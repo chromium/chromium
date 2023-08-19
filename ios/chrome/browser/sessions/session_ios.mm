@@ -4,12 +4,8 @@
 
 #import "ios/chrome/browser/sessions/session_ios.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 // Serialization keys
@@ -40,7 +36,7 @@ NSString* const kSessionWindowsKey = @"sessionWindows";
 
 - (instancetype)initWithCoder:(NSCoder*)aDecoder {
   NSArray<SessionWindowIOS*>* sessionWindows =
-      base::mac::ObjCCast<NSArray<SessionWindowIOS*>>(
+      base::apple::ObjCCast<NSArray<SessionWindowIOS*>>(
           [aDecoder decodeObjectForKey:kSessionWindowsKey]);
 
   return [self initWithWindows:(sessionWindows ? sessionWindows : @[])];

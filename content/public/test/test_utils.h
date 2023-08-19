@@ -113,23 +113,23 @@ void IsolateAllSitesForTesting(base::CommandLine* command_line);
 // Whether same-site navigations might result in a change of RenderFrameHosts -
 // this will happen when ProactivelySwapBrowsingInstance, RenderDocument or
 // back-forward cache is enabled on same-site main frame navigations. Note that
-// not even if this returns true, not all same-site main frame navigations will
+// even if this returns true, not all same-site main frame navigations will
 // result in a change of RenderFrameHosts, e.g. if RenderDocument is disabled
 // but BFCache is enabled, this will return true but only same-site navigations
 // from pages that are BFCache-eligible will result in a RenderFrameHost change.
 bool CanSameSiteMainFrameNavigationsChangeRenderFrameHosts();
 
-// Whether same-site navigations will always result in a change of
-// RenderFrameHosts, which will happen when RenderDocument is enabled. Different
-// from `CanSameSiteMainFrameNavigationsChangeRenderFrameHosts()`, this means
-// all same-site navigations will trigger a RenderFrameHost change, instead of
-// only a subset that satisfies some conditions, e.g. BFCache eligibilty.
-bool WillSameSiteNavigationsChangeRenderFrameHosts();
+// Whether same-site navigations will result in a change of RenderFrameHosts,
+// which will happen when RenderDocument is enabled. Due to the various levels
+// of the feature, the result may differ depending on whether the
+// RenderFrameHost is a main/local root/non-local-root frame.
+bool WillSameSiteNavigationChangeRenderFrameHosts(bool is_main_frame,
+                                                  bool is_local_root = true);
 
 // Whether same-site navigations might result in a change of SiteInstances -
 // this will happen when ProactivelySwapBrowsingInstance or back-forward cache
 // is enabled on same-site main frame navigations.
-// Note that unlike CanSameSiteMainFrameNavigationsChangeRenderFrameHosts()
+// Note that unlike WillSameSiteNavigationChangeRenderFrameHosts()
 // above, this will not be true when RenderDocument for main-frame is enabled.
 bool CanSameSiteMainFrameNavigationsChangeSiteInstances();
 

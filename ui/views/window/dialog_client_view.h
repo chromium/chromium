@@ -101,6 +101,8 @@ class VIEWS_EXPORT DialogClientView : public ClientView, public DialogObserver {
     input_protector_ = std::move(input_protector);
   }
 
+  bool IsPossiblyUnintendedInteraction(const ui::Event& event);
+
  private:
   enum {
     // The number of buttons that DialogClientView can support.

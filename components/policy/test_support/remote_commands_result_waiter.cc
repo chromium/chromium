@@ -4,7 +4,6 @@
 
 #include "components/policy/test_support/remote_commands_result_waiter.h"
 
-#include "base/logging.h"
 #include "base/run_loop.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/policy/test_support/remote_commands_state.h"
@@ -35,7 +34,6 @@ void RemoteCommandsResultWaiter::Wait() {
 
 em::RemoteCommandResult RemoteCommandsResultWaiter::WaitAndGetResult() {
   Wait();
-
   em::RemoteCommandResult result;
   const bool result_available =
       remote_commands_state_->GetRemoteCommandResult(command_id_, &result);

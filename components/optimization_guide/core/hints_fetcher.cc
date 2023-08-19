@@ -63,6 +63,8 @@ std::string GetStringNameForRequestContext(
       return "Journeys";
     case proto::RequestContext::CONTEXT_NEW_TAB_PAGE:
       return "NewTabPage";
+    case proto::RequestContext::CONTEXT_PAGE_INSIGHTS_HUB:
+      return "PageInsightsHub";
   }
   NOTREACHED();
   return std::string();
@@ -178,6 +180,7 @@ bool HintsFetcher::FetchOptimizationGuideServiceHints(
         optimization_types,
     optimization_guide::proto::RequestContext request_context,
     const std::string& locale,
+    absl::optional<std::string> access_token,
     bool skip_cache,
     HintsFetchedCallback hints_fetched_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -225,6 +228,8 @@ bool HintsFetcher::FetchOptimizationGuideServiceHints(
   }
 
   hints_fetch_start_time_ = base::TimeTicks::Now();
+
+  // TODO(b/280082735) Include OAuth token if provided.
 
   proto::GetHintsRequest get_hints_request;
   get_hints_request.add_supported_key_representations(proto::HOST);

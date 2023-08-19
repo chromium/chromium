@@ -5,88 +5,49 @@
 #include "components/supervised_user/core/browser/kids_management_url_checker_client.h"
 
 #include <memory>
-#include <utility>
+#include <string>
 
 #include "base/functional/bind.h"
-#include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/strings/string_piece.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "base/values.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/supervised_user/core/browser/kids_chrome_management_client.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
+#include "components/supervised_user/core/common/features.h"
+#include "components/supervised_user/test_support/kids_chrome_management_test_utils.h"
+#include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-using testing::_;
+#include "url/gurl.h"
 
 namespace {
 
+using UseProtoFetcher = bool;
 using kids_chrome_management::ClassifyUrlResponse;
+using testing::_;
 
-ClassifyUrlResponse::DisplayClassification ConvertClassification(
-    safe_search_api::ClientClassification classification) {
-  switch (classification) {
-    case safe_search_api::ClientClassification::kAllowed:
-      return ClassifyUrlResponse::ALLOWED;
-    case safe_search_api::ClientClassification::kRestricted:
-      return ClassifyUrlResponse::RESTRICTED;
-    case safe_search_api::ClientClassification::kUnknown:
-      return ClassifyUrlResponse::UNKNOWN_DISPLAY_CLASSIFICATION;
-  }
-}
-
-// Build fake response proto with a response according to |classification|.
-std::unique_ptr<ClassifyUrlResponse> BuildResponseProto(
-    safe_search_api::ClientClassification classification) {
-  auto response_proto = std::make_unique<ClassifyUrlResponse>();
-
-  response_proto->set_display_classification(
-      ConvertClassification(classification));
-  return response_proto;
-}
-
-class KidsChromeManagementClientForTesting : public KidsChromeManagementClient {
+class KidsManagementURLCheckerClientTest
+    : public ::testing::Test,
+      public ::testing::WithParamInterface<UseProtoFetcher> {
  public:
-  using KidsChromeManagementClient::KidsChromeManagementClient;
-
-  void ClassifyURL(
-      std::unique_ptr<kids_chrome_management::ClassifyUrlRequest> request_proto,
-      KidsChromeManagementClient::KidsChromeManagementCallback callback)
-      override {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  std::move(response_proto_), error_code_));
+  KidsManagementURLCheckerClientTest() {
+    if (UseProtoFetcher()) {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{supervised_user::kEnableProtoApiForClassifyUrl},
+          /*disabled_features=*/{});
+    }
   }
-
-  void SetupResponse(std::unique_ptr<ClassifyUrlResponse> response_proto,
-                     KidsChromeManagementClient::ErrorCode error_code) {
-    response_proto_ = std::move(response_proto);
-    error_code_ = error_code;
-  }
-
- private:
-  std::unique_ptr<ClassifyUrlResponse> response_proto_;
-  KidsChromeManagementClient::ErrorCode error_code_;
-};
-
-}  // namespace
-
-class KidsManagementURLCheckerClientTest : public testing::Test {
- public:
-  KidsManagementURLCheckerClientTest() = default;
-
-  KidsManagementURLCheckerClientTest(
-      const KidsManagementURLCheckerClientTest&) = delete;
-  KidsManagementURLCheckerClientTest& operator=(
-      const KidsManagementURLCheckerClientTest&) = delete;
 
   void SetUp() override {
     test_kids_chrome_management_client_ =
-        std::make_unique<KidsChromeManagementClientForTesting>(
+        std::make_unique<kids_management::KidsChromeManagementClientForTesting>(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_),
             identity_test_env_.identity_manager());
@@ -95,135 +56,235 @@ class KidsManagementURLCheckerClientTest : public testing::Test {
   }
 
  protected:
-  void SetupClientResponse(std::unique_ptr<ClassifyUrlResponse> response_proto,
-                           KidsChromeManagementClient::ErrorCode error_code) {
-    test_kids_chrome_management_client_->SetupResponse(
-        std::move(response_proto), error_code);
+  // TODO(b/276898959): Remove after migration.
+  void SetUpLegacyClientResponse(
+      safe_search_api::ClientClassification client_classification,
+      KidsChromeManagementClient::ErrorCode error_code) {
+    test_kids_chrome_management_client_->SetResponseWithError(
+        kids_management::BuildResponseProto(client_classification), error_code);
+  }
+
+  void MakePrimaryAccountAvailable() {
+    this->identity_test_env_.MakePrimaryAccountAvailable(
+        "homer@gmail.com", signin::ConsentLevel::kSignin);
+  }
+  void IssueAccessToken() {
+    this->identity_test_env_
+        .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+            "access_token", base::Time::Max());
+  }
+  void DenyAccessToken() {
+    this->identity_test_env_
+        .WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+            GoogleServiceAuthError(
+                GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS));
+  }
+  void AddTestResponse(
+      kids_chrome_management::ClassifyUrlResponse::DisplayClassification
+          display_classification) {
+    kids_chrome_management::ClassifyUrlResponse response;
+    response.set_display_classification(display_classification);
+
+    CHECK(test_url_loader_factory_.NumPending() == 1L);
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        test_url_loader_factory_.GetPendingRequest(0)->request.url.spec(),
+        response.SerializeAsString());
+  }
+  void AddMalformedResponse() {
+    CHECK(test_url_loader_factory_.NumPending() == 1L);
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        test_url_loader_factory_.GetPendingRequest(0)->request.url.spec(),
+        /*content=*/"garbage");
+  }
+  void NetworkError(int net_error) {
+    CHECK(test_url_loader_factory_.NumPending() == 1L);
+    this->test_url_loader_factory_.SimulateResponseForPendingRequest(
+        test_url_loader_factory_.GetPendingRequest(0)->request.url,
+        network::URLLoaderCompletionStatus(net_error),
+        network::CreateURLResponseHead(net::HTTP_OK), /*content=*/"");
+  }
+  void HttpError(net::HttpStatusCode http_status) {
+    CHECK(test_url_loader_factory_.NumPending() == 1L);
+    this->test_url_loader_factory_.SimulateResponseForPendingRequest(
+        test_url_loader_factory_.GetPendingRequest(0)->request.url.spec(),
+        /*content=*/"", http_status);
   }
 
   // Asynchronously checks the URL and waits until finished.
-  void CheckURL(const GURL& url) {
-    StartCheckURL(url);
+  void CheckUrl(base::StringPiece url) {
+    StartCheckUrl(url);
     task_environment_.RunUntilIdle();
   }
 
   // Starts a URL check, but doesn't wait for ClassifyURL() to finish.
-  void CheckURLWithoutResponse(const GURL& url) { StartCheckURL(url); }
+  void CheckUrlWithoutResponse(base::StringPiece url) { StartCheckUrl(url); }
+
+  bool UseProtoFetcher() const { return GetParam(); }
 
   MOCK_METHOD2(OnCheckDone,
                void(const GURL& url,
                     safe_search_api::ClientClassification classification));
 
-  void DestroyURLClassifier() { url_classifier_.reset(); }
+  void DestroyUrlClassifier() { url_classifier_.reset(); }
 
   base::test::TaskEnvironment task_environment_;
 
  private:
-  void StartCheckURL(const GURL& url) {
+  void StartCheckUrl(base::StringPiece url) {
     url_classifier_->CheckURL(
-        url, base::BindOnce(&KidsManagementURLCheckerClientTest::OnCheckDone,
-                            base::Unretained(this)));
+        GURL(url),
+        base::BindOnce(&KidsManagementURLCheckerClientTest::OnCheckDone,
+                       base::Unretained(this)));
   }
 
+ protected:
   network::TestURLLoaderFactory test_url_loader_factory_;
+
+ private:
   signin::IdentityTestEnvironment identity_test_env_;
-  std::unique_ptr<KidsChromeManagementClientForTesting>
+  std::unique_ptr<kids_management::KidsChromeManagementClientForTesting>
       test_kids_chrome_management_client_;
   std::unique_ptr<KidsManagementURLCheckerClient> url_classifier_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(KidsManagementURLCheckerClientTest, Simple) {
-  {
-    GURL url("http://randomurl1.com");
-
-    safe_search_api::ClientClassification classification =
-        safe_search_api::ClientClassification::kAllowed;
-
-    EXPECT_CALL(*this, OnCheckDone(url, classification));
-
-    SetupClientResponse(BuildResponseProto(classification),
-                        KidsChromeManagementClient::ErrorCode::kSuccess);
-
-    CheckURL(url);
+TEST_P(KidsManagementURLCheckerClientTest, UrlAllowed) {
+  if (!UseProtoFetcher()) {
+    // TODO(b/276898959): Remove branch after migration.
+    SetUpLegacyClientResponse(safe_search_api::ClientClassification::kAllowed,
+                              KidsChromeManagementClient::ErrorCode::kSuccess);
   }
-  {
-    GURL url("http://randomurl2.com");
 
-    safe_search_api::ClientClassification classification =
-        safe_search_api::ClientClassification::kRestricted;
+  EXPECT_CALL(*this,
+              OnCheckDone(GURL("http://example.com"),
+                          safe_search_api::ClientClassification::kAllowed));
+  CheckUrl("http://example.com");
 
-    EXPECT_CALL(*this, OnCheckDone(url, classification));
-
-    SetupClientResponse(BuildResponseProto(classification),
-                        KidsChromeManagementClient::ErrorCode::kSuccess);
-    CheckURL(url);
+  if (UseProtoFetcher()) {
+    MakePrimaryAccountAvailable();
+    IssueAccessToken();
+    AddTestResponse(kids_chrome_management::ClassifyUrlResponse::ALLOWED);
   }
 }
 
-TEST_F(KidsManagementURLCheckerClientTest, AccessTokenError) {
-  GURL url("http://randomurl3.com");
-
-  safe_search_api::ClientClassification classification =
-      safe_search_api::ClientClassification::kUnknown;
-
-  SetupClientResponse(BuildResponseProto(classification),
-                      KidsChromeManagementClient::ErrorCode::kTokenError);
-
-  EXPECT_CALL(*this, OnCheckDone(url, classification));
-  CheckURL(url);
-}
-
-TEST_F(KidsManagementURLCheckerClientTest, NetworkErrors) {
-  {
-    GURL url("http://randomurl4.com");
-
-    safe_search_api::ClientClassification classification =
-        safe_search_api::ClientClassification::kUnknown;
-
-    SetupClientResponse(BuildResponseProto(classification),
-                        KidsChromeManagementClient::ErrorCode::kNetworkError);
-
-    EXPECT_CALL(*this, OnCheckDone(url, classification));
-
-    CheckURL(url);
+TEST_P(KidsManagementURLCheckerClientTest, UrlRestricted) {
+  if (!UseProtoFetcher()) {
+    // TODO(b/276898959): Remove branch after migration.
+    SetUpLegacyClientResponse(
+        safe_search_api::ClientClassification::kRestricted,
+        KidsChromeManagementClient::ErrorCode::kSuccess);
   }
 
-  {
-    GURL url("http://randomurl5.com");
+  EXPECT_CALL(*this,
+              OnCheckDone(GURL("http://example.com"),
+                          safe_search_api::ClientClassification::kRestricted));
+  CheckUrl("http://example.com");
 
-    safe_search_api::ClientClassification classification =
-        safe_search_api::ClientClassification::kUnknown;
-
-    SetupClientResponse(BuildResponseProto(classification),
-                        KidsChromeManagementClient::ErrorCode::kHttpError);
-
-    EXPECT_CALL(*this, OnCheckDone(url, classification));
-
-    CheckURL(url);
+  if (UseProtoFetcher()) {
+    MakePrimaryAccountAvailable();
+    IssueAccessToken();
+    AddTestResponse(kids_chrome_management::ClassifyUrlResponse::RESTRICTED);
   }
 }
 
-TEST_F(KidsManagementURLCheckerClientTest, ServiceError) {
-  GURL url("http://randomurl6.com");
+TEST_P(KidsManagementURLCheckerClientTest, AccessTokenError) {
+  if (!UseProtoFetcher()) {
+    SetUpLegacyClientResponse(
+        safe_search_api::ClientClassification::kUnknown,
+        KidsChromeManagementClient::ErrorCode::kTokenError);
+  }
 
-  safe_search_api::ClientClassification classification =
-      safe_search_api::ClientClassification::kUnknown;
+  EXPECT_CALL(*this,
+              OnCheckDone(GURL("http://example.com"),
+                          safe_search_api::ClientClassification::kUnknown));
+  CheckUrl("http://example.com");
 
-  SetupClientResponse(BuildResponseProto(classification),
-                      KidsChromeManagementClient::ErrorCode::kServiceError);
-
-  EXPECT_CALL(*this, OnCheckDone(url, classification));
-  CheckURL(url);
+  if (UseProtoFetcher()) {
+    MakePrimaryAccountAvailable();
+    DenyAccessToken();
+  }
 }
 
-TEST_F(KidsManagementURLCheckerClientTest, DestroyClientBeforeCallback) {
-  GURL url("http://randomurl7.com");
+TEST_P(KidsManagementURLCheckerClientTest, NetworkError) {
+  if (!UseProtoFetcher()) {
+    SetUpLegacyClientResponse(
+        safe_search_api::ClientClassification::kUnknown,
+        KidsChromeManagementClient::ErrorCode::kNetworkError);
+  }
 
+  EXPECT_CALL(*this,
+              OnCheckDone(GURL("http://example.com"),
+                          safe_search_api::ClientClassification::kUnknown));
+  CheckUrl("http://example.com");
+  if (UseProtoFetcher()) {
+    MakePrimaryAccountAvailable();
+    IssueAccessToken();
+    NetworkError(net::ERR_UNEXPECTED);
+  }
+}
+
+TEST_P(KidsManagementURLCheckerClientTest, HttpError) {
+  if (!UseProtoFetcher()) {
+    SetUpLegacyClientResponse(
+        safe_search_api::ClientClassification::kUnknown,
+        KidsChromeManagementClient::ErrorCode::kNetworkError);
+  }
+
+  EXPECT_CALL(*this,
+              OnCheckDone(GURL("http://example.com"),
+                          safe_search_api::ClientClassification::kUnknown));
+  CheckUrl("http://example.com");
+  if (UseProtoFetcher()) {
+    MakePrimaryAccountAvailable();
+    IssueAccessToken();
+    HttpError(net::HTTP_BAD_GATEWAY);
+  }
+}
+
+TEST_P(KidsManagementURLCheckerClientTest, ServiceError) {
+  if (!UseProtoFetcher()) {
+    SetUpLegacyClientResponse(
+        safe_search_api::ClientClassification::kUnknown,
+        KidsChromeManagementClient::ErrorCode::kNetworkError);
+  }
+
+  EXPECT_CALL(*this,
+              OnCheckDone(GURL("http://example.com"),
+                          safe_search_api::ClientClassification::kUnknown));
+  CheckUrl("http://example.com");
+  if (UseProtoFetcher()) {
+    MakePrimaryAccountAvailable();
+    IssueAccessToken();
+    AddMalformedResponse();
+  }
+}
+
+TEST_P(KidsManagementURLCheckerClientTest,
+       PendingRequestsAreCanceledWhenClientIsDestroyed) {
   EXPECT_CALL(*this, OnCheckDone(_, _)).Times(0);
-  CheckURLWithoutResponse(url);
 
-  DestroyURLClassifier();
+  CheckUrlWithoutResponse("http://example.com");
+  DestroyUrlClassifier();
 
   // Now run the callback.
   task_environment_.RunUntilIdle();
 }
+
+// Instead of /0, /1... print human-readable description of the test.
+std::string PrettyPrintTestCaseName(
+    const ::testing::TestParamInfo<UseProtoFetcher>& info) {
+  if (info.param) {
+    return "ProtoFetcher";
+  } else {
+    return "JsonFetcher";
+  }
+}
+
+// TODO(b/276898959): Remove ::testing::Bool() == false once migrated.
+INSTANTIATE_TEST_SUITE_P(All,
+                         KidsManagementURLCheckerClientTest,
+                         ::testing::Bool(),
+                         &PrettyPrintTestCaseName);
+
+}  // namespace

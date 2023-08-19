@@ -49,8 +49,7 @@ class ExternalTextureCache : public GarbageCollected<ExternalTextureCache> {
   ExternalTextureCache& operator=(const ExternalTextureCache&) = delete;
 
   // Implement importExternalTexture() auto expiry mechanism.
-  GPUExternalTexture* Import(ExecutionContext* execution_context,
-                             const GPUExternalTextureDescriptor* descriptor,
+  GPUExternalTexture* Import(const GPUExternalTextureDescriptor* descriptor,
                              ExceptionState& exception_state);
 
   // Destroy all cached GPUExternalTexture and clear all lists.

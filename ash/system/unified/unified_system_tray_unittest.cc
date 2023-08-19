@@ -8,12 +8,15 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/test/shell_test_api.h"
+#include "ash/public/cpp/test/test_cast_config_controller.h"
+#include "ash/public/cpp/test/test_nearby_share_delegate.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/message_center/unified_message_center_bubble.h"
+#include "ash/system/model/system_tray_model.h"
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/notification_center/notification_center_view.h"
 #include "ash/system/privacy/privacy_indicators_controller.h"
@@ -38,7 +41,9 @@
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/dbus/audio/audio_node.h"
 #include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
@@ -49,6 +54,8 @@ namespace ash {
 namespace {
 
 constexpr int kQsDetailedViewHeight = 464;
+constexpr char kQuickSettingsPageCountOnClose[] =
+    "Ash.QuickSettings.PageCountOnClose";
 
 }  // namespace
 
@@ -66,11 +73,10 @@ class UnifiedSystemTrayTest
   ~UnifiedSystemTrayTest() override = default;
 
   void SetUp() override {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kCameraEffectsSupportedByHardware);
-
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
+
+    enabled_features.push_back(features::kCameraEffectsSupportedByHardware);
     if (IsQsRevampEnabled()) {
       enabled_features.push_back(features::kQsRevamp);
     } else {
@@ -548,6 +554,51 @@ TEST_P(UnifiedSystemTrayTest, TimeInQuickSettingsMetric) {
                                     /*count=*/2);
 }
 
+// Tests that the number of quick settings pages is recorded when the QS bubble
+// is closed. Tests that the metric is not recorded when QsRevamp is disabled.
+TEST_P(UnifiedSystemTrayTest, QuickSettingsPageCountMetric) {
+  base::HistogramTester histogram_tester;
+
+  // Show the bubble with one page and verify that nothing is recorded yet.
+  auto* tray = GetPrimaryUnifiedSystemTray();
+  tray->ShowBubble();
+  tray->bubble()
+      ->unified_system_tray_controller()
+      ->model()
+      ->pagination_model()
+      ->SetTotalPages(1);
+  histogram_tester.ExpectTotalCount(kQuickSettingsPageCountOnClose, 0);
+
+  // Close the bubble and verify that the metric is recorded.
+  tray->CloseBubble();
+  histogram_tester.ExpectTotalCount(kQuickSettingsPageCountOnClose,
+                                    IsQsRevampEnabled() ? 1 : 0);
+  histogram_tester.ExpectBucketCount(
+      kQuickSettingsPageCountOnClose,
+      /*sample=*/1,
+      /*expected_count=*/IsQsRevampEnabled() ? 1 : 0);
+
+  // Show the bubble with two pages, and verify that the metric is recorded when
+  // the bubble is closed.
+  tray->ShowBubble();
+  tray->bubble()
+      ->unified_system_tray_controller()
+      ->model()
+      ->pagination_model()
+      ->SetTotalPages(2);
+  tray->CloseBubble();
+  histogram_tester.ExpectTotalCount(kQuickSettingsPageCountOnClose,
+                                    IsQsRevampEnabled() ? 2 : 0);
+  histogram_tester.ExpectBucketCount(
+      kQuickSettingsPageCountOnClose,
+      /*sample=*/2,
+      /*expected_count=*/IsQsRevampEnabled() ? 1 : 0);
+  histogram_tester.ExpectBucketCount(
+      kQuickSettingsPageCountOnClose,
+      /*sample=*/1,
+      /*expected_count=*/IsQsRevampEnabled() ? 1 : 0);
+}
+
 // Tests that pressing the TOGGLE_CALENDAR accelerator once results in the
 // calendar view showing.
 TEST_P(UnifiedSystemTrayTest, PressCalendarAccelerator) {
@@ -789,7 +840,9 @@ TEST_P(UnifiedSystemTrayTest, InputMuteStateToggledButNoMicrophoneAvailable) {
   EXPECT_FALSE(IsMicrophoneMuteToastShown());
 }
 
-// Tests that the bubble is closed after entering or exiting tablet mode.
+// Tests that the bubble is closed after entering or exiting tablet mode. This
+// is required because the `FeatureTile`'s must be recreated to switch between
+// primary and compact.
 TEST_P(UnifiedSystemTrayTest, BubbleClosedAfterTabletModeChange) {
   auto* tray = GetPrimaryUnifiedSystemTray();
   TabletModeController* tablet_mode_controller =
@@ -826,8 +879,14 @@ TEST_P(UnifiedSystemTrayTest, TrayBackgroundColorAfterSwitchToTabletMode) {
             ShelfConfig::Get()->GetShelfControlButtonColor(widget));
 
   tablet_mode_controller->SetEnabledForTest(true);
-  EXPECT_EQ(tray->layer()->background_color(),
-            ShelfConfig::Get()->GetShelfControlButtonColor(widget));
+  if (chromeos::features::IsJellyEnabled()) {
+    EXPECT_EQ(tray->layer()->background_color(),
+              widget->GetColorProvider()->GetColor(
+                  cros_tokens::kCrosSysSystemBaseElevated));
+  } else {
+    EXPECT_EQ(tray->layer()->background_color(),
+              ShelfConfig::Get()->GetShelfControlButtonColor(widget));
+  }
 
   tablet_mode_controller->SetEnabledForTest(false);
   EXPECT_EQ(tray->layer()->background_color(),
@@ -910,6 +969,61 @@ TEST_P(UnifiedSystemTrayTest, BubbleViewSizeChangeNoEnoughSpace) {
 
   // No enough space for the fixed detailed view height.
   EXPECT_GT(kQsDetailedViewHeight, bubble_view->height());
+  tray->CloseBubble();
+}
+
+TEST_P(UnifiedSystemTrayTest, BubbleViewSizeChangeWithBigMainPage) {
+  // No QuickSettingsView in the old unified system bubble.
+  if (!IsQsRevampEnabled()) {
+    return;
+  }
+
+  // Set a large enough screen size.
+  UpdateDisplay("1600x900");
+
+  // The following code adds 2 more row in the tile section and 1 media control
+  // view to the qs bubble. In this case the main page should be larger than the
+  // default detailed page height.
+
+  // Enables nearby sharing to show the tile.
+  auto* test_delegate = static_cast<TestNearbyShareDelegate*>(
+      Shell::Get()->nearby_share_delegate());
+  test_delegate->set_is_pod_button_visible(true);
+
+  // Constructs the test cast config to add the cast tile.
+  TestCastConfigController cast_config;
+
+  // Adds locales to show the locale tile.
+  std::vector<LocaleInfo> locale_list;
+  locale_list.emplace_back("en-US", u"English (United States)");
+  Shell::Get()->system_tray_model()->SetLocaleList(std::move(locale_list),
+                                                   "en-US");
+  // Adds the media control view.
+  auto* tray = GetPrimaryUnifiedSystemTray();
+  tray->ShowBubble();
+  auto* qs_view = tray->bubble()->quick_settings_view();
+  auto media_conroller = std::make_unique<UnifiedMediaControlsController>(
+      tray->bubble()->unified_system_tray_controller());
+  qs_view->AddMediaControlsView(media_conroller->CreateView());
+  qs_view->ShowMediaControls();
+
+  auto* bubble_view = tray->bubble()->GetBubbleView();
+
+  // The main page height should be larger than the detailed view height.
+  EXPECT_LT(kQsDetailedViewHeight, bubble_view->height());
+
+  const int main_page_height = bubble_view->height();
+
+  // Goes to a detailed view (here using calendar view).
+  ShellTestApi().PressAccelerator(
+      ui::Accelerator(ui::VKEY_C, ui::EF_COMMAND_DOWN));
+
+  // Asserts that calendar is actually shown.
+  EXPECT_TRUE(GetPrimaryUnifiedSystemTray()->IsShowingCalendarView());
+
+  EXPECT_LT(kQsDetailedViewHeight, bubble_view->height());
+  EXPECT_EQ(main_page_height, bubble_view->height());
+
   tray->CloseBubble();
 }
 

@@ -449,10 +449,6 @@ TEST(DiscardableSharedMemoryHeapTest, DetailedDumpsDontContainRedundantData) {
 }
 
 TEST(DiscardableSharedMemoryHeapTest, MarkSpans) {
-  base::test::ScopedFeatureList fl;
-  fl.InitAndDisableFeature(
-      discardable_memory::kReleaseDiscardableFreeListPages);
-
   DiscardableSharedMemoryHeap heap;
 
   const size_t block_size = base::GetPageSize();

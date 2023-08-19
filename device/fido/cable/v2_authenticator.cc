@@ -407,7 +407,8 @@ class TunnelTransport : public Transport {
   void OnTunnelReady(
       WebSocketAdapter::Result result,
       absl::optional<std::array<uint8_t, device::cablev2::kRoutingIdSize>>
-          routing_id) {
+          routing_id,
+      WebSocketAdapter::ConnectSignalSupport) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(state_ == State::kConnecting || state_ == State::kConnectingPaired);
     bool ok = (result == WebSocketAdapter::Result::OK);
@@ -838,6 +839,8 @@ class CTAP2Processor : public Transaction {
         }
 
         auto params = blink::mojom::PublicKeyCredentialRequestOptions::New();
+        params->extensions =
+            blink::mojom::AuthenticationExtensionsClientInputs::New();
         params->challenge = *get_assertion_request.client_data_hash;
         params->relying_party_id = *get_assertion_request.rp_id;
         params->user_verification =
@@ -852,22 +855,22 @@ class CTAP2Processor : public Transaction {
         if (get_assertion_request.device_public_key_attestation) {
           // Play Services doesn't support any of the devicePubKey parameters so
           // this code doesn't bother parsing them nor passing them on.
-          params->device_public_key =
+          params->extensions->device_public_key =
               blink::mojom::DevicePublicKeyRequest::New();
         }
 
         if (get_assertion_request.prf_eval_first) {
-          params->prf = true;
+          params->extensions->prf = true;
           auto values = blink::mojom::PRFValues::New();
           values->first = *get_assertion_request.prf_eval_first;
           if (get_assertion_request.prf_eval_second) {
             values->second = *get_assertion_request.prf_eval_second;
           }
-          params->prf_inputs.emplace_back(std::move(values));
+          params->extensions->prf_inputs.emplace_back(std::move(values));
         }
 
         if (get_assertion_request.prf_eval_by_cred) {
-          params->prf = true;
+          params->extensions->prf = true;
           if (!get_assertion_request.prf_eval_by_cred->is_map()) {
             return Platform::Error::INVALID_CTAP;
           }
@@ -896,9 +899,14 @@ class CTAP2Processor : public Transaction {
               values->second = second_it->second.GetBytestring();
             }
 
-            params->prf_inputs.emplace_back(std::move(values));
+            params->extensions->prf_inputs.emplace_back(std::move(values));
           }
         }
+
+        // PRF inputs are already hashed when coming via CTAP so, if there are
+        // any PRF inputs, they're hashed.
+        params->extensions->prf_inputs_hashed =
+            !params->extensions->prf_inputs.empty();
 
         transaction_received_ = true;
         const bool empty_allowlist = params->allow_credentials.empty();

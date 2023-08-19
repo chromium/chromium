@@ -27,10 +27,10 @@ void FakePageTimingSender::SendTiming(
     const mojom::InputTimingPtr new_input_timing,
     const absl::optional<blink::SubresourceLoadMetrics>&
         subresource_load_metrics,
-    uint32_t soft_navigation_count) {
+    const mojom::SoftNavigationMetricsPtr& soft_navigation_metrics) {
   validator_->UpdateTiming(timing, metadata, new_features, resources,
                            render_data, cpu_timing, new_input_timing,
-                           subresource_load_metrics, soft_navigation_count);
+                           subresource_load_metrics, soft_navigation_metrics);
 }
 
 void FakePageTimingSender::SetUpSmoothnessReporting(
@@ -65,6 +65,26 @@ void FakePageTimingSender::PageTimingValidator::VerifyExpectedTimings() const {
     if (actual_timings_.at(i)->Equals(*expected_timings_.at(i)))
       continue;
     ADD_FAILURE() << "Actual timing != expected timing at index " << i;
+  }
+}
+
+void FakePageTimingSender::PageTimingValidator::ExpectSoftNavigationMetrics(
+    const mojom::SoftNavigationMetrics& soft_navigation_metrics) {
+  VerifyExpectedSoftNavigationMetrics();
+  expected_soft_navigation_metrics_.push_back(soft_navigation_metrics.Clone());
+}
+
+void FakePageTimingSender::PageTimingValidator::
+    VerifyExpectedSoftNavigationMetrics() const {
+  ASSERT_EQ(actual_soft_navigation_metrics_.size(),
+            expected_soft_navigation_metrics_.size());
+  for (size_t i = 0; i < actual_soft_navigation_metrics_.size(); ++i) {
+    if (actual_soft_navigation_metrics_.at(i)->Equals(
+            *expected_soft_navigation_metrics_.at(i))) {
+      continue;
+    }
+    ADD_FAILURE() << "Observed soft navigation metric != expected one at index "
+                  << i;
   }
 }
 
@@ -148,8 +168,9 @@ void FakePageTimingSender::PageTimingValidator::UpdateTiming(
     const mojom::InputTimingPtr& new_input_timing,
     const absl::optional<blink::SubresourceLoadMetrics>&
         subresource_load_metrics,
-    uint32_t soft_navigation_count) {
+    const mojom::SoftNavigationMetricsPtr& soft_navigation_metrics) {
   actual_timings_.push_back(timing.Clone());
+  actual_soft_navigation_metrics_.push_back(soft_navigation_metrics->Clone());
   if (!cpu_timing->task_time.is_zero()) {
     actual_cpu_timings_.push_back(cpu_timing.Clone());
   }
@@ -177,7 +198,7 @@ void FakePageTimingSender::PageTimingValidator::UpdateTiming(
   VerifyExpectedMainFrameIntersectionRect();
   VerifyExpectedMainFrameViewportRect();
   VerifyExpectedSubresourceLoadMetrics();
-  // TODO(yoav): Verify that soft nav count matches expectations.
+  VerifyExpectedSoftNavigationMetrics();
 }
 
 }  // namespace page_load_metrics

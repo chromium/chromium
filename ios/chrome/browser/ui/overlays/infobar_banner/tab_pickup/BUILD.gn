@@ -1,0 +1,52 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("tab_pickup") {
+  sources = [
+    "tab_pickup_infobar_banner_overlay_mediator.h",
+    "tab_pickup_infobar_banner_overlay_mediator.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//components/infobars/core",
+    "//components/url_formatter",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/overlays/public/default",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/tabs/tab_pickup:infobar_delegate",
+    "//ios/chrome/browser/ui/infobars/banners",
+    "//ios/chrome/browser/ui/infobars/banners:public",
+    "//ios/chrome/browser/ui/overlays:coordinators",
+    "//ios/chrome/browser/ui/overlays/infobar_banner:mediators",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "tab_pickup_infobar_banner_overlay_mediator_unittest.mm" ]
+
+  deps = [
+    ":tab_pickup",
+    "//base/test:test_support",
+    "//components/sync_device_info",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/overlays/public/default",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/synced_sessions",
+    "//ios/chrome/browser/tabs/tab_pickup:features",
+    "//ios/chrome/browser/tabs/tab_pickup:infobar_delegate",
+    "//ios/chrome/browser/ui/infobars/banners:public",
+    "//ios/chrome/browser/ui/infobars/banners/test",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+}

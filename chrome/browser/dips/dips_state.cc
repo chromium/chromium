@@ -41,3 +41,7 @@ void DIPSState::update_stateful_bounce_time(base::Time time) {
 void DIPSState::update_bounce_time(base::Time time) {
   dirty_ |= UpdateTimestampRange(state_.bounce_times, time);
 }
+
+void DIPSState::update_web_authn_assertion_time(base::Time time) {
+  dirty_ |= UpdateTimestampRange(state_.web_authn_assertion_times, time);
+}

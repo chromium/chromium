@@ -7,8 +7,4 @@ foreach (getallheaders() as $name => $value) {
 }
 ?>
 </body>
-<script>
-const bc = new BroadcastChannel('prerender');
-bc.postMessage(document.body.textContent);
-</script>
 </html>

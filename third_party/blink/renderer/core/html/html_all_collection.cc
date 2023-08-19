@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/html/html_all_collection.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_element_htmlcollection.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 
@@ -39,6 +40,25 @@ HTMLAllCollection::HTMLAllCollection(ContainerNode& node, CollectionType type)
 }
 
 HTMLAllCollection::~HTMLAllCollection() = default;
+
+V8UnionElementOrHTMLCollection* HTMLAllCollection::item(
+    v8::Isolate* isolate,
+    v8::Local<v8::Value> nameOrIndex,
+    ExceptionState& exception_state) {
+  v8::Local<v8::Uint32> index;
+  if (nameOrIndex->ToArrayIndex(isolate->GetCurrentContext()).ToLocal(&index)) {
+    if (Element* element = AnonymousIndexedGetter(index->Value())) {
+      return MakeGarbageCollected<V8UnionElementOrHTMLCollection>(element);
+    }
+    return nullptr;
+  }
+  AtomicString name = NativeValueTraits<IDLString>::ArgumentValue(
+      isolate, 0, nameOrIndex, exception_state);
+  if (UNLIKELY(exception_state.HadException())) {
+    return nullptr;
+  }
+  return NamedGetter(name);
+}
 
 Element* HTMLAllCollection::AnonymousIndexedGetter(unsigned index) {
   return HTMLCollection::item(index);

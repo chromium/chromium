@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view_data.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 enum class SetUpListItemType;
 
 @implementation SetUpListItemViewData

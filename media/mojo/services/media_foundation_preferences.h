@@ -9,14 +9,16 @@
 #include "media/mojo/mojom/media_foundation_preferences.mojom.h"
 #include "media/mojo/services/media_mojo_export.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "url/gurl.h"
 
 class MEDIA_MOJO_EXPORT MediaFoundationPreferencesImpl final
     : public media::mojom::MediaFoundationPreferences {
  public:
-  using IsHardwareSecureDecryptionDisabledCB =
-      base::RepeatingCallback<bool(void)>;
+  using IsHardwareSecureDecryptionAllowedCB =
+      base::RepeatingCallback<bool(const GURL&)>;
 
-  explicit MediaFoundationPreferencesImpl(IsHardwareSecureDecryptionDisabledCB);
+  MediaFoundationPreferencesImpl(const GURL& site,
+                                 IsHardwareSecureDecryptionAllowedCB cb);
 
   MediaFoundationPreferencesImpl(const MediaFoundationPreferencesImpl&) =
       delete;
@@ -26,14 +28,16 @@ class MEDIA_MOJO_EXPORT MediaFoundationPreferencesImpl final
   ~MediaFoundationPreferencesImpl() override;
 
   static void Create(
-      IsHardwareSecureDecryptionDisabledCB cb,
+      const GURL& site,
+      IsHardwareSecureDecryptionAllowedCB cb,
       mojo::PendingReceiver<media::mojom::MediaFoundationPreferences> receiver);
 
-  void IsHardwareSecureDecryptionPreferred(
-      IsHardwareSecureDecryptionPreferredCallback callback) override;
+  void IsHardwareSecureDecryptionAllowed(
+      IsHardwareSecureDecryptionAllowedCallback cb) override;
 
  private:
-  IsHardwareSecureDecryptionDisabledCB is_hardware_decryption_disabled_cb_;
+  GURL site_;
+  IsHardwareSecureDecryptionAllowedCB is_hardware_secure_decryption_allowed_cb_;
 };
 
 #endif  // MEDIA_MOJO_SERVICES_MEDIA_FOUNDATION_PREFERENCES_H_

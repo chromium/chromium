@@ -223,8 +223,8 @@ class TestClient final : public mojom::WebTransportClient {
       std::move(quit_closure_for_outgoing_stream_closure_).Run();
     }
   }
-  void OnReceivedResetStream(uint32_t stream_id, uint8_t) override {}
-  void OnReceivedStopSending(uint32_t stream_id, uint8_t) override {}
+  void OnReceivedResetStream(uint32_t stream_id, uint32_t) override {}
+  void OnReceivedStopSending(uint32_t stream_id, uint32_t) override {}
   void OnClosed(mojom::WebTransportCloseInfoPtr close_info) override {}
 
   void WaitUntilMojoConnectionError() {
@@ -332,8 +332,7 @@ class WebTransportTest : public testing::TestWithParam<base::StringPiece> {
     auto* quic_context =
         network_context_->url_request_context()->quic_context();
     quic_context->params()->supported_versions.push_back(version_);
-    quic_context->params()->origins_to_force_quic_on.insert(
-        net::HostPortPair("test.example.com", 0));
+    quic_context->params()->webtransport_developer_mode = true;
   }
   ~WebTransportTest() override = default;
 

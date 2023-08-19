@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <cstdint>
 
+#include "base/containers/contains.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -1592,8 +1593,8 @@ TEST_P(SQLDatabaseTest, OnMemoryDump) {
 // worrying too much about what they generate (since that will change).
 TEST_P(SQLDatabaseTest, CollectDiagnosticInfo) {
   const std::string corruption_info = db_->CollectCorruptionInfo();
-  EXPECT_NE(std::string::npos, corruption_info.find("SQLITE_CORRUPT"));
-  EXPECT_NE(std::string::npos, corruption_info.find("integrity_check"));
+  EXPECT_TRUE(base::Contains(corruption_info, "SQLITE_CORRUPT"));
+  EXPECT_TRUE(base::Contains(corruption_info, "integrity_check"));
 
   // A statement to see in the results.
   const char* kSimpleSql = "SELECT 'mountain'";
@@ -1604,7 +1605,7 @@ TEST_P(SQLDatabaseTest, CollectDiagnosticInfo) {
     DatabaseDiagnostics diagnostics;
     const std::string readonly_info =
         db_->CollectErrorInfo(SQLITE_READONLY, &s, &diagnostics);
-    EXPECT_NE(std::string::npos, readonly_info.find(kSimpleSql));
+    EXPECT_TRUE(base::Contains(readonly_info, kSimpleSql));
     EXPECT_EQ(diagnostics.sql_statement, kSimpleSql);
   }
 
@@ -1613,7 +1614,7 @@ TEST_P(SQLDatabaseTest, CollectDiagnosticInfo) {
     DatabaseDiagnostics diagnostics;
     const std::string full_info =
         db_->CollectErrorInfo(SQLITE_FULL, nullptr, &diagnostics);
-    EXPECT_EQ(std::string::npos, full_info.find(kSimpleSql));
+    EXPECT_FALSE(base::Contains(full_info, kSimpleSql));
     EXPECT_TRUE(diagnostics.sql_statement.empty());
   }
 
@@ -1628,9 +1629,9 @@ TEST_P(SQLDatabaseTest, CollectDiagnosticInfo) {
     DatabaseDiagnostics diagnostics;
     const std::string error_info =
         db_->CollectErrorInfo(SQLITE_ERROR, &s, &diagnostics);
-    EXPECT_NE(std::string::npos, error_info.find(kSimpleSql));
-    EXPECT_NE(std::string::npos, error_info.find("volcano"));
-    EXPECT_NE(std::string::npos, error_info.find("version: 4"));
+    EXPECT_TRUE(base::Contains(error_info, kSimpleSql));
+    EXPECT_TRUE(base::Contains(error_info, "volcano"));
+    EXPECT_TRUE(base::Contains(error_info, "version: 4"));
     EXPECT_EQ(diagnostics.sql_statement, kSimpleSql);
     EXPECT_EQ(diagnostics.version, 4);
 
@@ -1656,15 +1657,14 @@ TEST_P(SQLDatabaseTest, CollectDiagnosticInfo) {
     const std::string error_info =
         db_->CollectErrorInfo(SQLITE_ERROR, &s, &diagnostics);
     // Expect that the error message contains the table name and a column error.
-    EXPECT_NE(diagnostics.error_message.find("table"), std::string::npos);
-    EXPECT_NE(diagnostics.error_message.find("volcano"), std::string::npos);
-    EXPECT_NE(diagnostics.error_message.find("column"), std::string::npos);
+    EXPECT_TRUE(base::Contains(diagnostics.error_message, "table"));
+    EXPECT_TRUE(base::Contains(diagnostics.error_message, "volcano"));
+    EXPECT_TRUE(base::Contains(diagnostics.error_message, "column"));
 
     // Expect that bound values are not present.
-    EXPECT_EQ(diagnostics.error_message.find("bound_value1"),
-              std::string::npos);
-    EXPECT_EQ(diagnostics.error_message.find("42"), std::string::npos);
-    EXPECT_EQ(diagnostics.error_message.find("1234"), std::string::npos);
+    EXPECT_FALSE(base::Contains(diagnostics.error_message, "bound_value1"));
+    EXPECT_FALSE(base::Contains(diagnostics.error_message, "42"));
+    EXPECT_FALSE(base::Contains(diagnostics.error_message, "1234"));
   }
 }
 

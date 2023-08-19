@@ -9,8 +9,6 @@
 #include "base/base_paths.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
-#include "build/build_config.h"
-#include "net/cert/pem.h"
 #include "net/cert/pki/cert_error_params.h"
 #include "net/cert/pki/cert_issuer_source_static.h"
 #include "net/cert/pki/common_cert_errors.h"
@@ -36,6 +34,7 @@ namespace {
 
 using ::testing::_;
 using ::testing::ElementsAre;
+using ::testing::Exactly;
 using ::testing::Invoke;
 using ::testing::NiceMock;
 using ::testing::Return;
@@ -86,7 +85,8 @@ class AsyncCertIssuerSourceStatic : public CertIssuerSource {
 
     ~StaticAsyncRequest() override = default;
 
-    void GetNext(ParsedCertificateList* out_certs) override {
+    void GetNext(ParsedCertificateList* out_certs,
+                 base::SupportsUserData* debug_data) override {
       if (issuers_iter_ != issuers_.end())
         out_certs->push_back(std::move(*issuers_iter_++));
     }
@@ -1105,13 +1105,20 @@ TEST_F(PathBuilderKeyRolloverTest, TestReturnsPartialPathEndedByLoopChecker) {
   CertIssuerSourceStatic sync_certs;
   sync_certs.AddCert(newintermediate_);
   sync_certs.AddCert(newroot_);
-  sync_certs.AddCert(newrootrollover_);
+
+  CertIssuerSourceStatic rollover_certs;
+  rollover_certs.AddCert(newrootrollover_);
 
   CertPathBuilder path_builder(
       target_, &trust_store, &delegate_, time_, KeyPurpose::ANY_EKU,
       initial_explicit_policy_, user_initial_policy_set_,
       initial_policy_mapping_inhibit_, initial_any_policy_inhibit_);
   path_builder.AddCertIssuerSource(&sync_certs);
+  // The rollover root is added as a second issuer source to ensure we get paths
+  // back in a deterministic order, otherwise newroot and newrootrollover do not
+  // differ in any way that the path builder would use for prioritizing which
+  // path comes back first.
+  path_builder.AddCertIssuerSource(&rollover_certs);
 
   auto result = path_builder.Run();
 
@@ -1559,7 +1566,7 @@ TEST_F(PathBuilderKeyRolloverTest, TestDuplicateIntermediateAndRoot) {
 
 class MockCertIssuerSourceRequest : public CertIssuerSource::Request {
  public:
-  MOCK_METHOD1(GetNext, void(ParsedCertificateList*));
+  MOCK_METHOD2(GetNext, void(ParsedCertificateList*, base::SupportsUserData*));
 };
 
 class MockCertIssuerSource : public CertIssuerSource {
@@ -1595,7 +1602,10 @@ class AppendCertToList {
       const std::shared_ptr<const ParsedCertificate>& cert)
       : cert_(cert) {}
 
-  void operator()(ParsedCertificateList* out) { out->push_back(cert_); }
+  void operator()(ParsedCertificateList* out,
+                  base::SupportsUserData* debug_data) {
+    out->push_back(cert_);
+  }
 
  private:
   std::shared_ptr<const ParsedCertificate> cert_;
@@ -1633,7 +1643,7 @@ TEST_F(PathBuilderKeyRolloverTest, TestMultipleAsyncIssuersFromSingleSource) {
         .WillOnce(Invoke(&req_mover, &CertIssuerSourceRequestMover::MoveIt));
   }
 
-  EXPECT_CALL(*target_issuers_req, GetNext(_))
+  EXPECT_CALL(*target_issuers_req, GetNext(_, _))
       // First async batch: return oldintermediate_.
       .WillOnce(Invoke(AppendCertToList(oldintermediate_)))
       // Second async batch: return newintermediate_.
@@ -1720,7 +1730,7 @@ TEST_F(PathBuilderKeyRolloverTest, TestDuplicateAsyncIntermediates) {
               oldintermediate_->der_cert().Length(), nullptr)),
           {}, nullptr));
 
-  EXPECT_CALL(*target_issuers_req, GetNext(_))
+  EXPECT_CALL(*target_issuers_req, GetNext(_, _))
       // First async batch: return oldintermediate_.
       .WillOnce(Invoke(AppendCertToList(oldintermediate_)))
       // Second async batch: return a different copy of oldintermediate_ again.

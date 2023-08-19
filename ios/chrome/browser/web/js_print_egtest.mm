@@ -13,10 +13,6 @@
 #import "ios/web/public/test/http_server/http_server.h"
 #import "ios/web/public/test/http_server/http_server_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // Matcher for the cancel button on the printer options view.
 id<GREYMatcher> PrintOptionsCancelButton() {
@@ -51,9 +47,9 @@ id<GREYMatcher> PrintOptionsCancelButton() {
   [ChromeEarlGrey tapWebStateElementWithID:@"printButton"];
 
   // Test if print dialog appeared.
-  NSString* dialogTitle = @"Printer Options";
-  if (@available(iOS 15, *)) {
-    dialogTitle = @"Print Options";
+  NSString* dialogTitle = @"Print Options";
+  if (@available(iOS 17, *)) {
+    dialogTitle = @"Options";
   }
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(dialogTitle)]
       assertWithMatcher:grey_sufficientlyVisible()];

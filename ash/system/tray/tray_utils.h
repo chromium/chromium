@@ -7,6 +7,7 @@
 
 #include <cstdint>
 
+#include "ash/ash_export.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/tray/tray_popup_ink_drop_style.h"
 #include "components/session_manager/session_manager_types.h"
@@ -54,10 +55,6 @@ gfx::Insets GetTrayBubbleInsets(aura::Window* window);
 // hotseat for the display containing `window` is shown.
 int GetBubbleInsetHotseatCompensation(aura::Window* window);
 
-// Returns the separation above the shelf for positioning secondary tray
-// bubbles. (Palette Tray, IME Tray).
-gfx::Insets GetSecondaryBubbleInsets();
-
 // Gets the InkDrop insets based on `ink_drop_style`.
 gfx::Insets GetInkDropInsets(TrayPopupInkDropStyle ink_drop_style);
 
@@ -69,9 +66,9 @@ int CalculateMaxTrayBubbleHeight(aura::Window* window);
 // `anchor_to_shelf_corner` is true, the bubble will be anchored to the corner
 // of the shelf, near the status area button. Otherwise, it will be anchored to
 // the associated `tray`.
-TrayBubbleView::InitParams CreateInitParamsForTrayBubble(
-    TrayBackgroundView* tray,
-    bool anchor_to_shelf_corner = false);
+TrayBubbleView::InitParams ASH_EXPORT
+CreateInitParamsForTrayBubble(TrayBackgroundView* tray,
+                              bool anchor_to_shelf_corner = false);
 
 }  // namespace ash
 

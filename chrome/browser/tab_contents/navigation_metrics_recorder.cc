@@ -55,8 +55,7 @@ NavigationMetricsRecorder::GetThirdPartyCookieBlockState(const GURL& url) {
   if (!cookie_settings_->ShouldBlockThirdPartyCookies())
     return ThirdPartyCookieBlockState::kCookiesAllowed;
   bool blocking_enabled_for_site =
-      !cookie_settings_->IsThirdPartyAccessAllowed(url,
-                                                   /*source=*/nullptr);
+      !cookie_settings_->IsThirdPartyAccessAllowed(url);
   return blocking_enabled_for_site
              ? ThirdPartyCookieBlockState::kThirdPartyCookiesBlocked
              : ThirdPartyCookieBlockState::

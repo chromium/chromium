@@ -22,7 +22,7 @@ class TestModelExecutor
       scoped_refptr<base::SequencedTaskRunner>,
       scoped_refptr<base::SequencedTaskRunner>) override {}
 
-  void UpdateModelFile(const base::FilePath&) override {}
+  void UpdateModelFile(base::optional_ref<const base::FilePath>) override {}
 
   void UnloadModel() override {}
 
@@ -39,6 +39,9 @@ class TestModelExecutor
   void SendForBatchExecution(
       BatchExecutionCallback callback_on_complete,
       base::TimeTicks start_time,
+      const std::vector<std::vector<float>>& args) override;
+
+  std::vector<absl::optional<std::vector<float>>> SendForBatchExecutionSync(
       const std::vector<std::vector<float>>& args) override;
 };
 

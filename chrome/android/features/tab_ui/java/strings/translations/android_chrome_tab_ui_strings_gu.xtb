@@ -3,8 +3,6 @@
 <translationbundle lang="gu">
 <translation id="1075622780330595106">હજુ સુધી તમારા ટૅબમાંથી <ph name="NUMBER_OF_TABS" /> ટૅબનો ઉપયોગ કરવામાં આવ્યો નથી. તેને બંધ કરીએ?</translation>
 <translation id="125153950246128346">અન્ય ટૅબ જોવા માટે ટૅપ કરો</translation>
-<translation id="1403228085774130835">Chromeના મુખ્ય મેનૂ હેઠળ તાજેતરની ટૅબમાં તમે તમારી બંધ કરેલી ટૅબ શોધી શકશો</translation>
-<translation id="1455506303394048917">આ ડિવાઇસમાંથી આ છૂપી ટૅબમાંની તમારી પ્રવૃત્તિ સાફ કરવામાં આવશે</translation>
 <translation id="1499635324672558517">બધી છૂપી ટૅબ બંધ કરીએ?</translation>
 <translation id="1657719826150349398">ટૅબને નીચે ખસેડો</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ}one{<ph name="TABS_COUNT_MANY" /> ટૅબ}other{<ph name="TABS_COUNT_MANY" /> ટૅબ}}</translation>
@@ -47,6 +45,7 @@
 <translation id="5073204694187207510">પૂર્ણસ્ક્રીન ગ્રિડને છુપાવો</translation>
 <translation id="5076161749301278626">શું સ્ટોરના રિવ્યૂ જોવા માગો છો?</translation>
 <translation id="5082793167783849073">ગ્રૂપ બનાવીને ઝડપથી પેજની સરખામણી કરો. શરૂ કરવા માટે, લિંકને સ્પર્શ કરી રાખો.</translation>
+<translation id="5339733443032484186">તમારું છેલ્લું ટૅબ</translation>
 <translation id="5490235265819901748">ટૅબ ગ્રૂપ મોટું કરો</translation>
 <translation id="5494920125229734069">બધા પસંદ કરો</translation>
 <translation id="5556417849629758491">સ્ટોરની માહિતી જુઓ, વિકલ્પ સ્ક્રીનની ટોચની નજીક ઉપલબ્ધ છે</translation>
@@ -62,10 +61,12 @@
 <translation id="6228793724645064692">(સ્ટોરનું રેટિંગ)</translation>
 <translation id="6333260925957816943">આ સ્ટોર વિશેની માહિતી</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{પસંદ કરેલું <ph name="TABS_COUNT_ONE" /> ટૅબ અનગ્રૂપ કરો}one{પસંદ કરેલું <ph name="TABS_COUNT_MANY" /> ટૅબ અનગ્રૂપ કરો}other{પસંદ કરેલા <ph name="TABS_COUNT_MANY" /> ટૅબ અનગ્રૂપ કરો}}</translation>
+<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Chromeના મુખ્ય મેનૂ હેઠળ તાજેતરના ટૅબમાં તમે તમારા બંધ કરેલા ટૅબ શોધી શકશો. તમારું છૂપું ટૅબ ઉપલબ્ધ રહેશે નહીં.}one{Chromeના મુખ્ય મેનૂ હેઠળ તાજેતરના ટૅબમાં તમે તમારા બંધ કરેલા ટૅબ શોધી શકશો. તમારું # છૂપું ટૅબ ઉપલબ્ધ રહેશે નહીં.}other{Chromeના મુખ્ય મેનૂ હેઠળ તાજેતરના ટૅબમાં તમે તમારા બંધ કરેલા ટૅબ શોધી શકશો. તમારા # છૂપા ટૅબ ઉપલબ્ધ રહેશે નહીં.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ}one{<ph name="TABS_COUNT_MANY" /> ટૅબ}other{<ph name="TABS_COUNT_MANY" /> ટૅબ}}</translation>
 <translation id="6549021453810473782">સ્ટોરની માહિતી જુઓ</translation>
 <translation id="6562820390860419811">ટૅબને ડાબે ખસેડો</translation>
 <translation id="6615455863669487791">મને બતાવો</translation>
+<translation id="661742612106409204">Chromeના મુખ્ય મેનૂ હેઠળ તાજેતરના ટૅબમાં તમે તમારા બંધ કરેલા ટૅબ શોધી શકશો.</translation>
 <translation id="6840760312327750441">ટૅબનું ગ્રૂપ બનાવવા માટે, ટૅબને સ્પર્શ કરી રાખો. પછી, ટૅબને બીજા ટૅબ પર ખેંચો.</translation>
 <translation id="6856809498882026482">એક કરતાં વધુ પસંદગી કરવાનો મોડ છુપાવો</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{ટૅબ શેર કરો}one{ટૅબ શેર કરો}other{ટૅબ શેર કરો}}</translation>

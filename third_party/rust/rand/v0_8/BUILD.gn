@@ -2,6 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# @generated from third_party/rust/BUILD.gn.hbs by tools/crates/gnrt.
+# Do not edit!
+
 import("//build/rust/cargo_crate.gni")
 
 cargo_crate("lib") {
@@ -13,10 +16,41 @@ cargo_crate("lib") {
   # third_party.toml to use it from first-party code.
   visibility = [ "//third_party/rust/*" ]
   crate_root = "crate/src/lib.rs"
+  sources = [
+    "//third_party/rust/rand/v0_8/crate/src/distributions/bernoulli.rs",
+    "//third_party/rust/rand/v0_8/crate/src/distributions/distribution.rs",
+    "//third_party/rust/rand/v0_8/crate/src/distributions/float.rs",
+    "//third_party/rust/rand/v0_8/crate/src/distributions/integer.rs",
+    "//third_party/rust/rand/v0_8/crate/src/distributions/mod.rs",
+    "//third_party/rust/rand/v0_8/crate/src/distributions/other.rs",
+    "//third_party/rust/rand/v0_8/crate/src/distributions/slice.rs",
+    "//third_party/rust/rand/v0_8/crate/src/distributions/uniform.rs",
+    "//third_party/rust/rand/v0_8/crate/src/distributions/utils.rs",
+    "//third_party/rust/rand/v0_8/crate/src/distributions/weighted.rs",
+    "//third_party/rust/rand/v0_8/crate/src/distributions/weighted_index.rs",
+    "//third_party/rust/rand/v0_8/crate/src/lib.rs",
+    "//third_party/rust/rand/v0_8/crate/src/prelude.rs",
+    "//third_party/rust/rand/v0_8/crate/src/rng.rs",
+    "//third_party/rust/rand/v0_8/crate/src/rngs/adapter/mod.rs",
+    "//third_party/rust/rand/v0_8/crate/src/rngs/adapter/read.rs",
+    "//third_party/rust/rand/v0_8/crate/src/rngs/adapter/reseeding.rs",
+    "//third_party/rust/rand/v0_8/crate/src/rngs/mock.rs",
+    "//third_party/rust/rand/v0_8/crate/src/rngs/mod.rs",
+    "//third_party/rust/rand/v0_8/crate/src/rngs/small.rs",
+    "//third_party/rust/rand/v0_8/crate/src/rngs/std.rs",
+    "//third_party/rust/rand/v0_8/crate/src/rngs/thread.rs",
+    "//third_party/rust/rand/v0_8/crate/src/rngs/xoshiro128plusplus.rs",
+    "//third_party/rust/rand/v0_8/crate/src/rngs/xoshiro256plusplus.rs",
+    "//third_party/rust/rand/v0_8/crate/src/seq/index.rs",
+    "//third_party/rust/rand/v0_8/crate/src/seq/mod.rs",
+  ]
+  inputs = [
+    "//third_party/rust/rand/v0_8/crate/CHANGELOG.md",
+    "//third_party/rust/rand/v0_8/crate/README.md",
+  ]
 
   # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
-  sources = [ "crate/src/lib.rs" ]
   edition = "2018"
   cargo_pkg_version = "0.8.5"
   cargo_pkg_authors = "The Rand Project Developers, The Rust Project Developers"

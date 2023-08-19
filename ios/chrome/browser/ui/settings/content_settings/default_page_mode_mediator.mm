@@ -12,10 +12,6 @@
 #import "ios/chrome/browser/ui/settings/content_settings/default_page_mode_consumer.h"
 #import "ios/chrome/browser/ui/settings/utils/content_setting_backed_boolean.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface DefaultPageModeMediator () <BooleanObserver>
 
 @property(nonatomic, strong) ContentSettingBackedBoolean* requestDesktopSetting;

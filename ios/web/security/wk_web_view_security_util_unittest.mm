@@ -10,8 +10,8 @@
 #import <memory>
 
 #import "base/apple/bridging.h"
-#import "base/mac/foundation_util.h"
-#import "base/mac/scoped_cftyperef.h"
+#import "base/apple/foundation_util.h"
+#import "base/apple/scoped_cftyperef.h"
 #import "crypto/rsa_private_key.h"
 #import "net/cert/x509_certificate.h"
 #import "net/cert/x509_util.h"
@@ -20,10 +20,6 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace web {
 namespace {
@@ -138,7 +134,7 @@ TEST_F(WKWebViewSecurityUtilTest, CreationServerTrust) {
     if (@available(iOS 15.0, *)) {
       base::ScopedCFTypeRef<CFArrayRef> certificateChain(
           SecTrustCopyCertificateChain(server_trust.get()));
-      secCertificate = base::mac::CFCastStrict<SecCertificateRef>(
+      secCertificate = base::apple::CFCastStrict<SecCertificateRef>(
           CFArrayGetValueAtIndex(certificateChain, static_cast<CFIndex>(i)));
     }
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0

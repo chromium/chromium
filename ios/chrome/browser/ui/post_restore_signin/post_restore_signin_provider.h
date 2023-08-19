@@ -14,8 +14,7 @@
 // The Post Restore Sign-in promo comes in two variations: (1) A fullscreen,
 // FRE-like promo, and (2) a native iOS alert promo. This handler provides the
 // necessary data and functionality to power both variations of this promo.
-@interface PostRestoreSignInProvider
-    : NSObject <BanneredPromoViewProvider, StandardPromoAlertProvider>
+@interface PostRestoreSignInProvider : NSObject <StandardPromoAlertProvider>
 
 - (instancetype)init;
 

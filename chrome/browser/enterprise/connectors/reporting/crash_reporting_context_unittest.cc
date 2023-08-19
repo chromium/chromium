@@ -142,7 +142,8 @@ TEST_F(CrashReportingContextTest, UploadToReportingServer) {
               ReportPastEvent(ReportingServiceSettings::kBrowserCrashEvent, _,
                               _, base::Time::FromTimeT(timestamp)))
       .Times(1);
-  UploadToReportingServer(reporting_client, &pref_service, reports);
+  UploadToReportingServer(reporting_client->GetWeakPtr(), &pref_service,
+                          reports);
   EXPECT_EQ(timestamp, GetLatestCrashReportTime(&pref_service));
 }
 

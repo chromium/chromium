@@ -12,10 +12,6 @@
 #import "ios/chrome/browser/signin/trusted_vault_configuration.h"
 #import "ios/public/provider/chrome/browser/signin/trusted_vault_api.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // static
 TrustedVaultClientBackend* TrustedVaultClientBackendFactory::GetForBrowserState(
     ChromeBrowserState* browser_state) {

@@ -10,7 +10,7 @@
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
-#include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_rules_manager.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/services/service_provider_test_helper.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
@@ -28,6 +28,7 @@ constexpr char kEmailId[] = "test@example.com";
 constexpr char kGaiaId[] = "12345";
 
 constexpr char kExampleUrl[] = "https://example.com";
+constexpr char kExampleUrl2[] = "https://example2.com";
 constexpr ino_t kInode = 0;
 constexpr char kFilePath[] = "test.txt";
 
@@ -116,11 +117,12 @@ class DlpFilesPolicyServiceProviderTest
 
   content::BrowserTaskEnvironment task_environment_;
 
-  raw_ptr<policy::MockDlpRulesManager, ExperimentalAsh> mock_rules_manager_ =
-      nullptr;
+  raw_ptr<policy::MockDlpRulesManager, DanglingUntriaged | ExperimentalAsh>
+      mock_rules_manager_ = nullptr;
 
   const std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<FakeChromeUserManager, ExperimentalAsh> user_manager_;
+  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_;
 
   std::unique_ptr<DlpFilesPolicyServiceProvider> dlp_policy_service_;
@@ -147,12 +149,10 @@ TEST_P(DlpFilesPolicyServiceProviderTest, IsDlpPolicyMatched) {
                                testing::Return(level)));
 
   EXPECT_CALL(*mock_rules_manager_, GetDlpFilesController())
-      .Times(::testing::AnyNumber())
-      .WillOnce(::testing::Return(files_controller_.get()));
+      .WillRepeatedly(::testing::Return(files_controller_.get()));
 
   EXPECT_CALL(*mock_rules_manager_, GetReportingManager())
-      .Times(::testing::AnyNumber())
-      .WillOnce(::testing::Return(nullptr));
+      .WillRepeatedly(::testing::Return(nullptr));
 
   auto response =
       CallDlpFilesPolicyServiceMethod<dlp::IsDlpPolicyMatchedResponse>(
@@ -161,6 +161,63 @@ TEST_P(DlpFilesPolicyServiceProviderTest, IsDlpPolicyMatched) {
   ASSERT_TRUE(response->has_restricted());
   EXPECT_EQ(response->restricted(),
             (level == policy::DlpRulesManager::Level::kBlock));
+}
+
+TEST_P(DlpFilesPolicyServiceProviderTest, IsFilesTransferRestricted) {
+  dlp::IsFilesTransferRestrictedRequest request;
+  request.set_destination_url(kExampleUrl);
+  auto* file = request.add_transferred_files();
+  file->set_source_url(kExampleUrl2);
+  file->set_inode(kInode);
+  file->set_path(kFilePath);
+  request.set_file_action(::dlp::FileAction::COPY);
+  request.set_io_task_id(1234);
+
+  policy::DlpRulesManager::Level level = GetParam();
+  EXPECT_CALL(
+      *mock_rules_manager_,
+      IsRestrictedDestination(GURL(kExampleUrl2), GURL(kExampleUrl),
+                              policy::DlpRulesManager::Restriction::kFiles,
+                              testing::_, testing::_, testing::_))
+      .WillOnce(testing::Return(level));
+
+  EXPECT_CALL(*mock_rules_manager_, GetDlpFilesController())
+      .WillRepeatedly(::testing::Return(files_controller_.get()));
+
+  EXPECT_CALL(*mock_rules_manager_, GetReportingManager())
+      .WillRepeatedly(::testing::Return(nullptr));
+
+  auto response =
+      CallDlpFilesPolicyServiceMethod<dlp::IsFilesTransferRestrictedResponse>(
+          dlp::kDlpFilesPolicyServiceIsFilesTransferRestrictedMethod, request);
+  ASSERT_TRUE(response.has_value());
+  ASSERT_EQ(response->files_restrictions().size(), 1);
+}
+
+TEST_P(DlpFilesPolicyServiceProviderTest, IsFilesTransferRestrictedSystem) {
+  dlp::IsFilesTransferRestrictedRequest request;
+  request.set_destination_component(::dlp::DlpComponent::SYSTEM);
+  auto* file = request.add_transferred_files();
+  file->set_source_url(kExampleUrl2);
+  file->set_inode(kInode);
+  file->set_path(kFilePath);
+  request.set_file_action(::dlp::FileAction::COPY);
+  request.set_io_task_id(1234);
+
+  EXPECT_CALL(*mock_rules_manager_, IsRestrictedDestination).Times(0);
+
+  EXPECT_CALL(*mock_rules_manager_, GetDlpFilesController()).Times(0);
+
+  EXPECT_CALL(*mock_rules_manager_, GetReportingManager())
+      .WillRepeatedly(::testing::Return(nullptr));
+
+  auto response =
+      CallDlpFilesPolicyServiceMethod<dlp::IsFilesTransferRestrictedResponse>(
+          dlp::kDlpFilesPolicyServiceIsFilesTransferRestrictedMethod, request);
+  ASSERT_TRUE(response.has_value());
+  ASSERT_EQ(response->files_restrictions().size(), 1);
+  EXPECT_EQ(dlp::RestrictionLevel::LEVEL_ALLOW,
+            response->files_restrictions(0).restriction_level());
 }
 
 }  // namespace ash

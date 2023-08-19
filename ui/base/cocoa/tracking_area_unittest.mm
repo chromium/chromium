@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "ui/base/cocoa/tracking_area.h"
-#include "base/mac/scoped_nsobject.h"
 #import "ui/base/test/cocoa_helper.h"
 
 // A test object that counts the number of times a message is sent to it.
@@ -31,12 +30,11 @@ class CrTrackingAreaTest : public CocoaTest {
         trackingArea_([[CrTrackingArea alloc]
             initWithRect:NSMakeRect(0, 0, 100, 100)
                  options:NSTrackingMouseMoved | NSTrackingActiveInKeyWindow
-                   owner:owner_.get()
-                userInfo:nil]) {
-  }
+                   owner:owner_
+                userInfo:nil]) {}
 
-  base::scoped_nsobject<TestTrackingAreaOwner> owner_;
-  base::scoped_nsobject<CrTrackingArea> trackingArea_;
+  TestTrackingAreaOwner* __strong owner_;
+  CrTrackingArea* __strong trackingArea_;
 };
 
 TEST_F(CrTrackingAreaTest, OwnerForwards) {

@@ -4,7 +4,7 @@
 
 #include "headless/lib/browser/headless_browser_impl.h"
 
-#import "base/mac/scoped_objc_class_swizzler.h"
+#import "base/apple/scoped_objc_class_swizzler.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -14,10 +14,6 @@
 #include "headless/lib/browser/headless_web_contents_impl.h"
 #import "ui/base/cocoa/base_view.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 // Overrides events and actions for NSPopUpButtonCell.
 @interface FakeNSPopUpButtonCell : NSObject
@@ -58,8 +54,8 @@ class HeadlessPopUpMethods {
                                [FakeNSPopUpButtonCell class],
                                @selector(attachPopUpWithFrame:inView:)) {}
 
-  base::mac::ScopedObjCClassSwizzler popup_perform_click_swizzler_;
-  base::mac::ScopedObjCClassSwizzler popup_attach_swizzler_;
+  base::apple::ScopedObjCClassSwizzler popup_perform_click_swizzler_;
+  base::apple::ScopedObjCClassSwizzler popup_attach_swizzler_;
 };
 
 NSString* const kActivityReason = @"Batch headless process";

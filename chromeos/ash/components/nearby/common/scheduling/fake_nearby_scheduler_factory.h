@@ -33,28 +33,34 @@ class FakeNearbySchedulerFactory : public NearbySchedulerFactory {
     ExpirationInstance(ExpirationInstance&&);
     ~ExpirationInstance();
 
-    raw_ptr<FakeNearbyScheduler, ExperimentalAsh> fake_scheduler = nullptr;
+    raw_ptr<FakeNearbyScheduler, DanglingUntriaged | ExperimentalAsh>
+        fake_scheduler = nullptr;
     NearbyExpirationScheduler::ExpirationTimeFunctor expiration_time_functor;
     bool retry_failures;
     bool require_connectivity;
-    raw_ptr<PrefService, ExperimentalAsh> pref_service = nullptr;
+    raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> pref_service =
+        nullptr;
     raw_ptr<const base::Clock, ExperimentalAsh> clock = nullptr;
   };
 
   struct OnDemandInstance {
-    raw_ptr<FakeNearbyScheduler, ExperimentalAsh> fake_scheduler = nullptr;
+    raw_ptr<FakeNearbyScheduler, DanglingUntriaged | ExperimentalAsh>
+        fake_scheduler = nullptr;
     bool retry_failures;
     bool require_connectivity;
-    raw_ptr<PrefService, ExperimentalAsh> pref_service = nullptr;
+    raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> pref_service =
+        nullptr;
     raw_ptr<const base::Clock, ExperimentalAsh> clock = nullptr;
   };
 
   struct PeriodicInstance {
-    raw_ptr<FakeNearbyScheduler, ExperimentalAsh> fake_scheduler = nullptr;
+    raw_ptr<FakeNearbyScheduler, DanglingUntriaged | ExperimentalAsh>
+        fake_scheduler = nullptr;
     base::TimeDelta request_period;
     bool retry_failures;
     bool require_connectivity;
-    raw_ptr<PrefService, ExperimentalAsh> pref_service = nullptr;
+    raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> pref_service =
+        nullptr;
     raw_ptr<const base::Clock, ExperimentalAsh> clock = nullptr;
   };
 

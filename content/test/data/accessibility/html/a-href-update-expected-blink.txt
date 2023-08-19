@@ -1,0 +1,16 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++staticText name='done'
+++++++++++inlineTextBox name='done'
+++++++++staticText name=' '
+++++++++++inlineTextBox name=' '
+++++++++link name='Link set without delay'
+++++++++++staticText name='Link set without delay'
+++++++++++++inlineTextBox name='Link set without delay'
+++++++++staticText name=' '
+++++++++++inlineTextBox name=' '
+++++++++link name='Link set with delay'
+++++++++++staticText name='Link set with delay'
+++++++++++++inlineTextBox name='Link set with delay'

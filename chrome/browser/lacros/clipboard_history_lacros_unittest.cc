@@ -5,14 +5,13 @@
 #include "chrome/browser/lacros/clipboard_history_lacros.h"
 
 #include <utility>
+#include <vector>
 
 #include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#include "chromeos/lacros/lacros_test_helper.h"
 #include "chromeos/startup/browser_init_params.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_types.h"
@@ -23,6 +22,7 @@ namespace crosapi {
 namespace {
 
 using ::testing::ElementsAre;
+using ::testing::Mock;
 
 // Matchers --------------------------------------------------------------------
 
@@ -77,27 +77,20 @@ class ClipboardHistoryLacrosTest : public testing::Test {
         crosapi::mojom::BrowserInitParams::New();
     params_ptr->enable_clipboard_history_refresh = true;
     chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params_ptr));
-
-    // Inject the mock clipboard history interface.
-    chromeos::LacrosService::Get()->InjectRemoteForTesting(
-        mock_clipboard_history_ash_.receiver_.BindNewPipeAndPassRemote());
   }
 
   MockClipboardHistoryAsh mock_clipboard_history_ash_;
 
  private:
   base::test::TaskEnvironment task_environment_;
-  chromeos::ScopedLacrosServiceTestHelper helper_;
 };
 
 TEST_F(ClipboardHistoryLacrosTest, Basics) {
   // Verifies that `ClipboardHistoryLacros` calls the clipboard history
   // interface to register itself as a client.
   EXPECT_CALL(mock_clipboard_history_ash_, RegisterClient).Times(1);
-  ClipboardHistoryLacros client;
-  chromeos::LacrosService::Get()
-      ->GetRemote<crosapi::mojom::ClipboardHistory>()
-      .FlushForTesting();
+  ClipboardHistoryLacros client(&mock_clipboard_history_ash_);
+  Mock::VerifyAndClearExpectations(&mock_clipboard_history_ash_);
 
   std::vector<crosapi::mojom::ClipboardHistoryItemDescriptorPtr>
       descriptor_ptrs_from_ash;

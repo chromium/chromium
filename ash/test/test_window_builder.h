@@ -74,7 +74,8 @@ class ASH_EXPORT TestWindowBuilder {
  private:
   raw_ptr<aura::Window, ExperimentalAsh> parent_ = nullptr;
   raw_ptr<aura::Window, ExperimentalAsh> context_ = nullptr;
-  raw_ptr<aura::WindowDelegate, ExperimentalAsh> delegate_ = nullptr;
+  raw_ptr<aura::WindowDelegate, DanglingUntriaged | ExperimentalAsh> delegate_ =
+      nullptr;
   aura::client::WindowType window_type_ = aura::client::WINDOW_TYPE_NORMAL;
   ui::LayerType layer_type_ = ui::LAYER_TEXTURED;
   gfx::Rect bounds_;

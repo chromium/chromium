@@ -65,9 +65,13 @@ class SafeBrowsingTabHelper
     bool IsQueryStale(const SafeBrowsingQueryManager::Query& query);
 
     // Stores `policy_decision` for `query`.  `query` must not be stale.
+    // `performed_check` is the type of check that was performed when deciding
+    // the query.
     void HandlePolicyDecision(
         const SafeBrowsingQueryManager::Query& query,
-        const web::WebStatePolicyDecider::PolicyDecision& policy_decision);
+        const web::WebStatePolicyDecider::PolicyDecision& policy_decision,
+        safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck
+            performed_check);
 
     // Notifies the policy decider that a new main frame document has been
     // loaded.
@@ -90,6 +94,10 @@ class SafeBrowsingTabHelper
       GURL url;
       absl::optional<web::WebStatePolicyDecider::PolicyDecision> decision;
       web::WebStatePolicyDecider::PolicyDecisionCallback response_callback;
+
+      // The time at which a navigation was delayed waiting for the result of
+      // this query.
+      base::TimeTicks delay_start_time;
     };
 
     // Represents the policy decision for a URL loaded in a sub frame.
@@ -106,6 +114,10 @@ class SafeBrowsingTabHelper
       absl::optional<web::WebStatePolicyDecider::PolicyDecision> decision;
       std::list<web::WebStatePolicyDecider::PolicyDecisionCallback>
           response_callbacks;
+
+      // The times at which navigations were delayed waiting for the result of
+      // this query. This list has the same ordering as `response_callbacks`.
+      std::list<base::TimeTicks> delay_start_times;
     };
 
     // web::WebStatePolicyDecider implementation
@@ -133,16 +145,21 @@ class SafeBrowsingTabHelper
     MainFrameUrlQuery* GetOldestPendingMainFrameQuery(const GURL& url);
 
     // Callback invoked when a main frame query for `url` has finished with
-    // `decision`.
+    // `decision` after performing a check of type `performed_check`.
     void OnMainFrameUrlQueryDecided(
         const GURL& url,
-        web::WebStatePolicyDecider::PolicyDecision decision);
+        web::WebStatePolicyDecider::PolicyDecision decision,
+        safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck
+            performed_check);
 
     // Callback invoked when a sub frame url query for the NavigationItem with
-    // `navigation_item_id` has finished with `decision`.
+    // `navigation_item_id` has finished with `decision` after performing a
+    // check of type `performed_check`.
     void OnSubFrameUrlQueryDecided(
         const GURL& url,
-        web::WebStatePolicyDecider::PolicyDecision decision);
+        web::WebStatePolicyDecider::PolicyDecision decision,
+        safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck
+            performed_check);
 
     // Returns the policy decision determined by the results of queries for URLs
     // in the main-frame redirect chain and the `pending_main_frame_query`. If
@@ -185,7 +202,9 @@ class SafeBrowsingTabHelper
     void SafeBrowsingQueryFinished(
         SafeBrowsingQueryManager* manager,
         const SafeBrowsingQueryManager::Query& query,
-        const SafeBrowsingQueryManager::Result& result) override;
+        const SafeBrowsingQueryManager::Result& result,
+        safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck
+            performed_check) override;
     void SafeBrowsingQueryManagerDestroyed(
         SafeBrowsingQueryManager* manager) override;
 

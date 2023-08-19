@@ -9,7 +9,8 @@ import {Service} from './service.js';
 
 declare global {
   interface HTMLElementEventMap {
-    'drag-and-drop-load-error': CustomEvent<chrome.developerPrivate.LoadError>;
+    'drag-and-drop-load-error':
+        CustomEvent<Error|chrome.developerPrivate.LoadError>;
   }
 }
 

@@ -75,8 +75,8 @@ class TestTitleObserver : public TabStripModelObserver {
  private:
   bool seen_target_title_ = false;
 
-  raw_ptr<content::WebContents, DanglingUntriaged> contents_;
-  raw_ptr<Browser, DanglingUntriaged> browser_;
+  raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> contents_;
+  raw_ptr<Browser, AcrossTasksDanglingUntriaged> browser_;
   std::u16string target_title_;
   base::RunLoop awaiter_;
 };
@@ -209,7 +209,7 @@ class CustomTabBarViewBrowserTest
   }
 
   void InstallPWA(const GURL& start_url) {
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
+    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
     web_app_info->start_url = start_url;
     web_app_info->scope = start_url.GetWithoutFilename();
     web_app_info->user_display_mode =
@@ -218,7 +218,7 @@ class CustomTabBarViewBrowserTest
   }
 
   void InstallBookmark(const GURL& start_url) {
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
+    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
     web_app_info->start_url = start_url;
     web_app_info->scope = start_url.DeprecatedGetOriginAsURL();
     web_app_info->user_display_mode =
@@ -226,15 +226,15 @@ class CustomTabBarViewBrowserTest
     Install(std::move(web_app_info));
   }
 
-  raw_ptr<BrowserView, DanglingUntriaged> browser_view_;
-  raw_ptr<LocationBarView, DanglingUntriaged> location_bar_;
-  raw_ptr<CustomTabBarView, DanglingUntriaged> custom_tab_bar_;
-  raw_ptr<Browser, DanglingUntriaged> app_browser_ = nullptr;
-  raw_ptr<web_app::AppBrowserController, DanglingUntriaged> app_controller_ =
-      nullptr;
+  raw_ptr<BrowserView, AcrossTasksDanglingUntriaged> browser_view_;
+  raw_ptr<LocationBarView, AcrossTasksDanglingUntriaged> location_bar_;
+  raw_ptr<CustomTabBarView, AcrossTasksDanglingUntriaged> custom_tab_bar_;
+  raw_ptr<Browser, AcrossTasksDanglingUntriaged> app_browser_ = nullptr;
+  raw_ptr<web_app::AppBrowserController, AcrossTasksDanglingUntriaged>
+      app_controller_ = nullptr;
 
  private:
-  void Install(std::unique_ptr<WebAppInstallInfo> web_app_info) {
+  void Install(std::unique_ptr<web_app::WebAppInstallInfo> web_app_info) {
     const GURL start_url = web_app_info->start_url;
     web_app::AppId app_id = InstallWebApp(std::move(web_app_info));
 

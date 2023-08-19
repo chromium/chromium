@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <os/availability.h>
-
-#import "base/mac/scoped_nsobject.h"
 #include "base/strings/sys_string_conversions.h"
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
@@ -69,8 +66,8 @@ NSString* const kTouchBarCancelId = @"com.google.chrome-CANCEL";
   if (!buttonExists)
     return nil;
 
-  base::scoped_nsobject<NSCustomTouchBarItem> item([[NSClassFromString(
-      @"NSCustomTouchBarItem") alloc] initWithIdentifier:identifier]);
+  NSCustomTouchBarItem* item = [[NSClassFromString(@"NSCustomTouchBarItem")
+      alloc] initWithIdentifier:identifier];
   NSButton* button =
       [NSButton buttonWithTitle:base::SysUTF16ToNSString(buttonLabel)
                          target:self
@@ -87,7 +84,7 @@ NSString* const kTouchBarCancelId = @"com.google.chrome-CANCEL";
   [button setEnabled:isButtonEnabled];
   [button setTag:type];
   [item setView:button];
-  return item.autorelease();
+  return item;
 }
 
 // NSTouchBarProvider protocol implementation (via NSResponder category).
@@ -101,8 +98,7 @@ NSString* const kTouchBarCancelId = @"com.google.chrome-CANCEL";
   if (!buttonsExist)
     return nil;
 
-  base::scoped_nsobject<NSTouchBar> bar(
-      [[NSClassFromString(@"NSTouchBar") alloc] init]);
+  NSTouchBar* bar = [[NSTouchBar alloc] init];
   [bar setDelegate:self];
 
   // Use a group rather than individual items so they can be centered together.
@@ -110,7 +106,7 @@ NSString* const kTouchBarCancelId = @"com.google.chrome-CANCEL";
 
   // Setting the group as principal will center it in the TouchBar.
   [bar setPrincipalItemIdentifier:kTouchBarDialogButtonsGroupId];
-  return bar.autorelease();
+  return bar;
 }
 
 @end

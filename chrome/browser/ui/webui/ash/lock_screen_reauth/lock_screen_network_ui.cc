@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ash/public/cpp/network_config_service.h"
+#include "ash/webui/common/trusted_types_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/ui/webui/ash/internet_config_dialog.h"
 #include "chrome/browser/ui/webui/ash/internet_detail_dialog.h"
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_network_handler.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
@@ -72,9 +74,7 @@ LockScreenNetworkUI::LockScreenNetworkUI(content::WebUI* web_ui)
   content::WebUIDataSource* html = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUILockScreenNetworkHost);
-
-  // TODO(crbug.com/1400799): Enable TrustedTypes
-  html->DisableTrustedTypesCSP();
+  ash::EnableTrustedTypesCSP(html);
 
   html->AddLocalizedStrings(localized_strings);
 

@@ -143,6 +143,49 @@ TYPED_TEST(MinidumpContextWriter, MinidumpContextAMD64Writer) {
   }
 }
 
+TYPED_TEST(MinidumpContextWriter, MinidumpContextRISCV64Writer) {
+  {
+    // Make sure that a heap-allocated context writer has the proper alignment,
+    // because it may be nonstandard.
+    auto context_writer = std::make_unique<MinidumpContextRISCV64Writer>();
+    EXPECT_EQ(reinterpret_cast<uintptr_t>(context_writer.get()) &
+                  (alignof(MinidumpContextRISCV64Writer) - 1),
+              0u);
+  }
+
+  StringFile string_file;
+
+  {
+    // Make sure that a context writer that’s untouched writes a zeroed-out
+    // context.
+    SCOPED_TRACE("zero");
+
+    EmptyContextTest<MinidumpContextRISCV64Writer,
+                     MinidumpContextRISCV64,
+                     TypeParam>(ExpectMinidumpContextRISCV64);
+  }
+
+  {
+    SCOPED_TRACE("nonzero");
+
+    string_file.Reset();
+    constexpr uint32_t kSeed = 0x808664;
+
+    MinidumpContextRISCV64Writer context_writer;
+    InitializeMinidumpContextRISCV64(context_writer.context(), kSeed);
+
+    EXPECT_TRUE(context_writer.WriteEverything(&string_file));
+    ASSERT_EQ(string_file.string().size(), sizeof(MinidumpContextRISCV64));
+
+    const MinidumpContextRISCV64* observed =
+        MinidumpWritableAtRVA<MinidumpContextRISCV64>(string_file.string(),
+                                                      TypeParam(0));
+    ASSERT_TRUE(observed);
+
+    ExpectMinidumpContextRISCV64(kSeed, observed, false);
+  }
+}
+
 template <typename Writer, typename Context, typename RVAType>
 void FromSnapshotTest(const CPUContext& snapshot_context,
                       void (*expect_context)(uint32_t, const Context*, bool),
@@ -266,6 +309,23 @@ TYPED_TEST(MinidumpContextWriter, MIPS64_FromSnapshot) {
   FromSnapshotTest<MinidumpContextMIPS64Writer,
                    MinidumpContextMIPS64,
                    TypeParam>(context, ExpectMinidumpContextMIPS64, kSeed);
+}
+
+TYPED_TEST(MinidumpContextWriter, RISCV64_Zeros) {
+  EmptyContextTest<MinidumpContextRISCV64Writer,
+                   MinidumpContextRISCV64,
+                   TypeParam>(ExpectMinidumpContextRISCV64);
+}
+
+TYPED_TEST(MinidumpContextWriter, RISCV64_FromSnapshot) {
+  constexpr uint32_t kSeed = 64;
+  CPUContextRISCV64 context_riscv64;
+  CPUContext context;
+  context.riscv64 = &context_riscv64;
+  InitializeCPUContextRISCV64(&context, kSeed);
+  FromSnapshotTest<MinidumpContextRISCV64Writer,
+                   MinidumpContextRISCV64,
+                   TypeParam>(context, ExpectMinidumpContextRISCV64, kSeed);
 }
 
 }  // namespace

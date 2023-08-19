@@ -11,6 +11,7 @@
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_util.h"
 #include "ash/public/cpp/app_types_util.h"
+#include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -40,7 +41,6 @@
 #include "chrome/browser/sharesheet/sharesheet_service_factory.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/webshare/prepare_directory_task.h"
 #include "chrome/common/chrome_paths_internal.h"
 #include "components/services/app_service/public/cpp/intent.h"
@@ -401,8 +401,8 @@ void NearbyShareSessionImpl::OnPreparedDirectory(base::File::Error result) {
     return;
   }
 
-  // TODO(b/191232168): Figure out why PrepareDirectoryTask is flaky. Ignoring
-  // the error seem to always work otherwise will sometimes return error.
+  // PrepareDirectoryTask can sometimes be flaky but the error does not affect
+  // functionality. Log a warning when this happens and continue.
   PLOG_IF(WARNING, result != base::File::FILE_OK)
       << "Prepare Directory was not successful";
 

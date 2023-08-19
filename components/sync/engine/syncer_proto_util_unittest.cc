@@ -7,14 +7,11 @@
 #include <memory>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/sync/base/features.h"
 #include "components/sync/engine/cycle/sync_cycle_context.h"
-#include "components/sync/protocol/bookmark_specifics.pb.h"
-#include "components/sync/protocol/password_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/test/fake_sync_scheduler.h"
@@ -60,7 +57,6 @@ ClientToServerMessage DefaultGetUpdatesRequest() {
   msg.mutable_bag_of_chips();
   msg.set_api_key("api_key");
   msg.mutable_client_status();
-  msg.set_invalidator_client_id("client_id");
 
   return msg;
 }
@@ -106,7 +102,6 @@ class SyncerProtoUtilTest : public testing::Test {
         /*listeners=*/std::vector<SyncEngineEventListener*>(),
         /*debug_info_getter=*/nullptr,
         /*model_type_registry=*/nullptr,
-        /*invalidator_client_id=*/"",
         /*cache_guid=*/"",
         /*birthday=*/"",
         /*bag_of_chips=*/"",
@@ -275,8 +270,8 @@ TEST_F(SyncerProtoUtilTest, ShouldHandleGetUpdatesRetryDelay) {
                            /*extensions_activity=*/nullptr,
                            /*listeners=*/{},
                            /*debug_info_getter=*/nullptr,
-                           /*model_type_registry=*/nullptr,
-                           "invalidator_client_id", "cache_guid", "birthday",
+                           /*model_type_registry=*/nullptr, "cache_guid",
+                           "birthday",
                            /*bag_of_chips=*/"", base::Seconds(100));
   SyncCycle cycle(&context, &mock_sync_scheduler);
 
@@ -306,8 +301,8 @@ TEST_F(SyncerProtoUtilTest, ShouldIgnoreGetUpdatesRetryDelay) {
                            /*extensions_activity=*/nullptr,
                            /*listeners=*/{},
                            /*debug_info_getter=*/nullptr,
-                           /*model_type_registry=*/nullptr,
-                           "invalidator_client_id", "cache_guid", "birthday",
+                           /*model_type_registry=*/nullptr, "cache_guid",
+                           "birthday",
                            /*bag_of_chips=*/"", base::Seconds(100));
   SyncCycle cycle(&context, &mock_sync_scheduler);
 

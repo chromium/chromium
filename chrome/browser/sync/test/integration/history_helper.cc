@@ -9,20 +9,14 @@
 
 #include "chrome/browser/sync/test/integration/typed_urls_helper.h"
 #include "components/sync/protocol/history_specifics.pb.h"
+#include "components/sync/protocol/proto_value_conversions.h"
 
 namespace sync_pb {
 
 // Makes the GMock matchers print out a readable version of the protobuf.
 void PrintTo(const HistorySpecifics& history, std::ostream* os) {
-  *os << "[ Visit time: " << history.visit_time_windows_epoch_micros()
-      << ", Originator: " << history.originator_cache_guid()
-      << ", Redirects: ( ";
-  for (int i = 0; i < history.redirect_entries_size(); i++) {
-    *os << history.redirect_entries(i).url() << " ";
-  }
-  *os << "), Transition: " << history.page_transition().core_transition()
-      << ", Referring visit: " << history.originator_referring_visit_id()
-      << ", Duration: " << history.visit_duration_micros() << " ]";
+  base::Value serialized = syncer::HistorySpecificsToValue(history);
+  *os << serialized;
 }
 
 }  // namespace sync_pb

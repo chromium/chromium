@@ -5,9 +5,10 @@
 import 'chrome://resources/cr_components/managed_footnote/managed_footnote.js';
 import './item.js';
 import './shared_style.css.js';
+import './review_panel.js';
 
-import {CrContainerShadowMixin} from 'chrome://resources/cr_elements/cr_container_shadow_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -16,8 +17,7 @@ import {getTemplate} from './item_list.html.js';
 
 type Filter = (info: chrome.developerPrivate.ExtensionInfo) => boolean;
 
-const ExtensionsItemListElementBase =
-    I18nMixin(CrContainerShadowMixin(PolymerElement));
+const ExtensionsItemListElementBase = I18nMixin(PolymerElement);
 
 export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
   static get is() {
@@ -63,6 +63,16 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
         type: Number,
         value: 0,
       },
+
+      showSafetyCheckReviewPanel_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('safetyCheckShowReviewPanel'),
+      },
+
+      hasSafetyCheckTriggeringExtension_: {
+        type: Boolean,
+        computed: 'computeHasSafetyCheckTriggeringExtension_(extensions)',
+      },
     };
   }
 
@@ -75,6 +85,8 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
   private maxColumns_: number;
   private shownAppsCount_: number;
   private shownExtensionsCount_: number;
+  private showSafetyCheckReviewPanel_: boolean;
+  private hasSafetyCheckTriggeringExtension_: boolean;
 
   getDetailsButton(id: string): HTMLElement|null {
     const item =
@@ -102,6 +114,20 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
 
     return i => [i.name, i.id].some(
                s => s.toLowerCase().includes(formattedFilter));
+  }
+
+  private computeHasSafetyCheckTriggeringExtension_(): boolean {
+    if (!this.extensions) {
+      return false;
+    }
+    for (const extension of this.extensions) {
+      if (!!extension.safetyCheckText &&
+          !!extension.safetyCheckText.panelString &&
+          this.showSafetyCheckReviewPanel_) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private shouldShowEmptyItemsMessage_() {

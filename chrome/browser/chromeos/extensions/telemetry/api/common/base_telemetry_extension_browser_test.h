@@ -29,12 +29,14 @@ class BaseTelemetryExtensionBrowserTest
 
  protected:
   std::string extension_id() const;
-  std::string public_key() const;
+  virtual std::string public_key() const;
   virtual std::string pwa_page_url() const;
   virtual std::string matches_origin() const;
   void CreateExtensionAndRunServiceWorker(
       const std::string& service_worker_content);
-  virtual std::string GetManifestFile(const std::string& matches_origin);
+  void OpenAppUiAndMakeItSecure();
+  virtual std::string GetManifestFile(const std::string& manifest_key,
+                                      const std::string& matches_origin);
 
   std::unique_ptr<ApiGuardDelegate::Factory> api_guard_delegate_factory_;
 };

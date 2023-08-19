@@ -1,0 +1,25 @@
+caption: Forces Native Client (NaCl) to be allowed to run.
+default: false
+default_for_enterprise_users: false
+desc: |-
+  Setting the policy to True allows Native Client to continue to run even if the default behavior is that Native Client is disabled.
+  Setting the policy to False will use the default behavior.
+example_value: true
+features:
+  dynamic_refresh: false
+  per_profile: false
+items:
+- caption: Allow Native Client to Run
+  value: true
+- caption: Use Default Behavior
+  value: false
+owners:
+- erikchen@chromium.org
+- file://ATL_OWNERS
+schema:
+  type: boolean
+supported_on:
+- chrome_os:116-
+- chrome.*:116-119
+tags: []
+type: main

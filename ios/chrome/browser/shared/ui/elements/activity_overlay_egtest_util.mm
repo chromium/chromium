@@ -13,10 +13,6 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 void WaitForActivityOverlayToDisappear() {
   ConditionBlock condition = ^{
     NSError* error = nil;

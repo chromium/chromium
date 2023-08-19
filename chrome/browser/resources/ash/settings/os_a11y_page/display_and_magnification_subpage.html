@@ -1,0 +1,278 @@
+<style include="settings-shared">
+  :host {
+    --cr-section-indent-width: 60px;
+  }
+
+  .sub-item {
+    padding-inline-start: var(--cr-section-indent-width);
+  }
+
+  .settings-box {
+    padding-inline-start: 0;
+  }
+
+  settings-toggle-button,
+  cr-link-row {
+    padding-inline-end: var(--cr-section-padding);
+    padding-inline-start: var(--cr-section-padding);
+  }
+
+  .settings-box.indented,
+  settings-toggle-button.indented {
+    margin-inline-start: calc(var(--cr-section-indent-padding) +
+                              var(--cr-section-indent-width));
+  }
+
+  #screenMagnifierZoomHintLabel {
+    white-space: pre-line;
+  }
+
+  #colorFilteringDeficiencyTypeDropdown {
+    --md-select-width: 300px;
+  }
+
+  .color-item > .settings-box {
+    border-top: none
+  }
+
+  .color-preview-holder {
+    border: 1px solid var(--cros-separator-color);
+    border-radius: 8px;
+    gap: 16px;
+    margin-inline-end: 20px;
+    padding: 16px 0;
+    text-align: center;
+  }
+
+  .color-preview-holder table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    margin: 0 auto;
+  }
+
+  .color-preview-holder th {
+    font-weight: normal;
+    padding-bottom: 4px;
+    padding-top: 16px;
+  }
+
+  .color-preview-holder td {
+    margin: 0;
+    padding: 0;
+  }
+
+  .color-preview {
+    height: 92px;
+    width: calc(524px / 8);
+  }
+
+  .color-preview.red {
+    background: linear-gradient(
+        180deg, var(--cros-color-preview-red), transparent);
+  }
+
+  .color-preview.orange {
+    background: linear-gradient(
+        180deg, var(--cros-color-preview-orange), transparent);
+  }
+
+  .color-preview.yellow {
+    background: linear-gradient(
+        180deg, var(--cros-color-preview-yellow), transparent);
+  }
+
+  .color-preview.green {
+    background: linear-gradient(
+        180deg, var(--cros-color-preview-green), transparent);
+  }
+
+  .color-preview.cyan {
+    background: linear-gradient(
+        180deg, var(--cros-color-preview-cyan), transparent);
+  }
+
+  .color-preview.blue {
+    background: linear-gradient(
+        180deg, var(--cros-color-preview-blue), transparent);
+  }
+
+  .color-preview.purple {
+    background: linear-gradient(
+        180deg, var(--cros-color-preview-purple), transparent);
+  }
+
+  .color-preview.gray {
+    background: linear-gradient(
+        180deg, var(--cros-color-preview-grey), transparent);
+  }
+</style>
+<template is="dom-if" if="[[experimentalColorEnhancementSettingsEnabled_]]">
+  <settings-toggle-button
+    id="enableColorFiltering"
+    class="hr"
+    icon="os-settings:color-correction"
+    pref="{{prefs.settings.a11y.color_filtering.enabled}}"
+    label="$i18n{colorFilteringLabel}"
+    sub-label="$i18n{colorFilteringDescription}"
+    deep-link-focus-id$="[[Setting.kColorCorrectionEnabled]]">
+  </settings-toggle-button>
+  <template is="dom-if"
+      if="[[prefs.settings.a11y.color_filtering.enabled.value]]">
+    <div class="sub-item color-item">
+      <div class="settings-box">
+        <div class="start settings-box-text">
+          <div class="label" aria-hidden="true">
+            $i18n{colorVisionDeficiencyTypeLabel}
+          </div>
+        </div>
+        <settings-dropdown-menu
+            id="colorFilteringDeficiencyTypeDropdown"
+            label="$i18n{colorVisionDeficiencyTypeLabel}"
+            pref="{{prefs.settings.a11y.color_filtering.color_vision_deficiency_type}}"
+            menu-options="[[colorVisionDeficiencyTypeOptions_]]"
+            deep-link-focus-id$="[[Setting.kColorCorrectionFilterType]]">
+        </settings-dropdown-menu>
+      </div>
+      <div class="settings-box">
+        <div class="start settings-box-text" aria-hidden="true">
+          $i18n{colorVisionFilterIntensityLabel}
+        </div>
+        <settings-slider
+          id="colorFilteringIntensitySlider"
+          pref="{{prefs.settings.a11y.color_filtering.color_vision_correction_amount}}"
+          min="0" max="100"
+          label-aria="$i18n{colorVisionFilterIntensityLabel}"
+          label-min="$i18n{colorFilterMinLabel}"
+          label-max="$i18n{colorFilterMaxLabel}"
+          deep-link-focus-id$="[[Setting.kColorCorrectionFilterAmount]]">
+        </settings-slider>
+      </div>
+      <div class="color-preview-holder">
+        <div>$i18n{colorFilteringPreviewInstructions}</div>
+        <table>
+          <tr>
+            <th>$i18n{colorFilteringPreviewColorRed}</th>
+            <th>$i18n{colorFilteringPreviewColorOrange}</th>
+            <th>$i18n{colorFilteringPreviewColorYellow}</th>
+            <th>$i18n{colorFilteringPreviewColorGreen}</th>
+            <th>$i18n{colorFilteringPreviewColorCyan}</th>
+            <th>$i18n{colorFilteringPreviewColorBlue}</th>
+            <th>$i18n{colorFilteringPreviewColorPurple}</th>
+            <th>$i18n{colorFilteringPreviewColorGray}</th>
+          </tr>
+          <tr>
+            <td><div class="color-preview red"></div></td>
+            <td><div class="color-preview orange"></div></td>
+            <td><div class="color-preview yellow"></div></td>
+            <td><div class="color-preview green"></div></td>
+            <td><div class="color-preview cyan"></div></td>
+            <td><div class="color-preview blue"></div></td>
+            <td><div class="color-preview purple"></div></td>
+            <td><div class="color-preview gray"></div></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </template>
+</template>
+<settings-toggle-button
+    icon="os-settings:contrast"
+    pref="{{prefs.settings.a11y.high_contrast_enabled}}"
+    label="$i18n{highContrastLabel}"
+    sub-label="$i18n{highContrastDescription}"
+    deep-link-focus-id$="[[Setting.kHighContrastMode]]">
+</settings-toggle-button>
+<settings-toggle-button
+    class="hr"
+    icon="os-settings:fullscreen-magnifier"
+    pref="{{prefs.settings.a11y.screen_magnifier}}"
+    label="$i18n{screenMagnifierLabel}"
+    sub-label="[[getScreenMagnifierDescription_(
+        prefs.settings.a11y.screen_magnifier.value)]]"
+    disabled="[[prefs.ash.docked_magnifier.enabled.value]]"
+    deep-link-focus-id$="[[Setting.kFullscreenMagnifier]]">
+</settings-toggle-button>
+<template is="dom-if" if="[[prefs.settings.a11y.screen_magnifier.value]]">
+  <div class="sub-item">
+    <div class="hr">
+      <settings-radio-group id="screenMagnifierMouseFollowingModeRadioGroup"
+          pref="{{prefs.settings.a11y.screen_magnifier_mouse_following_mode}}">
+        <controlled-radio-button
+            id="screenMagnifierMouseFollowingModeContinuous"
+            name="[[screenMagnifierMouseFollowingModePrefValues_.CONTINUOUS]]"
+            pref="[[prefs.settings.a11y.screen_magnifier_mouse_following_mode]]"
+            label="$i18n{screenMagnifierMouseFollowingModeContinuous}">
+        </controlled-radio-button>
+        <controlled-radio-button
+            id="screenMagnifierMouseFollowingModeCentered"
+            name="[[screenMagnifierMouseFollowingModePrefValues_.CENTERED]]"
+            pref="[[prefs.settings.a11y.screen_magnifier_mouse_following_mode]]"
+            label="$i18n{screenMagnifierMouseFollowingModeCentered}">
+        </controlled-radio-button>
+        <controlled-radio-button
+            id="screenMagnifierMouseFollowingModeEdge"
+            name="[[screenMagnifierMouseFollowingModePrefValues_.EDGE]]"
+            pref="[[prefs.settings.a11y.screen_magnifier_mouse_following_mode]]"
+            label="$i18n{screenMagnifierMouseFollowingModeEdge}">
+        </controlled-radio-button>
+      </settings-radio-group>
+    </div>
+    <settings-toggle-button
+        class="settings-box hr"
+        pref="{{prefs.settings.a11y.screen_magnifier_focus_following}}"
+        label="$i18n{screenMagnifierFocusFollowingLabel}"
+        deep-link-focus-id$=
+            "[[Setting.kFullscreenMagnifierFocusFollowing]]">
+    </settings-toggle-button>
+    <div class="settings-box">
+      <div class="flex start settings-box-text" id="labelWrapper">
+        <div class="label" aria-hidden="true">
+          $i18n{screenMagnifierZoomLabel}
+        </div>
+        <!-- Next line long because screenMagnifierZoomHintLabel uses pre-line -->
+        <div id="screenMagnifierZoomHintLabel" class="secondary label">$i18n{screenMagnifierZoomHintLabel}</div>
+      </div>
+      <settings-dropdown-menu label="$i18n{screenMagnifierZoomLabel}"
+          pref="{{prefs.settings.a11y.screen_magnifier_scale}}"
+          menu-options="[[screenMagnifierZoomOptions_]]"
+          disabled="[[!prefs.settings.a11y.screen_magnifier.value]]">
+      </settings-dropdown-menu>
+    </div>
+  </div>
+</template>
+<settings-toggle-button
+    class="hr"
+    icon="os-settings:docked-magnifier"
+    pref="{{prefs.ash.docked_magnifier.enabled}}"
+    label="$i18n{dockedMagnifierLabel}"
+    sub-label="$i18n{dockedMagnifierDescription}"
+    disabled="[[prefs.settings.a11y.screen_magnifier.value]]"
+    deep-link-focus-id$="[[Setting.kDockedMagnifier]]">
+</settings-toggle-button>
+<template is="dom-if" if="[[prefs.ash.docked_magnifier.enabled.value]]">
+  <div class="sub-item">
+    <div class="settings-box">
+      <div class="start settings-box-text" aria-hidden="true">
+        $i18n{dockedMagnifierZoomLabel}
+      </div>
+      <settings-dropdown-menu label="$i18n{dockedMagnifierZoomLabel}"
+          pref="{{prefs.ash.docked_magnifier.scale}}"
+          menu-options="[[screenMagnifierZoomOptions_]]"
+          disabled="[[!prefs.ash.docked_magnifier.enabled.value]]">
+      </settings-dropdown-menu>
+    </div>
+  </div>
+</template>
+<template is="dom-if" if="[[!isKioskModeActive_]]">
+  <cr-link-row id="displaySubpageButton" class="hr"
+      label="$i18n{displaySettingsTitle}" on-click="onDisplayClick_"
+      sub-label="$i18n{displaySettingsDescription}"
+      role-description="$i18n{subpageArrowRoleDescription}" embedded>
+  </cr-link-row>
+  <cr-link-row id="appearanceSubpageButton" class="hr"
+      label="$i18n{appearanceSettingsTitle}" on-click="onAppearanceClick_"
+      sub-label="$i18n{appearanceSettingsDescription}"
+      external
+      embedded>
+  </cr-link-row>
+</template>

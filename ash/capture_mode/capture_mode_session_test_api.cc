@@ -6,20 +6,26 @@
 
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_session.h"
+#include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/recording_type_menu_view.h"
 
 namespace ash {
 
 CaptureModeSessionTestApi::CaptureModeSessionTestApi()
-    : session_(CaptureModeController::Get()->capture_mode_session()) {
+    // Will we have to change this test API to use BaseCaptureModeSession,
+    // despite it not being used for the null session?
+    : session_(static_cast<CaptureModeSession*>(
+          CaptureModeController::Get()->capture_mode_session())) {
   DCHECK(CaptureModeController::Get()->IsActive());
   DCHECK(session_);
+  CHECK_EQ(session_->session_type(), SessionType::kReal);
 }
 
 CaptureModeSessionTestApi::CaptureModeSessionTestApi(
-    CaptureModeSession* session)
-    : session_(session) {
+    BaseCaptureModeSession* session)
+    : session_(static_cast<CaptureModeSession*>(session)) {
   DCHECK(session_);
+  CHECK_EQ(session_->session_type(), SessionType::kReal);
 }
 
 CaptureModeBarView* CaptureModeSessionTestApi::GetCaptureModeBarView() {
@@ -33,6 +39,10 @@ CaptureModeSessionTestApi::GetCaptureModeSettingsView() {
 
 CaptureLabelView* CaptureModeSessionTestApi::GetCaptureLabelView() {
   return session_->capture_label_view_;
+}
+
+views::Label* CaptureModeSessionTestApi::GetCaptureLabelInternalView() {
+  return GetCaptureLabelView()->label_;
 }
 
 RecordingTypeMenuView* CaptureModeSessionTestApi::GetRecordingTypeMenuView() {
@@ -98,8 +108,12 @@ bool CaptureModeSessionTestApi::IsFolderSelectionDialogShown() {
          session_->folder_selection_dialog_controller_->dialog_window();
 }
 
-bool CaptureModeSessionTestApi::IsAllUisVisible() {
+bool CaptureModeSessionTestApi::AreAllUisVisible() {
   return session_->is_all_uis_visible_;
+}
+
+gfx::Rect CaptureModeSessionTestApi::GetSelectedWindowTargetBounds() {
+  return session_->GetSelectedWindowTargetBounds();
 }
 
 }  // namespace ash

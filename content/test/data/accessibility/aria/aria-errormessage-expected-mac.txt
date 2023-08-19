@@ -1,0 +1,14 @@
+AXWebArea
+++AXGroup
+++++AXTextField AXDescription='Invalid is true' AXErrorMessageElements=[:7]
+++++AXTextField AXDescription='Invalid is true with multiple errors' AXErrorMessageElements=[:7, :9]
+++++AXTextField AXDescription='Invalid is false'
+++++AXTextField AXDescription='Invalid is not set'
+++AXGroup
+++++AXStaticText AXValue='Error for invalid input'
+++AXGroup
+++++AXStaticText AXValue='Another error for invalid input'
+++AXGroup
+++++AXStaticText AXValue='Error for input which is not invalid'
+++AXGroup
+++++AXStaticText AXValue='Error for input with invalid not set'

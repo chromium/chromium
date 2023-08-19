@@ -3,14 +3,13 @@
 # found in the LICENSE file.
 
 source_set("safe_mode") {
-  configs += [ "//build/config/compiler:enable_arc" ]
+  configs += []
   sources = [
     "safe_mode_coordinator.h",
     "safe_mode_coordinator.mm",
     "safe_mode_view_controller.h",
     "safe_mode_view_controller.mm",
   ]
-
   deps = [
     "resources:fatal_error",
     "//base",
@@ -20,21 +19,17 @@ source_set("safe_mode") {
     "//ios/chrome/browser/safe_mode",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/ui/fancy_ui",
     "//ios/chrome/common/crash_report",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
     "//ui/base",
     "//ui/gfx",
   ]
-
   frameworks = [ "UIKit.framework" ]
 }
 
 source_set("eg_app_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "safe_mode_app_interface.h",
@@ -47,10 +42,7 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("eg_test_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
 
   sources = [
@@ -61,10 +53,7 @@ source_set("eg_test_support+eg2") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "safe_mode_egtest.mm" ]
   deps = [
@@ -81,7 +70,6 @@ source_set("eg2_tests") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "safe_mode_coordinator_unittest.mm",

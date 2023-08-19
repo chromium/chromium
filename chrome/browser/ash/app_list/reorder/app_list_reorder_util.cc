@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/ui/ash/app_icon_color_cache.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColorType.h"
@@ -190,6 +191,7 @@ bool EphemeralStateAndNameComparator::operator()(
 sync_pb::AppListSpecifics::ColorGroup CalculateBackgroundColorGroup(
     const SkBitmap& source,
     sync_pb::AppListSpecifics::ColorGroup light_vibrant_group) {
+  TRACE_EVENT0("ui", "app_list::reorder::CalculateBackgroundColorGroup");
   if (source.empty()) {
     return sync_pb::AppListSpecifics::ColorGroup::
         AppListSpecifics_ColorGroup_COLOR_WHITE;
@@ -261,6 +263,7 @@ sync_pb::AppListSpecifics::ColorGroup CalculateBackgroundColorGroup(
 }
 
 sync_pb::AppListSpecifics::ColorGroup ColorToColorGroup(SkColor color) {
+  TRACE_EVENT0("ui", "app_list::reorder::ColorToColorGroup");
   SkScalar hsv[3];
   SkColorToHSV(color, hsv);
 
@@ -314,6 +317,7 @@ sync_pb::AppListSpecifics::ColorGroup ColorToColorGroup(SkColor color) {
 
 ash::IconColor GetSortableIconColorForApp(const std::string& id,
                                           const gfx::ImageSkia& image) {
+  TRACE_EVENT0("ui", "app_list::reorder::GetSortableIconColorForApp");
   SkColor extracted_light_vibrant_color =
       ash::AppIconColorCache::GetInstance().GetLightVibrantColorForApp(id,
                                                                        image);

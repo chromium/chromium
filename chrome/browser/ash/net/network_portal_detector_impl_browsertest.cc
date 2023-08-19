@@ -208,8 +208,8 @@ class NetworkPortalDetectorImplBrowserTest
  protected:
   AccountId test_account_id_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
-  raw_ptr<NetworkPortalDetectorImpl, ExperimentalAsh> network_portal_detector_ =
-      nullptr;
+  raw_ptr<NetworkPortalDetectorImpl, DanglingUntriaged | ExperimentalAsh>
+      network_portal_detector_ = nullptr;
   std::unique_ptr<NetworkPortalNotificationController>
       network_portal_notification_controller_;
 };

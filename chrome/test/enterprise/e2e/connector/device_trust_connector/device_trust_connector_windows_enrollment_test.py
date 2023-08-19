@@ -82,13 +82,13 @@ class DeviceTrustConnectorWindowsEnrollmentTest(ChromeEnterpriseTestCase):
       logging.info('key_trust_level: %s' % result['KeyTrustLevel'])
       self.assertIsNotNone(result['SpkiHash'])
       logging.info('device_hash: %s' % result['SpkiHash'])
-      # self.assertTrue(result['HistogramSuccess'])
       self.assertIsNotNone(result['FakeIdP'])
       self.assertIsNotNone(result['Histograms'])
       client = result['ClientSignals']
       server = result['ServerSignals']
       self.assertEqual(client['deviceEnrollmentDomain'], 'beyondcorp.bigr.name')
       self.assertEqual(client['safeBrowsingProtectionLevel'], 1)
+      self.assertEqual(client['trigger'], 1)
       self.assertEqual(server['keyTrustLevel'], 'CHROME_BROWSER_HW_KEY')
       self.assertIsNotNone(server['devicePermanentId'])
 

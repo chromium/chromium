@@ -23,6 +23,7 @@ namespace {
 EnrollmentStatus GetEnrollmentStatus() {
   switch (chromeos::BrowserParamsProxy::Get()->DeviceMode()) {
     case crosapi::mojom::DeviceMode::kUnknown:
+    case crosapi::mojom::DeviceMode::kEnterpriseActiveDirectoryDeprecated:
       return EnrollmentStatus::kErrorGettingStatus;
     case crosapi::mojom::DeviceMode::kNotSet:
     case crosapi::mojom::DeviceMode::kConsumer:
@@ -30,7 +31,6 @@ EnrollmentStatus GetEnrollmentStatus() {
     case crosapi::mojom::DeviceMode::kConsumerKioskAutolaunch:
       return EnrollmentStatus::kNonManaged;
     case crosapi::mojom::DeviceMode::kEnterprise:
-    case crosapi::mojom::DeviceMode::kEnterpriseActiveDirectory:
     case crosapi::mojom::DeviceMode::kDemo:
       return EnrollmentStatus::kManaged;
   }

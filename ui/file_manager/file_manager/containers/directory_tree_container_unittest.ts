@@ -59,7 +59,7 @@ export function tearDown() {
   if (directoryTreeContainer) {
     getStore().unsubscribe(directoryTreeContainer);
   }
-  document.body.innerHTML = '';
+  document.body.innerHTML = window.trustedTypes!.emptyHTML;
 }
 
 /**
@@ -1117,6 +1117,38 @@ export async function testAriaExpanded(done: () => void) {
 
   // After clicking on expand-icon, aria-expanded should be set to false.
   assertEquals('false', treeItemElement.getAttribute('aria-expanded'));
+
+  done();
+}
+
+/** Test aria-description attribute for selected directory tree item. */
+export async function testAriaDescription(done: () => void) {
+  const initialState = getEmptyState();
+  const directoryTree = directoryTreeContainer.tree;
+
+  // Add MyFiles and Drive to the store.
+  await addMyFilesAndDriveToStore(initialState);
+  // Store initialization will notify DirectoryTree.
+  setupStore(initialState);
+
+  // At top level, MyFiles and Drive should be listed.
+  await waitUntil(() => directoryTree.items.length === 2);
+  const myFilesItem = directoryTree.items[0]!;
+  const driveItem = directoryTree.items[1]!;
+
+  // Select MyFiles and the aria-description should have value.
+  const ariaDescription = 'Current directory';
+  myFilesItem.selected = true;
+  await waitForElementUpdate(myFilesItem);
+  assertEquals(ariaDescription, myFilesItem.getAttribute('aria-description'));
+
+  // Select MyDrive.
+  driveItem.selected = true;
+  await waitForElementUpdate(driveItem);
+
+  // Now the aria-description on Drive should have value.
+  assertEquals(ariaDescription, driveItem.getAttribute('aria-description'));
+  assertFalse(myFilesItem.hasAttribute('aria-description'));
 
   done();
 }

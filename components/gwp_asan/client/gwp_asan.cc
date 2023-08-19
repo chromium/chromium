@@ -10,7 +10,6 @@
 #include <string>
 #include <tuple>
 
-#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_alloc_support.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/debug/crash_logging.h"
@@ -37,29 +36,55 @@ namespace gwp_asan {
 namespace internal {
 namespace {
 
-constexpr int kDefaultMaxAllocations = 70;
-constexpr int kDefaultMaxMetadata = 255;
-
+constexpr bool kCpuIs64Bit =
 #if defined(ARCH_CPU_64_BITS)
-constexpr int kDefaultTotalPages = 2048;
+    true;
 #else
-// Use much less virtual memory on 32-bit builds (where OOMing due to lack of
-// address space is a concern.)
-constexpr int kDefaultTotalPages = kDefaultMaxMetadata * 2;
+    false;
 #endif
 
+// GWP-ASAN's default parameters are as follows:
+// MaxAllocations determines the maximum number of simultaneous allocations
+// allocated from the GWP-ASAN region.
+//
+// MaxMetadata determines the number of slots in the GWP-ASAN region that have
+// associated metadata (e.g. alloc/dealloc stack traces).
+//
+// TotalPages determines the maximum number of slots used for allocations in the
+// GWP-ASAN region. The defaults below use MaxMetadata * 2 on 32-bit builds
+// (where OOMing due to lack of address space is a concern.)
+//
 // The allocation sampling frequency is calculated using the formula:
-// multiplier * range**rand
+// SamplingMultiplier * AllocationSamplingRange**rand
 // where rand is a random real number in the range [0,1).
+//
+// ProcessSamplingProbability is the probability of enabling GWP-ASAN in a new
+// process.
+//
+// ProcessSamplingBoost is the multiplier to increase the
+// ProcessSamplingProbability in scenarios where we want to perform additional
+// testing (e.g., on canary/dev builds).
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+constexpr int kDefaultMaxAllocations = 50;
+constexpr int kDefaultMaxMetadata = 210;
+constexpr int kDefaultTotalPages = kCpuIs64Bit ? 2048 : kDefaultMaxMetadata * 2;
+constexpr int kDefaultAllocationSamplingMultiplier = 1500;
+constexpr int kDefaultAllocationSamplingRange = 16;
+constexpr double kDefaultProcessSamplingProbability = 0.01;
+constexpr int kDefaultProcessSamplingBoost2 = 10;
+#else  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+constexpr int kDefaultMaxAllocations = 70;
+constexpr int kDefaultMaxMetadata = 255;
+constexpr int kDefaultTotalPages = kCpuIs64Bit ? 2048 : kDefaultMaxMetadata * 2;
 constexpr int kDefaultAllocationSamplingMultiplier = 1000;
 constexpr int kDefaultAllocationSamplingRange = 16;
-
 constexpr double kDefaultProcessSamplingProbability = 0.015;
-// The multiplier to increase the ProcessSamplingProbability in scenarios where
-// we want to perform additional testing (e.g., on canary/dev builds).
 constexpr int kDefaultProcessSamplingBoost2 = 10;
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
+        // BUILDFLAG(IS_FUCHSIA)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr base::FeatureState kDefaultEnabled = base::FEATURE_ENABLED_BY_DEFAULT;
 #else
 constexpr base::FeatureState kDefaultEnabled =

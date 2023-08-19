@@ -6,6 +6,7 @@ default	rel
 %define XMMWORD
 %define YMMWORD
 %define ZMMWORD
+%define _CET_ENDBR
 
 %ifdef BORINGSSL_PREFIX
 %include "boringssl_prefix_symbols_nasm.inc"
@@ -820,6 +821,7 @@ $L$SEH_begin_vpaes_set_encrypt_key:
 
 
 
+_CET_ENDBR
 %ifdef BORINGSSL_DISPATCH_TEST
 EXTERN	BORINGSSL_function_hit
 	mov	BYTE[((BORINGSSL_function_hit+5))],1
@@ -878,6 +880,7 @@ $L$SEH_begin_vpaes_set_decrypt_key:
 
 
 
+_CET_ENDBR
 	lea	rsp,[((-184))+rsp]
 	movaps	XMMWORD[16+rsp],xmm6
 	movaps	XMMWORD[32+rsp],xmm7
@@ -936,6 +939,7 @@ $L$SEH_begin_vpaes_encrypt:
 
 
 
+_CET_ENDBR
 %ifdef BORINGSSL_DISPATCH_TEST
 EXTERN	BORINGSSL_function_hit
 	mov	BYTE[((BORINGSSL_function_hit+4))],1
@@ -988,6 +992,7 @@ $L$SEH_begin_vpaes_decrypt:
 
 
 
+_CET_ENDBR
 	lea	rsp,[((-184))+rsp]
 	movaps	XMMWORD[16+rsp],xmm6
 	movaps	XMMWORD[32+rsp],xmm7
@@ -1038,6 +1043,7 @@ $L$SEH_begin_vpaes_cbc_encrypt:
 
 
 
+_CET_ENDBR
 	xchg	rdx,rcx
 	sub	rcx,16
 	jc	NEAR $L$cbc_abort
@@ -1117,6 +1123,7 @@ $L$SEH_begin_vpaes_ctr32_encrypt_blocks:
 
 
 
+_CET_ENDBR
 
 	xchg	rdx,rcx
 	test	rcx,rcx

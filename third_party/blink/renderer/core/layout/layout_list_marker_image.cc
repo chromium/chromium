@@ -45,10 +45,11 @@ void LayoutListMarkerImage::ComputeIntrinsicSizingInfoByDefaultSize(
   gfx::SizeF concrete_size = ImageResource()->ImageSizeWithDefaultSize(
       Style()->EffectiveZoom(), DefaultSize());
   concrete_size.Scale(ImageDevicePixelRatio());
-  LayoutSize image_size(RoundedLayoutSize(concrete_size));
 
-  intrinsic_sizing_info.size.set_width(image_size.Width());
-  intrinsic_sizing_info.size.set_height(image_size.Height());
+  intrinsic_sizing_info.size.set_width(
+      LayoutUnit(concrete_size.width()).ToFloat());
+  intrinsic_sizing_info.size.set_height(
+      LayoutUnit(concrete_size.height()).ToFloat());
   intrinsic_sizing_info.has_width = true;
   intrinsic_sizing_info.has_height = true;
 }

@@ -7,7 +7,6 @@
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/password_manager/core/browser/built_in_backend_to_android_backend_migrator.h"
-#include "components/password_manager/core/browser/field_info_table.h"
 #include "components/password_manager/core/browser/password_store_proxy_backend.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -15,7 +14,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/sync/model/proxy_model_type_controller_delegate.h"
 #include "components/sync/service/sync_service.h"
-#include "google_apis/gaia/google_service_auth_error.h"
 
 namespace password_manager {
 
@@ -126,6 +124,7 @@ void PasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
 }
 
 void PasswordStoreBackendMigrationDecorator::InitBackend(
+    AffiliatedMatchHelper* affiliated_match_helper,
     RemoteChangesReceived remote_form_changes_received,
     base::RepeatingClosure sync_enabled_or_disabled_cb,
     base::OnceCallback<void(bool)> completion) {
@@ -147,9 +146,9 @@ void PasswordStoreBackendMigrationDecorator::InitBackend(
       std::move(handle_sync_status_change_on_main_thread)
           .Then(std::move(sync_enabled_or_disabled_cb));
 
-  active_backend_->InitBackend(std::move(remote_form_changes_received),
-                               std::move(sync_enabled_or_disabled_cb),
-                               std::move(completion));
+  active_backend_->InitBackend(
+      affiliated_match_helper, std::move(remote_form_changes_received),
+      std::move(sync_enabled_or_disabled_cb), std::move(completion));
 
   // Create a migrator only if the current experiment stage allows it.
   if (!features::RequiresMigrationForUnifiedPasswordManager())
@@ -216,6 +215,13 @@ void PasswordStoreBackendMigrationDecorator::FillMatchingLoginsAsync(
                                            forms);
 }
 
+void PasswordStoreBackendMigrationDecorator::GetGroupedMatchingLoginsAsync(
+    const PasswordFormDigest& form_digest,
+    LoginsOrErrorReply callback) {
+  active_backend_->GetGroupedMatchingLoginsAsync(std::move(form_digest),
+                                                 std::move(callback));
+}
+
 void PasswordStoreBackendMigrationDecorator::AddLoginAsync(
     const PasswordForm& form,
     PasswordChangesOrErrorReply callback) {
@@ -263,10 +269,6 @@ void PasswordStoreBackendMigrationDecorator::DisableAutoSignInForOriginsAsync(
 SmartBubbleStatsStore*
 PasswordStoreBackendMigrationDecorator::GetSmartBubbleStatsStore() {
   return active_backend_->GetSmartBubbleStatsStore();
-}
-
-FieldInfoStore* PasswordStoreBackendMigrationDecorator::GetFieldInfoStore() {
-  return active_backend_->GetFieldInfoStore();
 }
 
 std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>

@@ -103,15 +103,6 @@ bool IsTextBasedAudioDescriptionEnabled() {
   return base::FeatureList::IsEnabled(::features::kTextBasedAudioDescription);
 }
 
-bool IsUnserializeOptimizationsEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kAccessibilityUnserializeOptimizations);
-}
-
-BASE_FEATURE(kAccessibilityUnserializeOptimizations,
-             "AccessibilityUnserializeOptimizations",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_WIN)
 BASE_FEATURE(kIChromeAccessible,
              "IChromeAccessible",
@@ -131,12 +122,27 @@ BASE_FEATURE(kSelectiveUIAEnablement,
 bool IsSelectiveUIAEnablementEnabled() {
   return base::FeatureList::IsEnabled(::features::kSelectiveUIAEnablement);
 }
+
+BASE_FEATURE(kUiaProvider, "UiaProvider", base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsUiaProviderEnabled() {
+  return base::FeatureList::IsEnabled(kUiaProvider);
+}
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 bool IsDictationOfflineAvailable() {
   return base::FeatureList::IsEnabled(
       ash::features::kOnDeviceSpeechRecognition);
+}
+
+BASE_FEATURE(kExperimentalAccessibilityChromeVoxOobeDialogImprovements,
+             "ExperimentalAccessibilityChromeVoxOobeDialogImprovements",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool IsExperimentalAccessibilityChromeVoxOobeDialogImprovementsEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kExperimentalAccessibilityChromeVoxOobeDialogImprovements);
 }
 
 BASE_FEATURE(kExperimentalAccessibilityDictationContextChecking,
@@ -159,29 +165,29 @@ bool IsExperimentalAccessibilityGoogleTtsLanguagePacksEnabled() {
 
 BASE_FEATURE(kExperimentalAccessibilityColorEnhancementSettings,
              "ExperimentalAccessibilityColorEnhancementSettings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool AreExperimentalAccessibilityColorEnhancementSettingsEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kExperimentalAccessibilityColorEnhancementSettings);
 }
 
-BASE_FEATURE(kAccessibilitySelectToSpeakPageMigration,
-             "AccessibilitySelectToSpeakPageMigration",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsAccessibilitySelectToSpeakPageMigrationEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kAccessibilitySelectToSpeakPageMigration);
-}
-
 BASE_FEATURE(kAccessibilityChromeVoxPageMigration,
              "AccessibilityChromeVoxPageMigration",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsAccessibilityChromeVoxPageMigrationEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kAccessibilityChromeVoxPageMigration);
+}
+
+BASE_FEATURE(kAccessibilityDictationKeyboardImprovements,
+             "AccessibilityDictationKeyboardImprovements",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsAccessibilityDictationKeyboardImprovementsEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAccessibilityDictationKeyboardImprovements);
 }
 
 BASE_FEATURE(kAccessibilitySelectToSpeakPrefsMigration,
@@ -211,13 +217,18 @@ bool IsAccessibilityAcceleratorNotificationsTimeoutEnabled() {
       ::features::kAccessibilityAcceleratorNotificationsTimeout);
 }
 
-BASE_FEATURE(kAccessibilityDeprecateChromeVoxTabs,
-             "AccessibilityDeprecateChromeVoxTabs",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kAccessibilityGameFaceIntegration,
+             "AccessibilityGameFaceIntegration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-bool IsAccessibilityDeprecateChromeVoxTabsEnabled() {
+bool IsAccessibilityGameFaceIntegrationEnabled() {
   return base::FeatureList::IsEnabled(
-      ::features::kAccessibilityDeprecateChromeVoxTabs);
+      ::features::kAccessibilityGameFaceIntegration);
+}
+
+BASE_FEATURE(kBacklightOcr, "BacklightOcr", base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsBacklightOcrEnabled() {
+  return base::FeatureList::IsEnabled(features::kBacklightOcr);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -308,6 +319,14 @@ bool IsScreenAIDebugModeEnabled() {
 BASE_FEATURE(kEmergencyDisableScreenAIOCR,
              "EmergencyDisableScreenAIOCR",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kReadAnythingWebUIToolbar,
+             "ReadAnythingWebUIToolbar",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsReadAnythingWebUIToolbarEnabled() {
+  return base::FeatureList::IsEnabled(::features::kReadAnythingWebUIToolbar);
+}
 
 BASE_FEATURE(kPdfOcr, "PdfOcr", base::FEATURE_DISABLED_BY_DEFAULT);
 

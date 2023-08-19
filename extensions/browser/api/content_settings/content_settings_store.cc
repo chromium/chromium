@@ -30,6 +30,7 @@
 #include "components/permissions/features.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/content_settings/content_settings_helpers.h"
+#include "extensions/common/api/types.h"
 
 using content::BrowserThread;
 using content_settings::ConcatenationIterator;
@@ -104,7 +105,7 @@ void ContentSettingsStore::SetExtensionContentSetting(
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType type,
     ContentSetting setting,
-    ExtensionPrefsScope scope) {
+    ChromeSettingScope scope) {
   {
     base::AutoLock lock(lock_);
     OriginIdentifierValueMap* map = GetValueMap(ext_id, scope);
@@ -121,8 +122,7 @@ void ContentSettingsStore::SetExtensionContentSetting(
   // Send notification that content settings changed. (Note: This is responsible
   // for updating the pref store, so cannot be skipped even if the setting would
   // be masked by another extension.)
-  NotifyOfContentSettingChanged(ext_id,
-                                scope != kExtensionPrefsScopeRegular);
+  NotifyOfContentSettingChanged(ext_id, scope != ChromeSettingScope::kRegular);
 }
 
 void ContentSettingsStore::RegisterExtension(
@@ -210,7 +210,7 @@ void ContentSettingsStore::SetExtensionState(
 
 OriginIdentifierValueMap* ContentSettingsStore::GetValueMap(
     const std::string& ext_id,
-    ExtensionPrefsScope scope) {
+    ChromeSettingScope scope) {
   const OriginIdentifierValueMap* result =
       static_cast<const ContentSettingsStore*>(this)->GetValueMap(ext_id,
                                                                   scope);
@@ -219,22 +219,24 @@ OriginIdentifierValueMap* ContentSettingsStore::GetValueMap(
 
 const OriginIdentifierValueMap* ContentSettingsStore::GetValueMap(
     const std::string& ext_id,
-    ExtensionPrefsScope scope) const {
+    ChromeSettingScope scope) const {
   ExtensionEntry* entry = FindEntry(ext_id);
   if (!entry)
     return nullptr;
 
   switch (scope) {
-    case kExtensionPrefsScopeRegular:
-      return &(entry->settings);
-    case kExtensionPrefsScopeRegularOnly:
+    case ChromeSettingScope::kRegular:
+      return &entry->settings;
+    case ChromeSettingScope::kRegularOnly:
       // TODO(bauerb): Implement regular-only content settings.
       NOTREACHED();
       return nullptr;
-    case kExtensionPrefsScopeIncognitoPersistent:
-      return &(entry->incognito_persistent_settings);
-    case kExtensionPrefsScopeIncognitoSessionOnly:
-      return &(entry->incognito_session_only_settings);
+    case ChromeSettingScope::kIncognitoPersistent:
+      return &entry->incognito_persistent_settings;
+    case ChromeSettingScope::kIncognitoSessionOnly:
+      return &entry->incognito_session_only_settings;
+    case ChromeSettingScope::kNone:
+      break;
   }
 
   NOTREACHED();
@@ -243,7 +245,7 @@ const OriginIdentifierValueMap* ContentSettingsStore::GetValueMap(
 
 void ContentSettingsStore::ClearContentSettingsForExtension(
     const std::string& ext_id,
-    ExtensionPrefsScope scope) {
+    ChromeSettingScope scope) {
   bool notify = false;
   {
     base::AutoLock lock(lock_);
@@ -254,13 +256,14 @@ void ContentSettingsStore::ClearContentSettingsForExtension(
     map->clear();
   }
   if (notify) {
-    NotifyOfContentSettingChanged(ext_id, scope != kExtensionPrefsScopeRegular);
+    NotifyOfContentSettingChanged(ext_id,
+                                  scope != ChromeSettingScope::kRegular);
   }
 }
 
 void ContentSettingsStore::ClearContentSettingsForExtensionAndContentType(
     const std::string& ext_id,
-    ExtensionPrefsScope scope,
+    ChromeSettingScope scope,
     ContentSettingsType content_type) {
   {
     base::AutoLock lock(lock_);
@@ -273,12 +276,12 @@ void ContentSettingsStore::ClearContentSettingsForExtensionAndContentType(
 
     map->DeleteValues(content_type);
   }
-    NotifyOfContentSettingChanged(ext_id, scope != kExtensionPrefsScopeRegular);
+  NotifyOfContentSettingChanged(ext_id, scope != ChromeSettingScope::kRegular);
 }
 
 base::Value::List ContentSettingsStore::GetSettingsForExtension(
     const std::string& extension_id,
-    ExtensionPrefsScope scope) const {
+    ChromeSettingScope scope) const {
   base::AutoLock lock(lock_);
   const OriginIdentifierValueMap* map = GetValueMap(extension_id, scope);
   if (!map)
@@ -332,7 +335,7 @@ base::Value::List ContentSettingsStore::GetSettingsForExtension(
 void ContentSettingsStore::SetExtensionContentSettingFromList(
     const std::string& extension_id,
     const base::Value::List& list,
-    ExtensionPrefsScope scope) {
+    ChromeSettingScope scope) {
   for (const base::Value& value : list) {
     if (!value.is_dict()) {
       LOG_INVALID_EXTENSION_PREFERENCE_DETAILS;

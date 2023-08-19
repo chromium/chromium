@@ -139,6 +139,10 @@ if (is_apple) {
 
     defines = [ "CRASH_CORE_COMMON_IMPLEMENTATION" ]
 
+    # Do not compile with ARC because ARC would prevent intercepting and
+    # interfering with low-level object destruction.
+    configs -= [ "//build/config/compiler:enable_arc" ]
+
     deps = [
       ":crash_key",
       "//base",
@@ -177,6 +181,10 @@ source_set("unit_tests") {
 
   if (is_apple) {
     sources += [ "objc_zombie_unittest.mm" ]
+
+    # Do not compile with ARC because ARC would prevent intercepting and
+    # interfering with low-level object destruction.
+    configs -= [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_castos || is_chromeos) {

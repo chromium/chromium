@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/url_loading/fake_url_loading_browser_agent.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 void FakeUrlLoadingBrowserAgent::InjectForBrowser(Browser* browser) {
   // No other instance should already have been attached.
   DCHECK(!FromBrowser(browser));

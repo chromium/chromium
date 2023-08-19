@@ -4,6 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
+import("//components/supervised_user/buildflags.gni")
 
 static_library("browser_sync") {
   sources = [
@@ -34,6 +35,7 @@ static_library("browser_sync") {
     "//components/reading_list/core",
     "//components/reading_list/features:flags",
     "//components/send_tab_to_self",
+    "//components/supervised_user/core/common:buildflags",
     "//components/sync/invalidations",
     "//components/sync_bookmarks",
     "//components/sync_preferences",
@@ -48,6 +50,10 @@ static_library("browser_sync") {
       "//ash/constants",
       "//components/desks_storage",
     ]
+  }
+
+  if (enable_supervised_users) {
+    deps += [ "//components/supervised_user/core/browser" ]
   }
 }
 

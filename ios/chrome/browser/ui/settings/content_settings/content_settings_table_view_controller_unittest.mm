@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/content_settings/content_settings_table_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
@@ -13,10 +14,6 @@
 #import "testing/gtest_mac.h"
 #import "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 class ContentSettingsTableViewControllerTest
@@ -25,6 +22,12 @@ class ContentSettingsTableViewControllerTest
   ContentSettingsTableViewControllerTest() {
     browser_state_ = TestChromeBrowserState::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+  }
+
+  void TearDown() override {
+    [base::apple::ObjCCastStrict<ContentSettingsTableViewController>(
+        controller()) settingsWillBeDismissed];
+    ChromeTableViewControllerTest::TearDown();
   }
 
   ChromeTableViewController* InstantiateController() override {

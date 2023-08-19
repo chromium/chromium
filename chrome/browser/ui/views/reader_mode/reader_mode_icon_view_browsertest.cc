@@ -66,7 +66,7 @@ class ReaderModeIconViewBrowserTest : public InProcessBrowserTest {
     return https_server_secure_.get();
   }
 
-  raw_ptr<PageActionIconView, DanglingUntriaged> reader_mode_icon_;
+  raw_ptr<PageActionIconView, AcrossTasksDanglingUntriaged> reader_mode_icon_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_secure_;
 
  private:

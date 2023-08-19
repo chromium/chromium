@@ -22,6 +22,9 @@ class ResponsivenessMetrics : public GarbageCollected<ResponsivenessMetrics> {
  public:
   // Timestamps for input events.
   struct EventTimestamps {
+    // The duration of the event (creation --> first display update it caused).
+    base::TimeDelta duration() const { return end_time - start_time; }
+
     // The event creation time.
     base::TimeTicks start_time;
     // The time when the first display update caused by the input event was

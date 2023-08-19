@@ -65,6 +65,9 @@ class TestAutofillDriverTemplate : public T {
       const std::u16string& value) override {}
   void RendererShouldClearFilledSection() override {}
   void RendererShouldClearPreviewedForm() override {}
+  void RendererShouldTriggerSuggestions(
+      const FieldGlobalId& field_id,
+      AutofillSuggestionTriggerSource trigger_source) override {}
   void RendererShouldFillFieldWithValue(const FieldGlobalId& field,
                                         const std::u16string& value) override {}
   void RendererShouldPreviewFieldWithValue(
@@ -77,7 +80,6 @@ class TestAutofillDriverTemplate : public T {
   net::IsolationInfo IsolationInfo() override { return isolation_info_; }
   void SendFieldsEligibleForManualFillingToRenderer(
       const std::vector<FieldGlobalId>& fields) override {}
-  void SetShouldSuppressKeyboard(bool suppress) override {}
   void TriggerFormExtraction() override {}
   void TriggerFormExtractionInAllFrames(
       base::OnceCallback<void(bool)> form_extraction_finished_callback)
@@ -89,7 +91,7 @@ class TestAutofillDriverTemplate : public T {
   // The return value contains the members (field, type) of `field_type_map` for
   // which `field_type_map_filter_.Run(triggered_origin, field, type)` is true.
   std::vector<FieldGlobalId> FillOrPreviewForm(
-      mojom::RendererFormDataAction action,
+      mojom::AutofillActionPersistence action_persistence,
       const FormData& form_data,
       const url::Origin& triggered_origin,
       const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map)
@@ -103,6 +105,12 @@ class TestAutofillDriverTemplate : public T {
     }
     return result;
   }
+
+  void UndoAutofill(mojom::AutofillActionPersistence action_persistence,
+                    const FormData& form_data,
+                    const url::Origin& triggered_origin,
+                    const base::flat_map<FieldGlobalId, ServerFieldType>&
+                        field_type_map) override {}
 
   // Methods unique to TestAutofillDriver that tests can use to specialize
   // functionality.

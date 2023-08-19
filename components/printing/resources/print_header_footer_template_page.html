@@ -17,12 +17,12 @@
 
   #header {
     align-items: flex-start;
-    padding-top: 0.4cm;
+    padding-top: 0.5cm;
   }
 
   #footer {
     align-items: flex-end;
-    padding-bottom: 0.4cm;
+    padding-bottom: 0.5cm;
   }
 
   #content {
@@ -31,22 +31,22 @@
 
   .left {
     flex: none;
-    padding-left: 0.7cm;
-    padding-right: 0.1cm;
+    padding-left: 0.9cm; /* csschecker-disable-line left-right */
+    padding-right: 0.2cm; /* csschecker-disable-line left-right */
   }
 
   .center {
     flex: auto;
-    padding-left: 0.7cm;
-    padding-right: 0.7cm;
+    padding-left: 0.9cm; /* csschecker-disable-line left-right */
+    padding-right: 0.9cm; /* csschecker-disable-line left-right */
     text-align: center;
   }
 
   .right {
     flex: none;
     /* historically does not account for RTL */
-    padding-left: 0.1cm;
-    padding-right: 0.7cm;
+    padding-left: 0.2cm; /* csschecker-disable-line left-right */
+    padding-right: 0.9cm; /* csschecker-disable-line left-right */
   }
 
   .grow {
@@ -54,7 +54,7 @@
   }
 
   .text {
-    font-size: 8px;
+    font-size: 8pt;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

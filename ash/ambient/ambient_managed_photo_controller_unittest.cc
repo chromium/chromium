@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/ambient/metrics/managed_screensaver_metrics.h"
 #include "ash/ambient/model/ambient_backend_model.h"
 #include "ash/ambient/model/ambient_photo_config.h"
 #include "ash/ambient/model/ambient_slideshow_photo_config.h"
@@ -19,6 +20,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/test_future.h"
@@ -46,6 +48,10 @@ bool AreBackedBySameImage(const PhotoWithDetails& topic_l,
 MATCHER_P(BackedBySameImageAs, photo_with_details, "") {
   return AreBackedBySameImage(arg, photo_with_details);
 }
+
+// This limit is specified in the policy definition for the policies
+// ScreensaverLockScreenImages and DeviceScreensaverLoginScreenImages.
+constexpr size_t kMaxUrlsToProcessFromPolicy = 25u;
 
 }  // namespace
 
@@ -456,6 +462,48 @@ TEST_F(AmbientManagedPhotoControllerTest, AddingEmptyImagesIsANoOP) {
                 ->all_decoded_topics()
                 .size(),
             2u);
+}
+
+TEST_F(AmbientManagedPhotoControllerTest, VerifyImageCountHistogram) {
+  base::HistogramTester histogram_tester;
+  std::vector<base::FilePath> images;
+
+  // Update image list to empty list
+  managed_photo_controller()->UpdateImageFilePaths(images);
+
+  const std::string& histogram_name =
+      GetManagedScreensaverHistogram(kManagedScreensaverImageCountUMA);
+
+  // Update list to max - 1
+  for (unsigned int i = 0; i < kMaxUrlsToProcessFromPolicy - 1; ++i) {
+    images.emplace_back(FILE_PATH_LITERAL("IMAGE_1.jpg"));
+  }
+  managed_photo_controller()->UpdateImageFilePaths(images);
+
+  // Update list to max
+  images.emplace_back(FILE_PATH_LITERAL("IMAGE_1.jpg"));
+  managed_photo_controller()->UpdateImageFilePaths(images);
+
+  // Update list to max + 1
+  images.emplace_back(FILE_PATH_LITERAL("IMAGE_1.jpg"));
+  managed_photo_controller()->UpdateImageFilePaths(images);
+
+  histogram_tester.ExpectTotalCount(histogram_name, 4);
+
+  histogram_tester.ExpectBucketCount(histogram_name,
+                                     /*sample=*/0, /*expected_count=*/1);
+
+  histogram_tester.ExpectBucketCount(histogram_name,
+                                     /*sample=*/kMaxUrlsToProcessFromPolicy - 1,
+                                     /*expected_count=*/1);
+
+  histogram_tester.ExpectBucketCount(histogram_name,
+                                     /*sample=*/kMaxUrlsToProcessFromPolicy + 1,
+                                     /*expected_count=*/1);
+
+  histogram_tester.ExpectBucketCount(histogram_name,
+                                     /*sample=*/kMaxUrlsToProcessFromPolicy + 1,
+                                     /*expected_count=*/1);
 }
 
 }  // namespace ash

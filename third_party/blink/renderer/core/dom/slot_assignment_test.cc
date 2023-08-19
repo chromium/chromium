@@ -76,11 +76,11 @@ void SlotAssignmentTest::SetBody(const char* html) {
 TEST_F(SlotAssignmentTest, DeclarativeShadowDOM) {
   SetBody(R"HTML(
     <div id=host>
-      <template shadowroot=open></template>
+      <template shadowrootmode=open></template>
     </div>
   )HTML");
 
-  Element* host = GetDocument().QuerySelector("#host");
+  Element* host = GetDocument().QuerySelector(AtomicString("#host"));
   ASSERT_NE(nullptr, host);
   ASSERT_NE(nullptr, host->OpenShadowRoot());
 }
@@ -88,20 +88,20 @@ TEST_F(SlotAssignmentTest, DeclarativeShadowDOM) {
 TEST_F(SlotAssignmentTest, NestedDeclarativeShadowDOM) {
   SetBody(R"HTML(
     <div id=host1>
-      <template shadowroot=open>
+      <template shadowrootmode=open>
         <div id=host2>
-          <template shadowroot=open></template>
+          <template shadowrootmode=open></template>
         </div>
       </template>
     </div>
   )HTML");
 
-  Element* host1 = GetDocument().QuerySelector("#host1");
+  Element* host1 = GetDocument().QuerySelector(AtomicString("#host1"));
   ASSERT_NE(nullptr, host1);
   ShadowRoot* shadow_root1 = host1->OpenShadowRoot();
   ASSERT_NE(nullptr, shadow_root1);
 
-  Element* host2 = shadow_root1->QuerySelector("#host2");
+  Element* host2 = shadow_root1->QuerySelector(AtomicString("#host2"));
   ASSERT_NE(nullptr, host2);
   ShadowRoot* shadow_root2 = host2->OpenShadowRoot();
   ASSERT_NE(nullptr, shadow_root2);
@@ -110,17 +110,19 @@ TEST_F(SlotAssignmentTest, NestedDeclarativeShadowDOM) {
 TEST_F(SlotAssignmentTest, AssignedNodesAreSet) {
   SetBody(R"HTML(
     <div id=host>
-      <template shadowroot=open>
+      <template shadowrootmode=open>
         <slot></slot>
       </template>
       <div id='host-child'></div>
     </div>
   )HTML");
 
-  Element* host = GetDocument().QuerySelector("#host");
-  Element* host_child = GetDocument().QuerySelector("#host-child");
+  Element* host = GetDocument().QuerySelector(AtomicString("#host"));
+  Element* host_child =
+      GetDocument().QuerySelector(AtomicString("#host-child"));
   ShadowRoot* shadow_root = host->OpenShadowRoot();
-  auto* slot = DynamicTo<HTMLSlotElement>(shadow_root->QuerySelector("slot"));
+  auto* slot = DynamicTo<HTMLSlotElement>(
+      shadow_root->QuerySelector(AtomicString("slot")));
   ASSERT_NE(nullptr, slot);
 
   EXPECT_EQ(slot, host_child->AssignedSlot());
@@ -132,7 +134,7 @@ TEST_F(SlotAssignmentTest, AssignedNodesAreSet) {
 TEST_F(SlotAssignmentTest, ScheduleVisualUpdate) {
   SetBody(R"HTML(
     <div id="host">
-      <template shadowroot=open>
+      <template shadowrootmode=open>
         <slot></slot>
       </template>
       <div></div>
@@ -142,7 +144,7 @@ TEST_F(SlotAssignmentTest, ScheduleVisualUpdate) {
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
   auto* div = MakeGarbageCollected<HTMLDivElement>(GetDocument());
-  GetDocument().getElementById("host")->appendChild(div);
+  GetDocument().getElementById(AtomicString("host"))->appendChild(div);
   EXPECT_EQ(DocumentLifecycle::kVisualUpdatePending,
             GetDocument().Lifecycle().GetState());
 }

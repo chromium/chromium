@@ -19,6 +19,7 @@
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "third_party/blink/public/platform/web_vector.h"
+#include "third_party/blink/public/web/web_autofill_state.h"
 #include "third_party/blink/public/web/web_element_collection.h"
 #include "ui/gfx/geometry/rect_f.h"
 
@@ -75,7 +76,7 @@ enum ExtractMask {
 
 // Autofill supports assigning <label for=x> tags to inputs if x its id/name,
 // or the id/name of a shadow host element containing the input.
-// This enum is used to track how often each case occurs in practise.
+// This enum is used to track how often each case occurs in practice.
 enum class AssignedLabelSource {
   kId = 0,
   kName = 1,
@@ -103,7 +104,7 @@ inline constexpr char kAssignedLabelSourceHistogram[] =
 // * Detect potential visibility of elements with "overflow: visible".
 //   (See WebElement::GetScrollSize().)
 // * Detect invisibility of elements with
-//   - "position: absolute; {left,top,right,bottol}: -100px"
+//   - "position: absolute; {left,top,right,bottom}: -100px"
 //   - "opacity: 0.0"
 //   - "clip: rect(0,0,0,0)"
 //
@@ -114,7 +115,7 @@ bool IsVisibleIframe(const blink::WebElement& iframe_element);
 //
 // Generally, WebFormElements must not be nested [1]. When parsing HTML, Blink
 // ignores nested form tags; the inner forms therefore never make it into the
-// DOM. Howevery, nested forms can be created and added to the DOM dynamically,
+// DOM. However, nested forms can be created and added to the DOM dynamically,
 // in which case Blink associates each field with its closest ancestor.
 //
 // For some elements, Autofill determines the associated form without Blink's
@@ -130,7 +131,7 @@ blink::WebFormElement GetClosestAncestorFormElement(blink::WebNode node);
 // As a performance improvement, `ancestor_hint` can be set to a suspected
 // ancestor of `x` and `y`. Otherwise, `ancestor_hint` can be arbitrary.
 //
-// This function is a simplified/specialised version of Blink's private
+// This function is a simplified/specialized version of Blink's private
 // Node::compareDocumentPosition().
 //
 // Exposed for testing purposes.
@@ -157,7 +158,7 @@ bool IsSomeControlElementVisible(
     const std::set<FieldRendererId>& control_elements);
 
 // Helper functions to assist in getting the canonical form of the action and
-// origin. The action will proplerly take into account <BASE>, and both will
+// origin. The action will properly take into account <BASE>, and both will
 // strip unnecessary data (e.g. query params and HTTP credentials).
 GURL GetCanonicalActionForForm(const blink::WebFormElement& form);
 GURL GetDocumentUrlWithoutAuth(const blink::WebDocument& document);
@@ -168,14 +169,14 @@ bool IsMonthInput(const blink::WebInputElement& element);
 // Returns true if |element| is a text input element.
 bool IsTextInput(const blink::WebInputElement& element);
 
-// Returns true if `element` is either a select or a selectmenu element.
-bool IsSelectOrSelectMenuElement(const blink::WebFormControlElement& element);
+// Returns true if `element` is either a select or a selectlist element.
+bool IsSelectOrSelectListElement(const blink::WebFormControlElement& element);
 
 // Returns true if |element| is a select element.
 bool IsSelectElement(const blink::WebFormControlElement& element);
 
-// Returns true if `element` is a selectmenu element.
-bool IsSelectMenuElement(const blink::WebFormControlElement& element);
+// Returns true if `element` is a selectlist element.
+bool IsSelectListElement(const blink::WebFormControlElement& element);
 
 // Returns true if |element| is a textarea element.
 bool IsTextAreaElement(const blink::WebFormControlElement& element);
@@ -200,10 +201,8 @@ bool IsWebauthnTaggedElement(const blink::WebFormControlElement& element);
 // Returns true if |element| can be edited (enabled and not read only).
 bool IsElementEditable(const blink::WebInputElement& element);
 
-// True if this element can take focus. If the layout is blocked, then the
-// function checks if the element takes up space in the layout, i.e., this
-// element or a descendant has a non-empty bounding client rect. If this element
-// is a selectmenu, checks whether a child of the selectmenu can take focus.
+// True if this element can take focus. If this element is a selectlist, checks
+// whether a child of the selectlist can take focus.
 bool IsWebElementFocusableForAutofill(const blink::WebElement& element);
 
 // A heuristic visibility detection. See crbug.com/1335257 for an overview of
@@ -336,18 +335,22 @@ bool FindFormAndFieldForFormControlElement(
     FormData* form,
     FormFieldData* field);
 
-// Fills or previews the form represented by |form|.  |element| is the input
-// element that initiated the auto-fill process. Returns the filled fields.
-std::vector<blink::WebFormControlElement> FillOrPreviewForm(
+// Fills or previews the form represented by `form`.
+// `initiating_element` is the element that initiated the autofill process.
+// Returns the filled elements.
+std::vector<blink::WebFormControlElement> ApplyAutofillAction(
     const FormData& form,
-    const blink::WebFormControlElement& element,
-    mojom::RendererFormDataAction action);
+    const blink::WebFormControlElement& initiating_element,
+    mojom::AutofillActionType action_type,
+    mojom::AutofillActionPersistence action_persistence);
 
-// Clears the suggested values in |control_elements|. The state of
-// |initiating_element| is set to |old_autofill_state|; all other fields are set
-// to kNotFilled.
+// Clears the suggested values in `previewed_elements`.
+// `initiating_element` is the element that initiated the preview operation.
+// `old_autofill_state` is the previous state of the field that initiated the
+// preview.
 void ClearPreviewedElements(
-    std::vector<blink::WebFormControlElement>& control_elements,
+    mojom::AutofillActionType action_type,
+    std::vector<blink::WebFormControlElement>& previewed_elements,
     const blink::WebFormControlElement& initiating_element,
     blink::WebAutofillState old_autofill_state);
 

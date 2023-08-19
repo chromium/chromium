@@ -99,7 +99,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterProfileBlueZ
       delegates_;
 
   // The UUID that this profile represents.
-  const raw_ref<const device::BluetoothUUID, DanglingUntriaged> uuid_;
+  const raw_ref<const device::BluetoothUUID, AcrossTasksDanglingUntriaged>
+      uuid_;
 
   // Registered dbus object path for this profile.
   dbus::ObjectPath object_path_;

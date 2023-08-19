@@ -9,6 +9,7 @@ import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 
 import {getDlpRestrictionDetails, getHoldingSpaceState, startIOTask} from '../../common/js/api.js';
 import {DialogType, isModal} from '../../common/js/dialog_type.js';
+import {getFocusedTreeItem, isDirectoryTree, isDirectoryTreeItem} from '../../common/js/dom_utils.js';
 import {FileType} from '../../common/js/file_type.js';
 import {EntryList} from '../../common/js/files_app_entry_types.js';
 import {metrics} from '../../common/js/metrics.js';
@@ -21,7 +22,10 @@ import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_ap
 import {State} from '../../externs/ts/state.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
+import {changeDirectory} from '../../state/actions/current_directory.js';
 import {getFileData, getStore} from '../../state/store.js';
+import {XfTree} from '../../widgets/xf_tree.js';
+import {XfTreeItem} from '../../widgets/xf_tree_item.js';
 
 import {ActionsModel} from './actions_model.js';
 import {constants} from './constants.js';
@@ -121,17 +125,28 @@ CommandUtil.getCommandEntries = (fileManager, element) => {
     return [element.entry];
   }
 
-  // DirectoryTree has the selected item.
-  if (element.selectedItem && element.selectedItem.entry) {
-    return [element.selectedItem.entry];
+  // DirectoryTree has the focused item.
+  const focusedItem = getFocusedTreeItem(element);
+  if (focusedItem?.entry) {
+    return [focusedItem.entry];
   }
 
   // The event target could still be a descendant of a DirectoryItem element
   // (e.g. the eject button).
-  if (fileManager.ui.directoryTree.contains(/** @type {Node} */ (element))) {
-    const treeItem = element.closest('.tree-item');
-    if (treeItem && treeItem.entry) {
-      return [treeItem.entry];
+  if (util.isFilesAppExperimental()) {
+    // Handle eject button in the new directory tree.
+    if (element.classList.contains('root-eject')) {
+      const treeItem = element.closest('xf-tree-item');
+      if (treeItem?.entry) {
+        return [treeItem.entry];
+      }
+    }
+  } else {
+    if (fileManager.ui.directoryTree.contains(/** @type {Node} */ (element))) {
+      const treeItem = element.closest('.tree-item');
+      if (treeItem && treeItem.entry) {
+        return [treeItem.entry];
+      }
     }
   }
 
@@ -171,11 +186,11 @@ CommandUtil.getCommandEntries = (fileManager, element) => {
  * @return {DirectoryEntry|FilesAppEntry} The extracted parent entry.
  */
 CommandUtil.getParentEntry = (element, directoryModel) => {
-  if (element && element.selectedItem && element.selectedItem.parentItem &&
-      element.selectedItem.parentItem.entry) {
-    // DirectoryTree has the selected item.
-    return element.selectedItem.parentItem.entry;
-  } else if (element.parentItem && element.parentItem.entry) {
+  const focusedItem = getFocusedTreeItem(element);
+  if (focusedItem?.parentItem?.entry) {
+    // DirectoryTree has the focused item.
+    return focusedItem.parentItem.entry;
+  } else if (element.parentItem?.entry) {
     // DirectoryItem has parentItem.
     return element.parentItem.entry;
   } else if (element instanceof List) {
@@ -261,13 +276,21 @@ CommandUtil.forceDefaultHandler = (node, commandId) => {
 CommandUtil.createVolumeSwitchCommand = index =>
     new (class extends FilesCommand {
       execute(event, fileManager) {
-        fileManager.directoryTree.activateByIndex(index - 1);
+        if (util.isFilesAppExperimental()) {
+          const items = fileManager.ui.directoryTree.items;
+          if (items[index - 1]?.entry) {
+            getStore().dispatch(
+                changeDirectory({toKey: items[index - 1].entry.toURL()}));
+          }
+        } else {
+          fileManager.ui.directoryTree.activateByIndex(index - 1);
+        }
       }
 
       /** @override */
       canExecute(event, fileManager) {
         event.canExecute =
-            index > 0 && index <= fileManager.directoryTree.items.length;
+            index > 0 && index <= fileManager.ui.directoryTree.items.length;
       }
     })();
 
@@ -316,8 +339,8 @@ CommandUtil.isFromSelectionMenu = event => {
 };
 
 /**
- * If entry is fake/invalid/root, we don't show menu items intended for regular
- * entries.
+ * If entry is fake/invalid/non-interactive/root, we don't show menu items
+ * intended for regular entries.
  * @param {!VolumeManager} volumeManager
  * @param {(!Entry|!FakeEntry)} entry Entry or a fake entry.
  * @return {boolean} True if we should show the menu items for regular entries.
@@ -335,6 +358,12 @@ CommandUtil.shouldShowMenuItemsForEntry = (volumeManager, entry) => {
 
   const volumeInfo = volumeManager.getVolumeInfo(entry);
   if (!volumeInfo) {
+    return false;
+  }
+
+  // If the entry belongs to a non-interactive volume, hide context menu
+  // entries.
+  if (!util.isInteractiveVolume(volumeInfo)) {
     return false;
   }
 
@@ -483,12 +512,46 @@ CommandUtil.getEventEntry = (event, fileManager) => {
 };
 
 
+
+/**
+ * Returns true if the current volume is interactive.
+ * @param {!CommandHandlerDeps} fileManager file manager
+ *     command handler.
+ * @returns {boolean}
+ */
+CommandUtil.currentVolumeIsInteractive = fileManager => {
+  const volumeInfo = fileManager.directoryModel.getCurrentVolumeInfo();
+  if (!volumeInfo) {
+    return true;
+  }
+  return util.isInteractiveVolume(volumeInfo);
+};
+
+
+/**
+ * Returns true if any entry belongs to a non-interactive volume.
+ * @param {!Array<!Entry>} entries
+ * @param {!CommandHandlerDeps} fileManager file manager
+ *     command handler.
+ * @returns {boolean}
+ */
+CommandUtil.containsNonInteractiveEntry = (entries, fileManager) => {
+  return entries.some(entry => {
+    const volumeInfo = fileManager.volumeManager.getVolumeInfo(entry);
+    if (!volumeInfo) {
+      return false;
+    }
+    return util.isInteractiveVolume(volumeInfo);
+  });
+};
+
+
 /**
  * Handle of the command events.
  */
 export class CommandHandler {
   /**
-   * @param {!CommandHandlerDeps} fileManager Classes |CommandHalder| depends.
+   * @param {!CommandHandlerDeps} fileManager Classes |CommandHandler| depends.
    * @param {!FileSelectionHandler} selectionHandler
    */
   constructor(fileManager, selectionHandler) {
@@ -931,10 +994,10 @@ CommandHandler.COMMANDS_['new-folder'] = new (class extends FilesCommand {
     let targetDirectory;
     let executedFromDirectoryTree;
 
-    if (event.target instanceof DirectoryTree) {
-      targetDirectory = event.target.selectedItem.entry;
+    if (isDirectoryTree(event.target)) {
+      targetDirectory = getFocusedTreeItem(event.target)?.entry;
       executedFromDirectoryTree = true;
-    } else if (event.target instanceof DirectoryItem) {
+    } else if (isDirectoryTreeItem(event.target)) {
       targetDirectory = event.target.entry;
       executedFromDirectoryTree = true;
     } else {
@@ -943,7 +1006,6 @@ CommandHandler.COMMANDS_['new-folder'] = new (class extends FilesCommand {
     }
 
     const directoryModel = fileManager.directoryModel;
-    const directoryTree = fileManager.ui.directoryTree;
     const listContainer = fileManager.ui.listContainer;
     this.busy_ = true;
 
@@ -961,11 +1023,24 @@ CommandHandler.COMMANDS_['new-folder'] = new (class extends FilesCommand {
 
                 // Select new directory and start rename operation.
                 if (executedFromDirectoryTree) {
-                  directoryTree.updateAndSelectNewDirectory(
-                      targetDirectory, newDirectory);
-                  fileManager.directoryTreeNamingController.attachAndStart(
-                      assert(fileManager.ui.directoryTree.selectedItem), false,
-                      null);
+                  if (util.isFilesAppExperimental()) {
+                    // The above `targetDirectory.getDirectory` call will create
+                    // a new directory, the new directory's file watcher handler
+                    // will re-read the parent directory and the new tree item
+                    // will be rendered automatically, we just need to tell the
+                    // tree container which item should enter into rename
+                    // status.
+                    fileManager.ui.directoryTreeContainer.entryKeyToRename =
+                        newDirectory.toURL();
+                  } else {
+                    const directoryTree =
+                        /** @type {DirectoryTree} */ (
+                            fileManager.ui.directoryTree);
+                    directoryTree.updateAndSelectNewDirectory(
+                        targetDirectory, newDirectory);
+                    fileManager.directoryTreeNamingController.attachAndStart(
+                        assert(directoryTree.selectedItem), false, null);
+                  }
                   this.busy_ = false;
                 } else {
                   directoryModel.updateAndSelectNewDirectory(newDirectory)
@@ -1027,9 +1102,17 @@ CommandHandler.COMMANDS_['new-folder'] = new (class extends FilesCommand {
       event.command.setHidden(true);
       return;
     }
-    if (event.target instanceof DirectoryItem ||
-        event.target instanceof DirectoryTree) {
-      const entry = CommandUtil.getCommandEntry(fileManager, event.target);
+    const entries = CommandUtil.getCommandEntries(fileManager, event.target);
+    // If there is a selected entry on a non-interactive volume, remove
+    // new-folder command.
+    if (entries.length > 0 &&
+        !CommandUtil.containsNonInteractiveEntry(entries, fileManager)) {
+      event.canExecute = false;
+      event.command.setHidden(true);
+      return;
+    }
+    if (isDirectoryTree(event.target) || isDirectoryTreeItem(event.target)) {
+      const entry = entries[0];
       if (!entry || util.isFakeEntry(entry) ||
           util.isTeamDrivesGrandRoot(entry)) {
         event.canExecute = false;
@@ -1042,6 +1125,14 @@ CommandHandler.COMMANDS_['new-folder'] = new (class extends FilesCommand {
           CommandUtil.hasCapability(fileManager, [entry], 'canAddChildren');
       event.command.setHidden(false);
     } else {
+      // If blank space was clicked and current volume is non-interactive,
+      // remove new-folder command.
+      if (entries == 0 &&
+          !CommandUtil.currentVolumeIsInteractive(fileManager)) {
+        event.canExecute = false;
+        event.command.setHidden(true);
+        return;
+      }
       const directoryModel = fileManager.directoryModel;
       const directoryEntry = fileManager.getCurrentDirectoryEntry();
       event.canExecute = !fileManager.directoryModel.isReadOnly() &&
@@ -1187,7 +1278,8 @@ CommandHandler.deleteCommand_ = new (class extends FilesCommand {
   canExecute(event, fileManager) {
     const entries = CommandUtil.getCommandEntries(fileManager, event.target);
 
-    // If entries contain fake or root entry, remove delete option.
+    // If entries contain fake, non-interactive or root entry, remove delete
+    // option.
     if (!entries.every(CommandUtil.shouldShowMenuItemsForEntry.bind(
             null, fileManager.volumeManager))) {
       event.canExecute = false;
@@ -1239,8 +1331,8 @@ CommandHandler.deleteCommand_ = new (class extends FilesCommand {
    * @public
    */
   deleteEntries(entries, fileManager, permanentlyDelete, dialog = null) {
-    // Verify that the entries are not fake or root entries, and that they
-    // can be deleted.
+    // Verify that the entries are not fake, non-interactive or root entries,
+    // and that they can be deleted.
     if (!entries.every(CommandUtil.shouldShowMenuItemsForEntry.bind(
             null, fileManager.volumeManager)) ||
         !this.canDeleteEntries_(entries, fileManager)) {
@@ -1331,8 +1423,8 @@ CommandHandler.deleteCommand_ = new (class extends FilesCommand {
    * @public
    */
   canDeleteEntries(entries, fileManager) {
-    // Verify that the entries are not fake or root entries, and that they
-    // can be deleted.
+    // Verify that the entries are not fake, non-interactive or root entries,
+    // and that they can be deleted.
     if (!entries.every(CommandUtil.shouldShowMenuItemsForEntry.bind(
             null, fileManager.volumeManager)) ||
         !this.canDeleteEntries_(entries, fileManager)) {
@@ -1496,14 +1588,11 @@ CommandHandler.COMMANDS_['empty-trash'] = new (class extends FilesCommand {
 
   /** @override */
   canExecute(event, fileManager) {
-    // Always allow execute regardless of which files are selected to allow the
-    // trash toolbar action to run even if no files are selected.
-    event.canExecute = true;
-
     const entries = CommandUtil.getCommandEntries(fileManager, event.target);
-    const visible = entries.length === 1 && util.isTrashRoot(entries[0]) &&
+    const isTrashRoot = entries.length === 1 && util.isTrashRoot(entries[0]) &&
         fileManager.trashEnabled;
-    event.command.setHidden(!visible);
+    event.canExecute = isTrashRoot || CommandUtil.isOnTrashRoot(fileManager);
+    event.command.setHidden(!isTrashRoot);
   }
 })();
 
@@ -1535,6 +1624,23 @@ CommandHandler.COMMANDS_['paste'] = new (class extends FilesCommand {
     // Hide this command if only one folder is selected.
     event.command.setHidden(
         !!CommandUtil.getOnlyOneSelectedDirectory(fileManager.getSelection()));
+
+    const entries = CommandUtil.getCommandEntries(fileManager, event.target);
+    // If there is a selected entry on a non-interactive volume, remove paste
+    // command.
+    if (entries.length > 0 &&
+        !CommandUtil.containsNonInteractiveEntry(entries, fileManager)) {
+      event.canExecute = false;
+      event.command.setHidden(true);
+      return;
+    } else if (
+        entries == 0 && !CommandUtil.currentVolumeIsInteractive(fileManager)) {
+      // If blank space was clicked and current volume is non-interactive,
+      // remove paste command.
+      event.canExecute = false;
+      event.command.setHidden(true);
+      return;
+    }
   }
 })();
 
@@ -1649,6 +1755,7 @@ CommandHandler.cutCopyCommand_ = new (class extends FilesCommand {
       return;
     }
 
+    const entries = CommandUtil.getCommandEntries(fileManager, event.target);
     const target = event.target;
     const volumeManager = fileManager.volumeManager;
     command.setHidden(false);
@@ -1658,12 +1765,13 @@ CommandHandler.cutCopyCommand_ = new (class extends FilesCommand {
       let entry;
       if (target.entry) {
         entry = target.entry;
-      } else if (target.selectedItem && target.selectedItem.entry) {
-        entry = target.selectedItem.entry;
+      } else if (getFocusedTreeItem(target)?.entry) {
+        entry = getFocusedTreeItem(target).entry;
       } else {
         return false;
       }
 
+      // If entry is fake, non-interactive or root, remove cut/copy option.
       if (!CommandUtil.shouldShowMenuItemsForEntry(volumeManager, entry)) {
         command.setHidden(true);
         return false;
@@ -1699,9 +1807,19 @@ CommandHandler.cutCopyCommand_ = new (class extends FilesCommand {
         return false;
       }
 
+      // If entries contain fake, non-interactive or root entry, remove cut/copy
+      // option.
       if (!fileManager.getSelection().entries.every(
               CommandUtil.shouldShowMenuItemsForEntry.bind(
                   null, volumeManager))) {
+        command.setHidden(true);
+        return false;
+      }
+
+      // If blank space was clicked and current volume is non-interactive,
+      // remove cut/copy command.
+      if (entries == 0 &&
+          !CommandUtil.currentVolumeIsInteractive(fileManager)) {
         command.setHidden(true);
         return false;
       }
@@ -1751,16 +1869,17 @@ CommandHandler.COMMANDS_['rename'] = new (class extends FilesCommand {
         isRemovableRoot = true;
       }
     }
-    if (event.target instanceof DirectoryTree ||
-        event.target instanceof DirectoryItem) {
-      if (event.target instanceof DirectoryTree) {
-        const directoryTree = event.target;
+    if (isDirectoryTree(event.target) || isDirectoryTreeItem(event.target)) {
+      if (isDirectoryTree(event.target)) {
+        const directoryTree =
+            /** @type {!DirectoryTree|!XfTree} */ (event.target);
         assert(fileManager.directoryTreeNamingController)
             .attachAndStart(
-                assert(directoryTree.selectedItem), isRemovableRoot,
+                assert(getFocusedTreeItem(event.target)), isRemovableRoot,
                 volumeInfo);
-      } else if (event.target instanceof DirectoryItem) {
-        const directoryItem = event.target;
+      } else if (isDirectoryTreeItem(event.target)) {
+        const directoryItem =
+            /** @type {!DirectoryItem|!XfTreeItem} */ (event.target);
         assert(fileManager.directoryTreeNamingController)
             .attachAndStart(directoryItem, isRemovableRoot, volumeInfo);
       }
@@ -1974,6 +2093,9 @@ CommandHandler.COMMANDS_['open-with'] = new (class extends FilesCommand {
 CommandHandler.COMMANDS_['invoke-sharesheet'] =
     new (class extends FilesCommand {
       execute(event, fileManager) {
+        if (CommandUtil.isOnTrashRoot(fileManager)) {
+          return;
+        }
         const entries = fileManager.selectionHandler.selection.entries;
         const launchSource = CommandUtil.getSharesheetLaunchSource(event);
         const dlpSourceUrls =
@@ -1991,6 +2113,11 @@ CommandHandler.COMMANDS_['invoke-sharesheet'] =
 
       /** @override */
       canExecute(event, fileManager) {
+        if (CommandUtil.isOnTrashRoot(fileManager)) {
+          event.canExecute = false;
+          event.command.setHidden(true);
+          return;
+        }
         const entries = fileManager.selectionHandler.selection.entries;
 
         if (!entries || entries.length === 0 ||
@@ -2495,8 +2622,17 @@ CommandHandler.COMMANDS_['zip-selection'] = new (class extends FilesCommand {
     // TODO(crbug/1226915) Make it work with MTP.
     const isOnEligibleLocation = fileManager.directoryModel.isOnNative();
 
+    // Hide if any encrypted files are selected, as we can't read them.
+    const hasEncryptedFile =
+        fileManager.metadataModel
+            .getCache(selection.entries, ['contentMimeType'])
+            .some(
+                (metadata, i) => FileType.isEncrypted(
+                    selection.entries[i], metadata.contentMimeType));
+
     event.canExecute = dirEntry && !fileManager.directoryModel.isReadOnly() &&
-        isOnEligibleLocation && selection && selection.totalCount > 0;
+        isOnEligibleLocation && selection && selection.totalCount > 0 &&
+        !hasEncryptedFile;
   }
 })();
 

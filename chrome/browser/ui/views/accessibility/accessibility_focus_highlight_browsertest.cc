@@ -25,7 +25,6 @@
 #include "content/public/test/focus_changed_observer.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/accessibility/accessibility_features.h"
-#include "ui/compositor/compositor_switches.h"
 #include "ui/compositor/layer.h"
 #include "ui/snapshot/snapshot.h"
 #include "ui/views/widget/widget.h"
@@ -142,7 +141,7 @@ class AccessibilityFocusHighlightBrowserTest : public InProcessBrowserTest {
 // Smoke test that ensures that when a node gets focus, the layer with the
 // focus highlight actually gets drawn.
 //
-// Flaky on all platforms. TODO(crbug.com/1083806): Enable this test.
+// Flaky on all platforms. TODO(https://crbug.com/1083806): Enable this test.
 IN_PROC_BROWSER_TEST_F(AccessibilityFocusHighlightBrowserTest,
                        DISABLED_DrawsHighlight) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -242,10 +241,9 @@ class ReadbackHolder : public base::RefCountedThreadSafe<ReadbackHolder> {
 
 const cc::ExactPixelComparator pixel_comparator;
 
-// Flaky on Lacros: https://crbug.com/1289366
-#if (BUILDFLAG(IS_MAC) &&                                     \
-     MAC_OS_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_15) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug/1289366): Fix flaky test on Lacros.
+// TODO(crbug/1467250): Fix flaky test on Mac.
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC)
 #define MAYBE_FocusAppearance DISABLED_FocusAppearance
 #else
 #define MAYBE_FocusAppearance FocusAppearance

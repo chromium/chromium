@@ -60,6 +60,13 @@ infrastructure.
     that fall into that latter category can also be referred to as
     __path-based trybots__.
 
+* __Builderless__: A Swarming dimension (see below for definition of a
+    dimension) that simply indicates the Swarming bot doesn't exclusively run
+    builds for a dedicated set of builders. Instead, it belongs to a generic
+    pool of bots (colloquially known as the "builderless pool") that's shared
+    across a large group of builders. Any builder that runs builds in said
+    pool is also referred to as being "builderless."
+
 * __Builder Group__: A logical grouping of builders. For example, the
   "chromium.linux" builder group is a set of builders that test basic
   functionality of Chromium on Linux.
@@ -108,6 +115,11 @@ These services largely make-up the backbone of Chromium's CI.
   * __Swarming bot__: A single worker that communicates with the Swarming server
     and executes Swarming tasks. The worker often, but not necessarily, runs on
     a Linux, Mac, or Win VM. A bot belongs to one or more Swarming pools.
+  * __Swarming dimension__: A key:value pair that a Swarming bot tags to itself
+    to describe its hardware or software attributes. (e.g. A machine running
+    macOS Ventura would tag itself with `os:Mac-13`.) A task can then include
+    certain dimensions in its request, and only bots that match all requested
+    dimensions will execute the task.
   * __Swarming pool__: A collection of Swarming bots. A pool acts as a security
     boundary, enforcing who can view and trigger tasks on its bots.
   * __Swarming task__: A single workload request. A task defines a command to

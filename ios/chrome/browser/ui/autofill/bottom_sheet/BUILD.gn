@@ -1,0 +1,101 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("bottom_sheet") {
+  sources = [
+    "payments_suggestion_bottom_sheet_coordinator.h",
+    "payments_suggestion_bottom_sheet_coordinator.mm",
+    "payments_suggestion_bottom_sheet_mediator.h",
+    "payments_suggestion_bottom_sheet_mediator.mm",
+  ]
+  deps = [
+    ":bottom_sheet_ui",
+    "//base",
+    "//components/autofill/core/browser",
+    "//components/autofill/ios/browser",
+    "//components/autofill/ios/form_util",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/autofill",
+    "//ios/chrome/browser/autofill/bottom_sheet",
+    "//ios/chrome/browser/default_browser:utils",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/web/public",
+    "//ios/web/public/js_messaging",
+    "//ui/base",
+  ]
+}
+
+source_set("bottom_sheet_ui") {
+  sources = [
+    "payments_suggestion_bottom_sheet_consumer.h",
+    "payments_suggestion_bottom_sheet_data.h",
+    "payments_suggestion_bottom_sheet_delegate.h",
+    "payments_suggestion_bottom_sheet_handler.h",
+    "payments_suggestion_bottom_sheet_view_controller.h",
+    "payments_suggestion_bottom_sheet_view_controller.mm",
+  ]
+  deps = [
+    "//build:branding_buildflags",
+    "//components/autofill/core/browser",
+    "//components/autofill/ios/browser",
+    "//components/resources:components_scaled_resources_grit",
+    "//components/url_formatter",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/bottom_sheet",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ui/base:base",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "payments_suggestion_bottom_sheet_mediator_unittest.mm" ]
+  deps = [
+    ":bottom_sheet",
+    ":bottom_sheet_ui",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/browser:test_support",
+    "//components/autofill/core/common",
+    "//components/autofill/ios/form_util",
+    "//components/prefs",
+    "//components/sync:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "payments_suggestion_bottom_sheet_egtest.mm" ]
+  deps = [
+    "//components/autofill/core/browser:test_support",
+    "//components/url_formatter",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/ui/autofill:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/settings:settings_root_constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

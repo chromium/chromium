@@ -9,8 +9,6 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.Size;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.RenderCoordinates;
 import org.chromium.ui.display.DisplayAndroid;
@@ -57,7 +55,6 @@ public class ScreenshotBoundsManager {
      * @param clipHeight The height of the device.
      * @return an instance of ScreenshotBoundsManager.
      */
-    @VisibleForTesting
     public static ScreenshotBoundsManager createForTests(Context context, Tab tab, int clipHeight) {
         return new ScreenshotBoundsManager(context, tab, clipHeight);
     }

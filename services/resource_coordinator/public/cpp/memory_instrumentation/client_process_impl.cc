@@ -14,7 +14,7 @@
 #include "build/build_config.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/os_metrics.h"
-#include "services/resource_coordinator/public/cpp/memory_instrumentation/tracing_observer.h"
+#include "services/resource_coordinator/public/cpp/memory_instrumentation/tracing_observer_proto.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
 
 namespace memory_instrumentation {
@@ -66,9 +66,8 @@ ClientProcessImpl::ClientProcessImpl(
           base::Unretained(this)),
       is_browser_process);
 
-  tracing_observer_ = std::make_unique<TracingObserver>(
-      base::trace_event::TraceLog::GetInstance(),
-      base::trace_event::MemoryDumpManager::GetInstance());
+  // Register the memory_instrumentation datasource.
+  TracingObserverProto::GetInstance();
 }
 
 ClientProcessImpl::~ClientProcessImpl() = default;

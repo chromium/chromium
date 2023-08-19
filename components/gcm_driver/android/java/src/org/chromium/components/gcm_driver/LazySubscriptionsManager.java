@@ -35,6 +35,7 @@ public class LazySubscriptionsManager {
             "subscriptions_with_persisted_messages";
     private static final String PREF_PACKAGE =
             "org.chromium.components.gcm_driver.lazy_subscriptions";
+    // TODO(crbug.com/1404927): clean up sync sender ID.
     private static final String INVALIDATION_APP_ID = "com.google.chrome.fcm.invalidations";
     private static final String INVALIDATION_SENDER_ID = "8181035976";
 

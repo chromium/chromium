@@ -86,20 +86,21 @@ TEST_F(NetworkHealthHelperTest, RequestDefaultNetworkOnline) {
   EXPECT_EQ(default_network->state, mojom::NetworkState::kOnline);
 }
 
-TEST_F(NetworkHealthHelperTest, RequestIsWiFiPortalState) {
-  EXPECT_FALSE(helper()->IsWiFiPortalState());
+TEST_F(NetworkHealthHelperTest, WiFiPortalState) {
+  using PortalState = chromeos::network_config::mojom::PortalState;
+  EXPECT_EQ(helper()->WiFiPortalState(), PortalState::kUnknown);
 
   std::string path = SetupWiFiService(shill::kStateOnline);
-  EXPECT_FALSE(helper()->IsWiFiPortalState());
+  EXPECT_EQ(helper()->WiFiPortalState(), PortalState::kOnline);
 
   SetWiFiState(path, shill::kStateRedirectFound);
-  EXPECT_TRUE(helper()->IsWiFiPortalState());
+  EXPECT_EQ(helper()->WiFiPortalState(), PortalState::kPortal);
 
-  // Ethernet in a portal state should return false.
+  // Ethernet in a portal state should return kUnknown.
   SetWiFiState(path, shill::kStateIdle);
   cros_network_config_test_helper()->network_state_helper().ConfigureService(
       R"({"GUID": "eth_guid", "Type": "ethernet", "State": "redirect-found"})");
-  EXPECT_FALSE(helper()->IsWiFiPortalState());
+  EXPECT_EQ(helper()->WiFiPortalState(), PortalState::kUnknown);
 }
 
 }  // namespace ash::network_health

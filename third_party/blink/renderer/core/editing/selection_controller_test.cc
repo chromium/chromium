@@ -97,8 +97,9 @@ TEST_F(SelectionControllerTest, setNonDirectionalSelectionIfNeeded) {
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
 
-  Node* top = GetDocument().getElementById("top")->firstChild();
-  Node* bottom = shadow_root->getElementById("bottom")->firstChild();
+  Node* top = GetDocument().getElementById(AtomicString("top"))->firstChild();
+  Node* bottom =
+      shadow_root->getElementById(AtomicString("bottom"))->firstChild();
 
   // top to bottom
   SetNonDirectionalSelectionIfNeeded(SelectionInFlatTree::Builder()
@@ -227,7 +228,7 @@ TEST_F(SelectionControllerTest, AdjustSelectionWithTrailingWhitespace) {
   SetBodyContent(
       "<input type=checkbox>"
       "<div style='user-select:none'>abc</div>");
-  Element* const input = GetDocument().QuerySelector("input");
+  Element* const input = GetDocument().QuerySelector(AtomicString("input"));
 
   const SelectionInFlatTree& selection = ExpandWithGranularity(
       SelectionInFlatTree::Builder()
@@ -529,8 +530,8 @@ TEST_F(SelectionControllerTest, AdjustSelectionByUserSelectWithInput) {
     </div>
     <div id="two">22</div>)HTML");
 
-  Element* one = GetDocument().getElementById("one");
-  Element* input = GetDocument().QuerySelector("input");
+  Element* one = GetDocument().getElementById(AtomicString("one"));
+  Element* input = GetDocument().QuerySelector(AtomicString("input"));
 
   const SelectionInFlatTree& selection =
       ExpandWithGranularity(SelectionInFlatTree::Builder()
@@ -554,9 +555,9 @@ TEST_F(SelectionControllerTest, AdjustSelectionByUserSelectWithSpan) {
       <span style="user-select:text"> lo </span>
       <span id="two" style="user-select:text">there</span></div>)HTML");
 
-  Element* div = GetDocument().getElementById("div");
-  Element* one = GetDocument().getElementById("one");
-  Element* two = GetDocument().getElementById("two");
+  Element* div = GetDocument().getElementById(AtomicString("div"));
+  Element* one = GetDocument().getElementById(AtomicString("one"));
+  Element* two = GetDocument().getElementById(AtomicString("two"));
 
   const SelectionInFlatTree& selection =
       ExpandWithGranularity(SelectionInFlatTree::Builder()

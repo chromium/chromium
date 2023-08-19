@@ -89,32 +89,42 @@ function focusEventHandler_(event: Event): void {
 }
 
 /**
- * Attach event listeners for relevant elements on the focus event.
+ * Focus events for observed input elements are messaged to the main
+ * application for broadcast to WebStateObservers.
  * @private
  */
-function doAttachListeners_(elementsToObserve: Element[]): void {
-  for (const element of elementsToObserve) {
-    element.addEventListener('focus', focusEventHandler_, true);
-    observedElements_.push(element);
+function focusEmptyOnlyEventHandler_(event: Event): void {
+  // Field must be empty
+  if ((event.target instanceof HTMLInputElement) && event.target.value) {
+    return;
   }
+  focusEventHandler_(event);
 }
 
 /**
- * Removes all listeners and clears the list of observed elements
+ * Removes listeners on the elements associated with each provided renderer ID
+ * and removes those same elements from list of observed elements.
  * @private
  */
-function detachListeners_(): void {
-  for (const element of observedElements_) {
-    element.removeEventListener('focus', focusEventHandler_, true);
+function detachListeners_(
+    renderer_ids: number[], must_be_empty: boolean): void {
+  let eventHandler =
+      must_be_empty ? focusEmptyOnlyEventHandler_ : focusEventHandler_;
+  for (const renderer_id of renderer_ids) {
+    const element = gCrWeb.fill.getElementByUniqueID(renderer_id);
+    let index = observedElements_.indexOf(element);
+    if (index > -1) {
+      element.removeEventListener('focus', eventHandler, true);
+      observedElements_.splice(index, 1);
+    }
   }
-  observedElements_ = [];
 }
 
 /**
  * Finds the element associated with each provided renderer ID and
  * attaches a listener to each of these elements for the focus event.
  */
-function attachListeners(renderer_ids: number[]): void {
+function attachListeners(renderer_ids: number[], must_be_empty: boolean): void {
   // Build list of elements
   let blurredElement: HTMLElement|null = null;
   let elementsToObserve: Element[] = [];
@@ -140,7 +150,12 @@ function attachListeners(renderer_ids: number[]): void {
   }
 
   // Attach the listeners once the IDs are set.
-  doAttachListeners_(elementsToObserve);
+  let eventHandler =
+      must_be_empty ? focusEmptyOnlyEventHandler_ : focusEventHandler_;
+  for (const element of elementsToObserve) {
+    element.addEventListener('focus', eventHandler, true);
+    observedElements_.push(element);
+  }
 
   // Restore focus if it was removed.
   if (blurredElement) {
@@ -153,18 +168,19 @@ function attachListeners(renderer_ids: number[]): void {
  * Removes all previously attached listeners before re-triggering
  * a focus event on the previously blurred element.
  */
-function detachListenersAndRefocus(): void {
-  // If the form was dismissed, we don't need to show it anymore on this page,
-  // so remove the event listeners.
-  detachListeners_();
+function detachListeners(
+    renderer_ids: number[], must_be_empty: boolean, refocus: boolean): void {
+  // If the bottom sheet was dismissed, we don't need to show it anymore on this
+  // page, so remove the event listeners.
+  detachListeners_(renderer_ids, must_be_empty);
 
-  // Re-focus the previously blurred element
-  if (lastBlurredElement_) {
+  if (refocus && lastBlurredElement_) {
+    // Re-focus the previously blurred element
     lastBlurredElement_.focus();
   }
 }
 
 gCrWeb.bottomSheet = {
   attachListeners,
-  detachListenersAndRefocus
+  detachListeners
 };

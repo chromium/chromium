@@ -20,8 +20,9 @@ TEST_F(LayoutSVGTextTest, RectBasedHitTest) {
     </svg>
   )HTML");
 
-  const auto& svg = *GetDocument().getElementById("svg");
-  const auto& text = *GetDocument().getElementById("text")->firstChild();
+  const auto& svg = *GetDocument().getElementById(AtomicString("svg"));
+  const auto& text =
+      *GetDocument().getElementById(AtomicString("text"))->firstChild();
 
   // Rect based hit testing
   auto results = RectBasedHitTest(PhysicalRect(0, 0, 300, 300));
@@ -53,12 +54,16 @@ TEST_F(LayoutSVGTextTest, TransformAffectsVectorEffect) {
   EXPECT_TRUE(text2->TransformAffectsVectorEffect());
   EXPECT_TRUE(text3->TransformAffectsVectorEffect());
 
-  GetDocument().getElementById("tspan1")->setAttribute(
-      svg_names::kVectorEffectAttr, "non-scaling-stroke");
-  GetDocument().getElementById("text2")->removeAttribute(
-      svg_names::kVectorEffectAttr);
-  GetDocument().getElementById("tspan3")->removeAttribute(
-      svg_names::kVectorEffectAttr);
+  GetDocument()
+      .getElementById(AtomicString("tspan1"))
+      ->setAttribute(svg_names::kVectorEffectAttr,
+                     AtomicString("non-scaling-stroke"));
+  GetDocument()
+      .getElementById(AtomicString("text2"))
+      ->removeAttribute(svg_names::kVectorEffectAttr);
+  GetDocument()
+      .getElementById(AtomicString("tspan3"))
+      ->removeAttribute(svg_names::kVectorEffectAttr);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(text1->TransformAffectsVectorEffect());
   EXPECT_FALSE(text2->TransformAffectsVectorEffect());

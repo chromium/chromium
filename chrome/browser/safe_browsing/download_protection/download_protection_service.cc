@@ -13,6 +13,9 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/download/chrome_download_manager_delegate.h"
+#include "chrome/browser/download/download_core_service.h"
+#include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
@@ -111,6 +114,7 @@ bool IsDownloadSecuritySensitive(safe_browsing::DownloadCheckResult result) {
     case Result::DANGEROUS_HOST:
     case Result::POTENTIALLY_UNWANTED:
     case Result::DANGEROUS_ACCOUNT_COMPROMISE:
+    case Result::DEEP_SCANNED_FAILED:
       return true;
     case Result::SAFE:
     case Result::ALLOWLISTED_BY_POLICY:
@@ -248,7 +252,8 @@ bool DownloadProtectionService::MaybeCheckClientDownload(
             &DownloadProtectionService::MaybeCheckMetadataAfterDeepScanning,
             weak_ptr_factory_.GetWeakPtr(), item, std::move(callback)),
         DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
-        DownloadCheckResult::UNKNOWN, std::move(settings.value()));
+        DownloadCheckResult::UNKNOWN, std::move(settings.value()),
+        /*password=*/"");
     return true;
   }
 
@@ -266,7 +271,7 @@ bool DownloadProtectionService::MaybeCheckClientDownload(
     UploadForDeepScanning(item, std::move(callback),
                           DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
                           DownloadCheckResult::UNKNOWN,
-                          std::move(settings.value()));
+                          std::move(settings.value()), /*password=*/"");
     return true;
   }
 
@@ -442,6 +447,7 @@ void DownloadProtectionService::ShowDetailsForDownload(
                              ui::PAGE_TRANSITION_LINK, false));
 }
 
+// static
 void DownloadProtectionService::SetDownloadProtectionData(
     download::DownloadItem* item,
     const std::string& token,
@@ -454,6 +460,7 @@ void DownloadProtectionService::SetDownloadProtectionData(
   }
 }
 
+// static
 std::string DownloadProtectionService::GetDownloadPingToken(
     const download::DownloadItem* item) {
   base::SupportsUserData::Data* protection_data =
@@ -465,6 +472,13 @@ std::string DownloadProtectionService::GetDownloadPingToken(
     return std::string();
 }
 
+// static
+bool DownloadProtectionService::HasDownloadProtectionVerdict(
+    const download::DownloadItem* item) {
+  return item->GetUserData(kDownloadProtectionDataKey) != nullptr;
+}
+
+// static
 ClientDownloadResponse::Verdict
 DownloadProtectionService::GetDownloadProtectionVerdict(
     const download::DownloadItem* item) {
@@ -476,6 +490,7 @@ DownloadProtectionService::GetDownloadProtectionVerdict(
     return ClientDownloadResponse::SAFE;
 }
 
+// static
 ClientDownloadResponse::TailoredVerdict
 DownloadProtectionService::GetDownloadProtectionTailoredVerdict(
     const download::DownloadItem* item) {
@@ -756,16 +771,61 @@ void DownloadProtectionService::UploadForDeepScanning(
     CheckDownloadRepeatingCallback callback,
     DeepScanningRequest::DeepScanTrigger trigger,
     DownloadCheckResult download_check_result,
-    enterprise_connectors::AnalysisSettings analysis_settings) {
+    enterprise_connectors::AnalysisSettings analysis_settings,
+    const std::string& password) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto request = std::make_unique<DeepScanningRequest>(
       item, trigger, download_check_result, callback, this,
-      std::move(analysis_settings));
+      std::move(analysis_settings), password);
   DeepScanningRequest* request_raw = request.get();
   auto insertion_result = deep_scanning_requests_.insert(
       std::make_pair(request_raw, std::move(request)));
   DCHECK(insertion_result.second);
   insertion_result.first->second->Start();
+}
+
+// static
+void DownloadProtectionService::UploadForConsumerDeepScanning(
+    download::DownloadItem* item,
+    const std::string& password) {
+  if (!item) {
+    return;
+  }
+  safe_browsing::SafeBrowsingService* sb_service =
+      g_browser_process->safe_browsing_service();
+  if (!sb_service) {
+    return;
+  }
+  safe_browsing::DownloadProtectionService* protection_service =
+      sb_service->download_protection_service();
+  if (!protection_service) {
+    return;
+  }
+  DownloadCoreService* download_core_service =
+      DownloadCoreServiceFactory::GetForBrowserContext(
+          content::DownloadItemUtils::GetBrowserContext(item));
+  DCHECK(download_core_service);
+  ChromeDownloadManagerDelegate* delegate =
+      download_core_service->GetDownloadManagerDelegate();
+  DCHECK(delegate);
+
+  // Create an analysis settings object for UploadForDeepScanning().
+  // Make sure it specifies a cloud analysis is required and does not
+  // specify a DM token, which is what triggers an APP scan.
+  enterprise_connectors::AnalysisSettings settings;
+  settings.cloud_or_local_settings =
+      enterprise_connectors::CloudOrLocalAnalysisSettings(
+          enterprise_connectors::CloudAnalysisSettings());
+  settings.tags = {{"malware", enterprise_connectors::TagSettings()}};
+  protection_service->UploadForDeepScanning(
+      item,
+      base::BindRepeating(
+          &ChromeDownloadManagerDelegate::CheckClientDownloadDone,
+          delegate->GetWeakPtr(), item->GetId()),
+      safe_browsing::DeepScanningRequest::DeepScanTrigger::
+          TRIGGER_CONSUMER_PROMPT,
+      safe_browsing::DownloadCheckResult::UNKNOWN, std::move(settings),
+      password);
 }
 
 void DownloadProtectionService::UploadSavePackageForDeepScanning(

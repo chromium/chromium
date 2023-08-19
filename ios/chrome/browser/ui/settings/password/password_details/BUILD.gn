@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("password_details") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "add_password_coordinator.h",
     "add_password_coordinator.mm",
@@ -14,6 +13,7 @@ source_set("password_details") {
     "password_details_coordinator.h",
     "password_details_coordinator.mm",
     "password_details_coordinator_delegate.h",
+    "password_details_mediator+private.h",
     "password_details_mediator.h",
     "password_details_mediator.mm",
     "password_details_mediator_delegate.h",
@@ -24,6 +24,7 @@ source_set("password_details") {
     "//components/password_manager/core/browser/form_parsing",
     "//components/password_manager/core/common:features",
     "//components/strings",
+    "//components/sync/base:features",
     "//components/url_formatter",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/credential_provider_promo:features",
@@ -42,6 +43,9 @@ source_set("password_details") {
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/ui/settings/password:common",
+    "//ios/chrome/browser/ui/settings/password:features",
+    "//ios/chrome/browser/ui/settings/password/password_sharing",
+    "//ios/chrome/browser/ui/settings/password/reauthentication",
     "//ios/chrome/browser/ui/settings/utils",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/reauthentication",
@@ -52,7 +56,6 @@ source_set("password_details") {
 }
 
 source_set("password_details_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "add_password_details_consumer.h",
     "add_password_handler.h",
@@ -97,6 +100,7 @@ source_set("password_details_ui") {
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings/autofill",
     "//ios/chrome/browser/ui/settings/cells",
+    "//ios/chrome/browser/ui/settings/password:features",
     "//ios/chrome/browser/ui/settings/password:password_constants",
     "//ios/chrome/browser/ui/settings/password/password_details/cells",
     "//ios/chrome/common/ui/colors",
@@ -109,7 +113,6 @@ source_set("password_details_ui") {
 }
 
 source_set("password_details_table_view_constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "password_details_table_view_constants.h",
     "password_details_table_view_constants.mm",
@@ -118,11 +121,11 @@ source_set("password_details_table_view_constants") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "add_password_view_controller_unittest.mm",
     "password_details_coordinator_unittest.mm",
+    "password_details_mediator_unittest.mm",
     "password_details_table_view_controller_unittest.mm",
   ]
   deps = [
@@ -130,30 +133,30 @@ source_set("unit_tests") {
     ":password_details_ui",
     "//base",
     "//base/test:test_support",
-    "//components/autofill/core/common",
+    "//components/keyed_service/core",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser:password_form",
     "//components/password_manager/core/browser:test_support",
     "//components/password_manager/core/common:features",
-    "//components/strings",
+    "//components/sync/base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/credential_provider_promo:features",
     "//ios/chrome/browser/passwords",
+    "//ios/chrome/browser/passwords:store_factory",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/table_view:test_support",
     "//ios/chrome/browser/shared/ui/table_view/cells",
-    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/sync",
     "//ios/chrome/browser/ui/settings/cells",
+    "//ios/chrome/browser/ui/settings/password:features",
     "//ios/chrome/browser/ui/settings/password/password_details/cells",
-    "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/reauthentication",
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/test/app:test_support",
     "//ios/web/public/test",
-    "//testing/gmock",
-    "//testing/gtest",
     "//third_party/ocmock",
     "//ui/base",
-    "//url",
   ]
 }

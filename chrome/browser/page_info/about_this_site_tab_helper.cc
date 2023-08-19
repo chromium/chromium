@@ -9,7 +9,7 @@
 #include "build/buildflag.h"
 #include "chrome/browser/page_info/page_info_features.h"
 #include "chrome/browser/ui/page_info/about_this_site_side_panel.h"
-#include "components/optimization_guide/content/browser/optimization_guide_decider.h"
+#include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
 #include "components/optimization_guide/proto/hints.pb.h"
@@ -27,24 +27,6 @@ using page_info::about_this_site_validation::AboutThisSiteStatus;
 using page_info::about_this_site_validation::ValidateMetadata;
 using page_info::proto::AboutThisSiteMetadata;
 
-namespace {
-
-bool ShouldConsultOptimizationGuide(
-    content::NavigationHandle* navigation_handle) {
-  if (navigation_handle->IsSameDocument())
-    return false;
-  if (navigation_handle->IsErrorPage())
-    return false;
-  if (!navigation_handle->IsInPrimaryMainFrame())
-    return false;
-  if (!navigation_handle->HasCommitted())
-    return false;
-  if (!navigation_handle->GetURL().SchemeIsHTTPOrHTTPS())
-    return false;
-  return true;
-}
-}  // namespace
-
 AboutThisSiteTabHelper::AboutThisSiteTabHelper(
     content::WebContents* web_contents,
     optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
@@ -59,19 +41,18 @@ AboutThisSiteTabHelper::AboutThisSiteTabHelper(
 
 AboutThisSiteTabHelper::~AboutThisSiteTabHelper() = default;
 
-void AboutThisSiteTabHelper::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
+void AboutThisSiteTabHelper::PrimaryPageChanged(content::Page& page) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (!ShouldConsultOptimizationGuide(navigation_handle)) {
-    return;
+  const GURL& url = page.GetMainDocument().GetLastCommittedURL();
+  const bool should_consult_optimization_guide =
+      url.SchemeIsHTTPOrHTTPS() && !page.GetMainDocument().IsErrorDocument();
+  if (should_consult_optimization_guide) {
+    optimization_guide_decider_->CanApplyOptimization(
+        url, optimization_guide::proto::ABOUT_THIS_SITE,
+        base::BindOnce(&AboutThisSiteTabHelper::OnOptimizationGuideDecision,
+                       weak_ptr_factory_.GetWeakPtr(), url));
   }
-
-  optimization_guide_decider_->CanApplyOptimizationAsync(
-      navigation_handle, optimization_guide::proto::ABOUT_THIS_SITE,
-      base::BindOnce(&AboutThisSiteTabHelper::OnOptimizationGuideDecision,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     navigation_handle->GetURL()));
 }
 
 void AboutThisSiteTabHelper::OnOptimizationGuideDecision(

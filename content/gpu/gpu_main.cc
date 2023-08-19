@@ -86,7 +86,7 @@
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "media/base/win/mf_initializer.h"
-#include "media/gpu/windows/dxva_video_decode_accelerator_win.h"
+#include "sandbox/policy/win/sandbox_warmup.h"
 #include "sandbox/win/src/sandbox.h"
 #endif
 
@@ -97,7 +97,7 @@
 #endif
 
 #if BUILDFLAG(IS_MAC)
-#include "base/message_loop/message_pump_mac.h"
+#include "base/message_loop/message_pump_apple.h"
 #include "components/metal_util/device_removal.h"
 #include "gpu/ipc/service/built_in_shader_cache_loader.h"
 #include "media/gpu/mac/vt_video_decode_accelerator_mac.h"
@@ -143,7 +143,11 @@ class ContentSandboxHelper : public gpu::GpuSandboxHelper {
       TRACE_EVENT0("gpu", "Warm up rand");
       // Warm up the random subsystem, which needs to be done pre-sandbox on all
       // platforms.
+#if BUILDFLAG(IS_WIN)
+      sandbox::policy::WarmupRandomnessInfrastructure();
+#else
       std::ignore = base::RandUint64();
+#endif  // BUILDFLAG(IS_WIN)
     }
 
 #if BUILDFLAG(USE_VAAPI)
@@ -155,9 +159,7 @@ class ContentSandboxHelper : public gpu::GpuSandboxHelper {
 #endif
 #endif  // BUILDFLAG(USE_VAAPI)
 #if BUILDFLAG(IS_WIN)
-    if (media::PreSandboxMediaFoundationInitialization()) {
-      media::DXVAVideoDecodeAccelerator::PreSandboxInitialization();
-    }
+    media::PreSandboxMediaFoundationInitialization();
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -478,9 +480,7 @@ bool StartSandboxLinux(gpu::GpuWatchdogThread* watchdog_thread,
       base::BindOnce(GpuProcessPreSandboxHook), sandbox_options);
 
   if (watchdog_thread) {
-    base::Thread::Options thread_options;
-    thread_options.timer_slack = base::TIMER_SLACK_MAXIMUM;
-    watchdog_thread->StartWithOptions(std::move(thread_options));
+    watchdog_thread->Start();
   }
 
   return res;

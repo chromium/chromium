@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("tailored_security") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "chrome_tailored_security_service.h",
     "chrome_tailored_security_service.mm",
@@ -26,12 +25,12 @@ source_set("tailored_security") {
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/sync",
     "//ios/components/security_interstitials/safe_browsing",
   ]
 }
 
 source_set("infobar_delegates") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "tailored_security_service_infobar_delegate.h",
     "tailored_security_service_infobar_delegate.mm",
@@ -71,6 +70,4 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

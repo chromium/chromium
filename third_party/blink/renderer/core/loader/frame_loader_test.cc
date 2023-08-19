@@ -158,7 +158,9 @@ TEST_F(FrameLoaderTest, PolicyContainerIsStoredOnCommitNavigation) {
                 Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
                 /*anonymous=*/false, network::mojom::WebSandboxFlags::kNone,
                 network::mojom::blink::IPAddressSpace::kUnknown,
-                /*can_navigate_top_without_user_gesture=*/true),
+                /*can_navigate_top_without_user_gesture=*/true,
+                /*allow_cross_origin_isolation_under_initial_empty_document=*/
+                false),
             local_frame->DomWindow()->GetPolicyContainer()->GetPolicies());
 }
 

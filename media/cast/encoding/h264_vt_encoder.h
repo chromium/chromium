@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/threading/thread_checker.h"
 #include "media/base/mac/videotoolbox_helpers.h"
@@ -32,6 +32,7 @@ class H264VideoToolboxEncoder final : public VideoEncoder,
   H264VideoToolboxEncoder(
       const scoped_refptr<CastEnvironment>& cast_environment,
       const FrameSenderConfig& video_config,
+      std::unique_ptr<VideoEncoderMetricsProvider> metrics_provider,
       StatusChangeCallback status_change_cb);
 
   H264VideoToolboxEncoder(const H264VideoToolboxEncoder&) = delete;
@@ -53,6 +54,8 @@ class H264VideoToolboxEncoder final : public VideoEncoder,
   void OnResume() override;
 
  private:
+  // Container for the associated data of a video frame being processed.
+  struct InProgressH264VTFrameEncode;
   // VideoFrameFactory tied to the VideoToolbox encoder.
   class VideoFrameFactoryImpl;
 
@@ -73,12 +76,20 @@ class H264VideoToolboxEncoder final : public VideoEncoder,
   // session. This will also update the video frame factory.
   void UpdateFrameSize(const gfx::Size& size_needed);
 
-  // Compression session callback function to handle compressed frames.
+  // Compression session callback function to handle compressed frames. This can
+  // be called by any thread.
   static void CompressionCallback(void* encoder_opaque,
                                   void* request_opaque,
                                   OSStatus status,
                                   VTEncodeInfoFlags info,
                                   CMSampleBufferRef sbuf);
+  // Invoked from CompressionCallback() to handle an encoded frame on the Cast
+  // main thread.
+  void CompressionCallbackTask(
+      std::unique_ptr<InProgressH264VTFrameEncode> request,
+      OSStatus status,
+      bool is_keyframe,
+      std::string data);
 
   // The cast environment (contains worker threads & more).
   const scoped_refptr<CastEnvironment> cast_environment_;
@@ -96,10 +107,12 @@ class H264VideoToolboxEncoder final : public VideoEncoder,
   // a frame of a different size, which will cause a compression session reset.
   gfx::Size frame_size_;
 
+  const std::unique_ptr<VideoEncoderMetricsProvider> metrics_provider_;
+
   // Callback used to report initialization status and runtime errors.
   const StatusChangeCallback status_change_cb_;
 
-  // Thread checker to enforce that this object is used on a specific thread.
+  // Thread checker to enforce that this object is used on cast main thread.
   THREAD_CHECKER(thread_checker_);
 
   // The compression session.

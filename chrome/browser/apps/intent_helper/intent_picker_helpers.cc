@@ -216,7 +216,7 @@ void ShowIntentPickerOrLaunchAppImpl(content::WebContents* web_contents,
 
   if (apps.size() == 1) {
     // If there is only a single available app, immediately launch it if either:
-    // - ShouldIntentChipSkipIntentPicker() is enabled, or
+    // - LinkCapturingInfoBarEnabled() is enabled, or
     // - LinkCapturingUiUpdateEnabled() is enabled and the app is preferred for
     // this link.
     Profile* profile =
@@ -228,7 +228,7 @@ void ShowIntentPickerOrLaunchAppImpl(content::WebContents* web_contents,
         proxy->PreferredAppsList().FindPreferredAppForUrl(url) ==
             apps[0].launch_name;
 
-    if (apps::features::ShouldIntentChipSkipIntentPicker() ||
+    if (apps::features::LinkCapturingInfoBarEnabled() ||
         should_launch_for_preferred_app) {
       LaunchAppFromIntentPicker(web_contents, url, apps[0].launch_name,
                                 apps[0].type);

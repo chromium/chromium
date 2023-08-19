@@ -15,6 +15,7 @@
 #include "base/strings/string_piece.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
+#include "components/headless/command_handler/headless_command_switches.h"
 #include "components/headless/test/pdf_utils.h"
 #include "content/public/test/browser_test.h"
 #include "headless/public/switches.h"
@@ -376,6 +377,82 @@ class HeadlessPDFOOPIFBrowserTest : public HeadlessPDFBrowserTestBase {
 
 HEADLESS_DEVTOOLED_TEST_F(HeadlessPDFOOPIFBrowserTest);
 
+class HeadlessPDFTinyPageBrowserTest
+    : public HeadlessPDFBrowserTestBase,
+      public testing::WithParamInterface<gfx::SizeF> {
+ public:
+  const char* GetUrl() override { return "/hello.html"; }
+
+  base::Value::Dict GetPrintToPDFParams() override {
+    // This tests that we can print into tiny pages as some WPT
+    // tests expect that.
+    base::Value::Dict params;
+    params.Set("paperHeight", paper_height());
+    params.Set("paperWidth", paper_width());
+    params.Set("marginTop", 0);
+    params.Set("marginBottom", 0);
+    params.Set("marginLeft", 0);
+    params.Set("marginRight", 0);
+
+    return params;
+  }
+
+  void OnPDFReady(base::span<const uint8_t> pdf_span, int num_pages) override {
+    EXPECT_GT(num_pages, 0);
+  }
+
+  void OnPDFFailure(int code, const std::string& message) override {
+    ADD_FAILURE() << "code=" << code << " message: " << message
+                  << " paper size: " << paper_size().ToString();
+  }
+
+  gfx::SizeF paper_size() const { return GetParam(); }
+  float paper_height() const { return paper_size().height(); }
+  float paper_width() const { return paper_size().width(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HeadlessPDFTinyPageBrowserTest,
+                         testing::Values(gfx::SizeF(0.1, 0.1),
+                                         gfx::SizeF(0.01, 0.01),
+                                         gfx::SizeF(0.001, 0.001)));
+
+HEADLESS_DEVTOOLED_TEST_P(HeadlessPDFTinyPageBrowserTest);
+
+class HeadlessPDFOversizeMarginsBrowserTest
+    : public HeadlessPDFBrowserTestBase {
+ public:
+  const char* GetUrl() override { return "/hello.html"; }
+
+  base::Value::Dict GetPrintToPDFParams() override {
+    // Set paper size to be smaller than the margins and expect content size
+    // error.
+    base::Value::Dict params;
+    params.Set("paperHeight", 0.1);
+    params.Set("paperWidth", 0.1);
+    params.Set("marginTop", 0.2);
+    params.Set("marginBottom", 0.2);
+    params.Set("marginLeft", 0.2);
+    params.Set("marginRight", 0.2);
+
+    return params;
+  }
+
+  void OnPDFReady(base::span<const uint8_t> pdf_span, int num_pages) override {
+    EXPECT_TRUE(false);
+  }
+
+  void OnPDFFailure(int code, const std::string& message) override {
+    EXPECT_THAT(
+        code,
+        testing::Eq(static_cast<int>(crdtp::DispatchCode::INVALID_PARAMS)));
+    EXPECT_THAT(message,
+                testing::Eq("invalid print parameters: content area is empty"));
+  }
+};
+
+HEADLESS_DEVTOOLED_TEST_F(HeadlessPDFOversizeMarginsBrowserTest);
+
 class HeadlessPDFDisableLazyLoading : public HeadlessPDFBrowserTestBase {
  public:
   const char* GetUrl() override { return "/page_with_lazy_image.html"; }
@@ -402,8 +479,6 @@ class HeadlessPDFDisableLazyLoading : public HeadlessPDFBrowserTestBase {
 };
 
 HEADLESS_DEVTOOLED_TEST_F(HeadlessPDFDisableLazyLoading);
-
-#if BUILDFLAG(ENABLE_TAGGED_PDF)
 
 const char kExpectedStructTreeJSON[] = R"({
    "lang": "en",
@@ -580,7 +655,7 @@ class HeadlessTaggedPDFBrowserTest
     EXPECT_THAT(num_pages, testing::Eq(1));
 
     absl::optional<bool> tagged = chrome_pdf::IsPDFDocTagged(pdf_span);
-    EXPECT_THAT(tagged, testing::Optional(true));
+    ASSERT_THAT(tagged, testing::Optional(true));
 
     constexpr int kFirstPage = 0;
     base::Value struct_tree =
@@ -625,6 +700,33 @@ HEADLESS_DEVTOOLED_TEST_P(HeadlessTaggedPDFDisabledBrowserTest);
 INSTANTIATE_TEST_SUITE_P(All,
                          HeadlessTaggedPDFDisabledBrowserTest,
                          ::testing::ValuesIn(kTaggedPDFTestData));
-#endif  // BUILDFLAG(ENABLE_TAGGED_PDF)
+
+class HeadlessGenerateTaggedPDFBrowserTest
+    : public HeadlessPDFBrowserTestBase,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  const char* GetUrl() override { return "/structured_doc.html"; }
+
+  base::Value::Dict GetPrintToPDFParams() override {
+    base::Value::Dict params;
+    params.Set("generateTaggedPDF", generate_tagged_pdf());
+    return params;
+  }
+
+  bool generate_tagged_pdf() { return GetParam(); }
+
+  void OnPDFReady(base::span<const uint8_t> pdf_span, int num_pages) override {
+    EXPECT_THAT(num_pages, testing::Eq(1));
+
+    absl::optional<bool> is_pdf_tagged = chrome_pdf::IsPDFDocTagged(pdf_span);
+    EXPECT_THAT(is_pdf_tagged, testing::Optional(generate_tagged_pdf()));
+  }
+};
+
+HEADLESS_DEVTOOLED_TEST_P(HeadlessGenerateTaggedPDFBrowserTest);
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HeadlessGenerateTaggedPDFBrowserTest,
+                         ::testing::Bool());
 
 }  // namespace headless

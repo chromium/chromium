@@ -26,7 +26,6 @@ IdentityLaunchWebAuthFlowFunction::Error WebAuthFlowFailureToError(
     WebAuthFlow::Failure failure) {
   switch (failure) {
     case WebAuthFlow::WINDOW_CLOSED:
-    case WebAuthFlow::USER_NAVIGATED_AWAY:
       return IdentityLaunchWebAuthFlowFunction::Error::kUserRejected;
     case WebAuthFlow::INTERACTION_REQUIRED:
       return IdentityLaunchWebAuthFlowFunction::Error::kInteractionRequired;
@@ -34,6 +33,8 @@ IdentityLaunchWebAuthFlowFunction::Error WebAuthFlowFailureToError(
       return IdentityLaunchWebAuthFlowFunction::Error::kPageLoadFailure;
     case WebAuthFlow::TIMED_OUT:
       return IdentityLaunchWebAuthFlowFunction::Error::kPageLoadTimedOut;
+    case WebAuthFlow::CANNOT_CREATE_WINDOW:
+      return IdentityLaunchWebAuthFlowFunction::Error::kCannotCreateWindow;
     default:
       NOTREACHED() << "Unexpected error from web auth flow: " << failure;
       return IdentityLaunchWebAuthFlowFunction::Error::kUnexpectedError;
@@ -58,6 +59,10 @@ std::string ErrorToString(IdentityLaunchWebAuthFlowFunction::Error error) {
       return identity_constants::kInvalidRedirect;
     case IdentityLaunchWebAuthFlowFunction::Error::kPageLoadTimedOut:
       return identity_constants::kPageLoadTimedOut;
+    case IdentityLaunchWebAuthFlowFunction::Error::kCannotCreateWindow:
+      return identity_constants::kCannotCreateWindow;
+    case IdentityLaunchWebAuthFlowFunction::Error::kInvalidURLScheme:
+      return identity_constants::kInvalidURLScheme;
   }
 }
 
@@ -95,6 +100,13 @@ ExtensionFunction::ResponseAction IdentityLaunchWebAuthFlowFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   GURL auth_url(params->details.url);
+  if (!auth_url.SchemeIsHTTPOrHTTPS()) {
+    Error error = Error::kInvalidURLScheme;
+
+    RecordHistogramFunctionResult(error);
+    return RespondNow(ExtensionFunction::Error(ErrorToString(error)));
+  }
+
   WebAuthFlow::Mode mode =
       params->details.interactive && *params->details.interactive
           ? WebAuthFlow::INTERACTIVE
@@ -121,7 +133,7 @@ ExtensionFunction::ResponseAction IdentityLaunchWebAuthFlowFunction::Run() {
   AddRef();  // Balanced in OnAuthFlowSuccess/Failure.
 
   auth_flow_ = std::make_unique<WebAuthFlow>(
-      this, profile, auth_url, mode, WebAuthFlow::LAUNCH_WEB_AUTH_FLOW,
+      this, profile, auth_url, mode, user_gesture(),
       abort_on_load_for_non_interactive, timeout_for_non_interactive);
   // An extension might call `launchWebAuthFlow()` with any URL. Add an infobar
   // to attribute displayed URL to the extension.
@@ -129,6 +141,12 @@ ExtensionFunction::ResponseAction IdentityLaunchWebAuthFlowFunction::Run() {
 
   auth_flow_->Start();
   return RespondLater();
+}
+
+bool IdentityLaunchWebAuthFlowFunction::ShouldKeepWorkerAliveIndefinitely() {
+  // `identity.launchWebAuthFlow()` can trigger an interactive signin flow for
+  // the user, and should thus keep the extension alive indefinitely.
+  return true;
 }
 
 void IdentityLaunchWebAuthFlowFunction::InitFinalRedirectURLPrefixForTest(

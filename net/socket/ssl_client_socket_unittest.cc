@@ -34,6 +34,7 @@
 #include "net/base/address_list.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/features.h"
+#include "net/base/host_port_pair.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
@@ -43,6 +44,7 @@
 #include "net/base/test_completion_callback.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/cert_and_ct_verifier.h"
+#include "net/cert/cert_database.h"
 #include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/ct_policy_status.h"
 #include "net/cert/ct_verifier.h"
@@ -1390,6 +1392,13 @@ class HangingCertVerifier : public CertVerifier {
   int num_active_requests_ = 0;
 };
 
+class MockSSLClientContextObserver : public SSLClientContext::Observer {
+ public:
+  MOCK_METHOD1(OnSSLConfigChanged, void(SSLClientContext::SSLConfigChangeType));
+  MOCK_METHOD1(OnSSLConfigForServersChanged,
+               void(const base::flat_set<HostPortPair>&));
+};
+
 }  // namespace
 
 INSTANTIATE_TEST_SUITE_P(TLSVersion,
@@ -1547,7 +1556,7 @@ TEST_P(SSLClientSocketVersionTest, ConnectBadValidityIgnoreCertErrors) {
 }
 
 // Client certificates are disabled on iOS.
-#if !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(ENABLE_CLIENT_CERTIFICATES)
 // Attempt to connect to a page which requests a client certificate. It should
 // return an error code on connect.
 TEST_P(SSLClientSocketVersionTest, ConnectClientAuthCertRequested) {
@@ -1590,7 +1599,7 @@ TEST_P(SSLClientSocketVersionTest, ConnectClientAuthSendNullCert) {
   sock_->Disconnect();
   EXPECT_FALSE(sock_->IsConnected());
 }
-#endif  // !IS_IOS
+#endif  // BUILDFLAG(ENABLE_CLIENT_CERTIFICATES)
 
 // TODO(wtc): Add unit tests for IsConnectedAndIdle:
 //   - Server closes an SSL connection (with a close_notify alert message).
@@ -2659,7 +2668,7 @@ TEST_P(SSLClientSocketVersionTest, VerifyReturnChainProperlyOrdered) {
 }
 
 // Client certificates are disabled on iOS.
-#if !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(ENABLE_CLIENT_CERTIFICATES)
 INSTANTIATE_TEST_SUITE_P(TLSVersion,
                          SSLClientSocketCertRequestInfoTest,
                          ValuesIn(GetTLSVersions()));
@@ -2731,7 +2740,7 @@ TEST_P(SSLClientSocketCertRequestInfoTest, CertKeyTypes) {
   EXPECT_THAT(request_info->signature_algorithms,
               testing::Contains(SSL_SIGN_RSA_PSS_RSAE_SHA256));
 }
-#endif  // !IS_IOS
+#endif  // BUILDFLAG(ENABLE_CLIENT_CERTIFICATES)
 
 // Tests that the Certificate Transparency (RFC 6962) TLS extension is
 // supported.
@@ -3600,7 +3609,7 @@ TEST_F(SSLClientSocketTest, AlpnClientDisabled) {
 }
 
 // Client certificates are disabled on iOS.
-#if !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(ENABLE_CLIENT_CERTIFICATES)
 // Connect to a server requesting client authentication, do not send
 // any client certificates. It should refuse the connection.
 TEST_P(SSLClientSocketVersionTest, NoCert) {
@@ -3743,7 +3752,109 @@ TEST_F(SSLClientSocketTest, ClearSessionCacheOnClientCertChange) {
   ASSERT_TRUE(CreateAndConnectSSLClientSocket(SSLConfig(), &rv));
   EXPECT_THAT(rv, IsError(ERR_BAD_SSL_CLIENT_AUTH_CERT));
 }
-#endif  // !IS_IOS
+
+TEST_F(SSLClientSocketTest, ClearSessionCacheOnClientCertDatabaseChange) {
+  SSLServerConfig server_config;
+  // TLS 1.3 reports client certificate errors after the handshake, so test at
+  // TLS 1.2 for simplicity.
+  server_config.version_max = SSL_PROTOCOL_VERSION_TLS1_2;
+  server_config.client_cert_type = SSLServerConfig::REQUIRE_CLIENT_CERT;
+  ASSERT_TRUE(
+      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
+
+  HostPortPair host_port_pair2("example.com", 42);
+  testing::StrictMock<MockSSLClientContextObserver> observer;
+  EXPECT_CALL(observer, OnSSLConfigForServersChanged(
+                            base::flat_set<HostPortPair>({host_port_pair()})));
+  EXPECT_CALL(observer, OnSSLConfigForServersChanged(
+                            base::flat_set<HostPortPair>({host_port_pair2})));
+  EXPECT_CALL(observer,
+              OnSSLConfigForServersChanged(base::flat_set<HostPortPair>(
+                  {host_port_pair(), host_port_pair2})));
+
+  context_->AddObserver(&observer);
+
+  base::FilePath certs_dir = GetTestCertsDirectory();
+  context_->SetClientCertificate(
+      host_port_pair(), ImportCertFromFile(certs_dir, "client_1.pem"),
+      key_util::LoadPrivateKeyOpenSSL(certs_dir.AppendASCII("client_1.key")));
+
+  context_->SetClientCertificate(
+      host_port_pair2, ImportCertFromFile(certs_dir, "client_2.pem"),
+      key_util::LoadPrivateKeyOpenSSL(certs_dir.AppendASCII("client_2.key")));
+
+  EXPECT_EQ(2U, context_->GetClientCertificateCachedServersForTesting().size());
+
+  // Connect to `host_port_pair()` using the client cert.
+  int rv;
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(SSLConfig(), &rv));
+  EXPECT_THAT(rv, IsOk());
+  EXPECT_TRUE(sock_->IsConnected());
+
+  EXPECT_EQ(1U, context_->ssl_client_session_cache()->size());
+
+  CertDatabase::GetInstance()->NotifyObserversClientCertStoreChanged();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(0U, context_->GetClientCertificateCachedServersForTesting().size());
+  EXPECT_EQ(0U, context_->ssl_client_session_cache()->size());
+
+  context_->RemoveObserver(&observer);
+}
+
+TEST_F(SSLClientSocketTest, DontClearSessionCacheOnServerCertDatabaseChange) {
+  SSLServerConfig server_config;
+  // TLS 1.3 reports client certificate errors after the handshake, so test at
+  // TLS 1.2 for simplicity.
+  server_config.version_max = SSL_PROTOCOL_VERSION_TLS1_2;
+  server_config.client_cert_type = SSLServerConfig::REQUIRE_CLIENT_CERT;
+  ASSERT_TRUE(
+      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
+
+  HostPortPair host_port_pair2("example.com", 42);
+  testing::StrictMock<MockSSLClientContextObserver> observer;
+  EXPECT_CALL(observer, OnSSLConfigForServersChanged(
+                            base::flat_set<HostPortPair>({host_port_pair()})));
+  EXPECT_CALL(observer, OnSSLConfigForServersChanged(
+                            base::flat_set<HostPortPair>({host_port_pair2})));
+  EXPECT_CALL(observer,
+              OnSSLConfigChanged(
+                  SSLClientContext::SSLConfigChangeType::kCertDatabaseChanged));
+
+  context_->AddObserver(&observer);
+
+  base::FilePath certs_dir = GetTestCertsDirectory();
+  context_->SetClientCertificate(
+      host_port_pair(), ImportCertFromFile(certs_dir, "client_1.pem"),
+      key_util::LoadPrivateKeyOpenSSL(certs_dir.AppendASCII("client_1.key")));
+
+  context_->SetClientCertificate(
+      host_port_pair2, ImportCertFromFile(certs_dir, "client_2.pem"),
+      key_util::LoadPrivateKeyOpenSSL(certs_dir.AppendASCII("client_2.key")));
+
+  EXPECT_EQ(2U, context_->GetClientCertificateCachedServersForTesting().size());
+
+  // Connect to `host_port_pair()` using the client cert.
+  int rv;
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(SSLConfig(), &rv));
+  EXPECT_THAT(rv, IsOk());
+  EXPECT_TRUE(sock_->IsConnected());
+
+  EXPECT_EQ(1U, context_->ssl_client_session_cache()->size());
+
+  CertDatabase::GetInstance()->NotifyObserversTrustStoreChanged();
+  base::RunLoop().RunUntilIdle();
+
+  // The `OnSSLConfigChanged` observer call should be verified by the
+  // mock observer, but the client auth and client session cache should be
+  // untouched.
+
+  EXPECT_EQ(2U, context_->GetClientCertificateCachedServersForTesting().size());
+  EXPECT_EQ(1U, context_->ssl_client_session_cache()->size());
+
+  context_->RemoveObserver(&observer);
+}
+#endif  // BUILDFLAG(ENABLE_CLIENT_CERTIFICATES)
 
 HashValueVector MakeHashValueVector(uint8_t value) {
   HashValueVector out;

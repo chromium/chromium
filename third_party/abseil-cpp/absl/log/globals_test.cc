@@ -101,4 +101,33 @@ TEST(TestGlobals, AndroidLogTag) {
   EXPECT_DEATH_IF_SUPPORTED(absl::SetAndroidNativeTag("test_tag_fail"), ".*");
 }
 
+TEST(TestExitOnDFatal, OffTest) {
+  // Turn off...
+  absl::log_internal::SetExitOnDFatal(false);
+  EXPECT_FALSE(absl::log_internal::ExitOnDFatal());
+
+  // We don't die.
+  {
+    absl::ScopedMockLog log(absl::MockLogDefault::kDisallowUnexpected);
+
+    // LOG(DFATAL) has severity FATAL if debugging, but is
+    // downgraded to ERROR if not debugging.
+    EXPECT_CALL(log, Log(absl::kLogDebugFatal, _, "This should not be fatal"));
+
+    log.StartCapturingLogs();
+    LOG(DFATAL) << "This should not be fatal";
+  }
+}
+
+#if GTEST_HAS_DEATH_TEST
+TEST(TestDeathWhileExitOnDFatal, OnTest) {
+  absl::log_internal::SetExitOnDFatal(true);
+  EXPECT_TRUE(absl::log_internal::ExitOnDFatal());
+
+  // Death comes on little cats' feet.
+  EXPECT_DEBUG_DEATH({ LOG(DFATAL) << "This should be fatal in debug mode"; },
+                     "This should be fatal in debug mode");
+}
+#endif
+
 }  // namespace

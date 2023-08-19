@@ -24,7 +24,13 @@ constexpr char kWriteType[] = "write_type";
 namespace {
 // Randomly generated UUID for use in this client.
 constexpr char kDefaultGattManagerClientUuid[] =
+// Ash and LaCrOS should use the different APP UUID, otherwise the latter one
+// (usually LaCrOS) fails on registering.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     "e060b902508c485f8b0e27639c7f2d41";
+#else
+    "58523f357dbc4390ab78ed075b15a634";
+#endif
 
 // Default to not requesting eatt support with gatt client.
 constexpr bool kDefaultEattSupport = false;

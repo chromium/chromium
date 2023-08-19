@@ -22,9 +22,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig.DisplayStyle;
@@ -56,27 +54,24 @@ public final class FeedStreamViewResizerTest {
     }
 
     @Config(qualifiers = "sw600dp-w600dp")
-    @EnableFeatures(ChromeFeatureList.FEED_MULTI_COLUMN)
     @Test
-    public void computePaddingWidthLessThan840dpMultiColumnEnabled() {
+    public void computePaddingWidthLessThan840dp() {
         // expectedPadding = mMinWidePaddingPixels = 48
         int expectedPadding = 48;
         assertPaddingEquals(expectedPadding);
     }
 
     @Config(qualifiers = "sw840dp-w840dp")
-    @EnableFeatures(ChromeFeatureList.FEED_MULTI_COLUMN)
     @Test
-    public void computePaddingWidth840dpMultiColumnEnabled() {
+    public void computePaddingWidth840dp() {
         // expectedPadding = mMinWidePaddingPixels = 48
         int expectedPadding = 48;
         assertPaddingEquals(expectedPadding);
     }
 
     @Config(qualifiers = "sw1220dp-w1220dp")
-    @EnableFeatures(ChromeFeatureList.FEED_MULTI_COLUMN)
     @Test
-    public void computePaddingWidth1220dpMultiColumnEnabled() {
+    public void computePaddingWidth1220dp() {
         // expectedPadding = max((1220-ntp_wide_card_width_breakpoint)/2, mMinWidePaddingPixels) =
         // max(190, 48)
         int expectedPadding = 190;
@@ -84,9 +79,8 @@ public final class FeedStreamViewResizerTest {
     }
 
     @Config(qualifiers = "sw1820dp-w1820dp")
-    @EnableFeatures(ChromeFeatureList.FEED_MULTI_COLUMN)
     @Test
-    public void computePaddingWidth1820dpMultiColumnEnabled() {
+    public void computePaddingWidth1820dp() {
         // expectedPadding = max(ntp_wide_card_lateral_margins_max,
         // (1820-ntp_wide_card_width_max)/2) = max(200, (1820-1200)/2) = 310
         int expectedPadding = 310;
@@ -113,9 +107,8 @@ public final class FeedStreamViewResizerTest {
     }
 
     @Config(qualifiers = "sw840dp-w840dp")
-    @EnableFeatures(ChromeFeatureList.FEED_MULTI_COLUMN)
     @Test
-    public void computePaddingWidth840dpNonWideDisplayMultiColumnEnabled() {
+    public void computePaddingWidth840dpNonWideDisplay() {
         shadowOf(mActivity).setInMultiWindowMode(true);
         mResizer.onDisplayStyleChanged(
                 new DisplayStyle(HorizontalDisplayStyle.NARROW, VerticalDisplayStyle.REGULAR));

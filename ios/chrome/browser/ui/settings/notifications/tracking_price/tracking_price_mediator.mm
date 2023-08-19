@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/notifications/tracking_price/tracking_price_mediator.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/commerce/core/pref_names.h"
@@ -29,10 +29,6 @@
 #import "ios/chrome/browser/ui/settings/notifications/tracking_price/tracking_price_consumer.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 // List of items.
 typedef NS_ENUM(NSInteger, ItemType) {

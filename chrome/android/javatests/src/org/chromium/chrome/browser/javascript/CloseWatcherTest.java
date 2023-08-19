@@ -32,7 +32,6 @@ public class CloseWatcherTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
-    private static final String TAG = "CloseWatcherTest";
     private static final String TEST_URL =
             UrlUtils.encodeHtmlDataUri("<body><script>let watcher = new CloseWatcher(); "
                     + "watcher.onclose = () => window.document.title = 'SUCCESS';</script></body>");

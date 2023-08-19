@@ -9,10 +9,6 @@
 #import "ios/chrome/browser/overlays/public/common/infobars/infobar_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 std::unique_ptr<OverlayRequest> FakeInfobarOverlayRequestFactory(
     InfoBarIOS* infobar_ios,
     InfobarOverlayType overlay_type) {

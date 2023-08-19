@@ -7,6 +7,6 @@
 #   https://source.chromium.org/chromium/infra/infra/+/master:go/src/infra/tools/dirmd/proto/dir_metadata.proto
 
 buganizer {
-  component_id: 1256717  # ChromeOS > Software > Commercial (Enterprise) > OEM Services
+  component_id: 982097  # ChromeOS > Platform > Enablement > Health
 }
-team_email: "chromeos-oem-services@google.com"
+team_email: "cros-tdm-tpe-eng@google.com"

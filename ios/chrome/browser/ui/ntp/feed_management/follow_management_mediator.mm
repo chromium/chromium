@@ -16,10 +16,6 @@
 #import "ios/chrome/browser/ui/ntp/feed_management/follow_management_ui_updater.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Converts a FollowedWebSite to a FollowedWebChannel.

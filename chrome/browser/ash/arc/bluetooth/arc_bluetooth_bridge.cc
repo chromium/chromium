@@ -610,6 +610,11 @@ void ArcBluetoothBridge::OnGetServiceRecordsFinished(
     mojom::BluetoothAddressPtr remote_addr,
     const BluetoothUUID& target_uuid,
     const std::vector<bluez::BluetoothServiceRecordBlueZ>& records_bluez) {
+  // TODO(b/288866953): ARCVM crashes if records are empty
+  if (records_bluez.size() == 0) {
+    return;
+  }
+
   auto* sdp_bluetooth_instance = ARC_GET_INSTANCE_FOR_METHOD(
       arc_bridge_service_->bluetooth(), OnGetSdpRecords);
   if (!sdp_bluetooth_instance) {
@@ -702,6 +707,26 @@ void ArcBluetoothBridge::GattDiscoveryCompleteForService(
   // Placeholder for GATT client functionality
 }
 
+void ArcBluetoothBridge::GattNeedsDiscovery(BluetoothDevice* device) {
+  if (!arc_bridge_service_->bluetooth()->IsConnected()) {
+    return;
+  }
+
+  // This is a bit of a misnomer from ARC side: OnServiceChanged needs to be
+  // called when we get the signal that something is changed on the peer side,
+  // so ARC can start to re-discover everything again.
+  // However, the GattServiceChanged below indicates we have updated a service,
+  // so it doesn't actually mean ARC needs to re-discover everything.
+  auto* btle_instance = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_bridge_service_->bluetooth(), OnServiceChanged);
+  if (!btle_instance) {
+    return;
+  }
+  btle_instance->OnServiceChanged(
+      mojom::BluetoothAddress::From(device->GetAddress()));
+}
+
+// TODO(b/284429795) This is wrong. See GattNeedsDiscovery above.
 void ArcBluetoothBridge::GattServiceChanged(
     BluetoothAdapter* adapter,
     BluetoothRemoteGattService* service) {

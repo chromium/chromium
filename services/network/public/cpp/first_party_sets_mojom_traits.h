@@ -16,7 +16,6 @@
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/global_first_party_sets.h"
-#include "net/first_party_sets/same_party_context.h"
 #include "services/network/public/mojom/first_party_sets.mojom-shared.h"
 
 namespace mojo {
@@ -64,36 +63,8 @@ struct COMPONENT_EXPORT(FIRST_PARTY_SETS_MOJOM_TRAITS)
 
 template <>
 struct COMPONENT_EXPORT(FIRST_PARTY_SETS_MOJOM_TRAITS)
-    EnumTraits<network::mojom::SamePartyCookieContextType,
-               net::SamePartyContext::Type> {
-  static network::mojom::SamePartyCookieContextType ToMojom(
-      net::SamePartyContext::Type context_type);
-
-  static bool FromMojom(network::mojom::SamePartyCookieContextType context_type,
-                        net::SamePartyContext::Type* out);
-};
-
-template <>
-struct COMPONENT_EXPORT(FIRST_PARTY_SETS_MOJOM_TRAITS)
-    StructTraits<network::mojom::SamePartyContextDataView,
-                 net::SamePartyContext> {
-  static net::SamePartyContext::Type context_type(
-      const net::SamePartyContext& s) {
-    return s.context_type();
-  }
-
-  static bool Read(network::mojom::SamePartyContextDataView bundle,
-                   net::SamePartyContext* out);
-};
-
-template <>
-struct COMPONENT_EXPORT(FIRST_PARTY_SETS_MOJOM_TRAITS)
     StructTraits<network::mojom::FirstPartySetMetadataDataView,
                  net::FirstPartySetMetadata> {
-  static net::SamePartyContext context(const net::FirstPartySetMetadata& m) {
-    return m.context();
-  }
-
   static absl::optional<net::FirstPartySetEntry> frame_entry(
       const net::FirstPartySetMetadata& m) {
     return m.frame_entry();

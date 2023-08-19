@@ -34,7 +34,7 @@ public class SuspensionTracker {
      */
     public Promise<Void> setWebsitesSuspended(List<String> fqdns, boolean suspended) {
         Promise<Void> newWritePromise = new Promise<>();
-        mWritePromise.then((dummyResult) -> {
+        mWritePromise.then((placeholderResult) -> {
             mRootPromise.then((result) -> {
                 // We copy result so that the mutation isn't reflected in result until persistence
                 // succeeds.
@@ -63,10 +63,10 @@ public class SuspensionTracker {
                                 newWritePromise.reject();
                             }
                         });
-                // We need to add a dummy exception handler so that Promise doesn't complain when we
-                // call variants of then() that don't take a single callback. These variants set an
-                // exception handler on the returned promise, so they expect there to be one on the
-                // root promise.
+                // We need to add a placeholder exception handler so that Promise doesn't complain
+                // when we call variants of then() that don't take a single callback. These variants
+                // set an exception handler on the returned promise, so they expect there to be one
+                // on the root promise.
             }, (e) -> {});
         });
 

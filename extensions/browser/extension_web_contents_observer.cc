@@ -43,8 +43,9 @@ ExtensionWebContentsObserver* ExtensionWebContentsObserver::GetForWebContents(
 // static
 void ExtensionWebContentsObserver::BindLocalFrameHost(
     mojo::PendingAssociatedReceiver<mojom::LocalFrameHost> receiver,
-    content::RenderFrameHost* rfh) {
-  auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
+    content::RenderFrameHost* render_frame_host) {
+  auto* web_contents =
+      content::WebContents::FromRenderFrameHost(render_frame_host);
   if (!web_contents)
     return;
   auto* observer = GetForWebContents(web_contents);
@@ -53,7 +54,7 @@ void ExtensionWebContentsObserver::BindLocalFrameHost(
   auto* efh = observer->extension_frame_host_.get();
   if (!efh)
     return;
-  efh->BindLocalFrameHost(std::move(receiver), rfh);
+  efh->BindLocalFrameHost(std::move(receiver), render_frame_host);
 }
 
 std::unique_ptr<ExtensionFrameHost>
@@ -216,12 +217,12 @@ void ExtensionWebContentsObserver::ReadyToCommitNavigation(
   content::RenderFrameHost* parent_or_outerdoc =
       navigation_handle->GetParentFrameOrOuterDocument();
 
-  content::RenderFrameHost* outermost_main_rfh =
+  content::RenderFrameHost* outermost_main_render_frame_host =
       parent_or_outerdoc ? parent_or_outerdoc->GetOutermostMainFrame()
                          : navigation_handle->GetRenderFrameHost();
 
   const Extension* const extension =
-      GetExtensionFromFrame(outermost_main_rfh, false);
+      GetExtensionFromFrame(outermost_main_render_frame_host, false);
   KioskDelegate* const kiosk_delegate =
       ExtensionsBrowserClient::Get()->GetKioskDelegate();
   DCHECK(kiosk_delegate);
@@ -369,8 +370,8 @@ mojom::LocalFrame* ExtensionWebContentsObserver::GetLocalFrame(
 
 void ExtensionWebContentsObserver::OnWindowIdChanged(SessionID id) {
   web_contents()->ForEachRenderFrameHost(
-      [&id, this](content::RenderFrameHost* rfh) {
-        auto* local_frame = GetLocalFrame(rfh);
+      [&id, this](content::RenderFrameHost* render_frame_host) {
+        auto* local_frame = GetLocalFrame(render_frame_host);
         if (local_frame)
           local_frame->UpdateBrowserWindowId(id.id());
       });

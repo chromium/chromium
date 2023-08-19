@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/install_bounce_metric.h"
+#include "chrome/browser/web_applications/jobs/uninstall/web_app_uninstall_and_replace_job.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/locks/noop_lock.h"
 #include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
@@ -21,8 +22,8 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_logging.h"
-#include "chrome/browser/web_applications/web_app_uninstall_and_replace_job.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
+#include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_logging.h"
@@ -35,8 +36,7 @@ ExternallyManagedInstallCommand::ExternallyManagedInstallCommand(
     const ExternalInstallOptions& external_install_options,
     InstallAndReplaceCallback callback,
     base::WeakPtr<content::WebContents> contents,
-    std::unique_ptr<WebAppDataRetriever> data_retriever,
-    WebAppUrlLoader* web_app_url_loader)
+    std::unique_ptr<WebAppDataRetriever> data_retriever)
     : WebAppCommandTemplate<NoopLock>("ExternallyManagedInstallCommand"),
       profile_(profile),
       noop_lock_description_(std::make_unique<NoopLockDescription>()),
@@ -48,7 +48,6 @@ ExternallyManagedInstallCommand::ExternallyManagedInstallCommand(
       install_callback_(std::move(callback)),
       web_contents_(contents),
       data_retriever_(std::move(data_retriever)),
-      web_app_url_loader_(web_app_url_loader),
       install_error_log_entry_(/*background_installation=*/true,
                                install_surface_) {
   debug_value_.Set("external_install_options",
@@ -82,6 +81,7 @@ void ExternallyManagedInstallCommand::StartWithLock(
     return;
   }
 
+  web_app_url_loader_ = noop_lock_->web_contents_manager().CreateUrlLoader();
   data_retriever_->GetWebAppInstallInfo(
       web_contents_.get(),
       base::BindOnce(
@@ -176,7 +176,8 @@ void ExternallyManagedInstallCommand::OnDidPerformInstallableCheck(
 
   if (install_params_.install_as_shortcut) {
     *web_app_info_ = WebAppInstallInfo::CreateInstallInfoForCreateShortcut(
-        web_contents_->GetLastCommittedURL(), *web_app_info_);
+        web_contents_->GetLastCommittedURL(), web_contents_->GetTitle(),
+        *web_app_info_);
   }
 
   app_id_ = GenerateAppIdFromManifestId(web_app_info_->manifest_id);
@@ -186,12 +187,15 @@ void ExternallyManagedInstallCommand::OnDidPerformInstallableCheck(
 
   base::flat_set<GURL> icon_urls = GetValidIconUrlsToDownload(*web_app_info_);
 
-  // PrepareForLoad() navigates to about:blank. This ensure that no further
-  // navigation/redirection is still running that could interrupt icon fetching.
-  if (web_app_url_loader_ && !web_contents_->GetVisibleURL().EqualsIgnoringRef(
-                                 GURL(url::kAboutBlankURL))) {
-    web_app_url_loader_->PrepareForLoad(
-        web_contents_.get(),
+  if (!web_contents_->GetVisibleURL().EqualsIgnoringRef(
+          GURL(url::kAboutBlankURL))) {
+    // Navigate to about:blank. This ensure that no further
+    // navigation/redirection is still running that could interrupt icon
+    // fetching.
+    const GURL kAboutBlankURL = GURL(url::kAboutBlankURL);
+    web_app_url_loader_->LoadUrl(
+        kAboutBlankURL, web_contents_.get(),
+        WebAppUrlLoader::UrlComparison::kExact,
         base::BindOnce(
             &ExternallyManagedInstallCommand::OnPreparedForIconRetrieving,
             weak_factory_.GetWeakPtr(), std::move(icon_urls),
@@ -208,6 +212,7 @@ void ExternallyManagedInstallCommand::OnPreparedForIconRetrieving(
     WebAppUrlLoaderResult result) {
   data_retriever_->GetIcons(
       web_contents_.get(), std::move(icon_urls), skip_page_favicons,
+      /*fail_all_if_any_fail=*/false,
       base::BindOnce(&ExternallyManagedInstallCommand::
                          OnIconsRetrievedUpgradeLockDescription,
                      weak_factory_.GetWeakPtr()));
@@ -320,7 +325,7 @@ void ExternallyManagedInstallCommand::OnInstallFinalized(
 
   DCHECK(app_lock_);
   uninstall_and_replace_job_.emplace(
-      profile_, app_lock_->AsWeakPtr(), apps_to_uninstall_, app_id,
+      profile_, *app_lock_, apps_to_uninstall_, app_id,
       base::BindOnce(&ExternallyManagedInstallCommand::OnUninstallAndReplaced,
                      weak_factory_.GetWeakPtr(), app_id, code));
   uninstall_and_replace_job_->Start();

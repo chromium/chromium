@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://resources/cr_elements/cr_tree/cr_tree.js';
 
 import {CrTreeItemElement} from 'chrome://resources/cr_elements/cr_tree/cr_tree_item.js';
+import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {File} from 'chrome://resources/mojo/mojo/public/mojom/base/file.mojom-webui.js';
 import {ReadOnlyBuffer} from 'chrome://resources/mojo/mojo/public/mojom/base/read_only_buffer.mojom-webui.js';
-import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {setSetupFn, UsbInternalsAppElement} from 'chrome://usb-internals/app.js';
 import {UsbClaimInterfaceResult, UsbControlTransferParams, UsbControlTransferRecipient, UsbControlTransferType, UsbDeviceClientRemote, UsbDeviceInfo, UsbDeviceInterface, UsbDevicePendingReceiver, UsbDeviceReceiver, UsbIsochronousPacket, UsbOpenDeviceResult, UsbOpenDeviceSuccess, UsbTransferDirection, UsbTransferStatus} from 'chrome://usb-internals/usb_device.mojom-webui.js';
 import {UsbInternalsPageHandler, UsbInternalsPageHandlerInterface, UsbInternalsPageHandlerReceiver} from 'chrome://usb-internals/usb_internals.mojom-webui.js';
@@ -305,13 +304,6 @@ function createDeviceWithShortDeviceDescriptor(): FakeUsbDeviceRemote {
     data: [0x12, 0x01, 0x00, 0x02, 0x00, 0x00, 0x00, 0x40, 0x50],
   });
   return deviceRemote;
-}
-
-/**
- * Converts an ECMAScript string to an instance of mojo_base.mojom.String16.
- */
-function stringToMojoString16(s: string): String16 {
-  return {data: Array.from(s, c => c.charCodeAt(0))};
 }
 
 /**

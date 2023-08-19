@@ -10,33 +10,10 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 
-namespace prefs {
-// String to represent the user's preferred font name for the read anything UI.
-const char kAccessibilityReadAnythingFontName[] =
-    "settings.a11y.read_anything.font_name";
-
-// Double to represent the user's preferred font size scaling factor.
-const char kAccessibilityReadAnythingFontScale[] =
-    "settings.a11y.read_anything.font_scale";
-
-// Int value to represent the user's preferred color settings.
-const char kAccessibilityReadAnythingColorInfo[] =
-    "settings.a11y.read_anything.color_info";
-
-// Int value to represent the user's preferred line spacing setting.
-const char kAccessibilityReadAnythingLineSpacing[] =
-    "settings.a11y.read_anything.line_spacing";
-
-// Int value to represent the user's preferred letter spacing setting.
-const char kAccessibilityReadAnythingLetterSpacing[] =
-    "settings.a11y.read_anything.letter_spacing";
-
-}  // namespace prefs
-
 void RegisterReadAnythingProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterStringPref(prefs::kAccessibilityReadAnythingFontName,
-                               string_constants::kReadAnythingDefaultFontName,
+                               string_constants::kReadAnythingPlaceholderFontName,
                                user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterDoublePref(prefs::kAccessibilityReadAnythingFontScale,
                                kReadAnythingDefaultFontScale,

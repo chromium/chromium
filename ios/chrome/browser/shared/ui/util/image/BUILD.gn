@@ -8,7 +8,6 @@ source_set("image") {
     "image_util.mm",
   ]
   deps = [ "//ui/base" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
   frameworks = [ "UniformTypeIdentifiers.framework" ]
 }
 
@@ -37,5 +36,4 @@ source_set("web") {
     "Photos.framework",
     "UniformTypeIdentifiers.framework",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

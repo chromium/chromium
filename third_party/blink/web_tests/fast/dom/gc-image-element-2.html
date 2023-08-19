@@ -2,44 +2,47 @@
 <pre id="console"></pre>
 
 <script src="../../resources/js-test.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <script>
-if (window.testRunner) {
-    testRunner.dumpAsText();
-    testRunner.waitUntilDone();
-}
-
 function $(id)
 {
     return document.getElementById(id);
 }
 
-function log(s)
-{
-    $("console").appendChild(document.createTextNode(s + "\n"));
-}
-
 var imageCount = 0;
+var finished = false;
 
-function createImage()
-{
-    ++imageCount;
-    var image = new Image;
-    image.src = "resources/apple.gif";
-    image.onload = function () {
-        log("onload fired...");
-        gc();
+function createImage() {
+    return new Promise(function(resolve, reject) {
+        ++imageCount;
+        var image = new Image;
+        image.src = "resources/apple.gif";
+        image.onload = function () {
+            gc();
 
-        --imageCount;
-        if (!imageCount) {
-            log("PASS");
-            if (window.testRunner)
-                testRunner.notifyDone();
-        }
-    };
-    image = null;
+            --imageCount;
+            if (!imageCount) {
+                finished = true;
+            }
+            resolve();
+        };
+        image = null;
+    });
 }
 
-for (var i = 0; i < 10; ++i)
-    createImage();
+function load() {
+    var imagePromises = [];
+    for (var i = 0; i < 10; ++i) {
+        imagePromises.push(createImage());
+    }
+    return Promise.all(imagePromises);
+}
 
+async_test(function(t) {
+    load().then(function() {
+        assert_true(finished);
+        t.done();  // Indicate that the async test is done
+    });
+})
 </script>

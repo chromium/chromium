@@ -876,19 +876,8 @@ bool CSPDirectiveListAllowFromSource(
   }
 
   CSPOperativeDirective directive = OperativeDirective(csp, type);
-  bool result =
-      CheckSource(csp, policy, directive, url, type, url_before_redirects,
-                  redirect_status, reporting_disposition);
-
-  if (type == CSPDirectiveName::BaseURI) {
-    if (result && !CheckSource(csp, policy, directive, url, type,
-                               url_before_redirects, redirect_status,
-                               ReportingDisposition::kSuppressReporting)) {
-      policy->Count(WebFeature::kBaseWouldBeBlockedByDefaultSrc);
-    }
-  }
-
-  return result;
+  return CheckSource(csp, policy, directive, url, type, url_before_redirects,
+                     redirect_status, reporting_disposition);
 }
 
 bool CSPDirectiveListAllowTrustedTypePolicy(

@@ -14,6 +14,7 @@
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/session/test_session_controller_client.h"
+#include "ash/system/privacy_hub/sensor_disabled_notification_delegate.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_types.h"
@@ -242,6 +243,15 @@ class AshTestBase : public testing::Test {
   // Waits for shelf animation in all displays.
   void WaitForShelfAnimation();
 
+  // Execute a list of tasks during a drag and drop sequence in the apps grid.
+  // This method should be called after the drag is initiated by long pressing
+  // over an app but before actually moving the pointer to drag the item. When
+  // the drag and drop sequence is not handled by DragDropController, the list
+  // of tasks is just run sequentially outside the loop
+  void MaybeRunDragAndDropSequenceForAppList(
+      std::list<base::OnceClosure>* tasks,
+      bool is_touch);
+
  protected:
   enum UserSessionBlockReason {
     FIRST_BLOCK_REASON,
@@ -312,33 +322,23 @@ class AshTestBase : public testing::Test {
   // behavior where |AccountId|s are compared, prefer the method of the same
   // name that takes an |AccountId| created with a valid storage key instead.
   // See the documentation for|AccountId::GetUserEmail| for discussion.
-  // NOTE: call `StabilizeUIForPixelTest()` after using this function in a pixel
-  // test.
   void SimulateUserLogin(
       const std::string& user_email,
       user_manager::UserType user_type = user_manager::USER_TYPE_REGULAR);
 
   // Simulates a user sign-in. It creates a new user session, adds it to
   // existing user sessions and makes it the active user session.
-  // NOTE: call `StabilizeUIForPixelTest()` after using this function in a pixel
-  // test.
   void SimulateUserLogin(
       const AccountId& account_id,
       user_manager::UserType user_type = user_manager::USER_TYPE_REGULAR);
 
   // Simular to SimulateUserLogin but for a newly created user first ever login.
-  // NOTE: call `StabilizeUIForPixelTest()` after using this function in a pixel
-  // test.
   void SimulateNewUserFirstLogin(const std::string& user_email);
 
   // Similar to SimulateUserLogin but for a guest user.
-  // NOTE: call `StabilizeUIForPixelTest()` after using this function in a pixel
-  // test.
   void SimulateGuestLogin();
 
   // Simulates kiosk mode. |user_type| must correlate to a kiosk type user.
-  // NOTE: call `StabilizeUIForPixelTest()` after using this function in a pixel
-  // test.
   void SimulateKioskMode(user_manager::UserType user_type);
 
   // Simulates setting height of the accessibility panel.
@@ -412,6 +412,9 @@ class AshTestBase : public testing::Test {
   std::unique_ptr<AshTestHelper> ash_test_helper_;
 
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
+
+  std::unique_ptr<ScopedSensorDisabledNotificationDelegateForTest>
+      scoped_disabled_notification_delegate_;
 };
 
 class NoSessionAshTestBase : public AshTestBase {

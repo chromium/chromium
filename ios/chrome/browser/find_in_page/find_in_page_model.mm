@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/find_in_page/find_in_page_model.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface FindInPageModel ()
 // Redefined as readwrite.
 @property(copy, nonatomic, readwrite) NSString* text;

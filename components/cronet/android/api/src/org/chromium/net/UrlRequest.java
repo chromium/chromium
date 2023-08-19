@@ -118,6 +118,21 @@ public abstract class UrlRequest {
         }
 
         /**
+         * Binds the request to the specified network handle. Cronet will send this request only
+         * using the network associated to this handle. If this network disconnects the request will
+         * fail, the exact error will depend on the stage of request processing when the network
+         * disconnects. Network handles can be obtained through {@code Network#getNetworkHandle}.
+         * Only available starting from Android Marshmallow.
+         *
+         * @param networkHandle the network handle to bind the request to. Specify {@link
+         * CronetEngine#UNBIND_NETWORK_HANDLE} to unbind.
+         * @return the builder to facilitate chaining.
+         */
+        public Builder bindToNetwork(long networkHandle) {
+            return this;
+        }
+
+        /**
          * Sets {@link android.net.TrafficStats} tag to use when accounting socket traffic caused by
          * this request. See {@link android.net.TrafficStats} for more information. If no tag is set
          * (e.g. this method isn't called), then Android accounts for the socket traffic caused by

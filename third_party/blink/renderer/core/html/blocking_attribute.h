@@ -22,7 +22,8 @@ class BlockingAttribute final : public DOMTokenList {
   static bool HasRenderToken(const String& attribute_value);
   bool HasRenderToken() const { return contains(keywords::kRender); }
 
-  void CountTokenUsage();
+  void OnAttributeValueChanged(const AtomicString& old_value,
+                               const AtomicString& new_value);
 
  private:
   static HashSet<AtomicString>& SupportedTokens();

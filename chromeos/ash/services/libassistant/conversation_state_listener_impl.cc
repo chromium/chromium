@@ -121,6 +121,7 @@ void ConversationStateListenerImpl::OnConversationTurnFinished(
       return;
     // This is only applicable in longform barge-in mode, which we do not use.
     case Resolution::LONGFORM_KEEP_MIC_OPEN:
+    case Resolution::BLUE_STEEL_ON_DEVICE_REJECTION:
       NOTREACHED();
       return;
   }

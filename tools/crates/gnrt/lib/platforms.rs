@@ -229,7 +229,7 @@ fn supported_os_cfgs() -> &'static [Cfg] {
     })
 }
 
-static SUPPORTED_NAMED_PLATFORMS: &'static [&'static str] = &[
+static SUPPORTED_NAMED_PLATFORMS: &[&str] = &[
     "i686-linux-android",
     "x86_64-linux-android",
     "armv7-linux-android",

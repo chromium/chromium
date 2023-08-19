@@ -5,10 +5,10 @@
 #import <WebKit/WebKit.h>
 #import <vector>
 
+#import "base/apple/foundation_util.h"
 #import "base/files/file_enumerator.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
-#import "base/mac/foundation_util.h"
 #import "base/memory/ptr_util.h"
 #import "base/path_service.h"
 #import "base/strings/string_util.h"
@@ -38,8 +38,8 @@
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/browser/passwords/password_controller.h"
-#import "ios/chrome/browser/paths/paths.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/sync/ios_user_event_service_factory.h"
 #import "ios/chrome/browser/ui/autofill/chrome_autofill_client_ios.h"
 #import "ios/chrome/browser/web/chrome_web_client.h"
@@ -54,10 +54,6 @@
 #import "ios/web/public/web_state.h"
 #import "testing/data_driven_testing/data_driven_test.h"
 #import "testing/platform_test.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using base::test::ios::kWaitForJSCompletionTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
@@ -211,8 +207,6 @@ FormStructureBrowserTest::FormStructureBrowserTest()
        // TODO(crbug.com/1150895) Remove once launched.
        features::kAutofillParsingPatternProvider,
        features::kAutofillPageLanguageDetection,
-       // TODO(crbug.com/1335549): Remove once launched.
-       features::kAutofillParseIBANFields,
        // TODO(crbug.com/1311937): Remove once launched.
        features::kAutofillEnableSupportForPhoneNumberTrunkTypes,
        features::kAutofillInferCountryCallingCode,

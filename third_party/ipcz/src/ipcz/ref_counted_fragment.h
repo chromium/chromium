@@ -17,7 +17,6 @@ namespace ipcz {
 // released. Consumers can hold onto references to RefCountedFragment objects
 // by holding a FragmentRef.
 struct IPCZ_ALIGN(4) RefCountedFragment {
-  enum { kAdoptExistingRef };
   enum { kUnmanagedRef };
 
   RefCountedFragment();

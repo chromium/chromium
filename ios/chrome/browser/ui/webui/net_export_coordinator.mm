@@ -13,10 +13,6 @@
 #import "ios/chrome/browser/webui/show_mail_composer_context.h"
 #import "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface NetExportCoordinator () <MFMailComposeViewControllerDelegate> {
   // Coordinator for displaying alerts.
   AlertCoordinator* _alertCoordinator;
@@ -48,16 +44,16 @@
     NSString* alertMessage =
         l10n_util::GetNSString([self.context emailNotConfiguredAlertMessageId]);
 
-    // Dismiss current alert, if any.
-    [_alertCoordinator stop];
-
     _alertCoordinator = [[AlertCoordinator alloc]
         initWithBaseViewController:self.baseViewController
                            browser:self.browser
                              title:alertTitle
                            message:alertMessage];
+    __weak NetExportCoordinator* weakSelf = self;
     [_alertCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_OK)
-                                 action:nil
+                                 action:^{
+                                   [weakSelf stopAlertCoordinator];
+                                 }
                                   style:UIAlertActionStyleDefault];
 
     [_alertCoordinator start];
@@ -90,7 +86,7 @@
 }
 
 - (void)stop {
-  [_alertCoordinator stop];
+  [self stopAlertCoordinator];
 }
 
 #pragma mark - MFMailComposeViewControllerDelegate methods
@@ -99,6 +95,13 @@
           didFinishWithResult:(MFMailComposeResult)result
                         error:(NSError*)error {
   [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma mark - private
+
+- (void)stopAlertCoordinator {
+  [_alertCoordinator stop];
+  _alertCoordinator = nil;
 }
 
 @end

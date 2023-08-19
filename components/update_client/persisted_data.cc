@@ -15,6 +15,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "base/uuid.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -26,6 +27,7 @@
 namespace update_client {
 
 const char kPersistedDataPreference[] = "updateclientdata";
+const char kThrottleUpdatesUntilPreference[] = "updateclientthrottleuntil";
 
 PersistedData::PersistedData(PrefService* pref_service,
                              ActivityDataService* activity_data_service)
@@ -228,8 +230,17 @@ void PersistedData::SetFingerprint(const std::string& id,
   SetString(id, "fp", fingerprint);
 }
 
+base::Time PersistedData::GetThrottleUpdatesUntil() const {
+  return pref_service_->GetTime(kThrottleUpdatesUntilPreference);
+}
+
+void PersistedData::SetThrottleUpdatesUntil(const base::Time& time) {
+  pref_service_->SetTime(kThrottleUpdatesUntilPreference, time);
+}
+
 void PersistedData::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kPersistedDataPreference);
+  registry->RegisterTimePref(kThrottleUpdatesUntilPreference, base::Time());
 }
 
 }  // namespace update_client

@@ -7,6 +7,8 @@
 ../../web_tests/external/wpt/css/css-fonts/resources/COLR-palettes-test-font.ttf
 ../../web_tests/external/wpt/fonts/AD.woff
 ../../web_tests/external/wpt/fonts/Ahem.ttf
+../../web_tests/external/wpt/fonts/CanvasTest-ascent256.ttf
+../../web_tests/external/wpt/fonts/CanvasTest-descent0.ttf
 ../../web_tests/external/wpt/fonts/CanvasTest.ttf
 ../../web_tests/external/wpt/fonts/GentiumPlus-R.woff
 ../../web_tests/external/wpt/fonts/Revalia.woff
@@ -144,10 +146,20 @@
 ../../web_tests/images/resources/avif/alpha-mask-limited-range-10bpc.avif
 ../../web_tests/images/resources/avif/alpha-mask-limited-range-12bpc.avif
 ../../web_tests/images/resources/avif/alpha-mask-limited-range-8bpc.avif
+../../web_tests/images/resources/avif/bee.avif
+../../web_tests/images/resources/avif/blue-and-magenta-crop-invalid.avif
+../../web_tests/images/resources/avif/blue-and-magenta-crop.avif
 ../../web_tests/images/resources/avif/dice_444_10b_grid4x3.avif
 ../../web_tests/images/resources/avif/gracehopper_422_12b_grid2x4.avif
 ../../web_tests/images/resources/avif/gray1024x704.avif
 ../../web_tests/images/resources/avif/green-no-alpha-ispe.avif
+../../web_tests/images/resources/avif/kodim03.avif
+../../web_tests/images/resources/avif/peach.avif
+../../web_tests/images/resources/avif/peach_13000000.avif
+../../web_tests/images/resources/avif/peach_13000002.avif
+../../web_tests/images/resources/avif/peach_900000.avif
+../../web_tests/images/resources/avif/red-and-purple-and-blue.avif
+../../web_tests/images/resources/avif/red-and-purple-crop.avif
 ../../web_tests/images/resources/avif/red-at-12-oclock-with-color-profile-10bpc.avif
 ../../web_tests/images/resources/avif/red-at-12-oclock-with-color-profile-12bpc.avif
 ../../web_tests/images/resources/avif/red-at-12-oclock-with-color-profile-8bpc.avif
@@ -185,8 +197,11 @@
 ../../web_tests/images/resources/avif/red-with-profile-12bpc.avif
 ../../web_tests/images/resources/avif/red-with-profile-8bpc.avif
 ../../web_tests/images/resources/avif/red.png
+../../web_tests/images/resources/avif/silver-400-matrix-0.avif
+../../web_tests/images/resources/avif/silver-400-matrix-6.avif
 ../../web_tests/images/resources/avif/silver-full-range-srgb-420-8bpc.avif
 ../../web_tests/images/resources/avif/silver.png
+../../web_tests/images/resources/avif/small-with-gainmap.avif
 ../../web_tests/images/resources/avif/star-animated-10bpc-with-alpha.avif
 ../../web_tests/images/resources/avif/star-animated-10bpc.avif
 ../../web_tests/images/resources/avif/star-animated-12bpc-with-alpha.avif
@@ -214,6 +229,7 @@
 ../../web_tests/images/resources/cHRM_color_spin.png
 ../../web_tests/images/resources/cat.jpg
 ../../web_tests/images/resources/cicp_pq.png
+../../web_tests/images/resources/circle-trns-before-plte.png
 ../../web_tests/images/resources/cmyk-jpeg.jpg
 ../../web_tests/images/resources/color-checker-adobe-color-profile.png
 ../../web_tests/images/resources/color-checker-munsell-chart.js
@@ -256,6 +272,7 @@
 ../../web_tests/images/resources/flip.webp
 ../../web_tests/images/resources/flowchart.jpg
 ../../web_tests/images/resources/full2loop.gif
+../../web_tests/images/resources/gainmap-trattore0.jpg
 ../../web_tests/images/resources/gif-loop-count.gif
 ../../web_tests/images/resources/gif-loop-count.png
 ../../web_tests/images/resources/gracehopper.bmp
@@ -495,6 +512,7 @@ testing/data/gracehopper.bmp
 testing/data/green-red-blue-yellow-animated.gif
 testing/data/green.jpg
 testing/data/green.png
+testing/data/happy_dog.avif
 testing/data/icc-v2-gbr.jpg
 testing/data/original-cat-420-629x473.jpg
 testing/data/palatted-color-png-gamma-one-color-profile.png

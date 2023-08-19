@@ -365,7 +365,7 @@ message AutofillUploadContents {
     }
 
     // The type of the username first flow vote signal, set iff |autofill_type|
-    // is SINGLE_USERNAME or NOT_USERNAME.
+    // is SINGLE_USERNAME, SINGLE_USERNAME_FORGOT_PASSWORD or NOT_USERNAME.
     optional SingleUsernameVoteType single_username_vote_type = 41;
   }
   // Signature of the form action host (e.g. Hash64Bit("example.com")).

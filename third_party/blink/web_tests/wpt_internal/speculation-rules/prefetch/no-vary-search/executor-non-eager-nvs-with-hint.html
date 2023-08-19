@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+<head>
+  <title>No-Vary-Search Hint non-eager test helper</title>
+  <meta name="viewport" content="width=device-width">
+  <script src="/common/dispatcher/dispatcher.js"></script>
+  <script src="/speculation-rules/prefetch/resources/utils.sub.js"></script>
+
+  <style>
+    body {
+        height: 600px;
+        width: 800px;
+    }
+  </style>
+</head>
+<body>
+
+<script>
+// Add a link to the page in order to use during the test
+function add_link(id, url) {
+  const link_element = document.createElement("a");
+  const link_text = document.createTextNode(url);
+  link_element.setAttribute("href", url);
+  link_element.setAttribute("id", id);
+  link_element.appendChild(link_text);
+  document.body.appendChild(link_element);
+}
+
+// "id" is the id of the link that we need to hover on in order
+// to start the prefetch
+async function start_non_eager_prefetch_on_hover(id) {
+  let target = document.getElementById(id);
+
+  // Inject the inputs to run this test.
+  // TODO(crbug.com/1453780): once the bug is fixed, replace eventSender usage
+  // with test_driver and move the test under external/wpt.
+  eventSender.mouseMoveTo(target.offsetLeft, target.offsetTop);
+}
+
+// "id" is the id of the link that we need to press on in order
+// to start the prefetch
+async function start_non_eager_prefetch_on_pointerdown(id) {
+  let target = document.getElementById(id);
+
+  // Inject the inputs to run this test.
+  // TODO(crbug.com/1453780): once the bug is fixed, replace eventSender usage
+  // with test_driver and move the test under external/wpt.
+  eventSender.mouseMoveTo(target.offsetLeft, target.offsetTop);
+  eventSender.mouseDown();
+  // Move mouse pointer outside of the anchor so that we don't start the
+  // navigation before making sure the prefetch request started server-side.
+  eventSender.mouseMoveTo(0,0);
+  eventSender.mouseUp();
+}
+
+const uuid = new URLSearchParams(location.search).get('uuid');
+window.executor = new Executor(uuid);
+</script>
+
+</body>
+</html>

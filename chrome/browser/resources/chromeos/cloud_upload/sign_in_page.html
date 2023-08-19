@@ -83,27 +83,18 @@
   }
 </style>
 
-<!-- TODO(b/254586358): Use localized strings -->
 <svg slot="header-image" viewBox="0 0 448 200">
   <use href="images/connect_one_drive.svg#EXPORT_image"></use>
 </svg>
-<div slot="title">
-  Connect to Microsoft OneDrive to open files in Microsoft 365
-</div>
+<div slot="title">$i18n{connectToOneDriveTitle}</div>
 <div slot="body">
   <div id="error-message" hidden>
     <div class="icon"></div>
-    <span class="error-text">
-      Can’t connect to OneDrive. Try again.
-    </span>
+    <span class="error-text">$i18n{cantConnectOneDrive}</span>
   </div>
-  <p>
-    Microsoft 365 uses OneDrive to open and edit Word, Excel, and PowerPoint
-    files. These files will be found in the Files app side navigation labeled
-    “Microsoft OneDrive.”
-  </p>
+  <p>$i18nRaw{connectToOneDriveSignInFlowBodyText}</p>
 </div>
 <div slot="button-container">
   <cr-button class="cancel-button">$i18n{cancel}</cr-button>
-  <cr-button class="action-button">Connect to OneDrive</cr-button>
+  <cr-button class="action-button">$i18n{connectOneDrive}</cr-button>
 </div>

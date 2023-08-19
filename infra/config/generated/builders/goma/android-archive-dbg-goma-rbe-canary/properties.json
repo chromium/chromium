@@ -19,7 +19,7 @@
               "legacy_chromium_config": {
                 "apply_configs": [
                   "mb",
-                  "download_vr_test_apks",
+                  "download_xr_test_apks",
                   "goma_canary"
                 ],
                 "build_config": "Debug",

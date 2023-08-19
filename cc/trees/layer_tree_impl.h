@@ -42,7 +42,7 @@ class TracedValue;
 
 namespace viz {
 class ClientResourceProvider;
-class ContextProvider;
+class RasterContextProvider;
 }
 
 namespace cc {
@@ -127,7 +127,7 @@ class CC_EXPORT LayerTreeImpl {
   int max_texture_size() const;
   const LayerTreeSettings& settings() const;
   const LayerTreeDebugState& debug_state() const;
-  viz::ContextProvider* context_provider() const;
+  viz::RasterContextProvider* context_provider() const;
   viz::ClientResourceProvider* resource_provider() const;
   TileManager* tile_manager() const;
   ImageDecodeCache* image_decode_cache() const;
@@ -153,7 +153,6 @@ class CC_EXPORT LayerTreeImpl {
                                      float initial_opacity);
   void DidAnimateScrollOffset();
   bool use_gpu_rasterization() const;
-  GpuRasterizationStatus GetGpuRasterizationStatus() const;
   bool create_low_res_tiling() const;
   bool RequiresHighResToDraw() const;
   bool SmoothnessTakesPriority() const;
@@ -627,10 +626,11 @@ class CC_EXPORT LayerTreeImpl {
   // Return all layers with a hit non-fast scrollable region.
   std::vector<const LayerImpl*> FindLayersHitByPointInNonFastScrollableRegion(
       const gfx::PointF& screen_space_point);
-  // Returns all layers up to the first scroller or scrollbar layer, inclusive.
-  // The returned vector is sorted in order of top most come first. The back of
-  // the vector will be the scrollable layer if one was hit.
-  std::vector<const LayerImpl*> FindAllLayersUpToAndIncludingFirstScrollable(
+  // Returns all layers up to the first scroller, scrollbar layer or a layer
+  // opaque to hit test, inclusive. The returned vector is sorted in order of
+  // top most come first. The back of the vector will be the scrollable layer
+  // or the first layer opaque to hit test, if one was hit.
+  std::vector<const LayerImpl*> FindLayersUpToFirstScrollableOrOpaqueToHitTest(
       const gfx::PointF& screen_space_point);
   bool PointHitsNonFastScrollableRegion(const gfx::PointF& scree_space_point,
                                         const LayerImpl& layer) const;

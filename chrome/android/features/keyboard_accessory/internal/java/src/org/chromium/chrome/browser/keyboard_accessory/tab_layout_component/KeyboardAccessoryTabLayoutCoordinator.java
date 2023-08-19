@@ -11,12 +11,10 @@ import static org.chromium.chrome.browser.keyboard_accessory.tab_layout_componen
 
 import android.view.View;
 
-import androidx.annotation.VisibleForTesting;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryCoordinator;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.ListModelChangeProcessor;
@@ -99,18 +97,10 @@ public class KeyboardAccessoryTabLayoutCoordinator {
         private ViewPager.OnPageChangeListener mOnPageChangeListener;
 
         TemporarySheetOpenerBindings(View view) {
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)) {
-                mMcp = PropertyModelChangeProcessor.create(mModel,
-                        (KeyboardAccessoryButtonGroupView) view,
-                        KeyboardAccessoryButtonGroupViewBinder::bind);
-                mOnPageChangeListener = new ViewPager.SimpleOnPageChangeListener();
-                mMediator.addPageChangeListener(mOnPageChangeListener);
-                return;
-            }
             mMcp = PropertyModelChangeProcessor.create(mModel,
-                    (KeyboardAccessoryTabLayoutView) view,
-                    KeyboardAccessoryTabLayoutViewBinder::bind);
-            mOnPageChangeListener = new TabLayout.TabLayoutOnPageChangeListener((TabLayout) view);
+                    (KeyboardAccessoryButtonGroupView) view,
+                    KeyboardAccessoryButtonGroupViewBinder::bind);
+            mOnPageChangeListener = new ViewPager.SimpleOnPageChangeListener();
             mMediator.addPageChangeListener(mOnPageChangeListener);
         }
 
@@ -202,12 +192,10 @@ public class KeyboardAccessoryTabLayoutCoordinator {
         return mMediator.getStableOnPageChangeListener();
     }
 
-    @VisibleForTesting
     PropertyModel getModelForTesting() {
         return mModel;
     }
 
-    @VisibleForTesting
     KeyboardAccessoryTabLayoutMediator getMediatorForTesting() {
         return mMediator;
     }

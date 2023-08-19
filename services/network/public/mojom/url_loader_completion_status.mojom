@@ -96,7 +96,4 @@ struct URLLoaderCompletionStatus {
 
   // Whether the initiator of this request should be collapsed.
   bool should_collapse_initiator = false;
-
-  // Whether a pervasive payload is requested.
-  bool pervasive_payload_requested = false;
 };

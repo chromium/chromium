@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <string>
-#include <vector>
 
 #include "ppapi/c/ppb_input_event.h"
 #include "ppapi/c/private/ppb_testing_private.h"

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("first_run") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "first_run.h",
     "first_run.mm",
@@ -12,8 +11,8 @@ source_set("first_run") {
   deps = [
     "//base",
     "//components/pref_registry",
-    "//components/startup_metric_utils/browser",
-    "//ios/chrome/browser/paths",
+    "//components/startup_metric_utils",
+    "//ios/chrome/browser/shared/model/paths",
     "//third_party/abseil-cpp:absl",
   ]
 }

@@ -31,7 +31,6 @@ static_library("quarantine") {
 
   if (is_mac) {
     sources += [ "quarantine_mac.mm" ]
-    configs += [ "//build/config/compiler:enable_arc" ]
     frameworks = [
       "Carbon.framework",
       "Foundation.framework",
@@ -70,7 +69,6 @@ source_set("common") {
       "common_mac.h",
       "common_mac.mm",
     ]
-    configs += [ "//build/config/compiler:enable_arc" ]
     frameworks = [
       "Carbon.framework",
       "Foundation.framework",
@@ -99,7 +97,6 @@ source_set("test_support") {
 
   if (is_mac) {
     sources += [ "test_support_mac.mm" ]
-    configs += [ "//build/config/compiler:enable_arc" ]
     frameworks = [
       "Carbon.framework",
       "Foundation.framework",
@@ -142,7 +139,6 @@ source_set("unit_tests") {
 
   if (is_mac) {
     sources += [ "quarantine_mac_unittest.mm" ]
-    configs += [ "//build/config/compiler:enable_arc" ]
     frameworks = [
       "Carbon.framework",
       "Foundation.framework",

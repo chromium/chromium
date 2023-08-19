@@ -3,6 +3,5 @@
 # found in the LICENSE file.
 
 source_set("url_rewriters_api") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "url_rewriters_api.h" ]
 }

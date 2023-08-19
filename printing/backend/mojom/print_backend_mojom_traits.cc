@@ -34,9 +34,10 @@ struct less<::printing::PrinterSemanticCapsAndDefaults::Paper> {
   bool operator()(
       const ::printing::PrinterSemanticCapsAndDefaults::Paper& lhs,
       const ::printing::PrinterSemanticCapsAndDefaults::Paper& rhs) const {
-    if (lhs.display_name < rhs.display_name)
+    if (lhs.display_name() < rhs.display_name()) {
       return true;
-    return lhs.vendor_id < rhs.vendor_id;
+    }
+    return lhs.vendor_id() < rhs.vendor_id();
   }
 };
 
@@ -112,28 +113,54 @@ bool StructTraits<printing::mojom::PaperDataView,
                   printing::PrinterSemanticCapsAndDefaults::Paper>::
     Read(printing::mojom::PaperDataView data,
          printing::PrinterSemanticCapsAndDefaults::Paper* out) {
-  absl::optional<gfx::Rect> printable_area_um;
-  if (!data.ReadDisplayName(&out->display_name) ||
-      !data.ReadVendorId(&out->vendor_id) || !data.ReadSizeUm(&out->size_um) ||
-      !data.ReadPrintableAreaUm(&printable_area_um)) {
+  std::string display_name;
+  std::string vendor_id;
+  gfx::Size size_um;
+  absl::optional<gfx::Rect> maybe_printable_area_um;
+  if (!data.ReadDisplayName(&display_name) || !data.ReadVendorId(&vendor_id) ||
+      !data.ReadSizeUm(&size_um) ||
+      !data.ReadPrintableAreaUm(&maybe_printable_area_um)) {
     return false;
   }
+  int max_height_um = data.max_height_um();
 
   // For backwards compatibility, allow printable area to be missing. Set the
   // default printable area to be the page size.
-  out->printable_area_um = printable_area_um.value_or(gfx::Rect(out->size_um));
+  gfx::Rect printable_area_um =
+      maybe_printable_area_um.value_or(gfx::Rect(size_um));
 
   // Allow empty Papers, since PrinterSemanticCapsAndDefaults can have empty
   // default Papers.
-  if (out->display_name.empty() && out->vendor_id.empty() &&
-      out->size_um.IsEmpty() && out->printable_area_um.IsEmpty()) {
+  if (display_name.empty() && vendor_id.empty() && size_um.IsEmpty() &&
+      printable_area_um.IsEmpty() && max_height_um == 0) {
+    *out = printing::PrinterSemanticCapsAndDefaults::Paper();
     return true;
   }
 
+  // If `max_height_um` is specified, ensure it's larger than size.
+  if (max_height_um > 0 && max_height_um < size_um.height()) {
+    return false;
+  }
+
   // Invalid if the printable area is empty or if the printable area is out of
-  // bounds of the paper size.
-  return !out->printable_area_um.IsEmpty() &&
-         gfx::Rect(out->size_um).Contains(out->printable_area_um);
+  // bounds of the paper size.  `max_height_um` doesn't need to be checked here
+  // since `printable_area_um` is always relative to `size_um`.
+  if (printable_area_um.IsEmpty() ||
+      !gfx::Rect(size_um).Contains(printable_area_um)) {
+    return false;
+  }
+  *out = printing::PrinterSemanticCapsAndDefaults::Paper(
+      display_name, vendor_id, size_um, printable_area_um, max_height_um);
+  return true;
+}
+
+// static
+bool StructTraits<printing::mojom::MediaTypeDataView,
+                  printing::PrinterSemanticCapsAndDefaults::MediaType>::
+    Read(printing::mojom::MediaTypeDataView data,
+         printing::PrinterSemanticCapsAndDefaults::MediaType* out) {
+  return data.ReadDisplayName(&out->display_name) &&
+         data.ReadVendorId(&out->vendor_id);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -224,6 +251,11 @@ bool StructTraits<printing::mojom::PrinterSemanticCapsAndDefaultsDataView,
                   printing::PrinterSemanticCapsAndDefaults>::
     Read(printing::mojom::PrinterSemanticCapsAndDefaultsDataView data,
          printing::PrinterSemanticCapsAndDefaults* out) {
+  absl::optional<printing::PrinterSemanticCapsAndDefaults::MediaTypes>
+      media_types;
+  absl::optional<printing::PrinterSemanticCapsAndDefaults::MediaType>
+      default_media_type;
+
   out->collate_capable = data.collate_capable();
   out->collate_default = data.collate_default();
   out->copies_max = data.copies_max();
@@ -309,6 +341,19 @@ bool StructTraits<printing::mojom::PrinterSemanticCapsAndDefaultsDataView,
     }
   }
 #endif
+
+  if (!data.ReadMediaTypes(&media_types) ||
+      !data.ReadDefaultMediaType(&default_media_type)) {
+    return false;
+  }
+
+  if (media_types.has_value()) {
+    out->media_types = media_types.value();
+  }
+  if (default_media_type.has_value()) {
+    out->default_media_type = default_media_type.value();
+  }
+
   return true;
 }
 

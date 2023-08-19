@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -15,6 +16,16 @@
 #include "url/gurl.h"
 
 namespace custom_handlers {
+
+namespace features {
+
+// When enabled, it strips credentials from URL to mitigate the mitigate the
+// risk of credential leakage when registering protocol handlers for standard
+// schemes. This feature is enabled by default and meant to be used as a
+// killswitch.
+// https://html.spec.whatwg.org/multipage/system-state.html#security-and-privacy
+BASE_DECLARE_FEATURE(kStripCredentialsForExternalProtocolHandler);
+}  // namespace features
 
 // A single tuple of (protocol, url, last_modified) that indicates how URLs
 // of the given protocol should be rewritten to be handled.
@@ -68,6 +79,9 @@ class ProtocolHandler {
   static const ProtocolHandler& EmptyProtocolHandler();
 
   // Interpolates the given URL into the URL template of this handler.
+  // It mitigates the risk of credential leakage by stripping the credentials
+  // from the url. See
+  // https://html.spec.whatwg.org/multipage/system-state.html#security-and-privacy
   GURL TranslateUrl(const GURL& url) const;
 
   // Returns true if the handlers are considered equivalent when determining

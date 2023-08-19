@@ -98,7 +98,6 @@ static_library("discovery") {
 
   if (is_mac) {
     sources += [ "discovery_network_list_wifi_mac.mm" ]
-    configs += [ "//build/config/compiler:enable_arc" ]
     frameworks = [ "CoreWLAN.framework" ]
   }
 

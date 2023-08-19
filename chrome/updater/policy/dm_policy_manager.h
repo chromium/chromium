@@ -12,15 +12,17 @@
 #include "chrome/updater/device_management/dm_storage.h"
 #include "chrome/updater/policy/manager.h"
 #include "chrome/updater/protos/omaha_settings.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
 // The DMPolicyManager returns device management policies for managed machines.
 class DMPolicyManager : public PolicyManagerInterface {
  public:
-  explicit DMPolicyManager(
+  DMPolicyManager(
       const ::wireless_android_enterprise_devicemanagement::
-          OmahaSettingsClientProto& omaha_settings);
+          OmahaSettingsClientProto& omaha_settings,
+      const absl::optional<bool>& override_is_managed_device = absl::nullopt);
   DMPolicyManager(const DMPolicyManager&) = delete;
   DMPolicyManager& operator=(const DMPolicyManager&) = delete;
 
@@ -56,12 +58,14 @@ class DMPolicyManager : public PolicyManagerInterface {
   const ::wireless_android_enterprise_devicemanagement::ApplicationSettings*
   GetAppSettings(const std::string& app_id) const;
 
+  const bool is_managed_device_;
   const ::wireless_android_enterprise_devicemanagement::OmahaSettingsClientProto
       omaha_settings_;
 };
 
 // A factory method to create a DM policy manager.
-scoped_refptr<PolicyManagerInterface> CreateDMPolicyManager();
+scoped_refptr<PolicyManagerInterface> CreateDMPolicyManager(
+    const absl::optional<bool>& override_is_managed_device);
 
 }  // namespace updater
 

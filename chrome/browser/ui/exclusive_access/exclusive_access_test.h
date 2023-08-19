@@ -13,6 +13,7 @@
 #include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_bubble.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_hide_callback.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
@@ -62,6 +63,8 @@ class ExclusiveAccessTest : public InProcessBrowserTest {
  public:
   ExclusiveAccessTest(const ExclusiveAccessTest&) = delete;
   ExclusiveAccessTest& operator=(const ExclusiveAccessTest&) = delete;
+
+  static bool IsBubbleDownloadNotification(ExclusiveAccessBubble* bubble);
 
  protected:
   ExclusiveAccessTest();

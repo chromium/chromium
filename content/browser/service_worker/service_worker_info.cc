@@ -33,7 +33,8 @@ ServiceWorkerVersionInfo::ServiceWorkerVersionInfo(
     int thread_id,
     int devtools_agent_route_id,
     ukm::SourceId ukm_source_id,
-    blink::mojom::AncestorFrameType ancestor_frame_type)
+    blink::mojom::AncestorFrameType ancestor_frame_type,
+    absl::optional<std::string> router_rules)
     : ServiceWorkerVersionBaseInfo(scope,
                                    storage_key,
                                    registration_id,
@@ -46,7 +47,8 @@ ServiceWorkerVersionInfo::ServiceWorkerVersionInfo(
       script_url(script_url),
       thread_id(thread_id),
       devtools_agent_route_id(devtools_agent_route_id),
-      ukm_source_id(ukm_source_id) {}
+      ukm_source_id(ukm_source_id),
+      router_rules(router_rules) {}
 
 ServiceWorkerVersionInfo::ServiceWorkerVersionInfo(
     const ServiceWorkerVersionInfo& other) = default;

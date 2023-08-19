@@ -57,10 +57,13 @@ class FederatedAuthRequestRequestTokenCallbackHelper {
   // already been called.
   void WaitForCallback();
 
+  void Reset();
+
  private:
   void ReceiverMethod(blink::mojom::RequestTokenStatus status,
                       const absl::optional<GURL>& selected_idp_config_url,
-                      const absl::optional<std::string>& token);
+                      const absl::optional<std::string>& token,
+                      bool is_auto_reauthn);
 
   void Quit();
 
@@ -69,6 +72,7 @@ class FederatedAuthRequestRequestTokenCallbackHelper {
   absl::optional<blink::mojom::RequestTokenStatus> status_;
   absl::optional<GURL> selected_idp_config_url_;
   absl::optional<std::string> token_;
+  bool is_auto_reauthn_{false};
 };
 
 }  // namespace content

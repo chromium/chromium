@@ -117,22 +117,22 @@ const AtomicString StyleEnvironmentVariables::GetVariableName(
     const FeatureContext* feature_context) {
   switch (variable) {
     case UADefinedTwoDimensionalVariable::kViewportSegmentTop:
-      DCHECK(RuntimeEnabledFeatures::CSSFoldablesEnabled());
+      DCHECK(RuntimeEnabledFeatures::ViewportSegmentsEnabled());
       return AtomicString("viewport-segment-top");
     case UADefinedTwoDimensionalVariable::kViewportSegmentRight:
-      DCHECK(RuntimeEnabledFeatures::CSSFoldablesEnabled());
+      DCHECK(RuntimeEnabledFeatures::ViewportSegmentsEnabled());
       return AtomicString("viewport-segment-right");
     case UADefinedTwoDimensionalVariable::kViewportSegmentBottom:
-      DCHECK(RuntimeEnabledFeatures::CSSFoldablesEnabled());
+      DCHECK(RuntimeEnabledFeatures::ViewportSegmentsEnabled());
       return AtomicString("viewport-segment-bottom");
     case UADefinedTwoDimensionalVariable::kViewportSegmentLeft:
-      DCHECK(RuntimeEnabledFeatures::CSSFoldablesEnabled());
+      DCHECK(RuntimeEnabledFeatures::ViewportSegmentsEnabled());
       return AtomicString("viewport-segment-left");
     case UADefinedTwoDimensionalVariable::kViewportSegmentWidth:
-      DCHECK(RuntimeEnabledFeatures::CSSFoldablesEnabled());
+      DCHECK(RuntimeEnabledFeatures::ViewportSegmentsEnabled());
       return AtomicString("viewport-segment-width");
     case UADefinedTwoDimensionalVariable::kViewportSegmentHeight:
-      DCHECK(RuntimeEnabledFeatures::CSSFoldablesEnabled());
+      DCHECK(RuntimeEnabledFeatures::ViewportSegmentsEnabled());
       return AtomicString("viewport-segment-height");
     default:
       break;

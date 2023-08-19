@@ -31,6 +31,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
@@ -91,7 +92,7 @@ class CrosSettingsTest : public testing::Test {
   OwnerSettingsServiceAsh* CreateOwnerSettingsService(
       const std::string& owner_email) {
     const AccountId account_id = AccountId::FromUserEmail(owner_email);
-    user_manager_.AddUser(account_id);
+    user_manager_->AddUser(account_id);
     profile_ = std::make_unique<TestingProfile>();
     profile_->set_profile_name(account_id.GetUserEmail());
 
@@ -154,7 +155,8 @@ class CrosSettingsTest : public testing::Test {
   ScopedTestDeviceSettingsService scoped_test_device_settings_;
   ScopedTestCrosSettings scoped_test_cros_settings_;
 
-  FakeChromeUserManager user_manager_;
+  user_manager::TypedScopedUserManager<FakeChromeUserManager> user_manager_{
+      std::make_unique<FakeChromeUserManager>()};
   FakeSessionManagerClient fake_session_manager_client_;
   scoped_refptr<ownership::MockOwnerKeyUtil> owner_key_util_{
       base::MakeRefCounted<ownership::MockOwnerKeyUtil>()};

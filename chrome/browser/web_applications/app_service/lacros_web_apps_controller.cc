@@ -71,10 +71,7 @@ namespace web_app {
 LacrosWebAppsController::LacrosWebAppsController(Profile* profile)
     : profile_(profile),
       provider_(WebAppProvider::GetForWebApps(profile)),
-      publisher_helper_(profile,
-                        provider_,
-                        this,
-                        /*observe_media_requests=*/true) {
+      publisher_helper_(profile, provider_, this) {
   DCHECK(provider_);
   DCHECK_EQ(publisher_helper_.app_type(), apps::AppType::kWeb);
 }

@@ -17,7 +17,6 @@
 #include "ui/base/cursor/cursor_size.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom.h"
 #include "ui/base/cursor/platform_cursor.h"
-#include "ui/base/layout.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/wm/core/cursor_util.h"
@@ -63,8 +62,6 @@ bool CursorLoader::SetDisplay(const display::Display& display) {
       ui::GetSupportedResourceScaleFactor(scale_));
 
   UnloadCursors();
-  if (use_platform_cursors_)
-    factory_->SetDeviceScaleFactor(scale_);
   return true;
 }
 
@@ -127,7 +124,7 @@ scoped_refptr<ui::PlatformCursor> CursorLoader::CursorFromType(
   // into account the different ways of creating an invisible cursor.
   scoped_refptr<ui::PlatformCursor> cursor;
   if (use_platform_cursors_ || type == CursorType::kNone) {
-    cursor = factory_->GetDefaultCursor(type);
+    cursor = factory_->GetDefaultCursor(type, scale_);
     if (cursor)
       return cursor;
     // The cursor may fail to load if the cursor theme has just been reset.
@@ -157,11 +154,12 @@ scoped_refptr<ui::PlatformCursor> CursorLoader::LoadCursorFromAsset(
 
   if (cursor_data->bitmaps.size() == 1) {
     image_cursors_[type] = factory_->CreateImageCursor(
-        type, cursor_data->bitmaps[0], cursor_data->hotspot);
+        type, cursor_data->bitmaps[0], cursor_data->hotspot,
+        cursor_data->scale_factor);
   } else {
     image_cursors_[type] = factory_->CreateAnimatedCursor(
         type, cursor_data->bitmaps, cursor_data->hotspot,
-        kAnimatedCursorFrameDelay);
+        cursor_data->scale_factor, kAnimatedCursorFrameDelay);
   }
   return image_cursors_[type];
 }

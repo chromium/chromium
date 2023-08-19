@@ -42,11 +42,10 @@
 #include <atomic>
 
 #include "base/allocator/partition_allocator/partition_alloc_base/bit_cast.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/check.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/cpu.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/threading/platform_thread.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/time/time_override.h"
-#include "base/allocator/partition_allocator/partition_alloc_check.h"
-#include "base/allocator/partition_allocator/partition_lock.h"
 #include "build/build_config.h"
 
 namespace partition_alloc::internal::base {
@@ -67,8 +66,9 @@ bool CanConvertToFileTime(int64_t us) {
 }
 
 FILETIME MicrosecondsToFileTime(int64_t us) {
-  PA_DCHECK(CanConvertToFileTime(us)) << "Out-of-range: Cannot convert " << us
-                                      << " microseconds to FILETIME units.";
+  PA_BASE_DCHECK(CanConvertToFileTime(us))
+      << "Out-of-range: Cannot convert " << us
+      << " microseconds to FILETIME units.";
 
   // Multiply by 10 to convert microseconds to 100-nanoseconds. Bit_cast will
   // handle alignment problems. This only works on little-endian machines.
@@ -90,76 +90,6 @@ TimeTicks g_initial_ticks;
 void InitializeClock() {
   g_initial_ticks = subtle::TimeTicksNowIgnoringOverride();
   g_initial_time = CurrentWallclockMicroseconds();
-}
-
-// Track the last value passed to timeBeginPeriod so that we can cancel that
-// call by calling timeEndPeriod with the same value. A value of zero means that
-// the timer frequency is not currently raised.
-UINT g_last_interval_requested_ms = 0;
-// Track if kMinTimerIntervalHighResMs or kMinTimerIntervalLowResMs is active.
-// For most purposes this could also be named g_is_on_ac_power.
-bool g_high_res_timer_enabled = false;
-// How many times the high resolution timer has been called.
-uint32_t g_high_res_timer_count = 0;
-// Start time of the high resolution timer usage monitoring. This is needed
-// to calculate the usage as percentage of the total elapsed time.
-TimeTicks g_high_res_timer_usage_start;
-// The cumulative time the high resolution timer has been in use since
-// |g_high_res_timer_usage_start| moment.
-TimeDelta g_high_res_timer_usage;
-// Timestamp of the last activation change of the high resolution timer. This
-// is used to calculate the cumulative usage.
-TimeTicks g_high_res_timer_last_activation;
-// The lock to control access to the above set of variables.
-::partition_alloc::internal::Lock& GetHighResLock() {
-  static ::partition_alloc::internal::Lock lock;
-  return lock;
-}
-
-// The two values that ActivateHighResolutionTimer uses to set the systemwide
-// timer interrupt frequency on Windows. These control how precise timers are
-// but also have a big impact on battery life.
-
-// Used when a faster timer has been requested (g_high_res_timer_count > 0) and
-// the computer is running on AC power (plugged in) so that it's okay to go to
-// the highest frequency.
-constexpr UINT kMinTimerIntervalHighResMs = 1;
-
-// Used when a faster timer has been requested (g_high_res_timer_count > 0) and
-// the computer is running on DC power (battery) so that we don't want to raise
-// the timer frequency as much.
-constexpr UINT kMinTimerIntervalLowResMs = 8;
-
-// Calculate the desired timer interrupt interval. Note that zero means that the
-// system default should be used.
-UINT GetIntervalMs() {
-  if (!g_high_res_timer_count)
-    return 0;  // Use the default, typically 15.625
-  if (g_high_res_timer_enabled)
-    return kMinTimerIntervalHighResMs;
-  return kMinTimerIntervalLowResMs;
-}
-
-// Compare the currently requested timer interrupt interval to the last interval
-// requested and update if necessary (by cancelling the old request and making a
-// new request). If there is no change then do nothing.
-void UpdateTimerIntervalLocked() {
-  UINT new_interval = GetIntervalMs();
-  if (new_interval == g_last_interval_requested_ms)
-    return;
-  if (g_last_interval_requested_ms) {
-    // Record how long the timer interrupt frequency was raised.
-    g_high_res_timer_usage += subtle::TimeTicksNowIgnoringOverride() -
-                              g_high_res_timer_last_activation;
-    // Reset the timer interrupt back to the default.
-    timeEndPeriod(g_last_interval_requested_ms);
-  }
-  g_last_interval_requested_ms = new_interval;
-  if (g_last_interval_requested_ms) {
-    // Record when the timer interrupt was raised.
-    g_high_res_timer_last_activation = subtle::TimeTicksNowIgnoringOverride();
-    timeBeginPeriod(g_last_interval_requested_ms);
-  }
 }
 
 // Returns the current value of the performance counter.
@@ -234,80 +164,6 @@ FILETIME Time::ToFileTime() const {
     return result;
   }
   return MicrosecondsToFileTime(us_);
-}
-
-// static
-// Enable raising of the system-global timer interrupt frequency to 1 kHz (when
-// enable is true, which happens when on AC power) or some lower frequency when
-// on battery power (when enable is false). If the g_high_res_timer_enabled
-// setting hasn't actually changed or if if there are no outstanding requests
-// (if g_high_res_timer_count is zero) then do nothing.
-// TL;DR - call this when going from AC to DC power or vice-versa.
-void Time::EnableHighResolutionTimer(bool enable) {
-  ScopedGuard lock(GetHighResLock());
-  g_high_res_timer_enabled = enable;
-  UpdateTimerIntervalLocked();
-}
-
-// static
-// Request that the system-global Windows timer interrupt frequency be raised.
-// How high the frequency is raised depends on the system's power state and
-// possibly other options.
-// TL;DR - call this at the beginning and end of a time period where you want
-// higher frequency timer interrupts. Each call with activating=true must be
-// paired with a subsequent activating=false call.
-bool Time::ActivateHighResolutionTimer(bool activating) {
-  // We only do work on the transition from zero to one or one to zero so we
-  // can easily undo the effect (if necessary) when EnableHighResolutionTimer is
-  // called.
-  const uint32_t max = std::numeric_limits<uint32_t>::max();
-
-  ScopedGuard lock(GetHighResLock());
-  if (activating) {
-    PA_DCHECK(g_high_res_timer_count != max);
-    ++g_high_res_timer_count;
-  } else {
-    PA_DCHECK(g_high_res_timer_count != 0u);
-    --g_high_res_timer_count;
-  }
-  UpdateTimerIntervalLocked();
-  return true;
-}
-
-// static
-// See if the timer interrupt interval has been set to the lowest value.
-bool Time::IsHighResolutionTimerInUse() {
-  ScopedGuard lock(GetHighResLock());
-  return g_last_interval_requested_ms == kMinTimerIntervalHighResMs;
-}
-
-// static
-void Time::ResetHighResolutionTimerUsage() {
-  ScopedGuard lock(GetHighResLock());
-  g_high_res_timer_usage = TimeDelta();
-  g_high_res_timer_usage_start = subtle::TimeTicksNowIgnoringOverride();
-  if (g_high_res_timer_count > 0)
-    g_high_res_timer_last_activation = g_high_res_timer_usage_start;
-}
-
-// static
-double Time::GetHighResolutionTimerUsage() {
-  ScopedGuard lock(GetHighResLock());
-  TimeTicks now = subtle::TimeTicksNowIgnoringOverride();
-  TimeDelta elapsed_time = now - g_high_res_timer_usage_start;
-  if (elapsed_time.is_zero()) {
-    // This is unexpected but possible if TimeTicks resolution is low and
-    // GetHighResolutionTimerUsage() is called promptly after
-    // ResetHighResolutionTimerUsage().
-    return 0.0;
-  }
-  TimeDelta used_time = g_high_res_timer_usage;
-  if (g_high_res_timer_count > 0) {
-    // If currently activated add the remainder of time since the last
-    // activation.
-    used_time += now - g_high_res_timer_last_activation;
-  }
-  return used_time / elapsed_time * 100;
 }
 
 // TimeTicks ------------------------------------------------------------------
@@ -438,7 +294,7 @@ TimeDelta QPCValueToTimeDelta(LONGLONG qpc_value) {
   // InitializeNowFunctionPointer(), has happened by this point.
   std::atomic_thread_fence(std::memory_order_acquire);
 
-  PA_DCHECK(g_qpc_ticks_per_second > 0);
+  PA_BASE_DCHECK(g_qpc_ticks_per_second > 0);
 
   // If the QPC Value is below the overflow threshold, we proceed with
   // simple multiply and divide.
@@ -529,37 +385,8 @@ TimeTicks TimeTicksNowIgnoringOverride() {
 }  // namespace subtle
 
 // static
-bool TimeTicks::IsHighResolution() {
-  if (g_time_ticks_now_ignoring_override_function == &InitialNowFunction)
-    InitializeNowFunctionPointer();
-  return g_time_ticks_now_ignoring_override_function == &QPCNow;
-}
-
-// static
-bool TimeTicks::IsConsistentAcrossProcesses() {
-  // According to Windows documentation [1] QPC is consistent post-Windows
-  // Vista. So if we are using QPC then we are consistent which is the same as
-  // being high resolution.
-  //
-  // [1]
-  // https://msdn.microsoft.com/en-us/library/windows/desktop/dn553408(v=vs.85).aspx
-  //
-  // "In general, the performance counter results are consistent across all
-  // processors in multi-core and multi-processor systems, even when measured on
-  // different threads or processes. Here are some exceptions to this rule:
-  // - Pre-Windows Vista operating systems that run on certain processors might
-  // violate this consistency because of one of these reasons:
-  //     1. The hardware processors have a non-invariant TSC and the BIOS
-  //     doesn't indicate this condition correctly.
-  //     2. The TSC synchronization algorithm that was used wasn't suitable for
-  //     systems with large numbers of processors."
-  return IsHighResolution();
-}
-
-// static
 TimeTicks::Clock TimeTicks::GetClock() {
-  return IsHighResolution() ? Clock::WIN_QPC
-                            : Clock::WIN_ROLLOVER_PROTECTED_TIME_GET_TIME;
+  return Clock::WIN_ROLLOVER_PROTECTED_TIME_GET_TIME;
 }
 
 // ThreadTicks ----------------------------------------------------------------
@@ -573,7 +400,7 @@ ThreadTicks ThreadTicksNowIgnoringOverride() {
 // static
 ThreadTicks ThreadTicks::GetForThread(
     const PlatformThreadHandle& thread_handle) {
-  PA_DCHECK(IsSupported());
+  PA_BASE_DCHECK(IsSupported());
 
 #if defined(ARCH_CPU_ARM64)
   // QueryThreadCycleTime versus TSCTicksPerSecond doesn't have much relation to
@@ -663,7 +490,7 @@ bool HasConstantRateTSC() {
 }
 
 double TSCTicksPerSecond() {
-  PA_DCHECK(HasConstantRateTSC());
+  PA_BASE_DCHECK(HasConstantRateTSC());
   // The value returned by QueryPerformanceFrequency() cannot be used as the TSC
   // frequency, because there is no guarantee that the TSC frequency is equal to
   // the performance counter frequency.
@@ -703,7 +530,7 @@ double TSCTicksPerSecond() {
   //   https://msdn.microsoft.com/library/windows/desktop/ms644905.aspx
   LARGE_INTEGER perf_counter_frequency = {};
   ::QueryPerformanceFrequency(&perf_counter_frequency);
-  PA_DCHECK(perf_counter_now >= perf_counter_initial);
+  PA_BASE_DCHECK(perf_counter_now >= perf_counter_initial);
   const uint64_t perf_counter_ticks = perf_counter_now - perf_counter_initial;
   const double elapsed_time_seconds =
       perf_counter_ticks / static_cast<double>(perf_counter_frequency.QuadPart);
@@ -713,7 +540,7 @@ double TSCTicksPerSecond() {
     return 0;
 
   // Compute the frequency of the TSC.
-  PA_DCHECK(tsc_now >= tsc_initial);
+  PA_BASE_DCHECK(tsc_now >= tsc_initial);
   const uint64_t tsc_ticks = tsc_now - tsc_initial;
   tsc_ticks_per_second = tsc_ticks / elapsed_time_seconds;
 

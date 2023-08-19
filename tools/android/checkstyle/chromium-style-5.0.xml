@@ -13,6 +13,14 @@
   <module name="SuppressWarningsFilter"/>
   <module name="TreeWalker">
     <module name="SuppressWarningsHolder"/>
+    <module name="ArrayTypeStyle"/>
+    <module name="AvoidDoubleBraceInitialization"/>
+    <module name="DefaultComesLast"/>
+    <module name="EmptyStatement"/>
+    <module name="InnerAssignment"/>
+    <module name="OneStatementPerLine"/>
+    <module name="StringLiteralEquality"/>
+    <module name="UnusedLocalVariable"/>
     <module name="AvoidStarImport">
       <property name="severity" value="error"/>
     </module>
@@ -41,11 +49,9 @@
     </module>
     <module name="JavadocMethod">
       <property name="severity" value="info"/>
-      <property name="scope" value="public"/>
+      <property name="accessModifiers" value="public"/>
       <property name="allowMissingParamTags" value="true"/>
-      <property name="allowMissingPropertyJavadoc" value="true"/>
       <property name="allowMissingReturnTag" value="true"/>
-      <property name="allowMissingThrowsTags" value="true"/>
     </module>
     <module name="PackageName">
       <property name="severity" value="error"/>
@@ -208,5 +214,17 @@
       <property name="format" value="ThemeOverlay\_BrowserUI\_Fullscreen"/>
       <property name="message" value="Fullscreen AlertDialogs must use FullscreenAlertDialog and fullscreen Dialogs must use ChromeDialog. Not doing this will break automotive devices. (This check is triggered by the presence of ThemeOverlay_BrowserUI_Fullscreen and does not know if you are already using the correct class)"/>
     </module>
+    <module name="RegexpSinglelineJava">
+      <property name="id" value="InclusiveLanguageCheck"/>
+      <property name="severity" value="warning"/>
+      <property name="format" value="([dD]ummy)|([sS]anity)|([bB]lind)"/>
+      <property name="message" value="&#xA;&#xA;Please use inclusive language where possible.&#xA;&#xA;Instead of 'dummy', use a term such as placeholder or empty (e.g. PlaceholderImpl, not DummyImpl).&#xA;Instead of 'sanity', use a term such as 'confidence' (e.g. confidence check, not sanity check).&#xA;Instead of 'blind', use a term such as unaware (e.g. being unaware of, not being blind to. unconfirmed change, not blind change).&#xA;&#xA;For more info see: https://developers.google.com/style/word-list&#xA;"/>
+    </module>
+  </module>
+  <module name="RegexpMultiline">
+    <property name="id" value="VisibleForTestingForTesting"/>
+    <property name="severity" value="warning"/>
+    <property name="format" value="@VisibleForTesting.*\n.*ForTests?(ing)\("/>
+    <property name="message" value="There is no need to add @VisibleForTesting to test-only methods (those with &quot;ForTesting&quot; suffix)."/>
   </module>
 </module>

@@ -27,7 +27,7 @@ class ExecutionContext;
 // normally routed to the browser to be bound to real interface implementations,
 // but in test environments it's often useful to mock them out locally.
 class MojoInterfaceInterceptor final
-    : public EventTargetWithInlineData,
+    : public EventTarget,
       public ActiveScriptWrappable<MojoInterfaceInterceptor>,
       public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();
@@ -51,7 +51,7 @@ class MojoInterfaceInterceptor final
 
   void Trace(Visitor*) const override;
 
-  // EventTargetWithInlineData
+  // EventTarget
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;
 

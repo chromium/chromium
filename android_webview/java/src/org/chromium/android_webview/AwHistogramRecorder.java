@@ -26,7 +26,8 @@ public class AwHistogramRecorder {
             WebViewCallbackType.ON_DOWNLOAD_START, WebViewCallbackType.ON_PAGE_STARTED,
             WebViewCallbackType.ON_PAGE_FINISHED, WebViewCallbackType.ON_LOAD_RESOURCE,
             WebViewCallbackType.ON_PAGE_COMMIT_VISIBLE,
-            WebViewCallbackType.SHOULD_OVERRIDE_URL_LOADING})
+            WebViewCallbackType.SHOULD_OVERRIDE_URL_LOADING,
+            WebViewCallbackType.SHOULD_INTERCEPT_REQUEST})
     public @interface WebViewCallbackType {
         // These values are used for UMA. Don't reuse or reorder values.
         // If you add something, update NUM_ENTRIES.
@@ -39,7 +40,8 @@ public class AwHistogramRecorder {
         int ON_LOAD_RESOURCE = 6;
         int ON_PAGE_COMMIT_VISIBLE = 7;
         int SHOULD_OVERRIDE_URL_LOADING = 8;
-        int NUM_ENTRIES = 9;
+        int SHOULD_INTERCEPT_REQUEST = 9;
+        int NUM_ENTRIES = 10;
     }
 
     public static void recordCallbackInvocation(@WebViewCallbackType int result) {

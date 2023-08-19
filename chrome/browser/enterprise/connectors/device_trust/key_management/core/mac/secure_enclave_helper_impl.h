@@ -10,7 +10,7 @@
 #include <CoreFoundation/CoreFoundation.h>
 #include <Security/Security.h>
 
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/scoped_cftyperef.h"
 
 namespace enterprise_connectors {
 
@@ -20,12 +20,13 @@ class SecureEnclaveHelperImpl : public SecureEnclaveHelper {
   ~SecureEnclaveHelperImpl() override;
 
   // SecureEnclaveHelper:
-  base::ScopedCFTypeRef<SecKeyRef> CreateSecureKey(
-      CFDictionaryRef attributes) override;
-  base::ScopedCFTypeRef<SecKeyRef> CopyKey(CFDictionaryRef query) override;
-  bool Update(CFDictionaryRef query,
-              CFDictionaryRef attributes_to_update) override;
-  bool Delete(CFDictionaryRef query) override;
+  base::ScopedCFTypeRef<SecKeyRef> CreateSecureKey(CFDictionaryRef attributes,
+                                                   OSStatus* error) override;
+  base::ScopedCFTypeRef<SecKeyRef> CopyKey(CFDictionaryRef query,
+                                           OSStatus* error) override;
+  OSStatus Update(CFDictionaryRef query,
+                  CFDictionaryRef attributes_to_update) override;
+  OSStatus Delete(CFDictionaryRef query) override;
   bool IsSecureEnclaveSupported() override;
 };
 

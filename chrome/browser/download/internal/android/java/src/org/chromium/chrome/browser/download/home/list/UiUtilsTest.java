@@ -17,7 +17,6 @@ import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowPackageManager;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.offline_items_collection.ContentId;
@@ -34,7 +33,6 @@ public class UiUtilsTest {
     public void setUp() {
         Context context = ContextUtils.getApplicationContext();
         mShadowPackageManager = Shadows.shadowOf(context.getPackageManager());
-        BuildInfo.resetForTesting();
     }
     @Test
     public void testCanShare_completeLegacyDownload_returnsTrue() {
@@ -64,8 +62,6 @@ public class UiUtilsTest {
     public void testCanShare_isAutomotive_returnsFalse() {
         mShadowPackageManager.setSystemFeature(
                 PackageManager.FEATURE_AUTOMOTIVE, /* supported= */ true);
-        BuildInfo.resetForTesting();
-
         assertFalse(UiUtils.canShare(createOfflineItem(
                 new ContentId("LEGACY_DOWNLOAD", "A"), OfflineItemState.COMPLETE)));
     }

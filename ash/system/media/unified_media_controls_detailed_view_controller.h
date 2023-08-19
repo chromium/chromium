@@ -19,8 +19,12 @@ class UnifiedSystemTrayController;
 class ASH_EXPORT UnifiedMediaControlsDetailedViewController
     : public DetailedViewController {
  public:
+  // If `show_devices_for_item_id` is not empty, when the
+  // MediaNotificationListView shows the MediaItemUIView for this ID, it will
+  // expand the casting device list too.
   explicit UnifiedMediaControlsDetailedViewController(
-      UnifiedSystemTrayController* tray_controller);
+      UnifiedSystemTrayController* tray_controller,
+      const std::string& show_devices_for_item_id = "");
   ~UnifiedMediaControlsDetailedViewController() override;
 
   // DetailedViewController:
@@ -33,6 +37,8 @@ class ASH_EXPORT UnifiedMediaControlsDetailedViewController
   static bool detailed_view_has_shown_;
 
   const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
+
+  const std::string show_devices_for_item_id_;
 };
 
 }  // namespace ash

@@ -61,7 +61,7 @@ bool TestExtensionsBrowserClient::AreExtensionsDisabled(
   return false;
 }
 
-bool TestExtensionsBrowserClient::IsValidContext(BrowserContext* context) {
+bool TestExtensionsBrowserClient::IsValidContext(void* context) {
   return context == main_context_ ||
          (incognito_context_ && context == incognito_context_);
 }
@@ -93,28 +93,29 @@ BrowserContext* TestExtensionsBrowserClient::GetOriginalContext(
 }
 
 content::BrowserContext*
-TestExtensionsBrowserClient::GetRedirectedContextInIncognito(
+TestExtensionsBrowserClient::GetContextRedirectedToOriginal(
     content::BrowserContext* context,
-    bool force_guest_profile,
-    bool force_system_profile) {
+    bool force_guest_profile) {
   return GetOriginalContext(context);
 }
 
-content::BrowserContext*
-TestExtensionsBrowserClient::GetContextForRegularAndIncognito(
+content::BrowserContext* TestExtensionsBrowserClient::GetContextOwnInstance(
     content::BrowserContext* context,
-    bool force_guest_profile,
-    bool force_system_profile) {
+    bool force_guest_profile) {
   return context;
 }
 
-content::BrowserContext* TestExtensionsBrowserClient::GetRegularProfile(
+content::BrowserContext* TestExtensionsBrowserClient::GetContextForOriginalOnly(
     content::BrowserContext* context,
-    bool force_guest_profile,
-    bool force_system_profile) {
+    bool force_guest_profile) {
   // Default implementation of
   // `BrowserContextKeyedServiceFactory::GetBrowserContextToUse()`.
   return context->IsOffTheRecord() ? nullptr : context;
+}
+
+bool TestExtensionsBrowserClient::AreExtensionsDisabledForContext(
+    content::BrowserContext* context) {
+  return false;
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

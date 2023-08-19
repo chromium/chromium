@@ -74,7 +74,7 @@ class MTPDeviceDelegateImplWinTest : public ChromeRenderViewHostTestHarness {
                         bool media_device);
 
   // Pointer to the storage monitor. Owned by TestingBrowserProcess.
-  raw_ptr<TestStorageMonitorWin> monitor_;
+  raw_ptr<TestStorageMonitorWin, DanglingUntriaged> monitor_;
   scoped_refptr<extensions::Extension> extension_;
 
   EnsureMediaDirectoriesExists media_directories_;

@@ -1,4 +1,4 @@
-team_email: "chrome-privacy-core@google.com"
+team_email: "chrome-privacy-controls@google.com"
 monorail {
   component: "UI>Settings>SafetyCheck"
 }

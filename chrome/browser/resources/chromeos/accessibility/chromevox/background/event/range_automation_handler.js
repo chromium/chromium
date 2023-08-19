@@ -7,10 +7,10 @@
  */
 import {AutomationPredicate} from '../../../common/automation_predicate.js';
 import {AutomationUtil} from '../../../common/automation_util.js';
-import {constants} from '../../../common/constants.js';
 import {CursorRange} from '../../../common/cursors/range.js';
 import {ChromeVoxEvent, CustomAutomationEvent} from '../../common/custom_automation_event.js';
 import {Msgs} from '../../common/msgs.js';
+import {ChromeVox} from '../chromevox.js';
 import {ChromeVoxRange, ChromeVoxRangeObserver} from '../chromevox_range.js';
 import {FocusBounds} from '../focus_bounds.js';
 import {Output} from '../output/output.js';
@@ -19,9 +19,7 @@ import {OutputCustomEvent} from '../output/output_types.js';
 import {BaseAutomationHandler} from './base_automation_handler.js';
 import {DesktopAutomationHandler} from './desktop_automation_handler.js';
 
-const AutomationEvent = chrome.automation.AutomationEvent;
 const AutomationNode = chrome.automation.AutomationNode;
-const Dir = constants.Dir;
 const EventType = chrome.automation.EventType;
 const RoleType = chrome.automation.RoleType;
 const StateType = chrome.automation.StateType;
@@ -82,20 +80,21 @@ export class RangeAutomationHandler extends BaseAutomationHandler {
       retarget = retarget.parent;
     }
 
-    // TODO: some of the events mapped to onAriaAttributeChanged need to have
+    // TODO: some of the events mapped to onAttributeChanged need to have
     // specific handlers that only output the specific attribute. There also
     // needs to be an audit of all attribute change events to ensure they get
     // outputted.
+    // TODO(crbug.com/1464633) Fully remove ARIA_ATTRIBUTE_CHANGED_DEPRECATED
+    // starting in 122, because although it was removed in 118, it is still
+    // present in earlier versions of LaCros.
     this.addListener_(
-        EventType.ARIA_ATTRIBUTE_CHANGED, this.onAriaAttributeChanged);
+        EventType.ARIA_ATTRIBUTE_CHANGED_DEPRECATED, this.onAttributeChanged);
+    this.addListener_(EventType.AUTO_COMPLETE_CHANGED, this.onAttributeChanged);
     this.addListener_(
-        EventType.AUTO_COMPLETE_CHANGED, this.onAriaAttributeChanged);
-    this.addListener_(
-        EventType.IMAGE_ANNOTATION_CHANGED, this.onAriaAttributeChanged);
-    this.addListener_(EventType.NAME_CHANGED, this.onAriaAttributeChanged);
-    this.addListener_(
-        EventType.DESCRIPTION_CHANGED, this.onAriaAttributeChanged);
-    this.addListener_(EventType.ROLE_CHANGED, this.onAriaAttributeChanged);
+        EventType.IMAGE_ANNOTATION_CHANGED, this.onAttributeChanged);
+    this.addListener_(EventType.NAME_CHANGED, this.onAttributeChanged);
+    this.addListener_(EventType.DESCRIPTION_CHANGED, this.onAttributeChanged);
+    this.addListener_(EventType.ROLE_CHANGED, this.onAttributeChanged);
     this.addListener_(EventType.AUTOCORRECTION_OCCURED, this.onEventIfInRange);
     this.addListener_(
         EventType.CHECKED_STATE_CHANGED, this.onCheckedStateChanged);
@@ -104,14 +103,14 @@ export class RangeAutomationHandler extends BaseAutomationHandler {
         this.onCheckedStateChanged);
     this.addListener_(EventType.COLLAPSED, this.onEventIfInRange);
     this.addListener_(EventType.EXPANDED, this.onEventIfInRange);
+    this.addListener_(EventType.IMAGE_FRAME_UPDATED, this.onImageFrameUpdated);
     this.addListener_(EventType.INVALID_STATUS_CHANGED, this.onEventIfInRange);
     this.addListener_(EventType.LOCATION_CHANGED, this.onLocationChanged);
-    this.addListener_(
-        EventType.RELATED_NODE_CHANGED, this.onAriaAttributeChanged);
+    this.addListener_(EventType.RELATED_NODE_CHANGED, this.onAttributeChanged);
     this.addListener_(EventType.ROW_COLLAPSED, this.onEventIfInRange);
     this.addListener_(EventType.ROW_EXPANDED, this.onEventIfInRange);
-    this.addListener_(EventType.STATE_CHANGED, this.onAriaAttributeChanged);
-    this.addListener_(EventType.SORT_CHANGED, this.onAriaAttributeChanged);
+    this.addListener_(EventType.STATE_CHANGED, this.onAttributeChanged);
+    this.addListener_(EventType.SORT_CHANGED, this.onAttributeChanged);
   }
 
   /** @param {!ChromeVoxEvent} evt */
@@ -161,7 +160,7 @@ export class RangeAutomationHandler extends BaseAutomationHandler {
   }
 
   /** @param {!ChromeVoxEvent} evt */
-  onAriaAttributeChanged(evt) {
+  onAttributeChanged(evt) {
     // Don't report changes on editable nodes since they interfere with text
     // selection changes. Users can query via Search+k for the current state
     // of the text field (which would also report the entire value).
@@ -246,6 +245,18 @@ export class RangeAutomationHandler extends BaseAutomationHandler {
     }
 
     new Output().withLocation(cur, null, evt.type).go();
+  }
+
+  /**
+   * Called when an image frame is received on a node.
+   * @param {!ChromeVoxEvent} evt The event.
+   * @private
+   */
+  onImageFrameUpdated(evt) {
+    const target = evt.target;
+    if (target.imageDataUrl) {
+      ChromeVox.braille.writeRawImage(target.imageDataUrl);
+    }
   }
 
   /**

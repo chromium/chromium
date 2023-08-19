@@ -137,6 +137,8 @@ NameValuePairsParser::NameValuePairsParser(NameValueMap* map)
     : map_(map) {
 }
 
+NameValuePairsParser::~NameValuePairsParser() = default;
+
 bool NameValuePairsParser::ParseNameValuePairsFromFile(
     const base::FilePath& file_path,
     NameValuePairsFormat format) {

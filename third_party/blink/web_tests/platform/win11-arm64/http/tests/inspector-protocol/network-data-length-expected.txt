@@ -1,0 +1,37 @@
+Ensures that data and header length sent from protocol is proper sizes
+Test started
+Network agent enabled
+
+url: http://127.0.0.1:8000/inspector-protocol/resources/data-xfer-resource.php?size=4&flush_header_with_x_bytes=1&wait_after_headers_packet=25&flush_every=1&wait_every_x_bytes=1&wait_duration_every_x_bytes=25
+  isChunked: true
+  isH2: false
+  redirected: false
+  headersSize: 173
+  receivedDataSize: 2631
+  reportedTotalSize: 2809
+
+url: http://127.0.0.1:8000/inspector-protocol/resources/data-xfer-resource.php?size=4&flush_header_with_x_bytes=1&wait_after_headers_packet=25&flush_every=1&wait_every_x_bytes=1&wait_duration_every_x_bytes=25
+  isChunked: true
+  isH2: false
+  redirected: false
+  headersSize: 173
+  receivedDataSize: 2631
+  reportedTotalSize: 2809
+
+url: http://127.0.0.1:8000/inspector-protocol/resources/data-xfer-resource.php?redirect=1
+  isChunked: false
+  isH2: false
+  redirected: false
+  headersSize: 167
+  receivedDataSize: 2123
+  reportedTotalSize: 2290
+
+url: http://127.0.0.1:8000/inspector-protocol/resources/data-xfer-resource.php?cached=1
+  isChunked: false
+  isH2: false
+  redirected: false
+  headersSize: 167
+  receivedDataSize: 2470
+  reportedTotalSize: 2637
+
+

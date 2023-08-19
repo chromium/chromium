@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
 #include "components/security_interstitials/core/controller_client.h"
@@ -24,6 +25,8 @@ void SecurityInterstitialTabHelper::DidFinishNavigation(
 
   if (navigation_handle->HasCommitted()) {
     if (blocking_page_for_currently_committed_navigation_) {
+      base::UmaHistogramEnumeration("interstitial.CloseReason",
+                                    InterstitialCloseReason::NAVIGATE_AWAY);
       blocking_page_for_currently_committed_navigation_
           ->OnInterstitialClosing();
     }
@@ -32,6 +35,12 @@ void SecurityInterstitialTabHelper::DidFinishNavigation(
       blocking_page_for_currently_committed_navigation_.reset();
     } else {
       blocking_page_for_currently_committed_navigation_ = std::move(it->second);
+      // According to `IsDisplayingInterstitial`,  inserting a value into
+      // `blocking_page_for_currently_committed_navigation_` means an
+      // interstitial is displaying, so log the INTERSTITIAL_SHOWN bucket here.
+      base::UmaHistogramEnumeration(
+          "interstitial.CloseReason",
+          InterstitialCloseReason::INTERSTITIAL_SHOWN);
     }
   }
 
@@ -45,6 +54,8 @@ void SecurityInterstitialTabHelper::DidFinishNavigation(
 
 void SecurityInterstitialTabHelper::WebContentsDestroyed() {
   if (blocking_page_for_currently_committed_navigation_) {
+    base::UmaHistogramEnumeration("interstitial.CloseReason",
+                                  InterstitialCloseReason::CLOSE_TAB);
     blocking_page_for_currently_committed_navigation_->OnInterstitialClosing();
   }
 }
@@ -91,6 +102,10 @@ bool SecurityInterstitialTabHelper::ShouldDisplayURL() const {
 
 bool SecurityInterstitialTabHelper::IsDisplayingInterstitial() const {
   return blocking_page_for_currently_committed_navigation_ != nullptr;
+}
+
+bool SecurityInterstitialTabHelper::HasPendingOrActiveInterstitial() const {
+  return !blocking_pages_for_navigations_.empty() || IsDisplayingInterstitial();
 }
 
 bool SecurityInterstitialTabHelper::IsInterstitialPendingForNavigation(

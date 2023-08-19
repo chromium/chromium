@@ -30,11 +30,15 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.autofill.AutofillProfile;
+import org.chromium.components.autofill.VerificationStatus;
 import org.chromium.components.image_fetcher.test.TestImageFetcher;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.url.GURL;
@@ -240,14 +244,8 @@ public class PersonalDataManagerTest {
     @SmallTest
     @Feature({"Autofill"})
     public void testCreditCardWithCardArtUrl_imageDownloaded() throws TimeoutException {
-        Context context = ContextUtils.getApplicationContext();
-
-        int widthId = R.dimen.settings_page_card_icon_width;
-        int width = context.getResources().getDimensionPixelSize(widthId);
-        int heightId = R.dimen.settings_page_card_icon_height;
-        int height = context.getResources().getDimensionPixelSize(heightId);
-        int cornerRadiusId = R.dimen.card_art_corner_radius;
-        float cornerRadius = context.getResources().getDimensionPixelSize(cornerRadiusId);
+        AutofillUiUtils.CardIconSpecs cardIconSpecs = AutofillUiUtils.CardIconSpecs.create(
+                ContextUtils.getApplicationContext(), AutofillUiUtils.CardIconSize.LARGE);
         GURL cardArtUrl = new GURL("http://google.com/test.png");
         CreditCard cardWithCardArtUrl = new CreditCard(/* guid= */ "serverGuid", /* origin= */ "",
                 /* isLocal= */ false, /* isCached= */ false, "John Doe Server", "41111111111111111",
@@ -264,28 +262,27 @@ public class PersonalDataManagerTest {
             assertEquals(null,
                     PersonalDataManager.getInstance()
                             .getCustomImageForAutofillSuggestionIfAvailable(
-                                    ContextUtils.getApplicationContext(), cardArtUrl, widthId,
-                                    heightId, cornerRadiusId));
+                                    cardArtUrl, cardIconSpecs));
             assertTrue(
                     AutofillUiUtils
-                            .resizeAndAddRoundedCornersAndGreyBorder(TEST_CARD_ART_IMAGE, width,
-                                    height, cornerRadius,
+                            .resizeAndAddRoundedCornersAndGreyBorder(TEST_CARD_ART_IMAGE,
+                                    cardIconSpecs,
                                     /* addRoundedCornersAndGreyBorder= */
                                     ChromeFeatureList.isEnabled(
                                             ChromeFeatureList
                                                     .AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES))
                             .sameAs(PersonalDataManager.getInstance()
                                             .getCustomImageForAutofillSuggestionIfAvailable(
-                                                    ContextUtils.getApplicationContext(),
-                                                    cardArtUrl, widthId, heightId,
-                                                    cornerRadiusId)));
+                                                    cardArtUrl, cardIconSpecs)));
         });
     }
 
     @Test
     @SmallTest
     @Feature({"Autofill"})
-    public void testCreditCardArtUrlIsFormattedWithImageSpecs() throws TimeoutException {
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_CARD_ART_SERVER_SIDE_STRETCHING)
+    public void testCreditCardArtUrlIsFormattedWithImageSpecs_serverSideStretchingDisabled()
+            throws TimeoutException {
         GURL capitalOneIconUrl = new GURL(AutofillUiUtils.CAPITAL_ONE_ICON_URL);
         GURL cardArtUrl = new GURL("http://google.com/test");
         int widthPixels = 32;
@@ -307,6 +304,38 @@ public class PersonalDataManagerTest {
                                             .append(widthPixels)
                                             .append("-h")
                                             .append(heightPixels)
+                                            .toString()));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Autofill"})
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_CARD_ART_SERVER_SIDE_STRETCHING)
+    public void testCreditCardArtUrlIsFormattedWithImageSpecs_serverSideStretchingEnabled()
+            throws TimeoutException {
+        GURL capitalOneIconUrl = new GURL(AutofillUiUtils.CAPITAL_ONE_ICON_URL);
+        GURL cardArtUrl = new GURL("http://google.com/test");
+        int widthPixels = 32;
+        int heightPixels = 20;
+
+        // The URL should be updated as `cardArtUrl=w{width}-h{height}-s`.
+        assertThat(AutofillUiUtils.getCreditCardIconUrlWithParams(
+                           capitalOneIconUrl, widthPixels, heightPixels))
+                .isEqualTo(new GURL(new StringBuilder(capitalOneIconUrl.getSpec())
+                                            .append("=w")
+                                            .append(widthPixels)
+                                            .append("-h")
+                                            .append(heightPixels)
+                                            .append("-s")
+                                            .toString()));
+        assertThat(AutofillUiUtils.getCreditCardIconUrlWithParams(
+                           cardArtUrl, widthPixels, heightPixels))
+                .isEqualTo(new GURL(new StringBuilder(cardArtUrl.getSpec())
+                                            .append("=w")
+                                            .append(widthPixels)
+                                            .append("-h")
+                                            .append(heightPixels)
+                                            .append("-s")
                                             .toString()));
     }
 
@@ -529,6 +558,7 @@ public class PersonalDataManagerTest {
     @Test
     @SmallTest
     @Feature({"Autofill"})
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_RANKING_FORMULA_ADDRESS_PROFILES)
     public void testProfilesFrecency() throws TimeoutException {
         // Create 3 profiles.
         AutofillProfile profile1 = AutofillProfile.builder()
@@ -568,30 +598,31 @@ public class PersonalDataManagerTest {
         String guid2 = mHelper.setProfile(profile2);
         String guid3 = mHelper.setProfile(profile3);
 
-        // The first profile has a lower use count than the two other profiles. It also has an older
-        // use date that the second profile and the same use date as the third. It should be last.
-        mHelper.setProfileUseStatsForTesting(guid1, 3, 5000);
-        // The second profile has the same use count as the third but a more recent use date. It
-        // also has a bigger use count that the first profile. It should be first.
-        mHelper.setProfileUseStatsForTesting(guid2, 6, 5001);
-        // The third profile has the same use count as the second but an older use date. It also has
-        // a bigger use count that the first profile. It should be second.
-        mHelper.setProfileUseStatsForTesting(guid3, 6, 5000);
+        // The first profile has the lowest use count but has most recently been used, making it
+        // ranked first.
+        mHelper.setProfileUseStatsForTesting(guid1, 6, 1);
+        // The second profile has the median use count and use date, and with these values it is
+        // ranked third.
+        mHelper.setProfileUseStatsForTesting(guid2, 25, 10);
+        // The third profile has the highest use count and is the profile with the farthest last
+        // use date. Because of its very high use count, it is still ranked second.
+        mHelper.setProfileUseStatsForTesting(guid3, 100, 20);
 
         List<AutofillProfile> profiles =
                 mHelper.getProfilesToSuggest(false /* includeNameInLabel */);
         Assert.assertEquals(3, profiles.size());
         Assert.assertTrue(
-                "Profile2 should be ranked first", guid2.equals(profiles.get(0).getGUID()));
+                "Profile1 should be ranked first", guid1.equals(profiles.get(0).getGUID()));
         Assert.assertTrue(
                 "Profile3 should be ranked second", guid3.equals(profiles.get(1).getGUID()));
         Assert.assertTrue(
-                "Profile1 should be ranked third", guid1.equals(profiles.get(2).getGUID()));
+                "Profile2 should be ranked third", guid2.equals(profiles.get(2).getGUID()));
     }
 
     @Test
     @SmallTest
     @Feature({"Autofill"})
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_RANKING_FORMULA_CREDIT_CARDS)
     public void testCreditCardsFrecency() throws TimeoutException {
         // Create 3 credit cards.
         CreditCard card1 = createLocalCreditCard("Visa", "1234123412341234", "5", "2020");
@@ -607,21 +638,92 @@ public class PersonalDataManagerTest {
         String guid2 = mHelper.setCreditCard(card2);
         String guid3 = mHelper.setCreditCard(card3);
 
-        // The first card has a lower use count than the two other cards. It also has an older
-        // use date that the second card and the same use date as the third. It should be last.
-        mHelper.setCreditCardUseStatsForTesting(guid1, 3, 5000);
-        // The second card has the same use count as the third but a more recent use date. It also
-        // has a bigger use count that the first card. It should be first.
-        mHelper.setCreditCardUseStatsForTesting(guid2, 6, 5001);
-        // The third card has the same use count as the second but an older use date. It also has a
-        // bigger use count that the first card. It should be second.
-        mHelper.setCreditCardUseStatsForTesting(guid3, 6, 5000);
+        // The first credit card has the lowest use count but has most recently been used, making it
+        // ranked first.
+        mHelper.setCreditCardUseStatsForTesting(guid1, 6, 1);
+        // The second credit card has the median use count and use date, and with these values it is
+        // ranked third.
+        mHelper.setCreditCardUseStatsForTesting(guid2, 25, 10);
+        // The third credit card has the highest use count and is the credit card with the farthest
+        // last use date. Because of its very high use count, it is still ranked second.
+        mHelper.setCreditCardUseStatsForTesting(guid3, 100, 20);
+
+        List<CreditCard> cards = mHelper.getCreditCardsToSuggest();
+        Assert.assertEquals(3, cards.size());
+        Assert.assertTrue("Card1 should be ranked first", guid1.equals(cards.get(0).getGUID()));
+        Assert.assertTrue("Card3 should be ranked second", guid3.equals(cards.get(1).getGUID()));
+        Assert.assertTrue("Card2 should be ranked third", guid2.equals(cards.get(2).getGUID()));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Autofill"})
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_RANKING_FORMULA_ADDRESS_PROFILES)
+    public void testProfileRanking() throws TimeoutException {
+        // Create 3 profiles.
+        AutofillProfile profile1 = AutofillProfile.builder().setFullName("John Major").build();
+        AutofillProfile profile2 = AutofillProfile.builder().setFullName("Josh Larkin").build();
+        AutofillProfile profile3 = AutofillProfile.builder().setFullName("Jasper Lundgren").build();
+
+        String guid1 = mHelper.setProfile(profile1);
+        String guid2 = mHelper.setProfile(profile2);
+        String guid3 = mHelper.setProfile(profile3);
+
+        // The first profile has the lowest use count but has most recently been used, making it
+        // ranked second.
+        mHelper.setProfileUseStatsForTesting(guid1, 6, 1);
+        // The second profile has the median use count and use date, and with these values it is
+        // ranked first.
+        mHelper.setProfileUseStatsForTesting(guid2, 25, 10);
+        // The third profile has the highest use count and is the profile with the farthest last
+        // use date. Because of its very far last use date, it's ranked third.
+        mHelper.setProfileUseStatsForTesting(guid3, 100, 20);
+
+        List<AutofillProfile> profiles =
+                mHelper.getProfilesToSuggest(false /* includeNameInLabel */);
+        Assert.assertEquals(3, profiles.size());
+        Assert.assertTrue(
+                "Profile2 should be ranked first", guid2.equals(profiles.get(0).getGUID()));
+        Assert.assertTrue(
+                "Profile1 should be ranked second", guid1.equals(profiles.get(1).getGUID()));
+        Assert.assertTrue(
+                "Profile3 should be ranked third", guid3.equals(profiles.get(2).getGUID()));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Autofill"})
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_RANKING_FORMULA_CREDIT_CARDS)
+    public void testCreditCardRanking() throws TimeoutException {
+        // Create 3 credit cards.
+        CreditCard card1 = createLocalCreditCard("Visa", "1234123412341234", "5", "2020");
+
+        CreditCard card2 =
+                createLocalCreditCard("American Express", "1234123412341234", "8", "2020");
+        card2.setOrigin("http://www.example.com");
+
+        CreditCard card3 = createLocalCreditCard("Mastercard", "1234123412341234", "11", "2020");
+        card3.setOrigin("http://www.example.com");
+
+        String guid1 = mHelper.setCreditCard(card1);
+        String guid2 = mHelper.setCreditCard(card2);
+        String guid3 = mHelper.setCreditCard(card3);
+
+        // The first credit card has the lowest use count but has most recently been used, making it
+        // ranked second.
+        mHelper.setCreditCardUseStatsForTesting(guid1, 6, 1);
+        // The second credit card has the median use count and use date, and with these values it is
+        // ranked first.
+        mHelper.setCreditCardUseStatsForTesting(guid2, 25, 10);
+        // The third credit card has the highest use count and is the profile with the farthest last
+        // use date. Because of its very far last use date, it's ranked third.
+        mHelper.setCreditCardUseStatsForTesting(guid3, 100, 20);
 
         List<CreditCard> cards = mHelper.getCreditCardsToSuggest();
         Assert.assertEquals(3, cards.size());
         Assert.assertTrue("Card2 should be ranked first", guid2.equals(cards.get(0).getGUID()));
-        Assert.assertTrue("Card3 should be ranked second", guid3.equals(cards.get(1).getGUID()));
-        Assert.assertTrue("Card1 should be ranked third", guid1.equals(cards.get(2).getGUID()));
+        Assert.assertTrue("Card1 should be ranked second", guid1.equals(cards.get(1).getGUID()));
+        Assert.assertTrue("Card3 should be ranked third", guid3.equals(cards.get(2).getGUID()));
     }
 
     @Test
@@ -662,7 +764,8 @@ public class PersonalDataManagerTest {
 
         // Make sure the specific use stats were set for the profile.
         Assert.assertEquals(1234, mHelper.getProfileUseCountForTesting(guid));
-        Assert.assertEquals(1234, mHelper.getProfileUseDateForTesting(guid));
+        Assert.assertEquals(
+                mHelper.getDateNDaysAgoForTesting(1234), mHelper.getProfileUseDateForTesting(guid));
     }
 
     @Test
@@ -683,7 +786,8 @@ public class PersonalDataManagerTest {
 
         // Make sure the specific use stats were set for the credit card.
         Assert.assertEquals(1234, mHelper.getCreditCardUseCountForTesting(guid));
-        Assert.assertEquals(1234, mHelper.getCreditCardUseDateForTesting(guid));
+        Assert.assertEquals(mHelper.getDateNDaysAgoForTesting(1234),
+                mHelper.getCreditCardUseDateForTesting(guid));
     }
 
     @Test
@@ -795,18 +899,14 @@ public class PersonalDataManagerTest {
     @Test
     @SmallTest
     @Feature({"Autofill"})
-    @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)
     public void
     testGetCardIcon_customIconUrlAvailable_customIconCachedOnFirstCallAndReturnedOnSecondCall()
             throws TimeoutException {
         Context context = ContextUtils.getApplicationContext();
 
-        int widthId = R.dimen.settings_page_card_icon_width;
-        int width = context.getResources().getDimensionPixelSize(widthId);
-        int heightId = R.dimen.settings_page_card_icon_height;
-        int height = context.getResources().getDimensionPixelSize(heightId);
-        int cornerRadiusId = R.dimen.card_art_corner_radius;
-        float cornerRadius = context.getResources().getDimensionPixelSize(cornerRadiusId);
+        AutofillUiUtils.CardIconSpecs cardIconSpecs =
+                AutofillUiUtils.CardIconSpecs.create(context, AutofillUiUtils.CardIconSize.LARGE);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // The first call to get the custom icon only fetches and caches the icon. It returns
@@ -816,20 +916,21 @@ public class PersonalDataManagerTest {
                             .getBitmap()
                             .sameAs(((BitmapDrawable) AutofillUiUtils.getCardIcon(context,
                                              new GURL("http://google.com/test.png"),
-                                             R.drawable.mc_card, widthId, heightId, cornerRadiusId,
+                                             R.drawable.mc_card, AutofillUiUtils.CardIconSize.LARGE,
                                              /* showCustomIcon= */ true))
                                             .getBitmap()));
 
             // The custom icon is already cached, and gets returned.
-            assertTrue(AutofillUiUtils
-                               .resizeAndAddRoundedCornersAndGreyBorder(TEST_CARD_ART_IMAGE, width,
-                                       height, cornerRadius,
-                                       /* addRoundedCornersAndGreyBorder= */ true)
-                               .sameAs(((BitmapDrawable) AutofillUiUtils.getCardIcon(context,
-                                                new GURL("http://google.com/test.png"),
-                                                R.drawable.mc_card, widthId, heightId,
-                                                cornerRadiusId, /* showCustomIcon= */ true))
-                                               .getBitmap()));
+            assertTrue(
+                    AutofillUiUtils
+                            .resizeAndAddRoundedCornersAndGreyBorder(TEST_CARD_ART_IMAGE,
+                                    cardIconSpecs,
+                                    /* addRoundedCornersAndGreyBorder= */ true)
+                            .sameAs(((BitmapDrawable) AutofillUiUtils.getCardIcon(context,
+                                             new GURL("http://google.com/test.png"),
+                                             R.drawable.mc_card, AutofillUiUtils.CardIconSize.LARGE,
+                                             /* showCustomIcon= */ true))
+                                            .getBitmap()));
         });
     }
 
@@ -839,9 +940,6 @@ public class PersonalDataManagerTest {
     public void testGetCardIcon_customIconUrlUnavailable_defaultIconReturned()
             throws TimeoutException {
         Context context = ContextUtils.getApplicationContext();
-        int widthId = R.dimen.autofill_dropdown_icon_width;
-        int heightId = R.dimen.autofill_dropdown_icon_height;
-        int cornerRadiusId = R.dimen.card_art_corner_radius;
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // In the absence of custom icon URL, the default icon is returned.
@@ -849,8 +947,8 @@ public class PersonalDataManagerTest {
                     ((BitmapDrawable) AppCompatResources.getDrawable(context, R.drawable.mc_card))
                             .getBitmap()
                             .sameAs(((BitmapDrawable) AutofillUiUtils.getCardIcon(context,
-                                             new GURL(""), R.drawable.mc_card, widthId, heightId,
-                                             cornerRadiusId, true))
+                                             new GURL(""), R.drawable.mc_card,
+                                             AutofillUiUtils.CardIconSize.LARGE, true))
                                             .getBitmap()));
 
             // Calling it twice just to make sure that there is no caching behavior like it happens
@@ -859,8 +957,8 @@ public class PersonalDataManagerTest {
                     ((BitmapDrawable) AppCompatResources.getDrawable(context, R.drawable.mc_card))
                             .getBitmap()
                             .sameAs(((BitmapDrawable) AutofillUiUtils.getCardIcon(context,
-                                             new GURL(""), R.drawable.mc_card, widthId, heightId,
-                                             cornerRadiusId, true))
+                                             new GURL(""), R.drawable.mc_card,
+                                             AutofillUiUtils.CardIconSize.LARGE, true))
                                             .getBitmap()));
         });
     }
@@ -870,16 +968,52 @@ public class PersonalDataManagerTest {
     @Feature({"Autofill"})
     public void testGetCardIcon_customIconUrlAndDefaultIconIdUnavailable_nothingReturned()
             throws TimeoutException {
-        Context context = ContextUtils.getApplicationContext();
-        int widthId = R.dimen.autofill_dropdown_icon_width;
-        int heightId = R.dimen.autofill_dropdown_icon_height;
-        int cornerRadiusId = R.dimen.card_art_corner_radius;
-
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // If neither the custom icon nor the default icon is available, null is returned.
             assertEquals(null,
-                    AutofillUiUtils.getCardIcon(
-                            context, new GURL(""), 0, widthId, heightId, cornerRadiusId, true));
+                    AutofillUiUtils.getCardIcon(ContextUtils.getApplicationContext(), new GURL(""),
+                            0, AutofillUiUtils.CardIconSize.LARGE, true));
+        });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Autofill"})
+    public void
+    testGetCustomImageForAutofillSuggestionIfAvailable_recordImageFetchingResult_success()
+            throws TimeoutException {
+        GURL cardArtUrl = new GURL("http://google.com/test.png");
+        AutofillUiUtils.CardIconSpecs cardIconSpecs = AutofillUiUtils.CardIconSpecs.create(
+                ContextUtils.getApplicationContext(), AutofillUiUtils.CardIconSize.LARGE);
+
+        HistogramWatcher expectedHistogram =
+                HistogramWatcher.newSingleRecordWatcher("Autofill.ImageFetcher.Result", true);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PersonalDataManager.getInstance().getCustomImageForAutofillSuggestionIfAvailable(
+                    cardArtUrl, cardIconSpecs);
+            expectedHistogram.assertExpected();
+        });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Autofill"})
+    public void
+    testGetCustomImageForAutofillSuggestionIfAvailable_recordImageFetchingResult_failure()
+            throws TimeoutException {
+        GURL cardArtUrl = new GURL("http://google.com/test.png");
+        AutofillUiUtils.CardIconSpecs cardIconSpecs = AutofillUiUtils.CardIconSpecs.create(
+                ContextUtils.getApplicationContext(), AutofillUiUtils.CardIconSize.LARGE);
+
+        HistogramWatcher expectedHistogram =
+                HistogramWatcher.newSingleRecordWatcher("Autofill.ImageFetcher.Result", false);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PersonalDataManager.getInstance().setImageFetcherForTesting(new TestImageFetcher(null));
+            PersonalDataManager.getInstance().getCustomImageForAutofillSuggestionIfAvailable(
+                    cardArtUrl, cardIconSpecs);
+            expectedHistogram.assertExpected();
         });
     }
 }

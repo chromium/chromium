@@ -26,6 +26,7 @@ class Origin;
 namespace content {
 
 class BrowserContext;
+class Page;
 class RenderFrameHost;
 class UsbChooser;
 
@@ -57,8 +58,14 @@ class CONTENT_EXPORT UsbDelegate {
   // below returned false.
   virtual std::unique_ptr<UsbChooser> RunChooser(
       RenderFrameHost& frame,
-      std::vector<device::mojom::UsbDeviceFilterPtr> filters,
+      blink::mojom::WebUsbRequestDeviceOptionsPtr options,
       blink::mojom::WebUsbService::GetPermissionCallback callback) = 0;
+
+  // By returning false, allows the embedder to deny WebUSB access to documents
+  // of the given `page`. This is beyond the restrictions already enforced
+  // within content/. For example, the embedder may be displaying `page` in a
+  // context where prompting for permissions is not appropriate.
+  virtual bool PageMayUseUsb(Page& page) = 0;
 
   // Returns whether `origin` in `browser_context` has permission to request
   // access to a device.
@@ -110,6 +117,15 @@ class CONTENT_EXPORT UsbDelegate {
 
   // Returns true if `origin` is allowed to access WebUSB from service workers.
   virtual bool IsServiceWorkerAllowedForOrigin(const url::Origin& origin) = 0;
+
+  // Notify the delegate a connection is created on |origin| by
+  // |browser_context|.
+  virtual void IncrementConnectionCount(BrowserContext* browser_context,
+                                        const url::Origin& origin) = 0;
+  // Notify the delegate a connection is closed on |origin| by
+  // |browser_context|.
+  virtual void DecrementConnectionCount(BrowserContext* browser_context,
+                                        const url::Origin& origin) = 0;
 };
 
 }  // namespace content

@@ -15,12 +15,13 @@
 #include "base/ranges/algorithm.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/to_vector.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
-#include "chromeos/ash/services/secure_channel/ble_constants.h"
 #include "chromeos/ash/services/secure_channel/connection_role.h"
 #include "chromeos/ash/services/secure_channel/fake_ble_scanner.h"
 #include "chromeos/ash/services/secure_channel/fake_ble_synchronizer.h"
 #include "chromeos/ash/services/secure_channel/fake_bluetooth_helper.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/shared/ble_constants.h"
 #include "device/bluetooth/bluetooth_low_energy_scan_filter.h"
 #include "device/bluetooth/floss/floss_features.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
@@ -46,8 +47,8 @@ class FakeBluetoothDevice : public device::MockBluetoothDevice {
                                     false /* paired */,
                                     false /* connected */) {
     // Convert |service_data| from a std::string to a std::vector<uint8_t>.
-    base::ranges::transform(
-        service_data, std::back_inserter(service_data_vector_),
+    service_data_vector_ = base::test::ToVector(
+        service_data,
         [](char character) { return static_cast<uint8_t>(character); });
   }
 
@@ -244,6 +245,7 @@ class SecureChannelBleScannerImplTest : public testing::Test {
       std::unique_ptr<device::BluetoothLowEnergyScanFilter> filter,
       base::WeakPtr<device::BluetoothLowEnergyScanSession::Delegate> delegate) {
     EXPECT_FALSE(scan_session_ptr_);
+    EXPECT_TRUE(filter);
     auto scan_session =
         std::make_unique<device::MockBluetoothLowEnergyScanSession>(
             base::BindOnce(
@@ -306,6 +308,14 @@ class SecureChannelBleScannerImplTest : public testing::Test {
             .has_value());
   }
 
+  void SimulateAdapterPoweredChanged(bool powered) {
+    // Note: MockBluetoothAdapter provides no way to notify observers, so the
+    // observer callback must be invoked directly.
+    for (auto& observer : mock_adapter_->GetObservers()) {
+      observer.AdapterPoweredChanged(mock_adapter_.get(), powered);
+    }
+  }
+
  private:
   std::unique_ptr<FakeBluetoothDevice> SimulateScanResult(
       const std::string& service_data) {
@@ -338,7 +348,7 @@ class SecureChannelBleScannerImplTest : public testing::Test {
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
 
   std::unique_ptr<device::BluetoothDiscoverySession> discovery_session_;
-  raw_ptr<FakeServiceDataProvider, ExperimentalAsh>
+  raw_ptr<FakeServiceDataProvider, DanglingUntriaged | ExperimentalAsh>
       fake_service_data_provider_ = nullptr;
   base::WeakPtr<device::BluetoothDiscoverySession> discovery_session_weak_ptr_;
   raw_ptr<device::BluetoothLowEnergyScanSession, ExperimentalAsh>
@@ -641,6 +651,26 @@ TEST_F(SecureChannelBleScannerImplTest, StartAndInvalidateSessionFloss) {
 
   // BleScanner should have realized that it was invalidated and start another
   // session.
+  EXPECT_TRUE(discovery_session_is_active());
+}
+
+TEST_F(SecureChannelBleScannerImplTest, StartAndPowerOffAndPowerOnFloss) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(floss::features::kFlossEnabled);
+
+  ConnectionAttemptDetails filter(DeviceIdPair(test_devices()[0].GetDeviceId(),
+                                               test_devices()[1].GetDeviceId()),
+                                  ConnectionMedium::kBluetoothLowEnergy,
+                                  ConnectionRole::kListenerRole);
+
+  AddScanRequest(filter);
+  SimulateAdapterPoweredChanged(false);
+
+  // BleScanner should have realized that Floss is powered off and give up
+  // starting another session.
+  EXPECT_FALSE(discovery_session_is_active());
+
+  SimulateAdapterPoweredChanged(true);
   EXPECT_TRUE(discovery_session_is_active());
 }
 

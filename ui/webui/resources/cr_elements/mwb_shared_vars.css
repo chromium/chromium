@@ -10,29 +10,27 @@
 html {
   --mwb-background-color: white;
   --mwb-icon-button-fill-color: var(--google-grey-700);
-  --mwb-icon-button-focus-ring-color: var(--google-blue-600);
-  --mwb-icon-button-hover-background-color: rgba(var(--google-grey-900-rgb), 0.1);
   --mwb-icon-size: 16px;
-  --mwb-item-height: 56px;
-  --mwb-list-item-horizontal-margin: 16px;
+  --mwb-item-height: 48px;
+  --mwb-list-item-horizontal-margin: 20px;
   --mwb-list-item-hover-background-color: rgba(var(--google-grey-900-rgb), 0.1);
   --mwb-list-item-selected-background-color: rgba(var(--google-grey-900-rgb), 0.14);
   --mwb-list-section-title-font-size: 11px;
-  --mwb-list-section-title-height: 40px;
+  --mwb-list-section-title-height: 48px;
   --mwb-primary-text-font-size: 13px;
+  --mwb-primary-text-font-weight: normal;
   --mwb-scrollbar-thumb-color: var(--google-grey-300);
   --mwb-scrollbar-thumb-hover-color: var(--google-grey-500);
   --mwb-scrollbar-track-color: var(--mwb-background-color);
   --mwb-scrollbar-width: 4px;
   --mwb-secondary-text-font-size: 12px;
+  --mwb-secondary-text-font-weight: normal;
 }
 
 @media (prefers-color-scheme: dark) {
   html {
     --mwb-background-color: var(--google-grey-900);
     --mwb-icon-button-fill-color: var(--google-grey-300);
-    --mwb-icon-button-focus-ring-color: var(--google-blue-300);
-    --mwb-icon-button-hover-background-color: rgba(255, 255, 255, 0.1);
     --mwb-list-item-hover-background-color: rgb(55, 56, 58); /* #37383a */
     --mwb-list-item-selected-background-color: rgb(68, 69, 71); /* #444547 */
     --mwb-scrollbar-thumb-color: var(--google-grey-500);

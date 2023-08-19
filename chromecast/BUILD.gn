@@ -286,14 +286,12 @@ cast_test_group("cast_tests") {
       } else {
         # Disable ProcessMetricsTest.GetNumberOfThreads (b/15610509)
         # Disable ProcessUtilTest.* (need to define OS_ANDROID)
-        # Disable StackContainer.BufferAlignment (don't support 16-byte alignment)
         # Disable SystemMetrics2Test.GetSystemMemoryInfo (buffers>0 can't be guaranteed)
         # Disable PostTasksViaTaskRunner/* to green up devices (b/62246873)
         # Disable WorkerDetaches to green up devices (b/62246873)
         gtest_excludes += [
           "ProcessMetricsTest.GetNumberOfThreads",
           "ProcessUtilTest.*",
-          "StackContainer.BufferAlignment",
           "SystemMetrics2Test.GetSystemMemoryInfo",
           "OneTraitsExecutionModePair/ThreadPoolImplTest.PostTasksViaTaskRunner/*",
           "TaskSchedulerWorkerTest.WorkerDetaches",
@@ -702,6 +700,8 @@ if (is_android) {
     target_sdk_version = 33
 
     shared_libraries = [ "//chromecast/android:libcast_shell_android" ]
+    srcjar_deps =
+        [ "//chromecast/android:libcast_shell_android__jni_registration" ]
 
     deps = [
       ":cast_shell_apk_assets",
@@ -741,6 +741,8 @@ if (is_android) {
         package_id = 125
 
         shared_libraries = [ "//chromecast/android:libcast_browser_android" ]
+        srcjar_deps =
+            [ "//chromecast/android:libcast_browser_android__jni_registration" ]
         deps = [
           "//base:base_java",
           "//base:jni_java",

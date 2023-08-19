@@ -1,0 +1,243 @@
+<style include="os-settings-icons settings-shared">
+  iron-icon.policy {
+    height: 24px;
+    margin-inline-end: 12px;
+    margin-inline-start: 4px;
+    width: 24px;
+  }
+
+  cr-toast iron-icon {
+    --iron-icon-fill-color: var(--cros-toast-icon-color-warning);
+    margin-inline-end: 16px;
+  }
+
+  #apnTooltip {
+    --paper-tooltip-background: var(--cros-tooltip-background-color);
+    --paper-tooltip-text-color: var(--cros-tooltip-label-color);
+    text-align: center;
+  }
+
+  #hotspotSubtitle {
+    color: var(--cr-secondary-text-color);
+    font-size: inherit;
+    left: 56px;
+    padding-inline-end: 210px;
+    position: relative;
+    top: -22px;
+  }
+</style>
+<os-settings-animated-pages id="pages" section="[[section_]]">
+  <div route-path="default">
+    <settings-card header-text="$i18n{internetPageTitle}">
+      <network-summary default-network="{{defaultNetwork}}"
+          device-states="{{deviceStates}}"
+          hotspot-info="{{hotspotInfo}}"
+          on-active-networks-updated="attemptDeepLink">
+      </network-summary>
+      <template is="dom-if" if="[[allowAddConnection_(globalPolicy_,
+          managedNetworkAvailable)]]">
+        <cr-expand-button
+            aria-label="$i18n{internetAddConnectionExpandA11yLabel}"
+            class="settings-box two-line"
+            expanded="{{addConnectionExpanded_}}"
+            id="expandAddConnections">
+          <span aria-hidden="true">
+            $i18n{internetAddConnection}
+          </span>
+        </cr-expand-button>
+        <template is="dom-if" if="[[addConnectionExpanded_]]">
+          <div class="list-frame vertical-list">
+            <template is="dom-if" if="[[shouldShowAddWiFiRow_(globalPolicy_,
+                managedNetworkAvailable, deviceStates)]]">
+              <div actionable class="list-item" on-click="onAddWiFiClick_">
+                <div class="start settings-box-text"
+                    id="add-wifi-label" aria-hidden="true">
+                  $i18n{internetAddWiFi}
+                </div>
+                <cr-icon-button class="icon-add-wifi"
+                    aria-labelledby="add-wifi-label"></cr-icon-button>
+              </div>
+            </template>
+            <div actionable$="[[!vpnIsProhibited_]]" class="list-item"
+                on-click="onAddVpnClick_">
+              <div class="start settings-box-text"
+                  id="add-vpn-label" aria-hidden="true">
+                $i18n{internetAddVPN}
+              </div>
+              <template is="dom-if" if="[[vpnIsProhibited_]]">
+                <cr-policy-indicator id="vpnPolicyIndicator"
+                    icon-aria-label="$i18n{networkVpnBuiltin}"
+                    indicator-type="devicePolicy"
+                    on-click="doNothing_">
+                </cr-policy-indicator>
+              </template>
+              <cr-icon-button class="icon-add-circle"
+                  aria-labelledby="add-vpn-label"
+                  disabled="[[vpnIsProhibited_]]">
+              </cr-icon-button>
+            </div>
+            <template is="dom-repeat" items="[[vpnProviders_]]">
+              <div actionable class="list-item"
+                  on-click="onAddThirdPartyVpnClick_">
+                <div class="start settings-box-text">
+                  [[getAddThirdPartyVpnLabel_(item)]]
+                </div>
+                <cr-icon-button class="icon-external"
+                    aria-label$="[[getAddThirdPartyVpnLabel_(item)]]">
+                </cr-icon-button>
+              </div>
+            </template>
+          </div>
+        </template>
+      </template>
+      <template is="dom-if" if="[[!allowAddConnection_(globalPolicy_,
+          managedNetworkAvailable)]]">
+        <div class="settings-box">
+          <iron-icon class="policy" icon="cr20:domain"></iron-icon>
+          <div class="settings-box-text">
+            $i18n{internetAddConnectionNotAllowed}
+          </div>
+        </div>
+      </template>
+    </settings-card>
+  </div>
+
+  <template is="dom-if" route-path="/networkDetail" restamp>
+    <os-settings-subpage page-title="$i18n{internetDetailPageTitle}">
+      <settings-internet-detail-menu
+          slot="subpage-title-extra"
+          device-state="[[getDeviceState_(subpageType_, deviceStates)]]">
+      </settings-internet-detail-menu>
+      <settings-internet-detail-subpage prefs="{{prefs}}"
+          default-network="[[defaultNetwork]]"
+          global-policy="[[globalPolicy_]]"
+          managed-network-available="[[managedNetworkAvailable]]">
+      </settings-internet-detail-subpage>
+    </os-settings-subpage>
+  </template>
+
+  <template is="dom-if" route-path="/knownNetworks" restamp>
+    <os-settings-subpage page-title="$i18n{internetKnownNetworksPageTitle}">
+      <settings-internet-known-networks-subpage
+          network-type="[[knownNetworksType_]]">
+      </settings-internet-known-networks-subpage>
+    </os-settings-subpage>
+  </template>
+
+  <template is="dom-if" route-path="/apn" restamp>
+    <os-settings-subpage page-title="$i18n{internetApnPageTitle}">
+      <div slot="subpage-title-extra">
+        <div id="apnButtonTitle">
+          <cr-button id="createCustomApnButton"
+              on-click="onCreateCustomApnClicked_"
+              class="cancel-button"
+              disabled="[[isCreateCustomApnButtonDisabled_]]">
+            <iron-icon icon="cr:add" slot="prefix-icon"></iron-icon>
+            $i18n{apnPageAddNewApn}
+          </cr-button>
+        </div>
+        <!-- TODO(b/162365553) Add a11y support-->
+        <template is="dom-if" if="[[isCreateCustomApnButtonDisabled_]]" restamp>
+          <paper-tooltip id="apnTooltip" for="apnButtonTitle">
+            $i18n{customApnLimitReached}
+          </paper-tooltip>
+        </template>
+      </div>
+      <apn-subpage id="apnSubpage"
+          is-num-custom-apns-limit-reached="{{isCreateCustomApnButtonDisabled_}}"
+      >
+      </apn-subpage>
+    </os-settings-subpage>
+  </template>
+
+  <template is="dom-if" route-path="/networks" restamp>
+    <os-settings-subpage page-title="[[getNetworksPageTitle_(subpageType_)]]"
+        show-spinner="[[showSpinner_]]"
+        spinner-title="$i18n{networkScanningLabel}">
+      <settings-internet-subpage-menu
+          slot="subpage-title-extra"
+          device-state="[[getDeviceState_(subpageType_, deviceStates)]]">
+      </settings-internet-subpage-menu>
+      <settings-internet-subpage
+          default-network="[[defaultNetwork]]"
+          device-state="[[getDeviceState_(subpageType_, deviceStates)]]"
+          tether-device-state="[[getTetherDeviceState_(deviceStates)]]"
+          global-policy="[[globalPolicy_]]"
+          vpn-providers="[[vpnProviders_]]"
+          show-spinner="{{showSpinner_}}"
+          is-connected-to-non-cellular-network="[[isConnectedToNonCellularNetwork_]]"
+          is-cellular-setup-active="[[showCellularSetupDialog_]]">
+      </settings-internet-subpage>
+    </os-settings-subpage>
+  </template>
+
+  <template is="dom-if" route-path="/hotspotDetail" restamp>
+    <os-settings-subpage id="hotspotSubpage" page-title="$i18n{hotspotPageTitle}"
+        show-spinner="[[showHotspotSpinner_(hotspotInfo.state)]]">
+      <div id="hotspotSubtitle">
+        <localized-link
+            localized-string="[[i18nAdvanced('hotspotSubpageSubtitle')]]">
+        </localized-link>
+      </div>
+      <settings-hotspot-subpage hotspot-info="[[hotspotInfo]]">
+      </settings-hotspot-subpage>
+    </os-settings-subpage>
+  </template>
+
+  <template is="dom-if" route-path="/passpointDetail" restamp>
+    <os-settings-subpage
+        page-title="[[getPasspointSubscriptionName_(passpointSubscription_)]]">
+      <settings-passpoint-subpage>
+      </settings-passpoint-subpage>
+    </os-settings-subpage>
+  </template>
+
+</os-settings-animated-pages>
+
+<template is="dom-if" if="[[showInternetConfig_]]" restamp>
+  <internet-config id="configDialog" on-close="onInternetConfigClose_">
+  </internet-config>
+</template>
+
+<template is="dom-if" if="[[showCellularSetupDialog_]]" restamp>
+  <os-settings-cellular-setup-dialog id="cellularSetupDialog"
+      on-close="onCloseCellularSetupDialog_"
+      page-name="[[cellularSetupDialogPageName_]]">
+  </os-settings-cellular-setup-dialog>
+</template>
+
+<template is="dom-if" if="[[showESimProfileRenameDialog_]]" restamp>
+  <esim-rename-dialog id="esimRenameDialog"
+      on-close="onCloseEsimProfileRenameDialog_"
+      network-state="[[eSimNetworkState_]]"
+      show-cellular-disconnect-warning="[[hasActiveCellularNetwork_]]">
+  </esim-rename-dialog>
+</template>
+
+<template is="dom-if" if="[[showESimRemoveProfileDialog_]]" restamp>
+  <esim-remove-profile-dialog id="esimRemoveProfileDialog"
+      on-close="onCloseEsimRemoveProfileDialog_"
+      on-show-error-toast="onShowErrorToast_"
+      network-state="[[eSimNetworkState_]]"
+      show-cellular-disconnect-warning="[[hasActiveCellularNetwork_]]">
+  </esim-remove-profile-dialog>
+</template>
+
+<template is="dom-if" if="[[showSimLockDialog_]]" restamp>
+  <sim-lock-dialogs
+      global-policy="[[globalPolicy_]]"
+      is-dialog-open="{{showSimLockDialog_}}"
+      device-state="[[getDeviceState_(subpageType_, deviceStates)]]">
+  </sim-lock-dialogs>
+</template>
+
+<template is="dom-if" if="[[showHotspotConfigDialog_]]" restamp>
+  <hotspot-config-dialog id="hotspotConfigDialog"
+      on-close="onCloseHotspotConfigDialog_"
+      hotspot-info="[[hotspotInfo]]">
+  </hotspot-config-dialog>
+</template>
+
+<cr-toast id="errorToast" duration="5000">
+  <span id="errorToastMessage">[[errorToastMessage_]]</span>
+</cr-toast>

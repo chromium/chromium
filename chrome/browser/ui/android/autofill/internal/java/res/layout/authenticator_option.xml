@@ -34,12 +34,14 @@ found in the LICENSE file.
         android:id="@+id/authenticator_option_title"
         android:layout_width="match_parent"
         android:gravity="center_vertical"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.TextMedium.Primary.Baseline"/>
       <TextView
         android:id="@+id/authenticator_option_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/authenticator_option_description_margin_top"
-        android:gravity="center_vertical"/>
+        android:gravity="center_vertical"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary.Baseline"/>
     </LinearLayout>
 </LinearLayout>

@@ -248,22 +248,13 @@ void CmdBufFuzz::RunCommandBuffer(fuzzing::CmdBufSession session) {
 
           case fuzzing::InProcessCommandBufferOp::kWaitForTokenInRange: {
             VLOG(3) << "kWaitForTokenInRange";
-            // TODO(bookholt): random start/end values is probably unwise
-            break;
-            command_buffer_->WaitForTokenInRange(
-                op.waitfortokeninrange().start(),
-                op.waitfortokeninrange().end());
+            // It'd be nice to fuzz this, but it's currently too slow.
             break;
           }
 
           case fuzzing::InProcessCommandBufferOp::kWaitForGetOffsetInRange: {
             VLOG(3) << "kWaitForGetOffsetInRange";
-            // TODO(bookholt): random count/start/end values is probably unwise
-            break;
-            command_buffer_->WaitForGetOffsetInRange(
-                op.waitforgetoffsetinrange().set_get_buffer_count(),
-                op.waitforgetoffsetinrange().start(),
-                op.waitforgetoffsetinrange().end());
+            // It'd be nice to fuzz this, but it's currently too slow.
             break;
           }
 

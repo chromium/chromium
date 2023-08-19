@@ -44,7 +44,8 @@ class ASH_EXPORT DarkModeFeaturePodController : public FeaturePodControllerBase,
   void UpdateTile(bool dark_mode_enabled);
 
   // Owned by the views hierarchy.
-  raw_ptr<FeaturePodButton, ExperimentalAsh> button_ = nullptr;
+  raw_ptr<FeaturePodButton, DanglingUntriaged | ExperimentalAsh> button_ =
+      nullptr;
   raw_ptr<FeatureTile, DanglingUntriaged | ExperimentalAsh> tile_ = nullptr;
 
   base::WeakPtrFactory<DarkModeFeaturePodController> weak_ptr_factory_{this};

@@ -29,7 +29,6 @@
 #endif
 
 namespace gfx {
-class Size;
 class Transform;
 }  // namespace gfx
 
@@ -49,28 +48,6 @@ using SessionEndedCallback = base::RepeatingCallback<void(ExitXrPresentReason)>;
 using VisibilityChangedCallback =
     base::RepeatingCallback<void(mojom::XRVisibilityState)>;
 
-// TODO(https://crbug.com/1441072): Refactor this class.
-struct SwapChainInfo {
-#if BUILDFLAG(IS_WIN)
-  explicit SwapChainInfo(ID3D11Texture2D*);
-#else
-  SwapChainInfo();
-#endif
-  ~SwapChainInfo();
-  SwapChainInfo(SwapChainInfo&&);
-  SwapChainInfo& operator=(SwapChainInfo&&);
-
-  void Clear();
-
-#if BUILDFLAG(IS_WIN)
-  // When shared images are being used, there is a corresponding MailboxHolder
-  // and D3D11Fence for each D3D11 texture in the vector.
-  raw_ptr<ID3D11Texture2D> d3d11_texture = nullptr;
-  Microsoft::WRL::ComPtr<ID3D11Fence> d3d11_fence;
-#endif
-  gpu::MailboxHolder mailbox_holder;
-};
-
 class OpenXrApiWrapper {
  public:
   OpenXrApiWrapper();
@@ -81,7 +58,9 @@ class OpenXrApiWrapper {
   ~OpenXrApiWrapper();
   bool IsInitialized() const;
 
-  static std::unique_ptr<OpenXrApiWrapper> Create(XrInstance instance);
+  static std::unique_ptr<OpenXrApiWrapper> Create(
+      XrInstance instance,
+      OpenXrGraphicsBinding* graphics_binding);
 
   static XrResult GetSystem(XrInstance instance, XrSystemId* system);
 
@@ -97,7 +76,6 @@ class OpenXrApiWrapper {
   // this object is destroyed.
   XrResult InitSession(
       const std::unordered_set<mojom::XRSessionFeature>& enabled_features,
-      OpenXrGraphicsBinding* graphics_binding,
       const OpenXrExtensionHelper& extension_helper,
       SessionStartedCallback on_session_started_callback,
       SessionEndedCallback on_session_ended_callback,
@@ -105,7 +83,7 @@ class OpenXrApiWrapper {
 
   XrSpace GetReferenceSpace(device::mojom::XRReferenceSpaceType type) const;
 
-  XrResult BeginFrame(SwapChainInfo** frame_info);
+  XrResult BeginFrame();
   XrResult EndFrame();
   bool HasPendingFrame() const;
   bool HasFrameState() const;
@@ -116,7 +94,6 @@ class OpenXrApiWrapper {
       bool hand_input_enabled);
 
   std::vector<mojom::XRViewPtr> GetDefaultViews() const;
-  gfx::Size GetSwapchainSize() const;
   XrTime GetPredictedDisplayTime() const;
   bool GetStageParameters(XrExtent2Df& stage_bounds,
                           gfx::Transform& local_from_stage);
@@ -138,14 +115,10 @@ class OpenXrApiWrapper {
   bool IsUsingSharedImages() const;
 
   static void DEVICE_VR_EXPORT SetTestHook(VRTestHook* hook);
-#if BUILDFLAG(IS_WIN)
-  void StoreFence(Microsoft::WRL::ComPtr<ID3D11Fence> d3d11_fence,
-                  int16_t frame_index);
-#endif
 
  private:
   void Reset();
-  bool Initialize(XrInstance instance);
+  bool Initialize(XrInstance instance, OpenXrGraphicsBinding* graphics_binding);
   void Uninitialize();
 
   XrResult InitializeSystem();
@@ -231,13 +204,11 @@ class OpenXrApiWrapper {
   XrSpace unbounded_space_;
   bool stage_parameters_enabled_;
   std::unordered_set<mojom::XRSessionFeature> enabled_features_;
-  raw_ptr<OpenXrGraphicsBinding> graphics_binding_;
+  raw_ptr<OpenXrGraphicsBinding> graphics_binding_ = nullptr;
 
   // The swapchain is initializd when a session begins and is re-created when
   // the state of a secondary view configuration changes.
   XrSwapchain color_swapchain_;
-  gfx::Size swapchain_size_;
-  std::vector<SwapChainInfo> color_swapchain_images_;
 
   // The rest of these objects store information about the current frame and are
   // updated each frame.

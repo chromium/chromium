@@ -129,9 +129,11 @@ std::set<std::string> RealtimeReportingJobConfiguration::GetFailedUploadIds(
     const std::string& response_body) const {
   std::set<std::string> failedIds;
   absl::optional<base::Value> response = base::JSONReader::Read(response_body);
-  base::Value response_value = response ? std::move(*response) : base::Value();
+  if (!response || !response->is_dict()) {
+    return failedIds;
+  }
   base::Value::List* failedUploads =
-      response_value.GetDict().FindList(kFailedUploadsKey);
+      response->GetDict().FindList(kFailedUploadsKey);
   if (failedUploads) {
     for (const auto& failedUpload : *failedUploads) {
       auto* id = failedUpload.GetDict().FindString(kEventIdKey);

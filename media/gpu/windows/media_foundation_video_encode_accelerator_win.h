@@ -8,8 +8,6 @@
 #include <mfapi.h>
 #include <mfidl.h>
 #include <stdint.h>
-#include <strmif.h>
-#include <wrl/client.h>
 
 #include <memory>
 
@@ -31,6 +29,7 @@
 #include "media/base/video_encoder.h"
 #include "media/base/win/dxgi_device_manager.h"
 #include "media/gpu/media_gpu_export.h"
+#include "media/gpu/windows/d3d11_com_defs.h"
 #include "media/video/h264_parser.h"
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
 #include "media/video/h265_nalu_parser.h"
@@ -63,11 +62,14 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
       const MediaFoundationVideoEncodeAccelerator&) = delete;
 
   // VideoEncodeAccelerator implementation.
+  using EncodeOptions = VideoEncoder::EncodeOptions;
   VideoEncodeAccelerator::SupportedProfiles GetSupportedProfiles() override;
   bool Initialize(const Config& config,
                   Client* client,
                   std::unique_ptr<MediaLog> media_log) override;
   void Encode(scoped_refptr<VideoFrame> frame, bool force_keyframe) override;
+  void Encode(scoped_refptr<VideoFrame> frame,
+              const EncodeOptions& options) override;
   void UseOutputBitstreamBuffer(BitstreamBuffer buffer) override;
   void RequestEncodingParametersChange(const Bitrate& bitrate,
                                        uint32_t framerate) override;
@@ -153,7 +155,7 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
 
   // Assign TemporalID by bitstream or external state machine(based on SVC
   // Spec).
-  bool AssignTemporalId(Microsoft::WRL::ComPtr<IMFMediaBuffer> output_buffer,
+  bool AssignTemporalId(ComMFMediaBuffer output_buffer,
                         size_t size,
                         int* temporal_id,
                         bool keyframe);
@@ -172,11 +174,17 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // process all inputs, produce all outputs and tell us when it's done.
   void DrainEncoder();
 
-  // Initialize video processing (for scaling)
+  // Initialize video processing (for scaling).
   HRESULT InitializeD3DVideoProcessing(ID3D11Texture2D* input_texture);
-
-  // Perform D3D11 scaling operation
+  // Scales `input_texture` to size `input_visible_size_`. On success, the
+  // result is stored in `scaled_d3d11_texture_`.
   HRESULT PerformD3DScaling(ID3D11Texture2D* input_texture);
+
+  // Initializes the video copying operation by making sure
+  // `copied_d3d11_texture_` exists and that its size matches `input_texture`.
+  HRESULT InitializeD3DCopying(ID3D11Texture2D* input_texture);
+  // Copies `input_texture` to `copied_d3d11_texture_`.
+  HRESULT PerformD3DCopy(ID3D11Texture2D* input_texture);
 
   // Used to post tasks from the IMFMediaEvent::Invoke() method.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
@@ -231,32 +239,33 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   VideoEncoderInfo encoder_info_;
   bool encoder_info_sent_ = false;
 
-  Microsoft::WRL::ComPtr<IMFActivate> activate_;
-  Microsoft::WRL::ComPtr<IMFTransform> encoder_;
-  Microsoft::WRL::ComPtr<ICodecAPI> codec_api_;
-  Microsoft::WRL::ComPtr<IMFMediaEventGenerator> event_generator_;
+  ComMFActivate activate_;
+  ComMFTransform encoder_;
+  ComCodecAPI codec_api_;
+  ComMFMediaEventGenerator event_generator_;
   base::AtomicRefCount async_callback_ref_{1};
 
   DWORD input_stream_id_ = 0u;
   DWORD output_stream_id_ = 0u;
 
-  Microsoft::WRL::ComPtr<IMFMediaType> imf_input_media_type_;
-  Microsoft::WRL::ComPtr<IMFMediaType> imf_output_media_type_;
+  ComMFMediaType imf_input_media_type_;
+  ComMFMediaType imf_output_media_type_;
 
-  Microsoft::WRL::ComPtr<IMFSample> input_sample_;
+  ComMFSample input_sample_;
   // True if `input_sample_` has been populated with data/metadata
   // of the next frame to be encoded.
   bool has_prepared_input_sample_ = false;
 
-  Microsoft::WRL::ComPtr<IMFSample> output_sample_;
-  Microsoft::WRL::ComPtr<ID3D11VideoProcessor> video_processor_;
-  Microsoft::WRL::ComPtr<ID3D11VideoProcessorEnumerator>
-      video_processor_enumerator_;
-  Microsoft::WRL::ComPtr<ID3D11VideoDevice> video_device_;
-  Microsoft::WRL::ComPtr<ID3D11VideoContext> video_context_;
+  // Variables used by video processing for scaling.
+  ComD3D11VideoProcessor video_processor_;
+  ComD3D11VideoProcessorEnumerator video_processor_enumerator_;
+  ComD3D11VideoDevice video_device_;
+  ComD3D11VideoContext video_context_;
   D3D11_VIDEO_PROCESSOR_CONTENT_DESC vp_desc_ = {};
-  Microsoft::WRL::ComPtr<ID3D11Texture2D> scaled_d3d11_texture_;
-  Microsoft::WRL::ComPtr<ID3D11VideoProcessorOutputView> vp_output_view_;
+  ComD3D11Texture2D scaled_d3d11_texture_;
+  ComD3D11VideoProcessorOutputView vp_output_view_;
+  // Destination texture used by the copy operation.
+  ComD3D11Texture2D copied_d3d11_texture_;
 
   // To expose client callbacks from VideoEncodeAccelerator.
   raw_ptr<Client> client_ = nullptr;
@@ -268,7 +277,7 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   bool dxgi_resource_mapping_required_ = false;
   // Staging texture for copying from GPU memory if HMFT does not operate in
   // D3D11 mode.
-  Microsoft::WRL::ComPtr<ID3D11Texture2D> staging_texture_;
+  ComD3D11Texture2D staging_texture_;
 
   // Preferred adapter for DXGIDeviceManager.
   const CHROME_LUID luid_;

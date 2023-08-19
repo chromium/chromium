@@ -183,7 +183,7 @@ class AutofillCapturedSitesInteractiveTest
       translate::test_utils::CloseCurrentBubble(browser());
       TryToCloseAllPrompts(web_contents);
 
-      autofill_manager->client()->HideAutofillPopup(
+      autofill_manager->client().HideAutofillPopup(
           autofill::PopupHidingReason::kViewDestroyed);
 
       testing::AssertionResult suggestions_shown = ShowAutofillSuggestion(
@@ -195,7 +195,9 @@ class AutofillCapturedSitesInteractiveTest
       }
 
       // Press the down key to highlight the first choice in the autofill
-      // suggestion drop down.
+      // suggestion drop down. Once the popup is shown, wait for 500 ms to
+      // exceed the freeze period of the popup during which it ignores "Enter"
+      // keystrokes.
       test_delegate()->SetExpectations({ObservedUiEvents::kPreviewFormData},
                                        kAutofillWaitForActionInterval);
       SendKeyToPopup(frame, ui::DomKey::ARROW_DOWN);
@@ -206,6 +208,7 @@ class AutofillCapturedSitesInteractiveTest
                      << preview_shown.message();
         continue;
       }
+      DoNothingAndWait(base::Milliseconds(500));
 
       absl::optional<std::u16string> cvc = profile_controller_->cvc();
       // If CVC is available in the Action Recorder receipts and this is a
@@ -218,7 +221,8 @@ class AutofillCapturedSitesInteractiveTest
       bool should_cvc_dialog_pop_up = is_credit_card_field && cvc;
 
       // Press the enter key to invoke autofill using the first suggestion.
-      test_delegate()->SetExpectations({ObservedUiEvents::kFormDataFilled},
+      test_delegate()->SetExpectations({ObservedUiEvents::kSuggestionsHidden,
+                                        ObservedUiEvents::kFormDataFilled},
                                        kAutofillWaitForFillInterval);
       TestCardUnmaskPromptWaiter test_card_unmask_prompt_waiter(
           web_contents,
@@ -244,7 +248,7 @@ class AutofillCapturedSitesInteractiveTest
       return true;
     }
 
-    autofill_manager->client()->HideAutofillPopup(
+    autofill_manager->client().HideAutofillPopup(
         autofill::PopupHidingReason::kViewDestroyed);
     ADD_FAILURE() << "Failed to autofill the form!";
     return false;
@@ -282,7 +286,6 @@ class AutofillCapturedSitesInteractiveTest
     recipe_replayer_ =
         std::make_unique<captured_sites_test_utils::TestRecipeReplayer>(
             browser(), this);
-    recipe_replayer()->Setup();
 
     SetServerUrlLoader(std::make_unique<test::ServerUrlLoader>(
         std::make_unique<test::ServerCacheReplayer>(
@@ -297,13 +300,13 @@ class AutofillCapturedSitesInteractiveTest
     if (metrics_scraper_) {
       metrics_scraper_->ScrapeMetrics();
     }
-    recipe_replayer()->Cleanup();
+    recipe_replayer_.reset();
     // Need to delete the URL loader and its underlying interceptor on the main
     // thread. Will result in a fatal crash otherwise. The pointer has its
     // memory cleaned up twice: first time in that single thread, a second time
     // when the fixture's destructor is called, which will have no effect since
     // the raw pointer will be nullptr.
-    server_url_loader_.reset(nullptr);
+    server_url_loader_.reset();
     AutofillUiTest::TearDownOnMainThread();
   }
 
@@ -358,7 +361,7 @@ class AutofillCapturedSitesInteractiveTest
     // First, automation should focus on the frame containing the autofill form.
     // Doing so ensures that Chrome scrolls the element into view if the
     // element is off the page.
-    test_delegate()->SetExpectations({ObservedUiEvents::kSuggestionShown},
+    test_delegate()->SetExpectations({ObservedUiEvents::kSuggestionsShown},
                                      kAutofillWaitForActionInterval);
     if (!captured_sites_test_utils::TestRecipeReplayer::PlaceFocusOnElement(
             target_element_xpath, iframe_path, frame)) {
@@ -378,7 +381,7 @@ class AutofillCapturedSitesInteractiveTest
              << FROM_HERE.ToString();
     }
 
-    test_delegate()->SetExpectations({ObservedUiEvents::kSuggestionShown},
+    test_delegate()->SetExpectations({ObservedUiEvents::kSuggestionsShown},
                                      kAutofillWaitForActionInterval);
     if (!captured_sites_test_utils::TestRecipeReplayer::
             SimulateLeftMouseClickAt(rect.CenterPoint(), frame))

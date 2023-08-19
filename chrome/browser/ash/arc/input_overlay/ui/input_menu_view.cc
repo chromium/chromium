@@ -44,7 +44,7 @@
 namespace arc::input_overlay {
 
 namespace {
-// If the parent's width smaller than |kParentWidthThreshold|, it uses smaller
+// If the parent's width smaller than `kParentWidthThreshold`, it uses smaller
 // specs.
 constexpr int kParentWidthThreshold = 376;
 // Whole Menu measurements.
@@ -89,7 +89,7 @@ constexpr char kGamePackageName[] = "entry.435412983";
 constexpr char kBoardName[] = "entry.1492517074";
 constexpr char kOsVersion[] = "entry.1961594320";
 
-// Pass |package_name| by value because the focus will be changed to the
+// Pass `package_name` by value because the focus will be changed to the
 // browser.
 GURL GetAssembleUrl(std::string package_name) {
   GURL url(kFeedbackUrl);
@@ -188,7 +188,7 @@ void InputMenuView::OnThemeChanged() {
 
 void InputMenuView::CloseMenu() {
   if (display_overlay_controller_) {
-    display_overlay_controller_->SetDisplayMode(DisplayMode::kView);
+    display_overlay_controller_->SetDisplayModeAlpha(DisplayMode::kView);
   }
 }
 
@@ -394,7 +394,7 @@ void InputMenuView::OnToggleGameControlPressed() {
   }
   const bool enabled = game_control_toggle_->GetIsOn();
   display_overlay_controller_->SetTouchInjectorEnable(enabled);
-  // Adjust |enabled_| and |visible_| properties to match |Game controls|.
+  // Adjust `enabled_` and `visible_` properties to match `Game controls`.
   show_mapping_toggle_->SetIsOn(enabled);
   display_overlay_controller_->SetInputMappingVisible(enabled);
   show_mapping_toggle_->SetEnabled(enabled);
@@ -423,7 +423,7 @@ void InputMenuView::OnEditButtonPressed() {
   // Change display mode, load edit UI per action and overall edit buttons; make
   // sure the following line is at the bottom because edit mode will kill this
   // view.
-  display_overlay_controller_->SetDisplayMode(DisplayMode::kEdit);
+  display_overlay_controller_->SetDisplayModeAlpha(DisplayMode::kEdit);
 }
 
 void InputMenuView::OnButtonSendFeedbackPressed() {

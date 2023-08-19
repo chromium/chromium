@@ -42,7 +42,7 @@ class BLINK_PLATFORM_EXPORT WebEncryptedMediaRequest {
   void Assign(const WebEncryptedMediaRequest&);
   void Reset();
 
-  WebPrivatePtr<EncryptedMediaRequest> private_;
+  WebPrivatePtrForGC<EncryptedMediaRequest> private_;
 };
 
 }  // namespace blink

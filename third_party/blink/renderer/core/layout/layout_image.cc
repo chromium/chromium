@@ -55,7 +55,7 @@
 namespace blink {
 
 LayoutImage::LayoutImage(Element* element)
-    : LayoutReplaced(element, LayoutSize()) {}
+    : LayoutReplaced(element, PhysicalSize()) {}
 
 LayoutImage* LayoutImage::CreateAnonymous(PseudoElement& pseudo) {
   LayoutImage* image = MakeGarbageCollected<LayoutImage>(nullptr);
@@ -156,7 +156,7 @@ void LayoutImage::ImageChanged(WrappedImagePtr new_image,
   InvalidatePaintAndMarkForLayoutIfNeeded(defer);
 }
 
-void LayoutImage::UpdateIntrinsicSizeIfNeeded(const LayoutSize& new_size) {
+void LayoutImage::UpdateIntrinsicSizeIfNeeded(const PhysicalSize& new_size) {
   NOT_DESTROYED();
   if (image_resource_->ErrorOccurred())
     return;
@@ -181,9 +181,9 @@ bool LayoutImage::NeedsLayoutOnIntrinsicSizeChange() const {
 void LayoutImage::InvalidatePaintAndMarkForLayoutIfNeeded(
     CanDeferInvalidation defer) {
   NOT_DESTROYED();
-  LayoutSize old_intrinsic_size = IntrinsicSize();
+  PhysicalSize old_intrinsic_size = IntrinsicSize();
 
-  LayoutSize new_intrinsic_size = RoundedLayoutSize(
+  PhysicalSize new_intrinsic_size = PhysicalSize::FromSizeFRound(
       ImageSizeOverriddenByIntrinsicSize(StyleRef().EffectiveZoom()));
   UpdateIntrinsicSizeIfNeeded(new_intrinsic_size);
 
@@ -341,9 +341,6 @@ bool LayoutImage::OverrideIntrinsicSizingInfo(
   gfx::SizeF overridden_intrinsic_size(kDefaultWidth, kDefaultHeight);
   intrinsic_sizing_info.size = overridden_intrinsic_size;
   intrinsic_sizing_info.aspect_ratio = intrinsic_sizing_info.size;
-  if (!IsHorizontalWritingMode())
-    intrinsic_sizing_info.Transpose();
-
   return true;
 }
 
@@ -381,20 +378,6 @@ void LayoutImage::ComputeIntrinsicSizingInfo(
       // doesn't know about them.
       if (StyleRef().GetObjectFit() != EObjectFit::kScaleDown)
         intrinsic_sizing_info.size.Scale(ImageDevicePixelRatio());
-
-      // Handle an overridden aspect ratio
-      const StyleAspectRatio& aspect_ratio = StyleRef().AspectRatio();
-      if (aspect_ratio.GetType() == EAspectRatioType::kRatio ||
-          (aspect_ratio.GetType() == EAspectRatioType::kAutoAndRatio &&
-           intrinsic_sizing_info.aspect_ratio.IsEmpty())) {
-        intrinsic_sizing_info.aspect_ratio.set_width(
-            aspect_ratio.GetRatio().width());
-        intrinsic_sizing_info.aspect_ratio.set_height(
-            aspect_ratio.GetRatio().height());
-      }
-
-      if (!IsHorizontalWritingMode())
-        intrinsic_sizing_info.Transpose();
       return;
     }
 

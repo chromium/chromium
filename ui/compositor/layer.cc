@@ -12,6 +12,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
@@ -51,6 +52,10 @@
 
 namespace ui {
 namespace {
+
+// TODO(https://crbug.com/1242749): temporary while tracking down crash.
+// Minimum interval between no mutation debug dumps.
+constexpr base::TimeDelta kMinNoMutationDumpInterval = base::Days(1);
 
 const Layer* GetRoot(const Layer* layer) {
   // Parent walk cannot be done on a layer that is being used as a mask. Get the
@@ -391,6 +396,11 @@ void Layer::RemoveObserver(LayerObserver* observer) {
 }
 
 void Layer::Add(Layer* child) {
+  // TODO(https://crbug.com/1242749): temporary while tracking down crash.
+  if (no_mutation_) {
+    base::debug::DumpWithoutCrashing(FROM_HERE, kMinNoMutationDumpInterval);
+  }
+
   DCHECK(!child->compositor_);
   if (child->parent_)
     child->parent_->Remove(child);
@@ -457,7 +467,7 @@ bool Layer::Contains(const Layer* other) const {
   return false;
 }
 
-void Layer::SetAnimator(LayerAnimator* animator) {
+void Layer::SetAnimator(scoped_refptr<LayerAnimator> animator) {
   Compositor* compositor = GetCompositor();
 
   if (animator_) {
@@ -467,7 +477,7 @@ void Layer::SetAnimator(LayerAnimator* animator) {
     animator_->SetDelegate(nullptr);
   }
 
-  animator_ = animator;
+  animator_ = std::move(animator);
 
   if (animator_) {
     animator_->SetDelegate(this);
@@ -666,6 +676,9 @@ void Layer::SetMaskLayer(Layer* layer_mask) {
     // TODO(https://crbug.com/1242749): temporary while tracking down crash.
     // A `layer_mask` of this would lead to recursion.
     CHECK(layer_mask != this);
+    if (no_mutation_) {
+      base::debug::DumpWithoutCrashing(FROM_HERE, kMinNoMutationDumpInterval);
+    }
     layer_mask->layer_mask_back_link_ = this;
     layer_mask->OnDeviceScaleFactorChanged(device_scale_factor_);
   }
@@ -726,8 +739,8 @@ void Layer::SetLayerFilters() {
         layer_brightness_));
   }
   if (alpha_shape_) {
-    filters.Append(cc::FilterOperation::CreateAlphaThresholdFilter(
-            *alpha_shape_, 0.f, 0.f));
+    filters.Append(
+        cc::FilterOperation::CreateAlphaThresholdFilter(*alpha_shape_));
   }
 
   cc_layer_->SetFilters(filters);
@@ -735,8 +748,6 @@ void Layer::SetLayerFilters() {
 
 void Layer::SetLayerBackgroundFilters() {
   cc::FilterOperations filters;
-  if (zoom_ != 1)
-    filters.Append(cc::FilterOperation::CreateZoomFilter(zoom_, zoom_inset_));
 
   if (background_blur_sigma_) {
     filters.Append(cc::FilterOperation::CreateBlurFilter(background_blur_sigma_,
@@ -746,6 +757,15 @@ void Layer::SetLayerBackgroundFilters() {
   if (!background_offset_.IsOrigin()) {
     filters.Append(cc::FilterOperation::CreateOffsetFilter(background_offset_));
   }
+
+  // The background zoom is applied after the background offset to support
+  // positioning of the background *before* magnifying it. Offsetting after
+  // magnifying is almost equivalent except it can lead to surprising clipping
+  // at the layer bounds.
+  if (zoom_ != 1) {
+    filters.Append(cc::FilterOperation::CreateZoomFilter(zoom_, zoom_inset_));
+  }
+
   cc_layer_->SetBackdropFilters(filters);
 }
 
@@ -1619,8 +1639,12 @@ void Layer::SetRoundedCornersFromAnimation(
     PropertyChangeReason reason) {
   cc_layer_->SetRoundedCorner(rounded_corners);
 
-  for (const auto& mirror : mirrors_)
-    mirror->dest()->SetRoundedCornersFromAnimation(rounded_corners, reason);
+  for (const auto& mirror : mirrors_) {
+    Layer* mirror_dest = mirror->dest();
+    if (mirror_dest->sync_rounded_corners_with_source_) {
+      mirror_dest->SetRoundedCornersFromAnimation(rounded_corners, reason);
+    }
+  }
 }
 
 void Layer::SetGradientMaskFromAnimation(

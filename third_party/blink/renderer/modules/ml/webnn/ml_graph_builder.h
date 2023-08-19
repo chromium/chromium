@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_BUILDER_H_
 
 #include "base/types/expected.h"
+#include "components/ml/webnn/graph_validation_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_auto_pad.h"
@@ -32,6 +33,7 @@ class MLGraph;
 class MLLeakyReluOptions;
 class MLPadOptions;
 class MLPool2dOptions;
+class MLReduceOptions;
 class MLResample2dOptions;
 class MLSplitOptions;
 class MLTransposeOptions;
@@ -58,29 +60,12 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
 
   MLContext* GetContext() const;
 
-  struct PaddingSizes {
-    uint32_t begin;
-    uint32_t end;
-  };
-
-  // Calculate the effective padding for conv2d based on WebNN auto padding
-  // rules.
-  //
-  // TODO(crbug.com/1273291): Add the link to WebNN spec's algorithm once it is
-  // defined, tracked by: https://github.com/webmachinelearning/webnn/issues/326
-  static absl::optional<PaddingSizes> CalculateConv2dPadding(
-      V8MLAutoPad::Enum auto_pad,
-      const uint32_t input_size,
-      const uint32_t filter_size,
-      const uint32_t stride,
-      const uint32_t dilation);
-
   // Calculate the effective padding for convTranspose2d based on WebNN auto
   // padding rules.
   //
   // TODO(crbug.com/1273291): Add the link to WebNN spec's algorithm once it is
   // defined, tracked by: https://github.com/webmachinelearning/webnn/issues/326
-  static absl::optional<PaddingSizes> CalculateConvTransposed2dPadding(
+  static absl::optional<webnn::PaddingSizes> CalculateConvTransposed2dPadding(
       V8MLAutoPad::Enum auto_pad,
       const uint32_t input_size,
       const uint32_t filter_size,
@@ -202,6 +187,14 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                    const MLOperand* slope,
                    ExceptionState& exception_state);
 
+  // Reduction operations
+  MLOperand* reduceMean(const MLOperand* input,
+                        const MLReduceOptions* options,
+                        ExceptionState& exception_state);
+  MLOperand* reduceSum(const MLOperand* input,
+                       const MLReduceOptions* options,
+                       ExceptionState& exception_state);
+
   MLOperand* relu(const MLOperand* input, ExceptionState& exception_state);
   MLActivation* relu(ExceptionState& exception_state);
 
@@ -231,6 +224,9 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                                             const Vector<uint32_t>& splits,
                                             const MLSplitOptions* options,
                                             ExceptionState& exception_state);
+
+  MLOperand* tanh(const MLOperand* input, ExceptionState& exception_state);
+  MLActivation* tanh(ExceptionState& exception_state);
 
   MLOperand* transpose(const MLOperand* input,
                        const MLTransposeOptions* options,

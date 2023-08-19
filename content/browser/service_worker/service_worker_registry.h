@@ -52,6 +52,11 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kServiceWorkerRegistrationCache);
 CONTENT_EXPORT extern const base::FeatureParam<int>
     kServiceWorkerRegistrationCacheSize;
 
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kServiceWorkerScopeCacheLimit);
+
+CONTENT_EXPORT extern const base::FeatureParam<int>
+    kServiceWorkerScopeCacheLimitSize;
+
 // Manages in-memory representation of service worker registrations
 // (i.e., ServiceWorkerRegistration) including installing and uninstalling
 // registrations. Owned by ServiceWorkerContextCore and has the same lifetime of
@@ -383,6 +388,11 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
       StatusCallback callback,
       storage::mojom::ServiceWorkerDatabaseStatus database_status,
       uint64_t deleted_resources_size);
+  void NotifyRegistrationStored(int64_t stored_registration_id,
+                                uint64_t stored_resources_total_size_bytes,
+                                const GURL& stored_scope,
+                                const blink::StorageKey& key,
+                                StatusCallback callback);
   void DidDeleteRegistration(
       int64_t registration_id,
       const GURL& stored_scope,
@@ -391,6 +401,12 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
       storage::mojom::ServiceWorkerDatabaseStatus database_status,
       uint64_t deleted_resources_size,
       storage::mojom::ServiceWorkerStorageStorageKeyState storage_key_state);
+  void NotifyRegistrationDeletedForStorageKey(
+      int64_t registration_id,
+      const GURL& stored_scope,
+      const blink::StorageKey& key,
+      storage::mojom::ServiceWorkerStorageStorageKeyState storage_key_state,
+      StatusCallback callback);
   void DidUpdateRegistration(
       StatusCallback callback,
       storage::mojom::ServiceWorkerDatabaseStatus status);
@@ -532,7 +548,7 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
 
   // ServiceWorker registration scope cache to skip calling
   // FindRegistrationForClientUrl mojo function (https://crbug.com/1411197).
-  std::map<blink::StorageKey, std::set<GURL>> registration_scope_cache_;
+  base::LRUCache<blink::StorageKey, std::set<GURL>> registration_scope_cache_;
 
   // Live registration's `registration_id` cache to skip calling
   // FindRegistrationForClientUrl mojo function (https://crbug.com/1446216).

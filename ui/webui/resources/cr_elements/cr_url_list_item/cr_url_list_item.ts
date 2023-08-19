@@ -108,7 +108,7 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
         value: false,
       },
 
-      timestamp: {
+      descriptionMeta: {
         type: String,
         value: '',
       },
@@ -129,7 +129,7 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
   imageUrls: string[];
   private firstImageLoaded_: boolean;
   forceHover: boolean;
-  timestamp: string;
+  descriptionMeta: string;
 
   override ready() {
     super.ready();
@@ -168,7 +168,7 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
   }
 
   private computeHasDescriptions_(): boolean {
-    return !!this.description || this.hasBadges_ || !!this.timestamp;
+    return !!this.description || this.hasBadges_ || !!this.descriptionMeta;
   }
 
   private computeIsFolder_(): boolean {

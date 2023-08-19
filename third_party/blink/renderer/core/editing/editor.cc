@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/editing/commands/indent_outdent_command.h"
 #include "third_party/blink/renderer/core/editing/commands/insert_list_command.h"
 #include "third_party/blink/renderer/core/editing/commands/replace_selection_command.h"
+#include "third_party/blink/renderer/core/editing/commands/selection_for_undo_step.h"
 #include "third_party/blink/renderer/core/editing/commands/simplify_markup_command.h"
 #include "third_party/blink/renderer/core/editing/commands/typing_command.h"
 #include "third_party/blink/renderer/core/editing/commands/undo_stack.h"
@@ -426,6 +427,20 @@ void Editor::RespondToChangedContents(const Position& position) {
   frame_->Client()->DidChangeContents();
 }
 
+void Editor::NotifyAccessibilityOfDeletionOrInsertionInTextField(
+    const SelectionForUndoStep& changed_selection,
+    bool is_deletion) {
+  if (AXObjectCache* cache =
+          GetFrame().GetDocument()->ExistingAXObjectCache()) {
+    if (!changed_selection.Start().IsValidFor(*GetFrame().GetDocument()) ||
+        !changed_selection.End().IsValidFor(*GetFrame().GetDocument())) {
+      return;
+    }
+    cache->HandleDeletionOrInsertionInTextField(changed_selection.AsSelection(),
+                                                is_deletion);
+  }
+}
+
 void Editor::RegisterCommandGroup(CompositeEditCommand* command_group_wrapper) {
   DCHECK(command_group_wrapper->IsCommandGroupWrapper());
   last_edit_command_ = command_group_wrapper;
@@ -622,6 +637,12 @@ void Editor::CopyImage(const HitTestResult& result) {
   WriteImageNodeToClipboard(*frame_->GetSystemClipboard(),
                             *result.InnerNodeOrImageMapImage(),
                             result.AltDisplayString());
+}
+
+void Editor::CopyImage(const HitTestResult& result,
+                       const scoped_refptr<Image>& image) {
+  WriteImageToClipboard(*frame_->GetSystemClipboard(), image, KURL(),
+                        result.AltDisplayString());
 }
 
 bool Editor::CanUndo() {

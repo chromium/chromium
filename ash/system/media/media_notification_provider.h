@@ -9,13 +9,18 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "base/memory/weak_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace global_media_controls {
 class MediaItemManager;
+class MediaItemUIDeviceSelector;
+class MediaItemUIFooter;
+enum class GlobalMediaControlsEntryPoint;
 }  // namespace global_media_controls
 
 namespace media_message_center {
+class MediaNotificationItem;
 struct NotificationTheme;
 }  // namespace media_message_center
 
@@ -48,14 +53,16 @@ class ASH_EXPORT MediaNotificationProvider {
   // True if there are active frozen media session notifications.
   virtual bool HasFrozenNotifications() = 0;
 
-  // Returns a MediaNotificationListView populated with the correct
-  // MediaNotificationContainerImpls. Used to populate the dialog on the Ash
-  // shelf. If `item_id` is non-empty, then the list consists only of the item
-  // specified by the ID.
+  // Returns a MediaNotificationListView that will show a list of
+  // MediaItemUIView for all the active media items. If `item_id` is not empty,
+  // the list will only show the item for this ID. If `show_devices_for_item_id`
+  // is not empty, when the list shows the item for this ID, it will expand the
+  // casting device list too.
   virtual std::unique_ptr<views::View> GetMediaNotificationListView(
       int separator_thickness,
       bool should_clip_height,
-      const std::string& item_id = "") = 0;
+      const std::string& item_id = "",
+      const std::string& show_devices_for_item_id = "") = 0;
 
   // Used for ash to notify the bubble is closing.
   virtual void OnBubbleClosing() = 0;
@@ -69,6 +76,32 @@ class ASH_EXPORT MediaNotificationProvider {
   // Performs initialization that must be done after the user session is
   // initialized.
   virtual void OnPrimaryUserSessionStarted() {}
+
+  // Use MediaNotificationProvider as a bridge to add/remove a given
+  // MediaItemManager to/from CastMediaNotificationProducerKeyedService, since
+  // the service lives on chrome/browser/ui/ash.
+  virtual void AddMediaItemManagerToCastService(
+      global_media_controls::MediaItemManager* media_item_manager) {}
+  virtual void RemoveMediaItemManagerFromCastService(
+      global_media_controls::MediaItemManager* media_item_manager) {}
+
+  // Use MediaNotificationProvider as a bridge to build a device selector view
+  // for the given media notification item with id. `show_devices` indicates
+  // whether the view should show the devices by default.
+  virtual std::unique_ptr<global_media_controls::MediaItemUIDeviceSelector>
+  BuildDeviceSelectorView(
+      const std::string& id,
+      base::WeakPtr<media_message_center::MediaNotificationItem> item,
+      global_media_controls::GlobalMediaControlsEntryPoint entry_point,
+      bool show_devices = false) = 0;
+
+  // Use MediaNotificationProvider as a bridge to build a footer view for the
+  // given media notification item.
+  virtual std::unique_ptr<global_media_controls::MediaItemUIFooter>
+  BuildFooterView(
+      const std::string& id,
+      base::WeakPtr<media_message_center::MediaNotificationItem> item,
+      global_media_controls::GlobalMediaControlsEntryPoint entry_point) = 0;
 };
 
 }  // namespace ash

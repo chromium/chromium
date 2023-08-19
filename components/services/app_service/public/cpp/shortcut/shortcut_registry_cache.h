@@ -11,8 +11,6 @@
 
 #include "base/component_export.h"
 #include "base/containers/contains.h"
-#include "base/memory/raw_ptr.h"
-#include "base/memory/stack_allocated.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
@@ -24,25 +22,15 @@ namespace apps {
 // A cache that manages and keeps track of all shortcuts on the system.
 class COMPONENT_EXPORT(SHORTCUT) ShortcutRegistryCache {
  public:
-  // A view class to reduce the risk of lifetime issues by preventing preventing
-  // long-term storage on the heap.
-  class ShortcutView {
-   public:
-    explicit ShortcutView(const Shortcut* shortcut) : shortcut_(shortcut) {}
-    const Shortcut* operator->() const { return shortcut_.get(); }
-    explicit operator bool() const { return shortcut_; }
-
-   private:
-    const raw_ptr<const Shortcut> shortcut_;
-    STACK_ALLOCATED();
-  };
-
   class COMPONENT_EXPORT(SHORTCUT) Observer : public base::CheckedObserver {
    public:
     // Called when a shortcut been updated (including added). `update` contains
     // the shortcut updating information to let the clients know which shortcut
     // has been updated and what changes have been made.
     virtual void OnShortcutUpdated(const ShortcutUpdate& update) {}
+
+    // Called when a shortcut represented by `id` been removed from the system.
+    virtual void OnShortcutRemoved(const ShortcutId& id) {}
 
     // Called when the ShortcutRegistryCache object (the thing that this
     // observer observes) will be destroyed. In response, the observer, |this|,
@@ -66,7 +54,8 @@ class COMPONENT_EXPORT(SHORTCUT) ShortcutRegistryCache {
   // shortcut if it doesn't exists.
   void UpdateShortcut(ShortcutPtr delta);
 
-  // TODO(crbug.com/1412708): Add remove flow.
+  // Removes the shortcut represented by `id` from the cache.
+  void RemoveShortcut(const ShortcutId& id);
 
   // Get the shortcut by the id, return nullptr if shortcut id doesn't exist.
   // Be careful about the lifetime when using this method, the ShortcutView is
@@ -75,8 +64,11 @@ class COMPONENT_EXPORT(SHORTCUT) ShortcutRegistryCache {
   ShortcutView GetShortcut(const ShortcutId& shortcut_id);
   bool HasShortcut(const ShortcutId& shortcut_id);
 
-  // Return a copy of all shortcuts.
-  std::vector<ShortcutPtr> GetAllShortcuts();
+  // Return a view of all shortcuts.
+  // Be careful about the lifetime when using this method, the ShortcutView is
+  // only valid before the shortcut is removed from the cache. Please do not
+  // store this data and always query a fresh one when using it.
+  std::vector<ShortcutView> GetAllShortcuts();
 
  private:
   // Maps from shortcut_id to the latest state: the "sum" of all previous
@@ -92,7 +84,6 @@ class COMPONENT_EXPORT(SHORTCUT) ShortcutRegistryCache {
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
-using ShortcutView = ShortcutRegistryCache::ShortcutView;
 
 }  // namespace apps
 

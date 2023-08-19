@@ -27,10 +27,17 @@ DataSource<T>::DataSource(T* data_source,
   DCHECK(delegate_);
 
   Initialize();
+  VLOG(1) << "DataSoure created:" << this;
+}
+
+template <typename T>
+DataSource<T>::~DataSource() {
+  VLOG(1) << "DataSoure deleted:" << this;
 }
 
 template <typename T>
 void DataSource<T>::HandleFinishEvent(bool completed) {
+  VLOG(1) << "OnDataSourceFinish in WaylandDataSource";
   delegate_->OnDataSourceFinish(completed);
 }
 

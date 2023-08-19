@@ -24,8 +24,9 @@
 // There are 3 events that can trigger a promo:
 //
 // (1) reaching the InitStageFinal init stage,
-// (2) the scene becomes active in the foreground, and
-// (3) the UI blocker is removed.
+// (2) the scene becomes active in the foreground,
+// (3) the UI blocker is removed, and
+// (4) forced externally
 //
 // In a multi-window context, only one scene will present the promo: the most
 // recently foregrounded scene. The first scene to receive the event that
@@ -34,6 +35,10 @@
 @interface PromosManagerSceneAgent : ObservingSceneAgent
 
 - (instancetype)initWithCommandDispatcher:(CommandDispatcher*)dispatcher;
+
+// Forces promo manager to considers displaying promos without any trigger from
+// scene agent.
+- (void)maybeForceDisplayPromo;
 
 // Command Dispatcher.
 @property(nonatomic, weak) CommandDispatcher* dispatcher;

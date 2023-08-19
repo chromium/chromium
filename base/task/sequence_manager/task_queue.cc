@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/sequence_manager/associated_thread_id.h"
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
@@ -270,6 +271,19 @@ void TaskQueue::SetTaskExecutionTraceLogger(TaskExecutionTraceLogger logger) {
   DCHECK(impl_);
   impl_->SetTaskExecutionTraceLogger(std::move(logger));
 }
+
+TaskQueue::Handle::Handle(std::unique_ptr<TaskQueue> task_queue)
+    : task_queue_(std::move(task_queue)) {}
+
+TaskQueue::Handle::Handle() = default;
+
+// TODO(crbug.com/1143007): Once TaskQueueImpl inherits from task queue, pass
+// `task_queue` to sequence manager.
+TaskQueue::Handle::~Handle() = default;
+
+TaskQueue::Handle::Handle(TaskQueue::Handle&& other) = default;
+
+TaskQueue::Handle& TaskQueue::Handle::operator=(TaskQueue::Handle&&) = default;
 
 }  // namespace sequence_manager
 }  // namespace base

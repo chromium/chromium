@@ -6,16 +6,11 @@
 
 #import <objc/runtime.h>
 
-#import "base/i18n/rtl.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "ui/base/l10n/l10n_util.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -133,26 +128,6 @@ TEST_F(UIKeyCommandChromeTest, Factories) {
   Verify(UIKeyCommand.cr_closeAll, @"⇧⌘W", @"keyCommand_closeAll",
          IDS_IOS_KEYBOARD_CLOSE_ALL);
   Verify(UIKeyCommand.cr_undo, @"⌘Z", @"keyCommand_undo");
-
-  // Prior to iOS 15, RTL needs to be handled manually. Check it for key
-  // commands that need to adapt.
-  if (@available(iOS 15.0, *)) {
-    // Nothing to do on iOS 15+.
-  } else {
-    base::i18n::SetRTLForTesting(true);
-    Verify(UIKeyCommand.cr_showNextTab_2, @"⌘{", @"keyCommand_showNextTab");
-    Verify(UIKeyCommand.cr_showPreviousTab_2, @"⌘}",
-           @"keyCommand_showPreviousTab");
-    Verify(UIKeyCommand.cr_showNextTab_3, @"⌥⌘←", @"keyCommand_showNextTab");
-    Verify(UIKeyCommand.cr_showPreviousTab_3, @"⌥⌘→",
-           @"keyCommand_showPreviousTab");
-    Verify(UIKeyCommand.cr_back, @"⌘]", @"keyCommand_back",
-           IDS_IOS_KEYBOARD_HISTORY_BACK);
-    Verify(UIKeyCommand.cr_forward, @"⌘[", @"keyCommand_forward",
-           IDS_IOS_KEYBOARD_HISTORY_FORWARD);
-    Verify(UIKeyCommand.cr_back_2, @"⌘→", @"keyCommand_back");
-    Verify(UIKeyCommand.cr_forward_2, @"⌘←", @"keyCommand_forward");
-  }
 }
 
 // Checks that modifiers in the symbolic description are correct (correct symbol

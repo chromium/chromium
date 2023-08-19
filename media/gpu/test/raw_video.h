@@ -35,7 +35,8 @@ class RawVideo final {
   // FrameData serves the access of the frame data.
   struct FrameData {
     FrameData(const std::vector<const uint8_t*>& plane_addrs,
-              const std::vector<size_t>& strides);
+              const std::vector<size_t>& strides,
+              std::vector<uint8_t> buffer);
     FrameData(FrameData&& frame_data);
     ~FrameData();
 
@@ -45,6 +46,9 @@ class RawVideo final {
 
     const std::vector<const uint8_t*> plane_addrs;
     const std::vector<size_t> strides;
+
+   private:
+    std::vector<uint8_t> buffer;
   };
 
   ~RawVideo();
@@ -95,7 +99,11 @@ class RawVideo final {
     absl::optional<VideoFrameLayout> frame_layout;
     gfx::Rect visible_rect;
   };
+  class VP9Decoder;
 
+  RawVideo(std::unique_ptr<VP9Decoder> vp9_decoder,
+           const Metadata& metadata,
+           size_t video_frame_size);
   RawVideo(std::unique_ptr<base::MemoryMappedFile> memory_mapped_file,
            const Metadata& metadata,
            size_t video_frame_size);
@@ -105,6 +113,7 @@ class RawVideo final {
                            Metadata& metadata,
                            bool& compressed_data);
 
+  const std::unique_ptr<VP9Decoder> vp9_decoder_;
   const std::unique_ptr<base::MemoryMappedFile> memory_mapped_file_;
   const Metadata metadata_;
   const size_t video_frame_size_;

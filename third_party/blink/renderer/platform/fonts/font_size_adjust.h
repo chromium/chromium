@@ -19,19 +19,25 @@ class PLATFORM_EXPORT FontSizeAdjust {
 
   FontSizeAdjust() = default;
   explicit FontSizeAdjust(float value) : value_(value) {}
+  explicit FontSizeAdjust(float value, bool is_from_font)
+      : value_(value), is_from_font_(is_from_font) {}
   explicit FontSizeAdjust(float value, Metric metric)
       : value_(value), metric_(metric) {}
+  explicit FontSizeAdjust(float value, Metric metric, bool is_from_font)
+      : value_(value), metric_(metric), is_from_font_(is_from_font) {}
 
   static constexpr float kFontSizeAdjustNone = -1;
 
   explicit operator bool() const { return value_ != kFontSizeAdjustNone; }
   bool operator==(const FontSizeAdjust& other) const {
-    return value_ == other.Value() && metric_ == other.GetMetric();
+    return value_ == other.Value() && metric_ == other.GetMetric() &&
+           is_from_font_ == other.IsFromFont();
   }
   bool operator!=(const FontSizeAdjust& other) const {
     return !operator==(other);
   }
 
+  bool IsFromFont() const { return is_from_font_; }
   float Value() const { return value_; }
   Metric GetMetric() const { return metric_; }
 
@@ -43,6 +49,7 @@ class PLATFORM_EXPORT FontSizeAdjust {
 
   float value_{kFontSizeAdjustNone};
   Metric metric_{Metric::kExHeight};
+  bool is_from_font_{false};
 };
 
 }  // namespace blink

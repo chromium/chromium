@@ -11,7 +11,6 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.TextView;
 
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -129,7 +128,6 @@ public class NativeViewListRenderer extends RecyclerView.Adapter<NativeViewListR
         return mLayoutHelper;
     }
 
-    @VisibleForTesting
     RecyclerView getListViewForTest() {
         return mView;
     }

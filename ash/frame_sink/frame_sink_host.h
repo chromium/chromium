@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/frame_sink/ui_resource_manager.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -116,6 +117,10 @@ class ASH_EXPORT FrameSinkHost : public aura::WindowObserver {
   void InitInternal(
       aura::Window* host_window,
       std::unique_ptr<cc::LayerTreeFrameSink> layer_tree_frame_sink);
+
+  // Observation to track the lifetime of `host_window_`.
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      host_window_observation_{this};
 
   // The window on which LayerTreeFrameSink is created on.
   raw_ptr<aura::Window> host_window_ = nullptr;

@@ -8,5 +8,4 @@ source_set("fuzzing_engine_main_ios") {
     "fuzzer_support.h",
     "fuzzer_support.mm",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

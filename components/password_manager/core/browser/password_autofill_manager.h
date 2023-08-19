@@ -15,6 +15,7 @@
 #include "base/types/strong_alias.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
+#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
@@ -54,19 +55,25 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
   void OnPopupShown() override;
   void OnPopupHidden() override;
   void OnPopupSuppressed() override;
+
+  // The password manager doesn't distinguish between trigger sources and its
+  // value is `kPasswordManager` for all password suggestions.
   void DidSelectSuggestion(
-      const std::u16string& value,
-      autofill::Suggestion::FrontendId frontend_id,
-      const autofill::Suggestion::BackendId& backend_id) override;
-  void DidAcceptSuggestion(const autofill::Suggestion& suggestion,
-                           int position) override;
+      const autofill::Suggestion& suggestion,
+      autofill::AutofillSuggestionTriggerSource trigger_source =
+          autofill::AutofillSuggestionTriggerSource::kPasswordManager) override;
+  void DidAcceptSuggestion(
+      const autofill::Suggestion& suggestion,
+      int position,
+      autofill::AutofillSuggestionTriggerSource trigger_source =
+          autofill::AutofillSuggestionTriggerSource::kPasswordManager) override;
   bool GetDeletionConfirmationText(const std::u16string& value,
-                                   autofill::Suggestion::FrontendId frontend_id,
+                                   autofill::PopupItemId popup_item_id,
                                    autofill::Suggestion::BackendId backend_id,
                                    std::u16string* title,
                                    std::u16string* body) override;
   bool RemoveSuggestion(const std::u16string& value,
-                        autofill::Suggestion::FrontendId frontend_id,
+                        autofill::PopupItemId popup_item_id,
                         autofill::Suggestion::BackendId backend_id) override;
   void ClearPreviewedForm() override;
   autofill::PopupType GetPopupType() const override;
@@ -84,7 +91,8 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
   // Handles a request from the renderer to show a popup with the suggestions
   // from the password manager. |options| should be a bitwise mask of
   // autofill::ShowPasswordSuggestionsOptions values.
-  void OnShowPasswordSuggestions(base::i18n::TextDirection text_direction,
+  void OnShowPasswordSuggestions(autofill::FieldRendererId element_id,
+                                 base::i18n::TextDirection text_direction,
                                  const std::u16string& typed_username,
                                  int options,
                                  const gfx::RectF& bounds);
@@ -118,10 +126,6 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
   // A public version of PreviewSuggestion(), only for use in tests.
   bool PreviewSuggestionForTest(const std::u16string& username);
 
-  void set_autofill_client_for_test(autofill::AutofillClient* autofill_client) {
-    autofill_client_ = autofill_client;
-  }
-
  private:
   using ForPasswordField = base::StrongAlias<class ForPasswordFieldTag, bool>;
   using OffersGeneration = base::StrongAlias<class OffersGenerationTag, bool>;
@@ -153,19 +157,19 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
   void UpdatePopup(const std::vector<autofill::Suggestion>& suggestions);
 
   // Attempts to find and fill the suggestions with the user name |username| and
-  // the |item_id| indicating the store (account-stored or local). Returns true
-  // if it was successful.
+  // the `popup_item_id` indicating the store (account-stored or local). Returns
+  // true if it was successful.
   bool FillSuggestion(const std::u16string& username,
-                      autofill::Suggestion::FrontendId item_id);
+                      autofill::PopupItemId popup_item_id);
 
   // Attempts to find and preview the suggestions with the user name |username|
-  // and the |item_id| indicating the store (account-stored or local). Returns
-  // true if it was successful.
+  // and the `popup_item_id` indicating the store (account-stored or local).
+  // Returns true if it was successful.
   bool PreviewSuggestion(const std::u16string& username,
-                         autofill::Suggestion::FrontendId item_id);
+                         autofill::PopupItemId popup_item_id);
 
   // If one of the login mappings in |fill_data| matches |current_username| and
-  // |item_id| (indicating whether a credential is stored in account or
+  // `popup_item_id` (indicating whether a credential is stored in account or
   // locally), return true and assign the password and the original signon
   // realm to |password_and_meta_data|. Note that if the credential comes from
   // the same realm as the one we're filling to, the |realm| field will be left
@@ -173,7 +177,7 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
   // Otherwise, returns false and leaves |password_and_meta_data| untouched.
   bool GetPasswordAndMetadataForUsername(
       const std::u16string& current_username,
-      autofill::Suggestion::FrontendId item_id,
+      autofill::PopupItemId popup_item_id,
       const autofill::PasswordFormFillData& fill_data,
       autofill::PasswordAndMetadata* password_and_meta_data);
 
@@ -199,9 +203,9 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
       PasswordManagerClient::ReauthSucceeded reauth_succeeded);
 
   // Called when the biometric reauth that guards password filling completes.
-  // |frontend_id| identifies the suggestion that was selected for filling.
+  // `popup_item_id` identifies the suggestion that was selected for filling.
   void OnBiometricReauthCompleted(const std::u16string& username_value,
-                                  autofill::Suggestion::FrontendId frontend_id,
+                                  autofill::PopupItemId popup_item_id,
                                   bool auth_succeded);
 
   // Cancels an ongoing biometric re-authentication. Usually, because
@@ -214,11 +218,11 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
   gfx::Image page_favicon_;
 
   // The driver that owns |this|.
-  raw_ptr<PasswordManagerDriver, DanglingUntriaged> password_manager_driver_;
+  const raw_ptr<PasswordManagerDriver> password_manager_driver_;
 
-  raw_ptr<autofill::AutofillClient> autofill_client_;  // weak
+  const raw_ptr<autofill::AutofillClient> autofill_client_;
 
-  raw_ptr<PasswordManagerClient, DanglingUntriaged> password_client_;
+  const raw_ptr<PasswordManagerClient> password_client_;
 
   // If not null then it will be called in destructor.
   base::OnceClosure deletion_callback_;

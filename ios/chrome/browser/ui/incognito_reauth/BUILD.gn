@@ -5,13 +5,11 @@
 import("//ios/build/chrome_build.gni")
 
 source_set("incognito_reauth_commands") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "incognito_reauth_commands.h" ]
   frameworks = [ "UIKit.framework" ]
 }
 
 source_set("incognito_reauth_util") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "incognito_reauth_util.h",
     "incognito_reauth_util.mm",
@@ -27,7 +25,6 @@ source_set("incognito_reauth_util") {
 }
 
 source_set("incognito_reauth_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "incognito_reauth_consumer.h",
     "incognito_reauth_view.h",
@@ -46,7 +43,6 @@ source_set("incognito_reauth_ui") {
 }
 
 source_set("incognito_reauth_scene_agent") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "incognito_reauth_mediator.h",
     "incognito_reauth_mediator.mm",
@@ -58,7 +54,6 @@ source_set("incognito_reauth_scene_agent") {
     ":incognito_reauth_ui",
     ":incognito_reauth_util",
     "//base",
-    "//base/ios",
     "//components/pref_registry",
     "//components/prefs",
     "//ios/chrome/app/strings",
@@ -75,7 +70,6 @@ source_set("incognito_reauth_scene_agent") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "incognito_reauth_scene_agent_unittest.mm" ]
   deps = [

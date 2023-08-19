@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/ui.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojom") {
   generate_java = true
@@ -48,15 +49,19 @@ mojom("mojom") {
     "hit_test/hit_test_region_list.mojom",
     "hit_test/input_target_client.mojom",
   ]
+
+  deps = [ "//gpu/ipc/common:gmb_interface" ]
+
   public_deps = [
-    ":resource_format",
     ":shared_image_format",
+    ":singleplanar_format",
     "//gpu/ipc/common:interfaces",
     "//media/mojo/mojom",
     "//mojo/public/mojom/base",
     "//skia/public/mojom",
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/mojom",
+    "//ui/gfx/mojom:hdr_metadata",
     "//ui/gl/mojom",
     "//ui/latency/mojom",
   ]
@@ -609,31 +614,29 @@ mojom("mojom") {
     },
   ]
 }
-mojom("resource_format") {
+
+# The enum that SharedImageFormat uses internally to denote singleplanar
+# formats. Must be defined in a separate file and GN target from
+# shared_image_format.mojom as it is used by shared_image_format.h, which
+# itself is used from shared_image_format_mojom_traits.*.
+# Not intended for client usage.
+mojom("singleplanar_format") {
   generate_java = true
-  sources = [ "compositing/resource_format.mojom" ]
-  cpp_typemaps = [
-    {
-      types = [
-        {
-          mojom = "viz.mojom.ResourceFormat"
-          cpp = "::viz::ResourceFormat"
-        },
-      ]
-      traits_headers = [
-        "//services/viz/public/cpp/compositing/resource_format_mojom_traits.h",
-      ]
-      traits_sources = [
-        "//services/viz/public/cpp/compositing/resource_format_mojom_traits.cc",
-      ]
-      traits_public_deps = [ "//components/viz/common:resource_format" ]
-    },
+  sources = [ "compositing/internal/singleplanar_format.mojom" ]
+  visibility = [
+    ":mojom",
+    ":shared_image_format",
+    "//components/viz/common:shared_image_format",
   ]
 }
 
 mojom("shared_image_format") {
   generate_java = true
   sources = [ "compositing/shared_image_format.mojom" ]
+  enabled_features = []
+  if (use_ozone) {
+    enabled_features += [ "use_ozone" ]
+  }
   cpp_typemaps = [
     {
       types = [
@@ -646,5 +649,7 @@ mojom("shared_image_format") {
       traits_sources = [ "//services/viz/public/cpp/compositing/shared_image_format_mojom_traits.cc" ]
     },
   ]
-  public_deps = [ ":resource_format" ]
+
+  # TODO(crbug.com/1378708): Does this need to be public_deps vs. deps?
+  public_deps = [ ":singleplanar_format" ]
 }

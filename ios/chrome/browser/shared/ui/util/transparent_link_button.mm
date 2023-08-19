@@ -11,10 +11,6 @@
 #import "ios/chrome/common/button_configuration_util.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Minimum tap area dimension, as specified by Apple guidelines.
 const CGFloat kLinkTapAreaMinimum = 44.0;
 

@@ -14,7 +14,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/common_export.h"
-#include "third_party/blink/public/common/url_pattern.h"
+#include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
 #include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom-forward.h"
@@ -172,7 +172,7 @@ class BLINK_COMMON_EXPORT Manifest {
     bool operator==(const HomeTabParams& other) const;
 
     std::vector<ImageResource> icons;
-    std::vector<UrlPattern> scope_patterns;
+    std::vector<SafeUrlPattern> scope_patterns;
   };
 
   // Parameters for the new tab button customisation to the tab strip.
@@ -194,8 +194,7 @@ class BLINK_COMMON_EXPORT Manifest {
 
     using Visibility = blink::mojom::TabStripMemberVisibility;
     using HomeTab = absl::variant<Visibility, blink::Manifest::HomeTabParams>;
-    using NewTabButton =
-        absl::variant<Visibility, blink::Manifest::NewTabButtonParams>;
+    using NewTabButton = blink::Manifest::NewTabButtonParams;
 
     HomeTab home_tab;
     NewTabButton new_tab_button;

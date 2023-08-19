@@ -71,7 +71,7 @@ TEST_F(FontResourceTest,
   KURL url("http://127.0.0.1:8000/font.woff");
   ResourceResponse response(url);
   response.SetHttpStatusCode(200);
-  response.SetHttpHeaderField(http_names::kETag, "1234567890");
+  response.SetHttpHeaderField(http_names::kETag, AtomicString("1234567890"));
   // TODO(crbug.com/751425): We should use the mock functionality
   // via the LoaderFactory.
   url_test_helpers::RegisterMockedURLLoadWithCustomResponse(
@@ -152,7 +152,7 @@ TEST_F(FontResourceTest, RevalidationPolicyMetrics) {
   ResourceResponse response_preload_font(url_preload_font);
   response_preload_font.SetHttpStatusCode(200);
   response_preload_font.SetHttpHeaderField(http_names::kCacheControl,
-                                           "max-age=3600");
+                                           AtomicString("max-age=3600"));
   url_test_helpers::RegisterMockedURLLoadWithCustomResponse(
       url_preload_font, "", WrappedResourceResponse(response_preload_font));
 
@@ -185,7 +185,8 @@ TEST_F(FontResourceTest, RevalidationPolicyMetrics) {
   KURL url_font("http://127.0.0.1:8000/font.ttf");
   ResourceResponse response_font(url_preload_font);
   response_font.SetHttpStatusCode(200);
-  response_font.SetHttpHeaderField(http_names::kCacheControl, "max-age=3600");
+  response_font.SetHttpHeaderField(http_names::kCacheControl,
+                                   AtomicString("max-age=3600"));
   url_test_helpers::RegisterMockedURLLoadWithCustomResponse(
       url_font, "", WrappedResourceResponse(response_font));
 
@@ -306,7 +307,8 @@ TEST_F(FontResourceStrongReferenceTest, FontResourceStrongReference) {
   KURL url_font("http://127.0.0.1:8000/font.ttf");
   ResourceResponse response_font(url_font);
   response_font.SetHttpStatusCode(200);
-  response_font.SetHttpHeaderField(http_names::kCacheControl, "max-age=3600");
+  response_font.SetHttpHeaderField(http_names::kCacheControl,
+                                   AtomicString("max-age=3600"));
   url_test_helpers::RegisterMockedURLLoadWithCustomResponse(
       url_font, "", WrappedResourceResponse(response_font));
 
@@ -339,7 +341,7 @@ TEST_F(FontResourceStrongReferenceTest, FollowCacheControl) {
   ResourceResponse response_font_no_store(url_font_no_store);
   response_font_no_store.SetHttpStatusCode(200);
   response_font_no_store.SetHttpHeaderField(http_names::kCacheControl,
-                                            "no-cache, no-store");
+                                            AtomicString("no-cache, no-store"));
   url_test_helpers::RegisterMockedURLLoadWithCustomResponse(
       url_font_no_store, "", WrappedResourceResponse(response_font_no_store));
 

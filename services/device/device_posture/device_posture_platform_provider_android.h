@@ -21,8 +21,12 @@ class DevicePosturePlatformProviderAndroid
       const DevicePosturePlatformProviderAndroid&) = delete;
 
   device::mojom::DevicePostureType GetDevicePosture() override;
+  const std::vector<gfx::Rect>& GetViewportSegments() override;
   void StartListening() override;
   void StopListening() override;
+
+ private:
+  std::vector<gfx::Rect> current_viewport_segments_;
 };
 
 }  // namespace device

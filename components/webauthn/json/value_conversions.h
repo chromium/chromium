@@ -10,6 +10,15 @@
 
 namespace webauthn {
 
+// JSONUser enumerates the callers of the parsing functions since they currently
+// need different semantics.
+//
+// TODO(https://crbug.com/1454841): remove this.
+enum class JSONUser {
+  kAndroid,
+  kRemoteDesktop,
+};
+
 // Converts a `PublicKeyCredentialCreationOptions` into a `base::Value`.
 //
 // The output conforms to the WebAuthn `PublicKeyCredentialCreationOptionsJSON`
@@ -35,7 +44,7 @@ base::Value ToValue(
 // dictionary IDL (see
 // https://w3c.github.io/webauthn/#dictdef-registrationresponsejson).
 std::pair<blink::mojom::MakeCredentialAuthenticatorResponsePtr, std::string>
-MakeCredentialResponseFromValue(const base::Value& value);
+MakeCredentialResponseFromValue(const base::Value& value, JSONUser user);
 
 // Converts a `base::Value` encoding a `PublicKeyCredential` instance from a
 // WebAuthn `get()` request into a `GetAssertionAuthenticatorResponse`. Returns
@@ -46,7 +55,7 @@ MakeCredentialResponseFromValue(const base::Value& value);
 // dictionary IDL (see
 // https://w3c.github.io/webauthn/#dictdef-authenticationresponsejson).
 std::pair<blink::mojom::GetAssertionAuthenticatorResponsePtr, std::string>
-GetAssertionResponseFromValue(const base::Value& value);
+GetAssertionResponseFromValue(const base::Value& value, JSONUser user);
 
 }  // namespace webauthn
 

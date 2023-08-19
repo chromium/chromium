@@ -5,29 +5,38 @@
 #ifndef CHROME_BROWSER_UI_SIDE_PANEL_COMPANION_COMPANION_UTILS_H_
 #define CHROME_BROWSER_UI_SIDE_PANEL_COMPANION_COMPANION_UTILS_H_
 
+#include "url/gurl.h"
+
 class Browser;
 class PrefService;
-
-namespace content {
-class WebContents;
-}
+class Profile;
 
 namespace companion {
 
-// Returns true if the companion feature is enabled.
+// Returns true if the companion feature is potentially enabled either via field
+// trial or because user is enrolled in experiments. Runtime checks may prohibit
+// Companion from showing up. Callers should check
+// `IsCompanionAvailableForCurrentActiveTab` before showing companion in side
+// panel or showing any pinned entries.
 bool IsCompanionFeatureEnabled();
 
 // Returns true if the companion entry points should be enabled for the state of
 // the current active tab.
 bool IsCompanionAvailableForCurrentActiveTab(const Browser* browser);
 
+// Returns true if the companion entry points should be enabled for the given
+// `url`.
+bool IsCompanionAvailableForURL(const GURL& url);
+
 // Returns true if the companion policy is enabled. The policy can change
 // dynamically, so callers should not cache the returned results.
 bool IsCompanionFeatureEnabledByPolicy(PrefService* pref_service);
 
-// Returns true if browser is valid, DSE is Google, and the side panel companion
-// feature is enabled.
+// Returns true if companion side panel should be available for `browser` or
+// `profile`. Takes into account the runtime checks such as companion field
+// trial state, if browser is valid, DSE is Google, enterprise policies etc.
 bool IsSearchInCompanionSidePanelSupported(const Browser* browser);
+bool IsSearchInCompanionSidePanelSupportedForProfile(Profile* profile);
 
 // Returns true if necessary flags are enabled, browser is valid and default
 // search engine is Google.
@@ -40,9 +49,6 @@ bool IsSearchImageInCompanionSidePanelSupported(const Browser* browser);
 // Updated the default value for the pref used to determine whether companion
 // should be pinned to the toolbar by default.
 void UpdateCompanionDefaultPinnedToToolbarState(PrefService* pref_service);
-
-// Potentially triggers the IPH promo for the companion feature.
-void MaybeTriggerCompanionFeaturePromo(content::WebContents* web_contents);
 
 }  // namespace companion
 

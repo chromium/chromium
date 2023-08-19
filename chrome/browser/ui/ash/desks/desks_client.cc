@@ -41,11 +41,13 @@
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/desk_ash.h"
+#include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/extensions/wm/wm_desks_private_events.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sync/desk_sync_service_factory.h"
+#include "chrome/browser/ui/ash/desks/admin_template_service_factory.h"
 #include "chrome/browser/ui/ash/desks/desks_templates_app_launch_handler.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -260,10 +262,10 @@ class DesksClient::DeskEventObserver : public ash::DesksController::Observer {
   // ScopedObservation handles stopping observing in destruction.
   ~DeskEventObserver() override = default;
 
-  void OnDeskAdded(const ash::Desk* desk) override {
+  void OnDeskAdded(const ash::Desk* desk, bool from_undo) override {
     // If there is listener in ash-chrome, dispatch events.
     if (auto* desk_events_router = GetDeskEventsRouter()) {
-      desk_events_router->OnDeskAdded(desk->uuid());
+      desk_events_router->OnDeskAdded(desk->uuid(), from_undo);
     }
 
     // CrosapiManager is always constructed even if lacros flag is disabled but
@@ -272,10 +274,15 @@ class DesksClient::DeskEventObserver : public ash::DesksController::Observer {
       return;
     }
     crosapi::CrosapiManager::Get()->crosapi_ash()->desk_ash()->NotifyDeskAdded(
-        desk->uuid());
+        desk->uuid(), from_undo);
   }
 
   void OnDeskRemovalFinalized(const base::Uuid& uuid) override {
+    // TODO(b/287382267): Add E2E browser test.
+    if (auto* desk_events_router = GetDeskEventsRouter()) {
+      desk_events_router->OnDeskRemoved(uuid);
+    }
+
     if (!crosapi::CrosapiManager::IsInitialized()) {
       return;
     }
@@ -350,17 +357,19 @@ void DesksClient::OnActiveUserSessionChanged(const AccountId& account_id) {
       std::make_unique<desks_storage::LocalDeskDataManager>(
           active_profile_->GetPath(), account_id);
 
-  if (ash::saved_desk_util::AreDesksTemplatesEnabled() &&
-      ash::features::IsDeskTemplateSyncEnabled()) {
+  if (ash::features::IsDeskTemplateSyncEnabled() &&
+      (ash::saved_desk_util::AreDesksTemplatesEnabled() ||
+       ash::floating_workspace_util::IsFloatingWorkspaceV2Enabled())) {
     saved_desk_storage_manager_ =
         std::make_unique<desks_storage::DeskModelWrapper>(
             save_and_recall_desks_storage_manager_.get());
   }
 
-  auto policy_desk_templates_it =
-      preconfigured_desk_templates_json_.find(account_id);
-  if (policy_desk_templates_it != preconfigured_desk_templates_json_.end())
-    GetDeskModel()->SetPolicyDeskTemplates(policy_desk_templates_it->second);
+  // Ensure that admin templates are ready to go.  This will only query from the
+  // primary profile but it happens early enough to ensure that the model is
+  // loaded when the user logs in.
+  ash::AdminTemplateServiceFactory::GetForProfile(
+      ProfileManager::GetPrimaryUserProfile());
 }
 
 // TODO(aprilzhou): Refactor DesksClient to remove unnecessary callback. It's
@@ -489,7 +498,7 @@ DesksClient::LaunchEmptyDesk(const std::u16string& customized_desk_name) {
 
 absl::optional<DesksClient::DeskActionError> DesksClient::RemoveDesk(
     const base::Uuid& desk_uuid,
-    bool combine_desk) {
+    ash::DeskCloseType close_type) {
   // Return error if `desk_uuid` is invalid.
   if (!desk_uuid.is_valid()) {
     return DeskActionError::kInvalidIdError;
@@ -512,9 +521,7 @@ absl::optional<DesksClient::DeskActionError> DesksClient::RemoveDesk(
     return DeskActionError::kDesksCountCheckFailedError;
   }
   desks_controller_->RemoveDesk(desk, ash::DesksCreationRemovalSource::kApi,
-                                combine_desk
-                                    ? ash::DeskCloseType::kCombineDesks
-                                    : ash::DeskCloseType::kCloseAllWindows);
+                                close_type);
   return absl::nullopt;
 }
 
@@ -547,10 +554,9 @@ void DesksClient::LaunchAppsFromTemplate(
     return;
 
   // Since we default the browser to launch as ash chrome, we want to to check
-  // to see if lacros is enabled and primary. If so, update the app id of the
-  // browser app to launch lacros instead of ash.
-  if (crosapi::browser_util::IsLacrosEnabled() &&
-      crosapi::browser_util::IsLacrosPrimaryBrowser()) {
+  // if lacros is enabled. If so, update the app id of the browser app to launch
+  // lacros instead of ash.
+  if (crosapi::browser_util::IsLacrosEnabled()) {
     restore_data->UpdateBrowserAppIdToLacros();
   }
 
@@ -586,17 +592,20 @@ void DesksClient::LaunchAppsFromTemplate(
 }
 
 desks_storage::DeskModel* DesksClient::GetDeskModel() {
-  if (!ash::saved_desk_util::AreDesksTemplatesEnabled() ||
-      !ash::features::IsDeskTemplateSyncEnabled()) {
+  // Get local storage only when 1) Desk templates sync is
+  // disabled or 2) Desk Templates and Floating workspace are disabled.
+  if (!ash::features::IsDeskTemplateSyncEnabled() ||
+      (!ash::saved_desk_util::AreDesksTemplatesEnabled() &&
+       !ash::floating_workspace_util::IsFloatingWorkspaceV2Enabled())) {
     DCHECK(save_and_recall_desks_storage_manager_.get());
     return save_and_recall_desks_storage_manager_.get();
   }
-    DCHECK(saved_desk_storage_manager_);
-    saved_desk_storage_manager_->SetDeskSyncBridge(
-        static_cast<desks_storage::DeskSyncBridge*>(
-            DeskSyncServiceFactory::GetForProfile(active_profile_)
-                ->GetDeskModel()));
-    return saved_desk_storage_manager_.get();
+  DCHECK(saved_desk_storage_manager_);
+  saved_desk_storage_manager_->SetDeskSyncBridge(
+      static_cast<desks_storage::DeskSyncBridge*>(
+          DeskSyncServiceFactory::GetForProfile(active_profile_)
+              ->GetDeskModel()));
+  return saved_desk_storage_manager_.get();
 }
 
 // Sets the preconfigured desk template. Data contains the contents of the JSON

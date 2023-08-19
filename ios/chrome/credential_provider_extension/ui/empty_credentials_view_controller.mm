@@ -4,10 +4,6 @@
 
 #import "ios/chrome/credential_provider_extension/ui/empty_credentials_view_controller.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 constexpr CGFloat kStackViewSpacingAfterIllustration = 32;
 }  // namespace

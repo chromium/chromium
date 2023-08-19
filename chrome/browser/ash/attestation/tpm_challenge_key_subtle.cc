@@ -25,6 +25,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/attestation/attestation_flow_adaptive.h"
@@ -44,6 +45,7 @@
 namespace ash {
 namespace attestation {
 
+using ::attestation::VerifiedAccessFlow;
 using Result = TpmChallengeKeyResult;
 using ResultCode = TpmChallengeKeyResultCode;
 
@@ -66,14 +68,14 @@ std::unique_ptr<TpmChallengeKeySubtle> TpmChallengeKeySubtleFactory::Create() {
 // static
 std::unique_ptr<TpmChallengeKeySubtle>
 TpmChallengeKeySubtleFactory::CreateForPreparedKey(
-    AttestationKeyType key_type,
+    VerifiedAccessFlow flow_type,
     bool will_register_key,
     ::attestation::KeyType key_crypto_type,
     const std::string& key_name,
     const std::string& public_key,
     Profile* profile) {
   auto result = TpmChallengeKeySubtleFactory::Create();
-  result->RestorePreparedKeyState(key_type, will_register_key, key_crypto_type,
+  result->RestorePreparedKeyState(flow_type, will_register_key, key_crypto_type,
                                   key_name, public_key, profile);
   return result;
 }
@@ -101,17 +103,26 @@ bool IsEnterpriseDevice() {
   return InstallAttributes::Get()->IsEnterpriseManaged();
 }
 
-// For personal devices, we don't need to check if remote attestation is
-// enabled in the device, but we need to ask for user consent if the key
-// does not exist.
-bool IsUserConsentRequired() {
+// For unmanaged devices we need to ask for user consent if the key does not
+// exist because data will be sent to the PCA. In case of the flow type being
+// DEVICE_TRUST_CONNECTOR, user consent is not required since it's only used
+// for attesting the DTC payload and is not usable by extensions.
+// Historical note: For managed device there used to be policies to control this
+// (AttestationEnabledForUser,AttestationEnabledForDevice) but they were removed
+// from the client after having been set to true unconditionally for all clients
+// for a long time.
+bool IsUserConsentRequired(VerifiedAccessFlow flow_type) {
+  if (flow_type == VerifiedAccessFlow::DEVICE_TRUST_CONNECTOR) {
+    return false;
+  }
+
   return !IsEnterpriseDevice();
 }
 
 // If no key name was given, use default well-known key names so they can be
 // reused across attestation operations (multiple challenge responses can be
 // generated using the same key).
-std::string GetDefaultKeyName(AttestationKeyType key_type,
+std::string GetDefaultKeyName(VerifiedAccessFlow flow_type,
                               ::attestation::KeyType key_crypto_type) {
   // When the caller wants to "register" a key through attestation (resulting in
   // a general-purpose key in the chaps PKCS#11 store), the behavior is
@@ -130,28 +141,30 @@ std::string GetDefaultKeyName(AttestationKeyType key_type,
   //
   //  See http://go/chromeos-va-registering-device-wide-keys-support for details
   //  on the concept of the stable EMK.
-  switch (key_type) {
-    case KEY_DEVICE:
+  switch (flow_type) {
+    case VerifiedAccessFlow::ENTERPRISE_MACHINE:
       return kEnterpriseMachineKey;
-    case KEY_USER:
+    case VerifiedAccessFlow::ENTERPRISE_USER:
       switch (key_crypto_type) {
         case ::attestation::KEY_TYPE_RSA:
           return kEnterpriseUserKey;
         case ::attestation::KEY_TYPE_ECC:
           return std::string(kEnterpriseUserKey) + "-ecdsa";
       }
+    default:
+      NOTREACHED();
+      return std::string();
   }
-  NOTREACHED();
 }
 
 // Returns the key name that should be used for the attestation platform APIs.
-std::string GetKeyNameWithDefault(AttestationKeyType key_type,
+std::string GetKeyNameWithDefault(VerifiedAccessFlow flow_type,
                                   ::attestation::KeyType key_crypto_type,
                                   const std::string& key_name) {
   if (!key_name.empty())
     return key_name;
 
-  return GetDefaultKeyName(key_type, key_crypto_type);
+  return GetDefaultKeyName(flow_type, key_crypto_type);
 }
 
 }  // namespace
@@ -180,7 +193,7 @@ TpmChallengeKeySubtleImpl::~TpmChallengeKeySubtleImpl() {
 }
 
 void TpmChallengeKeySubtleImpl::RestorePreparedKeyState(
-    AttestationKeyType key_type,
+    VerifiedAccessFlow flow_type,
     bool will_register_key,
     ::attestation::KeyType key_crypto_type,
     const std::string& key_name,
@@ -189,19 +202,30 @@ void TpmChallengeKeySubtleImpl::RestorePreparedKeyState(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!will_register_key || !public_key.empty());
 
-  // For user keys, a |profile| is strictly necessary.
-  DCHECK(key_type != KEY_USER || profile);
+  // Ensure that the selected flow type is supported
+  CHECK(flow_type == VerifiedAccessFlow::ENTERPRISE_MACHINE ||
+        flow_type == VerifiedAccessFlow::ENTERPRISE_USER);
 
-  key_type_ = key_type;
+  // For the ENTERPRISE_USER flow, a |profile| is strictly necessary.
+  DCHECK(flow_type != VerifiedAccessFlow::ENTERPRISE_USER || profile);
+
+  // For DEVICE_TRUST_CONNECTOR, a key name is required and registering a key is
+  // not allowed.
+  CHECK(flow_type != VerifiedAccessFlow::DEVICE_TRUST_CONNECTOR ||
+        !key_name.empty());
+  CHECK(flow_type != VerifiedAccessFlow::DEVICE_TRUST_CONNECTOR ||
+        !will_register_key);
+
+  flow_type_ = flow_type;
   will_register_key_ = will_register_key;
   key_crypto_type_ = key_crypto_type;
-  key_name_ = GetKeyNameWithDefault(key_type, key_crypto_type, key_name);
+  key_name_ = GetKeyNameWithDefault(flow_type, key_crypto_type, key_name);
   public_key_ = public_key;
   profile_ = profile;
 }
 
 void TpmChallengeKeySubtleImpl::StartPrepareKeyStep(
-    AttestationKeyType key_type,
+    VerifiedAccessFlow flow_type,
     bool will_register_key,
     ::attestation::KeyType key_crypto_type,
     const std::string& key_name,
@@ -210,34 +234,57 @@ void TpmChallengeKeySubtleImpl::StartPrepareKeyStep(
     const absl::optional<std::string>& signals) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback_.is_null());
-  // For device key: if |will_register_key| is true, |key_name| should not be
-  // empty, if |register_key| is false, |key_name| will not be used.
-  DCHECK((key_type != KEY_DEVICE) || (will_register_key == !key_name.empty()))
+
+  // For ENTERPRISE_MACHINE: if |will_register_key| is true, |key_name| should
+  // not be empty, if |register_key| is false, |key_name| will not be used.
+  DCHECK((flow_type != VerifiedAccessFlow::ENTERPRISE_MACHINE) ||
+         (will_register_key == !key_name.empty()))
       << "Invalid arguments: " << will_register_key << " " << !key_name.empty();
 
-  // For user keys, a |profile| is strictly necessary.
-  DCHECK(key_type != KEY_USER || profile);
+  // For ENTERPRISE_USER, a |profile| is strictly necessary.
+  DCHECK(flow_type != VerifiedAccessFlow::ENTERPRISE_USER || profile);
 
-  key_type_ = key_type;
+  // For DEVICE_TRUST_CONNECTOR, a key name is required and registering a key is
+  // not allowed.
+  CHECK(flow_type != VerifiedAccessFlow::DEVICE_TRUST_CONNECTOR ||
+        !key_name.empty());
+  CHECK(flow_type != VerifiedAccessFlow::DEVICE_TRUST_CONNECTOR ||
+        !will_register_key);
+
+  // Ensure that the selected flow type is supported
+  if (flow_type != VerifiedAccessFlow::ENTERPRISE_MACHINE &&
+      flow_type != VerifiedAccessFlow::ENTERPRISE_USER &&
+      flow_type != VerifiedAccessFlow::DEVICE_TRUST_CONNECTOR) {
+    std::move(callback).Run(
+        Result::MakeError(ResultCode::kVerifiedAccessFlowUnsupportedError));
+    return;
+  }
+
+  flow_type_ = flow_type;
   will_register_key_ = will_register_key;
   key_crypto_type_ = key_crypto_type;
-  key_name_ = GetKeyNameWithDefault(key_type, key_crypto_type, key_name);
+  key_name_ = GetKeyNameWithDefault(flow_type, key_crypto_type, key_name);
   profile_ = profile;
   callback_ = std::move(callback);
   signals_ = signals;
 
-  switch (key_type_) {
-    case KEY_DEVICE:
-      PrepareMachineKey();
+  switch (flow_type_) {
+    case VerifiedAccessFlow::ENTERPRISE_MACHINE:
+      PrepareEnterpriseMachineFlow();
       return;
-    case KEY_USER:
-      PrepareUserKey();
+    case VerifiedAccessFlow::ENTERPRISE_USER:
+      PrepareEnterpriseUserFlow();
+      return;
+    case VerifiedAccessFlow::DEVICE_TRUST_CONNECTOR:
+      PrepareDeviceTrustConnectorFlow();
+      return;
+    default:
+      NOTREACHED();
       return;
   }
-  NOTREACHED();
 }
 
-void TpmChallengeKeySubtleImpl::PrepareMachineKey() {
+void TpmChallengeKeySubtleImpl::PrepareEnterpriseMachineFlow() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Check if the device is enterprise enrolled.
@@ -247,20 +294,23 @@ void TpmChallengeKeySubtleImpl::PrepareMachineKey() {
     return;
   }
 
-  // Check whether the user is managed unless this is a device-wide instance.
+  // Check whether the user is affiliated unless this is a device-wide instance.
   if (GetUser() && !IsUserAffiliated()) {
     std::move(callback_).Run(
         Result::MakeError(ResultCode::kUserNotManagedError));
     return;
   }
 
-  // Check if remote attestation is enabled in the device policy.
-  GetDeviceAttestationEnabled(base::BindRepeating(
-      &TpmChallengeKeySubtleImpl::GetDeviceAttestationEnabledCallback,
-      weak_factory_.GetWeakPtr()));
+  // Wait for the machine certificate to be uploaded.
+  if (machine_certificate_uploader_) {
+    machine_certificate_uploader_->WaitForUploadComplete(base::BindOnce(
+        &TpmChallengeKeySubtleImpl::PrepareKey, weak_factory_.GetWeakPtr()));
+  } else {
+    PrepareKey(true);
+  }
 }
 
-void TpmChallengeKeySubtleImpl::PrepareUserKey() {
+void TpmChallengeKeySubtleImpl::PrepareEnterpriseUserFlow() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Check if user keys are available in this profile.
@@ -270,26 +320,52 @@ void TpmChallengeKeySubtleImpl::PrepareUserKey() {
     return;
   }
 
-  if (!IsRemoteAttestationEnabledForUser()) {
-    std::move(callback_).Run(
-        Result::MakeError(ResultCode::kUserPolicyDisabledError));
-    return;
-  }
-
   if (IsEnterpriseDevice()) {
     if (!IsUserAffiliated()) {
       std::move(callback_).Run(
           Result::MakeError(ResultCode::kUserNotManagedError));
       return;
     }
-
-    // Check if remote attestation is enabled in the device policy.
-    GetDeviceAttestationEnabled(base::BindRepeating(
-        &TpmChallengeKeySubtleImpl::GetDeviceAttestationEnabledCallback,
-        weak_factory_.GetWeakPtr()));
-  } else {
-    GetDeviceAttestationEnabledCallback(true);
   }
+
+  PrepareKey(true);
+}
+
+void TpmChallengeKeySubtleImpl::PrepareDeviceTrustConnectorFlow() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // TODO(b/277707201): remove once user email from login screen is available
+  // here.
+  if (!GetUser()) {
+    std::move(callback_).Run(
+        Result::MakeError(ResultCode::kUserKeyNotAvailableError));
+    return;
+  }
+
+  // Check whether the user is managed unless this is a device-wide instance.
+  if (GetUser() && !IsUserManaged()) {
+    std::move(callback_).Run(
+        Result::MakeError(ResultCode::kUserNotManagedError));
+    return;
+  }
+
+  PrepareKey(true);
+}
+
+bool TpmChallengeKeySubtleImpl::IsUserManaged() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!profile_) {
+    return false;
+  }
+
+  const auto* profile_policy_connector = profile_->GetProfilePolicyConnector();
+
+  if (!profile_policy_connector) {
+    return false;
+  }
+
+  return profile_policy_connector->IsManaged();
 }
 
 bool TpmChallengeKeySubtleImpl::IsUserAffiliated() const {
@@ -302,40 +378,37 @@ bool TpmChallengeKeySubtleImpl::IsUserAffiliated() const {
   return false;
 }
 
-bool TpmChallengeKeySubtleImpl::IsRemoteAttestationEnabledForUser() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(profile_);
-
-  PrefService* prefs = profile_->GetPrefs();
-  if (prefs && prefs->IsManagedPreference(prefs::kAttestationEnabled)) {
-    return prefs->GetBoolean(prefs::kAttestationEnabled);
-  }
-  return false;
-}
-
 std::string TpmChallengeKeySubtleImpl::GetEmail() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  switch (key_type_) {
-    case KEY_DEVICE:
+  switch (flow_type_) {
+    case VerifiedAccessFlow::ENTERPRISE_MACHINE:
       return std::string();
-    case KEY_USER:
+    case VerifiedAccessFlow::ENTERPRISE_USER:
+      [[fallthrough]];
+    case VerifiedAccessFlow::DEVICE_TRUST_CONNECTOR:
       return GetAccountId().GetUserEmail();
+    default:
+      NOTREACHED();
+      return std::string();
   }
-  NOTREACHED();
 }
 
 AttestationCertificateProfile TpmChallengeKeySubtleImpl::GetCertificateProfile()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  switch (key_type_) {
-    case KEY_DEVICE:
+  switch (flow_type_) {
+    case VerifiedAccessFlow::ENTERPRISE_MACHINE:
       return PROFILE_ENTERPRISE_MACHINE_CERTIFICATE;
-    case KEY_USER:
+    case VerifiedAccessFlow::ENTERPRISE_USER:
       return PROFILE_ENTERPRISE_USER_CERTIFICATE;
+    case VerifiedAccessFlow::DEVICE_TRUST_CONNECTOR:
+      return PROFILE_DEVICE_TRUST_USER_CERTIFICATE;
+    default:
+      NOTREACHED();
+      return {};
   }
-  NOTREACHED();
 }
 
 const user_manager::User* TpmChallengeKeySubtleImpl::GetUser() const {
@@ -357,73 +430,57 @@ AccountId TpmChallengeKeySubtleImpl::GetAccountId() const {
 }
 
 AccountId TpmChallengeKeySubtleImpl::GetAccountIdForAttestationFlow() const {
-  switch (key_type_) {
-    case KEY_DEVICE:
+  switch (flow_type_) {
+    case VerifiedAccessFlow::ENTERPRISE_MACHINE:
+      [[fallthrough]];
+    case VerifiedAccessFlow::DEVICE_TRUST_CONNECTOR:
       return EmptyAccountId();
-    case KEY_USER:
+    case VerifiedAccessFlow::ENTERPRISE_USER:
       return GetAccountId();
+    default:
+      LOG(DFATAL) << "Unsupported Verified Access flow type: " << flow_type_;
+      return EmptyAccountId();
   }
-  LOG(DFATAL) << "Unrecognized key type value: " << key_type_;
-  return EmptyAccountId();
 }
 
 std::string TpmChallengeKeySubtleImpl::GetUsernameForAttestationClient() const {
-  switch (key_type_) {
-    case KEY_DEVICE:
+  switch (flow_type_) {
+    case VerifiedAccessFlow::ENTERPRISE_MACHINE:
+      [[fallthrough]];
+    case VerifiedAccessFlow::DEVICE_TRUST_CONNECTOR:
       return std::string();
-    case KEY_USER:
+    case VerifiedAccessFlow::ENTERPRISE_USER:
       return cryptohome::Identification(GetAccountId()).id();
+    default:
+      LOG(DFATAL) << "Unsupported Verified Access flow type: " << flow_type_;
+      return std::string();
   }
-  LOG(DFATAL) << "Unrecognized key type value: " << key_type_;
-  return std::string();
 }
 
-void TpmChallengeKeySubtleImpl::GetDeviceAttestationEnabled(
-    const base::RepeatingCallback<void(bool)>& callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  CrosSettings* settings = CrosSettings::Get();
-  CrosSettingsProvider::TrustedStatus status = settings->PrepareTrustedValues(
-      base::BindOnce(&TpmChallengeKeySubtleImpl::GetDeviceAttestationEnabled,
-                     weak_factory_.GetWeakPtr(), callback));
-
-  bool value = false;
-  switch (status) {
-    case CrosSettingsProvider::TRUSTED:
-      if (!settings->GetBoolean(kDeviceAttestationEnabled, &value)) {
-        value = false;
-      }
-      break;
-    case CrosSettingsProvider::TEMPORARILY_UNTRUSTED:
-      // Do nothing. This function will be called again when the values are
-      // ready.
-      return;
-    case CrosSettingsProvider::PERMANENTLY_UNTRUSTED:
-      // If the value cannot be trusted, we assume that the device attestation
-      // is false to be on the safe side.
-      break;
+// For ENTERPRISE_MACHINE attestation, don't include the certificate of the
+// signing key, because the verified access server uses the "stable EMK
+// certificate" uploaded to DMServer after enrollment.
+bool TpmChallengeKeySubtleImpl::ShouldIncludeSigningKeyCertificate() const {
+  if (flow_type_ == VerifiedAccessFlow::ENTERPRISE_MACHINE) {
+    return false;
   }
-
-  callback.Run(value);
+  return true;
 }
 
-void TpmChallengeKeySubtleImpl::GetDeviceAttestationEnabledCallback(
-    bool enabled) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!enabled) {
-    std::move(callback_).Run(
-        Result::MakeError(ResultCode::kDevicePolicyDisabledError));
-    return;
-  }
-
-  // Only the device challenge depends on the certificate to be uploaded.
-  if ((key_type_ == AttestationKeyType::KEY_DEVICE) &&
-      machine_certificate_uploader_) {
-    machine_certificate_uploader_->WaitForUploadComplete(base::BindOnce(
-        &TpmChallengeKeySubtleImpl::PrepareKey, weak_factory_.GetWeakPtr()));
-  } else {
-    PrepareKey(true);
+bool TpmChallengeKeySubtleImpl::ShouldIncludeCustomerId() const {
+  // Request to include the customer ID in the challenge response when:
+  // * the request is a machine challenge
+  // * the request is a user challenge and this is a kiosk session
+  switch (flow_type_) {
+    case VerifiedAccessFlow::ENTERPRISE_MACHINE:
+      return true;
+    case VerifiedAccessFlow::ENTERPRISE_USER:
+      return chromeos::IsKioskSession();
+    case VerifiedAccessFlow::DEVICE_TRUST_CONNECTOR:
+      return false;
+    default:
+      NOTREACHED() << "Unsupported Verified Access flow type: " << flow_type_;
+      return false;
   }
 }
 
@@ -512,7 +569,7 @@ void TpmChallengeKeySubtleImpl::DoesKeyExistCallback(
   }
 
   // The key does not exist. Create a new key and have it signed by PCA.
-  if (IsUserConsentRequired()) {
+  if (IsUserConsentRequired(flow_type_)) {
     // We should ask the user explicitly before sending any private
     // information to PCA.
     AskForUserConsent(
@@ -608,20 +665,21 @@ void TpmChallengeKeySubtleImpl::StartSignChallengeStep(
   // about both key names.
 
   // Name of the key that will be used to sign challenge.
-  // Device key challenges are signed using a stable key.
+  // ENTERPRISE_MACHINE challenges are signed using a stable key.
   std::string key_name_for_challenge =
-      (key_type_ == KEY_DEVICE) ? GetDefaultKeyName(key_type_, key_crypto_type_)
-                                : key_name_;
+      (flow_type_ == VerifiedAccessFlow::ENTERPRISE_MACHINE)
+          ? GetDefaultKeyName(flow_type_, key_crypto_type_)
+          : key_name_;
   // Name of the key that will be included in SPKAC, it is used only when SPKAC
-  // should be included for device key.
+  // should be included for the flow type ENTERPRISE_MACHINE.
   std::string key_name_for_spkac =
-      (will_register_key_ && key_type_ == KEY_DEVICE) ? key_name_
-                                                      : std::string();
+      (will_register_key_ &&
+       flow_type_ == VerifiedAccessFlow::ENTERPRISE_MACHINE)
+          ? key_name_
+          : std::string();
 
-  const std::string username = GetUsernameForAttestationClient();
-  const bool is_machine_challenge = username.empty();
   ::attestation::SignEnterpriseChallengeRequest request;
-  request.set_username(username);
+  request.set_username(GetUsernameForAttestationClient());
   request.set_key_label(key_name_for_challenge);
   request.set_key_name_for_spkac(key_name_for_spkac);
   request.set_domain(GetEmail());
@@ -629,14 +687,12 @@ void TpmChallengeKeySubtleImpl::StartSignChallengeStep(
   request.set_include_signed_public_key(will_register_key_);
   request.set_challenge(challenge);
   request.set_va_type(AttestationClient::GetVerifiedAccessServerType());
+  request.set_flow_type(flow_type_);
+  request.set_include_certificate(ShouldIncludeSigningKeyCertificate());
   if (signals_.has_value()) {
     request.set_device_trust_signals_json(signals_.value());
   }
-  // Request to include the customer ID in the challenge response when:
-  // * the request is a machine challenge
-  // * the request is a user challenge and this is a kiosk session.
-  request.set_include_customer_id(is_machine_challenge ||
-                                  chromeos::IsKioskSession());
+  request.set_include_customer_id(ShouldIncludeCustomerId());
   AttestationClient::Get()->SignEnterpriseChallenge(
       request, base::BindOnce(&TpmChallengeKeySubtleImpl::SignChallengeCallback,
                               weak_factory_.GetWeakPtr()));
@@ -686,18 +742,20 @@ void TpmChallengeKeySubtleImpl::RegisterKeyCallback(
     return;
   }
 
-  DCHECK(key_type_ == KEY_DEVICE || profile_);
+  DCHECK(flow_type_ == VerifiedAccessFlow::ENTERPRISE_MACHINE || profile_);
 
   platform_keys::KeyPermissionsManager* key_permissions_manager = nullptr;
-  switch (key_type_) {
-    case AttestationKeyType::KEY_USER:
+  switch (flow_type_) {
+    case VerifiedAccessFlow::ENTERPRISE_USER:
       key_permissions_manager = platform_keys::KeyPermissionsManagerImpl::
           GetUserPrivateTokenKeyPermissionsManager(profile_);
       break;
-    case AttestationKeyType::KEY_DEVICE:
+    case VerifiedAccessFlow::ENTERPRISE_MACHINE:
       key_permissions_manager = platform_keys::KeyPermissionsManagerImpl::
           GetSystemTokenKeyPermissionsManager();
       break;
+    default:
+      NOTREACHED();
   }
 
   DCHECK(!public_key_.empty());

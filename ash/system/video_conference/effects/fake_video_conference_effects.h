@@ -118,14 +118,17 @@ class ASH_EXPORT StylishKitchenEffect : public SimpleToggleEffect {
   ~StylishKitchenEffect() override = default;
 };
 
-class ASH_EXPORT GreenhouseEffect : public SimpleToggleEffect {
+// A fake toggle effect with long text label (used to text multi-line label in
+// the toggle effect button).
+class ASH_EXPORT FakeLongTextLabelToggleEffect : public SimpleToggleEffect {
  public:
-  GreenhouseEffect();
+  FakeLongTextLabelToggleEffect();
 
-  GreenhouseEffect(const GreenhouseEffect&) = delete;
-  GreenhouseEffect& operator=(const GreenhouseEffect&) = delete;
+  FakeLongTextLabelToggleEffect(const FakeLongTextLabelToggleEffect&) = delete;
+  FakeLongTextLabelToggleEffect& operator=(
+      const FakeLongTextLabelToggleEffect&) = delete;
 
-  ~GreenhouseEffect() override = default;
+  ~FakeLongTextLabelToggleEffect() override = default;
 };
 
 // Delegate that hosts a set-value effect.
@@ -236,7 +239,7 @@ class EffectRepository {
   std::unique_ptr<OfficeBunnyEffect> office_bunny_;
   std::unique_ptr<CalmForestEffect> calm_forest_;
   std::unique_ptr<StylishKitchenEffect> stylish_kitchen_;
-  std::unique_ptr<GreenhouseEffect> greenhouse_;
+  std::unique_ptr<FakeLongTextLabelToggleEffect> long_text_label_effect_;
   std::unique_ptr<ShaggyFurEffect> shaggy_fur_;
   std::unique_ptr<SuperCutnessEffect> super_cuteness_;
 };

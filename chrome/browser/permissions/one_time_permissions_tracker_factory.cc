@@ -4,7 +4,7 @@
 
 #include "chrome/browser/permissions/one_time_permissions_tracker_factory.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker.h"
 #include "chrome/browser/profiles/profile.h"
 
@@ -17,7 +17,8 @@ OneTimePermissionsTrackerFactory::GetForBrowserContext(
 
 OneTimePermissionsTrackerFactory*
 OneTimePermissionsTrackerFactory::GetInstance() {
-  return base::Singleton<OneTimePermissionsTrackerFactory>::get();
+  static base::NoDestructor<OneTimePermissionsTrackerFactory> instance;
+  return instance.get();
 }
 
 OneTimePermissionsTrackerFactory::OneTimePermissionsTrackerFactory()

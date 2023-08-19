@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -22,7 +21,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
-import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController.SyncPromoState;
@@ -31,6 +30,7 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.sync.SyncService;
 
 /**
  * Class that manages all the logic and UI behind the signin promo header in the bookmark
@@ -64,7 +64,7 @@ public class BookmarkPromoHeader implements SyncService.SyncStateChangedListener
         mProfile = profile;
         mPromoHeaderChangeAction = promoHeaderChangeAction;
 
-        mSyncService = SyncService.get();
+        mSyncService = SyncServiceFactory.getForProfile(profile);
         if (mSyncService != null) mSyncService.addSyncStateChangedListener(this);
 
         mSigninManager = IdentityServicesProvider.get().getSigninManager(mProfile);
@@ -228,7 +228,7 @@ public class BookmarkPromoHeader implements SyncService.SyncStateChangedListener
 
     // AccountsChangeObserver implementation.
     @Override
-    public void onAccountsChanged() {
+    public void onCoreAccountInfosChanged() {
         triggerPromoUpdate();
     }
 
@@ -241,7 +241,6 @@ public class BookmarkPromoHeader implements SyncService.SyncStateChangedListener
      * Forces the promo state to a particular value for testing purposes.
      * @param promoState The promo state to which the header will be set to.
      */
-    @VisibleForTesting
     public static void forcePromoStateForTesting(@Nullable @SyncPromoState Integer promoState) {
         sPromoStateForTests = promoState;
     }

@@ -6,9 +6,9 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/containers/span.h"
-#import "base/mac/foundation_util.h"
 #import "base/ranges/algorithm.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
@@ -28,10 +28,6 @@
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 #pragma mark - PasswordFormContentCell
 
@@ -223,7 +219,7 @@
   [super configureCell:tableCell withStyler:styler];
 
   PasswordFormContentCell* cell =
-      base::mac::ObjCCastStrict<PasswordFormContentCell>(tableCell);
+      base::apple::ObjCCastStrict<PasswordFormContentCell>(tableCell);
   cell.titleLabel.text = self.title;
   // Title might be a URL, use "...oo.bar.com", not "fooooooooo..." if too big.
   cell.titleLabel.lineBreakMode = NSLineBreakByTruncatingHead;
@@ -251,9 +247,9 @@
 
 @end
 
-#pragma mark - CredentialTableViewItem
+#pragma mark - BlockedSiteTableViewItem
 
-@implementation CredentialTableViewItem
+@implementation BlockedSiteTableViewItem
 
 - (instancetype)initWithType:(NSInteger)type {
   self = [super initWithType:type];
@@ -265,17 +261,17 @@
 
 - (void)configureCell:(TableViewCell*)tableCell
            withStyler:(ChromeTableViewStyler*)styler {
+  CHECK(self.credential.blocked_by_user);
   [super configureCell:tableCell withStyler:styler];
 
   PasswordFormContentCell* cell =
-      base::mac::ObjCCastStrict<PasswordFormContentCell>(tableCell);
+      base::apple::ObjCCastStrict<PasswordFormContentCell>(tableCell);
   cell.titleLabel.text = self.title;
   // Title is a URL, use "...oo.bar.com", not "fooooooooo..." if too big.
   cell.titleLabel.lineBreakMode = NSLineBreakByTruncatingHead;
-  cell.detailLabel.text = self.detailText;
   cell.detailLabel.hidden = !cell.detailLabel.text.length;
   cell.faviconPageURL = self.credential.GetURL();
-  cell.localOnlyIcon.hidden = !self.showLocalOnlyIcon;
+  cell.localOnlyIcon.hidden = YES;
   if (styler.cellTitleColor) {
     cell.titleLabel.textColor = styler.cellTitleColor;
   }
@@ -285,13 +281,6 @@
   return base::SysUTF8ToNSString(
       password_manager::GetShownOrigin(self.credential));
   ;
-}
-
-- (NSString*)detailText {
-  if (self.credential.blocked_by_user) {
-    return @"";
-  }
-  return base::SysUTF16ToNSString(self.credential.username);
 }
 
 @end

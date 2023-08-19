@@ -6,8 +6,6 @@ package org.chromium.base.metrics;
 
 import android.text.format.DateUtils;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.build.annotations.MainDex;
 
 import java.util.List;
@@ -229,6 +227,19 @@ public class RecordHistogram {
     }
 
     /**
+     * Records a sample in a histogram of sizes in MB. This is the Java equivalent of the
+     * UMA_HISTOGRAM_MEMORY_MEDIUM_MB C++ macro.
+     * <p>
+     * Good for sizes up to about 4000MB.
+     *
+     * @param name name of the histogram
+     * @param sizeInMB Sample to record in MB
+     */
+    public static void recordMemoryMediumMBHistogram(String name, int sizeInMB) {
+        UmaRecorderHolder.get().recordExponentialHistogram(name, sizeInMB, 1, 4000, 100);
+    }
+
+    /**
      * Records a sample in a linear histogram where each bucket in range {@code [0, max)} counts
      * exactly a single value.
      *
@@ -268,7 +279,6 @@ public class RecordHistogram {
      * @param sample the bucket containing this sample value will be looked up
      */
     @Deprecated
-    @VisibleForTesting
     public static int getHistogramValueCountForTesting(String name, int sample) {
         return UmaRecorderHolder.get().getHistogramValueCountForTesting(name, sample);
     }
@@ -282,7 +292,6 @@ public class RecordHistogram {
      * @param name name of the histogram to look up
      */
     @Deprecated
-    @VisibleForTesting
     public static int getHistogramTotalCountForTesting(String name) {
         return UmaRecorderHolder.get().getHistogramTotalCountForTesting(name);
     }
@@ -294,7 +303,6 @@ public class RecordHistogram {
      *
      * @param name name of the histogram to look up
      */
-    @VisibleForTesting
     public static List<HistogramBucket> getHistogramSamplesForTesting(String name) {
         return UmaRecorderHolder.get().getHistogramSamplesForTesting(name);
     }

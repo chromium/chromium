@@ -6,10 +6,12 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "gpu/command_buffer/service/mock_texture_owner.h"
 #include "gpu/command_buffer/service/ref_counted_lock_for_test.h"
 #include "gpu/config/gpu_finch_features.h"
+#include "media/base/media_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
@@ -24,6 +26,7 @@ namespace {
 constexpr gfx::Size kTestVisibleSize(100, 100);
 constexpr gfx::Size kTestVisibleSize2(110, 110);
 constexpr gfx::Size kTestCodedSize(128, 128);
+constexpr gfx::Size kTestAlignment(64, 64);
 
 std::unique_ptr<FrameInfoHelper> CreateHelper() {
   auto task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
@@ -60,7 +63,8 @@ class FrameInfoHelperTest : public testing::Test {
 
   std::unique_ptr<CodecOutputBufferRenderer> CreateBufferRenderer(
       gfx::Size size,
-      scoped_refptr<gpu::TextureOwner> texture_owner) {
+      scoped_refptr<gpu::TextureOwner> texture_owner,
+      absl::optional<gfx::Size> coded_size_alignment = absl::nullopt) {
     auto codec_buffer_wait_coordinator =
         texture_owner
             ? base::MakeRefCounted<CodecBufferWaitCoordinator>(
@@ -70,23 +74,17 @@ class FrameInfoHelperTest : public testing::Test {
                       : nullptr)
             : nullptr;
     auto buffer = CodecOutputBuffer::CreateForTesting(
-        0, size, gfx::ColorSpace::CreateSRGB());
+        0, size, gfx::ColorSpace::CreateSRGB(), coded_size_alignment);
     auto buffer_renderer = std::make_unique<CodecOutputBufferRenderer>(
         std::move(buffer), codec_buffer_wait_coordinator,
         features::NeedThreadSafeAndroidMedia()
             ? base::MakeRefCounted<gpu::RefCountedLockForTest>()
             : nullptr);
-
-    // We don't have codec, so releasing test buffer is not possible. Mark it as
-    // rendered for test purpose.
-    buffer_renderer->set_phase_for_testing(
-        CodecOutputBufferRenderer::Phase::kInFrontBuffer);
     return buffer_renderer;
   }
 
   void FailNextRender(CodecOutputBufferRenderer* buffer_renderer) {
-    buffer_renderer->set_phase_for_testing(
-        CodecOutputBufferRenderer::Phase::kInvalidated);
+    buffer_renderer->InvalidateForTesting();
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -136,6 +134,158 @@ TEST_F(FrameInfoHelperTest, TextureOwner) {
   EXPECT_CALL(*texture_owner, GetCodedSizeAndVisibleRect(_, _, _)).Times(1);
   GetFrameInfo(CreateBufferRenderer(kTestVisibleSize2, texture_owner));
   EXPECT_EQ(last_frame_info_.coded_size, kTestCodedSize);
+}
+
+TEST_F(FrameInfoHelperTest, TextureOwnerGuessCodedSize) {
+  base::test::ScopedFeatureList scoped_enable(kMediaCodecCodedSizeGuessing);
+
+  auto texture_owner = base::MakeRefCounted<NiceMock<gpu::MockTextureOwner>>(
+      0, nullptr, nullptr, true);
+
+  // Return CodedSize when GetCodedSizeAndVisibleRect is called.
+  ON_CALL(*texture_owner, GetCodedSizeAndVisibleRect(_, _, _))
+      .WillByDefault(DoAll(SetArgPointee<1>(kTestCodedSize), Return(true)));
+
+  // The first FrameInfo request should take the normal path.
+  EXPECT_CALL(*texture_owner, GetCodedSizeAndVisibleRect(_, _, _)).Times(1);
+  GetFrameInfo(
+      CreateBufferRenderer(kTestVisibleSize, texture_owner, kTestAlignment));
+  EXPECT_EQ(last_frame_info_.coded_size, kTestCodedSize);
+  Mock::VerifyAndClearExpectations(texture_owner.get());
+  EXPECT_FALSE(helper_->IsStalled());
+
+  // When the size changes we should guess and `GetCodedSizeAndVisibleRect`
+  // won't be called until the buffer is rendered.
+  const auto kTestVisibleSizeBig = kTestAlignment + gfx::Size(1, 1);
+  const auto kExpectedCodedSize = gfx::ScaleToRoundedSize(kTestAlignment, 2);
+  auto buffer_renderer =
+      CreateBufferRenderer(kTestVisibleSizeBig, texture_owner, kTestAlignment);
+  helper_->GetFrameInfo(std::move(buffer_renderer),
+                        base::BindLambdaForTesting(
+                            [&](std::unique_ptr<CodecOutputBufferRenderer> br,
+                                FrameInfoHelper::FrameInfo info) {
+                              buffer_renderer = std::move(br);
+                              last_frame_info_ = info;
+                            }));
+
+  // The helper should report that it's stalled while waiting for info.
+  EXPECT_TRUE(helper_->IsStalled());
+
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(buffer_renderer);
+  EXPECT_EQ(last_frame_info_.coded_size, kExpectedCodedSize);
+
+  // Rendering the buffer should execute `GetCodedSizeAndVisibleRect`.
+  EXPECT_CALL(*texture_owner, GetCodedSizeAndVisibleRect(_, _, _)).Times(1);
+  ASSERT_TRUE(buffer_renderer->RenderToFrontBuffer());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(helper_->IsStalled());
+  Mock::VerifyAndClearExpectations(texture_owner.get());
+
+  // Calling GetFrameInfo again should just reuse the cached frame information.
+  EXPECT_CALL(*texture_owner, GetCodedSizeAndVisibleRect(_, _, _)).Times(0);
+  GetFrameInfo(CreateBufferRenderer(kTestVisibleSizeBig, texture_owner));
+  EXPECT_EQ(last_frame_info_.coded_size, kExpectedCodedSize);
+  EXPECT_FALSE(helper_->IsStalled());
+  Mock::VerifyAndClearExpectations(texture_owner.get());
+}
+
+TEST_F(FrameInfoHelperTest, TextureOwnerGuessCodedSizeFailRender) {
+  base::test::ScopedFeatureList scoped_enable(kMediaCodecCodedSizeGuessing);
+
+  auto texture_owner = base::MakeRefCounted<NiceMock<gpu::MockTextureOwner>>(
+      0, nullptr, nullptr, true);
+
+  // Return CodedSize when GetCodedSizeAndVisibleRect is called.
+  ON_CALL(*texture_owner, GetCodedSizeAndVisibleRect(_, _, _))
+      .WillByDefault(DoAll(SetArgPointee<1>(kTestCodedSize), Return(true)));
+
+  // The first FrameInfo request should take the normal path.
+  EXPECT_CALL(*texture_owner, GetCodedSizeAndVisibleRect(_, _, _)).Times(1);
+  GetFrameInfo(
+      CreateBufferRenderer(kTestVisibleSize, texture_owner, kTestAlignment));
+  EXPECT_EQ(last_frame_info_.coded_size, kTestCodedSize);
+  EXPECT_FALSE(helper_->IsStalled());
+  Mock::VerifyAndClearExpectations(texture_owner.get());
+
+  // When the size changes we should guess and `GetCodedSizeAndVisibleRect`
+  // won't be called until the buffer is rendered.
+  const auto kTestVisibleSizeBig = kTestAlignment + gfx::Size(1, 1);
+  const auto kExpectedCodedSize = gfx::ScaleToRoundedSize(kTestAlignment, 2);
+  auto buffer_renderer =
+      CreateBufferRenderer(kTestVisibleSizeBig, texture_owner, kTestAlignment);
+  helper_->GetFrameInfo(std::move(buffer_renderer),
+                        base::BindLambdaForTesting(
+                            [&](std::unique_ptr<CodecOutputBufferRenderer> br,
+                                FrameInfoHelper::FrameInfo info) {
+                              buffer_renderer = std::move(br);
+                              last_frame_info_ = info;
+                            }));
+  EXPECT_TRUE(helper_->IsStalled());
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(buffer_renderer);
+  EXPECT_EQ(last_frame_info_.coded_size, kExpectedCodedSize);
+
+  // Issuing another request should be stalled behind the rendering of the
+  // previous one.
+  auto buffer_renderer2 =
+      CreateBufferRenderer(kTestVisibleSizeBig, texture_owner, kTestAlignment);
+  bool called = false;
+  helper_->GetFrameInfo(std::move(buffer_renderer2),
+                        base::BindLambdaForTesting(
+                            [&](std::unique_ptr<CodecOutputBufferRenderer> br,
+                                FrameInfoHelper::FrameInfo info) {
+                              buffer_renderer2 = std::move(br);
+                              called = true;
+                              last_frame_info_ = info;
+                            }));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(buffer_renderer2);
+  ASSERT_FALSE(called);
+
+  EXPECT_TRUE(helper_->IsStalled());
+
+  // Failing the render should cause the next GetFrameInfo to be issued and it
+  // should try to retrieve the real frame info as well.
+  FailNextRender(buffer_renderer.get());
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(buffer_renderer2);
+  EXPECT_EQ(last_frame_info_.coded_size, kExpectedCodedSize);
+
+  EXPECT_TRUE(helper_->IsStalled());
+
+  // Rendering the buffer should execute `GetCodedSizeAndVisibleRect`.
+  EXPECT_CALL(*texture_owner, GetCodedSizeAndVisibleRect(_, _, _)).Times(1);
+  ASSERT_TRUE(buffer_renderer2->RenderToFrontBuffer());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(helper_->IsStalled());
+}
+
+TEST_F(FrameInfoHelperTest, TextureOwnerGuessedWrongCodedSize) {
+  base::test::ScopedFeatureList scoped_enable(kMediaCodecCodedSizeGuessing);
+
+  auto texture_owner = base::MakeRefCounted<NiceMock<gpu::MockTextureOwner>>(
+      0, nullptr, nullptr, true);
+
+  // Return CodedSize when GetCodedSizeAndVisibleRect is called.
+  ON_CALL(*texture_owner, GetCodedSizeAndVisibleRect(_, _, _))
+      .WillByDefault(DoAll(SetArgPointee<1>(kTestVisibleSize2), Return(true)));
+
+  // The first FrameInfo request should take the normal path, but notice that
+  // the returned coded size doesn't match the expected alignment.
+  EXPECT_CALL(*texture_owner, GetCodedSizeAndVisibleRect(_, _, _)).Times(1);
+  GetFrameInfo(
+      CreateBufferRenderer(kTestVisibleSize, texture_owner, kTestAlignment));
+  EXPECT_FALSE(helper_->IsStalled());
+  EXPECT_EQ(last_frame_info_.coded_size, kTestVisibleSize2);
+  Mock::VerifyAndClearExpectations(texture_owner.get());
+
+  // Subsequent size changes should take the non-guessing path.
+  EXPECT_CALL(*texture_owner, GetCodedSizeAndVisibleRect(_, _, _)).Times(1);
+  GetFrameInfo(CreateBufferRenderer(kTestVisibleSize2, texture_owner));
+  EXPECT_FALSE(helper_->IsStalled());
+  EXPECT_EQ(last_frame_info_.coded_size, kTestVisibleSize2);
+  Mock::VerifyAndClearExpectations(texture_owner.get());
 }
 
 TEST_F(FrameInfoHelperTest, Overlay) {

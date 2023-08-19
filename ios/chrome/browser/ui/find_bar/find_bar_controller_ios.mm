@@ -5,9 +5,9 @@
 #import "ios/chrome/browser/ui/find_bar/find_bar_controller_ios.h"
 
 #import "base/apple/bundle_locations.h"
+#import "base/apple/foundation_util.h"
 #import "base/format_macros.h"
 #import "base/i18n/rtl.h"
-#import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/find_in_page/constants.h"
@@ -23,10 +23,6 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "ui/base/resource/resource_bundle.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 // For the first `kSearchDelayChars` characters, delay by `kSearchLongDelay`

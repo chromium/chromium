@@ -10,62 +10,47 @@
 #include "base/task/task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "dbus/bus.h"
+#include "dbus/error.h"
 #include "dbus/object_proxy.h"
-#include "dbus/scoped_dbus_error.h"
 
 namespace chromeos {
 
 namespace {
 
 // This function is a part of CallMethodAndBlock implementation.
-void CallMethodAndBlockInternal(std::unique_ptr<dbus::Response>* response,
-                                base::ScopedClosureRunner* signaler,
-                                dbus::ObjectProxy* proxy,
-                                dbus::MethodCall* method_call,
-                                dbus::ScopedDBusError* error_out) {
-  *response = proxy->CallMethodAndBlockWithErrorDetails(
-      method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, error_out);
+void CallMethodAndBlockInternal(
+    dbus::ObjectProxy* proxy,
+    dbus::MethodCall* method_call,
+    base::expected<std::unique_ptr<dbus::Response>, dbus::Error>* result) {
+  *result = proxy->CallMethodAndBlock(method_call,
+                                      dbus::ObjectProxy::TIMEOUT_USE_DEFAULT);
 }
 
 }  // namespace
 
 BlockingMethodCaller::BlockingMethodCaller(dbus::Bus* bus,
                                            dbus::ObjectProxy* proxy)
-    : bus_(bus),
-      proxy_(proxy),
-      on_blocking_method_call_(
-          base::WaitableEvent::ResetPolicy::AUTOMATIC,
-          base::WaitableEvent::InitialState::NOT_SIGNALED) {}
+    : bus_(bus), proxy_(proxy) {}
 
 BlockingMethodCaller::~BlockingMethodCaller() = default;
 
-std::unique_ptr<dbus::Response> BlockingMethodCaller::CallMethodAndBlock(
-    dbus::MethodCall* method_call) {
-  dbus::ScopedDBusError error;
-  return CallMethodAndBlockWithError(method_call, &error);
-}
-
-std::unique_ptr<dbus::Response>
-BlockingMethodCaller::CallMethodAndBlockWithError(
-    dbus::MethodCall* method_call,
-    dbus::ScopedDBusError* error_out) {
-  // on_blocking_method_call_->Signal() will be called when |signaler| is
-  // destroyed.
-  base::OnceClosure signal_task =
-      base::BindOnce(&base::WaitableEvent::Signal,
-                     base::Unretained(&on_blocking_method_call_));
-  base::ScopedClosureRunner* signaler =
-      new base::ScopedClosureRunner(std::move(signal_task));
-
-  std::unique_ptr<dbus::Response> response;
+base::expected<std::unique_ptr<dbus::Response>, dbus::Error>
+BlockingMethodCaller::CallMethodAndBlock(dbus::MethodCall* method_call) {
+  base::WaitableEvent on_complete;
+  base::expected<std::unique_ptr<dbus::Response>, dbus::Error> result;
   bus_->GetDBusTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&CallMethodAndBlockInternal, &response,
-                                base::Owned(signaler), base::Unretained(proxy_),
-                                method_call, error_out));
+      FROM_HERE,
+      base::BindOnce(&CallMethodAndBlockInternal, base::Unretained(proxy_),
+                     base::Unretained(method_call), base::Unretained(&result))
+          // After the Callback is called, signal `on_complete` to unblock
+          // this thread.
+          .Then(base::BindOnce(&base::WaitableEvent::Signal,
+                               base::Unretained(&on_complete))));
+
   // http://crbug.com/125360
   base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
-  on_blocking_method_call_.Wait();
-  return response;
+  on_complete.Wait();
+  return result;
 }
 
 }  // namespace chromeos

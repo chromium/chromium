@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/shared/ui/symbols/chrome_icon.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
@@ -14,16 +14,12 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 using TableViewDetailIconItemTest = PlatformTest;
 
 // Returns the UIImageView containing the icon within the cell.
 UIImageView* GetImageView(TableViewDetailIconCell* cell) {
-  return base::mac::ObjCCastStrict<UIImageView>(
+  return base::apple::ObjCCastStrict<UIImageView>(
       cell.contentView.subviews[0].subviews[0]);
 }
 
@@ -54,7 +50,7 @@ TEST_F(TableViewDetailIconItemTest, ItemProperties) {
   ASSERT_TRUE([cell isMemberOfClass:[TableViewDetailIconCell class]]);
 
   TableViewDetailIconCell* detail_cell =
-      base::mac::ObjCCastStrict<TableViewDetailIconCell>(cell);
+      base::apple::ObjCCastStrict<TableViewDetailIconCell>(cell);
 
   ChromeTableViewStyler* styler = [[ChromeTableViewStyler alloc] init];
   [item configureCell:cell withStyler:styler];
@@ -88,7 +84,7 @@ TEST_F(TableViewDetailIconItemTest, iconImageUpdate) {
   ASSERT_TRUE([cell isMemberOfClass:[TableViewDetailIconCell class]]);
 
   TableViewDetailIconCell* detail_cell =
-      base::mac::ObjCCastStrict<TableViewDetailIconCell>(cell);
+      base::apple::ObjCCastStrict<TableViewDetailIconCell>(cell);
 
   ChromeTableViewStyler* styler = [[ChromeTableViewStyler alloc] init];
   [item configureCell:cell withStyler:styler];
@@ -128,7 +124,7 @@ TEST_F(TableViewDetailIconItemTest, iconImageNilUpdate) {
   ASSERT_TRUE([cell isMemberOfClass:[TableViewDetailIconCell class]]);
 
   TableViewDetailIconCell* detail_cell =
-      base::mac::ObjCCastStrict<TableViewDetailIconCell>(cell);
+      base::apple::ObjCCastStrict<TableViewDetailIconCell>(cell);
 
   ChromeTableViewStyler* styler = [[ChromeTableViewStyler alloc] init];
   [item configureCell:cell withStyler:styler];
@@ -167,7 +163,7 @@ TEST_F(TableViewDetailIconItemTest, ItemUpdateUILayoutConstraintAxisVertical) {
   ASSERT_TRUE([cell isMemberOfClass:[TableViewDetailIconCell class]]);
 
   TableViewDetailIconCell* detail_cell =
-      base::mac::ObjCCastStrict<TableViewDetailIconCell>(cell);
+      base::apple::ObjCCastStrict<TableViewDetailIconCell>(cell);
 
   ChromeTableViewStyler* styler = [[ChromeTableViewStyler alloc] init];
   [item configureCell:cell withStyler:styler];

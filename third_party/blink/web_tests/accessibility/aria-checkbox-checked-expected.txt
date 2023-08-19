@@ -12,8 +12,8 @@ PASS checkbox.checked is "true"
 PASS checkbox.checked is "false"
 PASS checkbox.checked is "true"
 PASS checkbox.checked is "false"
-PASS checkbox.checked is "false"
 PASS checkbox.checked is "true"
+PASS checkbox.checked is "false"
 PASS checkbox.checked is "true"
 PASS successfullyParsed is true
 

@@ -33,7 +33,6 @@ public class ProviderBookmarksUriTest {
     @Rule
     public ProviderTestRule mProviderTestRule = new ProviderTestRule();
 
-    private static final String TAG = "ProviderBookmarkUriTest";
     private static final byte[] FAVICON_DATA = { 1, 2, 3 };
 
     private Uri mBookmarksUri;

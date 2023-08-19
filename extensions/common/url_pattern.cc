@@ -353,7 +353,7 @@ void URLPattern::SetValidSchemes(int valid_schemes) {
 
 void URLPattern::SetHost(base::StringPiece host) {
   spec_.clear();
-  host_.assign(host.data(), host.size());
+  host_ = host;
 }
 
 void URLPattern::SetMatchAllURLs(bool val) {
@@ -375,7 +375,7 @@ void URLPattern::SetMatchSubdomains(bool val) {
 
 bool URLPattern::SetScheme(base::StringPiece scheme) {
   spec_.clear();
-  scheme_.assign(scheme.data(), scheme.size());
+  scheme_ = scheme;
   if (scheme_ == "*") {
     valid_schemes_ &= (SCHEME_HTTP | SCHEME_HTTPS);
   } else if (!IsValidScheme(scheme_)) {
@@ -398,7 +398,7 @@ bool URLPattern::IsValidScheme(base::StringPiece scheme) const {
 
 void URLPattern::SetPath(base::StringPiece path) {
   spec_.clear();
-  path_.assign(path.data(), path.size());
+  path_ = path;
   path_escaped_ = path_;
   base::ReplaceSubstringsAfterOffset(&path_escaped_, 0, "\\", "\\\\");
   base::ReplaceSubstringsAfterOffset(&path_escaped_, 0, "?", "\\?");
@@ -407,7 +407,7 @@ void URLPattern::SetPath(base::StringPiece path) {
 bool URLPattern::SetPort(base::StringPiece port) {
   spec_.clear();
   if (IsValidPortForScheme(scheme_, port)) {
-    port_.assign(port.data(), port.size());
+    port_ = port;
     return true;
   }
   return false;
@@ -767,14 +767,24 @@ bool URLPattern::MatchesPortPattern(base::StringPiece port) const {
 
 std::vector<std::string> URLPattern::GetExplicitSchemes() const {
   std::vector<std::string> result;
+  const bool is_wildcard_scheme = (scheme_ == "*");
 
-  if (scheme_ != "*" && !match_all_urls_ && IsValidScheme(scheme_)) {
+  if (!is_wildcard_scheme && !match_all_urls_ && IsValidScheme(scheme_)) {
     result.push_back(scheme_);
     return result;
   }
 
+  result.reserve(std::size(kValidSchemes));
   for (size_t i = 0; i < std::size(kValidSchemes); ++i) {
-    if (MatchesScheme(kValidSchemes[i])) {
+    const bool is_valid_scheme = (valid_schemes_ == SCHEME_ALL ||
+                                  (valid_schemes_ & kValidSchemeMasks[i]));
+    if (!is_valid_scheme) {
+      continue;
+    }
+
+    const bool scheme_matches =
+        (is_wildcard_scheme || kValidSchemes[i] == scheme_);
+    if (scheme_matches) {
       result.push_back(kValidSchemes[i]);
     }
   }

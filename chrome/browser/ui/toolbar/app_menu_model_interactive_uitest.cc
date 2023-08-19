@@ -222,8 +222,9 @@ class PasswordManagerMenuItemInteractiveTest
       public testing::WithParamInterface<bool> {
  public:
   PasswordManagerMenuItemInteractiveTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        password_manager::features::kPasswordManagerRedesign, GetParam());
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kChromeRefresh2023, false},
+         {features::kChromeRefreshSecondary2023, false}});
   }
   PasswordManagerMenuItemInteractiveTest(
       const PasswordManagerMenuItemInteractiveTest&) = delete;
@@ -232,39 +233,29 @@ class PasswordManagerMenuItemInteractiveTest
   ~PasswordManagerMenuItemInteractiveTest() override = default;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    PasswordManagerMenuItemInteractiveTest,
-    /* features::kPasswordManagerRedesign status */ testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(PasswordManagerMenuItemInteractiveTest,
+IN_PROC_BROWSER_TEST_F(PasswordManagerMenuItemInteractiveTest,
                        PasswordManagerMenuItem) {
   base::HistogramTester histograms;
 
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordManagerRedesign)) {
-    RunTestSequence(InstrumentTab(kPrimaryTabPageElementId),
-                    PressButton(kAppMenuButtonElementId),
-                    SelectMenuItem(AppMenuModel::kPasswordManagerMenuItem),
-                    WaitForWebContentsNavigation(
-                        kPrimaryTabPageElementId,
-                        GURL("chrome://password-manager/passwords")));
+  RunTestSequence(InstrumentTab(kPrimaryTabPageElementId),
+                  PressButton(kAppMenuButtonElementId),
+                  SelectMenuItem(AppMenuModel::kPasswordManagerMenuItem),
+                  WaitForWebContentsNavigation(
+                      kPrimaryTabPageElementId,
+                      GURL("chrome://password-manager/passwords")));
 
-    histograms.ExpectTotalCount("WrenchMenu.TimeToAction.PasswordManager", 1);
-    histograms.ExpectBucketCount("WrenchMenu.MenuAction",
-                                 MENU_ACTION_PASSWORD_MANAGER, 1);
-  } else {
-    RunTestSequence(InstrumentTab(kPrimaryTabPageElementId),
-                    PressButton(kAppMenuButtonElementId),
-                    EnsureNotPresent(AppMenuModel::kPasswordManagerMenuItem));
-  }
+  histograms.ExpectTotalCount("WrenchMenu.TimeToAction.PasswordManager", 1);
+  histograms.ExpectBucketCount("WrenchMenu.MenuAction",
+                               MENU_ACTION_PASSWORD_MANAGER, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(PasswordManagerMenuItemInteractiveTest,
+IN_PROC_BROWSER_TEST_F(PasswordManagerMenuItemInteractiveTest,
                        NoMenuItemOnPasswordManagerPage) {
   RunTestSequence(
       AddInstrumentedTab(kPrimaryTabPageElementId,
                          GURL("chrome://password-manager/passwords")),
+      WaitForWebContentsReady(kPrimaryTabPageElementId,
+                              GURL("chrome://password-manager/passwords")),
       PressButton(kAppMenuButtonElementId),
       EnsureNotPresent(AppMenuModel::kPasswordManagerMenuItem));
 }

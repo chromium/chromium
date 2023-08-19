@@ -675,6 +675,43 @@ TEST(ValuesTest, DictSetByDottedPath) {
   EXPECT_EQ(c, b->Find("c"));
 }
 
+TEST(ValuesTest, RvalueDictSetByDottedPath) {
+  Value::Dict dict =
+      Value::Dict()
+          .SetByDottedPath("nested.dictionary.null", Value())
+          .SetByDottedPath("nested.dictionary.bool", false)
+          .SetByDottedPath("nested.dictionary.int", 42)
+          .SetByDottedPath("nested.dictionary.double", 1.2)
+          .SetByDottedPath("nested.dictionary.string", "value")
+          .SetByDottedPath("nested.dictionary.u16-string", u"u16-value")
+          .SetByDottedPath("nested.dictionary.std-string",
+                           std::string("std-value"))
+          .SetByDottedPath("nested.dictionary.blob", Value::BlobStorage({1, 2}))
+          .SetByDottedPath("nested.dictionary.list",
+                           Value::List().Append("value in list"))
+          .SetByDottedPath("nested.dictionary.dict",
+                           Value::Dict().Set("key", "value"));
+
+  Value::Dict expected =
+      Value::Dict()  //
+          .Set("nested",
+               base::Value::Dict()  //
+                   .Set("dictionary",
+                        base::Value::Dict()
+                            .Set("null", Value())
+                            .Set("bool", false)
+                            .Set("int", 42)
+                            .Set("double", 1.2)
+                            .Set("string", "value")
+                            .Set("u16-string", u"u16-value")
+                            .Set("std-string", std::string("std-value"))
+                            .Set("blob", Value::BlobStorage({1, 2}))
+                            .Set("list", Value::List().Append("value in list"))
+                            .Set("dict", Value::Dict().Set("key", "value"))));
+
+  EXPECT_EQ(dict, expected);
+}
+
 TEST(ValuesTest, DictSetWithDottedKey) {
   Value::Dict dict;
 

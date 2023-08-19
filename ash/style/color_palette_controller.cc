@@ -7,6 +7,9 @@
 #include <memory>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/login/login_screen_controller.h"
+#include "ash/public/cpp/login_types.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/style/color_mode_observer.h"
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
@@ -16,19 +19,26 @@
 #include "ash/style/color_util.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
+#include "base/barrier_callback.h"
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
+#include "base/json/values_util.h"
 #include "base/logging.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "ui/color/color_provider_manager.h"
+#include "components/user_manager/known_user.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/color/dynamic_color/palette.h"
 #include "ui/color/dynamic_color/palette_factory.h"
 #include "ui/gfx/color_palette.h"
@@ -39,18 +49,15 @@ namespace {
 
 class ColorPaletteControllerImpl;
 
-using ColorMode = ui::ColorProviderManager::ColorMode;
+using ColorMode = ui::ColorProviderKey::ColorMode;
 
-// Returns the wallpaper colors for pre-Jelly.  Called for both dark and light.
-SkColor GetWallpaperColor(bool is_dark_mode_enabled) {
-  const SkColor default_color =
-      is_dark_mode_enabled ? gfx::kGoogleGrey900 : SK_ColorWHITE;
-  return ColorUtil::GetBackgroundThemedColor(default_color,
-                                             is_dark_mode_enabled);
-}
+const SkColor kDefaultWallpaperColor = gfx::kGoogleBlue400;
 
 PrefService* GetUserPrefService(const AccountId& account_id) {
-  DCHECK(account_id.is_valid());
+  if (!account_id.is_valid()) {
+    CHECK_IS_TEST();
+    return nullptr;
+  }
   return Shell::Get()->session_controller()->GetUserPrefServiceForUser(
       account_id);
 }
@@ -65,7 +72,7 @@ const AccountId& AccountFromSession(const UserSession* session) {
   return session->user_info.account_id;
 }
 
-using SchemeVariant = ui::ColorProviderManager::SchemeVariant;
+using SchemeVariant = ui::ColorProviderKey::SchemeVariant;
 
 SchemeVariant ToVariant(ColorScheme scheme) {
   switch (scheme) {
@@ -108,16 +115,20 @@ SampleColorScheme GenerateSampleColorScheme(bool dark,
   return sample;
 }
 
-std::vector<SampleColorScheme> GenerateSamples(
-    bool dark,
-    SkColor sample_color,
-    const std::vector<const ColorScheme>& schemes) {
-  std::vector<SampleColorScheme> samples;
-  for (auto scheme : schemes) {
-    samples.push_back(GenerateSampleColorScheme(dark, sample_color, scheme));
+void SortSampleColorSchemes(
+    ColorPaletteController::SampleColorSchemeCallback callback,
+    base::span<const ColorScheme> color_scheme_buttons,
+    std::vector<SampleColorScheme> sample_color_schemes) {
+  std::vector<SampleColorScheme> sorted_sample_color_schemes;
+  for (const auto scheme : color_scheme_buttons) {
+    auto color_scheme_sample =
+        std::find_if(sample_color_schemes.begin(), sample_color_schemes.end(),
+                     [&scheme](SampleColorScheme sample) {
+                       return scheme == sample.scheme;
+                     });
+    sorted_sample_color_schemes.push_back(*color_scheme_sample);
   }
-
-  return samples;
+  std::move(callback).Run(sorted_sample_color_schemes);
 }
 
 // Refresh colors of the system on the current color mode. Not only the SysUI,
@@ -147,21 +158,26 @@ void RefreshNativeTheme(const ColorPaletteSeed& seed) {
   native_theme_web->NotifyOnNativeThemeUpdated();
 }
 
-// TODO(b/258719005): Finish implementation with code that works/uses libmonet.
 class ColorPaletteControllerImpl : public ColorPaletteController,
                                    public WallpaperControllerObserver,
                                    public ColorModeObserver {
  public:
   ColorPaletteControllerImpl(
       DarkLightModeController* dark_light_mode_controller,
-      WallpaperControllerImpl* wallpaper_controller)
+      WallpaperControllerImpl* wallpaper_controller,
+      PrefService* local_state)
       : wallpaper_controller_(wallpaper_controller),
-        dark_light_mode_controller_(dark_light_mode_controller) {
+        dark_light_mode_controller_(dark_light_mode_controller),
+        local_state_(local_state) {
     dark_light_observation_.Observe(dark_light_mode_controller);
     wallpaper_observation_.Observe(wallpaper_controller);
+    Shell::Get()->login_screen_controller()->data_dispatcher()->AddObserver(
+        this);
+    if (!local_state) {
+      // The local state should only be null in tests.
+      CHECK_IS_TEST();
+    }
   }
-
-  ~ColorPaletteControllerImpl() override = default;
 
   void AddObserver(Observer* observer) override {
     observers_.AddObserver(observer);
@@ -183,8 +199,8 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
     pref_service->SetInteger(prefs::kDynamicColorColorScheme,
                              static_cast<int>(scheme));
     NotifyObservers(GetColorPaletteSeed(account_id));
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, std::move(on_complete), base::Milliseconds(100));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(on_complete));
   }
 
   void SetStaticColor(SkColor seed_color,
@@ -202,27 +218,50 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
                              static_cast<int>(ColorScheme::kStatic));
     pref_service->SetUint64(prefs::kDynamicColorSeedColor, seed_color);
     NotifyObservers(GetColorPaletteSeed(account_id));
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, std::move(on_complete), base::Milliseconds(100));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(on_complete));
   }
 
   absl::optional<ColorPaletteSeed> GetColorPaletteSeed(
       const AccountId& account_id) const override {
     ColorPaletteSeed seed;
-    bool dark = dark_light_mode_controller_->IsDarkModeEnabled();
-    absl::optional<SkColor> seed_color = UsesWallpaperSeedColor(account_id)
-                                             ? CurrentWallpaperColor(dark)
-                                             : GetStaticSeedColor(account_id);
+    absl::optional<SkColor> seed_color =
+        UsesWallpaperSeedColor(account_id)
+            ? GetWallpaperColorForUser(account_id)
+            : GetStaticSeedColor(account_id);
     if (!seed_color) {
       return {};
     }
 
-    seed.color_mode = dark ? ui::ColorProviderManager::ColorMode::kDark
-                           : ui::ColorProviderManager::ColorMode::kLight;
+    seed.color_mode = dark_light_mode_controller_->IsDarkModeEnabled()
+                          ? ui::ColorProviderKey::ColorMode::kDark
+                          : ui::ColorProviderKey::ColorMode::kLight;
     seed.seed_color = *seed_color;
     seed.scheme = GetColorScheme(account_id);
 
     return seed;
+  }
+
+  absl::optional<SkColor> GetWallpaperColorForUser(
+      const AccountId& account_id) const {
+    if (GetActiveUserSession()) {
+      return CurrentWallpaperColor(
+          dark_light_mode_controller_->IsDarkModeEnabled());
+    }
+    const bool should_use_k_means = ShouldUseKMeans(account_id);
+    absl::optional<SkColor> seed_color =
+        wallpaper_controller_->GetCachedWallpaperColorForUser(
+            account_id, should_use_k_means);
+    if (seed_color.has_value()) {
+      if (should_use_k_means) {
+        bool dark = dark_light_mode_controller_->IsDarkModeEnabled();
+        return ColorUtil::AdjustKMeansColor(seed_color.value(), dark);
+      }
+      return seed_color.value();
+    }
+    DVLOG(1)
+        << "No wallpaper color for user. Returning default wallpaper color.";
+    return kDefaultWallpaperColor;
   }
 
   absl::optional<ColorPaletteSeed> GetCurrentSeed() const override {
@@ -245,22 +284,34 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
       return ColorScheme::kTonalSpot;
     }
     PrefService* pref_service = GetUserPrefService(account_id);
-    if (!pref_service) {
-      DVLOG(1)
-          << "No user pref service available. Returning default color scheme.";
-      return ColorScheme::kTonalSpot;
+    if (pref_service) {
+      const PrefService::Preference* pref =
+          pref_service->FindPreference(prefs::kDynamicColorColorScheme);
+      if (!pref->IsDefaultValue()) {
+        return static_cast<ColorScheme>(pref->GetValue()->GetInt());
+      }
+    } else {
+      CHECK(local_state_);
+      const auto scheme =
+          user_manager::KnownUser(local_state_)
+              .FindIntPath(account_id, prefs::kDynamicColorColorScheme);
+      if (scheme.has_value()) {
+        return static_cast<ColorScheme>(scheme.value());
+      }
     }
-    return static_cast<ColorScheme>(
-        pref_service->GetInteger(prefs::kDynamicColorColorScheme));
+
+    DVLOG(1) << "No user pref service or local pref service available. "
+                "Returning default color scheme.";
+    // The preferred default color scheme for the time of day wallpaper instead
+    // of tonal spot.
+    return features::IsTimeOfDayWallpaperEnabled() &&
+                   wallpaper_controller_->IsTimeOfDayWallpaper()
+               ? ColorScheme::kNeutral
+               : ColorScheme::kTonalSpot;
   }
 
   absl::optional<SkColor> GetStaticColor(
       const AccountId& account_id) const override {
-    PrefService* pref_service = GetUserPrefService(account_id);
-    if (!pref_service) {
-      DVLOG(1) << "No user pref service available.";
-      return absl::nullopt;
-    }
     if (GetColorScheme(account_id) == ColorScheme::kStatic) {
       return GetStaticSeedColor(account_id);
     }
@@ -272,19 +323,43 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
       base::span<const ColorScheme> color_scheme_buttons,
       SampleColorSchemeCallback callback) const override {
     bool dark = dark_light_mode_controller_->IsDarkModeEnabled();
-    absl::optional<SkColor> seed_color = CurrentWallpaperColor(dark);
-    if (!seed_color) {
+    absl::optional<SkColor> celebi_seed_color = GetCurrentCelebiColor();
+    if (!celebi_seed_color) {
       LOG(WARNING) << "Using default color due to missing wallpaper sample";
-      seed_color.emplace(gfx::kGoogleBlue400);
+      celebi_seed_color.emplace(kDefaultWallpaperColor);
     }
+    CHECK(celebi_seed_color.has_value());
+    auto* session = GetActiveUserSession();
+    DCHECK(session);
+    auto account_id = AccountFromSession(session);
+    bool use_k_means = GetUseKMeansPref(account_id);
+    const SkColor tonal_spot_color =
+        use_k_means ? GetCurrentKMeanColor() : *celebi_seed_color;
     // Schemes need to be copied as the underlying memory for the span could go
     // out of scope.
     std::vector<const ColorScheme> schemes_copy(color_scheme_buttons.begin(),
                                                 color_scheme_buttons.end());
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE,
-        base::BindOnce(&GenerateSamples, dark, *seed_color, schemes_copy),
-        base::BindOnce(std::move(callback)));
+    const auto barrier_callback = base::BarrierCallback<SampleColorScheme>(
+        color_scheme_buttons.size(),
+        base::BindOnce(&SortSampleColorSchemes,
+                       base::BindPostTaskToCurrentDefault(std::move(callback)),
+                       std::move(schemes_copy)));
+
+    for (unsigned int i = 0; i < color_scheme_buttons.size(); i++) {
+      SkColor seed_color = color_scheme_buttons[i] == ColorScheme::kTonalSpot
+                               ? tonal_spot_color
+                               : *celebi_seed_color;
+      base::ThreadPool::PostTaskAndReplyWithResult(
+          FROM_HERE,
+          base::BindOnce(&GenerateSampleColorScheme, dark, seed_color,
+                         color_scheme_buttons[i]),
+          base::BindOnce(std::move(barrier_callback)));
+    }
+  }
+
+  // LoginDataDispatcher::Observer overrides:
+  void OnOobeDialogStateChanged(OobeDialogState state) override {
+    oobe_state_ = state;
   }
 
   // WallpaperControllerObserver overrides:
@@ -292,35 +367,197 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
     NotifyObservers(BestEffortSeed(GetActiveUserSession()));
   }
 
+  // WallpaperControllerObserver overrides:
+  void OnUserSetWallpaper(const AccountId& account_id) override {
+    if (oobe_state_ == OobeDialogState::HIDDEN) {
+      UpdateUseKMeanColor(account_id, /* value= */ false);
+    }
+  }
+
+  void SelectLocalAccount(const AccountId& account_id) override {
+    if (!chromeos::features::IsJellyEnabled()) {
+      return;
+    }
+    NotifyObservers(GetColorPaletteSeed(account_id));
+  }
+
   // ColorModeObserver overrides:
   void OnColorModeChanged(bool) override {
     NotifyObservers(BestEffortSeed(GetActiveUserSession()));
   }
 
- private:
-  absl::optional<SkColor> CurrentWallpaperColor(bool dark) const {
+  // SessionObserver overrides:
+  void OnActiveUserPrefServiceChanged(PrefService* prefs) override {
     if (!chromeos::features::IsJellyEnabled()) {
-      return GetWallpaperColor(dark);
+      return;
+    }
+    MaybeSetUseKMeansPref(prefs);
+    NotifyObservers(BestEffortSeed(GetActiveUserSession()));
+
+    pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
+    pref_change_registrar_->Init(prefs);
+    OnColorSchemePrefChanged();
+    OnSeedColorPrefChanged();
+    OnUseKMeansPrefChanged();
+
+    pref_change_registrar_->Add(
+        prefs::kDynamicColorColorScheme,
+        base::BindRepeating(
+            &ColorPaletteControllerImpl::OnColorSchemePrefChanged,
+            base::Unretained(this)));
+    pref_change_registrar_->Add(
+        prefs::kDynamicColorSeedColor,
+        base::BindRepeating(&ColorPaletteControllerImpl::OnSeedColorPrefChanged,
+                            base::Unretained(this)));
+    pref_change_registrar_->Add(
+        prefs::kDynamicColorUseKMeans,
+        base::BindRepeating(&ColorPaletteControllerImpl::OnUseKMeansPrefChanged,
+                            base::Unretained(this)));
+  }
+
+  // Sets the UseKMeans pref to false if the user is new, and
+  // true if the user does not have a set pref. This will give users updating
+  // the device the k means color for tonal spot, while new users will only see
+  // celebi colors.
+  void MaybeSetUseKMeansPref(PrefService* prefs) {
+    DCHECK(prefs);
+    auto* session = GetActiveUserSession();
+    DCHECK(session);
+    if (session->user_info.is_ephemeral) {
+      return;
     }
 
+    auto account_id = AccountFromSession(session);
+    if (Shell::Get()->session_controller()->IsUserFirstLogin()) {
+      // New users should use celebi color calculation.
+      UpdateUseKMeanColor(account_id, /* value= */ false);
+      return;
+    }
+    const PrefService::Preference* pref =
+        prefs->FindPreference(prefs::kDynamicColorUseKMeans);
+    if (pref->IsDefaultValue()) {
+      // Any user without a set pref is an existing user logging in for the
+      // first time after updating their device. They should use the kmeans
+      // color calculation.
+      UpdateUseKMeanColor(account_id, /* value= */ true);
+    }
+  }
+
+  SkColor GetUserWallpaperColorOrDefault(SkColor default_color) const override {
+    const auto& calculated_colors = wallpaper_controller_->calculated_colors();
+    if (!calculated_colors) {
+      DVLOG(1) << "Failed to get wallpaper color";
+      const bool dark_mode = dark_light_mode_controller_->IsDarkModeEnabled();
+      return ColorUtil::AdjustKMeansColor(default_color, dark_mode);
+    }
+
+    absl::optional<AccountId> account_id;
+    auto* session = GetActiveUserSession();
+    if (session) {
+      account_id = AccountFromSession(session);
+    }
+    if (!chromeos::features::IsJellyEnabled() ||
+        (account_id.has_value() && ShouldUseKMeans(*account_id))) {
+      return GetCurrentKMeanColor();
+    }
+
+    const auto celebi_color = GetCurrentCelebiColor();
+    if (celebi_color.has_value()) {
+      return *celebi_color;
+    }
+    DVLOG(1) << "Failed to get wallpaper color";
+    return default_color;
+  }
+
+  bool GetUseKMeansPref(const AccountId& account_id) const override {
+    PrefService* pref_service = GetUserPrefService(account_id);
+    if (pref_service) {
+      return pref_service->GetBoolean(prefs::kDynamicColorUseKMeans);
+    }
+    CHECK(local_state_);
+    const base::Value* value =
+        user_manager::KnownUser(local_state_)
+            .FindPath(account_id, prefs::kDynamicColorUseKMeans);
+    if (value && value->GetIfBool().has_value()) {
+      return value->GetBool();
+    }
+    DVLOG(1) << "No user pref service or local pref service available. "
+                "Returning UseKMeans pref as false.";
+    return false;
+  }
+
+ private:
+  // Gets the user's current wallpaper color.
+  // TODO(b/289106519): Combine this function with |GetUserWallpaperColor|.
+  absl::optional<SkColor> CurrentWallpaperColor(bool dark) const {
+    if (!chromeos::features::IsJellyEnabled()) {
+      const SkColor default_color = dark ? gfx::kGoogleGrey900 : SK_ColorWHITE;
+      return GetUserWallpaperColorOrDefault(default_color);
+    }
     const absl::optional<WallpaperCalculatedColors>& calculated_colors =
         wallpaper_controller_->calculated_colors();
     if (!calculated_colors) {
       return {};
     }
+    auto* session = GetActiveUserSession();
+    if (session) {
+      auto account_id = AccountFromSession(session);
+      if (ShouldUseKMeans(account_id)) {
+        return GetCurrentKMeanColor();
+      }
+    }
+    return GetCurrentCelebiColor();
+  }
 
+  absl::optional<SkColor> GetCurrentCelebiColor() const {
+    const absl::optional<WallpaperCalculatedColors>& calculated_colors =
+        wallpaper_controller_->calculated_colors();
+    if (!calculated_colors) {
+      return {};
+    }
     return calculated_colors->celebi_color;
+  }
+
+  SkColor GetCurrentKMeanColor() const {
+    bool dark = dark_light_mode_controller_->IsDarkModeEnabled();
+    const SkColor default_color = dark ? gfx::kGoogleGrey900 : SK_ColorWHITE;
+    SkColor k_mean_color = wallpaper_controller_->GetKMeanColor();
+    SkColor color =
+        k_mean_color == kInvalidWallpaperColor ? default_color : k_mean_color;
+    return ColorUtil::AdjustKMeansColor(color, dark);
+  }
+
+  bool ShouldUseKMeans(const AccountId& account_id) const {
+    return GetColorScheme(account_id) == ColorScheme::kTonalSpot &&
+           GetUseKMeansPref(account_id);
+  }
+
+  void UpdateUseKMeanColor(const AccountId& account_id, bool value) {
+    PrefService* pref_service = GetUserPrefService(account_id);
+    if (pref_service) {
+      pref_service->SetBoolean(prefs::kDynamicColorUseKMeans, value);
+    }
   }
 
   SkColor GetStaticSeedColor(const AccountId& account_id) const {
     PrefService* pref_service = GetUserPrefService(account_id);
-    if (!pref_service) {
-      DVLOG(1) << "No user pref service available. Returning default color "
-                  "palette seed.";
-      return SK_ColorBLUE;
+    if (pref_service) {
+      return static_cast<SkColor>(
+          pref_service->GetUint64(prefs::kDynamicColorSeedColor));
     }
-    return static_cast<SkColor>(
-        pref_service->GetUint64(prefs::kDynamicColorSeedColor));
+    CHECK(local_state_);
+    const base::Value* value =
+        user_manager::KnownUser(local_state_)
+            .FindPath(account_id, prefs::kDynamicColorSeedColor);
+    if (value) {
+      const auto seed_color = base::ValueToInt64(value);
+      if (seed_color.has_value()) {
+        return static_cast<SkColor>(seed_color.value());
+      }
+    }
+    DVLOG(1) << "No user pref service or local pref service available. "
+                "Returning default color palette seed.";
+    return kDefaultWallpaperColor;
   }
 
   // Returns the seed for `session` if it's present.  Otherwise, returns a seed
@@ -329,20 +566,37 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
     if (session) {
       return GetColorPaletteSeed(AccountFromSession(session));
     }
+    session_manager::SessionState session_state =
+        Shell::Get()->session_controller()->GetSessionState();
+    const bool is_oobe =
+        session_state == session_manager::SessionState::OOBE ||
+        (session_state == session_manager::SessionState::LOGIN_PRIMARY &&
+         oobe_state_ != OobeDialogState::HIDDEN);
 
-    // Generate a seed where we assume TonalSpot and ignore static colors.
-    // TODO(b/276475812): When static color and color scheme are in local state,
-    // only run this if Jelly is not enabled.
-    ColorPaletteSeed seed;
-    bool dark = dark_light_mode_controller_->IsDarkModeEnabled();
-    absl::optional<SkColor> seed_color = CurrentWallpaperColor(dark);
-    if (!seed_color) {
-      // If `seed_color` is not available, we expect to have it shortly when the
-      // color computation is done and this will be called again.
+    if (chromeos::features::IsJellyEnabled() && !is_oobe) {
+      // This early return prevents overwriting colors. When Jelly is disabled,
+      // it is always safe to return the k means color. OOBE has a special
+      // wallpaper and always uses celebi. In any other case, like on the login
+      // screen, the calculated colors may not have been updated and so the
+      // colors should not be updated.
       return {};
     }
-    seed.color_mode = dark ? ui::ColorProviderManager::ColorMode::kDark
-                           : ui::ColorProviderManager::ColorMode::kLight;
+    // Generate a seed where we assume TonalSpot and ignore static colors.
+    ColorPaletteSeed seed;
+    bool dark = dark_light_mode_controller_->IsDarkModeEnabled();
+    // If Jelly is enabled, then the user is in OOBE and should see the celebi
+    // color. If Jelly is not enabled, then users have no access to celebi and
+    // should see the k means color.
+    absl::optional<SkColor> seed_color = chromeos::features::IsJellyEnabled()
+                                             ? GetCurrentCelebiColor()
+                                             : GetCurrentKMeanColor();
+    if (!seed_color) {
+      // If `seed_color` is not available, we expect to have it shortly
+      // the color computation is done and this will be called again.
+      return {};
+    }
+    seed.color_mode = dark ? ui::ColorProviderKey::ColorMode::kDark
+                           : ui::ColorProviderKey::ColorMode::kLight;
     seed.seed_color = *seed_color;
     seed.scheme = ColorScheme::kTonalSpot;
 
@@ -362,27 +616,74 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
     RefreshNativeTheme(*seed);
   }
 
+  void OnColorSchemePrefChanged() {
+    if (!local_state_) {
+      CHECK_IS_TEST();
+      return;
+    }
+    auto account_id = AccountFromSession(GetActiveUserSession());
+    auto color_scheme = GetColorScheme(account_id);
+    user_manager::KnownUser(local_state_)
+        .SetIntegerPref(account_id, prefs::kDynamicColorColorScheme,
+                        static_cast<int>(color_scheme));
+    NotifyObservers(BestEffortSeed(GetActiveUserSession()));
+  }
+
+  void OnSeedColorPrefChanged() {
+    if (!local_state_) {
+      CHECK_IS_TEST();
+      return;
+    }
+    auto account_id = AccountFromSession(GetActiveUserSession());
+    auto seed_color = GetStaticSeedColor(account_id);
+    user_manager::KnownUser(local_state_)
+        .SetPath(account_id, prefs::kDynamicColorSeedColor,
+                 base::Int64ToValue(seed_color));
+    NotifyObservers(BestEffortSeed(GetActiveUserSession()));
+  }
+
+  void OnUseKMeansPrefChanged() {
+    if (!local_state_) {
+      CHECK_IS_TEST();
+      return;
+    }
+    auto account_id = AccountFromSession(GetActiveUserSession());
+    auto use_k_means = GetUseKMeansPref(account_id);
+    user_manager::KnownUser(local_state_)
+        .SetBooleanPref(account_id, prefs::kDynamicColorUseKMeans, use_k_means);
+    NotifyObservers(BestEffortSeed(GetActiveUserSession()));
+  }
+
   base::ScopedObservation<DarkLightModeController, ColorModeObserver>
       dark_light_observation_{this};
 
   base::ScopedObservation<WallpaperController, WallpaperControllerObserver>
       wallpaper_observation_{this};
 
+  ScopedSessionObserver scoped_session_observer_{this};
+
   raw_ptr<WallpaperControllerImpl> wallpaper_controller_;  // unowned
 
   raw_ptr<DarkLightModeController> dark_light_mode_controller_;  // unowned
 
-  base::ObserverList<ColorPaletteController::Observer> observers_;
-};
+  // May be null in tests.
+  const raw_ptr<PrefService> local_state_;
 
+  base::ObserverList<ColorPaletteController::Observer> observers_;
+
+  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+
+  OobeDialogState oobe_state_ = OobeDialogState::HIDDEN;
+};
 }  // namespace
 
 // static
 std::unique_ptr<ColorPaletteController> ColorPaletteController::Create(
     DarkLightModeController* dark_light_mode_controller,
-    WallpaperControllerImpl* wallpaper_controller) {
+    WallpaperControllerImpl* wallpaper_controller,
+    PrefService* local_state) {
   return std::make_unique<ColorPaletteControllerImpl>(
-      dark_light_mode_controller, wallpaper_controller);
+      dark_light_mode_controller, wallpaper_controller, local_state);
 }
 
 // static
@@ -394,6 +695,18 @@ void ColorPaletteController::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterUint64Pref(
       prefs::kDynamicColorSeedColor, 0,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kDynamicColorUseKMeans, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+}
+
+// static
+void ColorPaletteController::RegisterLocalStatePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterIntegerPref(prefs::kDynamicColorColorScheme,
+                                static_cast<int>(ColorScheme::kTonalSpot));
+  registry->RegisterUint64Pref(prefs::kDynamicColorSeedColor, 0);
+  registry->RegisterBooleanPref(prefs::kDynamicColorUseKMeans, false);
 }
 
 }  // namespace ash

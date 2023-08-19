@@ -43,7 +43,7 @@ class MediaQuerySet;
 // listeners that will be called whenever the value of the query changes.
 
 class CORE_EXPORT MediaQueryList final
-    : public EventTargetWithInlineData,
+    : public EventTarget,
       public ActiveScriptWrappable<MediaQueryList>,
       public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();

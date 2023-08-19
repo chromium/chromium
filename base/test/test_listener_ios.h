@@ -5,13 +5,11 @@
 #ifndef BASE_TEST_TEST_LISTENER_IOS_H_
 #define BASE_TEST_TEST_LISTENER_IOS_H_
 
-namespace base {
-namespace test_listener_ios {
+namespace base::test_listener_ios {
 
 // Register an IOSRunLoopListener.
 void RegisterTestEndListener();
 
-}  // namespace test_listener_ios
-}  // namespace base
+}  // namespace base::test_listener_ios
 
 #endif  // BASE_TEST_TEST_LISTENER_IOS_H_

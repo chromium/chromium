@@ -16,6 +16,7 @@ class WebContents;
 namespace android_webview {
 
 // Handles the WebView find-in-page API requests.
+// Lifetime: WebView
 class FindHelper {
  public:
   class Listener {

@@ -38,6 +38,13 @@ class PLATFORM_EXPORT ParkableImageImpl final
   // Smallest encoded size that will actually be parked.
   static constexpr size_t kMinSizeToPark = 1024;  // 1 KiB
   // How long to wait before parking an image.
+  //
+  // Chosen arbitrarily, did not regress metrics in field trials in 2022. From
+  // local experiments, images are typically only decoded once, to raster the
+  // tile(s) they are a part of, then never used as long as the image decode
+  // cache is not emptied and the tiles are not re-rasterized. This is set to
+  // something longer than e.g. 1s in case there is a looping GIF for instance,
+  // and/or the decoded image cache is too small.
   static constexpr base::TimeDelta kParkingDelay = base::Seconds(30);
 
  private:
@@ -128,6 +135,7 @@ class PLATFORM_EXPORT ParkableImageImpl final
 
   std::unique_ptr<RWBuffer> rw_buffer_ GUARDED_BY(lock_);
 
+  std::unique_ptr<ReservedChunk> reserved_chunk_ GUARDED_BY(lock_);
   // Non-null iff we have the data from |rw_buffer_| saved to disk.
   std::unique_ptr<DiskDataMetadata> on_disk_metadata_ GUARDED_BY(lock_);
   // |size_| is only modified on the main thread.

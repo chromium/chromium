@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/containers/contains.h"
 #include "base/strings/string_util.h"
 #include "chromecast/base/version.h"
 namespace chromecast {
@@ -43,8 +44,8 @@ const std::string GetVersionString(const std::string& cast_release_number,
 }
 
 const std::string VersionToVariant(const std::string& cast_build_revision) {
-  for (std::string variant : {kEngVariant, kUserVariant}) {
-    if (cast_build_revision.find(variant) != std::string::npos) {
+  for (const std::string& variant : {kEngVariant, kUserVariant}) {
+    if (base::Contains(cast_build_revision, variant)) {
       return variant;
     }
   }

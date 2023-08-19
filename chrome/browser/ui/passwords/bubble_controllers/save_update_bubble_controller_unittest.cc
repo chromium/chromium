@@ -779,3 +779,27 @@ TEST_F(SaveUpdateBubbleControllerTest,
   EXPECT_FALSE(
       controller()->IsCurrentStateAffectingPasswordsStoredInTheGoogleAccount());
 }
+
+TEST_F(SaveUpdateBubbleControllerTest, NullDelegate) {
+  PasswordsModelDelegateMock delegate;
+  EXPECT_CALL(delegate, GetPendingPassword())
+      .WillOnce(ReturnRef(pending_password()));
+  password_manager::InteractionsStats stats = GetTestStats();
+  EXPECT_CALL(delegate, GetCurrentInteractionStats()).WillOnce(Return(&stats));
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> forms =
+      GetCurrentForms();
+  EXPECT_CALL(delegate, GetCurrentForms()).WillOnce(ReturnRef(forms));
+  url::Origin origin = url::Origin::Create(GURL(kSiteOrigin));
+  EXPECT_CALL(delegate, GetOrigin()).WillOnce(Return(origin));
+  EXPECT_CALL(delegate, GetState())
+      .WillRepeatedly(Return(password_manager::ui::PENDING_PASSWORD_STATE));
+  EXPECT_CALL(delegate, GetWebContents()).WillRepeatedly(Return(nullptr));
+  SaveUpdateBubbleController controller(
+      delegate.AsWeakPtr(),
+      PasswordBubbleControllerBase::DisplayReason::kAutomatic);
+
+  controller.OnBubbleClosing();
+
+  EXPECT_FALSE(
+      controller.IsCurrentStateAffectingPasswordsStoredInTheGoogleAccount());
+}

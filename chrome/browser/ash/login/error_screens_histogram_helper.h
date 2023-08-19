@@ -30,6 +30,8 @@ class ErrorScreensHistogramHelper {
     kUpdate,
     kUpdateRequired,
     kUserCreation,
+    kAddChild,
+    kConsumerUpdate,
   };
 
   explicit ErrorScreensHistogramHelper(ErrorParentScreen parent_screen);

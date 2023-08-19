@@ -14,10 +14,10 @@ class FilePath;
 void CheckUserDataDirPolicy(base::FilePath* user_data_dir);
 
 // Sets the app bundle (base::apple::FrameworkBundle()) to the framework's
-// bundle, and sets the base bundle ID (base::mac::BaseBundleID()) to the proper
-// value based on the running application. The base bundle ID is the outer
-// browser application's bundle ID even when running in a non-browser (helper)
-// process.
+// bundle, and sets the base bundle ID (base::apple::BaseBundleID()) to the
+// proper value based on the running application. The base bundle ID is the
+// outer browser application's bundle ID even when running in a non-browser
+// (helper) process.
 void SetUpBundleOverrides();
 
 // Checks if the system launched the alerts helper app via a notification

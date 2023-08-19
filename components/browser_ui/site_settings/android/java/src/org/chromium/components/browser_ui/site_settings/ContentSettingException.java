@@ -26,6 +26,7 @@ public class ContentSettingException implements Serializable {
     // TODO(crbug.com/1344877): Convert {@link #mSource} to enum to enable merging {@link #mSource}
     // and {@link #mIsEmbargoed}.
     private final String mSource;
+    private final Integer mExpirationInDays;
     private final boolean mIsEmbargoed;
 
     /**
@@ -39,12 +40,13 @@ public class ContentSettingException implements Serializable {
      */
     public ContentSettingException(@ContentSettingsType int type, String primaryPattern,
             String secondaryPattern, @ContentSettingValues @Nullable Integer setting, String source,
-            boolean isEmbargoed) {
+            final Integer expirationInDays, boolean isEmbargoed) {
         mContentSettingType = type;
         mPrimaryPattern = primaryPattern;
         mSecondaryPattern = secondaryPattern;
         mContentSetting = setting;
         mSource = source;
+        mExpirationInDays = expirationInDays;
         mIsEmbargoed = isEmbargoed;
     }
 
@@ -54,7 +56,8 @@ public class ContentSettingException implements Serializable {
      */
     public ContentSettingException(@ContentSettingsType int type, String primaryPattern,
             @ContentSettingValues @Nullable Integer setting, String source, boolean isEmbargoed) {
-        this(type, primaryPattern, SITE_WILDCARD, setting, source, isEmbargoed);
+        this(type, primaryPattern, SITE_WILDCARD, setting, source,
+                /* expirationInDays = */ null, isEmbargoed);
     }
 
     public String getPrimaryPattern() {
@@ -79,6 +82,14 @@ public class ContentSettingException implements Serializable {
 
     public @ContentSettingsType int getContentSettingType() {
         return mContentSettingType;
+    }
+
+    public boolean hasExpiration() {
+        return mExpirationInDays != null;
+    }
+
+    public Integer getExpirationInDays() {
+        return mExpirationInDays;
     }
 
     public boolean isEmbargoed() {

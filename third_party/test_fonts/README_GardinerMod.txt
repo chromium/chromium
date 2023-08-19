@@ -3,8 +3,8 @@ Short Name: Aegyptus
 URL: http://users.teilar.gr/~g1951d/
 Version: 5.03
 License: Public Domain
-License File: NOT_SHIPPED
 Security Critical: no
+Shipped: no
 
 Description:
 

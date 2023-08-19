@@ -16,6 +16,10 @@ device::mojom::DevicePostureType
 DevicePosturePlatformProviderAndroid::GetDevicePosture() {
   return device::mojom::DevicePostureType::kContinuous;
 }
+const std::vector<gfx::Rect>&
+DevicePosturePlatformProviderAndroid::GetViewportSegments() {
+  return current_viewport_segments_;
+}
 
 void DevicePosturePlatformProviderAndroid::StartListening() {}
 

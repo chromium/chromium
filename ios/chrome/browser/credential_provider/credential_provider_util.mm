@@ -6,13 +6,15 @@
 
 #import <CommonCrypto/CommonDigest.h>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/thread_pool.h"
 #import "base/threading/scoped_blocking_call.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
+#import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
 #import "ios/chrome/common/credential_provider/archivable_credential_store.h"
@@ -21,10 +23,6 @@
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
 #import "net/base/mac/url_conversions.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using base::SysUTF16ToNSString;
 using base::UTF8ToUTF16;
@@ -63,16 +61,16 @@ NSString* GetFaviconFileKey(const GURL& url) {
 
 void SaveFaviconToSharedAppContainer(FaviconAttributes* attributes,
                                      NSString* filename) {
-  NSError* error = nil;
-  NSData* data = [NSKeyedArchiver archivedDataWithRootObject:attributes
-                                       requiringSecureCoding:NO
-                                                       error:&error];
-  if (!data || error) {
-    DLOG(WARNING) << base::SysNSStringToUTF8([error description]);
-    return;
-  }
-
   base::OnceCallback<void()> write_image = base::BindOnce(^{
+    NSError* error = nil;
+    NSData* data = [NSKeyedArchiver archivedDataWithRootObject:attributes
+                                         requiringSecureCoding:NO
+                                                         error:&error];
+    if (!data || error) {
+      DLOG(WARNING) << base::SysNSStringToUTF8([error description]);
+      return;
+    }
+
     base::ScopedBlockingCall scoped_blocking_call(
         FROM_HERE, base::BlockingType::WILL_BLOCK);
     NSURL* shared_favicon_attributes_folder_url =
@@ -95,7 +93,9 @@ void SaveFaviconToSharedAppContainer(FaviconAttributes* attributes,
     [data writeToURL:file_url atomically:YES];
   });
   base::ThreadPool::PostTask(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      FROM_HERE,
+      {base::MayBlock(), base::ThreadPolicy::PREFER_BACKGROUND,
+       base::TaskPriority::BEST_EFFORT},
       std::move(write_image));
 }
 
@@ -153,7 +153,7 @@ void FetchFaviconForURLToPath(FaviconLoader* favicon_loader,
 // Gets the last sync date for favicons in the app group storage.
 base::Time GetFaviconsLastSyncDate() {
   NSDate* last_sync_date =
-      base::mac::ObjCCast<NSDate>([[NSUserDefaults standardUserDefaults]
+      base::apple::ObjCCast<NSDate>([[NSUserDefaults standardUserDefaults]
           objectForKey:kFaviconsLastSyncDatePrefKey]);
   // If no value stored in the NSUserDefaults, consider that the last sync
   // happened forever ago.
@@ -293,4 +293,16 @@ void UpdateFaviconsStorage(FaviconLoader* favicon_loader, bool sync_enabled) {
         FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
         base::BindOnce(&CleanUpFavicons, excess_favicons_filenames));
   }];
+}
+
+void UpdateFaviconsStorageForBrowserState(
+    base::WeakPtr<ChromeBrowserState> weak_browser_state,
+    bool sync_enabled) {
+  ChromeBrowserState* browser_state = weak_browser_state.get();
+  if (!browser_state) {
+    return;
+  }
+  UpdateFaviconsStorage(
+      IOSChromeFaviconLoaderFactory::GetForBrowserState(browser_state),
+      sync_enabled);
 }

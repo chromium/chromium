@@ -32,7 +32,7 @@ void WebElementTest::InsertHTML(String html) {
 }
 
 WebElement WebElementTest::TestElement() {
-  Element* element = GetDocument().getElementById("testElement");
+  Element* element = GetDocument().getElementById(AtomicString("testElement"));
   DCHECK(element);
   return WebElement(element);
 }
@@ -105,7 +105,7 @@ TEST_F(WebElementTest, ShadowRoot) {
     InsertHTML("<span id=testElement></span>");
     EXPECT_TRUE(TestElement().ShadowRoot().IsNull())
         << "No ShadowRoot initially.";
-    auto* element = GetDocument().getElementById("testElement");
+    auto* element = GetDocument().getElementById(AtomicString("testElement"));
     element->AttachShadowRootInternal(ShadowRootType::kOpen);
     EXPECT_FALSE(TestElement().ShadowRoot().IsNull())
         << "Should return V1 open ShadowRoot.";
@@ -115,7 +115,7 @@ TEST_F(WebElementTest, ShadowRoot) {
     InsertHTML("<p id=testElement></p>");
     EXPECT_TRUE(TestElement().ShadowRoot().IsNull())
         << "No ShadowRoot initially.";
-    auto* element = GetDocument().getElementById("testElement");
+    auto* element = GetDocument().getElementById(AtomicString("testElement"));
     element->AttachShadowRootInternal(ShadowRootType::kClosed);
     EXPECT_FALSE(TestElement().ShadowRoot().IsNull())
         << "Should return V1 closed ShadowRoot.";

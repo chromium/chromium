@@ -9,9 +9,9 @@
 #include <memory>
 #include <set>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "extensions/common/event_filter.h"
@@ -107,7 +107,7 @@ class EventListener {
   void MakeLazy();
 
   const std::string& event_name() const { return event_name_; }
-  const std::string& extension_id() const { return extension_id_; }
+  const ExtensionId& extension_id() const { return extension_id_; }
   const GURL& listener_url() const { return listener_url_; }
   content::RenderProcessHost* process() const { return process_; }
   content::BrowserContext* browser_context() const { return browser_context_; }
@@ -123,7 +123,7 @@ class EventListener {
 
  private:
   EventListener(const std::string& event_name,
-                const std::string& extension_id,
+                const ExtensionId& extension_id,
                 const GURL& listener_url,
                 content::RenderProcessHost* process,
                 content::BrowserContext* browser_context,
@@ -133,7 +133,7 @@ class EventListener {
                 absl::optional<base::Value::Dict> filter);
 
   const std::string event_name_;
-  const std::string extension_id_;
+  const ExtensionId extension_id_;
   const GURL listener_url_;
   raw_ptr<content::RenderProcessHost, DanglingUntriaged> process_ = nullptr;
   raw_ptr<content::BrowserContext, DanglingUntriaged> browser_context_ =
@@ -160,7 +160,7 @@ class EventListenerMap {
  public:
   using ListenerList = std::vector<std::unique_ptr<EventListener>>;
   // The key here is an event name.
-  using ListenerMap = std::unordered_map<std::string, ListenerList>;
+  using ListenerMap = base::flat_map<std::string, ListenerList>;
 
   class Delegate {
    public:

@@ -63,9 +63,11 @@ import org.chromium.android_webview.AwPrintDocumentAdapter;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.AwThreadUtils;
 import org.chromium.android_webview.R;
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.gfx.AwDrawFnImpl;
 import org.chromium.android_webview.renderer_priority.RendererPriority;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TraceEvent;
 import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
@@ -93,9 +95,9 @@ import java.util.concurrent.Executor;
  * and a small set of no-op deprecated APIs.
  */
 @SuppressWarnings("deprecation")
+@Lifetime.WebView
 class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate,
                                  WebViewProvider.ViewDelegate, SmartClipProvider {
-
     private static final String TAG = WebViewChromium.class.getSimpleName();
 
     // The WebView that this WebViewChromium is the provider for.
@@ -242,7 +244,11 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             ApiCall.WEB_SETTINGS_SET_SUPPORT_ZOOM, ApiCall.WEB_SETTINGS_SET_TEXT_SIZE,
             ApiCall.WEB_SETTINGS_SET_TEXT_ZOOM, ApiCall.WEB_SETTINGS_SET_USE_WIDE_VIEW_PORT,
             ApiCall.WEB_SETTINGS_SET_USER_AGENT_STRING,
-            ApiCall.WEB_SETTINGS_SUPPORT_MULTIPLE_WINDOWS, ApiCall.WEB_SETTINGS_SUPPORT_ZOOM})
+            ApiCall.WEB_SETTINGS_SUPPORT_MULTIPLE_WINDOWS, ApiCall.WEB_SETTINGS_SUPPORT_ZOOM,
+            ApiCall.GET_RENDERER_REQUESTED_PRIORITY,
+            ApiCall.GET_RENDERER_PRIORITY_WAIVED_WHEN_NOT_VISIBLE,
+            ApiCall.SET_RENDERER_PRIORITY_POLICY, ApiCall.LOAD_URL,
+            ApiCall.LOAD_URL_ADDITIONAL_HEADERS})
 
     @interface ApiCall {
         int ADD_JAVASCRIPT_INTERFACE = 0;
@@ -432,7 +438,12 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
         int WEB_SETTINGS_SET_USER_AGENT_STRING = 184;
         int WEB_SETTINGS_SUPPORT_MULTIPLE_WINDOWS = 185;
         int WEB_SETTINGS_SUPPORT_ZOOM = 186;
-        int COUNT = 187;
+        int GET_RENDERER_REQUESTED_PRIORITY = 187;
+        int GET_RENDERER_PRIORITY_WAIVED_WHEN_NOT_VISIBLE = 188;
+        int SET_RENDERER_PRIORITY_POLICY = 189;
+        int LOAD_URL = 190;
+        int LOAD_URL_ADDITIONAL_HEADERS = 191;
+        int COUNT = 192;
     }
 
     public static void recordWebViewApiCall(@ApiCall int sample) {
@@ -576,16 +587,30 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             });
         }
 
-        // If initialization hasn't been deferred, record a startup time histogram entry.
+        // If initialization hasn't been deferred, record a startup time histogram entry
+        // and trace event(s).
         if (mFactory.hasStarted()) {
             if (isFirstWebViewInit) {
                 RecordHistogram.recordTimesHistogram(
                         "Android.WebView.Startup.CreationTime.Stage2.ProviderInit.Cold",
                         SystemClock.uptimeMillis() - startTime);
+
+                TraceEvent.webViewStartupTotalFactoryInit(
+                        mFactory.getInitInfo().mTotalFactoryInitStartTime,
+                        mFactory.getInitInfo().mTotalFactoryInitDuration);
+
+                TraceEvent.webViewStartupStage1(
+                        mFactory.getInitInfo().mStartTime, mFactory.getInitInfo().mDuration);
+
+                TraceEvent.webViewStartupStage2(
+                        startTime, SystemClock.uptimeMillis() - startTime, true);
             } else {
                 RecordHistogram.recordTimesHistogram(
                         "Android.WebView.Startup.CreationTime.Stage2.ProviderInit.Warm",
                         SystemClock.uptimeMillis() - startTime);
+
+                TraceEvent.webViewStartupStage2(
+                        startTime, SystemClock.uptimeMillis() - startTime, false);
             }
         }
     }
@@ -665,8 +690,11 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             });
             return;
         }
-        recordWebViewApiCall(ApiCall.SET_HORIZONTAL_SCROLLBAR_OVERLAY);
-        mAwContents.setHorizontalScrollbarOverlay(overlay);
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.Framework.SET_HORIZONTAL_SCROLLBAR_OVERLAY")) {
+            recordWebViewApiCall(ApiCall.SET_HORIZONTAL_SCROLLBAR_OVERLAY);
+            mAwContents.setHorizontalScrollbarOverlay(overlay);
+        }
     }
 
     @Override
@@ -680,8 +708,11 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             });
             return;
         }
-        recordWebViewApiCall(ApiCall.SET_VERTICAL_SCROLLBAR_OVERLAY);
-        mAwContents.setVerticalScrollbarOverlay(overlay);
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.Framework.SET_VERTICAL_SCROLLBAR_OVERLAY")) {
+            recordWebViewApiCall(ApiCall.SET_VERTICAL_SCROLLBAR_OVERLAY);
+            mAwContents.setVerticalScrollbarOverlay(overlay);
+        }
     }
 
     @Override
@@ -696,8 +727,11 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             });
             return ret;
         }
-        recordWebViewApiCall(ApiCall.OVERLAY_HORIZONTAL_SCROLLBAR);
-        return mAwContents.overlayHorizontalScrollbar();
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.Framework.OVERLAY_HORIZONTAL_SCROLLBAR")) {
+            recordWebViewApiCall(ApiCall.OVERLAY_HORIZONTAL_SCROLLBAR);
+            return mAwContents.overlayHorizontalScrollbar();
+        }
     }
 
     @Override
@@ -712,8 +746,11 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             });
             return ret;
         }
-        recordWebViewApiCall(ApiCall.OVERLAY_VERTICAL_SCROLLBAR);
-        return mAwContents.overlayVerticalScrollbar();
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICall.Framework.OVERLAY_VERTICAL_SCROLLBAR")) {
+            recordWebViewApiCall(ApiCall.OVERLAY_VERTICAL_SCROLLBAR);
+            return mAwContents.overlayVerticalScrollbar();
+        }
     }
 
     @Override
@@ -734,8 +771,10 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             });
             return ret;
         }
-        recordWebViewApiCall(ApiCall.GET_CERTIFICATE);
-        return mAwContents.getCertificate();
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.GET_CERTIFICATE")) {
+            recordWebViewApiCall(ApiCall.GET_CERTIFICATE);
+            return mAwContents.getCertificate();
+        }
     }
 
     @Override
@@ -760,9 +799,12 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             });
             return;
         }
-        recordWebViewApiCall(ApiCall.SET_HTTP_AUTH_USERNAME_PASSWORD);
-        ((WebViewDatabaseAdapter) mFactory.getWebViewDatabase(mContext))
-                .setHttpAuthUsernamePassword(host, realm, username, password);
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.Framework.SET_HTTP_AUTH_USERNAME_PASSWORD")) {
+            recordWebViewApiCall(ApiCall.SET_HTTP_AUTH_USERNAME_PASSWORD);
+            ((WebViewDatabaseAdapter) mFactory.getWebViewDatabase(mContext))
+                    .setHttpAuthUsernamePassword(host, realm, username, password);
+        }
     }
 
     @Override
@@ -777,9 +819,12 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             });
             return ret;
         }
-        recordWebViewApiCall(ApiCall.GET_HTTP_AUTH_USERNAME_PASSWORD);
-        return ((WebViewDatabaseAdapter) mFactory.getWebViewDatabase(mContext))
-                .getHttpAuthUsernamePassword(host, realm);
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.Framework.GET_HTTP_AUTH_USERNAME_PASSWORD")) {
+            recordWebViewApiCall(ApiCall.GET_HTTP_AUTH_USERNAME_PASSWORD);
+            return ((WebViewDatabaseAdapter) mFactory.getWebViewDatabase(mContext))
+                    .getHttpAuthUsernamePassword(host, realm);
+        }
     }
 
     @Override
@@ -817,8 +862,11 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             });
             return;
         }
-        recordWebViewApiCall(ApiCall.SET_NETWORK_AVAILABLE);
-        mAwContents.setNetworkAvailable(networkUp);
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICall.Framework.SET_NETWORK_AVAILABLE")) {
+            recordWebViewApiCall(ApiCall.SET_NETWORK_AVAILABLE);
+            mAwContents.setNetworkAvailable(networkUp);
+        }
     }
 
     @Override
@@ -834,10 +882,12 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
                     });
             return ret;
         }
-        recordWebViewApiCall(ApiCall.SAVE_STATE);
-        if (outState == null) return null;
-        if (!mAwContents.saveState(outState)) return null;
-        return copyBackForwardList();
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.SAVE_STATE")) {
+            recordWebViewApiCall(ApiCall.SAVE_STATE);
+            if (outState == null) return null;
+            if (!mAwContents.saveState(outState)) return null;
+            return copyBackForwardList();
+        }
     }
 
     @Override
@@ -865,10 +915,12 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
                     });
             return ret;
         }
-        recordWebViewApiCall(ApiCall.RESTORE_STATE);
-        if (inState == null) return null;
-        if (!mAwContents.restoreState(inState)) return null;
-        return copyBackForwardList();
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.RESTORE_STATE")) {
+            recordWebViewApiCall(ApiCall.RESTORE_STATE);
+            if (inState == null) return null;
+            if (!mAwContents.restoreState(inState)) return null;
+            return copyBackForwardList();
+        }
     }
 
     @Override
@@ -880,12 +932,20 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             mFactory.addTask(new Runnable() {
                 @Override
                 public void run() {
-                    mAwContents.loadUrl(url, additionalHttpHeaders);
+                    try (TraceEvent event = TraceEvent.scoped(
+                                 "WebView.APICall.Framework.LOAD_URL_ADDITIONAL_HEADERS")) {
+                        recordWebViewApiCall(ApiCall.LOAD_URL_ADDITIONAL_HEADERS);
+                        mAwContents.loadUrl(url, additionalHttpHeaders);
+                    }
                 }
             });
             return;
         }
-        mAwContents.loadUrl(url, additionalHttpHeaders);
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.Framework.LOAD_URL_ADDITIONAL_HEADERS")) {
+            recordWebViewApiCall(ApiCall.LOAD_URL_ADDITIONAL_HEADERS);
+            mAwContents.loadUrl(url, additionalHttpHeaders);
+        }
     }
 
     @Override
@@ -897,12 +957,19 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             mFactory.addTask(new Runnable() {
                 @Override
                 public void run() {
-                    mAwContents.loadUrl(url);
+                    try (TraceEvent event =
+                                    TraceEvent.scoped("WebView.APICall.Framework.LOAD_URL")) {
+                        recordWebViewApiCall(ApiCall.LOAD_URL);
+                        mAwContents.loadUrl(url);
+                    }
                 }
             });
             return;
         }
-        mAwContents.loadUrl(url);
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.LOAD_URL")) {
+            recordWebViewApiCall(ApiCall.LOAD_URL);
+            mAwContents.loadUrl(url);
+        }
     }
 
     @Override
@@ -914,14 +981,19 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             mFactory.addTask(new Runnable() {
                 @Override
                 public void run() {
-                    recordWebViewApiCall(ApiCall.POST_URL);
-                    mAwContents.postUrl(url, postData);
+                    try (TraceEvent event =
+                                    TraceEvent.scoped("WebView.APICall.Framework.POST_URL")) {
+                        recordWebViewApiCall(ApiCall.POST_URL);
+                        mAwContents.postUrl(url, postData);
+                    }
                 }
             });
             return;
         }
-        recordWebViewApiCall(ApiCall.POST_URL);
-        mAwContents.postUrl(url, postData);
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.POST_URL")) {
+            recordWebViewApiCall(ApiCall.POST_URL);
+            mAwContents.postUrl(url, postData);
+        }
     }
 
     @Override
@@ -933,14 +1005,19 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             mFactory.addTask(new Runnable() {
                 @Override
                 public void run() {
-                    recordWebViewApiCall(ApiCall.LOAD_DATA);
-                    mAwContents.loadData(data, mimeType, encoding);
+                    try (TraceEvent event =
+                                    TraceEvent.scoped("WebView.APICall.Framework.LOAD_DATA")) {
+                        recordWebViewApiCall(ApiCall.LOAD_DATA);
+                        mAwContents.loadData(data, mimeType, encoding);
+                    }
                 }
             });
             return;
         }
-        recordWebViewApiCall(ApiCall.LOAD_DATA);
-        mAwContents.loadData(data, mimeType, encoding);
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.LOAD_DATA")) {
+            recordWebViewApiCall(ApiCall.LOAD_DATA);
+            mAwContents.loadData(data, mimeType, encoding);
+        }
     }
 
     @Override
@@ -953,14 +1030,21 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             mFactory.addTask(new Runnable() {
                 @Override
                 public void run() {
-                    recordWebViewApiCall(ApiCall.LOAD_DATA_WITH_BASE_URL);
-                    mAwContents.loadDataWithBaseURL(baseUrl, data, mimeType, encoding, historyUrl);
+                    try (TraceEvent event = TraceEvent.scoped(
+                                 "WebView.APICall.Framework.LOAD_DATA_WITH_BASE_URL")) {
+                        recordWebViewApiCall(ApiCall.LOAD_DATA_WITH_BASE_URL);
+                        mAwContents.loadDataWithBaseURL(
+                                baseUrl, data, mimeType, encoding, historyUrl);
+                    }
                 }
             });
             return;
         }
-        recordWebViewApiCall(ApiCall.LOAD_DATA_WITH_BASE_URL);
-        mAwContents.loadDataWithBaseURL(baseUrl, data, mimeType, encoding, historyUrl);
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICall.Framework.LOAD_DATA_WITH_BASE_URL")) {
+            recordWebViewApiCall(ApiCall.LOAD_DATA_WITH_BASE_URL);
+            mAwContents.loadDataWithBaseURL(baseUrl, data, mimeType, encoding, historyUrl);
+        }
     }
 
     @Override
@@ -971,16 +1055,22 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             mFactory.addTask(new Runnable() {
                 @Override
                 public void run() {
-                    recordWebViewApiCall(ApiCall.EVALUATE_JAVASCRIPT);
-                    mAwContents.evaluateJavaScript(
-                            script, CallbackConverter.fromValueCallback(resultCallback));
+                    try (TraceEvent event = TraceEvent.scoped(
+                                 "WebView.APICall.Framework.EVALUATE_JAVASCRIPT")) {
+                        recordWebViewApiCall(ApiCall.EVALUATE_JAVASCRIPT);
+                        mAwContents.evaluateJavaScript(
+                                script, CallbackConverter.fromValueCallback(resultCallback));
+                    }
                 }
             });
         } else {
-            recordWebViewApiCall(ApiCall.EVALUATE_JAVASCRIPT);
-            checkThread();
-            mAwContents.evaluateJavaScript(
-                    script, CallbackConverter.fromValueCallback(resultCallback));
+            try (TraceEvent event =
+                            TraceEvent.scoped("WebView.APICall.Framework.EVALUATE_JAVASCRIPT")) {
+                recordWebViewApiCall(ApiCall.EVALUATE_JAVASCRIPT);
+                checkThread();
+                mAwContents.evaluateJavaScript(
+                        script, CallbackConverter.fromValueCallback(resultCallback));
+            }
         }
     }
 
@@ -1017,8 +1107,10 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             return;
         }
 
-        recordWebViewApiCall(ApiCall.STOP_LOADING);
-        mAwContents.stopLoading();
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.STOP_LOADING")) {
+            recordWebViewApiCall(ApiCall.STOP_LOADING);
+            mAwContents.stopLoading();
+        }
     }
 
     @Override
@@ -1032,8 +1124,10 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             });
             return;
         }
-        recordWebViewApiCall(ApiCall.RELOAD);
-        mAwContents.reload();
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.RELOAD")) {
+            recordWebViewApiCall(ApiCall.RELOAD);
+            mAwContents.reload();
+        }
     }
 
     @Override
@@ -1048,8 +1142,10 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             });
             return ret;
         }
-        recordWebViewApiCall(ApiCall.CAN_GO_BACK);
-        return mAwContents.canGoBack();
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.CAN_GO_BACK")) {
+            recordWebViewApiCall(ApiCall.CAN_GO_BACK);
+            return mAwContents.canGoBack();
+        }
     }
 
     @Override
@@ -1063,8 +1159,10 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             });
             return;
         }
-        recordWebViewApiCall(ApiCall.GO_BACK);
-        mAwContents.goBack();
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.GO_BACK")) {
+            recordWebViewApiCall(ApiCall.GO_BACK);
+            mAwContents.goBack();
+        }
     }
 
     @Override
@@ -1079,8 +1177,10 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             });
             return ret;
         }
-        recordWebViewApiCall(ApiCall.CAN_GO_FORWARD);
-        return mAwContents.canGoForward();
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.CAN_GO_FORWARD")) {
+            recordWebViewApiCall(ApiCall.CAN_GO_FORWARD);
+            return mAwContents.canGoForward();
+        }
     }
 
     @Override
@@ -1094,8 +1194,10 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             });
             return;
         }
-        recordWebViewApiCall(ApiCall.GO_FORWARD);
-        mAwContents.goForward();
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.GO_FORWARD")) {
+            recordWebViewApiCall(ApiCall.GO_FORWARD);
+            mAwContents.goForward();
+        }
     }
 
     @Override
@@ -1110,8 +1212,11 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             });
             return ret;
         }
-        recordWebViewApiCall(ApiCall.CAN_GO_BACK_OR_FORWARD);
-        return mAwContents.canGoBackOrForward(steps);
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICall.Framework.CAN_GO_BACK_OR_FORWARD")) {
+            recordWebViewApiCall(ApiCall.CAN_GO_BACK_OR_FORWARD);
+            return mAwContents.canGoBackOrForward(steps);
+        }
     }
 
     @Override
@@ -1125,15 +1230,20 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             });
             return;
         }
-        recordWebViewApiCall(ApiCall.GO_BACK_OR_FORWARD);
-        mAwContents.goBackOrForward(steps);
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.GO_BACK_OR_FORWARD")) {
+            recordWebViewApiCall(ApiCall.GO_BACK_OR_FORWARD);
+            mAwContents.goBackOrForward(steps);
+        }
     }
 
     @Override
     public boolean isPrivateBrowsingEnabled() {
         // Not supported in this WebView implementation.
-        recordWebViewApiCall(ApiCall.IS_PRIVATE_BROWSING_ENABLED);
-        return false;
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.Framework.IS_PRIVATE_BROWSING_ENABLED")) {
+            recordWebViewApiCall(ApiCall.IS_PRIVATE_BROWSING_ENABLED);
+            return false;
+        }
     }
 
     @Override
@@ -1148,8 +1258,10 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             });
             return ret;
         }
-        recordWebViewApiCall(ApiCall.PAGE_UP);
-        return mAwContents.pageUp(top);
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.PAGE_UP")) {
+            recordWebViewApiCall(ApiCall.PAGE_UP);
+            return mAwContents.pageUp(top);
+        }
     }
 
     @Override
@@ -1164,21 +1276,26 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             });
             return ret;
         }
-        recordWebViewApiCall(ApiCall.PAGE_DOWN);
-        return mAwContents.pageDown(bottom);
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.PAGE_DOWN")) {
+            recordWebViewApiCall(ApiCall.PAGE_DOWN);
+            return mAwContents.pageDown(bottom);
+        }
     }
 
     @Override
     public void insertVisualStateCallback(
             final long requestId, final VisualStateCallback callback) {
-        recordWebViewApiCall(ApiCall.INSERT_VISUAL_STATE_CALLBACK);
-        mSharedWebViewChromium.insertVisualStateCallback(
-                requestId, callback == null ? null : new AwContents.VisualStateCallback() {
-                    @Override
-                    public void onComplete(long requestId) {
-                        callback.onComplete(requestId);
-                    }
-                });
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.Framework.INSERT_VISUAL_STATE_CALLBACK")) {
+            recordWebViewApiCall(ApiCall.INSERT_VISUAL_STATE_CALLBACK);
+            mSharedWebViewChromium.insertVisualStateCallback(
+                    requestId, callback == null ? null : new AwContents.VisualStateCallback() {
+                        @Override
+                        public void onComplete(long requestId) {
+                            callback.onComplete(requestId);
+                        }
+                    });
+        }
     }
 
     @Override
@@ -1192,8 +1309,10 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             });
             return;
         }
-        recordWebViewApiCall(ApiCall.CLEAR_VIEW);
-        mAwContents.clearView();
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.CLEAR_VIEW")) {
+            recordWebViewApiCall(ApiCall.CLEAR_VIEW);
+            mAwContents.clearView();
+        }
     }
 
     @Override
@@ -1208,23 +1327,29 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             });
             return ret;
         }
-        recordWebViewApiCall(ApiCall.CAPTURE_PICTURE);
-        return mAwContents.capturePicture();
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.CAPTURE_PICTURE")) {
+            recordWebViewApiCall(ApiCall.CAPTURE_PICTURE);
+            return mAwContents.capturePicture();
+        }
     }
 
     @Override
     public float getScale() {
-        recordWebViewApiCall(ApiCall.GET_SCALE);
-        // No checkThread() as it is mostly thread safe (workaround for b/10652991).
-        mFactory.startYourEngines(true);
-        return mAwContents.getScale();
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.GET_SCALE")) {
+            recordWebViewApiCall(ApiCall.GET_SCALE);
+            // No checkThread() as it is mostly thread safe (workaround for b/10652991).
+            mFactory.startYourEngines(true);
+            return mAwContents.getScale();
+        }
     }
 
     @Override
     public void setInitialScale(final int scaleInPercent) {
-        recordWebViewApiCall(ApiCall.SET_INITIAL_SCALE);
-        // No checkThread() as it is thread safe
-        mWebSettings.getAwSettings().setInitialPageScale(scaleInPercent);
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.SET_INITIAL_SCALE")) {
+            recordWebViewApiCall(ApiCall.SET_INITIAL_SCALE);
+            // No checkThread() as it is thread safe
+            mWebSettings.getAwSettings().setInitialPageScale(scaleInPercent);
+        }
     }
 
     @Override
@@ -1238,8 +1363,10 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             });
             return;
         }
-        recordWebViewApiCall(ApiCall.INVOKE_ZOOM_PICKER);
-        mAwContents.invokeZoomPicker();
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.INVOKE_ZOOM_PICKER")) {
+            recordWebViewApiCall(ApiCall.INVOKE_ZOOM_PICKER);
+            mAwContents.invokeZoomPicker();
+        }
     }
 
     @Override
@@ -1255,11 +1382,14 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
                     });
             return ret;
         }
-        recordWebViewApiCall(ApiCall.GET_HIT_TEST_RESULT);
-        AwContents.HitTestData data = mAwContents.getLastHitTestResult();
-        mHitTestResult.setType(data.hitTestResultType);
-        mHitTestResult.setExtra(data.hitTestResultExtraData);
-        return mHitTestResult;
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICall.Framework.GET_HIT_TEST_RESULT")) {
+            recordWebViewApiCall(ApiCall.GET_HIT_TEST_RESULT);
+            AwContents.HitTestData data = mAwContents.getLastHitTestResult();
+            mHitTestResult.setType(data.hitTestResultType);
+            mHitTestResult.setExtra(data.hitTestResultExtraData);
+            return mHitTestResult;
+        }
     }
 
     @Override
@@ -1273,8 +1403,11 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             });
             return;
         }
-        recordWebViewApiCall(ApiCall.REQUEST_FOCUS_NODE_HREF);
-        mAwContents.requestFocusNodeHref(hrefMsg);
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICall.Framework.REQUEST_FOCUS_NODE_HREF")) {
+            recordWebViewApiCall(ApiCall.REQUEST_FOCUS_NODE_HREF);
+            mAwContents.requestFocusNodeHref(hrefMsg);
+        }
     }
 
     @Override
@@ -1288,8 +1421,10 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             });
             return;
         }
-        recordWebViewApiCall(ApiCall.REQUEST_IMAGE_REF);
-        mAwContents.requestImageRef(msg);
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.REQUEST_IMAGE_REF")) {
+            recordWebViewApiCall(ApiCall.REQUEST_IMAGE_REF);
+            mAwContents.requestImageRef(msg);
+        }
     }
 
     @Override
@@ -1304,9 +1439,11 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             });
             return ret;
         }
-        recordWebViewApiCall(ApiCall.GET_URL);
-        GURL url = mAwContents.getUrl();
-        return url == null ? null : url.getSpec();
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.GET_URL")) {
+            recordWebViewApiCall(ApiCall.GET_URL);
+            GURL url = mAwContents.getUrl();
+            return url == null ? null : url.getSpec();
+        }
     }
 
     @Override
@@ -1321,8 +1458,10 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             });
             return ret;
         }
-        recordWebViewApiCall(ApiCall.GET_ORIGINAL_URL);
-        return mAwContents.getOriginalUrl();
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.GET_ORIGINAL_URL")) {
+            recordWebViewApiCall(ApiCall.GET_ORIGINAL_URL);
+            return mAwContents.getOriginalUrl();
+        }
     }
 
     @Override
@@ -1337,8 +1476,10 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             });
             return ret;
         }
-        recordWebViewApiCall(ApiCall.GET_TITLE);
-        return mAwContents.getTitle();
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.GET_TITLE")) {
+            recordWebViewApiCall(ApiCall.GET_TITLE);
+            return mAwContents.getTitle();
+        }
     }
 
     @Override
@@ -1353,8 +1494,10 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             });
             return ret;
         }
-        recordWebViewApiCall(ApiCall.GET_FAVICON);
-        return mAwContents.getFavicon();
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.GET_FAVICON")) {
+            recordWebViewApiCall(ApiCall.GET_FAVICON);
+            return mAwContents.getFavicon();
+        }
     }
 
     @Override
@@ -1365,26 +1508,32 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
 
     @Override
     public int getProgress() {
-        recordWebViewApiCall(ApiCall.GET_PROGRESS);
-        if (mAwContents == null) return 100;
-        // No checkThread() because the value is cached java side (workaround for b/10533304).
-        return mAwContents.getMostRecentProgress();
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.GET_PROGRESS")) {
+            recordWebViewApiCall(ApiCall.GET_PROGRESS);
+            if (mAwContents == null) return 100;
+            // No checkThread() because the value is cached java side (workaround for b/10533304).
+            return mAwContents.getMostRecentProgress();
+        }
     }
 
     @Override
     public int getContentHeight() {
-        recordWebViewApiCall(ApiCall.GET_CONTENT_HEIGHT);
-        if (mAwContents == null) return 0;
-        // No checkThread() as it is mostly thread safe (workaround for b/10594869).
-        return mAwContents.getContentHeightCss();
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.GET_CONTENT_HEIGHT")) {
+            recordWebViewApiCall(ApiCall.GET_CONTENT_HEIGHT);
+            if (mAwContents == null) return 0;
+            // No checkThread() as it is mostly thread safe (workaround for b/10594869).
+            return mAwContents.getContentHeightCss();
+        }
     }
 
     @Override
     public int getContentWidth() {
-        recordWebViewApiCall(ApiCall.GET_CONTENT_WIDTH);
-        if (mAwContents == null) return 0;
-        // No checkThread() as it is mostly thread safe (workaround for b/10594869).
-        return mAwContents.getContentWidthCss();
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.GET_CONTENT_WIDTH")) {
+            recordWebViewApiCall(ApiCall.GET_CONTENT_WIDTH);
+            if (mAwContents == null) return 0;
+            // No checkThread() as it is mostly thread safe (workaround for b/10594869).
+            return mAwContents.getContentWidthCss();
+        }
     }
 
     @Override
@@ -1398,8 +1547,10 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             });
             return;
         }
-        recordWebViewApiCall(ApiCall.PAUSE_TIMERS);
-        mAwContents.pauseTimers();
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.PAUSE_TIMERS")) {
+            recordWebViewApiCall(ApiCall.PAUSE_TIMERS);
+            mAwContents.pauseTimers();
+        }
     }
 
     @Override
@@ -1413,8 +1564,10 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             });
             return;
         }
-        recordWebViewApiCall(ApiCall.RESUME_TIMERS);
-        mAwContents.resumeTimers();
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.RESUME_TIMERS")) {
+            recordWebViewApiCall(ApiCall.RESUME_TIMERS);
+            mAwContents.resumeTimers();
+        }
     }
 
     @Override
@@ -1428,8 +1581,10 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             });
             return;
         }
-        recordWebViewApiCall(ApiCall.ON_PAUSE);
-        mAwContents.onPause();
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.ON_PAUSE")) {
+            recordWebViewApiCall(ApiCall.ON_PAUSE);
+            mAwContents.onPause();
+        }
     }
 
     @Override
@@ -1443,8 +1598,10 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             });
             return;
         }
-        recordWebViewApiCall(ApiCall.ON_RESUME);
-        mAwContents.onResume();
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.ON_RESUME")) {
+            recordWebViewApiCall(ApiCall.ON_RESUME);
+            mAwContents.onResume();
+        }
     }
 
     @Override
@@ -1459,8 +1616,10 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             });
             return ret;
         }
-        recordWebViewApiCall(ApiCall.IS_PAUSED);
-        return mAwContents.isPaused();
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.IS_PAUSED")) {
+            recordWebViewApiCall(ApiCall.IS_PAUSED);
+            return mAwContents.isPaused();
+        }
     }
 
     @Override
@@ -1479,8 +1638,10 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             });
             return;
         }
-        recordWebViewApiCall(ApiCall.CLEAR_CACHE);
-        mAwContents.clearCache(includeDiskFiles);
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.CLEAR_CACHE")) {
+            recordWebViewApiCall(ApiCall.CLEAR_CACHE);
+            mAwContents.clearCache(includeDiskFiles);
+        }
     }
 
     /**
@@ -1497,8 +1658,10 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             });
             return;
         }
-        recordWebViewApiCall(ApiCall.CLEAR_FORM_DATA);
-        mAwContents.hideAutofillPopup();
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.CLEAR_FORM_DATA")) {
+            recordWebViewApiCall(ApiCall.CLEAR_FORM_DATA);
+            mAwContents.hideAutofillPopup();
+        }
     }
 
     @Override
@@ -1512,8 +1675,10 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             });
             return;
         }
-        recordWebViewApiCall(ApiCall.CLEAR_HISTORY);
-        mAwContents.clearHistory();
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.CLEAR_HISTORY")) {
+            recordWebViewApiCall(ApiCall.CLEAR_HISTORY);
+            mAwContents.clearHistory();
+        }
     }
 
     @Override
@@ -1527,8 +1692,11 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             });
             return;
         }
-        recordWebViewApiCall(ApiCall.CLEAR_SSL_PREFERENCES);
-        mAwContents.clearSslPreferences();
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICall.Framework.CLEAR_SSL_PREFERENCES")) {
+            recordWebViewApiCall(ApiCall.CLEAR_SSL_PREFERENCES);
+            mAwContents.clearSslPreferences();
+        }
     }
 
     @Override
@@ -1544,18 +1712,24 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
                     });
             return ret;
         }
-        recordWebViewApiCall(ApiCall.COPY_BACK_FORWARD_LIST);
-        // mAwContents.getNavigationHistory() can be null here if mAwContents has been destroyed,
-        // and we do not handle passing null to the WebBackForwardListChromium constructor.
-        NavigationHistory navHistory = mAwContents.getNavigationHistory();
-        if (navHistory == null) navHistory = new NavigationHistory();
-        return new WebBackForwardListChromium(navHistory);
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICall.Framework.COPY_BACK_FORWARD_LIST")) {
+            recordWebViewApiCall(ApiCall.COPY_BACK_FORWARD_LIST);
+            // mAwContents.getNavigationHistory() can be null here if mAwContents has been
+            // destroyed, and we do not handle passing null to the WebBackForwardListChromium
+            // constructor.
+            NavigationHistory navHistory = mAwContents.getNavigationHistory();
+            if (navHistory == null) navHistory = new NavigationHistory();
+            return new WebBackForwardListChromium(navHistory);
+        }
     }
 
     @Override
     public void setFindListener(WebView.FindListener listener) {
-        recordWebViewApiCall(ApiCall.SET_FIND_LISTENER);
-        mContentsClientAdapter.setFindListener(listener);
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.SET_FIND_LISTENER")) {
+            recordWebViewApiCall(ApiCall.SET_FIND_LISTENER);
+            mContentsClientAdapter.setFindListener(listener);
+        }
     }
 
     @Override
@@ -1569,8 +1743,10 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             });
             return;
         }
-        recordWebViewApiCall(ApiCall.FIND_NEXT);
-        mAwContents.findNext(forwards);
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.FIND_NEXT")) {
+            recordWebViewApiCall(ApiCall.FIND_NEXT);
+            mAwContents.findNext(forwards);
+        }
     }
 
     @Override
@@ -1595,32 +1771,34 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
 
     @Override
     public boolean showFindDialog(final String text, final boolean showIme) {
-        recordWebViewApiCall(ApiCall.SHOW_FIND_DIALOG);
-        mFactory.startYourEngines(false);
-        if (checkNeedsPost()) {
-            return false;
-        }
-        if (mWebView.getParent() == null) {
-            return false;
-        }
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.SHOW_FIND_DIALOG")) {
+            recordWebViewApiCall(ApiCall.SHOW_FIND_DIALOG);
+            mFactory.startYourEngines(false);
+            if (checkNeedsPost()) {
+                return false;
+            }
+            if (mWebView.getParent() == null) {
+                return false;
+            }
 
-        FindActionModeCallback findAction = new FindActionModeCallback(mContext);
-        if (findAction == null) {
-            return false;
-        }
+            FindActionModeCallback findAction = new FindActionModeCallback(mContext);
+            if (findAction == null) {
+                return false;
+            }
 
-        mWebView.startActionMode(findAction);
-        findAction.setWebView(mWebView);
-        if (showIme) {
-            findAction.showSoftInput();
-        }
+            mWebView.startActionMode(findAction);
+            findAction.setWebView(mWebView);
+            if (showIme) {
+                findAction.showSoftInput();
+            }
 
-        if (text != null) {
-            findAction.setText(text);
-            findAction.findAll();
-        }
+            if (text != null) {
+                findAction.setText(text);
+                findAction.findAll();
+            }
 
-        return true;
+            return true;
+        }
     }
 
     @Override
@@ -1634,8 +1812,11 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             });
             return;
         }
-        recordWebViewApiCall(ApiCall.NOTIFY_FIND_DIALOG_DISMISSED);
-        clearMatches();
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.Framework.NOTIFY_FIND_DIALOG_DISMISSED")) {
+            recordWebViewApiCall(ApiCall.NOTIFY_FIND_DIALOG_DISMISSED);
+            clearMatches();
+        }
     }
 
     @Override
@@ -1649,8 +1830,10 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             });
             return;
         }
-        recordWebViewApiCall(ApiCall.CLEAR_MATCHES);
-        mAwContents.clearMatches();
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.CLEAR_MATCHES")) {
+            recordWebViewApiCall(ApiCall.CLEAR_MATCHES);
+            mAwContents.clearMatches();
+        }
     }
 
     @Override
@@ -1664,21 +1847,28 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             });
             return;
         }
-        recordWebViewApiCall(ApiCall.DOCUMENT_HAS_IMAGES);
-        mAwContents.documentHasImages(response);
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICall.Framework.DOCUMENT_HAS_IMAGES")) {
+            recordWebViewApiCall(ApiCall.DOCUMENT_HAS_IMAGES);
+            mAwContents.documentHasImages(response);
+        }
     }
 
     @Override
     public void setWebViewClient(WebViewClient client) {
-        recordWebViewApiCall(ApiCall.SET_WEBVIEW_CLIENT);
-        mSharedWebViewChromium.setWebViewClient(client);
-        mContentsClientAdapter.setWebViewClient(mSharedWebViewChromium.getWebViewClient());
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.SET_WEBVIEW_CLIENT")) {
+            recordWebViewApiCall(ApiCall.SET_WEBVIEW_CLIENT);
+            mSharedWebViewChromium.setWebViewClient(client);
+            mContentsClientAdapter.setWebViewClient(mSharedWebViewChromium.getWebViewClient());
+        }
     }
 
     @Override
     public WebViewClient getWebViewClient() {
-        recordWebViewApiCall(ApiCall.GET_WEBVIEW_CLIENT);
-        return mSharedWebViewChromium.getWebViewClient();
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.GET_WEBVIEW_CLIENT")) {
+            recordWebViewApiCall(ApiCall.GET_WEBVIEW_CLIENT);
+            return mSharedWebViewChromium.getWebViewClient();
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
@@ -1715,22 +1905,31 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
 
     @Override
     public void setDownloadListener(DownloadListener listener) {
-        recordWebViewApiCall(ApiCall.SET_DOWNLOAD_LISTENER);
-        mContentsClientAdapter.setDownloadListener(listener);
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICall.Framework.SET_DOWNLOAD_LISTENER")) {
+            recordWebViewApiCall(ApiCall.SET_DOWNLOAD_LISTENER);
+            mContentsClientAdapter.setDownloadListener(listener);
+        }
     }
 
     @Override
     public void setWebChromeClient(WebChromeClient client) {
-        recordWebViewApiCall(ApiCall.SET_WEBCHROME_CLIENT);
-        mWebSettings.getAwSettings().setFullscreenSupported(doesSupportFullscreen(client));
-        mSharedWebViewChromium.setWebChromeClient(client);
-        mContentsClientAdapter.setWebChromeClient(mSharedWebViewChromium.getWebChromeClient());
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICall.Framework.SET_WEBCHROME_CLIENT")) {
+            recordWebViewApiCall(ApiCall.SET_WEBCHROME_CLIENT);
+            mWebSettings.getAwSettings().setFullscreenSupported(doesSupportFullscreen(client));
+            mSharedWebViewChromium.setWebChromeClient(client);
+            mContentsClientAdapter.setWebChromeClient(mSharedWebViewChromium.getWebChromeClient());
+        }
     }
 
     @Override
     public WebChromeClient getWebChromeClient() {
-        recordWebViewApiCall(ApiCall.GET_WEBCHROME_CLIENT);
-        return mSharedWebViewChromium.getWebChromeClient();
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICall.Framework.GET_WEBCHROME_CLIENT")) {
+            recordWebViewApiCall(ApiCall.GET_WEBCHROME_CLIENT);
+            return mSharedWebViewChromium.getWebChromeClient();
+        }
     }
 
     /**
@@ -1740,35 +1939,38 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
      * and {@link WebChromeClient#onHideCustomView()} are required.
      */
     private boolean doesSupportFullscreen(WebChromeClient client) {
-        recordWebViewApiCall(ApiCall.DOES_SUPPORT_FULLSCREEN);
-        if (client == null) {
-            return false;
-        }
-        Class<?> clientClass = client.getClass();
-        boolean foundShowMethod = false;
-        boolean foundHideMethod = false;
-        while (clientClass != WebChromeClient.class && (!foundShowMethod || !foundHideMethod)) {
-            if (!foundShowMethod) {
-                try {
-                    clientClass.getDeclaredMethod(
-                            "onShowCustomView", View.class, CustomViewCallback.class);
-                    foundShowMethod = true;
-                } catch (NoSuchMethodException e) {
-                    // Intentionally empty.
-                }
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICall.Framework.DOES_SUPPORT_FULLSCREEN")) {
+            recordWebViewApiCall(ApiCall.DOES_SUPPORT_FULLSCREEN);
+            if (client == null) {
+                return false;
             }
+            Class<?> clientClass = client.getClass();
+            boolean foundShowMethod = false;
+            boolean foundHideMethod = false;
+            while (clientClass != WebChromeClient.class && (!foundShowMethod || !foundHideMethod)) {
+                if (!foundShowMethod) {
+                    try {
+                        clientClass.getDeclaredMethod(
+                                "onShowCustomView", View.class, CustomViewCallback.class);
+                        foundShowMethod = true;
+                    } catch (NoSuchMethodException e) {
+                        // Intentionally empty.
+                    }
+                }
 
-            if (!foundHideMethod) {
-                try {
-                    clientClass.getDeclaredMethod("onHideCustomView");
-                    foundHideMethod = true;
-                } catch (NoSuchMethodException e) {
-                    // Intentionally empty.
+                if (!foundHideMethod) {
+                    try {
+                        clientClass.getDeclaredMethod("onHideCustomView");
+                        foundHideMethod = true;
+                    } catch (NoSuchMethodException e) {
+                        // Intentionally empty.
+                    }
                 }
+                clientClass = clientClass.getSuperclass();
             }
-            clientClass = clientClass.getSuperclass();
+            return foundShowMethod && foundHideMethod;
         }
-        return foundShowMethod && foundHideMethod;
     }
 
     @Override
@@ -1783,10 +1985,13 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             });
             return;
         }
-        recordWebViewApiCall(ApiCall.SET_PICTURE_LISTENER);
-        boolean invalidateOnly = mAppTargetSdkVersion >= Build.VERSION_CODES.JELLY_BEAN_MR2;
-        mContentsClientAdapter.setPictureListener(listener, invalidateOnly);
-        mAwContents.enableOnNewPicture(listener != null, invalidateOnly);
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICall.Framework.SET_PICTURE_LISTENER")) {
+            recordWebViewApiCall(ApiCall.SET_PICTURE_LISTENER);
+            boolean invalidateOnly = mAppTargetSdkVersion >= Build.VERSION_CODES.JELLY_BEAN_MR2;
+            mContentsClientAdapter.setPictureListener(listener, invalidateOnly);
+            mAwContents.enableOnNewPicture(listener != null, invalidateOnly);
+        }
     }
 
     @Override
@@ -1800,8 +2005,11 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             });
             return;
         }
-        recordWebViewApiCall(ApiCall.ADD_JAVASCRIPT_INTERFACE);
-        mAwContents.addJavascriptInterface(obj, interfaceName);
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICall.Framework.ADD_JAVASCRIPT_INTERFACE")) {
+            recordWebViewApiCall(ApiCall.ADD_JAVASCRIPT_INTERFACE);
+            mAwContents.addJavascriptInterface(obj, interfaceName);
+        }
     }
 
     @Override
@@ -1815,30 +2023,42 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             });
             return;
         }
-        recordWebViewApiCall(ApiCall.REMOVE_JAVASCRIPT_INTERFACE);
-        mAwContents.removeJavascriptInterface(interfaceName);
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.Framework.REMOVE_JAVASCRIPT_INTERFACE")) {
+            recordWebViewApiCall(ApiCall.REMOVE_JAVASCRIPT_INTERFACE);
+            mAwContents.removeJavascriptInterface(interfaceName);
+        }
     }
 
     @Override
     public WebMessagePort[] createWebMessageChannel() {
-        recordWebViewApiCall(ApiCall.CREATE_WEBMESSAGE_CHANNEL);
-        return WebMessagePortAdapter.fromMessagePorts(
-                mSharedWebViewChromium.createWebMessageChannel());
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICall.Framework.CREATE_WEBMESSAGE_CHANNEL")) {
+            recordWebViewApiCall(ApiCall.CREATE_WEBMESSAGE_CHANNEL);
+            return WebMessagePortAdapter.fromMessagePorts(
+                    mSharedWebViewChromium.createWebMessageChannel());
+        }
     }
 
     @Override
     public void postMessageToMainFrame(final WebMessage message, final Uri targetOrigin) {
-        recordWebViewApiCall(ApiCall.POST_MESSAGE_TO_MAIN_FRAME);
-        // Create MessagePayload from AOSP WebMessage, MessagePayload is not directly supported by
-        // AOSP.
-        mSharedWebViewChromium.postMessageToMainFrame(new MessagePayload(message.getData()),
-                targetOrigin.toString(), WebMessagePortAdapter.toMessagePorts(message.getPorts()));
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICall.Framework.POST_MESSAGE_TO_MAIN_FRAME")) {
+            recordWebViewApiCall(ApiCall.POST_MESSAGE_TO_MAIN_FRAME);
+            // Create MessagePayload from AOSP WebMessage, MessagePayload is not directly supported
+            // by AOSP.
+            mSharedWebViewChromium.postMessageToMainFrame(new MessagePayload(message.getData()),
+                    targetOrigin.toString(),
+                    WebMessagePortAdapter.toMessagePorts(message.getPorts()));
+        }
     }
 
     @Override
     public WebSettings getSettings() {
-        recordWebViewApiCall(ApiCall.GET_SETTINGS);
-        return mWebSettings;
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.GET_SETTINGS")) {
+            recordWebViewApiCall(ApiCall.GET_SETTINGS);
+            return mWebSettings;
+        }
     }
 
     @Override
@@ -1875,20 +2095,24 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
 
     @Override
     public boolean canZoomIn() {
-        recordWebViewApiCall(ApiCall.CAN_ZOOM_IN);
-        if (checkNeedsPost()) {
-            return false;
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.CAN_ZOOM_IN")) {
+            recordWebViewApiCall(ApiCall.CAN_ZOOM_IN);
+            if (checkNeedsPost()) {
+                return false;
+            }
+            return mAwContents.canZoomIn();
         }
-        return mAwContents.canZoomIn();
     }
 
     @Override
     public boolean canZoomOut() {
-        recordWebViewApiCall(ApiCall.CAN_ZOOM_OUT);
-        if (checkNeedsPost()) {
-            return false;
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.CAN_ZOOM_OUT")) {
+            recordWebViewApiCall(ApiCall.CAN_ZOOM_OUT);
+            if (checkNeedsPost()) {
+                return false;
+            }
+            return mAwContents.canZoomOut();
         }
-        return mAwContents.canZoomOut();
     }
 
     @Override
@@ -1946,53 +2170,73 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
     @Override
     public void setRendererPriorityPolicy(
             int rendererRequestedPriority, boolean waivedWhenNotVisible) {
-        @RendererPriority
-        int awRendererRequestedPriority;
-        switch (rendererRequestedPriority) {
-            case WebView.RENDERER_PRIORITY_WAIVED:
-                awRendererRequestedPriority = RendererPriority.WAIVED;
-                break;
-            case WebView.RENDERER_PRIORITY_BOUND:
-                awRendererRequestedPriority = RendererPriority.LOW;
-                break;
-            default:
-            case WebView.RENDERER_PRIORITY_IMPORTANT:
-                awRendererRequestedPriority = RendererPriority.HIGH;
-                break;
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICall.Framework.SET_RENDERER_PRIORITY_POLICY",
+                                rendererRequestedPriority)) {
+            recordWebViewApiCall(ApiCall.SET_RENDERER_PRIORITY_POLICY);
+            @RendererPriority
+            int awRendererRequestedPriority;
+            switch (rendererRequestedPriority) {
+                case WebView.RENDERER_PRIORITY_WAIVED:
+                    awRendererRequestedPriority = RendererPriority.WAIVED;
+                    break;
+                case WebView.RENDERER_PRIORITY_BOUND:
+                    awRendererRequestedPriority = RendererPriority.LOW;
+                    break;
+                default:
+                case WebView.RENDERER_PRIORITY_IMPORTANT:
+                    awRendererRequestedPriority = RendererPriority.HIGH;
+                    break;
+            }
+            mAwContents.setRendererPriorityPolicy(
+                    awRendererRequestedPriority, waivedWhenNotVisible);
         }
-        mAwContents.setRendererPriorityPolicy(awRendererRequestedPriority, waivedWhenNotVisible);
     }
 
     @Override
     public int getRendererRequestedPriority() {
-        @RendererPriority
-        final int awRendererRequestedPriority = mAwContents.getRendererRequestedPriority();
-        switch (awRendererRequestedPriority) {
-            case RendererPriority.WAIVED:
-                return WebView.RENDERER_PRIORITY_WAIVED;
-            case RendererPriority.LOW:
-                return WebView.RENDERER_PRIORITY_BOUND;
-            default:
-            case RendererPriority.HIGH:
-                return WebView.RENDERER_PRIORITY_IMPORTANT;
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.Framework.GET_RENDERER_REQUESTED_PRIORITY")) {
+            recordWebViewApiCall(ApiCall.GET_RENDERER_REQUESTED_PRIORITY);
+            @RendererPriority
+            final int awRendererRequestedPriority = mAwContents.getRendererRequestedPriority();
+            switch (awRendererRequestedPriority) {
+                case RendererPriority.WAIVED:
+                    return WebView.RENDERER_PRIORITY_WAIVED;
+                case RendererPriority.LOW:
+                    return WebView.RENDERER_PRIORITY_BOUND;
+                default:
+                case RendererPriority.HIGH:
+                    return WebView.RENDERER_PRIORITY_IMPORTANT;
+            }
         }
     }
 
     @Override
     public boolean getRendererPriorityWaivedWhenNotVisible() {
-        return mAwContents.getRendererPriorityWaivedWhenNotVisible();
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.Framework.GET_RENDERER_PRIORITY_WAIVED_WHEN_NOT_VISIBLE")) {
+            recordWebViewApiCall(ApiCall.GET_RENDERER_PRIORITY_WAIVED_WHEN_NOT_VISIBLE);
+            return mAwContents.getRendererPriorityWaivedWhenNotVisible();
+        }
     }
 
     @Override
     public void setTextClassifier(TextClassifier textClassifier) {
-        recordWebViewApiCall(ApiCall.SET_TEXT_CLASSIFIER);
-        mAwContents.setTextClassifier(textClassifier);
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICall.Framework.SET_TEXT_CLASSIFIER")) {
+            recordWebViewApiCall(ApiCall.SET_TEXT_CLASSIFIER);
+            mAwContents.setTextClassifier(textClassifier);
+        }
     }
 
     @Override
     public TextClassifier getTextClassifier() {
-        recordWebViewApiCall(ApiCall.GET_TEXT_CLASSIFIER);
-        return mAwContents.getTextClassifier();
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICall.Framework.GET_TEXT_CLASSIFIER")) {
+            recordWebViewApiCall(ApiCall.GET_TEXT_CLASSIFIER);
+            return mAwContents.getTextClassifier();
+        }
     }
 
     @Override
@@ -2006,8 +2250,10 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
                 }
             });
         }
-        recordWebViewApiCall(ApiCall.AUTOFILL);
-        mAwContents.autofill(values);
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.AUTOFILL")) {
+            recordWebViewApiCall(ApiCall.AUTOFILL);
+            mAwContents.autofill(values);
+        }
     }
 
     @Override
@@ -2022,8 +2268,11 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             });
             return;
         }
-        recordWebViewApiCall(ApiCall.ON_PROVIDE_AUTOFILL_VIRTUAL_STRUCTURE);
-        mAwContents.onProvideAutoFillVirtualStructure(structure, flags);
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.Framework.ON_PROVIDE_AUTOFILL_VIRTUAL_STRUCTURE")) {
+            recordWebViewApiCall(ApiCall.ON_PROVIDE_AUTOFILL_VIRTUAL_STRUCTURE);
+            mAwContents.onProvideAutoFillVirtualStructure(structure, flags);
+        }
     }
 
     @Override
@@ -2728,9 +2977,12 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
 
     @Override
     public PrintDocumentAdapter createPrintDocumentAdapter(String documentName) {
-        recordWebViewApiCall(ApiCall.CREATE_PRINT_DOCUMENT_ADAPTER);
-        checkThread();
-        return new AwPrintDocumentAdapter(mAwContents.getPdfExporter(), documentName);
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.Framework.CREATE_PRINT_DOCUMENT_ADAPTER")) {
+            recordWebViewApiCall(ApiCall.CREATE_PRINT_DOCUMENT_ADAPTER);
+            checkThread();
+            return new AwPrintDocumentAdapter(mAwContents.getPdfExporter(), documentName);
+        }
     }
     // AwContents.NativeDrawFunctorFactory implementation ----------------------------------
     private class WebViewNativeDrawFunctorFactory implements AwContents.NativeDrawFunctorFactory {
@@ -2814,17 +3066,23 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
     // Implements SmartClipProvider
     @Override
     public void extractSmartClipData(int x, int y, int width, int height) {
-        recordWebViewApiCall(ApiCall.EXTRACT_SMART_CLIP_DATA);
-        checkThread();
-        mAwContents.extractSmartClipData(x, y, width, height);
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICall.Framework.EXTRACT_SMART_CLIP_DATA")) {
+            recordWebViewApiCall(ApiCall.EXTRACT_SMART_CLIP_DATA);
+            checkThread();
+            mAwContents.extractSmartClipData(x, y, width, height);
+        }
     }
 
     // Implements SmartClipProvider
     @Override
     public void setSmartClipResultHandler(final Handler resultHandler) {
-        recordWebViewApiCall(ApiCall.SET_SMART_CLIP_RESULT_HANDLER);
-        checkThread();
-        mAwContents.setSmartClipResultHandler(resultHandler);
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.Framework.SET_SMART_CLIP_RESULT_HANDLER")) {
+            recordWebViewApiCall(ApiCall.SET_SMART_CLIP_RESULT_HANDLER);
+            checkThread();
+            mAwContents.setSmartClipResultHandler(resultHandler);
+        }
     }
 
     SharedWebViewChromium getSharedWebViewChromium() {

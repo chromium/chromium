@@ -4,15 +4,18 @@
 
 #include "ui/base/interaction/interactive_test.h"
 
+#include <functional>
 #include <memory>
 #include <string>
 
-#include "base/auto_reset.h"
 #include "base/functional/callback_helpers.h"
+#include "base/functional/overloaded.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_run_loop_timeout.h"
 #include "ui/base/interaction/element_identifier.h"
-#include "ui/base/interaction/element_test_util.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/interaction/interactive_test_internal.h"
@@ -233,45 +236,43 @@ InteractionSequence::StepBuilder InteractiveTestApi::WaitForEvent(
 
 // static
 InteractiveTestApi::MultiStep InteractiveTestApi::EnsureNotPresent(
-    ElementIdentifier element_to_check,
-    bool in_any_context) {
+    ElementIdentifier element_to_check) {
   return internal::InteractiveTestPrivate::PostTask(
-      base::StringPrintf("EnsureNotPresent( %s, %d )",
-                         element_to_check.GetName().c_str(), in_any_context),
+      base::StringPrintf("EnsureNotPresent( %s )",
+                         element_to_check.GetName().c_str()),
       base::BindOnce(
-          [](ElementIdentifier element_to_check, bool in_any_context,
-             InteractionSequence* seq, TrackedElement* reference) {
-            auto* const element =
-                in_any_context
-                    ? ElementTracker::GetElementTracker()
-                          ->GetElementInAnyContext(element_to_check)
-                    : ElementTracker::GetElementTracker()
-                          ->GetFirstMatchingElement(element_to_check,
-                                                    reference->context());
+          [](ElementIdentifier id, InteractionSequence* seq,
+             TrackedElement* reference) {
+            auto* const tracker = ElementTracker::GetElementTracker();
+            auto* const element = seq->IsCurrentStepInAnyContextForTesting()
+                                      ? tracker->GetElementInAnyContext(id)
+                                      : tracker->GetFirstMatchingElement(
+                                            id, reference->context());
             if (element) {
-              LOG(ERROR) << "Expected element " << element_to_check
+              LOG(ERROR) << "Expected element " << element->ToString()
                          << " not to be present but it was present.";
               seq->FailForTesting();
             }
           },
-          element_to_check, in_any_context));
+          element_to_check));
 }
 
 // static
 InteractiveTestApi::MultiStep InteractiveTestApi::EnsurePresent(
-    ElementSpecifier element_to_check,
-    bool in_any_context) {
+    ElementSpecifier element_to_check) {
   return Steps(
       FlushEvents(),
-      std::move(
-          WithElement(element_to_check, base::DoNothing())
-              .SetDescription(base::StringPrintf(
-                  "EnsurePresent( %s, %d )",
-                  internal::DescribeElement(element_to_check).c_str(),
-                  in_any_context))
-              .SetContext(in_any_context
-                              ? InteractionSequence::ContextMode::kAny
-                              : InteractionSequence::ContextMode::kInitial)));
+      std::move(WithElement(element_to_check, base::DoNothing())
+                    .SetDescription(base::StringPrintf(
+                        "EnsurePresent( %s )",
+                        internal::DescribeElement(element_to_check).c_str()))));
+}
+
+InteractionSequence::StepBuilder InteractiveTestApi::NameElement(
+    base::StringPiece name,
+    AbsoluteElementSpecifier spec) {
+  return NameElementRelative(kInteractiveTestPivotElementId, name,
+                             GetFindElementCallback(std::move(spec)));
 }
 
 // static
@@ -342,11 +343,74 @@ bool InteractiveTestApi::RunTestSequenceImpl(
       base::BindOnce(&internal::InteractiveTestPrivate::OnSequenceAborted,
                      base::Unretained(private_test_impl_.get())));
   auto sequence = builder.Build();
-  sequence->RunSynchronouslyForTesting();
+
+  {
+    base::test::ScopedRunLoopTimeout timeout(
+        FROM_HERE, absl::nullopt,
+        base::BindRepeating(
+            [](base::WeakPtr<InteractionSequence> sequence) {
+              std::ostringstream oss;
+              if (sequence) {
+                oss << internal::kInteractiveTestFailedMessagePrefix
+                    << sequence->BuildAbortedData(
+                           InteractionSequence::AbortedReason::
+                               kSequenceTimedOut);
+              } else {
+                oss << "Interactive test: timeout after test sequence "
+                       "destroyed; a failure message may already have been "
+                       "logged.";
+              }
+              return oss.str();
+            },
+            sequence->AsWeakPtr()));
+    sequence->RunSynchronouslyForTesting();
+  }
 
   private_test_impl_->Cleanup();
 
   return private_test_impl_->success_;
+}
+
+// static
+InteractiveTestApi::FindElementCallback
+InteractiveTestApi::GetFindElementCallback(AbsoluteElementSpecifier spec) {
+  using ContextCallback = base::OnceCallback<TrackedElement*(ElementContext)>;
+  return absl::visit(
+      base::Overloaded{
+          [](TrackedElement* el) {
+            CHECK(el) << "NameView(TrackedElement*): view must be set.";
+            return base::BindOnce(
+                [](const SafeElementReference& ref, TrackedElement*) {
+                  LOG_IF(ERROR, !ref.get()) << "NameElement(TrackedElement*): "
+                                               "element ceased to be valid "
+                                               "before step was executed.";
+                  return ref.get();
+                },
+                SafeElementReference(el));
+          },
+          [](std::reference_wrapper<TrackedElement*> ref) {
+            return base::BindOnce(
+                [](std::reference_wrapper<TrackedElement*> ref,
+                   TrackedElement*) {
+                  LOG_IF(ERROR, !ref.get()) << "NameElement(TrackedElement*): "
+                                               "element ceased to be valid "
+                                               "before step was executed.";
+                  return ref.get();
+                },
+                ref);
+          },
+          [](ContextCallback& callback) {
+            return base::BindOnce(
+                [](ContextCallback callback, TrackedElement* relative_to) {
+                  return std::move(callback).Run(relative_to->context());
+                },
+                std::move(callback));
+          },
+          [](base::OnceCallback<TrackedElement*()>& callback) {
+            return base::RectifyCallback<FindElementCallback>(
+                std::move(callback));
+          }},
+      spec);
 }
 
 // static
@@ -365,6 +429,14 @@ void InteractiveTestApi::AddStep(MultiStep& dest, StepBuilder src) {
 void InteractiveTestApi::AddStep(MultiStep& dest, MultiStep src) {
   for (auto& step : src)
     dest.emplace_back(std::move(step));
+}
+
+// static
+void InteractiveTestApi::AddDescription(MultiStep& steps,
+                                        const base::StringPiece& format) {
+  for (auto& step : steps) {
+    step.FormatDescription(format);
+  }
 }
 
 }  // namespace ui::test

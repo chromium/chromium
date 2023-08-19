@@ -16,6 +16,16 @@
   };
   dp.Target.onAttachedToTarget(onAttached);
 
+  // Enable the debugger before registering a service worker so that
+  // the debugger can be attached even when the
+  // AllowDevToolsMainThreadDebuggerForMultipleMainFrames feature is disabled.
+  // When the feature is disabled, a renderer disallows the debugger when
+  // there are multiple browsing contexts. The following code will create a
+  // new browsing context, so enabling the debugger after registering a service
+  // worker will fail. Enabling the debugger earlier works around the issue.
+  // TODO(https://crbug.com/1434900): Remove this workaround.
+  await dp.Debugger.enable();
+
   await dp.ServiceWorker.enable();
   await session.navigate('resources/service-worker-fetch.html');
   testRunner.log('Navigated, registering service worker');

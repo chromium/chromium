@@ -53,6 +53,8 @@ scoped_refptr<GLContext> CreateGLContext(GLShareGroup* share_group,
       stub_context->SetUseStubApi(true);
       return stub_context;
     }
+    case kGLImplementationDisabled:
+      return nullptr;
     default:
       NOTREACHED();
       return nullptr;

@@ -7,13 +7,12 @@
 
 #include <string>
 
-#include "base/component_export.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 
 namespace ui {
 
-class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeTestHelper {
+class AXPlatformNodeTestHelper {
  public:
   static int GetTreeSize(AXPlatformNode* ax_node);
   static AXPlatformNode* FindChildByName(AXPlatformNode* ax_node,

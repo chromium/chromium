@@ -47,7 +47,8 @@ class SignalFilterProcessor {
   void EnableMetrics(bool enable_metrics);
 
  private:
-  void FilterSignals(DefaultModelManager::SegmentInfoList segment_infos);
+  void FilterSignals(
+      std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> segment_infos);
 
   // Boolean to only record metrics the first time models are updated.
   bool is_first_time_model_update_{true};
@@ -55,7 +56,8 @@ class SignalFilterProcessor {
   const raw_ptr<StorageService, DanglingUntriaged> storage_service_;
   const raw_ptr<UserActionSignalHandler> user_action_signal_handler_;
   const raw_ptr<HistogramSignalHandler> histogram_signal_handler_;
-  const raw_ptr<HistoryServiceObserver, DanglingUntriaged> history_observer_;
+  const raw_ptr<HistoryServiceObserver, AcrossTasksDanglingUntriaged>
+      history_observer_;
   const base::flat_set<SegmentId> segment_ids_;
 
   base::WeakPtrFactory<SignalFilterProcessor> weak_ptr_factory_{this};

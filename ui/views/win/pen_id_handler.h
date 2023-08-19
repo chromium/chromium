@@ -16,6 +16,7 @@
 #include "base/auto_reset.h"
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/views_export.h"
 
@@ -76,24 +77,21 @@ class VIEWS_EXPORT PenIdHandler {
     }
   };
 
-  // Virtual for unit testing.
   // Checks if a PenDevice can be retrieved for the `pointer_id` and returns its
   // GUID if it exists.
-  virtual absl::optional<std::string> TryGetGuid(UINT32 pointer_id) const;
+  absl::optional<std::string> TryGetGuid(UINT32 pointer_id) const;
   // This is a fallback scenario when TryGetGUID doesn't retrieve a PenDevice.
   // Happens when the device doesn't have both TSN/TVID (e.g.
   // SurfaceHub 1 + SurfaceHub Pen -> only has TSN, no TVID).
-  virtual TransducerId TryGetTransducerId(UINT32 pointer_id) const;
+  TransducerId TryGetTransducerId(UINT32 pointer_id) const;
+
+  void InitPenIdStatics();
 
   base::flat_map<std::string, int32_t> guid_to_id_map_;
   // Mapping from "Transducer Serial Number (TSN)" to `unique_id`. More
   // information on TSN: https://www.usb.org/sites/default/files/hut1_22.pdf
   base::flat_map<TransducerId, int32_t> transducer_id_to_id_map_;
   int32_t current_id_ = 0;
-  Microsoft::WRL::ComPtr<ABI::Windows::Devices::Input::IPenDeviceStatics>
-      pen_device_statics_;
-  Microsoft::WRL::ComPtr<ABI::Windows::UI::Input::IPointerPointStatics>
-      pointer_point_statics_;
 };
 
 }  // namespace views

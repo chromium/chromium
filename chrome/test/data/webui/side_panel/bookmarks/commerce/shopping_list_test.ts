@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://bookmarks-side-panel.top-chrome/commerce/shopping_list.js';
 import 'chrome://bookmarks-side-panel.top-chrome/bookmarks_list.js';
 
@@ -32,22 +31,26 @@ suite('SidePanelShoppingListTest', () => {
       bookmarkId: BigInt(3),
       info: {
         title: 'Product Foo',
+        clusterTitle: 'Product Cluster Foo',
         domain: 'foo.com',
         imageUrl: {url: 'chrome://resources/images/error.svg'},
         productUrl: {url: 'https://foo.com/product'},
         currentPrice: '$12',
         previousPrice: '$34',
+        clusterId: BigInt(12345),
       },
     },
     {
       bookmarkId: BigInt(4),
       info: {
         title: 'Product bar',
+        clusterTitle: 'Product Cluster bar',
         domain: 'bar.com',
         imageUrl: {url: ''},
         productUrl: {url: 'https://foo.com/product'},
         currentPrice: '$15',
         previousPrice: '',
+        clusterId: BigInt(12345),
       },
     },
   ];
@@ -284,11 +287,13 @@ suite('SidePanelShoppingListTest', () => {
       bookmarkId: BigInt(5),
       info: {
         title: 'Product Baz',
+        clusterTitle: 'Product Cluster Baz',
         domain: 'baz.com',
         imageUrl: {url: 'https://baz.com/image'},
         productUrl: {url: 'https://baz.com/product'},
         currentPrice: '$56',
         previousPrice: '$78',
+        clusterId: BigInt(12345),
       },
     };
 
@@ -307,7 +312,7 @@ suite('SidePanelShoppingListTest', () => {
     }
 
     shoppingListApi.getCallbackRouterRemote().priceUntrackedForBookmark(
-        newProduct.bookmarkId);
+        newProduct);
     await flushTasks();
     checkActionButtonStatus(actionButtons[0]!, true);
     checkActionButtonStatus(actionButtons[1]!, true);
@@ -330,7 +335,7 @@ suite('SidePanelShoppingListTest', () => {
     checkActionButtonStatus(actionButtonA, true);
 
     shoppingListApi.getCallbackRouterRemote().priceUntrackedForBookmark(
-        product.bookmarkId);
+        product);
     await flushTasks();
     checkActionButtonStatus(actionButtonA, false);
 
@@ -351,11 +356,13 @@ suite('SidePanelShoppingListTest', () => {
       bookmarkId: BigInt(3),
       info: {
         title: 'Product Baz',
+        clusterTitle: 'Product Cluster Baz',
         domain: 'baz.com',
         imageUrl: {url: 'chrome://resources/images/error.svg'},
         productUrl: {url: 'https://baz.com/product'},
         currentPrice: '$56',
         previousPrice: '$78',
+        clusterId: BigInt(12345),
       },
     };
     shoppingListApi.getCallbackRouterRemote().priceTrackedForBookmark(
@@ -389,7 +396,7 @@ suite('SidePanelShoppingListTest', () => {
 
   test('ShowErrorToastWhenTrackAndUntrackFailed', async () => {
     shoppingListApi.getCallbackRouterRemote().operationFailedForBookmark(
-        products[0]!.bookmarkId, true);
+        products[0]!, true);
     await flushTasks();
 
     assertTrue(shoppingList.$.errorToast.open);
@@ -399,7 +406,7 @@ suite('SidePanelShoppingListTest', () => {
     assertFalse(shoppingList.$.errorToast.open);
 
     shoppingListApi.getCallbackRouterRemote().operationFailedForBookmark(
-        products[1]!.bookmarkId, false);
+        products[1]!, false);
     await flushTasks();
 
     assertTrue(shoppingList.$.errorToast.open);

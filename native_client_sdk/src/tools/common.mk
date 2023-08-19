@@ -507,6 +507,7 @@ run: check_for_chrome all $(PAGE)
 	$(RUN_PY) -C $(CURDIR) -P $(PAGE_TC_CONFIG) \
 	    $(addprefix -E ,$(CHROME_ENV)) -- "$(CHROME_PATH)" \
 	    $(CHROME_ARGS) \
+	    --allow-command-line-plugins \
 	    --register-pepper-plugins="$(PPAPI_DEBUG),$(PPAPI_RELEASE)"
 
 .PHONY: run_package
@@ -527,6 +528,7 @@ debug: check_for_chrome all $(PAGE)
 	    -C $(CURDIR) -P $(PAGE_TC_CONFIG) \
 	    $(addprefix -E ,$(CHROME_ENV)) -- "$(CHROME_PATH)" \
 	    $(CHROME_ARGS) $(SANDBOX_ARGS) --enable-nacl-debug \
+	    --allow-command-line-plugins \
 	    --register-pepper-plugins="$(PPAPI_DEBUG),$(PPAPI_RELEASE)"
 
 .PHONY: serve

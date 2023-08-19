@@ -34,7 +34,7 @@ base::Time GetSettingLastModifiedDate(HostContentSettingsMap* map,
                                       ContentSettingsType type) {
   content_settings::SettingInfo info;
   map->GetWebsiteSetting(primary_url, secondary_url, type, &info);
-  return info.metadata.last_modified;
+  return info.metadata.last_modified();
 }
 
 }  // namespace

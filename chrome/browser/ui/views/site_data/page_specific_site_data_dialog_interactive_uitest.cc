@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/views/collected_cookies_views.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/page_info/page_info_cookies_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
@@ -32,7 +31,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/content_settings/core/common/pref_names.h"
-#include "components/page_info/core/features.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_features.h"
@@ -202,10 +200,7 @@ class PageSpecificSiteDataDialogInteractiveUiTest
 
  protected:
   virtual void SetUpFeatureList() {
-    feature_list_.InitWithFeatures({page_info::kPageSpecificSiteDataDialog,
-                                    page_info::kPageInfoCookiesSubpage,
-                                    net::features::kPartitionedCookies},
-                                   {});
+    feature_list_.InitWithFeatures({net::features::kPartitionedCookies}, {});
   }
 
   virtual void SetUpCookieControlMode() {
@@ -244,8 +239,8 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
       InAnyContext(NameChildView(kPageSpecificSiteDataDialogFirstPartySection,
                                  kFirstPartyAllowedRow, 0)),
       // Verify no empty state label is present.
-      EnsureNotPresent(kPageSpecificSiteDataDialogEmptyStateLabel,
-                       /* in_any_context =*/true),
+      InAnyContext(
+          EnsureNotPresent(kPageSpecificSiteDataDialogEmptyStateLabel)),
       // Verify the row label and open the row menu.
       CheckRowLabel(kFirstPartyAllowedRow,
                     IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_ALLOWED_STATE_SUBTITLE),
@@ -254,8 +249,7 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
       InAnyContext(WaitForShow(SiteDataRowView::kBlockMenuItem)),
       InAnyContext(WaitForShow(SiteDataRowView::kClearOnExitMenuItem)),
       // Verify that "Allow" is not present as it is already allowed.
-      EnsureNotPresent(SiteDataRowView::kAllowMenuItem,
-                       /* in_any_context =*/true),
+      InAnyContext(EnsureNotPresent(SiteDataRowView::kAllowMenuItem)),
       // Verify that the site can be deleted.
       DeleteRow(kFirstPartyAllowedRow),
       // Verify that UI has updated as a result of clicking on a menu item and
@@ -296,8 +290,7 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
       InAnyContext(WaitForShow(SiteDataRowView::kAllowMenuItem)),
       // Verify that the menu doesn't have the "Block" or "Delete" menu items
       // because it is already blocked.
-      EnsureNotPresent(SiteDataRowView::kBlockMenuItem,
-                       /* in_any_context =*/true),
+      InAnyContext(EnsureNotPresent(SiteDataRowView::kBlockMenuItem)),
       InAnyContext(SelectMenuItem(SiteDataRowView::kAllowMenuItem)),
       // Wait until custom event happens (triggered when any menu item
       // callback is called). Menu item is accepted on Mac async, after
@@ -412,10 +405,7 @@ class PageSpecificSiteDataDialogIsolatedWebAppInteractiveUiTest
  protected:
   void SetUpFeatureList() override {
     feature_list_.InitWithFeatures(
-        {page_info::kPageSpecificSiteDataDialog,
-         page_info::kPageInfoCookiesSubpage, features::kIsolatedWebApps,
-         features::kIsolatedWebAppDevMode},
-        {});
+        {features::kIsolatedWebApps, features::kIsolatedWebAppDevMode}, {});
   }
 
   Browser* InstallAndLaunchIsolatedWebApp() {
@@ -475,8 +465,8 @@ IN_PROC_BROWSER_TEST_F(
       InAnyContext(NameChildView(kPageSpecificSiteDataDialogFirstPartySection,
                                  kFirstPartyAllowedRow, 0)),
       // Verify no empty state label is present.
-      EnsureNotPresent(kPageSpecificSiteDataDialogEmptyStateLabel,
-                       /* in_any_context =*/true),
+      InAnyContext(
+          EnsureNotPresent(kPageSpecificSiteDataDialogEmptyStateLabel)),
       // Verify the hostname label.
       CheckHostnameLabel(kFirstPartyAllowedRow, u"Simple Isolated App"));
 }
@@ -491,9 +481,7 @@ class PageSpecificSiteDataDialogPrivacySandboxInteractiveUiTest
  protected:
   void SetUpFeatureList() override {
     feature_list_.InitWithFeatures(
-        {page_info::kPageSpecificSiteDataDialog,
-         page_info::kPageInfoCookiesSubpage, blink::features::kSharedStorageAPI,
-         blink::features::kFencedFrames,
+        {blink::features::kSharedStorageAPI, blink::features::kFencedFrames,
          features::kPrivacySandboxAdsAPIsOverride},
         {});
   }
@@ -520,8 +508,8 @@ IN_PROC_BROWSER_TEST_F(
       InAnyContext(NameChildView(kPageSpecificSiteDataDialogFirstPartySection,
                                  kFirstPartyAllowedRow, 0)),
       // Verify no empty state label is present.
-      EnsureNotPresent(kPageSpecificSiteDataDialogEmptyStateLabel,
-                       /*in_any_context=*/true),
+      InAnyContext(
+          EnsureNotPresent(kPageSpecificSiteDataDialogEmptyStateLabel)),
       // Verify the row label and open the row menu.
       CheckRowLabel(kFirstPartyAllowedRow,
                     IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_ALLOWED_STATE_SUBTITLE),
@@ -530,8 +518,7 @@ IN_PROC_BROWSER_TEST_F(
       InAnyContext(WaitForShow(SiteDataRowView::kBlockMenuItem)),
       InAnyContext(WaitForShow(SiteDataRowView::kClearOnExitMenuItem)),
       // Verify that "Allow" is not present as it is already allowed.
-      EnsureNotPresent(SiteDataRowView::kAllowMenuItem,
-                       /*in_any_context=*/true),
+      InAnyContext(EnsureNotPresent(SiteDataRowView::kAllowMenuItem)),
       // Verify that the site can be deleted.
       DeleteRow(kFirstPartyAllowedRow),
       // Verify that UI has updated as a result of clicking on a menu item and

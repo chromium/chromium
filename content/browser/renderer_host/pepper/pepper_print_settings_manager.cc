@@ -69,7 +69,7 @@ PP_Rect PrintAreaToPPPrintArea(const gfx::Rect& print_area,
 class PrintingContextDelegate : public printing::PrintingContext::Delegate {
  public:
   // PrintingContext::Delegate methods.
-  gfx::NativeView GetParentView() override { return nullptr; }
+  gfx::NativeView GetParentView() override { return gfx::NativeView(); }
   std::string GetAppLocale() override {
     return GetContentClient()->browser()->GetApplicationLocale();
   }

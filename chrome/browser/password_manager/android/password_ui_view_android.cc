@@ -27,10 +27,11 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/android/chrome_jni_headers/PasswordUIView_jni.h"
+#include "chrome/browser/password_manager/android/local_passwords_migration_warning_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/export/password_csv_writer.h"
-#include "components/password_manager/core/browser/form_parsing/form_parser.h"
+#include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check_impl.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
@@ -278,6 +279,16 @@ void PasswordUIViewAndroid::HandleShowBlockedCredentialView(
       context, settings_launcher);
 }
 
+void PasswordUIViewAndroid::ShowMigrationWarning(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& activity,
+    const base::android::JavaParamRef<jobject>& bottom_sheet_controller) {
+  local_password_migration::ShowWarningWithActivity(
+      activity, bottom_sheet_controller, ProfileManager::GetLastUsedProfile(),
+      password_manager::metrics_util::PasswordMigrationWarningTriggers::
+          kPasswordSettings);
+}
+
 void PasswordUIViewAndroid::OnEditUIDismissed() {
   credential_edit_bridge_.reset();
 }
@@ -299,6 +310,12 @@ jboolean JNI_PasswordUIView_HasAccountForLeakCheckRequest(JNIEnv* env) {
           ProfileManager::GetLastUsedProfile());
   return password_manager::LeakDetectionCheckImpl::HasAccountForRequest(
       identity_manager);
+}
+
+jboolean PasswordUIViewAndroid::IsWaitingForPasswordStore(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>&) {
+  return saved_passwords_presenter_.IsWaitingForPasswordStore();
 }
 
 // static

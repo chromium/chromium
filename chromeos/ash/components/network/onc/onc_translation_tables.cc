@@ -7,6 +7,7 @@
 #include <cstddef>
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/strings/string_piece.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
 #include "chromeos/ash/components/network/tether_constants.h"
@@ -164,6 +165,7 @@ const FieldTranslationEntry wifi_fields[] = {
     {::onc::wifi::kAutoConnect, shill::kAutoConnectProperty},
     {::onc::wifi::kBSSID, shill::kWifiBSsid},
     {::onc::wifi::kBSSIDAllowlist, shill::kWifiBSSIDAllowlist},
+    {::onc::wifi::kBSSIDRequested, shill::kWifiBSSIDRequested},
     // This dictionary is converted during translation, see onc_translator_*.
     // { ::onc::wifi::kEAP, shill::kEap*},
     {::onc::wifi::kFrequency, shill::kWifiFrequency},
@@ -293,8 +295,12 @@ const FieldTranslationEntry static_or_saved_ipconfig_fields[] = {
     {nullptr}};
 
 struct OncValueTranslationEntry {
-  const chromeos::onc::OncValueSignature* onc_signature;
-  const FieldTranslationEntry* field_translation_table;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #global-scope
+  RAW_PTR_EXCLUSION const chromeos::onc::OncValueSignature* onc_signature;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #global-scope
+  RAW_PTR_EXCLUSION const FieldTranslationEntry* field_translation_table;
 };
 
 const OncValueTranslationEntry onc_value_translation_table[] = {
@@ -329,9 +335,13 @@ const OncValueTranslationEntry onc_value_translation_table[] = {
     {nullptr}};
 
 struct NestedShillDictionaryEntry {
-  const chromeos::onc::OncValueSignature* onc_signature;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #global-scope
+  RAW_PTR_EXCLUSION const chromeos::onc::OncValueSignature* onc_signature;
   // nullptr terminated list of Shill property keys.
-  const char* const* shill_property_path;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #global-scope
+  RAW_PTR_EXCLUSION const char* const* shill_property_path;
 };
 
 const char* cellular_apn_path_entries[] = {shill::kCellularApnProperty,

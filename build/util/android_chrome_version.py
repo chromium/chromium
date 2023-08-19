@@ -187,7 +187,7 @@ things here:
 """
 
 
-def _GetAbisToDigitMask(build_number):
+def _GetAbisToDigitMask(build_number, patch_number):
   """Return the correct digit mask based on build number.
 
   Updated from build 5750: Some intel devices advertise support for arm,
@@ -198,36 +198,39 @@ def _GetAbisToDigitMask(build_number):
     A dictionary of architecture mapped to bitness
     mapped to version code suffix.
   """
-
-  if build_number < 5750:
+  # Scheme change was made directly to M113 and M114 branches.
+  use_new_scheme = (build_number >= 5750
+                    or (build_number == 5672 and patch_number >= 176)
+                    or (build_number == 5735 and patch_number >= 53))
+  if use_new_scheme:
     return {
         'arm': {
             '32': 0,
-            '32_64': 3,
-            '64_32': 4,
-            '64': 5,
-            '64_32_high': 9,
+            '32_64': 1,
+            '64_32': 2,
+            '64_32_high': 3,
+            '64': 4,
         },
         'intel': {
-            '32': 1,
-            '32_64': 6,
-            '64_32': 7,
-            '64': 8,
+            '32': 6,
+            '32_64': 7,
+            '64_32': 8,
+            '64': 9,
         },
     }
   return {
       'arm': {
           '32': 0,
-          '32_64': 1,
-          '64_32': 2,
-          '64_32_high': 3,
-          '64': 4,
+          '32_64': 3,
+          '64_32': 4,
+          '64': 5,
+          '64_32_high': 9,
       },
       'intel': {
-          '32': 6,
-          '32_64': 7,
-          '64_32': 8,
-          '64': 9,
+          '32': 1,
+          '32_64': 6,
+          '64_32': 7,
+          '64': 8,
       },
   }
 
@@ -290,7 +293,8 @@ def TranslateVersionCode(version_code, is_webview=False):
         package_name = package
         break
 
-  for arch, bitness_to_number in _GetAbisToDigitMask(build_number).items():
+  for arch, bitness_to_number in (_GetAbisToDigitMask(build_number,
+                                                      patch_number).items()):
     for bitness, number in bitness_to_number.items():
       if abi_digit == number:
         abi = arch if arch != 'intel' else 'x86'
@@ -326,8 +330,9 @@ def GenerateVersionCodes(version_values, arch, is_next_build):
   Thus, this method is responsible for the final two digits of versionCode.
   """
 
-  base_version_code = int(
-      '%s%03d00' % (version_values['BUILD'], int(version_values['PATCH'])))
+  build_number = int(version_values['BUILD'])
+  patch_number = int(version_values['PATCH'])
+  base_version_code = (build_number * 1000 + patch_number) * 100
 
   if is_next_build:
     base_version_code += _NEXT_BUILD_VERSION_CODE_DIFF
@@ -336,7 +341,7 @@ def GenerateVersionCodes(version_values, arch, is_next_build):
 
   version_codes = {}
 
-  abi_to_digit_mask = _GetAbisToDigitMask(int(version_values['BUILD']))
+  abi_to_digit_mask = _GetAbisToDigitMask(build_number, patch_number)
   for apk, package, abis in _APKS[bitness]:
     if abis == '64_32_high' and arch != 'arm64':
       continue

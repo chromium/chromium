@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/policy/enrollment/psm/rlwe_dmserver_client_impl.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
+#include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
@@ -46,7 +47,7 @@ class EnrollmentFwmpHelper {
   // Read FWMP.dev_disable_boot (a.k.a. block_devmode) and return the
   // value asynchronously via result_callback.
   // Return `false` in case of errors (e.g. `install_attributes_client_` or
-  // FMWP not available).
+  // FWMP not available).
   void DetermineDevDisableBoot(ResultCallback result_callback);
 
  private:
@@ -63,9 +64,11 @@ class EnrollmentFwmpHelper {
 };
 
 // Drives the forced re-enrollment check (for historical reasons called
-// auto-enrollment check), running an AutoEnrollmentClient if appropriate to
+// auto-enrollment check), running an `AutoEnrollmentClient` if appropriate to
 // make a decision.
-class AutoEnrollmentController {
+// The controller tracks network status to retry when the device is going
+// online in case of a prior failure.
+class AutoEnrollmentController : public ash::NetworkStateHandlerObserver {
  public:
   using ProgressCallbackList =
       base::RepeatingCallbackList<void(AutoEnrollmentState)>;
@@ -91,7 +94,7 @@ class AutoEnrollmentController {
   AutoEnrollmentController(const AutoEnrollmentController&) = delete;
   AutoEnrollmentController& operator=(const AutoEnrollmentController&) = delete;
 
-  ~AutoEnrollmentController();
+  ~AutoEnrollmentController() override;
 
   // Starts the auto-enrollment check.  Safe to call multiple times: aborts in
   // case a check is currently running or a decision has already been made.
@@ -103,6 +106,12 @@ class AutoEnrollmentController {
   // Registers a callback to invoke on state changes.
   base::CallbackListSubscription RegisterProgressCallback(
       const ProgressCallbackList::CallbackType& callback);
+
+  // ash::NetworkStateHandlerObserver:
+  void PortalStateChanged(
+      const ash::NetworkState* default_network,
+      const ash::NetworkState::PortalState portal_state) override;
+  void OnShuttingDown() override;
 
   AutoEnrollmentState state() const { return state_; }
 
@@ -258,6 +267,11 @@ class AutoEnrollmentController {
   // Utility for waiting until the system clock has been synchronized.
   std::unique_ptr<ash::SystemClockSyncObservation>
       system_clock_sync_observation_;
+
+  // Observes network state and calls `PortalStateChanged` when it changes from
+  // the start until the auto-enrollment state is resolved. Triggers a retry
+  // when the device goes online.
+  ash::NetworkStateHandlerScopedObservation network_state_observation_{this};
 
   // Current system clock sync state. This is only modified in
   // `OnSystemClockSyncResult` after `system_clock_sync_wait_requested_` has

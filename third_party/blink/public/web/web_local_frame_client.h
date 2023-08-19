@@ -48,6 +48,7 @@
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/public/common/loader/url_loader_factory_bundle.h"
+#include "third_party/blink/public/common/performance/performance_timeline_constants.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/responsiveness_metrics/user_interaction_latency.h"
 #include "third_party/blink/public/common/subresource_load_metrics.h"
@@ -557,8 +558,15 @@ class BLINK_EXPORT WebLocalFrameClient {
   // An Input Event observed.
   virtual void DidObserveInputDelay(base::TimeDelta input_delay) {}
 
-  // A user interaction is observed.
-  virtual void DidObserveUserInteraction(base::TimeDelta max_event_duration,
+  // A user interaction is observed. A user interaction can be built up from
+  // multiple input events (e.g. keydown then keyup). Each of these events has
+  // an input to next frame latency. This reports the timings of the max
+  // input-to-frame latency for each interaction. `max_event_start` is when
+  // input was received, and `max_event_end` is when the next frame was
+  // presented. See https://web.dev/inp/#whats-in-an-interaction for more
+  // detailed motivation and explanation.
+  virtual void DidObserveUserInteraction(base::TimeTicks max_event_start,
+                                         base::TimeTicks max_event_end,
                                          UserInteractionType interaction_type) {
   }
 
@@ -597,7 +605,7 @@ class BLINK_EXPORT WebLocalFrameClient {
   virtual void DidObserveNewFeatureUsage(const UseCounterFeature&) {}
 
   // A new soft navigation was observed.
-  virtual void DidObserveSoftNavigation(uint32_t count) {}
+  virtual void DidObserveSoftNavigation(blink::SoftNavigationMetrics metrics) {}
 
   // Reports that visible elements in the frame shifted (bit.ly/lsm-explainer).
   virtual void DidObserveLayoutShift(double score, bool after_input_or_scroll) {

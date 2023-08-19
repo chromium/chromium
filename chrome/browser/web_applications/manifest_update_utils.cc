@@ -54,6 +54,8 @@ std::ostream& operator<<(std::ostream& os, ManifestUpdateResult result) {
       return os << "kAppIdentityUpdateRejectedAndUninstalled";
     case ManifestUpdateResult::kAppIsIsolatedWebApp:
       return os << "kAppIsIsolatedWebApp";
+    case ManifestUpdateResult::kCancelledDueToMainFrameNavigation:
+      return os << "kCancelledDueToMainFrameNavigation";
   }
 }
 
@@ -94,6 +96,8 @@ std::ostream& operator<<(std::ostream& os, ManifestUpdateCheckResult stage) {
       return os << "kIconReadFromDiskFailed";
     case ManifestUpdateCheckResult::kWebContentsDestroyed:
       return os << "kWebContentsDestroyed";
+    case ManifestUpdateCheckResult::kCancelledDueToMainFrameNavigation:
+      return os << "kCancelledDueToMainFrameNavigation";
   }
 }
 
@@ -121,6 +125,8 @@ ManifestUpdateResult FinalResultFromManifestUpdateCheckResult(
       return ManifestUpdateResult::kIconReadFromDiskFailed;
     case ManifestUpdateCheckResult::kWebContentsDestroyed:
       return ManifestUpdateResult::kWebContentsDestroyed;
+    case ManifestUpdateCheckResult::kCancelledDueToMainFrameNavigation:
+      return ManifestUpdateResult::kCancelledDueToMainFrameNavigation;
   }
 }
 
@@ -179,7 +185,7 @@ bool CanWebAppSilentlyUpdateIdentity(const WebApp& web_app) {
   // WebAppChromeOsData::oem_installed will be migrated to
   // WebAppManagement::kOem eventually.
   return web_app.IsPreinstalledApp() || web_app.IsKioskInstalledApp() ||
-         web_app.GetSources().test(WebAppManagement::kOem);
+         web_app.GetSources().Has(WebAppManagement::kOem);
 }
 
 bool CanShowIdentityUpdateConfirmationDialog(const WebAppRegistrar& registrar,

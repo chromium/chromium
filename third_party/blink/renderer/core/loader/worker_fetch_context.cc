@@ -195,6 +195,9 @@ void WorkerFetchContext::PrepareRequest(
   probe::ApplyUserAgentOverride(Probe(), &user_agent);
   DCHECK(!user_agent.IsNull());
   request.SetHTTPUserAgent(AtomicString(user_agent));
+  request.SetSharedDictionaryWriterEnabled(
+      RuntimeEnabledFeatures::CompressionDictionaryTransportEnabled(
+          GetExecutionContext()));
 
   WrappedResourceRequest webreq(request);
   web_context_->WillSendRequest(webreq);

@@ -16,13 +16,20 @@ import {isTree, isTreeItem} from './xf_tree_util.js';
  */
 export const TREE_ITEM_INDENT = 20;
 
+/**
+ * TODO(b/285977941): Remove the closure annotation here.
+ * @constructor
+ */
 @customElement('xf-tree-item')
 export class XfTreeItem extends XfBase {
-  /**
-   * Override the tabIndex because we need to assign it to the <li> element
-   * instead of the host element.
-   */
-  @property({attribute: false}) override tabIndex: number = -1;
+  // "delegatesFocus = true" will make sure when the tree item is focused, <li>
+  // element inside the shadow DOM will get the focus.
+  static override get shadowRootOptions() {
+    return {
+      ...XfBase.shadowRootOptions,
+      delegatesFocus: true,
+    };
+  }
 
   /**
    * `separator` attribute will show a top border for the tree item. It's
@@ -77,34 +84,6 @@ export class XfTreeItem extends XfBase {
     } as const;
   }
 
-  /**
-   * Override to focus the inner <li> instead of the host element.
-   * We use tabIndex to control if a tree item can be focused or not, need
-   * to set it to 0 before focusing the item.
-   */
-  override focus() {
-    console.assert(
-        !this.disabled,
-        'Called focus() on a disabled XfTreeItem() isn\'t allowed');
-
-    this.tabIndex = 0;
-    this.$treeItem_.focus();
-  }
-
-  /**
-   * Override to blur the inner <li> instead of the host element.
-   * We use tabIndex to control if a tree item can be focused or not, need
-   * to set it to -1 after blurring the item.
-   */
-  override blur() {
-    console.assert(
-        !this.disabled,
-        'Called blur() on a disabled XfTreeItem() isn\'t allowed');
-
-    this.tabIndex = -1;
-    this.$treeItem_.blur();
-  }
-
   /** The level of the tree item, starting from 1. */
   get level(): number {
     return this.level_;
@@ -122,6 +101,27 @@ export class XfTreeItem extends XfBase {
 
   hasChildren(): boolean {
     return this.mayHaveChildren || this.items_.length > 0;
+  }
+
+  /**
+   * Toggle the focusable for the item.
+   *
+   * We are delegate the focus to the <li> element in the shadow DOM, to make
+   * sure the update is synchronous, we are operating on the DOM directly here
+   * instead of updating this in the render() function.
+   *
+   * Note: "tabindex = -1" is also considered as "focusable" according to the
+   * spec
+   * https://html.spec.whatwg.org/multipage/interaction.html#the-tabindex-attribute,
+   * so we need to remove the "tabindex" attribute below to make it
+   * non-focusable.
+   */
+  toggleFocusable(focusable: boolean) {
+    if (focusable) {
+      this.$treeItem_.setAttribute('tabindex', '0');
+    } else {
+      this.$treeItem_.removeAttribute('tabindex');
+    }
   }
 
   /**
@@ -173,6 +173,7 @@ export class XfTreeItem extends XfBase {
   @state() private level_ = 1;
 
   @query('li') private $treeItem_!: HTMLLIElement;
+  @query('.tree-row') private $treeRow_!: HTMLDivElement;
   @query('slot:not([name])') private $childrenSlot_!: HTMLSlotElement;
 
   /** The child tree items. */
@@ -189,26 +190,27 @@ export class XfTreeItem extends XfBase {
       <li
         class="tree-item"
         role="treeitem"
-        tabindex=${this.tabIndex}
         aria-labelledby="tree-label"
         aria-selected=${this.selected}
         aria-expanded=${ifDefined(showExpandIcon ? this.expanded : undefined)}
         aria-disabled=${this.disabled}
       >
-        <div
-          class="tree-row"
-          style=${styleMap(treeRowStyles)}
-        >
-          <paper-ripple></paper-ripple>
-          <span class="expand-icon"></span>
-          <xf-icon
-            class="tree-label-icon"
-            type=${ifDefined(this.iconSet ? undefined : this.icon)}
-            .iconSet=${this.iconSet}
-          ></xf-icon>
-          <span class="tree-label" id="tree-label">${this.label || ''}</span>
-          <slot name="rename"></slot>
-          <slot name="trailingIcon"></slot>
+        <div class="tree-row-wrapper">
+          <div
+            class="tree-row"
+            style=${styleMap(treeRowStyles)}
+          >
+            <paper-ripple></paper-ripple>
+            <span class="expand-icon"></span>
+            <xf-icon
+              class="tree-label-icon"
+              type=${ifDefined(this.iconSet ? undefined : this.icon)}
+              .iconSet=${this.iconSet}
+            ></xf-icon>
+            <span class="tree-label" id="tree-label">${this.label || ''}</span>
+            <slot name="rename"></slot>
+            <slot name="trailingIcon"></slot>
+          </div>
         </div>
         <ul
           class="tree-children"
@@ -226,6 +228,19 @@ export class XfTreeItem extends XfBase {
       throw new Error(
           '<xf-tree-item> can not be used without a parent <xf-tree>');
     }
+  }
+
+  /**
+   * When <xf-tree-item> responds to the "contextmenu" event, the `e.target`
+   * will always be the host element even if we put the focus on the inner
+   * ".tree-row" element, this is because it's inside the shadow DOM. To make
+   * sure the context menu shows in the correct location (when triggered by
+   * keyboard), we need to expose this method to re-position the menu based on
+   * the ".tree-row"'s bounding box. This method will be invoked by
+   * `ContextMenuHandler`.
+   */
+  getRectForContextMenu(): DOMRect {
+    return this.$treeRow_.getBoundingClientRect();
   }
 
   private onSlotChanged_() {
@@ -266,6 +281,7 @@ export class XfTreeItem extends XfBase {
 
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
+    this.setAttribute('has-children', this.hasChildren().toString());
     if (changedProperties.has('expanded')) {
       this.onExpandChanged_();
     }
@@ -405,6 +421,14 @@ function getCSS() {
       background-color: unset;
     }
 
+    :host-context(html.drag-drop-active):host(.denies) .tree-row {
+      background-color: var(--cros-highlight-color-error);
+    }
+
+    :host-context(html.drag-drop-active):host(.accepts) .tree-row {
+      background-color: var(--cros-ripple-color);
+    }
+
     .expand-icon {
       -webkit-mask-image: url(../foreground/images/files/ui/sort_desc.svg);
       -webkit-mask-position: center;
@@ -535,7 +559,6 @@ function getCSS() {
     :host {
       --xf-tree-item-indent: ${TREE_ITEM_INDENT};
       display: block;
-      margin-top: 8px;
     }
 
     ul {
@@ -561,13 +584,20 @@ function getCSS() {
       width: 100%;
     }
 
+    /* We need this layer to make sure there's no gap between tree items, so
+    when we drag items onto the tree items, it won't activate the parent tree
+    item unexpectedly. */
+    .tree-row-wrapper {
+      cursor: pointer;
+      padding: 4px;
+    }
+
     .tree-row {
       align-items: center;
       border-inline-start-width: 0 !important;
       border-radius: 20px;
       box-sizing: border-box;
       color: var(--cros-sys-on_surface);
-      cursor: pointer;
       display: flex;
       height: 40px;
       padding-inline-end: 12px;
@@ -609,6 +639,19 @@ function getCSS() {
     :host-context(.pointer-active):host(:not([selected]):not([disabled]):not([renaming]))
         li:not(:focus-visible) .tree-row:not(:active):hover {
       background-color: unset;
+    }
+
+    :host-context(html.drag-drop-active):host(.denies) .tree-row {
+      background-color: var(--cros-sys-error_container);
+      color: var(--cros-sys-on_error_container);
+    }
+
+    :host-context(html.drag-drop-active):host(.accepts) .tree-row {
+      background-color: var(--cros-sys-hover_on_subtle);
+    }
+
+    :host-context(html.drag-drop-active):host(.accepts[selected]) .tree-row {
+      background-color: var(--cros-sys-primary);
     }
 
     .expand-icon {

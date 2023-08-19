@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/file_descriptor_posix.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -26,12 +25,6 @@
 namespace android_webview {
 
 namespace {
-
-// Enables real document cookie values instead of a dummy value.
-// TODO(crbug.com/1286556): Remove this kill switch after a safe rollout.
-BASE_FEATURE(kRealAwPrintManagerCookies,
-             "RealAwPrintManagerCookies",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 uint32_t SaveDataToFd(int fd,
                       uint32_t page_count,
@@ -103,11 +96,7 @@ void AwPrintManager::UpdateParam(
   settings_ = std::move(settings);
   fd_ = file_descriptor;
   set_pdf_writing_done_callback(std::move(callback));
-  constexpr int kDummyCookie = 1;
-  const int cookie = base::FeatureList::IsEnabled(kRealAwPrintManagerCookies)
-                         ? printing::PrintSettings::NewCookie()
-                         : kDummyCookie;
-  set_cookie(cookie);
+  set_cookie(printing::PrintSettings::NewCookie());
 }
 
 void AwPrintManager::ScriptedPrint(

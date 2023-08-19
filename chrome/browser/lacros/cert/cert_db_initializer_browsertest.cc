@@ -199,7 +199,7 @@ class ScopedCertDatabaseObserver : public net::CertDatabase::Observer {
     net::CertDatabase::GetInstance()->RemoveObserver(this);
   }
 
-  void OnCertDBChanged() override {
+  void OnClientCertStoreChanged() override {
     notifications_received_++;
     run_loop_.Quit();
   }

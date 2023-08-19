@@ -1,0 +1,58 @@
+// Copyright 2023 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Use the <code>userScripts</code> API to execute user scripts in the User
+// Scripts context.
+namespace userScripts {
+  // The source of the script to inject.
+  dictionary ScriptSource {
+    // A string containing the JavaScript code to inject. Exactly one of
+    // <code>file</code> or <code>code</code> must be specified.
+    DOMString? code;
+    // The path of the JavaScript file to inject relative to the extension's
+    // root directory. Exactly one of <code>file</code> or <code>code</code>
+    // must be specified.
+    DOMString? file;
+  };
+
+  // Describes a user script to be injected into a web page registered through
+  // this API.
+  dictionary RegisteredUserScript {
+    // If true, it will inject into all frames, even if the frame is not the
+    // top-most frame in the tab. Each frame is checked independently for URL
+    // requirements; it will not inject into child frames if the URL
+    // requirements are not met. Defaults to false, meaning that only the top
+    // frame is matched.
+    boolean? allFrames;
+    // Excludes pages that this content script would otherwise be injected into.
+    // See <a href="match_patterns">Match Patterns</a> for more details on the
+    // syntax of these strings.
+    DOMString[]? excludeMatches;
+    // The ID of the user script specified in the API call. This property must
+    // not start with a '_' as it's reserved as a prefix for generated script
+    // IDs.
+    DOMString id;
+    // The list of ScriptSource objects defining sources of scripts to be
+    // injected into matching pages.
+    ScriptSource[] js;
+    // Specifies which pages this content script will be injected into. See
+    // <a href="match_patterns">Match Patterns</a> for more details on the
+    // syntax of these strings.
+    DOMString[]? matches;
+    // Specifies when JavaScript files are injected into the web page. The
+    // preferred and default value is <code>document_idle</code>.
+    extensionTypes.RunAt? runAt;
+  };
+
+  callback RegisterCallback = void();
+
+  interface Functions {
+    // Registers one or more user scripts for this extension.
+    // |scripts|: Contains a list of user scripts to be registered.
+    // |callback|: Called once scripts have been fully registered or if an error
+    // has ocurred.
+    [supportsPromises] static void register(RegisteredUserScript[] scripts,
+                                            optional RegisterCallback callback);
+  };
+};

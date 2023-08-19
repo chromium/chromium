@@ -6,3 +6,5 @@ rootWebArea
 ++++++++++genericContainer
 ++++++++++++genericContainer ignored
 ++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++++staticText ignored invisible name='2 out of 10'

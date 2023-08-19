@@ -8,7 +8,6 @@ use core::cell::RefCell;
 #[cfg(span_locations)]
 use core::cmp;
 use core::fmt::{self, Debug, Display, Write};
-use core::iter::FromIterator;
 use core::mem::ManuallyDrop;
 use core::ops::RangeBounds;
 use core::ptr;
@@ -71,7 +70,6 @@ impl TokenStream {
 fn push_token_from_proc_macro(mut vec: RcVecMut<TokenTree>, token: TokenTree) {
     // https://github.com/dtolnay/proc-macro2/issues/235
     match token {
-        #[cfg(not(no_bind_by_move_pattern_guard))]
         TokenTree::Literal(crate::Literal {
             #[cfg(wrap_proc_macro)]
                 inner: crate::imp::Literal::Fallback(literal),
@@ -80,20 +78,6 @@ fn push_token_from_proc_macro(mut vec: RcVecMut<TokenTree>, token: TokenTree) {
             ..
         }) if literal.repr.starts_with('-') => {
             push_negative_literal(vec, literal);
-        }
-        #[cfg(no_bind_by_move_pattern_guard)]
-        TokenTree::Literal(crate::Literal {
-            #[cfg(wrap_proc_macro)]
-                inner: crate::imp::Literal::Fallback(literal),
-            #[cfg(not(wrap_proc_macro))]
-                inner: literal,
-            ..
-        }) => {
-            if literal.repr.starts_with('-') {
-                push_negative_literal(vec, literal);
-            } else {
-                vec.push(TokenTree::Literal(crate::Literal::_new_fallback(literal)));
-            }
         }
         _ => vec.push(token),
     }
@@ -233,7 +217,7 @@ impl Debug for TokenStream {
     }
 }
 
-#[cfg(use_proc_macro)]
+#[cfg(feature = "proc-macro")]
 impl From<proc_macro::TokenStream> for TokenStream {
     fn from(inner: proc_macro::TokenStream) -> Self {
         inner
@@ -243,7 +227,7 @@ impl From<proc_macro::TokenStream> for TokenStream {
     }
 }
 
-#[cfg(use_proc_macro)]
+#[cfg(feature = "proc-macro")]
 impl From<TokenStream> for proc_macro::TokenStream {
     fn from(inner: TokenStream) -> Self {
         inner
@@ -479,7 +463,6 @@ impl Span {
         Span { lo: 0, hi: 0 }
     }
 
-    #[cfg(not(no_hygiene))]
     pub fn mixed_site() -> Self {
         Span::call_site()
     }
@@ -539,26 +522,6 @@ impl Span {
             let fi = cm.fileinfo(*self);
             fi.offset_line_column(self.hi as usize)
         })
-    }
-
-    #[cfg(procmacro2_semver_exempt)]
-    pub fn before(&self) -> Span {
-        Span {
-            #[cfg(span_locations)]
-            lo: self.lo,
-            #[cfg(span_locations)]
-            hi: self.lo,
-        }
-    }
-
-    #[cfg(procmacro2_semver_exempt)]
-    pub fn after(&self) -> Span {
-        Span {
-            #[cfg(span_locations)]
-            lo: self.hi,
-            #[cfg(span_locations)]
-            hi: self.hi,
-        }
     }
 
     #[cfg(not(span_locations))]
@@ -789,7 +752,7 @@ fn validate_ident(string: &str, raw: bool) {
         panic!("Ident is not allowed to be empty; use Option<Ident>");
     }
 
-    if string.bytes().all(|digit| digit >= b'0' && digit <= b'9') {
+    if string.bytes().all(|digit| b'0' <= digit && digit <= b'9') {
         panic!("Ident cannot be a number; use Literal instead");
     }
 
@@ -850,6 +813,7 @@ impl Display for Ident {
     }
 }
 
+#[allow(clippy::missing_fields_in_debug)]
 impl Debug for Ident {
     // Ident(proc_macro), Ident(r#union)
     #[cfg(not(span_locations))]
@@ -1039,27 +1003,26 @@ impl Literal {
 
         #[cfg(span_locations)]
         {
-            use crate::convert::usize_to_u32;
             use core::ops::Bound;
 
             let lo = match range.start_bound() {
                 Bound::Included(start) => {
-                    let start = usize_to_u32(*start)?;
+                    let start = u32::try_from(*start).ok()?;
                     self.span.lo.checked_add(start)?
                 }
                 Bound::Excluded(start) => {
-                    let start = usize_to_u32(*start)?;
+                    let start = u32::try_from(*start).ok()?;
                     self.span.lo.checked_add(start)?.checked_add(1)?
                 }
                 Bound::Unbounded => self.span.lo,
             };
             let hi = match range.end_bound() {
                 Bound::Included(end) => {
-                    let end = usize_to_u32(*end)?;
+                    let end = u32::try_from(*end).ok()?;
                     self.span.lo.checked_add(end)?.checked_add(1)?
                 }
                 Bound::Excluded(end) => {
-                    let end = usize_to_u32(*end)?;
+                    let end = u32::try_from(*end).ok()?;
                     self.span.lo.checked_add(end)?
                 }
                 Bound::Unbounded => self.span.hi,

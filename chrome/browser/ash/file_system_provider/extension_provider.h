@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/file_system_provider/icon_set.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
@@ -23,8 +24,7 @@ namespace extensions {
 class ExtensionRegistry;
 }  // namespace extensions
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 
 class RequestDispatcher;
 class ODFSMetrics;
@@ -77,10 +77,13 @@ class ExtensionProvider : public ProviderInterface,
   std::unique_ptr<ODFSMetrics> odfs_metrics_;
   std::unique_ptr<RequestManager> request_manager_;
 
+  base::ScopedObservation<apps::AppRegistryCache,
+                          apps::AppRegistryCache::Observer>
+      app_registry_cache_observer_{this};
+
   base::WeakPtrFactory<ExtensionProvider> weak_ptr_factory_{this};
 };
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_EXTENSION_PROVIDER_H_

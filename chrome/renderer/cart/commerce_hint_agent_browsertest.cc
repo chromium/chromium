@@ -1679,7 +1679,8 @@ class CommerceHintDOMBasedHeuristicsTest : public CommerceHintAgentTest {
 #endif
              {}},
          {commerce::kChromeCartDomBasedHeuristics,
-          {{"add-to-cart-button-active-time", "2s"}}}},
+          {{"add-to-cart-button-active-time", "2s"},
+           {"heuristics-execution-gap-time", "0s"}}}},
         {optimization_guide::features::kOptimizationHints});
   }
 
@@ -1842,6 +1843,57 @@ IN_PROC_BROWSER_TEST_F(CommerceHintDOMBasedHeuristicsSkipTest,
   WaitForUmaCount("Commerce.Carts.AddToCartByPOST", 2);
   WaitForUmaCount("Commerce.Carts.AddToCartButtonDetection", 0);
   ExpectUKMCount(AddToCartEntry::kEntryName, "HeuristicsExecutionTime", 0);
+}
+
+class CommerceHintDOMBasedHeuristicsGapTimeTest : public CommerceHintAgentTest {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{
+#if !BUILDFLAG(IS_ANDROID)
+             ntp_features::kNtpChromeCartModule,
+#else
+             commerce::kCommerceHintAndroid,
+#endif
+             {}},
+         {commerce::kChromeCartDomBasedHeuristics,
+          {{"add-to-cart-button-active-time", "2s"},
+           {"heuristics-execution-gap-time", "100s"}}}},
+        {optimization_guide::features::kOptimizationHints});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(CommerceHintDOMBasedHeuristicsGapTimeTest,
+                       EnforceExecutionTimeGap) {
+  NavigateToURL("https://www.guitarcenter.com/product-page.html");
+
+  // Focus on a non-AddToCart button and then send AddToCart requests.
+  EXPECT_EQ(nullptr,
+            content::EvalJs(web_contents(), "focusElement(\"buttonTwo\")"));
+  SendXHR("/wp-admin/admin-ajax.php", "action: woocommerce_add_to_cart");
+
+#if !BUILDFLAG(IS_ANDROID)
+  WaitForCartCount(kEmptyExpected);
+#endif
+  WaitForUmaCount("Commerce.Carts.AddToCartByPOST", 0);
+  WaitForUmaCount("Commerce.Carts.AddToCartButtonDetection", 1);
+  ExpectUKMCount(AddToCartEntry::kEntryName, "HeuristicsExecutionTime", 1);
+
+  // Focus on an AddToCart button and then send AddToCart requests. Since the
+  // gap time is shorter than the threshold, this focus event will be ignored.
+  EXPECT_EQ(nullptr,
+            content::EvalJs(web_contents(), "focusElement(\"buttonOne\")"));
+  SendXHR("/wp-admin/admin-ajax.php", "action: woocommerce_add_to_cart");
+
+#if !BUILDFLAG(IS_ANDROID)
+  WaitForCartCount(kEmptyExpected);
+#endif
+  WaitForUmaCount("Commerce.Carts.AddToCartByPOST", 0);
+  WaitForUmaCount("Commerce.Carts.AddToCartButtonDetection", 1);
+  ExpectUKMCount(AddToCartEntry::kEntryName, "HeuristicsExecutionTime", 1);
 }
 
 }  // namespace

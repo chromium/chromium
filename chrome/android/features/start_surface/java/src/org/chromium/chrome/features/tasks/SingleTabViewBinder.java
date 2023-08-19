@@ -8,7 +8,9 @@ import static org.chromium.chrome.features.tasks.SingleTabViewProperties.CLICK_L
 import static org.chromium.chrome.features.tasks.SingleTabViewProperties.FAVICON;
 import static org.chromium.chrome.features.tasks.SingleTabViewProperties.IS_VISIBLE;
 import static org.chromium.chrome.features.tasks.SingleTabViewProperties.LATERAL_MARGIN;
+import static org.chromium.chrome.features.tasks.SingleTabViewProperties.TAB_THUMBNAIL;
 import static org.chromium.chrome.features.tasks.SingleTabViewProperties.TITLE;
+import static org.chromium.chrome.features.tasks.SingleTabViewProperties.URL;
 
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
@@ -23,10 +25,14 @@ class SingleTabViewBinder {
             view.setOnClickListener(model.get(CLICK_LISTENER));
         } else if (propertyKey == FAVICON) {
             view.setFavicon(model.get(FAVICON));
+        } else if (propertyKey == TAB_THUMBNAIL) {
+            view.setTabThumbnail(model.get(TAB_THUMBNAIL));
         } else if (propertyKey == IS_VISIBLE) {
             view.setVisibility(model.get(IS_VISIBLE) ? View.VISIBLE : View.GONE);
         } else if (propertyKey == TITLE) {
             view.setTitle(model.get(TITLE));
+        } else if (propertyKey == URL) {
+            view.setUrl(model.get(URL));
         } else if (propertyKey == LATERAL_MARGIN) {
             MarginLayoutParams marginLayoutParams = (MarginLayoutParams) view.getLayoutParams();
             int lateralMargin = model.get(LATERAL_MARGIN);

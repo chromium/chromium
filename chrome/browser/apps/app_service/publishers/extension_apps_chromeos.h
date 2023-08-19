@@ -10,16 +10,17 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "chrome/browser/apps/app_service/app_notifications.h"
-#include "chrome/browser/apps/app_service/app_web_contents_data.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/media_requests.h"
 #include "chrome/browser/apps/app_service/paused_apps.h"
 #include "chrome/browser/apps/app_service/publishers/extension_apps_base.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
-#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
+#include "chrome/browser/extensions/file_handlers/web_file_handlers_permission_handler.h"
+#include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -48,16 +49,15 @@ class PublisherHost;
 // An app publisher (in the App Service sense) of extension-backed apps for
 // ChromeOS, including Chrome Apps (platform apps and legacy packaged apps),
 // hosted apps (including desktop PWAs), and browser extensions. In Chrome OS,
-// there are 2 ExtensionAppsChromeOs publishers for browser extensions and
-// Chrome apps(including hosted apps) separately.
+// there are two ExtensionAppsChromeOs publishers for extension-backed apps: one
+// for `kExtension`, and one for `kChromeApp` (including hosted apps).
 //
 // See components/services/app_service/README.md.
 class ExtensionAppsChromeOs : public ExtensionAppsBase,
                               public extensions::AppWindowRegistry::Observer,
                               public ArcAppListPrefs::Observer,
                               public NotificationDisplayService::Observer,
-                              public MediaCaptureDevicesDispatcher::Observer,
-                              public AppWebContentsData::Client {
+                              public MediaStreamCaptureIndicator::Observer {
  public:
   ExtensionAppsChromeOs(AppServiceProxy* proxy, AppType app_type);
   ~ExtensionAppsChromeOs() override;
@@ -123,14 +123,11 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
   void OnPackageListInitialRefreshed() override;
   void OnArcAppListPrefsDestroyed() override;
 
-  // MediaCaptureDevicesDispatcher::Observer:
-  void OnRequestUpdate(int render_process_id,
-                       int render_frame_id,
-                       blink::mojom::MediaStreamType stream_type,
-                       const content::MediaRequestState state) override;
-
-  // AppWebContentsData::Observer:
-  void OnWebContentsDestroyed(content::WebContents* contents) override;
+  // MediaStreamCaptureIndicator::Observer:
+  void OnIsCapturingVideoChanged(content::WebContents* web_contents,
+                                 bool is_capturing_video) override;
+  void OnIsCapturingAudioChanged(content::WebContents* web_contents,
+                                 bool is_capturing_audio) override;
 
   // NotificationDisplayService::Observer overrides.
   void OnNotificationDisplayed(
@@ -193,6 +190,16 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
                        WindowInfoPtr window_info,
                        LaunchCallback callback);
 
+  // This is called after maybe presenting a file dialog permission UI to ensure
+  // that the extension is confirmed to be able to open the relevant file type.
+  void LaunchAppWithIntentCallback(LaunchSource launch_source,
+                                   const std::string& app_id,
+                                   int32_t event_flags,
+                                   IntentPtr intent,
+                                   WindowInfoPtr window_info,
+                                   LaunchCallback callback,
+                                   bool should_run);
+
   const raw_ptr<apps::InstanceRegistry, ExperimentalAsh> instance_registry_;
   base::ScopedObservation<extensions::AppWindowRegistry,
                           extensions::AppWindowRegistry::Observer>
@@ -217,8 +224,8 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
   // Registrar used to monitor the local state prefs.
   PrefChangeRegistrar local_state_pref_change_registrar_;
 
-  base::ScopedObservation<MediaCaptureDevicesDispatcher,
-                          MediaCaptureDevicesDispatcher::Observer>
+  base::ScopedObservation<MediaStreamCaptureIndicator,
+                          MediaStreamCaptureIndicator::Observer>
       media_dispatcher_{this};
 
   MediaRequests media_requests_;
@@ -228,6 +235,11 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
       notification_display_service_{this};
 
   AppNotifications app_notifications_;
+
+  std::unique_ptr<extensions::WebFileHandlersPermissionHandler>
+      web_file_handlers_permission_handler_;
+
+  base::WeakPtrFactory<ExtensionAppsChromeOs> weak_factory_{this};
 };
 
 }  // namespace apps

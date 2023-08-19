@@ -1,0 +1,41 @@
+{
+  "name": "Manifest for ML Test Metrics",
+  "screenshots": [
+    {
+      "src": "screenshot1-portrait.jpeg",
+      "type": "image/jpeg",
+      "sizes": "409x728",
+      "form_factor": "narrow",
+      "label": "a narrow screenshot"
+    }
+  ],
+  "icons": [
+     {
+       "src": "launcher-icon-1x.png",
+       "sizes": "48x48",
+       "type": "image/png"
+     },
+     {
+       "src": "launcher-icon-1-5x.png",
+       "sizes": "72x72",
+       "type": "image/png"
+     },
+     {
+       "src": "launcher-icon-2x.png",
+       "sizes": "96x96",
+       "type": "image/png",
+       "purpose": "any"
+     },
+     {
+       "src": "launcher-icon-4x.png",
+       "sizes": "192x192",
+       "type": "image/png",
+       "purpose": "maskable"
+     }
+  ],
+  "start_url": "test_page_for_ml_promotion.html",
+  "display": "browser",
+  "orientation": "landscape",
+  "background_color": "red",
+  "theme_color": "blue"
+}

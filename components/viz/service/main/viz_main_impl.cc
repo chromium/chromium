@@ -20,7 +20,7 @@
 #include "components/viz/common/features.h"
 #include "components/viz/service/debugger/viz_debugger.h"
 #include "components/viz/service/performance_hint/hint_session.h"
-#include "gpu/command_buffer/common/activity_flags.h"
+#include "gpu/command_buffer/common/shm_count.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/service/gpu_init.h"
 #include "gpu/ipc/service/gpu_watchdog_thread.h"
@@ -28,6 +28,11 @@
 #include "services/metrics/public/cpp/delegating_ukm_recorder.h"
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
 #include "skia/ext/legacy_display_globals.h"
+
+#if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
+#include "third_party/dawn/include/dawn/dawn_proc.h"          // nogncheck
+#include "third_party/dawn/include/dawn/native/DawnNative.h"  // nogncheck
+#endif
 
 namespace {
 
@@ -96,6 +101,11 @@ VizMainImpl::VizMainImpl(Delegate* delegate,
     ukm::DelegatingUkmRecorder::Get()->AddDelegate(
         dependencies_.ukm_recorder->GetWeakPtr());
   }
+
+#if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
+  // Setup the global procs table for GPU process.
+  dawnProcSetProcs(&dawn::native::GetProcs());
+#endif  // BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
 
   gpu_service_ = std::make_unique<GpuServiceImpl>(
       gpu_init_->gpu_info(), gpu_init_->TakeWatchdogThread(), io_task_runner(),
@@ -172,7 +182,7 @@ void VizMainImpl::CreateGpuService(
     mojo::PendingRemote<
         discardable_memory::mojom::DiscardableSharedMemoryManager>
         discardable_memory_manager,
-    base::UnsafeSharedMemoryRegion activity_flags_region,
+    base::UnsafeSharedMemoryRegion use_shader_cache_shm_region,
     gfx::FontRenderParams::SubpixelRendering subpixel_rendering) {
   DCHECK(gpu_thread_task_runner_->BelongsToCurrentThread());
 
@@ -208,7 +218,7 @@ void VizMainImpl::CreateGpuService(
 
   gpu_service_->InitializeWithHost(
       gpu_host.Unbind(),
-      gpu::GpuProcessActivityFlags(std::move(activity_flags_region)),
+      gpu::GpuProcessShmCount(std::move(use_shader_cache_shm_region)),
       gpu_init_->TakeDefaultOffscreenSurface(),
       dependencies_.sync_point_manager, dependencies_.shared_image_manager,
       dependencies_.scheduler, dependencies_.shutdown_event);

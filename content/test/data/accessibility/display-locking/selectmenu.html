@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<selectmenu></selectmenu>
+<div></div>
+
+<script>
+  (async () => {
+    const selectmenu = document.querySelector('selectmenu');
+    await getComputedAccessibleNode(document.querySelector('div'));
+    selectmenu.style.setProperty('content-visibility', 'hidden');
+  })();
+</script>

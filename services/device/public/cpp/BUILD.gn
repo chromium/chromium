@@ -23,7 +23,7 @@ if (is_android) {
       ":device_features",
       "//base",
       "//device/fido",
-      "//services/device:device_service_jni_headers",
+      "//services/device/public/java:device_feature_list_jni",
     ]
   }
 }

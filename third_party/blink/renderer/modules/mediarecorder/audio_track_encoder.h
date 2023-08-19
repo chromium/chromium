@@ -9,7 +9,9 @@
 
 #include "base/threading/thread_checker.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_encoder.h"
 #include "media/base/audio_parameters.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
@@ -24,10 +26,11 @@ namespace blink {
 // which is owned by AudioTrackRecorder.
 class AudioTrackEncoder {
  public:
-  using OnEncodedAudioCB =
-      base::RepeatingCallback<void(const media::AudioParameters& params,
-                                   std::string encoded_data,
-                                   base::TimeTicks capture_time)>;
+  using OnEncodedAudioCB = base::RepeatingCallback<void(
+      const media::AudioParameters& params,
+      std::string encoded_data,
+      absl::optional<media::AudioEncoder::CodecDescription> codec_desc,
+      base::TimeTicks capture_time)>;
 
   explicit AudioTrackEncoder(OnEncodedAudioCB on_encoded_audio_cb);
   virtual ~AudioTrackEncoder() = default;

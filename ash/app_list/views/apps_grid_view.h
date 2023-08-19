@@ -1117,7 +1117,8 @@ class ASH_EXPORT AppsGridView : public views::View,
   absl::optional<AppListItemView*> reordering_folder_view_;
 
   // A view which is hidden for testing purposes.
-  raw_ptr<views::View, ExperimentalAsh> hidden_view_for_test_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh>
+      hidden_view_for_test_ = nullptr;
 
   std::unique_ptr<AppsGridContextMenu> context_menu_;
 

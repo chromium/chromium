@@ -10,6 +10,7 @@ import "media/mojo/mojom/remoting.mojom";
 import "media/mojo/mojom/audio_data_pipe.mojom";
 import "media/mojo/mojom/audio_input_stream.mojom";
 import "media/mojo/mojom/audio_parameters.mojom";
+import "media/mojo/mojom/video_encoder_metrics_provider.mojom";
 import "sandbox/policy/mojom/context.mojom";
 import "services/viz/public/mojom/gpu.mojom";
 
@@ -34,6 +35,12 @@ interface ResourceProvider {
   // implementation in the browser process, to allow commanding video capture
   // events (Start, Stop, etc) from its client in the renderer process.
   GetVideoCaptureHost(pending_receiver<media.mojom.VideoCaptureHost> receiver);
+
+  // Binds the media.mojom.VideoEncoderMetricsProvider pending receiver to its
+  // remote implementation in the browser process, so that video encoder usage
+  // in cast mirroring utility process can be recorded.
+  GetVideoEncoderMetricsProvider(
+      pending_receiver<media.mojom.VideoEncoderMetricsProvider> receiver);
 
   [AllowedContext=sandbox.mojom.Context.kPrivilegedUtility]
   GetNetworkContext(pending_receiver<network.mojom.NetworkContext> receiver);

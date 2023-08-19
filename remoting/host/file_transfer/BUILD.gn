@@ -6,36 +6,24 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//remoting/build/config/remoting_build.gni")
 
 source_set("file_transfer") {
-  sources = [ "get_desktop_directory.h" ]
+  sources = []
 
   public_deps = [ ":common" ]
 
   deps = [
     "//base",
-    "//remoting/protocol",
     "//remoting/resources",
   ]
 
   if (is_mac) {
-    sources += [
-      "ensure_user_mac.cc",
-      "file_chooser_mac.mm",
-    ]
+    sources += [ "file_chooser_mac.mm" ]
     deps += [ "//ui/base" ]
     frameworks = [ "AppKit.framework" ]
-  }
-
-  if (!is_mac && !is_win) {
-    sources += [ "ensure_user_no_op.cc" ]
-  }
-
-  if (is_win) {
+  } else if (is_win) {
     sources += [
-      "ensure_user_win.cc",
       "file_chooser_common_win.h",
       "file_chooser_main_win.cc",
       "file_chooser_win.cc",
-      "get_desktop_directory_win.cc",
     ]
     deps += [
       "//ipc:ipc",
@@ -44,17 +32,16 @@ source_set("file_transfer") {
       "//remoting/host/mojom",
       "//remoting/host/win",
     ]
-  } else {
-    sources += [ "get_desktop_directory.cc" ]
-  }
-
-  if (is_chromeos_ash) {
-    sources += [ "file_chooser_chromeos.cc" ]
+  } else if (is_chromeos_ash) {
+    deps += [
+      ":file_chooser_chromeos",
+      "//remoting/host/chromeos",
+    ]
   } else if (is_linux) {
     sources += [ "file_chooser_linux.cc" ]
     deps += [
       "//build/config/linux/gtk",
-      "//ui/base:base",
+      "//ui/base",
     ]
   }
 }
@@ -62,11 +49,11 @@ source_set("file_transfer") {
 source_set("common") {
   public = [
     "buffered_file_writer.h",
+    "directory_helpers.h",
     "ensure_user.h",
     "file_chooser.h",
     "file_operations.h",
     "file_transfer_message_handler.h",
-    "get_desktop_directory.h",
     "ipc_file_operations.h",
     "local_file_operations.h",
     "rtc_log_file_operations.h",
@@ -85,31 +72,76 @@ source_set("common") {
   deps = [
     "//base",
     "//net:net",
-    "//remoting/base:base",
+    "//remoting/base",
     "//remoting/host/mojom",
     "//remoting/protocol",
-    "//ui/base:base",
+    "//ui/base",
     "//url:url",
   ]
+
+  if (is_mac) {
+    sources += [
+      "directory_helpers.cc",
+      "ensure_user_mac.cc",
+    ]
+  } else if (is_win) {
+    sources += [
+      "directory_helpers_win.cc",
+      "ensure_user_win.cc",
+    ]
+  } else if (is_chromeos) {
+    sources += [
+      "directory_helpers.cc",
+      "ensure_user_no_op.cc",
+    ]
+    deps += [ "//chrome/common:constants" ]
+  } else {
+    sources += [
+      "directory_helpers.cc",
+      "ensure_user_no_op.cc",
+    ]
+  }
+}
+
+if (is_chromeos_ash) {
+  source_set("file_chooser_chromeos") {
+    sources = [
+      "file_chooser_chromeos.cc",
+      "file_chooser_chromeos.h",
+    ]
+    deps = [
+      ":common",
+      "//remoting/host/chromeos:chromeos",
+      "//remoting/resources",
+      "//ui/display",
+      "//ui/shell_dialogs",
+    ]
+  }
 }
 
 source_set("test_support") {
   testonly = true
 
   sources = [
-    "ensure_user_no_op.cc",
-    "fake_file_chooser.cc",
-    "fake_file_chooser.h",
     "fake_file_operations.cc",
     "fake_file_operations.h",
-    "get_desktop_directory.cc",
     "test_byte_vector_utils.h",
   ]
   deps = [
     ":common",
-    "//base:base",
+    "//base",
     "//remoting/protocol",
   ]
+  public_deps = []
+
+  if (is_chromeos_ash) {
+    public_deps += [ ":file_chooser_chromeos" ]
+  } else {
+    sources += [
+      "fake_file_chooser.cc",
+      "fake_file_chooser.h",
+    ]
+  }
 }
 
 source_set("unit_tests") {
@@ -118,21 +150,34 @@ source_set("unit_tests") {
   sources = [
     "buffered_file_writer_unittest.cc",
     "file_transfer_message_handler_unittest.cc",
-    "ipc_file_operations_unittest.cc",
-    "local_file_operations_unittest.cc",
     "rtc_log_file_operations_unittest.cc",
   ]
 
   deps = [
     ":common",
     ":test_support",
-    "//base:base",
+    "//base",
     "//base/test:test_support",
     "//net:net",
-    "//remoting/base:base",
+    "//remoting/base",
     "//remoting/host/mojom",
     "//remoting/protocol",
     "//remoting/protocol:test_support",
     "//testing/gtest",
   ]
+
+  if (is_chromeos_ash) {
+    sources += [ "file_chooser_chromeos_unittest.cc" ]
+    deps += [
+      "//content/test:test_support",
+      "//remoting/host/chromeos:chromeos",
+      "//remoting/host/chromeos:unit_tests",
+      "//ui/shell_dialogs",
+    ]
+  } else {
+    sources += [
+      "ipc_file_operations_unittest.cc",
+      "local_file_operations_unittest.cc",
+    ]
+  }
 }

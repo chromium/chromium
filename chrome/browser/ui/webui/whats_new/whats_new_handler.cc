@@ -39,11 +39,21 @@ void WhatsNewHandler::HandleInitialize(const base::Value::List& args) {
   const std::string& callback_id = args[0].GetString();
 
   AllowJavascript();
-  ResolveJavascriptCallback(
-      base::Value(callback_id),
-      whats_new::IsRemoteContentDisabled()
-          ? base::Value()
-          : base::Value(whats_new::GetServerURL(true).spec()));
+
+  auto response = base::Value();
+  if (!whats_new::IsRemoteContentDisabled()) {
+    if (whats_new::IsRefreshVersion()) {
+      // If this is a refresh version, both m117 and m118 will use the
+      // m117 What's New version. This essentially does a client-side
+      // redirect when WN is auto-opened, which does not occur with the
+      // original implementation.
+      response = base::Value(whats_new::GetServerURLForRefresh().spec());
+    } else {
+      response = base::Value(whats_new::GetServerURL(true).spec());
+    }
+  }
+
+  ResolveJavascriptCallback(base::Value(callback_id), response);
   TryShowHatsSurveyWithTimeout();
 }
 

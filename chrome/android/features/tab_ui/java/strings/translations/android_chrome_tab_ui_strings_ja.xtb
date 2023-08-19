@@ -3,8 +3,6 @@
 <translationbundle lang="ja">
 <translation id="1075622780330595106">しばらく使用していないタブが <ph name="NUMBER_OF_TABS" /> 個あります。これらのタブを閉じますか？</translation>
 <translation id="125153950246128346">タップすると他のタブが表示されます</translation>
-<translation id="1403228085774130835">閉じたタブは Chrome メインメニューの [最近使ったタブ] で確認できます</translation>
-<translation id="1455506303394048917">これらのシークレット タブでのアクティビティはこのデバイスから削除されます</translation>
 <translation id="1499635324672558517">すべてのシークレット タブを閉じますか？</translation>
 <translation id="1657719826150349398">タブを下に移動</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個のタブ}other{<ph name="TABS_COUNT_MANY" /> 個のタブ}}</translation>
@@ -47,6 +45,7 @@
 <translation id="5073204694187207510">全画面グリッドを非表示</translation>
 <translation id="5076161749301278626">店舗の審査を確認しますか？</translation>
 <translation id="5082793167783849073">グループを作成して簡単にページを比較できます。グループを作成するには、リンクを長押しします。</translation>
+<translation id="5339733443032484186">最後のタブ</translation>
 <translation id="5490235265819901748">タブグループを展開しました</translation>
 <translation id="5494920125229734069">すべて選択する</translation>
 <translation id="5556417849629758491">ストア情報を表示、画面上部付近に表示されるオプション</translation>
@@ -62,10 +61,12 @@
 <translation id="6228793724645064692">（ストアの評価）</translation>
 <translation id="6333260925957816943">このショップに関する情報</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{選択した <ph name="TABS_COUNT_ONE" /> 個のタブのグループ化を解除}other{選択した <ph name="TABS_COUNT_MANY" /> 個のタブのグループ化を解除}}</translation>
+<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{閉じたタブは Chrome メインメニューの [最近使ったタブ] で確認できます。シークレット タブは使用できなくなります。}other{閉じたタブは Chrome メインメニューの [最近使ったタブ] で確認できます。# 個のシークレット タブは使用できなくなります。}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個のタブ}other{<ph name="TABS_COUNT_MANY" /> 個のタブ}}</translation>
 <translation id="6549021453810473782">ストア情報を表示</translation>
 <translation id="6562820390860419811">タブを左に移動</translation>
 <translation id="6615455863669487791">表示</translation>
+<translation id="661742612106409204">閉じたタブは Chrome メインメニューの [最近使ったタブ] で確認できます。</translation>
 <translation id="6840760312327750441">タブをグループ化するには、タブを押しながら別のタブにドラッグします。</translation>
 <translation id="6856809498882026482">複数選択モードを非表示にします</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{タブを共有する}other{タブを共有する}}</translation>

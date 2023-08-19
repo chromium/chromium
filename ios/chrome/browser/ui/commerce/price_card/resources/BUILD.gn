@@ -10,7 +10,6 @@ source_set("colors") {
     "semantic_color_names.mm",
   ]
   deps = [ ":price_drop_previous_price_text_color" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 colorset("price_drop_previous_price_text_color") {

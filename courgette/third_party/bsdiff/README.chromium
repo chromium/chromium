@@ -2,6 +2,7 @@ Name: bsdiff
 URL: http://www.daemonology.net/bsdiff/
 License: BSD
 License File: LICENCE
+Shipped: yes
 
 Description:
 This directory contains an extensively modified version of Colin Percival's

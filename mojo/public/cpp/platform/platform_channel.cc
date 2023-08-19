@@ -40,8 +40,8 @@
 #if BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
 #include <mach/port.h>
 
-#include "base/mac/mach_logging.h"
-#include "base/mac/scoped_mach_port.h"
+#include "base/apple/mach_logging.h"
+#include "base/apple/scoped_mach_port.h"
 #endif
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
@@ -110,11 +110,11 @@ void CreateChannel(PlatformHandle* local_endpoint,
   // handshake with its peer to establish two sets of Mach receive and send
   // rights. The handshake process starts with the creation of one
   // PlatformChannel endpoint.
-  base::mac::ScopedMachReceiveRight receive;
-  base::mac::ScopedMachSendRight send;
+  base::apple::ScopedMachReceiveRight receive;
+  base::apple::ScopedMachSendRight send;
   // The mpl_qlimit specified here should stay in sync with
   // NamedPlatformChannel.
-  CHECK(base::mac::CreateMachPort(&receive, &send, MACH_PORT_QLIMIT_LARGE));
+  CHECK(base::apple::CreateMachPort(&receive, &send, MACH_PORT_QLIMIT_LARGE));
 
   // In a reverse of Mach messaging semantics, in Mojo the "local" endpoint is
   // the send right, while the "remote" end is the receive right.

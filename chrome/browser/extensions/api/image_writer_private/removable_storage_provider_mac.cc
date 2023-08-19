@@ -11,8 +11,8 @@
 #include <IOKit/storage/IOStorageProtocolCharacteristics.h>
 #include <stdint.h>
 
-#include "base/mac/foundation_util.h"
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/foundation_util.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/mac/scoped_ioobject.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/sys_string_conversions.h"
@@ -75,11 +75,11 @@ RemovableStorageProvider::PopulateDeviceList() {
       continue;
     }
 
-    CFStringRef cf_vendor = base::mac::GetValueFromDictionary<CFStringRef>(
+    CFStringRef cf_vendor = base::apple::GetValueFromDictionary<CFStringRef>(
         characteristics, CFSTR(kIOPropertyVendorNameKey));
     std::string vendor = base::SysCFStringRefToUTF8(cf_vendor);
 
-    CFStringRef cf_model = base::mac::GetValueFromDictionary<CFStringRef>(
+    CFStringRef cf_model = base::apple::GetValueFromDictionary<CFStringRef>(
         characteristics, CFSTR(kIOPropertyProductNameKey));
     std::string model = base::SysCFStringRefToUTF8(cf_model);
 

@@ -158,7 +158,8 @@ interface FrameSinkManager {
   // Creates a FrameSinkVideoCapturer instance.
   CreateVideoCapturer(pending_receiver<FrameSinkVideoCapturer> receiver);
 
-  // Marks the given SurfaceIds for destruction.
+  // Marks the given SurfaceIds for destruction. The client must supply a sorted
+  // `surface_ids`.
   EvictSurfaces(array<SurfaceId> surface_ids);
 
   // Throttles the frame sinks specified by |frame_sink_ids| and all their
@@ -181,7 +182,11 @@ interface FrameSinkManager {
   // Takes a snapshot of |surface_id| or a newer surface with the same
   // FrameSinkId. The request will be queued up until such surface exists and is
   // reachable from the root surface.
-  RequestCopyOfOutput(SurfaceId surface_id, CopyOutputRequest request);
+  //
+  // `capture_exact_surface_id`, when set to true, makes sure the snapshot will
+  // only be taken by the surface with the exact `surface_id`.
+  RequestCopyOfOutput(SurfaceId surface_id, CopyOutputRequest request,
+                      bool capture_exact_surface_id);
 
 
   // Caches the back buffer for the |root_frame_sink_id|. The back buffer is

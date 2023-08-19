@@ -8,42 +8,45 @@
 #include "ash/shell.h"
 #include "ash/system/power/power_status.h"
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/audio/sounds.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/pref_service.h"
 #include "ui/message_center/message_center.h"
 
 namespace ash {
 
 namespace {
 
+constexpr ExternalPower kAcPower =
+    power_manager::PowerSupplyProperties_ExternalPower_AC;
+constexpr ExternalPower kUsbPower =
+    power_manager::PowerSupplyProperties_ExternalPower_USB;
+
 // Percentage-based thresholds for remaining battery charge to play sounds when
 // plugging in a charger cable.
 constexpr int kMidPercentageForCharging = 16;
 constexpr int kNormalPercentageForCharging = 80;
 
-// Percentage-based threshold for remaining battery charge to play sounds when
-// battery isn't charging.
-constexpr int kWarningPercentageForNoCharging = 15;
+// Percentage-based threshold for remaining battery level when using a low-power
+// charger.
+constexpr int kCriticalWarningPercentage = 5;
+constexpr int kLowPowerWarningPercentage = 10;
 
-// Gets the sound for plugging in a power line at different battery levels.
+// Time-based threshold for remaining time when disconnected with the line
+// power (any type of charger).
+constexpr base::TimeDelta kCriticalWarningMinutes = base::Minutes(5);
+constexpr base::TimeDelta kLowPowerWarningMinutes = base::Minutes(15);
+
+// Gets the sound for plugging in an AC charger at different battery levels.
 Sound GetSoundKeyForBatteryLevel(int level) {
   if (level >= kNormalPercentageForCharging)
     return Sound::kChargeHighBattery;
 
   return level >= kMidPercentageForCharging ? Sound::kChargeMediumBattery
                                             : Sound::kChargeLowBattery;
-}
-
-PrefService* GetActivePrefService() {
-  return Shell::Get()->session_controller()->GetActivePrefService();
-}
-
-bool GetChargingSoundsEnabled() {
-  PrefService* prefs = GetActivePrefService();
-  return prefs && prefs->GetBoolean(prefs::kChargingSoundsEnabled);
 }
 
 }  // namespace
@@ -70,7 +73,16 @@ PowerSoundsController::PowerSoundsController() {
   power_status->AddObserver(this);
 
   battery_level_ = power_status->GetRoundedBatteryPercent();
-  is_line_power_connected_ = power_status->IsLinePowerConnected();
+  is_ac_charger_connected_ = power_status->IsMainsChargerConnected();
+
+  local_state_ = Shell::Get()->local_state();
+
+  // `local_state_` could be null in tests.
+  if (local_state_) {
+    low_battery_sound_enabled_.Init(prefs::kLowBatterySoundEnabled,
+                                    local_state_);
+    charging_sounds_enabled_.Init(prefs::kChargingSoundsEnabled, local_state_);
+  }
 }
 
 PowerSoundsController::~PowerSoundsController() {
@@ -78,16 +90,24 @@ PowerSoundsController::~PowerSoundsController() {
   chromeos::PowerManagerClient::Get()->RemoveObserver(this);
 }
 
-void PowerSoundsController::RegisterPrefs(PrefRegistrySimple* registry) {
+void PowerSoundsController::RegisterLocalStatePrefs(
+    PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kChargingSoundsEnabled,
+                                /*default_value=*/false);
+  registry->RegisterBooleanPref(prefs::kLowBatterySoundEnabled,
                                 /*default_value=*/false);
 }
 
 void PowerSoundsController::OnPowerStatusChanged() {
-  const PowerStatus& status = *PowerStatus::Get();
+  if (!local_state_) {
+    CHECK_IS_TEST();
+    return;
+  }
 
+  const PowerStatus& status = *PowerStatus::Get();
   SetPowerStatus(status.GetRoundedBatteryPercent(),
-                 status.IsLinePowerConnected(), status.IsBatteryCharging());
+                 status.IsBatteryTimeBeingCalculated(), status.external_power(),
+                 status.GetBatteryTimeToEmpty());
 }
 
 void PowerSoundsController::LidEventReceived(
@@ -110,40 +130,43 @@ bool PowerSoundsController::CanPlaySounds() const {
          lid_state_ == chromeos::PowerManagerClient::LidState::OPEN;
 }
 
-void PowerSoundsController::SetPowerStatus(int battery_level,
-                                           bool is_line_power_connected,
-                                           bool is_battery_charging) {
-  const int old_battery_level = battery_level_;
-  const bool old_line_power_connected = is_line_power_connected_;
-
+void PowerSoundsController::SetPowerStatus(
+    int battery_level,
+    bool is_calculating_battery_time,
+    ExternalPower external_power,
+    absl::optional<base::TimeDelta> remaining_time) {
   battery_level_ = battery_level;
-  is_line_power_connected_ = is_line_power_connected;
+
+  const bool old_ac_charger_connected = is_ac_charger_connected_;
+  is_ac_charger_connected_ = external_power == kAcPower;
 
   // Records the battery level only for the device plugged in or Unplugged.
-  if (old_line_power_connected != is_line_power_connected) {
-    base::UmaHistogramPercentage(is_line_power_connected_
+  if (old_ac_charger_connected != is_ac_charger_connected_) {
+    base::UmaHistogramPercentage(is_ac_charger_connected_
                                      ? kPluggedInBatteryLevelHistogramName
                                      : kUnpluggedBatteryLevelHistogramName,
                                  battery_level_);
   }
 
-  if (!CanPlaySounds())
-    return;
+  MaybePlaySoundsForCharging(old_ac_charger_connected);
 
-  MaybePlaySoundsForCharging(old_line_power_connected);
-  MaybePlaySoundsForLowBattery(old_battery_level, is_battery_charging);
+  if (UpdateBatteryState(is_calculating_battery_time, external_power,
+                         remaining_time) &&
+      ShouldPlayLowBatterySound()) {
+    Shell::Get()->system_sounds_delegate()->Play(Sound::kNoChargeLowBattery);
+  }
 }
 
 void PowerSoundsController::MaybePlaySoundsForCharging(
-    bool old_line_power_connected) {
+    bool old_ac_charger_connected) {
   // Don't play the charging sound if the toggle button is disabled by user in
   // the Settings UI.
-  if (!GetChargingSoundsEnabled()) {
+  if (!charging_sounds_enabled_.GetValue() || !CanPlaySounds()) {
     return;
   }
 
   // Returns when it isn't a plug in event.
-  bool is_plugging_in = !old_line_power_connected && is_line_power_connected_;
+  bool is_plugging_in = !old_ac_charger_connected && is_ac_charger_connected_;
   if (!is_plugging_in)
     return;
 
@@ -151,23 +174,79 @@ void PowerSoundsController::MaybePlaySoundsForCharging(
       GetSoundKeyForBatteryLevel(battery_level_));
 }
 
-void PowerSoundsController::MaybePlaySoundsForLowBattery(
-    int old_battery_level,
-    bool is_battery_charging) {
-  // Don't play the warning sound if the battery is charging.
-  if (is_battery_charging)
-    return;
+bool PowerSoundsController::ShouldPlayLowBatterySound() const {
+  if (!low_battery_sound_enabled_.GetValue() || !CanPlaySounds()) {
+    return false;
+  }
 
-  // We only play sounds during the first time when the battery level drops
-  // below `kWarningPercentageForNoCharging` when there is no charging.
-  const bool is_warning_battery_level =
-      (old_battery_level > kWarningPercentageForNoCharging) &&
-      (battery_level_ <= kWarningPercentageForNoCharging);
+  return current_state_ == BatteryState::kCriticalPower ||
+         current_state_ == BatteryState::kLowPower;
+}
 
-  if (!is_warning_battery_level)
-    return;
+bool PowerSoundsController::UpdateBatteryState(
+    bool is_calculating_battery_time,
+    ExternalPower external_power,
+    absl::optional<base::TimeDelta> remaining_time) {
+  const auto new_state = CalculateBatteryState(is_calculating_battery_time,
+                                               external_power, remaining_time);
+  if (new_state == current_state_) {
+    return false;
+  }
 
-  Shell::Get()->system_sounds_delegate()->Play(Sound::kNoChargeLowBattery);
+  current_state_ = new_state;
+  return true;
+}
+
+PowerSoundsController::BatteryState
+PowerSoundsController::CalculateBatteryState(
+    bool is_calculating_battery_time,
+    ExternalPower external_power,
+    absl::optional<base::TimeDelta> remaining_time) const {
+  if (is_calculating_battery_time || is_ac_charger_connected_) {
+    return BatteryState::kNone;
+  }
+
+  // The battery state calculation should follow the same logic used by the
+  // power notification (Please see
+  // `PowerNotificationController::UpdateNotificationState()`). Hence, when a
+  // low-power charger (i.e. a USB charger) is connected, we calculate the state
+  // based on the remaining `battery_level_` percentage. Otherwise, when the
+  // device is disconnected, we calculate it based on the remaining time until
+  // the battery is empty.
+  return external_power == kUsbPower
+             ? GetBatteryStateFromBatteryLevel()
+             : GetBatteryStateFromRemainingTime(remaining_time);
+}
+
+PowerSoundsController::BatteryState
+PowerSoundsController::GetBatteryStateFromBatteryLevel() const {
+  if (battery_level_ <= kCriticalWarningPercentage) {
+    return BatteryState::kCriticalPower;
+  }
+
+  if (battery_level_ <= kLowPowerWarningPercentage) {
+    return BatteryState::kLowPower;
+  }
+
+  return BatteryState::kNone;
+}
+
+PowerSoundsController::BatteryState
+PowerSoundsController::GetBatteryStateFromRemainingTime(
+    absl::optional<base::TimeDelta> remaining_time) const {
+  if (!remaining_time) {
+    return BatteryState::kNone;
+  }
+
+  if (*remaining_time <= kCriticalWarningMinutes) {
+    return BatteryState::kCriticalPower;
+  }
+
+  if (*remaining_time <= kLowPowerWarningMinutes) {
+    return BatteryState::kLowPower;
+  }
+
+  return BatteryState::kNone;
 }
 
 }  // namespace ash

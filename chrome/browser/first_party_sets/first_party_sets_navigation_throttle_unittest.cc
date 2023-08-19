@@ -235,4 +235,28 @@ TEST_F(FirstPartySetsNavigationThrottleTest, ResumeOnTimeout) {
                               1);
 }
 
+class FirstPartySetsNavigationThrottleNoDelayTest
+    : public FirstPartySetsNavigationThrottleTest {
+ public:
+  FirstPartySetsNavigationThrottleNoDelayTest() {
+    features_.InitAndEnableFeatureWithParameters(
+        features::kFirstPartySets,
+        {
+            {features::kFirstPartySetsClearSiteDataOnChangedSets.name, "true"},
+            {features::kFirstPartySetsNavigationThrottleTimeout.name, "0"},
+        });
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+TEST_F(FirstPartySetsNavigationThrottleNoDelayTest,
+       MaybeCreateNavigationThrottle) {
+  content::MockNavigationHandle handle(GURL(kExampleURL), main_rfh());
+  ASSERT_TRUE(handle.IsInOutermostMainFrame());
+  EXPECT_FALSE(
+      FirstPartySetsNavigationThrottle::MaybeCreateNavigationThrottle(&handle));
+}
+
 }  // namespace first_party_sets

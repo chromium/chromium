@@ -1,9 +1,10 @@
 Name: JaCoCo
 URL: https://repo1.maven.org/maven2/org/jacoco/jacoco/
-Version: 8.3.2
+Version: 0.8.8
 License: EPL 1.0
-License File: NOT_SHIPPED
+License File: LICENSE
 Security Critical: no
+Shipped: no
 License Android Compatible: no
 
 Description:
@@ -15,3 +16,7 @@ Local Modifications:
 https://crbug.com/1334374)
 ** Do not read host address.
 (See local patch in `3pp/patches/0001-hardcode-properties.patch`.)
+** Do not use InjectedClassRuntime.
+(See local patch in `3pp/patches/0002-dont-use-injected-class-runtime.patch`.)
+** Do not use CondyProbeArrayStrategy.
+(See local patch in `3pp/patches/0003-dont-use-condy-probe-array-strategy.patch`.)

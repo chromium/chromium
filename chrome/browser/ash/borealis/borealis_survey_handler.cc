@@ -46,7 +46,7 @@ absl::optional<int> BorealisSurveyHandler::GetGameId(
       guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_)
           ->GetRegistration(app_id);
   if (registration.has_value()) {
-    game_id = borealis::GetBorealisAppId(registration->Exec());
+    game_id = borealis::ParseSteamGameId(registration->Exec());
   }
   return game_id;
 }

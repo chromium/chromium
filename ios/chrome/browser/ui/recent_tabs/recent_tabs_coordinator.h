@@ -11,8 +11,13 @@
 
 enum class UrlLoadStrategy;
 
+@protocol RecentTabsCoordinatorDelegate;
+
 // Coordinator that presents Recent Tabs.
 @interface RecentTabsCoordinator : ChromeCoordinator
+// The delegate for this coordinator.
+@property(nonatomic, weak) id<RecentTabsCoordinatorDelegate> delegate;
+
 // Opaque instructions on how to open urls.
 @property(nonatomic) UrlLoadStrategy loadStrategy;
 

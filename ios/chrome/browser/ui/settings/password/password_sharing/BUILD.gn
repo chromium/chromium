@@ -1,0 +1,92 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("password_sharing") {
+  sources = [
+    "family_picker_coordinator.h",
+    "family_picker_coordinator.mm",
+    "family_picker_mediator.h",
+    "family_picker_mediator.mm",
+    "password_picker_coordinator.h",
+    "password_picker_coordinator.mm",
+    "password_sharing_coordinator.h",
+    "password_sharing_coordinator.mm",
+    "password_sharing_mediator.h",
+    "password_sharing_mediator.mm",
+    "password_sharing_mediator_delegate.h",
+  ]
+  deps = [
+    ":password_sharing_ui",
+    "//components/password_manager/core/browser",
+    "//components/version_info:channel",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/common:common",
+  ]
+}
+
+source_set("password_sharing_ui") {
+  sources = [
+    "family_picker_consumer.h",
+    "family_picker_view_controller.h",
+    "family_picker_view_controller.mm",
+    "password_picker_view_controller.h",
+    "password_picker_view_controller.mm",
+    "password_sharing_view_controller.h",
+    "password_sharing_view_controller.mm",
+    "recipient_info.h",
+    "recipient_info.mm",
+  ]
+  deps = [
+    "//components/password_manager/core/browser",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/bottom_sheet",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/authentication:authentication_constants",
+    "//ios/chrome/browser/ui/settings/cells",
+    "//ios/chrome/common:string_util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements:popover_label_view_controller",
+    "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ui/base",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "password_sharing_egtest.mm" ]
+  deps = [
+    "//components/password_manager/core/common:features",
+    "//ios/chrome/browser/signin:fake_system_identity",
+    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/settings/password:eg2_tests",
+    "//ios/chrome/browser/ui/settings/password:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/settings/password/password_details:password_details_table_view_constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "family_picker_view_controller_unittest.mm" ]
+  deps = [
+    ":password_sharing_ui",
+    "//base/test:test_support",
+    "//components/password_manager/core/browser",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/table_view:test_support",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/ui/settings/cells",
+    "//ui/base",
+  ]
+}

@@ -248,7 +248,7 @@ void GuardedPageAllocator::Init(
     state_.num_lightweight_detector_metadata =
         num_lightweight_detector_metadata;
     lightweight_detector_metadata_ =
-        std::make_unique<AllocatorState::SlotMetadata[]>(
+        std::make_unique<AllocatorState::LightweightSlotMetadata[]>(
             state_.num_lightweight_detector_metadata);
     state_.lightweight_detector_metadata_addr =
         reinterpret_cast<uintptr_t>(lightweight_detector_metadata_.get());
@@ -538,16 +538,12 @@ void GuardedPageAllocator::RecordLightweightDeallocation(void* ptr,
   slot_metadata.alloc_size = size;
   slot_metadata.alloc_ptr = reinterpret_cast<uintptr_t>(ptr);
 
-  // The lightweight detector doesn't collect allocation stack traces.
-  slot_metadata.alloc.tid = base::kInvalidThreadId;
-  slot_metadata.alloc.trace_len = 0;
-  slot_metadata.alloc.trace_collected = false;
-
-  void* trace[AllocatorState::kMaxStackFrames];
-  size_t len = GetStackTrace(trace, AllocatorState::kMaxStackFrames);
-  slot_metadata.dealloc.trace_len = Pack(
-      reinterpret_cast<uintptr_t*>(trace), len, slot_metadata.stack_trace_pool,
-      sizeof(slot_metadata.stack_trace_pool));
+  void* trace[AllocatorState::kMaxLightweightStackFrames];
+  size_t len = GetStackTrace(trace, AllocatorState::kMaxLightweightStackFrames);
+  slot_metadata.dealloc.trace_len =
+      Pack(reinterpret_cast<uintptr_t*>(trace), len,
+           slot_metadata.deallocation_stack_trace,
+           sizeof(slot_metadata.deallocation_stack_trace));
   slot_metadata.dealloc.tid = ReportTid();
   slot_metadata.dealloc.trace_collected = true;
 

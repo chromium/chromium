@@ -12,7 +12,6 @@ from requests.exceptions import HTTPError
 from blinkpy.common.net.network_transaction import NetworkTimeout
 from blinkpy.common.path_finder import RELATIVE_WPT_TESTS
 from blinkpy.w3c.chromium_commit import ChromiumCommit
-from blinkpy.w3c.chromium_finder import absolute_chromium_dir
 from blinkpy.w3c.common import is_file_exportable
 
 _log = logging.getLogger(__name__)
@@ -29,6 +28,7 @@ class GerritAPI(object):
 
     def __init__(self, host, user, token):
         self.host = host
+        self.project_config = host.project_config
         self.user = user
         self.token = token
 
@@ -73,8 +73,8 @@ class GerritAPI(object):
 
     def query_cl(self, change_id, query_options=QUERY_OPTIONS):
         """Queries a commit information from Gerrit."""
-        path = '/changes/chromium%2Fsrc~main~{}?{}'.format(
-            change_id, query_options)
+        path = (f'/changes/{self.escaped_repo}~{self.project_config.gerrit_branch}'
+                f'~{change_id}?{query_options}')
         try:
             cl_data = self.get(path, return_none_on_404=True)
         except NetworkTimeout:
@@ -87,8 +87,9 @@ class GerritAPI(object):
         return cl
 
     def query_exportable_open_cls(self, limit=500):
-        path = ('/changes/?q=project:\"chromium/src\"+branch:main+is:open+'
-                '-is:wip&{}&n={}').format(QUERY_OPTIONS, limit)
+        path = (f'/changes/?q=project:\"{self.escaped_repo}\"+'
+                f'branch:{self.project_config.gerrit_branch}+is:open+'
+                f'-is:wip&{QUERY_OPTIONS}&n={limit}')
         # The underlying host.web.get_binary() automatically retries until it
         # times out, at which point NetworkTimeout is raised.
         try:
@@ -98,6 +99,10 @@ class GerritAPI(object):
         open_cls = [GerritCL(data, self) for data in open_cls_data]
 
         return [cl for cl in open_cls if cl.is_exportable()]
+
+    @property
+    def escaped_repo(self):
+        return urllib.parse.quote(self.project_config.gerrit_project, safe='')
 
 
 class GerritCL(object):
@@ -126,9 +131,8 @@ class GerritCL(object):
 
     @property
     def id(self):
-        repo = urllib.parse.quote('chromium/src', safe='')
-        branch = 'main'
-        return f"{repo}~{branch}~{self.change_id}"
+        branch = self.api.project_config.gerrit_branch
+        return f"{self.api.escaped_repo}~{branch}~{self.change_id}"
 
     @property
     def owner_email(self):
@@ -209,7 +213,10 @@ class GerritCL(object):
         if not files_in_wpt:
             return False
 
-        exportable_files = [f for f in files_in_wpt if is_file_exportable(f)]
+        exportable_files = [
+            f for f in files_in_wpt
+            if is_file_exportable(f, self.api.project_config)
+        ]
 
         if not exportable_files:
             return False
@@ -230,7 +237,7 @@ class GerritCL(object):
         Returns:
             A ChromiumCommit object (the fetched commit).
         """
-        git = host.git(absolute_chromium_dir(host))
+        git = host.git(host.project_config.project_root)
         url = self.current_revision['fetch']['http']['url']
         ref = self.current_revision['fetch']['http']['ref']
         git.run(['fetch', url, ref])

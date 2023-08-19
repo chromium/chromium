@@ -12,15 +12,12 @@
 namespace partition_alloc::internal {
 
 namespace {
-constexpr PartitionOptions kConfig{
-    .cookie = PartitionOptions::Cookie::kAllowed,
-};
+constexpr PartitionOptions kConfig{};
 }  // namespace
 
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)
-ThreadSafePartitionRoot& PCScanMetadataAllocator() {
-  static internal::base::NoDestructor<ThreadSafePartitionRoot> allocator(
-      kConfig);
+PartitionRoot& PCScanMetadataAllocator() {
+  static internal::base::NoDestructor<PartitionRoot> allocator(kConfig);
   return *allocator;
 }
 

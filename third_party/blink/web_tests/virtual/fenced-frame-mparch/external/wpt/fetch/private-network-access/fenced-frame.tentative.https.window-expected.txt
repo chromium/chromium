@@ -1,0 +1,24 @@
+This is a testharness.js-based test.
+FAIL private to local: failed preflight. assert_equals: expected "timeout" but got "loaded"
+PASS private to local: missing CORS headers.
+PASS private to local: missing PNA header.
+PASS private to local: failed because fenced frames are incompatible with PNA.
+FAIL public to local: failed preflight. assert_equals: expected "timeout" but got "loaded"
+PASS public to local: missing CORS headers.
+PASS public to local: missing PNA header.
+PASS public to local: failed because fenced frames are incompatible with PNA.
+FAIL public to private: failed preflight. assert_equals: expected "timeout" but got "loaded"
+PASS public to private: missing CORS headers.
+PASS public to private: missing PNA header.
+PASS public to private: failed because fenced frames are incompatible with PNA.
+FAIL treat-as-public-address to local: failed preflight. assert_equals: expected "timeout" but got "loaded"
+PASS treat-as-public-address to local: missing CORS headers.
+PASS treat-as-public-address to local: missing PNA header.
+PASS treat-as-public-address to local: failed because fenced frames are incompatible with PNA.
+FAIL treat-as-public-address to local (same-origin): fenced frame embedder initiated navigation has opaque origin. assert_equals: expected "timeout" but got "loaded"
+FAIL treat-as-public-address to private: failed preflight. assert_equals: expected "timeout" but got "loaded"
+PASS treat-as-public-address to private: missing CORS headers.
+PASS treat-as-public-address to private: missing PNA header.
+PASS treat-as-public-address to private: failed because fenced frames are incompatible with PNA.
+Harness: the test ran to completion.
+

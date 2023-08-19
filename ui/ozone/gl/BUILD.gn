@@ -5,18 +5,10 @@
 import("//testing/test.gni")
 
 test("ozone_gl_unittests") {
-  sources = [ "gl_image_ozone_native_pixmap_unittest.cc" ]
+  sources = [ "native_pixmap_gl_binding_unittest.cc" ]
 
   deps = [
     "//base/test:test_support",
-
-    # NOTE: The above tests of gpu::GLImageNativePixmap cannot easily be made
-    # to run as part of //gpu's gl_tests or gpu_unittests: they crash when run
-    # with the former due to differences in GL configuration, and they are
-    # skipped when run with the latter due to differences in Ozone
-    # configuration. Simply leave them here with this dependency for the short
-    # time remaining until GLImageNativePixmap is eliminated altogether.
-    "//gpu/command_buffer/service:gles2",
     "//testing/gtest",
     "//ui/gfx",
     "//ui/gl:run_all_unittests",

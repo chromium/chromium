@@ -10,8 +10,6 @@
 #include "ash/public/cpp/app_menu_constants.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/metrics/user_metrics.h"
-#include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -21,6 +19,7 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
+#include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_files.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager_factory.h"
@@ -74,9 +73,7 @@ apps::Permissions CreatePermissions(Profile* profile) {
   apps::Permissions permissions;
   for (const PermissionInfo& info : permission_infos) {
     permissions.push_back(std::make_unique<apps::Permission>(
-        info.permission,
-        std::make_unique<apps::PermissionValue>(
-            profile->GetPrefs()->GetBoolean(info.pref_name)),
+        info.permission, profile->GetPrefs()->GetBoolean(info.pref_name),
         /*is_managed=*/false));
   }
   return permissions;
@@ -101,8 +98,6 @@ apps::AppPtr CreatePluginVmApp(Profile* profile, bool allowed) {
   // to uninstall and free up space.
   app->show_in_management =
       plugin_vm::PluginVmFeatures::Get()->IsConfigured(profile);
-
-  // TODO(crbug.com/1253250): Add other fields for the App struct.
   return app;
 }
 
@@ -196,17 +191,6 @@ void PluginVmApps::Initialize() {
                         /*should_notify_initialized=*/true);
 }
 
-void PluginVmApps::LoadIcon(const std::string& app_id,
-                            const IconKey& icon_key,
-                            IconType icon_type,
-                            int32_t size_hint_in_dip,
-                            bool allow_placeholder_icon,
-                            apps::LoadIconCallback callback) {
-  registry_->LoadIcon(app_id, icon_key, icon_type, size_hint_in_dip,
-                      allow_placeholder_icon, IconKey::kInvalidResourceId,
-                      std::move(callback));
-}
-
 void PluginVmApps::GetCompressedIconData(const std::string& app_id,
                                          int32_t size_in_dip,
                                          ui::ResourceScaleFactor scale_factor,
@@ -235,7 +219,7 @@ void PluginVmApps::LaunchAppWithIntent(const std::string& app_id,
                                        WindowInfoPtr window_info,
                                        LaunchCallback callback) {
   // Retrieve URLs from the files in the intent.
-  std::vector<plugin_vm::LaunchArg> args;
+  std::vector<guest_os::LaunchArg> args;
   if (intent && intent->files.size() > 0) {
     args.reserve(intent->files.size());
     storage::FileSystemContext* file_system_context =
@@ -369,8 +353,6 @@ AppPtr PluginVmApps::CreateApp(
   app->allow_uninstall = false;
   app->handles_intents = true;
   app->intent_filters = CreateIntentFilterForPluginVm(registration);
-
-  // TODO(crbug.com/1253250): Add other fields for the App struct.
   return app;
 }
 

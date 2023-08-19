@@ -17,8 +17,10 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/contextmenu/ContextMenuPopulatorFactory.java",
   ]
 
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
-  srcjar_deps = [ "//chrome:context_menu_image_format_enum_javagen" ]
+  srcjar_deps = [
+    ":jni_headers",
+    "//chrome:context_menu_image_format_enum_javagen",
+  ]
 
   deps = [
     "//base:base_java",

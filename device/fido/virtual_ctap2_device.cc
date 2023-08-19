@@ -951,8 +951,9 @@ VirtualCtap2Device::CheckUserVerification(
       options.client_pin_availability !=
       AuthenticatorSupportedOptions::ClientPinAvailability::kNotSupported;
   if (supports_pin && pin_auth && pin_auth->empty()) {
-    if (!SimulatePress())
+    if (!SimulatePress()) {
       return absl::nullopt;
+    }
 
     switch (options.client_pin_availability) {
       case AuthenticatorSupportedOptions::ClientPinAvailability::
@@ -1039,12 +1040,14 @@ VirtualCtap2Device::CheckUserVerification(
       if (options.user_verification_availability ==
           AuthenticatorSupportedOptions::UserVerificationAvailability::
               kSupportedAndConfigured) {
-        if (!SimulatePress())
+        if (!SimulatePress()) {
           return absl::nullopt;
+        }
 
         if (!config_.user_verification_succeeds) {
-          if (mode != CheckUserVerificationMode::kGetAssertion)
+          if (mode != CheckUserVerificationMode::kGetAssertion) {
             return CtapDeviceResponseCode::kCtap2ErrPinAuthInvalid;
+          }
           return CtapDeviceResponseCode::kCtap2ErrOperationDenied;
         }
         uv = true;
@@ -1493,10 +1496,9 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
     }
 
     registration.is_resident = true;
-    registration.user = request.user;
-    registration.rp = request.rp;
   }
-
+  registration.user = request.user;
+  registration.rp = request.rp;
   registration.protection = cred_protect;
   registration.device_key = std::move(device_key);
   registration.cred_blob = std::move(request.cred_blob);
@@ -1811,8 +1813,9 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
     } else {
       signature = registration.second->private_key->Sign(signature_buffer);
     }
-    AuthenticatorGetAssertionResponse assertion(std::move(authenticator_data),
-                                                signature);
+    AuthenticatorGetAssertionResponse assertion(
+        std::move(authenticator_data), signature,
+        FidoTransportProtocol::kUsbHumanInterfaceDevice);
 
     bool include_credential;
     switch (config_.include_credential_in_assertion_response) {

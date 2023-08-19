@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ui/tabs/target_frame_cache.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 TargetFrameCache::TargetFrameCache() {}
 
 TargetFrameCache::~TargetFrameCache() {}

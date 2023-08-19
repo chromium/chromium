@@ -16,9 +16,9 @@
 #import "ios/web/public/web_state.h"
 #import "ui/base/page_transition_types.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+// To get access to UseSessionSerializationOptimizations().
+// TODO(crbug.com/1383087): remove once the feature is fully launched.
+#import "ios/web/common/features.h"
 
 PrerenderServiceImpl::PrerenderServiceImpl(ChromeBrowserState* browser_state)
     : controller_(
@@ -95,8 +95,10 @@ bool PrerenderServiceImpl::MaybeLoadPrerenderedURL(
     LoadTimingTabHelper::FromWebState(active_web_state)
         ->DidPromotePrerenderTab();
   }
-  SessionRestorationBrowserAgent::FromBrowser(browser)->SaveSession(
-      /*immediately=*/false);
+  if (!web::features::UseSessionSerializationOptimizations()) {
+    SessionRestorationBrowserAgent::FromBrowser(browser)->SaveSession(
+        /*immediately=*/false);
+  }
   return true;
 }
 

@@ -29,6 +29,11 @@
              android:showAsAction="never"/>
         <!--suppress HardcodedText -->
         <item
+            android:id="@+id/options_menu_safe_mode"
+            android:title="SafeMode status"
+            android:showAsAction="never"/>
+        <!--suppress HardcodedText -->
+        <item
              android:id="@+id/options_menu_about_devui"
              android:title="About WebView DevTools"
              android:showAsAction="never"/>

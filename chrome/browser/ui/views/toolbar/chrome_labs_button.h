@@ -44,7 +44,7 @@ class ChromeLabsButton : public ToolbarButton {
 
   raw_ptr<BrowserView, DanglingUntriaged> browser_view_;
 
-  raw_ptr<const ChromeLabsModel, DanglingUntriaged> model_;
+  raw_ptr<const ChromeLabsModel, AcrossTasksDanglingUntriaged> model_;
 
   raw_ptr<views::DotIndicator> new_experiments_indicator_;
 

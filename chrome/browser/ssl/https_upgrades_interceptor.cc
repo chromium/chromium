@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
+#include "chrome/browser/ssl/https_first_mode_settings_tracker.h"
 #include "chrome/browser/ssl/https_only_mode_tab_helper.h"
 #include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/common/chrome_features.h"
@@ -98,7 +99,8 @@ net::RedirectInfo SetupRedirect(
   response_head->response_start = response_head->request_start;
   std::string header_string = base::StringPrintf(
       "HTTP/1.1 %i Temporary Redirect\n"
-      "Location: %s\n",
+      "Location: %s\n"
+      "Non-Authoritative-Reason: HttpsUpgrades\n",
       net::HTTP_TEMPORARY_REDIRECT, new_url.spec().c_str());
   response_head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
       net::HttpUtil::AssembleRawHeaders(header_string));
@@ -190,8 +192,7 @@ HttpsUpgradesInterceptor::MaybeCreateInterceptor(
   }
   PrefService* prefs = profile->GetPrefs();
   bool https_first_mode_enabled =
-      base::FeatureList::IsEnabled(features::kHttpsFirstModeV2) && prefs &&
-      prefs->GetBoolean(prefs::kHttpsOnlyModeEnabled);
+      prefs && prefs->GetBoolean(prefs::kHttpsOnlyModeEnabled);
   return std::make_unique<HttpsUpgradesInterceptor>(
       frame_tree_node_id, https_first_mode_enabled, navigation_ui_data);
 }
@@ -385,9 +386,10 @@ void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
 
   // Next check whether the HTTP or HTTPS versions of the URL has "Insecure
   // Content" allowed in content settings. We treat this as a sign to not do
-  // silent HTTPS Upgrades for the site overall. (HTTPS-First Mode ignores this
-  // setting.)
-  if (!IsInterstitialEnabled(*interstitial_state_) &&
+  // silent HTTPS Upgrades for the site overall and not show an HTTPS-First Mode
+  // interstitial for Engaged Sites. The main HTTPS-First Mode ignores this
+  // setting.
+  if (!interstitial_state_->enabled_by_pref &&
       DoesInsecureContentSettingDisableUpgrading(tentative_resource_request.url,
                                                  profile)) {
     RecordNavigationRequestSecurityLevel(
@@ -503,6 +505,15 @@ void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
             tab_helper->fallback_url().host(),
             web_contents->GetPrimaryMainFrame()->GetStoragePartition());
       }
+      // Also record this fallback event so that we can auto-enable HFM based on
+      // browsing patterns later on.
+      HttpsFirstModeService* hfm_service =
+          HttpsFirstModeServiceFactory::GetForProfile(profile);
+      // HttpsFirstModeService can be null in tests.
+      if (hfm_service) {
+        hfm_service->MaybeEnableHttpsFirstModeForUser(
+            /*add_fallback_entry=*/true);
+      }
     }
 
     tab_helper->set_is_navigation_upgraded(false);
@@ -587,8 +598,14 @@ bool HttpsUpgradesInterceptor::MaybeCreateLoaderForResponse(
   // enabled, because otherwise these would cause the interstitial to be shown
   // which is confusing. HTTPS-Upgrades will silently fall back to HTTP for
   // these errors.
+  //
+  // However, if this is a request to a non-unique hostname, don't prefer
+  // net error as it is likely non-recoverable -- we want to fallback to HTTP
+  // and the HTTPS-First Mode interstitial in this case. (In particular, this
+  // avoids breaking corporate single-label hostnames.)
   if (IsInterstitialEnabled(*interstitial_state_) &&
-      IsHttpsFirstModeExemptedError(status.error_code)) {
+      IsHttpsFirstModeExemptedError(status.error_code) &&
+      !net::IsHostnameNonUnique(request.url.host())) {
     tab_helper->set_is_exempt_error(true);
     return false;
   }
@@ -628,6 +645,16 @@ bool HttpsUpgradesInterceptor::MaybeCreateLoaderForResponse(
       state->AllowHttpForHost(
           tab_helper->fallback_url().host(),
           web_contents->GetPrimaryMainFrame()->GetStoragePartition());
+    }
+
+    // Also record this fallback event so that we can auto-enable HFM based on
+    // browsing patterns later on.
+    HttpsFirstModeService* hfm_service =
+        HttpsFirstModeServiceFactory::GetForProfile(profile);
+    // HttpsFirstModeService can be null in tests.
+    if (hfm_service) {
+      hfm_service->MaybeEnableHttpsFirstModeForUser(
+          /*add_fallback_entry=*/true);
     }
   }
 

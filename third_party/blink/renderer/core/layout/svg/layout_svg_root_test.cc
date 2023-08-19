@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_shape.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/testing/find_cc_layer.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
@@ -61,7 +62,9 @@ TEST_P(LayoutSVGRootTest, VisualOverflowExpandsLayer) {
       CcLayersByDOMElementId(GetDocument().View()->RootCcLayer(), "root")[0];
   EXPECT_EQ(gfx::Size(100, 100), layer->bounds());
 
-  GetDocument().getElementById("rect")->setAttribute("height", "200");
+  GetDocument()
+      .getElementById(AtomicString("rect"))
+      ->setAttribute(svg_names::kHeightAttr, AtomicString("200"));
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_EQ(gfx::Size(100, 200), layer->bounds());
@@ -101,7 +104,7 @@ TEST_P(LayoutSVGRootTest, RectBasedHitTestPartialOverlap) {
     </svg>
   )HTML");
 
-  const auto& svg = *GetDocument().getElementById("svg");
+  const auto& svg = *GetDocument().getElementById(AtomicString("svg"));
   const auto& body = *GetDocument().body();
 
   // This is the center of the rect-based hit test below.
@@ -135,13 +138,17 @@ TEST_P(LayoutSVGRootTest, PaintLayerType) {
   ASSERT_TRUE(root.Layer());
   EXPECT_FALSE(root.Layer()->IsSelfPaintingLayer());
 
-  GetDocument().getElementById("rect")->setAttribute("style",
-                                                     "will-change: transform");
+  GetDocument()
+      .getElementById(AtomicString("rect"))
+      ->setAttribute(svg_names::kStyleAttr,
+                     AtomicString("will-change: transform"));
   UpdateAllLifecyclePhasesForTest();
   ASSERT_TRUE(root.Layer());
   EXPECT_FALSE(root.Layer()->IsSelfPaintingLayer());
 
-  GetDocument().getElementById("rect")->removeAttribute("style");
+  GetDocument()
+      .getElementById(AtomicString("rect"))
+      ->removeAttribute(svg_names::kStyleAttr);
   UpdateAllLifecyclePhasesForTest();
   ASSERT_TRUE(root.Layer());
   EXPECT_FALSE(root.Layer()->IsSelfPaintingLayer());

@@ -11,15 +11,10 @@
 #import "chrome/services/mac_notifications/mac_notification_service_utils.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace mac_notifications {
 
 namespace {
 
-API_AVAILABLE(macos(10.14))
 UNNotificationAction* CreateAction(
     const NotificationCategoryManager::Button& button,
     NSString* identifier) {
@@ -38,7 +33,6 @@ UNNotificationAction* CreateAction(
                    options:UNNotificationActionOptionNone];
 }
 
-API_AVAILABLE(macos(10.14))
 NotificationCategoryManager::Button GetButtonFromAction(
     UNNotificationAction* action) {
   std::u16string title = base::SysNSStringToUTF16([action title]);

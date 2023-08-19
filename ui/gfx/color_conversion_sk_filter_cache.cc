@@ -11,11 +11,14 @@
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GpuTypes.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
+#include "third_party/skia/include/gpu/graphite/Recorder.h"
+#include "third_party/skia/include/gpu/graphite/Surface.h"
 #include "third_party/skia/include/private/SkGainmapInfo.h"
 #include "third_party/skia/include/private/SkGainmapShader.h"
 #include "ui/gfx/color_transform.h"
@@ -25,15 +28,17 @@ namespace gfx {
 namespace {
 
 // Allocate an SkSurface to be used to create the tonemapped result.
-static sk_sp<SkSurface> MakeSurfaceForResult(SkImageInfo image_info,
-                                             GrDirectContext* context) {
+static sk_sp<SkSurface> MakeSurfaceForResult(
+    SkImageInfo image_info,
+    GrDirectContext* gr_context,
+    skgpu::graphite::Recorder* graphite_recorder) {
   // TODO(ccameron) this code is only used in OOP-R, which implies a GPU
   // backend, so perhaps this code should be moved to cc/
 #if defined(SK_GANESH)
-  if (context) {
+  if (gr_context) {
     // TODO(https://crbug.com/1286088): Consider adding mipmap support here.
     sk_sp<SkSurface> surface =
-        SkSurfaces::RenderTarget(context, skgpu::Budgeted::kNo, image_info,
+        SkSurfaces::RenderTarget(gr_context, skgpu::Budgeted::kNo, image_info,
                                  /*sampleCount=*/0, kTopLeft_GrSurfaceOrigin,
                                  /*surfaceProps=*/nullptr,
                                  /*shouldCreateWithMips=*/false);
@@ -45,10 +50,30 @@ static sk_sp<SkSurface> MakeSurfaceForResult(SkImageInfo image_info,
     }
     DLOG(ERROR) << "Falling back to tone mapped 8-bit surface.";
     image_info = image_info.makeColorType(kN32_SkColorType);
-    return SkSurfaces::RenderTarget(context, skgpu::Budgeted::kNo, image_info,
+    return SkSurfaces::RenderTarget(gr_context, skgpu::Budgeted::kNo,
+                                    image_info,
                                     /*sampleCount=*/0, kTopLeft_GrSurfaceOrigin,
                                     /*surfaceProps=*/nullptr,
                                     /*shouldCreateWithMips=*/false);
+  }
+#endif
+#if defined(SK_GRAPHITE)
+  if (graphite_recorder) {
+    // TODO(https://crbug.com/1286088): Consider adding mipmap support here.
+    sk_sp<SkSurface> surface = SkSurfaces::RenderTarget(
+        graphite_recorder, image_info, skgpu::Mipmapped::kNo,
+        /*surfaceProps=*/nullptr);
+    // It is not guaranteed that kRGBA_F16_SkColorType is renderable. If we fail
+    // to create an SkSurface with that color type, fall back to
+    // kN32_SkColorType.
+    if (surface) {
+      return surface;
+    }
+    DLOG(ERROR) << "Falling back to tone mapped 8-bit surface.";
+    image_info = image_info.makeColorType(kN32_SkColorType);
+    return SkSurfaces::RenderTarget(graphite_recorder, image_info,
+                                    skgpu::Mipmapped::kNo,
+                                    /*surfaceProps=*/nullptr);
   }
 #endif
   return SkSurfaces::Raster(image_info, image_info.minRowBytes(),
@@ -153,9 +178,11 @@ sk_sp<SkImage> ColorConversionSkFilterCache::ApplyGainmap(
     sk_sp<SkImage> gainmap_image,
     const SkGainmapInfo& gainmap_info,
     float dst_max_luminance_relative,
-    GrDirectContext* context) {
+    GrDirectContext* gr_context,
+    skgpu::graphite::Recorder* graphite_recorder) {
   DCHECK_EQ(base_image->isTextureBacked(), gainmap_image->isTextureBacked());
-  DCHECK_EQ(!!context, base_image->isTextureBacked());
+  CHECK_EQ((!!gr_context || !!graphite_recorder),
+           base_image->isTextureBacked());
 
   // If `gainmap_image` will not be applied, then return `base_image` directly.
   switch (gainmap_info.fBaseImageType) {
@@ -185,7 +212,8 @@ sk_sp<SkImage> ColorConversionSkFilterCache::ApplyGainmap(
                                     surface_color_space));
 
   // Create the surface to render the gainmap shader to.
-  sk_sp<SkSurface> surface = MakeSurfaceForResult(surface_info, context);
+  sk_sp<SkSurface> surface =
+      MakeSurfaceForResult(surface_info, gr_context, graphite_recorder);
   if (!surface) {
     LOG(ERROR) << "Failed to create SkSurface for applying gainmap.";
     return base_image;
@@ -224,15 +252,25 @@ sk_sp<SkImage> ColorConversionSkFilterCache::ConvertImage(
     float sdr_max_luminance_nits,
     float dst_max_luminance_relative,
     bool enable_tone_mapping,
-    GrDirectContext* context) {
+    GrDirectContext* gr_context,
+    skgpu::graphite::Recorder* graphite_recorder) {
   DCHECK(image);
   DCHECK(target_color_space);
   sk_sp<SkColorSpace> image_sk_color_space = image->refColorSpace();
-  if (!image_sk_color_space)
-    return image->makeColorSpace(target_color_space, context);
-
-  if (!enable_tone_mapping)
-    return image->makeColorSpace(target_color_space, context);
+  bool has_mipmaps = image->hasMipmaps();
+  if (!image_sk_color_space || !enable_tone_mapping) {
+    // TODO(crbug.com/1443068): It's possible for both `gr_context` and
+    // `graphite_recorder` to be nullptr if `image` is not texture backed. Need
+    // to handle this case (currently just goes through gr_context path with
+    // nullptr context).
+    if (graphite_recorder) {
+      SkImage::RequiredProperties props{.fMipmapped = has_mipmaps};
+      return image->makeColorSpace(graphite_recorder, target_color_space,
+                                   props);
+    } else {
+      return image->makeColorSpace(gr_context, target_color_space);
+    }
+  }
 
   gfx::ColorSpace image_color_space(*image_sk_color_space);
   switch (image_color_space.GetTransferID()) {
@@ -240,14 +278,25 @@ sk_sp<SkImage> ColorConversionSkFilterCache::ConvertImage(
     case ColorSpace::TransferID::HLG:
       break;
     default:
-      return image->makeColorSpace(target_color_space, context);
+      // TODO(crbug.com/1443068): It's possible for both `gr_context` and
+      // `graphite_recorder` to be nullptr if `image` is not texture backed.
+      // Need to handle this case (currently just goes through gr_context path
+      // with nullptr context).
+      if (graphite_recorder) {
+        SkImage::RequiredProperties props{.fMipmapped = has_mipmaps};
+        return image->makeColorSpace(graphite_recorder, target_color_space,
+                                     props);
+      } else {
+        return image->makeColorSpace(gr_context, target_color_space);
+      }
   }
 
   SkImageInfo image_info =
       SkImageInfo::Make(image->dimensions(),
                         SkColorInfo(kRGBA_F16_SkColorType, kPremul_SkAlphaType,
                                     image_sk_color_space));
-  sk_sp<SkSurface> surface = MakeSurfaceForResult(image_info, context);
+  sk_sp<SkSurface> surface =
+      MakeSurfaceForResult(image_info, gr_context, graphite_recorder);
   if (!surface) {
     DLOG(ERROR) << "Failed to create SkSurface color conversion.";
     return nullptr;

@@ -18,8 +18,6 @@ class WebState;
 @class BubblePresenter;
 @protocol NewTabPageComponentFactoryProtocol;
 @protocol NewTabPageControllerDelegate;
-@protocol ThumbStripSupporting;
-@class ViewRevealingVerticalPanHandler;
 
 // Coordinator handling the NTP.
 @interface NewTabPageCoordinator
@@ -42,17 +40,11 @@ class WebState;
 // ViewController associated with this coordinator.
 @property(nonatomic, readonly) UIViewController* viewController;
 
-// The toolbar delegate to pass to ContentSuggestionsCoordinator.
+// Delete for NTP and it's subclasses to communicate with the toolbar.
 @property(nonatomic, weak) id<NewTabPageControllerDelegate> toolbarDelegate;
 
 // Returns `YES` if the coordinator is started.
 @property(nonatomic, readonly) BOOL started;
-
-// The pan gesture handler for the view controller.
-@property(nonatomic, weak) ViewRevealingVerticalPanHandler* panGestureHandler;
-
-// Allows for the in-flight enabling/disabling of the thumb strip.
-@property(nonatomic, readonly) id<ThumbStripSupporting> thumbStripSupporting;
 
 // Bubble presenter for displaying IPH bubbles relating to the NTP.
 @property(nonatomic, strong) BubblePresenter* bubblePresenter;

@@ -22,7 +22,6 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.MutableFlagWithSafeDefault;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
@@ -184,9 +183,6 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     // document navigation. The first call is usually necessary, which updates the UrlBar to reflect
     // the new url. All subsequent calls are spurious and can be avoided. This experiment involves
     // using the flags below to short circuit all calls after the UrlBar has already been updated.
-    private static final MutableFlagWithSafeDefault sSameDocOptimizationsFlag =
-            new MutableFlagWithSafeDefault(
-                    ChromeFeatureList.REDUCE_TOOLBAR_UPDATES_FOR_SAME_DOC_NAVIGATIONS, false);
     private boolean mIsInSameDocNav;
     private boolean mAlreadyUpdatedUrlBarForSameDocNav;
     private boolean mAlreadyChangedSecurityStateForSameDocNav;
@@ -336,11 +332,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     }
 
     public void notifyUrlChanged() {
-        if (shouldDoSameDocOptimzations() && mAlreadyUpdatedUrlBarForSameDocNav) {
-            return;
-        }
-
-        if (!updateVisibleGurl()) {
+        if ((mIsInSameDocNav && mAlreadyUpdatedUrlBarForSameDocNav) || !updateVisibleGurl()) {
             return;
         }
 
@@ -349,9 +341,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
             observer.onUrlChanged();
         }
 
-        if (isSameDocOptimizationEnabled()) {
-            mAlreadyUpdatedUrlBarForSameDocNav = mIsInSameDocNav;
-        }
+        mAlreadyUpdatedUrlBarForSameDocNav = mIsInSameDocNav;
     }
 
     public void notifyZeroSuggestRefresh() {
@@ -477,7 +467,6 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         return TrustedCdn.getPublisherUrl(mTab) == null;
     }
 
-    @VisibleForTesting
     LruCache<SpannableDisplayTextCacheKey, SpannableStringBuilder> getCacheForTesting() {
         return mSpannableDisplayTextCache;
     }
@@ -649,8 +638,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     }
 
     @Override
-    @StringRes
-    public int getSecurityIconContentDescriptionResourceId() {
+    public @StringRes int getSecurityIconContentDescriptionResourceId() {
         return SecurityStatusIcon.getSecurityIconContentDescriptionResourceId(getSecurityLevel());
     }
 
@@ -748,7 +736,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
             // LIGHT_BRANDED_THEME for the purpose of improving contrast.
             if (isIncognito) {
                 // Use light red for Incognito mode.
-                return R.color.baseline_error_200;
+                return R.color.baseline_error_80;
             } else if (brandedColorScheme == BrandedColorScheme.APP_DEFAULT) {
                 // Use adaptive red for light and dark background.
                 return R.color.default_red;
@@ -758,7 +746,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     }
 
     public void notifySecurityStateChanged() {
-        if (shouldDoSameDocOptimzations() && mAlreadyChangedSecurityStateForSameDocNav) {
+        if (mIsInSameDocNav && mAlreadyChangedSecurityStateForSameDocNav) {
             return;
         }
 
@@ -772,9 +760,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
             observer.onSecurityStateChanged();
         }
 
-        if (isSameDocOptimizationEnabled()) {
-            mAlreadyChangedSecurityStateForSameDocNav = mIsInSameDocNav;
-        }
+        mAlreadyChangedSecurityStateForSameDocNav = mIsInSameDocNav;
     }
 
     private void recalculateFormattedUrls() {
@@ -841,10 +827,8 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     }
 
     public void notifyDidStartNavigation(boolean isSameDocument) {
-        if (isSameDocOptimizationEnabled()) {
-            resetSameDocNavFlags();
-            mIsInSameDocNav = isSameDocument;
-        }
+        resetSameDocNavFlags();
+        mIsInSameDocNav = isSameDocument;
     }
 
     public void notifyDidFinishNavigationEnd() {
@@ -863,14 +847,6 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         resetSameDocNavFlags();
     }
 
-    public boolean shouldDoSameDocOptimzations() {
-        return isSameDocOptimizationEnabled() && mIsInSameDocNav;
-    }
-
-    private boolean isSameDocOptimizationEnabled() {
-        return sSameDocOptimizationsFlag.isEnabled();
-    }
-
     private void resetSameDocNavFlags() {
         mIsInSameDocNav = false;
         mAlreadyUpdatedUrlBarForSameDocNav = false;
@@ -887,5 +863,11 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
                 long nativeLocationBarModelAndroid, LocationBarModel caller);
         int getPageClassification(long nativeLocationBarModelAndroid, LocationBarModel caller,
                 boolean isFocusedFromFakebox, boolean isPrefetch);
+    }
+
+    public void onPageLoadStopped() {
+        for (LocationBarDataProvider.Observer observer : mLocationBarDataObservers) {
+            observer.onPageLoadStopped();
+        }
     }
 }

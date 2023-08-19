@@ -316,6 +316,12 @@ class GPU_IPC_SERVICE_EXPORT GpuWatchdogThread
   // The GPU watchdog is paused. The timeout task is temporarily stopped.
   bool is_paused_ = false;
 
+  // The lock between the GpuMainThread and GpuWatchdogThread for stopping
+  // GpuWatchdog.
+  base::Lock skip_lock_;
+  bool skip_for_pause_ GUARDED_BY(skip_lock_) = false;
+  bool skip_for_backgrounded_ GUARDED_BY(skip_lock_) = false;
+
   // The GPU watchdog is in report only mode. The watchdog will behave as though
   // the thread which it found to be hung has made progress during crash
   // reporting.

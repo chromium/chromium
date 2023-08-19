@@ -5,7 +5,6 @@
 #ifndef CC_PAINT_SCOPED_RASTER_FLAGS_H_
 #define CC_PAINT_SCOPED_RASTER_FLAGS_H_
 
-#include "base/containers/stack_container.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "cc/paint/decode_stashing_image_provider.h"
 #include "cc/paint/paint_export.h"

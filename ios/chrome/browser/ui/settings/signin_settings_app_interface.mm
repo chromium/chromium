@@ -9,10 +9,6 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation SigninSettingsAppInterface
 
 + (void)setSettingsSigninPromoDisplayedCount:(int)displayedCount {

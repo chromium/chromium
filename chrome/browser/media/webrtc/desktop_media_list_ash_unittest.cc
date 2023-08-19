@@ -95,4 +95,21 @@ TEST_F(DesktopMediaListAshTest, WindowOnly) {
   base::RunLoop().Run();
   window.reset();
   base::RunLoop().Run();
+
+  // Tests that a floated window shows up on the list. Regression test for
+  // crbug.com/1462516.
+  std::unique_ptr<aura::Window> float_window = CreateAppWindow();
+  ui::test::EventGenerator event_generator(float_window->GetRootWindow());
+  event_generator.PressAndReleaseKey(ui::VKEY_F,
+                                     ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+
+  EXPECT_CALL(observer_, OnSourceAdded(0));
+  EXPECT_CALL(observer_, OnSourceThumbnailChanged(0))
+      .WillOnce(QuitMessageLoop())
+      .WillRepeatedly(DoDefault());
+  EXPECT_CALL(observer_, OnSourceRemoved(0)).WillOnce(QuitMessageLoop());
+
+  base::RunLoop().Run();
+  float_window.reset();
+  base::RunLoop().Run();
 }

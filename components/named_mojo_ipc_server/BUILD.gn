@@ -22,6 +22,8 @@ static_library("named_mojo_ipc_server") {
     "named_mojo_ipc_server_client_util.h",
     "named_mojo_ipc_util.cc",
     "named_mojo_ipc_util.h",
+    "named_mojo_message_pipe_server.cc",
+    "named_mojo_message_pipe_server.h",
     "named_mojo_server_endpoint_connector.cc",
     "named_mojo_server_endpoint_connector.h",
   ]

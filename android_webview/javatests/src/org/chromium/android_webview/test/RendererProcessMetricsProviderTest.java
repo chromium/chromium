@@ -9,7 +9,6 @@ import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.SINGLE_PRO
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -17,8 +16,8 @@ import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.test.util.RendererProcessMetricsProviderUtilsJni;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.HistogramWatcher;
 
 /**
  * Tests for renderer_process_metrics_provider.cc.
@@ -29,8 +28,20 @@ public class RendererProcessMetricsProviderTest {
     @Rule
     public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
+    private HistogramWatcher mHistogramExpectationSingleProcess;
+    private HistogramWatcher mHistogramExpectationMultiProcess;
     @Before
     public void setUp() throws Exception {
+        mHistogramExpectationSingleProcess =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecordTimes("Android.WebView.SingleOrMultiProcess",
+                                /* sample=single process */ 0, 1)
+                        .build();
+        mHistogramExpectationMultiProcess =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecordTimes("Android.WebView.SingleOrMultiProcess",
+                                /* sample=multi process */ 1, 1)
+                        .build();
         RendererProcessMetricsProviderUtilsJni.get().forceRecordHistograms();
     }
 
@@ -39,12 +50,7 @@ public class RendererProcessMetricsProviderTest {
     @OnlyRunIn(SINGLE_PROCESS)
     @SmallTest
     public void testSingleProcessHistograms() throws Throwable {
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "Android.WebView.SingleOrMultiProcess", /* sample=single process */ 0));
-        Assert.assertEquals(0,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "Android.WebView.SingleOrMultiProcess", /* sample=multi process */ 1));
+        mHistogramExpectationSingleProcess.assertExpected();
     }
 
     @Test
@@ -52,11 +58,6 @@ public class RendererProcessMetricsProviderTest {
     @OnlyRunIn(MULTI_PROCESS)
     @SmallTest
     public void testMultiProcessHistograms() throws Throwable {
-        Assert.assertEquals(0,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "Android.WebView.SingleOrMultiProcess", /* sample=single process */ 0));
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "Android.WebView.SingleOrMultiProcess", /* sample=multi process */ 1));
+        mHistogramExpectationMultiProcess.assertExpected();
     }
 }

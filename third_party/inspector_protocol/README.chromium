@@ -2,10 +2,11 @@ Name: inspector protocol
 Short Name: inspector_protocol
 URL: https://chromium.googlesource.com/deps/inspector_protocol/
 Version: 0
-Revision: 231d3578b4bf2bec1c3d306e53621430003b4bae
+Revision: fc500ba6b4303e25e186b368decf02aca8709a91
 License: BSD
 License File: LICENSE
 Security Critical: yes
+Shipped: yes
 
 Description:
 WebKit/core/inspector uses these scripts to generate handlers from protocol

@@ -90,8 +90,7 @@ public interface SurfaceActionsHandler {
             return "";
         }
         /** The View from which the user tap originated. May be null.*/
-        @Nullable
-        default View actionSourceView() {
+        default @Nullable View actionSourceView() {
             return null;
         }
     }

@@ -4,7 +4,7 @@ desc: |-
 
   The <ph name="MANIFEST_ID_FIELD">manifest_id</ph> field is the Manifest ID for the Web App. See <ph name="WEB_APP_ID_REFERENCE_URL">https://developer.chrome.com/blog/pwa-manifest-id/<ex>https://developer.chrome.com/blog/pwa-manifest-id/</ex></ph> for instructions on how to determine the Manifest ID for an installed web app.
   The <ph name="RUN_ON_OS_LOGIN_FIELD">run_on_os_login</ph> field specifies if a web app can be run during OS login. If this field is set to <ph name="BLOCKED">blocked</ph>, the web app will not run during OS login and the user will not be able to enable this later. If this field is set to <ph name="RUN_WINDOWED">run_windowed</ph>, the web app will run during OS login and the user will not be able to disable this later. If this field is set to <ph name="ALLOWED">allowed</ph>, the user will be able to configure the web app to run at OS login. The default configuration only allows the <ph name="ALLOWED">allowed</ph> and <ph name="BLOCKED">blocked</ph> values.
-  (Since version 115) The <ph name="PREVENT_CLOSE_FIELD">prevent_close</ph> field specifies if a web app shall be prevented from closing in any way (e.g. by the user, task manager, web APIs). This behavior can only be enabled if <ph name="RUN_ON_OS_LOGIN_FIELD">run_on_os_login</ph> is set to <ph name="RUN_WINDOWED">run_windowed</ph>. If the app were already running, this property will only come into effect after the app is restarted. If this field is not defined, apps will be closable by users.
+  (Since version 117) The <ph name="PREVENT_CLOSE_FIELD">prevent_close_after_run_on_os_login</ph> field specifies if a web app shall be prevented from closing in any way (e.g. by the user, task manager, web APIs). This behavior can only be enabled if <ph name="RUN_ON_OS_LOGIN_FIELD">run_on_os_login</ph> is set to <ph name="RUN_WINDOWED">run_windowed</ph>. If the app were already running, this property will only come into effect after the app is restarted. If this field is not defined, apps will be closable by users.
 example_value:
 - manifest_id: https://foo.example/index.html
   run_on_os_login: allowed
@@ -12,7 +12,7 @@ example_value:
   run_on_os_login: allowed
 - manifest_id: https://foobar.example/index.html
   run_on_os_login: run_windowed
-  prevent_close: true
+  prevent_close_after_run_on_os_login: true
 - manifest_id: '*'
   run_on_os_login: blocked
 features:
@@ -34,7 +34,7 @@ schema:
         - blocked
         - run_windowed
         type: string
-      prevent_close:
+      prevent_close_after_run_on_os_login:
         type: boolean
     required:
     - manifest_id

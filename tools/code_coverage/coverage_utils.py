@@ -7,7 +7,6 @@
 import argparse
 from collections import defaultdict
 import functools
-import jinja2
 import json
 import logging
 import os
@@ -15,6 +14,13 @@ import re
 import shutil
 import subprocess
 import sys
+
+# Appends third_party/ so that coverage_utils can import jinja2 from
+# third_party/.
+sys.path.append(
+    os.path.join(os.path.dirname(__file__), os.path.pardir, os.path.pardir,
+                 'third_party'))
+import jinja2
 
 # The default name of the html coverage report for a directory.
 DIRECTORY_COVERAGE_HTML_REPORT_NAME = os.extsep.join(['report', 'html'])

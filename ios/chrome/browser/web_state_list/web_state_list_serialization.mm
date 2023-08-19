@@ -10,9 +10,9 @@
 #import <memory>
 #import <unordered_map>
 
+#import "base/apple/foundation_util.h"
 #import "base/check_op.h"
 #import "base/functional/callback.h"
-#import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -23,10 +23,6 @@
 #import "ios/web/public/session/serializable_user_data_manager.h"
 #import "ios/web/public/web_state.h"
 #import "net/base/mac/url_conversions.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 // Keys used to store information about the opener-opened relationship between
@@ -63,7 +59,7 @@ WebStateListRemovingIndexes GetIndexOfWebStatesToDrop(
 bool GetPinnedStateForWebState(web::WebState* web_state) {
   web::SerializableUserDataManager* user_data_manager =
       web::SerializableUserDataManager::FromWebState(web_state);
-  NSNumber* pinned_state = base::mac::ObjCCast<NSNumber>(
+  NSNumber* pinned_state = base::apple::ObjCCast<NSNumber>(
       user_data_manager->GetValueForSerializationKey(kPinnedStateKey));
   return [pinned_state boolValue];
 }
@@ -212,10 +208,10 @@ void DeserializeWebStateList(WebStateList* web_state_list,
     web::SerializableUserDataManager* user_data_manager =
         web::SerializableUserDataManager::FromWebState(web_state);
 
-    NSNumber* boxed_opener_index = base::mac::ObjCCast<NSNumber>(
+    NSNumber* boxed_opener_index = base::apple::ObjCCast<NSNumber>(
         user_data_manager->GetValueForSerializationKey(kOpenerIndexKey));
 
-    NSNumber* boxed_opener_navigation_index = base::mac::ObjCCast<NSNumber>(
+    NSNumber* boxed_opener_navigation_index = base::apple::ObjCCast<NSNumber>(
         user_data_manager->GetValueForSerializationKey(
             kOpenerNavigationIndexKey));
 
@@ -258,7 +254,7 @@ void DeserializeWebStateList(WebStateList* web_state_list,
       web::SerializableUserDataManager* user_data_manager =
           web::SerializableUserDataManager::FromWebState(web_state);
 
-      NSNumber* pinned_state = base::mac::ObjCCast<NSNumber>(
+      NSNumber* pinned_state = base::apple::ObjCCast<NSNumber>(
           user_data_manager->GetValueForSerializationKey(kPinnedStateKey));
       web_state_list->SetWebStatePinnedAt(index, [pinned_state boolValue]);
     }

@@ -26,6 +26,7 @@
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_core_observer.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
+#include "content/browser/service_worker/service_worker_hid_delegate_observer.h"
 #include "content/browser/service_worker/service_worker_info.h"
 #include "content/browser/service_worker/service_worker_job_coordinator.h"
 #include "content/browser/service_worker/service_worker_offline_capability_checker.h"
@@ -547,11 +548,14 @@ void ServiceWorkerContextCore::RegisterServiceWorker(
       policy_container_policies);
 }
 
-void ServiceWorkerContextCore::UpdateServiceWorker(
+void ServiceWorkerContextCore::UpdateServiceWorkerWithoutExecutionContext(
     ServiceWorkerRegistration* registration,
     bool force_bypass_cache) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  job_coordinator_->Update(registration, force_bypass_cache);
+  // Use an empty fetch client settings object because this method is for
+  // browser-initiated update and there is no associated execution context.
+  UpdateServiceWorkerImpl(
+      registration, force_bypass_cache, /*skip_script_comparison=*/false,
+      blink::mojom::FetchClientSettingsObject::New(), base::NullCallback());
 }
 
 void ServiceWorkerContextCore::UpdateServiceWorker(
@@ -561,12 +565,9 @@ void ServiceWorkerContextCore::UpdateServiceWorker(
     blink::mojom::FetchClientSettingsObjectPtr
         outside_fetch_client_settings_object,
     UpdateCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  job_coordinator_->Update(
+  UpdateServiceWorkerImpl(
       registration, force_bypass_cache, skip_script_comparison,
-      std::move(outside_fetch_client_settings_object),
-      base::BindOnce(&ServiceWorkerContextCore::UpdateComplete, AsWeakPtr(),
-                     std::move(callback)));
+      std::move(outside_fetch_client_settings_object), std::move(callback));
 }
 
 void ServiceWorkerContextCore::UnregisterServiceWorker(
@@ -713,7 +714,15 @@ void ServiceWorkerContextCore::AddWarmUpRequest(
   const size_t kRequestQueueLength =
       blink::features::kSpeculativeServiceWorkerWarmUpRequestQueueLength.Get();
 
-  warm_up_requests_.emplace_back(document_url, key, std::move(callback));
+  // TODO(crbug.com/1431792): Move `kFifo` to the caller.
+  const bool kFifo =
+      blink::features::kSpeculativeServiceWorkerWarmUpOnInsertedIntoDom.Get();
+
+  if (kFifo) {
+    warm_up_requests_.emplace_front(document_url, key, std::move(callback));
+  } else {
+    warm_up_requests_.emplace_back(document_url, key, std::move(callback));
+  }
 
   while (warm_up_requests_.size() > kRequestQueueLength) {
     auto [front_url, front_key, front_callback] =
@@ -768,6 +777,40 @@ void ServiceWorkerContextCore::RegistrationComplete(
   observer_list_->Notify(
       FROM_HERE, &ServiceWorkerContextCoreObserver::OnRegistrationCompleted,
       registration->id(), scope, key);
+}
+
+void ServiceWorkerContextCore::UpdateServiceWorkerImpl(
+    ServiceWorkerRegistration* registration,
+    bool force_bypass_cache,
+    bool skip_script_comparison,
+    blink::mojom::FetchClientSettingsObjectPtr
+        outside_fetch_client_settings_object,
+    UpdateCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  BrowserContext* browser_context = wrapper_->browser_context();
+  if (!browser_context) {
+    // There is no associated browser context (this can happen while the context
+    // is shutting down). Bail.
+    return;
+  }
+
+  if (!GetContentClient()
+           ->browser()
+           ->ShouldTryToUpdateServiceWorkerRegistration(registration->scope(),
+                                                        browser_context)) {
+    return;
+  }
+
+  ServiceWorkerRegisterJob::RegistrationCallback callback_wrapper;
+  if (callback) {
+    callback_wrapper = base::BindOnce(&ServiceWorkerContextCore::UpdateComplete,
+                                      AsWeakPtr(), std::move(callback));
+  }
+  job_coordinator_->Update(registration, force_bypass_cache,
+                           skip_script_comparison,
+                           std::move(outside_fetch_client_settings_object),
+                           std::move(callback_wrapper));
 }
 
 void ServiceWorkerContextCore::UpdateComplete(
@@ -1173,13 +1216,13 @@ void ServiceWorkerContextCore::OnReportConsoleMessage(
     int line_number,
     const GURL& source_url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  BrowserContext* browser_context = wrapper_->browser_context();
+  DCHECK(browser_context);
   DCHECK_EQ(this, version->context().get());
-  // NOTE: This differs slightly from
-  // RenderFrameHostImpl::DidAddMessageToConsole, which also asks the
-  // content embedder whether to classify the message as a builtin component.
-  // This is called on the IO thread, though, so we can't easily get a
-  // BrowserContext and call ContentBrowserClient::IsBuiltinComponent().
-  const bool is_builtin_component = HasWebUIScheme(source_url);
+  const bool is_builtin_component =
+      HasWebUIScheme(source_url) ||
+      GetContentClient()->browser()->IsBuiltinComponent(
+          browser_context, url::Origin::Create(source_url));
 
   LogConsoleMessage(message_level, message, line_number, is_builtin_component,
                     wrapper_->is_incognito(),
@@ -1256,5 +1299,21 @@ void ServiceWorkerContextCore::DidGetRegisteredStorageKeys(
         base::TimeTicks::Now() - start_time);
   }
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+ServiceWorkerHidDelegateObserver*
+ServiceWorkerContextCore::hid_delegate_observer() {
+  if (!hid_delegate_observer_) {
+    hid_delegate_observer_ =
+        std::make_unique<ServiceWorkerHidDelegateObserver>(this);
+  }
+  return hid_delegate_observer_.get();
+}
+
+void ServiceWorkerContextCore::SetServiceWorkerHidDelegateObserverForTesting(
+    std::unique_ptr<ServiceWorkerHidDelegateObserver> hid_delegate_observer) {
+  hid_delegate_observer_ = std::move(hid_delegate_observer);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace content

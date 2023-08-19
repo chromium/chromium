@@ -14,12 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/system/sys_info.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace shape_detection {
 
@@ -116,17 +111,6 @@ void UpdateSymbologyHint(mojom::BarcodeFormat format,
 }
 
 }  // namespace
-
-// static
-bool BarcodeDetectionImplMacVision::IsBlockedMacOSVersion() {
-  int32_t major_version;
-  int32_t minor_version;
-  int32_t bugfix_version;
-  base::SysInfo::OperatingSystemVersionNumbers(&major_version, &minor_version,
-                                               &bugfix_version);
-  // Vision Framework doesn't work properly on 10.14.{0,1,2}: crbug.com/921968.
-  return major_version == 10 && minor_version == 14 && bugfix_version < 3;
-}
 
 BarcodeDetectionImplMacVision::BarcodeDetectionImplMacVision(
     mojom::BarcodeDetectorOptionsPtr options)

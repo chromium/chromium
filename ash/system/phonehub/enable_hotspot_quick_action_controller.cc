@@ -9,7 +9,9 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/phonehub/phone_hub_metrics.h"
 #include "ash/system/phonehub/quick_action_item.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 
 namespace ash {
 
@@ -45,6 +47,92 @@ void EnableHotspotQuickActionController::OnButtonPressed(bool is_now_enabled) {
 }
 
 void EnableHotspotQuickActionController::OnTetherStatusChanged() {
+  UpdateQuickActionItemUi();
+}
+
+void EnableHotspotQuickActionController::SetState(ActionState state) {
+  item_->SetEnabled(true);
+
+  // Ensure that GetColorProvider() is not null as it will be used
+  // to set |sub_label_color|.
+  if (chromeos::features::IsJellyrollEnabled() && !item_->GetColorProvider()) {
+    return;
+  }
+
+  bool icon_enabled;
+  bool button_enabled;
+  int state_text_id;
+  int sub_label_text;
+  SkColor sub_label_color;
+  switch (state) {
+    case ActionState::kOff:
+      icon_enabled = false;
+      button_enabled = true;
+      state_text_id = IDS_ASH_PHONE_HUB_QUICK_ACTIONS_DISABLED_STATE_TOOLTIP;
+      sub_label_text = IDS_ASH_PHONE_HUB_QUICK_ACTIONS_OFF_STATE;
+      sub_label_color =
+          chromeos::features::IsJellyrollEnabled()
+              ? item_->GetColorProvider()->GetColor(
+                    cros_tokens::kCrosSysOnSurfaceVariant)
+              : AshColorProvider::Get()->GetContentLayerColor(
+                    AshColorProvider::ContentLayerType::kTextColorSecondary);
+      break;
+    case ActionState::kConnecting:
+      icon_enabled = true;
+      button_enabled = true;
+      state_text_id = IDS_ASH_PHONE_HUB_QUICK_ACTIONS_CONNECTING_STATE_TOOLTIP;
+      sub_label_text = IDS_ASH_PHONE_HUB_QUICK_ACTIONS_CONNECTING_STATE;
+      sub_label_color =
+          chromeos::features::IsJellyrollEnabled()
+              ? item_->GetColorProvider()->GetColor(
+                    cros_tokens::kCrosSysOnSurfaceVariant)
+              : AshColorProvider::Get()->GetContentLayerColor(
+                    AshColorProvider::ContentLayerType::kTextColorSecondary);
+      break;
+    case ActionState::kConnected:
+      icon_enabled = true;
+      button_enabled = true;
+      state_text_id = IDS_ASH_PHONE_HUB_QUICK_ACTIONS_CONNECTED_STATE_TOOLTIP;
+      sub_label_text = IDS_ASH_PHONE_HUB_QUICK_ACTIONS_CONNECTED_STATE;
+      sub_label_color =
+          chromeos::features::IsJellyrollEnabled()
+              ? item_->GetColorProvider()->GetColor(
+                    cros_tokens::kCrosSysPositive)
+              : AshColorProvider::Get()->GetContentLayerColor(
+                    AshColorProvider::ContentLayerType::kTextColorPositive);
+      break;
+    case ActionState::kNoReception:
+      icon_enabled = false;
+      button_enabled = false;
+      state_text_id =
+          IDS_ASH_PHONE_HUB_ENABLE_HOTSPOT_NO_RECEPTION_STATE_TOOLTIP;
+      sub_label_text = IDS_ASH_PHONE_HUB_QUICK_ACTIONS_NOT_AVAILABLE_STATE;
+      sub_label_color =
+          chromeos::features::IsJellyrollEnabled()
+              ? item_->GetColorProvider()->GetColor(
+                    cros_tokens::kCrosSysOnSurfaceVariant)
+              : AshColorProvider::Get()->GetContentLayerColor(
+                    AshColorProvider::ContentLayerType::kTextColorSecondary);
+      break;
+  }
+
+  item_->SetToggled(icon_enabled);
+  item_->SetEnabled(button_enabled);
+  item_->SetSubLabel(l10n_util::GetStringUTF16(sub_label_text));
+  item_->SetSubLabelColor(sub_label_color);
+
+  if (state == ActionState::kNoReception) {
+    item_->SetTooltip(l10n_util::GetStringUTF16(state_text_id));
+  } else {
+    std::u16string tooltip_state =
+        l10n_util::GetStringFUTF16(state_text_id, item_->GetItemLabel());
+    item_->SetTooltip(l10n_util::GetStringFUTF16(
+        IDS_ASH_PHONE_HUB_QUICK_ACTIONS_TOGGLE_TOOLTIP, item_->GetItemLabel(),
+        tooltip_state));
+  }
+}
+
+void EnableHotspotQuickActionController::UpdateQuickActionItemUi() {
   switch (tether_controller_->GetStatus()) {
     case Status::kIneligibleForFeature:
       item_->SetVisible(false);
@@ -65,66 +153,6 @@ void EnableHotspotQuickActionController::OnTetherStatusChanged() {
       break;
   }
   item_->SetVisible(true);
-}
-
-void EnableHotspotQuickActionController::SetState(ActionState state) {
-  item_->SetEnabled(true);
-
-  bool icon_enabled;
-  bool button_enabled;
-  int state_text_id;
-  int sub_label_text;
-  SkColor sub_label_color;
-  switch (state) {
-    case ActionState::kOff:
-      icon_enabled = false;
-      button_enabled = true;
-      state_text_id = IDS_ASH_PHONE_HUB_QUICK_ACTIONS_DISABLED_STATE_TOOLTIP;
-      sub_label_text = IDS_ASH_PHONE_HUB_QUICK_ACTIONS_OFF_STATE;
-      sub_label_color = AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kTextColorSecondary);
-      break;
-    case ActionState::kConnecting:
-      icon_enabled = true;
-      button_enabled = true;
-      state_text_id = IDS_ASH_PHONE_HUB_QUICK_ACTIONS_CONNECTING_STATE_TOOLTIP;
-      sub_label_text = IDS_ASH_PHONE_HUB_QUICK_ACTIONS_CONNECTING_STATE;
-      sub_label_color = AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kTextColorSecondary);
-      break;
-    case ActionState::kConnected:
-      icon_enabled = true;
-      button_enabled = true;
-      state_text_id = IDS_ASH_PHONE_HUB_QUICK_ACTIONS_CONNECTED_STATE_TOOLTIP;
-      sub_label_text = IDS_ASH_PHONE_HUB_QUICK_ACTIONS_CONNECTED_STATE;
-      sub_label_color = AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kTextColorPositive);
-      break;
-    case ActionState::kNoReception:
-      icon_enabled = false;
-      button_enabled = false;
-      state_text_id =
-          IDS_ASH_PHONE_HUB_ENABLE_HOTSPOT_NO_RECEPTION_STATE_TOOLTIP;
-      sub_label_text = IDS_ASH_PHONE_HUB_QUICK_ACTIONS_NOT_AVAILABLE_STATE;
-      sub_label_color = AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kTextColorSecondary);
-      break;
-  }
-
-  item_->SetToggled(icon_enabled);
-  item_->SetEnabled(button_enabled);
-  item_->SetSubLabel(l10n_util::GetStringUTF16(sub_label_text));
-  item_->SetSubLabelColor(sub_label_color);
-
-  if (state == ActionState::kNoReception) {
-    item_->SetTooltip(l10n_util::GetStringUTF16(state_text_id));
-  } else {
-    std::u16string tooltip_state =
-        l10n_util::GetStringFUTF16(state_text_id, item_->GetItemLabel());
-    item_->SetTooltip(l10n_util::GetStringFUTF16(
-        IDS_ASH_PHONE_HUB_QUICK_ACTIONS_TOGGLE_TOOLTIP, item_->GetItemLabel(),
-        tooltip_state));
-  }
 }
 
 }  // namespace ash

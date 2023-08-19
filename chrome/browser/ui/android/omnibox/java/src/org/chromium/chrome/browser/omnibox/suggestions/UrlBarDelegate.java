@@ -18,7 +18,5 @@ public interface UrlBarDelegate {
     /**
      * Returns {@code true} when the omnibox should be cleared on focus, {@code false} otherwise.
      */
-    default boolean shouldClearOmniboxOnFocus() {
-        return true;
-    }
+    boolean shouldClearOmniboxOnFocus();
 }

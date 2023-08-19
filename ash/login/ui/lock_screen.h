@@ -40,7 +40,7 @@ class ASH_EXPORT LockScreen : public TrayActionObserver,
     void AddOnShownCallback(base::OnceClosure on_shown);
 
    private:
-    const raw_ptr<LockScreen, ExperimentalAsh> lock_screen_;
+    const raw_ptr<LockScreen, DanglingUntriaged | ExperimentalAsh> lock_screen_;
   };
 
   // The UI that this instance is displaying.
@@ -100,8 +100,7 @@ class ASH_EXPORT LockScreen : public TrayActionObserver,
   std::unique_ptr<views::Widget> widget_;
 
   // Unowned pointer to the LockContentsView hosted in lock window.
-  raw_ptr<LockContentsView, DanglingUntriaged | ExperimentalAsh>
-      contents_view_ = nullptr;
+  raw_ptr<LockContentsView> contents_view_ = nullptr;
 
   bool is_shown_ = false;
 

@@ -25,6 +25,13 @@ public final class DeviceFeatureMap extends FeatureMap {
         return sInstance;
     }
 
+    /**
+     * Convenience method to call {@link #isEnabledInNative(String)} statically.
+     */
+    public static boolean isEnabled(String featureName) {
+        return getInstance().isEnabledInNative(featureName);
+    }
+
     @Override
     protected long getNativeMap() {
         return DeviceFeatureMapJni.get().getNativeMap();

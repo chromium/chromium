@@ -70,8 +70,6 @@ class CRCImpl : public CRC {  // Implementation of the abstract class CRC
   // The internal version of CRC::New().
   static CRCImpl* NewInternal();
 
-  void Empty(uint32_t* crc) const override;
-
   // Fill in a table for updating a CRC by one word of 'word_size' bytes
   // [last_lo, last_hi] contains the answer if the last bit in the word
   // is set.

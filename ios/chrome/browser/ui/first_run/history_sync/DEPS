@@ -1,3 +1,0 @@
-include_rules = [
-  "+ios/chrome/browser/ui/authentication/history_sync/history_sync_coordinator.h",
-]

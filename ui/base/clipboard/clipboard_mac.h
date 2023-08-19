@@ -8,9 +8,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/apple/foundation_util.h"
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
-#include "base/mac/foundation_util.h"
 #include "ui/base/clipboard/clipboard.h"
 
 @class NSPasteboard;

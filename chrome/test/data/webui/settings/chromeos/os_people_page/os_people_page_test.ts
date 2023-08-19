@@ -5,9 +5,7 @@
 import 'chrome://os-settings/os_settings.js';
 
 import {AccountManagerBrowserProxy, AccountManagerBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
-import {createPageAvailabilityForTesting, OsSettingsPeoplePageElement, PageStatus, ProfileInfoBrowserProxy, ProfileInfoBrowserProxyImpl, Router, routes, settingMojom, SyncBrowserProxy, SyncBrowserProxyImpl} from 'chrome://os-settings/os_settings.js';
-import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
+import {CrIconButtonElement, CrRadioGroupElement, OsSettingsPeoplePageElement, OsSettingsRoutes, PageStatus, ProfileInfoBrowserProxy, ProfileInfoBrowserProxyImpl, Router, routes, settingMojom, SyncBrowserProxy, SyncBrowserProxyImpl} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -15,11 +13,17 @@ import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {TestSyncBrowserProxy} from '../test_os_sync_browser_proxy.js';
 import {TestProfileInfoBrowserProxy} from '../test_profile_info_browser_proxy.js';
 
 import {TestAccountManagerBrowserProxy} from './test_account_manager_browser_proxy.js';
+
+interface SubpageTriggerData {
+  triggerSelector: string;
+  routeName: keyof OsSettingsRoutes;
+}
 
 suite('<os-settings-people-page>', () => {
   let peoplePage: OsSettingsPeoplePageElement;
@@ -27,6 +31,12 @@ suite('<os-settings-people-page>', () => {
   let syncBrowserProxy: SyncBrowserProxy&TestSyncBrowserProxy;
   let accountManagerBrowserProxy: AccountManagerBrowserProxy&
       TestAccountManagerBrowserProxy;
+
+  function createPage(): void {
+    peoplePage = document.createElement('os-settings-people-page');
+    document.body.appendChild(peoplePage);
+    flush();
+  }
 
   setup(() => {
     browserProxy = new TestProfileInfoBrowserProxy();
@@ -38,6 +48,8 @@ suite('<os-settings-people-page>', () => {
     accountManagerBrowserProxy = new TestAccountManagerBrowserProxy();
     AccountManagerBrowserProxyImpl.setInstanceForTesting(
         accountManagerBrowserProxy);
+
+    Router.getInstance().navigateTo(routes.OS_PEOPLE);
   });
 
   teardown(() => {
@@ -49,9 +61,7 @@ suite('<os-settings-people-page>', () => {
     loadTimeData.overrideValues({
       isAccountManagerEnabled: false,
     });
-    peoplePage = document.createElement('os-settings-people-page');
-    peoplePage.pageAvailability = createPageAvailabilityForTesting();
-    document.body.appendChild(peoplePage);
+    createPage();
 
     await browserProxy.whenCalled('getProfileInfo');
     await syncBrowserProxy.whenCalled('getSyncStatus');
@@ -91,7 +101,7 @@ suite('<os-settings-people-page>', () => {
 
     // Sub-page trigger is hidden.
     const element = peoplePage.shadowRoot!.querySelector<CrIconButtonElement>(
-        '#account-manager-subpage-trigger');
+        '#accountManagerSubpageTrigger');
     assertTrue(!!element);
     assertTrue(element.hidden);
   });
@@ -101,10 +111,7 @@ suite('<os-settings-people-page>', () => {
       // Simulate parental controls.
       showParentalControls: true,
     });
-
-    peoplePage = document.createElement('os-settings-people-page');
-    document.body.appendChild(peoplePage);
-    flush();
+    createPage();
 
     // Setup button is shown and enabled.
     assert(peoplePage.shadowRoot!.querySelector(
@@ -116,10 +123,7 @@ suite('<os-settings-people-page>', () => {
       // Simulate parental controls.
       showParentalControls: true,
     });
-
-    peoplePage = document.createElement('os-settings-people-page');
-    document.body.appendChild(peoplePage);
-    flush();
+    createPage();
 
     const params = new URLSearchParams();
     params.append(
@@ -139,9 +143,7 @@ suite('<os-settings-people-page>', () => {
   });
 
   test('Deep link to encryption options on old sync page', async () => {
-    peoplePage = document.createElement('os-settings-people-page');
-    document.body.appendChild(peoplePage);
-    flush();
+    createPage();
 
     // Load the sync page.
     Router.getInstance().navigateTo(routes.SYNC);
@@ -155,30 +157,46 @@ suite('<os-settings-people-page>', () => {
     syncPage.syncPrefs = {
       customPassphraseAllowed: true,
       passphraseRequired: false,
+      appsManaged: false,
       appsRegistered: false,
       appsSynced: false,
+      autofillManaged: false,
       autofillRegistered: false,
       autofillSynced: false,
+      bookmarksManaged: false,
       bookmarksRegistered: false,
       bookmarksSynced: false,
       encryptAllData: false,
+      extensionsManaged: false,
       extensionsRegistered: false,
       extensionsSynced: false,
+      passwordsManaged: false,
       passwordsRegistered: false,
       passwordsSynced: false,
-      paymentsIntegrationEnabled: false,
+      paymentsManaged: false,
+      paymentsRegistered: false,
+      paymentsSynced: false,
+      preferencesManaged: false,
       preferencesRegistered: false,
       preferencesSynced: false,
+      readingListManaged: false,
       readingListRegistered: false,
       readingListSynced: false,
+      savedTabGroupsManaged: false,
+      savedTabGroupsRegistered: false,
+      savedTabGroupsSynced: false,
       syncAllDataTypes: false,
+      tabsManaged: false,
       tabsRegistered: false,
       tabsSynced: false,
+      themesManaged: false,
       themesRegistered: false,
       themesSynced: false,
       trustedVaultKeysRequired: false,
+      typedUrlsManaged: false,
       typedUrlsRegistered: false,
       typedUrlsSynced: false,
+      wifiConfigurationsManaged: false,
       wifiConfigurationsRegistered: false,
       wifiConfigurationsSynced: false,
     };
@@ -227,9 +245,7 @@ suite('<os-settings-people-page>', () => {
       secondaryGoogleAccountSigninAllowed: true,
       osProfileName: fakeOsProfileName,
     });
-    peoplePage = document.createElement('os-settings-people-page');
-    peoplePage.pageAvailability = createPageAvailabilityForTesting();
-    document.body.appendChild(peoplePage);
+    createPage();
 
     await accountManagerBrowserProxy.whenCalled('getAccounts');
     await syncBrowserProxy.whenCalled('getSyncStatus');
@@ -264,12 +280,59 @@ suite('<os-settings-people-page>', () => {
     // Sub-page trigger is shown.
     const subpageTrigger =
         peoplePage.shadowRoot!.querySelector<CrIconButtonElement>(
-            '#account-manager-subpage-trigger');
+            '#accountManagerSubpageTrigger');
     assertTrue(!!subpageTrigger);
     assertFalse(subpageTrigger.hidden);
 
     // Sub-page trigger navigates to Google account manager.
     subpageTrigger.click();
     assertEquals(routes.ACCOUNT_MANAGER, Router.getInstance().currentRoute);
+  });
+
+  const subpageTriggerData: SubpageTriggerData[] = [
+    {
+      triggerSelector: '#syncSetupRow',
+      routeName: 'SYNC',
+    },
+    {
+      triggerSelector: '#accountManagerSubpageTrigger',
+      routeName: 'ACCOUNT_MANAGER',
+    },
+  ];
+  subpageTriggerData.forEach(({triggerSelector, routeName}) => {
+    test(
+        `Row for ${routeName} is focused when returning from subpage`,
+        async () => {
+          loadTimeData.overrideValues({
+            isAccountManagerEnabled: true,
+            // settings-account-manager-subpage requires this to have a value.
+            secondaryGoogleAccountSigninAllowed: true,
+            osProfileName: 'Currently signed in as Walter White',
+          });
+          createPage();
+
+          await accountManagerBrowserProxy.whenCalled('getAccounts');
+          await syncBrowserProxy.whenCalled('getSyncStatus');
+          flush();
+
+          const subpageTrigger =
+              peoplePage.shadowRoot!.querySelector<HTMLElement>(
+                  triggerSelector);
+          assertTrue(!!subpageTrigger);
+
+          // Sub-page trigger navigates to subpage for route
+          subpageTrigger.click();
+          assertEquals(routes[routeName], Router.getInstance().currentRoute);
+
+          // Navigate back
+          const popStateEventPromise = eventToPromise('popstate', window);
+          Router.getInstance().navigateToPreviousRoute();
+          await popStateEventPromise;
+          await waitAfterNextRender(peoplePage);
+
+          assertEquals(
+              subpageTrigger, peoplePage.shadowRoot!.activeElement,
+              `${triggerSelector} should be focused.`);
+        });
   });
 });

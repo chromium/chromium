@@ -40,7 +40,8 @@ class IntentFilterUtilTest : public testing::Test {
     intent_filter->AddSingleValueCondition(apps::ConditionType::kScheme, scheme,
                                            apps::PatternMatchType::kLiteral);
 
-    intent_filter->AddSingleValueCondition(apps::ConditionType::kHost, host,
+    intent_filter->AddSingleValueCondition(apps::ConditionType::kAuthority,
+                                           host,
                                            apps::PatternMatchType::kLiteral);
 
     intent_filter->AddSingleValueCondition(apps::ConditionType::kPath, path,
@@ -52,17 +53,37 @@ class IntentFilterUtilTest : public testing::Test {
   apps::IntentFilterPtr MakeHostOnlyFilter(std::string host,
                                            apps::PatternMatchType pattern) {
     auto intent_filter = std::make_unique<apps::IntentFilter>();
-    intent_filter->AddSingleValueCondition(apps::ConditionType::kHost, host,
-                                           pattern);
+    intent_filter->AddSingleValueCondition(apps::ConditionType::kAuthority,
+                                           host, pattern);
 
     return intent_filter;
+  }
+
+  void MakeHostSuffixMatching(apps::IntentFilterPtr& intent_filter) {
+    for (apps::ConditionPtr& condition : intent_filter->conditions) {
+      if (condition->condition_type != apps::ConditionType::kAuthority) {
+        continue;
+      }
+      for (apps::ConditionValuePtr& condition_value :
+           condition->condition_values) {
+        condition_value->match_type = apps::PatternMatchType::kSuffix;
+      }
+    }
+  }
+
+  bool TestOverlapInBothDirections(
+      const apps::IntentFilterPtr& intent_filter1,
+      const apps::IntentFilterPtr& intent_filter2) {
+    return apps_util::FiltersHaveOverlap(intent_filter1, intent_filter2) &&
+           apps_util::FiltersHaveOverlap(intent_filter2, intent_filter1);
   }
 };
 
 TEST_F(IntentFilterUtilTest, EmptyConditionList) {
   auto intent_filter = std::make_unique<apps::IntentFilter>();
 
-  EXPECT_EQ(intent_filter->GetSupportedLinksForAppManagement().size(), 0u);
+  EXPECT_EQ(apps_util::GetSupportedLinksForAppManagement(intent_filter).size(),
+            0u);
 }
 
 TEST_F(IntentFilterUtilTest, SingleHostAndManyPaths) {
@@ -72,12 +93,12 @@ TEST_F(IntentFilterUtilTest, SingleHostAndManyPaths) {
                                          url::kHttpScheme,
                                          apps::PatternMatchType::kLiteral);
 
-  intent_filter->AddSingleValueCondition(apps::ConditionType::kHost,
+  intent_filter->AddSingleValueCondition(apps::ConditionType::kAuthority,
                                          kHostUrlGoogle,
                                          apps::PatternMatchType::kLiteral);
 
   std::set<std::string> links =
-      intent_filter->GetSupportedLinksForAppManagement();
+      apps_util::GetSupportedLinksForAppManagement(intent_filter);
 
   EXPECT_EQ(links.size(), 0u);
 
@@ -85,7 +106,7 @@ TEST_F(IntentFilterUtilTest, SingleHostAndManyPaths) {
                                          kPathLiteral,
                                          apps::PatternMatchType::kLiteral);
 
-  links = intent_filter->GetSupportedLinksForAppManagement();
+  links = apps_util::GetSupportedLinksForAppManagement(intent_filter);
 
   EXPECT_EQ(links.size(), 1u);
   EXPECT_EQ(links.count(kUrlGoogleLiteral), 1u);
@@ -93,7 +114,7 @@ TEST_F(IntentFilterUtilTest, SingleHostAndManyPaths) {
   intent_filter->AddSingleValueCondition(
       apps::ConditionType::kPath, kPathPrefix, apps::PatternMatchType::kPrefix);
 
-  links = intent_filter->GetSupportedLinksForAppManagement();
+  links = apps_util::GetSupportedLinksForAppManagement(intent_filter);
 
   EXPECT_EQ(links.size(), 2u);
   EXPECT_EQ(links.count(kUrlGoogleLiteral), 1u);
@@ -102,7 +123,7 @@ TEST_F(IntentFilterUtilTest, SingleHostAndManyPaths) {
   intent_filter->AddSingleValueCondition(apps::ConditionType::kPath, kPathGlob,
                                          apps::PatternMatchType::kGlob);
 
-  links = intent_filter->GetSupportedLinksForAppManagement();
+  links = apps_util::GetSupportedLinksForAppManagement(intent_filter);
 
   EXPECT_EQ(links.size(), 3u);
   EXPECT_EQ(links.count(kUrlGoogleLiteral), 1u);
@@ -115,7 +136,7 @@ TEST_F(IntentFilterUtilTest, InvalidScheme) {
                                   apps::PatternMatchType::kLiteral);
 
   std::set<std::string> links =
-      intent_filter->GetSupportedLinksForAppManagement();
+      apps_util::GetSupportedLinksForAppManagement(intent_filter);
 
   EXPECT_EQ(links.size(), 0u);
 }
@@ -136,14 +157,14 @@ TEST_F(IntentFilterUtilTest, ManyHostsAndOnePath) {
       kHostUrlGmail, apps::PatternMatchType::kLiteral));
 
   intent_filter->conditions.push_back(std::make_unique<apps::Condition>(
-      apps::ConditionType::kHost, std::move(condition_values)));
+      apps::ConditionType::kAuthority, std::move(condition_values)));
 
   intent_filter->AddSingleValueCondition(apps::ConditionType::kPath,
                                          kPathLiteral,
                                          apps::PatternMatchType::kLiteral);
 
   std::set<std::string> links =
-      intent_filter->GetSupportedLinksForAppManagement();
+      apps_util::GetSupportedLinksForAppManagement(intent_filter);
 
   EXPECT_EQ(links.size(), 2u);
   EXPECT_EQ(links.count(kUrlGoogleLiteral), 1u);
@@ -165,7 +186,7 @@ TEST_F(IntentFilterUtilTest, ManyHostsAndManyPaths) {
       kHostUrlGmail, apps::PatternMatchType::kLiteral));
 
   intent_filter->conditions.push_back(std::make_unique<apps::Condition>(
-      apps::ConditionType::kHost, std::move(host_condition_values)));
+      apps::ConditionType::kAuthority, std::move(host_condition_values)));
 
   std::vector<apps::ConditionValuePtr> path_condition_values;
 
@@ -180,7 +201,7 @@ TEST_F(IntentFilterUtilTest, ManyHostsAndManyPaths) {
       apps::ConditionType::kPath, std::move(path_condition_values)));
 
   std::set<std::string> links =
-      intent_filter->GetSupportedLinksForAppManagement();
+      apps_util::GetSupportedLinksForAppManagement(intent_filter);
 
   EXPECT_EQ(links.size(), 6u);
   EXPECT_EQ(links.count(kUrlGoogleLiteral), 1u);
@@ -198,14 +219,14 @@ TEST_F(IntentFilterUtilTest, WildcardHost) {
   intent_filter->AddSingleValueCondition(apps::ConditionType::kScheme,
                                          url::kHttpScheme,
                                          apps::PatternMatchType::kLiteral);
-  intent_filter->AddSingleValueCondition(apps::ConditionType::kHost, host,
+  intent_filter->AddSingleValueCondition(apps::ConditionType::kAuthority, host,
                                          apps::PatternMatchType::kSuffix);
   intent_filter->AddSingleValueCondition(apps::ConditionType::kPath,
                                          kPathLiteral,
                                          apps::PatternMatchType::kLiteral);
 
   std::set<std::string> links =
-      intent_filter->GetSupportedLinksForAppManagement();
+      apps_util::GetSupportedLinksForAppManagement(intent_filter);
 
   EXPECT_EQ(links.size(), 1u);
   EXPECT_EQ(links.count("*.google.com/a"), 1u);
@@ -216,7 +237,7 @@ TEST_F(IntentFilterUtilTest, HttpsScheme) {
       MakeFilter(url::kHttpsScheme, kHostUrlGoogle, kPathLiteral,
                  apps::PatternMatchType::kLiteral);
   std::set<std::string> links =
-      intent_filter->GetSupportedLinksForAppManagement();
+      apps_util::GetSupportedLinksForAppManagement(intent_filter);
 
   EXPECT_EQ(links.size(), 1u);
   EXPECT_EQ(links.count(kUrlGoogleLiteral), 1u);
@@ -236,7 +257,7 @@ TEST_F(IntentFilterUtilTest, HttpAndHttpsSchemes) {
   intent_filter->conditions.push_back(std::make_unique<apps::Condition>(
       apps::ConditionType::kScheme, std::move(condition_values)));
 
-  intent_filter->AddSingleValueCondition(apps::ConditionType::kHost,
+  intent_filter->AddSingleValueCondition(apps::ConditionType::kAuthority,
                                          kHostUrlGoogle,
                                          apps::PatternMatchType::kLiteral);
 
@@ -245,7 +266,7 @@ TEST_F(IntentFilterUtilTest, HttpAndHttpsSchemes) {
                                          apps::PatternMatchType::kLiteral);
 
   std::set<std::string> links =
-      intent_filter->GetSupportedLinksForAppManagement();
+      apps_util::GetSupportedLinksForAppManagement(intent_filter);
 
   EXPECT_EQ(links.size(), 1u);
   EXPECT_EQ(links.count(kUrlGoogleLiteral), 1u);
@@ -258,7 +279,7 @@ TEST_F(IntentFilterUtilTest, PathsWithNoSlash) {
                                          url::kHttpScheme,
                                          apps::PatternMatchType::kLiteral);
 
-  intent_filter->AddSingleValueCondition(apps::ConditionType::kHost,
+  intent_filter->AddSingleValueCondition(apps::ConditionType::kAuthority,
                                          "m.youtube.com",
                                          apps::PatternMatchType::kLiteral);
 
@@ -272,7 +293,7 @@ TEST_F(IntentFilterUtilTest, PathsWithNoSlash) {
                                          apps::PatternMatchType::kPrefix);
 
   std::set<std::string> links =
-      intent_filter->GetSupportedLinksForAppManagement();
+      apps_util::GetSupportedLinksForAppManagement(intent_filter);
 
   EXPECT_EQ(links.size(), 3u);
   EXPECT_EQ(links.count("m.youtube.com/*"), 1u);
@@ -308,7 +329,7 @@ TEST_F(IntentFilterUtilTest, NotSupportedLink) {
                                        apps::PatternMatchType::kLiteral);
   host_filter->AddSingleValueCondition(apps::ConditionType::kScheme, "https",
                                        apps::PatternMatchType::kLiteral);
-  host_filter->AddSingleValueCondition(apps::ConditionType::kHost,
+  host_filter->AddSingleValueCondition(apps::ConditionType::kAuthority,
                                        "www.example.com",
                                        apps::PatternMatchType::kLiteral);
   ASSERT_FALSE(apps_util::IsSupportedLinkForApp(kAppId, browser_filter));
@@ -324,9 +345,9 @@ TEST_F(IntentFilterUtilTest, HostMatchOverlapLiteralAndNone) {
   ASSERT_FALSE(
       apps_util::FiltersHaveOverlap(maps_domain_filter, google_domain_filter));
 
-  apps_util::AddConditionValue(apps::ConditionType::kHost, "www.google.com",
-                               apps::PatternMatchType::kLiteral,
-                               maps_domain_filter);
+  apps_util::AddConditionValue(
+      apps::ConditionType::kAuthority, "www.google.com",
+      apps::PatternMatchType::kLiteral, maps_domain_filter);
 
   ASSERT_TRUE(
       apps_util::FiltersHaveOverlap(maps_domain_filter, google_domain_filter));
@@ -370,6 +391,46 @@ TEST_F(IntentFilterUtilTest, HostMatchOverlapSuffix) {
                                             wikipedia_other_wildcard_filter));
   ASSERT_TRUE(apps_util::FiltersHaveOverlap(wikipedia_wildcard_filter,
                                             wikipedia_subsubdomain_filter));
+}
+
+TEST_F(IntentFilterUtilTest, AuthorityOverlap) {
+  apps::IntentFilterPtr no_port = apps_util::MakeIntentFilterForUrlScope(
+      GURL("https://www.example.com"), /*omit_port_for_testing=*/true);
+  apps::IntentFilterPtr default_port =
+      apps_util::MakeIntentFilterForUrlScope(GURL("https://www.example.com"));
+  apps::IntentFilterPtr explicit_port = apps_util::MakeIntentFilterForUrlScope(
+      GURL("https://www.example.com:443"));
+  apps::IntentFilterPtr different_port = apps_util::MakeIntentFilterForUrlScope(
+      GURL("https://www.example.com:1234"));
+  EXPECT_TRUE(TestOverlapInBothDirections(no_port, default_port));
+  EXPECT_TRUE(TestOverlapInBothDirections(no_port, explicit_port));
+  EXPECT_TRUE(TestOverlapInBothDirections(no_port, different_port));
+
+  EXPECT_TRUE(TestOverlapInBothDirections(default_port, explicit_port));
+
+  EXPECT_FALSE(TestOverlapInBothDirections(default_port, different_port));
+  EXPECT_FALSE(TestOverlapInBothDirections(explicit_port, different_port));
+
+  apps::IntentFilterPtr suffix_no_port =
+      apps_util::MakeIntentFilterForUrlScope(GURL("https://example.com"),
+                                             /*omit_port_for_testing=*/true);
+  MakeHostSuffixMatching(suffix_no_port);
+
+  apps::IntentFilterPtr suffix_different_port =
+      apps_util::MakeIntentFilterForUrlScope(GURL("https://example.com:1234"));
+  MakeHostSuffixMatching(suffix_different_port);
+
+  apps::IntentFilterPtr subdomain_default_port =
+      apps_util::MakeIntentFilterForUrlScope(
+          GURL("https://subdomain.example.com"));
+
+  EXPECT_TRUE(TestOverlapInBothDirections(suffix_no_port, default_port));
+  EXPECT_TRUE(
+      TestOverlapInBothDirections(suffix_no_port, subdomain_default_port));
+  EXPECT_FALSE(
+      TestOverlapInBothDirections(suffix_different_port, default_port));
+  EXPECT_FALSE(TestOverlapInBothDirections(suffix_different_port,
+                                           subdomain_default_port));
 }
 
 TEST_F(IntentFilterUtilTest, PatternMatchOverlap) {

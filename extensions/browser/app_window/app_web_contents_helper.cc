@@ -5,10 +5,10 @@
 #include "extensions/browser/app_window/app_web_contents_helper.h"
 
 #include "base/strings/stringprintf.h"
-#include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/input/native_web_keyboard_event.h"
 #include "extensions/browser/app_window/app_delegate.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/suggest_permission_util.h"

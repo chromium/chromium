@@ -1,0 +1,318 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// API and definitions exposed by the Telemetry Routine Services. This API is
+// normally consumed by the Telemetry Extension APIs implementation.
+
+// Note: this is a subset of the cros_healthd routine service interface which is
+// located in
+// //chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_routines.mojom
+// This interface serves as PII filtering and data post-processing service
+// between the source (cros_healthd) and the clients
+// (third-party telemetry extensions).
+//
+// This interface is in the process of being synced to Chromium from ChromiumOS.
+// Thus, we have the following routines that are supported by cros_healthd in
+// ChromiumOS but not yet part of this crosapi interface (in both
+// `TelemetryDiagnosticRoutineArgument` and `TelemetryDiagnosticRoutineDetail`):
+// - Memory routine
+// - Audio driver routine
+// - Cpu stress routine
+// - Ufs lifetime routine
+// - Disk read routine
+// - Cpu cache routine
+// - Prime search routine
+// - Volume button routine
+// - Led lit up routine
+
+module crosapi.mojom;
+
+import "chromeos/crosapi/mojom/telemetry_extension_exception.mojom";
+
+// This routine checks whether there is any memory problem by
+// reading/writing different patterns.
+//
+// NextMinVersion: 1, NextIndex: 1
+[Stable]
+struct TelemetryDiagnosticMemoryRoutineArgument {
+  // An optional field to indicate how much memory should be tested. If the
+  // value is null, memory test will run with as much memory as possible.
+  uint32? max_testing_mem_kib@0;
+};
+
+// Argument types for the possible routines the routine control API can create.
+//
+// NextMinVersion: 1, NextIndex: 1
+[Stable, Extensible]
+union TelemetryDiagnosticRoutineArgument {
+  // Default field is required by extensible unions for backward compatibility.
+  // Any unrecognized Mojo field will deserialize to this field. Don't use this.
+  [Default] bool unrecognizedArgument @0;
+  // Arguments to create a memory routine.
+  [MinVersion=1] TelemetryDiagnosticMemoryRoutineArgument memory@1;
+};
+
+// Routine has been initialized but not yet started.
+//
+// NextMinVersion: 1, NextIndex: 0
+[Stable]
+struct TelemetryDiagnosticRoutineStateInitialized {};
+
+// Routine is currently running.
+//
+// NextMinVersion: 1, NextIndex: 0
+[Stable]
+struct TelemetryDiagnosticRoutineStateRunning {};
+
+// Routine is currently waiting.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
+struct TelemetryDiagnosticRoutineStateWaiting {
+  // The reason why the routine waits.
+  //
+  // NextMinVersion: 1, NextIndex: 3
+  [Stable, Extensible]
+  enum Reason {
+    [Default] kUnmappedEnumField = 0,
+    // Waiting for the job to be scheduled for running.
+    kWaitingToBeScheduled = 1,
+    // Waiting for user input.
+    kWaitingUserInput = 2,
+  };
+  // Reason why the routine waits.
+  Reason reason@0;
+  // Additional information, may be used to pass instruction or explanation.
+  string message@1;
+};
+
+// Enumeration of each possible memtester test item.
+//
+// NextMinVersion: 1, NextIndex: 20
+[Stable, Extensible]
+enum TelemetryDiagnosticMemtesterTestItemEnum {
+  [Default] kUnmappedEnumField = 0,
+  // The memtester test is not recognized.
+  kUnknown = 1,
+
+  // Test that all memory addresses to be tested can be set to itself and its
+  // complement.
+  kStuckAddress = 2,
+
+  // These tests test different operation of a random int64 with buffer
+  // initialized as 0xFFFFFFFF, repeating over 64 bit blocks.
+  // Perform AND operation.
+  kCompareAND = 3,
+  // Perform DIV operation.
+  kCompareDIV = 4,
+  // Perform MUL operation.
+  kCompareMUL = 5,
+  // Perform OR operation.
+  kCompareOR = 6,
+  // Perform SUB operation.
+  kCompareSUB = 7,
+  // Perform XOR operation.
+  kCompareXOR = 8,
+  // Perform ADD operation.
+  kSequentialIncrement = 9,
+
+  // These tests test setting memory regions in a certain pattern, repeating
+  // over each 64 bit blocks.
+  // Test Pattern: |0*10*| and |1*01*|.
+  kBitFlip = 10,
+  // Test Pattern:|0*1010*| and |1*0101*|.
+  kBitSpread = 11,
+  // Test Pattern: all 256 possible combinations of a 8 bit block, repeated 8
+  // times.
+  kBlockSequential = 12,
+  // Test Pattern: Alternating 0 and 1.
+  kCheckerboard = 13,
+  // Test Pattern: Random 64 bits.
+  kRandomValue = 14,
+  // Test Pattern: all 0s and all 1s.
+  kSolidBits = 15,
+  // Test Pattern: |0*10*|.
+  kWalkingOnes = 16,
+  // Test Pattern: |1*01*|.
+  kWalkingZeroes = 17,
+
+  // These tests test writing random n bit words across the memory regions.
+  // Test Pattern: 8 bit random words.
+  k8BitWrites = 18,
+  // Test Pattern: 16 bit random words.
+  k16BitWrites = 19,
+};
+
+// Result from running memtester.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
+struct TelemetryDiagnosticMemtesterResult {
+  // Tests that have passed.
+  array<TelemetryDiagnosticMemtesterTestItemEnum> passed_items@0;
+  // Tests that have failed.
+  array<TelemetryDiagnosticMemtesterTestItemEnum> failed_items@1;
+};
+
+// Details regarding memory routine.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
+struct TelemetryDiagnosticMemoryRoutineDetail {
+  // Number of bytes tested in the memory routine.
+  uint64 bytes_tested@0;
+  // Contains the memtester test results.
+  TelemetryDiagnosticMemtesterResult result@1;
+};
+
+// Details about a finished routine.
+//
+// NextMinVersion: 2, NextIndex: 2
+[Stable]
+union TelemetryDiagnosticRoutineDetail {
+  // Default field is required by extensible unions for backward compatibility.
+  // Any unrecognized Mojo field will deserialize to this field. Don't use this.
+  [Default] bool unrecognizedArgument@0;
+  // Details of a completed memory routine.
+  [MinVersion=1] TelemetryDiagnosticMemoryRoutineDetail memory@1;
+};
+
+// Information about a finished routine.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
+struct TelemetryDiagnosticRoutineStateFinished {
+  // Whether the routine has passed or not.
+  bool has_passed@0;
+  // The details of the routine.
+  TelemetryDiagnosticRoutineDetail? detail@1;
+};
+
+// Possible routine states.
+//
+// NextMinVersion: 1, NextIndex: 4
+[Stable]
+union TelemetryDiagnosticRoutineStateUnion {
+  // Default field is required by extensible unions for backward compatibility.
+  // Any unrecognized Mojo field will deserialize to this field. Don't use this.
+  [Default] bool unrecognizedArgument @0;
+  // Routine has been initialized but not yet started.
+  TelemetryDiagnosticRoutineStateInitialized initialized@1;
+  // Routine is running.
+  TelemetryDiagnosticRoutineStateRunning running@2;
+  // Routine is waiting for something.
+  TelemetryDiagnosticRoutineStateWaiting waiting@3;
+  // Routine has finished.
+  TelemetryDiagnosticRoutineStateFinished finished@4;
+};
+
+// Used to pass information regarding routine state.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
+struct TelemetryDiagnosticRoutineState {
+  // The percentage of the completion of the routine. 0 to 100.
+  uint8 percentage@0;
+
+  TelemetryDiagnosticRoutineStateUnion state_union@1;
+};
+
+// Interface exposed to clients for controlling a routine.
+//
+// Error Handling:
+// Please check the Error Handling section of
+// TelemetryDiagnosticRoutinesService.
+//
+// NextMinVersion: 2, NextIndex: 2
+[Stable]
+interface TelemetryDiagnosticRoutineControl {
+  // Gets the current state of the routine. Note that if the routine fails to
+  // initialize, the RoutineControl will disconnect before the callback is
+  // called.
+  [MinVersion=1] GetState@0() => (TelemetryDiagnosticRoutineState state);
+
+  // Starts the routine. Each routine can only be started once. Calling this
+  // method multiple times results in no-ops.
+  //
+  // See the error handling section above to know how to handle possible
+  // exceptions that occur before and after the routine has been started.
+  [MinVersion=1] Start@1();
+};
+
+// Implemented by clients who desire routine update notifications.
+//
+// NextMinVersion: 1, NextIndex: 1
+[Stable]
+interface TelemetryDiagnosticRoutineObserver {
+  // Called when the routine state has changed. This is also called as soon
+  // as a routine is initialized (right after calling `CreateRoutine`).
+  // Note that if the routine fails to initialize, the
+  // TelemetryDiagnosticRoutineControl may disconnect before the first
+  // invocation of this observer method.
+  [MinVersion=1] OnRoutineStateChange@0(TelemetryDiagnosticRoutineState state);
+};
+
+// Diagnostic Routines interface exposed to Lacros, implemented in Ash.
+//
+// NextMinVersion: 3, NextIndex: 2
+[Stable, Uuid="0c7a9109-17eb-459d-82cd-60903bba315d"]
+interface TelemetryDiagnosticRoutinesService {
+  // Requests that a routine using the RoutineControl API is created on the
+  // platform. This function creates a different routine based on the
+  // RoutineArgument supplied.
+  //
+  // Error Handling:
+  // This method will result in the creation of the routine on the device, which
+  // might require allocation of additional resources and checking preconditions
+  // for the routine, e.g. available hardware, correct arguments, etc.
+  //
+  // All exceptions that occur (either during initialization or while executing
+  // the routine) will close the connection to the provided
+  // TelemetryDiagnosticRoutineControl with a specific reason (see
+  // crosapi.mojom.TelemetryExtensionException) and a string message containing
+  // human readable information about the exception.
+  // For that reason it is necessary to always setup a disconnect handler on the
+  // TelemetryDiagnosticRoutineControl remote to be informed about potential
+  // exceptions.
+  //
+  // Please note exceptions are different from a routine reporting `has_passed
+  // == false` (in case it failed, see TelemetryDiagnosticRoutineStateFinished).
+  // Exception are something not intended to happen. The details of the reasons
+  // for Exceptions can be found in crosapi.mojom.TelemetryExtensionException
+  // type and the corresponding reason enum.
+  //
+  // To know if an exception occurs during the initialization, callers can wait
+  // for the routine being initialized (get via `GetState` or
+  // TelemetryDiagnosticRoutineObserver) on the
+  // TelemetryDiagnosticRoutineControl remote, before calling the `Start`
+  // method.
+  //
+  // The request:
+  // * |routine_argument| - a RoutineArgument type that provides all the
+  //                        necessary parameters and configs to create a
+  //                        particular type of routine.
+  // * |routine_receiver| - a receiver that will be bound to the actual routine
+  //                        control implementation, where the remote will be
+  //                        held by the client for starting the routine.
+  //
+  // * |routine_observer| - an optional observer to receive status updates about
+  //                        changing routine states.
+  [MinVersion=1] CreateRoutine@0(
+      TelemetryDiagnosticRoutineArgument routine_argument,
+      pending_receiver<TelemetryDiagnosticRoutineControl> routine_receiver,
+      pending_remote<TelemetryDiagnosticRoutineObserver>? routine_observer);
+
+  // Checks whether a given `TelemetryDiagnosticRoutineArgument` is supported.
+  //
+  // The request:
+  // * |routine_argument| - a TelemetryDiagnosticRoutineArgument type that
+  //                        provides all the necessary parameters to create a
+  //                        particular type of routine.
+  //
+  // The response:
+  // * |status| - See the documentation of `TelemetryExtensionSupportStatus`.
+  [MinVersion=2] IsRoutineArgumentSupported@1(
+      TelemetryDiagnosticRoutineArgument routine_argument) =>
+        (TelemetryExtensionSupportStatus status);
+};

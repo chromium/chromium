@@ -10,17 +10,21 @@ import android.print.PrintAttributes;
 import android.util.Log;
 import android.view.ViewGroup;
 
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 
 /**
  * Export the android webview as a PDF.
- * @TODO(sgurun) explain the ownership of this class and its native counterpart
+ *
+ * Owned by Java-side AwContents. This object is lazy-instantiated when needed
+ * and receives a pointer to the native counterpart, which is owned by the
+ * native side of AwContents.
  */
+@Lifetime.WebView
 @JNINamespace("android_webview")
 public class AwPdfExporter {
-
     private static final String TAG = "AwPdfExporter";
     private long mNativeAwPdfExporter;
     // TODO(sgurun) result callback should return an int/object indicating errors.

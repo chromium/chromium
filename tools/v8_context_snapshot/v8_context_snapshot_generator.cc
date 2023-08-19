@@ -34,6 +34,9 @@ class SnapshotPlatform final : public blink::Platform {
 // % v8_context_snapshot_generator --output_file=<filename>
 int main(int argc, char** argv) {
   base::AtExitManager at_exit;
+
+  const bool kRemoveRecognizedFlags = true;
+  v8::V8::SetFlagsFromCommandLine(&argc, argv, kRemoveRecognizedFlags);
   base::CommandLine::Init(argc, argv);
 #ifdef V8_USE_EXTERNAL_STARTUP_DATA
   gin::V8Initializer::LoadV8Snapshot();

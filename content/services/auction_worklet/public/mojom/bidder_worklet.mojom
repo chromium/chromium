@@ -108,7 +108,7 @@ struct BidderWorkletBid {
   // 'adCost' returned by generateBid, if any.
   double? ad_cost;
 
-  // Render URL of the bid.
+  // Render URL of the bid, plus sizing information.
   blink.mojom.AdDescriptor ad_descriptor;
 
   // Ad components associated with bid, if any. These allow a single ad to be
@@ -396,10 +396,18 @@ interface BidderWorklet {
   //  if this worklet is running as part of a component (nested) Auction.
   //  Null, otherwise.
   //
+  //  `browser_signal_recency` The duration of time from when this device
+  //  joined this interest group until now, rounded to the nearest 100ms.
+  //
   // `bidding_browser_signals` See BiddingBrowserSignals.
   //
   // `auction_start_time` The time the auction started, used to ensure the
   //  last win times provided to all worklets are relative to the same time.
+  //
+  //  `requested_ad_size` The size of the ad slot requested in the initial
+  //  auction configuration. Will be passed into the buyer-side JS. Optional
+  //  because requested size is optional in the originating auction
+  //  configuration, and therefore not required to generate bids.
   //
   // `trace_id` ID of a nestable asynchronous trace event of category `fledge`
   //  to use with tracing calls.
@@ -417,8 +425,10 @@ interface BidderWorklet {
       url.mojom.Url? direct_from_seller_auction_signals,
       url.mojom.Origin browser_signal_seller_origin,
       url.mojom.Origin? browser_signal_top_level_seller_origin,
+      mojo_base.mojom.TimeDelta browser_signal_recency,
       BiddingBrowserSignals bidding_browser_signals,
       mojo_base.mojom.Time auction_start_time,
+      blink.mojom.AdSize? requested_ad_size,
       uint64 trace_id,
       pending_associated_remote<GenerateBidClient> generate_bid_client,
       pending_associated_receiver<GenerateBidFinalizer> bid_finalizer);
@@ -440,8 +450,8 @@ interface BidderWorklet {
   //  signal has been provided to ReportWin(), corresponding to either the
   //  interest group name or a field on the registered ad itself.
   //
-  //  `reporting_id` The string value of the field described by
-  //   `reporting_id_field`.
+  // `reporting_id` The string value of the field described by
+  //  `reporting_id_field`.
   //
   // `auction_signals_json` The JSON representation of the auction signals for
   //  the auction, if specified by the publisher page and provided to bidder
@@ -455,19 +465,19 @@ interface BidderWorklet {
   //  publisher page. Null will be passed to the worklet in that case.
   //
   // `direct_from_seller_per_buyer_signals` The subresource URL of the
-  // DirectFromSellerSignals for the specific owner of this interest group, as
-  // produced by concatenating the `directFromSellerSignals` URL prefix field
-  // passed from runAdAuction() with "?perBuyerSignals=[buyer]" for the
-  // URL-encoded buyer origin for this buyer. Since this is fetched from a
-  // subresource bundle, it may only be fetched using the URLLoaderFactory
-  // passed in when creating the worklet.
+  //  DirectFromSellerSignals for the specific owner of this interest group, as
+  //  produced by concatenating the `directFromSellerSignals` URL prefix field
+  //  passed from runAdAuction() with "?perBuyerSignals=[buyer]" for the
+  //  URL-encoded buyer origin for this buyer. Since this is fetched from a
+  //  subresource bundle, it may only be fetched using the URLLoaderFactory
+  //  passed in when creating the worklet.
   //
   // `direct_from_seller_auction_signals` The subresource URL of the
-  // DirectFromSellerSignals for the seller and all buyers, as produced by
-  // concatenating the `directFromSellerSignals` URL prefix field passed from
-  // runAdAuction() with "?auctionSignals". Since this is fetched from a
-  // subresource bundle, it may only be fetched using the URLLoaderFactory
-  // passed in when creating the worklet.
+  //  DirectFromSellerSignals for the seller and all buyers, as produced by
+  //  concatenating the `directFromSellerSignals` URL prefix field passed from
+  //  runAdAuction() with "?auctionSignals". Since this is fetched from a
+  //  subresource bundle, it may only be fetched using the URLLoaderFactory
+  //  passed in when creating the worklet.
   //
   // `seller_signals_json` is a JSON representation of the object returned by
   //  the seller worklet's ReportResult method.
@@ -476,22 +486,24 @@ interface BidderWorklet {
   //  the bidding function with only ads that are k-anonymous and produce an
   //  alternative bid.
   //
+  // `bid_is_kanon` is a boolean flag to show if the winner bid is k-anonymous.
+  //
   // `browser_signal_render_url` is the `render_url` returned by the
   //  BidderWorklet's generateBid() method, invoked as part of BidderWorklet
   //  creation.
   //
-  // `browser_signal_bid` The numeric value of the winning bid. This is always
-  //  in the bidder's own currency.
+  // `browser_signal_bid` The stochastically rounded numeric value of the
+  //  winning bid. This is always in the bidder's own currency.
   //
   // `browser_signal_bid_currency` Currency for the winning bid.
   //  The client should redact the currency if it's not guaranteed by the
   //  auction configuration to avoid leaking information.
   //
-  // `browser_signal_highest_scoring_other_bid` The numeric value of the bid
-  //  that got the second highest score, or 0 if it's not available, either
-  //  because there is no such thing or because sellerCurrency is enabled, and
-  //  the relevant bid was in a different currency without scoreAd providing
-  //  a conversion for it.
+  // `browser_signal_highest_scoring_other_bid` The stochastically rounded
+  //  numeric value of the bid that got the second highest score, or 0 if it's
+  //  not available, either because there is no such thing or because
+  //  sellerCurrency is enabled, and the relevant bid was in a different
+  //  currency without scoreAd providing a conversion for it.
   //
   // `browser_signal_highest_scoring_other_bid_currency` The currency associated
   //  with `browser_signal_highest_scoring_other_bid`. If a concrete value is
@@ -501,12 +513,19 @@ interface BidderWorklet {
   //  the interest group that ReportWin() is being invoked on behalf of made
   //  all the second-highest scoring bids in the auction.
   //
-  // `browser_signal_ad_cost` The numeric value of the adCost associated with
-  //  the winning bid, if specified by `generateBid()`.
+  // `browser_signal_ad_cost` The stochastically rounded numeric value of the
+  //  adCost associated with the winning bid, if specified by `generateBid()`.
   //
-  //  `browser_signal_modeling_signals` The masked and noised numeric value of
+  // `browser_signal_modeling_signals` The masked and noised numeric value of
   //  the modelingSignals associated with the winning bid, if specified by
   //  `generateBid()`.
+  //
+  // `browser_signal_join_count` The masked and noised number of times this
+  //  device has joined this interest group in the last 30 days while the
+  //  interest group has been continuously stored.
+  //
+  // `browser_signal_recency` The masked and noised duration of time
+  //  (in minutes) from when this device joined this interest group until now.
   //
   // `browser_signal_seller_origin` The origin of the seller script running
   //  the auction. Typically a valid, non-opaque HTTPS origin.
@@ -533,6 +552,9 @@ interface BidderWorklet {
   // `ad_beacon_map` The map of ad reporting events to URLs for fenced frame
   //  reporting.
   //
+  // `ad_macro_map` The map of ad macro names to macro values for macro support
+  //  in third party ad tracking.
+  //
   // `pa_requests` The various requests made to the Private Aggregation API.
   //
   // `reporting_latency` How long it took to run the JavaScript for
@@ -552,6 +574,7 @@ interface BidderWorklet {
       url.mojom.Url? direct_from_seller_auction_signals,
       string seller_signals_json,
       KAnonymityBidMode kanon_mode,
+      bool bid_is_kanon,
       url.mojom.Url browser_signal_render_url,
       double browser_signal_bid,
       blink.mojom.AdCurrency? browser_signal_bid_currency,
@@ -569,6 +592,7 @@ interface BidderWorklet {
       uint64 trace_id) => (
           url.mojom.Url? report_url,
           map<string, url.mojom.Url> ad_beacon_map,
+          map<string, string> ad_macro_map,
           array<PrivateAggregationRequest> pa_requests,
           mojo_base.mojom.TimeDelta reporting_latency,
           array<string> errors);

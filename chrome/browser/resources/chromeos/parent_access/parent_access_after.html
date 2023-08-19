@@ -4,7 +4,6 @@
   }
 
   #after-screen {
-    background-color: var(--cros-bg-color-elevation-1);
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -26,17 +25,21 @@
   }
 </style>
 
-<div id="after-screen">
-  <img class="google-logo" src="chrome://theme/IDR_LOGO_GOOGLE_COLOR_90"
-    alt="">
-  </img>
-  <div id="after-screen-body" aria-live="polite"></div>
-  <div id="after-screen-buttons">
-    <cr-button class="action-button" on-click="onParentApproved_">
-      $i18n{approveButtonText}
-    </cr-button>
-    <cr-button class="decline-button" on-click="onParentDeclined_">
-      $i18n{denyButtonText}
-    </cr-button>
-  </div>
-</div>
+<parent-access-template>
+  <span slot="main">
+    <div id="after-screen">
+      <img class="google-logo" src="chrome://theme/IDR_LOGO_GOOGLE_COLOR_90"
+        alt="">
+      </img>
+      <div id="after-screen-body" aria-live="polite"></div>
+      <div id="after-screen-buttons">
+        <cr-button class="action-button" on-click="onParentApproved_">
+          $i18n{approveButtonText}
+        </cr-button>
+        <cr-button class="decline-button" on-click="onParentDeclined_">
+          $i18n{denyButtonText}
+        </cr-button>
+      </div>
+    </div>
+  </span>
+</parent-access-template>

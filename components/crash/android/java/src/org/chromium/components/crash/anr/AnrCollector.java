@@ -46,7 +46,7 @@ public class AnrCollector {
     // SharedPrefs key for the timestamp from the last ANR we dealt with.
     private static final String ANR_TIMESTAMP_SHARED_PREFS_KEY = "ANR_ALREADY_UPLOADED_TIMESTAMP";
 
-    private static final String ANR_UPLOAD_UMA = "Crashpad.AnrUpload.Skipped";
+    private static final String ANR_SKIPPED_UMA = "Crashpad.AnrUpload.Skipped";
 
     /**
      * Grabs ANR reports from Android and writes them as 3-tuples as 3 entries in a string list.
@@ -114,7 +114,7 @@ public class AnrCollector {
             }
         } catch (IOException e) {
             Log.e(TAG, "Couldn't read ANR from system", e);
-            RecordHistogram.recordEnumeratedHistogram(ANR_UPLOAD_UMA,
+            RecordHistogram.recordEnumeratedHistogram(ANR_SKIPPED_UMA,
                     AnrSkippedReason.FILESYSTEM_READ_FAILURE, AnrSkippedReason.MAX_VALUE);
             return null;
         }
@@ -125,7 +125,7 @@ public class AnrCollector {
             // can't be be confident which version this ANR happened on. This would
             // happen if we ANRed before Chrome had set the process state summary.
             RecordHistogram.recordEnumeratedHistogram(
-                    ANR_UPLOAD_UMA, AnrSkippedReason.MISSING_VERSION, AnrSkippedReason.MAX_VALUE);
+                    ANR_SKIPPED_UMA, AnrSkippedReason.MISSING_VERSION, AnrSkippedReason.MAX_VALUE);
             return null;
         }
         String processStateSummary = new String(processStateSummaryBytes, StandardCharsets.UTF_8);
@@ -174,6 +174,11 @@ public class AnrCollector {
             String buildId = "";
             if (splitStateSummary.length > 1) {
                 buildId = splitStateSummary[1];
+                RecordHistogram.recordEnumeratedHistogram(
+                        ANR_SKIPPED_UMA, AnrSkippedReason.NOT_SKIPPED, AnrSkippedReason.MAX_VALUE);
+            } else {
+                RecordHistogram.recordEnumeratedHistogram(ANR_SKIPPED_UMA,
+                        AnrSkippedReason.ONLY_MISSING_NATIVE, AnrSkippedReason.MAX_VALUE);
             }
             String anrFileName = writeAnr(anr, outDir);
             if (anrFileName != null) {
@@ -196,7 +201,7 @@ public class AnrCollector {
             return anrFile.getAbsolutePath();
         } catch (IOException e) {
             Log.e(TAG, "Couldn't write ANR proto", e);
-            RecordHistogram.recordEnumeratedHistogram(ANR_UPLOAD_UMA,
+            RecordHistogram.recordEnumeratedHistogram(ANR_SKIPPED_UMA,
                     AnrSkippedReason.FILESYSTEM_WRITE_FAILURE, AnrSkippedReason.MAX_VALUE);
             return null;
         }

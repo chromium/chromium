@@ -105,7 +105,6 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 ਮਹੀਨਾ ਪਹਿਲਾਂ}one{# ਮਹੀਨਾ ਪਹਿਲਾਂ}other{# ਮਹੀਨੇ ਪਹਿਲਾਂ}}</translation>
 <translation id="4289300219472526559">ਬੋਲਣਾ ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="4289540628985791613">ਓਵਰਵਿਊ</translation>
-<translation id="4306392492252714209">ਕਲਿੱਪਬੋਰਡ ਵਿੱਚੋਂ ਹਟਾਓ।</translation>
 <translation id="4491109536499578614">ਚਿੱਤਰ</translation>
 <translation id="4565377596337484307">ਪਾਸਵਰਡ ਲੁਕਾਓ</translation>
 <translation id="4588090240171750605">ਸੱਜੇ ਪਾਸੇ ਸਕ੍ਰੌਲ ਕਰੋ</translation>
@@ -148,6 +147,7 @@
 <translation id="6142413573757616983"><ph name="QUANTITY" /> B/s</translation>
 <translation id="6237461503717005873"><ph name="ROW_NAME" /> ਨੂੰ ਚੁਣਿਆ ਗਿਆ ਹੈ।</translation>
 <translation id="6264365405983206840">&amp;ਸਾਰੇ ਚੁਣੋ</translation>
+<translation id="6346952829206698721">ਕਲਿੱਪਬੋਰਡ ਤੋਂ ਪੇਸਟ ਕਰੋ</translation>
 <translation id="6364916375976753737">ਖੱਬੇ ਪਾਸੇ ਸਕ੍ਰੌਲ ਕਰੋ</translation>
 <translation id="6394627529324717982">ਕਾਮਾ</translation>
 <translation id="6397363302884558537">ਬੋਲਣਾ ਬੰਦ ਕਰੋ</translation>
@@ -174,6 +174,7 @@
 <translation id="7170202025028120564">ਤੁਹਾਡੀ ਐਪਲੀਕੇਸ਼ਨ ਦੀਆਂ ਡਿਸਪਲੇ ਸੈਟਿੰਗਾਂ ਉਦੋਂ ਲਾਗੂ ਹੋਣਗੀਆਂ ਜਦੋਂ ਇਸਨੂੰ ਅਗਲੀ ਵਾਰ ਮੁੜ-ਸ਼ੁਰੂ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1 ਮਿੰਟ ਬਾਕੀ}one{# ਮਿੰਟ ਬਾਕੀ}other{# ਮਿੰਟ ਬਾਕੀ}}</translation>
+<translation id="7363164521834647158">ਜਵਾਬ ਭੇਜੋ</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{1 ਮਿੰਟ ਪਹਿਲਾਂ}one{# ਮਿੰਟ ਪਹਿਲਾਂ}other{# ਮਿੰਟ ਪਹਿਲਾਂ}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{1 ਮਿੰਟ ਬਾਕੀ}one{# ਮਿੰਟ ਬਾਕੀ}other{# ਮਿੰਟ ਬਾਕੀ}}</translation>

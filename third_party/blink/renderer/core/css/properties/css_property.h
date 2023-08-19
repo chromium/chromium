@@ -23,14 +23,34 @@ class CrossThreadStyleValue;
 class ExecutionContext;
 class LayoutObject;
 
+// For use in Get(Un)VisitedProperty(), although you could probably
+// use them yourself if you wanted to; contains a mapping from each
+// CSSPropertyID to its visited/unvisited counterpart, or kInvalid
+// if none exists. They use small integer types (even though they
+// actually contain CSSPropertyIDs) because they can be quite hot
+// in the cache, e.g., during cascade expansion.
+extern CORE_EXPORT const uint8_t kPropertyVisitedIDs[];
+extern CORE_EXPORT const uint16_t kPropertyUnvisitedIDs[];
+
 class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
  public:
   using Flags = uint64_t;
 
   static const CSSProperty& Get(CSSPropertyID id) {
-    DCHECK(id != CSSPropertyID::kInvalid);
-    DCHECK(id <= kLastCSSProperty);  // last property id
-    return To<CSSProperty>(*GetPropertyInternal(id));
+    // Instead of using To<> here (which calls GetFlags()), we have
+    // a bounds check on the property ID.
+    //
+    // This is pretty much the same speed overall (as measured by the
+    // style perftest, June 2023), but should be a stronger security
+    // bound; it is unlikely that an attacker can corrupt an object
+    // in the read-only kProperties[] array but _not_ make it return
+    // the flags they want (which is what the To<> downcast checks),
+    // but it seems very likely that a bug could cause them to control
+    // the id to go out-of-bounds and hit an attacked-controlled vtable
+    // at some wild memory location.
+    SECURITY_CHECK(id > CSSPropertyID::kInvalid && id <= kLastCSSProperty);
+    DCHECK(IsA<CSSProperty>(GetPropertyInternal(id)));
+    return UnsafeTo<CSSProperty>(*GetPropertyInternal(id));
   }
 
   static bool IsShorthand(const CSSPropertyName&);
@@ -114,16 +134,45 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
       const ComputedStyle& computed_style,
       const LayoutObject* layout_object,
       bool allow_visited_style) const;
-  virtual const CSSProperty& ResolveDirectionAwareProperty(TextDirection,
-                                                           WritingMode) const {
+
+  const CSSProperty& ResolveDirectionAwareProperty(
+      TextDirection direction,
+      WritingMode writing_mode) const {
+    if (!IsInLogicalPropertyGroup()) {
+      // Avoid the potentially expensive virtual function call.
+      return *this;
+    } else {
+      return ResolveDirectionAwarePropertyInternal(direction, writing_mode);
+    }
+  }
+
+  virtual const CSSProperty& ResolveDirectionAwarePropertyInternal(
+      TextDirection,
+      WritingMode) const {
     return *this;
   }
   virtual bool IsInSameLogicalPropertyGroupWithDifferentMappingLogic(
       CSSPropertyID) const {
     return false;
   }
-  virtual const CSSProperty* GetVisitedProperty() const { return nullptr; }
-  virtual const CSSProperty* GetUnvisitedProperty() const { return nullptr; }
+  const CSSProperty* GetVisitedProperty() const {
+    CSSPropertyID visited_id = static_cast<CSSPropertyID>(
+        kPropertyVisitedIDs[static_cast<unsigned>(property_id_)]);
+    if (visited_id == CSSPropertyID::kInvalid) {
+      return nullptr;
+    } else {
+      return To<CSSProperty>(GetPropertyInternal(visited_id));
+    }
+  }
+  const CSSProperty* GetUnvisitedProperty() const {
+    CSSPropertyID unvisited_id = static_cast<CSSPropertyID>(
+        kPropertyUnvisitedIDs[static_cast<unsigned>(property_id_)]);
+    if (unvisited_id == CSSPropertyID::kInvalid) {
+      return nullptr;
+    } else {
+      return To<CSSProperty>(GetPropertyInternal(unvisited_id));
+    }
+  }
 
   virtual const CSSProperty* SurrogateFor(TextDirection, WritingMode) const {
     return nullptr;

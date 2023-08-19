@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<!-- Generate token with the command:
+generate_token.py https://127.0.0.1:8443 FedCmIdpSigninStatus --expire-timestamp=2000000000
+-- -->
+<meta http-equiv="origin-trial"
+  content="A9a3fMLbgTmgdENpn0k3Xa5PyVf3Zuf7T93E0WkqOfannbR7I6EUCkuxOx/5x/vtou4iHIzov2F8huBcm/sFDgEAAABdeyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6ODQ0MyIsICJmZWF0dXJlIjogIkZlZENtSWRwU2lnbmluU3RhdHVzIiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9" />
+<title>FedCM IDP sign-in status API - interfaces and properties exposed by origin trial</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/origin-trials-helper.js"></script>
+<script>
+    test(t => {
+      OriginTrialsHelper.check_interfaces_exist(this, ['IdentityProvider']);
+  }, 'FedCM IDP sign-in status API interfaces and properties in Origin-Trial enabled document.');
+</script>

@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/mock_autofill_popup_controller.h"
 #include "chrome/browser/ui/autofill/autofill_keyboard_accessory_adapter.h"
@@ -99,8 +100,9 @@ std::string SuggestionLabelsToString(
 
 // Matcher returning true if suggestions have equal members.
 MATCHER_P(equalsSuggestion, other, "") {
-  if (arg.frontend_id != other.frontend_id) {
-    *result_listener << "has frontend_id " << arg.frontend_id;
+  if (arg.popup_item_id != other.popup_item_id) {
+    *result_listener << "has popup_item_id "
+                     << base::to_underlying(arg.popup_item_id);
     return false;
   }
   if (arg.main_text != other.main_text) {

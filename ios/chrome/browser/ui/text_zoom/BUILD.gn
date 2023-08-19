@@ -22,7 +22,6 @@ source_set("text_zoom") {
     "//ios/chrome/browser/web/font_size",
     "//ios/chrome/common/ui/colors",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("text_zoom_ui") {
@@ -42,11 +41,9 @@ source_set("text_zoom_ui") {
     "//ios/chrome/common/ui/colors",
     "//ui/base",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "text_zoom_constants.h",
     "text_zoom_constants.mm",

@@ -17,6 +17,7 @@ js_type_check("closure_compile") {
       ]
   deps = [
     ":auto_enrollment_check",
+    ":consumer_update",
     ":demo_preferences",
     ":demo_setup",
     ":enable_debugging",
@@ -41,6 +42,21 @@ js_library("auto_enrollment_check") {
     "../../components/behaviors:oobe_dialog_host_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/dialogs:oobe_loading_dialog",
+  ]
+  extra_deps = [ ":web_components" ]
+}
+
+js_library("consumer_update") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/consumer_update.js" ]
+  deps = [
+    "../../components:oobe_slide",
+    "../../components/behaviors:login_screen_behavior",
+    "../../components/behaviors:multi_step_behavior",
+    "../../components/behaviors:oobe_i18n_behavior",
+    "../../components/buttons:oobe_back_button",
+    "../../components/buttons:oobe_next_button",
+    "../../components/dialogs:oobe_adaptive_dialog",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":web_components" ]
 }
@@ -100,6 +116,8 @@ js_library("enterprise_enrollment") {
     "../../components/buttons:oobe_back_button",
     "../../components/buttons:oobe_next_button",
     "../../components/buttons:oobe_text_button",
+    "../../components/dialogs:oobe_adaptive_dialog",
+    "../../components/dialogs:oobe_loading_dialog",
     "../../components/dialogs:oobe_modal_dialog",
     "../common:offline_ad_login",
     "//ash/webui/common/resources:cr.m",
@@ -218,6 +236,7 @@ js_library("welcome_dialog") {
 html_to_js("web_components") {
   js_files = [
     "auto_enrollment_check.js",
+    "consumer_update.js",
     "demo_setup.js",
     "demo_preferences.js",
     "enable_debugging.js",

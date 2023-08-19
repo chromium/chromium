@@ -6,13 +6,13 @@
 
 emulator_package {
   package_name: "chromium/third_party/android_sdk/public/emulator"
-  version: "0EgkhrUNQp2T1opBdG5kmtrz6b-fKKwfeivwy73nGicC"  # 31.3.10
+  version: "jyllFQutkgCJPjALrVoBHl7mJBbY-S8alvqzqK93LFMC"  # 32.1.14
   dest_path: "generic_android28"
 }
 
 system_image_package {
   package_name: "chromium/third_party/android_sdk/public/system-images/android-28/google_apis/x86"
-  version: "-PkJpelLvoEn9KP6hZN0bdgnJrdRHbKkPWmrxWcMDGsC"  # R12, PSR1.180720.122
+  version: "n5ghWmdJtOyffzCTuQwcIHCz34tTB6Cac9gJGU5pCMAC"  # r12
   dest_path: "generic_android28"
 }
 system_image_name: "system-images;android-28;google_apis;x86"
@@ -33,13 +33,4 @@ avd_settings {
     key: "GLESDynamicVersion"
     value: "on"
   }
-}
-
-min_sdk: 28
-install_privileged_apk_partition: "/system"
-
-additional_apk {
-  package_name: "chrome_internal/third_party/google3/apks/gmscore/x86"
-  version: "LxrVLIW7QvPUWrYcfuX-gMseZmY_9JupJ5w-eTiTXNsC"
-  dest_path: "generic_android28/gmscore_apks"
 }

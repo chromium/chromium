@@ -11,16 +11,16 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/search/ntp_features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/ui_base_features.h"
 
 class CustomizeChromeSidePanelBrowserTest : public InProcessBrowserTest {
  protected:
   // InProcessBrowserTest:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {ntp_features::kCustomizeChromeSidePanel}, {});
+    scoped_feature_list_.InitWithFeatures({features::kCustomizeChromeSidePanel},
+                                          {});
     InProcessBrowserTest::SetUp();
   }
   // Activates the browser tab at `index`.

@@ -59,6 +59,7 @@ class ChromeCleanerControllerDelegate;
 class ChromeSafeBrowsingUIManagerDelegate;
 class DownloadUrlSBClient;
 class IncidentReportingService;
+class ServicesDelegateDesktop;
 
 namespace internal {
 class ReporterRunner;
@@ -90,7 +91,11 @@ class IsMetricsAndCrashReportingEnabled;
 
 namespace ash {
 class DemoSession;
-}
+
+namespace settings {
+class PerSessionSettingsUserActionTracker;
+}  // namespace settings
+}  // namespace ash
 
 // This class limits and documents access to metrics service helper methods.
 // Since these methods are private, each user has to be explicitly declared
@@ -126,12 +131,14 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
       OnMetricsReportingCallbackType,
       ChangeMetricsReportingStateCalledFrom);
   friend void ApplyMetricsReportingPolicy();
+  friend class ash::settings::PerSessionSettingsUserActionTracker;
   friend class settings::MetricsReportingHandler;
   friend class UmaSessionStats;
   friend class safe_browsing::ChromeCleanerControllerDelegate;
   friend class safe_browsing::ChromeSafeBrowsingUIManagerDelegate;
   friend class safe_browsing::DownloadUrlSBClient;
   friend class safe_browsing::IncidentReportingService;
+  friend class safe_browsing::ServicesDelegateDesktop;
   friend class safe_browsing::internal::ReporterRunner;
   friend class segmentation_platform::FieldTrialRegisterImpl;
   friend class ChromeMetricsServiceClient;
@@ -168,7 +175,7 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class ClonedInstallClientIdResetBrowserTest;
   friend class metrics::ChromeOSPerUserMetricsBrowserTestBase;
   friend class SampledOutClientIdSavedBrowserTest;
-  friend class MetricsInternalsUIBrowserTest;
+  friend class MetricsInternalsUIBrowserTestWithLog;
   FRIEND_TEST_ALL_PREFIXES(ChromeMetricsServiceAccessorTest,
                            MetricsReportingEnabled);
   FRIEND_TEST_ALL_PREFIXES(ChromeMetricsServicesManagerClientTest,

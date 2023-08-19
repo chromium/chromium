@@ -75,7 +75,7 @@ class RoundedDisplayHostTest : public AshTestBase {
   }
 
  protected:
-  raw_ptr<aura::Window> host_window_;
+  raw_ptr<aura::Window, DanglingUntriaged> host_window_;
   std::unique_ptr<TestRoundedDisplayHost> host_;
 };
 

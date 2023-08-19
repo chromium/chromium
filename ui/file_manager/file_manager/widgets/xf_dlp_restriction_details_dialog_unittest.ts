@@ -5,6 +5,7 @@
 import './xf_dlp_restriction_details_dialog.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {XfDlpRestrictionDetailsDialog} from './xf_dlp_restriction_details_dialog.js';
@@ -13,8 +14,9 @@ import {XfDlpRestrictionDetailsDialog} from './xf_dlp_restriction_details_dialog
  * Creates new <xf-dlp-restriction-details-dialog> element for each test.
  */
 export function setUp() {
-  document.body.innerHTML = '<xf-dlp-restriction-details-dialog>' +
-      '</xf-dlp-restriction-details-dialog>';
+  document.body.innerHTML = getTrustedHTML`
+    <xf-dlp-restriction-details-dialog></xf-dlp-restriction-details-dialog>
+  `;
 }
 
 /** Returns the <xf-dlp-restriction-details-dialog> element. */

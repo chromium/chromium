@@ -16,10 +16,6 @@
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/web_state_dependency_installation_observer.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 BROWSER_USER_DATA_KEY_IMPL(AccountConsistencyBrowserAgent)
 
 AccountConsistencyBrowserAgent::AccountConsistencyBrowserAgent(
@@ -95,7 +91,7 @@ void AccountConsistencyBrowserAgent::OnAddAccount() {
     return;
   }
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
-      initWithOperation:AuthenticationOperationAddAccount
+      initWithOperation:AuthenticationOperation::kAddAccount
             accessPoint:signin_metrics::AccessPoint::
                             ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE];
   [handler_ showSignin:command baseViewController:base_view_controller_];

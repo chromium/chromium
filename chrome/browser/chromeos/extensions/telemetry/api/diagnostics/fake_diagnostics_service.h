@@ -53,6 +53,16 @@ class FakeDiagnosticsService : public crosapi::mojom::DiagnosticsService {
       RunBatteryDischargeRoutineCallback callback) override;
   void RunBatteryHealthRoutine(
       RunBatteryHealthRoutineCallback callback) override;
+  void RunBluetoothDiscoveryRoutine(
+      RunBluetoothDiscoveryRoutineCallback callback) override;
+  void RunBluetoothPairingRoutine(
+      const std::string& peripheral_id,
+      RunBluetoothPairingRoutineCallback callback) override;
+  void RunBluetoothPowerRoutine(
+      RunBluetoothPowerRoutineCallback callback) override;
+  void RunBluetoothScanningRoutine(
+      uint32_t length_seconds,
+      RunBluetoothScanningRoutineCallback callback) override;
   void RunCpuCacheRoutine(uint32_t length_seconds,
                           RunCpuCacheRoutineCallback callback) override;
   void RunCpuStressRoutine(uint32_t length_seconds,
@@ -92,6 +102,10 @@ class FakeDiagnosticsService : public crosapi::mojom::DiagnosticsService {
   void RunSmartctlCheckRoutine(
       crosapi::mojom::UInt32ValuePtr percentage_used_threshold,
       RunSmartctlCheckRoutineCallback callback) override;
+  void RunUfsLifetimeRoutine(RunUfsLifetimeRoutineCallback callback) override;
+  void RunPowerButtonRoutine(uint32_t timeout_seconds,
+                             RunPowerButtonRoutineCallback callback) override;
+  void RunAudioDriverRoutine(RunAudioDriverRoutineCallback callback) override;
 
   // Sets the return value for |Run*Routine|.
   void SetRunRoutineResponse(

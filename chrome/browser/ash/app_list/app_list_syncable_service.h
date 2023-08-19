@@ -32,6 +32,8 @@
 
 class AppListModelUpdater;
 class AppServiceAppModelBuilder;
+class AppServicePromiseAppModelBuilder;
+class AppServiceShortcutModelBuilder;
 class ChromeAppListItem;
 class Profile;
 
@@ -66,6 +68,7 @@ class AppListSyncableService : public syncer::SyncableService,
     const std::string item_id;
     sync_pb::AppListSpecifics::AppListItemType item_type;
     std::string item_name;
+    std::string promise_package_id;
     std::string parent_id;
     syncer::StringOrdinal item_ordinal;
     syncer::StringOrdinal item_pin_ordinal;
@@ -96,6 +99,24 @@ class AppListSyncableService : public syncer::SyncableService,
     // IDs of obsolete ephemeral items.
     bool is_ephemeral = false;
 
+    // Whether the app was pinned to shelf by the user or not.
+    // The eventual consistency (a sufficient amount of time after rollout)
+    // we're aspiring to reach here is for this field to be interleaved with the
+    // pin ordinal: `item_pin_ordinal.IsValid() <=> is_user_pinned.has_value()`.
+    // However, it's okay for this contract to be violated in the meantine.
+    //
+    //  * missing value indicates that either `item_pin_ordinal` is invalid or
+    //    this field is new and hasn't yet been processed by sync.
+    //  * `true` means that the app was pinned by the user.
+    //    We are using this definition in a relaxed way -- for instance, default
+    //    OS apps that are shown in the shelf (like Chrome itself) also have
+    //    this set to true.
+    //  * `false` means that the app was pinned by PinnedLauncherApps policy.
+    //    Note that user pin has priority: if an app was first pinned by the
+    //    user and then additionally specified in PinnedLauncherApps, this value
+    //    will be set to true.
+    absl::optional<bool> is_user_pinned;
+
     std::string ToString() const;
   };
 
@@ -116,25 +137,12 @@ class AppListSyncableService : public syncer::SyncableService,
       base::RepeatingCallback<std::unique_ptr<AppListModelUpdater>(
           reorder::AppListReorderDelegate*)>;
 
-  // Sets and resets an app list model updater factory function for tests.
-  class ScopedModelUpdaterFactoryForTest {
-   public:
-    explicit ScopedModelUpdaterFactoryForTest(
-        ModelUpdaterFactoryCallback factory);
-    ScopedModelUpdaterFactoryForTest(const ScopedModelUpdaterFactoryForTest&) =
-        delete;
-    ScopedModelUpdaterFactoryForTest& operator=(
-        const ScopedModelUpdaterFactoryForTest&) = delete;
-    ~ScopedModelUpdaterFactoryForTest();
-
-   private:
-    ModelUpdaterFactoryCallback factory_;
-  };
+  // Sets an app list model updater factory function for tests. Its lifetime is
+  // bound to the lifetime of the returned unique_ptr<>.
+  static std::unique_ptr<base::ScopedClosureRunner>
+  SetScopedModelUpdaterFactoryForTest(ModelUpdaterFactoryCallback callback);
 
   using SyncItemMap = std::map<std::string, std::unique_ptr<SyncItem>>;
-
-  // No-op constructor for tests.
-  AppListSyncableService();
 
   // Populates the model when |profile|'s extension system is ready.
   explicit AppListSyncableService(Profile* profile);
@@ -172,6 +180,12 @@ class AppListSyncableService : public syncer::SyncableService,
   // provided `id`.
   syncer::StringOrdinal GetPositionAfterApp(const std::string& id) const;
 
+  // Find an app in the synced data that has the specified `promise_package_id`.
+  // If a match exists, retrieve the ordinal position of the synced app item.
+  // Otherwise, return an empty ordinal.
+  const syncer::StringOrdinal GetSyncPositionForPromiseAppItem(
+      const std::string& promise_package_id) const;
+
   // Called when properties of an item may have changed, e.g. default/oem state.
   void UpdateItem(const ChromeAppListItem* app_item);
 
@@ -204,9 +218,20 @@ class AppListSyncableService : public syncer::SyncableService,
   virtual syncer::StringOrdinal GetPinPosition(const std::string& app_id);
 
   // Sets pin position and how it is pinned for the app specified by |app_id|.
-  // Empty |item_pin_ordinal| indicates that the app has no pin.
+  // |item_pin_ordinal| must be valid.
+  // |pinned_by_policy| tells whether this item is pinned to the shelf by the
+  // `PinnedLauncherApps` policy.
   virtual void SetPinPosition(const std::string& app_id,
-                              const syncer::StringOrdinal& item_pin_ordinal);
+                              const syncer::StringOrdinal& item_pin_ordinal,
+                              bool pinned_by_policy);
+
+  // Sets |is_user_pinned| to false for the given item specified by |item_id|.
+  // Item must exist, |item_pin_ordinal| must be valid, and |is_user_pinned|
+  // must be unset by the time of the call.
+  void SetIsPolicyPinned(const std::string& app_id);
+
+  // Removes pin position for the app specified by |app_id|.
+  virtual void RemovePinPosition(const std::string& app_id);
 
   // Gets the app list model updater.
   AppListModelUpdater* GetModelUpdater();
@@ -215,26 +240,24 @@ class AppListSyncableService : public syncer::SyncableService,
   // Virtual for testing.
   virtual bool IsInitialized() const;
 
-  // Signalled when AppListSyncableService is Initialized.
-  const base::OneShotEvent& on_initialized() const { return on_initialized_; }
-
   // Returns true if sync was started.
   bool IsSyncing() const;
 
-  // Registers new observers and makes sure that service is started.
-  void AddObserverAndStart(Observer* observer);
-  void RemoveObserver(Observer* observer);
+  // Registers a `callback` to be run from a posted task on completion of the
+  // first sync in the session. The `callback` is notified of whether the first
+  // sync in the session was thought to be the first sync ever across all
+  // ChromeOS devices and sessions for the associated user. This method is safe
+  // to call even after completion of the first sync in the session, in which
+  // case the `callback` will be run from a task posted immediately.
+  // NOTE: Virtual for testing.
+  virtual void OnFirstSync(
+      base::OnceCallback<void(bool was_first_sync_ever)> callback);
 
-  const Profile* profile() const { return profile_; }
-  Profile* profile() { return profile_; }
-  size_t GetNumSyncItemsForTest();
   const std::string& GetOemFolderNameForTest() const {
     return oem_folder_name_;
   }
 
   void PopulateSyncItemsForTest(std::vector<std::unique_ptr<SyncItem>>&& items);
-
-  SyncItem* GetMutableSyncItemForTest(const std::string& id);
 
   virtual const SyncItemMap& sync_items() const;
 
@@ -263,7 +286,13 @@ class AppListSyncableService : public syncer::SyncableService,
 
  private:
   friend class AppListSyncModelSanitizer;
+  friend struct base::ScopedObservationTraits<AppListSyncableService,
+                                              AppListSyncableService::Observer>;
   class ModelUpdaterObserver;
+
+  // Registers new observers and makes sure that service is started.
+  void AddObserverAndStart(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   // Builds the model once ExtensionService is ready.
   void BuildModel();
@@ -336,11 +365,6 @@ class AppListSyncableService : public syncer::SyncableService,
   // Deletes a SyncItem matching |specifics|.
   void DeleteSyncItemSpecifics(const sync_pb::AppListSpecifics& specifics);
 
-  // Gets the preferred location for the OEM folder. It may return an invalid
-  // position and the final OEM folder position will be determined in the
-  // AppListModel.
-  syncer::StringOrdinal GetPreferredOemFolderPos();
-
   // Returns true if an extension matching |id| exists and was installed by
   // an OEM (extension->was_installed_by_oem() is true).
   bool AppIsOem(const std::string& id);
@@ -389,9 +413,9 @@ class AppListSyncableService : public syncer::SyncableService,
   // already exist.
   void EnsureOemFolderExists();
 
-  // Creates or updates the Crostini folder sync data if the Crostini folder is
+  // Creates or updates a GuestOS folder's sync data if the folder is
   // missing.
-  void MaybeAddOrUpdateCrostiniFolderSyncData();
+  void MaybeAddOrUpdateGuestOsFolderSyncData(const std::string& folder_id);
 
   // Creates a folder if the parent folder is missing before adding `app_item`.
   // Returns true if the folder already existed, or if it got created. Returns
@@ -407,6 +431,10 @@ class AppListSyncableService : public syncer::SyncableService,
   std::unique_ptr<AppListSyncModelSanitizer> sync_model_sanitizer_;
 
   std::unique_ptr<AppServiceAppModelBuilder> app_service_apps_builder_;
+  std::unique_ptr<AppServicePromiseAppModelBuilder>
+      app_service_promise_apps_builder_;
+  std::unique_ptr<AppServiceShortcutModelBuilder>
+      app_service_shortcuts_builder_;
   std::unique_ptr<syncer::SyncChangeProcessor> sync_processor_;
   SyncItemMap sync_items_;
   // Map that keeps pending request to transfer attributes from one app to
@@ -425,9 +453,14 @@ class AppListSyncableService : public syncer::SyncableService,
   std::string oem_folder_name_;
   base::OnceClosure wait_until_ready_to_sync_cb_;
 
+  // Whether the first sync in the session was thought to be the first sync ever
+  // across all ChromeOS devices and sessions for the associated user. Note that
+  // this value is absent until completion of the first sync in the session.
+  absl::optional<bool> first_sync_was_first_sync_ever_;
+
   // List of observers.
   base::ObserverList<Observer> observer_list_;
-  base::OneShotEvent on_initialized_;
+  base::OneShotEvent on_first_sync_;
 
   base::WeakPtrFactory<AppListSyncableService> weak_ptr_factory_{this};
 };

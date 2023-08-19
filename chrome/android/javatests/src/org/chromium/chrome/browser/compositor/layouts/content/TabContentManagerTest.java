@@ -22,6 +22,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.compositor.CompositorView;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
@@ -33,7 +34,8 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.RenderTestRule;
 
@@ -45,7 +47,7 @@ import org.chromium.ui.test.util.RenderTestRule;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
-@Features.EnableFeatures(ChromeFeatureList.THUMBNAIL_CACHE_REFACTOR)
+@EnableFeatures(ChromeFeatureList.THUMBNAIL_CACHE_REFACTOR)
 public class TabContentManagerTest {
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =
@@ -72,6 +74,7 @@ public class TabContentManagerTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "https://crbug.com/1455878")
     public void testLiveLayerDraws() throws Exception {
         final String testHttpsUrl1 =
                 sActivityTestRule.getTestServer().getURL("/chrome/test/data/android/test.html");
@@ -86,6 +89,9 @@ public class TabContentManagerTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1454653")
+    // Disable "AImageReader" as a workaround for https://crbug.com/1454914
+    @DisableFeatures("AImageReader")
     public void testJpegRefetch() throws Exception {
         final String testHttpsUrl1 =
                 sActivityTestRule.getTestServer().getURL("/chrome/test/data/android/test.html");
@@ -103,8 +109,9 @@ public class TabContentManagerTest {
             final TabContentManager tabContentManager =
                     sActivityTestRule.getActivity().getTabContentManagerSupplier().get();
             final int height = 100;
-            final int width = Math.round(
-                    height * TabUtils.getTabThumbnailAspectRatio(sActivityTestRule.getActivity()));
+            final int width = Math.round(height
+                    * TabUtils.getTabThumbnailAspectRatio(sActivityTestRule.getActivity(),
+                            sActivityTestRule.getActivity().getBrowserControlsManager()));
             tabContentManager.cacheTabThumbnail(currentTab);
             tabContentManager.getTabThumbnailWithCallback(currentTab.getId(),
                     new Size(width, height), bitmapCallback, /*forceUpdate=*/false,

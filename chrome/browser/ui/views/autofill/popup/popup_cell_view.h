@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "components/autofill/core/common/aliases.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -17,6 +18,10 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
+
+namespace content {
+struct NativeWebKeyboardEvent;
+}  // namespace content
 
 namespace views {
 class Label;
@@ -44,14 +49,16 @@ class PopupCellView : public views::View {
 
   METADATA_HEADER(PopupCellView);
 
-  PopupCellView();
+  explicit PopupCellView(
+      bool should_ignore_mouse_observed_outside_item_bounds_check = false);
+
   PopupCellView(const PopupCellView&) = delete;
   PopupCellView& operator=(const PopupCellView&) = delete;
   ~PopupCellView() override;
 
   // Gets and sets the selected state of the cell.
   bool GetSelected() const { return selected_; }
-  void SetSelected(bool selected);
+  virtual void SetSelected(bool selected);
 
   // Gets and sets the tooltip of the cell.
   const std::u16string& GetTooltipText() const { return tooltip_text_; }
@@ -98,6 +105,11 @@ class PopupCellView : public views::View {
   // labels contained in it based on the selection status of the view.
   void RefreshStyle();
 
+  // Attempts to process a key press `event`. Returns true if it did (and the
+  // parent no longer needs to handle it).
+  virtual bool HandleKeyPressEvent(
+      const content::NativeWebKeyboardEvent& event);
+
   // views::View:
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
@@ -111,6 +123,12 @@ class PopupCellView : public views::View {
 
   void OnPaint(gfx::Canvas* canvas) override;
 
+ protected:
+  // The selection state.
+  bool selected_ = false;
+  base::RepeatingClosure on_selected_callback_;
+  base::RepeatingClosure on_unselected_callback_;
+
  private:
   // Returns true if the mouse is within the bounds of this item. This is not
   // affected by whether or not the item is overlaid by another popup.
@@ -119,8 +137,6 @@ class PopupCellView : public views::View {
   // views::View:
   std::u16string GetTooltipText(const gfx::Point& p) const override;
 
-  // The selection state.
-  bool selected_ = false;
   // The tooltip text for this cell.
   std::u16string tooltip_text_;
   // The accessibility delegate.
@@ -129,8 +145,6 @@ class PopupCellView : public views::View {
   base::RepeatingClosure on_entered_callback_;
   base::RepeatingClosure on_exited_callback_;
   base::RepeatingClosure on_accepted_callback_;
-  base::RepeatingClosure on_selected_callback_;
-  base::RepeatingClosure on_unselected_callback_;
 
   // The labels whose style is updated when the cell's selection status changes.
   std::vector<raw_ptr<views::Label>> tracked_labels_;
@@ -146,6 +160,20 @@ class PopupCellView : public views::View {
   // a double click were executed at intervals larger than the threshold (500ms)
   // checked in the controller (crbug.com/1418837).
   bool mouse_observed_outside_item_bounds_ = false;
+
+  // Whether the `mouse_observed_outside_item_bounds_` will be ignored or not.
+  // Today this happens when:
+  // 1. The AutofillSuggestionTriggerSource is
+  // `kManualFallbackForAutocompleteUnrecognized`. This is because in this
+  // situation even though the popup could appear behind the cursor, the user
+  // intention about opening it is explicit.
+  //
+  // 2. The suggestions are of autocomplete type and were regenerated due to a
+  // suggestion being removed. We want to ignore the check in this case because
+  // the cursor can be above the popup after a row is deleted. This however does
+  // not mean that the popup just showed up to the user so there is no need to
+  // move the cursor out and in.
+  bool should_ignore_mouse_observed_outside_item_bounds_check_;
 };
 
 BEGIN_VIEW_BUILDER(/* no export*/, PopupCellView, views::View)

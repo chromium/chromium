@@ -6,7 +6,7 @@
 
 #import <Carbon/Carbon.h>
 
-#include "base/mac/scoped_nsobject.h"
+#include "base/apple/foundation_util.h"
 
 #pragma mark - NSDictionary Helper Functions
 
@@ -72,7 +72,7 @@ bool SystemHotkeyMap::ParseDictionary(NSDictionary* dictionary) {
   // -NSMutableDictionary addEntriesFromDictionary:] will ensure that the new
   // values are used.
   // See https://crbug.com/145062#c8
-  base::scoped_nsobject<NSMutableDictionary> hotkey_dictionaries([@{
+  NSMutableDictionary* hotkey_dictionaries = [@{
     // Default Window switch key binding: Command + `
     // Note: The first parameter @96 is not used by |SystemHotkeyMap|.
     @"27" : @{
@@ -84,15 +84,14 @@ bool SystemHotkeyMap::ParseDictionary(NSDictionary* dictionary) {
         ],
       }
     }
-  } mutableCopy]);
+  } mutableCopy];
   [hotkey_dictionaries addEntriesFromDictionary:user_hotkey_dictionaries];
 
   for (NSString* hotkey_system_effect in [hotkey_dictionaries allKeys]) {
     if (![hotkey_system_effect isKindOfClass:[NSString class]])
       continue;
 
-    NSDictionary* hotkey_dictionary =
-        [hotkey_dictionaries objectForKey:hotkey_system_effect];
+    NSDictionary* hotkey_dictionary = hotkey_dictionaries[hotkey_system_effect];
     if (![hotkey_dictionary isKindOfClass:[NSDictionary class]])
       continue;
 

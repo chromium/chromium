@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
@@ -92,7 +93,7 @@ class InputMethodManagerImpl : public InputMethodManager,
     const InputMethodDescriptor* GetInputMethodFromId(
         const std::string& input_method_id) const override;
     size_t GetNumEnabledInputMethods() const override;
-    void SetEnabledExtensionImes(std::vector<std::string>* ids) override;
+    void SetEnabledExtensionImes(base::span<const std::string> ids) override;
     void SetInputMethodLoginDefault() override;
     void SetInputMethodLoginDefaultFromVPD(const std::string& locale,
                                            const std::string& layout) override;
@@ -180,7 +181,8 @@ class InputMethodManagerImpl : public InputMethodManager,
   InputMethodManagerImpl(std::unique_ptr<InputMethodDelegate> delegate,
                          std::unique_ptr<ComponentExtensionIMEManagerDelegate>
                              component_extension_ime_manager_delegate,
-                         bool enable_extension_loading);
+                         bool enable_extension_loading,
+                         std::unique_ptr<ImeKeyboard> ime_keyboard);
 
   InputMethodManagerImpl(const InputMethodManagerImpl&) = delete;
   InputMethodManagerImpl& operator=(const InputMethodManagerImpl&) = delete;
@@ -190,8 +192,6 @@ class InputMethodManagerImpl : public InputMethodManager,
   // Sets |candidate_window_controller_|.
   void SetCandidateWindowControllerForTesting(
       CandidateWindowController* candidate_window_controller);
-  // Sets |keyboard_|.
-  void SetImeKeyboardForTesting(ImeKeyboard* keyboard);
 
   // InputMethodManager override:
   void AddObserver(InputMethodManager::Observer* observer) override;

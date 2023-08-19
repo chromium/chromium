@@ -4,31 +4,33 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<style include="oobe-dialog-host-styles">
-  :host {
-    --iron-icon-height: var(--oobe-adaptive-dialog-icon-size);
-    --iron-icon-width: var(--oobe-adaptive-dialog-icon-size);
-  }
-
+<style include="oobe-dialog-host-styles cros-color-overrides">
   .overview-list-item {
-    border-top: 1px solid var(--cros-color-primary-dark);
+    border-top: 1px solid var(--cros-sys-separator);
     padding: 16px;
   }
 
   .overview-list-item:last-of-type {
-    border-bottom: 1px solid var(--cros-color-primary-dark);
+    border-bottom: 1px solid var(--cros-sys-separator);
     margin-bottom: 0;
   }
 
   .overview-list-item-title {
-    font-size: 14px;
-    font-weight: 500; /* roboto-medium */
-    line-height: 24px;
+    font-size: var(--oobe-sync-consent-list-item-title-font-size);
+    font-weight: var(--oobe-sync-consent-list-item-title-font-weight);
+    line-height: var(--oobe-sync-consent-list-item-title-line-height);
     margin-bottom: 4px;
   }
 
   .overview-list-item-icon {
     padding-inline-end: 16px;
+    --iron-icon-fill-color: var(--cros-icon-color-blue);
+    --iron-icon-height: 24px;
+    --iron-icon-width: 24px;
+  }
+
+  :host-context(.jelly-enabled) .overview-list-item-icon {
+    --iron-icon-fill-color: var(--cros-sys-primary);
   }
 
   .overview-list-item-description {
@@ -79,38 +81,71 @@ found in the LICENSE file.
   }
 
   .card-icon {
-    --iron-icon-fill-color: var(--cros-icon-color-blue);
     align-items: center;
     align-self: center;
-    background-color: var(--cros-button-background-color-primary-disabled);
     border-radius: 20px;
     display: flex;
     flex-direction: row;
     justify-content: center;
     margin-inline-end: 16px;
+    --iron-icon-fill-color: var(--cros-icon-color-blue);
+    --iron-icon-height: 32px;
+    --iron-icon-width: 32px;
+  }
+
+  #tooltip-icon {
+    --iron-icon-height: 32px;
+    --iron-icon-width: 32px;
+  }
+
+  :host-context(.jelly-enabled) .card-icon {
+    --iron-icon-fill-color: var(--cros-sys-primary);
   }
 
   .card-title {
     color: var(--cros-text-color-primary);
-    font: var(--cros-headline-1-font);
+    font: var(--oobe-sync-consent-card-title-font);
+  }
+
+  :host-context(.jelly-enabled) .card-title {
+    color: var(--oobe-text-color);
   }
 
   .card-subtitle {
     color: var(--cros-text-color-secondary);
-    font: var(--cros-body-1-font);
+    font: var(--oobe-sync-consent-card-subtitle-font);
+  }
+
+  :host-context(.jelly-enabled) .card-subtitle {
+    color: var(--oobe-subheader-text-color);
   }
 
   .tooltip-text {
-    font: var(--cros-body-2-font);
+    font: var(--oobe-sync-consent-tooltip-text-font);
   }
 
   #tooltip-element {
-    --paper-tooltip-background: var(--cros-bg-color) ;
+    --paper-tooltip-background: var(--cros-bg-color);
     --paper-tooltip-text-color: var(--cros-text-color-primary);
     border-radius: 6px;
     box-shadow: 0 1px 3px var(--cros-shadow-color-key),
                 0 4px 8px var(--cros-separator-color);
     width: 444px;
+  }
+
+  :host-context(.jelly-enabled) #tooltip-element {
+    --paper-tooltip-background: var(--cros-sys-base_elevated);
+    --paper-tooltip-text-color: var(--oobe-text-color);
+  }
+
+  .bottom-buttons {
+    display: flex;
+    justify-content: space-between;
+    width:100%;
+  }
+
+  #rightButtons {
+    display: flex;
   }
 </style>
 
@@ -118,23 +153,24 @@ found in the LICENSE file.
     aria-label$="[[i18nDynamic(locale, 'syncConsentScreenTitle')]]"
     for-step="ash-sync">
   <iron-icon slot="icon" icon="sync-consent-32:googleg"></iron-icon>
-  <h1 slot="title" consent-description hidden="[[isArcRestricted_]]">
+  <h1 slot="title" consent-description hidden="[[isLacrosEnabled_]]">
     [[i18nDynamic(locale, 'syncConsentScreenTitle')]]
   </h1>
-  <h1 slot="title" consent-description hidden="[[!isArcRestricted_]]">
+  <h1 slot="title" consent-description hidden="[[!isLacrosEnabled_]]">
     [[i18nDynamic(locale, 'syncConsentScreenTitleArcRestrictions')]]
   </h1>
-  <div slot="subtitle" consent-description hidden="[[isArcRestricted_]]">
+  <div slot="subtitle" consent-description hidden="[[isLacrosEnabled_]]">
     [[i18nDynamic(locale, 'syncConsentScreenSubtitle')]]
   </div>
-  <img slot="subtitle" src="images/sync-consent.svg"
-      class="oobe-illustration" aria-hidden="true">
+  <iron-icon slot="subtitle-illustration" icon="oobe-illos:sync-consent-illo"
+      class="illustration-jelly">
+  </iron-icon>
   </div>
   <div slot="content" class="landscape-header-aligned">
     <div class="overview-list-item layout horizontal"
-        hidden="[[isArcRestricted_]]">
-      <img class="overview-list-item-icon" src="images/settings_gear.svg"
-          width="24" height="24" aria-hidden="true">
+        hidden="[[isLacrosEnabled_]]">
+      <iron-icon icon="oobe-24:settings-gear" class="overview-list-item-icon"
+          aria-hidden="true"></iron-icon>
       <div class="flex layout vertical center-justified">
         <div role="heading" aria-level="2" class="overview-list-item-title"
             consent-description>
@@ -143,9 +179,9 @@ found in the LICENSE file.
       </div>
     </div>
     <div class="overview-list-item layout horizontal"
-        hidden="[[isArcRestricted_]]">
-      <img class="overview-list-item-icon" src="images/browser_sync.svg"
-          width="24" height="24" aria-hidden="true">
+        hidden="[[isLacrosEnabled_]]">
+      <iron-icon icon="oobe-24:browser-sync" class="overview-list-item-icon"
+          aria-hidden="true"></iron-icon>
       <div class="flex layout vertical center-justified">
         <div role="heading" aria-level="2" class="overview-list-item-title"
             consent-description>
@@ -157,14 +193,14 @@ found in the LICENSE file.
         </div>
       </div>
     </div>
-    <div hidden="[[!isArcRestricted_]]" consent-description>
+    <div hidden="[[!isLacrosEnabled_]]" consent-description>
       [[i18nDynamic(locale,
           'syncConsentScreenOsSyncDescriptionArcRestrictions')]]
     </div>
 
     <cr-checkbox id="reviewSettingsBox" hidden="[[isMinorMode_]]"
         consent-description>
-      [[getReviewSettingText_(locale, isArcRestricted_)]]
+      [[getReviewSettingText_(locale, isLacrosEnabled_)]]
     </cr-checkbox>
   </div>
   <div slot="bottom-buttons">
@@ -207,25 +243,54 @@ found in the LICENSE file.
     </p>
   </div>
   <div slot="content" class="layout vertical landscape-vertical-centered">
-    <img src="images/os_sync_consent.svg" class="oobe-illustration"
-        aria-hidden="true">
+    <iron-icon icon="oobe-illos:sync-consent-illo" class="illustration-jelly">
+    </iron-icon>
   </div>
-  <div slot="bottom-buttons">
-    <oobe-text-button id="manageButton"
+  <div class="bottom-buttons" slot="bottom-buttons" hidden="[[isMinorMode_]]">
+    <oobe-text-button id="manageButtonRegularUser"
         on-click="onManageClicked_"
         label-for-aria="[[i18nDynamic(locale, 'syncConsentScreenManage')]]">
       <div slot="text" consent-description consent-confirmation>
         [[i18nDynamic(locale, 'syncConsentScreenManage')]]
       </div>
     </oobe-text-button>
-    <oobe-text-button class="focus-on-show" inverse="[[!isMinorMode_]]"
-        id="syncEverythingButton"
-        on-click="onSyncEverything_"
-        label-for-aria="[[i18nDynamic(locale, 'syncConsentTurnOnSync')]]">
+    <div id="rightButtons">
+      <oobe-text-button class="focus-on-show" inverse
+          id="syncEverythingButton"
+          on-click="onSyncEverything_"
+          label-for-aria="[[i18nDynamic(locale, 'syncConsentTurnOnSync')]]">
+        <div slot="text" consent-description consent-confirmation>
+          [[i18nDynamic(locale, 'syncConsentTurnOnSync')]]
+        </div>
+      </oobe-text-button>
+    </div>
+  </div>
+  <div class="bottom-buttons" slot="bottom-buttons" hidden="[[!isMinorMode_]]">
+    <oobe-text-button id="manageButtonMinorUser"
+        on-click="onManageClicked_"
+        label-for-aria="[[i18nDynamic(locale, 'syncConsentScreenManage')]]">
       <div slot="text" consent-description consent-confirmation>
-        [[i18nDynamic(locale, 'syncConsentTurnOnSync')]]
+        [[i18nDynamic(locale, 'syncConsentScreenManage')]]
       </div>
     </oobe-text-button>
+    <div id="rightButtons">
+      <oobe-text-button id="declineLacrosButton"
+          on-click="onLacrosDeclineClicked_"
+          label-for-aria="[[i18nDynamic(locale,
+                                          'syncConsentScreenDecline')]]">
+        <div slot="text" consent-description consent-confirmation>
+          [[i18nDynamic(locale, 'syncConsentScreenDecline')]]
+        </div>
+      </oobe-text-button>
+      <oobe-text-button class="focus-on-show"
+          id="syncEverythingButton"
+          on-click="onSyncEverything_"
+          label-for-aria="[[i18nDynamic(locale, 'syncConsentTurnOnSync')]]">
+        <div slot="text" consent-description consent-confirmation>
+          [[i18nDynamic(locale, 'syncConsentTurnOnSync')]]
+        </div>
+      </oobe-text-button>
+    </div>
   </div>
 </oobe-adaptive-dialog>
 

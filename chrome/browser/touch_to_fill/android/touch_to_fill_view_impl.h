@@ -34,8 +34,7 @@ class TouchToFillViewImpl : public TouchToFillView {
       IsOriginSecure is_origin_secure,
       base::span<const password_manager::UiCredential> credentials,
       base::span<const password_manager::PasskeyCredential> passkey_credentials,
-      bool trigger_submission,
-      bool can_manage_passwords_when_passkeys_present) override;
+      int flags) override;
   void OnCredentialSelected(
       const password_manager::UiCredential& credential) override;
   void OnDismiss() override;
@@ -47,6 +46,7 @@ class TouchToFillViewImpl : public TouchToFillView {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& credential);
   void OnManagePasswordsSelected(JNIEnv* env, jboolean passkeys_shown);
+  void OnHybridSignInSelected(JNIEnv* env);
   void OnDismiss(JNIEnv* env);
 
  private:

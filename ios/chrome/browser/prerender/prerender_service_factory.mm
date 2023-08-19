@@ -11,10 +11,6 @@
 #import "ios/chrome/browser/signin/account_consistency_service_factory.h"
 #import "ios/web/public/browser_state.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 std::unique_ptr<KeyedService> BuildPrerenderService(
     web::BrowserState* context) {
   ChromeBrowserState* browser_state =

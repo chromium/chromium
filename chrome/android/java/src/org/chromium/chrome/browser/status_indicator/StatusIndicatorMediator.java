@@ -14,14 +14,13 @@ import android.view.View;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
-import org.chromium.components.browser_ui.widget.animation.Interpolators;
+import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.HashSet;
@@ -446,12 +445,10 @@ class StatusIndicatorMediator implements BrowserControlsStateProvider.Observer,
         }
     }
 
-    @VisibleForTesting
     void updateVisibilityForTesting(boolean hiding) {
         updateVisibility(hiding);
     }
 
-    @VisibleForTesting
     void finishAnimationsForTesting() {
         if (mStatusBarAnimation != null && mStatusBarAnimation.isRunning()) {
             mStatusBarAnimation.end();

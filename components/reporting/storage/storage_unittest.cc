@@ -99,7 +99,7 @@ class SingleDecryptionContext {
   SingleDecryptionContext(
       const EncryptedRecord& encrypted_record,
       scoped_refptr<test::Decryptor> decryptor,
-      base::OnceCallback<void(StatusOr<base::StringPiece>)> response)
+      base::OnceCallback<void(StatusOr<std::string_view>)> response)
       : encrypted_record_(encrypted_record),
         decryptor_(decryptor),
         response_(std::move(response)) {}
@@ -109,7 +109,7 @@ class SingleDecryptionContext {
       delete;
 
   ~SingleDecryptionContext() {
-    DCHECK(!response_) << "Self-destruct without prior response";
+    CHECK(!response_) << "Self-destruct without prior response";
   }
 
   void Start() {
@@ -120,7 +120,7 @@ class SingleDecryptionContext {
   }
 
  private:
-  void Respond(StatusOr<base::StringPiece> result) {
+  void Respond(StatusOr<std::string_view> result) {
     std::move(response_).Run(result);
     delete this;
   }
@@ -145,7 +145,7 @@ class SingleDecryptionContext {
             base::Unretained(this)));
   }
 
-  void DecryptSharedSecret(base::StringPiece private_key) {
+  void DecryptSharedSecret(std::string_view private_key) {
     // Decrypt shared secret from private key and peer public key.
     auto shared_secret_result = decryptor_->DecryptSecret(
         private_key, encrypted_record_.encryption_info().encryption_key());
@@ -159,7 +159,7 @@ class SingleDecryptionContext {
                                   shared_secret_result.ValueOrDie()));
   }
 
-  void OpenRecord(base::StringPiece shared_secret) {
+  void OpenRecord(std::string_view shared_secret) {
     decryptor_->OpenRecord(
         shared_secret,
         base::BindOnce(
@@ -200,7 +200,7 @@ class SingleDecryptionContext {
   void CloseRecord(test::Decryptor::Handle* handle) {
     handle->CloseRecord(base::BindOnce(
         [](SingleDecryptionContext* self,
-           StatusOr<base::StringPiece> decryption_result) {
+           StatusOr<std::string_view> decryption_result) {
           self->Respond(decryption_result);
         },
         base::Unretained(this)));
@@ -209,7 +209,7 @@ class SingleDecryptionContext {
  private:
   const EncryptedRecord encrypted_record_;
   const scoped_refptr<test::Decryptor> decryptor_;
-  base::OnceCallback<void(StatusOr<base::StringPiece>)> response_;
+  base::OnceCallback<void(StatusOr<std::string_view>)> response_;
 };
 
 class StorageTest
@@ -263,7 +263,7 @@ class StorageTest
                 (const));
     MOCK_METHOD(bool,
                 UploadRecord,
-                (int64_t /*uploader_id*/, Priority, int64_t, base::StringPiece),
+                (int64_t /*uploader_id*/, Priority, int64_t, std::string_view),
                 (const));
     MOCK_METHOD(bool,
                 UploadRecordFailure,
@@ -311,7 +311,7 @@ class StorageTest
                         Priority priority,
                         int64_t sequencing_id,
                         int64_t generation_id,
-                        base::StringPiece data,
+                        std::string_view data,
                         base::OnceCallback<void(bool)> processed_cb) {
       DoEncounterSeqId(uploader_id, priority, sequencing_id, generation_id);
       DCHECK_CALLED_ON_VALID_SEQUENCE(scoped_checker_);
@@ -437,7 +437,7 @@ class StorageTest
         return std::move(uploader_);
       }
 
-      SetUp& Required(int64_t sequencing_id, base::StringPiece value) {
+      SetUp& Required(int64_t sequencing_id, std::string_view value) {
         CHECK(uploader_) << "'Complete' already called";
         EXPECT_CALL(*uploader_->mock_upload_,
                     UploadRecord(Eq(uploader_id_), Eq(priority_),
@@ -447,7 +447,7 @@ class StorageTest
         return *this;
       }
 
-      SetUp& Possible(int64_t sequencing_id, base::StringPiece value) {
+      SetUp& Possible(int64_t sequencing_id, std::string_view value) {
         CHECK(uploader_) << "'Complete' already called";
         EXPECT_CALL(*uploader_->mock_upload_,
                     UploadRecord(Eq(uploader_id_), Eq(priority_),
@@ -573,7 +573,7 @@ class StorageTest
                [](SequenceInformation sequence_information,
                   base::OnceCallback<void(bool)> processed_cb,
                   scoped_refptr<base::SequencedTaskRunner> task_runner,
-                  TestUploader* uploader, StatusOr<base::StringPiece> result) {
+                  TestUploader* uploader, StatusOr<std::string_view> result) {
                  ASSERT_OK(result.status()) << result.status();
                  WrappedRecord wrapped_record;
                  ASSERT_TRUE(wrapped_record.ParseFromArray(
@@ -704,7 +704,7 @@ class StorageTest
         std::string serialized_record;
         wrapped_record.record().SerializeToString(&serialized_record);
         const auto record_digest = crypto::SHA256HashString(serialized_record);
-        DCHECK_EQ(record_digest.size(), crypto::kSHA256Length);
+        CHECK_EQ(record_digest.size(), crypto::kSHA256Length);
         if (record_digest != wrapped_record.record_digest()) {
           sequence_bound_upload_
               .AsyncCall(&SequenceBoundUpload::DoUploadRecordFailure)
@@ -760,7 +760,7 @@ class StorageTest
     const raw_ptr<base::flat_map<Priority, int64_t>> last_upload_generation_id_;
     const raw_ptr<LastRecordDigestMap> last_record_digest_map_;
 
-    const raw_ptr<const MockUpload> mock_upload_;
+    const raw_ptr<const MockUpload, DanglingUntriaged> mock_upload_;
     const base::SequenceBound<SequenceBoundUpload> sequence_bound_upload_;
 
     const scoped_refptr<test::Decryptor> decryptor_;
@@ -911,7 +911,7 @@ class StorageTest
     AsyncStartMockUploader(reason, std::move(start_uploader_cb));
   }
 
-  Status WriteString(Priority priority, base::StringPiece data) {
+  Status WriteString(Priority priority, std::string_view data) {
     EXPECT_TRUE(storage_) << "Storage not created yet";
     test::TestEvent<Status> w;
     Record record;
@@ -924,7 +924,7 @@ class StorageTest
     return w.result();
   }
 
-  void WriteStringOrDie(Priority priority, base::StringPiece data) {
+  void WriteStringOrDie(Priority priority, std::string_view data) {
     const Status write_result = WriteString(priority, data);
     ASSERT_OK(write_result) << write_result;
   }
@@ -954,7 +954,7 @@ class StorageTest
   }
 
   SignedEncryptionInfo GenerateAndSignKey() {
-    DCHECK(decryptor_) << "Decryptor not created";
+    CHECK(decryptor_) << "Decryptor not created";
     // Generate new pair of private key and public value.
     uint8_t private_key[kKeySize];
     Encryptor::PublicKeyId public_key_id;
@@ -966,7 +966,7 @@ class StorageTest
         std::string(reinterpret_cast<const char*>(public_value), kKeySize),
         prepare_key_pair.cb());
     auto prepare_key_result = prepare_key_pair.result();
-    DCHECK(prepare_key_result.ok());
+    CHECK_OK(prepare_key_result) << prepare_key_result.status();
     public_key_id = prepare_key_result.ValueOrDie();
     // Prepare signed encryption key to be delivered to Storage.
     SignedEncryptionInfo signed_encryption_key;
@@ -981,16 +981,16 @@ class StorageTest
     uint8_t signature[kSignatureSize];
     test::SignMessage(
         signing_private_key_,
-        base::StringPiece(reinterpret_cast<const char*>(value_to_sign),
-                          sizeof(value_to_sign)),
+        std::string_view(reinterpret_cast<const char*>(value_to_sign),
+                         sizeof(value_to_sign)),
         signature);
     signed_encryption_key.set_signature(
         std::string(reinterpret_cast<const char*>(signature), kSignatureSize));
     // Double check signature.
-    DCHECK(VerifySignature(
+    CHECK(VerifySignature(
         signature_verification_public_key_,
-        base::StringPiece(reinterpret_cast<const char*>(value_to_sign),
-                          sizeof(value_to_sign)),
+        std::string_view(reinterpret_cast<const char*>(value_to_sign),
+                         sizeof(value_to_sign)),
         signature));
     return signed_encryption_key;
   }
@@ -1083,7 +1083,7 @@ constexpr std::array<const char*, 3> kData = {"Rec1111", "Rec222", "Rec33"};
 constexpr std::array<const char*, 3> kMoreData = {"More1111", "More222",
                                                   "More33"};
 constexpr std::array<char, (1024 * 1024 / 3)* 2> kBigData = {'A'};
-constexpr base::StringPiece xBigData(&kBigData.front(), kBigData.size());
+constexpr std::string_view xBigData(&kBigData.front(), kBigData.size());
 
 TEST_P(StorageTest, WriteIntoNewStorageAndReopen) {
   CreateTestStorageOrDie(BuildTestStorageOptions());

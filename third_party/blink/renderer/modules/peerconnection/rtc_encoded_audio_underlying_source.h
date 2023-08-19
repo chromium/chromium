@@ -13,7 +13,7 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace webrtc {
-class TransformableFrameInterface;
+class TransformableAudioFrameInterface;
 }  // namespace webrtc
 
 namespace blink {
@@ -23,14 +23,14 @@ class MODULES_EXPORT RTCEncodedAudioUnderlyingSource
  public:
   explicit RTCEncodedAudioUnderlyingSource(
       ScriptState*,
-      WTF::CrossThreadOnceClosure disconnect_callback,
-      bool is_receiver);
+      WTF::CrossThreadOnceClosure disconnect_callback);
 
   // UnderlyingSourceBase
   ScriptPromise pull(ScriptState*) override;
   ScriptPromise Cancel(ScriptState*, ScriptValue reason) override;
 
-  void OnFrameFromSource(std::unique_ptr<webrtc::TransformableFrameInterface>);
+  void OnFrameFromSource(
+      std::unique_ptr<webrtc::TransformableAudioFrameInterface>);
   void Close();
 
   // Called on any thread to indicate the source is being transferred to an
@@ -50,9 +50,6 @@ class MODULES_EXPORT RTCEncodedAudioUnderlyingSource
 
   const Member<ScriptState> script_state_;
   WTF::CrossThreadOnceClosure disconnect_callback_;
-  // Indicates if this source is for a receiver. Receiver sources
-  // expose CSRCs.
-  const bool is_receiver_;
   // Count of frames dropped due to the queue being full, for logging.
   int dropped_frames_ = 0;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;

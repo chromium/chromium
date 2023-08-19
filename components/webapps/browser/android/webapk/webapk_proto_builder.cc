@@ -65,6 +65,10 @@ webapk::WebApk_UpdateReason ConvertUpdateReasonToProtoEnum(
       return webapk::WebApk::MANUALLY_TRIGGERED;
     case WebApkUpdateReason::SHORTCUTS_DIFFER:
       return webapk::WebApk::SHORTCUTS_DIFFER;
+    case WebApkUpdateReason::DARK_BACKGROUND_COLOR_DIFFERS:
+      return webapk::WebApk::DARK_BACKGROUND_COLOR_DIFFERS;
+    case WebApkUpdateReason::DARK_THEME_COLOR_DIFFERS:
+      return webapk::WebApk::DARK_THEME_COLOR_DIFFERS;
   }
 }
 
@@ -84,9 +88,41 @@ std::string getCurrentAbi() {
   return "x86_64";
 #elif defined(__aarch64__)
   return "arm64-v8a";
+#elif defined(__riscv) && (__riscv_xlen == 64)
+  return "riscv64";
 #else
 #error "Unsupported target abi"
 #endif
+}
+
+void AddIcon(webapk::WebAppManifest* web_app_manifest,
+             GURL icon_url,
+             std::string icon_data,
+             std::map<std::string, WebApkIconHasher::Icon> hashes,
+             webapk::Image::Usage icon_usage,
+             bool is_maskable) {
+  if (icon_url.is_empty() && icon_data.empty()) {
+    return;
+  }
+
+  webapk::Image* icon_image = web_app_manifest->add_icons();
+  if (!icon_url.is_empty()) {
+    icon_image->set_src(icon_url.spec());
+    auto it = hashes.find(icon_url.spec());
+    if (it != hashes.end()) {
+      icon_image->set_hash(it->second.hash);
+      icon_image->set_image_data(it->second.unsafe_data);
+    }
+  }
+  if (!icon_data.empty()) {
+    icon_image->set_image_data(icon_data);
+  }
+  icon_image->add_usages(icon_usage);
+  if (is_maskable) {
+    icon_image->add_purposes(webapk::Image::MASKABLE);
+  } else {
+    icon_image->add_purposes(webapk::Image::ANY);
+  }
 }
 
 }  // namespace
@@ -130,6 +166,10 @@ std::unique_ptr<std::string> BuildProtoInBackground(
       ui::OptionalSkColorToString(shortcut_info.background_color));
   web_app_manifest->set_theme_color(
       ui::OptionalSkColorToString(shortcut_info.theme_color));
+  web_app_manifest->set_dark_background_color(
+      ui::OptionalSkColorToString(shortcut_info.dark_background_color));
+  web_app_manifest->set_dark_theme_color(
+      ui::OptionalSkColorToString(shortcut_info.dark_theme_color));
 
   web_app_manifest->set_id(shortcut_info.manifest_id.spec());
   webapk->set_app_key(app_key.spec());
@@ -170,69 +210,29 @@ std::unique_ptr<std::string> BuildProtoInBackground(
     }
   }
 
-  if (shortcut_info.best_primary_icon_url.is_empty()) {
-    // Update when web manifest is no longer available.
-    webapk::Image* best_primary_icon_image = web_app_manifest->add_icons();
-    best_primary_icon_image->set_image_data(primary_icon_data);
-    best_primary_icon_image->add_usages(webapk::Image::PRIMARY_ICON);
-    if (shortcut_info.is_primary_icon_maskable) {
-      best_primary_icon_image->add_purposes(webapk::Image::MASKABLE);
-    } else {
-      best_primary_icon_image->add_purposes(webapk::Image::ANY);
-    }
-  }
+  AddIcon(web_app_manifest, shortcut_info.best_primary_icon_url,
+          primary_icon_data, icon_url_to_murmur2_hash,
+          webapk::Image::PRIMARY_ICON, shortcut_info.is_primary_icon_maskable);
 
-  if (shortcut_info.splash_image_url.is_empty() && !splash_icon_data.empty()) {
-    webapk::Image* splash_icon_image = web_app_manifest->add_icons();
-    splash_icon_image->set_image_data(splash_icon_data);
-    splash_icon_image->add_usages(webapk::Image::SPLASH_ICON);
-    if (shortcut_info.is_splash_image_maskable) {
-      splash_icon_image->add_purposes(webapk::Image::MASKABLE);
-    } else {
-      splash_icon_image->add_purposes(webapk::Image::ANY);
-    }
+  if (shortcut_info.splash_image_url.is_empty() ||
+      shortcut_info.splash_image_url != shortcut_info.best_primary_icon_url) {
+    AddIcon(web_app_manifest, shortcut_info.splash_image_url, splash_icon_data,
+            icon_url_to_murmur2_hash, webapk::Image::SPLASH_ICON,
+            shortcut_info.is_splash_image_maskable);
   }
 
   for (const std::string& icon_url : shortcut_info.icon_urls) {
-    if (icon_url.empty())
+    if (icon_url.empty() ||
+        icon_url == shortcut_info.best_primary_icon_url.spec() ||
+        icon_url == shortcut_info.splash_image_url) {
       continue;
+    }
 
     webapk::Image* image = web_app_manifest->add_icons();
     auto it = icon_url_to_murmur2_hash.find(icon_url);
     image->set_src(icon_url);
-    if (it != icon_url_to_murmur2_hash.end())
+    if (it != icon_url_to_murmur2_hash.end()) {
       image->set_hash(it->second.hash);
-
-    if (icon_url == shortcut_info.best_primary_icon_url.spec()) {
-      if (!primary_icon_data.empty()) {
-        image->set_image_data(primary_icon_data);
-      } else {
-        image->set_image_data(it->second.unsafe_data);
-      }
-      image->add_usages(webapk::Image::PRIMARY_ICON);
-      if (shortcut_info.is_primary_icon_maskable) {
-        image->add_purposes(webapk::Image::MASKABLE);
-      } else {
-        image->add_purposes(webapk::Image::ANY);
-      }
-    }
-    if (icon_url == shortcut_info.splash_image_url.spec()) {
-      if (shortcut_info.splash_image_url !=
-          shortcut_info.best_primary_icon_url) {
-        // WebAPK updates uses the image data from fetched bitmap; installs use
-        // the image data from icon_url_to_murmur2_hash.
-        if (!splash_icon_data.empty()) {
-          image->set_image_data(splash_icon_data);
-        } else {
-          image->set_image_data(it->second.unsafe_data);
-        }
-        if (shortcut_info.is_splash_image_maskable) {
-          image->add_purposes(webapk::Image::MASKABLE);
-        } else {
-          image->add_purposes(webapk::Image::ANY);
-        }
-      }
-      image->add_usages(webapk::Image::SPLASH_ICON);
     }
   }
 

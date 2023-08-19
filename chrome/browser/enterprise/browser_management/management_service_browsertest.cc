@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/memory/raw_ptr.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -16,8 +15,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
-constexpr char kManagementAuthorityTrustworthinessValueChangeHistogram[] =
-    "Enterprise.ManagementAuthorityTrustworthiness.Cache.ValueChange";
 constexpr char kPrefName[] = "pref";
 
 class TestPlatformManagementStatusProvider
@@ -77,25 +74,16 @@ class ManagementServiceBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
-  base::HistogramTester histogram_tester_;
   raw_ptr<TestPlatformManagementStatusProvider> platform_status_provider_;
 };
 
 IN_PROC_BROWSER_TEST_F(ManagementServiceBrowserTest,
                        PRE_PlatformManagementServiceCache) {
   EXPECT_FALSE(platform_status_provider_->cached_authority().has_value());
-  histogram_tester_.ExpectBucketCount(
-      kManagementAuthorityTrustworthinessValueChangeHistogram, true, 1);
-  histogram_tester_.ExpectBucketCount(
-      kManagementAuthorityTrustworthinessValueChangeHistogram, false, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(ManagementServiceBrowserTest,
                        PlatformManagementServiceCache) {
   EXPECT_EQ(policy::EnterpriseManagementAuthority::DOMAIN_LOCAL,
             *platform_status_provider_->cached_authority());
-  histogram_tester_.ExpectBucketCount(
-      kManagementAuthorityTrustworthinessValueChangeHistogram, true, 0);
-  histogram_tester_.ExpectBucketCount(
-      kManagementAuthorityTrustworthinessValueChangeHistogram, false, 1);
 }

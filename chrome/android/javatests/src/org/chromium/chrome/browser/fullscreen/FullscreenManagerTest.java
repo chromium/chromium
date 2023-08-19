@@ -24,7 +24,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
@@ -32,6 +31,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutManager;
@@ -49,8 +49,7 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.FullscreenTestUtils;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
-import org.chromium.content_public.browser.GestureListenerManager;
-import org.chromium.content_public.browser.GestureStateListener;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
@@ -58,10 +57,8 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_public.browser.test.util.UiUtils;
-import org.chromium.content_public.browser.test.util.WebContentsUtils;
 
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -158,6 +155,29 @@ public class FullscreenManagerTest {
             + "</body>"
             + "</html>");
 
+    private static final String FULLSCREEN_WITH_SELECTION_POPUP = UrlUtils.encodeHtmlDataUri(
+            "<html onmousedown=\"rfsSelectAll()\" onclick=\"selectAllChildren()\">"
+            + "<script>"
+            + "    function rfsSelectAll() {"
+            + "        document.documentElement.requestFullscreen();"
+            + "        document.execCommand(\"selectAll\");"
+            + "    }"
+            + "    function selectAllChildren() {"
+            + "        document.getSelection().selectAllChildren(paragraph1);"
+            + "    }"
+            + "</script>"
+            + "<body>"
+            + "    <img style=\"margin-top: 9999px;\"></img>"
+            + "    <p id=\"paragraph1\">"
+            + "        <!-- Trigger Translate Menu -->"
+            + "        A[="
+            + "        ?:TLv"
+            + "        S9y"
+            + "        <!-- Trigger Translate Menu -->"
+            + "    </p>"
+            + "</body>"
+            + "</html>");
+
     @Before
     public void setUp() {
         TestThreadUtils.runOnUiThreadBlocking(
@@ -186,7 +206,7 @@ public class FullscreenManagerTest {
     @Test
     @MediumTest
     @Feature({"Fullscreen"})
-    @DisableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
+    @DisableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
     public void testBackPressExitPersistentFullscreen() {
         testBackPressExitPersistentFullscreenInternal();
     }
@@ -194,7 +214,7 @@ public class FullscreenManagerTest {
     @Test
     @MediumTest
     @Feature({"Fullscreen"})
-    @EnableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
+    @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
     public void testBackPressExitPersistentFullscreen_backGestureRefactor() {
         testBackPressExitPersistentFullscreenInternal();
     }
@@ -383,82 +403,6 @@ public class FullscreenManagerTest {
     }
 
     @Test
-    //@LargeTest
-    @DisabledTest(message = "crbug.com/901280")
-    public void testHideBrowserControlsAfterFlingBoosting() {
-        // Test that fling boosting doesn't break the scroll state management
-        // that's used by the BrowserControlsManager to dispatch URL bar based
-        // resizes to the renderer.
-        FullscreenManagerTestUtils.disableBrowserOverrides();
-        mActivityTestRule.startMainActivityWithURL(LONG_HTML_TEST_PAGE);
-
-        FullscreenManagerTestUtils.waitForBrowserControlsToBeMoveable(
-                mActivityTestRule, mActivityTestRule.getActivity().getActivityTab());
-
-        final CallbackHelper flingEndCallback = new CallbackHelper();
-        final CallbackHelper scrollStartCallback = new CallbackHelper();
-        GestureStateListener scrollListener = new GestureStateListener() {
-            @Override
-            public void onScrollStarted(
-                    int scrollOffsetY, int scrollExtentY, boolean isDirectionUp) {
-                scrollStartCallback.notifyCalled();
-            }
-
-            @Override
-            public void onFlingEndGesture(int scrollOffsetY, int scrollExtentY) {
-                flingEndCallback.notifyCalled();
-            }
-        };
-
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
-        GestureListenerManager gestureListenerManager =
-                WebContentsUtils.getGestureListenerManager(tab.getWebContents());
-        gestureListenerManager.addListener(scrollListener);
-
-        final CallbackHelper viewportCallback = new CallbackHelper();
-
-        Assert.assertEquals(0, scrollStartCallback.getCallCount());
-        Assert.assertEquals(0, viewportCallback.getCallCount());
-
-        // Start the first fling.
-        FullscreenManagerTestUtils.fling(mActivityTestRule, 0, -2000);
-
-        // Wait until we hear the gesture scroll begin before we try to fling
-        // again since we'll hit DCHECKs in the fling controller state
-        // management.
-        try {
-            scrollStartCallback.waitForCallback(0, 1, 1000, TimeUnit.MILLISECONDS);
-        } catch (TimeoutException e) {
-            Assert.fail("Timeout waiting for scroll to start");
-        }
-
-        // Fling again while the first fling is still active. This will boost
-        // the first fling.
-        FullscreenManagerTestUtils.fling(mActivityTestRule, 0, -2000);
-
-        Assert.assertEquals(0, flingEndCallback.getCallCount());
-        Assert.assertTrue(gestureListenerManager.isScrollInProgress());
-
-        try {
-            flingEndCallback.waitForCallback(0, 1, 5000, TimeUnit.MILLISECONDS);
-        } catch (TimeoutException e) {
-            Assert.fail("Timeout waiting for scroll to end");
-        }
-
-        // Make sure we call the viewport changed callback since the URL bar was hidden.
-        // Can be called once for the FlingEnd and once for the ScrollEnd.
-        try {
-            viewportCallback.waitForCallback(0, 1, 500, TimeUnit.MILLISECONDS);
-        } catch (TimeoutException e) {
-            Assert.fail("Failed to update viewport");
-        }
-
-        // Ensure we don't still think we're scrolling.
-        Assert.assertFalse(
-                "Failed to reset scrolling state", gestureListenerManager.isScrollInProgress());
-    }
-
-    @Test
     @LargeTest
     public void testHidingBrowserControlsPreservesScrollOffset() throws TimeoutException {
         FullscreenManagerTestUtils.disableBrowserOverrides();
@@ -603,7 +547,6 @@ public class FullscreenManagerTest {
     @Test
     @LargeTest
     @Feature({"Fullscreen"})
-    @DisabledTest(message = "crbug.com/698413")
     public void testBrowserControlsShownWhenInputIsFocused() throws TimeoutException {
         FullscreenManagerTestUtils.disableBrowserOverrides();
         mActivityTestRule.startMainActivityWithURL(LONG_HTML_WITH_AUTO_FOCUS_INPUT_TEST_PAGE);
@@ -685,6 +628,60 @@ public class FullscreenManagerTest {
         TouchCommon.singleClickView(view);
         FullscreenTestUtils.waitForPersistentFullscreen(delegate, false);
         FullscreenManagerTestUtils.waitForBrowserControlsPosition(mActivityTestRule, 0);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Fullscreen"})
+    @DisableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
+    @DisabledTest(message = "https://crbug.com/1469553")
+    public void testFullscreenExitWithSelectionPopPresent() throws InterruptedException {
+        mActivityTestRule.startMainActivityWithURL(FULLSCREEN_WITH_SELECTION_POPUP);
+        // Click to trigger java scripts callback
+        TestTouchUtils.singleClick(InstrumentationRegistry.getInstrumentation(),
+                mActivityTestRule.getActivity().getResources().getDisplayMetrics().widthPixels
+                        * 0.5f,
+                mActivityTestRule.getActivity().getResources().getDisplayMetrics().heightPixels
+                        * 0.5f);
+
+        final Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        final TabWebContentsDelegateAndroid delegate = TabTestUtils.getTabWebContentsDelegate(tab);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // Sometimes text bubble is shown and consumes the back press event.
+            BackPressManager backPressManager =
+                    mActivityTestRule.getActivity().getBackPressManagerForTesting();
+            if (backPressManager.has(BackPressHandler.Type.TEXT_BUBBLE)) {
+                backPressManager.removeHandler(BackPressHandler.Type.TEXT_BUBBLE);
+            }
+        });
+
+        final SelectionPopupController controller =
+                TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+                    return SelectionPopupController.fromWebContents(tab.getWebContents());
+                });
+
+        UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
+        FullscreenTestUtils.waitForFullscreenFlag(tab, true, mActivityTestRule.getActivity());
+        FullscreenTestUtils.waitForPersistentFullscreen(delegate, true);
+        Assert.assertTrue(controller.isSelectActionBarShowing());
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mActivityTestRule.getActivity().getOnBackPressedDispatcher().onBackPressed();
+        });
+
+        UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
+        FullscreenTestUtils.waitForFullscreenFlag(tab, false, mActivityTestRule.getActivity());
+        FullscreenTestUtils.waitForPersistentFullscreen(delegate, false);
+        Assert.assertTrue(controller.isSelectActionBarShowing());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Fullscreen"})
+    @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
+    public void testFullscreenExitWithSelectionPopPresent_BackGestureRefactor()
+            throws InterruptedException {
+        testFullscreenExitWithSelectionPopPresent();
     }
 
     private void waitForEditableNodeToLoseFocus(final Tab tab) {

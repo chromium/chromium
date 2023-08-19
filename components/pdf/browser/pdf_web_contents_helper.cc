@@ -125,36 +125,39 @@ void PDFWebContentsHelper::DidScroll() {
   if (!touch_selection_controller_client_manager_)
     InitTouchSelectionClientManager();
 
-  if (touch_selection_controller_client_manager_) {
-    gfx::SelectionBound start;
-    gfx::SelectionBound end;
-    start.SetEdgeStart(ConvertToRoot(selection_left_));
-    start.SetEdgeEnd(ConvertToRoot(gfx::PointF(
-        selection_left_.x(), selection_left_.y() + selection_left_height_)));
-    end.SetEdgeStart(ConvertToRoot(selection_right_));
-    end.SetEdgeEnd(ConvertToRoot(gfx::PointF(
-        selection_right_.x(), selection_right_.y() + selection_right_height_)));
-
-    // TouchSelectionControllerClientAura needs these visible edges of selection
-    // to show the quick menu and context menu. Set the visible edges by the
-    // edges of |start| and |end|.
-    start.SetVisibleEdge(start.edge_start(), start.edge_end());
-    end.SetVisibleEdge(end.edge_start(), end.edge_end());
-
-    // Don't do left/right comparison after setting type.
-    // TODO(wjmaclean): When PDFium supports editing, we'll need to detect
-    // start == end as *either* no selection, or an insertion point.
-    has_selection_ = start != end;
-    start.set_visible(has_selection_);
-    end.set_visible(has_selection_);
-    start.set_type(has_selection_ ? gfx::SelectionBound::LEFT
-                                  : gfx::SelectionBound::EMPTY);
-    end.set_type(has_selection_ ? gfx::SelectionBound::RIGHT
-                                : gfx::SelectionBound::EMPTY);
-
-    touch_selection_controller_client_manager_->UpdateClientSelectionBounds(
-        start, end, this, this);
+  if (!touch_selection_controller_client_manager_) {
+    return;
   }
+
+  gfx::SelectionBound start;
+  gfx::SelectionBound end;
+  start.SetEdgeStart(ConvertToRoot(selection_left_));
+  start.SetEdgeEnd(ConvertToRoot(gfx::PointF(
+      selection_left_.x(), selection_left_.y() + selection_left_height_)));
+  end.SetEdgeStart(ConvertToRoot(selection_right_));
+  end.SetEdgeEnd(ConvertToRoot(gfx::PointF(
+      selection_right_.x(), selection_right_.y() + selection_right_height_)));
+
+  // TouchSelectionControllerClientAura needs these visible edges of selection
+  // to show the quick menu and context menu. Set the visible edges by the
+  // edges of |start| and |end|.
+  start.SetVisibleEdge(start.edge_start(), start.edge_end());
+  end.SetVisibleEdge(end.edge_start(), end.edge_end());
+
+  // Don't do left/right comparison after setting type.
+  // TODO(wjmaclean): When PDFium supports editing, we'll need to detect
+  // start == end as *either* no selection, or an insertion point.
+  has_selection_ = start != end;
+  start.set_visible(has_selection_);
+  end.set_visible(has_selection_);
+  start.set_type(has_selection_ ? gfx::SelectionBound::LEFT
+                                : gfx::SelectionBound::EMPTY);
+  end.set_type(has_selection_ ? gfx::SelectionBound::RIGHT
+                              : gfx::SelectionBound::EMPTY);
+
+  touch_selection_controller_client_manager_->UpdateClientSelectionBounds(
+      start, end, this, this);
+  client_->OnDidScroll(start, end);
 }
 
 void PDFWebContentsHelper::RenderWidgetHostDestroyed(

@@ -4,6 +4,8 @@
 
 package org.chromium.net.smoke;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.chromium.net.smoke.CronetSmokeTestRule.assertJavaEngine;
 import static org.chromium.net.smoke.CronetSmokeTestRule.assertSuccessfulNonEmptyResponse;
 
@@ -12,7 +14,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -36,7 +37,7 @@ public class PlatformOnlyEngineTest {
         // Java-only implementation of the Cronet engine only supports Http/1 protocol.
         mServer = mRule.getTestSupport().createTestServer(
                 ApplicationProvider.getApplicationContext(), TestSupport.Protocol.HTTP1);
-        Assert.assertTrue(mServer.start());
+        assertThat(mServer.start()).isTrue();
         mURL = mServer.getSuccessURL();
     }
 

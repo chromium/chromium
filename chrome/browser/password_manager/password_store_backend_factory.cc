@@ -30,7 +30,8 @@ std::unique_ptr<PasswordStoreBackend> PasswordStoreBackend::Create(
   TRACE_EVENT0("passwords", "PasswordStoreBackendCreation");
 #if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(USE_LEGACY_PASSWORD_STORE_BACKEND)
   return std::make_unique<PasswordStoreBuiltInBackend>(
-      CreateLoginDatabaseForProfileStorage(login_db_path));
+      CreateLoginDatabaseForProfileStorage(login_db_path),
+      syncer::WipeModelUponSyncDisabledBehavior::kNever);
 #else  // BUILDFLAG(IS_ANDROID) && !USE_LEGACY_PASSWORD_STORE_BACKEND
   if (PasswordStoreAndroidBackendBridgeHelper::CanCreateBackend() &&
       base::FeatureList::IsEnabled(
@@ -49,11 +50,13 @@ std::unique_ptr<PasswordStoreBackend> PasswordStoreBackend::Create(
                               kTimesAttemptedToReenrollToGoogleMobileServices));
     return std::make_unique<PasswordStoreBackendMigrationDecorator>(
         std::make_unique<PasswordStoreBuiltInBackend>(
-            CreateLoginDatabaseForProfileStorage(login_db_path)),
+            CreateLoginDatabaseForProfileStorage(login_db_path),
+            syncer::WipeModelUponSyncDisabledBehavior::kNever),
         std::make_unique<PasswordStoreAndroidBackend>(prefs), prefs);
   }
   return std::make_unique<PasswordStoreBuiltInBackend>(
-      CreateLoginDatabaseForProfileStorage(login_db_path));
+      CreateLoginDatabaseForProfileStorage(login_db_path),
+      syncer::WipeModelUponSyncDisabledBehavior::kNever);
 #endif
 }
 

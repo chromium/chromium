@@ -43,18 +43,11 @@ class FakeArcSupport : public extensions::NativeMessageHost::Client {
   // Emulates clicking Close button.
   void Close();
 
-  // Authentication page emulation for Active Directory.
-  void EmulateAuthSuccess();
-  void EmulateAuthFailure(const std::string& error_msg);
-
   // Emulates clicking Agree button on the fake terms of service page.
   void ClickAgreeButton();
 
   // Emulates clicking Cancel button on the fake terms of service page.
   void ClickCancelButton();
-
-  // Emulates clicking Cancel button on the fake Active Directory auth page.
-  void ClickAdAuthCancelButton();
 
   // Error page emulation.
   void ClickRetryButton();
@@ -92,28 +85,6 @@ class FakeArcSupport : public extensions::NativeMessageHost::Client {
   }
   void set_tos_shown(bool shown) { tos_shown_ = shown; }
 
-  // Emulate setting the Active Directory auth federation URL.
-  void set_active_directory_auth_federation_url(
-      const std::string& federation_url) {
-    active_directory_auth_federation_url_ = federation_url;
-  }
-
-  const std::string& active_directory_auth_federation_url() const {
-    return active_directory_auth_federation_url_;
-  }
-
-  // Emulate setting the Active Directory DM server URL prefix.
-  void set_active_directory_auth_device_management_url_prefix(
-      const std::string& device_management_url_prefix) {
-    active_directory_auth_device_management_url_prefix_ =
-        device_management_url_prefix;
-  }
-
-  const std::string& active_directory_auth_device_management_url_prefix()
-      const {
-    return active_directory_auth_device_management_url_prefix_;
-  }
-
   // Returns the current page.
   ArcSupportHost::UIPage ui_page() const { return ui_page_; }
 
@@ -139,8 +110,6 @@ class FakeArcSupport : public extensions::NativeMessageHost::Client {
   bool location_service_mode_ = false;
   std::string tos_content_;
   bool tos_shown_ = false;
-  std::string active_directory_auth_federation_url_;
-  std::string active_directory_auth_device_management_url_prefix_;
   base::ObserverList<Observer>::Unchecked observer_list_;
 
   base::WeakPtrFactory<FakeArcSupport> weak_ptr_factory_{this};

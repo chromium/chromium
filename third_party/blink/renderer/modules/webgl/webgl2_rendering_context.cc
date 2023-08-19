@@ -43,8 +43,8 @@
 #include "third_party/blink/renderer/modules/webgl/webgl_multi_draw.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_multi_draw_instanced_base_vertex_base_instance.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_provoking_vertex.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_shader_pixel_local_storage.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_video_texture.h"
-#include "third_party/blink/renderer/modules/webgl/webgl_webcodecs_video_frame.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer.h"
 
 namespace blink {
@@ -181,8 +181,8 @@ void WebGL2RenderingContext::RegisterContextExtensions() {
   RegisterExtension(webgl_multi_draw_instanced_base_vertex_base_instance_,
                     kDraftExtension);
   RegisterExtension(webgl_provoking_vertex_);
+  RegisterExtension(webgl_shader_pixel_local_storage_, kDraftExtension);
   RegisterExtension(webgl_video_texture_, kDraftExtension);
-  RegisterExtension(webgl_webcodecs_video_frame_, kDraftExtension);
 }
 
 void WebGL2RenderingContext::Trace(Visitor* visitor) const {
@@ -212,8 +212,8 @@ void WebGL2RenderingContext::Trace(Visitor* visitor) const {
   visitor->Trace(webgl_multi_draw_);
   visitor->Trace(webgl_multi_draw_instanced_base_vertex_base_instance_);
   visitor->Trace(webgl_provoking_vertex_);
+  visitor->Trace(webgl_shader_pixel_local_storage_);
   visitor->Trace(webgl_video_texture_);
-  visitor->Trace(webgl_webcodecs_video_frame_);
   WebGL2RenderingContextBase::Trace(visitor);
 }
 

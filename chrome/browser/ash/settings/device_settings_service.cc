@@ -127,7 +127,7 @@ void DeviceSettingsService::SetDeviceMode(policy::DeviceMode device_mode) {
   DCHECK(policy::DEVICE_MODE_PENDING == device_mode_ ||
          policy::DEVICE_MODE_NOT_SET == device_mode_);
   device_mode_ = device_mode;
-  if (GetOwnershipStatus() != OWNERSHIP_UNKNOWN) {
+  if (GetOwnershipStatus() != OwnershipStatus::kOwnershipUnknown) {
     RunPendingOwnershipStatusCallbacks();
   }
 }
@@ -178,13 +178,14 @@ void DeviceSettingsService::Store(
 DeviceSettingsService::OwnershipStatus
 DeviceSettingsService::GetOwnershipStatus() {
   if (public_key_.get())
-    return public_key_->is_empty() ? OWNERSHIP_NONE : OWNERSHIP_TAKEN;
-  return OWNERSHIP_UNKNOWN;
+    return public_key_->is_empty() ? OwnershipStatus::kOwnershipNone
+                                   : OwnershipStatus::kOwnershipTaken;
+  return OwnershipStatus::kOwnershipUnknown;
 }
 
 void DeviceSettingsService::GetOwnershipStatusAsync(
     OwnershipStatusCallback callback) {
-  if (GetOwnershipStatus() != OWNERSHIP_UNKNOWN) {
+  if (GetOwnershipStatus() != OwnershipStatus::kOwnershipUnknown) {
     // Report status immediately.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
@@ -202,9 +203,9 @@ void DeviceSettingsService::GetOwnershipStatusAsync(
 
 void DeviceSettingsService::ValidateOwnershipStatusAndNotify(
     OwnershipStatusCallback callback) {
-  if (GetOwnershipStatus() == OWNERSHIP_UNKNOWN) {
+  if (GetOwnershipStatus() == OwnershipStatus::kOwnershipUnknown) {
     // OwnerKeySet() could be called upon user sign-in while event was in queue,
-    // which resets status to OWNERSHIP_UNKNOWN.
+    // which resets status to OwnershipStatus::kOwnershipUnknown.
     // We need to retry the logic in this case.
     GetOwnershipStatusAsync(std::move(callback));
     return;
@@ -262,8 +263,7 @@ void DeviceSettingsService::OwnerKeySet(bool success) {
 
   public_key_.reset();
 
-  if (GetOwnershipStatus() == OWNERSHIP_TAKEN ||
-      !will_establish_consumer_ownership_) {
+  if (!will_establish_consumer_ownership_) {
     EnsureReload(true);
   }
 }
@@ -274,7 +274,7 @@ void DeviceSettingsService::PropertyChangeComplete(bool success) {
     return;
   }
 
-  if (GetOwnershipStatus() == OWNERSHIP_TAKEN ||
+  if (GetOwnershipStatus() == OwnershipStatus::kOwnershipTaken ||
       !will_establish_consumer_ownership_) {
     EnsureReload(false);
   }
@@ -351,6 +351,13 @@ void DeviceSettingsService::HandleCompletedOperation(
 
   public_key_ = scoped_refptr<PublicKey>(operation->public_key());
   if (GetOwnershipStatus() != previous_ownership_status_) {
+    // TODO(b/293598969): Investigate onwerhip status condition to prevent the
+    // bugs in future. Check whether ownership status goes to kOwnershipTaken in
+    // the end. Remove this when it's resolved.
+    LOG(WARNING) << "Ownership status is changed from "
+                 << previous_ownership_status_ << " to "
+                 << GetOwnershipStatus();
+
     previous_ownership_status_ = GetOwnershipStatus();
     NotifyOwnershipStatusChanged();
   }
@@ -378,6 +385,18 @@ void DeviceSettingsService::RunPendingOwnershipStatusCallbacks() {
   callbacks.swap(pending_ownership_status_callbacks_);
   for (auto& callback : callbacks) {
     std::move(callback).Run(GetOwnershipStatus());
+  }
+}
+
+std::ostream& operator<<(std::ostream& ostream,
+                         DeviceSettingsService::OwnershipStatus status) {
+  switch (status) {
+    case DeviceSettingsService::OwnershipStatus::kOwnershipUnknown:
+      return ostream << "kOwnershipUnknown";
+    case DeviceSettingsService::OwnershipStatus::kOwnershipNone:
+      return ostream << "kOwnershipNone";
+    case DeviceSettingsService::OwnershipStatus::kOwnershipTaken:
+      return ostream << "kOwnershipTaken";
   }
 }
 

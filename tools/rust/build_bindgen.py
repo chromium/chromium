@@ -25,11 +25,11 @@ sys.path.append(
                  'scripts'))
 
 from build import (CheckoutGitRepo, DownloadAndUnpack, LLVM_BUILD_TOOLS_DIR,
-                   MaybeDownloadHostGcc, RunCommand)
+                   DownloadDebianSysroot, RunCommand)
 from update import (RmTree)
 
 # The git hash to use.
-BINDGEN_GIT_VERSION = '078fb77e82507c1b96f571a18700a03870c96fdd'
+BINDGEN_GIT_VERSION = '97e29b49bebaba4d067d4f5f2270748c7d28a557'
 BINDGEN_GIT_REPO = ('https://chromium.googlesource.com/external/' +
                     'github.com/rust-lang/rust-bindgen')
 
@@ -55,15 +55,14 @@ EXE = '.exe' if sys.platform == 'win32' else ''
 def InstallRustBetaSysroot(rust_git_hash, target_triples):
     if os.path.exists(RUST_BETA_SYSROOT_DIR):
         RmTree(RUST_BETA_SYSROOT_DIR)
-    InstallBetaPackage(FetchBetaPackage('cargo', RUST_REVISION),
+    InstallBetaPackage(FetchBetaPackage('cargo', rust_git_hash),
                        RUST_BETA_SYSROOT_DIR)
-    InstallBetaPackage(FetchBetaPackage('rustc', RUST_REVISION),
+    InstallBetaPackage(FetchBetaPackage('rustc', rust_git_hash),
                        RUST_BETA_SYSROOT_DIR)
     for t in target_triples:
         InstallBetaPackage(
-            FetchBetaPackage('rust-std', RUST_REVISION, triple=t),
+            FetchBetaPackage('rust-std', rust_git_hash, triple=t),
             RUST_BETA_SYSROOT_DIR)
-    return RUST_BETA_SYSROOT_DIR
 
 
 def FetchNcurseswLibrary():
@@ -96,13 +95,6 @@ def main():
         print('--build-mac-arm only valid on intel to cross-build arm')
         return 1
 
-    args.gcc_toolchain = None
-    if sys.platform.startswith('linux'):
-        # Fetch GCC package to build against same libstdc++ as Clang. This
-        # function will only download it if necessary, and it will set the
-        # `args.gcc_toolchain` if so.
-        MaybeDownloadHostGcc(args)
-
     ncursesw_dir = None
     if sys.platform.startswith('linux'):
         ncursesw_dir = FetchNcurseswLibrary()
@@ -111,12 +103,12 @@ def main():
         # When cross-compiling, the binaries in RUST_TOOLCHAIN_OUT_DIR are not
         # usable on this machine, so we have to fetch them. We install them,
         # along with the host and target stdlib to a sysroot dir.
-        root = InstallRustBetaSysroot(
+        InstallRustBetaSysroot(
             RUST_REVISION,
-            [RustTargetTriple(None),
-             RustTargetTriple(args.build_mac_arm)])
-        cargo_bin = os.path.join(root, 'bin', f'cargo{EXE}')
-        rustc_bin = os.path.join(root, 'bin', f'rustc{EXE}')
+            [RustTargetTriple(),
+             RustTargetTriple(build_mac_arm=True)])
+        cargo_bin = os.path.join(RUST_BETA_SYSROOT_DIR, 'bin', f'cargo{EXE}')
+        rustc_bin = os.path.join(RUST_BETA_SYSROOT_DIR, 'bin', f'rustc{EXE}')
 
         if not os.path.exists(cargo_bin):
             print(f'Missing cargo at {cargo_bin}. The sysroot was not setup '
@@ -193,13 +185,15 @@ def main():
     env['LD'] = linker
     env['RUSTFLAGS'] += f' -Clinker={linker}'
 
-    if args.gcc_toolchain:
+    if sys.platform.startswith('linux'):
         # We use these flags to avoid linking with the system libstdc++.
-        gcc_toolchain_flag = f'--gcc-toolchain={args.gcc_toolchain}'
-        env['CFLAGS'] += f' {gcc_toolchain_flag}'
-        env['CXXFLAGS'] += f' {gcc_toolchain_flag}'
-        env['LDFLAGS'] += f' {gcc_toolchain_flag}'
-        env['RUSTFLAGS'] += f' -Clink-arg={gcc_toolchain_flag}'
+        sysroot = DownloadDebianSysroot('amd64')
+        sysroot_flag = f'--sysroot={sysroot}'
+        env['CFLAGS'] += f' {sysroot_flag}'
+        env['CXXFLAGS'] += f' {sysroot_flag}'
+        env['LDFLAGS'] += f' {sysroot_flag}'
+        env['RUSTFLAGS'] += f' -Clink-arg={sysroot_flag}'
+
     if ncursesw_dir:
         env['CFLAGS'] += f' -I{ncursesw_dir}/include'
         env['CXXFLAGS'] += f' -I{ncursesw_dir}/include'
@@ -221,20 +215,21 @@ def main():
         'build',
         f'--manifest-path={BINDGEN_SRC_DIR}/Cargo.toml',
         f'--target-dir={build_dir}',
-        f'--target={RustTargetTriple(args.build_mac_arm)}',
+        f'--target={RustTargetTriple(build_mac_arm = args.build_mac_arm)}',
         f'--no-default-features',
         f'--features=logging',
         '--release',
         '--bin',
         'bindgen',
     ]
-    RunCommand([cargo_bin] + cargo_args, msvc_arch='x64', env=env)
+    RunCommand([cargo_bin] + cargo_args, setenv=True, env=env)
 
     install_dir = os.path.join(RUST_TOOLCHAIN_OUT_DIR)
     print(f'Installing bindgen to {install_dir} ...')
 
     shutil.copy(
-        os.path.join(build_dir, RustTargetTriple(args.build_mac_arm),
+        os.path.join(build_dir,
+                     RustTargetTriple(build_mac_arm=args.build_mac_arm),
                      'release', f'bindgen{EXE}'),
         os.path.join(install_dir, 'bin'))
     if sys.platform == 'win32':

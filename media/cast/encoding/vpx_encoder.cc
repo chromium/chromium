@@ -5,6 +5,8 @@
 #include "media/cast/encoding/vpx_encoder.h"
 
 #include "base/logging.h"
+#include "base/strings/strcat.h"
+#include "media/base/video_encoder_metrics_provider.h"
 #include "media/base/video_frame.h"
 #include "media/cast/common/openscreen_conversion_helpers.h"
 #include "media/cast/common/sender_encoded_frame.h"
@@ -64,7 +66,9 @@ bool HasSufficientFeedback(
 
 }  // namespace
 
-VpxEncoder::VpxEncoder(const FrameSenderConfig& video_config)
+VpxEncoder::VpxEncoder(
+    const FrameSenderConfig& video_config,
+    std::unique_ptr<VideoEncoderMetricsProvider> metrics_provider)
     : cast_config_(video_config),
       target_encoder_utilization_(
           video_config.video_codec_params.number_of_encode_threads > 2
@@ -72,6 +76,7 @@ VpxEncoder::VpxEncoder(const FrameSenderConfig& video_config)
               : (video_config.video_codec_params.number_of_encode_threads > 1
                      ? kMidTargetEncoderUtilization
                      : kLoTargetEncoderUtilization)),
+      metrics_provider_(std::move(metrics_provider)),
       key_frame_requested_(true),
       bitrate_kbit_(cast_config_.start_bitrate / 1000),
       next_frame_id_(FrameId::first()),
@@ -168,7 +173,17 @@ void VpxEncoder::ConfigureForNewFrameSize(const gfx::Size& frame_size) {
   config_.kf_mode = VPX_KF_DISABLED;
 
   vpx_codec_flags_t flags = 0;
-  CHECK_EQ(vpx_codec_enc_init(&encoder_, ctx, &config_, flags), VPX_CODEC_OK);
+  metrics_provider_->Initialize(cast_config_.codec == Codec::kVideoVp9
+                                    ? media::VP9PROFILE_MIN
+                                    : media::VP8PROFILE_ANY,
+                                frame_size, /*is_hardware_encoder=*/false);
+  if (vpx_codec_err_t ret = vpx_codec_enc_init(&encoder_, ctx, &config_, flags);
+      ret != VPX_CODEC_OK) {
+    metrics_provider_->SetError(
+        {media::EncoderStatus::Codes::kEncoderInitializationError,
+         base::StrCat(
+             {"libvpx failed to initialize: ", vpx_codec_err_to_string(ret)})});
+  }
 
   // Raise the threshold for considering macroblocks as static.  The default is
   // zero, so this setting makes the encoder less sensitive to motion.  This
@@ -215,27 +230,27 @@ void VpxEncoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
   vpx_image_t vpx_image;
   vpx_image_t* const result = vpx_img_wrap(
       &vpx_image, vpx_format, frame_size.width(), frame_size.height(), 1,
-      video_frame->writable_data(VideoFrame::kYPlane));
+      const_cast<uint8_t*>(video_frame->visible_data(VideoFrame::kYPlane)));
   DCHECK_EQ(result, &vpx_image);
   switch (vpx_format) {
     case VPX_IMG_FMT_I420:
       vpx_image.planes[VPX_PLANE_Y] =
-          video_frame->GetWritableVisibleData(VideoFrame::kYPlane);
+          const_cast<uint8_t*>(video_frame->visible_data(VideoFrame::kYPlane));
       vpx_image.planes[VPX_PLANE_U] =
-          video_frame->GetWritableVisibleData(VideoFrame::kUPlane);
+          const_cast<uint8_t*>(video_frame->visible_data(VideoFrame::kUPlane));
       vpx_image.planes[VPX_PLANE_V] =
-          video_frame->GetWritableVisibleData(VideoFrame::kVPlane);
+          const_cast<uint8_t*>(video_frame->visible_data(VideoFrame::kVPlane));
       vpx_image.stride[VPX_PLANE_Y] = video_frame->stride(VideoFrame::kYPlane);
       vpx_image.stride[VPX_PLANE_U] = video_frame->stride(VideoFrame::kUPlane);
       vpx_image.stride[VPX_PLANE_V] = video_frame->stride(VideoFrame::kVPlane);
       break;
     case VPX_IMG_FMT_NV12:
       vpx_image.planes[VPX_PLANE_Y] =
-          video_frame->GetWritableVisibleData(VideoFrame::kYPlane);
+          const_cast<uint8_t*>(video_frame->visible_data(VideoFrame::kYPlane));
       // In libvpx, the UV plane of NV12 frames is represented by two planes
       // with the same stride, shifted by one byte.
       vpx_image.planes[VPX_PLANE_U] =
-          video_frame->GetWritableVisibleData(VideoFrame::kUVPlane);
+          const_cast<uint8_t*>(video_frame->visible_data(VideoFrame::kUVPlane));
       vpx_image.planes[VPX_PLANE_V] = vpx_image.planes[VPX_PLANE_U] + 1;
       vpx_image.stride[VPX_PLANE_Y] = video_frame->stride(VideoFrame::kYPlane);
       vpx_image.stride[VPX_PLANE_U] = video_frame->stride(VideoFrame::kUVPlane);
@@ -272,12 +287,17 @@ void VpxEncoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
   // zero to force the encoder to base its single-frame bandwidth calculations
   // entirely on |predicted_frame_duration| and the target bitrate setting being
   // micro-managed via calls to UpdateRates().
-  CHECK_EQ(vpx_codec_encode(&encoder_, &vpx_image, 0,
-                            predicted_frame_duration.InMicroseconds(),
-                            key_frame_requested_ ? VPX_EFLAG_FORCE_KF : 0,
-                            VPX_DL_REALTIME),
-           VPX_CODEC_OK)
-      << "BUG: Invalid arguments passed to vpx_codec_encode().";
+  if (vpx_codec_err_t ret = vpx_codec_encode(
+          &encoder_, &vpx_image, 0, predicted_frame_duration.InMicroseconds(),
+          key_frame_requested_ ? VPX_EFLAG_FORCE_KF : 0, VPX_DL_REALTIME);
+      ret != VPX_CODEC_OK) {
+    metrics_provider_->SetError(
+        {media::EncoderStatus::Codes::kEncoderFailedEncode,
+         base::StrCat(
+             {"libvpx failed to encode: ", vpx_codec_err_to_string(ret), " - ",
+              vpx_codec_error_detail(&encoder_)})});
+    LOG(FATAL) << "BUG: Invalid arguments passed to vpx_codec_encode().";
+  }
 
   // Pull data from the encoder, populating a new EncodedFrame.
   encoded_frame->frame_id = next_frame_id_++;
@@ -307,6 +327,7 @@ void VpxEncoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
   }
   DCHECK(!encoded_frame->data.empty())
       << "BUG: Encoder must provide data since lagged encoding is disabled.";
+  metrics_provider_->IncrementEncodedFrameCount();
 
   // Compute encoder utilization as the real-world time elapsed divided by the
   // frame duration.

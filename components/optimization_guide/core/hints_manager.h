@@ -471,6 +471,9 @@ class HintsManager : public OptimizationHintsComponentObserver,
   // The current applcation locale of Chrome.
   const std::string application_locale_;
 
+  // The set of OAuth scopes to use for personalized metadata.
+  base::flat_set<std::string> oauth_scopes_ = {};
+
   // A reference to the PrefService for this profile. Not owned.
   raw_ptr<PrefService> pref_service_ = nullptr;
 
@@ -503,7 +506,8 @@ class HintsManager : public OptimizationHintsComponentObserver,
   raw_ptr<TopHostProvider, DanglingUntriaged> top_host_provider_ = nullptr;
 
   // The tab URL provider that can be queried. Not owned.
-  raw_ptr<TabUrlProvider, DanglingUntriaged> tab_url_provider_ = nullptr;
+  raw_ptr<TabUrlProvider, AcrossTasksDanglingUntriaged> tab_url_provider_ =
+      nullptr;
 
   // The timer used to schedule fetching hints from the remote Optimization
   // Guide Service.

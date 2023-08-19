@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/file_manager/file_manager_jstest_base.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "content/public/test/browser_test.h"
 
 class FileManagerJsTest : public FileManagerJsTestBase {
@@ -78,6 +79,10 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, DirectoryModelTest) {
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, DirectoryTreeTest) {
   RunTestURL("foreground/js/ui/directory_tree_unittest.js");
+}
+
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, DriveBulkPinningBanner) {
+  RunTestURL("foreground/js/ui/banners/drive_bulk_pinning_banner_unittest.js");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, DriveSyncHandlerTest) {
@@ -158,10 +163,6 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileTasks) {
   RunTestURL("foreground/js/file_tasks_unittest.js");
 }
 
-IN_PROC_BROWSER_TEST_F(FileManagerJsTest, GuestOsController) {
-  RunTestURL("foreground/js/guest_os_controller_unittest.js");
-}
-
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileTransferController) {
   RunTestURL("foreground/js/file_transfer_controller_unittest.js");
 }
@@ -172,6 +173,10 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileTypeFiltersController) {
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, AsyncUtil) {
   RunTestURL("common/js/async_util_unittest.js");
+}
+
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileTypesBase) {
+  RunTestURL("common/js/file_types_base_unittest.js");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileType) {
@@ -370,6 +375,10 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, SearchContainer) {
   RunTestURL("containers/search_container_unittest.js");
 }
 
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, XfBulkPinningDialog) {
+  RunTestURL("widgets/xf_bulk_pinning_dialog_unittest.js");
+}
+
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, XfConflictDialog) {
   RunTestURL("widgets/xf_conflict_dialog_unittest.js");
 }
@@ -406,10 +415,6 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, XfIcon) {
   RunTestURL("widgets/xf_icon_unittest.js");
 }
 
-IN_PROC_BROWSER_TEST_F(FileManagerJsTest, XfPathDisplay) {
-  RunTestURL("widgets/xf_path_display_unittest.js");
-}
-
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, BreadcrumbContainer) {
   RunTestURL("containers/breadcrumb_container_unittest.js");
 }
@@ -424,4 +429,21 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, DirectoryTreeContainer) {
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, EntryUtils) {
   RunTestURL("common/js/entry_utils_unittest.js");
+}
+
+// Rerun some of the tests above, using CrosComponents.
+class FileManagerJsCrosComponentsTest : public FileManagerJsTest {
+ public:
+  void SetUp() override {
+    FileManagerJsTest::SetUp();
+    scoped_feature_list_.InitWithFeatures({chromeos::features::kCrosComponents},
+                                          {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(FileManagerJsCrosComponentsTest, BannerEducational) {
+  RunTestURL("foreground/js/ui/banners/educational_banner_unittest.js");
 }

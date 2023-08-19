@@ -566,14 +566,14 @@ void MockAndroidConnection::Receive(const std::string& data) {
   if (socket_name_ == "chrome_devtools_remote") {
     if (path == kJsonVersionPath)
       SendHTTPResponse(kSampleChromeVersion);
-    else if (path == kJsonListPath)
+    else if (base::StartsWith(path, kJsonListPath))
       SendHTTPResponse(kSampleChromePages);
     else
       NOTREACHED() << "Unknown command " << request;
   } else if (socket_name_ == "chrome_devtools_remote_1002") {
     if (path == kJsonVersionPath)
       SendHTTPResponse(kSampleChromeBetaVersion);
-    else if (path == kJsonListPath)
+    else if (base::StartsWith(path, kJsonListPath))
       SendHTTPResponse(kSampleChromeBetaPages);
     else
       NOTREACHED() << "Unknown command " << request;
@@ -581,21 +581,21 @@ void MockAndroidConnection::Receive(const std::string& data) {
                               base::CompareCase::SENSITIVE)) {
     if (path == kJsonVersionPath)
       SendHTTPResponse("{}");
-    else if (path == kJsonListPath)
+    else if (base::StartsWith(path, kJsonListPath))
       SendHTTPResponse("[]");
     else
       NOTREACHED() << "Unknown command " << request;
   } else if (socket_name_ == "webview_devtools_remote_2425") {
     if (path == kJsonVersionPath)
       SendHTTPResponse(kSampleWebViewVersion);
-    else if (path == kJsonListPath)
+    else if (base::StartsWith(path, kJsonListPath))
       SendHTTPResponse(kSampleWebViewPages);
     else
       NOTREACHED() << "Unknown command " << request;
   } else if (socket_name_ == "node_devtools_remote") {
     if (path == kJsonVersionPath)
       SendHTTPResponse(kSampleNodeVersion);
-    else if (path == kJsonListPath)
+    else if (base::StartsWith(path, kJsonListPath))
       SendHTTPResponse(kSampleNodePage);
     else
       NOTREACHED() << "Unknown command " << request;

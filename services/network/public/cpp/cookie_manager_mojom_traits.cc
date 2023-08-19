@@ -586,17 +586,6 @@ bool StructTraits<network::mojom::CookieOptionsDataView, net::CookieOptions>::
   else
     cookie_options->unset_return_excluded_cookies();
 
-  net::SamePartyContext same_party_context;
-  if (!mojo_options.ReadSamePartyContext(&same_party_context))
-    return false;
-  cookie_options->set_same_party_context(same_party_context);
-
-  cookie_options->set_full_party_context_size(
-      mojo_options.full_party_context_size());
-
-  cookie_options->set_is_in_nontrivial_first_party_set(
-      mojo_options.is_in_nontrivial_first_party_set());
-
   return true;
 }
 

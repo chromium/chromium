@@ -22,12 +22,8 @@ class DesktopScreenOzoneLinux : public DesktopScreenOzone,
  private:
   // DeviceScaleFactorObserver:
   void OnDeviceScaleFactorChanged() override {
-    SetDeviceScaleFactorToPlatformScreen(
-        ui::LinuxUi::instance()->GetDeviceScaleFactor());
-  }
-
-  void SetDeviceScaleFactorToPlatformScreen(float scale_factor) {
-    platform_screen()->SetDeviceScaleFactor(scale_factor);
+    const auto* linux_ui = ui::LinuxUi::instance();
+    platform_screen()->SetDisplayConfig(linux_ui->display_config());
   }
 
   // ScreenOzone:
@@ -45,7 +41,7 @@ class DesktopScreenOzoneLinux : public DesktopScreenOzone,
       display_scale_factor_observer_.Observe(linux_ui);
       // Send current scale factor as starting to observe doesn't actually
       // result in getting a OnDeviceScaleFactorChanged call.
-      SetDeviceScaleFactorToPlatformScreen(linux_ui->GetDeviceScaleFactor());
+      OnDeviceScaleFactorChanged();
     }
   }
 

@@ -28,6 +28,8 @@ const char kWebStoreFeature[] = "web_store";
 const char kCanvasFeature[] = "canvas";
 const char kExploreFeature[] = "explore";
 const char kCroshFeature[] = "crosh";
+const char kTerminalFeature[] = "terminal";
+const char kGalleryFeature[] = "gallery";
 
 const char kBlockedDisableMode[] = "blocked";
 const char kHiddenDisableMode[] = "hidden";
@@ -98,22 +100,36 @@ void SystemFeaturesDisableListPolicyHandler::ApplyList(
 
 SystemFeature SystemFeaturesDisableListPolicyHandler::ConvertToEnum(
     const std::string& system_feature) {
-  if (system_feature == kCameraFeature)
+  if (system_feature == kCameraFeature) {
     return SystemFeature::kCamera;
-  if (system_feature == kOsSettingsFeature)
+  }
+  if (system_feature == kOsSettingsFeature) {
     return SystemFeature::kOsSettings;
-  if (system_feature == kBrowserSettingsFeature)
+  }
+  if (system_feature == kBrowserSettingsFeature) {
     return SystemFeature::kBrowserSettings;
-  if (system_feature == kScanningFeature)
+  }
+  if (system_feature == kScanningFeature) {
     return SystemFeature::kScanning;
-  if (system_feature == kWebStoreFeature)
+  }
+  if (system_feature == kWebStoreFeature) {
     return SystemFeature::kWebStore;
-  if (system_feature == kCanvasFeature)
+  }
+  if (system_feature == kCanvasFeature) {
     return SystemFeature::kCanvas;
-  if (system_feature == kExploreFeature)
+  }
+  if (system_feature == kExploreFeature) {
     return SystemFeature::kExplore;
-  if (system_feature == kCroshFeature)
+  }
+  if (system_feature == kCroshFeature) {
     return SystemFeature::kCrosh;
+  }
+  if (system_feature == kTerminalFeature) {
+    return SystemFeature::kTerminal;
+  }
+  if (system_feature == kGalleryFeature) {
+    return SystemFeature::kGallery;
+  }
 
   LOG(ERROR) << "Unsupported system feature: " << system_feature;
   return SystemFeature::kUnknownSystemFeature;

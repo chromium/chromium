@@ -65,6 +65,7 @@ class CORE_EXPORT ContainerSelector {
 
   bool SelectsStyleContainers() const { return has_style_query_; }
   bool SelectsStickyContainers() const { return has_sticky_query_; }
+  bool HasUnknownFeature() const { return has_unknown_feature_; }
 
   PhysicalAxes GetPhysicalAxes() const { return physical_axes_; }
   LogicalAxes GetLogicalAxes() const { return logical_axes_; }
@@ -75,6 +76,7 @@ class CORE_EXPORT ContainerSelector {
   LogicalAxes logical_axes_{kLogicalAxisNone};
   bool has_style_query_{false};
   bool has_sticky_query_{false};
+  bool has_unknown_feature_{false};
 };
 
 class ScopedContainerSelector

@@ -120,8 +120,7 @@ public class StartSurfaceUserData implements UserData {
     /**
      * @return The saved feed instance state, or null if it is not previously saved.
      */
-    @Nullable
-    protected String restoreFeedInstanceState() {
+    protected @Nullable String restoreFeedInstanceState() {
         return mFeedsInstanceState;
     }
 

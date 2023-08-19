@@ -3,20 +3,20 @@
   <head>
     <title>getEnvironmentIntegrity</title>
     <script>
+      function returnResult(success, resultString) {
+        window.document.title = 'Done|' + (success ? 'Success' : 'Fail') + '|'+ resultString;
+      }
+
       function doGetEnvironmentIntegrity(contentBinding) {
         if (navigator.getEnvironmentIntegrity === undefined) {
-          window.document.title = 'Fail: navigator.getEnvironmentIntegrity === undefined';
+          returnResult(false, 'navigator.getEnvironmentIntegrity === undefined');
           return;
         }
 
         navigator.getEnvironmentIntegrity(contentBinding).then(token => {
-          if (token.encode() === '') {
-            window.document.title = 'Success';
-          } else {
-            window.document.title = 'Fail: token.encode() returned an incorrect value';
-          }
+          returnResult(true, token.encode());
         }).catch(e => {
-          window.document.title = 'Fail: ' + e;
+          returnResult(false, e);
         });
       }
     </script>

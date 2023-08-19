@@ -11,8 +11,9 @@
 #include <utility>
 #include <vector>
 
-#include "base/allocator/early_zone_registration_mac.h"
+#include "base/allocator/early_zone_registration_apple.h"
 #include "base/apple/bundle_locations.h"
+#include "base/apple/osstatus_logging.h"
 #include "base/at_exit.h"
 #include "base/base_switches.h"
 #include "base/check.h"
@@ -21,12 +22,12 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/mac/mac_logging.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_executor.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread.h"
 #include "chrome/app/chrome_crash_reporter_client.h"
 #include "chrome/app_shim/app_shim_controller.h"
@@ -43,10 +44,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "url/gurl.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 // The NSApplication for app shims is a vanilla NSApplication, but sub-class it
 // so that we can DCHECK that we know precisely when it is initialized.
@@ -162,6 +159,11 @@ int APP_SHIM_ENTRY_POINT_NAME(const app_mode::ChromeAppModeInfo* info) {
     }
     base::FeatureList::SetInstance(std::move(feature_list));
     mojo::core::InitFeatures();
+
+    // Create and start a ThreadPool using default parameters, matching for
+    // example utility processes.
+    base::ThreadPoolInstance::Create("AppShim");
+    base::ThreadPoolInstance::Get()->StartWithDefaultParams();
 
     // We're using an isolated Mojo connection between the browser and this
     // process, so this process must act as a broker.

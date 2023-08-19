@@ -5,13 +5,14 @@
 package org.chromium.components.browser_ui.accessibility;
 
 import static org.chromium.content_public.browser.HostZoomMap.AVAILABLE_ZOOM_FACTORS;
-import static org.chromium.content_public.browser.HostZoomMap.SYSTEM_FONT_SCALE;
 import static org.chromium.content_public.browser.HostZoomMap.TEXT_SIZE_MULTIPLIER_RATIO;
+import static org.chromium.content_public.browser.HostZoomMap.getSystemFontScale;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.HostZoomMap;
 
 import java.util.Arrays;
@@ -65,7 +66,7 @@ public class PageZoomUtils {
      * @return boolean
      */
     public static boolean shouldShowSettingsUI() {
-        return ContentFeatureList.isEnabled(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM);
+        return ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM);
     }
 
     /**
@@ -233,7 +234,7 @@ public class PageZoomUtils {
 
         // The default (float) |fontScale| is 1, the default page zoom is 1.
         // If the user has a system font scale other than the default, always show the menu item.
-        boolean isUsingDefaultSystemFontScale = MathUtils.areFloatsEqual(SYSTEM_FONT_SCALE, 1f);
+        boolean isUsingDefaultSystemFontScale = MathUtils.areFloatsEqual(getSystemFontScale(), 1f);
         if (!isUsingDefaultSystemFontScale) {
             PageZoomUma.logAppMenuEnabledStateHistogram(
                     PageZoomUma.AccessibilityPageZoomAppMenuEnabledState.OS_ENABLED);

@@ -11,7 +11,7 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
-#include "ui/color/color_provider_manager.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_utils.h"
 #include "ui/color/color_recipe.h"
 #include "ui/color/dynamic_color/palette.h"
@@ -42,6 +42,7 @@ void AddBaselinePalette(ColorProvider* provider) {
 
   mixer[kColorRefSecondary0] = {SkColorSetRGB(0x00, 0x00, 0x00)};
   mixer[kColorRefSecondary10] = {SkColorSetRGB(0x00, 0x1D, 0x35)};
+  mixer[kColorRefSecondary12] = {SkColorSetRGB(0x00, 0x22, 0x38)};
   mixer[kColorRefSecondary15] = {SkColorSetRGB(0x00, 0x28, 0x45)};
   mixer[kColorRefSecondary20] = {SkColorSetRGB(0x00, 0x33, 0x55)};
   mixer[kColorRefSecondary25] = {SkColorSetRGB(0x00, 0x3f, 0x66)};
@@ -88,6 +89,7 @@ void AddBaselinePalette(ColorProvider* provider) {
   mixer[kColorRefNeutral0] = {SkColorSetRGB(0x00, 0x00, 0x00)};
   mixer[kColorRefNeutral4] = {SkColorSetRGB(0x0E, 0x0E, 0x0F)};
   mixer[kColorRefNeutral6] = {SkColorSetRGB(0x13, 0x13, 0x14)};
+  mixer[kColorRefNeutral8] = {SkColorSetRGB(0x16, 0x18, 0x18)};
   mixer[kColorRefNeutral10] = {SkColorSetRGB(0x1F, 0x1F, 0x1F)};
   mixer[kColorRefNeutral12] = {SkColorSetRGB(0x1F, 0x20, 0x20)};
   mixer[kColorRefNeutral15] = {SkColorSetRGB(0x28, 0x28, 0x28)};
@@ -132,7 +134,7 @@ void AddBaselinePalette(ColorProvider* provider) {
 // palette so it is independent of ColorMode.
 void AddGeneratedPalette(ColorProvider* provider,
                          SkColor seed_color,
-                         ColorProviderManager::SchemeVariant variant) {
+                         ColorProviderKey::SchemeVariant variant) {
   std::unique_ptr<Palette> palette = GeneratePalette(seed_color, variant);
 
   ColorMixer& mixer = provider->AddMixer();
@@ -153,6 +155,7 @@ void AddGeneratedPalette(ColorProvider* provider,
 
   mixer[kColorRefSecondary0] = {palette->secondary().get(0)};
   mixer[kColorRefSecondary10] = {palette->secondary().get(10)};
+  mixer[kColorRefSecondary12] = {palette->secondary().get(12)};
   mixer[kColorRefSecondary15] = {palette->secondary().get(15)};
   mixer[kColorRefSecondary20] = {palette->secondary().get(20)};
   mixer[kColorRefSecondary25] = {palette->secondary().get(25)};
@@ -199,6 +202,7 @@ void AddGeneratedPalette(ColorProvider* provider,
   mixer[kColorRefNeutral0] = {palette->neutral().get(0)};
   mixer[kColorRefNeutral4] = {palette->neutral().get(4)};
   mixer[kColorRefNeutral6] = {palette->neutral().get(6)};
+  mixer[kColorRefNeutral8] = {palette->neutral().get(8)};
   mixer[kColorRefNeutral10] = {palette->neutral().get(10)};
   mixer[kColorRefNeutral12] = {palette->neutral().get(12)};
   mixer[kColorRefNeutral15] = {palette->neutral().get(15)};
@@ -239,15 +243,25 @@ void AddGeneratedPalette(ColorProvider* provider,
   mixer[kColorRefNeutralVariant100] = {palette->neutral_variant().get(100)};
 }
 
-void AddRefColorMixer(ColorProvider* provider,
-                      const ColorProviderManager::Key& key) {
+void AddRefColorMixer(ColorProvider* provider, const ColorProviderKey& key) {
   if (!key.user_color.has_value()) {
     AddBaselinePalette(provider);
   } else {
     // The default value for schemes is Tonal Spot.
     auto variant = key.scheme_variant.value_or(
-        ColorProviderManager::SchemeVariant::kTonalSpot);
-    AddGeneratedPalette(provider, key.user_color.value(), variant);
+        ColorProviderKey::SchemeVariant::kTonalSpot);
+
+    // If the user color is set to black libmonet will default to a pink primary
+    // color. This results in an unexpected user experience where all other
+    // shades of gray result in the default blue primary color. To avoid this
+    // edge case set the user_color one step above black to ensure the primary
+    // blue is used, see crbug.com/1457314.
+    SkColor user_color = key.user_color.value();
+    if (user_color == SK_ColorBLACK) {
+      user_color = SkColorSetRGB(0x01, 0x01, 0x01);
+    }
+
+    AddGeneratedPalette(provider, user_color, variant);
   }
 }
 

@@ -5,10 +5,9 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_MAC_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_MAC_H_
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/frame/native_browser_frame.h"
 
-#import "base/mac/scoped_nsobject.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/command_observer.h"
 #include "ui/views/widget/native_widget_mac.h"
 
@@ -85,7 +84,7 @@ class BrowserFrameMac : public views::NativeWidgetMac,
 
  private:
   raw_ptr<BrowserView> browser_view_;  // Weak. Our ClientView.
-  base::scoped_nsobject<BrowserWindowTouchBarViewsDelegate> touch_bar_delegate_;
+  BrowserWindowTouchBarViewsDelegate* __strong touch_bar_delegate_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_MAC_H_

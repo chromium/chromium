@@ -12,7 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/browser/service_worker/service_worker_context_core.h"
+#include "content/browser/service_worker/service_worker_version.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
@@ -53,9 +53,9 @@ class DocumentHelper : public DocumentService<blink::mojom::WebUsbService> {
     service_->GetDevice(guid, std::move(device_receiver));
   }
   void GetPermission(
-      std::vector<device::mojom::UsbDeviceFilterPtr> device_filters,
+      blink::mojom::WebUsbRequestDeviceOptionsPtr options,
       blink::mojom::WebUsbService::GetPermissionCallback callback) override {
-    service_->GetPermission(std::move(device_filters), std::move(callback));
+    service_->GetPermission(std::move(options), std::move(callback));
   }
   void ForgetDevice(
       const std::string& guid,
@@ -129,10 +129,10 @@ class WebUsbServiceImpl::UsbDeviceClient
 
 WebUsbServiceImpl::WebUsbServiceImpl(
     RenderFrameHostImpl* render_frame_host,
-    base::WeakPtr<ServiceWorkerContextCore> service_worker_context,
+    base::WeakPtr<ServiceWorkerVersion> service_worker_version,
     const url::Origin& origin)
     : render_frame_host_(render_frame_host),
-      service_worker_context_(std::move(service_worker_context)),
+      service_worker_version_(std::move(service_worker_version)),
       origin_(origin) {
   auto* delegate = GetContentClient()->browser()->GetUsbDelegate();
   if (delegate)
@@ -157,7 +157,8 @@ void WebUsbServiceImpl::Create(
 
   // Avoid creating the WebUsbService if there is no USB delegate to provide the
   // implementation.
-  if (!GetContentClient()->browser()->GetUsbDelegate()) {
+  UsbDelegate* delegate = GetContentClient()->browser()->GetUsbDelegate();
+  if (!delegate) {
     return;
   }
 
@@ -169,6 +170,10 @@ void WebUsbServiceImpl::Create(
     return;
   }
 
+  if (!delegate->PageMayUseUsb(render_frame_host.GetPage())) {
+    return;
+  }
+
   // DocumentHelper observes the lifetime of the document connected to
   // `render_frame_host` and destroys the WebUsbService when the Mojo connection
   // is disconnected, RenderFrameHost is deleted, or the RenderFrameHost commits
@@ -177,17 +182,17 @@ void WebUsbServiceImpl::Create(
   new DocumentHelper(
       std::make_unique<WebUsbServiceImpl>(
           &render_frame_host,
-          /*service_worker_context=*/nullptr,
+          /*service_worker_version=*/nullptr,
           render_frame_host.GetMainFrame()->GetLastCommittedOrigin()),
       render_frame_host, std::move(pending_receiver));
 }
 
 // static
 void WebUsbServiceImpl::Create(
-    base::WeakPtr<ServiceWorkerContextCore> service_worker_context,
+    base::WeakPtr<ServiceWorkerVersion> service_worker_version,
     const url::Origin& origin,
     mojo::PendingReceiver<blink::mojom::WebUsbService> pending_receiver) {
-  DCHECK(service_worker_context);
+  DCHECK(service_worker_version);
 
   // Avoid creating the WebUsbService if there is no USB delegate to provide
   // the implementation or if `origin` is not eligible to access WebUSB from a
@@ -201,7 +206,7 @@ void WebUsbServiceImpl::Create(
   // when a mojo interface error occurs.
   mojo::MakeSelfOwnedReceiver(std::make_unique<WebUsbServiceImpl>(
                                   /*render_frame_host=*/nullptr,
-                                  std::move(service_worker_context), origin),
+                                  std::move(service_worker_version), origin),
                               std::move(pending_receiver));
 }
 
@@ -209,8 +214,8 @@ BrowserContext* WebUsbServiceImpl::GetBrowserContext() const {
   if (render_frame_host_) {
     return render_frame_host_->GetBrowserContext();
   }
-  if (service_worker_context_) {
-    return service_worker_context_->wrapper()->browser_context();
+  if (service_worker_version_ && service_worker_version_->context()) {
+    return service_worker_version_->context()->wrapper()->browser_context();
   }
   return nullptr;
 }
@@ -290,7 +295,7 @@ void WebUsbServiceImpl::GetDevice(
 }
 
 void WebUsbServiceImpl::GetPermission(
-    std::vector<device::mojom::UsbDeviceFilterPtr> device_filters,
+    blink::mojom::WebUsbRequestDeviceOptionsPtr options,
     GetPermissionCallback callback) {
   auto* delegate = GetContentClient()->browser()->GetUsbDelegate();
   if (!delegate ||
@@ -299,8 +304,8 @@ void WebUsbServiceImpl::GetPermission(
     return;
   }
 
-  usb_chooser_ = delegate->RunChooser(
-      *render_frame_host_, std::move(device_filters), std::move(callback));
+  usb_chooser_ = delegate->RunChooser(*render_frame_host_, std::move(options),
+                                      std::move(callback));
 }
 
 void WebUsbServiceImpl::ForgetDevice(const std::string& guid,
@@ -377,26 +382,47 @@ void WebUsbServiceImpl::OnDeviceManagerConnectionError() {
 // device::mojom::UsbDeviceClient implementation:
 void WebUsbServiceImpl::IncrementConnectionCount() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!render_frame_host_)
-    return;
+
+  auto* delegate = GetContentClient()->browser()->GetUsbDelegate();
+  if (delegate) {
+    delegate->IncrementConnectionCount(GetBrowserContext(), origin_);
+  }
 
   if (connection_count_++ == 0) {
-    auto* web_contents = static_cast<WebContentsImpl*>(
-        WebContents::FromRenderFrameHost(render_frame_host_));
-    web_contents->IncrementUsbActiveFrameCount();
+    if (render_frame_host_) {
+      auto* web_contents = static_cast<WebContentsImpl*>(
+          WebContents::FromRenderFrameHost(render_frame_host_));
+      web_contents->IncrementUsbActiveFrameCount();
+    } else if (service_worker_version_) {
+      CHECK(!service_worker_activity_request_uuid_);
+      service_worker_activity_request_uuid_ = base::Uuid::GenerateRandomV4();
+      service_worker_version_->StartExternalRequest(
+          *service_worker_activity_request_uuid_,
+          ServiceWorkerExternalRequestTimeoutType::kDoesNotTimeout);
+    }
   }
 }
 
 void WebUsbServiceImpl::DecrementConnectionCount() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!render_frame_host_)
-    return;
+
+  auto* delegate = GetContentClient()->browser()->GetUsbDelegate();
+  if (delegate) {
+    delegate->DecrementConnectionCount(GetBrowserContext(), origin_);
+  }
 
   DCHECK_GT(connection_count_, 0);
   if (--connection_count_ == 0) {
-    auto* web_contents = static_cast<WebContentsImpl*>(
-        WebContents::FromRenderFrameHost(render_frame_host_));
-    web_contents->DecrementUsbActiveFrameCount();
+    if (render_frame_host_) {
+      auto* web_contents = static_cast<WebContentsImpl*>(
+          WebContents::FromRenderFrameHost(render_frame_host_));
+      web_contents->DecrementUsbActiveFrameCount();
+    } else if (service_worker_version_) {
+      CHECK(service_worker_activity_request_uuid_);
+      service_worker_version_->FinishExternalRequest(
+          *service_worker_activity_request_uuid_);
+      service_worker_activity_request_uuid_.reset();
+    }
   }
 }
 

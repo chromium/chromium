@@ -7,7 +7,9 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
@@ -15,6 +17,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/display_size_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/drive_pinning_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/theme_selection_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/touchpad_scroll_screen_handler.h"
 #include "chrome/grit/generated_resources.h"
@@ -31,18 +34,10 @@ const int kMaxScreensToShowChoobe = 10;
 // shown in the same order they are listed in this list.
 const StaticOobeScreenId kOptionalScreens[] = {
     TouchpadScrollScreenView::kScreenId,
-    ThemeSelectionScreenView::kScreenId,
+    DrivePinningScreenView::kScreenId,
     DisplaySizeScreenView::kScreenId,
+    ThemeSelectionScreenView::kScreenId,
 };
-
-bool IsOptionalScreen(OobeScreenId screen_id) {
-  for (const auto& screen : kOptionalScreens) {
-    if (screen.AsId() == screen_id) {
-      return true;
-    }
-  }
-  return false;
-}
 
 // Returns the last screen in a set, given the order of screens in the
 // `kOptionalScreens` array, if the set is empty, the function will return
@@ -206,6 +201,19 @@ bool ChoobeFlowController::IsScreenCompleted(OobeScreenId id) {
 }
 
 void ChoobeFlowController::OnChoobeFlowExit() {
+  base::UmaHistogramBoolean("OOBE.CHOOBE.FlowSkipped",
+                            completed_screens_ids_.empty());
+
+  for (auto static_id : kOptionalScreens) {
+    OobeScreenId id = static_id.AsId();
+    std::string screen_name = id.name;
+    screen_name[0] = base::ToUpperASCII(screen_name[0]);
+    std::string histogram_name = "OOBE.CHOOBE.ScreenCompleted." + screen_name;
+    bool is_completed =
+        completed_screens_ids_.find(id) != completed_screens_ids_.end();
+    base::UmaHistogramBoolean(histogram_name, is_completed);
+  }
+
   ClearPreferences(*ProfileManager::GetActiveUserProfile()->GetPrefs());
   is_choobe_active_ = false;
 }
@@ -255,6 +263,15 @@ bool ChoobeFlowController::IsScreenEligible(OobeScreenId id) {
   }
   return !wizard_controller->GetScreen(id)->ShouldBeSkipped(
       *host->GetWizardContext());
+}
+
+bool ChoobeFlowController::IsOptionalScreen(OobeScreenId screen_id) {
+  for (const auto& screen : kOptionalScreens) {
+    if (screen.AsId() == screen_id) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace ash

@@ -106,13 +106,6 @@ class COMPONENT_EXPORT(ASH_INSTALL_ATTRIBUTES) InstallAttributes {
   // Checks whether this is a cloud (DM server) managed enterprise device.
   bool IsCloudManaged() const;
 
-  // Checks whether this is an Active Directory managed enterprise device.
-  // In theory, this can still yield true for a few left-over AD devices.
-  // However, starting in M114, it is considered safe to assume that this
-  // function always returns false.
-  // TODO(b/279364186) Remove.
-  bool IsActiveDirectoryManaged() const;
-
   // Checks whether this is a consumer kiosk enabled device.
   bool IsConsumerKioskDeviceWithAutoLaunch();
 
@@ -168,7 +161,6 @@ class COMPONENT_EXPORT(ASH_INSTALL_ATTRIBUTES) InstallAttributes {
   // Constants for the possible device modes that can be stored in the lockbox.
   static const char kConsumerDeviceMode[];
   static const char kEnterpriseDeviceMode[];
-  static const char kEnterpriseADDeviceMode[];
   static const char kLegacyRetailDeviceMode[];
   static const char kConsumerKioskDeviceMode[];
   static const char kDemoDeviceMode[];

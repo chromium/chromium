@@ -732,4 +732,78 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpServerBrowserTest, Ipv6Only) {
       EvalJs(shell(), "connectToServerWithIPv6Only(/*ipv6Only=*/true, '::1')"));
 }
 
+// A ContentBrowserClient that grants Isolated Web Apps the "direct-sockets"
+// permission, but not "cross-origin-isolated", which should result in Direct
+// Sockets being disabled.
+class NoCoiPermissionIsolatedWebAppContentBrowserClient
+    : public test::IsolatedWebAppContentBrowserClient {
+ public:
+  explicit NoCoiPermissionIsolatedWebAppContentBrowserClient(
+      const url::Origin& isolated_app_origin)
+      : IsolatedWebAppContentBrowserClient(isolated_app_origin) {}
+
+  absl::optional<blink::ParsedPermissionsPolicy>
+  GetPermissionsPolicyForIsolatedWebApp(
+      content::BrowserContext* browser_context,
+      const url::Origin& app_origin) override {
+    return {{blink::ParsedPermissionsPolicyDeclaration(
+        blink::mojom::PermissionsPolicyFeature::kDirectSockets,
+        /*allowed_origins=*/{},
+        /*self_if_matches=*/app_origin,
+        /*matches_all_origins=*/false, /*matches_opaque_src=*/false)}};
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, NoCoiPermission) {
+  NoCoiPermissionIsolatedWebAppContentBrowserClient client(
+      url::Origin::Create(GetTestPageURL()));
+
+  ASSERT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
+
+  EXPECT_EQ(false, EvalJs(shell(), "self.crossOriginIsolated"));
+
+  const int listening_port = StartTcpServer();
+  const std::string script =
+      JsReplace("openTcp($1, $2)", net::IPAddress::IPv4Localhost().ToString(),
+                listening_port);
+
+  EXPECT_THAT(EvalJs(shell(), script).ExtractString(),
+              StartsWith("openTcp failed: NotAllowedError"));
+}
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, NotInCrossOriginIframe) {
+  net::EmbeddedTestServer test_server2{net::EmbeddedTestServer::TYPE_HTTPS};
+  test_server2.AddDefaultHandlers();
+  net::test_server::EmbeddedTestServerHandle server_handle =
+      test_server2.StartAndReturnHandle();
+
+  ASSERT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
+
+  EXPECT_EQ(true, EvalJs(shell(), "self.crossOriginIsolated"));
+  EXPECT_TRUE(ExecJs(shell(), "TCPSocket !== undefined"));
+
+  constexpr const char kCreateIframeJs[] = R"(
+      new Promise(resolve => {
+        let f = document.createElement('iframe');
+        f.src = $1;
+        f.allow = 'cross-origin-isolated';
+        f.addEventListener('load', () => resolve());
+        document.body.appendChild(f);
+      });
+  )";
+  GURL cross_origin_corp_url = test_server2.GetURL(
+      "/set-header?"
+      "Cross-Origin-Opener-Policy: same-origin&"
+      "Cross-Origin-Embedder-Policy: require-corp&"
+      "Cross-Origin-Resource-Policy: cross-origin&");
+  ASSERT_TRUE(content::ExecJs(
+      shell(), content::JsReplace(kCreateIframeJs, cross_origin_corp_url)));
+
+  content::RenderFrameHost* iframe_rfh = content::ChildFrameAt(shell(), 0);
+  EXPECT_FALSE(iframe_rfh->IsErrorDocument());
+  EXPECT_EQ(cross_origin_corp_url, iframe_rfh->GetLastCommittedURL());
+  EXPECT_EQ(true, EvalJs(iframe_rfh, "self.crossOriginIsolated"));
+  EXPECT_TRUE(ExecJs(shell(), "TCPSocket === undefined"));
+}
+
 }  // namespace content

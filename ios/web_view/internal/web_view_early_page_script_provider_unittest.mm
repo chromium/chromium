@@ -16,10 +16,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace ios_web_view {
 
 class WebViewEarlyPageScriptProviderTest : public TestWithLocaleAndResources {
@@ -48,14 +44,20 @@ class WebViewEarlyPageScriptProviderTest : public TestWithLocaleAndResources {
   }
 };
 
-// Test WebViewEarlyPageScriptProvder::SetScript properly updates the underlying
-// WKUserContentController.
-TEST_F(WebViewEarlyPageScriptProviderTest, SetScript) {
-  EXPECT_FALSE(UserScriptsContainString(@"WebViewEarlyPageScriptProvider"));
+// Test WebViewEarlyPageScriptProvder::SetScripts properly updates the
+// underlying WKUserContentController.
+TEST_F(WebViewEarlyPageScriptProviderTest, SetScripts) {
+  NSString* allFramesScript = @"WebViewEarlyPageScriptProvider-AllFrames";
+  NSString* mainFrameScript = @"WebViewEarlyPageScriptProvider-MainFrame";
+
+  EXPECT_FALSE(UserScriptsContainString(allFramesScript));
+  EXPECT_FALSE(UserScriptsContainString(mainFrameScript));
 
   WebViewEarlyPageScriptProvider::FromBrowserState(&browser_state_)
-      .SetScript(@"WebViewEarlyPageScriptProvider");
-  EXPECT_TRUE(UserScriptsContainString(@"WebViewEarlyPageScriptProvider"));
+      .SetScripts(allFramesScript, mainFrameScript);
+
+  EXPECT_TRUE(UserScriptsContainString(allFramesScript));
+  EXPECT_TRUE(UserScriptsContainString(mainFrameScript));
 }
 
 }  // namespace ios_web_view

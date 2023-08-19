@@ -4,46 +4,45 @@
 
 #include "chrome/browser/web_applications/web_app_utils.h"
 
-#include <bitset>
 #include <iterator>
+#include <map>
 #include <set>
-#include <type_traits>
+#include <string_view>
 #include <utility>
 
 #include "base/base64.h"
 #include "base/check.h"
-#include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/containers/enum_set.h"
 #include "base/containers/flat_set.h"
-#include "base/containers/flat_tree.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
+#include "base/functional/identity.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
-#include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/browser/web_applications/web_app_sources.h"
-#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/custom_handlers/protocol_handler.h"
 #include "components/grit/components_resources.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/services/app_service/public/cpp/run_on_os_login_types.h"
 #include "components/site_engagement/content/site_engagement_service.h"
-#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -52,10 +51,10 @@
 #include "content/public/common/alternative_error_page_override_info.mojom.h"
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
-#include "skia/ext/skia_utils_base.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "url/gurl.h"
@@ -64,6 +63,7 @@
 #include "base/feature_list.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/user_manager/user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -289,7 +289,7 @@ constexpr base::FilePath::CharType kManifestResourcesDirectoryName[] =
 constexpr base::FilePath::CharType kTempDirectoryName[] =
     FILE_PATH_LITERAL("Temp");
 
-bool AreWebAppsEnabled(const Profile* profile) {
+bool AreWebAppsEnabled(Profile* profile) {
   if (!profile || profile->IsSystemProfile())
     return false;
 
@@ -300,7 +300,8 @@ bool AreWebAppsEnabled(const Profile* profile) {
   // Web Apps should not be installed to the ChromeOS system profiles except the
   // lock screen app profile.
   if (!ash::ProfileHelper::IsUserProfile(original_profile) &&
-      !ash::ProfileHelper::IsLockScreenAppProfile(profile)) {
+      !ash::ProfileHelper::IsLockScreenAppProfile(profile) &&
+      !ash::IsShimlessRmaAppBrowserContext(profile)) {
     return false;
   }
   auto* user_manager = user_manager::UserManager::Get();
@@ -499,11 +500,21 @@ std::vector<std::u16string> TransformFileExtensionsForDisplay(
   return extensions_for_display;
 }
 
+bool IsRunOnOsLoginModeEnabledForAutostart(RunOnOsLoginMode login_mode) {
+  switch (login_mode) {
+    case RunOnOsLoginMode::kWindowed:
+      return true;
+    case RunOnOsLoginMode::kMinimized:
+      return true;
+    case RunOnOsLoginMode::kNotRun:
+      return false;
+  }
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 bool IsWebAppsCrosapiEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return base::FeatureList::IsEnabled(features::kWebAppsCrosapi) ||
-         crosapi::browser_util::IsLacrosPrimaryBrowser();
+  return crosapi::browser_util::IsLacrosEnabled();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   auto* lacros_service = chromeos::LacrosService::Get();
@@ -567,28 +578,18 @@ ExperimentalWebAppIsolationMode ResolveExperimentalWebAppIsolationFeature() {
 }
 #endif
 
-bool HasAnySpecifiedSourcesAndNoOtherSources(WebAppSources sources,
-                                             WebAppSources specified_sources) {
-  bool has_any_specified_sources = (sources & specified_sources).any();
-  bool has_no_other_sources = (sources & ~specified_sources).none();
+bool HasAnySpecifiedSourcesAndNoOtherSources(
+    WebAppManagementTypes sources,
+    WebAppManagementTypes specified_sources) {
+  bool has_any_specified_sources = sources.HasAny(specified_sources);
+  bool has_no_other_sources =
+      base::Difference(sources, specified_sources).Empty();
   return has_any_specified_sources && has_no_other_sources;
 }
 
-bool CanUserUninstallWebApp(WebAppSources sources) {
-  WebAppSources specified_sources;
-  for (WebAppManagement::Type type : {
-           WebAppManagement::kDefault,
-           WebAppManagement::kSync,
-           WebAppManagement::kWebAppStore,
-           WebAppManagement::kSubApp,
-           WebAppManagement::kOem,
-           WebAppManagement::kCommandLine,
-           WebAppManagement::kOneDriveIntegration,
-       }) {
-    specified_sources.set(type);
-  }
-
-  return HasAnySpecifiedSourcesAndNoOtherSources(sources, specified_sources);
+bool CanUserUninstallWebApp(WebAppManagementTypes sources) {
+  return HasAnySpecifiedSourcesAndNoOtherSources(sources,
+                                                 kUserUninstallableSources);
 }
 
 AppId GetAppIdFromAppSettingsUrl(const GURL& url) {
@@ -598,17 +599,6 @@ AppId GetAppIdFromAppSettingsUrl(const GURL& url) {
   if (path.size() <= 1)
     return AppId();
   return path.substr(1);
-}
-
-bool HasAppSettingsPage(Profile* profile, const GURL& url) {
-  const AppId app_id = GetAppIdFromAppSettingsUrl(url);
-  if (app_id.empty())
-    return false;
-
-  WebAppProvider* provider = WebAppProvider::GetForWebApps(profile);
-  if (!provider)
-    return false;
-  return provider->registrar_unsafe().IsLocallyInstalled(app_id);
 }
 
 bool IsInScope(const GURL& url, const GURL& scope) {
@@ -648,17 +638,6 @@ apps::LaunchContainer ConvertDisplayModeToAppLaunchContainer(
       return apps::LaunchContainer::kLaunchContainerWindow;
     case DisplayMode::kUndefined:
       return apps::LaunchContainer::kLaunchContainerNone;
-  }
-}
-
-std::string RunOnOsLoginModeToString(RunOnOsLoginMode mode) {
-  switch (mode) {
-    case RunOnOsLoginMode::kWindowed:
-      return "windowed";
-    case RunOnOsLoginMode::kMinimized:
-      return "minimized";
-    case RunOnOsLoginMode::kNotRun:
-      return "not run";
   }
 }
 
@@ -730,6 +709,10 @@ content::mojom::AlternativeErrorPageOverrideInfoPtr ConstructWebAppErrorPage(
   alternative_error_page_info->alternative_error_page_params = std::move(dict);
   alternative_error_page_info->resource_id = IDR_WEBAPP_ERROR_PAGE_HTML;
   return alternative_error_page_info;
+}
+
+bool IsValidScopeForLinkCapturing(const GURL& scope) {
+  return scope.is_valid() && scope.has_scheme() && scope.SchemeIsHTTPOrHTTPS();
 }
 
 }  // namespace web_app

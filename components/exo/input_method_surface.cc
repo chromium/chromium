@@ -93,7 +93,7 @@ void InputMethodSurface::SetWidgetBounds(const gfx::Rect& bounds,
     return;
 
   widget_->SetBounds(bounds);
-  UpdateSurfaceBounds();
+  UpdateHostWindowOrigin();
 
   // Bounds change requests will be ignored in client side.
 }

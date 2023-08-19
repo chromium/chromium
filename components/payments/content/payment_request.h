@@ -94,7 +94,7 @@ class PaymentRequest : public content::DocumentService<mojom::PaymentRequest>,
             std::vector<mojom::PaymentMethodDataPtr> method_data,
             mojom::PaymentDetailsPtr details,
             mojom::PaymentOptionsPtr options) override;
-  void Show(bool wait_for_updated_details) override;
+  void Show(bool wait_for_updated_details, bool had_user_activation) override;
   void Retry(mojom::PaymentValidationErrorsPtr errors) override;
   void UpdateWith(mojom::PaymentDetailsPtr details) override;
   void OnPaymentDetailsNotUpdated() override;
@@ -287,6 +287,11 @@ class PaymentRequest : public content::DocumentService<mojom::PaymentRequest>,
   // If not empty, use this error message for rejecting
   // PaymentRequest.show().
   std::string reject_show_error_message_;
+
+  // Whether the PaymentRequest.show() was successfully invoked without a user
+  // activation. Used to record the activationless show JourneyLogger event only
+  // if UI was shown.
+  bool is_activationless_show_ = false;
 
   base::WeakPtrFactory<PaymentRequest> weak_ptr_factory_{this};
 };

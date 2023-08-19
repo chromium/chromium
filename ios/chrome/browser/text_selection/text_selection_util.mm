@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/text_selection/text_selection_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 BASE_FEATURE(kEnableExpKitTextClassifier,
              "EnableExpKitTextClassifier",
              base::FEATURE_ENABLED_BY_DEFAULT);

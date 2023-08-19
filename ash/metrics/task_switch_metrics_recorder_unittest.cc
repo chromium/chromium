@@ -63,17 +63,6 @@ void TaskSwitchMetricsRecorderTest::TearDown() {
 
 }  // namespace
 
-// Verifies that task switches from a non ANY source also add data to the
-// Ash.TimeBetweenTaskSwitches histogram.
-TEST_F(TaskSwitchMetricsRecorderTest,
-       VerifyTaskSwitchesRecordInAllTaskSwitchHistogram) {
-  const std::string kHistogramName = "Ash.TimeBetweenTaskSwitches";
-
-  OnTaskSwitch(TaskSwitchSource::SHELF);
-  OnTaskSwitch(TaskSwitchSource::SHELF);
-  histogram_tester_->ExpectTotalCount(kHistogramName, 1);
-}
-
 // Verifies that the TaskSwitchSource::WINDOW_CYCLE_CONTROLLER source
 // adds data to the Ash.WindowCycleController.TimeBetweenTaskSwitches histogram.
 TEST_F(TaskSwitchMetricsRecorderTest,

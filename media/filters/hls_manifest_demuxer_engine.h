@@ -60,7 +60,10 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
   hls::ParseStatus::Or<scoped_refptr<hls::MediaPlaylist>>
   ParseMediaPlaylistFromStream(HlsDataSourceStream stream,
                                GURL uri,
-                               hls::types::DecimalInteger version);
+                               hls::types::DecimalInteger version) override;
+
+  // Test helpers.
+  void AddRenditionForTesting(std::unique_ptr<HlsRendition> test_rendition);
 
  private:
   struct PlaylistParseInfo {
@@ -84,6 +87,37 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
     // Only root playlists are allowed to be multivariant.
     bool allow_multivariant_playlist;
   };
+
+  // Call the `CheckState` method of each rendition recursively and
+  // asynchronously while also maintaining the correct delay time.
+  // `media_time` and `playback_rate` represent the state of the playing media
+  // `cb` allows requesting a delay time until the next CheckState call,
+  // `rendition_index` is the index into `renditions_` that should be
+  // asynchronously checked next, and `response_time` is what the previously
+  // checked renditions requested for a delay time. The ultimate response to
+  // `cb` should be the lowest of all requested delays, adjusted for the time
+  // taken to calculate later delays, e.g.:
+  // Rendition1 requests 5 seconds, takes 2 seconds
+  // Rendition2 requests 4 seconds, takes 1.5 seconds
+  // Rendition3 requests kNoTimestamp, takes 1 second
+  // First the 5 second response is carried forward, then after the second
+  // response is acquired, the lesser of (5 - 1.5) and 4 is selected, so 3.5
+  // seconds is carried forward as a delay time. Finally after the kNoTimestamp
+  // response is acquired, the duration is once again subtracted and a final
+  // delay time of 2.5 seconds is returned via cb.
+  void CheckStateAtIndex(base::TimeDelta media_time,
+                         double playback_rate,
+                         ManifestDemuxer::DelayCallback cb,
+                         size_t rendition_index,
+                         absl::optional<base::TimeDelta> response_time);
+
+  // Helper for `CheckStateAtIndex` to be bound for Rendition::CheckState
+  // method calls.
+  void OnStateChecked(
+      base::TimeTicks call_start,
+      absl::optional<base::TimeDelta> prior_delay,
+      base::OnceCallback<void(absl::optional<base::TimeDelta>)> cb,
+      base::TimeDelta delay_time);
 
   // Helpers to call |PlayerImplDemuxer::OnDemuxerError|.
   void Abort(HlsDemuxerStatus status);
@@ -135,7 +169,7 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
   GURL root_playlist_uri_;
 
   std::unique_ptr<MediaLog> media_log_;
-  base::raw_ptr<ManifestDemuxerEngineHost> host_ = nullptr;
+  raw_ptr<ManifestDemuxerEngineHost> host_ = nullptr;
 
   // The codec detector is a reusable way for determining codecs in a media
   // stream.

@@ -453,7 +453,7 @@ void HIDDevice::Trace(Visitor* visitor) const {
   visitor->Trace(receiver_);
   visitor->Trace(device_requests_);
   visitor->Trace(collections_);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   ScriptWrappable::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }

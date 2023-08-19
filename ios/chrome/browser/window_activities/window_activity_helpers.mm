@@ -4,11 +4,7 @@
 
 #import "ios/chrome/browser/window_activities/window_activity_helpers.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
@@ -117,16 +113,16 @@ UrlLoadParams LoadParamsFromActivity(NSUserActivity* activity) {
 
   BOOL incognito =
       [activity.activityType isEqualToString:kLoadIncognitoURLActivityType];
-  NSURL* passed_url = base::mac::ObjCCast<NSURL>(activity.userInfo[kURLKey]);
+  NSURL* passed_url = base::apple::ObjCCast<NSURL>(activity.userInfo[kURLKey]);
   NSURL* referer_url =
-      base::mac::ObjCCast<NSURL>(activity.userInfo[kReferrerURLKey]);
+      base::apple::ObjCCast<NSURL>(activity.userInfo[kReferrerURLKey]);
 
   GURL url = net::GURLWithNSURL(passed_url);
   UrlLoadParams params = UrlLoadParams::InNewTab(url);
   params.in_incognito = incognito;
   if (referer_url) {
     NSNumber* policy_value =
-        base::mac::ObjCCast<NSNumber>(activity.userInfo[kReferrerPolicyKey]);
+        base::apple::ObjCCast<NSNumber>(activity.userInfo[kReferrerPolicyKey]);
     web::ReferrerPolicy policy =
         static_cast<web::ReferrerPolicy>(policy_value.intValue);
     params.web_params.referrer =

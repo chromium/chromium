@@ -11,10 +11,10 @@ member_on_stack.cpp:12:3: warning: [blink-gc] Member variable strong declared on
 member_on_stack.cpp:13:3: warning: [blink-gc] Member variable weak declared on stack here (use raw pointer or reference instead):
   WeakMember<HeapObject> weak;
   ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-member_on_stack.cpp:18:20: warning: [blink-gc] Member variable  declared on stack here (use raw pointer or reference instead):
+member_on_stack.cpp:19:20: warning: [blink-gc] Member variable  declared on stack here (use raw pointer or reference instead):
 void MethodWithArg(Member<HeapObject>) {}
                    ^~~~~~~~~~~~~~~~~~
-member_on_stack.cpp:20:25: warning: [blink-gc] Member variable  declared on stack here (use raw pointer or reference instead):
+member_on_stack.cpp:21:25: warning: [blink-gc] Member variable  declared on stack here (use raw pointer or reference instead):
 void MethodWithConstArg(const Member<HeapObject>) {}
                         ^~~~~~~~~~~~~~~~~~~~~~~~
 6 warnings generated.

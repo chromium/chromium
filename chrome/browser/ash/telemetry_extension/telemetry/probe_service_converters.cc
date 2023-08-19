@@ -16,8 +16,7 @@
 #include "chromeos/services/network_health/public/mojom/network_health_types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
-namespace converters {
+namespace ash::converters::telemetry {
 
 namespace {
 
@@ -56,8 +55,10 @@ cros_healthd::mojom::ProbeCategoryEnum Convert(
       return cros_healthd::mojom::ProbeCategoryEnum::kAudio;
     case crosapi::mojom::ProbeCategoryEnum::kBus:
       return cros_healthd::mojom::ProbeCategoryEnum::kBus;
+    case crosapi::mojom::ProbeCategoryEnum::kDisplay:
+      return cros_healthd::mojom::ProbeCategoryEnum::kDisplay;
   }
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace
@@ -70,7 +71,27 @@ crosapi::mojom::ProbeErrorPtr UncheckedConvertPtr(
                                          std::move(input->msg));
 }
 
-crosapi::mojom::UInt64ValuePtr UncheckedConvertPtr(
+absl::optional<double> UncheckedConvertPtr(
+    cros_healthd::mojom::NullableDoublePtr input) {
+  return input->value;
+}
+
+absl::optional<uint8_t> UncheckedConvertPtr(
+    cros_healthd::mojom::NullableUint8Ptr input) {
+  return input->value;
+}
+
+absl::optional<uint16_t> UncheckedConvertPtr(
+    cros_healthd::mojom::NullableUint16Ptr input) {
+  return input->value;
+}
+
+absl::optional<uint32_t> UncheckedConvertPtr(
+    cros_healthd::mojom::NullableUint32Ptr input) {
+  return input->value;
+}
+
+crosapi::mojom::UInt64ValuePtr LegacyUncheckedConvertPtr(
     cros_healthd::mojom::NullableUint64Ptr input) {
   return crosapi::mojom::UInt64Value::New(input->value);
 }
@@ -190,7 +211,7 @@ crosapi::mojom::ProbeBatteryInfoPtr UncheckedConvertPtr(
       Convert(input->charge_now), Convert(input->current_now),
       std::move(input->technology), std::move(input->status),
       std::move(input->manufacture_date),
-      ConvertProbePtr(std::move(input->temperature)));
+      LegacyConvertProbePtr(std::move(input->temperature)));
 }
 
 crosapi::mojom::ProbeBatteryResultPtr UncheckedConvertPtr(
@@ -216,7 +237,8 @@ crosapi::mojom::ProbeNonRemovableBlockDeviceInfoPtr UncheckedConvertPtr(
       Convert(input->read_time_seconds_since_last_boot),
       Convert(input->write_time_seconds_since_last_boot),
       Convert(input->io_time_seconds_since_last_boot),
-      ConvertProbePtr(std::move(input->discard_time_seconds_since_last_boot)));
+      LegacyConvertProbePtr(
+          std::move(input->discard_time_seconds_since_last_boot)));
 }
 
 crosapi::mojom::ProbeNonRemovableBlockDeviceResultPtr UncheckedConvertPtr(
@@ -307,6 +329,57 @@ crosapi::mojom::ProbeCpuResultPtr UncheckedConvertPtr(
       return crosapi::mojom::ProbeCpuResult::NewError(
           ConvertProbePtr(std::move(input->get_error())));
   }
+}
+
+crosapi::mojom::ProbeDisplayResultPtr UncheckedConvertPtr(
+    cros_healthd::mojom::DisplayResultPtr input) {
+  switch (input->which()) {
+    case cros_healthd::mojom::DisplayResult::Tag::kDisplayInfo:
+      return crosapi::mojom::ProbeDisplayResult::NewDisplayInfo(
+          ConvertProbePtr(std::move(input->get_display_info())));
+    case cros_healthd::mojom::DisplayResult::Tag::kError:
+      return crosapi::mojom::ProbeDisplayResult::NewError(
+          ConvertProbePtr(std::move(input->get_error())));
+  }
+}
+
+crosapi::mojom::ProbeDisplayInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::DisplayInfoPtr input) {
+  return crosapi::mojom::ProbeDisplayInfo::New(
+      ConvertProbePtr(std::move(input->embedded_display)),
+      ConvertOptionalPtrVector<crosapi::mojom::ProbeExternalDisplayInfoPtr>(
+          std::move(input->external_displays)));
+}
+
+crosapi::mojom::ProbeEmbeddedDisplayInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::EmbeddedDisplayInfoPtr input) {
+  return crosapi::mojom::ProbeEmbeddedDisplayInfo::New(
+      input->privacy_screen_supported, input->privacy_screen_enabled,
+      ConvertProbePtr(std::move(input->display_width)),
+      ConvertProbePtr(std::move(input->display_height)),
+      ConvertProbePtr(std::move(input->resolution_horizontal)),
+      ConvertProbePtr(std::move(input->resolution_vertical)),
+      ConvertProbePtr(std::move(input->refresh_rate)), input->manufacturer,
+      ConvertProbePtr(std::move(input->model_id)),
+      ConvertProbePtr(std::move(input->serial_number)),
+      ConvertProbePtr(std::move(input->manufacture_week)),
+      ConvertProbePtr(std::move(input->manufacture_year)), input->edid_version,
+      Convert(input->input_type), input->display_name);
+}
+
+crosapi::mojom::ProbeExternalDisplayInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::ExternalDisplayInfoPtr input) {
+  return crosapi::mojom::ProbeExternalDisplayInfo::New(
+      ConvertProbePtr(std::move(input->display_width)),
+      ConvertProbePtr(std::move(input->display_height)),
+      ConvertProbePtr(std::move(input->resolution_horizontal)),
+      ConvertProbePtr(std::move(input->resolution_vertical)),
+      ConvertProbePtr(std::move(input->refresh_rate)), input->manufacturer,
+      ConvertProbePtr(std::move(input->model_id)),
+      ConvertProbePtr(std::move(input->serial_number)),
+      ConvertProbePtr(std::move(input->manufacture_week)),
+      ConvertProbePtr(std::move(input->manufacture_year)), input->edid_version,
+      Convert(input->input_type), input->display_name);
 }
 
 crosapi::mojom::ProbeTimezoneInfoPtr UncheckedConvertPtr(
@@ -541,7 +614,8 @@ crosapi::mojom::ProbeTelemetryInfoPtr UncheckedConvertPtr(
       ConvertProbePtr(std::move(input->network_result)),
       ConvertProbePtr(std::move(input->tpm_result)),
       ConvertProbePtr(std::move(input->audio_result)),
-      ConvertProbePtr(std::move(input->bus_result)));
+      ConvertProbePtr(std::move(input->bus_result)),
+      ConvertProbePtr(std::move(input->display_result)));
 }
 
 }  // namespace unchecked
@@ -559,7 +633,7 @@ crosapi::mojom::ProbeErrorType Convert(cros_healthd::mojom::ErrorType input) {
     case cros_healthd::mojom::ErrorType::kServiceUnavailable:
       return crosapi::mojom::ProbeErrorType::kServiceUnavailable;
   }
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 crosapi::mojom::ProbeUsbVersion Convert(cros_healthd::mojom::UsbVersion input) {
@@ -575,7 +649,7 @@ crosapi::mojom::ProbeUsbVersion Convert(cros_healthd::mojom::UsbVersion input) {
     case cros_healthd::mojom::UsbVersion::kUsb3:
       return crosapi::mojom::ProbeUsbVersion::kUsb3;
   }
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 crosapi::mojom::ProbeUsbSpecSpeed Convert(
@@ -600,7 +674,7 @@ crosapi::mojom::ProbeUsbSpecSpeed Convert(
     case cros_healthd::mojom::UsbSpecSpeed::k20Gbps:
       return crosapi::mojom::ProbeUsbSpecSpeed::k20Gbps;
   }
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 crosapi::mojom::ProbeFwupdVersionFormat Convert(
@@ -635,7 +709,7 @@ crosapi::mojom::ProbeFwupdVersionFormat Convert(
     case cros_healthd::mojom::FwupdVersionFormat::kHex:
       return crosapi::mojom::ProbeFwupdVersionFormat::kHex;
   }
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 crosapi::mojom::ProbeCpuArchitectureEnum Convert(
@@ -650,7 +724,7 @@ crosapi::mojom::ProbeCpuArchitectureEnum Convert(
     case cros_healthd::mojom::CpuArchitectureEnum::kArmv7l:
       return crosapi::mojom::ProbeCpuArchitectureEnum::kArmv7l;
   }
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 crosapi::mojom::ProbeTpmGSCVersion Convert(
@@ -663,7 +737,20 @@ crosapi::mojom::ProbeTpmGSCVersion Convert(
     case cros_healthd::mojom::TpmGSCVersion::kTi50:
       return crosapi::mojom::ProbeTpmGSCVersion::kTi50;
   }
-  NOTREACHED();
+  NOTREACHED_NORETURN();
+}
+
+crosapi::mojom::ProbeDisplayInputType Convert(
+    cros_healthd::mojom::DisplayInputType input) {
+  switch (input) {
+    case cros_healthd::mojom::DisplayInputType::kUnmappedEnumField:
+      return crosapi::mojom::ProbeDisplayInputType::kUnmappedEnumField;
+    case cros_healthd::mojom::DisplayInputType::kDigital:
+      return crosapi::mojom::ProbeDisplayInputType::kDigital;
+    case cros_healthd::mojom::DisplayInputType::kAnalog:
+      return crosapi::mojom::ProbeDisplayInputType::kAnalog;
+  }
+  NOTREACHED_NORETURN();
 }
 
 crosapi::mojom::BoolValuePtr Convert(bool input) {
@@ -729,5 +816,4 @@ std::vector<cros_healthd::mojom::ProbeCategoryEnum> ConvertCategoryVector(
   return output;
 }
 
-}  // namespace converters
-}  // namespace ash
+}  // namespace ash::converters::telemetry

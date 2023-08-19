@@ -15,8 +15,10 @@
 #include "content/public/browser/web_authentication_request_proxy.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/cable/cable_discovery_data.h"
+#include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
+#include "device/fido/public_key_credential_descriptor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -180,7 +182,7 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
     : public device::FidoRequestHandlerBase::Observer {
  public:
   using AccountPreselectedCallback =
-      base::RepeatingCallback<void(std::vector<uint8_t> credential_id)>;
+      base::RepeatingCallback<void(device::PublicKeyCredentialDescriptor)>;
 
   // Failure reasons that might be of interest to the user, so the embedder may
   // decide to inform the user.
@@ -202,6 +204,18 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
     // kWinUserCancelled means that the user clicked "Cancel" in the native
     // Windows UI.
     kWinUserCancelled,
+    kHybridTransportError,
+  };
+
+  // RequestSource enumerates the source of a request, which is either the Web
+  // Authentication API (https://www.w3.org/TR/webauthn-2/), the Secure Payment
+  // Authentication API (https://www.w3.org/TR/secure-payment-confirmation), or
+  // a browser-internal use (which applies whenever
+  // `AuthenticatorCommon::Create` is used).
+  enum class RequestSource {
+    kWebAuthentication,
+    kSecurePaymentConfirmation,
+    kInternal,
   };
 
   AuthenticatorRequestClientDelegate();
@@ -231,6 +245,13 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
   // the request with the error right away.
   virtual bool DoesBlockRequestOnFailure(InterestingFailureReason reason);
 
+  // TransactionSuccessful is called when any WebAuthn get() or create() call
+  // completes successfully.
+  virtual void OnTransactionSuccessful(
+      RequestSource request_source,
+      device::FidoRequestType request_type,
+      device::AuthenticatorType authenticator_type);
+
   // Supplies callbacks that the embedder can invoke to initiate certain
   // actions, namely: cancel the request, start the request over, preselect an
   // account, dispatch request to connected authenticators, and power on the
@@ -259,15 +280,23 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
       bool is_enterprise_attestation,
       base::OnceCallback<void(bool)> callback);
 
-  // ConfigureCable optionally configures Cloud-assisted Bluetooth Low Energy
-  // transports. |origin| is the origin of the calling site and
-  // |pairings_from_extension| are caBLEv1 pairings that have been provided in
-  // an extension to the WebAuthn get() call. |resident_key_requirement| is only
-  // set when provided (i.e. for makeCredential calls) and reflects the value
-  // requested by the site. If the embedder wishes, it may use this to configure
-  // caBLE on the |FidoDiscoveryFactory| for use in this request.
-  virtual void ConfigureCable(
+  // ConfigureDiscoveries optionally configures |fido_discovery_factory|.
+  //
+  // |origin| is the origin of the calling site, |rp_id| is the relying party
+  // identifier of the request, |request_type| is the type of the request and
+  // |resident_key_requirement| (which is only set when provided, i.e. for
+  // makeCredential calls) reflects the value requested by the site.
+  //
+  // caBLE (also called the "hybrid" transport) must be configured in order to
+  // be functional and |pairings_from_extension| contains any caBLEv1 pairings
+  // that have been provided in an extension to the WebAuthn get() call.
+  //
+  // Other FidoDiscoveryFactory fields (e.g. the `LAContextDropbox`) can also be
+  // configured by this function.
+  virtual void ConfigureDiscoveries(
       const url::Origin& origin,
+      const std::string& rp_id,
+      RequestSource request_source,
       device::FidoRequestType request_type,
       absl::optional<device::ResidentKeyRequirement> resident_key_requirement,
       base::span<const device::CableDiscoveryData> pairings_from_extension,

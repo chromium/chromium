@@ -13,27 +13,44 @@ use std::process;
 
 use anyhow::{Context, Result};
 
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+pub enum SecurityCritical {
+    Yes,
+    No,
+}
+impl From<bool> for SecurityCritical {
+    fn from(b: bool) -> Self {
+        if b { Self::Yes } else { Self::No }
+    }
+}
+
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+pub enum Shipped {
+    Yes,
+    No,
+}
+impl From<bool> for Shipped {
+    fn from(b: bool) -> Self {
+        if b { Self::Yes } else { Self::No }
+    }
+}
+
 /// Runs the download subcommand, which downloads a crate from crates.io and
 /// unpacks it into the Chromium tree.
 pub fn download(
     name: &str,
     version: semver::Version,
-    security: bool,
+    security: SecurityCritical,
+    shipped: Shipped,
     paths: &paths::ChromiumPaths,
 ) -> Result<()> {
     let vendored_crate = crates::VendoredCrate { name: name.into(), version: version.clone() };
     let build_path = paths.third_party.join(ThirdPartySource::build_path(&vendored_crate));
     let crate_path = paths.third_party.join(ThirdPartySource::crate_path(&vendored_crate));
 
-    let url = format!(
-        "{dir}/{name}/{name}-{version}.{suffix}",
-        dir = CRATES_IO_DOWNLOAD_URL,
-        suffix = CRATES_IO_DOWNLOAD_SUFFIX
-    );
-    let curl_out = check_output(
-        &mut process::Command::new("curl").arg("--fail").arg(url.to_string()),
-        "curl",
-    )?;
+    let url =
+        format!("{CRATES_IO_DOWNLOAD_URL}/{name}/{name}-{version}.{CRATES_IO_DOWNLOAD_SUFFIX}");
+    let curl_out = check_output(process::Command::new("curl").arg("--fail").arg(&url), "curl")?;
     check_exit_ok(&curl_out, "curl")?;
 
     // Makes the directory where the build file will go. The crate's source code
@@ -46,7 +63,7 @@ pub fn download(
     std::fs::create_dir(&crate_path).expect("Crate directory '{crate_path}' already exists");
 
     let mut untar = check_spawn(
-        &mut process::Command::new("tar")
+        process::Command::new("tar")
             // Extract and unzip from stdin.
             .arg("xzf")
             .arg("-")
@@ -79,11 +96,11 @@ pub fn download(
 
     let (_, readme_license) = ALLOWED_LICENSES
         .iter()
-        .find(|(allowed_license, _)| &cargo.package.license == *allowed_license)
+        .find(|(allowed_license, _)| cargo.package.license == *allowed_license)
         .expect("License in downloaded Cargo.toml is not in ALLOWED_LICENSES");
 
     let vcs_path = crate_path.join(".cargo_vcs_info.json");
-    let vcs_contents = match fs::read_to_string(&vcs_path) {
+    let vcs_contents = match fs::read_to_string(vcs_path) {
         Ok(s) => serde_json::from_str(&s).unwrap(),
         Err(_) => None,
     };
@@ -101,7 +118,7 @@ pub fn download(
         }
     });
 
-    let readme = gen_readme_chromium_text(&cargo, readme_license, githash, security);
+    let readme = gen_readme_chromium_text(&cargo, readme_license, githash, security, shipped);
     std::fs::write(build_path.join("README.chromium"), readme)
         .expect("Failed to write README.chromium");
 
@@ -115,22 +132,25 @@ fn gen_readme_chromium_text(
     manifest: &CargoManifest,
     license: &str,
     githash: Option<&str>,
-    security: bool,
+    security: SecurityCritical,
+    shipped: Shipped,
 ) -> String {
-    let security = if security { "yes" } else { "no" };
+    let security = if security == SecurityCritical::Yes { "yes" } else { "no" };
+    let shipped = if shipped == Shipped::Yes { "yes" } else { "no" };
 
     let revision = githash.map_or_else(String::new, |s| format!("Revision: {s}\n"));
 
     format!(
         "Name: {crate_name}\n\
-         URL: {url}\n\
+         URL: {CRATES_IO_VIEW_URL}/{package_name}\n\
          Description: {description}\n\
          Version: {version}\n\
          Security Critical: {security}\n\
+         Shipped: {shipped}\n\
          License: {license}\n\
          {revision}",
         crate_name = manifest.package.name,
-        url = format!("{}/{}", CRATES_IO_VIEW_URL, manifest.package.name),
+        package_name = manifest.package.name,
         description = manifest.package.description.as_ref().unwrap_or(&"".to_string()),
         version = manifest.package.version,
     )
@@ -142,7 +162,7 @@ static CRATES_IO_VIEW_URL: &str = "https://crates.io/crates";
 
 // Allowed licenses, in the format they are specified in Cargo.toml files from
 // crates.io, and the format to write to README.chromium.
-static ALLOWED_LICENSES: [(&str, &str); 15] = [
+static ALLOWED_LICENSES: [(&str, &str); 16] = [
     // ("Cargo.toml string", "License for README.chromium")
     ("Apache-2.0", "Apache 2.0"),
     ("MIT OR Apache-2.0", "Apache 2.0"),
@@ -157,6 +177,7 @@ static ALLOWED_LICENSES: [(&str, &str); 15] = [
     ("BSD-3-Clause", "BSD 3-Clause"),
     ("ISC", "ISC"),
     ("MIT OR Zlib OR Apache-2.0", "Apache 2.0"),
+    ("Zlib OR Apache-2.0 OR MIT", "Apache 2.0"),
     ("0BSD OR MIT OR Apache-2.0", "Apache 2.0"),
     (
         "(MIT OR Apache-2.0) AND Unicode-DFS-2016",

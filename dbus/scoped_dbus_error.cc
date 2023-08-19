@@ -4,7 +4,7 @@
 
 #include "dbus/scoped_dbus_error.h"
 
-namespace dbus {
+namespace dbus::internal {
 
 ScopedDBusError::ScopedDBusError() {
   dbus_error_init(&error_);
@@ -18,4 +18,4 @@ bool ScopedDBusError::is_set() const {
   return dbus_error_is_set(&error_);
 }
 
-}  // namespace dbus
+}  // namespace dbus::internal

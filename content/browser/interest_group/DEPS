@@ -1,5 +1,6 @@
 include_rules = [
   "+content/services/auction_worklet/public/mojom",
+  "+content/services/auction_worklet/public/cpp",
 ]
 
 specific_include_rules = {

@@ -9,10 +9,6 @@
 
 #include <string>
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 void Usage() {
   fprintf(stderr,
           "usage: gcapi_example [options]\n"

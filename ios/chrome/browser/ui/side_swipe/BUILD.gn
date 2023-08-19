@@ -3,15 +3,14 @@
 # found in the LICENSE file.
 
 source_set("side_swipe") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "card_side_swipe_view.h",
     "card_side_swipe_view.mm",
-    "side_swipe_controller+private.h",
-    "side_swipe_controller.h",
-    "side_swipe_controller.mm",
     "side_swipe_gesture_recognizer.h",
     "side_swipe_gesture_recognizer.mm",
+    "side_swipe_mediator+private.h",
+    "side_swipe_mediator.h",
+    "side_swipe_mediator.mm",
     "side_swipe_navigation_view.h",
     "side_swipe_navigation_view.mm",
     "side_swipe_util.h",
@@ -54,9 +53,8 @@ source_set("side_swipe") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [ "side_swipe_controller_unittest.mm" ]
+  sources = [ "side_swipe_mediator_unittest.mm" ]
   deps = [
     ":side_swipe",
     "//base",
@@ -65,6 +63,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/snapshots",
+    "//ios/chrome/browser/ui/fullscreen",
     "//ios/chrome/test:test_support",
     "//ios/web/common",
     "//ios/web/public/test",
@@ -74,10 +74,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "side_swipe_egtest.mm" ]
   deps = [

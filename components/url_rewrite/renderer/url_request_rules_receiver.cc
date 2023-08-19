@@ -27,9 +27,9 @@ UrlRequestRulesReceiver::~UrlRequestRulesReceiver() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-const scoped_refptr<UrlRequestRewriteRules>&
-UrlRequestRulesReceiver::GetCachedRules() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+scoped_refptr<UrlRequestRewriteRules> UrlRequestRulesReceiver::GetCachedRules()
+    const {
+  base::AutoLock guard(lock_);
   return cached_rules_;
 }
 
@@ -43,6 +43,7 @@ void UrlRequestRulesReceiver::OnUrlRequestRulesReceiverAssociatedReceiver(
 void UrlRequestRulesReceiver::OnRulesUpdated(
     mojom::UrlRequestRewriteRulesPtr rules) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::AutoLock guard(lock_);
   cached_rules_ =
       base::MakeRefCounted<UrlRequestRewriteRules>(std::move(rules));
 }

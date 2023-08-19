@@ -11,7 +11,6 @@
 #include "ash/ash_export.h"
 #include "ash/frame_sink/ui_resource.h"
 #include "base/containers/flat_map.h"
-#include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "ui/gfx/geometry/size.h"

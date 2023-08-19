@@ -6,10 +6,6 @@
 
 #import "ios/web/navigation/navigation_item_impl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace web {
 
 ScopedNavigationItemImplList CreateScopedNavigationItemImplList(

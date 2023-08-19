@@ -6,8 +6,8 @@
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "device/fido/features.h"
-#include "services/device/device_service_jni_headers/DeviceFeatureMap_jni.h"
 #include "services/device/public/cpp/device_features.h"
+#include "services/device/public/java/device_feature_list_jni/DeviceFeatureMap_jni.h"
 
 namespace features {
 
@@ -19,10 +19,11 @@ namespace {
 // code base.
 const base::Feature* const kFeaturesExposedToJava[] = {
     &device::kWebAuthnAndroidCredMan,
+    &device::kWebAuthnAndroidHybridClientUi,
+    &device::kWebAuthnCableViaCredMan,
+    &device::kWebAuthnDontPrelinkInProfiles,
     &device::kWebAuthnHybridLinkWithoutNotifications,
     &kGenericSensorExtraClasses,
-    &device::kWebAuthnHybridLinkWithoutNotifications,
-    &device::kWebAuthnAndroidHybridClientUi,
 };
 
 // static

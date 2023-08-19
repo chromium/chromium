@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ui/settings/notifications/tracking_price/tracking_price_coordinator.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/check_op.h"
-#import "base/mac/foundation_util.h"
 #import "components/commerce/core/shopping_service.h"
 #import "ios/chrome/browser/commerce/shopping_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
@@ -19,10 +19,6 @@
 #import "ios/chrome/browser/ui/settings/notifications/tracking_price/tracking_price_view_controller.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 @interface TrackingPriceCoordinator () <
     TrackingPriceViewControllerPresentationDelegate>
@@ -73,6 +69,10 @@
                                            animated:YES];
 }
 
+- (void)stop {
+  [self dimissAlertCoordinator];
+}
+
 #pragma mark - TrackingPriceViewControllerPresentationDelegate
 
 - (void)trackingPriceViewControllerDidRemove:
@@ -98,6 +98,7 @@
   NSString* settingsTitle = l10n_util::GetNSString(
       IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_PERMISSION_REDIRECT_ALERT_REDIRECT);
 
+  __weak TrackingPriceCoordinator* weakSelf = self;
   [_alertCoordinator stop];
   _alertCoordinator =
       [[AlertCoordinator alloc] initWithBaseViewController:self.viewController
@@ -105,7 +106,9 @@
                                                      title:alertTitle
                                                    message:alertMessage];
   [_alertCoordinator addItemWithTitle:cancelTitle
-                               action:nil
+                               action:^{
+                                 [weakSelf dimissAlertCoordinator];
+                               }
                                 style:UIAlertActionStyleCancel];
   [_alertCoordinator
       addItemWithTitle:settingsTitle
@@ -114,9 +117,17 @@
                                 openURL:[NSURL URLWithString:settingURL]
                                 options:{}
                       completionHandler:nil];
+                  [weakSelf dimissAlertCoordinator];
                 }
                  style:UIAlertActionStyleDefault];
   [_alertCoordinator start];
+}
+
+#pragma mark - Private
+
+- (void)dimissAlertCoordinator {
+  [_alertCoordinator stop];
+  _alertCoordinator = nil;
 }
 
 @end

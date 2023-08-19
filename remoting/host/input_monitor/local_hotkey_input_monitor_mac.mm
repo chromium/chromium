@@ -10,13 +10,12 @@
 #include <cstdint>
 #include <utility>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/mac/scoped_cftyperef.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -69,7 +68,7 @@ class LocalHotkeyInputMonitorMac : public LocalHotkeyInputMonitor {
 @end
 
 @implementation LocalHotkeyInputMonitorManager {
-  id _eventMonitor;
+  id __strong _eventMonitor;
 
   raw_ptr<remoting::LocalHotkeyInputMonitorMac::EventHandler> _monitor;
 }
@@ -79,13 +78,19 @@ class LocalHotkeyInputMonitorMac : public LocalHotkeyInputMonitor {
   if ((self = [super init])) {
     _monitor = monitor;
 
+    LocalHotkeyInputMonitorManager* __weak weakSelf = self;
     auto eventHandler = ^NSEvent*(NSEvent* event) {
+      LocalHotkeyInputMonitorManager* strongSelf = weakSelf;
+      if (!strongSelf) {
+        return event;
+      }
+
       const NSEventModifierFlags requiredModifiers =
           NSEventModifierFlagOption | NSEventModifierFlagControl;
       if ((event.keyCode == kVK_Escape) &&
           (event.modifierFlags & requiredModifiers)) {
         // Trigger the callback.
-        _monitor->OnDisconnectShortcut();
+        strongSelf->_monitor->OnDisconnectShortcut();
 
         // Stop the event propagation.
         return nil;
@@ -106,8 +111,6 @@ class LocalHotkeyInputMonitorMac : public LocalHotkeyInputMonitor {
   if (_eventMonitor) {
     [NSEvent removeMonitor:_eventMonitor];
   }
-
-  [super dealloc];
 }
 
 @end
@@ -145,7 +148,7 @@ class LocalHotkeyInputMonitorMac::Core
   // Task runner on which |window_| is created.
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
 
-  base::scoped_nsobject<LocalHotkeyInputMonitorManager> manager_;
+  LocalHotkeyInputMonitorManager* __strong manager_;
 
   // Invoked in the |caller_task_runner_| thread to report session disconnect
   // requests.
@@ -192,19 +195,19 @@ void LocalHotkeyInputMonitorMac::Core::Stop() {
 }
 
 LocalHotkeyInputMonitorMac::Core::~Core() {
-  DCHECK_EQ(manager_.get(), nil);
+  DCHECK_EQ(manager_, nil);
 }
 
 void LocalHotkeyInputMonitorMac::Core::StartOnUiThread() {
   DCHECK(ui_task_runner_->BelongsToCurrentThread());
 
-  manager_.reset([[LocalHotkeyInputMonitorManager alloc] initWithMonitor:this]);
+  manager_ = [[LocalHotkeyInputMonitorManager alloc] initWithMonitor:this];
 }
 
 void LocalHotkeyInputMonitorMac::Core::StopOnUiThread() {
   DCHECK(ui_task_runner_->BelongsToCurrentThread());
 
-  manager_.reset();
+  manager_ = nil;
 }
 
 void LocalHotkeyInputMonitorMac::Core::OnDisconnectShortcut() {

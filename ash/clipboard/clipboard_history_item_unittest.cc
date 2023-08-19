@@ -11,6 +11,8 @@
 #include "base/strings/string_util.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,6 +27,12 @@ namespace ash {
 
 namespace {
 
+using ::testing::Bool;
+using ::testing::Combine;
+using ::testing::Optional;
+using ::testing::Values;
+using ::testing::WithParamInterface;
+
 struct FormatPair {
   ui::ClipboardInternalFormat clipboard_format;
   crosapi::mojom::ClipboardHistoryDisplayFormat display_format;
@@ -33,76 +41,6 @@ struct FormatPair {
 }  // namespace
 
 using ClipboardHistoryItemTest = AshTestBase;
-
-TEST_F(ClipboardHistoryItemTest, DisplayText) {
-  base::test::ScopedRestoreICUDefaultLocale locale("en_US");
-
-  // Populate a builder with all the data formats that we expect to handle.
-  ClipboardHistoryItemBuilder builder;
-  builder.SetText("Text")
-      .SetMarkup("HTML with no image or table tags")
-      .SetRtf("Rtf")
-      .SetFilenames({ui::FileInfo(base::FilePath("/path/to/File.txt"),
-                                  base::FilePath("File.txt")),
-                     ui::FileInfo(base::FilePath("/path/to/Other%20File.txt"),
-                                  base::FilePath("Other%20File.txt"))})
-      .SetBookmarkTitle("Bookmark Title")
-      .SetPng(gfx::test::CreatePNGBytes(10))
-      .SetFileSystemData({u"/path/to/File.txt", u"/path/to/Other%20File.txt"})
-      .SetWebSmartPaste(true);
-
-  // PNG data always takes precedence. When we must show text rather than the
-  // image itself, we display the PNG placeholder text.
-  EXPECT_EQ(builder.Build().display_text(),
-            l10n_util::GetStringUTF16(IDS_CLIPBOARD_MENU_IMAGE));
-
-  builder.ClearPng();
-
-  // In the absence of PNG data, HTML data takes precedence, but we use the
-  // plain-text format for the label.
-  EXPECT_EQ(builder.Build().display_text(), u"Text");
-
-  builder.ClearText();
-
-  // If plain text does not exist, we show a placeholder label.
-  EXPECT_EQ(builder.Build().display_text(),
-            l10n_util::GetStringUTF16(IDS_CLIPBOARD_MENU_HTML));
-
-  builder.SetText("Text");
-
-  builder.ClearMarkup();
-
-  // In the absence of HTML data, text data takes precedence.
-  EXPECT_EQ(builder.Build().display_text(), u"Text");
-
-  builder.ClearText();
-
-  // In the absence of text data, RTF data takes precedence.
-  EXPECT_EQ(builder.Build().display_text(),
-            l10n_util::GetStringUTF16(IDS_CLIPBOARD_MENU_RTF_CONTENT));
-
-  builder.ClearRtf();
-
-  // In the absence of RTF data, filename data takes precedence.
-  EXPECT_EQ(builder.Build().display_text(), u"File.txt, Other File.txt");
-
-  builder.ClearFilenames();
-
-  // In the absence of filename data, bookmark data takes precedence.
-  EXPECT_EQ(builder.Build().display_text(), u"Bookmark Title");
-
-  builder.ClearBookmarkTitle();
-
-  // In the absence of bookmark data, web smart paste data takes precedence.
-  EXPECT_EQ(builder.Build().display_text(),
-            l10n_util::GetStringUTF16(IDS_CLIPBOARD_MENU_WEB_SMART_PASTE));
-
-  builder.ClearWebSmartPaste();
-
-  // In the absence of web smart paste data, file system data takes precedence.
-  // NOTE: File system data is the only kind of custom data currently supported.
-  EXPECT_EQ(builder.Build().display_text(), u"File.txt, Other File.txt");
-}
 
 // Verifies that a callback can be added to an item to run iff the item's
 // display image is updated.
@@ -159,23 +97,116 @@ TEST_F(ClipboardHistoryItemTest, SetDisplayImageNotifiesCallback) {
   }
 }
 
-class ClipboardHistoryItemDisplayTest
+// Base class for tests parameterized by whether the clipboard history refresh
+// is enabled.
+class ClipboardHistoryItemRefreshTest
     : public ClipboardHistoryItemTest,
-      public testing::WithParamInterface<FormatPair> {
+      public WithParamInterface</*enable_refresh=*/bool> {
  public:
-  ClipboardHistoryItemDisplayTest() : item_(BuildClipboardHistoryItem()) {}
-  ~ClipboardHistoryItemDisplayTest() override = default;
-
-  ui::ClipboardInternalFormat GetClipboardFormat() const {
-    return GetParam().clipboard_format;
-  }
-  crosapi::mojom::ClipboardHistoryDisplayFormat GetDisplayFormat() const {
-    return GetParam().display_format;
+  ClipboardHistoryItemRefreshTest() {
+    scoped_feature_list_.InitWithFeatureStates(
+        {{chromeos::features::kClipboardHistoryRefresh,
+          IsClipboardHistoryRefreshEnabled()},
+         {chromeos::features::kJelly, IsClipboardHistoryRefreshEnabled()}});
   }
 
-  const ClipboardHistoryItem& item() const { return item_; }
+  bool IsClipboardHistoryRefreshEnabled() { return GetParam(); }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ClipboardHistoryItemRefreshTest,
+                         /*enable_refresh=*/Bool());
+
+TEST_P(ClipboardHistoryItemRefreshTest, DisplayText) {
+  base::test::ScopedRestoreICUDefaultLocale locale("en_US");
+
+  // Populate a builder with all the data formats that we expect to handle.
+  ClipboardHistoryItemBuilder builder;
+  builder.SetText("Text")
+      .SetMarkup("HTML with no image or table tags")
+      .SetRtf("Rtf")
+      .SetFilenames({ui::FileInfo(base::FilePath("/path/to/File.txt"),
+                                  base::FilePath("File.txt")),
+                     ui::FileInfo(base::FilePath("/path/to/Other%20File.txt"),
+                                  base::FilePath("Other%20File.txt"))})
+      .SetBookmarkTitle("Bookmark Title")
+      .SetPng(gfx::test::CreatePNGBytes(10))
+      .SetFileSystemData({u"/path/to/Third%20File.txt"})
+      .SetWebSmartPaste(true);
+
+  // PNG data always takes precedence. When we must show text rather than the
+  // image itself, we display the PNG placeholder text.
+  EXPECT_EQ(builder.Build().display_text(),
+            l10n_util::GetStringUTF16(IDS_CLIPBOARD_MENU_IMAGE));
+
+  builder.ClearPng();
+
+  // In the absence of PNG data, HTML data takes precedence, but we use the
+  // plain-text format for the label.
+  EXPECT_EQ(builder.Build().display_text(), u"Text");
+
+  builder.ClearText();
+
+  // If plain text does not exist, we show a placeholder label.
+  EXPECT_EQ(builder.Build().display_text(),
+            l10n_util::GetStringUTF16(IDS_CLIPBOARD_MENU_HTML));
+
+  builder.SetText("Text");
+
+  builder.ClearMarkup();
+
+  // In the absence of HTML data, text data takes precedence.
+  EXPECT_EQ(builder.Build().display_text(), u"Text");
+
+  builder.ClearText();
+
+  // In the absence of text data, RTF data takes precedence.
+  EXPECT_EQ(builder.Build().display_text(),
+            l10n_util::GetStringUTF16(IDS_CLIPBOARD_MENU_RTF_CONTENT));
+
+  builder.ClearRtf();
+
+  // In the absence of RTF data, filename data takes precedence.
+  EXPECT_EQ(builder.Build().display_text(), IsClipboardHistoryRefreshEnabled()
+                                                ? u"2 files"
+                                                : u"File.txt, Other File.txt");
+
+  builder.ClearFilenames();
+
+  // In the absence of filename data, bookmark data takes precedence.
+  EXPECT_EQ(builder.Build().display_text(), u"Bookmark Title");
+
+  builder.ClearBookmarkTitle();
+
+  // In the absence of bookmark data, web smart paste data takes precedence.
+  EXPECT_EQ(builder.Build().display_text(),
+            l10n_util::GetStringUTF16(IDS_CLIPBOARD_MENU_WEB_SMART_PASTE));
+
+  builder.ClearWebSmartPaste();
+
+  // In the absence of web smart paste data, file system data takes precedence.
+  // NOTE: File system data is the only kind of custom data currently supported.
+  EXPECT_EQ(builder.Build().display_text(), u"Third File.txt");
+}
+
+// Base class for tests parameterized by the type of item being tested, based on
+// its display format. The clipboard history refresh enablement status is also
+// parameterized as the refresh changes whether some items will have icons.
+class ClipboardHistoryItemDisplayFormatTest
+    : public ClipboardHistoryItemTest,
+      public WithParamInterface<
+          std::tuple<FormatPair, /*enable_refresh=*/bool>> {
+ public:
+  ClipboardHistoryItemDisplayFormatTest() {
+    scoped_feature_list_.InitWithFeatureStates(
+        {{chromeos::features::kClipboardHistoryRefresh,
+          IsClipboardHistoryRefreshEnabled()},
+         {chromeos::features::kJelly, IsClipboardHistoryRefreshEnabled()}});
+  }
+
   ClipboardHistoryItem BuildClipboardHistoryItem() const {
     ClipboardHistoryItemBuilder builder;
     builder.SetFormat(GetClipboardFormat());
@@ -184,26 +215,40 @@ class ClipboardHistoryItemDisplayTest
     return item;
   }
 
-  const ClipboardHistoryItem item_;
+  ui::ClipboardInternalFormat GetClipboardFormat() const {
+    return std::get<0>(GetParam()).clipboard_format;
+  }
+  crosapi::mojom::ClipboardHistoryDisplayFormat GetDisplayFormat() const {
+    return std::get<0>(GetParam()).display_format;
+  }
+
+  bool IsClipboardHistoryRefreshEnabled() { return std::get<1>(GetParam()); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    ClipboardHistoryItemDisplayTest,
-    ::testing::Values(
-        FormatPair{ui::ClipboardInternalFormat::kText,
-                   crosapi::mojom::ClipboardHistoryDisplayFormat::kText},
-        FormatPair{ui::ClipboardInternalFormat::kPng,
-                   crosapi::mojom::ClipboardHistoryDisplayFormat::kPng},
-        FormatPair{ui::ClipboardInternalFormat::kHtml,
-                   crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml},
-        FormatPair{ui::ClipboardInternalFormat::kFilenames,
-                   crosapi::mojom::ClipboardHistoryDisplayFormat::kFile}));
+    ClipboardHistoryItemDisplayFormatTest,
+    Combine(
+        Values(FormatPair{ui::ClipboardInternalFormat::kText,
+                          crosapi::mojom::ClipboardHistoryDisplayFormat::kText},
+               FormatPair{ui::ClipboardInternalFormat::kPng,
+                          crosapi::mojom::ClipboardHistoryDisplayFormat::kPng},
+               FormatPair{ui::ClipboardInternalFormat::kHtml,
+                          crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml},
+               FormatPair{
+                   ui::ClipboardInternalFormat::kFilenames,
+                   crosapi::mojom::ClipboardHistoryDisplayFormat::kFile}),
+        /*enable_refresh=*/Bool()));
 
-TEST_P(ClipboardHistoryItemDisplayTest, Icon) {
-  const auto& maybe_icon = item().icon();
-  if (GetDisplayFormat() ==
-      crosapi::mojom::ClipboardHistoryDisplayFormat::kFile) {
+TEST_P(ClipboardHistoryItemDisplayFormatTest, Icon) {
+  const auto item = BuildClipboardHistoryItem();
+  const auto& maybe_icon = item.icon();
+  if (IsClipboardHistoryRefreshEnabled() ||
+      GetDisplayFormat() ==
+          crosapi::mojom::ClipboardHistoryDisplayFormat::kFile) {
     ASSERT_TRUE(maybe_icon.has_value());
     EXPECT_TRUE(maybe_icon.value().IsVectorIcon());
   } else {
@@ -211,8 +256,9 @@ TEST_P(ClipboardHistoryItemDisplayTest, Icon) {
   }
 }
 
-TEST_P(ClipboardHistoryItemDisplayTest, DisplayImage) {
-  const auto& maybe_image = item().display_image();
+TEST_P(ClipboardHistoryItemDisplayFormatTest, DisplayImage) {
+  const auto item = BuildClipboardHistoryItem();
+  const auto& maybe_image = item.display_image();
   switch (GetDisplayFormat()) {
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kUnknown:
       NOTREACHED_NORETURN();
@@ -221,9 +267,17 @@ TEST_P(ClipboardHistoryItemDisplayTest, DisplayImage) {
       EXPECT_FALSE(maybe_image);
       break;
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kPng:
-    case crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml:
       ASSERT_TRUE(maybe_image);
       EXPECT_TRUE(maybe_image.value().IsImage());
+      break;
+    case crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml:
+      // Because the HTML placeholder image is a static `ImageModel`,
+      // `maybe_image` might be a vector icon or an image depending on which
+      // test cases are being run. What we know reliably is that the value of
+      // `maybe_image` should always be the current placeholder instance.
+      EXPECT_THAT(
+          maybe_image,
+          Optional(clipboard_history_util::GetHtmlPreviewPlaceholder()));
       break;
   }
 }

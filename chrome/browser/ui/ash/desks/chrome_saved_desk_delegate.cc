@@ -11,6 +11,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -167,6 +168,7 @@ void ShowUnavailableAppToast(
 void ImageResultToImageSkia(
     base::OnceCallback<void(const gfx::ImageSkia&)> callback,
     const favicon_base::FaviconRawBitmapResult& result) {
+  TRACE_EVENT0("ui", "chrome_saved_desk_delegate::ImageResultToImageSkia");
   if (!result.is_valid()) {
     std::move(callback).Run(gfx::ImageSkia());
     return;
@@ -184,6 +186,7 @@ void ImageResultToImageSkia(
 base::OnceCallback<void(apps::IconValuePtr icon_value)>
 AppIconResultToImageSkia(
     base::OnceCallback<void(const gfx::ImageSkia&)> callback) {
+  TRACE_EVENT0("ui", "chrome_saved_desk_delegate::AppIconResultToImageSkia");
   return base::BindOnce(
       [](base::OnceCallback<void(const gfx::ImageSkia&)> image_skia_callback,
          apps::IconValuePtr icon_value) {
@@ -204,6 +207,7 @@ ChromeSavedDeskDelegate::~ChromeSavedDeskDelegate() = default;
 void ChromeSavedDeskDelegate::GetAppLaunchDataForSavedDesk(
     aura::Window* window,
     GetAppLaunchDataCallback callback) const {
+  TRACE_EVENT0("ui", "ChromeSavedDeskDelegate::GetAppLaunchDataForSavedDesk");
   DCHECK(callback);
 
   const user_manager::User* active_user =
@@ -263,6 +267,7 @@ void ChromeSavedDeskDelegate::GetAppLaunchDataForSavedDesk(
     app_launch_info->container = app_restore_data->container;
     app_launch_info->disposition = app_restore_data->disposition;
     app_launch_info->file_paths = app_restore_data->file_paths;
+    app_launch_info->override_url = app_restore_data->override_url;
     if (app_restore_data->intent) {
       app_launch_info->intent = app_restore_data->intent->Clone();
     }
@@ -337,6 +342,8 @@ absl::optional<gfx::ImageSkia>
 ChromeSavedDeskDelegate::MaybeRetrieveIconForSpecialIdentifier(
     const std::string& identifier,
     const ui::ColorProvider* color_provider) const {
+  TRACE_EVENT0(
+      "ui", "ChromeSavedDeskDelegate::MaybeRetrieveIconForSpecialIdentifier");
   if (identifier == chrome::kChromeUINewTabURL) {
     ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
     return absl::make_optional<gfx::ImageSkia>(apps::CreateStandardIconImage(
@@ -358,8 +365,9 @@ void ChromeSavedDeskDelegate::GetFaviconForUrl(
     const std::string& page_url,
     base::OnceCallback<void(const gfx::ImageSkia&)> callback,
     base::CancelableTaskTracker* tracker) const {
+  TRACE_EVENT0("ui", "ChromeSavedDeskDelegate::GetFaviconForUrl");
   // Get the icons from lacros favicon service.
-  if (crosapi::browser_util::IsLacrosPrimaryBrowser()) {
+  if (crosapi::browser_util::IsLacrosEnabled()) {
     crosapi::CrosapiManager::Get()
         ->crosapi_ash()
         ->desk_template_ash()
@@ -382,6 +390,7 @@ void ChromeSavedDeskDelegate::GetIconForAppId(
     const std::string& app_id,
     int desired_icon_size,
     base::OnceCallback<void(const gfx::ImageSkia&)> callback) const {
+  TRACE_EVENT0("ui", "ChromeSavedDeskDelegate::GetIconForAppId");
   auto* app_service_proxy = apps::AppServiceProxyFactory::GetForProfile(
       ProfileManager::GetActiveUserProfile());
   if (!app_service_proxy) {
@@ -435,6 +444,7 @@ bool ChromeSavedDeskDelegate::IsWindowSupportedForSavedDesk(
 
 std::string ChromeSavedDeskDelegate::GetAppShortName(
     const std::string& app_id) {
+  TRACE_EVENT0("ui", "ChromeSavedDeskDelegate::GetAppShortName");
   std::string name;
   auto* app_service_proxy = apps::AppServiceProxyFactory::GetForProfile(
       ProfileManager::GetActiveUserProfile());
@@ -450,6 +460,7 @@ void ChromeSavedDeskDelegate::OnLacrosChromeInfoReturned(
     GetAppLaunchDataCallback callback,
     std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info,
     crosapi::mojom::DeskTemplateStatePtr state) {
+  TRACE_EVENT0("ui", "ChromeSavedDeskDelegate::OnLacrosChromeInfoReturned");
   if (state.is_null()) {
     std::move(callback).Run({});
     return;
@@ -472,6 +483,7 @@ void ChromeSavedDeskDelegate::GetLacrosChromeInfo(
     GetAppLaunchDataCallback callback,
     const std::string& window_unique_id,
     std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info) {
+  TRACE_EVENT0("ui", "ChromeSavedDeskDelegate::GetLacrosChromeInfo");
   crosapi::BrowserManager* browser_manager = crosapi::BrowserManager::Get();
   if (!browser_manager || !browser_manager->IsRunning()) {
     LOG(WARNING)

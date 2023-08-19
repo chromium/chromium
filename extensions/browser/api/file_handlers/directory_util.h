@@ -25,6 +25,11 @@ class FilePath;
 namespace extensions {
 namespace app_file_handler_util {
 
+// Gets is-a-directory-ness for a local path and returns it with |callback|.
+void GetIsDirectoryForLocalPath(content::BrowserContext* context,
+                                const base::FilePath& local_path,
+                                base::OnceCallback<void(bool)> callback);
+
 class IsDirectoryCollector {
  public:
   using CompletionCallback =

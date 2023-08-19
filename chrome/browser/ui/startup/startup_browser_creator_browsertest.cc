@@ -68,7 +68,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/profile_ui_test_utils.h"
+#include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
 #include "chrome/browser/ui/search/ntp_test_utils.h"
 #include "chrome/browser/ui/startup/launch_mode_recorder.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
@@ -101,6 +101,7 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
+#include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/metrics/metrics_pref_names.h"
@@ -125,6 +126,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "ui/views/controls/webview/webview.h"
 #include "url/gurl.h"
 
@@ -134,7 +136,7 @@
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "chrome/browser/first_run/scoped_relaunch_chrome_browser_override.h"
-#include "chrome/browser/ui/profile_picker.h"
+#include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_handler.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_ui.h"
 #include "components/policy/core/common/external_data_fetcher.h"
@@ -549,6 +551,21 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, OpenAppUrlIncognitoShortcut) {
   observer.Wait();
   EXPECT_EQ("title2.html",
             web_contents->GetLastCommittedURL().ExtractFileName());
+}
+
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
+                       LaunchWebAppWhileKeepAliveRegistryIsShutdown) {
+  // Command line to simulate app launch.
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitchASCII(switches::kAppId, "app_id_1");
+
+  // Simulate keep alive registry shutdown and try to launch the app and verify
+  // that we don't crash.
+  KeepAliveRegistry::GetInstance()->SetIsShuttingDown(true);
+  web_app::startup::MaybeHandleWebAppLaunch(
+      command_line, base::FilePath(FILE_PATH_LITERAL("\\path")),
+      browser()->profile(), chrome::startup::IsFirstRun::kNo);
+  base::RunLoop().RunUntilIdle();
 }
 
 namespace {
@@ -1930,7 +1947,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
 web_app::AppId InstallPWAWithName(Profile* profile,
                                   const GURL& start_url,
                                   const std::string& app_name) {
-  auto web_app_info = std::make_unique<WebAppInstallInfo>();
+  auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
   web_app_info->start_url = start_url;
   web_app_info->scope = start_url.GetWithoutFilename();
   web_app_info->user_display_mode =
@@ -2156,7 +2173,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithListAppsFeature,
 
 #if !BUILDFLAG(IS_CHROMEOS)
 web_app::AppId InstallPWA(Profile* profile, const GURL& start_url) {
-  auto web_app_info = std::make_unique<WebAppInstallInfo>();
+  auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
   web_app_info->start_url = start_url;
   web_app_info->scope = start_url.GetWithoutFilename();
   web_app_info->user_display_mode =
@@ -2369,8 +2386,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
 
   // Install web app set to open as a tab.
   {
-    std::unique_ptr<WebAppInstallInfo> info =
-        std::make_unique<WebAppInstallInfo>();
+    std::unique_ptr<web_app::WebAppInstallInfo> info =
+        std::make_unique<web_app::WebAppInstallInfo>();
     info->start_url = GURL(kStartUrl);
     info->title = kAppName;
     info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
@@ -2736,8 +2753,8 @@ class StartupBrowserWebAppProtocolHandlingTest : public InProcessBrowserTest {
   web_app::AppId InstallWebAppWithProtocolHandlers(
       const std::vector<apps::ProtocolHandlerInfo>& protocol_handlers,
       const std::vector<apps::FileHandler>& file_handlers = {}) {
-    std::unique_ptr<WebAppInstallInfo> info =
-        std::make_unique<WebAppInstallInfo>();
+    std::unique_ptr<web_app::WebAppInstallInfo> info =
+        std::make_unique<web_app::WebAppInstallInfo>();
     info->start_url = GURL(kStartUrl);
     info->title = kAppName;
     info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
@@ -3764,8 +3781,8 @@ INSTANTIATE_TEST_SUITE_P(
 
       std::string name = std::get<0>(info.param).flag + " " + policyState;
       std::replace_if(
-          name.begin(), name.end(), [](char c) { return !std::isalnum(c); },
-          '_');
+          name.begin(), name.end(),
+          [](unsigned char c) { return !absl::ascii_isalnum(c); }, '_');
       return name;
     });
 
@@ -3845,8 +3862,8 @@ INSTANTIATE_TEST_SUITE_P(
            info) {
       std::string name = info.param.flag;
       std::replace_if(
-          name.begin(), name.end(), [](char c) { return !std::isalnum(c); },
-          '_');
+          name.begin(), name.end(),
+          [](unsigned char c) { return !absl::ascii_isalnum(c); }, '_');
       return name;
     });
 
@@ -4339,8 +4356,8 @@ INSTANTIATE_TEST_SUITE_P(
         StartupBrowserCreatorPickerInfobarTest::ParamType>& info) {
       std::string name = info.param.flag;
       std::replace_if(
-          name.begin(), name.end(), [](char c) { return !std::isalnum(c); },
-          '_');
+          name.begin(), name.end(),
+          [](unsigned char c) { return !absl::ascii_isalnum(c); }, '_');
       return name;
     });
 
@@ -4357,7 +4374,7 @@ class StartupBrowserCreatorIwaCommandLineInstallProfilePickerErrorTest
           .Times(testing::AnyNumber());
       EXPECT_CALL(
           mock_log_,
-          Log(::logging::LOG_ERROR, testing::_, testing::_, testing::_,
+          Log(::logging::LOGGING_ERROR, testing::_, testing::_, testing::_,
               testing::HasSubstr("Command line switches to install IWAs are "
                                  "incompatible with the Profile Picker")));
       mock_log_.StartCapturingLogs();

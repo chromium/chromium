@@ -83,7 +83,7 @@ chrome.test.getConfig(function(config) {
           });
         }
       });
-      chrome.tabs.create({url: captureUrl});
+      chrome.test.openFileUrl(captureUrl);
     }
   ]);
 });

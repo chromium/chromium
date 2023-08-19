@@ -13,6 +13,10 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/resources/grit/webui_resources.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/webui/common/trusted_types_util.h"
+#endif
+
 namespace webui {
 
 content::WebUIDataSource* CreateAndAddWebUITestDataSource(
@@ -20,7 +24,12 @@ content::WebUIDataSource* CreateAndAddWebUITestDataSource(
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       browser_context, chrome::kChromeUIWebUITestHost);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::EnableTrustedTypesCSP(source);
+#else
   webui::EnableTrustedTypesCSP(source);
+#endif
+
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://* 'self';");

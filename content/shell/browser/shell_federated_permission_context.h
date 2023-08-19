@@ -87,6 +87,10 @@ class ShellFederatedPermissionContext
   void UnregisterIdP(const ::GURL&) override;
   std::vector<GURL> GetRegisteredIdPs() override;
 
+  void SetThirdPartyCookiesBlocked(bool blocked) {
+    third_party_cookies_blocked_ = blocked;
+  }
+
   void SetIdpStatusClosureForTesting(base::RepeatingClosure closure) {
     idp_signin_status_closure_ = std::move(closure);
   }
@@ -115,6 +119,8 @@ class ShellFederatedPermissionContext
 
   // A set of urls that require user mediation.
   std::set<GURL> require_user_mediation_sites_;
+
+  bool third_party_cookies_blocked_{false};
 };
 
 }  // namespace content

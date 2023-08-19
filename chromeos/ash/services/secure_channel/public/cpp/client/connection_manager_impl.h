@@ -100,7 +100,7 @@ class ConnectionManagerImpl : public ConnectionManager,
   std::unique_ptr<NearbyMetricsRecorder> metrics_recorder_;
   Status last_status_;
   base::Time status_change_timestamp_;
-  raw_ptr<base::Clock, ExperimentalAsh> clock_;
+  raw_ptr<base::Clock, DanglingUntriaged | ExperimentalAsh> clock_;
   base::WeakPtrFactory<ConnectionManagerImpl> weak_ptr_factory_{this};
 };
 

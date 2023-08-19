@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
+#include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
@@ -184,7 +185,7 @@ void SoftNavigationHeuristics::CheckAndReportSoftNavigation(
   }
   ScriptState::Scope scope(script_state);
   LocalFrame* frame = ToLocalFrameIfNotDetached(script_state->GetContext());
-  if (!frame || !frame->IsMainFrame()) {
+  if (!frame || !frame->IsOutermostMainFrame()) {
     return;
   }
   LocalDOMWindow* window = frame->DomWindow();
@@ -208,22 +209,54 @@ void SoftNavigationHeuristics::CheckAndReportSoftNavigation(
 
   ResetHeuristic();
   LogAndTraceDetectedSoftNavigation(frame, window, url_, user_click_timestamp_);
+
+  ReportSoftNavigationToMetrics(frame);
+}
+
+void SoftNavigationHeuristics::ReportSoftNavigationToMetrics(
+    LocalFrame* frame) const {
+  auto* loader = frame->Loader().GetDocumentLoader();
+
+  if (!loader) {
+    return;
+  }
+
+  auto soft_navigation_start_time =
+      loader->GetTiming().MonotonicTimeToPseudoWallTime(user_click_timestamp_);
+
+  LocalDOMWindow* window = frame->DomWindow();
+
+  CHECK(window);
+
+  blink::SoftNavigationMetrics metrics = {soft_navigation_count_,
+                                          soft_navigation_start_time,
+                                          window->GetNavigationId().Utf8()};
+
   if (LocalFrameClient* frame_client = frame->Client()) {
     // This notifies UKM about this soft navigation.
-    frame_client->DidObserveSoftNavigation(soft_navigation_count_);
+    frame_client->DidObserveSoftNavigation(metrics);
   }
 }
 
 void SoftNavigationHeuristics::ResetPaintsIfNeeded(LocalFrame* frame,
                                                    LocalDOMWindow* window) {
   if (!did_reset_paints_) {
+    LocalFrameView* local_frame_view = frame->View();
+
+    CHECK(local_frame_view);
+
     if (RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(window)) {
-      if (Document* document = window->document()) {
+      if (Document* document = window->document();
+          document &&
+          RuntimeEnabledFeatures::SoftNavigationHeuristicsExposeFPAndFCPEnabled(
+              window)) {
         PaintTiming::From(*document).ResetFirstPaintAndFCP();
       }
-      DCHECK(frame->View());
-      frame->View()->GetPaintTimingDetector().RestartRecordingLCP();
+      local_frame_view->GetPaintTimingDetector().RestartRecordingLCP();
     }
+
+    local_frame_view->GetPaintTimingDetector().RestartRecordingLCPToUkm();
+
     did_reset_paints_ = true;
   }
 }

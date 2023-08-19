@@ -6,15 +6,18 @@
 
 #include <math.h>
 
+#include <limits>
 #include <map>
 #include <utility>
 
+#include "base/bit_cast.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "components/cbor/constants.h"
+#include "components/cbor/float_conversions.h"
 
 namespace cbor {
 
@@ -56,7 +59,8 @@ const char kNonMinimalCBOREncoding[] =
 const char kUnsupportedSimpleValue[] =
     "Unsupported or unassigned simple value.";
 const char kUnsupportedFloatingPointValue[] =
-    "Floating point numbers are not supported.";
+    "Floating point numbers are not supported unless the "
+    "`allow_floating_point` configuration option is set.";
 const char kOutOfRangeIntegerValue[] =
     "Integer values must be between INT64_MIN and INT64_MAX.";
 const char kMapKeyDuplicate[] = "Duplicate map keys are not allowed.";
@@ -149,7 +153,9 @@ absl::optional<Value> Reader::DecodeCompleteDataItem(const Config& config,
     case Value::Type::MAP:
       return ReadMapContent(*header, config, max_nesting_level);
     case Value::Type::SIMPLE_VALUE:
-      return DecodeToSimpleValue(*header);
+    case Value::Type::FLOAT_VALUE:
+      // Floating point values also go here since they are also type 7.
+      return DecodeToSimpleValueOrFloat(*header, config);
     case Value::Type::TAG:  // We explicitly don't support TAG.
     case Value::Type::NONE:
     case Value::Type::INVALID_UTF8:
@@ -169,13 +175,15 @@ absl::optional<Reader::DataItemHeader> Reader::DecodeDataItemHeader() {
   const auto major_type = GetMajorType(initial_byte.value());
   const uint8_t additional_info = GetAdditionalInfo(initial_byte.value());
 
-  absl::optional<uint64_t> value = ReadVariadicLengthInteger(additional_info);
+  absl::optional<uint64_t> value =
+      ReadVariadicLengthInteger(major_type, additional_info);
   return value ? absl::make_optional(
                      DataItemHeader{major_type, additional_info, value.value()})
                : absl::nullopt;
 }
 
 absl::optional<uint64_t> Reader::ReadVariadicLengthInteger(
+    Value::Type type,
     uint8_t additional_info) {
   uint8_t additional_bytes = 0;
   if (additional_info < 24) {
@@ -205,6 +213,13 @@ absl::optional<uint64_t> Reader::ReadVariadicLengthInteger(
     int_data |= b;
   }
 
+  if (type == Value::Type::SIMPLE_VALUE && additional_info >= 25 &&
+      additional_info <= 27) {
+    // This is a floating point value and so `additional_bytes` should not be
+    // treated as an integer by minimality checking.
+    return absl::make_optional(int_data);
+  }
+
   return IsEncodingMinimal(additional_bytes, int_data)
              ? absl::make_optional(int_data)
              : absl::nullopt;
@@ -216,7 +231,7 @@ absl::optional<Value> Reader::DecodeValueToNegative(uint64_t value) {
     error_code_ = DecoderError::OUT_OF_RANGE_INTEGER_VALUE;
     return absl::nullopt;
   }
-  return Value(negative_value.ValueOrDie());
+  return Value(static_cast<int64_t>(negative_value.ValueOrDie()));
 }
 
 absl::optional<Value> Reader::DecodeValueToUnsigned(uint64_t value) {
@@ -225,17 +240,58 @@ absl::optional<Value> Reader::DecodeValueToUnsigned(uint64_t value) {
     error_code_ = DecoderError::OUT_OF_RANGE_INTEGER_VALUE;
     return absl::nullopt;
   }
-  return Value(unsigned_value.ValueOrDie());
+  return Value(static_cast<int64_t>(unsigned_value.ValueOrDie()));
 }
 
-absl::optional<Value> Reader::DecodeToSimpleValue(
-    const DataItemHeader& header) {
+absl::optional<Value> Reader::DecodeToSimpleValueOrFloat(
+    const DataItemHeader& header,
+    const Config& config) {
   // ReadVariadicLengthInteger provides this bound.
   CHECK_LE(header.additional_info, 27);
-  // Floating point numbers are not supported.
+  // Floating point numbers.
   if (header.additional_info > 24) {
-    error_code_ = DecoderError::UNSUPPORTED_FLOATING_POINT_VALUE;
-    return absl::nullopt;
+    if (header.additional_info >= 28) {
+      error_code_ = DecoderError::UNSUPPORTED_SIMPLE_VALUE;
+      return absl::nullopt;
+    }
+    if (!config.allow_floating_point) {
+      error_code_ = DecoderError::UNSUPPORTED_FLOATING_POINT_VALUE;
+      return absl::nullopt;
+    }
+
+    switch (header.additional_info) {
+      case 25:
+        return Value(DecodeHalfPrecisionFloat(header.value));
+      case 26: {
+        double result =
+            base::bit_cast<float>(static_cast<uint32_t>(header.value));
+        if (!std::isfinite(result) ||
+            result ==
+                DecodeHalfPrecisionFloat(EncodeHalfPrecisionFloat(result))) {
+          // This could have been encoded as a 16 bit float.
+          // Note that we use `isfinite()` here to handle NaN since infinity
+          // and NaN can both be encoded in 16 bits but NaN doesn't compare
+          // with equality.
+          error_code_ = DecoderError::NON_MINIMAL_CBOR_ENCODING;
+          return absl::nullopt;
+        }
+        return Value(result);
+      }
+      case 27: {
+        double result = base::bit_cast<double>(header.value);
+        float result_32 = result;
+        if (result == result_32) {
+          // This could have been encoded as a 32 bit float.
+          error_code_ = DecoderError::NON_MINIMAL_CBOR_ENCODING;
+          return absl::nullopt;
+        }
+        return Value(result);
+      }
+      default:
+        NOTREACHED();
+        error_code_ = DecoderError::UNSUPPORTED_SIMPLE_VALUE;
+        return absl::nullopt;
+    }
   }
 
   // Since |header.additional_info| <= 24, ReadVariadicLengthInteger also

@@ -30,8 +30,9 @@ class CORE_EXPORT Fence final : public ScriptWrappable,
  public:
   explicit Fence(LocalDOMWindow& window);
 
-  // If `event` is a FenceEvent, calls reportEvent() to send a beacon with the
-  // data in event to the registered reporting URL.
+  // If `event` is a FenceEvent, calls reportEvent() to send a beacon to a
+  // registered destination (referenced by destination enum and event name),
+  // or a custom destination URL as appropriate.
   // If `event` is a string of the name of the event (i.e.
   // FenceEvent.eventType), calls reportPrivateAggregationEvent() to trigger
   // sending the contributions associated with the given event.
@@ -56,10 +57,22 @@ class CORE_EXPORT Fence final : public ScriptWrappable,
   void Trace(Visitor*) const override;
 
  private:
-  // Sends a beacon with the data in `event` to the registered reporting URL.
+  // Dispatches to `reportEventToDestinationEnum` or
+  // `reportEventToDestinationURL` depending on the format of `event`.
   void reportEvent(ScriptState* script_state,
                    const FenceEvent* event,
                    ExceptionState& exception_state);
+
+  // Sends a report with `eventData` to the reporting destinations specified by
+  // `destination`.
+  void reportEventToDestinationEnum(ScriptState* script_state,
+                                    const FenceEvent* event,
+                                    ExceptionState& exception_state);
+
+  // Sends a report to `destinationURL`, with substitution of buyer macros.
+  void reportEventToDestinationURL(ScriptState* script_state,
+                                   const FenceEvent* event,
+                                   ExceptionState& exception_state);
 
   // Triggers the sending of any contributions associated with the given event.
   // This function simply passes off the work to the fenced frame reporter in

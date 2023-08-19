@@ -30,15 +30,18 @@
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "remoting/base/auto_thread.h"
 #include "remoting/base/auto_thread_task_runner.h"
+#include "remoting/base/logging.h"
 #include "remoting/base/scoped_sc_handle_win.h"
 #include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/base/screen_resolution.h"
 #include "remoting/host/base/switches.h"
 #include "remoting/host/branding.h"
+#include "remoting/host/chromoting_host_services_server.h"
 #include "remoting/host/desktop_session_win.h"
 #include "remoting/host/host_config.h"
 #include "remoting/host/host_main.h"
 #include "remoting/host/ipc_constants.h"
+#include "remoting/host/mojom/chromoting_host_services.mojom.h"
 #include "remoting/host/mojom/remoting_host.mojom.h"
 #include "remoting/host/pairing_registry_delegate_win.h"
 #include "remoting/host/win/etw_trace_consumer.h"
@@ -80,13 +83,13 @@ constexpr wchar_t kLoggingRegistryKeyName[] = L"SOFTWARE\\Chromoting\\logging";
 constexpr wchar_t kLogToFileRegistryValue[] = L"LogToFile";
 constexpr wchar_t kLogToEventLogRegistryValue[] = L"LogToEventLog";
 
+const char* const kCopiedSwitchNames[] = {switches::kV, switches::kVModule};
+
 }  // namespace
 
 namespace remoting {
 
 class WtsTerminalMonitor;
-
-const char* kCopiedSwitchNames[] = {switches::kV, switches::kVModule};
 
 class DaemonProcessWin : public DaemonProcess {
  public:
@@ -127,6 +130,7 @@ class DaemonProcessWin : public DaemonProcess {
   void SendHostConfigToNetworkProcess(
       const std::string& serialized_config) override;
   void SendTerminalDisconnected(int terminal_id) override;
+  void StartChromotingHostServices() override;
 
   // Changes the service start type to 'manual'.
   void DisableAutoStart();
@@ -138,6 +142,10 @@ class DaemonProcessWin : public DaemonProcess {
   bool OpenPairingRegistry();
 
  private:
+  void BindChromotingHostServices(
+      mojo::PendingReceiver<mojom::ChromotingHostServices> receiver,
+      base::ProcessId peer_pid);
+
   // Mojo keeps the task runner passed to it alive forever, so an
   // AutoThreadTaskRunner should not be passed to it. Otherwise, the process may
   // never shut down cleanly.
@@ -152,6 +160,8 @@ class DaemonProcessWin : public DaemonProcess {
   base::win::RegKey pairing_registry_unprivileged_key_;
 
   std::unique_ptr<EtwTraceConsumer> etw_trace_consumer_;
+
+  std::unique_ptr<ChromotingHostServicesServer> ipc_server_;
 
   mojo::AssociatedRemote<mojom::DesktopSessionConnectionEvents>
       desktop_session_connection_events_;
@@ -269,7 +279,7 @@ void DaemonProcessWin::LaunchNetworkProcess() {
   std::unique_ptr<base::CommandLine> target(new base::CommandLine(host_binary));
   target->AppendSwitchASCII(kProcessTypeSwitchName, kProcessTypeHost);
   target->CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
-                           kCopiedSwitchNames, std::size(kCopiedSwitchNames));
+                           kCopiedSwitchNames);
 
   std::unique_ptr<UnprivilegedProcessDelegate> delegate(
       new UnprivilegedProcessDelegate(io_task_runner(), std::move(target)));
@@ -301,6 +311,17 @@ void DaemonProcessWin::SendTerminalDisconnected(int terminal_id) {
   if (desktop_session_connection_events_) {
     desktop_session_connection_events_->OnTerminalDisconnected(terminal_id);
   }
+}
+
+void DaemonProcessWin::StartChromotingHostServices() {
+  DCHECK(caller_task_runner()->BelongsToCurrentThread());
+  DCHECK(!ipc_server_);
+
+  ipc_server_ = std::make_unique<ChromotingHostServicesServer>(
+      base::BindRepeating(&DaemonProcessWin::BindChromotingHostServices,
+                          base::Unretained(this)));
+  ipc_server_->StartServer();
+  HOST_LOG << "ChromotingHostServices IPC server has been started.";
 }
 
 std::unique_ptr<DaemonProcess> DaemonProcess::Create(
@@ -468,6 +489,17 @@ bool DaemonProcessWin::OpenPairingRegistry() {
   pairing_registry_privileged_key_.Set(privileged.Take());
   pairing_registry_unprivileged_key_.Set(unprivileged.Take());
   return true;
+}
+
+void DaemonProcessWin::BindChromotingHostServices(
+    mojo::PendingReceiver<mojom::ChromotingHostServices> receiver,
+    base::ProcessId peer_pid) {
+  if (!remoting_host_control_.is_bound()) {
+    LOG(ERROR) << "Binding rejected. Network process is not ready.";
+    return;
+  }
+  remoting_host_control_->BindChromotingHostServices(std::move(receiver),
+                                                     peer_pid);
 }
 
 void DaemonProcessWin::ConfigureHostLogging() {

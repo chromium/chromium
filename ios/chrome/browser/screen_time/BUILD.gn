@@ -16,7 +16,6 @@ if (ios_enable_screen_time) {
       "features.h",
       "features.mm",
     ]
-    configs += [ "//build/config/compiler:enable_arc" ]
     deps = [ "//base" ]
   }
 
@@ -27,7 +26,6 @@ if (ios_enable_screen_time) {
       "screen_time_history_deleter_factory.h",
       "screen_time_history_deleter_factory.mm",
     ]
-    configs += [ "//build/config/compiler:enable_arc" ]
     deps = [
       "//base",
       "//components/history/core/browser",

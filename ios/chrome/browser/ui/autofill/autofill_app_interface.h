@@ -65,7 +65,8 @@ enum CreditCardSaveManagerObserverEvent : int {
 + (NSInteger)localCreditCount;
 
 // Saves a masked credit card that requires CVC to be used.
-+ (void)saveMaskedCreditCard;
+// Returns the `card.NetworkAndLastFourDigits` of the card used in the UIs.
++ (NSString*)saveMaskedCreditCard;
 
 // The functions below are helpers for the SaveCardInfobarEGTest that requires
 // observing autofill events in the app process.

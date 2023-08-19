@@ -17,22 +17,20 @@ namespace {
 
 class IOSRunLoopListener : public testing::EmptyTestEventListener {
  public:
-  virtual void OnTestEnd(const testing::TestInfo& test_info);
+  void OnTestEnd(const testing::TestInfo& test_info) override;
 };
 
 void IOSRunLoopListener::OnTestEnd(const testing::TestInfo& test_info) {
   @autoreleasepool {
     // At the end of the test, spin the default loop for a moment.
     NSDate* stop_date = [NSDate dateWithTimeIntervalSinceNow:0.001];
-    [[NSRunLoop currentRunLoop] runUntilDate:stop_date];
+    [NSRunLoop.currentRunLoop runUntilDate:stop_date];
   }
 }
 
 }  // namespace
 
-
-namespace base {
-namespace test_listener_ios {
+namespace base::test_listener_ios {
 
 void RegisterTestEndListener() {
   testing::TestEventListeners& listeners =
@@ -40,5 +38,4 @@ void RegisterTestEndListener() {
   listeners.Append(new IOSRunLoopListener);
 }
 
-}  // namespace test_listener_ios
-}  // namespace base
+}  // namespace base::test_listener_ios

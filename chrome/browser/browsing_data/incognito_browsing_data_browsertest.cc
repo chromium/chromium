@@ -11,6 +11,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -29,6 +30,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_usage_info.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/test/browser_test.h"
 #include "media/base/media_switches.h"
@@ -67,7 +69,7 @@ class IncognitoBrowsingDataBrowserTest
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
     enabled_features.push_back(media::kExternalClearKeyForTesting);
 #endif
-    InitFeatureList(std::move(enabled_features));
+    InitFeatureLists(std::move(enabled_features), {});
   }
 
   void SetUpOnMainThread() override {
@@ -158,17 +160,26 @@ class IncognitoBrowsingDataBrowserTest
     ExpectCookieTreeModelCount(incognito_browser, 0);
   }
 
-#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
-  // TODO(crbug.com/1307796): Include quota nodes in CookieTreeModelCount to
-  // allow testing media licenses with TestSiteData().
-  int GetMediaLicenseCount(Browser* browser = nullptr) { return 0; }
-#endif
-
   inline void ExpectCookieTreeModelCount(Browser* browser, int expected) {
     std::unique_ptr<CookiesTreeModel> model =
         GetCookiesTreeModel(browser->profile());
     EXPECT_EQ(expected, GetCookiesTreeModelCount(model->GetRoot()))
         << GetCookiesTreeModelInfo(model->GetRoot());
+  }
+
+  inline void ExpectCookieTreeModelCount(Browser* browser,
+                                         int expected3PSPDisabled,
+                                         int expected3PSPEnabled) {
+    // TODO(crbug.com/1307796): Use a different approach to determine presence
+    // of data that does not depend on UI code and has a better resolution when
+    // 3PSP is fully enabled. Also, remove helper duplication between the
+    // incognito, and remover, browsing data browser tests.
+    if (base::FeatureList::IsEnabled(
+            net::features::kThirdPartyStoragePartitioning)) {
+      ExpectCookieTreeModelCount(browser, expected3PSPEnabled);
+    } else {
+      ExpectCookieTreeModelCount(browser, expected3PSPDisabled);
+    }
   }
 
   void OnVideoDecodePerfInfo(base::RunLoop* run_loop,
@@ -224,11 +235,23 @@ IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest, Download) {
 
 // Test that the salt for media device IDs is reset between Incognito sessions.
 IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest, MediaDeviceIdSalt) {
-  std::string original_salt = GetBrowser()->profile()->GetMediaDeviceIDSalt();
-
+  auto get_salt = [&]() {
+    content::RenderFrameHost* frame_host = GetBrowser()
+                                               ->tab_strip_model()
+                                               ->GetActiveWebContents()
+                                               ->GetPrimaryMainFrame();
+    url::Origin origin = frame_host->GetLastCommittedOrigin();
+    net::SiteForCookies site_for_cookies =
+        net::SiteForCookies::FromOrigin(origin);
+    blink::StorageKey storage_key = blink::StorageKey::CreateFirstParty(origin);
+    base::test::TestFuture<bool, const std::string&> future;
+    content::GetContentClientForTesting()->browser()->GetMediaDeviceIDSalt(
+        frame_host, site_for_cookies, storage_key, future.GetCallback());
+    return future.Get<1>();
+  };
+  std::string original_salt = get_salt();
   RestartIncognitoBrowser();
-
-  std::string new_salt = GetBrowser()->profile()->GetMediaDeviceIDSalt();
+  std::string new_salt = get_salt();
   EXPECT_NE(original_salt, new_salt);
 }
 
@@ -498,32 +521,24 @@ IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest, MediaLicenseDeletion) {
   const std::string kMediaLicenseType = "MediaLicense";
 
   EXPECT_EQ(0, GetSiteDataCount());
-  EXPECT_EQ(0, GetMediaLicenseCount());
   GURL url =
       embedded_test_server()->GetURL("/browsing_data/media_license.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), url));
 
   EXPECT_EQ(0, GetSiteDataCount());
-  EXPECT_EQ(0, GetMediaLicenseCount());
   ExpectCookieTreeModelCount(GetBrowser(), 0);
   EXPECT_FALSE(HasDataForType(kMediaLicenseType));
 
   // The new media license backend will not store media licenses explicitly
   // within CookieTreeModel, but the data will still be tracked through the
-  // quota system. GetMediaLicenseCount() is expected to always return 0 using
-  // the new backend.
-  // TODO(crbug.com/1307796): Fix GetCookiesTreeModelCount() to include quota
-  // nodes. `count` should be 1 here.
-  int count = 0;
+  // quota system.
   SetDataForType(kMediaLicenseType);
   EXPECT_EQ(1, GetSiteDataCount());
-  EXPECT_EQ(count, GetMediaLicenseCount());
-  ExpectCookieTreeModelCount(GetBrowser(), count);
+  ExpectCookieTreeModelCount(GetBrowser(), 0, 1);
   EXPECT_TRUE(HasDataForType(kMediaLicenseType));
 
   // No residue in regular mode.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(GetRegularBrowser(), url));
-  EXPECT_EQ(0, GetMediaLicenseCount(GetRegularBrowser()));
   EXPECT_FALSE(HasDataForType(kMediaLicenseType,
                               GetActiveWebContents(GetRegularBrowser())));
 
@@ -532,7 +547,6 @@ IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest, MediaLicenseDeletion) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), url));
 
   EXPECT_EQ(0, GetSiteDataCount());
-  EXPECT_EQ(0, GetMediaLicenseCount());
   ExpectCookieTreeModelCount(GetBrowser(), 0);
   EXPECT_FALSE(HasDataForType(kMediaLicenseType));
 }

@@ -12,7 +12,6 @@
 #include "base/system/sys_info.h"
 #include "base/values.h"
 #include "build/util/chromium_git_revision.h"
-#include "chromeos/ash/components/assistant/buildflags.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/assistant/public/cpp/switches.h"
 #include "chromeos/ash/services/libassistant/constants.h"
@@ -173,15 +172,15 @@ std::string CreateLibAssistantConfig(
 
   Value::Dict config;
 
-  Value::Dict device;
-  device.Set("board_name", base::SysInfo::GetLsbReleaseBoard());
-  device.Set("board_revision", "1");
   absl::optional<std::string> version = chromeos::version_loader::GetVersion(
       chromeos::version_loader::VERSION_FULL);
-  device.Set("embedder_build_info", version.value_or("0.0.0.0"));
-  device.Set("model_id", chromeos::assistant::kModelId);
-  device.Set("model_revision", 1);
-  config.Set("device", std::move(device));
+  config.Set("device",
+             Value::Dict()
+                 .Set("board_name", base::SysInfo::GetLsbReleaseBoard())
+                 .Set("board_revision", "1")
+                 .Set("embedder_build_info", version.value_or("0.0.0.0"))
+                 .Set("model_id", chromeos::assistant::kModelId)
+                 .Set("model_revision", 1));
 
   // Enables Libassistant gRPC server for V2.
   if (assistant::features::IsLibAssistantV2Enabled()) {
@@ -192,34 +191,45 @@ std::string CreateLibAssistantConfig(
         chromeos::assistant::GetHttpConnectionServiceAddress(
             is_chromeos_device);
 
-    Value::Dict libas_server;
-    libas_server.Set("libas_server_address", server_addresses);
-    libas_server.Set("enable_display_service", true);
-    libas_server.Set("enable_http_connection_service", true);
-    config.Set("libas_server", std::move(libas_server));
+    config.Set("libas_server",
+               Value::Dict()
+                   .Set("libas_server_address", server_addresses)
+                   .Set("enable_display_service", true)
+                   .Set("enable_http_connection_service", true));
   }
 
-  Value::Dict discovery;
-  discovery.Set("enable_mdns", false);
-  config.Set("discovery", std::move(discovery));
-
-  Value::Dict internal;
-  internal.Set("surface_type", "OPA_CROS");
+  config.Set("discovery", Value::Dict().Set("enable_mdns", false));
 
   std::string user_agent;
   CreateUserAgent(&user_agent);
-  internal.Set("user_agent", user_agent);
 
-  // Prevent LibAssistant from automatically playing ready message TTS during
-  // the startup sequence when the version of LibAssistant has been upgraded.
-  internal.Set("override_ready_message", true);
+  auto internal =
+      Value::Dict()
+          .Set("surface_type", "OPA_CROS")
+          .Set("user_agent", user_agent)
 
-  // Set DeviceProperties.visibility to Visibility::PRIVATE.
-  // See //libassistant/shared/proto/device_properties.proto.
-  internal.Set("visibility", "PRIVATE");
+          // Prevent LibAssistant from automatically playing ready
+          // message TTS during the startup sequence when the
+          // version of LibAssistant has been upgraded.
+          .Set("override_ready_message", true)
+
+          // Set DeviceProperties.visibility to Visibility::PRIVATE.
+          // See //libassistant/shared/proto/device_properties.proto.
+          .Set("visibility", "PRIVATE")
+
+          // Enable logging.
+          .Set("enable_logging", true)
+
+          // This only enables logging to local disk combined with the flag
+          // above. When user choose to file a Feedback report, user can examine
+          // the log and choose to upload the log with the report or not.
+          .Set("logging_opt_in", true)
+
+          // Allows libassistant to automatically toggle signed-out mode
+          // depending on whether it has auth_tokens.
+          .Set("enable_signed_out_mode", true);
 
   if (ShouldLogToFile()) {
-    Value::Dict logging;
     std::string log_dir("/var/log/chrome/");
     if (ShouldPutLogsInHomeDirectory()) {
       base::FilePath log_path =
@@ -233,58 +243,49 @@ std::string CreateLibAssistantConfig(
       log_dir = log_path.value();
     }
 
-    logging.Set("directory", log_dir);
-    // Maximum disk space consumed by all log files. There are 5 rotating log
-    // files on disk.
-    logging.Set("max_size_kb", 3 * 1024);
-    // Empty "output_type" disables logging to stderr.
-    logging.Set("output_type", Value::List());
+    auto logging = Value::Dict()
+                       .Set("directory", log_dir)
+                       // Maximum disk space consumed by all log files. There
+                       // are 5 rotating log files on disk.
+                       .Set("max_size_kb", 3 * 1024)
+                       // Empty "output_type" disables logging to stderr.
+                       .Set("output_type", Value::List());
     config.Set("logging", std::move(logging));
   } else {
     // Print logs to console if running in desktop or test mode.
     internal.Set("disable_log_files", true);
   }
 
-  // Enable logging.
-  internal.Set("enable_logging", true);
-
-  // This only enables logging to local disk combined with the flag above. When
-  // user choose to file a Feedback report, user can examine the log and choose
-  // to upload the log with the report or not.
-  internal.Set("logging_opt_in", true);
-
-  // Allows libassistant to automatically toggle signed-out mode depending on
-  // whether it has auth_tokens.
-  internal.Set("enable_signed_out_mode", true);
-
   config.Set("internal", std::move(internal));
 
-  Value::Dict audio_input;
-  // Skip sending speaker ID selection info to disable user verification.
-  audio_input.Set("should_send_speaker_id_selection_info", false);
+  config.Set(
+      "audio_input",
+      Value::Dict()
+          // Skip sending speaker ID selection to disable user verification.
+          .Set("should_send_speaker_id_selection_info", false)
+          .Set("sources",
+               Value::List().Append(
+                   Value::Dict()
+                       .Set("enable_eraser",
+                            assistant::features::IsAudioEraserEnabled())
+                       .Set("enable_eraser_toggling",
+                            assistant::features::IsAudioEraserEnabled()))));
 
-  Value::List sources;
-  Value::Dict dict;
-  dict.Set("enable_eraser", assistant::features::IsAudioEraserEnabled());
-  dict.Set("enable_eraser_toggling",
-           assistant::features::IsAudioEraserEnabled());
-  sources.Append(std::move(dict));
-  audio_input.Set("sources", std::move(sources));
-
-  config.Set("audio_input", std::move(audio_input));
-
-  if (assistant::features::IsLibAssistantBetaBackendEnabled())
+  if (assistant::features::IsLibAssistantBetaBackendEnabled()) {
     config.SetByDottedPath("internal.backend_type", "BETA_DOGFOOD");
+  }
 
   // Use http unless we're using the fake s3 server, which requires grpc.
-  if (s3_server_uri_override)
+  if (s3_server_uri_override) {
     config.SetByDottedPath("internal.transport_type", "GRPC");
-  else
+  } else {
     config.SetByDottedPath("internal.transport_type", "HTTP");
+  }
 
-  if (device_id_override)
+  if (device_id_override) {
     config.SetByDottedPath("internal.cast_device_id",
                            device_id_override.value());
+  }
 
   config.SetByDottedPath("internal.enable_on_device_assistant_tts_as_text",
                          true);

@@ -17,9 +17,6 @@ import org.chromium.components.webxr.XrSessionCoordinator.SessionType;
  * interfaces.
  */
 public class XrDelegateImpl implements XrDelegate {
-    private static final String TAG = "XrDelegateImpl";
-    private static final boolean DEBUG_LOGS = false;
-
     private @SessionType int mActiveSession = SessionType.NONE;
 
     private ObservableSupplierImpl<Boolean> mHasActiveSessionSupplier =
@@ -40,7 +37,7 @@ public class XrDelegateImpl implements XrDelegate {
 
     @Override
     public boolean onBackPressed() {
-        return XrSessionCoordinator.onBackPressed();
+        return XrSessionCoordinator.endActiveSession();
     }
 
     @Override

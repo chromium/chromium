@@ -100,7 +100,8 @@ class PumpkinInstallerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<PumpkinInstaller> installer_;
-  raw_ptr<FakeDlcserviceClient, ExperimentalAsh> fake_dlcservice_client_;
+  raw_ptr<FakeDlcserviceClient, DanglingUntriaged | ExperimentalAsh>
+      fake_dlcservice_client_;
   base::HistogramTester histogram_tester_;
   bool install_succeeded_ = false;
   bool install_failed_ = false;

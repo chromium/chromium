@@ -10,7 +10,7 @@
 #include <map>
 #include <memory>
 
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/memory/weak_ptr.h"
 #include "components/storage_monitor/storage_monitor.h"
 
@@ -67,7 +67,7 @@ class StorageMonitorMac : public StorageMonitor,
   // posted.
   std::map<std::string, StorageInfo> disk_info_map_;
 
-  int pending_disk_updates_;
+  int pending_disk_updates_ = 0;
 
   std::unique_ptr<ImageCaptureDeviceManager> image_capture_device_manager_;
 };

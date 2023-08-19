@@ -28,9 +28,6 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
-#include "components/power_scheduler/power_mode.h"
-#include "components/power_scheduler/power_mode_arbiter.h"
-#include "components/power_scheduler/power_mode_voter.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -302,6 +299,11 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
 
   v8_task_queue_ = NewTaskQueue(MainThreadTaskQueue::QueueCreationParams(
       MainThreadTaskQueue::QueueType::kV8));
+  v8_low_priority_task_queue_ = NewTaskQueue(
+      MainThreadTaskQueue::QueueCreationParams(
+          MainThreadTaskQueue::QueueType::kV8LowPriority)
+          .SetPrioritisationType(
+              MainThreadTaskQueue::QueueTraits::PrioritisationType::kLow));
   non_waking_task_queue_ =
       NewTaskQueue(MainThreadTaskQueue::QueueCreationParams(
                        MainThreadTaskQueue::QueueType::kNonWaking)
@@ -309,6 +311,8 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
 
   v8_task_runner_ =
       v8_task_queue_->CreateTaskRunner(TaskType::kMainThreadTaskQueueV8);
+  v8_low_priority_task_runner_ = v8_low_priority_task_queue_->CreateTaskRunner(
+      TaskType::kMainThreadTaskQueueV8LowPriority);
   compositor_task_runner_ = compositor_task_queue_->CreateTaskRunner(
       TaskType::kMainThreadTaskQueueCompositor);
   control_task_runner_ = helper_.ControlMainThreadTaskQueue()->CreateTaskRunner(
@@ -486,9 +490,6 @@ MainThreadSchedulerImpl::MainThreadOnly::MainThreadOnly(
           &main_thread_scheduler_impl->tracing_controller_,
           RenderingPrioritizationStateToString),
       last_frame_time(now),
-      audible_power_mode_voter(
-          power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
-              "PowerModeVoter.Audible")),
       agent_group_schedulers(
           MakeGarbageCollected<
               HeapHashSet<WeakMember<AgentGroupSchedulerImpl>>>()) {}
@@ -853,13 +854,6 @@ MainThreadSchedulerImpl::NewThrottleableTaskQueueForTest(
                           .SetCanRunWhenVirtualTimePaused(false));
 }
 
-scoped_refptr<base::sequence_manager::TaskQueue>
-MainThreadSchedulerImpl::NewTaskQueueForTest() {
-  return sequence_manager_->CreateTaskQueue(
-      base::sequence_manager::TaskQueue::Spec(
-          base::sequence_manager::QueueName::TEST_TQ));
-}
-
 void MainThreadSchedulerImpl::OnShutdownTaskQueue(
     const scoped_refptr<MainThreadTaskQueue>& task_queue) {
   if (was_shutdown_) {
@@ -1038,12 +1032,6 @@ void MainThreadSchedulerImpl::SetRendererHidden(bool hidden) {
 void MainThreadSchedulerImpl::SetRendererBackgrounded(bool backgrounded) {
   helper_.CheckOnValidThread();
 
-  // Increasing timer slack helps the OS to coalesce timers efficiently.
-  base::TimerSlack timer_slack = base::TIMER_SLACK_NONE;
-  if (backgrounded)
-    timer_slack = base::TIMER_SLACK_MAXIMUM;
-  helper_.SetTimerSlack(timer_slack);
-
   if (helper_.IsShutdown() ||
       main_thread_only().renderer_backgrounded.get() == backgrounded)
     return;
@@ -1094,10 +1082,6 @@ void MainThreadSchedulerImpl::OnAudioStateChanged() {
     return;
 
   main_thread_only().is_audio_playing = is_audio_playing;
-
-  main_thread_only().audible_power_mode_voter->VoteFor(
-      is_audio_playing ? power_scheduler::PowerMode::kAudible
-                       : power_scheduler::PowerMode::kIdle);
 }
 
 std::unique_ptr<MainThreadScheduler::RendererPauseHandle>
@@ -2134,6 +2118,11 @@ MainThreadSchedulerImpl::V8TaskRunner() {
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
+MainThreadSchedulerImpl::V8LowPriorityTaskRunner() {
+  return v8_low_priority_task_runner_;
+}
+
+scoped_refptr<base::SingleThreadTaskRunner>
 MainThreadSchedulerImpl::CompositorTaskRunner() {
   return compositor_task_runner_;
 }
@@ -2296,8 +2285,10 @@ void MainThreadSchedulerImpl::AddPageScheduler(
   main_thread_only().page_schedulers.insert(page_scheduler);
   DetachOnIPCTaskPostedWhileInBackForwardCacheHandler();
   if (page_scheduler->IsOrdinary()) {
-    memory_purge_manager_.OnPageCreated(
-        page_scheduler->GetPageLifecycleState());
+    // MemoryPurgeManager::OnPageCreated() assumes that the page isn't frozen.
+    // Its logic must be modified if this assumption is broken in the future.
+    CHECK(!page_scheduler->IsFrozen());
+    memory_purge_manager_.OnPageCreated();
   }
 
   base::AutoLock lock(any_thread_lock_);
@@ -2315,7 +2306,7 @@ void MainThreadSchedulerImpl::RemovePageScheduler(
   main_thread_only().page_schedulers.erase(page_scheduler);
   if (page_scheduler->IsOrdinary()) {
     memory_purge_manager_.OnPageDestroyed(
-        page_scheduler->GetPageLifecycleState());
+        /* frozen=*/page_scheduler->IsFrozen());
   }
 
   if (IsIpcTrackingEnabledForAllPages()) {
@@ -2406,11 +2397,9 @@ void MainThreadSchedulerImpl::OnTaskCompleted(
   if (queue) {
     queue->OnTaskRunTimeReported(task_timing);
 
-    if (RuntimeEnabledFeatures::LongAnimationFrameMonitoringEnabled()) {
-      if (FrameSchedulerImpl* frame_scheduler = queue->GetFrameScheduler()) {
-        frame_scheduler->OnTaskCompleted(task_timing,
-                                         task.GetDesiredExecutionTime());
-      }
+    if (FrameSchedulerImpl* frame_scheduler = queue->GetFrameScheduler()) {
+      frame_scheduler->OnTaskCompleted(task_timing,
+                                       task.GetDesiredExecutionTime());
     }
   }
 
@@ -2534,6 +2523,8 @@ TaskPriority MainThreadSchedulerImpl::ComputePriority(
       return TaskPriority::kBestEffortPriority;
     case MainThreadTaskQueue::QueueTraits::PrioritisationType::kRegular:
       return TaskPriority::kNormalPriority;
+    case MainThreadTaskQueue::QueueTraits::PrioritisationType::kLow:
+      return TaskPriority::kLowPriority;
     default:
       NOTREACHED();
       return TaskPriority::kNormalPriority;

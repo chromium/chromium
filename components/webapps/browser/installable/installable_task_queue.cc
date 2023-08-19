@@ -70,20 +70,21 @@ void InstallableTaskQueue::ResetWithError(InstallableStatusCode code) {
   // check for that.
   // Manifest is assumed to be non-null, so we create an empty one here.
   blink::mojom::Manifest manifest;
+  mojom::WebPageMetadata metadata;
   for (InstallableTask& task : tasks) {
     if (task.callback) {
       std::move(task.callback)
-          .Run(InstallableData({code}, GURL(), manifest, GURL(), nullptr, false,
-                               GURL(), nullptr, false,
-                               std::vector<Screenshot>(), false, false));
+          .Run(InstallableData({code}, GURL(), manifest, metadata, GURL(),
+                               nullptr, false, std::vector<Screenshot>(),
+                               false));
     }
   }
   for (InstallableTask& task : paused_tasks) {
     if (task.callback) {
       std::move(task.callback)
-          .Run(InstallableData({code}, GURL(), manifest, GURL(), nullptr, false,
-                               GURL(), nullptr, false,
-                               std::vector<Screenshot>(), false, false));
+          .Run(InstallableData({code}, GURL(), manifest, metadata, GURL(),
+                               nullptr, false, std::vector<Screenshot>(),
+                               false));
     }
   }
 }

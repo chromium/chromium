@@ -18,19 +18,21 @@ t.step(function() {
 
   ctx.fillStyle = '#f00';
   ctx.fillRect(0, 0, 100, 50);
+
   var g = ctx.createRadialGradient(230, 25, 100, 100, 25, 101);
   g.addColorStop(0, '#f00');
   g.addColorStop(1, '#0f0');
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, 100, 50);
+
   _assertPixel(canvas, 1,1, 0,255,0,255);
   _assertPixel(canvas, 50,1, 0,255,0,255);
   _assertPixel(canvas, 98,1, 0,255,0,255);
   _assertPixel(canvas, 1,25, 0,255,0,255);
   _assertPixel(canvas, 50,25, 0,255,0,255);
-  _assertPixel(canvas, 98,25, 0,255,0,255);
+  _assertPixelApprox(canvas, 98,25, 0,255,0,255, 1);
   _assertPixel(canvas, 1,48, 0,255,0,255);
-  _assertPixel(canvas, 50,48, 0,255,0,255);
+  _assertPixelApprox(canvas, 50,48, 0,255,0,255, 1);
   _assertPixel(canvas, 98,48, 0,255,0,255);
   t.done();
 });

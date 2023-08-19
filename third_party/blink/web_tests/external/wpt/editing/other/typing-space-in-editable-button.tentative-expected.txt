@@ -1,7 +1,7 @@
 This is a testharness.js-based test.
-FAIL Type space key in <button contenteditable> should be handled by the <button> promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
-FAIL Type space key in editable <button> shouldn't be handled by the <button> when it's not focused promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
-FAIL Type space key in editable <button> should be handled by the <button> when it's focused promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
-FAIL Type space key in editable element in <button> shouldn't be handled by the <button> promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
+PASS Type space key in <button contenteditable> should be handled by the <button>
+PASS Type space key in editable <button> shouldn't be handled by the <button> when it's not focused
+PASS Type space key in editable <button> should be handled by the <button> when it's focused
+FAIL Type space key in editable element in <button> shouldn't be handled by the <button> assert_equals: Click event should not be fired on the <button> expected null but got object "[object PointerEvent]"
 Harness: the test ran to completion.
 

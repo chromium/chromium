@@ -39,7 +39,8 @@ FullscreenToolbarAnimationController::FullscreenToolbarAnimationController(
   animation_.SetTweenType(gfx::Tween::EASE_OUT);
 }
 
-FullscreenToolbarAnimationController::~FullscreenToolbarAnimationController() {}
+FullscreenToolbarAnimationController::~FullscreenToolbarAnimationController() =
+    default;
 
 void FullscreenToolbarAnimationController::ToolbarDidUpdate() {
   animation_start_value_ = [owner_ toolbarFraction];

@@ -26,7 +26,6 @@
 <translation id="2060505056492490888">「<ph name="DOT" />」未放在「<ph name="INVALIDDOMAIN" />」的正確位置。</translation>
 <translation id="2148716181193084225">今天</translation>
 <translation id="2226276347425096477">請將這段文字刪減至 <ph name="MAX_CHARACTERS" /> 個字元以下 (目前的字元數為 <ph name="CURRENT_LENGTH" /> 個)。</translation>
-<translation id="2246498165605549352">本機檔案</translation>
 <translation id="2247351761944213033"><ph name="YEAR" /> 年，第 <ph name="WEEKNUMBER" /> 週</translation>
 <translation id="2277199496770840904">曲目 <ph name="NUMBER" /></translation>
 <translation id="2393030564806080191">十六進位顏色值</translation>
@@ -89,6 +88,7 @@
 <translation id="5425179576310518467">目前日期</translation>
 <translation id="5466621249238537318">請選取一或多個檔案。</translation>
 <translation id="5468998798572797635">退出全螢幕</translation>
+<translation id="5514612371225420585">裝置上的檔案</translation>
 <translation id="5516235301412634559">0.75</translation>
 <translation id="5537725057119320332">投放</translation>
 <translation id="5546461542133609677">取消靜音</translation>
@@ -113,6 +113,7 @@
 <translation id="6398862346408813489">顯示月份選取面板</translation>
 <translation id="6404546809543547843">音訊時間點拖曳工具</translation>
 <translation id="6443871981718447451">顯示隱藏式輔助字幕選單</translation>
+<translation id="6484738902856791350">美化排版</translation>
 <translation id="6550675742724504774">選項</translation>
 <translation id="6572309429103589720">文法錯誤</translation>
 <translation id="658823671542763450">進入全螢幕</translation>

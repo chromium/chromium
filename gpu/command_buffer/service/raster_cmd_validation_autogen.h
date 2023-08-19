@@ -41,6 +41,4 @@ class GpuRasterMsaaModeValidator {
 };
 GpuRasterMsaaModeValidator gpu_raster_msaa_mode;
 
-ValueValidator<viz::ResourceFormat> viz_resource_format;
-
 #endif  // GPU_COMMAND_BUFFER_SERVICE_RASTER_CMD_VALIDATION_AUTOGEN_H_

@@ -13,10 +13,6 @@
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using base::test::ios::kWaitForActionTimeout;
 using chrome_test_util::ManualFallbackFormSuggestionViewMatcher;
 using chrome_test_util::ManualFallbackKeyboardIconMatcher;
@@ -93,27 +89,6 @@ BOOL WaitForKeyboardToAppear() {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
-// Tests that the addresses view controller contains the "Manage Addresses..."
-// action.
-// TODO(crbug.com/1116043): Flaky on ios simulator.
-- (void)DISABLED_testAddressesViewControllerContainsManageAddressesAction {
-  // Bring up the keyboard.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormElementName)];
-
-  // Tap on the addresses icon.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackFormSuggestionViewMatcher()]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeRight)];
-  [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesIconMatcher()]
-      performAction:grey_tap()];
-
-  // Verify the address controller contains the "Manage Addresses..." action.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesTableViewMatcher()]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
-  [[EarlGrey selectElementWithMatcher:ManualFallbackManageProfilesMatcher()]
-      assertWithMatcher:grey_interactable()];
-}
-
 // Tests that the "Manage Addresses..." action works.
 - (void)testManageAddressesActionOpensAddressSettings {
   // Bring up the keyboard.
@@ -139,7 +114,7 @@ BOOL WaitForKeyboardToAppear() {
 
 // Tests that returning from "Manage Addresses..." leaves the icons and keyboard
 // in the right state.
-- (void)testAddressesStateAfterPresentingManageAddresses {
+- (void)DISABLED_testAddressesStateAfterPresentingManageAddresses {
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormElementName)];
@@ -256,15 +231,7 @@ BOOL WaitForKeyboardToAppear() {
 }
 
 // Tests that the address icon is hidden when no addresses are available.
-// TODO(crbug.com/1116043): Flaky on ios simulator.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testAddressIconIsNotVisibleWhenAddressStoreEmpty \
-  DISABLED_testAddressIconIsNotVisibleWhenAddressStoreEmpty
-#else
-#define MAYBE_testAddressIconIsNotVisibleWhenAddressStoreEmpty \
-  testAddressIconIsNotVisibleWhenAddressStoreEmpty
-#endif
-- (void)MAYBE_testAddressIconIsNotVisibleWhenAddressStoreEmpty {
+- (void)testAddressIconIsNotVisibleWhenAddressStoreEmpty {
   // Delete the profile that is added on `-setUp`.
   [AutofillAppInterface clearProfilesStore];
 

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("two_screens_signin") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "two_screens_signin_coordinator.h",
     "two_screens_signin_coordinator.mm",
@@ -11,14 +10,15 @@ source_set("two_screens_signin") {
   deps = [
     "//base",
     "//components/signin/public/identity_manager",
+    "//components/sync/base:features",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/ui/authentication/history_sync",
     "//ios/chrome/browser/ui/authentication/signin:signin_headers",
     "//ios/chrome/browser/ui/authentication/signin:signin_protected",
     "//ios/chrome/browser/ui/authentication/signin:signin_screen_provider",
     "//ios/chrome/browser/ui/first_run:screen_delegate",
     "//ios/chrome/browser/ui/first_run:utils",
-    "//ios/chrome/browser/ui/first_run/history_sync",
     "//ios/chrome/browser/ui/first_run/signin",
     "//ios/chrome/browser/ui/first_run/tangible_sync",
     "//ios/chrome/browser/ui/screen:screen_provider",
@@ -27,7 +27,6 @@ source_set("two_screens_signin") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "two_screens_signin_coordinator_unittest.mm" ]
   deps = [

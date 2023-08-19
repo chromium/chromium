@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
@@ -16,8 +17,11 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/data_model/autofill_i18n_api.h"
+#include "components/autofill/core/browser/data_model/autofill_structured_address_format_provider.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
 
@@ -245,10 +249,26 @@ std::u16string AddressComponent::GetValueForOtherSupportedType(
   return {};
 }
 
-std::u16string AddressComponent::GetBestFormatString() const {
+std::u16string AddressComponent::GetFormatString() const {
+  auto* pattern_provider = StructuredAddressesFormatProvider::GetInstance();
+  CHECK(pattern_provider);
+
+  const std::string country_code =
+      base::UTF16ToUTF8(GetRootNode().GetValueForType(ADDRESS_HOME_COUNTRY));
+
+  std::u16string result =
+      base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel)
+          ? i18n_model_definition::GetFormattingExpression(GetStorageType(),
+                                                           country_code)
+          : pattern_provider->GetPattern(GetStorageType(), country_code);
+  if (!result.empty()) {
+    return result;
+  }
+
   // If the component is atomic, the format string is just the value.
-  if (IsAtomic())
+  if (IsAtomic()) {
     return base::ASCIIToUTF16(GetPlaceholderToken(GetStorageTypeName()));
+  }
 
   // Otherwise, the canonical format string is the concatenation of all
   // subcomponents by their natural order.
@@ -602,18 +622,13 @@ bool AddressComponent::WipeInvalidStructure() {
 }
 
 std::u16string AddressComponent::GetFormattedValueFromSubcomponents() {
-  // Get the most suited format string.
-  std::u16string format_string = GetBestFormatString();
-
-  // Perform the following steps on a copy of the format string.
   // * Replace all the placeholders of the form ${TYPE_NAME} with the
   // corresponding value.
   // * Strip away double spaces as they may occur after replacing a placeholder
   // with an empty value.
-
-  std::u16string result = ReplacePlaceholderTypesWithValues(format_string);
-  return base::CollapseWhitespace(result,
-                                  /*trim_sequences_with_line_breaks=*/false);
+  return base::CollapseWhitespace(
+      ReplacePlaceholderTypesWithValues(GetFormatString()),
+      /*trim_sequences_with_line_breaks=*/false);
 }
 
 void AddressComponent::FormatValueFromSubcomponents() {
@@ -622,11 +637,11 @@ void AddressComponent::FormatValueFromSubcomponents() {
 }
 
 std::u16string AddressComponent::ReplacePlaceholderTypesWithValues(
-    const std::u16string& format) const {
+    std::u16string_view format) const {
   // Replaces placeholders using the following rules.
   // Assumptions: Placeholder values are not nested.
   //
-  // * Search for a substring of the form "{$[^}]*}".
+  // * Search for a substring of the form "{\$[^}]*}".
   // The substring can contain semicolon-separated tokens. The first token is
   // always the type name. If present, the second token is a prefix that is only
   // inserted if the corresponding value is not empty. Accordingly, the third
@@ -635,91 +650,64 @@ std::u16string AddressComponent::ReplacePlaceholderTypesWithValues(
   // * Check if this substring is a supported type of this component.
   //
   // * If yes, replace the substring with the corresponding value.
-  //
-  // * If the corresponding value is empty, return false.
-
-  // Create a result vector for the tokens that are joined in the end.
-  std::vector<base::StringPiece16> result_pieces;
 
   // Store the token pieces that are joined in the end.
-  std::vector<std::u16string> inserted_values;
-  inserted_values.reserve(20);
-
-  // Use a StringPiece rather than the string since this allows for getting
-  // cheap views onto substrings.
-  const base::StringPiece16 format_piece = format;
+  std::vector<std::u16string> values_to_join;
 
   bool started_control_sequence = false;
   // Track until which index the format string was fully processed.
-  size_t processed_until_index = 0;
+  size_t first_unprocessed_index = 0;
 
-  for (size_t i = 0; i < format_piece.size(); ++i) {
+  for (size_t i = 0; i < format.size(); ++i) {
     // Check if a control sequence is started by '${'
-    if (format_piece[i] == u'$' && i < format_piece.size() - 1 &&
-        format_piece[i + 1] == u'{') {
-      // A control sequence is started.
+    if (i + 1 < format.size() && format.substr(i, 2) == u"${") {
+      CHECK(!started_control_sequence) << format;
       started_control_sequence = true;
-      // Append the preceding string since it can't be a valid placeholder.
-      if (i > 0) {
-        inserted_values.emplace_back(format_piece.substr(
-            processed_until_index, i - processed_until_index));
-      }
-      processed_until_index = i;
+      // Append the preceding string as a separator of the current control
+      // sequence and the previous one.
+      values_to_join.emplace_back(
+          format.substr(first_unprocessed_index, i - first_unprocessed_index));
+      // Mark character '{' as the last processed character and skip it.
+      first_unprocessed_index = i + 2;
       ++i;
-    } else if (started_control_sequence && format_piece[i] == u'}') {
+    } else if (format[i] == u'}') {
+      CHECK(started_control_sequence);
       // The control sequence came to an end.
       started_control_sequence = false;
-      size_t placeholder_start = processed_until_index + 2;
       std::u16string placeholder(
-          format_piece.substr(placeholder_start, i - placeholder_start));
+          format.substr(first_unprocessed_index, i - first_unprocessed_index));
 
-      std::vector<std::u16string> placeholder_tokens = base::SplitString(
-          placeholder, u";", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-      CHECK(!placeholder_tokens.empty());
+      std::vector<std::u16string_view> placeholder_tokens =
+          base::SplitStringPiece(placeholder, u";", base::KEEP_WHITESPACE,
+                                 base::SPLIT_WANT_ALL);
+      CHECK(!placeholder_tokens.empty() && placeholder_tokens.size() <= 3u);
 
-      // By convention, the first token is the type of the placeholder.
-      std::u16string type_name = placeholder_tokens.at(0);
-      // If present, the second token is the prefix.
-      std::u16string prefix = placeholder_tokens.size() > 1
-                                  ? placeholder_tokens.at(1)
-                                  : std::u16string();
-      // And the third token the suffix.
-      std::u16string suffix = placeholder_tokens.size() > 2
-                                  ? placeholder_tokens.at(2)
-                                  : std::u16string();
+      std::u16string_view type_name = placeholder_tokens[0];
+      std::u16string_view prefix = placeholder_tokens.size() > 1
+                                       ? placeholder_tokens[1]
+                                       : std::u16string_view();
+      std::u16string_view suffix = placeholder_tokens.size() > 2
+                                       ? placeholder_tokens[2]
+                                       : std::u16string_view();
 
       const AddressComponent* node_for_type =
           GetNodeForType(TypeNameToFieldType(base::UTF16ToASCII(type_name)));
-      if (node_for_type) {
-        // The type is valid and should be substituted.
-        std::u16string value = node_for_type->GetValue();
-        if (!value.empty()) {
-          // Add the prefix if present.
-          if (!prefix.empty()) {
-            inserted_values.emplace_back(std::move(prefix));
-          }
-          // Add the substituted value.
-          inserted_values.emplace_back(std::move(value));
-          // Add the suffix if present.
-          if (!suffix.empty()) {
-            inserted_values.emplace_back(std::move(suffix));
-          }
-        }
-      } else {
-        // Append the control sequence as it is, because the type is not
-        // supported by the component tree.
-        inserted_values.emplace_back(format_piece.substr(
-            processed_until_index, i - processed_until_index + 1));
+      CHECK(node_for_type) << type_name;
+
+      const std::u16string& value = node_for_type->GetValue();
+      if (!value.empty()) {
+        values_to_join.emplace_back(base::StrCat({prefix, value, suffix}));
       }
-      processed_until_index = i + 1;
+      first_unprocessed_index = i + 1;
     }
   }
+  CHECK(!started_control_sequence) << format;
   // Append the rest of the string.
-  inserted_values.emplace_back(
-      format_piece.substr(processed_until_index, std::u16string::npos));
+  values_to_join.emplace_back(
+      format.substr(first_unprocessed_index, std::u16string::npos));
 
   // Build the final result.
-  return base::JoinString(inserted_values, u"");
+  return base::JoinString(values_to_join, u"");
 }
 
 bool AddressComponent::CompleteFullTree() {

@@ -180,7 +180,7 @@ class LacrosPrimaryProfilePolicyFetchTracker
     return profile_->GetProfilePolicyConnector()->IsManaged();
   }
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 };
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }  // namespace

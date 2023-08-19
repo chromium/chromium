@@ -6,6 +6,7 @@
 #define SQL_SQLITE_RESULT_CODE_H_
 
 #include <iosfwd>
+#include <string>
 
 #include "base/component_export.h"
 #include "base/dcheck_is_on.h"
@@ -83,7 +84,7 @@ bool IsSqliteSuccessCode(SqliteResultCode sqlite_result_code);
 // Works for all result codes, including success codes and extended error codes.
 // DCHECKs if provided result code should not occur in Chrome's usage of SQLite.
 COMPONENT_EXPORT(SQL)
-void UmaHistogramSqliteResult(const char* histogram_name,
+void UmaHistogramSqliteResult(const std::string& histogram_name,
                               int sqlite_result_code);
 
 // Converts a SQLite result code into a UMA logging-friendly form.

@@ -44,6 +44,7 @@ PowerBookmarkSyncBridge::~PowerBookmarkSyncBridge() = default;
 void PowerBookmarkSyncBridge::Init() {
   std::unique_ptr<syncer::MetadataBatch> batch = meta_db_->GetAllSyncMetadata();
   if (batch) {
+    initialized_ = true;
     change_processor()->ModelReadyToSync(std::move(batch));
   } else {
     change_processor()->ReportError({FROM_HERE, "Failed to load metadata"});
@@ -175,6 +176,10 @@ absl::optional<syncer::ModelError> PowerBookmarkSyncBridge::ApplyChanges(
 
   delegate_->NotifyPowersChanged();
   return {};
+}
+
+void PowerBookmarkSyncBridge::ReportError(const syncer::ModelError& error) {
+  change_processor()->ReportError(error);
 }
 
 }  // namespace power_bookmarks

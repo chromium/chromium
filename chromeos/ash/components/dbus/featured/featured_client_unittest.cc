@@ -3,8 +3,16 @@
 // found in the LICENSE file.
 
 #include "chromeos/ash/components/dbus/featured/featured_client.h"
+
+#include <string>
+
 #include "base/check_op.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
+#include "base/run_loop.h"
+#include "base/strings/escape.h"
 #include "base/test/bind.h"
+#include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/featured/fake_featured_client.h"
 #include "chromeos/ash/components/dbus/featured/featured.pb.h"
 #include "dbus/message.h"
@@ -13,13 +21,27 @@
 #include "dbus/object_path.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/cros_system_api/constants/featured.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
+
+namespace ash::featured {
+
+namespace {
 
 using ::testing::_;
 using ::testing::Invoke;
 using ::testing::Return;
 
-namespace ash::featured {
+std::string CreateEscapedFilename(const std::string& trial_name,
+                                  const std::string& group_name) {
+  std::string escaped_trial_name = base::EscapeAllExceptUnreserved(trial_name);
+  std::string escaped_group_name = base::EscapeAllExceptUnreserved(group_name);
+
+  return base::StrCat(
+      {escaped_trial_name, feature::kTrialGroupSeparator, escaped_group_name});
+}
+
+}  // namespace
 
 class FeaturedClientTest : public testing::Test {
  public:
@@ -35,6 +57,10 @@ class FeaturedClientTest : public testing::Test {
     EXPECT_CALL(*bus_.get(),
                 GetObjectProxy(::featured::kFeaturedServiceName, path_))
         .WillRepeatedly(Return(proxy_.get()));
+
+    EXPECT_TRUE(dir_.CreateUniqueTempDir());
+    active_trials_dir_ = dir_.GetPath().Append("active_trials");
+    EXPECT_TRUE(base::CreateDirectory(active_trials_dir_));
   }
 
   FeaturedClientTest(const FeaturedClientTest&) = delete;
@@ -43,10 +69,23 @@ class FeaturedClientTest : public testing::Test {
   ~FeaturedClientTest() override = default;
 
  protected:
+  // Helper method to test FeaturedClient::ParseTrialFilename. Wrapping this
+  // logic simplifies the testing logic by allowing us to use a friend class
+  // instead of several FRIEND_TEST_ALL_PREFIXES.
+  //
+  // Callers must initialize FeaturedClient before calling this method.
+  bool ParseTrialFilename(const base::FilePath& path,
+                          base::FieldTrial::ActiveGroup& active_group) {
+    return FeaturedClient::ParseTrialFilename(path, active_group);
+  }
+
   // Mock bus and proxy for simulating calls.
   scoped_refptr<dbus::MockBus> bus_;
   dbus::ObjectPath path_;
   scoped_refptr<dbus::MockObjectProxy> proxy_;
+  base::ScopedTempDir dir_;
+  base::FilePath active_trials_dir_;
+  base::test::TaskEnvironment task_environment_;
 };
 
 TEST_F(FeaturedClientTest, InitializeSuccess) {
@@ -225,6 +264,136 @@ TEST_F(FeaturedClientTest, FakeHandleSeedFetched_InvokeSuccessWhenSet) {
 
   EXPECT_EQ(FakeFeaturedClient::Get(), nullptr);
 }
+
+TEST_F(FeaturedClientTest, ListenForActiveEarlyBootTrials_NewFileCreated) {
+  base::RunLoop run_loop;
+  bool ran_callback = false;
+  FeaturedClient::InitializeForTesting(
+      bus_.get(), active_trials_dir_,
+      base::BindLambdaForTesting(
+          [&ran_callback, &run_loop](const std::string& trial_name,
+                                     const std::string& group_name) {
+            EXPECT_EQ(trial_name, "test_trial");
+            EXPECT_EQ(group_name, "test_group");
+            ran_callback = true;
+            run_loop.Quit();
+          }));
+
+  FeaturedClient* client = FeaturedClient::Get();
+  ASSERT_NE(client, nullptr);
+
+  // // Create a new active trial file.
+  EXPECT_TRUE(
+      base::WriteFile(active_trials_dir_.Append("test_trial,test_group"), ""));
+  run_loop.Run();
+  // Ensures the callback was executed.
+  EXPECT_TRUE(ran_callback);
+
+  FeaturedClient::Shutdown();
+
+  EXPECT_EQ(FeaturedClient::Get(), nullptr);
+}
+
+TEST_F(FeaturedClientTest, ListenForActiveEarlyBootTrials_NoFileCreated) {
+  bool ran_callback = false;
+  FeaturedClient::InitializeForTesting(
+      bus_.get(), active_trials_dir_,
+      base::BindLambdaForTesting(
+          [&ran_callback](const std::string& trial_name,
+                          const std::string& group_name) {
+            ran_callback = true;
+          }));
+
+  FeaturedClient* client = FeaturedClient::Get();
+  ASSERT_NE(client, nullptr);
+  EXPECT_FALSE(ran_callback);
+
+  FeaturedClient::Shutdown();
+
+  EXPECT_EQ(FeaturedClient::Get(), nullptr);
+}
+
+TEST_F(FeaturedClientTest, ParseTrialFileName_ImproperFilename_MissingGroup) {
+  FeaturedClient::InitializeForTesting(bus_.get(), active_trials_dir_,
+                                       base::DoNothing());
+  FeaturedClient* client = FeaturedClient::Get();
+
+  ASSERT_NE(client, nullptr);
+
+  base::FieldTrial::ActiveGroup active_group;
+  base::FilePath trial_file = active_trials_dir_.Append("test_trial");
+
+  EXPECT_TRUE(base::WriteFile(trial_file, ""));
+  EXPECT_FALSE(ParseTrialFilename(trial_file, active_group));
+
+  FeaturedClient::Shutdown();
+
+  EXPECT_EQ(FeaturedClient::Get(), nullptr);
+}
+
+TEST_F(FeaturedClientTest,
+       ParseTrialFileName_ImproperFilename_MissingSeparator) {
+  FeaturedClient::InitializeForTesting(bus_.get(), active_trials_dir_,
+                                       base::DoNothing());
+  FeaturedClient* client = FeaturedClient::Get();
+
+  ASSERT_NE(client, nullptr);
+
+  base::FieldTrial::ActiveGroup active_group;
+  base::FilePath trial_file = active_trials_dir_.Append("test_trialtest_group");
+
+  EXPECT_TRUE(base::WriteFile(trial_file, ""));
+  EXPECT_FALSE(ParseTrialFilename(trial_file, active_group));
+
+  FeaturedClient::Shutdown();
+
+  EXPECT_EQ(FeaturedClient::Get(), nullptr);
+}
+
+struct ParseProperFilenameTestParams {
+  std::string expected_trial_name;
+  std::string expected_group_name;
+};
+
+// Parameterized tests to check that properly formatted filenames with special
+// characters (eg. whitespace, /, *, etc) are parsed correctly.
+class FeaturedClientTrialFileTest
+    : public FeaturedClientTest,
+      public ::testing::WithParamInterface<ParseProperFilenameTestParams> {};
+
+TEST_P(FeaturedClientTrialFileTest, ParseProperFilename) {
+  FeaturedClient::InitializeForTesting(bus_.get(), active_trials_dir_,
+                                       base::DoNothing());
+  FeaturedClient* client = FeaturedClient::Get();
+  ASSERT_NE(client, nullptr);
+
+  const ParseProperFilenameTestParams test_case = GetParam();
+  base::FilePath trial_file = active_trials_dir_.Append(CreateEscapedFilename(
+      test_case.expected_trial_name, test_case.expected_group_name));
+  EXPECT_TRUE(base::WriteFile(trial_file, ""));
+
+  base::FieldTrial::ActiveGroup active_group;
+  EXPECT_TRUE(ParseTrialFilename(trial_file, active_group));
+  EXPECT_EQ(active_group.trial_name, test_case.expected_trial_name);
+  EXPECT_EQ(active_group.group_name, test_case.expected_group_name);
+
+  FeaturedClient::Shutdown();
+
+  EXPECT_EQ(FeaturedClient::Get(), nullptr);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    FeaturedClientTrialFileTestSuite,
+    FeaturedClientTrialFileTest,
+    testing::ValuesIn<ParseProperFilenameTestParams>({
+        {"test_trial", "test_group"}, {",", "test_group"}, {"/", "test_group"},
+        {"&", "test_group"},          {"!", "test_group"}, {"@", "test_group"},
+        {"#", "test_group"},          {"$", "test_group"}, {"%", "test_group"},
+        {"^", "test_group"},          {".", "test_group"}, {"~", "test_group"},
+        {"-", "test_group"},          {"`", "test_group"}, {"(", "test_group"},
+        {")", "test_group"},          {"`", "test_group"}, {"?", "test_group"},
+        {"+", "test_group"},          {"=", "test_group"}, {" ", "test_group"},
+    }));
 
 #if DCHECK_IS_ON()
 using FeaturedClientDeathTest = FeaturedClientTest;

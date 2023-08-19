@@ -13,7 +13,6 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "components/services/app_service/public/cpp/icon_info.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -36,7 +35,6 @@ IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, SimpleInstall) {
       "manifest_test_page.html");
   AppId id = GenerateAppId(absl::nullopt, test_url);
 
-  auto url_loader = std::make_unique<WebAppUrlLoader>();
   auto* provider = WebAppProvider::GetForTest(profile());
   base::RunLoop loop;
   InstallFromSyncCommand::Params params = InstallFromSyncCommand::Params(
@@ -48,8 +46,7 @@ IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, SimpleInstall) {
                       96)});
   provider->command_manager().ScheduleCommand(
       std::make_unique<InstallFromSyncCommand>(
-          url_loader.get(), profile(), std::make_unique<WebAppDataRetriever>(),
-          params,
+          profile(), params,
           base::BindLambdaForTesting(
               [&](const AppId& app_id, webapps::InstallResultCode code) {
                 EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
@@ -76,7 +73,6 @@ IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, TwoInstalls) {
       "manifest_no_service_worker.html");
   AppId other_id = GenerateAppId(absl::nullopt, test_url);
 
-  auto url_loader = std::make_unique<WebAppUrlLoader>();
   auto* provider = WebAppProvider::GetForTest(profile());
   base::RunLoop loop;
   {
@@ -89,8 +85,7 @@ IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, TwoInstalls) {
                         96)});
     provider->command_manager().ScheduleCommand(
         std::make_unique<InstallFromSyncCommand>(
-            url_loader.get(), profile(),
-            std::make_unique<WebAppDataRetriever>(), params,
+            profile(), params,
             base::BindLambdaForTesting([&](const AppId& app_id,
                                            webapps::InstallResultCode code) {
               EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
@@ -107,8 +102,7 @@ IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, TwoInstalls) {
                         96)});
     provider->command_manager().ScheduleCommand(
         std::make_unique<InstallFromSyncCommand>(
-            url_loader.get(), profile(),
-            std::make_unique<WebAppDataRetriever>(), params,
+            profile(), params,
             base::BindLambdaForTesting([&](const AppId& app_id,
                                            webapps::InstallResultCode code) {
               EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);

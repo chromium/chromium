@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from './assert.js';
+import {assertExists} from './assert.js';
 import {Intent} from './intent.js';
 import * as Comlink from './lib/comlink.js';
 import * as loadTimeData from './models/load_time_data.js';
@@ -21,7 +21,13 @@ import {
   Resolution,
   VideoResolutionLevel,
 } from './type.js';
-import {getGAHelper} from './untrusted_scripts.js';
+import {
+  Ga4EventParams,
+  Ga4MetricDimension,
+  GaBaseEvent,
+  GaMetricDimension,
+  getGaHelper,
+} from './untrusted_scripts.js';
 import {WaitableEvent} from './waitable_event.js';
 
 /**
@@ -35,35 +41,17 @@ const GA4_ID = PRODUCTION ? 'G-TRQS261G6E' : 'G-J03LBPJBGD';
 const GA4_API_SECRET =
     PRODUCTION ? '0Ir88y9HQtiwnchvaIzZ3Q' : 'WE_zBPUQTGefdXpHl25-ig';
 
-let baseDimen: Map<number, number|string>|null = null;
-
 const ready = new WaitableEvent();
 
 /**
- * Send the event to GA backend.
+ * Sends the event to GA backend.
  *
  * @param event The event to send.
- * @param dimen Optional object contains dimension information.
+ * @param dimensions Optional object contains dimension information.
  */
 async function sendEvent(
-    event: UniversalAnalytics.FieldsObject, dimen?: Map<number, unknown>) {
-  function assignDimension(
-      e: UniversalAnalytics.FieldsObject, d: Map<number, unknown>) {
-    for (const [key, value] of d.entries()) {
-      // The TypeScript definition for UniversalAnalytics.FieldsObject
-      // manually listed out dimension1 ~ dimension200, and TypeScript don't
-      // recognize accessing it using []. Force the type here.
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-      (e as Record<string, unknown>)[`dimension${key}`] = value;
-    }
-  }
-
-  assert(baseDimen !== null);
-  assignDimension(event, baseDimen);
-  if (dimen !== undefined) {
-    assignDimension(event, dimen);
-  }
-
+    event: GaBaseEvent,
+    dimensions: Map<GaMetricDimension, string> = new Map()) {
   if (event.eventValue !== undefined && !Number.isInteger(event.eventValue)) {
     // Round the duration here since GA expects that the value is an
     // integer. Reference:
@@ -73,142 +61,115 @@ async function sendEvent(
 
   await ready.wait();
 
-  // This value reflects the logging consent option in OS settings.
-  const canSendMetrics = !PRODUCTION ||
-      await ChromeHelper.getInstance().isMetricsAndCrashReportingEnabled();
-  if (canSendMetrics) {
-    const gaHelper = await getGAHelper();
-    const ga4CustomDimensions =
-        toGA4Dimensions(new Map([...baseDimen, ...(dimen ?? [])]));
+  if (await checkCanSendMetrics()) {
     await Promise.all([
-      gaHelper.sendGAEvent(event),
-      gaHelper.sendGA4Event(event, ga4CustomDimensions),
+      sendGaEvent(event, dimensions),
+      sendGa4Event(event, dimensions),
     ]);
   }
 }
 
-/**
- * Convert GA custom dimensions to GA4 custom dimensions. Dimension numbers are
- * mapped to lowercase enum key names; the values are cast to strings (undefined
- * values are dropped).
- *
- * @param dimensions GA custom dimensions map.
- * @return A string key-value pairs.
- */
-function toGA4Dimensions(dimensions: Map<number, unknown>) {
-  const ga4Dimensions: Record<string, string> = {};
-  for (const [enumKey, value] of dimensions) {
-    if (value === undefined) {
-      continue;
-    }
-    const key = MetricDimension[enumKey].toLowerCase();
-    ga4Dimensions[key] = String(value);
+async function sendGaEvent(
+    baseEvent: GaBaseEvent, dimensions: Map<GaMetricDimension, string>) {
+  const gaHelper = await getGaHelper();
+  await gaHelper.sendGaEvent({baseEvent, dimensions});
+}
+
+async function sendGa4Event(
+    baseEvent: GaBaseEvent, dimensions: Map<GaMetricDimension, string>) {
+  const params: Ga4EventParams = {};
+  if (baseEvent.eventCategory !== undefined) {
+    params.event_category = baseEvent.eventCategory;
   }
-  ga4Dimensions['browser_version'] = loadTimeData.getBrowserVersion();
-  return ga4Dimensions;
+  if (baseEvent.eventLabel !== undefined) {
+    params.event_label = baseEvent.eventLabel;
+  }
+  if (baseEvent.eventValue !== undefined) {
+    params.value = baseEvent.eventValue;
+  }
+  for (const [gaKey, value] of dimensions) {
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    const ga4Key = GaMetricDimension[gaKey].toLowerCase() as
+        Lowercase<keyof typeof GaMetricDimension>;
+    params[ga4Key] = value;
+  }
+  const gaHelper = await getGaHelper();
+  const name = baseEvent.eventAction.replaceAll('-', '_');
+  await gaHelper.sendGa4Event({name, eventParams: params});
 }
 
 /**
- * Set if the metrics is enabled. Note that the metrics will only be sent if it
+ * Sets if the metrics is enabled. Note that the metrics will only be sent if it
  * is enabled AND the logging consent option is enabled in OS settings.
  *
  * @param enabled True if the metrics is enabled.
  */
-export async function setMetricsEnabled(enabled: boolean): Promise<void> {
+export async function setEnabled(enabled: boolean): Promise<void> {
   await ready.wait();
-  await (await getGAHelper()).setMetricsEnabled(GA_ID, enabled);
-}
-
-const SCHEMA_VERSION = 3;
-
-/**
- * All dimensions for GA metrics.
- *
- * The following two documents should also be updated when the dimensions is
- * updated.
- *
- * * Camera App PDD (Privacy Design Document): go/cca-metrics-pdd.
- * * CCA GA Events & Dimensions sheet: go/cca-metrics-schema.
- */
-enum MetricDimension {
-  BOARD = 1,
-  OS_VERSION = 2,
-  // Obsolete 'sound' state.
-  // SOUND = 3,
-  MIRROR = 4,
-  GRID = 5,
-  TIMER = 6,
-  MICROPHONE = 7,
-  MAXIMIZED = 8,
-  TALL_ORIENTATION = 9,
-  RESOLUTION = 10,
-  FPS = 11,
-  INTENT_RESULT = 12,
-  SHOULD_HANDLE_RESULT = 13,
-  SHOULD_DOWN_SCALE = 14,
-  IS_SECURE = 15,
-  ERROR_NAME = 16,
-  FILENAME = 17,
-  FUNC_NAME = 18,
-  LINE_NO = 19,
-  COL_NO = 20,
-  SHUTTER_TYPE = 21,
-  IS_VIDEO_SNAPSHOT = 22,
-  EVER_PAUSED = 23,
-  SUPPORT_PAN = 24,
-  SUPPORT_TILT = 25,
-  SUPPORT_ZOOM = 26,
-  // Obsolete
-  // DOC_RESULT = 27,
-  RECORD_TYPE = 28,
-  GIF_RESULT = 29,
-  DURATION = 30,
-  SCHEMA_VERSION = 31,
-  LAUNCH_TYPE = 32,
-  DOC_FIX_TYPE = 33,
-  RESOLUTION_LEVEL = 34,
-  ASPECT_RATIO_SET = 35,
-  DOC_PAGE_COUNT = 36,
-  TIME_LAPSE_SPEED = 37,
-  IS_TEST_IMAGE = 38,
+  const gaHelper = await getGaHelper();
+  await Promise.all([
+    gaHelper.setGaEnabled(GA_ID, enabled),
+    gaHelper.setGa4Enabled(enabled),
+  ]);
 }
 
 /**
- * Initializes metrics with parameters.
+ * Initializes GA and GA4 with parameters like property ID, client ID, and
+ * custom dimensions from `loadTimeData`.
  */
 export async function initMetrics(): Promise<void> {
-  const board = loadTimeData.getBoard();
-  const boardName = (() => {
-    const match = /^(x86-)?(\w*)/.exec(board);
-    assert(match !== null);
-    return match[0];
-  })();
-  const osVer = (() => {
-    const match = navigator.appVersion.match(/CrOS\s+\S+\s+([\d.]+)/);
-    if (match === null) {
-      return '';
-    }
-    return match[1];
-  })();
+  const board = assertExists(/^(x86-)?(\w*)/.exec(loadTimeData.getBoard()))[0];
   const isTestImage = loadTimeData.getIsTestImage();
-  baseDimen = new Map<MetricDimension, number|string>([
-    [MetricDimension.BOARD, boardName],
-    [MetricDimension.OS_VERSION, osVer],
-    [MetricDimension.SCHEMA_VERSION, SCHEMA_VERSION],
-    [MetricDimension.IS_TEST_IMAGE, isTestImage ? '1' : '0'],
-  ]);
+  const gaHelper = await getGaHelper();
 
-  const clientId = localStorage.getString(LocalStorageKey.GA_USER_ID);
+  function initGa() {
+    const baseDimensions = new Map([
+      [GaMetricDimension.BOARD, board],
+      [GaMetricDimension.IS_TEST_IMAGE, boolToIntString(isTestImage)],
+    ]);
 
-  function setClientId(id: string) {
-    localStorage.set(LocalStorageKey.GA_USER_ID, id);
+    const clientId = localStorage.getString(LocalStorageKey.GA_USER_ID);
+    function setClientId(id: string) {
+      localStorage.set(LocalStorageKey.GA_USER_ID, id);
+    }
+    return gaHelper.initGa(
+        {
+          id: GA_ID,
+          clientId,
+          baseDimensions,
+        },
+        Comlink.proxy(setClientId));
   }
 
-  await (await getGAHelper())
-      .initGA(
-          {gaId: GA_ID, ga4Id: GA4_ID, clientId, ga4ApiSecret: GA4_API_SECRET},
-          Comlink.proxy(setClientId),
-      );
+  function initGa4() {
+    const baseParams = {
+      [Ga4MetricDimension.BOARD]: board,
+      [Ga4MetricDimension.IS_TEST_IMAGE]: boolToIntString(isTestImage),
+      [Ga4MetricDimension.BROWSER_VERSION]: loadTimeData.getBrowserVersion(),
+    };
+
+    const clientId = localStorage.getString(LocalStorageKey.GA4_CLIENT_ID);
+    function setClientId(id: string) {
+      localStorage.set(LocalStorageKey.GA4_CLIENT_ID, id);
+    }
+    return gaHelper.initGa4(
+        {
+          apiSecret: GA4_API_SECRET,
+          baseParams,
+          clientId,
+          measurementId: GA4_ID,
+        },
+        Comlink.proxy(setClientId));
+  }
+
+  await Promise.all([initGa(), initGa4()]);
+  // TODO(b/286511762): Monitor consent option to enable/disable sending
+  // metrics. Since end_session event is sent when the window is unloaded, we
+  // don't have time to read the value from `checkCanSendMetrics()`. Currently,
+  // we check the consent option on register instead of send.
+  if (await checkCanSendMetrics()) {
+    await gaHelper.registerGa4EndSessionEvent();
+  }
   ready.signal();
 }
 
@@ -239,7 +200,7 @@ export function sendLaunchEvent({launchType}: LaunchEventParam): void {
         eventLabel: '',
       },
       new Map([
-        [MetricDimension.LAUNCH_TYPE, launchType],
+        [GaMetricDimension.LAUNCH_TYPE, launchType],
       ]));
 }
 
@@ -363,36 +324,39 @@ export function sendCaptureEvent({
         eventLabel: facing,
         eventValue: duration,
       },
-      new Map<MetricDimension, unknown>([
+      new Map([
         // Skips 3rd dimension for obsolete 'sound' state.
-        [MetricDimension.MIRROR, condState([State.MIRROR])],
+        [GaMetricDimension.MIRROR, condState([State.MIRROR])],
         [
-          MetricDimension.GRID,
+          GaMetricDimension.GRID,
           condState(
               [State.GRID_3x3, State.GRID_4x4, State.GRID_GOLDEN], State.GRID),
         ],
         [
-          MetricDimension.TIMER,
+          GaMetricDimension.TIMER,
           condState([State.TIMER_3SEC, State.TIMER_10SEC], State.TIMER),
         ],
-        [MetricDimension.MICROPHONE, condState([State.MIC], Mode.VIDEO, true)],
-        [MetricDimension.MAXIMIZED, condState([State.MAX_WND])],
-        [MetricDimension.TALL_ORIENTATION, condState([State.TALL])],
-        [MetricDimension.RESOLUTION, resolution.toString()],
         [
-          MetricDimension.FPS,
+          GaMetricDimension.MICROPHONE,
+          condState([State.MIC], Mode.VIDEO, true),
+        ],
+        [GaMetricDimension.MAXIMIZED, condState([State.MAX_WND])],
+        [GaMetricDimension.TALL_ORIENTATION, condState([State.TALL])],
+        [GaMetricDimension.RESOLUTION, resolution.toString()],
+        [
+          GaMetricDimension.FPS,
           condState([State.FPS_30, State.FPS_60], Mode.VIDEO, true),
         ],
-        [MetricDimension.INTENT_RESULT, intentResult],
-        [MetricDimension.SHUTTER_TYPE, shutterType],
-        [MetricDimension.IS_VIDEO_SNAPSHOT, isVideoSnapshot],
-        [MetricDimension.EVER_PAUSED, everPaused],
-        [MetricDimension.RECORD_TYPE, recordType],
-        [MetricDimension.GIF_RESULT, gifResult],
-        [MetricDimension.DURATION, duration],
-        [MetricDimension.RESOLUTION_LEVEL, resolutionLevel],
-        [MetricDimension.ASPECT_RATIO_SET, aspectRatioSet],
-        [MetricDimension.TIME_LAPSE_SPEED, timeLapseSpeed],
+        [GaMetricDimension.INTENT_RESULT, intentResult],
+        [GaMetricDimension.SHUTTER_TYPE, shutterType],
+        [GaMetricDimension.IS_VIDEO_SNAPSHOT, boolToIntString(isVideoSnapshot)],
+        [GaMetricDimension.EVER_PAUSED, boolToIntString(everPaused)],
+        [GaMetricDimension.RECORD_TYPE, String(recordType)],
+        [GaMetricDimension.GIF_RESULT, String(gifResult)],
+        [GaMetricDimension.DURATION, String(duration)],
+        [GaMetricDimension.RESOLUTION_LEVEL, resolutionLevel],
+        [GaMetricDimension.ASPECT_RATIO_SET, String(aspectRatioSet)],
+        [GaMetricDimension.TIME_LAPSE_SPEED, String(timeLapseSpeed)],
       ]));
 }
 
@@ -432,7 +396,7 @@ export function sendPerfEvent({event, duration, perfInfo = {}}: PerfEventParam):
         eventValue: duration,
       },
       new Map([
-        [MetricDimension.RESOLUTION, `${resolution}`],
+        [GaMetricDimension.RESOLUTION, `${resolution}`],
       ]));
 }
 
@@ -449,9 +413,6 @@ export interface IntentEventParam {
  */
 export function sendIntentEvent({intent, result}: IntentEventParam): void {
   const {mode, shouldHandleResult, shouldDownScale, isSecure} = intent;
-  function getBoolValue(b: boolean) {
-    return b ? '1' : '0';
-  }
   sendEvent(
       {
         eventCategory: 'intent',
@@ -459,13 +420,13 @@ export function sendIntentEvent({intent, result}: IntentEventParam): void {
         eventLabel: result,
       },
       new Map([
-        [MetricDimension.INTENT_RESULT, result],
+        [GaMetricDimension.INTENT_RESULT, result],
         [
-          MetricDimension.SHOULD_HANDLE_RESULT,
-          getBoolValue(shouldHandleResult),
+          GaMetricDimension.SHOULD_HANDLE_RESULT,
+          boolToIntString(shouldHandleResult),
         ],
-        [MetricDimension.SHOULD_DOWN_SCALE, getBoolValue(shouldDownScale)],
-        [MetricDimension.IS_SECURE, getBoolValue(isSecure)],
+        [GaMetricDimension.SHOULD_DOWN_SCALE, boolToIntString(shouldDownScale)],
+        [GaMetricDimension.IS_SECURE, boolToIntString(isSecure)],
       ]));
 }
 
@@ -492,11 +453,11 @@ export function sendErrorEvent(
         eventLabel: level,
       },
       new Map([
-        [MetricDimension.ERROR_NAME, errorName],
-        [MetricDimension.FILENAME, fileName],
-        [MetricDimension.FUNC_NAME, funcName],
-        [MetricDimension.LINE_NO, lineNo],
-        [MetricDimension.COL_NO, colNo],
+        [GaMetricDimension.ERROR_NAME, errorName],
+        [GaMetricDimension.FILENAME, fileName],
+        [GaMetricDimension.FUNC_NAME, funcName],
+        [GaMetricDimension.LINE_NO, lineNo],
+        [GaMetricDimension.COL_NO, colNo],
       ]));
 }
 
@@ -545,9 +506,9 @@ export function sendOpenPTZPanelEvent(
         eventAction: 'open-panel',
       },
       new Map([
-        [MetricDimension.SUPPORT_PAN, capabilities.pan],
-        [MetricDimension.SUPPORT_TILT, capabilities.tilt],
-        [MetricDimension.SUPPORT_ZOOM, capabilities.zoom],
+        [GaMetricDimension.SUPPORT_PAN, boolToIntString(capabilities.pan)],
+        [GaMetricDimension.SUPPORT_TILT, boolToIntString(capabilities.tilt)],
+        [GaMetricDimension.SUPPORT_ZOOM, boolToIntString(capabilities.zoom)],
       ]));
 }
 
@@ -581,8 +542,8 @@ export function sendDocScanResultEvent(
         eventValue: fixCount,
       },
       new Map([
-        [MetricDimension.DOC_FIX_TYPE, fixType],
-        [MetricDimension.DOC_PAGE_COUNT, pageCount],
+        [GaMetricDimension.DOC_FIX_TYPE, String(fixType)],
+        [GaMetricDimension.DOC_PAGE_COUNT, String(pageCount)],
       ]));
 }
 
@@ -618,4 +579,78 @@ export function sendLowStorageEvent(action: LowStorageActionType): void {
     eventCategory: 'low-storage',
     eventAction: action,
   });
+}
+
+function boolToIntString(b: boolean) {
+  return b ? '1' : '0';
+}
+
+// The returned value reflects the logging consent option in OS settings.
+async function checkCanSendMetrics(): Promise<boolean> {
+  return !PRODUCTION ||
+      await ChromeHelper.getInstance().isMetricsAndCrashReportingEnabled();
+}
+
+/**
+ * Set of Top 20 Popular Camera Peripherals' Module ID from
+ * go/usb-popularity-study. Since 4 cameras of Sonix have the same module ids,
+ * they are aggregated to `Cam_Sonix`.
+ */
+export class PopularCamPeripheralSet {
+  private readonly moduleIDSet: Set<string>;
+
+  constructor() {
+    this.moduleIDSet = new Set<string>([
+      '046d:085b',  // C925e_Logitech
+      '046d:0825',  // C270_Logitech
+      '0c45:636b',  // Cam_Sonix
+      '0c45:6366',  // VitadeAF_Microdia
+      '046d:0843',  // C930e_Logitech
+      '046d:082d',  // HDProC920_Logitech
+      '046d:0892',  // C920HDPro_Logitech
+      '046d:08e5',  // C920PROHD_Logitech
+      '05a3:9331',  // Cam_ARC
+      '046d:085e',  // BRIOUltraHD_Logitech
+      '046d:085c',  // C922ProStream_Logitech
+      '1b3f:2002',  // 808Camera9_Generalplus
+      '1d6c:0103',  // NexiGoN60FHD_2MUVC
+      '046d:082c',  // HDC615_Logitech
+      '1778:d021',  // VZR_IPEVO
+      '07ca:313a',  // LiveStreamer313_Sunplus
+      '045e:0810',  // LifeCamHD3000_Microsoft
+    ]);
+  }
+
+  /**
+   * Returns the original `moduleId` if it exists in `moduleIDSet`. If not,
+   * returns 'others'.
+   */
+  getMaskedId(moduleId: string): string {
+    if (this.moduleIDSet.has(moduleId)) {
+      return moduleId;
+    }
+    return 'others';
+  }
+}
+
+const moduleIDSet = new PopularCamPeripheralSet();
+
+/**
+ * Sends camera opening event.
+ *
+ * @param moduleId Camera Module ID in the format of 8 digits hex string, such
+ *     as abcd:1234.
+ */
+export function sendOpenCameraEvent(moduleId: string|null): void {
+  const newModuleId =
+      moduleId === null ? 'MIPI' : moduleIDSet.getMaskedId(moduleId);
+
+  sendEvent(
+      {
+        eventCategory: 'open-camera',
+        eventAction: 'open-camera',
+      },
+      new Map([
+        [GaMetricDimension.CAMERA_MODULE_ID, newModuleId],
+      ]));
 }

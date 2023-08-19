@@ -102,7 +102,7 @@ std::vector<extensions::ExtensionId>
 ExtensionsSitePermissionsPageViewUnitTest::GetExtensionsShowingRequests() {
   return extensions_container()
       ->GetExtensionsToolbarControls()
-      ->request_access_button_for_testing()
+      ->request_access_button()
       ->GetExtensionIdsForTesting();
 }
 
@@ -334,7 +334,7 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
   ShowSitePermissionsPage(extension->id());
   EXPECT_TRUE(IsSitePermissionsPageOpened(extension->id()));
 
-  UpdateUserSiteAccess(*extension.get(), web_contents,
+  UpdateUserSiteAccess(*extension, web_contents,
                        PermissionsManager::UserSiteAccess::kOnClick);
 
   auto* on_click_button =
@@ -364,7 +364,7 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
   ShowSitePermissionsPage(extension->id());
   EXPECT_TRUE(IsSitePermissionsPageOpened(extension->id()));
 
-  UpdateUserSiteAccess(*extension.get(), web_contents,
+  UpdateUserSiteAccess(*extension, web_contents,
                        PermissionsManager::UserSiteAccess::kOnSite);
 
   auto* on_click_button =
@@ -402,7 +402,7 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
   ShowSitePermissionsPage(extension->id());
   EXPECT_TRUE(IsSitePermissionsPageOpened(extension->id()));
 
-  UpdateUserSiteAccess(*extension.get(), web_contents,
+  UpdateUserSiteAccess(*extension, web_contents,
                        PermissionsManager::UserSiteAccess::kOnAllSites);
 
   auto* on_click_button =

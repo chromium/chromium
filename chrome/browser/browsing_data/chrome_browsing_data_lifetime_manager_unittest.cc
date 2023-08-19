@@ -13,6 +13,7 @@
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/trusted_vault/trusted_vault_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/browsing_data/core/features.h"
 #include "components/browsing_data/core/pref_names.h"
@@ -137,8 +138,9 @@ TEST(ChromeBrowsingDataLifetimeManager, ScheduledRemoval) {
 
 TEST(ChromeBrowsingDataLifetimeManager, ScheduledRemovalWithSync) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      browsing_data::features::kEnableBrowsingDataLifetimeManager);
+  feature_list.InitWithFeatures(
+      {browsing_data::features::kEnableBrowsingDataLifetimeManager},
+      {browsing_data::features::kDataRetentionPoliciesDisableSyncTypesNeeded});
   content::BrowserTaskEnvironment browser_task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingProfile::Builder builder;
@@ -335,6 +337,8 @@ TEST(ChromeBrowsingDataLifetimeManager,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingProfile::Builder builder;
   builder.SetIsNewProfile(true);
+  builder.AddTestingFactory(TrustedVaultServiceFactory::GetInstance(),
+                            TrustedVaultServiceFactory::GetDefaultFactory());
   builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                             SyncServiceFactory::GetDefaultFactory());
 

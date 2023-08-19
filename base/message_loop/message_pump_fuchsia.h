@@ -10,6 +10,7 @@
 
 #include "base/base_export.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/message_loop/message_pump.h"
 #include "base/message_loop/watchable_io_message_pump_posix.h"
@@ -154,8 +155,19 @@ class BASE_EXPORT MessagePumpFuchsia : public MessagePump,
   // true if any events were received or if ScheduleWork() was called.
   bool HandleIoEventsUntil(zx_time_t deadline);
 
-  // This flag is set to false when Run should return.
-  bool keep_running_ = true;
+  struct RunState {
+    explicit RunState(Delegate* delegate_in) : delegate(delegate_in) {}
+
+    // `delegate` is not a raw_ptr<...> for performance reasons (based on
+    // analysis of sampling profiler data and tab_search:top100:2020).
+    RAW_PTR_EXCLUSION Delegate* const delegate;
+
+    // Used to flag that the current Run() invocation should return ASAP.
+    bool should_quit = false;
+  };
+
+  // State for the current invocation of Run(). null if not running.
+  RAW_PTR_EXCLUSION RunState* run_state_ = nullptr;
 
   std::unique_ptr<async::Loop> async_loop_;
 

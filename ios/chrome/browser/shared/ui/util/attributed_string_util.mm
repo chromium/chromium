@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/shared/ui/util/attributed_string_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 NSAttributedString* AttributedStringCopyWithAttributes(
     NSAttributedString* attributedString,
     NSLineBreakMode lineBreakMode,

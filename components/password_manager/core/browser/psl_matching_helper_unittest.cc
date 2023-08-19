@@ -5,7 +5,6 @@
 #include "components/password_manager/core/browser/psl_matching_helper.h"
 
 #include <stddef.h>
-#include <cctype>
 
 #include "base/strings/string_util.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -288,6 +287,7 @@ TEST(PSLMatchingUtilsTest, IsPublicSuffixDomainMatch) {
       {"http://facebook.com/path", "http://m.facebook.com/path", true},
       {"http://facebook.com/path1", "http://m.facebook.com/path2", true},
       {"http://example.com/has space", "http://example.com/has space", true},
+      {"http://www.example.com/%00", "http://www.example.com/%00", true},
       {"http://www.example.com", "http://wwwexample.com", false},
       {"http://www.example.com", "https://www.example.com", false},
       {"http://www.example.com:123", "http://www.example.com", false},
@@ -301,7 +301,7 @@ TEST(PSLMatchingUtilsTest, IsPublicSuffixDomainMatch) {
       {"http://www.example.com", "http://", false},
       {"", "http://www.example.com", false},
       {"http://www.example.com", "bad url", false},
-      {"http://www.example.com/%00", "http://www.example.com/%00", false},
+      {"http://www.example%00.com", "http://www.example%00.com", false},
       {"federation://example.com/google.com", "https://example.com/", false},
   };
 

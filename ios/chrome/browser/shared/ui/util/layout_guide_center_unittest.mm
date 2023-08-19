@@ -6,14 +6,10 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/test/ios/wait_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using base::test::ios::kWaitForUIElementTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
@@ -106,7 +102,7 @@ TEST_F(LayoutGuideCenterTest,
   UIView* view = [[UIView alloc] init];
   [view addLayoutGuide:layout_guide];
   // Set up windows in the same scene.
-  UIWindowScene* scene = base::mac::ObjCCastStrict<UIWindowScene>(
+  UIWindowScene* scene = base::apple::ObjCCastStrict<UIWindowScene>(
       [UIApplication.sharedApplication.connectedScenes anyObject]);
   UIWindow* reference_window = [[UIWindow alloc] init];
   reference_window.windowScene = scene;

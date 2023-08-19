@@ -9,12 +9,10 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/desks/desk_mini_view.h"
-#include "ash/wm/desks/legacy_desk_bar_view.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/gfx/text_elider.h"
-#include "ui/views/focus/focus_manager.h"
 
 namespace ash {
 
@@ -31,6 +29,9 @@ DeskNameView::DeskNameView(DeskMiniView* mini_view)
           gfx::Insets::VH(0, kDeskNameViewHorizontalPadding)))
       .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER)
       .BuildChildren();
+
+  set_use_default_focus_manager(mini_view_->owner_bar()->type() ==
+                                DeskBarViewBase::Type::kDeskButton);
 }
 
 DeskNameView::~DeskNameView() = default;

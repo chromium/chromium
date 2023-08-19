@@ -32,4 +32,5 @@
 ] interface PopStateEvent : Event {
     [CallWith=ScriptState] constructor(DOMString type, optional PopStateEventInit eventInitDict = {});
     [CallWith=ScriptState, RaisesException, CachedAttribute=IsStateDirty] readonly attribute any state;
+    [RuntimeEnabled=HasUAVisualTransition] readonly attribute boolean hasUAVisualTransition;
 };

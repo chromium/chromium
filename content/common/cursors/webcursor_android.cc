@@ -8,7 +8,7 @@
 namespace content {
 
 gfx::NativeCursor WebCursor::GetNativeCursor() {
-  return gfx::kNullCursor;
+  return gfx::NativeCursor{};
 }
 
 #if defined(USE_AURA)

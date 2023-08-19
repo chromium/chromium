@@ -10,7 +10,6 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/sequence_bound.h"
@@ -64,9 +63,7 @@ class ExtensionTelemetryService : public KeyedService {
  public:
   ExtensionTelemetryService(
       Profile* profile,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      extensions::ExtensionRegistry* extension_registry,
-      extensions::ExtensionPrefs* extension_prefs);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   ExtensionTelemetryService(const ExtensionTelemetryService&) = delete;
   ExtensionTelemetryService& operator=(const ExtensionTelemetryService&) =

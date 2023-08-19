@@ -152,12 +152,15 @@ class SafeBrowsingDatabaseManager
   // result when it is ready. The URL will only be checked for the threat types
   // in |threat_types|. |experiment_cache_selection| specifies which cache to
   // use. See comments above MechanismExperimentHashDatabaseCache's definition
-  // for more details.
+  // for more details. |check_type| specifies the type of check the url will be
+  // checked against. See comments above CheckBrowseUrlType's definition for
+  // more details.
   virtual bool CheckBrowseUrl(
       const GURL& url,
       const SBThreatTypeSet& threat_types,
       Client* client,
-      MechanismExperimentHashDatabaseCache experiment_cache_selection) = 0;
+      MechanismExperimentHashDatabaseCache experiment_cache_selection,
+      CheckBrowseUrlType check_type) = 0;
 
   // Check if the prefix for |url| is in safebrowsing download add lists.
   // Result will be passed to callback in |client|.
@@ -219,8 +222,15 @@ class SafeBrowsingDatabaseManager
   // syncs.
   virtual std::unique_ptr<StoreStateMap> GetStoreStateMap();
 
-  // Returns the ThreatSource for this implementation.
-  virtual ThreatSource GetThreatSource() const = 0;
+  // Returns the ThreatSource of browse URL check (i.e. URLs checked by the
+  // |CheckBrowseUrl| function) for this implementation.
+  virtual ThreatSource GetBrowseUrlThreatSource(
+      CheckBrowseUrlType check_type) const = 0;
+
+  // Returns the ThreatSource of non-browse URL check (i.e. URLs or other
+  // entities that are not checked by the |CheckBrowseUrl| function) for this
+  // implementation.
+  virtual ThreatSource GetNonBrowseUrlThreatSource() const = 0;
 
   // Returns whether download protection is enabled.
   virtual bool IsDownloadProtectionEnabled() const = 0;
@@ -237,8 +247,8 @@ class SafeBrowsingDatabaseManager
   // v4 protocol manager.  This may be called multiple times during the life of
   // the DatabaseManager. Must be called on IO thread unless
   // kSafeBrowsingOnUIThread is enabled in which case it'll be UI thread. All
-  // subclasses should override this method, set enabled_ to true and call the
-  // base class method at the top of it.
+  // subclasses should override this method and call the base class method at
+  // the top of it.
   virtual void StartOnSBThread(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const V4ProtocolConfig& config);
@@ -256,12 +266,12 @@ class SafeBrowsingDatabaseManager
 
   // Called to stop or shutdown operations on the io_thread unless
   // kSafeBrowsingOnUIThread is enabled in which case it'll be UI thread. All
-  // subclasses should override this method, set enabled_ to false and call the
-  // base class method at the bottom of it.
+  // subclasses should override this method and call the base class method at
+  // the bottom of it.
   virtual void StopOnSBThread(bool shutdown);
 
   // Called to check if database is ready or not.
-  virtual bool IsDatabaseReady();
+  virtual bool IsDatabaseReady() const = 0;
 
  protected:
   // Bundled client info for an API abuse hash prefix check.
@@ -338,10 +348,6 @@ class SafeBrowsingDatabaseManager
   // In-progress checks. This set owns the SafeBrowsingApiCheck pointers and is
   // responsible for deleting them when removing from the set.
   ApiCheckSet api_checks_;
-
-  // Whether the service is running. 'enabled_' is used by the
-  // SafeBrowsingDatabaseManager on the IO thread during normal operations.
-  bool enabled_;
 
   // Make callbacks about the completion of database update process. This is
   // currently used by the extension blocklist checker to disable any installed

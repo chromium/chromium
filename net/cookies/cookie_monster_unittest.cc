@@ -37,6 +37,7 @@
 #include "base/test/test_future.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
+#include "cookie_partition_key.h"
 #include "net/base/features.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/canonical_cookie_test_helpers.h"
@@ -3279,11 +3280,13 @@ TEST_F(CookieMonsterTest, HistogramCheck) {
       expired_histogram->SnapshotSamples());
   auto cookie = CanonicalCookie::CreateUnsafeCookieForTesting(
       "a", "b", "a.url", "/", base::Time(),
-      base::Time::Now() + base::Minutes(59), base::Time(), base::Time(), true,
-      false, CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, false);
+      base::Time::Now() + base::Minutes(59), base::Time(), base::Time(),
+      /*secure=*/true,
+      /*httponly=*/false, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, /*same_party=*/false);
   GURL source_url = cookie_util::SimulatedCookieSource(*cookie, "https");
   ASSERT_TRUE(SetCanonicalCookie(cm.get(), std::move(cookie), source_url,
-                                 true /*modify_httponly*/));
+                                 /*modify_httponly=*/true));
 
   std::unique_ptr<base::HistogramSamples> samples2(
       expired_histogram->SnapshotSamples());
@@ -3610,6 +3613,274 @@ TEST_F(CookieMonsterTest, NumKeysHistogram) {
     EXPECT_TRUE(cm->DoRecordPeriodicStatsForTesting());
     histogram_tester.ExpectUniqueSample(kHistogramName, 3 /* sample */,
                                         1 /* count */);
+  }
+}
+
+TEST_F(CookieMonsterTest, CookieCount2Histogram) {
+  auto cm = std::make_unique<CookieMonster>(nullptr, net::NetLog::Get());
+
+  {
+    base::HistogramTester histogram_tester;
+    ASSERT_TRUE(cm->DoRecordPeriodicStatsForTesting());
+    histogram_tester.ExpectUniqueSample("Cookie.Count2",
+                                        /*sample=*/0,
+                                        /*expected_bucket_count=*/1);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+
+    auto cookie = CanonicalCookie::CreateUnsafeCookieForTesting(
+        "a", "b", "a.url", "/", base::Time(),
+        base::Time::Now() + base::Minutes(59), base::Time(), base::Time(),
+        /*secure=*/true,
+        /*httponly=*/false, CookieSameSite::NO_RESTRICTION,
+        COOKIE_PRIORITY_DEFAULT, /*same_party=*/false);
+    GURL source_url = cookie_util::SimulatedCookieSource(*cookie, "https");
+    ASSERT_TRUE(SetCanonicalCookie(cm.get(), std::move(cookie), source_url,
+                                   /*modify_httponly=*/true));
+
+    ASSERT_TRUE(cm->DoRecordPeriodicStatsForTesting());
+
+    histogram_tester.ExpectUniqueSample("Cookie.Count2", /*sample=*/1,
+                                        /*expected_bucket_count=*/1);
+  }
+}
+
+TEST_F(CookieMonsterTest, CookieJarSizeHistograms) {
+  auto cm = std::make_unique<CookieMonster>(nullptr, net::NetLog::Get());
+
+  {
+    base::HistogramTester histogram_tester;
+    ASSERT_TRUE(cm->DoRecordPeriodicStatsForTesting());
+    histogram_tester.ExpectUniqueSample("Cookie.CookieJarSize",
+                                        /*sample=*/0,
+                                        /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample("Cookie.AvgCookieJarSizePerKey",
+                                        /*sample=*/0,
+                                        /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample("Cookie.MaxCookieJarSizePerKey",
+                                        /*sample=*/0,
+                                        /*expected_bucket_count=*/1);
+  }
+
+  auto set_cookie =
+      [&](const std::string& name, int cookie_value_size_kb,
+          const std::string& domain, CookieSameSite same_site,
+          const absl::optional<CookiePartitionKey>& partition_key) {
+        auto cc = CanonicalCookie::CreateUnsafeCookieForTesting(
+            name, std::string(cookie_value_size_kb * 1024, '0'), domain, "/",
+            base::Time(), base::Time::Now() + base::Minutes(59), base::Time(),
+            base::Time(),
+            /*secure=*/true,
+            /*httponly=*/false, same_site, COOKIE_PRIORITY_DEFAULT,
+            /*same_party=*/false, partition_key);
+        GURL source_url = cookie_util::SimulatedCookieSource(*cc, "https");
+        ASSERT_TRUE(SetCanonicalCookie(cm.get(), std::move(cc), source_url,
+                                       /*can_modify_httponly=*/true));
+      };
+
+  {  // Add unpartitioned cookie.
+    base::HistogramTester histogram_tester;
+    set_cookie("a", 2, "a.url", CookieSameSite::NO_RESTRICTION, absl::nullopt);
+    ASSERT_TRUE(cm->DoRecordPeriodicStatsForTesting());
+
+    histogram_tester.ExpectUniqueSample("Cookie.CookieJarSize",
+                                        /*sample=*/2,
+                                        /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample("Cookie.AvgCookieJarSizePerKey",
+                                        /*sample=*/2,
+                                        /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample("Cookie.MaxCookieJarSizePerKey",
+                                        /*sample=*/2,
+                                        /*expected_bucket_count=*/1);
+  }
+
+  {  // Add partitioned cookie, should not impact the counter.
+    base::HistogramTester histogram_tester;
+    set_cookie("b", 3, "a.url", CookieSameSite::NO_RESTRICTION,
+               CookiePartitionKey::FromURLForTesting(
+                   GURL("https://toplevelsite.com")));
+    ASSERT_TRUE(cm->DoRecordPeriodicStatsForTesting());
+
+    histogram_tester.ExpectUniqueSample("Cookie.CookieJarSize",
+                                        /*sample=*/2,
+                                        /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample("Cookie.AvgCookieJarSizePerKey",
+                                        /*sample=*/2,
+                                        /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample("Cookie.MaxCookieJarSizePerKey",
+                                        /*sample=*/2,
+                                        /*expected_bucket_count=*/1);
+  }
+
+  {  // Add unpartitioned cookie from another domain. Is also SameSite=Lax to
+     // ensure the counter includes SameSite cookies.
+    base::HistogramTester histogram_tester;
+    set_cookie("c", 4, "c.url", CookieSameSite::LAX_MODE, absl::nullopt);
+    ASSERT_TRUE(cm->DoRecordPeriodicStatsForTesting());
+
+    histogram_tester.ExpectUniqueSample("Cookie.CookieJarSize",
+                                        /*sample=*/6,
+                                        /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample("Cookie.AvgCookieJarSizePerKey",
+                                        /*sample=*/3,
+                                        /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample("Cookie.MaxCookieJarSizePerKey",
+                                        /*sample=*/4,
+                                        /*expected_bucket_count=*/1);
+  }
+}
+
+TEST_F(CookieMonsterTest, PartitionedCookieHistograms) {
+  auto cm = std::make_unique<CookieMonster>(nullptr, net::NetLog::Get());
+
+  {
+    base::HistogramTester histogram_tester;
+    ASSERT_TRUE(cm->DoRecordPeriodicStatsForTesting());
+
+    // Cookie counters.
+    histogram_tester.ExpectUniqueSample("Cookie.PartitionedCookieCount",
+                                        /*sample=*/0,
+                                        /*count=*/1);
+    histogram_tester.ExpectUniqueSample("Cookie.PartitionedCookieCount.Nonced",
+                                        /*sample=*/0,
+                                        /*count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        "Cookie.PartitionedCookieCount.Unnonced", /*sample=*/0,
+        /*count=*/1);
+
+    // Partitioned cookie jar size.
+    histogram_tester.ExpectUniqueSample(
+        "Cookie.PartitionedCookieJarSizeKibibytes",
+        /*sample=*/0,
+        /*count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        "Cookie.PartitionedCookieJarSizeKibibytes.Nonced", /*sample=*/0,
+        /*count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        "Cookie.PartitionedCookieJarSizeKibibytes.Unnonced", /*sample=*/0,
+        /*count=*/1);
+  }
+
+  {  // Add unpartitioned cookie.
+    base::HistogramTester histogram_tester;
+    auto cookie = CanonicalCookie::CreateUnsafeCookieForTesting(
+        "a", "b", "a.url", "/", base::Time(),
+        base::Time::Now() + base::Minutes(59), base::Time(), base::Time(),
+        /*secure=*/true,
+        /*httponly=*/false, CookieSameSite::NO_RESTRICTION,
+        COOKIE_PRIORITY_DEFAULT, /*same_party=*/false);
+    GURL source_url = cookie_util::SimulatedCookieSource(*cookie, "https");
+    ASSERT_TRUE(SetCanonicalCookie(cm.get(), std::move(cookie), source_url,
+                                   /*modify_httponly=*/true));
+    ASSERT_TRUE(cm->DoRecordPeriodicStatsForTesting());
+
+    // Cookie counters.
+    histogram_tester.ExpectUniqueSample("Cookie.PartitionedCookieCount",
+                                        /*sample=*/0,
+                                        /*count=*/1);
+    histogram_tester.ExpectUniqueSample("Cookie.PartitionedCookieCount.Nonced",
+                                        /*sample=*/0,
+                                        /*count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        "Cookie.PartitionedCookieCount.Unnonced", /*sample=*/0,
+        /*count=*/1);
+    histogram_tester.ExpectUniqueSample("Cookie.Count2", /*sample=*/1,
+                                        /*count=*/1);
+
+    // Partitioned cookie jar size.
+    histogram_tester.ExpectUniqueSample(
+        "Cookie.PartitionedCookieJarSizeKibibytes",
+        /*sample=*/0,
+        /*count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        "Cookie.PartitionedCookieJarSizeKibibytes.Nonced", /*sample=*/0,
+        /*count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        "Cookie.PartitionedCookieJarSizeKibibytes.Unnonced", /*sample=*/0,
+        /*count=*/1);
+  }
+
+  {  // Add unnonced partitioned cookie.
+    base::HistogramTester histogram_tester;
+    auto cookie = CanonicalCookie::CreateUnsafeCookieForTesting(
+        "a", std::string(2 * 1024, '0'), "a.url", "/", base::Time(),
+        base::Time::Now() + base::Minutes(59), base::Time(), base::Time(),
+        /*secure=*/true,
+        /*httponly=*/false, CookieSameSite::NO_RESTRICTION,
+        COOKIE_PRIORITY_DEFAULT, /*same_party=*/false,
+        CookiePartitionKey::FromURLForTesting(GURL("https://example.com")));
+    GURL source_url = cookie_util::SimulatedCookieSource(*cookie, "https");
+    ASSERT_TRUE(SetCanonicalCookie(cm.get(), std::move(cookie), source_url,
+                                   /*modify_httponly=*/true));
+    ASSERT_TRUE(cm->DoRecordPeriodicStatsForTesting());
+
+    // Cookie counters.
+    histogram_tester.ExpectUniqueSample("Cookie.PartitionedCookieCount",
+                                        /*sample=*/1,
+                                        /*count=*/1);
+    histogram_tester.ExpectUniqueSample("Cookie.PartitionedCookieCount.Nonced",
+                                        /*sample=*/0,
+                                        /*count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        "Cookie.PartitionedCookieCount.Unnonced", /*sample=*/1,
+        /*count=*/1);
+    histogram_tester.ExpectUniqueSample("Cookie.Count2", /*sample=*/1,
+                                        /*count=*/1);
+
+    // Partitioned cookie jar size.
+    histogram_tester.ExpectUniqueSample(
+        "Cookie.PartitionedCookieJarSizeKibibytes",
+        /*sample=*/2,
+        /*count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        "Cookie.PartitionedCookieJarSizeKibibytes.Nonced", /*sample=*/0,
+        /*count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        "Cookie.PartitionedCookieJarSizeKibibytes.Unnonced", /*sample=*/2,
+        /*count=*/1);
+  }
+
+  {  // Add nonced partitioned cookie.
+    base::HistogramTester histogram_tester;
+    auto cookie = CanonicalCookie::CreateUnsafeCookieForTesting(
+        "a", std::string(3 * 1024, '0'), "a.url", "/", base::Time(),
+        base::Time::Now() + base::Minutes(59), base::Time(), base::Time(),
+        /*secure=*/true,
+        /*httponly=*/false, CookieSameSite::NO_RESTRICTION,
+        COOKIE_PRIORITY_DEFAULT, /*same_party=*/false,
+        CookiePartitionKey::FromURLForTesting(
+            GURL("https://example.com"), base::UnguessableToken::Create()));
+    GURL source_url = cookie_util::SimulatedCookieSource(*cookie, "https");
+    ASSERT_TRUE(SetCanonicalCookie(cm.get(), std::move(cookie), source_url,
+                                   /*modify_httponly=*/true));
+    ASSERT_TRUE(cm->DoRecordPeriodicStatsForTesting());
+
+    // Cookie counts.
+    histogram_tester.ExpectUniqueSample("Cookie.PartitionedCookieCount",
+                                        /*sample=*/2,
+                                        /*count=*/1);
+    histogram_tester.ExpectUniqueSample("Cookie.PartitionedCookieCount.Nonced",
+                                        /*sample=*/1,
+                                        /*count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        "Cookie.PartitionedCookieCount.Unnonced", /*sample=*/1,
+        /*count=*/1);
+    histogram_tester.ExpectUniqueSample("Cookie.Count2", /*sample=*/1,
+                                        /*count=*/1);
+
+    // Partitioned cookie jar size.
+    histogram_tester.ExpectUniqueSample(
+        "Cookie.PartitionedCookieJarSizeKibibytes",
+        /*sample=*/5,
+        /*count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        "Cookie.PartitionedCookieJarSizeKibibytes.Nonced", /*sample=*/3,
+        /*count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        "Cookie.PartitionedCookieJarSizeKibibytes.Unnonced", /*sample=*/2,
+        /*count=*/1);
   }
 }
 
@@ -4134,10 +4405,9 @@ TEST_F(CookieMonsterTest, SetSamePartyCookies) {
   EXPECT_TRUE(
       CreateAndSetCookieReturnStatus(&cm, https_url, "A=B;").IsInclude());
 
-  // A SameParty cookie cannot be set without the Secure attribute.
-  EXPECT_THAT(CreateAndSetCookieReturnStatus(&cm, https_url, "A=B; SameParty"),
-              CookieInclusionStatus::MakeFromReasonsForTesting(
-                  {CookieInclusionStatus::EXCLUDE_INVALID_SAMEPARTY}));
+  // A SameParty cookie can be set without the Secure attribute.
+  EXPECT_TRUE(CreateAndSetCookieReturnStatus(&cm, https_url, "A=B; SameParty")
+                  .IsInclude());
 
   // A SameParty cookie can be set from a URL with a secure scheme.
   EXPECT_TRUE(
@@ -4720,9 +4990,10 @@ TEST_F(CookieMonsterTest, RejectCreatedSameSiteCookieOnSet) {
 
   CookieInclusionStatus status;
   // Cookie can be created successfully; SameSite is not checked on Creation.
-  auto cookie = CanonicalCookie::Create(
-      url, cookie_line, base::Time::Now(), absl::nullopt /* server_time */,
-      absl::nullopt /* cookie_partition_key */, &status);
+  auto cookie = CanonicalCookie::Create(url, cookie_line, base::Time::Now(),
+                                        /*server_time=*/absl::nullopt,
+                                        /*cookie_partition_key=*/absl::nullopt,
+                                        /*block_truncated=*/true, &status);
   ASSERT_TRUE(cookie != nullptr);
   ASSERT_TRUE(status.IsInclude());
 
@@ -4744,8 +5015,9 @@ TEST_F(CookieMonsterTest, RejectCreatedSecureCookieOnSet) {
   // Cookie can be created successfully from an any url. Secure is not checked
   // on Create.
   auto cookie = CanonicalCookie::Create(
-      http_url, cookie_line, base::Time::Now(), absl::nullopt /* server_time */,
-      absl::nullopt /* cookie_partition_key */, &status);
+      http_url, cookie_line, base::Time::Now(), /*server_time=*/absl::nullopt,
+      /*cookie_partition_key=*/absl::nullopt, /*block_truncated=*/true,
+      &status);
 
   ASSERT_TRUE(cookie != nullptr);
   ASSERT_TRUE(status.IsInclude());
@@ -4767,9 +5039,10 @@ TEST_F(CookieMonsterTest, RejectCreatedHttpOnlyCookieOnSet) {
   CookieMonster cm(nullptr, nullptr);
   CookieInclusionStatus status;
   // Cookie can be created successfully; HttpOnly is not checked on Create.
-  auto cookie = CanonicalCookie::Create(
-      url, cookie_line, base::Time::Now(), absl::nullopt /* server_time */,
-      absl::nullopt /* cookie_partition_key */, &status);
+  auto cookie = CanonicalCookie::Create(url, cookie_line, base::Time::Now(),
+                                        /*server_time=*/absl::nullopt,
+                                        /*cookie_partition_key=*/absl::nullopt,
+                                        /*block_truncated=*/true, &status);
 
   ASSERT_TRUE(cookie != nullptr);
   ASSERT_TRUE(status.IsInclude());
@@ -5485,9 +5758,11 @@ TEST_F(FirstPartySetEnabledCookieMonsterTest, RecordsPeriodicFPSSizes) {
   });
 
   ASSERT_TRUE(SetCookie(cm(), GURL("https://owner1.test"), kValidCookieLine));
-  ASSERT_TRUE(SetCookie(cm(), GURL("https://member1.test"), kValidCookieLine));
+  ASSERT_TRUE(SetCookie(cm(), GURL("https://subdomain.member1.test"),
+                        kValidCookieLine));
   ASSERT_TRUE(SetCookie(cm(), GURL("https://member2.test"), kValidCookieLine));
-  ASSERT_TRUE(SetCookie(cm(), GURL("https://owner2.test"), kValidCookieLine));
+  ASSERT_TRUE(
+      SetCookie(cm(), GURL("https://subdomain.owner2.test"), kValidCookieLine));
   ASSERT_TRUE(SetCookie(cm(), GURL("https://member3.test"), kValidCookieLine));
   // No cookie set for member4.test.
   ASSERT_TRUE(
@@ -5606,33 +5881,665 @@ TEST_F(CookieMonsterTest, SiteHasCookieInOtherPartition) {
       cm->SiteHasCookieInOtherPartition(site, /*partition_key=*/absl::nullopt));
 }
 
-// Tests which use this class verify the expiry date clamping behavior when
-// kClampCookieExpiryTo400Days is enabled. This caps expiry dates on new/updated
-// cookies to max of 400 days, but does not affect previously stored cookies.
-class CookieMonsterWithClampingTest : public CookieMonsterTest,
-                                      public testing::WithParamInterface<bool> {
- public:
-  CookieMonsterWithClampingTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kClampCookieExpiryTo400Days,
-        IsClampCookieExpiryTo400DaysEnabled());
-  }
-  bool IsClampCookieExpiryTo400DaysEnabled() { return GetParam(); }
+// Test that domain cookies which shadow origin cookies are excluded when scheme
+// binding is enabled.
+TEST_F(CookieMonsterTest, FilterCookiesWithOptionsExcludeShadowingDomains) {
+  auto store = base::MakeRefCounted<MockPersistentCookieStore>();
+  auto cm = std::make_unique<CookieMonster>(store.get(), net::NetLog::Get());
+  base::Time creation_time = base::Time::Now();
+  absl::optional<base::Time> server_time = absl::nullopt;
+  CookieOptions options = CookieOptions::MakeAllInclusive();
+  options.set_return_excluded_cookies();
 
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+  auto CookieListsMatch = [](const CookieAccessResultList& actual,
+                             const CookieList& expected) {
+    if (actual.size() != expected.size()) {
+      return false;
+    }
 
-INSTANTIATE_TEST_SUITE_P(/* no label */,
-                         CookieMonsterWithClampingTest,
-                         testing::Bool());
+    for (size_t i = 0; i < actual.size(); i++) {
+      if (!actual[i].cookie.IsEquivalent(expected[i])) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  // We only exclude shadowing domain cookies when scheme binding is enabled.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {net::features::kEnableSchemeBoundCookies},
+      {net::features::kEnablePortBoundCookies});
+
+  std::vector<CanonicalCookie*> cookie_ptrs;
+  CookieAccessResultList included;
+  CookieAccessResultList excluded;
+
+  auto reset = [&cookie_ptrs, &included, &excluded]() {
+    cookie_ptrs.clear();
+    included.clear();
+    excluded.clear();
+  };
+
+  auto origin_cookie1 = CanonicalCookie::Create(
+      https_www_foo_.url(), "foo1=origin", creation_time, server_time,
+      /*cookie_partition_key=*/absl::nullopt);
+  auto origin_cookie2 = CanonicalCookie::Create(
+      https_www_foo_.url(), "foo2=origin", creation_time, server_time,
+      /*cookie_partition_key=*/absl::nullopt);
+
+  auto domain_cookie1 = CanonicalCookie::Create(
+      https_www_foo_.url(), "foo1=domain; Domain=" + https_www_foo_.domain(),
+      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt);
+
+  // Shadowing domain cookie after the origin cookie.
+  cookie_ptrs = {origin_cookie1.get(), origin_cookie2.get(),
+                 domain_cookie1.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, {*origin_cookie1, *origin_cookie2}));
+  EXPECT_TRUE(CookieListsMatch(excluded, {*domain_cookie1}));
+  reset();
+
+  // Shadowing domain cookie before the origin cookie.
+  cookie_ptrs = {domain_cookie1.get(), origin_cookie2.get(),
+                 origin_cookie1.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, {*origin_cookie2, *origin_cookie1}));
+  EXPECT_TRUE(CookieListsMatch(excluded, {*domain_cookie1}));
+  reset();
+
+  auto domain_cookie2 = CanonicalCookie::Create(
+      https_www_foo_.url(), "foo2=domain; Domain=" + https_www_foo_.domain(),
+      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt);
+
+  // Multiple different shadowing domain cookies.
+  cookie_ptrs = {domain_cookie1.get(), origin_cookie2.get(),
+                 origin_cookie1.get(), domain_cookie2.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, {*origin_cookie2, *origin_cookie1}));
+  EXPECT_TRUE(CookieListsMatch(excluded, {*domain_cookie1, *domain_cookie2}));
+  reset();
+
+  auto domain_cookie3 = CanonicalCookie::Create(
+      https_www_foo_.url(), "foo3=domain; Domain=" + https_www_foo_.domain(),
+      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt);
+
+  // Non-shadowing domain cookie should be included.
+  cookie_ptrs = {domain_cookie1.get(), origin_cookie2.get(),
+                 origin_cookie1.get(), domain_cookie2.get(),
+                 domain_cookie3.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(
+      included, {*origin_cookie2, *origin_cookie1, *domain_cookie3}));
+  EXPECT_TRUE(CookieListsMatch(excluded, {*domain_cookie1, *domain_cookie2}));
+  reset();
+
+  auto sub_domain_cookie1 = CanonicalCookie::Create(
+      https_www_foo_.url(), "foo1=subdomain; Domain=" + https_www_foo_.host(),
+      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt);
+
+  // If there are multiple domain cookies that shadow the same cookie, they
+  // should all be excluded.
+  cookie_ptrs = {domain_cookie1.get(), origin_cookie2.get(),
+                 origin_cookie1.get(), sub_domain_cookie1.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, {*origin_cookie2, *origin_cookie1}));
+  EXPECT_TRUE(
+      CookieListsMatch(excluded, {*domain_cookie1, *sub_domain_cookie1}));
+  reset();
+
+  // Domain cookies may shadow each other.
+  cookie_ptrs = {domain_cookie1.get(), sub_domain_cookie1.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(
+      CookieListsMatch(included, {*domain_cookie1, *sub_domain_cookie1}));
+  EXPECT_TRUE(CookieListsMatch(excluded, {}));
+  reset();
+
+  auto path_origin_cookie1 = CanonicalCookie::Create(
+      https_www_foo_.url(), "foo1=pathorigin; Path=/bar", creation_time,
+      server_time,
+      /*cookie_partition_key=*/absl::nullopt);
+
+  // Origin cookies on different paths may not be shadowed, even if the
+  // origin cookie wouldn't be included on this request.
+  cookie_ptrs = {path_origin_cookie1.get(), domain_cookie1.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, {}));
+  EXPECT_TRUE(
+      CookieListsMatch(excluded, {*path_origin_cookie1, *domain_cookie1}));
+  reset();
+
+  auto insecure_origin_cookie1 = CanonicalCookie::Create(
+      http_www_foo_.url(), "foo1=insecureorigin", creation_time, server_time,
+      /*cookie_partition_key=*/absl::nullopt);
+  EXPECT_EQ(insecure_origin_cookie1->SourceScheme(),
+            CookieSourceScheme::kNonSecure);
+
+  // Origin cookies that are excluded due to scheme binding don't affect domain
+  // cookies.
+  cookie_ptrs = {insecure_origin_cookie1.get(), domain_cookie1.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, {*domain_cookie1}));
+  EXPECT_TRUE(CookieListsMatch(excluded, {*insecure_origin_cookie1}));
+  EXPECT_TRUE(
+      excluded[0].access_result.status.HasExactlyExclusionReasonsForTesting(
+          {CookieInclusionStatus::EXCLUDE_SCHEME_MISMATCH}));
+  reset();
+
+  auto insecure_domain_cookie1 = CanonicalCookie::Create(
+      http_www_foo_.url(),
+      "foo1=insecuredomain; Domain=" + http_www_foo_.domain(), creation_time,
+      server_time, /*cookie_partition_key=*/absl::nullopt);
+
+  // Domain cookies that are excluded due to scheme binding shouldn't also be
+  // exclude because of shadowing.
+  cookie_ptrs = {origin_cookie1.get(), insecure_domain_cookie1.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, {*origin_cookie1}));
+  EXPECT_TRUE(CookieListsMatch(excluded, {*insecure_domain_cookie1}));
+  EXPECT_TRUE(
+      excluded[0].access_result.status.HasExactlyExclusionReasonsForTesting(
+          {CookieInclusionStatus::EXCLUDE_SCHEME_MISMATCH}));
+  reset();
+
+  // If both domain and origin cookie are excluded due to scheme binding then
+  // domain cookie shouldn't get shadowing exclusion.
+  cookie_ptrs = {insecure_origin_cookie1.get(), insecure_domain_cookie1.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, {}));
+  EXPECT_TRUE(CookieListsMatch(
+      excluded, {*insecure_origin_cookie1, *insecure_domain_cookie1}));
+  EXPECT_TRUE(
+      excluded[1].access_result.status.HasExactlyExclusionReasonsForTesting(
+          {CookieInclusionStatus::EXCLUDE_SCHEME_MISMATCH}));
+  reset();
+
+  cm->SetCookieAccessDelegate(std::make_unique<TestCookieAccessDelegate>());
+
+  CookieURLHelper http_www_trustworthy =
+      CookieURLHelper("http://www.trustworthysitefortestdelegate.example");
+  CookieURLHelper https_www_trustworthy =
+      CookieURLHelper("https://www.trustworthysitefortestdelegate.example");
+
+  auto trust_origin_cookie1 =
+      CanonicalCookie::Create(http_www_trustworthy.url(), "foo1=trustorigin",
+                              creation_time, server_time,
+                              /*cookie_partition_key=*/absl::nullopt);
+
+  auto secure_trust_domain_cookie1 = CanonicalCookie::Create(
+      https_www_trustworthy.url(),
+      "foo1=securetrustdomain; Domain=" + https_www_trustworthy.domain(),
+      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt);
+  auto secure_trust_domain_cookie2 = CanonicalCookie::Create(
+      https_www_trustworthy.url(),
+      "foo2=securetrustdomain; Domain=" + https_www_trustworthy.domain(),
+      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt);
+
+  // Securely set domain cookies are excluded when shadowing trustworthy-ly set
+  // origin cookies.
+  cookie_ptrs = {trust_origin_cookie1.get(), secure_trust_domain_cookie1.get(),
+                 secure_trust_domain_cookie2.get()};
+  cm->FilterCookiesWithOptions(http_www_trustworthy.url(), options,
+                               &cookie_ptrs, &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(
+      included, {*trust_origin_cookie1, *secure_trust_domain_cookie2}));
+  EXPECT_TRUE(CookieListsMatch(excluded, {*secure_trust_domain_cookie1}));
+  reset();
+
+  auto trust_domain_cookie1 = CanonicalCookie::Create(
+      http_www_trustworthy.url(),
+      "foo1=trustdomain; Domain=" + http_www_trustworthy.domain(),
+      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt);
+  auto trust_domain_cookie2 = CanonicalCookie::Create(
+      http_www_trustworthy.url(),
+      "foo2=trustdomain; Domain=" + http_www_trustworthy.domain(),
+      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt);
+  auto secure_trust_origin_cookie1 = CanonicalCookie::Create(
+      https_www_trustworthy.url(), "foo1=securetrustorigin", creation_time,
+      server_time,
+      /*cookie_partition_key=*/absl::nullopt);
+
+  // Trustworthy-ly set domain cookies are excluded when shadowing securely set
+  // origin cookies.
+  cookie_ptrs = {secure_trust_origin_cookie1.get(), trust_domain_cookie1.get(),
+                 trust_domain_cookie2.get()};
+  cm->FilterCookiesWithOptions(http_www_trustworthy.url(), options,
+                               &cookie_ptrs, &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(
+      included, {*secure_trust_origin_cookie1, *trust_domain_cookie2}));
+  EXPECT_TRUE(CookieListsMatch(excluded, {*trust_domain_cookie1}));
+  reset();
+
+  auto port_origin_cookie1 =
+      CanonicalCookie::Create(https_www_foo_.url(), "foo1=differentportorigin",
+                              creation_time, server_time,
+                              /*cookie_partition_key=*/absl::nullopt);
+  port_origin_cookie1->SetSourcePort(123);
+
+  // Origin cookies that have warnings due to port binding don't affect domain
+  // cookies.
+  cookie_ptrs = {port_origin_cookie1.get(), domain_cookie1.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(
+      CookieListsMatch(included, {*port_origin_cookie1, *domain_cookie1}));
+  EXPECT_TRUE(included[0].access_result.status.HasWarningReason(
+      CookieInclusionStatus::WARN_PORT_MISMATCH));
+  reset();
+
+  auto port_insecure_origin_cookie1 =
+      std::make_unique<CanonicalCookie>(*insecure_origin_cookie1);
+  port_insecure_origin_cookie1->SetSourcePort(123);
+
+  // Origin cookies that have excluded due to scheme binding and have a port
+  // binding warning don't affect domain cookies.
+  cookie_ptrs = {port_insecure_origin_cookie1.get(), domain_cookie1.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, {*domain_cookie1}));
+  EXPECT_TRUE(
+      excluded[0].access_result.status.HasExactlyWarningReasonsForTesting(
+          {CookieInclusionStatus::WARN_PORT_MISMATCH}));
+  EXPECT_TRUE(
+      excluded[0].access_result.status.HasExactlyExclusionReasonsForTesting(
+          {CookieInclusionStatus::EXCLUDE_SCHEME_MISMATCH}));
+  reset();
+
+  // Enable port binding to test with port exclusions.
+  scoped_feature_list.Reset();
+  scoped_feature_list.InitWithFeatures(
+      {net::features::kEnableSchemeBoundCookies,
+       net::features::kEnablePortBoundCookies},
+      {});
+
+  // Origin cookies that are excluded due to port binding don't affect domain
+  // cookies.
+  cookie_ptrs = {port_origin_cookie1.get(), domain_cookie1.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, {*domain_cookie1}));
+  EXPECT_TRUE(CookieListsMatch(excluded, {*port_origin_cookie1}));
+  EXPECT_TRUE(
+      excluded[0].access_result.status.HasExactlyExclusionReasonsForTesting(
+          {CookieInclusionStatus::EXCLUDE_PORT_MISMATCH}));
+  reset();
+
+  // Origin cookies that are excluded due to scheme and port binding don't
+  // affect domain cookies.
+  cookie_ptrs = {port_insecure_origin_cookie1.get(), domain_cookie1.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, {*domain_cookie1}));
+  EXPECT_TRUE(CookieListsMatch(excluded, {*port_insecure_origin_cookie1}));
+  EXPECT_TRUE(
+      excluded[0].access_result.status.HasExactlyExclusionReasonsForTesting(
+          {CookieInclusionStatus::EXCLUDE_SCHEME_MISMATCH,
+           CookieInclusionStatus::EXCLUDE_PORT_MISMATCH}));
+  reset();
+}
+
+// Test that domain cookies which shadow origin cookies have warnings when
+// scheme binding is disabled.
+TEST_F(CookieMonsterTest, FilterCookiesWithOptionsWarnShadowingDomains) {
+  auto store = base::MakeRefCounted<MockPersistentCookieStore>();
+  auto cm = std::make_unique<CookieMonster>(store.get(), net::NetLog::Get());
+  base::Time creation_time = base::Time::Now();
+  absl::optional<base::Time> server_time = absl::nullopt;
+  CookieOptions options = CookieOptions::MakeAllInclusive();
+  options.set_return_excluded_cookies();
+
+  auto CookieListsMatch = [](const CookieAccessResultList& actual,
+                             const std::vector<CanonicalCookie*>& expected) {
+    if (actual.size() != expected.size()) {
+      return false;
+    }
+
+    for (size_t i = 0; i < actual.size(); i++) {
+      if (!actual[i].cookie.IsEquivalent(*expected[i])) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  // Confirms that of all the cookies in `actual` only the ones also in
+  // `expected` have WARN_SHADOWING_DOMAIN.
+  auto DomainCookiesHaveWarnings =
+      [](const CookieAccessResultList& actual,
+         const std::vector<CanonicalCookie>& expected) {
+        std::map<CanonicalCookie, CookieInclusionStatus> cookie_result_map;
+        for (const auto& cookie_result : actual) {
+          cookie_result_map.insert(
+              {cookie_result.cookie, cookie_result.access_result.status});
+        }
+
+        for (const auto& cookie : expected) {
+          // This is a touch hacky but will always work because if the
+          // cookie_result_map doesn't contain `cookie` it'll create a default
+          // entry with an empty status which will always fail the check. I.e.:
+          // return false.
+          if (!cookie_result_map[cookie].HasWarningReason(
+                  CookieInclusionStatus::WARN_SHADOWING_DOMAIN)) {
+            return false;
+          }
+
+          // Remove cookies that were part of `expected`.
+          cookie_result_map.erase(cookie);
+        }
+
+        // If any of the remaining cookies have the warning, return false.
+        for (const auto& item : cookie_result_map) {
+          if (item.second.HasWarningReason(
+                  CookieInclusionStatus::WARN_SHADOWING_DOMAIN)) {
+            return false;
+          }
+        }
+
+        return true;
+      };
+
+  // We only apply warnings to shadowing domain cookies when scheme binding is
+  // disabled.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {}, {net::features::kEnableSchemeBoundCookies,
+           net::features::kEnablePortBoundCookies});
+
+  std::vector<CanonicalCookie*> cookie_ptrs;
+  CookieAccessResultList included;
+  CookieAccessResultList excluded;
+
+  auto reset = [&cookie_ptrs, &included, &excluded]() {
+    cookie_ptrs.clear();
+    included.clear();
+    excluded.clear();
+  };
+
+  auto origin_cookie1 = CanonicalCookie::Create(
+      https_www_foo_.url(), "foo1=origin", creation_time, server_time,
+      /*cookie_partition_key=*/absl::nullopt);
+  auto origin_cookie2 = CanonicalCookie::Create(
+      https_www_foo_.url(), "foo2=origin", creation_time, server_time,
+      /*cookie_partition_key=*/absl::nullopt);
+
+  auto domain_cookie1 = CanonicalCookie::Create(
+      https_www_foo_.url(), "foo1=domain; Domain=" + https_www_foo_.domain(),
+      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt);
+
+  // Shadowing domain cookie after the origin cookie.
+  cookie_ptrs = {origin_cookie1.get(), origin_cookie2.get(),
+                 domain_cookie1.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, cookie_ptrs));
+  EXPECT_TRUE(DomainCookiesHaveWarnings(included, {*domain_cookie1}));
+  reset();
+
+  // Shadowing domain cookie before the origin cookie.
+  cookie_ptrs = {domain_cookie1.get(), origin_cookie2.get(),
+                 origin_cookie1.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, cookie_ptrs));
+  EXPECT_TRUE(DomainCookiesHaveWarnings(included, {*domain_cookie1}));
+  reset();
+
+  auto domain_cookie2 = CanonicalCookie::Create(
+      https_www_foo_.url(), "foo2=domain; Domain=" + https_www_foo_.domain(),
+      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt);
+
+  // Multiple different shadowing domain cookies.
+  cookie_ptrs = {domain_cookie1.get(), origin_cookie2.get(),
+                 origin_cookie1.get(), domain_cookie2.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, cookie_ptrs));
+  EXPECT_TRUE(
+      DomainCookiesHaveWarnings(included, {*domain_cookie1, *domain_cookie2}));
+  reset();
+
+  auto domain_cookie3 = CanonicalCookie::Create(
+      https_www_foo_.url(), "foo3=domain; Domain=" + https_www_foo_.domain(),
+      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt);
+
+  // Non-shadowing domain cookie shouldn't have a warning.
+  cookie_ptrs = {domain_cookie1.get(), origin_cookie2.get(),
+                 origin_cookie1.get(), domain_cookie2.get(),
+                 domain_cookie3.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, cookie_ptrs));
+  EXPECT_TRUE(
+      DomainCookiesHaveWarnings(included, {*domain_cookie1, *domain_cookie2}));
+  reset();
+
+  auto sub_domain_cookie1 = CanonicalCookie::Create(
+      https_www_foo_.url(), "foo1=subdomain; Domain=" + https_www_foo_.host(),
+      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt);
+
+  // If there are multiple domain cookies that shadow the same cookie, they
+  // should all have a warning.
+  cookie_ptrs = {domain_cookie1.get(), origin_cookie2.get(),
+                 origin_cookie1.get(), sub_domain_cookie1.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, cookie_ptrs));
+  EXPECT_TRUE(DomainCookiesHaveWarnings(
+      included, {*domain_cookie1, *sub_domain_cookie1}));
+  reset();
+
+  // Domain cookies may shadow each other.
+  cookie_ptrs = {domain_cookie1.get(), sub_domain_cookie1.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, cookie_ptrs));
+  EXPECT_TRUE(DomainCookiesHaveWarnings(included, {}));
+  reset();
+
+  auto path_origin_cookie1 = CanonicalCookie::Create(
+      https_www_foo_.url(), "foo1=pathorigin; Path=/bar", creation_time,
+      server_time,
+      /*cookie_partition_key=*/absl::nullopt);
+
+  // Origin cookies on different paths may not be shadowed, even if the
+  // origin cookie wouldn't be included on this request.
+  cookie_ptrs = {path_origin_cookie1.get(), domain_cookie1.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, {domain_cookie1.get()}));
+  EXPECT_TRUE(DomainCookiesHaveWarnings(included, {*domain_cookie1}));
+  reset();
+
+  auto insecure_origin_cookie1 = CanonicalCookie::Create(
+      http_www_foo_.url(), "foo1=insecureorigin", creation_time, server_time,
+      /*cookie_partition_key=*/absl::nullopt);
+  EXPECT_EQ(insecure_origin_cookie1->SourceScheme(),
+            CookieSourceScheme::kNonSecure);
+
+  // Origin cookies that have a warning for scheme binding don't affect domain
+  // cookies.
+  cookie_ptrs = {insecure_origin_cookie1.get(), domain_cookie1.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, cookie_ptrs));
+  EXPECT_TRUE(DomainCookiesHaveWarnings(included, {}));
+  EXPECT_TRUE(included[0].access_result.status.HasWarningReason(
+      CookieInclusionStatus::WARN_SCHEME_MISMATCH));
+  reset();
+
+  auto insecure_domain_cookie1 = CanonicalCookie::Create(
+      http_www_foo_.url(),
+      "foo1=insecuredomain; Domain=" + http_www_foo_.domain(), creation_time,
+      server_time, /*cookie_partition_key=*/absl::nullopt);
+
+  // Domain cookies that are excluded due to scheme binding shouldn't also get a
+  // shadow warning.
+  cookie_ptrs = {origin_cookie1.get(), insecure_domain_cookie1.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, cookie_ptrs));
+  EXPECT_TRUE(DomainCookiesHaveWarnings(included, {}));
+  EXPECT_TRUE(
+      included[1].access_result.status.HasExactlyWarningReasonsForTesting(
+          {CookieInclusionStatus::WARN_SCHEME_MISMATCH}));
+  reset();
+
+  // If both domain and origin cookie have warnings due to scheme binding then
+  // domain cookie shouldn't get shadowing warning.
+  cookie_ptrs = {insecure_origin_cookie1.get(), insecure_domain_cookie1.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, cookie_ptrs));
+  EXPECT_TRUE(DomainCookiesHaveWarnings(included, {}));
+  EXPECT_TRUE(included[0].access_result.status.HasWarningReason(
+      CookieInclusionStatus::WARN_SCHEME_MISMATCH));
+  EXPECT_TRUE(
+      included[1].access_result.status.HasExactlyWarningReasonsForTesting(
+          {CookieInclusionStatus::WARN_SCHEME_MISMATCH}));
+  reset();
+
+  cm->SetCookieAccessDelegate(std::make_unique<TestCookieAccessDelegate>());
+
+  CookieURLHelper http_www_trustworthy =
+      CookieURLHelper("http://www.trustworthysitefortestdelegate.example");
+  CookieURLHelper https_www_trustworthy =
+      CookieURLHelper("https://www.trustworthysitefortestdelegate.example");
+
+  auto trust_origin_cookie1 =
+      CanonicalCookie::Create(http_www_trustworthy.url(), "foo1=trustorigin",
+                              creation_time, server_time,
+                              /*cookie_partition_key=*/absl::nullopt);
+
+  auto secure_trust_domain_cookie1 = CanonicalCookie::Create(
+      https_www_trustworthy.url(),
+      "foo1=securetrustdomain; Domain=" + https_www_trustworthy.domain(),
+      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt);
+  auto secure_trust_domain_cookie2 = CanonicalCookie::Create(
+      https_www_trustworthy.url(),
+      "foo2=securetrustdomain; Domain=" + https_www_trustworthy.domain(),
+      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt);
+
+  // Securely set domain cookie has warning when shadowing trustworthy-ly set
+  // origin cookies.
+  cookie_ptrs = {trust_origin_cookie1.get(), secure_trust_domain_cookie1.get(),
+                 secure_trust_domain_cookie2.get()};
+  cm->FilterCookiesWithOptions(http_www_trustworthy.url(), options,
+                               &cookie_ptrs, &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, cookie_ptrs));
+  EXPECT_TRUE(
+      DomainCookiesHaveWarnings(included, {*secure_trust_domain_cookie1}));
+  reset();
+
+  auto trust_domain_cookie1 = CanonicalCookie::Create(
+      http_www_trustworthy.url(),
+      "foo1=trustdomain; Domain=" + http_www_trustworthy.domain(),
+      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt);
+  auto trust_domain_cookie2 = CanonicalCookie::Create(
+      http_www_trustworthy.url(),
+      "foo2=trustdomain; Domain=" + http_www_trustworthy.domain(),
+      creation_time, server_time, /*cookie_partition_key=*/absl::nullopt);
+  auto secure_trust_origin_cookie1 = CanonicalCookie::Create(
+      https_www_trustworthy.url(), "foo1=securetrustorigin", creation_time,
+      server_time,
+      /*cookie_partition_key=*/absl::nullopt);
+
+  // Trustworthy-ly set domain cookies are excluded when shadowing securely set
+  // origin cookies.
+  cookie_ptrs = {secure_trust_origin_cookie1.get(), trust_domain_cookie1.get(),
+                 trust_domain_cookie2.get()};
+  cm->FilterCookiesWithOptions(http_www_trustworthy.url(), options,
+                               &cookie_ptrs, &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, cookie_ptrs));
+  EXPECT_TRUE(DomainCookiesHaveWarnings(included, {*trust_domain_cookie1}));
+  reset();
+
+  auto port_origin_cookie1 =
+      CanonicalCookie::Create(https_www_foo_.url(), "foo1=differentportorigin",
+                              creation_time, server_time,
+                              /*cookie_partition_key=*/absl::nullopt);
+  port_origin_cookie1->SetSourcePort(123);
+
+  // Origin cookies that have warnings due to port binding don't affect domain
+  // cookies.
+  cookie_ptrs = {port_origin_cookie1.get(), domain_cookie1.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, cookie_ptrs));
+  EXPECT_TRUE(DomainCookiesHaveWarnings(included, {}));
+  EXPECT_TRUE(included[0].access_result.status.HasWarningReason(
+      CookieInclusionStatus::WARN_PORT_MISMATCH));
+  reset();
+
+  auto port_insecure_origin_cookie1 =
+      std::make_unique<CanonicalCookie>(*insecure_origin_cookie1);
+  port_insecure_origin_cookie1->SetSourcePort(123);
+
+  // Origin cookies that have warnings due to scheme and port binding don't
+  // affect domain cookies.
+  cookie_ptrs = {port_insecure_origin_cookie1.get(), domain_cookie1.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, cookie_ptrs));
+  EXPECT_TRUE(DomainCookiesHaveWarnings(included, {}));
+  EXPECT_TRUE(
+      included[0].access_result.status.HasExactlyWarningReasonsForTesting(
+          {CookieInclusionStatus::WARN_SCHEME_MISMATCH,
+           CookieInclusionStatus::WARN_PORT_MISMATCH}));
+  reset();
+
+  // Enable port binding to test with port exclusions.
+  scoped_feature_list.Reset();
+  scoped_feature_list.InitWithFeatures(
+      {net::features::kEnablePortBoundCookies},
+      {net::features::kEnableSchemeBoundCookies});
+
+  // Origin cookies that are excluded due to port binding don't affect domain
+  // cookies.
+  cookie_ptrs = {port_origin_cookie1.get(), domain_cookie1.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, {domain_cookie1.get()}));
+  EXPECT_TRUE(DomainCookiesHaveWarnings(included, {}));
+  EXPECT_TRUE(CookieListsMatch(excluded, {port_origin_cookie1.get()}));
+  EXPECT_TRUE(
+      excluded[0].access_result.status.HasExactlyExclusionReasonsForTesting(
+          {CookieInclusionStatus::EXCLUDE_PORT_MISMATCH}));
+  reset();
+
+  // Origin cookies that are excluded due to port binding and have a scheme
+  // binding warning don't affect domain cookies.
+  cookie_ptrs = {port_insecure_origin_cookie1.get(), domain_cookie1.get()};
+  cm->FilterCookiesWithOptions(https_www_foo_.url(), options, &cookie_ptrs,
+                               &included, &excluded);
+  EXPECT_TRUE(CookieListsMatch(included, {domain_cookie1.get()}));
+  EXPECT_TRUE(DomainCookiesHaveWarnings(included, {}));
+  EXPECT_TRUE(CookieListsMatch(excluded, {port_insecure_origin_cookie1.get()}));
+  EXPECT_TRUE(
+      excluded[0].access_result.status.HasExactlyExclusionReasonsForTesting(
+          {CookieInclusionStatus::EXCLUDE_PORT_MISMATCH}));
+  EXPECT_TRUE(excluded[0].access_result.status.HasWarningReason(
+      CookieInclusionStatus::WARN_SCHEME_MISMATCH));
+  reset();
+}
 
 // This test sets a cookie (only checked using IsCanonicalForFromStorage)
 // that's 300 days old and expires in 800 days. It checks that this cookie was
 // stored, and then update it. It checks that the updated cookie has the
-// creation and expiry dates expected given whether or not clamping is on.
-TEST_P(CookieMonsterWithClampingTest,
-       FromStorageCookieCreated300DaysAgoThenUpdatedNow) {
+// creation and expiry dates expected.
+TEST_F(CookieMonsterTest, FromStorageCookieCreated300DaysAgoThenUpdatedNow) {
   auto store = base::MakeRefCounted<FlushablePersistentStore>();
   auto cookie_monster =
       std::make_unique<CookieMonster>(store.get(), net::NetLog::Get());
@@ -5665,29 +6572,17 @@ TEST_P(CookieMonsterWithClampingTest,
           CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, true,
           absl::nullopt),
       https_www_foo_.url(), false));
-
-  if (IsClampCookieExpiryTo400DaysEnabled()) {
-    // The clamped update should retain the original creation date, but have
-    // a clamped expiry date.
-    EXPECT_THAT(
-        GetAllCookies(cookie_monster.get()),
-        ElementsAre(MatchesCookieNameValueCreationExpiry(
-            "A", "B", original_creation, new_creation + base::Days(400))));
-  } else {
-    // The unclamped update should retain the original creation date and have
-    // an unclamped expiry date.
-    EXPECT_THAT(GetAllCookies(cookie_monster.get()),
-                ElementsAre(MatchesCookieNameValueCreationExpiry(
-                    "A", "B", original_creation, new_expiry)));
-  }
+  EXPECT_THAT(
+      GetAllCookies(cookie_monster.get()),
+      ElementsAre(MatchesCookieNameValueCreationExpiry(
+          "A", "B", original_creation, new_creation + base::Days(400))));
 }
 
 // This test sets a cookie (only checked using IsCanonicalForFromStorage)
 // that's 500 days old and expires in 800 days. It checks that this cookie was
 // stored, and then update it. It checks that the updated cookie has the
-// creation and expiry dates expected given whether or not clamping is on.
-TEST_P(CookieMonsterWithClampingTest,
-       FromStorageCookieCreated500DaysAgoThenUpdatedNow) {
+// creation and expiry dates expected.
+TEST_F(CookieMonsterTest, FromStorageCookieCreated500DaysAgoThenUpdatedNow) {
   auto store = base::MakeRefCounted<FlushablePersistentStore>();
   auto cookie_monster =
       std::make_unique<CookieMonster>(store.get(), net::NetLog::Get());
@@ -5720,29 +6615,17 @@ TEST_P(CookieMonsterWithClampingTest,
           CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, true,
           absl::nullopt),
       https_www_foo_.url(), false));
-
-  if (IsClampCookieExpiryTo400DaysEnabled()) {
-    // The clamped update should retain the original creation date, but have
-    // a clamped expiry date.
-    EXPECT_THAT(
-        GetAllCookies(cookie_monster.get()),
-        ElementsAre(MatchesCookieNameValueCreationExpiry(
-            "A", "B", original_creation, new_creation + base::Days(400))));
-  } else {
-    // The unclamped update should retain the original creation date and have
-    // an unclamped expiry date.
-    EXPECT_THAT(GetAllCookies(cookie_monster.get()),
-                ElementsAre(MatchesCookieNameValueCreationExpiry(
-                    "A", "B", original_creation, new_expiry)));
-  }
+  EXPECT_THAT(
+      GetAllCookies(cookie_monster.get()),
+      ElementsAre(MatchesCookieNameValueCreationExpiry(
+          "A", "B", original_creation, new_creation + base::Days(400))));
 }
 
 // This test sets a cookie (checked using IsCanonical) that's 300 days old and
 // expires in 800 days. It checks that this cookie was stored, and then update
 // it. It checks that the updated cookie has the creation and expiry dates
-// expected given whether or not clamping is on.
-TEST_P(CookieMonsterWithClampingTest,
-       SanitizedCookieCreated300DaysAgoThenUpdatedNow) {
+// expected.
+TEST_F(CookieMonsterTest, SanitizedCookieCreated300DaysAgoThenUpdatedNow) {
   auto store = base::MakeRefCounted<FlushablePersistentStore>();
   auto cookie_monster =
       std::make_unique<CookieMonster>(store.get(), net::NetLog::Get());
@@ -5760,19 +6643,10 @@ TEST_P(CookieMonsterWithClampingTest,
           CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, true,
           absl::nullopt),
       https_www_foo_.url(), false));
-
-  if (IsClampCookieExpiryTo400DaysEnabled()) {
-    // The clamped set should have a clamped expiry date.
-    EXPECT_THAT(
-        GetAllCookies(cookie_monster.get()),
-        ElementsAre(MatchesCookieNameValueCreationExpiry(
-            "A", "B", original_creation, original_creation + base::Days(400))));
-  } else {
-    // The unclamped set should have an unclamped expiry date.
-    EXPECT_THAT(GetAllCookies(cookie_monster.get()),
-                ElementsAre(MatchesCookieNameValueCreationExpiry(
-                    "A", "B", original_creation, original_expiry)));
-  }
+  EXPECT_THAT(
+      GetAllCookies(cookie_monster.get()),
+      ElementsAre(MatchesCookieNameValueCreationExpiry(
+          "A", "B", original_creation, original_creation + base::Days(400))));
 
   // Update the cookie without bypassing clamping.
   base::Time new_creation = base::Time::Now();
@@ -5785,29 +6659,17 @@ TEST_P(CookieMonsterWithClampingTest,
           CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, true,
           absl::nullopt),
       https_www_foo_.url(), false));
-
-  if (IsClampCookieExpiryTo400DaysEnabled()) {
-    // The clamped update should retain the original creation date, but have
-    // a clamped expiry date.
-    EXPECT_THAT(
-        GetAllCookies(cookie_monster.get()),
-        ElementsAre(MatchesCookieNameValueCreationExpiry(
-            "A", "B", original_creation, new_creation + base::Days(400))));
-  } else {
-    // The unclamped update should retain the original creation date and have
-    // an unclamped expiry date.
-    EXPECT_THAT(GetAllCookies(cookie_monster.get()),
-                ElementsAre(MatchesCookieNameValueCreationExpiry(
-                    "A", "B", original_creation, new_expiry)));
-  }
+  EXPECT_THAT(
+      GetAllCookies(cookie_monster.get()),
+      ElementsAre(MatchesCookieNameValueCreationExpiry(
+          "A", "B", original_creation, new_creation + base::Days(400))));
 }
 
 // This test sets a cookie (checked using IsCanonical) that's 500 days old and
 // expires in 800 days. It checks that this cookie was stored, and then update
 // it. It checks that the updated cookie has the creation and expiry dates
-// expected given whether or not clamping is on.
-TEST_P(CookieMonsterWithClampingTest,
-       SanitizedCookieCreated500DaysAgoThenUpdatedNow) {
+// expected.
+TEST_F(CookieMonsterTest, SanitizedCookieCreated500DaysAgoThenUpdatedNow) {
   auto store = base::MakeRefCounted<FlushablePersistentStore>();
   auto cookie_monster =
       std::make_unique<CookieMonster>(store.get(), net::NetLog::Get());
@@ -5825,16 +6687,7 @@ TEST_P(CookieMonsterWithClampingTest,
           CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, true,
           absl::nullopt),
       https_www_foo_.url(), false));
-
-  if (IsClampCookieExpiryTo400DaysEnabled()) {
-    // The clamped set should result in no stored cookie.
-    EXPECT_TRUE(GetAllCookies(cookie_monster.get()).empty());
-  } else {
-    // The unclamped set should have an unclamped expiry date.
-    EXPECT_THAT(GetAllCookies(cookie_monster.get()),
-                ElementsAre(MatchesCookieNameValueCreationExpiry(
-                    "A", "B", original_creation, original_expiry)));
-  }
+  EXPECT_TRUE(GetAllCookies(cookie_monster.get()).empty());
 
   // Update the cookie without bypassing clamping.
   base::Time new_creation = base::Time::Now();
@@ -5847,21 +6700,9 @@ TEST_P(CookieMonsterWithClampingTest,
           CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, true,
           absl::nullopt),
       https_www_foo_.url(), false));
-
-  // The clamped one has the new creation date as the old cookie was expired.
-  if (IsClampCookieExpiryTo400DaysEnabled()) {
-    // The clamped update was really a set as the old cookie expired, so it has
-    // the new creation date and a clamped expiry date.
-    EXPECT_THAT(GetAllCookies(cookie_monster.get()),
-                ElementsAre(MatchesCookieNameValueCreationExpiry(
-                    "A", "B", new_creation, new_creation + base::Days(400))));
-  } else {
-    // The unclamped update should retain the original creation date and have
-    // an unclamped expiry date.
-    EXPECT_THAT(GetAllCookies(cookie_monster.get()),
-                ElementsAre(MatchesCookieNameValueCreationExpiry(
-                    "A", "B", original_creation, new_expiry)));
-  }
+  EXPECT_THAT(GetAllCookies(cookie_monster.get()),
+              ElementsAre(MatchesCookieNameValueCreationExpiry(
+                  "A", "B", new_creation, new_creation + base::Days(400))));
 }
 
 }  // namespace net

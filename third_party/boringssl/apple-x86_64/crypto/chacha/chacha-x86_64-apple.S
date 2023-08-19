@@ -1,16 +1,9 @@
 // This file is generated from a similarly-named Perl script in the BoringSSL
 // source tree. Do not edit by hand.
 
-#if defined(__has_feature)
-#if __has_feature(memory_sanitizer) && !defined(OPENSSL_NO_ASM)
-#define OPENSSL_NO_ASM
-#endif
-#endif
+#include <openssl/asm_base.h>
 
-#if defined(__x86_64__) && !defined(OPENSSL_NO_ASM) && defined(__APPLE__)
-#if defined(BORINGSSL_PREFIX)
-#include <boringssl_prefix_symbols_asm.h>
-#endif
+#if !defined(OPENSSL_NO_ASM) && defined(OPENSSL_X86_64) && defined(__APPLE__)
 .text	
 
 
@@ -52,6 +45,7 @@ L$sixteen:
 .p2align	6
 _ChaCha20_ctr32:
 
+_CET_ENDBR
 	cmpq	$0,%rdx
 	je	L$no_data
 	movq	_OPENSSL_ia32cap_P+4(%rip),%r10
@@ -1624,8 +1618,4 @@ L$8x_epilogue:
 	.byte	0xf3,0xc3
 
 
-#endif
-#if defined(__ELF__)
-// See https://www.airs.com/blog/archives/518.
-.section .note.GNU-stack,"",%progbits
 #endif

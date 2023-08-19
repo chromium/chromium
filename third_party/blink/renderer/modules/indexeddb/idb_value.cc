@@ -12,6 +12,7 @@
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
 #include "third_party/blink/public/platform/web_blob_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
+#include "third_party/blink/renderer/modules/indexeddb/idb_value_wrapping.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "v8/include/v8.h"
@@ -33,6 +34,10 @@ IDBValue::~IDBValue() {
 }
 
 scoped_refptr<SerializedScriptValue> IDBValue::CreateSerializedValue() const {
+  scoped_refptr<SharedBuffer> decompressed;
+  if (IDBValueUnwrapper::Decompress(*data_, &decompressed)) {
+    const_cast<IDBValue*>(this)->SetData(decompressed);
+  }
   return SerializedScriptValue::Create(data_);
 }
 

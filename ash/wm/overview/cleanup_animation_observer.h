@@ -8,6 +8,8 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/shell.h"
+#include "ash/shell_observer.h"
 #include "ash/wm/overview/delayed_animation_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -19,10 +21,12 @@ class Widget;
 namespace ash {
 
 // An observer which holds onto the passed widget until the animation is
-// complete.
+// complete. Widget must own NativeWidget. `widget_` will delete the
+// NativeWidget and NativeWindow when `this` is destroyed.
 class ASH_EXPORT CleanupAnimationObserver
     : public ui::ImplicitAnimationObserver,
-      public DelayedAnimationObserver {
+      public DelayedAnimationObserver,
+      public ShellObserver {
  public:
   explicit CleanupAnimationObserver(std::unique_ptr<views::Widget> widget);
 
@@ -32,17 +36,21 @@ class ASH_EXPORT CleanupAnimationObserver
   ~CleanupAnimationObserver() override;
 
   // ui::ImplicitAnimationObserver:
-  // TODO(varkha): Look into all cases when animations are not started such as
-  // zero-duration animations and ensure that the object lifetime is handled.
   void OnImplicitAnimationsCompleted() override;
 
   // DelayedAnimationObserver:
   void SetOwner(OverviewDelegate* owner) override;
   void Shutdown() override;
 
+  // ShellObserver:
+  void OnRootWindowWillShutdown(aura::Window* root_window) override;
+
  private:
   std::unique_ptr<views::Widget> widget_;
+
   raw_ptr<OverviewDelegate, ExperimentalAsh> owner_;
+
+  base::ScopedObservation<Shell, ShellObserver> shell_observation_{this};
 };
 
 }  // namespace ash

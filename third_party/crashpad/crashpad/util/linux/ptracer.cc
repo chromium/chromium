@@ -398,6 +398,37 @@ bool GetThreadArea64(pid_t tid,
   return true;
 }
 
+#elif defined(ARCH_CPU_RISCV64)
+
+bool GetFloatingPointRegisters64(pid_t tid,
+                                 FloatContext* context,
+                                 bool can_log) {
+  iovec iov;
+  iov.iov_base = context;
+  iov.iov_len = sizeof(*context);
+  if (ptrace(
+          PTRACE_GETREGSET, tid, reinterpret_cast<void*>(NT_PRFPREG), &iov) !=
+      0) {
+    PLOG_IF(ERROR, can_log) << "ptrace";
+    return false;
+  }
+  if (iov.iov_len != sizeof(context->f64)) {
+    LOG_IF(ERROR, can_log) << "Unexpected registers size " << iov.iov_len
+                           << " != " << sizeof(context->f64);
+    return false;
+  }
+  return true;
+}
+
+bool GetThreadArea64(pid_t tid,
+                     const ThreadContext& context,
+                     LinuxVMAddress* address,
+                     bool can_log) {
+  // Thread pointer register
+  *address = context.t64.regs[3];
+  return true;
+}
+
 #else
 #error Port.
 #endif  // ARCH_CPU_X86_FAMILY
@@ -426,6 +457,7 @@ size_t GetGeneralPurposeRegistersAndLength(pid_t tid,
   return iov.iov_len;
 }
 
+#if !defined(ARCH_CPU_RISCV64)
 bool GetGeneralPurposeRegisters32(pid_t tid,
                                   ThreadContext* context,
                                   bool can_log) {
@@ -437,6 +469,7 @@ bool GetGeneralPurposeRegisters32(pid_t tid,
   }
   return true;
 }
+#endif
 
 bool GetGeneralPurposeRegisters64(pid_t tid,
                                   ThreadContext* context,
@@ -500,12 +533,16 @@ bool Ptracer::GetThreadInfo(pid_t tid, ThreadInfo* info) {
                            can_log_);
   }
 
+#if !defined(ARCH_CPU_RISCV64)
   return GetGeneralPurposeRegisters32(tid, &info->thread_context, can_log_) &&
          GetFloatingPointRegisters32(tid, &info->float_context, can_log_) &&
          GetThreadArea32(tid,
                          info->thread_context,
                          &info->thread_specific_data_address,
                          can_log_);
+#else
+  return false;
+#endif
 }
 
 ssize_t Ptracer::ReadUpTo(pid_t pid,

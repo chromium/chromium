@@ -16,7 +16,6 @@ class TestAutofillExternalDelegate : public AutofillExternalDelegate {
  public:
   explicit TestAutofillExternalDelegate(
       BrowserAutofillManager* autofill_manager,
-      AutofillDriver* autofill_driver,
       bool call_parent_methods);
 
   TestAutofillExternalDelegate(const TestAutofillExternalDelegate&) = delete;
@@ -31,11 +30,10 @@ class TestAutofillExternalDelegate : public AutofillExternalDelegate {
   void OnQuery(const FormData& form,
                const FormFieldData& field,
                const gfx::RectF& bounds) override;
-  void OnSuggestionsReturned(
-      FieldGlobalId field_id,
-      const std::vector<Suggestion>& suggestions,
-      AutoselectFirstSuggestion autoselect_first_suggestion,
-      bool is_all_server_suggestions) override;
+  void OnSuggestionsReturned(FieldGlobalId field_id,
+                             const std::vector<Suggestion>& suggestions,
+                             AutofillSuggestionTriggerSource trigger_source,
+                             bool is_all_server_suggestions) override;
   bool HasActiveScreenReader() const override;
   void OnAutofillAvailabilityEvent(const mojom::AutofillState state) override;
 
@@ -60,7 +58,7 @@ class TestAutofillExternalDelegate : public AutofillExternalDelegate {
 
   bool on_suggestions_returned_seen() const;
 
-  AutoselectFirstSuggestion autoselect_first_suggestion() const;
+  AutofillSuggestionTriggerSource trigger_source() const;
 
   bool is_all_server_suggestions() const;
 
@@ -82,9 +80,9 @@ class TestAutofillExternalDelegate : public AutofillExternalDelegate {
   // call to OnQuery.
   bool on_suggestions_returned_seen_ = false;
 
-  // Records if the first suggestion should be auto-selected.
-  AutoselectFirstSuggestion autoselect_first_suggestion_ =
-      AutoselectFirstSuggestion(false);
+  // Records the trigger source of `OnSuggestionsReturned()`.
+  AutofillSuggestionTriggerSource trigger_source_ =
+      AutofillSuggestionTriggerSource::kUnspecified;
 
   // Records whether the Autofill suggestions all come from Google Payments.
   bool is_all_server_suggestions_ = false;

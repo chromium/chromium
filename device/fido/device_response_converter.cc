@@ -188,10 +188,8 @@ absl::optional<AuthenticatorGetAssertionResponse> ReadCTAPGetAssertionResponse(
     return absl::nullopt;
 
   auto signature = it->second.GetBytestring();
-  AuthenticatorGetAssertionResponse response(std::move(*auth_data),
-                                             std::move(signature));
-
-  response.transport_used = transport_used;
+  AuthenticatorGetAssertionResponse response(
+      std::move(*auth_data), std::move(signature), transport_used);
 
   it = response_map.find(CBOR(0x01));
   if (it != response_map.end()) {
@@ -891,6 +889,7 @@ static absl::optional<cbor::Value> FixInvalidUTF8Value(
     case cbor::Value::Type::STRING:
     case cbor::Value::Type::TAG:
     case cbor::Value::Type::SIMPLE_VALUE:
+    case cbor::Value::Type::FLOAT_VALUE:
     case cbor::Value::Type::NONE:
       return v.Clone();
 
@@ -963,6 +962,7 @@ static bool ContainsInvalidUTF8(const cbor::Value& v) {
     case cbor::Value::Type::STRING:
     case cbor::Value::Type::TAG:
     case cbor::Value::Type::SIMPLE_VALUE:
+    case cbor::Value::Type::FLOAT_VALUE:
     case cbor::Value::Type::NONE:
       return false;
 

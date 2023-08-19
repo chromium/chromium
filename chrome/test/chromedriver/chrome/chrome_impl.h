@@ -18,7 +18,6 @@
 #include "chrome/test/chromedriver/chrome/mobile_device.h"
 
 class DevToolsClient;
-class DevToolsClientImpl;
 class DevToolsEventListener;
 class PageTracker;
 class Status;
@@ -68,9 +67,6 @@ class ChromeImpl : public Chrome {
              std::string page_load_strategy);
 
   virtual Status QuitImpl() = 0;
-
-  Status CreateClient(const std::string& id,
-                      std::unique_ptr<DevToolsClientImpl>* client);
   Status CloseTarget(const std::string& id);
 
   bool IsBrowserWindow(const WebViewInfo& view) const;
@@ -90,7 +86,6 @@ class ChromeImpl : public Chrome {
   Status SetWindowBounds(Window* window,
                          const std::string& target_id,
                          std::unique_ptr<base::Value::Dict> bounds);
-  Status GetWebViewsInfo(WebViewsInfo* views_info);
 
   bool quit_ = false;
   absl::optional<MobileDevice> mobile_device_;

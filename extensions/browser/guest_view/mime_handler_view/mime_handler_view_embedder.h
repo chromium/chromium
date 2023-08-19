@@ -95,8 +95,8 @@ class MimeHandlerViewEmbedder : public content::WebContentsObserver {
       container_manager_;
 
   // The child frame of the template page at which we attach the guest contents.
-  raw_ptr<content::RenderFrameHost> placeholder_rfh_for_inner_contents_ =
-      nullptr;
+  raw_ptr<content::RenderFrameHost>
+      placeholder_render_frame_host_for_inner_contents_ = nullptr;
 
   bool ready_to_create_mime_handler_view_ = false;
 

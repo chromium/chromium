@@ -1011,27 +1011,14 @@ PendingScript* ScriptLoader::PrepareScript(
         // If the script’s result is not null, append it to the element’s node
         // document's list of speculation rule sets.
         DCHECK(RuntimeEnabledFeatures::SpeculationRulesEnabled(context_window));
-        auto* source = MakeGarbageCollected<SpeculationRuleSet::Source>(
+        auto* source = SpeculationRuleSet::Source::FromInlineScript(
             source_text, element_document, element_->GetDOMNodeId());
         speculation_rule_set_ =
             SpeculationRuleSet::Parse(source, context_window);
         CHECK(speculation_rule_set_);
         DocumentSpeculationRules::From(element_document)
             .AddRuleSet(speculation_rule_set_);
-        if (speculation_rule_set_->HasError()) {
-          if (speculation_rule_set_->ShouldReportUMAForError()) {
-            CountSpeculationRulesLoadOutcome(
-                SpeculationRulesLoadOutcome::kParseErrorInline);
-          }
-          auto* console_message = MakeGarbageCollected<ConsoleMessage>(
-              mojom::ConsoleMessageSource::kOther,
-              mojom::ConsoleMessageLevel::kWarning,
-              "While parsing speculation rules: " +
-                  speculation_rule_set_->error_message());
-          console_message->SetNodes(element_document.GetFrame(),
-                                    {element_->GetDOMNodeId()});
-          element_document.AddConsoleMessage(console_message);
-        }
+        speculation_rule_set_->AddConsoleMessageForValidation(*element_);
         return nullptr;
       }
 
@@ -1086,7 +1073,7 @@ PendingScript* ScriptLoader::PrepareScript(
         ModuleScriptCreationParams params(
             source_url, base_url, ScriptSourceLocationType::kInline,
             ModuleType::kJavaScript, ParkableString(source_text.Impl()),
-            nullptr);
+            nullptr, network::mojom::ReferrerPolicy::kDefault);
         ModuleScript* module_script =
             JSModuleScript::Create(params, modulator, options, position);
 

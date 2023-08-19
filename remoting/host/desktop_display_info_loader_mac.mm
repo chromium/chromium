@@ -25,7 +25,7 @@ class DesktopDisplayInfoLoaderMac : public DesktopDisplayInfoLoader {
 DesktopDisplayInfo DesktopDisplayInfoLoaderMac::GetCurrentDisplayInfo() {
   DesktopDisplayInfo result;
 
-  NSArray* screens = [NSScreen screens];
+  NSArray* screens = NSScreen.screens;
   DCHECK(screens);
 
   // Each display origin is the bottom left corner, so we need to record the
@@ -33,13 +33,13 @@ DesktopDisplayInfo DesktopDisplayInfoLoaderMac::GetCurrentDisplayInfo() {
   // the secondary displays.
   int main_display_height = 0;
 
-  for (NSUInteger i = 0; i < [screens count]; ++i) {
+  for (NSUInteger i = 0; i < screens.count; ++i) {
     NSScreen* screen = screens[i];
-    NSDictionary* device = [screen deviceDescription];
+    NSDictionary* device = screen.deviceDescription;
     CGDirectDisplayID id =
         static_cast<CGDirectDisplayID>([device[@"NSScreenNumber"] intValue]);
 
-    NSRect bounds = [screen frame];
+    NSRect bounds = screen.frame;
     int x = bounds.origin.x;
     int y = bounds.origin.y;
     int height = bounds.size.height;
@@ -59,7 +59,7 @@ DesktopDisplayInfo DesktopDisplayInfoLoaderMac::GetCurrentDisplayInfo() {
     info.y = main_display_height - y - height;
     info.width = bounds.size.width;
     info.height = height;
-    info.dpi = (int)(kDefaultScreenDpi * [screen backingScaleFactor]);
+    info.dpi = (int)(kDefaultScreenDpi * screen.backingScaleFactor);
     info.bpp = 24;
     info.is_default = is_default;
     result.AddDisplay(info);

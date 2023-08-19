@@ -83,7 +83,15 @@ bool ExtensionAppBlockListedForAppServiceInStandaloneBrowser(
 // the extension can't be published in app service by Lacros.
 bool ExtensionBlockListedForAppServiceInStandaloneBrowser(
     base::StringPiece extension_id);
-#endif
+
+// Some Lacros chrome apps related browser tests and unit tests run without Ash,
+// therefore, Lacros won't get the Ash extension keeplist data from Ash via
+// crosapi::mojom:::BrowserInitParams. For these tests, call
+// SetEmptyAshKeeplistForTest() to allow the tests to use an empty ash keeplist
+// for tests and proceed without CHECK failure due to absence of the ash
+// keeplist parameter in crosapi::mojom:::BrowserInitParams.
+void SetEmptyAshKeeplistForTest();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Returns true if the app is on app service block list in Ash, i.e.,
@@ -93,12 +101,12 @@ bool ExtensionAppBlockListedForAppServiceInOS(base::StringPiece app_id);
 // Returns true if the extension is on app service block list in Ash, i.e.,
 // the extension can't be published in app service by Ash.
 bool ExtensionBlockListedForAppServiceInOS(base::StringPiece extension_id);
-#endif
 
 size_t ExtensionsRunInOSAndStandaloneBrowserAllowlistSizeForTest();
 size_t ExtensionAppsRunInOSAndStandaloneBrowserAllowlistSizeForTest();
 size_t ExtensionsRunInOSOnlyAllowlistSizeForTest();
 size_t ExtensionAppsRunInOSOnlyAllowlistSizeForTest();
+#endif
 
 }  // namespace extensions
 

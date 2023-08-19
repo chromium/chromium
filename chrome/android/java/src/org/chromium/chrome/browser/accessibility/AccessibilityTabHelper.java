@@ -57,6 +57,9 @@ public class AccessibilityTabHelper extends EmptyTabObserver implements UserData
 
         // Enable image descriptions feature normally, but not for Chrome Custom Tabs.
         wcax.setIsImageDescriptionsCandidate(!tab.isCustomTab());
+
+        // Enable Auto-disable Accessibility feature normally, but not for Chrome Custom Tabs.
+        wcax.setIsAutoDisableAccessibilityCandidate(!tab.isCustomTab());
     }
 
     @Override

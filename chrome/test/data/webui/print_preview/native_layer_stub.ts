@@ -56,12 +56,14 @@ export class NativeLayerStub extends TestBrowserProxy implements NativeLayer {
   constructor() {
     super([
       'dialogClose',
+      'doPrint',
       'getInitialSettings',
       'getPrinters',
       'getPreview',
       'getPrinterCapabilities',
       'hidePreview',
-      'print',
+      'managePrinters',
+      'recordInHistogram',
       'saveAppState',
       'showSystemDialog',
     ]);
@@ -167,8 +169,8 @@ export class NativeLayerStub extends TestBrowserProxy implements NativeLayer {
         Promise.reject();
   }
 
-  print(printTicket: string) {
-    this.methodCalled('print', printTicket);
+  doPrint(printTicket: string) {
+    this.methodCalled('doPrint', printTicket);
     return Promise.resolve(undefined);
   }
 
@@ -180,7 +182,9 @@ export class NativeLayerStub extends TestBrowserProxy implements NativeLayer {
     this.methodCalled('showSystemDialog');
   }
 
-  recordInHistogram() {}
+  recordInHistogram(histogram: string, bucket: number) {
+    this.methodCalled('recordInHistogram', histogram, bucket);
+  }
 
   recordBooleanHistogram() {}
 
@@ -190,7 +194,9 @@ export class NativeLayerStub extends TestBrowserProxy implements NativeLayer {
 
   cancelPendingPrintRequest() {}
 
-  managePrinters() {}
+  managePrinters() {
+    this.methodCalled('managePrinters');
+  }
 
   /**
    * settings The settings to return as a response to |getInitialSettings|.

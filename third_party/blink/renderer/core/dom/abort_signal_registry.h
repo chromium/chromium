@@ -7,9 +7,11 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
+#include "third_party/blink/renderer/core/dom/abort_signal_composition_type.h"
 #include "third_party/blink/renderer/core/dom/events/event_listener.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
@@ -38,6 +40,13 @@ class CORE_EXPORT AbortSignalRegistry
   // of the handle to the lifetime of the event listener.
   void RegisterAbortAlgorithm(EventListener*, AbortSignal::AlgorithmHandle*);
 
+  // Registers and stores a strong reference to the signal for the given type.
+  // Does nothing if the signal is already registered.
+  void RegisterSignal(const AbortSignal&, AbortSignalCompositionType);
+  // Unregisters the signal for the given type. Does nothing if the signal is
+  // already registered.
+  void UnregisterSignal(const AbortSignal&, AbortSignalCompositionType);
+
   void Trace(Visitor*) const override;
   void ContextDestroyed() override;
 
@@ -49,6 +58,11 @@ class CORE_EXPORT AbortSignalRegistry
   HeapHashMap<WeakMember<EventListener>,
               Member<const AbortSignal::AlgorithmHandle>>
       event_listener_signals_;
+
+  // These sets are similarly cleared on detach, and individual signals are
+  // removed when they're settled (can no longer fire relevant events).
+  HeapHashSet<Member<const AbortSignal>> signals_registered_for_abort_;
+  HeapHashSet<Member<const AbortSignal>> signals_registered_for_priority_;
 };
 
 }  // namespace blink

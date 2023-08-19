@@ -122,9 +122,10 @@ enum class NavigationSuggestionEvent {
   kMaxValue = kComboSquattingSiteEngagement,
 };
 
-struct Top500DomainsParams {
-  // Skeletons of top 500 domains. There can be fewer than 500 skeletons in
-  // this array.
+struct TopBucketDomainsParams {
+  // Skeletons of top bucket domains. This is the top 500 or 1000 most popular
+  // domains (though, there can be fewer than 500 or 1000 skeletons in this
+  // array).
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:
   // #global-scope
   RAW_PTR_EXCLUSION const char* const* edit_distance_skeletons;
@@ -278,10 +279,10 @@ void SetEnterpriseAllowlistForTesting(PrefService* pref_service,
 bool HasOneCharacterSwap(const std::u16string& str1,
                          const std::u16string& str2);
 
-// Sets information about top 500 domains for testing.
-void SetTop500DomainsParamsForTesting(const Top500DomainsParams& params);
-// Resets information about top 500 domains for testing.
-void ResetTop500DomainsParamsForTesting();
+// Sets information about top bucket domains for testing.
+void SetTopBucketDomainsParamsForTesting(const TopBucketDomainsParams& params);
+// Resets information about top bucket domains for testing.
+void ResetTopBucketDomainsParamsForTesting();
 
 // Returns true if the launch configuration provided by the component updater
 // enables `heuristic` for the given `etld_plus_one`.

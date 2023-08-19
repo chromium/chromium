@@ -96,41 +96,6 @@ TEST(NotificationSchedulerStatsTest, LogNotificationShow) {
   }
 }
 
-// Verifies database initialization and record count are correctly tracked.
-TEST(NotificationSchedulerStatsTest, LogDbInit) {
-  base::HistogramTester histograms;
-  LogDbInit(DatabaseType::kImpressionDb, true, 3);
-  histograms.ExpectBucketCount(
-      "Notifications.Scheduler.ImpressionDb.InitResult", true, 1);
-  histograms.ExpectBucketCount(
-      "Notifications.Scheduler.ImpressionDb.RecordCount", 3, 1);
-
-  LogDbInit(DatabaseType::kNotificationDb, true, 5);
-  histograms.ExpectBucketCount(
-      "Notifications.Scheduler.NotificationDb.InitResult", true, 1);
-  histograms.ExpectBucketCount(
-      "Notifications.Scheduler.NotificationDb.RecordCount", 5, 1);
-
-  LogDbInit(DatabaseType::kIconDb, true, 1);
-  histograms.ExpectBucketCount("Notifications.Scheduler.IconDb.InitResult",
-                               true, 1);
-  histograms.ExpectTotalCount("Notifications.Scheduler.IconDb.RecordCount", 1);
-}
-
-// Verifies database operations are correctly tracked.
-TEST(NotificationSchedulerStatsTest, LogDbOperationResult) {
-  base::HistogramTester histograms;
-  LogDbOperation(DatabaseType::kImpressionDb, true);
-  histograms.ExpectBucketCount(
-      "Notifications.Scheduler.ImpressionDb.OperationResult", true, 1);
-  LogDbOperation(DatabaseType::kNotificationDb, true);
-  histograms.ExpectBucketCount(
-      "Notifications.Scheduler.NotificationDb.OperationResult", true, 1);
-  LogDbOperation(DatabaseType::kIconDb, true);
-  histograms.ExpectBucketCount("Notifications.Scheduler.IconDb.OperationResult",
-                               true, 1);
-}
-
 }  // namespace
 }  // namespace stats
 }  // namespace notifications

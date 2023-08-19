@@ -39,7 +39,7 @@ class ExternalLogoutRequestEventHandler
   void SetEventRouterForTesting(EventRouter* event_router);
 
  private:
-  raw_ptr<EventRouter> event_router_;
+  raw_ptr<EventRouter, DanglingUntriaged> event_router_;
   mojo::Receiver<crosapi::mojom::ExternalLogoutRequestObserver> receiver_{this};
 };
 

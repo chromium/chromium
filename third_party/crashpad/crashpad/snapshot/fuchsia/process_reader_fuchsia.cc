@@ -40,7 +40,7 @@ void GetStackRegions(
   uint64_t sp;
 #if defined(ARCH_CPU_X86_64)
   sp = regs.rsp;
-#elif defined(ARCH_CPU_ARM64)
+#elif defined(ARCH_CPU_ARM64) || defined(ARCH_CPU_RISCV64)
   sp = regs.sp;
 #else
 #error Port
@@ -234,7 +234,7 @@ void ProcessReaderFuchsia::InitializeModules() {
     // Crashpad needs to use the same module name at run time for symbol
     // resolution to work properly.
     //
-    // TODO(fuchsia/DX-1234): once Crashpad switches to elf-search, the
+    // TODO: https://fxbug.dev/6057 - once Crashpad switches to elf-search, the
     // following overwrites won't be necessary as only shared libraries will
     // have a soname at runtime, just like at build time.
     //
@@ -265,7 +265,6 @@ void ProcessReaderFuchsia::InitializeModules() {
     if (dsoname.empty()) {
       // This value must be kept in sync with what is used at build time to
       // index symbols for executables and loadable modules.
-      // See fuchsia/DX-1193 for more details.
       module.name = "<_>";
       module.type = ModuleSnapshot::kModuleTypeExecutable;
     } else {
@@ -345,6 +344,19 @@ void ProcessReaderFuchsia::InitializeThreads() {
           GetStackRegions(general_regs, *memory_map, &thread.stack_regions);
         }
       }
+
+// Floating point registers are in the vector context for ARM.
+#if !defined(ARCH_CPU_ARM64)
+      zx_thread_state_fp_regs_t fp_regs;
+      status = thread_handles[i].read_state(
+          ZX_THREAD_STATE_FP_REGS, &fp_regs, sizeof(fp_regs));
+      if (status != ZX_OK) {
+        ZX_LOG(WARNING, status)
+            << "zx_thread_read_state(ZX_THREAD_STATE_FP_REGS)";
+      } else {
+        thread.fp_registers = fp_regs;
+      }
+#endif
 
       zx_thread_state_vector_regs_t vector_regs;
       status = thread_handles[i].read_state(

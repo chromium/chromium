@@ -1,0 +1,16 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/public/provider/chrome/browser/build_config.gni")
+
+source_set("animations") {
+  sources = [ "tab_grid_transition_animation.h" ]
+
+  deps = [
+    "//base",
+    "//ios/chrome/browser/crash_report",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/util",
+  ]
+}

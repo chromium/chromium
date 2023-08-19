@@ -25,12 +25,3 @@ void InvokeWebPushCallback(WebPushCallback callback,
   base::UmaHistogramEnumeration("GCM.SendWebPushMessageResult", result);
   std::move(callback).Run(result, std::move(message_id));
 }
-
-void LogSendWebPushMessagePayloadSize(int size) {
-  // Note: The maximum size accepted by FCM is 4096.
-  base::UmaHistogramCounts10000("GCM.SendWebPushMessagePayloadSize", size);
-}
-
-void LogSendWebPushMessageStatusCode(int status_code) {
-  base::UmaHistogramSparse("GCM.SendWebPushMessageStatusCode", status_code);
-}

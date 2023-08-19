@@ -134,16 +134,16 @@ class EditableComboboxTest : public ViewsTestBase {
   void OnContentChanged() { ++change_count_; }
 
   // The widget where the control will appear.
-  raw_ptr<Widget, DanglingUntriaged> widget_ = nullptr;
+  raw_ptr<Widget, AcrossTasksDanglingUntriaged> widget_ = nullptr;
 
   // |combobox_| and |dummy_focusable_view_| are allocated in
   // |InitEditableCombobox| and then owned by |widget_|.
-  raw_ptr<EditableCombobox, DanglingUntriaged> combobox_ = nullptr;
-  raw_ptr<View, DanglingUntriaged> dummy_focusable_view_ = nullptr;
+  raw_ptr<EditableCombobox, AcrossTasksDanglingUntriaged> combobox_ = nullptr;
+  raw_ptr<View, AcrossTasksDanglingUntriaged> dummy_focusable_view_ = nullptr;
 
   // We make |combobox_| a child of another View to test different removal
   // scenarios.
-  raw_ptr<View, DanglingUntriaged> parent_of_combobox_ = nullptr;
+  raw_ptr<View, AcrossTasksDanglingUntriaged> parent_of_combobox_ = nullptr;
 
   int change_count_ = 0;
 

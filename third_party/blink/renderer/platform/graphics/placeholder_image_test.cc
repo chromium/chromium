@@ -117,14 +117,17 @@ void DrawImageExpectingIconOnly(PlaceholderImage& image,
 float GetExpectedPlaceholderTextWidth(const StringView& text,
                                       float scale_factor) {
   FontDescription description;
-  description.FirstFamily().SetFamily("Roboto", FontFamily::Type::kFamilyName);
+  description.FirstFamily().SetFamily(font_family_names::kRoboto,
+                                      FontFamily::Type::kFamilyName);
 
   scoped_refptr<SharedFontFamily> helvetica_neue = SharedFontFamily::Create();
-  helvetica_neue->SetFamily("Helvetica Neue", FontFamily::Type::kFamilyName);
+  helvetica_neue->SetFamily(font_family_names::kHelveticaNeue,
+                            FontFamily::Type::kFamilyName);
   scoped_refptr<SharedFontFamily> helvetica = SharedFontFamily::Create();
-  helvetica->SetFamily("Helvetica", FontFamily::Type::kFamilyName);
+  helvetica->SetFamily(font_family_names::kHelvetica,
+                       FontFamily::Type::kFamilyName);
   scoped_refptr<SharedFontFamily> arial = SharedFontFamily::Create();
-  arial->SetFamily("Arial", FontFamily::Type::kFamilyName);
+  arial->SetFamily(font_family_names::kArial, FontFamily::Type::kFamilyName);
 
   helvetica->AppendFamily(std::move(arial));
   helvetica_neue->AppendFamily(std::move(helvetica));
@@ -236,7 +239,8 @@ class PlaceholderImageTest : public testing::Test {
  public:
   void SetUp() override {
     old_user_preferred_languages_ = UserPreferredLanguages();
-    OverrideUserPreferredLanguagesForTesting(Vector<AtomicString>(1U, "en-US"));
+    OverrideUserPreferredLanguagesForTesting(
+        Vector<AtomicString>(1U, AtomicString("en-US")));
   }
 
   void TearDown() override {
@@ -388,7 +392,8 @@ TEST_F(PlaceholderImageTest, DrawWithOriginalResourceSizeRTL) {
   expected_text.Ensure16Bit();
   EXPECT_EQ(expected_text, image->GetTextForTesting());
 
-  OverrideUserPreferredLanguagesForTesting(Vector<AtomicString>(1U, "ar"));
+  OverrideUserPreferredLanguagesForTesting(
+      Vector<AtomicString>(1U, AtomicString("ar")));
   EXPECT_TRUE(Locale::DefaultLocale().IsRTL());
 
   static constexpr float kScaleFactor = 2.0f;

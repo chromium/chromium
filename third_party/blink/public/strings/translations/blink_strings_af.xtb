@@ -26,7 +26,6 @@
 <translation id="2060505056492490888">"<ph name="DOT" />" word op die verkeerde plek gebruik in "<ph name="INVALIDDOMAIN" />".</translation>
 <translation id="2148716181193084225">Vandag</translation>
 <translation id="2226276347425096477">Verkort hierdie teks na <ph name="MAX_CHARACTERS" /> karakters of minder (jy gebruik tans <ph name="CURRENT_LENGTH" /> karakters).</translation>
-<translation id="2246498165605549352">Plaaslike lêer</translation>
 <translation id="2247351761944213033">Week <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Snit <ph name="NUMBER" /></translation>
 <translation id="2393030564806080191">Heksadesimale kleurwaarde</translation>
@@ -89,6 +88,7 @@
 <translation id="5425179576310518467">huidige datum</translation>
 <translation id="5466621249238537318">Kies asseblief een of meer lêers.</translation>
 <translation id="5468998798572797635">gaan by volskerm uit</translation>
+<translation id="5514612371225420585">Lêer op jou toestel</translation>
 <translation id="5516235301412634559">0,75</translation>
 <translation id="5537725057119320332">Saai uit</translation>
 <translation id="5546461542133609677">ontdemp</translation>
@@ -113,6 +113,7 @@
 <translation id="6398862346408813489">Wys maandkeusepaneel</translation>
 <translation id="6404546809543547843">oudiotydskuurder</translation>
 <translation id="6443871981718447451">wys kieslys vir geslote onderskrifte</translation>
+<translation id="6484738902856791350">Teksformatering</translation>
 <translation id="6550675742724504774">Opsies</translation>
 <translation id="6572309429103589720">Ongeldige grammatika</translation>
 <translation id="658823671542763450">gaan by volskerm in</translation>

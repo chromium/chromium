@@ -144,17 +144,17 @@
 <translation id="7401733114166276557">Chrome 远程桌面</translation>
 <translation id="7434397035092923453"><ph name="CLIENT_USERNAME" /> 访问客户端的请求遭拒。</translation>
 <translation id="7444276978508498879">已连接客户端：<ph name="CLIENT_USERNAME" />。</translation>
-<translation id="7526139040829362392">更改帐号</translation>
+<translation id="7526139040829362392">更改账号</translation>
 <translation id="7535110896613603182">打开默认应用设置</translation>
 <translation id="7628469622942688817">在此设备上记住我的 PIN 码。</translation>
 <translation id="7649070708921625228">帮助</translation>
 <translation id="7658239707568436148">取消</translation>
-<translation id="7665369617277396874">添加帐号</translation>
+<translation id="7665369617277396874">添加账号</translation>
 <translation id="7678209621226490279">固定到左侧</translation>
 <translation id="7693372326588366043">刷新主机列表</translation>
 <translation id="7714222945760997814">报告此问题</translation>
 <translation id="7868137160098754906">请为远程计算机输入PIN码。</translation>
-<translation id="7895403300744144251">这台远程计算机的安全政策不允许从您的帐号进行连接。</translation>
+<translation id="7895403300744144251">这台远程计算机的安全政策不允许从您的账号进行连接。</translation>
 <translation id="7936528439960309876">固定到右侧</translation>
 <translation id="7970576581263377361">身份验证失败。请重新登录 Chromium。</translation>
 <translation id="7981525049612125370">远程会话已过期。</translation>
@@ -162,7 +162,7 @@
 <translation id="8041089156583427627">发送反馈</translation>
 <translation id="8060029310790625334">帮助中心</translation>
 <translation id="806699900641041263">正在连接到“<ph name="HOSTNAME" />”</translation>
-<translation id="8073845705237259513">要使用Chrome远程桌面，您需要先为自己的设备添加一个Google帐号。</translation>
+<translation id="8073845705237259513">要使用Chrome远程桌面，您需要先为自己的设备添加一个Google账号。</translation>
 <translation id="809687642899217504">我的计算机</translation>
 <translation id="8116630183974937060">发生网络错误。请确保您的设备已连接到网络，然后重试。</translation>
 <translation id="8295077433896346116">若想使用 <ph name="PRODUCT_NAME" />，您需要授予“无障碍”权限，以便将远程计算机上输入的内容注入到此 Mac 上。
@@ -171,7 +171,7 @@
 
 如果“<ph name="SERVICE_SCRIPT_NAME" />”已处于选中状态，请先取消选中，然后再次勾选。</translation>
 <translation id="8305209735512572429">网络身份验证远程处理</translation>
-<translation id="8383794970363966105">要使用Chrome远程访问，您需要先为自己的设备添加一个Google帐号。</translation>
+<translation id="8383794970363966105">要使用Chrome远程访问，您需要先为自己的设备添加一个Google账号。</translation>
 <translation id="8386846956409881180">为主机指定的 OAuth 凭据无效。</translation>
 <translation id="8397385476380433240">向 <ph name="PRODUCT_NAME" />授予权限</translation>
 <translation id="8406498562923498210">请选择要在 Chrome 远程桌面环境下启动的会话。（注意：某些会话类型可能不支持同时在 Chrome 远程桌面和本地控制台运行。）</translation>

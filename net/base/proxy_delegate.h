@@ -34,6 +34,7 @@ class NET_EXPORT ProxyDelegate {
   // ProxyResolutionService. The delegate may override the decision by modifying
   // the ProxyInfo |result|.
   virtual void OnResolveProxy(const GURL& url,
+                              const GURL& top_frame_url,
                               const std::string& method,
                               const ProxyRetryInfoMap& proxy_retry_info,
                               ProxyInfo* result) = 0;

@@ -83,10 +83,17 @@ class TestDisplayObserver : public display::DisplayObserver {
                                uint32_t changed_metrics) override {
     changed_metrics_ = changed_metrics;
     display_ = display;
+    if (display_metrics_changed_closure_) {
+      display_metrics_changed_closure_.Run();
+    }
   }
 
   void set_did_remove_display_closure(base::RepeatingClosure closure) {
     did_remove_display_closure_ = std::move(closure);
+  }
+
+  void set_display_metrics_changed_closure(base::RepeatingClosure closure) {
+    display_metrics_changed_closure_ = std::move(closure);
   }
 
  private:
@@ -94,6 +101,7 @@ class TestDisplayObserver : public display::DisplayObserver {
   display::Display display_;
   display::Display removed_display_;
   base::RepeatingClosure did_remove_display_closure_{};
+  base::RepeatingClosure display_metrics_changed_closure_{};
 };
 
 }  // namespace
@@ -420,6 +428,7 @@ TEST_P(WaylandScreenTest, OutputPropertyChangesPrimaryDisplayChanged) {
   // shifting display1 to its left.
   display1.set_bounds(gfx::Rect(-800, 0, 800, 600));
   display2.set_bounds(gfx::Rect(0, 0, 700, 500));
+  display2.set_native_origin(gfx::Point(0, 0));
 
   // Purposely send the output metrics out of order.
   platform_screen_->OnOutputAddedOrUpdated(MakeMetrics(display2));
@@ -1115,6 +1124,46 @@ TEST_P(WaylandScreenTest, DualOutput) {
 
   // The client should now have a view of all three displays.
   EXPECT_EQ(3u, platform_screen_->GetAllDisplays().size());
+}
+
+// Regression test for crbug.com/1408304. Ensures that the WaylandScreen's
+// internal output state is consistent when propagating change notifications to
+// clients.
+TEST_P(WaylandScreenTest, OutputStateIsConsistentWhenNotifyingObservers) {
+  // This has to be stored on the client thread, but must be used only on the
+  // server thread.
+  wl::TestOutput* output1 = nullptr;
+  wl::TestOutput* output2 = nullptr;
+
+  // Test to ensure that WaylandScreen output state remains consistent as
+  // metrics changed notifications are propagated.
+  TestDisplayObserver observer;
+  observer.set_display_metrics_changed_closure(
+      base::BindLambdaForTesting([&]() {
+        EXPECT_TRUE(platform_screen_->VerifyOutputStateConsistentForTesting());
+      }));
+  platform_screen_->AddObserver(&observer);
+
+  PostToServerAndWait([&output1](wl::TestWaylandServerThread* server) {
+    output1 = server->output();
+  });
+  ASSERT_FALSE(output1->GetPhysicalSize().IsEmpty());
+
+  // Add a second display. The second display is located to the right of first
+  // display like | || |.
+  PostToServerAndWait(
+      [&output2, &output1](wl::TestWaylandServerThread* server) {
+        output2 = server->CreateAndInitializeOutput(
+            wl::TestOutputMetrics({GetRightX(output1), 0, 800, 600}));
+        ASSERT_TRUE(output2);
+      });
+  WaitForAllDisplaysReady();
+
+  // Destroy primary display.
+  PostToServerAndWait([&output1](wl::TestWaylandServerThread* server) {
+    output1->DestroyGlobal();
+    output1 = nullptr;
+  });
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

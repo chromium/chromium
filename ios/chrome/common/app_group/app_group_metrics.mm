@@ -6,10 +6,6 @@
 
 #import "base/check_op.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace app_group {
 
 NSString* const kPendingLogFileSuffix = @"_PendingLog";
@@ -58,9 +54,6 @@ NSString* const kCredentialExtensionKeychainSavePasswordFailureCount =
 
 NSString* const kCredentialExtensionSaveCredentialFailureCount =
     @"CredentialExtensionSaveCredentialFailureCount";
-
-NSString* const kCredentialExtensionConsentVerifiedCount =
-    @"CredentialExtensionConsentVerifiedCount";
 
 NSString* HistogramCountKey(NSString* histogram, int bucket) {
   return [NSString stringWithFormat:@"%@.%i", histogram, bucket];

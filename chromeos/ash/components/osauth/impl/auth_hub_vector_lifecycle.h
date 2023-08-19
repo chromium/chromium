@@ -64,7 +64,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthHubVectorLifecycle
   void OnFactorAttemptResult(AshAuthFactor factor, bool success) override;
   void OnPolicyChanged(AshAuthFactor factor) override;
   void OnLockoutChanged(AshAuthFactor factor) override;
-  void OnOrientationRestrictionsChanged(AshAuthFactor factor) override;
+  void OnFactorSpecificRestrictionsChanged(AshAuthFactor factor) override;
   void OnCriticalError(AshAuthFactor factor) override;
   void OnFactorCustomSignal(AshAuthFactor factor) override;
 
@@ -99,7 +99,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthHubVectorLifecycle
   base::flat_map<AshAuthFactor, FactorAttemptState> engines_;
 
   base::OneShotTimer watchdog_;
-  base::raw_ptr<Owner> owner_;
+  raw_ptr<Owner> owner_;
   base::WeakPtrFactory<AuthHubVectorLifecycle> weak_factory_{this};
 };
 

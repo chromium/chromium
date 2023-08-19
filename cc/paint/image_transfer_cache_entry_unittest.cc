@@ -31,6 +31,7 @@
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
 #include "third_party/skia/include/gpu/gl/GrGLInterface.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 #include "ui/gfx/geometry/size.h"
@@ -178,14 +179,16 @@ class ImageTransferCacheEntryTest
                                   const SkColor4f& color,
                                   bool* released) {
     GrBackendTexture allocated_texture = gr_context->createBackendTexture(
-        width, height, GrBackendFormat::MakeGL(texture_format, GL_TEXTURE_2D),
-        color, GrMipMapped::kNo, GrRenderable::kNo);
+        width, height, GrBackendFormats::MakeGL(texture_format, GL_TEXTURE_2D),
+        color, skgpu::Mipmapped::kNo, GrRenderable::kNo);
     if (!allocated_texture.isValid())
       return nullptr;
     textures_to_free_.push_back(allocated_texture);
     GrGLTextureInfo allocated_texture_info;
-    if (!allocated_texture.getGLTextureInfo(&allocated_texture_info))
+    if (!GrBackendTextures::GetGLTextureInfo(allocated_texture,
+                                             &allocated_texture_info)) {
       return nullptr;
+    }
     DCHECK_EQ(width, allocated_texture.width());
     DCHECK_EQ(height, allocated_texture.height());
     DCHECK(!allocated_texture.hasMipMaps());

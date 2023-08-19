@@ -107,6 +107,7 @@ constexpr char kTotalDiskSpace[] = "TOTAL_DISK_SPACE";
 constexpr char kChronosHomeDirectory[] = "/home/chronos/user";
 constexpr char kFailedKnowledgeFactorAttempts[] =
     "FAILED_KNOWLEDGE_FACTOR_ATTEMPTS";
+constexpr char kRecordedAuthEvents[] = "RECORDED_AUTH_EVENTS";
 #else
 constexpr char kOsVersionTag[] = "OS VERSION";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -151,8 +152,6 @@ std::string GetPrimaryAccountTypeString() {
       return "child";
     case user_manager::USER_TYPE_ARC_KIOSK_APP:
       return "arc_kiosk_app";
-    case user_manager::USER_TYPE_ACTIVE_DIRECTORY:
-      return "active_directory";
     case user_manager::USER_TYPE_WEB_KIOSK_APP:
       return "web_kiosk_app";
     case user_manager::NUM_USER_TYPES:
@@ -435,6 +434,8 @@ void ChromeInternalLogSource::Fetch(SysLogsSourceCallback callback) {
       kFailedKnowledgeFactorAttempts,
       base::NumberToString(ash::AuthEventsRecorder::Get()
                                ->knowledge_factor_auth_failure_count()));
+  response->emplace(kRecordedAuthEvents,
+                    ash::AuthEventsRecorder::Get()->GetAuthEventsLog());
   PopulateLocalStateSettings(response.get());
   PopulateOnboardingTime(response.get());
 

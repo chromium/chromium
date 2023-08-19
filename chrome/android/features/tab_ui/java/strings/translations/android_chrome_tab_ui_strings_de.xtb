@@ -3,8 +3,6 @@
 <translationbundle lang="de">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> von deinen Tabs wurden längere Zeit nicht verwendet. Möchtest du sie schließen?</translation>
 <translation id="125153950246128346">Tippen, um einen anderen Tab zu sehen</translation>
-<translation id="1403228085774130835">Deine geschlossenen Tabs findest du im Chrome-Hauptmenü unter „Zuletzt geöffnete Tabs“</translation>
-<translation id="1455506303394048917">Deine Aktivitäten auf diesen Inkognitotabs werden von diesem Gerät gelöscht</translation>
 <translation id="1499635324672558517">Alle Inkognitotabs schließen?</translation>
 <translation id="1657719826150349398">Tab nach unten verschieben</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> Tab}other{<ph name="TABS_COUNT_MANY" /> Tabs}}</translation>
@@ -47,6 +45,7 @@
 <translation id="5073204694187207510">Vollbildraster ausblenden</translation>
 <translation id="5076161749301278626">Möchtest du dir Händlerrezensionen ansehen?</translation>
 <translation id="5082793167783849073">Du kannst Seiten schnell miteinander vergleichen, indem du eine Gruppe erstellst. Berühre und halte einen Link, um den Vorgang zu starten.</translation>
+<translation id="5339733443032484186">Dein letzter Tab</translation>
 <translation id="5490235265819901748">Tabgruppe maximiert</translation>
 <translation id="5494920125229734069">Alle auswählen</translation>
 <translation id="5556417849629758491">Geschäftsinformationen anzeigen, Option ist oben auf dem Bildschirm verfügbar</translation>
@@ -62,10 +61,12 @@
 <translation id="6228793724645064692">(Händlerbewertung)</translation>
 <translation id="6333260925957816943">Informationen zu diesem Händler</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Gruppierung des <ph name="TABS_COUNT_ONE" /> ausgewählten Tabs aufheben}other{Gruppierung der <ph name="TABS_COUNT_MANY" /> ausgewählten Tabs aufheben}}</translation>
+<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Deine geschlossenen Tabs findest du im Chrome-Hauptmenü unter „Zuletzt geöffnete Tabs“. Dein Inkognitotab ist jedoch nicht dort aufgeführt.}other{Deine geschlossenen Tabs findest du im Chrome-Hauptmenü unter „Zuletzt geöffnete Tabs“. # Inkognitotabs sind jedoch nicht dort aufgeführt.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> Tab}other{<ph name="TABS_COUNT_MANY" /> Tabs}}</translation>
 <translation id="6549021453810473782">Händlerinfo anzeigen</translation>
 <translation id="6562820390860419811">Tab nach links bewegen</translation>
 <translation id="6615455863669487791">Zeigen</translation>
+<translation id="661742612106409204">Deine geschlossenen Tabs findest du im Chrome-Hauptmenü unter „Zuletzt geöffnete Tabs“.</translation>
 <translation id="6840760312327750441">Wenn du Tabs gruppieren möchtest, berühre und halte einen Tab. Ziehe ihn dann auf einen anderen Tab.</translation>
 <translation id="6856809498882026482">Modus für die Mehrfachauswahl ausblenden</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Tab teilen}other{Tabs teilen}}</translation>

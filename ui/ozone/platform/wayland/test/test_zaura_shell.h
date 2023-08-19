@@ -7,6 +7,8 @@
 
 #include <aura-shell-server-protocol.h>
 
+#include <string>
+
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/ozone/platform/wayland/test/global_object.h"
 
@@ -21,13 +23,20 @@ class TestZAuraShell : public GlobalObject {
 
   ~TestZAuraShell() override;
 
+  void SetCompositorVersion(const std::string& version);
+
   // Sets bug fixes and sends them out if the object is bound.
   void SetBugFixes(std::vector<uint32_t> bug_fixes);
 
  private:
   void OnBind() override;
 
+  void MaybeSendCompositorVersion();
   void MaybeSendBugFixes();
+
+  // Compostitor string version. For testing purposes, it is help in a string,
+  // so that it can store either valid or invalid values.
+  std::string compositor_version_string_;
 
   // Bug fixes that shall be sent to the client.
   std::vector<uint32_t> bug_fixes_;

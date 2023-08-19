@@ -14,6 +14,7 @@
 #include "crypto/scoped_test_nss_db.h"
 #include "net/cert/cert_database.h"
 #include "net/cert/x509_util_nss.h"
+#include "net/test/cert_builder.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
@@ -88,11 +89,13 @@ class NSSCertDatabaseChromeOSTest : public TestWithTaskEnvironment,
   }
 
   // CertDatabase::Observer:
-  void OnCertDBChanged() override { db_changed_count_++; }
+  void OnTrustStoreChanged() override { trust_store_changed_count_++; }
+  void OnClientCertStoreChanged() override { client_cert_changed_count_++; }
 
  protected:
   bool observer_added_ = false;
-  int db_changed_count_ = 0;
+  int trust_store_changed_count_ = 0;
+  int client_cert_changed_count_ = 0;
 
   crypto::ScopedTestNSSChromeOSUser user_1_;
   crypto::ScopedTestNSSChromeOSUser user_2_;
@@ -140,9 +143,10 @@ TEST_F(NSSCertDatabaseChromeOSTest, ImportCACerts) {
       X509Certificate::FORMAT_AUTO);
   ASSERT_EQ(1U, certs_1.size());
 
-  ScopedCERTCertificateList certs_2 = CreateCERTCertificateListFromFile(
-      GetTestCertsDirectory(), "2048-rsa-root.pem",
-      X509Certificate::FORMAT_AUTO);
+  auto [leaf2, root2] = CertBuilder::CreateSimpleChain2();
+  ScopedCERTCertificateList certs_2 =
+      x509_util::CreateCERTCertificateListFromX509Certificate(
+          root2->GetX509Certificate().get());
   ASSERT_EQ(1U, certs_2.size());
 
   // Import one cert for each user.
@@ -166,8 +170,9 @@ TEST_F(NSSCertDatabaseChromeOSTest, ImportCACerts) {
   // Run the message loop so the observer notifications get processed and
   // lookups are completed.
   RunUntilIdle();
-  // Should have gotten two OnCertDBChanged notifications.
-  ASSERT_EQ(2, db_changed_count_);
+  // Should have gotten two OnTrustStoreChanged notifications.
+  EXPECT_EQ(2, trust_store_changed_count_);
+  EXPECT_EQ(0, client_cert_changed_count_);
 
   EXPECT_TRUE(IsCertInCertificateList(certs_1[0].get(), user_1_certlist));
   EXPECT_FALSE(IsCertInCertificateList(certs_1[0].get(), user_2_certlist));
@@ -185,9 +190,10 @@ TEST_F(NSSCertDatabaseChromeOSTest, ImportServerCert) {
       GetTestCertsDirectory(), "ok_cert.pem", X509Certificate::FORMAT_AUTO);
   ASSERT_EQ(1U, certs_1.size());
 
-  ScopedCERTCertificateList certs_2 = CreateCERTCertificateListFromFile(
-      GetTestCertsDirectory(), "2048-rsa-ee-by-2048-rsa-intermediate.pem",
-      X509Certificate::FORMAT_AUTO);
+  auto [leaf2, root2] = CertBuilder::CreateSimpleChain2();
+  ScopedCERTCertificateList certs_2 =
+      x509_util::CreateCERTCertificateListFromX509Certificate(
+          leaf2->GetX509Certificate().get());
   ASSERT_EQ(1U, certs_2.size());
 
   // Import one cert for each user.
@@ -211,9 +217,10 @@ TEST_F(NSSCertDatabaseChromeOSTest, ImportServerCert) {
   // Run the message loop so the observer notifications get processed and
   // lookups are completed.
   RunUntilIdle();
-  // TODO(mattm): ImportServerCert doesn't actually cause any observers to
-  // fire. Is that correct?
-  EXPECT_EQ(0, db_changed_count_);
+  // TODO(mattm): this should be 2, but ImportServerCert doesn't currently
+  // generate notifications.
+  EXPECT_EQ(0, trust_store_changed_count_);
+  EXPECT_EQ(0, client_cert_changed_count_);
 
   EXPECT_TRUE(IsCertInCertificateList(certs_1[0].get(), user_1_certlist));
   EXPECT_FALSE(IsCertInCertificateList(certs_1[0].get(), user_2_certlist));

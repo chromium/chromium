@@ -8,6 +8,6 @@
     Exposed=(Window,Worker)
 ] interface PromiseRejectionEvent : Event {
     [CallWith=ScriptState] constructor(DOMString type, PromiseRejectionEventInit eventInitDict);
-    [Custom=Getter] readonly attribute Promise<any> promise;
+    [CallWith=ScriptState] readonly attribute Promise<any> promise;
     [CallWith=ScriptState] readonly attribute any reason;
 };

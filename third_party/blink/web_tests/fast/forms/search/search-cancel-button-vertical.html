@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<title>Test for search cancel button will reset the input value.</title>
+
+<input id="searchInput" type="search" style="writing-mode: vertical-lr">
+<script>
+promise_test(async () => {
+    if (window.eventSender) {
+        searchInput.value = "some text";
+        const cancelY = searchInput.offsetTop + searchInput.offsetHeight - 6;
+        const cancelX = searchInput.offsetLeft + searchInput.offsetWidth / 2;
+        await new Promise((resolve, reject) => {
+            chrome.gpuBenchmarking.pointerActionSequence([{
+                source: 'mouse',
+                actions: [
+                    { name: 'pointerMove', x: cancelX, y: cancelY },
+                    { name: 'pointerDown', x: cancelX, y: cancelY },
+                    { name: 'pointerUp' }
+                ],
+            }], resolve);
+        });
+        assert_equals(searchInput.value, "");
+    }
+}, 'input[type=search] in vertical writing mode should reset when cancel button is clicked');
+</script>
+</html>

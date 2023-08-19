@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_LANGUAGE_PACKS_LANGUAGE_PACKS_UTIL_H_
 
 #include <string>
+#include <string_view>
 
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 #include "chromeos/ash/components/language_packs/language_pack_manager.h"
@@ -28,13 +29,22 @@ DlcErrorTypeEnum GetDlcErrorTypeForUma(const std::string& error_str);
 // PackResult that is returned by an invalid feature ID is specified.
 PackResult CreateInvalidDlcPackResult();
 
-// Converts the state defined by the DLC Service into our own PackResult proto.
+// Converts the state defined by the DLC Service into our own PackResult.
 PackResult ConvertDlcStateToPackResult(const dlcservice::DlcState& dlc_state);
+
+// Converts the install result defined by the DLC Service into our own
+// PackResult.
+PackResult ConvertDlcInstallResultToPackResult(
+    const DlcserviceClient::InstallResult& install_result);
+
+// Converts the error string returned by the DLC Service into our own
+// ErrorCode enum.
+PackResult::ErrorCode ConvertDlcErrorToErrorCode(std::string_view dlc_error);
 
 // Resolves the received locale to a canonical one that we keep in our mapping
 // from locales to DLC IDs.
-const std::string ResolveLocaleForHandwriting(const std::string& input_locale);
-const std::string ResolveLocaleForTts(const std::string& input_locale);
+const std::string ResolveLocale(const std::string& feature_id,
+                                const std::string& input_locale);
 
 // Returns true if we currently are in the OOBE flow.
 bool IsOobe();

@@ -60,8 +60,8 @@
 
 namespace blink {
 
-// Though isspace() considers \t and \v to be whitespace, Win IE doesn't when
-// parsing window features.
+// Though absl::ascii_isspace() considers \t and \v to be whitespace, Win IE
+// doesn't when parsing window features.
 static bool IsWindowFeaturesSeparator(UChar c) {
   return c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '=' ||
          c == ',' || c == '\f';

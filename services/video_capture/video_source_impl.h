@@ -48,6 +48,9 @@ class VideoSourceImpl : public mojom::VideoSource {
       mojo::PendingReceiver<mojom::PushVideoStreamSubscription> subscription,
       CreatePushSubscriptionCallback callback) override;
 
+  void RegisterVideoEffectsManager(
+      mojo::PendingRemote<mojom::VideoEffectsManager> remote) override;
+
  private:
   enum class DeviceStatus {
     kNotStarted,
@@ -82,8 +85,11 @@ class VideoSourceImpl : public mojom::VideoSource {
       push_subscriptions_;
   BroadcastingReceiver broadcaster_;
   DeviceStatus device_status_;
+  raw_ptr<Device, AcrossTasksDanglingUntriaged> device_{nullptr};
   media::VideoCaptureParams device_start_settings_;
   bool restart_device_once_when_stop_complete_;
+  mojo::PendingRemote<mojom::VideoEffectsManager>
+      pending_video_effects_manager_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

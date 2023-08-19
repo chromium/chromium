@@ -44,6 +44,7 @@ source_set("lib") {
     "//services/device/geolocation",
     "//services/device/power_monitor",
     "//services/device/public/cpp:device_features",
+    "//services/device/public/mojom:geolocation_internals",
     "//services/device/public/mojom:usb",
     "//services/device/public/mojom:usb_test",
     "//services/device/screen_orientation",
@@ -182,6 +183,7 @@ source_set("tests") {
     "//net",
     "//net:test_support",
     "//services/device/compute_pressure",
+    "//services/device/device_posture",
     "//services/device/generic_sensor",
     "//services/device/geolocation",
     "//services/device/geolocation:test_support",
@@ -189,6 +191,7 @@ source_set("tests") {
     "//services/device/public/cpp:device_features",
     "//services/device/public/cpp/power_monitor",
     "//services/device/public/mojom",
+    "//services/device/public/mojom:geolocation_internals",
     "//services/device/wake_lock",
     "//services/network:test_support",
     "//testing/gmock",
@@ -203,6 +206,7 @@ source_set("tests") {
     sources += [
       "battery/battery_status_manager_win_unittest.cc",
       "compute_pressure/cpu_probe_win_unittest.cc",
+      "device_posture/device_posture_platform_provider_win_unittest.cc",
       "generic_sensor/platform_sensor_and_provider_unittest_win.cc",
       "geolocation/wifi_data_provider_win_unittest.cc",
     ]
@@ -375,7 +379,6 @@ source_set("tests") {
 
   if (is_apple) {
     sources += [ "geolocation/core_location_provider_unittest.mm" ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_mac) {
@@ -444,7 +447,6 @@ if (is_android) {
   generate_jni("device_service_jni_headers") {
     sources = [
       "android/java/src/org/chromium/services/device/InterfaceRegistrar.java",
-      "public/java/src/org/chromium/device/DeviceFeatureMap.java",
     ]
   }
 
@@ -463,6 +465,7 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/services/device/InterfaceRegistrar.java",
     ]
+    srcjar_deps = [ ":device_service_jni_headers" ]
     deps = [
       "//base:jni_java",
       "//mojo/public/java:bindings_java",

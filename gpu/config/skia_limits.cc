@@ -11,6 +11,16 @@
 
 namespace gpu {
 
+size_t DetermineGraphiteImageProviderCacheLimitFromAvailableMemory() {
+  // Use the same value as that for the Ganesh resource cache.
+  size_t max_resource_cache_bytes;
+  size_t dont_care;
+  DetermineGrCacheLimitsFromAvailableMemory(&max_resource_cache_bytes,
+                                            &dont_care);
+
+  return max_resource_cache_bytes;
+}
+
 void DetermineGrCacheLimitsFromAvailableMemory(
     size_t* max_resource_cache_bytes,
     size_t* max_glyph_cache_texture_bytes) {

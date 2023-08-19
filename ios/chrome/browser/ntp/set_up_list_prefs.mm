@@ -9,10 +9,6 @@
 #import "ios/chrome/browser/ntp/set_up_list_item_type.h"
 #import "ios/chrome/browser/ntp/set_up_list_metrics.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace set_up_list_prefs {
 
 const char kSigninSyncItemState[] = "set_up_list.signin_sync_item.state";

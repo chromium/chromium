@@ -21,8 +21,8 @@ enum Effect {
 enum StreamType {
   PREVIEW_OUTPUT = 0,
   JPEG_OUTPUT = 1,
-  YUV_INPUT = 2,
-  YUV_OUTPUT = 3,
+  JPEG_PORTRAIT_OUTPUT = 2,
+  RECORDIND_OUTPUT = 3,
   UNKNOWN = 4,
 };
 
@@ -59,6 +59,9 @@ interface CameraAppDeviceProvider {
   // The virtual device has the same config as |device_id| except facing
   // attribute.
   SetVirtualDeviceEnabled(string device_id, bool enabled) => (bool success);
+
+  // Check if the device with |source_id| is in use.
+  IsDeviceInUse(string source_id) => (bool in_use);
 };
 
 // Inner interface that used to communicate between browser process (Remote) and
@@ -79,6 +82,9 @@ interface CameraAppDeviceBridge {
   // The virtual device has the same config as |device_id| except facing
   // attribute.
   SetVirtualDeviceEnabled(string device_id, bool enabled) => (bool success);
+
+  // Check if the device with |device_id| is in use.
+  IsDeviceInUse(string device_id) => (bool in_use);
 };
 
 // Interface for communication from the Chrome Camera App (Remote) to the camera
@@ -86,13 +92,10 @@ interface CameraAppDeviceBridge {
 // a renderer process, with all the code resides in the Chrome OS rootfs. The
 // camera device runs inside the browser process.
 interface CameraAppDevice {
-  // Sets reprocess options to bind with the coming take photo request. When
-  // this method is called, the reprocess options will be queued. All reprocess
-  // options in the queue will be consumed when ImageCapture::TakePhoto() is
-  // triggered and all the queued reprocess options will be bound to that take
-  // photo request.
-  SetReprocessOptions(array<Effect> effects,
-                      pending_remote<ReprocessResultListener> listener) => ();
+  // Takes portrait mode photos and returns the results to the observer.
+  // The observer will be called by the camera device when the result is ready.
+  TakePortraitModePhoto(
+      pending_remote<StillCaptureResultObserver> observer) => ();
 
   // Sets the fps range for upcoming configured camera stream.
   // The caller sets the |fps_range|.
@@ -172,8 +175,8 @@ interface CameraInfoObserver {
   OnCameraInfoUpdated(CameraInfo camera_info);
 };
 
-// Interface for the listener of reprocess results.
-interface ReprocessResultListener {
-  // Triggered when reprocess done for target |effect|.
-  OnReprocessDone(Effect effect, int32 status, media.mojom.Blob? blob);
+// Interface for the returned still capture results.
+interface StillCaptureResultObserver {
+  // Triggered when capture done for target |effect|.
+  OnStillCaptureDone(Effect effect, int32 status, media.mojom.Blob? blob);
 };

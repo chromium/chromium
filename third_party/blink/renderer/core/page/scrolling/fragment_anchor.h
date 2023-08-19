@@ -52,7 +52,6 @@ class CORE_EXPORT FragmentAnchor : public GarbageCollected<FragmentAnchor> {
   virtual void Installed() = 0;
 
   virtual void DidScroll(mojom::blink::ScrollType type) = 0;
-  virtual void PerformScriptableActions() = 0;
 
   virtual void Trace(Visitor*) const;
 
@@ -62,6 +61,10 @@ class CORE_EXPORT FragmentAnchor : public GarbageCollected<FragmentAnchor> {
 
   virtual void ScrollElementIntoViewWithOptions(Element* element_to_scroll,
                                                 ScrollIntoViewOptions* options);
+
+  // Called when additional searchable content may have become available in the
+  // document.
+  virtual void NewContentMayBeAvailable() {}
 
   Member<LocalFrame> frame_;
 };

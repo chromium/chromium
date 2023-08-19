@@ -280,6 +280,128 @@ int64_t AccumulateResourceSizeInBytes(
   return total_size_bytes;
 }
 
+absl::optional<std::vector<liburlpattern::Part>> ConvertToBlinkParts(
+    const google::protobuf::RepeatedPtrField<
+        storage::ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+            URLPattern::Part>& parts) {
+  std::vector<liburlpattern::Part> ret;
+  for (const auto& input_part : parts) {
+    liburlpattern::Part part;
+    switch (input_part.modifier()) {
+      case ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+          URLPattern::Part::kNone:
+        part.modifier = liburlpattern::Modifier::kNone;
+        break;
+      case ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+          URLPattern::Part::kOptional:
+        part.modifier = liburlpattern::Modifier::kOptional;
+        break;
+      case ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+          URLPattern::Part::kZeroOrMore:
+        part.modifier = liburlpattern::Modifier::kZeroOrMore;
+        break;
+      case ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+          URLPattern::Part::kOneOrMore:
+        part.modifier = liburlpattern::Modifier::kOneOrMore;
+        break;
+    }
+    switch (input_part.pattern_case()) {
+      case ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+          URLPattern::Part::PATTERN_NOT_SET:
+        // If URLPattern is used, one of the part must be set.
+        return absl::nullopt;
+      case ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+          URLPattern::Part::kFixed:
+        part.type = liburlpattern::PartType::kFixed;
+        part.value = input_part.fixed().value();
+        break;
+      // No case statement for "regexp" is intended for the security
+      // concern.
+      case ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+          URLPattern::Part::kSegmentWildcard:
+        part.type = liburlpattern::PartType::kSegmentWildcard;
+        part.name = input_part.segment_wildcard().name();
+        part.prefix = input_part.segment_wildcard().prefix();
+        part.value = input_part.segment_wildcard().value();
+        part.suffix = input_part.segment_wildcard().suffix();
+        break;
+      case ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+          URLPattern::Part::kFullWildcard:
+        part.type = liburlpattern::PartType::kFullWildcard;
+        part.name = input_part.full_wildcard().name();
+        part.prefix = input_part.full_wildcard().prefix();
+        part.value = input_part.full_wildcard().value();
+        part.suffix = input_part.full_wildcard().suffix();
+        break;
+    }
+    ret.emplace_back(part);
+  }
+  return ret;
+}
+
+void ConvertToProtoParts(
+    const std::vector<liburlpattern::Part> parts,
+    google::protobuf::RepeatedPtrField<
+        storage::ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+            URLPattern::Part>* out_parts) {
+  for (const auto& p : parts) {
+    ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::URLPattern::
+        Part* output_part = out_parts->Add();
+    switch (p.modifier) {
+      case liburlpattern::Modifier::kNone:
+        output_part->set_modifier(
+            ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+                URLPattern::Part::kNone);
+        break;
+      case liburlpattern::Modifier::kOptional:
+        output_part->set_modifier(
+            ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+                URLPattern::Part::kOptional);
+        break;
+      case liburlpattern::Modifier::kZeroOrMore:
+        output_part->set_modifier(
+            ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+                URLPattern::Part::kZeroOrMore);
+        break;
+      case liburlpattern::Modifier::kOneOrMore:
+        output_part->set_modifier(
+            ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+                URLPattern::Part::kOneOrMore);
+        break;
+    }
+    switch (p.type) {
+      case liburlpattern::PartType::kFixed: {
+        ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+            URLPattern::Part::FixedPattern* ptn = output_part->mutable_fixed();
+        ptn->set_value(p.value);
+        break;
+      }
+      case liburlpattern::PartType::kRegex:
+        NOTREACHED_NORETURN() << "should not see regexp URLPattern";
+      case liburlpattern::PartType::kSegmentWildcard: {
+        ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+            URLPattern::Part::WildcardPattern* ptn =
+                output_part->mutable_segment_wildcard();
+        ptn->set_name(p.name);
+        ptn->set_prefix(p.prefix);
+        ptn->set_value(p.value);
+        ptn->set_suffix(p.suffix);
+        break;
+      }
+      case liburlpattern::PartType::kFullWildcard: {
+        ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+            URLPattern::Part::WildcardPattern* ptn =
+                output_part->mutable_full_wildcard();
+        ptn->set_name(p.name);
+        ptn->set_prefix(p.prefix);
+        ptn->set_value(p.value);
+        ptn->set_suffix(p.suffix);
+        break;
+      }
+    }
+  }
+}
+
 }  // namespace
 
 const char* ServiceWorkerDatabase::StatusToString(
@@ -1700,10 +1822,10 @@ network::mojom::ReferrerPolicy ConvertReferrerPolicyFromProtocolBufferToMojom(
 network::mojom::IPAddressSpace ConvertIPAddressSpaceFromProtocolBufferToMojom(
     ServiceWorkerRegistrationData::IPAddressSpace value) {
   switch (value) {
-    case ServiceWorkerRegistrationData::LOOPBACK:
-      return network::mojom::IPAddressSpace::kLoopback;
     case ServiceWorkerRegistrationData::LOCAL:
       return network::mojom::IPAddressSpace::kLocal;
+    case ServiceWorkerRegistrationData::PRIVATE:
+      return network::mojom::IPAddressSpace::kPrivate;
     case ServiceWorkerRegistrationData::PUBLIC:
       return network::mojom::IPAddressSpace::kPublic;
     case ServiceWorkerRegistrationData::UNKNOWN:
@@ -1976,61 +2098,287 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
               kUrlPattern: {
             condition.type =
                 blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern;
-            blink::UrlPattern url_pattern;
-            for (const auto& pathname : c.url_pattern().pathname()) {
-              liburlpattern::Part part;
-              switch (pathname.modifier()) {
-                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
-                    Condition::URLPattern::Part::kNone:
-                  part.modifier = liburlpattern::Modifier::kNone;
-                  break;
-                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
-                    Condition::URLPattern::Part::kOptional:
-                  part.modifier = liburlpattern::Modifier::kOptional;
-                  break;
-                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
-                    Condition::URLPattern::Part::kZeroOrMore:
-                  part.modifier = liburlpattern::Modifier::kZeroOrMore;
-                  break;
-                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
-                    Condition::URLPattern::Part::kOneOrMore:
-                  part.modifier = liburlpattern::Modifier::kOneOrMore;
-                  break;
-              }
-              switch (pathname.pattern_case()) {
-                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
-                    Condition::URLPattern::Part::PATTERN_NOT_SET:
-                  // If URLPattern is used, one of the part must be set.
+            blink::SafeUrlPattern url_pattern;
+            if (c.url_pattern().legacy_pathname_size() == 0) {
+              if (c.url_pattern().protocol_size() > 0) {
+                auto protocol = ConvertToBlinkParts(c.url_pattern().protocol());
+                if (!protocol) {
                   return Status::kErrorCorrupted;
+                }
+                url_pattern.protocol = *protocol;
+              }
+              if (c.url_pattern().username_size() > 0) {
+                auto username = ConvertToBlinkParts(c.url_pattern().username());
+                if (!username) {
+                  return Status::kErrorCorrupted;
+                }
+                url_pattern.username = *username;
+              }
+              if (c.url_pattern().password_size() > 0) {
+                auto password = ConvertToBlinkParts(c.url_pattern().password());
+                if (!password) {
+                  return Status::kErrorCorrupted;
+                }
+                url_pattern.password = *password;
+              }
+              if (c.url_pattern().hostname_size() > 0) {
+                auto hostname = ConvertToBlinkParts(c.url_pattern().hostname());
+                if (!hostname) {
+                  return Status::kErrorCorrupted;
+                }
+                url_pattern.hostname = *hostname;
+              }
+              if (c.url_pattern().port_size() > 0) {
+                auto port = ConvertToBlinkParts(c.url_pattern().port());
+                if (!port) {
+                  return Status::kErrorCorrupted;
+                }
+                url_pattern.port = *port;
+              }
+              if (c.url_pattern().pathname_size() > 0) {
+                auto pathname = ConvertToBlinkParts(c.url_pattern().pathname());
+                if (!pathname) {
+                  return Status::kErrorCorrupted;
+                }
+                url_pattern.pathname = *pathname;
+              }
+              if (c.url_pattern().search_size() > 0) {
+                auto search = ConvertToBlinkParts(c.url_pattern().search());
+                if (!search) {
+                  return Status::kErrorCorrupted;
+                }
+                url_pattern.search = *search;
+              }
+              if (c.url_pattern().hash_size() > 0) {
+                auto hash = ConvertToBlinkParts(c.url_pattern().hash());
+                if (!hash) {
+                  return Status::kErrorCorrupted;
+                }
+                url_pattern.hash = *hash;
+              }
+              if (c.url_pattern().has_options()) {
+                url_pattern.options.ignore_case =
+                    c.url_pattern().options().ignore_case();
+              }
+            } else {
+              // Workaround for the legacy URLPattern pathanme implementation.
+              // It assumes the non-existence of the fields as matching
+              // anything. i.e. "*".
+              CHECK_GT(c.url_pattern().legacy_pathname_size(), 0);
+              auto pathname =
+                  ConvertToBlinkParts(c.url_pattern().legacy_pathname());
+              if (!pathname) {
+                return Status::kErrorCorrupted;
+              }
+              url_pattern.pathname = *pathname;
+
+              // Set default "*" to all other fields.
+              {
+                liburlpattern::Part part;
+                part.modifier = liburlpattern::Modifier::kNone;
+                part.type = liburlpattern::PartType::kFullWildcard;
+                part.name = "0";
+
+                url_pattern.protocol.push_back(part);
+                url_pattern.username.push_back(part);
+                url_pattern.password.push_back(part);
+                url_pattern.hostname.push_back(part);
+                url_pattern.port.push_back(part);
+                url_pattern.search.push_back(part);
+                url_pattern.hash.push_back(part);
+              }
+            }
+            condition.url_pattern = std::move(url_pattern);
+            break;
+          }
+          case ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+              kRequest: {
+            condition.type =
+                blink::ServiceWorkerRouterCondition::ConditionType::kRequest;
+            blink::ServiceWorkerRouterRequestCondition request;
+            if (c.request().has_method()) {
+              request.method = c.request().method();
+            }
+            if (c.request().has_mode()) {
+              switch (c.request().mode()) {
                 case ServiceWorkerRegistrationData::RouterRules::RuleV1::
-                    Condition::URLPattern::Part::kFixed:
-                  part.type = liburlpattern::PartType::kFixed;
-                  part.value = pathname.fixed().value();
+                    Condition::Request::kSameOriginMode:
+                  request.mode = network::mojom::RequestMode::kSameOrigin;
                   break;
-                // No case statement for "regexp" is intended for the security
-                // concern.
                 case ServiceWorkerRegistrationData::RouterRules::RuleV1::
-                    Condition::URLPattern::Part::kSegmentWildcard:
-                  part.type = liburlpattern::PartType::kSegmentWildcard;
-                  part.name = pathname.segment_wildcard().name();
-                  part.prefix = pathname.segment_wildcard().prefix();
-                  part.value = pathname.segment_wildcard().value();
-                  part.suffix = pathname.segment_wildcard().suffix();
+                    Condition::Request::kNoCorsMode:
+                  request.mode = network::mojom::RequestMode::kNoCors;
                   break;
                 case ServiceWorkerRegistrationData::RouterRules::RuleV1::
-                    Condition::URLPattern::Part::kFullWildcard:
-                  part.type = liburlpattern::PartType::kFullWildcard;
-                  part.name = pathname.full_wildcard().name();
-                  part.prefix = pathname.full_wildcard().prefix();
-                  part.value = pathname.full_wildcard().value();
-                  part.suffix = pathname.full_wildcard().suffix();
+                    Condition::Request::kCorsMode:
+                  request.mode = network::mojom::RequestMode::kCors;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kCorsWithForcedPreflightMode:
+                  request.mode =
+                      network::mojom::RequestMode::kCorsWithForcedPreflight;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kNavigateMode:
+                  request.mode = network::mojom::RequestMode::kNavigate;
                   break;
               }
-              url_pattern.pathname.emplace_back(part);
             }
-            condition.url_pattern = url_pattern;
-
+            if (c.request().has_destination()) {
+              switch (c.request().destination()) {
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kEmptyDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kEmpty;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kAudioDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kAudio;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kAudioWorkletDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kAudioWorklet;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kDocumentDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kDocument;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kEmbedDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kEmbed;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kFontDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kFont;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kFrameDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kFrame;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kIframeDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kIframe;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kImageDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kImage;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kManifestDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kManifest;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kObjectDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kObject;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kPaintWorkletDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kPaintWorklet;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kReportDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kReport;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kScriptDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kScript;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kServiceWorkerDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kServiceWorker;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kSharedWorkerDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kSharedWorker;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kStyleDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kStyle;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kTrackDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kTrack;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kVideoDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kVideo;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kWebBundleDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kWebBundle;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kWorkerDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kWorker;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kXsltDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kXslt;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kFencedframeDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kFencedframe;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kWebIdentityDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kWebIdentity;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kDictionaryDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kDictionary;
+                  break;
+              }
+            }
+            condition.request = request;
             break;
+          }
+          case ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+              kRunningStatus: {
+            condition.type = blink::ServiceWorkerRouterCondition::
+                ConditionType::kRunningStatus;
+            blink::ServiceWorkerRouterRunningStatusCondition running_status;
+            if (!c.has_running_status() || !c.running_status().has_status()) {
+              return Status::kErrorCorrupted;
+            }
+            switch (c.running_status().status()) {
+              case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                  Condition::RunningStatus::kRunning:
+                running_status.status =
+                    blink::ServiceWorkerRouterRunningStatusCondition::
+                        RunningStatusEnum::kRunning;
+                break;
+              case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                  Condition::RunningStatus::kNotRunning:
+                running_status.status =
+                    blink::ServiceWorkerRouterRunningStatusCondition::
+                        RunningStatusEnum::kNotRunning;
+                break;
+            }
+            condition.running_status = running_status;
           }
         }
         router_rule.conditions.emplace_back(condition);
@@ -2045,7 +2393,18 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
               kNetworkSource:
             source.type =
                 blink::ServiceWorkerRouterSource::SourceType::kNetwork;
-            source.network_source = blink::ServiceWorkerRouterNetworkSource{};
+            source.network_source.emplace();
+            break;
+          case ServiceWorkerRegistrationData::RouterRules::RuleV1::Source::
+              kRaceSource:
+            source.type = blink::ServiceWorkerRouterSource::SourceType::kRace;
+            source.race_source.emplace();
+            break;
+          case ServiceWorkerRegistrationData::RouterRules::RuleV1::Source::
+              kFetchEventSource:
+            source.type =
+                blink::ServiceWorkerRouterSource::SourceType::kFetchEvent;
+            source.fetch_event_source.emplace();
             break;
         }
         router_rule.sources.emplace_back(source);
@@ -2053,6 +2412,10 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
       router_rules.rules.emplace_back(router_rule);
     }
     (*out)->router_rules = std::move(router_rules);
+  }
+
+  if (data.has_has_hid_event_handlers()) {
+    (*out)->has_hid_event_handlers = data.has_hid_event_handlers();
   }
 
   return Status::kOk;
@@ -2100,10 +2463,10 @@ ServiceWorkerRegistrationData::IPAddressSpace
 ConvertIPAddressSpaceFromMojomToProtocolBuffer(
     network::mojom::IPAddressSpace value) {
   switch (value) {
-    case network::mojom::IPAddressSpace::kLoopback:
-      return ServiceWorkerRegistrationData::LOOPBACK;
     case network::mojom::IPAddressSpace::kLocal:
       return ServiceWorkerRegistrationData::LOCAL;
+    case network::mojom::IPAddressSpace::kPrivate:
+      return ServiceWorkerRegistrationData::PRIVATE;
     case network::mojom::IPAddressSpace::kPublic:
       return ServiceWorkerRegistrationData::PUBLIC;
     case network::mojom::IPAddressSpace::kUnknown:
@@ -2243,65 +2606,236 @@ void ServiceWorkerDatabase::WriteRegistrationDataInBatch(
           case blink::ServiceWorkerRouterCondition::ConditionType::
               kUrlPattern: {
             ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
-                URLPattern* url_pattern = condition->mutable_url_pattern();
-            for (const auto& p : c.url_pattern->pathname) {
-              ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
-                  URLPattern::Part* pathname = url_pattern->add_pathname();
-              switch (p.modifier) {
-                case liburlpattern::Modifier::kNone:
-                  pathname->set_modifier(
+                URLPattern* mutable_url_pattern =
+                    condition->mutable_url_pattern();
+            CHECK(!c.url_pattern->protocol.empty() ||
+                  !c.url_pattern->username.empty() ||
+                  !c.url_pattern->password.empty() ||
+                  !c.url_pattern->hostname.empty() ||
+                  !c.url_pattern->port.empty() ||
+                  !c.url_pattern->pathname.empty() ||
+                  !c.url_pattern->search.empty() ||
+                  !c.url_pattern->hash.empty());
+            if (!c.url_pattern->protocol.empty()) {
+              ConvertToProtoParts(c.url_pattern->protocol,
+                                  mutable_url_pattern->mutable_protocol());
+            }
+            if (!c.url_pattern->username.empty()) {
+              ConvertToProtoParts(c.url_pattern->username,
+                                  mutable_url_pattern->mutable_username());
+            }
+            if (!c.url_pattern->password.empty()) {
+              ConvertToProtoParts(c.url_pattern->password,
+                                  mutable_url_pattern->mutable_password());
+            }
+            if (!c.url_pattern->hostname.empty()) {
+              ConvertToProtoParts(c.url_pattern->hostname,
+                                  mutable_url_pattern->mutable_hostname());
+            }
+            if (!c.url_pattern->port.empty()) {
+              ConvertToProtoParts(c.url_pattern->port,
+                                  mutable_url_pattern->mutable_port());
+            }
+            if (!c.url_pattern->pathname.empty()) {
+              ConvertToProtoParts(c.url_pattern->pathname,
+                                  mutable_url_pattern->mutable_pathname());
+            }
+            if (!c.url_pattern->search.empty()) {
+              ConvertToProtoParts(c.url_pattern->search,
+                                  mutable_url_pattern->mutable_search());
+            }
+            if (!c.url_pattern->hash.empty()) {
+              ConvertToProtoParts(c.url_pattern->hash,
+                                  mutable_url_pattern->mutable_hash());
+            }
+            mutable_url_pattern->mutable_options()->set_ignore_case(
+                c.url_pattern->options.ignore_case);
+            break;
+          }
+          case blink::ServiceWorkerRouterCondition::ConditionType::kRequest: {
+            ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+                Request* request = condition->mutable_request();
+            if (c.request->method) {
+              request->set_method(*c.request->method);
+            }
+            if (c.request->mode) {
+              switch (*c.request->mode) {
+                case network::mojom::RequestMode::kSameOrigin:
+                  request->set_mode(
                       ServiceWorkerRegistrationData::RouterRules::RuleV1::
-                          Condition::URLPattern::Part::kNone);
+                          Condition::Request::kSameOriginMode);
                   break;
-                case liburlpattern::Modifier::kOptional:
-                  pathname->set_modifier(
+                case network::mojom::RequestMode::kNoCors:
+                  request->set_mode(
                       ServiceWorkerRegistrationData::RouterRules::RuleV1::
-                          Condition::URLPattern::Part::kOptional);
+                          Condition::Request::kNoCorsMode);
                   break;
-                case liburlpattern::Modifier::kZeroOrMore:
-                  pathname->set_modifier(
-                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
-                          Condition::URLPattern::Part::kZeroOrMore);
+                case network::mojom::RequestMode::kCors:
+                  request->set_mode(ServiceWorkerRegistrationData::RouterRules::
+                                        RuleV1::Condition::Request::kCorsMode);
                   break;
-                case liburlpattern::Modifier::kOneOrMore:
-                  pathname->set_modifier(
+                case network::mojom::RequestMode::kCorsWithForcedPreflight:
+                  request->set_mode(
                       ServiceWorkerRegistrationData::RouterRules::RuleV1::
-                          Condition::URLPattern::Part::kOneOrMore);
+                          Condition::Request::kCorsWithForcedPreflightMode);
+                  break;
+                case network::mojom::RequestMode::kNavigate:
+                  request->set_mode(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kNavigateMode);
                   break;
               }
-              switch (p.type) {
-                case liburlpattern::PartType::kFixed: {
-                  ServiceWorkerRegistrationData::RouterRules::RuleV1::
-                      Condition::URLPattern::Part::FixedPattern* part =
-                          pathname->mutable_fixed();
-                  part->set_value(p.value);
+            }
+            if (c.request->destination) {
+              switch (*c.request->destination) {
+                case network::mojom::RequestDestination::kEmpty:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kEmptyDestination);
                   break;
-                }
-                case liburlpattern::PartType::kRegex:
-                  NOTREACHED_NORETURN() << "should not see regexp URLPattern";
-                case liburlpattern::PartType::kSegmentWildcard: {
-                  ServiceWorkerRegistrationData::RouterRules::RuleV1::
-                      Condition::URLPattern::Part::WildcardPattern* part =
-                          pathname->mutable_segment_wildcard();
-                  part->set_name(p.name);
-                  part->set_prefix(p.prefix);
-                  part->set_value(p.value);
-                  part->set_suffix(p.suffix);
+                case network::mojom::RequestDestination::kAudio:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kAudioDestination);
                   break;
-                }
-                case liburlpattern::PartType::kFullWildcard: {
-                  ServiceWorkerRegistrationData::RouterRules::RuleV1::
-                      Condition::URLPattern::Part::WildcardPattern* part =
-                          pathname->mutable_full_wildcard();
-                  part->set_name(p.name);
-                  part->set_prefix(p.prefix);
-                  part->set_value(p.value);
-                  part->set_suffix(p.suffix);
+                case network::mojom::RequestDestination::kAudioWorklet:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kAudioWorkletDestination);
                   break;
-                }
+                case network::mojom::RequestDestination::kDocument:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kDocumentDestination);
+                  break;
+                case network::mojom::RequestDestination::kEmbed:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kEmbedDestination);
+                  break;
+                case network::mojom::RequestDestination::kFont:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kFontDestination);
+                  break;
+                case network::mojom::RequestDestination::kFrame:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kFrameDestination);
+                  break;
+                case network::mojom::RequestDestination::kIframe:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kIframeDestination);
+                  break;
+                case network::mojom::RequestDestination::kImage:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kImageDestination);
+                  break;
+                case network::mojom::RequestDestination::kManifest:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kManifestDestination);
+                  break;
+                case network::mojom::RequestDestination::kObject:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kObjectDestination);
+                  break;
+                case network::mojom::RequestDestination::kPaintWorklet:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kPaintWorkletDestination);
+                  break;
+                case network::mojom::RequestDestination::kReport:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kReportDestination);
+                  break;
+                case network::mojom::RequestDestination::kScript:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kScriptDestination);
+                  break;
+                case network::mojom::RequestDestination::kServiceWorker:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kServiceWorkerDestination);
+                  break;
+                case network::mojom::RequestDestination::kSharedWorker:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kSharedWorkerDestination);
+                  break;
+                case network::mojom::RequestDestination::kStyle:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kStyleDestination);
+                  break;
+                case network::mojom::RequestDestination::kTrack:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kTrackDestination);
+                  break;
+                case network::mojom::RequestDestination::kVideo:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kVideoDestination);
+                  break;
+                case network::mojom::RequestDestination::kWebBundle:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kWebBundleDestination);
+                  break;
+                case network::mojom::RequestDestination::kWorker:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kWorkerDestination);
+                  break;
+                case network::mojom::RequestDestination::kXslt:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kXsltDestination);
+                  break;
+                case network::mojom::RequestDestination::kFencedframe:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kFencedframeDestination);
+                  break;
+                case network::mojom::RequestDestination::kWebIdentity:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kWebIdentityDestination);
+                  break;
+                case network::mojom::RequestDestination::kDictionary:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kDictionaryDestination);
+                  break;
               }
             }
             break;
+          }
+          case blink::ServiceWorkerRouterCondition::ConditionType::
+              kRunningStatus: {
+            ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+                RunningStatus* running_status =
+                    condition->mutable_running_status();
+            switch (c.running_status->status) {
+              case blink::ServiceWorkerRouterRunningStatusCondition::
+                  RunningStatusEnum::kRunning:
+                running_status->set_status(
+                    ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                        Condition::RunningStatus::kRunning);
+                break;
+              case blink::ServiceWorkerRouterRunningStatusCondition::
+                  RunningStatusEnum::kNotRunning:
+                running_status->set_status(
+                    ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                        Condition::RunningStatus::kNotRunning);
+                break;
+            }
           }
         }
       }
@@ -2312,10 +2846,18 @@ void ServiceWorkerDatabase::WriteRegistrationDataInBatch(
           case blink::ServiceWorkerRouterSource::SourceType::kNetwork:
             source->mutable_network_source();
             break;
+          case blink::ServiceWorkerRouterSource::SourceType::kRace:
+            source->mutable_race_source();
+            break;
+          case blink::ServiceWorkerRouterSource::SourceType::kFetchEvent:
+            source->mutable_fetch_event_source();
+            break;
         }
       }
     }
   }
+
+  data.set_has_hid_event_handlers(registration.has_hid_event_handlers);
 
   std::string value;
   bool success = data.SerializeToString(&value);

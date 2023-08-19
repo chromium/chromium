@@ -86,10 +86,9 @@ void LoopbackCrosapiAppServiceProxy::LoadIcon(const std::string& app_id,
   // Implement this if needed.
   NOTIMPLEMENTED();
 }
-void LoopbackCrosapiAppServiceProxy::AddPreferredApp(
+void LoopbackCrosapiAppServiceProxy::AddPreferredAppDeprecated(
     const std::string& app_id,
     crosapi::mojom::IntentPtr intent) {
-  // Implement this if needed.
   NOTIMPLEMENTED();
 }
 void LoopbackCrosapiAppServiceProxy::ShowAppManagementPage(

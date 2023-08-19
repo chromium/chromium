@@ -145,7 +145,7 @@ class WindowsSystemProxyResolutionServiceTest : public TestWithTaskEnvironment {
  private:
   std::unique_ptr<WindowsSystemProxyResolutionService>
       proxy_resolution_service_;
-  raw_ptr<MockWindowsSystemProxyResolver> proxy_resolver_;
+  raw_ptr<MockWindowsSystemProxyResolver, DanglingUntriaged> proxy_resolver_;
 };
 
 TEST_F(WindowsSystemProxyResolutionServiceTest, CreateWithNullResolver) {

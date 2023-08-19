@@ -6,18 +6,21 @@ import 'chrome://print-management/print_management.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-import {setMetadataProviderForTesting} from 'chrome://print-management/mojo_interface_provider.js';
+import {setMetadataProviderForTesting, setPrintManagementHandlerForTesting} from 'chrome://print-management/mojo_interface_provider.js';
 import {PrintJobEntryElement} from 'chrome://print-management/print_job_entry.js';
 import {PrintManagementElement} from 'chrome://print-management/print_management.js';
 import {PrinterSetupInfoElement} from 'chrome://print-management/printer_setup_info.js';
-import {ActivePrintJobInfo, ActivePrintJobState, CompletedPrintJobInfo, PrinterErrorCode, PrintingMetadataProviderInterface, PrintJobCompletionStatus, PrintJobInfo, PrintJobsObserverRemote} from 'chrome://print-management/printing_manager.mojom-webui.js';
+import {ActivePrintJobInfo, ActivePrintJobState, CompletedPrintJobInfo, LaunchSource, PrinterErrorCode, PrintingMetadataProviderInterface, PrintJobCompletionStatus, PrintJobInfo, PrintJobsObserverRemote} from 'chrome://print-management/printing_manager.mojom-webui.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
+
+import {FakePrintManagementHandler} from './fake_print_management_handler.js';
 
 export function initPrintJobEntryElement(): PrintJobEntryElement {
   const element = document.createElement('print-job-entry');
@@ -321,14 +324,18 @@ suite('PrintManagementTest', () => {
   let page: PrintManagementElement|null = null;
 
   let mojoApi_: FakePrintingMetadataProvider;
+  let pageHandler: FakePrintManagementHandler;
 
   suiteSetup(() => {
     mojoApi_ = new FakePrintingMetadataProvider();
     setMetadataProviderForTesting(mojoApi_);
+    pageHandler = new FakePrintManagementHandler();
+    setPrintManagementHandlerForTesting(pageHandler);
   });
 
   teardown(function() {
     mojoApi_.resetForTest();
+    pageHandler.resetForTest();
     page?.remove();
     page = null;
   });
@@ -773,14 +780,24 @@ suite('PrintManagementTest', () => {
     await mojoApi_.whenCalled('getPrintJobs');
     flush();
 
-    // Assert that printer setup UI is not hidden when flag enabled.
+    // Assert that printer setup UI is not hidden and ongoing empty state
+    // message is hidden when flag enabled and there are no printer jobs.
+    assertTrue(
+        querySelector<HTMLElement>(page!, '#ongoingEmptyState')?.hidden as
+        boolean);
     assertFalse(
         querySelector<PrinterSetupInfoElement>(
             page!, PrinterSetupInfoElement.is)
             ?.hidden as boolean);
   });
 
-  test('CancelOngoingPrintJob', async () => {
+  // Verify expected elements render when there are no ongoing jobs, at least
+  // one historical job, and the printer setup flag is off.
+  test('CancelOngoingPrintJob_SetupAssistanceFlagOff', async () => {
+    // Ensure printer setup assistance flag is disabled for test.
+    loadTimeData.overrideValues({
+      isSetupAssistanceEnabled: false,
+    });
     const kId = 'fileA';
     const kTitle = 'titleA';
     const kTime =
@@ -808,10 +825,54 @@ suite('PrintManagementTest', () => {
         /*shouldAttemptCancel*/ true, expectedHistoryList);
     flush();
 
-    // Verify that there are no ongoing print jobs and history list is
-    // populated.
+    // Verify that there are no ongoing print jobs, history list is
+    // populated, and printer setup UI is hidden.
     assertTrue(!querySelector(page!, '#ongoingList'));
     verifyPrintJobs(expectedHistoryList, getHistoryPrintJobEntries(page!));
+    assertFalse(isVisible(querySelector<PrinterSetupInfoElement>(
+        page!, PrinterSetupInfoElement.is)));
+  });
+
+  // Verify expected elements render when there are no ongoing jobs, at least
+  // one historical job, and the printer setup flag is on.
+  test('CancelOngoingPrintJob_SetupAssistanceFlagOn', async () => {
+    // Ensure printer setup assistance flag is enabled for test.
+    loadTimeData.overrideValues({
+      isSetupAssistanceEnabled: true,
+    });
+    const kId = 'fileA';
+    const kTitle = 'titleA';
+    const kTime =
+        convertToMojoTime(new Date(Date.parse('February 5, 2020 03:23:00')));
+    const expectedArr = [
+      createJobEntry(
+          kId, kTitle, kTime, PrinterErrorCode.kNoError,
+          /*completedInfo=*/ undefined,
+          createOngoingPrintJobInfo(
+              /*printedPages=*/ 0, ActivePrintJobState.kStarted)),
+    ];
+
+    const expectedHistoryList = [createJobEntry(
+        kId, kTitle, kTime, PrinterErrorCode.kNoError,
+        createCompletedPrintJobInfo(PrintJobCompletionStatus.kCanceled))];
+
+    await initializePrintManagementApp(expectedArr);
+    await mojoApi_.whenCalled('getPrintJobs');
+    flush();
+    const jobEntries = getOngoingPrintJobEntries(page!);
+    verifyPrintJobs(expectedArr, jobEntries);
+
+    await simulateCancelPrintJob(
+        jobEntries[0]!, mojoApi_,
+        /*shouldAttemptCancel*/ true, expectedHistoryList);
+    flush();
+
+    // Verify that there are no ongoing print jobs, history list is
+    // populated, and printer setup UI is hidden.
+    assertTrue(!querySelector(page!, '#ongoingList'));
+    verifyPrintJobs(expectedHistoryList, getHistoryPrintJobEntries(page!));
+    assertFalse(isVisible(querySelector<PrinterSetupInfoElement>(
+        page!, PrinterSetupInfoElement.is)));
   });
 
   test('CancelOngoingPrintJobNotAttempted', async () => {
@@ -868,7 +929,8 @@ suite('PrintManagementTest', () => {
     // Clean up element.
     page?.remove();
     page = null;
-    document.body.innerHTML = '';
+    assert(window.trustedTypes);
+    document.body.innerHTML = window.trustedTypes.emptyHTML;
 
     // Setup for enabled test.
     loadTimeData.overrideValues({
@@ -882,6 +944,113 @@ suite('PrintManagementTest', () => {
 
     // Clean up test element.
     document.head.removeChild(linkEl);
+  });
+
+  // Verify 'manage printers' button in header does not show when setup
+  // assistance flag is off.
+  test('HeaderManagePrinterButton_HiddenWhenFlagOff', async () => {
+    const kId = 'fileA';
+    const kTitle = 'titleA';
+    const kTime =
+        convertToMojoTime(new Date(Date.parse('February 5, 2020 03:23:00')));
+
+    const jobsArr = [
+      createJobEntry(
+          kId, kTitle, kTime, PrinterErrorCode.kNoError,
+          /*completedInfo=*/ undefined,
+          createOngoingPrintJobInfo(
+              /*printedPages=*/ 0, ActivePrintJobState.kStarted)),
+    ];
+
+    // Setup for disabled test.
+    loadTimeData.overrideValues({
+      isSetupAssistanceEnabled: false,
+    });
+
+    await initializePrintManagementApp(jobsArr);
+
+    assertFalse(
+        isVisible(querySelector<CrButtonElement>(page!, '#managePrinters')));
+  });
+
+  // Verify 'manage printers' button in header does not show when setup
+  // assistance flag is on and there are no active or historical print jobs.
+  test('HeaderManagePrinterButton_HiddenWhenFlagOnAndHasNoJobs', async () => {
+    // Setup for disabled test.
+    loadTimeData.overrideValues({
+      isSetupAssistanceEnabled: true,
+    });
+
+    await initializePrintManagementApp([]);
+
+    assertFalse(
+        isVisible(querySelector<CrButtonElement>(page!, '#managePrinters')));
+  });
+
+  // Verify 'manage printers' button in header shows when setup
+  // assistance flag is on and there any print jobs.
+  test('HeaderManagePrinterButton_VisibleWhenFlagOn', async () => {
+    const kId = 'fileA';
+    const kTitle = 'titleA';
+    const kTime =
+        convertToMojoTime(new Date(Date.parse('February 5, 2020 03:23:00')));
+
+    const jobsArr = [
+      createJobEntry(
+          kId, kTitle, kTime, PrinterErrorCode.kNoError,
+          /*completedInfo=*/ undefined,
+          createOngoingPrintJobInfo(
+              /*printedPages=*/ 0, ActivePrintJobState.kStarted)),
+    ];
+
+    // Setup for disabled test.
+    loadTimeData.overrideValues({
+      isSetupAssistanceEnabled: true,
+    });
+
+    await initializePrintManagementApp(jobsArr);
+
+    const managePrintersButton: CrButtonElement =
+        querySelector<CrButtonElement>(page!, '#managePrinters')!;
+    assertTrue(isVisible(managePrintersButton));
+    assertTrue(page!.i18nExists('managePrintersButtonLabel'));
+    assertEquals(
+        page!.i18n('managePrintersButtonLabel'),
+        managePrintersButton.textContent!.trim());
+  });
+
+  // Verifies clicking 'manage printers' button triggers invokes
+  // `PrintManagementHandler.LaunchPrinterSettings` with `source` set to
+  // `LaunchSource.kHeaderButton`.
+  test('HeaderManagePrinterButtonCallsLaunchPrinterSettings', async () => {
+    const kId = 'fileA';
+    const kTitle = 'titleA';
+    const kTime =
+        convertToMojoTime(new Date(Date.parse('February 5, 2020 03:23:00')));
+
+    const jobsArr = [
+      createJobEntry(
+          kId, kTitle, kTime, PrinterErrorCode.kNoError,
+          /*completedInfo=*/ undefined,
+          createOngoingPrintJobInfo(
+              /*printedPages=*/ 0, ActivePrintJobState.kStarted)),
+    ];
+
+    // Setup for disabled test.
+    loadTimeData.overrideValues({
+      isSetupAssistanceEnabled: true,
+    });
+
+    await initializePrintManagementApp(jobsArr);
+    assertEquals(0, pageHandler.getLaunchPrinterSettingsCount());
+    assertEquals(null, pageHandler.getLastLaunchSource());
+
+    const managePrintersButton: CrButtonElement =
+        querySelector<CrButtonElement>(page!, '#managePrinters')!;
+    managePrintersButton.click();
+
+    assertEquals(1, pageHandler.getLaunchPrinterSettingsCount());
+    assertEquals(LaunchSource.kHeaderButton, pageHandler.getLastLaunchSource());
   });
 });
 
@@ -1030,6 +1199,27 @@ suite('PrintJobEntryTest', () => {
         querySelector<IronIconElement>(jobEntryTestElement, '#fileIcon')?.icon);
   });
 
+  test('initializePrinterUnreachableStoppedOngoingJobEntry', () => {
+    jobEntryTestElement = initPrintJobEntryElement();
+    const expectedPrinterError = ActivePrintJobState.kStarted;
+    const expectedOngoingError = PrinterErrorCode.kPrinterUnreachable;
+
+    jobEntryTestElement.jobEntry = createJobEntry(
+        /*id=*/ '1', 'title',
+        convertToMojoTime(new Date('June 6, 2023 09:00:00')),
+        expectedOngoingError,
+        /*completedInfo=*/ undefined,
+        createOngoingPrintJobInfo(/*printedPages=*/ 1, expectedPrinterError));
+
+    flush();
+
+    // Assert status displayed correctly.
+    assertEquals(
+        'Stopped - Printer unreachable',
+        querySelector(jobEntryTestElement, '#ongoingError')
+            ?.textContent?.trim());
+  });
+
   test('ensureGoogleFileIconIsShown', () => {
     jobEntryTestElement = initPrintJobEntryElement();
     jobEntryTestElement.jobEntry = createJobEntry(
@@ -1125,18 +1315,26 @@ suite('PrintJobEntryTest', () => {
 
 suite('PrinterSetupInfoTest', () => {
   let printerSetupInfoElement: PrinterSetupInfoElement|null = null;
+  let pageHandler: FakePrintManagementHandler;
+
+  suiteSetup(() => {
+    pageHandler = new FakePrintManagementHandler();
+    setPrintManagementHandlerForTesting(pageHandler);
+  });
 
   teardown(() => {
     if (printerSetupInfoElement) {
       printerSetupInfoElement.remove();
     }
     printerSetupInfoElement = null;
+    pageHandler.resetForTest();
   });
 
   function initPrinterSetupInfoElement(): Promise<void> {
     const element = document.createElement(PrinterSetupInfoElement.is);
     document.body.appendChild(element);
     printerSetupInfoElement = element as PrinterSetupInfoElement;
+    assertTrue(!!printerSetupInfoElement);
 
     return flushTasks();
   }
@@ -1195,5 +1393,35 @@ suite('PrinterSetupInfoTest', () => {
         expectedOpenPrinterSettingsMessage,
         getElementTextContent('.message-detail'));
     assertEquals(expectedButtonLabel, getElementTextContent('cr-button'));
+  });
+
+  // Verify expected illustration used in empty state UI.
+  test('ensureEmptyStateSvg', async () => {
+    const expectedIcon = 'print-management:empty-state';
+    await initPrinterSetupInfoElement();
+
+    const iconEl =
+        querySelector<IronIconElement>(printerSetupInfoElement!, 'iron-icon');
+    assertEquals(expectedIcon, iconEl?.icon);
+  });
+
+  // Verify clicking 'Manage Printers' button calls
+  // `PrintManagementHandler.LaunchPrinterSettings` and passes `source`
+  // set to `LaunchSource.kEmptyStateButton`.
+  test('launchPrinterSettingsCalled', async () => {
+    await initPrinterSetupInfoElement();
+    assertEquals(0, pageHandler.getLaunchPrinterSettingsCount());
+    assertEquals(null, pageHandler.getLastLaunchSource());
+
+    // Click button.
+    const managePrintersButton =
+        querySelector<CrButtonElement>(printerSetupInfoElement!, 'cr-button');
+    assertTrue(isVisible(managePrintersButton));
+    managePrintersButton!.click();
+
+    // Verify fake page handler count update and call is from empty state.
+    assertEquals(1, pageHandler.getLaunchPrinterSettingsCount());
+    assertEquals(
+        LaunchSource.kEmptyStateButton, pageHandler.getLastLaunchSource());
   });
 });

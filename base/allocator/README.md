@@ -96,7 +96,7 @@ allocator shim (next point).
 This is taken care of by the headers in `allocator_shim_override_*`.
 
 *On Windows*: Windows' UCRT (Universal C Runtime) exports weak symbols, that we
-can override in `allocator_shim_override_ucr_symbols_win.h`.
+can override in `allocator_shim_override_ucrt_symbols_win.h`.
 
 *On Linux/CrOS*: the allocator symbols are defined as exported global symbols
 in `allocator_shim_override_libc_symbols.h` (for `malloc`, `free` and friends)

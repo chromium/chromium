@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL Redirect count should be limited (same-origin) assert_unreached: Should fail before redirected 21 times Reached unreachable code
+FAIL Redirect count should be limited (cross-origin) assert_unreached: Should fail before redirected 21 times Reached unreachable code
+PASS Two XHRs both redirects 20 time should success (same-origin)
+PASS Two XHRs both redirects 20 time should success (cross-origin)
+Harness: the test ran to completion.
+

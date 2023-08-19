@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/new_tab_page/modules/photos/photos_service.h"
+#include "base/barrier_closure.h"
 #include "base/hash/hash.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -60,6 +61,7 @@ class PhotosServiceTest : public testing::Test {
 };
 
 TEST_F(PhotosServiceTest, PassesDataOnSuccess) {
+  auto quit_closure = task_environment_.QuitClosure();
   std::vector<photos::mojom::MemoryPtr> actual_memories;
   base::MockCallback<PhotosService::GetMemoriesCallback> callback;
 
@@ -68,6 +70,7 @@ TEST_F(PhotosServiceTest, PassesDataOnSuccess) {
       .WillOnce(
           testing::Invoke([&](std::vector<photos::mojom::MemoryPtr> memories) {
             actual_memories = std::move(memories);
+            quit_closure.Run();
           }));
 
   // Make sure we are not in the dismissed time window by default.
@@ -112,6 +115,7 @@ TEST_F(PhotosServiceTest, PassesDataOnSuccess) {
       )",
       net::HTTP_OK,
       network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix);
+  task_environment_.RunUntilQuit();
 
   EXPECT_EQ(2u, actual_memories.size());
   EXPECT_EQ("Title 1", actual_memories.at(0)->title);
@@ -141,6 +145,7 @@ TEST_F(PhotosServiceTest, PassesDataOnSuccess) {
 }
 
 TEST_F(PhotosServiceTest, RequestIsCached) {
+  auto quit_closure = task_environment_.QuitClosure();
   std::vector<photos::mojom::MemoryPtr> actual_memories;
   base::MockCallback<PhotosService::GetMemoriesCallback> callback;
 
@@ -180,11 +185,12 @@ TEST_F(PhotosServiceTest, RequestIsCached) {
       .WillOnce(
           testing::Invoke([&](std::vector<photos::mojom::MemoryPtr> memories) {
             actual_memories = std::move(memories);
+            quit_closure.Run();
           }));
   service_->GetMemories(callback.Get());
   identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "foo", base::Time());
-  base::RunLoop().RunUntilIdle();
+  task_environment_.RunUntilQuit();
 
   EXPECT_EQ(2u, actual_memories.size());
   ASSERT_EQ(0,
@@ -196,6 +202,7 @@ TEST_F(PhotosServiceTest, RequestIsCached) {
 }
 
 TEST_F(PhotosServiceTest, CacheIsSkippedOnMemoryOpen) {
+  auto quit_closure = task_environment_.QuitClosure();
   std::vector<photos::mojom::MemoryPtr> actual_memories;
   base::MockCallback<PhotosService::GetMemoriesCallback> callback;
 
@@ -204,6 +211,7 @@ TEST_F(PhotosServiceTest, CacheIsSkippedOnMemoryOpen) {
       .WillRepeatedly(
           testing::Invoke([&](std::vector<photos::mojom::MemoryPtr> memories) {
             actual_memories = std::move(memories);
+            quit_closure.Run();
           }));
 
   network::URLLoaderCompletionStatus status;
@@ -240,7 +248,7 @@ TEST_F(PhotosServiceTest, CacheIsSkippedOnMemoryOpen) {
   service_->GetMemories(callback.Get());
   identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "foo", base::Time());
-  base::RunLoop().RunUntilIdle();
+  task_environment_.RunUntilQuit();
 
   // API response is cached
   EXPECT_EQ(2u, actual_memories.size());
@@ -259,6 +267,7 @@ TEST_F(PhotosServiceTest, CacheIsSkippedOnMemoryOpen) {
       prefs_.GetTime(PhotosService::kLastMemoryOpenTimePrefName).is_null());
 
   // Expecting new API call with last opened timestamp in URL
+  quit_closure = task_environment_.QuitClosure();
   base::Time now = base::Time::Now();
   prefs_.SetTime(PhotosService::kLastMemoryOpenTimePrefName, now);
   service_->GetMemories(callback.Get());
@@ -287,6 +296,8 @@ TEST_F(PhotosServiceTest, CacheIsSkippedOnMemoryOpen) {
       )",
       net::HTTP_OK,
       network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix);
+  task_environment_.RunUntilQuit();
+
   EXPECT_EQ(1u, actual_memories.size());
   ASSERT_EQ(1,
             histogram_tester_.GetBucketCount("NewTabPage.Modules.DataRequest",
@@ -297,6 +308,9 @@ TEST_F(PhotosServiceTest, CacheIsSkippedOnMemoryOpen) {
 }
 
 TEST_F(PhotosServiceTest, PassesDataToMultipleRequestsToPhotosService) {
+  auto quit_closure = task_environment_.QuitClosure();
+  auto barrier_closure = base::BarrierClosure(4, quit_closure);
+
   std::vector<photos::mojom::MemoryPtr> response1;
   std::vector<photos::mojom::MemoryPtr> response2;
   std::vector<photos::mojom::MemoryPtr> response3;
@@ -311,24 +325,28 @@ TEST_F(PhotosServiceTest, PassesDataToMultipleRequestsToPhotosService) {
       .WillOnce(
           testing::Invoke([&](std::vector<photos::mojom::MemoryPtr> memories) {
             response1 = std::move(memories);
+            barrier_closure.Run();
           }));
   EXPECT_CALL(callback2, Run(testing::_))
       .Times(1)
       .WillOnce(
           testing::Invoke([&](std::vector<photos::mojom::MemoryPtr> memories) {
             response2 = std::move(memories);
+            barrier_closure.Run();
           }));
   EXPECT_CALL(callback3, Run(testing::_))
       .Times(1)
       .WillOnce(
           testing::Invoke([&](std::vector<photos::mojom::MemoryPtr> memories) {
             response3 = std::move(memories);
+            barrier_closure.Run();
           }));
   EXPECT_CALL(callback4, Run(testing::_))
       .Times(1)
       .WillOnce(
           testing::Invoke([&](std::vector<photos::mojom::MemoryPtr> memories) {
             response4 = std::move(memories);
+            barrier_closure.Run();
           }));
   service_->GetMemories(callback1.Get());
   service_->GetMemories(callback2.Get());
@@ -357,6 +375,7 @@ TEST_F(PhotosServiceTest, PassesDataToMultipleRequestsToPhotosService) {
       )",
       net::HTTP_OK,
       network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix);
+  task_environment_.RunUntilQuit();
 
   EXPECT_EQ(1u, response1.size());
   EXPECT_EQ(1u, response2.size());
@@ -373,33 +392,38 @@ TEST_F(PhotosServiceTest, PassesDataToMultipleRequestsToPhotosService) {
 }
 
 TEST_F(PhotosServiceTest, PassesNoDataOnAuthError) {
+  auto quit_closure = task_environment_.QuitClosure();
   bool empty_response = false;
   base::MockCallback<PhotosService::GetMemoriesCallback> callback;
 
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [&empty_response](std::vector<photos::mojom::MemoryPtr> memories) {
+      .WillOnce(
+          testing::Invoke([&](std::vector<photos::mojom::MemoryPtr> memories) {
             empty_response = memories.empty();
+            quit_closure.Run();
           }));
 
   service_->GetMemories(callback.Get());
 
   identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
       GoogleServiceAuthError(GoogleServiceAuthError::State::CONNECTION_FAILED));
+  task_environment_.RunUntilQuit();
 
   EXPECT_TRUE(empty_response);
 }
 
 TEST_F(PhotosServiceTest, PassesNoDataOnNetError) {
+  auto quit_closure = task_environment_.QuitClosure();
   bool empty_response = false;
   base::MockCallback<PhotosService::GetMemoriesCallback> callback;
 
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [&empty_response](std::vector<photos::mojom::MemoryPtr> memories) {
+      .WillOnce(
+          testing::Invoke([&](std::vector<photos::mojom::MemoryPtr> memories) {
             empty_response = memories.empty();
+            quit_closure.Run();
           }));
 
   service_->GetMemories(callback.Get());
@@ -418,6 +442,7 @@ TEST_F(PhotosServiceTest, PassesNoDataOnNetError) {
       "https://photosfirstparty-pa.googleapis.com/v1/ntp/memories:read",
       std::string(), net::HTTP_BAD_REQUEST,
       network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix);
+  task_environment_.RunUntilQuit();
 
   EXPECT_TRUE(empty_response);
   ASSERT_EQ(1,
@@ -429,14 +454,16 @@ TEST_F(PhotosServiceTest, PassesNoDataOnNetError) {
 }
 
 TEST_F(PhotosServiceTest, PassesNoDataOnEmptyResponse) {
+  auto quit_closure = task_environment_.QuitClosure();
   bool empty_response = false;
   base::MockCallback<PhotosService::GetMemoriesCallback> callback;
 
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [&empty_response](std::vector<photos::mojom::MemoryPtr> memories) {
+      .WillOnce(
+          testing::Invoke([&](std::vector<photos::mojom::MemoryPtr> memories) {
             empty_response = memories.empty();
+            quit_closure.Run();
           }));
 
   service_->GetMemories(callback.Get());
@@ -448,11 +475,13 @@ TEST_F(PhotosServiceTest, PassesNoDataOnEmptyResponse) {
       "https://photosfirstparty-pa.googleapis.com/v1/ntp/memories:read", "",
       net::HTTP_OK,
       network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix);
+  task_environment_.RunUntilQuit();
 
   EXPECT_TRUE(empty_response);
 }
 
 TEST_F(PhotosServiceTest, PassesNoDataOnMissingItemKey) {
+  auto quit_closure = task_environment_.QuitClosure();
   std::vector<photos::mojom::MemoryPtr> actual_memories;
   base::MockCallback<PhotosService::GetMemoriesCallback> callback;
 
@@ -461,6 +490,7 @@ TEST_F(PhotosServiceTest, PassesNoDataOnMissingItemKey) {
       .WillOnce(
           testing::Invoke([&](std::vector<photos::mojom::MemoryPtr> memories) {
             actual_memories = std::move(memories);
+            quit_closure.Run();
           }));
 
   service_->GetMemories(callback.Get());
@@ -477,6 +507,7 @@ TEST_F(PhotosServiceTest, PassesNoDataOnMissingItemKey) {
       )",
       net::HTTP_OK,
       network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix);
+  task_environment_.RunUntilQuit();
 
   EXPECT_TRUE(actual_memories.empty());
   ASSERT_EQ(1,
@@ -585,6 +616,7 @@ class PhotosServiceFakeDataTest : public PhotosServiceTest {
 };
 
 TEST_F(PhotosServiceFakeDataTest, ReturnsFakeData) {
+  auto quit_closure = task_environment_.QuitClosure();
   std::vector<photos::mojom::MemoryPtr> fake_memories;
   base::MockCallback<PhotosService::GetMemoriesCallback> callback;
 
@@ -593,10 +625,11 @@ TEST_F(PhotosServiceFakeDataTest, ReturnsFakeData) {
       .WillOnce(
           testing::Invoke([&](std::vector<photos::mojom::MemoryPtr> memories) {
             fake_memories = std::move(memories);
+            quit_closure.Run();
           }));
 
   service_->GetMemories(callback.Get());
-  task_environment_.RunUntilIdle();
+  task_environment_.RunUntilQuit();
 
   EXPECT_FALSE(fake_memories.empty());
 }
@@ -612,19 +645,22 @@ class PhotosServiceSoftOptOutEnabledTest : public PhotosServiceTest {
 };
 
 TEST_F(PhotosServiceSoftOptOutEnabledTest, PassesNoDataIfSoftOptedOut) {
+  auto quit_closure = task_environment_.QuitClosure();
   bool empty_response = false;
   base::MockCallback<PhotosService::GetMemoriesCallback> callback;
 
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [&empty_response](std::vector<photos::mojom::MemoryPtr> memories) {
+      .WillOnce(
+          testing::Invoke([&](std::vector<photos::mojom::MemoryPtr> memories) {
             empty_response = memories.empty();
+            quit_closure.Run();
           }));
 
   prefs_.SetTime(PhotosService::kLastSoftOptedOutTimePrefName,
                  base::Time::Now());
   service_->GetMemories(callback.Get());
+  task_environment_.RunUntilQuit();
 
   EXPECT_TRUE(empty_response);
 }
@@ -676,13 +712,15 @@ class PhotosServiceModulesRedesignedTest : public PhotosServiceTest {
 };
 
 TEST_F(PhotosServiceModulesRedesignedTest, IgnoresDismiss) {
+  auto quit_closure = task_environment_.QuitClosure();
   bool passed_data = false;
   base::MockCallback<PhotosService::GetMemoriesCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [&passed_data](std::vector<photos::mojom::MemoryPtr> memories) {
+      .WillOnce(
+          testing::Invoke([&](std::vector<photos::mojom::MemoryPtr> memories) {
             passed_data = !memories.empty();
+            quit_closure.Run();
           }));
   identity_test_env.SetAutomaticIssueOfAccessTokens(/*grant=*/true);
   test_url_loader_factory_.AddResponse(
@@ -705,7 +743,7 @@ TEST_F(PhotosServiceModulesRedesignedTest, IgnoresDismiss) {
 
   service_->DismissModule();
   service_->GetMemories(callback.Get());
-  base::RunLoop().RunUntilIdle();
+  task_environment_.RunUntilQuit();
 
   EXPECT_TRUE(passed_data);
 }

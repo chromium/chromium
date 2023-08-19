@@ -25,7 +25,6 @@ import org.chromium.ui.mojom.WindowOpenDisposition;
  * {@link NativePageNavigationDelegate} implementation.
  */
 public class NativePageNavigationDelegateImpl implements NativePageNavigationDelegate {
-    private static final String TAG = "PageNavDelegate";
     private final Profile mProfile;
     private final TabModelSelector mTabModelSelector;
     private final Tab mTab;
@@ -49,8 +48,7 @@ public class NativePageNavigationDelegateImpl implements NativePageNavigationDel
     }
 
     @Override
-    @Nullable
-    public Tab openUrl(int windowOpenDisposition, LoadUrlParams loadUrlParams) {
+    public @Nullable Tab openUrl(int windowOpenDisposition, LoadUrlParams loadUrlParams) {
         Tab loadingTab = null;
 
         switch (windowOpenDisposition) {

@@ -28,9 +28,6 @@ export class Dialog extends View {
 
   private readonly descHolder: HTMLDivElement|null;
 
-  /**
-   * @param name View name of the dialog.
-   */
   constructor(
       name: ViewName,
       {onPositiveButtonClicked, onNegativeButtonClicked}: ButtonEvent = {}) {

@@ -30,8 +30,7 @@ class AboutThisSiteTabHelper
   AboutThisSiteTabHelper& operator=(const AboutThisSiteTabHelper&) = delete;
 
   // content::WebContentsObserver implementation
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  void PrimaryPageChanged(content::Page& page) override;
 
  private:
   explicit AboutThisSiteTabHelper(

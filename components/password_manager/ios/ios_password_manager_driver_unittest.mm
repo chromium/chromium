@@ -5,6 +5,7 @@
 #import "components/password_manager/ios/ios_password_manager_driver.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/password_manager/core/browser/password_manager.h"
 #import "components/password_manager/core/browser/password_manager_client.h"
 #import "components/password_manager/core/browser/stub_password_manager_client.h"
@@ -17,13 +18,17 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
+using autofill::AutofillJavaScriptFeature;
 using base::SysNSStringToUTF8;
 using password_manager::PasswordManager;
 using testing::Return;
+
+#define andCompareStringAtIndex(expected_string, index) \
+  andDo(^(NSInvocation * invocation) {                  \
+    const std::string* param;                           \
+    [invocation getArgument:&param atIndex:index + 2];  \
+    EXPECT_EQ(*param, expected_string);                 \
+  })
 
 // This is a workaround for returning const GURL&, for which .andReturn and
 // .andReturnValue don’t work.
@@ -56,8 +61,11 @@ class IOSPasswordManagerDriverTest : public PlatformTest {
  public:
   IOSPasswordManagerDriverTest() : PlatformTest() {
     auto web_frames_manager = std::make_unique<web::FakeWebFramesManager>();
-    web::FakeWebFramesManager* web_frames_manager_ = web_frames_manager.get();
-    web_state_.SetWebFramesManager(std::move(web_frames_manager));
+    web_frames_manager_ = web_frames_manager.get();
+    web::ContentWorld content_world =
+        AutofillJavaScriptFeature::GetInstance()->GetSupportedContentWorld();
+    web_state_.SetWebFramesManager(content_world,
+                                   std::move(web_frames_manager));
 
     auto web_frame =
         web::FakeWebFrame::Create(SysNSStringToUTF8(@"main-frame"),
@@ -82,6 +90,7 @@ class IOSPasswordManagerDriverTest : public PlatformTest {
   }
 
  protected:
+  web::FakeWebFramesManager* web_frames_manager_;
   web::FakeWebState web_state_;
   IOSPasswordManagerDriver* driver_;
   IOSPasswordManagerDriver* driver2_;
@@ -107,18 +116,22 @@ TEST_F(IOSPasswordManagerDriverTest, IsInPrimaryMainFrame) {
 TEST_F(IOSPasswordManagerDriverTest, SetPasswordFillData) {
   autofill::PasswordFormFillData form_data;
 
-  OCMExpect([password_controller_
-      processPasswordFormFillData:form_data
-                          inFrame:driver_->web_frame()
-                      isMainFrame:driver_->web_frame()->IsMainFrame()
-                forSecurityOrigin:driver_->security_origin()]);
+  OCMExpect([[password_controller_ ignoringNonObjectArgs]
+                processPasswordFormFillData:form_data
+                                 forFrameId:""
+                                isMainFrame:driver_->IsInPrimaryMainFrame()
+                          forSecurityOrigin:driver_->security_origin()])
+      .andCompareStringAtIndex(driver_->web_frame_id(), 1);
   driver_->SetPasswordFillData(form_data);
   [password_controller_ verify];
 }
 
 // Tests the InformNoSavedCredentials method.
 TEST_F(IOSPasswordManagerDriverTest, InformNoSavedCredentials) {
-  OCMExpect([password_controller_ onNoSavedCredentials]);
+  const std::string main_frame_id = SysNSStringToUTF8(@"main-frame");
+  OCMExpect([[password_controller_ ignoringNonObjectArgs]
+                onNoSavedCredentialsWithFrameId:""])
+      .andCompareStringAtIndex(main_frame_id, 0);
   driver_->InformNoSavedCredentials(true);
   [password_controller_ verify];
 }

@@ -4,8 +4,4 @@
 
 #import "ios/chrome/browser/ui/sharing/share_file_download_metrics.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 const char kOpenInDownloadHistogram[] = "IOS.OpenIn.DownloadResult";

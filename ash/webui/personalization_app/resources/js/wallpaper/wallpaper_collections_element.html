@@ -116,6 +116,7 @@
 </template>
 <main aria-label="$i18n{wallpaperCollections}" hidden$="[[hasError_]]">
   <iron-list aria-setsize$="[[tiles_.length]]"
+      id="grid"
       grid
       items="[[tiles_]]"
       role="listbox">
@@ -144,16 +145,9 @@
               tabindex$="[[tabIndex]]">
             <template is="dom-if" if="[[!isSelectableTile_(item)]]" restamp>
               <div slot="text" class="primary-text">
-                <template is="dom-if" if="[[!isPersonalizationJellyEnabled_]]">
-                  <iron-icon icon="personalization:managed"
-                      title$="$i18n{managedSetting}">
-                  </iron-icon>
-                </template>
-                <template is="dom-if" if="[[isPersonalizationJellyEnabled_]]">
-                  <iron-icon icon="personalization:managed2"
-                      title$="$i18n{managedSetting}">
-                  </iron-icon>
-                </template>
+                <iron-icon icon="personalization:managed"
+                    title$="$i18n{managedSetting}">
+                </iron-icon>
                 <p title$="[[item.name]]">[[item.name]]</p>
               </div>
             </template>
@@ -184,7 +178,7 @@
               on-wallpaper-grid-item-selected="onCollectionSelected_"
               primary-text="[[item.name]]"
               role="option"
-              secondary-text="[[item.count]]"
+              secondary-text="[[getOnlineTileSecondaryText_(item)]]"
               src="[[item.preview]]"
               tabindex$="[[tabIndex]]">
           </wallpaper-grid-item>

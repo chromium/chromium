@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "build/build_config.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/webauthn_credentials_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -31,7 +32,12 @@ class MockWebAuthnCredentialsDelegate : public WebAuthnCredentialsDelegate {
               GetPasskeys,
               (),
               (const override));
+  MOCK_METHOD(bool, OfferPasskeysFromAnotherDeviceOption, (), (const override));
   MOCK_METHOD(void, RetrievePasskeys, (base::OnceClosure), (override));
+#if BUILDFLAG(IS_ANDROID)
+  MOCK_METHOD(void, ShowAndroidHybridSignIn, (), (override));
+  MOCK_METHOD(bool, IsAndroidHybridAvailable, (), (const override));
+#endif
 };
 
 }  // namespace password_manager

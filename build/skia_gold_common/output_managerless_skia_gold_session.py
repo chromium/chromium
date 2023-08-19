@@ -11,18 +11,12 @@ import subprocess
 import time
 from typing import List, Tuple
 
-import six
-
 from skia_gold_common import skia_gold_session
 
 
 class OutputManagerlessSkiaGoldSession(skia_gold_session.SkiaGoldSession):
   def RunComparison(self, *args, **kwargs) -> skia_gold_session.StepRetVal:
-    # Passing True for the output manager is a bit of a hack, as we don't
-    # actually need an output manager and just need to get past the truthy
-    # check.
     assert 'output_manager' not in kwargs, 'Cannot specify output_manager'
-    kwargs['output_manager'] = True
     return super().RunComparison(*args, **kwargs)
 
   def _CreateDiffOutputDir(self, name: str) -> str:
@@ -49,14 +43,13 @@ class OutputManagerlessSkiaGoldSession(skia_gold_session.SkiaGoldSession):
       elif f == 'diff.png':
         results.local_diff_diff_image = file_url
 
+  def _RequiresOutputManager(self) -> bool:
+    return False
+
   @staticmethod
   def _RunCmdForRcAndOutput(cmd: List[str]) -> Tuple[int, str]:
     try:
-      output = subprocess.check_output(cmd,
-                                       stderr=subprocess.STDOUT).decode('utf-8')
+      output = subprocess.check_output(cmd, stderr=subprocess.STDOUT, text=True)
       return 0, output
     except subprocess.CalledProcessError as e:
-      output = e.output
-      if not isinstance(output, six.string_types):
-        output = output.decode('utf-8')
-      return e.returncode, output
+      return e.returncode, e.output

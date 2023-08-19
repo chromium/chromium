@@ -79,46 +79,6 @@ void StandaloneBrowserExtensionApps::RegisterCrosapiHost(
                      weak_factory_.GetWeakPtr()));
 }
 
-void StandaloneBrowserExtensionApps::LoadIcon(const std::string& app_id,
-                                              const IconKey& icon_key,
-                                              IconType icon_type,
-                                              int32_t size_hint_in_dip,
-                                              bool allow_placeholder_icon,
-                                              apps::LoadIconCallback callback) {
-  // It is possible that Lacros is briefly unavailable, for example if it shuts
-  // down for an update.
-  if (!controller_.is_bound()) {
-    std::move(callback).Run(std::make_unique<IconValue>());
-    return;
-  }
-
-  IconType crosapi_icon_type = icon_type;
-  IconKeyPtr crosapi_icon_key = icon_key.Clone();
-  if (crosapi_icon_type == apps::IconType::kCompressed) {
-    // If the request is for a compressed icon, modify request so that
-    // uncompressed icon is sent over crosapi.
-    crosapi_icon_type = apps::IconType::kUncompressed;
-    crosapi_icon_key->icon_effects = apps::IconEffects::kNone;
-
-    // To compensate for the above, wrap |callback| icon recompression. This is
-    // applied after OnLoadIcon() runs, which is appropriate since OnLoadIcon()
-    // needs an uncompressed icon for ApplyIconEffects().
-    callback = base::BindOnce(
-        [](apps::LoadIconCallback wrapped_callback, IconValuePtr icon_value) {
-          ConvertUncompressedIconToCompressedIcon(std::move(icon_value),
-                                                  std::move(wrapped_callback));
-        },
-        std::move(callback));
-  }
-
-  const uint32_t icon_effects = icon_key.icon_effects;
-  controller_->LoadIcon(
-      app_id, std::move(crosapi_icon_key), crosapi_icon_type, size_hint_in_dip,
-      base::BindOnce(&StandaloneBrowserExtensionApps::OnLoadIcon,
-                     weak_factory_.GetWeakPtr(), icon_effects, size_hint_in_dip,
-                     std::move(callback)));
-}
-
 void StandaloneBrowserExtensionApps::GetCompressedIconData(
     const std::string& app_id,
     int32_t size_in_dip,
@@ -413,16 +373,6 @@ void StandaloneBrowserExtensionApps::OnReceiverDisconnected() {
 void StandaloneBrowserExtensionApps::OnControllerDisconnected() {
   receiver_.reset();
   controller_.reset();
-}
-
-void StandaloneBrowserExtensionApps::OnLoadIcon(uint32_t icon_effects,
-                                                int size_hint_in_dip,
-                                                apps::LoadIconCallback callback,
-                                                IconValuePtr icon_value) {
-  // Apply masking effects here since masking is unimplemented in Lacros.
-  ApplyIconEffects(/*profile=*/nullptr, /*app_id=*/absl::nullopt,
-                   static_cast<IconEffects>(icon_effects), size_hint_in_dip,
-                   std::move(icon_value), std::move(callback));
 }
 
 }  // namespace apps

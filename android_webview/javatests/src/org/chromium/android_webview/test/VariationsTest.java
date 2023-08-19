@@ -18,12 +18,13 @@ import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.variations.VariationsUtils;
 import org.chromium.android_webview.test.util.VariationsTestUtils;
 import org.chromium.android_webview.variations.VariationsSeedLoader;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.variations.StudyOuterClass.Study;
 import org.chromium.components.variations.StudyOuterClass.Study.Experiment;
 import org.chromium.components.variations.StudyOuterClass.Study.Experiment.FeatureAssociation;
 import org.chromium.components.variations.VariationsSeedOuterClass.VariationsSeed;
+import org.chromium.components.variations.VariationsSwitches;
 import org.chromium.components.variations.firstrun.VariationsSeedFetcher.SeedInfo;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -83,7 +84,7 @@ public class VariationsTest {
     // This flag forces the variations service to load the seed file from disk rather than using
     // fieldtrial_testing_config.json.
     // TODO(crbug.com/1098037): Reference this via a Java VariationsSwitches class.
-    @CommandLineFlags.Add("disable-field-trial-config")
+    @CommandLineFlags.Add(VariationsSwitches.DISABLE_FIELD_TRIAL_TESTING_CONFIG)
     public void testFeatureEnabled() throws Exception {
         try {
             FeatureAssociation features =
@@ -97,7 +98,7 @@ public class VariationsTest {
 
             TestThreadUtils.runOnUiThreadBlocking(() -> {
                 Assert.assertTrue("TEST_FEATURE_NAME should be enabled",
-                        AwFeatureMap.getInstance().isEnabled(AwFeatures.WEBVIEW_TEST_FEATURE));
+                        AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_TEST_FEATURE));
             });
         } finally {
             VariationsTestUtils.deleteSeeds();
@@ -109,23 +110,19 @@ public class VariationsTest {
     // This flag forces the variations service to load the seed file from disk rather than using
     // fieldtrial_testing_config.json.
     // TODO(crbug.com/1098037): Reference this via a Java VariationsSwitches class.
-    @CommandLineFlags.Add("disable-field-trial-config")
+    @CommandLineFlags.Add(VariationsSwitches.DISABLE_FIELD_TRIAL_TESTING_CONFIG)
     public void testSeedFreshnessHistogramWritten() throws Exception {
         String seedFreshnessHistogramName = "Variations.SeedFreshness";
         try {
+            HistogramWatcher histogramExpectation =
+                    HistogramWatcher.newSingleRecordWatcher(seedFreshnessHistogramName, 0);
             createAndLoadSeedFile(FeatureAssociation.getDefaultInstance());
-
-            Assert.assertEquals("SeedFreshness should not be written to initially", 0,
-                    RecordHistogram.getHistogramTotalCountForTesting(seedFreshnessHistogramName));
 
             // The seed should be loaded during browser process startup.
             mActivityTestRule.startBrowserProcess();
 
-            Assert.assertEquals("SeedFreshness should have been written to once", 1,
-                    RecordHistogram.getHistogramTotalCountForTesting(seedFreshnessHistogramName));
-            Assert.assertEquals("The value written to SeedFreshness should be 0 (<1 minute)", 1,
-                    RecordHistogram.getHistogramValueCountForTesting(
-                            seedFreshnessHistogramName, 0));
+            histogramExpectation.assertExpected(
+                    "SeedFreshness should have been written to once, with value 0 (<1 minute)");
         } finally {
             VariationsTestUtils.deleteSeeds();
         }

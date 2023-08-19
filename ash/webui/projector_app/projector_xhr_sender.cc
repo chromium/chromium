@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/webui/projector_app/projector_app_client.h"
+#include "ash/webui/projector_app/public/mojom/projector_types.mojom-shared.h"
 #include "ash/webui/projector_app/public/mojom/projector_types.mojom.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
@@ -16,6 +17,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/google_api_keys.h"
+#include "net/base/net_errors.h"
 #include "net/base/url_util.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -141,6 +143,35 @@ void HandleAccessTokenErrorState(const std::string& email,
   }
 }
 
+// Convert net error code from loader::NetError to JS style error code to
+// match xhr response from PWA.
+projector::mojom::JsNetErrorCode GetJsNetErrorCodeFromNetError(
+    int net_error_code) {
+  switch (net_error_code) {
+    case net::OK:
+      return projector::mojom::JsNetErrorCode::kNoError;
+    case net::ERR_ACCESS_DENIED:
+      return projector::mojom::JsNetErrorCode::kAccessDenied;
+    case net::ERR_ABORTED:
+      return projector::mojom::JsNetErrorCode::kAbort;
+    case net::ERR_TIMED_OUT:
+      return projector::mojom::JsNetErrorCode::kTimeout;
+    default:
+      return projector::mojom::JsNetErrorCode::kHttpError;
+  }
+}
+
+// Create Xhr Response with response body string and response code,
+// net error code is optional and need to be set separately if required.
+projector::mojom::XhrResponsePtr CreateXhrResposne(
+    std::string response_body,
+    projector::mojom::XhrResponseCode resposne_code) {
+  auto response = projector::mojom::XhrResponse::New();
+  response->response = response_body;
+  response->response_code = resposne_code;
+  return response;
+}
+
 }  // namespace
 
 ProjectorXhrSender::ProjectorXhrSender(
@@ -158,9 +189,8 @@ void ProjectorXhrSender::Send(
     const absl::optional<base::flat_map<std::string, std::string>>& headers,
     const absl::optional<std::string>& account_email) {
   if (!IsUrlAllowlisted(url.spec())) {
-    std::move(callback).Run(
-        /*response_body=*/std::string(),
-        /*response_code=*/projector::mojom::XhrResponseCode::kUnsupportedURL);
+    std::move(callback).Run(CreateXhrResposne(
+        std::string(), projector::mojom::XhrResponseCode::kUnsupportedURL));
     LOG(ERROR) << "URL is not supported.";
     return;
   }
@@ -175,19 +205,20 @@ void ProjectorXhrSender::Send(
     return;
   }
 
-  if (ash::features::IsProjectorViewerUseSecondaryAccountEnabled() &&
-      !IsValidEmail(account_email)) {
-    std::move(callback).Run(
-        /*response_body=*/std::string(),
-        /*response_code=*/projector::mojom::XhrResponseCode::
-            kInvalidAccountEmail);
+  // Send request with OAuth token.
+  // TODO(b/288457397): Currenlty, absent of account email is considered valid
+  // email so it will fallback to use primary account email. We want to clean it
+  // up so that account email is required.
+  if (!IsValidEmail(account_email)) {
+    std::move(callback).Run(CreateXhrResposne(
+        std::string(),
+        projector::mojom::XhrResponseCode::kInvalidAccountEmail));
     LOG(ERROR) << "User email is invalid";
     return;
   }
 
   std::string email;
-  if (account_email.has_value() && !account_email->empty() &&
-      ash::features::IsProjectorViewerUseSecondaryAccountEnabled()) {
+  if (account_email.has_value() && !account_email->empty()) {
     email = *account_email;
   } else {
     email = ProjectorAppClient::Get()
@@ -215,10 +246,8 @@ void ProjectorXhrSender::OnAccessTokenRequestCompleted(
     GoogleServiceAuthError error,
     const signin::AccessTokenInfo& info) {
   if (error.state() != GoogleServiceAuthError::State::NONE) {
-    std::move(callback).Run(
-        /*response_body=*/std::string(),
-        /*response_code=*/projector::mojom::XhrResponseCode::
-            kTokenFetchFailure);
+    std::move(callback).Run(CreateXhrResposne(
+        std::string(), projector::mojom::XhrResponseCode::kTokenFetchFailure));
     HandleAccessTokenErrorState(email, error);
     return;
   }
@@ -298,12 +327,13 @@ void ProjectorXhrSender::OnSimpleURLLoaderComplete(
   bool is_success =
       response_body && response_code >= 200 && response_code < 300;
   auto response_body_or_empty = response_body ? *response_body : std::string();
+  auto xhr_response_code =
+      is_success ? projector::mojom::XhrResponseCode::kSuccess
+                 : projector::mojom::XhrResponseCode::kXhrFetchFailure;
+  auto response = CreateXhrResposne(response_body_or_empty, xhr_response_code);
+  response->net_error_code = GetJsNetErrorCodeFromNetError(loader->NetError());
 
-  std::move(callback).Run(
-      /*response_body=*/response_body_or_empty,
-      /*response_code=*/is_success
-          ? projector::mojom::XhrResponseCode::kSuccess
-          : projector::mojom::XhrResponseCode::kXhrFetchFailure);
+  std::move(callback).Run(std::move(response));
   if (!is_success) {
     LOG(ERROR) << "Failed to send XHR request, Http error code: "
                << response_code
@@ -324,6 +354,8 @@ bool ProjectorXhrSender::IsValidEmail(
     const absl::optional<std::string>& email_check) {
   const auto email = email_check.value_or(std::string());
   if (email.empty()) {
+    // TODO(b/288457397): Return false here and clean up to require account
+    // email when sending with OAuth token.
     return true;
   }
   const std::vector<AccountInfo> accounts = oauth_token_fetcher_.GetAccounts();
@@ -334,4 +366,5 @@ bool ProjectorXhrSender::IsValidEmail(
   }
   return false;
 }
+
 }  // namespace ash

@@ -66,14 +66,9 @@ SVGAnimatedPropertyBase* SVGURIReference::PropertyFromAttribute(
   return href_->PropertyFromAttribute(attribute_name);
 }
 
-void SVGURIReference::SynchronizeSVGAttribute(const QualifiedName& name) const {
-  if (name == AnyQName()) {
-    SVGAnimatedPropertyBase* attrs[]{href_.Get()};
-    SVGElement::SynchronizeAllSVGAttributes(attrs);
-  }
-  // Specific (name != AnyQName()) sync of href_ will be handled
-  // by the normal path in SVGElement::SynchronizeAttribute(),
-  // which will be dealt with by the caller.
+void SVGURIReference::SynchronizeAllSVGAttributes() const {
+  SVGAnimatedPropertyBase* attrs[]{href_.Get()};
+  SVGElement::SynchronizeListOfSVGAttributes(attrs);
 }
 
 void SVGURIReference::Trace(Visitor* visitor) const {

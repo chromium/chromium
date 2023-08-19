@@ -4,14 +4,25 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "media/media_buildflags.h"
+#include "net/base/features.h"
 #include "net/test/embedded_test_server/http_request.h"
 
-using ChromeAcceptEncodingHeaderTest = InProcessBrowserTest;
+class ChromeAcceptEncodingHeaderTest : public InProcessBrowserTest {
+ public:
+  ChromeAcceptEncodingHeaderTest() {
+    feature_list_.InitAndEnableFeature(net::features::kZstdContentEncoding);
+  }
+  ~ChromeAcceptEncodingHeaderTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
 
 IN_PROC_BROWSER_TEST_F(ChromeAcceptEncodingHeaderTest, Check) {
   net::EmbeddedTestServer server(net::EmbeddedTestServer::TYPE_HTTPS);
@@ -40,8 +51,8 @@ IN_PROC_BROWSER_TEST_F(ChromeAcceptEncodingHeaderTest, Check) {
   navigation_loop.Run();
   subresource_loop.Run();
 
-  ASSERT_EQ("gzip, deflate, br", navigation_accept_encoding_header);
-  ASSERT_EQ("gzip, deflate, br", subresource_accept_encoding_header);
+  ASSERT_EQ("gzip, deflate, br, zstd", navigation_accept_encoding_header);
+  ASSERT_EQ("gzip, deflate, br, zstd", subresource_accept_encoding_header);
 
   // Since the server uses local variables.
   ASSERT_TRUE(server.ShutdownAndWaitUntilComplete());

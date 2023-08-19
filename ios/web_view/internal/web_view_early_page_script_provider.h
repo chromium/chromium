@@ -34,9 +34,16 @@ class WebViewEarlyPageScriptProvider : public base::SupportsUserData::Data {
   static WebViewEarlyPageScriptProvider& FromBrowserState(
       web::BrowserState* _Nonnull browser_state);
 
-  // Getter and Setter for the JavaScript source code.
-  NSString* _Nonnull GetScript() { return script_; }
-  void SetScript(NSString* _Nonnull script);
+  // Setter for the JavaScript source code which should be injected into all
+  // pages as early as possible.
+  void SetScripts(NSString* _Nonnull all_frames_script,
+                  NSString* _Nonnull main_frame_script);
+
+  // Getter for the JavaScript source code intended for all frames.
+  NSString* _Nonnull GetAllFramesScript() { return all_frames_script_; }
+
+  // Getter for the JavaScript source code intended for the main frame only.
+  NSString* _Nonnull GetMainFrameScript() { return main_frame_script_; }
 
  private:
   WebViewEarlyPageScriptProvider(web::BrowserState* _Nonnull browser_state);
@@ -44,8 +51,11 @@ class WebViewEarlyPageScriptProvider : public base::SupportsUserData::Data {
   // The associated browser state.
   web::BrowserState* _Nonnull browser_state_;
 
-  // The JavaScript source code.
-  NSString* _Nonnull script_;
+  // The JavaScript source code intended for all frames.
+  NSString* _Nonnull all_frames_script_;
+
+  // The JavaScript source code intended for the main frame only.
+  NSString* _Nonnull main_frame_script_;
 };
 
 }  // namespace ios_web_view

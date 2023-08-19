@@ -76,9 +76,12 @@ ModelFileObserver::~ModelFileObserver() = default;
 
 void ModelFileObserver::OnModelUpdated(
     proto::OptimizationTarget optimization_target,
-    const ModelInfo& model_info) {
+    base::optional_ref<const ModelInfo> model_info) {
   optimization_target_ = optimization_target;
-  model_info_ = model_info;
+  model_info_ = absl::nullopt;
+  if (model_info.has_value()) {
+    model_info_ = *model_info;
+  }
   if (file_received_callback_)
     std::move(file_received_callback_).Run(optimization_target, model_info);
 }

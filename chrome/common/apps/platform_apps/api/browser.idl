@@ -20,7 +20,7 @@ namespace browser {
     // |options|: Configures how the tab should be opened.
     // |callback|: Called when the tab was successfully created, or failed to
     // be created. If failed, $(ref:runtime.lastError) will be set.
-    static void openTab(OpenTabOptions options,
-                        optional Callback callback);
+    [supportsPromises] static void openTab(OpenTabOptions options,
+                                           optional Callback callback);
   };
 };

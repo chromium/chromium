@@ -655,7 +655,7 @@ bool GetVirtualFilenames(IDataObject* data_object,
   return false;
 }
 
-bool GetVirtualFilesAsTempFiles(
+void GetVirtualFilesAsTempFiles(
     IDataObject* data_object,
     base::OnceCallback<
         void(const std::vector<std::pair</*temp path*/ base::FilePath,
@@ -663,8 +663,10 @@ bool GetVirtualFilesAsTempFiles(
         callback) {
   // Retrieve the display names of the virtual files.
   std::vector<base::FilePath> display_names;
-  if (!GetVirtualFilenames(data_object, &display_names))
-    return false;
+  if (!GetVirtualFilenames(data_object, &display_names)) {
+    std::move(callback).Run({});
+    return;
+  }
 
   // Write the file contents to global memory.
   std::vector<HGLOBAL> memory_backed_contents;
@@ -679,8 +681,6 @@ bool GetVirtualFilesAsTempFiles(
       base::BindOnce(&WriteAllFileContentsToTempFiles, display_names,
                      memory_backed_contents),
       std::move(callback));  // callback on the UI thread
-
-  return true;
 }
 
 bool GetPlainText(IDataObject* data_object, std::u16string* plain_text) {

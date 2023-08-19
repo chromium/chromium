@@ -63,6 +63,8 @@ TEST_F(KioskAppLaunchErrorTest, GetErrorMessage) {
                      expected_message);
   VerifyErrorMessage(KioskAppLaunchError::Error::kArcAuthFailed,
                      expected_message);
+  VerifyErrorMessage(KioskAppLaunchError::Error::kUserNotAllowlisted,
+                     expected_message);
 
   expected_message =
       l10n_util::GetStringUTF8(IDS_KIOSK_APP_ERROR_UNABLE_TO_MOUNT);

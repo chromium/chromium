@@ -239,24 +239,6 @@ TEST(LayoutRectTest, ExpandEdgesToPixelBoundaries) {
             fractional_negpos_rect3);
 }
 
-TEST(LayoutRectTest, InfiniteIntRect) {
-  gfx::Rect r = LayoutRect::InfiniteIntRect();
-  EXPECT_TRUE(r.Contains(gfx::Rect(-8000000, -8000000, 16000000, 16000000)));
-  // The rect can be converted to LayoutRect and back without loss of accuracy.
-  EXPECT_EQ(ToEnclosingRect(LayoutRect(r)), r);
-  EXPECT_EQ(ToPixelSnappedRect(LayoutRect(r)), r);
-  for (int i = 0; i < 50; i++) {
-    // Modified rect with visible right/bottom can be converted to gfx::RectF
-    // or LayoutRect and back without loss of accuracy.
-    r.set_width(r.x() + i);
-    r.set_height(r.y() + i + 2000);
-    EXPECT_EQ(gfx::ToEnclosingRect(gfx::RectF(r)), r);
-    EXPECT_EQ(gfx::ToEnclosedRect(gfx::RectF(r)), r);
-    EXPECT_EQ(ToEnclosingRect(LayoutRect(r)), r);
-    EXPECT_EQ(ToPixelSnappedRect(LayoutRect(r)), r);
-  }
-}
-
 struct LayoutRectUniteTestData {
   const char* test_case;
   LayoutRect a;
@@ -303,11 +285,11 @@ TEST_P(LayoutRectUniteTest, Data) {
   // value to actually get a saturated expectation (which is what happens in
   // the Unite operation).
   if (data.expected.Width() == GetMaxSaturatedSetResultForTesting()) {
-    expected.Expand(LayoutSize(kExtraForSaturation, 0));
+    expected.Expand(DeprecatedLayoutSize(kExtraForSaturation, 0));
   }
 
   if (data.expected.Height() == GetMaxSaturatedSetResultForTesting()) {
-    expected.Expand(LayoutSize(0, kExtraForSaturation));
+    expected.Expand(DeprecatedLayoutSize(0, kExtraForSaturation));
   }
   EXPECT_EQ(expected, actual);
 }

@@ -87,6 +87,14 @@ class ReadWriter {
   // The CallXxx and OnXxx methods are static (but take a WeakPtr) so that the
   // callback will run even if the WeakPtr is invalidated.
 
+  static void OnFlushBeforeActualClose(
+      base::WeakPtr<ReadWriter> weak_ptr,
+      scoped_refptr<storage::FileSystemContext> fs_context,
+      Close2Callback callback,
+      std::unique_ptr<storage::FileStreamWriter> fs_writer,
+      int64_t write_offset,
+      int flush_posix_error_code);
+
   static void OnTempFileInitialized(base::WeakPtr<ReadWriter> weak_ptr,
                                     scoped_refptr<net::StringIOBuffer> buffer,
                                     int64_t offset,
@@ -112,6 +120,24 @@ class ReadWriter {
                               Write2Callback callback,
                               WriteTempFileResult result);
 
+  static void OnFlushBeforeCallWriteDirect(
+      base::WeakPtr<ReadWriter> weak_ptr,
+      Write2Callback callback,
+      scoped_refptr<storage::FileSystemContext> fs_context,
+      scoped_refptr<net::IOBuffer> buffer,
+      int64_t offset,
+      int length,
+      std::unique_ptr<storage::FileStreamWriter> fs_writer,
+      int64_t write_offset,
+      int flush_posix_error_code);
+
+  void CallWriteDirect(Write2Callback callback,
+                       scoped_refptr<storage::FileSystemContext> fs_context,
+                       std::unique_ptr<storage::FileStreamWriter> fs_writer,
+                       scoped_refptr<net::IOBuffer> buffer,
+                       int64_t offset,
+                       int length);
+
   static void OnWriteDirect(
       base::WeakPtr<ReadWriter> weak_ptr,
       Write2Callback callback,
@@ -125,11 +151,15 @@ class ReadWriter {
   const std::string profile_path_;
 
   std::unique_ptr<storage::FileStreamReader> fs_reader_;
-  // Unused whenever fs_reader_ is nullptr.
+  // Unused (and set to -1) whenever fs_reader_ is nullptr. When std::move'ing
+  // (or otherwise changing) the fs_reader_, we therefore assign (via = or
+  // std::exchange) to read_offset_ at the same time.
   int64_t read_offset_ = -1;
 
   std::unique_ptr<storage::FileStreamWriter> fs_writer_;
-  // Unused whenever fs_writer_ is nullptr.
+  // Unused (and set to -1) whenever fs_writer_ is nullptr. When std::move'ing
+  // (or otherwise changing) the fs_writer_, we therefore assign (via = or
+  // std::exchange) to write_offset_ at the same time.
   int64_t write_offset_ = -1;
 
   scoped_refptr<storage::FileSystemContext> close2_fs_context_;
@@ -150,6 +180,7 @@ class ReadWriter {
   bool is_in_flight_ = false;
   bool closed_ = false;
   bool created_temp_file_ = false;
+  bool fs_writer_needs_flushing_ = false;
 
   const bool use_temp_file_;
   const bool temp_file_starts_with_copy_;

@@ -8,12 +8,22 @@ import("//build/config/rust.gni")
 
 config("default_coverage") {
   if (use_clang_coverage) {
+    configs = []
     ldflags = []
+    rustflags = []
     if (!is_win) {
+      ldflags += [ "-fprofile-instr-generate" ]
+    } else {
       # Windows directly calls link.exe instead of the compiler driver when
       # linking, and embeds the path to the profile runtime library as
       # dependent library into each object file.
-      ldflags += [ "-fprofile-instr-generate" ]
+      #
+      # However... some build targets have no C++ object file (they have Rust
+      # instead), and thus the linker ends up not pulling in the profile
+      # library. So we add an edge to it directly.
+      if (toolchain_has_rust) {
+        configs += [ "//build/config/clang:compiler_profile" ]
+      }
     }
 
     cflags = [
@@ -33,7 +43,7 @@ config("default_coverage") {
     # tools that will be used to process the coverage output. This is because
     # the coverage file format is not stable.
     if (use_chromium_rust_toolchain) {
-      rustflags = [ "-Cinstrument-coverage" ]
+      rustflags += [ "-Cinstrument-coverage" ]
     }
 
     if (is_linux || is_chromeos) {

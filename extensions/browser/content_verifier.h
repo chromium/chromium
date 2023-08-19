@@ -211,7 +211,7 @@ class ContentVerifier : public base::RefCountedThreadSafe<ContentVerifier>,
   // Updated and accessed only on IO thread.
   bool shutdown_on_io_ = false;
 
-  const raw_ptr<content::BrowserContext, DanglingUntriaged> context_;
+  const raw_ptr<content::BrowserContext, AcrossTasksDanglingUntriaged> context_;
 
   // Guards creation of |hash_helper_|, limiting number of creation to <= 1.
   // Accessed only on IO thread.

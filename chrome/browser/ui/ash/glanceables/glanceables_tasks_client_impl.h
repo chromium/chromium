@@ -5,17 +5,21 @@
 #ifndef CHROME_BROWSER_UI_ASH_GLANCEABLES_GLANCEABLES_TASKS_CLIENT_IMPL_H_
 #define CHROME_BROWSER_UI_ASH_GLANCEABLES_GLANCEABLES_TASKS_CLIENT_IMPL_H_
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "ash/glanceables/tasks/glanceables_tasks_client.h"
-#include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "google_apis/tasks/tasks_api_requests.h"
 #include "ui/base/models/list_model.h"
+
+namespace base {
+class Time;
+}  // namespace base
 
 namespace google_apis {
 class RequestSender;
@@ -60,23 +64,67 @@ class GlanceablesTasksClientImpl : public GlanceablesTasksClient {
       const std::string& task_list_id,
       const std::string& task_id,
       GlanceablesTasksClient::MarkAsCompletedCallback callback) override;
+  void OnGlanceablesBubbleClosed() override;
+
+  using TaskListsRequestCallback =
+      base::RepeatingCallback<void(const std::string& page_token)>;
+  void set_task_lists_request_callback_for_testing(
+      const TaskListsRequestCallback& callback) {
+    task_lists_request_callback_ = callback;
+  }
+
+  using TasksRequestCallback =
+      base::RepeatingCallback<void(const std::string& task_list_id,
+                                   const std::string& page_token)>;
+  void set_tasks_request_callback_for_testing(
+      const TasksRequestCallback& callback) {
+    tasks_request_callback_ = callback;
+  }
 
  private:
+  enum class FetchStatus { kNotFresh, kRefreshing, kFresh };
+
+  // A structure that keeps track of fetch status and list of pending
+  // callbacks for a task lists fetch request.
+  struct TaskListsFetchState {
+    TaskListsFetchState();
+    ~TaskListsFetchState();
+
+    FetchStatus status = FetchStatus::kNotFresh;
+    // Callbacks to be called when all task lists get fetched using tasks API.
+    // Should be non-empty if a task lists fetch is in progress.
+    std::vector<GlanceablesTasksClient::GetTaskListsCallback> callbacks;
+  };
+
+  // A structure that keeps track of fetch status and list of pending callbacks
+  // for a single tasks in a task list fetch request.
+  struct TasksFetchState {
+    TasksFetchState();
+    ~TasksFetchState();
+
+    FetchStatus status = FetchStatus::kNotFresh;
+    // Callbacks to be called when all tasks in a task list get fetched using
+    // tasks API.
+    // Should be non-empty if a tasks fetch for the target task list is in
+    // progress.
+    std::vector<GlanceablesTasksClient::GetTasksCallback> callbacks;
+  };
+
   // Fetches one page of task lists data.
-  // `page_token` - token specifying the result page to return, comes from the
-  //                previous fetch request. Use an empty string to fetch the
-  //                first page.
-  // `callback`   - done callback passed from `GetTaskLists()` to
-  //                `OnTaskListsPageFetched()`.
-  void FetchTaskListsPage(
-      const std::string& page_token,
-      GlanceablesTasksClient::GetTaskListsCallback callback);
+  // `page_token`  - token specifying the result page to return, comes from the
+  //                 previous fetch request. Use an empty string to fetch the
+  //                 first page.
+  // `page_number` - 1-based page number of this fetch request. Used for UMA
+  //                 to track the total number of pages needed to fetch.
+  void FetchTaskListsPage(const std::string& page_token, int page_number);
 
   // Callback for `FetchTaskListsPage()`. Transforms fetched items to
   // ash-friendly types. If `next_page_token()` in the `result` is not empty -
-  // calls another `FetchTaskListsPage()`, otherwise runs `callback`.
+  // calls another `FetchTaskListsPage()`, otherwise runs
+  // `RunGetTaskListsCallbacks()`.
   void OnTaskListsPageFetched(
-      GlanceablesTasksClient::GetTaskListsCallback callback,
+      const base::Time& request_start_time,
+      int page_number,
       base::expected<std::unique_ptr<google_apis::tasks::TaskLists>,
                      google_apis::ApiErrorCode> result);
 
@@ -85,6 +133,9 @@ class GlanceablesTasksClientImpl : public GlanceablesTasksClient {
   // `page_token`            - token specifying the result page to return, comes
   //                           from the previous fetch request. Use an empty
   //                           string to fetch the first page.
+  // `page_number`           - 1-based page number of this fetch request. Used
+  //                           for UMA to track the total number of pages needed
+  //                           to fetch.
   // `accumulated_raw_tasks` - in contrast to the task lists conversion logic,
   //                           tasks can't be converted independently on every
   //                           single page response (subtasks could go first,
@@ -92,22 +143,21 @@ class GlanceablesTasksClientImpl : public GlanceablesTasksClient {
   //                           This parameter helps to accumulate all of them
   //                           first and then do the conversion once the last
   //                           page is fetched.
-  // `callback`              - done callback passed from `GetTasks()` to
-  //                           `OnTasksPageFetched()`.
   void FetchTasksPage(const std::string& task_list_id,
                       const std::string& page_token,
+                      int page_number,
                       std::vector<std::unique_ptr<google_apis::tasks::Task>>
-                          accumulated_raw_tasks,
-                      GlanceablesTasksClient::GetTasksCallback callback);
+                          accumulated_raw_tasks);
 
   // Callback for `FetchTasksPage()`. Transforms fetched items to ash-friendly
   // types. If `next_page_token()` in the `result` is not empty - calls another
-  // `FetchTasksPage()`, otherwise runs `callback`.
+  // `FetchTasksPage()`, otherwise runs `RunGetTasksCallbacks()`.
   void OnTasksPageFetched(
       const std::string& task_list_id,
       std::vector<std::unique_ptr<google_apis::tasks::Task>>
           accumulated_raw_tasks,
-      GlanceablesTasksClient::GetTasksCallback callback,
+      const base::Time& request_start_time,
+      int page_number,
       base::expected<std::unique_ptr<google_apis::tasks::Tasks>,
                      google_apis::ApiErrorCode> result);
 
@@ -117,8 +167,22 @@ class GlanceablesTasksClientImpl : public GlanceablesTasksClient {
   void OnMarkedAsCompleted(
       const std::string& task_list_id,
       const std::string& task_id,
+      const base::Time& request_start_time,
       GlanceablesTasksClient::MarkAsCompletedCallback callback,
       google_apis::ApiErrorCode status_code);
+
+  // To be called when requests to get user's task lists complete.
+  // It sets the task lists fetch status to `final_fetch_status`, and runs all
+  // pending callbacks in `task_lists_fetch_state_`.
+  void RunGetTaskListsCallbacks(FetchStatus final_fetch_status);
+
+  // To be called when requests to get tasks in the task list identified by
+  // `task_list_id` complete. It sets fetch status for the task list fetch to
+  // `final_fetch_status`, and runs all pending callbacks for the task list
+  // (kept in `tasks_fetch_state_` map). The callbacks are run with `tasks`.
+  void RunGetTasksCallbacks(const std::string& task_list_id,
+                            FetchStatus final_fetch_status,
+                            ui::ListModel<GlanceablesTask>* tasks);
 
   // Returns lazily initialized `request_sender_`.
   google_apis::RequestSender* GetRequestSender();
@@ -130,13 +194,27 @@ class GlanceablesTasksClientImpl : public GlanceablesTasksClient {
   // Helper class that sends requests, handles retries and authentication.
   std::unique_ptr<google_apis::RequestSender> request_sender_;
 
-  // All available task lists. Initialized after the first fetch request to
-  // distinguish between "not fetched yet" vs. "fetched, but has no items".
-  std::unique_ptr<ui::ListModel<GlanceablesTaskList>> task_lists_;
+  // The current fetch state for the users task lists.
+  TaskListsFetchState task_lists_fetch_state_;
+
+  // All available task lists.
+  ui::ListModel<GlanceablesTaskList> task_lists_;
 
   // All available tasks grouped by task list id.
-  base::flat_map<std::string, std::unique_ptr<ui::ListModel<GlanceablesTask>>>
-      tasks_in_task_lists_;
+  std::map<std::string, ui::ListModel<GlanceablesTask>> tasks_in_task_lists_;
+
+  // Map that contains fetch states for tasks requests from different task
+  // lists. Mapped by the task list id.
+  std::map<std::string, std::unique_ptr<TasksFetchState>> tasks_fetch_state_;
+
+  // Stub tasks list model that can be used to return an empty task list to
+  // `GetTasks()` requests.
+  ui::ListModel<GlanceablesTask> stub_task_list_;
+
+  // Callbacks invoked whenever a tasks API request is made. Used primarily
+  // in tests.
+  TaskListsRequestCallback task_lists_request_callback_;
+  TasksRequestCallback tasks_request_callback_;
 
   base::WeakPtrFactory<GlanceablesTasksClientImpl> weak_factory_{this};
 };

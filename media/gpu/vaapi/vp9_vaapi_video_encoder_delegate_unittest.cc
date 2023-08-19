@@ -20,7 +20,6 @@
 #include "media/gpu/gpu_video_encode_accelerator_helpers.h"
 #include "media/gpu/vaapi/vaapi_common.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
-#include "media/gpu/video_rate_control.h"
 #include "media/gpu/vp9_svc_layers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -242,11 +241,7 @@ class MockVaapiWrapper : public VaapiWrapper {
   ~MockVaapiWrapper() override = default;
 };
 
-class MockVP9RateControl
-    : public VideoRateControl<libvpx::VP9RateControlRtcConfig,
-                              libvpx::VP9RateControlRTC,
-                              libvpx::VP9FrameParamsQpRTC,
-                              int> {
+class MockVP9RateControl : public VP9RateControlWrapper {
  public:
   MockVP9RateControl() = default;
   ~MockVP9RateControl() override = default;

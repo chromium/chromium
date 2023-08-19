@@ -77,6 +77,12 @@ class CONTENT_EXPORT XRRuntimeManagerImpl
   // service is presenting, or if nobody is presenting.
   bool IsOtherClientPresenting(VRServiceImpl* service);
 
+  // Returns true if any runtime has an outstanding request for an immersive
+  // session. Returns false if there is no such pending request. Note that this
+  // also means that this will return false while there is an active immersive
+  // session.
+  bool HasPendingImmersiveRequest();
+
   void SupportsSession(
       device::mojom::XRSessionOptionsPtr options,
       device::mojom::VRService::SupportsSessionCallback callback);

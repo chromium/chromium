@@ -621,6 +621,9 @@ class EventSenderBindings : public gin::Wrappable<EventSenderBindings> {
   void MouseUp(gin::Arguments* args);
   void SetMouseButtonState(gin::Arguments* args);
   void KeyDown(gin::Arguments* args);
+  void KeyDownOnly(gin::Arguments* args);
+  void KeyUp(gin::Arguments* args);
+  void KeyEvent(EventSender::KeyEventType event_type, gin::Arguments* args);
 
   // Binding properties:
   bool ForceLayoutOnEvents() const;
@@ -734,6 +737,8 @@ gin::ObjectTemplateBuilder EventSenderBindings::GetObjectTemplateBuilder(
       .SetMethod("gestureTwoFingerTap",
                  &EventSenderBindings::GestureTwoFingerTap)
       .SetMethod("keyDown", &EventSenderBindings::KeyDown)
+      .SetMethod("keyDownOnly", &EventSenderBindings::KeyDownOnly)
+      .SetMethod("keyUp", &EventSenderBindings::KeyUp)
       .SetMethod("mouseDown", &EventSenderBindings::MouseDown)
       .SetMethod("mouseMoveTo", &EventSenderBindings::MouseMoveTo)
       .SetMethod("mouseLeave", &EventSenderBindings::MouseLeave)
@@ -1072,7 +1077,23 @@ void EventSenderBindings::SetMouseButtonState(gin::Arguments* args) {
   sender_->SetMouseButtonState(button_number, modifiers);
 }
 
+// `KeyDown` sends both `KeyDown` and `KeyUp` events. It's similar to `KeyPress`
+// in other APIs.
 void EventSenderBindings::KeyDown(gin::Arguments* args) {
+  KeyEvent(EventSender::kKeyPress, args);
+}
+
+// `KeyDownOnly` sends `KeyDown` without `KeyUp`.
+void EventSenderBindings::KeyDownOnly(gin::Arguments* args) {
+  KeyEvent(EventSender::kKeyDown, args);
+}
+
+void EventSenderBindings::KeyUp(gin::Arguments* args) {
+  KeyEvent(EventSender::kKeyUp, args);
+}
+
+void EventSenderBindings::KeyEvent(EventSender::KeyEventType event_type,
+                                   gin::Arguments* args) {
   if (!sender_)
     return;
 
@@ -1087,7 +1108,8 @@ void EventSenderBindings::KeyDown(gin::Arguments* args) {
     if (!args->PeekNext().IsEmpty())
       args->GetNext(&location);
   }
-  sender_->KeyDown(code_str, modifiers, static_cast<KeyLocationCode>(location));
+  sender_->KeyEvent(event_type, code_str, modifiers,
+                    static_cast<KeyLocationCode>(location));
 }
 
 bool EventSenderBindings::ForceLayoutOnEvents() const {
@@ -1405,9 +1427,18 @@ void EventSender::SetMouseButtonState(int button_number, int modifiers) {
           : modifiers & kButtonsInModifiers;
 }
 
+// `KeyDown` sends both `KeyDown` and `KeyUp` events. It's similar to `KeyPress`
+// in other APIs.
 void EventSender::KeyDown(const std::string& code_str,
                           int modifiers,
                           KeyLocationCode location) {
+  KeyEvent(KeyEventType::kKeyPress, code_str, modifiers, location);
+}
+
+void EventSender::KeyEvent(KeyEventType event_type,
+                           const std::string& code_str,
+                           int modifiers,
+                           KeyLocationCode location) {
   // FIXME: I'm not exactly sure how we should convert the string to a key
   // event. This seems to work in the cases I tested.
   // FIXME: Should we also generate a KEY_UP?
@@ -1598,6 +1629,35 @@ void EventSender::KeyDown(const std::string& code_str,
       break;
   }
 
+  // Update the currently pressed modifiers if `kKeyDown` or `kKeyUp`.
+  switch (event_type) {
+    case KeyEventType::kKeyDown:
+      // Add the given `modifier` to the `key_modifiers_`. For example:
+      // 1. Received `keyDown` of `kControlKey`. Keep it in `key_modifiers_`.
+      // 2. Then received `keyDown` of `kShiftKey`. The given `modifier` is
+      //    `kShiftKey`, but the current modifier state should become
+      //    `kControlKey | kShiftKey`.
+      key_modifiers_ |= modifiers;
+      // `WebKeyboardEvent` should have all modifiers currently in the down
+      // state. For example, if this event is `kShiftKey` while `kControlKey` is
+      // currently down, the event should have `kControlKey | kShiftKey`. If
+      // this is a non-modifier key (e.g., 'a') with `modifiers == 0` but
+      // `kControlKey` is currently down (`key_modifiers_ == kControlKey`), then
+      // the event should have `kControlKey`, meaning this is `Ctrl+A`.
+      modifiers = key_modifiers_;
+      break;
+    case KeyEventType::kKeyUp:
+      // Remove the released modifiers from the `key_modifiers_`.
+      key_modifiers_ &= ~modifiers;
+      // See `keyDown` above. For example, if this is `keyUp` for 'a' with no
+      // modifiers (`modifiers == 0`) but `kControlKey` is currently down, this
+      // should be `Ctrl+A`.
+      modifiers |= key_modifiers_;
+      break;
+    case KeyEventType::kKeyPress:
+      break;
+  }
+
   // For one generated keyboard event, we need to generate a keyDown/keyUp
   // pair;
   // On Windows, we might also need to generate a char event to mimic the
@@ -1626,38 +1686,43 @@ void EventSender::KeyDown(const std::string& code_str,
   if (force_layout_on_events_)
     UpdateLifecycleToPrePaint();
 
-  // In the browser, if a keyboard event corresponds to an editor command,
-  // the command will be dispatched to the renderer just before dispatching
-  // the keyboard event, and stored in RenderWidget. We just simulate the same
-  // behavior here.
-  std::string edit_command;
-  if (GetEditCommand(event_down, &edit_command)) {
-    web_frame_widget_->AddEditCommandForNextKeyEvent(
-        WebString::FromLatin1(edit_command), "");
+  if (event_type & KeyEventType::kKeyDown) {
+    // In the browser, if a keyboard event corresponds to an editor command,
+    // the command will be dispatched to the renderer just before dispatching
+    // the keyboard event, and stored in RenderWidget. We just simulate the same
+    // behavior here.
+    std::string edit_command;
+    if (GetEditCommand(event_down, &edit_command)) {
+      web_frame_widget_->AddEditCommandForNextKeyEvent(
+          WebString::FromLatin1(edit_command), "");
+    }
+
+    HandleInputEventOnViewOrPopup(event_down);
+
+    if (code == ui::VKEY_ESCAPE && current_drag_data_) {
+      WebMouseEvent event(WebInputEvent::Type::kMouseDown,
+                          ModifiersForPointer(kRawMousePointerId),
+                          GetCurrentEventTime());
+      InitMouseEvent(
+          current_pointer_state_[kRawMousePointerId].pressed_button_,
+          current_pointer_state_[kRawMousePointerId].current_buttons_,
+          current_pointer_state_[kRawMousePointerId].last_pos_, click_count_,
+          &event);
+      FinishDragAndDrop(event, ui::mojom::DragOperation::kNone);
+    }
+
+    web_frame_widget_->ClearEditCommands();
   }
 
-  HandleInputEventOnViewOrPopup(event_down);
+  if (event_type & KeyEventType::kKeyUp) {
+    if (generate_char) {
+      WebKeyboardEvent event_char = event_up;
+      event_char.SetType(WebInputEvent::Type::kChar);
+      HandleInputEventOnViewOrPopup(event_char);
+    }
 
-  if (code == ui::VKEY_ESCAPE && current_drag_data_) {
-    WebMouseEvent event(WebInputEvent::Type::kMouseDown,
-                        ModifiersForPointer(kRawMousePointerId),
-                        GetCurrentEventTime());
-    InitMouseEvent(current_pointer_state_[kRawMousePointerId].pressed_button_,
-                   current_pointer_state_[kRawMousePointerId].current_buttons_,
-                   current_pointer_state_[kRawMousePointerId].last_pos_,
-                   click_count_, &event);
-    FinishDragAndDrop(event, ui::mojom::DragOperation::kNone);
+    HandleInputEventOnViewOrPopup(event_up);
   }
-
-  web_frame_widget_->ClearEditCommands();
-
-  if (generate_char) {
-    WebKeyboardEvent event_char = event_up;
-    event_char.SetType(WebInputEvent::Type::kChar);
-    HandleInputEventOnViewOrPopup(event_char);
-  }
-
-  HandleInputEventOnViewOrPopup(event_up);
 }
 
 void EventSender::EnableDOMUIEventLogging() {}

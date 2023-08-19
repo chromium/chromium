@@ -11,7 +11,7 @@ import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://w
 import {FakeContactManager} from 'chrome://webui-test/nearby_share/shared/fake_nearby_contact_manager.js';
 import {FakeNearbyShareSettings} from 'chrome://webui-test/nearby_share/shared/fake_nearby_share_settings.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {isChildVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isChildVisible} from 'chrome://webui-test/test_util.js';
 
 import {createFakePageContentData, HOST_DEVICE, TestMultideviceBrowserProxy} from './test_multidevice_browser_proxy.js';
 
@@ -312,8 +312,14 @@ suite('Multidevice', function() {
         'settings-multidevice-notification-access-setup-dialog'));
 
     // Close the dialog.
-    multidevicePage.showPhonePermissionSetupDialog_ = false;
-    flush();
+    multidevicePage.shadowRoot
+        .querySelector('settings-multidevice-notification-access-setup-dialog')
+        .$.dialog.close();
+    await flushAsync();
+
+    // Check the subpage is focused on dialog close.
+    assertEquals(
+        getSubpage(), getDeepActiveElement(), 'subpage should be focused.');
 
     // A change in pageContentData will not cause the notification access
     // setup dialog to reappaear
@@ -417,6 +423,32 @@ suite('Multidevice', function() {
         assertTrue(!!getSubpage());
         assertFalse(!!getSubpage().shadowRoot.querySelector(
             'settings-multidevice-feature-item'));
+      });
+
+  test(
+      'Multidevice subpage trigger should be focused after returning from ' +
+          'subpage',
+      async () => {
+        Router.getInstance().navigateTo(routes.MULTIDEVICE);
+        setHostData(MultiDeviceSettingsMode.HOST_SET_VERIFIED);
+
+        // Sub-page trigger navigates to Multidevice Features subpage
+        const triggerSelector = '#multideviceItem .subpage-arrow';
+        const subpageTrigger =
+            multidevicePage.shadowRoot.querySelector(triggerSelector);
+        subpageTrigger.click();
+        assertEquals(
+            routes.MULTIDEVICE_FEATURES, Router.getInstance().currentRoute);
+
+        // Navigate back
+        const popStateEventPromise = eventToPromise('popstate', window);
+        Router.getInstance().navigateToPreviousRoute();
+        await popStateEventPromise;
+        await waitAfterNextRender(multidevicePage);
+
+        assertEquals(
+            subpageTrigger, multidevicePage.shadowRoot.activeElement,
+            `${triggerSelector} should be focused.`);
       });
 
   test('policy prohibited suite shows policy indicator', function() {

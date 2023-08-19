@@ -12,8 +12,6 @@ source_set("dialogs") {
     "java_script_dialog_blocking_state.h",
     "java_script_dialog_blocking_state.mm",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("unit_tests") {
@@ -28,8 +26,6 @@ source_set("unit_tests") {
     "//ios/web/public/test/fakes",
     "//testing/gtest",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("java_script_blocking_fake_web_state") {
@@ -44,12 +40,9 @@ source_set("java_script_blocking_fake_web_state") {
     "//ios/web",
     "//ios/web/public/test/fakes",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("dialogs_internal") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "nsurl_protection_space_util.h",
     "nsurl_protection_space_util.mm",
@@ -74,7 +67,6 @@ source_set("dialogs_internal") {
 }
 
 source_set("completion_block_util") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "completion_block_util.h",
     "completion_block_util.mm",
@@ -83,7 +75,6 @@ source_set("completion_block_util") {
 }
 
 source_set("unit_tests_internal") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "completion_block_util_unittest.mm",
@@ -106,10 +97,7 @@ source_set("unit_tests_internal") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "javascript_dialog_egtest.mm" ]
   deps = [

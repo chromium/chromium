@@ -6,10 +6,6 @@
 
 #import "ios/web/public/navigation/navigation_manager.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 BROWSER_USER_DATA_KEY_IMPL(WebUsageEnablerBrowserAgent)
 
 WebUsageEnablerBrowserAgent::WebUsageEnablerBrowserAgent(Browser* browser)
@@ -61,39 +57,56 @@ void WebUsageEnablerBrowserAgent::UpdateWebUsageForAddedWebState(
   }
 }
 
+#pragma mark - BrowserObserver
+
 void WebUsageEnablerBrowserAgent::BrowserDestroyed(Browser* browser) {
   web_state_observations_.RemoveAllObservations();
   web_state_list_observation_.Reset();
   browser_observation_.Reset();
 }
 
-void WebUsageEnablerBrowserAgent::WebStateInsertedAt(
-    WebStateList* web_state_list,
-    web::WebState* web_state,
-    int index,
-    bool activating) {
-  UpdateWebUsageForAddedWebState(web_state,
-                                 /*triggers_initial_load=*/activating);
-}
+#pragma mark - WebStateListObserver
 
-void WebUsageEnablerBrowserAgent::WebStateReplacedAt(
+void WebUsageEnablerBrowserAgent::WebStateListDidChange(
     WebStateList* web_state_list,
-    web::WebState* old_web_state,
-    web::WebState* new_web_state,
-    int index) {
-  if (web_state_observations_.IsObservingSource(old_web_state)) {
-    web_state_observations_.RemoveObservation(old_web_state);
-  }
+    const WebStateListChange& change,
+    const WebStateListStatus& status) {
+  switch (change.type()) {
+    case WebStateListChange::Type::kStatusOnly:
+      // Do nothing when a WebState is selected and its status is updated.
+      break;
+    case WebStateListChange::Type::kDetach: {
+      const WebStateListChangeDetach& detach_change =
+          change.As<WebStateListChangeDetach>();
+      web::WebState* detached_web_state = detach_change.detached_web_state();
+      if (web_state_observations_.IsObservingSource(detached_web_state)) {
+        web_state_observations_.RemoveObservation(detached_web_state);
+      }
+      break;
+    }
+    case WebStateListChange::Type::kMove:
+      // Do nothing when a WebState is moved.
+      break;
+    case WebStateListChange::Type::kReplace: {
+      const WebStateListChangeReplace& replace_change =
+          change.As<WebStateListChangeReplace>();
+      web::WebState* replaced_web_state = replace_change.replaced_web_state();
+      if (web_state_observations_.IsObservingSource(replaced_web_state)) {
+        web_state_observations_.RemoveObservation(replaced_web_state);
+      }
 
-  UpdateWebUsageForAddedWebState(new_web_state, /*triggers_initial_load=*/true);
-}
-
-void WebUsageEnablerBrowserAgent::WebStateDetachedAt(
-    WebStateList* web_state_list,
-    web::WebState* web_state,
-    int index) {
-  if (web_state_observations_.IsObservingSource(web_state)) {
-    web_state_observations_.RemoveObservation(web_state);
+      UpdateWebUsageForAddedWebState(replace_change.inserted_web_state(),
+                                     /*triggers_initial_load=*/true);
+      break;
+    }
+    case WebStateListChange::Type::kInsert: {
+      const WebStateListChangeInsert& insert_change =
+          change.As<WebStateListChangeInsert>();
+      UpdateWebUsageForAddedWebState(
+          insert_change.inserted_web_state(),
+          /*triggers_initial_load=*/status.active_web_state_change());
+      break;
+    }
   }
 }
 

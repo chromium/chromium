@@ -9,5 +9,7 @@ imageset("promo_style_avatar_circle") {
     "promo_style_avatar_circle.imageset/Contents.json",
     "promo_style_avatar_circle.imageset/promo_style_avatar_circle@2x.png",
     "promo_style_avatar_circle.imageset/promo_style_avatar_circle@3x.png",
+    "promo_style_avatar_circle.imageset/promo_style_avatar_circle_dark@2x.png",
+    "promo_style_avatar_circle.imageset/promo_style_avatar_circle_dark@3x.png",
   ]
 }

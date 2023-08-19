@@ -13,10 +13,6 @@
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // static
 ExternalFileRemover* ExternalFileRemoverFactory::GetForBrowserState(
     ChromeBrowserState* browser_state) {

@@ -12,18 +12,19 @@ package companion.proto;
 // Keep this file in sync with
 // google3/lens/web/standalone/companion/proto/companion_url_params.proto
 
-// Next ID: 5
+// Next ID: 6
 message PromoState {
   // Number of times the user has denied various promo requests in past.
   int32 signin_promo_denial_count = 1;
   int32 msbb_promo_denial_count = 2;
   int32 exps_promo_denial_count = 3;
   int32 exps_promo_shown_count = 4;
+  bool should_show_region_search_iph = 5;
 }
 
 // This proto file is shared between Chrome and Server side and used to pack the
 // URL query params for the companion URL request.
-// Next ID: 8
+// Next ID: 12
 message CompanionUrlParams {
   reserved 4, 5;
 
@@ -41,4 +42,16 @@ message CompanionUrlParams {
 
   // Whether user is allowed to sign in.
   bool is_sign_in_allowed = 7;
+
+  // Whether the Search Companion entrypoint is pinned to the toolbar.
+  optional bool is_entrypoint_pinned_by_default = 8;
+
+  // Whether link clicks in Search Companion open a new tab.
+  optional bool links_open_in_new_tab = 9;
+
+  // Whether visual query suggestions are enabled on Chrome.
+  optional bool is_vqs_enabled_on_chrome = 10;
+
+  // Whether the upload dialog file chooser is supported on Chrome.
+  optional bool is_upload_dialog_supported = 11;
 }

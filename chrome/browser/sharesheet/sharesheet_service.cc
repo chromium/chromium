@@ -11,7 +11,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/apps/app_service/app_icon/app_icon_util.h"
+#include "chrome/browser/apps/app_service/app_icon/icon_effects.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
@@ -115,7 +115,7 @@ void SharesheetService::ShowNearbyShareBubbleForArc(
     LaunchSource source,
     DeliveredCallback delivered_callback,
     CloseCallback close_callback,
-    ActionCleanupCallback action_cleanup_callback) {
+    ActionCleanupCallback cleanup_callback) {
   DCHECK(intent);
   DCHECK(intent->IsShareIntent());
 
@@ -126,8 +126,7 @@ void SharesheetService::ShowNearbyShareBubbleForArc(
     std::move(delivered_callback).Run(SharesheetResult::kCancel);
     return;
   }
-  share_action->SetActionCleanupCallbackForArc(
-      std::move(action_cleanup_callback));
+  share_action->SetActionCleanupCallbackForArc(std::move(cleanup_callback));
   SharesheetMetrics::RecordSharesheetLaunchSource(source);
 
   if (!native_window) {

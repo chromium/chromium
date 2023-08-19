@@ -5,6 +5,7 @@ option optimize_for = LITE_RUNTIME;
 package kids_chrome_management;
 
 import "families_common.proto";
+import "permissions_common.proto";
 
 message ListFamilyMembersRequest {
   // Must always be "mine" (enforced by the API config). Required.
@@ -60,4 +61,23 @@ message ClassifyUrlResponse {
   }
 
   optional DisplayClassification display_classification = 2;
+}
+
+message CreatePermissionRequestResponse {
+  optional PermissionRequest permission_request = 2;
+}
+
+message PermissionRequest {
+  // The unique ID of the permission request. The ID is assigned on creation
+  // on the server-side. This is a base64Url representation of the
+  // PermissionRequestId proto.
+  optional string id = 1;
+
+  optional FamilyEventType event_type = 10;
+
+  // The target object of the permission.
+  optional string object_ref = 4;
+
+  // The current state of the request.
+  optional PermissionRequestState state = 5;
 }

@@ -106,10 +106,13 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
   // Should only be called when the host has a content layer. Use this for one-
   // off screen capture, not for video. Always provides ResultFormat::RGBA,
   // ResultDestination::kSystemMemory CopyOutputResults.
+  // `capture_exact_surface_id` indicates if the `CopyOutputRequest` will be
+  // issued against a specific surface or not.
   void CopyFromCompositingSurface(
       const gfx::Rect& src_subrect,
       const gfx::Size& output_size,
-      base::OnceCallback<void(const SkBitmap&)> callback);
+      base::OnceCallback<void(const SkBitmap&)> callback,
+      bool capture_exact_surface_id);
   bool CanCopyFromCompositingSurface() const;
 
   void CompositorFrameSinkChanged();
@@ -153,15 +156,25 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
   // visible. A new Surface will have been embedded at this point. If navigation
   // is done while hidden, this will be called upon becoming visible.
   void DidNavigate();
+
   // Navigation to a different page than the current one has begun. This is
   // called regardless of the visibility of the page. Caches the current
   // LocalSurfaceId information so that old content can be evicted if
   // navigation fails to complete.
-  void OnNavigateToNewPage();
+  void DidNavigateMainFramePreCommit();
+
+  // Called when the page has just entered BFCache.
+  void DidEnterBackForwardCache();
 
   void SetTopControlsVisibleHeight(float height);
 
   viz::SurfaceId GetFallbackSurfaceIdForTesting() const;
+
+  viz::SurfaceId GetCurrentSurfaceIdForTesting() const;
+
+  viz::SurfaceId GetPreNavigationSurfaceIdForTesting() const {
+    return GetPreNavigationSurfaceId();
+  }
 
  private:
   // FrameEvictorClient implementation.
@@ -204,13 +217,24 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
   // Whether we've received a frame from the renderer since navigating.
   // Only used when surface synchronization is on.
   viz::LocalSurfaceId first_local_surface_id_after_navigation_;
+
   // While navigating we have no active |local_surface_id_|. Track the one from
   // before a navigation, because if the navigation fails to complete, we will
-  // need to evict its surface.
+  // need to evict its surface. If the old page enters BFCache, this id is used
+  // to restore `local_surface_id_`.
   viz::LocalSurfaceId pre_navigation_local_surface_id_;
+
+  // The fallback ID for BFCache restore. It is set when `this` enters the
+  // BFCache and is cleared when resize-while-hidden (which supplies with a
+  // latest fallback ID) or after it is used in `EmbedSurface`.
+  viz::LocalSurfaceId bfcache_fallback_;
 
   // The LocalSurfaceId of the currently embedded surface. If surface sync is
   // on, this surface is not necessarily active.
+  //
+  // TODO(https://crbug.com/1459238): this value is a copy of what the browser
+  // wants to embed. The source of truth is stored else where. We should
+  // consider de-dup this ID.
   viz::LocalSurfaceId local_surface_id_;
 
   // The size of the above surface (updated at the same time).

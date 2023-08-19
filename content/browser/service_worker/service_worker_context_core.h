@@ -48,6 +48,9 @@ class ServiceWorkerContextWrapper;
 class ServiceWorkerJobCoordinator;
 class ServiceWorkerQuotaClient;
 class ServiceWorkerRegistration;
+#if !BUILDFLAG(IS_ANDROID)
+class ServiceWorkerHidDelegateObserver;
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // This class manages data associated with service workers.
 // The class is single threaded and should only be used on the UI thread.
@@ -276,8 +279,13 @@ class CONTENT_EXPORT ServiceWorkerContextCore
 
   // Updates the service worker. If |force_bypass_cache| is true or 24 hours
   // have passed since the last update, bypasses the browser cache.
-  void UpdateServiceWorker(ServiceWorkerRegistration* registration,
-                           bool force_bypass_cache);
+  // This is used for update requests where there is no associated execution
+  // context.
+  void UpdateServiceWorkerWithoutExecutionContext(
+      ServiceWorkerRegistration* registration,
+      bool force_bypass_cache);
+  // As above, but for sites with an associated execution context, which leads
+  // to the specification of `outside_fetch_client_settings_object`.
   // |callback| is called when the promise for
   // ServiceWorkerRegistration.update() would be resolved.
   void UpdateServiceWorker(ServiceWorkerRegistration* registration,
@@ -400,6 +408,13 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   void BeginProcessingWarmingUp() { is_processing_warming_up_ = true; }
   void EndProcessingWarmingUp() { is_processing_warming_up_ = false; }
 
+#if !BUILDFLAG(IS_ANDROID)
+  ServiceWorkerHidDelegateObserver* hid_delegate_observer();
+
+  void SetServiceWorkerHidDelegateObserverForTesting(
+      std::unique_ptr<ServiceWorkerHidDelegateObserver> hid_delegate_observer);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
  private:
   friend class ServiceWorkerContextCoreTest;
   FRIEND_TEST_ALL_PREFIXES(ServiceWorkerContextCoreTest, FailureInfo);
@@ -418,6 +433,13 @@ class CONTENT_EXPORT ServiceWorkerContextCore
                             blink::ServiceWorkerStatusCode status,
                             const std::string& status_message,
                             ServiceWorkerRegistration* registration);
+
+  void UpdateServiceWorkerImpl(ServiceWorkerRegistration* registration,
+                               bool force_bypass_cache,
+                               bool skip_script_comparison,
+                               blink::mojom::FetchClientSettingsObjectPtr
+                                   outside_fetch_client_settings_object,
+                               UpdateCallback callback);
 
   void UpdateComplete(UpdateCallback callback,
                       blink::ServiceWorkerStatusCode status,
@@ -524,6 +546,10 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   base::circular_deque<WarmUpRequest> warm_up_requests_;
 
   bool is_processing_warming_up_ = false;
+
+#if !BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<ServiceWorkerHidDelegateObserver> hid_delegate_observer_;
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   base::WeakPtrFactory<ServiceWorkerContextCore> weak_factory_{this};
 };

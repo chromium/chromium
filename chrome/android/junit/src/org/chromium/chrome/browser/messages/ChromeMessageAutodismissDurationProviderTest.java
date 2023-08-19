@@ -14,9 +14,9 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.MessagesMetrics;
+import org.chromium.ui.accessibility.AccessibilityState;
 
 /**
  * Unit tests for {@link ChromeMessageAutodismissDurationProvider}.
@@ -31,56 +31,60 @@ public class ChromeMessageAutodismissDurationProviderTest {
         mFeatureTestValues = new TestValues();
         mFeatureTestValues.addFeatureFlagOverride(
                 ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE, true);
-
+        AccessibilityState.setIsPerformGesturesEnabledForTesting(false);
         FeatureList.setTestValues(mFeatureTestValues);
     }
 
     @Test
     public void testDefaultNonA11yDuration() {
-        ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(false);
         ChromeMessageAutodismissDurationProvider provider =
                 new ChromeMessageAutodismissDurationProvider();
         provider.setDefaultAutodismissDurationMsForTesting(500);
         provider.setDefaultAutodismissDurationWithA11yMsForTesting(1000);
-        Assert.assertEquals("Provider should return default non-a11y duration if a11y is off", 500,
-                provider.get(MessageIdentifier.TEST_MESSAGE, 0));
+        Assert.assertEquals(
+                "Provider should return default non-a11y duration if no gesture performing "
+                        + "a11y services are running.",
+                500, provider.get(MessageIdentifier.TEST_MESSAGE, 0));
     }
 
     @Test
     public void testA11yDuration() {
-        ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true);
+        AccessibilityState.setIsPerformGesturesEnabledForTesting(true);
         ChromeMessageAutodismissDurationProvider provider =
                 new ChromeMessageAutodismissDurationProvider();
         provider.setDefaultAutodismissDurationMsForTesting(500);
         provider.setDefaultAutodismissDurationWithA11yMsForTesting(1000);
-        Assert.assertEquals("Provider should return default a11y duration if a11y is on", 1000,
-                provider.get(MessageIdentifier.TEST_MESSAGE, 0));
+        Assert.assertEquals(
+                "Provider should return default a11y duration if any gesture performing "
+                        + "a11y services are running.",
+                1000, provider.get(MessageIdentifier.TEST_MESSAGE, 0));
     }
 
     @Test
     public void testCustomDuration() {
-        ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(false);
         ChromeMessageAutodismissDurationProvider provider =
                 new ChromeMessageAutodismissDurationProvider();
         provider.setDefaultAutodismissDurationMsForTesting(500);
         provider.setDefaultAutodismissDurationWithA11yMsForTesting(1000);
-        Assert.assertEquals("Provider should return custom non-a11y duration if a11y is off", 1500,
-                provider.get(MessageIdentifier.TEST_MESSAGE, 1500));
+        Assert.assertEquals(
+                "Provider should return custom non-a11y duration if no gesture performing "
+                        + "a11y services are running.",
+                1500, provider.get(MessageIdentifier.TEST_MESSAGE, 1500));
         Assert.assertEquals(
                 "Provider should return default non-a11y duration if custom duration is too short",
                 500, provider.get(MessageIdentifier.TEST_MESSAGE, 250));
-        ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true);
-        Assert.assertEquals("Provider should return custom a11y duration if a11y is on", 1500,
-                provider.get(MessageIdentifier.TEST_MESSAGE, 1500));
+        AccessibilityState.setIsPerformGesturesEnabledForTesting(true);
+        Assert.assertEquals("Provider should return custom a11y duration if any gesture performing "
+                        + "a11y services are running.",
+                1500, provider.get(MessageIdentifier.TEST_MESSAGE, 1500));
         Assert.assertEquals(
-                "Provider should return default a11y duration if custom duration is too short",
+                "Provider should return default a11y duration if custom duration is too short "
+                        + "and any gesture performing a11y services are running.",
                 1000, provider.get(MessageIdentifier.TEST_MESSAGE, 250));
     }
 
     @Test
     public void testFeatureCustomDuration() {
-        ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(false);
-
         mFeatureTestValues.addFieldTrialParamOverride(
                 ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE,
                 ChromeMessageAutodismissDurationProvider
@@ -93,7 +97,9 @@ public class ChromeMessageAutodismissDurationProviderTest {
                 new ChromeMessageAutodismissDurationProvider();
         provider.setDefaultAutodismissDurationMsForTesting(500);
         provider.setDefaultAutodismissDurationWithA11yMsForTesting(1000);
-        Assert.assertEquals("Provider should return finch custom non-a11y duration if a11y is off",
+        Assert.assertEquals(
+                "Provider should return finch custom non-a11y duration if no gesture performing "
+                        + "a11y services are running.",
                 2000, provider.get(MessageIdentifier.TEST_MESSAGE, 1500));
 
         Assert.assertEquals(

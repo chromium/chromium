@@ -115,8 +115,18 @@ void LeakDetectionRequest::LookupSingleLeak(
             "user"
           data:
             "A hash prefix of the username and the encrypted username and "
-            "password."
+            "password. An OAuth2 access token for the user account."
           destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+              owners: "//components/password_manager/OWNERS"
+            }
+          }
+          user_data {
+            type: ACCESS_TOKEN
+            type: CREDENTIALS
+          }
+          last_reviewed: "2023-08-14"
         }
         policy {
           cookies_allowed: NO

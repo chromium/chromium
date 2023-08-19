@@ -75,10 +75,6 @@ void PepperPlayerDelegate::OnEnterPictureInPicture(int player_id) {
   // Pepper player cannot enter picture-in-picture. Do nothing.
 }
 
-void PepperPlayerDelegate::OnExitPictureInPicture(int player_id) {
-  // Pepper player cannot exit picture-in-picture. Do nothing.
-}
-
 void PepperPlayerDelegate::OnSetAudioSinkId(int player_id,
                                             const std::string& raw_device_id) {
   // Pepper player cannot change audio sinks. Do nothing.

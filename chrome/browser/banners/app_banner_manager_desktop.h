@@ -10,7 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/web_applications/app_registrar_observer.h"
+#include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
@@ -52,8 +52,8 @@ class AppBannerManagerDesktop
       override_app_banner_manager_desktop_for_testing_;
 
   // AppBannerManager overrides.
-  base::WeakPtr<AppBannerManager> GetWeakPtr() override;
-  void InvalidateWeakPtrs() override;
+  base::WeakPtr<AppBannerManager> GetWeakPtrForThisNavigation() override;
+  void InvalidateWeakPtrsForThisNavigation() override;
   bool IsSupportedNonWebAppPlatform(
       const std::u16string& platform) const override;
   bool IsRelatedNonWebAppInstalled(
@@ -65,6 +65,10 @@ class AppBannerManagerDesktop
   void SaveInstallationIgnoredForMl(const GURL& manifest_id) override;
   void SaveInstallationAcceptedForMl(const GURL& manifest_id) override;
   bool IsMlPromotionBlockedByHistoryGuardrail(const GURL& manifest_id) override;
+  void OnMlInstallPrediction(base::PassKey<MLInstallabilityPromoter>,
+                             std::string result_label) override;
+  segmentation_platform::SegmentationPlatformService*
+  GetSegmentationPlatformService() override;
 
   // Called when the web app install initiated by a banner has completed.
   virtual void DidFinishCreatingWebApp(const web_app::AppId& app_id,
@@ -88,8 +92,15 @@ class AppBannerManagerDesktop
       webapps::WebappUninstallSource uninstall_source) override;
   void OnWebAppInstallManagerDestroyed() override;
 
-  void CreateWebApp(WebappInstallSource install_source);
+  void CreateWebApp(WebappInstallSource install_source,
+                    web_app::WebAppInstalledCallback install_callback);
+  // Catch only kSuccessNewInstall and kUserInstallDeclined user responses if
+  // the dialog is triggered by ML.
+  void DidCreateWebAppFromMLDialog(const web_app::AppId& app_id,
+                                   webapps::InstallResultCode code);
 
+  raw_ptr<segmentation_platform::SegmentationPlatformService>
+      segmentation_platform_service_;
   raw_ptr<extensions::ExtensionRegistry> extension_registry_;
   web_app::AppId uninstalling_app_id_;
 

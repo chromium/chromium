@@ -3,8 +3,6 @@
 <translationbundle lang="nl">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> van je tabbladen zijn niet recent gebruikt. Wil je ze sluiten?</translation>
 <translation id="125153950246128346">Tik om nog een tabblad te bekijken</translation>
-<translation id="1403228085774130835">Je kunt je gesloten tabbladen vinden in Recente tabbladen in het hoofdmenu van Chrome</translation>
-<translation id="1455506303394048917">Je activiteit in deze incognitotabbladen wordt verwijderd van dit apparaat</translation>
 <translation id="1499635324672558517">Alle incognitotabbladen sluiten?</translation>
 <translation id="1657719826150349398">Tabblad naar beneden verplaatsen</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tabblad}other{<ph name="TABS_COUNT_MANY" /> tabbladen}}</translation>
@@ -47,6 +45,7 @@
 <translation id="5073204694187207510">Raster op volledig scherm verbergen</translation>
 <translation id="5076161749301278626">Winkelreviews bekijken?</translation>
 <translation id="5082793167783849073">Vergelijk pagina's snel door een groep te maken. Tik op een link en houd deze vast om te beginnen.</translation>
+<translation id="5339733443032484186">Je laatste tabblad</translation>
 <translation id="5490235265819901748">Tabbladgroep uitgevouwen</translation>
 <translation id="5494920125229734069">Alles selecteren</translation>
 <translation id="5556417849629758491">Winkelinformatie bekijken, optie beschikbaar bovenaan het scherm</translation>
@@ -62,10 +61,12 @@
 <translation id="6228793724645064692">(winkelbeoordeling)</translation>
 <translation id="6333260925957816943">Informatie over deze winkel</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Groepering van <ph name="TABS_COUNT_ONE" /> geselecteerd tabblad opheffen}other{Groepering van <ph name="TABS_COUNT_MANY" /> geselecteerde tabbladen opheffen}}</translation>
+<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Je vindt je gesloten tabbladen bij Recente tabbladen in het hoofdmenu van Chrome. Je incognitotabblad is niet beschikbaar.}other{Je vindt je gesloten tabbladen bij Recente tabbladen in het hoofdmenu van Chrome. Je # incognitotabbladen zijn niet beschikbaar.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tabblad}other{<ph name="TABS_COUNT_MANY" /> tabbladen}}</translation>
 <translation id="6549021453810473782">Winkelinformatie bekijken</translation>
 <translation id="6562820390860419811">Tabblad naar links verplaatsen</translation>
 <translation id="6615455863669487791">Tonen</translation>
+<translation id="661742612106409204">Je vindt je gesloten tabbladen bij Recente tabbladen in het hoofdmenu van Chrome.</translation>
 <translation id="6840760312327750441">Groepeer tabbladen door ze vast te houden en naar andere tabbladen te slepen.</translation>
 <translation id="6856809498882026482">Optie om meerdere tabbladen te selecteren verbergen</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Tabblad delen}other{Tabbladen delen}}</translation>

@@ -146,3 +146,22 @@ interface PrintingMetadataProvider {
       int16 expiration_period_in_days,
       bool is_from_policy);
 };
+
+// Enum used in metrics, represents the element in Print Management interactived
+// with to open Printer settings.
+enum LaunchSource {
+  // Button displayed in Print Management when there are no print jobs.
+  kEmptyStateButton,
+
+  // Button displayed in Print Management when there are ongoing or historical
+  // print jobs.
+  kHeaderButton,
+};
+
+// Provides services needed by the Print Management UI. Implemented in the
+// browser process and called by the Print Management SWA (a renderer process).
+interface PrintManagementHandler {
+  // Opens OS Settings to the Printer settings subpage. `source` parameter
+  // used to help record users' action.
+  LaunchPrinterSettings(LaunchSource source);
+};

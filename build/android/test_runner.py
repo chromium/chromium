@@ -120,6 +120,11 @@ def AddCommandLineOptions(parser):
       action='store_true',
       help='Wether to use the flags file for the apk under test. If set, '
            "the filename will be looked up in the APK's PackageInfo.")
+  parser.add_argument('--variations-test-seed-path',
+                      type=os.path.relpath,
+                      default=None,
+                      help='Path to variations seed file.')
+
   parser.set_defaults(allow_unknown=True)
   parser.set_defaults(command_line_flags=None)
 
@@ -747,9 +752,10 @@ def AddJUnitTestOptions(parser):
   parser.add_argument(
       '--runner-filter',
       help='Filters tests by runner class. Must be fully qualified.')
+  parser.add_argument('--json-config',
+                      help='Runs only tests listed in this config.')
   parser.add_argument(
       '--shards',
-      default=-1,
       type=int,
       help='Number of shards to run junit tests in parallel on. Only 1 shard '
       'is supported when test-filter is specified. Values less than 1 will '
@@ -936,7 +942,7 @@ def _SinkTestResult(test_result, test_file_name, result_sink_client):
   result_sink_client.Post(test_result.GetNameForResultSink(),
                           test_result.GetType(),
                           test_result.GetDuration(),
-                          log_decoded.encode('utf-8'),
+                          log_decoded,
                           test_file_name,
                           variant=test_result.GetVariantForResultSink(),
                           failure_reason=test_result.GetFailureReason(),

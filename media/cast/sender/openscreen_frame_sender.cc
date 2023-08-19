@@ -215,8 +215,9 @@ CastStreamingFrameDropReason OpenscreenFrameSender::EnqueueFrame(
     std::unique_ptr<SenderEncodedFrame> encoded_frame) {
   DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
   DCHECK(encoded_frame);
-  VLOG_WITH_SSRC(2) << "About to send another frame. last enqueued="
-                    << last_enqueued_frame_id_;
+  VLOG_WITH_SSRC(2) << "About to send another frame ("
+                    << encoded_frame->frame_id
+                    << "). last enqueued=" << last_enqueued_frame_id_;
 
   DCHECK_GE(encoded_frame->frame_id, last_enqueued_frame_id_)
       << "enqueued frames out of order.";

@@ -7,12 +7,12 @@
 #include <stddef.h>
 #include <string.h>
 
-#include <cctype>
 #include <limits>
 
 #include "base/check_op.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/base/bit_reader.h"
+#include "third_party/abseil-cpp/absl/strings/ascii.h"
 
 namespace media {
 
@@ -1137,14 +1137,14 @@ static bool VerifyNumber(const uint8_t* buffer,
   RCHECK(*offset < buffer_size);
 
   // Skip over any leading space.
-  while (isspace(buffer[*offset])) {
+  while (absl::ascii_isspace(buffer[*offset])) {
     ++(*offset);
     RCHECK(*offset < buffer_size);
   }
 
   // Need to process up to max_digits digits.
   int numSeen = 0;
-  while (--max_digits >= 0 && isdigit(buffer[*offset])) {
+  while (--max_digits >= 0 && absl::ascii_isdigit(buffer[*offset])) {
     ++numSeen;
     ++(*offset);
     if (*offset >= buffer_size)

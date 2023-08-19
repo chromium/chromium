@@ -16,7 +16,9 @@
 #include "net/base/network_change_notifier.h"
 #include "services/device/device_service_test_base.h"
 #include "services/device/geolocation/geolocation_provider_impl.h"
+#include "services/device/geolocation/mock_wifi_data_provider.h"
 #include "services/device/geolocation/network_location_request.h"
+#include "services/device/geolocation/wifi_data_provider_handle.h"
 #include "services/device/public/cpp/device_features.h"
 #include "services/device/public/mojom/geolocation.mojom.h"
 #include "services/device/public/mojom/geolocation_config.mojom.h"
@@ -59,6 +61,10 @@ class GeolocationServiceUnitTest : public DeviceServiceTestBase {
     // the device service.
     DeviceServiceTestBase::SetUp();
 
+    wifi_data_provider_ = MockWifiDataProvider::CreateInstance();
+    WifiDataProviderHandle::SetFactoryForTesting(
+        MockWifiDataProvider::GetInstance);
+
     device_service()->BindGeolocationControl(
         geolocation_control_.BindNewPipeAndPassReceiver());
     geolocation_control_->UserDidOptIntoLocationServices();
@@ -70,6 +76,8 @@ class GeolocationServiceUnitTest : public DeviceServiceTestBase {
   }
 
   void TearDown() override {
+    WifiDataProviderHandle::ResetFactoryForTesting();
+
     DeviceServiceTestBase::TearDown();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -91,6 +99,7 @@ class GeolocationServiceUnitTest : public DeviceServiceTestBase {
         geolocation_config_.BindNewPipeAndPassReceiver());
   }
 
+  scoped_refptr<MockWifiDataProvider> wifi_data_provider_;
   std::unique_ptr<net::NetworkChangeNotifier> network_change_notifier_;
   mojo::Remote<mojom::GeolocationControl> geolocation_control_;
   mojo::Remote<mojom::GeolocationContext> geolocation_context_;

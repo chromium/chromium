@@ -3,8 +3,6 @@
 <translationbundle lang="hr">
 <translation id="1075622780330595106">Broj vaših kartica koje niste koristili neko vrijeme: <ph name="NUMBER_OF_TABS" />. Želite li ih zatvoriti?</translation>
 <translation id="125153950246128346">Dodirnite za prikaz druge kartice</translation>
-<translation id="1403228085774130835">Zatvorene kartice nalaze se u kategoriji Nedavne kartice u glavnom izborniku Chromea.</translation>
-<translation id="1455506303394048917">Vaša aktivnost na tim anonimnim karticama izbrisat će se s ovog uređaja</translation>
 <translation id="1499635324672558517">Zatvoriti sve anonimne kartice?</translation>
 <translation id="1657719826150349398">Pomakni karticu prema dolje</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> kartica}one{<ph name="TABS_COUNT_MANY" /> kartica}few{<ph name="TABS_COUNT_MANY" /> kartice}other{<ph name="TABS_COUNT_MANY" /> kartica}}</translation>
@@ -47,6 +45,7 @@
 <translation id="5073204694187207510">Sakrij rešetku na cijelom zaslonu</translation>
 <translation id="5076161749301278626">Pregled recenzija trgovine?</translation>
 <translation id="5082793167783849073">Izradom grupe možete brzo usporediti stranice. Da biste započeli, dodirnite i držite vezu.</translation>
+<translation id="5339733443032484186">Vaša posljednja kartica</translation>
 <translation id="5490235265819901748">Grupa kartica je proširena</translation>
 <translation id="5494920125229734069">Odaberi sve</translation>
 <translation id="5556417849629758491">Pogledajte podatke o trgovini, opciju koja je dostupna pri vrhu zaslona</translation>
@@ -62,10 +61,12 @@
 <translation id="6228793724645064692">(ocjena trgovine)</translation>
 <translation id="6333260925957816943">Informacije o ovoj trgovini</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Poništite grupiranje <ph name="TABS_COUNT_ONE" /> odabrane kartice}one{Poništite grupiranje <ph name="TABS_COUNT_MANY" /> odabrane kartice}few{Poništite grupiranje <ph name="TABS_COUNT_MANY" /> odabrane kartice}other{Poništite grupiranje <ph name="TABS_COUNT_MANY" /> odabranih kartica}}</translation>
+<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Zatvorene kartice nalaze se u kategoriji Nedavne kartice u glavnom izborniku Chromea. Vaša anonimna kartica neće biti dostupna.}one{Zatvorene kartice nalaze se u kategoriji Nedavne kartice u glavnom izborniku Chromea. Vaša # anonimna kartica neće biti dostupna.}few{Zatvorene kartice nalaze se u kategoriji Nedavne kartice u glavnom izborniku Chromea. Vaše # anonimne kartice neće biti dostupne.}other{Zatvorene kartice nalaze se u kategoriji Nedavne kartice u glavnom izborniku Chromea. Vaših # anonimnih kartica neće biti dostupne.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> kartica}one{<ph name="TABS_COUNT_MANY" /> kartica}few{<ph name="TABS_COUNT_MANY" /> kartice}other{<ph name="TABS_COUNT_MANY" /> kartica}}</translation>
 <translation id="6549021453810473782">Prikaži podatke o trgovini</translation>
 <translation id="6562820390860419811">Pomakni karticu ulijevo</translation>
 <translation id="6615455863669487791">Pokaži mi</translation>
+<translation id="661742612106409204">Zatvorene kartice nalaze se u kategoriji Nedavne kartice u glavnom izborniku Chromea.</translation>
 <translation id="6840760312327750441">Da biste grupirali kartice, dodirnite i držite karticu. Zatim je povucite na drugu karticu.</translation>
 <translation id="6856809498882026482">Sakrij način višestrukog odabira</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Podijeli karticu}one{Podijeli kartice}few{Podijeli kartice}other{Podijeli kartice}}</translation>

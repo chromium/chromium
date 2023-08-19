@@ -181,13 +181,14 @@ class COMPONENT_EXPORT(SQL) BuiltInRecovery {
   SqliteResultCode ReplaceOriginalWithRecoveredDb();
 
   void SetRecoverySucceeded();
-  void SetRecoveryFailed(Result failure_result);
+  void SetRecoveryFailed(Result failure_result, SqliteResultCode result_code);
 
   const Strategy strategy_;
 
   // Result of the recovery. This value must be set to something other than
   // `kUnknown` before this object is destroyed.
   Result result_ = Result::kUnknown;
+  SqliteResultCode sqlite_result_code_ = SqliteResultCode::kOk;
 
   raw_ptr<Database> db_;  // Original Database connection.
   Database recover_db_;   // Recovery Database connection.

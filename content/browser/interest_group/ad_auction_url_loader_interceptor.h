@@ -14,13 +14,12 @@ namespace content {
 //
 // This loader interceptor works as follows:
 //   1. Before making a network request (i.e. WillStartRequest()), if the
-//      request is eligible for ad auction headers, adds the
+//      request is eligible for ad auction headers, add the
 //      `Sec-Ad-Auction-Fetch: ?1` header.
 //   2. If any redirect is encountered, skip handling the response; otherwise,
 //      for the response (i.e. OnReceiveResponse()), if the previous request was
 //      eligible for ad auction headers, and if the response header contains the
-//      auction result, stores the auction result (i.e. associate the auction
-//      result with the top-level page).
+//      auction result or signals, associate them with the top-level page.
 class CONTENT_EXPORT AdAuctionURLLoaderInterceptor
     : public SubresourceProxyingURLLoader::Interceptor {
  public:
@@ -39,11 +38,9 @@ class CONTENT_EXPORT AdAuctionURLLoaderInterceptor
   void WillFollowRedirect(const absl::optional<GURL>& new_url,
                           std::vector<std::string>& removed_headers,
                           net::HttpRequestHeaders& modified_headers) override;
-  void OnReceiveRedirect(
-      const net::RedirectInfo& redirect_info,
-      const network::mojom::URLResponseHeadPtr& head) override;
-  void OnReceiveResponse(
-      const network::mojom::URLResponseHeadPtr& head) override;
+  void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
+                         network::mojom::URLResponseHeadPtr& head) override;
+  void OnReceiveResponse(network::mojom::URLResponseHeadPtr& head) override;
 
  private:
   // Upon NavigationRequest::DidCommitNavigation(), `document_` will be set to

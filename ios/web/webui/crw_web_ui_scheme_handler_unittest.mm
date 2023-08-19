@@ -16,10 +16,6 @@
 #import "services/network/test/test_url_loader_factory.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 const char kOfflineHost[] = "offline";
 const char kChromeScheme[] = "chrome";

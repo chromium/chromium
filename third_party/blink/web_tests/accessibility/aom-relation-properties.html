@@ -43,20 +43,3 @@ test(function(t) {
     assert_false(axOption1.isSelected);
 }, "AccessibleNode.activeDescendant");
 </script>
-
-<input id="input2">
-<div id="errorMessage">ErrorMessage</div>
-
-<script>
-test(function(t) {
-    var input2 = document.getElementById("input2");
-    var errorMessage = document.getElementById("errorMessage");
-    var axInput2 = accessibilityController.accessibleElementById("input2");
-    var axErrorMessage = accessibilityController.accessibleElementById("errorMessage");
-    assert_equals(axInput2.ariaErrorMessageElement(), undefined);
-
-    input2.accessibleNode.errorMessage = errorMessage.accessibleNode;
-
-    assert_equals(axInput2.ariaErrorMessageElement(), undefined);
-}, "AccessibleNode.errorMessage");
-</script>

@@ -26,6 +26,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_CSS_PARSER_OBSERVER_H_
 
 #include "third_party/blink/renderer/core/css/css_property_source_data.h"
+#include "third_party/blink/renderer/core/css/parser/css_at_rule_id.h"
 
 namespace blink {
 
@@ -42,6 +43,8 @@ class CSSParserObserver {
                                bool is_important,
                                bool is_parsed) = 0;
   virtual void ObserveComment(unsigned start_offset, unsigned end_offset) = 0;
+  virtual void ObserveErroneousAtRule(unsigned start_offset,
+                                      CSSAtRuleID id) = 0;
 };
 
 }  // namespace blink

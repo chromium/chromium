@@ -15,19 +15,20 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
-#include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/user_education/common/help_bubble.h"
 #include "components/user_education/common/help_bubble_params.h"
 #include "components/user_education/webui/help_bubble_webui.h"
 #include "components/user_education/webui/tracked_element_webui.h"
-#include "content/public/browser/render_widget_host.h"
-#include "content/public/browser/render_widget_host_observer.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom-shared.h"
@@ -80,9 +81,10 @@ std::string SnakeCaseFromCamelCase(std::string input) {
   std::string output;
   output.reserve(input.size());
   for (const char c : input) {
-    if (std::isupper(c) && !output.empty())
+    if (absl::ascii_isupper(static_cast<unsigned char>(c)) && !output.empty()) {
       output.push_back('_');
-    output.push_back(std::tolower(c));
+    }
+    output.push_back(absl::ascii_tolower(static_cast<unsigned char>(c)));
   }
   return output;
 }
@@ -162,18 +164,6 @@ HelpBubbleHandlerBase::~HelpBubbleHandlerBase() {
 
 content::WebContents* HelpBubbleHandlerBase::GetWebContents() {
   return GetController()->web_ui()->GetWebContents();
-}
-
-content::RenderWidgetHost* HelpBubbleHandlerBase::GetRenderWidgetHost() {
-  auto* const web_contents = GetWebContents();
-  if (!web_contents) {
-    return nullptr;
-  }
-  auto* const render_widget_host_view = web_contents->GetRenderWidgetHostView();
-  if (!render_widget_host_view) {
-    return nullptr;
-  }
-  return render_widget_host_view->GetRenderWidgetHost();
 }
 
 help_bubble::mojom::HelpBubbleClient* HelpBubbleHandlerBase::GetClient() {
@@ -545,46 +535,32 @@ class HelpBubbleHandler::ClientProvider
   mojo::Remote<help_bubble::mojom::HelpBubbleClient> remote_client_;
 };
 
-// Implementation of the WebContents visibility tracker. Watches the
-// RenderWidgetHost for visibility changes and signals them to its
-// HelpBubbleHandler.
+// Implementation of the WebContents visibility tracker.
 class HelpBubbleHandler::VisibilityProvider
     : public HelpBubbleHandlerBase::VisibilityProvider,
-      public content::RenderWidgetHostObserver {
+      public content::WebContentsObserver {
  public:
   VisibilityProvider() = default;
   ~VisibilityProvider() override = default;
 
-  absl::optional<bool> CheckIsVisible() const override {
-    auto* const host = handler()->GetRenderWidgetHost();
-    if (!host) {
+  absl::optional<bool> CheckIsVisible() override {
+    auto* const contents = handler()->GetWebContents();
+    if (!contents) {
       return absl::nullopt;
     }
-    CHECK(!observation_.IsObserving());
-    observation_.Observe(host);
-
-    // Current visibility cannot be determined from the host directly, but can
-    // be read from its view.
-    auto* const view = host->GetView();
-    return view && view->IsShowing();
+    CHECK(!web_contents());
+    Observe(contents);
+    return contents->GetVisibility() == content::Visibility::VISIBLE;
   }
 
  private:
-  // content::RenderWidgetHostObserver:
-  void RenderWidgetHostVisibilityChanged(content::RenderWidgetHost* host,
-                                         bool became_visible) override {
-    SetLastKnownVisibility(became_visible);
+  // content::WebContentsObserver:
+  void OnVisibilityChanged(content::Visibility new_visibility) override {
+    SetLastKnownVisibility(new_visibility == content::Visibility::VISIBLE);
   }
-  void RenderWidgetHostDestroyed(content::RenderWidgetHost*) override {
-    observation_.Reset();
+  void WebContentsDestroyed() override {
     SetLastKnownVisibility(absl::nullopt);
   }
-
-  // This observation is created lazily from CheckIsVisible(), so must be
-  // mutable.
-  mutable base::ScopedObservation<content::RenderWidgetHost,
-                                  content::RenderWidgetHostObserver>
-      observation_{this};
 };
 
 HelpBubbleHandler::HelpBubbleHandler(

@@ -10,6 +10,7 @@
 #include "components/dom_distiller/content/browser/uma_helper.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/dom_distiller/core/url_utils.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_handle.h"
@@ -137,6 +138,11 @@ void ReaderModeIconView::UpdateImpl() {
 }
 
 const gfx::VectorIcon& ReaderModeIconView::GetVectorIcon() const {
+  if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
+    return GetActive() ? kReaderModeRefreshIcon
+                       : kReaderModeDisabledRefreshIcon;
+  }
+
   return GetActive() ? kReaderModeIcon : kReaderModeDisabledIcon;
 }
 

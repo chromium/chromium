@@ -224,8 +224,7 @@ public class StatusViewTest extends BlankUiTestActivityTestCase {
         onView(withId(R.id.location_bar_status_icon)).check((view, e) -> {
             assertEquals(expectedWidth, view.getMeasuredWidth());
         });
-        int expectedPadding = getActivity().getResources().getDimensionPixelSize(
-                R.dimen.location_bar_icon_end_padding);
+        int expectedPadding = 0;
         onView(withId(R.id.location_bar_status)).check((view, e) -> {
             assertEquals(expectedPadding, view.getPaddingEnd());
         });

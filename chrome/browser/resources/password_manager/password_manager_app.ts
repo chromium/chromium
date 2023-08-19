@@ -104,6 +104,11 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
       toastMessage_: String,
 
       /**
+       * Whether to show an "undo" button on the removal toast.
+       */
+      showUndo_: Boolean,
+
+      /**
        * A Map specifying which element should be focused when exiting a
        * subpage. The key of the map holds a Route path, and the value holds
        * either a query selector that identifies the desired element, an element
@@ -122,6 +127,7 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
   private selectedPage_: Page;
   private narrow_: boolean;
   private toastMessage_: string;
+  private showUndo_: boolean;
   private focusConfig_: FocusConfig;
 
   override ready() {
@@ -146,6 +152,7 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
     });
 
     this.addEventListener('cr-toolbar-menu-click', this.onMenuButtonClick_);
+    this.addEventListener('close-drawer', this.closeDrawer_);
   }
 
   override currentRouteChanged(route: Route): void {
@@ -165,8 +172,12 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
     if (modalContextOpen) {
       return false;
     }
-    this.$.toolbar.searchField.showAndFocus();
-    return true;
+    // Redirect to Password Manager search on Passwords page.
+    if (Router.getInstance().currentRoute.page === Page.PASSWORDS) {
+      this.$.toolbar.searchField.showAndFocus();
+      return true;
+    }
+    return false;
   }
 
   // Override FindShortcutMixin methods.
@@ -182,6 +193,12 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
 
   private onMenuButtonClick_() {
     this.$.drawer.toggle();
+  }
+
+  private closeDrawer_() {
+    if (this.$.drawer && this.$.drawer.open) {
+      this.$.drawer.close();
+    }
   }
 
   setNarrowForTesting(state: boolean) {
@@ -211,7 +228,14 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
 
   private onPasswordRemoved_(_event: PasswordRemovedEvent) {
     // TODO(crbug.com/1350947): Show different message if account store user.
+    this.showUndo_ = true;
     this.toastMessage_ = this.i18n('passwordDeleted');
+    this.$.removalToast.show();
+  }
+
+  private onPasskeyRemoved_() {
+    this.showUndo_ = false;
+    this.toastMessage_ = this.i18n('passkeyDeleted');
     this.$.removalToast.show();
   }
 

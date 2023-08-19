@@ -18,6 +18,11 @@ BASE_FEATURE(kWebXrIncubations,
              "WebXRIncubations",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Feature flag for the WebXRInternals debugging page.
+BASE_FEATURE(kWebXrInternals,
+             "WebXrInternals",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables access to WebXR composition layers.
 BASE_FEATURE(kWebXrLayers, "WebXRLayers", base::FEATURE_DISABLED_BY_DEFAULT);
 

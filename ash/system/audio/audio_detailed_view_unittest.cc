@@ -8,40 +8,26 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
-#include "ash/system/tray/detailed_view_delegate.h"
+#include "ash/shell.h"
+#include "ash/system/tray/fake_detailed_view_delegate.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/services/app_service/public/cpp/app_capability_access_cache.h"
+#include "components/services/app_service/public/cpp/app_capability_access_cache_wrapper.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
+#include "components/user_manager/fake_user_manager.h"
+#include "media/base/media_switches.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
 
-namespace {
-
-// This class exists to stub out the CloseBubble() call. This allows tests to
-// directly construct the detailed view, without depending on the entire quick
-// settings bubble and view hierarchy.
-class FakeDetailedViewDelegate : public DetailedViewDelegate {
- public:
-  FakeDetailedViewDelegate()
-      : DetailedViewDelegate(/*tray_controller=*/nullptr) {}
-  ~FakeDetailedViewDelegate() override = default;
-
-  // DetailedViewDelegate:
-  void CloseBubble() override { ++close_bubble_count_; }
-
-  int close_bubble_count_ = 0;
-};
-
-}  // namespace
-
 class AudioDetailedViewTest : public AshTestBase {
  public:
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({features::kAudioSettingsPage}, {});
-
     AshTestBase::SetUp();
 
     auto audio_detailed_view =
@@ -65,8 +51,8 @@ class AudioDetailedViewTest : public AshTestBase {
 
   std::unique_ptr<views::Widget> widget_;
   FakeDetailedViewDelegate detailed_view_delegate_;
-  raw_ptr<AudioDetailedView, ExperimentalAsh> audio_detailed_view_ = nullptr;
-  base::test::ScopedFeatureList scoped_feature_list_;
+  raw_ptr<AudioDetailedView, DanglingUntriaged | ExperimentalAsh>
+      audio_detailed_view_ = nullptr;
 };
 
 TEST_F(AudioDetailedViewTest, PressingSettingsButtonOpensSettings) {
@@ -77,14 +63,147 @@ TEST_F(AudioDetailedViewTest, PressingSettingsButtonOpensSettings) {
       session_manager::SessionState::LOCKED);
   LeftClickOn(settings_button);
   EXPECT_EQ(0, GetSystemTrayClient()->show_audio_settings_count());
-  EXPECT_EQ(0, detailed_view_delegate_.close_bubble_count_);
+  EXPECT_EQ(0u, detailed_view_delegate_.close_bubble_call_count());
 
   // Clicking the button in an active user session opens OS settings.
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::ACTIVE);
   LeftClickOn(settings_button);
   EXPECT_EQ(1, GetSystemTrayClient()->show_audio_settings_count());
-  EXPECT_EQ(1, detailed_view_delegate_.close_bubble_count_);
+  EXPECT_EQ(1u, detailed_view_delegate_.close_bubble_call_count());
 }
+
+class AudioDetailedViewAgcInfoTest
+    : public AudioDetailedViewTest,
+      public testing::WithParamInterface<testing::tuple<bool, bool, bool>> {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatureStates(
+        {{media::kIgnoreUiGains, IsIgnoreUiGainsEnabled()},
+         {features::kQsRevamp, IsQsRevampEnabled()}});
+
+    AudioDetailedViewTest::SetUp();
+
+    CrasAudioHandler* audio_handler = CrasAudioHandler::Get();
+    CHECK(audio_handler);
+    audio_handler->SetForceRespectUiGainsState(IsForceRespectUiGainsEnabled());
+
+    account_id_ = Shell::Get()->session_controller()->GetActiveAccountId();
+    registry_cache_.SetAccountId(account_id_);
+    apps::AppRegistryCacheWrapper::Get().AddAppRegistryCache(account_id_,
+                                                             &registry_cache_);
+    capability_access_cache_.SetAccountId(account_id_);
+    apps::AppCapabilityAccessCacheWrapper::Get().AddAppCapabilityAccessCache(
+        account_id_, &capability_access_cache_);
+
+    audio_detailed_view_->Update();
+  }
+
+  void TearDown() override {
+    AudioDetailedViewTest::TearDown();
+    apps::AppRegistryCacheWrapper::Get().RemoveAppRegistryCache(
+        &registry_cache_);
+    apps::AppCapabilityAccessCacheWrapper::Get().RemoveAppCapabilityAccessCache(
+        &capability_access_cache_);
+    registry_cache_.ReinitializeForTesting();
+  }
+
+  bool IsIgnoreUiGainsEnabled() { return std::get<0>(GetParam()); }
+  bool IsForceRespectUiGainsEnabled() { return std::get<1>(GetParam()); }
+  bool IsQsRevampEnabled() { return std::get<2>(GetParam()); }
+
+  views::View* GetAgcInfoView() {
+    if (IsQsRevampEnabled()) {
+      return audio_detailed_view_->GetViewByID(
+          AudioDetailedView::AudioDetailedViewID::kAgcInfoView);
+    } else {
+      return audio_detailed_view_->GetViewByID(
+          AudioDetailedView::AudioDetailedViewID::kAgcInfoRow);
+    }
+  }
+
+  static apps::AppPtr MakeApp(const char* app_id, const char* name) {
+    apps::AppPtr app =
+        std::make_unique<apps::App>(apps::AppType::kChromeApp, app_id);
+    app->name = name;
+    app->short_name = name;
+    return app;
+  }
+
+  static apps::CapabilityAccessPtr MakeCapabilityAccess(
+      const char* app_id,
+      absl::optional<bool> mic) {
+    apps::CapabilityAccessPtr access =
+        std::make_unique<apps::CapabilityAccess>(app_id);
+    access->camera = false;
+    access->microphone = mic;
+    return access;
+  }
+
+  void LaunchApp(const char* id,
+                 const char* name,
+                 absl::optional<bool> use_mic) {
+    std::vector<apps::AppPtr> registry_deltas;
+    registry_deltas.push_back(MakeApp(id, name));
+    registry_cache_.OnApps(std::move(registry_deltas), apps::AppType::kUnknown,
+                           /* should_notify_initialized = */ false);
+
+    std::vector<apps::CapabilityAccessPtr> capability_access_deltas;
+    capability_access_deltas.push_back(MakeCapabilityAccess(id, use_mic));
+    capability_access_cache_.OnCapabilityAccesses(
+        std::move(capability_access_deltas));
+  }
+
+  AccountId account_id_;
+
+  apps::AppRegistryCache registry_cache_;
+  apps::AppCapabilityAccessCache capability_access_cache_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(AudioDetailedViewAgcInfoTest, AgcInfoRowShowInProperConditions) {
+  const char* app_id = "app";
+  const char* app_name = "App name";
+
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::ACTIVE);
+  audio_detailed_view_->OnSessionStateChanged(
+      session_manager::SessionState::ACTIVE);
+
+  views::View* agc_info = GetAgcInfoView();
+  if (!IsIgnoreUiGainsEnabled()) {
+    ASSERT_EQ(agc_info, nullptr);
+    return;
+  }
+  ASSERT_NE(agc_info, nullptr);
+
+  // Launch an app accessing mic and requesting ignore UI gains.
+  LaunchApp(app_id, app_name, true);
+  audio_detailed_view_->OnNumStreamIgnoreUiGainsChanged(1);
+  EXPECT_EQ(agc_info->GetVisible(), !IsForceRespectUiGainsEnabled());
+
+  // Launch an app accessing mic but not requesting ignore UI gains.
+  LaunchApp(app_id, app_name, true);
+  audio_detailed_view_->OnNumStreamIgnoreUiGainsChanged(0);
+  EXPECT_EQ(agc_info->GetVisible(), false);
+
+  // Launch an app not accessing mic but requesting ignore UI gains.
+  // This should not happen in real cases though.
+  LaunchApp(app_id, app_name, false);
+  audio_detailed_view_->OnNumStreamIgnoreUiGainsChanged(1);
+  EXPECT_EQ(agc_info->GetVisible(), false);
+
+  // Launch an app not accessing mic and not requesting ignore UI gains.
+  LaunchApp(app_id, app_name, false);
+  audio_detailed_view_->OnNumStreamIgnoreUiGainsChanged(0);
+  EXPECT_EQ(agc_info->GetVisible(), false);
+}
+
+INSTANTIATE_TEST_SUITE_P(AudioDetailedViewAgcInfoVisibleTest,
+                         AudioDetailedViewAgcInfoTest,
+                         testing::Combine(testing::Bool(),
+                                          testing::Bool(),
+                                          testing::Bool()));
 
 }  // namespace ash

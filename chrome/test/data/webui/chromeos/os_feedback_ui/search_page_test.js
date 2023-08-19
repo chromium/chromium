@@ -24,7 +24,7 @@ export function searchPageTestSuite() {
   let provider = null;
 
   setup(() => {
-    document.body.innerHTML = '';
+    document.body.innerHTML = trustedTypes.emptyHTML;
     // Create provider.
     provider = new FakeHelpContentProvider();
     // Setup search response.

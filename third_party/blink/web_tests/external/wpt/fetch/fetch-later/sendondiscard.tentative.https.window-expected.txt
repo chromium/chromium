@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL A discarded document sends all its fetchLater requests with default config. assert_equals: Number of sent beacons does not match expected count: expected 40 but got 0
+Harness: the test ran to completion.
+

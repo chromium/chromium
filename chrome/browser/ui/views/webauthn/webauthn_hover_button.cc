@@ -105,6 +105,9 @@ WebAuthnHoverButton::WebAuthnHoverButton(
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_->SetProperty(views::kTableColAndRowSpanKey,
                       gfx::Size(/*width=*/1, title_row_span));
+  if (features::IsChromeRefresh2023()) {
+    title_->SetTextStyle(views::style::STYLE_BODY_3_BOLD);
+  }
 
   if (secondary_icon) {
     secondary_icon_view_ =
@@ -116,6 +119,9 @@ WebAuthnHoverButton::WebAuthnHoverButton(
   if (is_two_line && !subtitle_text.empty()) {
     subtitle_ = AddChildView(std::make_unique<views::Label>(subtitle_text));
     subtitle_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    if (features::IsChromeRefresh2023()) {
+      subtitle_->SetTextStyle(views::style::STYLE_BODY_3_EMPHASIS);
+    }
   }
 
   SetAccessibleName(subtitle_text.empty()
@@ -129,13 +135,14 @@ WebAuthnHoverButton::WebAuthnHoverButton(
   // with such an icon.)
 
   int vert_inset = is_two_line ? 8 : 12;
-  int horz_inset = 8;
+  int left_inset = 8;
+  int right_inset = 8;
   if (features::IsChromeRefresh2023()) {
     vert_inset = is_two_line ? 10 : 16;
-    horz_inset = 16;
+    right_inset = 16;
   }
   SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::TLBR(vert_inset, horz_inset, vert_inset, horz_inset)));
+      gfx::Insets::TLBR(vert_inset, left_inset, vert_inset, right_inset)));
 }
 
 BEGIN_METADATA(WebAuthnHoverButton, HoverButton)

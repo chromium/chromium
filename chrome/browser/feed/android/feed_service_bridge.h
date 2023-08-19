@@ -19,7 +19,6 @@ class FeedServiceBridge {
  public:
   static std::string GetLanguageTag();
   static DisplayMetrics GetDisplayMetrics();
-  static bool IsAutoplayEnabled();
   static TabGroupEnabledState GetTabGroupEnabledState();
   static void ClearAll();
   static bool IsEnabled();

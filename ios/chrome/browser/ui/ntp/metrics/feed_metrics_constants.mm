@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 const int kMinScrollThreshold = 140;
 const int kGoodVisitTimeInFeedSeconds = 60;
 const int kNonShortClickSeconds = 10;

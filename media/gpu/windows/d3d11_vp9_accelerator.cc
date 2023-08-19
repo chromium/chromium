@@ -25,10 +25,8 @@ using DecodeStatus = VP9Decoder::VP9Accelerator::Status;
   } while (0)
 
 D3D11VP9Accelerator::D3D11VP9Accelerator(D3D11VideoDecoderClient* client,
-                                         MediaLog* media_log,
-                                         ComD3D11VideoDevice video_device)
-    : D3DAccelerator(client, media_log, std::move(video_device)),
-      status_feedback_(0) {}
+                                         MediaLog* media_log)
+    : D3DAccelerator(client, media_log), status_feedback_(0) {}
 
 D3D11VP9Accelerator::~D3D11VP9Accelerator() = default;
 

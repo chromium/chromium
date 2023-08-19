@@ -25,4 +25,10 @@ std::ostream& operator<<(std::ostream& out, const FrameSinkId& frame_sink_id) {
   return out << frame_sink_id.ToString();
 }
 
+void FrameSinkId::WriteIntoTrace(
+    perfetto::TracedProto<TraceProto> proto) const {
+  proto->set_frame_sink_client_id(client_id_);
+  proto->set_frame_sink_id(sink_id_);
+}
+
 }  // namespace viz

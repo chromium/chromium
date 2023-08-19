@@ -31,6 +31,8 @@
 #include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/browser/installable/ml_install_operation_tracker.h"
+#include "components/webapps/browser/installable/ml_installability_promoter.h"
 #include "content/public/browser/navigation_entry.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -50,6 +52,7 @@ void OnWebAppInstallShowInstallDialog(
     WebAppInstallFlow flow,
     webapps::WebappInstallSource install_source,
     chrome::PwaInProductHelpState iph_state,
+    std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
     content::WebContents* initiator_web_contents,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     WebAppInstallationAcceptanceCallback web_app_acceptance_callback) {
@@ -69,14 +72,12 @@ void OnWebAppInstallShowInstallDialog(
             .Record();
       }
 #endif
-      if (base::FeatureList::IsEnabled(
-              webapps::features::kDesktopPWAsDetailedInstallDialog) &&
-          webapps::AppBannerManager::FromWebContents(initiator_web_contents)
+      if (webapps::AppBannerManager::FromWebContents(initiator_web_contents)
               ->screenshots()
               .size()) {
         chrome::ShowWebAppDetailedInstallDialog(
             initiator_web_contents, std::move(web_app_info),
-            std::move(web_app_acceptance_callback),
+            std::move(install_tracker), std::move(web_app_acceptance_callback),
             webapps::AppBannerManager::FromWebContents(initiator_web_contents)
                 ->screenshots(),
             iph_state);
@@ -84,7 +85,8 @@ void OnWebAppInstallShowInstallDialog(
       } else {
         chrome::ShowPWAInstallBubble(
             initiator_web_contents, std::move(web_app_info),
-            std::move(web_app_acceptance_callback), iph_state);
+            std::move(install_tracker), std::move(web_app_acceptance_callback),
+            iph_state);
         return;
       }
     case WebAppInstallFlow::kCreateShortcut:
@@ -99,9 +101,9 @@ void OnWebAppInstallShowInstallDialog(
       }
 #endif
 
-      chrome::ShowWebAppInstallDialog(initiator_web_contents,
-                                      std::move(web_app_info),
-                                      std::move(web_app_acceptance_callback));
+      chrome::ShowWebAppInstallDialog(
+          initiator_web_contents, std::move(web_app_info),
+          std::move(install_tracker), std::move(web_app_acceptance_callback));
       return;
     case WebAppInstallFlow::kUnknown:
       NOTREACHED();
@@ -159,6 +161,13 @@ void CreateWebAppFromCurrentWebContents(Browser* browser,
   auto* provider = WebAppProvider::GetForWebContents(web_contents);
   DCHECK(provider);
 
+  webapps::MLInstallabilityPromoter* promoter =
+      webapps::MLInstallabilityPromoter::FromWebContents(web_contents);
+  CHECK(promoter);
+  if (promoter->HasCurrentInstall()) {
+    return;
+  }
+
   if (provider->command_manager().IsInstallingForWebContents(web_contents)) {
     return;
   }
@@ -169,13 +178,17 @@ void CreateWebAppFromCurrentWebContents(Browser* browser,
                             ? webapps::InstallTrigger::CREATE_SHORTCUT
                             : webapps::InstallTrigger::MENU);
 
+  std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
+      promoter->RegisterCurrentInstallForWebContents(install_source);
+
   WebAppInstalledCallback callback = base::DoNothing();
 
   provider->scheduler().FetchManifestAndInstall(
       install_source, web_contents->GetWeakPtr(),
       /*bypass_service_worker_check=*/false,
       base::BindOnce(OnWebAppInstallShowInstallDialog, flow, install_source,
-                     chrome::PwaInProductHelpState::kNotShown),
+                     chrome::PwaInProductHelpState::kNotShown,
+                     std::move(install_tracker)),
       base::BindOnce(OnWebAppInstalled, std::move(callback)),
       /*use_fallback=*/true);
 }
@@ -189,17 +202,30 @@ bool CreateWebAppFromManifest(content::WebContents* web_contents,
   if (!provider)
     return false;
 
+  webapps::MLInstallabilityPromoter* promoter =
+      webapps::MLInstallabilityPromoter::FromWebContents(web_contents);
+  if (promoter->HasCurrentInstall()) {
+    return false;
+  }
+
   if (provider->command_manager().IsInstallingForWebContents(web_contents)) {
     return false;
   }
 
+  std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
+      promoter->RegisterCurrentInstallForWebContents(install_source);
+
+  // If the source is from ML, there may not be a manifest, so allow the command
+  // to use the metadata from the page too.
+  bool use_fallback =
+      install_source == webapps::WebappInstallSource::ML_PROMOTION;
   provider->scheduler().FetchManifestAndInstall(
       install_source, web_contents->GetWeakPtr(), bypass_service_worker_check,
       base::BindOnce(OnWebAppInstallShowInstallDialog,
-                     WebAppInstallFlow::kInstallSite, install_source,
-                     iph_state),
+                     WebAppInstallFlow::kInstallSite, install_source, iph_state,
+                     std::move(install_tracker)),
       base::BindOnce(OnWebAppInstalled, std::move(installed_callback)),
-      /*use_fallback=*/false);
+      /*use_fallback=*/use_fallback);
   return true;
 }
 

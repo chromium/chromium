@@ -12,12 +12,12 @@ import xml.dom.minidom
 import extract_histograms
 import histogram_paths
 import merge_xml
+import xml_utils
 
 # The allowlist of namespaces (histogram prefixes, case insensitive) that are
 # split across multiple files.
 _NAMESPACES_IN_MULTIPLE_FILES = [
-    'ash', 'autocomplete', 'childprocess', 'chromeos', 'fcminvalidations',
-    'graphics', 'launch'
+    'ash', 'autocomplete', 'chromeos', 'fcminvalidations', 'graphics', 'launch'
 ]
 
 
@@ -31,8 +31,8 @@ def CheckNamespaces():
       return node.getAttribute('name').lower().split('.')[0]
 
     namespaces_in_file = set(
-        _GetNamespace(node) for node in extract_histograms.IterElementsWithTag(
-            tree, 'histogram', depth=3))
+        _GetNamespace(node)
+        for node in xml_utils.IterElementsWithTag(tree, 'histogram', depth=3))
     for namespace in namespaces_in_file:
       if (namespace in namespaces
           and namespace not in _NAMESPACES_IN_MULTIPLE_FILES):

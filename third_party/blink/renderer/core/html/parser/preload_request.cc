@@ -61,7 +61,6 @@ KURL PreloadRequest::CompleteURL(Document* document) {
 // static
 std::unique_ptr<PreloadRequest> PreloadRequest::CreateIfNeeded(
     const String& initiator_name,
-    const TextPosition& initiator_position,
     const String& resource_url,
     const KURL& base_url,
     ResourceType resource_type,
@@ -84,9 +83,8 @@ std::unique_ptr<PreloadRequest> PreloadRequest::CreateIfNeeded(
     return nullptr;
 
   return base::WrapUnique(new PreloadRequest(
-      initiator_name, initiator_position, resource_url, base_url, resource_type,
-      resource_width, resource_height, request_type, referrer_policy,
-      is_image_set));
+      initiator_name, resource_url, base_url, resource_type, resource_width,
+      resource_height, request_type, referrer_policy, is_image_set));
 }
 
 Resource* PreloadRequest::Start(Document* document) {
@@ -122,6 +120,13 @@ Resource* PreloadRequest::Start(Document* document) {
     resource_request.SetAttributionReportingEligibility(
         network::mojom::AttributionReportingEligibility::kEventSourceOrTrigger);
   }
+
+  bool shared_storage_writable =
+      shared_storage_writable_ &&
+      RuntimeEnabledFeatures::SharedStorageAPIM118Enabled(
+          document->domWindow()) &&
+      document->domWindow()->IsSecureContext();
+  resource_request.SetSharedStorageWritable(shared_storage_writable);
 
   ResourceLoaderOptions options(document->domWindow()->GetCurrentWorld());
   options.initiator_info = initiator_info;
@@ -173,6 +178,8 @@ Resource* PreloadRequest::Start(Document* document) {
     MaybeDisallowFetchForDocWrittenScript(params, *document);
   }
   params.SetRenderBlockingBehavior(render_blocking_behavior_);
+
+  params.SetIsPotentiallyLCPElement(is_potentially_lcp_element_);
 
   return PreloadHelper::StartPreload(resource_type_, params, *document);
 }

@@ -10,4 +10,7 @@ specific_include_rules = {
   "zcr_remote_shell_impl_unittest\.cc": [
     "+chromeos/ui/wm/features.h",
   ],
+  "zaura_shell\.cc": [
+    "+components/version_info/version_info.h",
+  ],
 }

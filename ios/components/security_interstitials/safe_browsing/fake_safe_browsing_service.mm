@@ -12,10 +12,6 @@
 #import "ios/web/public/thread/web_thread.h"
 #import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // A SafeBrowsingUrlCheckerImpl that treats all URLs as safe, unless they have
 // host safe.browsing.unsafe.chromium.test.
@@ -24,15 +20,18 @@ class FakeSafeBrowsingUrlCheckerImpl
  public:
   explicit FakeSafeBrowsingUrlCheckerImpl(
       network::mojom::RequestDestination request_destination)
-      : SafeBrowsingUrlCheckerImpl(request_destination,
-                                   base::MakeRefCounted<UrlCheckerDelegateImpl>(
-                                       /*database_manager=*/nullptr,
-                                       /*client=*/nullptr),
-                                   base::WeakPtr<web::WebState>(),
-                                   /*url_real_time_lookup_enabled=*/false,
-                                   /*can_urt_check_subresource_url=*/false,
-                                   web::GetUIThreadTaskRunner({}),
-                                   /*url_lookup_service_on_ui=*/nullptr) {}
+      : SafeBrowsingUrlCheckerImpl(
+            request_destination,
+            base::MakeRefCounted<UrlCheckerDelegateImpl>(
+                /*database_manager=*/nullptr,
+                /*client=*/nullptr),
+            base::WeakPtr<web::WebState>(),
+            /*url_real_time_lookup_enabled=*/false,
+            /*can_urt_check_subresource_url=*/false,
+            web::GetUIThreadTaskRunner({}),
+            /*url_lookup_service_on_ui=*/nullptr,
+            /*hash_realtime_service_on_ui=*/nullptr,
+            safe_browsing::hash_realtime_utils::HashRealTimeSelection::kNone) {}
   ~FakeSafeBrowsingUrlCheckerImpl() override = default;
 
   // SafeBrowsingUrlCheckerImpl:
@@ -42,17 +41,23 @@ class FakeSafeBrowsingUrlCheckerImpl
       safe_browsing::SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback
           callback) override {
     if (url.host() == FakeSafeBrowsingService::kUnsafeHost) {
-      std::move(callback).Run(/*slow_check_notifier=*/nullptr,
-                              /*proceed=*/false,
-                              /*showed_interstitial=*/true,
-                              /*did_perform_url_real_time_check=*/false,
-                              /*did_check_url_real_time_allowlist=*/true);
+      std::move(callback).Run(
+          /*slow_check_notifier=*/nullptr,
+          /*proceed=*/false,
+          /*showed_interstitial=*/true,
+          /*did_perform_url_real_time_check=*/
+          safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck::
+              kHashDatabaseCheck,
+          /*did_check_url_real_time_allowlist=*/true);
       return;
     }
-    std::move(callback).Run(/*slow_check_notifier=*/nullptr, /*proceed=*/true,
-                            /*showed_interstitial=*/false,
-                            /*did_perform_url_real_time_check=*/false,
-                            /*did_check_url_real_time_allowlist=*/true);
+    std::move(callback).Run(
+        /*slow_check_notifier=*/nullptr, /*proceed=*/true,
+        /*showed_interstitial=*/false,
+        /*did_perform_url_real_time_check=*/
+        safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck::
+            kHashDatabaseCheck,
+        /*did_check_url_real_time_allowlist=*/true);
   }
 };
 }  // namespace
@@ -98,7 +103,11 @@ FakeSafeBrowsingService::GetURLLoaderFactory() {
 
 scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
 FakeSafeBrowsingService::GetDatabaseManager() {
-  return nil;
+  return nullptr;
+}
+
+network::mojom::NetworkContext* FakeSafeBrowsingService::GetNetworkContext() {
+  return nullptr;
 }
 
 void FakeSafeBrowsingService::ClearCookies(

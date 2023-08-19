@@ -2,6 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# @generated from third_party/rust/BUILD.gn.hbs by tools/crates/gnrt.
+# Do not edit!
+
 import("//build/rust/cargo_crate.gni")
 
 cargo_crate("lib") {
@@ -13,10 +16,91 @@ cargo_crate("lib") {
   # third_party.toml to use it from first-party code.
   visibility = [ "//third_party/rust/*" ]
   crate_root = "crate/src/lib.rs"
+  sources = [
+    "//third_party/rust/rstest/v0_17/crate/src/lib.rs",
+    "//third_party/rust/rstest/v0_17/crate/src/magic_conversion.rs",
+    "//third_party/rust/rstest/v0_17/crate/src/timeout.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/fixture/mod.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/integration.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/fixture/async_fixture.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/fixture/await_complete_fixture.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/fixture/await_partial_fixture.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/fixture/clean_up_default_generics.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/fixture/default.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/fixture/default_conversion.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/fixture/default_in_attrs.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/fixture/defined_return_type.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/fixture/dyn.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/fixture/errors.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/fixture/fixture_struct.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/fixture/from_other_module.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/fixture/impl.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/fixture/no_warning.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/fixture/once.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/fixture/once_defined_type.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/fixture/once_no_return.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/fixture/partial.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/fixture/partial_in_attr.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/fixture/rename.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/fixture/resolve.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/fixture/simple_injection.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/cases/args_with_no_cases.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/cases/async.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/cases/async_awt.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/cases/async_awt_global.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/cases/case_attributes.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/cases/case_with_wrong_args.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/cases/description.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/cases/dump_just_one_case.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/cases/inject.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/cases/missed_argument.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/cases/missed_some_arguments.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/cases/partial.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/cases/simple.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/cases/use_attr.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/convert_string_literal.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/dump_debug.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/dump_debug_compact.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/dump_exclude_some_inputs.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/dump_exclude_some_inputs_compact.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/dump_not_debug.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/dump_not_debug_compact.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/errors.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/generic.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/happy_path.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/ignore_args.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/impl_param.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/matrix/async.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/matrix/async_awt.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/matrix/async_awt_global.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/matrix/inject.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/matrix/partial.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/matrix/simple.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/matrix/use_attr.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/mut.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/panic.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/reject_no_item_function.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/remove_underscore.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/rename.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/return_result.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/single/async.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/single/async_awt.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/single/async_awt_global.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/single/dump_debug.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/single/inject.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/single/partial.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/single/resolve.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/single/simple.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/timeout.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/timeout_async.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/use_mutable_fixture_in_parametric_argumnts.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/resources/rstest/values_tests_name.rs",
+    "//third_party/rust/rstest/v0_17/crate/tests/rstest/mod.rs",
+  ]
+  inputs = [ "//third_party/rust/rstest/v0_17/crate/README.md" ]
 
   # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
-  sources = [ "crate/src/lib.rs" ]
   edition = "2018"
   cargo_pkg_version = "0.17.0"
   cargo_pkg_authors = "Michele d'Amico <michele.damico@gmail.com>"

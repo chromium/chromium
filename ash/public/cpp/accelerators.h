@@ -102,6 +102,9 @@ class ASH_PUBLIC_EXPORT AcceleratorController {
   // Called by Ash to run the closure from SetVolumeAdjustmentSoundCallback.
   static void PlayVolumeAdjustmentSound();
 
+  // Returns true if |key_code| is a key usually handled directly by the shell.
+  static bool IsSystemKey(ui::KeyboardCode key_code);
+
   // Activates the target associated with the specified accelerator.
   // First, AcceleratorPressed handler of the most recently registered target
   // is called, and if that handler processes the event (i.e. returns true),

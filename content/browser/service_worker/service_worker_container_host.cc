@@ -438,6 +438,13 @@ void ServiceWorkerContainerHost::OnExecutionReady() {
   SetExecutionReady();
 }
 
+void ServiceWorkerContainerHost::GetRunningStatus(
+    GetRunningStatusCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(controller_);
+  std::move(callback).Run(controller_->running_status());
+}
+
 void ServiceWorkerContainerHost::OnVersionAttributesChanged(
     ServiceWorkerRegistration* registration,
     blink::mojom::ChangedServiceWorkerObjectsMaskPtr changed_mask) {
@@ -615,6 +622,9 @@ void ServiceWorkerContainerHost::SendSetControllerServiceWorker(
       controller()->fetch_handler_bypass_option();
   controller_info->sha256_script_checksum =
       controller()->sha256_script_checksum();
+  if (controller()->router_evaluator()) {
+    controller_info->router_rules = controller()->router_evaluator()->rules();
+  }
 
   // Pass an endpoint for the client to talk to this controller.
   mojo::Remote<blink::mojom::ControllerServiceWorker> remote =

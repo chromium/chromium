@@ -14,13 +14,15 @@ const char kChromeUIUntrustedProjectorUrl[] = "chrome-untrusted://projector/";
 const char kChromeUIUntrustedProjectorPwaUrl[] =
     "https://screencast.apps.chrome";
 
-const char kChromeUITrustedProjectorUrl[] = "chrome://projector/";
 const char kChromeUIUntrustedAnnotatorUrl[] =
     "chrome-untrusted://projector-annotator/";
 
-// LINT.IfChange
-const char kChromeUITrustedProjectorSwaAppId[] =
+const char kChromeUITrustedProjectorSwaAppIdDeprecated[] =
     "nblbgfbmjfjaeonhjnbbkabkdploocij";
+
+// LINT.IfChange
+const char kChromeUIUntrustedProjectorSwaAppId[] =
+    "hohmppfoilmflgicnofelkdablfahbnl";
 // Also update the Projector app id in the file below.
 // LINT.ThenChange(
 // src/platform/tast-tests/src/chromiumos/tast/local/apps/apps.go)

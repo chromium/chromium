@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/autofill/automation/automation_app_interface.h"
 
+#import "base/containers/contains.h"
 #import "base/json/json_reader.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -17,10 +18,6 @@
 #import "ios/testing/nserror_util.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using autofill::PersonalDataManager;
 using autofill::PersonalDataManagerFactory;
@@ -57,7 +54,7 @@ autofill::ServerFieldType ServerFieldTypeFromString(const std::string& str,
     }
   }
 
-  if (string_to_field_type_map.find(str) == string_to_field_type_map.end()) {
+  if (!base::Contains(string_to_field_type_map, str)) {
     NSString* error_description = [NSString
         stringWithFormat:@"Unable to recognize autofill field type %@!",
                          base::SysUTF8ToNSString(str)];
@@ -137,7 +134,7 @@ NSError* PrepareAutofillProfileWithValues(
       PersonalDataManagerFactory::GetForBrowserState(browser_state);
   personal_data_manager->ClearAllLocalData();
   personal_data_manager->AddCreditCard(credit_card);
-  personal_data_manager->SaveImportedProfile(profile);
+  personal_data_manager->AddProfile(profile);
 
   return nil;
 }

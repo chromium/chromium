@@ -9,6 +9,7 @@
 
 #include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/crash/core/common/crash_key.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "pdf/pdf.h"
 #include "printing/emf_win.h"
@@ -150,6 +151,13 @@ void PdfToEmfConverter::ConvertPage(uint32_t page_index,
   base::ReadOnlySharedMemoryRegion emf_region =
       RenderPdfPageToMetafile(page_index, postscript, &scale_factor);
   std::move(callback).Run(std::move(emf_region), scale_factor);
+}
+
+void PdfToEmfConverter::SetWebContentsURL(const GURL& url) {
+  // Record the most recent print job URL. This should be sufficient for common
+  // Print Preview use cases.
+  static crash_reporter::CrashKeyString<1024> crash_key("main-frame-url");
+  crash_key.Set(url.spec());
 }
 
 void PdfToEmfConverter::SetUseSkiaRendererPolicy(bool use_skia) {

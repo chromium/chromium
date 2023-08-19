@@ -11,11 +11,14 @@
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_command_line.h"
+#include "base/test/test_future.h"
+#include "base/test/to_vector.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -118,10 +121,8 @@ MATCHER(IsSystemFolder, "") {
 
 // Get a set of all apps in |model|.
 std::vector<std::string> GetModelContent(AppListModelUpdater* model_updater) {
-  std::vector<std::string> content;
-  for (size_t i = 0; i < model_updater->ItemCount(); ++i)
-    content.push_back(model_updater->ItemAtForTest(i)->name());
-  return content;
+  return base::test::ToVector(model_updater->GetItems(),
+                              &ChromeAppListItem::name);
 }
 
 scoped_refptr<extensions::Extension> MakeApp(const std::string& name,
@@ -286,22 +287,14 @@ class ExtensionAppTest : public AppServiceAppModelBuilderTest {
         registry->GetInstalledExtension(app_id);
     ASSERT_TRUE(extension);
 
-    base::RunLoop run_loop;
     int size_in_dip =
         ash::SharedAppListConfig::instance().default_grid_icon_dimension();
+    base::test::TestFuture<const gfx::Image&> image_future;
     extensions::ImageLoader::Get(profile())->LoadImageAtEveryScaleFactorAsync(
         extension, gfx::Size(size_in_dip, size_in_dip),
-        base::BindOnce(
-            [](gfx::ImageSkia* image_skia,
-               base::OnceClosure load_app_icon_callback,
-               const gfx::Image& image) {
-              *image_skia = image.AsImageSkia();
-              std::move(load_app_icon_callback).Run();
-            },
-            &output_image_skia, run_loop.QuitClosure()));
-    run_loop.Run();
-
-    output_image_skia = apps::CreateStandardIconImage(output_image_skia);
+        image_future.GetCallback());
+    output_image_skia =
+        apps::CreateStandardIconImage(image_future.Take().AsImageSkia());
   }
 
   void GenerateExtensionAppCompressedIcon(const std::string app_id,
@@ -341,7 +334,7 @@ class WebAppBuilderTest : public AppServiceAppModelBuilderTest {
   std::string CreateWebApp(const std::string& app_name) {
     const GURL kAppUrl("https://example.com/");
 
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
+    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
     web_app_info->title = base::UTF8ToUTF16(app_name);
     web_app_info->start_url = kAppUrl;
     web_app_info->scope = kAppUrl;
@@ -371,24 +364,15 @@ class WebAppBuilderTest : public AppServiceAppModelBuilderTest {
         web_app::WebAppProvider::GetForTest(profile());
     ASSERT_TRUE(web_app_provider);
 
-    base::RunLoop run_loop;
-    IconPurpose icon_purpose = IconPurpose::ANY;
-    web_app_provider->icon_manager().ReadIcons(
-        app_id, icon_purpose, icon_sizes_in_px,
-        base::BindOnce(
-            [](gfx::ImageSkia* image_skia,
-               std::map<float, int> scale_to_size_in_px,
-               base::OnceClosure load_app_icon_callback,
-               std::map<SquareSizePx, SkBitmap> icon_bitmaps) {
-              for (auto it : scale_to_size_in_px) {
-                image_skia->AddRepresentation(
-                    gfx::ImageSkiaRep(icon_bitmaps[it.second], it.first));
-              }
-              std::move(load_app_icon_callback).Run();
-            },
-            &output_image_skia, scale_to_size_in_px, run_loop.QuitClosure()));
-    run_loop.Run();
-
+    base::test::TestFuture<std::map<SquareSizePx, SkBitmap>> read_icons_future;
+    web_app_provider->icon_manager().ReadIcons(app_id, IconPurpose::ANY,
+                                               icon_sizes_in_px,
+                                               read_icons_future.GetCallback());
+    auto icon_bitmaps = read_icons_future.Take();
+    for (auto [scale, size_px] : scale_to_size_in_px) {
+      output_image_skia.AddRepresentation(
+          gfx::ImageSkiaRep(icon_bitmaps[size_px], scale));
+    }
     output_image_skia = gfx::ImageSkiaOperations::CreateMaskedImage(
         output_image_skia, apps::LoadMaskImage(scale_to_size_in_px));
 
@@ -605,18 +589,13 @@ TEST_F(ExtensionAppTest, LoadCompressedIcon) {
 
   apps::IconEffects icon_effects = apps::IconEffects::kCrOsStandardIcon;
 
-  base::RunLoop run_loop;
-  apps::IconValuePtr dst_icon;
+  base::test::TestFuture<apps::IconValuePtr> dst_icon_future;
   apps::LoadIconFromExtension(
       apps::IconType::kCompressed,
       ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
-      profile(), kPackagedApp1Id, icon_effects,
-      base::BindLambdaForTesting([&](apps::IconValuePtr icon) {
-        dst_icon = std::move(icon);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
+      profile(), kPackagedApp1Id, icon_effects, dst_icon_future.GetCallback());
 
+  auto dst_icon = dst_icon_future.Take();
   ASSERT_TRUE(dst_icon);
   ASSERT_EQ(apps::IconType::kCompressed, dst_icon->icon_type);
   ASSERT_FALSE(dst_icon->is_placeholder_icon);
@@ -747,11 +726,8 @@ class CrostiniAppTest : public AppServiceAppModelBuilderTest {
     return sync_service_->GetModelUpdater()->ItemCount();
   }
 
-  std::vector<ChromeAppListItem*> GetAllApps() const {
-    std::vector<ChromeAppListItem*> result;
-    for (size_t i = 0; i < GetModelItemCount(); ++i)
-      result.emplace_back(GetModelUpdater()->ItemAtForTest(i));
-    return result;
+  std::vector<const ChromeAppListItem*> GetAllApps() const {
+    return GetModelUpdater()->GetItems();
   }
 
   // For testing purposes, we want to pretend there are only crostini apps on
@@ -770,18 +746,18 @@ class CrostiniAppTest : public AppServiceAppModelBuilderTest {
   }
 
   void CreateBuilder() {
-    model_updater_factory_scope_ = std::make_unique<
-        AppListSyncableService::ScopedModelUpdaterFactoryForTest>(
-        base::BindRepeating(
-            [](Profile* profile,
-               reorder::AppListReorderDelegate* reorder_delegate)
-                -> std::unique_ptr<AppListModelUpdater> {
-              return std::make_unique<FakeAppListModelUpdater>(
-                  profile, reorder_delegate);
-            },
-            profile()));
+    model_updater_factory_scope_ =
+        AppListSyncableService::SetScopedModelUpdaterFactoryForTest(
+            base::BindRepeating(
+                [](Profile* profile,
+                   reorder::AppListReorderDelegate* reorder_delegate)
+                    -> std::unique_ptr<AppListModelUpdater> {
+                  return std::make_unique<FakeAppListModelUpdater>(
+                      profile, reorder_delegate);
+                },
+                profile()));
     // The AppListSyncableService creates the CrostiniAppModelBuilder.
-    sync_service_ = std::make_unique<AppListSyncableService>(profile_.get());
+    sync_service_ = std::make_unique<AppListSyncableService>(profile());
     RemoveNonCrostiniApps();
   }
 
@@ -802,8 +778,7 @@ class CrostiniAppTest : public AppServiceAppModelBuilderTest {
   std::unique_ptr<CrostiniTestHelper> test_helper_;
 
  private:
-  std::unique_ptr<AppListSyncableService::ScopedModelUpdaterFactoryForTest>
-      model_updater_factory_scope_;
+  std::unique_ptr<base::ScopedClosureRunner> model_updater_factory_scope_;
 };
 
 // Test that the Terminal app is only shown when Crostini is enabled

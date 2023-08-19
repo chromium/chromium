@@ -55,7 +55,6 @@ public class BackgroundSyncNetworkObserver implements NetworkChangeNotifierAutoD
     private @ConnectionType int mLastBroadcastConnectionType;
     private boolean mHasBroadcastConnectionType;
 
-    @VisibleForTesting
     public static void setConnectionTypeForTesting(@ConnectionType int connectionType) {
         sSetConnectionTypeForTesting = true;
         getBackgroundSyncNetworkObserver().broadcastNetworkChangeIfNecessary(connectionType);

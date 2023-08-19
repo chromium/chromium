@@ -1,0 +1,31 @@
+# MediaPipe graph to detect faces. (GPU input and inference, with region-of-interest.)
+
+type: "FaceDetectionShortRangeGpu"
+
+# The input image, either ImageFrame, or (multi-backend) Image.
+input_stream: "IMAGE:image"
+
+# ROI (region of interest) within the given image where faces should be
+# detected. (NormalizedRect)
+input_stream: "ROI:roi"
+
+# Detected faces. (std::vector<Detection>)
+output_stream: "DETECTIONS:detections"
+
+graph_options: {
+  [type.googleapis.com/mediapipe.FaceDetectionOptions] {}
+}
+
+node {
+  calculator: "FaceDetectionShortRange"
+  input_stream: "IMAGE:image"
+  input_stream: "ROI:roi"
+  output_stream: "DETECTIONS:detections"
+  node_options: {
+    [type.googleapis.com/mediapipe.FaceDetectionOptions] {
+      gpu_origin: TOP_LEFT
+      delegate: { gpu { use_advanced_gpu_api: true } }
+    }
+  }
+  option_value: "OPTIONS:options"
+}

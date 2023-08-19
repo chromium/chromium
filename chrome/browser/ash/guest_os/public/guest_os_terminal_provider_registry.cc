@@ -67,6 +67,19 @@ GuestOsTerminalProviderRegistry::Id GuestOsTerminalProviderRegistry::Register(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(next_id_ < INT_MAX);
   Id id = next_id_++;
+  providers_[id] = std::move(provider);
+  SyncPrefs(id);
+
+  return id;
+}
+
+void GuestOsTerminalProviderRegistry::SyncPrefs(
+    GuestOsTerminalProviderRegistry::Id id) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  auto pos = providers_.find(id);
+  CHECK(pos != providers_.end());
+  auto* provider = pos->second.get();
 
   // Per discussion on http://crrev/c/3774559, terminal app would like to read
   // prefs directly (via a private Chrome API) instead of getting data from
@@ -80,9 +93,9 @@ GuestOsTerminalProviderRegistry::Id GuestOsTerminalProviderRegistry::Register(
                       prefs::kTerminalSupportedKey, base::Value(true));
   UpdateContainerPref(profile_, provider->GuestId(), prefs::kTerminalLabel,
                       base::Value(provider->Label()));
-  providers_[id] = std::move(provider);
-
-  return id;
+  UpdateContainerPref(profile_, provider->GuestId(),
+                      prefs::kTerminalPolicyDisabled,
+                      base::Value(!provider->AllowedByPolicy()));
 }
 
 std::unique_ptr<GuestOsTerminalProvider>

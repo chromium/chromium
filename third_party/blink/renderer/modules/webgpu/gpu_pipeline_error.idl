@@ -14,11 +14,11 @@ dictionary GPUPipelineErrorInit {
 };
 
 [
-  Exposed(Window WebGPU, DedicatedWorker WebGPU),
+  Exposed=(Window, DedicatedWorker),
   SecureContext,
   Serializable
 ]
 interface GPUPipelineError : DOMException {
-    constructor(DOMString message, GPUPipelineErrorInit options);
+    constructor(optional DOMString message = "", GPUPipelineErrorInit options);
     readonly attribute GPUPipelineErrorReason reason;
 };

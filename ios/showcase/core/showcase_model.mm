@@ -7,10 +7,6 @@
 #import "base/check.h"
 #import "ios/showcase/core/showcase_model_buildflags.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Validates whether all classes referenced by name in |row| can be loaded

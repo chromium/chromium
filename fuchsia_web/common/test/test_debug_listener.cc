@@ -5,6 +5,7 @@
 #include "fuchsia_web/common/test/test_debug_listener.h"
 
 #include "base/auto_reset.h"
+#include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -17,7 +18,7 @@ void TestDebugListener::DestroyListener(TestPerContextListener* listener) {
 }
 
 void TestDebugListener::AddPort(uint16_t port) {
-  EXPECT_EQ(debug_ports_.find(port), debug_ports_.end());
+  EXPECT_FALSE(base::Contains(debug_ports_, port));
   debug_ports_.insert(port);
   if (on_debug_ports_changed_) {
     on_debug_ports_changed_.Run();

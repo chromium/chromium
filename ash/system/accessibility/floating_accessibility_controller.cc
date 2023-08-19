@@ -72,6 +72,7 @@ void FloatingAccessibilityController::Show(FloatingMenuPosition position) {
   init_params.max_height = kFloatingMenuHeight;
   init_params.translucent = true;
   init_params.close_on_deactivate = false;
+  init_params.type = TrayBubbleView::TrayBubbleType::kAccessibilityBubble;
   bubble_view_ = new FloatingAccessibilityBubbleView(init_params);
 
   menu_view_ = new FloatingAccessibilityView(this);

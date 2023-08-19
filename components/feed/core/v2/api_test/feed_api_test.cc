@@ -169,26 +169,49 @@ void TestUnreadContentObserver::HasUnreadContentChanged(
 TestSurfaceBase::TestSurfaceBase(const StreamType& stream_type,
                                  FeedStream* stream,
                                  SingleWebFeedEntryPoint entry_point)
-    : FeedStreamSurface(stream_type, entry_point) {
-  if (stream)
+    : stream_type_(stream_type), entry_point_(entry_point) {
+  if (stream) {
     Attach(stream);
+  }
 }
 
 TestSurfaceBase::~TestSurfaceBase() {
-  if (stream_)
+  if (bound_stream_) {
     Detach();
+  }
+
+  if (stream_) {
+    CHECK(!surface_id_.is_null());
+    stream_->DestroySurface(surface_id_);
+  }
+}
+
+SurfaceId TestSurfaceBase::GetSurfaceId() const {
+  CHECK(!surface_id_.is_null())
+      << "The surface wasn't yet created, so doesn't have an ID.";
+  return surface_id_;
+}
+
+void TestSurfaceBase::CreateWithoutAttach(FeedStream* stream) {
+  CHECK(surface_id_.is_null());
+
+  stream_ = stream->GetWeakPtr();
+  surface_id_ = stream->CreateSurface(stream_type_, entry_point_);
 }
 
 void TestSurfaceBase::Attach(FeedStream* stream) {
-  EXPECT_FALSE(stream_);
-  stream_ = stream->GetWeakPtr();
-  stream_->AttachSurface(this);
+  EXPECT_FALSE(bound_stream_);
+  if (surface_id_.is_null()) {
+    CreateWithoutAttach(stream);
+  }
+  bound_stream_ = stream->GetWeakPtr();
+  bound_stream_->AttachSurface(surface_id_, this);
 }
 
 void TestSurfaceBase::Detach() {
-  EXPECT_TRUE(stream_);
-  stream_->DetachSurface(this);
-  stream_ = nullptr;
+  EXPECT_TRUE(bound_stream_);
+  bound_stream_->DetachSurface(surface_id_);
+  bound_stream_ = nullptr;
 }
 
 void TestSurfaceBase::StreamUpdate(const feedui::StreamUpdate& stream_update) {
@@ -913,6 +936,10 @@ void FeedApiTest::SetUp() {
   image_fetcher_ =
       std::make_unique<TestImageFetcher>(shared_url_loader_factory_);
 
+  // Test initialization of TemplateURLService that defaults to Google as
+  // the default search engine.
+  template_url_service_ = std::make_unique<TemplateURLService>(nullptr, 0);
+
   CreateStream();
 }
 
@@ -966,9 +993,6 @@ DisplayMetrics FeedApiTest::GetDisplayMetrics() {
 std::string FeedApiTest::GetLanguageTag() {
   return "en-US";
 }
-bool FeedApiTest::IsAutoplayEnabled() {
-  return false;
-}
 TabGroupEnabledState FeedApiTest::GetTabGroupEnabledState() {
   return TabGroupEnabledState::kNone;
 }
@@ -990,7 +1014,8 @@ void FeedApiTest::CreateStream(bool wait_for_initialization,
   stream_ = std::make_unique<FeedStream>(
       &refresh_scheduler_, metrics_reporter_.get(), this, &profile_prefs_,
       &network_, image_fetcher_.get(), store_.get(),
-      persistent_key_value_store_.get(), chrome_info);
+      persistent_key_value_store_.get(), template_url_service_.get(),
+      chrome_info);
   stream_->SetWireResponseTranslatorForTesting(&response_translator_);
 
   if (wait_for_initialization)

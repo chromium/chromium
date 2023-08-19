@@ -34,8 +34,6 @@ example_value:
 features:
   dynamic_refresh: true
   per_profile: false
-future_on:
-- chrome_os
 owners:
 - yzd@google.com
 - cros-commercial-productivity-policy-eng@google.com
@@ -79,5 +77,7 @@ schema:
         type: string
       uuid:
         type: string
+supported_on:
+- chrome_os:116-
 tags: []
 type: dict

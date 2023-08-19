@@ -119,7 +119,7 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
       const webrtc::EncodedImage& input_image,
       bool missing_frames,
       int64_t render_time_ms);
-  bool ShouldReinitializeForSettingHDRColorSpace(
+  bool ShouldReinitializeForSettingColorSpace(
       const webrtc::EncodedImage& input_image) const;
   bool ReinitializeSync(const media::VideoDecoderConfig& config);
   void ChangeStatus(Status new_status);

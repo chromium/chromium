@@ -116,14 +116,8 @@ void V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::DestroyTask() {
 
 bool V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::Initialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(parent_->encoder_sequence_);
-  device_ = V4L2Device::Create();
+  device_ = base::MakeRefCounted<V4L2Device>();
   gpu_memory_buffer_support_ = std::make_unique<gpu::GpuMemoryBufferSupport>();
-
-  if (!device_) {
-    VLOGF(1) << "Failed to Create V4L2Device";
-    return false;
-  }
-
   output_buffer_pixelformat_ = V4L2_PIX_FMT_JPEG;
   if (!device_->Open(V4L2Device::Type::kJpegEncoder,
                      output_buffer_pixelformat_)) {
@@ -281,7 +275,7 @@ bool V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::SetInputBufferFormat(
 
     if (device_->Ioctl(VIDIOC_S_FMT, &format) == 0 &&
         format.fmt.pix_mp.pixelformat == input_pix_fmt) {
-      device_input_layout_ = V4L2Device::V4L2FormatToVideoFrameLayout(format);
+      device_input_layout_ = V4L2FormatToVideoFrameLayout(format);
 
       // Save V4L2 returned values.
       input_buffer_pixelformat_ = format.fmt.pix_mp.pixelformat;

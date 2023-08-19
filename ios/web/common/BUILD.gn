@@ -25,6 +25,7 @@ source_set("common") {
   deps = [
     "//base",
     "//ios/third_party/webkit",
+    "//ios/web/public/annotations:custom_text_check_result",
     "//ios/web/public/navigation",
     "//net",
     "//services/network/public/cpp",
@@ -34,17 +35,17 @@ source_set("common") {
   public_deps = [ ":features" ]
 
   frameworks = [ "UIKit.framework" ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("features") {
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//build:blink_buildflags",
+  ]
   sources = [
     "features.h",
     "features.mm",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("uikit") {
@@ -54,7 +55,6 @@ source_set("uikit") {
   ]
 
   deps = [ "//base" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("web_view_creation_util") {
@@ -71,8 +71,6 @@ source_set("web_view_creation_util") {
   ]
 
   frameworks = [ "UIKit.framework" ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 # This is a separate target as it is used by Cronet.
@@ -86,12 +84,9 @@ source_set("user_agent") {
     "user_agent.h",
     "user_agent.mm",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("unittests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   deps = [
     ":common",

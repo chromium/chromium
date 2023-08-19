@@ -43,6 +43,9 @@ class AshBrowserTestStarter {
   base::ScopedTempDir scoped_temp_dir_xdg_;
   base::test::ScopedFeatureList scoped_feature_list_;
   net::EmbeddedTestServer https_server_;
+
+  // Used for clean up.
+  base::FilePath ash_user_data_dir_for_cleanup_;
 };
 
 }  // namespace test

@@ -11,7 +11,7 @@
 class GURL;
 
 namespace optimization_guide {
-class NewOptimizationGuideDecider;
+class OptimizationGuideDecider;
 }  // namespace optimization_guide
 
 namespace autofill {
@@ -22,12 +22,12 @@ class FormStructure;
 class PersonalDataManager;
 
 // Class to enable and disable features on a per-origin basis using
-// optimization_guide::NewOptimizationGuideDecider.
+// optimization_guide::OptimizationGuideDecider.
 // One instance per profile.
 class AutofillOptimizationGuide : public KeyedService {
  public:
   explicit AutofillOptimizationGuide(
-      optimization_guide::NewOptimizationGuideDecider* decider);
+      optimization_guide::OptimizationGuideDecider* decider);
   AutofillOptimizationGuide(const AutofillOptimizationGuide&) = delete;
   AutofillOptimizationGuide& operator=(const AutofillOptimizationGuide&) =
       delete;
@@ -50,7 +50,7 @@ class AutofillOptimizationGuide : public KeyedService {
   virtual bool ShouldBlockSingleFieldSuggestions(const GURL& url,
                                                  AutofillField* field) const;
 
-  optimization_guide::NewOptimizationGuideDecider*
+  optimization_guide::OptimizationGuideDecider*
   GetOptimizationGuideKeyedServiceForTesting() const {
     return decider_;
   }
@@ -64,7 +64,7 @@ class AutofillOptimizationGuide : public KeyedService {
  private:
   // Raw pointer to a decider which is owned by the decider's factory.
   // The factory dependencies ensure that the `decider_` outlives this object.
-  raw_ptr<optimization_guide::NewOptimizationGuideDecider> decider_;
+  raw_ptr<optimization_guide::OptimizationGuideDecider> decider_;
 };
 
 }  // namespace autofill

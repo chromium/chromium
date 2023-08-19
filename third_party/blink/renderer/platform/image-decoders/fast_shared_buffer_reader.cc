@@ -39,9 +39,12 @@ FastSharedBufferReader::FastSharedBufferReader(
       segment_length_(0),
       data_position_(0) {}
 
+FastSharedBufferReader::~FastSharedBufferReader() = default;
+
 void FastSharedBufferReader::SetData(scoped_refptr<SegmentReader> data) {
-  if (data == data_)
+  if (data == data_) {
     return;
+  }
   data_ = std::move(data);
   ClearCache();
 }
@@ -59,20 +62,23 @@ const char* FastSharedBufferReader::GetConsecutiveData(size_t data_position,
 
   // Use the cached segment if it can serve the request.
   if (data_position >= data_position_ &&
-      data_position + length <= data_position_ + segment_length_)
+      data_position + length <= data_position_ + segment_length_) {
     return segment_ + data_position - data_position_;
+  }
 
   // Return a pointer into |data_| if the request doesn't span segments.
   GetSomeDataInternal(data_position);
-  if (length <= segment_length_)
+  if (length <= segment_length_) {
     return segment_;
+  }
 
   for (char* dest = buffer;;) {
     size_t copy = std::min(length, segment_length_);
     memcpy(dest, segment_, copy);
     length -= copy;
-    if (!length)
+    if (!length) {
       return buffer;
+    }
 
     // Continue reading the next segment.
     dest += copy;

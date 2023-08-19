@@ -5,20 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_ASH_ASH_ATTESTATION_SERVICE_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_ATTESTATION_ASH_ASH_ATTESTATION_SERVICE_H_
 
-#include <memory>
-
-#include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_service.h"
-
-class Profile;
-
-namespace ash {
-namespace attestation {
-struct TpmChallengeKeyResult;
-class TpmChallengeKeyWithTimeout;
-}  // namespace attestation
-}  // namespace ash
 
 namespace enterprise_connectors {
 
@@ -27,30 +14,13 @@ namespace enterprise_connectors {
 // Verified Access.
 class AshAttestationService : public AttestationService {
  public:
-  explicit AshAttestationService(Profile* profile);
-  ~AshAttestationService() override;
+  ~AshAttestationService() override = default;
 
-  // AttestationService:
-  void BuildChallengeResponseForVAChallenge(
-      const std::string& serialized_signed_challenge,
-      base::Value::Dict signals,
-      const std::set<DTCPolicyLevel>& levels,
-      AttestationCallback callback) override;
-
- private:
-  // Runs the `callback` which resumes the navigation with the `result`
-  // challenge response. In case the challenge response was not successfully
-  // built. An empty challenge response will be used. `tpm_key_challenger` is
-  // also forwarded to ensure the instance lives as long as the callback runs.
-  void ReturnResult(
-      std::unique_ptr<ash::attestation::TpmChallengeKeyWithTimeout>
-          tpm_key_challenger,
-      AttestationCallback callback,
-      const ash::attestation::TpmChallengeKeyResult& result);
-
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
-
-  base::WeakPtrFactory<AshAttestationService> weak_factory_{this};
+  // Tries to generate a key-certificate combination for the current profile in
+  // case the service will use the flow type DEVICE_TRUST_CONNECTOR for
+  // attestation. A failed key preparation will lead to an increased latency
+  // during the first DTC flow.
+  virtual void TryPrepareKey() = 0;
 };
 
 }  // namespace enterprise_connectors

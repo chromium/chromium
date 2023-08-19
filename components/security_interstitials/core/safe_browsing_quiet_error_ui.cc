@@ -113,6 +113,8 @@ void SafeBrowsingQuietErrorUI::HandleCommand(
     case CMD_TEXT_FOUND:
     case CMD_TEXT_NOT_FOUND:
     case CMD_OPEN_ENHANCED_PROTECTION_SETTINGS:
+    case CMD_CLOSE_INTERSTITIAL_WITHOUT_UI:
+    case CMD_REQUEST_SITE_ACCESS_PERMISSION:
       NOTREACHED();
       break;
   }

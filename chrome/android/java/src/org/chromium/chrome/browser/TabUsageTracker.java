@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
@@ -136,7 +134,6 @@ public class TabUsageTracker
     @Override
     public void onPauseWithNative() {}
 
-    @VisibleForTesting
     public TabModelSelectorTabModelObserver getTabModelSelectorTabModelObserverForTests() {
         return mTabModelSelectorTabModelObserver;
     }

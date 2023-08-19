@@ -80,8 +80,9 @@ LayoutObject* LayoutObject::Container(AncestorSkipInfo* skip_info) const {
   return Parent();
 }
 
-LayoutBox* LayoutObject::EnclosingScrollableBox() const {
+LayoutBox* LayoutObject::DeprecatedEnclosingScrollableBox() const {
   NOT_DESTROYED();
+  DCHECK(!RuntimeEnabledFeatures::IntersectionOptimizationEnabled());
   for (LayoutObject* ancestor = Parent(); ancestor;
        ancestor = ancestor->Parent()) {
     if (!ancestor->IsBox())

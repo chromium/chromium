@@ -30,7 +30,7 @@ class COMPONENT_EXPORT(UI_BASE) DropTargetEvent : public LocatedEvent {
 
  private:
   // Data associated with the drag/drop session.
-  const raw_ref<const OSExchangeData, DanglingUntriaged> data_;
+  const raw_ref<const OSExchangeData, AcrossTasksDanglingUntriaged> data_;
 
   // Bitmask of supported DragDropTypes::DragOperation by the source.
   int source_operations_;

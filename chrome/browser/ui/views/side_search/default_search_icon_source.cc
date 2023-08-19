@@ -8,7 +8,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/search/omnibox_utils.h"
-#include "components/omnibox/browser/omnibox_edit_model.h"
+#include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/geometry/insets.h"
@@ -74,9 +74,11 @@ gfx::Image DefaultSearchIconSource::GetRawIconImage() const {
   // Attempt to synchronously get the current default search engine's favicon.
   auto* omnibox_view = search::GetOmniboxView(active_contents);
   DCHECK(omnibox_view);
-  return omnibox_view->model()->client()->GetFaviconForDefaultSearchProvider(
-      base::BindRepeating(&DefaultSearchIconSource::OnIconFetched,
-                          weak_ptr_factory_.GetMutableWeakPtr()));
+  return omnibox_view->controller()
+      ->client()
+      ->GetFaviconForDefaultSearchProvider(
+          base::BindRepeating(&DefaultSearchIconSource::OnIconFetched,
+                              weak_ptr_factory_.GetMutableWeakPtr()));
 }
 
 void DefaultSearchIconSource::OnIconFetched(const gfx::Image& icon) {

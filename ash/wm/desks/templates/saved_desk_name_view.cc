@@ -21,6 +21,7 @@ SavedDeskNameView::SavedDeskNameView()
   // The focus ring is created in `DeskTextfield`'s constructor.
   views::FocusRing* focus_ring = views::FocusRing::Get(this);
   DCHECK(focus_ring);
+  focus_ring->SetOutsetFocusRingDisabled(true);
   focus_ring->SetHaloInset(-kFocusRingGapDp);
 }
 
@@ -28,11 +29,6 @@ SavedDeskNameView::~SavedDeskNameView() = default;
 
 void SavedDeskNameView::OnContentsChanged() {
   PreferredSizeChanged();
-}
-
-gfx::Size SavedDeskNameView::CalculatePreferredSize() const {
-  return gfx::Size(DeskTextfield::CalculatePreferredSize().width(),
-                   kSavedDeskNameViewHeight);
 }
 
 void SavedDeskNameView::OnGestureEvent(ui::GestureEvent* event) {

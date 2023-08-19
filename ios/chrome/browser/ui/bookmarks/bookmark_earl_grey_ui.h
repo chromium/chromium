@@ -169,7 +169,7 @@ id<GREYMatcher> SearchIconButton();
 
 // Bookmarks the current tab using `title` as Bookmark title. Make sure the
 // Bookmark loaded is loaded before by calling [BookmarkEarlGrey
-// waitForBookmarkModelLoaded:YES];
+// waitForBookmarkModelsLoaded];
 - (void)bookmarkCurrentTabWithTitle:(NSString*)title;
 
 @end

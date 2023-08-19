@@ -129,7 +129,7 @@ class BLINK_PLATFORM_EXPORT WebCryptoKey {
   void Assign(const WebCryptoKey& other);
   void Reset();
 
-  WebPrivatePtr<WebCryptoKeyPrivate> private_;
+  WebPrivatePtrForRefCounted<WebCryptoKeyPrivate> private_;
 };
 
 // Base class for the embedder to define its own opaque key handle. The lifetime

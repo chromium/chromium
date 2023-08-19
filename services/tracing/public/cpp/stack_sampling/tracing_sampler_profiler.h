@@ -269,7 +269,11 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
 
   base::Lock lock_;
   std::unique_ptr<base::StackSamplingProfiler> profiler_;  // under |lock_|
-  raw_ptr<TracingProfileBuilder> profile_builder_ = nullptr;
+  // This dangling raw_ptr occurred in:
+  // services_unittests: TracingSampleProfilerTest.SamplingChildThread
+  // https://ci.chromium.org/ui/p/chromium/builders/try/win-rel/237204/test-results?q=ExactID%3Aninja%3A%2F%2Fservices%3Aservices_unittests%2FTracingSampleProfilerTest.SamplingChildThread+VHash%3A83af393c6a76b581
+  raw_ptr<TracingProfileBuilder, FlakyDanglingUntriaged> profile_builder_ =
+      nullptr;
   base::RepeatingClosure sample_callback_for_testing_;
 
 #if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)

@@ -9,11 +9,16 @@
 
 #include "ash/ash_export.h"
 #include "ash/shell_observer.h"
+#include "ash/wm_mode/pie_menu_view.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/aura/window_observer.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/compositor/layer_owner.h"
 #include "ui/events/event_handler.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/views/widget/unique_widget_ptr.h"
 
 namespace aura {
 class Window;
@@ -35,7 +40,9 @@ class WindowDimmer;
 class ASH_EXPORT WmModeController : public ShellObserver,
                                     public ui::EventHandler,
                                     public ui::LayerOwner,
-                                    public ui::LayerDelegate {
+                                    public ui::LayerDelegate,
+                                    public aura::WindowObserver,
+                                    public PieMenuView::Delegate {
  public:
   WmModeController();
   WmModeController(const WmModeController&) = delete;
@@ -46,6 +53,7 @@ class ASH_EXPORT WmModeController : public ShellObserver,
 
   bool is_active() const { return is_active_; }
   aura::Window* selected_window() { return selected_window_; }
+  views::Widget* pie_menu_widget() { return pie_menu_widget_.get(); }
 
   // Toggles the active state of this mode.
   void Toggle();
@@ -63,6 +71,12 @@ class ASH_EXPORT WmModeController : public ShellObserver,
   void OnPaintLayer(const ui::PaintContext& context) override;
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
                                   float new_device_scale_factor) override {}
+
+  // aura::WindowObserver:
+  void OnWindowDestroying(aura::Window* window) override;
+
+  // PieMenuView::Delegate:
+  void OnPieMenuButtonPressed(int button_id) override;
 
   // Returns true if the given `root` window is being dimmed.
   bool IsRootWindowDimmedForTesting(aura::Window* root) const;
@@ -86,6 +100,28 @@ class ASH_EXPORT WmModeController : public ShellObserver,
   // be called when WM Mode is active `layer()` is valid.
   void MaybeChangeRoot(aura::Window* new_root);
 
+  // Sets the given `window` as the currently selected window. If `window` is
+  // nullptr, the selected window is cleared.
+  void SetSelectedWindow(aura::Window* window);
+
+  // Schedules repainting the contents of the layer owned by `this`.
+  void ScheduleRepaint();
+
+  // Builds the pie menu widget.
+  void BuildPieMenu();
+
+  // Returns true if the given `event_target` is contained within the window
+  // tree of the pie menu if it exists.
+  bool IsTargetingPieMenu(aura::Window* event_target) const;
+
+  // Gets the top-most window that can be selected for WM Mode operations at the
+  // given `screen_location`.
+  aura::Window* GetTopMostWindowAtPoint(
+      const gfx::Point& screen_location) const;
+
+  // Refreshes the visibility and the bounds of the pie menu (if it exists).
+  void MaybeRefreshPieMenu();
+
   bool is_active_ = false;
 
   // The current root window the layer of `this` belongs to. It's always nullptr
@@ -95,7 +131,11 @@ class ASH_EXPORT WmModeController : public ShellObserver,
   // The window that got selected as the top-most one at the most recent
   // received located event. This window (if available) will be the one that
   // receives all the gestures supported by this mode.
-  raw_ptr<aura::Window, ExperimentalAsh> selected_window_ = nullptr;
+  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> selected_window_ =
+      nullptr;
+
+  views::UniqueWidgetPtr pie_menu_widget_;
+  raw_ptr<PieMenuView> pie_menu_view_ = nullptr;
 
   // When WM Mode is enabled, we dim all the displays as an indication of this
   // special mode being active, which disallows the normal interaction with
@@ -103,6 +143,11 @@ class ASH_EXPORT WmModeController : public ShellObserver,
   // this mode.
   // `dimmers_` maps each root window to its associated dimmer.
   base::flat_map<aura::Window*, std::unique_ptr<WindowDimmer>> dimmers_;
+
+  // The screen location of the last received release located event.
+  // Valid only if we receive a release located event, and only until
+  // `OnLocatedEvent()` returns.
+  absl::optional<gfx::Point> last_release_event_screen_point_;
 };
 
 }  // namespace ash

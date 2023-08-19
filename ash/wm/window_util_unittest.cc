@@ -7,6 +7,7 @@
 #include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/test/fake_window_state.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_delegate.h"
@@ -14,6 +15,7 @@
 #include "base/containers/contains.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/wm/core/window_util.h"
@@ -28,58 +30,6 @@ std::string GetAdjustedBounds(const gfx::Rect& visible,
   AdjustBoundsToEnsureMinimumWindowVisibility(visible, &to_be_adjusted);
   return to_be_adjusted.ToString();
 }
-
-class FakeWindowState : public WindowState::State {
- public:
-  FakeWindowState() = default;
-
-  FakeWindowState(const FakeWindowState&) = delete;
-  FakeWindowState& operator=(const FakeWindowState&) = delete;
-
-  ~FakeWindowState() override = default;
-
-  // WindowState::State overrides:
-  void OnWMEvent(WindowState* window_state, const WMEvent* event) override {
-    if (event->type() == WM_EVENT_MINIMIZE)
-      was_visible_on_minimize_ = window_state->window()->IsVisible();
-  }
-  chromeos::WindowStateType GetType() const override {
-    return chromeos::WindowStateType::kNormal;
-  }
-  void AttachState(WindowState* window_state,
-                   WindowState::State* previous_state) override {}
-  void DetachState(WindowState* window_state) override {}
-
-  bool was_visible_on_minimize() { return was_visible_on_minimize_; }
-
- private:
-  bool was_visible_on_minimize_ = true;
-};
-
-class FakeWindowStateDelegate : public WindowStateDelegate {
- public:
-  FakeWindowStateDelegate() = default;
-
-  FakeWindowStateDelegate(const FakeWindowStateDelegate&) = delete;
-  FakeWindowStateDelegate& operator=(const FakeWindowStateDelegate&) = delete;
-
-  // WindowStateDelegate overrides:
-  bool ToggleFullscreen(WindowState* window_state) override { return false; }
-  void ToggleLockedFullscreen(WindowState* window_state) override {
-    toggle_locked_fullscreen_count_++;
-  }
-  std::unique_ptr<PresentationTimeRecorder> OnDragStarted(
-      int component) override {
-    return nullptr;
-  }
-
-  int toggle_locked_fullscreen_count() {
-    return toggle_locked_fullscreen_count_;
-  }
-
- private:
-  int toggle_locked_fullscreen_count_ = 0;
-};
 
 }  // namespace
 
@@ -282,7 +232,7 @@ TEST_F(WindowUtilTest, EnsureTransientRoots) {
 TEST_F(WindowUtilTest,
        MinimizeAndHideWithoutAnimationMinimizesArcWindowsBeforeHiding) {
   auto window = CreateTestWindow();
-  auto* state = new FakeWindowState();
+  auto* state = new FakeWindowState(chromeos::WindowStateType::kNormal);
   WindowState::Get(window.get())
       ->SetStateObject(std::unique_ptr<WindowState::State>(state));
 
@@ -374,6 +324,40 @@ TEST_F(WindowUtilTest, PinWindow_TabletMode) {
   EXPECT_TRUE(WindowState::Get(window.get())->IsPinned());
   EXPECT_TRUE(WindowState::Get(window.get())->IsTrustedPinned());
   EXPECT_EQ(window_state_delegate_ptr->toggle_locked_fullscreen_count(), 3);
+}
+
+TEST_F(WindowUtilTest, ShouldRoundThumbnailWindow) {
+  const float rounding = 30.f;
+  auto backdrop_view = std::make_unique<views::View>();
+  backdrop_view->SetPaintToLayer();
+  backdrop_view->layer()->SetRoundedCornerRadius(
+      {rounding, rounding, rounding, rounding});
+
+  // Note that `SetPosition` does nothing since this view is floating. For this
+  // test this is fine, but if we need to have a position, we need to attach
+  // this view to a views tree.
+  backdrop_view->SetBounds(0, 0, 300, 200);
+  ASSERT_EQ(gfx::Rect(300, 200), backdrop_view->GetBoundsInScreen());
+
+  // If the thumbnail covers the backdrop completely, it should be rounded as
+  // well.
+  EXPECT_TRUE(ShouldRoundThumbnailWindow(backdrop_view.get(),
+                                         gfx::RectF(300.f, 200.f)));
+
+  // If the thumbnail is completely within the backdrop's bounds including
+  // rounding, it doesn't need to be rounded.
+  EXPECT_FALSE(ShouldRoundThumbnailWindow(backdrop_view.get(),
+                                          gfx::RectF(0.f, 30.f, 300.f, 140.f)));
+  EXPECT_FALSE(ShouldRoundThumbnailWindow(backdrop_view.get(),
+                                          gfx::RectF(30.f, 0.f, 240.f, 200.f)));
+
+  // The thumbnail partially covers the part of the backdrop that will not get
+  // drawn. We should round the thumbnail as well in this case, otherwise the
+  // corner will be drawn over the rounding.
+  EXPECT_TRUE(ShouldRoundThumbnailWindow(backdrop_view.get(),
+                                         gfx::RectF(0.f, 15.f, 300.f, 170.f)));
+  EXPECT_TRUE(ShouldRoundThumbnailWindow(backdrop_view.get(),
+                                         gfx::RectF(15.f, 0.f, 270.f, 200.f)));
 }
 
 }  // namespace window_util

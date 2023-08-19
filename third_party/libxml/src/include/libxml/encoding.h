@@ -32,6 +32,15 @@
 extern "C" {
 #endif
 
+typedef enum {
+    XML_ENC_ERR_SUCCESS     =  0,
+    XML_ENC_ERR_SPACE       = -1,
+    XML_ENC_ERR_INPUT       = -2,
+    XML_ENC_ERR_PARTIAL     = -3,
+    XML_ENC_ERR_INTERNAL    = -4,
+    XML_ENC_ERR_MEMORY      = -5
+} xmlCharEncError;
+
 /*
  * xmlCharEncoding:
  *

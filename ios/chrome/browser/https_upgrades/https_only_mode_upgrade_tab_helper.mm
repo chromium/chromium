@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/components/security_interstitials/https_only_mode/feature.h"
 #import "ios/components/security_interstitials/https_only_mode/https_only_mode_blocking_page.h"
 #import "ios/components/security_interstitials/https_only_mode/https_only_mode_container.h"
 #import "ios/components/security_interstitials/https_only_mode/https_only_mode_controller_client.h"
@@ -24,10 +25,6 @@
 #import "net/base/mac/url_conversions.h"
 #import "net/base/url_util.h"
 #import "url/url_constants.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using security_interstitials::https_only_mode::Event;
 
@@ -245,10 +242,18 @@ void HttpsOnlyModeUpgradeTabHelper::ShouldAllowResponse(
   if (state_ == State::kFallbackStarted) {
     DCHECK(!timer_.IsRunning());
     state_ = State::kDone;
-    HttpsOnlyModeContainer* container =
-        HttpsOnlyModeContainer::FromWebState(web_state());
-    container->SetHttpUrl(http_url_);
-    std::move(callback).Run(CreateHttpsOnlyModeErrorDecision());
+
+    // If HTTPS-First Mode is enabled, show the interstitial.
+    if (prefs_ && prefs_->GetBoolean(prefs::kHttpsOnlyModeEnabled)) {
+      HttpsOnlyModeContainer* container =
+          HttpsOnlyModeContainer::FromWebState(web_state());
+      container->SetHttpUrl(http_url_);
+      std::move(callback).Run(CreateHttpsOnlyModeErrorDecision());
+      return;
+    }
+    // Otherwise, this is a failed HTTPS-Upgrade. Allow the response.
+    std::move(callback).Run(
+        web::WebStatePolicyDecider::PolicyDecision::Allow());
     return;
   }
 
@@ -263,7 +268,9 @@ void HttpsOnlyModeUpgradeTabHelper::ShouldAllowResponse(
 
   // Upgrade to HTTPS if the navigation wasn't upgraded before.
   if (item_pending->GetHttpsUpgradeType() == web::HttpsUpgradeType::kNone) {
-    if (!prefs_ || !prefs_->GetBoolean(prefs::kHttpsOnlyModeEnabled) ||
+    if ((!base::FeatureList::IsEnabled(
+             security_interstitials::features::kHttpsUpgrades) &&
+         !(prefs_ && prefs_->GetBoolean(prefs::kHttpsOnlyModeEnabled))) ||
         service_->IsLocalhost(url)) {
       // Don't upgrade if the feature is disabled or the URL is localhost.
       // See ShouldCreateLoader() function in
@@ -326,10 +333,16 @@ void HttpsOnlyModeUpgradeTabHelper::ShouldAllowResponse(
   state_ = State::kDone;
   RecordUMA(Event::kUpgradeFailed);
 
-  HttpsOnlyModeContainer* container =
-      HttpsOnlyModeContainer::FromWebState(web_state());
-  container->SetHttpUrl(url);
-  std::move(callback).Run(CreateHttpsOnlyModeErrorDecision());
+  // If HTTPS-First Mode is enabled, show the interstitial.
+  if (prefs_ && prefs_->GetBoolean(prefs::kHttpsOnlyModeEnabled)) {
+    HttpsOnlyModeContainer* container =
+        HttpsOnlyModeContainer::FromWebState(web_state());
+    container->SetHttpUrl(url);
+    std::move(callback).Run(CreateHttpsOnlyModeErrorDecision());
+    return;
+  }
+  // Otherwise, this is a failed HTTPS-Upgrade. Allow the response.
+  std::move(callback).Run(web::WebStatePolicyDecider::PolicyDecision::Allow());
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(HttpsOnlyModeUpgradeTabHelper)

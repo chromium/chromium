@@ -12,26 +12,35 @@
 namespace companion {
 namespace features {
 
+// `internal` code should be called outside this file with extreme caution.
+// The external code should call the utility functions defined in
+// chrome/browser/ui/side_panel/companion/companion_utils.h or
+// chrome/browser/companion/core/utils.h.
+namespace internal {
 // This differs from the search companion by providing a separate WebUI that
 // contains untrusted content in an iframe.
+// Companion can be directly enabled by either `kSidePanelCompanion` or
+// `kSidePanelCompanion2`. This makes it possible for Companion to be
+// enabled via multiple field trials (e.g., one that's session consistent, other
+// that's permanent consistent).
 BASE_FEATURE(kSidePanelCompanion,
              "SidePanelCompanion",
              base::FEATURE_DISABLED_BY_DEFAULT);
-constexpr base::FeatureParam<std::string> kHomepageURLForCompanion{
-    &kSidePanelCompanion, "companion-homepage-url",
-    "https://lens.google.com/companion"};
+BASE_FEATURE(kSidePanelCompanion2,
+             "SidePanelCompanion2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+// Dynamically enables the search companion if the user has experiments
+// enabled.
+BASE_FEATURE(kCompanionEnabledByObservingExpsNavigations,
+             "CompanionEnabledByObservingExpsNavigations",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+}  // namespace internal
 
-constexpr base::FeatureParam<std::string> kImageUploadURLForCompanion{
-    &kSidePanelCompanion, "companion-image-upload-url",
-    "https://lens.google.com/upload"};
-constexpr base::FeatureParam<bool> kEnableOpenCompanionForImageSearch{
-    &kSidePanelCompanion, "open-companion-for-image-search", true};
-constexpr base::FeatureParam<bool> kEnableOpenCompanionForWebSearch{
-    &kSidePanelCompanion, "open-companion-for-web-search", true};
-
-constexpr base::FeatureParam<bool> kOpenLinksInCurrentTab{
-    &kSidePanelCompanion, "open-links-in-current-tab", true};
-
+// When search companion is enabled, show a context menu item that allows the
+// user to bypass the companion and open search results in a new tab.
+BASE_FEATURE(kCompanionEnableSearchWebInNewTabContextMenuItem,
+             "CompanionEnableSearchWebInNewTabContextMenuItem",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace features
 
 namespace switches {

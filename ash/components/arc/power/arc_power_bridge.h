@@ -116,6 +116,12 @@ class ArcPowerBridge : public KeyedService,
 
   static void EnsureFactoryBuilt();
 
+  // Notify ARC and patchpanel about change in power state, notification to
+  // patchpanel is used to decide whether to start/stop forwarding multicast
+  // traffic to ARC.
+  static void NotifyAndroidInteractiveState(ArcBridgeService* bridge,
+                                            bool enabled);
+
  private:
   class WakeLockRequestor;
 

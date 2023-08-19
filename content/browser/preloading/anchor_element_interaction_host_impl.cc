@@ -28,10 +28,12 @@ void AnchorElementInteractionHostImpl::OnPointerDown(const GURL& url) {
   preloading_decider->OnPointerDown(url);
 }
 
-void AnchorElementInteractionHostImpl::OnPointerHover(const GURL& url) {
+void AnchorElementInteractionHostImpl::OnPointerHover(
+    const GURL& url,
+    blink::mojom::AnchorElementPointerDataPtr mouse_data) {
   auto* preloading_decider =
       PreloadingDecider::GetOrCreateForCurrentDocument(&render_frame_host());
-  preloading_decider->OnPointerHover(url);
+  preloading_decider->OnPointerHover(url, std::move(mouse_data));
 }
 
 }  // namespace content

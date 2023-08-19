@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(crbug.com/1309178): Define CSSOM API for @try at rule.
-
 [Exposed=Window, RuntimeEnabled=CSSAnchorPositioning]
-interface CSSTryRule : CSSRule { };
+interface CSSTryRule : CSSRule {
+  [SameObject, PutForwards=cssText] readonly attribute CSSStyleDeclaration style;
+};

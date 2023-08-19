@@ -74,7 +74,7 @@ absl::optional<AuthSessionIntent> DeserializeIntent(
 }  // namespace
 
 AuthPerformer::AuthPerformer(UserDataAuthClient* client) : client_(client) {
-  DCHECK(client_);
+  CHECK(client_);
 }
 
 AuthPerformer::~AuthPerformer() = default;
@@ -393,6 +393,78 @@ void AuthPerformer::GetAuthSessionStatus(std::unique_ptr<UserContext> context,
                               std::move(callback)));
 }
 
+void AuthPerformer::GetRecoveryRequest(
+    const std::string& access_token,
+    const CryptohomeRecoveryEpochResponse& epoch,
+    std::unique_ptr<UserContext> context,
+    RecoveryRequestCallback callback) {
+  if (context->GetAuthSessionId().empty()) {
+    NOTREACHED() << "Auth session should exist";
+  }
+
+  LOGIN_LOG(EVENT) << "Obtaining RecoveryRequest";
+
+  user_data_auth::GetRecoveryRequestRequest request;
+
+  request.set_auth_session_id(context->GetAuthSessionId());
+
+  const std::string& gaia_id = context->GetGaiaID();
+  CHECK(!gaia_id.empty()) << "Recovery is only supported for gaia users";
+  CHECK(!access_token.empty());
+  const std::string& reauth_proof_token = context->GetReauthProofToken();
+  CHECK(!reauth_proof_token.empty()) << "Reauth proof token must be set";
+
+  request.set_requestor_user_id_type(
+      user_data_auth::GetRecoveryRequestRequest::GAIA_ID);
+  request.set_requestor_user_id(gaia_id);
+  request.set_auth_factor_label(kCryptohomeRecoveryKeyLabel);
+  request.set_gaia_access_token(access_token);
+  request.set_gaia_reauth_proof_token(reauth_proof_token);
+  request.set_epoch_response(epoch->data(), epoch->size());
+
+  client_->GetRecoveryRequest(
+      std::move(request),
+      base::BindOnce(&AuthPerformer::OnGetRecoveryRequest,
+                     weak_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(context)));
+}
+
+void AuthPerformer::AuthenticateWithRecovery(
+    const CryptohomeRecoveryEpochResponse& epoch,
+    const CryptohomeRecoveryResponse& recovery_response,
+    const RecoveryLedgerName ledger_name,
+    const RecoveryLedgerPubKey ledger_public_key,
+    uint32_t ledger_public_key_hash,
+    std::unique_ptr<UserContext> context,
+    AuthOperationCallback callback) {
+  if (context->GetAuthSessionId().empty()) {
+    NOTREACHED() << "Auth session should exist";
+  }
+
+  LOGIN_LOG(EVENT) << "Authenticating via Recovery";
+
+  user_data_auth::AuthenticateAuthFactorRequest request;
+
+  request.set_auth_session_id(context->GetAuthSessionId());
+  request.set_auth_factor_label(kCryptohomeRecoveryKeyLabel);
+
+  user_data_auth::CryptohomeRecoveryAuthInput* recovery_input =
+      request.mutable_auth_input()->mutable_cryptohome_recovery_input();
+  recovery_input->set_epoch_response(epoch->data(), epoch->size());
+  recovery_input->set_recovery_response(recovery_response->data(),
+                                        recovery_response->size());
+  user_data_auth::CryptohomeRecoveryAuthInput::LedgerInfo* ledger =
+      recovery_input->mutable_ledger_info();
+  ledger->set_name(ledger_name.value());
+  ledger->set_key_hash(ledger_public_key_hash);
+  ledger->set_public_key(ledger_public_key.value());
+
+  client_->AuthenticateAuthFactor(
+      request, base::BindOnce(&AuthPerformer::OnAuthenticateAuthFactor,
+                              weak_factory_.GetWeakPtr(), std::move(context),
+                              std::move(callback)));
+}
+
 /// ---- private callbacks ----
 
 void AuthPerformer::OnStartAuthSession(
@@ -553,6 +625,25 @@ void AuthPerformer::OnGetAuthSessionStatus(
   }
   std::move(callback).Run(status, lifetime, std::move(context),
                           /*cryptohome_error=*/absl::nullopt);
+}
+
+void AuthPerformer::OnGetRecoveryRequest(
+    RecoveryRequestCallback callback,
+    std::unique_ptr<UserContext> context,
+    absl::optional<user_data_auth::GetRecoveryRequestReply> reply) {
+  auto error = user_data_auth::ReplyToCryptohomeError(reply);
+
+  if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
+    LOGIN_LOG(EVENT) << "Failed to obtain recovery request, error code "
+                     << error;
+    std::move(callback).Run(absl::nullopt, std::move(context),
+                            AuthenticationError{error});
+    return;
+  }
+
+  CHECK(!reply->recovery_request().empty());
+  std::move(callback).Run(RecoveryRequest(reply->recovery_request()),
+                          std::move(context), absl::nullopt);
 }
 
 }  // namespace ash

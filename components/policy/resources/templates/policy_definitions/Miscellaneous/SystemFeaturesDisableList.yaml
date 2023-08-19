@@ -1,5 +1,5 @@
 caption: Configure the camera, browser settings, os settings, scanning, web store,
-  canvas, explore and crosh features to be disabled
+  canvas, explore, crosh, gallery and terminal features to be disabled
 desc: |-
   Allows you to set a list of <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> features to be disabled.
 
@@ -47,6 +47,12 @@ items:
 - caption: Crosh (supported since version 99)
   name: crosh
   value: crosh
+- caption: Gallery (supported since version 117)
+  name: gallery
+  value: gallery
+- caption: Terminal (supported since version 117)
+  name: terminal
+  value: terminal
 owners:
 - file://components/policy/OWNERS
 - ayaelattar@chromium.org
@@ -63,6 +69,8 @@ schema:
     - google_news
     - explore
     - crosh
+    - gallery
+    - terminal
     type: string
   type: array
 supported_on:

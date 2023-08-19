@@ -16,8 +16,10 @@ namespace ash::settings {
 SettingsUserActionTracker::SettingsUserActionTracker(
     Hierarchy* hierarchy,
     OsSettingsSections* sections,
-    PrefService* pref_service)
-    : hierarchy_(hierarchy), sections_(sections), pref_service_(pref_service) {}
+    PrefService* profile_pref_service)
+    : hierarchy_(hierarchy),
+      sections_(sections),
+      profile_pref_service_(profile_pref_service) {}
 
 SettingsUserActionTracker::~SettingsUserActionTracker() = default;
 
@@ -31,8 +33,8 @@ void SettingsUserActionTracker::BindInterface(
                      base::Unretained(this)));
 
   // New session started, so create a new per session tracker.
-  per_session_tracker_ =
-      std::make_unique<PerSessionSettingsUserActionTracker>(pref_service_);
+  per_session_tracker_ = std::make_unique<PerSessionSettingsUserActionTracker>(
+      profile_pref_service_);
 }
 
 void SettingsUserActionTracker::EndCurrentSession() {

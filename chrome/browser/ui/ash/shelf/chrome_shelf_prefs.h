@@ -8,9 +8,10 @@
 #include <string>
 #include <vector>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"
-#include "components/services/app_service/public/cpp/app_types.h"
 
 class ShelfControllerHelper;
 class PrefService;
@@ -35,7 +36,7 @@ class ChromeShelfPrefs : public app_list::AppListSyncableService::Observer {
 
   // Key for the dictionary entries in the prefs::kPinnedLauncherApps list
   // specifying the extension ID of the app to be pinned by that entry.
-  static const char kPinnedAppsPrefAppIDKey[];
+  static constexpr char kPinnedAppsPrefAppIDKey[] = "id";
 
   // All prefs must be registered early in the process lifecycle.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
@@ -59,56 +60,43 @@ class ChromeShelfPrefs : public app_list::AppListSyncableService::Observer {
 
   // Gets the ordered list of apps that have been pinned by policy. May contain
   // duplicates.
-  std::vector<std::string> GetAppsPinnedByPolicy(ShelfControllerHelper* helper);
+  static std::vector<std::string> GetAppsPinnedByPolicy(Profile* profile);
 
   // Removes information about pin position from sync model for the app.
   // Note, |shelf_id| with non-empty launch_id is not supported.
-  void RemovePinPosition(Profile* profile, const ash::ShelfID& shelf_id);
+  void RemovePinPosition(const ash::ShelfID& shelf_id);
 
   // Updates information about pin position in sync model for the app
   // |shelf_id|. |shelf_id_before| optionally specifies an app that exists right
   // before the target app. |shelf_ids_after| optionally specifies sorted by
   // position apps that exist right after the target app. Note, |shelf_id| with
   // non-empty launch_id is not supported.
+  // |pinned_by_policy| tells whether this item is pinned to the shelf by the
+  // `PinnedLauncherApps` policy.
   void SetPinPosition(const ash::ShelfID& shelf_id,
                       const ash::ShelfID& shelf_id_before,
-                      const std::vector<ash::ShelfID>& shelf_ids_after);
+                      const std::vector<ash::ShelfID>& shelf_ids_after,
+                      bool pinned_by_policy);
 
   // Makes GetPinnedAppsFromSync() return an empty list. Avoids test failures
   // due to an untitled Play Store icon in the shelf.
   // https://crbug.com/1085597
   static void SkipPinnedAppsFromSyncForTest();
 
-  // Ensure the Files Chrome app pinned positions are appropriately migrated to
-  // the Files System Web App.
-  void MigrateFilesChromeAppToSWA(
-      app_list::AppListSyncableService* syncable_service);
-
-  // This is run each time ash launches and each time new data is obtained from
-  // sync. It ensures that both ash-chrome and lacros-chrome are properly
-  // pinned or unpinned.
-  void EnsureChromePinned(app_list::AppListSyncableService* syncable_service);
-
-  // Whether the default apps have already been added for this device form
-  // factor.
-  bool DidAddDefaultApps(PrefService* pref_service);
-
-  // Virtual for testing.
-  // Whether it's safe to add the default apps. We will refrain from adding the
-  // default apps if there are policies that modify the pinned apps, or if app
-  // sync has not yet started.
-  virtual bool ShouldAddDefaultApps(PrefService* pref_service);
-
-  // This migration is run once per device form factor and the result is stored
-  // in prefs. It is never run again if that pref is present. It causes several
-  // default apps to be shown in the shelf.
-  void AddDefaultApps(PrefService* pref_service,
-                      app_list::AppListSyncableService* syncable_service);
+  // Makes ShouldAddDefaultApps() return true.
+  static void SetShouldAddDefaultAppsForTest();
 
   // In multi-user login, it's possible for the profile to change during a
   // session. This requires resetting all migrations. This method is also called
   // shorty after initialization.
   void AttachProfile(Profile* profile);
+
+ private:
+  FRIEND_TEST_ALL_PREFIXES(ChromeShelfPrefsTest, AddChromePinNoExistingOrdinal);
+  FRIEND_TEST_ALL_PREFIXES(ChromeShelfPrefsTest, AddChromePinExistingOrdinal);
+  FRIEND_TEST_ALL_PREFIXES(ChromeShelfPrefsTest, AddDefaultApps);
+  FRIEND_TEST_ALL_PREFIXES(ChromeShelfPrefsTest, ProfileChanged);
+  FRIEND_TEST_ALL_PREFIXES(ChromeShelfPrefsTest, LacrosOnlyPinnedApp);
 
   // Sync is the source of truth. However, the data from sync can be
   // nonsensical, either because the user nuked all sync data, corruption, or
@@ -123,66 +111,35 @@ class ChromeShelfPrefs : public app_list::AppListSyncableService::Observer {
   // again.
   bool ShouldPerformConsistencyMigrations() const;
 
-  // During Lacros development, there is a period of time when we wish to deploy
-  // a transparent migration to Lacros, while still allowing users to fall back
-  // to Ash. This requires us to be very careful about how we store data in
-  // sync, which will be used by potentially both Lacros and Ash. We use the
-  // following scheme:
-  // (1) If the app is either an ash extension platform app or a lacros
-  // extension platform app, we store the ash extension app id in sync.
-  // (2) If the app is part of a small keep-list that continues to run in ash,
-  // we expose the ash extension app id to the shelf.
-  // (3) If Lacros chrome apps is enabled, we expose the lacros extension app id
-  // to the shelf.
-  // (4) If ash chrome apps is enabled, we expose the ash extension app id to
-  // the shelf.
-  //
-  // These methods are public as there are some places that need to translate
-  // from the ShelfId to SyncId to match up with policy, which uses SyncId.
-  //
-  // In order to ensure that the chrome icon in the shelf is consistent across
-  // devices, we must apply the following rules:
-  // (1) If ash is the only web-browser, transform [sync id] kChromeAppId <->
-  // [shelf id] kChromeAppId
-  // (2) If lacros is the only web-browser, transform [sync id] kChromeAppId <->
-  // [shelf id] kLacrosAppId
-  // (3) If lacros and ash are both web browsers, do not use any transformation.
-  std::string GetShelfId(const std::string& sync_id);
-  std::string GetSyncId(const std::string& shelf_id);
+  // Ensure the Files Chrome app pinned positions are appropriately migrated to
+  // the Files System Web App.
+  void MigrateFilesChromeAppToSWA();
 
- protected:
-  // Virtual for testing. Returns the syncable service associated with the
-  // current profile.
-  virtual app_list::AppListSyncableService* GetSyncableService();
+  // Ensure that Projector app pinned positions are appropriatley migrated after
+  // the change to its app-id.
+  void EnsureProjectorShelfPinConsistency();
 
-  // Virtual for testing. Returns the pref service associated with the current
-  // profile.
-  virtual PrefService* GetPrefs();
+  // This is run each time ash launches and each time new data is obtained from
+  // sync. It ensures that both ash-chrome and lacros-chrome are properly
+  // pinned or unpinned.
+  void EnsureChromePinned();
 
-  // Starts observing the sync service if not already doing so.
-  virtual void ObserveSyncService();
+  // Whether the default apps have already been added for this device form
+  // factor.
+  bool DidAddDefaultApps() const;
 
-  // Virtual for testing. The migration to use a standalone browser (lacros) to
-  // publish chrome apps is incomplete. In the interim, this class uses some
-  // workarounds to ensure that sync does not end up in an inconsistent state.
-  virtual bool IsStandaloneBrowserPublishingChromeApps();
+  // Whether it's safe to add the default apps. We will refrain from adding the
+  // default apps if there are policies that modify the pinned apps, or if app
+  // sync has not yet started.
+  bool ShouldAddDefaultApps() const;
 
-  // Virtual for testing. Returns the app type associated with an app id.
-  virtual apps::AppType GetAppType(const std::string& app_id);
+  // This migration is run once per device form factor and the result is stored
+  // in prefs. It is never run again if that pref is present. It causes several
+  // default apps to be shown in the shelf.
+  void AddDefaultApps();
 
-  // Virtual for testing. Returns whether this app_id corresponds to an ash
-  // extension-based platform app.
-  virtual bool IsAshExtensionApp(const std::string& app_id);
-
-  // Virtual for testing. There's a small set of apps that always run in Ash.
-  virtual bool IsAshKeepListApp(const std::string& app_id);
-
- private:
   // app_list::AppListSyncableService::Observer:
   void OnSyncModelUpdated() override;
-
-  // Stops observing the current sync service.
-  void StopObservingSyncService();
 
   // Migrations are performed in several situations:
   //   (1) On first launch
@@ -192,10 +149,9 @@ class ChromeShelfPrefs : public app_list::AppListSyncableService::Observer {
   // be idempotent.
   bool needs_consistency_migrations_ = true;
 
-  // The sync service instance that is currently being observed. If nullptr then
-  // nothing is being observed.
-  raw_ptr<app_list::AppListSyncableService, ExperimentalAsh>
-      observed_sync_service_ = nullptr;
+  base::ScopedObservation<app_list::AppListSyncableService,
+                          app_list::AppListSyncableService::Observer>
+      sync_service_observer_{this};
 
   // The owner of this class is responsible for ensuring the validity of this
   // pointer.

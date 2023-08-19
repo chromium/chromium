@@ -24,6 +24,7 @@ class MockAuthFactorStatusConsumer : public AuthFactorStatusConsumer {
               (override));
   MOCK_METHOD(void, OnFactorListChanged, (FactorsStatusMap), (override));
   MOCK_METHOD(void, OnFactorStatusesChanged, (FactorsStatusMap), (override));
+  MOCK_METHOD(void, OnFactorCustomSignal, (AshAuthFactor), (override));
   MOCK_METHOD(void, OnFactorAuthFailure, (AshAuthFactor), (override));
   MOCK_METHOD(void, OnFactorAuthSuccess, (AshAuthFactor), (override));
   MOCK_METHOD(void, OnEndAuthentication, (), (override));

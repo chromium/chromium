@@ -527,9 +527,9 @@ void ServiceWorkerContextClient::SendWorkerStarted(
   CHECK_LE(start_timing_->script_evaluation_start_time,
            start_timing_->script_evaluation_end_time);
 
-  instance_host_->OnStarted(status, proxy_->FetchHandlerType(),
-                            WorkerThread::GetCurrentId(),
-                            std::move(start_timing_));
+  instance_host_->OnStarted(
+      status, proxy_->FetchHandlerType(), proxy_->HasHidEventHandlers(),
+      WorkerThread::GetCurrentId(), std::move(start_timing_));
 
   TRACE_EVENT_NESTABLE_ASYNC_END0("ServiceWorker", "ServiceWorkerContextClient",
                                   this);
@@ -553,6 +553,13 @@ void ServiceWorkerContextClient::RequestTermination(
     RequestTerminationCallback callback) {
   DCHECK(worker_task_runner_->RunsTasksInCurrentSequence());
   instance_host_->RequestTermination(std::move(callback));
+}
+
+bool ServiceWorkerContextClient::ShouldNotifyServiceWorkerOnWebSocketActivity(
+    v8::Local<v8::Context> context) {
+  return GetContentClient()
+      ->renderer()
+      ->ShouldNotifyServiceWorkerOnWebSocketActivity(context);
 }
 
 void ServiceWorkerContextClient::StopWorkerOnInitiatorThread() {

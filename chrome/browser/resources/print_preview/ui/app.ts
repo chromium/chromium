@@ -420,7 +420,7 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
       // </if>
 
       const whenPrintDone =
-          this.nativeLayer_!.print(this.$.model.createPrintTicket(
+          this.nativeLayer_!.doPrint(this.$.model.createPrintTicket(
               this.destination_, this.openPdfInPreview_,
               this.showSystemDialogBeforePrint_));
       const onError = this.destination_.type === PrinterType.PDF_PRINTER ?

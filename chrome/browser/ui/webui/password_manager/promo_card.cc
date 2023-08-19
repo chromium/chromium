@@ -12,6 +12,8 @@
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/chromium_strings.h"
@@ -166,7 +168,7 @@ PasswordCheckupPromo::PasswordCheckupPromo(
     extensions::PasswordsPrivateDelegate* delegate)
     : PromoCardInterface(kCheckupPromoId, prefs) {
   CHECK(delegate);
-  delegate_ = delegate;
+  delegate_ = delegate->AsWeakPtr();
 }
 
 PasswordCheckupPromo::~PasswordCheckupPromo() = default;
@@ -176,7 +178,13 @@ std::string PasswordCheckupPromo::GetPromoID() const {
 }
 
 bool PasswordCheckupPromo::ShouldShowPromo() const {
-  if (delegate_->GetCredentialGroups().empty()) {
+  // Don't show promo if checkup is disabled by policy.
+  if (!prefs_->GetBoolean(
+          password_manager::prefs::kPasswordLeakDetectionEnabled)) {
+    return false;
+  }
+  // Don't show promo if there are no saved passwords.
+  if (!delegate_ || delegate_->GetCredentialGroups().empty()) {
     return false;
   }
   // If promo card was dismissed or shown already for kPromoDisplayLimit times,
@@ -233,7 +241,8 @@ std::u16string WebPasswordManagerPromo::GetDescription() const {
 }
 
 PasswordManagerShortcutPromo::PasswordManagerShortcutPromo(Profile* profile)
-    : PromoCardInterface(kShortcutPromoId, profile->GetPrefs()) {
+    : PromoCardInterface(kShortcutPromoId, profile->GetPrefs()),
+      profile_(profile) {
   is_shortcut_installed_ =
       web_app::FindInstalledAppWithUrlInScope(
           profile, GURL(chrome::kChromeUIPasswordManagerURL))
@@ -249,6 +258,14 @@ bool PasswordManagerShortcutPromo::ShouldShowPromo() const {
     return false;
   }
 
+  auto* service = UserEducationServiceFactory::GetForBrowserContext(profile_);
+  if (service) {
+    auto* tutorial_service = &service->tutorial_service();
+    if (tutorial_service && tutorial_service->IsRunningTutorial()) {
+      return false;
+    }
+  }
+
   return !was_dismissed_ && number_of_times_shown_ < kPromoDisplayLimit;
 }
 
@@ -258,10 +275,8 @@ std::u16string PasswordManagerShortcutPromo::GetTitle() const {
 }
 
 std::u16string PasswordManagerShortcutPromo::GetDescription() const {
-  return l10n_util::GetStringFUTF16(
-      IDS_PASSWORD_MANAGER_UI_SHORTCUT_PROMO_CARD_DESCRIPTION,
-      l10n_util::GetStringUTF16(
-          IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SAVING_ON_DEVICE));
+  return l10n_util::GetStringUTF16(
+      IDS_PASSWORD_MANAGER_UI_SHORTCUT_PROMO_CARD_DESCRIPTION);
 }
 
 std::u16string PasswordManagerShortcutPromo::GetActionButtonText() const {

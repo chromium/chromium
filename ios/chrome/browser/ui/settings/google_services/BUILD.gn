@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("google_services") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "accounts_table_view_controller.h",
     "accounts_table_view_controller.mm",
@@ -33,15 +32,16 @@ source_set("google_services") {
     ":constants",
     "resources:google_services_enterprise",
     "//base",
-    "//components/autofill/core/common",
     "//components/browser_sync",
     "//components/google/core/common",
     "//components/metrics",
     "//components/password_manager/core/common",
     "//components/password_manager/core/common:features",
     "//components/prefs",
+    "//components/signin/public/base",
     "//components/signin/public/identity_manager/objc",
     "//components/strings",
+    "//components/supervised_user/core/common",
     "//components/sync",
     "//components/sync/service",
     "//components/unified_consent",
@@ -49,6 +49,7 @@ source_set("google_services") {
     "//ios/chrome/browser/commerce:commerce",
     "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/policy:policy_util",
+    "//ios/chrome/browser/settings/sync/utils",
     "//ios/chrome/browser/settings/sync/utils:identity_error_util",
     "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
@@ -77,8 +78,8 @@ source_set("google_services") {
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/browser/ui/settings/elements:enterprise_info_popover_view_controller",
+    "//ios/chrome/browser/ui/settings/elements:info_popover_view_controller",
     "//ios/chrome/browser/ui/settings/sync",
-    "//ios/chrome/browser/ui/settings/sync/utils",
     "//ios/chrome/browser/ui/settings/utils",
     "//ios/chrome/browser/url_loading",
     "//ios/chrome/common/ui/colors",
@@ -90,7 +91,6 @@ source_set("google_services") {
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "accounts_table_view_controller_constants.h",
     "accounts_table_view_controller_constants.mm",
@@ -103,10 +103,7 @@ source_set("constants") {
 }
 
 source_set("eg_app_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "google_services_settings_app_interface.h",
@@ -121,10 +118,7 @@ source_set("eg_app_support+eg2") {
   ]
 }
 source_set("eg_test_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "google_services_settings_app_interface.h",
@@ -134,10 +128,7 @@ source_set("eg_test_support+eg2") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "accounts_table_egtest.mm",
@@ -148,11 +139,13 @@ source_set("eg2_tests") {
     ":eg_test_support+eg2",
     "//base",
     "//base/test:test_support",
+    "//components/bookmarks/common",
     "//components/password_manager/core/common",
     "//components/policy:generated",
     "//components/policy/core/common:common_constants",
     "//components/signin/public/base",
     "//components/strings",
+    "//components/supervised_user/core/common:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/policy:eg_test_support+eg2",
     "//ios/chrome/browser/policy:policy_util",
@@ -164,6 +157,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
     "//ios/chrome/browser/ui/bookmarks:eg_test_support+eg2",
     "//ios/chrome/browser/ui/settings:constants",
+    "//ios/chrome/browser/ui/settings:eg_test_support+eg2",
     "//ios/chrome/browser/ui/settings/google_services:constants",
     "//ios/chrome/common/ui/promo_style:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
@@ -176,7 +170,6 @@ source_set("eg2_tests") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "accounts_table_view_controller_unittest.mm",
@@ -185,9 +178,9 @@ source_set("unit_tests") {
   deps = [
     ":google_services",
     "//base/test:test_support",
-    "//components/autofill/core/common",
     "//components/prefs",
     "//components/prefs:test_support",
+    "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/sync",
     "//components/sync:test_support",
@@ -209,6 +202,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin:test_support",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/sync:test_support",
+    "//ios/chrome/browser/ui/authentication/cells",
     "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/browser/ui/settings/google_services:constants",
     "//ios/chrome/test:test_support",

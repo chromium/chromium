@@ -9,11 +9,15 @@
 
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/signin/ios/browser/wait_for_network_callback_helper.h"
 #include "components/signin/public/base/signin_client.h"
 #include "net/cookies/cookie_change_dispatcher.h"
 
 class ChromeBrowserState;
+class WaitForNetworkCallbackHelperIOS;
+
+namespace version_info {
+enum class Channel;
+}
 
 // Concrete implementation of SigninClient for //ios/chrome.
 class IOSChromeSigninClient : public SigninClient {
@@ -47,10 +51,11 @@ class IOSChromeSigninClient : public SigninClient {
       content_settings::Observer* observer) override;
   bool AreNetworkCallsDelayed() override;
   void DelayNetworkCall(base::OnceClosure callback) override;
+  version_info::Channel GetClientChannel() override;
 
  private:
   // Helper to delay callbacks until connection becomes online again.
-  std::unique_ptr<WaitForNetworkCallbackHelper> network_callback_helper_;
+  std::unique_ptr<WaitForNetworkCallbackHelperIOS> network_callback_helper_;
   // The browser state associated with this service.
   ChromeBrowserState* browser_state_;
   // Used to check if sign in cookies are allowed.

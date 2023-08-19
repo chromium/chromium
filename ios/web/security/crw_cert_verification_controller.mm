@@ -6,10 +6,10 @@
 
 #import <memory>
 
+#import "base/apple/foundation_util.h"
 #import "base/check_op.h"
 #import "base/functional/bind.h"
 #import "base/ios/block_types.h"
-#import "base/mac/foundation_util.h"
 #import "base/memory/ref_counted.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/thread_pool.h"
@@ -21,10 +21,6 @@
 #import "net/cert/cert_verify_proc_ios.h"
 #import "net/cert/x509_util.h"
 #import "net/cert/x509_util_apple.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using base::TaskShutdownBehavior;
 using base::TaskTraits;
@@ -236,7 +232,7 @@ using web::WebThread;
     base::ScopedCFTypeRef<CFArrayRef> certificateChain(
         SecTrustCopyCertificateChain(trust));
     SecCertificateRef secCertificate =
-        base::mac::CFCastStrict<SecCertificateRef>(
+        base::apple::CFCastStrict<SecCertificateRef>(
             CFArrayGetValueAtIndex(certificateChain, 0));
     leafCert = net::x509_util::CreateX509CertificateFromSecCertificate(
         base::ScopedCFTypeRef<SecCertificateRef>(secCertificate,

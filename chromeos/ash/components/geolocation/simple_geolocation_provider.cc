@@ -43,12 +43,16 @@ void SimpleGeolocationProvider::RequestGeolocation(
     SimpleGeolocationRequest::ResponseCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
+  // Drop request if the system geolocation permission is not granted.
+  if (!delegate_->IsSystemGeolocationAllowed()) {
+    return;
+  }
+
+  // System permission is granted:
   auto cell_vector = std::make_unique<CellTowerVector>();
   auto wifi_vector = std::make_unique<WifiAccessPointVector>();
 
-  // Geolocation permission is required to access Wi-Fi and cellular signals.
-  if ((send_wifi_access_points || send_cell_towers) &&
-      delegate_->IsPreciseGeolocationAllowed()) {
+  if (send_wifi_access_points || send_cell_towers) {
     // Mostly necessary for testing and rare cases where NetworkHandler is not
     // initialized: in that case, calls to Get() will fail.
     GeolocationHandler* geolocation_handler = geolocation_handler_;

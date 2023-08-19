@@ -25,33 +25,26 @@ class FakeQuickStartDecoder : public mojom::QuickStartDecoder {
 
   // mojom::QuickStartDecoder:
   void DecodeBootstrapConfigurations(
-      const std::vector<uint8_t>& data,
+      const absl::optional<std::vector<uint8_t>>& data,
       DecodeBootstrapConfigurationsCallback callback) override;
   void DecodeGetAssertionResponse(
-      const std::vector<uint8_t>& data,
+      const absl::optional<std::vector<uint8_t>>& data,
       DecodeGetAssertionResponseCallback callback) override;
   void DecodeWifiCredentialsResponse(
-      const std::vector<uint8_t>& data,
+      const absl::optional<std::vector<uint8_t>>& data,
       DecodeWifiCredentialsResponseCallback callback) override;
   void DecodeNotifySourceOfUpdateResponse(
-      const std::vector<uint8_t>& data,
+      const absl::optional<std::vector<uint8_t>>& data,
       DecodeNotifySourceOfUpdateResponseCallback callback) override;
   void DecodeUserVerificationRequested(
-      const std::vector<uint8_t>& data,
+      const absl::optional<std::vector<uint8_t>>& data,
       DecodeUserVerificationRequestedCallback callback) override;
   void DecodeUserVerificationResult(
-      const std::vector<uint8_t>& data,
+      const absl::optional<std::vector<uint8_t>>& data,
       DecodeUserVerificationResultCallback callback) override;
 
   void SetExpectedData(std::vector<uint8_t> expected_data);
-  void SetAssertionResponse(
-      mojom::GetAssertionResponse::GetAssertionStatus status,
-      uint8_t decoder_status,
-      uint8_t decoder_error,
-      const std::string& email,
-      const std::string& credential_id,
-      const std::vector<uint8_t>& signature,
-      const std::vector<uint8_t>& data);
+  void SetAssertionResponse(mojom::FidoAssertionResponsePtr fido_assertion);
 
   void SetUserVerificationResponse(mojom::UserVerificationResult result,
                                    bool is_first_user_verification);
@@ -72,16 +65,10 @@ class FakeQuickStartDecoder : public mojom::QuickStartDecoder {
 
  private:
   std::vector<uint8_t> expected_data_;
-  mojom::GetAssertionResponse::GetAssertionStatus response_status_;
-  uint8_t response_decoder_status_;
-  uint8_t response_decoder_error_;
-  std::string response_email_;
-  std::string response_credential_id_;
-  std::vector<uint8_t> response_signature_;
-  std::vector<uint8_t> response_data_;
   mojo::ReceiverSet<ash::quick_start::mojom::QuickStartDecoder> receiver_set_;
   absl::optional<bool> notify_source_of_update_response_;
   mojom::WifiCredentialsPtr credentials_;
+  mojom::FidoAssertionResponsePtr fido_assertion_;
   mojom::UserVerificationRequestedPtr user_verification_request_;
   mojom::UserVerificationResponsePtr user_verification_response_;
   absl::optional<mojom::QuickStartDecoderError> error_;

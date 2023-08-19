@@ -15,7 +15,7 @@
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom-forward.h"
-#include "components/web_package/shared_file.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
 #include "net/base/net_errors.h"
 #include "services/data_decoder/public/cpp/safe_web_bundle_parser.h"
@@ -31,6 +31,62 @@ class SignedWebBundleIntegrityBlock;
 }
 
 namespace web_app {
+
+namespace internal {
+
+// This class is responsible for establishing and maintaining of
+// the IPC connection for parsing of the Signed Web Bundle.
+class SafeWebBundleParserConnection {
+ public:
+  static base::expected<std::unique_ptr<SafeWebBundleParserConnection>,
+                        UnusableSwbnFileError>
+  CreateSafeWebBundleParserConnection(const base::File* web_bundle_file,
+                                      absl::optional<GURL> base_url);
+
+  ~SafeWebBundleParserConnection();
+
+  using ReconnectCompleteCallback =
+      base::OnceCallback<void(base::expected<void, std::string> status)>;
+
+  // Subscribes the instance of this class on OnParserDisconnected
+  // events.
+  void StartProcessingDisconnects();
+  bool is_disconnected() const { return state_ != State::kConnected; }
+  // Tries to reestablish IPC connection.
+  void Reconnect(ReconnectCompleteCallback reconnect_callback);
+
+  // The public fields below violate encapsulation. The problem is that
+  // there is no good way (so far) how to treat them. Returning
+  // const reference is currently not an option because reading
+  // is not a const function of these types (even though logically it is
+  // const).
+  // So far it is better to leave these fields in such an ugly form
+  // to pay attention to them in the nearest future.
+  // TODO(peletskyi): Make proper encapsulation here.
+  std::unique_ptr<data_decoder::SafeWebBundleParser> parser_;
+
+  // These fields we may not need after refactoring of the tests.
+  base::RepeatingClosure parser_disconnect_callback_for_testing_;
+  absl::optional<base::File::Error> reconnection_file_error_for_testing_;
+
+ private:
+  SafeWebBundleParserConnection(const base::File* web_bundle_file,
+                                absl::optional<GURL> base_url);
+  enum class State {
+    kConnected,
+    kDisconnected,
+  };
+
+  void OnParserDisconnected();
+
+  const raw_ref<const base::File> web_bundle_file_;
+  absl::optional<GURL> base_url_;
+  State state_ = State::kDisconnected;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+  base::WeakPtrFactory<SafeWebBundleParserConnection> weak_ptr_factory_{this};
+};
+}  // namespace internal
 
 // This class is a reader for Signed Web Bundles.
 //
@@ -212,16 +268,7 @@ class SignedWebBundleReader {
       std::unique_ptr<web_package::SignedWebBundleSignatureVerifier>
           signature_verifier);
 
-  void Initialize(
-      IntegrityBlockReadResultCallback integrity_block_result_callback,
-      ReadErrorCallback read_error_callback);
-
   void OnFileOpened(
-      IntegrityBlockReadResultCallback integrity_block_result_callback,
-      ReadErrorCallback read_error_callback,
-      std::unique_ptr<base::File> file);
-
-  void OnFileDuplicated(
       IntegrityBlockReadResultCallback integrity_block_result_callback,
       ReadErrorCallback read_error_callback,
       base::File file);
@@ -236,10 +283,6 @@ class SignedWebBundleReader {
       web_package::SignedWebBundleIntegrityBlock integrity_block,
       ReadErrorCallback callback,
       SignatureVerificationAction action);
-
-  void VerifySignatures(
-      web_package::SignedWebBundleIntegrityBlock integrity_block,
-      ReadErrorCallback callback);
 
   void OnFileLengthRead(
       web_package::SignedWebBundleIntegrityBlock integrity_block,
@@ -270,28 +313,17 @@ class SignedWebBundleReader {
                         web_package::mojom::BundleResponsePtr response,
                         web_package::mojom::BundleResponseParseErrorPtr error);
 
-  // The following methods are for reconnection handling if the
-  // `SafeWebBundleParser` disconnects at some point after integrity block and
+  // The following method is a callback for reconnection handling if the
+  // `SafeWebBundleParser` in the `SignedWebBundleParserConnection`
+  // disconnects at some point after integrity block and
   // metadata have been read. Reconnecting to a new parser will be attempted on
   // the next call to `ReadResponse`.
-  void OnParserDisconnected();
-  void Reconnect();
-  void ReconnectForFile(base::File file);
-  void DidReconnect(absl::optional<std::string> error);
+  void OnReconnect(base::expected<void, std::string> status);
 
   State state_ = State::kUninitialized;
 
-  bool is_disconnected_ = false;
-  base::FilePath web_bundle_path_;
-  absl::optional<GURL> base_url_;
   std::unique_ptr<web_package::SignedWebBundleSignatureVerifier>
       signature_verifier_;
-
-  std::unique_ptr<data_decoder::SafeWebBundleParser> parser_;
-  base::RepeatingClosure parser_disconnect_callback_for_testing_;
-  absl::optional<base::File::Error> reconnection_file_error_for_testing_;
-
-  scoped_refptr<web_package::SharedFile> file_;
 
   // Integrity Block
   absl::optional<uint64_t> integrity_block_size_in_bytes_;
@@ -306,8 +338,78 @@ class SignedWebBundleReader {
                         ResponseCallback>>
       pending_read_responses_;
 
+  base::FilePath web_bundle_path_;
+  absl::optional<GURL> base_url_;
+  absl::optional<base::File> file_;
+  std::unique_ptr<internal::SafeWebBundleParserConnection> connection_;
+
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<SignedWebBundleReader> weak_ptr_factory_{this};
+};
+
+// This is a base class for fetching an info about a unsecure .swbn file.
+// The implementation of the pure virtual functions of this class should
+// provide a logic to read a specific thing from a bundle.
+// A signed web bundle considered unsecure if the signed web bundle ID of the
+// file is not known from a trusted source. Examples of trusted source of the ID
+// are the enterprise policy, a distributor store, etc.
+// Integrity check of the .swbn file without knowing the expected ID makes no
+// sense as an attacker can resign the tampered bundle with their private key.
+class UnsecureReader {
+ public:
+  UnsecureReader(const UnsecureReader&) = delete;
+  UnsecureReader& operator=(const UnsecureReader&) = delete;
+  virtual ~UnsecureReader();
+
+ protected:
+  explicit UnsecureReader(const base::FilePath& web_bundle_path);
+  // Initializes the connection which in the end leads to
+  // |DoReading()| execution.
+  void StartReading();
+
+  // Implementation of this does real work to fetch the particular
+  // information about the .swbn file.
+  virtual void DoReading() = 0;
+  // Implementation should return an error to the caller.
+  virtual void ReturnError(UnusableSwbnFileError error) = 0;
+  virtual base::WeakPtr<UnsecureReader> GetWeakPtr() = 0;
+
+  void OnFileOpened(base::File file);
+
+  base::FilePath web_bundle_path_;
+  absl::optional<base::File> file_;
+  std::unique_ptr<internal::SafeWebBundleParserConnection> connection_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+};
+
+class UnsecureSignedWebBundleIdReader : public UnsecureReader {
+ public:
+  using WebBundleIdCallback = base::OnceCallback<void(
+      base::expected<web_package::SignedWebBundleId, UnusableSwbnFileError>)>;
+
+  static void GetWebBundleId(const base::FilePath& web_bundle_path,
+                             WebBundleIdCallback result_callback);
+
+  ~UnsecureSignedWebBundleIdReader() override;
+
+ protected:
+  explicit UnsecureSignedWebBundleIdReader(
+      const base::FilePath& web_bundle_path);
+
+  void DoReading() override;
+  base::WeakPtr<UnsecureReader> GetWeakPtr() override;
+  void ReturnError(UnusableSwbnFileError error) override;
+
+  void OnIntegrityBlockParsed(
+      web_package::mojom::BundleIntegrityBlockPtr raw_integrity_block,
+      web_package::mojom::BundleIntegrityBlockParseErrorPtr error);
+
+ private:
+  void SetResultCallback(WebBundleIdCallback web_bundle_id_result_callback);
+
+  WebBundleIdCallback web_bundle_id_callback_;
+  base::WeakPtrFactory<UnsecureSignedWebBundleIdReader> weak_ptr_factory_{this};
 };
 
 }  // namespace web_app

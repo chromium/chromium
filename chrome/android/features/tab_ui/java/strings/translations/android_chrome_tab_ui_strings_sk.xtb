@@ -3,8 +3,6 @@
 <translationbundle lang="sk">
 <translation id="1075622780330595106">V poslednom čase ste nepoužili tento počet kariet: <ph name="NUMBER_OF_TABS" />. Chcete ich zavrieť?</translation>
 <translation id="125153950246128346">Klepnutím zobrazíte ďalšiu kartu</translation>
-<translation id="1403228085774130835">Zatvorené karty nájdete v hlavnej ponuke Chromu na kartách Nedávne</translation>
-<translation id="1455506303394048917">Vaša aktivita v týchto kartách inkognito bude vymazaná z tohto zariadenia</translation>
 <translation id="1499635324672558517">Chcete zavrieť všetky karty inkognito?</translation>
 <translation id="1657719826150349398">Presunúť kartu nadol</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> karta}few{<ph name="TABS_COUNT_MANY" /> karty}many{<ph name="TABS_COUNT_MANY" /> tabs}other{<ph name="TABS_COUNT_MANY" /> kariet}}</translation>
@@ -47,6 +45,7 @@
 <translation id="5073204694187207510">Skryť mriežku na celú obrazovku</translation>
 <translation id="5076161749301278626">Chcete si zobraziť recenzie v obchode?</translation>
 <translation id="5082793167783849073">Ak chcete rýchlo porovnať stránky, vytvorte skupinu. Začnite pridržaním ľubovoľného odkazu.</translation>
+<translation id="5339733443032484186">Vaša posledná karta</translation>
 <translation id="5490235265819901748">Skupina kariet bola rozbalená</translation>
 <translation id="5494920125229734069">Vybrať všetko</translation>
 <translation id="5556417849629758491">Zobraziť informácie o obchode, možnosť je k dispozícii v dolnej časti obrazovky</translation>
@@ -62,10 +61,12 @@
 <translation id="6228793724645064692">(hodnotenie obchodu)</translation>
 <translation id="6333260925957816943">Informácie o tomto obchode</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Zrušiť zoskupenie <ph name="TABS_COUNT_ONE" /> vybranej karty}few{Zrušiť zoskupenie <ph name="TABS_COUNT_MANY" /> vybraných kariet}many{Ungroup <ph name="TABS_COUNT_MANY" /> selected tabs}other{Zrušiť zoskupenie <ph name="TABS_COUNT_MANY" /> vybraných kariet}}</translation>
+<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Zatvorené karty nájdete v hlavnej ponuke Chromu na kartách Nedávne. Karta inkognito nebude k dispozícii.}few{Zatvorené karty nájdete v hlavnej ponuke Chromu na kartách Nedávne. # karty inkognito nebudú k dispozícii.}many{You can find your closed tabs in Recent tabs under the Chrome main menu. Your # Incognito tabs won't be available.}other{Zatvorené karty nájdete v hlavnej ponuke Chromu na kartách Nedávne. # kariet inkognito nebude k dispozícii.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> karta}few{<ph name="TABS_COUNT_MANY" /> karty}many{<ph name="TABS_COUNT_MANY" /> tabs}other{<ph name="TABS_COUNT_MANY" /> kariet}}</translation>
 <translation id="6549021453810473782">Zobraziť informácie o obchode</translation>
 <translation id="6562820390860419811">Presunúť kartu doľava</translation>
 <translation id="6615455863669487791">Ukázať</translation>
+<translation id="661742612106409204">Zatvorené karty nájdete v hlavnej ponuke Chromu na kartách Nedávne.</translation>
 <translation id="6840760312327750441">Ak chcete zoskupiť karty, pridržte niektorú z nich. Potom ju presuňte na inú.</translation>
 <translation id="6856809498882026482">Skryť režim hromadného výberu</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Zdieľať kartu}few{Zdieľať karty}many{Zdieľať karty}other{Zdieľať karty}}</translation>

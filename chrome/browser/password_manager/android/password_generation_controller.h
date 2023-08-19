@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/touch_to_fill/password_generation/android/touch_to_fill_password_generation_controller.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-forward.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "content/public/browser/web_contents.h"
@@ -16,8 +17,6 @@
 namespace password_manager {
 class ContentPasswordManagerDriver;
 }  // namespace password_manager
-class TouchToFillPasswordGenerationController;
-class TouchToFillPasswordGenerationBridge;
 
 // Interface for the controller responsible for overseeing the UI flow for
 // password generation.
@@ -111,12 +110,6 @@ class PasswordGenerationController {
   // navigation to reset the bottom sheet state and allow it to be shown again
   // on the next page.
   virtual void HideBottomSheetIfNeeded() = 0;
-
-  // Called when content::WebContents render frame is deleted.
-  // Ensures that the password generation bottom sheet is hidden when the frame
-  // is removed.
-  virtual void RenderFrameDeleted(
-      content::RenderFrameHost* render_frame_host) = 0;
 
   virtual std::unique_ptr<TouchToFillPasswordGenerationController>
   CreateTouchToFillGenerationControllerForTesting(

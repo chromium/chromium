@@ -1,45 +1,13 @@
 <html>
 <head>
 <script src="../../resources/js-test.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 </head>
 <body>
 <script>
-description("Test the behavior of disconneced canvas recovery after a gpu context loss");
-
-var ctx;
-var lostEventHasFired = false;
-var contextLostTest;
-if (window.internals) {
-    if (window.testRunner) {
-        testRunner.dumpAsText();
-        testRunner.waitUntilDone();
-    }
-    var canvas = document.createElement('canvas');
-    canvas.addEventListener('contextlost', contextLost);
-    canvas.addEventListener('contextrestored', contextRestored);
-    ctx = canvas.getContext('2d', {willReadFrequently: true});
-
-    ctx.fillRect(0, 0, 1, 1);
-    // setTimeout creates a frame barrier that locks the canvas into gpu
-    // acceleration mode when running under virtual/gpu
-    setTimeout(() => {
-        // Now it is safe to use verifyContextLost without fearing side-effects
-        // because a rendering mode was fixed.
-        verifyContextLost(false);
-
-        internals.forceLoseCanvasContext(canvas, "2d");
-        if (!ctx.isContextLost()) {
-            debug('<span>Aborting test: Graphics context loss did not destroy canvas contents. This is expected if canvas is not accelerated.</span>');
-            if (window.testRunner) {
-                testRunner.notifyDone();
-            }
-        } else {
-            verifyContextLost(true);
-        }
-    }, 1);
-} else {
-    testFailed('This test requires window.internals.');
-}
+let ctx;
+let lostEventHasFired = false;
 
 function verifyContextLost(shouldBeLost) {
     // Verify context loss experimentally as well as isContextLost()
@@ -47,35 +15,51 @@ function verifyContextLost(shouldBeLost) {
     ctx.fillRect(0, 0, 1, 1);
     contextLostTest = ctx.getImageData(0, 0, 1, 1).data[1] == 0;
     if (shouldBeLost) {
-        shouldBeTrue('contextLostTest');
-        shouldBeTrue('ctx.isContextLost()');
+        assert_true(contextLostTest);
+        assert_true(ctx.isContextLost());
     } else {
-        shouldBeFalse('contextLostTest');
-        shouldBeFalse('ctx.isContextLost()');
+        assert_false(contextLostTest);
+        assert_false(ctx.isContextLost());
     }
 }
 
 function contextLost() {
-    if (lostEventHasFired) {
-        testFailed('Context lost event was dispatched more than once.');
-    } else {
-        testPassed('Graphics context lost event dispatched.');
-    }
+    assert_false(lostEventHasFired, 'Context lost event was dispatched more than once.');
     lostEventHasFired = true;
     verifyContextLost(true);
 }
 
 function contextRestored() {
-    if (lostEventHasFired) {
-        testPassed('Context restored event dispatched after context lost.');
-    } else {
-        testFailed('Context restored event was dispatched before a context lost event.');
-    }
+    assert_true(lostEventHasFired, 'Context restored event was dispatched before a context lost event.');
     verifyContextLost(false);
-    if (window.testRunner) {
-        testRunner.notifyDone();
-    }
 }
+
+async_test(function(t) {
+    if (window.internals) {
+        var canvas = document.createElement('canvas');
+        canvas.addEventListener('contextlost', contextLost);
+        canvas.addEventListener('contextrestored', contextRestored);
+        ctx = canvas.getContext('2d', {willReadFrequently: true});
+
+        ctx.fillRect(0, 0, 1, 1);
+        // setTimeout creates a frame barrier that locks the canvas into gpu
+        // acceleration mode when running under virtual/gpu
+        setTimeout(t.step_func_done(() => {
+            // Now it is safe to use verifyContextLost without fearing side-effects
+            // because a rendering mode was fixed.
+            verifyContextLost(false);
+
+            internals.forceLoseCanvasContext(canvas, "2d");
+            if (!ctx.isContextLost()) {
+                assert_true(false, "canvas context is not lost properly. This is expected if canvas is not accelerated.");
+            } else {
+                verifyContextLost(true);
+            }
+        }, 0));
+    } else {
+        assert_true(false, 'This test requires window.internals.');
+    }
+}, "Test the behavior of disconneced canvas recovery after a gpu context loss");
 
 </script>
 </body>

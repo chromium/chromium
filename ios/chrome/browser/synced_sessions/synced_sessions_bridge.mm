@@ -10,10 +10,6 @@
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/session_sync_service_factory.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace synced_sessions {
 
 #pragma mark - SyncedSessionsObserverBridge
@@ -39,6 +35,10 @@ SyncedSessionsObserverBridge::~SyncedSessionsObserverBridge() {}
 
 void SyncedSessionsObserverBridge::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
+  // TODO(crbug.com/1466884): Migrate away from ConsentLevel::kSync once
+  // SessionsSyncUserState is modernized. Note also that, meanwhile, this
+  // particular codepath is likely unnecessary, as these events should also be
+  // reported via SyncedSessionsObserverBridge::OnForeignSessionChanged().
   switch (event.GetEventTypeFor(signin::ConsentLevel::kSync)) {
     case signin::PrimaryAccountChangeEvent::Type::kNone:
       // Ignored.
@@ -52,10 +52,6 @@ void SyncedSessionsObserverBridge::OnPrimaryAccountChanged(
 }
 
 #pragma mark - Signin and syncing status
-
-bool SyncedSessionsObserverBridge::HasSyncConsent() {
-  return identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync);
-}
 
 void SyncedSessionsObserverBridge::OnForeignSessionChanged() {
   [owner_ reloadSessions];

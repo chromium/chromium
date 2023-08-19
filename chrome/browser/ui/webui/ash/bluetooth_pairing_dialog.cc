@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/public/cpp/bluetooth_config_service.h"
+#include "ash/webui/common/trusted_types_util.h"
 #include "base/check.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
@@ -35,7 +36,7 @@ namespace ash {
 
 namespace {
 
-constexpr int kBluetoothPairingDialogHeight = 424;
+constexpr int kBluetoothPairingDialogHeight = 409;
 
 void AddBluetoothStrings(content::WebUIDataSource* html_source) {
   struct {
@@ -141,7 +142,10 @@ BluetoothPairingDialogUI::BluetoothPairingDialogUI(content::WebUI* web_ui)
       base::make_span(kBluetoothPairingDialogResources,
                       kBluetoothPairingDialogResourcesSize),
       IDR_BLUETOOTH_PAIRING_DIALOG_BLUETOOTH_PAIRING_DIALOG_CONTAINER_HTML);
-  source->DisableTrustedTypesCSP();
+  // Enabling trusted types via trusted_types_util must be done after
+  // webui::SetupWebUIDataSource to override the trusted type CSP with correct
+  // policies for JS WebUIs.
+  ash::EnableTrustedTypesCSP(source);
 
   device::RecordUiSurfaceDisplayed(
       device::BluetoothUiSurface::kStandalonePairingDialog);

@@ -10,6 +10,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_client.h"
 #include "components/bookmarks/browser/bookmark_node.h"
@@ -82,6 +83,10 @@ class ManagedBookmarkService : public KeyedService,
   // Pointer to the BookmarkModel; may be null. Only valid between the calls to
   // BookmarkModelCreated() and to BookmarkModelBeingDestroyed().
   raw_ptr<BookmarkModel> bookmark_model_;
+
+  // Observation for the bookmark_model_
+  base::ScopedObservation<BookmarkModel, BaseBookmarkModelObserver>
+      bookmark_model_observation_{this};
 
   // Managed bookmarks are defined by an enterprise policy. The lifetime of the
   // BookmarkPermanentNode is controlled by BookmarkModel.

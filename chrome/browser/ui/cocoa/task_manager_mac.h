@@ -5,14 +5,9 @@
 #ifndef CHROME_BROWSER_UI_COCOA_TASK_MANAGER_MAC_H_
 #define CHROME_BROWSER_UI_COCOA_TASK_MANAGER_MAC_H_
 
-#include "base/memory/raw_ptr.h"
-
 #import <Cocoa/Cocoa.h>
 
-#include <vector>
-
 #include "base/callback_list.h"
-#include "base/mac/scoped_nsobject.h"
 #include "chrome/browser/ui/task_manager/task_manager_table_model.h"
 #include "ui/base/models/table_model_observer.h"
 
@@ -28,28 +23,10 @@ class TaskManagerMac;
     : NSWindowController <NSWindowDelegate,
                           NSTableViewDataSource,
                           NSTableViewDelegate,
-                          NSMenuDelegate> {
- @private
-  NSTableView* _tableView;
-  NSButton* _endProcessButton;
-  raw_ptr<task_manager::TaskManagerMac, DanglingUntriaged>
-      _taskManagerMac;  // weak
-  raw_ptr<task_manager::TaskManagerTableModel, DanglingUntriaged>
-      _tableModel;  // weak
+                          NSMenuDelegate>
 
-  base::scoped_nsobject<WindowSizeAutosaver> _size_saver;
-
-  // These contain a permutation of [0..|tableModel_->RowCount() - 1|]. Used to
-  // implement sorting.
-  std::vector<size_t> _viewToModelMap;
-  std::vector<size_t> _modelToViewMap;
-
-  // Descriptor of the current sort column.
-  task_manager::TableSortDescriptor _currentSortDescriptor;
-
-  // Re-entrancy flag to allow meddling with the sort descriptor.
-  BOOL _withinSortDescriptorsDidChange;
-}
+// The current sort descriptor.
+@property(nonatomic) task_manager::TableSortDescriptor sortDescriptor;
 
 // Creates and shows the task manager's window.
 - (instancetype)
@@ -59,18 +36,11 @@ class TaskManagerMac;
 // Refreshes all data in the task manager table.
 - (void)reloadData;
 
-// Gets a copy of the current sort descriptor.
-- (task_manager::TableSortDescriptor)sortDescriptor;
-
-// Sets the current sort descriptor.
-- (void)setSortDescriptor:
-    (const task_manager::TableSortDescriptor&)sortDescriptor;
-
 // Returns YES if the specified column is visible.
 - (BOOL)visibilityOfColumnWithId:(int)columnId;
 
 // Sets the visibility of the specified column.
-- (void)setColumnWithId:(int)columnId toVisibility:(BOOL)visibility;
+- (void)setVisibility:(BOOL)visibility ofColumnWithId:(int)columnId;
 
 // Callback for "End process" button.
 - (IBAction)killSelectedProcesses:(id)sender;
@@ -80,8 +50,8 @@ class TaskManagerMac;
 @end
 
 @interface TaskManagerWindowController (TestingAPI)
-- (NSTableView*)tableViewForTesting;
-- (NSButton*)endProcessButtonForTesting;
+@property(readonly) NSTableView* tableViewForTesting;
+@property(readonly) NSButton* endProcessButtonForTesting;
 @end
 
 namespace task_manager {
@@ -129,12 +99,11 @@ class TaskManagerMac : public ui::TableModelObserver, public TableViewDelegate {
 
   void OnAppTerminating();
 
-  // Our model.
+  // The model holding the data for the table.
   TaskManagerTableModel table_model_;
 
-  // Controller of our window, destroys itself when the task manager window
-  // is closed.
-  TaskManagerWindowController* window_controller_;  // weak
+  // The window controller that runs the window.
+  TaskManagerWindowController* __strong window_controller_;
 
   base::CallbackListSubscription on_app_terminating_subscription_;
 

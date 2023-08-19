@@ -62,10 +62,6 @@ class CORE_EXPORT DisplayLockUtilities {
     friend void Document::EnsurePaintLocationDataValidForNode(
         const Node* node,
         DocumentUpdateReason reason);
-    friend void Document::EnsurePaintLocationDataValidForNode(
-        const Node* node,
-        DocumentUpdateReason reason,
-        CSSPropertyID property_id);
     friend VisibleSelection
     FrameSelection::ComputeVisibleSelectionInDOMTreeDeprecated() const;
     friend gfx::RectF Range::BoundingRect() const;
@@ -214,6 +210,8 @@ class CORE_EXPORT DisplayLockUtilities {
   // Returns true if at least one node gets activated.
   // See: http://bit.ly/2RXULVi, "beforeactivate Event" part.
   static bool ActivateFindInPageMatchRangeIfNeeded(
+      const EphemeralRangeInFlatTree& range);
+  static bool NeedsActivationForFindInPage(
       const EphemeralRangeInFlatTree& range);
 
   // Returns activatable-locked inclusive ancestors of |node|.

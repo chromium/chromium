@@ -19,6 +19,7 @@
 #include "cc/resources/resource_pool.h"
 #include "cc/trees/debug_rect_history.h"
 #include "cc/trees/layer_tree_impl.h"
+#include "cc/trees/raster_capabilities.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
 class SkTypeface;
@@ -58,7 +59,7 @@ class CC_EXPORT HeadsUpDisplayLayerImpl : public LayerImpl {
   void UpdateHudTexture(DrawMode draw_mode,
                         LayerTreeFrameSink* frame_sink,
                         viz::ClientResourceProvider* resource_provider,
-                        bool gpu_raster,
+                        const RasterCapabilities& raster_caps,
                         const viz::CompositorRenderPassList& list);
 
   void ReleaseResources() override;

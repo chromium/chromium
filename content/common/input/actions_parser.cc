@@ -6,13 +6,13 @@
 
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/format_macros.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "content/common/input/input_injector.mojom.h"
-#include "content/common/input/synthetic_smooth_scroll_gesture_params.h"
 #include "ui/events/types/scroll_types.h"
 
 using Button = content::SyntheticPointerActionParams::Button;
@@ -362,7 +362,7 @@ bool ActionsParser::ParsePointerParameters(
     return false;
   }
 
-  if (pointer_name_set_.find(*pointer_name) != pointer_name_set_.end()) {
+  if (base::Contains(pointer_name_set_, *pointer_name)) {
     error_message_ = std::string("pointer name already exists");
     return false;
   }

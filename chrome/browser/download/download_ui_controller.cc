@@ -45,6 +45,10 @@
 #include "chrome/browser/download/notification/download_notification_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/startup/browser_params_proxy.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 namespace {
 
 // DownloadShelfUIControllerDelegate{Android,} is used when a
@@ -180,6 +184,66 @@ void DownloadBubbleUIControllerDelegate::OnButtonClicked() {
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_CHROMEOS)
+
+// A composite `DownloadUIController::Delegate` for use exclusively on ChromeOS.
+// TODO(http://b/279791981): Remove after enabling the new downloads integration
+// with System UI surfaces and deprecating `DownloadNotificationManager`.
+class CrOSUIControllerDelegate : public DownloadUIController::Delegate {
+ public:
+  explicit CrOSUIControllerDelegate(content::DownloadManager* manager) {
+    // Conditionally add the `DownloadBubbleUIControllerDelegate`.
+    auto* profile = Profile::FromBrowserContext(manager->GetBrowserContext());
+    if (download::IsDownloadBubbleEnabled(profile)) {
+      delegates_.emplace_back(
+          std::make_unique<DownloadBubbleUIControllerDelegate>(profile));
+      InitializeDownloadBubbleUpdateService(profile, manager);
+    }
+
+    // Generally the `DownloadNotificationManager` should always be added as it
+    // provides System UI notifications on ChromeOS.
+    bool add_download_notification_manager = true;
+
+    // In Lacros, the `DownloadNotificationManager` should be added if and only
+    // if the new downloads integration with System UI surfaces is disabled.
+    // This ensures that exactly one System UI notification provider exists.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    if (auto* proxy = chromeos::BrowserParamsProxy::Get();
+        proxy && proxy->IsSysUiDownloadsIntegrationV2Enabled()) {
+      add_download_notification_manager = false;
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+    if (add_download_notification_manager) {
+      delegates_.emplace_back(
+          std::make_unique<DownloadNotificationManager>(profile));
+    }
+  }
+
+  CrOSUIControllerDelegate(const CrOSUIControllerDelegate&) = delete;
+  CrOSUIControllerDelegate& operator=(const CrOSUIControllerDelegate&) = delete;
+  ~CrOSUIControllerDelegate() override = default;
+
+ private:
+  // DownloadUIController::Delegate:
+  void OnNewDownloadReady(download::DownloadItem* item) override {
+    for (auto& delegate : delegates_) {
+      delegate->OnNewDownloadReady(item);
+    }
+  }
+
+  void OnButtonClicked() override {
+    for (auto& delegate : delegates_) {
+      delegate->OnButtonClicked();
+    }
+  }
+
+  // The collection of delegates contained by this composite.
+  std::vector<std::unique_ptr<DownloadUIController::Delegate>> delegates_;
+};
+
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 } // namespace
 
 DownloadUIController::Delegate::~Delegate() {
@@ -195,14 +259,7 @@ DownloadUIController::DownloadUIController(content::DownloadManager* manager,
     delegate_ = std::make_unique<AndroidUIControllerDelegate>();
 #elif BUILDFLAG(IS_CHROMEOS)
   if (!delegate_) {
-    Profile* profile =
-        Profile::FromBrowserContext(manager->GetBrowserContext());
-    if (download::IsDownloadBubbleEnabled(profile)) {
-      delegate_ = std::make_unique<DownloadBubbleUIControllerDelegate>(profile);
-      InitializeDownloadBubbleUpdateService(profile, manager);
-    } else {
-      delegate_ = std::make_unique<DownloadNotificationManager>(profile);
-    }
+    delegate_ = std::make_unique<CrOSUIControllerDelegate>(manager);
   }
 #else   // BUILDFLAG(IS_CHROMEOS)
   if (!delegate_) {
@@ -218,8 +275,7 @@ DownloadUIController::DownloadUIController(content::DownloadManager* manager,
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
-DownloadUIController::~DownloadUIController() {
-}
+DownloadUIController::~DownloadUIController() = default;
 
 void DownloadUIController::OnButtonClicked() {
   delegate_->OnButtonClicked();

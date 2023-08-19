@@ -118,12 +118,12 @@ class BluetoothClassicMediumTest : public testing::Test {
   std::unique_ptr<BluetoothClassicMedium> bluetooth_classic_medium_;
   BluetoothClassicMedium::DiscoveryCallback discovery_callback_;
 
-  raw_ptr<api::BluetoothDevice, ExperimentalAsh> last_device_discovered_ =
-      nullptr;
-  raw_ptr<api::BluetoothDevice, ExperimentalAsh> last_device_name_changed_ =
-      nullptr;
-  raw_ptr<api::BluetoothDevice, ExperimentalAsh> expected_last_device_lost_ =
-      nullptr;
+  raw_ptr<api::BluetoothDevice, DanglingUntriaged | ExperimentalAsh>
+      last_device_discovered_ = nullptr;
+  raw_ptr<api::BluetoothDevice, DanglingUntriaged | ExperimentalAsh>
+      last_device_name_changed_ = nullptr;
+  raw_ptr<api::BluetoothDevice, DanglingUntriaged | ExperimentalAsh>
+      expected_last_device_lost_ = nullptr;
 
   base::OnceClosure on_device_discovered_callback_;
   base::OnceClosure on_device_name_changed_callback_;
@@ -279,11 +279,30 @@ TEST_F(BluetoothClassicMediumTest, TestConnectToService_Success) {
   fake_adapter_->AllowConnectionForAddressAndUuidPair(
       kDeviceAddress1, kNearbySharingServiceUuid);
 
+  auto cancellation_flag = std::make_unique<CancellationFlag>();
   auto bluetooth_socket = bluetooth_classic_medium_->ConnectToService(
-      *last_device_discovered_, kNearbySharingServiceUuid.value(), nullptr);
+      *last_device_discovered_, kNearbySharingServiceUuid.value(),
+      cancellation_flag.get());
   EXPECT_EQ(last_device_discovered_, bluetooth_socket->GetRemoteDevice());
 
   EXPECT_TRUE(bluetooth_socket->Close().Ok());
+}
+
+TEST_F(BluetoothClassicMediumTest,
+       TestConnectToService_CancelledByCancellationFlag) {
+  StartDiscovery();
+  NotifyDeviceAdded(kDeviceAddress1, kDeviceName1);
+  StopDiscovery();
+
+  fake_adapter_->AllowConnectionForAddressAndUuidPair(
+      kDeviceAddress1, kNearbySharingServiceUuid);
+
+  auto cancellation_flag = std::make_unique<CancellationFlag>();
+  cancellation_flag->Cancel();
+
+  EXPECT_FALSE(bluetooth_classic_medium_->ConnectToService(
+      *last_device_discovered_, kNearbySharingServiceUuid.value(),
+      cancellation_flag.get()));
 }
 
 TEST_F(BluetoothClassicMediumTest, TestConnectToService_Failure) {

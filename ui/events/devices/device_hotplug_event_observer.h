@@ -47,6 +47,11 @@ class EVENTS_DEVICES_EXPORT DeviceHotplugEventObserver {
   virtual void OnTouchpadDevicesUpdated(
       const std::vector<TouchpadDevice>& devices) = 0;
 
+  // On a hotplug event this is called with the list of available graphics
+  // tablets. The set of graphics tablets may not have changed.
+  virtual void OnGraphicsTabletDevicesUpdated(
+      const std::vector<InputDevice>& devices) = 0;
+
   // On a hotplug event this is called with the list of the available
   // uncategorized input devices, which means not touchscreens, keyboards, mice
   // and touchpads.

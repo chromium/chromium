@@ -7,10 +7,6 @@
 #import "ios/chrome/browser/follow/follow_browser_agent_observing.h"
 #import "ios/chrome/browser/follow/followed_web_site.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 FollowBrowserAgentObserverBridge::FollowBrowserAgentObserverBridge(
     id<FollowBrowserAgentObserving> observing,
     FollowBrowserAgent* browser_agent)

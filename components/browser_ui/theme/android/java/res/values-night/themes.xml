@@ -15,20 +15,20 @@ found in the LICENSE file.
         <item name="colorOnPrimary">@color/baseline_primary_20</item>
         <item name="colorPrimaryContainer">@color/baseline_primary_30</item>
         <item name="colorOnPrimaryContainer">@color/baseline_primary_90</item>
-        <item name="colorSecondaryContainer">@color/baseline_secondary_700</item>
-        <item name="colorOnSecondaryContainer">@color/baseline_secondary_100</item>
-        <item name="android:colorBackground">@color/baseline_neutral_900</item>
-        <item name="colorOnBackground">@color/baseline_neutral_100</item>
-        <item name="colorSurface">@color/baseline_neutral_900</item>
-        <item name="colorOnSurface">@color/baseline_neutral_100</item>
-        <item name="colorSurfaceVariant">@color/baseline_neutral_variant_700</item>
-        <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_200</item>
-        <item name="colorOnSurfaceInverse">@color/baseline_neutral_800</item>
-        <item name="colorOutline">@color/baseline_neutral_variant_400</item>
-        <item name="colorError">@color/baseline_error_200</item>
+        <item name="colorSecondaryContainer">@color/baseline_secondary_30</item>
+        <item name="colorOnSecondaryContainer">@color/baseline_secondary_90</item>
+        <item name="android:colorBackground">@color/baseline_neutral_10</item>
+        <item name="colorOnBackground">@color/baseline_neutral_90</item>
+        <item name="colorSurface">@color/baseline_neutral_10</item>
+        <item name="colorOnSurface">@color/baseline_neutral_90</item>
+        <item name="colorSurfaceVariant">@color/baseline_neutral_variant_30</item>
+        <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_80</item>
+        <item name="colorOnSurfaceInverse">@color/baseline_neutral_20</item>
+        <item name="colorOutline">@color/baseline_neutral_variant_60</item>
+        <item name="colorError">@color/baseline_error_80</item>
 
         <!-- Elevation overlays -->
-        <item name="elevationOverlayColor">@color/baseline_neutral_200</item>
+        <item name="elevationOverlayColor">@color/baseline_neutral_80</item>
     </style>
 
     <!-- Colors should be mirrored by Theme.BrowserUI.DayNight. -->
@@ -39,20 +39,20 @@ found in the LICENSE file.
         <item name="colorOnPrimary">@color/baseline_primary_20</item>
         <item name="colorPrimaryContainer">@color/baseline_primary_30</item>
         <item name="colorOnPrimaryContainer">@color/baseline_primary_90</item>
-        <item name="colorSecondaryContainer">@color/baseline_secondary_700</item>
-        <item name="colorOnSecondaryContainer">@color/baseline_secondary_100</item>
-        <item name="android:colorBackground">@color/baseline_neutral_900</item>
-        <item name="colorOnBackground">@color/baseline_neutral_100</item>
-        <item name="colorSurface">@color/baseline_neutral_900</item>
-        <item name="colorOnSurface">@color/baseline_neutral_100</item>
-        <item name="colorSurfaceVariant">@color/baseline_neutral_variant_700</item>
-        <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_200</item>
-        <item name="colorOnSurfaceInverse">@color/baseline_neutral_800</item>
-        <item name="colorOutline">@color/baseline_neutral_variant_400</item>
-        <item name="colorError">@color/baseline_error_200</item>
+        <item name="colorSecondaryContainer">@color/baseline_secondary_30</item>
+        <item name="colorOnSecondaryContainer">@color/baseline_secondary_90</item>
+        <item name="android:colorBackground">@color/baseline_neutral_10</item>
+        <item name="colorOnBackground">@color/baseline_neutral_90</item>
+        <item name="colorSurface">@color/baseline_neutral_10</item>
+        <item name="colorOnSurface">@color/baseline_neutral_90</item>
+        <item name="colorSurfaceVariant">@color/baseline_neutral_variant_30</item>
+        <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_80</item>
+        <item name="colorOnSurfaceInverse">@color/baseline_neutral_20</item>
+        <item name="colorOutline">@color/baseline_neutral_variant_60</item>
+        <item name="colorError">@color/baseline_error_80</item>
 
         <!-- Elevation overlays -->
-        <item name="elevationOverlayColor">@color/baseline_neutral_200</item>
+        <item name="elevationOverlayColor">@color/baseline_neutral_80</item>
     </style>
 
     <!-- Colors should be mirrored by Theme.BrowserUI.DayNight. -->
@@ -63,19 +63,19 @@ found in the LICENSE file.
         <item name="colorOnPrimary">@color/baseline_primary_20</item>
         <item name="colorPrimaryContainer">@color/baseline_primary_30</item>
         <item name="colorOnPrimaryContainer">@color/baseline_primary_90</item>
-        <item name="colorSecondaryContainer">@color/baseline_secondary_700</item>
-        <item name="colorOnSecondaryContainer">@color/baseline_secondary_100</item>
-        <item name="android:colorBackground">@color/baseline_neutral_900</item>
-        <item name="colorOnBackground">@color/baseline_neutral_100</item>
-        <item name="colorSurface">@color/baseline_neutral_900</item>
-        <item name="colorOnSurface">@color/baseline_neutral_100</item>
-        <item name="colorSurfaceVariant">@color/baseline_neutral_variant_700</item>
-        <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_200</item>
-        <item name="colorOnSurfaceInverse">@color/baseline_neutral_800</item>
-        <item name="colorOutline">@color/baseline_neutral_variant_400</item>
-        <item name="colorError">@color/baseline_error_200</item>
+        <item name="colorSecondaryContainer">@color/baseline_secondary_30</item>
+        <item name="colorOnSecondaryContainer">@color/baseline_secondary_90</item>
+        <item name="android:colorBackground">@color/baseline_neutral_10</item>
+        <item name="colorOnBackground">@color/baseline_neutral_90</item>
+        <item name="colorSurface">@color/baseline_neutral_10</item>
+        <item name="colorOnSurface">@color/baseline_neutral_90</item>
+        <item name="colorSurfaceVariant">@color/baseline_neutral_variant_30</item>
+        <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_80</item>
+        <item name="colorOnSurfaceInverse">@color/baseline_neutral_20</item>
+        <item name="colorOutline">@color/baseline_neutral_variant_60</item>
+        <item name="colorError">@color/baseline_error_80</item>
 
         <!-- Elevation overlays -->
-        <item name="elevationOverlayColor">@color/baseline_neutral_200</item>
+        <item name="elevationOverlayColor">@color/baseline_neutral_80</item>
     </style>
 </resources>

@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -12,10 +12,6 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 using TableViewTextItemTest = PlatformTest;
@@ -32,7 +28,7 @@ TEST_F(TableViewTextItemTest, TextLabels) {
   ASSERT_TRUE([cell isMemberOfClass:[TableViewTextCell class]]);
 
   TableViewTextCell* textCell =
-      base::mac::ObjCCastStrict<TableViewTextCell>(cell);
+      base::apple::ObjCCastStrict<TableViewTextCell>(cell);
   EXPECT_FALSE(textCell.textLabel.text);
 
   ChromeTableViewStyler* styler = [[ChromeTableViewStyler alloc] init];
@@ -53,7 +49,7 @@ TEST_F(TableViewTextItemTest, MaskedTextLabels) {
   ASSERT_TRUE([cell isMemberOfClass:[TableViewTextCell class]]);
 
   TableViewTextCell* textCell =
-      base::mac::ObjCCastStrict<TableViewTextCell>(cell);
+      base::apple::ObjCCastStrict<TableViewTextCell>(cell);
   EXPECT_FALSE(textCell.textLabel.text);
 
   ChromeTableViewStyler* styler = [[ChromeTableViewStyler alloc] init];

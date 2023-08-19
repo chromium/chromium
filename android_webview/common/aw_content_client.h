@@ -50,6 +50,8 @@ class AwContentClient : public content::ContentClient {
   std::unique_ptr<embedder_support::OriginTrialPolicyImpl> origin_trial_policy_;
 };
 
+jboolean IsDisableOriginTrialsSafeModeActionOn();
+
 }  // namespace android_webview
 
 #endif  // ANDROID_WEBVIEW_COMMON_AW_CONTENT_CLIENT_H_

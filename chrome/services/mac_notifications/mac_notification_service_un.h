@@ -20,10 +20,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @class AlertUNNotificationCenterDelegate;
 @class UNUserNotificationCenter;
 
@@ -31,8 +27,7 @@ namespace mac_notifications {
 
 // Implementation of the MacNotificationService mojo interface using the
 // UNNotification system API.
-class API_AVAILABLE(macos(10.14)) MacNotificationServiceUN
-    : public mojom::MacNotificationService {
+class MacNotificationServiceUN : public mojom::MacNotificationService {
  public:
   // Timer interval used to synchronize displayed notifications.
   static constexpr auto kSynchronizationInterval = base::Minutes(10);

@@ -12,8 +12,10 @@
 
 #include "base/auto_reset.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/debug/alias.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
 #include "base/logging.h"
@@ -41,7 +43,6 @@
 #include "cc/tiles/raster_dark_mode_filter.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "gpu/command_buffer/client/context_support.h"
-#include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -63,6 +64,8 @@
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
+#include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -73,7 +76,7 @@ namespace cc {
 // A feature that will start a task on a timer to purge old cache entries.
 BASE_FEATURE(kPurgeOldCacheEntriesOnTimer,
              "PurgeOldCacheEntriesOnTimer",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
@@ -465,8 +468,8 @@ sk_sp<SkImage> MakeTextureImage(viz::RasterContextProvider* context,
   // Step 2: Apply a color-space conversion if necessary.
   if (uploaded_image && target_color_space) {
     sk_sp<SkImage> pre_converted_image = uploaded_image;
-    uploaded_image = uploaded_image->makeColorSpace(target_color_space,
-                                                    context->GrContext());
+    uploaded_image = uploaded_image->makeColorSpace(context->GrContext(),
+                                                    target_color_space);
 
     if (uploaded_image != pre_converted_image)
       DeleteSkImageAndPreventCaching(context, std::move(pre_converted_image));
@@ -1199,7 +1202,7 @@ GrGLuint GpuImageDecodeCache::GlIdFromSkImage(const SkImage* image) {
   }
 
   GrGLTextureInfo info;
-  if (!backend_texture.getGLTextureInfo(&info)) {
+  if (!GrBackendTextures::GetGLTextureInfo(backend_texture, &info)) {
     return 0;
   }
 
@@ -1594,17 +1597,7 @@ void GpuImageDecodeCache::ReduceCacheUsage() {
 void GpuImageDecodeCache::ReduceCacheUsageLocked() NO_THREAD_SAFETY_ANALYSIS {
   EnsureCapacity(0);
 
-  // This is typically called when no tasks are running (between scheduling
-  // tasks). Try to lock and run pending operations if possible, but don't
-  // block on it.
-  //
-  // NO_THREAD_SAFETY_ANALYSIS: runtime-dependent locking.
-  if (context_->GetLock() && !context_->GetLock()->Try())
-    return;
-
-  RunPendingContextThreadOperations();
-  if (context_->GetLock())
-    context_->GetLock()->Release();
+  TryFlushPendingWork();
 }
 
 void GpuImageDecodeCache::SetShouldAggressivelyFreeResources(
@@ -1644,6 +1637,8 @@ void GpuImageDecodeCache::ClearCache() {
     it = RemoveFromPersistentCache(it);
   DCHECK(persistent_cache_.empty());
   paint_image_entries_.clear();
+
+  TryFlushPendingWork();
 }
 
 void GpuImageDecodeCache::RecordStats() {
@@ -1711,7 +1706,38 @@ Iterator GpuImageDecodeCache::RemoveFromPersistentCache(Iterator it) {
   return persistent_cache_.Erase(it);
 }
 
-void GpuImageDecodeCache::DoPurgeOldCacheEntries(base::TimeDelta max_age) {
+bool GpuImageDecodeCache::TryFlushPendingWork() {
+  // This is typically called when no tasks are running (between scheduling
+  // tasks). Try to lock and run pending operations if possible, but don't
+  // block on it.
+  //
+  // However, there are cases where the lock acquisition will fail. Indeed,
+  // when a task runs on a worker thread, it may acquire both the compositor
+  // lock then the GpuImageDecodeCache lock, whereas here we are trying to
+  // acquire the compositor lock after. So the early exit is required to avoid
+  // deadlocks.
+  //
+  // NO_THREAD_SAFETY_ANALYSIS: runtime-dependent locking.
+  if (context_->GetLock() && !context_->GetLock()->Try()) {
+    return false;
+  }
+
+  // The calls below will empty the cache on the GPU side. These calls will
+  // also happen on the next frame, but we want to call them ourselves here to
+  // avoid having to wait for the next frame (which might be a long wait/never
+  // happen).
+  RunPendingContextThreadOperations();
+  context_->ContextSupport()->FlushPendingWork();
+
+  if (context_->GetLock()) {
+    CheckContextLockAcquiredIfNecessary();
+    context_->GetLock()->Release();
+  }
+
+  return true;
+}
+
+bool GpuImageDecodeCache::DoPurgeOldCacheEntries(base::TimeDelta max_age) {
   const base::TimeTicks min_last_use = base::TimeTicks::Now() - max_age;
   for (auto it = persistent_cache_.rbegin();
        it != persistent_cache_.rend() &&
@@ -1724,6 +1750,8 @@ void GpuImageDecodeCache::DoPurgeOldCacheEntries(base::TimeDelta max_age) {
 
     it = RemoveFromPersistentCache(it);
   }
+
+  return TryFlushPendingWork();
 }
 
 void GpuImageDecodeCache::MaybePurgeOldCacheEntries() {
@@ -1736,12 +1764,13 @@ void GpuImageDecodeCache::MaybePurgeOldCacheEntries() {
 
 void GpuImageDecodeCache::PurgeOldCacheEntriesCallback() {
   base::AutoLock locker(lock_);
-  DoPurgeOldCacheEntries(get_max_purge_age());
+  bool flushed_gpu_work = DoPurgeOldCacheEntries(get_max_purge_age());
 
   has_pending_purge_task_ = false;
 
-  // If the cache is empty, we stop posting the task, to avoid endless wakeups.
-  if (persistent_cache_.empty()) {
+  // If the cache is empty and we have flushed the pending work on the GPU side,
+  // we stop posting the task, to avoid endless wakeups.
+  if (persistent_cache_.empty() && flushed_gpu_work) {
     return;
   }
 
@@ -2182,8 +2211,11 @@ void GpuImageDecodeCache::OwnershipChanged(const DrawImage& draw_image,
   const bool has_cpu_data = image_data->decode.HasData() ||
                             (image_data->is_bitmap_backed &&
                              image_data->decode.image(0, AuxImage::kDefault));
-  if (!has_any_refs && !image_data->HasUploadedData() && !has_cpu_data &&
-      !image_data->is_orphaned) {
+  bool is_empty = !has_any_refs && !image_data->HasUploadedData() &&
+                  !has_cpu_data && !image_data->is_orphaned;
+  if (is_empty ||
+      (draw_image.paint_image().no_cache() &&
+       base::FeatureList::IsEnabled(features::kImageCacheNoCache))) {
     auto found_persistent = persistent_cache_.Peek(draw_image.frame_key());
     if (found_persistent != persistent_cache_.end())
       RemoveFromPersistentCache(found_persistent);
@@ -2345,10 +2377,10 @@ bool GpuImageDecodeCache::NeedsDarkModeFilter(const DrawImage& draw_image,
   }
 
   // Dark mode filter is already generated and cached.
-  if (image_data->decode.dark_mode_color_filter_cache.find(
-          draw_image.src_rect()) !=
-      image_data->decode.dark_mode_color_filter_cache.end())
+  if (base::Contains(image_data->decode.dark_mode_color_filter_cache,
+                     draw_image.src_rect())) {
     return false;
+  }
 
   return true;
 }
@@ -3206,21 +3238,19 @@ std::tuple<SkImageInfo, int> GpuImageDecodeCache::CreateImageInfoForDrawImage(
   SkColorType color_type = color_type_;
 
   // The PaintImage will identify that its content is high bit depth by setting
-  // its SkColorType to kRGBA_F16_SkColorType. Only set the target SkColorType
-  // to this value if the PaintImage itself reports it. Otherwise, the content
-  // may not appear, see https://crbug.com/1266456.
+  // its SkColorType to kRGBA_F16_SkColorType. Always decode high bit depth WCG
+  // and HDR content as high bit depth, to avoid quantization artifacts.
+  // https://crbug.com/1363056: See effects of tone mapping applied to dithered
+  // low bit depth images.
+  // https://crbug.com/1266456: Do not attempt to decode non high bit depth
+  // images as high bit depth or they might not appear.
+  // https://crbug.com/1076568: See historical discussions.
   const auto image_color_type =
       draw_image.paint_image().GetSkImageInfo(aux_image).colorType();
-  if (image_color_type == kRGBA_F16_SkColorType) {
-    // Only set the target SkColorType to kRGBA_F16_SkColorType if the content
-    // is HDR and the target display is HDR capable. This is done to preserve
-    // existing behavior while fixing the above mentioned bug. See related
-    // discussions in https://crbug.com/1076568.
-    if (draw_image.paint_image().GetContentColorUsage() ==
-            gfx::ContentColorUsage::kHDR &&
-        draw_image.target_color_space().IsHDR()) {
-      color_type = kRGBA_F16_SkColorType;
-    }
+  if (image_color_type == kRGBA_F16_SkColorType &&
+      draw_image.paint_image().GetContentColorUsage() !=
+          gfx::ContentColorUsage::kSRGB) {
+    color_type = kRGBA_F16_SkColorType;
   }
 
   return {SkImageInfo::Make(mip_size.width(), mip_size.height(), color_type,
@@ -3475,6 +3505,21 @@ void GpuImageDecodeCache::OnMemoryPressure(
   ReduceCacheUsageLocked();
 }
 
+bool GpuImageDecodeCache::AcquireContextLockForTesting() {
+  if (!context_->GetLock()) {
+    return false;
+  }
+  return context_->GetLock()->Try();
+}
+
+void GpuImageDecodeCache::ReleaseContextLockForTesting()
+    NO_THREAD_SAFETY_ANALYSIS {
+  if (!context_->GetLock()) {
+    return;
+  }
+  context_->GetLock()->Release();
+}
+
 bool GpuImageDecodeCache::SupportsColorSpaceConversion() const {
   switch (color_type_) {
     case kRGBA_8888_SkColorType:
@@ -3539,8 +3584,8 @@ sk_sp<SkImage> GpuImageDecodeCache::CreateImageFromYUVATexturesInternal(
       context_->GrContext(), yuva_backend_textures,
       std::move(decoded_color_space));
   if (target_color_space && yuva_image) {
-    return yuva_image->makeColorSpace(target_color_space,
-                                      context_->GrContext());
+    return yuva_image->makeColorSpace(context_->GrContext(),
+                                      target_color_space);
   }
 
   return yuva_image;

@@ -69,12 +69,13 @@ void EncodedAudioChunk::copyTo(const AllowSharedBufferSource* destination,
                                ExceptionState& exception_state) {
   // Validate destination buffer.
   auto dest_wrapper = AsSpan<uint8_t>(destination);
-  if (!dest_wrapper.data()) {
-    exception_state.ThrowTypeError("destination is detached.");
-    return;
-  }
   if (dest_wrapper.size() < buffer_->data_size()) {
     exception_state.ThrowTypeError("destination is not large enough.");
+    return;
+  }
+
+  if (buffer_->data_size() == 0) {
+    // Calling memcpy with nullptr is UB, even if count is zero.
     return;
   }
 

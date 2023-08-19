@@ -33,8 +33,6 @@ namespace url {
 class SchemeHostPort;
 }
 
-class PrefService;
-
 namespace password_manager {
 
 class AffiliationBackend;
@@ -51,8 +49,7 @@ class AffiliationServiceImpl : public AffiliationService,
 
   explicit AffiliationServiceImpl(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      scoped_refptr<base::SequencedTaskRunner> backend_task_runner,
-      PrefService* pref_service);
+      scoped_refptr<base::SequencedTaskRunner> backend_task_runner);
   ~AffiliationServiceImpl() override;
 
   AffiliationServiceImpl(const AffiliationServiceImpl& other) = delete;
@@ -129,9 +126,7 @@ class AffiliationServiceImpl : public AffiliationService,
   // living on the backend thread. It will be deleted asynchronously during
   // shutdown on the backend thread, so it will outlive |this| along with all
   // its in-flight tasks.
-  raw_ptr<AffiliationBackend, DanglingUntriaged> backend_;
-
-  raw_ptr<PrefService> pref_service_;
+  raw_ptr<AffiliationBackend, AcrossTasksDanglingUntriaged> backend_;
 
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
 

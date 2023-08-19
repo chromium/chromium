@@ -8,9 +8,11 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/trace_event/typed_macros.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/audio_manager_base.h"
 #include "media/audio/pulse/pulse_util.h"
@@ -156,6 +158,14 @@ void PulseAudioOutputStream::SendLogMessage(const char* format, ...) {
 }
 
 void PulseAudioOutputStream::FulfillWriteRequest(size_t requested_bytes) {
+  TRACE_EVENT("audio", "PulseAudioOutputStream::FulfillWriteRequest",
+              [&](perfetto::EventContext ctx) {
+                auto* event =
+                    ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+                auto* data = event->set_linux_pulse_output();
+                data->set_stream_request_bytes(requested_bytes);
+                data->set_sample_rate(params_.sample_rate());
+              });
   int bytes_remaining = requested_bytes;
   while (bytes_remaining > 0) {
     void* pa_buffer = nullptr;
@@ -171,9 +181,19 @@ void PulseAudioOutputStream::FulfillWriteRequest(size_t requested_bytes) {
     }
 
     size_t unwritten_frames_in_bus = audio_bus_->frames();
+    size_t frame_size = buffer_size_ / unwritten_frames_in_bus;
+    const base::TimeDelta delay = pulse::GetHardwareLatency(pa_stream_);
+    UMA_HISTOGRAM_COUNTS_1000("Media.Audio.Render.SystemDelay",
+                              delay.InMilliseconds());
+    TRACE_EVENT("audio", "source request", [&](perfetto::EventContext ctx) {
+      auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+      auto* data = event->set_linux_pulse_output();
+      data->set_source_request_playout_delay_us(delay.InMicroseconds());
+      data->set_input_buffer_size_frames(params_.frames_per_buffer());
+      data->set_frame_size_bytes(frame_size);
+    });
     size_t frames_filled = source_callback_->OnMoreData(
-        pulse::GetHardwareLatency(pa_stream_), base::TimeTicks::Now(), {},
-        audio_bus_.get());
+        BoundedDelay(delay), base::TimeTicks::Now(), {}, audio_bus_.get());
 
     // Zero any unfilled data so it plays back as silence.
     if (frames_filled < unwritten_frames_in_bus) {
@@ -188,7 +208,6 @@ void PulseAudioOutputStream::FulfillWriteRequest(size_t requested_bytes) {
 
     audio_bus_->Scale(volume_);
 
-    size_t frame_size = buffer_size_ / unwritten_frames_in_bus;
     size_t frames_to_copy = pa_buffer_size / frame_size;
     size_t frame_offset_in_bus = 0;
     do {

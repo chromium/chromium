@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
+
+#include <sstream>
+
 #include "components/signin/public/base/consent_level.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -12,6 +15,8 @@ using signin::PrimaryAccountChangeEvent;
 using Type = signin::PrimaryAccountChangeEvent::Type;
 using State = signin::PrimaryAccountChangeEvent::State;
 
+// TODO(crbug.com/1462978): Revise this test suite when ConsentLevel::kSync is
+//     deleted. See ConsentLevel::kSync documentation for details.
 class PrimaryAccountChangeEventTest : public testing::Test {
  public:
   PrimaryAccountChangeEventTest() {
@@ -73,6 +78,8 @@ TEST_F(PrimaryAccountChangeEventTest,
   EXPECT_EQ(Type::kNone, event.GetEventTypeFor(ConsentLevel::kSync));
 }
 
+// TODO(crbug.com/1462978): Delete this test when ConsentLevel::kSync is
+//     deleted. See ConsentLevel::kSync documentation for details.
 TEST_F(PrimaryAccountChangeEventTest, ConsentLevelChangeFromNotRequiredToSync) {
   PrimaryAccountChangeEvent event(empty_not_required_, account1_sync_);
   EXPECT_EQ(Type::kSet, event.GetEventTypeFor(ConsentLevel::kSignin));
@@ -87,6 +94,8 @@ TEST_F(PrimaryAccountChangeEventTest, ConsentLevelChangeFromNotRequiredToSync) {
   EXPECT_EQ(Type::kSet, event.GetEventTypeFor(ConsentLevel::kSync));
 }
 
+// TODO(crbug.com/1462978): Delete this test when ConsentLevel::kSync is
+//     deleted. See ConsentLevel::kSync documentation for details.
 TEST_F(PrimaryAccountChangeEventTest, ConsentLevelChangeFromSyncToNotRequired) {
   PrimaryAccountChangeEvent event(account1_sync_, account1_not_required_);
   EXPECT_EQ(Type::kNone, event.GetEventTypeFor(ConsentLevel::kSignin));
@@ -95,4 +104,16 @@ TEST_F(PrimaryAccountChangeEventTest, ConsentLevelChangeFromSyncToNotRequired) {
   event = PrimaryAccountChangeEvent(account1_sync_, empty_not_required_);
   EXPECT_EQ(Type::kCleared, event.GetEventTypeFor(ConsentLevel::kSignin));
   EXPECT_EQ(Type::kCleared, event.GetEventTypeFor(ConsentLevel::kSync));
+}
+
+TEST_F(PrimaryAccountChangeEventTest, ToStringSupported) {
+  PrimaryAccountChangeEvent event(empty_not_required_, account1_not_required_);
+
+  std::stringstream sstream;
+  sstream << event;
+
+  EXPECT_EQ(
+      sstream.str(),
+      "{ previous_state: { primary_account: , consent_level: }, "
+      "current_state: { primary_account: account1, consent_level: Signin } }");
 }

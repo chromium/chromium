@@ -11,6 +11,7 @@ import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 suite('<os-settings-printing-page>', function() {
   let printingPage: OsSettingsPrintingPageElement;
@@ -59,5 +60,28 @@ suite('<os-settings-printing-page>', function() {
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
         'Scanning app button should be focused for settingId=1403.');
+  });
+
+  test('Printers row is focused after returning from subpage', async () => {
+    Router.getInstance().navigateTo(routes.OS_PRINTING);
+
+    const triggerSelector = '#cupsPrintersRow';
+    const subpageTrigger =
+        printingPage.shadowRoot!.querySelector<HTMLElement>(triggerSelector);
+    assert(subpageTrigger);
+
+    // Sub-page trigger navigates to Printers subpage
+    subpageTrigger.click();
+    assertEquals(routes.CUPS_PRINTERS, Router.getInstance().currentRoute);
+
+    // Navigate back
+    const popStateEventPromise = eventToPromise('popstate', window);
+    Router.getInstance().navigateToPreviousRoute();
+    await popStateEventPromise;
+    await waitAfterNextRender(printingPage);
+
+    assertEquals(
+        subpageTrigger, printingPage.shadowRoot!.activeElement,
+        `${triggerSelector} should be focused.`);
   });
 });

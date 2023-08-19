@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.signin;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
+import android.os.Build.VERSION_CODES;
+
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
@@ -22,6 +24,8 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -169,6 +173,7 @@ public class SigninManagerIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1467211")
     public void testUpdateAccountListTwoAccountsThenRemoveOne() {
         // Add accounts.
         mSigninTestRule.addAccountAndWaitForSeeding(TEST_ACCOUNT1);
@@ -197,6 +202,8 @@ public class SigninManagerIntegrationTest {
 
     @Test
     @MediumTest
+    @DisableIf.Build(message = "https://crbug.com/1470400",
+            sdk_is_greater_than = VERSION_CODES.M, sdk_is_less_than = VERSION_CODES.P)
     public void testUpdateAccountListTwoAccountsThenRemoveAll() {
         // Add accounts.
         mSigninTestRule.addAccountAndWaitForSeeding(TEST_ACCOUNT1);
@@ -225,6 +232,7 @@ public class SigninManagerIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1467211")
     public void testUpdateAccountListTwoAccountsThenRemoveAllSignOut() {
         // Add accounts.
         mSigninTestRule.addAccountAndWaitForSeeding(TEST_ACCOUNT1);

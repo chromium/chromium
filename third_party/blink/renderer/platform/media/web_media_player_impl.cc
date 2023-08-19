@@ -1097,14 +1097,7 @@ void WebMediaPlayerImpl::SetVolume(double volume) {
 
   if (delegate_has_audio_ != HasUnmutedAudio()) {
     delegate_has_audio_ = HasUnmutedAudio();
-    media::MediaContentType content_type = GetMediaContentType();
-    client_->DidMediaMetadataChange(
-        delegate_has_audio_, HasVideo(),
-        pipeline_metadata_.audio_decoder_config.codec(),
-        pipeline_metadata_.video_decoder_config.codec(), content_type,
-        pipeline_metadata_.video_decoder_config.is_encrypted());
-    delegate_->DidMediaMetadataChange(delegate_id_, delegate_has_audio_,
-                                      HasVideo(), content_type);
+    DidMediaMetadataChange();
 
     // If we paused a background video since it was muted, the volume change
     // should resume the playback.
@@ -1353,8 +1346,13 @@ WebTimeRanges WebMediaPlayerImpl::Buffered() const {
 WebTimeRanges WebMediaPlayerImpl::Seekable() const {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
-  if (ready_state_ < WebMediaPlayer::kReadyStateHaveMetadata)
+  if (ready_state_ < WebMediaPlayer::kReadyStateHaveMetadata) {
     return WebTimeRanges();
+  }
+
+  if (demuxer_manager_->IsLiveContent()) {
+    return WebTimeRanges();
+  }
 
   const double seekable_end = Duration();
 
@@ -1497,6 +1495,10 @@ uint64_t WebMediaPlayerImpl::VideoDecodedByteCount() const {
 
 bool WebMediaPlayerImpl::HasAvailableVideoFrame() const {
   return has_first_frame_;
+}
+
+bool WebMediaPlayerImpl::HasReadableVideoFrame() const {
+  return has_first_frame_ && is_frame_readable_;
 }
 
 void WebMediaPlayerImpl::SetContentDecryptionModule(
@@ -1820,6 +1822,11 @@ void WebMediaPlayerImpl::UpdateLoadedUrl(const GURL& url) {
   loaded_url_ = url;
 }
 
+void WebMediaPlayerImpl::DemuxerRequestsSeek(base::TimeDelta seek_time) {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+  DoSeek(seek_time, true);
+}
+
 void WebMediaPlayerImpl::RestartForHls() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   observer_->OnHlsManifestDetected();
@@ -1960,14 +1967,7 @@ void WebMediaPlayerImpl::OnMetadata(const media::PipelineMetadata& metadata) {
     observer_->OnMetadataChanged(pipeline_metadata_);
 
   delegate_has_audio_ = HasUnmutedAudio();
-  media::MediaContentType content_type = GetMediaContentType();
-  client_->DidMediaMetadataChange(
-      delegate_has_audio_, HasVideo(),
-      pipeline_metadata_.audio_decoder_config.codec(),
-      pipeline_metadata_.video_decoder_config.codec(), content_type,
-      pipeline_metadata_.video_decoder_config.is_encrypted());
-  delegate_->DidMediaMetadataChange(delegate_id_, delegate_has_audio_,
-                                    HasVideo(), content_type);
+  DidMediaMetadataChange();
 
   // It could happen that the demuxer successfully completed initialization
   // (implying it had determined media metadata), but then removed all audio and
@@ -2247,14 +2247,7 @@ void WebMediaPlayerImpl::OnDurationChange() {
     return;
 
   client_->DurationChanged();
-  media::MediaContentType content_type = GetMediaContentType();
-  client_->DidMediaMetadataChange(
-      delegate_has_audio_, HasVideo(),
-      pipeline_metadata_.audio_decoder_config.codec(),
-      pipeline_metadata_.video_decoder_config.codec(), content_type,
-      pipeline_metadata_.video_decoder_config.is_encrypted());
-  delegate_->DidMediaMetadataChange(delegate_id_, delegate_has_audio_,
-                                    HasVideo(), content_type);
+  DidMediaMetadataChange();
 
   if (watch_time_reporter_)
     watch_time_reporter_->OnDurationChanged(GetPipelineMediaDuration());
@@ -2805,6 +2798,11 @@ std::unique_ptr<media::Renderer> WebMediaPlayerImpl::CreateRenderer(
   bool old_uses_audio_service = UsesAudioService(renderer_type_);
   renderer_type_ = renderer_factory_selector_->GetCurrentRendererType();
 
+  // TODO(crbug/1426179): Support codec changing for Media Foundation.
+  if (renderer_type_ == media::RendererType::kMediaFoundation) {
+    demuxer_manager_->DisableDemuxerCanChangeType();
+  }
+
   bool new_uses_audio_service = UsesAudioService(renderer_type_);
   if (new_uses_audio_service != old_uses_audio_service)
     client_->DidUseAudioServiceChange(new_uses_audio_service);
@@ -3217,7 +3215,7 @@ bool WebMediaPlayerImpl::IsMediaPlayerRendererClient() {
   // MediaResource::Type::URL for the moment.
   return renderer_factory_selector_->GetCurrentFactory()
              ->GetRequiredMediaResourceType() ==
-         media::MediaResource::Type::URL;
+         media::MediaResource::Type::KUrl;
 }
 
 void WebMediaPlayerImpl::ReportMemoryUsage() {
@@ -3792,11 +3790,15 @@ void WebMediaPlayerImpl::SetTickClockForTest(
   buffered_data_source_host_->SetTickClockForTest(tick_clock);
 }
 
-void WebMediaPlayerImpl::OnFirstFrame(base::TimeTicks frame_time) {
+void WebMediaPlayerImpl::OnFirstFrame(base::TimeTicks frame_time,
+                                      bool is_frame_readable) {
   DCHECK(!load_start_time_.is_null());
   DCHECK(!skip_metrics_due_to_startup_suspend_);
+
   has_first_frame_ = true;
   needs_first_frame_ = false;
+  is_frame_readable_ = is_frame_readable;
+
   const base::TimeDelta elapsed = frame_time - load_start_time_;
   media_metrics_provider_->SetTimeToFirstFrame(elapsed);
   WriteSplitHistogram<kPlaybackType | kEncrypted>(
@@ -3972,6 +3974,22 @@ void WebMediaPlayerImpl::ReportSessionUMAs() const {
 
 bool WebMediaPlayerImpl::PassedTimingAllowOriginCheck() const {
   return demuxer_manager_->PassedDataSourceTimingAllowOriginCheck();
+}
+
+void WebMediaPlayerImpl::DidMediaMetadataChange() {
+  media::MediaContentType content_type = GetMediaContentType();
+  bool is_encrypted_media =
+      pipeline_metadata_.audio_decoder_config.is_encrypted() ||
+      pipeline_metadata_.video_decoder_config.is_encrypted();
+
+  client_->DidMediaMetadataChange(
+      delegate_has_audio_, HasVideo(),
+      pipeline_metadata_.audio_decoder_config.codec(),
+      pipeline_metadata_.video_decoder_config.codec(), content_type,
+      is_encrypted_media);
+
+  delegate_->DidMediaMetadataChange(delegate_id_, delegate_has_audio_,
+                                    HasVideo(), content_type);
 }
 
 }  // namespace blink

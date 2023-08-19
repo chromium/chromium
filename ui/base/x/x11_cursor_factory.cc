@@ -37,7 +37,8 @@ X11CursorFactory::~X11CursorFactory() = default;
 scoped_refptr<PlatformCursor> X11CursorFactory::CreateImageCursor(
     mojom::CursorType type,
     const SkBitmap& bitmap,
-    const gfx::Point& hotspot) {
+    const gfx::Point& hotspot,
+    float scale) {
   // There is a problem with custom cursors that have no custom data. The
   // resulting SkBitmap is empty and X crashes when creating a zero size cursor
   // image. Return invisible cursor here instead.
@@ -51,6 +52,7 @@ scoped_refptr<PlatformCursor> X11CursorFactory::CreateAnimatedCursor(
     mojom::CursorType type,
     const std::vector<SkBitmap>& bitmaps,
     const gfx::Point& hotspot,
+    float scale,
     base::TimeDelta frame_delay) {
   std::vector<XCursorLoader::Image> images;
   images.reserve(bitmaps.size());

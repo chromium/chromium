@@ -20,6 +20,8 @@
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
+#include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 #include "ui/gl/trace_util.h"
 
 namespace gpu {
@@ -52,7 +54,7 @@ void DumpMemoryForImageTransferCacheEntry(
     return;
   }
   GrGLTextureInfo info;
-  if (image_backend_texture.getGLTextureInfo(&info)) {
+  if (GrBackendTextures::GetGLTextureInfo(image_backend_texture, &info)) {
     auto guid = gl::GetGLTextureRasterGUIDForTracing(info.fID);
     pmd->CreateSharedGlobalAllocatorDump(guid);
     // Importance of 3 gives this dump priority over the dump made by Skia
@@ -111,7 +113,7 @@ void DumpMemoryForYUVImageTransferCacheEntry(
       return;
     }
     GrGLTextureInfo info;
-    if (image_backend_texture.getGLTextureInfo(&info)) {
+    if (GrBackendTextures::GetGLTextureInfo(image_backend_texture, &info)) {
       auto guid = gl::GetGLTextureRasterGUIDForTracing(info.fID);
       pmd->CreateSharedGlobalAllocatorDump(guid);
       // Importance of 3 gives this dump priority over the dump made by Skia
@@ -256,10 +258,17 @@ cc::ServiceTransferCacheEntry* ServiceTransferCache::GetEntry(
   if (!found) {
     return nullptr;
   }
-  UMA_HISTOGRAM_LONG_TIMES("GPU.TransferCache.TimeSinceLastUse",
-                           base::TimeTicks::Now() - entry->second.last_use);
-  entry->second.last_use = base::TimeTicks::Now();
+  base::TimeTicks now = base::TimeTicks::Now();
+  base::TimeDelta last_use_delta = now - entry->second.last_use;
+  if (last_use_delta > entry->second.max_last_use_delta) {
+    entry->second.max_last_use_delta = last_use_delta;
+  }
+  entry->second.last_use = now;
   entry->second.num_reuse++;
+  UMA_HISTOGRAM_LONG_TIMES("GPU.TransferCache.TimeSinceLastUse",
+                           last_use_delta);
+  UMA_HISTOGRAM_LONG_TIMES("GPU.TransferCache.MaxHistoricalTimeSinceLastUse",
+                           entry->second.max_last_use_delta);
   return entry->second.entry.get();
 }
 

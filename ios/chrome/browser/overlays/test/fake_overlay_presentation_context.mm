@@ -9,10 +9,6 @@
 #import "ios/chrome/browser/overlays/public/overlay_presentation_context_observer.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 FakeOverlayPresentationContext::FakeOverlayPresentationContext() = default;
 FakeOverlayPresentationContext::~FakeOverlayPresentationContext() = default;
 

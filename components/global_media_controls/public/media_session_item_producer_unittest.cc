@@ -691,15 +691,6 @@ TEST_F(MediaSessionItemProducerTest, HidingNotification_TimerParams) {
   EXPECT_FALSE(HasActiveItems());
 }
 
-TEST_F(MediaSessionItemProducerTest, HidesSessionWithPresentation) {
-  const base::UnguessableToken id = SimulatePlayingControllableMedia();
-  EXPECT_TRUE(HasActiveItems());
-  SimulateSessionHasPresentation(id);
-  // The presentation gets its own item, so MediaSessionItemProducer's item has
-  // become redundant and gets hidden.
-  EXPECT_FALSE(HasActiveItems());
-}
-
 TEST_F(MediaSessionItemProducerTest, RefreshSessionWhenRemotePlaybackChanges) {
   EXPECT_CALL(item_manager(), ShowItem(_));
   const base::UnguessableToken id = SimulatePlayingControllableMedia();

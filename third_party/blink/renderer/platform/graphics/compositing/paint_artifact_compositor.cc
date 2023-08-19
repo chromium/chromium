@@ -368,6 +368,11 @@ bool NeedsFullUpdateAfterPaintingChunk(
     return true;
   }
 
+  // Hit test opaqueness of the paint chunk may affect that of cc::Layer.
+  if (previous.hit_test_opaqueness != repainted.hit_test_opaqueness) {
+    return true;
+  }
+
   // Debugging for https://crbug.com/1237389 and https://crbug.com/1230104.
   // Before returning that a full update is not needed, check that the
   // properties are changed, which would indicate a missing call to
@@ -731,6 +736,19 @@ SynthesizedClip& PaintArtifactCompositor::CreateOrReuseSynthesizedClipLayer(
     synthesized_clip.Layer()->SetLayerTreeHost(root_layer_->layer_tree_host());
     if (layer_debug_info_enabled_ && !synthesized_clip.Layer()->debug_info())
       synthesized_clip.Layer()->SetDebugName("Synthesized Clip");
+
+    if (!should_always_update_on_scroll_) {
+      // If there is any scroll translation between `clip.LocalTransformSpace`
+      // and `transform`, the synthesized clip layer's geometry and paint
+      // operations depend on the scroll offset and we need to update them
+      // on each scroll of the scroller.
+      const auto& clip_transform = clip.LocalTransformSpace().Unalias();
+      if (&clip_transform != &transform &&
+          &clip_transform.NearestScrollTranslationNode() !=
+              &transform.NearestScrollTranslationNode()) {
+        should_always_update_on_scroll_ = true;
+      }
+    }
   }
   mask_isolation_id = synthesized_clip.GetMaskIsolationId();
   mask_effect_id = synthesized_clip.GetMaskEffectId();
@@ -787,15 +805,14 @@ void PaintArtifactCompositor::Update(
     scoped_refptr<const PaintArtifact> artifact,
     const ViewportProperties& viewport_properties,
     const Vector<const TransformPaintPropertyNode*>& scroll_translation_nodes,
-    const Vector<const TransformPaintPropertyNode*>&
-        anchor_scroll_container_nodes,
+    const Vector<const TransformPaintPropertyNode*>& anchor_position_scrollers,
     Vector<std::unique_ptr<cc::ViewTransitionRequest>> transition_requests) {
   const bool unification_enabled =
       base::FeatureList::IsEnabled(features::kScrollUnification);
   // See: |UpdateRepaintedLayers| for repaint updates.
   DCHECK(needs_update_);
   DCHECK(scroll_translation_nodes.empty() || unification_enabled);
-  DCHECK(anchor_scroll_container_nodes.empty() || !unification_enabled);
+  DCHECK(anchor_position_scrollers.empty() || !unification_enabled);
   DCHECK(root_layer_);
 
   TRACE_EVENT0("blink", "PaintArtifactCompositor::Update");
@@ -820,7 +837,7 @@ void PaintArtifactCompositor::Update(
   CHECK(painted_scroll_translations_.empty());
 
   // Make compositing decisions, storing the result in |pending_layers_|.
-  CollectPendingLayers(std::move(artifact));
+  CollectPendingLayers(artifact);
   PendingLayer::DecompositeTransforms(pending_layers_);
 
   LayerListBuilder layer_list_builder;
@@ -831,6 +848,7 @@ void PaintArtifactCompositor::Update(
   UpdateCompositorViewportProperties(viewport_properties, property_tree_manager,
                                      host);
 
+  should_always_update_on_scroll_ = false;
   for (auto& entry : synthesized_clip_cache_)
     entry.in_use = false;
 
@@ -910,10 +928,10 @@ void PaintArtifactCompositor::Update(
       property_tree_manager.EnsureCompositorScrollAndTransformNode(*node);
     }
   } else {
-    // anchor-scroll requires all relevant scroll containers to have their
+    // Anchor positioning requires all relevant scroll containers to have their
     // cc::TransformNode and cc::ScrollNode, so that compositor can update the
     // translation correctly.
-    for (auto* node : anchor_scroll_container_nodes) {
+    for (auto* node : anchor_position_scrollers) {
       property_tree_manager.EnsureCompositorScrollAndTransformNode(*node);
     }
   }
@@ -949,6 +967,15 @@ void PaintArtifactCompositor::Update(
 
   g_s_property_tree_sequence_number++;
 
+  if (RuntimeEnabledFeatures::SimplifiedClearPropertyTreeChangeEnabled()) {
+    // For information about |sequence_number|, see:
+    // PaintPropertyNode::changed_sequence_number_|;
+    for (auto& chunk : artifact->PaintChunks()) {
+      chunk.properties.GetPropertyTreeState().ClearChangedToRoot(
+          g_s_property_tree_sequence_number);
+    }
+  }
+
   DVLOG(2) << "PaintArtifactCompositor::Update() done\n"
            << "Composited layers:\n"
            << GetLayersAsJSON(VLOG_IS_ON(3) ? 0xffffffff : 0)
@@ -961,10 +988,9 @@ void PaintArtifactCompositor::UpdateRepaintedLayers(
   // |Update| should be used for full updates.
   DCHECK(!needs_update_);
 
-  const auto& repainted_chunks = repainted_artifact->PaintChunks();
 #if DCHECK_IS_ON()
   // Any property tree state change should have caused a full update.
-  for (const auto& chunk : repainted_chunks) {
+  for (const auto& chunk : repainted_artifact->PaintChunks()) {
     // If this fires, a property tree value has changed but we are missing a
     // call to |PaintArtifactCompositor::SetNeedsUpdate|.
     DCHECK(!chunk.properties.GetPropertyTreeState().Unalias().ChangedToRoot(
@@ -973,33 +999,11 @@ void PaintArtifactCompositor::UpdateRepaintedLayers(
 #endif
 
   cc::LayerSelection layer_selection;
-
-  // The loop below iterates over the existing PendingLayers and issues updates.
-  auto* repainted_chunk_iterator = repainted_chunks.begin();
   for (auto& pending_layer : pending_layers_) {
-    // We need to both copy the repainted paint chunks and update the cc::Layer.
-    // To do this, we need the previous PaintChunks (from the PendingLayer) and
-    // the matching repainted PaintChunks (from |repainted_chunks|). Because
-    // repaint-only updates cannot add, remove, or re-order PaintChunks,
-    // |repainted_chunk_iterator| searches forward in |repainted_chunks| for
-    // the matching paint chunk, ensuring this function is O(chunks).
-    const PaintChunk& first = *pending_layer.Chunks().begin();
-    while (repainted_chunk_iterator != repainted_chunks.end()) {
-      if (repainted_chunk_iterator->Matches(first))
-        break;
-      ++repainted_chunk_iterator;
-    }
-    // If we do not find a matching PaintChunk, PaintChunks must have been
-    // added, removed, or re-ordered, and we should be doing a full update
-    // instead of a repaint update.
-    CHECK(repainted_chunk_iterator != repainted_chunks.end());
-
     pending_layer.UpdateCompositedLayerForRepaint(repainted_artifact,
                                                   layer_selection);
   }
-
   root_layer_->layer_tree_host()->RegisterSelection(layer_selection);
-
   UpdateDebugInfo();
 
   previous_update_for_testing_ = PreviousUpdateType::kRepaint;
@@ -1290,6 +1294,7 @@ Vector<cc::Layer*> PaintArtifactCompositor::SynthesizedClipLayersForTesting()
 }
 
 void PaintArtifactCompositor::ClearPropertyTreeChangedState() {
+  CHECK(!RuntimeEnabledFeatures::SimplifiedClearPropertyTreeChangeEnabled());
   // For information about |sequence_number|, see:
   // PaintPropertyNode::changed_sequence_number_|;
   static int changed_sequence_number = 1;

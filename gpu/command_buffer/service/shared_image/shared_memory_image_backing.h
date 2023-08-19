@@ -15,20 +15,24 @@
 #include "gpu/gpu_gles2_export.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace gpu {
 
 // Implementation of SharedImageBacking that uses Shared Memory GMB.
 class GPU_GLES2_EXPORT SharedMemoryImageBacking : public SharedImageBacking {
  public:
-  SharedMemoryImageBacking(const Mailbox& mailbox,
-                           viz::SharedImageFormat format,
-                           const gfx::Size& size,
-                           const gfx::ColorSpace& color_space,
-                           GrSurfaceOrigin surface_origin,
-                           SkAlphaType alpha_type,
-                           uint32_t usage,
-                           SharedMemoryRegionWrapper wrapper);
+  SharedMemoryImageBacking(
+      const Mailbox& mailbox,
+      viz::SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      SharedMemoryRegionWrapper wrapper,
+      gfx::GpuMemoryBufferHandle handle = gfx::GpuMemoryBufferHandle(),
+      absl::optional<gfx::BufferUsage> buffer_usage = absl::nullopt);
 
   ~SharedMemoryImageBacking() override;
 
@@ -37,6 +41,7 @@ class GPU_GLES2_EXPORT SharedMemoryImageBacking : public SharedImageBacking {
   SharedImageBackingType GetType() const override;
   gfx::Rect ClearedRect() const override;
   void SetClearedRect(const gfx::Rect& cleared_rect) override;
+  gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandle() override;
 
   const SharedMemoryRegionWrapper& shared_memory_wrapper();
   const std::vector<SkPixmap>& pixmaps();
@@ -45,9 +50,9 @@ class GPU_GLES2_EXPORT SharedMemoryImageBacking : public SharedImageBacking {
   std::unique_ptr<DawnImageRepresentation> ProduceDawn(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
-      WGPUDevice device,
-      WGPUBackendType backend_type,
-      std::vector<WGPUTextureFormat> view_formats) override;
+      const wgpu::Device& device,
+      wgpu::BackendType backend_type,
+      std::vector<wgpu::TextureFormat> view_formats) override;
   std::unique_ptr<GLTextureImageRepresentation> ProduceGLTexture(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker) override;
@@ -78,6 +83,9 @@ class GPU_GLES2_EXPORT SharedMemoryImageBacking : public SharedImageBacking {
 
   // Set for shared memory GMB.
   SharedMemoryRegionWrapper shared_memory_wrapper_;
+
+  // Initialized when backing is created as CPU mappable.
+  gfx::GpuMemoryBufferHandle handle_;
 
   // SkPixmap(s) for accessing memory.
   std::vector<SkPixmap> pixmaps_;

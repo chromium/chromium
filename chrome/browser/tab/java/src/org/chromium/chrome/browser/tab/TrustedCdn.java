@@ -80,8 +80,7 @@ public class TrustedCdn extends TabWebContentsUserData {
     /**
      *  @return The publisher URL if the current page is hosted on a trusted CDN, or null otherwise
      */
-    @Nullable
-    public static String getPublisherUrl(@Nullable Tab tab) {
+    public static @Nullable String getPublisherUrl(@Nullable Tab tab) {
         TrustedCdn cdn = get(tab);
         return cdn != null ? cdn.getPublisherUrl() : null;
     }
@@ -110,7 +109,6 @@ public class TrustedCdn extends TabWebContentsUserData {
         return trustedCdn;
     }
 
-    @VisibleForTesting
     public static void setPublisherUrlForTesting(@NonNull Tab tab, @Nullable String publisherUrl) {
         from(tab).setPublisherUrl(publisherUrl);
     }

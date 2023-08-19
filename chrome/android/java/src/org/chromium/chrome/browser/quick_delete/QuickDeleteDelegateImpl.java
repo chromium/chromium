@@ -7,26 +7,37 @@ package org.chromium.chrome.browser.quick_delete;
 import androidx.annotation.NonNull;
 
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
-import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge.OnClearBrowsingDataListener;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
+import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 /**
  * An implementation of the {@link QuickDeleteDelegate} to handle quick delete operations
  * for Chrome.
  */
-public class QuickDeleteDelegateImpl implements QuickDeleteDelegate {
+public class QuickDeleteDelegateImpl extends QuickDeleteDelegate {
+    /** {@link SettingsLauncher} used to launch the Clear browsing data settings fragment. */
+    private final SettingsLauncher mSettingsLauncher = new SettingsLauncherImpl();
+
     @Override
-    public void performQuickDelete(@NonNull Runnable onDeleteFinished) {
+    public void performQuickDelete(@NonNull Runnable onDeleteFinished, @TimePeriod int timePeriod) {
+        // Note: clang-format does a bad job formatting lambdas so we turn it off here.
+        // clang-format off
         BrowsingDataBridge.getInstance().clearBrowsingData(
-                new OnClearBrowsingDataListener() {
-                    @Override
-                    public void onBrowsingDataCleared() {
-                        onDeleteFinished.run();
-                    }
-                },
+                onDeleteFinished::run,
                 new int[] {
-                        BrowsingDataType.HISTORY, BrowsingDataType.COOKIES, BrowsingDataType.CACHE},
-                TimePeriod.LAST_15_MINUTES);
+                        BrowsingDataType.HISTORY, BrowsingDataType.COOKIES, BrowsingDataType.CACHE
+                },
+                timePeriod);
+        // clang-format on
+    }
+
+    /**
+     * @return {@link SettingsLauncher} used to launch the Clear browsing data settings fragment.
+     */
+    @Override
+    SettingsLauncher getSettingsLauncher() {
+        return mSettingsLauncher;
     }
 }

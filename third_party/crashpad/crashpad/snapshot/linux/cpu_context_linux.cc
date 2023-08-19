@@ -266,6 +266,21 @@ void InitializeCPUContextARM64_OnlyFPSIMD(
   context->fpcr = float_context.fpcr;
 }
 
+#elif defined(ARCH_CPU_RISCV64)
+
+void InitializeCPUContextRISCV64(const ThreadContext::t64_t& thread_context,
+                                 const FloatContext::f64_t& float_context,
+                                 CPUContextRISCV64* context) {
+  context->pc = thread_context.pc;
+
+  static_assert(sizeof(context->regs) == sizeof(thread_context.regs));
+  memcpy(context->regs, thread_context.regs, sizeof(context->regs));
+
+  static_assert(sizeof(context->fpregs) == sizeof(float_context.fpregs));
+  memcpy(context->fpregs, float_context.fpregs, sizeof(context->fpregs));
+  context->fcsr = float_context.fcsr;
+}
+
 #endif  // ARCH_CPU_X86_FAMILY
 
 }  // namespace internal

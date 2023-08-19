@@ -5,6 +5,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 
 #include "build/build_config.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
@@ -35,11 +36,13 @@ bool UpdateField(std::string* field,
   return true;
 }
 
-// Updates |field| with |new_value| if true. Returns whether |field| was
-// changed.
-bool UpdateField(bool* field, bool new_value) {
-  if (*field == new_value || !new_value)
+// Updates |field| with |new_value| if different from the default value.
+// Returns whether |field| was changed.
+template <typename T>
+bool UpdateField(T* field, T new_value, T default_value) {
+  if (*field == new_value || new_value == default_value) {
     return false;
+  }
 
   *field = new_value;
   return true;
@@ -47,12 +50,15 @@ bool UpdateField(bool* field, bool new_value) {
 
 // Updates |field| with |new_value| if true. Returns whether |field| was
 // changed.
-bool UpdateField(signin::Tribool* field, signin::Tribool new_value) {
-  if (*field == new_value || new_value == signin::Tribool::kUnknown)
-    return false;
+bool UpdateField(bool* field, bool new_value) {
+  return UpdateField<bool>(field, new_value, false);
+}
 
-  *field = new_value;
-  return true;
+// Updates |field| with |new_value| if true. Returns whether |field| was
+// changed.
+bool UpdateField(signin::Tribool* field, signin::Tribool new_value) {
+  return UpdateField<signin::Tribool>(field, new_value,
+                                      signin::Tribool::kUnknown);
 }
 
 }  // namespace
@@ -121,6 +127,8 @@ bool AccountInfo::UpdateWith(const AccountInfo& other) {
   modified |= UpdateField(&locale, other.locale, nullptr);
   modified |= UpdateField(&picture_url, other.picture_url, kNoPictureURLFound);
   modified |= UpdateField(&is_child_account, other.is_child_account);
+  modified |= UpdateField(&access_point, other.access_point,
+                          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   modified |= UpdateField(&is_under_advanced_protection,
                           other.is_under_advanced_protection);
   modified |= capabilities.UpdateWith(other.capabilities);

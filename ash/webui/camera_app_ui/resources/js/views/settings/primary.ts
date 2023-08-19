@@ -26,7 +26,7 @@ import {
   toAspectRatioAriaLabel,
   toAspectRatioLabel,
   toPhotoResolutionOptionLabel,
-  toVideoResoloutionOptionLabel,
+  toVideoResolutionOptionLabel,
 } from './util.js';
 import {VideoResolutionSettings} from './video_resolution.js';
 
@@ -147,7 +147,7 @@ export class PrimarySettings extends BaseSettings {
       }
       const span =
           dom.getFrom(this.videoResolutionSettings, 'span', HTMLSpanElement);
-      span.textContent = toVideoResoloutionOptionLabel(option.resolutionLevel);
+      span.textContent = toVideoResolutionOptionLabel(option.resolutionLevel);
     });
   }
 
@@ -204,11 +204,6 @@ export class PrimarySettings extends BaseSettings {
     util.setupI18nElements(assertInstanceof(this.header, HTMLElement));
   }
 
-  /**
-   * Opens sub-settings.
-   *
-   * @param name Name of settings view.
-   */
   private async openSubSettings(name: ViewName): Promise<void> {
     // Dismiss primary-settings if sub-settings was dismissed by background
     // click.

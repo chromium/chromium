@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chrome_build.gni")
 import("//build/config/ios/asset_catalog.gni")
 import("//ios/chrome/tools/strings/substitute_strings_identifier.gni")
 
@@ -9,7 +10,7 @@ substitute_strings_identifier("convert_whats_new_items") {
   source = "whats_new_entries.plist"
   output = "$target_gen_dir/whats_new_items.plist"
   headers = [ "$root_gen_dir/ios/chrome/grit/ios_strings.h" ]
-  deps = [ "//ios/chrome/app/strings:ios_strings" ]
+  deps = [ "//ios/chrome/app/strings" ]
 }
 
 bundle_data("whats_new_entries_plist") {
@@ -19,11 +20,35 @@ bundle_data("whats_new_entries_plist") {
   outputs = [ "{{bundle_resources_dir}}/whats_new_entries.plist" ]
 }
 
+substitute_strings_identifier("convert_whats_new_items_m116") {
+  source = "whats_new_entries_m116.plist"
+  output = "$target_gen_dir/whats_new_items_m116.plist"
+  headers = [ "$root_gen_dir/ios/chrome/grit/ios_strings.h" ]
+
+  if (is_chrome_branded) {
+    headers += [ "$root_gen_dir/ios/chrome/grit/ios_google_chrome_strings.h" ]
+  } else {
+    headers += [ "$root_gen_dir/ios/chrome/grit/ios_chromium_strings.h" ]
+  }
+
+  deps = [ "//ios/chrome/app/strings" ]
+}
+
+bundle_data("whats_new_entries_m116_plist") {
+  public_deps = [ ":convert_whats_new_items_m116" ]
+  sources = get_target_outputs(":convert_whats_new_items_m116")
+
+  outputs = [ "{{bundle_resources_dir}}/whats_new_entries_m116.plist" ]
+}
+
 substitute_strings_identifier("convert_unit_tests_resources") {
   source = "test/data/whats_new_test.plist"
   output = "$target_gen_dir/whats_new/test/data/whats_new_test.plist"
-  headers = [ "$root_gen_dir/ios/chrome/grit/ios_strings.h" ]
-  deps = [ "//ios/chrome/app/strings:ios_strings" ]
+  headers = [
+    "$root_gen_dir/ios/chrome/grit/ios_strings.h",
+    "$root_gen_dir/ios/chrome/grit/ios_chromium_strings.h",
+  ]
+  deps = [ "//ios/chrome/app/strings" ]
 }
 
 bundle_data("unit_tests_resources") {
@@ -144,4 +169,20 @@ imageset("search_tabs_hero_banner") {
     "search_tabs_hero_banner.imageset/search_tabs_hero_banner_dark@2x.png",
     "search_tabs_hero_banner.imageset/search_tabs_hero_banner_dark@3x.png",
   ]
+}
+
+bundle_data("screenshots_files") {
+  sources = [
+    "calendar_event.json",
+    "calendar_event_darkmode.json",
+    "chrome_actions.json",
+    "chrome_actions_darkmode.json",
+    "incognito_lock.json",
+    "incognito_lock_darkmode.json",
+    "incognito_tabs_from_other_apps.json",
+    "incognito_tabs_from_other_apps_darkmode.json",
+    "mini_maps.json",
+    "mini_maps_darkmode.json",
+  ]
+  outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
 }

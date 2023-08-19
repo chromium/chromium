@@ -24,6 +24,16 @@ if (enable_me2me_host) {
     outputs = [ "$root_build_dir/remoting/chrome-remote-desktop" ]
   }
 
+  copy("remoting_me2me_host_copy_pipewire_templates") {
+    sources = [
+      "pipewire-media-session.conf.template",
+      "pipewire-pulse.conf.template",
+      "pipewire.conf.template",
+      "wireplumber.conf.template",
+    ]
+    outputs = [ "$root_build_dir/remoting/{{source_file_part}}" ]
+  }
+
   copy("remoting_me2me_host_copy_host_wrapper") {
     sources = [ "remoting_me2me_host_wrapper.sh" ]
     outputs = [ "$root_build_dir/remoting/chrome-remote-desktop-host" ]
@@ -73,6 +83,7 @@ if (enable_me2me_host) {
     deps = [
       ":remoting_me2me_host_copy_crash_uploader",
       ":remoting_me2me_host_copy_host_wrapper",
+      ":remoting_me2me_host_copy_pipewire_templates",
       ":remoting_me2me_host_copy_script",
       ":remoting_me2me_host_copy_setup_url_forwarder_script",
       ":remoting_me2me_host_copy_user_session",

@@ -27,6 +27,7 @@
 #include "fuchsia_web/webengine/test/test_data.h"
 #include "fuchsia_web/webengine/test/web_engine_browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/ozone/public/ozone_platform.h"
 
 namespace virtualkeyboard = fuchsia_input_virtualkeyboard;
 
@@ -53,6 +54,10 @@ class VirtualKeyboardTest : public WebEngineBrowserTest {
   ~VirtualKeyboardTest() override = default;
 
   void SetUp() override {
+    if (ui::OzonePlatform::GetPlatformNameForTest() == "headless") {
+      GTEST_SKIP() << "Keyboard inputs are ignored in headless mode.";
+    }
+
     scoped_feature_list_.InitWithFeatures(
         {features::kVirtualKeyboard, features::kKeyboardInput}, {});
     WebEngineBrowserTest::SetUp();

@@ -9,10 +9,8 @@
 
 #include "base/base64.h"
 #include "base/containers/flat_map.h"
-#include "base/task/sequenced_task_runner.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
-#include "mojo/public/cpp/system/simple_watcher.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace profile_management {
@@ -99,55 +97,18 @@ const std::string* GetAttributeValue(const base::Value::Dict& dict,
 
 }  // namespace
 
-SAMLResponseParser::SAMLResponseParser(
-    std::vector<std::string>&& attributes,
-    const mojo::DataPipeConsumerHandle& body,
-    base::OnceCallback<void(base::flat_map<std::string, std::string>)> callback)
-    : attributes_(std::move(attributes)),
-      body_(body),
-      body_consumer_watcher_(FROM_HERE,
-                             mojo::SimpleWatcher::ArmingPolicy::MANUAL,
-                             base::SequencedTaskRunner::GetCurrentDefault()),
-      callback_(std::move(callback)) {
-  body_consumer_watcher_.Watch(
-      *body_, MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
-      base::BindRepeating(&SAMLResponseParser::OnBodyReady,
-                          weak_ptr_factory_.GetWeakPtr()));
-  body_consumer_watcher_.ArmOrNotify();
+SAMLResponseParser::SAMLResponseParser(std::vector<std::string>&& attributes,
+                                       const std::string& body,
+                                       ResponseParserCallback callback)
+    : attributes_(std::move(attributes)), callback_(std::move(callback)) {
+  data_decoder::DataDecoder::ParseXmlIsolated(
+      body,
+      data_decoder::mojom::XmlParser::WhitespaceBehavior::kPreserveSignificant,
+      base::BindOnce(&SAMLResponseParser::GetSamlResponse,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 SAMLResponseParser::~SAMLResponseParser() = default;
-
-void SAMLResponseParser::OnBodyReady(MojoResult) {
-  uint32_t num_bytes = 0;
-  MojoResult result =
-      body_->ReadData(nullptr, &num_bytes, MOJO_READ_DATA_FLAG_QUERY);
-  switch (result) {
-    case MOJO_RESULT_OK: {
-      std::string response(num_bytes, '\0');
-      body_->ReadData(response.data(), &num_bytes, MOJO_READ_DATA_FLAG_PEEK);
-      data_decoder::DataDecoder::ParseXmlIsolated(
-          response,
-          data_decoder::mojom::XmlParser::WhitespaceBehavior::
-              kPreserveSignificant,
-          base::BindOnce(&SAMLResponseParser::GetSamlResponse,
-                         weak_ptr_factory_.GetWeakPtr()));
-      break;
-    }
-    case MOJO_RESULT_FAILED_PRECONDITION:
-      DCHECK_EQ(num_bytes, 0u);
-      break;
-    case MOJO_RESULT_SHOULD_WAIT:
-      body_consumer_watcher_.ArmOrNotify();
-      return;
-    default:
-      NOTREACHED();
-      return;
-  }
-
-  // Stop watching for response body changes.
-  body_consumer_watcher_.Cancel();
-}
 
 void SAMLResponseParser::GetSamlResponse(
     data_decoder::DataDecoder::ValueOrError value_or_error) {
@@ -185,6 +146,15 @@ void SAMLResponseParser::GetAttributesFromSAMLResponse(
     return;
   }
 
+  // Set standard attributes.
+  auto* destination_url =
+      value_or_error.value().GetDict().FindStringByDottedPath(
+          "attributes.Destination");
+  if (destination_url) {
+    result[kDestinationUrl] = *destination_url;
+  }
+
+  // Set custom attributes.
   for (const auto& attribute : attributes_) {
     const auto* value =
         GetAttributeValue(value_or_error.value().GetDict(), attribute);

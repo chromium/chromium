@@ -273,7 +273,7 @@ class HidDetectionManagerImplTest : public testing::Test {
   size_t num_devices_created_ = 0;
 
   FakeHidDetectionManagerDelegate delegate_;
-  raw_ptr<FakeBluetoothHidDetector, ExperimentalAsh>
+  raw_ptr<FakeBluetoothHidDetector, DanglingUntriaged | ExperimentalAsh>
       fake_bluetooth_hid_detector_ = nullptr;
 
   std::unique_ptr<hid_detection::HidDetectionManagerImpl>

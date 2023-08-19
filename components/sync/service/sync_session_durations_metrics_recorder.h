@@ -10,8 +10,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/elapsed_timer.h"
-#include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/service/history_sync_session_durations_metrics_recorder.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_observer.h"
 
@@ -37,7 +37,7 @@ class SyncSessionDurationsMetricsRecorder
 
   // Returns whether the user is signed in.
   // Note: this is not the same thing as |account_status_|.
-  // |account_status_| says OFF (kind of like sayng "no, not signed-in") if the
+  // |account_status_| says OFF (kind of like saying "no, not signed-in") if the
   // account is in an error state.  IsSignedIn() does not; it will return
   // true for accounts that are signed-in in yet an error state.
   // The most common reason this happens is if a syncing user signs out
@@ -103,6 +103,8 @@ class SyncSessionDurationsMetricsRecorder
 
   const raw_ptr<SyncService> sync_service_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
+
+  HistorySyncSessionDurationsMetricsRecorder history_sync_recorder_;
 
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_observation_{this};

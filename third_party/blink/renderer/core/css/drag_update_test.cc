@@ -33,7 +33,7 @@ TEST(DragUpdateTest, AffectedByDragUpdate) {
   document.View()->UpdateAllLifecyclePhasesForTest();
   unsigned start_count = document.GetStyleEngine().StyleForElementCount();
 
-  document.getElementById("div")->SetDragged(true);
+  document.getElementById(AtomicString("div"))->SetDragged(true);
   document.View()->UpdateAllLifecyclePhasesForTest();
 
   unsigned element_count =
@@ -63,7 +63,7 @@ TEST(DragUpdateTest, ChildAffectedByDragUpdate) {
   document.UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   unsigned start_count = document.GetStyleEngine().StyleForElementCount();
 
-  document.getElementById("div")->SetDragged(true);
+  document.getElementById(AtomicString("div"))->SetDragged(true);
   document.UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   unsigned element_count =
@@ -94,7 +94,7 @@ TEST(DragUpdateTest, SiblingAffectedByDragUpdate) {
   document.UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   unsigned start_count = document.GetStyleEngine().StyleForElementCount();
 
-  document.getElementById("div")->SetDragged(true);
+  document.getElementById(AtomicString("div"))->SetDragged(true);
   document.UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   unsigned element_count =

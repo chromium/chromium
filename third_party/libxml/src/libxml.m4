@@ -2,7 +2,7 @@ dnl AM_PATH_XML2([MINIMUM-VERSION, [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 dnl Test for XML, and define XML_CPPFLAGS and XML_LIBS
 dnl
 AC_DEFUN([AM_PATH_XML2],[
-  AC_MSG_WARN([AM_PATH_XML2 is deprecated, use PKG_CHECK_MODULES instead])
+  m4_warn([obsolete], [AM_PATH_XML2 is deprecated, use PKG_CHECK_MODULES instead])
   AC_REQUIRE([PKG_PROG_PKG_CONFIG])
 
   verdep=ifelse([$1], [], [], [">= $1"])

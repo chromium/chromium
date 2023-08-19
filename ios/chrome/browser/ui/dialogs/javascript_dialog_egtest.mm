@@ -29,10 +29,6 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using chrome_test_util::ButtonWithAccessibilityLabel;
 using chrome_test_util::OKButton;
 using chrome_test_util::SettingsDoneButton;
@@ -229,7 +225,7 @@ void TypeInPrompt(NSString* input) {
       grey_accessibilityID(kJavaScriptDialogTextFieldAccessibilityIdentifier),
       nil);
   [[EarlGrey selectElementWithMatcher:text_field_matcher]
-      performAction:grey_typeText(input)];
+      performAction:grey_replaceText(input)];
 }
 
 void TapCancel() {

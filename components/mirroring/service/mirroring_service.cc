@@ -73,9 +73,9 @@ void MirroringService::SwitchMirroringSourceTab() {
 
 void MirroringService::GetMirroringStats(GetMirroringStatsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Currently implementation only exists for legacy mirroring sessions.
   session_ ? std::move(callback).Run(base::Value(session_->GetMirroringStats()))
-           : std::move(callback).Run(base::Value());
+           : std::move(callback).Run(
+                 base::Value(session_host_->GetMirroringStats()));
 }
 
 void MirroringService::OnDisconnect() {

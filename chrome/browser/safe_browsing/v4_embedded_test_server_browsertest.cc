@@ -107,6 +107,9 @@ class V4EmbeddedTestServerBrowserTest : public InProcessBrowserTest {
   // with the source of truth.
   void LocallyMarkPrefixAsBad(const GURL& url, const ListIdentifier& list_id) {
     FullHashStr full_hash = V4ProtocolManagerUtil::GetFullHash(url);
+    while (!v4_db_factory_->IsReady()) {
+      content::RunAllTasksUntilIdle();
+    }
     v4_db_factory_->MarkPrefixAsBad(list_id, full_hash);
   }
 
@@ -117,7 +120,8 @@ class V4EmbeddedTestServerBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<net::MappedHostResolver> mapped_host_resolver_;
 
   // Owned by the V4Database.
-  raw_ptr<TestV4DatabaseFactory, DanglingUntriaged> v4_db_factory_ = nullptr;
+  raw_ptr<TestV4DatabaseFactory, AcrossTasksDanglingUntriaged> v4_db_factory_ =
+      nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(V4EmbeddedTestServerBrowserTest, SimpleTest) {

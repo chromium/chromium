@@ -17,6 +17,7 @@
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/sync_file_system/local/canned_syncable_file_system.h"
 #include "chrome/browser/sync_file_system/local/local_file_change_tracker.h"
@@ -432,11 +433,10 @@ TEST_F(LocalFileSyncContextTest, CreateDefaultSyncableBucket) {
       storage::kDefaultBucketName, blink::mojom::StorageType::kSyncable,
       base::SequencedTaskRunner::GetCurrentDefault(), future.GetCallback());
 
-  const auto result = future.Take();
-  ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result->name, storage::kDefaultBucketName);
-  EXPECT_EQ(result->type, blink::mojom::StorageType::kSyncable);
-  EXPECT_GT(result->id.value(), 0);
+  ASSERT_OK_AND_ASSIGN(const auto result, future.Take());
+  EXPECT_EQ(result.name, storage::kDefaultBucketName);
+  EXPECT_EQ(result.type, blink::mojom::StorageType::kSyncable);
+  EXPECT_GT(result.id.value(), 0);
 
   // Finishing the test.
   sync_context_->ShutdownOnUIThread();

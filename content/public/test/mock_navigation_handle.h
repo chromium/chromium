@@ -145,6 +145,12 @@ class MockNavigationHandle : public NavigationHandle {
   const net::HttpResponseHeaders* GetResponseHeaders() override {
     return response_headers_.get();
   }
+  MOCK_METHOD1(
+      SetLCPPNavigationHint,
+      void(const blink::mojom::LCPCriticalPathPredictorNavigationTimeHint&));
+  MOCK_METHOD0(
+      GetLCPPNavigationHint,
+      const blink::mojom::LCPCriticalPathPredictorNavigationTimeHintPtr&());
   MOCK_METHOD0(GetConnectionInfo, net::HttpResponseInfo::ConnectionInfo());
   const absl::optional<net::SSLInfo>& GetSSLInfo() override {
     return ssl_info_;
@@ -176,7 +182,7 @@ class MockNavigationHandle : public NavigationHandle {
       override {
     return initiator_frame_token_;
   }
-  int GetInitiatorProcessID() override { return initiator_process_id_; }
+  int GetInitiatorProcessId() override { return initiator_process_id_; }
   const absl::optional<url::Origin>& GetInitiatorOrigin() override {
     return initiator_origin_;
   }
@@ -204,6 +210,7 @@ class MockNavigationHandle : public NavigationHandle {
               (const std::vector<std::string>& trials));
   MOCK_METHOD(void, SetIsOverridingUserAgent, (bool));
   MOCK_METHOD(void, SetSilentlyIgnoreErrors, ());
+  MOCK_METHOD(network::mojom::WebSandboxFlags, SandboxFlagsInitiator, ());
   MOCK_METHOD(network::mojom::WebSandboxFlags, SandboxFlagsInherited, ());
   MOCK_METHOD(network::mojom::WebSandboxFlags, SandboxFlagsToCommit, ());
   MOCK_METHOD(bool, IsWaitingToCommit, ());
@@ -214,6 +221,7 @@ class MockNavigationHandle : public NavigationHandle {
   MOCK_METHOD(PrerenderTriggerType, GetPrerenderTriggerType, ());
   MOCK_METHOD(std::string, GetPrerenderEmbedderHistogramSuffix, ());
   MOCK_METHOD(void, SetAllowCookiesFromBrowser, (bool));
+  MOCK_METHOD(void, GetResponseBody, (ResponseBodyCallback));
 
 #if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(const base::android::JavaRef<jobject>&,

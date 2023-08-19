@@ -10,6 +10,7 @@
 #include "ipcz/api_object.h"
 #include "ipcz/ipcz.h"
 #include "ipcz/parcel.h"
+#include "third_party/abseil-cpp/absl/base/macros.h"
 #include "util/ref_counted.h"
 
 namespace ipcz {
@@ -22,9 +23,18 @@ namespace ipcz {
 // application-level validation failures to ipcz via the Reject() API.
 class ParcelWrapper : public APIObjectImpl<ParcelWrapper, APIObject::kParcel> {
  public:
-  explicit ParcelWrapper(Parcel parcel);
+  explicit ParcelWrapper(std::unique_ptr<Parcel> parcel);
 
-  Parcel& parcel() { return parcel_; }
+  Parcel& parcel() {
+    ABSL_ASSERT(parcel_);
+    return *parcel_;
+  }
+
+  void SetParcel(std::unique_ptr<Parcel> parcel) {
+    parcel_ = std::move(parcel);
+  }
+
+  std::unique_ptr<Parcel> TakeParcel() { return std::move(parcel_); }
 
   // APIObject:
   IpczResult Close() override;
@@ -38,18 +48,22 @@ class ParcelWrapper : public APIObjectImpl<ParcelWrapper, APIObject::kParcel> {
                  void* data,
                  size_t* num_data_bytes,
                  IpczHandle* handles,
-                 size_t* num_handles);
-  IpczResult BeginGet(const void** data,
-                      size_t* num_bytes,
-                      size_t* num_handles);
-  IpczResult CommitGet(size_t num_data_bytes_consumed,
-                       absl::Span<IpczHandle> handles);
-  IpczResult AbortGet();
+                 size_t* num_handles,
+                 IpczHandle* parcel);
+  IpczResult BeginGet(IpczBeginGetFlags flags,
+                      const volatile void** data,
+                      size_t* num_data_bytes,
+                      IpczHandle* handles,
+                      size_t* num_handles,
+                      IpczTransaction* transaction);
+  IpczResult EndGet(IpczTransaction transaction,
+                    IpczEndGetFlags flags,
+                    IpczHandle* parcel);
 
  private:
   ~ParcelWrapper() override;
 
-  Parcel parcel_;
+  std::unique_ptr<Parcel> parcel_;
   bool in_two_phase_get_ = false;
 };
 

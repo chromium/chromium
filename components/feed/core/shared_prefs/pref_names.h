@@ -20,9 +20,6 @@ extern const char kEnableSnippets[];
 // the user toggles the list off.
 extern const char kArticlesListVisible[];
 
-// Choose how video previews will automatically play.
-extern const char kVideoPreviewsType[];
-
 void RegisterFeedSharedProfilePrefs(PrefRegistrySimple* registry);
 }  // namespace prefs
 }  // namespace feed

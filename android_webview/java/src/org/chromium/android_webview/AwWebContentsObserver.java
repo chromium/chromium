@@ -5,6 +5,7 @@
 package org.chromium.android_webview;
 
 import org.chromium.android_webview.AwContents.VisualStateCallback;
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
@@ -22,6 +23,7 @@ import java.lang.ref.WeakReference;
 /**
  * Routes notifications from WebContents to AwContentsClient and other listeners.
  */
+@Lifetime.WebView
 public class AwWebContentsObserver extends WebContentsObserver {
     // TODO(tobiasjs) similarly to WebContentsObserver.mWebContents, mAwContents
     // needs to be a WeakReference, which suggests that there exists a strong

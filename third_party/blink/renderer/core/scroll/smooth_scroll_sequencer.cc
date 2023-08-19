@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
 
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/scroll/programmatic_scroll_animator.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 
@@ -23,10 +24,16 @@ void SmoothScrollSequencer::QueueAnimation(
   }
 }
 
+SmoothScrollSequencer::SmoothScrollSequencer(LocalFrame& owner_frame)
+    : owner_frame_(&owner_frame),
+      scroll_type_(mojom::blink::ScrollType::kProgrammatic) {
+  CHECK(owner_frame_->IsLocalRoot());
+}
+
 void SmoothScrollSequencer::RunQueuedAnimations() {
   if (queue_.empty()) {
-    current_scrollable_ = nullptr;
-    scroll_type_ = mojom::blink::ScrollType::kProgrammatic;
+    CHECK_EQ(owner_frame_->GetSmoothScrollSequencer(), this);
+    owner_frame_->FinishedScrollSequence();
     return;
   }
   SequencedScroll* sequenced_scroll = queue_.back();
@@ -43,7 +50,11 @@ void SmoothScrollSequencer::AbortAnimations() {
     current_scrollable_ = nullptr;
   }
   queue_.clear();
-  scroll_type_ = mojom::blink::ScrollType::kProgrammatic;
+
+  // The sequence may be aborted after being replaced by a new sequence.
+  if (owner_frame_->GetSmoothScrollSequencer() == this) {
+    owner_frame_->FinishedScrollSequence();
+  }
 }
 
 bool SmoothScrollSequencer::FilterNewScrollOrAbortCurrent(
@@ -70,6 +81,10 @@ wtf_size_t SmoothScrollSequencer::GetCount() const {
   return queue_.size();
 }
 
+bool SmoothScrollSequencer::IsEmpty() const {
+  return queue_.empty();
+}
+
 void SmoothScrollSequencer::DidDisposeScrollableArea(
     const ScrollableArea& area) {
   for (Member<SequencedScroll>& sequenced_scroll : queue_) {
@@ -83,6 +98,7 @@ void SmoothScrollSequencer::DidDisposeScrollableArea(
 void SmoothScrollSequencer::Trace(Visitor* visitor) const {
   visitor->Trace(queue_);
   visitor->Trace(current_scrollable_);
+  visitor->Trace(owner_frame_);
 }
 
 }  // namespace blink

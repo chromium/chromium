@@ -71,12 +71,15 @@ enum class RecordingType {
   kGif,
 };
 
-// Defines the supported audio recording modes.
+// Defines the supported audio recording modes. Note that these values are
+// persisted to histograms so existing values should remain unchanged and new
+// values should be added to the end.
 enum class AudioRecordingMode {
-  kOff,
+  kOff = 0,
   kSystem,
   kMicrophone,
   kSystemAndMicrophone,
+  kMaxValue = kSystemAndMicrophone,
 };
 
 // Specifies the capture mode behavior types.
@@ -90,6 +93,12 @@ enum class BehaviorType {
 constexpr int ToInt(RecordingType type) {
   return static_cast<int>(type);
 }
+
+// The concrete type of the capture session instance.
+enum class SessionType {
+  kNull,
+  kReal,
+};
 
 }  // namespace ash
 

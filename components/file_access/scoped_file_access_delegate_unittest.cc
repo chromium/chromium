@@ -12,6 +12,7 @@
 #include "base/location.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "components/file_access/test/mock_scoped_file_access_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -115,6 +116,75 @@ TEST_F(ScopedFileAccessDelegateTaskTest, AccessScopedExecution) {
   scoped_file_access_delegate.AccessScopedPostTaskAndReplyWithResult(
       path, FROM_HERE, {}, task.Get(), reply.Get());
   task_environment_.RunUntilIdle();
+}
+
+TEST_F(ScopedFileAccessDelegateTaskTest, RequestFilesAccessHelper_HasInstance) {
+  MockScopedFileAccessDelegate scoped_file_access_delegate;
+  EXPECT_CALL(scoped_file_access_delegate, RequestFilesAccess)
+      .WillOnce(
+          [](const std::vector<base::FilePath>& files,
+             const GURL& destination_url,
+             base::OnceCallback<void(file_access::ScopedFileAccess)> callback) {
+            std::move(callback).Run(ScopedFileAccess::Allowed());
+          });
+  base::test::TestFuture<file_access::ScopedFileAccess> future;
+  RequestFilesAccess({}, GURL(), future.GetCallback());
+  EXPECT_TRUE(future.Get<0>().is_allowed());
+}
+
+TEST_F(ScopedFileAccessDelegateTaskTest, RequestFilesAccessHelper_NoInstance) {
+  base::test::TestFuture<file_access::ScopedFileAccess> future;
+  RequestFilesAccess({}, GURL(), future.GetCallback());
+  EXPECT_TRUE(future.Get<0>().is_allowed());
+}
+
+TEST_F(ScopedFileAccessDelegateTaskTest,
+       RequestFilesAccessForSystemHelper_HasInstance) {
+  MockScopedFileAccessDelegate scoped_file_access_delegate;
+  EXPECT_CALL(scoped_file_access_delegate, RequestFilesAccessForSystem)
+      .WillOnce(
+          [](const std::vector<base::FilePath>& files,
+             base::OnceCallback<void(file_access::ScopedFileAccess)> callback) {
+            std::move(callback).Run(ScopedFileAccess::Allowed());
+          });
+  base::test::TestFuture<file_access::ScopedFileAccess> future;
+  RequestFilesAccessForSystem({}, future.GetCallback());
+  EXPECT_TRUE(future.Get<0>().is_allowed());
+}
+
+TEST_F(ScopedFileAccessDelegateTaskTest,
+       RequestFilesAccessForSystemHelper_NoInstance) {
+  base::test::TestFuture<file_access::ScopedFileAccess> future;
+  RequestFilesAccessForSystem({}, future.GetCallback());
+  EXPECT_TRUE(future.Get<0>().is_allowed());
+}
+
+TEST_F(ScopedFileAccessDelegateTaskTest,
+       CreateFileAccessCallbackHelper_HasInstance) {
+  MockScopedFileAccessDelegate scoped_file_access_delegate;
+  EXPECT_CALL(scoped_file_access_delegate, CreateFileAccessCallback)
+      .WillOnce([](const GURL& destination) {
+        return base::BindRepeating(
+            [](const GURL& destination,
+               const std::vector<base::FilePath>& files,
+               base::OnceCallback<void(file_access::ScopedFileAccess)>
+                   callback) {
+              std::move(callback).Run(file_access::ScopedFileAccess::Allowed());
+            },
+            destination);
+      });
+  base::test::TestFuture<file_access::ScopedFileAccess> future;
+  auto cb = CreateFileAccessCallback(GURL());
+  cb.Run({}, future.GetCallback());
+  EXPECT_TRUE(future.Get<0>().is_allowed());
+}
+
+TEST_F(ScopedFileAccessDelegateTaskTest,
+       CreateFileAccessCallbackHelper_NoInstance) {
+  base::test::TestFuture<file_access::ScopedFileAccess> future;
+  auto cb = CreateFileAccessCallback(GURL());
+  cb.Run({}, future.GetCallback());
+  EXPECT_TRUE(future.Get<0>().is_allowed());
 }
 
 }  // namespace file_access

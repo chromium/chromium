@@ -16,8 +16,10 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
@@ -327,6 +329,33 @@ bool StoredDeviceInfoStillAccurate(const DeviceInfo* stored,
          current->interested_data_types() == stored->interested_data_types();
 }
 
+// Record a histogram of the age of the PaaSK fields, in days. To confirm that
+// crbug.com/1465558 is fixed.
+// TODO(crbug.com/1465558): remove this function before Oct 2023.
+void RecordPhoneAsASecurityKeyFieldsAge(const DeviceInfoSpecifics& specifics) {
+  if (!specifics.has_paask_fields()) {
+    return;
+  }
+  // This is just for the purposes of measurement so this code knows that the
+  // ID field, in prelinked data, is actually a time_t divided by 86400, the
+  // number of seconds in a typical day.
+  const int age_days = static_cast<int>(base::Time::Now().ToTimeT() / 86400) -
+                       static_cast<int>(specifics.paask_fields().id());
+  int recorded_value = age_days;
+  // The desktop will ignore records older than 31 days so it's not useful to
+  // track if they're older than that.
+  if (recorded_value > 31) {
+    recorded_value = 31;
+  } else if (recorded_value < 0) {
+    // If the system clock has gone backwards then the age might be negative.
+    // Record this with a special value so that we can confirm that it's very
+    // rare.
+    recorded_value = 32;
+  }
+  base::UmaHistogramExactLinear("WebAuthentication.CableV2.PrelinkDataAgeDays",
+                                recorded_value, /*exclusive_max=*/33);
+}
+
 }  // namespace
 
 DeviceInfoSyncBridge::DeviceInfoSyncBridge(
@@ -584,6 +613,8 @@ std::unique_ptr<DeviceInfo> DeviceInfoSyncBridge::GetDeviceInfo(
 
 std::vector<std::unique_ptr<DeviceInfo>>
 DeviceInfoSyncBridge::GetAllDeviceInfo() const {
+  TRACE_EVENT1("sync", "DeviceInfoSyncBridge::GetAllDeviceInfo", "size",
+               all_data_.size());
   std::vector<std::unique_ptr<DeviceInfo>> list;
   for (const auto& [cache_guid, specifics] : all_data_) {
     if (IsChromeClient(*specifics)) {
@@ -853,6 +884,7 @@ void DeviceInfoSyncBridge::SendLocalDataWithBatch(
 
   std::unique_ptr<DeviceInfoSpecifics> specifics = MakeLocalDeviceSpecifics(
       *local_device_info_provider_->GetLocalDeviceInfo());
+  RecordPhoneAsASecurityKeyFieldsAge(*specifics);
   change_processor()->Put(specifics->cache_guid(), CopyToEntityData(*specifics),
                           batch->GetMetadataChangeList());
   StoreSpecifics(std::move(specifics), batch.get());

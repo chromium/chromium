@@ -24,7 +24,7 @@
 class WebDatabaseService;
 
 namespace base {
-class SingleThreadTaskRunner;
+class SequencedTaskRunner;
 }
 
 namespace autofill {
@@ -35,18 +35,18 @@ class AutofillWebDataBackendImpl;
 class AutofillWebDataServiceObserverOnDBSequence;
 class AutofillWebDataServiceObserverOnUISequence;
 class CreditCard;
-class IBAN;
+class Iban;
 
 // API for Autofill web data.
 class AutofillWebDataService : public WebDataServiceBase {
  public:
   AutofillWebDataService(
-      scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> db_task_runner);
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> db_task_runner);
   AutofillWebDataService(
       scoped_refptr<WebDatabaseService> wdbs,
-      scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> db_task_runner);
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> db_task_runner);
 
   AutofillWebDataService(const AutofillWebDataService&) = delete;
   AutofillWebDataService& operator=(const AutofillWebDataService&) = delete;
@@ -97,6 +97,7 @@ class AutofillWebDataService : public WebDataServiceBase {
   // profiles using |app_locale| and filling in |primary_account_email| into
   // newly converted profiles. The task only converts profiles that have not
   // been converted before.
+  // TODO(crbug.com/1348294): Delete this function, which is unused.
   void ConvertWalletAddressesAndUpdateWalletCards(
       const std::string& app_locale,
       const std::string& primary_account_email);
@@ -118,20 +119,20 @@ class AutofillWebDataService : public WebDataServiceBase {
           change_cb);
 
   // Schedules a task to add IBAN to the web database.
-  void AddIBAN(const IBAN& iban);
+  void AddIban(const Iban& iban);
 
   // Initiates the request for local IBANs. The method
   // OnWebDataServiceRequestDone of |consumer| gets called when the request is
   // finished, with the IBAN included in the argument |result|. The consumer
   // owns the IBAN.
-  WebDataServiceBase::Handle GetIBANs(WebDataServiceConsumer* consumer);
+  WebDataServiceBase::Handle GetIbans(WebDataServiceConsumer* consumer);
 
   // Schedules a task to update iban in the web database.
-  void UpdateIBAN(const IBAN& iban);
+  void UpdateIban(const Iban& iban);
 
   // Schedules a task to remove an IBAN from the web database.
   // |guid| is the identifier of the IBAN to remove.
-  void RemoveIBAN(const std::string& guid);
+  void RemoveIban(const std::string& guid);
 
   // Schedules a task to add credit card to the web database.
   void AddCreditCard(const CreditCard& credit_card);
@@ -145,6 +146,13 @@ class AutofillWebDataService : public WebDataServiceBase {
 
   // Schedules a task to add a full server credit card to the web database.
   void AddFullServerCreditCard(const CreditCard& credit_card);
+
+  // Methods to schedule a task to add, update, remove, clear server cvc in the
+  // web database.
+  void AddServerCvc(int64_t instrument_id, const std::u16string& cvc);
+  void UpdateServerCvc(int64_t instrument_id, const std::u16string& cvc);
+  void RemoveServerCvc(int64_t instrument_id);
+  void ClearServerCvcs();
 
   // Initiates the request for local/server credit cards.  The method
   // OnWebDataServiceRequestDone of |consumer| gets called when the request is
@@ -232,7 +240,7 @@ class AutofillWebDataService : public WebDataServiceBase {
 
   // Returns a task runner that can be used to schedule tasks on the DB
   // sequence.
-  base::SingleThreadTaskRunner* GetDBTaskRunner();
+  base::SequencedTaskRunner* GetDBTaskRunner();
 
   // Triggers an Autocomplete retention policy run which will cleanup data that
   // hasn't been used since over the retention threshold.
@@ -255,10 +263,10 @@ class AutofillWebDataService : public WebDataServiceBase {
       ui_observer_list_;
 
   // The task runner that this class uses for UI tasks.
-  scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
 
   // The task runner that this class uses for DB tasks.
-  scoped_refptr<base::SingleThreadTaskRunner> db_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> db_task_runner_;
 
   scoped_refptr<AutofillWebDataBackendImpl> autofill_backend_;
 

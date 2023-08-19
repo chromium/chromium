@@ -82,6 +82,11 @@ class CAPTURE_EXPORT CameraAppDeviceBridgeImpl
       bool enabled,
       SetVirtualDeviceEnabledCallback callback) override;
 
+  void SetDeviceInUse(const std::string& device_id, bool in_use);
+
+  void IsDeviceInUse(const std::string& device_id,
+                     IsDeviceInUseCallback callback) override;
+
  private:
   friend struct base::DefaultSingletonTraits<CameraAppDeviceBridgeImpl>;
 
@@ -106,6 +111,9 @@ class CAPTURE_EXPORT CameraAppDeviceBridgeImpl
   base::Lock task_runner_map_lock_;
   base::flat_map<std::string, scoped_refptr<base::SingleThreadTaskRunner>>
       ipc_task_runners_ GUARDED_BY(task_runner_map_lock_);
+
+  base::Lock devices_in_use_lock_;
+  base::flat_set<std::string> devices_in_use_ GUARDED_BY(devices_in_use_lock_);
 };
 
 }  // namespace media

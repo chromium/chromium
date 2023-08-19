@@ -67,6 +67,9 @@ class TestingAppShim : public chrome::mojom::AppShim {
   void UpdateApplicationDockMenu(
       std::vector<chrome::mojom::ApplicationDockMenuItemPtr> dock_menu_items)
       override {}
+  void BindNotificationProvider(
+      mojo::PendingReceiver<mac_notifications::mojom::MacNotificationProvider>
+          provider) override {}
 
   bool received_launch_done_result_ = false;
   chrome::mojom::AppShimLaunchResult launch_done_result_ =
@@ -184,6 +187,7 @@ class AppShimHostTest : public testing::Test,
                          const std::vector<base::FilePath>& files) override {}
   void OnShimSelectedProfile(AppShimHost* host,
                              const base::FilePath& profile_path) override {}
+  void OnShimOpenedAppSettings(AppShimHost* host) override {}
   void OnShimOpenedUrls(AppShimHost* host,
                         const std::vector<GURL>& urls) override {}
   void OnShimOpenAppWithOverrideUrl(AppShimHost* host,

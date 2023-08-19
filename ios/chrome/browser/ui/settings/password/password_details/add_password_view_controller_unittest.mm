@@ -6,8 +6,8 @@
 
 #import <memory>
 
+#import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
-#import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -31,10 +31,6 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "ui/base/l10n/l10n_util_mac.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 constexpr char kPassword[] = "test";
@@ -94,6 +90,7 @@ constexpr char kPassword[] = "test";
 class AddPasswordViewControllerTest : public ChromeTableViewControllerTest {
  protected:
   AddPasswordViewControllerTest() {
+    feature_list_.InitAndEnableFeature(syncer::kPasswordNotesWithBackup);
     delegate_ = [[FakeAddPasswordDelegate alloc] init];
   }
 
@@ -136,6 +133,7 @@ class AddPasswordViewControllerTest : public ChromeTableViewControllerTest {
   FakeAddPasswordDelegate* delegate() { return delegate_; }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   FakeAddPasswordDelegate* delegate_ = nil;
 };
 
@@ -147,7 +145,7 @@ TEST_F(AddPasswordViewControllerTest, TestShowHidePassword) {
   indexOfPassword = [NSIndexPath indexPathForRow:1 inSection:2];
 
   TableViewTextEditCell* textFieldCell =
-      base::mac::ObjCCastStrict<TableViewTextEditCell>([controller()
+      base::apple::ObjCCastStrict<TableViewTextEditCell>([controller()
                       tableView:controller().tableView
           cellForRowAtIndexPath:indexOfPassword]);
   EXPECT_TRUE(textFieldCell);
@@ -168,10 +166,10 @@ TEST_F(AddPasswordViewControllerTest, TestSectionsInAdd) {
       static_cast<AddPasswordViewController*>(controller());
   [passwords_controller loadModel];
 
-  EXPECT_EQ(4, NumberOfSections());
+  EXPECT_EQ(5, NumberOfSections());
   EXPECT_EQ(1, NumberOfItemsInSection(0));
   EXPECT_EQ(0, NumberOfItemsInSection(1));
-  EXPECT_EQ(2, NumberOfItemsInSection(2));
+  EXPECT_EQ(3, NumberOfItemsInSection(2));
 
   CheckSectionFooter(
       [NSString stringWithFormat:@"%@\n\n%@",
@@ -179,7 +177,7 @@ TEST_F(AddPasswordViewControllerTest, TestSectionsInAdd) {
                                      IDS_IOS_SETTINGS_ADD_PASSWORD_DESCRIPTION),
                                  l10n_util::GetNSString(
                                      IDS_IOS_SAVE_PASSWORD_FOOTER_NOT_SYNCING)],
-      3);
+      4);
 }
 
 // Tests the layout of the view controller when adding a new credential with
@@ -207,30 +205,6 @@ TEST_F(AddPasswordViewControllerTest, TestSectionsInAddWithNotesDisabled) {
 }
 
 // Tests the layout of the view controller when adding a new credential with
-// notes features enabled.
-TEST_F(AddPasswordViewControllerTest, TestSectionsInAddWithNotesEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(syncer::kPasswordNotesWithBackup);
-
-  AddPasswordViewController* passwords_controller =
-      static_cast<AddPasswordViewController*>(controller());
-  [passwords_controller loadModel];
-
-  EXPECT_EQ(5, NumberOfSections());
-  EXPECT_EQ(1, NumberOfItemsInSection(0));
-  EXPECT_EQ(0, NumberOfItemsInSection(1));
-  EXPECT_EQ(3, NumberOfItemsInSection(2));
-
-  CheckSectionFooter(
-      [NSString stringWithFormat:@"%@\n\n%@",
-                                 l10n_util::GetNSString(
-                                     IDS_IOS_SETTINGS_ADD_PASSWORD_DESCRIPTION),
-                                 l10n_util::GetNSString(
-                                     IDS_IOS_SAVE_PASSWORD_FOOTER_NOT_SYNCING)],
-      4);
-}
-
-// Tests the layout of the view controller when adding a new credential with
 // duplicate website/username combination.
 TEST_F(AddPasswordViewControllerTest, TestSectionsInAddDuplicated) {
   SetPassword();
@@ -244,10 +218,10 @@ TEST_F(AddPasswordViewControllerTest, TestSectionsInAddDuplicated) {
 
   [passwords_controller onDuplicateCheckCompletion:YES];
 
-  EXPECT_EQ(5, NumberOfSections());
+  EXPECT_EQ(6, NumberOfSections());
   EXPECT_EQ(1, NumberOfItemsInSection(0));
   EXPECT_EQ(0, NumberOfItemsInSection(1));
-  EXPECT_EQ(2, NumberOfItemsInSection(2));
+  EXPECT_EQ(3, NumberOfItemsInSection(2));
   EXPECT_EQ(2, NumberOfItemsInSection(3));
 }
 
@@ -267,5 +241,5 @@ TEST_F(AddPasswordViewControllerTest, TestFooterTextWithEmail) {
                            l10n_util::GetNSStringF(
                                IDS_IOS_SETTINGS_ADD_PASSWORD_FOOTER_BRANDED,
                                u"example@gmail.com")],
-      3);
+      4);
 }

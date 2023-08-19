@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from '../../assert.js';
+import {assert, assertEnumVariant} from '../../assert.js';
 import * as barcodeChip from '../../barcode_chip.js';
 import {CameraManager, CameraUI} from '../../device/index.js';
 import * as dom from '../../dom.js';
@@ -11,7 +11,6 @@ import {BarcodeScanner} from '../../models/barcode.js';
 import {ChromeHelper} from '../../mojo/chrome_helper.js';
 import * as state from '../../state.js';
 import {Mode, PreviewVideo} from '../../type.js';
-import {assertEnumVariant} from '../../util.js';
 
 import {DocumentCornerOverlay} from './document_corner_overlay.js';
 
@@ -54,9 +53,6 @@ export class ScanOptions implements CameraUI {
 
   private readonly onChangeListeners = new Set<ScanOptionsChangeListener>();
 
-  /**
-   * @param cameraManager Camera manager instance.
-   */
   constructor(private readonly cameraManager: CameraManager) {
     this.cameraManager.registerCameraUI(this);
 
@@ -81,7 +77,7 @@ export class ScanOptions implements CameraUI {
       });
       option.addEventListener('change', () => {
         if (option.checked) {
-          this.updateOption(this.getToggledScanOption());
+          this.switchToScanType(this.getToggledScanOption());
         }
       });
     }
@@ -108,14 +104,14 @@ export class ScanOptions implements CameraUI {
   }
 
   /**
-   * Add listener for scan options change.
+   * Adds a listener for scan options change.
    */
   addOnChangeListener(listener: ScanOptionsChangeListener): void {
     this.onChangeListeners.add(listener);
   }
 
   /**
-   * Whether preview have attached as scan frame source.
+   * Whether preview is attached to scan frame source.
    */
   private previewAvailable(): boolean {
     return this.video?.isExpired() === false;
@@ -137,7 +133,7 @@ export class ScanOptions implements CameraUI {
       await video.onExpired.wait();
       this.detachPreview();
     })();
-    await this.updateOption(scanType);
+    await this.switchToScanType(scanType);
     this.checkDocumentModeReadiness();
   }
 
@@ -156,10 +152,10 @@ export class ScanOptions implements CameraUI {
   }
 
   /**
-   * @param scanType Scan type to be enabled, null for no type is
-   *     enabled.
+   * Updates the option UI and starts or stops the corresponding scanner
+   * according to given |scanType|.
    */
-  private async updateOption(scanType: ScanType) {
+  private async switchToScanType(scanType: ScanType) {
     if (!this.previewAvailable()) {
       return;
     }
@@ -193,7 +189,7 @@ export class ScanOptions implements CameraUI {
   }
 
   /**
-   * Stops all scanner and detach from current preview.
+   * Stops all scanner and detaches from current preview.
    */
   private detachPreview(): void {
     if (this.barcodeScanner !== null) {

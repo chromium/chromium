@@ -25,33 +25,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace {
-
-using ::testing::IsNull;
-using ::testing::Pair;
-
-template <typename Container>
-void RunConstCastIteratorTest() {
-  using std::begin;
-  using std::cbegin;
-
-  Container c = {1, 2, 3, 4, 5};
-  auto c_it = std::next(cbegin(c), 3);
-  auto it = base::ConstCastIterator(c, c_it);
-  static_assert(std::is_same<decltype(cbegin(std::declval<Container&>())),
-                             decltype(c_it)>::value,
-                "c_it is not a constant iterator.");
-  static_assert(std::is_same<decltype(begin(std::declval<Container&>())),
-                             decltype(it)>::value,
-                "it is not a iterator.");
-  EXPECT_EQ(c_it, it);
-  // Const casting the iterator should not modify the underlying container.
-  Container other = {1, 2, 3, 4, 5};
-  EXPECT_THAT(c, testing::ContainerEq(other));
-}
-
-}  // namespace
-
 namespace base {
 namespace {
 
@@ -98,24 +71,6 @@ TEST(STLUtilTest, GetUnderlyingContainer) {
     EXPECT_THAT(GetUnderlyingContainer(stack),
                 testing::ElementsAre(1, 2, 3, 4, 5));
   }
-}
-
-TEST(STLUtilTest, ConstCastIterator) {
-  // Sequence Containers
-  RunConstCastIteratorTest<std::forward_list<int>>();
-  RunConstCastIteratorTest<std::list<int>>();
-  RunConstCastIteratorTest<std::deque<int>>();
-  RunConstCastIteratorTest<std::vector<int>>();
-  RunConstCastIteratorTest<std::array<int, 5>>();
-  RunConstCastIteratorTest<int[5]>();
-
-  // Associative Containers
-  RunConstCastIteratorTest<std::set<int>>();
-  RunConstCastIteratorTest<std::multiset<int>>();
-
-  // Unordered Associative Containers
-  RunConstCastIteratorTest<std::unordered_set<int>>();
-  RunConstCastIteratorTest<std::unordered_multiset<int>>();
 }
 
 TEST(STLUtilTest, STLSetDifference) {

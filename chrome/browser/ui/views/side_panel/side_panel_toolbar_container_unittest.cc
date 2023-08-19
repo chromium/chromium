@@ -28,7 +28,7 @@ class SidePanelToolbarContainerTest : public TestWithBrowserView {
  public:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {companion::features::kSidePanelCompanion,
+        {companion::features::internal::kSidePanelCompanion,
          features::kSidePanelCompanionDefaultPinned},
         {});
     TestWithBrowserView::SetUp();

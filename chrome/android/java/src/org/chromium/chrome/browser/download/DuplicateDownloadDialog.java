@@ -8,11 +8,9 @@ import android.content.Context;
 import android.text.style.ClickableSpan;
 import android.view.View;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.dialogs.DownloadDialogUtils;
 import org.chromium.chrome.browser.download.interstitial.NewDownloadTab;
@@ -28,26 +26,6 @@ import org.chromium.ui.modelutil.PropertyModel;
  * default model dialog from ModalDialogManager.
  */
 public class DuplicateDownloadDialog {
-    /**
-     * Events related to the duplicate download dialog, used for UMA reporting.
-     * These values are persisted to logs. Entries should not be renumbered and
-     * numeric values should never be reused.
-     */
-    @IntDef({DuplicateDownloadDialogEvent.DUPLICATE_DOWNLOAD_DIALOG_SHOW,
-            DuplicateDownloadDialogEvent.DUPLICATE_DOWNLOAD_DIALOG_CONFIRM,
-            DuplicateDownloadDialogEvent.DUPLICATE_DOWNLOAD_DIALOG_CANCEL,
-            DuplicateDownloadDialogEvent.DUPLICATE_DOWNLOAD_DIALOG_LINK_CLICKED,
-            DuplicateDownloadDialogEvent.DUPLICATE_DOWNLOAD_DIALOG_DISMISS})
-    private @interface DuplicateDownloadDialogEvent {
-        int DUPLICATE_DOWNLOAD_DIALOG_SHOW = 0;
-        int DUPLICATE_DOWNLOAD_DIALOG_CONFIRM = 1;
-        int DUPLICATE_DOWNLOAD_DIALOG_CANCEL = 2;
-        int DUPLICATE_DOWNLOAD_DIALOG_LINK_CLICKED = 3;
-        int DUPLICATE_DOWNLOAD_DIALOG_DISMISS = 4;
-
-        int COUNT = 5;
-    }
-
     private ModalDialogManager mModalDialogManager;
     private PropertyModel mPropertyModel;
 
@@ -94,8 +72,6 @@ public class DuplicateDownloadDialog {
         }
 
         modalDialogManager.showDialog(mPropertyModel, ModalDialogManager.ModalDialogType.TAB);
-        recordDuplicateDownloadDialogEvent(
-                !pageUrl.isEmpty(), DuplicateDownloadDialogEvent.DUPLICATE_DOWNLOAD_DIALOG_SHOW);
     }
 
     @NonNull
@@ -111,9 +87,6 @@ public class DuplicateDownloadDialog {
                 modalDialogManager.dismissDialog(model,
                         isConfirm ? DialogDismissalCause.POSITIVE_BUTTON_CLICKED
                                   : DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
-                recordDuplicateDownloadDialogEvent(!pageUrl.isEmpty(),
-                        isConfirm ? DuplicateDownloadDialogEvent.DUPLICATE_DOWNLOAD_DIALOG_CONFIRM
-                                  : DuplicateDownloadDialogEvent.DUPLICATE_DOWNLOAD_DIALOG_CANCEL);
             }
 
             @Override
@@ -124,8 +97,6 @@ public class DuplicateDownloadDialog {
                 if (callback != null
                         && dismissalCause != DialogDismissalCause.NEGATIVE_BUTTON_CLICKED) {
                     callback.onResult(false);
-                    recordDuplicateDownloadDialogEvent(!pageUrl.isEmpty(),
-                            DuplicateDownloadDialogEvent.DUPLICATE_DOWNLOAD_DIALOG_DISMISS);
                 }
                 if (context instanceof AsyncInitializationActivity) {
                     NewDownloadTab.closeExistingNewDownloadTab(
@@ -141,8 +112,6 @@ public class DuplicateDownloadDialog {
      */
     private void closeDialog(boolean isOfflinePage) {
         mModalDialogManager.dismissDialog(mPropertyModel, DialogDismissalCause.ACTION_ON_CONTENT);
-        recordDuplicateDownloadDialogEvent(
-                isOfflinePage, DuplicateDownloadDialogEvent.DUPLICATE_DOWNLOAD_DIALOG_LINK_CLICKED);
     }
 
     /**
@@ -174,18 +143,5 @@ public class DuplicateDownloadDialog {
                         DownloadUtils.openPageUrl(context, filePath);
                     }
                 });
-    }
-
-    /**
-     * Collects duplicate download dialog UI event metrics.
-     * @param isOfflinePage Whether this is an offline page download.
-     * @param event The UI event to collect.
-     */
-    private static void recordDuplicateDownloadDialogEvent(
-            boolean isOfflinePage, @DuplicateDownloadDialogEvent int event) {
-        RecordHistogram.recordEnumeratedHistogram(isOfflinePage
-                        ? "Download.DuplicateDialogEvent.OfflinePage"
-                        : "Download.DuplicateDialogEvent.Download",
-                event, DuplicateDownloadDialogEvent.COUNT);
     }
 }

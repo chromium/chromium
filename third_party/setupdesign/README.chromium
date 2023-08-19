@@ -5,6 +5,7 @@ Version: unknown
 License: Apache 2.0
 License File: LICENSE
 Security Critical: no
+Shipped: yes
 
 Description:
 This purely exists as a temporary workaround for the setupdesign library which

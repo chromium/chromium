@@ -48,6 +48,8 @@ class MockCupsPrinter : public CupsPrinter {
                      ipp_attribute_t*(const char* option_name));
   MOCK_CONST_METHOD2(CheckOptionSupported,
                      bool(const char* name, const char* value));
+  MOCK_CONST_METHOD2(GetLocalizedOptionValueName,
+                     const char*(const char* option_name, const char* value));
 };
 
 }  // namespace printing

@@ -73,7 +73,7 @@ class VIEWS_EXPORT ClientView : public View {
 
  private:
   // The View that this ClientView contains.
-  raw_ptr<View, DanglingUntriaged> contents_view_;
+  raw_ptr<View, AcrossTasksDanglingUntriaged> contents_view_;
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, ClientView, View)

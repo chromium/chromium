@@ -28,7 +28,6 @@
 #include "media/base/media_switches.h"
 #include "media/base/video_util.h"
 #include "media/capture/video_capture_types.h"
-#include "ui/base/layout.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_conversions.h"

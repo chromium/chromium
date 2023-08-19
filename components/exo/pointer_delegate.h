@@ -56,9 +56,9 @@ class PointerDelegate {
                                const gfx::Vector2dF& offset,
                                bool discrete) = 0;
 
-  // Called when pointer scroll has stopped and a fling is happening (e.g.
-  // lifting the fingers from the touchpad after scrolling quickly)
-  virtual void OnPointerScrollStop(base::TimeTicks time_stamp) = 0;
+  // Called to end a sequence of finger (continuous) scroll events, e.g.
+  // lifting the fingers from the touchpad after scrolling.
+  virtual void OnFingerScrollStop(base::TimeTicks time_stamp) = 0;
 
   // Called after all pointer information of this frame has been set and the
   // client should evaluate the updated state. No events are being sent before

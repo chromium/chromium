@@ -38,12 +38,9 @@ namespace web_app {
 class AllAppsLock;
 class ExternallyManagedAppInstallTask;
 class ExternallyManagedAppRegistrationTaskBase;
-class WebAppCommandScheduler;
 class WebAppDataRetriever;
-class WebAppInstallFinalizer;
-class WebAppUiManager;
 class WebAppUrlLoader;
-class WebContentsManager;
+class WebAppProvider;
 
 enum class RegistrationResultCode { kSuccess, kAlreadyRegistered, kTimeout };
 
@@ -106,10 +103,7 @@ class ExternallyManagedAppManager {
       delete;
   virtual ~ExternallyManagedAppManager();
 
-  void SetSubsystems(WebAppUiManager* ui_manager,
-                     WebAppInstallFinalizer* finalizer,
-                     WebAppCommandScheduler* command_scheduler,
-                     WebContentsManager* web_contents_manager);
+  void SetProvider(base::PassKey<WebAppProvider>, WebAppProvider& provider);
 
   // Queues an installation operation with the highest priority. Essentially
   // installing the app immediately if there are no ongoing operations or
@@ -181,22 +175,21 @@ class ExternallyManagedAppManager {
       base::RepeatingCallback<std::unique_ptr<WebAppDataRetriever>()> factory);
 
  protected:
-  WebAppUiManager* ui_manager() { return ui_manager_; }
-  WebAppInstallFinalizer* finalizer() { return finalizer_; }
-  WebAppCommandScheduler* command_scheduler() { return command_scheduler_; }
-
   virtual void ReleaseWebContents();
 
   virtual std::unique_ptr<ExternallyManagedAppInstallTask>
   CreateInstallationTask(ExternalInstallOptions install_options);
 
   virtual std::unique_ptr<ExternallyManagedAppRegistrationTaskBase>
-  CreateRegistration(GURL launch_url);
+  CreateRegistration(GURL install_url,
+                     const base::TimeDelta registration_timeout);
 
   virtual void OnRegistrationFinished(const GURL& launch_url,
                                       RegistrationResultCode result);
 
   Profile* profile() { return profile_; }
+
+  raw_ptr<WebAppProvider> provider_ = nullptr;
 
  private:
   struct TaskAndCallback;
@@ -233,7 +226,8 @@ class ExternallyManagedAppManager {
   void UninstallForSynchronizeCallback(ExternalInstallSource source,
                                        const GURL& install_url,
                                        bool succeeded);
-  void ContinueOrCompleteSynchronization(ExternalInstallSource source);
+  void ContinueSynchronization(ExternalInstallSource source);
+  void CompleteSynchronization(ExternalInstallSource source);
 
   void PostMaybeStartNext();
 
@@ -254,11 +248,6 @@ class ExternallyManagedAppManager {
   bool IsShuttingDown();
 
   base::OnceClosure registrations_complete_callback_;
-
-  raw_ptr<WebAppUiManager, DanglingUntriaged> ui_manager_ = nullptr;
-  raw_ptr<WebAppInstallFinalizer, DanglingUntriaged> finalizer_ = nullptr;
-  raw_ptr<WebAppCommandScheduler, DanglingUntriaged> command_scheduler_ =
-      nullptr;
 
   const raw_ptr<Profile> profile_;
 
@@ -282,7 +271,8 @@ class ExternallyManagedAppManager {
   std::unique_ptr<ExternallyManagedAppRegistrationTaskBase>
       current_registration_;
 
-  base::circular_deque<GURL> pending_registrations_;
+  using UrlAndTimeout = std::tuple<GURL, const base::TimeDelta>;
+  base::circular_deque<UrlAndTimeout> pending_registrations_;
 
   RegistrationCallback registration_callback_;
 

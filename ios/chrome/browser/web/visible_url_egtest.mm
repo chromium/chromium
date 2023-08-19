@@ -25,10 +25,6 @@
 #import "ios/web/public/test/http_server/http_server_util.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using chrome_test_util::OmniboxText;
 
 namespace {
@@ -227,9 +223,9 @@ class PausableResponseProvider : public HtmlResponseProvider {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::BackButton()]
       performAction:grey_longPress()];
   NSString* URL1Title = base::SysUTF8ToNSString(kTestPage1);
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabel(
-                                   URL1Title)] performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ContextMenuItemWithAccessibilityLabel(
+                     URL1Title)] performAction:grey_tap()];
 
   {
     // Disables EG synchronization.

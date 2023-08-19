@@ -58,6 +58,7 @@ include_rules = [
   "+ios/components/webui",
   "+ios/net",
   "+ios/web/common",
+  "+ios/web/navigation",
   "+ios/web/public",
   "+ios/web/web_state",
   "+ios/web/webui",

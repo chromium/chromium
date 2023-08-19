@@ -37,6 +37,12 @@ constexpr char FlossAdminClient::kExportedCallbacksPath[] =
 
 FlossAdminClient::FlossAdminClient() = default;
 FlossAdminClient::~FlossAdminClient() {
+  if (callback_id_) {
+    CallAdminMethod<bool>(
+        base::BindOnce(&FlossAdminClient::HandleCallbackUnregistered,
+                       weak_ptr_factory_.GetWeakPtr()),
+        admin::kUnregisterCallback, callback_id_.value());
+  }
   if (bus_) {
     exported_callback_manager_.UnexportCallback(
         dbus::ObjectPath(kExportedCallbacksPath));
@@ -63,10 +69,17 @@ void FlossAdminClient::HandleCallbackRegistered(DBusResult<uint32_t> result) {
   }
 
   client_registered_ = true;
+  callback_id_ = *result;
   while (!initialized_callbacks_.empty()) {
     auto& cb = initialized_callbacks_.front();
     std::move(cb).Run();
     initialized_callbacks_.pop();
+  }
+}
+
+void FlossAdminClient::HandleCallbackUnregistered(DBusResult<bool> result) {
+  if (!result.has_value() || *result == false) {
+    LOG(WARNING) << __func__ << "Failed to unregister callback";
   }
 }
 

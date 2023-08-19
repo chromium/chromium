@@ -1,0 +1,99 @@
+{
+  "$build/chromium_orchestrator": {
+    "compilator": "linux_chromium_asan_siso_rel_ng-compilator",
+    "compilator_watcher_git_revision": "e6d08be3fd589d4f222dae5d18dbc972e6117b23"
+  },
+  "$build/chromium_tests_builder_config": {
+    "builder_config": {
+      "builder_db": {
+        "entries": [
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "Linux ASan LSan Builder",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "build_gs_bucket": "chromium-memory-archive",
+              "builder_group": "chromium.memory",
+              "execution_mode": "COMPILE_AND_TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "lsan",
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium_asan",
+                "target_bits": 64
+              },
+              "legacy_gclient_config": {
+                "config": "chromium"
+              }
+            }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "Linux ASan LSan Tests (1)",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "build_gs_bucket": "chromium-memory-archive",
+              "builder_group": "chromium.memory",
+              "execution_mode": "TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "lsan",
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium_asan",
+                "target_bits": 64
+              },
+              "legacy_gclient_config": {
+                "config": "chromium"
+              },
+              "parent": {
+                "bucket": "ci",
+                "builder": "Linux ASan LSan Builder",
+                "project": "chromium"
+              }
+            }
+          }
+        ]
+      },
+      "builder_ids": [
+        {
+          "bucket": "ci",
+          "builder": "Linux ASan LSan Builder",
+          "project": "chromium"
+        }
+      ],
+      "builder_ids_in_scope_for_testing": [
+        {
+          "bucket": "ci",
+          "builder": "Linux ASan LSan Tests (1)",
+          "project": "chromium"
+        }
+      ],
+      "is_compile_only": true,
+      "rts_config": {
+        "condition": "QUICK_RUN_ONLY"
+      }
+    }
+  },
+  "$build/flakiness": {
+    "check_for_flakiness": true,
+    "check_for_flakiness_with_resultdb": true
+  },
+  "$recipe_engine/resultdb/test_presentation": {
+    "column_keys": [],
+    "grouping_keys": [
+      "status",
+      "v.test_suite"
+    ]
+  },
+  "builder_group": "tryserver.chromium.linux",
+  "cq": "required",
+  "recipe": "chromium/orchestrator"
+}

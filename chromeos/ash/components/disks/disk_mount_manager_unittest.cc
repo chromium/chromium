@@ -246,8 +246,9 @@ struct FormatEvent : public ObserverEvent {
   }
 
   std::string DebugString() const {
-    return StringPrintf("OnFormatEvent(%d, %d, %s, %s)", event, error_code,
-                        device_path.c_str(), device_label.c_str());
+    return StringPrintf("OnFormatEvent(%d, %d, %s, %s)", event,
+                        static_cast<int>(error_code), device_path.c_str(),
+                        device_label.c_str());
   }
 };
 
@@ -276,8 +277,9 @@ struct RenameEvent : public ObserverEvent {
   }
 
   std::string DebugString() const {
-    return StringPrintf("OnRenameEvent(%d, %d, %s, %s)", event, error_code,
-                        device_path.c_str(), device_label.c_str());
+    return StringPrintf("OnRenameEvent(%d, %d, %s, %s)", event,
+                        static_cast<int>(error_code), device_path.c_str(),
+                        device_label.c_str());
   }
 };
 
@@ -308,9 +310,11 @@ struct MountEvent : public ObserverEvent {
 
   std::string DebugString() const {
     return StringPrintf("OnMountEvent(%d, %d, %s, %s, %d, %d)", event,
-                        error_code, mount_point.source_path.c_str(),
-                        mount_point.mount_path.c_str(), mount_point.mount_type,
-                        mount_point.mount_error);
+                        static_cast<int>(error_code),
+                        mount_point.source_path.c_str(),
+                        mount_point.mount_path.c_str(),
+                        static_cast<int>(mount_point.mount_type),
+                        static_cast<int>(mount_point.mount_error));
   }
 };
 
@@ -465,7 +469,7 @@ class MockDiskMountManagerObserver : public DiskMountManager::Observer {
 
  private:
   // Pointer to the manager object to which this |Observer| is registered.
-  raw_ptr<const DiskMountManager, ExperimentalAsh> manager_;
+  raw_ptr<const DiskMountManager, DanglingUntriaged | ExperimentalAsh> manager_;
 
   // Records all invocations.
   std::vector<std::unique_ptr<ObserverEvent>> events_;
@@ -575,7 +579,8 @@ class DiskMountManagerTest : public testing::Test {
   }
 
  protected:
-  raw_ptr<FakeCrosDisksClient, ExperimentalAsh> fake_cros_disks_client_;
+  raw_ptr<FakeCrosDisksClient, DanglingUntriaged | ExperimentalAsh>
+      fake_cros_disks_client_;
   std::unique_ptr<MockDiskMountManagerObserver> observer_;
 
  private:

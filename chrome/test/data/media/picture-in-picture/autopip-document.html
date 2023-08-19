@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<head>
+<meta charset="utf-8">
+<title>Autopip Document Picture-in-Picture</title>
+</head>
+<body>
+  <video id="video" controls loop>
+    <source src="../bigbuck.webm">
+  </video>
+</body>
+<script>
+const video = document.getElementById('video');
+
+function playVideo() {
+  video.play();
+}
+
+function pauseVideo() {
+  video.pause();
+}
+
+function openPip(details) {
+  // These tests should have `automatic` set to true in the
+  // MediaSessionActionDetails, so only proceed if they do.
+  if (details.automatic) {
+    documentPictureInPicture.requestWindow();
+  }
+}
+
+navigator.mediaSession.setActionHandler('enterpictureinpicture', openPip);
+</script>

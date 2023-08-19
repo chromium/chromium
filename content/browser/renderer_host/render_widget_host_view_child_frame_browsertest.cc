@@ -411,7 +411,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
             base::TimeTicks::Now(),
             /*destination_is_loaded=*/true,
             /*show_reason_tab_switching=*/true,
-            /*show_reason_bfcache_restore=*/false));
+            /*show_reason_bfcache_restore=*/false,
+            /*show_reason_unfold=*/false));
     // Force the child to submit a new frame.
     return ExecJs(root->child_at(0)->current_frame_host(),
                   "document.write('Force a new frame.');");

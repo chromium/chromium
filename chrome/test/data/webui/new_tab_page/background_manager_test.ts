@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://webui-test/mojo_webui_test_support.js';
-
 import {BackgroundManager} from 'chrome://new-tab-page/new_tab_page.js';
 import {NtpBackgroundImageSource} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -91,7 +89,6 @@ suite('NewTabPageBackgroundManagerTest', () => {
       repeatY: 'repeat',
       positionX: 'left',
       positionY: 'top',
-      scrimDisplay: 'none',
       imageSource: NtpBackgroundImageSource.kFirstPartyThemeWithoutDailyRefresh,
     });
 
@@ -101,7 +98,7 @@ suite('NewTabPageBackgroundManagerTest', () => {
         `url=${encodeURIComponent('https://example.com')}&` +
         `url2x=${encodeURIComponent('https://example2x.com')}&` +
         'size=cover&repeatX=no-repeat&repeatY=repeat&positionX=left&' +
-        'positionY=top&scrimDisplay=none';
+        'positionY=top';
     assertEquals(expected, backgroundImage.url);
   });
 

@@ -4,6 +4,7 @@
 
 import itertools
 
+from .argument import Argument
 from .attribute import Attribute
 from .composition_parts import Identifier
 from .composition_parts import WithCodeGeneratorInfo
@@ -41,6 +42,7 @@ class Interface(UserDefinedType, WithExtendedAttributes, WithCodeGeneratorInfo,
                      constructors=None,
                      legacy_factory_functions=None,
                      operations=None,
+                     async_iterable=None,
                      iterable=None,
                      maplike=None,
                      setlike=None,
@@ -57,6 +59,8 @@ class Interface(UserDefinedType, WithExtendedAttributes, WithCodeGeneratorInfo,
             assert legacy_factory_functions is None or isinstance(
                 legacy_factory_functions, (list, tuple))
             assert operations is None or isinstance(operations, (list, tuple))
+            assert async_iterable is None or isinstance(
+                async_iterable, AsyncIterable.IR)
             assert iterable is None or isinstance(iterable, Iterable.IR)
             assert maplike is None or isinstance(maplike, Maplike.IR)
             assert setlike is None or isinstance(setlike, Setlike.IR)
@@ -113,9 +117,11 @@ class Interface(UserDefinedType, WithExtendedAttributes, WithCodeGeneratorInfo,
             self.operation_groups = []
             self.exposed_constructs = []
             self.legacy_window_aliases = []
+            self.async_iterable = async_iterable
             self.iterable = iterable
             self.maplike = maplike
             self.setlike = setlike
+            self.async_iterator = None
             self.sync_iterator = None
 
         def iter_all_members(self):
@@ -126,6 +132,8 @@ class Interface(UserDefinedType, WithExtendedAttributes, WithCodeGeneratorInfo,
                 self.legacy_factory_functions,
                 self.operations,
             ]
+            if self.async_iterable:
+                list_of_members.append(self.async_iterable.operations)
             if self.iterable:
                 list_of_members.append(self.iterable.operations)
             if self.maplike:
@@ -134,41 +142,22 @@ class Interface(UserDefinedType, WithExtendedAttributes, WithCodeGeneratorInfo,
             if self.setlike:
                 list_of_members.append(self.setlike.attributes)
                 list_of_members.append(self.setlike.operations)
-            # self.sync_iterator.operations are not members of this interface.
-            # They're members of an iterator prototype object.
             return itertools.chain(*list_of_members)
 
         def iter_all_overload_groups(self):
-            # Returns all overload groups regardless of whether they're members
-            # of this interface or not.
             list_of_groups = [
                 self.constructor_groups,
                 self.legacy_factory_function_groups,
                 self.operation_groups,
             ]
+            if self.async_iterable:
+                list_of_groups.append(self.async_iterable.operation_groups)
             if self.iterable:
                 list_of_groups.append(self.iterable.operation_groups)
             if self.maplike:
                 list_of_groups.append(self.maplike.operation_groups)
             if self.setlike:
                 list_of_groups.append(self.setlike.operation_groups)
-            # self.sync_iterator.operation_groups are not members of this
-            # interface, but we'd like to let IdlCompiler work on all overload
-            # groups in order to minimize the potentially-surprising
-            # differences.
-            #
-            # This method is used by IdlCompiler to propagate IDL extended
-            # attributes from operations to operation groups and also to
-            # determine the exposure of operation groups from the operation's
-            # exposure.
-            #
-            # Exactly and technically speaking, iterator object's "next" is not
-            # an IDL operation (just like iterator objects are not platform
-            # objects), however, we treat them in the same way as much as
-            # possible just because it's implementor-friendly and no observable
-            # side effect.
-            if self.sync_iterator:
-                list_of_groups.append(self.sync_iterator.operation_groups)
             return itertools.chain(*list_of_groups)
 
     def __init__(self, ir):
@@ -261,12 +250,14 @@ class Interface(UserDefinedType, WithExtendedAttributes, WithCodeGeneratorInfo,
                 assert len(attributes) == 1
                 attribute = attributes[0]
             self._stringifier = Stringifier(operation, attribute, owner=self)
+        self._async_iterable = (AsyncIterable(ir.async_iterable, owner=self)
+                                if ir.async_iterable else None)
         self._iterable = (Iterable(ir.iterable, owner=self)
                           if ir.iterable else None)
         self._maplike = Maplike(ir.maplike, owner=self) if ir.maplike else None
         self._setlike = Setlike(ir.setlike, owner=self) if ir.setlike else None
-        self._sync_iterator = (SyncIterator(ir.sync_iterator, owner=self)
-                               if ir.sync_iterator else None)
+        self._async_iterator = ir.async_iterator
+        self._sync_iterator = ir.sync_iterator
 
     @property
     def is_mixin(self):
@@ -391,6 +382,11 @@ class Interface(UserDefinedType, WithExtendedAttributes, WithCodeGeneratorInfo,
         return self._stringifier
 
     @property
+    def async_iterable(self):
+        """Returns an AsyncIterable or None."""
+        return self._async_iterable
+
+    @property
     def iterable(self):
         """Returns an Iterable or None."""
         return self._iterable
@@ -404,6 +400,11 @@ class Interface(UserDefinedType, WithExtendedAttributes, WithCodeGeneratorInfo,
     def setlike(self):
         """Returns a Setlike or None."""
         return self._setlike
+
+    @property
+    def async_iterator(self):
+        """Returns a AsyncIterator or None."""
+        return self._async_iterator
 
     @property
     def sync_iterator(self):
@@ -569,6 +570,91 @@ class Stringifier(WithOwner):
     @property
     def attribute(self):
         return self._attribute
+
+
+class AsyncIterable(WithDebugInfo):
+    """https://webidl.spec.whatwg.org/#idl-async-iterable"""
+    class IR(WithDebugInfo):
+        def __init__(self,
+                     key_type=None,
+                     value_type=None,
+                     operations=None,
+                     arguments=None,
+                     debug_info=None):
+            assert key_type is None or isinstance(key_type, IdlType)
+            assert isinstance(value_type, IdlType)
+            assert isinstance(operations, (list, tuple))
+            assert all(
+                isinstance(operation, Operation.IR)
+                for operation in operations)
+            assert arguments is None or isinstance(arguments, (list, tuple))
+            arguments = arguments or []
+            assert all(
+                isinstance(argument, Argument.IR) for argument in arguments)
+
+            WithDebugInfo.__init__(self, debug_info)
+
+            self.key_type = key_type
+            self.value_type = value_type
+            self.operations = list(operations)
+            self.operation_groups = []
+            self.arguments = list(arguments)
+
+    def __init__(self, ir, owner):
+        assert isinstance(ir, AsyncIterable.IR)
+        assert isinstance(owner, Interface)
+
+        WithDebugInfo.__init__(self, ir)
+
+        self._key_type = ir.key_type
+        self._value_type = ir.value_type
+        self._operations = tuple([
+            Operation(operation_ir, owner=owner)
+            for operation_ir in ir.operations
+        ])
+        self._operation_groups = tuple([
+            OperationGroup(
+                group_ir,
+                list(
+                    filter(lambda x: x.identifier == group_ir.identifier,
+                           self._operations)),
+                owner=owner) for group_ir in ir.operation_groups
+        ])
+        self._arguments = tuple(
+            [Argument(arg_ir, self) for arg_ir in ir.arguments])
+
+    @property
+    def key_type(self):
+        """Returns the key type or None."""
+        return self._key_type
+
+    @property
+    def value_type(self):
+        """Returns the value type."""
+        return self._value_type
+
+    @property
+    def attributes(self):
+        """Returns attributes supported by an async iterable declaration."""
+        return ()
+
+    @property
+    def operations(self):
+        """Returns operations supported by an async iterable declaration."""
+        return self._operations
+
+    @property
+    def operation_groups(self):
+        """
+        Returns groups of overloaded operations supported by an async iterable
+        declaration.
+        """
+        return self._operation_groups
+
+    @property
+    def arguments(self):
+        """Returns a list of arguments of an async iterable declaration."""
+        return self._arguments
 
 
 class Iterable(WithDebugInfo):
@@ -828,151 +914,3 @@ class Setlike(WithDebugInfo):
         declaration.
         """
         return self._operation_groups
-
-
-class SyncIterator(UserDefinedType, WithExtendedAttributes,
-                   WithCodeGeneratorInfo, WithExposure, WithComponent,
-                   WithDebugInfo):
-    """
-    Represents a sync iterator type for 'default iterator objects' [1],
-    which exists for every interface that has a 'pair iterator' [2][3], or
-    a map/set iterator type of a maplike/setlike interface [4][5].
-
-    [1] https://webidl.spec.whatwg.org/#es-default-iterator-object
-    [2] https://webidl.spec.whatwg.org/#es-iterable
-    [3] https://webidl.spec.whatwg.org/#dfn-pair-iterator
-    [4] https://webidl.spec.whatwg.org/#create-a-map-iterator
-    [5] https://webidl.spec.whatwg.org/#create-a-set-iterator
-    """
-
-    class IR(WithIdentifier, WithCodeGeneratorInfo, WithComponent,
-             WithDebugInfo):
-        def __init__(self, interface_ir, component, debug_info, key_type,
-                     value_type, operations):
-            assert isinstance(interface_ir, Interface.IR)
-            assert key_type is None or isinstance(key_type, IdlType)
-            assert isinstance(value_type, IdlType)
-            assert isinstance(operations, (list, tuple))
-            assert all(
-                isinstance(operation, Operation.IR)
-                for operation in operations)
-
-            identifier = Identifier('SyncIterator_{}'.format(
-                interface_ir.identifier))
-
-            WithIdentifier.__init__(self, identifier)
-            WithCodeGeneratorInfo.__init__(self)
-            WithComponent.__init__(self, component)
-            WithDebugInfo.__init__(self, debug_info)
-
-            self.code_generator_info.set_for_testing(
-                interface_ir.code_generator_info.for_testing)
-
-            self.key_type = key_type
-            self.value_type = value_type
-            self.operations = list(operations)
-            self.operation_groups = []
-
-    def __init__(self, ir, owner):
-        assert isinstance(ir, SyncIterator.IR)
-        assert isinstance(owner, Interface)
-
-        UserDefinedType.__init__(self, ir.identifier)
-        WithExtendedAttributes.__init__(self, readonly=True)
-        WithCodeGeneratorInfo.__init__(self,
-                                       ir.code_generator_info,
-                                       readonly=True)
-        WithExposure.__init__(self, readonly=True)
-        WithComponent.__init__(self, ir.components, readonly=True)
-        WithDebugInfo.__init__(self, ir.debug_info)
-
-        self._interface = owner
-        self._key_type = ir.key_type
-        self._value_type = ir.value_type
-        self._operations = tuple([
-            Operation(operation_ir, owner=self)
-            for operation_ir in ir.operations
-        ])
-        self._operation_groups = tuple([
-            OperationGroup(
-                group_ir,
-                list(
-                    filter(lambda x: x.identifier == group_ir.identifier,
-                           self._operations)),
-                owner=self) for group_ir in ir.operation_groups
-        ])
-
-    @property
-    def interface(self):
-        """Returns the interface that defines this sync iterator."""
-        return self._interface
-
-    @property
-    def key_type(self):
-        """Returns the key type or None."""
-        return self._key_type
-
-    @property
-    def value_type(self):
-        """Returns the value type."""
-        return self._value_type
-
-    @property
-    def inherited(self):
-        # Just to be compatible with web_idl.Interface.
-        return None
-
-    @property
-    def deriveds(self):
-        # Just to be compatible with web_idl.Interface.
-        return ()
-
-    @property
-    def attributes(self):
-        """Returns attributes."""
-        return ()
-
-    @property
-    def constants(self):
-        """Returns constants."""
-        return ()
-
-    @property
-    def constructors(self):
-        """Returns constructors."""
-        return ()
-
-    @property
-    def constructor_groups(self):
-        """Returns groups of constructors."""
-        return ()
-
-    @property
-    def legacy_factory_functions(self):
-        """Returns legacy factory functions."""
-        return ()
-
-    @property
-    def legacy_factory_function_groups(self):
-        """Returns groups of overloaded legacy factory functions."""
-        return ()
-
-    @property
-    def operations(self):
-        """Returns operations."""
-        return self._operations
-
-    @property
-    def operation_groups(self):
-        """Returns a list of OperationGroups."""
-        return self._operation_groups
-
-    @property
-    def exposed_constructs(self):
-        """Returns exposed constructs."""
-        return ()
-
-    # UserDefinedType overrides
-    @property
-    def is_sync_iterator(self):
-        return True

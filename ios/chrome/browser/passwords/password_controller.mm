@@ -13,8 +13,8 @@
 #import <utility>
 #import <vector>
 
+#import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -51,6 +51,7 @@
 #import "components/password_manager/ios/shared_password_controller.h"
 #import "components/safe_browsing/core/browser/password_protection/password_reuse_detection_manager_client.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/sync/base/features.h"
 #import "components/sync/service/sync_service.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/autofill/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
@@ -83,10 +84,6 @@
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using autofill::FieldRendererId;
 using autofill::FormActivityObserverBridge;
@@ -572,11 +569,20 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
 
 - (void)attachListenersForBottomSheet:
             (const std::vector<autofill::FieldRendererId>&)rendererIds
-                              inFrame:(web::WebFrame*)frame {
+                           forFrameId:(const std::string&)frameId {
   AutofillBottomSheetTabHelper* bottomSheetTabHelper =
       AutofillBottomSheetTabHelper::FromWebState(_webState);
   if (bottomSheetTabHelper) {
-    bottomSheetTabHelper->AttachPasswordListeners(rendererIds, frame);
+    bottomSheetTabHelper->AttachPasswordListeners(rendererIds, frameId);
+  }
+}
+
+- (void)detachListenersForBottomSheet:(const std::string&)frameId {
+  AutofillBottomSheetTabHelper* bottomSheetTabHelper =
+      AutofillBottomSheetTabHelper::FromWebState(_webState);
+  if (bottomSheetTabHelper) {
+    bottomSheetTabHelper->DetachPasswordListeners(frameId,
+                                                  /*refocus = */ false);
   }
 }
 
@@ -584,7 +590,9 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
   return _passwordManagerClient->GetPasswordFeatureManager()
              ->IsOptedInForAccountStorage() &&
          !self.browserState->GetPrefs()->GetBoolean(
-             password_manager::prefs::kAccountStorageNoticeShown);
+             password_manager::prefs::kAccountStorageNoticeShown) &&
+         !base::FeatureList::IsEnabled(
+             syncer::kReplaceSyncPromosWithSignInPromos);
 }
 
 - (void)showAccountStorageNotice:(void (^)())completion {

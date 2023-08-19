@@ -22,15 +22,15 @@ class FakeChromeFeatureFlagsInstance
 
   ~FakeChromeFeatureFlagsInstance() override;
 
-  absl::optional<bool> qs_revamp_called_value() {
-    return qs_revamp_called_value_;
+  const mojom::FeatureFlagsPtr& flags_called_value() {
+    return flags_called_value_.value();
   }
 
   // mojom::ChromeFeatureFlagsInstance overrides:
-  void NotifyQsRevamp(bool enabled) override;
+  void NotifyFeatureFlags(mojom::FeatureFlagsPtr flags) override;
 
  private:
-  absl::optional<bool> qs_revamp_called_value_;
+  absl::optional<mojom::FeatureFlagsPtr> flags_called_value_;
 };
 
 }  // namespace arc

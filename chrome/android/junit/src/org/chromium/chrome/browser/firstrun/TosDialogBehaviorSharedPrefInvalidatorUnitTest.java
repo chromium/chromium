@@ -60,8 +60,6 @@ public class TosDialogBehaviorSharedPrefInvalidatorUnitTest {
     @After
     public void tearDown() {
         FirstRunStatus.setFirstRunSkippedByPolicy(false);
-        FirstRunAppRestrictionInfo.setInitializedInstanceForTest(null);
-        PolicyServiceFactory.setPolicyServiceForTest(null);
     }
 
     @Test

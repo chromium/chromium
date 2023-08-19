@@ -29,6 +29,7 @@
 #include "chrome/browser/ash/policy/core/reporting_user_tracker.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
 #include "chrome/browser/ash/policy/networking/euicc_status_uploader.h"
+#include "chrome/browser/ash/policy/remote_commands/crd_admin_session_controller.h"
 #include "chrome/browser/ash/policy/remote_commands/device_commands_factory_ash.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_manager.h"
 #include "chrome/browser/ash/policy/reporting/os_updates/os_updates_reporter.h"
@@ -83,7 +84,8 @@ DeviceCloudPolicyManagerAsh::DeviceCloudPolicyManagerAsh(
     std::unique_ptr<DeviceCloudPolicyStoreAsh> store,
     std::unique_ptr<CloudExternalDataManager> external_data_manager,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
-    ServerBackedStateKeysBroker* state_keys_broker)
+    ServerBackedStateKeysBroker* state_keys_broker,
+    StartCrdSessionJobDelegate& crd_delegate)
     : CloudPolicyManager(
           dm_protocol::kChromeDevicePolicyType,
           std::string(),
@@ -93,6 +95,7 @@ DeviceCloudPolicyManagerAsh::DeviceCloudPolicyManagerAsh(
       device_store_(std::move(store)),
       external_data_manager_(std::move(external_data_manager)),
       state_keys_broker_(state_keys_broker),
+      crd_delegate_(&crd_delegate),
       task_runner_(task_runner),
       local_state_(nullptr),
       helper_(std::make_unique<reporting::UserEventReporterHelper>(
@@ -108,8 +111,9 @@ void DeviceCloudPolicyManagerAsh::Init(SchemaRegistry* registry) {
   // If the underlying store is already initialized, pretend it was loaded now.
   // Note: It is not enough to just copy OnStoreLoaded's contents here because
   // subclasses can override it.
-  if (store()->is_initialized())
+  if (store()->is_initialized()) {
     OnStoreLoaded(store());
+  }
 }
 
 void DeviceCloudPolicyManagerAsh::Initialize(PrefService* local_state) {
@@ -142,6 +146,8 @@ void DeviceCloudPolicyManagerAsh::Shutdown() {
   heartbeat_scheduler_.reset();
   syslog_uploader_.reset();
   status_uploader_.reset();
+  crd_delegate_ = nullptr;
+  state_keys_broker_ = nullptr;
   managed_session_service_.reset();
   euicc_status_uploader_.reset();
   external_data_manager_->Disconnect();
@@ -193,8 +199,9 @@ void DeviceCloudPolicyManagerAsh::StartConnection(
   CHECK(!service());
 
   // Set state keys here so the first policy fetch submits them to the server.
-  if (IsForcedReEnrollmentEnabled())
+  if (IsForcedReEnrollmentEnabled()) {
     client_to_connect->SetStateKeysToUpload(state_keys_broker_->state_keys());
+  }
 
   // Create the component cloud policy service for fetching, caching and
   // exposing policy for extensions.
@@ -243,7 +250,8 @@ void DeviceCloudPolicyManagerAsh::StartConnection(
 
   // Start remote commands services now that we have setup everything they need.
   core()->StartRemoteCommandsService(
-      std::make_unique<DeviceCommandsFactoryAsh>(this),
+      std::make_unique<DeviceCommandsFactoryAsh>(
+          machine_certificate_uploader_.get(), *crd_delegate_),
       PolicyInvalidationScope::kDevice);
 
   // Enable device reporting and status monitoring for cloud managed devices. We
@@ -346,18 +354,21 @@ void DeviceCloudPolicyManagerAsh::OnUserRemoved(
 void DeviceCloudPolicyManagerAsh::OnStateKeysUpdated() {
   // TODO(b/181140445): If we had a separate state keys upload request to DM
   // Server we should call it here.
-  if (client() && IsForcedReEnrollmentEnabled())
+  if (client() && IsForcedReEnrollmentEnabled()) {
     client()->SetStateKeysToUpload(state_keys_broker_->state_keys());
+  }
 }
 
 void DeviceCloudPolicyManagerAsh::NotifyConnected() {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnDeviceCloudPolicyManagerConnected();
+  }
 }
 
 void DeviceCloudPolicyManagerAsh::NotifyGotRegistry() {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnDeviceCloudPolicyManagerGotRegistry();
+  }
 }
 
 void DeviceCloudPolicyManagerAsh::CreateStatusUploader(

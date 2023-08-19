@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_USER_EDUCATION_COMMON_TUTORIAL_H_
 #define COMPONENTS_USER_EDUCATION_COMMON_TUTORIAL_H_
 
+#include "base/gtest_prod_util.h"
 #include "components/user_education/common/help_bubble_factory.h"
 #include "components/user_education/common/help_bubble_params.h"
 #include "components/user_education/common/tutorial_description.h"
@@ -43,67 +44,6 @@ class Tutorial {
  public:
   ~Tutorial();
 
-  // Step Builder provides an interface for constructing an
-  // InteractionSequence::Step from a TutorialDescription::Step.
-  // TutorialDescription is used as the basis for the StepBuilder since all
-  // parameters of the Description will be needed to create the bubble or build
-  // the interaction sequence step. In order to use the The StepBuilder should
-  // only be used by Tutorial::Builder to construct the steps in the tutorial.
-  class StepBuilder {
-   public:
-    StepBuilder();
-    explicit StepBuilder(const TutorialDescription::Step& step);
-    StepBuilder(const StepBuilder&) = delete;
-    StepBuilder& operator=(const StepBuilder&) = delete;
-    ~StepBuilder();
-
-    // Constructs the InteractionSequenceStepDirectly from the
-    // TutorialDescriptionStep. This method is used by
-    // Tutorial::Builder::BuildFromDescription to create tutorials.
-    static std::unique_ptr<ui::InteractionSequence::Step>
-    BuildFromDescriptionStep(const TutorialDescription::Step& step,
-                             absl::optional<std::pair<int, int>> progress,
-                             bool is_last_step,
-                             bool can_be_restarted,
-                             TutorialService* tutorial_service);
-
-    StepBuilder& SetAnchorElementID(ui::ElementIdentifier anchor_element_id);
-    StepBuilder& SetAnchorElementName(std::string anchor_element_name);
-    StepBuilder& SetTitleTextID(int title_text_id);
-    StepBuilder& SetBodyTextID(int body_text_id);
-    // Sets the step type; `event_type_` should be set only for custom events.
-    StepBuilder& SetStepType(
-        ui::InteractionSequence::StepType step_type_,
-        ui::CustomElementEventType event_type_ = ui::CustomElementEventType());
-    StepBuilder& SetArrow(HelpBubbleArrow arrow_);
-    StepBuilder& SetProgress(absl::optional<std::pair<int, int>> progress_);
-    StepBuilder& SetIsLastStep(bool is_last_step_);
-    StepBuilder& SetMustRemainVisible(bool must_remain_visible_);
-    StepBuilder& SetMustBeVisibleAtStart(bool must_be_visible_);
-    StepBuilder& SetTransitionOnlyOnEvent(bool transition_only_on_event_);
-    StepBuilder& SetNameElementsCallback(
-        TutorialDescription::NameElementsCallback name_elements_callback_);
-    StepBuilder& SetCanBeRestarted(bool can_be_restarted_);
-
-    std::unique_ptr<ui::InteractionSequence::Step> Build(
-        TutorialService* tutorial_service);
-
-   private:
-    absl::optional<std::pair<int, int>> progress;
-    bool is_last_step = false;
-    bool can_be_restarted = false;
-
-    ui::InteractionSequence::StepStartCallback BuildStartCallback(
-        TutorialService* tutorial_service);
-
-    ui::InteractionSequence::StepStartCallback BuildMaybeShowBubbleCallback(
-        TutorialService* tutorial_service);
-
-    ui::InteractionSequence::StepEndCallback BuildHideBubbleCallback(
-        TutorialService* tutorial_service);
-    TutorialDescription::Step step_;
-  };
-
   class Builder {
    public:
     Builder();
@@ -113,6 +53,22 @@ class Tutorial {
         const TutorialDescription& description,
         TutorialService* tutorial_service,
         ui::ElementContext context);
+
+    // Constructs the InteractionSequenceStepDirectly from the
+    // TutorialDescriptionStep. This method is used by
+    // Tutorial::Builder::BuildFromDescription to create tutorials.
+    //
+    // Because tutorials can branch, this step may represent one or more
+    // conditional subsequences. `current_progress` will be updated based on all
+    // steps added as a result of adding this step, including in subsequences.
+    // Also,
+    static std::unique_ptr<ui::InteractionSequence::Step>
+    BuildFromDescriptionStep(const TutorialDescription::Step& step,
+                             int max_progress,
+                             int& current_progress,
+                             bool is_terminal,
+                             bool can_be_restarted,
+                             TutorialService* tutorial_service);
 
     Builder(const Builder& other) = delete;
     void operator=(Builder& other) = delete;

@@ -41,9 +41,7 @@ void AddressFormEventLogger::OnDidFillSuggestion(
   AutofillProfile::RecordType record_type = profile.record_type();
   sync_state_ = sync_state;
 
-  form_interactions_ukm_logger_->LogDidFillSuggestion(
-      record_type,
-      /*is_for_credit_card=*/false, form, field);
+  form_interactions_ukm_logger_->LogDidFillSuggestion(record_type, form, field);
 
   if (record_type == AutofillProfile::SERVER_PROFILE) {
     Log(FORM_EVENT_SERVER_SUGGESTION_FILLED, form);
@@ -69,10 +67,7 @@ void AddressFormEventLogger::OnDidFillSuggestion(
   }
   UpdateFlowId();
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillAccountProfilesUnionView)) {
-    profile_categories_filled_.insert(GetCategoryOfProfile(profile));
-  }
+  profile_categories_filled_.insert(GetCategoryOfProfile(profile));
 }
 
 void AddressFormEventLogger::OnDidSeeFillableDynamicForm(
@@ -125,10 +120,6 @@ void AddressFormEventLogger::RecordShowSuggestions() {
 
 void AddressFormEventLogger::RecordFillingAssistance(LogBuffer& logs) const {
   FormEventLoggerBase::RecordFillingAssistance(logs);
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillAccountProfilesUnionView)) {
-    return;
-  }
   // Log the origin-resolved filling assistance metric by converting the
   // `profile_categories_filled` to an CategoryResolvedFillingAssistanceBucket.
   auto filled_categories_to_bucket = [&] {
@@ -153,10 +144,6 @@ void AddressFormEventLogger::RecordFillingAssistance(LogBuffer& logs) const {
 
 void AddressFormEventLogger::RecordFillingCorrectness(LogBuffer& logs) const {
   FormEventLoggerBase::RecordFillingCorrectness(logs);
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillAccountProfilesUnionView)) {
-    return;
-  }
   // Non-empty because correctness is only logged when an Autofill
   // suggestion was accepted.
   DCHECK(!profile_categories_filled_.empty());

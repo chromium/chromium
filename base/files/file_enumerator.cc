@@ -5,6 +5,7 @@
 #include "base/files/file_enumerator.h"
 
 #include "base/files/file_util.h"
+#include "base/functional/function_ref.h"
 
 namespace base {
 
@@ -20,6 +21,12 @@ bool FileEnumerator::ShouldSkip(const FilePath& path) {
 bool FileEnumerator::IsTypeMatched(bool is_dir) const {
   return (file_type_ &
           (is_dir ? FileEnumerator::DIRECTORIES : FileEnumerator::FILES)) != 0;
+}
+
+void FileEnumerator::ForEach(FunctionRef<void(const FilePath& path)> ref) {
+  for (FilePath name = Next(); !name.empty(); name = Next()) {
+    ref(name);
+  }
 }
 
 }  // namespace base

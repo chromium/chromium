@@ -157,6 +157,9 @@ MojoVideoDecoderService::~MojoVideoDecoderService() {
   // the histogram timer below.
   weak_factory_.InvalidateWeakPtrs();
   decoder_.reset();
+
+  mojo_media_client_ = nullptr;
+  mojo_cdm_service_context_ = nullptr;
 }
 
 void MojoVideoDecoderService::GetSupportedConfigs(

@@ -119,7 +119,6 @@ FakeChromeUserManager::AddUserWithAffiliationAndTypeAndProfile(
               IDR_LOGIN_DEFAULT_USER)),
       user_manager::User::USER_IMAGE_PROFILE, false);
   users_.push_back(user);
-  ProfileHelper::Get()->SetProfileToUserMappingForTesting(user);
 
   if (profile) {
     ProfileHelper::Get()->SetUserToProfileMappingForTesting(user, profile);
@@ -180,22 +179,7 @@ user_manager::User* FakeChromeUserManager::AddPublicAccountUser(
               IDR_LOGIN_DEFAULT_USER)),
       user_manager::User::USER_IMAGE_PROFILE, false);
   users_.push_back(user);
-  ProfileHelper::Get()->SetProfileToUserMappingForTesting(user);
   return user;
-}
-
-user_manager::User* FakeChromeUserManager::AddActiveDirectoryUser(
-    const AccountId& account_id) {
-  DCHECK(account_id.GetAccountType() == AccountType::ACTIVE_DIRECTORY);
-  return AddUserWithAffiliationAndTypeAndProfile(
-      account_id, /*is_affiliated=*/false,
-      user_manager::USER_TYPE_ACTIVE_DIRECTORY,
-      /*profile=*/nullptr);
-}
-
-bool FakeChromeUserManager::IsEphemeralAccountId(
-    const AccountId& account_id) const {
-  return fake_ephemeral_mode_config_.IsAccountIdIncluded(account_id);
 }
 
 void FakeChromeUserManager::LoginUser(const AccountId& account_id,
@@ -204,8 +188,9 @@ void FakeChromeUserManager::LoginUser(const AccountId& account_id,
                user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
                false /* browser_restart */, false /* is_child */);
 
-  if (!set_profile_created_flag)
+  if (!set_profile_created_flag) {
     return;
+  }
 
   // NOTE: This does not match production. See function comment.
   SimulateUserProfileLoad(account_id);
@@ -220,8 +205,9 @@ UserImageManager* FakeChromeUserManager::GetUserImageManager(
     const AccountId& account_id) {
   UserImageManagerMap::iterator user_image_manager_it =
       user_image_managers_.find(account_id);
-  if (user_image_manager_it != user_image_managers_.end())
+  if (user_image_manager_it != user_image_managers_.end()) {
     return user_image_manager_it->second.get();
+  }
   if (mock_user_image_manager_enabled_) {
     auto mgr =
         std::make_unique<::testing::NiceMock<MockUserImageManager>>(account_id);
@@ -265,17 +251,19 @@ void FakeChromeUserManager::RemoveUserFromList(const AccountId& account_id) {
   WallpaperControllerClientImpl* const wallpaper_client =
       WallpaperControllerClientImpl::Get();
   // `wallpaper_client` could be nullptr in tests.
-  if (wallpaper_client)
+  if (wallpaper_client) {
     wallpaper_client->RemoveUserWallpaper(account_id, base::DoNothing());
-  ProfileHelper::Get()->RemoveUserFromListForTesting(account_id);
+  }
 
   const user_manager::UserList::iterator it =
       base::ranges::find(users_, account_id, &user_manager::User::GetAccountId);
   if (it != users_.end()) {
-    if (primary_user_ == *it)
+    if (primary_user_ == *it) {
       primary_user_ = nullptr;
-    if (active_user_ != *it)
+    }
+    if (active_user_ != *it) {
       delete *it;
+    }
     users_.erase(it);
   }
 }
@@ -393,8 +381,9 @@ void FakeChromeUserManager::UserLoggedIn(const AccountId& account_id,
       user->set_is_logged_in(true);
       logged_in_users_.push_back(user);
 
-      if (!primary_user_)
+      if (!primary_user_) {
         primary_user_ = user;
+      }
       break;
     }
   }
@@ -411,13 +400,15 @@ bool FakeChromeUserManager::IsKnownUser(const AccountId& account_id) const {
 
 const user_manager::User* FakeChromeUserManager::FindUser(
     const AccountId& account_id) const {
-  if (active_user_ != nullptr && active_user_->GetAccountId() == account_id)
+  if (active_user_ != nullptr && active_user_->GetAccountId() == account_id) {
     return active_user_;
+  }
 
   const user_manager::UserList& users = GetUsers();
   for (const auto* user : users) {
-    if (user->GetAccountId() == account_id)
+    if (user->GetAccountId() == account_id) {
       return user;
+    }
   }
 
   return nullptr;
@@ -425,13 +416,15 @@ const user_manager::User* FakeChromeUserManager::FindUser(
 
 user_manager::User* FakeChromeUserManager::FindUserAndModify(
     const AccountId& account_id) {
-  if (active_user_ != nullptr && active_user_->GetAccountId() == account_id)
+  if (active_user_ != nullptr && active_user_->GetAccountId() == account_id) {
     return active_user_;
+  }
 
   const user_manager::UserList& users = GetUsers();
   for (auto* user : users) {
-    if (user->GetAccountId() == account_id)
+    if (user->GetAccountId() == account_id) {
       return user;
+    }
   }
 
   return nullptr;
@@ -488,7 +481,12 @@ std::u16string FakeChromeUserManager::GetUserDisplayName(
 void FakeChromeUserManager::SaveUserDisplayEmail(
     const AccountId& account_id,
     const std::string& display_email) {
-  NOTREACHED();
+  user_manager::User* user = FindUserAndModify(account_id);
+  if (!user) {
+    LOG(ERROR) << "User not found: " << account_id.GetUserEmail();
+    return;
+  }
+  user->set_display_email(display_email);
 }
 
 void FakeChromeUserManager::SaveUserType(const user_manager::User* user) {
@@ -527,7 +525,7 @@ bool FakeChromeUserManager::IsLoggedInAsChildUser() const {
   return current_user_child_;
 }
 
-bool FakeChromeUserManager::IsLoggedInAsPublicAccount() const {
+bool FakeChromeUserManager::IsLoggedInAsManagedGuestSession() const {
   const user_manager::User* active_user = GetActiveUser();
   return active_user
              ? active_user->GetType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT
@@ -595,10 +593,12 @@ bool FakeChromeUserManager::IsUserAllowed(
          user.GetType() == user_manager::USER_TYPE_CHILD);
 
   if (user.GetType() == user_manager::USER_TYPE_GUEST &&
-      !IsGuestSessionAllowed())
+      !IsGuestSessionAllowed()) {
     return false;
-  if (user.HasGaiaAccount() && !IsGaiaUserAllowed(user))
+  }
+  if (user.HasGaiaAccount() && !IsGaiaUserAllowed(user)) {
     return false;
+  }
   return true;
 }
 
@@ -658,16 +658,24 @@ void FakeChromeUserManager::SetUserAffiliationForTesting(
   NotifyUserAffiliationUpdated(*user);
 }
 
-user_manager::User* FakeChromeUserManager::GetActiveUserInternal() const {
-  if (active_user_ != nullptr)
-    return active_user_;
+bool FakeChromeUserManager::IsEphemeralAccountIdByPolicy(
+    const AccountId& account_id) const {
+  return fake_ephemeral_mode_config_.IsAccountIdIncluded(account_id);
+}
 
-  if (users_.empty())
+user_manager::User* FakeChromeUserManager::GetActiveUserInternal() const {
+  if (active_user_ != nullptr) {
+    return active_user_;
+  }
+
+  if (users_.empty()) {
     return nullptr;
+  }
   if (active_account_id_.is_valid()) {
     for (auto* user : users_) {
-      if (user->GetAccountId() == active_account_id_)
+      if (user->GetAccountId() == active_account_id_) {
         return user;
+      }
     }
   }
   return users_[0];

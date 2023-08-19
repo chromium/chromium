@@ -26,16 +26,40 @@
 #include "third_party/blink/renderer/core/loader/history_item.h"
 
 #include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
+#include "base/containers/span.h"
+#include "base/ranges/algorithm.h"
+#include "third_party/blink/public/common/page_state/page_state.h"
+#include "third_party/blink/public/common/page_state/page_state_serialization.h"
+#include "third_party/blink/public/platform/web_http_body.h"
+#include "third_party/blink/public/platform/web_url_request_util.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/uuid.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_conversions.h"
 
 namespace blink {
+
+namespace {
+
+std::vector<absl::optional<std::u16string>> ToOptionalString16Vector(
+    base::span<const String> input) {
+  std::vector<absl::optional<std::u16string>> output;
+  output.reserve(input.size());
+  for (const auto& i : input) {
+    output.emplace_back(WebString::ToOptionalString16(i));
+  }
+  return output;
+}
+
+}  // namespace
 
 static int64_t GenerateSequenceNumber() {
   // Initialize to the current time to reduce the likelihood of generating
@@ -43,6 +67,76 @@ static int64_t GenerateSequenceNumber() {
   static int64_t next =
       static_cast<int64_t>(base::Time::Now().ToDoubleT() * 1000000.0);
   return ++next;
+}
+
+HistoryItem* HistoryItem::Create(const PageState& page_state) {
+  ExplodedPageState exploded_page_state;
+  if (!DecodePageState(page_state.ToEncodedData(), &exploded_page_state)) {
+    return nullptr;
+  }
+
+  auto* new_item = MakeGarbageCollected<HistoryItem>();
+  const ExplodedFrameState& state = exploded_page_state.top;
+  new_item->SetURLString(WebString::FromUTF16(state.url_string));
+  new_item->SetReferrer(WebString::FromUTF16(state.referrer));
+  new_item->SetReferrerPolicy(state.referrer_policy);
+  new_item->SetTarget(WebString::FromUTF16(state.target));
+  if (state.state_object) {
+    new_item->SetStateObject(SerializedScriptValue::Create(
+        WebString::FromUTF16(*state.state_object)));
+  }
+
+  Vector<String> document_state;
+  for (auto& ds : state.document_state) {
+    document_state.push_back(WebString::FromUTF16(ds));
+  }
+  new_item->SetDocumentState(document_state);
+
+  new_item->SetScrollRestorationType(state.scroll_restoration_type);
+
+  if (state.did_save_scroll_or_scale_state) {
+    // TODO(crbug.com/1274078): Are these conversions from blink scroll offset
+    // to gfx::PointF and gfx::Point correct?
+    new_item->SetVisualViewportScrollOffset(
+        state.visual_viewport_scroll_offset.OffsetFromOrigin());
+    new_item->SetScrollOffset(
+        ScrollOffset(state.scroll_offset.OffsetFromOrigin()));
+    new_item->SetPageScaleFactor(state.page_scale_factor);
+  }
+
+  // These values are generated at HistoryItem construction time, and we only
+  // want to override those new values with old values if the old values are
+  // defined. A value of 0 means undefined in this context.
+  if (state.item_sequence_number) {
+    new_item->SetItemSequenceNumber(state.item_sequence_number);
+  }
+  if (state.document_sequence_number) {
+    new_item->SetDocumentSequenceNumber(state.document_sequence_number);
+  }
+  if (state.navigation_api_key) {
+    new_item->SetNavigationApiKey(
+        WebString::FromUTF16(state.navigation_api_key));
+  }
+  if (state.navigation_api_id) {
+    new_item->SetNavigationApiId(WebString::FromUTF16(state.navigation_api_id));
+  }
+
+  if (state.navigation_api_state) {
+    new_item->SetNavigationApiState(SerializedScriptValue::Create(
+        WebString::FromUTF16(*state.navigation_api_state)));
+  }
+
+  new_item->SetFormContentType(
+      WebString::FromUTF16(state.http_body.http_content_type));
+  if (state.http_body.request_body) {
+    new_item->SetFormData(
+        blink::GetWebHTTPBodyForRequestBody(*state.http_body.request_body));
+  }
+
+  new_item->SetScrollAnchorData(
+      {WebString::FromUTF16(state.scroll_anchor_selector),
+       state.scroll_anchor_offset, state.scroll_anchor_simhash});
+  return new_item;
 }
 
 HistoryItem::HistoryItem()
@@ -120,13 +214,16 @@ void HistoryItem::SetDocumentState(DocumentState* state) {
   document_state_ = state;
 }
 
-const Vector<String>& HistoryItem::GetDocumentState() {
+const Vector<String>& HistoryItem::GetDocumentState() const {
+  // TODO(dcheng): This is super weird. It seems like it would be better to just
+  // populate the vector eagerly once when calling `SetDocumentState()` with a
+  // `DocumentState` object.
   if (document_state_)
     document_state_vector_ = document_state_->ToStateVector();
   return document_state_vector_;
 }
 
-Vector<String> HistoryItem::GetReferencedFilePaths() {
+Vector<String> HistoryItem::GetReferencedFilePaths() const {
   return FormController::GetReferencedFilePaths(GetDocumentState());
 }
 
@@ -151,7 +248,7 @@ void HistoryItem::SetFormContentType(const AtomicString& form_content_type) {
   form_content_type_ = form_content_type;
 }
 
-EncodedFormData* HistoryItem::FormData() {
+EncodedFormData* HistoryItem::FormData() const {
   return form_data_.get();
 }
 
@@ -177,6 +274,99 @@ ResourceRequest HistoryItem::GenerateResourceRequest(
 
 void HistoryItem::Trace(Visitor* visitor) const {
   visitor->Trace(document_state_);
+}
+
+PageState HistoryItem::ToPageState() const {
+  ExplodedPageState state;
+  state.referenced_files = GetReferencedFilePathsForSerialization();
+
+  state.top.url_string = WebString::ToOptionalString16(UrlString());
+  state.top.referrer = WebString::ToOptionalString16(GetReferrer());
+  state.top.referrer_policy = GetReferrerPolicy();
+  state.top.target = WebString::ToOptionalString16(Target());
+  if (StateObject()) {
+    state.top.state_object =
+        WebString::ToOptionalString16(StateObject()->ToWireString());
+  }
+  state.top.scroll_restoration_type = ScrollRestorationType();
+
+  ScrollAnchorData anchor;
+  if (const auto& scroll_and_view_state = GetViewState()) {
+    // TODO(crbug.com/1274078): Are these conversions from blink scroll offset
+    // to gfx::PointF and gfx::Point correct?
+    state.top.visual_viewport_scroll_offset = gfx::PointAtOffsetFromOrigin(
+        scroll_and_view_state->visual_viewport_scroll_offset_);
+    state.top.scroll_offset = gfx::ToFlooredPoint(
+        gfx::PointAtOffsetFromOrigin(scroll_and_view_state->scroll_offset_));
+    state.top.page_scale_factor = scroll_and_view_state->page_scale_factor_;
+    state.top.did_save_scroll_or_scale_state = true;
+    anchor = scroll_and_view_state->scroll_anchor_data_;
+  } else {
+    state.top.visual_viewport_scroll_offset = gfx::PointF();
+    state.top.scroll_offset = gfx::Point();
+    state.top.page_scale_factor = 0;
+    state.top.did_save_scroll_or_scale_state = false;
+  }
+
+  state.top.scroll_anchor_selector =
+      WebString::ToOptionalString16(anchor.selector_);
+  state.top.scroll_anchor_offset = anchor.offset_;
+  state.top.scroll_anchor_simhash = anchor.simhash_;
+
+  state.top.item_sequence_number = ItemSequenceNumber();
+  state.top.document_sequence_number = DocumentSequenceNumber();
+
+  state.top.document_state = ToOptionalString16Vector(GetDocumentState());
+
+  state.top.http_body.http_content_type =
+      WebString::ToOptionalString16(FormContentType());
+  WebHTTPBody http_body(FormData());
+  if (!http_body.IsNull()) {
+    state.top.http_body.request_body =
+        blink::GetRequestBodyForWebHTTPBody(http_body);
+    state.top.http_body.contains_passwords = http_body.ContainsPasswordData();
+  }
+
+  state.top.navigation_api_key =
+      WebString::ToOptionalString16(GetNavigationApiKey());
+  state.top.navigation_api_id =
+      WebString::ToOptionalString16(GetNavigationApiId());
+  if (GetNavigationApiState()) {
+    state.top.navigation_api_state =
+        WebString::ToOptionalString16(GetNavigationApiState()->ToWireString());
+  }
+
+  std::string encoded_data;
+  EncodePageState(state, &encoded_data);
+  return PageState::CreateFromEncodedData(encoded_data);
+}
+
+std::vector<absl::optional<std::u16string>>
+HistoryItem::GetReferencedFilePathsForSerialization() const {
+  HashSet<String> file_paths;
+
+  // These additional paths are presumably used by PageState so the browser can
+  // grant the renderer access to referenced files during session restore. This
+  // logic dates to https://crrev.com/db4a9b4108635b3678c3f9fd5bdd1f98001db216,
+  // and it is not entirely clear if it is still needed.
+  const EncodedFormData* form_data = FormData();
+  if (form_data) {
+    for (const FormDataElement& element : form_data->Elements()) {
+      if (element.type_ == FormDataElement::kEncodedFile) {
+        file_paths.insert(element.filename_);
+      }
+    }
+  }
+
+  for (const String& path : GetReferencedFilePaths()) {
+    file_paths.insert(path);
+  }
+
+  std::vector<absl::optional<std::u16string>> result;
+  result.reserve(file_paths.size());
+  base::ranges::transform(file_paths, std::back_inserter(result),
+                          WebString::ToOptionalString16);
+  return result;
 }
 
 }  // namespace blink

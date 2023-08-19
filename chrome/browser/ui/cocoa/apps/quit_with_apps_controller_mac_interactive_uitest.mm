@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/cocoa/apps/quit_with_apps_controller_mac.h"
 
+#import "base/apple/foundation_util.h"
 #include "base/command_line.h"
-#import "base/mac/foundation_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #import "chrome/browser/app_controller_mac.h"

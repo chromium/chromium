@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -15,6 +16,7 @@
 #include "base/values.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_sms_handler.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/message_center/message_center.h"
 
@@ -60,17 +62,46 @@ SmsObserver::SmsObserver() {
   // TODO(armansito): SMS could be a special case for cellular that requires a
   // user (perhaps the owner) to be logged in. If that is the case, then an
   // additional check should be done before subscribing for SMS notifications.
-  if (NetworkHandler::IsInitialized())
-    NetworkHandler::Get()->network_sms_handler()->AddObserver(this);
+  if (NetworkHandler::IsInitialized()) {
+    if (features::IsSuppressTextMessagesEnabled()) {
+      NetworkHandler::Get()->text_message_provider()->AddObserver(this);
+    } else {
+      NetworkHandler::Get()->network_sms_handler()->AddObserver(this);
+    }
+  }
 }
 
 SmsObserver::~SmsObserver() {
   if (NetworkHandler::IsInitialized()) {
-    NetworkHandler::Get()->network_sms_handler()->RemoveObserver(this);
+    if (features::IsSuppressTextMessagesEnabled()) {
+      NetworkHandler::Get()->text_message_provider()->RemoveObserver(this);
+    } else {
+      NetworkHandler::Get()->network_sms_handler()->RemoveObserver(this);
+    }
   }
 }
 
+void SmsObserver::MessageReceived(const TextMessageData& message_data) {
+  CHECK(features::IsSuppressTextMessagesEnabled());
+
+  if (!message_data.text.has_value() || message_data.text->empty()) {
+    NET_LOG(ERROR) << "SMS message contains no or empty content.";
+    return;
+  }
+  if (!message_data.number.has_value() || message_data.number->empty()) {
+    NET_LOG(DEBUG) << "SMS contains no number. Ignoring.";
+    return;
+  }
+  message_id_++;
+  // TODO(b/295169036) Remove unused message dictionary once suppress text
+  // messages feature flag is removed.
+  ShowNotification(/*message=*/nullptr, *message_data.text,
+                   *message_data.number, message_id_);
+}
+
 void SmsObserver::MessageReceived(const base::Value::Dict& message) {
+  CHECK(!features::IsSuppressTextMessagesEnabled());
+
   const std::string* message_text =
       message.FindString(NetworkSmsHandler::kTextKey);
   if (!message_text) {

@@ -8,7 +8,7 @@ import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-
 import {assertEquals, assertFalse, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-suite('UtilModuleTest', function() {
+suite('UtilTest', function() {
   test('get elements', function() {
     const element = document.createElement('div');
     element.id = 'foo';

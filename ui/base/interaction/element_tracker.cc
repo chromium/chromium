@@ -9,7 +9,6 @@
 #include <map>
 #include <sstream>
 
-#include "base/auto_reset.h"
 #include "base/callback_list.h"
 #include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
@@ -91,15 +90,18 @@ class ElementTracker::ElementData {
   }
 
   void NotifyElementActivated(TrackedElement*& element) {
-    DCHECK(base::Contains(element_lookup_, element));
+    // Note: "All contexts" does not require the element to be present here.
+    DCHECK(!context_ || base::Contains(element_lookup_, element));
     activated_callbacks_.Notify(element);
   }
 
   void NotifyElementHidden(TrackedElement* element) {
-    const auto it = element_lookup_.find(element);
-    DCHECK(it != element_lookup_.end());
-    elements_.erase(it->second);
-    element_lookup_.erase(it);
+    if (context_) {
+      const auto it = element_lookup_.find(element);
+      DCHECK(it != element_lookup_.end());
+      elements_.erase(it->second);
+      element_lookup_.erase(it);
+    }
     hidden_callbacks_.Notify(element);
   }
 
@@ -270,6 +272,18 @@ ElementTracker::Contexts ElementTracker::GetAllContextsForTesting() const {
   return result;
 }
 
+ElementTracker::ElementList ElementTracker::GetAllElementsForTesting(
+    absl::optional<ElementContext> in_context) {
+  ElementList result;
+  for (const auto& [key, data] : element_data_) {
+    if (!in_context.has_value() || in_context.value() == key.second) {
+      std::copy(data.elements().begin(), data.elements().end(),
+                std::back_inserter(result));
+    }
+  }
+  return result;
+}
+
 ElementTracker::Subscription
 ElementTracker::AddAnyElementShownCallbackForTesting(Callback callback) {
   return any_element_shown_callbacks_.Add(std::move(callback));
@@ -302,6 +316,14 @@ ElementTracker::Subscription ElementTracker::AddElementActivatedCallback(
       ->AddElementActivatedCallback(callback);
 }
 
+ElementTracker::Subscription
+ElementTracker::AddElementActivatedInAnyContextCallback(ElementIdentifier id,
+                                                        Callback callback) {
+  DCHECK(id);
+  return GetOrAddElementData(id, ElementContext())
+      ->AddElementActivatedCallback(callback);
+}
+
 ElementTracker::Subscription ElementTracker::AddElementHiddenCallback(
     ElementIdentifier id,
     ElementContext context,
@@ -309,6 +331,14 @@ ElementTracker::Subscription ElementTracker::AddElementHiddenCallback(
   DCHECK(id);
   DCHECK(context);
   return GetOrAddElementData(id, context)->AddElementHiddenCallback(callback);
+}
+
+ElementTracker::Subscription
+ElementTracker::AddElementHiddenInAnyContextCallback(ElementIdentifier id,
+                                                     Callback callback) {
+  DCHECK(id);
+  return GetOrAddElementData(id, ElementContext())
+      ->AddElementHiddenCallback(callback);
 }
 
 ElementTracker::Subscription ElementTracker::AddCustomEventCallback(
@@ -321,6 +351,17 @@ ElementTracker::Subscription ElementTracker::AddCustomEventCallback(
   // use the same underlying type for both element ids and custom events), we
   // can store both in the same lookup table.
   return GetOrAddElementData(event_type, context)
+      ->AddCustomEventCallback(callback);
+}
+
+ElementTracker::Subscription ElementTracker::AddCustomEventInAnyContextCallback(
+    CustomElementEventType event_type,
+    Callback callback) {
+  DCHECK(event_type);
+  // Because custom event callbacks are indexed by event type (and because we
+  // use the same underlying type for both element ids and custom events), we
+  // can store both in the same lookup table.
+  return GetOrAddElementData(event_type, ElementContext())
       ->AddCustomEventCallback(callback);
 }
 
@@ -368,6 +409,15 @@ void ElementTracker::NotifyElementActivated(TrackedElement* element) {
   DCHECK(it != element_data_.end());
   it->second.NotifyElementActivated(safe_element);
 
+  // Do "all contexts" notification:
+  if (safe_element) {
+    const auto all_it =
+        element_data_.find(LookupKey(element->identifier(), ElementContext()));
+    if (all_it != element_data_.end()) {
+      all_it->second.NotifyElementActivated(safe_element);
+    }
+  }
+
   notification_elements_.pop_back();
 }
 
@@ -381,12 +431,21 @@ void ElementTracker::NotifyElementHidden(TrackedElement* element) {
   // Prevent garbage collection of dead entries until after we send
   // notifications and all callbacks happen.
   GarbageCollector::Frame gc_frame(gc_.get());
+
+  // Call context-specific callbacks and erase entry.
   const auto it =
       element_data_.find(LookupKey(element->identifier(), element->context()));
   DCHECK(it != element_data_.end());
   ElementData* const data = &it->second;
   data->NotifyElementHidden(element);
   gc_frame.Add(data);
+
+  // Call "in any context" callbacks.
+  const auto all_it =
+      element_data_.find(LookupKey(element->identifier(), ElementContext()));
+  if (all_it != element_data_.end()) {
+    all_it->second.NotifyElementHidden(element);
+  }
 }
 
 void ElementTracker::NotifyCustomEvent(TrackedElement* element,
@@ -403,13 +462,26 @@ void ElementTracker::NotifyCustomEvent(TrackedElement* element,
   DCHECK(entry != element_data_.end() && entry->second.HasElement(element));
 #endif
 
+  notification_elements_.push_back(element);
+  TrackedElement*& safe_element = notification_elements_.back();
+
   // Since event types are identifiers, we store callbacks by event type rather
   // than element identifier.
   const auto it = element_data_.find(LookupKey(event_type, element->context()));
   // If we don't find a match, that's fine; it means nobody was listening for
   // that event type.
-  if (it != element_data_.end())
-    it->second.NotifyCustomEvent(element);
+  if (it != element_data_.end()) {
+    it->second.NotifyCustomEvent(safe_element);
+  }
+
+  // Do "all contexts" notification:
+  const auto all_it =
+      element_data_.find(LookupKey(event_type, ElementContext()));
+  if (all_it != element_data_.end()) {
+    all_it->second.NotifyCustomEvent(safe_element);
+  }
+
+  notification_elements_.pop_back();
 }
 
 ElementTracker::ElementData* ElementTracker::GetOrAddElementData(

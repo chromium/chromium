@@ -35,7 +35,8 @@ class TouchUsageMetricsRecorderTest : public AshTestBase {
   base::HistogramTester histogram_tester_;
 
   // Used to generate input events.
-  raw_ptr<ui::test::EventGenerator, ExperimentalAsh> event_generator_;
+  raw_ptr<ui::test::EventGenerator, DanglingUntriaged | ExperimentalAsh>
+      event_generator_;
 };
 
 // Verifies that a singular TouchscreenUsageRecorder, tested in isolation, does

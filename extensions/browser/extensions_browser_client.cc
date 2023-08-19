@@ -244,4 +244,10 @@ void ExtensionsBrowserClient::GetWebViewStoragePartitionConfig(
 void ExtensionsBrowserClient::CreatePasswordReuseDetectionManager(
     content::WebContents* web_contents) const {}
 
+media_device_salt::MediaDeviceSaltService*
+ExtensionsBrowserClient::GetMediaDeviceSaltService(
+    content::BrowserContext* context) {
+  return nullptr;
+}
+
 }  // namespace extensions

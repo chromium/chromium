@@ -1,0 +1,27 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package blink;
+
+message ElementLocator {
+  message Component {
+    message Id {
+      optional string id_attr = 1;
+    }
+    message NthTagName {
+      optional string tag_name = 1;
+      optional int32 index = 2;
+    }
+    oneof component {
+      Id id = 1;
+      NthTagName nth = 2;
+    }
+  }
+
+  repeated Component components = 1;
+}

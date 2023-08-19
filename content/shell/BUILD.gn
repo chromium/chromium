@@ -10,6 +10,7 @@ import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/ui.gni")
 import("//build/config/win/console_app.gni")
 import("//build/config/win/manifest.gni")
+import("//device/vr/buildflags/buildflags.gni")
 import("//gpu/vulkan/features.gni")
 import("//media/media_options.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
@@ -104,7 +105,6 @@ static_library("content_shell_app") {
     ]
   }
   if (is_apple) {
-    configs += [ "//build/config/compiler:enable_arc" ]
     sources += [
       "app/paths_mac.h",
       "app/paths_mac.mm",
@@ -208,7 +208,6 @@ static_library("content_shell_lib") {
       "browser/shell_platform_delegate_mac.mm",
       "browser/shell_web_contents_view_delegate_mac.mm",
     ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_ios) {
@@ -225,13 +224,14 @@ static_library("content_shell_lib") {
       "browser/bluetooth/ios/shell_bluetooth_device_list_view_controller.mm",
       "browser/bluetooth/shell_bluetooth_delegate_impl_client.cc",
       "browser/bluetooth/shell_bluetooth_delegate_impl_client.h",
+      "browser/color_chooser/shell_color_chooser_ios.h",
+      "browser/color_chooser/shell_color_chooser_ios.mm",
       "browser/shell_browser_main_parts_ios.mm",
       "browser/shell_file_select_helper.cc",
       "browser/shell_file_select_helper.h",
       "browser/shell_platform_delegate_ios.mm",
       "browser/shell_web_contents_view_delegate_ios.mm",
     ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_win) {
@@ -305,6 +305,7 @@ static_library("content_shell_lib") {
     "//device/bluetooth",
     "//media",
     "//media/mojo:buildflags",
+    "//media/mojo/services",
     "//net",
     "//net:net_resources",
     "//ppapi/buildflags",
@@ -364,10 +365,7 @@ static_library("content_shell_lib") {
   }
 
   if (is_mac) {
-    deps += [
-      "//base:base_arc",
-      "//ui/display:test_support",
-    ]
+    deps += [ "//ui/display:test_support" ]
   }
 
   if (is_ios) {
@@ -529,6 +527,10 @@ repack("pak") {
     "//ui/strings",
   ]
 
+  if (enable_vr) {
+    sources += [ "$root_gen_dir/content/webxr_internals_resources.pak" ]
+  }
+
   if (!is_android) {
     deps += [ "//content/browser/tracing:resources" ]
     sources += [ "$root_gen_dir/content/browser/tracing/tracing_resources.pak" ]
@@ -588,7 +590,7 @@ if (is_android) {
 
       # Despite its path, this does not add a //base dependency, see comments in
       # the .cc file.
-      "//base/allocator:early_zone_registration_mac",
+      "//base/allocator:early_zone_registration_apple",
       "//sandbox/mac:seatbelt",
     ]
     info_plist_target = ":content_shell_plist"
@@ -633,8 +635,6 @@ if (is_android) {
     ]
     entitlements_path = ios_content_shell_entitlements_path
     bundle_identifier = ios_content_shell_bundle_identifier
-
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 } else {
   executable("content_shell") {
@@ -673,6 +673,9 @@ if (is_android) {
         configs -= [ "//build/config/win:console" ]
         configs += [ "//build/config/win:windowed" ]
       }
+
+      # Limit pre-loaded modules to improve sandbox coverage in content_shell.
+      configs += [ "//build/config/win:delayloads" ]
 
       # Increase the initial stack size. The default is 1MB, this is 8MB.
       # This matches the chrome.exe.
@@ -887,7 +890,7 @@ if (is_mac) {
         "CONTENT_SHELL_HELPER_BUNDLE_ID_SUFFIX=${invoker.helper_bundle_id_suffix}",
       ]
       deps = [
-        "//base/allocator:early_zone_registration_mac",
+        "//base/allocator:early_zone_registration_apple",
         "//sandbox/mac:seatbelt",
       ]
 

@@ -12,6 +12,7 @@
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/referrer.h"
@@ -44,6 +45,19 @@ class BubbleContentsWrapper : public content::WebContentsDelegate,
     virtual bool HandleKeyboardEvent(
         content::WebContents* source,
         const content::NativeWebKeyboardEvent& event);
+    virtual bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
+                                   const content::ContextMenuParams& params);
+    virtual void RequestMediaAccessPermission(
+        content::WebContents* web_contents,
+        const content::MediaStreamRequest& request,
+        content::MediaResponseCallback callback) {}
+    virtual content::WebContents* OpenURLFromTab(
+        content::WebContents* source,
+        const content::OpenURLParams& params);
+    virtual void RunFileChooser(
+        content::RenderFrameHost* render_frame_host,
+        scoped_refptr<content::FileSelectListener> listener,
+        const blink::mojom::FileChooserParams& params) {}
   };
 
   BubbleContentsWrapper(const GURL& webui_url,
@@ -67,6 +81,16 @@ class BubbleContentsWrapper : public content::WebContentsDelegate,
   std::unique_ptr<content::EyeDropper> OpenEyeDropper(
       content::RenderFrameHost* frame,
       content::EyeDropperListener* listener) override;
+  void RequestMediaAccessPermission(
+      content::WebContents* web_contents,
+      const content::MediaStreamRequest& request,
+      content::MediaResponseCallback callback) override;
+  content::WebContents* OpenURLFromTab(
+      content::WebContents* source,
+      const content::OpenURLParams& params) override;
+  void RunFileChooser(content::RenderFrameHost* render_frame_host,
+                      scoped_refptr<content::FileSelectListener> listener,
+                      const blink::mojom::FileChooserParams& params) override;
 
   // content::WebContentsObserver:
   void PrimaryPageChanged(content::Page& page) override;

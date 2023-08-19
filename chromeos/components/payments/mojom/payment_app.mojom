@@ -1,0 +1,88 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next MinVersion: 4
+
+module chromeos.payments.mojom;
+
+import "chromeos/components/payments/mojom/payment_app_types.mojom";
+
+// The service that runs in ARC and allows the browser to invoke the TWA payment
+// app that is installed in ARC, if it implements payment intents as described
+// in https://web.dev/android-payment-apps-overview/.
+//
+// This mojom interface is used in crosapi as well to forward the payment
+// request from Lacros.
+//
+// At first, only "https://play.google.com/billing" payment method is supported.
+//
+// Ash Browser:
+// --------------------      --------------------------------------------------
+// |   Ash Browser    |      |                      ARC                       |
+// |                  |      |                                                |
+// | ---------------  |      |  --------------    -------    ---------------- |
+// | | Web Payment |<-|------|->| PaymentApp |<-->| TWA |<-->| Play Billing | |
+// | ---------------  |      |  --------------    -------    ---------------- |
+// |                  |      |                                                |
+// --------------------      --------------------------------------------------
+// Lacros Browser:
+// ---------------- ---------------- -----------------------------------------
+// |   Lacros     | |     Ash      | |                 ARC                   |
+// |   Browser    | |              | |                                       |
+// |------------- | | ------------ | | ------------   -----   -------------- |
+// ||Web Payment|<|-|>|PaymentApp|<|-|>|PaymentApp|<->|TWA|<->|Play Billing| |
+// |------------- | | |Forwarder | | | ------------   -----   -------------- |
+// |              | | ------------ | |                                       |
+// ---------------- ---------------- -----------------------------------------
+
+
+//
+// Next method ID: 3
+[Stable, Uuid="5d046348-1f14-4bfe-840b-75bc2c05ef01"]
+interface PaymentAppInstance {
+  // Called by the browser to check whether the TWA with |package_name| (e.g.,
+  // "com.example.app") in ARC has intent filters for
+  // org.chromium.intent.action.PAY and
+  // org.chromium.intent.action.IS_READY_TO_PAY with
+  // "https://play.google.com/billing" in either
+  // "org.chromium.default_payment_method_name" or
+  // "org.chromium.payment_method_names" metadata of the PAY intent filter.
+  // Other payment methods are ignored for now.
+  //
+  // Should not invoke any of the TWA activities or connect to any of its
+  // services, because this method may be invoked when off the record, e.g.,
+  // incognito mode or guest mode.
+  IsPaymentImplemented@0(string package_name)
+      => (chromeos.payments.mojom.IsPaymentImplementedResult response);
+
+  // Forwards the request to IsReadyToPayServiceHelper.query(), which queries
+  // the payment app. The payment app should return true if payments can be
+  // made. This should not be invoked when off the record, e.g., incognito mode
+  // or guest mode.
+  [MinVersion=1]
+  IsReadyToPay@1(chromeos.payments.mojom.PaymentParameters parameters)
+      => (chromeos.payments.mojom.IsReadyToPayResult response);
+
+  // Forwards the request to WebPaymentIntentHelper.createPayIntent() and fires
+  // the resulting intent. This invokes the payment flow.
+  //
+  // The "String merchantName" parameter to createPayIntent() should be empty
+  // (but not null).
+  //
+  // The total amount for createPayIntent() should always be "0" with currency
+  // "ZZZ".
+  [MinVersion=2]
+  InvokePaymentApp@2(chromeos.payments.mojom.PaymentParameters parameters)
+      => (chromeos.payments.mojom.InvokePaymentAppResult response);
+
+  // Requests to abort a previous payment flow (identified by |request_token|)
+  // which was opened with InvokePaymentApp().
+  //
+  // This may be called by the website if a payment should no longer be made
+  // (e.g., when an item goes out of stock), or by the browser if the payment is
+  // no longer available (e.g., the page was refreshed).
+  [MinVersion=3]
+  AbortPaymentApp@3(string request_token)
+      => (bool aborted);
+};

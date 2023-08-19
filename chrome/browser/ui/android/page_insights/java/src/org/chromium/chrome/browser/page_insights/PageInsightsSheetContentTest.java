@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.test.filters.MediumTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -24,7 +25,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
@@ -46,7 +47,7 @@ public class PageInsightsSheetContentTest {
 
     private BottomSheetController mBottomSheetController;
     private ScrimCoordinator mScrimCoordinator;
-    private BottomSheetContent mSheetContent;
+    private PageInsightsSheetContent mSheetContent;
     private BottomSheetTestSupport mTestSupport;
 
     @BeforeClass
@@ -110,5 +111,32 @@ public class PageInsightsSheetContentTest {
         // Collapsing from full state leads to peeking state.
         TestThreadUtils.runOnUiThreadBlocking(() -> mBottomSheetController.collapseSheet(false));
         assertEquals(BottomSheetController.SheetState.PEEK, mBottomSheetController.getSheetState());
+    }
+
+    @Test
+    @SmallTest
+    public void backButtonPressed(){
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            getToolbarViewById(R.id.page_insights_back_button).performClick();
+            assertEquals(View.VISIBLE,
+                getToolbarViewById(R.id.page_insights_main_header).getVisibility());
+            assertEquals(View.GONE,
+                getToolbarViewById(R.id.page_insights_child_page_header).getVisibility());
+        });
+    }
+
+    @Test
+    @SmallTest
+    @DisabledTest(message = "https://crbug.com/1472037")
+    public void childPageRendered() {
+        mSheetContent.renderChildPage();
+        assertEquals(View.GONE,
+            getToolbarViewById(R.id.page_insights_main_header).getVisibility());
+        assertEquals(View.VISIBLE,
+            getToolbarViewById(R.id.page_insights_child_page_header).getVisibility());
+    }
+
+    private View getToolbarViewById(int viewId){
+        return mSheetContent.getToolbarView().findViewById(viewId);
     }
 }

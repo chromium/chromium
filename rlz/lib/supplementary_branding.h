@@ -50,7 +50,7 @@ class SupplementaryBranding {
   static const std::string& GetBrand();
 
  private:
-  raw_ptr<ScopedRlzValueStoreLock> lock_;
+  raw_ptr<ScopedRlzValueStoreLock, DanglingUntriaged> lock_;
 };
 
 }  // namespace rlz_lib

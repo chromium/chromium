@@ -17,8 +17,6 @@ import sys
 import tempfile
 import time
 
-from six.moves import range  # pylint: disable=redefined-builtin
-from six.moves import zip  # pylint: disable=redefined-builtin
 from devil import base_error
 from devil.android import apk_helper
 from devil.android import crash_handler
@@ -43,9 +41,11 @@ from pylib.local.device import local_device_test_run
 from pylib.output import remote_output_manager
 from pylib.symbols import stack_symbolizer
 from pylib.utils import chrome_proxy_utils
+from pylib.utils import code_coverage_utils
 from pylib.utils import gold_utils
 from pylib.utils import instrumentation_tracing
 from pylib.utils import shared_preference_utils
+from pylib.utils.device_dependencies import DevicePathComponentsFor
 from py_trace_event import trace_event
 from py_trace_event import trace_time
 from py_utils import contextlib_ext
@@ -89,6 +89,10 @@ MAX_BATCH_TEST_TIMEOUT = 30 * 60
 LOGCAT_FILTERS = ['*:e', 'chromium:v', 'cr_*:v', 'DEBUG:I',
                   'StrictMode:D', '%s:I' % _TAG]
 
+EXTRA_CLANG_COVERAGE_DEVICE_FILE = (
+    'org.chromium.base.test.BaseChromiumAndroidJUnitRunner.'
+    'ClangCoverageDeviceFile')
+
 EXTRA_SCREENSHOT_FILE = (
     'org.chromium.base.test.ScreenshotOnFailureStatement.ScreenshotFile')
 
@@ -96,6 +100,9 @@ EXTRA_UI_CAPTURE_DIR = (
     'org.chromium.base.test.util.Screenshooter.ScreenshotDir')
 
 EXTRA_TRACE_FILE = ('org.chromium.base.test.BaseJUnit4ClassRunner.TraceFile')
+
+_EXTRA_RUN_DISABLED_TEST = (
+    'org.chromium.base.test.util.DisableIfSkipCheck.RunDisabledTest')
 
 _EXTRA_TEST_LIST = (
     'org.chromium.base.test.BaseChromiumAndroidJUnitRunner.TestList')
@@ -216,7 +223,9 @@ class LocalDeviceInstrumentationTestRun(
         self._env.DenylistDevice)
     @trace_event.traced
     def individual_device_set_up(device, host_device_tuples):
-      steps = []
+      # Functions to run concurrerntly when --concurrent-adb is enabled.
+      install_steps = []
+      post_install_steps = []
 
       if self._test_instance.replace_system_package:
         @trace_event.traced
@@ -238,7 +247,7 @@ class LocalDeviceInstrumentationTestRun(
           # pylint: enable=no-member
           self._context_managers[str(dev)].append(system_app_context)
 
-        steps.append(replace_package)
+        install_steps.append(replace_package)
 
       if self._test_instance.system_packages_to_remove:
 
@@ -253,7 +262,7 @@ class LocalDeviceInstrumentationTestRun(
         # This should be at the front in case we're removing the package to make
         # room for another APK installation later on. Since we disallow
         # concurrent adb with this option specified, this should be safe.
-        steps.insert(0, remove_packages)
+        install_steps.insert(0, remove_packages)
 
       def install_helper(apk,
                          modules=None,
@@ -295,11 +304,11 @@ class LocalDeviceInstrumentationTestRun(
 
         return incremental_install_helper_internal
 
-      steps.extend(
+      install_steps.extend(
           install_apex_helper(apex)
           for apex in self._test_instance.additional_apexs)
 
-      steps.extend(
+      install_steps.extend(
           install_helper(apk, instant_app=self._test_instance.IsApkInstant(apk))
           for apk in self._test_instance.additional_apks)
 
@@ -309,13 +318,13 @@ class LocalDeviceInstrumentationTestRun(
           raise Exception('Test APK cannot be installed as an instant '
                           'app if it is incremental')
 
-        steps.append(
+        install_steps.append(
             incremental_install_helper(
                 self._test_instance.test_apk,
                 self._test_instance.test_apk_incremental_install_json,
                 permissions))
       else:
-        steps.append(
+        install_steps.append(
             install_helper(self._test_instance.test_apk,
                            permissions=permissions,
                            instant_app=self._test_instance.test_apk_as_instant))
@@ -350,7 +359,7 @@ class LocalDeviceInstrumentationTestRun(
           # pylint: enable=no-member
           self._context_managers[str(dev)].append(webview_context)
 
-        steps.append(use_webview_provider)
+        install_steps.append(use_webview_provider)
 
       if self._test_instance.use_voice_interaction_service:
 
@@ -366,7 +375,7 @@ class LocalDeviceInstrumentationTestRun(
           self._context_managers[str(device)].append(
               voice_interaction_service_context)
 
-        steps.append(use_voice_interaction_service)
+        post_install_steps.append(use_voice_interaction_service)
 
       # The apk under test needs to be installed last since installing other
       # apks after will unintentionally clear the fake module directory.
@@ -376,13 +385,13 @@ class LocalDeviceInstrumentationTestRun(
             apk_helper.GetPackageName(self._test_instance.apk_under_test))
         permissions = self._test_instance.apk_under_test.GetPermissions()
         if self._test_instance.apk_under_test_incremental_install_json:
-          steps.append(
+          install_steps.append(
               incremental_install_helper(
                   self._test_instance.apk_under_test,
                   self._test_instance.apk_under_test_incremental_install_json,
                   permissions))
         else:
-          steps.append(
+          install_steps.append(
               install_helper(self._test_instance.apk_under_test,
                              self._test_instance.modules,
                              self._test_instance.fake_modules, permissions,
@@ -397,7 +406,7 @@ class LocalDeviceInstrumentationTestRun(
             logging.info('Running custom setup shell command: %s', cmd)
             dev.RunShellCommand(cmd, shell=True, check_return=True)
 
-        steps.append(run_setup_commands)
+        post_install_steps.append(run_setup_commands)
 
       @trace_event.traced
       def set_debug_app(dev):
@@ -470,30 +479,44 @@ class LocalDeviceInstrumentationTestRun(
 
       @trace_event.traced
       def create_flag_changer(dev):
-        if self._test_instance.flags:
+        flags = self._test_instance.flags[:]
+        if self._test_instance.variations_test_seed_path:
+          test_data_root_dir = posixpath.join(
+              self._GetDataStorageRootDirectory(dev), 'chromium_tests_root')
+          seed_path_components = DevicePathComponentsFor(
+              self._test_instance.variations_test_seed_path)
+          test_seed_path = local_device_test_run.SubstituteDeviceRoot(
+              seed_path_components, test_data_root_dir)
+          flags.append('--variations-test-seed-path={0}'.format(test_seed_path))
+
+        if flags:
           self._CreateFlagChangerIfNeeded(dev)
-          logging.debug('Attempting to set flags: %r',
-                        self._test_instance.flags)
-          self._flag_changers[str(dev)].AddFlags(self._test_instance.flags)
+          logging.debug('Attempting to set flags: %r', flags)
+          self._flag_changers[str(dev)].AddFlags(flags)
 
         valgrind_tools.SetChromeTimeoutScale(
             dev, self._test_instance.timeout_scale)
 
-      steps += [
-          set_debug_app, edit_shared_prefs, approve_app_links, push_test_data,
-          create_flag_changer, set_vega_permissions, DismissCrashDialogs
+      install_steps += [push_test_data, create_flag_changer]
+      post_install_steps += [
+          set_debug_app, edit_shared_prefs, approve_app_links,
+          set_vega_permissions, DismissCrashDialogs
       ]
 
       def bind_crash_handler(step, dev):
         return lambda: crash_handler.RetryOnSystemCrash(step, dev)
 
-      steps = [bind_crash_handler(s, device) for s in steps]
+      install_steps = [bind_crash_handler(s, device) for s in install_steps]
+      post_install_steps = [
+          bind_crash_handler(s, device) for s in post_install_steps
+      ]
 
       try:
         if self._env.concurrent_adb:
-          reraiser_thread.RunAsync(steps)
+          reraiser_thread.RunAsync(install_steps)
+          reraiser_thread.RunAsync(post_install_steps)
         else:
-          for step in steps:
+          for step in install_steps + post_install_steps:
             step()
         if self._test_instance.store_tombstones:
           tombstones.ClearAllTombstones(device)
@@ -674,6 +697,14 @@ class LocalDeviceInstrumentationTestRun(
             batch_name += '|cmd_line_remove:' + ','.join(
                 sorted(annotations['CommandLineFlags$Remove']['value']))
 
+        # WebView tests run in 2 process modes (single and multi). We must
+        # restart the process for each mode, so this means singleprocess tests
+        # and multiprocess tests must not be in the same batch.
+        webview_multiprocess_mode = test['method'].endswith(
+            base_test_result.MULTIPROCESS_SUFFIX)
+        if webview_multiprocess_mode:
+          batch_name += '|multiprocess_mode'
+
         batched_tests.setdefault(batch_name, []).append(test)
       else:
         other_tests.append(test)
@@ -721,6 +752,9 @@ class LocalDeviceInstrumentationTestRun(
   def _RunTest(self, device, test):
     extras = {}
 
+    if self._test_instance.GetRunDisabledFlag():
+      extras[_EXTRA_RUN_DISABLED_TEST] = 'true'
+
     if self._test_instance.is_unit_test:
       extras[_EXTRA_TEST_IS_UNIT] = 'true'
 
@@ -736,15 +770,28 @@ class LocalDeviceInstrumentationTestRun(
                                   (test[0]['class'], test[0]['method'])
                                   if isinstance(test, list) else '%s_%s' %
                                   (test['class'], test['method']))
-      extras['coverage'] = 'true'
       coverage_directory = os.path.join(
           device.GetExternalStoragePath(), 'chrome', 'test', 'coverage')
       if not device.PathExists(coverage_directory):
         device.RunShellCommand(['mkdir', '-p', coverage_directory],
                                check_return=True)
-      coverage_device_file = os.path.join(coverage_directory, coverage_basename)
-      coverage_device_file += '.exec'
-      extras['coverageFile'] = coverage_device_file
+
+      # Setting up for jacoco coverage.
+      extras['coverage'] = 'true'
+      jacoco_coverage_device_file = os.path.join(coverage_directory,
+                                                 coverage_basename)
+      jacoco_coverage_device_file += '.exec'
+      extras['coverageFile'] = jacoco_coverage_device_file
+
+      # Setting up for clang coverage.
+      device_clang_profile_dir = code_coverage_utils.GetDeviceClangCoverageDir(
+          device)
+      # "%2m" is used to expand to 2 raw profiles at runtime. "%p" writes
+      # process ID.
+      # See https://clang.llvm.org/docs/SourceBasedCodeCoverage.html
+      clang_profile_filename = '%s_%s.profraw' % (coverage_basename, '%2m_%p')
+      extras[EXTRA_CLANG_COVERAGE_DEVICE_FILE] = posixpath.join(
+          device_clang_profile_dir, clang_profile_filename)
 
     if self._test_instance.enable_breakpad_dump:
       # Use external storage directory so that the breakpad dump can be accessed
@@ -901,14 +948,39 @@ class LocalDeviceInstrumentationTestRun(
           try:
             if not os.path.exists(self._test_instance.coverage_directory):
               os.makedirs(self._test_instance.coverage_directory)
+
+            # Handling Jacoco coverage data.
             # Retries add time to test execution.
-            if device.PathExists(coverage_device_file, retries=0):
-              device.PullFile(coverage_device_file,
+            if device.PathExists(jacoco_coverage_device_file, retries=0):
+              device.PullFile(jacoco_coverage_device_file,
                               self._test_instance.coverage_directory)
-              device.RemovePath(coverage_device_file, True)
+              device.RemovePath(jacoco_coverage_device_file, True)
             else:
-              logging.warning('Coverage file does not exist: %s',
-                              coverage_device_file)
+              logging.warning('Jacoco coverage file does not exist: %s',
+                              jacoco_coverage_device_file)
+
+            # Handling Clang coverage data.
+            profraw_parent_dir = os.path.join(
+                self._test_instance.coverage_directory, coverage_basename)
+            if device.PathExists(device_clang_profile_dir, retries=0):
+              # Note: The function pulls |device_clang_profile_dir| folder,
+              # instead of profraw files, into |profraw_parent_dir|. the
+              # function also removes |device_clang_profile_dir| from device.
+              code_coverage_utils.PullClangCoverageFiles(
+                  device, device_clang_profile_dir, profraw_parent_dir)
+              # Merge data into one merged file if llvm-profdata tool exists.
+              if os.path.isfile(code_coverage_utils.LLVM_PROFDATA_PATH):
+                profraw_folder_name = os.path.basename(
+                    os.path.normpath(device_clang_profile_dir))
+                profraw_dir = os.path.join(profraw_parent_dir,
+                                           profraw_folder_name)
+                code_coverage_utils.MergeClangCoverageFiles(
+                    self._test_instance.coverage_directory, profraw_dir)
+                shutil.rmtree(profraw_parent_dir)
+            else:
+              logging.warning('Clang coverage data folder does not exist: %s',
+                              profraw_parent_dir)
+
           except (OSError, base_error.BaseError) as e:
             logging.warning('Failed to handle coverage data after tests: %s', e)
 

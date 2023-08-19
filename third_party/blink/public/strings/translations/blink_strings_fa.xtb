@@ -26,7 +26,6 @@
 <translation id="2060505056492490888">«<ph name="DOT" />» در «<ph name="INVALIDDOMAIN" />» در محل اشتباهی قرار دارد.</translation>
 <translation id="2148716181193084225">امروز</translation>
 <translation id="2226276347425096477">لطفاً این متن را به اندازه <ph name="MAX_CHARACTERS" /> نویسه یا کمتر کوتاه کنید (شما در حال حاضر از <ph name="CURRENT_LENGTH" /> نویسه استفاده می‌کنید).</translation>
-<translation id="2246498165605549352">فایل محلی</translation>
 <translation id="2247351761944213033">هفته <ph name="WEEKNUMBER" />، <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">آهنگ <ph name="NUMBER" /></translation>
 <translation id="2393030564806080191">مقدار رنگ در مبنای شانزده</translation>
@@ -89,6 +88,7 @@
 <translation id="5425179576310518467">تاریخ کنونی</translation>
 <translation id="5466621249238537318">لطفاً یک یا چند فایل را انتخاب کنید.</translation>
 <translation id="5468998798572797635">خروج از حالت تمام صفحه</translation>
+<translation id="5514612371225420585">فایل ذخیره‌شده در دستگاه</translation>
 <translation id="5516235301412634559">۰٫۷۵</translation>
 <translation id="5537725057119320332">فرستادن</translation>
 <translation id="5546461542133609677">صدادارکردن</translation>
@@ -113,6 +113,7 @@
 <translation id="6398862346408813489">نمایش پانل انتخاب ماه</translation>
 <translation id="6404546809543547843">انتخابگر زمان صدا</translation>
 <translation id="6443871981718447451">نمایش منوی زیرنویس ناشنوایان</translation>
+<translation id="6484738902856791350">چاپ شکیل</translation>
 <translation id="6550675742724504774">گزینه‌ها</translation>
 <translation id="6572309429103589720">دستور زبان نامعتبر</translation>
 <translation id="658823671542763450">رفتن به حالت تمام صفحه</translation>

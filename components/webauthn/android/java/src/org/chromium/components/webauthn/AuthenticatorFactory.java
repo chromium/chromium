@@ -4,12 +4,16 @@
 
 package org.chromium.components.webauthn;
 
+import android.content.Context;
+
+import org.chromium.base.ContextUtils;
 import org.chromium.blink.mojom.Authenticator;
 import org.chromium.content_public.browser.RenderFrameHost;
-import org.chromium.content_public.browser.WebAuthenticationDelegate;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsStatics;
 import org.chromium.services.service_manager.InterfaceFactory;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.Origin;
 
 /**
  * Factory class registered to create Authenticators upon request.
@@ -31,7 +35,17 @@ public class AuthenticatorFactory implements InterfaceFactory<Authenticator> {
             return null;
         }
 
-        WebAuthenticationDelegate delegate = new WebAuthenticationDelegate();
-        return new AuthenticatorImpl(delegate.getIntentSender(webContents), mRenderFrameHost);
+        WindowAndroid window = webContents.getTopLevelNativeWindow();
+        Context context = null;
+        // In practice, `window` is sometimes null for unclear reasons (crbug.com/1459476).
+        if (window != null) {
+            context = window.getActivity().get();
+        }
+        if (context == null) {
+            context = ContextUtils.getApplicationContext();
+        }
+        Origin topOrigin = webContents.getMainFrame().getLastCommittedOrigin();
+        return new AuthenticatorImpl(context, new AuthenticatorImpl.WindowIntentSender(window),
+                mRenderFrameHost, topOrigin);
     }
 }

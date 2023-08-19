@@ -26,7 +26,6 @@
 <translation id="2060505056492490888">"<ph name="DOT" />" utilízase nunha posición incorrecta en "<ph name="INVALIDDOMAIN" />".</translation>
 <translation id="2148716181193084225">Hoxe</translation>
 <translation id="2226276347425096477">Acurta este texto a <ph name="MAX_CHARACTERS" /> caracteres como máximo (actualmente estás utilizando <ph name="CURRENT_LENGTH" /> caracteres).</translation>
-<translation id="2246498165605549352">Ficheiro local</translation>
 <translation id="2247351761944213033">Semana <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Pista <ph name="NUMBER" /></translation>
 <translation id="2393030564806080191">Valor hexadecimal da cor</translation>
@@ -89,6 +88,7 @@
 <translation id="5425179576310518467">data actual</translation>
 <translation id="5466621249238537318">Selecciona un ou máis ficheiros.</translation>
 <translation id="5468998798572797635">sae da pantalla completa</translation>
+<translation id="5514612371225420585">Ficheiro no teu dispositivo</translation>
 <translation id="5516235301412634559">0,75</translation>
 <translation id="5537725057119320332">Emitir</translation>
 <translation id="5546461542133609677">activar o son</translation>
@@ -113,6 +113,7 @@
 <translation id="6398862346408813489">Mostra o panel de selección do mes</translation>
 <translation id="6404546809543547843">barra de reprodución do audio</translation>
 <translation id="6443871981718447451">mostra o menú de subtítulos</translation>
+<translation id="6484738902856791350">Dar formato</translation>
 <translation id="6550675742724504774">Opcións</translation>
 <translation id="6572309429103589720">A gramática non é válida</translation>
 <translation id="658823671542763450">acceder á pantalla completa</translation>

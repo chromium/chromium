@@ -14,7 +14,6 @@
 #include "base/base64.h"
 #include "base/functional/callback.h"
 #include "base/lazy_instance.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/crash/core/common/crash_key.h"
@@ -224,9 +223,9 @@ void NativeWidgetMac::InitNativeWidget(Widget::InitParams params) {
     ns_window_host_->CreateRemoteNSWindow(application_host,
                                           std::move(create_window_params));
   } else {
-    base::scoped_nsobject<NativeWidgetMacNSWindow> window(
-        [CreateNSWindow(create_window_params.get()) retain]);
-    ns_window_host_->CreateInProcessNSWindowBridge(std::move(window));
+    NativeWidgetMacNSWindow* window =
+        CreateNSWindow(create_window_params.get());
+    ns_window_host_->CreateInProcessNSWindowBridge(window);
   }
 
   // If the z-order wasn't specifically set to something other than `kNormal`,
@@ -314,7 +313,7 @@ gfx::NativeView NativeWidgetMac::GetNativeView() const {
   // When a widget becomes a subwidget, its contentView moves to an another
   // NSWindow. When this happens, the window's contentView will be nil.
   // Return the cached original contentView instead.
-  NSView* contentView = (NSView*)GetNativeWindowProperty(
+  NSView* contentView = (__bridge NSView*)GetNativeWindowProperty(
       views::NativeWidgetMacNSWindowHost::kMovedContentNSView);
   if (contentView) {
     return gfx::NativeView(contentView);
@@ -910,8 +909,7 @@ NativeWidgetMac::RegisterInitNativeWidgetCallback(
 
 NativeWidgetMacNSWindow* NativeWidgetMac::CreateNSWindow(
     const remote_cocoa::mojom::CreateWindowParams* params) {
-  return remote_cocoa::NativeWidgetNSWindowBridge::CreateNSWindow(params)
-      .autorelease();
+  return remote_cocoa::NativeWidgetNSWindowBridge::CreateNSWindow(params);
 }
 
 remote_cocoa::ApplicationHost*

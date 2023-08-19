@@ -12,7 +12,6 @@ import "gpu/ipc/common/sync_token.mojom";
 import "gpu/ipc/common/vulkan_ycbcr_info.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
-import "services/viz/public/mojom/compositing/resource_format.mojom";
 import "services/viz/public/mojom/compositing/shared_image_format.mojom";
 import "skia/public/mojom/image_info.mojom";
 import "skia/public/mojom/surface_origin.mojom";
@@ -50,24 +49,16 @@ enum SchedulingPriority {
 
 // Maps to its namesake in gpu/command_buffer/common/context_creation_attribs.h.
 struct ContextCreationAttribs {
-  gfx.mojom.Size offscreen_framebuffer_size;
   gl.mojom.GpuPreference gpu_preference = kLowPower;
 
   // -1 if invalid or unspecified.
-  int32 alpha_size = -1;
-  int32 blue_size = -1;
-  int32 green_size = -1;
-  int32 red_size = -1;
-  int32 depth_size = -1;
-  int32 stencil_size = -1;
-  int32 samples = -1;
-  int32 sample_buffers = -1;
-  bool buffer_preserved = true;
+  [EnableIf=is_android] int32 alpha_size = -1;
+  [EnableIf=is_android] int32 blue_size = -1;
+  [EnableIf=is_android] int32 green_size = -1;
+  [EnableIf=is_android] int32 red_size = -1;
   bool bind_generates_resource = true;
   bool fail_if_major_perf_caveat = false;
   bool lose_context_when_out_of_memory = false;
-  bool should_use_native_gmb_for_backbuffer = false;
-  bool single_buffer = false;
   bool enable_gles2_interface = true;
   bool enable_grcontext = false;
   bool enable_raster_interface = false;
@@ -444,6 +435,9 @@ union DeferredSharedImageRequest {
   // See CreateSharedImageParams.
   CreateSharedImageParams create_shared_image;
 
+  // See CreateSharedImageBackedByBufferParams.
+  CreateSharedImageBackedByBufferParams create_shared_image_backed_by_buffer;
+
   // See CreateSharedImageWithDataParams.
   CreateSharedImageWithDataParams create_shared_image_with_data;
 
@@ -540,6 +534,41 @@ struct CreateSharedImageParams {
 
   // Indicates how the alpha component of each pixel is interpreted.
   skia.mojom.AlphaType alpha_type;
+};
+
+// Creates a new shared image backed by native buffer or shared memory.
+struct CreateSharedImageBackedByBufferParams {
+  // The mailbox used to identify the shared image.
+  Mailbox mailbox;
+
+  // The pixel format of the image.
+  viz.mojom.SharedImageFormat format;
+
+  // Size in pixels.
+  gfx.mojom.Size size;
+
+  // Color space.
+  gfx.mojom.ColorSpace color_space;
+
+  // Usage flags corresponding to values defined in
+  // gpu/command_buffer/common/shared_image_usage.h.
+  uint32 usage;
+
+  // Retained for heap dumps and passed to graphics APIs for tracing tools.
+  // Pick a name that is unique to the allocation site.
+  string debug_label;
+
+  // The fence to release once the image is created.
+  uint32 release_id;
+
+  // Which corner is considered the origin of the new image.
+  skia.mojom.SurfaceOrigin surface_origin;
+
+  // Indicates how the alpha component of each pixel is interpreted.
+  skia.mojom.AlphaType alpha_type;
+
+  // Usage flags which decides what GPU memory buffer can be supported.
+  gfx.mojom.BufferUsage buffer_usage;
 };
 
 // Creates a new shared image and populates it with pixel data from a shared

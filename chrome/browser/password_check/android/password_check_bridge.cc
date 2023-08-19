@@ -8,8 +8,8 @@
 #include <string>
 
 #include "base/android/jni_string.h"
+#include "chrome/browser/password_check/android/internal/internal_jni/PasswordCheckBridge_jni.h"
 #include "chrome/browser/password_check/android/jni_headers/CompromisedCredential_jni.h"
-#include "chrome/browser/password_check/android/jni_headers/PasswordCheckBridge_jni.h"
 #include "chrome/browser/password_manager/android/password_checkup_launcher_helper.h"
 #include "chrome/browser/password_manager/android/password_checkup_launcher_helper_impl.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"

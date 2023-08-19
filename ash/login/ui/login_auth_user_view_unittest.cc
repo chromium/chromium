@@ -114,7 +114,6 @@ class LoginAuthUserViewTestBase : public LoginTestBase {
     user_ = user;
     LoginAuthUserView::Callbacks auth_callbacks;
     auth_callbacks.on_auth = base::DoNothing();
-    auth_callbacks.on_easy_unlock_icon_hovered = base::DoNothing();
     auth_callbacks.on_tap = base::DoNothing();
     auth_callbacks.on_remove_warning_shown = base::DoNothing();
     auth_callbacks.on_remove = base::DoNothing();
@@ -132,9 +131,9 @@ class LoginAuthUserViewTestBase : public LoginTestBase {
 
   base::test::ScopedFeatureList feature_list_;
   LoginUserInfo user_;
-  raw_ptr<views::View, ExperimentalAsh> container_ =
+  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> container_ =
       nullptr;  // Owned by test widget view hierarchy.
-  raw_ptr<LoginAuthUserView, ExperimentalAsh> view_ =
+  raw_ptr<LoginAuthUserView, DanglingUntriaged | ExperimentalAsh> view_ =
       nullptr;  // Owned by test widget view hierarchy.
 };
 

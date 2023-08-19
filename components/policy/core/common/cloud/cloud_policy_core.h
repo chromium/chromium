@@ -136,7 +136,7 @@ class POLICY_EXPORT CloudPolicyCore {
 
   std::string policy_type_;
   std::string settings_entity_id_;
-  raw_ptr<CloudPolicyStore, DanglingUntriaged> store_;
+  raw_ptr<CloudPolicyStore, AcrossTasksDanglingUntriaged> store_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   network::NetworkConnectionTrackerGetter network_connection_tracker_getter_;
   std::unique_ptr<CloudPolicyClient> client_;

@@ -1,0 +1,60 @@
+context.properties = {
+    remote.name = "$instance_name"
+}
+
+context.spa-libs = {
+    audio.convert.* = audioconvert/libspa-audioconvert
+    support.*       = support/libspa-support
+}
+
+context.modules = [
+    { name = libpipewire-module-protocol-native }
+    { name = libpipewire-module-client-node }
+    { name = libpipewire-module-adapter }
+    { name = libpipewire-module-metadata }
+
+    { name = libpipewire-module-protocol-pulse }
+]
+
+pulse.cmd = [
+    { cmd = "load-module" args = "module-always-sink" }
+    { cmd = "load-module" args = "module-pipe-sink sink_name=\"$sink_name\" file=\"$runtime_path/fifo_output\" rate=48000 channels=2 format=s16le" }
+]
+
+pulse.properties = {
+    server.address = [ "unix:native" ]
+    # These overrides are only applied when running in a vm.
+    vm.overrides = {
+        pulse.min.quantum = 1024/48000      # 22ms
+    }
+}
+
+# client/stream specific properties
+pulse.rules = [
+    {
+        # skype does not want to use devices that don't have an S16 sample format.
+        matches = [
+             { application.process.binary = "teams" }
+             { application.process.binary = "teams-insiders" }
+             { application.process.binary = "skypeforlinux" }
+        ]
+        actions = { quirks = [ force-s16-info ] }
+    }
+    {
+        # firefox marks the capture streams as don't move and then they
+        # can't be moved with pavucontrol or other tools.
+        matches = [ { application.process.binary = "firefox" } ]
+        actions = { quirks = [ remove-capture-dont-move ] }
+    }
+    {
+        # speech dispatcher asks for too small latency and then underruns.
+        matches = [ { application.name = "~speech-dispatcher.*" } ]
+        actions = {
+            update-props = {
+                pulse.min.req          = 512/48000      # 10.6ms
+                pulse.min.quantum      = 512/48000      # 10.6ms
+                pulse.idle.timeout     = 5              # pause after 5 seconds of underrun
+            }
+        }
+    }
+]

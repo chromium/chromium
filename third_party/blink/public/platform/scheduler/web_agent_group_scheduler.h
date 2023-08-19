@@ -56,7 +56,7 @@ class BLINK_PLATFORM_EXPORT WebAgentGroupScheduler {
 #endif
 
  protected:
-  WebPrivatePtr<AgentGroupScheduler> private_;
+  WebPrivatePtrForGC<AgentGroupScheduler> private_;
 };
 
 }  // namespace scheduler

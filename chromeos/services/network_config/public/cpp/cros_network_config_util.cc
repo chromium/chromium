@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
-
+#include "ash/constants/ash_features.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/onc/onc_constants.h"
 
@@ -265,8 +265,12 @@ bool NetworkTypeMatchesType(mojom::NetworkType network_type,
     case mojom::NetworkType::kAll:
       return true;
     case mojom::NetworkType::kMobile:
-      return network_type == mojom::NetworkType::kCellular ||
-             network_type == mojom::NetworkType::kTether;
+      if (base::FeatureList::IsEnabled(ash::features::kInstantHotspotRebrand)) {
+        return network_type == mojom::NetworkType::kCellular;
+      } else {
+        return network_type == mojom::NetworkType::kCellular ||
+               network_type == mojom::NetworkType::kTether;
+      }
     case mojom::NetworkType::kWireless:
       return network_type == mojom::NetworkType::kCellular ||
              network_type == mojom::NetworkType::kTether ||

@@ -11,6 +11,8 @@
 #include "base/memory/raw_ptr.h"
 #include "components/account_id/account_id.h"
 
+class PrefRegistrySimple;
+
 namespace ash {
 
 class GlanceablesClassroomClient;
@@ -23,9 +25,10 @@ class ASH_EXPORT GlanceablesV2Controller : public SessionObserver {
  public:
   // Convenience wrapper to pass all clients from browser to ash at once.
   struct ClientsRegistration {
-    raw_ptr<GlanceablesClassroomClient, ExperimentalAsh> classroom_client =
-        nullptr;
-    raw_ptr<GlanceablesTasksClient, ExperimentalAsh> tasks_client = nullptr;
+    raw_ptr<GlanceablesClassroomClient, DanglingUntriaged | ExperimentalAsh>
+        classroom_client = nullptr;
+    raw_ptr<GlanceablesTasksClient, DanglingUntriaged | ExperimentalAsh>
+        tasks_client = nullptr;
   };
 
   GlanceablesV2Controller();
@@ -33,8 +36,16 @@ class ASH_EXPORT GlanceablesV2Controller : public SessionObserver {
   GlanceablesV2Controller& operator=(const GlanceablesV2Controller&) = delete;
   ~GlanceablesV2Controller() override;
 
+  // Registers syncable user profile prefs with the specified `registry`.
+  static void RegisterUserProfilePrefs(PrefRegistrySimple* registry);
+
   // SessionObserver:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
+
+  // Whether glanceanbles are available to the `active_account_id_`.
+  // Glanceables are available if the feature is enabled for the user and it has
+  // at least one registered client.
+  bool AreGlanceablesAvailable() const;
 
   // Updates `clients_registry_` for a specific `account_id`.
   void UpdateClientsRegistration(const AccountId& account_id,
@@ -47,6 +58,10 @@ class ASH_EXPORT GlanceablesV2Controller : public SessionObserver {
   // Returns a tasks client pointer associated with the `active_account_id_`.
   // Could return `nullptr`.
   GlanceablesTasksClient* GetTasksClient() const;
+
+  // Informs registered glanceables clients that the glanceables bubble UI has
+  // been closed.
+  void NotifyGlanceablesBubbleClosed();
 
  private:
   // The currently active user account id.

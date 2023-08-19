@@ -35,7 +35,8 @@ using ContactCallback = base::RepeatingCallback<void(
 // |nullopt| then all contact requests will be rejected with an HTTP 410 status
 // to indicate that the contact ID is disabled.
 std::unique_ptr<network::mojom::NetworkContext> NewMockTunnelServer(
-    absl::optional<ContactCallback> contact_callback);
+    absl::optional<ContactCallback> contact_callback,
+    bool supports_connect_signal = false);
 
 namespace authenticator {
 
@@ -68,6 +69,13 @@ std::unique_ptr<Transaction> NewLateLinkingDevice(
     network::mojom::NetworkContext* network_context,
     base::span<const uint8_t> qr_secret,
     base::span<const uint8_t, kP256X962Length> peer_identity);
+
+// NewHandshakeErrorDevice returns a caBLEv2 device that produces an invalid
+// caBLEv2 handshake.
+std::unique_ptr<Transaction> NewHandshakeErrorDevice(
+    std::unique_ptr<Platform> platform,
+    network::mojom::NetworkContext* network_context,
+    base::span<const uint8_t> qr_secret);
 
 }  // namespace authenticator
 

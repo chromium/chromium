@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Pinned view dimensions.
 const CGFloat kPinnedViewDragEnabledHeight = 94.0f;
 const CGFloat kPinnedViewDefaultHeight = 68.0f;

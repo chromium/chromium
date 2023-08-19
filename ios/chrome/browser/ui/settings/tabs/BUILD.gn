@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("tabs") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "tabs_settings_coordinator.h",
     "tabs_settings_coordinator.mm",
@@ -14,16 +13,20 @@ source_set("tabs") {
     ":tabs_ui",
     "//components/prefs",
     "//components/prefs/ios",
+    "//components/sync/service",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/sync",
     "//ios/chrome/browser/tabs/inactive_tabs:features",
+    "//ios/chrome/browser/tabs/tab_pickup:features",
     "//ios/chrome/browser/ui/settings/tabs/inactive_tabs",
+    "//ios/chrome/browser/ui/settings/tabs/tab_pickup",
   ]
 }
 
 source_set("tabs_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "tabs_settings_consumer.h",
     "tabs_settings_navigation_commands.h",
@@ -39,6 +42,7 @@ source_set("tabs_ui") {
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/tabs/inactive_tabs:features",
+    "//ios/chrome/browser/tabs/tab_pickup:features",
     "//ios/chrome/browser/ui/settings:constants",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings/tabs/inactive_tabs:inactive_tabs_ui",
@@ -47,7 +51,6 @@ source_set("tabs_ui") {
 }
 
 source_set("tabs_constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "tabs_settings_constants.h",
     "tabs_settings_constants.mm",
@@ -55,15 +58,13 @@ source_set("tabs_constants") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "tabs_settings_egtest.mm" ]
   deps = [
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/tabs/inactive_tabs:features",
+    "//ios/chrome/browser/tabs/tab_pickup:features",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
   ]

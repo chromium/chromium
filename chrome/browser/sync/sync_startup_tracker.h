@@ -64,7 +64,7 @@ class SyncStartupTracker : public syncer::SyncServiceObserver {
   void OnStartupTimeout();
 
   // The SyncService we should track.
-  raw_ptr<syncer::SyncService> sync_service_;
+  const raw_ptr<syncer::SyncService> sync_service_;
 
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_service_observation_{this};

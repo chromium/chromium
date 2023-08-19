@@ -11,10 +11,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/upgrade/upgrade_center.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 BROWSER_USER_DATA_KEY_IMPL(UpgradeCenterBrowserAgent)
 
 UpgradeCenterBrowserAgent::UpgradeCenterBrowserAgent(
@@ -29,26 +25,39 @@ UpgradeCenterBrowserAgent::UpgradeCenterBrowserAgent(
 
 UpgradeCenterBrowserAgent::~UpgradeCenterBrowserAgent() {}
 
-void UpgradeCenterBrowserAgent::WebStateInsertedAt(WebStateList* web_state_list,
-                                                   web::WebState* web_state,
-                                                   int index,
-                                                   bool activating) {
-  WebStateAttached(web_state);
-}
+#pragma mark - WebStateListObserver
 
-void UpgradeCenterBrowserAgent::WebStateReplacedAt(WebStateList* web_state_list,
-                                                   web::WebState* old_web_state,
-                                                   web::WebState* new_web_state,
-                                                   int index) {
-  WebStateDetached(old_web_state);
-  WebStateAttached(new_web_state);
-}
-
-void UpgradeCenterBrowserAgent::WillDetachWebStateAt(
+void UpgradeCenterBrowserAgent::WebStateListDidChange(
     WebStateList* web_state_list,
-    web::WebState* web_state,
-    int index) {
-  WebStateDetached(web_state);
+    const WebStateListChange& change,
+    const WebStateListStatus& status) {
+  switch (change.type()) {
+    case WebStateListChange::Type::kStatusOnly:
+      // Do nothing when a WebState is selected and its status is updated.
+      break;
+    case WebStateListChange::Type::kDetach: {
+      const WebStateListChangeDetach& detach_change =
+          change.As<WebStateListChangeDetach>();
+      WebStateDetached(detach_change.detached_web_state());
+      break;
+    }
+    case WebStateListChange::Type::kMove:
+      // Do nothing when a WebState is moved.
+      break;
+    case WebStateListChange::Type::kReplace: {
+      const WebStateListChangeReplace& replace_change =
+          change.As<WebStateListChangeReplace>();
+      WebStateDetached(replace_change.replaced_web_state());
+      WebStateAttached(replace_change.inserted_web_state());
+      break;
+    }
+    case WebStateListChange::Type::kInsert: {
+      const WebStateListChangeInsert& insert_change =
+          change.As<WebStateListChangeInsert>();
+      WebStateAttached(insert_change.inserted_web_state());
+      break;
+    }
+  }
 }
 
 void UpgradeCenterBrowserAgent::WebStateListDestroyed(

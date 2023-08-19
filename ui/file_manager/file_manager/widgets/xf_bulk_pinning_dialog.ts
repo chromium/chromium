@@ -20,6 +20,9 @@ const enum DialogState {
   // Currently offline. Cannot compute space requirement for the time being.
   OFFLINE,
 
+  // Currently not running due to battery saver mode active.
+  BATTERY_SAVER,
+
   // Listing files and computing space requirements.
   LISTING,
 
@@ -33,7 +36,7 @@ const enum DialogState {
   READY,
 }
 
-const BulkPinStage = chrome.fileManagerPrivate.BulkPinStage;
+export const BulkPinStage = chrome.fileManagerPrivate.BulkPinStage;
 
 /**
  * Dialog that shows the benefits of enabling bulk pinning along with storage
@@ -44,6 +47,7 @@ export class XfBulkPinningDialog extends XfBase {
   @query('cr-dialog') private $dialog_!: CrDialogElement;
   @query('#continue-button') private $button_!: CrButtonElement;
   @query('#offline-footer') private $offlineFooter_!: HTMLElement;
+  @query('#battery-saver-footer') private $batterySaverFooter_!: HTMLElement;
   @query('#listing-footer') private $listingFooter_!: HTMLElement;
   @query('#error-footer') private $errorFooter_!: HTMLElement;
   @query('#not-enough-space-footer')
@@ -85,8 +89,12 @@ export class XfBulkPinningDialog extends XfBase {
 
     this.stage_ = bpp.stage;
     switch (bpp.stage) {
-      case BulkPinStage.PAUSED:
+      case BulkPinStage.PAUSED_OFFLINE:
         this.state = DialogState.OFFLINE;
+        break;
+
+      case BulkPinStage.PAUSED_BATTERY_SAVER:
+        this.state = DialogState.BATTERY_SAVER;
         break;
 
       case BulkPinStage.GETTING_FREE_SPACE:
@@ -119,6 +127,8 @@ export class XfBulkPinningDialog extends XfBase {
   set state(s: DialogState) {
     this.$offlineFooter_.style.display =
         s === DialogState.OFFLINE ? 'initial' : 'none';
+    this.$batterySaverFooter_.style.display =
+        s === DialogState.BATTERY_SAVER ? 'initial' : 'none';
     this.$listingFooter_.style.display =
         s === DialogState.LISTING ? 'flex' : 'none';
     this.$errorFooter_.style.display =
@@ -131,14 +141,22 @@ export class XfBulkPinningDialog extends XfBase {
     this.$button_.disabled = s !== DialogState.READY;
   }
 
+  // Indicates if this dialog is currently open.
+  get is_open(): boolean {
+    return this.$dialog_.open;
+  }
+
+  // Shows the dialog and starts calculating the required space for
+  // bulk-pinning.
   async show() {
+    this.stage_ = BulkPinStage.LISTING_FILES;
     this.state = DialogState.LISTING;
     this.$dialog_.showModal();
     this.store_.subscribe(this);
     try {
       await calculateBulkPinRequiredSpace();
     } catch (e) {
-      console.error('Cannot calculate bulk-pinning required space', e);
+      console.error('Cannot calculate required space for bulk-pinning:', e);
       this.state = DialogState.ERROR;
     }
   }
@@ -148,6 +166,7 @@ export class XfBulkPinningDialog extends XfBase {
     this.store_.unsubscribe(this);
   }
 
+  // Called when the "Continue" button is clicked.
   private onContinue() {
     this.$dialog_.close();
     chrome.fileManagerPrivate.setPreferences(
@@ -155,6 +174,7 @@ export class XfBulkPinningDialog extends XfBase {
         chrome.fileManagerPrivate.PreferencesChange);
   }
 
+  // Called when the "Cancel" button is clicked.
   private onCancel() {
     this.$dialog_.cancel();
   }
@@ -162,7 +182,7 @@ export class XfBulkPinningDialog extends XfBase {
   // Called when the "Learn more" link is clicked.
   private onLearnMore(e: UIEvent) {
     e.preventDefault();
-    util.visitURL(str('GOOGLE_DRIVE_HELP_URL'));
+    util.visitURL('https://support.google.com/chromebook?p=my_drive_cbx');
   }
 
   // Called when the "View storage" link is clicked.
@@ -183,7 +203,7 @@ export class XfBulkPinningDialog extends XfBase {
         <div slot="body">
           <div class="description">
             ${str('BULK_PINNING_EXPLANATION')}
-            <a href="_blank" @click="${this.onLearnMore}">
+            <a id="learn-more-link" href="_blank" @click="${this.onLearnMore}">
               ${str('LEARN_MORE_LABEL')}
             </a>
           </div>
@@ -196,6 +216,9 @@ export class XfBulkPinningDialog extends XfBase {
           <div id="offline-footer" class="offline-footer">
             ${str('BULK_PINNING_OFFLINE')}
           </div>
+          <div id="battery-saver-footer" class="battery-saver-footer">
+            ${str('BULK_PINNING_BATTERY_SAVER')}
+          </div>
           <div id="listing-footer" class="normal-footer">
             <files-spinner></files-spinner>
             ${str('BULK_PINNING_LISTING')}
@@ -205,14 +228,16 @@ export class XfBulkPinningDialog extends XfBase {
           </div>
           <div id="not-enough-space-footer" class="error-footer">
             ${str('BULK_PINNING_NOT_ENOUGH_SPACE')}
-            <a href="_blank" @click="${this.onViewStorage}">
+            <a id="view-storage-link" href="_blank"
+              @click="${this.onViewStorage}">
               ${str('BULK_PINNING_VIEW_STORAGE')}
             </a>
           </div>
           <div id="ready-footer" class="normal-footer"></div>
         </div>
         <div slot="button-container">
-          <cr-button class="cancel-button" @click="${this.onCancel}">
+          <cr-button id="cancel-button" class="cancel-button"
+            @click="${this.onCancel}">
             ${str('CANCEL_LABEL')}
           </cr-button>
           <cr-button id="continue-button" class="continue-button action-button"
@@ -304,7 +329,7 @@ export class XfBulkPinningDialog extends XfBase {
         padding: 16px;
       }
 
-      .offline-footer {
+      .offline-footer, .battery-saver-footer {
         background-color: var(--cros-sys-surface_variant);
         border: 1px solid var(--cros-separator-color);
         border-radius: 0 0 12px 12px;

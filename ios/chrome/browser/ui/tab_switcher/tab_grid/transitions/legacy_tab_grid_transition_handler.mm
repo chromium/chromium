@@ -10,10 +10,6 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_transition_layout.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 const CGFloat kBrowserToGridDuration = 0.3;
 const CGFloat kGridToBrowserDuration = 0.5;
@@ -109,7 +105,17 @@ const CGFloat kReducedMotionDuration = 0.25;
   browser.view.alpha = 0;
 
   // Run the main animation.
-  [self.animation.animator startAnimation];
+  if (@available(iOS 17, *)) {
+    // On iOS 17, there is an issue if the animation is run directly.
+    // See crbug.com/1458980.
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
+                                 static_cast<int64_t>(0.01 * NSEC_PER_SEC)),
+                   dispatch_get_main_queue(), ^{
+                     [self.animation.animator startAnimation];
+                   });
+  } else {
+    [self.animation.animator startAnimation];
+  }
 }
 
 - (void)transitionFromTabGrid:(UIViewController*)tabGrid

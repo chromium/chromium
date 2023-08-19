@@ -31,6 +31,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/frame.mojom.h"
+#include "content/public/browser/preloading.h"
 #include "content/public/browser/preloading_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/visibility.h"
@@ -231,12 +232,10 @@ PreloadingEligibility ToEligibility(PrerenderFinalStatus status) {
     case PrerenderFinalStatus::kLoginAuthRequested:
     case PrerenderFinalStatus::kUaChangeRequiresReload:
     case PrerenderFinalStatus::kBlockedByClient:
-    case PrerenderFinalStatus::kAudioOutputDeviceRequested:
     case PrerenderFinalStatus::kMixedContent:
       NOTREACHED_NORETURN();
     case PrerenderFinalStatus::kTriggerBackgrounded:
       return PreloadingEligibility::kHidden;
-    case PrerenderFinalStatus::kEmbedderTriggeredAndCrossOriginRedirected:
     case PrerenderFinalStatus::kMemoryLimitExceeded:
     case PrerenderFinalStatus::kFailToGetMemoryUsage:
       NOTREACHED_NORETURN();
@@ -287,6 +286,11 @@ PreloadingEligibility ToEligibility(PrerenderFinalStatus status) {
       NOTREACHED_NORETURN();
     case PrerenderFinalStatus::kPrerenderingDisabledByDevTools:
       return PreloadingEligibility::kPreloadingDisabledByDevTools;
+    case PrerenderFinalStatus::kResourceLoadBlockedByClient:
+      return PreloadingEligibility::kPreloadingDisabledByDevTools;
+    case PrerenderFinalStatus::kSpeculationRuleRemoved:
+    case PrerenderFinalStatus::kActivatedWithAuxiliaryBrowsingContexts:
+      NOTREACHED_NORETURN();
   }
 
   NOTREACHED_NORETURN();
@@ -307,17 +311,19 @@ class PrerenderHostBuilder {
   PrerenderHostBuilder(PrerenderHostBuilder&&) = delete;
   PrerenderHostBuilder& operator=(PrerenderHostBuilder&&) = delete;
 
-  void SetHoldbackAllowed();
-
   // The following methods consumes this class.
   std::unique_ptr<PrerenderHost> Build(const PrerenderAttributes& attributes,
                                        WebContentsImpl& prerender_web_contents);
   void RejectAsNotEligible(const PrerenderAttributes& attributes,
                            PrerenderFinalStatus status);
-  void RejectDueToHoldback();
   void RejectAsDuplicate();
   void RejectAsFailure(const PrerenderAttributes& attributes,
                        PrerenderFinalStatus status);
+  void RejectDueToHoldback();
+
+  void SetHoldbackOverride(PreloadingHoldbackStatus status);
+  bool CheckIfShouldHoldback();
+
   // Public only for exceptional case.
   // TODO(https://crbug.com/1435376): Make this private again.
   void Drop();
@@ -346,12 +352,6 @@ void PrerenderHostBuilder::Drop() {
 
 bool PrerenderHostBuilder::IsDropped() {
   return devtools_attempt_ == nullptr;
-}
-
-void PrerenderHostBuilder::SetHoldbackAllowed() {
-  if (attempt_) {
-    attempt_->SetHoldbackStatus(PreloadingHoldbackStatus::kAllowed);
-  }
 }
 
 std::unique_ptr<PrerenderHost> PrerenderHostBuilder::Build(
@@ -386,6 +386,22 @@ void PrerenderHostBuilder::RejectAsNotEligible(
   Drop();
 }
 
+bool PrerenderHostBuilder::CheckIfShouldHoldback() {
+  CHECK(!IsDropped());
+
+  // Assigns the holdback status in the attempt it was not overridden earlier.
+  return attempt_ && attempt_->ShouldHoldback();
+}
+
+void PrerenderHostBuilder::RejectDueToHoldback() {
+  CHECK(!IsDropped());
+
+  // If DevTools is opened, holdbacks are force-disabled. So, we don't need to
+  // report this case to DevTools.
+
+  Drop();
+}
+
 void PrerenderHostBuilder::RejectAsDuplicate() {
   CHECK(!IsDropped());
 
@@ -398,17 +414,12 @@ void PrerenderHostBuilder::RejectAsDuplicate() {
   Drop();
 }
 
-void PrerenderHostBuilder::RejectDueToHoldback() {
-  CHECK(!IsDropped());
-
-  if (attempt_) {
-    attempt_->SetHoldbackStatus(PreloadingHoldbackStatus::kHoldback);
+void PrerenderHostBuilder::SetHoldbackOverride(
+    PreloadingHoldbackStatus status) {
+  if (!attempt_) {
+    return;
   }
-
-  // If DevTools is opened, holdbacks are force-disabled. So, we don't need to
-  // report this case to DevTools.
-
-  Drop();
+  attempt_->SetHoldbackStatus(status);
 }
 
 void PrerenderHostBuilder::RejectAsFailure(
@@ -439,6 +450,27 @@ void PrerenderHostBuilder::RejectAsFailure(
 BASE_FEATURE(kPrerender2IgnoreFailureOnMemoryFootprintQuery,
              "Prerender2IgnoreFailureOnMemoryFootprintQuery",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Kill-switch controlled by the field trial. When this feature is enabled,
+// PrerenderHostRegistry doesn't query about the current memory footprint and
+// bypasses the memory limit check, while it still checks the limit on the
+// number of ongoing prerendering requests and memory pressure events to prevent
+// excessive memory usage. See https://crbug.com/1382697 for details.
+BASE_FEATURE(kPrerender2BypassMemoryLimitCheck,
+             "Prerender2BypassMemoryLimitCheck",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables to introduce the new limit and scheduler for prerender triggers.
+// See crbug.com/1464021 for more details.
+BASE_FEATURE(kPrerender2NewLimitAndScheduler,
+             "Prerender2NewLimitAndScheduler",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const char kMaxNumOfRunningSpeculationRulesEagerPrerenders[] =
+    "max_num_of_running_speculation_rules_eager_prerenders";
+const char kMaxNumOfRunningSpeculationRulesNonEagerPrerenders[] =
+    "max_num_of_running_speculation_rules_non_eager_prerenders";
+const char kMaxNumOfRunningEmbedderPrerenders[] =
+    "max_num_of_running_embedder_prerenders";
 
 PrerenderHostRegistry::PrerenderHostRegistry(WebContents& web_contents)
     : memory_pressure_listener_(
@@ -618,19 +650,30 @@ int PrerenderHostRegistry::CreateAndStartHost(
     if (attempt)
       attempt->SetEligibility(PreloadingEligibility::kEligible);
 
-    // Check for the HoldbackStatus after checking the eligibility.
-    // Override Prerender2Holdback for speculation rules when DevTools is
-    // opened to mitigate the cases in which developers are affected by
-    // kPrerender2Holdback.
-    bool should_prerender2holdback_be_overridden =
+    // Normally CheckIfShouldHoldback() computes the holdback status based on
+    // PreloadingConfig. In special cases, we call SetHoldbackOverride() to
+    // override that processing.
+    bool has_devtools_open =
         initiator_rfh &&
         RenderFrameDevToolsAgentHost::GetFor(initiator_rfh) != nullptr;
-    if (!should_prerender2holdback_be_overridden &&
-        base::FeatureList::IsEnabled(features::kPrerender2Holdback)) {
+
+    if (has_devtools_open) {
+      // Never holdback when DevTools is opened, to avoid web developer
+      // frustration.
+      builder.SetHoldbackOverride(PreloadingHoldbackStatus::kAllowed);
+    } else if (attributes.holdback_status_override !=
+               PreloadingHoldbackStatus::kUnspecified) {
+      // The caller (e.g. from chrome/) is allowed to specify a holdback that
+      // overrides the default logic.
+      builder.SetHoldbackOverride(attributes.holdback_status_override);
+    }
+
+    // Check if the attempt is held back either due to the check above or via
+    // PreloadingConfig.
+    if (builder.CheckIfShouldHoldback()) {
       builder.RejectDueToHoldback();
       return RenderFrameHost::kNoFrameTreeNodeId;
     }
-    builder.SetHoldbackAllowed();
 
     // Ignore prerendering requests for the same URL.
     for (auto& iter : prerender_host_by_frame_tree_node_id_) {
@@ -643,7 +686,8 @@ int PrerenderHostRegistry::CreateAndStartHost(
     // TODO(crbug.com/1355151): Enqueue the request exceeding the number limit
     // until the forerunners are cancelled, and suspend starting a new prerender
     // when the number reaches the limit.
-    if (!IsAllowedToStartPrerenderingForTrigger(attributes.trigger_type)) {
+    if (!IsAllowedToStartPrerenderingForTrigger(attributes.trigger_type,
+                                                attributes.eagerness)) {
       // The reason we don't consider limit exceeded as an ineligibility
       // reason is because we can't replicate the behavior in our other
       // experiment groups for analysis. To prevent this we set
@@ -1361,12 +1405,15 @@ void PrerenderHostRegistry::ResourceLoadComplete(
   }
 
   // Cancel the corresponding prerender if the resource load is blocked.
-  for (auto& iter : prerender_host_by_frame_tree_node_id_) {
+  for (auto& [host_id, host] : prerender_host_by_frame_tree_node_id_) {
     if (&render_frame_host->GetPage() !=
-        &iter.second->GetPrerenderedMainFrameHost()->GetPage()) {
+        &host->GetPrerenderedMainFrameHost()->GetPage()) {
       continue;
     }
-    CancelHost(iter.first, PrerenderFinalStatus::kBlockedByClient);
+    RecordBlockedByClientResourceType(resource_load_info.request_destination,
+                                      host->trigger_type(),
+                                      host->embedder_histogram_suffix());
+    CancelHost(host_id, PrerenderFinalStatus::kResourceLoadBlockedByClient);
     break;
   }
 }
@@ -1403,14 +1450,6 @@ int PrerenderHostRegistry::FindHostToActivateInternal(
   if (navigation_request.IsInPrerenderedMainFrame())
     return RenderFrameHost::kNoFrameTreeNodeId;
 
-  // Disallow activation when other auxiliary browsing contexts (e.g., pop-up
-  // windows) exist in the same browsing context group. This is because these
-  // browsing contexts should be able to script each other, but prerendered
-  // pages are created in new browsing context groups.
-  SiteInstance* site_instance = render_frame_host->GetSiteInstance();
-  if (site_instance->GetRelatedActiveContentsCount() != 1u)
-    return RenderFrameHost::kNoFrameTreeNodeId;
-
   // Find an available host for the navigation URL.
   PrerenderHost* host = nullptr;
   for (const auto& [host_id, it_prerender_host] :
@@ -1422,6 +1461,17 @@ int PrerenderHostRegistry::FindHostToActivateInternal(
   }
   if (!host)
     return RenderFrameHost::kNoFrameTreeNodeId;
+
+  // Disallow activation when other auxiliary browsing contexts (e.g., pop-up
+  // windows) exist in the same browsing context group. This is because these
+  // browsing contexts should be able to script each other, but prerendered
+  // pages are created in new browsing context groups.
+  SiteInstance* site_instance = render_frame_host->GetSiteInstance();
+  if (site_instance->GetRelatedActiveContentsCount() != 1u) {
+    CancelHost(host->frame_tree_node_id(),
+               PrerenderFinalStatus::kActivatedWithAuxiliaryBrowsingContexts);
+    return RenderFrameHost::kNoFrameTreeNodeId;
+  }
 
   // TODO(crbug.com/1399709): Remove the restriction after further investigation
   // and discussion.
@@ -1531,37 +1581,105 @@ const std::string& PrerenderHostRegistry::GetPrerenderEmbedderHistogramSuffix(
   return prerender_host->embedder_histogram_suffix();
 }
 
-bool PrerenderHostRegistry::IsAllowedToStartPrerenderingForTrigger(
-    PrerenderTriggerType trigger_type) {
-  int trigger_type_count = 0;
-  for (const auto& host_by_id : prerender_host_by_frame_tree_node_id_) {
-    if (host_by_id.second->trigger_type() == trigger_type)
-      ++trigger_type_count;
-  }
-  // TODO(crbug.com/1350676): Make this function care about
-  // `prerender_new_tab_handle_by_frame_tree_node_id_` as well.
+PrerenderHostRegistry::PrerenderLimitGroup
+PrerenderHostRegistry::GetPrerenderLimitGroup(
+    PrerenderTriggerType trigger_type,
+    absl::optional<blink::mojom::SpeculationEagerness> eagerness) {
+  CHECK(base::FeatureList::IsEnabled(kPrerender2NewLimitAndScheduler));
 
   switch (trigger_type) {
     case PrerenderTriggerType::kSpeculationRule:
     case PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld:
-      // The number of prerenders triggered by speculation rules is limited to a
-      // Finch config param.
+      CHECK(eagerness.has_value());
+      switch (eagerness.value()) {
+        // Separate the limits of speculation rules into two categories: eager,
+        // which are triggered immediately after adding the rule, and
+        // non-eager(moderate, conservative), which wait for a specific user
+        // action to trigger, aiming to apply the appropriate corresponding
+        // limits for these attributes.
+        case blink::mojom::SpeculationEagerness::kEager:
+          return PrerenderLimitGroup::kSpeculationRulesEager;
+        case blink::mojom::SpeculationEagerness::kModerate:
+        case blink::mojom::SpeculationEagerness::kConservative:
+          return PrerenderLimitGroup::kSpeculationRulesNonEager;
+      }
+    case PrerenderTriggerType::kEmbedder:
+      return PrerenderLimitGroup::kEmbedder;
+  }
+}
+
+bool PrerenderHostRegistry::IsAllowedToStartPrerenderingForTrigger(
+    PrerenderTriggerType trigger_type,
+    absl::optional<blink::mojom::SpeculationEagerness> eagerness) {
+  int trigger_type_count = 0;
+
+  PrerenderLimitGroup limit_group;
+  if (base::FeatureList::IsEnabled(kPrerender2NewLimitAndScheduler)) {
+    limit_group = GetPrerenderLimitGroup(trigger_type, eagerness);
+  }
+
+  for (const auto& [_, host] : prerender_host_by_frame_tree_node_id_) {
+    if (base::FeatureList::IsEnabled(kPrerender2NewLimitAndScheduler)) {
+      if (GetPrerenderLimitGroup(host->trigger_type(), host->eagerness()) ==
+          limit_group) {
+        ++trigger_type_count;
+      }
+    } else {
+      if (host->trigger_type() == trigger_type) {
+        ++trigger_type_count;
+      }
+    }
+  }
+  // TODO(crbug.com/1350676): Make this function care about
+  // `prerender_new_tab_handle_by_frame_tree_node_id_` as well.
+
+  if (base::FeatureList::IsEnabled(kPrerender2NewLimitAndScheduler)) {
+    // Apply the limit of maximum number of running prerenders per
+    // PrerenderLimitGroup.
+    switch (limit_group) {
+      case PrerenderLimitGroup::kSpeculationRulesEager:
+        return trigger_type_count <
+               base::GetFieldTrialParamByFeatureAsInt(
+                   kPrerender2NewLimitAndScheduler,
+                   kMaxNumOfRunningSpeculationRulesEagerPrerenders, 10);
+      case PrerenderLimitGroup::kSpeculationRulesNonEager:
+        return trigger_type_count <
+               base::GetFieldTrialParamByFeatureAsInt(
+                   kPrerender2NewLimitAndScheduler,
+                   kMaxNumOfRunningSpeculationRulesNonEagerPrerenders, 2);
+      case PrerenderLimitGroup::kEmbedder:
+        return trigger_type_count < base::GetFieldTrialParamByFeatureAsInt(
+                                        kPrerender2NewLimitAndScheduler,
+                                        kMaxNumOfRunningEmbedderPrerenders, 2);
+    }
+  }
+  switch (trigger_type) {
+    case PrerenderTriggerType::kSpeculationRule:
+    case PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld:
+      // The number of prerenders triggered by speculation rules is limited to
+      // a Finch config param.
       return trigger_type_count <
              base::GetFieldTrialParamByFeatureAsInt(
                  blink::features::kPrerender2,
                  blink::features::kPrerender2MaxNumOfRunningSpeculationRules,
                  10);
     case PrerenderTriggerType::kEmbedder:
-      // Currently the number of prerenders triggered by an embedder is limited
-      // to two.
+      // Currently the number of prerenders triggered by an embedder is
+      // limited to two.
       return trigger_type_count < 2;
   }
 }
 
 void PrerenderHostRegistry::DestroyWhenUsingExcessiveMemory(
     int frame_tree_node_id) {
-  if (!base::FeatureList::IsEnabled(blink::features::kPrerender2MemoryControls))
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kPrerender2MemoryControls)) {
     return;
+  }
+
+  if (base::FeatureList::IsEnabled(kPrerender2BypassMemoryLimitCheck)) {
+    return;
+  }
 
   // Override the memory restriction when the DevTools is open.
   if (IsDevToolsOpen(*web_contents())) {

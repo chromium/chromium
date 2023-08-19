@@ -53,11 +53,10 @@ const char WasInProgressData::kKey[] =
 
 }  // anonymous namespace
 
-DownloadStatusUpdater::DownloadStatusUpdater() {
-}
-
-DownloadStatusUpdater::~DownloadStatusUpdater() {
-}
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+DownloadStatusUpdater::DownloadStatusUpdater() = default;
+DownloadStatusUpdater::~DownloadStatusUpdater() = default;
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 bool DownloadStatusUpdater::GetProgress(float* progress,
                                         int* download_count) const {

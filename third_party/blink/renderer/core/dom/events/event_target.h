@@ -32,8 +32,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_EVENTS_EVENT_TARGET_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_EVENTS_EVENT_TARGET_H_
 
-#include <memory>
-
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_result.h"
@@ -61,22 +59,43 @@ class V8EventListener;
 class V8UnionAddEventListenerOptionsOrBoolean;
 class V8UnionBooleanOrEventListenerOptions;
 
-struct FiringEventIterator {
-  DISALLOW_NEW();
-  FiringEventIterator(const AtomicString& event_type,
-                      wtf_size_t& iterator,
-                      wtf_size_t& end)
-      : event_type(event_type), iterator(iterator), end(end) {}
+// Macros to define an attribute event listener.
+//  |lower_name| - Lower-cased event type name.  e.g. |focus|
+//  |symbol_name| - C++ symbol name in event_type_names namespace. e.g. |kFocus|
+// FIXME: These macros should be split into separate DEFINE and DECLARE
+// macros to avoid causing so many header includes.
 
-  const AtomicString& event_type;
-  wtf_size_t& iterator;
-  wtf_size_t& end;
-};
-using FiringEventIteratorVector = Vector<FiringEventIterator, 1>;
+#define DEFINE_ATTRIBUTE_EVENT_LISTENER(lower_name, symbol_name)        \
+  EventListener* on##lower_name() {                                     \
+    return GetAttributeEventListener(event_type_names::symbol_name);    \
+  }                                                                     \
+  void setOn##lower_name(EventListener* listener) {                     \
+    SetAttributeEventListener(event_type_names::symbol_name, listener); \
+  }
 
-class CORE_EXPORT EventTargetData final {
-  DISALLOW_NEW();
+#define DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(lower_name, symbol_name)  \
+  static EventListener* on##lower_name(EventTarget& eventTarget) {       \
+    return eventTarget.GetAttributeEventListener(                        \
+        event_type_names::symbol_name);                                  \
+  }                                                                      \
+  static void setOn##lower_name(EventTarget& eventTarget,                \
+                                EventListener* listener) {               \
+    eventTarget.SetAttributeEventListener(event_type_names::symbol_name, \
+                                          listener);                     \
+  }
 
+#define DEFINE_WINDOW_ATTRIBUTE_EVENT_LISTENER(lower_name, symbol_name)        \
+  EventListener* on##lower_name() {                                            \
+    return GetDocumentForWindowEventHandler().GetWindowAttributeEventListener( \
+        event_type_names::symbol_name);                                        \
+  }                                                                            \
+  void setOn##lower_name(EventListener* listener) {                            \
+    GetDocumentForWindowEventHandler().SetWindowAttributeEventListener(        \
+        event_type_names::symbol_name, listener);                              \
+  }
+
+class CORE_EXPORT EventTargetData final
+    : public GarbageCollected<EventTargetData> {
  public:
   EventTargetData();
   EventTargetData(const EventTargetData&) = delete;
@@ -86,7 +105,6 @@ class CORE_EXPORT EventTargetData final {
   void Trace(Visitor*) const;
 
   EventListenerMap event_listener_map;
-  std::unique_ptr<FiringEventIteratorVector> firing_event_iterators;
 };
 
 // All DOM event targets extend EventTarget. The spec is defined here:
@@ -99,11 +117,9 @@ class CORE_EXPORT EventTargetData final {
 
 // To make your class an EventTarget, follow these steps:
 // - Make your IDL interface inherit from EventTarget.
-// - Inherit from EventTargetWithInlineData (only in rare cases should you
-//   use EventTarget directly).
-// - In your class declaration, EventTargetWithInlineData must come first in
-//   the base class list. If your class is non-final, classes inheriting from
-//   your class need to come first, too.
+// - In your class declaration, EventTarget must come first in the base class
+//   list. If your class is non-final, your class must be the first base class
+//   for any derived classes as well.
 // - If you added an onfoo attribute, use DEFINE_ATTRIBUTE_EVENT_LISTENER(foo)
 //   in your class declaration. Add "attribute EventHandler onfoo;" to the IDL
 //   file.
@@ -112,8 +128,6 @@ class CORE_EXPORT EventTargetData final {
 //   return ExecutionContextLifecycleObserver::executionContext (if you are an
 //   ExecutionContextLifecycleObserver)
 //   or the document you're in.
-// - Your trace() method will need to call EventTargetWithInlineData::trace
-//   depending on the base class of your class.
 class CORE_EXPORT EventTarget : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -195,6 +209,119 @@ class CORE_EXPORT EventTarget : public ScriptWrappable {
   // window.document.body.
   bool IsTopLevelNode();
 
+  EventTargetData* GetEventTargetData();
+
+  // GlobalEventHandlers:
+  // These event listener helpers are defined internally for all EventTargets,
+  // but they will only actually be web-exposed for interfaces that include
+  // GlobalEventHandlers as a mixin in the idl.
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(abort, kAbort)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(animationend, kAnimationend)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(animationiteration, kAnimationiteration)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(animationstart, kAnimationstart)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(auxclick, kAuxclick)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(beforeinput, kBeforeinput)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(beforematch, kBeforematch)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(beforetoggle, kBeforetoggle)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(blur, kBlur)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(cancel, kCancel)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(canplay, kCanplay)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(canplaythrough, kCanplaythrough)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(change, kChange)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(click, kClick)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(close, kClose)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(contentvisibilityautostatechange,
+                                  kContentvisibilityautostatechange)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(contextmenu, kContextmenu)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(contextlost, kContextlost)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(contextrestored, kContextrestored)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(cuechange, kCuechange)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(dblclick, kDblclick)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(drag, kDrag)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(dragend, kDragend)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(dragenter, kDragenter)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(dragleave, kDragleave)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(dragover, kDragover)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(dragstart, kDragstart)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(drop, kDrop)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(durationchange, kDurationchange)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(emptied, kEmptied)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(ended, kEnded)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(error, kError)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(focus, kFocus)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(formdata, kFormdata)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(gotpointercapture, kGotpointercapture)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(input, kInput)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(invalid, kInvalid)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(keydown, kKeydown)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(keypress, kKeypress)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(keyup, kKeyup)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(load, kLoad)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(loadeddata, kLoadeddata)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(loadedmetadata, kLoadedmetadata)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(loadstart, kLoadstart)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(lostpointercapture, kLostpointercapture)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(mousedown, kMousedown)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(mouseenter, kMouseenter)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(mouseleave, kMouseleave)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(mousemove, kMousemove)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(mouseout, kMouseout)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(mouseover, kMouseover)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(mouseup, kMouseup)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(mousewheel, kMousewheel)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(overscroll, kOverscroll)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(pause, kPause)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(play, kPlay)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(playing, kPlaying)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(pointercancel, kPointercancel)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(pointerdown, kPointerdown)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(pointerenter, kPointerenter)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(pointerleave, kPointerleave)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(pointermove, kPointermove)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(pointerout, kPointerout)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(pointerover, kPointerover)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(pointerrawupdate, kPointerrawupdate)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(pointerup, kPointerup)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(popoverhide, kPopoverhide)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(popovershow, kPopovershow)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(progress, kProgress)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(ratechange, kRatechange)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(reset, kReset)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(resize, kResize)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(scroll, kScroll)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(scrollend, kScrollend)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(securitypolicyviolation,
+                                  kSecuritypolicyviolation)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(seeked, kSeeked)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(seeking, kSeeking)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(select, kSelect)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(selectionchange, kSelectionchange)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(selectstart, kSelectstart)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(slotchange, kSlotchange)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(stalled, kStalled)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(submit, kSubmit)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(suspend, kSuspend)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(timeupdate, kTimeupdate)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(toggle, kToggle)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(touchcancel, kTouchcancel)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(touchend, kTouchend)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(touchmove, kTouchmove)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(touchstart, kTouchstart)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(transitioncancel, kTransitioncancel)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(transitionend, kTransitionend)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(transitionrun, kTransitionrun)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(transitionstart, kTransitionstart)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(volumechange, kVolumechange)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(waiting, kWaiting)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(webkitanimationend, kWebkitAnimationEnd)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(webkitanimationiteration,
+                                  kWebkitAnimationIteration)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(webkitanimationstart, kWebkitAnimationStart)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(webkittransitionend, kWebkitTransitionEnd)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(wheel, kWheel)
+
+  void Trace(Visitor*) const override;
+
  protected:
   EventTarget();
 
@@ -216,10 +343,7 @@ class CORE_EXPORT EventTarget : public ScriptWrappable {
 
   virtual DispatchEventResult DispatchEventInternal(Event&);
 
-  // Subclasses should likely not override these themselves; instead, they
-  // should subclass EventTargetWithInlineData.
-  virtual EventTargetData* GetEventTargetData() = 0;
-  virtual EventTargetData& EnsureEventTargetData() = 0;
+  EventTargetData& EnsureEventTargetData();
 
  private:
   LocalDOMWindow* ExecutingWindow();
@@ -230,65 +354,22 @@ class CORE_EXPORT EventTarget : public ScriptWrappable {
   RegisteredEventListener* GetAttributeRegisteredEventListener(
       const AtomicString& event_type);
 
-  bool FireEventListeners(Event&, EventTargetData*, EventListenerVector&);
+  // Fire event listeners. This method makes a copy of the `EventListenerVector`
+  // on invocation to match the HTML spec. Do not try to optimize it away.
+  // The spec snapshots the array at the beginning of a dispatch so that
+  // listeners adding or removing other event listeners during dispatch is
+  // done in a consistent way.
+  bool FireEventListeners(Event&, EventTargetData*, EventListenerVector);
   void CountLegacyEvents(const AtomicString& legacy_type_name,
                          EventListenerVector*,
                          EventListenerVector*);
 
   void DispatchEnqueuedEvent(Event*, ExecutionContext*);
 
+  Member<EventTargetData> data_;
+
   friend class EventListenerIterator;
 };
-
-// Provide EventTarget with inlined EventTargetData for improved performance.
-class CORE_EXPORT EventTargetWithInlineData : public EventTarget {
- public:
-  ~EventTargetWithInlineData() override = default;
-
-  void Trace(Visitor* visitor) const override;
-
- protected:
-  EventTargetData* GetEventTargetData() final { return &data_; }
-  EventTargetData& EnsureEventTargetData() final { return data_; }
-
- private:
-  EventTargetData data_;
-};
-
-// Macros to define an attribute event listener.
-//  |lower_name| - Lower-cased event type name.  e.g. |focus|
-//  |symbol_name| - C++ symbol name in event_type_names namespace. e.g. |kFocus|
-// FIXME: These macros should be split into separate DEFINE and DECLARE
-// macros to avoid causing so many header includes.
-
-#define DEFINE_ATTRIBUTE_EVENT_LISTENER(lower_name, symbol_name)        \
-  EventListener* on##lower_name() {                                     \
-    return GetAttributeEventListener(event_type_names::symbol_name);    \
-  }                                                                     \
-  void setOn##lower_name(EventListener* listener) {                     \
-    SetAttributeEventListener(event_type_names::symbol_name, listener); \
-  }
-
-#define DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(lower_name, symbol_name)  \
-  static EventListener* on##lower_name(EventTarget& eventTarget) {       \
-    return eventTarget.GetAttributeEventListener(                        \
-        event_type_names::symbol_name);                                  \
-  }                                                                      \
-  static void setOn##lower_name(EventTarget& eventTarget,                \
-                                EventListener* listener) {               \
-    eventTarget.SetAttributeEventListener(event_type_names::symbol_name, \
-                                          listener);                     \
-  }
-
-#define DEFINE_WINDOW_ATTRIBUTE_EVENT_LISTENER(lower_name, symbol_name)        \
-  EventListener* on##lower_name() {                                            \
-    return GetDocumentForWindowEventHandler().GetWindowAttributeEventListener( \
-        event_type_names::symbol_name);                                        \
-  }                                                                            \
-  void setOn##lower_name(EventListener* listener) {                            \
-    GetDocumentForWindowEventHandler().SetWindowAttributeEventListener(        \
-        event_type_names::symbol_name, listener);                              \
-  }
 
 DISABLE_CFI_PERF
 inline bool EventTarget::HasEventListeners() const {

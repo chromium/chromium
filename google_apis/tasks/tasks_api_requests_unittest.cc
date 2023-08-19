@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
@@ -133,8 +134,7 @@ TEST_F(TasksApiRequestsTest, ListTaskListsRequestHandlesError) {
   request_sender()->StartRequestWithAuthRetry(std::move(request));
   ASSERT_TRUE(future.Wait());
 
-  ASSERT_FALSE(future.Get().has_value());
-  EXPECT_EQ(future.Get().error(), HTTP_NOT_FOUND);
+  EXPECT_THAT(future.Get(), base::test::ErrorIs(HTTP_NOT_FOUND));
 }
 
 TEST_F(TasksApiRequestsTest, ListTasksRequest) {
@@ -188,8 +188,7 @@ TEST_F(TasksApiRequestsTest, ListTasksRequestHandlesError) {
   request_sender()->StartRequestWithAuthRetry(std::move(request));
   ASSERT_TRUE(future.Wait());
 
-  ASSERT_FALSE(future.Get().has_value());
-  EXPECT_EQ(future.Get().error(), HTTP_NOT_FOUND);
+  EXPECT_THAT(future.Get(), base::test::ErrorIs(HTTP_NOT_FOUND));
 }
 
 TEST_F(TasksApiRequestsTest, PatchTaskRequest) {

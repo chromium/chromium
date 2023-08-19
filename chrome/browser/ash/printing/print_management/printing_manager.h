@@ -131,7 +131,8 @@ class PrintingManager : public chromeos::printing::printing_manager::mojom::
 
   // Not owned, this is the intermediate layer to interact with the print
   // job local database.
-  raw_ptr<PrintJobHistoryService, ExperimentalAsh> print_job_history_service_;
+  raw_ptr<PrintJobHistoryService, DanglingUntriaged | ExperimentalAsh>
+      print_job_history_service_;
 
   // Not owned, this provides the necessary observers to observe when browser
   // history has been cleared.

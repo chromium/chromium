@@ -14,15 +14,6 @@ LayoutNGMathMLBlock::LayoutNGMathMLBlock(Element* element)
     : LayoutNGMixin<LayoutBlock>(element) {
 }
 
-void LayoutNGMathMLBlock::UpdateBlockLayout() {
-  if (IsOutOfFlowPositioned()) {
-    UpdateOutOfFlowBlockLayout();
-    return;
-  }
-
-  UpdateInFlowBlockLayout();
-}
-
 bool LayoutNGMathMLBlock::IsOfType(LayoutObjectType type) const {
   return type == kLayoutObjectMathML ||
          (type == kLayoutObjectMathMLRoot && GetNode() &&

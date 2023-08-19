@@ -18,7 +18,6 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "base/values.h"
-#include "components/aggregation_service/aggregation_service.mojom.h"
 #include "content/browser/aggregation_service/public_key.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
@@ -41,13 +40,14 @@ struct CONTENT_EXPORT AggregationServicePayloadContents {
     kHistogram,
   };
 
+  // The default aggregation coordinator origin will be used if
+  // `aggregation_coordinator_origin` is `absl::nullopt`.
   AggregationServicePayloadContents(
       Operation operation,
       std::vector<blink::mojom::AggregatableReportHistogramContribution>
           contributions,
       blink::mojom::AggregationServiceMode aggregation_mode,
-      ::aggregation_service::mojom::AggregationCoordinator
-          aggregation_coordinator);
+      absl::optional<url::Origin> aggregation_coordinator_origin);
 
   AggregationServicePayloadContents(
       const AggregationServicePayloadContents& other);
@@ -62,7 +62,7 @@ struct CONTENT_EXPORT AggregationServicePayloadContents {
   std::vector<blink::mojom::AggregatableReportHistogramContribution>
       contributions;
   blink::mojom::AggregationServiceMode aggregation_mode;
-  ::aggregation_service::mojom::AggregationCoordinator aggregation_coordinator;
+  absl::optional<url::Origin> aggregation_coordinator_origin;
 };
 
 // Represents the information that will be provided to both the reporting
@@ -186,12 +186,12 @@ class CONTENT_EXPORT AggregatableReport {
   static constexpr base::StringPiece kDomainSeparationPrefix =
       "aggregation_service";
 
-  AggregatableReport(std::vector<AggregationServicePayload> payloads,
-                     std::string shared_info,
-                     absl::optional<uint64_t> debug_key,
-                     base::flat_map<std::string, std::string> additional_fields,
-                     ::aggregation_service::mojom::AggregationCoordinator
-                         aggregation_coordinator);
+  AggregatableReport(
+      std::vector<AggregationServicePayload> payloads,
+      std::string shared_info,
+      absl::optional<uint64_t> debug_key,
+      base::flat_map<std::string, std::string> additional_fields,
+      absl::optional<url::Origin> aggregation_coordinator_origin);
   AggregatableReport(const AggregatableReport& other);
   AggregatableReport& operator=(const AggregatableReport& other);
   AggregatableReport(AggregatableReport&& other);
@@ -206,9 +206,8 @@ class CONTENT_EXPORT AggregatableReport {
   const base::flat_map<std::string, std::string>& additional_fields() const {
     return additional_fields_;
   }
-  ::aggregation_service::mojom::AggregationCoordinator aggregation_coordinator()
-      const {
-    return aggregation_coordinator_;
+  const absl::optional<url::Origin>& aggregation_coordinator_origin() const {
+    return aggregation_coordinator_origin_;
   }
 
   // Returns the JSON representation of this report of the form
@@ -274,7 +273,7 @@ class CONTENT_EXPORT AggregatableReport {
 
   base::flat_map<std::string, std::string> additional_fields_;
 
-  ::aggregation_service::mojom::AggregationCoordinator aggregation_coordinator_;
+  absl::optional<url::Origin> aggregation_coordinator_origin_;
 };
 
 // Represents a request for an AggregatableReport. Contains all the data

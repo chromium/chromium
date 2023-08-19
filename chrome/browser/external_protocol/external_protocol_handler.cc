@@ -10,6 +10,7 @@
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/escape.h"
@@ -86,8 +87,19 @@ constexpr const char* kDeniedSchemes[] = {
     "vnd.ms.radio",
 };
 
+// Additional entries should not be added to this list. The BlockStateMetric
+// assumees that the only default-allowed scheme is mailto.
+// TODO(rsesek): Remove this list once PromptForExternalNewsSchemes is
+// launched.
 constexpr const char* kAllowedSchemes[] = {
-    "mailto", "news", "snews",
+    "mailto",
+};
+
+// These schemes are considered part of `kAllowedSchemes` when the
+// PromptForExternalNewsSchemes feature is disabled.
+constexpr const char* kNewsSchemes[] = {
+    "news",
+    "snews",
 };
 
 void AddMessageToConsole(const content::WeakDocumentPtr& document,
@@ -304,6 +316,15 @@ bool IsSchemeOriginPairAllowedByPolicy(const std::string& scheme,
 
 }  // namespace
 
+// Treat the news: and snews: schemes as arbitrary, non-default schemes. This
+// means if a handler is present for those, the external protocol handler
+// dialog will be shown.
+BASE_FEATURE(kPromptForExternalNewsSchemes,
+             "PromptForExternalNewsSchemes",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+const char ExternalProtocolHandler::kBlockStateMetric[] =
+    "BrowserDialogs.ExternalProtocol.BlockState";
 const char ExternalProtocolHandler::kHandleStateMetric[] =
     "BrowserDialogs.ExternalProtocol.HandleState";
 
@@ -337,21 +358,41 @@ ExternalProtocolHandler::BlockState ExternalProtocolHandler::GetBlockState(
   }
 
   // Always block the hard-coded denied schemes.
-  for (size_t i = 0; i < std::size(kDeniedSchemes); ++i) {
-    if (kDeniedSchemes[i] == scheme)
+  for (const auto* candidate : kDeniedSchemes) {
+    if (candidate == scheme) {
+      base::UmaHistogramEnumeration(kBlockStateMetric,
+                                    BlockStateMetric::kDeniedDefault);
       return BLOCK;
+    }
   }
 
   // Always allow the hard-coded allowed schemes.
-  for (size_t i = 0; i < std::size(kAllowedSchemes); ++i) {
-    if (kAllowedSchemes[i] == scheme)
+  for (const auto* candidate : kAllowedSchemes) {
+    if (candidate == scheme) {
+      base::UmaHistogramEnumeration(kBlockStateMetric,
+                                    BlockStateMetric::kAllowedDefaultMail);
       return DONT_BLOCK;
+    }
+  }
+  for (const auto* candidate : kNewsSchemes) {
+    if (candidate == scheme) {
+      if (base::FeatureList::IsEnabled(kPromptForExternalNewsSchemes)) {
+        base::UmaHistogramEnumeration(kBlockStateMetric,
+                                      BlockStateMetric::kNewsNotDefault);
+      } else {
+        base::UmaHistogramEnumeration(kBlockStateMetric,
+                                      BlockStateMetric::kAllowedDefaultNews);
+        return DONT_BLOCK;
+      }
+    }
   }
 
   PrefService* profile_prefs = profile->GetPrefs();
   if (profile_prefs) {  // May be NULL during testing.
     if (IsSchemeOriginPairAllowedByPolicy(scheme, initiating_origin,
                                           profile_prefs)) {
+      base::UmaHistogramEnumeration(
+          kBlockStateMetric, BlockStateMetric::kAllowedByEnterprisePolicy);
       return DONT_BLOCK;
     }
 
@@ -366,12 +407,16 @@ ExternalProtocolHandler::BlockState ExternalProtocolHandler::GetBlockState(
       if (allowed_protocols_for_origin) {
         absl::optional<bool> allow =
             allowed_protocols_for_origin->FindBool(scheme);
-        if (allow.has_value() && allow.value())
+        if (allow.has_value() && allow.value()) {
+          base::UmaHistogramEnumeration(kBlockStateMetric,
+                                        BlockStateMetric::kAllowedByPreference);
           return DONT_BLOCK;
+        }
       }
     }
   }
 
+  base::UmaHistogramEnumeration(kBlockStateMetric, BlockStateMetric::kPrompt);
   return UNKNOWN;
 }
 

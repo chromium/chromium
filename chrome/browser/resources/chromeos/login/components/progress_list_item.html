@@ -37,13 +37,25 @@ Attributes and properties:
     width: 8px;
   }
 
+  :host-context(.jelly-enabled) #icon-pending {
+    background-color: var(--cros-sys-on_surface);
+  }
+
   #icon-active {
     height: 24px;
     width: 24px;
   }
 
+  :host-context(.jelly-enabled) #icon-active {
+    --paper-spinner-color: var(--cros-sys-primary);
+  }
+
   #icon-completed {
     color: var(--cros-icon-color-blue);
+  }
+
+  :host-context(.jelly-enabled) #icon-completed {
+    color: var(--cros-sys-primary);
   }
 
   #text {
@@ -53,8 +65,20 @@ Attributes and properties:
     line-height: 16px;
   }
 
+  :host-context(.jelly-enabled) #text {
+    color: var(--cros-sys-on_surface_variant);
+    font-family: var(--cros-button-1-font-family);
+    font-size: var(--cros-button-1-font-size);
+    font-weight: var(--cros-button-1-font-weight);
+    line-height: var(--cros-button-1-line-height);
+  }
+
   #text-active {
     color: var(--cros-text-color-primary);
+  }
+
+  :host-context(.jelly-enabled) #text-active {
+    color: var(--cros-sys-on_surface);
   }
 </style>
 

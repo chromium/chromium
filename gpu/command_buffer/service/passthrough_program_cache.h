@@ -105,6 +105,10 @@ class GPU_GLES2_EXPORT PassthroughProgramCache : public ProgramCache {
   bool CacheEnabled() const;
 
   const ProgramCacheValue* Get(const Key& key);
+  EGLsizeiANDROID BlobCacheGetImpl(const void* key,
+                                   EGLsizeiANDROID key_size,
+                                   void* value,
+                                   EGLsizeiANDROID value_size);
 
   friend class ProgramCacheValue;
 

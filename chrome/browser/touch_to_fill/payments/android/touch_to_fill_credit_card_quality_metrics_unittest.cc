@@ -124,9 +124,9 @@ TEST_P(TouchToFillForCreditCardsTest,
   FormData form = CreateForm(GetFields(test_case.field_types));
 
   SeeForm(form);
-  autofill_manager().OnAskForValuesToFillTest(form, form.fields[0], {},
-                                              AutoselectFirstSuggestion(false),
-                                              FormElementWasClicked(true));
+  autofill_manager().OnAskForValuesToFillTest(
+      form, form.fields[0], {},
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
 
   base::HistogramTester histogram_tester;
   // Simulate user selection in the payments bottom sheet.

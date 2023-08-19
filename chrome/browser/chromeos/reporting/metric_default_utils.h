@@ -17,6 +17,10 @@ constexpr base::TimeDelta kDefaultAppUsageTelemetryCollectionRate =
 constexpr base::TimeDelta kDefaultAudioTelemetryCollectionRate =
     base::Minutes(15);
 
+// Default runtime counters telemetry collection rate.
+constexpr base::TimeDelta kDefaultRuntimeCountersTelemetryCollectionRate =
+    base::Days(1);
+
 // Default metric collection rate used for testing purposes.
 constexpr base::TimeDelta kDefaultCollectionRateForTesting = base::Minutes(2);
 
@@ -42,6 +46,10 @@ constexpr base::TimeDelta kDefaultReportUploadFrequency = base::Hours(3);
 // Default record upload frequency used for testing purposes.
 constexpr base::TimeDelta kDefaultReportUploadFrequencyForTesting =
     base::Minutes(5);
+
+// Default website telemetry collection rate.
+constexpr base::TimeDelta kDefaultWebsiteTelemetryCollectionRate =
+    base::Minutes(15);
 
 // Initial metric reporting collection delay.
 constexpr base::TimeDelta kInitialCollectionDelay = base::Minutes(1);
@@ -77,11 +85,17 @@ constexpr bool kDeviceReportNetworkEventsDefaultValue = false;
 // Default value for reporting device peripheral status.
 constexpr bool kReportDevicePeripheralsDefaultValue = false;
 
+// Default value for reporting runtime counters.
+constexpr bool kDeviceReportRuntimeCountersDefaultValue = false;
+
 // Default value for reporting device graphics status.
 constexpr bool kReportDeviceGraphicsStatusDefaultValue = false;
 
 // Default value for reporting device app info and usage.
 constexpr bool kReportDeviceAppInfoDefaultValue = false;
+
+// Default value for reporting fatal crashes.
+constexpr bool kReportDeviceCrashReportInfoDefaultValue = false;
 
 // Returns the default report upload frequency for the current environment.
 const base::TimeDelta GetDefaultReportUploadFrequency();

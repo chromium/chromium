@@ -15,8 +15,7 @@ import androidx.annotation.Nullable;
  */
 public interface PageInsightsSurfaceScopeDependencyProvider {
     /** Returns the activity context hosting the surface. */
-    @Nullable
-    default Context getActivityContext() {
+    default @Nullable Context getActivityContext() {
         return null;
     }
 }

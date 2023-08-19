@@ -454,9 +454,6 @@ void AppsGridView::EndDragCallback(
     std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
   DCHECK(app_list_features::IsDragAndDropRefactorEnabled());
   output_drag_op = ui::mojom::DragOperation::kMove;
-  if (drag_view_) {
-    drag_view_->OnDragEnded();
-  }
   drag_image_layer_ = std::move(drag_image_layer_owner);
 
   EndDrag(/*cancel=*/false);
@@ -1128,11 +1125,6 @@ void AppsGridView::OnDragExited() {
     return;
   }
 
-  // TODO(b/261985897): Consider removing the direct call to OnDragEnded.
-  if (drag_view_) {
-    drag_view_->OnDragEnded();
-  }
-
   // When the drag and drop host is a folder apps grid, close the folder when
   // drag exits folder grid bounds.
   // TODO(b/261985897): Add timer to close folder bounds.
@@ -1372,7 +1364,8 @@ AppListItemView* AppsGridView::MaybeSwapPlaceholderAsset(size_t index) {
   if (should_animate_placeholder_swap) {
     PulsingBlockView* placeholder =
         items_container_->AddChildView(std::make_unique<PulsingBlockView>(
-            app_list_config_->grid_icon_size(), base::TimeDelta()));
+            app_list_config_->grid_icon_size(), base::TimeDelta(),
+            app_list_config_->grid_icon_dimension() / 2.f));
     placeholder->SetBoundsRect(view->bounds());
     placeholder->SetPaintToLayer();
     view->EnsureLayer();
@@ -1412,7 +1405,8 @@ void AppsGridView::UpdatePulsingBlockViews() {
     base::TimeDelta time = GetPulsingBlockAnimationDelayForIndex(
         pulsing_blocks_model_.view_size());
     auto view = std::make_unique<PulsingBlockView>(
-        app_list_config_->grid_icon_size(), time);
+        app_list_config_->grid_icon_size(), time,
+        app_list_config_->grid_icon_dimension() / 2.f);
     pulsing_blocks_model_.Add(view.get(), pulsing_blocks_model_.view_size());
     items_container_->AddChildView(std::move(view));
   }

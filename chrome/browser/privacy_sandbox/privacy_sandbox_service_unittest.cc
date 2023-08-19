@@ -12,6 +12,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/to_vector.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -33,6 +34,8 @@
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/policy/policy_constants.h"
 #include "components/privacy_sandbox/mock_privacy_sandbox_settings.h"
+#include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
+#include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings_impl.h"
@@ -793,7 +796,7 @@ std::vector<int> GetTopicsSettingsStringIdentifiers(bool did_consent,
             IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_HEADING,
             IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_1,
             IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_2,
-            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_3,
+            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_3_CANONICAL,
             IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_HEADING,
             IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION_EMPTY,
             IDS_SETTINGS_TOPICS_PAGE_FOOTER_CANONICAL};
@@ -807,7 +810,7 @@ std::vector<int> GetTopicsSettingsStringIdentifiers(bool did_consent,
             IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_HEADING,
             IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_1,
             IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_2,
-            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_3,
+            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_3_CANONICAL,
             IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_HEADING,
             IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION,
             IDS_SETTINGS_TOPICS_PAGE_FOOTER_CANONICAL};
@@ -820,7 +823,7 @@ std::vector<int> GetTopicsSettingsStringIdentifiers(bool did_consent,
             IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_HEADING,
             IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_1,
             IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_2,
-            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_3,
+            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_3_CANONICAL,
             IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_HEADING,
             IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION,
             IDS_SETTINGS_TOPICS_PAGE_FOOTER_CANONICAL};
@@ -833,7 +836,7 @@ std::vector<int> GetTopicsSettingsStringIdentifiers(bool did_consent,
             IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_HEADING,
             IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_1,
             IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_2,
-            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_3,
+            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_3_CANONICAL,
             IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_HEADING,
             IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION_EMPTY,
             IDS_SETTINGS_TOPICS_PAGE_FOOTER_CANONICAL};
@@ -847,7 +850,7 @@ std::vector<int> GetTopicsSettingsStringIdentifiers(bool did_consent,
             IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_HEADING,
             IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_1,
             IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_2,
-            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_3,
+            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_3_CANONICAL,
             IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_HEADING,
             IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION,
             IDS_SETTINGS_TOPICS_PAGE_FOOTER_CANONICAL};
@@ -861,7 +864,7 @@ std::vector<int> GetTopicsSettingsStringIdentifiers(bool did_consent,
             IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_HEADING,
             IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_1,
             IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_2,
-            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_3,
+            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_3_CANONICAL,
             IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_HEADING,
             IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION_EMPTY,
             IDS_SETTINGS_TOPICS_PAGE_FOOTER_CANONICAL};
@@ -890,7 +893,9 @@ class PrivacySandboxServiceTest : public testing::Test {
  public:
   PrivacySandboxServiceTest()
       : browser_task_environment_(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        scoped_attestations_(
+            privacy_sandbox::PrivacySandboxAttestations::CreateForTesting()) {}
 
   void SetUp() override {
     InitializeFeaturesBeforeStart();
@@ -1018,6 +1023,7 @@ class PrivacySandboxServiceTest : public testing::Test {
 #endif
   std::unique_ptr<privacy_sandbox::PrivacySandboxSettings>
       privacy_sandbox_settings_;
+  privacy_sandbox::ScopedPrivacySandboxAttestations scoped_attestations_;
 
   std::unique_ptr<PrivacySandboxService> privacy_sandbox_service_;
 };
@@ -1067,23 +1073,19 @@ TEST_F(PrivacySandboxServiceTest, GetFledgeJoiningEtldPlusOne) {
   std::vector<FledgeTestCase> test_cases = {test_case_1, test_case_2,
                                             test_case_3, test_case_4};
 
-  for (const auto& origins_to_expected : test_cases) {
-    std::vector<content::InterestGroupManager::InterestGroupDataKey> data_keys;
-    base::ranges::transform(
-        origins_to_expected.first, std::back_inserter(data_keys),
-        [](const auto& origin) {
+  for (const auto& [origins, expected] : test_cases) {
+    test_interest_group_manager()->SetInterestGroupDataKeys(
+        base::test::ToVector(origins, [](const auto& origin) {
           return content::InterestGroupManager::InterestGroupDataKey{
               url::Origin::Create(GURL("https://embedded.com")), origin};
-        });
-    test_interest_group_manager()->SetInterestGroupDataKeys(data_keys);
+        }));
 
     bool callback_called = false;
     auto callback = base::BindLambdaForTesting(
         [&](std::vector<std::string> items_for_display) {
-          ASSERT_EQ(items_for_display.size(),
-                    origins_to_expected.second.size());
+          ASSERT_EQ(items_for_display.size(), expected.size());
           for (size_t i = 0; i < items_for_display.size(); i++) {
-            EXPECT_EQ(origins_to_expected.second[i], items_for_display[i]);
+            EXPECT_EQ(expected[i], items_for_display[i]);
           }
           callback_called = true;
         });
@@ -1199,11 +1201,6 @@ TEST_F(PrivacySandboxServiceTest, PromptActionsUMAActions) {
                    "Settings.PrivacySandbox.Notice.OpenedSettings"));
 
   privacy_sandbox_service()->PromptActionOccurred(
-      PrivacySandboxService::PromptAction::kRestrictedNoticeOpenSettings);
-  EXPECT_EQ(1, user_action_tester.GetActionCount(
-                   "Settings.PrivacySandbox.RestrictedNotice.OpenedSettings"));
-
-  privacy_sandbox_service()->PromptActionOccurred(
       PrivacySandboxService::PromptAction::kNoticeAcknowledge);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.Notice.Acknowledged"));
@@ -1272,6 +1269,34 @@ TEST_F(PrivacySandboxServiceTest, PromptActionsUMAActions) {
       PrivacySandboxService::PromptAction::kNoticeMoreButtonClicked);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.Notice.MoreButtonClicked"));
+
+  privacy_sandbox_service()->PromptActionOccurred(
+      PrivacySandboxService::PromptAction::kRestrictedNoticeOpenSettings);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "Settings.PrivacySandbox.RestrictedNotice.OpenedSettings"));
+
+  privacy_sandbox_service()->PromptActionOccurred(
+      PrivacySandboxService::PromptAction::kRestrictedNoticeAcknowledge);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "Settings.PrivacySandbox.RestrictedNotice.Acknowledged"));
+
+  privacy_sandbox_service()->PromptActionOccurred(
+      PrivacySandboxService::PromptAction::kRestrictedNoticeShown);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "Settings.PrivacySandbox.RestrictedNotice.Shown"));
+
+  privacy_sandbox_service()->PromptActionOccurred(
+      PrivacySandboxService::PromptAction::
+          kRestrictedNoticeClosedNoInteraction);
+  EXPECT_EQ(
+      1, user_action_tester.GetActionCount(
+             "Settings.PrivacySandbox.RestrictedNotice.ClosedNoInteraction"));
+
+  privacy_sandbox_service()->PromptActionOccurred(
+      PrivacySandboxService::PromptAction::kRestrictedNoticeMoreButtonClicked);
+  EXPECT_EQ(1,
+            user_action_tester.GetActionCount(
+                "Settings.PrivacySandbox.RestrictedNotice.MoreButtonClicked"));
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -4260,7 +4285,7 @@ TEST_F(PrivacySandboxServiceM1Test, DisablePrivacySandboxFledgePolicy) {
       TestOutput{{OutputKey::kPromptType, static_cast<int>(PromptType::kNone)},
                  {OutputKey::kM1PromptSuppressedReason,
                   static_cast<int>(PromptSuppressedReason::kNone)},
-                 {OutputKey::kIsFledgeAllowed, false}});
+                 {OutputKey::kIsFledgeJoinAllowed, false}});
 }
 
 TEST_F(PrivacySandboxServiceM1Test, DisablePrivacySandboxAdMeasurementPolicy) {

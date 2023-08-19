@@ -76,7 +76,7 @@ class CaptivePortalWindowTest : public InProcessBrowserTest {
 
  private:
   std::unique_ptr<CaptivePortalWindowProxy> captive_portal_window_proxy_;
-  raw_ptr<NetworkPortalDetectorTestImpl, ExperimentalAsh>
+  raw_ptr<NetworkPortalDetectorTestImpl, DanglingUntriaged | ExperimentalAsh>
       network_portal_detector_;
 };
 

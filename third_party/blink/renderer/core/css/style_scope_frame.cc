@@ -11,6 +11,10 @@ void StyleScopeActivation::Trace(blink::Visitor* visitor) const {
   visitor->Trace(root);
 }
 
+void StyleScopeActivations::Trace(blink::Visitor* visitor) const {
+  visitor->Trace(vector);
+}
+
 StyleScopeFrame* StyleScopeFrame::GetParentFrameOrNull(
     Element& parent_element) {
   if (parent_ && (&parent_->element_ == &parent_element)) {

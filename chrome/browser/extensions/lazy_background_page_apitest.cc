@@ -14,10 +14,12 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/chrome_browser_main_extra_parts_nacl_deprecation.h"
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
@@ -118,7 +120,9 @@ class LoadedIncognitoObserver : public ExtensionRegistryObserver {
 
 class LazyBackgroundPageApiTest : public ExtensionApiTest {
  public:
-  LazyBackgroundPageApiTest() {}
+  LazyBackgroundPageApiTest() {
+    feature_list_.InitAndEnableFeature(kNaclAllow);
+  }
 
   LazyBackgroundPageApiTest(const LazyBackgroundPageApiTest&) = delete;
   LazyBackgroundPageApiTest& operator=(const LazyBackgroundPageApiTest&) =
@@ -181,6 +185,9 @@ class LazyBackgroundPageApiTest : public ExtensionApiTest {
                                 browser()->profile(),
                                 api_test_utils::FunctionMode::kNone);
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, BrowserActionCreateTab) {
@@ -711,6 +718,7 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, OnUnload) {
 // Tests that both a regular page and an event page will receive events when
 // the event page is not loaded.
 IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, EventDispatchToTab) {
+  base::HistogramTester histogram_tester;
   ResultCatcher catcher;
   catcher.RestrictToBrowserContext(browser()->profile());
 
@@ -739,6 +747,10 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, EventDispatchToTab) {
   page_ready.Reply("go");
 
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
+  // Call to runtime.onInstalled and bookmarks.onCreated are expected.
+  histogram_tester.ExpectTotalCount(
+      "Extensions.Events.DispatchToAckTime.ExtensionEventPage2",
+      /*expected_count=*/2);
 }
 
 // Tests that the lazy background page will be unloaded if the onSuspend event

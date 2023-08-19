@@ -60,7 +60,8 @@ class ArcAudioBridge : public KeyedService,
   const raw_ptr<ArcBridgeService, ExperimentalAsh>
       arc_bridge_service_;  // Owned by ArcServiceManager.
 
-  raw_ptr<ash::CrasAudioHandler, ExperimentalAsh> cras_audio_handler_;
+  raw_ptr<ash::CrasAudioHandler, DanglingUntriaged | ExperimentalAsh>
+      cras_audio_handler_;
 
   int volume_ = 0;  // Volume range: 0-100.
   bool muted_ = false;

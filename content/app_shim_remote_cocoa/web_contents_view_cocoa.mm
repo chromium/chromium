@@ -6,6 +6,7 @@
 
 #include <AppKit/AppKit.h>
 
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #import "base/mac/mac_util.h"
@@ -73,12 +74,12 @@ class DroppedScreenShotCopierMac {
  private:
   bool IsPathScreenShot(const base::FilePath& path) const {
     const std::string& value = path.value();
-    size_t found_var = value.find("/var");
-    if (found_var != 0)
+    if (!base::Contains(value, "/var")) {
       return false;
-    size_t found_screencaptureui = value.find("screencaptureui");
-    if (found_screencaptureui == std::string::npos)
+    }
+    if (!base::Contains(value, "screencaptureui")) {
       return false;
+    }
     return true;
   }
 
@@ -102,6 +103,28 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
 // WebContentsViewCocoa
 
 @implementation WebContentsViewCocoa {
+  // Instances of this class are owned by both `_host` and AppKit. The `_host`
+  // must call `-setHost:nil` in its destructor.
+  raw_ptr<remote_cocoa::mojom::WebContentsNSViewHost> _host;
+
+  // The interface exported to views::Views that embed this as a sub-view.
+  raw_ptr<ui::ViewsHostableView> _viewsHostableView;
+
+  BOOL _mouseDownCanMoveWindow;
+
+  // Utility to copy screenshots to a usable directory for PWAs. This utility
+  // will maintain a temporary directory for such screenshot files until this
+  // WebContents is destroyed.
+  // https://crbug.com/1148078
+  std::unique_ptr<remote_cocoa::DroppedScreenShotCopierMac>
+      _droppedScreenShotCopier;
+
+  // Drag variables.
+  WebDragSource* __strong _dragSource;
+  NSDragOperation _dragOperation;
+
+  gfx::Rect _windowControlsOverlayRect;
+
   // TODO(https://crbug.com/883031): Remove this when kMacWebContentsOcclusion
   // is enabled by default.
   BOOL _inFullScreenTransition;
@@ -136,8 +159,6 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
 
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   [self cancelDelayedSetWebContentsOccluded];
-
-  [super dealloc];
 }
 
 - (void)enableDroppedScreenShotCopier {
@@ -230,11 +251,11 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
                                         clickCount:1
                                           pressure:1.0];
 
-  _dragSource.reset([[WebDragSource alloc] initWithHost:_host
-                                               dropData:dropData
-                                           isPrivileged:isPrivileged]);
-  NSDraggingItem* draggingItem = [[[NSDraggingItem alloc]
-      initWithPasteboardWriter:_dragSource] autorelease];
+  _dragSource = [[WebDragSource alloc] initWithHost:_host
+                                           dropData:dropData
+                                       isPrivileged:isPrivileged];
+  NSDraggingItem* draggingItem =
+      [[NSDraggingItem alloc] initWithPasteboardWriter:_dragSource];
 
   if (!image) {
     image = content::GetContentClient()
@@ -292,7 +313,7 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
 
   // The drag is complete. Disconnect the drag source.
   [_dragSource webContentsIsGone];
-  _dragSource.reset();
+  _dragSource = nil;
 }
 
 // NSDraggingDestination methods

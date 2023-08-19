@@ -4,15 +4,18 @@
 
 #include "extensions/renderer/renderer_context_data.h"
 
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "third_party/blink/public/web/blink.h"
 
 namespace extensions {
 
 // static
 bool RendererContextData::IsIsolatedWebAppContextAndEnabled() {
-  return base::FeatureList::IsEnabled(features::kIsolatedWebApps) &&
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kEnableIsolatedWebAppsInRenderer) &&
          blink::IsIsolatedContext();
 }
 

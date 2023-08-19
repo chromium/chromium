@@ -4,19 +4,23 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.InsetDrawable;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.tab.Tab;
@@ -44,6 +48,7 @@ public class TabSelectionEditorShareAction extends TabSelectionEditorAction {
     private static Callback<Intent> sIntentCallbackForTesting;
     private Context mContext;
     private boolean mSkipUrlCheckForTesting;
+    private BroadcastReceiver mBroadcastReceiver;
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
@@ -80,6 +85,15 @@ public class TabSelectionEditorShareAction extends TabSelectionEditorAction {
                 R.plurals.tab_selection_editor_share_tabs_action_button,
                 R.plurals.accessibility_tab_selection_editor_share_tabs_action_button, drawable);
         mContext = context;
+        mBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                context.unregisterReceiver(mBroadcastReceiver);
+                // Hide the selection editor if the custom share intent is sent and received by
+                // another app, indicating that the user has completed the share tabs workflow.
+                getActionDelegate().hideByAction();
+            }
+        };
     }
 
     @Override
@@ -142,17 +156,27 @@ public class TabSelectionEditorShareAction extends TabSelectionEditorAction {
                 AppCompatResources.getDrawable(mContext, R.drawable.chrome_sync_logo),
                 (int) mContext.getResources().getDimension(
                         R.dimen.tab_selection_editor_share_sheet_preview_thumbnail_padding));
-        createShareableImageAndSendIntent(shareIntent, drawable, actionId);
+
+        // Create a custom share intent and receiver to assess if another app receives the share
+        // intent sent from the tab selection editor.
+        Intent receiver = new Intent("SHARE_ACTION");
+        PendingIntent pendingIntent =
+                PendingIntent.getBroadcast(mContext, 0, receiver, PendingIntent.FLAG_IMMUTABLE);
+        ContextUtils.registerNonExportedBroadcastReceiver(
+                mContext, mBroadcastReceiver, new IntentFilter("SHARE_ACTION"));
+        createShareableImageAndSendIntent(shareIntent, drawable, actionId, pendingIntent);
         return true;
     }
 
     @Override
     public boolean shouldHideEditorAfterAction() {
-        return true;
+        // Ensure the selection editor stays open when the user is interacting with the share
+        // sheet in case they decide to leave and go back to the selection editor.
+        return false;
     }
 
     private void createShareableImageAndSendIntent(Intent shareIntent, Drawable drawable,
-            @TabSelectionEditorActionMetricGroups int actionId) {
+            @TabSelectionEditorActionMetricGroups int actionId, PendingIntent pendingIntent) {
         PostTask.postTask(TaskTraits.USER_BLOCKING_MAY_BLOCK, () -> {
             // Allotted thumbnail size is approx. 72 dp, with the icon left at default size.
             // The padding is adjusted accordingly, taking into account the scaling factor.
@@ -169,7 +193,8 @@ public class TabSelectionEditorShareAction extends TabSelectionEditorAction {
                         bitmap.recycle();
                         PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
                             shareIntent.setClipData(ClipData.newRawUri("", uri));
-                            mContext.startActivity(Intent.createChooser(shareIntent, null));
+                            mContext.startActivity(Intent.createChooser(
+                                    shareIntent, null, pendingIntent.getIntentSender()));
                             TabUiMetricsHelper.recordSelectionEditorActionMetrics(actionId);
                             TabUiMetricsHelper.recordShareStateHistogram(
                                     TabSelectionEditorShareActionState.SUCCESS);
@@ -221,13 +246,13 @@ public class TabSelectionEditorShareAction extends TabSelectionEditorAction {
                 || UNSUPPORTED_SCHEMES.contains(url.getScheme());
     }
 
-    @VisibleForTesting
     void setSkipUrlCheckForTesting(boolean skip) {
         mSkipUrlCheckForTesting = skip;
+        ResettersForTesting.register(() -> mSkipUrlCheckForTesting = false);
     }
 
-    @VisibleForTesting
     static void setIntentCallbackForTesting(Callback<Intent> callback) {
         sIntentCallbackForTesting = callback;
+        ResettersForTesting.register(() -> sIntentCallbackForTesting = null);
     }
 }

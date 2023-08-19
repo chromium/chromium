@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/containers/span.h"
+#include "base/test/gmock_expected_support.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/signed_web_bundles/ed25519_signature.h"
@@ -66,9 +67,9 @@ TEST(SignedWebBundleIntegrityBlockTest, InvalidSize) {
 
   auto integrity_block =
       SignedWebBundleIntegrityBlock::Create(std::move(raw_integrity_block));
-  ASSERT_FALSE(integrity_block.has_value());
-  EXPECT_EQ(integrity_block.error(),
-            "Cannot create integrity block with a size of 0.");
+  EXPECT_THAT(
+      integrity_block,
+      base::test::ErrorIs("Cannot create integrity block with a size of 0."));
 }
 
 TEST(SignedWebBundleIntegrityBlockTest, EmptySignatureStack) {
@@ -77,10 +78,11 @@ TEST(SignedWebBundleIntegrityBlockTest, EmptySignatureStack) {
 
   auto integrity_block =
       SignedWebBundleIntegrityBlock::Create(std::move(raw_integrity_block));
-  ASSERT_FALSE(integrity_block.has_value());
-  EXPECT_EQ(integrity_block.error(),
-            "Cannot create an integrity block: The signature stack needs at "
-            "least one entry.");
+  EXPECT_THAT(
+      integrity_block,
+      base::test::ErrorIs(
+          "Cannot create an integrity block: The signature stack needs at "
+          "least one entry."));
 }
 
 TEST(SignedWebBundleIntegrityBlockTest, ValidIntegrityBlockWithOneSignature) {
@@ -94,12 +96,12 @@ TEST(SignedWebBundleIntegrityBlockTest, ValidIntegrityBlockWithOneSignature) {
   raw_integrity_block->size = 42;
   raw_integrity_block->signature_stack = std::move(raw_signature_stack);
 
-  auto integrity_block =
-      SignedWebBundleIntegrityBlock::Create(std::move(raw_integrity_block));
-  ASSERT_TRUE(integrity_block.has_value());
-  EXPECT_EQ(integrity_block->size_in_bytes(), 42ul);
+  ASSERT_OK_AND_ASSIGN(
+      auto integrity_block,
+      SignedWebBundleIntegrityBlock::Create(std::move(raw_integrity_block)));
+  EXPECT_EQ(integrity_block.size_in_bytes(), 42ul);
 
-  const auto& signature_stack = integrity_block->signature_stack();
+  const auto& signature_stack = integrity_block.signature_stack();
   EXPECT_EQ(signature_stack.size(), 1ul);
   EXPECT_EQ(signature_stack.entries()[0].public_key().bytes(),
             kEd25519PublicKey1);
@@ -125,12 +127,12 @@ TEST(SignedWebBundleIntegrityBlockTest, ValidIntegrityBlockWithTwoSignatures) {
   raw_integrity_block->size = 42;
   raw_integrity_block->signature_stack = std::move(raw_signature_stack);
 
-  auto integrity_block =
-      SignedWebBundleIntegrityBlock::Create(std::move(raw_integrity_block));
-  ASSERT_TRUE(integrity_block.has_value());
-  EXPECT_EQ(integrity_block->size_in_bytes(), 42ul);
+  ASSERT_OK_AND_ASSIGN(
+      auto integrity_block,
+      SignedWebBundleIntegrityBlock::Create(std::move(raw_integrity_block)));
+  EXPECT_EQ(integrity_block.size_in_bytes(), 42ul);
 
-  const auto& signature_stack = integrity_block->signature_stack();
+  const auto& signature_stack = integrity_block.signature_stack();
   EXPECT_EQ(signature_stack.size(), 2ul);
   EXPECT_EQ(signature_stack.entries()[0].public_key().bytes(),
             kEd25519PublicKey1);

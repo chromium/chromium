@@ -30,8 +30,10 @@ class MostVisitedSitesProvider : public AutocompleteProvider {
                           size_t element) override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(ParameterizedMostVisitedSitesProviderTest,
+  FRIEND_TEST_ALL_PREFIXES(MostVisitedSitesProviderTest,
                            AllowMostVisitedSitesSuggestions);
+  FRIEND_TEST_ALL_PREFIXES(MostVisitedSitesProviderTest,
+                           SrpCoverageIsControlledWithFeatureFlag);
 
   ~MostVisitedSitesProvider() override;
 

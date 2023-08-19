@@ -20,10 +20,6 @@
 #import "ios/web_view/public/cwv_sync_controller_data_source.h"
 #import "ios/web_view/public/cwv_sync_controller_delegate.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface CWVSyncController ()
 
 // Called by WebViewSyncControllerObserverBridge's |OnSyncShutdown|.
@@ -112,9 +108,9 @@ __weak id<CWVSyncControllerDataSource> gSyncDataSource;
 #pragma mark - Public Methods
 
 - (CWVIdentity*)currentIdentity {
-  if (_identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+  if (_identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     CoreAccountInfo accountInfo =
-        _identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
+        _identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
     return [[CWVIdentity alloc]
         initWithEmail:base::SysUTF8ToNSString(accountInfo.email)
              fullName:nil
@@ -152,8 +148,8 @@ __weak id<CWVSyncControllerDataSource> gSyncDataSource;
   CHECK(_identityManager->HasAccountWithRefreshToken(accountId));
 
   _identityManager->GetPrimaryAccountMutator()->SetPrimaryAccount(
-      accountId, signin::ConsentLevel::kSync);
-  CHECK_EQ(_identityManager->GetPrimaryAccountId(signin::ConsentLevel::kSync),
+      accountId, signin::ConsentLevel::kSignin);
+  CHECK_EQ(_identityManager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
            accountId);
 
   autofill::prefs::SetUserOptedInWalletSyncTransport(_prefService, accountId,

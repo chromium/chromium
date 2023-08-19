@@ -13,11 +13,11 @@
 #include <string>
 #include <utility>
 
+#include "base/apple/foundation_util.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_ioobject.h"
 #include "base/memory/ptr_util.h"
@@ -152,7 +152,7 @@ bool BluetoothAdapterMac::IsPresent() const {
   }
 
   base::ScopedCFTypeRef<CFBooleanRef> connected(
-      base::mac::CFCast<CFBooleanRef>(IORegistryEntryCreateCFProperty(
+      base::apple::CFCast<CFBooleanRef>(IORegistryEntryCreateCFProperty(
           service, CFSTR("BluetoothTransportConnected"), kCFAllocatorDefault,
           0)));
   return CFBooleanGetValue(connected);
@@ -160,21 +160,15 @@ bool BluetoothAdapterMac::IsPresent() const {
 
 BluetoothAdapter::PermissionStatus BluetoothAdapterMac::GetOsPermissionStatus()
     const {
-  if (@available(macOS 10.15.0, *)) {
-    switch (CBCentralManager.authorization) {
-      case CBManagerAuthorizationNotDetermined:
-        return PermissionStatus::kUndetermined;
-      case CBManagerAuthorizationRestricted:
-      case CBManagerAuthorizationDenied:
-        return PermissionStatus::kDenied;
-      case CBManagerAuthorizationAllowedAlways:
-        return PermissionStatus::kAllowed;
-    }
+  switch (CBCentralManager.authorization) {
+    case CBManagerAuthorizationNotDetermined:
+      return PermissionStatus::kUndetermined;
+    case CBManagerAuthorizationRestricted:
+    case CBManagerAuthorizationDenied:
+      return PermissionStatus::kDenied;
+    case CBManagerAuthorizationAllowedAlways:
+      return PermissionStatus::kAllowed;
   }
-
-  // There are no Core Bluetooth permissions before macOS 10.15 so assume we
-  // always have permission.
-  return PermissionStatus::kAllowed;
 }
 
 bool BluetoothAdapterMac::IsPowered() const {
@@ -273,7 +267,7 @@ void BluetoothAdapterMac::InitForTest(
 }
 
 BluetoothLowEnergyAdapterApple::GetDevicePairedStatusCallback
-BluetoothAdapterMac::GetDevicePariedStatus() const {
+BluetoothAdapterMac::GetDevicePairedStatus() const {
   return device_paired_status_callback_;
 }
 

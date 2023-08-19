@@ -19,6 +19,5 @@ component("capture_mode") {
     "//services/video_capture/public/mojom",
     "//ui/compositor",
     "//ui/gfx",
-    "//ui/ozone",
   ]
 }

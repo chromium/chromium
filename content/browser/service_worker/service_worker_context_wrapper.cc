@@ -63,6 +63,7 @@
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
@@ -84,6 +85,9 @@ BASE_FEATURE(kServiceWorkerStorageControlOnIOThread,
 BASE_FEATURE(kServiceWorkerStorageControlOnThreadPool,
              "ServiceWorkerStorageControlOnThreadPool",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kUpdateDelayParam{
+    &blink::features::kServiceWorkerUpdateDelay, "update_delay_in_ms", 1000};
 
 base::LazyInstance<ServiceWorkerContextWrapper::URLLoaderFactoryInterceptor>::
     Leaky g_loader_factory_interceptor = LAZY_INSTANCE_INITIALIZER;
@@ -229,6 +233,11 @@ void ServiceWorkerContext::RunTask(
   task_runner->PostTask(
       from_here,
       base::BindOnce(&RunOnceClosure, std::move(ref), std::move(task)));
+}
+
+// static
+base::TimeDelta ServiceWorkerContext::GetUpdateDelay() {
+  return base::Milliseconds(kUpdateDelayParam.Get());
 }
 
 ServiceWorkerContextWrapper::ServiceWorkerContextWrapper(
@@ -537,7 +546,7 @@ ServiceWorkerExternalRequestResult
 ServiceWorkerContextWrapper::StartingExternalRequest(
     int64_t service_worker_version_id,
     ServiceWorkerExternalRequestTimeoutType timeout_type,
-    const std::string& request_uuid) {
+    const base::Uuid& request_uuid) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!context())
     return ServiceWorkerExternalRequestResult::kNullContext;
@@ -566,7 +575,7 @@ bool ServiceWorkerContextWrapper::ExecuteScriptForTest(
 ServiceWorkerExternalRequestResult
 ServiceWorkerContextWrapper::FinishedExternalRequest(
     int64_t service_worker_version_id,
-    const std::string& request_uuid) {
+    const base::Uuid& request_uuid) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!context())
     return ServiceWorkerExternalRequestResult::kNullContext;
@@ -1384,6 +1393,10 @@ void ServiceWorkerContextWrapper::FindRegistrationForScopeImpl(
 void ServiceWorkerContextWrapper::MaybeProcessPendingWarmUpRequest() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  if (!context_core_) {
+    return;
+  }
+
   context_core_->EndProcessingWarmingUp();
 
   absl::optional<ServiceWorkerContextCore::WarmUpRequest> request =
@@ -1524,8 +1537,8 @@ void ServiceWorkerContextWrapper::DidFindRegistrationForUpdate(
   // bypassed. However, in order to provide options for callers to choose the
   // cache bypass mode, plumb |force_bypass_cache| through to
   // UpdateRegistration().
-  context_core_->UpdateServiceWorker(registration.get(),
-                                     true /* force_bypass_cache */);
+  context_core_->UpdateServiceWorkerWithoutExecutionContext(
+      registration.get(), true /* force_bypass_cache */);
 }
 
 void ServiceWorkerContextWrapper::DidFindRegistrationForNavigationHint(
@@ -1840,7 +1853,7 @@ ServiceWorkerContextWrapper::GetLoaderFactoryForBrowserInitiatedRequest(
           context()->loader_factory_bundle_for_update_check()->Clone();
 
   if (auto* config = content::WebUIConfigMap::GetInstance().GetConfig(
-          browser_context(), scope_origin)) {
+          browser_context(), scope)) {
     // If this is a Service Worker for a WebUI, the WebUI's URLDataSource
     // needs to be registered. Registering a URLDataSource allows the
     // WebUIURLLoaderFactory below to serve the resources for the WebUI. We

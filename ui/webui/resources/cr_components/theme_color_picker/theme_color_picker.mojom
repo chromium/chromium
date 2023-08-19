@@ -1,0 +1,93 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module theme_color_picker.mojom;
+
+import "skia/public/mojom/skcolor.mojom";
+import "ui/base/mojom/themes.mojom";
+
+// A generic theme.
+struct Theme {
+  // Whether the user has a background image applied.
+  bool has_background_image;
+  // Whether the user has a third party theme applied.
+  bool has_third_party_theme;
+  // The background image main color.
+  skia.mojom.SkColor? background_image_main_color;
+  // Whether the browser theming is dark mode.
+  bool is_dark_mode;
+  // The color this theme was calculated from.
+  skia.mojom.SkColor seed_color;
+  // The hue of the color this theme was calculated from.
+  float seed_color_hue;
+  // The current theme background color.
+  skia.mojom.SkColor background_color;
+  // The current theme foreground color. If not set, we use the default theme.
+  skia.mojom.SkColor? foreground_color;
+  // The color of the color picker icon.
+  skia.mojom.SkColor color_picker_icon_color;
+  // True if the colors are managed by a policy.
+  bool colors_managed_by_policy;
+  // True if using grey baseline theme.
+  bool is_grey_baseline;
+  // BrowserColorVariant for the current theme.
+  ui.mojom.BrowserColorVariant browser_color_variant;
+  // True if following the OS theme.
+  bool follow_device_theme;
+};
+
+struct ChromeColor {
+  // Localized string of the color name.
+  string name;
+  // The color this Chrome color was calculated from.
+  skia.mojom.SkColor seed;
+  // The foreground color.
+  skia.mojom.SkColor background;
+  // The background color.
+  skia.mojom.SkColor foreground;
+  // The base color.
+  // TODO(crbug/1454868): Make base no longer optional once GM2 is removed.
+  skia.mojom.SkColor? base;
+  // The color variant for this color palette.
+  ui.mojom.BrowserColorVariant variant;
+};
+
+// Used by the WebUI page to bootstrap bidirectional communication.
+interface ThemeColorPickerHandlerFactory {
+  // The WebUI calls this method when the page is first initialized.
+  CreateThemeColorPickerHandler(pending_receiver<ThemeColorPickerHandler> handler,
+                    pending_remote<ThemeColorPickerClient> client);
+};
+
+// Browser-side handler for requests from WebUI page.
+interface ThemeColorPickerHandler {
+  // Returns the chrome colors used in the customize colors component with
+  // |is_dark_mode| true for darker versions of the colors. |extended_list|
+  // set to false returns a subset of the list sent when true.
+  GetChromeColors(bool is_dark_mode, bool extended_list) => (array<ChromeColor> colors);
+
+  // Triggers a call to |ThemeColorPickerClient.SetTheme()|.
+  UpdateTheme();
+
+  // Sets Chrome's theme according to the default color.
+  SetDefaultColor();
+
+  // Sets Chrome's theme according to the grey version of the default color.
+  SetGreyDefaultColor();
+
+  // Sets a Chrome theme generated from |seed_color|.
+  SetSeedColor(skia.mojom.SkColor seed_color, ui.mojom.BrowserColorVariant variant);
+
+  // Sets a Chrome theme generated from |hue|.
+  SetSeedColorFromHue(float hue);
+
+  // Removes background image.
+  RemoveBackgroundImage();
+};
+
+// WebUI-side handler for requests from the browser.
+interface ThemeColorPickerClient {
+  // Sets the current theme.
+  SetTheme(Theme theme);
+};

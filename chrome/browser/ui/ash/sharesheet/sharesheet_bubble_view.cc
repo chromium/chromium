@@ -163,13 +163,26 @@ SharesheetBubbleView::SharesheetBubbleView(
     gfx::NativeWindow native_window,
     ::sharesheet::SharesheetServiceDelegator* delegator)
     : delegator_(delegator) {
-  PerformLoggingAndChecks(native_window);
+  CHECK(native_window);
+  CHECK(delegator_);
 
-  SetUpDialog();
+  SetID(SHARESHEET_BUBBLE_VIEW_ID);
+  // We set the dialog role because views::BubbleDialogDelegate defaults this to
+  // an alert dialog. This would make screen readers announce all of this dialog
+  // which is undesirable.
+  SetAccessibleWindowRole(ax::mojom::Role::kDialog);
+  SetAccessibleTitle(l10n_util::GetStringUTF16(IDS_SHARESHEET_TITLE_LABEL));
+  AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
 
-  SetUpParentWindow(native_window);
+  set_parent_window(native_window);
+  views::Widget* const widget =
+      views::Widget::GetWidgetForNativeWindow(native_window);
+  CHECK(widget);
+  parent_view_ = widget->GetRootView();
+  parent_widget_observer_ =
+      std::make_unique<SharesheetParentWidgetObserver>(this, widget);
 
-  CreateBubble();
+  InitBubble();
 }
 
 SharesheetBubbleView::~SharesheetBubbleView() {
@@ -240,15 +253,7 @@ void SharesheetBubbleView::ShowBubble(
         gfx::Insets::VH(kFooterNoExtensionVerticalPadding, 0));
   }
 
-  main_view_->SetFocusBehavior(View::FocusBehavior::NEVER);
-  views::BubbleDialogDelegateView::CreateBubble(base::WrapUnique(this));
-  GetWidget()->GetRootView()->Layout();
-  RecordFormFactorMetric();
-  RecordMimeTypeMetric(intent_);
-  ShowWidgetWithAnimateFadeIn();
-
-  UpdateAnchorPosition();
-  tablet_mode_observation_.Observe(TabletMode::Get());
+  SetUpAndShowBubble();
 }
 
 void SharesheetBubbleView::ShowNearbyShareBubbleForArc(
@@ -257,12 +262,32 @@ void SharesheetBubbleView::ShowNearbyShareBubbleForArc(
     ::sharesheet::CloseCallback close_callback) {
   // Disable close when clicking outside bubble for Nearby Share.
   close_on_deactivate_ = false;
-  ShowBubble({}, std::move(intent), std::move(delivered_callback),
-             std::move(close_callback));
-  if (delivered_callback_) {
-    std::move(delivered_callback_)
-        .Run(::sharesheet::SharesheetResult::kSuccess);
+  close_callback_ = std::move(close_callback);
+  intent_ = std::move(intent);
+
+  // Set up the bubble so that the nearby share dialog can be triggered within
+  // the sharesheet.
+  SetUpAndShowBubble();
+
+  if (delivered_callback) {
+    std::move(delivered_callback).Run(::sharesheet::SharesheetResult::kSuccess);
   }
+
+  // When the Nearby Share target is shown, it will transform from the original
+  // sharesheet bubble to the nearby share dialog. This animation requires an
+  // original rectangle to transform from, so the size of the bubble cannot be
+  // 0. In this instance, we have not populated the sharesheet with anything, as
+  // it'll never be shown, so the dynamic sizing will set the height to 0. To
+  // get around that, we set the height to 1, so there is a starting rectangle
+  // to transform from.
+  //
+  // Having a height of "1" means that the animation for showing Nearby Share
+  // from ARC++ is mostly a vertical expansion, instead of how it looks in a
+  // normal sharesheet where there's a slight vertical and slight horizontal
+  // change. We could try calculate the correct "empty" size of the sharesheet
+  // and use that instead for a more consistent UI experience.
+  height_ = 1;
+
   delegator_->OnTargetSelected(
       l10n_util::GetStringUTF16(IDS_NEARBY_SHARE_FEATURE_NAME),
       ::sharesheet::TargetType::kAction, std::move(intent_),
@@ -375,9 +400,6 @@ void SharesheetBubbleView::PopulateLayoutsWithTargets(
 }
 
 void SharesheetBubbleView::ShowActionView() {
-  // TODO(melzhang) This should be a separate function on sharesheet controller
-  // called by Nearby. Disable close when clicking outside bubble for Nearby
-  // Share.
   close_on_deactivate_ = false;
   constexpr float kShareActionScaleUpFactor = 0.9f;
 
@@ -455,48 +477,6 @@ void SharesheetBubbleView::ResizeBubble(const int& width, const int& height) {
 void SharesheetBubbleView::CloseBubble(views::Widget::ClosedReason reason) {
   CloseWidgetWithAnimateFadeOut(reason);
 }
-
-// --- Added for debugging purposes. Remove after bug fixed.
-
-void SharesheetBubbleView::PerformLoggingAndChecks(
-    gfx::NativeWindow native_window) {
-  if (!native_window) {
-    LOG(ERROR) << "Native_window value is null";
-  }
-  CHECK(native_window);
-  if (!delegator_) {
-    LOG(ERROR) << "Delegator value is null";
-  }
-  CHECK(delegator_);
-}
-
-void SharesheetBubbleView::SetUpDialog() {
-  SetID(SHARESHEET_BUBBLE_VIEW_ID);
-  // We set the dialog role because views::BubbleDialogDelegate defaults this to
-  // an alert dialog. This would make screen readers announce all of this dialog
-  // which is undesirable.
-  SetAccessibleWindowRole(ax::mojom::Role::kDialog);
-  SetAccessibleTitle(l10n_util::GetStringUTF16(IDS_SHARESHEET_TITLE_LABEL));
-  AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
-}
-
-void SharesheetBubbleView::SetUpParentWindow(gfx::NativeWindow native_window) {
-  set_parent_window(native_window);
-  views::Widget* const widget =
-      views::Widget::GetWidgetForNativeWindow(native_window);
-  if (!widget) {
-    LOG(ERROR) << "Widget value is null";
-  }
-  if (!widget->GetRootView()) {
-    LOG(ERROR) << "Widget RootView value is null";
-  }
-  CHECK(widget);
-  parent_view_ = widget->GetRootView();
-  parent_widget_observer_ =
-      std::make_unique<SharesheetParentWidgetObserver>(this, widget);
-}
-
-// --- End of functions added for debugging.
 
 bool SharesheetBubbleView::AcceleratorPressed(
     const ui::Accelerator& accelerator) {
@@ -628,7 +608,7 @@ void SharesheetBubbleView::OnTabletControllerDestroyed() {
   tablet_mode_observation_.Reset();
 }
 
-void SharesheetBubbleView::CreateBubble() {
+void SharesheetBubbleView::InitBubble() {
   // This disables the default deactivation behaviour in
   // BubbleDialogDelegateView. Close on deactivation behaviour is managed by the
   // SharesheetBubbleView with the |close_on_deactivate_| member.
@@ -650,6 +630,18 @@ void SharesheetBubbleView::CreateBubble() {
   share_action_view_ = AddChildView(std::move(share_action_view));
   share_action_view_->SetID(SHARE_ACTION_VIEW_ID);
   share_action_view_->SetVisible(false);
+}
+
+void SharesheetBubbleView::SetUpAndShowBubble() {
+  main_view_->SetFocusBehavior(View::FocusBehavior::NEVER);
+  views::BubbleDialogDelegateView::CreateBubble(base::WrapUnique(this));
+  GetWidget()->GetRootView()->Layout();
+  RecordFormFactorMetric();
+  RecordMimeTypeMetric(intent_);
+  ShowWidgetWithAnimateFadeIn();
+
+  UpdateAnchorPosition();
+  tablet_mode_observation_.Observe(TabletMode::Get());
 }
 
 void SharesheetBubbleView::ExpandButtonPressed() {

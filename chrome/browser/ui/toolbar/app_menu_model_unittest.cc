@@ -16,12 +16,14 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/prefs/browser_prefs.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/global_error/global_error.h"
 #include "chrome/browser/ui/global_error/global_error_service.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
+#include "chrome/browser/ui/toolbar/recent_tabs_sub_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -30,6 +32,9 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/performance_manager/public/features.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
@@ -197,6 +202,17 @@ class TestAppMenuModel : public AppMenuModel {
   mutable int enable_count_;
 };
 
+class TestLogMetricsAppMenuModel : public AppMenuModel {
+ public:
+  TestLogMetricsAppMenuModel(ui::AcceleratorProvider* provider,
+                             Browser* browser)
+      : AppMenuModel(provider, browser), log_metrics_count_(0) {}
+
+  void LogMenuAction(AppMenuAction action_id) override { log_metrics_count_++; }
+
+  int log_metrics_count_;
+};
+
 TEST_F(AppMenuModelTest, Basics) {
   // Simulate that an update is available to ensure that the menu includes the
   // upgrade item for platforms that support it.
@@ -211,10 +227,7 @@ TEST_F(AppMenuModelTest, Basics) {
   // becomes visible. Note that profile migration is only enabled if Lacros is
   // the only browser.
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
-       ash::features::kLacrosOnly},
-      {});
+  feature_list.InitWithFeatures({ash::features::kLacrosOnly}, {});
 #endif
 
   FakeIconDelegate fake_delegate;
@@ -344,7 +357,8 @@ TEST_F(TestAppMenuModelCR2023, ModelHasIcons) {
   // Skip the items that are either not supposed to have an icon, or are not
   // ready to be tested. Remove items once they're ready for testing.
   static const std::vector<int> skip_commands = {
-      IDC_RECENT_TABS_MENU, IDC_ABOUT,
+      IDC_RECENT_TABS_NO_DEVICE_TABS, IDC_ABOUT,
+      RecentTabsSubMenuModel::kDisabledRecentlyClosedHeaderCommandId,
       IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE, IDC_TAKE_SCREENSHOT};
   AppMenuModel model(this, browser());
   model.Init();
@@ -384,6 +398,61 @@ TEST_F(TestAppMenuModelCR2023, ModelHasIcons) {
 
   check_for_icons(u"<Root Menu>", &model);
 }
+
+// Profile row does not show on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
+class TestAppMenuModelCR2023MetricsTest
+    : public TestAppMenuModelCR2023,
+      public testing::WithParamInterface<int> {
+ public:
+  TestAppMenuModelCR2023MetricsTest() = default;
+};
+
+TEST_P(TestAppMenuModelCR2023MetricsTest, LogProfileMenuMetrics) {
+  int command_id = GetParam();
+  TestLogMetricsAppMenuModel model(this, browser());
+  model.Init();
+  model.ExecuteCommand(command_id, 0);
+  EXPECT_EQ(1, model.log_metrics_count_);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    TestAppMenuModelCR2023MetricsTest,
+    testing::Values(IDC_MANAGE_GOOGLE_ACCOUNT,
+                    IDC_CLOSE_PROFILE,
+                    IDC_CUSTOMIZE_CHROME,
+                    IDC_SHOW_SIGNIN_WHEN_PAUSED,
+                    IDC_SHOW_SYNC_SETTINGS,
+                    IDC_TURN_ON_SYNC,
+                    IDC_OPEN_GUEST_PROFILE,
+                    IDC_ADD_NEW_PROFILE,
+                    IDC_MANAGE_CHROME_PROFILES,
+                    IDC_READING_LIST_MENU_ADD_TAB,
+                    IDC_READING_LIST_MENU_SHOW_UI,
+                    IDC_SHOW_PASSWORD_MANAGER,
+                    IDC_SHOW_PAYMENT_METHODS,
+                    IDC_SHOW_ADDRESSES,
+                    AppMenuModel::kMinOtherProfileCommandId));
+
+TEST_F(TestAppMenuModelCR2023, ProfileSyncOnTest) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser()->profile());
+  signin::MakePrimaryAccountAvailable(identity_manager, "user@example.com",
+                                      signin::ConsentLevel::kSync);
+  signin::SetRefreshTokenForPrimaryAccount(identity_manager);
+  AppMenuModel model(this, browser());
+  model.Init();
+  const size_t profile_menu_index =
+      model.GetIndexOfCommandId(IDC_PROFILE_MENU_IN_APP_MENU).value();
+  ui::SimpleMenuModel* profile_menu = static_cast<ui::SimpleMenuModel*>(
+      model.GetSubmenuModelAt(profile_menu_index));
+  const size_t sync_settings_index =
+      profile_menu->GetIndexOfCommandId(IDC_SHOW_SYNC_SETTINGS).value();
+  EXPECT_TRUE(profile_menu->IsEnabledAt(sync_settings_index));
+}
+
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Tests settings menu items is disabled in the app menu when

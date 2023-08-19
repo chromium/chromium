@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/system/system_nudge_pause_manager.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/tray/system_nudge.h"
@@ -77,10 +78,24 @@ class ImplicitNudgeHideAnimationObserver
   const raw_ptr<SystemNudgeController, ExperimentalAsh> controller_;
 };
 
-SystemNudgeController::SystemNudgeController() = default;
+SystemNudgeController::SystemNudgeController() {
+  // `DiacriticsNudgeController` defined under chrome/browser/ash may not have a
+  // shell instance in `testing::Test`, but in the production code `Shell()`
+  // always exists.
+  if (Shell::HasInstance()) {
+    Shell::Get()->system_nudge_pause_manager()->AddObserver(/*observer=*/this);
+  }
+}
 
 SystemNudgeController::~SystemNudgeController() {
   hide_nudge_animation_observer_.reset();
+  // `DiacriticsNudgeController` defined under chrome/browser/ash may not have a
+  // shell instance in `testing::Test`, but in the production code `Shell()`
+  // always exists.
+  if (Shell::HasInstance()) {
+    Shell::Get()->system_nudge_pause_manager()->RemoveObserver(
+        /*observer=*/this);
+  }
 }
 
 // static
@@ -110,11 +125,14 @@ void SystemNudgeController::MaybeRecordNudgeAction(
 }
 
 void SystemNudgeController::ShowNudge() {
-  if (nudge_ && !nudge_->widget()->IsClosed()) {
-    if (hide_nudge_timer_) {
-      hide_nudge_timer_->AbandonAndStop();
-    }
-    nudge_->Close();
+  // Closes the nudge immediately before showing a new one.
+  if (nudge_ && nudge_->widget() && !nudge_->widget()->IsClosed()) {
+    CloseNudge();
+  }
+
+  // If `pause_counter()` is greater than 0, no nudges should be shown.
+  if (Shell::Get()->system_nudge_pause_manager()->pause_counter() > 0) {
+    return;
   }
 
   // Create and show the nudge.
@@ -128,6 +146,19 @@ void SystemNudgeController::ShowNudge() {
   hide_nudge_timer_->Start(FROM_HERE, kNudgeShowTime,
                            base::BindOnce(&SystemNudgeController::HideNudge,
                                           weak_ptr_factory_.GetWeakPtr()));
+}
+
+void SystemNudgeController::CloseNudge() {
+  if (!nudge_ || !nudge_->widget()) {
+    return;
+  }
+
+  if (hide_nudge_timer_) {
+    hide_nudge_timer_->AbandonAndStop();
+  }
+
+  nudge_->Close();
+  nudge_.reset();
 }
 
 void SystemNudgeController::ForceCloseAnimatingNudge() {
@@ -146,6 +177,11 @@ void SystemNudgeController::HideNudge() {
   StartFadeAnimation(/*show=*/false);
 }
 
+void SystemNudgeController::OnSystemNudgePaused() {
+  // When a `SystemNudgePause` is created, close all nudges right away.
+  CloseNudge();
+}
+
 // static
 std::vector<std::pair<NudgeCatalogName, base::TimeTicks>>&
 SystemNudgeController::GetNudgeRegistry() {
@@ -155,19 +191,21 @@ SystemNudgeController::GetNudgeRegistry() {
 }
 
 void SystemNudgeController::StartFadeAnimation(bool show) {
-  hide_nudge_timer_.reset();
-  // Clean any pending animation observer.
-  hide_nudge_animation_observer_.reset();
-
   // `nudge_` may not exist if `StartFadeAnimation(false)` has been called
   // before a new nudge has been created.
-  if (!nudge_)
+  if (!nudge_ || !nudge_->widget()) {
     return;
+  }
 
   ui::Layer* layer = nudge_->widget()->GetLayer();
   if (layer->GetAnimator()->is_animating()) {
     return;
   }
+
+  hide_nudge_timer_.reset();
+  // Clean any pending animation observer.
+  hide_nudge_animation_observer_.reset();
+
   gfx::Rect widget_bounds = layer->bounds();
 
   gfx::Transform scaled_nudge_transform;

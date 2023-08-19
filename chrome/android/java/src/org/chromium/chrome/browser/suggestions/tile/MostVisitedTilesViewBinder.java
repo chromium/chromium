@@ -7,8 +7,8 @@ package org.chromium.chrome.browser.suggestions.tile;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.HORIZONTAL_EDGE_PADDINGS;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.HORIZONTAL_INTERVAL_PADDINGS;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_CONTAINER_VISIBLE;
-import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_MULTI_COLUMN_FEED_ON_TABLET_ENABLED;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_MVT_LAYOUT_VISIBLE;
+import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_NTP_AS_HOME_SURFACE_ENABLED;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.PLACEHOLDER_VIEW;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.UPDATE_INTERVAL_PADDINGS_TABLET;
 
@@ -51,10 +51,9 @@ final class MostVisitedTilesViewBinder {
             assert viewHolder.mvTilesLayout instanceof MostVisitedTilesCarouselLayout;
             ((MostVisitedTilesCarouselLayout) viewHolder.mvTilesLayout)
                     .setEdgePaddings(model.get(HORIZONTAL_EDGE_PADDINGS));
-        } else if (IS_MULTI_COLUMN_FEED_ON_TABLET_ENABLED == propertyKey) {
+        } else if (IS_NTP_AS_HOME_SURFACE_ENABLED == propertyKey) {
             ((MostVisitedTilesLayout) viewHolder.mvTilesLayout)
-                    .setIsMultiColumnFeedOnTabletEnabled(
-                            model.get(IS_MULTI_COLUMN_FEED_ON_TABLET_ENABLED));
+                    .setIsNtpAsHomeSurfaceEnabled(model.get(IS_NTP_AS_HOME_SURFACE_ENABLED));
         } else if (UPDATE_INTERVAL_PADDINGS_TABLET == propertyKey) {
             assert viewHolder.mvTilesLayout instanceof MostVisitedTilesCarouselLayout;
             ((MostVisitedTilesCarouselLayout) viewHolder.mvTilesLayout)

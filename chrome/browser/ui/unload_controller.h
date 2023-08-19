@@ -124,6 +124,8 @@ class UnloadController : public WebContentsCollection::Observer,
   // the state of the stack), pass in false.
   void ClearUnloadState(content::WebContents* web_contents, bool process_now);
 
+  bool IsUnclosableApp() const;
+
   bool is_calling_before_unload_handlers() {
     return !on_close_confirmed_.is_null();
   }

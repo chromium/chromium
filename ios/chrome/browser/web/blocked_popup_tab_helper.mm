@@ -10,8 +10,8 @@
 #import <utility>
 
 #import "base/apple/bundle_locations.h"
+#import "base/apple/foundation_util.h"
 #import "base/format_macros.h"
-#import "base/mac/foundation_util.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
@@ -28,10 +28,6 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/models/image_model.h"
 #import "ui/gfx/image/image.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 // The infobar to display when a popup is blocked.

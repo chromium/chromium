@@ -4,6 +4,7 @@
 {
     include: [
         "//src/sys/test_runners/elf/ambient_exec.shard.cml",
+        "inspect/offer.shard.cml",
         "syslog/client.shard.cml",
     ],
     program: {

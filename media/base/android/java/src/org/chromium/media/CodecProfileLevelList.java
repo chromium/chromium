@@ -176,6 +176,8 @@ class CodecProfileLevelList {
         switch (codec) {
             case VideoCodec.H264:
                 switch (level) {
+                    case CodecProfileLevel.AVCLevel1b:
+                        return 9;
                     case CodecProfileLevel.AVCLevel1:
                         return 10;
                     case CodecProfileLevel.AVCLevel11:
@@ -208,6 +210,10 @@ class CodecProfileLevelList {
                         return 51;
                     case CodecProfileLevel.AVCLevel52:
                         return 52;
+                    case CodecProfileLevel.AVCLevel61:
+                        return 61;
+                    case CodecProfileLevel.AVCLevel62:
+                        return 62;
                     default:
                         throw new UnsupportedCodecProfileException();
                 }

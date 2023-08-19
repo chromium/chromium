@@ -16,6 +16,7 @@
 #include "content/common/content_navigation_policy.h"
 #include "content/common/features.h"
 #include "content/public/browser/back_forward_cache.h"
+#include "content/public/browser/web_exposed_isolation_level.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -886,18 +887,19 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   EXPECT_EQ(
       GURL("https://a.test"),
       web_contents->GetPrimaryMainFrame()->GetSiteInstance()->GetSiteURL());
-  EXPECT_EQ(
-      ProcessLock::FromSiteInfo(SiteInfo(
-          GURL("https://a.test"), GURL("https://a.test"),
-          /*requires_origin_keyed_process=*/false,
-          /*requires_origin_keyed_process_by_default=*/false,
-          /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
-          StoragePartitionConfig::CreateDefault(browser_context),
-          WebExposedIsolationInfo::CreateNonIsolated(), /*is_guest=*/false,
-          /*does_site_request_dedicated_process_for_coop=*/false,
-          /*is_jit_disabled=*/false, /*is_pdf=*/false,
-          /*is_fenced=*/false)),
-      policy->GetProcessLock(process2->GetID()));
+  EXPECT_EQ(ProcessLock::FromSiteInfo(SiteInfo(
+                /*site_url=*/GURL("https://a.test"),
+                /*process_lock_url=*/GURL("https://a.test"),
+                /*requires_origin_keyed_process=*/false,
+                /*requires_origin_keyed_process_by_default=*/false,
+                /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
+                StoragePartitionConfig::CreateDefault(browser_context),
+                WebExposedIsolationInfo::CreateNonIsolated(),
+                WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
+                /*does_site_request_dedicated_process_for_coop=*/false,
+                /*is_jit_disabled=*/false, /*is_pdf=*/false,
+                /*is_fenced=*/false)),
+            policy->GetProcessLock(process2->GetID()));
 
   // Ensure also that the regular url process didn't change midway through the
   // navigation.

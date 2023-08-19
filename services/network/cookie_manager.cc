@@ -73,6 +73,11 @@ CookieManager::CookieManager(
 }
 
 CookieManager::~CookieManager() {
+  // The cookie manager will go away which means potentially clearing cookies if
+  // policy calls for it. This can be important for background mode for which
+  // renderers might stay active.
+  OnSettingsWillChange();
+
   if (session_cleanup_cookie_store_) {
     session_cleanup_cookie_store_->DeleteSessionCookies(
         cookie_settings_.CreateDeleteCookieOnExitPredicate());
@@ -81,6 +86,12 @@ CookieManager::~CookieManager() {
   // holds a pointer to this CookieManager's CookieSettings, which is about to
   // be destroyed.
   cookie_store_->SetCookieAccessDelegate(nullptr);
+}
+
+void CookieManager::AddSettingsWillChangeCallback(
+    SettingsChangeCallback callback) {
+  CHECK(!settings_will_change_callback_);
+  settings_will_change_callback_ = callback;
 }
 
 void CookieManager::AddReceiver(
@@ -154,6 +165,7 @@ void CookieManager::DeleteCanonicalCookie(
 
 void CookieManager::SetContentSettings(
     const ContentSettingsForOneType& settings) {
+  OnSettingsWillChange();
   cookie_settings_.set_content_settings(settings);
 }
 
@@ -283,6 +295,8 @@ void CookieManager::FlushCookieStore(FlushCookieStoreCallback callback) {
 void CookieManager::AllowFileSchemeCookies(
     bool allow,
     AllowFileSchemeCookiesCallback callback) {
+  OnSettingsWillChange();
+
   std::vector<std::string> cookieable_schemes(
       net::CookieMonster::kDefaultCookieableSchemes,
       net::CookieMonster::kDefaultCookieableSchemes +
@@ -294,21 +308,36 @@ void CookieManager::AllowFileSchemeCookies(
 }
 
 void CookieManager::SetForceKeepSessionState() {
+  OnSettingsWillChange();
   cookie_store_->SetForceKeepSessionState();
 }
 
 void CookieManager::BlockThirdPartyCookies(bool block) {
+  OnSettingsWillChange();
   cookie_settings_.set_block_third_party_cookies(block);
+}
+
+void CookieManager::BlockTruncatedCookies(bool block) {
+  OnSettingsWillChange();
+  cookie_settings_.set_block_truncated_cookies(block);
 }
 
 void CookieManager::SetContentSettingsForLegacyCookieAccess(
     const ContentSettingsForOneType& settings) {
+  OnSettingsWillChange();
   cookie_settings_.set_content_settings_for_legacy_cookie_access(settings);
+}
+
+void CookieManager::SetContentSettingsFor3pcd(
+    const ContentSettingsForOneType& settings) {
+  OnSettingsWillChange();
+  cookie_settings_.set_content_settings_for_3pcd(settings);
 }
 
 void CookieManager::SetStorageAccessGrantSettings(
     const ContentSettingsForOneType& settings,
     SetStorageAccessGrantSettingsCallback callback) {
+  OnSettingsWillChange();
   cookie_settings_.set_storage_access_grants(settings);
 
   // Signal our storage update is complete.
@@ -319,6 +348,7 @@ void CookieManager::SetAllStorageAccessSettings(
     const ContentSettingsForOneType& standard_settings,
     const ContentSettingsForOneType& top_level_settings,
     SetStorageAccessGrantSettingsCallback callback) {
+  OnSettingsWillChange();
   cookie_settings_.set_storage_access_grants(standard_settings);
   cookie_settings_.set_top_level_storage_access_grants(top_level_settings);
 
@@ -326,11 +356,18 @@ void CookieManager::SetAllStorageAccessSettings(
   std::move(callback).Run();
 }
 
+void CookieManager::OnSettingsWillChange() {
+  if (settings_will_change_callback_) {
+    settings_will_change_callback_.Run();
+  }
+}
+
 // static
 void CookieManager::ConfigureCookieSettings(
     const network::mojom::CookieManagerParams& params,
     CookieSettings* out) {
   out->set_block_third_party_cookies(params.block_third_party_cookies);
+  out->set_block_truncated_cookies(params.block_truncated_cookies);
   out->set_content_settings(params.settings);
   out->set_secure_origin_cookies_allowed_schemes(
       params.secure_origin_cookies_allowed_schemes);
@@ -378,12 +415,12 @@ CookieDeletionInfo DeletionFilterToInfo(mojom::CookieDeletionFilterPtr filter) {
   }
 
   if (filter->including_domains.has_value()) {
-    delete_info.domains_and_ips_to_delete.insert(
+    delete_info.domains_and_ips_to_delete.emplace(
         filter->including_domains.value().begin(),
         filter->including_domains.value().end());
   }
   if (filter->excluding_domains.has_value()) {
-    delete_info.domains_and_ips_to_ignore.insert(
+    delete_info.domains_and_ips_to_ignore.emplace(
         filter->excluding_domains.value().begin(),
         filter->excluding_domains.value().end());
   }

@@ -212,12 +212,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       UsageAndQuotaCallback callback);
 
-  void GetUsageAndQuotaWithBreakdown(
-      const blink::StorageKey& storage_key,
-      blink::mojom::StorageType type,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-      UsageAndQuotaWithBreakdownCallback callback);
-
   void GetBucketUsageAndQuota(
       BucketId bucket,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
@@ -237,6 +231,12 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
       blink::mojom::StorageType type,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceCallback<void(bool)> callback);
+
+  void GetStorageKeyUsageWithBreakdown(
+      const blink::StorageKey& storage_key,
+      blink::mojom::StorageType type,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      UsageWithBreakdownCallback callback);
 
   // DevTools Quota Override methods:
   std::unique_ptr<QuotaOverrideHandle> GetQuotaOverrideHandle();
@@ -291,7 +291,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
   //    constructed. This is because the easiest way to ensure that
   //    QuotaManagerImpl exposes its QuotaManagerProxy in a thread-safe manner
   //    is to have the QuotaManagerImpl's QuotaManagerProxy reference be const.
-  raw_ptr<QuotaManagerImpl, DanglingUntriaged> quota_manager_impl_
+  raw_ptr<QuotaManagerImpl, AcrossTasksDanglingUntriaged> quota_manager_impl_
       GUARDED_BY_CONTEXT(quota_manager_impl_sequence_checker_);
 
   // TaskRunner that accesses QuotaManagerImpl's sequence.

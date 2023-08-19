@@ -53,8 +53,11 @@ class GeolocationPermissionContextAndroid
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  GeolocationPermissionContextAndroid(content::BrowserContext* browser_context,
-                                      std::unique_ptr<Delegate> delegate);
+  GeolocationPermissionContextAndroid(
+      content::BrowserContext* browser_context,
+      std::unique_ptr<Delegate> delegate,
+      bool is_regular_profile,
+      std::unique_ptr<LocationSettings> settings_override_for_test = nullptr);
 
   GeolocationPermissionContextAndroid(
       const GeolocationPermissionContextAndroid&) = delete;
@@ -88,8 +91,8 @@ class GeolocationPermissionContextAndroid
                            ContentSetting content_setting,
                            bool is_one_time,
                            bool is_final_decision) override;
-  PermissionResult UpdatePermissionStatusWithDeviceStatus(
-      PermissionResult result,
+  content::PermissionResult UpdatePermissionStatusWithDeviceStatus(
+      content::PermissionResult result,
       const GURL& requesting_origin,
       const GURL& embedding_origin) const override;
 

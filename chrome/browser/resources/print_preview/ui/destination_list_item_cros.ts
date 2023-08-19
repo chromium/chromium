@@ -10,14 +10,14 @@ import './destination_list_item_style.css.js';
 import './icons.html.js';
 import '../strings.m.js';
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {removeHighlights} from 'chrome://resources/js/search_highlight_utils.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination, DestinationOrigin} from '../data/destination.js';
-import {ERROR_STRING_KEY_MAP, getPrinterStatusIcon, PrinterStatusReason} from '../data/printer_status_cros.js';
+import {ERROR_STRING_KEY_MAP, getPrinterStatusIcon, getStatusTextColorClass, PrinterStatusReason} from '../data/printer_status_cros.js';
 
 import {getTemplate} from './destination_list_item_cros.html.js';
 import {updateHighlights} from './highlight_utils.js';
@@ -206,6 +206,16 @@ export class PrintPreviewDestinationListItemElement extends
     }
 
     return this.destination.icon;
+  }
+
+  private computeStatusClass_(): string {
+    const statusClass = 'connection-status';
+    if (!this.destination || this.destination.printerStatusReason === null) {
+      return statusClass;
+    }
+
+    return `${statusClass} ${
+        getStatusTextColorClass(this.destination.printerStatusReason)}`;
   }
 
   /**

@@ -86,12 +86,12 @@ void SetSinkIdResolver::Start() {
       std::move(set_sink_id_completion_callback)
           .Run(media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_INTERNAL);
     } else {
+      audio_context_->NotifySetSinkIdBegins();
       auto set_sink_descriptor_callback = WTF::BindOnce(
           &RealtimeAudioDestinationNode::SetSinkDescriptor,
           WrapWeakPersistent(
               static_cast<RealtimeAudioDestinationNode*>(audio_destination)),
           sink_descriptor_, std::move(set_sink_id_completion_callback));
-
       audio_context_->GetExecutionContext()
           ->GetTaskRunner(TaskType::kInternalMediaRealTime)
           ->PostTask(FROM_HERE, std::move(set_sink_descriptor_callback));

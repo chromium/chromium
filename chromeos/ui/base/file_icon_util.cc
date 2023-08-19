@@ -372,6 +372,11 @@ gfx::ImageSkia GetChipIconForPath(const base::FilePath& filepath,
   return GetIconForPath(filepath, dark_background);
 }
 
+const gfx::VectorIcon& GetIconFromType(const std::string& icon_type) {
+  return GetIconParamsFromIconType(internal::GetIconTypeFromString(icon_type))
+      .icon;
+}
+
 gfx::ImageSkia GetIconFromType(const std::string& icon_type,
                                bool dark_background) {
   return GetVectorIconFromIconType(internal::GetIconTypeFromString(icon_type),

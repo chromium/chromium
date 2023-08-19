@@ -43,6 +43,7 @@ found in the LICENSE file.
     <dimen name="selection_tab_list_toggle_button_vertical_inset">22dp</dimen>
     <dimen name="tab_carousel_card_width">168dp</dimen>
     <dimen name="tasks_view_items_vertical_spacing">8dp</dimen>
+    <dimen name="tab_thumbnail_placeholder_vertical_offset">2dp</dimen>
 
     <!-- Dimens for incognito reauth promo message icon -->
     <dimen name="incognito_reauth_promo_message_icon_width">52dp</dimen>
@@ -79,7 +80,7 @@ found in the LICENSE file.
     <dimen name="tasks_surface_location_bar_url_button_size"> 20dp</dimen>
     <dimen name="tasks_surface_location_bar_url_button_start_margin"> 16dp</dimen>
 
-    <!-- Dimens for TabSelectionEditorV2 -->
+    <!-- Dimens for TabSelectionEditor -->
     <dimen name="tab_selection_editor_action_view_padding">14dp</dimen>
     <dimen name="tab_selection_editor_longpress_entry_threshold">20dp</dimen>
     <dimen name="tab_selection_editor_share_sheet_preview_thumbnail_padding">10dp</dimen>

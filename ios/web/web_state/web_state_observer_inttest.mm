@@ -5,12 +5,12 @@
 #import <memory>
 #import <string>
 
+#import "base/apple/foundation_util.h"
 #import "base/base_paths.h"
 #import "base/files/file_path.h"
 #import "base/functional/bind.h"
 #import "base/ios/ios_util.h"
 #import "base/ios/ns_error_util.h"
-#import "base/mac/foundation_util.h"
 #import "base/path_service.h"
 #import "base/scoped_observation.h"
 #import "base/strings/string_number_conversions.h"
@@ -29,13 +29,12 @@
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
-#import "ios/web/public/session/crw_navigation_item_storage.h"
-#import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/test/error_test_util.h"
 #import "ios/web/public/test/fakes/async_web_state_policy_decider.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/fakes/fake_web_state_observer.h"
 #import "ios/web/public/test/navigation_test_util.h"
+#import "ios/web/public/test/web_state_test_util.h"
 #import "ios/web/public/test/web_view_content_test_util.h"
 #import "ios/web/public/test/web_view_interaction_test_util.h"
 #import "ios/web/public/web_client.h"
@@ -60,10 +59,6 @@
 #import "url/gurl.h"
 #import "url/scheme_host_port.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace web {
 
 namespace {
@@ -81,19 +76,6 @@ const char kTestPageURL[] = "/pony.html";
 
 // A text string from the test HTML page at `kTestPageURL`.
 const char kTestSessionStoragePageText[] = "pony";
-
-// Returns a session storage with a single committed entry of a test HTML page.
-CRWSessionStorage* GetTestSessionStorage(const GURL& testUrl) {
-  CRWSessionStorage* result = [[CRWSessionStorage alloc] init];
-  result.stableIdentifier = [[NSUUID UUID] UUIDString];
-  result.uniqueIdentifier = SessionID::NewUnique();
-  result.lastCommittedItemIndex = 0;
-  CRWNavigationItemStorage* item = [[CRWNavigationItemStorage alloc] init];
-  [item setURL:testUrl];
-  [result setItemStorages:@[ item ]];
-  result.userAgentType = UserAgentType::MOBILE;
-  return result;
-}
 
 // Calls Stop() on the given WebState and returns a PolicyDecision which
 // allows the request to continue.
@@ -2873,9 +2855,9 @@ TEST_F(WebStateObserverTest, RestoreSessionOnline) {
 // Tests that if a saved session is provided when creating a new WebState, it is
 // restored after the first NavigationManager::LoadIfNecessary() call.
 TEST_F(WebStateObserverTest, RestoredFromHistory) {
-  auto web_state = WebState::CreateWithStorageSession(
-      WebState::CreateParams(GetBrowserState()),
-      GetTestSessionStorage(test_server_->GetURL(kTestPageURL)));
+  std::unique_ptr<WebState> web_state = test::CreateUnrealizedWebStateWithItems(
+      GetBrowserState(), /* last_committed_item_index= */ 0,
+      {test::PageInfo{.url = test_server_->GetURL(kTestPageURL)}});
 
   ASSERT_FALSE(test::IsWebViewContainingText(web_state.get(),
                                              kTestSessionStoragePageText));
@@ -2887,9 +2869,10 @@ TEST_F(WebStateObserverTest, RestoredFromHistory) {
 // Tests that NavigationManager::LoadIfNecessary() restores the page after
 // disabling and re-enabling web usage.
 TEST_F(WebStateObserverTest, DisableAndReenableWebUsage) {
-  auto web_state = WebState::CreateWithStorageSession(
-      WebState::CreateParams(GetBrowserState()),
-      GetTestSessionStorage(test_server_->GetURL(kTestPageURL)));
+  std::unique_ptr<WebState> web_state = test::CreateUnrealizedWebStateWithItems(
+      GetBrowserState(), /* last_committed_item_index= */ 0,
+      {test::PageInfo{.url = test_server_->GetURL(kTestPageURL)}});
+
   web_state->GetNavigationManager()->LoadIfNecessary();
   ASSERT_TRUE(test::WaitForWebViewContainingText(web_state.get(),
                                                  kTestSessionStoragePageText));
@@ -2909,7 +2892,7 @@ TEST_F(WebStateObserverTest, DisableAndReenableWebUsage) {
 TEST_F(WebStateObserverTest, PdfFileUrlNavigation) {
   // Construct a valid file:// URL.
   base::FilePath path;
-  base::PathService::Get(base::DIR_MODULE, &path);
+  base::PathService::Get(base::DIR_ASSETS, &path);
   path = path.Append(
       FILE_PATH_LITERAL("ios/testing/data/http_server_files/testpage.pdf"));
 

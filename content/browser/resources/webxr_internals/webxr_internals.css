@@ -1,0 +1,84 @@
+/* Copyright 2023 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+:root {
+  --dark-text-color: rgb(92, 97, 102);
+  --light-gray-color: #eee;
+  --section-padding: 1em;
+  --white-color: #fff;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+h1,
+h3 {
+  color: var(--dark-text-color);
+}
+
+.page-header {
+  background-color: var(--white-color);
+  border-bottom: 1px solid var(--light-gray-color);
+  padding: 10px;
+}
+
+.page-header h1 {
+  margin: 0;
+}
+
+.container {
+  display: flex;
+  height: 100vh;
+}
+
+.sidebar {
+  background-color: var(--white-color);
+  border-inline-end: 1px solid var(--light-gray-color);
+  box-sizing: border-box;
+  padding: 0;
+  width: 250px;
+}
+
+.sidebar .tab-button {
+  background-color: transparent;
+  background-image: none;
+  border: 0;
+  color: #999;
+  cursor: pointer;
+  font: inherit;
+  height: 40px;
+  overflow: hidden;
+  padding-inline-start: var(--section-padding);
+  text-align: start;
+  width: 100%;
+}
+
+.sidebar .tab-button.active {
+  background-image: none;
+  border-inline-start: 6px solid rgb(78, 87, 100);
+  border-radius: 0;
+  color: rgb(70, 78, 90);
+  padding-inline-start: 10px;
+}
+
+.sidebar .tab-button:hover {
+  background-color: #e0e0e0;
+  background-image: none;
+}
+
+.content {
+  flex-grow: 1;
+  padding: 10px;
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}

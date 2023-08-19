@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/webui/ash/internet_config_dialog.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/network_config_service.h"
+#include "ash/webui/common/trusted_types_util.h"
 #include "base/json/json_writer.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
@@ -152,10 +152,8 @@ std::string InternetConfigDialog::GetDialogArgs() const {
   // Provide the UI with information on whether a user is currently logged in.
   // This information is used to avoid an edge case when configuring a network.
   // For more information see b/253247084.
-  if (base::FeatureList::IsEnabled(ash::features::kHiddenNetworkMigration)) {
-    args.Set("loggedIn", base::Value(LoginState::IsInitialized() &&
-                                     LoginState::Get()->IsUserLoggedIn()));
-  }
+  args.Set("loggedIn", base::Value(LoginState::IsInitialized() &&
+                                   LoginState::Get()->IsUserLoggedIn()));
   std::string json;
   base::JSONWriter::Write(args, &json);
   return json;
@@ -168,8 +166,6 @@ InternetConfigDialogUI::InternetConfigDialogUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       Profile::FromWebUI(web_ui), chrome::kChromeUIInternetConfigDialogHost);
 
-  source->DisableTrustedTypesCSP();
-
   source->AddBoolean("isJellyEnabled", ::chromeos::features::IsJellyEnabled());
   AddInternetStrings(source);
   source->AddLocalizedString("title", IDS_SETTINGS_INTERNET_CONFIG);
@@ -179,6 +175,10 @@ InternetConfigDialogUI::InternetConfigDialogUI(content::WebUI* web_ui)
       base::make_span(kInternetConfigDialogResources,
                       kInternetConfigDialogResourcesSize),
       IDR_INTERNET_CONFIG_DIALOG_INTERNET_CONFIG_DIALOG_CONTAINER_HTML);
+  // Enabling trusted types via trusted_types_util must be done after
+  // webui::SetupWebUIDataSource to override the trusted type CSP with correct
+  // policies for JS WebUIs.
+  ash::EnableTrustedTypesCSP(source);
 }
 
 InternetConfigDialogUI::~InternetConfigDialogUI() {}

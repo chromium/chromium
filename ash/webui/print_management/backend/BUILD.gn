@@ -1,0 +1,33 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
+
+static_library("backend") {
+  sources = [
+    "print_management_delegate.h",
+    "print_management_handler.cc",
+    "print_management_handler.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/components/print_management/mojom",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "print_management_handler_unittest.cc" ]
+
+  deps = [
+    ":backend",
+    "//base",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

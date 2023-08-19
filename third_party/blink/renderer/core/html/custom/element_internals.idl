@@ -15,7 +15,7 @@ interface ElementInternals {
 
   [RaisesException] readonly attribute HTMLFormElement? form;
 
-  [RaisesException] void setValidity(ValidityStateFlags flags, optional DOMString message, optional Element anchor);
+  [RaisesException] void setValidity(ValidityStateFlags flags, optional DOMString message, optional HTMLElement anchor);
   [RaisesException] readonly attribute boolean willValidate;
   [RaisesException] readonly attribute ValidityState validity;
   [RaisesException, ImplementedAs=ValidationMessageForBinding] readonly attribute DOMString validationMessage;

@@ -43,15 +43,13 @@ class PNGImageDecoder;
 // This class decodes the ICO and CUR image formats.
 class PLATFORM_EXPORT ICOImageDecoder final : public ImageDecoder {
  public:
-  ICOImageDecoder(AlphaOption,
-                  const ColorBehavior&,
-                  wtf_size_t max_decoded_bytes);
+  ICOImageDecoder(AlphaOption, ColorBehavior, wtf_size_t max_decoded_bytes);
   ICOImageDecoder(const ICOImageDecoder&) = delete;
   ICOImageDecoder& operator=(const ICOImageDecoder&) = delete;
   ~ICOImageDecoder() override;
 
   // ImageDecoder:
-  String FilenameExtension() const override { return "ico"; }
+  String FilenameExtension() const override;
   const AtomicString& MimeType() const override;
   void OnSetData(SegmentReader*) override;
   gfx::Size Size() const override;
@@ -91,9 +89,9 @@ class PLATFORM_EXPORT ICOImageDecoder final : public ImageDecoder {
                              const IconDirectoryEntry& b);
 
   // ImageDecoder:
-  void DecodeSize() override { Decode(0, true); }
+  void DecodeSize() override;
   wtf_size_t DecodeFrameCount() override;
-  void Decode(wtf_size_t index) override { Decode(index, false); }
+  void Decode(wtf_size_t index) override;
 
   // TODO (scroggo): These functions are identical to functions in
   // BMPImageReader. Share code?

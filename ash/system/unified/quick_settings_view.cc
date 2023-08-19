@@ -6,6 +6,7 @@
 
 #include <numeric>
 
+#include "ash/ash_element_identifiers.h"
 #include "ash/system/media/quick_settings_media_view_container.h"
 #include "ash/system/media/unified_media_controls_container.h"
 #include "ash/system/tray/interacted_by_tap_recorder.h"
@@ -129,6 +130,8 @@ QuickSettingsView::QuickSettingsView(UnifiedSystemTrayController* controller)
           std::make_unique<InteractedByTapRecorder>(this)) {
   DCHECK(controller_);
   controller_->model()->pagination_model()->AddObserver(this);
+
+  SetProperty(views::kElementIdentifierKey, kQuickSettingsViewElementId);
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
 

@@ -22,11 +22,8 @@ group("deps") {
 
   # All the rest require Rust.
   if (toolchain_has_rust) {
-    # TODO(crbug/1439611): does not compile on Android platform.
-    if (!is_android) {
-      deps += [ "bindgen_test" ]
-    }
     deps += [
+      "bindgen_test",
       "test_aliased_deps",
       "test_aliased_deps:test_aliased_deps_exe",
       "test_bin_crate",
@@ -34,11 +31,11 @@ group("deps") {
       "test_rlib_crate:target1",
       "test_rlib_crate:target2",
       "test_rlib_crate:test_rlib_crate_associated_bin",
+      "test_rust_calling_cpp",
       "test_rust_exe",
       "test_rust_metadata:test_rust_metadata_cc_exe",
       "test_rust_metadata:test_rust_metadata_exe",
       "test_rust_multiple_dep_versions_exe",
-      "test_rust_shared_library",
       "test_rust_static_library",
       "test_serde_json_lenient",
       "test_simple_rust_exe",
@@ -53,7 +50,6 @@ group("deps") {
       deps += [
         "bindgen_test:bindgen_test_lib_unittests",
         "test_aliased_deps:test_aliased_deps_unittests",
-        "test_cpp_including_rust:test_cpp_including_rust_dylib_unittests",
         "test_cpp_including_rust:test_cpp_including_rust_unittests",
         "test_rlib_crate:target1_test_rlib_crate_v0_2_unittests",
         "test_rlib_crate:target2_test_rlib_crate_v0_2_unittests",
@@ -71,11 +67,24 @@ group("deps") {
         # `//build/rust/run_rs_bindings_from_cc.py`.
         #"test_rs_bindings_from_cc:test_rs_bindings_from_cc_unittests",
       ]
-      if ((!is_win || !is_component_build) && !is_mac) {
+    }
+
+    # Dylibs should only be built in component builds. We turn on flags which
+    # are incompatible with shared library compilation in non-component builds
+    # (such as code coverage https://crbug.com/1457533).
+    if (is_component_build) {
+      deps += [ "test_rust_shared_library" ]
+      if (can_build_rust_unit_tests) {
+        deps += [
+          "test_cpp_including_rust:test_cpp_including_rust_dylib_unittests",
+        ]
+
         # TODO(crbug.com/1442273): The shared library unittest EXE ends up
         # requiring the DLL to run, even though it does not use the DLL.
-        deps +=
-            [ "test_rust_shared_library:test_rust_shared_library_unittests" ]
+        if (!is_win && !is_mac) {
+          deps +=
+              [ "test_rust_shared_library:test_rust_shared_library_unittests" ]
+        }
       }
     }
 

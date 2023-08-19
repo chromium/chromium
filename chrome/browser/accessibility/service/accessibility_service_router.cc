@@ -36,6 +36,17 @@ void AccessibilityServiceRouter::BindAssistiveTechnologyController(
   }
 }
 
+void AccessibilityServiceRouter::ConnectDevToolsAgent(
+    ::mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent,
+    mojom::AssistiveTechnologyType type) {
+#if BUILDFLAG(ENABLE_ACCESSIBILITY_SERVICE)
+  LaunchIfNotRunning();
+  // Check to make sure the service was actually launched.
+  CHECK(accessibility_service_.is_bound());
+  accessibility_service_->ConnectDevToolsAgent(std::move(agent), type);
+#endif
+}
+
 void AccessibilityServiceRouter::LaunchIfNotRunning() {
   if (accessibility_service_.is_bound())
     return;

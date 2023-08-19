@@ -1,0 +1,38 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+source_set("editor_menu") {
+  sources = [
+    "editor_menu_controller_impl.cc",
+    "editor_menu_controller_impl.h",
+  ]
+
+  deps = [
+    ":views",
+    "//base",
+    "//chromeos/components/editor_menu/public/cpp",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+}
+
+source_set("views") {
+  sources = [
+    "editor_menu_chip_view.cc",
+    "editor_menu_chip_view.h",
+    "editor_menu_view.cc",
+    "editor_menu_view.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/vector_icons",
+    "//ui/aura",
+    "//ui/chromeos/styles:cros_tokens_color_mappings_generator",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+}

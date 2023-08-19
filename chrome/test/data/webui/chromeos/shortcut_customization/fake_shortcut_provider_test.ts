@@ -6,7 +6,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/js/fake_data.js';
 import {FakeShortcutProvider} from 'chrome://shortcut-customization/js/fake_shortcut_provider.js';
-import {Accelerator, AcceleratorConfig, AcceleratorConfigResult, AcceleratorSource, MojoAcceleratorConfig, MojoLayoutInfo} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {Accelerator, AcceleratorConfigResult, AcceleratorSource, MojoAcceleratorConfig, MojoLayoutInfo} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {AcceleratorResultData, AcceleratorsUpdatedObserverRemote} from 'chrome://shortcut-customization/mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
@@ -71,7 +71,7 @@ suite('fakeShortcutProviderTest', function() {
     // Set the expected value to be returned when `onAcceleratorsUpdated()` is
     // called.
     getProvider().setFakeAcceleratorsUpdated(
-        [fakeAcceleratorConfig as AcceleratorConfig]);
+        [fakeAcceleratorConfig as MojoAcceleratorConfig]);
 
     const remote = new FakeAcceleratorsUpdatedRemote();
     getProvider().addObserver(remote);
@@ -143,6 +143,13 @@ suite('fakeShortcutProviderTest', function() {
   });
 
   test('RestoreDefaultFake', () => {
+    const fakeResult: AcceleratorResultData = {
+      result: AcceleratorConfigResult.kSuccess,
+      shortcutName: undefined,
+    };
+
+    getProvider().setRestoreDefault(fakeResult);
+
     return getProvider()
         .restoreDefault(AcceleratorSource.kAsh, 0)
         .then(({result}) => {

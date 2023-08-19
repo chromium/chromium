@@ -17,9 +17,9 @@
 #include "chromeos/ash/services/network_config/cros_network_config.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/user_manager/scoped_user_manager.h"
 
 namespace user_manager {
-class ScopedUserManager;
 class User;
 }  // namespace user_manager
 
@@ -70,8 +70,10 @@ class NetworkTestHelper : public network_config::CrosNetworkConfigTestHelper {
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
   sync_preferences::TestingPrefServiceSyncable user_prefs_;
 
-  raw_ptr<const user_manager::User, ExperimentalAsh> primary_user_;
-  raw_ptr<const user_manager::User, ExperimentalAsh> secondary_user_;
+  raw_ptr<const user_manager::User, DanglingUntriaged | ExperimentalAsh>
+      primary_user_;
+  raw_ptr<const user_manager::User, DanglingUntriaged | ExperimentalAsh>
+      secondary_user_;
 
   TestingPrefServiceSimple local_state_;
 };

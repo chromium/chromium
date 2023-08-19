@@ -38,17 +38,19 @@ class CORE_EXPORT CSSSyntaxDefinition {
   }
 
   CSSSyntaxDefinition IsolatedCopy() const;
+  String ToString() const;
 
  private:
   friend class CSSSyntaxStringParser;
   friend class CSSSyntaxStringParserTest;
 
-  explicit CSSSyntaxDefinition(Vector<CSSSyntaxComponent>);
+  CSSSyntaxDefinition(Vector<CSSSyntaxComponent>, const String& original_text);
 
   // https://drafts.css-houdini.org/css-properties-values-api-1/#universal-syntax-descriptor
   static CSSSyntaxDefinition CreateUniversal();
 
   Vector<CSSSyntaxComponent> syntax_components_;
+  String original_text_;
 };
 
 }  // namespace blink

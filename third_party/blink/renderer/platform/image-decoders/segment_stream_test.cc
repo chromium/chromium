@@ -609,30 +609,34 @@ TEST(SegmentStreamTest, HasLengthShouldBeSupported) {
 namespace {
 
 ::testing::AssertionResult IsCleared(const SegmentStream& segment_stream) {
-  if (segment_stream.IsCleared())
+  if (segment_stream.IsCleared()) {
     return ::testing::AssertionSuccess();
+  }
 
   return ::testing::AssertionFailure() << "SegmentStream is not clear";
 }
 
 ::testing::AssertionResult IsAtEnd(const SegmentStream& segment_stream) {
-  if (segment_stream.isAtEnd())
+  if (segment_stream.isAtEnd()) {
     return ::testing::AssertionSuccess();
+  }
 
   return ::testing::AssertionFailure() << "SegmentStream is not at the end";
 }
 
 ::testing::AssertionResult PositionIsZero(const SegmentStream& segment_stream) {
-  if (segment_stream.getPosition() == 0ul)
+  if (segment_stream.getPosition() == 0ul) {
     return ::testing::AssertionSuccess();
+  }
 
   return ::testing::AssertionFailure() << "SegmentStream position is not 0";
 }
 
 ::testing::AssertionResult PositionIsInsideBuffer(
     const SegmentStream& segment_stream) {
-  if (segment_stream.getPosition() == kInsideBufferPosition)
+  if (segment_stream.getPosition() == kInsideBufferPosition) {
     return ::testing::AssertionSuccess();
+  }
 
   return ::testing::AssertionFailure()
          << "SegmentStream position is not inside the buffer";
@@ -640,24 +644,27 @@ namespace {
 
 ::testing::AssertionResult PositionIsAtEndOfBuffer(
     const SegmentStream& segment_stream) {
-  if (segment_stream.getPosition() == kBufferAllocationSize)
+  if (segment_stream.getPosition() == kBufferAllocationSize) {
     return ::testing::AssertionSuccess();
+  }
 
   return ::testing::AssertionFailure()
          << "SegmentStream position is not at the end of the buffer";
 }
 
 ::testing::AssertionResult LengthIsZero(const SegmentStream& segment_stream) {
-  if (segment_stream.getLength() == 0ul)
+  if (segment_stream.getLength() == 0ul) {
     return ::testing::AssertionSuccess();
+  }
 
   return ::testing::AssertionFailure() << "SegmentStream length is not 0";
 }
 
 ::testing::AssertionResult LengthIsAllocationSize(
     const SegmentStream& segment_stream) {
-  if (segment_stream.getLength() == kBufferAllocationSize)
+  if (segment_stream.getLength() == kBufferAllocationSize) {
     return ::testing::AssertionSuccess();
+  }
 
   return ::testing::AssertionFailure()
          << "SegmentStream length is not the allocation size";

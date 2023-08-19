@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<body>
+<input id="i1" type="number" value=1 style="writing-mode: vertical-rl; direction: ltr;">
+<input id="i2" type="number" value=2 style="writing-mode: vertical-rl; direction: rtl;">
+<input id="i3" type="number" value=3 style="writing-mode: vertical-lr; direction: ltr;">
+<input id="i4" type="number" value=4 style="writing-mode: vertical-lr; direction: rtl;">
+
+<input id="i5" type="number" value=5 style="writing-mode: vertical-rl;" dir="ltr">
+<input id="i6" type="number" value=6 style="writing-mode: vertical-rl;" dir="rtl">
+<input id="i7" type="number" value=7 style="writing-mode: vertical-lr;" dir="ltr">
+<input id="i8" type="number" value=8 style="writing-mode: vertical-lr;" dir="rtl">
+
+<script>
+var input = document.getElementById('i4');
+// A spinbutton should be showing on the top (left)
+input.focus();
+</script>
+</body>
+</html>
+

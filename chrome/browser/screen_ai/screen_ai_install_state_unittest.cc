@@ -8,25 +8,41 @@
 #include "base/scoped_observation.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace screen_ai {
+namespace {
 
-class ScreenAIInstallStateTest : public testing::Test,
-                                 ScreenAIInstallState::Observer {
+class TestScreenAIInstallState : public screen_ai::ScreenAIInstallState {
  public:
-  ScreenAIInstallStateTest() {
-    ScreenAIInstallState::GetInstance()->ResetForTesting();
-  }
+  TestScreenAIInstallState() = default;
 
-  void StartObservation() {
-    component_downloaded_observer_.Observe(ScreenAIInstallState::GetInstance());
-  }
+  TestScreenAIInstallState(const TestScreenAIInstallState&) = delete;
+  TestScreenAIInstallState& operator=(const TestScreenAIInstallState&) = delete;
 
-  void MakeComponentDownloaded() {
+  ~TestScreenAIInstallState() override = default;
+
+  void SetLastUsageTime() override {}
+
+  void DownloadComponentInternal() override {
     // The passed file path is not used and just indicates that the component
     // exists.
     ScreenAIInstallState::GetInstance()->SetComponentFolder(
         base::FilePath(FILE_PATH_LITERAL("tmp")));
   }
+};
+
+}  // namespace
+
+namespace screen_ai {
+
+class ScreenAIInstallStateTest : public testing::Test,
+                                 ScreenAIInstallState::Observer {
+ public:
+  ScreenAIInstallStateTest() = default;
+
+  void StartObservation() {
+    component_downloaded_observer_.Observe(ScreenAIInstallState::GetInstance());
+  }
+
+  void DownloadComponent() { test_install_state_.DownloadComponentInternal(); }
 
   void StateChanged(ScreenAIInstallState::State state) override {
     if (state == ScreenAIInstallState::State::kDownloaded) {
@@ -41,23 +57,25 @@ class ScreenAIInstallStateTest : public testing::Test,
                           ScreenAIInstallState::Observer>
       component_downloaded_observer_{this};
 
+  TestScreenAIInstallState test_install_state_;
   bool component_downloaded_received_ = false;
 };
 
-TEST_F(ScreenAIInstallStateTest, NeverDownloaded) {
-  StartObservation();
-  EXPECT_FALSE(ComponentDownloadedReceived());
-}
-
-TEST_F(ScreenAIInstallStateTest, DownloadedBeforeObservation) {
-  MakeComponentDownloaded();
+TEST_F(ScreenAIInstallStateTest, AddingObserverTriggersDownload) {
   StartObservation();
   EXPECT_TRUE(ComponentDownloadedReceived());
 }
 
-TEST_F(ScreenAIInstallStateTest, DownloadedAfterObservation) {
+TEST_F(ScreenAIInstallStateTest, DownloadedBeforeObservation) {
+  DownloadComponent();
   StartObservation();
-  MakeComponentDownloaded();
+  EXPECT_TRUE(ComponentDownloadedReceived());
+}
+
+TEST_F(ScreenAIInstallStateTest, ObservationAfterFailure) {
+  ScreenAIInstallState::GetInstance()->SetStateForTesting(
+      screen_ai::ScreenAIInstallState::State::kFailed);
+  StartObservation();
   EXPECT_TRUE(ComponentDownloadedReceived());
 }
 

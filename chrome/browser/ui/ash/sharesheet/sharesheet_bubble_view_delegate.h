@@ -54,6 +54,7 @@ class SharesheetBubbleViewDelegate : public ::sharesheet::SharesheetUiDelegate {
 
  protected:
   friend class SharesheetBubbleViewTest;
+  friend class SharesheetBubbleViewNearbyShareBrowserTest;
 
   SharesheetBubbleView* GetBubbleViewForTesting();
 

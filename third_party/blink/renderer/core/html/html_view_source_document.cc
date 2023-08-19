@@ -116,8 +116,7 @@ void HTMLViewSourceDocument::CreateContainingTable() {
   line_number_ = 0;
 
   // Create a checkbox to control line wrapping.
-  auto* checkbox =
-      MakeGarbageCollected<HTMLInputElement>(*this, CreateElementFlags());
+  auto* checkbox = MakeGarbageCollected<HTMLInputElement>(*this);
   checkbox->setAttribute(html_names::kTypeAttr, input_type_names::kCheckbox);
   checkbox->addEventListener(
       event_type_names::kChange,
@@ -310,9 +309,31 @@ void HTMLViewSourceDocument::AddText(const String& text,
   if (text.empty())
     return;
 
-  // Add in the content, splitting on newlines.
+  // Add in the content, splitting on linebreaks.
+  // \r and \n both count as linebreaks, but \r\n only counts as one linebreak.
   Vector<String> lines;
-  text.Split('\n', true, lines);
+  {
+    unsigned start_pos = 0;
+    unsigned pos = 0;
+    while (pos < text.length()) {
+      if (text[pos] == '\r') {
+        lines.push_back(text.Substring(start_pos, pos - start_pos));
+        pos++;
+        if (pos < text.length() && text[pos] == '\n') {
+          pos++;  // \r\n counts as a single line break.
+        }
+        start_pos = pos;
+      } else if (text[pos] == '\n') {
+        lines.push_back(text.Substring(start_pos, pos - start_pos));
+        pos++;
+        start_pos = pos;
+      } else {
+        pos++;
+      }
+    }
+    lines.push_back(text.Substring(start_pos, text.length() - start_pos));
+  }
+
   unsigned size = lines.size();
   for (unsigned i = 0; i < size; i++) {
     String substring = lines[i];

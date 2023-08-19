@@ -29,6 +29,7 @@
 #include "media/base/bitstream_buffer.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
+#include "media/base/video_encoder_metrics_provider.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "media/base/video_util.h"
@@ -109,12 +110,14 @@ class ExternalVideoEncoder::VEAClientImpl final
     : public VideoEncodeAccelerator::Client,
       public base::RefCountedThreadSafe<VEAClientImpl> {
  public:
+  using EncoderStatusChangeCallback =
+      base::RepeatingCallback<void(media::EncoderStatus, OperationalStatus)>;
   VEAClientImpl(
       const scoped_refptr<CastEnvironment>& cast_environment,
       const scoped_refptr<base::SingleThreadTaskRunner>& encoder_task_runner,
       std::unique_ptr<media::VideoEncodeAccelerator> vea,
       double max_frame_rate,
-      StatusChangeCallback status_change_cb)
+      EncoderStatusChangeCallback status_change_cb)
       : cast_environment_(cast_environment),
         task_runner_(encoder_task_runner),
         max_frame_rate_(max_frame_rate),
@@ -160,9 +163,11 @@ class ExternalVideoEncoder::VEAClientImpl final
 
     cast_environment_->PostTask(
         CastEnvironment::MAIN, FROM_HERE,
-        base::BindOnce(status_change_cb_, encoder_active_
-                                              ? STATUS_INITIALIZED
-                                              : STATUS_CODEC_INIT_FAILED));
+        base::BindOnce(
+            status_change_cb_,
+            encoder_active_ ? media::EncoderStatus::Codes::kOk
+                            : media::EncoderStatus::Codes::kEncoderFailedEncode,
+            encoder_active_ ? STATUS_INITIALIZED : STATUS_CODEC_INIT_FAILED));
   }
 
   void SetBitRate(int bit_rate) {
@@ -271,7 +276,7 @@ class ExternalVideoEncoder::VEAClientImpl final
 
     cast_environment_->PostTask(
         CastEnvironment::MAIN, FROM_HERE,
-        base::BindOnce(status_change_cb_, STATUS_CODEC_RUNTIME_ERROR));
+        base::BindOnce(status_change_cb_, status, STATUS_CODEC_RUNTIME_ERROR));
 
     // Flush all in progress frames to avoid any getting stuck.
     while (!in_progress_frame_encodes_.empty())
@@ -579,7 +584,8 @@ class ExternalVideoEncoder::VEAClientImpl final
   const scoped_refptr<CastEnvironment> cast_environment_;
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   const double max_frame_rate_;
-  const StatusChangeCallback status_change_cb_;  // Must be run on MAIN thread.
+  // Must be run on MAIN thread.
+  const EncoderStatusChangeCallback status_change_cb_;
   std::unique_ptr<media::VideoEncodeAccelerator> video_encode_accelerator_;
   bool encoder_active_;
   FrameId next_frame_id_;
@@ -630,11 +636,13 @@ class ExternalVideoEncoder::VEAClientImpl final
 ExternalVideoEncoder::ExternalVideoEncoder(
     const scoped_refptr<CastEnvironment>& cast_environment,
     const FrameSenderConfig& video_config,
+    VideoEncoderMetricsProvider& metrics_provider,
     const gfx::Size& frame_size,
     FrameId first_frame_id,
     StatusChangeCallback status_change_cb,
     const CreateVideoEncodeAcceleratorCallback& create_vea_cb)
     : cast_environment_(cast_environment),
+      metrics_provider_(metrics_provider),
       frame_size_(frame_size),
       bit_rate_(video_config.start_bitrate) {
   DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
@@ -663,6 +671,12 @@ void ExternalVideoEncoder::DestroyClientSoon() {
     client_->task_runner()->PostTask(
         FROM_HERE, base::DoNothingWithBoundArgs(std::move(client_)));
   }
+}
+
+void ExternalVideoEncoder::SetErrorToMetricsProvider(
+    const media::EncoderStatus& encoder_status) {
+  DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
+  metrics_provider_->SetError(encoder_status);
 }
 
 bool ExternalVideoEncoder::EncodeVideoFrame(
@@ -741,36 +755,43 @@ void ExternalVideoEncoder::OnCreateVideoEncodeAccelerator(
 
   // Create a callback that wraps the StatusChangeCallback. It monitors when a
   // fatal error occurs and schedules destruction of the VEAClientImpl.
-  StatusChangeCallback wrapped_status_change_cb = base::BindRepeating(
-      [](base::WeakPtr<ExternalVideoEncoder> self,
-         const StatusChangeCallback& status_change_cb,
-         OperationalStatus status) {
-        if (self.get()) {
-          switch (status) {
-            case STATUS_UNINITIALIZED:
-            case STATUS_INITIALIZED:
-            case STATUS_CODEC_REINIT_PENDING:
-              break;
+  VEAClientImpl::EncoderStatusChangeCallback wrapped_status_change_cb =
+      base::BindRepeating(
+          [](base::WeakPtr<ExternalVideoEncoder> self,
+             const StatusChangeCallback& status_change_cb,
+             media::EncoderStatus encoder_status, OperationalStatus status) {
+            if (self.get()) {
+              if (!encoder_status.is_ok()) {
+                self->SetErrorToMetricsProvider(encoder_status);
+              }
+              switch (status) {
+                case STATUS_UNINITIALIZED:
+                case STATUS_INITIALIZED:
+                case STATUS_CODEC_REINIT_PENDING:
+                  break;
 
-            case STATUS_INVALID_CONFIGURATION:
-            case STATUS_UNSUPPORTED_CODEC:
-            case STATUS_CODEC_INIT_FAILED:
-            case STATUS_CODEC_RUNTIME_ERROR:
-              // Something bad happened. Destroy the client to: 1) fail-out any
-              // currently in-progress frame encodes; and 2) prevent future
-              // EncodeVideoFrame() calls from queuing frames indefinitely.
-              self->DestroyClientSoon();
-              break;
-          }
-        }
-        status_change_cb.Run(status);
-      },
-      weak_factory_.GetWeakPtr(), status_change_cb);
+                case STATUS_INVALID_CONFIGURATION:
+                case STATUS_UNSUPPORTED_CODEC:
+                case STATUS_CODEC_INIT_FAILED:
+                case STATUS_CODEC_RUNTIME_ERROR:
+                  // Something bad happened. Destroy the client to: 1) fail-out
+                  // any currently in-progress frame encodes; and 2) prevent
+                  // future EncodeVideoFrame() calls from queuing frames
+                  // indefinitely.
+                  self->DestroyClientSoon();
+                  break;
+              }
+            }
+            status_change_cb.Run(status);
+          },
+          weak_factory_.GetWeakPtr(), status_change_cb);
 
   DCHECK(!client_);
   client_ = new VEAClientImpl(cast_environment_, encoder_task_runner,
                               std::move(vea), video_config.max_frame_rate,
                               std::move(wrapped_status_change_cb));
+  metrics_provider_->Initialize(codec_profile, frame_size_,
+                                /*is_hardware_encoder=*/true);
   client_->task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&VEAClientImpl::Initialize, client_, frame_size_,
@@ -780,10 +801,12 @@ void ExternalVideoEncoder::OnCreateVideoEncodeAccelerator(
 SizeAdaptableExternalVideoEncoder::SizeAdaptableExternalVideoEncoder(
     const scoped_refptr<CastEnvironment>& cast_environment,
     const FrameSenderConfig& video_config,
+    std::unique_ptr<VideoEncoderMetricsProvider> metrics_provider,
     StatusChangeCallback status_change_cb,
     const CreateVideoEncodeAcceleratorCallback& create_vea_cb)
     : SizeAdaptableVideoEncoderBase(cast_environment,
                                     video_config,
+                                    std::move(metrics_provider),
                                     std::move(status_change_cb)),
       create_vea_cb_(create_vea_cb) {}
 
@@ -793,8 +816,8 @@ SizeAdaptableExternalVideoEncoder::~SizeAdaptableExternalVideoEncoder() =
 std::unique_ptr<VideoEncoder>
 SizeAdaptableExternalVideoEncoder::CreateEncoder() {
   return std::make_unique<ExternalVideoEncoder>(
-      cast_environment(), video_config(), frame_size(), next_frame_id(),
-      CreateEncoderStatusChangeCallback(), create_vea_cb_);
+      cast_environment(), video_config(), metrics_provider(), frame_size(),
+      next_frame_id(), CreateEncoderStatusChangeCallback(), create_vea_cb_);
 }
 
 QuantizerEstimator::QuantizerEstimator() = default;

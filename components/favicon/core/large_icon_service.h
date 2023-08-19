@@ -6,6 +6,7 @@
 #define COMPONENTS_FAVICON_CORE_LARGE_ICON_SERVICE_H_
 
 #include "base/task/cancelable_task_tracker.h"
+#include "components/favicon/core/large_favicon_provider.h"
 #include "components/favicon_base/favicon_callback.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -19,43 +20,10 @@ namespace favicon {
 
 // The large icon service provides methods to access large icons. The actual
 // implementation of this uses Google's favicon service.
-class LargeIconService : public KeyedService {
+class LargeIconService : public KeyedService, public LargeFaviconProvider {
  public:
   LargeIconService(const LargeIconService&) = delete;
   LargeIconService& operator=(const LargeIconService&) = delete;
-
-  // Requests the best large icon for the page at |page_url|.
-  // Case 1. An icon exists whose size is >= MAX(|min_source_size_in_pixel|,
-  // |desired_size_in_pixel|):
-  // - If |desired_size_in_pixel| == 0: returns icon as is.
-  // - Else: returns the icon resized to |desired_size_in_pixel|.
-  // Case 2. An icon exists whose size is >= |min_source_size_in_pixel| and <
-  // |desired_size_in_pixel|:
-  // - Same as 1 with the biggest icon.
-  // Case 4. An icon exists whose size is < |min_source_size_in_pixel|:
-  // - Extracts dominant color of smaller image, returns a fallback icon style
-  //   that has a matching background.
-  // Case 5. No icon exists.
-  // - Returns the default fallback icon style.
-  // For cases 4 and 5, this function returns the style of the fallback icon
-  // instead of rendering an icon so clients can render the icon themselves.
-  virtual base::CancelableTaskTracker::TaskId
-  GetLargeIconRawBitmapOrFallbackStyleForPageUrl(
-      const GURL& page_url,
-      int min_source_size_in_pixel,
-      int desired_size_in_pixel,
-      favicon_base::LargeIconCallback callback,
-      base::CancelableTaskTracker* tracker) = 0;
-
-  // Behaves the same as GetLargeIconRawBitmapOrFallbackStyleForPageUrl(), only
-  // returns the large icon (if available) decoded.
-  virtual base::CancelableTaskTracker::TaskId
-  GetLargeIconImageOrFallbackStyleForPageUrl(
-      const GURL& page_url,
-      int min_source_size_in_pixel,
-      int desired_size_in_pixel,
-      favicon_base::LargeIconImageCallback callback,
-      base::CancelableTaskTracker* tracker) = 0;
 
   // Behaves the same as GetLargeIconRawBitmapOrFallbackStyleForPageUrl, except
   // uses icon URL instead of page URL.

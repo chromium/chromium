@@ -62,7 +62,6 @@ CommandSource::CommandResults SimpleCommandSource::GetCommands(
       {IDC_FOCUS_TOOLBAR, u"Focus toolbar"},
       {IDC_OPEN_FILE, u"Open file"},
       {IDC_TASK_MANAGER, u"Show task manager"},
-      {IDC_TRANSLATE_PAGE, u"Google Translate"},
       {IDC_SHOW_BOOKMARK_MANAGER, u"Show bookmark manager"},
       {IDC_SHOW_DOWNLOADS, u"Show downloads"},
       {IDC_CLEAR_BROWSING_DATA, u"Clear browsing data"},

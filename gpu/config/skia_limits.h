@@ -11,6 +11,8 @@
 
 namespace gpu {
 
+GPU_EXPORT size_t DetermineGraphiteImageProviderCacheLimitFromAvailableMemory();
+
 GPU_EXPORT void DetermineGrCacheLimitsFromAvailableMemory(
     size_t* max_resource_cache_bytes,
     size_t* max_glyph_cache_texture_bytes);

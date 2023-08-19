@@ -31,19 +31,6 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram
-    name="BackgroundFetch.EventDispatchFailure.Dispatch{BackgroundFetchEvents}"
-    enum="ServiceWorkerStatusCode" expires_after="2022-06-30">
-  <owner>peter@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
-  <summary>
-    Records the Service Worker status code that caused a Background Fetch API
-    event to fail dispatching whilst trying to dispatch an event on the active
-    Service Worker. {BackgroundFetchEvents}
-  </summary>
-  <token key="BackgroundFetchEvents" variants="BackgroundFetchEvents"/>
-</histogram>
-
-<histogram
     name="BackgroundFetch.EventDispatchFailure.FindWorker{BackgroundFetchEvents}"
     enum="ServiceWorkerStatusCode" expires_after="2022-06-30">
   <owner>peter@chromium.org</owner>
@@ -67,28 +54,6 @@ chromium-metrics-reviews@google.com.
     {BackgroundFetchEvents}
   </summary>
   <token key="BackgroundFetchEvents" variants="BackgroundFetchEvents"/>
-</histogram>
-
-<histogram name="BackgroundFetch.EventDispatchResult{BackgroundFetchEvents}"
-    enum="BackgroundFetchEventDispatchResult" expires_after="2022-06-30">
-  <owner>peter@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
-  <summary>
-    Records the result of dispatching one of the Background Fetch API events to
-    the Service Worker associated with the event. {BackgroundFetchEvents}
-  </summary>
-  <token key="BackgroundFetchEvents" variants="BackgroundFetchEvents"/>
-</histogram>
-
-<histogram name="BackgroundFetch.HasDuplicateRequests" enum="Boolean"
-    expires_after="2022-06-30">
-  <owner>peter@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
-  <summary>
-    Records whether the fetch requests contains any duplicate URLs. This is
-    called after the provided requests are verified, but before the fetch is
-    started.
-  </summary>
 </histogram>
 
 <histogram name="BackgroundMode.OnStartup.IsBackgroundModePrefEnabled"

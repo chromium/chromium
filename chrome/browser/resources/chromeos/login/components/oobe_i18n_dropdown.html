@@ -4,7 +4,7 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<style include="md-select">
+<style include="md-select cros-color-overrides">
   :host {
     font-size: var(--oobe-select-font-size);
     line-height: var(--oobe-select-line-height);
@@ -13,6 +13,10 @@ found in the LICENSE file.
 
   select {
     height: var(--oobe-select-height);
+  }
+
+  :host-context(.jelly-enabled) select.md-select {
+    --md-select-bg-color: var(--cros-sys-input_field_on_shaded);
   }
 </style>
 <select id="select" aria-label$="[[labelForAria]]" class="md-select" >

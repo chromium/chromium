@@ -23,7 +23,6 @@ import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,15 +34,12 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.ChromeWindow;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.keyboard_accessory.FakeKeyboard;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.ui.test.util.UiDisableIf;
 
@@ -54,7 +50,6 @@ import java.util.concurrent.TimeoutException;
  */
 
 @RunWith(ChromeJUnit4ClassRunner.class)
-@EnableFeatures({ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class CreditCardAccessoryIntegrationTest {
     @Rule
@@ -84,7 +79,6 @@ public class CreditCardAccessoryIntegrationTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.AUTOFILL_MANUAL_FALLBACK_ANDROID})
     public void testCreditCardSheetAvailable_whenManualFallbackEnabled() {
         mHelper.loadTestPage(false);
 
@@ -95,33 +89,6 @@ public class CreditCardAccessoryIntegrationTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_MANUAL_FALLBACK_FOR_VIRTUAL_CARDS})
-    @DisableFeatures({ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY,
-            ChromeFeatureList.AUTOFILL_MANUAL_FALLBACK_ANDROID})
-    public void
-    testCreditCardSheetAvailable_whenManualFallbackForVirtualCardsEnabled() {
-        mHelper.loadTestPage(false);
-
-        CriteriaHelper.pollUiThread(() -> {
-            return mHelper.getOrCreateCreditCardAccessorySheet() != null;
-        }, "Credit Card sheet should be bound to accessory sheet.");
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures({ChromeFeatureList.AUTOFILL_MANUAL_FALLBACK_ANDROID,
-            ChromeFeatureList.AUTOFILL_ENABLE_MANUAL_FALLBACK_FOR_VIRTUAL_CARDS})
-    public void
-    testCreditCardSheetUnavailableWithoutFeature() {
-        mHelper.loadTestPage(false);
-
-        Assert.assertNull("Credit Card sheet should not have been created.",
-                mHelper.getOrCreateCreditCardAccessorySheet());
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.AUTOFILL_MANUAL_FALLBACK_ANDROID})
     @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/1182626
     public void testDisplaysEmptyStateMessageWithoutSavedCards() throws TimeoutException {
         mHelper.loadTestPage(false);
@@ -144,7 +111,6 @@ public class CreditCardAccessoryIntegrationTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.AUTOFILL_MANUAL_FALLBACK_ANDROID})
     @DisabledTest(message = "https://crbug.com/1392789, https://crbug.com/1182626")
     public void testFillsSuggestionOnClick() throws TimeoutException {
         loadTestPage(FakeKeyboard::new);

@@ -9,8 +9,6 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageButton;
 
-import androidx.annotation.VisibleForTesting;
-
 /**
  * <p>
  * A RadioButton with a primary and descriptive text to the right, and an aux button at the end.
@@ -137,7 +135,6 @@ public class RadioButtonWithDescriptionAndAuxButton extends RadioButtonWithDescr
     /**
      * @return the aux button living inside this widget.
      */
-    @VisibleForTesting
     public ImageButton getAuxButtonForTests() {
         return mAuxButton;
     }

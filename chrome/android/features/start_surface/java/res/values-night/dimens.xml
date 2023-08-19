@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <!-- Surface Polish -->
+  <dimen name="home_surface_background_color_elevation">@dimen/default_elevation_0</dimen>
+  <dimen name="home_surface_ui_background_color_elevation">@dimen/default_elevation_1</dimen>
+
+  <!-- Single Tab module on phones -->
+  <dimen name="favicon_background_color_elevation">@dimen/default_elevation_2</dimen>
+</resources>

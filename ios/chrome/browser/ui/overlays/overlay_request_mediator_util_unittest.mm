@@ -10,10 +10,6 @@
 #import "ios/chrome/browser/ui/overlays/overlay_request_mediator.h"
 #import "testing/platform_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // Fake request config types for use in tests.
 DEFINE_TEST_OVERLAY_REQUEST_CONFIG(FirstConfig);

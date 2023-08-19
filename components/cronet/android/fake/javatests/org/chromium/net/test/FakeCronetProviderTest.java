@@ -6,9 +6,6 @@ package org.chromium.net.test;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import android.content.Context;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -39,26 +36,26 @@ public class FakeCronetProviderTest {
     @SmallTest
     public void testGetName() {
         String expectedName = "Fake-Cronet-Provider";
-        assertEquals(expectedName, mProvider.getName());
+        assertThat(mProvider.getName()).isEqualTo(expectedName);
     }
 
     @Test
     @SmallTest
     public void testGetVersion() {
-        assertEquals(ImplVersion.getCronetVersion(), mProvider.getVersion());
+        assertThat(mProvider.getVersion()).isEqualTo(ImplVersion.getCronetVersion());
     }
 
     @Test
     @SmallTest
     public void testIsEnabled() {
-        assertTrue(mProvider.isEnabled());
+        assertThat(mProvider.isEnabled()).isTrue();
     }
 
     @Test
     @SmallTest
     public void testHashCode() {
         FakeCronetProvider otherProvider = new FakeCronetProvider(mContext);
-        assertEquals(otherProvider.hashCode(), mProvider.hashCode());
+        assertThat(mProvider.hashCode()).isEqualTo(otherProvider.hashCode());
     }
 
     @Test

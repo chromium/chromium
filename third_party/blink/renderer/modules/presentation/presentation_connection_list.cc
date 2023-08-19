@@ -28,8 +28,7 @@ PresentationConnectionList::connections() const {
 void PresentationConnectionList::AddedEventListener(
     const AtomicString& event_type,
     RegisteredEventListener& registered_listener) {
-  EventTargetWithInlineData::AddedEventListener(event_type,
-                                                registered_listener);
+  EventTarget::AddedEventListener(event_type, registered_listener);
   if (event_type == event_type_names::kConnectionavailable) {
     UseCounter::Count(
         GetExecutionContext(),
@@ -65,7 +64,7 @@ bool PresentationConnectionList::IsEmpty() {
 
 void PresentationConnectionList::Trace(Visitor* visitor) const {
   visitor->Trace(connections_);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
 }
 

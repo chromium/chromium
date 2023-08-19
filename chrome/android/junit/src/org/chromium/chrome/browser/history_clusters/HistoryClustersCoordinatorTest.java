@@ -66,7 +66,6 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.ClipboardImpl;
 import org.chromium.ui.display.DisplayAndroidManager;
-import org.chromium.ui.util.AccessibilityUtil;
 import org.chromium.url.GURL;
 
 import java.io.Serializable;
@@ -190,8 +189,6 @@ public class HistoryClustersCoordinatorTest {
     @Mock
     private HistoryClustersMetricsLogger mMetricsLogger;
     @Mock
-    private AccessibilityUtil mAccessibilityUtil;
-    @Mock
     private SnackbarManager mSnackbarManager;
 
     private ActivityScenario<ChromeTabbedActivity> mActivityScenario;
@@ -238,7 +235,7 @@ public class HistoryClustersCoordinatorTest {
                     mActivity = activity;
                     mHistoryClustersCoordinator = new HistoryClustersCoordinator(mProfile, activity,
                             mTemplateUrlService, mHistoryClustersDelegate, mMetricsLogger,
-                            mSelectionDelegate, mAccessibilityUtil, mSnackbarManager);
+                            mSelectionDelegate, mSnackbarManager);
                 });
     }
 
@@ -389,7 +386,7 @@ public class HistoryClustersCoordinatorTest {
         assertNotNull(clipboardManager);
         ((ClipboardImpl) Clipboard.getInstance())
                 .overrideClipboardManagerForTesting(clipboardManager);
-        clipboardManager.setPrimaryClip(ClipData.newPlainText(null, "dummy_val"));
+        clipboardManager.setPrimaryClip(ClipData.newPlainText(null, "placeholder_val"));
         doReturn("http://spec1.com").when(mGurl1).getSpec();
 
         HistoryClustersToolbar toolbar = mHistoryClustersCoordinator.getActivityContentView()

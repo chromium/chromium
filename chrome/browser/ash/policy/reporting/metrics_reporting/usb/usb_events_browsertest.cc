@@ -32,6 +32,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ::testing::Eq;
+
 namespace reporting {
 namespace {
 
@@ -165,6 +167,8 @@ IN_PROC_BROWSER_TEST_F(UsbEventsBrowserTest,
   EmitUsbAddEventForTesting();
 
   Record record = std::get<1>(missive_observer_.GetNextEnqueuedRecord());
+  ASSERT_TRUE(record.has_source_info());
+  EXPECT_THAT(record.source_info().source(), Eq(SourceInfo::ASH));
   MetricData record_data;
 
   // First record should be the USB added event
@@ -196,6 +200,9 @@ IN_PROC_BROWSER_TEST_F(
   std::tuple<Priority, Record> entry =
       missive_observer_.GetNextEnqueuedRecord();
   Record record = std::get<1>(entry);
+  ASSERT_TRUE(record.has_source_info());
+  EXPECT_THAT(record.source_info().source(), Eq(SourceInfo::ASH));
+
   MetricData record_data;
   ASSERT_TRUE(record_data.ParseFromString(record.data()));
 
@@ -227,6 +234,9 @@ IN_PROC_BROWSER_TEST_F(
   std::tuple<Priority, Record> entry =
       missive_observer_.GetNextEnqueuedRecord();
   Record record = std::get<1>(entry);
+  ASSERT_TRUE(record.has_source_info());
+  EXPECT_THAT(record.source_info().source(), Eq(SourceInfo::ASH));
+
   MetricData record_data;
   ASSERT_TRUE(record_data.ParseFromString(record.data()));
 

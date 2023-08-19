@@ -12,8 +12,10 @@ source_set("internals") {
 
   deps = [
     "../:feature_list",
+    "../:pref_names",
     "../:shopping_service",
     "//base",
+    "//components/prefs",
     "//mojo/public/cpp/bindings",
     "//ui/base",
     "//url",

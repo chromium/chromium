@@ -14,6 +14,10 @@
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_mixer.h"
+#include "ui/color/color_provider.h"
+#include "ui/color/color_recipe.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor_extra/shadow.h"
 #include "ui/wm/core/shadow_controller_delegate.h"
@@ -254,28 +258,78 @@ TEST_F(ShadowControllerTest, TransientParentKeepsActiveShadow) {
   EXPECT_EQ(kShadowElevationActiveWindow, shadow1->desired_elevation());
 }
 
+// Tests that the shadow color will be updated by setting the shadow colors map.
+TEST_F(ShadowControllerTest, SetColorsMapToShadow) {
+  std::unique_ptr<aura::Window> window(new aura::Window(nullptr));
+  window->SetType(aura::client::WINDOW_TYPE_NORMAL);
+  window->Init(ui::LAYER_TEXTURED);
+  ParentWindow(window.get());
+  window->SetBounds(gfx::Rect(10, 20, 300, 400));
+  window->Show();
+
+  ui::Shadow* shadow = ShadowController::GetShadowForWindow(window.get());
+  // Before setting color map, the shadow should has default colors.
+  const auto* default_details = shadow->details_for_testing();
+  SkColor default_key_color = SkColorSetA(SK_ColorBLACK, 0x3d);
+  SkColor default_ambient_color = SkColorSetA(SK_ColorBLACK, 0x1f);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  default_ambient_color = SkColorSetA(SK_ColorBLACK, 0x1a);
+#endif
+  EXPECT_EQ(default_details->values[0].color(), default_key_color);
+  EXPECT_EQ(default_details->values[1].color(), default_ambient_color);
+
+  // Change shadow colors map.
+  ui::ColorProvider color_provider;
+  ui::ColorMixer& mixer = color_provider.AddMixer();
+  mixer[ui::kColorShadowValueKeyShadowElevationTwelve] = {SK_ColorYELLOW};
+  mixer[ui::kColorShadowValueAmbientShadowElevationTwelve] = {SK_ColorRED};
+  mixer[ui::kColorShadowValueKeyShadowElevationTwentyFour] = {SK_ColorGREEN};
+  mixer[ui::kColorShadowValueAmbientShadowElevationTwentyFour] = {SK_ColorBLUE};
+  color_provider.GenerateColorMap();
+
+  shadow->SetElevationToColorsMap(
+      ShadowController::GenerateShadowColorsMap(&color_provider));
+
+  // After setting color map, the shadow colors will be updated.
+  const auto* inactive_details = shadow->details_for_testing();
+  EXPECT_EQ(inactive_details->values[0].color(), SK_ColorYELLOW);
+  EXPECT_EQ(inactive_details->values[1].color(), SK_ColorRED);
+
+  // Activate window will change shadow colors.
+  ActivateWindow(window.get());
+  const auto* active_details = shadow->details_for_testing();
+  EXPECT_EQ(active_details->values[0].color(), SK_ColorGREEN);
+  EXPECT_EQ(active_details->values[1].color(), SK_ColorBLUE);
+}
+
 namespace {
 
 class TestShadowControllerDelegate : public wm::ShadowControllerDelegate {
  public:
-  TestShadowControllerDelegate() {}
+  TestShadowControllerDelegate() = default;
 
   TestShadowControllerDelegate(const TestShadowControllerDelegate&) = delete;
   TestShadowControllerDelegate& operator=(const TestShadowControllerDelegate&) =
       delete;
 
-  ~TestShadowControllerDelegate() override {}
+  ~TestShadowControllerDelegate() override = default;
 
   bool ShouldShowShadowForWindow(const aura::Window* window) override {
     return window->parent();
   }
+
+  bool ShouldHaveRoundedShadowForWindow(const aura::Window* window) override {
+    return true;
+  }
+
+  void ApplyColorThemeToWindowShadow(aura::Window* window) override {}
 };
 
 }  // namespace
 
 TEST_F(ShadowControllerTest, UpdateShadowWhenAddedToParent) {
   InstallShadowController(std::make_unique<TestShadowControllerDelegate>());
-  std::unique_ptr<aura::Window> window1(new aura::Window(NULL));
+  std::unique_ptr<aura::Window> window1(new aura::Window(nullptr));
   window1->SetType(aura::client::WINDOW_TYPE_NORMAL);
   window1->Init(ui::LAYER_TEXTURED);
   window1->SetBounds(gfx::Rect(10, 20, 300, 400));

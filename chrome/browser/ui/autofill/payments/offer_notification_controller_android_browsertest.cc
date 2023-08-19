@@ -73,6 +73,9 @@ class OfferNotificationControllerAndroidBrowserTest
   // AndroidBrowserTest
   void SetUpOnMainThread() override {
     personal_data_ = PersonalDataManagerFactory::GetForProfile(GetProfile());
+    // Mimic the user is signed in so payments integration is considered
+    // enabled.
+    personal_data_->SetSyncingForTest(true);
     // Wait for Personal Data Manager to be fully loaded to prevent that
     // spurious notifications deceive the tests.
     WaitForPersonalDataManagerToBeLoaded(GetProfile());

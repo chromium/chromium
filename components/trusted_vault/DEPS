@@ -1,8 +1,7 @@
 include_rules = [
+  "+components/keyed_service/core",
   "+components/os_crypt/sync",
   "+components/signin/public",
-  # TODO(crbug.com/1423343): Avoid dependencies to components/sync.
-  "+components/sync/service",
   "+crypto",
   "+google_apis",
   "+net",

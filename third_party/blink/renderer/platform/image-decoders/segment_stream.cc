@@ -31,8 +31,9 @@ bool SegmentStream::IsCleared() const {
 }
 
 size_t SegmentStream::read(void* buffer, size_t size) {
-  if (IsCleared())
+  if (IsCleared()) {
     return 0;
+  }
 
   size = std::min(size, reader_->size() - position_);
 
@@ -49,8 +50,9 @@ size_t SegmentStream::read(void* buffer, size_t size) {
 }
 
 size_t SegmentStream::peek(void* buffer, size_t size) const {
-  if (IsCleared())
+  if (IsCleared()) {
     return 0;
+  }
 
   size = std::min(size, reader_->size() - position_);
 
@@ -60,10 +62,12 @@ size_t SegmentStream::peek(void* buffer, size_t size) const {
     const char* segment = nullptr;
     size_t bytes_peeked =
         reader_->GetSomeData(segment, position_ + total_bytes_peeked);
-    if (!bytes_peeked)
+    if (!bytes_peeked) {
       break;
-    if (bytes_peeked > size)
+    }
+    if (bytes_peeked > size) {
       bytes_peeked = size;
+    }
 
     memcpy(buffer_as_char_ptr, segment, bytes_peeked);
     buffer_as_char_ptr += bytes_peeked;
@@ -83,6 +87,14 @@ bool SegmentStream::rewind() {
   return true;
 }
 
+bool SegmentStream::hasPosition() const {
+  return true;
+}
+
+size_t SegmentStream::getPosition() const {
+  return position_;
+}
+
 bool SegmentStream::seek(size_t position) {
   position_ = position;
   return true;
@@ -94,9 +106,14 @@ bool SegmentStream::move(long offset) {
   return true;
 }
 
+bool SegmentStream::hasLength() const {
+  return true;
+}
+
 size_t SegmentStream::getLength() const {
-  if (reader_)
+  if (reader_) {
     return reader_->size();
+  }
 
   return 0;
 }

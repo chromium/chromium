@@ -55,13 +55,12 @@ class RTree {
   template <typename Container>
   void Build(const Container& items);
 
-  // Build helper that takes a container, a function used to get gfx::Rect
-  // from each item, and a function used to get the payload for each item. That
-  // is, "bounds_getter(items, i);" should return a gfx::Rect representing the
-  // bounds of ith item, and "payload_getter(items, i);" should return the
-  // payload (aka T) of ith item.
-  template <typename Container, typename BoundsFunctor, typename PayloadFunctor>
-  void Build(const Container& items,
+  // Build helper that takes a functions to provide rects and payloads.
+  // `bounds_getter(i)` should return the gfx::Rect representing the bounds of
+  // the ith item, and `payload_getter(i)` should return the payload (aka T) of
+  // the ith item.
+  template <typename BoundsFunctor, typename PayloadFunctor>
+  void Build(size_t item_count,
              const BoundsFunctor& bounds_getter,
              const PayloadFunctor& payload_getter);
 
@@ -69,6 +68,13 @@ class RTree {
   //  - GetBoundsOrDie will CHECK.
   //  - Search* will have degraded performance.
   bool has_valid_bounds() const { return has_valid_bounds_; }
+
+  // Given a query rect, for each element that intersects the rect,
+  // result_handler is called with the payload and the rect of the element,
+  // in the order they appeared in the initial container.
+  template <typename ResultFunctor>
+  void Search(const gfx::Rect& query,
+              const ResultFunctor& result_handler) const;
 
   // Given a query rect, returns elements that intersect the rect. Elements are
   // returned in the order they appeared in the initial container.
@@ -125,23 +131,17 @@ class RTree {
     explicit Node(uint16_t level) : level(level) {}
   };
 
+  template <typename ResultFunctor>
   void SearchRecursive(Node<T>* root,
                        const gfx::Rect& query,
-                       std::vector<T>* results,
-                       std::vector<gfx::Rect>* rects = nullptr) const;
-  void SearchRefsRecursive(Node<T>* root,
-                           const gfx::Rect& query,
-                           std::vector<const T*>* results) const;
+                       const ResultFunctor& result_handler) const;
 
   // The following two functions are slow fallback versions of SearchRecursive
   // and SearchRefsRecursive for when !has_valid_bounds().
+  template <typename ResultFunctor>
   void SearchRecursiveFallback(Node<T>* root,
                                const gfx::Rect& query,
-                               std::vector<T>* results,
-                               std::vector<gfx::Rect>* rects = nullptr) const;
-  void SearchRefsRecursiveFallback(Node<T>* root,
-                                   const gfx::Rect& query,
-                                   std::vector<const T*>* results) const;
+                               const ResultFunctor& result_handler) const;
 
   // Consumes the input array.
   Branch<T> BuildRecursive(std::vector<Branch<T>>* branches, int level);
@@ -168,26 +168,26 @@ RTree<T>::~RTree() = default;
 template <typename T>
 template <typename Container>
 void RTree<T>::Build(const Container& items) {
-  Build(items,
-        [](const Container& items, size_t index) { return items[index]; },
-        [](const Container& items, size_t index) { return index; });
+  Build(
+      items.size(), [&items](size_t index) { return items[index]; },
+      [](size_t index) { return index; });
 }
 
 template <typename T>
-template <typename Container, typename BoundsFunctor, typename PayloadFunctor>
-void RTree<T>::Build(const Container& items,
+template <typename BoundsFunctor, typename PayloadFunctor>
+void RTree<T>::Build(size_t item_count,
                      const BoundsFunctor& bounds_getter,
                      const PayloadFunctor& payload_getter) {
   DCHECK_EQ(0u, num_data_elements_);
 
   std::vector<Branch<T>> branches;
-  branches.reserve(items.size());
+  branches.reserve(item_count);
 
-  for (size_t i = 0; i < items.size(); i++) {
-    const gfx::Rect& bounds = bounds_getter(items, i);
+  for (size_t i = 0; i < item_count; i++) {
+    const gfx::Rect& bounds = bounds_getter(i);
     if (bounds.IsEmpty())
       continue;
-    branches.emplace_back(payload_getter(items, i), bounds);
+    branches.emplace_back(payload_getter(i), bounds);
   }
 
   num_data_elements_ = branches.size();
@@ -311,60 +311,56 @@ auto RTree<T>::BuildRecursive(std::vector<Branch<T>>* branches, int level)
 }
 
 template <typename T>
+template <typename ResultFunctor>
+void RTree<T>::Search(const gfx::Rect& query,
+                      const ResultFunctor& result_handler) const {
+  if (num_data_elements_ == 0) {
+    return;
+  }
+  if (!has_valid_bounds_) {
+    SearchRecursiveFallback(root_.subtree.get(), query, result_handler);
+  } else if (query.Intersects(root_.bounds)) {
+    SearchRecursive(root_.subtree.get(), query, result_handler);
+  }
+}
+
+template <typename T>
 void RTree<T>::Search(const gfx::Rect& query,
                       std::vector<T>* results,
                       std::vector<gfx::Rect>* rects) const {
   results->clear();
-  if (num_data_elements_ == 0)
-    return;
-  if (!has_valid_bounds_) {
-    SearchRecursiveFallback(root_.subtree.get(), query, results, rects);
-  } else if (query.Intersects(root_.bounds)) {
-    SearchRecursive(root_.subtree.get(), query, results, rects);
+  if (rects) {
+    rects->clear();
   }
+  Search(query, [results, rects](const T& payload, const gfx::Rect& rect) {
+    results->push_back(payload);
+    if (rects) {
+      rects->push_back(rect);
+    }
+  });
 }
 
 template <typename T>
 void RTree<T>::SearchRefs(const gfx::Rect& query,
                           std::vector<const T*>* results) const {
   results->clear();
-  if (num_data_elements_ == 0)
-    return;
-  if (!has_valid_bounds_) {
-    SearchRefsRecursiveFallback(root_.subtree.get(), query, results);
-  } else if (query.Intersects(root_.bounds)) {
-    SearchRefsRecursive(root_.subtree.get(), query, results);
-  }
+  Search(query, [results](const T& payload, const gfx::Rect&) {
+    results->push_back(&payload);
+  });
 }
 
 template <typename T>
+template <typename ResultFunctor>
 void RTree<T>::SearchRecursive(Node<T>* node,
                                const gfx::Rect& query,
-                               std::vector<T>* results,
-                               std::vector<gfx::Rect>* rects) const {
+                               const ResultFunctor& result_handler) const {
   for (uint16_t i = 0; i < node->num_children; ++i) {
     if (query.Intersects(node->children[i].bounds)) {
       if (node->level == 0) {
-        results->push_back(node->children[i].payload);
-        if (rects)
-          rects->push_back(node->children[i].bounds);
+        result_handler(node->children[i].payload, node->children[i].bounds);
       } else {
-        SearchRecursive(node->children[i].subtree.get(), query, results, rects);
+        SearchRecursive(node->children[i].subtree.get(), query, result_handler);
       }
-    }
-  }
-}
-
-template <typename T>
-void RTree<T>::SearchRefsRecursive(Node<T>* node,
-                                   const gfx::Rect& query,
-                                   std::vector<const T*>* results) const {
-  for (uint16_t i = 0; i < node->num_children; ++i) {
-    if (query.Intersects(node->children[i].bounds)) {
-      if (node->level == 0)
-        results->push_back(&node->children[i].payload);
-      else
-        SearchRefsRecursive(node->children[i].subtree.get(), query, results);
     }
   }
 }
@@ -372,34 +368,18 @@ void RTree<T>::SearchRefsRecursive(Node<T>* node,
 // When !has_valid_bounds(), any non-leaf bounds may have overflowed and be
 // invalid. Iterate over the entire tree, checking bounds at each leaf.
 template <typename T>
-void RTree<T>::SearchRecursiveFallback(Node<T>* node,
-                                       const gfx::Rect& query,
-                                       std::vector<T>* results,
-                                       std::vector<gfx::Rect>* rects) const {
+template <typename ResultFunctor>
+void RTree<T>::SearchRecursiveFallback(
+    Node<T>* node,
+    const gfx::Rect& query,
+    const ResultFunctor& result_handler) const {
   for (uint16_t i = 0; i < node->num_children; ++i) {
     if (node->level == 0) {
       if (query.Intersects(node->children[i].bounds)) {
-        results->push_back(node->children[i].payload);
-        if (rects)
-          rects->push_back(node->children[i].bounds);
+        result_handler(node->children[i].payload, node->children[i].bounds);
       }
     } else {
-      SearchRecursive(node->children[i].subtree.get(), query, results, rects);
-    }
-  }
-}
-
-template <typename T>
-void RTree<T>::SearchRefsRecursiveFallback(
-    Node<T>* node,
-    const gfx::Rect& query,
-    std::vector<const T*>* results) const {
-  for (uint16_t i = 0; i < node->num_children; ++i) {
-    if (node->level == 0) {
-      if (query.Intersects(node->children[i].bounds))
-        results->push_back(&node->children[i].payload);
-    } else {
-      SearchRefsRecursive(node->children[i].subtree.get(), query, results);
+      SearchRecursive(node->children[i].subtree.get(), query, result_handler);
     }
   }
 }

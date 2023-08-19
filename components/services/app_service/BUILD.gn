@@ -4,7 +4,10 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-# The primary public target for the App Service component. Prefer to use this instead of depending on individual targets inside the component.
+# The primary public target for the App Service component. Prefer to use this
+# instead of depending on individual targets inside the component.
+# :instance_update is not included in this target as it introduces a dependency
+# on //content.
 source_set("app_service") {
   public_deps = [
     "//components/services/app_service/public/cpp:app_file_handling",
@@ -14,22 +17,13 @@ source_set("app_service") {
     "//components/services/app_service/public/cpp:app_url_handling",
     "//components/services/app_service/public/cpp:crosapi_utils",
     "//components/services/app_service/public/cpp:icon_loader",
-    "//components/services/app_service/public/cpp:icon_types",
     "//components/services/app_service/public/cpp:intents",
-    "//components/services/app_service/public/cpp:macros",
-    "//components/services/app_service/public/cpp:preferred_app",
     "//components/services/app_service/public/cpp:preferred_apps",
     "//components/services/app_service/public/cpp:protocol_handling",
-    "//components/services/app_service/public/cpp:run_on_os_login",
     "//components/services/app_service/public/cpp:types",
   ]
 
   if (is_chromeos) {
-    public_deps += [ "//components/services/app_service/public/cpp:browser_app_instance_registry_update" ]
-  }
-
-  if (is_chromeos_ash) {
-    public_deps +=
-        [ "//components/services/app_service/public/cpp:instance_update" ]
+    public_deps += [ "//components/services/app_service/public/cpp/shortcut" ]
   }
 }

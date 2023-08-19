@@ -48,6 +48,10 @@ const char kDataUrlInSvgUseEnabled[] = "data-url-in-svg-use-enabled";
 const char kDefaultTileWidth[] = "default-tile-width";
 const char kDefaultTileHeight[] = "default-tile-height";
 
+// If set, the unload event cannot be disabled by default by Permissions-Policy.
+const char kForcePermissionPolicyUnloadDefaultEnabled[] =
+    "force-permission-policy-unload-default-enabled";
+
 // Disallow image animations to be reset to the beginning to avoid skipping
 // many frames. Only effective if compositor image animations are enabled.
 const char kDisableImageAnimationResync[] = "disable-image-animation-resync";
@@ -71,9 +75,6 @@ const char kDisablePreferCompositingToLCDText[] =
 
 // Disables RGBA_4444 textures.
 const char kDisableRGBA4444Textures[] = "disable-rgba-4444-textures";
-
-// Disable multithreaded, compositor scrolling of web content.
-const char kDisableThreadedScrolling[] = "disable-threaded-scrolling";
 
 // Disable rasterizer that writes directly to GPU memory associated with tiles.
 const char kDisableZeroCopy[] = "disable-zero-copy";
@@ -118,6 +119,11 @@ extern const char kIntensiveWakeUpThrottlingPolicy[] =
     "intensive-wake-up-throttling-policy";
 extern const char kIntensiveWakeUpThrottlingPolicy_ForceDisable[] = "0";
 extern const char kIntensiveWakeUpThrottlingPolicy_ForceEnable[] = "1";
+
+// A command line to indicate if there ia any legacy tech report urls being set.
+// If so, we will send report from blink to browser process.
+extern const char kLegacyTechReportPolicyEnabled[] =
+    "legacy-tech-report-policy-enabled";
 
 // Sets the width and height above which a composited layer will get tiled.
 const char kMaxUntiledLayerHeight[] = "max-untiled-layer-height";

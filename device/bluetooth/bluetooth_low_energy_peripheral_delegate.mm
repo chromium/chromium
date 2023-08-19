@@ -20,7 +20,7 @@ class BluetoothLowEnergyPeripheralBridge {
   BluetoothLowEnergyPeripheralBridge(BluetoothLowEnergyDeviceMac* device_mac)
       : device_mac_(device_mac) {}
 
-  ~BluetoothLowEnergyPeripheralBridge() {}
+  ~BluetoothLowEnergyPeripheralBridge() = default;
 
   void DidModifyServices(NSArray* invalidatedServices) {
     device_mac_->DidModifyServices(invalidatedServices);

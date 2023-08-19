@@ -20,6 +20,7 @@ import org.chromium.base.Log;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.InputMethodManagerWrapper;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
@@ -50,7 +51,7 @@ public class InputMethodManagerWrapperImpl implements InputMethodManagerWrapper 
         mWindowAndroid = windowAndroid;
         mDelegate = delegate;
         mOptimizeImmHideCalls =
-                ContentFeatureList.isEnabled(ContentFeatureList.OPTIMIZE_IMM_HIDE_CALLS);
+                ContentFeatureMap.isEnabled(ContentFeatureList.OPTIMIZE_IMM_HIDE_CALLS);
     }
 
     @Override

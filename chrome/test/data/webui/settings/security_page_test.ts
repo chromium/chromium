@@ -44,7 +44,7 @@ function pagePrefs() {
   };
 }
 
-suite('SecurityPage', function() {
+suite('Main', function() {
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
   let testPrivacyBrowserProxy: TestPrivacyPageBrowserProxy;
   let page: SettingsSecurityPageElement;
@@ -55,7 +55,6 @@ suite('SecurityPage', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       enableSecurityKeysSubpage: true,
-      showHttpsOnlyModeSetting: true,
       showChromeRootStoreCertificates: true,
     });
   });
@@ -155,15 +154,46 @@ suite('SecurityPage', function() {
     assertEquals(lockedSubLabel, toggle.subLabel);
   });
 
+  test('UpdatedStandardProtectionDropdown', function() {
+    const standardProtection = page.$.safeBrowsingStandard;
+    const updatedSpSubLabel =
+        loadTimeData.getString('safeBrowsingStandardDescUpdated');
+    assertEquals(updatedSpSubLabel, standardProtection.subLabel);
+
+    const passwordsLeakToggle = page.$.passwordsLeakToggle;
+    const updatedPasswordLeakLabel =
+        loadTimeData.getString('passwordsLeakDetectionLabelUpdated');
+    assertEquals(updatedPasswordLeakLabel, passwordsLeakToggle.label);
+
+    const updatedPasswordLeakSubLabel = loadTimeData.getString(
+        'passwordsLeakDetectionGeneralDescriptionUpdated');
+    assertEquals(updatedPasswordLeakSubLabel, passwordsLeakToggle.subLabel);
+  });
+
+  test('UpdatedEnhancedProtectionText', function() {
+    const enhancedProtection = page.$.safeBrowsingEnhanced;
+    const epSubLabel =
+        loadTimeData.getString('safeBrowsingEnhancedDescUpdated');
+    assertEquals(epSubLabel, enhancedProtection.subLabel);
+
+    const noProtection = page.$.safeBrowsingDisabled;
+    const npSubLabel = loadTimeData.getString('safeBrowsingNoneDescUpdated');
+    assertEquals(npSubLabel, noProtection.subLabel);
+
+    page.$.safeBrowsingEnhanced.click();
+    flush();
+    // Learn more label should be visible.
+    assertTrue(isChildVisible(page, '#learnMoreLabelContainer'));
+  });
 });
 
-suite('SecurityPage_FlagsDisabled', function() {
+suite('FlagsDisabled', function() {
   let page: SettingsSecurityPageElement;
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
       enableSecurityKeysSubpage: false,
-      showHttpsOnlyModeSetting: false,
+      enableFriendlierSafeBrowsingSettings: false,
     });
   });
 
@@ -198,19 +228,55 @@ suite('SecurityPage_FlagsDisabled', function() {
   });
   // </if>
 
-  test('HttpsOnlyModeSettingHidden', function() {
-    assertFalse(isChildVisible(page, '#httpsOnlyModeToggle'));
+  // TODO(crbug.com/1466292): Remove once friendlier safe browsing settings
+  // standard protection is launched.
+  test('NotUpdatedStandardProtectionDropdown', function() {
+    const standardProtection = page.$.safeBrowsingStandard;
+    const spSubLabel = loadTimeData.getString('safeBrowsingStandardDesc');
+    assertEquals(spSubLabel, standardProtection.subLabel);
+
+    const passwordsLeakToggle = page.$.passwordsLeakToggle;
+    const passwordLeakLabel =
+        loadTimeData.getString('passwordsLeakDetectionLabel');
+    assertEquals(passwordLeakLabel, passwordsLeakToggle.label);
+
+    const passwordLeakSubLabel =
+        loadTimeData.getString('passwordsLeakDetectionGeneralDescription');
+    assertEquals(passwordLeakSubLabel, passwordsLeakToggle.subLabel);
+  });
+
+  // TODO(crbug.com/1470385): Remove once friendlier safe browsing settings
+  // enhanced protection is launched.
+  test('NotUpdatedEnhancedProtectionDropdown', function() {
+    // Enhanced protection sublabel should not be the updated one.
+    const enhancedProtection = page.$.safeBrowsingEnhanced;
+    const epSubLabel = loadTimeData.getString('safeBrowsingEnhancedDesc');
+    assertEquals(epSubLabel, enhancedProtection.subLabel);
+
+    // The updated description container should not be visible.
+    assertFalse(isChildVisible(page, '#enhancedProtectionDescContainer'));
+
+    // No protection sublabel should not be the updated one.
+    const noProtection = page.$.safeBrowsingDisabled;
+    const npSubLabel = loadTimeData.getString('safeBrowsingNoneDesc');
+    assertEquals(npSubLabel, noProtection.subLabel);
   });
 });
 
 // Separate test suite for tests specifically related to Safe Browsing controls.
-suite('SecurityPage_SafeBrowsing', function() {
+suite('SafeBrowsing', function() {
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
   let testPrivacyBrowserProxy: TestPrivacyPageBrowserProxy;
   let page: SettingsSecurityPageElement;
   // <if expr="chrome_root_store_supported">
   let openWindowProxy: TestOpenWindowProxy;
   // </if>
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      enableFriendlierSafeBrowsingSettings: false,
+    });
+  });
 
   setup(function() {
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
@@ -720,5 +786,4 @@ suite('SecurityPage_SafeBrowsing', function() {
     assertFalse(page.$.safeBrowsingEnhanced.expanded);
     assertFalse(page.$.safeBrowsingStandard.expanded);
   });
-
 });

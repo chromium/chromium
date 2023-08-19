@@ -55,7 +55,7 @@ class Encryptor : public base::RefCountedThreadSafe<Encryptor> {
     ~Handle();
 
     // Adds piece of data to the record.
-    void AddToRecord(base::StringPiece data,
+    void AddToRecord(std::string_view data,
                      base::OnceCallback<void(Status)> cb);
 
     // Closes and encrypts the record, hands over the data (encrypted with
@@ -88,7 +88,7 @@ class Encryptor : public base::RefCountedThreadSafe<Encryptor> {
   // To affect specific record, must happen before Handle::CloseRecord
   // (it is OK to do it after OpenRecord and Handle::AddToRecord).
   // Executes on a sequenced thread, returns with callback.
-  void UpdateAsymmetricKey(base::StringPiece new_public_key,
+  void UpdateAsymmetricKey(std::string_view new_public_key,
                            PublicKeyId new_public_key_id,
                            base::OnceCallback<void(Status)> response_cb);
 

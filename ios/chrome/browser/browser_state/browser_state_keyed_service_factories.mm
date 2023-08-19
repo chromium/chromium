@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/autocomplete/shortcuts_backend_factory.h"
 #import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
 #import "ios/chrome/browser/bookmarks/account_bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/bookmark_undo_service_factory.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #import "ios/chrome/browser/bring_android_tabs/bring_android_tabs_to_ios_service_factory.h"
@@ -41,11 +42,13 @@
 #import "ios/chrome/browser/language/language_model_manager_factory.h"
 #import "ios/chrome/browser/language/url_language_histogram_factory.h"
 #import "ios/chrome/browser/mailto_handler/mailto_handler_service_factory.h"
+#import "ios/chrome/browser/metrics/google_groups_updater_service_factory.h"
 #import "ios/chrome/browser/metrics/ios_profile_session_durations_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
+#import "ios/chrome/browser/photos/photos_service_factory.h"
 #import "ios/chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
 #import "ios/chrome/browser/policy_url_blocking/policy_url_blocking_service.h"
 #import "ios/chrome/browser/promos_manager/promos_manager_event_exporter_factory.h"
@@ -57,9 +60,11 @@
 #import "ios/chrome/browser/safe_browsing/safe_browsing_client_factory.h"
 #import "ios/chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #import "ios/chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
+#import "ios/chrome/browser/safety_check/ios_chrome_safety_check_manager_factory.h"
 #import "ios/chrome/browser/screen_time/screen_time_buildflags.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
+#import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
 #import "ios/chrome/browser/signin/about_signin_internals_factory.h"
 #import "ios/chrome/browser/signin/account_consistency_service_factory.h"
 #import "ios/chrome/browser/signin/account_reconcilor_factory.h"
@@ -70,7 +75,10 @@
 #import "ios/chrome/browser/signin/signin_client_factory.h"
 #import "ios/chrome/browser/signin/signin_error_controller_factory.h"
 #import "ios/chrome/browser/signin/trusted_vault_client_backend_factory.h"
+#import "ios/chrome/browser/supervised_user/child_account_service_factory.h"
 #import "ios/chrome/browser/supervised_user/kids_chrome_management_client_factory.h"
+#import "ios/chrome/browser/supervised_user/list_family_members_service_factory.h"
+#import "ios/chrome/browser/supervised_user/supervised_user_metrics_service_factory.h"
 #import "ios/chrome/browser/supervised_user/supervised_user_service_factory.h"
 #import "ios/chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #import "ios/chrome/browser/sync/ios_user_event_service_factory.h"
@@ -80,8 +88,8 @@
 #import "ios/chrome/browser/tabs_search/tabs_search_service_factory.h"
 #import "ios/chrome/browser/text_selection/text_classifier_model_service_factory.h"
 #import "ios/chrome/browser/translate/translate_ranker_factory.h"
+#import "ios/chrome/browser/trusted_vault/ios_trusted_vault_service_factory.h"
 #import "ios/chrome/browser/ui/voice/text_to_speech_playback_controller_factory.h"
-#import "ios/chrome/browser/undo/bookmark_undo_service_factory.h"
 #import "ios/chrome/browser/unified_consent/unified_consent_service_factory.h"
 #import "ios/chrome/browser/webdata_services/web_data_service_factory.h"
 
@@ -92,10 +100,6 @@
 #if BUILDFLAG(IOS_SCREEN_TIME_ENABLED)
 #import "ios/chrome/browser/screen_time/features.h"
 #import "ios/chrome/browser/screen_time/screen_time_history_deleter_factory.h"
-#endif
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
 #endif
 
 // This method gets the instance of each ServiceFactory. We do this so that
@@ -142,6 +146,7 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   DomainDiversityReporterFactory::GetInstance();
   BackgroundDownloadServiceFactory::GetInstance();
   FollowServiceFactory::GetInstance();
+  GoogleGroupsUpdaterServiceFactory::GetInstance();
   GoogleLogoServiceFactory::GetInstance();
   IdentityManagerFactory::GetInstance();
   IOSChromeAccountPasswordStoreFactory::GetInstance();
@@ -152,7 +157,9 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   IOSChromePasswordCheckManagerFactory::GetInstance();
   IOSChromePasswordStoreFactory::GetInstance();
   IOSChromeProfileInvalidationProviderFactory::GetInstance();
+  IOSChromeSafetyCheckManagerFactory::GetInstance();
   IOSProfileSessionDurationsServiceFactory::GetInstance();
+  IOSTrustedVaultServiceFactory::GetInstance();
   IOSUserEventServiceFactory::GetInstance();
   KidsChromeManagementClientFactory::GetInstance();
   LanguageModelManagerFactory::GetInstance();
@@ -161,6 +168,7 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   ModelTypeStoreServiceFactory::GetInstance();
   OptimizationGuideServiceFactory::GetInstance();
   policy::UserPolicySigninServiceFactory::GetInstance();
+  PhotosServiceFactory::GetInstance();
   TabsSearchServiceFactory::GetInstance();
   PushNotificationBrowserStateServiceFactory::GetInstance();
   SyncServiceFactory::GetInstance();
@@ -169,10 +177,14 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   SafeBrowsingClientFactory::GetInstance();
   SafeBrowsingMetricsCollectorFactory::GetInstance();
   segmentation_platform::SegmentationPlatformServiceFactory::GetInstance();
+  SessionRestorationServiceFactory::GetInstance();
   SigninBrowserStateInfoUpdaterFactory::GetInstance();
   SigninClientFactory::GetInstance();
+  SupervisedUserMetricsServiceFactory::GetInstance();
   SupervisedUserSettingsServiceFactory::GetInstance();
   SupervisedUserServiceFactory::GetInstance();
+  ChildAccountServiceFactory::GetInstance();
+  ListFamilyMembersServiceFactory::GetInstance();
   SyncSetupServiceFactory::GetInstance();
   TextToSpeechPlaybackControllerFactory::GetInstance();
   AcceptLanguagesServiceFactory::GetInstance();

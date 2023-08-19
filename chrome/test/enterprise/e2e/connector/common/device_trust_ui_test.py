@@ -10,16 +10,18 @@ import traceback
 from absl import app
 from absl import flags
 from absl import logging
+from histogram.util import poll_histogram
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import StaleElementReferenceException
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 import test_util
 from test_util import getElementFromShadowRoot
 from test_util import getElementsFromShadowRoot
 from test_util import shutdown_chrome
 
-from histogram.util import poll_histogram
 
 FLAGS = flags.FLAGS
 
@@ -27,10 +29,11 @@ flags.DEFINE_string(
     'idp_matcher', '',
     'The idp_matcher used to match a IdP site listed at chrome://policy.')
 
-PolicyURL = 'chrome://policy'
-ConnectorInternalURL = 'chrome://connectors-internals'
-PolicyContextAwareAccessSignalsAllowlist = 'ContextAwareAccessSignalsAllowlist'
-SuccessValue = 9
+_POLICY_URL = 'chrome://policy'
+_CONNECTOR_INTERNAL_URL = 'chrome://connectors-internals'
+_POLICY_CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST = (
+    'ContextAwareAccessSignalsAllowlist')
+_TIMEOUT = 10
 
 
 def save_screenshot(driver: webdriver.Chrome, path: str) -> None:
@@ -40,8 +43,15 @@ def save_screenshot(driver: webdriver.Chrome, path: str) -> None:
   required_height = driver.execute_script(
       'return document.body.parentNode.scrollHeight')
   driver.set_window_size(required_width, required_height)
-  driver.find_element_by_tag_name('body').screenshot(path)
+  wait_element(driver, By.TAG_NAME, 'body')
+  driver.find_element(By.TAG_NAME, 'body').screenshot(path)
   driver.set_window_size(original_size['width'], original_size['height'])
+
+
+def wait_element(driver, by_selector, selector, timeout=_TIMEOUT * 3):
+  return WebDriverWait(driver, timeout).until(
+      EC.presence_of_element_located((by_selector, selector)),
+      'Could not find element with selector: "{}"'.format(selector))
 
 
 def main(argv):
@@ -61,7 +71,7 @@ def main(argv):
     logging.info('Starting test case %s ...' % test_case)
 
     try:
-      WebDriverWait(driver=driver, timeout=10)
+      WebDriverWait(driver=driver, timeout=_TIMEOUT)
 
       # Step 1: navigate to chrome://policy app
       count = 0
@@ -71,17 +81,17 @@ def main(argv):
       found_idp_urls = False
       # Wait up to 120s till the idp_urls fields are filled.
       while count < 20:
-        driver.get(PolicyURL)
-        WebDriverWait(driver=driver, timeout=10)
+        driver.get(_POLICY_URL)
         count += 1
         # Only click `Reload-policies` button on the key_creation because
         # a newly enrolled Chrome does not have policies cached. The button
         # triggers a policy refetch which is needed.
         # For the key_load, the policies are fetched from disk.
         if test_case == 'key_creation':
-          driver.find_element_by_xpath('//*[@id="reload-policies"]').click()
-          WebDriverWait(driver=driver, timeout=30)
-        policy_table = driver.find_element_by_css_selector('policy-table')
+          wait_element(driver, By.CSS_SELECTOR, '#reload-policies')
+          driver.find_element(By.CSS_SELECTOR, '#reload-policies').click()
+        wait_element(driver, By.CSS_SELECTOR, 'policy-table')
+        policy_table = driver.find_element(By.CSS_SELECTOR, 'policy-table')
         row_groups = getElementsFromShadowRoot(driver, policy_table,
                                                '.policy-data')
         try:
@@ -89,7 +99,7 @@ def main(argv):
             name = getElementFromShadowRoot(driver, group, '#name').text
             if not name:
               break
-            if name == PolicyContextAwareAccessSignalsAllowlist:
+            if name == _POLICY_CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST:
               idp_urls = getElementFromShadowRoot(
                   driver, group, 'div.policy.row > div.value').text
               if idp_urls:
@@ -101,10 +111,11 @@ def main(argv):
           time.sleep(6)
         except StaleElementReferenceException:
           logging.info('StaleElementReferenceException happened, skip rest')
-      status_box = driver.find_element_by_css_selector('status-box')
-      el = getElementFromShadowRoot(driver, status_box, 'fieldset')
-      device_id = el.find_element_by_class_name(
-          'machine-enrollment-device-id').text
+      wait_element(driver, By.CSS_SELECTOR, 'status-box')
+      status_box = driver.find_element(By.CSS_SELECTOR, 'status-box')
+      el = getElementFromShadowRoot(driver, status_box, '.status-box-fields')
+      device_id = el.find_element(By.CLASS_NAME,
+                                  'machine-enrollment-device-id').text
       # idp_urls could be of '["http://abc", "http://def"]'
       # remove the excess {[, ], ", '}
       idp_urls = idp_urls.translate({ord(i): None for i in '[]\"\''})
@@ -122,12 +133,10 @@ def main(argv):
       key_sync = ''
       while count < 20:
         count += 1
-        driver.get(ConnectorInternalURL)
-        WebDriverWait(driver=driver, timeout=10)
-        connectors_internals_app = driver.find_element_by_css_selector(
-            'connectors-internals-app')
-        WebDriverWait(driver=driver, timeout=10)
-
+        driver.get(_CONNECTOR_INTERNAL_URL)
+        wait_element(driver, By.CSS_SELECTOR, 'connectors-internals-app')
+        connectors_internals_app = driver.find_element(
+            By.CSS_SELECTOR, 'connectors-internals-app')
         connectors_tabs = getElementFromShadowRoot(driver,
                                                    connectors_internals_app,
                                                    'connectors-tabs')
@@ -184,25 +193,26 @@ def main(argv):
       result['FakeIdP'] = idp_url
       result['DeviceId'] = device_id
       driver.get(idp_url)
-      WebDriverWait(driver=driver, timeout=10)
-      # artificially wait for another 3 seconds
-      time.sleep(3)
-      driver.find_element_by_xpath('//*[@id="content"]/div[2]/a').click()
+      wait_element(driver, By.XPATH, '//*[@id="content"]/div[2]/a')
+      driver.find_element(By.XPATH, '//*[@id="content"]/div[2]/a').click()
 
       # Check client/server signals
-      WebDriverWait(driver=driver, timeout=10)
+      WebDriverWait(driver=driver, timeout=_TIMEOUT)
       try:
+        wait_element(driver, By.XPATH, '//*[@id="serverSignals"]')
         server_signals = json.loads(
-            driver.find_element_by_xpath('//*[@id="serverSignals"]').text)
+            driver.find_element(By.XPATH, '//*[@id="serverSignals"]').text)
 
+        wait_element(driver, By.XPATH, '//*[@id="clientSignals"]')
         client_signals = json.loads(
-            driver.find_element_by_xpath('//*[@id="clientSignals"]').text)
+            driver.find_element(By.XPATH, '//*[@id="clientSignals"]').text)
         result['ClientSignals'] = client_signals
         result['ServerSignals'] = server_signals
       except NoSuchElementException:
         logging.info('No such element found! trying to find error message')
+        wait_element(driver, By.XPATH, '//*[@id="errorMessage"]/pre')
         err_msg = json.loads(
-            driver.find_element_by_xpath('//*[@id="errorMessage"]/pre').text)
+            driver.find_element(By.XPATH, '//*[@id="errorMessage"]/pre').text)
         logging.info('error: %s' % err_msg)
         result['SignalError'] = err_msg
 

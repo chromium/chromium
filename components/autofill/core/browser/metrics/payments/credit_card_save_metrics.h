@@ -95,7 +95,7 @@ enum class CardUploadEnabled {
   // Deprecated: kAccountWalletStorageUploadDisabled = 4,
   kUsingExplicitSyncPassphrase = 5,
   kLocalSyncEnabled = 6,
-  kPaymentsIntegrationDisabled = 7,
+  // Deprecated: kPaymentsIntegrationDisabled = 7,
   kEmailEmpty = 8,
   kEmailDomainNotSupported = 9,
   // Deprecated: kAutofillUpstreamDisabled = 10,
@@ -217,6 +217,14 @@ void LogSaveCardPromptResultMetric(
     AutofillClient::SaveCreditCardOptions options,
     security_state::SecurityLevel security_level,
     AutofillSyncSigninState sync_state);
+
+void LogSaveCvcPromptOfferMetric(SaveCardPromptOffer metric,
+                                 bool is_uploading,
+                                 bool is_reshow);
+
+void LogSaveCvcPromptResultMetric(SaveCardPromptResult metric,
+                                  bool is_uploading,
+                                  bool is_reshow);
 
 void LogSaveCardRequestExpirationDateReasonMetric(
     SaveCardRequestExpirationDateReason metric);

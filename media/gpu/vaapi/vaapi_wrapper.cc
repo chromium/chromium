@@ -120,7 +120,7 @@ enum class VaapiFunctions {
   kVAQueryConfigAttributes = 16,
   kVAQueryImageFormats = 17,
   kVAQuerySurfaceAttributes = 18,
-  kVAQueryVideoProcPipelineCaps = 19,
+  // kVAQueryVideoProcPipelineCaps = 19,  // UNUSED.
   kVARenderPicture_VABuffers = 20,
   kVARenderPicture_Vpp = 21,
   kVASyncSurface = 22,
@@ -145,38 +145,39 @@ void ReportVaapiErrorToUMA(const std::string& histogram_name,
 
 constexpr std::array<const char*,
                      static_cast<size_t>(VaapiFunctions::kMaxValue) + 1>
-    kVaapiFunctionNames = {"vaBeginPicture",
-                           "vaCreateBuffer",
-                           "vaCreateConfig",
-                           "vaCreateContext",
-                           "vaCreateImage",
-                           "vaCreateSurfaces (allocate mode)",
-                           "vaCreateSurfaces (import mode)",
-                           "vaDestroyBuffer",
-                           "vaDestroyConfig",
-                           "vaDestroyContext",
-                           "vaDestroySurfaces",
-                           "vaEndPicture",
-                           "vaExportSurfaceHandle",
-                           "vaGetConfigAttributes",
-                           "vaPutImage",
-                           "vaPutSurface",
-                           "vaQueryConfigAttributes",
-                           "vaQueryImageFormats",
-                           "vaQuerySurfaceAttributes",
-                           "vaQueryVideoProcPipelineCaps",
-                           "vaRenderPicture (|pending_va_buffers_|)",
-                           "vaRenderPicture using Vpp",
-                           "vaSyncSurface",
-                           "vaTerminate",
-                           "vaUnmapBuffer",
-                           "vaCreateProtectedSession",
-                           "vaDestroyProtectedSession",
-                           "vaAttachProtectedSession",
-                           "vaDetachProtectedSession",
-                           "vaProtectedSessionHwUpdate (Deprecated)",
-                           "vaProtectedSessionExecute",
-                           "Other VA function"};
+    kVaapiFunctionNames = {
+        "vaBeginPicture",
+        "vaCreateBuffer",
+        "vaCreateConfig",
+        "vaCreateContext",
+        "vaCreateImage",
+        "vaCreateSurfaces (allocate mode)",
+        "vaCreateSurfaces (import mode)",
+        "vaDestroyBuffer",
+        "vaDestroyConfig",
+        "vaDestroyContext",
+        "vaDestroySurfaces",
+        "vaEndPicture",
+        "vaExportSurfaceHandle",
+        "vaGetConfigAttributes",
+        "vaPutImage",
+        "",  // UNUSED (used to be vaPutSurface).
+        "vaQueryConfigAttributes",
+        "vaQueryImageFormats",
+        "vaQuerySurfaceAttributes",
+        "",  // UNUSED (used to be vaQueryVideoProcPipelineCaps).
+        "vaRenderPicture (|pending_va_buffers_|)",
+        "vaRenderPicture using Vpp",
+        "vaSyncSurface",
+        "vaTerminate",
+        "vaUnmapBuffer",
+        "vaCreateProtectedSession",
+        "vaDestroyProtectedSession",
+        "vaAttachProtectedSession",
+        "vaDetachProtectedSession",
+        "vaProtectedSessionHwUpdate (Deprecated)",
+        "vaProtectedSessionExecute",
+        "Other VA function"};
 
 // Translates |function| into a human readable string for logging.
 const char* VaapiFunctionName(VaapiFunctions function) {
@@ -774,7 +775,7 @@ bool IsBlockedDriver(VaapiWrapper::CodecMode mode,
     // The rate controller on grunt is not good enough to support VBR encoding,
     // b/253988139.
     const bool is_amd_stoney_ridge_driver =
-        va_vendor_string.find("STONEY") != std::string::npos;
+        va_vendor_string.find("stoney") != std::string::npos;
     if (!base::FeatureList::IsEnabled(kChromeOSHWVBREncoding) ||
         is_amd_stoney_ridge_driver) {
       return true;
@@ -1336,29 +1337,6 @@ bool VASupportedProfiles::FillProfileInfo_Locked(
     break;
   }
 
-  // Now work around some driver misreporting for JPEG decoding.
-  if (va_profile == VAProfileJPEGBaseline && entrypoint == VAEntrypointVLD) {
-    auto va_display_state_handle = VADisplayStateSingleton::GetHandle();
-
-    // Note: FillProfileInfo_Locked() is called only from
-    // FillSupportedProfileInfos() which in turn is called only from the
-    // VASupportedProfiles constructor. This call occurs while a valid
-    // VADisplayStateHandle exists (because of the check in the constructor).
-    // That means that at this point, there is an initialized
-    // VADisplayStateSingleton, so the VADisplayStateSingleton::GetHandle() call
-    // above must produce a valid handle.
-    CHECK(va_display_state_handle);
-
-    if (va_display_state_handle->implementation_type() ==
-        VAImplementation::kMesaGallium) {
-      // TODO(andrescj): the VAAPI state tracker in mesa does not report
-      // VA_RT_FORMAT_YUV422 as being supported for JPEG decoding. However, it
-      // is happy to allocate YUYV surfaces
-      // (https://gitlab.freedesktop.org/mesa/mesa/commit/5608f442). Remove this
-      // workaround once b/128337341 is resolved.
-      profile_info->supported_internal_formats.yuv422 = true;
-    }
-  }
   const bool is_any_profile_supported =
       profile_info->supported_internal_formats.yuv420 ||
       profile_info->supported_internal_formats.yuv420_10 ||
@@ -1478,33 +1456,6 @@ bool VASupportedImageFormats::InitSupportedImageFormats_Locked(
 
   // Resize the list to the actual number of formats returned by the driver.
   supported_formats_.resize(static_cast<size_t>(num_image_formats));
-
-  // Now work around some driver misreporting.
-  auto va_display_state_handle = VADisplayStateSingleton::GetHandle();
-
-  // Note: InitSupportedImageFormats_Locked() is called only from the
-  // VASupportedImageFormats constructor. This call occurs while a valid
-  // VADisplayStateHandle exists (because of the check in the constructor). That
-  // means that at this point, there is an initialized VADisplayStateSingleton,
-  // so the VADisplayStateSingleton::GetHandle() call above must produce a valid
-  // handle.
-  CHECK(va_display_state_handle);
-
-  if (va_display_state_handle->implementation_type() ==
-      VAImplementation::kMesaGallium) {
-    // TODO(andrescj): considering that the VAAPI state tracker in mesa can
-    // convert from NV12 to IYUV when doing vaGetImage(), it's reasonable to
-    // assume that IYUV/I420 is supported. However, it's not currently being
-    // reported. See https://gitlab.freedesktop.org/mesa/mesa/commit/b0a44f10.
-    // Remove this workaround once b/128340287 is resolved.
-    if (!base::Contains(supported_formats_,
-                        static_cast<unsigned int>(VA_FOURCC_I420),
-                        &VAImageFormat::fourcc)) {
-      VAImageFormat i420_format{};
-      i420_format.fourcc = VA_FOURCC_I420;
-      supported_formats_.push_back(i420_format);
-    }
-  }
   return true;
 }
 
@@ -2453,16 +2404,21 @@ scoped_refptr<VASurface> VaapiWrapper::CreateVASurfaceForPixmap(
     return nullptr;
   }
 
-  // TODO(b/233894465): use the DRM_PRIME_2 API with the Mesa Gallium driver
-  // when AMD supports it.
+#if BUILDFLAG(IS_LINUX)
+  // TODO(crbug.com/1326754): enable use DRIME_PRIME_2 API on Linux with the
+  // iHD driver.
+  const bool use_drm_prime_2 = false;
+#else
   // TODO(b/233924862): use the DRM_PRIME_2 API with protected content.
   // TODO(b/233929647): use the DRM_PRIME_2 API with the i965 driver.
   // TODO(b/236746283): remove the kNoModifier check once the modifier is
   // plumbed for JPEG decoding and encoding.
   const bool use_drm_prime_2 =
-      GetImplementationType() == VAImplementation::kIntelIHD &&
+      (GetImplementationType() == VAImplementation::kIntelIHD ||
+       GetImplementationType() == VAImplementation::kMesaGallium) &&
       !protected_content &&
       pixmap->GetBufferFormatModifier() != gfx::NativePixmapHandle::kNoModifier;
+#endif
 
   union {
     VADRMPRIMESurfaceDescriptor descriptor;
@@ -3084,29 +3040,10 @@ bool VaapiWrapper::GetSupportedPackedHeaders(VideoCodecProfile profile,
   return true;
 }
 
-bool VaapiWrapper::IsRotationSupported() {
-  CHECK(!enforce_sequence_affinity_ ||
-        sequence_checker_.CalledOnValidSequence());
-  base::AutoLockMaybe auto_lock(va_lock_.get());
-  VAProcPipelineCaps pipeline_caps;
-  memset(&pipeline_caps, 0, sizeof(pipeline_caps));
-  VAStatus va_res = vaQueryVideoProcPipelineCaps(va_display_, va_context_id_,
-                                                 nullptr, 0, &pipeline_caps);
-  VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVAQueryVideoProcPipelineCaps,
-                       false);
-
-  if (!pipeline_caps.rotation_flags) {
-    DVLOG(2) << "VA-API driver doesn't support any rotation";
-    return false;
-  }
-  return true;
-}
-
 bool VaapiWrapper::BlitSurface(const VASurface& va_surface_src,
                                const VASurface& va_surface_dest,
                                absl::optional<gfx::Rect> src_rect,
-                               absl::optional<gfx::Rect> dest_rect,
-                               VideoRotation rotation
+                               absl::optional<gfx::Rect> dest_rect
 #if BUILDFLAG(IS_CHROMEOS_ASH)
                                ,
                                VAProtectedSessionID va_protected_session_id
@@ -3163,21 +3100,7 @@ bool VaapiWrapper::BlitSurface(const VASurface& va_surface_src,
     pipeline_param->output_background_color = 0xff000000;
     pipeline_param->output_color_standard = VAProcColorStandardNone;
     pipeline_param->filter_flags = VA_FILTER_SCALING_DEFAULT;
-
-    switch (rotation) {
-      case VIDEO_ROTATION_0:
-        pipeline_param->rotation_state = VA_ROTATION_NONE;
-        break;
-      case VIDEO_ROTATION_90:
-        pipeline_param->rotation_state = VA_ROTATION_90;
-        break;
-      case VIDEO_ROTATION_180:
-        pipeline_param->rotation_state = VA_ROTATION_180;
-        break;
-      case VIDEO_ROTATION_270:
-        pipeline_param->rotation_state = VA_ROTATION_270;
-        break;
-    }
+    pipeline_param->rotation_state = VA_ROTATION_NONE;
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

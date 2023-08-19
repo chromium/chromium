@@ -10,6 +10,7 @@
 #include "chrome/browser/safe_browsing/ohttp_key_service_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
+#include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -59,7 +60,8 @@ KeyedService* HashRealTimeServiceFactory::BuildServiceInstanceFor(
       VerdictCacheManagerFactory::GetForProfile(profile),
       OhttpKeyServiceFactory::GetForProfile(profile),
       base::BindRepeating(
-          &HashRealTimeServiceFactory::IsEnhancedProtectionEnabled, profile));
+          &HashRealTimeServiceFactory::IsEnhancedProtectionEnabled, profile),
+      WebUIInfoSingleton::GetInstance());
 }
 
 // static

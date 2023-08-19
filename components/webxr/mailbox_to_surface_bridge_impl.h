@@ -57,8 +57,6 @@ class MailboxToSurfaceBridgeImpl : public device::MailboxToSurfaceBridge {
 
   void ResizeSurface(int width, int height) override;
 
-  bool CopyMailboxToSurfaceAndSwap(const gpu::MailboxHolder& mailbox) override;
-
   bool CopyMailboxToSurfaceAndSwap(const gpu::MailboxHolder& mailbox,
                                    const gfx::Transform& uv_transform) override;
 

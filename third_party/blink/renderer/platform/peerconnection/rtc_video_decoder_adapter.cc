@@ -153,11 +153,7 @@ scoped_refptr<media::DecoderBuffer> ConvertToDecoderBuffer(
   }
 
   if (spatial_layer_frame_size.size() > 1) {
-    const uint8_t* side_data =
-        reinterpret_cast<const uint8_t*>(spatial_layer_frame_size.data());
-    size_t side_data_size =
-        spatial_layer_frame_size.size() * sizeof(uint32_t) / sizeof(uint8_t);
-    buffer->CopySideDataFrom(side_data, side_data_size);
+    buffer->WritableSideData().spatial_layers = spatial_layer_frame_size;
   }
 
   return buffer;
@@ -169,7 +165,8 @@ absl::optional<RTCVideoDecoderFallbackReason> NeedSoftwareFallback(
     const media::VideoDecoderType decoder_type) {
   // Fall back to software decoding if there's no support for VP9 spatial
   // layers. See https://crbug.com/webrtc/9304.
-  const bool is_spatial_layer_buffer = buffer.side_data_size() > 0;
+  const bool is_spatial_layer_buffer =
+      buffer.has_side_data() && !buffer.side_data()->spatial_layers.empty();
   if (codec == media::VideoCodec::kVP9 && is_spatial_layer_buffer &&
       !RTCVideoDecoderAdapter::Vp9HwSupportForSpatialLayers(decoder_type)) {
     return RTCVideoDecoderFallbackReason::kSpatialLayers;
@@ -726,9 +723,15 @@ RTCVideoDecoderAdapter::DecodeInternal(const webrtc::EncodedImage& input_image,
     ChangeStatus(Status::kOk);
   }
 
-  if (ShouldReinitializeForSettingHDRColorSpace(input_image)) {
-    config_.set_color_space_info(
-        blink::WebRtcToMediaVideoColorSpace(*input_image.ColorSpace()));
+  // If color space is specified, transmit it to decoder side by
+  // ReinitializeSync, then we can use the right color space to render and
+  // overlay instead of gussing for webrtc use case on decoder side.
+
+  // This also includes reinitialization for the HDR use case, i.e.
+  // config_.profile() is media::VP9PROFILE_PROFILE2.
+  if (ShouldReinitializeForSettingColorSpace(input_image)) {
+    config_.set_color_space_info(media::VideoColorSpace::FromGfxColorSpace(
+        blink::WebRtcToGfxColorSpace(*input_image.ColorSpace())));
     if (!ReinitializeSync(config_)) {
       RecordRTCVideoDecoderFallbackReason(
           config_.codec(),
@@ -844,19 +847,25 @@ int32_t RTCVideoDecoderAdapter::Release() {
   return WEBRTC_VIDEO_CODEC_OK;
 }
 
-bool RTCVideoDecoderAdapter::ShouldReinitializeForSettingHDRColorSpace(
+bool RTCVideoDecoderAdapter::ShouldReinitializeForSettingColorSpace(
     const webrtc::EncodedImage& input_image) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoding_sequence_checker_);
-
-  if (config_.profile() == media::VP9PROFILE_PROFILE2 &&
-      input_image.ColorSpace()) {
-    const media::VideoColorSpace& new_color_space =
-        blink::WebRtcToMediaVideoColorSpace(*input_image.ColorSpace());
-    if (!config_.color_space_info().IsSpecified() ||
-        new_color_space != config_.color_space_info()) {
-      return true;
-    }
+  if (!input_image.ColorSpace()) {
+    return false;
   }
+
+  const gfx::ColorSpace& new_color_space =
+      blink::WebRtcToGfxColorSpace(*input_image.ColorSpace());
+
+  if (!new_color_space.IsValid()) {
+    return false;
+  }
+
+  if (new_color_space != config_.color_space_info().ToGfxColorSpace()) {
+    DVLOG(2) << __func__ << ", new_color_space:" << new_color_space.ToString();
+    return true;
+  }
+
   return false;
 }
 

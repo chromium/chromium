@@ -9,10 +9,6 @@
 #import "base/check.h"
 #import "ios/web/public/find_in_page/crw_find_session.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation CRWFindInteraction {
   // Underlying UIFindInteraction object.
   UIFindInteraction* _UIFindInteraction;

@@ -6,10 +6,9 @@ package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 
-import static org.chromium.net.CronetTestRule.getContext;
+import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
 
 import android.os.ConditionVariable;
 
@@ -25,7 +24,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
-import org.chromium.net.CronetTestRule.CronetTestFramework;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
 import org.chromium.net.TestUrlRequestCallback.ResponseStep;
 import org.chromium.net.UrlRequest.Status;
@@ -44,39 +42,20 @@ import java.util.concurrent.Executors;
 @RunWith(AndroidJUnit4.class)
 public class GetStatusTest {
     @Rule
-    public final CronetTestRule mTestRule = new CronetTestRule();
+    public final CronetTestRule mTestRule = CronetTestRule.withAutomaticEngineStartup();
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-    private CronetTestFramework mTestFramework;
-
-    private static class TestStatusListener extends StatusListener {
-        boolean mOnStatusCalled;
-        int mStatus = Integer.MAX_VALUE;
-        private final ConditionVariable mBlock = new ConditionVariable();
-
-        @Override
-        public void onStatus(int status) {
-            mOnStatusCalled = true;
-            mStatus = status;
-            mBlock.open();
-        }
-
-        public void waitUntilOnStatusCalled() {
-            mBlock.block();
-            mBlock.close();
-        }
-    }
     @Before
     public void setUp() throws Exception {
-        mTestFramework = mTestRule.startCronetTestFramework();
-        assertTrue(NativeTestServer.startNativeTestServer(getContext()));
+        assertThat(
+                NativeTestServer.startNativeTestServer(mTestRule.getTestFramework().getContext()))
+                .isTrue();
     }
 
     @After
     public void tearDown() throws Exception {
         NativeTestServer.shutdownNativeTestServer();
-        mTestFramework.mCronetEngine.shutdown();
     }
 
     @Test
@@ -85,7 +64,7 @@ public class GetStatusTest {
         String url = NativeTestServer.getEchoMethodURL();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         callback.setAutoAdvance(false);
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 url, callback, callback.getExecutor());
         UrlRequest urlRequest = builder.build();
         // Calling before request is started should give Status.INVALID,
@@ -93,7 +72,7 @@ public class GetStatusTest {
         TestStatusListener statusListener0 = new TestStatusListener();
         urlRequest.getStatus(statusListener0);
         statusListener0.waitUntilOnStatusCalled();
-        assertTrue(statusListener0.mOnStatusCalled);
+        assertThat(statusListener0.mOnStatusCalled).isTrue();
         assertThat(statusListener0.mStatus).isEqualTo(Status.INVALID);
 
         urlRequest.start();
@@ -102,7 +81,7 @@ public class GetStatusTest {
         TestStatusListener statusListener1 = new TestStatusListener();
         urlRequest.getStatus(statusListener1);
         statusListener1.waitUntilOnStatusCalled();
-        assertTrue(statusListener1.mOnStatusCalled);
+        assertThat(statusListener1.mOnStatusCalled).isTrue();
         assertThat(statusListener1.mStatus)
                 .isIn(Range.closed(Status.IDLE, Status.READING_RESPONSE));
         callback.waitForNextStep();
@@ -113,7 +92,7 @@ public class GetStatusTest {
         TestStatusListener statusListener2 = new TestStatusListener();
         urlRequest.getStatus(statusListener2);
         statusListener2.waitUntilOnStatusCalled();
-        assertTrue(statusListener2.mOnStatusCalled);
+        assertThat(statusListener2.mOnStatusCalled).isTrue();
         assertThat(statusListener1.mStatus)
                 .isIn(Range.closed(Status.IDLE, Status.READING_RESPONSE));
 
@@ -128,22 +107,19 @@ public class GetStatusTest {
         TestStatusListener statusListener3 = new TestStatusListener();
         urlRequest.getStatus(statusListener3);
         statusListener3.waitUntilOnStatusCalled();
-        assertTrue(statusListener3.mOnStatusCalled);
+        assertThat(statusListener3.mOnStatusCalled).isTrue();
         assertThat(statusListener3.mStatus).isEqualTo(Status.INVALID);
 
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).isEqualTo("GET");
     }
 
     @Test
     @SmallTest
     public void testInvalidLoadState() throws Exception {
-        try {
-            UrlRequestBase.convertLoadState(LoadState.OBSOLETE_WAITING_FOR_APPCACHE);
-            fail();
-        } catch (IllegalArgumentException e) {
-            // Expected because LoadState.WAITING_FOR_APPCACHE is not mapped.
-        }
+        assertThrows(IllegalArgumentException.class,
+                () -> UrlRequestBase.convertLoadState(LoadState.OBSOLETE_WAITING_FOR_APPCACHE));
+        // Expected throw because LoadState.WAITING_FOR_APPCACHE is not mapped.
 
         thrown.expect(Throwable.class);
         UrlRequestBase.convertLoadState(-1);
@@ -156,7 +132,7 @@ public class GetStatusTest {
     @OnlyRunNativeCronet
     public void testGetStatusForUpload() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getEchoBodyURL(), callback, callback.getExecutor());
 
         final ConditionVariable block = new ConditionVariable();
@@ -185,7 +161,7 @@ public class GetStatusTest {
         // executed, the |url_request_| is null.
         urlRequest.getStatus(statusListener);
         statusListener.waitUntilOnStatusCalled();
-        assertTrue(statusListener.mOnStatusCalled);
+        assertThat(statusListener.mOnStatusCalled).isTrue();
         // The request should be in IDLE state because GetStatusOnNetworkThread
         // is called before |url_request_| is initialized and started.
         assertThat(statusListener.mStatus).isEqualTo(Status.IDLE);
@@ -200,7 +176,25 @@ public class GetStatusTest {
         assertThat(dataProvider.getNumReadCalls()).isEqualTo(1);
         assertThat(dataProvider.getNumRewindCalls()).isEqualTo(0);
 
-        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).isEqualTo("test");
+    }
+
+    private static class TestStatusListener extends StatusListener {
+        boolean mOnStatusCalled;
+        int mStatus = Integer.MAX_VALUE;
+        private final ConditionVariable mBlock = new ConditionVariable();
+
+        @Override
+        public void onStatus(int status) {
+            mOnStatusCalled = true;
+            mStatus = status;
+            mBlock.open();
+        }
+
+        public void waitUntilOnStatusCalled() {
+            mBlock.block();
+            mBlock.close();
+        }
     }
 }

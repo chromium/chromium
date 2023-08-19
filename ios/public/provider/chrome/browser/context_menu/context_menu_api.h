@@ -14,6 +14,7 @@
 #import "third_party/abseil-cpp/absl/types/optional.h"
 
 class ChromeBrowserState;
+@protocol MiniMapCommands;
 
 // Wraps information to add/show to/in a context menu
 @interface ElementsToAddToContextMenu : NSObject
@@ -39,7 +40,8 @@ ElementsToAddToContextMenu* GetContextMenuElementsToAdd(
     ChromeBrowserState* browser_state,
     web::WebState* web_state,
     web::ContextMenuParams params,
-    UIViewController* presenting_view_controller);
+    UIViewController* presenting_view_controller,
+    id<MiniMapCommands> mini_map_handler);
 
 // Returns set of `NSTextCheckingType` representing the intent types that
 // can be handled by the provider, for the given `web_state`.
@@ -54,7 +56,9 @@ NSTextCheckingType GetHandledIntentTypesForOneTap(web::WebState* web_state);
 // NO if no direct 1-tap action is defined.
 BOOL HandleIntentTypesForOneTap(web::WebState* web_state,
                                 NSTextCheckingResult* match,
-                                UIViewController* presenting_view_controller);
+                                NSString* text,
+                                UIViewController* presenting_view_controller,
+                                id<MiniMapCommands> mini_map_handler);
 
 // Returns `CRWContextMenuItem` items for the given `match`, for the given
 // `web_state`.
@@ -62,6 +66,16 @@ NSArray<CRWContextMenuItem*>* GetContextMenuElementsToAdd(
     web::WebState* web_state,
     NSTextCheckingResult* match,
     NSString* text,
+    UIViewController* presenting_view_controller,
+    id<MiniMapCommands> mini_map_handler);
+
+// Returns `CRWContextMenuItem` items for the given `match`, for the given
+// `web_state`.
+NSArray<CRWContextMenuItem*>* GetContextMenuElementsToAdd(
+    web::WebState* web_state,
+    NSTextCheckingResult* match,
+    NSString* text,
+    CGPoint location,
     UIViewController* presenting_view_controller);
 
 // Returns a full set of intents of `handled_types`, located inside `text`. The

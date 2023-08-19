@@ -242,6 +242,11 @@ void FCMInvalidationListener::OnSubscriptionChannelStateChanged(
   EmitStateChange();
 }
 
+void FCMInvalidationListener::OnSubscriptionRequestStarted(Topic topic) {}
+
+void FCMInvalidationListener::OnSubscriptionRequestFinished(Topic topic,
+                                                            Status code) {}
+
 base::Value::Dict FCMInvalidationListener::CollectDebugData() const {
   base::Value::Dict status =
       per_user_topic_subscription_manager_->CollectDebugData();

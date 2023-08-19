@@ -9,7 +9,9 @@
 #include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
+#include "ash/system/input_device_settings/input_device_settings_notification_controller.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/notreached.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/notifications/deprecation_notification_controller.h"
 #include "chrome/browser/extensions/extension_commands_global_registry.h"
@@ -20,6 +22,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/message_center/message_center.h"
 
 namespace ash {
@@ -30,15 +33,21 @@ EventRewriterDelegateImpl::EventRewriterDelegateImpl(
           activation_client,
           std::make_unique<DeprecationNotificationController>(
               message_center::MessageCenter::Get()),
+          std::make_unique<InputDeviceSettingsNotificationController>(
+              message_center::MessageCenter::Get()),
           InputDeviceSettingsController::Get()) {}
 
 EventRewriterDelegateImpl::EventRewriterDelegateImpl(
     wm::ActivationClient* activation_client,
     std::unique_ptr<DeprecationNotificationController> deprecation_controller,
+    std::unique_ptr<InputDeviceSettingsNotificationController>
+        input_device_settings_notification_controller,
     InputDeviceSettingsController* input_device_settings_controller)
     : pref_service_for_testing_(nullptr),
       activation_client_(activation_client),
       deprecation_controller_(std::move(deprecation_controller)),
+      input_device_settings_notification_controller_(
+          std::move(input_device_settings_notification_controller)),
       input_device_settings_controller_(input_device_settings_controller) {}
 
 EventRewriterDelegateImpl::~EventRewriterDelegateImpl() {}
@@ -216,6 +225,43 @@ void EventRewriterDelegateImpl::RecordSixPackEventRewrite(
   pref_service->SetInteger(it->second, count);
 }
 
+absl::optional<ui::mojom::SimulateRightClickModifier>
+EventRewriterDelegateImpl::GetRemapRightClickModifier(int device_id) {
+  const mojom::TouchpadSettings* settings =
+      input_device_settings_controller_->GetTouchpadSettings(device_id);
+  if (!settings) {
+    return absl::nullopt;
+  }
+  return settings->simulate_right_click;
+}
+
+absl::optional<ui::mojom::SixPackShortcutModifier>
+EventRewriterDelegateImpl::GetShortcutModifierForSixPackKey(
+    int device_id,
+    ui::KeyboardCode key_code) {
+  const mojom::KeyboardSettings* settings =
+      input_device_settings_controller_->GetKeyboardSettings(device_id);
+  if (!settings) {
+    return absl::nullopt;
+  }
+  switch (key_code) {
+    case ui::KeyboardCode::VKEY_DELETE:
+      return settings->six_pack_key_remappings->del;
+    case ui::KeyboardCode::VKEY_HOME:
+      return settings->six_pack_key_remappings->home;
+    case ui::KeyboardCode::VKEY_PRIOR:
+      return settings->six_pack_key_remappings->page_up;
+    case ui::KeyboardCode::VKEY_END:
+      return settings->six_pack_key_remappings->end;
+    case ui::KeyboardCode::VKEY_NEXT:
+      return settings->six_pack_key_remappings->page_down;
+    case ui::KeyboardCode::VKEY_INSERT:
+      return settings->six_pack_key_remappings->insert;
+    default:
+      NOTREACHED_NORETURN();
+  }
+}
+
 bool EventRewriterDelegateImpl::NotifyDeprecatedRightClickRewrite() {
   return deprecation_controller_->NotifyDeprecatedRightClickRewrite();
 }
@@ -236,4 +282,25 @@ void EventRewriterDelegateImpl::SuppressModifierKeyRewrites(
     bool should_suppress) {
   suppress_modifier_key_rewrites_ = should_suppress;
 }
+
+void EventRewriterDelegateImpl::NotifyRightClickRewriteBlockedBySetting(
+    ui::mojom::SimulateRightClickModifier blocked_modifier,
+    ui::mojom::SimulateRightClickModifier active_modifier) {
+  DCHECK(features::IsAltClickAndSixPackCustomizationEnabled());
+  input_device_settings_notification_controller_
+      ->NotifyRightClickRewriteBlockedBySetting(blocked_modifier,
+                                                active_modifier);
+}
+
+void EventRewriterDelegateImpl::NotifySixPackRewriteBlockedBySetting(
+    ui::KeyboardCode key_code,
+    ui::mojom::SixPackShortcutModifier blocked_modifier,
+    ui::mojom::SixPackShortcutModifier active_modifier,
+    int device_id) {
+  DCHECK(ash::features::IsAltClickAndSixPackCustomizationEnabled());
+  input_device_settings_notification_controller_
+      ->NotifySixPackRewriteBlockedBySetting(key_code, blocked_modifier,
+                                             active_modifier, device_id);
+}
+
 }  // namespace ash

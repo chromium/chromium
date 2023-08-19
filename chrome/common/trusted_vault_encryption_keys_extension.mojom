@@ -1,0 +1,30 @@
+// Copyright 2019 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chrome.mojom;
+
+// The shared encryption key for a single trusted vault.
+struct TrustedVaultKey {
+  int32 version;
+  array<uint8> bytes;
+};
+
+// API exposed by the browser process to the renderer process, such that the
+// renderer can interact with the encryption state of trusted vault clients
+// (see //components/trusted_vault/README.md). Exposed to allowed origins only.
+interface TrustedVaultEncryptionKeysExtension {
+  // Provides encryption keys for any trusted vault to the browser process.
+  // `encryption_keys` is a map of trusted vault name to a set of keys for that
+  // vault.
+  [EnableIfNot=is_android]
+  SetEncryptionKeys(string gaia_id, map<string,
+                    array<TrustedVaultKey>> encryption_keys) => ();
+
+  // Registers a new trusted recovery method that can be used by other clients
+  // to retrieve encryption keys for the sync trusted vault. `method_type_hint`
+  // is an opaque value provided server-side that may be used for related
+  // future interactions with the server.
+  AddTrustedRecoveryMethod(string gaia_id, array<uint8> public_key,
+                           int32 method_type_hint) => ();
+};

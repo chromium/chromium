@@ -8,17 +8,13 @@
 #import "base/memory/weak_ptr.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
-
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/shared/coordinator/alert/repost_form_coordinator_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/dialogs/completion_block_util.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using completion_block_util::DecidePolicyCallback;
 using completion_block_util::GetSafeDecidePolicyCompletion;
@@ -98,16 +94,7 @@ using completion_block_util::GetSafeDecidePolicyCompletion;
   // 400 milliseconds
   const int64_t kDelayBetweenAttemptsNanoSecs = 0.4 * NSEC_PER_SEC;
   if (_repostAttemptCount >= kMaximumNumberAttempts) {
-    if (!self.baseViewController.view.window) {
-      NOTREACHED() << "no window is found";
-    } else {
-      UIViewController* presented =
-          self.baseViewController.presentedViewController;
-      NOTREACHED() << "presenting view controller "
-                   << base::SysNSStringToUTF8(
-                          NSStringFromClass([presented class]));
-    }
-    [self stop];
+    [self.delegate repostFormCoordinatorWantsToBeDismissed:self];
     return;
   }
   __weak RepostFormCoordinator* weakSelf = self;

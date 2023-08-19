@@ -12,7 +12,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/ptr_util.h"
-#include "chrome/browser/password_entry_edit/android/jni_headers/CredentialEditBridge_jni.h"
+#include "chrome/browser/password_entry_edit/android/internal/jni/CredentialEditBridge_jni.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_form.h"

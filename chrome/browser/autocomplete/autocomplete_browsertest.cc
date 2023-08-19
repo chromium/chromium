@@ -35,6 +35,7 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
+#include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/search_engines/template_url_service.h"
@@ -71,7 +72,7 @@ class AutocompleteBrowserTest : public extensions::ExtensionBrowserTest {
   AutocompleteController* GetAutocompleteController() const {
     return GetLocationBar()
         ->GetOmniboxView()
-        ->model()
+        ->controller()
         ->autocomplete_controller();
   }
 
@@ -80,7 +81,7 @@ class AutocompleteBrowserTest : public extensions::ExtensionBrowserTest {
     OmniboxView* omnibox_view = location_bar->GetOmniboxView();
     OmniboxEditModel* omnibox_model = omnibox_view->model();
 
-    EXPECT_FALSE(location_bar->GetDestinationURL().is_valid());
+    EXPECT_FALSE(location_bar->navigation_params().destination_url.is_valid());
     EXPECT_EQ(url::kAboutBlankURL16, omnibox_view->GetText());
     EXPECT_EQ(std::u16string(), omnibox_model->keyword());
     EXPECT_FALSE(omnibox_model->is_keyword_hint());
@@ -93,33 +94,33 @@ IN_PROC_BROWSER_TEST_F(AutocompleteBrowserTest, Basic) {
   LocationBar* location_bar = GetLocationBar();
   OmniboxView* omnibox_view = location_bar->GetOmniboxView();
 
-  EXPECT_FALSE(location_bar->GetDestinationURL().is_valid());
+  EXPECT_FALSE(location_bar->navigation_params().destination_url.is_valid());
   EXPECT_EQ(url::kAboutBlankURL16, omnibox_view->GetText());
   // TODO(phajdan.jr): check state of IsSelectAll when it's consistent across
   // platforms.
 
   location_bar->FocusLocation(true);
 
-  EXPECT_FALSE(location_bar->GetDestinationURL().is_valid());
+  EXPECT_FALSE(location_bar->navigation_params().destination_url.is_valid());
   EXPECT_EQ(url::kAboutBlankURL16, omnibox_view->GetText());
   EXPECT_TRUE(omnibox_view->IsSelectAll());
 
   omnibox_view->SetUserText(u"chrome");
 
-  EXPECT_FALSE(location_bar->GetDestinationURL().is_valid());
+  EXPECT_FALSE(location_bar->navigation_params().destination_url.is_valid());
   EXPECT_EQ(u"chrome", omnibox_view->GetText());
   EXPECT_FALSE(omnibox_view->IsSelectAll());
 
   omnibox_view->RevertAll();
 
-  EXPECT_FALSE(location_bar->GetDestinationURL().is_valid());
+  EXPECT_FALSE(location_bar->navigation_params().destination_url.is_valid());
   EXPECT_EQ(url::kAboutBlankURL16, omnibox_view->GetText());
   EXPECT_FALSE(omnibox_view->IsSelectAll());
 
   omnibox_view->SetUserText(u"chrome");
   location_bar->Revert();
 
-  EXPECT_FALSE(location_bar->GetDestinationURL().is_valid());
+  EXPECT_FALSE(location_bar->navigation_params().destination_url.is_valid());
   EXPECT_EQ(url::kAboutBlankURL16, omnibox_view->GetText());
   EXPECT_FALSE(omnibox_view->IsSelectAll());
 }
@@ -153,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(AutocompleteBrowserTest, MAYBE_Autocomplete) {
     autocomplete_controller->Start(input);
 
     EXPECT_TRUE(autocomplete_controller->done());
-    EXPECT_FALSE(location_bar->GetDestinationURL().is_valid());
+    EXPECT_FALSE(location_bar->navigation_params().destination_url.is_valid());
     EXPECT_TRUE(omnibox_view->GetText().empty());
     EXPECT_FALSE(omnibox_view->IsSelectAll());
     const AutocompleteResult& result = autocomplete_controller->result();
@@ -165,7 +166,7 @@ IN_PROC_BROWSER_TEST_F(AutocompleteBrowserTest, MAYBE_Autocomplete) {
 
   {
     location_bar->Revert();
-    EXPECT_FALSE(location_bar->GetDestinationURL().is_valid());
+    EXPECT_FALSE(location_bar->navigation_params().destination_url.is_valid());
     EXPECT_EQ(url::kAboutBlankURL16, omnibox_view->GetText());
     EXPECT_FALSE(omnibox_view->IsSelectAll());
     const AutocompleteResult& result = autocomplete_controller->result();
@@ -213,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(AutocompleteBrowserTest, FocusSearch) {
     FocusSearchCheckPreconditions();
 
     location_bar->FocusSearch();
-    EXPECT_FALSE(location_bar->GetDestinationURL().is_valid());
+    EXPECT_FALSE(location_bar->navigation_params().destination_url.is_valid());
     EXPECT_EQ(std::u16string(), omnibox_view->GetText());
     EXPECT_EQ(default_search_keyword, omnibox_model->keyword());
     EXPECT_FALSE(omnibox_model->is_keyword_hint());
@@ -231,14 +232,14 @@ IN_PROC_BROWSER_TEST_F(AutocompleteBrowserTest, FocusSearch) {
     FocusSearchCheckPreconditions();
 
     omnibox_view->SetUserText(query_text);
-    EXPECT_FALSE(location_bar->GetDestinationURL().is_valid());
+    EXPECT_FALSE(location_bar->navigation_params().destination_url.is_valid());
     EXPECT_EQ(query_text, omnibox_view->GetText());
     EXPECT_EQ(std::u16string(), omnibox_model->keyword());
     EXPECT_FALSE(omnibox_model->is_keyword_hint());
     EXPECT_FALSE(omnibox_model->is_keyword_selected());
 
     location_bar->FocusSearch();
-    EXPECT_FALSE(location_bar->GetDestinationURL().is_valid());
+    EXPECT_FALSE(location_bar->navigation_params().destination_url.is_valid());
     EXPECT_EQ(query_text, omnibox_view->GetText());
     EXPECT_EQ(default_search_keyword, omnibox_model->keyword());
     EXPECT_FALSE(omnibox_model->is_keyword_hint());
@@ -257,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(AutocompleteBrowserTest, FocusSearch) {
     FocusSearchCheckPreconditions();
 
     location_bar->FocusSearch();
-    EXPECT_FALSE(location_bar->GetDestinationURL().is_valid());
+    EXPECT_FALSE(location_bar->navigation_params().destination_url.is_valid());
     EXPECT_EQ(std::u16string(), omnibox_view->GetText());
     EXPECT_EQ(default_search_keyword, omnibox_model->keyword());
     EXPECT_FALSE(omnibox_model->is_keyword_hint());
@@ -268,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(AutocompleteBrowserTest, FocusSearch) {
     EXPECT_EQ(0U, selection_end);
 
     location_bar->FocusSearch();
-    EXPECT_FALSE(location_bar->GetDestinationURL().is_valid());
+    EXPECT_FALSE(location_bar->navigation_params().destination_url.is_valid());
     EXPECT_EQ(std::u16string(), omnibox_view->GetText());
     EXPECT_EQ(default_search_keyword, omnibox_model->keyword());
     EXPECT_FALSE(omnibox_model->is_keyword_hint());
@@ -288,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(AutocompleteBrowserTest, FocusSearch) {
 
     omnibox_view->SetUserText(query_text);
     location_bar->FocusSearch();
-    EXPECT_FALSE(location_bar->GetDestinationURL().is_valid());
+    EXPECT_FALSE(location_bar->navigation_params().destination_url.is_valid());
     EXPECT_EQ(query_text, omnibox_view->GetText());
     EXPECT_EQ(default_search_keyword, omnibox_model->keyword());
     EXPECT_FALSE(omnibox_model->is_keyword_hint());
@@ -299,7 +300,7 @@ IN_PROC_BROWSER_TEST_F(AutocompleteBrowserTest, FocusSearch) {
     EXPECT_EQ(query_text.length(), std::max(selection_start, selection_end));
 
     location_bar->FocusSearch();
-    EXPECT_FALSE(location_bar->GetDestinationURL().is_valid());
+    EXPECT_FALSE(location_bar->navigation_params().destination_url.is_valid());
     EXPECT_EQ(query_text, omnibox_view->GetText());
     EXPECT_EQ(default_search_keyword, omnibox_model->keyword());
     EXPECT_FALSE(omnibox_model->is_keyword_hint());
@@ -324,7 +325,7 @@ IN_PROC_BROWSER_TEST_F(AutocompleteBrowserTest, FocusSearch) {
     // The user presses backspace.
     omnibox_model->ClearKeyword();
 
-    EXPECT_FALSE(location_bar->GetDestinationURL().is_valid());
+    EXPECT_FALSE(location_bar->navigation_params().destination_url.is_valid());
     EXPECT_EQ(query_text, omnibox_view->GetText());
     EXPECT_EQ(std::u16string(), omnibox_model->keyword());
     EXPECT_FALSE(omnibox_model->is_keyword_hint());
@@ -342,7 +343,7 @@ IN_PROC_BROWSER_TEST_F(AutocompleteBrowserTest, FocusSearch) {
     EXPECT_EQ(url::kAboutBlankURL16, omnibox_view->GetText());
 
     location_bar->FocusSearch();
-    EXPECT_FALSE(location_bar->GetDestinationURL().is_valid());
+    EXPECT_FALSE(location_bar->navigation_params().destination_url.is_valid());
     EXPECT_EQ(std::u16string(), omnibox_view->GetText());
     EXPECT_EQ(default_search_keyword, omnibox_model->keyword());
     EXPECT_FALSE(omnibox_model->is_keyword_hint());

@@ -80,9 +80,6 @@ class LazyLevelDb {
   const leveldb::WriteOptions& write_options() const { return write_options_; }
 
  private:
-  ValueStore::BackingStoreRestoreStatus LogRestoreStatus(
-      ValueStore::BackingStoreRestoreStatus restore_status) const;
-
   // The leveldb to which this class reads/writes.
   std::unique_ptr<leveldb::DB> db_;
   // The path to the underlying leveldb.
@@ -98,8 +95,6 @@ class LazyLevelDb {
   bool db_unrecoverable_ = false;
   // Used for UMA logging.
   raw_ptr<base::HistogramBase> open_histogram_ = nullptr;
-  raw_ptr<base::HistogramBase> db_restore_histogram_ = nullptr;
-  raw_ptr<base::HistogramBase> value_restore_histogram_ = nullptr;
 };
 
 }  // namespace value_store

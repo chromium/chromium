@@ -16,7 +16,9 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "components/reporting/client/report_queue.h"
+#include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/client/report_queue_factory.h"
+#include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/util/status.h"
 #include "url/gurl.h"
 
@@ -109,7 +111,6 @@ DlpPolicyEvent_UserType GetCurrentUserType() {
       return DlpPolicyEvent_UserType_KIOSK;
     case user_manager::USER_TYPE_GUEST:
     case user_manager::USER_TYPE_CHILD:
-    case user_manager::USER_TYPE_ACTIVE_DIRECTORY:
       return DlpPolicyEvent_UserType_UNDEFINED_USER_TYPE;
     case user_manager::NUM_USER_TYPES:
       NOTREACHED();
@@ -274,9 +275,14 @@ DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
 
 DlpReportingManager::DlpReportingManager()
     : report_queue_(
-          ::reporting::ReportQueueFactory::CreateSpeculativeReportQueue(
-              ::reporting::EventType::kUser,
-              ::reporting::Destination::DLP_EVENTS)) {}
+          ::reporting::ReportQueueFactory::CreateSpeculativeReportQueue([]() {
+            ::reporting::SourceInfo source_info;
+            source_info.set_source(::reporting::SourceInfo::ASH);
+            return ::reporting::ReportQueueConfiguration::Create(
+                       {.event_type = ::reporting::EventType::kUser,
+                        .destination = ::reporting::Destination::DLP_EVENTS})
+                .SetSourceInfo(std::move(source_info));
+          }())) {}
 
 DlpReportingManager::~DlpReportingManager() = default;
 

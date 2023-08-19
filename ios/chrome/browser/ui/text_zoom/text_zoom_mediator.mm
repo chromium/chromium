@@ -14,10 +14,6 @@
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface TextZoomMediator () <WebStateListObserving, CRWWebStateObserver>
 
 @end
@@ -59,7 +55,8 @@
 }
 
 - (void)dealloc {
-  [self disconnect];
+  DCHECK(!_activeWebState);
+  DCHECK(!_webStateList);
 }
 
 - (void)disconnect {
@@ -85,25 +82,14 @@
 
 #pragma mark - WebStateListObserver
 
-- (void)webStateList:(WebStateList*)webStateList
-    didReplaceWebState:(web::WebState*)oldWebState
-          withWebState:(web::WebState*)newWebState
-               atIndex:(int)atIndex {
+- (void)didChangeWebStateList:(WebStateList*)webStateList
+                       change:(const WebStateListChange&)change
+                       status:(const WebStateListStatus&)status {
   DCHECK_EQ(_webStateList, webStateList);
-  if (atIndex == webStateList->active_index()) {
-    [self setActiveWebState:newWebState];
+  if (status.active_web_state_change()) {
+    [self setActiveWebState:status.new_active_web_state];
     [_commandHandler closeTextZoom];
   }
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-    didChangeActiveWebState:(web::WebState*)newWebState
-                oldWebState:(web::WebState*)oldWebState
-                    atIndex:(int)atIndex
-                     reason:(ActiveWebStateChangeReason)reason {
-  DCHECK_EQ(_webStateList, webStateList);
-  [self setActiveWebState:newWebState];
-  [_commandHandler closeTextZoom];
 }
 
 #pragma mark - TextZoomHandler

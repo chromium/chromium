@@ -52,19 +52,24 @@ bool IsHevcSPSNALU(const uint8_t* data, size_t size) {
 
 // If |reverse| is true , GetNextFrame() for a frame returns frames in a
 // round-trip playback fashion (0, 1,.., |num_frames| - 2, |num_frames| - 1,
-// |num_frames| - 1, |num_frames_| - 2,.., 1, 0, 0, 1,..).
+// |num_frames| - 2, |num_frames_| - 3,.., 1, 0, 1, 2,..).
 // If |reverse| is false, GetNextFrame() just loops the stream (0, 1,..,
 // |num_frames| - 2, |num_frames| - 1, 0, 1,..).
 uint32_t GetReadFrameIndex(uint32_t frame_index,
                            bool reverse,
                            uint32_t num_frames) {
+  CHECK_GT(num_frames, 1u);
   if (!reverse)
     return frame_index % num_frames;
-
-  const uint32_t number_of_loops = frame_index / num_frames;
-  const bool is_even_loop = number_of_loops % 2 == 0;
-  const uint32_t local_index = frame_index % num_frames;
-  return is_even_loop ? local_index : num_frames - local_index - 1;
+  // 0, .., num_frames - 1, num_frames - 2
+  // 0-num_frame, num_frames - 1, ... 1, 0, 1, nu
+  const size_t num_frames_in_loop = num_frames + num_frames - 2;
+  frame_index = frame_index % num_frames_in_loop;
+  if (frame_index < num_frames) {
+    return frame_index;
+  }
+  frame_index -= num_frames;
+  return num_frames - 2 - frame_index;
 }
 }  // namespace
 
@@ -303,16 +308,10 @@ scoped_refptr<DecoderBuffer> EncodedDataHelper::GetNextFrame() {
     frame_sizes.push_back(ivf.header.frame_size);
   }
 
-  // Copy frame_sizes information to DecoderBuffer's side data. Since side_data
-  // is uint8_t*, we need to copy as uint8_t from uint32_t. The copied data is
-  // recognized as uint32_t in VD(A).
-  const uint8_t* side_data =
-      reinterpret_cast<const uint8_t*>(frame_sizes.data());
-  size_t side_data_size =
-      frame_sizes.size() * sizeof(uint32_t) / sizeof(uint8_t);
-
-  return DecoderBuffer::CopyFrom(reinterpret_cast<const uint8_t*>(data.data()),
-                                 data.size(), side_data, side_data_size);
+  auto buffer = DecoderBuffer::CopyFrom(
+      reinterpret_cast<const uint8_t*>(data.data()), data.size());
+  buffer->WritableSideData().spatial_layers = frame_sizes;
+  return buffer;
 }
 
 absl::optional<IvfFrameHeader> EncodedDataHelper::GetNextIvfFrameHeader()

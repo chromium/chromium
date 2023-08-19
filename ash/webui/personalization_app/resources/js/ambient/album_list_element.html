@@ -4,7 +4,6 @@
   }
 
   iron-list {
-    height: auto;
     width: 100%;
   }
 
@@ -12,9 +11,11 @@
     cursor: default;
   }
 </style>
-<iron-list aria-setsize$="[[albums.length]]" as="album" grid id="grid"
-    items="[[albums]]" role="listbox">
+<iron-list aria-setsize$="[[albumsForDisplay_.length]]" as="album" grid id="grid"
+    items="[[albumsForDisplay_]]" role="listbox">
   <template>
+    <!-- |albums| is used for |class$| and |selected| to ensure the attributes
+          are updated correctly. -->
     <wallpaper-grid-item aria-label$="[[album.title]]"
         aria-posinset$="[[getAriaIndex_(index)]]"
         class$="[[getAlbumItemClass_(album, albums)]]"

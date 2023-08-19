@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("password_issues") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "password_issues_coordinator.h",
     "password_issues_coordinator.mm",
@@ -32,6 +31,7 @@ source_set("password_issues") {
     "//ios/chrome/browser/ui/settings/password:common",
     "//ios/chrome/browser/ui/settings/password/password_checkup:password_checkup_constants",
     "//ios/chrome/browser/ui/settings/password/password_details",
+    "//ios/chrome/browser/ui/settings/utils",
     "//ios/chrome/common/ui/favicon:favicon_constants",
     "//ios/chrome/common/ui/reauthentication",
     "//ui/base",
@@ -39,7 +39,6 @@ source_set("password_issues") {
 }
 
 source_set("password_issues_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "password_issue.h",
     "password_issue.mm",
@@ -72,7 +71,6 @@ source_set("password_issues_ui") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "password_issue_unittest.mm",

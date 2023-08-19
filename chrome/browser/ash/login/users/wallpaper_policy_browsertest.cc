@@ -10,6 +10,7 @@
 
 #include "ash/constants/ash_paths.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
@@ -33,7 +34,6 @@
 #include "chrome/browser/ash/policy/external_data/cloud_external_data_manager_base_test_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
@@ -191,7 +191,7 @@ class WallpaperPolicyTest : public LoginManagerTest,
 
   void SetUpOnMainThread() override {
     LoginManagerTest::SetUpOnMainThread();
-    WallpaperControllerClientImpl::Get()->AddObserver(this);
+    ash::WallpaperController::Get()->AddObserver(this);
 
     // Set up policy signing.
     user_policy_builders_[0] =
@@ -201,14 +201,14 @@ class WallpaperPolicyTest : public LoginManagerTest,
   }
 
   void TearDownOnMainThread() override {
-    WallpaperControllerClientImpl::Get()->RemoveObserver(this);
+    ash::WallpaperController::Get()->RemoveObserver(this);
     LoginManagerTest::TearDownOnMainThread();
   }
 
   // Obtain wallpaper image and return its average ARGB color.
   SkColor GetAverageWallpaperColor() {
     average_color_.reset();
-    auto image = WallpaperControllerClientImpl::Get()->GetWallpaperImage();
+    auto image = ash::WallpaperController::Get()->GetWallpaperImage();
     const gfx::ImageSkiaRep& representation = image.GetRepresentation(1.0f);
     if (representation.is_null()) {
       ADD_FAILURE() << "No image representation.";
@@ -221,8 +221,9 @@ class WallpaperPolicyTest : public LoginManagerTest,
   // WallpaperControllerObserver:
   void OnWallpaperChanged() override {
     ++wallpaper_change_count_;
-    if (run_loop_)
+    if (run_loop_) {
       run_loop_->Quit();
+    }
   }
 
   // Runs the loop until wallpaper has changed to the expected color.

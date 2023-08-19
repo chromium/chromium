@@ -13,6 +13,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/event.h"
+#include "ui/events/types/event_type.h"
 
 namespace ui {
 
@@ -74,6 +75,17 @@ TEST(AcceleratorTest, MAYBE_GetShortcutText) {
 TEST(AcceleratorTest, ShortcutTextForUnknownKey) {
   const Accelerator accelerator(VKEY_UNKNOWN, EF_NONE);
   EXPECT_EQ(std::u16string(), accelerator.GetShortcutText());
+}
+
+TEST(AcceleratorTest, VerifyToKeyEventConstructor) {
+  const Accelerator accelerator(VKEY_Z, EF_COMMAND_DOWN,
+                                Accelerator::KeyState::RELEASED,
+                                base::TimeTicks());
+  KeyEvent key_event = accelerator.ToKeyEvent();
+  // Check key event fields to verift if the right constructor is called.
+  EXPECT_EQ(key_event.key_code(), VKEY_Z);
+  EXPECT_EQ(key_event.Clone()->type(), ui::ET_KEY_RELEASED);
+  EXPECT_FALSE(key_event.is_char());
 }
 
 TEST(AcceleratorTest, ConversionFromKeyEvent) {

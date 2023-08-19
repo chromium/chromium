@@ -7,9 +7,9 @@
 
 #include <memory>
 
-namespace base::mac {
+namespace base::apple {
 class ScopedObjCClassSwizzler;
-}  // namespace base::mac
+}  // namespace base::apple
 
 // Within a given scope, swizzles the implementation of +[NSBundle mainBundle]
 // to return a partial mock of the original bundle. This partial mock has a
@@ -29,7 +29,7 @@ class ScopedBundleSwizzlerMac {
   ~ScopedBundleSwizzlerMac();
 
  private:
-  std::unique_ptr<base::mac::ScopedObjCClassSwizzler> class_swizzler_;
+  std::unique_ptr<base::apple::ScopedObjCClassSwizzler> class_swizzler_;
 };
 
 #endif  // CHROME_TEST_BASE_SCOPED_BUNDLE_SWIZZLER_MAC_H_

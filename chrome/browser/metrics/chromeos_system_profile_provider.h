@@ -67,8 +67,8 @@ class ChromeOSSystemProfileProvider : public metrics::MetricsProvider {
   void OnArcFeaturesParsed(base::OnceClosure callback,
                            absl::optional<arc::ArcFeatures> features);
 
-  // Sets the TPM firmware version, then calls the callback.
-  void OnTpmManagerGetVersionInfo(
+  // Sets the TPM RW firmware version, then calls the callback.
+  void OnTpmManagerGetRwVersionInfo(
       base::OnceClosure callback,
       const tpm_manager::GetVersionInfoReply& reply);
 
@@ -97,8 +97,8 @@ class ChromeOSSystemProfileProvider : public metrics::MetricsProvider {
   // ARC release version obtained from build properties.
   absl::optional<std::string> arc_release_;
 
-  // The firmware version of the TPM (go/trusted-platform-module).
-  absl::optional<uint64_t> tpm_firmware_version_;
+  // The RW firmware version of the TPM (go/trusted-platform-module).
+  absl::optional<std::string> tpm_rw_firmware_version_;
 
   base::WeakPtrFactory<ChromeOSSystemProfileProvider> weak_ptr_factory_;
 };

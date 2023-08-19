@@ -65,20 +65,29 @@ struct PackResult {
   ~PackResult();
   PackResult(const PackResult&);
 
-  enum StatusCode {
-    UNKNOWN = 0,
-    WRONG_ID,
-    NOT_INSTALLED,
-    IN_PROGRESS,
-    INSTALLED
+  enum class StatusCode {
+    kUnknown = 0,
+    kNotInstalled,
+    kInProgress,
+    kInstalled
   };
 
-  // This string contains the error returned by the DLC Service.
-  std::string operation_error;
+  enum class ErrorCode {
+    kNone = 0,
+    kOther,
+    kWrongId,
+    kNeedReboot,
+    kAllocation
+  };
 
   // The code that indicates the current state of the Pack.
-  // INSTALLED means that the Pack is ready to be used.
+  // kInstalled means that the Pack is ready to be used.
+  // If there's any error during the operation, we set status to kUnknown.
   StatusCode pack_state;
+
+  // If there is any error in the operation that is requested, it is indicated
+  // here.
+  ErrorCode operation_error;
 
   // The resolved language code that this Pack is associated with.
   // Often this field matches the locale requested by the client, but due to
@@ -97,8 +106,8 @@ struct PackSpecPair {
   std::string feature_id;
   std::string locale;
 
-  PackSpecPair(const std::string& feature_id, const std::string& locale)
-      : feature_id(feature_id), locale(locale) {}
+  PackSpecPair(std::string feature_id, std::string locale)
+      : feature_id(std::move(feature_id)), locale(std::move(locale)) {}
 
   bool operator==(const PackSpecPair& other) const {
     return (feature_id == other.feature_id && locale == other.locale);
@@ -132,6 +141,8 @@ using GetPackStateCallback =
 using OnUninstallCompleteCallback =
     base::OnceCallback<void(const PackResult& pack_result)>;
 using OnInstallBasePackCompleteCallback =
+    base::OnceCallback<void(const PackResult& pack_result)>;
+using OnUpdatePacksForOobeCallback =
     base::OnceCallback<void(const PackResult& pack_result)>;
 
 // This class manages all Language Packs and their dependencies (called Base
@@ -194,7 +205,8 @@ class LanguagePackManager : public DlcserviceClient::Observer {
   // Installs relevant language packs during OOBE.
   // This method should only be called during OOBE and will do nothing if called
   // outside it.
-  void UpdatePacksForOobe(const std::string& locale);
+  void UpdatePacksForOobe(const std::string& locale,
+                          OnUpdatePacksForOobeCallback callback);
 
   // Adds an observer to the observer list.
   void AddObserver(Observer* observer);

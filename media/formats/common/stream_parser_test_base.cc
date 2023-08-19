@@ -129,7 +129,7 @@ bool StreamParserTestBase::OnNewConfig(
   DVLOG(1) << __func__ << ": got " << tracks->tracks().size() << " tracks";
   EXPECT_EQ(tracks->tracks().size(), 1u);
   const auto& track = tracks->tracks()[0];
-  EXPECT_EQ(track->type(), MediaTrack::Audio);
+  EXPECT_EQ(track->type(), MediaTrack::Type::kAudio);
   audio_track_id_ = track->bytestream_track_id();
   last_audio_config_ = tracks->getAudioConfig(track->bytestream_track_id());
   EXPECT_TRUE(last_audio_config_.IsValidConfig());

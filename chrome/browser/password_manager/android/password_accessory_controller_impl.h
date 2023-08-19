@@ -21,14 +21,18 @@
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/password_manager/core/browser/credential_cache.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
 
 class ManualFillingController;
 class AllPasswordsBottomSheetController;
+class Profile;
 
 // Use either PasswordAccessoryController::GetOrCreate or
 // PasswordAccessoryController::GetIfExisting to obtain instances of this class.
@@ -36,11 +40,16 @@ class AllPasswordsBottomSheetController;
 // contents of one of its frames. This can cause cross-origin hazards.
 class PasswordAccessoryControllerImpl
     : public PasswordAccessoryController,
+      public content::WebContentsObserver,
       public content::WebContentsUserData<PasswordAccessoryControllerImpl> {
  public:
   using PasswordDriverSupplierForFocusedFrame =
       base::RepeatingCallback<password_manager::PasswordManagerDriver*(
           content::WebContents*)>;
+  using ShowMigrationWarningCallback = base::RepeatingCallback<void(
+      gfx::NativeWindow,
+      Profile*,
+      password_manager::metrics_util::PasswordMigrationWarningTriggers)>;
 
   PasswordAccessoryControllerImpl(const PasswordAccessoryControllerImpl&) =
       delete;
@@ -83,7 +92,8 @@ class PasswordAccessoryControllerImpl
       password_manager::CredentialCache* credential_cache,
       base::WeakPtr<ManualFillingController> manual_filling_controller,
       password_manager::PasswordManagerClient* password_client,
-      PasswordDriverSupplierForFocusedFrame driver_supplier);
+      PasswordDriverSupplierForFocusedFrame driver_supplier,
+      ShowMigrationWarningCallback show_migration_warning_callback);
 
   // Returns true if the current site attached to `web_contents_` has a SECURE
   // security level.
@@ -105,7 +115,8 @@ class PasswordAccessoryControllerImpl
       password_manager::CredentialCache* credential_cache,
       base::WeakPtr<ManualFillingController> manual_filling_controller,
       password_manager::PasswordManagerClient* password_client,
-      PasswordDriverSupplierForFocusedFrame driver_supplier);
+      PasswordDriverSupplierForFocusedFrame driver_supplier,
+      ShowMigrationWarningCallback show_migration_warning_callback);
 
  private:
   friend class content::WebContentsUserData<PasswordAccessoryControllerImpl>;
@@ -129,6 +140,9 @@ class PasswordAccessoryControllerImpl
     // If true, manual generation will be available for the focused field.
     bool is_manual_generation_available = false;
   };
+
+  // WebContentsObserver:
+  void WebContentsDestroyed() override;
 
   // Enables or disables saving for the focused origin. This involves removing
   // or adding blocklisted entry in the |PasswordStore|.
@@ -173,16 +187,14 @@ class PasswordAccessoryControllerImpl
   content::WebContents& GetWebContents() const;
 
   // Keeps track of credentials which are stored for all origins in this tab.
-  raw_ptr<password_manager::CredentialCache, DanglingUntriaged>
-      credential_cache_ = nullptr;
+  const raw_ptr<password_manager::CredentialCache> credential_cache_;
 
   // The password accessory controller object to forward client requests to.
   base::WeakPtr<ManualFillingController> manual_filling_controller_;
 
   // The password manager client is used to update the save passwords status
   // for the currently focused origin.
-  raw_ptr<password_manager::PasswordManagerClient, DanglingUntriaged>
-      password_client_ = nullptr;
+  const raw_ptr<password_manager::PasswordManagerClient> password_client_;
 
   // The authenticator used to trigger a biometric re-auth before filling.
   // null, if there is no ongoing authentication.
@@ -213,6 +225,10 @@ class PasswordAccessoryControllerImpl
   // Security level used for testing only.
   security_state::SecurityLevel security_level_for_testing_ =
       security_state::NONE;
+
+  // Callback attempting to display the migration warning when invoked.
+  // Used to facilitate injecting a mock bridge in tests.
+  ShowMigrationWarningCallback show_migration_warning_callback_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

@@ -77,16 +77,15 @@ def _CheckColorTokens(input_api, output_api):
 
 
 def _CheckModifyMetrics(input_api, output_api):
-  if not input_api.change.METRICS_DOCUMENTATION_UPDATED:
-    return [
-      output_api.PresubmitPromptWarning(
-          'Metrics are modified but `METRICS_DOCUMENTATION_UPDATED=true` is ' +
-          'not found in the commit messages.\n' +
-          'The CL author should confirm CCA metrics are still synced in ' +
-          'PDD (go/cca-metrics-pdd) and Schema (go/cca-metrics-schema).\n' +
-          'Once done, the CL author should explicitly claim it by including ' +
-          '`METRICS_DOCUMENTATION_UPDATED=true` in the commit messages.'
-      )
-    ]
-
-  return []
+  if input_api.no_diffs or input_api.change.METRICS_DOCUMENTATION_UPDATED:
+    return []
+  return [
+    output_api.PresubmitPromptWarning(
+        'Metrics are modified but `METRICS_DOCUMENTATION_UPDATED=true` is ' +
+        'not found in the commit messages.\n' +
+        'The CL author should confirm CCA metrics are still synced in ' +
+        'PDD (go/cca-metrics-pdd) and Schema (go/cca-metrics-schema).\n' +
+        'Once done, the CL author should explicitly claim it by including ' +
+        '`METRICS_DOCUMENTATION_UPDATED=true` in the commit messages.'
+    )
+  ]

@@ -33,12 +33,16 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /** Tests for ForeignSessionItemViewBinder. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ForeignSessionItemViewBinderUnitTest {
+    private static final long JAN_1_1970 = new Date(70, Calendar.JANUARY, 1).getTime();
+
     private Activity mActivity;
     private View mForeignSessionItemView;
     private View mForeignSessionItemView2;
@@ -55,7 +59,7 @@ public class ForeignSessionItemViewBinderUnitTest {
 
         mModel = new PropertyModel.Builder(ALL_KEYS)
                          .with(SESSION_PROFILE,
-                                 new ForeignSession("tag", "John's iPhone 6", 32L,
+                                 new ForeignSession("tag", "John's iPhone 6", JAN_1_1970,
                                          new ArrayList<>(), FormFactor.PHONE))
                          .with(IS_SELECTED, true)
                          .with(ON_CLICK_LISTENER,
@@ -66,11 +70,11 @@ public class ForeignSessionItemViewBinderUnitTest {
                 mModel, mForeignSessionItemView, ForeignSessionItemViewBinder::bind);
 
         ForeignSessionTab tab = new ForeignSessionTab(
-                JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1), "title", 32L, 0);
+                JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1), "title", JAN_1_1970, 0);
         List<ForeignSessionTab> tabs = new ArrayList<>();
         tabs.add(tab);
 
-        ForeignSessionWindow window = new ForeignSessionWindow(31L, 1, tabs);
+        ForeignSessionWindow window = new ForeignSessionWindow(JAN_1_1970, 1, tabs);
         List<ForeignSessionWindow> windows = new ArrayList<>();
         windows.add(window);
 
@@ -78,8 +82,8 @@ public class ForeignSessionItemViewBinderUnitTest {
                 R.layout.restore_tabs_foreign_session_item, /*root=*/null);
         mModel2 = new PropertyModel.Builder(ALL_KEYS)
                           .with(SESSION_PROFILE,
-                                  new ForeignSession("tag2", "John's iPad Air", 33L, windows,
-                                          FormFactor.TABLET))
+                                  new ForeignSession("tag2", "John's iPad Air", JAN_1_1970,
+                                          windows, FormFactor.TABLET))
                           .with(IS_SELECTED, true)
                           .with(ON_CLICK_LISTENER,
                                   () -> { mModel.set(IS_SELECTED, !mModel.get(IS_SELECTED)); })

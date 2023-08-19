@@ -401,8 +401,13 @@ class CONTENT_EXPORT SavePackage
   raw_ptr<SaveFileManager, FlakyDanglingUntriaged> file_manager_ = nullptr;
 
   // DownloadManager owns the download::DownloadItem and handles history and UI.
-  raw_ptr<DownloadManagerImpl> download_manager_ = nullptr;
-  raw_ptr<download::DownloadItemImpl> download_ = nullptr;
+  // These dangling raw_ptrs occurred in:
+  // content_browsertests: SavePackageBrowserTest.Reload
+  // chttps://ci.chromium.org/ui/p/chromium/builders/try/linux-rel/1430369/test-results?q=ExactID%3Aninja%3A%2F%2Fcontent%2Ftest%3Acontent_browsertests%2FSavePackageBrowserTest.Reload+VHash%3Ad83661216aa0a42d
+  raw_ptr<DownloadManagerImpl, FlakyDanglingUntriaged> download_manager_ =
+      nullptr;
+  raw_ptr<download::DownloadItemImpl, FlakyDanglingUntriaged> download_ =
+      nullptr;
 
   // The URL of the page the user wants to save.
   const GURL page_url_;

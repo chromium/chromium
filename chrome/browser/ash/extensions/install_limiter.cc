@@ -11,7 +11,6 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/extensions/install_limiter_factory.h"
 #include "extensions/browser/extensions_browser_client.h"
-#include "extensions/browser/notification_types.h"
 
 namespace {
 

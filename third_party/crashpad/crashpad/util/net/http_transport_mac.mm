@@ -17,8 +17,8 @@
 #import <Foundation/Foundation.h>
 #include <sys/utsname.h>
 
-#include "base/mac/foundation_util.h"
-#import "base/mac/scoped_nsobject.h"
+#include "base/apple/bridging.h"
+#include "base/apple/foundation_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "build/build_config.h"
@@ -33,7 +33,7 @@
 @interface CrashpadHTTPBodyStreamTransport : NSInputStream {
  @private
   NSStreamStatus _streamStatus;
-  id<NSStreamDelegate> _delegate;
+  id<NSStreamDelegate> __strong _delegate;
   crashpad::HTTPBodyStream* _bodyStream;  // weak
 }
 - (instancetype)initWithBodyStream:(crashpad::HTTPBodyStream*)bodyStream;
@@ -153,13 +153,14 @@ NSString* UserAgentString() {
 
   // Expected to be CFNetwork.
   NSBundle* nsurl_bundle = [NSBundle bundleForClass:[NSURLRequest class]];
-  NSString* bundle_name = base::mac::ObjCCast<NSString>([nsurl_bundle
-      objectForInfoDictionaryKey:base::mac::CFToNSCast(kCFBundleNameKey)]);
+  NSString* bundle_name = base::apple::ObjCCast<NSString>([nsurl_bundle
+      objectForInfoDictionaryKey:base::apple::CFToNSPtrCast(kCFBundleNameKey)]);
   if (bundle_name) {
     user_agent = AppendEscapedFormat(user_agent, @" %@", bundle_name);
 
-    NSString* bundle_version = base::mac::ObjCCast<NSString>([nsurl_bundle
-        objectForInfoDictionaryKey:base::mac::CFToNSCast(kCFBundleVersionKey)]);
+    NSString* bundle_version = base::apple::ObjCCast<NSString>(
+        [nsurl_bundle objectForInfoDictionaryKey:base::apple::CFToNSPtrCast(
+                                                     kCFBundleVersionKey)]);
     if (bundle_version) {
       user_agent = AppendEscapedFormat(user_agent, @"/%@", bundle_version);
     }
@@ -240,10 +241,9 @@ bool HTTPTransportMac::ExecuteSynchronously(std::string* response_body) {
           forHTTPHeaderField:base::SysUTF8ToNSString(pair.first)];
     }
 
-    base::scoped_nsobject<NSInputStream> input_stream(
-        [[CrashpadHTTPBodyStreamTransport alloc]
-            initWithBodyStream:body_stream()]);
-    [request setHTTPBodyStream:input_stream.get()];
+    NSInputStream* input_stream = [[CrashpadHTTPBodyStreamTransport alloc]
+        initWithBodyStream:body_stream()];
+    [request setHTTPBodyStream:input_stream];
 
     NSURLResponse* response = nil;
     NSError* error = nil;
@@ -268,7 +268,7 @@ bool HTTPTransportMac::ExecuteSynchronously(std::string* response_body) {
       return false;
     }
     NSHTTPURLResponse* http_response =
-        base::mac::ObjCCast<NSHTTPURLResponse>(response);
+        base::apple::ObjCCast<NSHTTPURLResponse>(response);
     if (!http_response) {
       LOG(ERROR) << "no http_response";
       return false;

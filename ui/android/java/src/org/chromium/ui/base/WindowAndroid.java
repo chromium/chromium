@@ -37,6 +37,7 @@ import org.chromium.base.LifetimeAssert;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.PackageManagerUtils;
+import org.chromium.base.TraceEvent;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -1018,6 +1019,15 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
         return overlayTransform;
     }
 
+    public void setUnfoldLatencyBeginTime(long beginTimestampMs) {
+        try (TraceEvent e = TraceEvent.scoped("setUnfoldLatencyBeginTime")) {
+            if (mNativeWindowAndroid != 0) {
+                WindowAndroidJni.get().sendUnfoldLatencyBeginTimestamp(
+                        mNativeWindowAndroid, beginTimestampMs);
+            }
+        }
+    }
+
     @NativeMethods
     interface Natives {
         long init(WindowAndroid caller, int displayId, float scrollFactor,
@@ -1031,5 +1041,6 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
         void onSupportedRefreshRatesUpdated(
                 long nativeWindowAndroid, WindowAndroid caller, float[] supportedRefreshRates);
         void onOverlayTransformUpdated(long nativeWindowAndroid, WindowAndroid caller);
+        void sendUnfoldLatencyBeginTimestamp(long nativeWindowAndroid, long beginTimestampMs);
     }
 }

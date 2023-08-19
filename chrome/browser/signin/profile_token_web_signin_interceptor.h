@@ -78,7 +78,7 @@ class ProfileTokenWebSigninInterceptor : public WebSigninInterceptor,
   // callback to `session_startup_helper_`.
   void OnNewBrowserCreated(bool is_new_profile);
 
-  void OnNewSignedInProfileCreated(Profile* new_profile);
+  void OnNewSignedInProfileCreated(base::WeakPtr<Profile> new_profile);
 
   const raw_ptr<Profile, DanglingUntriaged> profile_;
   std::unique_ptr<Delegate> delegate_;

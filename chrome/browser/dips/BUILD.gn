@@ -35,7 +35,11 @@ source_set("unit_tests") {
 bundle_data("golden_dbs_bundle_data") {
   visibility = [ ":unit_tests" ]
   testonly = true
-  sources = [ "//chrome/test/data/dips/v1.sql" ]
+  sources = [
+    "//chrome/test/data/dips/v1.sql",
+    "//chrome/test/data/dips/v2.sql",
+    "//chrome/test/data/dips/v3.sql",
+  ]
   outputs = [ "{{bundle_resources_dir}}/" +
               "{{source_root_relative_dir}}/{{source_file_part}}" ]
 }
@@ -59,6 +63,7 @@ source_set("browser_tests") {
     "//components/site_engagement/content:content",
     "//components/ukm:test_support",
     "//content/test:test_support",
+    "//device/fido:test_support",
     "//net:test_support",
     "//testing/gtest",
     "//third_party/blink/public/common",

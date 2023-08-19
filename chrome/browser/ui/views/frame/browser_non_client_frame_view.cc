@@ -134,8 +134,10 @@ bool BrowserNonClientFrameView::HasVisibleBackgroundTabShapes(
 
   // Background tab shapes are visible iff the tab color differs from the frame
   // color.
-  return tab_strip->GetTabBackgroundColor(TabActive::kInactive, active_state) !=
-         GetFrameColor(active_state);
+  return TabStyle::Get()->GetTabBackgroundColor(
+             TabStyle::TabSelectionState::kInactive,
+             /*hovered=*/false, ShouldPaintAsActive(active_state),
+             *GetColorProvider()) != GetFrameColor(active_state);
 }
 
 bool BrowserNonClientFrameView::EverHasVisibleBackgroundTabShapes() const {

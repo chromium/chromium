@@ -1,8 +1,9 @@
 <?php
 header("HTTP/1.1 307 Temporary Redirect");
-if ($_GET['mode'] == "anonymous") {
+$mode = $_GET['mode'] ?? '';
+if ($mode == "anonymous") {
     header("Access-Control-Allow-Origin: *");
-} else if ($_GET['mode'] == "use-credentials") {
+} else if ($mode == "use-credentials") {
     header("Access-Control-Allow-Credentials: true");
     header("Access-Control-Allow-Origin: " . $_SERVER['HTTP_ORIGIN']);
 }

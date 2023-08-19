@@ -1,0 +1,20 @@
+<style include="common md-select">
+  .md-select {
+    margin: 4px 8px 0 0;
+  }
+</style>
+<div class="ambient-toggle-row">
+  <h3 class="ambient-subpage-element-title">
+    $i18n{ambientModeDurationTitle}
+  </h3>
+  <select id="durationOptions" class="md-select"
+      on-change="onOptionChanged_">
+    <template is="dom-repeat" items="[[options_]]" as="option">
+      <option value="[[option]]"
+          selected="[[isEqual_(option, selectedDuration_)]]">
+        [[getDurationLabel_(option)]]
+      </option>
+    </template>
+  </select>
+</div>
+<p class="duration-description">$i18n{ambientModeDurationDescription}</p>

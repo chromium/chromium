@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "ash/wm/desks/templates/saved_desk_test_util.h"
-#include "base/memory/raw_ref.h"
 
 #include "ash/shell.h"
 #include "ash/style/icon_button.h"
@@ -17,7 +16,9 @@
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_test_util.h"
+#include "base/memory/raw_ref.h"
 #include "base/test/bind.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/animation/bounds_animator_observer.h"
@@ -175,6 +176,10 @@ void SavedDeskControllerTestApi::SetAdminTemplate(
   saved_desk_controller_->SetAdminTemplateForTesting(std::move(admin_template));
 }
 
+void SavedDeskControllerTestApi::ResetAutoLaunch() {
+  saved_desk_controller_->ResetAutoLaunchForTesting();
+}
+
 std::vector<SavedDeskItemView*> GetItemViewsFromDeskLibrary(
     const OverviewGrid* overview_grid) {
   SavedDeskLibraryView* saved_desk_library_view =
@@ -209,53 +214,79 @@ SavedDeskItemView* GetItemViewFromSavedDeskGrid(size_t grid_item_index) {
   return item_view;
 }
 
-views::Button* GetZeroStateLibraryButton() {
+const views::Button* GetZeroStateLibraryButton() {
   const auto* overview_grid = GetPrimaryOverviewGrid();
   if (!overview_grid)
     return nullptr;
 
   // May be null in tablet mode.
   const auto* desks_bar_view = overview_grid->desks_bar_view();
-  return desks_bar_view ? desks_bar_view->zero_state_library_button() : nullptr;
+  if (!desks_bar_view) {
+    return nullptr;
+  }
+
+  // In post-Jellyroll, we only have the one library button so always return it
+  // for tests.
+  return !chromeos::features::IsJellyrollEnabled()
+             ? static_cast<views::Button*>(
+                   desks_bar_view->zero_state_library_button())
+             : desks_bar_view->library_button();
 }
 
-views::Button* GetExpandedStateLibraryButton() {
+const views::Button* GetExpandedStateLibraryButton() {
   const auto* overview_grid = GetPrimaryOverviewGrid();
   if (!overview_grid)
     return nullptr;
 
   // May be null in tablet mode.
   const auto* desks_bar_view = overview_grid->desks_bar_view();
-  return desks_bar_view
-             ? desks_bar_view->expanded_state_library_button()->GetInnerButton()
-             : nullptr;
+  if (!desks_bar_view) {
+    return nullptr;
+  }
+
+  // In post-Jellyroll, we only have the one library button so always return it
+  // for tests.
+  return !chromeos::features::IsJellyrollEnabled()
+             ? static_cast<views::Button*>(
+                   desks_bar_view->expanded_state_library_button()
+                       ->GetInnerButton())
+             : desks_bar_view->library_button();
 }
 
-views::Button* GetSaveDeskAsTemplateButton() {
+const views::Button* GetSaveDeskAsTemplateButton() {
   const auto* overview_grid = GetPrimaryOverviewGrid();
   if (!overview_grid)
     return nullptr;
   return overview_grid->GetSaveDeskAsTemplateButton();
 }
 
-views::Button* GetSaveDeskForLaterButton() {
+const views::Button* GetSaveDeskForLaterButton() {
   const auto* overview_grid = GetPrimaryOverviewGrid();
   return overview_grid ? overview_grid->GetSaveDeskForLaterButton() : nullptr;
 }
 
-views::Button* GetSavedDeskItemButton(int index) {
+const views::Button* GetSavedDeskItemButton(int index) {
   auto* item = GetItemViewFromSavedDeskGrid(index);
   return item ? static_cast<views::Button*>(item) : nullptr;
 }
 
-views::Button* GetSavedDeskItemDeleteButton(int index) {
+const views::Button* GetSavedDeskItemDeleteButton(int index) {
   auto* item = GetItemViewFromSavedDeskGrid(index);
   return item ? const_cast<IconButton*>(
                     SavedDeskItemViewTestApi(item).delete_button())
               : nullptr;
 }
 
-views::Button* GetSavedDeskDialogAcceptButton() {
+const views::Button* GetSavedDeskDialogAcceptButton() {
+  if (chromeos::features::IsJellyEnabled()) {
+    const SystemDialogDelegateView* dialog_widget_view =
+        saved_desk_util::GetSavedDeskDialogController()
+            ->GetSystemDialogViewForTesting();
+    if (!dialog_widget_view) {
+      return nullptr;
+    }
+    return dialog_widget_view->GetAcceptButtonForTesting();
+  }
   const views::Widget* dialog_widget =
       saved_desk_util::GetSavedDeskDialogController()->dialog_widget();
   if (!dialog_widget)

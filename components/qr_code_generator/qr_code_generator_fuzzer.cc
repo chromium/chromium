@@ -16,7 +16,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   int min_version = provider.ConsumeIntegral<int>();
   auto qr_data = provider.ConsumeRemainingBytes<uint8_t>();
 
-  QRCodeGenerator qr;
+  qr_code_generator::QRCodeGenerator qr;
   std::ignore = qr.Generate(qr_data, min_version);
   return 0;
 }

@@ -19,6 +19,7 @@
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/ink_drop_mask.h"
 #include "ui/views/animation/ink_drop_stub.h"
+#include "ui/views/animation/pulsing_ink_drop_mask.h"
 #include "ui/views/animation/square_ink_drop_ripple.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -92,7 +93,7 @@ std::unique_ptr<InkDropRipple> InkDropHost::CreateInkDropRipple() const {
     return create_ink_drop_ripple_callback_.Run();
   }
   return std::make_unique<views::FloodFillInkDropRipple>(
-      InkDrop::Get(host_view_), host_view_->size(), gfx::Insets(),
+      InkDrop::Get(host_view_), host_view_->size(),
       GetInkDropCenterBasedOnLastEvent(), GetBaseColor(), GetVisibleOpacity());
 }
 
@@ -134,6 +135,11 @@ void InkDropHost::SetCreateHighlightCallback(
 }
 
 std::unique_ptr<views::InkDropMask> InkDropHost::CreateInkDropMask() const {
+  // Attention mask takes precedence.
+  if (in_attention_state_) {
+    return std::make_unique<views::PulsingInkDropMask>(host_view_);
+  }
+
   if (create_ink_drop_mask_callback_) {
     return create_ink_drop_mask_callback_.Run();
   }
@@ -146,7 +152,23 @@ void InkDropHost::SetCreateMaskCallback(
   create_ink_drop_mask_callback_ = std::move(callback);
 }
 
+void InkDropHost::ToggleAttentionState(bool attention_on) {
+  in_attention_state_ = attention_on;
+
+  // Calling HostSizeChanged() will force the new mask and color to be fetched.
+  // TODO(collinbaker): Consider adding explicit way to recreate mask instead
+  // of relying on HostSizeChanged() to do so.
+  GetInkDrop()->HostSizeChanged(host_view_->size());
+}
+
 SkColor InkDropHost::GetBaseColor() const {
+  // Attention color takes precedence.
+  if (in_attention_state_) {
+    ui::ColorProvider* const color_provider = host_view_->GetColorProvider();
+    CHECK(color_provider);
+    return color_provider->GetColor(ui::kColorButtonFeatureAttentionHighlight);
+  }
+
   if (absl::holds_alternative<ui::ColorId>(ink_drop_base_color_)) {
     ui::ColorProvider* color_provider = host_view_->GetColorProvider();
     CHECK(color_provider);
@@ -269,7 +291,9 @@ void InkDropHost::OnInkDropHighlightedChanged() {
 
 void InkDropHost::AddInkDropLayer(ui::Layer* ink_drop_layer) {
   // If a clip is provided, use that as it is more performant than a mask.
-  if (!AddInkDropClip(ink_drop_layer)) {
+  // If `host_view_` is in attention state e.g. has an IPH bubble attached
+  // also install the attention mask.
+  if (!AddInkDropClip(ink_drop_layer) || in_attention_state_) {
     InstallInkDropMask(ink_drop_layer);
   }
   host_view_->AddLayerToRegion(ink_drop_layer, layer_region_);

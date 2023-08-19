@@ -149,6 +149,7 @@ TEST_F(OpenTabResultTest, Favicon) {
   std::move(return_icon_callback).Run(mock_icon_result);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(ImageSkiasEqual(TestIcon(), result->icon().icon));
+  EXPECT_TRUE(
+      ImageSkiasEqual(TestIcon(), result->icon().icon.Rasterize(nullptr)));
 }
 }  // namespace app_list::test

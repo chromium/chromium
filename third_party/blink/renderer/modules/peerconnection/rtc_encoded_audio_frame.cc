@@ -16,32 +16,18 @@
 namespace blink {
 
 RTCEncodedAudioFrame::RTCEncodedAudioFrame(
-    std::unique_ptr<webrtc::TransformableFrameInterface> webrtc_frame)
-    : delegate_(base::MakeRefCounted<RTCEncodedAudioFrameDelegate>(
-          std::move(webrtc_frame),
-          Vector<uint32_t>(),
-          absl::nullopt)) {}
-
-RTCEncodedAudioFrame::RTCEncodedAudioFrame(
     std::unique_ptr<webrtc::TransformableAudioFrameInterface>
-        webrtc_audio_frame) {
-  Vector<uint32_t> contributing_sources;
-  absl::optional<uint16_t> sequence_number;
-  if (webrtc_audio_frame) {
-    contributing_sources.assign(webrtc_audio_frame->GetContributingSources());
-    if (webrtc_audio_frame->GetDirection() ==
-        webrtc::TransformableFrameInterface::Direction::kReceiver) {
-      sequence_number = webrtc_audio_frame->GetHeader().sequenceNumber;
-    }
-  }
-  delegate_ = base::MakeRefCounted<RTCEncodedAudioFrameDelegate>(
-      std::move(webrtc_audio_frame), std::move(contributing_sources),
-      sequence_number);
-}
+        webrtc_audio_frame)
+    : delegate_(base::MakeRefCounted<RTCEncodedAudioFrameDelegate>(
+          std::move(webrtc_audio_frame),
+          webrtc_audio_frame ? webrtc_audio_frame->GetContributingSources()
+                             : Vector<uint32_t>(),
+          webrtc_audio_frame ? webrtc_audio_frame->SequenceNumber()
+                             : absl::nullopt)) {}
 
 RTCEncodedAudioFrame::RTCEncodedAudioFrame(
     scoped_refptr<RTCEncodedAudioFrameDelegate> delegate)
-    : delegate_(std::move(delegate)) {}
+    : RTCEncodedAudioFrame(delegate->CloneWebRtcFrame()) {}
 
 uint32_t RTCEncodedAudioFrame::timestamp() const {
   return delegate_->Timestamp();
@@ -67,11 +53,19 @@ RTCEncodedAudioFrameMetadata* RTCEncodedAudioFrame::getMetadata() const {
   if (delegate_->SequenceNumber()) {
     metadata->setSequenceNumber(*delegate_->SequenceNumber());
   }
+  if (delegate_->AbsCaptureTime()) {
+    metadata->setAbsCaptureTime(*delegate_->AbsCaptureTime());
+  }
   return metadata;
 }
 
 void RTCEncodedAudioFrame::setData(DOMArrayBuffer* data) {
   frame_data_ = data;
+}
+
+void RTCEncodedAudioFrame::setTimestamp(uint32_t timestamp,
+                                        ExceptionState& exception_state) {
+  delegate_->SetTimestamp(timestamp, exception_state);
 }
 
 String RTCEncodedAudioFrame::toString() const {
@@ -86,14 +80,10 @@ String RTCEncodedAudioFrame::toString() const {
 
 RTCEncodedAudioFrame* RTCEncodedAudioFrame::clone(
     ExceptionState& exception_state) const {
-  String exception_message;
-  std::unique_ptr<webrtc::TransformableFrameInterface> new_webrtc_frame =
-      delegate_->CloneWebRtcFrame(exception_message);
-  if (!new_webrtc_frame) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
-                                      exception_message);
-    return nullptr;
-  }
+  std::unique_ptr<webrtc::TransformableAudioFrameInterface> new_webrtc_frame =
+      delegate_->CloneWebRtcFrame();
+  // Clone should never fail.
+  CHECK(new_webrtc_frame);
   return MakeGarbageCollected<RTCEncodedAudioFrame>(
       std::move(new_webrtc_frame));
 }
@@ -108,7 +98,7 @@ scoped_refptr<RTCEncodedAudioFrameDelegate> RTCEncodedAudioFrame::Delegate()
   return delegate_;
 }
 
-std::unique_ptr<webrtc::TransformableFrameInterface>
+std::unique_ptr<webrtc::TransformableAudioFrameInterface>
 RTCEncodedAudioFrame::PassWebRtcFrame() {
   SyncDelegate();
   return delegate_->PassWebRtcFrame();

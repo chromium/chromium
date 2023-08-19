@@ -79,6 +79,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
+#include "third_party/blink/renderer/core/lcp_critical_path_predictor/lcp_critical_path_predictor.h"
 #include "third_party/blink/renderer/core/loader/back_forward_cache_loader_helper_impl.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
@@ -336,21 +337,7 @@ void FrameFetchContext::PrepareRequest(
     request.SetTopFrameOrigin(GetTopFrameOrigin());
   }
 
-  const bool ua_reduced =
-      request.HttpHeaderField(AtomicString(
-          network::GetClientHintToNameMap()
-              .at(network::mojom::blink::WebClientHintsType::kUAReduced)
-              .c_str())) == "?1";
-  const bool ua_full =
-      request.HttpHeaderField(AtomicString(
-          network::GetClientHintToNameMap()
-              .at(network::mojom::blink::WebClientHintsType::kFullUserAgent)
-              .c_str())) == "?1";
-
-  String user_agent =
-      ua_full ? GetFullUserAgent()
-              : (ua_reduced ? GetReducedUserAgent() : GetUserAgent());
-  request.SetHTTPUserAgent(AtomicString(user_agent));
+  request.SetHTTPUserAgent(AtomicString(GetUserAgent()));
 
   if (GetResourceFetcherProperties().IsDetached())
     return;
@@ -540,6 +527,18 @@ bool FrameFetchContext::IsPrerendering() const {
   if (GetResourceFetcherProperties().IsDetached())
     return frozen_state_->is_prerendering;
   return document_->IsPrerendering();
+}
+
+bool FrameFetchContext::DoesLCPPHaveAnyHintData() {
+  if (GetResourceFetcherProperties().IsDetached()) {
+    return false;
+  }
+
+  LCPCriticalPathPredictor* lcpp = GetFrame()->GetLCPP();
+  if (!lcpp) {
+    return false;
+  }
+  return lcpp->HasAnyHintData();
 }
 
 void FrameFetchContext::SetFirstPartyCookie(ResourceRequest& request) {
@@ -736,18 +735,6 @@ String FrameFetchContext::GetUserAgent() const {
   return GetFrame()->Loader().UserAgent();
 }
 
-String FrameFetchContext::GetFullUserAgent() const {
-  if (GetResourceFetcherProperties().IsDetached())
-    return frozen_state_->user_agent;
-  return GetFrame()->Loader().FullUserAgent();
-}
-
-String FrameFetchContext::GetReducedUserAgent() const {
-  if (GetResourceFetcherProperties().IsDetached())
-    return frozen_state_->user_agent;
-  return GetFrame()->Loader().ReducedUserAgent();
-}
-
 absl::optional<UserAgentMetadata> FrameFetchContext::GetUserAgentMetadata()
     const {
   if (GetResourceFetcherProperties().IsDetached())
@@ -796,25 +783,15 @@ FetchContext* FrameFetchContext::Detach() {
   if (GetResourceFetcherProperties().IsDetached())
     return this;
 
-  // If the Sec-CH-UA-Full client hint header is set on the request, then the
-  // full User-Agent string should be set on the User-Agent request header.
-  // If the Sec-CH-UA-Reduced client hint header is set on the request, then the
-  // reduced User-Agent string should also be set on the User-Agent request
-  // header.
+  // As we completed the reduction in the user-agent, the reduced User-Agent
+  // string returns from GetUserAgent() should also be set on the User-Agent
+  // request header.
   const ClientHintsPreferences& client_hints_prefs =
       GetClientHintsPreferences();
-  String user_agent = client_hints_prefs.ShouldSend(
-                          network::mojom::WebClientHintsType::kFullUserAgent)
-                          ? GetFullUserAgent()
-                          : client_hints_prefs.ShouldSend(
-                                network::mojom::WebClientHintsType::kUAReduced)
-                                ? GetReducedUserAgent()
-                                : GetUserAgent();
-
   frozen_state_ = MakeGarbageCollected<FrozenState>(
       Url(), GetContentSecurityPolicy(), GetSiteForCookies(),
       GetTopFrameOrigin(), client_hints_prefs, GetDevicePixelRatio(),
-      user_agent, GetUserAgentMetadata(), IsSVGImageChromeClient(),
+      GetUserAgent(), GetUserAgentMetadata(), IsSVGImageChromeClient(),
       IsPrerendering(), GetReducedAcceptLanguage());
   document_loader_ = nullptr;
   document_ = nullptr;

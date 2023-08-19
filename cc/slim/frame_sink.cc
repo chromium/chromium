@@ -20,7 +20,7 @@ std::unique_ptr<FrameSink> FrameSink::Create(
         compositor_frame_sink_associated_remote,
     mojo::PendingReceiver<viz::mojom::CompositorFrameSinkClient>
         client_receiver,
-    scoped_refptr<viz::ContextProvider> context_provider,
+    scoped_refptr<viz::RasterContextProvider> context_provider,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     // Parameters below only used when wrapping cc.
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,

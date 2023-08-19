@@ -123,6 +123,25 @@ void ShowFloatedWindow(aura::Window* floated_window) {
   floated_window->Show();
 }
 
+gfx::Rect GetFloatBounds(const gfx::Size& size,
+                         const gfx::Rect& work_area_bounds,
+                         chromeos::FloatStartLocation location) {
+  const int padding_dp = chromeos::wm::kFloatedWindowPaddingDp;
+  int origin_x;
+  const int origin_y = work_area_bounds.bottom() - size.height() - padding_dp;
+  switch (location) {
+    case chromeos::FloatStartLocation::kBottomLeft: {
+      origin_x = padding_dp;
+      break;
+    }
+    case chromeos::FloatStartLocation::kBottomRight: {
+      origin_x = work_area_bounds.right() - size.width() - padding_dp;
+      break;
+    }
+  }
+  return gfx::Rect(gfx::Point(origin_x, origin_y), size);
+}
+
 class FloatLayoutManager : public WmDefaultLayoutManager {
  public:
   FloatLayoutManager() = default;
@@ -131,6 +150,20 @@ class FloatLayoutManager : public WmDefaultLayoutManager {
   ~FloatLayoutManager() override = default;
 
   // WmDefaultLayoutManager:
+  void OnWindowAddedToLayout(aura::Window* child) override {
+    // We don't support multiple displays in tablet mode, so this function is
+    // called when the window is moved into the float container from a desk
+    // container. This happens during a state change, and we can let the
+    // transition event handle setting the floated window bounds instead.
+    if (Shell::Get()->IsInTabletMode()) {
+      return;
+    }
+
+    WindowState* window_state = WindowState::Get(child);
+    WMEvent event(WM_EVENT_ADDED_TO_WORKSPACE);
+    window_state->OnWMEvent(&event);
+  }
+
   void SetChildBounds(aura::Window* child,
                       const gfx::Rect& requested_bounds) override {
     // This should result in sending a bounds change WMEvent to properly support
@@ -229,9 +262,8 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver {
 
     if (!animate) {
       scoped_window_tucker_.reset();
-      TabletModeWindowState::UpdateWindowPosition(
-          WindowState::Get(floated_window_),
-          WindowState::BoundsChangeAnimationType::kNone);
+      UpdateWindowBoundsForTablet(
+          floated_window_, WindowState::BoundsChangeAnimationType::kNone);
       return;
     }
 
@@ -322,7 +354,7 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver {
   // container, this Desk pointer is used to determine floating window's desk
   // ownership, since floated window should only be shown on the desk it belongs
   // to.
-  raw_ptr<const Desk, ExperimentalAsh> desk_;
+  raw_ptr<const Desk, DanglingUntriaged | ExperimentalAsh> desk_;
 
   // The start time when the floated window is on the active desk. Used for
   // logging the amount of time a window is floated. Logged when the desk
@@ -359,8 +391,9 @@ FloatController::~FloatController() {
 }
 
 // static
-gfx::Rect FloatController::GetPreferredFloatWindowClamshellBounds(
-    aura::Window* window) {
+gfx::Rect FloatController::GetFloatWindowClamshellBounds(
+    aura::Window* window,
+    chromeos::FloatStartLocation location) {
   DCHECK(chromeos::wm::CanFloatWindow(window));
 
   // In the case of window restore, as we re-float previously floated window, we
@@ -378,10 +411,7 @@ gfx::Rect FloatController::GetPreferredFloatWindowClamshellBounds(
   if ((window->GetProperty(aura::client::kResizeBehaviorKey) &
        aura::client::kResizeBehaviorCanResize) == 0) {
     // Unresizable windows must not be resized for any reason.
-    const gfx::Size size = window->bounds().size();
-    return gfx::Rect(work_area.right() - size.width() - padding_dp,
-                     work_area.bottom() - size.height() - padding_dp,
-                     size.width(), size.height());
+    return GetFloatBounds(window->bounds().size(), work_area, location);
   }
 
   // Default float size is 1/3 width and 70% height of `work_area`.
@@ -407,15 +437,12 @@ gfx::Rect FloatController::GetPreferredFloatWindowClamshellBounds(
       std::min(preferred_bounds.width(), work_area.width() - 2 * padding_dp);
   const int preferred_height =
       std::min(preferred_bounds.height(), work_area.height() - 2 * padding_dp);
-
-  return gfx::Rect(work_area.right() - preferred_width - padding_dp,
-                   work_area.bottom() - preferred_height - padding_dp,
-                   preferred_width, preferred_height);
+  return GetFloatBounds(gfx::Size(preferred_width, preferred_height), work_area,
+                        location);
 }
 
 // static
-gfx::Rect FloatController::GetPreferredFloatWindowTabletBounds(
-    aura::Window* window) {
+gfx::Rect FloatController::GetFloatWindowTabletBounds(aura::Window* window) {
   const gfx::Size preferred_size =
       chromeos::wm::GetFloatedWindowTabletSize(window);
 
@@ -480,6 +507,14 @@ gfx::Rect FloatController::GetPreferredFloatWindowTabletBounds(
   }
 
   return gfx::Rect(origin, gfx::Size(width, height));
+}
+
+void FloatController::ToggleFloat(aura::Window* window) {
+  if (WindowState::Get(window)->IsFloated()) {
+    UnsetFloat(window);
+  } else {
+    SetFloat(window, chromeos::FloatStartLocation::kBottomRight);
+  }
 }
 
 void FloatController::MaybeUntuckFloatedWindowForTablet(
@@ -680,8 +715,9 @@ void FloatController::OnTabletModeStarted() {
 }
 
 void FloatController::OnTabletModeEnding() {
-  for (auto& [window, info] : floated_window_info_map_)
-    info->MaybeUntuckWindow(/*animate=*/true);
+  for (auto& [window, info] : floated_window_info_map_) {
+    info->MaybeUntuckWindow(/*animate=*/false);
+  }
 }
 
 void FloatController::OnTabletControllerDestroyed() {
@@ -701,15 +737,18 @@ void FloatController::OnDeskActivationChanged(const Desk* activated,
       });
   if (deactivated_desk_floated_window_info_iter !=
       floated_window_info_map_.end()) {
-    deactivated_desk_floated_window_info_iter->second->MaybeUntuckWindow(
-        /*animate=*/false);
+    // If we are currently not in tablet mode, no need to untuck, which would
+    // update the window bounds.
+    if (Shell::Get()->IsInTabletMode()) {
+      deactivated_desk_floated_window_info_iter->second->MaybeUntuckWindow(
+          /*animate=*/false);
+    }
     HideFloatedWindow(deactivated_desk_floated_window_info_iter->first);
   }
 
   if (auto* activated_desk_floated_window =
           FindFloatedWindowOfDesk(activated)) {
     ShowFloatedWindow(activated_desk_floated_window);
-
     // Activate the floated window if it is the top window. This is normally
     // done in `Desk::Activate`, but floated windows are technically not owned
     // by the desk, and the window is still hidden at that point so it isn't in
@@ -733,8 +772,10 @@ void FloatController::OnDisplayMetricsChanged(const display::Display& display,
     return;
   }
 
-  if ((display::DisplayObserver::DISPLAY_METRIC_WORK_AREA & metrics) == 0)
+  const uint32_t filter = DISPLAY_METRIC_BOUNDS | DISPLAY_METRIC_WORK_AREA;
+  if ((filter & metrics) == 0) {
     return;
+  }
 
   DCHECK(!floated_window_info_map_.empty());
   std::vector<aura::Window*> windows_need_reset;
@@ -742,11 +783,18 @@ void FloatController::OnDisplayMetricsChanged(const display::Display& display,
     if (!chromeos::wm::CanFloatWindow(window)) {
       windows_need_reset.push_back(window);
     } else {
-      // Let the state object handle the work area change. This is normally
+      // Let the state object handle the display change. This is normally
       // handled by the `WorkspaceLayoutManager`, but the float container does
       // not have one attached.
-      const WMEvent event(WM_EVENT_WORKAREA_BOUNDS_CHANGED);
-      WindowState::Get(window)->OnWMEvent(&event);
+      if (metrics & display::DisplayObserver::DISPLAY_METRIC_BOUNDS) {
+        const DisplayMetricsChangedWMEvent wm_event(metrics);
+        WindowState::Get(window)->OnWMEvent(&wm_event);
+      }
+
+      if (metrics & display::DisplayObserver::DISPLAY_METRIC_WORK_AREA) {
+        const WMEvent wm_event(WM_EVENT_WORKAREA_BOUNDS_CHANGED);
+        WindowState::Get(window)->OnWMEvent(&wm_event);
+      }
     }
   }
   for (auto* window : windows_need_reset)
@@ -795,8 +843,9 @@ void FloatController::OnScreenRotationAnimationFinished(
         static_cast<int>(AppType::ARC_APP)) {
       const gfx::Rect bounds =
           Shell::Get()->tablet_mode_controller()->InTabletMode()
-              ? GetPreferredFloatWindowTabletBounds(window)
-              : GetPreferredFloatWindowClamshellBounds(window);
+              ? GetFloatWindowTabletBounds(window)
+              : GetFloatWindowClamshellBounds(
+                    window, chromeos::FloatStartLocation::kBottomRight);
       const SetBoundsWMEvent event(bounds);
       WindowState::Get(window)->OnWMEvent(&event);
     }
@@ -819,11 +868,22 @@ void FloatController::OnPinnedStateChanged(aura::Window* pinned_window) {
   }
 }
 
-void FloatController::ToggleFloat(aura::Window* window) {
-  WindowState* window_state = WindowState::Get(window);
-  const WMEvent toggle_event(window_state->IsFloated() ? WM_EVENT_RESTORE
-                                                       : WM_EVENT_FLOAT);
-  window_state->OnWMEvent(&toggle_event);
+void FloatController::SetFloat(
+    aura::Window* window,
+    chromeos::FloatStartLocation float_start_location) {
+  auto* window_state = WindowState::Get(window);
+  if (!window_state->IsFloated()) {
+    const WindowFloatWMEvent float_event(float_start_location);
+    window_state->OnWMEvent(&float_event);
+  }
+}
+
+void FloatController::UnsetFloat(aura::Window* window) {
+  auto* window_state = WindowState::Get(window);
+  if (window_state->IsFloated()) {
+    const WMEvent restore_event(WM_EVENT_RESTORE);
+    window_state->OnWMEvent(&restore_event);
+  }
 }
 
 // static
@@ -952,7 +1012,7 @@ void FloatController::UnfloatImpl(aura::Window* window) {
   // `pre_added_to_workspace_window_bounds_` to update it's bounds, here we
   // update `pre_added_to_workspace_window_bounds_` as window is re-added to
   // active desk container from float container.
-  WindowState::Get(window)->SetPreAddedToWorkspaceWindowBounds(
+  WindowState::Get(window)->set_pre_added_to_workspace_window_bounds(
       window->bounds());
   // Floated window have been hidden on purpose on the inactive desk.
   ShowFloatedWindow(window);
@@ -971,7 +1031,7 @@ void FloatController::UnfloatImpl(aura::Window* window) {
 void FloatController::ResetFloatedWindow(aura::Window* floated_window) {
   DCHECK(floated_window);
   DCHECK(WindowState::Get(floated_window)->IsFloated());
-  ToggleFloat(floated_window);
+  UnsetFloat(floated_window);
 }
 
 FloatController::FloatedWindowInfo* FloatController::MaybeGetFloatedWindowInfo(

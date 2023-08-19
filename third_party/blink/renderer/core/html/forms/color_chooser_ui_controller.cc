@@ -57,10 +57,11 @@ void ColorChooserUIController::Trace(Visitor* visitor) const {
 }
 
 void ColorChooserUIController::OpenUI() {
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   OpenColorChooser();
 #else
-  NOTREACHED() << "ColorChooserUIController should only be used on Android";
+  NOTREACHED()
+      << "ColorChooserUIController should only be used on Android or iOS";
 #endif
 }
 
@@ -83,7 +84,7 @@ void ColorChooserUIController::DidChooseColor(uint32_t color) {
   client_->DidChooseColor(Color::FromRGBA32(color));
 }
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE)
 void ColorChooserUIController::OpenColorChooser() {
   DCHECK(!chooser_);
   scoped_refptr<base::SequencedTaskRunner> runner =
@@ -98,6 +99,6 @@ void ColorChooserUIController::OpenColorChooser() {
   receiver_.set_disconnect_handler(WTF::BindOnce(
       &ColorChooserUIController::EndChooser, WrapWeakPersistent(this)));
 }
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
+#endif
 
 }  // namespace blink

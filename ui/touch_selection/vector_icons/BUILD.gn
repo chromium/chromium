@@ -1,0 +1,26 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/vector_icons/vector_icons.gni")
+
+aggregate_vector_icons("touch_selection_vector_icons") {
+  icon_directory = "."
+
+  sources = [
+    "text_selection_handle_center.icon",
+    "text_selection_handle_left.icon",
+    "text_selection_handle_right.icon",
+  ]
+}
+
+source_set("vector_icons") {
+  sources = get_target_outputs(":touch_selection_vector_icons")
+
+  deps = [
+    ":touch_selection_vector_icons",
+    "//base",
+    "//skia",
+    "//ui/gfx",
+  ]
+}

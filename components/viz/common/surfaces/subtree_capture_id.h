@@ -7,7 +7,9 @@
 
 #include <cstdint>
 #include <string>
+#include <utility>
 
+#include "base/token.h"
 #include "components/viz/common/viz_common_export.h"
 
 namespace viz {
@@ -16,18 +18,20 @@ namespace viz {
 // CompositorFrameSink, which can be captured independently from the root
 // CompositorFrameSink by the FrameSinkVideoCapturer.
 //
-// Use the SubtreeCaptureIdAllocator to allocate a valid instace of this class.
+// For aura::Window capture, use the SubtreeCaptureIdAllocator to allocate a
+// valid instance of this class. For Element level capture, use the base::Token
+// associated with the element undergoing capture to construct this class.
 class VIZ_COMMON_EXPORT SubtreeCaptureId {
  public:
   constexpr SubtreeCaptureId() = default;
-  constexpr explicit SubtreeCaptureId(uint32_t subtree_id)
-      : subtree_id_(subtree_id) {}
+  constexpr explicit SubtreeCaptureId(base::Token subtree_id)
+      : subtree_id_(std::move(subtree_id)) {}
   constexpr SubtreeCaptureId(const SubtreeCaptureId&) = default;
   SubtreeCaptureId& operator=(const SubtreeCaptureId&) = default;
   ~SubtreeCaptureId() = default;
 
-  constexpr bool is_valid() const { return subtree_id_ != 0; }
-  constexpr uint32_t subtree_id() const { return subtree_id_; }
+  constexpr bool is_valid() const { return !subtree_id_.is_zero(); }
+  constexpr const base::Token& subtree_id() const { return subtree_id_; }
 
   bool operator==(const SubtreeCaptureId& rhs) const {
     return subtree_id_ == rhs.subtree_id_;
@@ -40,7 +44,7 @@ class VIZ_COMMON_EXPORT SubtreeCaptureId {
   std::string ToString() const;
 
  private:
-  uint32_t subtree_id_ = 0;
+  base::Token subtree_id_;
 };
 
 }  // namespace viz

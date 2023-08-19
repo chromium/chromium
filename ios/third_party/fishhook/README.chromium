@@ -4,8 +4,9 @@ URL: https://github.com/facebook/fishhook
 Version: 0.2
 Revision: 8ef82f0711494ecc78d16bf6ce76f5ad92e5f67b
 License: BSD
-License File: NOT_SHIPPED
+License File: LICENSE
 Security Critical: no
+Shipped: no
 
 Description:
 Fishhook is a library that enables dynamically rebinding symbols in Mach-O

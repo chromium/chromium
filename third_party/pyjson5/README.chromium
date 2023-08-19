@@ -7,6 +7,7 @@ Revision: 25ca192ef962ddb2c2680ce0c22ef81f9999b0e2
 License: Apache 2.0
 License File: src/LICENSE
 Security Critical: No
+Shipped: no
 
 Description:
 A Python implementation of the JSON5 data format.

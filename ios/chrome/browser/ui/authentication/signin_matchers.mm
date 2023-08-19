@@ -10,10 +10,6 @@
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace chrome_test_util {
 
 id<GREYMatcher> IdentityCellMatcherForEmail(NSString* email) {
@@ -52,6 +48,11 @@ id<GREYMatcher> GoogleSyncSettingsButton() {
 
 id<GREYMatcher> UpgradeSigninPromoMatcher() {
   return grey_accessibilityID(kUnifiedConsentScrollViewIdentifier);
+}
+
+id<GREYMatcher> SettingsSignInRowMatcher() {
+  return grey_allOf(grey_accessibilityID(kSettingsSignInCellId),
+                    grey_sufficientlyVisible(), nil);
 }
 
 }  // namespace chrome_test_util

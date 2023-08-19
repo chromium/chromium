@@ -17,20 +17,14 @@
 
 namespace blink {
 
-ScreenDetailed::ScreenDetailed(LocalDOMWindow* window,
-                               int64_t display_id,
-                               bool label_is_internal,
-                               uint32_t label_idx)
-    : Screen(window, display_id, /*use_size_override=*/false),
-      label_idx_(label_idx),
-      label_is_internal_(label_is_internal) {}
+ScreenDetailed::ScreenDetailed(LocalDOMWindow* window, int64_t display_id)
+    : Screen(window, display_id) {}
 
 // static
 bool ScreenDetailed::AreWebExposedScreenDetailedPropertiesEqual(
     const display::ScreenInfo& prev,
     const display::ScreenInfo& current) {
-  if (!Screen::AreWebExposedScreenPropertiesEqual(
-          prev, current, /*use_size_override=*/false)) {
+  if (!Screen::AreWebExposedScreenPropertiesEqual(prev, current)) {
     return false;
   }
 

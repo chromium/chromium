@@ -150,6 +150,8 @@ function annotateMetadata(metadata) {
     result.mimeType = metadata.mimeType;
   if (metadata.thumbnail !== undefined)
     result.thumbnail = metadata.thumbnail;
+  if(metadata.cloudIdentifier !== undefined)
+    result.cloudIdentifier = metadata.cloudIdentifier;
   return result;
 }
 

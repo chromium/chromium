@@ -76,16 +76,18 @@ bool BrowserLoader::WillLoadStatefulComponentBuilds() {
   return true;
 }
 
-void BrowserLoader::SelectRootfsLacros(LoadCompletionCallback callback) {
-  LOG(WARNING) << "rootfs lacros is selected";
+void BrowserLoader::SelectRootfsLacros(LoadCompletionCallback callback,
+                                       LacrosSelectionSource source) {
+  LOG(WARNING) << "rootfs lacros is selected by " << source;
 
   rootfs_lacros_loader_->Load(
       base::BindOnce(&BrowserLoader::OnLoadComplete, weak_factory_.GetWeakPtr(),
                      std::move(callback), LacrosSelection::kRootfs));
 }
 
-void BrowserLoader::SelectStatefulLacros(LoadCompletionCallback callback) {
-  LOG(WARNING) << "stateful lacros is selected";
+void BrowserLoader::SelectStatefulLacros(LoadCompletionCallback callback,
+                                         LacrosSelectionSource source) {
+  LOG(WARNING) << "stateful lacros is selected by " << source;
 
   stateful_lacros_loader_->Load(
       base::BindOnce(&BrowserLoader::OnLoadComplete, weak_factory_.GetWeakPtr(),
@@ -126,10 +128,11 @@ void BrowserLoader::Load(LoadCompletionCallback callback) {
     // too.
     switch (lacros_selection.value()) {
       case browser_util::LacrosSelection::kRootfs:
-        SelectRootfsLacros(std::move(callback));
+        SelectRootfsLacros(std::move(callback), LacrosSelectionSource::kPolicy);
         return;
       case browser_util::LacrosSelection::kStateful:
-        SelectStatefulLacros(std::move(callback));
+        SelectStatefulLacros(std::move(callback),
+                             LacrosSelectionSource::kPolicy);
         return;
       case browser_util::LacrosSelection::kDeployedLocally:
         NOTREACHED();
@@ -212,11 +215,13 @@ void BrowserLoader::OnLoadVersions(
 
   switch (selected->selection) {
     case LacrosSelection::kRootfs: {
-      SelectRootfsLacros(std::move(callback));
+      SelectRootfsLacros(std::move(callback),
+                         LacrosSelectionSource::kCompatibilityCheck);
       break;
     }
     case LacrosSelection::kStateful: {
-      SelectStatefulLacros(std::move(callback));
+      SelectStatefulLacros(std::move(callback),
+                           LacrosSelectionSource::kCompatibilityCheck);
       break;
     }
     case LacrosSelection::kDeployedLocally: {
@@ -282,6 +287,20 @@ void BrowserLoader::FinishOnLoadComplete(LoadCompletionCallback callback,
   // Log the path on success.
   LOG(WARNING) << "Loaded lacros image at " << path;
   std::move(callback).Run(path, selection, std::move(version));
+}
+
+std::ostream& operator<<(std::ostream& ostream,
+                         BrowserLoader::LacrosSelectionSource source) {
+  switch (source) {
+    case BrowserLoader::LacrosSelectionSource::kUnknown:
+      return ostream << "Unknown";
+    case BrowserLoader::LacrosSelectionSource::kCompatibilityCheck:
+      return ostream << "CompatibilityCheck";
+    case BrowserLoader::LacrosSelectionSource::kPolicy:
+      return ostream << "Policy";
+    case BrowserLoader::LacrosSelectionSource::kDeployedPath:
+      return ostream << "DeployedPath";
+  }
 }
 
 }  // namespace crosapi

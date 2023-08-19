@@ -9,6 +9,7 @@
     border: 1px solid var(--google-grey-300);
     border-radius: 4px;
     color: var(--cr-secondary-text-color);
+    font-family: inherit;
     display: flex;
     flex-direction: row;
     font-size: 13px;
@@ -30,7 +31,9 @@
     color: var(--color-side-panel-filter-chip-foreground);
     font-size: 12px;
     font-weight: 500;
-    padding: 0 8px;
+    overflow: hidden;
+    padding: 0 7px;
+    position: relative;
   }
 
   button:not(:is([disabled], [selected])):hover {
@@ -40,7 +43,7 @@
 
   :host-context([chrome-refresh-2023])
       button:not(:is([disabled], [selected])):hover {
-    background-color: var(--color-side-panel-filter-chip-background-hover);
+    background-color: transparent;
     border-color: var(--color-side-panel-filter-chip-border);
   }
 
@@ -55,8 +58,11 @@
   }
 
   button:focus-visible {
-    box-shadow: 0 0 0 2px var(--cr-focus-outline-color);
-    outline: none;
+    outline: solid 2px var(--cr-focus-outline-color);
+  }
+
+  :host-context([chrome-refresh-2023]) button:focus-visible {
+    outline-offset: 2px;
   }
 
   button[disabled] {
@@ -81,12 +87,26 @@
   :host-context([chrome-refresh-2023]) button[selected] {
     --iron-icon-fill-color: var(--color-side-panel-filter-chip-icon-selected);
     background-color: var(--color-side-panel-filter-chip-background-selected);
-    border-color: transparent;
+    border: none;
     color: var(--color-side-panel-filter-chip-foreground-selected);
+    padding: 0 8px;
+  }
+
+  #hoverLayer {
+    display: none;
+  }
+
+  :host-context([chrome-refresh-2023]) button:hover #hoverLayer {
+    background: var(--cr-hover-background-color);
+    display: block;
+    inset: 0;
+    pointer-events: none;
+    position: absolute;
   }
 </style>
 
 <button selected$="[[selected]]" disabled$="[[disabled]]"
     aria-pressed="[[selected]]">
+  <div id="hoverLayer"></div>
   <slot></slot>
 </button>

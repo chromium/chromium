@@ -10,9 +10,9 @@
 namespace network {
 
 ClientSecurityStateBuilder&
-ClientSecurityStateBuilder::WithLocalNetworkRequestPolicy(
-    network::mojom::LocalNetworkRequestPolicy policy) {
-  state_.local_network_request_policy = policy;
+ClientSecurityStateBuilder::WithPrivateNetworkRequestPolicy(
+    network::mojom::PrivateNetworkRequestPolicy policy) {
+  state_.private_network_request_policy = policy;
   return *this;
 }
 

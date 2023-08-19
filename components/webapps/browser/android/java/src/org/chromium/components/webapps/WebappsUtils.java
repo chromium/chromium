@@ -178,4 +178,18 @@ public class WebappsUtils {
                     shortcutManager != null && shortcutManager.isRequestPinShortcutSupported();
         }
     }
+
+    /**
+     * Override whether shortcuts are considered supported for testing.
+     * @param supported Whether shortcuts are supported. Pass null to reset.
+     */
+    public static void setAddToHomeIntentSupportedForTesting(Boolean supported) {
+        if (supported == null) {
+            sCheckedIfRequestPinShortcutSupported = false;
+            sIsRequestPinShortcutSupported = false;
+        } else {
+            sCheckedIfRequestPinShortcutSupported = true;
+            sIsRequestPinShortcutSupported = supported.booleanValue();
+        }
+    }
 }

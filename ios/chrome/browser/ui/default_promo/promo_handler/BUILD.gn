@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("promo_handler") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "default_browser_promo_display_handler.h",
     "default_browser_promo_display_handler.mm",
@@ -15,6 +14,7 @@ source_set("promo_handler") {
     "//components/feature_engagement/public",
     "//components/prefs",
     "//ios/chrome/browser/default_browser:utils",
+    "//ios/chrome/browser/feature_engagement:feature_engagement",
     "//ios/chrome/browser/promos_manager",
     "//ios/chrome/browser/promos_manager:constants",
     "//ios/chrome/browser/promos_manager:features",
@@ -37,6 +37,8 @@ source_set("unit_tests") {
   deps = [
     ":promo_handler",
     "//base/test:test_support",
+    "//components/feature_engagement/public",
+    "//components/feature_engagement/test:test_support",
     "//components/sync_preferences:sync_preferences",
     "//components/sync_preferences:test_support",
     "//ios/chrome/app:app_internal",
@@ -45,6 +47,7 @@ source_set("unit_tests") {
     "//ios/chrome/app/application_delegate:test_support",
     "//ios/chrome/browser/default_browser:test_support",
     "//ios/chrome/browser/default_browser:utils",
+    "//ios/chrome/browser/feature_engagement",
     "//ios/chrome/browser/promos_manager:constants",
     "//ios/chrome/browser/promos_manager:features",
     "//ios/chrome/browser/promos_manager:test_support",
@@ -55,6 +58,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:fake_system_identity",
     "//ios/chrome/browser/signin:fake_system_identity_manager",
@@ -65,5 +69,4 @@ source_set("unit_tests") {
     "//ios/web/public/test:test",
     "//third_party/ocmock",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

@@ -7,6 +7,13 @@
     margin: 0 16px 16px;
   }
 
+  :host-context([chrome-refresh-2023]) #showToggleContainer {
+    font-size: inherit;
+    line-height: inherit;
+    margin: 0;
+    padding: var(--sp-card-padding);
+  }
+
   #showToggleTitle {
     flex-grow: 1;
   }
@@ -16,10 +23,20 @@
     margin: 0 16px;
   }
 
+  :host-context([chrome-refresh-2023]) #cards {
+    margin: 0;
+  }
+
   .card {
     display: flex;
     justify-content: space-between;
     margin-bottom: 16px;
+  }
+
+  :host-context([chrome-refresh-2023]) .card {
+    margin: 0;
+    padding: var(--sp-card-padding);
+    padding-inline-start: 32px;
   }
 
   .card-name {
@@ -28,9 +45,19 @@
     margin-inline-start: 24px;
   }
 
+  :host-context([chrome-refresh-2023]) .card-name {
+    font-size: inherit;
+    line-height: inherit;
+    margin-inline-start: 0;
+  }
+
   .card-checkbox {
     margin-inline-end: 3px;
     width: 16px;
+  }
+
+  :host-context([chrome-refresh-2023]) .card-checkbox {
+    margin-inline-end: 0;
   }
 
   .card-option-name {
@@ -44,6 +71,11 @@
 
   hr {
     margin-bottom: 16px;
+  }
+
+  :host-context([chrome-refresh-2023]) hr {
+    margin: var(--sp-card-block-padding) var(--sp-card-inline-padding);
+    width: auto;
   }
 
   cr-toggle {

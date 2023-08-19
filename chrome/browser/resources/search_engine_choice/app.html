@@ -1,0 +1,146 @@
+<style>
+  :host {
+    color: var(--cr-primary-text-color);
+  }
+
+  .left-illustration,
+  .right-illustration {
+    position: absolute;
+    top: 0;
+    width: 20vw;
+  }
+
+  .left-illustration {
+    content: url(images/left_illustration.svg);
+    left: 0;
+  }
+
+  .right-illustration {
+    content: url(images/right_illustration.svg);
+    right: 0;
+  }
+
+  .button {
+    bottom: 0;
+    height: unset;
+    margin: 25px;
+    /* The max-width is needed to stop the button from overlapping with
+     the choice list. The exact value will be updated once the mocks
+     are final. */
+    max-width: 115px;
+    position: absolute;
+    right: 0;
+  }
+
+  :host-context([dir='rtl']) .button {
+    left: 0;
+    right: initial;
+  }
+
+  .content-container {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    max-width: 472px;
+    text-align: center;
+  }
+
+  .title {
+    font-weight: 400;
+    margin-top: 68px;
+  }
+
+  .subtitle {
+    color: var(--cr-seconday-text-color);
+    font-size: 0.88rem;
+    line-height: 22px;
+  }
+
+  .image-placeholder {
+    background-color: blue;
+    height: 70px;
+    width: 250px;
+  }
+
+  .choice-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  .choice {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+  }
+
+  .choice-icon {
+    background-color: green;
+    height: 24px;
+    width: 24px;
+  }
+
+  .choice-text {
+    font-size: 0.88rem;
+    line-height: 20px;
+  }
+
+  cr-radio-button {
+    background-color: var(--google-grey-200);
+    height: 24px;
+    padding: 16px 24px;
+    width: 424px;
+  }
+
+  cr-radio-button:first-of-type {
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+  }
+
+  cr-radio-button:last-of-type {
+    border-bottom-left-radius: 24px;
+    border-bottom-right-radius: 24px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .left-illustration {
+      content: url(images/left_illustration_dark.svg);
+    }
+
+    .right-illustration {
+      content: url(images/right_illustration_dark.svg);
+    }
+  }
+</style>
+
+<img class="left-illustration" alt="">
+<img class="right-illustration" alt="">
+<div class="content-container">
+  <h1 class="title">$i18n{title}</h1>
+  <div class="image-placeholder"></div>
+  <p class="subtitle">
+    $i18n{subtitle}
+    <a href="" on-click="onLinkClicked_">$i18n{subtitleInfoLink}</a>
+  </p>
+  <cr-radio-group class="choice-list">
+    <template is="dom-repeat" items="[[choiceList_]]">
+      <cr-radio-button class="label-first" name="[[item.id]]">
+        <div class="choice">
+          <div class="choice-icon"></div>
+          <div class="choice-text">[[item.name]]</div>
+        </div>
+      </cr-radio-button>
+    </template>
+  </cr-radio-group>
+</div>
+<cr-button class="button action-button" disabled>
+  $i18n{buttonText}
+</cr-button>
+
+<cr-dialog id="infoDialog">
+  <div slot="title">
+    $i18n{infoTitle}
+  </div>
+</cr-dialog>

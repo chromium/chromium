@@ -6,6 +6,7 @@
 #define COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_ACCOUNTS_MUTATOR_IMPL_H_
 
 #include <string>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
@@ -43,7 +44,13 @@ class AccountsMutatorImpl : public AccountsMutator {
       const std::string& email,
       const std::string& refresh_token,
       bool is_under_advanced_protection,
-      signin_metrics::SourceForRefreshTokenOperation source) override;
+      signin_metrics::AccessPoint access_point,
+      signin_metrics::SourceForRefreshTokenOperation source
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+      ,
+      const std::vector<uint8_t>& wrapped_binding_key = std::vector<uint8_t>()
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+          ) override;
   void UpdateAccountInfo(const CoreAccountId& account_id,
                          Tribool is_child_account,
                          Tribool is_under_advanced_protection) override;
@@ -66,9 +73,12 @@ class AccountsMutatorImpl : public AccountsMutator {
 #endif
 
  private:
-  raw_ptr<ProfileOAuth2TokenService, DanglingUntriaged> token_service_;
-  raw_ptr<AccountTrackerService, DanglingUntriaged> account_tracker_service_;
-  raw_ptr<PrimaryAccountManager, DanglingUntriaged> primary_account_manager_;
+  raw_ptr<ProfileOAuth2TokenService, AcrossTasksDanglingUntriaged>
+      token_service_;
+  raw_ptr<AccountTrackerService, AcrossTasksDanglingUntriaged>
+      account_tracker_service_;
+  raw_ptr<PrimaryAccountManager, AcrossTasksDanglingUntriaged>
+      primary_account_manager_;
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   raw_ptr<PrefService> pref_service_;
 #endif

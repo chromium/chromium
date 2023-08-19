@@ -17,6 +17,10 @@ class ArcAppListPrefs;
 class ExtensionEnableFlow;
 class Profile;
 
+namespace apps {
+enum class PromiseStatus;
+}
+
 namespace content {
 class WebContents;
 }
@@ -42,13 +46,27 @@ class ShelfControllerHelper : public ExtensionEnableFlowDelegate {
   static ash::AppStatus GetAppStatus(Profile* profile,
                                      const std::string& app_id);
 
-  // Helper function to return whether the app with `app_id` should explicitly
-  // be hidden from shelf, as indicated by `AppUpdate::ShowInShelf()` app state.
-  static bool IsAppHiddenFromShelf(Profile* profile, const std::string& app_id);
-
   // Returns the app id of the specified tab, or an empty string if there is
   // no app. All known profiles will be queried for this.
   virtual std::string GetAppID(content::WebContents* tab);
+
+  // Retrieve the label for a registered promise app. If there isn't a promise
+  // app with the specified package ID, return an empty string.
+  static std::u16string GetPromiseAppTitle(
+      Profile* profile,
+      const std::string& string_package_id);
+
+  // Retrieve the installation progress value for a registered promise app. If
+  // there isn't a promise app with the specified package ID, return -1.
+  static float GetPromiseAppProgress(Profile* profile,
+                                     const std::string& string_package_id);
+
+  // Check whether this item is a registered promise app.
+  static bool IsPromiseApp(Profile* profile, const std::string& id);
+
+  // Convert promise status into general app status.
+  static ash::AppStatus ConvertPromiseStatusToAppStatus(
+      apps::PromiseStatus promise_status);
 
   // Returns true if |id| is valid for the currently active profile.
   // Used during restore to ignore no longer valid extensions.
@@ -79,7 +97,7 @@ class ShelfControllerHelper : public ExtensionEnableFlowDelegate {
   bool IsValidIDFromAppService(const std::string& app_id) const;
 
   // The currently active profile for the usage of |GetAppID|.
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
   std::unique_ptr<ExtensionEnableFlow> extension_enable_flow_;
 };
 

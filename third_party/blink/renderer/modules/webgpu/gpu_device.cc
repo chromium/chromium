@@ -498,11 +498,9 @@ GPUSampler* GPUDevice::createSampler(const GPUSamplerDescriptor* descriptor) {
 }
 
 GPUExternalTexture* GPUDevice::importExternalTexture(
-    ScriptState* script_state,
     const GPUExternalTextureDescriptor* descriptor,
     ExceptionState& exception_state) {
-  return external_texture_cache_->Import(ExecutionContext::From(script_state),
-                                         descriptor, exception_state);
+  return external_texture_cache_->Import(descriptor, exception_state);
 }
 
 GPUBindGroup* GPUDevice::createBindGroup(
@@ -698,7 +696,7 @@ void GPUDevice::Trace(Visitor* visitor) const {
   visitor->Trace(textures_with_mailbox_);
   visitor->Trace(mappable_buffers_);
   ExecutionContextClient::Trace(visitor);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
 }
 
 void GPUDevice::Dispose() {

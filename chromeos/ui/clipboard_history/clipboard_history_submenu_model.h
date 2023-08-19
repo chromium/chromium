@@ -29,11 +29,15 @@ class COMPONENT_EXPORT(CHROMEOS_UI_CLIPBOARD_HISTORY)
     ClipboardHistorySubmenuModel : public ui::SimpleMenuModel,
                                    public ui::SimpleMenuModel::Delegate {
  public:
-  // `source` indicates where the submenu model is used. It should be a context
-  // menu.
+  // That callback that can be run to show the standalone clipboard history menu
+  // in Ash. `event_flags` describes the event that caused the menu to show.
+  using ShowClipboardHistoryMenuCallback =
+      base::RepeatingCallback<void(int event_flags)>;
+
   static std::unique_ptr<ClipboardHistorySubmenuModel>
   CreateClipboardHistorySubmenuModel(
-      crosapi::mojom::ClipboardHistoryControllerShowSource source);
+      crosapi::mojom::ClipboardHistoryControllerShowSource submenu_type,
+      ShowClipboardHistoryMenuCallback show_menu_callback);
 
   ClipboardHistorySubmenuModel(const ClipboardHistorySubmenuModel&) = delete;
   ClipboardHistorySubmenuModel& operator=(const ClipboardHistorySubmenuModel&) =
@@ -43,16 +47,24 @@ class COMPONENT_EXPORT(CHROMEOS_UI_CLIPBOARD_HISTORY)
  private:
   // ui::SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;
+  bool GetAcceleratorForCommandId(int command_id,
+                                  ui::Accelerator* accelerator) const override;
+  void OnMenuWillShow(SimpleMenuModel* model) override;
 
   ClipboardHistorySubmenuModel(
-      crosapi::mojom::ClipboardHistoryControllerShowSource source,
+      crosapi::mojom::ClipboardHistoryControllerShowSource submenu_type,
       const std::vector<crosapi::mojom::ClipboardHistoryItemDescriptor>&
-          item_descriptors);
+          item_descriptors,
+      ShowClipboardHistoryMenuCallback show_menu_callback);
 
-  const crosapi::mojom::ClipboardHistoryControllerShowSource source_;
+  // Indicates the type of submenu where this model is used.
+  const crosapi::mojom::ClipboardHistoryControllerShowSource submenu_type_;
 
   // Mappings from command ids to clipboard history item ids.
   std::map<int, base::UnguessableToken> item_ids_by_command_ids_;
+
+  // The callback to show the standalone clipboard history menu.
+  const ShowClipboardHistoryMenuCallback show_menu_callback_;
 };
 
 }  // namespace chromeos::clipboard_history

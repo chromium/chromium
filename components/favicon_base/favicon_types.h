@@ -108,6 +108,8 @@ struct LargeIconResult {
 
   ~LargeIconResult();
 
+  LargeIconResult(LargeIconResult&& result);
+
   // The bitmap from the favicon database if the database has a sufficiently
   // large one.
   FaviconRawBitmapResult bitmap;

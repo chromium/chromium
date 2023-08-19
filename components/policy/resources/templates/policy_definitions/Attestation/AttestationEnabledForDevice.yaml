@@ -1,3 +1,4 @@
+# TODO(b/285556135): Remove or deprecate this policy
 caption: Enable remote attestation for the device
 desc: |-
   Setting the policy to Enabled allows remote attestation for the device. A certificate is automatically generated and uploaded to the Device Management Server.

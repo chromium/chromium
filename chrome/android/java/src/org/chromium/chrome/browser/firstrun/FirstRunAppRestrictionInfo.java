@@ -9,14 +9,12 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.os.UserManager;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.components.policy.AbstractAppRestrictionsProvider;
@@ -183,10 +181,6 @@ class FirstRunAppRestrictionInfo {
         if (startTime > 0) {
             mCompletionElapsedRealtimeMs = SystemClock.elapsedRealtime();
             long runTime = mCompletionElapsedRealtimeMs - startTime;
-            RecordHistogram.recordTimesHistogram(
-                    "Enterprise.FirstRun.AppRestrictionLoadTime", runTime);
-            RecordHistogram.recordMediumTimesHistogram(
-                    "Enterprise.FirstRun.AppRestrictionLoadTime.Medium", runTime);
             Log.d(TAG,
                     String.format(Locale.US, "Policy received. Runtime: [%d], result: [%s]",
                             runTime, isAppRestricted));
@@ -200,9 +194,10 @@ class FirstRunAppRestrictionInfo {
         }
     }
 
-    @VisibleForTesting
     static void setInitializedInstanceForTest(
             FirstRunAppRestrictionInfo firstRunAppRestrictionInfo) {
+        var oldValue = sInitializedInstance;
         sInitializedInstance = firstRunAppRestrictionInfo;
+        ResettersForTesting.register(() -> sInitializedInstance = oldValue);
     }
 }

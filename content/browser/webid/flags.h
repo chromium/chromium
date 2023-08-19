@@ -15,9 +15,6 @@ enum class FedCmIdpSigninStatusMode { DISABLED, METRICS_ONLY, ENABLED };
 // Whether the AuthZ is enabled or not.
 bool IsFedCmAuthzEnabled();
 
-// Whether FedCM auto re-authentication is enabled.
-bool IsFedCmAutoReauthnEnabled();
-
 // Whether FedCM IDP sign-out is enabled.
 bool IsFedCmIdpSignoutEnabled();
 
@@ -25,29 +22,30 @@ bool IsFedCmIdpSignoutEnabled();
 bool IsFedCmMultipleIdentityProvidersEnabled();
 
 // Returns the IdpSigninStatus API mode.
-FedCmIdpSigninStatusMode GetFedCmIdpSigninStatusMode();
+// Most callers should use webid::GetIdpSigninStatusMode() in webid_utils.h
+// instead, as that version takes origin trial status into account.
+FedCmIdpSigninStatusMode GetFedCmIdpSigninStatusFlag();
 
 // Whether metrics endpoint is enabled.
 bool IsFedCmMetricsEndpointEnabled();
 
-// Whether the Relying Party Context API is enabled.
-bool IsFedCmRpContextEnabled();
-
-// Whether the UserInfo API is enabled.
-bool IsFedCmUserInfoEnabled();
-
 // Whether the Selective Disclosure API is enabled.
 bool IsFedCmSelectiveDisclosureEnabled();
-
-// Whether the login hint parameter is enabled.
-bool IsFedCmLoginHintEnabled();
 
 // Whether the IdP Registration API is enabled.
 bool IsFedCmIdPRegistrationEnabled();
 
+// Whether the well-known enforcement is bypassed.
+bool IsFedCmWithoutWellKnownEnforcementEnabled();
+
 // Whether the Web Identity MDocs API is enabled.
 bool IsWebIdentityMDocsEnabled();
 
+// Whether the AutoReauthnFlag feature is enabled.
+bool IsFedCmAutoReauthnFlagEnabled();
+
+// Whether the HostedDomain feature is enabled.
+bool IsFedCmHostedDomainEnabled();
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_WEBID_FLAGS_H_

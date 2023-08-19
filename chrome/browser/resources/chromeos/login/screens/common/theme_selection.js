@@ -4,6 +4,7 @@
 /**
  * @fileoverview Polymer element for theme selection screen.
  */
+import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
 import '//resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import '//resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';

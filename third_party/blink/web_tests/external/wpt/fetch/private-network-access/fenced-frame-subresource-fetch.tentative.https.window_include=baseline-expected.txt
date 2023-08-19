@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL local to public: PUT preflight failure. promise_test: Unhandled rejection with value: object "TypeError: Illegal constructor"
+FAIL local to public: PUT preflight success. promise_test: Unhandled rejection with value: object "TypeError: Illegal constructor"
+Harness: the test ran to completion.
+

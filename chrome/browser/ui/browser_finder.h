@@ -109,6 +109,9 @@ Browser* FindLastActiveWithProfile(Profile* profile);
 Browser* FindLastActive();
 
 // Returns the number of browsers across all profiles.
+//
+// WARNING: this function includes browsers scheduled for deletion whereas
+// the majority of other functions do not.
 size_t GetTotalBrowserCount();
 
 // Returns the number of browsers with the Profile |profile|.
@@ -120,9 +123,15 @@ size_t GetTotalBrowserCount();
 //    record profile is visible.)  Likewise, a parent profile with off-the-
 //    record (Incognito) child profiles that have windows will not count those
 //    child windows.
+//
+// WARNING: this function includes browsers scheduled for deletion whereas
+// the majority of other functions do not.
 size_t GetBrowserCount(Profile* profile);
 
 // Returns the number of tabbed browsers with the Profile |profile|.
+//
+// WARNING: this function includes browsers scheduled for deletion whereas
+// the majority of other functions do not.
 size_t GetTabbedBrowserCount(Profile* profile);
 
 }  // namespace chrome

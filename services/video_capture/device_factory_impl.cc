@@ -107,14 +107,12 @@ void DeviceFactoryImpl::CreateDeviceInternal(
     absl::optional<CreateDeviceCallback> create_callback) {
   auto active_device_iter = active_devices_by_id_.find(device_id);
   if (active_device_iter != active_devices_by_id_.end()) {
-    // The requested device is already in use.
-    // Revoke the access and close the device, then callback the device or bind
-    // to the new receiver.
-    std::unique_ptr<DeviceMediaToMojoAdapter>& device_entry =
-        active_device_iter->second;
-    device_entry->Stop();
-    DCHECK(create_callback);
-    DeviceInfo info{device_entry.get(), media::VideoCaptureError::kNone};
+    // The requested device is already in use, this only happens when lacros and
+    // ash tries to access the camera at the same time.
+    // In this case, the second request will be rejected.
+    DeviceInfo info{
+        nullptr,
+        media::VideoCaptureError::kVideoCaptureDeviceFactorySecondCreateDenied};
     std::move(*create_callback).Run(std::move(info));
     return;
   }

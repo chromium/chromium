@@ -219,8 +219,6 @@ source_set("filters") {
     sources += [
       "win/media_foundation_audio_decoder.cc",
       "win/media_foundation_audio_decoder.h",
-      "win/media_foundation_utils.cc",
-      "win/media_foundation_utils.h",
     ]
     deps += [ "//media/base/win:media_foundation_util" ]
     if (enable_platform_dts_audio) {
@@ -251,6 +249,8 @@ source_set("filters") {
       "hls_data_source_provider.cc",
       "hls_data_source_provider.h",
       "hls_demuxer_status.h",
+      "hls_live_rendition.cc",
+      "hls_live_rendition.h",
       "hls_manifest_demuxer_engine.cc",
       "hls_manifest_demuxer_engine.h",
       "hls_rendition.cc",
@@ -415,6 +415,7 @@ source_set("unit_tests") {
     sources += [
       "hls_codec_detector_unittest.cc",
       "hls_data_source_provider_unittest.cc",
+      "hls_live_rendition_unittest.cc",
       "hls_manifest_demuxer_engine_unittest.cc",
       "hls_test_helpers.cc",
       "hls_test_helpers.h",

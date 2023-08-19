@@ -114,7 +114,7 @@ void WaylandSubsurface::CreateSubsurface() {
   // contained in |parent_|'s. Setting input_region to empty allows |parent_| to
   // dispatch all of the input to platform window.
   gfx::Rect region_px;
-  wayland_surface()->set_input_region(&region_px);
+  wayland_surface()->set_input_region(region_px);
 
   if (connection_->surface_augmenter()) {
     // |augmented_subsurface| might be null if the protocol's version is not
@@ -129,6 +129,7 @@ void WaylandSubsurface::ConfigureAndShowSurface(
     const gfx::RectF& bounds_px,
     const gfx::RectF& parent_bounds_px,
     const absl::optional<gfx::Rect>& clip_rect_px,
+    const absl::variant<gfx::OverlayTransform, gfx::Transform>& transform,
     float buffer_scale,
     WaylandSubsurface* new_below,
     WaylandSubsurface* new_above) {
@@ -158,8 +159,11 @@ void WaylandSubsurface::ConfigureAndShowSurface(
     }
   }
 
+  // If augmented_surface_set_clip_rect is supported, clip rect is handled
+  // inside WaylandSurface, so skip sending clip rect on sub surface.
   if (augmented_subsurface_ &&
-      connection_->surface_augmenter()->SupportsClipRect()) {
+      connection_->surface_augmenter()->SupportsClipRect() &&
+      !connection_->surface_augmenter()->SupportsClipRectOnAugmentedSurface()) {
     absl::optional<gfx::RectF> clip_dip_in_parent_surface;
     if (clip_rect_px) {
       clip_dip_in_parent_surface = AdjustSubsurfaceBounds(
@@ -182,6 +186,25 @@ void WaylandSubsurface::ConfigureAndShowSurface(
                                             kMinusOne, kMinusOne, kMinusOne,
                                             kMinusOne);
       }
+    }
+  }
+
+  if (augmented_subsurface_ &&
+      connection_->surface_augmenter()->SupportsTransform()) {
+    // If the old and new transforms are both enums, there's no need to update
+    // the matrix transform.
+    if ((absl::holds_alternative<gfx::Transform>(transform_) ||
+         absl::holds_alternative<gfx::Transform>(transform)) &&
+        transform_ != transform) {
+      transform_ = transform;
+      wl_array transform_data;
+      wl_array_init(&transform_data);
+      wl::TransformToWlArray(transform_, transform_data);
+
+      augmented_sub_surface_set_transform(augmented_subsurface_.get(),
+                                          &transform_data);
+
+      wl_array_release(&transform_data);
     }
   }
 

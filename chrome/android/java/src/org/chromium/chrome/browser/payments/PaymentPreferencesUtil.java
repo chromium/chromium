@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.payments;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 
@@ -57,7 +55,6 @@ public class PaymentPreferencesUtil {
      * @param id    The app identifier.
      * @param count The count value.
      */
-    @VisibleForTesting
     public static void setPaymentAppUseCountForTest(String id, int count) {
         SharedPreferencesManager.getInstance().writeInt(
                 ChromePreferenceKeys.PAYMENTS_PAYMENT_INSTRUMENT_USE_COUNT.createKey(id), count);

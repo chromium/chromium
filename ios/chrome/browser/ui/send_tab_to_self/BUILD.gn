@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("send_tab_to_self") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "send_tab_to_self_coordinator.h",
     "send_tab_to_self_coordinator.mm",
@@ -25,6 +24,7 @@ source_set("send_tab_to_self") {
     "//ios/chrome/browser/signin:system_identity",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/ui/authentication:signin_presenter",
+    "//ios/chrome/browser/ui/authentication/signin:constants",
     "//ios/chrome/browser/ui/infobars/presentation",
     "//ios/third_party/material_components_ios",
     "//ui/base",
@@ -33,7 +33,6 @@ source_set("send_tab_to_self") {
 }
 
 source_set("send_tab_to_self_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "send_tab_to_self_image_detail_text_item.h",
     "send_tab_to_self_image_detail_text_item.mm",
@@ -66,18 +65,17 @@ source_set("send_tab_to_self_ui") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "send_tab_to_self_coordinator_egtest.mm" ]
   deps = [
     "//base",
     "//components/send_tab_to_self",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin:fake_system_identity",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/authentication/signin:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//net:test_support",

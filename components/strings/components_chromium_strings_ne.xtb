@@ -2,9 +2,12 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ne">
 <translation id="130631256467250065">तपाईंले अर्को पटक तपाईंको यन्त्रलाई पुन: सुरु गर्दा तपाईंका परिवर्तनहरू प्रभावकारी हुनेछन्।</translation>
+<translation id="1555506416658437797">भुक्तानी विधिहरू सम्पादन गर्नुहोस्।</translation>
 <translation id="275588974610408078">क्र्यास रिपोर्टिङ Chromium मा उपलब्ध छैन।</translation>
 <translation id="3064346599913645280">तपाईं एउटा सुरक्षित Chromium पृष्ठ हेर्दै हुनुहुन्छ</translation>
+<translation id="3255926992597692024">Chromium ले भुक्तानी विधिहरू हाल्नका निम्ति सेटिङ मिलाउन खोज्दै छ।</translation>
 <translation id="358997566136285270">क्रोमियम लोगो</translation>
+<translation id="4050599136622776556">Chromium ले भुक्तानी विधिहरू सम्पादन गर्ने प्रयास गर्दै छ।</translation>
 <translation id="4365115785552740256">क्रोमियमको कारण सम्भव भएको हो <ph name="BEGIN_LINK_CHROMIUM" /> क्रोमियम <ph name="END_LINK_CHROMIUM" /> खुला स्रोत परियोजना र अन्य <ph name="BEGIN_LINK_OSS" /> खुला स्रोत सफ्टवेयर <ph name="END_LINK_OSS" /> ।</translation>
 <translation id="4559775032954821361">यसमा जानुहोस्
           Chromium मेनु &gt;
@@ -27,6 +30,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           र तपाइँको विन्यास "प्रोक्सी छैन" वand make sure your configuration is set to "no proxy" or "direct."</translation>
+<translation id="585620188971323280">भुक्तानी विधिहरू हाल्नका निम्ति सेटिङ मिलाउनुहोस्।</translation>
 <translation id="6549378540556750549">Chromium बनाउँदा <ph name="BEGIN_LINK_OSS" />खुला स्रोतका अन्य सफ्टवेयर<ph name="END_LINK_OSS" />को पनि मद्दत लिइएको छ।</translation>
 <translation id="6613594504749178791">तपाईंले अर्को पटक Chromium लाई पुन: लन्च गर्दा तपाईंका परिवर्तनहरू प्रभावमा आउनेछन्।</translation>
 <translation id="7681937895330411637">Chromium बनाउँदा <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> खुला स्रोतको परियोजनाको मद्दत लिइएको छ।</translation>
@@ -40,5 +44,6 @@
 <translation id="8187289872471304532">यसमा जानुहोस्
           एपहरू &gt; प्रणाली प्राथमिकताहरू &gt; सञ्जाल &gt; उन्नत &gt; प्रोक्सीहरू
           र तपाइँले चयन गर्नुका कुनै पनि प्रोक्सीहरूको चयन हटाउनुहोस्।</translation>
+<translation id="8597726643333341451">तपाईं सुरक्षित Chrome for Testing पेज हेर्दै हुनुहुन्छ</translation>
 <translation id="8684913864886094367">क्रोमियम सही तवरले बन्द भएन।</translation>
 </translationbundle>

@@ -1,0 +1,7 @@
+buganizer {
+  component_id: 1111615 # ChromeOS > Software > Commercial (Enterprise) > Supportability
+}
+buganizer_public {
+    component_id: 1199457 # ChromeOS > Public Tracker > Services > Supportability
+}
+team_email: "chromeos-commercial-supportability@google.com"

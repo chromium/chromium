@@ -2,10 +2,18 @@
 <html dir="$i18n{textdirection}" lang="$i18n{language}">
   <head>
     <meta name="color-scheme" content="light dark">
+    <if expr="chromeos_ash">
+      <link rel="stylesheet" href="//theme/colors.css?sets=sys">
+    </if>
     <link rel="stylesheet" href="../css/feedback_shared_styles.css">
+    <link rel="stylesheet" href="../css/logs_info.css">
+    </link>
+    <if expr="chromeos_ash">
+      <script type="module" src="../js/jelly_colors.js"></script>
+    </if>
   </head>
   <body>
-    <div id="bluetooth-logs-info-container">
+    <div class="logs-info-container">
       <span>$i18n{bluetoothLogsMessage}</span>
     </div>
   </body>

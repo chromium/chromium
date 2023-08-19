@@ -47,6 +47,9 @@ class VerticalDateView : public views::View {
   // Updates the date label text.
   void UpdateText();
 
+  // For Jelly: updates `icon_` and `text_label_` color ids.
+  void UpdateIconAndLabelColorId(ui::ColorId color_id);
+
  private:
   friend class TimeViewTest;
 
@@ -89,6 +92,9 @@ class ASH_EXPORT TimeView : public ActionableView, public ClockObserver {
 
   // Updates the time text shadow values.
   void SetTextShadowValues(const gfx::ShadowValues& shadows);
+
+  // For Jelly: updates `date_view_` color id if exists.
+  void SetDateViewColorId(ui::ColorId color_id);
 
   // ClockObserver:
   void OnDateFormatChanged() override;

@@ -7,18 +7,17 @@ module web_package.mojom;
 import "mojo/public/mojom/base/read_only_file.mojom";
 import "url/mojom/url.mojom";
 
-// Factory interface to create WebBundleParser for the passed |file|
-// or |data_source| that provides application/webbundle data.
+// Factory interface that constructs and binds the receivers that are used
+// for parsing the Web Bundles.
 interface WebBundleParserFactory {
-  // Constructs a parser for the passed |file|.
-  GetParserForFile(pending_receiver<WebBundleParser> receiver,
-                   url.mojom.Url? base_url,
-                   mojo_base.mojom.ReadOnlyFile file);
-
   // Constructs a parser for the passed |data_source|.
   GetParserForDataSource(pending_receiver<WebBundleParser> receiver,
                          url.mojom.Url? base_url,
                          pending_remote<BundleDataSource> data_source);
+
+  // Constructs a file based data source for the corresponding |file|.
+  BindFileDataSource(pending_receiver<BundleDataSource> data_source,
+                     mojo_base.mojom.ReadOnlyFile file);
 };
 
 // Parser interface to obtain metadata and multiple responses from the bound

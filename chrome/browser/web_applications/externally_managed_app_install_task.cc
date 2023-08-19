@@ -11,7 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -46,17 +46,12 @@ namespace web_app {
 ExternallyManagedAppInstallTask::ExternallyManagedAppInstallTask(
     Profile* profile,
     WebAppUrlLoader* url_loader,
-    WebAppUiManager* ui_manager,
-    WebAppInstallFinalizer* install_finalizer,
-    WebAppCommandScheduler* command_scheduler,
+    WebAppProvider& provider,
     DataRetrieverFactory data_retriever_factory,
     ExternalInstallOptions install_options)
     : profile_(profile),
       url_loader_(url_loader),
-      ui_manager_(ui_manager),
-      install_finalizer_(install_finalizer),
-      command_scheduler_(command_scheduler),
-      externally_installed_app_prefs_(profile_->GetPrefs()),
+      provider_(provider),
       data_retriever_factory_(std::move(data_retriever_factory)),
       install_options_(std::move(install_options)) {}
 
@@ -71,9 +66,10 @@ void ExternallyManagedAppInstallTask::Install(
     return;
   }
 
-  url_loader_->PrepareForLoad(
-      web_contents,
-      base::BindOnce(&ExternallyManagedAppInstallTask::OnWebContentsReady,
+  url_loader_->LoadUrl(
+      install_options_.install_url, web_contents,
+      WebAppUrlLoader::UrlComparison::kSameOrigin,
+      base::BindOnce(&ExternallyManagedAppInstallTask::OnUrlLoaded,
                      weak_ptr_factory_.GetWeakPtr(), web_contents,
                      std::move(result_callback)));
 }
@@ -81,20 +77,6 @@ void ExternallyManagedAppInstallTask::Install(
 void ExternallyManagedAppInstallTask::SetDataRetrieverFactoryForTesting(
     DataRetrieverFactory data_retriever_factory) {
   data_retriever_factory_ = std::move(data_retriever_factory);
-}
-
-void ExternallyManagedAppInstallTask::OnWebContentsReady(
-    content::WebContents* web_contents,
-    ResultCallback result_callback,
-    WebAppUrlLoader::Result prepare_for_load_result) {
-  // TODO(crbug.com/1098139): Handle the scenario where WebAppUrlLoader fails to
-  // load about:blank and flush WebContents states.
-  url_loader_->LoadUrl(
-      install_options_.install_url, web_contents,
-      WebAppUrlLoader::UrlComparison::kSameOrigin,
-      base::BindOnce(&ExternallyManagedAppInstallTask::OnUrlLoaded,
-                     weak_ptr_factory_.GetWeakPtr(), web_contents,
-                     std::move(result_callback)));
 }
 
 void ExternallyManagedAppInstallTask::OnUrlLoaded(
@@ -109,12 +91,6 @@ void ExternallyManagedAppInstallTask::OnUrlLoaded(
       weak_ptr_factory_.GetWeakPtr(), std::move(result_callback));
 
   if (load_url_result == WebAppUrlLoader::Result::kUrlLoaded) {
-    // If we are not re-installing a placeholder, then no need to uninstall
-    // anything.
-    if (!install_options_.reinstall_placeholder) {
-      ContinueWebAppInstall(web_contents, std::move(retry_on_failure));
-      return;
-    }
     // Calling InstallWebAppWithOptions with the same URL used to install a
     // placeholder won't necessarily replace the placeholder app, because the
     // new app might be installed with a new AppId. To avoid this, always
@@ -167,7 +143,7 @@ void ExternallyManagedAppInstallTask::OnUrlLoaded(
       break;
   }
 
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(retry_on_failure),
                      ExternallyManagedAppManager::InstallResult(code)));
@@ -190,7 +166,7 @@ void ExternallyManagedAppInstallTask::InstallFromInfo(
     web_app_info->additional_search_terms.push_back(std::move(search_term));
   }
   web_app_info->install_url = install_params.install_url;
-  command_scheduler_->InstallFromInfoWithParams(
+  provider_->scheduler().InstallFromInfoWithParams(
       std::move(web_app_info),
       /*overwrite_existing_manifest_fields=*/install_params.force_reinstall,
       internal_install_source,
@@ -214,9 +190,10 @@ void ExternallyManagedAppInstallTask::UninstallPlaceholderApp(
   }
 
   // Otherwise, uninstall the placeholder app.
-  install_finalizer_->UninstallExternalWebAppByUrl(
-      install_options_.install_url,
+  provider_->scheduler().RemoveInstallUrl(
+      std::move(app_id),
       ConvertExternalInstallSourceToSource(install_options_.install_source),
+      install_options_.install_url,
       webapps::WebappUninstallSource::kPlaceholderReplacement,
       base::BindOnce(&ExternallyManagedAppInstallTask::OnPlaceholderUninstalled,
                      weak_ptr_factory_.GetWeakPtr(), web_contents,
@@ -227,7 +204,7 @@ void ExternallyManagedAppInstallTask::OnPlaceholderUninstalled(
     content::WebContents* web_contents,
     ResultCallback result_callback,
     webapps::UninstallResultCode code) {
-  if (code != webapps::UninstallResultCode::kSuccess) {
+  if (!UninstallSucceeded(code)) {
     LOG(ERROR) << "Failed to uninstall placeholder for: "
                << install_options_.install_url;
     std::move(result_callback)
@@ -241,14 +218,14 @@ void ExternallyManagedAppInstallTask::OnPlaceholderUninstalled(
 void ExternallyManagedAppInstallTask::ContinueWebAppInstall(
     content::WebContents* web_contents,
     ResultCallback result_callback) {
-  command_scheduler_->InstallExternallyManagedApp(
+  provider_->scheduler().InstallExternallyManagedApp(
       install_options_,
       base::BindOnce(
           &ExternallyManagedAppInstallTask::OnWebAppInstalledAndReplaced,
           weak_ptr_factory_.GetWeakPtr(),
           /*is_placeholder=*/false,
           /*offline_install=*/false, std::move(result_callback)),
-      web_contents->GetWeakPtr(), data_retriever_factory_.Run(), url_loader_);
+      web_contents->GetWeakPtr(), data_retriever_factory_.Run());
 }
 
 void ExternallyManagedAppInstallTask::InstallPlaceholder(
@@ -259,7 +236,7 @@ void ExternallyManagedAppInstallTask::InstallPlaceholder(
 
   if (app_id.has_value() && !install_options_.force_reinstall) {
     // No need to install a placeholder app again.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
             std::move(callback),
@@ -268,7 +245,7 @@ void ExternallyManagedAppInstallTask::InstallPlaceholder(
     return;
   }
 
-  command_scheduler_->InstallPlaceholder(
+  provider_->scheduler().InstallPlaceholder(
       install_options_,
       base::BindOnce(
           &ExternallyManagedAppInstallTask::OnWebAppInstalledAndReplaced,
@@ -289,11 +266,6 @@ void ExternallyManagedAppInstallTask::OnWebAppInstalledAndReplaced(
         .Run(ExternallyManagedAppManager::InstallResult(code));
     return;
   }
-
-  externally_installed_app_prefs_.Insert(install_options_.install_url, app_id,
-                                         install_options_.install_source);
-  externally_installed_app_prefs_.SetIsPlaceholder(install_options_.install_url,
-                                                   is_placeholder);
 
   if (offline_install) {
     code = install_options().only_use_app_info_factory
@@ -320,7 +292,7 @@ void ExternallyManagedAppInstallTask::GetPlaceholderAppId(
     const GURL& install_url,
     WebAppManagement::Type source_type,
     base::OnceCallback<void(absl::optional<AppId>)> callback) {
-  command_scheduler_->ScheduleCallbackWithLock<AllAppsLock>(
+  provider_->scheduler().ScheduleCallbackWithLock<AllAppsLock>(
       "ExternallyManagedAppInstallTask::GetPlaceholderAppId",
       std::make_unique<AllAppsLockDescription>(),
       base::BindOnce(

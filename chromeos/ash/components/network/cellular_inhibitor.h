@@ -85,9 +85,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularInhibitor
   using InhibitCallback =
       base::OnceCallback<void(std::unique_ptr<InhibitLock>)>;
 
-  // Puts the Cellular device in Inhibited state and returns an InhibitLock
-  // object which when destroyed automatically uninhibits the Cellular device. A
-  // call to this method will block until the last issues lock is deleted.
+  // This function attempts to put the cellular device into an inhibited state.
+  // On success, this method will provide a lock to |callback| that will prevent
+  // the cellular device from becoming uninhibited until the lock is freed. On
+  // failure, e.g. this function fails to set the corresponding Shill device
+  // property, |nullptr| is provided to |callback|.
   void InhibitCellularScanning(InhibitReason reason, InhibitCallback callback);
 
   // Returns the reason that cellular scanning is currently inhibited, or null

@@ -1,0 +1,24 @@
+From 161f5e23e7b860b90630057df3379400bf68e95f Mon Sep 17 00:00:00 2001
+From: Clark DuVall <cduvall@chromium.org>
+Date: Wed, 16 Aug 2023 16:02:16 -0700
+Subject: [PATCH 1/4] Remove config include
+
+---
+ third_party/sentencepiece/src/src/common.h | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/third_party/sentencepiece/src/src/common.h b/third_party/sentencepiece/src/src/common.h
+index b38b3f7b6615f..9bfb3884b068f 100644
+--- a/third_party/sentencepiece/src/src/common.h
++++ b/third_party/sentencepiece/src/src/common.h
+@@ -25,7 +25,6 @@
+ #include <utility>
+ #include <vector>
+ 
+-#include "config.h"
+ #include "third_party/absl/strings/string_view.h"
+ 
+ #if defined(_WIN32) && !defined(__CYGWIN__)
+-- 
+2.42.0.rc1.204.g551eb34607-goog
+

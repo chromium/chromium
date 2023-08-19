@@ -3,8 +3,6 @@
 <translationbundle lang="ur">
 <translation id="1075622780330595106">آپ کے ٹیبز میں سے <ph name="NUMBER_OF_TABS" /> کا استعمال حال میں نہیں ہوا ہے۔ انہیں بند کریں؟</translation>
 <translation id="125153950246128346">دوسرا ٹیب دیکھنے کیلئے تھپتھپائیں</translation>
-<translation id="1403228085774130835">‏آپ اپنے بند ٹیبز Chrome کے مرکزی مینیو کے نیچے حالیہ ٹیبز میں تلاش کر سکتے ہیں</translation>
-<translation id="1455506303394048917">ان پوشیدگی ٹیبز میں موجود آپ کی سرگرمی اس آلے سے صاف ہو جائے گی</translation>
 <translation id="1499635324672558517">سبھی پوشیدگی ٹیبز بند کریں؟</translation>
 <translation id="1657719826150349398">ٹیب کو نیچے منتقل کریں</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ٹیب}other{<ph name="TABS_COUNT_MANY" /> ٹیبز}}</translation>
@@ -47,6 +45,7 @@
 <translation id="5073204694187207510">پوری اسکرین گرڈ کو چھپائیں</translation>
 <translation id="5076161749301278626">اسٹور کے جائزے دیکھیں؟</translation>
 <translation id="5082793167783849073">ایک گروپ بنا کر صفحات کا فوری طور پر موازنہ کریں۔ شروع کرنے کیلئے، کسی لنک کو ٹچ کریں اور دبائے رکھیں۔</translation>
+<translation id="5339733443032484186">آپ کا آخری ٹیب</translation>
 <translation id="5490235265819901748">ٹیب گروپ پھیلا دیا گیا</translation>
 <translation id="5494920125229734069">سبھی کو منتخب کریں</translation>
 <translation id="5556417849629758491">اسٹور کی معلومات دیکھنے کا اختیار اسکرین کے اوپری حصے کے قریپ دستیاب ہے</translation>
@@ -62,10 +61,12 @@
 <translation id="6228793724645064692">(اسٹور کی درجہ بندی)</translation>
 <translation id="6333260925957816943">اس اسٹور سے متعلق معلومات</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> کو منتخب کردہ ٹیب سے گروپ ختم کریں}other{<ph name="TABS_COUNT_MANY" /> کو منتخب کردہ ٹیبز سے گروپ ختم کریں}}</translation>
+<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{‏آپ اپنے بند ٹیبز Chrome کے مرکزی مینو کے تحت حالیہ ٹیبز میں تلاش کر سکتے ہیں۔ آپ کا پوشیدگی ٹیب دستیاب نہیں ہوگا۔}other{‏آپ اپنے بند ٹیبز Chrome کے مرکزی مینو کے تحت حالیہ ٹیبز میں تلاش کر سکتے ہیں۔ آپ کے # پوشیدگی ٹیبز دستیاب نہیں ہوں گے۔}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ٹیب}other{<ph name="TABS_COUNT_MANY" /> ٹیبز}}</translation>
 <translation id="6549021453810473782">اسٹور کی معلومات دیکھیں</translation>
 <translation id="6562820390860419811">ٹیب کو بائیں منتقل کریں</translation>
 <translation id="6615455863669487791">مجھے دکھائیں</translation>
+<translation id="661742612106409204">‏آپ اپنے بند ٹیبز Chrome کے مرکزی مینو کے تحت حالیہ ٹیبز میں تلاش کر سکتے ہیں۔</translation>
 <translation id="6840760312327750441">ٹیبز کا گروپ بنانے کے لیے، کسی ٹیب کو ٹچ کریں اور دبائے رکھیں۔ پھر، اسے کسی دوسرے ٹیب پر گھسیٹیں۔</translation>
 <translation id="6856809498882026482">متعدد انتخاب کی وضع کو چھپائیں</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{ٹیب کا اشتراک کریں}other{ٹیبز کا اشتراک کریں}}</translation>

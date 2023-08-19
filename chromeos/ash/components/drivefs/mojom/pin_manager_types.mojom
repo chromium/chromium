@@ -9,24 +9,31 @@ module drivefs.pin_manager_types.mojom;
 // monitoring. This enum represents the various stages the setup goes through.
 // This enum is currently shared between the PinManager as well as the OS
 // Settings.
+//
+// These values are persisted to UMA histograms (see UMA enum
+// GoogleDrive.BulkPinning.Stage). Entries should not be renumbered and numeric
+// values should never be reused.
 enum Stage {
   // Initial stage.
   kStopped = 0,
 
   // Paused because of unfavorable network conditions.
-  kPaused = 1,
+  kPausedOffline = 1,
+
+  // Paused because of battery saving mode.
+  kPausedBatterySaver = 2,
 
   // In-progress stages.
-  kGettingFreeSpace = 2,
-  kListingFiles = 3,
-  kSyncing = 4,
+  kGettingFreeSpace = 3,
+  kListingFiles = 4,
+  kSyncing = 5,
 
   // Final success stage.
-  kSuccess = 5,
+  kSuccess = 6,
 
   // Final error stages.
-  kCannotGetFreeSpace = 6,
-  kCannotListFiles = 7,
-  kNotEnoughSpace = 8,
-  kCannotEnableDocsOffline = 9,
+  kNotEnoughSpace = 7,
+  kCannotGetFreeSpace = 8,
+  kCannotListFiles = 9,
+  kCannotEnableDocsOffline = 10,
 };

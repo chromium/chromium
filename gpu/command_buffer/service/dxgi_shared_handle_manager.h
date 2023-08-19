@@ -5,11 +5,10 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_DXGI_SHARED_HANDLE_MANAGER_H_
 #define GPU_COMMAND_BUFFER_SERVICE_DXGI_SHARED_HANDLE_MANAGER_H_
 
-#include <map>
-
 #include <d3d11.h>
 #include <wrl/client.h>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -17,6 +16,14 @@
 #include "base/win/scoped_handle.h"
 #include "gpu/gpu_gles2_export.h"
 #include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gl/buildflags.h"
+
+// Usage of BUILDFLAG(USE_DAWN) needs to be after the include for
+// ui/gl/buildflags.h
+#if BUILDFLAG(USE_DAWN)
+#include <dawn/native/D3DBackend.h>
+using dawn::native::d3d::ExternalImageDXGI;
+#endif  // BUILDFLAG(USE_DAWN)
 
 namespace gpu {
 
@@ -60,51 +67,101 @@ class GPU_GLES2_EXPORT DXGISharedHandleState
 
   HANDLE GetSharedHandle() const { return shared_handle_.Get(); }
 
-  Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture() const {
-    return d3d11_texture_;
-  }
+  bool has_keyed_mutex() const { return has_keyed_mutex_; }
 
-  bool has_keyed_mutex() const { return !!dxgi_keyed_mutex_; }
+  // Returns D3D11 texture for given device. Imports shared handle and caches
+  // texture and keyed mutex if not present in |d3d11_texture_state_map_|.
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> GetOrCreateD3D11Texture(
+      Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device);
 
-  // The following only have an effect if a keyed mutex is present.
-  bool BeginAccessD3D11();
-  void EndAccessD3D11();
+  // Acquires keyed mutex if necessary for given device. Disallows concurrent
+  // access on different devices due to the possibility of deadlock.
+  bool BeginAccessD3D11(Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device);
 
-  bool BeginAccessD3D12();
-  void EndAccessD3D12();
+  // Releases keyed mutex if all pending access for given device are ended.
+  void EndAccessD3D11(Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device);
+
+#if BUILDFLAG(USE_DAWN)
+  // Returns the Dawn ExternalImageDXGI associated with given device. It's the
+  // caller's responsibility to initialize the external image if needed.
+  std::unique_ptr<ExternalImageDXGI>& GetDawnExternalImage(WGPUDevice device);
+
+  // Returns true if there's no concurrent keyed mutex access on another device
+  // allowing Dawn to acquire the keyed mutex if needed.
+  bool BeginAccessDawn(WGPUDevice device);
+
+  // Updates keyed mutex acquired state after Dawn has released it. Erases the
+  // Dawn state entry from the map if the external image is already destroyed
+  // after all pending Dawn access is done.
+  void EndAccessDawn(WGPUDevice device);
+#endif  // BUILDFLAG(USE_DAWN)
 
  private:
+  struct D3D11TextureState {
+    D3D11TextureState(Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture);
+    ~D3D11TextureState();
+    D3D11TextureState(D3D11TextureState&&);
+    D3D11TextureState& operator=(D3D11TextureState&&);
+
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture;
+    Microsoft::WRL::ComPtr<IDXGIKeyedMutex> dxgi_keyed_mutex;
+    int keyed_mutex_acquired_count = 0;
+  };
+
   ~DXGISharedHandleState();
 
   scoped_refptr<DXGISharedHandleManager> manager_;
   const gfx::DXGIHandleToken token_;
 
-  // If |d3d11_texture_| has a keyed mutex, it will be stored in
-  // |dxgi_keyed_mutex_|. The keyed mutex is used to synchronize D3D11 and
-  // D3D12 Chromium components. |dxgi_keyed_mutex_| is the D3D11 side of the
-  // keyed mutex. To create the corresponding D3D12 interface, pass the handle
-  // stored in |shared_handle_| to ID3D12Device::OpenSharedHandle. Only one
-  // component is allowed to read/write to the texture at a time.
   base::win::ScopedHandle shared_handle_;
-  Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture_;
-  Microsoft::WRL::ComPtr<IDXGIKeyedMutex> dxgi_keyed_mutex_;
-  bool acquired_for_d3d12_ = false;
-  int acquired_for_d3d11_count_ = 0;
+
+  using D3D11TextureStateMap =
+      base::flat_map<Microsoft::WRL::ComPtr<ID3D11Device>, D3D11TextureState>;
+  D3D11TextureStateMap d3d11_texture_state_map_;
+
+#if BUILDFLAG(USE_DAWN)
+  // When Dawn uses keyed mutex for synchronization with the D3D11 backend, we
+  // want a single instance of ExternalImageDXGI (per device) for each unique
+  // texture even if we have multiple duplicated handles (and shared images)
+  // pointing to the texture. Caching the ExternalImageDXGI here enables this.
+  // Note that it's ok to use raw WGPUDevice pointers here since the external
+  // image acts like a weak pointer to the device, and we can detect if the
+  // entry is valid by checking ExternalImageDXGI::IsValid().
+  struct DawnExternalImageState {
+    DawnExternalImageState();
+    ~DawnExternalImageState();
+    DawnExternalImageState(DawnExternalImageState&&);
+    DawnExternalImageState& operator=(DawnExternalImageState&&);
+
+    std::unique_ptr<ExternalImageDXGI> external_image;
+    int access_count = 0;
+  };
+  using DawnExternalImageCache =
+      base::flat_map<WGPUDevice, DawnExternalImageState>;
+  DawnExternalImageCache dawn_external_image_cache_;
+#endif  // BUILDFLAG(USE_DAWN)
+
+  // True if the texture has an underlying keyed mutex.
+  bool has_keyed_mutex_ = false;
+
+  // True if the keyed mutex is acquired on any device.
+  bool keyed_mutex_acquired_ = false;
 };
 
 class GPU_GLES2_EXPORT DXGISharedHandleManager
     : public base::RefCountedThreadSafe<DXGISharedHandleManager> {
  public:
-  explicit DXGISharedHandleManager(
-      Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device);
+  DXGISharedHandleManager();
 
   // Retrieves an existing state associated with |token| or creates a new one if
   // none exists. Note that the returned state won't not have |shared_handle| as
   // its handle if |token| was registered previously, but the state's handle
-  // will refer to the same D3D11 texture. Returns a nullptr on error.
+  // will refer to the same D3D11 texture. |d3d11_device| is used for opening
+  // the shared handle if a state is not found. Returns a nullptr on error.
   scoped_refptr<DXGISharedHandleState> GetOrCreateSharedHandleState(
       gfx::DXGIHandleToken token,
-      base::win::ScopedHandle shared_handle);
+      base::win::ScopedHandle shared_handle,
+      Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device);
 
   // Creates a new unique state for given |shared_handle| and |d3d11_texture|.
   // No other state will have references to the same shared handle and texture.
@@ -122,12 +179,10 @@ class GPU_GLES2_EXPORT DXGISharedHandleManager
 
   ~DXGISharedHandleManager();
 
-  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
-
   mutable base::Lock lock_;
 
   using SharedHandleMap =
-      std::map<gfx::DXGIHandleToken, DXGISharedHandleState*>;
+      base::flat_map<gfx::DXGIHandleToken, DXGISharedHandleState*>;
   SharedHandleMap shared_handle_state_map_ GUARDED_BY(lock_);
 };
 

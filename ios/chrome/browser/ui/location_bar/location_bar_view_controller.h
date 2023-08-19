@@ -7,14 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
-#import "ios/chrome/browser/ui/badges/badge_consumer.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_element.h"
 #import "ios/chrome/browser/ui/orchestrator/location_bar_animatee.h"
 
-@class InfobarMetricsRecorder;
 @class LayoutGuideCenter;
-@class OmniboxTextFieldIOS;
 @protocol ActivityServiceCommands;
 @protocol ApplicationCommands;
 @protocol LocationBarOffsetProvider;
@@ -56,15 +54,10 @@
 @interface LocationBarViewController
     : UIViewController <FullscreenUIElement, LocationBarAnimatee>
 
-// Sets the edit view to use in the editing state. This must be set before the
-// view of this view controller is initialized. This must only be called once.
-- (void)setEditView:(UIView*)editView;
-
-// Sets the badge view to display badges. This must be set before the
-// view of this view controller is initialized. This must only be called once.
-- (void)setBadgeView:(UIView*)badgeView;
-
 @property(nonatomic, assign) BOOL incognito;
+
+// Get and set preferred omnibox position.
+@property(nonatomic, assign) PrefService* prefService;
 
 // The dispatcher for the share button, voice search, and long press actions.
 @property(nonatomic, weak) id<ActivityServiceCommands,
@@ -81,6 +74,26 @@
 
 // The layout guide center to use to refer to the first suggestion label.
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
+
+// Displays the voice search button instead of the share button in steady state,
+// and adds the voice search button to the empty textfield.
+@property(nonatomic, assign) BOOL voiceSearchEnabled;
+
+// Whether the default search engine supports search-by-image. This controls the
+// edit menu option to do an image search.
+@property(nonatomic, assign) BOOL searchByImageEnabled;
+
+// Whether the default search engine supports Lensing images. This controls the
+// edit menu option to do an image search.
+@property(nonatomic, assign) BOOL lensImageEnabled;
+
+// Sets the edit view to use in the editing state. This must be set before the
+// view of this view controller is initialized. This must only be called once.
+- (void)setEditView:(UIView*)editView;
+
+// Sets the badge view to display badges. This must be set before the
+// view of this view controller is initialized. This must only be called once.
+- (void)setBadgeView:(UIView*)badgeView;
 
 // Switches between the two states of the location bar:
 // - editing state, with the textfield;
@@ -101,18 +114,6 @@
 - (void)updateForNTP:(BOOL)isNTP;
 // Sets `enabled` of the share button.
 - (void)setShareButtonEnabled:(BOOL)enabled;
-
-// Displays the voice search button instead of the share button in steady state,
-// and adds the voice search button to the empty textfield.
-@property(nonatomic, assign) BOOL voiceSearchEnabled;
-
-// Whether the default search engine supports search-by-image. This controls the
-// edit menu option to do an image search.
-@property(nonatomic, assign) BOOL searchByImageEnabled;
-
-// Whether the default search engine supports Lensing images. This controls the
-// edit menu option to do an image search.
-@property(nonatomic, assign) BOOL lensImageEnabled;
 
 @end
 

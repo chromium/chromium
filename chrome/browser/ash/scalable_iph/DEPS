@@ -1,0 +1,4 @@
+include_rules = [
+  "+ui/message_center/message_center.h",
+  "+ui/message_center/message_center_observer.h",
+]

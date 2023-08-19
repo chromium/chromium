@@ -35,8 +35,10 @@
 <translation id="1280820357415527819">กำลังค้นหาเครือข่ายมือถือ</translation>
 <translation id="1293556467332435079">ไฟล์</translation>
 <translation id="1297922636971898492">Google ไดรฟ์ไม่พร้อมใช้งานในขณะนี้ การอัปโหลดจะเริ่มต้นอีกครั้งโดยอัตโนมัติเมื่อ Google ไดรฟ์ใช้งานได้</translation>
+<translation id="1306130176943817227">ลบไม่ได้ เนื่องจากมีการใช้รายการอยู่</translation>
 <translation id="1307931752636661898">ดูไฟล์ Linux ไม่ได้</translation>
 <translation id="1313405956111467313">กำหนดค่าพร็อกซีอัตโนมัติ</translation>
+<translation id="134645005685694099">อุปกรณ์ของคุณมีพื้นที่เก็บข้อมูลไม่เพียงพอที่จะเปิดการซิงค์ไฟล์ไว้ ไฟล์ใหม่จะไม่ซิงค์โดยอัตโนมัติอีกต่อไป</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">ไฟล์หรือไดเรกทอรีใช้งานไม่ได้</translation>
 <translation id="1363028406613469049">แทร็ก</translation>
@@ -113,7 +115,6 @@
 <translation id="1920798810075583923">แตงโม</translation>
 <translation id="1924372192547904021">จัดรูปแบบ <ph name="DRIVE_NAME" /> แล้ว</translation>
 <translation id="1931134289871235022">สโลวัก</translation>
-<translation id="1933345018156373194">การย้ายล้มเหลว ข้อผิดพลาดที่ไม่คาดคิด: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">ฟินแลนด์</translation>
 <translation id="1942765061641586207">ความละเอียดของรูปภาพ</translation>
 <translation id="1972984168337863910">ขยายแผงความคิดเห็นเกี่ยวกับไฟล์</translation>
@@ -130,7 +131,7 @@
 <translation id="2084108471225856927">การตั้งค่าอุปกรณ์</translation>
 <translation id="2084809735218147718">กำลังเขียนขอบคุณ</translation>
 <translation id="2088690981887365033">เครือข่าย VPN</translation>
-<translation id="2089751716171649322">เข้าถึงไฟล์ใน Google ไดรฟ์ได้โดยง่ายเมื่อคุณออฟไลน์</translation>
+<translation id="209653272837065803">มีพื้นที่เก็บข้อมูลไม่เพียงพอที่จะซิงค์ไฟล์ต่อ</translation>
 <translation id="2111134541987263231">เปิด<ph name="BEGIN_BOLD" />อนุญาตในโหมดไม่ระบุตัวตน<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086">ระบบจะลบ <ph name="NUMBER_OF_ITEMS" /> รายการและคุณจะกู้คืนไม่ได้</translation>
 <translation id="2122305276694332719">การเชื่อมต่อเครือข่ายที่ซ่อนอยู่โดยอัตโนมัติจะทำให้คนอื่นๆ เห็นอุปกรณ์ของคุณและการตั้งค่าเครือข่ายบางอย่าง เราไม่แนะนำให้เชื่อมต่อ</translation>
@@ -147,9 +148,11 @@
 <translation id="2198315389084035571">จีนตัวย่อ</translation>
 <translation id="22085916256174561">เกาหลี</translation>
 <translation id="2208919847696382164">ติดตั้งด้วย Linux</translation>
+<translation id="2215692307449050019">แบตเตอรี่เหลือน้อย การซิงค์ไฟล์จะดำเนินการต่อเมื่อคุณเชื่อมต่อกับแหล่งจ่ายไฟ</translation>
 <translation id="2225536596944493418">แน่ใจไหมว่าต้องการลบ <ph name="NUMBER_OF_ITEMS" /> รายการ</translation>
 <translation id="2230062665678605299">ไม่สามารถสร้างโฟลเดอร์ "<ph name="FOLDER_NAME" />" <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">คนกับกาแฟ</translation>
+<translation id="2247561763838186830">คุณออกจากระบบแล้ว</translation>
 <translation id="2251368349685848079">กู้คืนจากถังขยะ</translation>
 <translation id="2278133026967558505">การเข้าถึงไฟล์จากเว็บไซต์และ URL ทั้งหมด</translation>
 <translation id="2282155092769082568">URL การกำหนดค่าอัตโนมัติ:</translation>
@@ -163,7 +166,7 @@
 <translation id="2312704192806647271">{COUNT,plural, =1{ไม่พบส่วนขยายที่มีรหัส <ph name="BEGIN_LIST" /><ph name="END_LIST" /> โปรดติดต่อผู้ดูแลระบบ}other{ไม่พบส่วนขยายที่มีรหัส <ph name="BEGIN_LIST" /><ph name="END_LIST" /> โปรดติดต่อผู้ดูแลระบบ}}</translation>
 <translation id="2325650632570794183">ไฟล์ประเภทนี้ไม่ได้รับการสนับสนุน โปรดไปที่ Chrome เว็บสโตร์เพื่อหาแอปพลิเคชันที่สามารถเปิดไฟล์ประเภทนี้</translation>
 <translation id="2326539130272988168">บัลแกเรีย</translation>
-<translation id="2337715497728194187">แชร์กับ Bruschetta</translation>
+<translation id="233822363739146957">มีพื้นที่เก็บข้อมูลไม่เพียงพอที่จะซิงค์ไฟล์ทั้งหมด</translation>
 <translation id="23721837607121582">ดาวน์โหลดโปรไฟล์อุปกรณ์เคลื่อนที่, เครือข่าย <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">เปลี่ยนเป็นมุมมองรายการ</translation>
 <translation id="2377590462528165447">แชร์กับ Linux แล้ว <ph name="NUMBER_OF_ITEMS" /> โฟลเดอร์</translation>
@@ -181,6 +184,7 @@
 <translation id="2464089476039395325">พร็อกซี HTTP</translation>
 <translation id="2467267713099745100">เครือข่าย <ph name="NETWORK_TYPE" /> ปิดอยู่</translation>
 <translation id="2468402215065996499">ทามาก็อตจิ</translation>
+<translation id="2468470447085858632">เข้าถึงไฟล์ใน Google ไดรฟ์แบบออฟไลน์ด้วยการซิงค์ไฟล์</translation>
 <translation id="2470939964922472929">ป้อน PIN ไม่ถูกต้องหลายครั้งเกินไป หากต้องการตั้งค่า PIN ใหม่ ให้ป้อนคีย์การเลิกบล็อกส่วนตัว (PUK) 8 หลักจากผู้ให้บริการของคุณ</translation>
 <translation id="2500392669976258912">คุชราต (ตามการออกเสียง)</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -192,7 +196,6 @@
 <translation id="2544853746127077729">ใบรับรองการตรวจสอบสิทธิ์ได้รับการปฏิเสธจากเครือข่าย</translation>
 <translation id="255937426064304553">สหรัฐอเมริกาสากล</translation>
 <translation id="2563185590376525700">กบ</translation>
-<translation id="2574327434504608656">แชร์ 1 โฟลเดอร์กับ Bruschetta แล้ว</translation>
 <translation id="2578394532502990878">ทมิฬ (ตามการออกเสียง)</translation>
 <translation id="2579959351793446050">โอเดีย</translation>
 <translation id="2587195714949534472">กำลังเตรียมการซิงค์ <ph name="FILE_NAME" />...</translation>
@@ -216,6 +219,7 @@
 <translation id="2782104745158847185">เกิดข้อผิดพลาดในการติดตั้งแอปพลิเคชัน Linux</translation>
 <translation id="2802583107108007218">ดูข้อมูลเพิ่มเติมเกี่ยวกับข้อจำกัดเหล่านี้</translation>
 <translation id="2803375539583399270">ป้อน PIN</translation>
+<translation id="2819519502129272135">การซิงค์ไฟล์ปิดอยู่</translation>
 <translation id="2820957248982571256">กำลังสแกน...</translation>
 <translation id="2830077785865012357">จีน (Zhuyin)</translation>
 <translation id="2843806747483486897">เปลี่ยนค่าเริ่มต้น...</translation>
@@ -291,7 +295,6 @@
 <translation id="3408072735282270043">เปิดใช้งาน <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">เยอรมัน (เยอรมนี) ด้วยแป้นพิมพ์ Neo 2</translation>
 <translation id="3414856743105198592">การฟอร์แมตอุปกรณ์แบบถอดได้จะทำให้ข้อมูลทั้งหมดถูกลบออก คุณต้องการดำเนินการต่อหรือไม่</translation>
-<translation id="3435143625481187092">ให้สิทธิ์ Bruschetta เข้าถึงไฟล์ในโฟลเดอร์ "<ph name="FOLDER_NAME" />"</translation>
 <translation id="3437801641691368414">เวลาที่สร้าง</translation>
 <translation id="343907260260897561">กล้องอินสแตนท์</translation>
 <translation id="3455931012307786678">เอสโทเนีย</translation>
@@ -299,7 +302,6 @@
 <translation id="3479552764303398839">ไม่ใช่ตอนนี้</translation>
 <translation id="3486821258960016770">มองโกเลีย</translation>
 <translation id="3495304270784461826">ข้อผิดพลาด <ph name="COUNT" /> รายการ</translation>
-<translation id="3501954296166022751">ไฟล์ Google ไดรฟ์พร้อมใช้งานแบบออฟไลน์</translation>
 <translation id="3509680540198371098">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, รายละเอียด</translation>
 <translation id="3511705761158917664">กำลังเตรียมการซิงค์ <ph name="NUMBER_OF_ITEMS" /> รายการ...</translation>
 <translation id="3522708245912499433">โปรตุเกส</translation>
@@ -356,8 +358,10 @@
 <translation id="3906232975181435906">กำลังติดตั้งโปรไฟล์อุปกรณ์เคลื่อนที่, เครือข่าย <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">วาง</translation>
+<translation id="3950820424414687140">ลงชื่อเข้าใช้</translation>
 <translation id="3952872973865944257">เตลูกู (ตามการออกเสียง)</translation>
 <translation id="3958548648197196644">กีวี</translation>
+<translation id="397105322502079400">กำลังคำนวณ...</translation>
 <translation id="3971140002794351170">ดาวน์โหลดโปรไฟล์อุปกรณ์เคลื่อนที่, เครือข่าย <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">อังกฤษ (สหราชอาณาจักร)</translation>
 <translation id="3975895378829046965">บังกลา (ตามการออกเสียง)</translation>
@@ -368,6 +372,7 @@
 <translation id="4040753847560036377">PUK ไม่ถูกต้อง</translation>
 <translation id="4057991113334098539">กำลังเปิดการใช้งาน...</translation>
 <translation id="4092890906744441904">ไอร์แลนด์</translation>
+<translation id="4124731372776320263">กำลังซิงค์ไฟล์ในไดรฟ์ 1 รายการ</translation>
 <translation id="4124935795427217608">ยูนิคอร์น</translation>
 <translation id="4131235941541910880">ย้ายรายการที่คุณไม่ต้องการไปยังถังขยะ</translation>
 <translation id="4134804435730168042">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, เปิดใช้งานหลังจากตั้งค่าอุปกรณ์</translation>
@@ -377,7 +382,6 @@
 <translation id="4159731583141908892">ย้าย <ph name="FILE_NAME" /> แล้ว</translation>
 <translation id="4176286497474237543">ล้างข้อมูลทั้งหมดในถังขยะเลย</translation>
 <translation id="4179621117429069925">รายการนี้อยู่ในถังขยะ</translation>
-<translation id="4181839429935094755">แชร์ <ph name="NUMBER_OF_ITEMS" /> โฟลเดอร์กับ Bruschetta แล้ว</translation>
 <translation id="4186579485882418952">เปิดใช้แบบออฟไลน์</translation>
 <translation id="4193154014135846272">เอกสารของ Google</translation>
 <translation id="4197674956721858839">การเลือกซิป</translation>
@@ -417,6 +421,7 @@
 <translation id="4432921877815220091">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, , เปิดใช้งานหลังจากตั้งค่าอุปกรณ์, จัดการโดยผู้ดูแลระบบ</translation>
 <translation id="4439427728133035643">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, เชื่อมต่อ</translation>
 <translation id="4442424173763614572">การค้นหา DNS ล้มเหลว</translation>
+<translation id="4445896958353114391">กำลังซิงค์ไฟล์</translation>
 <translation id="4462159676511157176">เซิร์ฟเวอร์ชื่อที่กำหนดเอง</translation>
 <translation id="4465725236958772856">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, จัดการโดยผู้ดูแลระบบ, เชื่อมต่อ</translation>
 <translation id="4470564870223067757">ฮังกูลแบบ 2 ชุด</translation>
@@ -438,11 +443,11 @@
 <translation id="4599600860674643278">รีเซ็ตตัวกรองแล้ว</translation>
 <translation id="4603392156942865207">กำลังคัดลอก <ph name="FILE_NAME" /> ไปยัง <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">ศิลปิน</translation>
+<translation id="4635373743001040938">พื้นที่เก็บข้อมูลเหลือน้อยมาก ปิดการซิงค์ไฟล์แล้ว</translation>
 <translation id="4642769377300286600">กำลังติดตั้งโปรไฟล์อุปกรณ์เคลื่อนที่, เครือข่าย <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">เช็กด้วยแป้นพิมพ์ Qwerty</translation>
 <translation id="4656777537938206294">ทำให้ไฟล์ใช้งานได้แบบออฟไลน์</translation>
 <translation id="4658782175094886150">คนอยู่ท่ามกลางหิมะ</translation>
-<translation id="466782788172479199">ให้สิทธิ์ Bruschetta เข้าถึงไฟล์ใน Google ไดรฟ์ การเปลี่ยนแปลงจะซิงค์กับอุปกรณ์อื่นๆ ของคุณ</translation>
 <translation id="4669606053856530811">สมาชิกของ "<ph name="SOURCE_NAME" />" จะสูญเสียสิทธิ์เข้าถึง เว้นแต่มีการแชร์รายการเหล่านี้กับสมาชิกดังกล่าว</translation>
 <translation id="467809019005607715">Google สไลด์</translation>
 <translation id="4690246192099372265">สวีเดน</translation>
@@ -491,8 +496,8 @@
 <translation id="4961158930123534723">แชร์กับ Parallels Desktop แล้ว 1 โฟลเดอร์</translation>
 <translation id="496656650103537022">กู้คืน <ph name="FILE_NAME" /> แล้ว</translation>
 <translation id="4969785127455456148">อัลบั้ม</translation>
+<translation id="4972330214479971536">ตั้งค่าการซิงค์ไฟล์ไม่สําเร็จ</translation>
 <translation id="4973523518332075481">ใช้ชื่อที่มีอักขระไม่เกิน <ph name="MAX_LENGTH" /> อักขระ</translation>
-<translation id="4973970068702235170">การซิปล้มเหลว ข้อผิดพลาดที่ไม่คาดคิด: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4984616446166309645">ญี่ปุ่น</translation>
 <translation id="4987699874727873250">อังกฤษ (อินเดีย)</translation>
 <translation id="4988205478593450158">แน่ใจไหมว่าต้องการลบ "<ph name="FILE_NAME" />"</translation>
@@ -514,6 +519,7 @@
 <translation id="5102922915594634436">จัดการโฟลเดอร์ที่ซิงค์</translation>
 <translation id="5109254780565519649">เกิดข้อผิดพลาด ระบบอาจไม่ได้คืนค่าบางรายการ</translation>
 <translation id="5110329002213341433">อังกฤษ (แคนาดา)</translation>
+<translation id="5119780910075847424">การซิงค์หยุดชั่วคราว</translation>
 <translation id="5123433949759960244">บาสเกตบอล</translation>
 <translation id="5129662217315786329">โปแลนด์</translation>
 <translation id="5144820558584035333">ฮังกูลแบบ 3 ชุด (390)</translation>
@@ -532,6 +538,7 @@
 <translation id="5218183485292899140">ฝรั่งเศสแบบสวิส</translation>
 <translation id="5234764350956374838">ปิด</translation>
 <translation id="5253070652067921974">สร้างโดย</translation>
+<translation id="5254207638927440400">ย้ายไฟล์ไม่ได้ เนื่องจากมีการใช้ไฟล์อยู่</translation>
 <translation id="5257456363153333584">แมลงปอ</translation>
 <translation id="5262311848634918433"><ph name="MARKUP_1" />เข้าถึงไฟล์ได้จากทุกที่ แม้ขณะออฟไลน์<ph name="MARKUP_2" />
     ไฟล์ใน Google ไดรฟ์จะทันสมัยและสามารถใช้ได้จากทุกอุปกรณ์<ph name="MARKUP_3" />
@@ -552,7 +559,6 @@
 <translation id="5323213332664049067">ละตินอเมริกา</translation>
 <translation id="5330145655348521461">ไฟล์เหล่านี้เปิดอยู่บนเดสก์ท็อปเครื่องอื่น โปรดย้ายมายัง <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) เพื่อดู</translation>
 <translation id="5330512191124428349">รับข้อมูล</translation>
-<translation id="5344246330454251646">จัดการการแชร์กับ Bruschetta</translation>
 <translation id="535792325654997756">คนกับแมว</translation>
 <translation id="5358764674931277">อัตราเฟรม</translation>
 <translation id="5363339716524495120">ภาษาในการป้อนข้อมูลคือภาษาจีน</translation>
@@ -564,6 +570,7 @@
 <translation id="5422221874247253874">จุดเข้าใช้งาน</translation>
 <translation id="5428105026674456456">สเปน</translation>
 <translation id="5438282218546237410">ไม่มีผลการค้นหาสำหรับ <ph name="SEARCH_TERM" /></translation>
+<translation id="5447680084201416734">พื้นที่เก็บข้อมูลไม่เพียงพอ</translation>
 <translation id="5449551289610225147">รหัสผ่านไม่ถูกต้อง</translation>
 <translation id="5459064203055649751">มีไฟล์ที่ชื่อ "<ph name="FILENAME" />" อยู่แล้ว ต้องการแทนที่ไฟล์ดังกล่าวด้วยไฟล์ที่คุณจะย้ายไหม</translation>
 <translation id="5463231940765244860">ป้อน</translation>
@@ -574,7 +581,6 @@
 <translation id="5494920125229734069">เลือกทั้งหมด</translation>
 <translation id="5500122897333236901">ไอซ์แลนดิก</translation>
 <translation id="5508696409934741614">จุด</translation>
-<translation id="5519161320735100193">การตั้งค่า Google ไดรฟ์</translation>
 <translation id="5522908512596376669">เปลี่ยนรายการไฟล์เป็นมุมมองรายการแล้ว</translation>
 <translation id="5524517123096967210">ไม่สามารถอ่านไฟล์</translation>
 <translation id="5533102081734025921">รูปภาพ <ph name="IMAGE_TYPE" /></translation>
@@ -602,6 +608,7 @@
 <translation id="5720028165859493293">ย้าย <ph name="FILE_NAME" /> ไปที่ถังขยะแล้ว</translation>
 <translation id="5724172041621205163">ไทยด้วยแป้นพิมพ์ปัตตะโชติ</translation>
 <translation id="57383366388012121">เดือนที่แล้ว</translation>
+<translation id="575175778971367197">ซิงค์ไฟล์นี้ไม่ได้ในขณะนี้</translation>
 <translation id="5756666464756035725">QWERTY ภาษาฮังการี</translation>
 <translation id="5760252553414789727">เลือกไว้ <ph name="SELECTED_FILES_COUNT" /> รายการ</translation>
 <translation id="5763377084591234761">เยอรมัน (สวิตเซอร์แลนด์)</translation>
@@ -627,7 +634,6 @@
 <translation id="5896749729057314184"><ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" /> เครือข่าย, <ph name="NETWORK_NAME" />, ไม่ได้เปิดใช้งาน, ความแรงของสัญญาณ <ph name="SIGNAL_STRENGTH" />%, รายละเอียด</translation>
 <translation id="5911887972742538906">ข้อผิดพลาดเกิดขึ้นระหว่างการติดตั้งแอปพลิเคชัน Linux</translation>
 <translation id="5912396950572065471">รูปแบบ</translation>
-<translation id="5913638992615760742">การคัดลอกล้มเหลว ข้อผิดพลาดที่ไม่คาดคิด: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5918480239180455431">มีฟีเจอร์การค้นหาใหม่พร้อมใช้งาน</translation>
 <translation id="5926082595146149752">ดัตช์ (เนเธอร์แลนด์) ด้วยแป้นพิมพ์พีซีสหรัฐฯ แบบสากล</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -635,7 +641,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> รายการ</translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">ตัวเลือกการจัดเรียง</translation>
-<translation id="6007237601604674381">การย้ายล้มเหลว <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">เครือข่ายอีเธอร์เน็ต</translation>
 <translation id="60357267506638014">QWERTY แบบเช็ก</translation>
 <translation id="603895874132768835">คุณจะใช้เครือข่ายนี้ไม่ได้จนกว่าจะตั้งค่า PIN ใหม่</translation>
@@ -691,6 +696,7 @@
 <translation id="6423031066725912715">เวียดนามด้วยแป้นพิมพ์ TCVN</translation>
 <translation id="6430271654280079150">คุณลองได้อีก 1 ครั้ง</translation>
 <translation id="643243556292470964">ย้ายไฟล์ที่ลบไปยังถังขยะแล้ว</translation>
+<translation id="6438480100790416671">กําลังตรวจสอบพื้นที่เก็บข้อมูล…</translation>
 <translation id="6485131920355264772">การดึงข้อมูลพื้นที่ล้มเหลว</translation>
 <translation id="6495925982925244349">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, จัดการโดยผู้ดูแลระบบ, รายละเอียด</translation>
 <translation id="649877868557234318">กำลังแตกข้อมูล <ph name="FILE_NAME" /> ไปที่ <ph name="FOLDER_NAME" /></translation>
@@ -703,6 +709,7 @@
 <translation id="6558280019477628686">เกิดข้อผิดพลาด อาจไม่ได้ลบบางรายการ</translation>
 <translation id="656398493051028875">กำลังลบ "<ph name="FILENAME" />"...</translation>
 <translation id="6581162200855843583">ลิงก์ Google ไดรฟ์</translation>
+<translation id="6588648400954570689">การตั้งค่าการซิงค์ไฟล์</translation>
 <translation id="6594855146910089723">โฟลเดอร์นี้แชร์อยู่กับ Linux และ Parallels Desktop</translation>
 <translation id="6607272825297743757">ข้อมูลไฟล์</translation>
 <translation id="6609332149380188670">แชร์กับ Parallels Desktop แล้ว <ph name="NUMBER_OF_ITEMS" /> โฟลเดอร์</translation>
@@ -717,7 +724,6 @@
 <translation id="6710213216561001401">ก่อนหน้า</translation>
 <translation id="6732801395666424405">ยังไม่ได้โหลดใบรับรอง</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
-<translation id="6740270213273127264">แชร์โฟลเดอร์กับ Bruschetta</translation>
 <translation id="6750737795876287924">ไดเรกทอรีปัจจุบัน</translation>
 <translation id="6751256176799620176">เลือกไว้ 1 โฟลเดอร์</translation>
 <translation id="6755827872271341378">อุปกรณ์ Chrome OS Flex</translation>
@@ -794,6 +800,7 @@
 <translation id="7256405249507348194">ข้อผิดพลาดที่ไม่รู้จัก: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">บริการที่มี</translation>
 <translation id="7291818353625820805">ต้องการให้แป้นทำงานซ้ำไหม โปรดปิดเครื่องหมายการเน้นเสียงในการตั้งค่าแป้นพิมพ์</translation>
+<translation id="729236380049459563">การซิงค์ไฟล์เปิดอยู่</translation>
 <translation id="7292816689782057017">นโยบายของผู้ดูแลระบบจำกัดการบันทึกไปยังบางตำแหน่ง</translation>
 <translation id="7294063083760278948">เตลูกู (การทับศัพท์)</translation>
 <translation id="7295662345261934369">แชร์กับคนอื่นๆ</translation>
@@ -801,6 +808,7 @@
 <translation id="7309413087278791451">เยอรมัน (เบลเยียม)</translation>
 <translation id="7339898014177206373">หน้าต่างใหม่</translation>
 <translation id="7343393116438664539">เวียดนาม (Telex)</translation>
+<translation id="7347346221088620549">ไฟล์ที่เข้ารหัส</translation>
 <translation id="7357762654218998920">ไม่รองรับไฟล์ประเภทนี้ <ph name="BEGIN_LINK_HELP" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_HELP" />เกี่ยวกับการเปิดไฟล์ใน Chrome OS</translation>
 <translation id="7359359531237882347">กำลังคัดลอก <ph name="NUMBER_OF_ITEMS" /> รายการ...</translation>
 <translation id="7375951387215729722">รายชื่อไฟล์จัดเรียงตามคอลัมน์ "<ph name="COLUMN_NAME" />" จากมากไปหาน้อย</translation>
@@ -827,6 +835,7 @@
 <translation id="7547811415869834682">ดัตช์</translation>
 <translation id="7551643184018910560">ปักหมุดที่ชั้นวาง</translation>
 <translation id="7553492409867692754">ให้สิทธิ์แอป Linux เข้าถึงไฟล์ในโฟลเดอร์ "<ph name="FOLDER_NAME" />"</translation>
+<translation id="7555339735447658365">คุณออฟไลน์อยู่ การซิงค์ไฟล์จะดำเนินต่อเมื่อคุณเชื่อมต่ออินเทอร์เน็ต</translation>
 <translation id="7589661784326793847">รอสักครู่</translation>
 <translation id="7592775719802218421">ทำให้ <ph name="FILE_NAME" /> ใช้งานแบบออฟไลน์ได้</translation>
 <translation id="7600126690270271294">เซอร์เบีย</translation>
@@ -845,6 +854,7 @@
 <translation id="76959938259365003">ล้างข้อมูลในถังขยะไม่สำเร็จ</translation>
 <translation id="770015031906360009">กรีก</translation>
 <translation id="7705251383879779343">คัดลอก <ph name="FILE_NAME" /> แล้ว</translation>
+<translation id="7707941139430559579">ย้ายไฟล์ไม่ได้ <ph name="ERROR_MESSAGE" /></translation>
 <translation id="7708271999969613024">หากต้องการใช้เครือข่ายนี้ คุณต้องป้อนคีย์การเลิกบล็อกส่วนตัว (PUK) 8 หลักจากผู้ให้บริการ</translation>
 <translation id="7711920809702896782">ข้อมูลรูปภาพ</translation>
 <translation id="7724603315864178912">ตัด</translation>
@@ -890,10 +900,10 @@
 <translation id="7972920761225148017">ฝรั่งเศส (สวิตเซอร์แลนด์)</translation>
 <translation id="7973962044839454485">การตรวจสอบสิทธิ์ PPP ล้มเหลวเนื่องจากชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง</translation>
 <translation id="7980421588063892270">อังกฤษ (สหรัฐฯ) ด้วยแป้นพิมพ์ Colemak</translation>
-<translation id="7985008041109611710">กำลังซิงค์ <ph name="NUMBER_OF_FILES_SYNCING" /> ไฟล์</translation>
 <translation id="8000066093800657092">ไม่มีเครือข่าย</translation>
 <translation id="8008366997883261463">สุนัข</translation>
 <translation id="8028993641010258682">ขนาด</translation>
+<translation id="8034974485549318493">สำหรับการตั้งค่าเริ่มต้น คุณจะต้องเชื่อมต่ออินเทอร์เน็ตเพื่อให้ซิงค์ไฟล์ได้</translation>
 <translation id="803771048473350947">ไฟล์</translation>
 <translation id="8038111231936746805">(ค่าเริ่มต้น)</translation>
 <translation id="8042602468072383151">เสียง <ph name="AUDIO_TYPE" /></translation>
@@ -904,6 +914,7 @@
 <translation id="8087576439476816834">ดาวน์โหลด <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">ที่แชร์กับฉัน</translation>
 <translation id="8116072619078571545">น้ำเย็น</translation>
+<translation id="8124093710070495550">ปัญหาการซิงค์</translation>
 <translation id="8128733386027980860">อังกฤษ (สหราชอาณาจักร) ด้วยแป้นพิมพ์ดีโวรัก</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" มีการแชร์กับคุณ คุณไม่สามารถลบออกได้เนื่องจากคุณไม่ใช่เจ้าของ</translation>
 <translation id="8138705869659070104">เปิดใช้งานหลังตั้งค่าอุปกรณ์</translation>
@@ -913,9 +924,11 @@
 <translation id="8154842056504218462">เลือกรายการทั้งหมดอยู่</translation>
 <translation id="8157684860301034423">ดึงข้อมูลแอปไม่สำเร็จ</translation>
 <translation id="8175731104491895765">ฝรั่งเศส (เบลเยียม)</translation>
+<translation id="8175799081768705361">กำลังซิงค์ไฟล์ในไดรฟ์ <ph name="NUMBER_OF_FILES_SYNCING" /> รายการ</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">รุ่นอุปกรณ์</translation>
 <translation id="8223479393428528563">หากต้องการบันทึกไฟล์เหล่านี้เพื่อใช้งานแบบออฟไลน์ ให้คลิกขวาที่ไฟล์ และเลือกตัวเลือก <ph name="OFFLINE_CHECKBOX_NAME" /></translation>
+<translation id="8241139360630443550">ดูพื้นที่เก็บข้อมูล</translation>
 <translation id="8249296373107784235">ล้มเลิก</translation>
 <translation id="8250690786522693009">ภาษาละติน</translation>
 <translation id="8250920743982581267">เอกสาร</translation>
@@ -946,6 +959,7 @@
 <translation id="8404498045299006085">เก็บไว้ทั้งหมด</translation>
 <translation id="8408068190360279472">เครือข่าย <ph name="NETWORK_TYPE" /> กำลังเชื่อมต่อ</translation>
 <translation id="8425213833346101688">เปลี่ยน</translation>
+<translation id="8428213095426709021">การตั้งค่า</translation>
 <translation id="8431909052837336408">เปลี่ยน PIN ของซิม</translation>
 <translation id="8437209419043462667">สหรัฐอเมริกา</translation>
 <translation id="8452135315243592079">ไม่มีซิมการ์ด</translation>
@@ -982,6 +996,7 @@
 <translation id="8609695766746872526">ไอซ์แลนด์</translation>
 <translation id="863903787380594467">PIN ไม่ถูกต้อง คุณลองได้อีก <ph name="RETRIES" /> ครั้ง</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - พอร์ต</translation>
+<translation id="8656407365183407932">ต้องนําไฟล์ออฟไลน์ออก</translation>
 <translation id="8656768832129462377">ไม่ต้องตรวจสอบ</translation>
 <translation id="8688591111840995413">รหัสผ่านไม่ถูกต้อง</translation>
 <translation id="8698464937041809063">ภาพวาดของ Google</translation>
@@ -1012,10 +1027,12 @@
 <translation id="8919081441417203123">เดนมาร์ก</translation>
 <translation id="8949925099261528566">เชื่อมต่อแล้ว ไม่พบอินเทอร์เน็ต</translation>
 <translation id="8965697826696209160">พื้นที่ไม่เพียงพอ</translation>
+<translation id="8970887620466824814">มีบางอย่างผิดพลาด</translation>
 <translation id="8971742885766657349">กำลังซิงค์ - <ph name="PERCENT" />%</translation>
 <translation id="8997962250644902079">พินอินภาษาจีน (ตัวเต็ม)</translation>
 <translation id="8998871447376656508">มีพื้นที่ว่างใน Google ไดรฟ์ไม่เพียงพอที่จะอัปโหลดให้เสร็จสิ้น</translation>
 <translation id="9003940392834790328">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, จัดการโดยผู้ดูแลระบบ, รายละเอียด</translation>
+<translation id="9007990314804111233">ลงชื่อเข้าใช้บัญชี Microsoft</translation>
 <translation id="9017798300203431059">การออกเสียงภาษารัสเซีย</translation>
 <translation id="9034924485347205037">ไฟล์ Linux</translation>
 <translation id="9035012421917565900">ไม่สามารถย้ายรายการกลับไปที่ "<ph name="DESTINATION_NAME" />" คุณจึงไม่สามารถเลิกทำการดำเนินการนี้</translation>
@@ -1046,7 +1063,6 @@
 <translation id="9213073329713032541">เริ่มการติดตั้งสำเร็จแล้ว</translation>
 <translation id="9219103736887031265">ภาพ</translation>
 <translation id="9219908252191632183">ดวงจันทร์</translation>
-<translation id="937795003075802289">กำลังซิงค์ 1 ไฟล์</translation>
 <translation id="938470336146445890">โปรดติดตั้งใบรับรองของผู้ใช้</translation>
 <translation id="939736085109172342">โฟลเดอร์ใหม่</translation>
 <translation id="943972244133411984">แก้ไขโดย</translation>

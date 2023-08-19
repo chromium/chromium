@@ -11,6 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -60,6 +61,12 @@ class ExternalConstants : public base::RefCountedThreadSafe<ExternalConstants> {
   // Overrides the overinstall timeout.
   virtual base::TimeDelta OverinstallTimeout() const = 0;
 
+  // Overrides the idleness check period.
+  virtual base::TimeDelta IdleCheckPeriod() const = 0;
+
+  // Overrides machine management state.
+  virtual absl::optional<bool> IsMachineManaged() const = 0;
+
  protected:
   friend class base::RefCountedThreadSafe<ExternalConstants>;
   scoped_refptr<ExternalConstants> next_provider_;
@@ -68,10 +75,6 @@ class ExternalConstants : public base::RefCountedThreadSafe<ExternalConstants> {
 
 // Sets up an external constants chain of responsibility. May block.
 scoped_refptr<ExternalConstants> CreateExternalConstants();
-
-// Sets up an external constants provider yielding only default values.
-// Intended only for testing of other constants providers.
-scoped_refptr<ExternalConstants> CreateDefaultExternalConstantsForTesting();
 
 }  // namespace updater
 

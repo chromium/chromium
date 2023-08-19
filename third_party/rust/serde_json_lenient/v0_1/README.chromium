@@ -3,4 +3,6 @@ URL: https://crates.io/crates/serde_json_lenient
 Description: A lenient JSON serialization file format
 Version: 0.1.4
 Security Critical: yes
+Shipped: yes
 License: Apache 2.0
+License File: crate/LICENSE-APACHE

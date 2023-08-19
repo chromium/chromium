@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("tab_strip") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "tab_strip_coordinator.h",
     "tab_strip_coordinator.mm",
@@ -20,7 +19,6 @@ source_set("tab_strip") {
 }
 
 source_set("tab_strip_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "tab_strip_cell.h",
     "tab_strip_cell.mm",
@@ -34,7 +32,9 @@ source_set("tab_strip_ui") {
     "tab_strip_view_layout.mm",
   ]
   deps = [
+    "//base",
     "//components/favicon/ios",
+    "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/url",
     "//ios/chrome/browser/shared/model/url:constants",

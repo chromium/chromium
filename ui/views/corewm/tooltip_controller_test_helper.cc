@@ -7,23 +7,30 @@
 #include "base/time/time.h"
 #include "ui/aura/window.h"
 #include "ui/wm/public/activation_change_observer.h"
+#include "ui/wm/public/tooltip_client.h"
 #include "ui/wm/public/tooltip_observer.h"
 
 namespace views::corewm::test {
 
 TooltipControllerTestHelper::TooltipControllerTestHelper(
-    TooltipController* controller)
-    : controller_(controller) {
+    aura::Window* root_window)
+    : root_window_(root_window),
+      controller_(
+          static_cast<TooltipController*>(wm::GetTooltipClient(root_window))) {
+  CHECK(root_window_);
+  root_window_->AddObserver(this);
   SkipTooltipShowDelay(true);
 }
 
-TooltipControllerTestHelper::~TooltipControllerTestHelper() = default;
+TooltipControllerTestHelper::~TooltipControllerTestHelper() {
+  if (root_window_) {
+    root_window_->RemoveObserver(this);
+  }
+}
 
 bool TooltipControllerTestHelper::UseServerSideTooltip() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return ui::OzonePlatform::GetInstance()
-      ->GetPlatformRuntimeProperties()
-      .supports_tooltip;
+  return true;
 #else
   return false;
 #endif
@@ -93,6 +100,24 @@ void TooltipControllerTestHelper::MockWindowActivated(aura::Window* window,
   controller_->OnWindowActivated(
       wm::ActivationChangeObserver::ActivationReason::ACTIVATION_CLIENT,
       gained_active, lost_active);
+}
+
+void TooltipControllerTestHelper::OnWindowPropertyChanged(aura::Window* window,
+                                                          const void* key,
+                                                          intptr_t old) {
+  if (window != root_window_ || key != wm::kRootWindowTooltipClientKey) {
+    return;
+  }
+
+  controller_ = static_cast<TooltipController*>(wm::GetTooltipClient(window));
+}
+
+void TooltipControllerTestHelper::OnWindowDestroyed(aura::Window* window) {
+  if (window != root_window_) {
+    return;
+  }
+
+  root_window_ = nullptr;
 }
 
 TooltipTestView::TooltipTestView() = default;

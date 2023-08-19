@@ -44,11 +44,11 @@ import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.UiUtils;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.util.AccessibilityUtil;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -108,7 +108,6 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
     private final HistoryClustersMetricsLogger mMetricsLogger;
     private final Map<String, PropertyModel> mLabelToModelMap = new LinkedHashMap<>();
     private final Map<ClusterVisit, VisitMetadata> mVisitMetadataMap = new HashMap<>();
-    private final AccessibilityUtil mAccessibilityUtil;
     private final Callback<String> mAnnounceForAccessibilityCallback;
     private final Handler mHandler;
     private final DestroyChecker mDestroyChecker = new DestroyChecker();
@@ -130,7 +129,6 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
      * @param selectionDelegate Delegate that gives us information about the currently selected
      *         items in the list we're displaying.
      * @param metricsLogger Object that records metrics about user interactions.
-     * @param accessibilityUtil Utility object that tells us about the current accessibility state.
      * @param announceForAccessibilityCallback Callback that announces the given string for a11y.
      * @param handler Handler object on which deferred tasks can be posted.
      */
@@ -139,7 +137,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
             @NonNull ModelList modelList, @NonNull PropertyModel toolbarModel,
             HistoryClustersDelegate historyClustersDelegate, Clock clock,
             TemplateUrlService templateUrlService, SelectionDelegate selectionDelegate,
-            HistoryClustersMetricsLogger metricsLogger, AccessibilityUtil accessibilityUtil,
+            HistoryClustersMetricsLogger metricsLogger,
             Callback<String> announceForAccessibilityCallback, Handler handler) {
         mHistoryClustersBridge = historyClustersBridge;
         mLargeIconBridge = largeIconBridge;
@@ -155,7 +153,6 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
         mTemplateUrlService = templateUrlService;
         mSelectionDelegate = selectionDelegate;
         mMetricsLogger = metricsLogger;
-        mAccessibilityUtil = accessibilityUtil;
         mAnnounceForAccessibilityCallback = announceForAccessibilityCallback;
         mHandler = handler;
 
@@ -175,8 +172,9 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
         mClearBrowsingDataItem = new ListItem(ItemType.CLEAR_BROWSING_DATA, clearBrowsingDataModel);
         mDelegate.shouldShowClearBrowsingDataSupplier().addObserver(show -> ensureHeaders());
 
-        mIsScrollToLoadDisabled = mAccessibilityUtil.isAccessibilityEnabled()
-                || AccessibilityUtil.isHardwareKeyboardAttached(mResources.getConfiguration());
+        mIsScrollToLoadDisabled = AccessibilityState.isTouchExplorationEnabled()
+                || AccessibilityState.isPerformGesturesEnabled()
+                || UiUtils.isHardwareKeyboardAttached();
         @State
         int buttonState = mIsScrollToLoadDisabled ? State.BUTTON : State.LOADING;
         PropertyModel moreProgressModel =

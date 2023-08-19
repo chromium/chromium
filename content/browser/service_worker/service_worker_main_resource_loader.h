@@ -16,6 +16,7 @@
 #include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_fetch_dispatcher.h"
 #include "content/common/content_export.h"
+#include "content/common/service_worker/forwarded_race_network_request_url_loader_factory.h"
 #include "content/common/service_worker/race_network_request_url_loader_client.h"
 #include "content/common/service_worker/service_worker_resource_loader.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -72,7 +73,8 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   ServiceWorkerMainResourceLoader(
       NavigationLoaderInterceptor::FallbackCallback fallback_callback,
       base::WeakPtr<ServiceWorkerContainerHost> container_host,
-      int frame_tree_node_id);
+      int frame_tree_node_id,
+      base::TimeTicks find_registration_start_time);
 
   ServiceWorkerMainResourceLoader(const ServiceWorkerMainResourceLoader&) =
       delete;
@@ -187,10 +189,9 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   void OnConnectionClosed();
   void DeleteIfNeeded();
 
-  // Records loading milestones. Called only after ForwardToServiceWorker() is
-  // called and there was no error.
-  bool InitRecordTimingMetricsIfEligible(
-      const net::LoadTimingInfo& load_timing);
+  std::string GetInitialServiceWorkerStatusString();
+  bool IsEligibleForRecordingTimingMetrics();
+  void RecordFindRegistrationToCompletedTrace();
   // Called when the fetch handler handles the request.
   void RecordTimingMetricsForFetchHandlerHandledCase();
   // Called when the fetch handler doesn't handle the request (i.e. network
@@ -199,41 +200,28 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   // Called when the response from RaceNetworkRequest is faster than the
   // response from the fetch handler.
   void RecordTimingMetricsForRaceNetworkRequestCase();
+  void RecordFindRegistrationToRequestStartTiming();
   // Time between the request is made and the request is routed to this loader.
-  void RecordStartToForwardServiceWorkerTiming(
-      const net::LoadTimingInfo& load_timing,
-      const std::string& initial_worker_status);
+  void RecordRequestStartToForwardServiceWorkerTiming();
   // Time spent for service worker startup.
-  void RecordForwardServiceWorkerToWorkerReadyTiming(
-      const net::LoadTimingInfo& load_timing,
-      const std::string& initial_worker_status);
+  void RecordForwardServiceWorkerToWorkerReadyTiming();
   // Browser -> Renderer IPC delay.
-  void RecordWorkerReadyToFetchHandlerStartTiming(
-      const net::LoadTimingInfo& load_timing,
-      const std::string& initial_worker_status);
+  void RecordWorkerReadyToFetchHandlerStartTiming();
   // Time spent by fetch handlers.
-  void RecordFetchHandlerStartToFetchHandlerEndTiming(
-      const net::LoadTimingInfo& load_timing,
-      const std::string& initial_worker_status);
+  void RecordFetchHandlerStartToFetchHandlerEndTiming();
   // Renderer -> Browser IPC delay.
-  void RecordFetchHandlerEndToResponseReceivedTiming(
-      const net::LoadTimingInfo& load_timing,
-      const std::string& initial_worker_status);
+  void RecordFetchHandlerEndToResponseReceivedTiming();
   // Time spent reading response body.
-  void RecordResponseReceivedToCompletedTiming(
-      const net::LoadTimingInfo& load_timing,
-      const std::string& initial_worker_status);
+  void RecordResponseReceivedToCompletedTiming();
+  void RecordFindRegistrationToCompletedTiming();
   // Time between the request is made and complete reading response body.
-  void RecordStartToCompletedTiming(const net::LoadTimingInfo& load_timing,
-                                    const std::string& initial_worker_status);
+  void RecordRequestStartToCompletedTiming(
+      const base::TimeTicks& request_start);
+  void RecordFindRegistrationToFallbackNetworkTiming();
   // Time between the request is made and network fallback.
-  void RecordStartToFallbackNetworkTiming(
-      const net::LoadTimingInfo& load_timing,
-      const std::string& initial_worker_status);
+  void RecordStartToFallbackNetworkTiming();
   // Renderer -> Browser IPC delay (network fallback case).
-  void RecordFetchHandlerEndToFallbackNetworkTiming(
-      const net::LoadTimingInfo& load_timing,
-      const std::string& initial_worker_status);
+  void RecordFetchHandlerEndToFallbackNetworkTiming();
 
   // Records metrics related to the fetch event handler execution.
   void RecordFetchEventHandlerMetrics(
@@ -242,6 +230,12 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   void TransitionToStatus(Status new_status);
 
   bool MaybeStartRaceNetworkRequest(
+      scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
+      scoped_refptr<ServiceWorkerVersion> version);
+
+  // Returns false if fails to start the race network request.
+  // The caller should run the regular path instead.
+  bool StartRaceNetworkRequest(
       scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
       scoped_refptr<ServiceWorkerVersion> version);
 
@@ -273,15 +267,29 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   mojo::Receiver<network::mojom::URLLoader> receiver_{this};
 
   Status status_ = Status::kNotStarted;
-  absl::optional<EmbeddedWorkerStatus> initial_embedded_worker_status_;
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class InitialServiceWorkerStatus {
+    kRunning = 0,
+    kStarting = 1,
+    kStopping = 2,
+    kStopped = 3,
+    kWarmingUp = 4,
+    kWarmedUp = 5,
+    kMaxValue = kWarmedUp,
+  };
+  absl::optional<InitialServiceWorkerStatus> initial_service_worker_status_;
   bool is_detached_ = false;
 
   scoped_refptr<network::SharedURLLoaderFactory>
       race_network_request_url_loader_factory_;
-  mojo::PendingRemote<network::mojom::URLLoader>
-      race_network_request_url_loader_;
-  std::unique_ptr<ServiceWorkerRaceNetworkRequestURLLoaderClient>
-      race_network_request_loader_client_;
+  absl::optional<ServiceWorkerRaceNetworkRequestURLLoaderClient>
+      race_network_request_url_loader_client_;
+  absl::optional<ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory>
+      forwarded_race_network_request_url_loader_factory_;
+
+  base::TimeTicks find_registration_start_time_;
 
   base::WeakPtrFactory<ServiceWorkerMainResourceLoader> weak_factory_{this};
 };

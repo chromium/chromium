@@ -379,6 +379,17 @@ class VIEWS_EXPORT WidgetDelegate
   bool enable_arrow_key_traversal() const {
     return params_.enable_arrow_key_traversal;
   }
+  // Rotates focus for panes contained in the current widget from the provided
+  // view. If wrapping is enabled, rotation will continue after reaching the
+  // end. This method will return  true if a rotation was performed and false
+  // otherwise.
+  // If the provided |focused_view| is not included by the widget's panes,
+  // the method will not perform any rotation unless |enable_wrapping| is
+  // set to true.
+  virtual bool RotatePaneFocusFromView(views::View* focused_view,
+                                       bool forward,
+                                       bool enable_wrapping);
+
   bool owned_by_widget() const { return params_.owned_by_widget; }
 
   void set_internal_name(std::string name) { params_.internal_name = name; }
@@ -396,14 +407,14 @@ class VIEWS_EXPORT WidgetDelegate
 
   // The Widget that was initialized with this instance as its WidgetDelegate,
   // if any.
-  raw_ptr<Widget, DanglingUntriaged> widget_ = nullptr;
+  raw_ptr<Widget, AcrossTasksDanglingUntriaged> widget_ = nullptr;
   Params params_;
 
-  raw_ptr<View, DanglingUntriaged> default_contents_view_ = nullptr;
+  raw_ptr<View, AcrossTasksDanglingUntriaged> default_contents_view_ = nullptr;
   bool contents_view_taken_ = false;
   bool can_activate_ = true;
 
-  raw_ptr<View, DanglingUntriaged> unowned_contents_view_ = nullptr;
+  raw_ptr<View, AcrossTasksDanglingUntriaged> unowned_contents_view_ = nullptr;
   std::unique_ptr<View> owned_contents_view_;
 
   // Managed by Widget. Ensures |this| outlives its Widget.

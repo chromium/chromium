@@ -3,13 +3,16 @@
 // found in the LICENSE file.
 
 #include "services/network/network_service_proxy_delegate.h"
+#include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/strcat.h"
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
+#include "services/network/network_service_proxy_allow_list.h"
 #include "services/network/url_loader.h"
 #include "url/url_constants.h"
 
@@ -19,6 +22,7 @@ namespace {
 bool ApplyProxyConfigToProxyInfo(const net::ProxyConfig::ProxyRules& rules,
                                  const net::ProxyRetryInfoMap& proxy_retry_info,
                                  const GURL& url,
+                                 const GURL& top_frame_url,
                                  net::ProxyInfo* proxy_info) {
   DCHECK(proxy_info);
   if (rules.empty())
@@ -99,9 +103,11 @@ NetworkServiceProxyDelegate::NetworkServiceProxyDelegate(
     mojom::CustomProxyConfigPtr initial_config,
     mojo::PendingReceiver<mojom::CustomProxyConfigClient>
         config_client_receiver,
-    mojo::PendingRemote<mojom::CustomProxyConnectionObserver> observer_remote)
+    mojo::PendingRemote<mojom::CustomProxyConnectionObserver> observer_remote,
+    NetworkServiceProxyAllowList* network_service_proxy_allow_list)
     : proxy_config_(std::move(initial_config)),
-      receiver_(this, std::move(config_client_receiver)) {
+      receiver_(this, std::move(config_client_receiver)),
+      network_service_proxy_allow_list_(network_service_proxy_allow_list) {
   // Make sure there is always a valid proxy config so we don't need to null
   // check it.
   if (!proxy_config_) {
@@ -118,10 +124,11 @@ NetworkServiceProxyDelegate::NetworkServiceProxyDelegate(
   }
 }
 
-NetworkServiceProxyDelegate::~NetworkServiceProxyDelegate() {}
+NetworkServiceProxyDelegate::~NetworkServiceProxyDelegate() = default;
 
 void NetworkServiceProxyDelegate::OnResolveProxy(
     const GURL& url,
+    const GURL& top_frame_url,
     const std::string& method,
     const net::ProxyRetryInfoMap& proxy_retry_info,
     net::ProxyInfo* result) {
@@ -129,9 +136,22 @@ void NetworkServiceProxyDelegate::OnResolveProxy(
     return;
   }
 
+  if (IsForIpProtection()) {
+    if (auth_token_cache_ && network_service_proxy_allow_list_ &&
+        network_service_proxy_allow_list_->IsEnabled() &&
+        network_service_proxy_allow_list_->Matches(url, top_frame_url) &&
+        auth_token_cache_->IsAuthTokenAvailable()) {
+      result->set_is_for_ip_protection(true);
+    } else {
+      // Do not use the proxy if the request doesn't match the allow list or the
+      // token cache is not available or does not have a token.
+      return;
+    }
+  }
+
   net::ProxyInfo proxy_info;
   if (ApplyProxyConfigToProxyInfo(proxy_config_->rules, proxy_retry_info, url,
-                                  &proxy_info)) {
+                                  top_frame_url, &proxy_info)) {
     DCHECK(!proxy_info.is_empty() && !proxy_info.is_direct());
     if (proxy_config_->should_replace_direct &&
         !proxy_config_->should_override_existing_config) {
@@ -151,8 +171,19 @@ void NetworkServiceProxyDelegate::OnFallback(const net::ProxyServer& bad_proxy,
 void NetworkServiceProxyDelegate::OnBeforeTunnelRequest(
     const net::ProxyServer& proxy_server,
     net::HttpRequestHeaders* extra_headers) {
-  if (IsInProxyConfig(proxy_server))
+  if (IsInProxyConfig(proxy_server)) {
     MergeRequestHeaders(extra_headers, proxy_config_->connect_tunnel_headers);
+    if (auth_token_cache_ && IsForIpProtection()) {
+      auto token = auth_token_cache_->GetAuthToken();
+      if (token) {
+        std::string encoded_token;
+        base::Base64Encode((*token)->token, &encoded_token);
+        auto value = base::StrCat({"Bearer ", encoded_token});
+        extra_headers->SetHeader(net::HttpRequestHeaders::kAuthorization,
+                                 value);
+      }
+    }
+  }
 }
 
 net::Error NetworkServiceProxyDelegate::OnTunnelHeadersReceived(
@@ -216,6 +247,12 @@ bool NetworkServiceProxyDelegate::IsInProxyConfig(
 
 bool NetworkServiceProxyDelegate::MayProxyURL(const GURL& url) const {
   return !proxy_config_->rules.empty();
+}
+
+bool NetworkServiceProxyDelegate::IsForIpProtection() {
+  // Only IP protection uses the network service proxy allow list, so this
+  // config represents IP protection if and only if the allow list is in use.
+  return proxy_config_->rules.restrict_to_network_service_proxy_allow_list;
 }
 
 bool NetworkServiceProxyDelegate::EligibleForProxy(

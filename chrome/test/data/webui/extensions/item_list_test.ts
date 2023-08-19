@@ -12,25 +12,18 @@ import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 import {createExtensionInfo, testVisible} from './test_util.js';
 
-const extension_item_list_tests = {
-  suiteName: 'ExtensionItemListTest',
-  TestNames: {
-    Filtering: 'item list filtering',
-    NoItemsMsg: 'empty item list',
-    NoSearchResultsMsg: 'empty item list filtering results',
-    LoadTimeData: 'loadTimeData contains isManaged and managedByOrg',
-  },
-};
-
-Object.assign(window, {extension_item_list_tests: extension_item_list_tests});
-
-suite(extension_item_list_tests.suiteName, function() {
+suite('ExtensionItemListTest', function() {
   let itemList: ExtensionsItemListElement;
   let boundTestVisible: (selector: string, visible: boolean, text?: string) =>
       void;
 
   // Initialize an extension item before each test.
   setup(function() {
+    loadTimeData.overrideValues({'safetyCheckShowReviewPanel': false});
+    setupElement();
+  });
+
+  function setupElement() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     itemList = document.createElement('extensions-item-list');
     boundTestVisible = testVisible.bind(null, itemList);
@@ -48,9 +41,9 @@ suite(extension_item_list_tests.suiteName, function() {
     itemList.apps = appItems;
     itemList.filter = '';
     document.body.appendChild(itemList);
-  });
+  }
 
-  test(extension_item_list_tests.TestNames.Filtering, function() {
+  test('Filtering', function() {
     function itemLengthEquals(num: number) {
       flush();
       assertEquals(
@@ -102,7 +95,7 @@ suite(extension_item_list_tests.suiteName, function() {
         itemList.shadowRoot!.querySelector('extensions-item')!.data.name);
   });
 
-  test(extension_item_list_tests.TestNames.NoItemsMsg, function() {
+  test('NoItems', function() {
     flush();
     boundTestVisible('#no-items', false);
     boundTestVisible('#no-search-results', false);
@@ -114,7 +107,7 @@ suite(extension_item_list_tests.suiteName, function() {
     boundTestVisible('#no-search-results', false);
   });
 
-  test(extension_item_list_tests.TestNames.NoSearchResultsMsg, function() {
+  test('NoSearchResults', function() {
     flush();
     boundTestVisible('#no-items', false);
     boundTestVisible('#no-search-results', false);
@@ -125,9 +118,32 @@ suite(extension_item_list_tests.suiteName, function() {
     boundTestVisible('#no-search-results', true);
   });
 
-  test(extension_item_list_tests.TestNames.LoadTimeData, function() {
+  test('LoadTimeData', function() {
     // Check that loadTimeData contains these values.
     loadTimeData.getBoolean('isManaged');
     loadTimeData.getString('browserManagedByOrg');
+  });
+
+  test('SafetyCheckPanel', function() {
+    // The extension review panel should not be visible if
+    // safetyCheckShowReviewPanel is set to false.
+    loadTimeData.overrideValues({'safetyCheckShowReviewPanel': false});
+
+    // set up the element again to capture the updated value of
+    // safetyCheckShowReviewPanel.
+    setupElement();
+
+    flush();
+    boundTestVisible('extensions-review-panel', false);
+    // The extension review panel should be visible if the feature flag is set
+    // to true.
+    loadTimeData.overrideValues({'safetyCheckShowReviewPanel': true});
+
+    // set up the element again to capture the updated value of
+    // safetyCheckShowReviewPanel.
+    setupElement();
+
+    flush();
+    boundTestVisible('extensions-review-panel', true);
   });
 });

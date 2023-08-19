@@ -33,7 +33,7 @@ class CursorPositionTest : public FontTestBase {
     FontDescription::VariantLigatures ligatures(
         FontDescription::kEnabledLigaturesState);
     Font font = CreateTestFont(
-        "TestFont",
+        AtomicString("TestFont"),
         test::PlatformTestDataPath(font_path.find(font_name)->value), 100,
         &ligatures);
     TextRun text_run(text, ltr ? TextDirection::kLtr : TextDirection::kRtl,
@@ -58,7 +58,7 @@ class CursorPositionTest : public FontTestBase {
     FontDescription::VariantLigatures ligatures(
         FontDescription::kEnabledLigaturesState);
     Font font = CreateTestFont(
-        "TestFont",
+        AtomicString("TestFont"),
         test::PlatformTestDataPath(font_path.find(font_name)->value), 100,
         &ligatures);
     TextRun text_run(text, ltr ? TextDirection::kLtr : TextDirection::kRtl,

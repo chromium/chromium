@@ -6,7 +6,7 @@ Original navigation, should not be cached:
 
 Second navigation, should be cached:
   responseReceived status: 200
-  responseReceivedExtraInfo status: 304
+  responseReceivedExtraInfo status: undefined
   cached: true
 
 Navigation with cache disabled:

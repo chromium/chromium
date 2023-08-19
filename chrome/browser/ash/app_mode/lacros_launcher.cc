@@ -34,7 +34,7 @@ void LacrosLauncher::Start(base::OnceClosure callback) {
 
   SYSLOG(INFO) << "Launching Lacros for kiosk session";
   if (browser_manager()->IsRunning()) {
-    // Nothing to do if lacros is already running
+    // Nothing to do if lacros is already running.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(callback));
     return;
@@ -43,9 +43,8 @@ void LacrosLauncher::Start(base::OnceClosure callback) {
   SYSLOG(INFO) << "Waiting for Lacros to start";
   on_launched_ = std::move(callback);
   browser_manager_observation_.Observe(browser_manager());
-  if (!browser_manager()->IsInitialized()) {
-    browser_manager()->InitializeAndStartIfNeeded();
-  }
+
+  browser_manager()->EnsureLaunch();
 }
 
 void LacrosLauncher::OnStateChanged() {

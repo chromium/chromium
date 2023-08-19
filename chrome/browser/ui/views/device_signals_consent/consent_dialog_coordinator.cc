@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -21,8 +22,10 @@
 #include "ui/views/widget/widget.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/profile_picker.h"
+#include "chrome/browser/ui/profiles/profile_picker.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+using device_signals::prefs::kDeviceSignalsConsentReceived;
 
 namespace {
 std::unique_ptr<ConsentRequester>* GetTestInstanceStorage() {
@@ -49,15 +52,22 @@ ConsentDialogCoordinator::CreateDeviceSignalsConsentDialogModel() {
       .AddOkButton(
           base::BindOnce(&ConsentDialogCoordinator::OnConsentDialogAccept,
                          weak_ptr_factory_.GetWeakPtr()),
-          ui::DialogModelButton::Params().SetLabel(l10n_util::GetStringUTF16(
-              IDS_DEVICE_SIGNALS_CONSENT_DIALOG_PROCEED_BUTTON)))
+          ui::DialogModelButton::Params()
+              .SetLabel(l10n_util::GetStringUTF16(
+                  IDS_DEVICE_SIGNALS_CONSENT_DIALOG_PROCEED_BUTTON))
+              .SetId(kDeviceSignalsConsentOkButtonElementId))
       .AddCancelButton(
           base::BindOnce(&ConsentDialogCoordinator::OnConsentDialogCancel,
                          weak_ptr_factory_.GetWeakPtr()),
-          ui::DialogModelButton::Params().SetLabel(l10n_util::GetStringUTF16(
-              IDS_DEVICE_SIGNALS_CONSENT_DIALOG_CANCEL_BUTTON)))
+          ui::DialogModelButton::Params()
+              .SetLabel(l10n_util::GetStringUTF16(
+                  IDS_DEVICE_SIGNALS_CONSENT_DIALOG_CANCEL_BUTTON))
+              .SetId(kDeviceSignalsConsentCancelButtonElementId))
       .OverrideDefaultButton(ui::DialogButton::DIALOG_BUTTON_NONE)
       .AddParagraph(ui::DialogModelLabel(GetDialogBodyText()))
+      .SetCloseActionCallback(
+          base::BindOnce(&ConsentDialogCoordinator::OnConsentDialogClose,
+                         weak_ptr_factory_.GetWeakPtr()))
       .Build();
 }
 
@@ -89,7 +99,12 @@ ConsentDialogCoordinator::ConsentDialogCoordinator(Browser* browser,
                                                    Profile* profile)
     : browser_(browser), profile_(profile) {}
 
-ConsentDialogCoordinator::~ConsentDialogCoordinator() = default;
+ConsentDialogCoordinator::~ConsentDialogCoordinator() {
+  if (dialog_widget_ && !dialog_widget_->IsClosed()) {
+    dialog_widget_->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
+    dialog_widget_ = nullptr;
+  }
+}
 
 void ConsentDialogCoordinator::RequestConsent(RequestConsentCallback callback) {
   pref_observer_.Init(profile_->GetPrefs());
@@ -116,23 +131,19 @@ std::u16string ConsentDialogCoordinator::GetDialogBodyText() {
 }
 
 void ConsentDialogCoordinator::Show() {
-  if (dialog_widget_) {
-    dialog_widget_->Hide();
-    dialog_widget_->Show();
+  if (dialog_widget_ && !dialog_widget_->IsClosed()) {
+    if (!dialog_widget_->IsVisible()) {
+      dialog_widget_->Show();
+    }
+    return;
   }
+
   dialog_widget_ = chrome::ShowBrowserModal(
       browser_, CreateDeviceSignalsConsentDialogModel());
 }
 
-void ConsentDialogCoordinator::Hide() {
-  if (dialog_widget_) {
-    dialog_widget_->Hide();
-  }
-}
-
 void ConsentDialogCoordinator::OnConsentDialogAccept() {
-  profile_->GetPrefs()->SetBoolean(
-      device_signals::prefs::kDeviceSignalsConsentReceived, true);
+  profile_->GetPrefs()->SetBoolean(kDeviceSignalsConsentReceived, true);
 }
 
 void ConsentDialogCoordinator::OnConsentDialogCancel() {
@@ -143,8 +154,21 @@ void ConsentDialogCoordinator::OnConsentDialogCancel() {
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
+void ConsentDialogCoordinator::OnConsentDialogClose() {
+  if (dialog_widget_->closed_reason() ==
+      views::Widget::ClosedReason::kEscKeyPressed) {
+    OnConsentDialogCancel();
+  }
+}
+
 void ConsentDialogCoordinator::OnConsentPreferenceUpdated(
     RequestConsentCallback callback) {
-  Hide();
-  callback.Run();
+  if (profile_->GetPrefs()->GetBoolean(kDeviceSignalsConsentReceived)) {
+    if (dialog_widget_) {
+      dialog_widget_->CloseWithReason(
+          views::Widget::ClosedReason::kAcceptButtonClicked);
+      dialog_widget_ = nullptr;
+    }
+    callback.Run();
+  }
 }

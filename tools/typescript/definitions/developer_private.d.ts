@@ -252,6 +252,7 @@ declare global {
         webStoreUrl: string;
         showSafeBrowsingAllowlistWarning: boolean;
         showAccessRequestsInToolbar: boolean;
+        acknowledgeSafetyCheckWarning: boolean;
       }
 
       export interface ProfileInfo {
@@ -269,6 +270,7 @@ declare global {
         errorCollection?: boolean;
         hostAccess?: HostAccess;
         showAccessRequestsInToolbar?: boolean;
+        acknowledgeSafetyCheckWarning?: boolean;
       }
 
       export interface ProfileConfigurationUpdate {
@@ -326,6 +328,7 @@ declare global {
         PERMISSIONS_CHANGED = 'PERMISSIONS_CHANGED',
         SERVICE_WORKER_STARTED = 'SERVICE_WORKER_STARTED',
         SERVICE_WORKER_STOPPED = 'SERVICE_WORKER_STOPPED',
+        CONFIGURATION_CHANGED = 'CONFIGURATION_CHANGED',
       }
 
       export enum SiteSet {
@@ -420,6 +423,7 @@ declare global {
       export interface MatchingExtensionInfo {
         id: string;
         siteAccess: HostAccess;
+        canRequestAllSites: boolean;
       }
 
       export interface ExtensionSiteAccessUpdate {
@@ -453,6 +457,8 @@ declare global {
       export function reload(extensionId: string, options?: ReloadOptions):
           Promise<LoadError|null>;
       export function removeHostPermission(extensionId: string, host: string):
+          Promise<void>;
+      export function removeMultipleExtensions(extensionIds: string[]):
           Promise<void>;
       export function repairExtension(extensionId: string): Promise<void>;
       export function requestFileSource(properties:

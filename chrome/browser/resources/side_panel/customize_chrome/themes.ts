@@ -22,6 +22,7 @@ import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 import {BackgroundCollection, CollectionImage, CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerInterface, Theme} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 import {getTemplate} from './themes.html.js';
+import {WindowProxy} from './window_proxy.js';
 
 export const CHROME_THEME_ELEMENT_ID =
     'CustomizeChromeUI::kChromeThemeElementId';
@@ -54,6 +55,7 @@ export class ThemesElement extends ThemesElementBase {
         value: null,
         observer: 'onCollectionChange_',
       },
+      header_: String,
       isRefreshToggleChecked_: {
         type: Boolean,
         computed: `computeIsRefreshToggleChecked_(theme_, selectedCollection)`,
@@ -63,7 +65,6 @@ export class ThemesElement extends ThemesElementBase {
         value: undefined,
       },
       themes_: Array,
-      header_: String,
     };
   }
 
@@ -73,10 +74,11 @@ export class ThemesElement extends ThemesElementBase {
   private isRefreshToggleChecked_: boolean;
   private theme_: Theme|undefined;
   private themes_: CollectionImage[];
-  private setThemeListenerId_: number|null = null;
 
   private callbackRouter_: CustomizeChromePageCallbackRouter;
   private pageHandler_: CustomizeChromePageHandlerInterface;
+  private previewImageLoadStartEpoch_: number;
+  private setThemeListenerId_: number|null = null;
 
   constructor() {
     super();
@@ -117,10 +119,25 @@ export class ThemesElement extends ThemesElementBase {
     }
   }
 
+  private onPreviewImageLoad_() {
+    chrome.metricsPrivate.recordValue(
+        {
+          metricName: 'NewTabPage.Images.ShownTime.ThemePreviewImage',
+          type: chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LOG,
+          min: 1,
+          max: 60000,  // 60 seconds.
+          buckets: 100,
+        },
+        Math.floor(
+            WindowProxy.getInstance().now() -
+            this.previewImageLoadStartEpoch_));
+  }
+
   private onCollectionChange_() {
     this.header_ = '';
     this.themes_ = [];
     if (this.selectedCollection) {
+      this.previewImageLoadStartEpoch_ = WindowProxy.getInstance().now();
       this.pageHandler_.getBackgroundImages(this.selectedCollection!.id)
           .then(({images}) => {
             this.themes_ = images;

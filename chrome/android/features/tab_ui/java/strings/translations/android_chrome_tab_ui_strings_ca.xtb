@@ -3,8 +3,6 @@
 <translationbundle lang="ca">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> de les teves pestanyes no s'han utilitzat últimament. Vols tancar-les?</translation>
 <translation id="125153950246128346">Toca per veure una altra pestanya</translation>
-<translation id="1403228085774130835">Pots trobar les teves pestanyes tancades a Pestanyes recents, al menú principal de Chrome</translation>
-<translation id="1455506303394048917">La teva activitat en aquestes pestanyes d'incògnit s'esborrarà del dispositiu</translation>
 <translation id="1499635324672558517">Vols tancar totes les pestanyes d'incògnit?</translation>
 <translation id="1657719826150349398">Mou la pestanya cap avall</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> pestanya}other{<ph name="TABS_COUNT_MANY" /> pestanyes}}</translation>
@@ -34,7 +32,7 @@
 <translation id="3882834874697329510">Per rebre una alerta quan hi hagi un preu més baix en una pestanya oberta, activa les notificacions a Configuració.</translation>
 <translation id="3940195383040445971">Seguiment dels preus a les pestanyes</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Agrupa la pestanya}other{Agrupa les pestanyes}}</translation>
-<translation id="3996880007329611795">Rep notificacions</translation>
+<translation id="3996880007329611795">Rep una notificació</translation>
 <translation id="4133493477912226187">Sembla que hi ha <ph name="NUMBER_OF_TABS" /> pestanyes relacionades. Vols agrupar-les?</translation>
 <translation id="4212246570487010370">Continua navegant</translation>
 <translation id="4648718555153979859">Les teves pestanyes s'agrupen aquí</translation>
@@ -47,6 +45,7 @@
 <translation id="5073204694187207510">Amaga la quadrícula en pantalla completa</translation>
 <translation id="5076161749301278626">Vols veure les ressenyes de la botiga?</translation>
 <translation id="5082793167783849073">Crea un grup per comparar pàgines ràpidament. Per començar, mantén premut un enllaç.</translation>
+<translation id="5339733443032484186">La teva darrera pestanya</translation>
 <translation id="5490235265819901748">El grup de pestanyes s'ha desplegat</translation>
 <translation id="5494920125229734069">Selecciona-ho tot</translation>
 <translation id="5556417849629758491">Consulta la informació de la botiga, opció disponible a prop de la part superior de la pantalla</translation>
@@ -62,10 +61,12 @@
 <translation id="6228793724645064692">(puntuació de la botiga)</translation>
 <translation id="6333260925957816943">Informació sobre aquesta botiga</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Desagrupa la pestanya seleccionada (<ph name="TABS_COUNT_ONE" />)}other{Desagrupa les <ph name="TABS_COUNT_MANY" /> pestanyes seleccionades}}</translation>
+<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Pots trobar les pestanyes tancades a Pestanyes recents, al menú principal de Chrome. La pestanya d'incògnit no estarà disponible.}other{Pots trobar les pestanyes tancades a Pestanyes recents, al menú principal de Chrome. # pestanyes d'incògnit no estaran disponibles.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> pestanya}other{<ph name="TABS_COUNT_MANY" /> pestanyes}}</translation>
 <translation id="6549021453810473782">Consulta la informació de la botiga</translation>
 <translation id="6562820390860419811">Mou la pestanya cap a l'esquerra</translation>
 <translation id="6615455863669487791">Mostra-m'ho</translation>
+<translation id="661742612106409204">Pots trobar les pestanyes tancades a Pestanyes recents, al menú principal de Chrome.</translation>
 <translation id="6840760312327750441">Per agrupar les pestanyes, mantén-ne una premuda. A continuació, arrossega-la fins a una altra.</translation>
 <translation id="6856809498882026482">Amaga el mode de multiselecció</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Comparteix la pestanya}other{Comparteix les pestanyes}}</translation>

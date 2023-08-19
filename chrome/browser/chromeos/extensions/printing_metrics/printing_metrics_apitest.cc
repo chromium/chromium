@@ -27,7 +27,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/crosapi/mojom/printing_metrics.mojom.h"
-#include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -117,8 +116,10 @@ class PrintingMetricsApiTest : public ExtensionApiTest {
     print_job_manager->CancelPrintJob(print_job.get());
     run_loop.Run();
 #else
-    crosapi::mojom::TestControllerAsyncWaiter waiter{GetTestController()};
-    waiter.CreateAndCancelPrintJob(job_title);
+    base::test::TestFuture<void> future;
+    GetTestController()->CreateAndCancelPrintJob(job_title,
+                                                 future.GetCallback());
+    ASSERT_TRUE(future.Wait());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 

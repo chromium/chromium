@@ -5,7 +5,6 @@
 import("//ios/build/config.gni")
 
 source_set("error_page") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     "//base",
     "//ios/web/navigation:wk_navigation_util",

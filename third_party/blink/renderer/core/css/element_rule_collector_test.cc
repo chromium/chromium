@@ -72,7 +72,8 @@ class ElementRuleCollectorTest : public PageTestBase {
     MatchRequest request(rule_set, scope);
 
     collector.CollectMatchingRules(request);
-    collector.SortAndTransferMatchedRules(/*is_vtt_embedded_style=*/false,
+    collector.SortAndTransferMatchedRules(CascadeOrigin::kNone,
+                                          /*is_vtt_embedded_style=*/false,
                                           /*tracker=*/nullptr);
 
     const MatchedPropertiesVector& vector = result.GetMatchedProperties();
@@ -117,7 +118,8 @@ class ElementRuleCollectorTest : public PageTestBase {
 
     collector.SetMode(SelectorChecker::kCollectingCSSRules);
     collector.CollectMatchingRules(request);
-    collector.SortAndTransferMatchedRules(/*is_vtt_embedded_style=*/false,
+    collector.SortAndTransferMatchedRules(CascadeOrigin::kAuthor,
+                                          /*is_vtt_embedded_style=*/false,
                                           /*tracker=*/nullptr);
 
     return collector.MatchedCSSRuleList();
@@ -135,12 +137,14 @@ TEST_F(ElementRuleCollectorTest, LinkMatchType) {
     </a>
     <div id=bar></div>
   )HTML");
-  Element* foo = GetDocument().getElementById("foo");
-  Element* bar = GetDocument().getElementById("bar");
-  Element* visited = GetDocument().getElementById("visited");
-  Element* link = GetDocument().getElementById("link");
-  Element* unvisited_span = GetDocument().getElementById("unvisited_span");
-  Element* visited_span = GetDocument().getElementById("visited_span");
+  Element* foo = GetDocument().getElementById(AtomicString("foo"));
+  Element* bar = GetDocument().getElementById(AtomicString("bar"));
+  Element* visited = GetDocument().getElementById(AtomicString("visited"));
+  Element* link = GetDocument().getElementById(AtomicString("link"));
+  Element* unvisited_span =
+      GetDocument().getElementById(AtomicString("unvisited_span"));
+  Element* visited_span =
+      GetDocument().getElementById(AtomicString("visited_span"));
   ASSERT_TRUE(foo);
   ASSERT_TRUE(bar);
   ASSERT_TRUE(visited);
@@ -236,8 +240,10 @@ TEST_F(ElementRuleCollectorTest, LinkMatchTypeHostContext) {
     <a href="unvisited"><div id="unvisited_host"></div></a>
   )HTML");
 
-  Element* visited_host = GetDocument().getElementById("visited_host");
-  Element* unvisited_host = GetDocument().getElementById("unvisited_host");
+  Element* visited_host =
+      GetDocument().getElementById(AtomicString("visited_host"));
+  Element* unvisited_host =
+      GetDocument().getElementById(AtomicString("unvisited_host"));
   ASSERT_TRUE(visited_host);
   ASSERT_TRUE(unvisited_host);
 
@@ -257,13 +263,14 @@ TEST_F(ElementRuleCollectorTest, LinkMatchTypeHostContext) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  Element* visited_style = visited_root.getElementById("style");
-  Element* unvisited_style = unvisited_root.getElementById("style");
+  Element* visited_style = visited_root.getElementById(AtomicString("style"));
+  Element* unvisited_style =
+      unvisited_root.getElementById(AtomicString("style"));
   ASSERT_TRUE(visited_style);
   ASSERT_TRUE(unvisited_style);
 
-  Element* visited_div = visited_root.getElementById("div");
-  Element* unvisited_div = unvisited_root.getElementById("div");
+  Element* visited_div = visited_root.getElementById(AtomicString("div"));
+  Element* unvisited_div = unvisited_root.getElementById(AtomicString("div"));
   ASSERT_TRUE(visited_div);
   ASSERT_TRUE(unvisited_div);
 
@@ -311,7 +318,7 @@ TEST_F(ElementRuleCollectorTest, MatchesNonUniversalHighlights) {
       "</body></html>";
   scoped_refptr<SharedBuffer> data =
       SharedBuffer::Create(markup.Utf8().data(), markup.length());
-  GetFrame().ForceSynchronousDocumentInstall("text/xml", data);
+  GetFrame().ForceSynchronousDocumentInstall(AtomicString("text/xml"), data);
 
   // Creates a StyleSheetContents with selector and optional default @namespace,
   // matches rules for originating element, then returns the non-universal flag
@@ -321,7 +328,8 @@ TEST_F(ElementRuleCollectorTest, MatchesNonUniversalHighlights) {
     auto* parser_context = MakeGarbageCollected<CSSParserContext>(
         kHTMLStandardMode, SecureContextMode::kInsecureContext);
     auto* sheet = MakeGarbageCollected<StyleSheetContents>(parser_context);
-    sheet->ParserAddNamespace("bar", "http://example.org/bar");
+    sheet->ParserAddNamespace(AtomicString("bar"),
+                              AtomicString("http://example.org/bar"));
     if (defaultNamespace) {
       sheet->ParserAddNamespace(g_null_atom, *defaultNamespace);
     }
@@ -358,10 +366,10 @@ TEST_F(ElementRuleCollectorTest, MatchesNonUniversalHighlights) {
   };
 
   Element& body = *GetDocument().body();
-  Element& none = *body.QuerySelector("none");
-  Element& bar = *body.QuerySelector("bar");
-  Element& def = *body.QuerySelector("default");
-  AtomicString defNs = "http://example.org/default";
+  Element& none = *body.QuerySelector(AtomicString("none"));
+  Element& bar = *body.QuerySelector(AtomicString("bar"));
+  Element& def = *body.QuerySelector(AtomicString("default"));
+  AtomicString defNs("http://example.org/default");
 
   // Cases that only make sense without a default @namespace.
   // ::selection kSubSelector :window-inactive
@@ -407,9 +415,9 @@ TEST_F(ElementRuleCollectorTest, DirectNesting) {
   RuleSet* rule_set = RuleSetFromSingleRule(GetDocument(), rule);
   ASSERT_NE(nullptr, rule_set);
 
-  Element* foo = GetDocument().getElementById("foo");
-  Element* bar = GetDocument().getElementById("bar");
-  Element* baz = GetDocument().getElementById("baz");
+  Element* foo = GetDocument().getElementById(AtomicString("foo"));
+  Element* bar = GetDocument().getElementById(AtomicString("bar"));
+  Element* baz = GetDocument().getElementById(AtomicString("baz"));
   ASSERT_NE(nullptr, foo);
   ASSERT_NE(nullptr, bar);
   ASSERT_NE(nullptr, baz);
@@ -441,8 +449,8 @@ TEST_F(ElementRuleCollectorTest, RuleNotStartingWithAmpersand) {
   RuleSet* rule_set = RuleSetFromSingleRule(GetDocument(), rule);
   ASSERT_NE(nullptr, rule_set);
 
-  Element* foo = GetDocument().getElementById("foo");
-  Element* bar = GetDocument().getElementById("bar");
+  Element* foo = GetDocument().getElementById(AtomicString("foo"));
+  Element* bar = GetDocument().getElementById(AtomicString("bar"));
   ASSERT_NE(nullptr, foo);
   ASSERT_NE(nullptr, bar);
 
@@ -465,7 +473,7 @@ TEST_F(ElementRuleCollectorTest, NestingAtToplevelMatchesNothing) {
   RuleSet* rule_set = RuleSetFromSingleRule(GetDocument(), rule);
   ASSERT_NE(nullptr, rule_set);
 
-  Element* foo = GetDocument().getElementById("foo");
+  Element* foo = GetDocument().getElementById(AtomicString("foo"));
   ASSERT_NE(nullptr, foo);
 
   Vector<MatchedRule> foo_rules = GetAllMatchedRules(foo, rule_set);
@@ -488,9 +496,9 @@ TEST_F(ElementRuleCollectorTest, NestedRulesInMediaQuery) {
   RuleSet* rule_set = RuleSetFromSingleRule(GetDocument(), rule);
   ASSERT_NE(nullptr, rule_set);
 
-  Element* foo = GetDocument().getElementById("foo");
-  Element* bar = GetDocument().getElementById("bar");
-  Element* baz = GetDocument().getElementById("baz");
+  Element* foo = GetDocument().getElementById(AtomicString("foo"));
+  Element* bar = GetDocument().getElementById(AtomicString("bar"));
+  Element* baz = GetDocument().getElementById(AtomicString("baz"));
   ASSERT_NE(nullptr, foo);
   ASSERT_NE(nullptr, bar);
   ASSERT_NE(nullptr, baz);
@@ -522,13 +530,14 @@ TEST_F(ElementRuleCollectorTest, FindStyleRuleWithNesting) {
     </div>
   )HTML");
   CSSStyleSheet* sheet =
-      To<HTMLStyleElement>(GetDocument().getElementById("style"))->sheet();
+      To<HTMLStyleElement>(GetDocument().getElementById(AtomicString("style")))
+          ->sheet();
 
   RuleSet* rule_set = &sheet->Contents()->GetRuleSet();
   ASSERT_NE(nullptr, rule_set);
 
-  Element* foo = GetDocument().getElementById("foo");
-  Element* bar = GetDocument().getElementById("bar");
+  Element* foo = GetDocument().getElementById(AtomicString("foo"));
+  Element* bar = GetDocument().getElementById(AtomicString("bar"));
   ASSERT_NE(nullptr, foo);
   ASSERT_NE(nullptr, bar);
 

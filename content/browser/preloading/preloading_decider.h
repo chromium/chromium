@@ -9,6 +9,7 @@
 #include "content/browser/preloading/prefetcher.h"
 #include "content/browser/preloading/prerenderer.h"
 #include "content/public/browser/document_user_data.h"
+#include "third_party/blink/public/mojom/preloading/anchor_element_interaction_host.mojom-forward.h"
 
 namespace content {
 
@@ -38,7 +39,8 @@ class CONTENT_EXPORT PreloadingDecider
   void OnPointerDown(const GURL& url);
 
   // Receives and processes on pointer hover event for 'url' target link.
-  void OnPointerHover(const GURL& url);
+  void OnPointerHover(const GURL& url,
+                      blink::mojom::AnchorElementPointerDataPtr mouse_data);
 
   // Sets the new preloading decider observer for testing and returns the old
   // one.

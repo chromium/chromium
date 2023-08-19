@@ -9,11 +9,7 @@
 #include "base/notreached.h"
 #include "ui/base/idle/idle_internal.h"
 
-@interface IOSScreenMonitor : NSObject {
- @private
-  BOOL _appInBackground;
-  BOOL _deviceLocked;
-}
+@interface IOSScreenMonitor : NSObject
 
 @property(readonly, nonatomic, getter=isAppInBackground) BOOL appInBackground;
 @property(readonly, nonatomic, getter=isDeviceLocked) BOOL deviceLocked;
@@ -27,7 +23,7 @@
 
 - (instancetype)init {
   if ((self = [super init])) {
-    NSNotificationCenter* defaultCenter = [NSNotificationCenter defaultCenter];
+    NSNotificationCenter* defaultCenter = NSNotificationCenter.defaultCenter;
     [defaultCenter addObserver:self
                       selector:@selector(onAppDidEnterBackground:)
                           name:UIApplicationDidEnterBackgroundNotification
@@ -50,7 +46,6 @@
 
 - (void)dealloc {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [super dealloc];
 }
 
 - (void)onAppDidEnterBackground:(NSNotification*)notification {
@@ -95,7 +90,7 @@ bool CheckIdleStateIsLocked() {
     return IdleStateForTesting().value() == IDLE_STATE_LOCKED;
   }
 
-  return g_screenMonitor.isAppInBackground || g_screenMonitor.isDeviceLocked;
+  return g_screenMonitor.appInBackground || g_screenMonitor.deviceLocked;
 }
 
 }  // namespace ui

@@ -99,6 +99,8 @@ Verbs fall into a number of different categories:
     - `WaitForHide()`
     - `WaitForActivated()`
     - `WaitForEvent()`
+    - `WaitForViewProperty()` [Views]
+    - `WaitForViewPropertyCallback()` [Views]
 - **After** verbs allow you to take some action when a given event takes place
   or condition becomes true. The action can be a full
   `InteractionSequence::StepStartCallback` or it can omit any number of leading
@@ -113,10 +115,9 @@ Verbs fall into a number of different categories:
     - `WithElement()`
     - `WithView()` [Views]
 - **Ensure** verbs check the presence or absence of an element after allowing
-  all pending events to settle. They are not compatible with `InAnyContext()`
-  for technical reasons, and therefore, take an `in_any_context` parameter.
-  There are also versions that look for a DOM element in an
-  [instrumented WebContents](#webcontents-instrumentation) [Browser].
+  all pending events to settle. There are also versions that look for a DOM
+  element in an [instrumented WebContents](#webcontents-instrumentation)
+  [Browser].
     - `EnsurePresent()`
     - `EnsureNotPresent()`
 - **Action** verbs simulate input to specific UI elements. You can often specify
@@ -149,6 +150,8 @@ Verbs fall into a number of different categories:
 - **Name** verbs assign a string name to some UI element which may not be known
   ahead of time, so that it can be referenced later in the test. Examples
   include:
+    - `NameElement()`
+    - `NameElementRelative()`
     - `NameView()` [Views]
     - `NameChildView()` [Views]
     - `NameChildViewByType()` [Views]
@@ -177,8 +180,14 @@ Verbs fall into a number of different categories:
    - `ExecuteJsAt()` [Browser]
    - `CheckJsResult()` [Browser]
    - `CheckJsResultAt()` [Browser]
+- **Observation** verbs let you observe state that isn't tied to a UI element,
+  and to wait for it to achieve specific values. See
+  [Waiting for Asynchronous Events](#waiting-for-asynchronous-events) for more
+  information.
+   - `ObserveState()`
+   - `WaitForState()`
 - **Utility** verbs modify how the test sequence is executed.
-   - `FlushEvents()` - ensures that the next step happens on a fresh
+   - `FlushEvents()` ensures that the next step happens on a fresh
      message loop rather than being able to chain successive steps.
    - `SetOnIncompatibleAction()` changes what the sequence will do when faced
      with an action that cannot be executed on the current
@@ -281,12 +290,11 @@ A modifier wraps around a step or steps and change their behavior.
 
 - **InAnyContext** allows the modified verb to find an element outside the test's default
   `ElementContext`. Unlike the other modifiers, there are a number of limitations on its use:
-  - It should not be used with `FlushEvents`, most `Ensure`, or any `Activate`,
-    `Event`, or `Mouse` verbs.
+  - It should not be used with any `Ensure` verbs.
     - This is a shortcoming in the underlying framework that will be fixed in the future.
   - It should not be used with named elements, which can already be found in any context.
   - For unsupported verbs, it is best to either use `InSameContext()` or `InContext()` instead.
-  - Example:
+  - Usage example:
 
 ```cpp
 RunTestSequence(
@@ -296,10 +304,7 @@ RunTestSequence(
 ```
 
 - **InSameContext** allows the modified verb (or verbs) to find an element in the same context
-  as the previous step.
-  - Has no effect on `EnsurePresent()` or `EnsureNotPresent()` when the `in_any_context`
-    parameter is set to true.
-  - Example:
+  as the previous step. Example:
 ```cpp
 RunTestSequence(
     InAnyContext(WaitForShow(kMyButton)),
@@ -307,10 +312,7 @@ RunTestSequence(
 ```
 
 - **InContext** allows the modified verb (or verbs) to execute in the specified context instead of
-  the default context for the sequence.
-  - Has no effect on `EnsurePresent()` or `EnsureNotPresent()` when the `in_any_context` parameter
-    is set to true.
-  - Example:
+  the default context for the sequence. Example:
 
 ```cpp
 Browser* const incognito = CreateIncognitoBrowser();
@@ -571,6 +573,121 @@ Example:
     // Could have also used SelectDropdownItem for this:
     AsView<ComboBox>(el)->SelectItem(1);
   }),
+```
+
+### Waiting for Asynchronous Events
+
+There are a number of ways to wait for some asynchronous browser event or state:
+ - If you are waiting for WebContents state, use `WaitForStateChange()`
+ - If you are waiting for a discrete event, have your code or a test-specific
+   listener emit a custom event, then use `WaitForEvent()` or `AfterEvent()`.
+    - **Note:** the event must be emitted while you are waiting, or during the
+      callback of the step before, or you may miss it.
+ - If you are waiting for a stateful change, consider creating an appropriate
+   `StateObserver`-derived class, and use `ObserveState()` and `WaitForState()`
+   to check for your state change.
+
+`ObserveState()` is powerful but kind of tricky, as you have to declare a helper
+class that actually tracks the state.
+
+For state that can be observed using an observer pattern (i.e. you could use
+`base::ScopedObservation`), derive from `ObservationStateObserver`, which will
+handle subscribing and unsubscribing; you need only override 1-3 methods.
+
+Otherwise you will need to derive directly from `StateObserver` and manage the
+process yourself.
+
+Here is an example that waits for a property to achieve a specific value using
+an observer pattern:
+
+```cpp
+class FooStateObserver
+  : public ObservationStateObserver<int, Foo, FooObserver> {
+ public:
+  FooStateObserver(Foo* foo)
+    : ObservationStateObserver<int>(foo) {}
+  ~FooStateObserver() override = default;
+
+  // ObservationStateObserver:
+  int GetStateObserverInitialState() const override {
+    return source()->value();
+  }
+
+  // FooObserver:
+  void OnFooValueChanged(Foo*, int value) override {
+    OnStateObserverStateChanged(value);
+  }
+  void OnFooDestroyed(Foo*) override {
+    OnObservationStateObserverSourceDestroyed();
+  }
+}
+```
+
+Here is an example that derives directly from `StateObserver`:
+
+```cpp
+class SubscriptionObserver : public StateObserver {
+ public:
+  SubscriptionObserver(SubscribableObject* object)
+    : subscription_(
+          object->AddValueChangedCallback(
+              base::BindRepeating(&SubscriptionObserver::OnValueChanged,
+                                  base::Unretained(this)))),
+      object_(sub_obj) {}
+
+  // ObservationStateObserver:
+  int GetStateObserverInitialState() const override {
+    return object_->value();
+  }
+
+ private:
+  void OnValueChanged() {
+    OnStateObserverStateChanged(object_->value());
+  }
+
+  base::CallbackListSubscription subscription_;
+  raw_ptr<SubscribableObject> object_;
+};
+```
+
+The next step is to declare your state identifier and call `ObserveState()`.
+`StateIdentifier`s are like `ElementIdentifier`s except that they also encode
+the type of the observer, which allows you to be a little more lax when passing
+in values to the corresponding verbs:
+
+```cpp
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(FooStateObserver, kFooState);
+```
+
+The `ObserveState()` verb has two versions:
+ - One lets you pre-construct an observer and pass it in as a `unique_ptr`.
+ - The other lets you pass in the constructor arguments, which allows you
+   to have some of them evaluate when the step is executed:
+    - Any argument that is a function will be executed to get its return value.
+    - Any `std::reference_wrapper` will be unwrapped to get its value.
+    - This behavior is identical to the how the `Log()` verb works.
+    - This does mean that if you need to pass a callback to the constructor, you
+      can't use this version.
+
+Examples:
+```cpp
+  // These have parameters evaluated when the sequence is built:
+  ObserveState(kFooState, std::make_unique<FooStateObserver>(&foo))
+  ObserveState(kFooState, foo.get())
+  // These have a parameter evaluated at runtime:
+  ObserveState(kFooState, std::ref(foo_ptr))
+  ObserveState(kFooState, base::BindOnce(&FooTest::GetCurrentFoo,
+                                         base::Unretained(this)))
+```
+
+Waiting for the state to change is as simple as calling `WaitForState()`; again
+you may pass a callback or reference to have the target evaluated at runtime, or
+a matcher to look for a range of values:
+```cpp
+  WaitForState(kFooState, 3),
+  WaitForState(kFooState, std::ref(expected_foo_value)),
+  WaitForState(kFooState, &GetExpectedFooValue),
+  WaitForState(kFooState, testing::Ne(3)),
 ```
 
 ### Custom Verbs

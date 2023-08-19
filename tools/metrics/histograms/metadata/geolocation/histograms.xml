@@ -22,6 +22,16 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="Geolocation.Android.LocationPermissionState"
+    enum="AndroidLocationPermissionState" expires_after="2023-12-23">
+  <owner>mattreynolds@chromium.org</owner>
+  <owner>device-dev@chromium.org</owner>
+  <summary>
+    Android location permission state, recorded when the geolocation permission
+    context is initialized.
+  </summary>
+</histogram>
+
 <histogram name="Geolocation.AuthorizationActionExistingUser"
     enum="GeolocationAuthorizationAction" expires_after="2022-10-16">
   <owner>mattreynolds@chromium.org</owner>
@@ -79,12 +89,19 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Geolocation.HeaderSentOrNot" enum="GeolocationHeaderSentOrNot"
     expires_after="M85">
+  <obsolete>
+    Long expired.
+  </obsolete>
   <owner>kiyun@google.com</owner>
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>newt@chromium.org</owner>
   <summary>
     Reason why the X-Geo header was or was not included in a Google search from
-    the omnibox.
+    the omnibox. Not recorded in Incognito mode. (X-Geo headers are never
+    allowed to be added to such requests in Incognito mode.)
+
+    If multiple reasons for not sending the header are true, only the first
+    found during the code flow is recorded. Refer to the code for the order.
   </summary>
 </histogram>
 
@@ -98,7 +115,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Geolocation.NetworkLocationRequest.Event"
-    enum="NetworkLocationRequestEvent" expires_after="2023-10-22">
+    enum="NetworkLocationRequestEvent" expires_after="2023-12-24">
   <owner>mattreynolds@chromium.org</owner>
   <owner>device-dev@chromium.org</owner>
   <summary>
@@ -110,7 +127,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Geolocation.NetworkLocationRequest.RequestInterval"
-    units="mins" expires_after="2023-10-31">
+    units="mins" expires_after="2023-12-31">
   <owner>alvinji@chromium.org</owner>
   <owner>device-dev@chromium.org</owner>
   <summary>
@@ -121,7 +138,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Geolocation.NetworkLocationRequest.ResponseCode"
-    enum="HttpResponseCode" expires_after="2023-10-22">
+    enum="HttpResponseCode" expires_after="2023-12-24">
   <owner>mattreynolds@chromium.org</owner>
   <owner>device-dev@chromium.org</owner>
   <summary>
@@ -129,16 +146,6 @@ chromium-metrics-reviews@google.com.
 
     Warning: this histogram was expired after M85 and brought back 2021-05-21;
     data may be missing.
-  </summary>
-</histogram>
-
-<histogram name="Geolocation.WifiDataProviderCommon.WifiScanTaskTime"
-    units="ms" expires_after="2023-07-15">
-  <owner>reillyg@chromium.org</owner>
-  <owner>deviceapi-team@google.com</owner>
-  <summary>
-    Records the time taken on Windows, macOS and Linux to query the operating
-    system for nearby access points.
   </summary>
 </histogram>
 

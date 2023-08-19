@@ -34,9 +34,9 @@ class MediaRouterBase : public MediaRouter {
       override;
 
  protected:
-  FRIEND_TEST_ALL_PREFIXES(MediaRouterMojoImplTest,
+  FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest,
                            PresentationConnectionStateChangedCallback);
-  FRIEND_TEST_ALL_PREFIXES(MediaRouterMojoImplTest,
+  FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest,
                            PresentationConnectionStateChangedCallbackRemoved);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterBaseTest, CreatePresentationIds);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterBaseTest, NotifyCallbacks);

@@ -21,7 +21,7 @@
               },
               "legacy_chromium_config": {
                 "apply_configs": [
-                  "download_vr_test_apks"
+                  "download_xr_test_apks"
                 ],
                 "build_config": "Debug",
                 "config": "android",
@@ -59,7 +59,7 @@
               },
               "legacy_chromium_config": {
                 "apply_configs": [
-                  "download_vr_test_apks"
+                  "download_xr_test_apks"
                 ],
                 "build_config": "Debug",
                 "config": "android",
@@ -97,7 +97,7 @@
               },
               "legacy_chromium_config": {
                 "apply_configs": [
-                  "download_vr_test_apks"
+                  "download_xr_test_apks"
                 ],
                 "build_config": "Debug",
                 "config": "android",
@@ -132,7 +132,7 @@
               },
               "legacy_chromium_config": {
                 "apply_configs": [
-                  "download_vr_test_apks"
+                  "download_xr_test_apks"
                 ],
                 "build_config": "Debug",
                 "config": "android",
@@ -162,7 +162,7 @@
               },
               "legacy_chromium_config": {
                 "apply_configs": [
-                  "download_vr_test_apks"
+                  "download_xr_test_apks"
                 ],
                 "build_config": "Debug",
                 "config": "android",
@@ -197,7 +197,7 @@
               },
               "legacy_chromium_config": {
                 "apply_configs": [
-                  "download_vr_test_apks"
+                  "download_xr_test_apks"
                 ],
                 "build_config": "Debug",
                 "config": "android",
@@ -232,7 +232,7 @@
               },
               "legacy_chromium_config": {
                 "apply_configs": [
-                  "download_vr_test_apks"
+                  "download_xr_test_apks"
                 ],
                 "build_config": "Debug",
                 "config": "android",
@@ -332,7 +332,8 @@
   "$build/reclient": {
     "instance": "rbe-chromium-trusted",
     "jobs": 500,
-    "metrics_project": "chromium-reclient-metrics"
+    "metrics_project": "chromium-reclient-metrics",
+    "scandeps_server": true
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],

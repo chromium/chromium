@@ -45,7 +45,7 @@ SearchTagRegistry::SearchTagRegistry(
     local_search_service::LocalSearchServiceProxy* local_search_service_proxy) {
   local_search_service_proxy->GetIndex(
       local_search_service::IndexId::kHelpAppLauncher,
-      local_search_service::Backend::kInvertedIndex,
+      local_search_service::Backend::kLinearMap,
       index_remote_.BindNewPipeAndPassReceiver());
   DCHECK(index_remote_.is_bound());
 }

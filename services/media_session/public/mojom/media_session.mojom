@@ -9,7 +9,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
-// Next MinVersion: 19
+// Next MinVersion: 20
 
 [Stable, Extensible]
 enum MediaPlaybackState {
@@ -39,6 +39,7 @@ enum MediaSessionAction {
   [MinVersion=13] kSetMute,
   [MinVersion=18] kPreviousSlide,
   [MinVersion=18] kNextSlide,
+  [MinVersion=19] kEnterAutoPictureInPicture,
 };
 
 [Stable, Extensible]
@@ -212,6 +213,9 @@ struct MediaSessionInfo {
 
   // Stores the Media metadata used for Remote Playback.
   [MinVersion=15] RemotePlaybackMetadata? remote_playback_metadata;
+
+  // If true then media metadata will be hidden from the OS' media controllers.
+  [MinVersion=16] bool hide_metadata;
 };
 
 // Contains debugging information about a MediaSession. This will be displayed
@@ -366,4 +370,8 @@ interface MediaSession {
 
   // Go to next slide.
   [MinVersion=18] NextSlide@25();
+
+  // Automatically enter picture-in-picture from a non-user source (e.g. in
+  // reaction to content being hidden).
+  [MinVersion=19] EnterAutoPictureInPicture@26();
 };

@@ -15,7 +15,6 @@ struct TaskParams {
   bool valid_manifest = false;
   bool has_worker = false;
   bool valid_primary_icon = false;
-  bool valid_splash_icon = false;
 };
 
 // Constructs an InstallableTask, with the supplied bools stored in it.
@@ -24,23 +23,24 @@ InstallableTask CreateTask(const TaskParams& params) {
   task.params.valid_manifest = params.valid_manifest;
   task.params.has_worker = params.has_worker;
   task.params.valid_primary_icon = params.valid_primary_icon;
-  task.params.valid_splash_icon = params.valid_splash_icon;
   return task;
 }
 
 bool IsEqual(const TaskParams& params, const InstallableTask& task) {
   return task.params.valid_manifest == params.valid_manifest &&
          task.params.has_worker == params.has_worker &&
-         task.params.valid_primary_icon == params.valid_primary_icon &&
-         task.params.valid_splash_icon == params.valid_splash_icon;
+         task.params.valid_primary_icon == params.valid_primary_icon;
 }
 
 class InstallableTaskQueueUnitTest : public testing::Test {};
 
 TEST_F(InstallableTaskQueueUnitTest, PausingMakesNextTaskAvailable) {
   InstallableTaskQueue task_queue;
-  TaskParams task1 = {false, false, false, false};
-  TaskParams task2 = {true, true, true, true};
+  TaskParams task1 = {.valid_manifest = false,
+                      .has_worker = false,
+                      .valid_primary_icon = false};
+  TaskParams task2 = {
+      .valid_manifest = true, .has_worker = true, .valid_primary_icon = true};
 
   EXPECT_FALSE(task_queue.HasCurrent());
   EXPECT_FALSE(task_queue.HasPaused());
@@ -65,8 +65,11 @@ TEST_F(InstallableTaskQueueUnitTest, PausingMakesNextTaskAvailable) {
 
 TEST_F(InstallableTaskQueueUnitTest, PausedTaskCanBeRetrieved) {
   InstallableTaskQueue task_queue;
-  TaskParams task1 = {false, false, false, false};
-  TaskParams task2 = {true, true, true, true};
+  TaskParams task1 = {.valid_manifest = false,
+                      .has_worker = false,
+                      .valid_primary_icon = false};
+  TaskParams task2 = {
+      .valid_manifest = true, .has_worker = true, .valid_primary_icon = true};
 
   task_queue.Add(CreateTask(task1));
   task_queue.Add(CreateTask(task2));
@@ -93,8 +96,11 @@ TEST_F(InstallableTaskQueueUnitTest, PausedTaskCanBeRetrieved) {
 
 TEST_F(InstallableTaskQueueUnitTest, NextDiscardsTask) {
   InstallableTaskQueue task_queue;
-  TaskParams task1 = {false, false, false, false};
-  TaskParams task2 = {true, true, true, true};
+  TaskParams task1 = {.valid_manifest = false,
+                      .has_worker = false,
+                      .valid_primary_icon = false};
+  TaskParams task2 = {
+      .valid_manifest = true, .has_worker = true, .valid_primary_icon = true};
 
   task_queue.Add(CreateTask(task1));
   task_queue.Add(CreateTask(task2));

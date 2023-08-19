@@ -27,7 +27,7 @@ rootWebArea
 ++++++++++++spinButton name='AM/PM' placeholder='--' value='PM' valueForRange=2.00 minValueForRange=1.00 maxValueForRange=2.00
 ++++++++++++++staticText name='PM'
 ++++++++++++++++inlineTextBox name='PM'
-++++++++popUpButton name='Show time picker'
+++++++++popUpButton description='Show time picker' name='Show time picker' descriptionFrom=title
 ++++++++group
 ++++++++++genericContainer ignored
 ++++++++++++genericContainer ignored

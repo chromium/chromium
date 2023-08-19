@@ -14,6 +14,8 @@ source_set("nearby") {
     "nearby_connections_stream_buffer_manager.h",
     "nearby_presence.cc",
     "nearby_presence.h",
+    "nearby_presence_conversions.cc",
+    "nearby_presence_conversions.h",
     "nearby_shared_remotes.cc",
     "nearby_shared_remotes.h",
     "platform.cc",
@@ -28,6 +30,9 @@ source_set("nearby") {
     "//chromeos/ash/services/nearby/public/mojom",
     "//mojo/public/cpp/bindings",
     "//third_party/nearby:connections",
+    "//third_party/nearby:connections_credential_proto",
+    "//third_party/nearby:connections_metadata_proto",
+    "//third_party/nearby:presence",
   ]
 
   deps = [
@@ -55,5 +60,6 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/nearby:connections_test_util",
+    "//third_party/nearby:presence_test",
   ]
 }

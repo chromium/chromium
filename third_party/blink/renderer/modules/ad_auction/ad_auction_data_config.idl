@@ -8,3 +8,8 @@
 dictionary AdAuctionDataConfig {
   required USVString seller;
 };
+
+dictionary AdAuctionData {
+  required Uint8Array request;
+  required USVString requestId;
+};

@@ -21,7 +21,29 @@
 #include "base/allocator/partition_allocator/tagging.h"
 #include "build/build_config.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/mac/mac_util.h"
+#endif  // BUILDFLAG(IS_MAC)
+
 namespace partition_alloc::internal {
+
+// Aligns up (on 8B boundary) and returns `ref_count_size` if needed.
+// *  Known to be needed on MacOS 13: https://crbug.com/1378822.
+// *  Thought to be needed on MacOS 14: https://crbug.com/1457756.
+// *  No-op everywhere else.
+//
+// Placed outside `BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)`
+// intentionally to accommodate usage in contexts also outside
+// this gating.
+PA_ALWAYS_INLINE size_t AlignUpRefCountSizeForMac(size_t ref_count_size) {
+#if BUILDFLAG(IS_MAC)
+  if (internal::base::mac::IsOS13() || internal::base::mac::IsOS14()) {
+    return internal::base::bits::AlignUp(ref_count_size, 8);
+  }
+#endif  // BUILDFLAG(IS_MAC)
+  return ref_count_size;
+}
 
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
@@ -195,8 +217,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRefCount {
       DoubleFreeOrCorruptionDetected(old_count);
     }
 
-    if (PA_LIKELY((old_count & ~kNeedsMac11MallocSizeHackBit) ==
-                  kMemoryHeldByAllocatorBit)) {
+    // Release memory when no raw_ptr<> exists anymore:
+    static constexpr CountType mask = kPtrCountMask | kUnprotectedPtrCountMask;
+    if (PA_LIKELY((old_count & mask) == 0)) {
       std::atomic_thread_fence(std::memory_order_acquire);
       // The allocation is about to get freed, so clear the cookie.
       ClearCookieIfSupported();
@@ -204,7 +227,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRefCount {
     }
 
 #if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
-    // Check if any raw_ptr<> still exists. It is now dangling.
+    // There are some dangling raw_ptr<>. Turn on the error flag if it exists
+    // some which have not opted-out of being checked against being dangling:
     if (PA_UNLIKELY(old_count & kPtrCountMask)) {
       count_.fetch_or(kDanglingRawPtrDetectedBit, std::memory_order_relaxed);
       partition_alloc::internal::DanglingRawPtrDetected(
@@ -221,8 +245,10 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRefCount {
   // safely freed.
   PA_ALWAYS_INLINE bool IsAliveWithNoKnownRefs() {
     CheckCookieIfSupported();
-    return (count_.load(std::memory_order_acquire) &
-            ~kNeedsMac11MallocSizeHackBit) == kMemoryHeldByAllocatorBit;
+    static constexpr CountType mask =
+        kMemoryHeldByAllocatorBit | kPtrCountMask | kUnprotectedPtrCountMask;
+    return (count_.load(std::memory_order_acquire) & mask) ==
+           kMemoryHeldByAllocatorBit;
   }
 
   PA_ALWAYS_INLINE bool IsAlive() {
@@ -259,9 +285,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRefCount {
   }
 
   PA_ALWAYS_INLINE bool CanBeReusedByGwpAsan() {
-    return (count_.load(std::memory_order_acquire) &
-            ~kNeedsMac11MallocSizeHackBit) ==
-           (kPtrInc | kMemoryHeldByAllocatorBit);
+    static constexpr CountType mask = kPtrCountMask | kUnprotectedPtrCountMask;
+    return (count_.load(std::memory_order_acquire) & mask) == kPtrInc;
   }
 
   bool NeedsMac11MallocSizeHack() {

@@ -1,0 +1,46 @@
+Tests that Page.addScriptToEvaluateOnNewDocument can run for existing contexts.
+foo in the main world:
+{
+    id : <number>
+    result : {
+        result : {
+            description : 41
+            type : number
+            value : 41
+        }
+    }
+    sessionId : <string>
+}
+bar in the main world:
+{
+    id : <number>
+    result : {
+        result : {
+            type : undefined
+        }
+    }
+    sessionId : <string>
+}
+foo in the isolated world:
+{
+    id : <number>
+    result : {
+        result : {
+            description : 43
+            type : number
+            value : 43
+        }
+    }
+    sessionId : <string>
+}
+bar in the isolated world:
+{
+    id : <number>
+    result : {
+        result : {
+            type : undefined
+        }
+    }
+    sessionId : <string>
+}
+

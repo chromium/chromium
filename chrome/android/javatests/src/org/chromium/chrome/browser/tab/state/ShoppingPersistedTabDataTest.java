@@ -967,7 +967,6 @@ public class ShoppingPersistedTabDataTest {
     @SmallTest
     @Test
     public void testVerifyDeserializationBackgroundThread() throws TimeoutException {
-        ThreadUtils.setThreadAssertsDisabledForTesting(false);
         CallbackHelper helper = new CallbackHelper();
         int count = helper.getCallCount();
         ThreadUtils.runOnUiThreadBlocking(() -> {

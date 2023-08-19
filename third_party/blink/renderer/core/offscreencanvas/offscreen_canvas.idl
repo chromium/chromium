@@ -8,7 +8,7 @@
     Exposed=(Window,Worker),
     Transferable
 ] interface OffscreenCanvas : EventTarget {
-    [CallWith=ExecutionContext, MeasureAs=OffscreenCanvas] constructor([EnforceRange] unsigned long width, [EnforceRange] unsigned long height);
+    [CallWith=ScriptState, MeasureAs=OffscreenCanvas] constructor([EnforceRange] unsigned long width, [EnforceRange] unsigned long height);
     attribute [EnforceRange] unsigned long width;
     attribute [EnforceRange] unsigned long height;
 

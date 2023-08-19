@@ -3,4 +3,5 @@ URL: https://crates.io/crates/cxxbridge-cmd
 Description: C++ code generator for integrating `cxx` crate into a non-Cargo build.
 Version: 1.0.82
 Security Critical: no
+Shipped: yes
 License: Apache 2.0

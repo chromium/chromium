@@ -7,7 +7,29 @@ module content.mojom;
 import "content/test/data/web_ui_ts_test_types.test-mojom";
 import "url/mojom/url.mojom";
 
+enum TestEnum {
+  kOne,
+  kTwo,
+};
+
+struct OptionalNumericsStruct {
+  bool? optional_bool;
+  uint8? optional_uint8;
+  TestEnum? optional_enum;
+};
+
 interface WebUITsMojoTestCache {
   Put(url.mojom.Url url, string contents);
   GetAll() => (array<TsCacheItem> items);
+
+  Echo(
+    bool? optional_bool,
+    uint8? optional_uint8,
+    TestEnum? optional_enum,
+    OptionalNumericsStruct optional_numerics)
+  => (
+    bool? optional_bool,
+    uint8? optional_uint8,
+    TestEnum? optional_enum,
+    OptionalNumericsStruct optional_numerics);
 };

@@ -1,2 +1,14 @@
 [document web]
+++[panel] xml-roles:form
+++++[static] name='Unnamed ARIA form: must fall back to the native role.'
+++[section] xml-roles:form
+++++[static] name='Unnamed ARIA form on plain div uses generic container role.'
+++[form] name='Named form' xml-roles:form
+++++[static] name='Named ARIA form#1 gets the form role.'
+++[form] name='Named ARIA form#2 gets the form role.' labelled-by=[section] xml-roles:form
+++++[section] label-for=[form]
+++++++[static] name='Named ARIA form#2 gets the form role.'
+++[form] name='Named form' xml-roles:form
+++++[static] name='Named ARIA form#3 gets the form role.'
 ++[form] xml-roles:form
+++++[static] name='An aria-rolescription works on a nameless role=form.'

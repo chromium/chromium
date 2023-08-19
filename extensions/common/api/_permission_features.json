@@ -653,6 +653,12 @@
       "C06709A259378015404ED20F75C7D08547E0F10B"   // Security Key (dev)
     ]
   },
+  "userScripts": {
+    "channel": "trunk",
+    "extension_types": [ "extension" ],
+    "min_manifest_version": 3,
+    "feature_flag": "ApiUserScripts"
+  },
   "unlimitedStorage": {
     "channel": "stable",
     "extension_types": [

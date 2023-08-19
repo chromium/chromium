@@ -38,6 +38,7 @@ consoles.list_view(
 defaults.set(
     bucket = "reviver",
     pool = ci.DEFAULT_POOL,
+    cores = 8,
     os = os.LINUX_DEFAULT,
     list_view = "reviver",
     service_account = "reviver-builder@chops-service-accounts.iam.gserviceaccount.com",
@@ -55,6 +56,18 @@ polymorphic.launcher(
         "ci/android-nougat-x86-rel",
         "ci/android-pie-x86-rel",
         "ci/android-12-x64-rel",
+    ],
+)
+
+polymorphic.launcher(
+    name = "android-coverage-launcher",
+    # Match the replicated builder's schedule for comparable data
+    schedule = "0 4 * * *",
+    pool = ci.DEFAULT_POOL,
+    os = os.LINUX_DEFAULT,
+    runner = "reviver/coverage-runner",
+    target_builders = [
+        "ci/android-code-coverage-native",
     ],
 )
 
@@ -83,6 +96,8 @@ polymorphic.launcher(
             builder = "ci/Android x64 Builder (dbg)",
             dimensions = dimensions.dimensions(
                 builderless = "",
+                cores = "",
+                os = "Ubuntu-22.04",
                 ssd = "",
                 free_space = "",
                 builder = "Android x64 Builder (dbg)",
@@ -165,16 +180,6 @@ polymorphic.launcher(
         "ci/fuchsia-fyi-arm64-dbg",
         "ci/fuchsia-fyi-x64-dbg",
         "ci/fuchsia-x64-rel",
-        polymorphic.target_builder(
-            builder = "ci/fuchsia-fyi-x64-asan",
-            dimensions = dimensions.dimensions(
-                # It's weird that fuchsia-fyi-x64-asan is running out of space
-                # quite frequently on reviver runner. So increase it's
-                # free_space dimension to work around it.
-                # E.g. https://ci.chromium.org/ui/p/chromium/builders/reviver/runner/b8782210084759851793/overview
-                free_space = free_space.high,
-            ),
-        ),
     ],
 )
 
@@ -205,6 +210,28 @@ builder(
     os = os.LINUX_DEFAULT,
     cpu = cpu.X86_64,
     ssd = False,
+    free_space = free_space.standard,
+    auto_builder_dimension = False,
+    execution_timeout = 6 * time.hour,
+    resultdb_bigquery_exports = [
+        resultdb.export_test_results(
+            bq_table = "chrome-luci-data.chromium.reviver_test_results",
+        ),
+    ],
+    # TODO(crbug/1346396) Remove this once the reviver service account has
+    # necessary permissions
+    service_account = ci.DEFAULT_SERVICE_ACCOUNT,
+)
+
+builder(
+    name = "coverage-runner",
+    executable = "recipe:reviver/chromium/runner",
+    pool = ci.DEFAULT_POOL,
+    builderless = 1,
+    cores = 32,
+    os = os.LINUX_DEFAULT,
+    cpu = cpu.X86_64,
+    ssd = True,
     free_space = free_space.standard,
     auto_builder_dimension = False,
     execution_timeout = 6 * time.hour,

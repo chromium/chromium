@@ -34,7 +34,7 @@ UNKNOWN focusable has_input_focus
 ++++++UNKNOWN
 ++++++++STATIC_TEXT label='This is an ARIA contentinfo landmark.'
 ++++++++++UNKNOWN label='This is an ARIA contentinfo landmark.'
-++++++UNKNOWN
+++++++UNKNOWN label='Named form'
 ++++++++STATIC_TEXT label='This is an ARIA form landmark.'
 ++++++++++UNKNOWN label='This is an ARIA form landmark.'
 ++++++UNKNOWN

@@ -14,6 +14,7 @@ class Transform;
 
 namespace views {
 class View;
+class Widget;
 }  // namespace views
 
 namespace ash {
@@ -128,6 +129,13 @@ void PerformDeskIconButtonScaleAnimationCrOSNext(
     DeskBarViewBase* bar_view,
     const gfx::Transform& new_desk_button_rects_transform,
     int shift_x);
+
+// Performs the slide out animation for `bar_view` when exiting overview. Please
+// note, unlike other animations where we animate directly on the objects using
+// `AnimationBuilder` we also pass ownership using `CleanupAnimationObserver`,
+// which does not support abort handle.
+void PerformDeskBarSlideAnimation(std::unique_ptr<views::Widget> desks_widget,
+                                  bool is_zero_state);
 
 }  // namespace ash
 

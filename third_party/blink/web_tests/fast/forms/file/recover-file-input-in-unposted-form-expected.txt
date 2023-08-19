@@ -10,9 +10,9 @@ Test that the state of a file chooser is recovered when navigating away and navi
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
 PASS document.getElementById('text-input').value is "text to be posted"
-PASS document.readFileContents is "Hello"
-PASS document.readFileContents is "Hello"
-PASS document.readFileContents is "Another"
+PASS fileContents[0].actual is "Hello"
+PASS fileContents[1].actual is "Hello"
+PASS fileContents[2].actual is "Another"
 PASS successfullyParsed is true
 
 TEST COMPLETE

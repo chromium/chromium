@@ -26,7 +26,6 @@
 <translation id="2060505056492490888">„<ph name="DOT" />“ се използва на неправилна позиция в/ъв „<ph name="INVALIDDOMAIN" />“.</translation>
 <translation id="2148716181193084225">днес</translation>
 <translation id="2226276347425096477">Моля, съкратете този текст до <ph name="MAX_CHARACTERS" /> знака или по-малко (понастоящем използвате <ph name="CURRENT_LENGTH" /> знака).</translation>
-<translation id="2246498165605549352">Локален файл</translation>
 <translation id="2247351761944213033">Седмица <ph name="WEEKNUMBER" />, <ph name="YEAR" /> г.</translation>
 <translation id="2277199496770840904">Запис <ph name="NUMBER" /></translation>
 <translation id="2393030564806080191">Шестнадесетична стойност за цвета</translation>
@@ -89,6 +88,7 @@
 <translation id="5425179576310518467">текуща дата</translation>
 <translation id="5466621249238537318">Моля, изберете един или повече файлове.</translation>
 <translation id="5468998798572797635">изход от цял екран</translation>
+<translation id="5514612371225420585">Файл на устройството ви</translation>
 <translation id="5516235301412634559">0,75</translation>
 <translation id="5537725057119320332">Предаване</translation>
 <translation id="5546461542133609677">пускане на звука</translation>
@@ -113,6 +113,7 @@
 <translation id="6398862346408813489">Показване на панела за избиране на месец</translation>
 <translation id="6404546809543547843">времеви плъзгач за аудиозаписа</translation>
 <translation id="6443871981718447451">показване на менюто за надписи</translation>
+<translation id="6484738902856791350">Отпечатване с форматиране</translation>
 <translation id="6550675742724504774">Опции</translation>
 <translation id="6572309429103589720">Невалидна граматика</translation>
 <translation id="658823671542763450">вход за цял екран</translation>

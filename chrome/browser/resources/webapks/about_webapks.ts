@@ -21,6 +21,8 @@ interface WebApkInfo {
   orientation: string;
   themeColor: string;
   backgroundColor: string;
+  darkThemeColor: string;
+  darkBackgroundColor: string;
   lastUpdateCheckTimeMs: number;
   lastUpdateCompletionTimeMs: number;
   relaxUpdates: boolean;
@@ -104,6 +106,9 @@ function addWebApk(webApkInfo: WebApkInfo) {
   addWebApkField(webApkList, 'Orientation: ', webApkInfo.orientation);
   addWebApkField(webApkList, 'Theme color: ', webApkInfo.themeColor);
   addWebApkField(webApkList, 'Background color: ', webApkInfo.backgroundColor);
+  addWebApkField(webApkList, 'Dark theme color: ', webApkInfo.darkThemeColor);
+  addWebApkField(
+      webApkList, 'Dark background color: ', webApkInfo.darkBackgroundColor);
   addWebApkField(
       webApkList, 'Last Update Check Time: ',
       new Date(webApkInfo.lastUpdateCheckTimeMs).toString());

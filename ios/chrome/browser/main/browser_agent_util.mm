@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/main/browser_agent_util.h"
 
 #import "base/feature_list.h"
-#import "components/breadcrumbs/core/features.h"
+#import "components/breadcrumbs/core/breadcrumbs_status.h"
 #import "ios/chrome/browser/app_launcher/app_launcher_browser_agent.h"
 #import "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_browser_agent.h"
 #import "ios/chrome/browser/device_sharing/device_sharing_browser_agent.h"
@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/tabs/features.h"
 #import "ios/chrome/browser/tabs/synced_window_delegate_browser_agent.h"
 #import "ios/chrome/browser/tabs/tab_parenting_browser_agent.h"
+#import "ios/chrome/browser/tabs/tab_pickup/tab_pickup_browser_agent.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_browser_agent.h"
 #import "ios/chrome/browser/upgrade/upgrade_center.h"
 #import "ios/chrome/browser/upgrade/upgrade_center_browser_agent.h"
@@ -43,14 +44,19 @@
 #import "ios/chrome/browser/web_state_list/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/public/provider/chrome/browser/app_utils/app_utils_api.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+// To get access to UseSessionSerializationOptimizations().
+// TODO(crbug.com/1383087): remove once the feature is fully launched.
+#import "ios/web/common/features.h"
 
 void AttachBrowserAgents(Browser* browser) {
-  if (base::FeatureList::IsEnabled(breadcrumbs::kLogBreadcrumbs)) {
+  if (breadcrumbs::IsEnabled()) {
     BreadcrumbManagerBrowserAgent::CreateForBrowser(browser);
   }
+
+  const bool browser_is_off_record =
+      browser->GetBrowserState()->IsOffTheRecord();
+  const bool browser_is_inactive = browser->IsInactive();
+
   LiveTabContextBrowserAgent::CreateForBrowser(browser);
   TabInsertionBrowserAgent::CreateForBrowser(browser);
   AttachInfobarOverlayBrowserAgent(browser);
@@ -68,16 +74,23 @@ void AttachBrowserAgents(Browser* browser) {
   ClosingWebStateObserverBrowserAgent::CreateForBrowser(browser);
   SnapshotBrowserAgent::CreateForBrowser(browser);
 
-  if (IsWebChannelsEnabled() && !browser->GetBrowserState()->IsOffTheRecord())
+  if (!browser_is_off_record && !browser_is_inactive) {
+    TabPickupBrowserAgent::CreateForBrowser(browser);
+  }
+
+  if (IsWebChannelsEnabled() && !browser_is_off_record) {
     FollowBrowserAgent::CreateForBrowser(browser);
+  }
 
   // PolicyWatcher is non-OTR only.
-  if (!browser->GetBrowserState()->IsOffTheRecord())
+  if (!browser_is_off_record) {
     PolicyWatcherBrowserAgent::CreateForBrowser(browser);
+  }
 
   // Send Tab To Self is non-OTR only.
-  if (!browser->GetBrowserState()->IsOffTheRecord())
+  if (!browser_is_off_record) {
     SendTabToSelfBrowserAgent::CreateForBrowser(browser);
+  }
 
   WebStateDelegateBrowserAgent::CreateForBrowser(
       browser, TabInsertionBrowserAgent::FromBrowser(browser));
@@ -92,8 +105,10 @@ void AttachBrowserAgents(Browser* browser) {
   UrlLoadingBrowserAgent::CreateForBrowser(browser);
 
   // SessionRestorartionAgent requires WebUsageEnablerBrowserAgent.
-  SessionRestorationBrowserAgent::CreateForBrowser(
-      browser, [SessionServiceIOS sharedService], IsPinnedTabsEnabled());
+  if (!web::features::UseSessionSerializationOptimizations()) {
+    SessionRestorationBrowserAgent::CreateForBrowser(
+        browser, [SessionServiceIOS sharedService], IsPinnedTabsEnabled());
+  }
 
   // TabUsageRecorderBrowserAgent and WebStateListMetricsBrowserAgent observe
   // the SessionRestorationBrowserAgent, so they should be created after the the
@@ -102,13 +117,15 @@ void AttachBrowserAgents(Browser* browser) {
       browser, SessionMetrics::FromBrowserState(browser->GetBrowserState()));
 
   // Normal browser states are the only ones to get tab usage recorder.
-  if (!browser->GetBrowserState()->IsOffTheRecord())
+  if (!browser_is_off_record) {
     TabUsageRecorderBrowserAgent::CreateForBrowser(browser);
+  }
 
-  if (!browser->GetBrowserState()->IsOffTheRecord())
+  if (!browser_is_off_record) {
     StartSurfaceRecentTabBrowserAgent::CreateForBrowser(browser);
+  }
 
-  if (!browser->IsInactive()) {
+  if (!browser_is_inactive) {
     SyncErrorBrowserAgent::CreateForBrowser(browser);
   }
 

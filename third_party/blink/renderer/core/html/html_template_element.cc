@@ -32,6 +32,7 @@
 
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
+#include "third_party/blink/renderer/core/dom/node_cloning_data.h"
 #include "third_party/blink/renderer/core/dom/template_content_document_fragment.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -46,7 +47,7 @@ HTMLTemplateElement::HTMLTemplateElement(Document& document)
 HTMLTemplateElement::~HTMLTemplateElement() = default;
 
 DocumentFragment* HTMLTemplateElement::ContentInternal() const {
-  DCHECK(!declarative_shadow_root_);
+  CHECK(!declarative_shadow_root_);
   if (!content_ && GetExecutionContext())
     content_ = MakeGarbageCollected<TemplateContentDocumentFragment>(
         GetDocument().EnsureTemplateDocument(),
@@ -56,24 +57,27 @@ DocumentFragment* HTMLTemplateElement::ContentInternal() const {
 }
 
 DocumentFragment* HTMLTemplateElement::content() const {
-  DCHECK(!declarative_shadow_root_);
+  CHECK(!declarative_shadow_root_);
   return IsDeclarativeShadowRoot() ? nullptr : ContentInternal();
 }
 
 DocumentFragment* HTMLTemplateElement::DeclarativeShadowContent() const {
-  DCHECK(IsNonStreamingDeclarativeShadowRoot());
+  CHECK(RuntimeEnabledFeatures::
+            DeprecatedNonStreamingDeclarativeShadowDOMEnabled());
+  CHECK(IsNonStreamingDeclarativeShadowRoot());
   return IsDeclarativeShadowRoot() ? ContentInternal() : nullptr;
 }
 
 // https://html.spec.whatwg.org/C/#the-template-element:concept-node-clone-ext
 void HTMLTemplateElement::CloneNonAttributePropertiesFrom(
     const Element& source,
-    CloneChildrenFlag flag) {
-  if (flag == CloneChildrenFlag::kSkip || !GetExecutionContext())
+    NodeCloningData& data) {
+  if (!data.Has(CloneOption::kIncludeDescendants) || !GetExecutionContext()) {
     return;
+  }
   auto& html_template_element = To<HTMLTemplateElement>(source);
   if (html_template_element.content())
-    content()->CloneChildNodesFrom(*html_template_element.content(), flag);
+    content()->CloneChildNodesFrom(*html_template_element.content(), data);
 }
 
 void HTMLTemplateElement::DidMoveToNewDocument(Document& old_document) {

@@ -13,6 +13,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
@@ -52,7 +53,8 @@ SharedImageStub::~SharedImageStub() {
   channel_->scheduler()->DestroySequence(sequence_);
   sync_point_client_state_->Destroy();
   if (factory_ && factory_->HasImages()) {
-    bool have_context = MakeContextCurrent();
+    // Some of the backings might require a current GL context to be destroyed.
+    bool have_context = MakeContextCurrent(/*needs_gl=*/true);
     factory_->DestroyAllSharedImages(have_context);
   }
 }
@@ -83,6 +85,12 @@ void SharedImageStub::ExecuteDeferredRequest(
 
     case mojom::DeferredSharedImageRequest::Tag::kCreateSharedImage:
       OnCreateSharedImage(std::move(request->get_create_shared_image()));
+      break;
+
+    case mojom::DeferredSharedImageRequest::Tag::
+        kCreateSharedImageBackedByBuffer:
+      OnCreateSharedImageBackedByBuffer(
+          std::move(request->get_create_shared_image_backed_by_buffer()));
       break;
 
     case mojom::DeferredSharedImageRequest::Tag::kCreateSharedImageWithData:
@@ -157,7 +165,15 @@ bool SharedImageStub::CreateSharedImage(const Mailbox& mailbox,
     OnError();
     return false;
   }
-  if (!MakeContextCurrent()) {
+
+  bool needs_gl = usage & SHARED_IMAGE_USAGE_GLES2;
+  if (!MakeContextCurrent(needs_gl)) {
+    OnError();
+    return false;
+  }
+
+  if (!IsPlaneValidForGpuMemoryBufferFormat(plane, format)) {
+    LOG(ERROR) << "SharedImageStub: Incompatible format.";
     OnError();
     return false;
   }
@@ -193,7 +209,16 @@ bool SharedImageStub::CreateSharedImage(const Mailbox& mailbox,
     OnError();
     return false;
   }
-  if (!MakeContextCurrent()) {
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
+  if (format.PrefersExternalSampler()) {
+    LOG(ERROR) << "SharedImageStub: Incompatible format.";
+    OnError();
+    return false;
+  }
+#endif
+
+  bool needs_gl = usage & SHARED_IMAGE_USAGE_GLES2;
+  if (!MakeContextCurrent(needs_gl)) {
     OnError();
     return false;
   }
@@ -232,6 +257,11 @@ bool SharedImageStub::UpdateSharedImage(const Mailbox& mailbox,
   return true;
 }
 
+void SharedImageStub::SetGpuExtraInfo(const gfx::GpuExtraInfo& gpu_extra_info) {
+  CHECK(factory_);
+  factory_->SetGpuExtraInfo(gpu_extra_info);
+}
+
 void SharedImageStub::OnCreateSharedImage(
     mojom::CreateSharedImageParamsPtr params) {
   TRACE_EVENT2("gpu", "SharedImageStub::OnCreateSharedImage", "width",
@@ -242,9 +272,8 @@ void SharedImageStub::OnCreateSharedImage(
     return;
   }
 
-  // Some shared image backing factories will use GL.
-  // TODO(crbug.com/1239365): Only request GL when needed.
-  if (!MakeContextCurrent(/*needs_gl=*/true)) {
+  bool needs_gl = params->usage & SHARED_IMAGE_USAGE_GLES2;
+  if (!MakeContextCurrent(needs_gl)) {
     OnError();
     return;
   }
@@ -253,6 +282,34 @@ void SharedImageStub::OnCreateSharedImage(
           params->mailbox, params->format, params->size, params->color_space,
           params->surface_origin, params->alpha_type, gpu::kNullSurfaceHandle,
           params->usage, GetLabel(params->debug_label))) {
+    LOG(ERROR) << kSICreationFailureError;
+    OnError();
+    return;
+  }
+
+  sync_point_client_state_->ReleaseFenceSync(params->release_id);
+}
+
+void SharedImageStub::OnCreateSharedImageBackedByBuffer(
+    mojom::CreateSharedImageBackedByBufferParamsPtr params) {
+  TRACE_EVENT2("gpu", "SharedImageStub::OnCreateSharedImage", "width",
+               params->size.width(), "height", params->size.height());
+  if (!params->mailbox.IsSharedImage()) {
+    LOG(ERROR) << kInvalidMailboxOnCreateError;
+    OnError();
+    return;
+  }
+
+  bool needs_gl = params->usage & SHARED_IMAGE_USAGE_GLES2;
+  if (!MakeContextCurrent(needs_gl)) {
+    OnError();
+    return;
+  }
+
+  if (!factory_->CreateSharedImage(
+          params->mailbox, params->format, params->size, params->color_space,
+          params->surface_origin, params->alpha_type, gpu::kNullSurfaceHandle,
+          params->usage, GetLabel(params->debug_label), params->buffer_usage)) {
     LOG(ERROR) << kSICreationFailureError;
     OnError();
     return;
@@ -271,7 +328,8 @@ void SharedImageStub::OnCreateSharedImageWithData(
     return;
   }
 
-  if (!MakeContextCurrent()) {
+  bool needs_gl = params->usage & SHARED_IMAGE_USAGE_GLES2;
+  if (!MakeContextCurrent(needs_gl)) {
     OnError();
     return;
   }
@@ -384,7 +442,9 @@ void SharedImageStub::OnDestroySharedImage(const Mailbox& mailbox) {
     return;
   }
 
-  if (!MakeContextCurrent()) {
+  bool needs_gl =
+      factory_->GetUsageForMailbox(mailbox) & SHARED_IMAGE_USAGE_GLES2;
+  if (!MakeContextCurrent(needs_gl)) {
     OnError();
     return;
   }

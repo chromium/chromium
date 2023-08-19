@@ -8,7 +8,6 @@
 
 
 import os
-import tempfile
 import unittest
 
 from pylib.gtest import gtest_test_instance
@@ -58,19 +57,6 @@ class LocalDeviceGtestRunTest(unittest.TestCase):
     path = local_device_gtest_run._GetLLVMProfilePath('test_dir', 'sr71', '5')
     self.assertEqual(path, os.path.join('test_dir', 'sr71_5_%2m.profraw'))
 
-  @mock.patch('subprocess.check_output')
-  def testMergeCoverageFiles(self, mock_sub):
-    with tempfile_ext.NamedTemporaryDirectory() as cov_tempd:
-      pro_tempd = os.path.join(cov_tempd, 'profraw')
-      os.mkdir(pro_tempd)
-      profdata = tempfile.NamedTemporaryFile(
-          dir=pro_tempd,
-          delete=False,
-          suffix=local_device_gtest_run._PROFRAW_FILE_EXTENSION)
-      local_device_gtest_run._MergeCoverageFiles(cov_tempd, pro_tempd)
-      # Merged file should be deleted.
-      self.assertFalse(os.path.exists(profdata.name))
-      self.assertTrue(mock_sub.called)
 
   @mock.patch('pylib.utils.google_storage_helper.upload')
   def testUploadTestArtifacts(self, mock_gsh):

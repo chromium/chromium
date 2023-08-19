@@ -266,6 +266,33 @@ bool MinidumpContextConverter::Initialize(
     context_.mips64->fir = src->fir;
 
     memcpy(&context_.mips64->fpregs, &src->fpregs, sizeof(src->fpregs));
+  } else if (context_.architecture ==
+             CPUArchitecture::kCPUArchitectureRISCV64) {
+    context_memory_.resize(sizeof(CPUContextRISCV64));
+    context_.riscv64 =
+        reinterpret_cast<CPUContextRISCV64*>(context_memory_.data());
+    const MinidumpContextRISCV64* src =
+        reinterpret_cast<const MinidumpContextRISCV64*>(
+            minidump_context.data());
+    if (minidump_context.size() < sizeof(MinidumpContextRISCV64)) {
+      return false;
+    }
+
+    if (!(src->context_flags & kMinidumpContextRISCV64)) {
+      return false;
+    }
+
+    context_.riscv64->pc = src->pc;
+
+    static_assert(sizeof(context_.riscv64->regs) == sizeof(src->regs),
+                  "GPR size mismatch");
+    memcpy(&context_.riscv64->regs, &src->regs, sizeof(src->regs));
+
+    static_assert(sizeof(context_.riscv64->fpregs) == sizeof(src->fpregs),
+                  "FPR size mismatch");
+    memcpy(&context_.riscv64->fpregs, &src->fpregs, sizeof(src->fpregs));
+
+    context_.riscv64->fcsr = src->fcsr;
   } else {
     // Architecture is listed as "unknown".
     DLOG(ERROR) << "Unknown architecture";

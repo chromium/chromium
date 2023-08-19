@@ -6,6 +6,7 @@
   <head>
     <title>$i18n{name}</title>
     <meta charset="utf-8">
+    <link rel="icon" href="/images/camera_app_icons_48.png">
     <link rel="stylesheet" href="chrome://theme/typography.css">
     <!-- main.css contains all :root styles require to be loaded first. -->
     <link rel="stylesheet" href="/css/main.css">
@@ -239,6 +240,12 @@
           <svg id="shutter-progress-bar">
             <circle></circle>
           </svg>
+          <svg id="time-lapse-progress">
+            <mask id="loop-mask">
+              <circle></circle>
+            </mask>
+            <circle class="ticks"></circle>
+          </svg>
         </div>
         <button id="start-takephoto" class="shutter inkdrop" tabindex="0"
                 i18n-label="take_photo_button"
@@ -262,7 +269,7 @@
       <div id="mode-selector" class="bottom-stripe">
         <div id="modes-group" class="buttons" role="radiogroup"
              i18n-aria="aria_camera_mode_group">
-          <div class="mode-item">
+          <div class="mode-item" i18n-new-feature="new_time_lapse_toast">
             <input type="radio" name="mode"
                  data-mode="video" tabindex="0"
                  i18n-aria="switch_record_video_button">
@@ -638,9 +645,10 @@
       <div class="ripple"></div>
     </template>
     <template id="new-feature-toast-template">
-      <div id="new-feature-toast" class="custom-toast" tabindex="0">
+      <div id="new-feature-toast" class="custom-toast" tabindex="0"
+           role="alert">
         <svg-wrapper name="new_feature_toast_icon.svg"></svg-wrapper>
-        <span class="custom-toast-text" aria-hidden="true"></span>
+        <span class="custom-toast-text"></span>
       </div>
     </template>
     <template id="indicator-toast-template">

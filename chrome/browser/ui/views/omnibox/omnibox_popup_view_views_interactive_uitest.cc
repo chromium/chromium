@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/feature_list.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views_test.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/ui_base_features.h"
 
 // Check that the location bar background (and the background of the textfield
 // it contains) changes when it receives focus, and matches the popup background
@@ -37,8 +40,20 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
   views::View* background_host = popup_view()->parent();
   EXPECT_EQ(color_after_focus, background_host->background()->get_color());
 
-  // Blurring the Omnibox should restore the original colors.
   omnibox_view()->GetFocusManager()->ClearFocus();
-  EXPECT_EQ(color_before_focus, location_bar()->background()->get_color());
-  EXPECT_EQ(color_before_focus, omnibox_view()->GetBackgroundColor());
+
+  if (features::GetChromeRefresh2023Level() ==
+          features::ChromeRefresh2023Level::kLevel2 ||
+      base::FeatureList::IsEnabled(
+          omnibox::kOmniboxSteadyStateBackgroundColor)) {
+    // With CR23, blurring the Omnibox w/ in-progress input (e.g. "foo") should
+    // result in the on-focus colors.
+    EXPECT_EQ(color_after_focus, location_bar()->background()->get_color());
+    EXPECT_EQ(color_after_focus, omnibox_view()->GetBackgroundColor());
+  } else {
+    // Without CR23, blurring the Omnibox w/ in-progress input (e.g. "foo")
+    // should restore the original colors.
+    EXPECT_EQ(color_before_focus, location_bar()->background()->get_color());
+    EXPECT_EQ(color_before_focus, omnibox_view()->GetBackgroundColor());
+  }
 }

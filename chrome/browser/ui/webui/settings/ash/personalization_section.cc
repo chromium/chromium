@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/ash/personalization_section.h"
 
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/settings/ash/personalization_hub_handler.h"
 #include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
@@ -24,15 +25,20 @@ PersonalizationSection::PersonalizationSection(
     Profile* profile,
     SearchTagRegistry* search_tag_registry,
     PrefService* pref_service)
-    : OsSettingsSection(profile, search_tag_registry) {}
+    : OsSettingsSection(profile, search_tag_registry),
+      isRevampEnabled_(ash::features::IsOsSettingsRevampWayfindingEnabled()) {}
 
 PersonalizationSection::~PersonalizationSection() = default;
 
 void PersonalizationSection::AddLoadTimeData(
     content::WebUIDataSource* html_source) {
-  static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"personalizationPageTitle", IDS_OS_SETTINGS_PERSONALIZATION},
-      {"personalizationHubTitle", IDS_OS_SETTINGS_OPEN_PERSONALIZATION_HUB},
+  webui::LocalizedString kLocalizedStrings[] = {
+      {"personalizationPageTitle", isRevampEnabled_
+                                       ? IDS_OS_SETTINGS_REVAMP_PERSONALIZATION
+                                       : IDS_OS_SETTINGS_PERSONALIZATION},
+      {"personalizationHubTitle",
+       isRevampEnabled_ ? IDS_OS_SETTINGS_REVAMP_OPEN_PERSONALIZATION_HUB
+                        : IDS_OS_SETTINGS_OPEN_PERSONALIZATION_HUB},
       {"personalizationHubSubtitle",
        IDS_OS_SETTINGS_OPEN_PERSONALIZATION_HUB_SUBTITLE},
   };
@@ -44,7 +50,8 @@ void PersonalizationSection::AddHandlers(content::WebUI* web_ui) {
 }
 
 int PersonalizationSection::GetSectionNameMessageId() const {
-  return IDS_OS_SETTINGS_PERSONALIZATION;
+  return isRevampEnabled_ ? IDS_OS_SETTINGS_REVAMP_PERSONALIZATION
+                          : IDS_OS_SETTINGS_PERSONALIZATION;
 }
 
 mojom::Section PersonalizationSection::GetSection() const {
@@ -55,7 +62,7 @@ mojom::SearchResultIcon PersonalizationSection::GetSectionIcon() const {
   return mojom::SearchResultIcon::kPaintbrush;
 }
 
-std::string PersonalizationSection::GetSectionPath() const {
+const char* PersonalizationSection::GetSectionPath() const {
   return mojom::kPersonalizationSectionPath;
 }
 

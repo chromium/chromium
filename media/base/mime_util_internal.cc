@@ -396,10 +396,6 @@ void MimeUtil::AddSupportedMediaFormats() {
   video_3gpp_codecs.emplace(H264);
   AddContainerWithCodecs("video/3gpp", video_3gpp_codecs);
 
-#if BUILDFLAG(ENABLE_MSE_MPEG2TS_STREAM_PARSER)
-  CodecSet mp2t_codecs{H264, MPEG2_AAC, MPEG4_AAC, MP3};
-  AddContainerWithCodecs("video/mp2t", mp2t_codecs);
-#endif  // BUILDFLAG(ENABLE_MSE_MPEG2TS_STREAM_PARSER)
 #if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(kCanPlayHls)) {
     // HTTP Live Streaming (HLS).

@@ -116,8 +116,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   void Reset() override;
 
-  String font() const;
-  void setFont(const String&) override;
+  void setFontForTesting(const String& new_font) override;
 
   String direction() const;
   void setDirection(const String&);
@@ -165,9 +164,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   // BaseRenderingContext2D implementation
   bool OriginClean() const final;
   void SetOriginTainted() final;
-  bool WouldTaintOrigin(CanvasImageSource* source) final {
-    return CanvasRenderingContext::WouldTaintOrigin(source);
-  }
   void DisableAcceleration() override;
   bool ShouldDisableAccelerationBecauseOfReadback() const override;
 
@@ -245,6 +241,11 @@ class MODULES_EXPORT CanvasRenderingContext2D final
                    int y) override;
   void WillOverwriteCanvas() override;
   void TryRestoreContextEvent(TimerBase*) override;
+
+  void WillUseCurrentFont() const final;
+  bool WillSetFont() const final;
+  bool CurrentFontResolvedAndUpToDate() const final;
+  bool ResolveFont(const String& new_font) final;
 
  private:
   friend class CanvasRenderingContext2DAutoRestoreSkCanvas;

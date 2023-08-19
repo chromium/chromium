@@ -3,6 +3,5 @@
 # found in the LICENSE file.
 
 source_set("fullscreen_api") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "fullscreen_api.h" ]
 }

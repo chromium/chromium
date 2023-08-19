@@ -13,11 +13,13 @@ import './profile_card.js';
 import './profile_picker_shared.css.js';
 import './strings.m.js';
 
+import {listenOnce} from '//resources/js/util_ts.js';
 import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {afterNextRender, DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {DragDropReorderTileListDelegate, DraggableTileListInterface} from './drag_drop_reorder_tile_list_delegate.js';
 import {ManageProfilesBrowserProxy, ManageProfilesBrowserProxyImpl, ProfileState} from './manage_profiles_browser_proxy.js';
 import {navigateTo, NavigationMixin, Routes} from './navigation_mixin.js';
 import {isAskOnStartupAllowed, isGuestModeEnabled, isProfileCreationAllowed} from './policy_helper.js';
@@ -31,6 +33,7 @@ export interface ProfilePickerMainViewElement {
     browseAsGuestButton: HTMLElement,
     profilesContainer: HTMLElement,
     wrapper: HTMLElement,
+    profiles: DomRepeat,
   };
 }
 
@@ -38,7 +41,7 @@ const ProfilePickerMainViewElementBase =
     WebUiListenerMixin(NavigationMixin(PolymerElement));
 
 export class ProfilePickerMainViewElement extends
-    ProfilePickerMainViewElementBase {
+    ProfilePickerMainViewElementBase implements DraggableTileListInterface {
   static get is() {
     return 'profile-picker-main-view';
   }
@@ -86,6 +89,9 @@ export class ProfilePickerMainViewElement extends
   private resizeObserver_: ResizeObserver|null = null;
   private previousRoute_: Routes|null = null;
 
+  private dragDelegate_: DragDropReorderTileListDelegate|null = null;
+  private dragDuration_: number = 300;
+
   override ready() {
     super.ready();
     if (!isGuestModeEnabled()) {
@@ -97,6 +103,8 @@ export class ProfilePickerMainViewElement extends
     }
 
     this.addEventListener('view-enter-finish', this.onViewEnterFinish_);
+
+    this.addEventListener('toggle-drag', this.toggleDrag_);
   }
 
   override connectedCallback() {
@@ -112,6 +120,10 @@ export class ProfilePickerMainViewElement extends
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.resizeObserver_!.disconnect();
+
+    if (this.dragDelegate_) {
+      this.dragDelegate_.clearListeners();
+    }
   }
 
   override onRouteChange(route: Routes) {
@@ -156,6 +168,21 @@ export class ProfilePickerMainViewElement extends
   private handleProfilesListChanged_(profilesList: ProfileState[]) {
     this.profilesListLoaded_ = true;
     this.profilesList_ = profilesList;
+
+    if (loadTimeData.getBoolean('profilesReorderingEnabled')) {
+      if (this.dragDelegate_) {
+        this.dragDelegate_.clearListeners();
+      }
+
+      this.dragDelegate_ = new DragDropReorderTileListDelegate(
+          this, this.profilesList_.length, this.dragDuration_);
+
+      listenOnce(this, 'dom-change', () => {
+        afterNextRender(this, () => {
+          this.dragDelegate_!.initializeListeners();
+        });
+      });
+    }
   }
 
   /**
@@ -197,6 +224,30 @@ export class ProfilePickerMainViewElement extends
   private computeHideAskOnStartup_(): boolean {
     return !isAskOnStartupAllowed() || !this.profilesList_ ||
         this.profilesList_.length < 2;
+  }
+
+  private toggleDrag_(e: Event) {
+    if (!this.dragDelegate_) {
+      return;
+    }
+
+    const customEvent = e as CustomEvent;
+    this.dragDelegate_.toggleDrag(customEvent.detail.toggle);
+  }
+
+
+  // @override
+  getDraggableTile(index: number): HTMLElement {
+    return this.shadowRoot!.querySelector<HTMLElement>('#profile-' + index)!;
+  }
+
+  // @override
+  getDraggableTileIndex(tile: HTMLElement): number {
+    return this.$.profiles.indexForElement(tile) as number;
+  }
+
+  setDraggingTransitionDurationForTesting(duration: number) {
+    this.dragDuration_ = duration;
   }
 }
 

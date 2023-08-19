@@ -6,12 +6,12 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -93,7 +93,7 @@ class UserAddedRemovedReporterTest : public ::testing::Test {
   }
 
   std::unique_ptr<TestingProfile> LoginRegularProfile(
-      base::StringPiece user_email,
+      std::string_view user_email,
       policy::ManagedSessionService* managed_session_service) {
     const AccountId account_id =
         AccountId::FromUserEmail(std::string(user_email));
@@ -121,7 +121,7 @@ class UserAddedRemovedReporterTest : public ::testing::Test {
   }
 
   std::unique_ptr<TestingProfile> LoginKioskProfile(
-      base::StringPiece user_email,
+      std::string_view user_email,
       policy::ManagedSessionService* managed_session_service) {
     const AccountId account_id =
         AccountId::FromUserEmail(std::string(user_email));
@@ -135,13 +135,16 @@ class UserAddedRemovedReporterTest : public ::testing::Test {
     return profile;
   }
 
-  raw_ptr<::reporting::MockReportQueueStrict, ExperimentalAsh> mock_queue_;
+  raw_ptr<::reporting::MockReportQueueStrict,
+          DanglingUntriaged | ExperimentalAsh>
+      mock_queue_;
 
   std::unique_ptr<base::WeakPtrFactory<::reporting::MockReportQueueStrict>>
       weak_mock_queue_factory_;
 
  private:
-  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_;
+  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      user_manager_;
 
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 
@@ -160,7 +163,7 @@ TEST_F(UserAddedRemovedReporterTest, TestAffiliatedUserAdded) {
   ::reporting::Priority priority;
   EXPECT_CALL(*mock_queue, AddRecord)
       .WillOnce(
-          [&record, &priority](base::StringPiece record_string,
+          [&record, &priority](std::string_view record_string,
                                ::reporting::Priority event_priority,
                                ::reporting::ReportQueue::EnqueueCallback) {
             record.ParseFromString(std::string(record_string));
@@ -199,7 +202,7 @@ TEST_F(UserAddedRemovedReporterTest, TestUnaffiliatedUserAdded) {
   ::reporting::Priority priority;
   EXPECT_CALL(*mock_queue, AddRecord)
       .WillOnce(
-          [&record, &priority](base::StringPiece record_string,
+          [&record, &priority](std::string_view record_string,
                                ::reporting::Priority event_priority,
                                ::reporting::ReportQueue::EnqueueCallback) {
             record.ParseFromString(std::string(record_string));
@@ -338,7 +341,7 @@ TEST_F(UserAddedRemovedReporterTest, TestAffiliatedUserRemoval) {
   ::reporting::Priority priority;
   EXPECT_CALL(*mock_queue, AddRecord)
       .WillOnce(
-          [&record, &priority](base::StringPiece record_string,
+          [&record, &priority](std::string_view record_string,
                                ::reporting::Priority event_priority,
                                ::reporting::ReportQueue::EnqueueCallback) {
             record.ParseFromString(std::string(record_string));
@@ -385,7 +388,7 @@ TEST_F(UserAddedRemovedReporterTest, TestUnaffiliatedUserRemoval) {
   ::reporting::Priority priority;
   EXPECT_CALL(*mock_queue, AddRecord)
       .WillOnce(
-          [&record, &priority](base::StringPiece record_string,
+          [&record, &priority](std::string_view record_string,
                                ::reporting::Priority event_priority,
                                ::reporting::ReportQueue::EnqueueCallback) {
             record.ParseFromString(std::string(record_string));
@@ -457,7 +460,7 @@ TEST_F(UserAddedRemovedReporterTest, TestRemoteRemoval) {
   ::reporting::Priority priority;
   EXPECT_CALL(*mock_queue, AddRecord)
       .WillOnce(
-          [&record, &priority](base::StringPiece record_string,
+          [&record, &priority](std::string_view record_string,
                                ::reporting::Priority event_priority,
                                ::reporting::ReportQueue::EnqueueCallback) {
             record.ParseFromString(std::string(record_string));

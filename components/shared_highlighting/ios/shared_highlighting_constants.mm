@@ -4,10 +4,6 @@
 
 #import "components/shared_highlighting/ios/shared_highlighting_constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace shared_highlighting {
 
 const char kLearnMoreUrl[] =

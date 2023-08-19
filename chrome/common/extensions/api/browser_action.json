@@ -117,14 +117,13 @@
                 "description": "Limits the change to when a particular tab is selected. Automatically resets when the tab is closed."
               }
             }
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": []
+        }
       },
       {
         "name": "setPopup",
@@ -295,21 +294,19 @@
         "type": "function",
         "description": "Opens the extension popup window in the active window but does not grant tab permissions.",
         "nodoc": true,
-        "parameters": [
-          {
-            "type": "function",
-            "name": "callback",
-            "parameters": [
-              {
-                "name": "popupView",
-                "type": "object",
-                "optional": true,
-                "description": "JavaScript 'window' object for the popup window if it was succesfully opened.",
-                "additionalProperties": { "type": "any" }
-              }
-            ]
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "popupView",
+              "type": "object",
+              "optional": true,
+              "description": "JavaScript 'window' object for the popup window if it was succesfully opened.",
+              "additionalProperties": { "type": "any" }
+            }
+          ]
+        }
       }
     ],
     "events": [

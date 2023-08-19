@@ -153,26 +153,6 @@ void FakeCommandBufferHelper::SetCleared(GLuint service_id) {
   DCHECK(service_ids_.count(service_id));
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
-bool FakeCommandBufferHelper::BindDecoderManagedImage(GLuint service_id,
-                                                      gl::GLImage* image) {
-  return BindImageInternal(service_id, image);
-}
-#else
-bool FakeCommandBufferHelper::BindClientManagedImage(GLuint service_id,
-                                                     gl::GLImage* image) {
-  return BindImageInternal(service_id, image);
-}
-#endif
-
-bool FakeCommandBufferHelper::BindImageInternal(GLuint service_id,
-                                                gl::GLImage* image) {
-  DVLOG(2) << __func__ << "(" << service_id << ")";
-  DCHECK(task_runner_->BelongsToCurrentThread());
-  DCHECK(service_ids_.count(service_id));
-  return has_stub_;
-}
-
 gpu::Mailbox FakeCommandBufferHelper::CreateLegacyMailbox(GLuint service_id) {
   DVLOG(2) << __func__ << "(" << service_id << ")";
   DCHECK(task_runner_->BelongsToCurrentThread());

@@ -137,6 +137,48 @@ typedef interface IUpdaterCallbackSystem IUpdaterCallbackSystem;
 #endif 	/* __IUpdaterCallbackSystem_FWD_DEFINED__ */
 
 
+#ifndef __IUpdaterAppState_FWD_DEFINED__
+#define __IUpdaterAppState_FWD_DEFINED__
+typedef interface IUpdaterAppState IUpdaterAppState;
+
+#endif 	/* __IUpdaterAppState_FWD_DEFINED__ */
+
+
+#ifndef __IUpdaterAppStateUser_FWD_DEFINED__
+#define __IUpdaterAppStateUser_FWD_DEFINED__
+typedef interface IUpdaterAppStateUser IUpdaterAppStateUser;
+
+#endif 	/* __IUpdaterAppStateUser_FWD_DEFINED__ */
+
+
+#ifndef __IUpdaterAppStateSystem_FWD_DEFINED__
+#define __IUpdaterAppStateSystem_FWD_DEFINED__
+typedef interface IUpdaterAppStateSystem IUpdaterAppStateSystem;
+
+#endif 	/* __IUpdaterAppStateSystem_FWD_DEFINED__ */
+
+
+#ifndef __IUpdaterAppStatesCallback_FWD_DEFINED__
+#define __IUpdaterAppStatesCallback_FWD_DEFINED__
+typedef interface IUpdaterAppStatesCallback IUpdaterAppStatesCallback;
+
+#endif 	/* __IUpdaterAppStatesCallback_FWD_DEFINED__ */
+
+
+#ifndef __IUpdaterAppStatesCallbackUser_FWD_DEFINED__
+#define __IUpdaterAppStatesCallbackUser_FWD_DEFINED__
+typedef interface IUpdaterAppStatesCallbackUser IUpdaterAppStatesCallbackUser;
+
+#endif 	/* __IUpdaterAppStatesCallbackUser_FWD_DEFINED__ */
+
+
+#ifndef __IUpdaterAppStatesCallbackSystem_FWD_DEFINED__
+#define __IUpdaterAppStatesCallbackSystem_FWD_DEFINED__
+typedef interface IUpdaterAppStatesCallbackSystem IUpdaterAppStatesCallbackSystem;
+
+#endif 	/* __IUpdaterAppStatesCallbackSystem_FWD_DEFINED__ */
+
+
 #ifndef __IUpdater_FWD_DEFINED__
 #define __IUpdater_FWD_DEFINED__
 typedef interface IUpdater IUpdater;
@@ -250,6 +292,41 @@ typedef interface IUpdaterCallbackUser IUpdaterCallbackUser;
 typedef interface IUpdaterCallbackSystem IUpdaterCallbackSystem;
 
 #endif 	/* __IUpdaterCallbackSystem_FWD_DEFINED__ */
+
+
+#ifndef __IUpdaterAppState_FWD_DEFINED__
+#define __IUpdaterAppState_FWD_DEFINED__
+typedef interface IUpdaterAppState IUpdaterAppState;
+
+#endif 	/* __IUpdaterAppState_FWD_DEFINED__ */
+
+
+#ifndef __IUpdaterAppStateUser_FWD_DEFINED__
+#define __IUpdaterAppStateUser_FWD_DEFINED__
+typedef interface IUpdaterAppStateUser IUpdaterAppStateUser;
+
+#endif 	/* __IUpdaterAppStateUser_FWD_DEFINED__ */
+
+
+#ifndef __IUpdaterAppStateSystem_FWD_DEFINED__
+#define __IUpdaterAppStateSystem_FWD_DEFINED__
+typedef interface IUpdaterAppStateSystem IUpdaterAppStateSystem;
+
+#endif 	/* __IUpdaterAppStateSystem_FWD_DEFINED__ */
+
+
+#ifndef __IUpdaterAppStatesCallbackUser_FWD_DEFINED__
+#define __IUpdaterAppStatesCallbackUser_FWD_DEFINED__
+typedef interface IUpdaterAppStatesCallbackUser IUpdaterAppStatesCallbackUser;
+
+#endif 	/* __IUpdaterAppStatesCallbackUser_FWD_DEFINED__ */
+
+
+#ifndef __IUpdaterAppStatesCallbackSystem_FWD_DEFINED__
+#define __IUpdaterAppStatesCallbackSystem_FWD_DEFINED__
+typedef interface IUpdaterAppStatesCallbackSystem IUpdaterAppStatesCallbackSystem;
+
+#endif 	/* __IUpdaterAppStatesCallbackSystem_FWD_DEFINED__ */
 
 
 /* header files for imported files */
@@ -1665,6 +1742,837 @@ EXTERN_C const IID IID_IUpdaterCallbackSystem;
 #endif 	/* __IUpdaterCallbackSystem_INTERFACE_DEFINED__ */
 
 
+#ifndef __IUpdaterAppState_INTERFACE_DEFINED__
+#define __IUpdaterAppState_INTERFACE_DEFINED__
+
+/* interface IUpdaterAppState */
+/* [unique][helpstring][uuid][dual][object] */ 
+
+
+EXTERN_C const IID IID_IUpdaterAppState;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("A22AFC54-2DEF-4578-9187-DB3B24381090")
+    IUpdaterAppState : public IDispatch
+    {
+    public:
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_appId( 
+            /* [retval][out] */ BSTR *__MIDL__IUpdaterAppState0000) = 0;
+        
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_version( 
+            /* [retval][out] */ BSTR *__MIDL__IUpdaterAppState0001) = 0;
+        
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_ap( 
+            /* [retval][out] */ BSTR *__MIDL__IUpdaterAppState0002) = 0;
+        
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_brandCode( 
+            /* [retval][out] */ BSTR *__MIDL__IUpdaterAppState0003) = 0;
+        
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_brandPath( 
+            /* [retval][out] */ BSTR *__MIDL__IUpdaterAppState0004) = 0;
+        
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_ecp( 
+            /* [retval][out] */ BSTR *__MIDL__IUpdaterAppState0005) = 0;
+        
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct IUpdaterAppStateVtbl
+    {
+        BEGIN_INTERFACE
+        
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IUpdaterAppState * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IUpdaterAppState * This);
+        
+        DECLSPEC_XFGVIRT(IUnknown, Release)
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IUpdaterAppState * This);
+        
+        DECLSPEC_XFGVIRT(IDispatch, GetTypeInfoCount)
+        HRESULT ( STDMETHODCALLTYPE *GetTypeInfoCount )( 
+            IUpdaterAppState * This,
+            /* [out] */ UINT *pctinfo);
+        
+        DECLSPEC_XFGVIRT(IDispatch, GetTypeInfo)
+        HRESULT ( STDMETHODCALLTYPE *GetTypeInfo )( 
+            IUpdaterAppState * This,
+            /* [in] */ UINT iTInfo,
+            /* [in] */ LCID lcid,
+            /* [out] */ ITypeInfo **ppTInfo);
+        
+        DECLSPEC_XFGVIRT(IDispatch, GetIDsOfNames)
+        HRESULT ( STDMETHODCALLTYPE *GetIDsOfNames )( 
+            IUpdaterAppState * This,
+            /* [in] */ REFIID riid,
+            /* [size_is][in] */ LPOLESTR *rgszNames,
+            /* [range][in] */ UINT cNames,
+            /* [in] */ LCID lcid,
+            /* [size_is][out] */ DISPID *rgDispId);
+        
+        DECLSPEC_XFGVIRT(IDispatch, Invoke)
+        /* [local] */ HRESULT ( STDMETHODCALLTYPE *Invoke )( 
+            IUpdaterAppState * This,
+            /* [annotation][in] */ 
+            _In_  DISPID dispIdMember,
+            /* [annotation][in] */ 
+            _In_  REFIID riid,
+            /* [annotation][in] */ 
+            _In_  LCID lcid,
+            /* [annotation][in] */ 
+            _In_  WORD wFlags,
+            /* [annotation][out][in] */ 
+            _In_  DISPPARAMS *pDispParams,
+            /* [annotation][out] */ 
+            _Out_opt_  VARIANT *pVarResult,
+            /* [annotation][out] */ 
+            _Out_opt_  EXCEPINFO *pExcepInfo,
+            /* [annotation][out] */ 
+            _Out_opt_  UINT *puArgErr);
+        
+        DECLSPEC_XFGVIRT(IUpdaterAppState, get_appId)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_appId )( 
+            IUpdaterAppState * This,
+            /* [retval][out] */ BSTR *__MIDL__IUpdaterAppState0000);
+        
+        DECLSPEC_XFGVIRT(IUpdaterAppState, get_version)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_version )( 
+            IUpdaterAppState * This,
+            /* [retval][out] */ BSTR *__MIDL__IUpdaterAppState0001);
+        
+        DECLSPEC_XFGVIRT(IUpdaterAppState, get_ap)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_ap )( 
+            IUpdaterAppState * This,
+            /* [retval][out] */ BSTR *__MIDL__IUpdaterAppState0002);
+        
+        DECLSPEC_XFGVIRT(IUpdaterAppState, get_brandCode)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_brandCode )( 
+            IUpdaterAppState * This,
+            /* [retval][out] */ BSTR *__MIDL__IUpdaterAppState0003);
+        
+        DECLSPEC_XFGVIRT(IUpdaterAppState, get_brandPath)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_brandPath )( 
+            IUpdaterAppState * This,
+            /* [retval][out] */ BSTR *__MIDL__IUpdaterAppState0004);
+        
+        DECLSPEC_XFGVIRT(IUpdaterAppState, get_ecp)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_ecp )( 
+            IUpdaterAppState * This,
+            /* [retval][out] */ BSTR *__MIDL__IUpdaterAppState0005);
+        
+        END_INTERFACE
+    } IUpdaterAppStateVtbl;
+
+    interface IUpdaterAppState
+    {
+        CONST_VTBL struct IUpdaterAppStateVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IUpdaterAppState_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IUpdaterAppState_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IUpdaterAppState_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IUpdaterAppState_GetTypeInfoCount(This,pctinfo)	\
+    ( (This)->lpVtbl -> GetTypeInfoCount(This,pctinfo) ) 
+
+#define IUpdaterAppState_GetTypeInfo(This,iTInfo,lcid,ppTInfo)	\
+    ( (This)->lpVtbl -> GetTypeInfo(This,iTInfo,lcid,ppTInfo) ) 
+
+#define IUpdaterAppState_GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId)	\
+    ( (This)->lpVtbl -> GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId) ) 
+
+#define IUpdaterAppState_Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr)	\
+    ( (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr) ) 
+
+
+#define IUpdaterAppState_get_appId(This,__MIDL__IUpdaterAppState0000)	\
+    ( (This)->lpVtbl -> get_appId(This,__MIDL__IUpdaterAppState0000) ) 
+
+#define IUpdaterAppState_get_version(This,__MIDL__IUpdaterAppState0001)	\
+    ( (This)->lpVtbl -> get_version(This,__MIDL__IUpdaterAppState0001) ) 
+
+#define IUpdaterAppState_get_ap(This,__MIDL__IUpdaterAppState0002)	\
+    ( (This)->lpVtbl -> get_ap(This,__MIDL__IUpdaterAppState0002) ) 
+
+#define IUpdaterAppState_get_brandCode(This,__MIDL__IUpdaterAppState0003)	\
+    ( (This)->lpVtbl -> get_brandCode(This,__MIDL__IUpdaterAppState0003) ) 
+
+#define IUpdaterAppState_get_brandPath(This,__MIDL__IUpdaterAppState0004)	\
+    ( (This)->lpVtbl -> get_brandPath(This,__MIDL__IUpdaterAppState0004) ) 
+
+#define IUpdaterAppState_get_ecp(This,__MIDL__IUpdaterAppState0005)	\
+    ( (This)->lpVtbl -> get_ecp(This,__MIDL__IUpdaterAppState0005) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IUpdaterAppState_INTERFACE_DEFINED__ */
+
+
+#ifndef __IUpdaterAppStateUser_INTERFACE_DEFINED__
+#define __IUpdaterAppStateUser_INTERFACE_DEFINED__
+
+/* interface IUpdaterAppStateUser */
+/* [unique][helpstring][uuid][dual][object] */ 
+
+
+EXTERN_C const IID IID_IUpdaterAppStateUser;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("028FEB84-44BC-4A73-A0CD-603678155CC3")
+    IUpdaterAppStateUser : public IDispatch
+    {
+    public:
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_appId( 
+            /* [retval][out] */ BSTR *__MIDL__IUpdaterAppStateUser0000) = 0;
+        
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_version( 
+            /* [retval][out] */ BSTR *__MIDL__IUpdaterAppStateUser0001) = 0;
+        
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_ap( 
+            /* [retval][out] */ BSTR *__MIDL__IUpdaterAppStateUser0002) = 0;
+        
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_brandCode( 
+            /* [retval][out] */ BSTR *__MIDL__IUpdaterAppStateUser0003) = 0;
+        
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_brandPath( 
+            /* [retval][out] */ BSTR *__MIDL__IUpdaterAppStateUser0004) = 0;
+        
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_ecp( 
+            /* [retval][out] */ BSTR *__MIDL__IUpdaterAppStateUser0005) = 0;
+        
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct IUpdaterAppStateUserVtbl
+    {
+        BEGIN_INTERFACE
+        
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IUpdaterAppStateUser * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IUpdaterAppStateUser * This);
+        
+        DECLSPEC_XFGVIRT(IUnknown, Release)
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IUpdaterAppStateUser * This);
+        
+        DECLSPEC_XFGVIRT(IDispatch, GetTypeInfoCount)
+        HRESULT ( STDMETHODCALLTYPE *GetTypeInfoCount )( 
+            IUpdaterAppStateUser * This,
+            /* [out] */ UINT *pctinfo);
+        
+        DECLSPEC_XFGVIRT(IDispatch, GetTypeInfo)
+        HRESULT ( STDMETHODCALLTYPE *GetTypeInfo )( 
+            IUpdaterAppStateUser * This,
+            /* [in] */ UINT iTInfo,
+            /* [in] */ LCID lcid,
+            /* [out] */ ITypeInfo **ppTInfo);
+        
+        DECLSPEC_XFGVIRT(IDispatch, GetIDsOfNames)
+        HRESULT ( STDMETHODCALLTYPE *GetIDsOfNames )( 
+            IUpdaterAppStateUser * This,
+            /* [in] */ REFIID riid,
+            /* [size_is][in] */ LPOLESTR *rgszNames,
+            /* [range][in] */ UINT cNames,
+            /* [in] */ LCID lcid,
+            /* [size_is][out] */ DISPID *rgDispId);
+        
+        DECLSPEC_XFGVIRT(IDispatch, Invoke)
+        /* [local] */ HRESULT ( STDMETHODCALLTYPE *Invoke )( 
+            IUpdaterAppStateUser * This,
+            /* [annotation][in] */ 
+            _In_  DISPID dispIdMember,
+            /* [annotation][in] */ 
+            _In_  REFIID riid,
+            /* [annotation][in] */ 
+            _In_  LCID lcid,
+            /* [annotation][in] */ 
+            _In_  WORD wFlags,
+            /* [annotation][out][in] */ 
+            _In_  DISPPARAMS *pDispParams,
+            /* [annotation][out] */ 
+            _Out_opt_  VARIANT *pVarResult,
+            /* [annotation][out] */ 
+            _Out_opt_  EXCEPINFO *pExcepInfo,
+            /* [annotation][out] */ 
+            _Out_opt_  UINT *puArgErr);
+        
+        DECLSPEC_XFGVIRT(IUpdaterAppStateUser, get_appId)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_appId )( 
+            IUpdaterAppStateUser * This,
+            /* [retval][out] */ BSTR *__MIDL__IUpdaterAppStateUser0000);
+        
+        DECLSPEC_XFGVIRT(IUpdaterAppStateUser, get_version)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_version )( 
+            IUpdaterAppStateUser * This,
+            /* [retval][out] */ BSTR *__MIDL__IUpdaterAppStateUser0001);
+        
+        DECLSPEC_XFGVIRT(IUpdaterAppStateUser, get_ap)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_ap )( 
+            IUpdaterAppStateUser * This,
+            /* [retval][out] */ BSTR *__MIDL__IUpdaterAppStateUser0002);
+        
+        DECLSPEC_XFGVIRT(IUpdaterAppStateUser, get_brandCode)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_brandCode )( 
+            IUpdaterAppStateUser * This,
+            /* [retval][out] */ BSTR *__MIDL__IUpdaterAppStateUser0003);
+        
+        DECLSPEC_XFGVIRT(IUpdaterAppStateUser, get_brandPath)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_brandPath )( 
+            IUpdaterAppStateUser * This,
+            /* [retval][out] */ BSTR *__MIDL__IUpdaterAppStateUser0004);
+        
+        DECLSPEC_XFGVIRT(IUpdaterAppStateUser, get_ecp)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_ecp )( 
+            IUpdaterAppStateUser * This,
+            /* [retval][out] */ BSTR *__MIDL__IUpdaterAppStateUser0005);
+        
+        END_INTERFACE
+    } IUpdaterAppStateUserVtbl;
+
+    interface IUpdaterAppStateUser
+    {
+        CONST_VTBL struct IUpdaterAppStateUserVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IUpdaterAppStateUser_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IUpdaterAppStateUser_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IUpdaterAppStateUser_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IUpdaterAppStateUser_GetTypeInfoCount(This,pctinfo)	\
+    ( (This)->lpVtbl -> GetTypeInfoCount(This,pctinfo) ) 
+
+#define IUpdaterAppStateUser_GetTypeInfo(This,iTInfo,lcid,ppTInfo)	\
+    ( (This)->lpVtbl -> GetTypeInfo(This,iTInfo,lcid,ppTInfo) ) 
+
+#define IUpdaterAppStateUser_GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId)	\
+    ( (This)->lpVtbl -> GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId) ) 
+
+#define IUpdaterAppStateUser_Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr)	\
+    ( (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr) ) 
+
+
+#define IUpdaterAppStateUser_get_appId(This,__MIDL__IUpdaterAppStateUser0000)	\
+    ( (This)->lpVtbl -> get_appId(This,__MIDL__IUpdaterAppStateUser0000) ) 
+
+#define IUpdaterAppStateUser_get_version(This,__MIDL__IUpdaterAppStateUser0001)	\
+    ( (This)->lpVtbl -> get_version(This,__MIDL__IUpdaterAppStateUser0001) ) 
+
+#define IUpdaterAppStateUser_get_ap(This,__MIDL__IUpdaterAppStateUser0002)	\
+    ( (This)->lpVtbl -> get_ap(This,__MIDL__IUpdaterAppStateUser0002) ) 
+
+#define IUpdaterAppStateUser_get_brandCode(This,__MIDL__IUpdaterAppStateUser0003)	\
+    ( (This)->lpVtbl -> get_brandCode(This,__MIDL__IUpdaterAppStateUser0003) ) 
+
+#define IUpdaterAppStateUser_get_brandPath(This,__MIDL__IUpdaterAppStateUser0004)	\
+    ( (This)->lpVtbl -> get_brandPath(This,__MIDL__IUpdaterAppStateUser0004) ) 
+
+#define IUpdaterAppStateUser_get_ecp(This,__MIDL__IUpdaterAppStateUser0005)	\
+    ( (This)->lpVtbl -> get_ecp(This,__MIDL__IUpdaterAppStateUser0005) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IUpdaterAppStateUser_INTERFACE_DEFINED__ */
+
+
+#ifndef __IUpdaterAppStateSystem_INTERFACE_DEFINED__
+#define __IUpdaterAppStateSystem_INTERFACE_DEFINED__
+
+/* interface IUpdaterAppStateSystem */
+/* [unique][helpstring][uuid][dual][object] */ 
+
+
+EXTERN_C const IID IID_IUpdaterAppStateSystem;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("92631531-8044-46F4-B645-CDFBCCC7FA3B")
+    IUpdaterAppStateSystem : public IDispatch
+    {
+    public:
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_appId( 
+            /* [retval][out] */ BSTR *__MIDL__IUpdaterAppStateSystem0000) = 0;
+        
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_version( 
+            /* [retval][out] */ BSTR *__MIDL__IUpdaterAppStateSystem0001) = 0;
+        
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_ap( 
+            /* [retval][out] */ BSTR *__MIDL__IUpdaterAppStateSystem0002) = 0;
+        
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_brandCode( 
+            /* [retval][out] */ BSTR *__MIDL__IUpdaterAppStateSystem0003) = 0;
+        
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_brandPath( 
+            /* [retval][out] */ BSTR *__MIDL__IUpdaterAppStateSystem0004) = 0;
+        
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_ecp( 
+            /* [retval][out] */ BSTR *__MIDL__IUpdaterAppStateSystem0005) = 0;
+        
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct IUpdaterAppStateSystemVtbl
+    {
+        BEGIN_INTERFACE
+        
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IUpdaterAppStateSystem * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IUpdaterAppStateSystem * This);
+        
+        DECLSPEC_XFGVIRT(IUnknown, Release)
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IUpdaterAppStateSystem * This);
+        
+        DECLSPEC_XFGVIRT(IDispatch, GetTypeInfoCount)
+        HRESULT ( STDMETHODCALLTYPE *GetTypeInfoCount )( 
+            IUpdaterAppStateSystem * This,
+            /* [out] */ UINT *pctinfo);
+        
+        DECLSPEC_XFGVIRT(IDispatch, GetTypeInfo)
+        HRESULT ( STDMETHODCALLTYPE *GetTypeInfo )( 
+            IUpdaterAppStateSystem * This,
+            /* [in] */ UINT iTInfo,
+            /* [in] */ LCID lcid,
+            /* [out] */ ITypeInfo **ppTInfo);
+        
+        DECLSPEC_XFGVIRT(IDispatch, GetIDsOfNames)
+        HRESULT ( STDMETHODCALLTYPE *GetIDsOfNames )( 
+            IUpdaterAppStateSystem * This,
+            /* [in] */ REFIID riid,
+            /* [size_is][in] */ LPOLESTR *rgszNames,
+            /* [range][in] */ UINT cNames,
+            /* [in] */ LCID lcid,
+            /* [size_is][out] */ DISPID *rgDispId);
+        
+        DECLSPEC_XFGVIRT(IDispatch, Invoke)
+        /* [local] */ HRESULT ( STDMETHODCALLTYPE *Invoke )( 
+            IUpdaterAppStateSystem * This,
+            /* [annotation][in] */ 
+            _In_  DISPID dispIdMember,
+            /* [annotation][in] */ 
+            _In_  REFIID riid,
+            /* [annotation][in] */ 
+            _In_  LCID lcid,
+            /* [annotation][in] */ 
+            _In_  WORD wFlags,
+            /* [annotation][out][in] */ 
+            _In_  DISPPARAMS *pDispParams,
+            /* [annotation][out] */ 
+            _Out_opt_  VARIANT *pVarResult,
+            /* [annotation][out] */ 
+            _Out_opt_  EXCEPINFO *pExcepInfo,
+            /* [annotation][out] */ 
+            _Out_opt_  UINT *puArgErr);
+        
+        DECLSPEC_XFGVIRT(IUpdaterAppStateSystem, get_appId)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_appId )( 
+            IUpdaterAppStateSystem * This,
+            /* [retval][out] */ BSTR *__MIDL__IUpdaterAppStateSystem0000);
+        
+        DECLSPEC_XFGVIRT(IUpdaterAppStateSystem, get_version)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_version )( 
+            IUpdaterAppStateSystem * This,
+            /* [retval][out] */ BSTR *__MIDL__IUpdaterAppStateSystem0001);
+        
+        DECLSPEC_XFGVIRT(IUpdaterAppStateSystem, get_ap)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_ap )( 
+            IUpdaterAppStateSystem * This,
+            /* [retval][out] */ BSTR *__MIDL__IUpdaterAppStateSystem0002);
+        
+        DECLSPEC_XFGVIRT(IUpdaterAppStateSystem, get_brandCode)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_brandCode )( 
+            IUpdaterAppStateSystem * This,
+            /* [retval][out] */ BSTR *__MIDL__IUpdaterAppStateSystem0003);
+        
+        DECLSPEC_XFGVIRT(IUpdaterAppStateSystem, get_brandPath)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_brandPath )( 
+            IUpdaterAppStateSystem * This,
+            /* [retval][out] */ BSTR *__MIDL__IUpdaterAppStateSystem0004);
+        
+        DECLSPEC_XFGVIRT(IUpdaterAppStateSystem, get_ecp)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_ecp )( 
+            IUpdaterAppStateSystem * This,
+            /* [retval][out] */ BSTR *__MIDL__IUpdaterAppStateSystem0005);
+        
+        END_INTERFACE
+    } IUpdaterAppStateSystemVtbl;
+
+    interface IUpdaterAppStateSystem
+    {
+        CONST_VTBL struct IUpdaterAppStateSystemVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IUpdaterAppStateSystem_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IUpdaterAppStateSystem_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IUpdaterAppStateSystem_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IUpdaterAppStateSystem_GetTypeInfoCount(This,pctinfo)	\
+    ( (This)->lpVtbl -> GetTypeInfoCount(This,pctinfo) ) 
+
+#define IUpdaterAppStateSystem_GetTypeInfo(This,iTInfo,lcid,ppTInfo)	\
+    ( (This)->lpVtbl -> GetTypeInfo(This,iTInfo,lcid,ppTInfo) ) 
+
+#define IUpdaterAppStateSystem_GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId)	\
+    ( (This)->lpVtbl -> GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId) ) 
+
+#define IUpdaterAppStateSystem_Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr)	\
+    ( (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr) ) 
+
+
+#define IUpdaterAppStateSystem_get_appId(This,__MIDL__IUpdaterAppStateSystem0000)	\
+    ( (This)->lpVtbl -> get_appId(This,__MIDL__IUpdaterAppStateSystem0000) ) 
+
+#define IUpdaterAppStateSystem_get_version(This,__MIDL__IUpdaterAppStateSystem0001)	\
+    ( (This)->lpVtbl -> get_version(This,__MIDL__IUpdaterAppStateSystem0001) ) 
+
+#define IUpdaterAppStateSystem_get_ap(This,__MIDL__IUpdaterAppStateSystem0002)	\
+    ( (This)->lpVtbl -> get_ap(This,__MIDL__IUpdaterAppStateSystem0002) ) 
+
+#define IUpdaterAppStateSystem_get_brandCode(This,__MIDL__IUpdaterAppStateSystem0003)	\
+    ( (This)->lpVtbl -> get_brandCode(This,__MIDL__IUpdaterAppStateSystem0003) ) 
+
+#define IUpdaterAppStateSystem_get_brandPath(This,__MIDL__IUpdaterAppStateSystem0004)	\
+    ( (This)->lpVtbl -> get_brandPath(This,__MIDL__IUpdaterAppStateSystem0004) ) 
+
+#define IUpdaterAppStateSystem_get_ecp(This,__MIDL__IUpdaterAppStateSystem0005)	\
+    ( (This)->lpVtbl -> get_ecp(This,__MIDL__IUpdaterAppStateSystem0005) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IUpdaterAppStateSystem_INTERFACE_DEFINED__ */
+
+
+#ifndef __IUpdaterAppStatesCallback_INTERFACE_DEFINED__
+#define __IUpdaterAppStatesCallback_INTERFACE_DEFINED__
+
+/* interface IUpdaterAppStatesCallback */
+/* [unique][helpstring][uuid][oleautomation][object] */ 
+
+
+EXTERN_C const IID IID_IUpdaterAppStatesCallback;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("EFE903C0-E820-4136-9FAE-FDCD7F256302")
+    IUpdaterAppStatesCallback : public IUnknown
+    {
+    public:
+        virtual HRESULT STDMETHODCALLTYPE Run( 
+            /* [in] */ VARIANT app_states) = 0;
+        
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct IUpdaterAppStatesCallbackVtbl
+    {
+        BEGIN_INTERFACE
+        
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IUpdaterAppStatesCallback * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IUpdaterAppStatesCallback * This);
+        
+        DECLSPEC_XFGVIRT(IUnknown, Release)
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IUpdaterAppStatesCallback * This);
+        
+        DECLSPEC_XFGVIRT(IUpdaterAppStatesCallback, Run)
+        HRESULT ( STDMETHODCALLTYPE *Run )( 
+            IUpdaterAppStatesCallback * This,
+            /* [in] */ VARIANT app_states);
+        
+        END_INTERFACE
+    } IUpdaterAppStatesCallbackVtbl;
+
+    interface IUpdaterAppStatesCallback
+    {
+        CONST_VTBL struct IUpdaterAppStatesCallbackVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IUpdaterAppStatesCallback_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IUpdaterAppStatesCallback_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IUpdaterAppStatesCallback_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IUpdaterAppStatesCallback_Run(This,app_states)	\
+    ( (This)->lpVtbl -> Run(This,app_states) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IUpdaterAppStatesCallback_INTERFACE_DEFINED__ */
+
+
+#ifndef __IUpdaterAppStatesCallbackUser_INTERFACE_DEFINED__
+#define __IUpdaterAppStatesCallbackUser_INTERFACE_DEFINED__
+
+/* interface IUpdaterAppStatesCallbackUser */
+/* [unique][helpstring][uuid][oleautomation][object] */ 
+
+
+EXTERN_C const IID IID_IUpdaterAppStatesCallbackUser;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("BCFCF95C-DE48-4F42-B0E9-D50DB407DB53")
+    IUpdaterAppStatesCallbackUser : public IUnknown
+    {
+    public:
+        virtual HRESULT STDMETHODCALLTYPE Run( 
+            /* [in] */ VARIANT app_states) = 0;
+        
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct IUpdaterAppStatesCallbackUserVtbl
+    {
+        BEGIN_INTERFACE
+        
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IUpdaterAppStatesCallbackUser * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IUpdaterAppStatesCallbackUser * This);
+        
+        DECLSPEC_XFGVIRT(IUnknown, Release)
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IUpdaterAppStatesCallbackUser * This);
+        
+        DECLSPEC_XFGVIRT(IUpdaterAppStatesCallbackUser, Run)
+        HRESULT ( STDMETHODCALLTYPE *Run )( 
+            IUpdaterAppStatesCallbackUser * This,
+            /* [in] */ VARIANT app_states);
+        
+        END_INTERFACE
+    } IUpdaterAppStatesCallbackUserVtbl;
+
+    interface IUpdaterAppStatesCallbackUser
+    {
+        CONST_VTBL struct IUpdaterAppStatesCallbackUserVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IUpdaterAppStatesCallbackUser_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IUpdaterAppStatesCallbackUser_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IUpdaterAppStatesCallbackUser_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IUpdaterAppStatesCallbackUser_Run(This,app_states)	\
+    ( (This)->lpVtbl -> Run(This,app_states) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IUpdaterAppStatesCallbackUser_INTERFACE_DEFINED__ */
+
+
+#ifndef __IUpdaterAppStatesCallbackSystem_INTERFACE_DEFINED__
+#define __IUpdaterAppStatesCallbackSystem_INTERFACE_DEFINED__
+
+/* interface IUpdaterAppStatesCallbackSystem */
+/* [unique][helpstring][uuid][oleautomation][object] */ 
+
+
+EXTERN_C const IID IID_IUpdaterAppStatesCallbackSystem;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("2CB8867E-495E-459F-B1B6-2DD7FFDBD462")
+    IUpdaterAppStatesCallbackSystem : public IUnknown
+    {
+    public:
+        virtual HRESULT STDMETHODCALLTYPE Run( 
+            /* [in] */ VARIANT app_states) = 0;
+        
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct IUpdaterAppStatesCallbackSystemVtbl
+    {
+        BEGIN_INTERFACE
+        
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IUpdaterAppStatesCallbackSystem * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IUpdaterAppStatesCallbackSystem * This);
+        
+        DECLSPEC_XFGVIRT(IUnknown, Release)
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IUpdaterAppStatesCallbackSystem * This);
+        
+        DECLSPEC_XFGVIRT(IUpdaterAppStatesCallbackSystem, Run)
+        HRESULT ( STDMETHODCALLTYPE *Run )( 
+            IUpdaterAppStatesCallbackSystem * This,
+            /* [in] */ VARIANT app_states);
+        
+        END_INTERFACE
+    } IUpdaterAppStatesCallbackSystemVtbl;
+
+    interface IUpdaterAppStatesCallbackSystem
+    {
+        CONST_VTBL struct IUpdaterAppStatesCallbackSystemVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IUpdaterAppStatesCallbackSystem_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IUpdaterAppStatesCallbackSystem_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IUpdaterAppStatesCallbackSystem_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IUpdaterAppStatesCallbackSystem_Run(This,app_states)	\
+    ( (This)->lpVtbl -> Run(This,app_states) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IUpdaterAppStatesCallbackSystem_INTERFACE_DEFINED__ */
+
+
 #ifndef __IUpdater_INTERFACE_DEFINED__
 #define __IUpdater_INTERFACE_DEFINED__
 
@@ -1736,6 +2644,9 @@ EXTERN_C const IID IID_IUpdater;
             /* [string][in] */ const WCHAR *install_data,
             /* [string][in] */ const WCHAR *install_settings,
             /* [in] */ IUpdaterObserver *observer) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE GetAppStates( 
+            /* [in] */ IUpdaterAppStatesCallback *callback) = 0;
         
     };
     
@@ -1838,6 +2749,11 @@ EXTERN_C const IID IID_IUpdater;
             /* [string][in] */ const WCHAR *install_settings,
             /* [in] */ IUpdaterObserver *observer);
         
+        DECLSPEC_XFGVIRT(IUpdater, GetAppStates)
+        HRESULT ( STDMETHODCALLTYPE *GetAppStates )( 
+            IUpdater * This,
+            /* [in] */ IUpdaterAppStatesCallback *callback);
+        
         END_INTERFACE
     } IUpdaterVtbl;
 
@@ -1890,6 +2806,9 @@ EXTERN_C const IID IID_IUpdater;
 
 #define IUpdater_RunInstaller(This,app_id,installer_path,install_args,install_data,install_settings,observer)	\
     ( (This)->lpVtbl -> RunInstaller(This,app_id,installer_path,install_args,install_data,install_settings,observer) ) 
+
+#define IUpdater_GetAppStates(This,callback)	\
+    ( (This)->lpVtbl -> GetAppStates(This,callback) ) 
 
 #endif /* COBJMACROS */
 
@@ -1973,6 +2892,9 @@ EXTERN_C const IID IID_IUpdaterUser;
             /* [string][in] */ const WCHAR *install_data,
             /* [string][in] */ const WCHAR *install_settings,
             /* [in] */ IUpdaterObserverUser *observer) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE GetAppStates( 
+            /* [in] */ IUpdaterAppStatesCallbackUser *callback) = 0;
         
     };
     
@@ -2075,6 +2997,11 @@ EXTERN_C const IID IID_IUpdaterUser;
             /* [string][in] */ const WCHAR *install_settings,
             /* [in] */ IUpdaterObserverUser *observer);
         
+        DECLSPEC_XFGVIRT(IUpdaterUser, GetAppStates)
+        HRESULT ( STDMETHODCALLTYPE *GetAppStates )( 
+            IUpdaterUser * This,
+            /* [in] */ IUpdaterAppStatesCallbackUser *callback);
+        
         END_INTERFACE
     } IUpdaterUserVtbl;
 
@@ -2127,6 +3054,9 @@ EXTERN_C const IID IID_IUpdaterUser;
 
 #define IUpdaterUser_RunInstaller(This,app_id,installer_path,install_args,install_data,install_settings,observer)	\
     ( (This)->lpVtbl -> RunInstaller(This,app_id,installer_path,install_args,install_data,install_settings,observer) ) 
+
+#define IUpdaterUser_GetAppStates(This,callback)	\
+    ( (This)->lpVtbl -> GetAppStates(This,callback) ) 
 
 #endif /* COBJMACROS */
 
@@ -2210,6 +3140,9 @@ EXTERN_C const IID IID_IUpdaterSystem;
             /* [string][in] */ const WCHAR *install_data,
             /* [string][in] */ const WCHAR *install_settings,
             /* [in] */ IUpdaterObserverSystem *observer) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE GetAppStates( 
+            /* [in] */ IUpdaterAppStatesCallbackSystem *callback) = 0;
         
     };
     
@@ -2312,6 +3245,11 @@ EXTERN_C const IID IID_IUpdaterSystem;
             /* [string][in] */ const WCHAR *install_settings,
             /* [in] */ IUpdaterObserverSystem *observer);
         
+        DECLSPEC_XFGVIRT(IUpdaterSystem, GetAppStates)
+        HRESULT ( STDMETHODCALLTYPE *GetAppStates )( 
+            IUpdaterSystem * This,
+            /* [in] */ IUpdaterAppStatesCallbackSystem *callback);
+        
         END_INTERFACE
     } IUpdaterSystemVtbl;
 
@@ -2365,6 +3303,9 @@ EXTERN_C const IID IID_IUpdaterSystem;
 #define IUpdaterSystem_RunInstaller(This,app_id,installer_path,install_args,install_data,install_settings,observer)	\
     ( (This)->lpVtbl -> RunInstaller(This,app_id,installer_path,install_args,install_data,install_settings,observer) ) 
 
+#define IUpdaterSystem_GetAppStates(This,callback)	\
+    ( (This)->lpVtbl -> GetAppStates(This,callback) ) 
+
 #endif /* COBJMACROS */
 
 
@@ -2382,6 +3323,11 @@ EXTERN_C const IID IID_IUpdaterSystem;
 
 /* library UpdaterLib */
 /* [helpstring][version][uuid] */ 
+
+
+
+
+
 
 
 
@@ -2419,6 +3365,11 @@ unsigned long             __RPC_USER  BSTR_UserSize(     unsigned long *, unsign
 unsigned char * __RPC_USER  BSTR_UserMarshal(  unsigned long *, unsigned char *, BSTR * ); 
 unsigned char * __RPC_USER  BSTR_UserUnmarshal(unsigned long *, unsigned char *, BSTR * ); 
 void                      __RPC_USER  BSTR_UserFree(     unsigned long *, BSTR * ); 
+
+unsigned long             __RPC_USER  VARIANT_UserSize(     unsigned long *, unsigned long            , VARIANT * ); 
+unsigned char * __RPC_USER  VARIANT_UserMarshal(  unsigned long *, unsigned char *, VARIANT * ); 
+unsigned char * __RPC_USER  VARIANT_UserUnmarshal(unsigned long *, unsigned char *, VARIANT * ); 
+void                      __RPC_USER  VARIANT_UserFree(     unsigned long *, VARIANT * ); 
 
 /* end of Additional Prototypes */
 

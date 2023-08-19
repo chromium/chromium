@@ -10,6 +10,8 @@
 #include "chromeos/ash/components/dbus/userdataauth/fake_install_attributes_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+// TODO(b/294350413): Cover AutoEnrollmentController with unit tests.
+
 namespace policy {
 
 class EnrollmentFwmpHelperTest : public testing::Test {
@@ -22,7 +24,7 @@ class EnrollmentFwmpHelperTest : public testing::Test {
   void TearDown() override { ash::InstallAttributesClient::Shutdown(); }
 
  protected:
-  raw_ptr<ash::FakeInstallAttributesClient, ExperimentalAsh>
+  raw_ptr<ash::FakeInstallAttributesClient, DanglingUntriaged | ExperimentalAsh>
       install_attributes_client_;
 
  private:

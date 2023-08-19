@@ -14,12 +14,14 @@ import org.junit.runner.RunWith;
 import org.chromium.android_webview.AwContentsStatics;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.components.variations.VariationsSwitches;
 
 /**
  * Tests that the variations headers are correctly set.
  */
 @RunWith(AwJUnit4ClassRunner.class)
-@CommandLineFlags.Add({"disable-field-trial-config", "force-variation-ids=4,10,34"})
+@CommandLineFlags.Add({VariationsSwitches.DISABLE_FIELD_TRIAL_TESTING_CONFIG,
+        VariationsSwitches.FORCE_VARIATION_IDS + "=4,10,34"})
 public class VariationsHeadersTest {
     @Rule
     public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();

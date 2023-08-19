@@ -5,6 +5,10 @@
 // Use the <code>chrome.os.telemetry</code> API to get telemetry data.
 [implemented_in = "chrome/browser/chromeos/extensions/telemetry/api/telemetry/telemetry_api.h", modernised_enums]
 namespace os.telemetry {
+// Note: Please update documentation as well when this interface is changed.
+// The documentation lives here: //docs/telemetry_extension/api_overview.md.
+// LINT.IfChange
+
   dictionary AudioInputNodeInfo {
     double? id;
     DOMString? name;
@@ -104,6 +108,87 @@ namespace os.telemetry {
   };
 
   callback CpuInfoCallback = void (CpuInfo cpuInfo);
+
+  // An enumeration of display input type.
+  enum DisplayInputType {
+    // Unknown enum value.
+    unknown,
+    // Digital input.
+    digital,
+    // Analog input.
+    analog
+  };
+
+  dictionary EmbeddedDisplayInfo {
+    // Privacy screen is supported or not.
+    boolean? privacyScreenSupported;
+    // Privacy screen is enabled or not.
+    boolean? privacyScreenEnabled;
+    // Display width in millimeters.
+    long? displayWidth;
+    // Display height in millimeters.
+    long? displayHeight;
+    // Horizontal resolution.
+    long? resolutionHorizontal;
+    // Vertical resolution.
+    long? resolutionVertical;
+    // Refresh rate.
+    double? refreshRate;
+    // Three letter manufacturer ID.
+    DOMString? manufacturer;
+    // Manufacturer product code.
+    long? modelId;
+    // 32 bits serial number.
+    long? serialNumber;
+    // Week of manufacture.
+    long? manufactureWeek;
+    // Year of manufacture.
+    long? manufactureYear;
+    // EDID version.
+    DOMString? edidVersion;
+    // Digital or analog input.
+    DisplayInputType inputType;
+    // Name of display product.
+    DOMString? displayName;
+  };
+
+  dictionary ExternalDisplayInfo {
+    // Display width in millimeters.
+    long? displayWidth;
+    // Display height in millimeters.
+    long? displayHeight;
+    // Horizontal resolution.
+    long? resolutionHorizontal;
+    // Vertical resolution.
+    long? resolutionVertical;
+    // Refresh rate.
+    double? refreshRate;
+    // Three letter manufacturer ID.
+    DOMString? manufacturer;
+    // Manufacturer product code.
+    long? modelId;
+    // 32 bits serial number.
+    long? serialNumber;
+    // Week of manufacture.
+    long? manufactureWeek;
+    // Year of manufacture.
+    long? manufactureYear;
+    // EDID version.
+    DOMString? edidVersion;
+    // Digital or analog input.
+    DisplayInputType inputType;
+    // Name of display product.
+    DOMString? displayName;
+  };
+
+  dictionary DisplayInfo {
+    // Embedded display info.
+    EmbeddedDisplayInfo embeddedDisplay;
+    // External display info.
+    ExternalDisplayInfo[] externalDisplays;
+  };
+
+  callback DisplayInfoCallback = void (DisplayInfo displayInfo);
 
   dictionary MarketingInfo {
     DOMString? marketingName;
@@ -400,5 +485,12 @@ namespace os.telemetry {
     [supportsPromises] static void getStatefulPartitionInfo(StatefulPartitionInfoCallback callback);
 
     [supportsPromises] static void getTpmInfo(TpmInfoCallback callback);
+
+    [supportsPromises] static void getDisplayInfo(DisplayInfoCallback callback);
   };
+
+  // LINT.ThenChange(//docs/telemetry_extension/api_overview.md)
+  // The following is an empty definition, since the IDL compiler only accepts
+  // comments over valid definitions.
+  callback EOF = void();
 };

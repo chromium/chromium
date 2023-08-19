@@ -196,7 +196,7 @@ AutofillProfile CreateLocalProfileWithDetails(size_t use_count,
 CreditCard CreateLocalCreditCardWithDetails(size_t use_count,
                                             int64_t use_date) {
   CreditCard card;
-  DCHECK_EQ(card.record_type(), CreditCard::LOCAL_CARD);
+  DCHECK_EQ(card.record_type(), CreditCard::RecordType::kLocalCard);
   card.set_use_count(use_count);
   card.set_use_date(UseDateFromProtoValue(use_date));
   return card;
@@ -651,9 +651,9 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest,
 
   bridge()->AutofillProfileChanged(
       AutofillProfileChange(AutofillProfileChange::UPDATE,
-                            updated_profile.server_id(), &updated_profile));
+                            updated_profile.server_id(), updated_profile));
   bridge()->CreditCardChanged(CreditCardChange(
-      CreditCardChange::UPDATE, updated_card.server_id(), &updated_card));
+      CreditCardChange::UPDATE, updated_card.server_id(), updated_card));
 
   // Check that also the local metadata did not get updated.
   EXPECT_THAT(
@@ -689,9 +689,9 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest,
 
   bridge()->AutofillProfileChanged(
       AutofillProfileChange(AutofillProfileChange::ADD,
-                            updated_profile.server_id(), &updated_profile));
+                            updated_profile.server_id(), updated_profile));
   bridge()->CreditCardChanged(CreditCardChange(
-      CreditCardChange::ADD, updated_card.server_id(), &updated_card));
+      CreditCardChange::ADD, updated_card.server_id(), updated_card));
 
   // Check that also the local metadata did not get updated.
   EXPECT_THAT(
@@ -736,9 +736,9 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest,
 
   bridge()->AutofillProfileChanged(
       AutofillProfileChange(AutofillProfileChange::UPDATE,
-                            updated_profile.server_id(), &updated_profile));
+                            updated_profile.server_id(), updated_profile));
   bridge()->CreditCardChanged(CreditCardChange(
-      CreditCardChange::UPDATE, updated_card.server_id(), &updated_card));
+      CreditCardChange::UPDATE, updated_card.server_id(), updated_card));
 
   // Check that the local metadata got update as well.
   EXPECT_THAT(GetAllLocalDataInclRestart(),
@@ -772,9 +772,9 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest,
   EXPECT_CALL(*backend(), NotifyOfMultipleAutofillChanges()).Times(0);
 
   bridge()->AutofillProfileChanged(AutofillProfileChange(
-      AutofillProfileChange::ADD, new_profile.server_id(), &new_profile));
+      AutofillProfileChange::ADD, new_profile.server_id(), new_profile));
   bridge()->CreditCardChanged(
-      CreditCardChange(CreditCardChange::ADD, new_card.server_id(), &new_card));
+      CreditCardChange(CreditCardChange::ADD, new_card.server_id(), new_card));
 
   // Check that the new metadata got created as well.
   EXPECT_THAT(GetAllLocalDataInclRestart(),
@@ -809,9 +809,9 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest, SendNewDataToServerOnLocalUpdate) {
   EXPECT_CALL(*backend(), NotifyOfMultipleAutofillChanges()).Times(0);
 
   bridge()->AutofillProfileChanged(AutofillProfileChange(
-      AutofillProfileChange::UPDATE, new_profile.server_id(), &new_profile));
-  bridge()->CreditCardChanged(CreditCardChange(
-      CreditCardChange::UPDATE, new_card.server_id(), &new_card));
+      AutofillProfileChange::UPDATE, new_profile.server_id(), new_profile));
+  bridge()->CreditCardChanged(CreditCardChange(CreditCardChange::UPDATE,
+                                               new_card.server_id(), new_card));
 
   // Check that the new metadata got created as well.
   EXPECT_THAT(GetAllLocalDataInclRestart(),
@@ -838,9 +838,9 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest,
 
   bridge()->AutofillProfileChanged(
       AutofillProfileChange(AutofillProfileChange::REMOVE,
-                            existing_profile.server_id(), &existing_profile));
+                            existing_profile.server_id(), existing_profile));
   bridge()->CreditCardChanged(CreditCardChange(
-      CreditCardChange::REMOVE, existing_card.server_id(), &existing_card));
+      CreditCardChange::REMOVE, existing_card.server_id(), existing_card));
 
   // Check that there is no metadata anymore.
   EXPECT_THAT(GetAllLocalDataInclRestart(), IsEmpty());
@@ -868,9 +868,9 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest,
 
   bridge()->AutofillProfileChanged(
       AutofillProfileChange(AutofillProfileChange::REMOVE,
-                            existing_profile.server_id(), &existing_profile));
+                            existing_profile.server_id(), existing_profile));
   bridge()->CreditCardChanged(CreditCardChange(
-      CreditCardChange::REMOVE, existing_card.server_id(), &existing_card));
+      CreditCardChange::REMOVE, existing_card.server_id(), existing_card));
 
   // Check that there is also no metadata at the end.
   EXPECT_THAT(GetAllLocalDataInclRestart(), IsEmpty());
@@ -896,7 +896,7 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest, DoNotPropagateNonSyncAddresses) {
   existing_profile.set_use_date(UseDateFromProtoValue(21));
   bridge()->AutofillProfileChanged(
       AutofillProfileChange(AutofillProfileChange::UPDATE,
-                            existing_profile.guid(), &existing_profile));
+                            existing_profile.guid(), existing_profile));
 
   // Check that there is also no metadata at the end.
   EXPECT_THAT(GetAllLocalDataInclRestart(), IsEmpty());
@@ -925,7 +925,7 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest, DoNotPropagateNonSyncCards) {
   existing_card.set_use_count(31);
   existing_card.set_use_date(UseDateFromProtoValue(41));
   bridge()->CreditCardChanged(CreditCardChange(
-      AutofillProfileChange::UPDATE, existing_card.guid(), &existing_card));
+      AutofillProfileChange::UPDATE, existing_card.guid(), existing_card));
 
   // Check that there is also no metadata at the end.
   EXPECT_THAT(GetAllLocalDataInclRestart(), IsEmpty());

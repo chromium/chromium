@@ -1,5 +1,5 @@
 {
   "provider_urls": [
-    "https://devtools.test:8443/resources/fedcm/fedcm.json"
+    "https://127.0.0.1:8443/resources/fedcm/fedcm.json"
   ]
 }

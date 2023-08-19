@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+PASS left < right
+PASS no overflow
+PASS same widths
+FAIL zero width assert_equals: expected 0 but got 200
+FAIL same heights assert_equals: expected 28 but got 40
+FAIL no overflow 2 assert_less_than_equal: expected a number less than or equal to 183 but got 301
+Harness: the test ran to completion.
+

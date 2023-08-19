@@ -66,6 +66,8 @@ class FakeClientSideDetectionService : public ClientSideDetectionService {
 
   CSDModelType GetModelType() override { return CSDModelType::kProtobuf; }
 
+  bool IsModelAvailable() override { return true; }
+
   const std::string& GetModelStr() override {
     client_side_model_ = model_.SerializeAsString();
     return client_side_model_;

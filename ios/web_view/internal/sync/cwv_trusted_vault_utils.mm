@@ -6,10 +6,6 @@
 
 #import "components/trusted_vault/trusted_vault_histograms.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 trusted_vault::TrustedVaultDeviceRegistrationStateForUMA
 CWVConvertTrustedVaultState(CWVTrustedVaultState state) {

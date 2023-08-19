@@ -45,7 +45,7 @@ class ReadAnythingControllerTest : public TestWithBrowserView {
     // Reset prefs to default values for test.
     browser()->profile()->GetPrefs()->SetString(
         prefs::kAccessibilityReadAnythingFontName,
-        string_constants::kReadAnythingDefaultFontName);
+        string_constants::kReadAnythingPlaceholderFontName);
     browser()->profile()->GetPrefs()->SetDouble(
         prefs::kAccessibilityReadAnythingFontScale,
         kReadAnythingDefaultFontScale);

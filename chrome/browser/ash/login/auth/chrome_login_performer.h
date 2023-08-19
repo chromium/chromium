@@ -9,7 +9,9 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/login/osauth/auth_policy_enforcer.h"
 #include "chrome/browser/ash/policy/login/wildcard_login_checker.h"
+#include "chromeos/ash/components/early_prefs/early_prefs_reader.h"
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "chromeos/ash/components/login/auth/auth_status_consumer.h"
 #include "chromeos/ash/components/login/auth/authenticator.h"
@@ -48,6 +50,9 @@ class ChromeLoginPerformer : public LoginPerformer {
       bool* wildcard_match,
       const absl::optional<user_manager::UserType>& user_type) override;
 
+  void LoadAndApplyEarlyPrefs(std::unique_ptr<UserContext> context,
+                              AuthOperationCallback callback) override;
+
  protected:
   bool RunTrustedCheck(base::OnceClosure callback) override;
   // Runs `callback` unconditionally, but DidRunTrustedCheck() will only be run
@@ -71,7 +76,12 @@ class ChromeLoginPerformer : public LoginPerformer {
       base::OnceClosure success_callback,
       base::OnceClosure failure_callback,
       policy::WildcardLoginChecker::Result result);
+  void OnEarlyPrefsRead(std::unique_ptr<UserContext> context,
+                        AuthOperationCallback callback,
+                        bool success);
 
+  std::unique_ptr<AuthPolicyEnforcer> auth_policy_enforcer_;
+  std::unique_ptr<EarlyPrefsReader> early_prefs_reader_;
   // Used to verify logins that matched wildcard on the login allowlist.
   std::unique_ptr<policy::WildcardLoginChecker> wildcard_login_checker_;
   base::WeakPtrFactory<ChromeLoginPerformer> weak_factory_{this};

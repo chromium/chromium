@@ -32,6 +32,7 @@ class RenderFrameHost;
 class RenderViewHostTestHarness;
 class WebContents;
 struct GlobalRequestID;
+class NavigationHandle;
 }  // namespace content
 
 namespace mojom {
@@ -114,7 +115,11 @@ class PageLoadMetricsObserverTester : public test::WeakMockTimerProvider {
       const mojom::FrameRenderDataUpdate& render_data);
   void SimulateRenderDataUpdate(const mojom::FrameRenderDataUpdate& render_data,
                                 content::RenderFrameHost* render_frame_host);
-  void SimulateSoftNavigationCountUpdate(uint32_t soft_navigation_count);
+  void SimulateSoftNavigation(content::NavigationHandle* navigation_handle);
+  void SimulateDidFinishNavigation(
+      content::NavigationHandle* navigation_handle);
+  void SimulateSoftNavigationCountUpdate(
+      const mojom::SoftNavigationMetrics& soft_navigation_metrics);
 
   // Simulates a loaded resource. Main frame resources must specify a
   // GlobalRequestID, using the SimulateLoadedResource() method that takes a
@@ -175,7 +180,7 @@ class PageLoadMetricsObserverTester : public test::WeakMockTimerProvider {
       const absl::optional<blink::SubresourceLoadMetrics>&
           subresource_load_metrics,
       content::RenderFrameHost* rfh,
-      uint32_t soft_navigation_count = 0);
+      const mojom::SoftNavigationMetrics& soft_navigation_metrics);
 
   content::WebContents* web_contents() const { return web_contents_; }
 

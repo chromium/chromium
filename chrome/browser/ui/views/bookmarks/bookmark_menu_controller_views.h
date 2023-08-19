@@ -121,7 +121,7 @@ class BookmarkMenuController : public bookmarks::BaseBookmarkModelObserver,
   std::unique_ptr<BookmarkMenuDelegate> menu_delegate_;
 
   // The node we're showing the contents of.
-  raw_ptr<const bookmarks::BookmarkNode> node_;
+  raw_ptr<const bookmarks::BookmarkNode, DanglingUntriaged> node_;
 
   // Data for the drop.
   bookmarks::BookmarkNodeData drop_data_;

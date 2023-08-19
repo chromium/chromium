@@ -11,21 +11,26 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertEquals;
 
 import static org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils.checkCurrentPresenter;
 import static org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils.checkDialogDismissalCause;
 import static org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils.checkPendingSize;
 import static org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils.createDialog;
+import static org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils.createDialogWithDialogStyle;
 import static org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils.showDialog;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.os.Build;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.matcher.BoundedMatcher;
+import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Description;
@@ -42,6 +47,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.components.browser_ui.modaldialog.test.R;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -138,10 +144,10 @@ public class AppModalPresenterTest {
     @SmallTest
     @Feature({"ModalDialog"})
     public void testDismiss_DismissalCause_BackPressed() throws Exception {
-        PropertyModel dialog1 = createDialog(sActivity, sManager, "1", mTestObserver);
+        PropertyModel dialog = createDialog(sActivity, sManager, "title", mTestObserver);
         mExpectedDismissalCause = DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE;
 
-        showDialog(sManager, dialog1, ModalDialogType.APP);
+        showDialog(sManager, dialog, ModalDialogType.APP);
 
         // Dismiss the tab modal dialog and verify dismissal cause.
         int callCount = mTestObserver.onDialogDismissedCallback.getCallCount();
@@ -155,7 +161,7 @@ public class AppModalPresenterTest {
     @SmallTest
     @Feature({"ModalDialog"})
     public void testBackPressedCallback_ModalDialogProperty_IsFired() throws TimeoutException {
-        PropertyModel dialog1 = createDialog(sActivity, sManager, "1", null);
+        PropertyModel dialog = createDialog(sActivity, sManager, "title", null);
         CallbackHelper callbackHelper = new CallbackHelper();
         final OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
             @Override
@@ -165,11 +171,11 @@ public class AppModalPresenterTest {
         };
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            dialog1.set(ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER,
+            dialog.set(ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER,
                     onBackPressedCallback);
         });
 
-        showDialog(sManager, dialog1, ModalDialogType.APP);
+        showDialog(sManager, dialog, ModalDialogType.APP);
 
         Espresso.pressBack();
         callbackHelper.waitForCallback(0);
@@ -179,9 +185,9 @@ public class AppModalPresenterTest {
     @SmallTest
     @Feature({"ModalDialog"})
     public void testButton_negativeButtonFilled() throws Exception {
-        PropertyModel dialog1 = createDialog(sActivity, sManager, "1", mTestObserver,
+        PropertyModel dialog = createDialog(sActivity, sManager, "title", mTestObserver,
                 ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_FILLED);
-        showDialog(sManager, dialog1, ModalDialogType.APP);
+        showDialog(sManager, dialog, ModalDialogType.APP);
         onView(withText(R.string.cancel)).check(matches(hasCurrentTextColor(Color.WHITE)));
         onView(withText(R.string.ok)).check(matches(not(hasCurrentTextColor(Color.WHITE))));
     }
@@ -190,11 +196,31 @@ public class AppModalPresenterTest {
     @SmallTest
     @Feature({"ModalDialog"})
     public void testButton_primaryButtonFilled() throws Exception {
-        PropertyModel dialog1 = createDialog(sActivity, sManager, "1", mTestObserver,
+        PropertyModel dialog = createDialog(sActivity, sManager, "title", mTestObserver,
                 ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE);
-        showDialog(sManager, dialog1, ModalDialogType.APP);
+        showDialog(sManager, dialog, ModalDialogType.APP);
         onView(withText(R.string.cancel)).check(matches(not(hasCurrentTextColor(Color.WHITE))));
         onView(withText(R.string.ok)).check(matches(hasCurrentTextColor(Color.WHITE)));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog"})
+    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
+    public void testFullscreenDarkStyle() {
+        PropertyModel dialog = createDialogWithDialogStyle(sActivity, sManager, "title",
+                mTestObserver, ModalDialogProperties.DialogStyles.FULLSCREEN_DARK_DIALOG);
+        showDialog(sManager, dialog, ModalDialogType.APP);
+        Window window = ((AppModalPresenter) sManager.getCurrentPresenterForTest()).getWindow();
+
+        assertEquals(sActivity.getColor(R.color.toolbar_background_primary_dark),
+                window.getStatusBarColor());
+        assertEquals(sActivity.getColor(R.color.toolbar_background_primary_dark),
+                window.getNavigationBarColor());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            assertEquals(sActivity.getColor(R.color.bottom_system_nav_divider_color_light),
+                    window.getNavigationBarDividerColor());
+        }
     }
 
     private static Matcher<View> hasCurrentTextColor(int expected) {

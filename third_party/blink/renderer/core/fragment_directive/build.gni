@@ -36,6 +36,8 @@ blink_core_tests_fragment_directive = [
   "same_block_word_iterator_test.cc",
   "text_fragment_anchor_metrics_test.cc",
   "text_fragment_anchor_test.cc",
+  "text_fragment_test_util.cc",
+  "text_fragment_test_util.h",
   "text_fragment_finder_test.cc",
   "text_fragment_generation_navigation_test.cc",
   "text_fragment_handler_test.cc",

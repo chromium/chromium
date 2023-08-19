@@ -29,7 +29,9 @@ enum Visibility {
   // The user is visible to all contacts.
   kAllContacts = 2,
   // The user is only visible to selected contacts.
-  kSelectedContacts = 3
+  kSelectedContacts = 3,
+  // The user is only visible to their own devices.
+  kYourDevices = 4
 };
 
 // Represents the error result when validating the device name.

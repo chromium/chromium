@@ -38,10 +38,10 @@ class SyncErrorNotifier : public syncer::SyncServiceObserver,
 
  private:
   // The sync service to query for error details.
-  raw_ptr<syncer::SyncService, ExperimentalAsh> sync_service_;
+  raw_ptr<syncer::SyncService, ExperimentalAsh> sync_service_ = nullptr;
 
   // The Profile this service belongs to.
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
 
   // Notification was added to NotificationUIManager. This flag is used to
   // prevent displaying passphrase notification to user if they already saw (and

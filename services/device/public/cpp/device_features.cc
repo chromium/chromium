@@ -29,6 +29,10 @@ BASE_FEATURE(kCrOSGeolocationReducedWifiPollingInterval,
 // Enable serial communication for SPP devices.
 BASE_FEATURE(kEnableBluetoothSerialPortProfileInSerialApi,
              "EnableBluetoothSerialPortProfileInSerialApi",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
+// Enable real-time diagnostic updates in chrome://location-internals.
+BASE_FEATURE(kGeolocationDiagnosticsObserver,
+             "GeolocationDiagnosticsObserver",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features

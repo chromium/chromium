@@ -67,7 +67,7 @@ TEST(NewTabPageModulesTest, MakeModuleIdNames_DummyModules) {
 
   const std::vector<std::pair<const std::string, int>> module_id_names =
       MakeModuleIdNames(false);
-  ASSERT_EQ(12u, module_id_names.size());
+  ASSERT_EQ(1u, module_id_names.size());
 }
 #endif
 

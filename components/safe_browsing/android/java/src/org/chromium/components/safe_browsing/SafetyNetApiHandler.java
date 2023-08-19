@@ -37,12 +37,12 @@ public interface SafetyNetApiHandler {
      * Verifies that SafetyNetApiHandler can operate and initializes if feasible.
      * Should be called on the same sequence as |startUriLookup|.
      *
-     * @param result The object on which to call the callback functions when URL checking
+     * @param observer The object on which to call the callback functions when URL checking
      * is complete.
      *
      * @return whether Safe Browsing is supported for this installation.
      */
-    boolean init(Observer result);
+    boolean init(Observer observer);
 
     /**
      * Start a URI-lookup to determine if it matches one of the specified threats.

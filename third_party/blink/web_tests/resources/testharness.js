@@ -499,7 +499,7 @@
     ShellTestEnvironment.prototype.next_default_test_name = function() {
         var suffix = this.name_counter > 0 ? " " + this.name_counter : "";
         this.name_counter++;
-        return "Untitled" + suffix;
+        return get_title() + suffix;
     };
 
     ShellTestEnvironment.prototype.on_new_harness_properties = function() {};
@@ -2483,6 +2483,10 @@
         this._user_defined_cleanup_count = 0;
         this._done_callbacks = [];
 
+        if (typeof AbortController === "function") {
+            this._abortController = new AbortController();
+        }
+
         // Tests declared following harness completion are likely an indication
         // of a programming error, but they cannot be reported
         // deterministically.
@@ -2959,6 +2963,10 @@
 
         this.phase = this.phases.CLEANING;
 
+        if (this._abortController) {
+            this._abortController.abort("Test cleanup");
+        }
+
         forEach(this.cleanup_callbacks,
                 function(cleanup_callback) {
                     var result;
@@ -3050,6 +3058,16 @@
                     callback();
                 });
         test._done_callbacks.length = 0;
+    }
+
+    /**
+     * Gives an AbortSignal that will be aborted when the test finishes.
+     */
+    Test.prototype.get_signal = function() {
+        if (!this._abortController) {
+            throw new Error("AbortController is not supported in this browser");
+        }
+        return this._abortController.signal;
     }
 
     /**
@@ -4741,7 +4759,7 @@
         if ('META_TITLE' in global_scope && META_TITLE) {
             return META_TITLE;
         }
-        if ('location' in global_scope) {
+        if ('location' in global_scope && 'pathname' in location) {
             return location.pathname.substring(location.pathname.lastIndexOf('/') + 1, location.pathname.indexOf('.'));
         }
         return "Untitled";

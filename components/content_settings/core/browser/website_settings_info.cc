@@ -74,6 +74,7 @@ bool WebsiteSettingsInfo::SupportsSecondaryPattern() const {
     case REQUESTING_ORIGIN_ONLY_SCOPE:
     case TOP_ORIGIN_ONLY_SCOPE:
     case GENERIC_SINGLE_ORIGIN_SCOPE:
+    case REQUESTING_SCHEMEFUL_SITE_ONLY_SCOPE:
       return false;
   }
 }

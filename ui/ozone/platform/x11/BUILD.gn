@@ -70,7 +70,6 @@ source_set("x11") {
     "//ui/base/ime",
     "//ui/base/x",
     "//ui/base/x:gl",
-    "//ui/display/fake",
     "//ui/events",
     "//ui/events:dom_keycode_converter",
     "//ui/events/devices",
@@ -171,7 +170,7 @@ source_set("x11_unittests") {
     "//ui/ozone/common",
   ]
 
-  if (!is_chromeos && !is_chromeos) {
+  if (!is_chromeos) {
     sources += [ "test/os_exchange_data_provider_x11_unittest.cc" ]
     deps += [ "//ui/base/clipboard:clipboard_types" ]
 

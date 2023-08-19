@@ -383,10 +383,8 @@ void DownloadHistory::LoadHistoryDownloads(
   std::map<std::string, int> file_name_count;
   CountFilePathOccurences(rows, &file_name_count);
 
-  int overwritten_download_removals = 0;
   for (const history::DownloadRow& row : rows) {
     if (ShouldSkipLoadingDownload(row, &file_name_count)) {
-      ++overwritten_download_removals;
       ScheduleRemoveDownload(row.id);
       continue;
     }
@@ -475,8 +473,6 @@ void DownloadHistory::LoadHistoryDownloads(
     DCHECK_EQ(DownloadHistoryData::PERSISTED,
               DownloadHistoryData::Get(item)->state());
   }
-  UMA_HISTOGRAM_COUNTS_1000("Download.OverwrittenDownloadRemovedFromHistory",
-                            overwritten_download_removals);
 
   // Indicate that the history db is initialized.
   notifier_.GetManager()->PostInitialization(

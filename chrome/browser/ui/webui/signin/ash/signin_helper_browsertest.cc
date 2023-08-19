@@ -21,9 +21,12 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
@@ -303,12 +306,21 @@ class SigninHelperTestWithArcAccountRestrictions
       public ::ash::AccountAppsAvailability::Observer {
  public:
   SigninHelperTestWithArcAccountRestrictions() {
-    feature_list_.InitAndEnableFeature(ash::features::kLacrosSupport);
+    feature_list_.InitWithFeatures(ash::standalone_browser::GetFeatureRefs(),
+                                   {});
   }
 
   ~SigninHelperTestWithArcAccountRestrictions() override = default;
 
   void SetUpOnMainThread() override {
+    if (browser() == nullptr) {
+      // Create a new Ash browser window so test code using browser() can work
+      // even when Lacros is the only browser.
+      // TODO(crbug.com/1450158): Remove uses of browser() from such tests.
+      chrome::NewEmptyWindow(ProfileManager::GetActiveUserProfile());
+      SelectFirstBrowser();
+    }
+
     SigninHelperTest::SetUpOnMainThread();
     account_apps_availability_ =
         ash::AccountAppsAvailabilityFactory::GetForProfile(
@@ -499,7 +511,8 @@ IN_PROC_BROWSER_TEST_F(SigninHelperTestWithArcAccountRestrictions,
 class SigninHelperTestSecondaryGoogleAccountUsage : public SigninHelperTest {
  public:
   SigninHelperTestSecondaryGoogleAccountUsage() {
-    feature_list_.InitAndDisableFeature(ash::features::kLacrosSupport);
+    feature_list_.InitWithFeatures({},
+                                   ash::standalone_browser::GetFeatureRefs());
   }
 
   ~SigninHelperTestSecondaryGoogleAccountUsage() override = default;

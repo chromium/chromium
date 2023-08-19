@@ -17,8 +17,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.commerce.core.ShoppingService.MerchantInfo;
 import org.chromium.components.page_info.PageInfoAction;
-import org.chromium.components.page_info.PageInfoDiscoverabilityMetrics;
-import org.chromium.components.page_info.PageInfoDiscoverabilityMetrics.DiscoverabilityAction;
 import org.chromium.components.page_info.PageInfoMainController;
 import org.chromium.components.page_info.PageInfoRowView;
 import org.chromium.components.page_info.PageInfoSubpageController;
@@ -42,8 +40,6 @@ public class PageInfoStoreInfoController implements PageInfoSubpageController {
     private final Context mContext;
     private final boolean mPageInfoOpenedFromStoreIcon;
     private final WebContents mWebContents;
-    private final PageInfoDiscoverabilityMetrics mDiscoverabilityMetrics =
-            new PageInfoDiscoverabilityMetrics();
     private final MerchantTrustMetrics mMetrics = new MerchantTrustMetrics();
 
     public PageInfoStoreInfoController(PageInfoMainController mainController,
@@ -86,10 +82,6 @@ public class PageInfoStoreInfoController implements PageInfoSubpageController {
                 rowParams.rowTint = R.color.iph_highlight_blue;
             }
             rowParams.clickCallback = () -> {
-                if (mPageInfoOpenedFromStoreIcon) {
-                    mDiscoverabilityMetrics.recordDiscoverabilityAction(
-                            DiscoverabilityAction.STORE_INFO_OPENED);
-                }
                 mMainController.recordAction(PageInfoAction.PAGE_INFO_STORE_INFO_CLICKED);
                 mMainController.dismiss();
                 mMetrics.recordUkmOnRowClicked(mWebContents);

@@ -19,7 +19,7 @@
 #include "chrome/browser/android/metrics/uma_utils.h"
 #include "chrome/common/profiler/main_thread_stack_sampling_profiler.h"
 #include "components/policy/core/common/android/android_combined_policy_provider.h"
-#include "components/startup_metric_utils/browser/startup_metric_utils.h"
+#include "components/startup_metric_utils/common/startup_metric_utils.h"
 #include "content/public/browser/browser_main_runner.h"
 
 namespace {
@@ -98,7 +98,7 @@ ChromeMainDelegateAndroid::RunProcess(
     base::TimeTicks application_start_time =
         chrome::android::GetApplicationStartTime();
     if (!process_start_time.is_null()) {
-      startup_metric_utils::RecordStartupProcessCreationTime(
+      startup_metric_utils::GetCommon().RecordStartupProcessCreationTime(
           process_start_time);
       // TODO(crbug.com/1127482): Perf bots should add support for measuring
       // Startup.LoadTime.ProcessCreateToApplicationStart, then the
@@ -106,7 +106,8 @@ ChromeMainDelegateAndroid::RunProcess(
       if (base::FeatureList::IsEnabled(kUseProcessStartTimeForMetrics))
         application_start_time = process_start_time;
     }
-    startup_metric_utils::RecordApplicationStartTime(application_start_time);
+    startup_metric_utils::GetCommon().RecordApplicationStartTime(
+        application_start_time);
     browser_runner_ = content::BrowserMainRunner::Create();
   }
 

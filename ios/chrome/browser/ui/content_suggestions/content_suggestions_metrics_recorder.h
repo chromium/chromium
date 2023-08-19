@@ -9,6 +9,7 @@
 
 #import "ios/chrome/browser/metrics/new_tab_page_uma.h"
 
+class PrefService;
 namespace web {
 class WebState;
 }
@@ -16,10 +17,28 @@ class WebState;
 typedef NS_ENUM(NSInteger, NTPCollectionShortcutType);
 
 @class ContentSuggestionsMostVisitedItem;
+enum class ContentSuggestionsModuleType;
 enum class SetUpListItemType;
 
 // Metrics recorder for the content suggestions.
 @interface ContentSuggestionsMetricsRecorder : NSObject
+
+- (instancetype)initWithLocalState:(PrefService*)localState
+    NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
+
+// Cleans up this class's saved properties before deallocation.
+- (void)disconnect;
+
+// Logs a metric for when a module of `type` is shown as the first module in the
+// Magic Stack.
+- (void)recordMagicStackTopModuleImpressionForType:
+    (ContentSuggestionsModuleType)type;
+
+// Logs a metric for when the user taps on a module of `type` in the Magic
+// Stack.
+- (void)recordMagicStackModuleEngagementForType:
+    (ContentSuggestionsModuleType)type;
 
 // Logs a metric for the "Return to Recent Tab" tile being shown.
 - (void)recordReturnToRecentTabTileShown;

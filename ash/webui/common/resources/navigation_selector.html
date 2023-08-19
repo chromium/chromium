@@ -1,6 +1,6 @@
 <style include="cr-shared-style">
 :host {
-  --focus-border-width: 1px;
+  --focus-border-width: 2px;
 }
 
 :host-context(body.jelly-enabled) .navigation-item {
@@ -28,8 +28,16 @@
   justify-content: start;
   margin-bottom: 8px;
   margin-inline-end: 2px;
-  min-height: 32px;
+  min-height: 40px;
   padding-inline-start: 20px;
+}
+
+:host-context(body.jelly-enabled) .navigation-item {
+  color: var(--cros-sys-on_surface);
+}
+
+:host-context(body.jelly-enabled) .navigation-item:hover {
+  background-color: var(--cros-sys-hover_on_subtle);
 }
 
 .navigation-item:focus-visible {
@@ -38,13 +46,13 @@
 
 .navigation-item.selected {
   background-color: var(--cros-highlight-color);
-  color: var(--cros-color-prominent);
+  color: var(--cros-text-color-selection);
 }
 
 :host-context(body.jelly-enabled) .navigation-item.selected {
-  /* TODO(276493287): Remove cros-highlight-color fallback after jelly colors
-                      launches. */
-  background-color: var(--cros-sys-highlight_shape);
+  /* TODO(276493287): Replace default color rule after jelly colors launches. */
+  background-color: var(--cros-sys-primary);
+  color: var(--cros-sys-on_primary);
 }
 
 iron-icon {
@@ -56,8 +64,19 @@ iron-icon {
   vertical-align: top;
 }
 
+/* TODO(276493287): Merge into default color rule after jelly colors
+                    launches. */
+:host-context(body.jelly-enabled) iron-icon {
+  --iron-icon-fill-color: var(--cros-sys-on_surface);
+}
+
+/* TODO(276493287): Remove default color rule after jelly colors launches. */
 .navigation-item.selected > iron-icon {
   --iron-icon-fill-color: var(--cros-icon-color-prominent);
+}
+
+:host-context(body.jelly-enabled) .navigation-item.selected > iron-icon {
+  --iron-icon-fill-color: var(--cros-sys-on_primary);
 }
 
 cr-expand-button {

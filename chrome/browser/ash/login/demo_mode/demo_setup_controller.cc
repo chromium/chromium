@@ -4,11 +4,9 @@
 
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 
-#include <cctype>
 #include <utility>
 
 #include "ash/components/arc/arc_util.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/barrier_closure.h"
 #include "base/command_line.h"
@@ -39,6 +37,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "third_party/icu/source/common/unicode/bytestream.h"
 #include "third_party/icu/source/common/unicode/casemap.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -50,7 +49,6 @@ namespace {
 using ErrorCode = DemoSetupController::DemoSetupError::ErrorCode;
 using RecoveryMethod = DemoSetupController::DemoSetupError::RecoveryMethod;
 
-constexpr char kDemoRequisition[] = "cros-demo-mode";
 constexpr char kDemoSetupDownloadDurationHistogram[] =
     "DemoMode.Setup.DownloadDuration";
 constexpr char kDemoSetupEnrollDurationHistogram[] =
@@ -391,7 +389,8 @@ DemoSetupController::DemoSetupError::GetLocalizedRecoveryMessage() const {
 
 std::string DemoSetupController::DemoSetupError::GetDebugDescription() const {
   return base::StringPrintf("DemoSetupError (code: %d, recovery: %d) : %s",
-                            error_code_, recovery_method_,
+                            static_cast<int>(error_code_),
+                            static_cast<int>(recovery_method_),
                             debug_message_.c_str());
 }
 
@@ -405,7 +404,7 @@ void DemoSetupController::RegisterLocalStatePrefs(
 // static
 void DemoSetupController::ClearDemoRequisition() {
   if (policy::EnrollmentRequisitionManager::GetDeviceRequisition() ==
-      kDemoRequisition) {
+      policy::EnrollmentRequisitionManager::kDemoRequisition) {
     policy::EnrollmentRequisitionManager::SetDeviceRequisition(std::string());
     // If device requisition is `kDemoRequisition`, it means the sub
     // organization was also set by the demo setup controller, so remove it as
@@ -497,9 +496,10 @@ void DemoSetupController::SetAndCanonicalizeRetailerName(
   icu::CaseMap::utf8Fold(/* options= */ 0, retailer_name, byte_sink,
                          /* edits= */ nullptr, error_code);
   retailer_name_.erase(
-      std::remove_if(
-          retailer_name_.begin(), retailer_name_.end(),
-          [](unsigned char c) { return std::ispunct(c) || std::isspace(c); }),
+      std::remove_if(retailer_name_.begin(), retailer_name_.end(),
+                     [](unsigned char c) {
+                       return absl::ascii_ispunct(c) || absl::ascii_isspace(c);
+                     }),
       retailer_name_.end());
 }
 
@@ -554,14 +554,10 @@ void DemoSetupController::LoadDemoComponents() {
   base::OnceClosure load_callback =
       base::BindOnce(&DemoSetupController::OnDemoComponentsLoaded,
                      weak_ptr_factory_.GetWeakPtr());
-  if (chromeos::features::IsDemoModeSWAEnabled()) {
-    base::RepeatingClosure barrier_closure =
-        base::BarrierClosure(2, std::move(load_callback));
-    demo_components_->LoadResourcesComponent(barrier_closure);
-    demo_components_->LoadAppComponent(barrier_closure);
-  } else {
-    demo_components_->LoadResourcesComponent(std::move(load_callback));
-  }
+  base::RepeatingClosure barrier_closure =
+      base::BarrierClosure(2, std::move(load_callback));
+  demo_components_->LoadResourcesComponent(barrier_closure);
+  demo_components_->LoadAppComponent(barrier_closure);
 }
 
 void DemoSetupController::OnDemoComponentsLoaded() {
@@ -583,16 +579,13 @@ void DemoSetupController::OnDemoComponentsLoaded() {
         DemoComponents::kDemoModeResourcesComponentName));
     return;
   }
-
-  if (chromeos::features::IsDemoModeSWAEnabled()) {
-    auto app_component_error = demo_components_->app_component_error().value_or(
-        component_updater::CrOSComponentManager::Error::NOT_FOUND);
-    if (app_component_error !=
-        component_updater::CrOSComponentManager::Error::NONE) {
-      SetupFailed(DemoSetupError::CreateFromComponentError(
-          app_component_error, DemoComponents::kDemoModeAppComponentName));
-      return;
-    }
+  auto app_component_error = demo_components_->app_component_error().value_or(
+      component_updater::CrOSComponentManager::Error::NOT_FOUND);
+  if (app_component_error !=
+      component_updater::CrOSComponentManager::Error::NONE) {
+    SetupFailed(DemoSetupError::CreateFromComponentError(
+        app_component_error, DemoComponents::kDemoModeAppComponentName));
+    return;
   }
 
   VLOG(1) << "Starting online enrollment";
@@ -600,7 +593,8 @@ void DemoSetupController::OnDemoComponentsLoaded() {
   enroll_start_time_ = base::TimeTicks::Now();
 
   DCHECK(policy::EnrollmentRequisitionManager::GetDeviceRequisition().empty());
-  policy::EnrollmentRequisitionManager::SetDeviceRequisition(kDemoRequisition);
+  policy::EnrollmentRequisitionManager::SetDeviceRequisition(
+      policy::EnrollmentRequisitionManager::kDemoRequisition);
   policy::EnrollmentRequisitionManager::SetSubOrganization(
       GetSubOrganizationEmail());
   policy::EnrollmentConfig config;

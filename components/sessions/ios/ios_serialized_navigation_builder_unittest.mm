@@ -12,10 +12,6 @@
 #include "ios/web/public/test/web_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using IOSSerializedNavigationBuilderTest = web::WebTest;
 
 namespace sessions {

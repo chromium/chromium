@@ -2,6 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# @generated from third_party/rust/BUILD.gn.hbs by tools/crates/gnrt.
+# Do not edit!
+
 import("//build/rust/cargo_crate.gni")
 
 cargo_crate("lib") {
@@ -13,10 +16,36 @@ cargo_crate("lib") {
   # third_party.toml to use it from first-party code.
   visibility = [ "//third_party/rust/*" ]
   crate_root = "crate/src/lib.rs"
+  sources = [
+    "//third_party/rust/base64/v0_13/crate/benches/benchmarks.rs",
+    "//third_party/rust/base64/v0_13/crate/examples/base64.rs",
+    "//third_party/rust/base64/v0_13/crate/examples/make_tables.rs",
+    "//third_party/rust/base64/v0_13/crate/src/chunked_encoder.rs",
+    "//third_party/rust/base64/v0_13/crate/src/decode.rs",
+    "//third_party/rust/base64/v0_13/crate/src/display.rs",
+    "//third_party/rust/base64/v0_13/crate/src/encode.rs",
+    "//third_party/rust/base64/v0_13/crate/src/lib.rs",
+    "//third_party/rust/base64/v0_13/crate/src/read/decoder.rs",
+    "//third_party/rust/base64/v0_13/crate/src/read/decoder_tests.rs",
+    "//third_party/rust/base64/v0_13/crate/src/read/mod.rs",
+    "//third_party/rust/base64/v0_13/crate/src/tables.rs",
+    "//third_party/rust/base64/v0_13/crate/src/tests.rs",
+    "//third_party/rust/base64/v0_13/crate/src/write/encoder.rs",
+    "//third_party/rust/base64/v0_13/crate/src/write/encoder_string_writer.rs",
+    "//third_party/rust/base64/v0_13/crate/src/write/encoder_tests.rs",
+    "//third_party/rust/base64/v0_13/crate/src/write/mod.rs",
+    "//third_party/rust/base64/v0_13/crate/tests/decode.rs",
+    "//third_party/rust/base64/v0_13/crate/tests/encode.rs",
+    "//third_party/rust/base64/v0_13/crate/tests/helpers.rs",
+    "//third_party/rust/base64/v0_13/crate/tests/tests.rs",
+  ]
+  inputs = [
+    "//third_party/rust/base64/v0_13/crate/README.md",
+    "//third_party/rust/base64/v0_13/crate/RELEASE-NOTES.md",
+  ]
 
   # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
-  sources = [ "crate/src/lib.rs" ]
   edition = "2018"
   cargo_pkg_version = "0.13.1"
   cargo_pkg_authors =

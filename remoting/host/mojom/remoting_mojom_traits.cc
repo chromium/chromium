@@ -580,6 +580,8 @@ bool mojo::StructTraits<remoting::mojom::VideoLayoutDataView,
   out_layout->set_supports_full_desktop_capture(
       data_view.supports_full_desktop_capture());
 
+  out_layout->set_primary_screen_id(data_view.primary_screen_id());
+
   return true;
 }
 

@@ -14,8 +14,9 @@ TEST(StyleNameTest, DefaultConstructor) {
 }
 
 TEST(StyleNameTest, Copy) {
-  StyleName name_string("foo", StyleName::Type::kString);
-  StyleName name_custom_ident("foo", StyleName::Type::kCustomIdent);
+  StyleName name_string(AtomicString("foo"), StyleName::Type::kString);
+  StyleName name_custom_ident(AtomicString("foo"),
+                              StyleName::Type::kCustomIdent);
 
   StyleName name_string_copy1(name_string);
   StyleName name_custom_ident_copy1(name_custom_ident);
@@ -31,24 +32,24 @@ TEST(StyleNameTest, Copy) {
 }
 
 TEST(StyleNameTest, CustomIdent) {
-  StyleName name("foo", StyleName::Type::kCustomIdent);
+  StyleName name(AtomicString("foo"), StyleName::Type::kCustomIdent);
   EXPECT_TRUE(name.IsCustomIdent());
   EXPECT_EQ("foo", name.GetValue());
 }
 
 TEST(StyleNameTest, String) {
-  StyleName name("foo", StyleName::Type::kString);
+  StyleName name(AtomicString("foo"), StyleName::Type::kString);
   EXPECT_FALSE(name.IsCustomIdent());
   EXPECT_EQ("foo", name.GetValue());
 }
 
 TEST(StyleNameTest, Equals) {
-  EXPECT_EQ(StyleName("foo", StyleName::Type::kString),
-            StyleName("foo", StyleName::Type::kString));
-  EXPECT_NE(StyleName("foo", StyleName::Type::kString),
-            StyleName("bar", StyleName::Type::kString));
-  EXPECT_NE(StyleName("foo", StyleName::Type::kString),
-            StyleName("foo", StyleName::Type::kCustomIdent));
+  EXPECT_EQ(StyleName(AtomicString("foo"), StyleName::Type::kString),
+            StyleName(AtomicString("foo"), StyleName::Type::kString));
+  EXPECT_NE(StyleName(AtomicString("foo"), StyleName::Type::kString),
+            StyleName(AtomicString("bar"), StyleName::Type::kString));
+  EXPECT_NE(StyleName(AtomicString("foo"), StyleName::Type::kString),
+            StyleName(AtomicString("foo"), StyleName::Type::kCustomIdent));
 }
 
 }  // namespace blink

@@ -28,6 +28,9 @@ class TestHistoryBackendForSync : public HistoryBackendForSync {
   bool UpdateURL(URLRow row);
   VisitID AddVisit(VisitRow row);
   bool UpdateVisit(VisitRow row);
+  void AddOrReplaceContentAnnotation(
+      VisitID visit_id,
+      const VisitContentAnnotations& content_annotation);
 
   void RemoveURLAndVisits(URLID url_id);
   void Clear();
@@ -49,7 +52,8 @@ class TestHistoryBackendForSync : public HistoryBackendForSync {
                        VisitID originator_visit_id,
                        VisitRow* visit_row) override;
   std::vector<AnnotatedVisit> ToAnnotatedVisits(
-      const VisitVector& visit_rows) override;
+      const VisitVector& visit_rows,
+      bool compute_redirect_chain_start_properties) override;
   VisitID AddSyncedVisit(
       const GURL& url,
       const std::u16string& title,

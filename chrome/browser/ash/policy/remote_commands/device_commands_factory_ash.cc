@@ -8,7 +8,6 @@
 
 #include "base/notreached.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
-#include "chrome/browser/ash/policy/remote_commands/crd_admin_session_controller.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_fetch_crd_availability_info_job.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_fetch_status_job.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_fetch_support_packet_job.h"
@@ -35,8 +34,10 @@ using enterprise_management::RemoteCommand;
 bool DeviceCommandsFactoryAsh::device_commands_test_ = false;
 
 DeviceCommandsFactoryAsh::DeviceCommandsFactoryAsh(
-    DeviceCloudPolicyManagerAsh* policy_manager)
-    : policy_manager_(policy_manager) {}
+    ash::attestation::MachineCertificateUploader* certificate_uploader,
+    StartCrdSessionJobDelegate& crd_delegate)
+    : machine_certificate_uploader_(certificate_uploader),
+      crd_delegate_(crd_delegate) {}
 
 DeviceCommandsFactoryAsh::~DeviceCommandsFactoryAsh() = default;
 
@@ -52,15 +53,14 @@ std::unique_ptr<RemoteCommandJob> DeviceCommandsFactoryAsh::BuildJobForType(
     case RemoteCommand::DEVICE_SET_VOLUME:
       return std::make_unique<DeviceCommandSetVolumeJob>();
     case RemoteCommand::DEVICE_START_CRD_SESSION:
-      return std::make_unique<DeviceCommandStartCrdSessionJob>(
-          GetCrdHostDelegate());
+      return std::make_unique<DeviceCommandStartCrdSessionJob>(*crd_delegate_);
     case RemoteCommand::DEVICE_FETCH_STATUS:
       return std::make_unique<DeviceCommandFetchStatusJob>();
     case RemoteCommand::DEVICE_WIPE_USERS:
       return std::make_unique<DeviceCommandWipeUsersJob>(service);
     case RemoteCommand::DEVICE_REFRESH_ENTERPRISE_MACHINE_CERTIFICATE:
       return std::make_unique<DeviceCommandRefreshMachineCertificateJob>(
-          policy_manager_->GetMachineCertificateUploader());
+          machine_certificate_uploader_);
     case RemoteCommand::DEVICE_REMOTE_POWERWASH:
       return std::make_unique<DeviceCommandRemotePowerwashJob>(service);
     case RemoteCommand::DEVICE_GET_AVAILABLE_DIAGNOSTIC_ROUTINES:
@@ -90,14 +90,6 @@ std::unique_ptr<RemoteCommandJob> DeviceCommandsFactoryAsh::BuildJobForType(
 void DeviceCommandsFactoryAsh::set_commands_for_testing(
     bool device_commands_test) {
   device_commands_test_ = device_commands_test;
-}
-
-DeviceCommandStartCrdSessionJob::Delegate*
-DeviceCommandsFactoryAsh::GetCrdHostDelegate() {
-  if (!crd_host_delegate_) {
-    crd_host_delegate_ = std::make_unique<CrdAdminSessionController>();
-  }
-  return crd_host_delegate_.get();
 }
 
 std::unique_ptr<DeviceCommandScreenshotJob::Delegate>

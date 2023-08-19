@@ -1,0 +1,188 @@
+<style include="settings-shared">
+  :host([is-user-configurable_])
+      .peripheral-data-access-protection {
+    --cr-disabled-opacity: 1;
+    cursor: pointer;
+    opacity: 1;
+  }
+
+  #dataAccessProtectionWrapper:focus {
+    outline: none;
+  }
+</style>
+<os-settings-animated-pages id="pages" section="[[section_]]">
+  <div route-path="default">
+    <settings-card header-text="$i18n{privacyPageTitle}">
+      <template is="dom-if" if="[[!isGuestMode_]]" restamp>
+        <cr-link-row id="lockScreenRow"
+            on-click="onConfigureLockClick_"
+            label="[[selectLockScreenTitleString_(hasPinLogin)]]"
+            sub-label="[[getPasswordState_(hasPin,
+                prefs.settings.enable_screen_lock.value)]]"
+            role-description="$i18n{subpageArrowRoleDescription}">
+        </cr-link-row>
+        <cr-link-row id="manageOtherPeopleRow" class="hr"
+            label="$i18n{manageOtherPeople}"
+            on-click="onManageOtherPeople_"
+            role-description="$i18n{subpageArrowRoleDescription}">
+        </cr-link-row>
+        <div class="hr"></div>
+        <template is="dom-if" if="[[isSmartPrivacyEnabled_]]" restamp>
+          <cr-link-row id="smartPrivacySubpageTrigger"
+              on-click="onSmartPrivacy_"
+              label="$i18n{smartPrivacyTitle}"
+              role-description="$i18n{subpageArrowRoleDescription}">
+          </cr-link-row>
+          <div class="hr"></div>
+        </template>
+      </template>
+
+<if expr="_google_chrome">
+      <template is="dom-if" if="[[!showPrivacyHubPage_]]" restamp>
+        <settings-metrics-consent-toggle-button
+            id="metricsConsentToggle"
+            deep-link-focus-id$="[[Setting.kUsageStatsAndCrashReports]]"
+            prefs="{{prefs}}">
+        </settings-metrics-consent-toggle-button>
+        <div class="hr"></div>
+      </template>
+      <template is="dom-if" if="[[isRevenBranding_]]">
+        <settings-toggle-button
+            id="enable-hw-data-usage"
+            pref="{{prefs.cros.reven.enable_hw_data_usage}}"
+            label="[[i18n('enableHWDataUsage')]]"
+            sub-label="[[i18n('enableHWDataUsageDesc')]]">
+          </settings-toggle-button>
+        <div class="hr"></div>
+      </template>
+</if>
+      <template is="dom-if" if="[[!showPrivacyHubPage_]]" restamp>
+        <settings-toggle-button
+            id="suggested-content"
+            pref="{{prefs.settings.suggested_content_enabled}}"
+            label="$i18n{enableSuggestedContent}"
+            sub-label="$i18n{enableSuggestedContentDesc}"
+            learn-more-url="$i18n{suggestedContentLearnMoreURL}">
+        </settings-toggle-button>
+        <div class="hr"></div>
+      </template>
+      <settings-toggle-button
+          id="verifiedAccessToggle"
+          pref="{{
+            prefs.cros.device.attestation_for_content_protection_enabled}}"
+          label="$i18n{enableContentProtectionAttestation}"
+          on-settings-boolean-control-change="onVerifiedAccessChange_"
+          deep-link-focus-id$="[[Setting.kVerifiedAccess]]">
+      </settings-toggle-button>
+      <template is="dom-if" if="[[showPrivacyHubPage_]]" restamp>
+        <div class="hr"></div>
+        <cr-link-row id="privacyHubSubpageTrigger"
+            on-click="onPrivacyHubClick_"
+            label="$i18n{privacyHubTitle}"
+            sub-label="$i18n{privacyHubSubtext}"
+            role-description="$i18n{subpageArrowRoleDescription}">
+        </cr-link-row>
+      </template>
+      <template is="dom-if" if="[[isThunderboltSupported_]]">
+        <div class="hr"></div>
+        <!-- This toggle is always disabled. The underlying pref state is
+              handled by the JS impl. This is to prevent toggling the pref
+              before the user confirms the action. -->
+        <div id="dataAccessProtectionWrapper"
+            tabindex="0"
+            on-focus="onDataAccessToggleFocus_"
+            on-keypress="onDataAccessToggleKeyPress_">
+          <settings-toggle-button
+              id="crosSettingDataAccessToggle"
+              class="peripheral-data-access-protection"
+              pref="{{prefs.cros.device.peripheral_data_access_enabled}}"
+              label="$i18n{peripheralDataAccessProtectionToggleTitle}"
+              sub-label=
+                  "$i18n{peripheralDataAccessProtectionToggleDescription}"
+              deep-link-focus-id$=
+                  "[[Setting.kPeripheralDataAccessProtection]]"
+              on-click="onPeripheralProtectionClick_"
+              learn-more-url="$i18n{peripheralDataAccessLearnMoreURL}"
+              hidden$="[[isLocalStateDataAccessPref_(
+                  dataAccessProtectionPrefName_)]]"
+              disabled
+              inverted>
+          </settings-toggle-button>
+          <settings-toggle-button
+              id="localStateDataAccessToggle"
+              class="peripheral-data-access-protection"
+              pref="{{prefs.settings.local_state_device_pci_data_access_enabled}}"
+              label="$i18n{peripheralDataAccessProtectionToggleTitle}"
+              sub-label=
+                  "$i18n{peripheralDataAccessProtectionToggleDescription}"
+              deep-link-focus-id$=
+                  "[[Setting.kPeripheralDataAccessProtection]]"
+              on-click="onPeripheralProtectionClick_"
+              learn-more-url="$i18n{peripheralDataAccessLearnMoreURL}"
+              hidden$="[[isCrosSettingDataAccessPref_(
+                  dataAccessProtectionPrefName_)]]"
+              disabled
+              inverted>
+          </settings-toggle-button>
+        </div>
+      </template>
+      <template is="dom-if" if="[[showSecureDnsSetting_]]">
+        <settings-secure-dns prefs="{{prefs}}"></settings-secure-dns>
+      </template>
+    </settings-card>
+  </div>
+
+  <template is="dom-if" if="[[!isGuestMode_]]" restamp>
+    <template is="dom-if" route-path="/osPrivacy/lockScreen">
+      <os-settings-subpage page-title="[[selectLockScreenTitleString_(hasPinLogin)]]">
+        <settings-lock-screen-subpage id="lockScreen"
+            prefs="{{prefs}}" auth-token="[[authTokenInfo_.token]]"
+            on-invalidate-auth-token-requested="onInvalidateTokenRequested_"
+            on-password-requested="onPasswordRequested_">
+        </settings-lock-screen-subpage>
+      </os-settings-subpage>
+    </template>
+    <template is="dom-if" route-path="/osPrivacy/lockScreen/fingerprint">
+      <os-settings-subpage page-title="$i18n{lockScreenFingerprintTitle}">
+        <settings-fingerprint-list-subpage id="fingerprint-list"
+            auth-token="[[authTokenInfo_.token]]"
+            on-password-requested="onPasswordRequested_">
+        </settings-fingerprint-list-subpage>
+      </os-settings-subpage>
+    </template>
+    <template is="dom-if" route-path="/osPrivacy/accounts">
+      <os-settings-subpage page-title="$i18n{manageOtherPeople}">
+        <settings-manage-users-subpage prefs="{{prefs}}">
+        </settings-manage-users-subpage>
+      </os-settings-subpage>
+    </template>
+    <template is="dom-if" route-path="/osPrivacy/smartPrivacy">
+      <os-settings-subpage page-title="$i18n{smartPrivacyTitle}">
+        <settings-smart-privacy-subpage prefs="{{prefs}}">
+        </settings-smart-privacy-subpage>
+      </os-settings-subpage>
+    </template>
+    <template is="dom-if" route-path="/osPrivacy/privacyHub">
+      <os-settings-subpage page-title="$i18n{privacyHubTitle}">
+        <settings-privacy-hub-subpage prefs="{{prefs}}">
+        </settings-privacy-hub-subpage>
+      </os-settings-subpage>
+    </template>
+  </template>
+
+</os-settings-animated-pages>
+
+<template is="dom-if" if="[[showPasswordPromptDialog_]]" restamp>
+  <settings-lock-screen-password-prompt-dialog
+      id="passwordDialog"
+      on-close="onPasswordPromptDialogClose_"
+      on-auth-token-obtained="onAuthTokenObtained_">
+  </settings-lock-screen-password-prompt-dialog>
+</template>
+
+<template is="dom-if" if="[[showDisableProtectionDialog_]]" restamp>
+  <settings-peripheral-data-access-protection-dialog id="protectionDialog"
+      on-close="onDisableProtectionDialogClosed_" prefs="{{prefs}}"
+      pref-name="[[dataAccessProtectionPrefName_]]">
+  </settings-peripheral-data-access-protection-dialog>
+</template>

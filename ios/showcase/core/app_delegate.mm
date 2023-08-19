@@ -12,10 +12,6 @@
 #import "ios/showcase/core/showcase_view_controller.h"
 #import "ui/base/resource/resource_bundle.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation AppDelegate
 @synthesize window = _window;
 

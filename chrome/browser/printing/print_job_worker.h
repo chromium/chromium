@@ -55,6 +55,14 @@ class PrintJobWorker {
   // Cancels the job.
   void Cancel();
 
+#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+  // The job is canceled due to content analysis denying printing.  Called
+  // only from UI thread, before any platform calls are made for the job.
+  // Performs any extra cleanup for this particular case that can't be safely
+  // safely done from within Cancel().
+  virtual void CleanupAfterContentAnalysisDenial();
+#endif
+
   // Returns true if the thread has been started, and not yet stopped.
   bool IsRunning() const;
 

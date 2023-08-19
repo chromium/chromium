@@ -16,6 +16,7 @@ import android.os.Bundle;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -148,8 +149,8 @@ public class LauncherShortcutActivity extends Activity {
         return newIntent;
     }
 
-    @VisibleForTesting
     public static void setDynamicShortcutStringForTesting(String label) {
         sLabelForTesting = label;
+        ResettersForTesting.register(() -> sLabelForTesting = null);
     }
 }

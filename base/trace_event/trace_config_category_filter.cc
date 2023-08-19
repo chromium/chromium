@@ -16,8 +16,16 @@
 namespace base::trace_event {
 
 namespace {
+
 const char kIncludedCategoriesParam[] = "included_categories";
 const char kExcludedCategoriesParam[] = "excluded_categories";
+
+bool AreStringListsEquivalent(const std::vector<std::string>& list1,
+                              const std::vector<std::string>& list2) {
+  std::unordered_set<std::string> set1(list1.begin(), list1.end());
+  std::unordered_set<std::string> set2(list2.begin(), list2.end());
+  return set1 == set2;
+}
 }
 
 TraceConfigCategoryFilter::TraceConfigCategoryFilter() = default;
@@ -29,6 +37,16 @@ TraceConfigCategoryFilter::~TraceConfigCategoryFilter() = default;
 
 TraceConfigCategoryFilter& TraceConfigCategoryFilter::operator=(
     const TraceConfigCategoryFilter& rhs) = default;
+
+bool TraceConfigCategoryFilter::IsEquivalentTo(
+    const TraceConfigCategoryFilter& other) const {
+  return AreStringListsEquivalent(included_categories_,
+                                  other.included_categories_) &&
+         AreStringListsEquivalent(disabled_categories_,
+                                  other.disabled_categories_) &&
+         AreStringListsEquivalent(excluded_categories_,
+                                  other.excluded_categories_);
+}
 
 void TraceConfigCategoryFilter::InitializeFromString(
     const StringPiece& category_filter_string) {

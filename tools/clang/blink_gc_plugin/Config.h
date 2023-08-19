@@ -57,9 +57,6 @@ class Config {
                        llvm::StringRef ns_name,
                        RecordInfo* info,
                        RecordInfo::TemplateArgs* args) {
-    if (name == "Member") {
-      return VerifyNamespaceAndArgCount("blink", 1, ns_name, info, args);
-    }
     if (name == "BasicMember") {
       if (!VerifyNamespaceAndArgCount("cppgc", 2, ns_name, info, args))
         return false;
@@ -72,9 +69,6 @@ class Config {
                            llvm::StringRef ns_name,
                            RecordInfo* info,
                            RecordInfo::TemplateArgs* args) {
-    if (name == "WeakMember") {
-      return VerifyNamespaceAndArgCount("blink", 1, ns_name, info, args);
-    }
     if (name == "BasicMember") {
       if (!VerifyNamespaceAndArgCount("cppgc", 2, ns_name, info, args))
         return false;
@@ -87,9 +81,6 @@ class Config {
                            llvm::StringRef ns_name,
                            RecordInfo* info,
                            RecordInfo::TemplateArgs* args) {
-    if ((name == "Persistent") || (name == "WeakPersistent")) {
-      return VerifyNamespaceAndArgCount("blink", 1, ns_name, info, args);
-    }
     if (name == "BasicPersistent") {
       return VerifyNamespaceAndArgCount("cppgc", 1, ns_name, info, args);
     }
@@ -100,10 +91,6 @@ class Config {
                                       llvm::StringRef ns_name,
                                       RecordInfo* info,
                                       RecordInfo::TemplateArgs* args) {
-    if ((name == "CrossThreadPersistent") ||
-        (name == "CrossThreadWeakPersistent")) {
-      return VerifyNamespaceAndArgCount("blink", 1, ns_name, info, args);
-    }
     if (name == "BasicCrossThreadPersistent") {
       return VerifyNamespaceAndArgCount("cppgc", 1, ns_name, info, args);
     }

@@ -174,8 +174,8 @@ public class OfflineContentAggregatorNotificationBridgeUi
                 mUi.notifyDownloadSuccessful(info, -1L, false, item.isOpenable);
                 break;
             case OfflineItemState.INTERRUPTED:
-                mUi.notifyDownloadInterrupted(info,
-                        LegacyHelpers.isLegacyDownload(item.id) ? false : true, item.pendingState);
+                mUi.notifyDownloadInterrupted(
+                        info, !LegacyHelpers.isLegacyDownload(item.id), item.pendingState);
                 break;
             case OfflineItemState.PAUSED:
                 mUi.notifyDownloadPaused(info);

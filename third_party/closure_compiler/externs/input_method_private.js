@@ -27,7 +27,8 @@ chrome.inputMethodPrivate.MenuItemStyle = {
 };
 
 /**
- * A menu item used by an input method to interact with the user from the language menu.
+ * A menu item used by an input method to interact with the user from the
+ * language menu.
  * @typedef {{
  *   id: string,
  *   label: (string|undefined),
@@ -114,16 +115,19 @@ chrome.inputMethodPrivate.AutoCapitalizeType = {
 chrome.inputMethodPrivate.InputContext;
 
 /**
- * User preference settings for a specific input method. Japanese input methods are not included because they are managed separately by Mozc module.
+ * User preference settings for a specific input method. Japanese input methods
+ * are not included because they are managed separately by Mozc module.
  * @typedef {{
  *   enableCompletion: (boolean|undefined),
  *   enableDoubleSpacePeriod: (boolean|undefined),
  *   enableGestureTyping: (boolean|undefined),
  *   enablePrediction: (boolean|undefined),
  *   enableSoundOnKeypress: (boolean|undefined),
+ *   physicalKeyboardAutoCorrectionEnabledByDefault: (boolean|undefined),
  *   physicalKeyboardAutoCorrectionLevel: (number|undefined),
  *   physicalKeyboardEnableCapitalization: (boolean|undefined),
  *   physicalKeyboardEnableDiacriticsOnLongpress: (boolean|undefined),
+ *   physicalKeyboardEnablePredictiveWriting: (boolean|undefined),
  *   virtualKeyboardAutoCorrectionLevel: (number|undefined),
  *   virtualKeyboardEnableCapitalization: (boolean|undefined),
  *   xkbLayout: (string|undefined),
@@ -152,7 +156,16 @@ chrome.inputMethodPrivate.InputContext;
  *   }|undefined),
  *   zhuyinKeyboardLayout: (string|undefined),
  *   zhuyinPageSize: (number|undefined),
- *   zhuyinSelectKeys: (string|undefined)
+ *   zhuyinSelectKeys: (string|undefined),
+ *   vietnameseVniAllowFlexibleDiacritics: (boolean|undefined),
+ *   vietnameseVniNewStyleToneMarkPlacement: (boolean|undefined),
+ *   vietnameseVniInsertDoubleHornOnUo: (boolean|undefined),
+ *   vietnameseVniShowUnderline: (boolean|undefined),
+ *   vietnameseTelexAllowFlexibleDiacritics: (boolean|undefined),
+ *   vietnameseTelexNewStyleToneMarkPlacement: (boolean|undefined),
+ *   vietnameseTelexInsertDoubleHornOnUo: (boolean|undefined),
+ *   vietnameseTelexInsertUHornOnW: (boolean|undefined),
+ *   vietnameseTelexShowUnderline: (boolean|undefined)
  * }}
  */
 chrome.inputMethodPrivate.InputMethodSettings;

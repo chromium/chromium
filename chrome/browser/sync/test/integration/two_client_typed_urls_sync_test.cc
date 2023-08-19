@@ -26,6 +26,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #endif
 
 using base::ASCIIToUTF16;
@@ -471,7 +472,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsWithoutNewHistoryTypeSyncTest,
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   // Disable history sync for one client, leave it active for the other.
-  GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kHistory);
+  ASSERT_TRUE(
+      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kHistory));
 
   // Add one URL to non-syncing client, add a different URL to the other,
   // wait for sync cycle to complete. No data should be exchanged.
@@ -490,7 +492,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsWithoutNewHistoryTypeSyncTest,
   ASSERT_EQ(url2, post_sync_urls[0].url());
 
   // Enable history sync, make both URLs are synced to each client.
-  GetClient(0)->EnableSyncForType(syncer::UserSelectableType::kHistory);
+  ASSERT_TRUE(
+      GetClient(0)->EnableSyncForType(syncer::UserSelectableType::kHistory));
 
   ASSERT_TRUE(ProfilesHaveSameTypedURLsChecker().Wait());
 }
@@ -822,7 +825,9 @@ class TwoClientTypedUrlsSyncTestWithoutLacrosSupport
   TwoClientTypedUrlsSyncTestWithoutLacrosSupport() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // TODO(crbug.com/1263014): Update test to pass with Lacros enabled.
-    feature_list_.InitAndDisableFeature(ash::features::kLacrosSupport);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/ash::standalone_browser::GetFeatureRefs());
 #endif
   }
   ~TwoClientTypedUrlsSyncTestWithoutLacrosSupport() override = default;

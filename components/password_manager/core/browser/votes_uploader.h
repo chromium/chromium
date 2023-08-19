@@ -29,11 +29,12 @@ namespace password_manager {
 
 class PasswordManagerClient;
 
-// A map from field names to field types.
-using FieldTypeMap = std::map<std::u16string, autofill::ServerFieldType>;
-// A map from field names to field vote types.
-using VoteTypeMap =
-    std::map<std::u16string, autofill::AutofillUploadContents::Field::VoteType>;
+// Map from a field's renderer id to a field type.
+using FieldTypeMap =
+    std::map<autofill::FieldRendererId, autofill::ServerFieldType>;
+// A map from field's renderer id to a vote type (e.g. CREDENTIALS_REUSED).
+using VoteTypeMap = std::map<autofill::FieldRendererId,
+                             autofill::AutofillUploadContents::Field::VoteType>;
 
 // Contains information for sending a SINGLE_USERNAME vote.
 struct SingleUsernameVoteData {
@@ -254,12 +255,6 @@ class VotesUploader {
       std::unique_ptr<autofill::FormStructure> form_to_upload,
       const autofill::ServerFieldTypeSet& available_field_types);
 
-  // Save a vote |field_type| for a field with |field_signature| from a form
-  // with |form_signature| to FieldInfoManager.
-  void SaveFieldVote(autofill::FormSignature form_signature,
-                     autofill::FieldSignature field_signature,
-                     autofill::ServerFieldType field_type);
-
   // On username first flow votes are uploaded both for the single username form
   // and for the single password form. This method sets the data needed to
   // upload vote on the username form. The vote is based on the user interaction
@@ -278,7 +273,7 @@ class VotesUploader {
       autofill::FormStructure& form_structure);
 
   // The client which implements embedder-specific PasswordManager operations.
-  raw_ptr<PasswordManagerClient, DanglingUntriaged> client_;
+  raw_ptr<PasswordManagerClient> client_ = nullptr;
 
   // Whether generation popup was shown at least once.
   bool generation_popup_was_shown_ = false;

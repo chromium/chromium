@@ -15,9 +15,9 @@ namespace ui {
 class AXPlatformNode;
 class AXPlatformNodeDelegate;
 
-// Abstract interface for a class that owns an AXTree and manages its
-// connections to other AXTrees in the same page or desktop (parent and child
-// trees).
+// Abstract interface for a class that manages AXPlatformNodes and is
+// able to query for them via `GetPlatformNodeFromTree`. Extends
+// AXTreeManager, so AXNodes are also managed.
 class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformTreeManager
     : public AXTreeManager {
  public:
@@ -31,6 +31,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformTreeManager
   // Returns an AXPlatformNodeDelegate that corresponds to a root node
   // of the accessibility tree.
   virtual AXPlatformNodeDelegate* RootDelegate() const = 0;
+
+  bool IsPlatformTreeManager() const override;
 
  protected:
   explicit AXPlatformTreeManager(std::unique_ptr<AXTree> tree)

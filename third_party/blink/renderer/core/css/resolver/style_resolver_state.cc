@@ -24,11 +24,13 @@
 
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/animation/css/css_animations.h"
+#include "third_party/blink/renderer/core/core_probes_inl.h"
 #include "third_party/blink/renderer/core/css/css_light_dark_value_pair.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
+#include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
 namespace blink {
@@ -77,6 +79,9 @@ StyleResolverState::StyleResolverState(
       is_for_highlight_(IsHighlightPseudoElement(style_request.pseudo_id)),
       uses_highlight_pseudo_inheritance_(
           ::blink::UsesHighlightPseudoInheritance(style_request.pseudo_id)),
+      is_outside_flat_tree_(style_recalc_context
+                                ? style_recalc_context->is_outside_flat_tree
+                                : false),
       can_trigger_animations_(style_request.can_trigger_animations) {
   DCHECK(!!parent_style_ == !!layout_parent_style_);
 
@@ -109,6 +114,37 @@ bool StyleResolverState::IsInheritedForUnset(
   return property.IsInherited() || UsesHighlightPseudoInheritance();
 }
 
+EInsideLink StyleResolverState::InsideLink() const {
+  if (inside_link_.has_value()) {
+    return *inside_link_;
+  }
+  if (ParentStyle()) {
+    inside_link_ = ParentStyle()->InsideLink();
+  } else {
+    inside_link_ = EInsideLink::kNotInsideLink;
+  }
+  if (element_type_ != ElementType::kPseudoElement && GetElement().IsLink()) {
+    inside_link_ = ElementLinkState();
+    if (inside_link_ != EInsideLink::kNotInsideLink) {
+      bool force_visited = false;
+      probe::ForcePseudoState(&GetElement(), CSSSelector::kPseudoVisited,
+                              &force_visited);
+      if (force_visited) {
+        inside_link_ = EInsideLink::kInsideVisitedLink;
+      }
+    }
+  } else if (uses_highlight_pseudo_inheritance_) {
+    // Highlight pseudo-elements acquire the link status of the originating
+    // element. Note that highlight pseudo-elements do not *inherit* from
+    // the originating element [1], and therefore ParentStyle()->InsideLink()
+    // would otherwise always be kNotInsideLink.
+    //
+    // [1] https://drafts.csswg.org/css-pseudo-4/#highlight-cascade
+    inside_link_ = ElementLinkState();
+  }
+  return *inside_link_;
+}
+
 scoped_refptr<const ComputedStyle> StyleResolverState::TakeStyle() {
   if (had_no_matched_properties_ &&
       pseudo_request_type_ == StyleRequest::kForRenderer) {
@@ -120,7 +156,7 @@ scoped_refptr<const ComputedStyle> StyleResolverState::TakeStyle() {
 void StyleResolverState::UpdateLengthConversionData() {
   css_to_length_conversion_data_ = CSSToLengthConversionData(
       *style_builder_, ParentStyle(), RootElementStyle(),
-      GetDocument().GetLayoutView(),
+      GetDocument().GetStyleEngine().GetViewportSize(),
       CSSToLengthConversionData::ContainerSizes(container_unit_context_),
       StyleBuilder().EffectiveZoom(), length_conversion_flags_);
   element_style_resources_.UpdateLengthConversionData(
@@ -157,8 +193,10 @@ CSSToLengthConversionData StyleResolverState::UnzoomedLengthConversionData() {
 void StyleResolverState::SetParentStyle(
     scoped_refptr<const ComputedStyle> parent_style) {
   parent_style_ = std::move(parent_style);
-  // Need to update conversion data for 'lh' units.
-  UpdateLengthConversionData();
+  if (style_builder_) {
+    // Need to update conversion data for 'lh' units.
+    UpdateLengthConversionData();
+  }
 }
 
 void StyleResolverState::SetLayoutParentStyle(

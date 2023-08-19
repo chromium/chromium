@@ -56,6 +56,19 @@ ParkableStringImpl::Age MakeOlder(ParkableStringImpl::Age age) {
 
 enum class ParkingAction { kParked, kUnparked, kWritten, kRead };
 
+void RecordLatencyHistogram(const char* histogram_name,
+                            base::TimeDelta duration) {
+  // Size is at least 10kB, and at most ~10MB, and throughput ranges from
+  // single-digit MB/s to ~1000MB/s depending on the CPU/disk, hence the ranges.
+  base::UmaHistogramCustomMicrosecondsTimes(
+      histogram_name, duration, base::Microseconds(500), base::Seconds(1), 100);
+}
+
+void RecordThroughputHistogram(const char* histogram_name,
+                               int throughput_mb_s) {
+  base::UmaHistogramCounts1000(histogram_name, throughput_mb_s);
+}
+
 void RecordStatistics(size_t size,
                       base::TimeDelta duration,
                       ParkingAction action) {
@@ -63,39 +76,28 @@ void RecordStatistics(size_t size,
       base::ClampRound(size / duration.InSecondsF() / 1000000);
   int size_kb = static_cast<int>(size / 1000);
 
-  const char *size_histogram, *latency_histogram, *throughput_histogram;
   switch (action) {
     case ParkingAction::kParked:
-      size_histogram = "Memory.ParkableString.Compression.SizeKb";
-      latency_histogram = "Memory.ParkableString.Compression.Latency";
-      throughput_histogram = "Memory.ParkableString.Compression.ThroughputMBps";
+      // Size should be <1MiB in most cases.
+      base::UmaHistogramCounts1000("Memory.ParkableString.Compression.SizeKb",
+                                   size_kb);
+      RecordLatencyHistogram("Memory.ParkableString.Compression.Latency",
+                             duration);
       break;
     case ParkingAction::kUnparked:
-      size_histogram = "Memory.ParkableString.Decompression.SizeKb";
-      latency_histogram = "Memory.ParkableString.Decompression.Latency";
-      throughput_histogram =
-          "Memory.ParkableString.Decompression.ThroughputMBps";
-      break;
-    case ParkingAction::kWritten:
-      size_histogram = "Memory.ParkableString.Write.SizeKb";
-      latency_histogram = "Memory.ParkableString.Write.Latency";
-      throughput_histogram = "Memory.ParkableString.Write.ThroughputMBps";
+      RecordLatencyHistogram("Memory.ParkableString.Decompression.Latency",
+                             duration);
+      RecordThroughputHistogram(
+          "Memory.ParkableString.Decompression.ThroughputMBps",
+          throughput_mb_s);
       break;
     case ParkingAction::kRead:
-      size_histogram = "Memory.ParkableString.Read.SizeKb";
-      latency_histogram = "Memory.ParkableString.Read.Latency";
-      throughput_histogram = "Memory.ParkableString.Read.ThroughputMBps";
+      RecordLatencyHistogram("Memory.ParkableString.Read.Latency", duration);
+      break;
+    case ParkingAction::kWritten:
+      // No metric recorded.
       break;
   }
-
-  // Size should be <1MiB in most cases.
-  base::UmaHistogramCounts1000(size_histogram, size_kb);
-  // Size is at least 10kB, and at most ~10MB, and throughput ranges from
-  // single-digit MB/s to ~1000MB/s depending on the CPU/disk, hence the ranges.
-  base::UmaHistogramCustomMicrosecondsTimes(latency_histogram, duration,
-                                            base::Microseconds(500),
-                                            base::Seconds(1), 100);
-  base::UmaHistogramCounts1000(throughput_histogram, throughput_mb_s);
 }
 
 void AsanPoisonString(const String& string) {
@@ -161,11 +163,13 @@ struct BackgroundTaskParams final {
       scoped_refptr<ParkableStringImpl> string,
       const void* data,
       size_t size,
+      std::unique_ptr<ReservedChunk> reserved_chunk,
       scoped_refptr<base::SingleThreadTaskRunner> callback_task_runner)
       : callback_task_runner(callback_task_runner),
         string(std::move(string)),
         data(data),
-        size(size) {}
+        size(size),
+        reserved_chunk(std::move(reserved_chunk)) {}
 
   BackgroundTaskParams(const BackgroundTaskParams&) = delete;
   BackgroundTaskParams& operator=(const BackgroundTaskParams&) = delete;
@@ -175,6 +179,7 @@ struct BackgroundTaskParams final {
   const scoped_refptr<ParkableStringImpl> string;
   const void* data;
   const size_t size;
+  std::unique_ptr<ReservedChunk> reserved_chunk;
 };
 
 // Valid transitions are:
@@ -225,6 +230,7 @@ ParkableStringImpl::ParkableMetadata::ParkableMetadata(
     : lock_(),
       lock_depth_(0),
       state_(State::kUnparked),
+      compression_failed_(false),
       compressed_(nullptr),
       digest_(*digest),
       age_(Age::kYoung),
@@ -409,7 +415,10 @@ ParkableStringImpl::AgeOrParkResult ParkableStringImpl::MaybeAgeOrParkString() {
   if (age == Age::kYoung) {
     if (status == Status::kUnreferencedExternally)
       metadata_->age_ = MakeOlder(age);
-  } else if (age == Age::kOld && CanParkNow()) {
+  } else if (age == Age::kOld) {
+    if (!CanParkNow()) {
+      return AgeOrParkResult::kNonTransientFailure;
+    }
     bool ok = ParkInternal(ParkingMode::kCompress);
     DCHECK(ok);
     return AgeOrParkResult::kSuccessOrTransientFailure;
@@ -474,7 +483,13 @@ bool ParkableStringImpl::ParkInternal(ParkingMode mode) {
         // writing to disk is not possible.
         if (!manager.data_allocator().may_write())
           return false;
-        PostBackgroundWritingTask();
+
+        auto reserved_chunk = manager.data_allocator().TryReserveChunk(
+            metadata_->compressed_->size());
+        if (!reserved_chunk) {
+          return false;
+        }
+        PostBackgroundWritingTask(std::move(reserved_chunk));
       }
       break;
   }
@@ -503,6 +518,10 @@ bool ParkableStringImpl::is_parked_no_lock() const {
 
 bool ParkableStringImpl::is_on_disk_no_lock() const {
   return metadata_->state_ == State::kOnDisk;
+}
+
+bool ParkableStringImpl::is_compression_failed_no_lock() const {
+  return metadata_->compression_failed_;
 }
 
 bool ParkableStringImpl::is_parked() const {
@@ -536,7 +555,7 @@ ParkableStringImpl::Status ParkableStringImpl::CurrentStatus() const {
 
 bool ParkableStringImpl::CanParkNow() const {
   return CurrentStatus() == Status::kUnreferencedExternally &&
-         metadata_->age_ != Age::kYoung;
+         metadata_->age_ != Age::kYoung && !is_compression_failed_no_lock();
 }
 
 void ParkableStringImpl::Unpark() {
@@ -564,9 +583,6 @@ void ParkableStringImpl::Unpark() {
   if (metadata_->last_disk_parking_time_ != base::TimeTicks()) {
     // Can be quite short, can be multiple hours, hence long times, and 100
     // buckets.
-    base::UmaHistogramLongTimes100(
-        "Memory.ParkableString.Read.SinceLastDiskWrite",
-        base::TimeTicks::Now() - metadata_->last_disk_parking_time_);
     metadata_->last_disk_parking_time_ = base::TimeTicks();
   }
 }
@@ -664,7 +680,7 @@ void ParkableStringImpl::PostBackgroundCompressionTask() {
   // |params| keeps |this| alive until |OnParkingCompleteOnMainThread()|.
   auto params = std::make_unique<BackgroundTaskParams>(
       this, string_.Bytes(), string_.CharactersSizeInBytes(),
-      manager.task_runner());
+      /* reserved_chunk */ nullptr, manager.task_runner());
   worker_pool::PostTask(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT},
       CrossThreadBindOnce(&ParkableStringImpl::CompressInBackground,
@@ -736,9 +752,6 @@ void ParkableStringImpl::CompressInBackground(
         if (compressed_size > params->size) {
           ok = false;
         }
-
-        base::UmaHistogramBoolean(
-            "Memory.ParkableString.Snappy.CompressedLargerThanOriginal", !ok);
       } else {
         ok = compression::GzipCompress(data, buffer.data(), buffer.size(),
                                        &compressed_size, nullptr, nullptr);
@@ -788,8 +801,11 @@ void ParkableStringImpl::OnParkingCompleteOnMainThread(
   // uncompressed representation cannot be discarded now, avoid compressing
   // multiple times. This will allow synchronous parking next time.
   DCHECK(!metadata_->compressed_);
-  if (compressed)
+  if (compressed) {
     metadata_->compressed_ = std::move(compressed);
+  } else {
+    metadata_->compression_failed_ = true;
+  }
 
   // Between |Park()| and now, things may have happened:
   // 1. |ToString()| or
@@ -808,7 +824,8 @@ void ParkableStringImpl::OnParkingCompleteOnMainThread(
       parking_thread_time);
 }
 
-void ParkableStringImpl::PostBackgroundWritingTask() {
+void ParkableStringImpl::PostBackgroundWritingTask(
+    std::unique_ptr<ReservedChunk> reserved_chunk) {
   DCHECK(!metadata_->background_task_in_progress_);
   DCHECK_EQ(State::kParked, metadata_->state_);
   auto& manager = ParkableStringManager::Instance();
@@ -818,7 +835,7 @@ void ParkableStringImpl::PostBackgroundWritingTask() {
     metadata_->background_task_in_progress_ = true;
     auto params = std::make_unique<BackgroundTaskParams>(
         this, metadata_->compressed_->data(), metadata_->compressed_->size(),
-        manager.task_runner());
+        std::move(reserved_chunk), manager.task_runner());
     worker_pool::PostTask(
         FROM_HERE, {base::MayBlock()},
         CrossThreadBindOnce(&ParkableStringImpl::WriteToDiskInBackground,
@@ -832,7 +849,8 @@ void ParkableStringImpl::WriteToDiskInBackground(
     std::unique_ptr<BackgroundTaskParams> params,
     DiskDataAllocator* data_allocator) {
   base::ElapsedTimer timer;
-  auto metadata = data_allocator->Write(params->data, params->size);
+  auto metadata =
+      data_allocator->Write(std::move(params->reserved_chunk), params->data);
   base::TimeDelta elapsed = timer.Elapsed();
   RecordStatistics(params->size, elapsed, ParkingAction::kWritten);
 

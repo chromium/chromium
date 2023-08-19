@@ -49,10 +49,13 @@ struct PermissionContextDelegates {
 };
 
 // Creates default permission contexts shared between Content embedders.
-// Embedders are expected to populate all fields of |delegates| which are then
-// being used to create the specific permission contexts.
+// Embedders are expected to populate all fields of `delegates` which are then
+// being used to create the specific permission contexts. Pass `true` for
+// `is_regular_profile` if `browser_context` is a `Profile` and
+// `Profile::IsRegularProfile` returns `true`.
 permissions::PermissionManager::PermissionContextMap
 CreateDefaultPermissionContexts(content::BrowserContext* browser_context,
+                                bool is_regular_profile,
                                 PermissionContextDelegates delegates);
 
 }  // namespace embedder_support

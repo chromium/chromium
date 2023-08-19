@@ -2,6 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# @generated from third_party/rust/BUILD.gn.hbs by tools/crates/gnrt.
+# Do not edit!
+
 import("//build/rust/cargo_crate.gni")
 
 cargo_crate("lib") {
@@ -13,10 +16,46 @@ cargo_crate("lib") {
   # third_party.toml to use it from first-party code.
   visibility = [ "//third_party/rust/*" ]
   crate_root = "crate/src/lib.rs"
+  sources = [
+    "//third_party/rust/anyhow/v1/crate/build.rs",
+    "//third_party/rust/anyhow/v1/crate/src/backtrace.rs",
+    "//third_party/rust/anyhow/v1/crate/src/chain.rs",
+    "//third_party/rust/anyhow/v1/crate/src/context.rs",
+    "//third_party/rust/anyhow/v1/crate/src/ensure.rs",
+    "//third_party/rust/anyhow/v1/crate/src/error.rs",
+    "//third_party/rust/anyhow/v1/crate/src/fmt.rs",
+    "//third_party/rust/anyhow/v1/crate/src/kind.rs",
+    "//third_party/rust/anyhow/v1/crate/src/lib.rs",
+    "//third_party/rust/anyhow/v1/crate/src/macros.rs",
+    "//third_party/rust/anyhow/v1/crate/src/ptr.rs",
+    "//third_party/rust/anyhow/v1/crate/src/wrapper.rs",
+    "//third_party/rust/anyhow/v1/crate/tests/common/mod.rs",
+    "//third_party/rust/anyhow/v1/crate/tests/compiletest.rs",
+    "//third_party/rust/anyhow/v1/crate/tests/drop/mod.rs",
+    "//third_party/rust/anyhow/v1/crate/tests/test_autotrait.rs",
+    "//third_party/rust/anyhow/v1/crate/tests/test_backtrace.rs",
+    "//third_party/rust/anyhow/v1/crate/tests/test_boxed.rs",
+    "//third_party/rust/anyhow/v1/crate/tests/test_chain.rs",
+    "//third_party/rust/anyhow/v1/crate/tests/test_context.rs",
+    "//third_party/rust/anyhow/v1/crate/tests/test_convert.rs",
+    "//third_party/rust/anyhow/v1/crate/tests/test_downcast.rs",
+    "//third_party/rust/anyhow/v1/crate/tests/test_ensure.rs",
+    "//third_party/rust/anyhow/v1/crate/tests/test_ffi.rs",
+    "//third_party/rust/anyhow/v1/crate/tests/test_fmt.rs",
+    "//third_party/rust/anyhow/v1/crate/tests/test_macros.rs",
+    "//third_party/rust/anyhow/v1/crate/tests/test_repr.rs",
+    "//third_party/rust/anyhow/v1/crate/tests/test_source.rs",
+    "//third_party/rust/anyhow/v1/crate/tests/ui/chained-comparison.rs",
+    "//third_party/rust/anyhow/v1/crate/tests/ui/empty-ensure.rs",
+    "//third_party/rust/anyhow/v1/crate/tests/ui/must-use.rs",
+    "//third_party/rust/anyhow/v1/crate/tests/ui/no-impl.rs",
+    "//third_party/rust/anyhow/v1/crate/tests/ui/temporary-value.rs",
+    "//third_party/rust/anyhow/v1/crate/tests/ui/wrong-interpolation.rs",
+  ]
+  inputs = [ "//third_party/rust/anyhow/v1/crate/README.md" ]
 
   # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
-  sources = [ "crate/src/lib.rs" ]
   edition = "2018"
   cargo_pkg_version = "1.0.70"
   cargo_pkg_authors = "David Tolnay <dtolnay@gmail.com>"

@@ -133,7 +133,8 @@ class MockInputRouterImplClient : public InputRouterImplClient {
 
   void OnImeCompositionRangeChanged(
       const gfx::Range& range,
-      const std::vector<gfx::Rect>& character_bounds) override {}
+      const absl::optional<std::vector<gfx::Rect>>& character_bounds,
+      const absl::optional<std::vector<gfx::Rect>>& line_bounds) override {}
 
   void OnImeCancelComposition() override {}
 

@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
@@ -21,8 +20,9 @@
 #include "ui/aura/window_observer.h"
 #include "ui/base/class_property.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor_extra/shadow.h"
 #include "ui/wm/core/shadow_controller_delegate.h"
 #include "ui/wm/core/shadow_types.h"
 #include "ui/wm/core/window_util.h"
@@ -117,6 +117,12 @@ class ShadowController::Impl :
 
   // Checks if |window| is visible and contains a property requesting a shadow.
   bool ShouldShowShadowForWindow(aura::Window* window) const;
+
+  // Sets rounded corner on the shadow for the `window`. The default behavior is
+  // to set the radius defined by `aura::client::kWindowCornerRadiusKey`.
+  // However, a ShadowControllerDelegate can decide if the shadow should be
+  // rounded.
+  void MaybeSetShadowRadiusForWindow(aura::Window* window) const;
 
   // Updates the shadow for windows when activation changes.
   void HandleWindowActivationChange(aura::Window* gaining_active,
@@ -260,12 +266,34 @@ bool ShadowController::Impl::ShouldShowShadowForWindow(
   return GetShadowElevationConvertDefault(window) > 0;
 }
 
+void ShadowController::Impl::MaybeSetShadowRadiusForWindow(
+    aura::Window* window) const {
+  ui::Shadow* shadow = GetShadowForWindow(window);
+  CHECK(shadow);
+
+  if (delegate_ && !delegate_->ShouldHaveRoundedShadowForWindow(window)) {
+    shadow->SetRoundedCornerRadius(0);
+    return;
+  }
+
+  const int corner_radius =
+      window->GetProperty(aura::client::kWindowCornerRadiusKey);
+
+  // `aura::client::kWindowCornerRadiusKey` default value is -1, meaning
+  // unspecified radius. i.e window server may want to apply rounded corners
+  // implicitly.
+  if (corner_radius >= 0) {
+    shadow->SetRoundedCornerRadius(corner_radius);
+  }
+}
+
 void ShadowController::Impl::HandlePossibleShadowVisibilityChange(
     aura::Window* window) {
   const bool should_show = ShouldShowShadowForWindow(window);
   ui::Shadow* shadow = GetShadowForWindow(window);
   if (shadow) {
     shadow->SetElevation(GetShadowElevationForActiveState(window));
+    MaybeSetShadowRadiusForWindow(window);
     shadow->layer()->SetVisible(should_show);
   } else if (should_show) {
     CreateShadowForWindow(window);
@@ -277,10 +305,7 @@ void ShadowController::Impl::CreateShadowForWindow(aura::Window* window) {
   ui::Shadow* shadow =
       window->SetProperty(kShadowLayerKey, std::make_unique<ui::Shadow>());
 
-  int corner_radius = window->GetProperty(aura::client::kWindowCornerRadiusKey);
-  if (corner_radius >= 0)
-    shadow->SetRoundedCornerRadius(corner_radius);
-
+  MaybeSetShadowRadiusForWindow(window);
   shadow->Init(GetShadowElevationForActiveState(window));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   shadow->SetShadowStyle(gfx::ShadowStyle::kChromeOSSystemUI);
@@ -289,6 +314,10 @@ void ShadowController::Impl::CreateShadowForWindow(aura::Window* window) {
   shadow->layer()->SetVisible(ShouldShowShadowForWindow(window));
   window->layer()->Add(shadow->layer());
   window->layer()->StackAtBottom(shadow->layer());
+
+  if (delegate_) {
+    delegate_->ApplyColorThemeToWindowShadow(window);
+  }
 }
 
 ShadowController::Impl::Impl(aura::Env* env)
@@ -313,6 +342,25 @@ ShadowController::Impl::GetInstances() {
 
 ui::Shadow* ShadowController::GetShadowForWindow(aura::Window* window) {
   return window->GetProperty(kShadowLayerKey);
+}
+
+ui::Shadow::ElevationToColorsMap ShadowController::GenerateShadowColorsMap(
+    const ui::ColorProvider* color_provider) {
+  ui::Shadow::ElevationToColorsMap color_map;
+  color_map[kShadowElevationPopup] = std::make_pair(
+      color_provider->GetColor(ui::kColorShadowValueKeyShadowElevationFour),
+      color_provider->GetColor(
+          ui::kColorShadowValueAmbientShadowElevationFour));
+  color_map[kShadowElevationInactiveWindow] = std::make_pair(
+      color_provider->GetColor(ui::kColorShadowValueKeyShadowElevationTwelve),
+      color_provider->GetColor(
+          ui::kColorShadowValueAmbientShadowElevationTwelve));
+  color_map[kShadowElevationActiveWindow] = std::make_pair(
+      color_provider->GetColor(
+          ui::kColorShadowValueKeyShadowElevationTwentyFour),
+      color_provider->GetColor(
+          ui::kColorShadowValueAmbientShadowElevationTwentyFour));
+  return color_map;
 }
 
 ShadowController::ShadowController(

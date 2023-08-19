@@ -7,8 +7,10 @@
 
 #include <map>
 #include <set>
+#include <vector>
 
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -16,7 +18,7 @@
 #include "net/base/hash_value.h"
 #include "net/base/network_isolation_key.h"
 #include "net/extras/shared_dictionary/shared_dictionary_info.h"
-#include "net/extras/shared_dictionary/shared_dictionary_storage_isolation_key.h"
+#include "net/extras/shared_dictionary/shared_dictionary_isolation_key.h"
 #include "net/extras/sqlite/sqlite_persistent_shared_dictionary_store.h"
 #include "services/network/shared_dictionary/shared_dictionary_storage.h"
 #include "services/network/shared_dictionary/shared_dictionary_writer_on_disk.h"
@@ -32,7 +34,7 @@ class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage {
  public:
   SharedDictionaryStorageOnDisk(
       base::WeakPtr<SharedDictionaryManagerOnDisk> manager,
-      const net::SharedDictionaryStorageIsolationKey& isolation_key,
+      const net::SharedDictionaryIsolationKey& isolation_key,
       base::ScopedClosureRunner on_deleted_closure_runner);
 
   SharedDictionaryStorageOnDisk(const SharedDictionaryStorageOnDisk&) = delete;
@@ -40,12 +42,19 @@ class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage {
       const SharedDictionaryStorageOnDisk&) = delete;
 
   // SharedDictionaryStorage
-  std::unique_ptr<SharedDictionary> GetDictionary(const GURL& url) override;
+  std::unique_ptr<SharedDictionary> GetDictionarySync(const GURL& url) override;
+  void GetDictionary(const GURL& url,
+                     base::OnceCallback<void(std::unique_ptr<SharedDictionary>)>
+                         callback) override;
   scoped_refptr<SharedDictionaryWriter> CreateWriter(
       const GURL& url,
       base::Time response_time,
       base::TimeDelta expiration,
       const std::string& match) override;
+  bool IsAlreadyRegistered(const GURL& url,
+                           base::Time response_time,
+                           base::TimeDelta expiration,
+                           const std::string& match) override;
 
   // Called from `SharedDictionaryManagerOnDisk` when dictionary has been
   // deleted.
@@ -75,13 +84,18 @@ class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage {
   }
 
   base::WeakPtr<SharedDictionaryManagerOnDisk> manager_;
-  const net::SharedDictionaryStorageIsolationKey isolation_key_;
+  const net::SharedDictionaryIsolationKey isolation_key_;
   base::ScopedClosureRunner on_deleted_closure_runner_;
   std::map<url::SchemeHostPort,
            std::map<std::string, net::SharedDictionaryInfo>>
       dictionary_info_map_;
   std::map<base::UnguessableToken, raw_ptr<RefCountedSharedDictionary>>
       dictionaries_;
+
+  bool get_dictionary_called_ = false;
+  bool is_metadata_ready_ = false;
+
+  std::vector<base::OnceClosure> pending_get_dictionary_tasks_;
 
   base::WeakPtrFactory<SharedDictionaryStorageOnDisk> weak_factory_{this};
 };

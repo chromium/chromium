@@ -153,7 +153,7 @@ class StatusBubbleViews : public StatusBubble {
   // going outside the bounds of the hosting widget.
   std::unique_ptr<views::Widget> popup_;
 
-  raw_ptr<views::View, DanglingUntriaged> base_view_;
+  raw_ptr<views::View, AcrossTasksDanglingUntriaged> base_view_;
   raw_ptr<StatusView, DanglingUntriaged> view_ = nullptr;
 
   // Manages the expansion of a status bubble to fit a long URL.

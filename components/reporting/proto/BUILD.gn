@@ -59,6 +59,15 @@ proto_library("health_proto") {
   ]
 }
 
+proto_library("session_affiliated_user_proto") {
+  proto_in_dir = "//"
+
+  # Generate JS so it can be used by chrome extensions
+  generate_javascript = true
+
+  sources = [ "synced/session_affiliated_user.proto" ]
+}
+
 proto_library("test_proto") {
   proto_in_dir = "//"
   sources = [ "test.proto" ]
@@ -74,6 +83,8 @@ proto_library("metric_data_proto") {
   sources = [ "synced/metric_data.proto" ]
 
   link_deps = [ "//components/services/app_service/public/protos" ]
+
+  deps = [ ":session_affiliated_user_proto" ]
 }
 
 proto_library("status_proto") {

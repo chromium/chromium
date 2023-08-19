@@ -54,7 +54,7 @@ class CC_ANIMATION_EXPORT WorkletAnimation final : public Animation {
 
   bool IsWorkletAnimation() const override;
 
-  void Tick(base::TimeTicks monotonic_time) override;
+  bool Tick(base::TimeTicks monotonic_time) override;
 
   void UpdateState(bool start_ready_animations,
                    AnimationEvents* events) override;

@@ -10,10 +10,6 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface SCFirstRunHeroScreenViewController ()
 
 @end
@@ -32,7 +28,7 @@
   self.readMoreString =
       l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SCREEN_READ_MORE);
   self.bannerName = @"Sample-banner-tall";
-  self.isTallBanner = YES;
+  self.bannerSize = BannerImageSizeType::kTall;
   self.scrollToEndMandatory = YES;
 
   // Add some screen-specific content and its constraints.

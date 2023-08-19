@@ -10,14 +10,6 @@ import shutil
 import subprocess
 import sys
 import unittest
-
-# Appends third_party/ so that coverage_utils can import jinja2 from
-# third_party/, note that this is not done inside coverage_utils because
-# coverage_utils is also used outside of Chromium source tree.
-sys.path.append(
-    os.path.join(
-        os.path.dirname(__file__), os.path.pardir, os.path.pardir,
-        'third_party'))
 import coverage_utils
 
 
@@ -61,7 +53,7 @@ class CoverageTest(unittest.TestCase):
                                  'llvm-build', 'Release+Asserts', 'bin',
                                  'llvm-cov')
 
-    self.PYTHON = 'python'
+    self.PYTHON = 'python3'
     self.PLATFORM = coverage_utils.GetHostPlatform()
     if self.PLATFORM == 'win32':
       self.LLVM_COV += '.exe'
@@ -69,13 +61,13 @@ class CoverageTest(unittest.TestCase):
 
     # Even though 'is_component_build=false' is recommended, we intentionally
     # use 'is_component_build=true' to test handling of shared libraries.
-    self.GN_ARGS = """use_clang_coverage=true
-                      dcheck_always_on=true
-                      ffmpeg_branding=\"ChromeOS\"
-                      is_component_build=true
-                      is_debug=false
-                      proprietary_codecs=true
-                      use_libfuzzer=true"""
+    self.GN_ARGS = ('use_clang_coverage=true '
+                    'dcheck_always_on=true '
+                    'ffmpeg_branding=\"ChromeOS\" '
+                    'is_component_build=true '
+                    'is_debug=false '
+                    'proprietary_codecs=true '
+                    'use_libfuzzer=true')
 
     shutil.rmtree(self.BUILD_DIR, ignore_errors=True)
 

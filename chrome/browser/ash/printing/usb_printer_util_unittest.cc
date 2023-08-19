@@ -50,5 +50,21 @@ TEST(UsbPrinterUtilTest, UsbDeviceToPrinterWithEmptySerialNumber) {
   EXPECT_THAT(entry.printer.uri().GetNormalized(), HasSubstr("?serial=?"));
 }
 
+TEST(UsbPrinterUtilTest, GuessEffectiveMakeAndModelDuplicatedManufacturer) {
+  UsbDeviceInfo device_info;
+  device_info.manufacturer_name = u"bixolon";
+  device_info.product_name = u"bixolon abc-123";
+
+  EXPECT_EQ(GuessEffectiveMakeAndModel(device_info), "bixolon abc-123");
+}
+
+TEST(UsbPrinterUtilTest, GuessEffectiveMakeAndModel) {
+  UsbDeviceInfo device_info;
+  device_info.manufacturer_name = u"bixolon";
+  device_info.product_name = u"abc-123";
+
+  EXPECT_EQ(GuessEffectiveMakeAndModel(device_info), "bixolon abc-123");
+}
+
 }  // namespace
 }  // namespace ash

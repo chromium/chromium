@@ -82,7 +82,7 @@ void SVGGradientElement::BuildPendingResource() {
   if (auto* gradient = DynamicTo<SVGGradientElement>(target))
     AddReferenceTo(gradient);
 
-  InvalidateGradient(layout_invalidation_reason::kSvgResourceInvalidated);
+  InvalidateGradient();
 }
 
 void SVGGradientElement::ClearResourceReferences() {
@@ -116,7 +116,7 @@ void SVGGradientElement::SvgAttributeChanged(
       attr_name == svg_names::kGradientTransformAttr ||
       attr_name == svg_names::kSpreadMethodAttr) {
     SVGElement::InvalidationGuard invalidation_guard(this);
-    InvalidateGradient(layout_invalidation_reason::kAttributeChanged);
+    InvalidateGradient();
     return;
   }
 
@@ -147,20 +147,18 @@ void SVGGradientElement::ChildrenChanged(const ChildrenChange& change) {
   SVGElement::ChildrenChanged(change);
 
   if (!change.ByParser())
-    InvalidateGradient(layout_invalidation_reason::kChildChanged);
+    InvalidateGradient();
 }
 
-void SVGGradientElement::InvalidateGradient(
-    LayoutInvalidationReasonForTracing reason) {
+void SVGGradientElement::InvalidateGradient() {
   if (auto* layout_object = To<LayoutSVGResourceContainer>(GetLayoutObject()))
-    layout_object->InvalidateCacheAndMarkForLayout(reason);
+    layout_object->InvalidateCache();
 }
 
 void SVGGradientElement::InvalidateDependentGradients() {
   NotifyIncomingReferences([](SVGElement& element) {
     if (auto* gradient = DynamicTo<SVGGradientElement>(element)) {
-      gradient->InvalidateGradient(
-          layout_invalidation_reason::kSvgResourceInvalidated);
+      gradient->InvalidateGradient();
     }
   });
 }
@@ -226,21 +224,18 @@ SVGAnimatedPropertyBase* SVGGradientElement::PropertyFromAttribute(
   }
 }
 
-void SVGGradientElement::SynchronizeSVGAttribute(
-    const QualifiedName& name) const {
-  if (name == AnyQName()) {
-    SVGAnimatedPropertyBase* attrs[]{
-        gradient_transform_.Get(), spread_method_.Get(), gradient_units_.Get()};
-    SynchronizeAllSVGAttributes(attrs);
-  }
-  SVGURIReference::SynchronizeSVGAttribute(name);
-  SVGElement::SynchronizeSVGAttribute(name);
+void SVGGradientElement::SynchronizeAllSVGAttributes() const {
+  SVGAnimatedPropertyBase* attrs[]{gradient_transform_.Get(),
+                                   spread_method_.Get(), gradient_units_.Get()};
+  SynchronizeListOfSVGAttributes(attrs);
+  SVGURIReference::SynchronizeAllSVGAttributes();
+  SVGElement::SynchronizeAllSVGAttributes();
 }
 
 void SVGGradientElement::CollectExtraStyleForPresentationAttribute(
     MutableCSSPropertyValueSet* style) {
-  if (gradient_transform_->HasPresentationAttributeMapping() &&
-      gradient_transform_->IsAnimating()) {
+  DCHECK(gradient_transform_->HasPresentationAttributeMapping());
+  if (gradient_transform_->IsAnimating()) {
     CollectStyleForPresentationAttribute(svg_names::kGradientTransformAttr,
                                          g_empty_atom, style);
   }

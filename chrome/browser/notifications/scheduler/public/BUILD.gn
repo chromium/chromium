@@ -39,8 +39,8 @@ source_set("public") {
     "user_action_handler.h",
   ]
 
+  public_deps = [ "//base" ]
   deps = [
-    "//base",
     "//components/keyed_service/core",
     "//skia",
   ]

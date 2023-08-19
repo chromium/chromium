@@ -18,7 +18,7 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/profile_picker.h"
+#include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/profile_waiter.h"
@@ -80,9 +80,14 @@ IN_PROC_BROWSER_TEST_F(ProfileListDesktopBrowserTest, MAYBE_SwitchToProfile) {
   EXPECT_EQ(1u, browser_list->size());
   EXPECT_EQ(path_profile1, browser_list->get(0)->profile()->GetPath());
 
-  // Open a browser window for the second profile.
+  // Open a browser window for the second profile. This is synchronous
+  // on some platforms and asynchronous on others, so this code has to
+  // handle both.
   menu->SwitchToProfile(
       menu->GetIndexOfItemWithProfilePathForTesting(path_profile2), false);
+  if (browser_list->size() == 1) {
+    ui_test_utils::WaitForBrowserToOpen();
+  }
   EXPECT_EQ(2u, browser_list->size());
 
   // Switch to the first profile without opening a new window.

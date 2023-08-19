@@ -3,53 +3,14 @@
 <title>This tests the new EditContext APIs while in composition</title>
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/testdriver.js"></script>
+<script src="../../resources/testdriver-actions.js"></script>
+<script src="../../resources/testdriver-vendor.js"></script>
 </head>
 <body>
 <div id="test"></div>
 <div id="test2"></div>
-<div id="contenteditableDiv" contenteditable></div>
 <script>
-
-test(function() {
-  const editContextDict = {
-    text: "Hello world",
-    selectionStart: 11,
-    selectionEnd: 11,
-    inputMode: "text",
-    inputPanelPolicy: "auto",
-    enterKeyHint: "enter"
-  };
-  const editContext = new EditContext(editContextDict);
-  assert_not_equals(editContext, null);
-  // Verify all the members of the EditContext
-  assert_equals(editContext.text, "Hello world");
-  assert_equals(editContext.selectionStart, 11);
-  assert_equals(editContext.selectionEnd, 11);
-  assert_equals(editContext.inputMode, "text");
-  assert_equals(editContext.inputPanelPolicy, "auto");
-  assert_equals(editContext.enterKeyHint, "enter");
-}, 'Testing EditContext Dictionary Init');
-
-test(function() {
-  contenteditableDiv.editContext = new EditContext();
-  contenteditableDiv.editContext = null;
-  contenteditableDiv.focus();
-  assert_equals(document.activeElement, contenteditableDiv);
-}, 'A contenteditable element should remain editable after attaching and detaching EditContext.');
-
-test(function() {
-  const editContext = new EditContext();
-  assert_not_equals(editContext, null);
-  const test = document.getElementById('test');
-  test.innerHTML = "";
-  editContext.addEventListener("textupdate", e => {
-    test.innerHTML = e.text;
-  });
-  test.editContext = editContext;
-  test.focus();
-  eventSender.keyDown('a');
-  assert_equals(test.innerHTML, "a");
-}, 'Testing EditContext English typing');
 
 test(function() {
   const iframe = document.createElement("iframe");
@@ -63,109 +24,9 @@ test(function() {
 test(function() {
   const editContext = new EditContext();
   assert_not_equals(editContext, null);
-
-  const new_div = document.createElement("DIV");
-  assert_equals(new_div.editContext, null);
-  document.body.appendChild(new_div);
-
-  new_div.editContext = editContext;
-  assert_equals(new_div.editContext, editContext);
-  new_div.editContext = null;
-  assert_equals(new_div.editContext, null);
-  document.body.removeChild(new_div);
-}, 'Testing Element.editContext');
-
-test(function() {
-  const editContext = new EditContext();
-  assert_not_equals(editContext, null);
-
-  const disconnected_div = document.createElement("DIV");
-  assert_equals(disconnected_div.editContext, null);
-
-  disconnected_div.editContext = editContext;
-  assert_equals(disconnected_div.editContext, editContext);
-  assert_equals(editContext.attachedElements().length, 1);
-  assert_equals(editContext.attachedElements()[0], disconnected_div);
-}, 'EditContext can be associated with an element that is not in the tree.');
-
-test(function() {
-  const editContext = new EditContext();
-  assert_not_equals(editContext, null);
-
-  const div = document.createElement("DIV");
-  assert_equals(div.editContext, null);
-
-  document.body.appendChild(div);
-  div.editContext = editContext;
-  assert_equals(div.editContext, editContext);
-  assert_equals(editContext.attachedElements().length, 1);
-  assert_equals(editContext.attachedElements()[0], div);
-
-  document.body.removeChild(div);
-  assert_equals(div.editContext, editContext);
-  assert_equals(editContext.attachedElements().length, 1);
-  assert_equals(editContext.attachedElements()[0], div);
-}, 'If an element is removed from the tree, the associated EditContext remains connected to the element.');
-
-test(function() {
-  const editContext = new EditContext();
-
-  const div_parent = document.createElement("DIV");
-  const div_child = document.createElement("DIV");
-  document.body.appendChild(div_parent);
-  div_parent.appendChild(div_child);
-
-  div_child.editContext = editContext;
-  assert_equals(div_child.editContext, editContext);
-  assert_equals(div_parent.editContext, null);
-  assert_equals(editContext.attachedElements().length, 1);
-  assert_equals(editContext.attachedElements()[0], div_child);
-
-  document.body.removeChild(div_parent);
-  assert_equals(div_child.editContext, editContext);
-  assert_equals(editContext.attachedElements().length, 1);
-  assert_equals(editContext.attachedElements()[0], div_child);
-}, 'If an element\'s ancestor is removed from tree, the associated EditContext remains connected to the element.');
-
-test(function() {
-  const editContext = new EditContext();
-
-  const test = document.getElementById("test");
-  const test2 = document.getElementById("test2");
-
-  test.editContext = editContext;
-  test2.editContext = editContext;
-
-  assert_equals(test.editContext, editContext);
-  assert_equals(test2.editContext, editContext);
-  assert_equals(editContext.attachedElements().length, 2);
-  assert_equals(editContext.attachedElements()[0], test);
-  assert_equals(editContext.attachedElements()[1], test2);
-
-  test.editContext = null;
-
-  assert_equals(editContext.attachedElements().length, 1);
-  assert_equals(editContext.attachedElements()[0], test2);
-}, '.attachedElements() should return associated elements');
-
-test(function() {
-  const editContext = new EditContext();
-  assert_not_equals(editContext, null);
-  const test = document.getElementById('test');
-  test.innerHTML = "";
-  test.editContext = editContext;
-  test.focus();
-  textInputController.setComposition("foo");
-  assert_equals(test.innerHTML, "");
-  eventSender.keyDown('a');
-  assert_equals(test.innerHTML, "");
-}, 'EditContext should disable DOM mutation');
-
-test(function() {
-  const editContext = new EditContext();
-  assert_not_equals(editContext, null);
-  const test = document.getElementById('test');
-  test.innerHTML = "";
+  const test = document.createElement("div");
+  document.body.appendChild(test);
+  test.tabIndex = "0";
   // Add EditContext event listeners
   editContext.addEventListener("textupdate", e => {
     // Update the text in the div
@@ -176,6 +37,7 @@ test(function() {
   test.editContext = editContext;
   textInputController.setComposition("foo");
   assert_equals(test.innerHTML, "FOO");
+  test.remove();
 }, 'Testing attaching EditContext AFTER the element is focused.');
 
 test(function() {
@@ -201,22 +63,8 @@ test(function() {
   const editContext = new EditContext();
   assert_not_equals(editContext, null);
   const test = document.getElementById('test');
-  test.focus();
-  test.editContext = editContext;
-  test.addEventListener("beforeinput", e => {
-    if (e.inputType === "insertText") {
-      e.preventDefault();
-    }
-  });
-  eventSender.keyDown('a');
-  assert_equals(editContext.text, "");
-}, 'beforeInput(insertText) should be cancelable');
-
-test(function() {
-  const editContext = new EditContext();
-  assert_not_equals(editContext, null);
-  const test = document.getElementById('test');
-  test.innerHTML = "";
+  test.innerHTML = "ABCD";
+  editContext.updateText(0, 4, "abcd");
   // Add EditContext event listeners
   editContext.addEventListener("textupdate", e => {
     // Update the text in the div
@@ -224,13 +72,36 @@ test(function() {
     test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.text.toUpperCase() + buffer.substr(e.updateRangeEnd);
   });
 
+  let compositionStartCount = 0;
+  let compositionEndCount = 0;
+  editContext.addEventListener("compositionstart", e => {
+    compositionStartCount++;
+  });
+  editContext.addEventListener("compositionend", e => {
+    compositionEndCount++;
+  });
+
   test.editContext = editContext;
   test.focus();
+  editContext.updateSelection(2, 2);
   textInputController.setComposition("foo");
-  assert_equals(test.innerHTML, "FOO");
+  assert_equals(editContext.text, "abfoocd");
+  assert_equals(test.innerHTML, "ABFOOCD");
+  assert_equals(compositionStartCount, 1, "Should get compositionstart after setting non-empty composition");
+  assert_equals(compositionEndCount, 0, "Should not get compositionend until terminating composition");
+
   textInputController.setComposition("");
-  assert_equals(test.innerHTML, "");
-}, 'Testing EditContext TextUpdate with empty strings');
+  assert_equals(editContext.text, "abcd");
+  assert_equals(test.innerHTML, "ABCD");
+  assert_equals(compositionStartCount, 1, "Shouldn't get another compositionstart when setting empty composition");
+  assert_equals(compositionEndCount, 1, "Should get compositionend when setting empty composition");
+
+  textInputController.setComposition("bar");
+  assert_equals(editContext.text, "abbarcd");
+  assert_equals(test.innerHTML, "ABBARCD");
+  assert_equals(compositionStartCount, 2, "Should get another compositionstart after setting non-empty composition");
+  assert_equals(compositionEndCount, 1, "Should not get another compositionend until terminating composition");
+}, 'Testing EditContext TextUpdate with empty string');
 
 test(function() {
   const editContext = new EditContext();
@@ -494,6 +365,37 @@ test(function() {
   assert_equals(editContext.text, "bat");
 }, 'Testing EditContext SetCompositionFromExistingText');
 
+promise_test(async function() {
+  const editContext = new EditContext();
+  assert_not_equals(editContext, null);
+  const test = document.getElementById('test');
+  test.innerHTML = "";
+  // Add EditContext event listeners
+  editContext.addEventListener("textupdate", e => {
+    // Update the text in the div
+    const buffer = test.innerText;
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.text.toUpperCase()  + buffer.substr(e.updateRangeEnd);
+  });
+
+  test.editContext = editContext;
+  test.focus();
+  textInputController.setComposition("foo");
+  assert_equals(test.innerHTML, "FOO");
+  textInputController.insertText("foo");
+  assert_equals(editContext.text, "foo", "EditContext's text should have been updated");
+  assert_equals(editContext.selectionStart, 3, "EditContext's selectionStart should have been placed after inserted text");
+  assert_equals(editContext.selectionEnd, 3, "EditContext's selectionEnd should have been placed after inserted text");
+
+  textInputController.setMarkedTextFromExistingText(0, 3);
+  assert_equals(editContext.text, "foo", "SetCompositionFromExistingText should not change EditContext's text");
+  assert_equals(editContext.selectionStart, 3, "SetCompositionFromExistingText should not change EditContext's text");
+  assert_equals(editContext.selectionEnd, 3, "SetCompositionFromExistingText should not change EditContext's text");
+
+  await test_driver.send_keys(test, 'a');
+  assert_equals(editContext.text, "fooa", "Normal typing should be inserted at selection position, not composition position");
+  assert_equals(test.innerHTML, "FOOA",  "Normal typing should be inserted at selection position, not composition position");
+}, 'Testing EditContext SetCompositionFromExistingText followed by non-composition typing');
+
 test(function() {
   const editContext = new EditContext();
   assert_not_equals(editContext, null);
@@ -588,126 +490,23 @@ test(function() {
 }, 'Testing EditContext blur');
 
 test(function() {
-  const editContext = new EditContext();
-  assert_not_equals(editContext, null);
-  editContext.text = "foo";
-  assert_equals(editContext.text, "foo");
-  const test = document.getElementById('test');
-  // Update the layout of the |EditContext|
-  var viewRect = test.getBoundingClientRect();
-  viewRect.x = viewRect.left;
-  viewRect.y = viewRect.top;
-  var caretRect = test.getBoundingClientRect();
-  caretRect.x = caretRect.left;
-  caretRect.y = 2.2 * caretRect.top;
-  caretRect.width = 1;
-  editContext.updateSelection(0, 0);
-  assert_equals(editContext.selectionStart, 0);
-  assert_equals(editContext.selectionEnd, 0);
-  editContext.selectionStart = 1;
-  assert_equals(editContext.selectionStart, 0); // selectionEnd is still 0
-  editContext.selectionEnd = 1;
-  assert_equals(editContext.selectionEnd, 1);
-  editContext.selectionStart = 1;
-  assert_equals(editContext.selectionStart, 1);
-  editContext.updateControlBounds(viewRect);
-  editContext.updateSelectionBounds(caretRect);
-}, 'Testing EditContext update text, selection and layout');
-
-test(function() {
-  const editContext = new EditContext();
-  const test = document.getElementById('test');
-  var rect1 = DOMRect.fromRect({x:0, y:1, width:100, height:200});
-  var rect2 = DOMRect.fromRect({x:2, y:3, width:300, height:400});
-  var rectArray = [rect1, rect2];
-  var rangeStart = 2;
-  editContext.updateCharacterBounds(rangeStart, rectArray);
-  assert_equals(editContext.characterBoundsRangeStart, 2);
-
-  var actualRectArray = editContext.characterBounds();
-  assert_equals(actualRectArray.length, 2);
-  assert_equals(actualRectArray[0].x, 0);
-  assert_equals(actualRectArray[0].y, 1);
-  assert_equals(actualRectArray[0].width, 100);
-  assert_equals(actualRectArray[0].height, 200);
-  rect2.x=100;
-  assert_equals(actualRectArray[1].x, 2);  // the cached value shouldn't change.
-  assert_equals(actualRectArray[1].y, 3);
-  assert_equals(actualRectArray[1].width, 300);
-  assert_equals(actualRectArray[1].height, 400);
-}, 'updateCharacterBounds(), characterBounds(), and characterBoundsRangeStart should work properly');
-
-test(function() {
-  const editContext = new EditContext();
-  assert_not_equals(editContext, null);
-  editContext.text = "foo";
-  assert_equals(editContext.text, "foo");
-  assert_throws_dom("IndexSizeError", function() { editContext.updateSelection(10, 0); });
-  assert_equals(editContext.selectionStart, 0);
-  assert_equals(editContext.selectionEnd, 0);
-  assert_throws_dom("IndexSizeError", function() { editContext.updateText(10, 1, "h"); });
-  assert_equals(editContext.text, "foo");
-}, 'Testing EditContext update text and selection with invalid values');
-
-test(function() {
-  const editContext = new EditContext();
-  assert_not_equals(editContext, null);
-  assert_equals(editContext.inputMode, "text"); // default value
-  editContext.inputMode = "tel";
-  assert_equals(editContext.inputMode, "tel");
-  editContext.inputMode = "email";
-  assert_equals(editContext.inputMode, "email");
-  editContext.inputMode = "search";
-  assert_equals(editContext.inputMode, "search");
-  editContext.inputMode = "decimal";
-  assert_equals(editContext.inputMode, "decimal");
-  editContext.inputMode = "numeric";
-  assert_equals(editContext.inputMode, "numeric");
-  editContext.inputMode = "url";
-  assert_equals(editContext.inputMode, "url");
-  editContext.inputMode = "none";
-  assert_equals(editContext.inputMode, "none");
-  editContext.inputMode = "test";
-  assert_equals(editContext.inputMode, "none");
-}, 'Testing EditContext inputMode');
-
-test(function() {
-  const editContext = new EditContext();
-  assert_not_equals(editContext, null);
-  assert_equals(editContext.enterKeyHint, "enter"); // default value
-  editContext.enterKeyHint = "done";
-  assert_equals(editContext.enterKeyHint, "done");
-  editContext.enterKeyHint = "go";
-  assert_equals(editContext.enterKeyHint, "go");
-  editContext.enterKeyHint = "next";
-  assert_equals(editContext.enterKeyHint, "next");
-  editContext.enterKeyHint = "previous";
-  assert_equals(editContext.enterKeyHint, "previous");
-  editContext.enterKeyHint = "search";
-  assert_equals(editContext.enterKeyHint, "search");
-  editContext.enterKeyHint = "send";
-  assert_equals(editContext.enterKeyHint, "send");
-  editContext.enterKeyHint = "test";
-  assert_equals(editContext.enterKeyHint, "send");
-}, 'Testing EditContext enterKeyHint');
-
-test(function() {
   // SetComposition should not crash when event handler removes document
   const child = document.createElement("iframe");
   document.body.appendChild(child);
   const childDocument = child.contentDocument;
-  const textarea = childDocument.createElement('textarea');
-  childDocument.body.appendChild(textarea);
-  textarea.addEventListener("focusin", e => {
+  const editable = childDocument.createElement('div');
+  editable.contentEditable = true;
+  childDocument.body.appendChild(editable);
+  editable.addEventListener("focusin", e => {
     const childEditContext = new EditContext();
-    textarea.editContext = childEditContext;
+    editable.editContext = childEditContext;
     childEditContext.addEventListener("textupdate", e => {
       child.remove();
     });
     childEditContext.addEventListener("textformatupdate", e => {
     });
   });
-  textarea.focus();
+  editable.focus();
   child.contentWindow.focus();
   child.contentWindow.textInputController.setComposition("bar");
 }, 'Testing EditContext Iframe Document Delete');
@@ -723,28 +522,6 @@ test(function() {
   textInputController.setComposition("bar");
 
 }, 'Testing EditContext GC');
-
-test(() => {
-    let div = document.createElement("div");
-    document.body.appendChild(div);
-    let divText = "Hello World";
-    div.innerText = divText;
-    div.editContext = new EditContext();
-    div.focus();
-
-    let got_textupdate_event = false;
-    div.editContext.addEventListener("textupdate", e => {
-      got_textupdate_event = true;
-    });
-
-    div.editContext = null;
-    eventSender.keyDown("a");
-
-    assert_false(got_textupdate_event, "Shouldn't have received textupdate event after editContext was detached");
-
-    document.body.removeChild(div);
-  }, "EditContext should not receive events after being detached from element");
-
 </script>
 </body>
 </html>

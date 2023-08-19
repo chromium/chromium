@@ -17,10 +17,10 @@
 namespace ash {
 
 // Observes web app update from App Service and updates information stored in
-// |WebKioskAppManager|. It persists through the whole Kiosk session so that app
+// `WebKioskAppManager`. It persists through the whole Kiosk session so that app
 // updates during the session can also be handled.
 // This class must be created after WebAppProvider is ready. It can be achieved
-// by waiting for |apps::AppType::kWeb| to be ready in |apps::AppServiceProxy|.
+// by waiting for `apps::AppType::kWeb` to be ready in `apps::AppServiceProxy`.
 class WebKioskAppUpdateObserver : public apps::AppRegistryCache::Observer {
  public:
   WebKioskAppUpdateObserver(Profile* profile, const AccountId& account_id);
@@ -36,7 +36,7 @@ class WebKioskAppUpdateObserver : public apps::AppRegistryCache::Observer {
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override;
 
-  // Updates app info in |WebKioskAppManager|.
+  // Updates app info in `WebKioskAppManager`.
   void UpdateWebAppFromAppService(const std::string& app_id, bool icon_updated);
 
   void OnAppServiceIconLoaded(std::string title,

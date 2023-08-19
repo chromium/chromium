@@ -4,7 +4,6 @@
 
 source_set("primes") {
   testonly = true
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "test_primes.mm" ]
   deps = [
     "//base",

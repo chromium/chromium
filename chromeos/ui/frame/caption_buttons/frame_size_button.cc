@@ -16,6 +16,7 @@
 #include "chromeos/ui/frame/multitask_menu/multitask_menu.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_nudge_controller.h"
 #include "chromeos/ui/wm/features.h"
+#include "ui/aura/client/cursor_client.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/hit_test.h"
@@ -41,8 +42,8 @@ constexpr base::TimeDelta kSetButtonsToSnapModeDelay = base::Milliseconds(150);
 
 // The amount that a user can overshoot one of the caption buttons while in
 // "snap mode" and keep the button hovered/pressed.
-const int kMaxOvershootX = 200;
-const int kMaxOvershootY = 50;
+constexpr int kMaxOvershootX = 200;
+constexpr int kMaxOvershootY = 50;
 
 // TODO(b/277770052): Adjust the press duration to reflect the shorter overall
 // time to activate the multitask menu.
@@ -260,6 +261,7 @@ void FrameSizeButton::ShowMultitaskMenu(MultitaskMenuEntryType entry_type) {
         /*anchor=*/this, GetWidget(),
         /*close_on_move_out=*/entry_type ==
             MultitaskMenuEntryType::kFrameSizeButtonHover);
+    multitask_menu_ = menu_delegate->GetWeakPtr();
     multitask_menu_widget_ =
         base::WrapUnique(views::BubbleDialogDelegateView::CreateBubble(
             std::move(menu_delegate)));
@@ -294,12 +296,24 @@ bool FrameSizeButton::OnMouseDragged(const ui::MouseEvent& event) {
   // |in_snap_mode_| == true because we want different behavior.
   if (!in_snap_mode_)
     views::FrameCaptionButton::OnMouseDragged(event);
+
+  if (multitask_menu_) {
+    multitask_menu_->multitask_menu_view()->OnSizeButtonDrag(
+        views::View::ConvertPointToScreen(this, event.location()));
+  }
+
   return true;
 }
 
 void FrameSizeButton::OnMouseReleased(const ui::MouseEvent& event) {
-  if (IsTriggerableEvent(event))
+  if (IsTriggerableEvent(event)) {
     CommitSnap(event);
+
+    if (multitask_menu_) {
+      multitask_menu_->multitask_menu_view()->OnSizeButtonRelease(
+          views::View::ConvertPointToScreen(this, event.location()));
+    }
+  }
 
   if (pie_animation_view_) {
     pie_animation_view_->Stop();
@@ -336,6 +350,12 @@ void FrameSizeButton::OnGestureEvent(ui::GestureEvent* event) {
   if (event->type() == ui::ET_GESTURE_SCROLL_BEGIN ||
       event->type() == ui::ET_GESTURE_SCROLL_UPDATE) {
     UpdateSnapPreview(*event);
+
+    if (multitask_menu_) {
+      multitask_menu_->multitask_menu_view()->OnSizeButtonDrag(
+          views::View::ConvertPointToScreen(this, event->location()));
+    }
+
     event->SetHandled();
     return;
   }
@@ -344,6 +364,13 @@ void FrameSizeButton::OnGestureEvent(ui::GestureEvent* event) {
       event->type() == ui::ET_GESTURE_SCROLL_END ||
       event->type() == ui::ET_SCROLL_FLING_START ||
       event->type() == ui::ET_GESTURE_END) {
+    if (multitask_menu_ &&
+        multitask_menu_->multitask_menu_view()->OnSizeButtonRelease(
+            views::View::ConvertPointToScreen(this, event->location()))) {
+      event->SetHandled();
+      return;
+    }
+
     if (CommitSnap(*event)) {
       event->SetHandled();
       return;
@@ -360,8 +387,17 @@ void FrameSizeButton::StateChanged(views::Button::ButtonState old_state) {
     return;
   }
 
+  // Ignore if there is no native window, which can happen during widget
+  // shutdown.
+  if (!GetWidget()->GetNativeWindow()) {
+    return;
+  }
+
   // Pie animation will start on both active/inactive window.
-  if (GetState() == views::Button::STATE_HOVERED) {
+  if (aura::client::CursorClient* cursor_client = aura::client::GetCursorClient(
+          GetWidget()->GetNativeWindow()->GetRootWindow());
+      cursor_client && cursor_client->IsCursorVisible() &&
+      GetState() == views::Button::STATE_HOVERED) {
     // On animation end we should show the multitask menu.
     // Note that if the window is not active, after the pie animation this will
     // activate the window.

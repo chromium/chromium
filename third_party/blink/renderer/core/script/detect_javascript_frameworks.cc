@@ -19,11 +19,6 @@
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
-#include "v8-container.h"
-#include "v8-local-handle.h"
-#include "v8-object.h"
-#include "v8-primitive.h"
-#include "v8-regexp.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -224,10 +219,13 @@ void DetectFrameworkVersions(Document& document,
                              const AtomicString& detected_ng_version) {
   v8::Local<v8::Object> global = context->Global();
   static constexpr char kVersionPattern[] = "([0-9]+)\\.([0-9]+)";
-  v8::Local<v8::RegExp> version_regexp =
-      v8::RegExp::New(context, V8AtomicString(isolate, kVersionPattern),
-                      v8::RegExp::kNone)
-          .ToLocalChecked();
+  v8::Local<v8::RegExp> version_regexp;
+
+  if (!v8::RegExp::New(context, V8AtomicString(isolate, kVersionPattern),
+                       v8::RegExp::kNone)
+           .ToLocal(&version_regexp)) {
+    return;
+  }
 
   auto SafeGetProperty = [&](v8::Local<v8::Value> object,
                              const char* prop_name) -> v8::Local<v8::Value> {

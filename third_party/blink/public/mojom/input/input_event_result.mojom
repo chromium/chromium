@@ -20,6 +20,8 @@ enum InputEventResultState {
   kConsumed,
   // Was not consumed.
   kNotConsumed,
+  // Event hit a blocking touch handler but was not consumed.
+  kNotConsumedBlocking,
   // Could not be targeted.
   kNoConsumerExists,
   // Discarded.

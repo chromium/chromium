@@ -152,7 +152,8 @@ void GameResult::OnIconLoaded(const gfx::ImageSkia& image,
     icon = gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
         radius, SK_ColorWHITE, resized_image);
   }
-  SetIcon(IconInfo(icon, kAppIconDimension, IconShape::kCircle));
+  SetIcon(IconInfo(ui::ImageModel::FromImageSkia(icon), kAppIconDimension,
+                   IconShape::kCircle));
 }
 
 }  // namespace app_list

@@ -11,6 +11,7 @@
 #include "base/values.h"
 #include "chromeos/ash/components/network/client_cert_util.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
+#include "chromeos/ash/components/network/text_message_suppression_state.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash {
@@ -101,11 +102,14 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) MockManagedNetworkConfigurationHandler
   MOCK_CONST_METHOD1(NotifyPolicyAppliedToNetwork,
                      void(const std::string& service_path));
   MOCK_METHOD1(OnCellularPoliciesApplied, void(const NetworkProfile& profile));
+  MOCK_CONST_METHOD0(OnEnterpriseMonitoredWebPoliciesApplied, void());
   MOCK_CONST_METHOD0(AllowCellularSimLock, bool());
+  MOCK_CONST_METHOD0(AllowCellularHotspot, bool());
   MOCK_CONST_METHOD0(AllowOnlyPolicyCellularNetworks, bool());
   MOCK_CONST_METHOD0(AllowOnlyPolicyWiFiToConnect, bool());
   MOCK_CONST_METHOD0(AllowOnlyPolicyWiFiToConnectIfAvailable, bool());
   MOCK_CONST_METHOD0(AllowOnlyPolicyNetworksToAutoconnect, bool());
+  MOCK_CONST_METHOD0(GetAllowTextMessages, PolicyTextMessageSuppressionState());
   MOCK_CONST_METHOD0(GetBlockedHexSSIDs, std::vector<std::string>());
 };
 

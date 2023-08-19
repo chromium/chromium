@@ -20,6 +20,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/ozone/platform/wayland/host/dump_util.h"
 #include "ui/ozone/platform/wayland/host/gtk_shell1.h"
 #include "ui/ozone/platform/wayland/host/gtk_surface1.h"
 #include "ui/ozone/platform/wayland/host/shell_object_factory.h"
@@ -137,6 +138,10 @@ void WaylandToplevelWindow::DispatchHostWindowDragMovement(
     shell_toplevel_->SurfaceResize(connection(), hittest);
 
   connection()->Flush();
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(crbug.com/1454893): Revisit to resolve the correct impl.
+  connection()->event_source()->ResetPointerFlags();
+#endif
 }
 
 void WaylandToplevelWindow::Show(bool inactive) {
@@ -364,19 +369,14 @@ bool WaylandToplevelWindow::CanSetDecorationInsets() const {
 }
 
 void WaylandToplevelWindow::SetOpaqueRegion(
-    const std::vector<gfx::Rect>* region_px) {
-  if (region_px)
-    opaque_region_px_ = *region_px;
-  else
-    opaque_region_px_ = absl::nullopt;
+    absl::optional<std::vector<gfx::Rect>> region_px) {
+  opaque_region_px_ = region_px;
   root_surface()->set_opaque_region(region_px);
 }
 
-void WaylandToplevelWindow::SetInputRegion(const gfx::Rect* region_px) {
-  if (region_px)
-    input_region_px_ = *region_px;
-  else
-    input_region_px_ = absl::nullopt;
+void WaylandToplevelWindow::SetInputRegion(
+    absl::optional<gfx::Rect> region_px) {
+  input_region_px_ = region_px;
   root_surface()->set_input_region(region_px);
 }
 
@@ -411,6 +411,35 @@ void WaylandToplevelWindow::UpdateWindowScale(bool update_bounds) {
   // Update min/max size in DIP if buffer scale is updated.
   SizeConstraintsChanged();
 }
+
+void WaylandToplevelWindow::OnRotateFocus(uint32_t serial,
+                                          uint32_t direction,
+                                          bool restart) {
+  if (!is_active_ || !HasKeyboardFocus()) {
+    VLOG(1) << "requested focus rotation when surface is not active or does "
+               "not have keyboard focus {active, focus}: {"
+            << is_active_ << ", " << HasKeyboardFocus()
+            << "}. This might be caused by delay in exo. Ignoring request.";
+    shell_toplevel()->AckRotateFocus(
+        serial, ZAURA_TOPLEVEL_ROTATE_HANDLED_STATE_NOT_HANDLED);
+    return;
+  }
+
+  auto platform_direction =
+      direction == ZAURA_TOPLEVEL_ROTATE_DIRECTION_FORWARD
+          ? PlatformWindowDelegate::RotateDirection::kForward
+          : PlatformWindowDelegate::RotateDirection::kBackward;
+  bool rotated = delegate()->OnRotateFocus(platform_direction, restart);
+  shell_toplevel()->AckRotateFocus(
+      serial, rotated ? ZAURA_TOPLEVEL_ROTATE_HANDLED_STATE_HANDLED
+                      : ZAURA_TOPLEVEL_ROTATE_HANDLED_STATE_NOT_HANDLED);
+}
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void WaylandToplevelWindow::OnOverviewModeChanged(bool in_overview) {
+  delegate()->OnOverviewModeChanged(in_overview);
+}
+#endif
 
 void WaylandToplevelWindow::LockFrame() {
   OnFrameLockingChanged(true);
@@ -481,6 +510,8 @@ void WaylandToplevelWindow::HandleAuraToplevelConfigure(
     int32_t width_dip,
     int32_t height_dip,
     const WindowStates& window_states) {
+  VLOG(1) << "Wayland XDG/Aura toplevel configure: states="
+          << window_states.ToString();
   // Store the old state to propagte state changes if Wayland decides to change
   // the state to something else.
   PlatformWindowState old_state = state_;
@@ -770,6 +801,12 @@ void WaylandToplevelWindow::SetImmersiveFullscreenStatus(bool status) {
     NOTIMPLEMENTED_LOG_ONCE();
   }
 }
+
+void WaylandToplevelWindow::SetTopInset(int height) {
+  if (shell_toplevel_) {
+    shell_toplevel_->SetTopInset(height);
+  }
+}
 #endif
 
 void WaylandToplevelWindow::ShowSnapPreview(
@@ -913,6 +950,21 @@ void WaylandToplevelWindow::SetSystemModal(bool modal) {
   system_modal_ = modal;
   if (shell_toplevel_)
     shell_toplevel_->SetSystemModal(modal);
+}
+
+void WaylandToplevelWindow::DumpState(std::ostream& out) const {
+  WaylandWindow::DumpState(out);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  out << ", is_immersive_fullscreen=" << ToBoolString(is_immersive_fullscreen_);
+#endif
+  out << ", title=" << window_title_
+      << ", is_active=" << ToBoolString(is_active_)
+      << ", restore_session_id=" << restore_session_id_;
+  if (restore_window_id_source_) {
+    out << ", source=" << *restore_window_id_source_;
+  }
+  out << ", persistable=" << ToBoolString(persistable_)
+      << ", system_modal=" << ToBoolString(system_modal_);
 }
 
 void WaylandToplevelWindow::UpdateSystemModal() {
@@ -1095,10 +1147,12 @@ void WaylandToplevelWindow::SetInitialWorkspace() {
 void WaylandToplevelWindow::UpdateWindowMask() {
   std::vector<gfx::Rect> region{gfx::Rect({}, latched_state().size_px)};
   root_surface()->set_opaque_region(
-      opaque_region_px_.has_value() ? &*opaque_region_px_
-                                    : (IsOpaqueWindow() ? &region : nullptr));
-  root_surface()->set_input_region(input_region_px_ ? &*input_region_px_
-                                                    : &*region.begin());
+      opaque_region_px_.has_value()
+          ? opaque_region_px_
+          : (IsOpaqueWindow() ? absl::optional<std::vector<gfx::Rect>>(region)
+                              : absl::nullopt));
+  root_surface()->set_input_region(input_region_px_ ? input_region_px_
+                                                    : *region.begin());
 }
 
 bool WaylandToplevelWindow::GetTabletMode() {

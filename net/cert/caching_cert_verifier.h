@@ -127,7 +127,7 @@ class NET_EXPORT CachingCertVerifier : public CertVerifier,
   void OnCertVerifierChanged() override;
 
   // CertDatabase::Observer methods:
-  void OnCertDBChanged() override;
+  void OnTrustStoreChanged() override;
 
   // For unit testing.
   void ClearCache();

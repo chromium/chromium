@@ -5,10 +5,9 @@
 package org.chromium.chrome.browser.share;
 
 import android.app.Activity;
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.Context;
 import android.net.Uri;
+import android.os.Build;
+import android.os.Build.VERSION;
 import android.text.TextUtils;
 import android.view.View;
 
@@ -325,8 +324,12 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
 
     protected void maybeAddCopyFirstPartyOption() {
         mOrderedFirstPartyOptions.add(createCopyLinkFirstPartyOption());
-        mOrderedFirstPartyOptions.add(createCopyGifFirstPartyOption());
-        mOrderedFirstPartyOptions.add(createCopyImageFirstPartyOption(true));
+        if (usePolishedActionOrderedList()) {
+            mOrderedFirstPartyOptions.add(createCopyImageFirstPartyOption(false));
+        } else {
+            mOrderedFirstPartyOptions.add(createCopyGifFirstPartyOption());
+            mOrderedFirstPartyOptions.add(createCopyImageFirstPartyOption(true));
+        }
         mOrderedFirstPartyOptions.add(createCopyFirstPartyOption());
         mOrderedFirstPartyOptions.add(createCopyTextFirstPartyOption());
     }
@@ -348,12 +351,8 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
         return builder.setIcon(R.drawable.ic_content_copy_black, R.string.sharing_copy_url)
                 .setFeatureNameForMetrics(USER_ACTION_COPY_URL_SELECTED)
                 .setOnClickCallback((view) -> {
-                    ClipboardManager clipboard = (ClipboardManager) mActivity.getSystemService(
-                            Context.CLIPBOARD_SERVICE);
-                    clipboard.setPrimaryClip(
-                            ClipData.newPlainText(mShareParams.getTitle(), mShareParams.getUrl()));
-                    // TODO(crbug/1448655): Remove toast for Android T+
-                    Toast.makeText(mActivity, R.string.link_copied, Toast.LENGTH_SHORT).show();
+                    Clipboard.getInstance().setText(mShareParams.getTitle(), mShareParams.getUrl(),
+                            /*notifyOnSuccess=*/true);
                 })
                 .build();
     }
@@ -369,8 +368,14 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
                     Uri imageUri = mShareParams.getImageUriToShare();
                     if (imageUri != null) {
                         Clipboard.getInstance().setImageUri(imageUri);
-                        // TODO(crbug/1448655): Move toast into Clipboard#setImageUri.
-                        Toast.makeText(mActivity, R.string.gif_copied, Toast.LENGTH_SHORT).show();
+                        // TODO(crbug/1448589): Remove copy GIF action.
+                        // This is separate from regular image copy due to the string used on the
+                        // toast. To avoid growing complexity to customize text on toast in
+                        // Clipboard, this is logic guarded by version code.
+                        if (VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                            Toast.makeText(mActivity, R.string.gif_copied, Toast.LENGTH_SHORT)
+                                    .show();
+                        }
                     }
                 })
                 .build();
@@ -388,10 +393,8 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
                         .setOnClickCallback((view) -> {
                             Uri imageUri = mShareParams.getImageUriToShare();
                             if (imageUri != null) {
-                                Clipboard.getInstance().setImageUri(imageUri);
-                                // TODO(crbug/1448655): Move toast into Clipboard#setImageUri.
-                                Toast.makeText(mActivity, R.string.image_copied, Toast.LENGTH_SHORT)
-                                        .show();
+                                Clipboard.getInstance().setImageUri(
+                                        imageUri, /*notifyOnSuccess=*/true);
                             }
                         });
         if (excludeGif) {
@@ -405,12 +408,8 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
                 .setIcon(R.drawable.ic_content_copy_black, R.string.sharing_copy)
                 .setFeatureNameForMetrics(USER_ACTION_COPY_SELECTED)
                 .setOnClickCallback((view) -> {
-                    // TODO(crbug/1448655): Switch to Clipboard#setText.
-                    ClipboardManager clipboard = (ClipboardManager) mActivity.getSystemService(
-                            Context.CLIPBOARD_SERVICE);
-                    clipboard.setPrimaryClip(ClipData.newPlainText(
-                            mShareParams.getTitle(), mShareParams.getTextAndUrl()));
-                    Toast.makeText(mActivity, R.string.copied, Toast.LENGTH_SHORT).show();
+                    Clipboard.getInstance().setText(mShareParams.getTitle(),
+                            mShareParams.getTextAndUrl(), /*notifyOnSuccess=*/true);
                 })
                 .build();
     }
@@ -421,12 +420,8 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
                 .setIcon(R.drawable.ic_content_copy_black, R.string.sharing_copy_text)
                 .setFeatureNameForMetrics(USER_ACTION_COPY_TEXT_SELECTED)
                 .setOnClickCallback((view) -> {
-                    // TODO(crbug/1448655): Switch to Clipboard#setText.
-                    ClipboardManager clipboard = (ClipboardManager) mActivity.getSystemService(
-                            Context.CLIPBOARD_SERVICE);
-                    clipboard.setPrimaryClip(
-                            ClipData.newPlainText(mShareParams.getTitle(), mShareParams.getText()));
-                    Toast.makeText(mActivity, R.string.text_copied, Toast.LENGTH_SHORT).show();
+                    Clipboard.getInstance().setText(mShareParams.getTitle(), mShareParams.getText(),
+                            /*notifyOnSuccess=*/true);
                 })
                 .build();
     }
@@ -434,7 +429,8 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
     private FirstPartyOption createSendTabToSelfFirstPartyOption() {
         return new FirstPartyOptionBuilder(
                 ContentType.LINK_PAGE_VISIBLE, ContentType.LINK_PAGE_NOT_VISIBLE, ContentType.IMAGE)
-                .setDetailedContentTypesToDisableFor(DetailedContentType.WEB_NOTES)
+                .setDetailedContentTypesToDisableFor(
+                        DetailedContentType.WEB_NOTES, DetailedContentType.SCREENSHOT)
                 .setIcon(R.drawable.send_tab, R.string.sharing_send_tab_to_self)
                 .setFeatureNameForMetrics(USER_ACTION_SEND_TAB_TO_SELF_SELECTED)
                 .setOnClickCallback((view) -> {
@@ -449,7 +445,8 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
     private FirstPartyOption createQrCodeFirstPartyOption() {
         return new FirstPartyOptionBuilder(
                 ContentType.LINK_PAGE_VISIBLE, ContentType.LINK_PAGE_NOT_VISIBLE, ContentType.IMAGE)
-                .setDetailedContentTypesToDisableFor(DetailedContentType.WEB_NOTES)
+                .setDetailedContentTypesToDisableFor(
+                        DetailedContentType.WEB_NOTES, DetailedContentType.SCREENSHOT)
                 .setIcon(R.drawable.qr_code, R.string.qr_code_share_icon_label)
                 .setFeatureNameForMetrics(USER_ACTION_QR_CODE_SELECTED)
                 .setOnClickCallback((view) -> {
@@ -507,12 +504,10 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
     /**
      * Create a {@link FirstPartyOption} used to do screenshot. Return null if not supported.
      */
-    @Nullable
-    protected abstract FirstPartyOption createScreenshotFirstPartyOption();
+    protected abstract @Nullable FirstPartyOption createScreenshotFirstPartyOption();
 
     /**
      * Create a {@link FirstPartyOption} used to do long screenshot. Return null if not supported.
      */
-    @Nullable
-    protected abstract FirstPartyOption createLongScreenshotsFirstPartyOption();
+    protected abstract @Nullable FirstPartyOption createLongScreenshotsFirstPartyOption();
 }

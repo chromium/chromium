@@ -54,9 +54,10 @@ if (is_android) {
       "//weblayer/public/java",
       "//weblayer/public/javatestutil:test_java",
     ]
-    srcjar_deps = [ ":generated_enums" ]
-
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+    srcjar_deps = [
+      ":generated_enums",
+      ":weblayer_browsertests_jni",
+    ]
   }
 
   generate_jni("weblayer_browsertests_jni") {

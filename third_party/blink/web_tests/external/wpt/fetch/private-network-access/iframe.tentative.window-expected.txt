@@ -1,0 +1,16 @@
+This is a testharness.js-based test.
+PASS local to local: no preflight required.
+PASS local to private: no preflight required.
+PASS local to public: no preflight required.
+FAIL private to local: failure. assert_equals: expected "timeout" but got "loaded"
+PASS private to private: no preflight required.
+PASS private to public: no preflight required.
+FAIL public to local: failure. assert_equals: expected "timeout" but got "loaded"
+FAIL public to private: failure. assert_equals: expected "timeout" but got "loaded"
+PASS public to public: no preflight required.
+FAIL treat-as-public-address to local: failure. assert_equals: expected "timeout" but got "loaded"
+FAIL treat-as-public-address to private: failure. assert_equals: expected "timeout" but got "loaded"
+PASS treat-as-public-address to public: no preflight required.
+PASS local to local, grandparent navigates: success.
+Harness: the test ran to completion.
+

@@ -12,6 +12,10 @@ class PrefService;
 @class SetUpListItem;
 @protocol SetUpListDelegate;
 
+namespace syncer {
+class SyncService;
+}  // namespace syncer
+
 // Contains a list of items to display in the Set Up List UI on the NTP / Home.
 @interface SetUpList : NSObject
 
@@ -23,6 +27,7 @@ class PrefService;
 // if the Set Up List has been disabled in local state prefs.
 + (instancetype)buildFromPrefs:(PrefService*)prefs
                     localState:(PrefService*)localState
+                   syncService:(syncer::SyncService*)syncService
          authenticationService:(AuthenticationService*)authService;
 
 // Initializes a SetUpList with the given `items`. `localState` is used to
@@ -38,6 +43,10 @@ class PrefService;
 
 // Returns `YES` if all items are complete.
 - (BOOL)allItemsComplete;
+
+// Returns the complete list of tasks, inclusive of the ones the user has
+// already completed.
+- (NSArray<SetUpListItem*>*)allItems;
 
 // Contains the items or tasks that the user may want to complete as part of
 // setting up the app.

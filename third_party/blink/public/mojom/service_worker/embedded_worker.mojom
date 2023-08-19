@@ -230,8 +230,11 @@ interface EmbeddedWorkerInstanceHost {
   // thread id the worker runs on. |fetch_handler_type| represents the fetch
   // handler type. The type is decided after initial script evaluation, and
   // it can also represents the fetch event handler does not exist.
+  // |has_hid_event_handlers| represent any HID event handlers and is decided
+  // after initial script evaluation.
   OnStarted(ServiceWorkerStartStatus status,
             blink.mojom.ServiceWorkerFetchHandlerType fetch_handler_type,
+            bool has_hid_event_handlers,
             int32 thread_id,
             EmbeddedWorkerStartTiming start_timing);
 

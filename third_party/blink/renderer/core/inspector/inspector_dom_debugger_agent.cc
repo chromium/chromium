@@ -106,13 +106,20 @@ void InspectorDOMDebuggerAgent::CollectEventListeners(
   // Nodes and their Listeners for the concerned event types (order is top to
   // bottom).
   Vector<AtomicString> event_types = target->EventTypes();
-  for (wtf_size_t j = 0; j < event_types.size(); ++j) {
-    AtomicString& type = event_types[j];
-    EventListenerVector* listeners = target->GetEventListeners(type);
-    if (!listeners)
+  for (AtomicString& type : event_types) {
+    // We need to clone the EventListenerVector because `GetEffectiveFunction`
+    // can execute script which may invalidate the iterator.
+    EventListenerVector listeners;
+    if (auto* registered_listeners = target->GetEventListeners(type)) {
+      listeners = *registered_listeners;
+    } else {
       continue;
-    for (wtf_size_t k = 0; k < listeners->size(); ++k) {
-      EventListener* event_listener = listeners->at(k).Callback();
+    }
+    for (auto& registered_event_listener : listeners) {
+      if (registered_event_listener->Removed()) {
+        continue;
+      }
+      EventListener* event_listener = registered_event_listener->Callback();
       JSBasedEventListener* v8_event_listener =
           DynamicTo<JSBasedEventListener>(event_listener);
       if (!v8_event_listener)
@@ -138,8 +145,9 @@ void InspectorDOMDebuggerAgent::CollectEventListeners(
             target_node);
       }
       event_information->push_back(V8EventListenerInfo(
-          type, listeners->at(k).Capture(), listeners->at(k).Passive(),
-          listeners->at(k).Once(), handler.As<v8::Object>(),
+          type, registered_event_listener->Capture(),
+          registered_event_listener->Passive(),
+          registered_event_listener->Once(), handler.As<v8::Object>(),
           effective_function.As<v8::Function>(), backend_node_id));
     }
   }
@@ -190,12 +198,7 @@ void InspectorDOMDebuggerAgent::EventListenersInfoForTarget(
     return;
   }
 
-  EventTarget* target = V8EventTarget::ToWrappable(isolate, value);
-  // We need to handle LocalDOMWindow specially, because LocalDOMWindow wrapper
-  // exists on prototype chain.
-  if (!target)
-    target = ToDOMWindow(isolate, value);
-  if (target) {
+  if (EventTarget* target = V8EventTarget::ToWrappable(isolate, value)) {
     CollectEventListeners(isolate, target, value, nullptr, false,
                           event_information);
   }
@@ -240,7 +243,7 @@ protocol::Response InspectorDOMDebuggerAgent::setEventListenerBreakpoint(
     const String& event_name,
     Maybe<String> target_name) {
   return SetBreakpoint(String(listenerEventCategoryType) + event_name,
-                       target_name.fromMaybe(String()));
+                       target_name.value_or(String()));
 }
 
 protocol::Response InspectorDOMDebuggerAgent::setInstrumentationBreakpoint(
@@ -264,7 +267,7 @@ protocol::Response InspectorDOMDebuggerAgent::removeEventListenerBreakpoint(
     const String& event_name,
     Maybe<String> target_name) {
   return RemoveBreakpoint(String(listenerEventCategoryType) + event_name,
-                          target_name.fromMaybe(String()));
+                          target_name.value_or(String()));
 }
 
 protocol::Response InspectorDOMDebuggerAgent::removeInstrumentationBreakpoint(
@@ -467,9 +470,8 @@ protocol::Response InspectorDOMDebuggerAgent::getEventListeners(
   v8::Context::Scope scope(context);
   V8EventListenerInfoList event_information;
   InspectorDOMDebuggerAgent::EventListenersInfoForTarget(
-      context->GetIsolate(), object, depth.fromMaybe(1),
-      pierce.fromMaybe(false), dom_agent_->IncludeWhitespace(),
-      &event_information);
+      context->GetIsolate(), object, depth.value_or(1), pierce.value_or(false),
+      dom_agent_->IncludeWhitespace(), &event_information);
   *listeners_array = BuildObjectsForEventListeners(event_information, context,
                                                    object_group->string());
   return protocol::Response::Success();

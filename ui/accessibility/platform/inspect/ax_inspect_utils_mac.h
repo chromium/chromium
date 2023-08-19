@@ -7,9 +7,9 @@
 
 #include <ApplicationServices/ApplicationServices.h>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
 

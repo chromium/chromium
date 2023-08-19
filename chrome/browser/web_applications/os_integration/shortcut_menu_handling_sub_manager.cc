@@ -17,6 +17,7 @@
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/sync/base/time.h"
 #include "url/gurl.h"
@@ -30,15 +31,35 @@ bool HasShortcutsMenuInfo(const proto::WebAppOsIntegrationState& state) {
          state.shortcut_menus().shortcut_menu_info_size() > 0;
 }
 
+enum class ShortcutMenuIconDataDiffResult {
+  kSuccess = 0,
+  kIconCountLessThanItemCount = 1,
+  kItemCountLessThanIconCount = 2,
+  kMaxValue = kItemCountLessThanIconCount,
+};
+
+void MeasureShortcutMenuIconHistograms(int icon_count, int item_count) {
+  if (icon_count == item_count) {
+    base::UmaHistogramEnumeration(
+        "WebApp.ShortcutsMenuBitmapAndItemCount.Results",
+        ShortcutMenuIconDataDiffResult::kSuccess);
+  } else if (icon_count < item_count) {
+    base::UmaHistogramEnumeration(
+        "WebApp.ShortcutsMenuBitmapAndItemCount.Results",
+        ShortcutMenuIconDataDiffResult::kIconCountLessThanItemCount);
+  } else {
+    base::UmaHistogramEnumeration(
+        "WebApp.ShortcutsMenuBitmapAndItemCount.Results",
+        ShortcutMenuIconDataDiffResult::kItemCountLessThanIconCount);
+  }
+}
+
 }  // namespace
 
 ShortcutMenuHandlingSubManager::ShortcutMenuHandlingSubManager(
     const base::FilePath& profile_path,
-    WebAppIconManager& icon_manager,
-    WebAppRegistrar& registrar)
-    : profile_path_(profile_path),
-      icon_manager_(icon_manager),
-      registrar_(registrar) {}
+    WebAppProvider& provider)
+    : profile_path_(profile_path), provider_(provider) {}
 
 ShortcutMenuHandlingSubManager::~ShortcutMenuHandlingSubManager() = default;
 
@@ -48,16 +69,24 @@ void ShortcutMenuHandlingSubManager::Configure(
     base::OnceClosure configure_done) {
   DCHECK(!desired_state.has_shortcut_menus());
 
-  if (!registrar_->IsLocallyInstalled(app_id)) {
+  if (!provider_->registrar_unsafe().IsLocallyInstalled(app_id)) {
+    std::move(configure_done).Run();
+    return;
+  }
+
+  std::vector<WebAppShortcutsMenuItemInfo> shortcut_menu_item_info =
+      provider_->registrar_unsafe().GetAppShortcutsMenuItemInfos(app_id);
+  if (shortcut_menu_item_info.empty()) {
     std::move(configure_done).Run();
     return;
   }
 
   proto::ShortcutMenus* shortcut_menus = desired_state.mutable_shortcut_menus();
-  icon_manager_->ReadAllShortcutMenuIconsWithTimestamp(
+  provider_->icon_manager().ReadAllShortcutMenuIconsWithTimestamp(
       app_id,
       base::BindOnce(&ShortcutMenuHandlingSubManager::StoreShortcutMenuData,
-                     weak_ptr_factory_.GetWeakPtr(), app_id, shortcut_menus)
+                     weak_ptr_factory_.GetWeakPtr(), app_id,
+                     shortcut_menu_item_info, shortcut_menus)
           .Then(std::move(configure_done)));
 }
 
@@ -105,16 +134,16 @@ void ShortcutMenuHandlingSubManager::ForceUnregister(
 
 void ShortcutMenuHandlingSubManager::StoreShortcutMenuData(
     const AppId& app_id,
+    std::vector<WebAppShortcutsMenuItemInfo> shortcut_menu_item_info,
     proto::ShortcutMenus* shortcut_menus,
     WebAppIconManager::ShortcutIconDataVector downloaded_shortcut_menu_items) {
-  std::vector<WebAppShortcutsMenuItemInfo> shortcut_menu_item_info =
-      registrar_->GetAppShortcutsMenuItemInfos(app_id);
+  MeasureShortcutMenuIconHistograms(downloaded_shortcut_menu_items.size(),
+                                    shortcut_menu_item_info.size());
+
   // Due to the bitmaps possibly being not populated (see
   // https://crbug.com/1427444), we just have empty bitmap data in that case. We
   // continue to check to make sure that there aren't MORE bitmaps than
   // items.
-  CHECK_LE(downloaded_shortcut_menu_items.size(),
-           shortcut_menu_item_info.size());
   while (downloaded_shortcut_menu_items.size() <
          shortcut_menu_item_info.size()) {
     downloaded_shortcut_menu_items.emplace_back();
@@ -180,7 +209,7 @@ void ShortcutMenuHandlingSubManager::ReadIconDataForShortcutsMenu(
     return;
   }
 
-  icon_manager_->ReadAllShortcutsMenuIcons(
+  provider_->icon_manager().ReadAllShortcutsMenuIcons(
       app_id, base::BindOnce(&ShortcutMenuHandlingSubManager::
                                  OnIconDataLoadedRegisterShortcutsMenu,
                              weak_ptr_factory_.GetWeakPtr(), app_id,
@@ -193,7 +222,8 @@ void ShortcutMenuHandlingSubManager::OnIconDataLoadedRegisterShortcutsMenu(
     base::OnceClosure execute_complete,
     ShortcutsMenuIconBitmaps shortcut_menu_icon_bitmaps) {
   base::FilePath shortcut_data_dir = GetOsIntegrationResourcesDirectoryForApp(
-      profile_path_, app_id, registrar_->GetAppStartUrl(app_id));
+      profile_path_, app_id,
+      provider_->registrar_unsafe().GetAppStartUrl(app_id));
   web_app::RegisterShortcutsMenuWithOs(
       app_id, profile_path_, shortcut_data_dir,
       CreateShortcutsMenuItemInfos(desired_state.shortcut_menus()),

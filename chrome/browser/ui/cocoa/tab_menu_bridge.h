@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_COCOA_TAB_MENU_BRIDGE_H_
 
 #include "base/gtest_prod_util.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 
@@ -64,8 +63,8 @@ class TabMenuBridge : public TabStripModelObserver {
   void OnTabStripModelDestroyed(TabStripModel* model) override;
 
   raw_ptr<TabStripModel> model_;
-  NSMenuItem* menu_item_;  // weak
-  base::scoped_nsobject<TabMenuListener> menu_listener_;
+  NSMenuItem* __weak menu_item_;
+  TabMenuListener* __strong menu_listener_;
 
   // When created, this class remembers how many items were present in the
   // non-dynamic section of the menu. This offset is used to map menu items to

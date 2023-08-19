@@ -417,7 +417,7 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
   // CertDatabase::Observer methods:
 
   // We close all sessions when certificate database is changed.
-  void OnCertDBChanged() override;
+  void OnTrustStoreChanged() override;
 
   // CertVerifier::Observer:
   // We close all sessions when certificate verifier settings have changed.
@@ -443,10 +443,6 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
   QuicChromiumConnectionHelper* helper() { return helper_.get(); }
 
   quic::QuicAlarmFactory* alarm_factory() { return alarm_factory_.get(); }
-
-  void set_server_push_delegate(ServerPushDelegate* push_delegate) {
-    push_delegate_ = push_delegate;
-  }
 
   handles::NetworkHandle default_network() const { return default_network_; }
 
@@ -633,7 +629,6 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
   raw_ptr<HostResolver> host_resolver_;
   raw_ptr<ClientSocketFactory> client_socket_factory_;
   raw_ptr<HttpServerProperties> http_server_properties_;
-  raw_ptr<ServerPushDelegate> push_delegate_ = nullptr;
   const raw_ptr<CertVerifier> cert_verifier_;
   const raw_ptr<CTPolicyEnforcer> ct_policy_enforcer_;
   const raw_ptr<TransportSecurityState> transport_security_state_;
@@ -715,8 +710,6 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
   bool prefer_aes_gcm_recorded_ = false;
 
   NetworkConnection network_connection_;
-
-  int num_push_streams_created_ = 0;
 
   QuicConnectivityMonitor connectivity_monitor_;
 

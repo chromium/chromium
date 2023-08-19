@@ -16,10 +16,6 @@
 #include "ui/gfx/image/image_skia_util_mac.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Returns true if the structure of |ns_image| matches the structure

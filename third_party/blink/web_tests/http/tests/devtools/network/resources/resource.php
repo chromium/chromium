@@ -1,27 +1,27 @@
 <?php
-    $type = $_GET["type"];
-    $wait = $_GET["wait"];
-    $tail_wait = $_GET["tail_wait"];
-    $send = $_GET["send"];
-    $size = $_GET["size"];
-    $gzip = $_GET["gzip"];
-    $jsdelay = $_GET["jsdelay"];
-    $jscontent = $_GET["jscontent"];
-    $chunked = $_GET["chunked"];
-    $random = $_GET["random"];
-    $cached = $_GET["cached"];
-    $nosniff = $_GET["nosniff"];
-    $download = $_GET["download"];
-    $named_download = $_GET["named_download"];
-    $mime_type = $_GET["mime_type"];
-    $body_pattern = $_GET["body_pattern"];
+    $type = $_GET["type"] ?? null;
+    $wait = $_GET["wait"] ?? null;
+    $tail_wait = $_GET["tail_wait"] ?? null;
+    $send = $_GET["send"] ?? null;
+    $size = $_GET["size"] ?? null;
+    $gzip = $_GET["gzip"] ?? null;
+    $jsdelay = $_GET["jsdelay"] ?? null;
+    $jscontent = $_GET["jscontent"] ?? null;
+    $chunked = $_GET["chunked"] ?? null;
+    $random = $_GET["random"] ?? null;
+    $cached = $_GET["cached"] ?? null;
+    $nosniff = $_GET["nosniff"] ?? null;
+    $download = $_GET["download"] ?? null;
+    $named_download = $_GET["named_download"] ?? null;
+    $mime_type = $_GET["mime_type"] ?? null;
+    $body_pattern = $_GET["body_pattern"] ?? null;
 
     # Wait before sending response
     if ($wait)
         usleep($wait * 1000);
 
     # Exit early if we return 304 code.
-    if ($cached && $_SERVER["HTTP_IF_MODIFIED_SINCE"]) {
+    if ($cached && isset($_SERVER["HTTP_IF_MODIFIED_SINCE"])) {
         header("HTTP/1.0 304 Not Modified");
         exit;
     }
@@ -111,7 +111,9 @@ __foo(<?php echo($jsdelay)?>);
         print($data);
         if ($size) {
             if ($chunked) {
-                ob_flush();
+                if (ob_get_level() > 0){
+                    ob_flush();
+                }
                 flush();
             }
             for ($i = 0; $size && $i < $size - $data_len; ++$i)
@@ -124,7 +126,9 @@ __foo(<?php echo($jsdelay)?>);
             $str = $body_pattern ? $body_pattern : "*";
             for ($i = 0; $i < $size; ++$i) {
                 if ($chunked && (1 == $i)) {
-                    ob_flush();
+                    if (ob_get_level() > 0){
+                        ob_flush();
+                    }
                     flush();
                 }
                 echo($str[$i % strlen($str)]);
@@ -132,7 +136,9 @@ __foo(<?php echo($jsdelay)?>);
         } else {
             echo("Hello ");
             if ($chunked) {
-                ob_flush();
+                if (ob_get_level() > 0){
+                    ob_flush();
+                }
                 flush();
             }
             echo("world");
@@ -143,7 +149,9 @@ __foo(<?php echo($jsdelay)?>);
     # Useful in some download-related tests
     if ($tail_wait) {
         flush();
-        ob_flush();
+        if (ob_get_level() > 0){
+            ob_flush();
+        }
         usleep($tail_wait * 1000);
     }
 ?>

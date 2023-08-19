@@ -9,10 +9,6 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Feature disabled by default to keep showing old Zine feed.
 BASE_FEATURE(kDiscoverFeedInNtp,
              "DiscoverFeedInNtp",
@@ -26,6 +22,10 @@ BASE_FEATURE(kMagicStack, "MagicStack", base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kHideContentSuggestionsTiles,
              "HideContentSuggestionsTiles",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTabResumption,
+             "TabResumption",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kMagicStackMostVisitedModuleParam[] = "MagicStackMostVisitedModule";
@@ -63,7 +63,7 @@ bool ShouldHideMVT() {
       kHideContentSuggestionsTilesParamMostVisited, false);
 }
 
-bool ShoudHideShortcuts() {
+bool ShouldHideShortcuts() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kHideContentSuggestionsTiles, kHideContentSuggestionsTilesParamShortcuts,
       false);

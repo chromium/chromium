@@ -7,7 +7,7 @@ import os
 import posixpath
 import sys
 import time
-from typing import Any, List
+from typing import Any, List, Set
 import unittest
 
 from gpu_tests import common_typing as ct
@@ -18,39 +18,6 @@ from gpu_tests import skia_gold_integration_test_base
 import gpu_path_util
 
 from telemetry.util import image_util
-
-test_harness_script = r"""
-  var domAutomationController = {};
-
-  domAutomationController._proceed = false;
-
-  domAutomationController._readyForActions = false;
-  domAutomationController._succeeded = undefined;
-  domAutomationController._finished = false;
-  domAutomationController._originalLog = window.console.log;
-  domAutomationController._messages = '';
-
-  domAutomationController.log = function(msg) {
-    domAutomationController._messages += msg + "\n";
-    domAutomationController._originalLog.apply(window.console, [msg]);
-  }
-
-  domAutomationController.send = function(msg) {
-    domAutomationController._proceed = true;
-    let lmsg = msg.toLowerCase();
-    if (lmsg == "ready") {
-      domAutomationController._readyForActions = true;
-    } else {
-      domAutomationController._finished = true;
-      // Do not squelch any previous failures. Show any new ones.
-      if (domAutomationController._succeeded === undefined ||
-          domAutomationController._succeeded)
-        domAutomationController._succeeded = (lmsg == "success");
-    }
-  }
-
-  window.domAutomationController = domAutomationController;
-"""
 
 # We're not sure if this is actually a fixed value or not, but it's 10 pixels
 # wide on the only device we've had issues with so far (Pixel 4), so assume
@@ -69,6 +36,40 @@ class PixelIntegrationTest(
     return 'pixel'
 
   @classmethod
+  def _SuiteSupportsParallelTests(cls) -> bool:
+    return True
+
+  def _GetSerialGlobs(self) -> Set[str]:
+    serial_globs = set()
+    if sys.platform == 'darwin':
+      serial_globs |= {
+          # Flakily produces only half the image when run in parallel on Mac.
+          'Pixel_OffscreenCanvasWebGL*',
+          # Flakily fails to capture a screenshot when run in parallel on Mac.
+          'Pixel_VideoStreamFrom*',
+      }
+    return serial_globs
+
+  def _GetSerialTests(self) -> Set[str]:
+    serial_tests = {
+        # High/low power tests don't work properly with multiple browsers
+        # active.
+        'Pixel_OffscreenCanvasIBRCWebGLHighPerfWorker',
+        'Pixel_OffscreenCanvasIBRCWebGLMain',
+        'Pixel_OffscreenCanvasIBRCWebGLWorker',
+        'Pixel_WebGLLowToHighPower',
+        'Pixel_WebGLLowToHighPowerAlphaFalse',
+    }
+
+    if sys.platform.startswith('linux'):
+      serial_tests |= {
+          # Flakily produces slightly incorrect images when run in parallel on
+          # AMD.
+          'Pixel_OffscreenCanvasWebGLSoftwareCompositingWorker',
+      }
+    return serial_tests
+
+  @classmethod
   def GenerateGpuTests(cls, options: ct.ParsedCmdArgs) -> ct.TestGenerator:
     namespace = pixel_test_pages.PixelTestPages
     pages = namespace.DefaultPages(cls.test_base_name)
@@ -79,7 +80,6 @@ class PixelIntegrationTest(
     pages += namespace.WebGPUCanvasCapturePages(cls.test_base_name)
     pages += namespace.PaintWorkletPages(cls.test_base_name)
     pages += namespace.VideoFromCanvasPages(cls.test_base_name)
-    pages += namespace.MediaRecorderPages(cls.test_base_name)
     # pages += namespace.NoGpuProcessPages(cls.test_base_name)
     # The following pages should run only on platforms where SwiftShader is
     # enabled. They are skipped on other platforms through test expectations.
@@ -106,7 +106,9 @@ class PixelIntegrationTest(
     url = self.UrlOfStaticFilePath(test_path)
     # This property actually comes off the class, not 'self'.
     tab = self.tab
-    tab.Navigate(url, script_to_evaluate_on_commit=test_harness_script)
+    tab.Navigate(
+        url,
+        script_to_evaluate_on_commit=self._dom_automation_controller_script)
 
     try:
       tab.action_runner.WaitForJavaScriptCondition(
@@ -167,11 +169,8 @@ class PixelIntegrationTest(
     # Actually run the test and capture the screenshot.
     if not tab.EvaluateJavaScript('domAutomationController._succeeded'):
       self.fail('page indicated test failure')
-    # Special case some tests on Fuchsia that need to grab the entire contents
-    # in the screenshot instead of just the visible portion due to small screen
-    # sizes.
-    if (PixelIntegrationTest.browser.platform.GetOSName() == 'fuchsia'
-        and page.name in pixel_test_pages.PROBLEMATIC_FUCHSIA_TESTS):
+
+    if page.ShouldCaptureFullScreenshot(self.browser):
       # Screenshot on Fuchsia can take a long time. See crbug.com/1376684.
       screenshot = tab.FullScreenshot(15)
     else:
@@ -288,7 +287,7 @@ class PixelIntegrationTest(
         self.UrlOfStaticFilePath(
             posixpath.join(gpu_path_util.GPU_DATA_RELATIVE_PATH,
                            'functional_webgl_high_performance.html')),
-        script_to_evaluate_on_commit=test_harness_script)
+        script_to_evaluate_on_commit=self._dom_automation_controller_script)
     high_performance_tab.action_runner.WaitForJavaScriptCondition(
         'domAutomationController._finished', timeout=30)
     # Wait a few seconds for the GPU switched notification to propagate

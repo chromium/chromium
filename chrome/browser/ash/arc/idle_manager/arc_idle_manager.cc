@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/arc/idle_manager/arc_display_power_observer.h"
 #include "chrome/browser/ash/arc/idle_manager/arc_on_battery_observer.h"
 #include "chrome/browser/ash/arc/idle_manager/arc_window_observer.h"
+#include "chromeos/ash/components/dbus/patchpanel/patchpanel_client.h"
 
 namespace arc {
 
@@ -32,15 +33,7 @@ class DefaultDelegateImpl : public ArcIdleManager::Delegate {
 
   // ArcIdleManager::Delegate:
   void SetInteractiveMode(ArcBridgeService* bridge, bool enable) override {
-    auto* const power =
-        ARC_GET_INSTANCE_FOR_METHOD(bridge->power(), SetInteractive);
-    if (!power)
-      return;
-    // When enable=false,
-    // the code below is equivalent to pressing the power button on
-    // a smartphone, which turns its screen off and kicks off a gradual
-    // power state transition, ultimately leading to doze mode.
-    power->SetInteractive(enable);
+    ArcPowerBridge::NotifyAndroidInteractiveState(bridge, enable);
   }
 };
 

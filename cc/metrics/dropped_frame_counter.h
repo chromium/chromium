@@ -83,8 +83,9 @@ class CC_EXPORT DroppedFrameCounter {
   void SetSortedFrameCallback(SortedFrameCallback callback);
 
   typedef base::RingBuffer<FrameState, 180> RingBufferType;
-  RingBufferType::Iterator begin() const { return ring_buffer_.Begin(); }
-  RingBufferType::Iterator end() const { return ring_buffer_.End(); }
+  RingBufferType::Iterator Begin() const { return ring_buffer_.Begin(); }
+  // `End()` points to the last `FrameState`, not past it.
+  RingBufferType::Iterator End() const { return ring_buffer_.End(); }
 
   void AddGoodFrame();
   void AddPartialFrame();

@@ -28,12 +28,11 @@
 #include "chrome/browser/ui/bookmarks/bookmark_tab_helper_observer.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
-#include "chrome/browser/ui/signin_view_controller.h"
+#include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/unload_controller.h"
 #include "components/paint_preview/buildflags/buildflags.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "components/services/screen_ai/buildflags/buildflags.h"
 #include "components/sessions/core/session_id.h"
 #include "components/translate/content/browser/content_translate_driver.h"
 #include "components/zoom/zoom_observer.h"
@@ -64,6 +63,7 @@ class BrowserWindow;
 class ExclusiveAccessManager;
 class FindBarController;
 class LocationBarModel;
+class OverscrollPrefManager;
 class Profile;
 class ScopedKeepAlive;
 class ScopedProfileKeepAlive;
@@ -247,7 +247,7 @@ class Browser : public TabStripModelObserver,
     Type type;
 
     // The associated profile.
-    raw_ptr<Profile, DanglingUntriaged> profile;
+    raw_ptr<Profile, AcrossTasksDanglingUntriaged> profile;
 
     // Specifies the browser `is_trusted_source_` value.
     bool trusted_source = false;
@@ -320,9 +320,8 @@ class Browser : public TabStripModelObserver,
     // maximizable.
     bool can_maximize = true;
 
-    // Aspect ratio parameters specific to TYPE_PICTURE_IN_PICTURE.
-    double initial_aspect_ratio = 1.0;
-    bool lock_aspect_ratio = false;
+    // Document Picture in Picture options, specific to TYPE_PICTURE_IN_PICTURE.
+    absl::optional<blink::mojom::PictureInPictureWindowOptions> pip_options;
 
    private:
     friend class Browser;
@@ -399,6 +398,12 @@ class Browser : public TabStripModelObserver,
     force_skip_warning_user_on_close_ = force_skip_warning_user_on_close;
   }
 
+  // Sets whether the UI should be immediately updated when scheduled on a
+  // test.
+  void set_update_ui_immediately_for_testing() {
+    update_ui_immediately_for_testing_ = true;
+  }
+
   // Accessors ////////////////////////////////////////////////////////////////
 
   const CreateParams& create_params() const { return create_params_; }
@@ -413,8 +418,6 @@ class Browser : public TabStripModelObserver,
     return initial_visible_on_all_workspaces_state_;
   }
   CreationSource creation_source() const { return creation_source_; }
-
-  bool is_delete_scheduled() const { return is_delete_scheduled_; }
 
   // |window()| will return NULL if called before |CreateBrowserWindow()|
   // is done.
@@ -571,7 +574,26 @@ class Browser : public TabStripModelObserver,
   // It starts beforeunload/unload processing as a side-effect.
   bool TabsNeedBeforeUnloadFired();
 
+  // Browser closing consists of the following phases:
+  //
+  // 1. If the browser has WebContents with before unload handlers, then the
+  //    before unload handlers are processed (this is asynchronous). During this
+  //    phase IsAttemptingToCloseBrowser() returns true. When processing
+  //    completes, the WebContents is removed. Once all WebContents are removed,
+  //    the next phase happens. Note that this phase may be aborted.
+  // 2. The Browser window is hidden, and a task is posted that results in
+  //    deleting the Browser (Views is responsible for posting the task). This
+  //    phase can not be stopped. During this phase is_delete_scheduled()
+  //    returns true. IsBrowserClosing() is nearly identical to
+  //    is_delete_scheduled(), it's set just before removing the tabs.
+  //
+  // Note that there are other cases that may delay closing, such as downloads,
+  // but that is done before any of these steps.
+  // TODO(https://crbug.com/1434387): See about unifying IsBrowserClosing() and
+  // is_delete_scheduled().
   bool IsAttemptingToCloseBrowser() const;
+  bool IsBrowserClosing() const;
+  bool is_delete_scheduled() const { return is_delete_scheduled_; }
 
   // Invoked when the window containing us is closing. Performs the necessary
   // cleanup.
@@ -725,6 +747,8 @@ class Browser : public TabStripModelObserver,
   std::unique_ptr<content::EyeDropper> OpenEyeDropper(
       content::RenderFrameHost* frame,
       content::EyeDropperListener* listener) override;
+  void InitiatePreview(content::WebContents& web_contents,
+                       const GURL& url) override;
 
   bool is_type_normal() const { return type_ == TYPE_NORMAL; }
   bool is_type_popup() const { return type_ == TYPE_POPUP; }
@@ -770,10 +794,6 @@ class Browser : public TabStripModelObserver,
   Browser* GetBrowserForOpeningWebUi();
 
   StatusBubble* GetStatusBubbleForTesting();
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  void RunScreenAIAnnotator();
-#endif
 
  private:
   friend class BrowserTest;
@@ -1151,10 +1171,6 @@ class Browser : public TabStripModelObserver,
 
   bool ShouldHideUIForFullscreen() const;
 
-  // Indicates if we have called BrowserList::NotifyBrowserCloseStarted for the
-  // browser.
-  bool IsBrowserClosing() const;
-
   // Returns true if we can start the shutdown sequence for the browser, i.e.
   // the last browser window is being closed.
   bool ShouldStartShutdown() const;
@@ -1189,7 +1205,7 @@ class Browser : public TabStripModelObserver,
   const Type type_;
 
   // This Browser's profile.
-  const raw_ptr<Profile, DanglingUntriaged> profile_;
+  const raw_ptr<Profile, AcrossTasksDanglingUntriaged> profile_;
 
   // Prevent Profile deletion until this browser window is closed.
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
@@ -1325,6 +1341,9 @@ class Browser : public TabStripModelObserver,
   // Tells if the browser should skip warning the user when closing the window.
   bool force_skip_warning_user_on_close_ = false;
 
+  // If true, immediately updates the UI when scheduled.
+  bool update_ui_immediately_for_testing_ = false;
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   std::unique_ptr<extensions::ExtensionBrowserWindowHelper>
       extension_browser_window_helper_;
@@ -1341,6 +1360,10 @@ class Browser : public TabStripModelObserver,
   // If true, the Browser window has been closed and this will be deleted
   // shortly (after a PostTask).
   bool is_delete_scheduled_ = false;
+
+#if defined(USE_AURA)
+  std::unique_ptr<OverscrollPrefManager> overscroll_pref_manager_;
+#endif
 
   // The following factory is used for chrome update coalescing.
   base::WeakPtrFactory<Browser> chrome_updater_factory_{this};

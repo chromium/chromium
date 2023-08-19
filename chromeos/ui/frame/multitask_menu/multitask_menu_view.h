@@ -50,8 +50,21 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuView
 
   ~MultitaskMenuView() override;
 
+  SplitButtonView* partial_button() { return partial_button_.get(); }
+
+  // Forwarded from the size button which is the anchor of `this`'s widget. When
+  // an event starts on the size button, it will receive all subsequent events.
+  // Therefore, we have to manually forward them if the pointer is visually on
+  // `this`. Receives the event and updates the hover state or fires the
+  // callback of the button that the pointer is visually on top of.
+  // `OnSizeButtonRelease` returns true if any button was activated.
+  void OnSizeButtonDrag(const gfx::Point& event_screen_location);
+  bool OnSizeButtonRelease(const gfx::Point& event_screen_location);
+
   // views::View:
   void AddedToWidget() override;
+  bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
+  bool OnKeyPressed(const ui::KeyEvent& event) override;
 
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* parent_window) override;
@@ -63,37 +76,28 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuView
 
   // If the menu is opened because of mouse hover, moving the mouse outside the
   // menu for 3 seconds will result in it auto closing. This function reduces
-  // that 3 second dealy to
+  // that 3 second delay to zero.
   static void SetSkipMouseOutDelayForTesting(bool val);
-
-  SplitButtonView* partial_button() { return partial_button_.get(); }
-
-  // For testing.
-  SplitButtonView* half_button_for_testing() {
-    return half_button_for_testing_.get();
-  }
-  MultitaskButton* full_button_for_testing() {
-    return full_button_for_testing_.get();
-  }
-  MultitaskButton* float_button_for_testing() {
-    return float_button_for_testing_.get();
-  }
 
  private:
   class MenuPreTargetHandler;
+  friend class MultitaskMenuViewTestApi;
 
   // Callbacks for the buttons in the multitask menu view.
-  void SplitButtonPressed(SnapDirection direction);
+  void HalfButtonPressed(SnapDirection direction);
   void PartialButtonPressed(SnapDirection direction);
   void FullScreenButtonPressed();
   void FloatButtonPressed();
 
+  // Owned by views hierarchy.
+  raw_ptr<SplitButtonView> half_button_ = nullptr;
   raw_ptr<SplitButtonView> partial_button_ = nullptr;
+  raw_ptr<MultitaskButton> full_button_ = nullptr;
+  raw_ptr<MultitaskButton> float_button_ = nullptr;
 
-  // Saved for testing purposes.
-  raw_ptr<SplitButtonView> half_button_for_testing_ = nullptr;
-  raw_ptr<MultitaskButton> full_button_for_testing_ = nullptr;
-  raw_ptr<MultitaskButton> float_button_for_testing_ = nullptr;
+  // True if the menu buttons should be painted in reverse, when the `Alt` key
+  // is pressed. Toggled on every `Alt` press.
+  bool is_reversed_ = false;
 
   // The window which the buttons act on.
   raw_ptr<aura::Window, ExperimentalAsh> window_;
@@ -101,7 +105,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuView
   // The view the menu is anchored to if any. This is only passed if we want to
   // close the menu when the mouse moves out of the multitask menu or its anchor
   // view.
-  const raw_ptr<views::View, ExperimentalAsh> anchor_view_;
+  const raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> anchor_view_;
 
   // Runs when the widget which contains `this` should be destroyed. For
   // example, after any of the buttons are pressed, or a press out of the menu

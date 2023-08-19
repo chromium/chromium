@@ -272,8 +272,7 @@ class COMPONENTS_DOWNLOAD_EXPORT BaseFile {
 
   // Callback invoked by quarantine service. Also called by
   // OnQuarantineServiceError after manually applying mark-of-the-web.
-  void OnFileQuarantined(bool connection_error,
-                         quarantine::mojom::QuarantineFileResult result);
+  void OnFileQuarantined(quarantine::mojom::QuarantineFileResult result);
 
   // Full path to the file including the file name.
   base::FilePath full_path_;

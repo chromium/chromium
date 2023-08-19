@@ -5,8 +5,6 @@
 import("//ios/build/config.gni")
 
 source_set("deprecated") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//base",
     "//ios/web/public:web_state_observer",

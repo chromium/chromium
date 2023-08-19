@@ -8,6 +8,7 @@
 #include "chrome/browser/apps/app_service/extension_apps_utils.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 #include "chrome/browser/lacros/for_which_extension_type.h"
 #include "chrome/browser/lacros/lacros_extensions_util.h"
 #include "chrome/browser/ui/lacros/window_utility.h"
@@ -31,6 +32,10 @@ class LacrosExtensionAppsPublisherFake : public LacrosExtensionAppsPublisher {
  public:
   LacrosExtensionAppsPublisherFake()
       : LacrosExtensionAppsPublisher(InitForChromeApps()) {
+    // Since LacrosExtensionAppsPublisherTest run without Ash, Lacros won't get
+    // the Ash extension keeplist data from Ash (passed via crosapi). Therefore,
+    // set empty ash keeplist for test.
+    extensions::SetEmptyAshKeeplistForTest();
     apps::EnableHostedAppsInLacrosForTesting();
   }
   ~LacrosExtensionAppsPublisherFake() override = default;
@@ -89,8 +94,8 @@ void VerifyOnlyDefaultAppsPublished(
   auto& default_app = default_apps[0];
   Profile* profile = nullptr;
   const extensions::Extension* extension = nullptr;
-  bool success = lacros_extensions_util::DemuxId(default_app->app_id, &profile,
-                                                 &extension);
+  bool success = lacros_extensions_util::GetProfileAndExtension(
+      default_app->app_id, &profile, &extension);
   ASSERT_TRUE(success);
   ASSERT_TRUE(extension->is_hosted_app());
   ASSERT_EQ(extensions::kWebStoreAppId, extension->id());
@@ -245,8 +250,7 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsPublisherTest, LaunchAppWindow) {
   {
     auto& app_windows = publisher->app_windows();
     ASSERT_EQ(1u, app_windows.size());
-    EXPECT_EQ(app_windows.begin()->second,
-              lacros_extensions_util::MuxId(profile(), extension));
+    EXPECT_EQ(app_windows.begin()->second, extension->id());
     EXPECT_EQ(app_windows.begin()->first,
               lacros_window_utility::GetRootWindowUniqueId(
                   app_window->GetNativeWindow()));
@@ -281,8 +285,7 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsPublisherTest, PreLaunchAppWindow) {
   {
     auto& app_windows = publisher->app_windows();
     ASSERT_EQ(1u, app_windows.size());
-    EXPECT_EQ(app_windows.begin()->second,
-              lacros_extensions_util::MuxId(profile(), extension));
+    EXPECT_EQ(app_windows.begin()->second, extension->id());
     EXPECT_EQ(app_windows.begin()->first,
               lacros_window_utility::GetRootWindowUniqueId(
                   app_window->GetNativeWindow()));
@@ -297,21 +300,6 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsPublisherTest, PreLaunchAppWindow) {
     auto& app_windows = publisher->app_windows();
     ASSERT_EQ(0u, app_windows.size());
   }
-}
-
-// Test id muxing and demuxing.
-IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsPublisherTest, Mux) {
-  const extensions::Extension* extension =
-      LoadExtension(test_data_dir_.AppendASCII("platform_apps/minimal"));
-  std::string muxed_id1 = lacros_extensions_util::MuxId(profile(), extension);
-  ASSERT_FALSE(muxed_id1.empty());
-  Profile* demuxed_profile = nullptr;
-  const extensions::Extension* demuxed_extension = nullptr;
-  bool success = lacros_extensions_util::DemuxPlatformAppId(
-      muxed_id1, &demuxed_profile, &demuxed_extension);
-  ASSERT_TRUE(success);
-  EXPECT_EQ(demuxed_profile, profile());
-  EXPECT_EQ(demuxed_extension, extension);
 }
 
 }  // namespace

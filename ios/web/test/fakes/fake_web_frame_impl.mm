@@ -4,10 +4,6 @@
 
 #import "ios/web/test/fakes/fake_web_frame_impl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 #import <string>
 #import <utility>
 

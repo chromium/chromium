@@ -78,7 +78,8 @@ var EduCoexistenceAppTestWithArcAccountRestrictionsEnabled =
   get featureList() {
     return {
       enabled: [
-        'ash::features::kLacrosSupport',
+        'ash::features::kLacrosOnly',
+        'ash::features::kLacrosProfileMigrationForceOff',
       ],
     };
   }

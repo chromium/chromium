@@ -12,6 +12,7 @@
 #include "components/reading_list/core/proto/reading_list.pb.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
 #include "components/sync/base/storage_type.h"
+#include "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
 
 namespace {
 
@@ -40,6 +41,7 @@ std::unique_ptr<KeyedService> BuildReadingListModelWithFakeStorage(
   base::WeakPtr<FakeReadingListModelStorage> storage_ptr = storage->AsWeakPtr();
   auto reading_list_model = std::make_unique<ReadingListModelImpl>(
       std::move(storage), syncer::StorageType::kUnspecified,
+      syncer::WipeModelUponSyncDisabledBehavior::kNever,
       base::DefaultClock::GetInstance());
   // Complete the initial model load from storage.
   storage_ptr->TriggerLoadCompletion(CloneEntries(initial_entries));

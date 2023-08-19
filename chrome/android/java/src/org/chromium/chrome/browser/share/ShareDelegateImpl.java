@@ -215,8 +215,8 @@ public class ShareDelegateImpl implements ShareDelegate {
         return canonicalUrl.getSpec();
     }
 
-    @CanonicalURLResult
-    private static int getCanonicalUrlResult(GURL visibleUrl, GURL canonicalUrl) {
+    private static @CanonicalURLResult int getCanonicalUrlResult(
+            GURL visibleUrl, GURL canonicalUrl) {
         if (!UrlConstants.HTTPS_SCHEME.equals(visibleUrl.getScheme())) {
             return CanonicalURLResult.FAILED_VISIBLE_URL_NOT_HTTPS;
         }

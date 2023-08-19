@@ -6,7 +6,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #import "ui/accessibility/platform/ax_platform_node_mac.h"
 #include "ui/compositor/layer.h"
 #import "ui/views/cocoa/native_widget_mac_ns_window_host.h"
@@ -35,15 +35,16 @@ void EnsureNativeViewHasNoChildWidgets(NSView* native_view) {
 // `native_view`. If found, removes the reference and returns the Widget's
 // NSWindow.
 NSWindow* RemoveReferenceToMovedContentView(NSView* native_view) {
-  for (NSWindow* window in [NSApp windows]) {
+  for (NSWindow* window in NSApp.windows) {
     Widget* widget =
         views::Widget::GetWidgetForNativeWindow(gfx::NativeWindow(window));
     if (widget == nullptr) {
       continue;
     }
 
-    NSView* moved_content_view = (NSView*)widget->GetNativeWindowProperty(
-        views::NativeWidgetMacNSWindowHost::kMovedContentNSView);
+    NSView* moved_content_view =
+        (__bridge NSView*)widget->GetNativeWindowProperty(
+            views::NativeWidgetMacNSWindowHost::kMovedContentNSView);
 
     if (moved_content_view == native_view) {
       widget->SetNativeWindowProperty(
@@ -107,7 +108,7 @@ void NativeViewHostMac::OnHostableViewDestroying() {
 void NativeViewHostMac::AttachNativeView() {
   DCHECK(host_->native_view());
   DCHECK(!native_view_);
-  native_view_.reset([host_->native_view().GetNativeNSView() retain]);
+  native_view_ = host_->native_view().GetNativeNSView();
   if ([native_view_ conformsToProtocol:@protocol(ViewsHostable)]) {
     id hostable = native_view_;
     native_view_hostable_ = [hostable viewsHostableView];
@@ -133,7 +134,8 @@ void NativeViewHostMac::AttachNativeView() {
   // break.
   if (![ns_window contentView] && widget) {
     widget->SetNativeWindowProperty(
-        views::NativeWidgetMacNSWindowHost::kMovedContentNSView, native_view_);
+        views::NativeWidgetMacNSWindowHost::kMovedContentNSView,
+        (__bridge void*)native_view_);
   }
 
   if (native_view_hostable_) {
@@ -193,7 +195,7 @@ void NativeViewHostMac::NativeViewDetaching(bool destroyed) {
     [originating_window setContentView:native_view_];
   }
 
-  native_view_.reset();
+  native_view_ = nil;
 }
 
 void NativeViewHostMac::AddedToWidget() {
@@ -259,7 +261,7 @@ void NativeViewHostMac::ShowWidget(int x,
     native_view_hostable_->ViewsHostableSetVisible(true);
   } else {
     // Coordinates will be from the top left of the parent Widget. The
-    // NativeView is already in the same NSWindow, so just flip to get Cooca
+    // NativeView is already in the same NSWindow, so just flip to get Cocoa
     // coordinates and then convert to the containing view.
     NSRect window_rect = NSMakeRect(
         x, host_->GetWidget()->GetClientAreaBoundsInScreen().height() - y - h,
@@ -303,16 +305,16 @@ gfx::NativeViewAccessible NativeViewHostMac::GetNativeViewAccessible() {
 }
 
 ui::Cursor NativeViewHostMac::GetCursor(int x, int y) {
-  // Intentionally not implemented: Not required on non-aura Mac because OSX
+  // Intentionally not implemented: Not required on non-aura Mac because macOS
   // will query the native view for the cursor directly. For NativeViewHostMac
-  // in practice, OSX will retrieve the cursor that was last set by
+  // in practice, macOS will retrieve the cursor that was last set by
   // -[RenderWidgetHostViewCocoa updateCursor:] whenever the pointer is over the
   // hosted view. With some plumbing, NativeViewHostMac could return that same
   // cursor here, but it doesn't achieve anything. The implications of returning
   // null simply mean that the "fallback" cursor on the window itself will be
   // cleared (see -[NativeWidgetMacNSWindow cursorUpdate:]). However, while the
-  // pointer is over a RenderWidgetHostViewCocoa, OSX won't ask for the fallback
-  // cursor.
+  // pointer is over a RenderWidgetHostViewCocoa, macOS won't ask for the
+  // fallback cursor.
   return ui::Cursor();
 }
 

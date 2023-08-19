@@ -4,6 +4,7 @@
 
 #include "ash/user_education/user_education_util.h"
 
+#include <map>
 #include <vector>
 
 #include "ash/display/window_tree_host_manager.h"
@@ -12,9 +13,16 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/user_education/user_education_types.h"
+#include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
+#include "base/unguessable_token.h"
 #include "components/account_id/account_id.h"
 #include "components/session_manager/session_manager_types.h"
+#include "components/user_education/common/help_bubble.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view.h"
 
@@ -22,7 +30,9 @@ namespace ash::user_education_util {
 namespace {
 
 // Keys used in `user_education::HelpBubbleParams::ExtendedProperties`.
+constexpr char kHelpBubbleBodyIconKey[] = "helpBubbleBodyIcon";
 constexpr char kHelpBubbleIdKey[] = "helpBubbleId";
+constexpr char kHelpBubbleModalTypeKey[] = "helpBubbleModalType";
 constexpr char kHelpBubbleStyleKey[] = "helpBubbleStyle";
 
 // Helpers ---------------------------------------------------------------------
@@ -30,6 +40,14 @@ constexpr char kHelpBubbleStyleKey[] = "helpBubbleStyle";
 AccountId GetActiveAccountId(const SessionControllerImpl* session_controller) {
   return session_controller ? session_controller->GetActiveAccountId()
                             : AccountId();
+}
+
+std::map<std::string, raw_ptr<const gfx::VectorIcon>>&
+GetHelpBubbleBodyIconRegistry() {
+  static base::NoDestructor<
+      std::map<std::string, raw_ptr<const gfx::VectorIcon>>>
+      registry;
+  return *registry;
 }
 
 const AccountId& GetPrimaryAccountId() {
@@ -57,6 +75,24 @@ session_manager::SessionState GetSessionState(
 // Utilities -------------------------------------------------------------------
 
 user_education::HelpBubbleParams::ExtendedProperties CreateExtendedProperties(
+    const gfx::VectorIcon& body_icon) {
+  auto& registry = GetHelpBubbleBodyIconRegistry();
+
+  auto it = base::ranges::find(
+      registry, &body_icon,
+      &std::pair<const std::string, raw_ptr<const gfx::VectorIcon>>::second);
+
+  if (it == registry.end()) {
+    const auto token = base::UnguessableToken::Create();
+    it = registry.emplace(token.ToString(), &body_icon).first;
+  }
+
+  user_education::HelpBubbleParams::ExtendedProperties extended_properties;
+  extended_properties.values().Set(kHelpBubbleBodyIconKey, it->first);
+  return extended_properties;
+}
+
+user_education::HelpBubbleParams::ExtendedProperties CreateExtendedProperties(
     HelpBubbleId help_bubble_id) {
   user_education::HelpBubbleParams::ExtendedProperties extended_properties;
   extended_properties.values().Set(kHelpBubbleIdKey,
@@ -72,8 +108,34 @@ user_education::HelpBubbleParams::ExtendedProperties CreateExtendedProperties(
   return extended_properties;
 }
 
+user_education::HelpBubbleParams::ExtendedProperties CreateExtendedProperties(
+    ui::ModalType modal_type) {
+  user_education::HelpBubbleParams::ExtendedProperties extended_properties;
+  extended_properties.values().Set(kHelpBubbleModalTypeKey,
+                                   static_cast<int>(modal_type));
+  return extended_properties;
+}
+
 const AccountId& GetAccountId(const UserSession* user_session) {
   return user_session ? user_session->user_info.account_id : EmptyAccountId();
+}
+
+ui::CustomElementEventType GetHelpBubbleAnchorBoundsChangedEventType() {
+  return user_education::kHelpBubbleAnchorBoundsChangedEvent;
+}
+
+absl::optional<std::reference_wrapper<const gfx::VectorIcon>>
+GetHelpBubbleBodyIcon(
+    const user_education::HelpBubbleParams::ExtendedProperties&
+        extended_properties) {
+  if (const std::string* body_icon =
+          extended_properties.values().FindString(kHelpBubbleBodyIconKey)) {
+    auto& registry = GetHelpBubbleBodyIconRegistry();
+    auto it = registry.find(*body_icon);
+    CHECK(it != registry.end());
+    return *it->second;
+  }
+  return absl::nullopt;
 }
 
 HelpBubbleId GetHelpBubbleId(
@@ -81,6 +143,16 @@ HelpBubbleId GetHelpBubbleId(
         extended_properties) {
   return static_cast<HelpBubbleId>(
       extended_properties.values().FindInt(kHelpBubbleIdKey).value());
+}
+
+ui::ModalType GetHelpBubbleModalType(
+    const user_education::HelpBubbleParams::ExtendedProperties&
+        extended_properties) {
+  if (const absl::optional<int> model_type =
+          extended_properties.values().FindInt(kHelpBubbleModalTypeKey)) {
+    return static_cast<ui::ModalType>(model_type.value());
+  }
+  return ui::MODAL_TYPE_NONE;
 }
 
 absl::optional<HelpBubbleStyle> GetHelpBubbleStyle(

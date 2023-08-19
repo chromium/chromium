@@ -42,6 +42,14 @@ void RecordQsSliderValueChange(QsSliderCatalogName slider_catalog_name,
 // action.
 void RecordQsSliderToggle(QsSliderCatalogName slider_catalog_name, bool enable);
 
+// Records the number of quick settings pages the user has. It is better to
+// record this when the user closes (rather than opens) the quick settings
+// because the number of feature tiles, and thus the number of settings pages,
+// may not be accurately represented upon opening (e.g. a feature tile's
+// visibility may only be known after some data is fetched asynchronously).
+// Should only be called when QsRevamp is enabled.
+void RecordQsPageCountOnClose(int page_count);
+
 }  // namespace ash::quick_settings_metrics_util
 
 #endif  // ASH_SYSTEM_UNIFIED_QUICK_SETTINGS_METRICS_UTIL_H_

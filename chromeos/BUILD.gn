@@ -31,19 +31,6 @@ component("chromeos") {
 
   if (is_chromeos_ash) {
     configs += [ ":chromeos_implementation" ]
-    if (is_chromeos_device) {
-      configs += [ "//build/config/compiler:use_orderfile_for_hugepage" ]
-    }
-
-    deps += [
-      ":chromeos_export",
-      "//base",
-      "//chromeos/startup:constants",
-    ]
-    sources += [
-      "hugepage_text/hugepage_text.cc",
-      "hugepage_text/hugepage_text.h",
-    ]
     if (current_cpu == "arm" || current_cpu == "x86") {
       defines = [ "BINDER_IPC_32BIT" ]
     }
@@ -186,7 +173,13 @@ if (is_chromeos_ash && is_chromeos_device) {
   # To diagnose tast failures or disable tests, see go/tast-failures
   # For any builders that run this target, it should also build Lacros.
   tast_test("chrome_all_tast_tests") {
-    deploy_lacros_chrome = true
+    if (is_skylab) {
+      # This tast_attr_expr needs to be kept in sync with //testing/buildbot/test_suites.pyl
+      # because the skylab pipeline needs the attr at the build phase. (see b/294778490)
+      tast_attr_expr = "(\"group:mainline\" && \"dep:chrome\" && !\"dep:no_chrome_dcheck\" && !\"dep:lacros\" && !informational)"
+    } else {
+      deploy_lacros_chrome = true
+    }
 
     # To disable a specific test, add it to the
     # tast_disabled_tests_from_chrome_all list in "tast_control.gni" and cite
@@ -199,12 +192,22 @@ if (is_chromeos_ash && is_chromeos_device) {
   }
 
   tast_test("chrome_criticalstaging_tast_tests") {
-    deploy_lacros_chrome = true
+    if (is_skylab) {
+      # This tast_attr_expr needs to be kept in sync with //testing/buildbot/test_suites.pyl
+      # because the skylab pipeline needs the attr at the build phase. (see b/294778490)
+      tast_attr_expr = "(\"group:mainline\" && \"dep:chrome\" && !\"dep:no_chrome_dcheck\" && !\"dep:lacros\" && \"informational\" && \"group:criticalstaging\")"
+    } else {
+      deploy_lacros_chrome = true
+    }
 
     # To disable a specific test, add it to the
     # tast_disabled_tests_from_chrome_all list in "tast_control.gni" and cite
     # a bug.
     tast_disabled_tests = tast_disabled_tests_from_chrome_all
+  }
+
+  tast_test("chrome_disabled_tast_tests") {
+    tast_tests = tast_disabled_tests_from_chrome_all
   }
 
   tast_test("chrome_variations_tast_tests") {

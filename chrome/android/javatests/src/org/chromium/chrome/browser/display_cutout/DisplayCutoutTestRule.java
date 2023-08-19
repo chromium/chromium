@@ -198,7 +198,6 @@ public class DisplayCutoutTestRule<T extends ChromeActivity> extends ChromeActiv
                 getActivity().getFullscreenManager().removeObserver(mListener);
             }
         });
-        mTestServer.stopAndDestroyServer();
     }
 
     /** Set a simulated dip scale for this device. */

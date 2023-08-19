@@ -21,6 +21,7 @@ schema:
   type: boolean
 supported_on:
 - chrome.win:96-
+- chrome.linux:117-
 tags:
 - system-security
 type: main

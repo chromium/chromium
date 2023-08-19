@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
@@ -19,7 +20,6 @@
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "chromeos/ash/services/secure_channel/authenticated_channel_impl.h"
 #include "chromeos/ash/services/secure_channel/ble_advertiser_impl.h"
-#include "chromeos/ash/services/secure_channel/ble_constants.h"
 #include "chromeos/ash/services/secure_channel/ble_initiator_failure_type.h"
 #include "chromeos/ash/services/secure_channel/ble_listener_failure_type.h"
 #include "chromeos/ash/services/secure_channel/ble_weave_client_connection.h"
@@ -32,6 +32,7 @@
 #include "chromeos/ash/services/secure_channel/fake_secure_channel_connection.h"
 #include "chromeos/ash/services/secure_channel/fake_secure_channel_disconnector.h"
 #include "chromeos/ash/services/secure_channel/fake_timer_factory.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/shared/ble_constants.h"
 #include "chromeos/ash/services/secure_channel/secure_channel.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
@@ -82,11 +83,15 @@ class FakeBleAdvertiserFactory : public BleAdvertiserImpl::Factory {
     return instance;
   }
 
-  raw_ptr<FakeBleAdvertiser, ExperimentalAsh> instance_ = nullptr;
+  raw_ptr<FakeBleAdvertiser, DanglingUntriaged | ExperimentalAsh> instance_ =
+      nullptr;
 
-  raw_ptr<FakeBluetoothHelper, ExperimentalAsh> expected_fake_bluetooth_helper_;
-  raw_ptr<FakeBleSynchronizer, ExperimentalAsh> expected_fake_ble_synchronizer_;
-  raw_ptr<FakeTimerFactory, ExperimentalAsh> expected_fake_timer_factory_;
+  raw_ptr<FakeBluetoothHelper, DanglingUntriaged | ExperimentalAsh>
+      expected_fake_bluetooth_helper_;
+  raw_ptr<FakeBleSynchronizer, DanglingUntriaged | ExperimentalAsh>
+      expected_fake_ble_synchronizer_;
+  raw_ptr<FakeTimerFactory, DanglingUntriaged | ExperimentalAsh>
+      expected_fake_timer_factory_;
 };
 
 class FakeWeaveClientConnectionFactory
@@ -130,10 +135,11 @@ class FakeWeaveClientConnectionFactory
 
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>>
       expected_mock_adapter_;
-  raw_ptr<device::MockBluetoothDevice, ExperimentalAsh>
+  raw_ptr<device::MockBluetoothDevice, DanglingUntriaged | ExperimentalAsh>
       expected_bluetooth_device_;
 
-  raw_ptr<FakeConnection, ExperimentalAsh> last_created_instance_ = nullptr;
+  raw_ptr<FakeConnection, DanglingUntriaged | ExperimentalAsh>
+      last_created_instance_ = nullptr;
 };
 
 class FakeSecureChannelFactory : public SecureChannel::Factory {
@@ -168,7 +174,10 @@ class FakeSecureChannelFactory : public SecureChannel::Factory {
   raw_ptr<FakeWeaveClientConnectionFactory, ExperimentalAsh>
       fake_weave_client_connection_factory_;
 
-  FakeSecureChannelConnection* last_created_instance_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION FakeSecureChannelConnection* last_created_instance_ =
+      nullptr;
 };
 
 class FakeAuthenticatedChannelFactory
@@ -218,10 +227,15 @@ class FakeAuthenticatedChannelFactory
     return instance;
   }
 
-  FakeSecureChannelConnection* expected_fake_secure_channel_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION FakeSecureChannelConnection* expected_fake_secure_channel_ =
+      nullptr;
   bool expected_to_be_background_advertisement_ = false;
 
-  FakeAuthenticatedChannel* last_created_instance_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION FakeAuthenticatedChannel* last_created_instance_ = nullptr;
 };
 
 }  // namespace

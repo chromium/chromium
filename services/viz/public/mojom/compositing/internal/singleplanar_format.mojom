@@ -1,0 +1,37 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module viz.mojom;
+
+// An enum for singleplanar SharedImage format. Intended for usage only within
+// SharedImageFormat itself.
+enum SingleplanarFormat {
+  RGBA_8888,
+  RGBA_4444,
+  BGRA_8888,
+  ALPHA_8,
+  LUMINANCE_8,
+  RGB_565,
+  BGR_565,
+  ETC1,
+  RED_8,
+  RG_88,
+  LUMINANCE_F16,
+  RGBA_F16,
+  R16_EXT,
+  RG16_EXT,
+  RGBX_8888,
+  BGRX_8888,
+  RGBX_1010102,
+  BGRX_1010102,
+
+  // Legacy multiplanar formats (used before Multiplanar SharedImage was
+  // introduced).
+  // TODO(crbug.com/1366495): Remove these once all clients are converted to
+  // use MultiplanarSharedImage for this use case.
+  YV12_LEGACY,
+  NV12_LEGACY,
+  NV12A_LEGACY,
+  P010_LEGACY,
+};

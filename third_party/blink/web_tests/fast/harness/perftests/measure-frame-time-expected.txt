@@ -1,18 +1,18 @@
 Running 5 times
 Ignoring warm-up run (-1 ms)
-Ignoring warm-up run (30 ms)
-Ignoring warm-up run (30 ms)
-30 ms
-30 ms
-30 ms
-30 ms
-30 ms
+Ignoring warm-up run (40 ms)
+Ignoring warm-up run (40 ms)
+40 ms
+40 ms
+40 ms
+40 ms
+40 ms
 
 Time:
-values 30, 30, 30, 30, 30 ms
-avg 30 ms
-median 30 ms
+values 40, 40, 40, 40, 40 ms
+avg 40 ms
+median 40 ms
 stdev 0 ms
-min 30 ms
-max 30 ms
+min 40 ms
+max 40 ms
 

@@ -16,11 +16,12 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
-import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
-import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppPresence;
+import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
+import org.chromium.components.autofill.AutofillProfile;
 
 import java.util.concurrent.TimeoutException;
 
@@ -49,9 +50,6 @@ public class PaymentRequestShippingAddressAndOptionTest {
                                                           .setPhoneNumber("555-555-5555")
                                                           .setLanguageCode("en-US")
                                                           .build());
-        helper.setCreditCard(new CreditCard("", "https://example.test", true, true, "Jon Doe",
-                "4111111111111111", "1111", "12", "2050", "visa", R.drawable.visa_card,
-                firstAddressId, "" /* serverId */));
 
         // The user has a second address.
         String secondAddressId = helper.setProfile(AutofillProfile.builder()
@@ -67,17 +65,20 @@ public class PaymentRequestShippingAddressAndOptionTest {
                                                            .build());
 
         // Set the fist profile to have a better frecency score that the second one.
-        helper.setProfileUseStatsForTesting(firstAddressId, 10, 10);
-        helper.setProfileUseStatsForTesting(secondAddressId, 0, 0);
+        helper.setProfileUseStatsForTesting(firstAddressId, 10, 0);
+        helper.setProfileUseStatsForTesting(secondAddressId, 0, 10);
+        mPaymentRequestTestRule.addPaymentAppFactory(
+                AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
     }
 
     /** Verifies that the shipping address format in bottomsheet mode is as expected. */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testShippingAddressFormat_BottomSheet() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+                "buyWithMethods([{supportedMethods: 'https://bobpay.test'}]);",
+                mPaymentRequestTestRule.getReadyToPay());
 
         // Make sure that the shipping label on the bottomsheet does not include the country.
         Assert.assertEquals("Jon Doe\nGoogle, 340 Main St, Los Angeles, CA 90291\n555-555-5555",
@@ -96,11 +97,11 @@ public class PaymentRequestShippingAddressAndOptionTest {
     /** Verifies that the shipping address format in fullsheet mode is as expected. */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testShippingAddressFormat_FullSheet() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
-
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+                "buyWithMethods([{supportedMethods: 'https://bobpay.test'}]);",
+                mPaymentRequestTestRule.getReadyToPay());
         // Focus on a section other that shipping addresses to enter fullsheet mode.
         mPaymentRequestTestRule.clickInPaymentMethodAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
@@ -117,13 +118,14 @@ public class PaymentRequestShippingAddressAndOptionTest {
                 mPaymentRequestTestRule.getShippingOptionSummaryLabel());
     }
 
-    /** Verifies that the shipping address format in fullsheet mode is as expected. */
+    /** Verifies that the shipping address format in expanded mode is as expected. */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testShippingAddressFormat_Expanded() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+                "buyWithMethods([{supportedMethods: 'https://bobpay.test'}]);",
+                mPaymentRequestTestRule.getReadyToPay());
 
         // Focus on the shipping addresses section to enter expanded mode.
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
@@ -151,10 +153,11 @@ public class PaymentRequestShippingAddressAndOptionTest {
     /** Verifies that the shipping address format of a new address is as expected. */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testShippingAddressFormat_NewAddress() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+                "buyWithMethods([{supportedMethods: 'https://bobpay.test'}]);",
+                mPaymentRequestTestRule.getReadyToPay());
 
         // Add a shipping address.
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
@@ -181,11 +184,12 @@ public class PaymentRequestShippingAddressAndOptionTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testEditShippingAddressAndCancelEditorShouldKeepAddressSelected()
             throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+                "buyWithMethods([{supportedMethods: 'https://bobpay.test'}]);",
+                mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.expectShippingAddressRowIsSelected(0);
@@ -231,11 +235,12 @@ public class PaymentRequestShippingAddressAndOptionTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testAddShippingAddressAndCancelEditorShouldKeepAddressSelected()
             throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+                "buyWithMethods([{supportedMethods: 'https://bobpay.test'}]);",
+                mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.expectShippingAddressRowIsSelected(0);

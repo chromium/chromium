@@ -8,10 +8,9 @@
 
 #include <ntstatus.h>
 #include <stddef.h>
+#include <winternl.h>
 
 #include "base/win/pe_image.h"
-#include "sandbox/win/src/nt_internals.h"
-#include "sandbox/win/src/sandbox_nt_util.h"
 
 namespace sandbox {
 
@@ -48,7 +47,6 @@ NTSTATUS ResolverThunk::Init(const void* target_module,
 NTSTATUS ResolverThunk::ResolveInterceptor(const void* interceptor_module,
                                            const char* interceptor_name,
                                            const void** address) {
-  DCHECK_NT(address);
   if (!interceptor_module)
     return STATUS_INVALID_PARAMETER;
 

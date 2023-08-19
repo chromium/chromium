@@ -116,6 +116,14 @@ class POLICY_EXPORT ManagementService {
   // Returns whether there is any management authority at all.
   bool IsManaged();
 
+  // Returns whether the profile is managed because the signed in account is a
+  // managed account.
+  bool IsAccountManaged();
+
+  // Returns whether the profile is managed because the whole browser is
+  // managed.
+  bool IsBrowserManaged();
+
   const absl::optional<int>& management_authorities_for_testing() {
     return management_authorities_for_testing_;
   }

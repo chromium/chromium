@@ -368,8 +368,7 @@ ExternalTexture CreateExternalTexture(
       device->GetDawnControlClient()->GetOrCreateCanvasResource(
           SkImageInfo::MakeN32Premul(
               intrinsic_size.width(), intrinsic_size.height(),
-              recyclable_canvas_resource_color_space.ToSkColorSpace()),
-          /*is_origin_top_left=*/true);
+              recyclable_canvas_resource_color_space.ToSkColorSpace()));
   if (!recyclable_canvas_resource) {
     return external_texture;
   }

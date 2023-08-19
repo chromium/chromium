@@ -1,0 +1,35 @@
+<!--
+@MAC-ALLOW:AXRoleDescription=*
+@WIN-ALLOW:HASPOPUP
+@WIN-ALLOW:haspopup*
+@WIN-ALLOW:ia2_hypertext=*
+@WIN-ALLOW:MULTISELECTABLE
+@WIN-ALLOW:EXTSELECTABLE
+@WIN-ALLOW:SELECT*
+@BLINK-ALLOW:focus*
+@BLINK-ALLOW:setSize*
+@BLINK-ALLOW:posInSet*
+@BLINK-ALLOW:haspopup*
+@AURALINUX-ALLOW:haspopup*
+@AURALINUX-ALLOW:posinset*
+@AURALINUX-ALLOW:setsize*
+@AURALINUX-ALLOW:expand*
+@AURALINUX-ALLOW:required
+-->
+<html>
+<body>
+  <selectlist id="A" name="Select A">
+    <option value="1">Option 1</option>
+    <option value="2">Option 2</option>
+    <option value="3">Option 3</option>
+  </selectlist>
+  <selectlist id="B" name="Select B">
+    <div slot="button" behavior="button">Custom selectlist button</div>
+    <div popover slot="listbox" behavior="listbox">
+      <option value="1">Option 1</option>
+      <option value="2">Option 2</option>
+      <option value="3">Option 3</option>
+    </div>
+  </selectlist>
+</body>
+</html>

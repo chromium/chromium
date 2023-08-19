@@ -5,6 +5,10 @@
 #ifndef ASH_PUBLIC_CPP_SCHEDULE_ENUMS_H_
 #define ASH_PUBLIC_CPP_SCHEDULE_ENUMS_H_
 
+#include <ostream>
+
+#include "ash/public/cpp/ash_public_export.h"
+
 namespace ash {
 
 // These values are written to logs. New enum values can be added, but
@@ -60,6 +64,10 @@ enum class ScheduleCheckpoint {
   kMorning,
   kLateAfternoon,
 };
+
+ASH_PUBLIC_EXPORT std::ostream& operator<<(
+    std::ostream& os,
+    ScheduleCheckpoint schedule_checkpoint);
 
 }  // namespace ash
 

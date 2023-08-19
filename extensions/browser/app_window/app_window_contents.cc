@@ -66,14 +66,16 @@ void AppWindowContentsImpl::NativeWindowChanged(
   base::Value::List args;
   args.Append(std::move(dictionary));
 
-  content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
+  content::RenderFrameHost* render_frame_host =
+      web_contents_->GetPrimaryMainFrame();
   // Return early if this method is called before RenderFrameCreated(). (e.g.
   // if AppWindow is created and shown before navigation, this method is called
   // for the visibility change.)
-  if (!rfh->IsRenderFrameLive())
+  if (!render_frame_host->IsRenderFrameLive()) {
     return;
+  }
   ExtensionWebContentsObserver::GetForWebContents(web_contents())
-      ->GetLocalFrame(rfh)
+      ->GetLocalFrame(render_frame_host)
       ->MessageInvoke(host_->extension_id(), "app.window",
                       "updateAppWindowProperties", std::move(args));
 }

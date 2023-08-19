@@ -5,11 +5,13 @@
 #ifndef CHROME_COMMON_GOOGLE_URL_LOADER_THROTTLE_H_
 #define CHROME_COMMON_GOOGLE_URL_LOADER_THROTTLE_H_
 
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "extensions/buildflags/buildflags.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
@@ -64,6 +66,7 @@ class GoogleURLLoaderThrottle
 
   std::unique_ptr<BoundSessionRequestThrottledListener>
       bound_session_request_throttled_listener_;
+  absl::optional<base::TimeTicks> bound_session_request_throttled_start_time_;
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

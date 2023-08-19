@@ -6,6 +6,8 @@ package org.chromium.content.browser.accessibility;
 
 import android.view.View;
 
+import androidx.annotation.VisibleForTesting;
+
 /**
  * Helper class that handles the logic and state behind the "Auto Disable" accessibility feature.
  * Clients need to cancel/reset the timer based on their implementation (e.g. on a user action).
@@ -62,8 +64,17 @@ public class AutoDisableAccessibilityHandler {
     /**
      * Helper method to notify Client and reset local state when the timer has expired.
      */
-    private void notifyDisable() {
+    @VisibleForTesting()
+    public void notifyDisable() {
         mClient.onDisabled();
         mHasPendingTimer = false;
+    }
+
+    /**
+     * Return true when there is a pending timer.
+     */
+    @VisibleForTesting
+    public boolean hasPendingTimer() {
+        return mHasPendingTimer;
     }
 }

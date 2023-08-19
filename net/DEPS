@@ -54,6 +54,10 @@ specific_include_rules = {
     "+base/i18n",
   ],
 
+  "zstd_source_stream\.cc": [
+    "+third_party/zstd",
+  ],
+
   # Dependencies specific for fuzz targets and other fuzzing-related code.
   ".*fuzz.*": [
     "+third_party/libprotobuf-mutator",  # This is needed for LPM-based fuzzers.

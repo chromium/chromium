@@ -922,10 +922,9 @@ TEST_F(AlternateProtocolServerPropertiesTest, SetWithEmptyHostname) {
             alternative_service_info_vector[0].alternative_service());
 }
 
-// Regression test for https://crbug.com/516486:
 // GetAlternativeServiceInfos() should remove |server_info_map_|
 // elements with empty value.
-TEST_F(AlternateProtocolServerPropertiesTest, DISABLED_EmptyVector) {
+TEST_F(AlternateProtocolServerPropertiesTest, EmptyVector) {
   url::SchemeHostPort server("https", "foo", 443);
   const AlternativeService alternative_service(kProtoHTTP2, "bar", 443);
   base::Time expiration = test_clock_.Now() - base::Days(1);

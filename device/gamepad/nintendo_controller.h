@@ -227,8 +227,6 @@ class NintendoController final : public AbstractHapticGamepad {
     kPendingReadAnalogStickCalibration,
     // Enable vibration.
     kPendingEnableVibration,
-    // Turn on the Home light.
-    kPendingSetHomeLight,
     // Set standard full mode (60 Hz).
     kPendingSetInputReportMode,
     // Wait for controller data to be received.
@@ -318,12 +316,6 @@ class NintendoController final : public AbstractHapticGamepad {
   void RequestEnableVibration(bool enable);
   void RequestEnableImu(bool enable);
   void RequestSetPlayerLights(uint8_t light_pattern);
-  void RequestSetHomeLight(uint8_t minicycle_count,
-                           uint8_t minicycle_duration,
-                           uint8_t start_intensity,
-                           uint8_t cycle_count,
-                           const std::vector<uint8_t>& minicycle_data);
-  void RequestSetHomeLightIntensity(double intensity);
   void RequestSetImuSensitivity(uint8_t gyro_sensitivity,
                                 uint8_t accelerometer_sensitivity,
                                 uint8_t gyro_performance_rate,

@@ -4,25 +4,35 @@
 
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_service.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/scoped_observation.h"
+#include "base/test/test_future.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/package_id.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_almanac_connector.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_update.h"
-#include "chrome/browser/apps/app_service/promise_apps/promise_app_wrapper.h"
 #include "chrome/browser/apps/app_service/promise_apps/proto/promise_app.pb.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
-#include "components/image_fetcher/core/fake_image_decoder.h"
-#include "components/image_fetcher/core/image_fetcher.h"
-#include "components/image_fetcher/core/image_fetcher_impl.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "content/public/test/browser_task_environment.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_unittest_util.h"
+#include "ui/gfx/skia_util.h"
 
 namespace apps {
 
@@ -42,12 +52,10 @@ class PromiseAppServiceTest : public testing::Test,
     test_shared_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             url_loader_factory_.get());
-    service_ = std::make_unique<PromiseAppService>(profile_.get());
-    std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher =
-        std::make_unique<image_fetcher::ImageFetcherImpl>(
-            std::make_unique<image_fetcher::FakeImageDecoder>(),
-            profile_->GetURLLoaderFactory());
-    service_->SetImageFetcherForTesting(std::move(image_fetcher));
+    app_cache_ = &AppServiceProxyFactory::GetForProfile(profile_.get())
+                      ->AppRegistryCache();
+    service_ = std::make_unique<PromiseAppService>(profile_.get(), *app_cache_);
+    service_->SetSkipApiKeyCheckForTesting(true);
   }
 
   network::TestURLLoaderFactory* url_loader_factory() {
@@ -58,10 +66,44 @@ class PromiseAppServiceTest : public testing::Test,
     return service_->PromiseAppRegistryCache();
   }
 
+  AppRegistryCache* app_cache() { return app_cache_; }
+
   PromiseAppIconCache* icon_cache() { return service_->PromiseAppIconCache(); }
 
   PromiseAppService* service() { return service_.get(); }
 
+  PromiseAppIconPtr CreatePromiseAppIcon(int width) {
+    PromiseAppIconPtr icon = std::make_unique<PromiseAppIcon>();
+    icon->icon = gfx::test::CreateBitmap(width, width);
+    icon->width_in_pixels = width;
+    return icon;
+  }
+
+  // Create a data string that represents an image of the requested dimensions.
+  // This is used to produce mock content for the url_loader_factory.
+  std::string CreateImageString(int width) {
+    SkBitmap bitmap = gfx::test::CreateBitmap(width, width);
+    std::vector<unsigned char> compressed;
+    gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, true, &compressed);
+    std::string image_string(compressed.begin(), compressed.end());
+    return image_string;
+  }
+
+  SkBitmap ApplyEffectsToBitmap(SkBitmap bitmap, IconEffects effects) {
+    auto iv = std::make_unique<apps::IconValue>();
+    iv->uncompressed = gfx::ImageSkia::CreateFromBitmap(bitmap, 1.0f);
+    iv->icon_type = apps::IconType::kUncompressed;
+
+    base::test::TestFuture<IconValuePtr> image_with_effects;
+    ApplyIconEffects(/*profile=*/nullptr, /*app_id=*/absl::nullopt, effects,
+                     bitmap.width(), std::move(iv),
+                     image_with_effects.GetCallback());
+
+    return *image_with_effects.Get()->uncompressed.bitmap();
+  }
+
+  // Set the number of updates we expect the Promise App Registry Cache to
+  // receive in the test.
   void ExpectNumUpdates(int num_updates) {
     expected_num_updates_ = num_updates;
     current_num_updates_ = 0;
@@ -103,6 +145,8 @@ class PromiseAppServiceTest : public testing::Test,
       obs_{this};
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
+  raw_ptr<AppRegistryCache> app_cache_;
 
   // Tracks how many times we should expect OnPromiseAppUpdate to be called
   // before proceeding with a unit test.
@@ -116,23 +160,24 @@ TEST_F(PromiseAppServiceTest, OnPromiseApp_AlmanacResponseUpdatesPromiseApp) {
   response.set_name("Name");
   response.add_icons();
   response.mutable_icons(0)->set_url("www.image");
-  response.mutable_icons(0)->set_width_in_pixels(512);
-  response.mutable_icons(0)->set_mime_type("image/png");
-  response.mutable_icons(0)->set_is_masking_allowed(true);
 
-  // Wait for the registry cache update that follows the Almanac API response.
-  ExpectNumUpdates(/*num_updates=*/2);
   url_loader_factory()->AddResponse(
       PromiseAppAlmanacConnector::GetServerUrl().spec(),
       response.SerializeAsString());
 
-  // Add promise app to cache and trigger Almanac API call.
+  // We expect 2 Promise App Registry Cache updates in this test:
+  // The first update is when we initially register the promise app in the
+  // cache. The second update is when we take the app name provided by the
+  // Almanac API response and save it to the promise app object.
+  ExpectNumUpdates(/*num_updates=*/2);
+
+  // Add promise app to the cache, which will trigger an Almanac API call.
   service()->OnPromiseApp(std::make_unique<PromiseApp>(kTestPackageId));
 
+  // Wait for all the updates to trigger.
   WaitForPromiseAppUpdates();
 
-  const PromiseApp* promise_app_result =
-      cache()->GetPromiseAppForTesting(kTestPackageId);
+  const PromiseApp* promise_app_result = cache()->GetPromiseApp(kTestPackageId);
   EXPECT_TRUE(promise_app_result->name.has_value());
   EXPECT_EQ(promise_app_result->name.value(), "Name");
 }
@@ -148,33 +193,31 @@ TEST_F(PromiseAppServiceTest, OnPromiseApp_IconsDownloaded) {
   response.set_name("Name");
   response.add_icons();
   response.mutable_icons(0)->set_url(url);
-  response.mutable_icons(0)->set_width_in_pixels(512);
-  response.mutable_icons(0)->set_mime_type("image/png");
-  response.mutable_icons(0)->set_is_masking_allowed(true);
   response.add_icons();
   response.mutable_icons(1)->set_url(url_other);
-  response.mutable_icons(1)->set_width_in_pixels(1024);
-  response.mutable_icons(1)->set_mime_type("image/png");
-  response.mutable_icons(1)->set_is_masking_allowed(false);
 
   // Set up response for Almanac endpoint.
   url_loader_factory()->AddResponse(
       PromiseAppAlmanacConnector::GetServerUrl().spec(),
       response.SerializeAsString());
 
-  // Set up responses for image fetcher.
-  url_loader_factory()->AddResponse(url, "data");
-  url_loader_factory()->AddResponse(url_other, "data");
+  // Set up mock icon response.
+  url_loader_factory()->AddResponse(url, CreateImageString(512));
+  url_loader_factory()->AddResponse(url_other, CreateImageString(1024));
 
   // Confirm there aren't any icons for the package yet.
   EXPECT_FALSE(icon_cache()->DoesPackageIdHaveIcons(kTestPackageId));
 
-  // Add promise app to cache and trigger Almanac API and image fetcher calls.
+  // We expect 3 Promise App Registry Cache updates in this test:
+  // The first update is when we initially register the promise app in the
+  // cache. The second update is when we take the app name provided by the
+  // Almanac API response and save it to the promise app object. The third is
+  // after we finish downloading all the icons for the promise app and mark the
+  // promise app as ready to be shown to the user.
   ExpectNumUpdates(/*num_updates=*/3);
   service()->OnPromiseApp(std::make_unique<PromiseApp>(kTestPackageId));
 
-  // Wait for the separate registry cache updates that follow the Almanac API
-  // response and image fetcher completion.
+  // Wait for all the updates to trigger.
   WaitForPromiseAppUpdates();
 
   // Verify that there are 2 icons now saved in cache.
@@ -182,14 +225,15 @@ TEST_F(PromiseAppServiceTest, OnPromiseApp_IconsDownloaded) {
   std::vector<PromiseAppIcon*> icons =
       icon_cache()->GetIconsForTesting(kTestPackageId);
   EXPECT_EQ(icons.size(), 2u);
-  EXPECT_TRUE(icons[0]->is_masking_allowed);
   EXPECT_EQ(icons[0]->width_in_pixels, 512);
-  EXPECT_FALSE(icons[1]->is_masking_allowed);
+  EXPECT_TRUE(
+      gfx::BitmapsAreEqual(icons[0]->icon, gfx::test::CreateBitmap(512, 512)));
   EXPECT_EQ(icons[1]->width_in_pixels, 1024);
+  EXPECT_TRUE(gfx::BitmapsAreEqual(icons[1]->icon,
+                                   gfx::test::CreateBitmap(1024, 1024)));
 
   // Verify that the promise app is allowed to be visible now.
-  const PromiseApp* promise_app_result =
-      cache()->GetPromiseAppForTesting(kTestPackageId);
+  const PromiseApp* promise_app_result = cache()->GetPromiseApp(kTestPackageId);
   EXPECT_TRUE(promise_app_result->should_show);
 }
 
@@ -201,9 +245,6 @@ TEST_F(PromiseAppServiceTest, OnPromiseApp_FailedIconDownload) {
   response.set_name("Name");
   response.add_icons();
   response.mutable_icons(0)->set_url("broken-url");
-  response.mutable_icons(0)->set_width_in_pixels(512);
-  response.mutable_icons(0)->set_mime_type("image/png");
-  response.mutable_icons(0)->set_is_masking_allowed(true);
 
   // Set up response for Almanac endpoint.
   url_loader_factory()->AddResponse(
@@ -213,13 +254,103 @@ TEST_F(PromiseAppServiceTest, OnPromiseApp_FailedIconDownload) {
   // Confirm there aren't any icons for the package yet.
   EXPECT_FALSE(icon_cache()->DoesPackageIdHaveIcons(kTestPackageId));
 
-  // Add promise app to cache and trigger Almanac API call.
+  // We expect 2 Promise App Registry Cache updates in this test:
+  // The first update is when we initially register the promise app in the
+  // cache. The second update is when we take the app name provided by the
+  // Almanac API response and save it to the promise app object.
   ExpectNumUpdates(/*num_updates=*/2);
   service()->OnPromiseApp(std::make_unique<PromiseApp>(kTestPackageId));
 
+  // Wait for all the updates to trigger.
   WaitForPromiseAppUpdates();
 
   // Icon cache should still be empty.
   EXPECT_FALSE(icon_cache()->DoesPackageIdHaveIcons(kTestPackageId));
+}
+
+TEST_F(PromiseAppServiceTest, LoadIcon_NoIcons) {
+  // Check that we don't have any icons yet.
+  std::vector<PromiseAppIcon*> icons_saved =
+      icon_cache()->GetIconsForTesting(kTestPackageId);
+  EXPECT_EQ(icons_saved.size(), 0u);
+
+  // Attempt to load icon for test package.
+  base::test::TestFuture<std::unique_ptr<apps::IconValue>> test_callback;
+  service()->LoadIcon(kTestPackageId, 512, IconEffects::kCrOsStandardMask,
+                      test_callback.GetCallback());
+
+  // Confirm that there is no icon in the callback.
+  IconValue* result_icon = test_callback.Get().get();
+  EXPECT_TRUE(result_icon->uncompressed.isNull());
+}
+
+TEST_F(PromiseAppServiceTest, LoadIcon) {
+  PromiseAppIconPtr icon = CreatePromiseAppIcon(512);
+  icon_cache()->SaveIcon(kTestPackageId, std::move(icon));
+
+  // Confirm that we have an icon in the icon cache.
+  std::vector<PromiseAppIcon*> icons_saved =
+      icon_cache()->GetIconsForTesting(kTestPackageId);
+  EXPECT_EQ(icons_saved.size(), 1u);
+
+  // Attempt to load icon for test package.
+  base::test::TestFuture<std::unique_ptr<apps::IconValue>> test_callback;
+  service()->LoadIcon(kTestPackageId, 128, IconEffects::kCrOsStandardMask,
+                      test_callback.GetCallback());
+
+  // Confirm the details of the icon in the callback.
+  IconValue* result_icon = test_callback.Get().get();
+  EXPECT_FALSE(result_icon->uncompressed.isNull());
+  EXPECT_EQ(result_icon->icon_type, IconType::kStandard);
+  EXPECT_FALSE(result_icon->is_placeholder_icon);
+  EXPECT_TRUE(result_icon->is_maskable_icon);
+  EXPECT_EQ(result_icon->uncompressed.bitmap()->width(), 128);
+
+  // Confirm that the icon has the correct effects applied to it.
+  SkBitmap expected_bitmap = ApplyEffectsToBitmap(
+      gfx::test::CreateBitmap(128, 128), kCrOsStandardMask);
+  EXPECT_TRUE(gfx::BitmapsAreEqual(*result_icon->uncompressed.bitmap(),
+                                   expected_bitmap));
+}
+
+TEST_F(PromiseAppServiceTest, CompleteAppInstallationRemovesPromiseApp) {
+  AppType app_type = AppType::kArc;
+  std::string identifier = "test.com.example";
+  PackageId package_id(app_type, identifier);
+
+  // Register test promise app.
+  PromiseAppPtr promise_app = std::make_unique<PromiseApp>(package_id);
+  promise_app->should_show = true;
+  promise_app->status = PromiseStatus::kInstalling;
+  service()->OnPromiseApp(std::move(promise_app));
+
+  // Confirm that the promise app gets registered.
+  const PromiseApp* promise_app_registered = cache()->GetPromiseApp(package_id);
+  EXPECT_TRUE(promise_app_registered);
+  EXPECT_TRUE(promise_app_registered->should_show.has_value());
+  EXPECT_TRUE(promise_app_registered->should_show.value());
+  EXPECT_EQ(promise_app_registered->status, PromiseStatus::kInstalling);
+
+  // Add test icons.
+  icon_cache()->SaveIcon(package_id, CreatePromiseAppIcon(100));
+  icon_cache()->SaveIcon(package_id, CreatePromiseAppIcon(200));
+  EXPECT_TRUE(icon_cache()->DoesPackageIdHaveIcons(package_id));
+
+  // Register (i.e. "install") an app with a matching package ID. This should
+  // trigger removal of the promise app.
+  std::string app_id = "asdfghjkl";
+  apps::AppPtr app = std::make_unique<apps::App>(app_type, app_id);
+  app->publisher_id = identifier;
+  app->readiness = apps::Readiness::kReady;
+
+  std::vector<apps::AppPtr> apps;
+  apps.push_back(std::move(app));
+  app_cache()->OnApps(std::move(apps), app_type,
+                      /*should_notify_initialized=*/false);
+
+  // Confirm that the promise app is now absent from the Promise App Registry
+  // and Promise App Icon Cache.
+  EXPECT_FALSE(cache()->HasPromiseApp(package_id));
+  EXPECT_FALSE(icon_cache()->DoesPackageIdHaveIcons(package_id));
 }
 }  // namespace apps

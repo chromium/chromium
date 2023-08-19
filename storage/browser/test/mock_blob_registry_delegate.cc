@@ -16,9 +16,4 @@ bool MockBlobRegistryDelegate::CanAccessDataForOrigin(
   return can_access_data_for_origin;
 }
 
-file_access::ScopedFileAccessDelegate::RequestFilesAccessIOCallback
-MockBlobRegistryDelegate::GetAccessCallback() {
-  return base::DoNothing();
-}
-
 }  // namespace storage

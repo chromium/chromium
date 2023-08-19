@@ -27,6 +27,16 @@ public class LayoutTab extends PropertyModel {
     private static float sPxToDp;
     // End section --------------
 
+    /**
+     * Supplier for determining if the current layout is active.
+     */
+    public interface IsActiveLayoutSupplier {
+        /**
+         * @return whether the current layout is active.
+         */
+        public boolean isActiveLayout();
+    }
+
     // TODO(crbug.com/1070284): Maybe make this a ReadableIntPropertyKey
     public static final WritableIntPropertyKey TAB_ID = new WritableIntPropertyKey();
 
@@ -106,13 +116,17 @@ public class LayoutTab extends PropertyModel {
     public static final PropertyModel.WritableFloatPropertyKey CONTENT_OFFSET =
             new PropertyModel.WritableFloatPropertyKey();
 
+    public static final PropertyModel
+            .WritableObjectPropertyKey<IsActiveLayoutSupplier> IS_ACTIVE_LAYOUT_SUPPLIER =
+            new WritableObjectPropertyKey<>();
+
     public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {TAB_ID, IS_INCOGNITO, SCALE, X,
             Y, RENDER_X, RENDER_Y, CLIPPED_WIDTH, CLIPPED_HEIGHT, ALPHA, SATURATION, BORDER_ALPHA,
             BORDER_SCALE, ORIGINAL_CONTENT_WIDTH_IN_DP, ORIGINAL_CONTENT_HEIGHT_IN_DP,
             MAX_CONTENT_WIDTH, MAX_CONTENT_HEIGHT, STATIC_TO_VIEW_BLEND, SHOULD_STALL,
             CAN_USE_LIVE_TEXTURE, SHOW_TOOLBAR, ANONYMIZE_TOOLBAR, DECORATION_ALPHA,
             INIT_FROM_HOST_CALLED, BACKGROUND_COLOR, TOOLBAR_BACKGROUND_COLOR,
-            TEXT_BOX_BACKGROUND_COLOR, CONTENT_OFFSET};
+            TEXT_BOX_BACKGROUND_COLOR, CONTENT_OFFSET, IS_ACTIVE_LAYOUT_SUPPLIER};
 
     /**
      * Default constructor for a {@link LayoutTab}.

@@ -719,32 +719,6 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
   VerifyPopupWindowGetUserMedia(opener_contents, blob_popup_contents);
 }
 
-IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
-                       EmbedIframeFileSystem) {
-  // TODO(https://crbug.com/1332598): Remove this test when removing filesystem:
-  // navigation for good.
-  if (!base::FeatureList::IsEnabled(blink::features::kFileSystemUrlNavigation))
-    GTEST_SKIP();
-
-  ASSERT_TRUE(embedded_test_server()->Start());
-  const GURL url(embedded_test_server()->GetURL("/empty.html"));
-  content::RenderFrameHost* main_rfh =
-      ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(), url,
-                                                                1);
-  ASSERT_TRUE(main_rfh);
-  content::WebContents* embedder_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(embedder_contents);
-
-  content::RenderFrameHost* embedded_iframe_rfh =
-      CreateIframe(main_rfh, CreateFilesystemURL(main_rfh));
-  ASSERT_TRUE(embedded_iframe_rfh);
-
-  VerifyPermissionsExceptGetUserMedia(embedder_contents, embedded_iframe_rfh);
-  VerifyPermission(embedder_contents, embedded_iframe_rfh, kRequestCamera,
-                   kCheckCamera);
-}
-
 // Renderer navigation for "filesystem:" is not allowed.
 IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
                        WindowOpenFileSystemRendererNavigationNotAllowed) {

@@ -13,8 +13,6 @@ source_set("history_swiper") {
     "chrome_render_widget_host_view_mac_history_swiper.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   frameworks = [ "Cocoa.framework" ]
 
   deps = [

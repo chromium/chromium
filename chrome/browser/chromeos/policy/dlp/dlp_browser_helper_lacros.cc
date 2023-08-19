@@ -13,24 +13,15 @@ namespace policy {
 
 namespace dlp {
 
+// Retrieves the aura::Window for the last active browser. Returns nullptr if no
+// browser window is currently visible.
 aura::Window* GetActiveAuraWindow() {
   BrowserList* browser_list = BrowserList::GetInstance();
   DCHECK(browser_list);
 
-  // Find the active tab in the visible focused or topmost browser.
-  for (auto browser_iterator =
-           browser_list->begin_browsers_ordered_by_activation();
-       browser_iterator != browser_list->end_browsers_ordered_by_activation();
-       ++browser_iterator) {
-    const Browser* browser = *browser_iterator;
-    DCHECK(browser);
-
-    const BrowserWindow* window = browser->window();
-    DCHECK(window);
-
-    // We only need the visible focused or topmost browser.
-    if (window->GetNativeWindow()->IsVisible())
-      return window->GetNativeWindow();
+  auto* browser = browser_list->GetLastActive();
+  if (browser && browser->window()) {
+    return browser->window()->GetNativeWindow();
   }
 
   return nullptr;
@@ -39,8 +30,9 @@ aura::Window* GetActiveAuraWindow() {
 aura::WindowTreeHost* GetActiveWindowTreeHost() {
   aura::Window* active_window = GetActiveAuraWindow();
 
-  if (active_window)
-    return active_window->GetHost();
+  if (active_window) {
+    return active_window->GetRootWindow()->GetHost();
+  }
 
   return nullptr;
 }

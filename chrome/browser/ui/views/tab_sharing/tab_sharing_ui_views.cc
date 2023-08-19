@@ -56,13 +56,6 @@ using content::GlobalRenderFrameHostId;
 using content::RenderFrameHost;
 using content::WebContents;
 
-// Killswitch for bypassing the new logic for fixing tab-sharing indicators
-// for guest mode, in case an unexpected bug is discovered.
-// TODO(crbug.com/1443411): Remove this.
-BASE_FEATURE(kTabShareInGuestModeBugfix,
-             "TabShareInGuestModeBugfix",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_CHROMEOS)
 bool g_apply_dlp_for_all_users_for_testing_ = false;
 #endif
@@ -362,8 +355,7 @@ void TabSharingUIViews::CreateInfobarsForAllTabs() {
   for (auto* browser : *browser_list) {
     CHECK(browser);
 
-    if (base::FeatureList::IsEnabled(kTabShareInGuestModeBugfix) &&
-        !IsCapturableByCapturer(browser->profile())) {
+    if (!IsCapturableByCapturer(browser->profile())) {
       continue;
     }
 
@@ -647,15 +639,13 @@ bool TabSharingUIViews::IsCapturableByCapturer(const Profile* profile) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(profile);
 
-  if (base::FeatureList::IsEnabled(kTabShareInGuestModeBugfix)) {
-    // Guest profiles may have an arbitrary non-guest profile as their original,
-    // so direct comparison would not work. Instead, we rely on the assumption
-    // that there is at most one guest profile.
-    const bool capturer_is_guest = profile_ && profile_->IsGuestSession();
-    const bool new_is_guest = profile->IsGuestSession();
-    if (capturer_is_guest || new_is_guest) {
-      return capturer_is_guest && new_is_guest;
-    }
+  // Guest profiles may have an arbitrary non-guest profile as their original,
+  // so direct comparison would not work. Instead, we rely on the assumption
+  // that there is at most one guest profile.
+  const bool capturer_is_guest = profile_ && profile_->IsGuestSession();
+  const bool new_is_guest = profile->IsGuestSession();
+  if (capturer_is_guest || new_is_guest) {
+    return capturer_is_guest && new_is_guest;
   }
 
   return profile->GetOriginalProfile() == profile_;

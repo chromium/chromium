@@ -591,12 +591,17 @@ void GLDisplayEGL::EGLGpuSwitchingObserver::OnGpuSwitched(
   eglHandleGPUSwitchANGLE(display_);
 }
 
+// Because on Apple platforms there is a member variable of a type (ObjCStorage)
+// that is defined in gl_display_egl.mm, the constructor/destructor also have to
+// be there. If making changes to this copy, be sure to adjust the other.
+#if !BUILDFLAG(IS_APPLE)
 GLDisplayEGL::GLDisplayEGL(uint64_t system_device_id, DisplayKey display_key)
-    : GLDisplay(system_device_id, display_key, EGL), display_(EGL_NO_DISPLAY) {
+    : GLDisplay(system_device_id, display_key, EGL) {
   ext = std::make_unique<DisplayExtensionsEGL>();
 }
 
 GLDisplayEGL::~GLDisplayEGL() = default;
+#endif
 
 EGLDisplay GLDisplayEGL::GetDisplay() const {
   return display_;

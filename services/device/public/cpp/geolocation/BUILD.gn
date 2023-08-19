@@ -2,6 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//services/device/public/cpp/geolocation/buildflags.gni")
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [ "OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED=$os_level_geolocation_permission_supported" ]
+}
+
 component("geolocation") {
   sources = [
     "geolocation_manager.cc",
@@ -23,7 +30,6 @@ component("geolocation") {
       "system_geolocation_source_mac.h",
       "system_geolocation_source_mac.mm",
     ]
-    configs += [ "//build/config/compiler:enable_arc" ]
     frameworks = [
       "CoreLocation.framework",
       "Foundation.framework",
@@ -33,6 +39,9 @@ component("geolocation") {
   public_deps = [
     "//base",
     "//services/device/public/mojom",
+    "//services/device/public/mojom:geolocation_internals",
     "//third_party/abseil-cpp:absl",
   ]
+
+  deps = [ ":buildflags" ]
 }

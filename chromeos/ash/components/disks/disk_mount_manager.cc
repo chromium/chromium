@@ -24,6 +24,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
+#include "base/system/sys_info.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/disks/disk.h"
 #include "chromeos/ash/components/disks/suspend_unmount_manager.h"
@@ -496,8 +497,10 @@ class DiskMountManagerImpl : public DiskMountManager,
         VLOG(1) << "Updated mount point '" << mount_info.mount_path << "'";
       }
     } else {
-      LOG(ERROR) << "Cannot mount '" << mount_info.source_path << "' as '"
-                 << mount_info.mount_path << "': " << entry.mount_error;
+      if (base::SysInfo::IsRunningOnChromeOS()) {
+        LOG(ERROR) << "Cannot mount '" << mount_info.source_path << "' as '"
+                   << mount_info.mount_path << "': " << entry.mount_error;
+      }
       if (const MountPoints::const_iterator it =
               mount_points_.find(mount_info.mount_path);
           it != mount_points_.end()) {

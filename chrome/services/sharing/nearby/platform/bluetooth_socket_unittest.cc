@@ -101,7 +101,8 @@ class BluetoothSocketTest : public testing::Test {
 
  protected:
   std::unique_ptr<chrome::BluetoothDevice> bluetooth_device_;
-  raw_ptr<FakeSocket, ExperimentalAsh> fake_socket_ = nullptr;
+  raw_ptr<FakeSocket, DanglingUntriaged | ExperimentalAsh> fake_socket_ =
+      nullptr;
   mojo::ScopedDataPipeProducerHandle receive_stream_;
   mojo::ScopedDataPipeConsumerHandle send_stream_;
   std::unique_ptr<BluetoothSocket> bluetooth_socket_;

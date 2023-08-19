@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://webui-test/mojo_webui_test_support.js';
-
 import {FeedHandlerRemote} from 'chrome://new-tab-page/feed.mojom-webui.js';
 import {feedDescriptor, FeedModuleElement, FeedProxy} from 'chrome://new-tab-page/lazy_load.js';
 import {CrAutoImgElement} from 'chrome://new-tab-page/new_tab_page.js';

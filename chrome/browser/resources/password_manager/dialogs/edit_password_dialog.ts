@@ -41,7 +41,7 @@ export interface EditPasswordDialogElement {
 }
 
 /**
- * Computes possible conflicting username by finding all credentials with
+ * Computes possible conflicting username by finding all passwords with
  * matching signonRealms. Returns map where key is the username and value is
  * human readable representation of signonRealm. Username is considered
  * conflicting if shares any domain with |currentPassword|.
@@ -134,7 +134,12 @@ export class EditPasswordDialogElement extends EditPasswordDialogElementBase {
   override connectedCallback() {
     super.connectedCallback();
 
-    this.setSavedPasswordsListener_ = passwordList => {
+    this.setSavedPasswordsListener_ = credentialList => {
+      // Passkeys and federated credential may have the same username as a
+      // password, since they can be different ways to authenticate the same
+      // user. Thus, ignore these when finding conflicting usernames.
+      const passwordList = credentialList.filter(
+          credential => !credential.isPasskey && !credential.federationText);
       this.conflictingUsernames_ =
           getConflictingUsernames(this.credential, passwordList);
     };
@@ -233,18 +238,11 @@ export class EditPasswordDialogElement extends EditPasswordDialogElementBase {
 
   private onEditClick_() {
     assert(this.computeCanEditPassword_());
-    const params: chrome.passwordsPrivate.ChangeSavedPasswordParams = {
-      username: this.username_,
-      password: this.password_,
-      note: this.note_,
-    };
+    this.credential.password = this.password_;
+    this.credential.username = this.username_;
+    this.credential.note = this.note_;
     PasswordManagerImpl.getInstance()
-        .changeSavedPassword(this.credential.id, params)
-        .then(() => {
-          this.credential.password = this.password_;
-          this.credential.username = this.username_;
-          this.credential.note = this.note_;
-        })
+        .changeCredential(this.credential)
         .finally(() => {
           this.$.dialog.close();
         });

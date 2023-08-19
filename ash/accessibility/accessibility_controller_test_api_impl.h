@@ -26,6 +26,9 @@ class AccessibilityControllerTestApiImpl
   void SetLargeCursorEnabled(bool enabled) override;
   bool IsLargeCursorEnabled() const override;
   int GetDictationSodaDownloadProgress() const override;
+  bool IsDictationKeboardDialogShowing() const override;
+  void AcceptDictationKeyboardDialog() override;
+  void DismissDictationKeyboardDialog() override;
 };
 
 }  // namespace ash

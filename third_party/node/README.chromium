@@ -5,8 +5,9 @@ Version: 12.14.1
 Revision: f098f8295c407e5a5126b501ed5f1aa80bd86106
 Date: Tue Dec 06 2016 18:07:35 GMT-0800 (PST)
 License: NodeJS
-License File: NOT_SHIPPED
+License File: LICENSE
 Security Critical: no
+Shipped: no
 
 Description:
 Node binaries and NPM modules necessary for buliding Chrome's WebUI.
@@ -24,8 +25,8 @@ Version: 1.2.0
 Date: Feb 24, 2019
 Revision: 0cc1d0a3d6d6ea38eb2f764d17fb097d9ffe6b31
 License: MIT
-License File: NOT_SHIPPED
 Security Critical: Probably not (does rewrite .svg files displayed on chrome:// pages, though)
+Shipped: no
 License Android Compatible: Yes?
 
 Description:
@@ -41,6 +42,7 @@ URL: https://www.npmjs.com/package/typescript
 Version: 4.6.3
 License: Apache 2.0
 Security Critical: No. The compiler is not shipped with Chrome but code compiled using it is.
+Shipped: no
 
 Description:
 TypeScript is a language for application-scale JavaScript. TypeScript adds
@@ -59,6 +61,7 @@ URL: https://www.npmjs.com/package/@types/d3
 Version: 7.4.0
 License: MIT
 Security Critical: No. The types are only used when type checking in Chrome.
+Shipped: no
 
 Description:
 This package contains type definitions for d3.
@@ -73,6 +76,7 @@ URL: https://www.npmjs.com/package/@types/dom-mediacapture-record
 Version: 1.0.11
 License: MIT
 Security Critical: No. The types are only used when type checking in Chrome OS.
+Shipped: no
 
 Description:
 This package contains type definitions for w3c MediaStream Recording
@@ -88,6 +92,7 @@ URL: https://www.npmjs.com/package/@types/w3c-css-typed-object-model-level-1
 Version: 20180410.0.4
 License: MIT
 Security Critical: No. The types are only used when type checking in Chrome OS.
+Shipped: no
 
 Description:
 This package contains type definitions for css-typed-object-model-level-1
@@ -103,6 +108,7 @@ URL: https://www.npmjs.com/package/@types/w3c-image-capture
 Version: 1.0.4
 License: MIT
 Security Critical: No. The types are only used when type checking in Chrome OS.
+Shipped: no
 
 Description:
 This package contains type definitions for W3C Image Capture
@@ -118,6 +124,7 @@ URL: https://www.npmjs.com/package/@types/webrtc
 Version: 0.0.31
 License: MIT
 Security Critical: No. The types are only used when type checking in Chrome OS.
+Shipped: no
 
 Description:
 This package contains type definitions for webrtc (https://webrtc.org/).
@@ -132,6 +139,7 @@ URL: https://www.npmjs.com/package/@types/google.analytics
 Version: 0.0.42
 License: MIT
 Security Critical: No. The types are only used when type checking in Chrome OS.
+Shipped: no
 
 Description:
 This package contains type definitions for Google Analytics (Classic and
@@ -148,6 +156,7 @@ URL: https://www.npmjs.com/package/@types/offscreencanvas
 Version: 2019.6.4
 License: MIT
 Security Critical: No. The types are only used when type checking in Chrome OS.
+Shipped: no
 
 Description:
 This package contains type definitions for offscreencanvas-browser
@@ -163,6 +172,7 @@ URL: https://www.npmjs.com/package/eslint-plugin-jsdoc
 Version: 37.5.1
 License: BSD-3-Clause
 Security Critical: No. The ESLint checks are not shipped with Chrome and code are only linted with it.
+Shipped: no
 
 Description:
 JSDoc linting rules for ESLint.
@@ -177,6 +187,7 @@ URL: https://www.npmjs.com/package/@typescript-eslint/eslint-plugin
 Version: 5.12.0
 License: BSD-2-Clause
 Security Critical: No. The ESLint checks are not shipped with Chrome and code are only linted with it.
+Shipped: no
 
 Description:
 An ESLint plugin which provides lint rules for TypeScript codebases.
@@ -191,6 +202,7 @@ URL: https://www.npmjs.com/package/@typescript-eslint/parser
 Version: 5.12.0
 License: BSD-2-Clause
 Security Critical: No. The ESLint checks are not shipped with Chrome and code are only linted with it.
+Shipped: no
 
 Description:
 An ESLint parser which leverages TypeScript ESTree to allow for ESLint to lint
@@ -206,6 +218,7 @@ URL: https://www.npmjs.com/package/@types/trusted-types
 Version: 1.0.6
 License: MIT
 Security Critical: No. The types are only used when type checking the Web
+Shipped: no
 Trusted Types:
 
 Description:
@@ -223,6 +236,7 @@ Version: 0.0.32
 License: MIT
 Security Critical: No. The types are only used when type checking the Web
 FileSystem API.
+Shipped: no
 
 Description:
 This package contains type definitions for Web FileSystem API.
@@ -239,6 +253,7 @@ Version: 0.0.29
 License: MIT
 Security Critical: No. The types are only used when type checking the Web
 FileWriter API.
+Shipped: no
 
 Description:
 This package contains type definitions for Web FileWriter API. This is a
@@ -255,6 +270,7 @@ Version: 4.0.0
 License: MIT
 Security Critical: No, as html-minifier itself is only used during build time.
 It does affect the contents of shipped HTML files though.
+Shipped: no
 
 Description:
 HTMLMinifier is a highly configurable, well-tested, JavaScript-based HTML
@@ -270,6 +286,7 @@ URL: https://www.npmjs.com/package/@types/dom-webcodecs
 Version: 0.1.5
 License: MIT
 Security Critical: No. The types are only used when type checking in ChromeOS.
+Shipped: no
 
 Description:
 This package contains type definitions for WebCodecs
@@ -284,10 +301,25 @@ URL: https://www.npmjs.com/package/@types/dom-mediacapture-transform
 Version: 0.1.4
 License: MIT
 Security Critical: No. The types are only used when type checking in ChromeOS.
+Shipped: no
 
 Description:
 This package contains type definitions for MediaStreamTrack Insertable Media
 Processing using Streams (https://w3c.github.io/mediacapture-transform/).
+
+Local Modifications:
+(none)
+
+Name: Type Definition for Emscripten
+Short Name: @types/emscripten
+URL: https://www.npmjs.com/package/@types/emscripten
+Version: 1.39.6
+License: MIT
+Security Critical: No. The types are only used when type checking in ChromeOS.
+Shipped: no
+
+Description:
+This package contains type definitions for Emscripten (https://emscripten.org).
 
 Local Modifications:
 (none)

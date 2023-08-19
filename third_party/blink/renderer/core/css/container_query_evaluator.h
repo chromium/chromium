@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/container_selector.h"
+#include "third_party/blink/renderer/core/css/container_stuck.h"
 #include "third_party/blink/renderer/core/css/media_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/media_query_exp.h"
 #include "third_party/blink/renderer/core/css/style_recalc_change.h"
@@ -20,6 +21,7 @@ namespace blink {
 
 class ComputedStyle;
 class ContainerQuery;
+class ContainerQueryScrollSnapshot;
 class Element;
 class MatchResult;
 class StyleRecalcContext;
@@ -74,6 +76,15 @@ class CORE_EXPORT ContainerQueryEvaluator final
   // Re-evaluate the cached results and clear any results which are affected.
   Change StyleContainerChanged();
 
+  // Update the ContainerValues for the evaluator if necessary based on the
+  // latest snapshot.
+  Change ApplyScrollSnapshot();
+
+  // Re-evaluate the cached results and clear any results which are affected by
+  // the ContainerStuckPhysical changes.
+  Change StickyContainerChanged(ContainerStuckPhysical stuck_horizontal,
+                                ContainerStuckPhysical stuck_vertical);
+
   // We may need to update the internal CSSContainerValues of this evaluator
   // when e.g. the rem unit changes.
   void UpdateContainerValuesFromUnitChanges(StyleRecalcChange);
@@ -96,7 +107,11 @@ class CORE_EXPORT ContainerQueryEvaluator final
   // used for queries.
   void UpdateContainerSize(PhysicalSize, PhysicalAxes contained_axes);
 
-  enum ContainerType { kSizeContainer, kStyleContainer };
+  // Update the CSSContainerValues with the new stuck state.
+  void UpdateContainerStuck(ContainerStuckPhysical stuck_horizontal,
+                            ContainerStuckPhysical stuck_vertical);
+
+  enum ContainerType { kSizeContainer, kStyleContainer, kStickyContainer };
   void ClearResults(Change change, ContainerType container_type);
 
   // Re-evaluate cached query results after a size change and return which
@@ -106,6 +121,7 @@ class CORE_EXPORT ContainerQueryEvaluator final
   // Re-evaluate cached query results after a style change and return which
   // elements need to be invalidated if necessary.
   Change ComputeStyleChange() const;
+  Change ComputeStickyChange() const;
 
   struct Result {
     // Main evaluation result.
@@ -130,7 +146,10 @@ class CORE_EXPORT ContainerQueryEvaluator final
   Member<MediaQueryEvaluator> media_query_evaluator_;
   PhysicalSize size_;
   PhysicalAxes contained_axes_;
+  ContainerStuckPhysical stuck_horizontal_ = ContainerStuckPhysical::kNo;
+  ContainerStuckPhysical stuck_vertical_ = ContainerStuckPhysical::kNo;
   HeapHashMap<Member<const ContainerQuery>, Result> results_;
+  Member<ContainerQueryScrollSnapshot> snapshot_;
   // The MediaQueryExpValue::UnitFlags of all queries evaluated against this
   // ContainerQueryEvaluator.
   unsigned unit_flags_ = 0;

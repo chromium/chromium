@@ -18,7 +18,7 @@ class GpuFence;
 
 namespace gl {
 
-// For saving the properties of a GLImage overlay plane and scheduling it later.
+// For saving the properties of an overlay plane and scheduling it later.
 class GL_EXPORT GLSurfaceOverlay {
  public:
   GLSurfaceOverlay(scoped_refptr<gfx::NativePixmap> pixmap,

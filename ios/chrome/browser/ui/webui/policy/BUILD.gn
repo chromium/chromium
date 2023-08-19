@@ -3,8 +3,6 @@
 # found in the LICENSE file.
 
 source_set("policy") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   sources = [
     "policy_ui.h",
     "policy_ui.mm",

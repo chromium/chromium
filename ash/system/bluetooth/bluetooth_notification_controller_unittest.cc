@@ -145,10 +145,12 @@ class BluetoothNotificationControllerTest : public AshTestBase {
   TestMessageCenter test_message_center_;
   scoped_refptr<device::MockBluetoothAdapter> mock_adapter_;
   std::unique_ptr<BluetoothNotificationController> notification_controller_;
-  raw_ptr<TestSystemTrayClient, ExperimentalAsh> system_tray_client_;
+  raw_ptr<TestSystemTrayClient, DanglingUntriaged | ExperimentalAsh>
+      system_tray_client_;
   std::unique_ptr<device::MockBluetoothDevice> bluetooth_device_1_;
   std::unique_ptr<device::MockBluetoothDevice> bluetooth_device_2_;
-  raw_ptr<ToastManagerImpl, ExperimentalAsh> toast_manager_ = nullptr;
+  raw_ptr<ToastManagerImpl, DanglingUntriaged | ExperimentalAsh>
+      toast_manager_ = nullptr;
 };
 
 TEST_F(BluetoothNotificationControllerTest, DiscoverableToast) {

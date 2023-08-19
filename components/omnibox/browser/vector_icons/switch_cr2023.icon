@@ -1,0 +1,37 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Source: tab_BASELINE_P900_FILL0_wght500_GRAD0_opsz20.svg
+//              -> https://www.iloveimg.com/resize-image (16px)
+//              -> SVGOMG -> Skiafy
+// Appearance Description: A rectangle with a smaller rectangle inset in the
+//     upper right corner, representing a browser window with a single tab
+//     selected.
+
+CANVAS_DIMENSIONS, 16,
+MOVE_TO, 2.85f, 11.55f,
+R_H_LINE_TO, 10.3f,
+V_LINE_TO, 7.2f,
+H_LINE_TO, 8.8f,
+V_LINE_TO, 4.45f,
+H_LINE_TO, 2.85f,
+CLOSE,
+R_MOVE_TO, 0, 1.38f,
+R_CUBIC_TO, -0.38f, 0, -0.71f, -0.13f, -0.98f, -0.4f,
+R_ARC_TO, 1.34f, 1.34f, 0, 0, 1, -0.4f, -0.98f,
+V_LINE_TO, 4.44f,
+R_CUBIC_TO, 0, -0.38f, 0.13f, -0.71f, 0.4f, -0.98f,
+R_CUBIC_TO, 0.27f, -0.27f, 0.6f, -0.4f, 0.98f, -0.4f,
+R_H_LINE_TO, 10.31f,
+R_CUBIC_TO, 0.38f, 0, 0.71f, 0.13f, 0.98f, 0.4f,
+R_CUBIC_TO, 0.27f, 0.27f, 0.4f, 0.6f, 0.4f, 0.98f,
+R_V_LINE_TO, 7.11f,
+R_CUBIC_TO, 0, 0.38f, -0.13f, 0.71f, -0.4f, 0.98f,
+R_CUBIC_TO, -0.27f, 0.27f, -0.6f, 0.4f, -0.98f, 0.4f,
+CLOSE,
+R_MOVE_TO, 0, -1.38f,
+V_LINE_TO, 4.45f,
+CLOSE,
+R_MOVE_TO, 0, 0,
+CLOSE

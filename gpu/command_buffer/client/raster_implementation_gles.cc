@@ -17,7 +17,6 @@
 #include "cc/paint/paint_op_buffer_serializer.h"
 #include "cc/paint/transfer_cache_entry.h"
 #include "cc/paint/transfer_cache_serialize_helper.h"
-#include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/gl_helper.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"
@@ -219,6 +218,27 @@ void RasterImplementationGLES::WritePixels(const gpu::Mailbox& dest_mailbox,
 
   EndSharedImageAccessDirectCHROMIUM(texture_id);
   DeleteGpuRasterTexture(texture_id);
+}
+
+void RasterImplementationGLES::WritePixelsYUV(
+    const gpu::Mailbox& dest_mailbox,
+    const SkYUVAPixmaps& src_yuv_pixmap) {
+  const auto& src_yuv_info = src_yuv_pixmap.yuvaInfo();
+  const auto& src_yuv_pixmap_info = src_yuv_pixmap.pixmapsInfo();
+  const std::array<SkPixmap, SkYUVAInfo::kMaxPlanes>& src_sk_pixmaps =
+      src_yuv_pixmap.planes();
+
+  gl_->WritePixelsYUVINTERNAL(
+      dest_mailbox.name, src_sk_pixmaps[0].computeByteSize(),
+      src_sk_pixmaps[1].computeByteSize(), src_sk_pixmaps[2].computeByteSize(),
+      src_sk_pixmaps[3].computeByteSize(), src_yuv_info.width(),
+      src_yuv_info.height(), static_cast<int>(src_yuv_info.planeConfig()),
+      static_cast<int>(src_yuv_info.subsampling()),
+      static_cast<int>(src_yuv_pixmap_info.dataType()),
+      src_sk_pixmaps[0].rowBytes(), src_sk_pixmaps[1].rowBytes(),
+      src_sk_pixmaps[2].rowBytes(), src_sk_pixmaps[3].rowBytes(),
+      src_sk_pixmaps[0].addr(), src_sk_pixmaps[1].addr(),
+      src_sk_pixmaps[2].addr(), src_sk_pixmaps[3].addr());
 }
 
 void RasterImplementationGLES::ConvertYUVAMailboxesToRGB(

@@ -60,6 +60,12 @@ class MockWebAppService : public crosapi::mojom::WebAppService {
               (const std::string& web_app_id,
                GetAssociatedAndroidPackageCallback callback),
               (override));
+  MOCK_METHOD(void,
+              MigrateLauncherState,
+              (const std::string& from_app_id,
+               const std::string& to_app_id,
+               MigrateLauncherStateCallback callback),
+              (override));
 };
 
 crosapi::mojom::WebAppAndroidPackagePtr CreateWebAppAndroidPackage() {
@@ -122,7 +128,7 @@ class PaymentRequestLacrosBrowserTest
 
  private:
   void InstallTestApp() {
-    auto app_info = std::make_unique<WebAppInstallInfo>();
+    auto app_info = std::make_unique<web_app::WebAppInstallInfo>();
     app_info->start_url = GetAppURL();
     app_info->scope = app_info->start_url.GetWithoutFilename();
     app_info->title = kTestAppTitle;

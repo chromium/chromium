@@ -28,7 +28,6 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -817,7 +816,6 @@ public class InstalledAppProviderTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @DisabledTest(message = "https://crbug.com/1052429")
     public void testAssetStatementSiteMissingParts() throws Exception {
         RelatedApplication manifestRelatedApps[] = new RelatedApplication[] {
                 createRelatedApplication(PLATFORM_ANDROID, PACKAGE_NAME_1, null)};

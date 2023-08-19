@@ -10,7 +10,7 @@
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
 #include "components/segmentation_platform/internal/execution/execution_request.h"
-#include "components/segmentation_platform/internal/execution/model_execution_manager_impl.h"
+#include "components/segmentation_platform/internal/execution/model_manager_impl.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/platform_options.h"
 #include "components/segmentation_platform/internal/stats.h"
@@ -24,7 +24,7 @@ ModelExecutionSchedulerImpl::ModelExecutionSchedulerImpl(
     std::vector<Observer*>&& observers,
     SegmentInfoDatabase* segment_database,
     SignalStorageConfig* signal_storage_config,
-    ModelExecutionManager* model_execution_manager,
+    ModelManager* model_manager,
     ModelExecutor* model_executor,
     base::flat_set<proto::SegmentId> segment_ids,
     base::Clock* clock,
@@ -32,7 +32,7 @@ ModelExecutionSchedulerImpl::ModelExecutionSchedulerImpl(
     : observers_(observers),
       segment_database_(segment_database),
       signal_storage_config_(signal_storage_config),
-      model_execution_manager_(model_execution_manager),
+      model_manager_(model_manager),
       model_executor_(model_executor),
       all_segment_ids_(segment_ids),
       clock_(clock),
@@ -74,8 +74,8 @@ void ModelExecutionSchedulerImpl::RequestModelExecution(
       base::BindOnce(&ModelExecutionSchedulerImpl::OnModelExecutionCompleted,
                      weak_ptr_factory_.GetWeakPtr(), segment_info)));
   auto request = std::make_unique<ExecutionRequest>();
-  request->model_provider =
-      model_execution_manager_->GetProvider(segment_info.segment_id());
+  request->model_provider = model_manager_->GetModelProvider(
+      segment_info.segment_id(), proto::ModelSource::SERVER_MODEL_SOURCE);
   DCHECK(request->model_provider);
   request->segment_info = &segment_info;
   request->callback = outstanding_requests_[segment_id].callback();
@@ -94,11 +94,12 @@ void ModelExecutionSchedulerImpl::OnModelExecutionCompleted(
   if (success) {
     segment_result = metadata_utils::CreatePredictionResult(
         result->scores, segment_info.model_metadata().output_config(),
-        clock_->Now());
+        clock_->Now(), segment_info.model_version());
   }
 
   segment_database_->SaveSegmentResult(
-      segment_id, success ? absl::make_optional(segment_result) : absl::nullopt,
+      segment_id, proto::ModelSource::SERVER_MODEL_SOURCE,
+      success ? absl::make_optional(segment_result) : absl::nullopt,
       base::BindOnce(&ModelExecutionSchedulerImpl::OnResultSaved,
                      weak_ptr_factory_.GetWeakPtr(), segment_id));
 }

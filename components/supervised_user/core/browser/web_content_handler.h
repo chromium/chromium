@@ -62,10 +62,6 @@ class WebContentHandler {
   // is the main frame.
   virtual void CleanUpInfoBarOnMainFrame() = 0;
 
-  // Shows the feedback page to the user.
-  // TODO(b/276428131): Remove when local approvals is fully launched.
-  virtual void ShowFeedback(GURL url, std::u16string reason) = 0;
-
   // Goes back to main frame if we are on a subframe.
   // The action applies when localWebApprovalsEnabled is disabled.
   virtual void GoBack() = 0;

@@ -6,17 +6,11 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
+#include "base/apple/foundation_util.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 NSString* const kCRUTicketBrandKey = @"KSBrandID";
 NSString* const kCRUTicketTagKey = @"KSChannelID";
@@ -46,9 +40,6 @@ NSString* const kCRUTicketTagKey = @"KSChannelID";
   if (!storeData) {
     VLOG(0) << "Failed to load ticket store at "
             << base::SysNSStringToUTF8(path) << ": " << error;
-    SCOPED_CRASH_KEY_STRING32("updater ticket error", "error",
-                              "Failed to load ticket store.");
-    base::debug::DumpWithoutCrashing();
     return nil;
   }
   if (!storeData.length) {
@@ -61,9 +52,6 @@ NSString* const kCRUTicketTagKey = @"KSChannelID";
   if (!unpacker) {
     VLOG(0) << base::SysNSStringToUTF8(
         [NSString stringWithFormat:@"Ticket error %@", error]);
-    SCOPED_CRASH_KEY_STRING32("updater ticket error", "error",
-                              "Failed to initialize unpacker.");
-    base::debug::DumpWithoutCrashing();
     return nil;
   }
   unpacker.requiresSecureCoding = YES;
@@ -78,20 +66,10 @@ NSString* const kCRUTicketTagKey = @"KSChannelID";
   [unpacker finishDecoding];
   if (unpacker.error) {
     VLOG(0) << "Error unpacking ticket store: " << unpacker.error;
-    SCOPED_CRASH_KEY_STRING32(
-        "updater ticket error", "description",
-        base::SysNSStringToUTF8(unpacker.error.localizedDescription));
-    SCOPED_CRASH_KEY_STRING32(
-        "updater ticket error", "reason",
-        base::SysNSStringToUTF8(unpacker.error.localizedFailureReason));
-    base::debug::DumpWithoutCrashing();
     return nil;
   }
   if (!store || ![store isKindOfClass:[NSDictionary class]]) {
     VLOG(0) << "Ticket store is not a dictionary.";
-    SCOPED_CRASH_KEY_STRING32("updater ticket error", "error",
-                              "store is nil or not an NSDictionary.");
-    base::debug::DumpWithoutCrashing();
     return nil;
   }
   return store;
@@ -116,7 +94,7 @@ NSString* const kCRUTicketTagKey = @"KSChannelID";
 
 - (instancetype)initWithFilePath:(const base::FilePath&)filePath {
   if ((self = [super init])) {
-    path_ = base::mac::FilePathToNSString(filePath);
+    path_ = base::apple::FilePathToNSString(filePath);
   }
   return self;
 }
@@ -301,15 +279,16 @@ NSString* const kKSTicketVersionKeyKey = @"versionKey";
     if (!ecp.empty()) {
       existenceChecker_ = [[KSPathExistenceChecker alloc] initWithFilePath:ecp];
 
-      tagPath_ = [NSString stringWithFormat:@"%@/Contents/Info.plist",
-                                            base::mac::FilePathToNSString(ecp)];
+      tagPath_ =
+          [NSString stringWithFormat:@"%@/Contents/Info.plist",
+                                     base::apple::FilePathToNSString(ecp)];
       tagKey_ = kCRUTicketTagKey;
     }
     tag_ = tag;
 
     brandCode_ = brandCode;
     if (!brandPath.empty()) {
-      brandPath_ = base::mac::FilePathToNSString(brandPath);
+      brandPath_ = base::apple::FilePathToNSString(brandPath);
       brandKey_ = kCRUTicketBrandKey;
     }
     serverURL_ =

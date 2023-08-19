@@ -164,6 +164,11 @@ struct BLINK_COMMON_EXPORT
     return r.input_field_type;
   }
 
+  static bool is_password_type_by_heuristics(
+      const blink::UntrustworthyContextMenuParams& r) {
+    return r.is_password_type_by_heuristics;
+  }
+
   static const gfx::Rect& selection_rect(
       const blink::UntrustworthyContextMenuParams& r) {
     return r.selection_rect;

@@ -4,19 +4,15 @@
 
 #include "chrome/browser/touch_to_fill/password_generation/android/touch_to_fill_password_generation_controller.h"
 
-#include <algorithm>
 #include <memory>
+#include <string>
 #include "base/check.h"
-#include "base/feature_list.h"
-#include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/touch_to_fill/password_generation/android/touch_to_fill_password_generation_bridge.h"
 #include "chrome/browser/touch_to_fill/password_generation/android/touch_to_fill_password_generation_controller.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_user_data.h"
 
 TouchToFillPasswordGenerationController::
     ~TouchToFillPasswordGenerationController() {
@@ -29,10 +25,12 @@ TouchToFillPasswordGenerationController::
         base::WeakPtr<password_manager::ContentPasswordManagerDriver>
             frame_driver,
         content::WebContents* web_contents,
+        PasswordGenerationElementData generation_element_data,
         std::unique_ptr<TouchToFillPasswordGenerationBridge> bridge,
         OnDismissedCallback on_dismissed_callback)
     : frame_driver_(frame_driver),
       web_contents_(web_contents),
+      generation_element_data_(std::move(generation_element_data)),
       bridge_(std::move(bridge)),
       on_dismissed_callback_(std::move(on_dismissed_callback)) {
   CHECK(bridge_);
@@ -44,8 +42,17 @@ TouchToFillPasswordGenerationController::
   });
 }
 
-bool TouchToFillPasswordGenerationController::ShowTouchToFill() {
-  if (!bridge_->Show(web_contents_, base::AsWeakPtr(this))) {
+bool TouchToFillPasswordGenerationController::ShowTouchToFill(
+    std::string account_display_name) {
+  std::u16string generated_password =
+      frame_driver_->GetPasswordGenerationHelper()->GeneratePassword(
+          web_contents_->GetLastCommittedURL().DeprecatedGetOriginAsURL(),
+          generation_element_data_.form_signature,
+          generation_element_data_.field_signature,
+          generation_element_data_.max_password_length);
+  if (!bridge_->Show(web_contents_, base::AsWeakPtr(this),
+                     std::move(generated_password),
+                     std::move(account_display_name))) {
     return false;
   }
 
@@ -61,6 +68,13 @@ void TouchToFillPasswordGenerationController::OnDismissed() {
   if (on_dismissed_callback_) {
     std::exchange(on_dismissed_callback_, base::NullCallback()).Run();
   }
+}
+
+void TouchToFillPasswordGenerationController::OnGeneratedPasswordAccepted(
+    const std::u16string& password) {
+  frame_driver_->GeneratedPasswordAccepted(
+      generation_element_data_.form_data,
+      generation_element_data_.generation_element_id, password);
 }
 
 void TouchToFillPasswordGenerationController::AddSuppressShowingImeCallback() {

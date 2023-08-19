@@ -8,8 +8,6 @@ import android.graphics.Outline;
 import android.view.View;
 import android.view.ViewOutlineProvider;
 
-import androidx.annotation.VisibleForTesting;
-
 /**
  * A custom {@link ViewOutlineProvider} that is able to render content with rounded off corners.
  * The instance guarantees that only the actual bounds of the view are rounded,
@@ -79,17 +77,14 @@ public class RoundedCornerOutlineProvider extends ViewOutlineProvider {
     }
 
     /** Returns the radius used to round the view. */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public int getRadiusForTesting() {
         return mRadius;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public boolean isTopEdgeRoundedForTesting() {
         return mRoundTopEdge;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public boolean isBottomEdgeRoundedForTesting() {
         return mRoundBottomEdge;
     }

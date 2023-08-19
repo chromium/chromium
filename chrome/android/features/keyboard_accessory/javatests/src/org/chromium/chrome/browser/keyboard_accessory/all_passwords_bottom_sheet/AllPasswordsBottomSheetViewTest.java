@@ -49,7 +49,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
@@ -64,7 +64,7 @@ import java.util.concurrent.ExecutionException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Features.EnableFeatures(ChromeFeatureList.FILLING_PASSWORDS_FROM_ANY_ORIGIN)
+@EnableFeatures(ChromeFeatureList.FILLING_PASSWORDS_FROM_ANY_ORIGIN)
 public class AllPasswordsBottomSheetViewTest {
     private static final Credential ANA =
             new Credential("Ana", "S3cr3t", "Ana", "https://example.com", false, "");
@@ -122,22 +122,6 @@ public class AllPasswordsBottomSheetViewTest {
 
     @Test
     @MediumTest
-    @Features.DisableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID,
-            ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID_BRANDING})
-    public void
-    testShowsWarningWithOriginByDefaultWithUpmDisabled() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
-        pollUiThread(() -> getBottomSheetState() == SheetState.FULL);
-        assertThat(mAllPasswordsBottomSheetView.getContentView().isShown(), is(true));
-        assertEquals(mAllPasswordsBottomSheetView.getWarningText().toString(),
-                String.format(
-                        getString(R.string.all_passwords_bottom_sheet_warning_dialog_message_first),
-                        "m.example.com"));
-    }
-
-    @Test
-    @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testShowsWarningWithOriginByDefaultWithUpmEnabled() {
         TestThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
         pollUiThread(() -> getBottomSheetState() == SheetState.FULL);

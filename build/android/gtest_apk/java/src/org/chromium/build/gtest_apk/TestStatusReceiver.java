@@ -51,7 +51,11 @@ public class TestStatusReceiver extends BroadcastReceiver {
 
     /** Register this receiver using the provided context. */
     public void register(Context c) {
-        c.registerReceiver(this, INTENT_FILTER);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            c.registerReceiver(this, INTENT_FILTER, Context.RECEIVER_EXPORTED);
+        } else {
+            c.registerReceiver(this, INTENT_FILTER);
+        }
     }
 
     /**

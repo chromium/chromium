@@ -162,57 +162,9 @@ void FocusManager::ClearNativeFocus() {
 
 bool FocusManager::RotatePaneFocus(Direction direction,
                                    FocusCycleWrapping wrapping) {
-  // Get the list of all accessible panes.
-  std::vector<View*> panes;
-  widget_->widget_delegate()->GetAccessiblePanes(&panes);
-
-  // Count the number of panes and set the default index if no pane
-  // is initially focused.
-  const size_t count = panes.size();
-  if (!count)
-    return false;
-
-  // Initialize |index| to an appropriate starting index if nothing is
-  // focused initially.
-  size_t index = (direction == Direction::kBackward) ? 0 : (count - 1);
-
-  // Check to see if a pane already has focus and update the index accordingly.
-  const views::View* focused_view = GetFocusedView();
-  if (focused_view) {
-    const auto i =
-        base::ranges::find_if(panes, [focused_view](const auto* pane) {
-          return pane && pane->Contains(focused_view);
-        });
-    if (i != panes.cend())
-      index = static_cast<size_t>(i - panes.cbegin());
-  }
-
-  // Rotate focus.
-  for (const size_t start_index = index;;) {
-    index = ((direction == Direction::kBackward) ? (index + count - 1)
-                                                 : (index + 1)) %
-            count;
-
-    if ((wrapping == FocusCycleWrapping::kDisabled) &&
-        (index == ((direction == Direction::kBackward) ? (count - 1) : 0))) {
-      return false;
-    }
-
-    // Ensure that we don't loop more than once.
-    if (index == start_index)
-      return false;
-
-    views::View* pane = panes[index];
-    DCHECK(pane);
-    if (pane->GetVisible()) {
-      pane->RequestFocus();
-      // |pane| may be in a different widget, so don't assume its focus manager
-      // is |this|.
-      focused_view = pane->GetWidget()->GetFocusManager()->GetFocusedView();
-      if (pane == focused_view || pane->Contains(focused_view))
-        return true;
-    }
-  }
+  return widget_->widget_delegate()->RotatePaneFocusFromView(
+      GetFocusedView(), direction == Direction::kForward,
+      wrapping == FocusCycleWrapping::kEnabled);
 }
 
 View* FocusManager::GetNextFocusableView(View* original_starting_view,

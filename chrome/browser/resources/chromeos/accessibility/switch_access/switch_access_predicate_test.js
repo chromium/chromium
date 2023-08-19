@@ -8,12 +8,13 @@ GEN_INCLUDE(['switch_access_e2e_test_base.js']);
 SwitchAccessPredicateTest = class extends SwitchAccessE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
-    await importModule(
-        'SwitchAccessPredicate', '/switch_access/switch_access_predicate.js');
-    await importModule('SACache', '/switch_access/cache.js');
-    await importModule(
-        'SARootNode', '/switch_access/nodes/switch_access_node.js');
-    await importModule('AutomationTreeWalker', '/common/tree_walker.js');
+    await Promise.all([
+      importModule(
+          'SwitchAccessPredicate', '/switch_access/switch_access_predicate.js'),
+      importModule('SACache', '/switch_access/cache.js'),
+      importModule('SARootNode', '/switch_access/nodes/switch_access_node.js'),
+      importModule('AutomationTreeWalker', '/common/tree_walker.js'),
+    ]);
   }
 };
 

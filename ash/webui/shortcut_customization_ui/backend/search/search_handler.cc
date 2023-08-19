@@ -17,6 +17,15 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/accelerator.h"
 
+// Sets the relevance_threshold to be low enough for single-character queries
+// to produce results, but high enough to avoid too many irrelevant results.
+// The default value is 0.64, at which we observed single-character queries
+// produced no or few results. In testing, 0.4 was discovered to be too low of
+// a threshold and reduced the quality of search results. We arrived at the
+// current value by testing various combinations of queries. This value may
+// need to be amended in the future.
+const double search_service_relevance_threshold = 0.52;
+
 namespace ash::shortcut_ui {
 
 SearchHandler::SearchHandler(
@@ -31,6 +40,10 @@ SearchHandler::SearchHandler(
   DCHECK(index_remote_.is_bound());
 
   search_concept_registry_->AddObserver(this);
+
+  index_remote_->SetSearchParams(
+      {/*relevance_threshold=*/search_service_relevance_threshold},
+      base::OnceCallback<void()>());
 }
 
 SearchHandler::~SearchHandler() {

@@ -3,8 +3,6 @@
 <translationbundle lang="ro">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> dintre file nu au fost folosite în ultima vreme. Vrei să le închizi?</translation>
 <translation id="125153950246128346">Atinge pentru a vedea altă filă</translation>
-<translation id="1403228085774130835">Poți găsi filele închise în filele Recente din meniul principal Chrome</translation>
-<translation id="1455506303394048917">Activitatea ta în filele incognito va fi ștearsă de pe acest dispozitiv</translation>
 <translation id="1499635324672558517">Închizi toate filele incognito?</translation>
 <translation id="1657719826150349398">Mută fila mai jos</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> filă}few{<ph name="TABS_COUNT_MANY" /> file}other{<ph name="TABS_COUNT_MANY" /> de file}}</translation>
@@ -47,6 +45,7 @@
 <translation id="5073204694187207510">Ascunde grila pe ecran complet</translation>
 <translation id="5076161749301278626">Vezi recenziile magazinului?</translation>
 <translation id="5082793167783849073">Compară rapid paginile făcând un grup. Pentru a începe, atinge lung un link.</translation>
+<translation id="5339733443032484186">Ultima filă</translation>
 <translation id="5490235265819901748">Grup de file extins</translation>
 <translation id="5494920125229734069">Selectează-le pe toate</translation>
 <translation id="5556417849629758491">Vezi informații despre magazin, opțiune disponibilă în partea de sus a ecranului</translation>
@@ -62,10 +61,12 @@
 <translation id="6228793724645064692">(evaluare a magazinului)</translation>
 <translation id="6333260925957816943">Informații despre magazin</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Anulează <ph name="TABS_COUNT_ONE" /> filă selectată}few{Anulează <ph name="TABS_COUNT_MANY" /> file selectate}other{Anulează <ph name="TABS_COUNT_MANY" /> de file selectate}}</translation>
+<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Poți găsi filele închise în filele Recente din meniul principal Chrome. Fila incognito nu va fi disponibilă.}few{Poți găsi filele închise în filele Recente din meniul principal Chrome. Cele # file incognito nu vor fi disponibile.}other{Poți găsi filele închise în filele Recente din meniul principal Chrome. Cele # de file incognito nu vor fi disponibile.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> filă}few{<ph name="TABS_COUNT_MANY" /> file}other{<ph name="TABS_COUNT_MANY" /> de file}}</translation>
 <translation id="6549021453810473782">Vezi informații despre magazin</translation>
 <translation id="6562820390860419811">Mută fila spre stânga</translation>
 <translation id="6615455863669487791">Afișează</translation>
+<translation id="661742612106409204">Poți găsi filele închise în filele Recente din meniul principal Chrome.</translation>
 <translation id="6840760312327750441">Pentru a grupa filele, atinge lung o filă. Apoi trage-o peste o altă filă.</translation>
 <translation id="6856809498882026482">Ascunde modul de selectare multiplă</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Trimite fila}few{Trimite filele}other{Trimite filele}}</translation>

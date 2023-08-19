@@ -28,6 +28,7 @@
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-shared.h"
 
 class GURL;
 
@@ -56,6 +57,8 @@ struct PrerenderAttributes;
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kPrerender2IgnoreFailureOnMemoryFootprintQuery);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrerender2BypassMemoryLimitCheck);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrerender2NewLimitAndScheduler);
 
 // PrerenderHostRegistry creates and retains a prerender host, and reserves it
 // for NavigationRequest to activate the prerendered page. This is created per
@@ -218,6 +221,15 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   const std::string& GetPrerenderEmbedderHistogramSuffix(
       int frame_tree_node_id);
 
+  // Represents the group of prerender limit calculated by PrerenderTriggerType
+  // and SpeculationEagerness on GetPrerenderLimitGroup.
+  // Currently, this is used when kPrerender2NewLimitAndScheduler is enabled.
+  enum class PrerenderLimitGroup {
+    kSpeculationRulesEager,
+    kSpeculationRulesNonEager,
+    kEmbedder,
+  };
+
   // May be called when it is believed to be likely that the user will perform a
   // back navigation due to the trigger indicated by `predictor` (e.g. they're
   // hovering over a back button).
@@ -271,11 +283,21 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   void CancelHostsForTriggers(std::vector<PrerenderTriggerType> trigger_types,
                               const PrerenderCancellationReason& reason);
 
+  // Calculates PrerenderLimitGroup by PrerenderTriggerType and
+  // SpeculationEagerness.
+  PrerenderLimitGroup GetPrerenderLimitGroup(
+      PrerenderTriggerType trigger_type,
+      absl::optional<blink::mojom::SpeculationEagerness> eagerness);
+
   // Returns whether a certain type of PrerenderTriggerType is allowed to be
   // added to PrerenderHostRegistry according to the limit of the given
   // PrerenderTriggerType.
+  // If kPrerender2NewLimitAndScheduler is enabled, SpeculationEagerness is
+  // additionally considered to calculate the new limits according to
+  // PrerenderLimitGroup.
   bool IsAllowedToStartPrerenderingForTrigger(
-      PrerenderTriggerType trigger_type);
+      PrerenderTriggerType trigger_type,
+      absl::optional<blink::mojom::SpeculationEagerness> eagerness);
 
   // Destroys a host when the current memory usage is higher than a certain
   // threshold.

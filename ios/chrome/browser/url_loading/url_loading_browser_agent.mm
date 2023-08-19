@@ -28,10 +28,6 @@
 #import "ios/chrome/browser/web_state_list/tab_insertion_browser_agent.h"
 #import "net/base/url_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 BROWSER_USER_DATA_KEY_IMPL(UrlLoadingBrowserAgent)
 
 namespace {
@@ -233,12 +229,12 @@ void UrlLoadingBrowserAgent::LoadUrlInCurrentTab(const UrlLoadParams& params) {
     return;
   }
 
-  BOOL typedOrGeneratedTransition =
+  const bool typed_or_generated_transition =
       PageTransitionCoreTypeIs(web_params.transition_type,
                                ui::PAGE_TRANSITION_TYPED) ||
       PageTransitionCoreTypeIs(web_params.transition_type,
                                ui::PAGE_TRANSITION_GENERATED);
-  if (typedOrGeneratedTransition) {
+  if (typed_or_generated_transition) {
     LoadTimingTabHelper::FromWebState(current_web_state)->DidInitiatePageLoad();
   }
 
@@ -318,12 +314,12 @@ void UrlLoadingBrowserAgent::LoadUrlInNewTab(const UrlLoadParams& params) {
   ChromeBrowserState* active_browser_state =
       scene_service_->GetCurrentBrowser()->GetBrowserState();
 
-  // Two UrlLoadingServices exist, normal and incognito.  Handle two special
-  // cases that need to be sent up to the SceneUrlLoadingService:
-  // 1) The URL needs to be loaded by the UrlLoadingService for the other mode.
-  // 2) The URL will be loaded in a foreground tab by this UrlLoadingService,
-  // but the UI associated with this UrlLoadingService is not currently visible,
-  // so the SceneUrlLoadingService needs to switch modes before loading the URL.
+  // Two UrlLoadingServices exist per scene, normal and incognito.  Handle two
+  // special cases that need to be sent up to the SceneUrlLoadingService: 1) The
+  // URL needs to be loaded by the UrlLoadingService for the other mode. 2) The
+  // URL will be loaded in a foreground tab by this UrlLoadingService, but the
+  // UI associated with this UrlLoadingService is not currently visible, so the
+  // SceneUrlLoadingService needs to switch modes before loading the URL.
   if (params.in_incognito != browser_state->IsOffTheRecord() ||
       (!params.in_background() &&
        params.in_incognito != active_browser_state->IsOffTheRecord())) {

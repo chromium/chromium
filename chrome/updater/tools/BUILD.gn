@@ -6,42 +6,32 @@ import("//testing/test.gni")
 
 group("tools") {
   if (is_win) {
-    deps = [ ":certificate_tag" ]
+    deps = [ ":tag" ]
   }
 }
 
-source_set("certificate_tag_lib") {
-  sources = [
-    "certificate_tag.cc",
-    "certificate_tag.h",
-  ]
-
-  deps = [ "//base" ]
-}
-
-executable("certificate_tag_exe") {
+executable("tag_exe") {
   sources = [ "main.cc" ]
   deps = [
-    ":certificate_tag_lib",
     "//base",
+    "//chrome/updater:tagging",
   ]
 }
 
-copy("certificate_tag") {
-  # For arm64 builds, we need to create an x86_64 certificate_tag executable.
+copy("tag") {
+  # For arm64 builds, we need to create an x86_64 tag executable.
   if (current_cpu != "x64" && is_win) {
-    tag_tool = ":certificate_tag_exe(//build/toolchain/win:win_clang_x64)"
+    tag_tool = ":tag_exe(//build/toolchain/win:win_clang_x64)"
   } else {
-    tag_tool = ":certificate_tag_exe"
+    tag_tool = ":tag_exe"
   }
   if (is_win) {
     suffix = ".exe"
   } else {
     suffix = ""
   }
-  sources = [ get_label_info(tag_tool, "root_out_dir") +
-              "/certificate_tag_exe" + suffix ]
-  outputs = [ "$root_build_dir/certificate_tag.exe" ]
+  sources = [ get_label_info(tag_tool, "root_out_dir") + "/tag_exe" + suffix ]
+  outputs = [ "$root_build_dir/tag.exe" ]
   deps = [ tag_tool ]
 }
 
@@ -53,7 +43,6 @@ if (is_mac) {
       "//chrome/updater:ks_ticket",
     ]
 
-    configs += [ "//build/config/compiler:enable_arc" ]
     frameworks = [ "Foundation.framework" ]
   }
 }
@@ -68,21 +57,4 @@ executable("dm_policy_dump") {
     "//chrome/updater/protos:omaha_proto",
     "//components/policy/proto",
   ]
-}
-
-source_set("unittest") {
-  testonly = true
-
-  sources = [ "certificate_tag_unittest.cc" ]
-
-  deps = [
-    ":certificate_tag_lib",
-    "//base",
-    "//base/test:test_support",
-    "//chrome/updater:unittest_util_sources",
-    "//testing/gtest",
-    "//third_party/zlib/google:compression_utils",
-  ]
-
-  data = [ "../test/data/signed.exe.gz" ]
 }

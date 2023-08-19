@@ -37,8 +37,8 @@ constexpr int32_t kDisplayIdentityMatrix[9] = {
     0x00010000, 0, 0, 0, 0x00010000, 0, 0, 0, 0x40000000};
 
 void WriteIsoTime(BoxByteStream& writer, base::Time time) {
-  uint64_t iso_time =
-      time.ToDeltaSinceWindowsEpoch().InSeconds() - k1601To1904DeltaInSeconds;
+  uint64_t iso_time = time.ToDeltaSinceWindowsEpoch().InMilliseconds() -
+                      k1601To1904DeltaInMilliseconds;
 
   writer.WriteU64(iso_time);
 }
@@ -49,6 +49,37 @@ void WriteLowHigh(BoxByteStream& writer, uint32_t value) {
 }
 
 }  // namespace
+
+// Mp4FileTypeBoxWriter class.
+Mp4FileTypeBoxWriter::Mp4FileTypeBoxWriter(
+    const Mp4MuxerContext& context,
+    const mp4::writable_boxes::FileType& box)
+    : Mp4BoxWriter(context), box_(box) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+Mp4FileTypeBoxWriter::~Mp4FileTypeBoxWriter() = default;
+
+void Mp4FileTypeBoxWriter::Write(BoxByteStream& writer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  writer.StartBox(mp4::FOURCC_FTYP);
+
+  writer.WriteU32(box_.major_brand);    // normal rate.
+  writer.WriteU32(box_.minor_version);  // normal rate.
+
+  // It should include at least of `avc1`.
+  CHECK_GE(box_.compatible_brands.size(), 1u);
+  CHECK(box_.compatible_brands.end() !=
+        std::find(box_.compatible_brands.begin(), box_.compatible_brands.end(),
+                  mp4::FOURCC_AVC1));
+
+  for (const uint32_t& brand : box_.compatible_brands) {
+    writer.WriteU32(brand);
+  }
+
+  writer.EndBox();
+}
 
 // Mp4MovieBoxWriter class.
 Mp4MovieBoxWriter::Mp4MovieBoxWriter(const Mp4MuxerContext& context,
@@ -104,7 +135,10 @@ void Mp4MovieHeaderBoxWriter::Write(BoxByteStream& writer) {
   WriteIsoTime(writer, box_.creation_time);
   WriteIsoTime(writer, box_.modification_time);
   writer.WriteU32(box_.timescale);
-  writer.WriteU64(box_.duration.InSeconds());
+
+  // TODO(crbug.com://1465031): The conversion to timescale will be made in
+  // the box writer with its duration calculation.
+  writer.WriteU64(box_.duration.InMilliseconds());
 
   writer.WriteU32(0x00010000);  // normal rate.
   writer.WriteU16(0x0100);      // full volume.
@@ -178,7 +212,7 @@ void Mp4MovieTrackExtendsBoxWriter::Write(BoxByteStream& writer) {
   writer.WriteU32(box_.track_id);
   writer.WriteU32(box_.default_sample_description_index);
   writer.WriteU32(
-      static_cast<uint32_t>(box_.default_sample_duration.InSeconds()));
+      static_cast<uint32_t>(box_.default_sample_duration.InMilliseconds()));
   writer.WriteU32(box_.default_sample_size);
   writer.WriteU32(box_.default_sample_flags);
 
@@ -228,7 +262,7 @@ void Mp4MovieTrackHeaderBoxWriter::Write(BoxByteStream& writer) {
 
   writer.WriteU32(box_.track_id);
   writer.WriteU32(0);  // reserved
-  writer.WriteU64(box_.duration.InSeconds());
+  writer.WriteU64(box_.duration.InMilliseconds());
   writer.WriteU32(0);  // reserved;
   writer.WriteU32(0);  // reserved;
   writer.WriteU16(0);  // layer, 0 is the normal value.
@@ -297,7 +331,7 @@ void Mp4MovieMediaHeaderBoxWriter::Write(BoxByteStream& writer) {
   WriteIsoTime(writer, box_.modification_time);
 
   writer.WriteU32(box_.timescale);
-  writer.WriteU64(box_.duration.InSeconds());
+  writer.WriteU64(box_.duration.InMilliseconds());
   uint16_t language_code = ConvertIso639LanguageCodeToU16(box_.language);
   writer.WriteU16(language_code);
   writer.WriteU16(0);  // pre_defined = 0;

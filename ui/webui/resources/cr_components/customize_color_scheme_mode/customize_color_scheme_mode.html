@@ -11,11 +11,14 @@
     --cr-icon-image: url(chrome://resources/cr_components/customize_color_scheme_mode/system_mode.svg);
   }
 </style>
-<cr-segmented-button selected="[[currentMode_]]">
-  <template is="dom-repeat" items="[[colorSchemeModeOptions_]]">
+<cr-segmented-button
+    selected="[[currentMode_.id]]"
+    group-aria-label="[[i18n('colorSchemeModeLabel')]]"
+    on-selected-changed="onSelectedChanged_">
+  <template is="dom-repeat" id="options" items="[[colorSchemeModeOptions_]]">
       <cr-segmented-button-option name="[[item.id]]">
         <div id="[[item.id]]" class="cr-icon" slot="prefix-icon"></div>
-        [[item.name]]
+        [[i18n(item.id)]]
       </cr-segmented-button-option>
   </template>
 </cr-segmented-button>

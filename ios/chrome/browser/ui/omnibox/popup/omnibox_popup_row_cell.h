@@ -14,12 +14,10 @@
 @class OmniboxIconView;
 @class OmniboxPopupRowCell;
 
-namespace {
-NSString* OmniboxPopupRowCellReuseIdentifier = @"OmniboxPopupRowCell";
+extern NSString* const OmniboxPopupRowCellReuseIdentifier;
 /// This minimum height causes most of the rows to be the same height. Some have
 /// multiline answers, so those heights may be taller than this minimum.
-const CGFloat kOmniboxPopupCellMinimumHeight = 58;
-}  // namespace
+extern const CGFloat kOmniboxPopupCellMinimumHeight;
 
 /// Protocol for informing delegate that the trailing button for this cell
 /// was tapped

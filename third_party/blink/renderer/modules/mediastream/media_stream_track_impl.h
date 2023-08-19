@@ -62,12 +62,6 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   static MediaStreamTrack* Create(ExecutionContext* context,
                                   MediaStreamComponent* component,
                                   base::OnceClosure callback);
-  // Creates a new MediaStreamTrackImpl with a component cloned from an existing
-  // component with an initialized platform track. The cloned component will be
-  // connected to the same platform track as the passed in component.
-  static MediaStreamTrackImpl* CreateCloningComponent(
-      ExecutionContext* execution_context,
-      MediaStreamComponent* component);
 
   MediaStreamTrackImpl(ExecutionContext*, MediaStreamComponent*);
   MediaStreamTrackImpl(ExecutionContext*,
@@ -76,7 +70,8 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   MediaStreamTrackImpl(ExecutionContext*,
                        MediaStreamComponent*,
                        MediaStreamSource::ReadyState,
-                       base::OnceClosure callback);
+                       base::OnceClosure callback,
+                       bool is_clone = false);
   ~MediaStreamTrackImpl() override;
 
   // MediaStreamTrack
@@ -94,6 +89,7 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   MediaTrackCapabilities* getCapabilities() const override;
   MediaTrackConstraints* getConstraints() const override;
   MediaTrackSettings* getSettings() const override;
+  ScriptPromise getFrameStats(ScriptState*) const override;
   CaptureHandle* getCaptureHandle() const override;
   ScriptPromise applyConstraints(ScriptState*,
                                  const MediaTrackConstraints*) override;
@@ -161,6 +157,9 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   void applyConstraints(ScriptPromiseResolver*,
                         const MediaTrackConstraints*) override;
 
+  void OnDeliverableVideoFramesCount(Persistent<ScriptPromiseResolver> resolver,
+                                     size_t deliverable_frames) const;
+
   // MediaStreamSource::Observer
   void SourceChangedState() override;
   void SourceChangedCaptureConfiguration() override;
@@ -199,6 +198,18 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   bool muted_ = false;
   MediaConstraints constraints_;
   absl::optional<bool> suppress_local_audio_playback_setting_;
+  // Video-only.
+  //   It is the source' job to keep track of the true number of discarded or
+  // dropped frames. But tracks, unlike sources, can be cloned or disabled so
+  // we need to keep track of the baseline for when the track was cloned and
+  // a snapshot for when the track was disabled.
+  size_t video_source_discarded_frames_baseline_ = 0u;
+  size_t video_source_dropped_frames_baseline_ = 0u;
+  // To avoid counters increasing while the track is disabled, a snapshot of the
+  // discarded/dropped stats are taken at the time of disabling the track. These
+  // are also used when adjusting the baseline when the track is re-enabled.
+  size_t discarded_frames_at_last_disable_ = 0u;
+  size_t dropped_frames_at_last_disable_ = 0u;
 };
 
 }  // namespace blink

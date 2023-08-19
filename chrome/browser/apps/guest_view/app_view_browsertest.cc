@@ -12,7 +12,6 @@
 #include "components/guest_view/browser/guest_view_manager_factory.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
 #include "content/public/browser/child_process_termination_info.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
@@ -41,9 +40,7 @@ using guest_view::TestGuestViewManagerFactory;
 
 class AppViewTest : public extensions::PlatformAppBrowserTest {
  public:
-  AppViewTest() {
-    GuestViewManager::set_factory_for_testing(&factory_);
-  }
+  AppViewTest() = default;
   AppViewTest(const AppViewTest&) = delete;
   AppViewTest& operator=(const AppViewTest&) = delete;
 
@@ -117,12 +114,9 @@ class AppViewTest : public extensions::PlatformAppBrowserTest {
  private:
   void SetUpOnMainThread() override {
     extensions::PlatformAppBrowserTest::SetUpOnMainThread();
-    test_guest_view_manager_ = static_cast<guest_view::TestGuestViewManager*>(
-        guest_view::GuestViewManager::CreateWithDelegate(
-            browser()->profile(),
-            std::unique_ptr<guest_view::GuestViewManagerDelegate>(
-                ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate(
-                    browser()->profile()))));
+    test_guest_view_manager_ = factory_.GetOrCreateTestGuestViewManager(
+        browser()->profile(),
+        ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate());
   }
 
   TestGuestViewManagerFactory factory_;

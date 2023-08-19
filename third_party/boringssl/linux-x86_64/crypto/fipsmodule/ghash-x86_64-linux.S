@@ -1,16 +1,9 @@
 // This file is generated from a similarly-named Perl script in the BoringSSL
 // source tree. Do not edit by hand.
 
-#if defined(__has_feature)
-#if __has_feature(memory_sanitizer) && !defined(OPENSSL_NO_ASM)
-#define OPENSSL_NO_ASM
-#endif
-#endif
+#include <openssl/asm_base.h>
 
-#if defined(__x86_64__) && !defined(OPENSSL_NO_ASM) && defined(__ELF__)
-#if defined(BORINGSSL_PREFIX)
-#include <boringssl_prefix_symbols_asm.h>
-#endif
+#if !defined(OPENSSL_NO_ASM) && defined(OPENSSL_X86_64) && defined(__ELF__)
 .text	
 .extern	OPENSSL_ia32cap_P
 .hidden OPENSSL_ia32cap_P
@@ -21,6 +14,7 @@
 gcm_init_clmul:
 .cfi_startproc	
 
+_CET_ENDBR
 .L_init_clmul:
 	movdqu	(%rsi),%xmm2
 	pshufd	$78,%xmm2,%xmm2
@@ -181,6 +175,7 @@ gcm_init_clmul:
 .align	16
 gcm_gmult_clmul:
 .cfi_startproc	
+_CET_ENDBR
 .L_gmult_clmul:
 	movdqu	(%rdi),%xmm0
 	movdqa	.Lbswap_mask(%rip),%xmm5
@@ -236,6 +231,7 @@ gcm_gmult_clmul:
 gcm_ghash_clmul:
 .cfi_startproc	
 
+_CET_ENDBR
 .L_ghash_clmul:
 	movdqa	.Lbswap_mask(%rip),%xmm10
 
@@ -624,6 +620,7 @@ gcm_ghash_clmul:
 .align	32
 gcm_init_avx:
 .cfi_startproc	
+_CET_ENDBR
 	vzeroupper
 
 	vmovdqu	(%rsi),%xmm2
@@ -735,6 +732,7 @@ gcm_init_avx:
 .align	32
 gcm_gmult_avx:
 .cfi_startproc	
+_CET_ENDBR
 	jmp	.L_gmult_clmul
 .cfi_endproc	
 .size	gcm_gmult_avx,.-gcm_gmult_avx
@@ -744,6 +742,7 @@ gcm_gmult_avx:
 .align	32
 gcm_ghash_avx:
 .cfi_startproc	
+_CET_ENDBR
 	vzeroupper
 
 	vmovdqu	(%rdi),%xmm10
@@ -1131,8 +1130,4 @@ gcm_ghash_avx:
 .byte	71,72,65,83,72,32,102,111,114,32,120,56,54,95,54,52,44,32,67,82,89,80,84,79,71,65,77,83,32,98,121,32,60,97,112,112,114,111,64,111,112,101,110,115,115,108,46,111,114,103,62,0
 .align	64
 .text	
-#endif
-#if defined(__ELF__)
-// See https://www.airs.com/blog/archives/518.
-.section .note.GNU-stack,"",%progbits
 #endif

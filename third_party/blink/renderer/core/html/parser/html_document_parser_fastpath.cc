@@ -613,7 +613,7 @@ class HTMLFastPathParser {
     // input. This path could handle other valid attribute name chars, but they
     // are not as common, so it only looks for lowercase.
     const Char* start = pos_;
-    while (pos_ != end_ && *pos_ >= 'a' && *pos_ <= 'z') {
+    while (pos_ != end_ && ((*pos_ >= 'a' && *pos_ <= 'z') || *pos_ == '-')) {
       ++pos_;
     }
     if (UNLIKELY(pos_ == end_)) {
@@ -640,18 +640,33 @@ class HTMLFastPathParser {
                 static_cast<size_t>(attribute_name_buffer_.size()));
   }
 
+  static constexpr int kSingleQuote = 0x27;     // '
+  static constexpr int kDoubleQuote = 0x22;     // "
+  static constexpr int kAmpersand = 0x26;       // &
+  static constexpr int kCarriageReturn = 0x0D;  // \r
+
   std::pair<Span, USpan> ScanAttrValue() {
     Span result;
     SkipWhitespace();
     const Char* start = pos_;
     if (Char quote_char = GetNext(); quote_char == '"' || quote_char == '\'') {
       start = ++pos_;
-      while (pos_ != end_ && GetNext() != quote_char) {
-        if (GetNext() == '&' || GetNext() == '\r') {
+      while (pos_ != end_) {
+        uint16_t c = GetNext();
+        static_assert(kSingleQuote > kDoubleQuote);
+        // The c is mostly like to be a~z or A~Z, the ASCII code value of a~z
+        // and A~Z is greater than kSingleQuote, so we just need to compare
+        // kSingleQuote here.
+        if (LIKELY(c > kSingleQuote)) {
+          ++pos_;
+        } else if (c == kAmpersand || c == kCarriageReturn) {
           pos_ = start - 1;
           return {Span{}, ScanEscapedAttrValue()};
+        } else if (c == kDoubleQuote || c == kSingleQuote) {
+          break;
+        } else {
+          ++pos_;
         }
-        ++pos_;
       }
       if (pos_ == end_) {
         return Fail(HtmlFastPathResult::kFailedParsingQuotedAttributeValue,
@@ -943,7 +958,9 @@ class HTMLFastPathParser {
         // fails. For example, an image's onload event.
         return Fail(HtmlFastPathResult::kFailedOnAttribute);
       }
-      SkipWhitespace();
+      if (GetNext() != '=') {
+        SkipWhitespace();
+      }
       std::pair<Span, USpan> attr_value = {};
       if (GetNext() == '=') {
         ++pos_;

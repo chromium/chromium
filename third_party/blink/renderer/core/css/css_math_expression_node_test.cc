@@ -99,7 +99,8 @@ TEST(CSSCalculationValue, AccumulatePixelsAndPercent) {
   scoped_refptr<const ComputedStyle> style = builder.TakeStyle();
   CSSToLengthConversionData::Flags ignored_flags = 0;
   CSSToLengthConversionData conversion_data(
-      *style, style.get(), style.get(), nullptr,
+      *style, style.get(), style.get(),
+      CSSToLengthConversionData::ViewportSize(nullptr),
       CSSToLengthConversionData::ContainerSizes(), style->EffectiveZoom(),
       ignored_flags);
 
@@ -335,10 +336,11 @@ TEST(CSSMathExpressionNode, TestParseDeeplyNestedExpression) {
     const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
         kHTMLStandardMode, SecureContextMode::kInsecureContext);
     const CSSMathExpressionNode* res = CSSMathExpressionNode::ParseMathFunction(
-        CSSValueID::kCalc, range, *context, kCSSAnchorQueryTypesNone);
+        CSSValueID::kCalc, range, *context, true, kCSSAnchorQueryTypesNone);
 
     if (test_case.expected) {
       EXPECT_TRUE(res);
+      EXPECT_TRUE(res->CanBeResolvedWithConversionData());
     } else {
       EXPECT_FALSE(res);
     }
@@ -364,12 +366,13 @@ TEST(CSSMathExpressionNode, TestSteppedValueFunctions) {
     const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
         kHTMLStandardMode, SecureContextMode::kInsecureContext);
     const CSSMathExpressionNode* res = CSSMathExpressionNode::ParseMathFunction(
-        CSSValueID::kCalc, range, *context, kCSSAnchorQueryTypesNone);
+        CSSValueID::kCalc, range, *context, true, kCSSAnchorQueryTypesNone);
     EXPECT_EQ(res->DoubleValue(), test_case.output);
     CSSToLengthConversionData resolver{};
     scoped_refptr<const CalculationExpressionNode> node =
         res->ToCalculationExpression(resolver);
     EXPECT_EQ(node->Evaluate(FLT_MAX, nullptr), test_case.output);
+    EXPECT_TRUE(res->CanBeResolvedWithConversionData());
   }
 }
 
@@ -389,7 +392,7 @@ TEST(CSSMathExpressionNode, TestSteppedValueFunctionsToCalculationExpression) {
         CSSMathExpressionNumericLiteral::Create(
             10, CSSPrimitiveValue::UnitType::kNumber)};
     const auto* operation = MakeGarbageCollected<CSSMathExpressionOperation>(
-        kCalcNumber, std::move(operands), test_case.op);
+        kCalcNumber, true, std::move(operands), test_case.op);
     CSSToLengthConversionData resolver{};
     scoped_refptr<const CalculationExpressionNode> node =
         operation->ToCalculationExpression(resolver);
@@ -416,7 +419,7 @@ TEST(CSSMathExpressionNode, TestSteppedValueFunctionsSerialization) {
     const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
         kHTMLStandardMode, SecureContextMode::kInsecureContext);
     const CSSMathExpressionNode* res = CSSMathExpressionNode::ParseMathFunction(
-        CSSValueID::kCalc, range, *context, kCSSAnchorQueryTypesNone);
+        CSSValueID::kCalc, range, *context, true, kCSSAnchorQueryTypesNone);
     EXPECT_EQ(res->CustomCSSText(), test_case.input);
   }
 }
@@ -437,20 +440,24 @@ TEST(CSSMathExpressionNode, TestExponentialFunctions) {
     const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
         kHTMLStandardMode, SecureContextMode::kInsecureContext);
     const CSSMathExpressionNode* res = CSSMathExpressionNode::ParseMathFunction(
-        CSSValueID::kCalc, range, *context, kCSSAnchorQueryTypesNone);
+        CSSValueID::kCalc, range, *context, true, kCSSAnchorQueryTypesNone);
     EXPECT_EQ(res->DoubleValue(), test_case.output);
     CSSToLengthConversionData resolver;
     scoped_refptr<const CalculationExpressionNode> node =
         res->ToCalculationExpression(resolver);
     EXPECT_EQ(node->Evaluate(FLT_MAX, nullptr), test_case.output);
+    EXPECT_TRUE(res->CanBeResolvedWithConversionData());
   }
 }
 
 TEST(CSSMathExpressionNode, TestExponentialFunctionsSerialization) {
   const struct TestCase {
     const String input;
+    const bool can_be_simplified_with_conversion_data;
   } test_cases[] = {
-      {"hypot(3%, 4%)"},
+      {"hypot(3em, 4rem)", true},
+      {"hypot(3%, 4%)", false},
+      {"hypot(hypot(3%, 4%), 5em)", false},
   };
 
   for (const auto& test_case : test_cases) {
@@ -460,8 +467,10 @@ TEST(CSSMathExpressionNode, TestExponentialFunctionsSerialization) {
     const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
         kHTMLStandardMode, SecureContextMode::kInsecureContext);
     const CSSMathExpressionNode* res = CSSMathExpressionNode::ParseMathFunction(
-        CSSValueID::kCalc, range, *context, kCSSAnchorQueryTypesNone);
+        CSSValueID::kCalc, range, *context, true, kCSSAnchorQueryTypesNone);
     EXPECT_EQ(res->CustomCSSText(), test_case.input);
+    EXPECT_EQ(res->CanBeResolvedWithConversionData(),
+              test_case.can_be_simplified_with_conversion_data);
   }
 }
 
@@ -478,7 +487,7 @@ TEST(CSSMathExpressionNode, TestExponentialFunctionsToCalculationExpression) {
         CSSMathExpressionNumericLiteral::Create(
             4.0f, CSSPrimitiveValue::UnitType::kNumber)};
     const auto* operation = MakeGarbageCollected<CSSMathExpressionOperation>(
-        kCalcNumber, std::move(operands), test_case.op);
+        kCalcNumber, true, std::move(operands), test_case.op);
     CSSToLengthConversionData resolver{};
     scoped_refptr<const CalculationExpressionNode> node =
         operation->ToCalculationExpression(resolver);

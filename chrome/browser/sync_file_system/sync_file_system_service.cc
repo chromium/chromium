@@ -79,7 +79,7 @@ SyncServiceState RemoteStateToSyncServiceState(
 
 void DidHandleUninstalledEvent(const GURL& origin, SyncStatusCode code) {
   if (code != SYNC_STATUS_OK && code != SYNC_STATUS_UNKNOWN_ORIGIN) {
-    util::Log(logging::LOG_WARNING, FROM_HERE,
+    util::Log(logging::LOGGING_WARNING, FROM_HERE,
               "Failed to uninstall origin for uninstall event: %s",
               origin.spec().c_str());
   }
@@ -87,7 +87,7 @@ void DidHandleUninstalledEvent(const GURL& origin, SyncStatusCode code) {
 
 void DidHandleUnloadedEvent(const GURL& origin, SyncStatusCode code) {
   if (code != SYNC_STATUS_OK && code != SYNC_STATUS_UNKNOWN_ORIGIN) {
-    util::Log(logging::LOG_WARNING, FROM_HERE,
+    util::Log(logging::LOGGING_WARNING, FROM_HERE,
               "Failed to disable origin for unload event: %s",
               origin.spec().c_str());
   }
@@ -97,7 +97,7 @@ void DidHandleLoadEvent(
     const GURL& origin,
     SyncStatusCode code) {
   if (code != SYNC_STATUS_OK) {
-    util::Log(logging::LOG_WARNING, FROM_HERE,
+    util::Log(logging::LOGGING_WARNING, FROM_HERE,
               "Failed to enable origin for load event: %s",
               origin.spec().c_str());
   }
@@ -180,7 +180,7 @@ class LocalSyncRunner : public SyncProcessRunner,
   void DidProcessLocalChange(SyncStatusCallback callback,
                              SyncStatusCode status,
                              const FileSystemURL& url) {
-    util::Log(logging::LOG_VERBOSE, FROM_HERE,
+    util::Log(logging::LOGGING_VERBOSE, FROM_HERE,
               "ProcessLocalChange finished with status=%d (%s) for url=%s",
               status, SyncStatusCodeToString(status),
               url.DebugString().c_str());
@@ -238,7 +238,7 @@ class RemoteSyncRunner : public SyncProcessRunner,
   void DidProcessRemoteChange(SyncStatusCallback callback,
                               SyncStatusCode status,
                               const FileSystemURL& url) {
-    util::Log(logging::LOG_VERBOSE, FROM_HERE,
+    util::Log(logging::LOGGING_VERBOSE, FROM_HERE,
               "ProcessRemoteChange finished with status=%d (%s) for url=%s",
               status, SyncStatusCodeToString(status),
               url.DebugString().c_str());
@@ -293,8 +293,8 @@ void SyncFileSystemService::InitializeForApp(
   DCHECK(remote_service_);
   DCHECK(app_origin == app_origin.DeprecatedGetOriginAsURL());
 
-  util::Log(logging::LOG_VERBOSE, FROM_HERE,
-            "Initializing for App: %s", app_origin.spec().c_str());
+  util::Log(logging::LOGGING_VERBOSE, FROM_HERE, "Initializing for App: %s",
+            app_origin.spec().c_str());
 
   local_service_->MaybeInitializeFileSystemContext(
       app_origin, file_system_context,
@@ -509,10 +509,9 @@ void SyncFileSystemService::DidInitializeFileSystem(const GURL& app_origin,
 void SyncFileSystemService::DidRegisterOrigin(const GURL& app_origin,
                                               SyncStatusCallback callback,
                                               SyncStatusCode status) {
-  util::Log(logging::LOG_VERBOSE, FROM_HERE,
+  util::Log(logging::LOGGING_VERBOSE, FROM_HERE,
             "DidInitializeForApp (registered the origin): %s: %s",
-            app_origin.spec().c_str(),
-            SyncStatusCodeToString(status));
+            app_origin.spec().c_str(), SyncStatusCodeToString(status));
 
   if (!remote_service_) {
     std::move(callback).Run(SYNC_STATUS_ABORT);
@@ -620,7 +619,7 @@ void SyncFileSystemService::OnRemoteServiceStateUpdated(
     RemoteServiceState state,
     const std::string& description) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  util::Log(logging::LOG_VERBOSE, FROM_HERE,
+  util::Log(logging::LOGGING_VERBOSE, FROM_HERE,
             "OnRemoteServiceStateChanged: %d %s", state, description.c_str());
 
   for (auto& observer : observers_) {

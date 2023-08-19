@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "extensions/common/extension_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "url/origin.h"
@@ -80,21 +81,6 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
   // Location where the context menu is open from.
   enum class ContextMenuSource { kToolbarAction = 0, kMenuItem = 1 };
 
-  // The current visibility of the extension; this affects the "pin" / "unpin"
-  // strings in the menu.
-  // TODO(crbug.com/1416359): Rename this "PinState" when we finish removing the
-  // old UI bits and move outside this class (pin state is not tied to the
-  // context menu).
-  enum ButtonVisibility {
-    // The extension is pinned on the toolbar.
-    PINNED,
-    // The extension is temporarily visible on the toolbar, as for showing a
-    // popup.
-    TRANSITIVELY_VISIBLE,
-    // The extension is not pinned (and is shown in the extensions menu).
-    UNPINNED,
-  };
-
   // Delegate to handle showing an ExtensionAction popup.
   class PopupDelegate {
    public:
@@ -113,7 +99,7 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
   // ShowPopupForDevToolsWindow() to be called on |delegate|.
   ExtensionContextMenuModel(const Extension* extension,
                             Browser* browser,
-                            ButtonVisibility visibility,
+                            bool is_pinned,
                             PopupDelegate* delegate,
                             bool can_show_icon_in_toolbar,
                             ContextMenuSource source);
@@ -148,13 +134,6 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
   void CreatePageAccessItems(const Extension* extension,
                              content::WebContents* web_contents);
 
-  // Returns true if the given page access command is enabled in the menu.
-  bool IsPageAccessCommandEnabled(const Extension& extension,
-                                  int command_id) const;
-
-  void HandlePageAccessCommand(int command_id,
-                               const Extension* extension) const;
-
   // Gets the extension we are displaying the menu for. Returns NULL if the
   // extension has been uninstalled and no longer exists.
   const Extension* GetExtension() const;
@@ -166,7 +145,7 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
   void AppendExtensionItems();
 
   // A copy of the extension's id.
-  std::string extension_id_;
+  ExtensionId extension_id_;
 
   // Whether the menu is for a component extension.
   bool is_component_;
@@ -182,8 +161,8 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
   // The delegate which handles the 'inspect popup' menu command (or NULL).
   raw_ptr<PopupDelegate> delegate_;
 
-  // The visibility of the button at the time the menu opened.
-  ButtonVisibility button_visibility_;
+  // Whether the extension icon is pinned at the time the menu opened.
+  bool is_pinned_;
 
   // Menu matcher for context menu items specified by the extension.
   std::unique_ptr<ContextMenuMatcher> extension_items_;

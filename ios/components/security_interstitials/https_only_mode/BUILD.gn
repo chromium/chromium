@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("https_only_mode") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "https_only_mode_blocking_page.h",
     "https_only_mode_blocking_page.mm",
@@ -49,7 +48,6 @@ source_set("test_util") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "https_only_mode_blocking_page_unittest.mm" ]
   deps = [

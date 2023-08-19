@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/autofill/autofill_profile_table_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
@@ -27,10 +27,6 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "third_party/ocmock/gtest_support.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -67,8 +63,8 @@ class AutofillProfileTableViewControllerTest
   }
 
   void TearDown() override {
-    [base::mac::ObjCCastStrict<AutofillProfileTableViewController>(controller())
-        settingsWillBeDismissed];
+    [base::apple::ObjCCastStrict<AutofillProfileTableViewController>(
+        controller()) settingsWillBeDismissed];
     ChromeTableViewControllerTest::TearDown();
   }
 
@@ -89,7 +85,7 @@ class AutofillProfileTableViewControllerTest
     autofill_profile.SetRawInfo(autofill::NAME_FULL, base::ASCIIToUTF16(name));
     autofill_profile.SetRawInfo(autofill::ADDRESS_HOME_LINE1,
                                 base::ASCIIToUTF16(address));
-    personal_data_manager->SaveImportedProfile(autofill_profile);
+    personal_data_manager->AddProfile(autofill_profile);
     waiter.Wait();  // Wait for completion of the asynchronous operation.
   }
 
@@ -127,49 +123,6 @@ TEST_F(AutofillProfileTableViewControllerTest, TestOneProfile) {
   EXPECT_EQ(2, NumberOfSections());
   // Expect address section to contain one row (the address itself).
   EXPECT_EQ(1, NumberOfItemsInSection(1));
-}
-
-// Deleting the only profile results in item deletion and section deletion.
-TEST_F(AutofillProfileTableViewControllerTest, TestOneProfileItemDeleted) {
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillAccountProfilesUnionView)) {
-    // The test is incompatible with the feature as now the user is asked to
-    // confirm the deletion.
-    // TODO(crbug.com/1423319): Cleanup
-    return;
-  }
-
-  AddProfile("John Doe", "1 Main Street");
-  CreateController();
-  CheckController();
-
-  // Expect two sections (header and addresses section).
-  EXPECT_EQ(2, NumberOfSections());
-  // Expect address section to contain one row (the address itself).
-  EXPECT_EQ(1, NumberOfItemsInSection(1));
-
-  AutofillProfileTableViewController* view_controller =
-      base::mac::ObjCCastStrict<AutofillProfileTableViewController>(
-          controller());
-  // Put the tableView in 'edit' mode.
-  [view_controller editButtonPressed];
-
-  AutofillProfileTableViewController* autofill_controller =
-      static_cast<AutofillProfileTableViewController*>(controller());
-  [autofill_controller deleteItems:@[ [NSIndexPath indexPathForRow:0
-                                                         inSection:1] ]];
-
-  // Verify the resulting UI.
-  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForUIElementTimeout, ^bool() {
-        return NumberOfSections() == 1;
-      }));
-
-  // Exit 'edit' mode.
-  [view_controller editButtonPressed];
-
-  // Expect address section to have been removed.
-  EXPECT_EQ(1, NumberOfSections());
 }
 
 }  // namespace

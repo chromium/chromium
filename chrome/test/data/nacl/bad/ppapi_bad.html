@@ -85,7 +85,9 @@ function declareTests(tester) {
       'ppapi_bad.html',
       mime_type,
       new RegExp('NaCl module load failed: manifest JSON parsing failed: ' +
-                 'Line: 1, column: 1.*'));
+                 // This message differs slightly depending on the parser used.
+                 // First alternative is from the Rust JSON parser.
+                 '(expected value at line 1 column 1|Line: 1, column: 1).*'));
 
   // 'bad_manifest_uses_nexes' loads a manifest with an obsolete 'nexes' section.
   badLoadTest(

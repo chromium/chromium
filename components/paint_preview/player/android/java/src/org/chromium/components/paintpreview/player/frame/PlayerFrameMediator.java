@@ -104,7 +104,6 @@ class PlayerFrameMediator implements PlayerFrameViewDelegate, PlayerFrameMediato
         mBitmapStateController.destroy();
     }
 
-    @VisibleForTesting
     PlayerFrameBitmapStateController getBitmapStateControllerForTest() {
         return mBitmapStateController;
     }
@@ -433,7 +432,6 @@ class PlayerFrameMediator implements PlayerFrameViewDelegate, PlayerFrameMediato
         }
     }
 
-    @VisibleForTesting
     public boolean checkRequiredBitmapsLoadedForTest() {
         PlayerFrameBitmapState state = mBitmapStateController.getBitmapState(false);
         assert mBitmapStateController.isVisible(state);

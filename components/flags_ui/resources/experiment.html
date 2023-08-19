@@ -1,0 +1,205 @@
+<style>
+  :host {
+    display: block;
+  }
+
+  .experiment {
+    color: var(--secondary-color);
+    line-height: 1.45;
+    width: 100%;
+  }
+
+  .experiment .flex-container {
+    display: flex;
+    gap: 8px;
+    padding: 0.8em 4px 16px 0;
+  }
+
+  .experiment .flex-container .flex:first-child {
+    max-width: 540px;
+  }
+
+  .experiment p {
+    margin: .2em 0;
+  }
+
+  .experiment-name {
+    color: var(--primary-color);
+    display: inline-block;
+    font-size: .8125rem;
+    font-weight: 500;
+    line-height: 1.5;
+    margin: 0;
+    padding: 0;
+  }
+
+  .experiment-switched .experiment-name::before {
+    --end-margin: 4px;
+    --diameter: 10px;
+    background-color: var(--interactive-color);
+    border-radius: 50%;
+    content: '';
+    display: inline-block;
+    height: var(--diameter);
+    margin-inline-end: var(--end-margin);
+    margin-inline-start: calc(-1 * var(--end-margin) - var(--diameter));
+    width: var(--diameter);
+  }
+
+
+  .match,
+  :host(.referenced) .experiment-name {
+    /* This UI is intentionally the same in light and dark mode. */
+    background: yellow;
+    color: var(--google-grey-900);
+  }
+
+  .flex {
+    align-self: center;
+    flex: 1 1 auto;
+  }
+
+  .experiment-actions {
+    align-self: center;
+    flex: 0 0 auto;
+    padding-inline-start: 5px;
+    text-align: right; /* csschecker-disable-line left-right */
+    width: 150px;
+  }
+
+  .experiment-origin-list-value {
+    resize: none;
+  }
+
+  select {
+    background: white;
+    border: 1px solid var(--link-color);
+    color: var(--link-color);
+    font-size: .8125rem;
+    height: 1.625rem;
+    letter-spacing: .01em;
+    max-width: 150px;
+    text-align-last: center;
+    width: 100%;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    select {
+      background: var(--input-background);
+      border: none;
+      color: var(--primary-color);
+    }
+
+    option {
+      background: var(--toolbar-color);
+    }
+  }
+
+  textarea,
+  input {
+    background: var(--input-background);
+    border-radius: 3px;
+    box-sizing: border-box;
+    color: inherit;
+    font-size: .8125rem;
+    margin: 0;
+    min-height: 3em;
+    padding: 8px;
+    width: 100%;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    textarea {
+      border: 1px solid var(--secondary-color);
+    }
+  }
+
+  .experiment-switched select {
+    background: var(--link-color);
+    color: white;
+  }
+
+  .experiment-switched option {
+    background: white;
+    color: var(--link-color);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .experiment-switched select {
+      color: var(--google-grey-900);
+    }
+
+    .experiment-switched option {
+      background: var(--toolbar-color);
+      color: var(--primary-color);
+    }
+  }
+
+  .experiment-no-match {
+    display: none;
+    position: absolute;
+  }
+
+  .permalink {
+    color: var(--secondary-color);
+  }
+
+  @media (max-width: 480px) {
+    .experiment {
+      border-bottom: 1px solid var(--separator-color);
+    }
+
+    .experiment-name {
+      cursor: pointer;
+    }
+
+    .experiment .flex-container {
+      flex-flow: column;
+    }
+
+    .experiment .flex {
+      width: 100%;
+    }
+
+    .experiment .experiment-actions {
+      max-width: 100%;
+      padding-top: 12px;
+      text-align: left; /* csschecker-disable-line left-right */
+      width: 100%;
+    }
+
+    /* Hide the overflow description text */
+    .body {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      width: 100%;
+    }
+
+    .expand .body {
+      overflow: visible;
+      white-space: normal;
+    }
+  }
+
+  @media (max-width: 732px) {
+    .experiment-switched .experiment-name::before {
+      margin-inline-start: 0;
+    }
+  }
+</style>
+
+<div class="experiment">
+  <div class="experiment-default flex-container">
+    <div class="flex">
+      <h2 class="experiment-name"></h2>
+      <p class="body" part="body">
+        <span class="description"></span> – <span class="platforms"></span>
+      </p>
+      <div class="textarea-container"></div>
+      <div class="input-container"></div>
+      <a class="permalink" tabindex="7"></a>
+    </div>
+    <div class="flex experiment-actions"></div>
+  </div>
+</div>

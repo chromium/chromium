@@ -59,16 +59,22 @@ class FakeNetworkSettingsService
     }
   }
 
+  // This fake implementation of the crosapi::mojom::NetworkSettingsService is
+  // only used to test the behaviour of `ProxyConfigServiceLacros`, which is an
+  // observer of the mojo service. Observers only listen for updates, they do
+  // not send data to the service. Extension set proxy are tested by the test
+  // suite LacrosExtensionProxyTrackerTest whose fixture supports installing
+  // extension.
   void SetExtensionProxy(crosapi::mojom::ProxyConfigPtr proxy_config) override {
-    // Extension set proxy are tested by the test suite
-    // LacrosExtensionProxyTrackerTest whose fixture supports installing
-    // extension.
+    NOTREACHED_NORETURN();
   }
-
-  void ClearExtensionProxy() override {
-    // Extension set proxy are tested by the test suite
-    // LacrosExtensionProxyTrackerTest whose fixture supports installing
-    // extension.
+  void ClearExtensionProxy() override { NOTREACHED_NORETURN(); }
+  void SetExtensionControllingProxyMetadata(
+      crosapi::mojom::ExtensionControllingProxyPtr extension) override {
+    NOTREACHED_NORETURN();
+  }
+  void ClearExtensionControllingProxyMetadata() override {
+    NOTREACHED_NORETURN();
   }
 
   void SetQuitClosure(base::OnceClosure quit_closure) {

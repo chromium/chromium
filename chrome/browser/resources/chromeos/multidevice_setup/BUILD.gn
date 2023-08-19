@@ -34,6 +34,8 @@ if (optimize_webui) {
       "//ash/webui/common/resources:css_wrapper_files",
       "//ash/webui/common/resources:html_wrapper_files",
       "//ash/webui/common/resources:preprocess",
+      "//third_party/cros-components:cros_components_ts",
+      "//third_party/material_web_components:library",
       "//ui/webui/resources/cr_elements:build_ts",
     ]
   }
@@ -86,11 +88,18 @@ js_type_check("closure_compile") {
 }
 
 js_library("multidevice_setup_post_oobe") {
+  extra_deps = [
+    "//third_party/cros-components:cros_components_ts",
+    "//third_party/material_web_components:library",
+  ]
   deps = [
     ":post_oobe_delegate",
     "//ash/webui/common/resources/multidevice_setup:multidevice_setup",
     "//ash/webui/common/resources/multidevice_setup:multidevice_setup_delegate",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  externs_list = [
+    "//third_party/cros-components/externs/cros_lottie_renderer_externs.js",
   ]
 }
 

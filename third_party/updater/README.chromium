@@ -1,8 +1,10 @@
 Name: ChromiumUpdater
+URL: https://chromium.googlesource.com/chromium/src/+/main/chrome/updater/README.md
 Version: Varies
 License: BSD
 License File: LICENSE
 Security Critical: Yes
+Shipped: yes
 CPEPrefix: cpe:2.3:a:google:updater:
 
 Description:

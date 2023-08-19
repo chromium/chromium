@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 import {assert, assertNotReached} from 'chrome://resources/ash/common/assert.js';
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 
 import {getDisallowedTransfers, startIOTask} from '../../common/js/api.js';
-import {queryRequiredElement} from '../../common/js/dom_utils.js';
+import {getFocusedTreeItem, htmlEscape, isDirectoryTree, isDirectoryTreeItem, queryRequiredElement} from '../../common/js/dom_utils.js';
 import {FileType} from '../../common/js/file_type.js';
+import {getFileTypeForName} from '../../common/js/file_types_base.js';
 import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
 import {getEnabledTrashVolumeURLs, isAllTrashEntries, TrashEntry} from '../../common/js/trash.js';
 import {str, strf, util} from '../../common/js/util.js';
@@ -17,6 +19,8 @@ import {EntryLocation} from '../../externs/entry_location.js';
 import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
+import {XfTree} from '../../widgets/xf_tree.js';
+import {XfTreeItem} from '../../widgets/xf_tree_item.js';
 
 import {DirectoryModel} from './directory_model.js';
 import {DropEffectType} from './drop_effect_and_label.js';
@@ -67,7 +71,7 @@ export class FileTransferController {
   /**
    * @param {!Document} doc Owning document.
    * @param {!ListContainer} listContainer List container.
-   * @param {!DirectoryTree} directoryTree Directory tree.
+   * @param {!DirectoryTree|!XfTree} directoryTree Directory tree.
    * @param {function(boolean, !Array<string>): !Promise<boolean>}
    *     confirmationCallback called when operation requires user's
    *     confirmation. The operation will be executed if the return value
@@ -248,24 +252,19 @@ export class FileTransferController {
   /**
    * @param {!List} list List itself and its directory items will could
    *                          be drop target.
-   * @param {boolean=} opt_onlyIntoDirectories If true only directory list
-   *     items could be drop targets. Otherwise any other place of the list
-   *     accetps files (putting it into the current directory).
    * @private
    */
-  attachFileListDropTarget_(list, opt_onlyIntoDirectories) {
-    list.addEventListener(
-        'dragover',
-        this.onDragOver_.bind(this, !!opt_onlyIntoDirectories, list));
+  attachFileListDropTarget_(list) {
+    list.addEventListener('dragover', this.onDragOver_.bind(this, false, list));
     list.addEventListener(
         'dragenter', this.onDragEnterFileList_.bind(this, list));
     list.addEventListener('dragleave', this.onDragLeave_.bind(this, list));
-    list.addEventListener(
-        'drop', this.onDrop_.bind(this, !!opt_onlyIntoDirectories));
+    list.addEventListener('drop', this.onDrop_.bind(this, false));
   }
 
   /**
-   * @param {!DirectoryTree} tree Its sub items will could be drop target.
+   * @param {!DirectoryTree|!XfTree} tree Its sub items will could be drop
+   *     target.
    * @private
    */
   attachTreeDropTarget_(tree) {
@@ -327,8 +326,7 @@ export class FileTransferController {
         clipboardData, effectAllowed, volumeInfo,
         this.selectionHandler_.selection.entries,
         !this.selectionHandler_.isAvailable());
-    this.appendUriList_(
-        clipboardData, this.selectionHandler_.selection.entries);
+    this.appendFiles_(clipboardData, this.selectionHandler_.selection.entries);
   }
 
   /**
@@ -376,14 +374,12 @@ export class FileTransferController {
   }
 
   /**
-   * Appends uri-list of |entries| to |clipboardData|.
+   * Appends files of |entries| to |clipboardData|.
    * @param {DataTransfer} clipboardData ClipboardData from the event.
    * @param {!Array<!Entry>} entries
    * @private
    */
-  appendUriList_(clipboardData, entries) {
-    let externalFileUrl;
-
+  appendFiles_(clipboardData, entries) {
     for (let i = 0; i < entries.length; i++) {
       const url = entries[i].toURL();
       if (!this.selectedAsyncData_[url]) {
@@ -392,13 +388,6 @@ export class FileTransferController {
       if (this.selectedAsyncData_[url].file) {
         clipboardData.items.add(assert(this.selectedAsyncData_[url].file));
       }
-      if (!externalFileUrl) {
-        externalFileUrl = this.selectedAsyncData_[url].externalFileUrl;
-      }
-    }
-
-    if (externalFileUrl) {
-      clipboardData.setData('text/uri-list', externalFileUrl);
     }
   }
 
@@ -686,13 +675,15 @@ export class FileTransferController {
     const container = /** @type {!HTMLElement} */ (
         this.document_.body.querySelector('#drag-container'));
     const multiple = items > 1 ? 'block' : 'none';
-    container.innerHTML = `
-      <div class='drag-box drag-multiple' style='display:${multiple}'></div>
+    const html = `
+      ${items > 1 ? `<div class='drag-box drag-multiple'></div>` : ''}
       <div class='drag-box drag-contents'>
-        <div class='detail-icon'></div><div class='label'>${entry.name}</div>
+        <div class='detail-icon'></div>
+        <div class='label'>${htmlEscape(entry.name)}</div>
       </div>
-      <div class='drag-bubble' style='display:${multiple}'>${items}</div>
+      ${items > 1 ? `<div class='drag-bubble'>${items}</div>` : ''}
     `;
+    container.innerHTML = sanitizeInnerHtml(html, {attrs: ['class']});
 
     const icon = container.querySelector('.detail-icon');
     const thumbnail = this.listContainer_.currentView.getThumbnail(index);
@@ -801,7 +792,7 @@ export class FileTransferController {
   /**
    * @param {boolean} onlyIntoDirectories True if the drag is only into
    *     directories.
-   * @param {(!List|!DirectoryTree)} list Drop target list.
+   * @param {(!List|!DirectoryTree|!XfTree)} list Drop target list.
    * @param {Event} event A dragover event of DOM.
    * @private
    */
@@ -818,7 +809,7 @@ export class FileTransferController {
   }
 
   /**
-   * @param {(!List|!DirectoryTree)} list Drop target list.
+   * @param {!List} list Drop target list.
    * @param {!Event} event A dragenter event of DOM.
    * @private
    */
@@ -843,7 +834,7 @@ export class FileTransferController {
   }
 
   /**
-   * @param {!DirectoryTree} tree Drop target tree.
+   * @param {!DirectoryTree|!XfTree} tree Drop target tree.
    * @param {!Event} event A dragenter event of DOM.
    * @private
    */
@@ -857,7 +848,7 @@ export class FileTransferController {
 
     this.lastEnteredTarget_ = event.target;
     let item = event.target;
-    while (item && !(item instanceof TreeItem)) {
+    while (item && !(item instanceof TreeItem || item instanceof XfTreeItem)) {
       item = item.parentNode;
     }
 
@@ -1104,9 +1095,10 @@ export class FileTransferController {
 
     // If current focus is on DirectoryTree, write selected item of
     // DirectoryTree to system clipboard.
-    if (document.activeElement instanceof DirectoryTree) {
+    if (isDirectoryTree(document.activeElement)) {
       this.cutOrCopyFromDirectoryTree(
-          document.activeElement, clipboardData, effectAllowed);
+          /** @type {!DirectoryTree|!XfTree} */ (document.activeElement),
+          clipboardData, effectAllowed);
       return;
     }
 
@@ -1118,17 +1110,17 @@ export class FileTransferController {
 
   /**
    * Performs cut or copy operation dispatched from directory tree.
-   * @param {!DirectoryTree} directoryTree
+   * @param {!DirectoryTree|!XfTree} directoryTree
    * @param {!DataTransfer} clipboardData
    * @param {string} effectAllowed
    */
   cutOrCopyFromDirectoryTree(directoryTree, clipboardData, effectAllowed) {
-    const selectedItem = document.activeElement.selectedItem;
-    if (selectedItem === null) {
+    const focusedItem = getFocusedTreeItem(document.activeElement);
+    if (focusedItem === null) {
       return;
     }
 
-    const entry = selectedItem.entry;
+    const entry = focusedItem.entry;
 
     const volumeInfo = this.volumeManager_.getVolumeInfo(entry);
     if (!volumeInfo) {
@@ -1342,7 +1334,7 @@ export class FileTransferController {
       // person who tries to open it. It also blocks copying hosted files to
       // other profiles, as the files would need to be shared in Drive first.
       if (sourceUrls.some(
-              source => FileType.getTypeForName(source).type === 'hosted')) {
+              source => getFileTypeForName(source).type === 'hosted')) {
         return false;
       }
     }

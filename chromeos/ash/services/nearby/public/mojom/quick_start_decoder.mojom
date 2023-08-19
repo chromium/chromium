@@ -18,13 +18,13 @@ interface QuickStartDecoder {
   // for Unified Setup. We will also need to ensure that we receive an
   // appropriate BootstrapConfigurations to ensure that BootstrapOptions
   // was set correctly on the phone.
-  DecodeBootstrapConfigurations(array<uint8> data) => (
+  DecodeBootstrapConfigurations(array<uint8>? data) => (
     BootstrapConfigurations? bootstrap_configurations,
     QuickStartDecoderError? error);
 
   // Decode a D2D response to a request for Wifi Credentials
   // This response is JSON, with a Base64 encoded JSON payload
-  DecodeWifiCredentialsResponse(array<uint8> data) => (
+  DecodeWifiCredentialsResponse(array<uint8>? data) => (
     WifiCredentials? credentials, QuickStartDecoderError? error);
 
   // Decode a simple ack response to a message notifying the source device
@@ -33,21 +33,21 @@ interface QuickStartDecoder {
   // the ack key in the response payload. This value should always be 'true',
   // but we handle the error case when the value is unexpectedly 'false'. If
   // the ack key isn't found in the response, this returns nullopt.
-  DecodeNotifySourceOfUpdateResponse(array<uint8> data) => (
+  DecodeNotifySourceOfUpdateResponse(array<uint8>? data) => (
     bool? ack_received);
 
   // Decode a FIDO CTAP2 GetAssertionResponse from the phone into a struct
   // that details fields we need to pass along to GAIA as well as error
   // codes from the CBOR decoding step and from the phone.
-  DecodeGetAssertionResponse(array<uint8> data) => (
-    GetAssertionResponse response);
+  DecodeGetAssertionResponse(array<uint8>? data) => (
+   FidoAssertionResponse? response, QuickStartDecoderError? error);
 
   // Decode UserVerificationRequested message, indicating we are waiting
   // for the user to pass a verification prompt.
-  DecodeUserVerificationRequested(array<uint8> data) => (
+  DecodeUserVerificationRequested(array<uint8>? data) => (
     UserVerificationRequested? response, QuickStartDecoderError? error);
 
   // Decode the UserVerificationResult sent from the target device.
-  DecodeUserVerificationResult(array<uint8> data) => (
+  DecodeUserVerificationResult(array<uint8>? data) => (
     UserVerificationResponse? response, QuickStartDecoderError? error);
 };

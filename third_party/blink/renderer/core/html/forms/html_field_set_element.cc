@@ -187,4 +187,15 @@ bool HTMLFieldSetElement::IsDisabledFormControl() const {
   return HTMLFormControlElement::IsDisabledFormControl();
 }
 
+// <fieldset> should never be considered disabled, but should still match the
+// :enabled or :disabled pseudo-classes according to whether the attribute is
+// set or not. See here for context:
+// https://github.com/whatwg/html/issues/5886#issuecomment-1582410112
+bool HTMLFieldSetElement::MatchesEnabledPseudoClass() const {
+  if (RuntimeEnabledFeatures::SendMouseEventsDisabledFormControlsEnabled()) {
+    return !IsActuallyDisabled();
+  }
+  return HTMLFormControlElement::MatchesEnabledPseudoClass();
+}
+
 }  // namespace blink

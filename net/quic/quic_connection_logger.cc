@@ -160,7 +160,8 @@ void QuicConnectionLogger::OnPacketSent(
     quic::EncryptionLevel encryption_level,
     const quic::QuicFrames& retransmittable_frames,
     const quic::QuicFrames& nonretransmittable_frames,
-    quic::QuicTime sent_time) {
+    quic::QuicTime sent_time,
+    uint32_t batch_id) {
   // 4.4.1.4.  Minimum Packet Size
   // The payload of a UDP datagram carrying the Initial packet MUST be
   // expanded to at least 1200 octets
@@ -197,7 +198,7 @@ void QuicConnectionLogger::OnPacketSent(
   event_logger_.OnPacketSent(packet_number, packet_length, has_crypto_handshake,
                              transmission_type, encryption_level,
                              retransmittable_frames, nonretransmittable_frames,
-                             sent_time);
+                             sent_time, batch_id);
 }
 
 void QuicConnectionLogger::OnPacketLoss(

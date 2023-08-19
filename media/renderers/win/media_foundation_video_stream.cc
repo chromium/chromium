@@ -14,7 +14,6 @@
 #include "media/base/video_codecs.h"
 #include "media/base/video_decoder_config.h"
 #include "media/base/win/mf_helpers.h"
-#include "media/filters/win/media_foundation_utils.h"
 #include "media/media_buildflags.h"
 
 namespace media {
@@ -258,17 +257,18 @@ HRESULT GetVideoType(const VideoDecoderConfig& config,
     const auto hdr_metadata = gfx::HDRMetadata::PopulateUnspecifiedWithDefaults(
         config.hdr_metadata());
     UINT32 max_display_mastering_luminance =
-        hdr_metadata.smpte_st_2086.luminance_max;
+        hdr_metadata.smpte_st_2086->luminance_max;
     RETURN_IF_FAILED(media_type->SetUINT32(MF_MT_MAX_MASTERING_LUMINANCE,
                                            max_display_mastering_luminance));
 
     UINT32 min_display_mastering_luminance =
-        hdr_metadata.smpte_st_2086.luminance_min * kMasteringDispLuminanceScale;
+        hdr_metadata.smpte_st_2086->luminance_min *
+        kMasteringDispLuminanceScale;
     RETURN_IF_FAILED(media_type->SetUINT32(MF_MT_MIN_MASTERING_LUMINANCE,
                                            min_display_mastering_luminance));
 
     MT_CUSTOM_VIDEO_PRIMARIES primaries =
-        CustomVideoPrimaryToMF(hdr_metadata.smpte_st_2086);
+        CustomVideoPrimaryToMF(hdr_metadata.smpte_st_2086.value());
     RETURN_IF_FAILED(media_type->SetBlob(MF_MT_CUSTOM_VIDEO_PRIMARIES,
                                          reinterpret_cast<UINT8*>(&primaries),
                                          sizeof(MT_CUSTOM_VIDEO_PRIMARIES)));
@@ -381,6 +381,14 @@ bool MediaFoundationH264VideoStream::AreFormatChangesEnabled() {
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+HRESULT MediaFoundationHEVCVideoStream::GetMediaType(
+    IMFMediaType** media_type_out) {
+  RETURN_IF_FAILED(MediaFoundationVideoStream::GetMediaType(media_type_out));
+  // Enable conversion to Annex-B
+  demuxer_stream_->EnableBitstreamConverter();
+  return S_OK;
+}
+
 bool MediaFoundationHEVCVideoStream::AreFormatChangesEnabled() {
   // Disable explicit format change event for HEVC to allow switching to the
   // new stream without a full re-create, which will be much faster. This is

@@ -27,6 +27,10 @@ struct Mailbox;
 struct SyncToken;
 }  // namespace gpu
 
+namespace viz {
+class SharedImageFormat;
+}
+
 namespace media {
 
 class VideoFrame;
@@ -50,6 +54,18 @@ class MEDIA_EXPORT RenderableGpuMemoryBufferVideoFramePool {
     // allocated by this interface. Populate `mailbox` and `sync_token`.
     virtual void CreateSharedImage(gfx::GpuMemoryBuffer* gpu_memory_buffer,
                                    gfx::BufferPlane plane,
+                                   const gfx::ColorSpace& color_space,
+                                   GrSurfaceOrigin surface_origin,
+                                   SkAlphaType alpha_type,
+                                   uint32_t usage,
+                                   gpu::Mailbox& mailbox,
+                                   gpu::SyncToken& sync_token) = 0;
+
+    // Create a SharedImage representation with format `si_format` of a
+    // GpuMemoryBuffer allocated by this interface. Populate `mailbox` and
+    // `sync_token`.
+    virtual void CreateSharedImage(gfx::GpuMemoryBuffer* gpu_memory_buffer,
+                                   const viz::SharedImageFormat& si_format,
                                    const gfx::ColorSpace& color_space,
                                    GrSurfaceOrigin surface_origin,
                                    SkAlphaType alpha_type,

@@ -21,7 +21,6 @@
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
-#include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
@@ -96,9 +95,9 @@ class FastInkHostTest
   gfx::Rect expected_quad_rect_;
   gfx::Rect expected_quad_layer_rect_;
 
-  raw_ptr<aura::Window> host_window_;
+  raw_ptr<aura::Window, DanglingUntriaged> host_window_;
   std::unique_ptr<FastInkHost> fast_ink_host_;
-  raw_ptr<TestLayerTreeFrameSink> layer_tree_frame_sink_;
+  raw_ptr<TestLayerTreeFrameSink, DanglingUntriaged> layer_tree_frame_sink_;
   std::unique_ptr<TestBeginFrameSource> begin_frame_source_;
 };
 

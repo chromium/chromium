@@ -6,12 +6,13 @@
 
 #import "base/check.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/ui/settings/password/password_settings/scoped_password_settings_reauth_module_override.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+namespace password_manager {
 
 std::pair<NSString*, NSString*> GetPasswordAlertTitleAndMessageForOrigins(
     NSArray<NSString*>* origins) {
@@ -64,3 +65,19 @@ std::pair<NSString*, NSString*> GetPasswordAlertTitleAndMessageForOrigins(
   pair.second = message;
   return pair;
 }
+
+id<ReauthenticationProtocol> BuildReauthenticationModule(
+    id<SuccessfulReauthTimeAccessor> successfulReauthTimeAccessor) {
+  // Return override for tests if one is set or use the real implementation.
+  if (ScopedPasswordSettingsReauthModuleOverride::instance) {
+    return ScopedPasswordSettingsReauthModuleOverride::instance->module;
+  }
+
+  return successfulReauthTimeAccessor
+             ? [[ReauthenticationModule alloc]
+                   initWithSuccessfulReauthTimeAccessor:
+                       successfulReauthTimeAccessor]
+             : [[ReauthenticationModule alloc] init];
+}
+
+}  // namespace password_manager

@@ -99,7 +99,7 @@ class CardUnmaskPromptControllerImpl : public CardUnmaskPromptController {
   AutofillMetrics::UnmaskPromptEvent GetCloseReasonEvent();
 
   CardUnmaskPromptOptions card_unmask_prompt_options_;
-  const raw_ptr<PrefService, DanglingUntriaged> pref_service_;
+  const raw_ptr<PrefService> pref_service_;
   bool new_card_link_clicked_ = false;
   CreditCard card_;
   base::WeakPtr<CardUnmaskDelegate> delegate_;

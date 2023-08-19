@@ -24,7 +24,8 @@ constexpr char kListStudentSubmissionsUrlTemplate[] =
 
 constexpr char kFieldsParameterName[] = "fields";
 constexpr char kRequestedFields[] =
-    "studentSubmissions(id,courseWorkId,state,assignedGrade),nextPageToken";
+    "studentSubmissions(id,courseWorkId,updateTime,state,assignedGrade),"
+    "nextPageToken";
 
 constexpr char kPageTokenParameterName[] = "pageToken";
 

@@ -45,7 +45,7 @@ Link::Link(const std::u16string& title, int text_context, int text_style)
 Link::~Link() = default;
 
 SkColor Link::GetColor() const {
-  // TODO(tapted): Use style::GetColor().
+  // TODO(crbug.com/1446855): Use TypographyProvider::GetColorId().
   const ui::ColorProvider* color_provider = GetColorProvider();
   DCHECK(color_provider);
   if (!GetEnabled())
@@ -53,6 +53,12 @@ SkColor Link::GetColor() const {
 
   if (requested_enabled_color_.has_value())
     return requested_enabled_color_.value();
+
+  if (GetTextContext() == style::CONTEXT_BUBBLE_FOOTER) {
+    return color_provider->GetColor(
+        pressed_ ? ui::kColorLinkForegroundPressedOnBubbleFooter
+                 : ui::kColorLinkForegroundOnBubbleFooter);
+  }
 
   return color_provider->GetColor(pressed_ ? ui::kColorLinkForegroundPressed
                                            : ui::kColorLinkForeground);

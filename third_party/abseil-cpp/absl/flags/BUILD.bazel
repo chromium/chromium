@@ -99,6 +99,7 @@ cc_library(
         "//absl/base:config",
         "//absl/base:core_headers",
         "//absl/base:log_severity",
+        "//absl/numeric:int128",
         "//absl/strings",
         "//absl/strings:str_format",
         "//absl/types:optional",
@@ -265,8 +266,8 @@ cc_library(
         ":reflection",
         "//absl/base:config",
         "//absl/base:core_headers",
-        "//absl/container:flat_hash_map",
         "//absl/strings",
+        "//absl/synchronization",
     ],
 )
 
@@ -387,6 +388,7 @@ cc_test(
         ":reflection",
         "//absl/base:core_headers",
         "//absl/base:malloc_internal",
+        "//absl/numeric:int128",
         "//absl/strings",
         "//absl/time",
         "@com_google_googletest//:gtest_main",

@@ -10,7 +10,7 @@
 #include <utility>
 
 #include "base/apple/owned_objc.h"
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "ui/base/test/cocoa_helper.h"
 #import "ui/events/cocoa/cocoa_event_utils.h"
@@ -19,10 +19,6 @@
 #import "ui/events/test/cocoa_test_event_utils.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace ui {
 

@@ -38,6 +38,9 @@ class StartupUtils {
   // Stores the next pending OOBE screen in case it will need to be resumed.
   static void SaveOobePendingScreen(const std::string& screen);
 
+  // Stores the next OOBE screen after updating and rebooting to be resumed.
+  static void SaveScreenAfterConsumerUpdate(const std::string& screen);
+
   // Returns the time since the OOBE flag file was created.
   static base::TimeDelta GetTimeSinceOobeFlagFileCreation();
 
@@ -46,6 +49,9 @@ class StartupUtils {
   // consumer owner or by logging in as guest.  This state change is announced
   // to the system by writing the .oobe_completed flag file.
   static bool IsDeviceRegistered();
+
+  // clear specific oobe preference from Local state.
+  static void ClearSpecificOobePrefs();
 
   // Marks device registered. i.e. second part of OOBE is completed.
   static void MarkDeviceRegistered(base::OnceClosure done_callback);

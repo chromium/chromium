@@ -274,10 +274,25 @@ TEST_P(ZipFileInstallerLocationTest, GoodZip) {
 
   // Expect extension install directory to be immediate subdir of expected
   // temp install directory. E.g. /a/b/c/d == /a/b/c + /d.
-  EXPECT_EQ(observer_.last_extension_installed_path,
-            expected_extension_install_directory_.Append(
-                observer_.last_extension_installed_path.BaseName()));
+  //
+  // Make sure we're comparing absolute paths to avoid failures like
+  // https://crbug.com/1453669 on macOS 14.
+  base::FilePath absolute_last_extension_installed_path =
+      base::MakeAbsoluteFilePath(observer_.last_extension_installed_path);
+  base::FilePath absolute_expected_extension_install_directory =
+      base::MakeAbsoluteFilePath(expected_extension_install_directory_.Append(
+          observer_.last_extension_installed_path.BaseName()));
+  EXPECT_EQ(absolute_last_extension_installed_path,
+            absolute_expected_extension_install_directory);
 }
+
+/*
+ base::FilePath absolute_extension_path =
+    base::MakeAbsoluteFilePath(extension->path());
+base::FilePath absolute_expected_extension_install_directory =
+    base::MakeAbsoluteFilePath(expected_extension_install_directory_.Append(
+        extension->path().BaseName()));
+*/
 
 TEST_P(ZipFileInstallerLocationTest, BadZip) {
   // Manifestless archive.
@@ -296,9 +311,16 @@ TEST_P(ZipFileInstallerLocationTest, MultipleSameZipInstallSeparately) {
   base::FilePath first_install_path = observer_.last_extension_installed_path;
   // Expect extension install directory to be immediate subdir of expected
   // unpacked install directory. E.g. /a/b/c/d == /a/b/c + /d.
-  EXPECT_EQ(observer_.last_extension_installed_path,
-            expected_extension_install_directory_.Append(
-                observer_.last_extension_installed_path.BaseName()));
+  //
+  // Make sure we're comparing absolute paths to avoid failures like
+  // https://crbug.com/1453669 on macOS 14.
+  base::FilePath absolute_last_extension_installed_path =
+      base::MakeAbsoluteFilePath(observer_.last_extension_installed_path);
+  base::FilePath absolute_expected_extension_install_directory =
+      base::MakeAbsoluteFilePath(expected_extension_install_directory_.Append(
+          observer_.last_extension_installed_path.BaseName()));
+  EXPECT_EQ(absolute_last_extension_installed_path,
+            absolute_expected_extension_install_directory);
 
   RunInstaller(/*zip_name=*/"good.zip",
                /*expect_error=*/false);
@@ -306,9 +328,13 @@ TEST_P(ZipFileInstallerLocationTest, MultipleSameZipInstallSeparately) {
   base::FilePath second_install_path = observer_.last_extension_installed_path;
   // Expect extension install directory to be immediate subdir of expected
   // unpacked install directory. E.g. /a/b/c/d == /a/b/c + /d.
-  EXPECT_EQ(observer_.last_extension_installed_path,
-            expected_extension_install_directory_.Append(
-                observer_.last_extension_installed_path.BaseName()));
+  absolute_last_extension_installed_path =
+      base::MakeAbsoluteFilePath(observer_.last_extension_installed_path);
+  absolute_expected_extension_install_directory =
+      base::MakeAbsoluteFilePath(expected_extension_install_directory_.Append(
+          observer_.last_extension_installed_path.BaseName()));
+  EXPECT_EQ(absolute_last_extension_installed_path,
+            absolute_expected_extension_install_directory);
 
   // Confirm that the two extensions are installed in two separate
   // directories.
@@ -347,9 +373,16 @@ TEST_P(ZipFileInstallerLocationTest, ZipWithPublicKey) {
                /*expect_error=*/false);
   const char kIdForPublicKey[] = "ikppjpenhoddphklkpdfdfdabbakkpal";
   EXPECT_EQ(observer_.last_extension_installed, kIdForPublicKey);
-  EXPECT_EQ(observer_.last_extension_installed_path,
-            expected_extension_install_directory_.Append(
-                observer_.last_extension_installed_path.BaseName()));
+
+  // Make sure we compare absolute paths to avoid failures like
+  // https://crbug.com/1453669 on macOS 14.
+  base::FilePath absolute_last_extension_installed_path =
+      base::MakeAbsoluteFilePath(observer_.last_extension_installed_path);
+  base::FilePath absolute_expected_extension_install_directory =
+      base::MakeAbsoluteFilePath(expected_extension_install_directory_.Append(
+          observer_.last_extension_installed_path.BaseName()));
+  EXPECT_EQ(absolute_last_extension_installed_path,
+            absolute_expected_extension_install_directory);
 }
 
 }  // namespace extensions

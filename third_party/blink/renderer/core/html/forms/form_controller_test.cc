@@ -50,7 +50,7 @@ TEST(FormControllerTest, FormSignature) {
           </form>`;
   )SCRIPT");
   doc.body()->appendChild(script);
-  Element* form = doc.QuerySelector("form", ASSERT_NO_EXCEPTION);
+  Element* form = doc.QuerySelector(AtomicString("form"), ASSERT_NO_EXCEPTION);
   ASSERT_TRUE(form);
   EXPECT_EQ(String("http://example.com/ [1cb 3s ]"),
             FormSignature(*To<HTMLFormElement>(form)))

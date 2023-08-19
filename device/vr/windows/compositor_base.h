@@ -59,7 +59,7 @@ class XRDeviceAbstraction {
   virtual bool HasSessionEnded();
   virtual bool SubmitCompositedFrame() = 0;
   virtual void HandleDeviceLost();
-  virtual void OnLayerBoundsChanged();
+  virtual void OnLayerBoundsChanged(const gfx::Size& size);
   // Sets enabled_features_ based on what features are supported
   virtual void EnableSupportedFeatures(
       const std::vector<device::mojom::XRSessionFeature>& requiredFeatures,
@@ -96,9 +96,6 @@ class XRCompositorCommon : public base::Thread,
 
   void GetFrameData(mojom::XRFrameDataRequestOptionsPtr options,
                     XRFrameDataProvider::GetFrameDataCallback callback) final;
-  void SetInputSourceButtonListener(
-      mojo::PendingAssociatedRemote<device::mojom::XRInputSourceButtonListener>
-          input_listener_remote) override;
 
   void GetEnvironmentIntegrationProvider(
       mojo::PendingAssociatedReceiver<
@@ -110,7 +107,6 @@ class XRCompositorCommon : public base::Thread,
   virtual gpu::gles2::GLES2Interface* GetContextGL() = 0;
 
  protected:
-  virtual bool UsesInputEventing();
   void SetVisibilityState(mojom::XRVisibilityState visibility_state);
   const mojom::VRStageParametersPtr& GetCurrentStageParameters() const;
   void SetStageParameters(mojom::VRStageParametersPtr stage_parameters);
@@ -121,8 +117,6 @@ class XRCompositorCommon : public base::Thread,
 
   // Allow derived classes to call methods on the main thread.
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
-  mojo::AssociatedRemote<mojom::XRInputSourceButtonListener>
-      input_event_listener_;
 
   // Derived classes override this to be notified to clear its pending frame.
   virtual void ClearPendingFrameInternal() {}
@@ -147,6 +141,20 @@ class XRCompositorCommon : public base::Thread,
                                     const gpu::SyncToken& sync_token) final;
 #endif
 
+  // Will Submit if we have textures submitted from the Overlay (if it is
+  // visible), and WebXR (if it is visible).  We decide what to wait for during
+  // StartPendingFrame, may mark things as ready after SubmitFrameMissing and
+  // SubmitFrameWithTextureHandle (for WebXR), or SubmitOverlayTexture (for
+  // overlays), or SetOverlayAndWebXRVisibility (for WebXR and overlays).
+  // Finally, if we exit presentation while waiting for outstanding submits, we
+  // will clean up our pending-frame state.
+  void MaybeCompositeAndSubmit();
+
+  // Sets all relevant internal state to mark that we have successfully received
+  // a frame. Will return whether or not the given frame index was expected.
+  // If not expected, not all state may be successfully cleared.
+  bool MarkFrameSubmitted(int16_t frame_index);
+
  private:
   // base::Thread overrides:
   void Init() final;
@@ -161,15 +169,6 @@ class XRCompositorCommon : public base::Thread,
       mojom::XRRuntimeSessionOptionsPtr options,
       RequestSessionCallback callback,
       bool success);
-
-  // Will Submit if we have textures submitted from the Overlay (if it is
-  // visible), and WebXR (if it is visible).  We decide what to wait for during
-  // StartPendingFrame, may mark things as ready after SubmitFrameMissing and
-  // SubmitFrameWithTextureHandle (for WebXR), or SubmitOverlayTexture (for
-  // overlays), or SetOverlayAndWebXRVisibility (for WebXR and overlays).
-  // Finally, if we exit presentation while waiting for outstanding submits, we
-  // will clean up our pending-frame state.
-  void MaybeCompositeAndSubmit();
 
   // XRPresentationProvider overrides:
   void UpdateLayerBounds(int16_t frame_id,

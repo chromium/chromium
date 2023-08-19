@@ -6,6 +6,7 @@
 
 #include <string.h>
 
+#include <algorithm>
 #include <cstdio>
 #include <sstream>
 
@@ -61,6 +62,16 @@ char* CheckOpValueStr(std::nullptr_t v) {
 
 char* CheckOpValueStr(const std::string& v) {
   return strdup(v.c_str());
+}
+
+char* CheckOpValueStr(std::string_view v) {
+  // Ideally this would be `strndup`, but `strndup` is not portable.
+  char* ret = static_cast<char*>(malloc(v.size() + 1));
+  if (ret) {
+    std::copy(v.begin(), v.end(), ret);
+    ret[v.size()] = 0;
+  }
+  return ret;
 }
 
 char* CheckOpValueStr(double v) {

@@ -18,9 +18,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
-#include "third_party/blink/renderer/core/css/cssom/css_style_value.h"
-#include "third_party/blink/renderer/core/css/cssom/style_property_map_read_only.h"
-#include "third_party/blink/renderer/core/css/style_sheet_list.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
@@ -55,22 +52,18 @@ KURL GetOpenerURL() {
   return KURL("https://example.com/");
 }
 
-// Should the PiP window get a copy of the style sheets from the opener?
-enum class CopyStyleSheetOptions {
-  kNo,
-  kYes,
-};
-
 LocalDOMWindow* OpenDocumentPictureInPictureWindow(
     V8TestingScope& v8_scope,
     Document& document,
-    CopyStyleSheetOptions copyStyleSheets,
     KURL opener_url = GetOpenerURL()) {
   auto& controller = PictureInPictureControllerImpl::From(document);
   EXPECT_EQ(nullptr, controller.pictureInPictureWindow());
 
   // Enable the DocumentPictureInPictureAPI flag.
   ScopedDocumentPictureInPictureAPIForTest scoped_feature(true);
+
+  // Make sure that the document URL is set, since it's required.
+  document.SetURL(opener_url);
 
   // Get past the LocalDOMWindow::isSecureContext() check.
   document.domWindow()->GetSecurityContext().SetSecurityOriginForTesting(
@@ -97,13 +90,6 @@ LocalDOMWindow* OpenDocumentPictureInPictureWindow(
       ->Set(v8_scope.GetContext(), V8String(v8_scope.GetIsolate(), "height"),
             v8::Number::New(v8_scope.GetIsolate(), 320))
       .Check();
-  if (copyStyleSheets == CopyStyleSheetOptions::kYes) {
-    v8_object
-        ->Set(v8_scope.GetContext(),
-              V8String(v8_scope.GetIsolate(), "copyStyleSheets"),
-              v8::Number::New(v8_scope.GetIsolate(), true))
-        .Check();
-  }
   DocumentPictureInPictureOptions* options =
       DocumentPictureInPictureOptions::Create(resolver->Promise().GetIsolate(),
                                               v8_object, exception_state);
@@ -321,7 +307,7 @@ class PictureInPictureControllerTestWithWidget : public RenderingTest {
           dummy_tracks, dummy_tracks);
       Video()->SetSrcObjectVariant(descriptor);
     } else {
-      Video()->SetSrc("http://example.com/foo.mp4");
+      Video()->SetSrc(AtomicString("http://example.com/foo.mp4"));
     }
 
     test::RunPendingTasks();
@@ -588,11 +574,11 @@ TEST_F(PictureInPictureControllerTestWithWidget,
 
   Element* div = GetDocument().CreateRawElement(html_names::kDivTag);
   div->setAttribute(html_names::kStyleAttr,
-                    "padding: 100px;"
-                    "width: 150px;"
-                    "height: 150px;"
-                    "padding: 100px;"
-                    "transform: scale(2)");
+                    AtomicString("padding: 100px;"
+                                 "width: 150px;"
+                                 "height: 150px;"
+                                 "padding: 100px;"
+                                 "transform: scale(2)"));
   GetDocument().body()->AppendChild(div);
   div->AppendChild(Video());
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
@@ -602,11 +588,10 @@ TEST_F(PictureInPictureControllerTestWithWidget,
   const char kPosterUrl[] = "http://example.com/foo.jpg";
   url_test_helpers::RegisterMockedErrorURLLoad(
       url_test_helpers::ToKURL(kPosterUrl));
-  Video()->setAttribute(html_names::kPosterAttr, kPosterUrl);
-  Video()->setAttribute(html_names::kStyleAttr,
-                        "object-fit: none;"
-                        "height: 150px;"
-                        "width: 150px;");
+  Video()->setAttribute(html_names::kPosterAttr, AtomicString(kPosterUrl));
+  Video()->setAttribute(html_names::kStyleAttr, AtomicString("object-fit: none;"
+                                                             "height: 150px;"
+                                                             "width: 150px;"));
   layout_image->ImageResource()->SetImageResource(image_content);
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
@@ -654,13 +639,38 @@ TEST_F(PictureInPictureControllerTestWithWidget,
   ScriptState::Scope entered_context_scope(script_state);
   LocalFrame::NotifyUserActivation(
       &GetFrame(), mojom::UserActivationNotificationType::kTest);
-  OpenDocumentPictureInPictureWindow(v8_scope, GetDocument(),
-                                     CopyStyleSheetOptions::kNo);
+  OpenDocumentPictureInPictureWindow(v8_scope, GetDocument());
 
   EXPECT_FALSE(GetWidget()->GetMayThrottleIfUndrawnFramesForTesting());
 
   // TODO(1357125): Check that GetMayThrottle... returns true once the PiP
   // window is closed.
+}
+
+TEST_F(PictureInPictureControllerTestWithWidget,
+       DocumentPiPDoesNotOpenWithBlankUrl) {
+  V8TestingScope v8_scope;
+  ScriptState* script_state =
+      ToScriptStateForMainWorld(GetDocument().GetFrame());
+  ScriptState::Scope entered_context_scope(script_state);
+  LocalFrame::NotifyUserActivation(
+      &GetFrame(), mojom::UserActivationNotificationType::kTest);
+  auto* pip =
+      OpenDocumentPictureInPictureWindow(v8_scope, GetDocument(), BlankURL());
+  EXPECT_FALSE(pip);
+}
+
+TEST_F(PictureInPictureControllerTestWithWidget,
+       DocumentPiPDoesOpenWithFileUrl) {
+  V8TestingScope v8_scope;
+  ScriptState* script_state =
+      ToScriptStateForMainWorld(GetDocument().GetFrame());
+  ScriptState::Scope entered_context_scope(script_state);
+  LocalFrame::NotifyUserActivation(
+      &GetFrame(), mojom::UserActivationNotificationType::kTest);
+  auto* pip = OpenDocumentPictureInPictureWindow(v8_scope, GetDocument(),
+                                                 KURL("file://my/file.html"));
+  EXPECT_TRUE(pip);
 }
 
 class PictureInPictureControllerChromeClient
@@ -710,45 +720,6 @@ class PictureInPictureControllerTestWithChromeClient : public RenderingTest {
     return *chrome_client_;
   }
 
-  StyleSheet* FindStyleSheetInOpener() {
-    // Remember that style sheet names are not preserved in the pip document,
-    // because injection doesn't do that.
-    StyleSheetList& list = GetDocument().StyleSheets();
-    for (unsigned i = 0; i < list.length(); i++) {
-      StyleSheet* sheet = list.item(i);
-      if (sheet->title() && sheet->title() == style_sheet_title_) {
-        return sheet;
-      }
-    }
-
-    return nullptr;
-  }
-
-  String GetBodyBackgroundColor(V8TestingScope& v8_scope, Document* document) {
-    const auto* styleMap = document->body()->ComputedStyleMap();
-    CSSStyleValue* styleValue =
-        styleMap->get(v8_scope.GetExecutionContext(), "background-color",
-                      v8_scope.GetExceptionState());
-    return styleValue->toString();
-  }
-
-  void InitializeDocumentPictureInPictureOpener(V8TestingScope& v8_scope) {
-    // Get past the BindingSecurity::ShouldAllowAccessTo() check.
-    ScriptState* script_state =
-        ToScriptStateForMainWorld(GetDocument().GetFrame());
-    ScriptState::Scope entered_context_scope(script_state);
-
-    // Add HTML to set the CSS to the opener, with a title so that we can find
-    // it later.
-    GetDocument().write("<head><style title='");
-    GetDocument().write(style_sheet_title_);
-    GetDocument().write(
-        "'>"
-        "body { background-color: blue; }"
-        "</style></head>",
-        /*entered_window=*/nullptr, v8_scope.GetExceptionState());
-  }
-
  private:
   Persistent<PictureInPictureControllerChromeClient> chrome_client_;
   // This is used by our chrome client to create the PiP window.  We keep
@@ -756,8 +727,6 @@ class PictureInPictureControllerTestWithChromeClient : public RenderingTest {
   // cannot own it because it also has a GC root to the client; everything would
   // leak if we did so.
   DummyPageHolder dummy_page_holder_;
-
-  const char* style_sheet_title_ = "our_style_sheet";
 };
 
 TEST_F(PictureInPictureControllerTestWithChromeClient,
@@ -765,21 +734,16 @@ TEST_F(PictureInPictureControllerTestWithChromeClient,
   EXPECT_EQ(nullptr, PictureInPictureControllerImpl::From(GetDocument())
                          .pictureInPictureWindow());
   V8TestingScope v8_scope;
-  InitializeDocumentPictureInPictureOpener(v8_scope);
   LocalFrame::NotifyUserActivation(
       &GetFrame(), mojom::UserActivationNotificationType::kTest);
-  auto* pictureInPictureWindow = OpenDocumentPictureInPictureWindow(
-      v8_scope, GetDocument(), CopyStyleSheetOptions::kNo);
+  auto* pictureInPictureWindow =
+      OpenDocumentPictureInPictureWindow(v8_scope, GetDocument());
   ASSERT_NE(nullptr, pictureInPictureWindow);
   Document* document = pictureInPictureWindow->document();
   ASSERT_NE(nullptr, document);
 
   // The Picture in Picture window's base URL should match the opener.
   EXPECT_EQ(GetOpenerURL().GetString(), document->BaseURL().GetString());
-
-  // By default, CSS should not be copied from the opener, so the background
-  // color should be the default.
-  EXPECT_EQ(GetBodyBackgroundColor(v8_scope, document), "rgba(0, 0, 0, 0)");
 
   // Verify that move* and resize* don't call through to the chrome client.
   EXPECT_CALL(GetPipChromeClient(), SetWindowRect(_, _)).Times(0);
@@ -803,67 +767,85 @@ TEST_F(PictureInPictureControllerTestWithChromeClient,
 }
 
 TEST_F(PictureInPictureControllerTestWithChromeClient,
-       CopyStylesToDocumentPictureInPictureWindow) {
+       CreateDocumentPictureInPictureWindowThrowsExceptionWhenDomWindowNull) {
+  auto& document = GetDocument();
+  auto& controller = PictureInPictureControllerImpl::From(document);
+  EXPECT_EQ(controller.pictureInPictureWindow(), nullptr);
+
   V8TestingScope v8_scope;
-  InitializeDocumentPictureInPictureOpener(v8_scope);
   LocalFrame::NotifyUserActivation(
       &GetFrame(), mojom::UserActivationNotificationType::kTest);
-  auto* pictureInPictureWindow = OpenDocumentPictureInPictureWindow(
-      v8_scope, GetDocument(), CopyStyleSheetOptions::kYes);
-  Document* pictureInPictureDocument = pictureInPictureWindow->document();
 
-  // CSS for a blue background should have been copied from the opener.
-  EXPECT_EQ(GetBodyBackgroundColor(v8_scope, pictureInPictureDocument),
-            "rgb(0, 0, 255)");
+  // Enable the DocumentPictureInPictureAPI flag.
+  ScopedDocumentPictureInPictureAPIForTest scoped_feature(true);
 
-  // Changing the opener's sheets should not result in a change to PiP.
-  CSSStyleSheet* sheet = DynamicTo<CSSStyleSheet>(FindStyleSheetInOpener());
-  sheet->deleteRule(0, v8_scope.GetExceptionState());
-  EXPECT_EQ(GetBodyBackgroundColor(v8_scope, pictureInPictureDocument),
-            "rgb(0, 0, 255)");
-}
+  // Get past the LocalDOMWindow::isSecureContext() check.
+  const KURL opener_url = GetOpenerURL();
+  document.domWindow()->GetSecurityContext().SetSecurityOriginForTesting(
+      nullptr);
+  document.domWindow()->GetSecurityContext().SetSecurityOrigin(
+      SecurityOrigin::Create(opener_url));
 
-TEST_F(PictureInPictureControllerTestWithChromeClient,
-       DoesNotCopyDisabledStyleSheetsToDocumentPictureInPictureWindow) {
-  V8TestingScope v8_scope;
-  InitializeDocumentPictureInPictureOpener(v8_scope);
+  // Set the kPopups sandbox flag. This prevents the creation of the document
+  // picture in picture window.
+  document.domWindow()->GetSecurityContext().SetSandboxFlags(
+      network::mojom::blink::WebSandboxFlags::kPopups);
 
-  // Turn off our style sheet.
-  StyleSheet* sheet = FindStyleSheetInOpener();
-  ASSERT_NE(sheet, nullptr);
-  sheet->setDisabled(true);
+  // Get past the BindingSecurity::ShouldAllowAccessTo() check.
+  ScriptState* script_state = ToScriptStateForMainWorld(document.GetFrame());
+  ScriptState::Scope entered_context_scope(script_state);
 
-  LocalFrame::NotifyUserActivation(
-      &GetFrame(), mojom::UserActivationNotificationType::kTest);
-  auto* pictureInPictureWindow = OpenDocumentPictureInPictureWindow(
-      v8_scope, GetDocument(), CopyStyleSheetOptions::kYes);
-  Document* pictureInPictureDocument = pictureInPictureWindow->document();
-  EXPECT_EQ(GetBodyBackgroundColor(v8_scope, pictureInPictureDocument),
-            "rgba(0, 0, 0, 0)");
+  // Create the DocumentPictureInPictureOptions.
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ExceptionState exception_state(script_state->GetIsolate(),
+                                 ExceptionState::kExecutionContext,
+                                 "DocumentPictureInPicture", "requestWindow");
+
+  v8::Local<v8::Object> v8_object = v8::Object::New(v8_scope.GetIsolate());
+  const auto promise = resolver->Promise();
+  DocumentPictureInPictureOptions* options =
+      DocumentPictureInPictureOptions::Create(promise.GetIsolate(), v8_object,
+                                              exception_state);
+
+  // Set a URL for the opener window.
+  document.SetURL(opener_url);
+  EXPECT_EQ(opener_url.GetString(), document.BaseURL().GetString());
+
+  // Create document picture in picture window.
+  controller.CreateDocumentPictureInPictureWindow(
+      script_state, *document.domWindow(), options, resolver, exception_state);
+
+  // Verify the document picture in picture window was not created.
+  auto* pictureInPictureWindow = controller.documentPictureInPictureWindow();
+  ASSERT_EQ(pictureInPictureWindow, nullptr);
+
+  // Verify rejected with DOMExceptionCode::kInvalidStateError.
+  EXPECT_EQ(promise.V8Promise()->State(), v8::Promise::kRejected);
+  DOMException* dom_exception = V8DOMException::ToWrappable(
+      promise.GetIsolate(), promise.V8Promise()->Result());
+  ASSERT_NE(dom_exception, nullptr);
+  EXPECT_EQ(dom_exception->code(),
+            static_cast<int>(DOMExceptionCode::kInvalidStateError));
 }
 
 TEST_F(PictureInPictureControllerTestWithChromeClient, RequiresUserGesture) {
   V8TestingScope v8_scope;
-  InitializeDocumentPictureInPictureOpener(v8_scope);
-
-  auto* pictureInPictureWindow = OpenDocumentPictureInPictureWindow(
-      v8_scope, GetDocument(), CopyStyleSheetOptions::kYes);
+  auto* pictureInPictureWindow =
+      OpenDocumentPictureInPictureWindow(v8_scope, GetDocument());
   EXPECT_FALSE(pictureInPictureWindow);
 }
 
 TEST_F(PictureInPictureControllerTestWithChromeClient,
        OpenDocumentPiPTwiceSynchronouslyDoesNotCrash) {
   V8TestingScope v8_scope;
-  InitializeDocumentPictureInPictureOpener(v8_scope);
-
   LocalFrame::NotifyUserActivation(
       &GetFrame(), mojom::UserActivationNotificationType::kTest);
-  auto* pictureInPictureWindow1 = OpenDocumentPictureInPictureWindow(
-      v8_scope, GetDocument(), CopyStyleSheetOptions::kYes);
+  auto* pictureInPictureWindow1 =
+      OpenDocumentPictureInPictureWindow(v8_scope, GetDocument());
   LocalFrame::NotifyUserActivation(
       &GetFrame(), mojom::UserActivationNotificationType::kTest);
-  auto* pictureInPictureWindow2 = OpenDocumentPictureInPictureWindow(
-      v8_scope, GetDocument(), CopyStyleSheetOptions::kYes);
+  auto* pictureInPictureWindow2 =
+      OpenDocumentPictureInPictureWindow(v8_scope, GetDocument());
 
   // This should properly return two windows.
   EXPECT_NE(nullptr, pictureInPictureWindow1);

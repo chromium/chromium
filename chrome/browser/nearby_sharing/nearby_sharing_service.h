@@ -16,6 +16,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 
 class NearbyNotificationDelegate;
+class NearbyNotificationManager;
 class NearbyShareContactManager;
 class NearbyShareCertificateManager;
 class NearbyShareHttpNotifier;
@@ -178,6 +179,7 @@ class NearbySharingService : public KeyedService {
   // notification.
   virtual void RecordFastInitiationNotificationUsage(bool success) = 0;
 
+  virtual NearbyNotificationManager* GetNotificationManager() = 0;
   virtual NearbyShareSettings* GetSettings() = 0;
   virtual NearbyShareHttpNotifier* GetHttpNotifier() = 0;
   virtual NearbyShareLocalDeviceDataManager* GetLocalDeviceDataManager() = 0;

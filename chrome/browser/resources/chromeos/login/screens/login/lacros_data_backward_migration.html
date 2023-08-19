@@ -20,8 +20,9 @@ found in the LICENSE file.
     </p>
   </div>
   <div slot="content" class="flex layout vertical center center-justified">
-    <img src="/images/update_boot.svg"
-        class="oobe-illustration" aria-hidden="true">
+    <iron-icon icon="oobe-illos:update-boot-illo"
+        class="illustration-jelly">
+    </iron-icon>
   </div>
 </oobe-adaptive-dialog>
 
@@ -31,8 +32,21 @@ found in the LICENSE file.
   <h1 slot="title">
     [[i18nDynamic(locale, 'lacrosDataBackwardMigrationErrorTitle')]]
   </h1>
+  <div slot="subtitle">
+    <p>
+      [[i18nDynamic(locale, 'lacrosDataBackwardMigrationErrorSubtitle')]]
+    </p>
+  </div>
   <div slot="content" class="flex layout vertical center center-justified">
-    <img src="/images/error.svg"
-         class="oobe-illustration" aria-hidden="true">
+    <iron-icon icon="oobe-illos:error-illo" class="illustration-jelly">
+    </iron-icon>
+  </div>
+
+  <!-- Cancel button -->
+  <div slot="bottom-buttons" class="layout horizontal end-justified">
+    <oobe-text-button id="cancelButton"
+                      on-click="onCancelButtonClicked_"
+                      text-key="lacrosDataBackwardMigrationErrorCancelButton">
+    </oobe-text-button>
   </div>
 </oobe-adaptive-dialog>

@@ -22,6 +22,17 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="Windows.AcLayersLoaded" enum="BooleanLoaded"
+    expires_after="2024-07-15">
+  <owner>ajgo@chromium.org</owner>
+  <owner>brucedawson@chromium.org</owner>
+  <summary>
+    Records if AcLayers.dll is loaded in the browser process, indicating that
+    Chrome has been shimmed by Window's AppCompat mechanism. Reported once per
+    browser session, on startup.
+  </summary>
+</histogram>
+
 <histogram name="Windows.CetAvailable" enum="BooleanAvailable"
     expires_after="2023-12-01">
   <owner>ajgo@chromium.org</owner>
@@ -34,7 +45,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.CetEnabled" enum="BooleanEnabled"
-    expires_after="2023-10-22">
+    expires_after="2023-12-24">
   <owner>ajgo@chromium.org</owner>
   <owner>wfh@chromium.org</owner>
   <summary>
@@ -76,7 +87,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.HighResolutionTimerUsage" units="%"
-    expires_after="2023-11-12">
+    expires_after="2024-01-14">
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -135,7 +146,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.Launch.TaskbarInstallerPinned" enum="Boolean"
-    expires_after="2023-10-22">
+    expires_after="2023-12-24">
   <owner>davidbienvenu@chromium.org</owner>
   <owner>jessemckenna@google.com</owner>
   <summary>
@@ -147,7 +158,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.MakeChromeDefaultDirectly.Result"
-    enum="DefaultDirectAttemptResult" expires_after="M118">
+    enum="DefaultDirectAttemptResult" expires_after="2024-01-28">
   <owner>robliao@chromium.org</owner>
   <owner>davidbienvenu@chromium.org</owner>
   <summary>
@@ -261,29 +272,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.RendererCodeIntegrityEnabled" enum="BooleanEnabled"
-    expires_after="M118">
+    expires_after="2023-12-24">
   <owner>ajgo@chromium.org</owner>
   <owner>wfh@chromium.org</owner>
   <summary>
     Records whether or not Renderer code integrity is enabled. This is enabled
     by default but can be overridden by policy. This is recorded each time a new
     renderer process starts.
-  </summary>
-</histogram>
-
-<histogram name="Windows.TouchDrag.Success" enum="BooleanSuccess"
-    expires_after="2021-12-01">
-  <owner>davidbienvenu@chromium.org</owner>
-  <owner>dfried@chromium.org</owner>
-  <summary>
-    Recorded each time the user starts a Windows touch drag drop of web
-    contents. This is currently only used by the WebUI tab strip, where touch
-    drag drop is enabled, to count the number of touch drags attempted.
-    ::DoDragDrop occasionally blocks waiting for a right mouse button down
-    followed by a move, which is detected by ::DoDragDrop not calling
-    QueryContinueDrag for more than a second. This will be recorded as false.
-    This stat will be used to determine how much of a real world problem this
-    is.
   </summary>
 </histogram>
 

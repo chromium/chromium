@@ -41,10 +41,10 @@ TEST_F(StyleInvalidatorTest, SkipDisplayNone) {
   {
     InvalidationLists lists;
     scoped_refptr<InvalidationSet> set = DescendantInvalidationSet::Create();
-    set->AddClass("a");
+    set->AddClass(AtomicString("a"));
     lists.descendants.push_back(set);
     pending.ScheduleInvalidationSetsForNode(
-        lists, *GetDocument().getElementById("root"));
+        lists, *GetDocument().getElementById(AtomicString("root")));
   }
 
   StyleInvalidator invalidator(pending.GetPendingInvalidationMap());
@@ -70,27 +70,30 @@ TEST_F(StyleInvalidatorTest, SkipDisplayNoneClearPendingNth) {
   {
     InvalidationLists lists;
     scoped_refptr<InvalidationSet> set = NthSiblingInvalidationSet::Create();
-    set->AddClass("a");
+    set->AddClass(AtomicString("a"));
     lists.siblings.push_back(set);
     pending.ScheduleInvalidationSetsForNode(
-        lists, *GetDocument().getElementById("none"));
+        lists, *GetDocument().getElementById(AtomicString("none")));
   }
   {
     InvalidationLists lists;
     scoped_refptr<InvalidationSet> set = DescendantInvalidationSet::Create();
-    set->AddClass("a");
+    set->AddClass(AtomicString("a"));
     lists.descendants.push_back(set);
     pending.ScheduleInvalidationSetsForNode(
-        lists, *GetDocument().getElementById("descendant"));
+        lists, *GetDocument().getElementById(AtomicString("descendant")));
   }
 
   StyleInvalidator invalidator(pending.GetPendingInvalidationMap());
   invalidator.Invalidate(GetDocument(), GetDocument().body());
 
   EXPECT_TRUE(GetDocument().NeedsLayoutTreeUpdate());
-  EXPECT_FALSE(GetDocument().getElementById("none")->ChildNeedsStyleRecalc());
-  EXPECT_TRUE(
-      GetDocument().getElementById("descendant")->ChildNeedsStyleRecalc());
+  EXPECT_FALSE(GetDocument()
+                   .getElementById(AtomicString("none"))
+                   ->ChildNeedsStyleRecalc());
+  EXPECT_TRUE(GetDocument()
+                  .getElementById(AtomicString("descendant"))
+                  ->ChildNeedsStyleRecalc());
 }
 
 }  // namespace blink

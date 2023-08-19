@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+PASS ORB shouldn't block opaque range of image/png starting at zero
+PASS ORB should block opaque range of image/png not starting at zero, that isn't subsequent
+Harness: the test ran to completion.
+

@@ -9,10 +9,6 @@
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type.h"
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation AutofillCreditCardUtil
 
 + (autofill::CreditCard)creditCardWithHolderName:(NSString*)cardHolderName

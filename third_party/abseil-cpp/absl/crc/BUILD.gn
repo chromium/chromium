@@ -61,7 +61,8 @@ absl_source_set("crc32c") {
     "//third_party/abseil-cpp/absl/base:dynamic_annotations",
     "//third_party/abseil-cpp/absl/base:endian",
     "//third_party/abseil-cpp/absl/base:prefetch",
-    "//third_party/abseil-cpp/absl/strings",
+    "//third_party/abseil-cpp/absl/strings:str_format",
+    "//third_party/abseil-cpp/absl/strings:string_view",
   ]
 }
 
@@ -70,6 +71,8 @@ absl_test("crc32c_test") {
   deps = [
     ":crc32c",
     "//third_party/abseil-cpp/absl/strings",
+    "//third_party/abseil-cpp/absl/strings:str_format",
+    "//third_party/abseil-cpp/absl/strings:string_view",
   ]
 }
 
@@ -99,6 +102,7 @@ absl_test("crc_memcpy_test") {
     "//third_party/abseil-cpp/absl/random",
     "//third_party/abseil-cpp/absl/random:distributions",
     "//third_party/abseil-cpp/absl/strings",
+    "//third_party/abseil-cpp/absl/strings:string_view",
   ]
 }
 

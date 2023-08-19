@@ -97,7 +97,7 @@ class FormAutofillUtilsTest : public content::RenderViewTest {
  public:
   FormAutofillUtilsTest() {
     scoped_feature_list_.InitAndEnableFeature(
-        features::kAutofillEnableSelectMenu);
+        features::kAutofillEnableSelectList);
   }
   ~FormAutofillUtilsTest() override = default;
 
@@ -1325,7 +1325,7 @@ TEST_F(FormAutofillUtilsTest, GetUnownedFormFieldElements) {
       <option value='first'>first</option>
       <option value='second' selected>second</option>
     </select>
-    <select id='unowned_selectmenu'>
+    <select id='unowned_selectlist'>
       <option value='first'>first</option>
       <option value='second' selected>second</option>
     </select>
@@ -1343,10 +1343,10 @@ TEST_F(FormAutofillUtilsTest, GetUnownedFormFieldElements) {
         <option value='june'>june</option>
         <option value='july' selected>july</option>
       </select>
-      <selectmenu name='form_selectmenu' id='form_selectmenu'>
+      <selectlist name='form_selectlist' id='form_selectlist'>
         <option value='june'>june</option>
         <option value='july' selected>july</option>
-      </selectmenu>
+      </selectlist>
       <object id='form_object'></object>
     </form>
   )");
@@ -1363,7 +1363,7 @@ TEST_F(FormAutofillUtilsTest, GetUnownedFormFieldElements) {
                   GetFormControlElementById(doc, "unowned_textarea"),
                   GetFormControlElementById(doc, "unowned_output"),
                   GetFormControlElementById(doc, "unowned_select"),
-                  GetFormControlElementById(doc, "unowned_selectmenu")));
+                  GetFormControlElementById(doc, "unowned_selectlist")));
 }
 
 // Tests that FormData::fields and FormData::child_frames are extracted fully
@@ -1526,36 +1526,36 @@ INSTANTIATE_TEST_SUITE_P(
     }()));
 
 // FormAutofillUtilsTest subclass for testing with and without
-// features::kAutofillEnableSelectMenu feature enabled.
-class SelectMenuAutofillParamTest : public FormAutofillUtilsTest,
+// features::kAutofillEnableSelectList feature enabled.
+class SelectListAutofillParamTest : public FormAutofillUtilsTest,
                                     public testing::WithParamInterface<bool> {
  public:
-  SelectMenuAutofillParamTest() {
+  SelectListAutofillParamTest() {
     scoped_feature_list_.InitWithFeatureState(
-        features::kAutofillEnableSelectMenu, IsAutofillingSelectMenuEnabled());
+        features::kAutofillEnableSelectList, IsAutofillingSelectListEnabled());
   }
-  ~SelectMenuAutofillParamTest() override = default;
+  ~SelectListAutofillParamTest() override = default;
 
-  bool IsAutofillingSelectMenuEnabled() const { return GetParam(); }
+  bool IsAutofillingSelectListEnabled() const { return GetParam(); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(FormAutofillUtilsTest,
-                         SelectMenuAutofillParamTest,
+                         SelectListAutofillParamTest,
                          ::testing::Bool());
 
-// Test that WebFormElementToFormData() ignores <selectmenu> if
-// features::kAutofillEnableSelectMenu is disabled.
-TEST_P(SelectMenuAutofillParamTest, WebFormElementToFormData) {
+// Test that WebFormElementToFormData() ignores <selectlist> if
+// features::kAutofillEnableSelectList is disabled.
+TEST_P(SelectListAutofillParamTest, WebFormElementToFormData) {
   LoadHTML(R"(
     <form id='form'>
       <input id='input'>
-      <selectmenu name='form_selectmenu' id='selectmenu'>
+      <selectlist name='form_selectlist' id='selectlist'>
         <option value='june'>june</option>
         <option value='july' selected>july</option>
-      </selectmenu>
+      </selectlist>
     </form>
   )");
 
@@ -1567,7 +1567,7 @@ TEST_P(SelectMenuAutofillParamTest, WebFormElementToFormData) {
                                        nullptr, EXTRACT_NONE, &form_data,
                                        nullptr));
   EXPECT_EQ(form_data.fields.size(),
-            IsAutofillingSelectMenuEnabled() ? 2u : 1u);
+            IsAutofillingSelectListEnabled() ? 2u : 1u);
 
   {
     WebElement element = GetElementById(doc, "input");
@@ -1577,8 +1577,8 @@ TEST_P(SelectMenuAutofillParamTest, WebFormElementToFormData) {
                                       form_data.fields[0]));
   }
 
-  if (IsAutofillingSelectMenuEnabled()) {
-    WebElement element = GetElementById(doc, "selectmenu");
+  if (IsAutofillingSelectListEnabled()) {
+    WebElement element = GetElementById(doc, "selectlist");
     ASSERT_FALSE(element.IsNull());
     ASSERT_TRUE(element.IsFormControlElement());
     EXPECT_TRUE(HaveSameFormControlId(element.To<WebFormControlElement>(),
@@ -1672,80 +1672,6 @@ TEST_F(FormAutofillUtilsTest, ExtractNoFieldsOrFramesIfTooManyFields) {
     EXPECT_TRUE(form_data.fields.empty());
     EXPECT_TRUE(form_data.child_frames.empty());
   }
-}
-
-// Fills a form, resets the form using <input type=reset>, and fills it again.
-// Tests that the form is actually filled on the second fill
-// (crbug.com/1291619).
-TEST_F(FormAutofillUtilsTest, FillAndResetAndFillAgainForm) {
-  // TODO(crbug.com/1422114): Make test work without explicit <selectmenu>
-  // tabindex.
-  LoadHTML(R"(
-    <body>
-      <form id="f">
-        <input id="text_id">
-        <select id="select_id">
-          <option value="Bar">Bar</option>
-          <option value="Foo">Foo</option>
-          <option value="Zoo">Zoo</option>
-        </select>
-        <selectmenu id="selectmenu_id" tabindex=0>
-          <option value="Bar">Bar</option>
-          <option value="Foo">Foo</option>
-          <option value="Zoo">Zoo</option>
-        </selectmenu>
-        <input id="reset" type="reset">
-      </form>
-    </body>
-  )");
-  WebDocument doc = GetMainFrame()->GetDocument();
-  auto field_manager = base::MakeRefCounted<FieldDataManager>();
-
-  FormData form;
-  ExtractFormData(GetFormElementById(doc, "f"), *field_manager, &form);
-  ASSERT_EQ(form.fields.size(), 3u);
-  for (FormFieldData& field : form.fields) {
-    field.value = u"Foo";
-    field.is_autofilled = true;
-  }
-
-  // First fill of the form.
-  FillOrPreviewForm(form, GetFormControlElementById(doc, "text_id"),
-                    mojom::RendererFormDataAction::kFill);
-
-  WebFormControlElement textfield = GetFormControlElementById(doc, "text_id");
-  WebFormControlElement select = GetFormControlElementById(doc, "select_id");
-  WebFormControlElement selectmenu =
-      GetFormControlElementById(doc, "selectmenu_id");
-
-  // Autofilling `textfield` leaves textfield.UserHasEditedTheField() == false.
-  // TODO(crbug.com/1291619): Is this desired?
-  EXPECT_TRUE(select.UserHasEditedTheField());
-  EXPECT_TRUE(selectmenu.UserHasEditedTheField());
-  EXPECT_EQ(textfield.Value().Ascii(), "Foo");
-  EXPECT_EQ(select.Value().Ascii(), "Foo");
-  EXPECT_EQ(selectmenu.Value().Ascii(), "Foo");
-
-  // Click reset button.
-  GetFormControlElementById(doc, "reset").SimulateClick();
-  content::RunAllTasksUntilIdle();
-  EXPECT_FALSE(textfield.UserHasEditedTheField());
-  EXPECT_FALSE(select.UserHasEditedTheField());
-  EXPECT_FALSE(selectmenu.UserHasEditedTheField());
-  EXPECT_EQ(textfield.Value().Ascii(), "");
-  EXPECT_EQ(select.Value().Ascii(), "Bar");
-  EXPECT_EQ(selectmenu.Value().Ascii(), "Bar");
-
-  // Fill form again.
-  FillOrPreviewForm(form, GetFormControlElementById(doc, "text_id"),
-                    mojom::RendererFormDataAction::kFill);
-  // Autofilling `textfield` leaves textfield.UserHasEditedTheField() == false.
-  // TODO(crbug.com/1291619): Is this desired?
-  EXPECT_TRUE(select.UserHasEditedTheField());
-  EXPECT_TRUE(selectmenu.UserHasEditedTheField());
-  EXPECT_EQ(textfield.Value().Ascii(), "Foo");
-  EXPECT_EQ(select.Value().Ascii(), "Foo");
-  EXPECT_EQ(selectmenu.Value().Ascii(), "Foo");
 }
 
 // Verifies that the callback happens even if no sequences of 4 digits are

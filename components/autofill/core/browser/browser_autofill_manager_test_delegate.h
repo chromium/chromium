@@ -20,6 +20,9 @@ class BrowserAutofillManagerTestDelegate {
   // Called when a popup with Autofill suggestions is shown.
   virtual void DidShowSuggestions() = 0;
 
+  // Called when a popup with Autofill suggestions is hidden.
+  virtual void DidHideSuggestions() = 0;
+
   // Called when a text field change is detected.
   virtual void OnTextFieldChanged() = 0;
 };

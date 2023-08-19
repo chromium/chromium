@@ -29,15 +29,21 @@ class ColorTrackingVectorImageButton : public ImageButton {
  public:
   ColorTrackingVectorImageButton(PressedCallback callback,
                                  const gfx::VectorIcon& icon,
-                                 int dip_size)
-      : ImageButton(std::move(callback)), icon_(icon), dip_size_(dip_size) {}
+                                 int dip_size,
+                                 ui::ColorId icon_color,
+                                 ui::ColorId icon_disabled_color)
+      : ImageButton(std::move(callback)),
+        icon_(icon),
+        dip_size_(dip_size),
+        icon_color_(icon_color),
+        icon_disabled_color_(icon_disabled_color) {}
 
   // ImageButton:
   void OnThemeChanged() override {
     ImageButton::OnThemeChanged();
     const ui::ColorProvider* cp = GetColorProvider();
-    const SkColor color = cp->GetColor(ui::kColorIcon);
-    const SkColor disabled_color = cp->GetColor(ui::kColorIconDisabled);
+    const SkColor color = cp->GetColor(icon_color_);
+    const SkColor disabled_color = cp->GetColor(icon_disabled_color_);
     SetImageFromVectorIconWithColor(this, *icon_, dip_size_, color,
                                     disabled_color);
   }
@@ -45,6 +51,8 @@ class ColorTrackingVectorImageButton : public ImageButton {
  private:
   const raw_ref<const gfx::VectorIcon> icon_;
   int dip_size_;
+  ui::ColorId icon_color_;
+  ui::ColorId icon_disabled_color_;
 };
 
 }  // namespace
@@ -52,7 +60,9 @@ class ColorTrackingVectorImageButton : public ImageButton {
 std::unique_ptr<ImageButton> CreateVectorImageButtonWithNativeTheme(
     Button::PressedCallback callback,
     const gfx::VectorIcon& icon,
-    absl::optional<int> dip_size) {
+    absl::optional<int> dip_size,
+    SkColor icon_color,
+    SkColor icon_disabled_color) {
   // We can't use `value_or` as that ALWAYS evaluates the false case, which is
   // undefined for some valid and commonly used Chrome vector icons.
   const int dip_size_value = dip_size.has_value()
@@ -60,7 +70,8 @@ std::unique_ptr<ImageButton> CreateVectorImageButtonWithNativeTheme(
                                  : GetDefaultSizeOfVectorIcon(icon);
 
   auto button = std::make_unique<ColorTrackingVectorImageButton>(
-      std::move(callback), icon, dip_size_value);
+      std::move(callback), icon, dip_size_value, icon_color,
+      icon_disabled_color);
   ConfigureVectorImageButton(button.get());
   return button;
 }

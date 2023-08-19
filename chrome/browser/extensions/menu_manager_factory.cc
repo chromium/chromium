@@ -30,7 +30,7 @@ MenuManagerFactory* MenuManagerFactory::GetInstance() {
 std::unique_ptr<KeyedService>
 MenuManagerFactory::BuildServiceInstanceForTesting(
     content::BrowserContext* context) {
-  return base::WrapUnique(GetInstance()->BuildServiceInstanceFor(context));
+  return GetInstance()->BuildServiceInstanceForBrowserContext(context);
 }
 
 MenuManagerFactory::MenuManagerFactory()

@@ -5,7 +5,6 @@
 package org.chromium.components.content_relationship_verification;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
@@ -22,8 +21,6 @@ import java.util.Set;
  * website will only performed at most once.
  */
 public class OriginVerificationScheduler {
-    private static final String TAG = "OriginVerification";
-
     private static final String HTTP_SCHEME = "http";
     private static final String HTTPS_SCHEME = "https";
 
@@ -40,13 +37,11 @@ public class OriginVerificationScheduler {
         mPendingOrigins = pendingOrigins;
     }
 
-    @VisibleForTesting
     public Set<Origin> getPendingOriginsForTesting() {
         return mPendingOrigins;
     }
 
     // Use this function only for testing.
-    @VisibleForTesting
     public void addPendingOriginForTesting(Origin origin) {
         mPendingOrigins.add(origin);
     }

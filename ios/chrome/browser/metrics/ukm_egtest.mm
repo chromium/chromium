@@ -14,10 +14,6 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using chrome_test_util::GoogleServicesSettingsButton;
 using chrome_test_util::SettingsDoneButton;
 
@@ -42,6 +38,12 @@ using chrome_test_util::SettingsDoneButton;
 
 - (void)setUp {
   [super setUp];
+
+  // These tests enable Chrome Sync through Recent Tabs. If there are too many
+  // tabs in the list, the button at the bottom of the view is offscreen and its
+  // animation causes tests to hang for the same reasons as crbug.com/640977.
+  // Clear browsing history to ensure that there are no recent tabs.
+  [ChromeEarlGrey clearBrowsingHistory];
 
   [ChromeEarlGrey
       waitForSyncEngineInitialized:NO

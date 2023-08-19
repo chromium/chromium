@@ -13,6 +13,7 @@
 #include "base/component_export.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/fido_constants.h"
+#include "device/fido/fido_transport_protocol.h"
 #include "device/fido/large_blob.h"
 #include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/public_key_credential_user_entity.h"
@@ -34,10 +35,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorGetAssertionResponse {
   CreateFromU2fSignResponse(
       base::span<const uint8_t, kRpIdHashLength> relying_party_id_hash,
       base::span<const uint8_t> u2f_data,
-      base::span<const uint8_t> key_handle);
+      base::span<const uint8_t> key_handle,
+      absl::optional<FidoTransportProtocol> transport_used);
 
-  AuthenticatorGetAssertionResponse(AuthenticatorData authenticator_data,
-                                    std::vector<uint8_t> signature);
+  AuthenticatorGetAssertionResponse(
+      AuthenticatorData authenticator_data,
+      std::vector<uint8_t> signature,
+      absl::optional<FidoTransportProtocol> transport_used);
   AuthenticatorGetAssertionResponse(AuthenticatorGetAssertionResponse&& that);
   AuthenticatorGetAssertionResponse& operator=(
       AuthenticatorGetAssertionResponse&& other);

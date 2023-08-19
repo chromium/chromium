@@ -103,7 +103,7 @@ void PressureClientImpl::Trace(Visitor* visitor) const {
   ExecutionContextClient::Trace(visitor);
 }
 
-// https://wicg.github.io/compute-pressure/#dfn-passes-privacy-test
+// https://w3c.github.io/compute-pressure/#dfn-passes-privacy-test
 bool PressureClientImpl::PassesPrivacyTest() const {
   const ExecutionContext* context = GetExecutionContext();
 

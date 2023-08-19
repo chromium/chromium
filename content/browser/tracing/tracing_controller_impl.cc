@@ -166,6 +166,13 @@ std::string GetClockOffsetSinceEpoch() {
 }
 #endif
 
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+bool IsSpecialCategory(const std::string& name) {
+  return name == "__metadata" || name == "tracing_already_shutdown" ||
+         name == "tracing_categories_exhausted._must_increase_kMaxCategories";
+}
+#endif
+
 }  // namespace
 
 TracingController* TracingController::GetInstance() {
@@ -388,7 +395,20 @@ TracingControllerImpl* TracingControllerImpl::GetInstance() {
 
 bool TracingControllerImpl::GetCategories(GetCategoriesDoneCallback callback) {
   std::set<std::string> category_set;
+
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  using base::perfetto_track_event::internal::kCategoryRegistry;
+  for (size_t i = 0; i < kCategoryRegistry.category_count(); ++i) {
+    std::string category_name = kCategoryRegistry.GetCategory(i)->name;
+    // Only add single categories, not groups. Also exclude special categories.
+    if (category_name.find(',') == std::string::npos &&
+        !IsSpecialCategory(category_name)) {
+      category_set.insert(category_name);
+    }
+  }
+#else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   tracing::TracedProcessImpl::GetInstance()->GetCategories(&category_set);
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
   std::move(callback).Run(category_set);
   return true;

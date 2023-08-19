@@ -52,6 +52,15 @@ namespace fileSystemProvider {
     SHARE
   };
 
+  // Cloud storage representation of a file system entry.
+  dictionary CloudIdentifier {
+    // Identifier for the cloud storage provider (e.g. 'drive.google.com').
+    DOMString providerName;
+
+    // The provider's identifier for the given file/directory.
+    DOMString id;
+  };
+
   // Represents metadata of a file or a directory.
   dictionary EntryMetadata {
     // True if it is a directory. Must be provided if requested in
@@ -78,6 +87,12 @@ namespace fileSystemProvider {
     // 32 KB in size. Optional, but can be provided only when explicitly
     // requested by the $(ref:onGetMetadataRequested) event.
     DOMString? thumbnail;
+
+    // Cloud storage representation of this entry. Must be provided if requested
+    // in <code>options</code> and the file is backed by cloud storage. For
+    // local files not backed by cloud storage, it should be undefined when
+    // requested.
+    CloudIdentifier? cloudIdentifier;
   };
 
   // Represents a watcher.
@@ -110,7 +125,7 @@ namespace fileSystemProvider {
     // The identifier of the file system.
     DOMString fileSystemId;
 
-    // A human-readable name for the file system. 
+    // A human-readable name for the file system.
     DOMString displayName;
 
     // Whether the file system supports operations which may change contents
@@ -138,7 +153,7 @@ namespace fileSystemProvider {
     // extension.
     DOMString fileSystemId;
 
-    // A human-readable name for the file system. 
+    // A human-readable name for the file system.
     DOMString displayName;
 
     // Whether the file system supports operations which may change contents
@@ -200,8 +215,12 @@ namespace fileSystemProvider {
     // Set to <code>true</code> if <code>mimeType</code> value is requested.
     boolean mimeType;
 
-    // Set to <code>true</code> if the thumbnail is requested.
+    // Set to <code>true</code> if <code>thumbnail</code> value is requested.
     boolean thumbnail;
+
+    // Set to <code>true</code> if <code>cloudIdentifier</code> value is
+    // requested.
+    boolean cloudIdentifier;
   };
 
   // Options for the $(ref:onGetActionsRequested) event.
@@ -224,7 +243,7 @@ namespace fileSystemProvider {
     // The unique identifier of this request.
     long requestId;
 
-    // The path of the directory which contents are requested. 
+    // The path of the directory which contents are requested.
     DOMString directoryPath;
 
     // Set to <code>true</code> if <code>is_directory</code> value is requested.
@@ -243,7 +262,7 @@ namespace fileSystemProvider {
     // Set to <code>true</code> if <code>mimeType</code> value is requested.
     boolean mimeType;
 
-    // Set to <code>true</code> if the thumbnail is requested.
+    // Set to <code>true</code> if <code>thumbnail</code> value is requested.
     boolean thumbnail;
   };
 
@@ -786,4 +805,3 @@ namespace fileSystemProvider {
       ProviderErrorCallback errorCallback);
   };
 };
-

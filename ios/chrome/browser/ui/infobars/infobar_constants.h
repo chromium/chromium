@@ -10,6 +10,8 @@
 #include "base/time/time.h"
 
 extern const int kInfobarBackgroundColor;
+// Top padding for the infobar when the omnibox is in the bottom toolbar.
+extern const CGFloat kInfobarTopPaddingBottomOmnibox;
 
 // a11y identifier so that automation can tap on either infobar button
 extern NSString* const kConfirmInfobarButton1AccessibilityIdentifier;

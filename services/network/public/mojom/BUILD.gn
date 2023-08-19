@@ -215,6 +215,54 @@ mojom("mojom_network_isolation_key") {
   ]
 }
 
+mojom("mojom_shared_dictionary") {
+  generate_java = true
+  sources = [
+    "shared_dictionary_isolation_key.mojom",
+    "shared_dictionary_usage_info.mojom",
+  ]
+
+  public_deps = [
+    ":mojom_schemeful_site",
+    "//mojo/public/mojom/base",
+    "//url/mojom:url_mojom_origin",
+  ]
+
+  if (!is_ios) {
+    export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
+    export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+    export_header_blink = "third_party/blink/public/platform/web_common.h"
+  }
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "network.mojom.SharedDictionaryIsolationKey"
+          cpp = "::net::SharedDictionaryIsolationKey"
+        },
+      ]
+      traits_headers = [ "//services/network/public/cpp/shared_dictionary_isolation_key_mojom_traits.h" ]
+      traits_sources = [ "//services/network/public/cpp/shared_dictionary_isolation_key_mojom_traits.cc" ]
+      traits_public_deps = [
+        "//net:shared_dictionary",
+        "//services/network/public/cpp:schemeful_site_mojom_support",
+      ]
+    },
+    {
+      types = [
+        {
+          mojom = "network.mojom.SharedDictionaryUsageInfo"
+          cpp = "::net::SharedDictionaryUsageInfo"
+        },
+      ]
+      traits_headers = [ "//services/network/public/cpp/shared_dictionary_usage_info_mojom_traits.h" ]
+      traits_sources = [ "//services/network/public/cpp/shared_dictionary_usage_info_mojom_traits.cc" ]
+      traits_public_deps = [ "//net:shared_dictionary" ]
+    },
+  ]
+}
+
 # As with mojom_ip_address, this is a separate target to avoid a circular
 # dependency, which comes from the fact that proxy_resolver service will use
 # this interface, and the network service uses the proxy_resolver service.
@@ -429,6 +477,7 @@ mojom("url_loader_base") {
     "parsed_headers.mojom",
     "referrer_policy.mojom",
     "request_priority.mojom",
+    "shared_dictionary_access_observer.mojom",
     "source_location.mojom",
     "supports_loading_mode.mojom",
     "timing_allow_origin.mojom",
@@ -454,6 +503,7 @@ mojom("url_loader_base") {
     ":mojom_network_param",
     ":mojom_proxy_config",
     ":mojom_schemeful_site",
+    ":mojom_shared_dictionary",
     "//mojo/public/mojom/base",
     "//services/proxy_resolver/public/mojom",
     "//url/mojom:url_mojom_gurl",
@@ -590,6 +640,7 @@ mojom("url_loader_base") {
         "//services/network/public/mojom/trust_token_access_observer.mojom.h",
       ]
       traits_public_deps = [
+        ":mojom_network_isolation_key",
         "//base",
         "//url/mojom:url_mojom_gurl",
       ]
@@ -969,14 +1020,6 @@ mojom("mojom_first_party_sets") {
               cpp = "::net::FirstPartySetEntry"
             },
             {
-              mojom = "network.mojom.SamePartyCookieContextType"
-              cpp = "::net::SamePartyContext::Type"
-            },
-            {
-              mojom = "network.mojom.SamePartyContext"
-              cpp = "::net::SamePartyContext"
-            },
-            {
               mojom = "network.mojom.FirstPartySetMetadata"
               cpp = "::net::FirstPartySetMetadata"
               move_only = true
@@ -1303,6 +1346,7 @@ mojom("mojom") {
     "dhcp_wpad_url_client.mojom",
     "digitally_signed.mojom",
     "first_party_sets_access_delegate.mojom",
+    "hash_value.mojom",
     "http_cache_backend_file_operations.mojom",
     "key_pinning.mojom",
     "mdns_responder.mojom",
@@ -1338,6 +1382,7 @@ mojom("mojom") {
     ":mojom_network_param",
     ":mojom_proxy_config",
     ":mojom_schemeful_site",
+    ":mojom_shared_dictionary",
     ":mojom_structured_headers",
     ":url_loader_base",
     ":websocket_mojom",
@@ -1351,6 +1396,10 @@ mojom("mojom") {
 
   if (is_win) {
     public_deps += [ "//services/proxy_resolver_win/public/mojom" ]
+  }
+
+  if (is_android) {
+    sources += [ "system_dns_config_observer.mojom" ]
   }
 
   enabled_features = []
@@ -1514,7 +1563,39 @@ mojom("mojom") {
         "//services/network/public/cpp/transferable_socket_mojom_traits.cc",
       ]
     },
+    {
+      types = [
+        {
+          mojom = "network.mojom.SHA256HashValue"
+          cpp = "::net::SHA256HashValue"
+        },
+      ]
+      traits_headers =
+          [ "//services/network/public/cpp/hash_value_mojom_traits.h" ]
+      traits_sources =
+          [ "//services/network/public/cpp/hash_value_mojom_traits.cc" ]
+      traits_public_deps = [ "//net" ]
+    },
   ]
+
+  if (is_android) {
+    cpp_typemaps += [
+      {
+        types = [
+          {
+            mojom = "network.mojom.DnsConfig"
+            cpp = "::net::DnsConfig"
+          },
+        ]
+        traits_headers = [ "//services/network/public/cpp/system_dns_config_observer_mojom_traits.h" ]
+        traits_sources = [ "//services/network/public/cpp/system_dns_config_observer_mojom_traits.cc" ]
+        traits_public_deps = [
+          "//net",
+          "//services/network/public/cpp:cpp_base",
+        ]
+      },
+    ]
+  }
 
   if (enable_reporting) {
     cpp_typemaps += [

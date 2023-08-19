@@ -6,12 +6,53 @@ source_set("privacy_sandbox_attestations") {
   sources = [
     "privacy_sandbox_attestations.cc",
     "privacy_sandbox_attestations.h",
+    "privacy_sandbox_attestations_parser.cc",
+    "privacy_sandbox_attestations_parser.h",
   ]
 
-  deps = [ "//components/privacy_sandbox:features" ]
+  deps = [
+    "//components/privacy_sandbox:features",
+    "//components/privacy_sandbox:privacy_sandbox_settings_headers",
+    "//components/privacy_sandbox/privacy_sandbox_attestations/proto:proto",
+    "//content/public/browser",
+  ]
 
   public_deps = [
     "//base",
     "//net:net",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "privacy_sandbox_attestations_parser_unittest.cc",
+    "privacy_sandbox_attestations_unittest.cc",
+  ]
+
+  deps = [
+    ":privacy_sandbox_attestations",
+    ":test_support",
+    "//base/test:test_support",
+    "//components/privacy_sandbox:features",
+    "//components/privacy_sandbox/privacy_sandbox_attestations/proto:proto",
+    "//content/test:test_support",
+    "//net",
+    "//testing/gtest",
+    "//testing/gtest:gtest",
+    "//url:url",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "scoped_privacy_sandbox_attestations.cc",
+    "scoped_privacy_sandbox_attestations.h",
+  ]
+
+  deps = [
+    ":privacy_sandbox_attestations",
+    "//base",
   ]
 }

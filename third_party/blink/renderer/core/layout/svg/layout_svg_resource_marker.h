@@ -75,12 +75,12 @@ class LayoutSVGResourceMarker final : public LayoutSVGResourceContainer {
 
  private:
   void UpdateLayout() override;
-  SVGTransformChange CalculateLocalTransform(bool bounds_changed) final;
+  SVGTransformChange UpdateLocalTransform(
+      const gfx::RectF& reference_box) final;
   bool FindCycleFromSelf() const override;
 
   AffineTransform local_to_parent_transform_;
   gfx::SizeF viewport_size_;
-  bool needs_transform_update_;
   bool is_in_layout_;
 };
 

@@ -366,13 +366,14 @@ class WorkerSchedulerDelegateForTesting : public WorkerScheduler::Delegate {
 };
 
 MATCHER(BlockingDetailsHasCCNS, "Compares two blocking details.") {
-  bool vector_empty = arg.non_sticky_features_and_js_locations.empty();
+  bool vector_empty =
+      arg.non_sticky_features_and_js_locations.details_list.empty();
   bool vector_has_ccns =
-      arg.sticky_features_and_js_locations.Contains(
+      arg.sticky_features_and_js_locations.details_list.Contains(
           FeatureAndJSLocationBlockingBFCache(
               SchedulingPolicy::Feature::kMainResourceHasCacheControlNoStore,
               nullptr)) &&
-      arg.sticky_features_and_js_locations.Contains(
+      arg.sticky_features_and_js_locations.details_list.Contains(
           FeatureAndJSLocationBlockingBFCache(
               SchedulingPolicy::Feature::kMainResourceHasCacheControlNoCache,
               nullptr));

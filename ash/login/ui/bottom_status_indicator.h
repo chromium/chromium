@@ -28,7 +28,9 @@ class BottomStatusIndicator
   BottomStatusIndicator& operator=(const BottomStatusIndicator&) = delete;
   ~BottomStatusIndicator() override;
 
-  void SetIcon(const gfx::VectorIcon& vector_icon, ui::ColorId color_id);
+  void SetIcon(const gfx::VectorIcon& vector_icon,
+               ui::ColorId color_id,
+               int icon_size = 0);
 
   void set_role_for_accessibility(ax::mojom::Role role) { role_ = role; }
 

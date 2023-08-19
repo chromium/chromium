@@ -28,7 +28,6 @@
 #include "net/socket/socket_tag.h"
 #include "net/socket/socket_test_util.h"
 #include "net/spdy/buffered_spdy_framer.h"
-#include "net/spdy/http2_push_promise_index.h"
 #include "net/spdy/spdy_http_utils.h"
 #include "net/spdy/spdy_session.h"
 #include "net/spdy/spdy_session_pool.h"
@@ -138,10 +137,6 @@ class SpdyStreamTest : public ::testing::Test, public WithTaskEnvironment {
         ImportCertFromFile(GetTestCertsDirectory(), "spdy_pooling.pem");
     ASSERT_TRUE(ssl_.ssl_info.cert);
     session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_);
-  }
-
-  static size_t num_pushed_streams(base::WeakPtr<SpdySession> session) {
-    return session->num_pushed_streams_;
   }
 
   int32_t unacked_recv_window_bytes(base::WeakPtr<SpdyStream> stream) {

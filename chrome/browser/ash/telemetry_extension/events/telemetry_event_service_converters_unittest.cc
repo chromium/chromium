@@ -6,25 +6,35 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "ash/system/diagnostics/mojom/input.mojom.h"
+#include "chrome/browser/ash/telemetry_extension/telemetry/probe_service_converters.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
-#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_exception.mojom.h"
+#include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_extension_exception.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_keyboard_event.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash::converters {
+namespace ash::converters::events {
 
 // Tests that `ConvertStructPtr` function returns nullptr if input is
 // nullptr. `ConvertStructPtr` is a template, so we can test this function
 // with any valid type.
 TEST(TelemetryEventServiceConvertersTest, ConvertStructPtrTakesNullPtr) {
   EXPECT_TRUE(ConvertStructPtr(cros_healthd::mojom::EventInfoPtr()).is_null());
+}
+
+TEST(TelemetryEventServiceConvertersTest, OptionalUint32) {
+  constexpr double kValue = (1ULL << 31) + 1000;
+  EXPECT_EQ(ConvertStructPtr(cros_healthd::mojom::NullableUint32Ptr()),
+            absl::nullopt);
+  EXPECT_EQ(ConvertStructPtr(cros_healthd::mojom::NullableUint32::New(kValue)),
+            kValue);
 }
 
 TEST(TelemetryEventServiceConvertersTest, ConvertKeyboardConnectionType) {
@@ -191,6 +201,45 @@ TEST(TelemetryEventServiceConvertersTest, ConvertKeyboardTopRightKey) {
             crosapi::mojom::TelemetryKeyboardTopRightKey::kControlPanel);
 }
 
+TEST(TelemetryEventServiceConvertersTest, LegacyConvertNullableUint32Ptr) {
+  EXPECT_EQ(
+      LegacyConvertStructPtr(cros_healthd::mojom::NullableUint32::New(10)),
+      crosapi::mojom::UInt32Value::New(10));
+
+  EXPECT_EQ(LegacyConvertStructPtr(cros_healthd::mojom::NullableUint32Ptr()),
+            crosapi::mojom::UInt32ValuePtr());
+}
+
+TEST(TelemetryEventServiceConvertersTest, ConvertInputTouchButton) {
+  EXPECT_EQ(Convert(cros_healthd::mojom::InputTouchButton::kUnmappedEnumField),
+            crosapi::mojom::TelemetryInputTouchButton::kUnmappedEnumField);
+
+  EXPECT_EQ(Convert(cros_healthd::mojom::InputTouchButton::kLeft),
+            crosapi::mojom::TelemetryInputTouchButton::kLeft);
+
+  EXPECT_EQ(Convert(cros_healthd::mojom::InputTouchButton::kMiddle),
+            crosapi::mojom::TelemetryInputTouchButton::kMiddle);
+
+  EXPECT_EQ(Convert(cros_healthd::mojom::InputTouchButton::kRight),
+            crosapi::mojom::TelemetryInputTouchButton::kRight);
+}
+
+TEST(TelemetryEventServiceConvertersTest, ConvertTouchPointInfoPtr) {
+  EXPECT_EQ(ConvertStructPtr(cros_healthd::mojom::TouchPointInfo::New(
+                1, 2, 3, nullptr, nullptr, nullptr)),
+            crosapi::mojom::TelemetryTouchPointInfo::New(1, 2, 3, nullptr,
+                                                         nullptr, nullptr));
+
+  EXPECT_EQ(ConvertStructPtr(cros_healthd::mojom::TouchPointInfo::New(
+                4, 5, 6, cros_healthd::mojom::NullableUint32::New(7),
+                cros_healthd::mojom::NullableUint32::New(8),
+                cros_healthd::mojom::NullableUint32::New(9))),
+            crosapi::mojom::TelemetryTouchPointInfo::New(
+                4, 5, 6, crosapi::mojom::UInt32Value::New(7),
+                crosapi::mojom::UInt32Value::New(8),
+                crosapi::mojom::UInt32Value::New(9)));
+}
+
 TEST(TelemetryEventServiceConvertersTest,
      ConvertTelemetryAudioJackEventInfo_State) {
   EXPECT_EQ(
@@ -215,6 +264,21 @@ TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryUsbEventInfo_State) {
 
   EXPECT_EQ(Convert(cros_healthd::mojom::UsbEventInfo::State::kRemove),
             crosapi::mojom::TelemetryUsbEventInfo::State::kRemove);
+}
+
+TEST(TelemetryEventServiceConvertersTest,
+     ConvertTelemetryExternalDisplayEventInfo_State) {
+  EXPECT_EQ(Convert(cros_healthd::mojom::ExternalDisplayEventInfo::State::
+                        kUnmappedEnumField),
+            crosapi::mojom::TelemetryExternalDisplayEventInfo::State::
+                kUnmappedEnumField);
+
+  EXPECT_EQ(Convert(cros_healthd::mojom::ExternalDisplayEventInfo::State::kAdd),
+            crosapi::mojom::TelemetryExternalDisplayEventInfo::State::kAdd);
+
+  EXPECT_EQ(
+      Convert(cros_healthd::mojom::ExternalDisplayEventInfo::State::kRemove),
+      crosapi::mojom::TelemetryExternalDisplayEventInfo::State::kRemove);
 }
 
 TEST(TelemetryEventServiceConvertersTest,
@@ -250,6 +314,37 @@ TEST(TelemetryEventServiceConvertersTest,
 }
 
 TEST(TelemetryEventServiceConvertersTest,
+     ConvertTelemetryStylusGarageEventInfo_State) {
+  EXPECT_EQ(Convert(cros_healthd::mojom::StylusGarageEventInfo::State::
+                        kUnmappedEnumField),
+            crosapi::mojom::TelemetryStylusGarageEventInfo::State::
+                kUnmappedEnumField);
+
+  EXPECT_EQ(
+      Convert(cros_healthd::mojom::StylusGarageEventInfo::State::kInserted),
+      crosapi::mojom::TelemetryStylusGarageEventInfo::State::kInserted);
+
+  EXPECT_EQ(
+      Convert(cros_healthd::mojom::StylusGarageEventInfo::State::kRemoved),
+      crosapi::mojom::TelemetryStylusGarageEventInfo::State::kRemoved);
+}
+
+TEST(TelemetryEventServiceConvertersTest, ConvertStylusTouchPointInfoPtr) {
+  constexpr int kX = 1;
+  constexpr int kY = 2;
+  constexpr int kPressure = 3;
+  EXPECT_EQ(ConvertStructPtr(cros_healthd::mojom::StylusTouchPointInfo::New(
+                kX, kY, nullptr)),
+            crosapi::mojom::TelemetryStylusTouchPointInfo::New(kX, kY,
+                                                               absl::nullopt));
+
+  EXPECT_EQ(
+      ConvertStructPtr(cros_healthd::mojom::StylusTouchPointInfo::New(
+          kX, kY, cros_healthd::mojom::NullableUint32::New(kPressure))),
+      crosapi::mojom::TelemetryStylusTouchPointInfo::New(kX, kY, kPressure));
+}
+
+TEST(TelemetryEventServiceConvertersTest,
      ConvertTelemetryAudioJackEventInfo_DeviceType) {
   EXPECT_EQ(Convert(cros_healthd::mojom::AudioJackEventInfo::DeviceType::
                         kUnmappedEnumField),
@@ -277,25 +372,6 @@ TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryLidEventInfo_State) {
             crosapi::mojom::TelemetryLidEventInfo::State::kOpened);
 }
 
-TEST(TelemetryEventServiceConvertersTest,
-     ConvertTelemetryExtensionExceptionReason) {
-  EXPECT_EQ(
-      Convert(cros_healthd::mojom::Exception_Reason::kUnmappedEnumField),
-      crosapi::mojom::TelemetryExtensionException::Reason::kUnmappedEnumField);
-
-  EXPECT_EQ(
-      Convert(
-          cros_healthd::mojom::Exception_Reason::kMojoDisconnectWithoutReason),
-      crosapi::mojom::TelemetryExtensionException::Reason::
-          kMojoDisconnectWithoutReason);
-
-  EXPECT_EQ(Convert(cros_healthd::mojom::Exception_Reason::kUnexpected),
-            crosapi::mojom::TelemetryExtensionException::Reason::kUnexpected);
-
-  EXPECT_EQ(Convert(cros_healthd::mojom::Exception_Reason::kUnsupported),
-            crosapi::mojom::TelemetryExtensionException::Reason::kUnsupported);
-}
-
 TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryEventCategoryEnum) {
   EXPECT_EQ(
       Convert(crosapi::mojom::TelemetryEventCategoryEnum::kUnmappedEnumField),
@@ -310,6 +386,10 @@ TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryEventCategoryEnum) {
   EXPECT_EQ(Convert(crosapi::mojom::TelemetryEventCategoryEnum::kUsb),
             cros_healthd::mojom::EventCategoryEnum::kUsb);
 
+  EXPECT_EQ(
+      Convert(crosapi::mojom::TelemetryEventCategoryEnum::kExternalDisplay),
+      cros_healthd::mojom::EventCategoryEnum::kExternalDisplay);
+
   EXPECT_EQ(Convert(crosapi::mojom::TelemetryEventCategoryEnum::kSdCard),
             cros_healthd::mojom::EventCategoryEnum::kSdCard);
 
@@ -319,6 +399,27 @@ TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryEventCategoryEnum) {
   EXPECT_EQ(
       Convert(crosapi::mojom::TelemetryEventCategoryEnum::kKeyboardDiagnostic),
       cros_healthd::mojom::EventCategoryEnum::kKeyboardDiagnostic);
+
+  EXPECT_EQ(Convert(crosapi::mojom::TelemetryEventCategoryEnum::kStylusGarage),
+            cros_healthd::mojom::EventCategoryEnum::kStylusGarage);
+
+  EXPECT_EQ(
+      Convert(crosapi::mojom::TelemetryEventCategoryEnum::kTouchpadButton),
+      cros_healthd::mojom::EventCategoryEnum::kTouchpad);
+
+  EXPECT_EQ(Convert(crosapi::mojom::TelemetryEventCategoryEnum::kTouchpadTouch),
+            cros_healthd::mojom::EventCategoryEnum::kTouchpad);
+
+  EXPECT_EQ(
+      Convert(crosapi::mojom::TelemetryEventCategoryEnum::kTouchpadConnected),
+      cros_healthd::mojom::EventCategoryEnum::kTouchpad);
+
+  EXPECT_EQ(Convert(crosapi::mojom::TelemetryEventCategoryEnum::kStylusTouch),
+            cros_healthd::mojom::EventCategoryEnum::kStylus);
+
+  EXPECT_EQ(
+      Convert(crosapi::mojom::TelemetryEventCategoryEnum::kStylusConnected),
+      cros_healthd::mojom::EventCategoryEnum::kStylus);
 }
 
 TEST(TelemetryEventServiceConvertersTest, ConvertKeyboardInfo) {
@@ -486,6 +587,49 @@ TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryUsbEventInfoPtr) {
                 crosapi::mojom::TelemetryUsbEventInfo::State::kAdd));
 }
 
+TEST(TelemetryEventServiceConvertersTest,
+     ConvertTelemetryExternalDisplayEventInfoPtr) {
+  constexpr uint32_t kDisplayWidth = 0;
+  constexpr uint32_t kDisplayHeight = 1;
+  constexpr uint32_t kResolutionHorizontal = 2;
+  constexpr uint32_t kResolutionVertical = 3;
+  constexpr double kRefreshRate = 4.4;
+  constexpr char kManufacturer[] = "manufacturer";
+  constexpr uint16_t kModelId = 5;
+  constexpr uint32_t kSerialNumber = 6;
+  constexpr uint8_t kManufactureWeek = 7;
+  constexpr uint16_t kManufactureYear = 8;
+  constexpr char kEdidVersion[] = "1.4";
+  constexpr cros_healthd::mojom::DisplayInputType kInputType =
+      cros_healthd::mojom::DisplayInputType::kDigital;
+  constexpr char kDisplayName[] = "external_display_1";
+
+  auto input = cros_healthd::mojom::ExternalDisplayEventInfo::New();
+  input->state = cros_healthd::mojom::ExternalDisplayEventInfo::State::kAdd;
+  input->display_info = cros_healthd::mojom::ExternalDisplayInfo::New(
+      cros_healthd::mojom::NullableUint32::New(kDisplayWidth),
+      cros_healthd::mojom::NullableUint32::New(kDisplayHeight),
+      cros_healthd::mojom::NullableUint32::New(kResolutionHorizontal),
+      cros_healthd::mojom::NullableUint32::New(kResolutionVertical),
+      cros_healthd::mojom::NullableDouble::New(kRefreshRate),
+      std::string(kManufacturer),
+      cros_healthd::mojom::NullableUint16::New(kModelId),
+      cros_healthd::mojom::NullableUint32::New(kSerialNumber),
+      cros_healthd::mojom::NullableUint8::New(kManufactureWeek),
+      cros_healthd::mojom::NullableUint16::New(kManufactureYear),
+      std::string(kEdidVersion), kInputType, std::string(kDisplayName));
+
+  EXPECT_EQ(
+      ConvertStructPtr(std::move(input)),
+      crosapi::mojom::TelemetryExternalDisplayEventInfo::New(
+          crosapi::mojom::TelemetryExternalDisplayEventInfo::State::kAdd,
+          crosapi::mojom::ProbeExternalDisplayInfo::New(
+              kDisplayWidth, kDisplayHeight, kResolutionHorizontal,
+              kResolutionVertical, kRefreshRate, kManufacturer, kModelId,
+              kSerialNumber, kManufactureWeek, kManufactureYear, kEdidVersion,
+              ash::converters::telemetry::Convert(kInputType), kDisplayName)));
+}
+
 TEST(TelemetryEventServiceConvertersTest, ConvertTelemetrySdCardEventInfoPtr) {
   auto input = cros_healthd::mojom::SdCardEventInfo::New();
   input->state = cros_healthd::mojom::SdCardEventInfo::State::kAdd;
@@ -504,99 +648,15 @@ TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryPowerEventInfoPtr) {
                 crosapi::mojom::TelemetryPowerEventInfo::State::kAcInserted));
 }
 
-TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryExtensionException) {
-  constexpr char kDebugMessage[] = "TestMessage";
-
-  auto input = cros_healthd::mojom::Exception::New();
-  input->reason = cros_healthd::mojom::Exception::Reason::kUnexpected;
-  input->debug_message = kDebugMessage;
-
-  auto result = ConvertStructPtr(std::move(input));
-
-  ASSERT_TRUE(result);
-  EXPECT_EQ(result->reason,
-            crosapi::mojom::TelemetryExtensionException::Reason::kUnexpected);
-  EXPECT_EQ(result->debug_message, kDebugMessage);
-}
-
 TEST(TelemetryEventServiceConvertersTest,
-     ConvertTelemetryExtensionSupportedPtr) {
-  EXPECT_EQ(ConvertStructPtr(cros_healthd::mojom::Supported::New()),
-            crosapi::mojom::TelemetryExtensionSupported::New());
-}
-
-TEST(TelemetryEventServiceConvertersTest,
-     ConvertTelemetryExtensionUnsupportedReasonPtr) {
-  EXPECT_EQ(
-      ConvertStructPtr(
-          cros_healthd::mojom::UnsupportedReason::NewUnmappedUnionField(9)),
-      crosapi::mojom::TelemetryExtensionUnsupportedReason::
-          NewUnmappedUnionField(9));
-}
-
-TEST(TelemetryEventServiceConvertersTest,
-     ConvertTelemetryExtensionUnsupportedPtr) {
-  constexpr char kDebugMsg[] = "Test";
-  constexpr uint8_t kUnmappedUnionField = 4;
-
-  auto input = cros_healthd::mojom::Unsupported::New();
-  input->debug_message = kDebugMsg;
-  input->reason = cros_healthd::mojom::UnsupportedReason::NewUnmappedUnionField(
-      kUnmappedUnionField);
-
-  auto result = ConvertStructPtr(std::move(input));
-
-  ASSERT_TRUE(result);
-  EXPECT_EQ(result->debug_message, kDebugMsg);
-  EXPECT_EQ(result->reason,
-            crosapi::mojom::TelemetryExtensionUnsupportedReason::
-                NewUnmappedUnionField(kUnmappedUnionField));
-}
-
-TEST(TelemetryEventServiceConvertersTest,
-     ConvertTelemetryExtensionSupportStatusPtr) {
-  constexpr char kDebugMsg[] = "Test";
-  constexpr uint8_t kUnmappedUnionField = 4;
-
-  EXPECT_EQ(ConvertStructPtr(cros_healthd::mojom::SupportStatus::NewSupported(
-                cros_healthd::mojom::Supported::New())),
-            crosapi::mojom::TelemetryExtensionSupportStatus::NewSupported(
-                crosapi::mojom::TelemetryExtensionSupported::New()));
+     ConvertTelemetryStylusGarageEventInfoPtr) {
+  auto input = cros_healthd::mojom::StylusGarageEventInfo::New();
+  input->state = cros_healthd::mojom::StylusGarageEventInfo::State::kInserted;
 
   EXPECT_EQ(
-      ConvertStructPtr(
-          cros_healthd::mojom::SupportStatus::NewUnmappedUnionField(
-              kUnmappedUnionField)),
-      crosapi::mojom::TelemetryExtensionSupportStatus::NewUnmappedUnionField(
-          kUnmappedUnionField));
-
-  auto unsupported = cros_healthd::mojom::Unsupported::New();
-  unsupported->debug_message = kDebugMsg;
-  unsupported->reason =
-      cros_healthd::mojom::UnsupportedReason::NewUnmappedUnionField(
-          kUnmappedUnionField);
-
-  auto unsupported_result =
-      ConvertStructPtr(cros_healthd::mojom::SupportStatus::NewUnsupported(
-          std::move(unsupported)));
-
-  ASSERT_TRUE(unsupported_result->is_unsupported());
-  EXPECT_EQ(unsupported_result->get_unsupported()->debug_message, kDebugMsg);
-  EXPECT_EQ(unsupported_result->get_unsupported()->reason,
-            crosapi::mojom::TelemetryExtensionUnsupportedReason::
-                NewUnmappedUnionField(kUnmappedUnionField));
-
-  auto exception = cros_healthd::mojom::Exception::New();
-  exception->reason = cros_healthd::mojom::Exception::Reason::kUnexpected;
-  exception->debug_message = kDebugMsg;
-
-  auto exception_result = ConvertStructPtr(
-      cros_healthd::mojom::SupportStatus::NewException(std::move(exception)));
-
-  ASSERT_TRUE(exception_result->is_exception());
-  EXPECT_EQ(exception_result->get_exception()->reason,
-            crosapi::mojom::TelemetryExtensionException::Reason::kUnexpected);
-  EXPECT_EQ(exception_result->get_exception()->debug_message, kDebugMsg);
+      ConvertStructPtr(std::move(input)),
+      crosapi::mojom::TelemetryStylusGarageEventInfo::New(
+          crosapi::mojom::TelemetryStylusGarageEventInfo::State::kInserted));
 }
 
 TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryEventInfoPtr) {
@@ -618,4 +678,163 @@ TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryEventInfoPtr) {
   EXPECT_TRUE(ConvertStructPtr(std::move(illegal_input)).is_null());
 }
 
-}  // namespace ash::converters
+TEST(TelemetryEventServiceConvertersTest, ConvertTouchpadEventInfoButtonEvent) {
+  auto button_event_input = cros_healthd::mojom::TouchpadButtonEvent::New(
+      cros_healthd::mojom::InputTouchButton::kLeft, true);
+  auto input = cros_healthd::mojom::EventInfo::NewTouchpadEventInfo(
+      cros_healthd::mojom::TouchpadEventInfo::NewButtonEvent(
+          std::move(button_event_input)));
+
+  auto result = ConvertStructPtr(std::move(input));
+
+  EXPECT_TRUE(result->is_touchpad_button_event_info());
+  const auto& button_event_output = result->get_touchpad_button_event_info();
+  EXPECT_EQ(button_event_output->state,
+            crosapi::mojom::TelemetryTouchpadButtonEventInfo_State::kPressed);
+  EXPECT_EQ(button_event_output->button,
+            crosapi::mojom::TelemetryInputTouchButton::kLeft);
+}
+
+TEST(TelemetryEventServiceConvertersTest, ConvertTouchpadEventInfoTouchEvent) {
+  std::vector<cros_healthd::mojom::TouchPointInfoPtr> touch_points;
+  touch_points.push_back(cros_healthd::mojom::TouchPointInfo::New(
+      1, 2, 3, nullptr, nullptr, nullptr));
+  touch_points.push_back(cros_healthd::mojom::TouchPointInfo::New(
+      4, 5, 6, cros_healthd::mojom::NullableUint32::New(7),
+      cros_healthd::mojom::NullableUint32::New(8),
+      cros_healthd::mojom::NullableUint32::New(9)));
+
+  auto touch_event_input =
+      cros_healthd::mojom::TouchpadTouchEvent::New(std::move(touch_points));
+  auto input = cros_healthd::mojom::EventInfo::NewTouchpadEventInfo(
+      cros_healthd::mojom::TouchpadEventInfo::NewTouchEvent(
+          std::move(touch_event_input)));
+
+  auto result = ConvertStructPtr(std::move(input));
+
+  EXPECT_TRUE(result->is_touchpad_touch_event_info());
+  const auto& touch_event_output = result->get_touchpad_touch_event_info();
+  EXPECT_EQ(touch_event_output->touch_points.size(), 2UL);
+  EXPECT_EQ(touch_event_output->touch_points[0],
+            crosapi::mojom::TelemetryTouchPointInfo::New(1, 2, 3, nullptr,
+                                                         nullptr, nullptr));
+
+  EXPECT_EQ(touch_event_output->touch_points[1],
+            crosapi::mojom::TelemetryTouchPointInfo::New(
+                4, 5, 6, crosapi::mojom::UInt32Value::New(7),
+                crosapi::mojom::UInt32Value::New(8),
+                crosapi::mojom::UInt32Value::New(9)));
+}
+
+TEST(TelemetryEventServiceConvertersTest,
+     ConvertTouchpadEventInfoConnectedEvent) {
+  std::vector<cros_healthd::mojom::InputTouchButton> buttons{
+      cros_healthd::mojom::InputTouchButton::kLeft,
+      cros_healthd::mojom::InputTouchButton::kMiddle,
+      cros_healthd::mojom::InputTouchButton::kRight};
+
+  auto connected_event_input = cros_healthd::mojom::TouchpadConnectedEvent::New(
+      1, 2, 3, std::move(buttons));
+  auto input = cros_healthd::mojom::EventInfo::NewTouchpadEventInfo(
+      cros_healthd::mojom::TouchpadEventInfo::NewConnectedEvent(
+          std::move(connected_event_input)));
+
+  auto result = ConvertStructPtr(std::move(input));
+  EXPECT_TRUE(result->is_touchpad_connected_event_info());
+  const auto& connected_event_output =
+      result->get_touchpad_connected_event_info();
+
+  EXPECT_EQ(connected_event_output->max_x, 1UL);
+  EXPECT_EQ(connected_event_output->max_y, 2UL);
+  EXPECT_EQ(connected_event_output->max_pressure, 3UL);
+  auto expected_buttons =
+      std::vector<crosapi::mojom::TelemetryInputTouchButton>{
+          crosapi::mojom::TelemetryInputTouchButton::kLeft,
+          crosapi::mojom::TelemetryInputTouchButton::kMiddle,
+          crosapi::mojom::TelemetryInputTouchButton::kRight};
+  EXPECT_EQ(connected_event_output->buttons, expected_buttons);
+}
+
+TEST(TelemetryEventServiceConvertersTest, ConvertStylusEventInfoTouchEvent) {
+  constexpr int kX = 1;
+  constexpr int kY = 2;
+  constexpr int kPressure = 3;
+  {
+    auto touch_point =
+        cros_healthd::mojom::StylusTouchPointInfo::New(kX, kY, nullptr);
+    auto touch_event_input =
+        cros_healthd::mojom::StylusEventInfo::NewTouchEvent(
+            cros_healthd::mojom::StylusTouchEvent::New(std::move(touch_point)));
+
+    auto input = cros_healthd::mojom::EventInfo::NewStylusEventInfo(
+        std::move(touch_event_input));
+
+    auto result = ConvertStructPtr(std::move(input));
+
+    EXPECT_TRUE(result->is_stylus_touch_event_info());
+    const auto& touch_event_output = result->get_stylus_touch_event_info();
+    EXPECT_FALSE(touch_event_output->touch_point.is_null());
+    EXPECT_EQ(touch_event_output->touch_point,
+              crosapi::mojom::TelemetryStylusTouchPointInfo::New(
+                  kX, kY, absl::nullopt));
+  }
+  {
+    auto touch_point = cros_healthd::mojom::StylusTouchPointInfo::New(
+        kX, kY, cros_healthd::mojom::NullableUint32::New(kPressure));
+    auto touch_event_input =
+        cros_healthd::mojom::StylusEventInfo::NewTouchEvent(
+            cros_healthd::mojom::StylusTouchEvent::New(std::move(touch_point)));
+
+    auto input = cros_healthd::mojom::EventInfo::NewStylusEventInfo(
+        std::move(touch_event_input));
+
+    auto result = ConvertStructPtr(std::move(input));
+
+    EXPECT_TRUE(result->is_stylus_touch_event_info());
+    const auto& touch_event_output = result->get_stylus_touch_event_info();
+    EXPECT_FALSE(touch_event_output->touch_point.is_null());
+    EXPECT_EQ(
+        touch_event_output->touch_point,
+        crosapi::mojom::TelemetryStylusTouchPointInfo::New(kX, kY, kPressure));
+  }
+  {
+    auto touch_event_input =
+        cros_healthd::mojom::StylusEventInfo::NewTouchEvent(
+            cros_healthd::mojom::StylusTouchEvent::New(nullptr));
+
+    auto input = cros_healthd::mojom::EventInfo::NewStylusEventInfo(
+        std::move(touch_event_input));
+
+    auto result = ConvertStructPtr(std::move(input));
+
+    EXPECT_TRUE(result->is_stylus_touch_event_info());
+    const auto& touch_event_output = result->get_stylus_touch_event_info();
+    EXPECT_TRUE(touch_event_output->touch_point.is_null());
+  }
+}
+
+TEST(TelemetryEventServiceConvertersTest,
+     ConvertStylusEventInfoConnectedEvent) {
+  constexpr int kMaxX = 1;
+  constexpr int kMaxY = 2;
+  constexpr int kMaxPressure = 3;
+  auto connected_event_input =
+      cros_healthd::mojom::StylusEventInfo::NewConnectedEvent(
+          cros_healthd::mojom::StylusConnectedEvent::New(kMaxX, kMaxY,
+                                                         kMaxPressure));
+
+  auto input = cros_healthd::mojom::EventInfo::NewStylusEventInfo(
+      std::move(connected_event_input));
+
+  auto result = ConvertStructPtr(std::move(input));
+  EXPECT_TRUE(result->is_stylus_connected_event_info());
+  const auto& connected_event_output =
+      result->get_stylus_connected_event_info();
+
+  EXPECT_EQ(connected_event_output->max_x, static_cast<uint32_t>(kMaxX));
+  EXPECT_EQ(connected_event_output->max_y, static_cast<uint32_t>(kMaxY));
+  EXPECT_EQ(connected_event_output->max_pressure,
+            static_cast<uint32_t>(kMaxPressure));
+}
+
+}  // namespace ash::converters::events

@@ -25,16 +25,19 @@ WMDesksEventsRouter::WMDesksEventsRouter(Profile* profile)
 
 WMDesksEventsRouter::~WMDesksEventsRouter() = default;
 
-void WMDesksEventsRouter::OnDeskAdded(const base::Uuid& desk_id) {
+void WMDesksEventsRouter::OnDeskAdded(const base::Uuid& desk_id,
+                                      bool from_undo) {
   if (!event_router_) {
     CHECK_IS_TEST();
     return;
   }
-  base::Value::List args;
-  args.Append(desk_id.AsLowercaseString());
+
   auto event = std::make_unique<Event>(
-      events::DESK_EVENTS_ON_DESK_ADDED,
-      api::wm_desks_private::OnDeskAdded::kEventName, std::move(args));
+      from_undo ? events::DESK_EVENTS_ON_DESK_REMOVAL_UNDONE
+                : events::DESK_EVENTS_ON_DESK_ADDED,
+      api::wm_desks_private::OnDeskAdded::kEventName,
+      base::Value::List()
+          .Append(desk_id.AsLowercaseString()));
   event_router_->BroadcastEvent(std::move(event));
 }
 
@@ -43,11 +46,11 @@ void WMDesksEventsRouter::OnDeskRemoved(const base::Uuid& desk_id) {
     CHECK_IS_TEST();
     return;
   }
-  base::Value::List args;
-  args.Append(desk_id.AsLowercaseString());
+
   auto event = std::make_unique<Event>(
       events::DESK_EVENTS_ON_DESK_REMOVED,
-      api::wm_desks_private::OnDeskRemoved::kEventName, std::move(args));
+      api::wm_desks_private::OnDeskRemoved::kEventName,
+      base::Value::List().Append(desk_id.AsLowercaseString()));
   event_router_->BroadcastEvent(std::move(event));
 }
 
@@ -57,12 +60,13 @@ void WMDesksEventsRouter::OnDeskSwitched(const base::Uuid& deactivated,
     CHECK_IS_TEST();
     return;
   }
-  base::Value::List args;
-  args.Append(deactivated.AsLowercaseString());
-  args.Append(activated.AsLowercaseString());
-  auto event = std::make_unique<Event>(
-      events::DESK_EVENTS_ON_DESK_SWITCHED,
-      api::wm_desks_private::OnDeskSwitched::kEventName, std::move(args));
+
+  auto event =
+      std::make_unique<Event>(events::DESK_EVENTS_ON_DESK_SWITCHED,
+                              api::wm_desks_private::OnDeskSwitched::kEventName,
+                              base::Value::List()
+                                  .Append(deactivated.AsLowercaseString())
+                                  .Append(activated.AsLowercaseString()));
   event_router_->BroadcastEvent(std::move(event));
 }
 

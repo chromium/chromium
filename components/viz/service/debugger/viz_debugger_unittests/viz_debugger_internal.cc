@@ -17,11 +17,6 @@ VizDebuggerInternal::GetDrawRectCalls() {
   return draw_rect_calls_;
 }
 
-std::vector<VizDebuggerInternal::DrawTextCall>
-VizDebuggerInternal::GetDrawTextCalls() {
-  return draw_text_calls_;
-}
-
 std::vector<VizDebuggerInternal::LogCall> VizDebuggerInternal::GetLogs() {
   return logs_;
 }
@@ -35,11 +30,7 @@ int VizDebuggerInternal::GetSubmissionCount() {
 }
 
 int VizDebuggerInternal::GetRectCallsTailIdx() {
-  return draw_rect_calls_tail_idx_;
-}
-
-int VizDebuggerInternal::GetTextCallsTailIdx() {
-  return draw_text_calls_tail_idx_;
+  return draw_calls_tail_idx_;
 }
 
 int VizDebuggerInternal::GetLogsTailIdx() {
@@ -48,10 +39,6 @@ int VizDebuggerInternal::GetLogsTailIdx() {
 
 int VizDebuggerInternal::GetRectCallsSize() {
   return draw_rect_calls_.size();
-}
-
-int VizDebuggerInternal::GetTextCallsSize() {
-  return draw_text_calls_.size();
 }
 
 int VizDebuggerInternal::GetLogsSize() {
@@ -64,7 +51,6 @@ rwlock::RWLock* VizDebuggerInternal::GetRWLock() {
 
 void VizDebuggerInternal::SetBufferCapacities(uint32_t bufferSize) {
   draw_rect_calls_.resize(bufferSize);
-  draw_text_calls_.resize(bufferSize);
   logs_.resize(bufferSize);
   sources_.reserve(bufferSize);
 }
@@ -73,19 +59,19 @@ bool VizDebuggerInternal::Reset() {
   submission_count_ = 0;
   buffer_id = 0;
   draw_rect_calls_.clear();
-  draw_text_calls_.clear();
+
   logs_.clear();
   buffers_.clear();
 
   draw_rect_calls_.resize(kDefaultBufferSize);
-  draw_text_calls_.resize(kDefaultBufferSize);
+
   logs_.resize(kDefaultBufferSize);
 
   last_sent_source_count_ = 0;
   sources_.clear();
   // Reset index counters for each buffer.
-  draw_rect_calls_tail_idx_ = 0;
-  draw_text_calls_tail_idx_ = 0;
+  draw_calls_tail_idx_ = 0;
+
   logs_tail_idx_ = 0;
   enabled_ = false;
   new_filters_.clear();

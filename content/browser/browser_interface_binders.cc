@@ -90,7 +90,9 @@
 #include "media/mojo/mojom/media_player.mojom.h"
 #include "media/mojo/mojom/remoting.mojom.h"
 #include "media/mojo/mojom/video_decode_perf_history.mojom.h"
+#include "media/mojo/mojom/video_encoder_metrics_provider.mojom.h"
 #include "media/mojo/mojom/webrtc_video_perf.mojom.h"
+#include "media/mojo/services/mojo_video_encoder_metrics_provider_service.h"
 #include "media/mojo/services/webrtc_video_perf_recorder.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "services/device/public/mojom/battery_monitor.mojom.h"
@@ -136,6 +138,7 @@
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 #include "third_party/blink/public/mojom/input/input_host.mojom.h"
 #include "third_party/blink/public/mojom/keyboard_lock/keyboard_lock.mojom.h"
+#include "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
 #include "third_party/blink/public/mojom/loader/content_security_notifier.mojom.h"
 #include "third_party/blink/public/mojom/loader/navigation_predictor.mojom.h"
@@ -176,9 +179,7 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "content/browser/android/date_time_chooser_android.h"
 #include "content/browser/android/text_suggestion_host_android.h"
-#include "content/browser/environment_integrity/environment_integrity_service_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "services/device/public/mojom/nfc.mojom.h"
 #include "third_party/blink/public/mojom/hid/hid.mojom.h"
@@ -192,8 +193,17 @@
 #include "third_party/blink/public/mojom/serial/serial.mojom.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+#include "content/browser/date_time_chooser/date_time_chooser.h"
+#endif
+
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING)
 #include "media/mojo/mojom/remoting.mojom-forward.h"
+#endif
+
+#if BUILDFLAG(ENABLE_VR)
+#include "content/browser/xr/webxr_internals/mojom/webxr_internals.mojom.h"
+#include "content/browser/xr/webxr_internals/webxr_internals_ui.h"
 #endif
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
@@ -317,7 +327,7 @@ void BindQuotaManagerHost(
     RenderFrameHostImpl* host,
     mojo::PendingReceiver<blink::mojom::QuotaManagerHost> receiver) {
   host->GetStoragePartition()->GetQuotaContext()->BindQuotaManagerHost(
-      host->storage_key(), std::move(receiver));
+      host->GetStorageKey(), std::move(receiver));
 }
 
 void BindSharedWorkerConnector(
@@ -326,15 +336,17 @@ void BindSharedWorkerConnector(
   SharedWorkerConnectorImpl::Create(host->GetGlobalId(), std::move(receiver));
 }
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 void BindDateTimeChooserForFrame(
     RenderFrameHost* host,
     mojo::PendingReceiver<blink::mojom::DateTimeChooser> receiver) {
-  auto* date_time_chooser = DateTimeChooserAndroid::FromWebContents(
+  auto* date_time_chooser = DateTimeChooser::GetDateTimeChooser(
       WebContents::FromRenderFrameHost(host));
   date_time_chooser->OnDateTimeChooserReceiver(std::move(receiver));
 }
+#endif
 
+#if BUILDFLAG(IS_ANDROID)
 void BindTextSuggestionHostForFrame(
     RenderFrameHost* host,
     mojo::PendingReceiver<blink::mojom::TextSuggestionHost> receiver) {
@@ -987,6 +999,10 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
       &RenderFrameHostImpl::BindMediaMetricsProviderReceiver,
       base::Unretained(host)));
 
+  map->Add<media::mojom::VideoEncoderMetricsProvider>(base::BindRepeating(
+      &RenderFrameHostImpl::BindVideoEncoderMetricsProviderReceiver,
+      base::Unretained(host)));
+
   map->Add<media::mojom::WebrtcVideoPerfRecorder>(base::BindRepeating(
       [](RenderFrameHostImpl* host,
          mojo::PendingReceiver<media::mojom::WebrtcVideoPerfRecorder>
@@ -1020,7 +1036,7 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
          mojo::PendingReceiver<blink::mojom::OneShotBackgroundSyncService>
              receiver) {
         host->GetProcess()->CreateOneShotSyncService(
-            host->storage_key().origin(), std::move(receiver));
+            host->GetStorageKey().origin(), std::move(receiver));
       },
       base::Unretained(host)));
 
@@ -1029,7 +1045,7 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
          mojo::PendingReceiver<blink::mojom::PeriodicBackgroundSyncService>
              receiver) {
         host->GetProcess()->CreatePeriodicSyncService(
-            host->storage_key().origin(), std::move(receiver));
+            host->GetStorageKey().origin(), std::move(receiver));
       },
       base::Unretained(host)));
 
@@ -1120,11 +1136,17 @@ void PopulateBinderMapWithContext(
       &EmptyBinderForFrame<blink::mojom::AnchorElementMetricsHost>));
   map->Add<blink::mojom::CredentialManager>(base::BindRepeating(
       &EmptyBinderForFrame<blink::mojom::CredentialManager>));
+  map->Add<blink::mojom::LCPCriticalPathPredictorHost>(base::BindRepeating(
+      &EmptyBinderForFrame<blink::mojom::LCPCriticalPathPredictorHost>));
   if (base::FeatureList::IsEnabled(blink::features::kBrowsingTopics) &&
       base::FeatureList::IsEnabled(
           blink::features::kBrowsingTopicsDocumentAPI)) {
     map->Add<blink::mojom::BrowsingTopicsDocumentService>(
         base::BindRepeating(&BrowsingTopicsDocumentHost::CreateMojoService));
+  }
+  if (base::FeatureList::IsEnabled(blink::features::kWebEnvironmentIntegrity)) {
+    map->Add<blink::mojom::EnvironmentIntegrityService>(base::BindRepeating(
+        &EmptyBinderForFrame<blink::mojom::EnvironmentIntegrityService>));
   }
 #if !BUILDFLAG(IS_ANDROID)
   map->Add<blink::mojom::DirectSocketsService>(
@@ -1185,22 +1207,20 @@ void PopulateBinderMapWithContext(
                                          ProcessInternalsUI>(map);
   RegisterWebUIControllerInterfaceBinder<storage::mojom::QuotaInternalsHandler,
                                          QuotaInternalsUI>(map);
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_VR)
+  RegisterWebUIControllerInterfaceBinder<webxr::mojom::WebXrInternalsHandler,
+                                         WebXrInternalsUI>(map);
+#endif
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   map->Add<blink::mojom::DateTimeChooser>(
       base::BindRepeating(&BindDateTimeChooserForFrame));
+#endif
+#if BUILDFLAG(IS_ANDROID)
   map->Add<blink::mojom::TextSuggestionHost>(
       base::BindRepeating(&BindTextSuggestionHostForFrame));
-  if (base::FeatureList::IsEnabled(features::kWebEnvironmentIntegrity)) {
-    map->Add<blink::mojom::EnvironmentIntegrityService>(
-        base::BindRepeating(&EnvironmentIntegrityServiceImpl::Create));
-  }
 #else
   map->Add<blink::mojom::TextSuggestionHost>(base::BindRepeating(
       &EmptyBinderForFrame<blink::mojom::TextSuggestionHost>));
-  if (base::FeatureList::IsEnabled(features::kWebEnvironmentIntegrity)) {
-    map->Add<blink::mojom::EnvironmentIntegrityService>(base::BindRepeating(
-        &EmptyBinderForFrame<blink::mojom::EnvironmentIntegrityService>));
-  }
 #endif  // BUILDFLAG(IS_ANDROID)
 
   map->Add<blink::mojom::ClipboardHost>(
@@ -1275,6 +1295,11 @@ void PopulateDedicatedWorkerBinders(DedicatedWorkerHost* host,
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE}));
 
+#if !BUILDFLAG(IS_ANDROID)
+  map->Add<blink::mojom::DirectSocketsService>(
+      base::BindRepeating(&DedicatedWorkerHost::CreateDirectSocketsService,
+                          base::Unretained(host)));
+#endif
   map->Add<blink::mojom::WebUsbService>(base::BindRepeating(
       &DedicatedWorkerHost::CreateWebUsbService, base::Unretained(host)));
   map->Add<blink::mojom::WebSocketConnector>(base::BindRepeating(

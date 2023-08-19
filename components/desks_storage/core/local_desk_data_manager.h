@@ -27,6 +27,8 @@ class OverviewTestBase;
 }  // namespace ash
 
 namespace desks_storage {
+class LocalDeskDataManagerTest;
+
 // The LocalDeskDataManager is the local storage implementation of
 // the DeskModel interface and handles storage operations for local
 // desk templates and save and recall desks.
@@ -105,7 +107,7 @@ class LocalDeskDataManager : public DeskModel, public AdminTemplateModel {
   size_t GetDeskTemplateEntryCount() const override;
   size_t GetMaxSaveAndRecallDeskEntryCount() const override;
   size_t GetMaxDeskTemplateEntryCount() const override;
-  std::vector<base::Uuid> GetAllEntryUuids() const override;
+  std::set<base::Uuid> GetAllEntryUuids() const override;
   bool IsReady() const override;
   bool IsSyncing() const override;
   ash::DeskTemplate* FindOtherEntryWithName(
@@ -121,6 +123,16 @@ class LocalDeskDataManager : public DeskModel, public AdminTemplateModel {
 
  private:
   friend class ash::OverviewTestBase;
+  friend class LocalDeskDataManagerTest;
+
+  // Update entry status used in testing to verify
+  // behavior.
+  enum class UpdateEntryStatus {
+    kOk,
+    kNotFound,
+    kDuplicate,
+    kOutdatedPolicy,
+  };
 
   // Loads templates from `user_data_dir_path` and `sub_directory_name` into the
   // `saved_desks_list_`, based on the template's desk type, if the cache is not
@@ -190,6 +202,9 @@ class LocalDeskDataManager : public DeskModel, public AdminTemplateModel {
 
   // Cache status of the templates cache for both desk types.
   CacheStatus cache_status_;
+
+  // Used in testing to verify update behavior.
+  UpdateEntryStatus last_update_status_;
 
   // In memory cache of saved desks based on their type.
   base::flat_map<ash::DeskTemplateType, SavedDesks> saved_desks_list_;

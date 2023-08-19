@@ -116,7 +116,7 @@ class Json5File(object):
         merged_doc = dict()
         for path in file_paths:
             assert path.endswith(".json5")
-            with open(os.path.abspath(path)) as json5_file:
+            with open(os.path.abspath(path), encoding='utf-8') as json5_file:
                 doc = json5.loads(json5_file.read())
                 if not merged_doc:
                     merged_doc = doc

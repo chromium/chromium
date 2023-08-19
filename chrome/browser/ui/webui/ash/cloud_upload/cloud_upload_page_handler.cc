@@ -6,6 +6,7 @@
 #include <cstddef>
 
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_macros.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
@@ -114,7 +115,6 @@ void CloudUploadPageHandler::RespondWithLocalTaskAndClose(int task_position) {
 void CloudUploadPageHandler::SetOfficeAsDefaultHandler() {
   using file_manager::file_tasks::kActionIdOpenInOffice;
 
-  // TODO(b:275912658): Only set handlers if that group has no type set already
   file_manager::file_tasks::SetWordFileHandlerToFilesSWA(profile_,
                                                          kActionIdOpenInOffice);
   file_manager::file_tasks::SetExcelFileHandlerToFilesSWA(
@@ -158,6 +158,11 @@ void CloudUploadPageHandler::GetOfficeMoveConfirmationShownForOneDrive(
   std::move(callback).Run(
       file_manager::file_tasks::GetOfficeMoveConfirmationShownForOneDrive(
           profile_));
+}
+
+void CloudUploadPageHandler::RecordCancel(
+    mojom::MetricsRecordedSetupPage page) {
+  UMA_HISTOGRAM_ENUMERATION("FileBrowser.OfficeFiles.Setup.CancelPage", page);
 }
 
 }  // namespace ash::cloud_upload

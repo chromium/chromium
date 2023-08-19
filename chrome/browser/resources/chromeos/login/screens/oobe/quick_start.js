@@ -9,7 +9,9 @@
 import '//resources/polymer/v3_0/paper-styles/color.js';
 import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/dialogs/oobe_loading_dialog.js';
+import '../../components/quick_start_pin.js';
 
+import { assert } from '//resources/ash/common/assert.js';
 import {afterNextRender, dom, flush, html, mixinBehaviors, Polymer, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
@@ -24,18 +26,14 @@ import { loadTimeData } from '../../i18n_setup.js';
  * UI mode for the screen.
  * @enum {string}
  */
-const QuickStartUIState = {
+export const QuickStartUIState = {
   LOADING: 'loading',
   VERIFICATION: 'verification',
-  FIGURES: 'figures',
   CONNECTING_TO_WIFI: 'connecting_to_wifi',
   CONNECTED_TO_WIFI: 'connected_to_wifi',
   GAIA_CREDENTIALS: 'gaia_credentials',
   FIDO_ASSERTION_RECEIVED: 'fido_assertion_received',
 };
-
-// Should be in sync with the C++ enum (ash::quick_start::Color).
-const QuickStartColors = ['blue', 'red', 'green', 'yellow'];
 
 // TODO(b/246697586) Figure out the right DPI.
 // The size of each tile in pixels.
@@ -69,7 +67,6 @@ class QuickStartScreen extends QuickStartScreenBase {
 
   static get properties() {
     return {
-      figures_: Object,
       shapes_: {
         type: Object,
         // Should be in sync with the C++ enum (ash::quick_start::Shape).
@@ -92,6 +89,10 @@ class QuickStartScreen extends QuickStartScreenBase {
         type: String,
         value: '',
       },
+      pin_: {
+        type: String,
+        value: '0000',
+      },
       // Whether to show the PIN for verification instead of a QR code.
       usePinInsteadOfQrForVerification_: {
         type: Boolean,
@@ -107,7 +108,6 @@ class QuickStartScreen extends QuickStartScreenBase {
   constructor() {
     super();
     this.UI_STEPS = QuickStartUIState;
-    this.figures_ = [];
     this.canvasSize_ = 0;
     this.password_ = '';
     this.ssid_ = '';
@@ -117,8 +117,8 @@ class QuickStartScreen extends QuickStartScreenBase {
 
   get EXTERNAL_API() {
     return [
-      'setFigures',
       'setQRCode',
+      'setPin',
       'showConnectingToWifi',
       'showConnectedToWifi',
       'setDiscoverableName',
@@ -148,16 +148,6 @@ class QuickStartScreen extends QuickStartScreenBase {
     return QuickStartUIState.LOADING;
   }
 
-  /**
-   * @param {!Array<OobeTypes.QuickStartScreenFigureData>} figures
-   */
-  setFigures(figures) {
-    this.setUIStep(QuickStartUIState.FIGURES);
-    this.figures_ = figures.map(x => {
-      return {shape: x.shape, color: QuickStartColors[x.color], digit: x.digit};
-    });
-  }
-
   showConnectingToWifi() {
     this.setUIStep(QuickStartUIState.CONNECTING_TO_WIFI);
     this.$.spinnerWifi.playing = true;
@@ -170,21 +160,22 @@ class QuickStartScreen extends QuickStartScreenBase {
 
   /**
    * @param {string} ssid
-   * @param {string} password
+   * @param {string?} password
    */
   showConnectedToWifi(ssid, password) {
     this.setUIStep(QuickStartUIState.CONNECTED_TO_WIFI);
     this.ssid_ = ssid;
-    this.password_ = password;
+    this.password_ = password ? password : '';
   }
 
   /**
    * @param {!Array<boolean>} qrCode
    */
   setQRCode(qrCode) {
-    const qrSize = Math.round(Math.sqrt(qrCode.length));
+    this.usePinInsteadOfQrForVerification_ = false;
     this.setUIStep(QuickStartUIState.VERIFICATION);
 
+    const qrSize = Math.round(Math.sqrt(qrCode.length));
     this.canvasSize_ = qrSize * QR_CODE_TILE_SIZE;
     flush();
     const context = this.getCanvasContext_();
@@ -201,6 +192,13 @@ class QuickStartScreen extends QuickStartScreenBase {
         index++;
       }
     }
+  }
+
+  setPin(pin) {
+    this.usePinInsteadOfQrForVerification_ = true;
+    this.setUIStep(QuickStartUIState.VERIFICATION);
+    assert(pin.length === 4);
+    this.pin_ = pin;
   }
 
   setDiscoverableName(discoverableName) {

@@ -20,10 +20,6 @@
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Schemes accepted by the ClipboardRecentContentIOS.

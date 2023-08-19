@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 169 tests; 165 PASS, 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 168 tests; 164 PASS, 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS <img srcset="/images/green-1x1.png?a2 300w, /images/green-16x16.png?a2 301w"> ref sizes="100vw" (quirks mode)
 PASS <img srcset="/images/green-1x1.png?b2 450w, /images/green-16x16.png?b2 451w"> ref sizes="100vw" (quirks mode)
 PASS <img srcset="/images/green-1x1.png?c2 600w, /images/green-16x16.png?c2 601w"> ref sizes="100vw" (quirks mode)
@@ -143,7 +143,6 @@ PASS <img srcset="/images/green-1x1.png?f18 50w, /images/green-16x16.png?f18 51w
 PASS <img srcset="/images/green-1x1.png?f19 50w, /images/green-16x16.png?f19 51w" data-foo="1" sizes="attr(data-foo, px, 1px)"> ref sizes="100vw" (quirks mode)
 PASS <img srcset="/images/green-1x1.png?f20 50w, /images/green-16x16.png?f20 51w" sizes="toggle(1px)"> ref sizes="100vw" (quirks mode)
 PASS <img srcset="/images/green-1x1.png?f21 50w, /images/green-16x16.png?f21 51w" sizes="inherit"> ref sizes="100vw" (quirks mode)
-PASS <img srcset="/images/green-1x1.png?f22 50w, /images/green-16x16.png?f22 51w" sizes="auto"> ref sizes="100vw" (quirks mode)
 PASS <img srcset="/images/green-1x1.png?f23 50w, /images/green-16x16.png?f23 51w" sizes="initial"> ref sizes="100vw" (quirks mode)
 PASS <img srcset="/images/green-1x1.png?f24 50w, /images/green-16x16.png?f24 51w" sizes="unset"> ref sizes="100vw" (quirks mode)
 PASS <img srcset="/images/green-1x1.png?f25 50w, /images/green-16x16.png?f25 51w" sizes="default"> ref sizes="100vw" (quirks mode)

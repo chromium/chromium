@@ -30,7 +30,9 @@
 #include "ui/ozone/platform/drm/gpu/hardware_display_controller.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane.h"
 #include "ui/ozone/platform/drm/gpu/mock_drm_device.h"
+#include "ui/ozone/platform/drm/gpu/mock_drm_modifiers_filter.h"
 #include "ui/ozone/platform/drm/gpu/page_flip_watchdog.h"
+#include "ui/ozone/public/drm_modifiers_filter.h"
 
 namespace ui {
 
@@ -102,7 +104,11 @@ class MAYBE_HardwareDisplayControllerTest : public testing::Test {
   void SetUp() override;
   void TearDown() override;
 
-  void InitializeDrmDevice(bool use_atomic, size_t movable_planes = 0);
+  void InitializeDrmDevice(
+      bool use_atomic,
+      size_t movable_planes = 0,
+      const std::vector<uint64_t>& supported_modifiers = {},
+      std::unique_ptr<DrmModifiersFilter> modifiers_filter = nullptr);
   void SchedulePageFlip(DrmOverlayPlaneList planes);
   void OnSubmission(gfx::SwapResult swap_result,
                     gfx::GpuFenceHandle release_fence);
@@ -142,6 +148,7 @@ class MAYBE_HardwareDisplayControllerTest : public testing::Test {
 
   std::unique_ptr<HardwareDisplayController> controller_;
   scoped_refptr<MockDrmDevice> drm_;
+  std::unique_ptr<DrmModifiersFilter> modifiers_filter_;
 
   int successful_page_flips_count_ = 0;
   gfx::SwapResult last_swap_result_;
@@ -167,16 +174,24 @@ void MAYBE_HardwareDisplayControllerTest::TearDown() {
 
 void MAYBE_HardwareDisplayControllerTest::InitializeDrmDevice(
     bool use_atomic,
-    size_t movable_planes) {
+    size_t movable_planes,
+    const std::vector<uint64_t>& supported_modifiers,
+    std::unique_ptr<DrmModifiersFilter> modifiers_filter) {
   // This will change the plane_manager of the drm.
   // HardwareDisplayController is tied to the plane_manager CRTC states.
   // Destruct the controller before destructing the plane manager its CRTC
   // controllers are tied to.
   controller_ = nullptr;
+  modifiers_filter_ = std::move(modifiers_filter);
 
   // Set up the default property blob for in formats:
+  std::vector<drm_format_modifier> drm_format_modifiers;
+  for (const auto modifier : supported_modifiers) {
+    drm_format_modifiers.push_back(
+        {.formats = 1, .offset = 0, .pad = 0, .modifier = modifier});
+  }
   drm_->SetPropertyBlob(MockDrmDevice::AllocateInFormatsBlob(
-      kInFormatsBlobIdBase, {DRM_FORMAT_XRGB8888}, {}));
+      kInFormatsBlobIdBase, {DRM_FORMAT_XRGB8888}, drm_format_modifiers));
 
   auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
       /*crtc_count=*/2, /*planes_per_crtc*/ 2, movable_planes);
@@ -191,7 +206,7 @@ void MAYBE_HardwareDisplayControllerTest::InitializeDrmDevice(
   controller_ = std::make_unique<HardwareDisplayController>(
       std::make_unique<CrtcController>(drm_.get(), primary_crtc_,
                                        kConnectorIdBase),
-      gfx::Point());
+      gfx::Point(), modifiers_filter_.get());
 }
 
 bool MAYBE_HardwareDisplayControllerTest::ModesetWithPlanes(
@@ -784,7 +799,8 @@ TEST_F(MAYBE_HardwareDisplayControllerTest, PlaneStateAfterAddCrtc) {
   ASSERT_TRUE(primary_crtc_plane != nullptr);
 
   auto hdc_controller = std::make_unique<HardwareDisplayController>(
-      controller_->RemoveCrtc(drm_, primary_crtc_), controller_->origin());
+      controller_->RemoveCrtc(drm_, primary_crtc_), controller_->origin(),
+      nullptr);
   SchedulePageFlip(DrmOverlayPlane::Clone(planes));
   drm_->RunCallbacks();
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK, last_swap_result_);
@@ -1397,6 +1413,22 @@ TEST_F(MAYBE_HardwareDisplayControllerTest,
 
   EXPECT_TRUE(ModesetWithPlanes(modeset_planes))
       << "Should be able modeset with two CRTCs and two movable planes.";
+}
+
+TEST_F(MAYBE_HardwareDisplayControllerTest, ModifiersFilter) {
+  std::vector<uint64_t> filter_modifiers = {DRM_FORMAT_MOD_LINEAR,
+                                            I915_FORMAT_MOD_X_TILED};
+  std::unique_ptr<MockDrmModifiersFilter> filter =
+      std::make_unique<MockDrmModifiersFilter>(filter_modifiers);
+  InitializeDrmDevice(/*use_atomic=*/true, /*movable_planes=*/0,
+                      {I915_FORMAT_MOD_X_TILED, I915_FORMAT_MOD_Y_TILED},
+                      std::move(filter));
+
+  std::vector<uint64_t> valid_modifiers =
+      controller_->GetFormatModifiersForTestModeset(DRM_FORMAT_XRGB8888);
+
+  EXPECT_EQ(1u, valid_modifiers.size());
+  EXPECT_EQ(I915_FORMAT_MOD_X_TILED, valid_modifiers[0]);
 }
 
 }  // namespace ui

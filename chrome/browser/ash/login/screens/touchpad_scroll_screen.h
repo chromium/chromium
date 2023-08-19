@@ -63,6 +63,7 @@ class TouchpadScrollScreen : public BaseScreen {
 
   std::string RetrieveChoobeSubtitle();
 
+  bool initial_pref_value_;
   bool ignore_pref_sync_for_testing_ = false;
 
   base::WeakPtr<TouchpadScrollScreenView> view_;

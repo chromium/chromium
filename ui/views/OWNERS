@@ -4,9 +4,11 @@
 # 5 minutes. This approach helps our team to load-balance incoming reviews.
 # Googlers can read more about this at go/gwsq-gerrit.
 
+dayeung@chromium.org
 dfried@chromium.org
 elainechien@chromium.org
 ellyjones@chromium.org
+josephjoopark@chromium.org
 kerenzhu@chromium.org
 kylixrd@chromium.org
 msw@chromium.org

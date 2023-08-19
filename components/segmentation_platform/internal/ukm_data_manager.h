@@ -59,6 +59,10 @@ class UkmDataManager {
   // alive, so until after all profiles are destroyed.
   virtual UkmDatabase* GetUkmDatabase() = 0;
 
+  // Called to check if Ukm database exist. Ukm database might be null if
+  // initialized within tests.
+  virtual bool HasUkmDatabase() = 0;
+
   // Called when a new UKM entry is added.
   virtual void OnEntryAdded(ukm::mojom::UkmEntryPtr entry) = 0;
 

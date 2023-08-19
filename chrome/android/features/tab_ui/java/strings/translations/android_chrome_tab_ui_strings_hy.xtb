@@ -3,8 +3,6 @@
 <translationbundle lang="hy">
 <translation id="1075622780330595106">Ձեր ներդիրներից <ph name="NUMBER_OF_TABS" />-ը վերջերս չեն օգտագործվել։ Փակե՞լ դրանք։</translation>
 <translation id="125153950246128346">Հպեք՝ այլ ներդիրի անցնելու համար</translation>
-<translation id="1403228085774130835">Դուք կարող եք գտնել ձեր փակված ներդիրները Chrome-ի հիմնական ընտրացանկի «Վերջերս բացված ներդիրներ» բաժնում</translation>
-<translation id="1455506303394048917">Այս ինկոգնիտո ներդիրներում ձեր կատարած գործողությունները կհեռացվեն սարքից</translation>
 <translation id="1499635324672558517">Փակե՞լ բոլոր ինկոգնիտո ներդիրները</translation>
 <translation id="1657719826150349398">Տեղափոխել ներդիրը ներքև</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ներդիր}one{<ph name="TABS_COUNT_MANY" /> ներդիր}other{<ph name="TABS_COUNT_MANY" /> ներդիր}}</translation>
@@ -47,6 +45,7 @@
 <translation id="5073204694187207510">Թաքցնել լիաէկրան ցանցը</translation>
 <translation id="5076161749301278626">Ցուցադրե՞լ խանութի մասին կարծիքները</translation>
 <translation id="5082793167783849073">Արագ համեմատեք էջերը՝ խումբ կազմելով: Սկսելու համար հպեք և պահեք հղումը:</translation>
+<translation id="5339733443032484186">Ձեր վերջին ներդիրը</translation>
 <translation id="5490235265819901748">Ներդիրների խումբը ծավալվեց</translation>
 <translation id="5494920125229734069">Ընտրել բոլորը</translation>
 <translation id="5556417849629758491">Դիտել խանութի մասին տեղեկությունները, գործողությունը հասանելի է էկրանի վերին մասում</translation>
@@ -62,10 +61,12 @@
 <translation id="6228793724645064692">(խանութի վարկանիշը)</translation>
 <translation id="6333260925957816943">Տեղեկություններ այս խանութի մասին</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Ապախմբավորել ընտրված <ph name="TABS_COUNT_ONE" /> ներդիրը}one{Ապախմբավորել ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրը}other{Ապախմբավորել ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրները}}</translation>
+<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Դուք կարող եք գտնել ձեր փակված ներդիրները Chrome-ի հիմնական ընտրացանկի «Վերջերս բացված ներդիրներ» բաժնում։ Ձեր ինկոգնիտո ներդիրը հասանելի չի լինի։}one{Դուք կարող եք գտնել ձեր փակված ներդիրները Chrome-ի հիմնական ընտրացանկի «Վերջերս բացված ներդիրներ» բաժնում։ Ձեր # ինկոգնիտո ներդիրը հասանելի չի լինի։}other{Դուք կարող եք գտնել ձեր փակված ներդիրները Chrome-ի հիմնական ընտրացանկի «Վերջերս բացված ներդիրներ» բաժնում։ Ձեր # ինկոգնիտո ներդիրները հասանելի չեն լինի։}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ներդիր}one{<ph name="TABS_COUNT_MANY" /> ներդիր}other{<ph name="TABS_COUNT_MANY" /> ներդիր}}</translation>
 <translation id="6549021453810473782">Դիտել խանութի մասին տեղեկությունները</translation>
 <translation id="6562820390860419811">Տեղափոխել ներդիրը ձախ</translation>
 <translation id="6615455863669487791">Ցույց տալ</translation>
+<translation id="661742612106409204">Դուք կարող եք գտնել ձեր փակված ներդիրները Chrome-ի հիմնական ընտրացանկի «Վերջերս բացված ներդիրներ» բաժնում։</translation>
 <translation id="6840760312327750441">Ներդիրները խմբավորելու համար հպեք ներդիրին և պահեք։ Ապա այն քաշեք մյուս ներդիրի վրա։</translation>
 <translation id="6856809498882026482">Թաքցնել մի քանի ներդիրի ընտրության ռեժիմը</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Կիսվել ներդիրով}one{Կիսվել ներդիրով}other{Կիսվել ներդիրներով}}</translation>

@@ -28,7 +28,7 @@ struct LanguageCodePair {
 // are different to be exact.
 //
 // If this table is updated, please sync this with the synonym table in
-// chrome/browser/resources/settings/languages_page/languages.js.
+// chrome/browser/resources/settings/languages_page/languages.ts.
 const LanguageCodePair kTranslateOnlySynonyms[] = {
     {"no", "nb"},
     {"id", "in"},
@@ -38,8 +38,9 @@ const LanguageCodePair kTranslateOnlySynonyms[] = {
 // codes are used, so we must see them as synonyms.
 //
 // If this table is updated, please sync this with the synonym table in
-// chrome/browser/resources/settings/languages_page/languages.js.
+// chrome/browser/resources/settings/languages_page/languages.ts.
 const LanguageCodePair kLanguageCodeSynonyms[] = {
+    {"gom", "kok"},
     {"iw", "he"},
     {"jw", "jv"},
     {"tl", "fil"},
@@ -49,7 +50,7 @@ const LanguageCodePair kLanguageCodeSynonyms[] = {
 // Translate.
 //
 // If this table is updated, please sync this with the synonym table in
-// chrome/browser/resources/settings/languages_page/languages.js.
+// chrome/browser/resources/settings/languages_page/languages.ts.
 const LanguageCodePair kLanguageCodeChineseCompatiblePairs[] = {
     {"zh-TW", "zh-HK"},
     {"zh-TW", "zh-MO"},
@@ -81,6 +82,11 @@ void ToTranslateLanguageSynonym(std::string* language) {
   // Get the base language (e.g. "es" for "es-MX")
   base::StringPiece main_part = language::SplitIntoMainAndTail(*language).first;
   if (main_part.empty()) {
+    return;
+  }
+
+  if (main_part == "mni") {
+    // "mni-Mtei" does not have any mapping and as such we leave it as is.
     return;
   }
 

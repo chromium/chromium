@@ -16,9 +16,4 @@ gfx::Vector3dF GetForwardVector(const gfx::Transform& head_pose) {
                         -head_pose.rc(2, 2));
 }
 
-gfx::Vector3dF GetUpVector(const gfx::Transform& head_pose) {
-  return gfx::Vector3dF(head_pose.rc(1, 0), head_pose.rc(1, 1),
-                        head_pose.rc(1, 2));
-}
-
 }  // namespace vr

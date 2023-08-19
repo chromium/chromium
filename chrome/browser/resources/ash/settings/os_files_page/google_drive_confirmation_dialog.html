@@ -1,0 +1,21 @@
+<style include="settings-shared"></style>
+<cr-dialog id="dialog" show-on-attach close-text="$i18n{close}"
+    on-cancel="onDialogCancel_" on-close="onDialogClose_">
+  <div slot="title">[[titleText]]</div>
+  <div slot="body">
+    <slot></slot>
+    [[bodyText]]
+  </div>
+  <div slot="button-container">
+    <template is="dom-if" if="[[cancelButtonText]]" restamp>
+      <cr-button class="cancel-button" on-click="onCancelClick_">
+        [[cancelButtonText]]
+      </cr-button>
+    </template>
+    <template is="dom-if" if="[[actionButtonText]]" restamp>
+      <cr-button class="action-button" on-click="onActionClick_">
+        [[actionButtonText]]
+      </cr-button>
+    </template>
+  </div>
+</cr-dialog>

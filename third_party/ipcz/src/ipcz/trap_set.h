@@ -9,6 +9,7 @@
 
 #include "ipcz/ipcz.h"
 #include "ipcz/operation_context.h"
+#include "ipcz/parcel_queue.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 
 namespace ipcz {
@@ -18,24 +19,6 @@ class TrapEventDispatcher;
 // A set of traps installed on a portal.
 class TrapSet {
  public:
-  // The reason for each status update when something happens that might
-  // interest a trap. This is particularly useful for observing edge-triggered
-  // conditions.
-  enum class UpdateReason {
-    // A new trap is being installed and this is an initial state query.
-    kInstallTrap,
-
-    // A new inbound parcel has arrived for retrieval.
-    kNewLocalParcel,
-
-    // We just discovered that the remote portal is gone.
-    kPeerClosed,
-
-    // A previously queued inbound parcel has been fully or partially retrieved
-    // by the application.
-    kLocalParcelConsumed,
-  };
-
   TrapSet();
   TrapSet(const TrapSet&) = delete;
   TrapSet& operator=(const TrapSet&) = delete;
@@ -45,34 +28,45 @@ class TrapSet {
 
   bool empty() const { return traps_.empty(); }
 
-  // Returns the set of trap condition flags within `conditions` that would be
-  // raised right now if a trap were installed to watch for them, given
-  // `current_status` as the status of the portal being watched. If this returns
-  // zero (IPCZ_NO_FLAGS), then no watched conditions are satisfied and a
-  // corresponding call to Add() would succeed.
-  static IpczTrapConditionFlags GetSatisfiedConditions(
-      const IpczTrapConditions& conditions,
-      const IpczPortalStatus& current_status);
-
   // Attempts to install a new trap in the set. This effectively implements
-  // the ipcz Trap() API. If `conditions` are already met, returns
-  // IPCZ_RESULT_FAILED_PRECONDITION and populates `satisfied_condition_flags`
-  // and/or `status` if non-null.
+  // the ipcz Trap() API. `status_flags`, `num_local_parcels`, and
+  // `num_local_bytes` convey the current status of the portal. If `conditions`
+  // are already met, returns IPCZ_RESULT_FAILED_PRECONDITION and populates
+  // `satisfied_condition_flags` and/or `status` if non-null.
   IpczResult Add(const IpczTrapConditions& conditions,
                  IpczTrapEventHandler handler,
                  uintptr_t context,
-                 const IpczPortalStatus& current_status,
+                 IpczPortalStatusFlags status_flags,
+                 ParcelQueue& inbound_parcel_queue,
                  IpczTrapConditionFlags* satisfied_condition_flags,
                  IpczPortalStatus* status);
 
-  // Notifies this TrapSet of a state change on the portal it's interested in.
-  // If the state change is interesting to any trap in the set, an appropriate
-  // event may be appended to `dispatcher` for imminent dispatch and the trap is
-  // removed from the set before returning.
-  void UpdatePortalStatus(const OperationContext& context,
-                          const IpczPortalStatus& status,
-                          UpdateReason reason,
-                          TrapEventDispatcher& dispatcher);
+  // Notifies the TrapSet that a new local parcel has arrived on its portal.
+  // Any trap interested in this is removed from the set, and its event handler
+  // invocation is appended to `dispatcher`. `status_flags`, `num_local_parcels`
+  // and `num_local_bytes` convey the new status of the portal.
+  void NotifyNewLocalParcel(const OperationContext& context,
+                            IpczPortalStatusFlags status_flags,
+                            ParcelQueue& inbound_parcel_queue,
+                            TrapEventDispatcher& dispatcher);
+
+  // Notifies the TrapSet that a local parcel has been consumed from its portal.
+  // Any trap interested in this is removed from the set, and its event handler
+  // invocation is appended to `dispatcher`. `status_flags`, `num_local_parcels`
+  // and `num_local_bytes` convey the new status of the portal.
+  void NotifyLocalParcelConsumed(const OperationContext& context,
+                                 IpczPortalStatusFlags status_flags,
+                                 ParcelQueue& inbound_parcel_queue,
+                                 TrapEventDispatcher& dispatcher);
+
+  // Notifies the TrapSet that its portal's peer has been closed. Any trap
+  // interested in this is removed from the set, and its event handler
+  // invocation is appended to `dispatcher`. `status_flags` conveys the new
+  // status of the portal.
+  void NotifyPeerClosed(const OperationContext& context,
+                        IpczPortalStatusFlags status_flags,
+                        ParcelQueue& inbound_parcel_queue,
+                        TrapEventDispatcher& dispatcher);
 
   // Immediately removes all traps from the set. Every trap present appends an
   // IPCZ_TRAP_REMOVED event to `dispatcher` before removal.
@@ -91,9 +85,40 @@ class TrapSet {
     uintptr_t context;
   };
 
-  using TrapList = absl::InlinedVector<Trap, 4>;
+  // The reason for each status update when something happens that might
+  // interest a trap.
+  enum class UpdateReason {
+    // A new trap is being installed and this is an initial state query.
+    kInstallTrap,
+
+    // A new inbound parcel has arrived for retrieval.
+    kNewLocalParcel,
+
+    // We just discovered that the remote portal is gone.
+    kPeerClosed,
+
+    // A previously queued inbound parcel has been fully or partially retrieved
+    // by the application.
+    kLocalParcelConsumed,
+  };
+
+  // Determines which trap condition flags would be set if an event fired for
+  // a trap watching the given `conditions`, given the most recent state change.
+  IpczTrapConditionFlags GetSatisfiedConditionsForUpdate(
+      const IpczTrapConditions& conditions,
+      IpczPortalStatusFlags status_flags,
+      ParcelQueue& inbound_parcel_queue,
+      UpdateReason reason);
+
+  // Helper used by Notify* methods to carry out common update work.
+  void UpdatePortalStatus(const OperationContext& context,
+                          IpczPortalStatusFlags status_flags,
+                          ParcelQueue& inbound_parcel_queue,
+                          UpdateReason reason,
+                          TrapEventDispatcher& dispatcher);
+
+  using TrapList = std::vector<Trap>;
   TrapList traps_;
-  IpczPortalStatus last_known_status_ = {.size = sizeof(last_known_status_)};
 };
 
 }  // namespace ipcz

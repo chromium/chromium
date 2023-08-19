@@ -481,9 +481,7 @@ TEST_F(EnumSetTest, SparseEnum) {
   sparse.Put(TestEnumSparse::TEST_MAX);
   EXPECT_EQ(sparse.Size(), 2u);
 
-  // TestEnumSparseSet::All() does not compile because there are more than 64
-  // possible values. See NCTEST_ALL_METHOD_DISALLOWED_ON_LARGE_SPARSE_ENUM in
-  // enum_set_unittest.nc.
+  EXPECT_EQ(TestEnumSparseSet::All().Size(), 100u);
 }
 
 TEST_F(EnumSetTest, SparseEnumSmall) {

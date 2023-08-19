@@ -171,32 +171,24 @@ class NotificationListView::MessageViewContainer : public MessageView::Observer,
                                       GetInnerCornerRadius());
   }
 
-  // Collapses the notification if its state haven't changed manually by a user.
-  void Collapse() {
-    if (!message_view_->IsManuallyExpandedOrCollapsed()) {
-      message_view_->SetExpanded(false);
-    }
-  }
-
-  // Check if the notification is manually expanded / collapsed before and
-  // restores the state.
-  void LoadExpandedState(UnifiedSystemTrayModel* model, bool is_latest) {
+  // Restores the state of the notification if it has been manually expanded or
+  // collapsed. Only used pre-QS Revamp.
+  void LoadExpandedState(UnifiedSystemTrayModel* model) {
     DCHECK(model);
-    base::AutoReset<bool> scoped_reset(&loading_expanded_state_, true);
     absl::optional<bool> manually_expanded =
         model->GetNotificationExpanded(GetNotificationId());
     if (manually_expanded.has_value()) {
-      message_view_->SetExpanded(manually_expanded.value());
+      SetExpandedBySystem(manually_expanded.value());
       message_view_->SetManuallyExpandedOrCollapsed(
           manually_expanded.value()
               ? message_center::ExpandState::USER_EXPANDED
               : message_center::ExpandState::USER_COLLAPSED);
-    } else {
-      // Expand the latest notification, and collapse all other notifications.
-      message_view_->SetExpanded(
-          is_latest && message_view_->IsAutoExpandingAllowed() &&
-          !message_view_->IsManuallyExpandedOrCollapsed());
     }
+  }
+
+  void SetExpandedBySystem(bool expanded) {
+    base::AutoReset<bool> scoped_reset(&expanding_by_system_, true);
+    message_view_->SetExpanded(expanded);
   }
 
   // Stores if the notification is manually expanded or collapsed so that we can
@@ -229,6 +221,12 @@ class NotificationListView::MessageViewContainer : public MessageView::Observer,
     return message_view_->GetMode() == MessageView::Mode::PINNED;
   }
 
+  bool IsGroupParent() const {
+    return MessageCenter::Get()
+        ->FindNotificationById(GetNotificationId())
+        ->group_parent();
+  }
+
   // Returns the direction that the notification is swiped out. If swiped to the
   // left, it returns -1 and if sipwed to the right, it returns 1. By default
   // (i.e. the notification is removed but not by touch gesture), it returns 1.
@@ -254,8 +252,8 @@ class NotificationListView::MessageViewContainer : public MessageView::Observer,
     base::ScopedClosureRunner defer_preferred_size_changed(base::BindOnce(
         &MessageViewContainer::PreferredSizeChanged, base::Unretained(this)));
 
-    // Ignore non user triggered expand/collapses.
-    if (loading_expanded_state_) {
+    // Ignore non-user triggered expand/collapses.
+    if (expanding_by_system_) {
       return;
     }
 
@@ -407,14 +405,15 @@ class NotificationListView::MessageViewContainer : public MessageView::Observer,
 
   // Whether expanded state is being set programmatically. Used to prevent
   // animating programmatic expands which occur on open.
-  bool loading_expanded_state_ = false;
+  bool expanding_by_system_ = false;
 
   // Set to flag the view as requiring an expand or collapse animation.
   bool needs_bounds_animation_ = false;
 
   // The views directly above or below this view in the list. Used to update
   // corner radius when sliding.
-  raw_ptr<MessageViewContainer, ExperimentalAsh> above_view_ = nullptr;
+  raw_ptr<MessageViewContainer, DanglingUntriaged | ExperimentalAsh>
+      above_view_ = nullptr;
   raw_ptr<MessageViewContainer, ExperimentalAsh> below_view_ = nullptr;
 
   // `need_update_corner_radius_` indicates that we need to update the corner
@@ -454,28 +453,36 @@ NotificationListView::~NotificationListView() {
 }
 
 void NotificationListView::Init() {
-  bool is_latest = true;
-  for (auto* notification :
-       message_center_utils::GetSortedNotificationsWithOwnView()) {
-    auto* view =
-        new MessageViewContainer(CreateMessageView(*notification), this);
+  const auto& notifications =
+      message_center_utils::GetSortedNotificationsWithOwnView();
 
+  for (auto* notification : notifications) {
+    auto message_view_container = std::make_unique<MessageViewContainer>(
+        CreateMessageView(*notification), this);
+
+    // Expanded state pre-QS revamp is loaded from `UnifiedSystemTrayModel`.
     if (!features::IsQsRevampEnabled()) {
-      view->LoadExpandedState(model_.get(), is_latest);
-    }
-
-    if (features::IsQsRevampEnabled() && is_latest &&
-        !view->message_view()->IsManuallyExpandedOrCollapsed()) {
-      view->message_view()->SetExpanded(
-          view->message_view()->IsAutoExpandingAllowed());
+      message_view_container->LoadExpandedState(model_.get());
     }
 
     // The insertion order for notifications is reversed.
-    AddChildViewAt(view, children().size());
+    AddChildViewAt(std::move(message_view_container), children().size());
     MessageCenter::Get()->DisplayedNotification(
         notification->id(), message_center::DISPLAY_SOURCE_MESSAGE_CENTER);
-    is_latest = false;
   }
+
+  // The latest notification will be expanded if auto-expanding is allowed, it
+  // is not grouped and it has not been manually expanded or collapsed.
+  if (!notifications.empty()) {
+    auto* latest_mvc = AsMVC(children().front());
+    if (!latest_mvc->IsGroupParent() &&
+        !latest_mvc->message_view()->IsManuallyExpandedOrCollapsed()) {
+      base::AutoReset<bool> auto_reset(&ignore_size_change_, true);
+      latest_mvc->SetExpandedBySystem(
+          latest_mvc->message_view()->IsAutoExpandingAllowed());
+    }
+  }
+
   UpdateBorders(/*force_update=*/true);
   UpdateBounds();
 }
@@ -755,8 +762,16 @@ void NotificationListView::OnNotificationAdded(const std::string& id) {
 
   InterruptClearAll();
 
-  // Collapse all notifications before adding new one.
-  CollapseAllNotifications();
+  // Collapse notifications that have not been manually expanded or collapsed.
+  {
+    base::AutoReset<bool> auto_reset(&ignore_size_change_, true);
+    for (auto* child : children()) {
+      auto* mvc = AsMVC(child);
+      if (!mvc->message_view()->IsManuallyExpandedOrCollapsed()) {
+        mvc->message_view()->SetExpanded(false);
+      }
+    }
+  }
 
   // We only need to update if we already have a message view associated with
   // the notification. This happens when we convert a single notification to a
@@ -1010,13 +1025,6 @@ NotificationListView::GetNextRemovableNotification() {
       base::Reversed(children()),
       [](const auto* v) { return AsMVC(v)->IsPinned(); });
   return (i == children().rend()) ? nullptr : AsMVC(*i);
-}
-
-void NotificationListView::CollapseAllNotifications() {
-  base::AutoReset<bool> auto_reset(&ignore_size_change_, true);
-  for (auto* child : children()) {
-    AsMVC(child)->Collapse();
-  }
 }
 
 void NotificationListView::UpdateBorders(bool force_update) {

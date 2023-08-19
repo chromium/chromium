@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
-import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -102,14 +101,13 @@ public class AutocompleteController implements Destroyable {
      *                       not focused on the text.
      * @param preventInlineAutocomplete Whether autocomplete suggestions should be prevented.
      */
-    void start(@NonNull String url, int pageClassification, @NonNull String text,
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public void start(@NonNull GURL url, int pageClassification, @NonNull String text,
             int cursorPosition, boolean preventInlineAutocomplete) {
         if (mNativeController == 0) return;
-        assert !TextUtils.isEmpty(url);
-        if (TextUtils.isEmpty(url)) return;
 
-        AutocompleteControllerJni.get().start(mNativeController, text, cursorPosition, null, url,
-                pageClassification, preventInlineAutocomplete, false, false, true);
+        AutocompleteControllerJni.get().start(mNativeController, text, cursorPosition, null,
+                url.getSpec(), pageClassification, preventInlineAutocomplete, false, false, true);
     }
 
     /**
@@ -119,9 +117,10 @@ public class AutocompleteController implements Destroyable {
      * @param url The URL of the current tab, used to suggest query refinements.
      * @param pageClassification The page classification of the current tab.
      */
-    void startPrefetch(@NonNull String url, int pageClassification) {
+    void startPrefetch(@NonNull GURL url, int pageClassification) {
         if (mNativeController == 0) return;
-        AutocompleteControllerJni.get().startPrefetch(mNativeController, url, pageClassification);
+        AutocompleteControllerJni.get().startPrefetch(
+                mNativeController, url.getSpec(), pageClassification);
     }
 
     /**
@@ -153,14 +152,12 @@ public class AutocompleteController implements Destroyable {
      * @param pageClassification The page classification of the current tab.
      * @param title The title of the currently loaded web page.
      */
-    public void startZeroSuggest(@NonNull String omniboxText, @NonNull String url,
+    public void startZeroSuggest(@NonNull String omniboxText, @NonNull GURL url,
             int pageClassification, @NonNull String title) {
         if (mNativeController == 0) return;
-        assert !TextUtils.isEmpty(url);
-        if (TextUtils.isEmpty(url)) return;
 
         AutocompleteControllerJni.get().onOmniboxFocused(
-                mNativeController, omniboxText, url, pageClassification, title);
+                mNativeController, omniboxText, url.getSpec(), pageClassification, title);
     }
 
     /**
@@ -171,7 +168,8 @@ public class AutocompleteController implements Destroyable {
      *         {@link #onSuggestionsReceived(AutocompleteResult, String)} will be called with an
      *         empty result set.
      */
-    void stop(boolean clear) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public void stop(boolean clear) {
         if (mNativeController == 0) return;
         AutocompleteControllerJni.get().stop(mNativeController, clear);
     }
@@ -180,7 +178,8 @@ public class AutocompleteController implements Destroyable {
      * Resets session for autocomplete controller. This happens every time we start typing
      * new input into the omnibox.
      */
-    void resetSession() {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public void resetSession() {
         if (mNativeController == 0) return;
         AutocompleteControllerJni.get().resetSession(mNativeController);
     }
@@ -250,14 +249,14 @@ public class AutocompleteController implements Destroyable {
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public void onSuggestionSelected(int matchIndex, int disposition, int type,
-            @NonNull String currentPageUrl, int pageClassification, long elapsedTimeSinceModified,
+            @NonNull GURL currentPageUrl, int pageClassification, long elapsedTimeSinceModified,
             int completedLength, @Nullable WebContents webContents) {
         if (mNativeController == 0) return;
         if (!mAutocompleteResult.verifyCoherency(matchIndex, VerificationPoint.SELECT_MATCH)) {
             return;
         }
         AutocompleteControllerJni.get().onSuggestionSelected(mNativeController, matchIndex,
-                disposition, currentPageUrl, pageClassification, elapsedTimeSinceModified,
+                disposition, currentPageUrl.getSpec(), pageClassification, elapsedTimeSinceModified,
                 completedLength, webContents);
     }
 

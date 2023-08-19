@@ -337,6 +337,9 @@ testcase.trashEmptyTrash = async () => {
   await navigateWithDirectoryTree(appId, '/Trash');
   await remoteCall.waitAndClickElement(
       appId, '#file-list [file-name="hello.txt"]');
+  // Fire focus event for #empty-trash command to reset canExecute.
+  await remoteCall.callRemoteTestUtil(
+      'fakeEvent', appId, ['#file-list [file-name="hello.txt"]', 'focus']);
 
   // Empty trash and confirm delete (dialog shown).
   await remoteCall.waitAndClickElement(
@@ -1055,6 +1058,7 @@ testcase.trashInfeasibleActionsForFileDisabledAndHiddenInTrashRoot =
     'copy',
     'zip-selection',
     'set-wallpaper',
+    'invoke-sharesheet',
   ];
   for (const action of infeasibleActions) {
     await remoteCall.waitForElement(

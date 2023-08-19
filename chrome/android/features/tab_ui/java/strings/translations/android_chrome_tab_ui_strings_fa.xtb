@@ -3,8 +3,6 @@
 <translationbundle lang="fa">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> مورد از برگه‌هایتان اخیراً استفاده نشده‌اند. آن‌ها را می‌بندید؟</translation>
 <translation id="125153950246128346">برای دیدن برگه دیگر ضربه بزنید</translation>
-<translation id="1403228085774130835">‏می‌توانید برگه‌های بسته‌شده را در «برگه‌های اخیر» در بخش منوی اصلی Chrome پیدا کنید</translation>
-<translation id="1455506303394048917">فعالیتتان در این «برگه‌های ناشناس» از این دستگاه حذف خواهد شد.</translation>
 <translation id="1499635324672558517">همه «برگه‌های ناشناس» بسته شود؟</translation>
 <translation id="1657719826150349398">انتقال برگه به پایین</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> برگه}one{<ph name="TABS_COUNT_MANY" /> برگه}other{<ph name="TABS_COUNT_MANY" /> برگه}}</translation>
@@ -47,6 +45,7 @@
 <translation id="5073204694187207510">پنهان کردن شبکه تمام‌صفحه</translation>
 <translation id="5076161749301278626">می‌خواهید مرورهای فروشگاه را ببینید؟</translation>
 <translation id="5082793167783849073">با ایجاد گروه، صفحه‌ها را سریع مقایسه کنید. برای شروع، پیوندی را لمس کنید و نگه دارید.</translation>
+<translation id="5339733443032484186">آخرین برگه شما</translation>
 <translation id="5490235265819901748">گروه برگه گسترده شد</translation>
 <translation id="5494920125229734069">انتخاب همه</translation>
 <translation id="5556417849629758491">مشاهده اطلاعات فروشگاه، گزینه مربوطه در نزدیکی بالای صفحه قرار دارد</translation>
@@ -62,10 +61,12 @@
 <translation id="6228793724645064692">(رده‌بندی فروشگاه)</translation>
 <translation id="6333260925957816943">اطلاعات مربوط به این فروشگاه</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{لغو گروه‌بندی <ph name="TABS_COUNT_ONE" /> برگه انتخاب‌شده}one{لغو گروه‌بندی <ph name="TABS_COUNT_MANY" /> برگه انتخاب‌شده}other{لغو گروه‌بندی <ph name="TABS_COUNT_MANY" /> برگه انتخاب‌شده}}</translation>
+<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{‏می‌توانید برگه‌های بسته‌شده را در «برگه‌های اخیر» تحت منوِ اصلی Chrome پیدا کنید. «برگه ناشناس» دردسترس نخواهد بود.}one{‏می‌توانید برگه‌های بسته‌شده را در «برگه‌های اخیر» تحت منوِ اصلی Chrome پیدا کنید. # «برگه ناشناس» دردسترس نخواهد بود.}other{‏می‌توانید برگه‌های بسته‌شده را در «برگه‌های اخیر» تحت منوِ اصلی Chrome پیدا کنید. # «برگه ناشناس» دردسترس نخواهد بود.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> برگه}one{<ph name="TABS_COUNT_MANY" /> برگه}other{<ph name="TABS_COUNT_MANY" /> برگه}}</translation>
 <translation id="6549021453810473782">مشاهده اطلاعات فروشگاه</translation>
 <translation id="6562820390860419811">انتقال برگه به راست</translation>
 <translation id="6615455863669487791">نشانم داده شود</translation>
+<translation id="661742612106409204">‏می‌توانید برگه‌های بسته‌شده را در «برگه‌های اخیر» تحت منوِ اصلی Chrome پیدا کنید.</translation>
 <translation id="6840760312327750441">برای ایجاد برگه‌های گروهی، برگه‌ای را لمس کنید و نگه‌دارید. سپس آن را به برگه‌ای دیگر بکشید.</translation>
 <translation id="6856809498882026482">پنهان کردن حالت چندانتخابی</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{هم‌رسانی برگه}one{هم‌رسانی برگه}other{هم‌رسانی برگه‌ها}}</translation>

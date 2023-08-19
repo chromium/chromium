@@ -142,14 +142,6 @@ HostService::HostService() {
 HostService::~HostService() = default;
 
 int HostService::RunHost() {
-  // Mojave users updating from an older host likely have already granted a11y
-  // permission to the old script. In this case we always delegate RunHost to
-  // the old script so that they don't need to grant permission to a new app.
-  if (base::mac::IsOS10_14() && base::PathExists(old_host_helper_file_)) {
-    HOST_LOG << "RunHost will be delegated to the old host script.";
-    return RunHostFromOldScript();
-  }
-
   if (geteuid() != 0 && HostIsEnabled()) {
     // Only check for non-root users, as the permission wizard is not actionable
     // at the login screen. Also, permission is only needed when host is

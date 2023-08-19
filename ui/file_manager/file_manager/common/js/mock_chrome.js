@@ -9,23 +9,11 @@
 export function installMockChrome(mockChrome) {
   /** @suppress {const|checkTypes} */
   window.chrome = window.chrome || {};
-  const metricsPrivate = mockChrome['metricsPrivate'] || getMetricsApiMock();
-  mockChrome['metricsPrivate'] = metricsPrivate;
-
   const chrome = window.chrome;
   for (const [key, value] of Object.entries(mockChrome)) {
     const target = chrome[key] || {};
-    chrome[key] = target;
     Object.assign(target, value);
   }
-}
-
-export function getMetricsApiMock() {
-  return {
-    recordSmallCount() {},
-    recordPercentage() {},
-    recordValue() {},
-  };
 }
 
 /**

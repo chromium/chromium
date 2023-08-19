@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
@@ -64,8 +65,8 @@ void NormalizeInitState(gpu::gles2::GLES2DecoderTestBase::InitState* init) {
       "GL_APPLE_vertex_array_object"
   };
   bool contains_vao_extension = false;
-  for (size_t ii = 0; ii < std::size(kVAOExtensions); ++ii) {
-    if (init->extensions.find(kVAOExtensions[ii]) != std::string::npos) {
+  for (const char* extension : kVAOExtensions) {
+    if (base::Contains(init->extensions, extension)) {
       contains_vao_extension = true;
       break;
     }

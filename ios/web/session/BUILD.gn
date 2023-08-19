@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("session") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     ":hash_util",
     "//base",
@@ -21,15 +20,12 @@ source_set("session") {
     "crw_session_user_data.mm",
     "session_certificate.cc",
     "session_certificate.h",
+    "session_certificate_policy_cache_impl.cc",
     "session_certificate_policy_cache_impl.h",
-    "session_certificate_policy_cache_impl.mm",
-    "session_certificate_policy_cache_storage_builder.h",
-    "session_certificate_policy_cache_storage_builder.mm",
   ]
 }
 
 source_set("hash_util") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   visibility = [ ":session" ]
   sources = [ "hash_util.h" ]
   deps = [
@@ -39,7 +35,6 @@ source_set("hash_util") {
 }
 
 source_set("unittests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   deps = [
     "//ios/web/public",
@@ -57,6 +52,5 @@ source_set("unittests") {
     "crw_session_certificate_policy_cache_storage_unittest.mm",
     "serializable_user_data_manager_unittest.mm",
     "session_certificate_policy_cache_impl_unittest.mm",
-    "session_certificate_policy_cache_storage_builder_unittest.mm",
   ]
 }

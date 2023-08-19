@@ -81,9 +81,12 @@ public class EventForwarder {
 
     @CalledByNative
     private static EventForwarder create(long nativeEventForwarder, boolean isDragDropEnabled) {
-        return new EventForwarder(nativeEventForwarder, isDragDropEnabled,
-                UiAndroidFeatureMap.getInstance().isEnabled(
-                        UiAndroidFeatures.CONVERT_TRACKPAD_EVENTS_TO_MOUSE));
+        final boolean isAtLeastU = Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
+        final boolean convertTrackpadEventsToMouse = isAtLeastU
+                && UiAndroidFeatureMap.isEnabled(
+                        UiAndroidFeatures.CONVERT_TRACKPAD_EVENTS_TO_MOUSE);
+        return new EventForwarder(
+                nativeEventForwarder, isDragDropEnabled, convertTrackpadEventsToMouse);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -205,8 +208,8 @@ public class EventForwarder {
             // We can't get nanosecond for historical event time, so we get milliseconds and cast
             // them to nanosecond.
             final long oldestEventTime = event.getHistorySize() > 0
-                    ? MotionEventUtils.getHistoricalEventTimeNano(event, 0)
-                    : MotionEventUtils.getEventTimeNano(event);
+                    ? MotionEventUtils.getHistoricalEventTimeNanos(event, 0)
+                    : MotionEventUtils.getEventTimeNanos(event);
 
             int eventAction = event.getActionMasked();
 
@@ -344,7 +347,7 @@ public class EventForwarder {
             if (eventAction == MotionEvent.ACTION_HOVER_ENTER) {
                 if (mLastMouseButtonState == MotionEvent.BUTTON_PRIMARY) {
                     EventForwarderJni.get().onMouseEvent(mNativeEventForwarder, EventForwarder.this,
-                            MotionEventUtils.getEventTimeNano(event),
+                            MotionEventUtils.getEventTimeNanos(event),
                             MotionEvent.ACTION_BUTTON_RELEASE, event.getX(), event.getY(),
                             event.getPointerId(0), event.getPressure(0), event.getOrientation(0),
                             event.getAxisValue(MotionEvent.AXIS_TILT, 0),
@@ -408,7 +411,7 @@ public class EventForwarder {
         boolean shouldConvertToMouseEvent = isTrackpadToMouseEventConversionEnabled()
                 && isTrackpadClickOrClickAndDragEvent(event);
         EventForwarderJni.get().onMouseEvent(mNativeEventForwarder, EventForwarder.this,
-                MotionEventUtils.getEventTimeNano(event), eventAction, event.getX(), event.getY(),
+                MotionEventUtils.getEventTimeNanos(event), eventAction, event.getX(), event.getY(),
                 event.getPointerId(0), event.getPressure(0), event.getOrientation(0),
                 event.getAxisValue(MotionEvent.AXIS_TILT, 0), getMouseEventActionButton(event),
                 event.getButtonState(), event.getMetaState(),
@@ -551,7 +554,7 @@ public class EventForwarder {
         }
 
         return EventForwarderJni.get().onGenericMotionEvent(mNativeEventForwarder,
-                EventForwarder.this, event, MotionEventUtils.getEventTimeNano(event));
+                EventForwarder.this, event, MotionEventUtils.getEventTimeNanos(event));
     }
 
     /**
@@ -588,7 +591,6 @@ public class EventForwarder {
         EventForwarderJni.get().scrollTo(mNativeEventForwarder, EventForwarder.this, xPix, yPix);
     }
 
-    @VisibleForTesting
     public void doubleTapForTest(long timeMs, int x, int y) {
         if (mNativeEventForwarder == 0) return;
         EventForwarderJni.get().doubleTap(mNativeEventForwarder, EventForwarder.this, timeMs, x, y);

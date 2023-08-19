@@ -10,11 +10,14 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/frame/window_frame_util.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_win.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/grit/theme_resources.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -48,9 +51,12 @@ WindowsCaptionButton::CreateIconPainter() {
 }
 
 gfx::Size WindowsCaptionButton::CalculatePreferredSize() const {
+  const int width =
+      WindowFrameUtil::kWindowsCaptionButtonWidth + GetBetweenButtonSpacing();
+
   // TODO(bsep): The sizes in this function are for 1x device scale and don't
   // match Windows button sizes at hidpi.
-  int height = WindowFrameUtil::kWindows10GlassCaptionButtonHeightRestored;
+  int height = WindowFrameUtil::kWindowsCaptionButtonHeightRestored;
   if (!frame_view_->browser_view()->webui_tab_strip() &&
       frame_view_->IsMaximized()) {
     int maximized_height =
@@ -61,8 +67,7 @@ gfx::Size WindowsCaptionButton::CalculatePreferredSize() const {
     maximized_height -= kMaximizedBottomMargin;
     height = std::min(height, maximized_height);
   }
-  int base_width = WindowFrameUtil::kWindows10GlassCaptionButtonWidth;
-  return gfx::Size(base_width + GetBetweenButtonSpacing(), height);
+  return gfx::Size(width, height);
 }
 
 SkColor WindowsCaptionButton::GetBaseForegroundColor() const {
@@ -85,18 +90,17 @@ void WindowsCaptionButton::OnPaintBackground(gfx::Canvas* canvas) {
   if (theme_alpha > 0) {
     canvas->FillRect(
         bounds,
-        SkColorSetA(bg_color,
-                    WindowFrameUtil::
-                        CalculateWindows10GlassCaptionButtonBackgroundAlpha(
-                            theme_alpha)));
+        SkColorSetA(
+            bg_color,
+            WindowFrameUtil::CalculateWindowsCaptionButtonBackgroundAlpha(
+                theme_alpha)));
   }
   if (theme_provider->HasCustomImage(IDR_THEME_WINDOW_CONTROL_BACKGROUND)) {
     // Figure out what portion of the background image to display
     const int button_display_order = GetButtonDisplayOrderIndex();
-    const int base_button_width =
-        WindowFrameUtil::kWindows10GlassCaptionButtonWidth;
+    const int base_button_width = WindowFrameUtil::kWindowsCaptionButtonWidth;
     const int base_visual_spacing =
-        WindowFrameUtil::kWindows10GlassCaptionButtonVisualSpacing;
+        WindowFrameUtil::kWindowsCaptionButtonVisualSpacing;
     const int src_x =
         button_display_order * (base_button_width + base_visual_spacing);
     const int src_y = 0;
@@ -145,13 +149,13 @@ int WindowsCaptionButton::GetBetweenButtonSpacing() const {
   const int display_order_index = GetButtonDisplayOrderIndex();
   return display_order_index == 0
              ? 0
-             : WindowFrameUtil::kWindows10GlassCaptionButtonVisualSpacing;
+             : WindowFrameUtil::kWindowsCaptionButtonVisualSpacing;
 }
 
 int WindowsCaptionButton::GetButtonDisplayOrderIndex() const {
   int button_display_order = 0;
   const bool tab_search_enabled =
-      WindowFrameUtil::IsWin10TabSearchCaptionButtonEnabled(
+      WindowFrameUtil::IsWindowsTabSearchCaptionButtonEnabled(
           frame_view_->browser_view()->browser());
   switch (button_type_) {
     case VIEW_ID_TAB_SEARCH_BUTTON:

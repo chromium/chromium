@@ -92,8 +92,8 @@ class FakeFastPairPresenterFactory
   }
 
  protected:
-  raw_ptr<FakeFastPairPresenter, ExperimentalAsh> fake_fast_pair_presenter_ =
-      nullptr;
+  raw_ptr<FakeFastPairPresenter, DanglingUntriaged | ExperimentalAsh>
+      fake_fast_pair_presenter_ = nullptr;
 };
 
 }  // namespace
@@ -122,6 +122,7 @@ class UIBrokerImplTest : public AshTestBase, public UIBroker::Observer {
     ui_broker_.reset();
     ClearLogin();
     AshTestBase::TearDown();
+    FastPairPresenterImpl::Factory::SetFactoryForTesting(nullptr);
   }
 
   void OnDiscoveryAction(scoped_refptr<Device> device,

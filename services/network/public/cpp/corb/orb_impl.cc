@@ -218,6 +218,7 @@ Decision OpaqueResponseBlockingAnalyzer::Init(
     const GURL& request_url,
     const absl::optional<url::Origin>& request_initiator,
     mojom::RequestMode request_mode,
+    mojom::RequestDestination request_destination_from_renderer,
     const network::mojom::URLResponseHead& response) {
   // Exclude responses that ORB doesn't apply to.
   if (!IsOpaqueResponse(request_initiator, request_mode, response))
@@ -248,6 +249,8 @@ Decision OpaqueResponseBlockingAnalyzer::Init(
   // media) and to the subsequent range requests (deciding which URLs from the
   // chain to validate against the ones in the store of validated URLs).
   final_request_url_ = request_url;
+
+  request_destination_from_renderer_ = request_destination_from_renderer;
 
   // 1. Let mimeType be the result of extracting a MIME type from response's
   //    header list.
@@ -372,6 +375,19 @@ Decision OpaqueResponseBlockingAnalyzer::Sniff(base::StringPiece data) {
   CHECK(!IsAudioOrVideoMimeType(mime_type_));       // Ditto.
   CHECK(!IsNonSniffableImageMimeType(mime_type_));  // Ditto.
 
+  // 12. If mimeType is failure, then return true.
+  //
+  // The spec proposal handles this step before checking for JS and JSON. To
+  // be compatible, we handle this before our 'sniffing' steps that handle
+  // those formats.
+  //
+  // TODO(lukasza): This is not fully accurate - it doesn't capture all the
+  // possible failure modes of
+  // https://fetch.spec.whatwg.org/#concept-header-extract-mime-type
+  if (mime_type_.empty()) {
+    return Decision::kAllow;
+  }
+
   // Check if the response is HTML, XML, or JSON, in which case it is surely not
   // JavaScript.  (The sniffers account for HTML/JS polyglot cases - see
   // https://crbug.com/839945 and https://crbug.com/839425.  OTOH, the sniffers
@@ -424,14 +440,6 @@ Decision OpaqueResponseBlockingAnalyzer::HandleEndOfSniffableResponseBody() {
   // (Skipping these steps minimizes the risk of shipping the initial ORB
   // implementation.)
 
-  // 12. If mimeType is failure, then return true.
-  //
-  // TODO(lukasza): This is not fully accurate - it doesn't capture all the
-  // possible failure modes of
-  // https://fetch.spec.whatwg.org/#concept-header-extract-mime-type
-  if (mime_type_.empty())
-    return Decision::kAllow;
-
   // TODO(lukasza): Departure from the spec discussed in
   // https://github.com/annevk/orb/issues/3.
   // Diff: Removing step 13:
@@ -457,11 +465,21 @@ bool OpaqueResponseBlockingAnalyzer::ShouldReportBlockedResponse() const {
 ResponseAnalyzer::BlockedResponseHandling
 OpaqueResponseBlockingAnalyzer::ShouldHandleBlockedResponseAs() const {
   // "ORB v0.1" uses CORB-style error handling with injecting an empty response.
-  // Later versions use ORB-specified error handling, by injecting a network
-  // error.
-  return base::FeatureList::IsEnabled(features::kOpaqueResponseBlockingV02)
-             ? BlockedResponseHandling::kNetworkError
-             : BlockedResponseHandling::kEmptyResponse;
+  // "ORB v0.2" uses ORB-specified error handling (injecting a network error)
+  // for non-script fetches, by injecting a network error.
+  // "ORB errors-for-all-fetches" uses ORB-specified error handling everywhere.
+
+  if (base::FeatureList::IsEnabled(
+          features::kOpaqueResponseBlockingErrorsForAllFetches)) {
+    return BlockedResponseHandling::kNetworkError;
+  }
+
+  if (base::FeatureList::IsEnabled(features::kOpaqueResponseBlockingV02) &&
+      request_destination_from_renderer_ != mojom::RequestDestination::kEmpty) {
+    return BlockedResponseHandling::kNetworkError;
+  }
+
+  return BlockedResponseHandling::kEmptyResponse;
 }
 
 void OpaqueResponseBlockingAnalyzer::ReportOrbBlockedAndCorbDidnt() const {

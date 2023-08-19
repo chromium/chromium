@@ -6,9 +6,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_RESIZE_OBSERVER_RESIZE_OBSERVATION_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_box_options.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_entry.h"
-#include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -26,12 +26,12 @@ class CORE_EXPORT ResizeObservation final
 
   Element* Target() const { return target_; }
   size_t TargetDepth();
-  // True if observationSize differs from target's current size.
+  // True if observation_size_ differs from target's current size.
   bool ObservationSizeOutOfSync();
-  void SetObservationSize(const LayoutSize&);
+  void SetObservationSize(const LogicalSize&);
   ResizeObserverBoxOptions ObservedBox() const { return observed_box_; }
 
-  LayoutSize ComputeTargetSize() const;
+  LogicalSize ComputeTargetSize() const;
 
   void Trace(Visitor*) const;
 
@@ -39,7 +39,7 @@ class CORE_EXPORT ResizeObservation final
   WeakMember<Element> target_;
   Member<ResizeObserver> observer_;
   // Target size sent in last observation notification.
-  LayoutSize observation_size_;
+  LogicalSize observation_size_;
   ResizeObserverBoxOptions observed_box_;
 };
 

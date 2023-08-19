@@ -44,7 +44,10 @@ class POLICY_EXPORT PolicyBundle {
   // Each policy in each PolicyMap is replaced only if the policy from |other|
   // has a higher priority.
   // See PolicyMap::MergeFrom for details on merging individual PolicyMaps.
-  void MergeFrom(const PolicyBundle& other);
+  // If |merge_precedence_metapolicies| is true, only the precedence
+  // metapolicies are merged for each policy map. Otherwise they are skipped.
+  void MergeFrom(const PolicyBundle& other,
+                 bool merge_precedence_metapolicies = false);
 
   // Returns true if |other| has the same keys and value as |this|.
   bool Equals(const PolicyBundle& other) const;

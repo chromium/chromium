@@ -101,14 +101,16 @@ TailoredSecurityUnconsentedModal::TailoredSecurityUnconsentedModal(
   SetTitle(IDS_TAILORED_SECURITY_UNCONSENTED_MODAL_TITLE);
   if (base::FeatureList::IsEnabled(
           safe_browsing::kTailoredSecurityUpdatedMessages)) {
-    // TODO(crbug.com/1439615) Update the modal width to match the mocks.
-    AddChildView(std::make_unique<views::Label>(l10n_util::GetStringUTF16(
-        IDS_TAILORED_SECURITY_UNCONSENTED_MODAL_BODY)));
+    auto* bodyLabel =
+        AddChildView(std::make_unique<views::Label>(l10n_util::GetStringUTF16(
+            IDS_TAILORED_SECURITY_UNCONSENTED_MODAL_BODY)));
+    bodyLabel->SetMultiLine(true);
+    bodyLabel->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical,
-        ChromeLayoutProvider::Get()->GetInsetsMetric(views::INSETS_DIALOG),
-        ChromeLayoutProvider::Get()->GetDistanceMetric(
-            views::DISTANCE_RELATED_LABEL_HORIZONTAL)));
+        ChromeLayoutProvider::Get()->GetInsetsMetric(views::INSETS_DIALOG)));
+    set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
+        views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
   }
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringUTF16(

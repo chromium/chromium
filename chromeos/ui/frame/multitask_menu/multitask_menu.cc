@@ -41,7 +41,9 @@ MultitaskMenu::MultitaskMenu(views::View* anchor,
   set_parent_window(parent_widget->GetNativeWindow());
   SetAnchorView(anchor);
   SetArrow(views::BubbleBorder::Arrow::TOP_CENTER);
+  SetEnableArrowKeyTraversal(true);
   SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetCanActivate(parent_widget->IsActive());
   SetUseDefaultFillLayout(true);
 
   uint8_t buttons = MultitaskMenuView::kFullscreen;
@@ -93,6 +95,10 @@ void MultitaskMenu::HideBubble() {
 
   // Destroys `this`.
   widget->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+}
+
+base::WeakPtr<MultitaskMenu> MultitaskMenu::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 void MultitaskMenu::OnDisplayTabletStateChanged(display::TabletState state) {

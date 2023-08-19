@@ -67,6 +67,7 @@ class ThemeSelectionScreen : public BaseScreen {
   ScreenSummary GetScreenSummary() override;
   std::string RetrieveChoobeSubtitle();
 
+  ThemeSelectionScreen::SelectedTheme initial_theme_;
   base::WeakPtr<ThemeSelectionScreenView> view_;
   ScreenExitCallback exit_callback_;
 };

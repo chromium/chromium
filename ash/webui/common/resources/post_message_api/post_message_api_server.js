@@ -21,7 +21,7 @@ const MAX_INITIALIZATION_ATTEMPTS = 8;
  * over the PostMessageAPI.  This should be subclassed and the subclass should
  * provide supported methods.
  */
-export class PostMessageAPIServer extends RequestHandler {
+export class PostMessageApiServer extends RequestHandler {
   constructor(clientElement, targetURL, messageOriginURLFilter) {
     super(clientElement, messageOriginURLFilter, targetURL);
     /**
@@ -77,7 +77,7 @@ export class PostMessageAPIServer extends RequestHandler {
           'Sending init message to guest content,  attempt # :' +
           this.numInitializationAttempts_);
 
-      this.targetWindow().postMessage('init', this.targetURL().toString());
+      this.targetWindow().postMessage('init', this.targetUrl().toString());
 
       // Set timeout to check if initialization message has been received using
       // exponential backoff.

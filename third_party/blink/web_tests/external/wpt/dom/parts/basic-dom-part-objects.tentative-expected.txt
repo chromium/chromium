@@ -1,0 +1,28 @@
+This is a testharness.js-based test.
+PASS Basic imperative DOM Parts object construction (Document)
+PASS Cloning (Document)
+PASS Cloning Element (Document)
+PASS Cloning Text (Document)
+PASS Cloning Comment (Document)
+PASS Cloning CDATASection (Document)
+PASS Cloning ProcessingInstruction (Document)
+PASS DOM mutation support (Document)
+PASS ChildNodePart children manipulation (Document)
+PASS Corner case ChildNodePart construction and cloning (Document)
+PASS Basic imperative DOM Parts object construction (DocumentFragment)
+PASS Cloning (DocumentFragment)
+PASS Cloning Element (DocumentFragment)
+PASS Cloning Text (DocumentFragment)
+PASS Cloning Comment (DocumentFragment)
+PASS Cloning CDATASection (DocumentFragment)
+PASS Cloning ProcessingInstruction (DocumentFragment)
+PASS DOM mutation support (DocumentFragment)
+PASS ChildNodePart children manipulation (DocumentFragment)
+PASS Corner case ChildNodePart construction and cloning (DocumentFragment)
+PASS Basic declarative DOM Parts (Main Document)
+PASS Basic declarative DOM Parts (Template)
+PASS Basic declarative DOM Parts (Clone)
+PASS Basic declarative DOM Parts (PartClone)
+FAIL Basic declarative DOM Parts (DeclarativeShadowDOM) assert_equals: declarative root should have two parts: lengths differ expected 2 but got 0
+Harness: the test ran to completion.
+

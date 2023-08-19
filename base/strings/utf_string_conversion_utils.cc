@@ -9,6 +9,21 @@
 
 namespace base {
 
+// CountUnicodeCharacters ------------------------------------------------------
+
+absl::optional<size_t> CountUnicodeCharacters(const char16_t* src,
+                                              size_t src_len,
+                                              size_t limit) {
+  base_icu::UChar32 unused = 0;
+  size_t count = 0;
+  for (size_t index = 0; count < limit && index < src_len; ++count, ++index) {
+    if (!ReadUnicodeCharacter(src, src_len, &index, &unused)) {
+      return absl::nullopt;
+    }
+  }
+  return count;
+}
+
 // ReadUnicodeCharacter --------------------------------------------------------
 
 bool ReadUnicodeCharacter(const char* src,

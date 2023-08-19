@@ -5,4 +5,7 @@ include_rules = [
   "+components/sync_device_info",
   "+ios/web/public",
   "+ios/chrome/browser/sync",
+  "+ios/chrome/browser/history",
+  "+ios/chrome/browser/optimization_guide",
+  "+ios/chrome/browser/metrics",
 ]

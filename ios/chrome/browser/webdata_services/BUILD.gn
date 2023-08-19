@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("webdata_services") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "web_data_service_factory.h",
     "web_data_service_factory.mm",

@@ -8,9 +8,11 @@ import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
+import org.chromium.components.power_bookmarks.PowerBookmarkType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /** Simple implementation of {@link BookmarkQueryHandler} that fetches children. */
 public class BasicBookmarkQueryHandler implements BookmarkQueryHandler {
@@ -31,7 +33,9 @@ public class BasicBookmarkQueryHandler implements BookmarkQueryHandler {
 
     @Override
     public List<BookmarkListEntry> buildBookmarkListForParent(BookmarkId parentId) {
-        final List<BookmarkId> childIdList = mBookmarkModel.getChildIds(parentId);
+        final List<BookmarkId> childIdList = parentId.equals(mBookmarkModel.getRootFolderId())
+                ? BookmarkUtils.populateTopLevelFolders(mBookmarkModel)
+                : mBookmarkModel.getChildIds(parentId);
         final List<BookmarkListEntry> bookmarkListEntries = new ArrayList<>();
         for (BookmarkId bookmarkId : childIdList) {
             PowerBookmarkMeta powerBookmarkMeta = mBookmarkModel.getPowerBookmarkMeta(bookmarkId);
@@ -42,7 +46,6 @@ public class BasicBookmarkQueryHandler implements BookmarkQueryHandler {
                     continue;
                 }
             }
-
             BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
             BookmarkListEntry bookmarkListEntry = BookmarkListEntry.createBookmarkEntry(
                     bookmarkItem, powerBookmarkMeta, mBookmarkUiPrefs.getBookmarkRowDisplayPref());
@@ -57,17 +60,30 @@ public class BasicBookmarkQueryHandler implements BookmarkQueryHandler {
     }
 
     @Override
-    public List<BookmarkListEntry> buildBookmarkListForSearch(String query) {
+    public List<BookmarkListEntry> buildBookmarkListForSearch(
+            String query, Set<PowerBookmarkType> powerFilter) {
         final List<BookmarkId> searchIdList =
                 mBookmarkModel.searchBookmarks(query, MAXIMUM_NUMBER_OF_SEARCH_RESULTS);
         final List<BookmarkListEntry> bookmarkListEntries = new ArrayList<>();
         for (BookmarkId bookmarkId : searchIdList) {
             PowerBookmarkMeta powerBookmarkMeta = mBookmarkModel.getPowerBookmarkMeta(bookmarkId);
+            boolean isFilterEmpty = powerFilter == null || powerFilter.isEmpty();
+            if (!isFilterEmpty && !powerFilter.contains(getTypeFromMeta(powerBookmarkMeta))) {
+                continue;
+            }
             BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
             BookmarkListEntry bookmarkListEntry = BookmarkListEntry.createBookmarkEntry(
                     bookmarkItem, powerBookmarkMeta, mBookmarkUiPrefs.getBookmarkRowDisplayPref());
             bookmarkListEntries.add(bookmarkListEntry);
         }
         return bookmarkListEntries;
+    }
+
+    private PowerBookmarkType getTypeFromMeta(PowerBookmarkMeta powerBookmarkMeta) {
+        if (powerBookmarkMeta != null && powerBookmarkMeta.hasShoppingSpecifics()) {
+            return PowerBookmarkType.SHOPPING;
+        } else {
+            return PowerBookmarkType.UNKNOWN;
+        }
     }
 }

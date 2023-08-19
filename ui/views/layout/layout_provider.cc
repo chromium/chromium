@@ -193,6 +193,10 @@ ShapeSysTokens GetShapeSysToken(ShapeContextTokens id) {
           {ShapeContextTokens::kMenuTouchRadius, ShapeSysTokens::kSmall},
           {ShapeContextTokens::kOmniboxExpandedRadius, ShapeSysTokens::kMedium},
           {ShapeContextTokens::kTextfieldRadius, ShapeSysTokens::kSmall},
+          {ShapeContextTokens::kSidePanelContentRadius,
+           ShapeSysTokens::kMedium},
+          {ShapeContextTokens::kSidePanelPageContentRadius,
+           ShapeSysTokens::kSmall},
       });
   const auto* it = shape_token_map.find(id);
   return it == shape_token_map.end() ? ShapeSysTokens::kDefault : it->second;
@@ -219,6 +223,8 @@ int LayoutProvider::GetCornerRadiusMetric(ShapeContextTokens id,
         return 16;
       case ShapeContextTokens::kTextfieldRadius:
         return FocusRing::kDefaultCornerRadiusDp;
+      case ShapeContextTokens::kSidePanelContentRadius:
+        return GetCornerRadiusMetric(Emphasis::kMedium);
       default:
         return 0;
     }

@@ -12,12 +12,12 @@
 
 namespace network {
 
+namespace {
+
 using Step = AttributionVerificationMediator::Step;
 using GetHeadersStatus = AttributionVerificationMediator::GetHeadersStatus;
 using ProcessVerificationStatus =
     AttributionVerificationMediator::ProcessVerificationStatus;
-
-namespace {
 
 enum TimeSpan {
   kGetKeyCommitment,

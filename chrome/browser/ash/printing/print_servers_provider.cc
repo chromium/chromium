@@ -242,6 +242,7 @@ class PrintServersProviderImpl : public PrintServersProvider {
 
   // Called when a new allowlist is available.
   void UpdateAllowlist() {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     allowlist_ = absl::nullopt;
     // Fetch and parse the allowlist.
     const PrefService::Preference* pref =

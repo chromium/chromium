@@ -5,60 +5,40 @@
 package org.chromium.chrome.browser.omnibox.suggestions.entity;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.BaseSwitches;
-import org.chromium.base.CommandLine;
-import org.chromium.base.SysUtils;
-import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
+import org.chromium.chrome.browser.omnibox.styles.SuggestionSpannable;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
-import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProcessor;
-import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionDrawableState;
-import org.chromium.components.browser_ui.util.ConversionUtils;
-import org.chromium.components.image_fetcher.ImageFetcher;
+import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.url.GURL;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /** A class that handles model and view creation for the Entity suggestions. */
-public class EntitySuggestionProcessor extends BaseSuggestionViewProcessor {
-    private final Map<GURL, List<PropertyModel>> mPendingImageRequests;
-    private final Supplier<ImageFetcher> mImageFetcherSupplier;
-    // Threshold for low RAM devices. We won't be showing entity suggestion images
-    // on devices that have less RAM than this to avoid bloat and reduce user-visible
-    // slowdown while spinning up an image decompression process.
-    // We set the threshold to 1.5GB to reduce number of users affected by this restriction.
-    // TODO(crbug.com/979426): This threshold is set arbitrarily and should be revisited once
-    // we have more data about relation between system memory and performance.
-    private static final int LOW_MEMORY_THRESHOLD_KB =
-            (int) (1.5 * ConversionUtils.KILOBYTES_PER_GIGABYTE);
-
-    /**
-     * @param context An Android context.
-     * @param suggestionHost A handle to the object using the suggestions.
-     */
-    public EntitySuggestionProcessor(Context context, SuggestionHost suggestionHost,
-            Supplier<ImageFetcher> imageFetcherSupplier) {
-        super(context, suggestionHost, null);
-        mPendingImageRequests = new HashMap<>();
-        mImageFetcherSupplier = imageFetcherSupplier;
+public class EntitySuggestionProcessor extends BasicSuggestionProcessor {
+    public EntitySuggestionProcessor(@NonNull Context context,
+            @NonNull SuggestionHost suggestionHost,
+            @NonNull UrlBarEditingTextStateProvider editingTextProvider,
+            @Nullable OmniboxImageSupplier imageSupplier, @NonNull BookmarkState bookmarkState) {
+        super(context, suggestionHost, editingTextProvider, imageSupplier, bookmarkState);
     }
 
     @Override
     public boolean doesProcessSuggestion(AutocompleteMatch suggestion, int position) {
+        // TODO(ender): Expand with Categorical Suggestions once these get their dedicated type:
+        // - Confirm whether custom handling applicable to Entities should also be applied to
+        //   Categorical Suggestions,
+        // - Return null upon call to getSuggestionDescription(), unless Categorical Suggestions
+        //   make proper use of the description text. Do not show <Search with X>.
         return suggestion.getType() == OmniboxSuggestionType.SEARCH_SUGGEST_ENTITY;
     }
 
@@ -72,86 +52,22 @@ public class EntitySuggestionProcessor extends BaseSuggestionViewProcessor {
         return new PropertyModel(EntitySuggestionViewProperties.ALL_KEYS);
     }
 
-    private void fetchEntityImage(AutocompleteMatch suggestion, PropertyModel model) {
-        ThreadUtils.assertOnUiThread();
-        final GURL url = suggestion.getImageUrl();
-        if (url.isEmpty()) return;
-
-        // Ensure an image fetcher is available prior to requesting images.
-        ImageFetcher imageFetcher = mImageFetcherSupplier.get();
-        if (imageFetcher == null) return;
-
-        // Do not make duplicate answer image requests for the same URL (to avoid generating
-        // duplicate bitmaps for the same image).
-        if (mPendingImageRequests.containsKey(url)) {
-            mPendingImageRequests.get(url).add(model);
-            return;
-        }
-
-        List<PropertyModel> models = new ArrayList<>();
-        models.add(model);
-        mPendingImageRequests.put(url, models);
-
-        ImageFetcher.Params params = ImageFetcher.Params.create(
-                url.getSpec(), ImageFetcher.ENTITY_SUGGESTIONS_UMA_CLIENT_NAME);
-        imageFetcher.fetchImage(
-                params, (Bitmap bitmap) -> {
-                    ThreadUtils.assertOnUiThread();
-
-                    final List<PropertyModel> pendingModels = mPendingImageRequests.remove(url);
-                    if (pendingModels == null || bitmap == null) {
-                        return;
-                    }
-
-                    for (int i = 0; i < pendingModels.size(); i++) {
-                        PropertyModel pendingModel = pendingModels.get(i);
-                        setSuggestionDrawableState(pendingModel,
-                                SuggestionDrawableState.Builder.forBitmap(mContext, bitmap)
-                                        .setUseRoundedCorners(true)
-                                        .setLarge(true)
-                                        .build());
-                    }
-                });
-    }
-
     @VisibleForTesting
-    public void applyImageDominantColor(String colorSpec, PropertyModel model) {
-        if (TextUtils.isEmpty(colorSpec)) {
-            return;
-        }
+    @Override
+    public OmniboxDrawableState getFallbackIcon(AutocompleteMatch match) {
+        var colorSpec = match.getImageDominantColor();
+        if (TextUtils.isEmpty(colorSpec)) return super.getFallbackIcon(match);
 
-        int color;
         try {
-            color = Color.parseColor(colorSpec);
+            int color = Color.parseColor(colorSpec);
+            return OmniboxDrawableState.forColor(color);
         } catch (IllegalArgumentException e) {
-            // The supplied color information could not be parsed.
-            return;
+            return super.getFallbackIcon(match);
         }
-
-        setSuggestionDrawableState(model,
-                SuggestionDrawableState.Builder.forColor(color)
-                        .setLarge(true)
-                        .setUseRoundedCorners(true)
-                        .build());
     }
 
     @Override
-    public void populateModel(AutocompleteMatch suggestion, PropertyModel model, int position) {
-        super.populateModel(suggestion, model, position);
-        setSuggestionDrawableState(model,
-                SuggestionDrawableState.Builder
-                        .forDrawableRes(mContext, R.drawable.ic_suggestion_magnifier)
-                        .setAllowTint(true)
-                        .build());
-
-        if (SysUtils.amountOfPhysicalMemoryKB() >= LOW_MEMORY_THRESHOLD_KB
-                || CommandLine.getInstance().hasSwitch(BaseSwitches.DISABLE_LOW_END_DEVICE_MODE)) {
-            applyImageDominantColor(suggestion.getImageDominantColor(), model);
-            fetchEntityImage(suggestion, model);
-        }
-
-        model.set(EntitySuggestionViewProperties.SUBJECT_TEXT, suggestion.getDisplayText());
-        model.set(EntitySuggestionViewProperties.DESCRIPTION_TEXT, suggestion.getDescription());
-        setTabSwitchOrRefineAction(model, suggestion, position);
+    protected @Nullable SuggestionSpannable getSuggestionDescription(AutocompleteMatch match) {
+        return new SuggestionSpannable(match.getDescription());
     }
 }

@@ -6,17 +6,13 @@
 
 #import <Security/Security.h>
 
+#include "base/apple/osstatus_logging.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/base64.h"
-#include "base/mac/mac_logging.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "build/branding_buildflags.h"
 #include "crypto/apple_keychain.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using crypto::AppleKeychain;
 

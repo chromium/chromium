@@ -34,10 +34,9 @@
 #include "cc/trees/paint_holding_reason.h"
 #include "cc/trees/render_frame_metadata_observer.h"
 #include "cc/trees/scoped_abort_remaining_swap_promises.h"
-#include "components/power_scheduler/power_mode_arbiter.h"
 #include "components/viz/common/frame_sinks/delay_based_time_source.h"
 #include "components/viz/common/frame_timing_details.h"
-#include "components/viz/common/gpu/context_provider.h"
+#include "components/viz/common/gpu/raster_context_provider.h"
 
 namespace cc {
 
@@ -100,8 +99,7 @@ void SingleThreadProxy::Start() {
         this, scheduler_settings, layer_tree_host_->GetId(),
         task_runner_provider_->MainThreadTaskRunner(),
         std::move(compositor_timing_history),
-        host_impl_->compositor_frame_reporting_controller(),
-        power_scheduler::PowerModeArbiter::GetInstance());
+        host_impl_->compositor_frame_reporting_controller());
   }
 }
 
@@ -724,6 +722,21 @@ void SingleThreadProxy::RequestBeginMainFrameNotExpected(bool new_state) {
   }
 }
 
+viz::BeginFrameArgs SingleThreadProxy::BeginImplFrameForTest(
+    base::TimeTicks frame_begin_time) {
+  viz::BeginFrameArgs begin_frame_args(viz::BeginFrameArgs::Create(
+      BEGINFRAME_FROM_HERE, viz::BeginFrameArgs::kManualSourceId,
+      begin_frame_sequence_number_++, frame_begin_time, base::TimeTicks(),
+      viz::BeginFrameArgs::DefaultInterval(), viz::BeginFrameArgs::NORMAL));
+
+  // Start the impl frame.
+  {
+    DebugScopedSetImplThread impl(task_runner_provider_);
+    WillBeginImplFrame(begin_frame_args);
+  }
+  return begin_frame_args;
+}
+
 void SingleThreadProxy::CompositeImmediatelyForTest(
     base::TimeTicks frame_begin_time,
     bool raster,
@@ -749,16 +762,8 @@ void SingleThreadProxy::CompositeImmediatelyForTest(
     }
   }
 
-  viz::BeginFrameArgs begin_frame_args(viz::BeginFrameArgs::Create(
-      BEGINFRAME_FROM_HERE, viz::BeginFrameArgs::kManualSourceId,
-      begin_frame_sequence_number_++, frame_begin_time, base::TimeTicks(),
-      viz::BeginFrameArgs::DefaultInterval(), viz::BeginFrameArgs::NORMAL));
-
-  // Start the impl frame.
-  {
-    DebugScopedSetImplThread impl(task_runner_provider_);
-    WillBeginImplFrame(begin_frame_args);
-  }
+  viz::BeginFrameArgs begin_frame_args =
+      BeginImplFrameForTest(frame_begin_time);  // IN-TEST
 
   // Run the "main thread" and get it to commit.
   {

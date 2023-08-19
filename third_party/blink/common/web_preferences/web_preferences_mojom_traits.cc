@@ -109,8 +109,9 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
   out->should_clear_document_background =
       data.should_clear_document_background();
   out->enable_scroll_animator = data.enable_scroll_animator();
-  out->threaded_scrolling_enabled = data.threaded_scrolling_enabled();
   out->prefers_reduced_motion = data.prefers_reduced_motion();
+  out->prefers_reduced_transparency = data.prefers_reduced_transparency();
+  out->inverted_colors = data.inverted_colors();
   out->touch_event_feature_detection_enabled =
       data.touch_event_feature_detection_enabled();
   out->pointer_events_max_touch_points = data.pointer_events_max_touch_points();

@@ -24,16 +24,14 @@
 #include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
 #include "third_party/blink/renderer/core/svg/svg_g_element.h"
 #include "third_party/blink/renderer/core/svg/svg_graphics_element.h"
-#include "third_party/blink/renderer/core/svg/svg_length_context.h"
+#include "third_party/blink/renderer/core/svg/svg_length_functions.h"
 #include "third_party/blink/renderer/core/svg/svg_use_element.h"
 
 namespace blink {
 
 LayoutSVGTransformableContainer::LayoutSVGTransformableContainer(
     SVGGraphicsElement* node)
-    : LayoutSVGContainer(node),
-      needs_transform_update_(true),
-      transform_uses_reference_box_(false) {}
+    : LayoutSVGContainer(node) {}
 
 static bool HasValidPredecessor(const Node* node) {
   DCHECK(node);
@@ -72,48 +70,26 @@ bool LayoutSVGTransformableContainer::IsChildAllowed(
   return LayoutSVGContainer::IsChildAllowed(child, style);
 }
 
-void LayoutSVGTransformableContainer::SetNeedsTransformUpdate() {
-  NOT_DESTROYED();
-  // The transform paint property relies on the SVG transform being up-to-date
-  // (see: PaintPropertyTreeBuilder::updateTransformForNonRootSVG).
-  SetNeedsPaintPropertyUpdate();
-  needs_transform_update_ = true;
-}
-
-SVGTransformChange LayoutSVGTransformableContainer::CalculateLocalTransform(
-    bool bounds_changed) {
+SVGTransformChange LayoutSVGTransformableContainer::UpdateLocalTransform(
+    const gfx::RectF& reference_box) {
   NOT_DESTROYED();
   SVGElement* element = GetElement();
   DCHECK(element);
-
   // If we're the LayoutObject for a <use> element, this container needs to
   // respect the translations induced by their corresponding use elements x/y
   // attributes.
   if (IsA<SVGUseElement>(element)) {
     const ComputedStyle& style = StyleRef();
-    SVGLengthContext length_context(element);
-    gfx::Vector2dF translation =
-        length_context.ResolveLengthPair(style.X(), style.Y(), style);
-    // TODO(fs): Signal this on style update instead.
-    if (translation != additional_translation_)
-      SetNeedsTransformUpdate();
-    additional_translation_ = translation;
+    const SVGViewportResolver viewport_resolver(*this);
+    additional_translation_ =
+        VectorForLengthPair(style.X(), style.Y(), viewport_resolver, style);
   }
-
-  if (!needs_transform_update_ && transform_uses_reference_box_) {
-    if (CheckForImplicitTransformChange(bounds_changed))
-      SetNeedsTransformUpdate();
-  }
-
-  if (!needs_transform_update_)
-    return SVGTransformChange::kNone;
 
   SVGTransformChangeDetector change_detector(local_transform_);
-  local_transform_ =
-      element->CalculateTransform(SVGElement::kIncludeMotionTransform);
+  local_transform_ = TransformHelper::ComputeTransformIncludingMotion(
+      *GetElement(), reference_box);
   local_transform_.Translate(additional_translation_.x(),
                              additional_translation_.y());
-  needs_transform_update_ = false;
   return change_detector.ComputeChange(local_transform_);
 }
 
@@ -123,9 +99,18 @@ void LayoutSVGTransformableContainer::StyleDidChange(
   NOT_DESTROYED();
   LayoutSVGContainer::StyleDidChange(diff, old_style);
 
-  TransformHelper::UpdateOffsetPath(*GetElement(), old_style);
-  transform_uses_reference_box_ =
-      TransformHelper::DependsOnReferenceBox(StyleRef());
+  // Check for changes to the 'x' or 'y' properties if this is a <use> element.
+  SVGElement& element = *GetElement();
+  if (old_style && IsA<SVGUseElement>(element)) {
+    const ComputedStyle& style = StyleRef();
+    if (old_style->X() != style.X() || old_style->Y() != style.Y()) {
+      SetNeedsTransformUpdate();
+    }
+  }
+
+  TransformHelper::UpdateOffsetPath(element, old_style);
+  SetTransformUsesReferenceBox(
+      TransformHelper::UpdateReferenceBoxDependency(*this));
 }
 
 }  // namespace blink

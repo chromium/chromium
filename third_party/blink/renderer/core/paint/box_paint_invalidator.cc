@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/paint/box_paint_invalidator.h"
 
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/layout/layout_replaced.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_ink_overflow.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
@@ -138,6 +139,15 @@ PaintInvalidationReason BoxPaintInvalidator::ComputePaintInvalidationReason() {
       box_.PreviousPhysicalContentBoxRect() != box_.PhysicalContentBoxRect())
     return PaintInvalidationReason::kLayout;
 
+  if (const auto* layout_replaced = DynamicTo<LayoutReplaced>(box_)) {
+    if (RuntimeEnabledFeatures::PaintNewReplacedInvalidationEnabled() &&
+        layout_replaced->ReplacedContentRect() !=
+            layout_replaced->ReplacedContentRectFrom(
+                box_.PreviousPhysicalContentBoxRect())) {
+      return PaintInvalidationReason::kLayout;
+    }
+  }
+
 #if DCHECK_IS_ON()
   // TODO(crbug.com/1205708): Audit this.
   NGInkOverflow::ReadUnsetAsNoneScope read_unset_as_none;
@@ -152,18 +162,18 @@ PaintInvalidationReason BoxPaintInvalidator::ComputePaintInvalidationReason() {
 
   // Incremental invalidation is not applicable if there is visual overflow.
   if (box_.PreviousPhysicalSelfVisualOverflowRect().size !=
-          PhysicalSizeToBeNoop(box_.PreviousSize()) ||
-      box_.PhysicalSelfVisualOverflowRect().size !=
-          PhysicalSizeToBeNoop(box_.Size()))
+          box_.PreviousSize() ||
+      box_.PhysicalSelfVisualOverflowRect().size != box_.Size()) {
     return PaintInvalidationReason::kLayout;
+  }
 
   // Incremental invalidation is not applicable if paint offset or size has
   // fraction.
   if (context_.old_paint_offset.HasFraction() ||
       context_.fragment_data->PaintOffset().HasFraction() ||
-      PhysicalSizeToBeNoop(box_.PreviousSize()).HasFraction() ||
-      PhysicalSizeToBeNoop(box_.Size()).HasFraction())
+      box_.PreviousSize().HasFraction() || box_.Size().HasFraction()) {
     return PaintInvalidationReason::kLayout;
+  }
 
   // Incremental invalidation is not applicable if there is border in the
   // direction of border box size change because we don't know the border
@@ -183,10 +193,6 @@ PaintInvalidationReason BoxPaintInvalidator::ComputePaintInvalidationReason() {
   if (box_.IsFrameSet()) {
     return PaintInvalidationReason::kLayout;
   }
-
-  // Needs to repaint column rules.
-  if (box_.IsLayoutMultiColumnSet())
-    return PaintInvalidationReason::kLayout;
 
   // Background invalidation has been done during InvalidateBackground(), so
   // we don't need to check background in this function.
@@ -266,9 +272,8 @@ BoxPaintInvalidator::ComputeViewBackgroundInvalidation() {
         // See: https://drafts.csswg.org/css-backgrounds-3/#root-background.
         const auto& background_layers = box_.StyleRef().BackgroundLayers();
         if (ShouldFullyInvalidateFillLayersOnSizeChange(
-                background_layers,
-                PhysicalSizeToBeNoop(root_box->PreviousSize()),
-                PhysicalSizeToBeNoop(root_box->Size()))) {
+                background_layers, root_box->PreviousSize(),
+                root_box->Size())) {
           return BackgroundInvalidationType::kFull;
         }
         if (BackgroundGeometryDependsOnLayoutOverflowRect() &&
@@ -316,9 +321,9 @@ BoxPaintInvalidator::ComputeBackgroundInvalidation(
   const auto& background_layers = box_.StyleRef().BackgroundLayers();
   if (background_layers.AnyLayerHasDefaultAttachmentImage() &&
       ShouldFullyInvalidateFillLayersOnSizeChange(
-          background_layers, PhysicalSizeToBeNoop(box_.PreviousSize()),
-          PhysicalSizeToBeNoop(box_.Size())))
+          background_layers, box_.PreviousSize(), box_.Size())) {
     return BackgroundInvalidationType::kFull;
+  }
 
   if (background_layers.AnyLayerUsesContentBox() &&
       box_.PreviousPhysicalContentBoxRect() != box_.PhysicalContentBoxRect())
@@ -404,8 +409,9 @@ bool BoxPaintInvalidator::NeedsToSavePreviousContentBoxRect() {
   // crbug.com/490533
   if ((style.BackgroundLayers().AnyLayerUsesContentBox() ||
        style.MaskLayers().AnyLayerUsesContentBox()) &&
-      box_.ContentSize() != box_.Size())
+      box_.ContentSize() != box_.Size()) {
     return true;
+  }
 
   return false;
 }

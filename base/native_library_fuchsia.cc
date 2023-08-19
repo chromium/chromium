@@ -94,8 +94,8 @@ void UnloadNativeLibrary(NativeLibrary library) {
 }
 
 void* GetFunctionPointerFromNativeLibrary(NativeLibrary library,
-                                          StringPiece name) {
-  return dlsym(library, name.data());
+                                          const char* name) {
+  return dlsym(library, name);
 }
 
 std::string GetNativeLibraryName(StringPiece name) {

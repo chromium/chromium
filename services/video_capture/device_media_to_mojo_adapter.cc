@@ -24,7 +24,6 @@
 #include "media/capture/video/chromeos/scoped_video_capture_jpeg_decoder.h"
 #include "media/capture/video/chromeos/video_capture_jpeg_decoder_impl.h"
 #elif BUILDFLAG(IS_WIN)
-#include "media/capture/video/win/video_capture_buffer_tracker_factory_win.h"
 #include "media/capture/video/win/video_capture_device_factory_win.h"
 #endif
 
@@ -162,7 +161,7 @@ void DeviceMediaToMojoAdapter::StartInternal(
 #if BUILDFLAG(IS_WIN)
     buffer_pool = base::MakeRefCounted<media::VideoCaptureBufferPoolImpl>(
         requested_settings.buffer_type, max_buffer_pool_buffer_count(),
-        std::make_unique<media::VideoCaptureBufferTrackerFactoryWin>(
+        std::make_unique<media::VideoCaptureBufferTrackerFactoryImpl>(
             dxgi_device_manager_));
 #else   // BUILDFLAG(IS_WIN)
     buffer_pool = base::MakeRefCounted<media::VideoCaptureBufferPoolImpl>(

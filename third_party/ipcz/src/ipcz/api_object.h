@@ -11,19 +11,19 @@
 
 namespace ipcz {
 
-class Portal;
+class Router;
 
 // Base class for any object which can be referenced by an IpczHandle.
 //
 // A subclass T should inherit from APIObjectImpl<T, U> rather than inheriting
 // this base class directly. See APIObjectImpl below.
-class APIObject : public RefCounted {
+class APIObject : public RefCounted<APIObject> {
  public:
   enum ObjectType {
     kNode,
     kPortal,
     kBox,
-    kTransport,
+    kTransportListener,
     kParcel,
   };
 
@@ -58,10 +58,12 @@ class APIObject : public RefCounted {
 
   // Indicates whether it's possible to send this object from `sender`. By
   // default the answer is NO.
-  virtual bool CanSendFrom(Portal& sender);
+  virtual bool CanSendFrom(Router& sender);
 
  protected:
-  ~APIObject() override;
+  friend class RefCounted<APIObject>;
+
+  virtual ~APIObject();
 
   const ObjectType type_;
 };

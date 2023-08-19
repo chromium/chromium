@@ -12,6 +12,8 @@
  * #include=iron-flex cr-shared-style md-select
  * #css_wrapper_metadata_end */
 
+@import 'ui/webui/resources/cr_elements/chromeos/cros_color_overrides.css';
+
 a {
   color: var(--cros-link-color);
   text-decoration: none;

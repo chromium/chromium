@@ -23,7 +23,6 @@
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 
 class GURL;
-struct WebAppInstallInfo;
 
 namespace content {
 class WebContents;
@@ -36,6 +35,8 @@ struct InstallableData;
 namespace web_app {
 
 enum class IconsDownloadedResult;
+
+struct WebAppInstallInfo;
 
 // Class used by the WebApp system to retrieve the necessary information to
 // install an app. Should only be called from the UI thread.
@@ -60,14 +61,18 @@ class WebAppDataRetriever : content::WebContentsObserver {
 
   using GetIconsCallback = WebAppIconDownloader::WebAppIconDownloaderCallback;
 
+  static void PopulateWebAppInfoFromMetadata(
+      WebAppInstallInfo* install_info,
+      const webapps::mojom::WebPageMetadata& metadata);
+
   WebAppDataRetriever();
   WebAppDataRetriever(const WebAppDataRetriever&) = delete;
   WebAppDataRetriever& operator=(const WebAppDataRetriever&) = delete;
   ~WebAppDataRetriever() override;
 
   // Runs `callback` with a `WebAppInstallInfo` generated from the
-  // `web_contents`. This tries to populated the following fields based on both
-  // the `web_contents` and it's `WebPageMetadata`: title, description,
+  // `web_contents`. This tries to populate the following fields based on both
+  // the `web_contents` and its `WebPageMetadata`: title, description,
   // start_url, icons, and mobile_capable.
   virtual void GetWebAppInstallInfo(content::WebContents* web_contents,
                                     GetWebAppInstallInfoCallback callback);
@@ -84,6 +89,7 @@ class WebAppDataRetriever : content::WebContentsObserver {
   virtual void GetIcons(content::WebContents* web_contents,
                         const base::flat_set<GURL>& extra_favicon_urls,
                         bool skip_page_favicons,
+                        bool fail_all_if_any_fail,
                         GetIconsCallback callback);
 
   // WebContentsObserver:

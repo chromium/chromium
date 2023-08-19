@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_PAINT_CHUNKER_H_
 
 #include "base/dcheck_is_on.h"
+#include "cc/input/hit_test_opaqueness.h"
 #include "cc/input/layer_selection_bound.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
@@ -61,7 +62,7 @@ class PLATFORM_EXPORT PaintChunker final {
     will_force_new_chunk_ = force;
     next_chunk_id_ = absl::nullopt;
   }
-  bool WillForceNewChunk() const { return will_force_new_chunk_; }
+  bool WillForceNewChunkForTesting() const { return will_force_new_chunk_; }
 
   void AppendByMoving(PaintChunk&&);
 
@@ -74,7 +75,11 @@ class PLATFORM_EXPORT PaintChunker final {
                                     const DisplayItemClient&,
                                     const gfx::Rect&,
                                     TouchAction,
-                                    bool blocking_wheel);
+                                    bool blocking_wheel,
+                                    cc::HitTestOpaqueness);
+
+  bool CurrentChunkIsNonEmptyAndTransparentToHitTest() const;
+
   void CreateScrollHitTestChunk(
       const PaintChunk::Id&,
       const DisplayItemClient&,
@@ -110,6 +115,9 @@ class PLATFORM_EXPORT PaintChunker final {
  private:
   // Returns true if a new chunk is created.
   bool EnsureCurrentChunk(const PaintChunk::Id&, const DisplayItemClient&);
+  bool WillCreateNewChunk() const;
+
+  void UnionBounds(const gfx::Rect&, cc::HitTestOpaqueness);
 
   void ProcessBackgroundColorCandidate(const DisplayItem&);
 

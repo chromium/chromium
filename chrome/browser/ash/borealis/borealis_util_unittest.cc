@@ -8,7 +8,8 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "chrome/browser/ash/borealis/borealis_window_manager_test_helper.h"
+#include "chrome/browser/ash/borealis/testing/apps.h"
+#include "chrome/browser/ash/borealis/testing/windows.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/url_util.h"
@@ -29,24 +30,26 @@ class BorealisUtilTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 };
 
+}  // namespace
+
 TEST_F(BorealisUtilTest, GetBorealisAppIdReturnsEmptyOnFailure) {
-  EXPECT_EQ(GetBorealisAppId("foo"), absl::nullopt);
+  EXPECT_EQ(ParseSteamGameId("foo"), absl::nullopt);
 }
 
 TEST_F(BorealisUtilTest, GetBorealisAppIdReturnsId) {
-  EXPECT_EQ(GetBorealisAppId("steam://rungameid/123").value(), 123);
+  EXPECT_EQ(ParseSteamGameId("steam://rungameid/123").value(), 123);
 }
 
 TEST_F(BorealisUtilTest, GetBorealisAppIdFromWindowReturnsEmptyOnFailure) {
   std::unique_ptr<aura::Window> window =
       MakeWindow("org.chromium.guest_os.borealis.wmclass.foo");
-  EXPECT_EQ(GetBorealisAppId(window.get()), absl::nullopt);
+  EXPECT_EQ(SteamGameId(window.get()), absl::nullopt);
 }
 
 TEST_F(BorealisUtilTest, GetBorealisAppIdFromWindowReturnsId) {
   std::unique_ptr<aura::Window> window =
       MakeWindow("org.chromium.guest_os.borealis.xprop.123");
-  EXPECT_EQ(GetBorealisAppId(window.get()).value(), 123);
+  EXPECT_EQ(SteamGameId(window.get()).value(), 123);
 }
 
 TEST_F(BorealisUtilTest, IsNonGameBorealisAppReturnsTrueForNonGameBorealisApp) {
@@ -57,6 +60,40 @@ TEST_F(BorealisUtilTest, IsNonGameBorealisAppReturnsTrueForNonGameBorealisApp) {
 TEST_F(BorealisUtilTest, IsNonGameBorealisAppReturnsFalseForGames) {
   EXPECT_FALSE(
       IsNonGameBorealisApp("borealis_anon:org.chromium.guest_os.borealis.app"));
+}
+
+TEST_F(BorealisUtilTest, SteamGameIdNulloptForUnregistered) {
+  TestingProfile prof;
+  EXPECT_FALSE(SteamGameId(&prof, "test").has_value());
+}
+
+TEST_F(BorealisUtilTest, SteamGameIdNulloptForNonGame) {
+  TestingProfile prof;
+  CreateFakeMainApp(&prof);
+  EXPECT_FALSE(SteamGameId(&prof, kClientAppId).has_value());
+}
+
+TEST_F(BorealisUtilTest, SteamGameIdNulloptForAnonNonGame) {
+  TestingProfile prof;
+  EXPECT_FALSE(
+      SteamGameId(&prof,
+                  "borealis_anon:org.chromium.guest_os.borealis.xid.1337")
+          .has_value());
+}
+
+TEST_F(BorealisUtilTest, SteamGameIdWithRegisteredGame) {
+  TestingProfile prof;
+  CreateFakeApp(&prof, "test", "steam://rungameid/42");
+  EXPECT_EQ(SteamGameId(&prof, FakeAppId("test")).value(), 42);
+}
+
+TEST_F(BorealisUtilTest, SteamGameIdWithAnonGame) {
+  TestingProfile prof;
+  EXPECT_EQ(
+      SteamGameId(&prof,
+                  "borealis_anon:org.chromium.guest_os.borealis.xprop.1337")
+          .value(),
+      1337);
 }
 
 TEST_F(BorealisUtilTest, ProtonTitleUnknownBorealisAppId) {
@@ -208,5 +245,4 @@ TEST_F(BorealisUtilTest, LinuxTitleAfterProtonTitle) {
   EXPECT_EQ(info.slr, "None");
 }
 
-}  // namespace
 }  // namespace borealis

@@ -6,8 +6,7 @@ package org.chromium.chrome.browser.ntp;
 
 import android.content.Context;
 
-import androidx.annotation.VisibleForTesting;
-
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.invalidation.SessionsInvalidationManager;
@@ -20,7 +19,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
-import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -33,6 +32,7 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.sync.SyncService;
 import org.chromium.url.GURL;
 
 import java.util.HashMap;
@@ -114,7 +114,7 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context);
         mSyncPromoController = new SyncPromoController(
                 SigninAccessPoint.RECENT_TABS, SyncConsentActivityLauncherImpl.get());
-        mSyncService = SyncService.get();
+        mSyncService = SyncServiceFactory.getForProfile(mProfile);
 
         mRecentlyClosedTabManager.setEntriesUpdatedRunnable(this::updateRecentlyClosedEntries);
         updateRecentlyClosedEntries();
@@ -474,7 +474,7 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
 
     // AccountsChangeObserver implementation.
     @Override
-    public void onAccountsChanged() {
+    public void onCoreAccountInfosChanged() {
         update();
     }
 
@@ -515,8 +515,8 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
         return mTabModel;
     }
 
-    @VisibleForTesting
     public static void setRecentlyClosedTabManagerForTests(RecentlyClosedTabManager manager) {
         sRecentlyClosedTabManagerForTests = manager;
+        ResettersForTesting.register(() -> sRecentlyClosedTabManagerForTests = null);
     }
 }

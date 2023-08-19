@@ -21,10 +21,10 @@ file://localhost	file://localhost/	localhost	/
 file://localhost/	file://localhost/	localhost	/
 file://localhost/test	file://localhost/test	localhost	/test
 http:	http:		
-http:/	http:		
-http://	http:		
-http:///	http:		
-http:////	http:		
+http:/	http:/		
+http://	http://		
+http:///	http:///		
+http:////	http:////		
 http://localhost	http://localhost/	localhost	/
 http://localhost/	http://localhost/	localhost	/
 http://localhost/test	http://localhost/test	localhost	/test

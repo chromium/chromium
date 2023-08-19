@@ -23,9 +23,7 @@ class AutofillContextMenuManagerFeedbackUILacrosBrowserTest
  public:
   AutofillContextMenuManagerFeedbackUILacrosBrowserTest() {
     feature_.InitWithFeatures(
-        /*enabled_features=*/{features::
-                                  kAutofillShowManualFallbackInContextMenu,
-                              features::kAutofillFeedback},
+        /*enabled_features=*/{features::kAutofillFeedback},
         /*disabled_features=*/{});
   }
 
@@ -66,8 +64,7 @@ IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUILacrosBrowserTest,
   base::HistogramTester histogram_tester;
   // Executing autofill feedback command opens the Feedback UI.
   autofill_context_menu_manager_->ExecuteCommand(
-      AutofillContextMenuManager::CommandId(
-          IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK));
+      IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK);
 
   // Checks that feedback form was requested.
   histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
@@ -76,8 +73,7 @@ IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUILacrosBrowserTest,
 IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUILacrosBrowserTest,
                        CloseTabWhileUIIsOpenShouldNotCrash) {
   autofill_context_menu_manager_->ExecuteCommand(
-      AutofillContextMenuManager::CommandId(
-          IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK));
+      IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK);
 
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();

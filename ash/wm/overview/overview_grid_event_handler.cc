@@ -7,8 +7,8 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
-#include "ash/wallpaper/wallpaper_view.h"
-#include "ash/wallpaper/wallpaper_widget_controller.h"
+#include "ash/wallpaper/views/wallpaper_view.h"
+#include "ash/wallpaper/views/wallpaper_widget_controller.h"
 #include "ash/wm/gestures/wm_fling_handler.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -69,6 +69,10 @@ void OverviewGridEventHandler::OnMouseEvent(ui::MouseEvent* event) {
     event->StopPropagation();
     event->SetHandled();
     return;
+  }
+
+  if (event->type() == ui::ET_MOUSEWHEEL) {
+    grid_->HandleMouseWheelScrollEvent(event->AsMouseWheelEvent()->y_offset());
   }
 
   if (event->type() == ui::ET_MOUSE_RELEASED)

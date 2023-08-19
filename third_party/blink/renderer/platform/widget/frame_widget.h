@@ -146,6 +146,12 @@ class PLATFORM_EXPORT FrameWidget {
   virtual void GetCompositionCharacterBoundsInWindow(
       Vector<gfx::Rect>* bounds_in_dips) = 0;
 
+  // Return the visible line bounds in screen coordinates.
+  virtual Vector<gfx::Rect>& GetVisibleLineBoundsOnScreen() = 0;
+
+  // Update the current visible line bounds for the focused element.
+  virtual void UpdateLineBounds() = 0;
+
   virtual gfx::Range CompositionRange() = 0;
   // Returns ime_text_spans and corresponding window coordinates for the list
   // of given spans.

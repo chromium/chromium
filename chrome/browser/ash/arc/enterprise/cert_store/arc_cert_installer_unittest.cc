@@ -158,7 +158,8 @@ class ArcCertInstallerTest : public testing::Test {
   raw_ptr<arc::ArcPolicyBridge, ExperimentalAsh> arc_policy_bridge_;
   std::unique_ptr<arc::MockPolicyInstance> policy_instance_;
 
-  raw_ptr<policy::RemoteCommandsQueue, ExperimentalAsh> queue_;
+  raw_ptr<policy::RemoteCommandsQueue, DanglingUntriaged | ExperimentalAsh>
+      queue_;
   std::unique_ptr<ArcCertInstaller> installer_;
   MockRemoteCommandsQueueObserver observer_;
 };

@@ -546,7 +546,7 @@ export class PrintJobEntryElement extends PrintJobEntryElementBase {
       case PrinterErrorCode.kExpiredCertificate:
         return loadTimeData.getString('expiredCertificate');
       case PrinterErrorCode.kPrinterUnreachable:
-        assertNotReached();
+        return loadTimeData.getString('printerUnreachableStopped');
       default:
         assertNotReached();
     }

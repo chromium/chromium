@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+  <TextView
+      android:id="@+id/site_settings_zoom_empty_zoom_levels_message_text"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:gravity="center"
+      android:padding="@dimen/toolbar_shadow_height"
+      android:text="@string/site_settings_empty_zoom_levels_message"
+      android:textAppearance="?android:attr/textAppearanceMedium"
+      android:visibility="gone" />
+
+  <View
+      android:layout_width="match_parent"
+      android:layout_height="@dimen/toolbar_shadow_height"
+      android:layout_gravity="bottom"
+      android:background="@drawable/modern_toolbar_shadow"
+      android:scaleY="-1" />
+
+  <org.chromium.ui.widget.ButtonCompat
+      android:id="@+id/site_settings_zoom_clear_all_zoom_levels_button"
+      style="@style/TextButton"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:paddingBottom="@dimen/default_favicon_size"
+      android:paddingTop="@dimen/default_favicon_size"
+      android:text="@string/site_settings_clear_all_zoom_levels_button_text"
+      app:verticalInset="@dimen/section_tab_selected_bg_elevation" />
+</merge>

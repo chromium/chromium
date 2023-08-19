@@ -18,6 +18,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.browser.content.ContentUtils;
@@ -190,7 +191,7 @@ public class ConnectivityDetector implements NetworkChangeNotifier.ConnectionTyp
     private static final int CONNECTIVITY_CHECK_INITIAL_DELAY_MS = 5000;
     private static final int CONNECTIVITY_CHECK_MAX_DELAY_MS = 2 * 60 * 1000;
 
-    private static Delegate sOveriddenDelegate;
+    private static Delegate sDelegateForTesting;
     private static String sDefaultProbeUrl = DEFAULT_PROBE_URL;
     private static String sFallbackProbeUrl = FALLBACK_PROBE_URL;
     private static String sProbeMethod = PROBE_METHOD;
@@ -222,7 +223,7 @@ public class ConnectivityDetector implements NetworkChangeNotifier.ConnectionTyp
     public ConnectivityDetector(Observer observer, String clientName) {
         mObserver = observer;
         mClientName = clientName;
-        mDelegate = sOveriddenDelegate != null ? sOveriddenDelegate : new DelegateImpl();
+        mDelegate = sDelegateForTesting != null ? sDelegateForTesting : new DelegateImpl();
         mHandler = new Handler();
         NetworkChangeNotifier.addConnectionTypeObserver(this);
         detect();
@@ -517,37 +518,31 @@ public class ConnectivityDetector implements NetworkChangeNotifier.ConnectionTyp
         if (mObserver != null) mObserver.onConnectionStateChanged(mConnectionState);
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public static void setDelegateForTesting(Delegate delegate) {
-        sOveriddenDelegate = delegate;
+        sDelegateForTesting = delegate;
+        ResettersForTesting.register(() -> sDelegateForTesting = null);
     }
 
-    @VisibleForTesting
     static void overrideDefaultProbeUrlForTesting(String url) {
         sDefaultProbeUrl = url;
     }
 
-    @VisibleForTesting
     static void resetDefaultProbeUrlForTesting() {
         sDefaultProbeUrl = DEFAULT_PROBE_URL;
     }
 
-    @VisibleForTesting
     static void overrideFallbackProbeUrlForTesting(String url) {
         sFallbackProbeUrl = url;
     }
 
-    @VisibleForTesting
     static void resetFallbackProbeUrlForTesting() {
         sFallbackProbeUrl = FALLBACK_PROBE_URL;
     }
 
-    @VisibleForTesting
     static void overrideProbeMethodForTesting(String method) {
         sProbeMethod = method;
     }
 
-    @VisibleForTesting
     static void resetProbeMethodForTesting() {
         sProbeMethod = PROBE_METHOD;
     }
@@ -557,17 +552,14 @@ public class ConnectivityDetector implements NetworkChangeNotifier.ConnectionTyp
         sConnectivityCheckInitialDelayMs = delayMs;
     }
 
-    @VisibleForTesting
     void forceConnectionStateForTesting(@ConnectionState int connectionState) {
         mConnectionState = connectionState;
     }
 
-    @VisibleForTesting
     Handler getHandlerForTesting() {
         return mHandler;
     }
 
-    @VisibleForTesting
     void setUseDefaultUrlForTesting(boolean useDefaultUrl) {
         mConnectivityCheckingStage = useDefaultUrl ? ConnectivityCheckingStage.PROBE_DEFAULT_URL
                                                    : ConnectivityCheckingStage.PROBE_FALLBACK_URL;

@@ -22,7 +22,12 @@
             'arm64': 3,
             'x64': 4,
           }[target_cpu] %}
-          android:versionCode="{{ cast_build_incremental }}{{ device_type_digit }}{{ architecture_digit }}" >
+          {% set bundle_digit = {
+            "BROWSER_PACKAGING_MONOLITH": 0,
+            "BROWSER_PACKAGING_APK": 1,
+            "BROWSER_PACKAGING_BUNDLE": 2,
+          }[ browser_packaging] %}
+          android:versionCode="{{ cast_build_incremental }}{{ device_type_digit }}{{ architecture_digit }}{{ bundle_digit }}" >
     <dist:module
         dist:onDemand="false"
         dist:title="cast_browser">

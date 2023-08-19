@@ -7,7 +7,6 @@
 #import <UIKit/UIKit.h>
 
 #import "base/test/task_environment.h"
-#import "components/autofill/core/common/autofill_prefs.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
@@ -26,10 +25,6 @@
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "testing/platform_test.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using syncer::MockSyncService;
 using syncer::SyncService;
@@ -80,8 +75,6 @@ class AdvancedSettingsSigninMediatorTest : public PlatformTest {
     registry->RegisterStringPref(prefs::kGoogleServicesLastUsername,
                                  kTestEmail);
     registry->RegisterStringPref(prefs::kGoogleServicesLastGaiaId, kTestGaiaID);
-    registry->RegisterBooleanPref(autofill::prefs::kAutofillWalletImportEnabled,
-                                  false);
     return prefs;
   }
 

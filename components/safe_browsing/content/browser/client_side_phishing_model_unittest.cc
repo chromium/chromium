@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "components/safe_browsing/content/browser/client_side_phishing_model.h"
-#include "components/safe_browsing/content/browser/client_side_phishing_model_optimization_guide.h"
 
 #include <string>
 #include <utility>
@@ -75,6 +74,13 @@ class ClientSidePhishingModelObserverTracker
                                 .SetAdditionalFiles(additional_files_path)
                                 .Build();
       model_observer_->OnModelUpdated(optimization_target, *model_metadata);
+    } else if (optimization_target ==
+               optimization_guide::proto::
+                   OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING_IMAGE_EMBEDDER) {
+      auto model_metadata = optimization_guide::TestModelInfoBuilder()
+                                .SetModelFilePath(model_file_path)
+                                .Build();
+      model_observer_->OnModelUpdated(optimization_target, *model_metadata);
     }
   }
 
@@ -88,26 +94,25 @@ class ClientSidePhishingModelTest : public content::RenderViewHostTestHarness,
                                     public testing::WithParamInterface<bool> {
  public:
   ClientSidePhishingModelTest() {
-    if (ShouldEnableCacao()) {
-      feature_list_.InitAndEnableFeature(
-          kClientSideDetectionModelOptimizationGuide);
+    std::vector<base::test::FeatureRef> enabled_features = {};
+
+    if (ShouldEnableImageEmbedder()) {
+      enabled_features.push_back(kClientSideDetectionModelImageEmbedder);
     }
+
+    feature_list_.InitWithFeatures(enabled_features, {});
   }
 
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
 
-    if (base::FeatureList::IsEnabled(
-            kClientSideDetectionModelOptimizationGuide)) {
-      model_observer_tracker_ =
-          std::make_unique<ClientSidePhishingModelObserverTracker>();
-      scoped_refptr<base::SequencedTaskRunner> background_task_runner =
-          base::ThreadPool::CreateSequencedTaskRunner(
-              {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
-      client_side_phishing_model_ =
-          std::make_unique<ClientSidePhishingModelOptimizationGuide>(
-              model_observer_tracker_.get(), background_task_runner);
-    }
+    model_observer_tracker_ =
+        std::make_unique<ClientSidePhishingModelObserverTracker>();
+    scoped_refptr<base::SequencedTaskRunner> background_task_runner =
+        base::ThreadPool::CreateSequencedTaskRunner(
+            {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+    client_side_phishing_model_ = std::make_unique<ClientSidePhishingModel>(
+        model_observer_tracker_.get(), background_task_runner);
   }
 
   void TearDown() override {
@@ -125,13 +130,22 @@ class ClientSidePhishingModelTest : public content::RenderViewHostTestHarness,
     task_environment()->RunUntilIdle();
   }
 
-  ClientSidePhishingModelOptimizationGuide* service() {
+  void ValidateImageEmbeddingModel(
+      const base::FilePath& image_embedding_model_file_path) {
+    model_observer_tracker_->NotifyModelFileUpdate(
+        optimization_guide::proto::
+            OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING_IMAGE_EMBEDDER,
+        image_embedding_model_file_path, {});
+    task_environment()->RunUntilIdle();
+  }
+
+  ClientSidePhishingModel* service() {
     return client_side_phishing_model_.get();
   }
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
-  bool ShouldEnableCacao() { return GetParam(); }
+  bool ShouldEnableImageEmbedder() { return GetParam(); }
 
  protected:
   base::test::ScopedFeatureList feature_list_;
@@ -142,8 +156,7 @@ class ClientSidePhishingModelTest : public content::RenderViewHostTestHarness,
 
   std::unique_ptr<ClientSidePhishingModelObserverTracker>
       model_observer_tracker_;
-  std::unique_ptr<ClientSidePhishingModelOptimizationGuide>
-      client_side_phishing_model_;
+  std::unique_ptr<ClientSidePhishingModel> client_side_phishing_model_;
 };
 
 namespace {
@@ -171,10 +184,6 @@ void GetFlatBufferStringFromMappedMemory(
 INSTANTIATE_TEST_SUITE_P(All, ClientSidePhishingModelTest, testing::Bool());
 
 TEST_P(ClientSidePhishingModelTest, ValidModel) {
-  if (!base::FeatureList::IsEnabled(
-          kClientSideDetectionModelOptimizationGuide)) {
-    return;
-  }
   base::FilePath model_file_path;
   base::PathService::Get(base::DIR_SOURCE_ROOT, &model_file_path);
   model_file_path = model_file_path.AppendASCII("components")
@@ -197,19 +206,29 @@ TEST_P(ClientSidePhishingModelTest, ValidModel) {
   additional_files_path =
       additional_files_path.AppendASCII("visual_model_desktop.tflite");
 #endif
-  service()->SetModelTypeForTesting(CSDModelTypeOptimizationGuide::kFlatbuffer);
+  service()->SetModelTypeForTesting(CSDModelType::kFlatbuffer);
   ValidateModel(model_file_path, {additional_files_path});
 
   histogram_tester().ExpectUniqueSample(
       "SBClientPhishing.ModelDynamicUpdateSuccess", true, 1);
   EXPECT_TRUE(service()->IsEnabled());
+  if (base::FeatureList::IsEnabled(kClientSideDetectionModelImageEmbedder)) {
+    base::FilePath image_embedding_model_file_path;
+    base::PathService::Get(base::DIR_SOURCE_ROOT,
+                           &image_embedding_model_file_path);
+    image_embedding_model_file_path =
+        image_embedding_model_file_path.AppendASCII("components")
+            .AppendASCII("test")
+            .AppendASCII("data")
+            .AppendASCII("safe_browsing")
+            .AppendASCII("image_embedding.tflite");
+    ValidateImageEmbeddingModel(image_embedding_model_file_path);
+    histogram_tester().ExpectUniqueSample(
+        "SBClientPhishing.ModelDynamicUpdateSuccess.ImageEmbedding", true, 1);
+  }
 }
 
 TEST_P(ClientSidePhishingModelTest, InvalidModelDueToInvalidPath) {
-  if (!base::FeatureList::IsEnabled(
-          kClientSideDetectionModelOptimizationGuide)) {
-    return;
-  }
   base::ScopedTempDir model_dir;
   EXPECT_TRUE(model_dir.CreateUniqueTempDir());
   base::FilePath model_file_path =
@@ -235,155 +254,76 @@ TEST_P(ClientSidePhishingModelTest, InvalidModelDueToInvalidPath) {
 
   histogram_tester().ExpectUniqueSample(
       "SBClientPhishing.ModelDynamicUpdateSuccess", false, 1);
-  EXPECT_FALSE(ClientSidePhishingModel::GetInstance()->IsEnabled());
+  EXPECT_FALSE(service()->IsEnabled());
 }
 
 TEST_P(ClientSidePhishingModelTest, NotifiesOnUpdate) {
-  if (base::FeatureList::IsEnabled(
-          kClientSideDetectionModelOptimizationGuide)) {
-    service()->SetModelStrForTesting("");
-    service()->SetVisualTfLiteModelForTesting(base::File());
-    service()->ClearMappedRegionForTesting();
-    service()->SetModelTypeForTesting(CSDModelTypeOptimizationGuide::kNone);
-  } else {
-    ClientSidePhishingModel::GetInstance()->SetModelStrForTesting("");
-    ClientSidePhishingModel::GetInstance()->SetVisualTfLiteModelForTesting(
-        base::File());
-    ClientSidePhishingModel::GetInstance()->ClearMappedRegionForTesting();
-    ClientSidePhishingModel::GetInstance()->SetModelTypeForTesting(
-        CSDModelType::kNone);
-  }
+  service()->SetModelStrForTesting("");
+  service()->SetVisualTfLiteModelForTesting(base::File());
+  service()->ClearMappedRegionForTesting();
+  service()->SetModelTypeForTesting(CSDModelType::kNone);
+
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(kClientSideDetectionModelIsFlatBuffer);
 
   base::RunLoop run_loop;
   bool called = false;
   base::CallbackListSubscription subscription =
-      base::FeatureList::IsEnabled(kClientSideDetectionModelOptimizationGuide)
-          ? service()->RegisterCallback(base::BindRepeating(
-                [](base::RepeatingClosure quit_closure, bool* called) {
-                  *called = true;
-                  std::move(quit_closure).Run();
-                },
-                run_loop.QuitClosure(), &called))
-          : ClientSidePhishingModel::GetInstance()->RegisterCallback(
-                base::BindRepeating(
-                    [](base::RepeatingClosure quit_closure, bool* called) {
-                      *called = true;
-                      std::move(quit_closure).Run();
-                    },
-                    run_loop.QuitClosure(), &called));
+      service()->RegisterCallback(base::BindRepeating(
+          [](base::RepeatingClosure quit_closure, bool* called) {
+            *called = true;
+            std::move(quit_closure).Run();
+          },
+          run_loop.QuitClosure(), &called));
 
   ClientSideModel model;
   model.set_max_words_per_term(0);  // Required field.
-  if (base::FeatureList::IsEnabled(
-          kClientSideDetectionModelOptimizationGuide)) {
-    service()->SetModelStringForTesting(model.SerializeAsString(),
-                                        base::File());
-  } else {
-    ClientSidePhishingModel::GetInstance()->PopulateFromDynamicUpdate(
-        model.SerializeAsString(), base::File());
-  }
+  service()->SetModelStringForTesting(model.SerializeAsString(), base::File());
 
   run_loop.Run();
 
   EXPECT_TRUE(called);
-  if (base::FeatureList::IsEnabled(
-          kClientSideDetectionModelOptimizationGuide)) {
-    EXPECT_EQ(model.SerializeAsString(), service()->GetModelStr());
-    EXPECT_TRUE(service()->IsEnabled());
-  } else {
-    EXPECT_EQ(model.SerializeAsString(),
-              ClientSidePhishingModel::GetInstance()->GetModelStr());
-    EXPECT_TRUE(ClientSidePhishingModel::GetInstance()->IsEnabled());
-  }
+  EXPECT_EQ(model.SerializeAsString(), service()->GetModelStr());
+  EXPECT_TRUE(service()->IsEnabled());
 }
 
 TEST_P(ClientSidePhishingModelTest, RejectsInvalidProto) {
-  if (base::FeatureList::IsEnabled(
-          kClientSideDetectionModelOptimizationGuide)) {
-    service()->SetModelStrForTesting("");
-    service()->SetVisualTfLiteModelForTesting(base::File());
-    service()->ClearMappedRegionForTesting();
-    service()->SetModelTypeForTesting(CSDModelTypeOptimizationGuide::kNone);
-    service()->SetModelStringForTesting("bad proto", base::File());
-    EXPECT_FALSE(service()->IsEnabled());
-  } else {
-    ClientSidePhishingModel::GetInstance()->SetModelStrForTesting("");
-    ClientSidePhishingModel::GetInstance()->SetVisualTfLiteModelForTesting(
-        base::File());
-    ClientSidePhishingModel::GetInstance()->ClearMappedRegionForTesting();
-    ClientSidePhishingModel::GetInstance()->SetModelTypeForTesting(
-        CSDModelType::kNone);
-    ClientSidePhishingModel::GetInstance()->PopulateFromDynamicUpdate(
-        "bad proto", base::File());
-    EXPECT_FALSE(ClientSidePhishingModel::GetInstance()->IsEnabled());
-  }
+  service()->SetModelStrForTesting("");
+  service()->SetVisualTfLiteModelForTesting(base::File());
+  service()->ClearMappedRegionForTesting();
+  service()->SetModelTypeForTesting(CSDModelType::kNone);
+  service()->SetModelStringForTesting("bad proto", base::File());
+  EXPECT_FALSE(service()->IsEnabled());
 }
 
 TEST_P(ClientSidePhishingModelTest, RejectsInvalidFlatbuffer) {
-  if (base::FeatureList::IsEnabled(
-          kClientSideDetectionModelOptimizationGuide)) {
-    service()->SetModelStrForTesting("");
-    service()->SetVisualTfLiteModelForTesting(base::File());
-    service()->ClearMappedRegionForTesting();
-    service()->SetModelTypeForTesting(CSDModelTypeOptimizationGuide::kNone);
-  } else {
-    ClientSidePhishingModel::GetInstance()->SetModelStrForTesting("");
-    ClientSidePhishingModel::GetInstance()->SetVisualTfLiteModelForTesting(
-        base::File());
-    ClientSidePhishingModel::GetInstance()->ClearMappedRegionForTesting();
-    ClientSidePhishingModel::GetInstance()->SetModelTypeForTesting(
-        CSDModelType::kNone);
-  }
+  service()->SetModelStrForTesting("");
+  service()->SetVisualTfLiteModelForTesting(base::File());
+  service()->ClearMappedRegionForTesting();
+  service()->SetModelTypeForTesting(CSDModelType::kNone);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{kClientSideDetectionModelIsFlatBuffer},
       /*disabled_features=*/{});
-  if (base::FeatureList::IsEnabled(
-          kClientSideDetectionModelOptimizationGuide)) {
-    service()->SetModelStringForTesting("bad flatbuffer", base::File());
-    EXPECT_FALSE(service()->IsEnabled());
-  } else {
-    ClientSidePhishingModel::GetInstance()->PopulateFromDynamicUpdate(
-        "bad flatbuffer", base::File());
-    EXPECT_FALSE(ClientSidePhishingModel::GetInstance()->IsEnabled());
-  }
+  service()->SetModelStringForTesting("bad flatbuffer", base::File());
+  EXPECT_FALSE(service()->IsEnabled());
 }
 
 TEST_P(ClientSidePhishingModelTest, NotifiesForFile) {
-  if (base::FeatureList::IsEnabled(
-          kClientSideDetectionModelOptimizationGuide)) {
-    service()->SetModelStrForTesting("");
-    service()->SetVisualTfLiteModelForTesting(base::File());
-    service()->ClearMappedRegionForTesting();
-    service()->SetModelTypeForTesting(CSDModelTypeOptimizationGuide::kNone);
-  } else {
-    ClientSidePhishingModel::GetInstance()->SetModelStrForTesting("");
-    ClientSidePhishingModel::GetInstance()->SetVisualTfLiteModelForTesting(
-        base::File());
-    ClientSidePhishingModel::GetInstance()->ClearMappedRegionForTesting();
-    ClientSidePhishingModel::GetInstance()->SetModelTypeForTesting(
-        CSDModelType::kNone);
-  }
+  service()->SetModelStrForTesting("");
+  service()->SetVisualTfLiteModelForTesting(base::File());
+  service()->ClearMappedRegionForTesting();
+  service()->SetModelTypeForTesting(CSDModelType::kNone);
 
   base::RunLoop run_loop;
   bool called = false;
   base::CallbackListSubscription subscription =
-      base::FeatureList::IsEnabled(kClientSideDetectionModelOptimizationGuide)
-          ? service()->RegisterCallback(base::BindRepeating(
-                [](base::RepeatingClosure quit_closure, bool* called) {
-                  *called = true;
-                  std::move(quit_closure).Run();
-                },
-                run_loop.QuitClosure(), &called))
-          : ClientSidePhishingModel::GetInstance()->RegisterCallback(
-                base::BindRepeating(
-                    [](base::RepeatingClosure quit_closure, bool* called) {
-                      *called = true;
-                      std::move(quit_closure).Run();
-                    },
-                    run_loop.QuitClosure(), &called));
+      service()->RegisterCallback(base::BindRepeating(
+          [](base::RepeatingClosure quit_closure, bool* called) {
+            *called = true;
+            std::move(quit_closure).Run();
+          },
+          run_loop.QuitClosure(), &called));
 
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -396,93 +336,43 @@ TEST_P(ClientSidePhishingModelTest, NotifiesForFile) {
   file.WriteAtCurrentPos(file_contents.data(), file_contents.size());
 
   const std::string model_str = CreateFlatBufferString();
-  if (base::FeatureList::IsEnabled(
-          kClientSideDetectionModelOptimizationGuide)) {
-    service()->SetModelStringForTesting(model_str, std::move(file));
-  } else {
-    ClientSidePhishingModel::GetInstance()->PopulateFromDynamicUpdate(
-        model_str, std::move(file));
-  }
+  service()->SetModelStringForTesting(model_str, std::move(file));
 
   run_loop.Run();
 
   EXPECT_TRUE(called);
-  if (base::FeatureList::IsEnabled(
-          kClientSideDetectionModelOptimizationGuide)) {
-    EXPECT_TRUE(service()->IsEnabled());
-  } else {
-    EXPECT_TRUE(ClientSidePhishingModel::GetInstance()->IsEnabled());
-  }
+  EXPECT_TRUE(service()->IsEnabled());
 }
 
 TEST_P(ClientSidePhishingModelTest, DoesNotNotifyOnBadInitialUpdate) {
-  if (base::FeatureList::IsEnabled(
-          kClientSideDetectionModelOptimizationGuide)) {
-    service()->SetModelStrForTesting("");
-    service()->SetVisualTfLiteModelForTesting(base::File());
-    service()->ClearMappedRegionForTesting();
-    service()->SetModelTypeForTesting(CSDModelTypeOptimizationGuide::kNone);
-  } else {
-    ClientSidePhishingModel::GetInstance()->SetModelStrForTesting("");
-    ClientSidePhishingModel::GetInstance()->SetVisualTfLiteModelForTesting(
-        base::File());
-    ClientSidePhishingModel::GetInstance()->ClearMappedRegionForTesting();
-    ClientSidePhishingModel::GetInstance()->SetModelTypeForTesting(
-        CSDModelType::kNone);
-  }
+  service()->SetModelStrForTesting("");
+  service()->SetVisualTfLiteModelForTesting(base::File());
+  service()->ClearMappedRegionForTesting();
+  service()->SetModelTypeForTesting(CSDModelType::kNone);
 
   base::RunLoop run_loop;
   bool called = false;
   base::CallbackListSubscription subscription =
-      base::FeatureList::IsEnabled(kClientSideDetectionModelOptimizationGuide)
-          ? service()->RegisterCallback(base::BindRepeating(
-                [](base::RepeatingClosure quit_closure, bool* called) {
-                  *called = true;
-                  std::move(quit_closure).Run();
-                },
-                run_loop.QuitClosure(), &called))
-          : ClientSidePhishingModel::GetInstance()->RegisterCallback(
-                base::BindRepeating(
-                    [](base::RepeatingClosure quit_closure, bool* called) {
-                      *called = true;
-                      std::move(quit_closure).Run();
-                    },
-                    run_loop.QuitClosure(), &called));
+      service()->RegisterCallback(base::BindRepeating(
+          [](base::RepeatingClosure quit_closure, bool* called) {
+            *called = true;
+            std::move(quit_closure).Run();
+          },
+          run_loop.QuitClosure(), &called));
 
-  if (base::FeatureList::IsEnabled(
-          kClientSideDetectionModelOptimizationGuide)) {
-    service()->SetModelStringForTesting("", base::File());
-  } else {
-    ClientSidePhishingModel::GetInstance()->PopulateFromDynamicUpdate(
-        "", base::File());
-  }
+  service()->SetModelStringForTesting("", base::File());
 
   run_loop.RunUntilIdle();
 
   EXPECT_FALSE(called);
-  if (base::FeatureList::IsEnabled(
-          kClientSideDetectionModelOptimizationGuide)) {
-    EXPECT_FALSE(service()->IsEnabled());
-  } else {
-    EXPECT_FALSE(ClientSidePhishingModel::GetInstance()->IsEnabled());
-  }
+  EXPECT_FALSE(service()->IsEnabled());
 }
 
 TEST_P(ClientSidePhishingModelTest, DoesNotNotifyOnBadFollowingUpdate) {
-  if (base::FeatureList::IsEnabled(
-          kClientSideDetectionModelOptimizationGuide)) {
-    service()->SetModelStrForTesting("");
-    service()->SetVisualTfLiteModelForTesting(base::File());
-    service()->ClearMappedRegionForTesting();
-    service()->SetModelTypeForTesting(CSDModelTypeOptimizationGuide::kNone);
-  } else {
-    ClientSidePhishingModel::GetInstance()->SetModelStrForTesting("");
-    ClientSidePhishingModel::GetInstance()->SetVisualTfLiteModelForTesting(
-        base::File());
-    ClientSidePhishingModel::GetInstance()->ClearMappedRegionForTesting();
-    ClientSidePhishingModel::GetInstance()->SetModelTypeForTesting(
-        CSDModelType::kNone);
-  }
+  service()->SetModelStrForTesting("");
+  service()->SetVisualTfLiteModelForTesting(base::File());
+  service()->ClearMappedRegionForTesting();
+  service()->SetModelTypeForTesting(CSDModelType::kNone);
 
   base::RunLoop run_loop;
 
@@ -498,68 +388,33 @@ TEST_P(ClientSidePhishingModelTest, DoesNotNotifyOnBadFollowingUpdate) {
   file.WriteAtCurrentPos(file_contents.data(), file_contents.size());
 
   const std::string model_str = CreateFlatBufferString();
-  if (base::FeatureList::IsEnabled(
-          kClientSideDetectionModelOptimizationGuide)) {
-    service()->SetModelStringForTesting(model_str, std::move(file));
-  } else {
-    ClientSidePhishingModel::GetInstance()->PopulateFromDynamicUpdate(
-        model_str, std::move(file));
-  }
+  service()->SetModelStringForTesting(model_str, std::move(file));
 
   run_loop.RunUntilIdle();
 
   // Perform an invalid update.
   bool called = false;
   base::CallbackListSubscription subscription =
-      base::FeatureList::IsEnabled(kClientSideDetectionModelOptimizationGuide)
-          ? service()->RegisterCallback(base::BindRepeating(
-                [](base::RepeatingClosure quit_closure, bool* called) {
-                  *called = true;
-                  std::move(quit_closure).Run();
-                },
-                run_loop.QuitClosure(), &called))
-          : ClientSidePhishingModel::GetInstance()->RegisterCallback(
-                base::BindRepeating(
-                    [](base::RepeatingClosure quit_closure, bool* called) {
-                      *called = true;
-                      std::move(quit_closure).Run();
-                    },
-                    run_loop.QuitClosure(), &called));
+      service()->RegisterCallback(base::BindRepeating(
+          [](base::RepeatingClosure quit_closure, bool* called) {
+            *called = true;
+            std::move(quit_closure).Run();
+          },
+          run_loop.QuitClosure(), &called));
 
-  if (base::FeatureList::IsEnabled(
-          kClientSideDetectionModelOptimizationGuide)) {
-    service()->SetModelStringForTesting("", base::File());
-  } else {
-    ClientSidePhishingModel::GetInstance()->PopulateFromDynamicUpdate(
-        "", base::File());
-  }
+  service()->SetModelStringForTesting("", base::File());
 
   run_loop.RunUntilIdle();
 
   EXPECT_FALSE(called);
-  if (base::FeatureList::IsEnabled(
-          kClientSideDetectionModelOptimizationGuide)) {
-    EXPECT_TRUE(service()->IsEnabled());
-  } else {
-    EXPECT_TRUE(ClientSidePhishingModel::GetInstance()->IsEnabled());
-  }
+  EXPECT_TRUE(service()->IsEnabled());
 }
 
 TEST_P(ClientSidePhishingModelTest, CanOverrideFlatBufferWithFlag) {
-  if (base::FeatureList::IsEnabled(
-          kClientSideDetectionModelOptimizationGuide)) {
-    service()->SetModelStrForTesting("");
-    service()->SetVisualTfLiteModelForTesting(base::File());
-    service()->ClearMappedRegionForTesting();
-    service()->SetModelTypeForTesting(CSDModelTypeOptimizationGuide::kNone);
-  } else {
-    ClientSidePhishingModel::GetInstance()->SetModelStrForTesting("");
-    ClientSidePhishingModel::GetInstance()->SetVisualTfLiteModelForTesting(
-        base::File());
-    ClientSidePhishingModel::GetInstance()->ClearMappedRegionForTesting();
-    ClientSidePhishingModel::GetInstance()->SetModelTypeForTesting(
-        CSDModelType::kNone);
-  }
+  service()->SetModelStrForTesting("");
+  service()->SetVisualTfLiteModelForTesting(base::File());
+  service()->ClearMappedRegionForTesting();
+  service()->SetModelTypeForTesting(CSDModelType::kNone);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{kClientSideDetectionModelIsFlatBuffer},
@@ -581,64 +436,31 @@ TEST_P(ClientSidePhishingModelTest, CanOverrideFlatBufferWithFlag) {
   base::RunLoop run_loop;
   bool called = false;
   base::CallbackListSubscription subscription =
-      base::FeatureList::IsEnabled(kClientSideDetectionModelOptimizationGuide)
-          ? service()->RegisterCallback(base::BindRepeating(
-                [](base::RepeatingClosure quit_closure, bool* called) {
-                  *called = true;
-                  std::move(quit_closure).Run();
-                },
-                run_loop.QuitClosure(), &called))
-          : ClientSidePhishingModel::GetInstance()->RegisterCallback(
-                base::BindRepeating(
-                    [](base::RepeatingClosure quit_closure, bool* called) {
-                      *called = true;
-                      std::move(quit_closure).Run();
-                    },
-                    run_loop.QuitClosure(), &called));
+      service()->RegisterCallback(base::BindRepeating(
+          [](base::RepeatingClosure quit_closure, bool* called) {
+            *called = true;
+            std::move(quit_closure).Run();
+          },
+          run_loop.QuitClosure(), &called));
 
-  if (base::FeatureList::IsEnabled(
-          kClientSideDetectionModelOptimizationGuide)) {
-    service()->MaybeOverrideModel();
-  } else {
-    ClientSidePhishingModel::GetInstance()->MaybeOverrideModel();
-  }
+  service()->MaybeOverrideModel();
 
   run_loop.Run();
 
   std::string model_str_from_shared_mem;
-  if (base::FeatureList::IsEnabled(
-          kClientSideDetectionModelOptimizationGuide)) {
-    ASSERT_NO_FATAL_FAILURE(GetFlatBufferStringFromMappedMemory(
-        service()->GetModelSharedMemoryRegion(), &model_str_from_shared_mem));
-    EXPECT_EQ(model_str_from_shared_mem, file_contents);
-    EXPECT_EQ(service()->GetModelType(),
-              CSDModelTypeOptimizationGuide::kFlatbuffer);
-  } else {
-    ASSERT_NO_FATAL_FAILURE(GetFlatBufferStringFromMappedMemory(
-        ClientSidePhishingModel::GetInstance()->GetModelSharedMemoryRegion(),
-        &model_str_from_shared_mem));
-    EXPECT_EQ(model_str_from_shared_mem, file_contents);
-    EXPECT_EQ(ClientSidePhishingModel::GetInstance()->GetModelType(),
-              CSDModelType::kFlatbuffer);
-  }
+  ASSERT_NO_FATAL_FAILURE(GetFlatBufferStringFromMappedMemory(
+      service()->GetModelSharedMemoryRegion(), &model_str_from_shared_mem));
+  EXPECT_EQ(model_str_from_shared_mem, file_contents);
+  EXPECT_EQ(service()->GetModelType(), CSDModelType::kFlatbuffer);
+
   EXPECT_TRUE(called);
 }
 
 TEST_P(ClientSidePhishingModelTest, AcceptsValidFlatbufferIfFeatureEnabled) {
-  if (base::FeatureList::IsEnabled(
-          kClientSideDetectionModelOptimizationGuide)) {
-    service()->SetModelStrForTesting("");
-    service()->SetVisualTfLiteModelForTesting(base::File());
-    service()->ClearMappedRegionForTesting();
-    service()->SetModelTypeForTesting(CSDModelTypeOptimizationGuide::kNone);
-  } else {
-    ClientSidePhishingModel::GetInstance()->SetModelStrForTesting("");
-    ClientSidePhishingModel::GetInstance()->SetVisualTfLiteModelForTesting(
-        base::File());
-    ClientSidePhishingModel::GetInstance()->ClearMappedRegionForTesting();
-    ClientSidePhishingModel::GetInstance()->SetModelTypeForTesting(
-        CSDModelType::kNone);
-  }
+  service()->SetModelStrForTesting("");
+  service()->SetVisualTfLiteModelForTesting(base::File());
+  service()->ClearMappedRegionForTesting();
+  service()->SetModelTypeForTesting(CSDModelType::kNone);
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -647,20 +469,12 @@ TEST_P(ClientSidePhishingModelTest, AcceptsValidFlatbufferIfFeatureEnabled) {
   base::RunLoop run_loop;
   bool called = false;
   base::CallbackListSubscription subscription =
-      base::FeatureList::IsEnabled(kClientSideDetectionModelOptimizationGuide)
-          ? service()->RegisterCallback(base::BindRepeating(
-                [](base::RepeatingClosure quit_closure, bool* called) {
-                  *called = true;
-                  std::move(quit_closure).Run();
-                },
-                run_loop.QuitClosure(), &called))
-          : ClientSidePhishingModel::GetInstance()->RegisterCallback(
-                base::BindRepeating(
-                    [](base::RepeatingClosure quit_closure, bool* called) {
-                      *called = true;
-                      std::move(quit_closure).Run();
-                    },
-                    run_loop.QuitClosure(), &called));
+      service()->RegisterCallback(base::BindRepeating(
+          [](base::RepeatingClosure quit_closure, bool* called) {
+            *called = true;
+            std::move(quit_closure).Run();
+          },
+          run_loop.QuitClosure(), &called));
 
   const std::string model_str = CreateFlatBufferString();
   base::ScopedTempDir temp_dir;
@@ -672,173 +486,92 @@ TEST_P(ClientSidePhishingModelTest, AcceptsValidFlatbufferIfFeatureEnabled) {
                                  base::File::FLAG_WRITE);
   const std::string file_contents = "visual model file";
   file.WriteAtCurrentPos(file_contents.data(), file_contents.size());
-  if (base::FeatureList::IsEnabled(
-          kClientSideDetectionModelOptimizationGuide)) {
-    service()->SetModelStringForTesting(model_str, std::move(file));
-  } else {
-    ClientSidePhishingModel::GetInstance()->PopulateFromDynamicUpdate(
-        model_str, std::move(file));
-  }
+  service()->SetModelStringForTesting(model_str, std::move(file));
   run_loop.Run();
 
-  if (base::FeatureList::IsEnabled(
-          kClientSideDetectionModelOptimizationGuide)) {
     EXPECT_TRUE(service()->IsEnabled());
-  } else {
-    EXPECT_TRUE(ClientSidePhishingModel::GetInstance()->IsEnabled());
-  }
-  std::string model_str_from_shared_mem;
-  if (base::FeatureList::IsEnabled(
-          kClientSideDetectionModelOptimizationGuide)) {
+
+    std::string model_str_from_shared_mem;
     ASSERT_NO_FATAL_FAILURE(GetFlatBufferStringFromMappedMemory(
         service()->GetModelSharedMemoryRegion(), &model_str_from_shared_mem));
     EXPECT_EQ(model_str, model_str_from_shared_mem);
-    EXPECT_EQ(service()->GetModelType(),
-              CSDModelTypeOptimizationGuide::kFlatbuffer);
-  } else {
-    ASSERT_NO_FATAL_FAILURE(GetFlatBufferStringFromMappedMemory(
-        ClientSidePhishingModel::GetInstance()->GetModelSharedMemoryRegion(),
-        &model_str_from_shared_mem));
-    EXPECT_EQ(model_str, model_str_from_shared_mem);
-    EXPECT_EQ(ClientSidePhishingModel::GetInstance()->GetModelType(),
-              CSDModelType::kFlatbuffer);
-  }
-  EXPECT_TRUE(called);
+    EXPECT_EQ(service()->GetModelType(), CSDModelType::kFlatbuffer);
+
+    EXPECT_TRUE(called);
 }
 
 TEST_P(ClientSidePhishingModelTest, FlatbufferonFollowingUpdate) {
-  if (base::FeatureList::IsEnabled(
-          kClientSideDetectionModelOptimizationGuide)) {
     service()->SetModelStrForTesting("");
     service()->SetVisualTfLiteModelForTesting(base::File());
     service()->ClearMappedRegionForTesting();
-    service()->SetModelTypeForTesting(CSDModelTypeOptimizationGuide::kNone);
-  } else {
-    ClientSidePhishingModel::GetInstance()->SetModelStrForTesting("");
-    ClientSidePhishingModel::GetInstance()->SetVisualTfLiteModelForTesting(
-        base::File());
-    ClientSidePhishingModel::GetInstance()->ClearMappedRegionForTesting();
-    ClientSidePhishingModel::GetInstance()->SetModelTypeForTesting(
-        CSDModelType::kNone);
-  }
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{kClientSideDetectionModelIsFlatBuffer},
-      /*disabled_features=*/{});
-  base::RunLoop run_loop;
+    service()->SetModelTypeForTesting(CSDModelType::kNone);
 
-  const std::string model_str1 = CreateFlatBufferString();
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  const base::FilePath file_path =
-      temp_dir.GetPath().AppendASCII("visual_model.tflite");
-  base::File file(file_path, base::File::FLAG_OPEN_ALWAYS |
-                                 base::File::FLAG_READ |
-                                 base::File::FLAG_WRITE);
-  const std::string file_contents = "visual model file";
-  file.WriteAtCurrentPos(file_contents.data(), file_contents.size());
-  if (base::FeatureList::IsEnabled(
-          kClientSideDetectionModelOptimizationGuide)) {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        /*enabled_features=*/{kClientSideDetectionModelIsFlatBuffer},
+        /*disabled_features=*/{});
+    base::RunLoop run_loop;
+
+    const std::string model_str1 = CreateFlatBufferString();
+    base::ScopedTempDir temp_dir;
+    ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+    const base::FilePath file_path =
+        temp_dir.GetPath().AppendASCII("visual_model.tflite");
+    base::File file(file_path, base::File::FLAG_OPEN_ALWAYS |
+                                   base::File::FLAG_READ |
+                                   base::File::FLAG_WRITE);
+    const std::string file_contents = "visual model file";
+    file.WriteAtCurrentPos(file_contents.data(), file_contents.size());
     service()->SetModelStringForTesting(model_str1, std::move(file));
-  } else {
-    ClientSidePhishingModel::GetInstance()->PopulateFromDynamicUpdate(
-        model_str1, std::move(file));
-  }
 
-  run_loop.RunUntilIdle();
-  if (base::FeatureList::IsEnabled(
-          kClientSideDetectionModelOptimizationGuide)) {
+    run_loop.RunUntilIdle();
     EXPECT_TRUE(service()->IsEnabled());
-  } else {
-    EXPECT_TRUE(ClientSidePhishingModel::GetInstance()->IsEnabled());
-  }
+
   std::string model_str_from_shared_mem1;
-  if (base::FeatureList::IsEnabled(
-          kClientSideDetectionModelOptimizationGuide)) {
+
     ASSERT_NO_FATAL_FAILURE(GetFlatBufferStringFromMappedMemory(
         service()->GetModelSharedMemoryRegion(), &model_str_from_shared_mem1));
     EXPECT_EQ(model_str1, model_str_from_shared_mem1);
-    EXPECT_EQ(service()->GetModelType(),
-              CSDModelTypeOptimizationGuide::kFlatbuffer);
-  } else {
-    ASSERT_NO_FATAL_FAILURE(GetFlatBufferStringFromMappedMemory(
-        ClientSidePhishingModel::GetInstance()->GetModelSharedMemoryRegion(),
-        &model_str_from_shared_mem1));
-    EXPECT_EQ(model_str1, model_str_from_shared_mem1);
-    EXPECT_EQ(ClientSidePhishingModel::GetInstance()->GetModelType(),
-              CSDModelType::kFlatbuffer);
-  }
+    EXPECT_EQ(service()->GetModelType(), CSDModelType::kFlatbuffer);
+    // Should be able to write to memory with WritableSharedMemoryMapping field.
+    void* memory_addr = service()->GetFlatBufferMemoryAddressForTesting();
 
-  // Should be able to write to memory with WritableSharedMemoryMapping field.
-  void* memory_addr =
-      base::FeatureList::IsEnabled(kClientSideDetectionModelOptimizationGuide)
-          ? service()->GetFlatBufferMemoryAddressForTesting()
-          : ClientSidePhishingModel::GetInstance()
-                ->GetFlatBufferMemoryAddressForTesting();
+    EXPECT_EQ(memset(memory_addr, 'G', 1), memory_addr);
 
-  EXPECT_EQ(memset(memory_addr, 'G', 1), memory_addr);
+    bool called = false;
+    base::CallbackListSubscription subscription =
+        service()->RegisterCallback(base::BindRepeating(
+            [](base::RepeatingClosure quit_closure, bool* called) {
+              *called = true;
+              std::move(quit_closure).Run();
+            },
+            run_loop.QuitClosure(), &called));
 
-  bool called = false;
-  base::CallbackListSubscription subscription =
-      base::FeatureList::IsEnabled(kClientSideDetectionModelOptimizationGuide)
-          ? service()->RegisterCallback(base::BindRepeating(
-                [](base::RepeatingClosure quit_closure, bool* called) {
-                  *called = true;
-                  std::move(quit_closure).Run();
-                },
-                run_loop.QuitClosure(), &called))
-          : ClientSidePhishingModel::GetInstance()->RegisterCallback(
-                base::BindRepeating(
-                    [](base::RepeatingClosure quit_closure, bool* called) {
-                      *called = true;
-                      std::move(quit_closure).Run();
-                    },
-                    run_loop.QuitClosure(), &called));
-
-  const std::string model_str2 = CreateFlatBufferString();
-  base::ScopedTempDir temp_dir2;
-  ASSERT_TRUE(temp_dir2.CreateUniqueTempDir());
-  const base::FilePath file_path2 =
-      temp_dir2.GetPath().AppendASCII("visual_model.tflite");
-  base::File file2(file_path2, base::File::FLAG_OPEN_ALWAYS |
-                                   base::File::FLAG_READ |
-                                   base::File::FLAG_WRITE);
-  const std::string file_contents2 = "visual model file";
-  file2.WriteAtCurrentPos(file_contents2.data(), file_contents2.size());
-  if (base::FeatureList::IsEnabled(
-          kClientSideDetectionModelOptimizationGuide)) {
+    const std::string model_str2 = CreateFlatBufferString();
+    base::ScopedTempDir temp_dir2;
+    ASSERT_TRUE(temp_dir2.CreateUniqueTempDir());
+    const base::FilePath file_path2 =
+        temp_dir2.GetPath().AppendASCII("visual_model.tflite");
+    base::File file2(file_path2, base::File::FLAG_OPEN_ALWAYS |
+                                     base::File::FLAG_READ |
+                                     base::File::FLAG_WRITE);
+    const std::string file_contents2 = "visual model file";
+    file2.WriteAtCurrentPos(file_contents2.data(), file_contents2.size());
     service()->SetModelStringForTesting(model_str2, std::move(file2));
-  } else {
-    ClientSidePhishingModel::GetInstance()->PopulateFromDynamicUpdate(
-        model_str2, std::move(file2));
-  }
 
-  run_loop.RunUntilIdle();
-  EXPECT_TRUE(called);
-  if (base::FeatureList::IsEnabled(
-          kClientSideDetectionModelOptimizationGuide)) {
+    run_loop.RunUntilIdle();
+    EXPECT_TRUE(called);
     EXPECT_TRUE(service()->IsEnabled());
     std::string model_str_from_shared_mem2;
     ASSERT_NO_FATAL_FAILURE(GetFlatBufferStringFromMappedMemory(
         service()->GetModelSharedMemoryRegion(), &model_str_from_shared_mem2));
     EXPECT_EQ(model_str2, model_str_from_shared_mem2);
-    EXPECT_EQ(service()->GetModelType(),
-              CSDModelTypeOptimizationGuide::kFlatbuffer);
-  } else {
-    EXPECT_TRUE(ClientSidePhishingModel::GetInstance()->IsEnabled());
-    std::string model_str_from_shared_mem2;
-    ASSERT_NO_FATAL_FAILURE(GetFlatBufferStringFromMappedMemory(
-        ClientSidePhishingModel::GetInstance()->GetModelSharedMemoryRegion(),
-        &model_str_from_shared_mem2));
-    EXPECT_EQ(model_str2, model_str_from_shared_mem2);
-    EXPECT_EQ(ClientSidePhishingModel::GetInstance()->GetModelType(),
-              CSDModelType::kFlatbuffer);
-  }
+    EXPECT_EQ(service()->GetModelType(), CSDModelType::kFlatbuffer);
 
-  // Mapping should be undone automatically, even with a region copy lying
-  // around.
-  // Can remove this if flaky.
-  // Windows ASAN flake: crbug.com/1234652
+    // Mapping should be undone automatically, even with a region copy lying
+    // around.
+    // Can remove this if flaky.
+    // Windows ASAN flake: crbug.com/1234652
 #if !(BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
   BASE_EXPECT_DEATH(memset(memory_addr, 'G', 1), "");
 #endif

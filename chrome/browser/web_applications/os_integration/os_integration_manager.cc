@@ -36,8 +36,10 @@
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/browser_thread.h"
@@ -165,57 +167,41 @@ OsIntegrationManager::GetBarrierForSynchronize(
   return barrier_callback_for_synchronize;
 }
 
-void OsIntegrationManager::SetSubsystems(WebAppSyncBridge* sync_bridge,
-                                         WebAppRegistrar* registrar,
-                                         WebAppUiManager* ui_manager,
-                                         WebAppIconManager* icon_manager) {
+void OsIntegrationManager::SetProvider(base::PassKey<WebAppProvider>,
+                                       WebAppProvider& provider) {
   CHECK(!first_synchronize_called_);
 
-  // TODO(estade): fetch the registrar from `sync_bridge` instead of passing
-  // both as arguments.
-  registrar_ = registrar;
-  ui_manager_ = ui_manager;
-  sync_bridge_ = sync_bridge;
-  file_handler_manager_->SetSubsystems(sync_bridge);
-  shortcut_manager_->SetSubsystems(icon_manager, registrar);
+  provider_ = &provider;
+
+  base::PassKey<OsIntegrationManager> pass_key;
+  file_handler_manager_->SetProvider(pass_key, provider);
+  shortcut_manager_->SetProvider(pass_key, provider);
   if (protocol_handler_manager_)
-    protocol_handler_manager_->SetSubsystems(registrar);
-  if (url_handler_manager_)
-    url_handler_manager_->SetSubsystems(registrar);
+    protocol_handler_manager_->SetProvider(pass_key, provider);
 
   sub_managers_.clear();
-
-  auto shortcut_sub_manager = std::make_unique<ShortcutSubManager>(
-      *profile_, *icon_manager, *registrar);
-  auto file_handling_sub_manager = std::make_unique<FileHandlingSubManager>(
-      profile_->GetPath(), *registrar, *sync_bridge);
-  auto protocol_handling_sub_manager =
-      std::make_unique<ProtocolHandlingSubManager>(profile_->GetPath(),
-                                                   *registrar);
-  auto shortcut_menu_handling_sub_manager =
-      std::make_unique<ShortcutMenuHandlingSubManager>(
-          profile_->GetPath(), *icon_manager, *registrar);
-  auto run_on_os_login_sub_manager = std::make_unique<RunOnOsLoginSubManager>(
-      *profile_, *registrar, *sync_bridge, *icon_manager);
-  auto uninstallation_via_os_settings_sub_manager =
-      std::make_unique<UninstallationViaOsSettingsSubManager>(
-          profile_->GetPath(), *registrar);
-  sub_managers_.push_back(std::move(shortcut_sub_manager));
-  sub_managers_.push_back(std::move(file_handling_sub_manager));
-  sub_managers_.push_back(std::move(protocol_handling_sub_manager));
-  sub_managers_.push_back(std::move(shortcut_menu_handling_sub_manager));
-  sub_managers_.push_back(std::move(run_on_os_login_sub_manager));
   sub_managers_.push_back(
-      std::move(uninstallation_via_os_settings_sub_manager));
+      std::make_unique<ShortcutSubManager>(*profile_, provider));
+  sub_managers_.push_back(
+      std::make_unique<FileHandlingSubManager>(profile_->GetPath(), provider));
+  sub_managers_.push_back(std::make_unique<ProtocolHandlingSubManager>(
+      profile_->GetPath(), provider));
+  sub_managers_.push_back(std::make_unique<ShortcutMenuHandlingSubManager>(
+      profile_->GetPath(), provider));
+  sub_managers_.push_back(
+      std::make_unique<RunOnOsLoginSubManager>(*profile_, provider));
+  sub_managers_.push_back(
+      std::make_unique<UninstallationViaOsSettingsSubManager>(
+          profile_->GetPath(), provider));
 
-  set_subsystems_called_ = true;
+  set_provider_called_ = true;
 }
 
 void OsIntegrationManager::Start() {
-  CHECK(registrar_);
+  CHECK(provider_);
   CHECK(file_handler_manager_);
 
-  registrar_observation_.Observe(registrar_.get());
+  registrar_observation_.Observe(&provider_->registrar_unsafe());
   shortcut_manager_->Start();
   file_handler_manager_->Start();
   if (protocol_handler_manager_)
@@ -238,13 +224,13 @@ void OsIntegrationManager::Synchronize(
 
   // If the app does not exist in the DB and an unregistration is required, it
   // should have been done in the past Synchronize call.
-  CHECK(registrar_->GetAppById(app_id))
+  CHECK(provider_->registrar_unsafe().GetAppById(app_id))
       << "Can't perform OS integration without the app existing in the "
          "registrar. If the use-case requires an app to not be installed, "
          "consider setting the force_unregister_on_app_missing flag inside "
          "SynchronizeOsOptions";
 
-  CHECK(set_subsystems_called_);
+  CHECK(set_provider_called_);
 
   if (!AreOsIntegrationSubManagersEnabled()) {
     std::move(callback).Run();
@@ -603,7 +589,7 @@ void OsIntegrationManager::ReadAllShortcutsMenuIconsAndRegisterShortcutsMenu(
   }
 
   std::vector<WebAppShortcutsMenuItemInfo> shortcuts_menu_item_infos =
-      registrar_->GetAppShortcutsMenuItemInfos(app_id);
+      provider_->registrar_unsafe().GetAppShortcutsMenuItemInfos(app_id);
 
   // Exit early if shortcuts_menu_item_infos are not populated.
   if (shortcuts_menu_item_infos.size() < 1) {
@@ -646,9 +632,9 @@ void OsIntegrationManager::MacAppShimOnAppInstalledForProfile(
 }
 
 void OsIntegrationManager::AddAppToQuickLaunchBar(const AppId& app_id) {
-  CHECK(ui_manager_);
-  if (ui_manager_->CanAddAppToQuickLaunchBar()) {
-    ui_manager_->AddAppToQuickLaunchBar(app_id);
+  CHECK(provider_);
+  if (provider_->ui_manager().CanAddAppToQuickLaunchBar()) {
+    provider_->ui_manager().AddAppToQuickLaunchBar(app_id);
   }
 }
 
@@ -689,8 +675,8 @@ void OsIntegrationManager::UnregisterRunOnOsLogin(const AppId& app_id,
       }).Then(std::move(callback));
 
   ScheduleUnregisterRunOnOsLogin(
-      sync_bridge_, app_id, profile_->GetPath(),
-      base::UTF8ToUTF16(registrar_->GetAppShortName(app_id)),
+      *provider_, app_id, profile_->GetPath(),
+      base::UTF8ToUTF16(provider_->registrar_unsafe().GetAppShortName(app_id)),
       std::move(metrics_callback));
 }
 
@@ -958,7 +944,7 @@ void OsIntegrationManager::StartSubManagerExecutionIfRequired(
   // 3. Execution has been disabled by the feature parameters (see
   //    `AreSubManagersExecuteEnabled()`).
 
-  const WebApp* web_app = registrar_->GetAppById(app_id);
+  const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
   if (!web_app) {
     std::move(on_all_execution_done).Run();
     return;
@@ -1007,14 +993,14 @@ void OsIntegrationManager::WriteStateToDB(
     base::OnceClosure callback) {
   // Exit early if the app is scheduled to be uninstalled or is already
   // uninstalled.
-  const WebApp* existing_app = registrar_->GetAppById(app_id);
+  const WebApp* existing_app = provider_->registrar_unsafe().GetAppById(app_id);
   if (!existing_app || existing_app->is_uninstalling()) {
     std::move(callback).Run();
     return;
   }
 
   {
-    ScopedRegistryUpdate update(sync_bridge_);
+    ScopedRegistryUpdate update = provider_->sync_bridge_unsafe().BeginUpdate();
     WebApp* web_app = update->UpdateApp(app_id);
     CHECK(web_app);
     web_app->SetCurrentOsIntegrationStates(*desired_states.get());
@@ -1049,7 +1035,7 @@ void OsIntegrationManager::OnShortcutsCreated(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(barrier);
 
-  if (registrar_ && !registrar_->GetAppById(app_id)) {
+  if (provider_ && !provider_->registrar_unsafe().GetAppById(app_id)) {
     return;
   }
 
@@ -1103,7 +1089,8 @@ void OsIntegrationManager::OnShortcutsCreated(
 
   if (options.os_hooks[OsHookType::kUninstallationViaOsSettings]) {
     RegisterWebAppOsUninstallation(
-        app_id, registrar_ ? registrar_->GetAppShortName(app_id) : "");
+        app_id,
+        provider_ ? provider_->registrar_unsafe().GetAppShortName(app_id) : "");
   }
 }
 
@@ -1126,8 +1113,8 @@ void OsIntegrationManager::OnShortcutsDeleted(const AppId& app_id,
 void OsIntegrationManager::OnShortcutInfoRetrievedRegisterRunOnOsLogin(
     ResultCallback callback,
     std::unique_ptr<ShortcutInfo> info) {
-  ScheduleRegisterRunOnOsLogin(sync_bridge_, std::move(info),
-                               std::move(callback));
+  ScheduleRegisterRunOnOsLogin(&provider_->sync_bridge_unsafe(),
+                               std::move(info), std::move(callback));
 }
 
 }  // namespace web_app

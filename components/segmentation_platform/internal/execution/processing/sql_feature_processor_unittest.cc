@@ -11,17 +11,18 @@
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "components/segmentation_platform/internal/database/mock_ukm_database.h"
-#include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_processor_state.h"
+#include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 #include "components/segmentation_platform/public/input_delegate.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
-#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::test::RunOnceCallback;
 using testing::_;
 
 namespace segmentation_platform::processing {
+
+const auto kBoolType = proto::SqlFeature::BindValue::BOOL;
 
 class SqlFeatureProcessorTest : public testing::Test {
  public:
@@ -38,30 +39,13 @@ class SqlFeatureProcessorTest : public testing::Test {
     ukm_database_ = nullptr;
   }
 
-  proto::CustomInput CreateCustomInput(
-      int tensor_length,
-      proto::CustomInput::FillPolicy fill_policy,
-      const std::vector<float>& default_values) {
-    proto::CustomInput custom_input;
-    custom_input.set_fill_policy(fill_policy);
-    custom_input.set_tensor_length(tensor_length);
-    for (float default_value : default_values)
-      custom_input.add_default_value(default_value);
-    return custom_input;
-  }
-
   Data CreateSqlFeature(const std::string& sql,
-                        const std::vector<proto::CustomInput>& custom_inputs) {
-    proto::InputFeature input;
-    proto::SqlFeature* sql_feature = input.mutable_sql_feature();
-    sql_feature->set_sql(sql);
-    for (const proto::CustomInput& custom_input : custom_inputs) {
-      auto* bind_value = sql_feature->add_bind_values();
-      auto* value = bind_value->mutable_value();
-      bind_value->set_param_type(proto::SqlFeature::BindValue::BOOL);
-      *value = custom_input;
-    }
-    return Data(input);
+                        const MetadataWriter::BindValues& custom_inputs) {
+    proto::SegmentationModelMetadata metadata;
+    MetadataWriter writer(&metadata);
+    MetadataWriter::SqlFeature feature{.sql = sql.c_str()};
+    writer.AddSqlFeature(feature, custom_inputs);
+    return Data(metadata.input_features(0));
   }
 
   void ExpectQueryResult(
@@ -137,14 +121,20 @@ TEST_F(SqlFeatureProcessorTest, SingleSqlFeatureWithBindValues) {
   // Set up a single empty sql feature.
   SqlFeatureProcessor::QueryList data;
   constexpr char kSqlQuery[] = "some sql query with three bind value ? ? ?";
-  std::vector<float> custom_default_values = {1, 2, 3};
-  data.emplace(
-      0,
-      CreateSqlFeature(
-          kSqlQuery,
-          {CreateCustomInput(1, proto::CustomInput::FILL_PREDICTION_TIME, {}),
-           CreateCustomInput(2, proto::CustomInput::UNKNOWN_FILL_POLICY,
-                             custom_default_values)}));
+  std::array<float, 3> default_values = {1, 2, 3};
+  MetadataWriter::BindValue custom_input1{
+      kBoolType,
+      {.tensor_length = 1,
+       .fill_policy = proto::CustomInput::FILL_PREDICTION_TIME}};
+  MetadataWriter::BindValue custom_input2{
+      kBoolType,
+      {
+          .tensor_length = 2,
+          .fill_policy = proto::CustomInput::UNKNOWN_FILL_POLICY,
+          .default_values_size = default_values.size(),
+          .default_values = default_values.data(),
+      }};
+  data.emplace(0, CreateSqlFeature(kSqlQuery, {custom_input1, custom_input2}));
 
   // Construct the expected processed bind values based on the given data.
   base::flat_map<SqlFeatureProcessor::FeatureIndex, CustomSqlQuery>
@@ -168,16 +158,13 @@ TEST_F(SqlFeatureProcessorTest, MultipleSqlFeatures) {
   constexpr char kSqlQuery[] = "some sql query";
   constexpr char kSqlQueryWithBindValue[] =
       "some sql query with one bind value ?";
-  std::vector<float> custom_default_values = {1, 2, 3};
-  data.emplace(0, CreateSqlFeature(
-                      kSqlQueryWithBindValue,
-                      {CreateCustomInput(
-                          1, proto::CustomInput::FILL_PREDICTION_TIME, {})}));
+  MetadataWriter::BindValue custom_input1{
+      kBoolType,
+      {.tensor_length = 1,
+       .fill_policy = proto::CustomInput::FILL_PREDICTION_TIME}};
+  data.emplace(0, CreateSqlFeature(kSqlQueryWithBindValue, {custom_input1}));
   data.emplace(1, CreateSqlFeature(kSqlQuery, {}));
-  data.emplace(2, CreateSqlFeature(
-                      kSqlQueryWithBindValue,
-                      {CreateCustomInput(
-                          1, proto::CustomInput::FILL_PREDICTION_TIME, {})}));
+  data.emplace(2, CreateSqlFeature(kSqlQueryWithBindValue, {custom_input1}));
 
   // Construct the expected processed bind values based on the given data.
   base::flat_map<SqlFeatureProcessor::FeatureIndex, CustomSqlQuery>

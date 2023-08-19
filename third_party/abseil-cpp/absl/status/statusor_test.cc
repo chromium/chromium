@@ -15,11 +15,14 @@
 #include "absl/status/statusor.h"
 
 #include <array>
+#include <cstddef>
 #include <initializer_list>
+#include <map>
 #include <memory>
 #include <string>
 #include <type_traits>
 #include <utility>
+#include <vector>
 
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
@@ -28,6 +31,7 @@
 #include "absl/status/status.h"
 #include "absl/strings/string_view.h"
 #include "absl/types/any.h"
+#include "absl/types/variant.h"
 #include "absl/utility/utility.h"
 
 namespace {

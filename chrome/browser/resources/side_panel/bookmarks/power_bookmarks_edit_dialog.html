@@ -28,6 +28,10 @@
     background-color: var(--cr-hover-background-color);
   }
 
+  :host-context([chrome-refresh-2023]) .folder-row:focus-visible {
+    outline-color: var(--cr-focus-outline-color);
+  }
+
   .folder-row[selected] {
     background-color: var(--google-blue-50);
   }
@@ -50,12 +54,34 @@
     }
   }
 
+  :host-context([chrome-refresh-2023]) .folder-row[selected] {
+    background-color: var(
+        --color-side-panel-bookmarks-selected-folder-background);
+  }
+
+  :host-context([chrome-refresh-2023]) .folder-row[selected] > .cr-icon {
+    background-color: var(--color-side-panel-bookmarks-selected-folder-icon);
+  }
+
+  :host-context([chrome-refresh-2023]) .folder-row[selected] > .folder-title {
+    color: var(--color-side-panel-bookmarks-selected-folder-foreground);
+  }
+
+  :host-context([chrome-refresh-2023]) .folder-row[selected] > .subpage-arrow {
+    --cr-icon-button-fill-color: var(
+        --color-side-panel-bookmarks-selected-folder-icon);
+  }
+
   .folder-selector {
     border: 1px solid var(--scrollable-border-color);
     border-radius: 2px;
     height: 160px;
     margin-top: 8px;
     overflow: auto;
+  }
+
+  :host-context([chrome-refresh-2023]) .folder-selector {
+    border-color: var(--color-side-panel-dialog-divider);
   }
 
   .folder-title {
@@ -71,8 +97,15 @@
     white-space: nowrap;
   }
 
+  :host-context([chrome-refresh-2023]) .input-label {
+    font-size: 13px;
+    color: var(--cr-primary-text-color);
+  }
+
   .input-row {
+    align-items: baseline;
     display: grid;
+    gap: 4px;
     grid-template-columns: 52px auto;
   }
 
@@ -88,6 +121,10 @@
 
   .name-input {
     --cr-input-error-display: none;
+  }
+
+  :host-context([chrome-refresh-2023]) .cr-icon {
+    --cr-icon-color: var(--cr-secondary-text-color);
   }
 </style>
 
@@ -106,7 +143,7 @@
         <cr-input class="sp-labelless-input" id="urlInput" type="url"
             value="[[getBookmarkUrl_(selectedBookmarks_.*)]]"
             error-message="$i18n{editInvalidUrl}"
-            aria-label="$i18n{editUrl}"></cr-input>
+            aria-label="$i18n{editUrl}" required></cr-input>
       </div>
     </div>
     <sp-heading hide-back-button="[[!activeFolderPath_.length]]"

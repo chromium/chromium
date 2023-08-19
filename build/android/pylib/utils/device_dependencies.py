@@ -65,7 +65,7 @@ def _FilterDataDeps(abs_host_files):
   return [p for p in abs_host_files if not any(r.match(p) for r in exclusions)]
 
 
-def DevicePathComponentsFor(host_path, output_directory):
+def DevicePathComponentsFor(host_path, output_directory=None):
   """Returns the device path components for a given host path.
 
   This returns the device path as a list of joinable path components,
@@ -102,6 +102,7 @@ def DevicePathComponentsFor(host_path, output_directory):
   Returns:
     A list of device path components.
   """
+  output_directory = output_directory or constants.GetOutDirectory()
   if (host_path.startswith(output_directory) and
       os.path.splitext(host_path)[1] == '.pak'):
     return [None, 'paks', os.path.basename(host_path)]

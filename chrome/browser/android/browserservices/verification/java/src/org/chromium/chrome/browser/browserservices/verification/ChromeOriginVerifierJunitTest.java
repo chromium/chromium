@@ -65,7 +65,6 @@ public class ChromeOriginVerifierJunitTest {
     private ChromeOriginVerifier.Natives mMockChromeOriginVerifierJni;
 
     private CountDownLatch mVerificationResultLatch = new CountDownLatch(1);
-    private CountDownLatch mVerificationResultLatch2 = new CountDownLatch(1);
 
     private static class TestOriginVerificationListener implements OriginVerificationListener {
         private CountDownLatch mLatch;

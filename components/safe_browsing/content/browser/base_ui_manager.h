@@ -58,6 +58,12 @@ class BaseUIManager : public base::RefCountedThreadSafe<BaseUIManager> {
       content::BrowserContext* browser_context,
       std::unique_ptr<ClientSafeBrowsingReportRequest> report);
 
+  // This is a no-op in the base class, but should be overridden to have threat
+  // details included as part of a user's response to a HaTS survey.
+  virtual void AttachThreatDetailsAndLaunchSurvey(
+      content::BrowserContext* browser_context,
+      std::unique_ptr<ClientSafeBrowsingReportRequest> report);
+
   // Updates the allowlist URL set for |web_contents|. Called on the UI thread.
   void AddToAllowlistUrlSet(const GURL& allowlist_url,
                             content::WebContents* web_contents,

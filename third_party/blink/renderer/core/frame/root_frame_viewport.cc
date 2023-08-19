@@ -385,6 +385,7 @@ PhysicalRect RootFrameViewport::ScrollIntoView(
 
   if (new_scroll_offset != GetScrollOffset()) {
     if (params->is_for_scroll_sequence) {
+      CHECK(GetSmoothScrollSequencer());
       DCHECK(params->type == mojom::blink::ScrollType::kProgrammatic ||
              params->type == mojom::blink::ScrollType::kUser);
       mojom::blink::ScrollBehavior behavior = DetermineScrollBehavior(
@@ -717,14 +718,6 @@ bool RootFrameViewport::SnapContainerDataNeedsUpdate() const {
 
 void RootFrameViewport::SetSnapContainerDataNeedsUpdate(bool needs_update) {
   LayoutViewport().SetSnapContainerDataNeedsUpdate(needs_update);
-}
-
-bool RootFrameViewport::NeedsResnap() const {
-  return LayoutViewport().NeedsResnap();
-}
-
-void RootFrameViewport::SetNeedsResnap(bool needs_resnap) {
-  LayoutViewport().SetNeedsResnap(needs_resnap);
 }
 
 absl::optional<gfx::PointF> RootFrameViewport::GetSnapPositionAndSetTarget(

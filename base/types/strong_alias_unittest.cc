@@ -371,7 +371,7 @@ TEST(StrongAliasTest, EnsureConstexpr) {
 void StreamOperatorExists() {
   // Aliases of ints should be streamable because ints are streamable.
   using StreamableAlias = StrongAlias<class IntTag, int>;
-  static_assert(internal::SupportsOstreamOperator<StreamableAlias>::value);
+  static_assert(internal::SupportsOstreamOperator<StreamableAlias>);
 
   // Aliases of a class which does not expose a stream operator should
   // themselves not be streamable.
@@ -380,7 +380,7 @@ void StreamOperatorExists() {
     Scope() = default;
   };
   using NonStreamableAlias = StrongAlias<class ScopeTag, Scope>;
-  static_assert(!internal::SupportsOstreamOperator<NonStreamableAlias>::value);
+  static_assert(!internal::SupportsOstreamOperator<NonStreamableAlias>);
 }
 
 #if BUILDFLAG(ENABLE_BASE_TRACING)

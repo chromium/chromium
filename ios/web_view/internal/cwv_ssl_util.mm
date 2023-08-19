@@ -4,10 +4,6 @@
 
 #import "ios/web_view/internal/cwv_ssl_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 CWVCertStatus CWVCertStatusFromNetCertStatus(net::CertStatus cert_status) {
   CWVCertStatus cwv_status = 0;
   if (cert_status & net::CERT_STATUS_COMMON_NAME_INVALID) {

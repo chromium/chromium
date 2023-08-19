@@ -17,6 +17,10 @@
 
 namespace ash {
 
+namespace {
+using chromeos::network_config::mojom::NetworkType;
+}  // namespace
+
 class DetailedViewDelegate;
 
 // This class defines both the interface used to interact with the
@@ -69,13 +73,14 @@ class ASH_EXPORT NetworkDetailedNetworkView {
   // Creates, adds and returns a new network list item. The client is
   // expected to use the returned pointer for removing and rearranging
   // the list item.
-  virtual NetworkListNetworkItemView* AddNetworkListItem(
-      chromeos::network_config::mojom::NetworkType type) = 0;
+  virtual NetworkListNetworkItemView* AddNetworkListItem(NetworkType type) = 0;
 
-  // Creates, adds and returns a `HoverHighlightView`, which is the "Join WIFI
-  // network" entry. The client is expected to use the returned pointer for
+  // Creates, adds and returns a `HoverHighlightView`, which is the "Join Wifi
+  // network" entry for the Wifi section if `NetworkType::kWiFi` is passed in or
+  // the "Add eSIM" entry for the Mobile data section if `NetworkType::kMobile`
+  // is passed in. The client is expected to use the returned pointer for
   // removing and rearranging this entry.
-  virtual HoverHighlightView* AddJoinNetworkEntry() = 0;
+  virtual HoverHighlightView* AddConfigureNetworkEntry(NetworkType type) = 0;
 
   // Creates, adds and returns a Wifi sticky sub-header to the end of the
   // network list. The client is expected to use the returned pointer for
@@ -91,8 +96,7 @@ class ASH_EXPORT NetworkDetailedNetworkView {
   virtual void UpdateScanningBarVisibility(bool visible) = 0;
 
   // Returns the network list.
-  virtual views::View* GetNetworkList(
-      chromeos::network_config::mojom::NetworkType type) = 0;
+  virtual views::View* GetNetworkList(NetworkType type) = 0;
 
   // Reorders the container or list view based on the index.
   virtual void ReorderFirstListView(size_t index) = 0;
@@ -107,6 +111,11 @@ class ASH_EXPORT NetworkDetailedNetworkView {
   // Updates the containers, shows or hides the corresponding list view.
   virtual void UpdateWifiStatus(bool enabled) = 0;
   virtual void UpdateMobileStatus(bool enabled) = 0;
+
+  // Provides some virtual methods to get and set the scroll view's position
+  // before and after reordering the network list.
+  virtual void ScrollToPosition(int position) {}
+  virtual int GetScrollPosition();
 
  protected:
   explicit NetworkDetailedNetworkView(Delegate* delegate);

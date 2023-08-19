@@ -11,7 +11,6 @@
 #include "net/cert/cert_verify_proc.h"
 #include "net/cert/crl_set.h"
 #include "net/cert/multi_threaded_cert_verifier.h"
-#include "net/cert_net/cert_net_fetcher_url_request.h"
 #include "net/net_buildflags.h"
 
 #if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

@@ -34,6 +34,7 @@
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
+#include "media/base/media_switches.h"
 #include "ui/aura/env.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/compositor.h"
@@ -54,6 +55,75 @@ namespace {
 const int kWaitForReleaseDelayMs = 500;
 
 constexpr char kBufferInUse[] = "BufferInUse";
+
+// Gets the color type of |format| for creating bitmap. If it returns
+// SkColorType::kUnknown_SkColorType, it means with this format, this buffer
+// contents should not be used to create bitmap.
+SkColorType GetColorTypeForBitmapCreation(gfx::BufferFormat format) {
+  switch (format) {
+    case gfx::BufferFormat::RGBA_8888:
+      return SkColorType::kRGBA_8888_SkColorType;
+    case gfx::BufferFormat::BGRA_8888:
+      return SkColorType::kBGRA_8888_SkColorType;
+    default:
+      // Don't create bitmap for other formats.
+      return SkColorType::kUnknown_SkColorType;
+  }
+}
+
+// Gets the shared image format equivalent of |buffer_format| used for creating
+// shared image.
+viz::SharedImageFormat GetSharedImageFormat(gfx::BufferFormat buffer_format) {
+  viz::SharedImageFormat format;
+  switch (buffer_format) {
+    case gfx::BufferFormat::BGRA_8888:
+      return viz::SinglePlaneFormat::kBGRA_8888;
+    case gfx::BufferFormat::R_8:
+      return viz::SinglePlaneFormat::kR_8;
+    case gfx::BufferFormat::R_16:
+      return viz::SinglePlaneFormat::kR_16;
+    case gfx::BufferFormat::RG_1616:
+      return viz::SinglePlaneFormat::kRG_1616;
+    case gfx::BufferFormat::RGBA_4444:
+      return viz::SinglePlaneFormat::kRGBA_4444;
+    case gfx::BufferFormat::RGBA_8888:
+      return viz::SinglePlaneFormat::kRGBA_8888;
+    case gfx::BufferFormat::RGBA_F16:
+      return viz::SinglePlaneFormat::kRGBA_F16;
+    case gfx::BufferFormat::BGR_565:
+      return viz::SinglePlaneFormat::kBGR_565;
+    case gfx::BufferFormat::RG_88:
+      return viz::SinglePlaneFormat::kRG_88;
+    case gfx::BufferFormat::RGBX_8888:
+      return viz::SinglePlaneFormat::kRGBX_8888;
+    case gfx::BufferFormat::BGRX_8888:
+      return viz::SinglePlaneFormat::kBGRX_8888;
+    case gfx::BufferFormat::RGBA_1010102:
+      return viz::SinglePlaneFormat::kRGBA_1010102;
+    case gfx::BufferFormat::BGRA_1010102:
+      return viz::SinglePlaneFormat::kBGRA_1010102;
+    case gfx::BufferFormat::YVU_420:
+      format = viz::MultiPlaneFormat::kYV12;
+      break;
+    case gfx::BufferFormat::YUV_420_BIPLANAR:
+      format = viz::MultiPlaneFormat::kNV12;
+      break;
+    case gfx::BufferFormat::YUVA_420_TRIPLANAR:
+      format = viz::MultiPlaneFormat::kNV12A;
+      break;
+    case gfx::BufferFormat::P010:
+      format = viz::MultiPlaneFormat::kP010;
+      break;
+  }
+#if BUILDFLAG(IS_CHROMEOS)
+  // If format is true multiplanar format, we prefer external sampler on
+  // ChromeOS.
+  if (format.is_multi_plane()) {
+    format.SetPrefersExternalSampler();
+  }
+#endif
+  return format;
+}
 
 }  // namespace
 
@@ -123,7 +193,8 @@ class Buffer::Texture : public viz::ContextLostObserver {
   void ScheduleWaitForRelease(base::TimeDelta delay);
   void WaitForRelease();
 
-  const raw_ptr<gfx::GpuMemoryBuffer, ExperimentalAsh> gpu_memory_buffer_;
+  const raw_ptr<gfx::GpuMemoryBuffer, DanglingUntriaged | ExperimentalAsh>
+      gpu_memory_buffer_;
   const gfx::Size size_;
   scoped_refptr<viz::RasterContextProvider> context_provider_;
   const unsigned texture_target_;
@@ -192,9 +263,18 @@ Buffer::Texture::Texture(
   if (is_overlay_candidate) {
     usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
   }
-  mailbox_ = sii->CreateSharedImage(
-      gpu_memory_buffer_, gpu_memory_buffer_manager, color_space,
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, "ExoTexture");
+
+  if (media::IsMultiPlaneFormatForHardwareVideoEnabled()) {
+    auto si_format = GetSharedImageFormat(gpu_memory_buffer_->GetFormat());
+    mailbox_ = sii->CreateSharedImage(si_format, gpu_memory_buffer_->GetSize(),
+                                      color_space, kTopLeft_GrSurfaceOrigin,
+                                      kPremul_SkAlphaType, usage, "ExoTexture",
+                                      gpu_memory_buffer_->CloneHandle());
+  } else {
+    mailbox_ = sii->CreateSharedImage(
+        gpu_memory_buffer_, gpu_memory_buffer_manager, color_space,
+        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, "ExoTexture");
+  }
   DCHECK(!mailbox_.IsZero());
   gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
   sync_token_out = sii->GenUnverifiedSyncToken();
@@ -534,7 +614,7 @@ bool Buffer::ProduceTransferableResource(
         texture_target_);
     resource->is_overlay_candidate = is_overlay_candidate_;
     resource->format =
-        viz::GetSharedImageFormat(gpu_memory_buffer_->GetFormat());
+        viz::GetSinglePlaneSharedImageFormat(gpu_memory_buffer_->GetFormat());
     if (context_provider->ContextCapabilities().chromium_gpu_fence &&
         request_release_fence) {
       resource->synchronization_type =
@@ -721,6 +801,36 @@ void Buffer::FenceSignalled(uint64_t commit_id) {
   DCHECK(iter != buffer_releases_.end());
   std::move(iter->second.buffer_release_callback).Run();
   buffer_releases_.erase(iter);
+}
+
+SkBitmap Buffer::CreateBitmap() {
+  SkBitmap bitmap;
+
+  if (!gpu_memory_buffer_) {
+    return bitmap;
+  }
+
+  SkColorType color_type = GetColorTypeForBitmapCreation(GetFormat());
+  if (color_type == SkColorType::kUnknown_SkColorType) {
+    return bitmap;
+  }
+
+  if (!gpu_memory_buffer_->Map()) {
+    return bitmap;
+  }
+
+  gfx::Size size = gpu_memory_buffer_->GetSize();
+  SkImageInfo image_info = SkImageInfo::Make(size.width(), size.height(),
+                                             color_type, kPremul_SkAlphaType);
+  SkPixmap pixmap = SkPixmap(image_info, gpu_memory_buffer_->memory(0),
+                             gpu_memory_buffer_->stride(0));
+  bitmap.allocPixels(image_info);
+  bitmap.writePixels(pixmap);
+  bitmap.setImmutable();
+
+  gpu_memory_buffer_->Unmap();
+
+  return bitmap;
 }
 
 #if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)

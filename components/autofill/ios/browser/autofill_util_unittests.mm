@@ -12,10 +12,6 @@
 #import "components/autofill/core/common/unique_ids.h"
 #include "testing/platform_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using AutofillUtilTest = PlatformTest;
 
 using autofill::ExtractIDs;

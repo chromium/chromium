@@ -12,9 +12,8 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ProgressBar;
 
-import androidx.annotation.VisibleForTesting;
-
-import org.chromium.ui.interpolators.BakedBezierInterpolator;
+import org.chromium.base.ResettersForTesting;
+import org.chromium.ui.interpolators.Interpolators;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,7 +80,7 @@ public class LoadingView extends ProgressBar {
 
             animate()
                     .alpha(0.0f)
-                    .setInterpolator(BakedBezierInterpolator.TRANSFORM_CURVE)
+                    .setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR)
                     .setListener(new AnimatorListenerAdapter() {
                         @Override
                         public void onAnimationEnd(Animator animation) {
@@ -168,9 +167,9 @@ public class LoadingView extends ProgressBar {
      * @param disableAnimation Whether the fading animation should be disabled during {@link
      *         #hideLoadingUI()}.
      */
-    @VisibleForTesting
     public static void setDisableAnimationForTest(boolean disableAnimation) {
         sDisableAnimationForTest = disableAnimation;
+        ResettersForTesting.register(() -> sDisableAnimationForTest = false);
     }
 
     /**

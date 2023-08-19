@@ -25,20 +25,18 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/signin/fake_system_identity_manager.h"
+#import "ios/chrome/browser/ui/default_promo/post_restore/features.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
  public:
@@ -80,15 +78,20 @@ class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
   }
 
   void TearDown() override {
+    [[NSUserDefaults standardUserDefaults]
+        setBool:NO
+         forKey:@"SimulatePostDeviceRestore"];
     browser_state_.reset();
     ClearDefaultBrowserPromoData();
     TestingApplicationContext::GetGlobal()->SetLocalState(nullptr);
     local_state_.reset();
   }
+
   void EnableDefaultBrowserPromoRefactoringFlag() {
     scoped_feature_list_.InitWithFeatures(
         {kDefaultBrowserRefactoringPromoManager}, {});
   }
+
   void SignIn() {
     FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
     FakeSystemIdentityManager* system_identity_manager =
@@ -97,6 +100,12 @@ class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
     system_identity_manager->AddIdentity(identity);
     AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
         ->SignIn(identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  }
+
+  void SimulatePostDeviceRestore() {
+    [[NSUserDefaults standardUserDefaults]
+        setBool:YES
+         forKey:@"SimulatePostDeviceRestore"];
   }
 
   web::WebTaskEnvironment task_environment_;
@@ -204,6 +213,51 @@ TEST_F(DefaultBrowserPromoSceneAgentTest,
       *promos_manager_.get(),
       RegisterPromoForSingleDisplay(promos_manager::Promo::DefaultBrowser))
       .Times(0);
+
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+}
+
+// Tests that the Post Restore Default Browser Promo is not registered when the
+// user is not in a post restore state.
+TEST_F(DefaultBrowserPromoSceneAgentTest,
+       TestPromoRegistrationPostRestore_UserNotInPostRestoreState) {
+  scoped_feature_list_.InitAndEnableFeature(kPostRestoreDefaultBrowserPromo);
+  LogOpenHTTPURLFromExternalURL();
+  TestingApplicationContext::GetGlobal()->SetLastShutdownClean(true);
+  EXPECT_CALL(*promos_manager_.get(),
+              RegisterPromoForSingleDisplay(
+                  promos_manager::Promo::PostRestoreDefaultBrowserAlert))
+      .Times(0);
+
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+}
+
+// Tests that the Post Restore Default Browser Promo is not registered when
+// Chrome was not set as the user's default browser before the iOS restore.
+TEST_F(DefaultBrowserPromoSceneAgentTest,
+       TestPromoRegistrationPostRestore_ChromeNotSetDefaultBrowser) {
+  scoped_feature_list_.InitAndEnableFeature(kPostRestoreDefaultBrowserPromo);
+  SimulatePostDeviceRestore();
+  TestingApplicationContext::GetGlobal()->SetLastShutdownClean(true);
+  EXPECT_CALL(*promos_manager_.get(),
+              RegisterPromoForSingleDisplay(
+                  promos_manager::Promo::PostRestoreDefaultBrowserAlert))
+      .Times(0);
+
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+}
+
+// Tests that the Post Restore Default Browser Promo is registered when the
+// conditions are met.
+TEST_F(DefaultBrowserPromoSceneAgentTest, TestPromoRegistrationPostRestore) {
+  scoped_feature_list_.InitAndEnableFeature(kPostRestoreDefaultBrowserPromo);
+  SimulatePostDeviceRestore();
+  TestingApplicationContext::GetGlobal()->SetLastShutdownClean(true);
+  LogOpenHTTPURLFromExternalURL();
+  EXPECT_CALL(*promos_manager_.get(),
+              RegisterPromoForSingleDisplay(
+                  promos_manager::Promo::PostRestoreDefaultBrowserAlert))
+      .Times(1);
 
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 }

@@ -170,10 +170,13 @@ class FeaturePromoSnoozeInteractiveTest : public InteractiveBrowserTest {
             user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
   }
 
-  raw_ptr<NiceMock<feature_engagement::test::MockTracker>, DanglingUntriaged>
+  raw_ptr<NiceMock<feature_engagement::test::MockTracker>,
+          AcrossTasksDanglingUntriaged>
       mock_tracker_;
-  raw_ptr<BrowserFeaturePromoController, DanglingUntriaged> promo_controller_;
-  raw_ptr<user_education::FeaturePromoSnoozeService, DanglingUntriaged>
+  raw_ptr<BrowserFeaturePromoController, AcrossTasksDanglingUntriaged>
+      promo_controller_;
+  raw_ptr<user_education::FeaturePromoSnoozeService,
+          AcrossTasksDanglingUntriaged>
       snooze_service_;
 
  private:

@@ -4,13 +4,11 @@
 
 package org.chromium.chrome.browser.autofill;
 
-import android.content.Context;
 import android.view.accessibility.AccessibilityEvent;
-import android.view.accessibility.AccessibilityManager;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.ui.accessibility.AccessibilityState;
 
 /**
  * Helper methods for accessibility.
@@ -22,17 +20,12 @@ public class AutofillAccessibilityUtils {
 
     @CalledByNative
     private static void announce(String message) {
-        AccessibilityManager am =
-                (AccessibilityManager) ContextUtils.getApplicationContext().getSystemService(
-                        Context.ACCESSIBILITY_SERVICE);
-        if (am == null || !am.isEnabled() || !am.isTouchExplorationEnabled()) {
-            return;
-        }
+        if (!AccessibilityState.isTouchExplorationEnabled()) return;
 
         AccessibilityEvent accessibilityEvent = AccessibilityEvent.obtain();
         accessibilityEvent.setEventType(AccessibilityEvent.TYPE_ANNOUNCEMENT);
         accessibilityEvent.getText().add(message);
 
-        am.sendAccessibilityEvent(accessibilityEvent);
+        AccessibilityState.sendAccessibilityEvent(accessibilityEvent);
     }
 }

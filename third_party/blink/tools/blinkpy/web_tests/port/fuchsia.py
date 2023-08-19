@@ -218,8 +218,8 @@ class FuchsiaPort(base.Port):
     def _driver_class(self):
         return ChromiumFuchsiaDriver
 
-    def _path_to_driver(self, target=None):
-        return self._build_path_with_target(target, CONTENT_SHELL_PACKAGE_PATH)
+    def path_to_driver(self, target=None):
+        return self.build_path(CONTENT_SHELL_PACKAGE_PATH, target=target)
 
     def __del__(self):
         if self._zircon_logger:
@@ -295,7 +295,7 @@ class FuchsiaPort(base.Port):
         return self._target_host
 
     def get_build_ids_path(self):
-        package_path = self._path_to_driver()
+        package_path = self.path_to_driver()
         return os.path.join(os.path.dirname(package_path), 'ids.txt')
 
 

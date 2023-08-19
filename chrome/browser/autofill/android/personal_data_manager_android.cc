@@ -38,8 +38,8 @@
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/sync_utils.h"
 #include "components/autofill/core/browser/validation.h"
+#include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -70,29 +70,6 @@ PrefService* GetPrefs() {
   return GetProfile()->GetPrefs();
 }
 
-void MaybeSetRawInfoWithVerificationStatus(
-    AutofillProfile* profile,
-    ServerFieldType type,
-    const base::android::JavaRef<jstring>& value,
-    jint status) {
-  if (value)
-    profile->SetRawInfoWithVerificationStatus(
-        type, ConvertJavaStringToUTF16(value),
-        static_cast<VerificationStatus>(status));
-}
-
-void MaybeSetInfoWithVerificationStatus(
-    AutofillProfile* profile,
-    ServerFieldType type,
-    const base::android::JavaRef<jstring>& value,
-    jint status) {
-  if (value)
-    profile->SetInfoWithVerificationStatus(
-        type, ConvertJavaStringToUTF16(value),
-        g_browser_process->GetApplicationLocale(),
-        static_cast<VerificationStatus>(status));
-}
-
 void OnSubKeysReceived(ScopedJavaGlobalRef<jobject> jdelegate,
                        const std::vector<std::string>& subkeys_codes,
                        const std::vector<std::string>& subkeys_names) {
@@ -109,11 +86,11 @@ void OnAddressNormalized(ScopedJavaGlobalRef<jobject> jdelegate,
   if (success) {
     Java_NormalizedAddressRequestDelegate_onAddressNormalized(
         env, jdelegate,
-        PersonalDataManagerAndroid::CreateJavaProfileFromNative(env, profile));
+        profile.CreateJavaObject(g_browser_process->GetApplicationLocale()));
   } else {
     Java_NormalizedAddressRequestDelegate_onCouldNotNormalize(
         env, jdelegate,
-        PersonalDataManagerAndroid::CreateJavaProfileFromNative(env, profile));
+        profile.CreateJavaObject(g_browser_process->GetApplicationLocale()));
   }
 }
 
@@ -145,9 +122,9 @@ PersonalDataManagerAndroid::CreateJavaCreditCardFromNative(
   return Java_CreditCard_create(
       env, ConvertUTF8ToJavaString(env, card.guid()),
       ConvertUTF8ToJavaString(env, card.origin()),
-      card.record_type() == CreditCard::LOCAL_CARD,
-      card.record_type() == CreditCard::FULL_SERVER_CARD,
-      card.record_type() == CreditCard::VIRTUAL_CARD,
+      card.record_type() == CreditCard::RecordType::kLocalCard,
+      card.record_type() == CreditCard::RecordType::kFullServerCard,
+      card.record_type() == CreditCard::RecordType::kVirtualCard,
       ConvertUTF16ToJavaString(env, card.GetRawInfo(CREDIT_CARD_NAME_FULL)),
       ConvertUTF16ToJavaString(env, card.GetRawInfo(CREDIT_CARD_NUMBER)),
       ConvertUTF16ToJavaString(env, card.NetworkAndLastFourDigits()),
@@ -210,14 +187,14 @@ void PersonalDataManagerAndroid::PopulateNativeCreditCardFromJava(
     card->set_guid(guid);
 
   if (Java_CreditCard_getIsLocal(env, jcard)) {
-    card->set_record_type(CreditCard::LOCAL_CARD);
+    card->set_record_type(CreditCard::RecordType::kLocalCard);
   } else {
     if (Java_CreditCard_getIsCached(env, jcard)) {
-      card->set_record_type(CreditCard::FULL_SERVER_CARD);
+      card->set_record_type(CreditCard::RecordType::kFullServerCard);
     } else {
       // Native copies of virtual credit card objects should not be created.
       DCHECK(!Java_CreditCard_getIsVirtual(env, jcard));
-      card->set_record_type(CreditCard::MASKED_SERVER_CARD);
+      card->set_record_type(CreditCard::RecordType::kMaskedServerCard);
       card->SetNetworkForMaskedCard(
           data_util::GetIssuerNetworkForBasicCardIssuerNetwork(
               ConvertJavaStringToUTF8(
@@ -229,121 +206,6 @@ void PersonalDataManagerAndroid::PopulateNativeCreditCardFromJava(
           Java_CreditCard_getVirtualCardEnrollmentState(env, jcard)));
   card->set_product_description(ConvertJavaStringToUTF16(
       Java_CreditCard_getProductDescription(env, jcard)));
-}
-
-// static
-ScopedJavaLocalRef<jobject>
-PersonalDataManagerAndroid::CreateJavaProfileFromNative(
-    JNIEnv* env,
-    const AutofillProfile& profile) {
-  return Java_AutofillProfile_create(
-      env, ConvertUTF8ToJavaString(env, profile.guid()),
-      profile.record_type() == AutofillProfile::LOCAL_PROFILE,
-      static_cast<jint>(profile.source()),
-      ConvertUTF16ToJavaString(
-          env, profile.GetInfo(AutofillType(NAME_HONORIFIC_PREFIX),
-                               g_browser_process->GetApplicationLocale())),
-      static_cast<jint>(profile.GetVerificationStatus(NAME_HONORIFIC_PREFIX)),
-      ConvertUTF16ToJavaString(
-          env, profile.GetInfo(AutofillType(NAME_FULL),
-                               g_browser_process->GetApplicationLocale())),
-      static_cast<jint>(profile.GetVerificationStatus(NAME_FULL)),
-      ConvertUTF16ToJavaString(env, profile.GetRawInfo(COMPANY_NAME)),
-      static_cast<jint>(profile.GetVerificationStatus(COMPANY_NAME)),
-      ConvertUTF16ToJavaString(env,
-                               profile.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS)),
-      static_cast<jint>(
-          profile.GetVerificationStatus(ADDRESS_HOME_STREET_ADDRESS)),
-      ConvertUTF16ToJavaString(env, profile.GetRawInfo(ADDRESS_HOME_STATE)),
-      static_cast<jint>(profile.GetVerificationStatus(ADDRESS_HOME_STATE)),
-      ConvertUTF16ToJavaString(env, profile.GetRawInfo(ADDRESS_HOME_CITY)),
-      static_cast<jint>(profile.GetVerificationStatus(ADDRESS_HOME_CITY)),
-      ConvertUTF16ToJavaString(
-          env, profile.GetRawInfo(ADDRESS_HOME_DEPENDENT_LOCALITY)),
-      static_cast<jint>(
-          profile.GetVerificationStatus(ADDRESS_HOME_DEPENDENT_LOCALITY)),
-      ConvertUTF16ToJavaString(env, profile.GetRawInfo(ADDRESS_HOME_ZIP)),
-      static_cast<jint>(profile.GetVerificationStatus(ADDRESS_HOME_ZIP)),
-      ConvertUTF16ToJavaString(env,
-                               profile.GetRawInfo(ADDRESS_HOME_SORTING_CODE)),
-      static_cast<jint>(
-          profile.GetVerificationStatus(ADDRESS_HOME_SORTING_CODE)),
-      ConvertUTF16ToJavaString(env, profile.GetRawInfo(ADDRESS_HOME_COUNTRY)),
-      static_cast<jint>(profile.GetVerificationStatus(ADDRESS_HOME_COUNTRY)),
-      ConvertUTF16ToJavaString(env,
-                               profile.GetRawInfo(PHONE_HOME_WHOLE_NUMBER)),
-      static_cast<jint>(profile.GetVerificationStatus(PHONE_HOME_WHOLE_NUMBER)),
-      ConvertUTF16ToJavaString(env, profile.GetRawInfo(EMAIL_ADDRESS)),
-      static_cast<jint>(profile.GetVerificationStatus(EMAIL_ADDRESS)),
-      ConvertUTF8ToJavaString(env, profile.language_code()));
-}
-
-// static
-AutofillProfile PersonalDataManagerAndroid::CreateNativeProfileFromJava(
-    const JavaParamRef<jobject>& jprofile,
-    JNIEnv* env) {
-  AutofillProfile profile(static_cast<AutofillProfile::Source>(
-      Java_AutofillProfile_getSource(env, jprofile)));
-
-  // Only set the guid if it is an existing profile (java guid not empty).
-  // Otherwise, keep the generated one.
-  std::string guid =
-      ConvertJavaStringToUTF8(Java_AutofillProfile_getGUID(env, jprofile));
-  if (!guid.empty())
-    profile.set_guid(guid);
-
-  MaybeSetInfoWithVerificationStatus(
-      &profile, NAME_FULL, Java_AutofillProfile_getFullName(env, jprofile),
-      Java_AutofillProfile_getFullNameStatus(env, jprofile));
-  MaybeSetRawInfoWithVerificationStatus(
-      &profile, NAME_HONORIFIC_PREFIX,
-      Java_AutofillProfile_getHonorificPrefix(env, jprofile),
-      Java_AutofillProfile_getHonorificPrefixStatus(env, jprofile));
-  MaybeSetRawInfoWithVerificationStatus(
-      &profile, COMPANY_NAME,
-      Java_AutofillProfile_getCompanyName(env, jprofile),
-      Java_AutofillProfile_getCompanyNameStatus(env, jprofile));
-  MaybeSetRawInfoWithVerificationStatus(
-      &profile, ADDRESS_HOME_STREET_ADDRESS,
-      Java_AutofillProfile_getStreetAddress(env, jprofile),
-      Java_AutofillProfile_getStreetAddressStatus(env, jprofile));
-  MaybeSetRawInfoWithVerificationStatus(
-      &profile, ADDRESS_HOME_STATE,
-      Java_AutofillProfile_getRegion(env, jprofile),
-      Java_AutofillProfile_getRegionStatus(env, jprofile));
-  MaybeSetRawInfoWithVerificationStatus(
-      &profile, ADDRESS_HOME_CITY,
-      Java_AutofillProfile_getLocality(env, jprofile),
-      Java_AutofillProfile_getLocalityStatus(env, jprofile));
-  MaybeSetRawInfoWithVerificationStatus(
-      &profile, ADDRESS_HOME_DEPENDENT_LOCALITY,
-      Java_AutofillProfile_getDependentLocality(env, jprofile),
-      Java_AutofillProfile_getDependentLocalityStatus(env, jprofile));
-  MaybeSetRawInfoWithVerificationStatus(
-      &profile, ADDRESS_HOME_ZIP,
-      Java_AutofillProfile_getPostalCode(env, jprofile),
-      Java_AutofillProfile_getPostalCodeStatus(env, jprofile));
-  MaybeSetRawInfoWithVerificationStatus(
-      &profile, ADDRESS_HOME_SORTING_CODE,
-      Java_AutofillProfile_getSortingCode(env, jprofile),
-      Java_AutofillProfile_getSortingCodeStatus(env, jprofile));
-  MaybeSetInfoWithVerificationStatus(
-      &profile, ADDRESS_HOME_COUNTRY,
-      Java_AutofillProfile_getCountryCode(env, jprofile),
-      Java_AutofillProfile_getCountryCodeStatus(env, jprofile));
-  MaybeSetRawInfoWithVerificationStatus(
-      &profile, PHONE_HOME_WHOLE_NUMBER,
-      Java_AutofillProfile_getPhoneNumber(env, jprofile),
-      Java_AutofillProfile_getPhoneNumberStatus(env, jprofile));
-  MaybeSetRawInfoWithVerificationStatus(
-      &profile, EMAIL_ADDRESS,
-      Java_AutofillProfile_getEmailAddress(env, jprofile),
-      Java_AutofillProfile_getEmailAddressStatus(env, jprofile));
-  profile.set_language_code(ConvertJavaStringToUTF8(
-      Java_AutofillProfile_getLanguageCode(env, jprofile)));
-  profile.FinalizeAfterImport();
-
-  return profile;
 }
 
 jboolean PersonalDataManagerAndroid::IsDataLoaded(
@@ -375,7 +237,7 @@ ScopedJavaLocalRef<jobject> PersonalDataManagerAndroid::GetProfileByGUID(
   if (!profile)
     return ScopedJavaLocalRef<jobject>();
 
-  return PersonalDataManagerAndroid::CreateJavaProfileFromNative(env, *profile);
+  return profile->CreateJavaObject(g_browser_process->GetApplicationLocale());
 }
 
 jboolean PersonalDataManagerAndroid::IsEligibleForAddressAccountStorage(
@@ -395,11 +257,12 @@ bool PersonalDataManagerAndroid::IsCountryEligibleForAccountStorage(
 ScopedJavaLocalRef<jstring> PersonalDataManagerAndroid::SetProfile(
     JNIEnv* env,
     const JavaParamRef<jobject>& unused_obj,
-    const JavaParamRef<jobject>& jprofile) {
-  std::string guid = ConvertJavaStringToUTF8(
-      env, Java_AutofillProfile_getGUID(env, jprofile).obj());
+    const JavaParamRef<jobject>& jprofile,
+    const JavaParamRef<jstring>& jguid) {
+  std::string guid = ConvertJavaStringToUTF8(env, jguid);
 
-  AutofillProfile profile = CreateNativeProfileFromJava(jprofile, env);
+  AutofillProfile profile = AutofillProfile::CreateFromJavaObject(
+      jprofile, g_browser_process->GetApplicationLocale());
 
   if (guid.empty()) {
     personal_data_manager_->AddProfile(profile);
@@ -414,12 +277,13 @@ ScopedJavaLocalRef<jstring> PersonalDataManagerAndroid::SetProfile(
 ScopedJavaLocalRef<jstring> PersonalDataManagerAndroid::SetProfileToLocal(
     JNIEnv* env,
     const JavaParamRef<jobject>& unused_obj,
-    const JavaParamRef<jobject>& jprofile) {
-  AutofillProfile profile = CreateNativeProfileFromJava(jprofile, env);
+    const JavaParamRef<jobject>& jprofile,
+    const JavaParamRef<jstring>& jguid) {
+  AutofillProfile profile = AutofillProfile::CreateFromJavaObject(
+      jprofile, g_browser_process->GetApplicationLocale());
 
-  AutofillProfile* target_profile =
-      personal_data_manager_->GetProfileByGUID(ConvertJavaStringToUTF8(
-          env, Java_AutofillProfile_getGUID(env, jprofile).obj()));
+  AutofillProfile* target_profile = personal_data_manager_->GetProfileByGUID(
+      ConvertJavaStringToUTF8(env, jguid));
 
   if (target_profile != nullptr &&
       target_profile->record_type() == AutofillProfile::LOCAL_PROFILE) {
@@ -487,7 +351,8 @@ PersonalDataManagerAndroid::GetBillingAddressLabelForPaymentRequest(
       ADDRESS_HOME_ZIP,   ADDRESS_HOME_SORTING_CODE,
   };
 
-  AutofillProfile profile = CreateNativeProfileFromJava(jprofile, env);
+  AutofillProfile profile = AutofillProfile::CreateFromJavaObject(
+      jprofile, g_browser_process->GetApplicationLocale());
 
   return ConvertUTF16ToJavaString(
       env, profile.ConstructInferredLabel(
@@ -585,7 +450,7 @@ void PersonalDataManagerAndroid::AddServerCreditCardForTest(
     const base::android::JavaParamRef<jobject>& jcard) {
   std::unique_ptr<CreditCard> card = std::make_unique<CreditCard>();
   PopulateNativeCreditCardFromJava(jcard, env, card.get());
-  card->set_record_type(CreditCard::MASKED_SERVER_CARD);
+  card->set_record_type(CreditCard::RecordType::kMaskedServerCard);
   personal_data_manager_->AddServerCreditCardForTest(std::move(card));
   personal_data_manager_->NotifyPersonalDataObserver();
 }
@@ -598,7 +463,7 @@ void PersonalDataManagerAndroid::AddServerCreditCardForTestWithAdditionalFields(
     jint jcard_issuer) {
   std::unique_ptr<CreditCard> card = std::make_unique<CreditCard>();
   PopulateNativeCreditCardFromJava(jcard, env, card.get());
-  card->set_record_type(CreditCard::MASKED_SERVER_CARD);
+  card->set_record_type(CreditCard::RecordType::kMaskedServerCard);
   card->SetNickname(ConvertJavaStringToUTF16(jnickname));
   card->set_card_issuer(static_cast<CreditCard::Issuer>(jcard_issuer));
   personal_data_manager_->AddServerCreditCardForTest(std::move(card));
@@ -644,13 +509,14 @@ void PersonalDataManagerAndroid::SetProfileUseStatsForTesting(
     const JavaParamRef<jobject>& unused_obj,
     const JavaParamRef<jstring>& jguid,
     jint count,
-    jint date) {
-  DCHECK(count >= 0 && date >= 0);
+    jint days_since_last_used) {
+  DCHECK(count >= 0 && days_since_last_used >= 0);
 
   AutofillProfile* profile = personal_data_manager_->GetProfileByGUID(
       ConvertJavaStringToUTF8(env, jguid));
   profile->set_use_count(static_cast<size_t>(count));
-  profile->set_use_date(base::Time::FromTimeT(date));
+  profile->set_use_date(AutofillClock::Now() -
+                        base::Days(days_since_last_used));
 
   personal_data_manager_->NotifyPersonalDataObserver();
 }
@@ -688,13 +554,13 @@ void PersonalDataManagerAndroid::SetCreditCardUseStatsForTesting(
     const JavaParamRef<jobject>& unused_obj,
     const JavaParamRef<jstring>& jguid,
     jint count,
-    jint date) {
-  DCHECK(count >= 0 && date >= 0);
+    jint days_since_last_used) {
+  DCHECK(count >= 0 && days_since_last_used >= 0);
 
   CreditCard* card = personal_data_manager_->GetCreditCardByGUID(
       ConvertJavaStringToUTF8(env, jguid));
   card->set_use_count(static_cast<size_t>(count));
-  card->set_use_date(base::Time::FromTimeT(date));
+  card->set_use_date(AutofillClock::Now() - base::Days(days_since_last_used));
 
   personal_data_manager_->NotifyPersonalDataObserver();
 }
@@ -722,6 +588,13 @@ jlong PersonalDataManagerAndroid::GetCurrentDateForTesting(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& unused_obj) {
   return base::Time::Now().ToTimeT();
+}
+
+jlong PersonalDataManagerAndroid::GetDateNDaysAgoForTesting(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& unused_obj,
+    jint days) {
+  return (AutofillClock::Now() - base::Days(days)).ToTimeT();
 }
 
 void PersonalDataManagerAndroid::ClearServerDataForTesting(
@@ -753,7 +626,8 @@ void PersonalDataManagerAndroid::StartAddressNormalization(
     const JavaParamRef<jobject>& jprofile,
     jint jtimeout_seconds,
     const JavaParamRef<jobject>& jdelegate) {
-  AutofillProfile profile = CreateNativeProfileFromJava(jprofile, env);
+  AutofillProfile profile = AutofillProfile::CreateFromJavaObject(
+      jprofile, g_browser_process->GetApplicationLocale());
 
   // Start the normalization.
   AddressNormalizer* normalizer = AddressNormalizerFactory::GetInstance();
@@ -774,10 +648,7 @@ jboolean PersonalDataManagerAndroid::HasCreditCards(JNIEnv* env) {
 jboolean PersonalDataManagerAndroid::IsFidoAuthenticationAvailable(
     JNIEnv* env) {
   // Don't show toggle switch if user is unable to downstream cards.
-  if (personal_data_manager_->GetSyncSigninState() !=
-          AutofillSyncSigninState::kSignedInAndWalletSyncTransportEnabled &&
-      personal_data_manager_->GetSyncSigninState() !=
-          AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled) {
+  if (!personal_data_manager_->IsPaymentsDownloadActive()) {
     return false;
   }
   // Show the toggle switch only if FIDO authentication is available.
@@ -839,24 +710,24 @@ ScopedJavaLocalRef<jobjectArray> PersonalDataManagerAndroid::GetProfileLabels(
     bool include_organization_in_label,
     bool include_country_in_label,
     std::vector<AutofillProfile*> profiles) {
-  std::unique_ptr<std::vector<ServerFieldType>> suggested_fields;
+  ServerFieldTypeSet suggested_fields;
   size_t minimal_fields_shown = 2;
   if (address_only) {
-    suggested_fields = std::make_unique<std::vector<ServerFieldType>>();
+    suggested_fields = ServerFieldTypeSet();
     if (include_name_in_label)
-      suggested_fields->push_back(NAME_FULL);
+      suggested_fields.insert(NAME_FULL);
     if (include_organization_in_label)
-      suggested_fields->push_back(COMPANY_NAME);
-    suggested_fields->push_back(ADDRESS_HOME_LINE1);
-    suggested_fields->push_back(ADDRESS_HOME_LINE2);
-    suggested_fields->push_back(ADDRESS_HOME_DEPENDENT_LOCALITY);
-    suggested_fields->push_back(ADDRESS_HOME_CITY);
-    suggested_fields->push_back(ADDRESS_HOME_STATE);
-    suggested_fields->push_back(ADDRESS_HOME_ZIP);
-    suggested_fields->push_back(ADDRESS_HOME_SORTING_CODE);
+      suggested_fields.insert(COMPANY_NAME);
+    suggested_fields.insert(ADDRESS_HOME_LINE1);
+    suggested_fields.insert(ADDRESS_HOME_LINE2);
+    suggested_fields.insert(ADDRESS_HOME_DEPENDENT_LOCALITY);
+    suggested_fields.insert(ADDRESS_HOME_CITY);
+    suggested_fields.insert(ADDRESS_HOME_STATE);
+    suggested_fields.insert(ADDRESS_HOME_ZIP);
+    suggested_fields.insert(ADDRESS_HOME_SORTING_CODE);
     if (include_country_in_label)
-      suggested_fields->push_back(ADDRESS_HOME_COUNTRY);
-    minimal_fields_shown = suggested_fields->size();
+      suggested_fields.insert(ADDRESS_HOME_COUNTRY);
+    minimal_fields_shown = suggested_fields.size();
   }
 
   ServerFieldType excluded_field =
@@ -864,7 +735,9 @@ ScopedJavaLocalRef<jobjectArray> PersonalDataManagerAndroid::GetProfileLabels(
 
   std::vector<std::u16string> labels;
   AutofillProfile::CreateInferredLabels(
-      profiles, suggested_fields.get(), excluded_field, minimal_fields_shown,
+      profiles,
+      address_only ? absl::make_optional(suggested_fields) : absl::nullopt,
+      excluded_field, minimal_fields_shown,
       g_browser_process->GetApplicationLocale(), &labels);
 
   return base::android::ToJavaArrayOfStrings(env, labels);
@@ -888,7 +761,8 @@ PersonalDataManagerAndroid::GetShippingAddressLabelForPaymentRequest(
   if (!include_country_in_label)
     --kLabelFields_size;
 
-  AutofillProfile profile = CreateNativeProfileFromJava(jprofile, env);
+  AutofillProfile profile = AutofillProfile::CreateFromJavaObject(
+      jprofile, g_browser_process->GetApplicationLocale());
 
   return ConvertUTF16ToJavaString(
       env, profile.ConstructInferredLabel(
@@ -910,19 +784,6 @@ static jboolean JNI_PersonalDataManager_IsAutofillProfileManaged(JNIEnv* env) {
 static jboolean JNI_PersonalDataManager_IsAutofillCreditCardManaged(
     JNIEnv* env) {
   return prefs::IsAutofillCreditCardManaged(GetPrefs());
-}
-
-// Returns whether the Payments integration feature is enabled.
-static jboolean JNI_PersonalDataManager_IsPaymentsIntegrationEnabled(
-    JNIEnv* env) {
-  return prefs::IsPaymentsIntegrationEnabled(GetPrefs());
-}
-
-// Enables or disables the Payments integration feature.
-static void JNI_PersonalDataManager_SetPaymentsIntegrationEnabled(
-    JNIEnv* env,
-    jboolean enable) {
-  prefs::SetPaymentsIntegrationEnabled(GetPrefs(), enable);
 }
 
 // Returns an ISO 3166-1-alpha-2 country code for a |jcountry_name| using

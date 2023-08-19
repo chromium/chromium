@@ -7,10 +7,6 @@
 #import "base/functional/bind.h"
 #import "testing/platform_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using SafeWebCompletionTest = PlatformTest;
 using completion_block_util::AlertCallback;
 using completion_block_util::ConfirmCallback;

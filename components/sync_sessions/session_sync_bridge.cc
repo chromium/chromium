@@ -25,6 +25,7 @@
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/session_specifics.pb.h"
+#include "components/sync_sessions/session_sync_prefs.h"
 #include "components/sync_sessions/sync_sessions_client.h"
 #include "components/sync_sessions/synced_window_delegate.h"
 #include "components/sync_sessions/synced_window_delegates_getter.h"
@@ -37,7 +38,7 @@ using syncer::MetadataChangeList;
 
 // Default time without activity after which a session is considered stale and
 // becomes a candidate for garbage collection.
-const base::TimeDelta kStaleSessionThreshold = base::Days(14);
+const base::TimeDelta kStaleSessionThreshold = base::Days(28);
 
 std::unique_ptr<syncer::EntityData> MoveToEntityData(
     const std::string& client_name,
@@ -124,6 +125,11 @@ OpenTabsUIDelegate* SessionSyncBridge::GetOpenTabsUIDelegate() {
   return syncing_->open_tabs_ui_delegate.get();
 }
 
+bool SessionSyncBridge::IsLocalDataOutOfSyncForTest() const {
+  return sessions_client_ &&
+         sessions_client_->GetSessionSyncPrefs()->GetLocalDataOutOfSync();
+}
+
 std::unique_ptr<MetadataChangeList>
 SessionSyncBridge::CreateMetadataChangeList() {
   return std::make_unique<syncer::InMemoryMetadataChangeList>();
@@ -179,6 +185,7 @@ SessionSyncBridge::ApplyIncrementalSyncChanges(
     syncer::EntityChangeList entity_changes) {
   DCHECK(change_processor()->IsTrackingMetadata());
   DCHECK(syncing_);
+  DCHECK(sessions_client_);
 
   // Merging sessions is simple: remote entities are expected to be foreign
   // sessions (identified by the session tag)  and hence must simply be
@@ -186,6 +193,7 @@ SessionSyncBridge::ApplyIncrementalSyncChanges(
   // information is ignored (local wins).
   std::unique_ptr<SessionStore::WriteBatch> batch =
       CreateSessionStoreWriteBatch();
+
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
     switch (change->type()) {
       case syncer::EntityChange::ACTION_DELETE:
@@ -197,7 +205,10 @@ SessionSyncBridge::ApplyIncrementalSyncChanges(
           // error or a clock is inaccurate). Just ignore the deletion for now.
           DLOG(WARNING) << "Local session data deleted. Ignoring until next "
                         << "local navigation event.";
-          syncing_->local_data_out_of_sync = true;
+          sessions_client_->GetSessionSyncPrefs()->SetLocalDataOutOfSync(true);
+          static_cast<syncer::InMemoryMetadataChangeList*>(
+              metadata_change_list.get())
+              ->DropMetadataChangeForStorageKey(change->storage_key());
         } else {
           // Deleting an entity (if it's a header entity) may cascade other
           // deletions, so let's assume that whoever initiated remote deletions
@@ -220,7 +231,7 @@ SessionSyncBridge::ApplyIncrementalSyncChanges(
           // info if encryption was turned on. In that case, the data is still
           // the same, so we can ignore.
           DLOG(WARNING) << "Dropping modification to local session.";
-          syncing_->local_data_out_of_sync = true;
+          sessions_client_->GetSessionSyncPrefs()->SetLocalDataOutOfSync(true);
           continue;
         }
 
@@ -314,9 +325,9 @@ SessionSyncBridge::CreateLocalSessionWriteBatch() {
   // If a remote client mangled with our local session (typically deleted
   // entities due to garbage collection), we resubmit all local entities at this
   // point (i.e. local changes observed).
-  if (syncing_->local_data_out_of_sync) {
-    syncing_->local_data_out_of_sync = false;
-    // We use PostTask() to avoid interferring with the ongoing handling of
+  if (sessions_client_->GetSessionSyncPrefs()->GetLocalDataOutOfSync()) {
+    sessions_client_->GetSessionSyncPrefs()->SetLocalDataOutOfSync(false);
+    // We use PostTask() to avoid interfering with the ongoing handling of
     // local changes that triggered this function.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&SessionSyncBridge::ResubmitLocalSession,

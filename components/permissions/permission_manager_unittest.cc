@@ -16,7 +16,6 @@
 #include "components/permissions/features.h"
 #include "components/permissions/permission_context_base.h"
 #include "components/permissions/permission_request_manager.h"
-#include "components/permissions/permission_result.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/permissions/test/permission_test_util.h"
@@ -37,7 +36,6 @@
 
 using blink::PermissionType;
 using blink::mojom::PermissionsPolicyFeature;
-using blink::mojom::PermissionStatus;
 
 namespace permissions {
 namespace {
@@ -98,7 +96,8 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
   void CheckPermissionStatus(PermissionType type, PermissionStatus expected) {
     EXPECT_EQ(expected, GetPermissionManager()
                             ->GetPermissionResultForOriginWithoutContext(
-                                type, url::Origin::Create(url_))
+                                type, url::Origin::Create(url_),
+                                url::Origin::Create(url_))
                             .status);
   }
 
@@ -108,7 +107,7 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
       content::PermissionStatusSource expected_status_source) {
     content::PermissionResult result =
         GetPermissionManager()->GetPermissionResultForOriginWithoutContext(
-            type, url::Origin::Create(url_));
+            type, url::Origin::Create(url_), url::Origin::Create(url_));
     EXPECT_EQ(expected_status, result.status);
     EXPECT_EQ(expected_status_source, result.source);
   }
@@ -140,9 +139,8 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
     GetPermissionManager()->RequestPermissionsFromCurrentDocument(
         std::vector(1, type), rfh, true,
         base::BindOnce(
-            [](base::OnceCallback<void(blink::mojom::PermissionStatus)>
-                   callback,
-               const std::vector<blink::mojom::PermissionStatus>& state) {
+            [](base::OnceCallback<void(PermissionStatus)> callback,
+               const std::vector<PermissionStatus>& state) {
               DCHECK_EQ(state.size(), 1U);
               std::move(callback).Run(state[0]);
             },
@@ -157,9 +155,8 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
     GetPermissionManager()->RequestPermissionsFromCurrentDocument(
         std::vector(1, type), rfh, true,
         base::BindOnce(
-            [](base::OnceCallback<void(blink::mojom::PermissionStatus)>
-                   callback,
-               const std::vector<blink::mojom::PermissionStatus>& state) {
+            [](base::OnceCallback<void(PermissionStatus)> callback,
+               const std::vector<PermissionStatus>& state) {
               DCHECK_EQ(state.size(), 1U);
               std::move(callback).Run(state[0]);
             },
@@ -253,7 +250,7 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
     std::vector<blink::OriginWithPossibleWildcards> parsed_origins;
     for (const std::string& origin : origins)
       parsed_origins.emplace_back(
-          blink::OriginWithPossibleWildcards::FromOrigin(
+          *blink::OriginWithPossibleWildcards::FromOrigin(
               url::Origin::Create(GURL(origin))));
     navigation->SetPermissionsPolicyHeader(
         {{feature, parsed_origins, /*self_if_matches=*/absl::nullopt,
@@ -271,8 +268,8 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
     if (feature != PermissionsPolicyFeature::kNotFound) {
       frame_policy.emplace_back(
           feature,
-          std::vector({blink::OriginWithPossibleWildcards::FromOrigin(
-              url::Origin::Create(origin))}),
+          std::vector{*blink::OriginWithPossibleWildcards::FromOrigin(
+              url::Origin::Create(origin))},
           /*self_if_matches=*/absl::nullopt,
           /*matches_all_origins=*/false,
           /*matches_opaque_src=*/false);

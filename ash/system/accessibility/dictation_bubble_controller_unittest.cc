@@ -55,6 +55,11 @@ class DictationBubbleControllerTest : public AshTestBase {
     return GetController()->dictation_bubble_view_;
   }
 
+  DictationHintView* GetHintView() {
+    DictationBubbleView* view = GetView();
+    return view->hint_view_;
+  }
+
   bool IsBubbleVisible() { return GetController()->widget_->IsVisible(); }
 
   std::u16string GetBubbleText() { return GetView()->GetTextForTesting(); }
@@ -221,6 +226,16 @@ TEST_F(DictationBubbleControllerTest, HideBeforeShow) {
        absl::optional<std::vector<DictationBubbleHintType>>());
   EXPECT_TRUE(GetView());
   EXPECT_TRUE(IsBubbleVisible());
+
+  HideAndCheckExpectations();
+}
+
+TEST_F(DictationBubbleControllerTest, DictationHintViewClassHasTheRightName) {
+  EXPECT_FALSE(GetView());
+  Show(DictationBubbleIconType::kStandby, absl::optional<std::u16string>(),
+       absl::optional<std::vector<DictationBubbleHintType>>());
+  EXPECT_TRUE(GetView());
+  EXPECT_STREQ(GetHintView()->GetClassName(), "DictationHintView");
 
   HideAndCheckExpectations();
 }

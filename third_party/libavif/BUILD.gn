@@ -4,9 +4,17 @@
 
 import("//media/media_options.gni")
 
-source_set("libavif") {
+config("avif_config") {
+  if (is_component_build) {
+    defines = [ "AVIF_DLL" ]
+  }
+}
+
+component("libavif") {
+  public = [ "src/include/avif/avif.h" ]
+  public_configs = [ ":avif_config" ]
+
   sources = [
-    "src/include/avif/avif.h",
     "src/include/avif/internal.h",
     "src/src/alpha.c",
     "src/src/avif.c",
@@ -25,10 +33,19 @@ source_set("libavif") {
     "src/src/utils.c",
   ]
 
-  # configs -= [ "//build/config/compiler:chromium_code" ]
-  # configs += [ "//build/config/compiler:no_chromium_code" ]
+  # CFI builds fail when C code tries to access, via a function pointer, a C++
+  # function that contains a "struct YuvConstants *" parameter. The reason for
+  # this is that libyuv adds a namespace definition when compiled with a C++
+  # compiler and thus CFI sees a mismatch: "struct YuvConstants *" vs "struct
+  # libyuv::YuvConstants *". To work around this problem, we add
+  # "-fsanitize-cfi-icall-generalize-pointers" to libavif build. The only
+  # libavif source file with this issue is reformat_libyuv.c.
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
   include_dirs = [ "src/include/" ]
   defines = [ "AVIF_LIBYUV_ENABLED" ]
+  if (is_component_build) {
+    defines += [ "AVIF_BUILDING_SHARED_LIBS" ]
+  }
 
   deps = [ "//third_party/libyuv" ]
 

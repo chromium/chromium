@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/autofill/autofill_country_selection_table_view_controller.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
@@ -17,10 +17,6 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -161,14 +157,14 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
     return;
   }
 
-  CountryItem* item = base::mac::ObjCCastStrict<CountryItem>(
+  CountryItem* item = base::apple::ObjCCastStrict<CountryItem>(
       [self.tableViewModel itemAtIndexPath:indexPath]);
   [self.delegate didSelectCountry:item];
 }
 
 - (void)tableView:(UITableView*)tableView
     performPrimaryActionForRowAtIndexPath:(NSIndexPath*)indexPath {
-  CountryItem* item = base::mac::ObjCCastStrict<CountryItem>(
+  CountryItem* item = base::apple::ObjCCastStrict<CountryItem>(
       [self.tableViewModel itemAtIndexPath:indexPath]);
   [self.delegate didSelectCountry:item];
 }

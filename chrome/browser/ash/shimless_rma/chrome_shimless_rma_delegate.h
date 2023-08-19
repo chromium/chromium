@@ -37,6 +37,10 @@ class ChromeShimlessRmaDelegate : public ShimlessRmaDelegate {
   void GenerateQrCode(const std::string& url,
                       base::OnceCallback<void(const std::string& qr_code_image)>
                           callback) override;
+  void PrepareDiagnosticsAppBrowserContext(
+      const base::FilePath& crx_path,
+      const base::FilePath& swbn_path,
+      PrepareDiagnosticsAppBrowserContextCallback callback) override;
 
   void SetQRCodeServiceForTesting(
       base::RepeatingCallback<

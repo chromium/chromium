@@ -4,7 +4,6 @@
 
 #include "ash/app_list/views/search_box_view.h"
 
-#include <cctype>
 #include <map>
 #include <memory>
 #include <string>
@@ -28,6 +27,7 @@
 #include "ash/search_box/search_box_constants.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_mixer.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/test/ash_test_base.h"
@@ -38,9 +38,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/vector_icons/vector_icons.h"
+#include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -107,7 +110,7 @@ class KeyPressCounterView : public ContentsView {
  private:
   // Overridden from views::View:
   bool OnKeyPressed(const ui::KeyEvent& key_event) override {
-    if (!::isalnum(static_cast<int>(key_event.key_code()))) {
+    if (!absl::ascii_isalnum(key_event.key_code())) {
       ++count_;
       return true;
     }
@@ -119,7 +122,9 @@ class KeyPressCounterView : public ContentsView {
 class SearchBoxViewTest : public views::test::WidgetTest,
                           public SearchBoxViewDelegate {
  public:
-  SearchBoxViewTest() = default;
+  SearchBoxViewTest() {
+    scoped_feature_list_.InitAndEnableFeature(chromeos::features::kJelly);
+  }
 
   SearchBoxViewTest(const SearchBoxViewTest&) = delete;
   SearchBoxViewTest& operator=(const SearchBoxViewTest&) = delete;
@@ -179,8 +184,8 @@ class SearchBoxViewTest : public views::test::WidgetTest,
                        is_shift_down ? ui::EF_SHIFT_DOWN : ui::EF_NONE);
     view()->search_box()->OnKeyEvent(&event);
     // Emulates the input method.
-    if (::isalnum(static_cast<int>(key_code))) {
-      char16_t character = ::tolower(static_cast<int>(key_code));
+    if (absl::ascii_isalnum(key_code)) {
+      char16_t character = absl::ascii_tolower(key_code);
       view()->search_box()->InsertText(
           std::u16string(1, character),
           ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
@@ -248,12 +253,14 @@ class SearchBoxViewTest : public views::test::WidgetTest,
   void OnSearchBoxKeyEvent(ui::KeyEvent* event) override {}
   bool CanSelectSearchResults() override { return true; }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   AshColorProvider ash_color_provider_;
-  raw_ptr<AppListSearchView, ExperimentalAsh> search_view_ = nullptr;
+  raw_ptr<AppListSearchView, DanglingUntriaged | ExperimentalAsh> search_view_ =
+      nullptr;
   AppListTestViewDelegate view_delegate_;
-  raw_ptr<views::Widget, ExperimentalAsh> widget_ = nullptr;
+  raw_ptr<views::Widget, DanglingUntriaged | ExperimentalAsh> widget_ = nullptr;
   raw_ptr<AppListView, ExperimentalAsh> app_list_view_ = nullptr;
-  raw_ptr<SearchBoxView, ExperimentalAsh> view_ =
+  raw_ptr<SearchBoxView, DanglingUntriaged | ExperimentalAsh> view_ =
       nullptr;  // Owned by views hierarchy.
   raw_ptr<KeyPressCounterView, ExperimentalAsh> counter_view_ =
       nullptr;  // Owned by views hierarchy.
@@ -263,7 +270,8 @@ class SearchBoxViewTest : public views::test::WidgetTest,
 TEST_F(SearchBoxViewTest, SearchBoxTextUsesAppListSearchBoxTextColor) {
   // With darklight mode enabled by default, search box text color should be the
   // same with and without productivity launcher enabled.
-  EXPECT_EQ(view()->search_box()->GetTextColor(), gfx::kGoogleGrey900);
+  EXPECT_EQ(view()->search_box()->GetTextColor(),
+            view()->GetColorProvider()->GetColor(kColorAshTextColorPrimary));
 }
 
 // Tests that the close button is invisible by default.
@@ -299,7 +307,8 @@ TEST_F(SearchBoxViewTest, SearchBoxInactiveSearchBoxGoogle) {
   SetSearchEngineIsGoogle(true);
   SetSearchBoxActive(false, ui::ET_UNKNOWN);
   const gfx::ImageSkia expected_icon = gfx::CreateVectorIcon(
-      kGoogleBlackIcon, view()->GetSearchBoxIconSize(), gfx::kGoogleGrey900);
+      kGoogleBlackIcon, view()->GetSearchBoxIconSize(),
+      view()->GetColorProvider()->GetColor(kColorAshButtonIconColor));
 
   const gfx::ImageSkia actual_icon = view()->search_icon()->GetImage();
 
@@ -313,7 +322,7 @@ TEST_F(SearchBoxViewTest, SearchBoxActiveSearchEngineGoogle) {
   SetSearchBoxActive(true, ui::ET_MOUSE_PRESSED);
   const gfx::ImageSkia expected_icon = gfx::CreateVectorIcon(
       vector_icons::kGoogleColorIcon, view()->GetSearchBoxIconSize(),
-      gfx::kGoogleGrey900);
+      view()->GetColorProvider()->GetColor(kColorAshButtonIconColor));
 
   const gfx::ImageSkia actual_icon = view()->search_icon()->GetImage();
 
@@ -327,7 +336,7 @@ TEST_F(SearchBoxViewTest, SearchBoxInactiveSearchEngineNotGoogle) {
   SetSearchBoxActive(false, ui::ET_UNKNOWN);
   const gfx::ImageSkia expected_icon = gfx::CreateVectorIcon(
       kSearchEngineNotGoogleIcon, view()->GetSearchBoxIconSize(),
-      gfx::kGoogleGrey900);
+      view()->GetColorProvider()->GetColor(kColorAshButtonIconColor));
 
   const gfx::ImageSkia actual_icon = view()->search_icon()->GetImage();
 
@@ -341,7 +350,7 @@ TEST_F(SearchBoxViewTest, SearchBoxActiveSearchEngineNotGoogle) {
   SetSearchBoxActive(true, ui::ET_UNKNOWN);
   const gfx::ImageSkia expected_icon = gfx::CreateVectorIcon(
       kSearchEngineNotGoogleIcon, view()->GetSearchBoxIconSize(),
-      gfx::kGoogleGrey900);
+      view()->GetColorProvider()->GetColor(kColorAshButtonIconColor));
 
   const gfx::ImageSkia actual_icon = view()->search_icon()->GetImage();
 
@@ -663,9 +672,17 @@ class SearchBoxViewAutocompleteTest : public SearchBoxViewTest,
                                       public testing::WithParamInterface<bool> {
  public:
   SearchBoxViewAutocompleteTest() {
-    scoped_features_.InitWithFeatureState(
-        features::kAutocompleteExtendedSuggestions,
-        IsExtendedAutocompleteEnabled());
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitWithFeatureStates({
+        {
+            features::kAutocompleteExtendedSuggestions,
+            IsExtendedAutocompleteEnabled(),
+        },
+        {
+            chromeos::features::kJelly,
+            true,
+        },
+    });
   }
   SearchBoxViewAutocompleteTest(const SearchBoxViewAutocompleteTest&) = delete;
   SearchBoxViewAutocompleteTest& operator=(
@@ -691,9 +708,6 @@ class SearchBoxViewAutocompleteTest : public SearchBoxViewTest,
     base::RunLoop().RunUntilIdle();
     ProcessAutocomplete();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_features_;
 };
 
 // Instantiate the values in the parameterized tests. The boolean

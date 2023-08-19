@@ -11,7 +11,6 @@ import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -59,12 +58,11 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures({ChromeFeatureList.MESSAGES_FOR_ANDROID_PERMISSION_UPDATE})
+@EnableFeatures(ChromeFeatureList.MESSAGES_FOR_ANDROID_PERMISSION_UPDATE)
 public class PermissionUpdateMessageTest {
     private static final String GEOLOCATION_PAGE =
             "/chrome/test/data/geolocation/geolocation_on_load.html";
     private static final String MEDIASTREAM_PAGE = "/content/test/data/media/getusermedia.html";
-    private static final String DOWNLOAD_PAGE = "/chrome/test/data/android/download/get.html";
     private EmbeddedTestServer mTestServer;
 
     @Rule
@@ -121,11 +119,6 @@ public class PermissionUpdateMessageTest {
         mActivityTestRule.startMainActivityOnBlankPage();
         mTestServer = EmbeddedTestServer.createAndStartServer(
                 ApplicationProvider.getApplicationContext());
-    }
-
-    @After
-    public void tearDown() {
-        mTestServer.stopAndDestroyServer();
     }
 
     /**

@@ -456,8 +456,7 @@ void DownloadDatabase::QueryDownloads(std::vector<DownloadRow>* results) {
           "danger_type, interrupt_reason, hash, end_time, opened, "
           "last_access_time, transient, referrer, site_url, "
           "embedder_download_data, tab_url, tab_referrer_url, http_method, "
-          "by_ext_id, by_ext_name, by_web_app_id, etag, last_modified FROM %s "
-          "ORDER BY start_time",
+          "by_ext_id, by_ext_name, by_web_app_id, etag, last_modified FROM %s ",
           kDownloadsTable)
           .c_str()));
 

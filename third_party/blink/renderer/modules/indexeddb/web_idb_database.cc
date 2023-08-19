@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_request.h"
 #include "third_party/blink/renderer/modules/indexeddb/indexed_db_blink_mojom_traits.h"
 #include "third_party/blink/renderer/modules/indexeddb/indexed_db_dispatcher.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -73,66 +74,21 @@ void WebIDBDatabase::Get(
                  std::move(result_callback));
 }
 
-void WebIDBDatabase::BatchGetAll(
-    int64_t transaction_id,
-    int64_t object_store_id,
-    int64_t index_id,
-    Vector<mojom::blink::IDBKeyRangePtr> key_range_ptrs,
-    uint32_t max_count,
-    WebIDBCallbacks* callbacks_ptr) {
-  std::unique_ptr<WebIDBCallbacks> callbacks(callbacks_ptr);
-  IndexedDBDispatcher::ResetCursorPrefetchCaches(transaction_id, nullptr);
-
-  callbacks->SetState(nullptr, transaction_id);
-  database_->BatchGetAll(
-      transaction_id, object_store_id, index_id, std::move(key_range_ptrs),
-      max_count,
-      WTF::BindOnce(&WebIDBDatabase::BatchGetAllCallback, WTF::Unretained(this),
-                    std::move(callbacks)));
-}
-
-void WebIDBDatabase::BatchGetAllCallback(
-    std::unique_ptr<WebIDBCallbacks> callbacks,
-    mojom::blink::IDBDatabaseBatchGetAllResultPtr result) {
-  if (result->is_error_result()) {
-    callbacks->Error(result->get_error_result()->error_code,
-                     std::move(result->get_error_result()->error_message));
-    callbacks.reset();
-    return;
-  }
-
-  if (result->is_values()) {
-    callbacks->SuccessArrayArray(std::move(result->get_values()));
-    callbacks.reset();
-    return;
-  }
-}
-
 void WebIDBDatabase::GetAll(int64_t transaction_id,
                             int64_t object_store_id,
                             int64_t index_id,
                             const IDBKeyRange* key_range,
                             int64_t max_count,
                             bool key_only,
-                            WebIDBCallbacks* callbacks_ptr) {
-  std::unique_ptr<WebIDBCallbacks> callbacks(callbacks_ptr);
+                            IDBRequest* request) {
   IndexedDBDispatcher::ResetCursorPrefetchCaches(transaction_id, nullptr);
 
   mojom::blink::IDBKeyRangePtr key_range_ptr =
       mojom::blink::IDBKeyRange::From(key_range);
-  callbacks->SetState(nullptr, transaction_id);
-  database_->GetAll(
-      transaction_id, object_store_id, index_id, std::move(key_range_ptr),
-      key_only, max_count,
-      WTF::BindOnce(&WebIDBDatabase::GetAllCallback, WTF::Unretained(this),
-                    std::move(callbacks), key_only));
-}
-
-void WebIDBDatabase::GetAllCallback(
-    std::unique_ptr<WebIDBCallbacks> callbacks,
-    bool key_only,
-    mojo::PendingReceiver<mojom::blink::IDBDatabaseGetAllResultSink> receiver) {
-  callbacks->ReceiveGetAllResults(key_only, std::move(receiver));
+  database_->GetAll(transaction_id, object_store_id, index_id,
+                    std::move(key_range_ptr), key_only, max_count,
+                    WTF::BindOnce(&IDBRequest::OnGetAll,
+                                  WrapWeakPersistent(request), key_only));
 }
 
 void WebIDBDatabase::SetIndexKeys(int64_t transaction_id,
@@ -165,22 +121,19 @@ void WebIDBDatabase::OpenCursor(int64_t object_store_id,
   database_->OpenCursor(
       request->transaction()->Id(), object_store_id, index_id,
       std::move(key_range_ptr), direction, key_only, task_type,
-      WTF::BindOnce(&IDBRequest::OnOpenCursor, WrapPersistent(request)));
+      WTF::BindOnce(&IDBRequest::OnOpenCursor, WrapWeakPersistent(request)));
 }
 
 void WebIDBDatabase::Count(int64_t transaction_id,
                            int64_t object_store_id,
                            int64_t index_id,
                            const IDBKeyRange* key_range,
-                           WebIDBCallbacks* callbacks) {
+                           mojom::blink::IDBDatabase::CountCallback callback) {
   IndexedDBDispatcher::ResetCursorPrefetchCaches(transaction_id, nullptr);
 
-  mojom::blink::IDBKeyRangePtr key_range_ptr =
-      mojom::blink::IDBKeyRange::From(key_range);
-  callbacks->SetState(nullptr, transaction_id);
   database_->Count(transaction_id, object_store_id, index_id,
-                   std::move(key_range_ptr),
-                   GetCallbacksProxy(base::WrapUnique(callbacks)));
+                   mojom::blink::IDBKeyRange::From(key_range),
+                   std::move(callback));
 }
 
 void WebIDBDatabase::Delete(int64_t transaction_id,
@@ -208,13 +161,12 @@ void WebIDBDatabase::DeleteRange(
                          std::move(key_range_ptr), std::move(success_callback));
 }
 
-void WebIDBDatabase::GetKeyGeneratorCurrentNumber(int64_t transaction_id,
-                                                  int64_t object_store_id,
-                                                  WebIDBCallbacks* callbacks) {
-  callbacks->SetState(nullptr, transaction_id);
-  database_->GetKeyGeneratorCurrentNumber(
-      transaction_id, object_store_id,
-      GetCallbacksProxy(base::WrapUnique(callbacks)));
+void WebIDBDatabase::GetKeyGeneratorCurrentNumber(
+    int64_t transaction_id,
+    int64_t object_store_id,
+    mojom::blink::IDBDatabase::GetKeyGeneratorCurrentNumberCallback callback) {
+  database_->GetKeyGeneratorCurrentNumber(transaction_id, object_store_id,
+                                          std::move(callback));
 }
 
 void WebIDBDatabase::Clear(
@@ -257,16 +209,6 @@ void WebIDBDatabase::Abort(int64_t transaction_id) {
 
 void WebIDBDatabase::DidBecomeInactive() {
   database_->DidBecomeInactive();
-}
-
-mojo::PendingAssociatedRemote<mojom::blink::IDBCallbacks>
-WebIDBDatabase::GetCallbacksProxy(
-    std::unique_ptr<WebIDBCallbacks> callbacks_impl) {
-  mojo::PendingAssociatedRemote<mojom::blink::IDBCallbacks> pending_callbacks;
-  mojo::MakeSelfOwnedAssociatedReceiver(
-      std::move(callbacks_impl),
-      pending_callbacks.InitWithNewEndpointAndPassReceiver(), task_runner_);
-  return pending_callbacks;
 }
 
 }  // namespace blink

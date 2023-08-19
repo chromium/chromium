@@ -283,13 +283,14 @@ MediaFileSystemBackend::GetCopyOrMoveFileValidatorFactory(
 
 std::unique_ptr<storage::FileSystemOperation>
 MediaFileSystemBackend::CreateFileSystemOperation(
+    storage::OperationType type,
     const FileSystemURL& url,
     FileSystemContext* context,
     base::File::Error* error_code) const {
   std::unique_ptr<storage::FileSystemOperationContext> operation_context(
       std::make_unique<storage::FileSystemOperationContext>(
           context, MediaTaskRunner().get()));
-  return storage::FileSystemOperation::Create(url, context,
+  return storage::FileSystemOperation::Create(type, url, context,
                                               std::move(operation_context));
 }
 

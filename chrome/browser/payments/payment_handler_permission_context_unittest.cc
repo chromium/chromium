@@ -28,6 +28,8 @@
 
 namespace {
 
+using PermissionStatus = blink::mojom::PermissionStatus;
+
 class TestPermissionContext : public payments::PaymentHandlerPermissionContext {
  public:
   explicit TestPermissionContext(Profile* profile)
@@ -124,21 +126,21 @@ TEST_F(PaymentHandlerPermissionContextTests, TestInsecureQueryingUrl) {
                                     secure_url.DeprecatedGetOriginAsURL(),
                                     ContentSettingsType::PAYMENT_HANDLER));
 
-  EXPECT_EQ(CONTENT_SETTING_BLOCK,
+  EXPECT_EQ(PermissionStatus::DENIED,
             permission_context
                 .GetPermissionStatus(nullptr /* render_frame_host */,
                                      insecure_url, insecure_url)
-                .content_setting);
+                .status);
 
-  EXPECT_EQ(CONTENT_SETTING_BLOCK,
+  EXPECT_EQ(PermissionStatus::DENIED,
             permission_context
                 .GetPermissionStatus(nullptr /* render_frame_host */,
                                      secure_url, insecure_url)
-                .content_setting);
+                .status);
 
-  EXPECT_EQ(CONTENT_SETTING_BLOCK,
+  EXPECT_EQ(PermissionStatus::DENIED,
             permission_context
                 .GetPermissionStatus(nullptr /* render_frame_host */,
                                      insecure_url, secure_url)
-                .content_setting);
+                .status);
 }

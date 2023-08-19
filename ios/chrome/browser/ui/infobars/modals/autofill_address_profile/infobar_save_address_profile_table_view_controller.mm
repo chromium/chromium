@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/infobars/modals/autofill_address_profile/infobar_save_address_profile_table_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
-#import "base/mac/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
@@ -28,10 +28,6 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -88,8 +84,8 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
 @property(nonatomic, copy) NSDictionary* profileDataDiff;
 // Description of the update modal.
 @property(nonatomic, copy) NSString* updateModalDescription;
-// Stores the user email for the currently syncing account.
-@property(nonatomic, copy) NSString* syncingUserEmail;
+// Stores the user email for the currently signed-in account.
+@property(nonatomic, copy) NSString* userEmail;
 // If YES, denotes that the profile will be added to the Google Account.
 @property(nonatomic, assign) BOOL isMigrationToAccount;
 // IF YES, for update prompt, the profile belongs to the Google Account.
@@ -213,7 +209,7 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
 
   if (itemType == ItemTypeAddressProfileSaveUpdateButton) {
     TableViewTextButtonCell* tableViewTextButtonCell =
-        base::mac::ObjCCastStrict<TableViewTextButtonCell>(cell);
+        base::apple::ObjCCastStrict<TableViewTextButtonCell>(cell);
     [tableViewTextButtonCell.button
                addTarget:self
                   action:@selector(saveAddressProfileButtonWasPressed:)
@@ -223,7 +219,7 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
         UIEdgeInsetsMake(0, 0, 0, self.tableView.bounds.size.width);
   } else if (itemType == ItemTypeAddressProfileNoThanksButton) {
     TableViewTextButtonCell* tableViewTextButtonCell =
-        base::mac::ObjCCastStrict<TableViewTextButtonCell>(cell);
+        base::apple::ObjCCastStrict<TableViewTextButtonCell>(cell);
     [tableViewTextButtonCell.button
                addTarget:self
                   action:@selector(noThanksButtonWasPressed:)
@@ -250,7 +246,7 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
   self.profileDataDiff = prefs[kProfileDataDiffKey];
   self.updateModalDescription = prefs[kUpdateModalDescriptionKey];
   self.isMigrationToAccount = [prefs[kIsMigrationToAccountKey] boolValue];
-  self.syncingUserEmail = prefs[kSyncingUserEmailKey];
+  self.userEmail = prefs[kUserEmailKey];
   self.profileAnAccountProfile =
       [prefs[kIsProfileAnAccountProfileKey] boolValue];
   self.profileDescriptionForMigrationPrompt =
@@ -341,7 +337,6 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
   }
 
   if (self.profileAnAccountProfile) {
-    DCHECK([self.syncingUserEmail length] > 0);
     [model addItem:[self updateFooterItem]
         toSectionWithIdentifier:SectionIdentifierFields];
   }
@@ -375,7 +370,6 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
   }
 
   if (self.isMigrationToAccount || self.profileAnAccountProfile) {
-    DCHECK([self.syncingUserEmail length] > 0);
     [model addItem:[self saveFooterItem]
         toSectionWithIdentifier:SectionIdentifierFields];
   }
@@ -575,8 +569,9 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
   int footerTextId = self.currentAddressProfileSaved
                          ? IDS_IOS_SETTINGS_AUTOFILL_ACCOUNT_ADDRESS_FOOTER_TEXT
                          : IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_FOOTER;
-  item.text = l10n_util::GetNSStringF(
-      footerTextId, base::SysNSStringToUTF16(self.syncingUserEmail));
+  CHECK([self.userEmail length] > 0);
+  item.text = l10n_util::GetNSStringF(footerTextId,
+                                      base::SysNSStringToUTF16(self.userEmail));
   item.textFont = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   item.textColor = [UIColor colorNamed:kTextSecondaryColor];
   return item;
@@ -585,9 +580,10 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
 - (TableViewTextItem*)updateFooterItem {
   TableViewTextItem* item =
       [[TableViewTextItem alloc] initWithType:ItemTypeFooter];
+  CHECK([self.userEmail length] > 0);
   item.text = l10n_util::GetNSStringF(
       IDS_IOS_SETTINGS_AUTOFILL_ACCOUNT_ADDRESS_FOOTER_TEXT,
-      base::SysNSStringToUTF16(self.syncingUserEmail));
+      base::SysNSStringToUTF16(self.userEmail));
   item.textFont = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   item.textColor = [UIColor colorNamed:kTextSecondaryColor];
   return item;
@@ -599,8 +595,9 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
   int footerTextId = self.currentAddressProfileSaved
                          ? IDS_IOS_SETTINGS_AUTOFILL_ACCOUNT_ADDRESS_FOOTER_TEXT
                          : IDS_IOS_AUTOFILL_ADDRESS_MIGRATE_IN_ACCOUNT_FOOTER;
-  item.text = l10n_util::GetNSStringF(
-      footerTextId, base::SysNSStringToUTF16(self.syncingUserEmail));
+  CHECK([self.userEmail length] > 0);
+  item.text = l10n_util::GetNSStringF(footerTextId,
+                                      base::SysNSStringToUTF16(self.userEmail));
   item.textFont = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   item.textColor = [UIColor colorNamed:kTextSecondaryColor];
   return item;

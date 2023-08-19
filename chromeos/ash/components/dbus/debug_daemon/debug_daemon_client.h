@@ -338,29 +338,6 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
   virtual void GetU2fFlags(
       chromeos::DBusMethodCallback<std::set<std::string>> callback) = 0;
 
-  // Set Swap Parameter
-  virtual void SetSwapParameter(
-      const std::string& parameter,
-      int32_t value,
-      chromeos::DBusMethodCallback<std::string> callback) = 0;
-
-  // Zram Writeback Dbus Messages
-  virtual void SwapZramEnableWriteback(
-      uint32_t size_mb,
-      chromeos::DBusMethodCallback<std::string> callback) = 0;
-
-  virtual void SwapZramSetWritebackLimit(
-      uint32_t limit_pages,
-      chromeos::DBusMethodCallback<std::string> callback) = 0;
-
-  virtual void SwapZramMarkIdle(
-      uint32_t age_seconds,
-      chromeos::DBusMethodCallback<std::string> callback) = 0;
-
-  virtual void InitiateSwapZramWriteback(
-      debugd::ZramWritebackMode mode,
-      chromeos::DBusMethodCallback<std::string> callback) = 0;
-
   // Stops the packet capture process identified with |handle|. |handle| is a
   // unique process identifier that is returned from debugd's PacketCaptureStart
   // D-Bus method when the packet capture process is started. Stops all on-going

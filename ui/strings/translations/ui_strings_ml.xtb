@@ -105,7 +105,6 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{ഒരു മാസം മുമ്പ്}other{# മാസം മുമ്പ്}}</translation>
 <translation id="4289300219472526559">സംഭാഷണം ആരംഭിക്കുക</translation>
 <translation id="4289540628985791613">അവലോകനം</translation>
-<translation id="4306392492252714209">ക്ലിപ്പ്ബോർഡിൽ നിന്ന് നീക്കം ചെയ്യുക.</translation>
 <translation id="4491109536499578614">ചിത്രം</translation>
 <translation id="4565377596337484307">പാസ്‌വേഡ് മറയ്ക്കുക</translation>
 <translation id="4588090240171750605">വലത്തോട്ട് സ്ക്രോള്‍ ചെയ്യുക</translation>
@@ -148,6 +147,7 @@
 <translation id="6142413573757616983"><ph name="QUANTITY" /> B/s</translation>
 <translation id="6237461503717005873"><ph name="ROW_NAME" /> തിരഞ്ഞെടുത്തു.</translation>
 <translation id="6264365405983206840">എല്ലാം &amp;തിരഞ്ഞെടുക്കുക</translation>
+<translation id="6346952829206698721">ക്ലിപ്പ്‌ബോർഡിൽ നിന്ന് ഒട്ടിക്കുക</translation>
 <translation id="6364916375976753737">ഇടത്തേക്ക് സ്ക്രോള്‍ ചെയ്യുക</translation>
 <translation id="6394627529324717982">കോമ</translation>
 <translation id="6397363302884558537">സംഭാഷണം നിർത്തുക</translation>
@@ -174,6 +174,7 @@
 <translation id="7170202025028120564">അടുത്ത തവണ റീസ്റ്റാർട്ട് ചെയ്യുമ്പോൾ നിങ്ങളുടെ ആപ്പിന്റെ ഡിസ്‌പ്ലേ ക്രമീകരണം പ്രാബല്യത്തിൽ വരും.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{ഒരു മിനിറ്റ് ശേഷിക്കുന്നു}other{# മിനിറ്റ് ശേഷിക്കുന്നു}}</translation>
+<translation id="7363164521834647158">മറുപടി അയയ്ക്കുക</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{ഒരു മിനിറ്റ് മുമ്പ്}other{# മിനിറ്റ് മുമ്പ്}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{ഒരു മിനിറ്റ് ശേഷിക്കുന്നു}other{# മിനിറ്റ് ശേഷിക്കുന്നു}}</translation>

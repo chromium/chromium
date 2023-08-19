@@ -15,6 +15,13 @@ public interface QrCodeDialogTab {
     public View getView();
 
     /**
+     * @return whether the tab is currently enabled.
+     */
+    default boolean isEnabled() {
+        return true;
+    }
+
+    /**
      *  Called when the entire dialog is resumed.
      */
     public void onResume();

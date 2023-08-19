@@ -28,7 +28,6 @@
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/media_list.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
-#include "third_party/blink/renderer/core/dom/context_features.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
 #include "third_party/blink/renderer/core/dom/document_type.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -85,8 +84,6 @@ XMLDocument* DOMImplementation::createDocument(
     doc = MakeGarbageCollected<XMLDocument>(init);
   }
 
-  doc->SetContextFeatures(document_->GetContextFeatures());
-
   Node* document_element = nullptr;
   if (!qualified_name.empty()) {
     document_element =
@@ -119,7 +116,6 @@ Document* DOMImplementation::createHTMLDocument(const String& title) {
     head_element->AppendChild(title_element);
     title_element->AppendChild(d->createTextNode(title), ASSERT_NO_EXCEPTION);
   }
-  d->SetContextFeatures(document_->GetContextFeatures());
   return d;
 }
 

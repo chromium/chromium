@@ -27,7 +27,8 @@ void FormGroup::GetMatchingTypes(const std::u16string& text,
     return;
   }
 
-  std::u16string canonicalized_text = comparator.NormalizeForComparison(text);
+  std::u16string canonicalized_text =
+      AutofillProfileComparator::NormalizeForComparison(text);
   ServerFieldTypeSet types;
   GetSupportedTypes(&types);
   for (auto type : types) {

@@ -4,10 +4,10 @@
 
 #include "media/gpu/mac/vp9_super_frame_bitstream_filter.h"
 
+#include "base/apple/osstatus_logging.h"
 #include "base/bits.h"
 #include "base/check.h"
 #include "base/logging.h"
-#include "base/mac/mac_logging.h"
 #include "media/filters/vp9_raw_bits_reader.h"
 
 namespace {

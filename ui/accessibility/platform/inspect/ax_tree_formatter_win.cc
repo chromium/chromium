@@ -478,7 +478,7 @@ void AXTreeFormatterWin::AddSimpleDOMNodeProperties(
     return;
 
   base::win::ScopedBstr bstr;
-  if (SUCCEEDED(simple_dom_node->get_innerHTML(bstr.Receive()))) {
+  if (S_OK == simple_dom_node->get_innerHTML(bstr.Receive())) {
     dict->Set("inner_html", base::WideToUTF8(bstr.Get()));
   }
   bstr.Reset();
@@ -701,14 +701,7 @@ void AXTreeFormatterWin::AddIA2RelationProperty(
   }
   delete[] targets;
 
-  // Need to alphabetically sort targets to eliminate flakiness from order
-  // targets are returned.
-  std::vector<std::string> targetsStringArr = base::SplitString(
-      targetsString, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  std::sort(targetsStringArr.begin(), targetsStringArr.end());
-
-  dict->Set(base::WideToUTF8(name.Get()),
-            base::JoinString(targetsStringArr, ","));
+  dict->Set(base::WideToUTF8(name.Get()), targetsString);
 }
 
 void AXTreeFormatterWin::AddIA2TableProperties(

@@ -13,6 +13,7 @@ import '../../css/common.css.js';
 import './google_photos_zero_state_element.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, WallpaperProviderInterface} from '../../personalization_app.mojom-webui.js';
 import {isGooglePhotosSharedAlbumsEnabled} from '../load_time_booleans.js';
@@ -21,22 +22,8 @@ import {WithPersonalizationStore} from '../personalization_store.js';
 import {isNonEmptyArray} from '../utils.js';
 
 import {getTemplate} from './google_photos_collection_element.html.js';
-import {fetchGooglePhotosAlbums, fetchGooglePhotosEnabled, fetchGooglePhotosPhotos, fetchGooglePhotosSharedAlbums} from './wallpaper_controller.js';
+import {fetchGooglePhotosAlbums, fetchGooglePhotosPhotos, fetchGooglePhotosSharedAlbums} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
-
-/** A Promise<T> which can be externally |resolve()|-ed. */
-type ExternallyResolvablePromise<T> = Promise<T>&{resolve: (result: T) => void};
-
-/** Creates a Promise<T> which can be externally |resolve()|-ed. */
-function createExternallyResolvablePromise<T>():
-    ExternallyResolvablePromise<T> {
-  let externalResolver: (result: T) => void;
-  const promise = new Promise<T>(resolve => {
-                    externalResolver = resolve;
-                  }) as ExternallyResolvablePromise<T>;
-  promise.resolve = externalResolver!;
-  return promise;
-}
 
 /**
  * Checks if argument is an array with zero length.
@@ -72,13 +59,6 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
         observer: 'onAlbumIdChanged_',
       },
 
-      hidden: {
-        type: Boolean,
-        value: true,
-        reflectToAttribute: true,
-        observer: 'onHiddenChanged_',
-      },
-
       path: String,
 
       albums_: Array,
@@ -110,9 +90,6 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
   /** The currently selected album id. */
   albumId: string|undefined;
 
-  /** Whether or not this element is currently hidden. */
-  override hidden: boolean;
-
   /** The currently selected path. */
   path: string|undefined;
 
@@ -130,15 +107,6 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
 
   /** Whether the user is allowed to access Google Photos. */
   private enabled_: GooglePhotosEnablementState|undefined;
-
-  /**
-   * Promise which is resolved after initializing Google Photos data. Note that
-   * this promise is created early (instead of at data initialization request
-   * time) so that it can be waited on prior to the request.
-   */
-  private initializeGooglePhotosDataPromise_:
-      ExternallyResolvablePromise<void> =
-          createExternallyResolvablePromise<void>();
 
   /** The list of photos. */
   private photos_: GooglePhotosPhoto[]|null|undefined;
@@ -159,6 +127,13 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
 
   /** Whether feature flag |kGooglePhotosSharedAlbums| is enabled. */
   private isSharedAlbumsEnabled_: boolean;
+
+  override ready() {
+    super.ready();
+    afterNextRender(this, () => {
+      this.$.main.focus();
+    });
+  }
 
   override connectedCallback() {
     super.connectedCallback();
@@ -185,46 +160,12 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
         'photosLoading_', state => state.wallpaper.loading.googlePhotos.photos);
 
     this.updateFromStore();
-
-    fetchGooglePhotosEnabled(this.wallpaperProvider_, this.getStore())
-        .then(() => this.initializeGooglePhotosDataPromise_.resolve());
   }
 
   /** Invoked on changes to the currently selected |albumId|. */
   private onAlbumIdChanged_(albumId: GooglePhotosCollection['albumId']) {
     this.tab_ =
         albumId ? GooglePhotosTab.PHOTOS_BY_ALBUM_ID : GooglePhotosTab.ALBUMS;
-  }
-
-  /** Invoked on changes to this element's |hidden| state. */
-  private onHiddenChanged_(hidden: GooglePhotosCollection['hidden']) {
-    if (hidden) {
-      return;
-    }
-
-    document.title = this.i18n('googlePhotosLabel');
-    this.$.main.focus();
-
-    // When the user first selects the Google Photos collection it should result
-    // in a data fetch for the user's photos.
-    if (this.photos_ === undefined && !this.photosLoading_) {
-      this.initializeGooglePhotosDataPromise_.then(() => {
-        fetchGooglePhotosPhotos(this.wallpaperProvider_, this.getStore());
-      });
-    }
-
-    // When the user first selects the Google Photos collection it should result
-    // in a data fetch for the user's albums.
-    if (this.albums_ === undefined && !this.albumsLoading_ &&
-        this.albumsShared_ === undefined && !this.albumsSharedLoading_) {
-      this.initializeGooglePhotosDataPromise_.then(() => {
-        fetchGooglePhotosAlbums(this.wallpaperProvider_, this.getStore());
-        if (this.isSharedAlbumsEnabled_) {
-          fetchGooglePhotosSharedAlbums(
-              this.wallpaperProvider_, this.getStore());
-        }
-      });
-    }
   }
 
   /** Invoked on changes to either |path| or |enabled_|. */
@@ -236,6 +177,25 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
     if (path === Paths.GOOGLE_PHOTOS_COLLECTION &&
         enabled === GooglePhotosEnablementState.kDisabled) {
       PersonalizationRouter.reloadAtWallpaper();
+    }
+
+    if (enabled === GooglePhotosEnablementState.kEnabled) {
+      // When the user first selects the Google Photos collection it should
+      // result in a data fetch for the user's photos.
+      if (this.photos_ === undefined && !this.photosLoading_) {
+        fetchGooglePhotosPhotos(this.wallpaperProvider_, this.getStore());
+      }
+
+      // When the user first selects the Google Photos collection it should
+      // result in a data fetch for the user's albums.
+      if (this.albums_ === undefined && !this.albumsLoading_ &&
+          this.albumsShared_ === undefined && !this.albumsSharedLoading_) {
+        fetchGooglePhotosAlbums(this.wallpaperProvider_, this.getStore());
+        if (this.isSharedAlbumsEnabled_) {
+          fetchGooglePhotosSharedAlbums(
+              this.wallpaperProvider_, this.getStore());
+        }
+      }
     }
   }
 
@@ -272,10 +232,9 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
   }
 
   /** Whether the albums tab content is currently visible. */
-  private isAlbumsTabContentVisible_(
-      hidden: GooglePhotosCollection['hidden'],
-      tab: GooglePhotosCollection['tab_']): boolean {
-    return this.isAlbumsTabSelected_(tab) && !hidden;
+  private isAlbumsTabContentVisible_(tab: GooglePhotosCollection['tab_']):
+      boolean {
+    return this.isAlbumsTabSelected_(tab);
   }
 
   /** Whether the photos by album id tab is currently selected. */
@@ -287,13 +246,11 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
   /** Whether the photos by album id tab content is currently visible. */
   private isPhotosByAlbumIdTabContentVisible_(
       albumId: GooglePhotosCollection['albumId'],
-      hidden: GooglePhotosCollection['hidden'],
       photosByAlbumId: GooglePhotosCollection['photosByAlbumId_'],
       tab: GooglePhotosCollection['tab_']): boolean {
     return this.isPhotosByAlbumIdTabSelected_(tab) &&
         !this.isPhotosByAlbumIdTabZeroStateVisible_(
-            albumId, photosByAlbumId, tab) &&
-        !hidden;
+            albumId, photosByAlbumId, tab);
   }
 
   /** Whether the photos by album id tab zero state is currently visible. */
@@ -312,11 +269,10 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
 
   /** Whether the photos tab content is currently visible. */
   private isPhotosTabContentVisible_(
-      hidden: GooglePhotosCollection['hidden'],
       photos: GooglePhotosCollection['photos_'],
       tab: GooglePhotosCollection['tab_']): boolean {
     return this.isPhotosTabSelected_(tab) &&
-        !this.isPhotosTabZeroStateVisible_(photos, tab) && !hidden;
+        !this.isPhotosTabZeroStateVisible_(photos, tab);
   }
 
   /** Whether the photos tab zero state is currently visible. */

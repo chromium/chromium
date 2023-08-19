@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/reading_list/reading_list_table_view_item.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/i18n/time_formatting.h"
-#import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
@@ -24,10 +24,6 @@
 #import "ui/base/l10n/time_format.h"
 #import "ui/strings/grit/ui_strings.h"
 #import "url/gurl.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -96,7 +92,8 @@ NSString* const kURLAndDistillationDateFormat = @"%@ • %@";
 - (void)configureCell:(TableViewCell*)cell
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:cell withStyler:styler];
-  TableViewURLCell* URLCell = base::mac::ObjCCastStrict<TableViewURLCell>(cell);
+  TableViewURLCell* URLCell =
+      base::apple::ObjCCastStrict<TableViewURLCell>(cell);
   URLCell.titleLabel.text = [self titleLabelText];
   URLCell.URLLabel.text = [self URLLabelText];
   URLCell.cellUniqueIdentifier = base::SysUTF8ToNSString(self.entryURL.host());

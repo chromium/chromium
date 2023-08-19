@@ -14,7 +14,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/win/atl.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_win.h"
@@ -43,7 +42,7 @@ class BrowserAccessibilityWin;
 //
 // Class implementing the windows accessible interface used by screen readers
 // and other assistive technology (AT). It typically is created and owned by
-// a BrowserAccessibilityWin |owner_|. When this owner goes away, the
+// a BrowserAccessibilityWin delegate. When this owner goes away, the
 // BrowserAccessibilityComWin objects may continue to exists being held onto by
 // MSCOM (due to reference counting). However, such objects are invalid and
 // should gracefully fail by returning E_FAIL from all MSCOM methods.
@@ -81,6 +80,10 @@ class __declspec(uuid("562072fe-3390-43b1-9e2c-dd4118f5ac79"))
       delete;
 
   CONTENT_EXPORT ~BrowserAccessibilityComWin() override;
+
+  // AXPlatformNodeWin methods.
+  CONTENT_EXPORT void OnReferenced() override;
+  CONTENT_EXPORT void OnDereferenced() override;
 
   // Called after an atomic tree update completes. See
   // BrowserAccessibilityManagerWin::OnAtomicUpdateFinished for more
@@ -349,17 +352,8 @@ class __declspec(uuid("562072fe-3390-43b1-9e2c-dd4118f5ac79"))
   std::wstring description() const { return win_attributes_->description; }
   std::wstring value() const { return win_attributes_->value; }
 
-  // Setter and getter for the browser accessibility owner
-  BrowserAccessibilityWin* owner() const { return owner_; }
-  void SetOwner(BrowserAccessibilityWin* owner) { owner_ = owner; }
-
+  BrowserAccessibilityWin* GetOwner() const;
   BrowserAccessibilityManager* Manager() const;
-
-  //
-  // AXPlatformNode overrides
-  //
-  void Destroy() override;
-  void Init(ui::AXPlatformNodeDelegate* delegate) override;
 
   // Returns the IA2 text attributes for this object.
   ui::TextAttributeList ComputeTextAttributes() const;
@@ -428,13 +422,23 @@ class __declspec(uuid("562072fe-3390-43b1-9e2c-dd4118f5ac79"))
     ui::TextAttributeMap offset_to_text_attributes;
   };
 
-  raw_ptr<BrowserAccessibilityWin> owner_;
-
   std::unique_ptr<WinAttributes> win_attributes_;
+
+  // Holds transient state needed only while processing a tree update.
+  struct UpdateState {
+    UpdateState(std::unique_ptr<WinAttributes> old_win_attributes,
+                ui::AXLegacyHypertext old_hypertext);
+    UpdateState(const UpdateState&) = delete;
+    UpdateState& operator=(const UpdateState&) = delete;
+    ~UpdateState();
+
+    std::unique_ptr<WinAttributes> old_win_attributes;
+    ui::AXLegacyHypertext old_hypertext;
+  };
 
   // Only valid during the scope of a IA2_EVENT_TEXT_REMOVED or
   // IA2_EVENT_TEXT_INSERTED event.
-  std::unique_ptr<WinAttributes> old_win_attributes_;
+  std::unique_ptr<UpdateState> update_state_;
 
   // The previous scroll position, so we can tell if this object scrolled.
   int previous_scroll_x_;

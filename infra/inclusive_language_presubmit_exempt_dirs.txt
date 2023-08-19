@@ -527,6 +527,12 @@ third_party/markdown 5 2
 third_party/markdown/extensions 1 1
 third_party/material_web_components/components-chromium/node_modules/lit-html 1 1
 third_party/material_web_components/components-chromium/node_modules/@types/trusted-types 1 1
+third_party/mediapipe/src 2 1
+third_party/mediapipe/src/.github/ISSUE_TEMPLATE 2 1
+third_party/mediapipe/src/mediapipe/calculators/core 1 1
+third_party/mediapipe/src/mediapipe/framework/api2 2 1
+third_party/mediapipe/src/mediapipe/graphs/youtube8m 1 1
+third_party/mediapipe/src/mediapipe/modules/face_detection 4 1
 third_party/metrics_proto 2 1
 third_party/microsoft_webauthn 1 1
 third_party/mocha 10 2
@@ -685,6 +691,10 @@ third_party/rust/unicode_ident/v1/crate/.github/workflows 2 1
 third_party/rust/unicode_width/v0_1/crate 1 1
 third_party/rust/winapi_util/v0_1/crate/.github/workflows 1 1
 third_party/rust/winapi/v0_3/crate 1 1
+third_party/sentencepiece/src 5 3
+third_party/sentencepiece/src/doc 3 1
+third_party/sentencepiece/src/src 1 1
+third_party/sentencepiece/src/src/test_data 2 1
 third_party/shell-encryption 1 1
 third_party/shell-encryption/src 2 2
 third_party/sinonjs/src 1 1

@@ -31,6 +31,8 @@ const char kReleaseChannelCanary[] = "canary-channel";
 const char kReleaseChannelDev[] = "dev-channel";
 const char kReleaseChannelBeta[] = "beta-channel";
 const char kReleaseChannelStable[] = "stable-channel";
+const char kReleaseChannelLtc[] = "ltc-channel";
+const char kReleaseChannelLts[] = "lts-channel";
 
 // Commandline flag whose value is the FD connected to Crosapi.
 const char kCrosapiMojoPlatformChannelHandle[] =

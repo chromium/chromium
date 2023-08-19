@@ -5,7 +5,6 @@
 #include "components/ntp_tiles/most_visited_sites.h"
 
 #include <algorithm>
-#include <cctype>
 #include <iterator>
 #include <memory>
 #include <utility>

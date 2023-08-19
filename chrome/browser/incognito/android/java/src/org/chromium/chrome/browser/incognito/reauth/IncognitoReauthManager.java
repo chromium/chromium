@@ -7,9 +7,9 @@ package org.chromium.chrome.browser.incognito.reauth;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.device_reauth.DeviceAuthRequester;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
@@ -104,9 +104,9 @@ public class IncognitoReauthManager {
                 && isIncognitoReauthSettingEnabled(profile);
     }
 
-    @VisibleForTesting
     public static void setIsIncognitoReauthFeatureAvailableForTesting(Boolean isAvailable) {
         sIsIncognitoReauthFeatureAvailableForTesting = isAvailable;
+        ResettersForTesting.register(() -> sIsIncognitoReauthFeatureAvailableForTesting = null);
     }
 
     private static boolean isIncognitoReauthSettingEnabled(Profile profile) {

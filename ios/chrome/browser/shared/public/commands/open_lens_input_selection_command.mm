@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation OpenLensInputSelectionCommand
 
 - (instancetype)initWithEntryPoint:(LensEntrypoint)entryPoint

@@ -11,6 +11,7 @@
 #include "ash/ambient/ambient_ui_launcher.h"
 #include "ash/ambient/ambient_view_delegate_impl.h"
 #include "ash/ambient/managed/screensaver_images_policy_handler.h"
+#include "ash/ambient/metrics/managed_screensaver_metrics.h"
 #include "ash/ambient/model/ambient_backend_model_observer.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/files/file_path.h"
@@ -60,6 +61,7 @@ class AmbientManagedSlideshowUiLauncher
 
   bool ComputeReadyState();
 
+  ManagedScreensaverMetricsRecorder metrics_recorder_;
   AmbientManagedPhotoController photo_controller_;
   const raw_ptr<AmbientViewDelegateImpl> delegate_;
   InitializationCallback initialization_callback_;
@@ -67,7 +69,7 @@ class AmbientManagedSlideshowUiLauncher
       ambient_backend_model_observer_{this};
   ScopedSessionObserver session_observer_{this};
 
-  const raw_ptr<ScreensaverImagesPolicyHandler>
+  const raw_ptr<ScreensaverImagesPolicyHandler, DanglingUntriaged>
       screensaver_images_policy_handler_;
 
   base::WeakPtrFactory<AmbientManagedSlideshowUiLauncher> weak_factory_{this};

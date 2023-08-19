@@ -193,7 +193,8 @@ class SettingsResetPromptDialogCloseTest : public DialogBrowserTest {
   void DismissUi() override { dialog_->Close(); }
 
  private:
-  raw_ptr<SettingsResetPromptDialog, DanglingUntriaged> dialog_ = nullptr;
+  raw_ptr<SettingsResetPromptDialog, AcrossTasksDanglingUntriaged> dialog_ =
+      nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(SettingsResetPromptDialogCloseTest,

@@ -6,8 +6,10 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_features.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_service.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -15,6 +17,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/devicetype_utils.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/layout/box_layout.h"
@@ -68,11 +71,25 @@ BruschettaUninstallerView::GetActiveViewForTesting() {
   return g_bruschetta_uninstaller_view;
 }
 
+void BruschettaUninstallerView::OnWidgetInitialized() {
+  views::BubbleDialogDelegateView::OnWidgetInitialized();
+  const std::u16string device_type = ui::GetChromeOSDeviceName();
+  const std::u16string name =
+      base::UTF8ToUTF16(bruschetta::GetDisplayName(profile_, guest_id_));
+  GetOkButton()->SetAccessibleDescription(l10n_util::GetStringFUTF16(
+      IDS_BRUSCHETTA_UNINSTALLER_UNINSTALL_BUTTON_ARIA_DESCRIPTION, name,
+      device_type));
+}
+
 BruschettaUninstallerView::BruschettaUninstallerView(Profile* profile,
                                                      guest_os::GuestId guest_id)
     : profile_(profile), guest_id_(std::move(guest_id)) {
   SetShowCloseButton(false);
-  SetTitle(IDS_BRUSCHETTA_UNINSTALLER_TITLE);
+  const std::u16string name =
+      base::UTF8ToUTF16(bruschetta::GetDisplayName(profile_, guest_id_));
+  const std::u16string title =
+      l10n_util::GetStringFUTF16(IDS_BRUSCHETTA_UNINSTALLER_TITLE, name);
+  SetTitle(title);
   SetButtonLabel(
       ui::DIALOG_BUTTON_OK,
       l10n_util::GetStringUTF16(IDS_BRUSCHETTA_UNINSTALLER_UNINSTALL_BUTTON));
@@ -85,22 +102,26 @@ BruschettaUninstallerView::BruschettaUninstallerView(Profile* profile,
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL)));
 
   const std::u16string device_type = ui::GetChromeOSDeviceName();
-  const std::u16string message =
-      l10n_util::GetStringFUTF16(IDS_BRUSCHETTA_UNINSTALLER_BODY, device_type);
+  const std::u16string message = l10n_util::GetStringFUTF16(
+      IDS_BRUSCHETTA_UNINSTALLER_BODY, name, device_type);
   message_label_ = AddChildView(std::make_unique<views::Label>());
   message_label_->SetMultiLine(true);
   message_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  message_label_->SetText(message);
 }
 
 BruschettaUninstallerView::~BruschettaUninstallerView() {
   g_bruschetta_uninstaller_view = nullptr;
 }
 
-void BruschettaUninstallerView::HandleError(
-    const std::u16string& error_message) {
+void BruschettaUninstallerView::HandleError() {
   state_ = State::ERROR;
   SetButtons(ui::DIALOG_BUTTON_CANCEL);
   message_label_->SetVisible(true);
+  const std::u16string name =
+      base::UTF8ToUTF16(bruschetta::GetDisplayName(profile_, guest_id_));
+  auto error_message =
+      l10n_util::GetStringFUTF16(IDS_BRUSCHETTA_UNINSTALLER_ERROR, name);
   message_label_->SetText(error_message);
   progress_bar_->SetVisible(false);
   DialogModelChanged();
@@ -111,7 +132,7 @@ void BruschettaUninstallerView::HandleError(
 void BruschettaUninstallerView::UninstallBruschettaFinished(bool success) {
   if (!success) {
     LOG(ERROR) << "Error uninstalling Bruschetta";
-    HandleError(l10n_util::GetStringUTF16(IDS_BRUSCHETTA_UNINSTALLER_ERROR));
+    HandleError();
     return;
   }
   GetWidget()->Close();

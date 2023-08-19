@@ -4,9 +4,20 @@
 
 #import "ios/chrome/test/app/mock_reauthentication_module.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+#import "base/check.h"
+
+// Type of the block used for delivering mocked reauth results.
+typedef void (^ReauthenticationResultHandler)(ReauthenticationResult success);
+
+@interface MockReauthenticationModule ()
+
+// Last handler passed to attemptReauthWithLocalizedReason.
+// Used for letting tests control the timing of emitting mock reauth results.
+// This allows test to validate states before/after mocked reauth result is
+// emitted.
+@property(nonatomic) ReauthenticationResultHandler reauthResultHandler;
+
+@end
 
 @implementation MockReauthenticationModule
 
@@ -14,6 +25,14 @@
     _localizedReasonForAuthentication;
 @synthesize expectedResult = _expectedResult;
 @synthesize canAttempt = _canAttempt;
+
+- (instancetype)init {
+  self = [super init];
+  if (self) {
+    _shouldReturnSynchronously = YES;
+  }
+  return self;
+}
 
 - (void)setExpectedResult:(ReauthenticationResult)expectedResult {
   _canAttempt = YES;
@@ -26,11 +45,28 @@
 
 - (void)attemptReauthWithLocalizedReason:(NSString*)localizedReason
                     canReusePreviousAuth:(BOOL)canReusePreviousAuth
-                                 handler:
-                                     (void (^)(ReauthenticationResult success))
-                                         showCopyPasswordsHandler {
+                                 handler:(ReauthenticationResultHandler)
+                                             reauthResultHandler {
   self.localizedReasonForAuthentication = localizedReason;
-  showCopyPasswordsHandler(_expectedResult);
+
+  if (self.shouldReturnSynchronously) {
+    reauthResultHandler(_expectedResult);
+  } else {
+    if (self.reauthResultHandler) {
+      // When multiple reauth requests are done without waiting for the result,
+      // mimic native behavior and make the oldest request fail.
+      self.reauthResultHandler(ReauthenticationResult::kFailure);
+    }
+    self.reauthResultHandler = reauthResultHandler;
+  }
+}
+
+- (void)returnMockedReathenticationResult {
+  DCHECK(!self.shouldReturnSynchronously);
+  DCHECK(self.reauthResultHandler);
+
+  self.reauthResultHandler(_expectedResult);
+  self.reauthResultHandler = nil;
 }
 
 @end

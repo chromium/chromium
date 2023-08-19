@@ -5,13 +5,13 @@
 #include "chrome/browser/chromeos/reporting/device_reporting_settings_lacros.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece_forward.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -21,7 +21,7 @@
 namespace reporting {
 namespace {
 
-bool IsSupportedPolicy(base::StringPiece policy_name) {
+bool IsSupportedPolicy(std::string_view policy_name) {
   return policy_name == ::policy::key::kReportDeviceNetworkStatus ||
          policy_name == ::policy::key::kReportUploadFrequency ||
          policy_name ==

@@ -44,6 +44,10 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcDisableTtsCache[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcDisableUreadahead[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kArcHostUreadaheadGeneration[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcUseDevCaches[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcErofs[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcForceEnableApkCache[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcForcePostBootDexOpt[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcForceShowOptInUi[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcGeneratePlayAutoInstall[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -93,7 +97,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kChildWallpaperLarge[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kChildWallpaperSmall[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kCrosRegion[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kCryptohomeRecoveryReauthUrl[];
+extern const char kCryptohomeRecoveryServiceBaseUrl[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kCryptohomeRecoveryUseTestEnvironment[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kCryptohomeUseAuthSession[];
@@ -140,6 +144,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDisableVolumeAdjustSound[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableArc[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableArcVm[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableArcVmRtVcpu[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableAshDebugBrowser[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableCastReceiver[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableConsumerKiosk[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableDimShelf[];
@@ -194,7 +199,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kFingerprintSensorLocation[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kFirstExecAfterBoot[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kForceCryptohomeRecoveryForTesting[];
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kForceDevToolsAvailable[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kForceFirstRunUI[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kForceHWIDCheckResultForTest[];
@@ -234,10 +238,21 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kLacrosChromePath[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kLacrosMojoSocketForTesting[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kLacrosSelectionPolicyIgnore[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kExtensionsRunInBothAshAndLacros[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kExtensionAppsRunInBothAshAndLacros[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kExtensionsRunInAshOnly[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kExtensionAppsRunInAshOnly[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kExtensionAppsBlockForAppServiceInAsh[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kLaunchRma[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kLoginManager[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kLoginProfile[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kLoginUser[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDisallowLacros[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kBrowserDataMigrationForUser[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -326,6 +341,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kTpmIsDynamic[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kUnfilteredBluetoothDevices[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kUpdateRequiredAueForTest[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kUseFakeCrasAudioClientForDBus[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kUseMyFilesInUserDataDirForTesting[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kWebUiDataSourcePathForTesting[];
@@ -363,6 +380,9 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldSkipOobePostLogin();
 // Returns true if we should show a11y button on the marketing opt in screen.
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool ShouldShowAccessibilityButtonOnMarketingOptInForTesting();
+
+// Returns true if ash-debug browser is enabled.
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAshDebugBrowserEnabled();
 
 // Returns true if the device is of tablet form factor.
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsTabletFormFactor();
@@ -432,6 +452,9 @@ bool IsStabilizeTimeDependentViewForTestsEnabled();
 
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsCameraEffectsSupportedByHardware();
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool UseFakeCrasAudioClientForDBus();
 
 }  // namespace ash::switches
 

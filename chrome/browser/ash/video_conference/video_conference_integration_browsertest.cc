@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -33,6 +34,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/visibility.h"
@@ -54,7 +56,7 @@ bool IsNudgeShown(const std::string& id) {
 }
 
 const std::u16string& GetNudgeText(const std::string& id) {
-  return Shell::Get()->anchored_nudge_manager()->GetNudgeTextForTest(id);
+  return Shell::Get()->anchored_nudge_manager()->GetNudgeBodyTextForTest(id);
 }
 
 views::View* GetNudgeAnchorView(const std::string& id) {
@@ -63,8 +65,10 @@ views::View* GetNudgeAnchorView(const std::string& id) {
 
 }  // namespace
 
-constexpr char kVideoConferenceTrayUseWhileDisabledNudgeId[] =
-    "video_conference_tray_nudge_ids.use_while_disabled";
+constexpr char kVideoConferenceTrayMicrophoneUseWhileSWDisabledNudgeId[] =
+    "video_conference_tray_nudge_ids.microphone_use_while_sw_disabled";
+constexpr char kVideoConferenceTrayCameraUseWhileSWDisabledNudgeId[] =
+    "video_conference_tray_nudge_ids.camera_use_while_sw_disabled";
 const char16_t kTitle1[] = u"Title1";
 const char16_t kTitle2[] = u"Title2";
 
@@ -119,7 +123,9 @@ class VideoConferenceIntegrationTest
     // kOnDeviceSpeechRecognition is to support live caption.
     scoped_feature_list_.InitWithFeatures(
         {ash::features::kVideoConference,
-         ash::features::kOnDeviceSpeechRecognition},
+         ash::features::kOnDeviceSpeechRecognition,
+         ash::features::kCameraEffectsSupportedByHardware,
+         ash::features::kShowLiveCaptionInVideoConferenceTray},
         {});
   }
 
@@ -213,10 +219,16 @@ class VideoConferenceIntegrationTest
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(
-        ::ash::switches::kCameraEffectsSupportedByHardware);
-    // Used for bypassing tab capturing selection.
-    command_line->AppendSwitch(::switches::kThisTabCaptureAutoAccept);
+    // Flags use to automatically select the right desktop source and get
+    // around security restrictions.
+    // TODO(crbug.com/1459164): Use a less error-prone flag.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    command_line->AppendSwitchASCII(::switches::kAutoSelectDesktopCaptureSource,
+                                    "Display");
+#else
+    command_line->AppendSwitchASCII(::switches::kAutoSelectDesktopCaptureSource,
+                                    "Entire screen");
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     // If in guest mode.
     if (std::get<1>(GetParam())) {
@@ -301,7 +313,7 @@ class VideoConferenceIntegrationTest
 };
 
 INSTANTIATE_TEST_SUITE_P(
-    All,
+    ,  // Empty to simplify gtest output
     VideoConferenceIntegrationTest,
     ::testing::Values(std::make_tuple<bool, bool>(false, false),
                       std::make_tuple<bool, bool>(true, false),
@@ -639,13 +651,19 @@ IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest, UseWhileDisabled) {
   base::AddFeatureIdTagToTestResult(
       "screenplay-3042cdd9-978d-432c-8488-77684b09a9e4");
 
+  // Prevent "Speak-on-mute opt-in" nudge from showing so it doesn't cancel
+  // other shown nudges.
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      prefs::kShouldShowSpeakOnMuteOptInNudge, false);
+
   // Trigger the VcTray with microphone.
   content::WebContents* web_contents =
       TriggeringTray(/*use_camera=*/false,
                      /*use_microphone=*/true,
                      /*use_screen_sharing=*/false);
 
-  auto* nudge_id = kVideoConferenceTrayUseWhileDisabledNudgeId;
+  auto* microphone_nudge_id =
+      kVideoConferenceTrayMicrophoneUseWhileSWDisabledNudgeId;
 
   // Stop microphone and wait for is_capturing to populate.
   StopMicrophone(web_contents);
@@ -657,19 +675,21 @@ IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest, UseWhileDisabled) {
 
   // Start accessing microphone should trigger UseWhileDisabled.
   StartMicrophone(web_contents);
-  WAIT_FOR_CONDITION(IsNudgeShown(nudge_id));
+  WAIT_FOR_CONDITION(IsNudgeShown(microphone_nudge_id));
 
   // Check the nudge message and anchor view is as expected.
   EXPECT_EQ(
-      GetNudgeText(nudge_id),
+      GetNudgeText(microphone_nudge_id),
       l10n_util::GetStringFUTF16(
-          IDS_ASH_VIDEO_CONFERENCE_TOAST_USE_WHILE_SOFTWARE_DISABLED, kTitle1,
+          IDS_ASH_VIDEO_CONFERENCE_TOAST_USE_WHILE_DISABLED, kTitle1,
           l10n_util::GetStringUTF16(IDS_ASH_VIDEO_CONFERENCE_MICROPHONE_NAME)));
-  EXPECT_EQ(GetNudgeAnchorView(nudge_id), GetVcTray()->audio_icon());
+  EXPECT_EQ(GetNudgeAnchorView(microphone_nudge_id), GetVcTray()->audio_icon());
 
   // Remove current nudge for the next step.
-  Shell::Get()->anchored_nudge_manager()->Cancel(nudge_id);
-  WAIT_FOR_CONDITION(!IsNudgeShown(nudge_id));
+  Shell::Get()->anchored_nudge_manager()->Cancel(microphone_nudge_id);
+  WAIT_FOR_CONDITION(!IsNudgeShown(microphone_nudge_id));
+
+  auto* camera_nudge_id = kVideoConferenceTrayCameraUseWhileSWDisabledNudgeId;
 
   // Clicking on the camera icon should mute it.
   ClickButton(camera_bt_);
@@ -677,15 +697,15 @@ IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest, UseWhileDisabled) {
 
   // Start accessing camera should trigger UseWhileDisabled.
   StartCamera(web_contents);
-  WAIT_FOR_CONDITION(IsNudgeShown(nudge_id));
+  WAIT_FOR_CONDITION(IsNudgeShown(camera_nudge_id));
 
   // Check the nudge message and anchor view is as expected.
   EXPECT_EQ(
-      GetNudgeText(nudge_id),
+      GetNudgeText(camera_nudge_id),
       l10n_util::GetStringFUTF16(
-          IDS_ASH_VIDEO_CONFERENCE_TOAST_USE_WHILE_SOFTWARE_DISABLED, kTitle1,
+          IDS_ASH_VIDEO_CONFERENCE_TOAST_USE_WHILE_DISABLED, kTitle1,
           l10n_util::GetStringUTF16(IDS_ASH_VIDEO_CONFERENCE_CAMERA_NAME)));
-  EXPECT_EQ(GetNudgeAnchorView(nudge_id), GetVcTray()->camera_icon());
+  EXPECT_EQ(GetNudgeAnchorView(camera_nudge_id), GetVcTray()->camera_icon());
 }
 
 IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
@@ -868,6 +888,40 @@ IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
 
   EXPECT_TRUE(found_live_caption_button);
   EXPECT_TRUE(found_noise_cancellation_buttion);
+}
+
+IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest, StopAllScreenShare) {
+  // Open a tab.
+  content::WebContents* web_contents_1 =
+      NavigateTo("/video_conference_demo.html");
+
+  // Start the screen sharing.
+  StartScreenSharing(web_contents_1);
+  WAIT_FOR_CONDITION(GetVcTray()->GetVisible());
+
+  // Get the ReturnToApp Panel.
+  ClickButton(GetVcTray()->toggle_bubble_button());
+  WAIT_FOR_CONDITION(GetVcTray()->GetBubbleView()->GetVisible());
+
+  // Check that web_contents_1 is sharing screen.
+  auto buttons = GetReturnToAppButtons();
+  EXPECT_EQ(buttons.size(), 1u);
+  EXPECT_FALSE(buttons[0]->is_capturing_camera());
+  EXPECT_FALSE(buttons[0]->is_capturing_microphone());
+  EXPECT_TRUE(buttons[0]->is_capturing_screen());
+
+  // Hide the ReturnToApp Panel.
+  ClickButton(GetVcTray()->toggle_bubble_button());
+
+  // Click on the screen share button.
+  EXPECT_TRUE(share_bt_->is_capturing());
+  ClickButton(share_bt_);
+  WAIT_FOR_CONDITION(!share_bt_->is_capturing());
+
+  // Check that web_contents_1 has stopped sharing screen.
+  ClickButton(GetVcTray()->toggle_bubble_button());
+  WAIT_FOR_CONDITION(GetVcTray()->GetBubbleView()->GetVisible());
+  EXPECT_FALSE(GetReturnToAppButtons()[0]->is_capturing_screen());
 }
 
 }  // namespace ash::video_conference

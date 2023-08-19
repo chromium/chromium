@@ -5,6 +5,7 @@
 package org.chromium.webapk.shell_apk;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -14,6 +15,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -22,6 +24,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.Surface;
@@ -42,7 +45,6 @@ import java.util.Map;
  */
 public class WebApkUtils {
     private static final String TAG = "cr_WebApkUtils";
-
     private static final float CONTRAST_LIGHT_ITEM_THRESHOLD = 3f;
 
     /** Returns whether the application is installed and enabled. */
@@ -224,12 +226,16 @@ public class WebApkUtils {
     /**
      * Sets the status bar icons to dark or light.
      *
+     * TODO: migrate to WindowInsetsController API for Android R+ (API 30+)
+     *
      * @param rootView The root view used to request updates to the system UI theming.
      * @param useDarkIcons Whether the status bar icons should be dark.
      */
-    public static void setStatusBarIconColor(View rootView, boolean useDarkIcons) {
+    public static void setStatusBarIconColor(View rootView, boolean useDarkIcons, Context context) {
         int systemUiVisibility = rootView.getSystemUiVisibility();
-        if (useDarkIcons) {
+        // The status bar should always be black in automotive devices to match the black back
+        // button toolbar, so we should use dark theme icons.
+        if (useDarkIcons || isAutomotive(context)) {
             systemUiVisibility |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
         } else {
             systemUiVisibility &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
@@ -240,9 +246,16 @@ public class WebApkUtils {
     /**
      * @see android.view.Window#setStatusBarColor(int color).
      */
-    public static void setStatusBarColor(Window window, int statusBarColor) {
+    public static void setStatusBarColor(Activity activity, int statusBarColor) {
+        Window window = activity.getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.setStatusBarColor(statusBarColor);
+        // The status bar should always be black in automotive devices to match the black back
+        // button toolbar.
+        if (isAutomotive(activity)) {
+            window.setStatusBarColor(Color.BLACK);
+        } else {
+            window.setStatusBarColor(statusBarColor);
+        }
     }
 
     /**
@@ -330,5 +343,27 @@ public class WebApkUtils {
         } catch (Resources.NotFoundException e) {
         }
         return false;
+    }
+
+    /** Returns whether the system is in dark mode */
+    public static boolean inDarkMode(Context context) {
+        return (context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK)
+                == Configuration.UI_MODE_NIGHT_YES;
+    }
+
+    private static boolean isAutomotive(Context context) {
+        boolean isAutomotive;
+        try {
+            isAutomotive = context.getApplicationContext().getPackageManager().hasSystemFeature(
+                    PackageManager.FEATURE_AUTOMOTIVE);
+        } catch (SecurityException e) {
+            Log.e(TAG, "Unable to query for Automotive system feature", e);
+
+            // `hasSystemFeature` can possibly throw an exception on modified instances of
+            // Android. In this case, assume the device is not a car since automotive vehicles
+            // should not have such a modification.
+            isAutomotive = false;
+        }
+        return isAutomotive;
     }
 }

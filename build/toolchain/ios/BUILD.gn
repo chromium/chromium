@@ -27,16 +27,35 @@ template("ios_toolchain") {
   }
 }
 
-ios_toolchain("ios_clang_arm64") {
-  toolchain_args = {
-    current_cpu = "arm64"
+# Specialisation of the ios_toolchain template to declare the toolchain
+# and its tools to build application extension for iOS platform.
+template("ios_app_ext_toolchain") {
+  assert(defined(invoker.toolchain_args),
+         "Toolchains must declare toolchain_args")
+
+  ios_toolchain(target_name) {
+    forward_variables_from(invoker, "*", [ "toolchain_args" ])
+
+    toolchain_args = {
+      forward_variables_from(invoker.toolchain_args, "*")
+
+      ios_is_app_extension = true
+
+      # Those variables are defined outside of //build and thus only exists
+      # when used as part of Chromium. Use build_with_chromium to check if
+      # they can be overridden safely. This prevents breaking third-party
+      # projects such as WebRTC that only uses //build but not //base.
+      if (build_with_chromium) {
+        use_partition_alloc = false
+        ios_partition_alloc_enabled = false
+      }
+    }
   }
 }
 
-ios_toolchain("ios_clang_arm64_13_4") {
+ios_toolchain("ios_clang_arm64") {
   toolchain_args = {
     current_cpu = "arm64"
-    ios_deployment_target = "13.4"
   }
 }
 
@@ -52,15 +71,41 @@ ios_toolchain("ios_clang_x64") {
   }
 }
 
-ios_toolchain("ios_clang_x64_13_4") {
+ios_toolchain("ios_clang_x86") {
+  toolchain_args = {
+    current_cpu = "x86"
+  }
+}
+
+ios_app_ext_toolchain("ios_clang_arm64_app_ext") {
+  toolchain_args = {
+    current_cpu = "arm64"
+  }
+}
+
+ios_app_ext_toolchain("ios_clang_arm64_app_ext_13_4") {
+  toolchain_args = {
+    current_cpu = "arm64"
+    ios_deployment_target = "13.4"
+  }
+}
+
+ios_app_ext_toolchain("ios_clang_x64_app_ext") {
+  toolchain_args = {
+    current_cpu = "x64"
+  }
+}
+
+ios_app_ext_toolchain("ios_clang_x64_app_ext_13_4") {
   toolchain_args = {
     current_cpu = "x64"
     ios_deployment_target = "13.4"
   }
 }
 
-ios_toolchain("ios_clang_x86") {
+ios_toolchain("ios_clang_arm64_blink") {
   toolchain_args = {
-    current_cpu = "x86"
+    current_cpu = "arm64"
+    use_blink = true
   }
 }

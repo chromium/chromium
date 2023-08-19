@@ -6,6 +6,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
+#include "media/base/video_encoder_metrics_provider.h"
 #include "media/cast/encoding/encoding_support.h"
 #include "media/cast/encoding/external_video_encoder.h"
 #include "media/cast/encoding/video_encoder_impl.h"
@@ -20,6 +21,7 @@ namespace media::cast {
 std::unique_ptr<VideoEncoder> VideoEncoder::Create(
     const scoped_refptr<CastEnvironment>& cast_environment,
     const FrameSenderConfig& video_config,
+    std::unique_ptr<VideoEncoderMetricsProvider> metrics_provider,
     StatusChangeCallback status_change_cb,
     const CreateVideoEncodeAcceleratorCallback& create_vea_cb) {
 // On MacOS and iOS: attempt to use the system VideoToolbox library to
@@ -31,21 +33,23 @@ std::unique_ptr<VideoEncoder> VideoEncoder::Create(
   if (video_config.use_hardware_encoder &&
       H264VideoToolboxEncoder::IsSupported(video_config)) {
     return base::WrapUnique<VideoEncoder>(new H264VideoToolboxEncoder(
-        cast_environment, video_config, status_change_cb));
+        cast_environment, video_config, std::move(metrics_provider),
+        status_change_cb));
   }
 #endif  // BUILDFLAG(IS_APPLE)
 
   // If the system provides a hardware-accelerated encoder, use it.
   if (video_config.use_hardware_encoder) {
     return base::WrapUnique<VideoEncoder>(new SizeAdaptableExternalVideoEncoder(
-        cast_environment, video_config, std::move(status_change_cb),
-        create_vea_cb));
+        cast_environment, video_config, std::move(metrics_provider),
+        std::move(status_change_cb), create_vea_cb));
   }
 
   // Otherwise we must have a software configuration.
   DCHECK(encoding_support::IsSoftwareEnabled(video_config.codec));
   return base::WrapUnique<VideoEncoder>(
-      new VideoEncoderImpl(cast_environment, video_config, status_change_cb));
+      new VideoEncoderImpl(cast_environment, video_config,
+                           std::move(metrics_provider), status_change_cb));
 }
 
 std::unique_ptr<VideoFrameFactory> VideoEncoder::CreateVideoFrameFactory() {

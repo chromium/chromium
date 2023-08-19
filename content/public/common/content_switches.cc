@@ -22,6 +22,9 @@ const char kAllowInsecureLocalhost[] = "allow-insecure-localhost";
 const char kAllowLoopbackInPeerConnection[] =
     "allow-loopback-in-peer-connection";
 
+// Allows plugins to be loaded in the command line for testing.
+const char kAllowCommandLinePlugins[] = "allow-command-line-plugins";
+
 // Causes the Attribution Report API to run without delays or noise.
 const char kAttributionReportingDebugMode[] =
     "attribution-reporting-debug-mode";
@@ -100,6 +103,11 @@ const char kDisableBackgroundTimerThrottling[] =
 
 // Disables the BackForwardCache feature.
 const char kDisableBackForwardCache[] = "disable-back-forward-cache";
+
+// Disables BackForwardCache for the pages with "Cache-Control: no-store"
+// header.
+const char kDisableBackForwardCacheForCacheControlNoStorePage[] =
+    "disable-back-forward-cache-for-cache-control-no-store-page";
 
 // Disable one or more Blink runtime-enabled features.
 // Use names from runtime_enabled_features.json5, separated by commas.
@@ -414,9 +422,6 @@ const char kEnableStrictMixedContentChecking[] =
 const char kEnableStrictPowerfulFeatureRestrictions[] =
     "enable-strict-powerful-feature-restrictions";
 
-// Enabled threaded compositing for web tests.
-const char kEnableThreadedCompositing[]     = "enable-threaded-compositing";
-
 // When specified along with a value in the range (0,1] will --enable-tracing
 // for (roughly) that percentage of tests being run. This is done in a stable
 // manner such that the same tests are chosen each run, and under the assumption
@@ -620,6 +625,12 @@ const char kProcessPerTab[]                 = "process-per-tab";
 // renderer or plugin host.  If it's empty, it's the browser.
 const char kProcessType[]                   = "type";
 
+// Causes Protected Audiences Bidding and Auction API to supply the provided
+// debugging key to the trusted auction server. This tells the server that it
+// okay to log information about this user's auction to help with debugging.
+const char kProtectedAudiencesConsentedDebugToken[] =
+    "protected-audiences-consented-debug-token";
+
 // Uses a specified proxy server, overrides system settings. This switch only
 // affects HTTP and HTTPS requests. ARC-apps use only HTTP proxy server with the
 // highest priority.
@@ -657,7 +668,8 @@ const char kReduceUserAgentPlatformOsCpu[] = "reduce-user-agent-platform-oscpu";
 // Register Pepper plugins (see pepper_plugin_list.cc for its format).
 const char kRegisterPepperPlugins[]         = "register-pepper-plugins";
 
-// Enables remote debug over stdio pipes [in=3, out=4].
+// Enables remote debug over stdio pipes [in=3, out=4] or over the remote pipes
+// specified in the 'remote-debugging-io-pipes' switch.
 // Optionally, specifies the format for the protocol messages, can be either
 // "JSON" (the default) or "CBOR".
 const char kRemoteDebuggingPipe[] = "remote-debugging-pipe";
@@ -1060,6 +1072,11 @@ const char kGpu2StartupDialog[] = "gpu2-startup-dialog";
 
 // Use high priority for the audio process.
 const char kAudioProcessHighPriority[] = "audio-process-high-priority";
+
+// Specifies pipe names for the incoming and outbound messages on the Windows
+// platform. This is a comma separated list of two pipe handles serialized as
+// unsigned integers, e.g. "--remote-debugging-io-pipes=3,4".
+const char kRemoteDebuggingIoPipes[] = "remote-debugging-io-pipes";
 #endif
 
 #if defined(ENABLE_IPC_FUZZER)

@@ -70,15 +70,11 @@ struct DrainResult {
 DrainResult DrainPeerUpdates(IpczHandle portal) {
   size_t num_bytes_changed = 0;
   for (;;) {
-    const void* data;
-    size_t num_bytes;
-    const IpczResult result = GetIpczAPI().BeginGet(
-        portal, IPCZ_NO_FLAGS, nullptr, &data, &num_bytes, nullptr);
-    auto end_get = [portal](size_t num_bytes_consumed) {
-      GetIpczAPI().EndGet(portal, num_bytes_consumed, 0, IPCZ_NO_FLAGS, nullptr,
-                          nullptr);
-    };
-
+    uint32_t value;
+    size_t num_bytes = sizeof(value);
+    const IpczResult result =
+        GetIpczAPI().Get(portal, IPCZ_GET_PARTIAL, nullptr, &value, &num_bytes,
+                         nullptr, nullptr, nullptr);
     switch (result) {
       case IPCZ_RESULT_UNAVAILABLE:
         // No more parcels and peer is still alive.
@@ -89,23 +85,19 @@ DrainResult DrainPeerUpdates(IpczHandle portal) {
         return {.num_bytes_changed = num_bytes_changed, .dead = true};
 
       case IPCZ_RESULT_OK: {
-        if (num_bytes != sizeof(uint32_t)) {
-          // Unexpected data. Treat as if closed.
-          end_get(0);
+        if (num_bytes < sizeof(value)) {
+          // Missing data. Treat as if closed.
           return {.num_bytes_changed = num_bytes_changed, .dead = true};
         }
 
-        const uint32_t value = *static_cast<const uint32_t*>(data);
         if (!base::CheckAdd(num_bytes_changed, value)
                  .AssignIfValid(&num_bytes_changed)) {
           // Stop accumulating on overflow to avoid losing information. This is
           // not an error condition and subsequent operations may continue to
           // drain control messages.
-          end_get(0);
           return {.num_bytes_changed = num_bytes_changed, .dead = false};
         }
 
-        end_get(sizeof(value));
         continue;
       }
 

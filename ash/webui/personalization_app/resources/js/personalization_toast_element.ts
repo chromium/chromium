@@ -55,7 +55,8 @@ export class PersonalizationToastElement extends WithPersonalizationStore {
     this.watch(
         'isLoading_',
         state => state.wallpaper.loading.setImage > 0 ||
-            state.wallpaper.loading.selected ||
+            state.wallpaper.loading.selected.attribution ||
+            state.wallpaper.loading.selected.image ||
             state.wallpaper.loading.refreshWallpaper);
   }
 

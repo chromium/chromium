@@ -38,8 +38,8 @@
 #include "media/capture/video/win/video_capture_device_mf_win.h"
 #endif
 
-#if BUILDFLAG(IS_MAC)
-#include "media/capture/video/mac/video_capture_device_factory_mac.h"
+#if BUILDFLAG(IS_APPLE)
+#include "media/capture/video/apple/video_capture_device_factory_apple.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -505,13 +505,13 @@ void VideoCaptureDeviceTest::RunOpenInvalidDeviceTestCase() {
       VideoCaptureDeviceFactoryWin::PlatformSupportsMediaFoundation()
           ? VideoCaptureApi::WIN_MEDIA_FOUNDATION
           : VideoCaptureApi::WIN_DIRECT_SHOW;
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
   invalid_descriptor.capture_api = VideoCaptureApi::MACOSX_AVFOUNDATION;
 #endif
   VideoCaptureErrorOrDevice device_status =
       video_capture_device_factory_->CreateDevice(invalid_descriptor);
 
-#if !BUILDFLAG(IS_MAC)
+#if !BUILDFLAG(IS_APPLE)
   EXPECT_FALSE(device_status.ok());
 #else
   ASSERT_TRUE(device_status.ok());

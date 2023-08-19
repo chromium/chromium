@@ -6,9 +6,12 @@
 
 #include <memory>
 
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
+#include "components/content_settings/core/common/content_settings_constraints.h"
+#include "components/content_settings/core/common/content_settings_metadata.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -166,12 +169,13 @@ TEST(OriginIdentifierValueMapTest, IterateNonempty) {
       ContentSettingsPattern::FromString("sub.google.com");
   base::Time t1 = base::Time::Now();
   base::Time t2 = t1 + base::Seconds(1);
+  content_settings::RuleMetaData metadata;
+  metadata.set_last_modified(t1);
   map.SetValue(pattern, ContentSettingsPattern::Wildcard(),
-               ContentSettingsType::COOKIES, base::Value(1),
-               {.last_modified = t1});
+               ContentSettingsType::COOKIES, base::Value(1), metadata);
+  metadata.set_last_modified(t2);
   map.SetValue(sub_pattern, ContentSettingsPattern::Wildcard(),
-               ContentSettingsType::COOKIES, base::Value(2),
-               {.last_modified = t2});
+               ContentSettingsType::COOKIES, base::Value(2), metadata);
 
   map.GetLock().Release();
   std::unique_ptr<content_settings::RuleIterator> rule_iterator(
@@ -180,13 +184,13 @@ TEST(OriginIdentifierValueMapTest, IterateNonempty) {
   std::unique_ptr<content_settings::Rule> rule = rule_iterator->Next();
   EXPECT_EQ(sub_pattern, rule->primary_pattern);
   EXPECT_EQ(2, content_settings::ValueToContentSetting(rule->value()));
-  EXPECT_EQ(t2, rule->metadata.last_modified);
+  EXPECT_EQ(t2, rule->metadata.last_modified());
 
   ASSERT_TRUE(rule_iterator->HasNext());
   rule = rule_iterator->Next();
   EXPECT_EQ(pattern, rule->primary_pattern);
   EXPECT_EQ(1, content_settings::ValueToContentSetting(rule->value()));
-  EXPECT_EQ(t1, rule->metadata.last_modified);
+  EXPECT_EQ(t1, rule->metadata.last_modified());
 }
 
 TEST(OriginIdentifierValueMapTest, UpdateLastModified) {
@@ -199,17 +203,16 @@ TEST(OriginIdentifierValueMapTest, UpdateLastModified) {
       ContentSettingsPattern::FromString("sub.google.com");
 
   base::Time t1 = base::Time::Now();
+  content_settings::RuleMetaData metadata;
+  metadata.set_last_modified(t1);
+  metadata.set_session_model(content_settings::SessionModel::Durable);
   map.SetValue(pattern, ContentSettingsPattern::Wildcard(),
-               ContentSettingsType::COOKIES, base::Value(1),
-               {.last_modified = t1,
-                .expiration = base::Time(),
-                .session_model = content_settings::SessionModel::Durable});
+               ContentSettingsType::COOKIES, base::Value(1), metadata);
+  metadata.SetExpirationAndLifetime(base::Time::Now() + base::Seconds(100),
+                                    base::Seconds(100));
+  metadata.set_session_model(content_settings::SessionModel::UserSession);
   map.SetValue(sub_pattern, ContentSettingsPattern::Wildcard(),
-               ContentSettingsType::COOKIES, base::Value(2),
-               {.last_modified = t1,
-                .expiration = content_settings::GetConstraintExpiration(
-                    base::Seconds(100)),
-                .session_model = content_settings::SessionModel::UserSession});
+               ContentSettingsType::COOKIES, base::Value(2), metadata);
   map.GetLock().Release();
 
   {
@@ -219,26 +222,26 @@ TEST(OriginIdentifierValueMapTest, UpdateLastModified) {
     std::unique_ptr<content_settings::Rule> rule = rule_iterator->Next();
     EXPECT_EQ(sub_pattern, rule->primary_pattern);
     EXPECT_EQ(2, content_settings::ValueToContentSetting(rule->value()));
-    EXPECT_EQ(t1, rule->metadata.last_modified);
-    ASSERT_FALSE(rule->metadata.expiration.is_null());
-    EXPECT_GT(rule->metadata.expiration, base::Time::Now());
-    EXPECT_EQ(rule->metadata.session_model,
+    EXPECT_EQ(t1, rule->metadata.last_modified());
+    ASSERT_FALSE(rule->metadata.expiration().is_null());
+    EXPECT_GT(rule->metadata.expiration(), base::Time::Now());
+    EXPECT_EQ(rule->metadata.session_model(),
               content_settings::SessionModel::UserSession);
 
     rule = rule_iterator->Next();
     EXPECT_EQ(pattern, rule->primary_pattern);
     EXPECT_EQ(1, content_settings::ValueToContentSetting(rule->value()));
-    EXPECT_EQ(t1, rule->metadata.last_modified);
-    ASSERT_TRUE(rule->metadata.expiration.is_null());
-    EXPECT_EQ(rule->metadata.session_model,
+    EXPECT_EQ(t1, rule->metadata.last_modified());
+    ASSERT_TRUE(rule->metadata.expiration().is_null());
+    EXPECT_EQ(rule->metadata.session_model(),
               content_settings::SessionModel::Durable);
     ASSERT_FALSE(rule_iterator->HasNext());
   }
   map.GetLock().Acquire();
   base::Time t2 = t1 + base::Seconds(1);
+  metadata.set_last_modified(t2);
   map.SetValue(pattern, ContentSettingsPattern::Wildcard(),
-               ContentSettingsType::COOKIES, base::Value(3),
-               {.last_modified = t2});
+               ContentSettingsType::COOKIES, base::Value(3), metadata);
   map.GetLock().Release();
   {
     std::unique_ptr<content_settings::RuleIterator> rule_iterator =
@@ -247,11 +250,11 @@ TEST(OriginIdentifierValueMapTest, UpdateLastModified) {
     std::unique_ptr<content_settings::Rule> rule = rule_iterator->Next();
     EXPECT_EQ(sub_pattern, rule->primary_pattern);
     EXPECT_EQ(2, content_settings::ValueToContentSetting(rule->value()));
-    EXPECT_EQ(t1, rule->metadata.last_modified);
+    EXPECT_EQ(t1, rule->metadata.last_modified());
     rule = rule_iterator->Next();
     EXPECT_EQ(pattern, rule->primary_pattern);
     EXPECT_EQ(3, content_settings::ValueToContentSetting(rule->value()));
-    EXPECT_EQ(t2, rule->metadata.last_modified);
+    EXPECT_EQ(t2, rule->metadata.last_modified());
     ASSERT_FALSE(rule_iterator->HasNext());
   }
 }

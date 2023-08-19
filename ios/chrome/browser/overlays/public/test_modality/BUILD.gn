@@ -13,8 +13,6 @@ source_set("test_modality") {
     "test_resizing_presented_overlay_request_config.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//base",
     "//ios/chrome/browser/overlays",

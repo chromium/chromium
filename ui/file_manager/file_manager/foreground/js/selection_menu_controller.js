@@ -4,7 +4,6 @@
 
 import {queryRequiredElement} from '../../common/js/dom_utils.js';
 import {util} from '../../common/js/util.js';
-import {FilesTooltip} from '../elements/files_tooltip.js';
 
 import {Menu} from './ui/menu.js';
 import {MultiMenuButton} from './ui/multi_menu_button.js';

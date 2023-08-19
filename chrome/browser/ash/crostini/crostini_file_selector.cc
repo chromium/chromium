@@ -31,8 +31,9 @@ CrostiniFileSelector::CrostiniFileSelector(content::WebUI* web_ui)
     : web_ui_(web_ui) {}
 
 CrostiniFileSelector::~CrostiniFileSelector() {
-  if (select_file_dialog_.get())
+  if (select_file_dialog_.get()) {
     select_file_dialog_->ListenerDestroyed();
+  }
 }
 
 void CrostiniFileSelector::SelectFile(
@@ -66,8 +67,7 @@ void CrostiniFileSelector::SelectFile(
 gfx::NativeWindow CrostiniFileSelector::GetBrowserWindow() {
   Browser* browser =
       chrome::FindBrowserWithWebContents(web_ui_->GetWebContents());
-  return browser ? browser->window()->GetNativeWindow()
-                 : gfx::kNullNativeWindow;
+  return browser ? browser->window()->GetNativeWindow() : gfx::NativeWindow();
 }
 
 void CrostiniFileSelector::FileSelected(const base::FilePath& path,
@@ -77,8 +77,9 @@ void CrostiniFileSelector::FileSelected(const base::FilePath& path,
 }
 
 void CrostiniFileSelector::FileSelectionCanceled(void* params) {
-  if (cancelled_callback_)
+  if (cancelled_callback_) {
     std::move(cancelled_callback_).Run();
+  }
 }
 
 }  // namespace crostini

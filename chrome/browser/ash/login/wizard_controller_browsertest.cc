@@ -25,8 +25,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/base/locale_util.h"
+#include "chrome/browser/ash/login/demo_mode/demo_mode_test_utils.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
-#include "chrome/browser/ash/login/demo_mode/demo_setup_test_utils.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen.h"
 #include "chrome/browser/ash/login/enrollment/mock_auto_enrollment_check_screen.h"
 #include "chrome/browser/ash/login/enrollment/mock_enrollment_screen.h"
@@ -82,6 +82,7 @@
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/consolidated_consent_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/display_size_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
@@ -91,6 +92,7 @@
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/ash/login/reset_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/theme_selection_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/touchpad_scroll_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/update_required_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/common/chrome_switches.h"
@@ -119,6 +121,7 @@
 #include "components/prefs/testing_pref_store.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
+#include "content/public/browser/notification_service.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -849,51 +852,55 @@ class WizardControllerFlowTest : public WizardControllerTest {
 
   // All of the *Screen types are owned by WizardController. The views are owned
   // by this test class.
-  raw_ptr<MockWelcomeScreen, ExperimentalAsh> mock_welcome_screen_ = nullptr;
+  raw_ptr<MockWelcomeScreen, DanglingUntriaged | ExperimentalAsh>
+      mock_welcome_screen_ = nullptr;
 
-  raw_ptr<MockNetworkScreen, ExperimentalAsh> mock_network_screen_ = nullptr;
+  raw_ptr<MockNetworkScreen, DanglingUntriaged | ExperimentalAsh>
+      mock_network_screen_ = nullptr;
   std::unique_ptr<MockNetworkScreenView> mock_network_screen_view_;
 
-  raw_ptr<MockUpdateScreen, ExperimentalAsh> mock_update_screen_ = nullptr;
+  raw_ptr<MockUpdateScreen, DanglingUntriaged | ExperimentalAsh>
+      mock_update_screen_ = nullptr;
   std::unique_ptr<MockUpdateView> mock_update_view_;
 
-  raw_ptr<MockEnrollmentScreen, ExperimentalAsh> mock_enrollment_screen_ =
-      nullptr;
+  raw_ptr<MockEnrollmentScreen, DanglingUntriaged | ExperimentalAsh>
+      mock_enrollment_screen_ = nullptr;
   std::unique_ptr<MockEnrollmentScreenView> mock_enrollment_screen_view_;
 
   // Auto enrollment check screen is a nice mock because it may or may not be
   // shown depending on when asynchronous auto enrollment check finishes. Only
   // add expectations for this if you are sure they are not affected by race
   // conditions.
-  raw_ptr<testing::NiceMock<MockAutoEnrollmentCheckScreen>, ExperimentalAsh>
+  raw_ptr<testing::NiceMock<MockAutoEnrollmentCheckScreen>,
+          DanglingUntriaged | ExperimentalAsh>
       mock_auto_enrollment_check_screen_ = nullptr;
   std::unique_ptr<MockAutoEnrollmentCheckScreenView>
       mock_auto_enrollment_check_screen_view_;
 
-  raw_ptr<MockWrongHWIDScreen, ExperimentalAsh> mock_wrong_hwid_screen_ =
-      nullptr;
+  raw_ptr<MockWrongHWIDScreen, DanglingUntriaged | ExperimentalAsh>
+      mock_wrong_hwid_screen_ = nullptr;
   std::unique_ptr<MockWrongHWIDScreenView> mock_wrong_hwid_screen_view_;
 
-  raw_ptr<MockEnableAdbSideloadingScreen, ExperimentalAsh>
+  raw_ptr<MockEnableAdbSideloadingScreen, DanglingUntriaged | ExperimentalAsh>
       mock_enable_adb_sideloading_screen_ = nullptr;
   std::unique_ptr<MockEnableAdbSideloadingScreenView>
       mock_enable_adb_sideloading_screen_view_;
 
-  raw_ptr<MockEnableDebuggingScreen, ExperimentalAsh>
+  raw_ptr<MockEnableDebuggingScreen, DanglingUntriaged | ExperimentalAsh>
       mock_enable_debugging_screen_ = nullptr;
   std::unique_ptr<MockEnableDebuggingScreenView>
       mock_enable_debugging_screen_view_;
 
-  raw_ptr<MockDemoSetupScreen, ExperimentalAsh> mock_demo_setup_screen_ =
-      nullptr;
+  raw_ptr<MockDemoSetupScreen, DanglingUntriaged | ExperimentalAsh>
+      mock_demo_setup_screen_ = nullptr;
   std::unique_ptr<MockDemoSetupScreenView> mock_demo_setup_screen_view_;
 
-  raw_ptr<MockDemoPreferencesScreen, ExperimentalAsh>
+  raw_ptr<MockDemoPreferencesScreen, DanglingUntriaged | ExperimentalAsh>
       mock_demo_preferences_screen_ = nullptr;
   std::unique_ptr<MockDemoPreferencesScreenView>
       mock_demo_preferences_screen_view_;
 
-  raw_ptr<MockConsolidatedConsentScreen, ExperimentalAsh>
+  raw_ptr<MockConsolidatedConsentScreen, DanglingUntriaged | ExperimentalAsh>
       mock_consolidated_consent_screen_ = nullptr;
   std::unique_ptr<MockConsolidatedConsentScreenView>
       mock_consolidated_consent_screen_view_;
@@ -903,7 +910,7 @@ class WizardControllerFlowTest : public WizardControllerTest {
   network::TestURLLoaderFactory test_url_loader_factory_;
 
  private:
-  raw_ptr<NetworkPortalDetectorTestImpl, ExperimentalAsh>
+  raw_ptr<NetworkPortalDetectorTestImpl, DanglingUntriaged | ExperimentalAsh>
       network_portal_detector_ = nullptr;
   std::unique_ptr<base::AutoReset<bool>> branded_build_override_;
 };
@@ -2859,10 +2866,12 @@ class WizardControllerOobeResumeTest : public WizardControllerTest {
   }
 
   std::unique_ptr<MockWelcomeView> mock_welcome_view_;
-  raw_ptr<MockWelcomeScreen, ExperimentalAsh> mock_welcome_screen_;
+  raw_ptr<MockWelcomeScreen, DanglingUntriaged | ExperimentalAsh>
+      mock_welcome_screen_;
 
   std::unique_ptr<MockEnrollmentScreenView> mock_enrollment_screen_view_;
-  raw_ptr<MockEnrollmentScreen, ExperimentalAsh> mock_enrollment_screen_;
+  raw_ptr<MockEnrollmentScreen, DanglingUntriaged | ExperimentalAsh>
+      mock_enrollment_screen_;
 
   std::unique_ptr<base::AutoReset<bool>> branded_build_override_;
 };
@@ -3021,7 +3030,8 @@ class WizardControllerRollbackFlowTest : public WizardControllerFlowTest {
         policy::AutoEnrollmentTypeChecker::kForcedReEnrollmentAlways);
   }
 
-  raw_ptr<FakeRollbackNetworkConfig, ExperimentalAsh> network_config_;
+  raw_ptr<FakeRollbackNetworkConfig, DanglingUntriaged | ExperimentalAsh>
+      network_config_;
 };
 
 // Ensure that enrollment screen is triggered after auto enrollment check
@@ -3073,6 +3083,10 @@ class WizardControllerThemeSelectionTest : public WizardControllerTest {
 
 IN_PROC_BROWSER_TEST_F(WizardControllerThemeSelectionTest,
                        TransitionToMarketingOptIn) {
+  LoginDisplayHost::default_host()
+      ->GetWizardContextForTesting()
+      ->skip_choobe_for_tests = true;
+
   LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build = true;
   login_mixin_.LoginAsNewRegularUser();
   WizardController::default_controller()->AdvanceToScreen(
@@ -3083,9 +3097,23 @@ IN_PROC_BROWSER_TEST_F(WizardControllerThemeSelectionTest,
 
 IN_PROC_BROWSER_TEST_F(WizardControllerThemeSelectionTest,
                        TransitionToThemeSelection) {
+  LoginDisplayHost::default_host()
+      ->GetWizardContextForTesting()
+      ->skip_choobe_for_tests = true;
+
   login_mixin_.LoginAsNewRegularUser();
-  WizardController::default_controller()->AdvanceToScreen(
-      GestureNavigationScreenView::kScreenId);
+  if (features::IsOobeDisplaySizeEnabled()) {
+    WizardController::default_controller()->AdvanceToScreen(
+        DisplaySizeScreenView::kScreenId);
+    test::OobeJS().ClickOnPath({"display-size", "nextButton"});
+  } else if (features::IsOobeTouchpadScrollEnabled()) {
+    WizardController::default_controller()->AdvanceToScreen(
+        TouchpadScrollScreenView::kScreenId);
+    test::OobeJS().ClickOnPath({"touchpad-scroll", "nextButton"});
+  } else {
+    WizardController::default_controller()->AdvanceToScreen(
+        GestureNavigationScreenView::kScreenId);
+  }
   OobeScreenWaiter(ThemeSelectionScreenView::kScreenId).Wait();
 }
 
@@ -3118,6 +3146,8 @@ IN_PROC_BROWSER_TEST_F(GaiaInfoTest, TransitionToGaiaInfo) {
       UserCreationView::kScreenId);
   test::OobeJS().ClickOnPath({"user-creation", "selfButton"});
   test::OobeJS().ClickOnPath({"user-creation", "nextButton"});
+  test::WaitForConsumerUpdateScreen();
+  test::ExitConsumerUpdateScreenNoUpdate();
   OobeScreenWaiter(GaiaInfoScreenView::kScreenId).Wait();
 }
 
@@ -3129,26 +3159,19 @@ IN_PROC_BROWSER_TEST_F(GaiaInfoTest, TransitionFromGaiaInfo) {
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
 }
 
-IN_PROC_BROWSER_TEST_F(GaiaInfoTest, SkipGaiaInfoForChildAccountCreation) {
+IN_PROC_BROWSER_TEST_F(GaiaInfoTest, SkipGaiaInfoForChildAccount) {
   WaitForOobeUI();
   WizardController::default_controller()->AdvanceToScreen(
       UserCreationView::kScreenId);
-  test::OobeJS().ClickOnPath({"user-creation", "childButton"});
-  test::OobeJS().ClickOnPath({"user-creation", "nextButton"});
-  test::OobeJS().ClickOnPath({"user-creation", "childCreateButton"});
-  test::OobeJS().ClickOnPath({"user-creation", "childNextButton"});
-  OobeScreenWaiter(GaiaView::kScreenId).Wait();
-}
+  OobeScreenWaiter(UserCreationView::kScreenId).Wait();
 
-IN_PROC_BROWSER_TEST_F(GaiaInfoTest, SkipGaiaInfoForChildSignIn) {
-  WaitForOobeUI();
-  WizardController::default_controller()->AdvanceToScreen(
-      UserCreationView::kScreenId);
   test::OobeJS().ClickOnPath({"user-creation", "childButton"});
   test::OobeJS().ClickOnPath({"user-creation", "nextButton"});
-  test::OobeJS().ClickOnPath({"user-creation", "childSignInButton"});
-  test::OobeJS().ClickOnPath({"user-creation", "childNextButton"});
-  OobeScreenWaiter(GaiaView::kScreenId).Wait();
+  test::OobeJS().ClickOnPath({"user-creation", "childAccountButton"});
+  test::OobeJS().ClickOnPath({"user-creation", "childSetupNextButton"});
+  test::WaitForConsumerUpdateScreen();
+  test::ExitConsumerUpdateScreenNoUpdate();
+  OobeScreenWaiter(AddChildScreenView::kScreenId).Wait();
 }
 
 class WizardControllerGaiaTest : public GaiaInfoTest {
@@ -3168,7 +3191,12 @@ IN_PROC_BROWSER_TEST_F(WizardControllerGaiaTest, GoBackToGaiaInfo) {
 
   test::OobeJS().ClickOnPath(
       {"gaia-signin", "signin-frame-dialog", "signin-back-button"});
-  OobeScreenWaiter(GaiaInfoScreenView::kScreenId).Wait();
+
+  if (features::IsOobeSoftwareUpdateEnabled()) {
+    OobeScreenWaiter(UserCreationView::kScreenId).Wait();
+  } else {
+    OobeScreenWaiter(GaiaInfoScreenView::kScreenId).Wait();
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(WizardControllerGaiaTest,
@@ -3192,7 +3220,9 @@ IN_PROC_BROWSER_TEST_F(WizardControllerGaiaTest,
 
 class GoingBackFromGaiaScreenInChildFlowTest
     : public GaiaInfoTest,
-      public testing::WithParamInterface<std::tuple<bool, std::string>> {};
+      public testing::WithParamInterface<std::tuple<bool, std::string>> {
+  FakeGaiaMixin fake_gaia_{&mixin_host_};
+};
 
 IN_PROC_BROWSER_TEST_P(GoingBackFromGaiaScreenInChildFlowTest,
                        SkippingGaiaInfoScreen) {
@@ -3205,14 +3235,26 @@ IN_PROC_BROWSER_TEST_P(GoingBackFromGaiaScreenInChildFlowTest,
 
   test::OobeJS().ClickOnPath({"user-creation", "childButton"});
   test::OobeJS().ClickOnPath({"user-creation", "nextButton"});
-  test::OobeJS().ClickOnPath({"user-creation", std::get<1>(GetParam())});
-  test::OobeJS().ClickOnPath({"user-creation", "childNextButton"});
+  test::OobeJS().ClickOnPath({"user-creation", "childAccountButton"});
+  test::OobeJS().ClickOnPath({"user-creation", "childSetupNextButton"});
+
+  if (!LoginDisplayHost::default_host()
+           ->GetWizardContext()
+           ->is_add_person_flow) {
+    test::WaitForConsumerUpdateScreen();
+    test::ExitConsumerUpdateScreenNoUpdate();
+  }
+
+  OobeScreenWaiter(AddChildScreenView::kScreenId).Wait();
+  test::OobeJS().ClickOnPath({"add-child", std::get<1>(GetParam())});
+  test::OobeJS().ClickOnPath({"add-child", "childNextButton"});
 
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
 
   test::OobeJS().ClickOnPath(
       {"gaia-signin", "signin-frame-dialog", "signin-back-button"});
-  OobeScreenWaiter(UserCreationView::kScreenId).Wait();
+
+  OobeScreenWaiter(AddChildScreenView::kScreenId).Wait();
 }
 
 INSTANTIATE_TEST_SUITE_P(

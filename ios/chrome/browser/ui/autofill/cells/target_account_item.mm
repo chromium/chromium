@@ -4,17 +4,13 @@
 
 #import "ios/chrome/browser/ui/autofill/cells/target_account_item.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "build/branding_buildflags.h"
 #import "components/grit/components_scaled_resources.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_cell.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -41,7 +37,7 @@ const CGFloat kAccountCellSpacing = 7;
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:cell withStyler:styler];
   TargetAccountCell* accountCell =
-      base::mac::ObjCCastStrict<TargetAccountCell>(cell);
+      base::apple::ObjCCastStrict<TargetAccountCell>(cell);
   accountCell.avatarBadge.image = self.avatar;
   accountCell.emailLabel.text = self.email;
 }

@@ -49,7 +49,7 @@ class MockTransformerCallbackHolder {
                void(std::unique_ptr<webrtc::TransformableVideoFrameInterface>));
 };
 
-std::unique_ptr<webrtc::TransformableVideoFrameInterface> CreateMockFrame() {
+std::unique_ptr<webrtc::MockTransformableVideoFrame> CreateMockFrame() {
   auto mock_frame =
       std::make_unique<NiceMock<webrtc::MockTransformableVideoFrame>>();
   ON_CALL(*mock_frame.get(), GetSsrc).WillByDefault(Return(kSSRC));
@@ -124,6 +124,16 @@ TEST_F(RTCEncodedVideoStreamTransformerTest,
 TEST_F(RTCEncodedVideoStreamTransformerTest, TransformerForwardsFrameToWebRTC) {
   EXPECT_CALL(*webrtc_callback_, OnTransformedFrame);
   encoded_video_stream_transformer_.SendFrameToSink(CreateMockFrame());
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(RTCEncodedVideoStreamTransformerTest, IgnoresSsrcForSinglecast) {
+  EXPECT_CALL(*webrtc_callback_, OnTransformedFrame);
+  std::unique_ptr<webrtc::MockTransformableVideoFrame> mock_frame =
+      CreateMockFrame();
+  EXPECT_CALL(*mock_frame.get(), GetSsrc)
+      .WillRepeatedly(Return(kNonexistentSSRC));
+  encoded_video_stream_transformer_.SendFrameToSink(std::move(mock_frame));
   task_environment_.RunUntilIdle();
 }
 

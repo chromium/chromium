@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 """Base class for WebGL conformance tests."""
 
+import collections
 import logging
 import json
 import os
@@ -11,18 +12,19 @@ import sys
 import time
 from typing import Any, List, Optional, Set, Tuple
 
+import dataclasses  # Built-in, but pylint gives an ordering false positive.
+
 from gpu_tests import common_browser_args as cba
 from gpu_tests import common_typing as ct
 from gpu_tests import gpu_helper
 from gpu_tests import gpu_integration_test
 from gpu_tests import webgl_test_util
-from gpu_tests.util import websocket_server
+from gpu_tests.util import websocket_server as wss
 
 import gpu_path_util
 
 from telemetry.internal.platform import gpu_info as telemetry_gpu_info
 
-JAVASCRIPT_DIR = os.path.join(gpu_path_util.GPU_DIR, 'gpu_tests', 'javascript')
 TEST_PAGE_RELPATH = os.path.join(webgl_test_util.extensions_relpath,
                                  'webgl_test_page.html')
 
@@ -55,33 +57,32 @@ def _CompareVersion(version1: str, version2: str) -> int:
   return cmp(ver_num1[0:size], ver_num2[0:size])
 
 
+@dataclasses.dataclass
 class WebGLTestArgs():
   """Struct-like class for passing args to a WebGLConformance test."""
-
-  def __init__(self, webgl_version=None, extension=None, extension_list=None):
-    self.webgl_version = webgl_version
-    self.extension = extension
-    self.extension_list = extension_list
+  webgl_version: Optional[int] = None
+  extension: Optional[str] = None
+  extension_list: Optional[List[str]] = None
 
 
 class WebGLConformanceIntegrationTestBase(
     gpu_integration_test.GpuIntegrationTest):
 
-  _webgl_version = None
+  _webgl_version: Optional[int] = None
   is_asan = False
   _crash_count = 0
   _gl_backend = ''
   _angle_backend = ''
   _command_decoder = ''
   _verified_flags = False
-  _original_environ = None
+  _original_environ: Optional[collections.abc.Mapping] = None
   page_loaded = False
 
   # Scripts read from file during process start up.
-  _conformance_harness_script = None
-  _extension_harness_additional_script = None
+  _conformance_harness_script: Optional[str] = None
+  _extension_harness_additional_script: Optional[str] = None
 
-  websocket_server = None
+  websocket_server: Optional[wss.WebsocketServer] = None
 
   @classmethod
   def _SuiteSupportsParallelTests(cls) -> bool:
@@ -133,16 +134,17 @@ class WebGLConformanceIntegrationTestBase(
 
   @classmethod
   def _SetClassVariablesFromOptions(cls, options: ct.ParsedCmdArgs) -> None:
+    super()._SetClassVariablesFromOptions(options)
     cls._webgl_version = int(options.webgl_conformance_version.split('.')[0])
     if not cls._conformance_harness_script:
       with open(
-          os.path.join(JAVASCRIPT_DIR,
+          os.path.join(gpu_path_util.GPU_TEST_HARNESS_JAVASCRIPT_DIR,
                        'webgl_conformance_harness_script.js')) as f:
         cls._conformance_harness_script = f.read()
     if not cls._extension_harness_additional_script:
       with open(
           os.path.join(
-              JAVASCRIPT_DIR,
+              gpu_path_util.GPU_TEST_HARNESS_JAVASCRIPT_DIR,
               'webgl_conformance_extension_harness_additional_script.js')) as f:
         cls._extension_harness_additional_script = f.read()
 
@@ -154,7 +156,6 @@ class WebGLConformanceIntegrationTestBase(
     test_paths = cls._ParseTests('00_test_list.txt',
                                  options.webgl_conformance_version,
                                  (options.webgl2_only == 'true'), None)
-    cls._SetClassVariablesFromOptions(options)
     assert cls._webgl_version is not None
     for test_path in test_paths:
       test_path_with_args = test_path
@@ -333,7 +334,7 @@ class WebGLConformanceIntegrationTestBase(
         if response_type == 'TEST_FINISHED':
           break
         raise RuntimeError('Received unknown message type %s' % response_type)
-    except websocket_server.WebsocketReceiveMessageTimeoutError:
+    except wss.WebsocketReceiveMessageTimeoutError:
       logging.error(
           'Timed out waiting for websocket message (%.3f seconds since test '
           'start), checking for hung renderer',
@@ -348,7 +349,7 @@ class WebGLConformanceIntegrationTestBase(
                                                 timeout=5)
       logging.error('Timeout does *not* appear to be due to a hung renderer')
       raise
-    except websocket_server.ClientClosedConnectionError as e:
+    except wss.ClientClosedConnectionError as e:
       raise RuntimeError(
           'Detected closed websocket (%.3f seconds since test start) - likely '
           'caused by a renderer crash' % (time.time() - start_time)) from e
@@ -467,12 +468,11 @@ class WebGLConformanceIntegrationTestBase(
         if o.startswith('--js-flags'):
           found_js_flags = True
           user_js_flags = o
-          break
-        if o.startswith('--use-gl='):
+        elif o.startswith('--use-gl='):
           cls._gl_backend = o[len('--use-gl='):]
-        if o.startswith('--use-angle='):
+        elif o.startswith('--use-angle='):
           cls._angle_backend = o[len('--use-angle='):]
-        if o.startswith('--use-cmd-decoder='):
+        elif o.startswith('--use-cmd-decoder='):
           cls._command_decoder = o[len('--use-cmd-decoder='):]
     if found_js_flags:
       logging.warning('Overriding built-in JavaScript flags:')
@@ -490,7 +490,7 @@ class WebGLConformanceIntegrationTestBase(
     # Logging every time a connection is opened/closed is spammy, so decrease
     # the default log level.
     logging.getLogger('websockets.server').setLevel(logging.WARNING)
-    cls.websocket_server = websocket_server.WebsocketServer()
+    cls.websocket_server = wss.WebsocketServer()
     cls.websocket_server.StartServer()
 
     cls.CustomizeBrowserArgs([])
@@ -599,7 +599,6 @@ class WebGLConformanceIntegrationTestBase(
   def GetPlatformTags(cls, browser: ct.Browser) -> List[str]:
     assert cls._webgl_version is not None
     tags = super().GetPlatformTags(browser)
-    tags.append('webgl-version-%d' % cls._webgl_version)
 
     system_info = browser.GetSystemInfo()
     gpu_info = None

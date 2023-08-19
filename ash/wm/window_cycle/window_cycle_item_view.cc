@@ -5,16 +5,19 @@
 #include "ash/wm/window_cycle/window_cycle_item_view.h"
 
 #include <algorithm>
+#include <memory>
 
 #include "ash/shell.h"
+#include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_mini_view_header_view.h"
 #include "ash/wm/window_preview_view.h"
 #include "ui/accessibility/ax_action_data.h"
-#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/gfx/geometry/rect_f.h"
+#include "ui/compositor/layer.h"
+#include "ui/gfx/geometry/insets.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -27,20 +30,18 @@ constexpr int kMinPreviewWidthDp =
 constexpr int kMaxPreviewWidthDp =
     WindowCycleItemView::kFixedPreviewHeightDp * 2;
 
+// The border padding value of the container view.
+constexpr auto kInsideContainerBorderInset = gfx::Insets(2);
+
+// Spacing between the child `WindowCycleItemView`s of the container view.
+constexpr int kBetweenCycleItemsSpacing = 2;
+
 }  // namespace
 
 WindowCycleItemView::WindowCycleItemView(aura::Window* window)
     : WindowMiniView(window) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetNotifyEnterExitOnChild(true);
-}
-
-void WindowCycleItemView::ShowPreview() {
-  DCHECK(!preview_view());
-
-  header_view()->UpdateIconView(source_window());
-  SetShowPreview(/*show=*/true);
-  UpdatePreviewRoundedCorners(/*show=*/true);
 }
 
 void WindowCycleItemView::OnMouseEntered(const ui::MouseEvent& event) {
@@ -132,7 +133,54 @@ bool WindowCycleItemView::HandleAccessibleAction(
   return View::HandleAccessibleAction(action_data);
 }
 
+void WindowCycleItemView::RefreshItemVisuals() {
+  CHECK(!preview_view());
+
+  header_view()->UpdateIconView(source_window());
+  SetShowPreview(/*show=*/true);
+  UpdatePreviewRoundedCorners(/*show=*/true);
+}
+
 BEGIN_METADATA(WindowCycleItemView, WindowMiniView)
+END_METADATA
+
+GroupContainerView::GroupContainerView(SnapGroup* snap_group) {
+  mini_view1_ = AddChildView(
+      std::make_unique<WindowCycleItemView>(snap_group->window1()));
+  mini_view2_ = AddChildView(
+      std::make_unique<WindowCycleItemView>(snap_group->window2()));
+
+  SetFocusBehavior(FocusBehavior::ALWAYS);
+  SetPaintToLayer();
+  layer()->SetFillsBoundsOpaquely(false);
+  SetAccessibleName(u"Group container view");
+
+  // TODO(michelefan@): Orientation should correspond to the window layout.
+  views::BoxLayout* layout =
+      SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal,
+          kInsideContainerBorderInset, kBetweenCycleItemsSpacing));
+  layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+}
+
+GroupContainerView::~GroupContainerView() = default;
+
+bool GroupContainerView::Contains(aura::Window* window) const {
+  return mini_view1_->Contains(window) || mini_view2_->Contains(window);
+}
+
+aura::Window* GroupContainerView::GetWindowAtPoint(
+    const gfx::Point& screen_point) const {
+  for (auto mini_view : {mini_view1_, mini_view2_}) {
+    if (auto* window = mini_view->GetWindowAtPoint(screen_point)) {
+      return window;
+    }
+  }
+  return nullptr;
+}
+
+BEGIN_METADATA(GroupContainerView, WindowMiniViewBase)
 END_METADATA
 
 }  // namespace ash

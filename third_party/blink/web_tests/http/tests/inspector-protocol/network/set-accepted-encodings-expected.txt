@@ -2,7 +2,7 @@ Tests setting accepted encodings.
 Testing that navigation requests have overrides applied:
 
 Testing Accept-Encoding header before overrides are set:
-Server received Accept-Encoding header: gzip, deflate, br
+Server received Accept-Encoding header: gzip, deflate, br, zstd
 
 Testing Accept-Encoding header with the override: 
 Server received Accept-Encoding header: 
@@ -19,13 +19,19 @@ Server received Accept-Encoding header: gzip, deflate, br
 Testing Accept-Encoding header with the override: br
 Server received Accept-Encoding header: br
 
+Testing Accept-Encoding header with the override: zstd,gzip
+Server received Accept-Encoding header: gzip, zstd
+
+Testing Accept-Encoding header with the override: zstd
+Server received Accept-Encoding header: zstd
+
 Testing Accept-Encoding header after clearAcceptedEncodingsOverride
-Server received Accept-Encoding header: gzip, deflate, br
+Server received Accept-Encoding header: gzip, deflate, br, zstd
 
 Testing that page fetch requests have overrides applied:
 
 Testing Accept-Encoding header before overrides are set:
-Server received Accept-Encoding header: gzip, deflate, br
+Server received Accept-Encoding header: gzip, deflate, br, zstd
 
 Testing Accept-Encoding header with the override: 
 Server received Accept-Encoding header: 
@@ -42,8 +48,14 @@ Server received Accept-Encoding header: gzip, deflate, br
 Testing Accept-Encoding header with the override: br
 Server received Accept-Encoding header: br
 
+Testing Accept-Encoding header with the override: zstd,gzip
+Server received Accept-Encoding header: gzip, zstd
+
+Testing Accept-Encoding header with the override: zstd
+Server received Accept-Encoding header: zstd
+
 Testing Accept-Encoding header after clearAcceptedEncodingsOverride
-Server received Accept-Encoding header: gzip, deflate, br
+Server received Accept-Encoding header: gzip, deflate, br, zstd
 
 Invalid encoding error:
 {

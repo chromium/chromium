@@ -36,6 +36,7 @@ if (is_linux && is_chrome_for_testing) {
       ":strip_chrome_binary",
       ":strip_chrome_crashpad_handler",
       ":strip_chrome_sandbox",
+      ":strip_headless_shell_binary",
       ":strip_libEGL_shlib",
       ":strip_libGLESv2_shlib",
       ":strip_libvk_swiftshader_shlib",
@@ -84,6 +85,11 @@ if (is_linux && is_chrome_for_testing) {
     deps = [ "//third_party/swiftshader/src/Vulkan:swiftshader_libvulkan" ]
   }
 
+  strip_binary("strip_headless_shell_binary") {
+    binary_input = "$root_out_dir/headless_shell"
+    deps = [ "//headless:headless_shell" ]
+  }
+
   if (enable_nacl) {
     strip_binary("strip_nacl_helper") {
       binary_input = "$root_out_dir/nacl_helper"
@@ -94,5 +100,16 @@ if (is_linux && is_chrome_for_testing) {
       binary_input = "$root_out_dir/nacl_helper_bootstrap"
       deps = [ "//native_client/src/trusted/service_runtime/linux:bootstrap" ]
     }
+  }
+}
+
+if (is_chrome_for_testing) {
+  action("generate_about_file") {
+    script = "//chrome/browser/chrome_for_testing/tools/generate_about_file.py"
+    args = [
+      "--output-file",
+      rebase_path("$root_out_dir/ABOUT"),
+    ]
+    outputs = [ "$root_out_dir/ABOUT" ]
   }
 }

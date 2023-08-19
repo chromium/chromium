@@ -12,10 +12,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/password_manager/core/browser/mock_password_store_backend.h"
-#include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
-#include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -200,7 +198,7 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
   EXPECT_CALL(mock_completion_callback, Run(/*success=*/true));
 
   EXPECT_CALL(*built_in_backend(), InitBackend)
-      .WillOnce(WithArgs<1, 2>(
+      .WillOnce(WithArgs<2, 3>(
           [&sync_status_changed_closure](auto sync_status_changed,
                                          auto completion_callback) {
             std::move(completion_callback).Run(/*success=*/true);
@@ -209,11 +207,12 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
             sync_status_changed_closure = std::move(sync_status_changed);
           }));
   EXPECT_CALL(*android_backend(), InitBackend)
-      .WillOnce(WithArg<2>([](auto completion_callback) {
+      .WillOnce(WithArg<3>([](auto completion_callback) {
         std::move(completion_callback).Run(/*success=*/true);
       }));
 
   backend_migration_decorator()->InitBackend(
+      /*affiliated_match_helper=*/nullptr,
       /*remote_form_changes_received=*/base::DoNothing(),
       /*sync_enabled_or_disabled_cb=*/base::DoNothing(),
       /*completion=*/mock_completion_callback.Get());
@@ -243,7 +242,7 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
   // Init backend.
   EXPECT_CALL(mock_completion_callback, Run(/*success=*/true));
   EXPECT_CALL(*built_in_backend(), InitBackend)
-      .WillOnce(WithArgs<1, 2>(
+      .WillOnce(WithArgs<2, 3>(
           [&sync_status_changed_closure](auto sync_status_changed,
                                          auto completion_callback) {
             std::move(completion_callback).Run(/*success=*/true);
@@ -252,10 +251,11 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
             sync_status_changed_closure = std::move(sync_status_changed);
           }));
   EXPECT_CALL(*android_backend(), InitBackend)
-      .WillOnce(WithArg<2>([](auto completion_callback) {
+      .WillOnce(WithArg<3>([](auto completion_callback) {
         std::move(completion_callback).Run(/*success=*/true);
       }));
   backend_migration_decorator()->InitBackend(
+      /*affiliated_match_helper=*/nullptr,
       /*remote_form_changes_received=*/base::DoNothing(),
       /*sync_enabled_or_disabled_cb=*/base::DoNothing(),
       /*completion=*/mock_completion_callback.Get());
@@ -288,7 +288,7 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
   base::RepeatingClosure sync_status_changed_closure;
   EXPECT_CALL(mock_completion_callback, Run(/*success=*/true));
   EXPECT_CALL(*built_in_backend(), InitBackend)
-      .WillOnce(WithArgs<1, 2>(
+      .WillOnce(WithArgs<2, 3>(
           [&sync_status_changed_closure](auto sync_status_changed,
                                          auto completion_callback) {
             std::move(completion_callback).Run(/*success=*/true);
@@ -297,10 +297,11 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
             sync_status_changed_closure = std::move(sync_status_changed);
           }));
   EXPECT_CALL(*android_backend(), InitBackend)
-      .WillOnce(WithArg<2>([](auto completion_callback) {
+      .WillOnce(WithArg<3>([](auto completion_callback) {
         std::move(completion_callback).Run(/*success=*/true);
       }));
   backend_migration_decorator()->InitBackend(
+      /*affiliated_match_helper=*/nullptr,
       /*remote_form_changes_received=*/base::DoNothing(),
       /*sync_enabled_or_disabled_cb=*/base::DoNothing(),
       /*completion=*/mock_completion_callback.Get());
@@ -336,7 +337,7 @@ TEST_F(
   base::RepeatingClosure sync_status_changed_closure;
   EXPECT_CALL(mock_completion_callback, Run(/*success=*/true));
   EXPECT_CALL(*built_in_backend(), InitBackend)
-      .WillOnce(WithArgs<1, 2>(
+      .WillOnce(WithArgs<2, 3>(
           [&sync_status_changed_closure](auto sync_status_changed,
                                          auto completion_callback) {
             std::move(completion_callback).Run(/*success=*/true);
@@ -345,10 +346,11 @@ TEST_F(
             sync_status_changed_closure = std::move(sync_status_changed);
           }));
   EXPECT_CALL(*android_backend(), InitBackend)
-      .WillOnce(WithArg<2>([](auto completion_callback) {
+      .WillOnce(WithArg<3>([](auto completion_callback) {
         std::move(completion_callback).Run(/*success=*/true);
       }));
   backend_migration_decorator()->InitBackend(
+      /*affiliated_match_helper=*/nullptr,
       /*remote_form_changes_received=*/base::DoNothing(),
       /*sync_enabled_or_disabled_cb=*/base::DoNothing(),
       /*completion=*/mock_completion_callback.Get());
@@ -371,7 +373,7 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
   base::RepeatingClosure sync_status_changed_closure;
   EXPECT_CALL(mock_completion_callback, Run(/*success=*/true));
   EXPECT_CALL(*built_in_backend(), InitBackend)
-      .WillOnce(WithArgs<1, 2>(
+      .WillOnce(WithArgs<2, 3>(
           [&sync_status_changed_closure](auto sync_status_changed,
                                          auto completion_callback) {
             std::move(completion_callback).Run(/*success=*/true);
@@ -380,10 +382,11 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
             sync_status_changed_closure = std::move(sync_status_changed);
           }));
   EXPECT_CALL(*android_backend(), InitBackend)
-      .WillOnce(WithArg<2>([](auto completion_callback) {
+      .WillOnce(WithArg<3>([](auto completion_callback) {
         std::move(completion_callback).Run(/*success=*/true);
       }));
   backend_migration_decorator()->InitBackend(
+      /*affiliated_match_helper=*/nullptr,
       /*remote_form_changes_received=*/base::DoNothing(),
       /*sync_enabled_or_disabled_cb=*/base::DoNothing(),
       /*completion=*/mock_completion_callback.Get());
@@ -440,7 +443,7 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
   // Init backend.
   EXPECT_CALL(mock_completion_callback, Run(/*success=*/true));
   EXPECT_CALL(*built_in_backend(), InitBackend)
-      .WillOnce(WithArgs<1, 2>(
+      .WillOnce(WithArgs<2, 3>(
           [&sync_status_changed_closure](auto sync_status_changed,
                                          auto completion_callback) {
             std::move(completion_callback).Run(/*success=*/true);
@@ -449,10 +452,11 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
             sync_status_changed_closure = std::move(sync_status_changed);
           }));
   EXPECT_CALL(*android_backend(), InitBackend)
-      .WillOnce(WithArg<2>([](auto completion_callback) {
+      .WillOnce(WithArg<3>([](auto completion_callback) {
         std::move(completion_callback).Run(/*success=*/true);
       }));
   backend_migration_decorator()->InitBackend(
+      /*affiliated_match_helper=*/nullptr,
       /*remote_form_changes_received=*/base::DoNothing(),
       /*sync_enabled_or_disabled_cb=*/base::DoNothing(),
       /*completion=*/mock_completion_callback.Get());
@@ -488,6 +492,7 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
   EXPECT_CALL(*built_in_backend(), InitBackend);
   EXPECT_CALL(*android_backend(), InitBackend);
   backend_migration_decorator()->InitBackend(
+      /*affiliated_match_helper=*/nullptr,
       /*remote_form_changes_received=*/base::DoNothing(),
       /*sync_enabled_or_disabled_cb=*/base::DoNothing(),
       /*completion=*/mock_completion_callback.Get());
@@ -525,6 +530,7 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
   EXPECT_CALL(*built_in_backend(), InitBackend);
   EXPECT_CALL(*android_backend(), InitBackend);
   backend_migration_decorator()->InitBackend(
+      /*affiliated_match_helper=*/nullptr,
       /*remote_form_changes_received=*/base::DoNothing(),
       /*sync_enabled_or_disabled_cb=*/base::DoNothing(),
       /*completion=*/mock_completion_callback.Get());

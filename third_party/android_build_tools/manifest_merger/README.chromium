@@ -2,8 +2,9 @@ Name: Android SDK manifest merger
 Short Name: manifest merger
 Version: unknown
 License: Apache Version 2.0
-License File: NOT_SHIPPED
+License File: LICENSE
 Security Critical: No
+Shipped: no
 URL: https://developer.android.com/studio/build
 
 Description:

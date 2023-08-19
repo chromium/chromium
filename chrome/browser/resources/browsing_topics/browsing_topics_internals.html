@@ -71,16 +71,21 @@ youtube.com
       <div id="privacy-sandbox-settings3-enabled-div">PrivacySandboxSettings3: </div>
       <div id="override-privacy-sandbox-settings-local-testing-enabled-div">OverridePrivacySandboxSettingsLocalTesting: </div>
       <div id="browsing-topics-bypass-ip-is-publicly-routable-check-enabled-div">BrowsingTopicsBypassIPIsPubliclyRoutableCheck: </div>
-      <div id="number-of-epochs-to-expose-div">BrowsingTopics:number_of_epochs_to_expose: </div>
-      <div id="time-period-per-epoch-div">BrowsingTopics:time_period_per_epoch: </div>
-      <div id="number-of-top-topics-per-epoch-div">BrowsingTopics:number_of_top_topics_per_epoch: </div>
-      <div id="use-random-topic-probability-percent-div">BrowsingTopics:use_random_topic_probability_percent: </div>
-      <div id="number-of-epochs-of-observation-data-to-use-for-filtering-div">BrowsingTopics:number_of_epochs_of_observation_data_to_use_for_filtering: </div>
-      <div id="max-number-of-api-usage-context-domains-to-keep-per-topic-div">BrowsingTopics:max_number_of_api_usage_context_domains_to_keep_per_topic: </div>
-      <div id="max-number-of-api-usage-context-entries-to-load-per-epoch-div">BrowsingTopics:max_number_of_api_usage_context_entries_to_load_per_epoch: </div>
-      <div id="max-number-of-api-usage-context-domains-to-store-per-page-load-div">BrowsingTopics:max_number_of_api_usage_context_domains_to_store_per_page_load: </div>
-      <div id="config-version-div">BrowsingTopics:config_version: </div>
-      <div id="taxonomy-version-div">BrowsingTopics:taxonomy_version: </div>
+      <div id="browsing-topics-xhr-enabled-div">BrowsingTopicsXHR: </div>
+      <div id="browsing-topics-document-api-enabled-div">BrowsingTopicsDocumentAPI: </div>
+      <div id="config-version-div">Configuration version: </div>
+      <div id="browsing-topics-parameters-enabled-div">BrowsingTopicsParameters: </div>
+      <div id="number-of-epochs-to-expose-div">BrowsingTopicsParameters:number_of_epochs_to_expose: </div>
+      <div id="time-period-per-epoch-div">BrowsingTopicsParameters:time_period_per_epoch: </div>
+      <div id="number-of-top-topics-per-epoch-div">BrowsingTopicsParameters:number_of_top_topics_per_epoch: </div>
+      <div id="use-random-topic-probability-percent-div">BrowsingTopicsParameters:use_random_topic_probability_percent: </div>
+      <div id="max-epoch-introduction-delay-div">BrowsingTopicsParameters:max_epoch_introduction_delay: </div>
+      <div id="number-of-epochs-of-observation-data-to-use-for-filtering-div">BrowsingTopicsParameters:number_of_epochs_of_observation_data_to_use_for_filtering: </div>
+      <div id="max-number-of-api-usage-context-domains-to-keep-per-topic-div">BrowsingTopicsParameters:max_number_of_api_usage_context_domains_to_keep_per_topic: </div>
+      <div id="max-number-of-api-usage-context-entries-to-load-per-epoch-div">BrowsingTopicsParameters:max_number_of_api_usage_context_entries_to_load_per_epoch: </div>
+      <div id="max-number-of-api-usage-context-domains-to-store-per-page-load-div">BrowsingTopicsParameters:max_number_of_api_usage_context_domains_to_store_per_page_load: </div>
+      <div id="taxonomy-version-div">BrowsingTopicsParameters:taxonomy_version: </div>
+      <div id="disabled-topics-list-div">BrowsingTopicsParameters:disabled_topics_list: </div>
     </div>
   </div>
   <div id="consent-info-slot" slot="panel" class="panel">
@@ -111,7 +116,8 @@ youtube.com
       <th>Topic ID</th>
       <th>Topic Name</th>
       <th>Real or Random</th>
-      <th>Observed-by context domains (hashed)</th>
+      <th>Observed-by context domains 
+        (hashed if the original value is unavailable)</th>
     </tr>
   </table>
   <div>Calculation time: </div>

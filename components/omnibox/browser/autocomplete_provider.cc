@@ -71,6 +71,8 @@ const char* AutocompleteProvider::TypeToString(Type type) {
       return "OpenTab";
     case TYPE_HISTORY_CLUSTER_PROVIDER:
       return "HistoryCluster";
+    case TYPE_CALCULATOR:
+      return "Calculator";
     default:
       NOTREACHED() << "Unhandled AutocompleteProvider::Type " << type;
       return "Unknown";
@@ -172,6 +174,11 @@ AutocompleteProvider::AsOmniboxEventProviderType() const {
       return metrics::OmniboxEventProto::OPEN_TAB;
     case TYPE_HISTORY_CLUSTER_PROVIDER:
       return metrics::OmniboxEventProto::HISTORY_CLUSTER;
+    case TYPE_CALCULATOR:
+      // TODO(manukh): Since there's a high likelihood the calc provider won't
+      //   launch, log as search provider to avoid the adding then deprecating
+      //   the provider in the proto and histograms.
+      return metrics::OmniboxEventProto::SEARCH;
     default:
       NOTREACHED() << "Unhandled AutocompleteProvider::Type " << type_;
       return metrics::OmniboxEventProto::UNKNOWN_PROVIDER;

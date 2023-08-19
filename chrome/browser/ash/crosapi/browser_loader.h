@@ -63,6 +63,21 @@ class BrowserLoader {
     base::Version version;
   };
 
+  // Indicates how lacros is selected.
+  enum class LacrosSelectionSource {
+    kUnknown,
+
+    // Selected by comparing the version to choose newer one or either of the
+    // lacros selection is not available.
+    kCompatibilityCheck,
+
+    // Forced by the selection policy.
+    kPolicy,
+
+    // Forced by registered lacros-chrome path.
+    kDeployedPath,
+  };
+
   // Starts to load lacros-chrome binary or the rootfs lacros-chrome binary.
   // |callback| is called on completion with the path to the lacros-chrome on
   // success, or an empty filepath on failure, and the loaded lacros selection
@@ -99,8 +114,12 @@ class BrowserLoader {
       OnLoadSelectionPolicyIsUserChoiceAndCommandLineIsStateful);
   FRIEND_TEST_ALL_PREFIXES(BrowserLoaderTest, OnLoadLacrosSpecifiedBySwitch);
 
-  void SelectRootfsLacros(LoadCompletionCallback callback);
-  void SelectStatefulLacros(LoadCompletionCallback callback);
+  // `source` indicates why rootfs/stateful is selected. `source` is only used
+  // for logging.
+  void SelectRootfsLacros(LoadCompletionCallback callback,
+                          LacrosSelectionSource source);
+  void SelectStatefulLacros(LoadCompletionCallback callback,
+                            LacrosSelectionSource source);
 
   // Called on GetVersion for each rootfs and stateful lacros loader.
   void OnGetVersion(
@@ -138,6 +157,8 @@ class BrowserLoader {
 
   base::WeakPtrFactory<BrowserLoader> weak_factory_{this};
 };
+
+std::ostream& operator<<(std::ostream&, BrowserLoader::LacrosSelectionSource);
 
 }  // namespace crosapi
 

@@ -7,11 +7,7 @@
 
 #include "cc/paint/paint_export.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
-#include "ui/gfx/geometry/vector2d_f.h"
-
-namespace gfx {
-class SizeF;
-}
+#include "ui/gfx/geometry/rect.h"
 
 namespace cc {
 class PaintFilter;
@@ -21,10 +17,10 @@ class CC_PAINT_EXPORT RenderSurfaceFilters {
  public:
   RenderSurfaceFilters() = delete;
 
+  // `layer_bounds` is only used for backdrop filters that reference ZOOM
   static sk_sp<PaintFilter> BuildImageFilter(
       const FilterOperations& filters,
-      const gfx::SizeF& size,
-      const gfx::Vector2dF& offset = gfx::Vector2dF(0, 0));
+      const gfx::Rect& layer_bounds = {});
 };
 
 }  // namespace cc

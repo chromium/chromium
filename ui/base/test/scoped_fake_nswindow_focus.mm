@@ -6,15 +6,15 @@
 
 #import <Cocoa/Cocoa.h>
 
-#import "base/mac/foundation_util.h"
-#import "base/mac/scoped_objc_class_swizzler.h"
+#import "base/apple/foundation_util.h"
+#import "base/apple/scoped_objc_class_swizzler.h"
 
-using base::mac::ScopedObjCClassSwizzler;
+using base::apple::ScopedObjCClassSwizzler;
 
 namespace {
 
 NSWindow* g_fake_focused_window = nil;
-base::mac::ScopedObjCClassSwizzler* g_order_out_swizzler = nullptr;
+base::apple::ScopedObjCClassSwizzler* g_order_out_swizzler = nullptr;
 
 void SetFocus(NSWindow* window) {
   g_fake_focused_window = window;
@@ -47,17 +47,17 @@ void ClearFocus() {
 @implementation FakeNSWindowFocusDonor
 
 - (BOOL)isKeyWindow {
-  NSWindow* selfAsWindow = base::mac::ObjCCastStrict<NSWindow>(self);
+  NSWindow* selfAsWindow = base::apple::ObjCCastStrict<NSWindow>(self);
   return selfAsWindow == g_fake_focused_window;
 }
 
 - (BOOL)isMainWindow {
-  NSWindow* selfAsWindow = base::mac::ObjCCastStrict<NSWindow>(self);
+  NSWindow* selfAsWindow = base::apple::ObjCCastStrict<NSWindow>(self);
   return selfAsWindow == g_fake_focused_window;
 }
 
 - (void)makeKeyWindow {
-  NSWindow* selfAsWindow = base::mac::ObjCCastStrict<NSWindow>(self);
+  NSWindow* selfAsWindow = base::apple::ObjCCastStrict<NSWindow>(self);
   if (selfAsWindow == g_fake_focused_window ||
       ![selfAsWindow canBecomeKeyWindow])
     return;
@@ -71,7 +71,7 @@ void ClearFocus() {
 }
 
 - (void)orderOut:(id)sender {
-  NSWindow* selfAsWindow = base::mac::ObjCCastStrict<NSWindow>(self);
+  NSWindow* selfAsWindow = base::apple::ObjCCastStrict<NSWindow>(self);
   if (selfAsWindow == g_fake_focused_window)
     ClearFocus();
   g_order_out_swizzler->InvokeOriginal<void, id>(self, _cmd, sender);
@@ -85,8 +85,7 @@ void ClearFocus() {
 
 @end
 
-namespace ui {
-namespace test {
+namespace ui::test {
 
 ScopedFakeNSWindowFocus::ScopedFakeNSWindowFocus()
     : is_main_swizzler_(
@@ -125,5 +124,4 @@ ScopedFakeNSWindowFocus::~ScopedFakeNSWindowFocus() {
   ClearFocus();
 }
 
-}  // namespace test
-}  // namespace ui
+}  // namespace ui::test

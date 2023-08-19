@@ -7,12 +7,11 @@
     ],
     "skylab_tests": [
       {
-        "args": [],
         "bucket": "chromiumos-image-archive",
-        "cros_board": "eve",
-        "cros_img": "eve-public/R115-15465.0.0",
+        "cros_board": "volteer",
+        "cros_img": "volteer-public/R118-15574.0.0",
         "dut_pool": "chromium",
-        "name": "lacros_all_tast_tests EVE_PUBLIC_LKGM",
+        "name": "lacros_all_tast_tests VOLTEER_PUBLIC_LKGM",
         "public_builder": "cros_test_platform_public",
         "public_builder_bucket": "testplatform-public",
         "resultdb": {
@@ -20,21 +19,19 @@
           "has_native_resultdb_integration": true
         },
         "shards": 2,
-        "swarming": {},
         "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
         "test": "lacros_all_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
         "test_level_retries": 2,
         "timeout_sec": 10800,
-        "variant_id": "EVE_PUBLIC_LKGM"
+        "variant_id": "VOLTEER_PUBLIC_LKGM"
       },
       {
-        "args": [],
         "bucket": "chromiumos-image-archive",
-        "cros_board": "eve",
-        "cros_img": "eve-public/R115-15470.0.0",
+        "cros_board": "volteer",
+        "cros_img": "volteer-public/R117-15563.0.0",
         "dut_pool": "chromium",
-        "name": "lacros_all_tast_tests EVE_PUBLIC_DEV",
+        "name": "lacros_all_tast_tests VOLTEER_PUBLIC_DEV",
         "public_builder": "cros_test_platform_public",
         "public_builder_bucket": "testplatform-public",
         "resultdb": {
@@ -42,21 +39,19 @@
           "has_native_resultdb_integration": true
         },
         "shards": 2,
-        "swarming": {},
         "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
         "test": "lacros_all_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
         "test_level_retries": 2,
         "timeout_sec": 10800,
-        "variant_id": "EVE_PUBLIC_DEV"
+        "variant_id": "VOLTEER_PUBLIC_DEV"
       },
       {
-        "args": [],
         "bucket": "chromiumos-image-archive",
-        "cros_board": "eve",
-        "cros_img": "eve-public/R114-15437.31.0",
+        "cros_board": "volteer",
+        "cros_img": "volteer-public/R116-15509.50.0",
         "dut_pool": "chromium",
-        "name": "lacros_all_tast_tests EVE_PUBLIC_BETA",
+        "name": "lacros_all_tast_tests VOLTEER_PUBLIC_BETA",
         "public_builder": "cros_test_platform_public",
         "public_builder_bucket": "testplatform-public",
         "resultdb": {
@@ -64,21 +59,19 @@
           "has_native_resultdb_integration": true
         },
         "shards": 2,
-        "swarming": {},
         "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
         "test": "lacros_all_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
         "test_level_retries": 2,
         "timeout_sec": 10800,
-        "variant_id": "EVE_PUBLIC_BETA"
+        "variant_id": "VOLTEER_PUBLIC_BETA"
       },
       {
-        "args": [],
         "bucket": "chromiumos-image-archive",
-        "cros_board": "eve",
-        "cros_img": "eve-public/R113-15393.58.0",
+        "cros_board": "volteer",
+        "cros_img": "volteer-public/R115-15474.70.0",
         "dut_pool": "chromium",
-        "name": "lacros_all_tast_tests EVE_PUBLIC_STABLE",
+        "name": "lacros_all_tast_tests VOLTEER_PUBLIC_STABLE",
         "public_builder": "cros_test_platform_public",
         "public_builder_bucket": "testplatform-public",
         "resultdb": {
@@ -86,13 +79,12 @@
           "has_native_resultdb_integration": true
         },
         "shards": 2,
-        "swarming": {},
         "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
         "test": "lacros_all_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
         "test_level_retries": 2,
         "timeout_sec": 10800,
-        "variant_id": "EVE_PUBLIC_STABLE"
+        "variant_id": "VOLTEER_PUBLIC_STABLE"
       }
     ]
   }

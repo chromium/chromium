@@ -43,33 +43,6 @@
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
 
-namespace {
-
-// Returns the bounding box that contains the specified rounded corner.
-gfx::RectF ComputeRoundedCornerBoundingBox(const gfx::RRectF& rrect,
-                                           const gfx::RRectF::Corner corner) {
-  auto radii = rrect.GetCornerRadii(corner);
-  gfx::RectF bounding_box(radii.x(), radii.y());
-  switch (corner) {
-    case gfx::RRectF::Corner::kUpperLeft:
-      bounding_box.Offset(rrect.rect().x(), rrect.rect().y());
-      break;
-    case gfx::RRectF::Corner::kUpperRight:
-      bounding_box.Offset(rrect.rect().right() - radii.x(), rrect.rect().y());
-      break;
-    case gfx::RRectF::Corner::kLowerRight:
-      bounding_box.Offset(rrect.rect().right() - radii.x(),
-                          rrect.rect().bottom() - radii.y());
-      break;
-    case gfx::RRectF::Corner::kLowerLeft:
-      bounding_box.Offset(rrect.rect().x(), rrect.rect().bottom() - radii.y());
-      break;
-  }
-  return bounding_box;
-}
-
-}  // namespace
-
 namespace viz {
 
 DirectRenderer::DrawingFrame::DrawingFrame() = default;
@@ -161,6 +134,10 @@ gfx::Rect DirectRenderer::MoveFromDrawToWindowSpace(
 const DrawQuad* DirectRenderer::CanPassBeDrawnDirectly(
     const AggregatedRenderPass* pass) {
   return nullptr;
+}
+
+void DirectRenderer::SetOutputSurfaceClipRect(const gfx::Rect& clip_rect) {
+  output_surface_clip_rect_ = clip_rect;
 }
 
 void DirectRenderer::SetVisible(bool visible) {
@@ -566,6 +543,11 @@ const absl::optional<gfx::RRectF> DirectRenderer::BackdropFilterBoundsForPass(
              : it->second;
 }
 
+bool DirectRenderer::SupportsBGRA() const {
+  // TODO(penghuang): check supported format correctly.
+  return true;
+}
+
 void DirectRenderer::FlushPolygons(
     base::circular_deque<std::unique_ptr<DrawPolygon>>* poly_list,
     const gfx::Rect& render_pass_scissor,
@@ -674,6 +656,10 @@ void DirectRenderer::DrawRenderPass(const AggregatedRenderPass* render_pass) {
         ComputeScissorRectForRenderPass(current_frame()->current_render_pass));
   }
 
+  if (is_root_render_pass && output_surface_clip_rect_) {
+    render_pass_scissor_in_draw_space.Intersect(*output_surface_clip_rect_);
+  }
+
   const bool render_pass_is_clipped =
       !render_pass_scissor_in_draw_space.Contains(surface_rect_in_draw_space);
 
@@ -737,12 +723,18 @@ void DirectRenderer::DrawRenderPass(const AggregatedRenderPass* render_pass) {
                            render_pass_requires_scissor);
 
     if (OverlayCandidate::RequiresOverlay(&quad)) {
-      // We cannot composite this quad properly, replace it with solid black.
-      SolidColorDrawQuad solid_black;
-      solid_black.SetAll(quad.shared_quad_state, quad.rect, quad.rect,
-                         /*needs_blending=*/false, SkColors::kBlack,
-                         /*force_anti_aliasing_off=*/true);
-      DoDrawQuad(&solid_black, nullptr);
+      // We cannot composite this quad properly, replace it with a fallback
+      // solid color quad.
+      SolidColorDrawQuad overlay_fallback;
+      overlay_fallback.SetAll(quad.shared_quad_state, quad.rect, quad.rect,
+                              /*needs_blending=*/false,
+#if DCHECK_IS_ON()
+                              SkColors::kMagenta,
+#else
+                              SkColors::kBlack,
+#endif
+                              /*anti_aliasing_off=*/true);
+      DoDrawQuad(&overlay_fallback, nullptr);
       continue;
     }
 
@@ -790,7 +782,8 @@ DirectRenderer::CalculateRenderPassRequirements(
     requirements.size = surface_size_for_swap_buffers();
     requirements.generate_mipmap = false;
     requirements.color_space = reshape_color_space();
-    requirements.format = GetSharedImageFormat(reshape_buffer_format());
+    requirements.format =
+        GetSinglePlaneSharedImageFormat(reshape_buffer_format());
 
     // All root render pass backings allocated by the renderer needs to
     // eventually go into some composition tree. Other things that own/allocate
@@ -1085,8 +1078,7 @@ bool DirectRenderer::ShouldApplyRoundedCorner(const DrawQuad* quad) const {
       gfx::RRectF::Corner::kUpperLeft, gfx::RRectF::Corner::kUpperRight,
       gfx::RRectF::Corner::kLowerRight, gfx::RRectF::Corner::kLowerLeft};
   for (auto c : corners) {
-    if (ComputeRoundedCornerBoundingBox(rounded_corner_bounds, c)
-            .Intersects(target_quad)) {
+    if (rounded_corner_bounds.CornerBoundingRect(c).Intersects(target_quad)) {
       return true;
     }
   }
@@ -1135,9 +1127,8 @@ gfx::ColorSpace DirectRenderer::CurrentRenderPassColorSpace() const {
 
 SharedImageFormat DirectRenderer::GetColorSpaceSharedImageFormat(
     gfx::ColorSpace color_space) const {
-  // TODO(penghuang): check supported format correctly.
   gpu::Capabilities caps;
-  caps.texture_format_bgra8888 = true;
+  caps.texture_format_bgra8888 = SupportsBGRA();
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // TODO(crbug.com/1317015): add support RGBA_F16 in LaCrOS.

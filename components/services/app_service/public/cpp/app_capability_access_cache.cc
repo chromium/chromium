@@ -9,31 +9,8 @@
 
 namespace apps {
 
-AppCapabilityAccessCache::Observer::Observer(AppCapabilityAccessCache* cache) {
-  Observe(cache);
-}
-
-AppCapabilityAccessCache::Observer::Observer() = default;
-
 AppCapabilityAccessCache::Observer::~Observer() {
-  if (cache_) {
-    cache_->RemoveObserver(this);
-  }
-}
-
-void AppCapabilityAccessCache::Observer::Observe(
-    AppCapabilityAccessCache* cache) {
-  if (cache == cache_) {
-    // Early exit to avoid infinite loops if we're in the middle of a callback.
-    return;
-  }
-  if (cache_) {
-    cache_->RemoveObserver(this);
-  }
-  cache_ = cache;
-  if (cache_) {
-    cache_->AddObserver(this);
-  }
+  CHECK(!IsInObserverList());
 }
 
 AppCapabilityAccessCache::AppCapabilityAccessCache()
@@ -74,6 +51,16 @@ std::set<std::string> AppCapabilityAccessCache::GetAppsAccessingMicrophone() {
   ForEachApp([&app_ids](const apps::CapabilityAccessUpdate& update) {
     auto microphone = update.Microphone();
     if (microphone.value_or(false)) {
+      app_ids.insert(update.AppId());
+    }
+  });
+  return app_ids;
+}
+
+std::set<std::string> AppCapabilityAccessCache::GetAppsAccessingCapabilities() {
+  std::set<std::string> app_ids;
+  ForEachApp([&app_ids](const apps::CapabilityAccessUpdate& update) {
+    if (update.IsAccessingAnyCapability()) {
       app_ids.insert(update.AppId());
     }
   });

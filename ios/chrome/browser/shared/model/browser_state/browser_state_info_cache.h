@@ -72,8 +72,7 @@ class BrowserStateInfoCache {
   PrefService* prefs_;
   std::vector<std::string> sorted_keys_;
   base::FilePath user_data_dir_;
-  base::ObserverList<BrowserStateInfoCacheObserver, true>::Unchecked
-      observer_list_;
+  base::ObserverList<BrowserStateInfoCacheObserver, true> observer_list_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_STATE_BROWSER_STATE_INFO_CACHE_H_

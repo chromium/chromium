@@ -7,10 +7,10 @@
 #include <dlfcn.h>
 #include <mach-o/getsect.h>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -98,17 +98,17 @@ void UnloadNativeLibrary(NativeLibrary library) {
 }
 
 void* GetFunctionPointerFromNativeLibrary(NativeLibrary library,
-                                          StringPiece name) {
+                                          const char* name) {
   void* function_pointer = nullptr;
 
   // Get the function pointer using the right API for the type.
   if (library->type == BUNDLE) {
     ScopedCFTypeRef<CFStringRef> symbol_name(CFStringCreateWithCString(
-        kCFAllocatorDefault, name.data(), kCFStringEncodingUTF8));
-    function_pointer = CFBundleGetFunctionPointerForName(library->bundle,
-                                                         symbol_name);
+        kCFAllocatorDefault, name, kCFStringEncodingUTF8));
+    function_pointer =
+        CFBundleGetFunctionPointerForName(library->bundle, symbol_name);
   } else {
-    function_pointer = dlsym(library->dylib, name.data());
+    function_pointer = dlsym(library->dylib, name);
   }
 
   // If this library hasn't been tested for having ObjC, use the function

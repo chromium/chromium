@@ -84,8 +84,9 @@ class ExtensionsMenuMainPageView : public views::View {
                        bool is_site_settings_toggle_visible,
                        bool is_site_settings_toggle_on);
 
-  // Updates the message section given `state`.
-  void UpdateMessageSection(MessageSectionState state);
+  // Updates the message section given `state` and `has_enterprise_extensions`.
+  void UpdateMessageSection(MessageSectionState state,
+                            bool has_enterprise_extensions);
 
   // Adds or updates the extension entry in the `requests_access_section_` with
   // the given information.
@@ -100,10 +101,11 @@ class ExtensionsMenuMainPageView : public views::View {
 
   // Accessors used by tests:
   // Returns the currently-showing menu items.
+  const std::u16string& GetSubheaderSubtitleTextForTesting() const;
   views::ToggleButton* GetSiteSettingsToggleForTesting() {
     return site_settings_toggle_;
   }
-  views::Label* GetTextContainerForTesting();
+  views::View* GetTextContainerForTesting();
   views::View* GetReloadContainerForTesting();
   views::View* GetRequestsAccessContainerForTesting();
   std::vector<extensions::ExtensionId>

@@ -226,6 +226,10 @@ bool IsGoogleSearchResultUrl(const GURL& url);
 // Whether the given url is a Google Search redirector URL.
 bool IsGoogleSearchRedirectorUrl(const GURL& url);
 
+// Whether the given url has a domain from a known list that can serve
+// zstd content-coded responses.
+bool IsZstdUrl(const GURL& url);
+
 // Whether the given query string contains the given component. The query
 // parameter should contain the query string of a URL (the portion following
 // the question mark, excluding the question mark). The component must fully

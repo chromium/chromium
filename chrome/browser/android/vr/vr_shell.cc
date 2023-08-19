@@ -28,12 +28,7 @@
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_delegate.h"
-#include "chrome/browser/vr/assets_loader.h"
 #include "chrome/browser/vr/browser_renderer.h"
-#include "chrome/browser/vr/location_bar_helper.h"
-#include "chrome/browser/vr/model/assets.h"
-#include "chrome/browser/vr/model/omnibox_suggestions.h"
-#include "chrome/browser/vr/model/text_input_info.h"
 #include "chrome/browser/vr/ui_test_input.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/browser/vr/vr_web_contents_observer.h"
@@ -123,8 +118,6 @@ VrShell::VrShell(JNIEnv* env,
 
   web_contents_ = content::WebContents::FromJavaWebContents(j_web_contents);
   SetIsInVR(web_contents_, true);
-
-  ui_->SetWebVrMode(true);
 
   vr_web_contents_observer_ = std::make_unique<VrWebContentsObserver>(
       web_contents_, base::BindOnce(&VrShell::ContentWebContentsDestroyed,

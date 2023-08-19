@@ -1,0 +1,40 @@
+{
+{%if key is defined %}
+  "key": "{{key}}",
+{% endif %}
+  "manifest_version": 3,
+  "name": "ChromeVox Helper",
+  "version": "{{set_version}}",
+  "description": "Provides support for ChromeVox within non-Ash browsers",
+  "background": {
+    "service_worker": "chromevox_helper/service_worker.js",
+    "type":"module"
+  },
+  "permissions": [
+    "tabs",
+    "scripting",
+    "storage"
+  ],
+  "incognito": "split",
+  "content_scripts": [
+    {
+      "matches": [ "https://docs.google.com/document*",
+                   "https://docs.sandbox.google.com/document*" ],
+      "all_frames": true,
+      "js": [
+        "chromevox_helper/content.js"
+      ]
+    }
+  ],
+  "host_permissions": [
+    "https://docs.google.com/document*",
+    "https://docs.sandbox.google.com/document*"
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["chromevox_helper/cvox_gdocs_script.js"],
+      "matches": [ "https://docs.google.com/*",
+                   "https://docs.sandbox.google.com/*" ]
+    }
+  ]
+}

@@ -44,6 +44,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_icon_set.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
@@ -136,10 +137,14 @@ class CrashNotificationDelegate : public message_center::NotificationDelegate {
     CloseBalloon(extension_id, profile);
   }
 
-  raw_ptr<Profile> profile_;
+  // This dangling raw_ptr occurred in:
+  // unit_tests:
+  // BackgroundContentsServiceNotificationTest.TestShowBalloonShutdown
+  // https://ci.chromium.org/ui/p/chromium/builders/try/linux-rel/1427454/test-results?q=ExactID%3Aninja%3A%2F%2Fchrome%2Ftest%3Aunit_tests%2FBackgroundContentsServiceNotificationTest.TestShowBalloonShutdown+VHash%3A728d3f3a440b40c1
+  raw_ptr<Profile, FlakyDanglingUntriaged> profile_;
   bool is_hosted_app_;
   bool is_platform_app_;
-  std::string extension_id_;
+  extensions::ExtensionId extension_id_;
 };
 
 void ReloadExtension(const std::string& extension_id, Profile* profile) {

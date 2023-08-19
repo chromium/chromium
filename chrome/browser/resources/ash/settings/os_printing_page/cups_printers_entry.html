@@ -1,0 +1,137 @@
+<style include="settings-shared">
+  :host-context(body.jelly-enabled) .list-item:focus-within {
+    background-color: var(--cros-sys-hover_on_subtle);
+  }
+
+  .icon-more-vert {
+    background-color: none;
+  }
+
+  .printer-name {
+    align-items: center;
+    display: flex;
+    flex: 1;
+  }
+
+  .list-item:focus-within {
+    background-color: var(--cros-highlight-color);
+    outline: none;
+  }
+
+  .entry-icon {
+    flex-basis: 40px;
+  }
+
+  :host([is-printer-settings-revamp-enabled_]) .entry-icon {
+    flex-basis: 20px;
+    padding-inline: 20px 16px;
+  }
+
+  .entry-text {
+    flex: 1;
+    margin: 20px auto;
+  }
+
+  iron-icon {
+    display: block;
+    margin: auto;
+  }
+
+  #printerSubtext {
+    color: var(--cros-sys-warning);
+  }
+
+  :host([has-high-severity-error_]) #printerSubtext {
+    color: var(--cros-sys-error);
+  }
+
+  cr-button {
+    border-radius: 18px;
+  }
+
+  .container,
+  .list-item {
+    height: 64px;
+  }
+
+  .row-button {
+    margin-inline-end: 20px;
+  }
+</style>
+<div class="container" focus-row-container>
+  <div id="entry" class="list-item" focus-row-control focus-type="entry"
+      aria-label$="[[getAriaLabel_(printerEntry.printerInfo.printerId,
+          numPrinters, focusRowIndex)]]">
+    <div class="printer-name text-elide" aria-hidden="true">
+      <span class="entry-icon"
+          hidden="[[!showAnyIcon_(printerEntry.printerType,
+              printerEntry.printerInfo)]]">
+          <iron-icon
+            hidden="[[!printerEntry.printerInfo.isManaged]]"
+            icon="cr20:domain">
+          </iron-icon>
+          <iron-icon id="printerStatusIcon"
+            hidden="[[!showPrinterIcon_(printerEntry.printerType)]]"
+            icon="[[getPrinterIcon_(printerEntry.printerType,
+                printerEntry.printerInfo.printerId)]]">
+          </iron-icon>
+      </span>
+      <span class="entry-text">
+        <div>
+          [[printerEntry.printerInfo.printerName]]
+        </div>
+        <div id="printerSubtext" class="secondary"
+            hidden="[[!showPrinterStatusIcon_(printerEntry.printerType)]]">
+          [[getStatusReasonString_(
+              printerEntry.printerInfo.printerId)]]
+        </div>
+      </span>
+    </div>
+    <template is="dom-if"
+        if="[[showActionsMenu_(printerEntry.printerType)]]">
+      <cr-icon-button id="moreActions" class="icon-more-vert row-button"
+          on-click="onOpenActionMenuClick_" title="$i18n{moreActions}"
+          aria-label="$i18n{moreActions}"
+          focus-row-control focus-type="moreActions" tabindex$="[[tabindex]]">
+      </cr-icon-button>
+    </template>
+    <template is="dom-if"
+        if="[[isDiscoveredPrinter_(printerEntry.printerType)]]">
+      <cr-button id="setupPrinterButton" class="row-button"
+          on-click="onAddDiscoveredPrinterClick_"
+          aria-label$="[[getSetupButtonLabel_()]]"
+          focus-row-control
+          focus-type="setupPrinterButton"
+          disabled="[[isConfigureDisabled_(userPrintersAllowed,
+              savingPrinter)]]">
+        [[getSetupButtonLabel_()]]
+      </cr-button>
+    </template>
+    <template is="dom-if"
+        if="[[isAutomaticPrinter_(printerEntry.printerType)]]">
+      <cr-button id="automaticPrinterButton"
+          class="save-printer-button row-button"
+          on-click="onAddAutomaticPrinterClick_"
+          aria-label$="$i18n{savePrinter}"
+          focus-row-control
+          focus-type="automaticPrinterButton"
+          disabled="[[isConfigureDisabled_(userPrintersAllowed,
+              savingPrinter)]]">
+        $i18n{savePrinter}
+      </cr-button>
+    </template>
+    <template is="dom-if"
+        if="[[isPrintServerPrinter_(printerEntry.printerType)]]">
+      <cr-button id="savePrinterButton"
+          class="save-printer-button row-button"
+          on-click="onAddServerPrinterClick_"
+          aria-label$="$i18n{savePrinter}"
+          focus-row-control
+          focus-type="savePrinterButton"
+          disabled="[[isConfigureDisabled_(userPrintersAllowed,
+              savingPrinter)]]">
+        $i18n{savePrinter}
+      </cr-button>
+    </template>
+  </div>
+</div>

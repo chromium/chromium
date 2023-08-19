@@ -12,6 +12,12 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/frame.mojom-forward.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "services/accessibility/public/mojom/accessibility_service.mojom.h"
+
+namespace base {
+class Uuid;
+}
 
 namespace extensions {
 
@@ -38,9 +44,10 @@ class IPCMessageSender {
   virtual void SendRequestIPC(ScriptContext* context,
                               mojom::RequestParamsPtr params) = 0;
 
-  // Handles sending any additional messages required after receiving a response
-  // to a request.
-  virtual void SendOnRequestResponseReceivedIPC(int request_id) = 0;
+  // Sends an "ack" back to the browser that the response to an API request was
+  // received.
+  virtual void SendResponseAckIPC(ScriptContext* context,
+                                  const base::Uuid& request_uuid) = 0;
 
   // Sends a message to add/remove an unfiltered listener.
   virtual void SendAddUnfilteredEventListenerIPC(
@@ -68,6 +75,11 @@ class IPCMessageSender {
       const std::string& event_name,
       const base::Value::Dict& filter,
       bool remove_lazy_listener) = 0;
+
+  // Sends a message to bind a pipe for the Automation API.
+  virtual void SendBindAutomationIPC(
+      ScriptContext* context,
+      mojo::PendingAssociatedRemote<ax::mojom::Automation> pending_remote) = 0;
 
   // Opens a message channel to the specified target.
   virtual void SendOpenMessageChannel(ScriptContext* script_context,

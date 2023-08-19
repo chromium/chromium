@@ -152,17 +152,17 @@ int TaskGroupSampler::RefreshOpenFdCount() {
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 
-bool TaskGroupSampler::RefreshProcessPriority() {
+base::Process::Priority TaskGroupSampler::RefreshProcessPriority() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(worker_pool_sequenced_checker_);
 #if BUILDFLAG(IS_MAC)
   if (process_.is_current()) {
     base::SelfPortProvider self_provider;
-    return process_.IsProcessBackgrounded(&self_provider);
+    return process_.GetPriority(&self_provider);
   }
-  return process_.IsProcessBackgrounded(
+  return process_.GetPriority(
       content::BrowserChildProcessHost::GetPortProvider());
 #else
-  return process_.IsProcessBackgrounded();
+  return process_.GetPriority();
 #endif  // BUILDFLAG(IS_MAC)
 }
 

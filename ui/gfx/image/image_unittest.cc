@@ -20,14 +20,14 @@
 #include "ui/gfx/image/image_unittest_util.h"
 
 #if BUILDFLAG(IS_IOS)
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #include "skia/ext/skia_utils_ios.h"
 #elif BUILDFLAG(IS_MAC)
 #include <CoreGraphics/CoreGraphics.h>
 
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "skia/ext/skia_utils_mac.h"
 #endif
 

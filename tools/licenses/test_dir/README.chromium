@@ -1,0 +1,15 @@
+Name: License tools directory parsing test
+Short Name: tools-licenses-parse-dir-test
+URL: https://chromium.tools.licenses.test/src.git
+Version: 0
+Revision: v1.0.0
+License: FAKE
+License File: NONEXISTING-LICENSE, NOT_SHIPPED, //tools/licenses/test_dir/LICENSE
+Security Critical: no
+
+Description:
+This package contains only dummy files to test the ParseDir function
+in tools/licenses.py
+
+Local Modifications:
+N/A.

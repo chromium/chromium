@@ -121,7 +121,7 @@ LayoutUnit VttCueLayoutAlgorithm::ComputeInitialPositionAdjustment(
   // 8. Vertical Growing Left: Decrease position by the width of the
   // bounding box of the boxes in boxes, then increase position by step.
   if (cue_box.HasFlippedBlocksWritingMode()) {
-    position -= cue_box.FrameRect().Width();
+    position -= cue_box.Size().width;
     position += step_;
   }
 
@@ -151,12 +151,12 @@ gfx::Rect VttCueLayoutAlgorithm::CueBoundingBox(const LayoutBox& cue_box) {
   const LayoutBlock* container = cue_box.ContainingBlock();
   PhysicalRect border_box =
       cue_box.LocalToAncestorRect(cue_box.PhysicalBorderBoxRect(), container);
-  const LayoutSize size = container->Size();
+  const PhysicalSize size = container->Size();
   const auto* cue_dom = To<VTTCueBox>(cue_box.GetNode());
   if (cue_box.IsHorizontalWritingMode())
-    border_box.SetY(cue_dom->AdjustedPosition(size.Height(), PassKey()));
+    border_box.SetY(cue_dom->AdjustedPosition(size.height, PassKey()));
   else
-    border_box.SetX(cue_dom->AdjustedPosition(size.Width(), PassKey()));
+    border_box.SetX(cue_dom->AdjustedPosition(size.width, PassKey()));
   return ToEnclosingRect(border_box);
 }
 
@@ -207,7 +207,7 @@ void VttCueLayoutAlgorithm::AdjustPositionWithSnapToLines() {
   // 1. Horizontal: Let full dimension be the height of video’s rendering area.
   //    Vertical: Let full dimension be the width of video’s rendering area.
   const LayoutUnit full_dimension =
-      is_horizontal ? container.Size().Height() : container.Size().Width();
+      is_horizontal ? container.Size().height : container.Size().width;
 
   // https://www.w3.org/TR/2017/WD-webvtt1-20170808/#apply-webvtt-cue-settings
   // 11.1. Horizontal: Let margin be a user-agent-defined vertical length which

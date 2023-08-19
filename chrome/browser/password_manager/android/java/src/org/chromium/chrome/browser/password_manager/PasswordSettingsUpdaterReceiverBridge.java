@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.password_manager;
 
 import static org.chromium.base.ThreadUtils.assertOnUiThread;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -85,7 +83,6 @@ public class PasswordSettingsUpdaterReceiverBridge {
                 mNativeReceiverBridge, setting, error, apiErrorCode);
     }
 
-    @VisibleForTesting
     void destroyForTesting() {
         mNativeReceiverBridge = 0;
     }

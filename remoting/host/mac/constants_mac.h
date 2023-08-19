@@ -28,7 +28,7 @@ extern const char kHostSettingsFilePath[];
 extern const char kHostServiceBinaryPath[];
 
 // Path to the old host helper script, which is still used after user updates
-// their host on macOS 10.14.*.
+// their host on macOS 10.14.*. TODO(https://crbug.com/1462995): Remove.
 extern const char kOldHostHelperScriptPath[];
 
 // Path to the service binary (.app).

@@ -21,6 +21,8 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
+#include "gpu/command_buffer/common/command_buffer.h"
+#include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/ipc/common/gpu_param_traits_macros.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_utils.h"
@@ -40,6 +42,7 @@
 #include "tools/ipc_fuzzer/message_lib/message_file.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/range/range.h"
+#include "ui/gl/gpu_preference.h"
 #include "ui/latency/latency_info.h"
 
 #if BUILDFLAG(IS_POSIX)
@@ -1002,8 +1005,6 @@ struct FuzzTraits<gpu::CommandBufferNamespace> {
 template <>
 struct FuzzTraits<gpu::ContextCreationAttribs> {
   static bool Fuzz(gpu::ContextCreationAttribs* p, Fuzzer* fuzzer) {
-    if (!FuzzParam(&p->offscreen_framebuffer_size, fuzzer))
-      return false;
     if (!FuzzParam(&p->gpu_preference, fuzzer))
       return false;
     if (!FuzzParam(&p->context_type, fuzzer))

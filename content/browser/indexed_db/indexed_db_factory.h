@@ -49,6 +49,7 @@ class IndexedDBBucketState;
 class IndexedDBBucketStateHandle;
 class IndexedDBClassFactory;
 class IndexedDBContextImpl;
+class IndexedDBDatabase;
 class TransactionalLevelDBFactory;
 class TransactionalLevelDBDatabase;
 
@@ -75,7 +76,7 @@ class CONTENT_EXPORT IndexedDBFactory : base::trace_event::MemoryDumpProvider {
                 client_state_checker);
 
   void DeleteDatabase(const std::u16string& name,
-                      scoped_refptr<IndexedDBCallbacks> callbacks,
+                      std::unique_ptr<IndexedDBFactoryClient> factory_client,
                       const storage::BucketLocator& bucket_locator,
                       const base::FilePath& data_directory,
                       bool force_close);

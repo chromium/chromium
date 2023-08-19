@@ -9,8 +9,8 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "chromeos/ash/services/secure_channel/ble_constants.h"
 #include "chromeos/ash/services/secure_channel/fake_ble_synchronizer.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/shared/ble_constants.h"
 #include "device/bluetooth/bluetooth_advertisement.h"
 #include "device/bluetooth/test/mock_bluetooth_advertisement.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -125,7 +125,8 @@ class SecureChannelErrorTolerantBleAdvertisementImplTest
 
   std::unique_ptr<FakeBleSynchronizer> fake_synchronizer_;
 
-  raw_ptr<device::MockBluetoothAdvertisement, ExperimentalAsh>
+  raw_ptr<device::MockBluetoothAdvertisement,
+          DanglingUntriaged | ExperimentalAsh>
       fake_advertisement_;
 
   bool stopped_callback_called_;

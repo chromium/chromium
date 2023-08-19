@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@ import './cellular_setup_icons.html.js';
 
 import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ESimProfileProperties, ESimProfileRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
+import {ESimProfileProperties} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 
 import {getTemplate} from './profile_discovery_list_item.html.js';
 
@@ -28,11 +28,13 @@ Polymer({
   behaviors: [I18nBehavior],
 
   properties: {
-    /** @type {?ESimProfileRemote} */
-    profile: {
+    /**
+     * @type {?ESimProfileProperties}
+     */
+    profileProperties: {
       type: Object,
       value: null,
-      observer: 'onProfileChanged_',
+      notify: true,
     },
 
     selected: {
@@ -42,16 +44,6 @@ Polymer({
 
     showLoadingIndicator: {
       type: Boolean,
-    },
-
-    /**
-     * @type {?ESimProfileProperties}
-     * @private
-     */
-    profileProperties_: {
-      type: Object,
-      value: null,
-      notify: true,
     },
 
     /**
@@ -65,39 +57,10 @@ Polymer({
   },
 
   /** @private */
-  onProfileChanged_() {
-    if (!this.profile) {
-      this.profileProperties_ = null;
-      return;
-    }
-    this.profile.getProperties().then(response => {
-      this.profileProperties_ = response.properties;
-    });
-  },
-
-  /** @private */
   getProfileName_() {
-    if (!this.profileProperties_) {
+    if (!this.profileProperties) {
       return '';
     }
-    return String.fromCharCode(...this.profileProperties_.name.data);
-  },
-
-  /** @private */
-  getProfileProvider_() {
-    if (!this.profileProperties_) {
-      return '';
-    }
-    return String.fromCharCode(...this.profileProperties_.serviceProvider.data);
-  },
-
-  /**
-   * @return {string}
-   * @private
-   */
-  getProfileImage_() {
-    return this.isDarkModeActive_ ?
-        'chrome://resources/ash/common/cellular_setup/default_esim_profile_dark.svg' :
-        'chrome://resources/ash/common/cellular_setup/default_esim_profile.svg';
+    return String.fromCharCode(...this.profileProperties.name.data);
   },
 });

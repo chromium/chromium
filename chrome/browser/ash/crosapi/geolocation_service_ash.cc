@@ -8,6 +8,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/privacy_hub/privacy_hub_util.h"
 #include "chromeos/ash/components/network/geolocation_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -78,6 +79,15 @@ void GeolocationServiceAsh::GetWifiAccessPoints(
   ash::NetworkHandler::Get()->task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&DoWifiScanTaskOnNetworkHandlerThread,
                                 std::move(callback_on_current_thread)));
+}
+
+void GeolocationServiceAsh::TrackGeolocationAttempted(const std::string& name) {
+  ash::privacy_hub_util::TrackGeolocationAttempted(name);
+}
+
+void GeolocationServiceAsh::TrackGeolocationRelinquished(
+    const std::string& name) {
+  ash::privacy_hub_util::TrackGeolocationRelinquished(name);
 }
 
 }  // namespace crosapi

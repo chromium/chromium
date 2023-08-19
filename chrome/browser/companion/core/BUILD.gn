@@ -16,6 +16,8 @@ static_library("core") {
     "promo_handler.cc",
     "promo_handler.h",
     "signin_delegate.h",
+    "utils.cc",
+    "utils.h",
   ]
   public_deps = [ "//third_party/abseil-cpp:absl" ]
   deps = [
@@ -23,6 +25,7 @@ static_library("core") {
     "proto",
     "//base",
     "//chrome/browser/ui/side_panel:side_panel_enums",
+    "//chrome/common:constants",
     "//components/prefs",
     "//components/unified_consent",
     "//content/public/browser",
@@ -31,33 +34,42 @@ static_library("core") {
     "//services/metrics/public/cpp:ukm_builders",
     "//url",
   ]
+  if (!is_android) {
+    deps += [ "//chrome/browser/companion/visual_search:flags" ]
+  }
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "companion_metrics_logger_unittest.cc",
-    "companion_url_builder_unittest.cc",
-    "promo_handler_unittest.cc",
-  ]
+  if (!is_android) {
+    sources = [
+      "companion_metrics_logger_unittest.cc",
+      "companion_url_builder_unittest.cc",
+      "mock_signin_delegate.cc",
+      "mock_signin_delegate.h",
+      "promo_handler_unittest.cc",
+      "utils_unittest.cc",
+    ]
 
-  deps = [
-    ":core",
-    "mojom:mojo_bindings",
-    "proto",
-    "//base",
-    "//base/test:test_support",
-    "//chrome/browser/ui/side_panel:side_panel_enums",
-    "//chrome/test:test_support",
-    "//components/prefs",
-    "//components/ukm:test_support",
-    "//components/unified_consent",
-    "//content/public/browser",
-    "//content/test:test_support",
-    "//net",
-    "//services/metrics/public/cpp:ukm_builders",
-    "//testing/gmock",
-    "//testing/gtest",
-    "//url",
-  ]
+    deps = [
+      ":core",
+      "mojom:mojo_bindings",
+      "proto",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/companion/visual_search:flags",
+      "//chrome/browser/ui/side_panel:side_panel_enums",
+      "//chrome/test:test_support",
+      "//components/prefs",
+      "//components/ukm:test_support",
+      "//components/unified_consent",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//net",
+      "//services/metrics/public/cpp:ukm_builders",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//url",
+    ]
+  }
 }

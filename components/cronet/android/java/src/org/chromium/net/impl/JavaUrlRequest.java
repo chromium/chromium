@@ -4,6 +4,9 @@
 
 package org.chromium.net.impl;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.Network;
 import android.net.TrafficStats;
 import android.os.Build;
 import android.util.Log;
@@ -14,6 +17,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.net.CronetException;
 import org.chromium.net.InlineExecutionProhibitedException;
+import org.chromium.net.NetworkException;
 import org.chromium.net.ThreadStatsUid;
 import org.chromium.net.UploadDataProvider;
 import org.chromium.net.UrlResponseInfo;
@@ -39,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionException;
@@ -106,6 +111,8 @@ final class JavaUrlRequest extends UrlRequestBase {
     private final JavaCronetEngine mEngine;
     private final int mCronetEngineId;
     private final CronetLogger mLogger;
+
+    private final long mNetworkHandle;
 
     // Executor that runs one task at a time on an underlying Executor.
     // NOTE: Do not use to wrap user supplied Executor as lock is held while underlying execute()
@@ -181,52 +188,45 @@ final class JavaUrlRequest extends UrlRequestBase {
     JavaUrlRequest(JavaCronetEngine engine, Callback callback, final Executor executor,
             Executor userExecutor, String url, String userAgent, boolean allowDirectExecutor,
             boolean trafficStatsTagSet, int trafficStatsTag, final boolean trafficStatsUidSet,
-            final int trafficStatsUid) {
-        if (url == null) {
-            throw new NullPointerException("URL is required");
-        }
-        if (callback == null) {
-            throw new NullPointerException("Listener is required");
-        }
-        if (executor == null) {
-            throw new NullPointerException("Executor is required");
-        }
-        if (userExecutor == null) {
-            throw new NullPointerException("userExecutor is required");
-        }
+            final int trafficStatsUid, long networkHandle) {
+            Objects.requireNonNull(url, "URL is required");
+            Objects.requireNonNull(callback, "Listener is required");
+            Objects.requireNonNull(executor, "Executor is required");
+            Objects.requireNonNull(userExecutor, "userExecutor is required");
 
-        mAllowDirectExecutor = allowDirectExecutor;
-        mCallbackAsync = new AsyncUrlRequestCallback(callback, userExecutor);
-        final int trafficStatsTagToUse =
-                trafficStatsTagSet ? trafficStatsTag : TrafficStats.getThreadStatsTag();
-        mExecutor = new SerializingExecutor(new Executor() {
-            @Override
-            public void execute(final Runnable command) {
-                executor.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        int oldTag = TrafficStats.getThreadStatsTag();
-                        TrafficStats.setThreadStatsTag(trafficStatsTagToUse);
-                        if (trafficStatsUidSet) {
-                            ThreadStatsUid.set(trafficStatsUid);
-                        }
-                        try {
-                            command.run();
-                        } finally {
+            mAllowDirectExecutor = allowDirectExecutor;
+            mCallbackAsync = new AsyncUrlRequestCallback(callback, userExecutor);
+            final int trafficStatsTagToUse =
+                    trafficStatsTagSet ? trafficStatsTag : TrafficStats.getThreadStatsTag();
+            mExecutor = new SerializingExecutor(new Executor() {
+                @Override
+                public void execute(final Runnable command) {
+                    executor.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            int oldTag = TrafficStats.getThreadStatsTag();
+                            TrafficStats.setThreadStatsTag(trafficStatsTagToUse);
                             if (trafficStatsUidSet) {
-                                ThreadStatsUid.clear();
+                                ThreadStatsUid.set(trafficStatsUid);
                             }
-                            TrafficStats.setThreadStatsTag(oldTag);
+                            try {
+                                command.run();
+                            } finally {
+                                if (trafficStatsUidSet) {
+                                    ThreadStatsUid.clear();
+                                }
+                                TrafficStats.setThreadStatsTag(oldTag);
+                            }
                         }
-                    }
-                });
-            }
-        });
-        mEngine = engine;
-        mCronetEngineId = engine.getCronetEngineId();
-        mLogger = engine.getCronetLogger();
-        mCurrentUrl = url;
-        mUserAgent = userAgent;
+                    });
+                }
+            });
+            mEngine = engine;
+            mCronetEngineId = engine.getCronetEngineId();
+            mLogger = engine.getCronetLogger();
+            mCurrentUrl = url;
+            mUserAgent = userAgent;
+            mNetworkHandle = networkHandle;
     }
 
     @Override
@@ -589,7 +589,19 @@ final class JavaUrlRequest extends UrlRequestBase {
                     mCurrentUrlConnection.disconnect();
                     mCurrentUrlConnection = null;
                 }
-                mCurrentUrlConnection = (HttpURLConnection) url.openConnection();
+
+                if (mNetworkHandle == CronetEngineBase.DEFAULT_NETWORK_HANDLE
+                        || Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                    mCurrentUrlConnection = (HttpURLConnection) url.openConnection();
+                } else {
+                    Network network = getNetworkFromHandle(mNetworkHandle);
+                    if (network == null) {
+                        throw new NetworkExceptionImpl("Network bound to request not found",
+                                NetworkException.ERROR_ADDRESS_UNREACHABLE,
+                                -4 /*Invalid argument*/);
+                    }
+                    mCurrentUrlConnection = (HttpURLConnection) network.openConnection(url);
+                }
                 mCurrentUrlConnection.setInstanceFollowRedirects(false);
                 if (!mRequestHeaders.containsKey(USER_AGENT)) {
                     mRequestHeaders.put(USER_AGENT, mUserAgent);
@@ -1044,5 +1056,17 @@ final class JavaUrlRequest extends UrlRequestBase {
                 }
             }
         });
+    }
+
+    private Network getNetworkFromHandle(long networkHandle) {
+        Network[] networks = ((ConnectivityManager) mEngine.getContext().getSystemService(
+                                      Context.CONNECTIVITY_SERVICE))
+                                     .getAllNetworks();
+
+        for (Network network : networks) {
+            if (network.getNetworkHandle() == networkHandle) return network;
+        }
+
+        return null;
     }
 }

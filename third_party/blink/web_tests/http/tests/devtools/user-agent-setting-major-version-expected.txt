@@ -1,6 +1,6 @@
 Test user agent setting
 
-Detected Chrome user agent version: 999.77.34.5
+Detected Chrome user agent version: 999.0.0.0
 Generated app version: 999.0.100.0
 Android (4.0.2) Browser — Galaxy Nexus: PASSED
 Android (2.3) Browser — Nexus S: PASSED

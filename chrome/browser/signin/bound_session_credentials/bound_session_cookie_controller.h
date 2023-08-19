@@ -5,9 +5,12 @@
 #ifndef CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_COOKIE_CONTROLLER_H_
 #define CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_COOKIE_CONTROLLER_H_
 
+#include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_registration_params.pb.h"
+#include "chrome/common/renderer_configuration.mojom.h"
 #include "url/gurl.h"
 
 // This class is responsible for tracking a single bound session cookie:
@@ -29,15 +32,21 @@ class BoundSessionCookieController {
  public:
   class Delegate {
    public:
-    // Called when the cookie tracked in this controller has a change in its
-    // expiration date. Cookie deletion is considered as a change in the
-    // expiration date to the null time.
-    virtual void OnCookieExpirationDateChanged() = 0;
+    // Called when the cookie refresh request results in a persistent error that
+    // can't be fixed by retrying. `BoundSessionCookieController` is expected to
+    // be deleted after this call.
+    virtual void TerminateSession() = 0;
+
+    // Called when the bound session parameters change, for example the minimum
+    // cookie expiration date changes. Cookie deletion is considered as a change
+    // in the expiration date to the null time.
+    virtual void OnBoundSessionParamsChanged() = 0;
   };
 
-  BoundSessionCookieController(const GURL& url,
-                               const std::string& cookie_name,
-                               Delegate* delegate);
+  BoundSessionCookieController(
+      bound_session_credentials::RegistrationParams registration_params,
+      const base::flat_set<std::string>& cookie_names,
+      Delegate* delegate);
 
   virtual ~BoundSessionCookieController();
 
@@ -51,13 +60,17 @@ class BoundSessionCookieController {
       base::OnceClosure resume_blocked_request) = 0;
 
   const GURL& url() const { return url_; }
-  const std::string& cookie_name() const { return cookie_name_; }
-  base::Time cookie_expiration_time() { return cookie_expiration_time_; }
+  base::Time min_cookie_expiration_time();
+  chrome::mojom::BoundSessionParamsPtr bound_session_params();
 
  protected:
   const GURL url_;
-  const std::string cookie_name_;
-  base::Time cookie_expiration_time_;
+  // Map from cookie name to cookie expiration time, it is expected to have two
+  // elements the 1P and 3P cookies.
+  // Cookie expiration time is reduced by threshold to guarantee cookie will be
+  // fresh when cookies are added to the request, as URL Loader throttle(s)
+  // attached to the request may decide to defer it.
+  base::flat_map<std::string, base::Time> bound_cookies_info_;
   raw_ptr<Delegate> delegate_;
 };
 

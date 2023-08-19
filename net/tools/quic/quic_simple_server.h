@@ -73,6 +73,8 @@ class QuicSimpleServer : public quic::QuicSpdyServerBase {
 
   IPEndPoint server_address() const { return server_address_; }
 
+  quic::QuicCryptoServerConfig* crypto_config() { return &crypto_config_; }
+
  private:
   friend class test::QuicSimpleServerPeer;
 

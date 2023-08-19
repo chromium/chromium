@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -16,10 +17,13 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
+#include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/clock.h"
 #include "build/build_config.h"
 #include "components/feature_engagement/internal/availability_model_impl.h"
+#include "components/feature_engagement/internal/blocked_iph_features.h"
 #include "components/feature_engagement/internal/chrome_variations_configuration.h"
 #include "components/feature_engagement/internal/display_lock_controller_impl.h"
 #include "components/feature_engagement/internal/editable_configuration.h"
@@ -36,6 +40,7 @@
 #include "components/feature_engagement/internal/proto/availability.pb.h"
 #include "components/feature_engagement/internal/stats.h"
 #include "components/feature_engagement/internal/system_time_provider.h"
+#include "components/feature_engagement/internal/testing_clock_time_provider.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/feature_engagement/public/group_constants.h"
@@ -100,7 +105,8 @@ Tracker* Tracker::Create(
     const base::FilePath& storage_dir,
     const scoped_refptr<base::SequencedTaskRunner>& background_task_runner,
     leveldb_proto::ProtoDatabaseProvider* db_provider,
-    base::WeakPtr<TrackerEventExporter> event_exporter) {
+    base::WeakPtr<TrackerEventExporter> event_exporter,
+    ConfigurationProviderList configuration_providers) {
   DVLOG(2) << "Creating Tracker";
   if (base::FeatureList::IsEnabled(kIPHDemoMode))
     return CreateDemoModeTracker().release();
@@ -114,8 +120,9 @@ Tracker* Tracker::Create(
   auto event_store =
       std::make_unique<PersistentEventStore>(std::move(event_db));
 
-  auto configuration = std::make_unique<ChromeVariationsConfiguration>();
-  configuration->ParseConfigs(GetAllFeatures(), GetAllGroups());
+  auto configuration = std::make_unique<ChromeVariationsConfiguration>(
+      std::move(configuration_providers));
+  configuration->LoadConfigs(GetAllFeatures(), GetAllGroups());
 
   auto event_storage_validator =
       std::make_unique<FeatureConfigEventStorageValidator>();
@@ -371,7 +378,15 @@ void TrackerImpl::UnregisterPriorityNotificationHandler(
 }
 
 const Configuration* TrackerImpl::GetConfigurationForTesting() const {
+  CHECK_IS_TEST();
   return configuration_.get();
+}
+
+void TrackerImpl::SetClockForTesting(const base::Clock& clock,
+                                     base::Time& initial_now) {
+  CHECK_IS_TEST();
+  time_provider_ =
+      std::make_unique<TestingClockTimeProvider>(clock, initial_now);
 }
 
 bool TrackerImpl::IsInitialized() const {
@@ -455,29 +470,18 @@ void TrackerImpl::OnReceiveExportedEvents(
 }
 
 // static
-bool TrackerImpl::IsFeatureBlockedByTest(const base::Feature& feature) {
-  auto& data = GetAllowedTestFeatureMap();
-  // Refcount for nullptr is the number of active ScopedIphFeatureList.
-  if (!data[nullptr]) {
-    return false;
-  }
-
-  // If the refcount for the feature is nonzero, then it is explicitly allowed.
-  if (data[&feature]) {
-    return false;
-  }
-
-  // At least one ScopedIphFeatureList is active and this feature is not
-  // explicitly allowed.
-  return true;
+void Tracker::PropagateTestStateToChildProcess(
+    base::CommandLine& command_line) {
+  auto* const blocked = BlockedIphFeatures::GetInstance();
+  base::AutoLock lock(blocked->GetLock());
+  blocked->MaybeWriteToCommandLine(command_line);
 }
 
 // static
-std::map<const base::Feature*, size_t>&
-TrackerImpl::GetAllowedTestFeatureMap() {
-  static base::NoDestructor<std::map<const base::Feature*, size_t>> instance{
-      {std::make_pair(nullptr, 0)}};
-  return *instance;
+bool TrackerImpl::IsFeatureBlockedByTest(const base::Feature& feature) {
+  auto* const blocked = BlockedIphFeatures::GetInstance();
+  base::AutoLock lock(blocked->GetLock());
+  return blocked->IsFeatureBlocked(feature.name);
 }
 
 }  // namespace feature_engagement

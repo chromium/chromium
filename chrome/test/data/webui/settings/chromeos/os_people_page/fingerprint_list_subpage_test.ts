@@ -5,8 +5,7 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {FingerprintBrowserProxyImpl, FingerprintResultType, FingerprintSetupStep, SettingsFingerprintListSubpageElement, SettingsSetupFingerprintDialogElement} from 'chrome://os-settings/lazy_load.js';
-import {Router, routes} from 'chrome://os-settings/os_settings.js';
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {CrDialogElement, Router, routes} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
 import {DomRepeatEvent, flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

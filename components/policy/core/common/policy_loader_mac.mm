@@ -8,13 +8,13 @@
 
 #include <Foundation/Foundation.h>
 
+#include "base/apple/foundation_util.h"
 #include "base/enterprise_util.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/mac/foundation_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
@@ -24,16 +24,11 @@
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/mac_util.h"
 #include "components/policy/core/common/policy_bundle.h"
-#include "components/policy/core/common/policy_load_status.h"
 #include "components/policy/core/common/policy_loader_common.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/preferences_mac.h"
 #include "components/policy/core/common/schema.h"
 #include "components/policy/core/common/schema_map.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace policy {
 
@@ -94,10 +89,8 @@ void PolicyLoaderMac::InitOnBackgroundThread() {
   base::UmaHistogramBoolean("EnterpriseCheck.IsEnterpriseUser",
                             base::IsEnterpriseDevice());
 
-  base::UmaHistogramEnumeration("EnterpriseCheck.Mac.IsDeviceMDMEnrolledOld",
-                                base::IsDeviceRegisteredWithManagementOld());
   base::UmaHistogramEnumeration("EnterpriseCheck.Mac.IsDeviceMDMEnrolledNew",
-                                base::IsDeviceRegisteredWithManagementNew());
+                                base::IsDeviceRegisteredWithManagement());
   base::DeviceUserDomainJoinState state =
       base::AreDeviceAndUserJoinedToDomain();
   base::UmaHistogramBoolean("EnterpriseCheck.Mac.IsDeviceDomainJoined",
@@ -114,8 +107,6 @@ PolicyBundle PolicyLoaderMac::Load() {
   PolicyMap& chrome_policy =
       bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
 
-  PolicyLoadStatusUmaReporter status;
-  bool policy_present = false;
   const Schema* schema =
       schema_map()->GetSchema(PolicyNamespace(POLICY_DOMAIN_CHROME, ""));
   for (Schema::Iterator it = schema->GetPropertiesIterator(); !it.IsAtEnd();
@@ -126,7 +117,6 @@ PolicyBundle PolicyLoaderMac::Load() {
         preferences_->CopyAppValue(name, application_id_));
     if (!value)
       continue;
-    policy_present = true;
     bool forced = preferences_->AppValueIsForced(name, application_id_);
     PolicyLevel level =
         forced ? POLICY_LEVEL_MANDATORY : POLICY_LEVEL_RECOMMENDED;
@@ -140,13 +130,8 @@ PolicyBundle PolicyLoaderMac::Load() {
     if (policy) {
       chrome_policy.Set(it.key(), level, scope, POLICY_SOURCE_PLATFORM,
                         std::move(*policy), nullptr);
-    } else {
-      status.Add(POLICY_LOAD_STATUS_PARSE_ERROR);
     }
   }
-
-  if (!policy_present)
-    status.Add(POLICY_LOAD_STATUS_NO_POLICY);
 
   // Load policy for the registered components.
   LoadPolicyForDomain(POLICY_DOMAIN_EXTENSIONS, "extensions", &bundle);
@@ -177,8 +162,9 @@ base::FilePath PolicyLoaderMac::GetManagedPolicyPath(CFStringRef bundle_id) {
   // missed the change.
 
   base::FilePath path;
-  if (!base::mac::GetLocalDirectory(NSLibraryDirectory, &path))
+  if (!base::apple::GetLocalDirectory(NSLibraryDirectory, &path)) {
     return base::FilePath();
+  }
   path = path.Append(FILE_PATH_LITERAL("Managed Preferences"));
   char* login = getlogin();
   if (!login)

@@ -139,7 +139,8 @@ class ArcDlcInstallerTest : public testing::Test {
     return dlc_list;
   }
 
-  raw_ptr<ash::FakeDlcserviceClient, ExperimentalAsh> fake_dlc_client_;
+  raw_ptr<ash::FakeDlcserviceClient, DanglingUntriaged | ExperimentalAsh>
+      fake_dlc_client_;
   base::test::SingleThreadTaskEnvironment task_environment;
   std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
 };

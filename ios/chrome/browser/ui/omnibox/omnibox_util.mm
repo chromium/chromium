@@ -8,11 +8,8 @@
 #import "base/strings/utf_string_conversions.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/grit/ios_theme_resources.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -84,8 +81,11 @@ UIImage* GetOmniboxSuggestionIconForAutocompleteMatchType(
 
 // Returns the asset with "always template" rendering mode.
 UIImage* GetLocationBarSecurityIcon(LocationBarSecurityIconType iconType) {
-  return DefaultSymbolTemplateWithPointSize(
-      GetLocationBarSecuritySymbolName(iconType), kSymbolLocationBarPointSize);
+  NSString* name = GetLocationBarSecuritySymbolName(iconType);
+  if (!name) {
+    return nil;
+  }
+  return DefaultSymbolTemplateWithPointSize(name, kSymbolLocationBarPointSize);
 }
 
 // Converts the `security_level` to an appropriate security icon type.
@@ -98,8 +98,12 @@ LocationBarSecurityIconType GetLocationBarSecurityIconTypeForSecurityState(
     case security_state::WARNING:
       return NOT_SECURE_WARNING;
     case security_state::SECURE:
+      return base::FeatureList::IsEnabled(kOmniboxLockIconEnabled) ? SECURE
+                                                                   : NONE;
     case security_state::SECURE_WITH_POLICY_INSTALLED_CERT:
-      return SECURE;
+      NOTREACHED()
+          << "SECURE_WITH_POLICY_INSTALLED_CERT is used only on ChromeOS";
+      return NONE;
     case security_state::SECURITY_LEVEL_COUNT:
       NOTREACHED();
       return LOCATION_BAR_SECURITY_ICON_TYPE_COUNT;

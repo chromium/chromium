@@ -8,11 +8,17 @@
 #include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/mojom/input_device_settings.mojom-forward.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
+#include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
+#include "base/containers/contains.h"
 #include "base/containers/cxx20_erase_vector.h"
-#include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
+#include "base/values.h"
+#include "components/prefs/pref_service.h"
 #include "device/bluetooth/bluetooth_common.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "ui/events/devices/device_data_manager.h"
@@ -26,6 +32,11 @@ namespace {
 
 using DeviceId = InputDeviceSettingsController::DeviceId;
 
+bool AreOnLoginScreen() {
+  auto status = Shell::Get()->session_controller()->login_status();
+  return status == LoginStatus::NOT_LOGGED_IN;
+}
+
 DeviceId ExtractDeviceIdFromInputDevice(const ui::InputDevice& device) {
   return device.id;
 }
@@ -36,10 +47,66 @@ bool IsDeviceASuspectedImposter(BluetoothDevicesObserver* bluetooth_observer,
   return false;
 }
 
+// Imposter here means a device that has a virtual keyboard device as well as a
+// virtual mouse device presented to evdev and the keyboard device is "fake".
+bool IsKeyboardAKnownImposterFalsePositive(const ui::InputDevice& device) {
+  if (!Shell::Get()->session_controller()->IsActiveUserSessionStarted()) {
+    return false;
+  }
+
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  if (!prefs) {
+    return false;
+  }
+
+  const auto& imposters =
+      prefs->GetList(prefs::kKeyboardDeviceImpostersListPref);
+  const std::string device_key = BuildDeviceKey(device);
+  return base::Contains(imposters, device_key);
+}
+
+// Saves `imposter_false_positives_to_add` to the know list of imposters in
+// prefs. Clears the list if it successfully adds the devices to prefs.
+void SaveKeyboardsToImposterPref(
+    base::flat_set<std::string>& imposter_false_positives_to_add) {
+  if (!Shell::Get()->session_controller()->IsActiveUserSessionStarted()) {
+    return;
+  }
+
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  if (!prefs) {
+    return;
+  }
+
+  auto updated_imposters =
+      prefs->GetList(prefs::kKeyboardDeviceImpostersListPref).Clone();
+  for (const auto& device_key : imposter_false_positives_to_add) {
+    if (base::Contains(updated_imposters, device_key)) {
+      continue;
+    }
+
+    updated_imposters.Append(device_key);
+  }
+
+  prefs->SetList(prefs::kKeyboardDeviceImpostersListPref,
+                 std::move(updated_imposters));
+  imposter_false_positives_to_add.clear();
+}
+
 template <>
 bool IsDeviceASuspectedImposter<mojom::KeyboardPtr>(
     BluetoothDevicesObserver* bluetooth_observer,
     const ui::InputDevice& device) {
+  if (AreOnLoginScreen()) {
+    return false;
+  }
+
+  if (IsKeyboardAKnownImposterFalsePositive(device)) {
+    return false;
+  }
+
   // If the device is a keyboard that is known to pretend to have mouse-like
   // functionality, do not use the `suspected_imposter` field.
   if (IsKeyboardPretendingToBeMouse(device)) {
@@ -72,6 +139,10 @@ template <>
 bool IsDeviceASuspectedImposter<mojom::MousePtr>(
     BluetoothDevicesObserver* bluetooth_observer,
     const ui::InputDevice& device) {
+  if (AreOnLoginScreen()) {
+    return false;
+  }
+
   // If the device is a keyboard that is known to pretend to have mouse-like
   // functionality, the device should always be considered an imposter.
   if (IsKeyboardPretendingToBeMouse(device)) {
@@ -170,6 +241,7 @@ InputDeviceNotifier<MojomDevicePtr, InputDeviceType>::InputDeviceNotifier(
       device_lists_updated_callback_(callback) {
   DCHECK(connected_devices_);
   ui::DeviceDataManager::GetInstance()->AddObserver(this);
+  Shell::Get()->session_controller()->AddObserver(this);
   bluetooth_devices_observer_ =
       std::make_unique<BluetoothDevicesObserver>(base::BindRepeating(
           &InputDeviceNotifier<MojomDevicePtr, InputDeviceType>::
@@ -181,6 +253,7 @@ InputDeviceNotifier<MojomDevicePtr, InputDeviceType>::InputDeviceNotifier(
 template <typename MojomDevicePtr, typename InputDeviceType>
 InputDeviceNotifier<MojomDevicePtr, InputDeviceType>::~InputDeviceNotifier() {
   ui::DeviceDataManager::GetInstance()->RemoveObserver(this);
+  Shell::Get()->session_controller()->RemoveObserver(this);
 }
 
 template <typename MojomDevicePtr, typename InputDeviceType>
@@ -188,12 +261,46 @@ void InputDeviceNotifier<MojomDevicePtr, InputDeviceType>::RefreshDevices() {
   std::vector<InputDeviceType> devices_to_add;
   std::vector<DeviceId> device_ids_to_remove;
 
+  std::vector<InputDeviceType> updated_device_list = GetUpdatedDeviceList();
+  HandleImposterPref(updated_device_list);
   GetAddedAndRemovedDevices(bluetooth_devices_observer_.get(),
-                            GetUpdatedDeviceList(), *connected_devices_,
+                            updated_device_list, *connected_devices_,
                             &devices_to_add, &device_ids_to_remove);
 
   device_lists_updated_callback_.Run(std::move(devices_to_add),
                                      std::move(device_ids_to_remove));
+}
+
+template <typename MojomDevicePtr, typename InputDeviceType>
+void InputDeviceNotifier<MojomDevicePtr, InputDeviceType>::HandleImposterPref(
+    const std::vector<InputDeviceType>& updated_device_list) {
+  return;
+}
+
+template <>
+void InputDeviceNotifier<mojom::KeyboardPtr, ui::KeyboardDevice>::
+    HandleImposterPref(
+        const std::vector<ui::KeyboardDevice>& updated_device_list) {
+  // Use a temporary set to store the device ids of imposter devices so devices
+  // get removed upon device disconnect.
+  base::flat_set<DeviceId> updated_imposter_devices;
+  for (const ui::KeyboardDevice& device : updated_device_list) {
+    if (device.suspected_imposter) {
+      updated_imposter_devices.insert(device.id);
+      continue;
+    }
+
+    // If the device is no longer an imposter and once was (which means it was
+    // in `imposter_devices_`) add it to our list of device keys to add to the
+    // known imposter list.
+    if (imposter_devices_.contains(device.id)) {
+      imposter_false_positives_to_add_.insert(BuildDeviceKey(device));
+    }
+  }
+  imposter_devices_ = std::move(updated_imposter_devices);
+
+  // Always try to add additional devices to the imposter pref list.
+  SaveKeyboardsToImposterPref(imposter_false_positives_to_add_);
 }
 
 template <typename MojomDevicePtr, typename InputDeviceType>
@@ -205,6 +312,12 @@ void InputDeviceNotifier<MojomDevicePtr,
 template <typename MojomDevicePtr, typename InputDeviceType>
 void InputDeviceNotifier<MojomDevicePtr, InputDeviceType>::
     OnInputDeviceConfigurationChanged(uint8_t input_device_type) {
+  RefreshDevices();
+}
+
+template <typename MojomDevicePtr, typename InputDeviceType>
+void InputDeviceNotifier<MojomDevicePtr, InputDeviceType>::OnLoginStatusChanged(
+    LoginStatus login_status) {
   RefreshDevices();
 }
 

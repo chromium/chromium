@@ -88,6 +88,9 @@ class CORE_EXPORT StyleResolverState {
     return element_context_.ElementLinkState();
   }
 
+  // See inside_link_.
+  EInsideLink InsideLink() const;
+
   const ElementResolveContext& ElementContext() const {
     return element_context_;
   }
@@ -95,6 +98,16 @@ class CORE_EXPORT StyleResolverState {
   void SetStyle(const ComputedStyle& style) {
     // FIXME: Improve RAII of StyleResolverState to remove this function.
     style_builder_.emplace(style);
+    UpdateLengthConversionData();
+  }
+  void CreateNewStyle(
+      const ComputedStyle& source_for_noninherited,
+      const ComputedStyle& inherit_parent,
+      ComputedStyleBuilderBase::IsAtShadowBoundary is_at_shadow_boundary =
+          ComputedStyleBuilderBase::kNotAtShadowBoundary) {
+    // FIXME: Improve RAII of StyleResolverState to remove this function.
+    style_builder_.emplace(source_for_noninherited, inherit_parent,
+                           is_at_shadow_boundary);
     UpdateLengthConversionData();
   }
   ComputedStyleBuilder& StyleBuilder() { return *style_builder_; }
@@ -186,6 +199,7 @@ class CORE_EXPORT StyleResolverState {
   bool UsesHighlightPseudoInheritance() const {
     return uses_highlight_pseudo_inheritance_;
   }
+  bool IsOutsideFlatTree() const { return is_outside_flat_tree_; }
 
   bool CanTriggerAnimations() const { return can_trigger_animations_; }
 
@@ -225,6 +239,22 @@ class CORE_EXPORT StyleResolverState {
 
   void UpdateLengthConversionData();
 
+  void SetIsResolvingPositionFallbackStyle() {
+    is_resolving_position_fallback_style_ = true;
+  }
+  bool IsResolvingPositionFallbackStyle() const {
+    return is_resolving_position_fallback_style_;
+  }
+
+  float TextAutosizingMultiplier() const {
+    const ComputedStyle* old_style = GetElement().GetComputedStyle();
+    if (element_type_ != ElementType::kPseudoElement && old_style) {
+      return old_style->TextAutosizingMultiplier();
+    } else {
+      return 1.0f;
+    }
+  }
+
  private:
   CSSToLengthConversionData UnzoomedLengthConversionData(const FontSizeStyle&);
 
@@ -263,12 +293,25 @@ class CORE_EXPORT StyleResolverState {
   ElementType element_type_;
   Element* container_unit_context_;
 
+  // Whether this element is inside a link or not. Note that this is different
+  // from ElementLinkState() if the element is not a link itself but is inside
+  // one. It may also be overridden from non-visited to visited by devtools.
+  // This will eventually get stored on ComputedStyle, but since we do not have
+  // a ComputedStyle until pretty late in the process, keep it here until
+  // we have one.
+  //
+  // This is computed only once, lazily (thus the absl::optional).
+  mutable absl::optional<EInsideLink> inside_link_;
+
   scoped_refptr<const ComputedStyle> originating_element_style_;
   // True if we are resolving styles for a highlight pseudo-element.
   const bool is_for_highlight_;
   // True if this is a highlight style request, and highlight inheritance
   // should be used for this highlight pseudo.
   const bool uses_highlight_pseudo_inheritance_;
+  // See StyleRecalcContext::is_outside_flat_tree. Set to false if there is no
+  // StyleRecalcContext.
+  const bool is_outside_flat_tree_;
 
   // True if this style resolution can start or stop animations and transitions.
   // One case where animations and transitions can not be triggered is when we
@@ -279,7 +322,8 @@ class CORE_EXPORT StyleResolverState {
   bool can_trigger_animations_ = false;
 
   // Set to true if a given style resolve produced an empty MatchResult.
-  // This is used to return a nullptr style for pseudo-element style resolves.
+  // This is used to return a nullptr style for pseudo-element style
+  // resolves.
   bool had_no_matched_properties_ = false;
 
   // True whenever a matching rule in a non-matching container query contains
@@ -292,6 +336,10 @@ class CORE_EXPORT StyleResolverState {
   // True if the cascade rejected any properties with the kLegacyOverlapping
   // flag.
   bool rejected_legacy_overlapping_ = false;
+
+  // True if we are currently resolving a position fallback style by applying
+  // rules in a `@try` block.
+  bool is_resolving_position_fallback_style_ = false;
 };
 
 }  // namespace blink

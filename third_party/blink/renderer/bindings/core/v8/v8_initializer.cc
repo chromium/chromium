@@ -231,30 +231,6 @@ void V8Initializer::MessageHandlerInWorker(v8::Local<v8::Message> message,
   }
 }
 
-namespace {
-
-bool IsRejectedPromisesPerWindowAgent() {
-  static bool g_rejected_promises_per_window_agent =
-      base::FeatureList::IsEnabled(scheduler::kRejectedPromisesPerWindowAgent);
-  return g_rejected_promises_per_window_agent;
-}
-
-static RejectedPromises& RejectedPromisesOnMainThread() {
-  DCHECK(IsMainThread());
-  DCHECK(!IsRejectedPromisesPerWindowAgent());
-  DEFINE_STATIC_LOCAL(scoped_refptr<RejectedPromises>, rejected_promises,
-                      (RejectedPromises::Create()));
-  return *rejected_promises;
-}
-
-}  // namespace
-
-void V8Initializer::ReportRejectedPromisesOnMainThread() {
-  if (IsRejectedPromisesPerWindowAgent())
-    return;
-  RejectedPromisesOnMainThread().ProcessQueue();
-}
-
 static void PromiseRejectHandler(v8::PromiseRejectMessage data,
                                  RejectedPromises& rejected_promises,
                                  ScriptState* script_state) {
@@ -332,12 +308,8 @@ static void PromiseRejectHandlerInMainThread(v8::PromiseRejectMessage data) {
   if (!script_state->ContextIsValid())
     return;
 
-  RejectedPromises* rejected_promises;
-  if (IsRejectedPromisesPerWindowAgent()) {
-    rejected_promises = &window->GetAgent()->GetRejectedPromises();
-  } else {
-    rejected_promises = &RejectedPromisesOnMainThread();
-  }
+  RejectedPromises* rejected_promises =
+      &window->GetAgent()->GetRejectedPromises();
   PromiseRejectHandler(data, *rejected_promises, script_state);
 }
 
@@ -595,6 +567,16 @@ bool WasmGCEnabledCallback(v8::Local<v8::Context> context) {
   return RuntimeEnabledFeatures::WebAssemblyGCEnabled(execution_context);
 }
 
+bool JavaScriptCompileHintsMagicEnabledCallback(
+    v8::Local<v8::Context> context) {
+  ExecutionContext* execution_context = ToExecutionContext(context);
+  if (!execution_context) {
+    return false;
+  }
+  return RuntimeEnabledFeatures::JavaScriptCompileHintsMagicRuntimeEnabled(
+      execution_context);
+}
+
 v8::MaybeLocal<v8::Promise> HostImportModuleDynamically(
     v8::Local<v8::Context> context,
     v8::Local<v8::Data> v8_host_defined_options,
@@ -705,6 +687,8 @@ void InitializeV8Common(v8::Isolate* isolate) {
   isolate->SetWasmGCEnabledCallback(WasmGCEnabledCallback);
   isolate->SetSharedArrayBufferConstructorEnabledCallback(
       SharedArrayBufferConstructorEnabledCallback);
+  isolate->SetJavaScriptCompileHintsMagicEnabledCallback(
+      JavaScriptCompileHintsMagicEnabledCallback);
   isolate->SetHostImportModuleDynamicallyCallback(HostImportModuleDynamically);
   isolate->SetHostInitializeImportMetaObjectCallback(
       HostGetImportMetaProperties);
@@ -856,8 +840,8 @@ void V8Initializer::InitializeMainThread(
     add_histogram_sample_callback = AddHistogramSample;
   }
   v8::Isolate* isolate = V8PerIsolateData::Initialize(
-      scheduler->V8TaskRunner(), snapshot_mode, create_histogram_callback,
-      add_histogram_sample_callback);
+      scheduler->V8TaskRunner(), scheduler->V8LowPriorityTaskRunner(),
+      snapshot_mode, create_histogram_callback, add_histogram_sample_callback);
   scheduler->SetV8Isolate(isolate);
 
   // ThreadState::isolate_ needs to be set before setting the EmbedderHeapTracer
@@ -899,12 +883,13 @@ void V8Initializer::InitializeMainThread(
 }
 
 // Stack size for workers is limited to 500KB because default stack size for
-// secondary threads is 512KB on Mac OS X. See GetDefaultThreadStackSize() in
-// base/threading/platform_thread_mac.mm for details.
-// For 32bit Windows, the stack region always starts with an odd number of
+// secondary threads is 512KB on macOS. See GetDefaultThreadStackSize() in
+// base/threading/platform_thread_apple.mm for details.
+//
+// For 32-bit Windows, the stack region always starts with an odd number of
 // reserved pages, followed by two guard pages, followed by the committed
 // memory for the stack, and the worker stack size need to be reduced
-// (crbug.com/1412239).
+// (https://crbug.com/1412239).
 #if defined(ARCH_CPU_32_BITS) && BUILDFLAG(IS_WIN)
 static const int kWorkerMaxStackSize = 492 * 1024;
 #else

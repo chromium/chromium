@@ -30,13 +30,13 @@ found in the LICENSE file.
   }
 </style>
 
-<h1 tabindex="0">Get a Support Tool link</h1>
-<div class="support-tool-title">Support Case ID</div>
+<h1 tabindex="0">$i18n{urlGeneratorPageTitle}</h1>
+<div class="support-tool-title">$i18n{supportCaseId}</div>
 <cr-input id="caseIdInput" class="support-case-id" value="{{caseId_}}"
-  spellcheck="false" maxlength="20" aria-label="Support Case ID">
+  spellcheck="false" maxlength="20" aria-label="$i18n{supportCaseId}">
 </cr-input>
 <div id="data-sources-title" class="support-tool-title" tabindex="0">
-  Data sources to collect
+  $i18n{dataCollectorListTitle}
 </div>
 <div class="data-collector-list" aria-labelledby="data-sources-title">
   <template is="dom-repeat" items="[[dataCollectors_]]">
@@ -47,19 +47,19 @@ found in the LICENSE file.
   </template>
 </div>
 
-<div class="support-tool-title" tabindex="0">Get a link</div>
+<div class="support-tool-title" tabindex="0">$i18n{getLinkText}</div>
 <div>
   <p id="info-text">
-    Copy and send this link to the user to collect the logs.
+    $i18n{copyLinkDescription}
   </p>
   <cr-button id="copyURLButton" class="navigation-buttons action-button"
       on-click="onCopyUrlClick_" disabled="[[buttonDisabled_]]">
-    Copy link
+      $i18n{copyLinkButtonText}
   </cr-button>
   <cr-button id="copyTokenButton" class="navigation-buttons action-button"
       on-click="onCopyTokenClick_" disabled="[[buttonDisabled_]]"
       hidden="[[hideTokenButton_]]">
-    Copy token
+      $i18n{copyTokenButtonText}
   </cr-button>
 </div>
 <cr-toast id="copyToast" duration="5000" tabindex="0"
@@ -70,6 +70,6 @@ found in the LICENSE file.
     aria-labelledby="error-message">
   <span id="error-message">[[errorMessage_]]</span>
   <cr-button on-click="onErrorMessageToastCloseClicked_">
-    Dismiss
+    $i18n{dismissButtonText}
   </cr-button>
 </cr-toast>

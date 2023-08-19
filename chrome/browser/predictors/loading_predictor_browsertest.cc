@@ -45,6 +45,7 @@
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/hints.pb.h"
+#include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
@@ -138,6 +139,17 @@ class PredictorInitializer : public TestObserver {
 
  private:
   raw_ptr<ResourcePrefetchPredictor> predictor_;
+  base::RunLoop run_loop_;
+};
+
+class LcpElementLearnWaiter : public TestObserver {
+ public:
+  explicit LcpElementLearnWaiter(ResourcePrefetchPredictor* predictor)
+      : TestObserver(predictor) {}
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  void OnLcppLearned() override { run_loop_.Quit(); }
   base::RunLoop run_loop_;
 };
 
@@ -877,6 +889,109 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTest, PreconnectNonCors) {
   connection_tracker()->WaitForAcceptedConnections(1u);
   EXPECT_EQ(1u, connection_tracker()->GetAcceptedSocketCount());
   EXPECT_EQ(0u, connection_tracker()->GetReadSocketCount());
+}
+
+class LCPCriticalPathPredictorBrowserTest : public LoadingPredictorBrowserTest {
+ public:
+  LCPCriticalPathPredictorBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kLCPCriticalPathPredictor}, {});
+  }
+
+  std::vector<std::string> ExpectLcpElementLocatorsPrediction(
+      const base::Location& from_here,
+      const GURL& url,
+      size_t expected_locator_count) {
+    std::vector<std::string> locators = loading_predictor()
+                                            ->resource_prefetch_predictor()
+                                            ->PredictLcpElementLocators(url);
+    EXPECT_EQ(expected_locator_count, locators.size()) << from_here.ToString();
+    return locators;
+  }
+
+  void NavigateAndWaitForLcpElement(const base::Location& from_here,
+                                    const GURL& url) {
+    LcpElementLearnWaiter lcp_element_waiter(
+        loading_predictor()->resource_prefetch_predictor());
+    page_load_metrics::PageLoadMetricsTestWaiter waiter(
+        browser()->tab_strip_model()->GetActiveWebContents());
+    waiter.AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
+                                  TimingField::kLargestContentfulPaint);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url))
+        << from_here.ToString();
+    waiter.Wait();
+    // Navigate to about:blank to force recording a LCP element.
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")))
+        << from_here.ToString();
+    lcp_element_waiter.Wait();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that the LoadingPredictor has a LCP critical path predictor
+// (LCPP) prediction after navigating to it.
+// LCPP:
+// https://docs.google.com/document/d/18qTNRyv_9K2CtvVrl_ancLzPxiAnfAcbvrCNegU9IBM
+// LCP: https://web.dev/lcp/
+IN_PROC_BROWSER_TEST_F(LCPCriticalPathPredictorBrowserTest,
+                       LearnLCPPFromNavigation) {
+  const GURL kUrlA =
+      embedded_test_server()->GetURL("p.com", "/predictors/load_image_a.html");
+  const GURL kUrlB =
+      embedded_test_server()->GetURL("p.com", "/predictors/load_image_b.html");
+  const GURL kUrlC =
+      embedded_test_server()->GetURL("q.com", "/predictors/load_image_a.html");
+
+  // There is no knowledge in the beginning.
+  ExpectLcpElementLocatorsPrediction(FROM_HERE, kUrlA,
+                                     /*expected_locator_count=*/0);
+  ExpectLcpElementLocatorsPrediction(FROM_HERE, kUrlB,
+                                     /*expected_locator_count=*/0);
+  ExpectLcpElementLocatorsPrediction(FROM_HERE, kUrlC,
+                                     /*expected_locator_count=*/0);
+
+  NavigateAndWaitForLcpElement(FROM_HERE, kUrlA);
+  // The locators should contain [lcp_element_for_a].
+  std::vector<std::string> locators_1 =
+      ExpectLcpElementLocatorsPrediction(FROM_HERE, kUrlA,
+                                         /*expected_locator_count=*/1);
+  std::vector<std::string> locators_2 =
+      ExpectLcpElementLocatorsPrediction(FROM_HERE, kUrlB,
+                                         /*expected_locator_count=*/1);
+  EXPECT_EQ(locators_1, locators_2);
+  // The locator is encoded in a binary form. So storing the locator for a LCP
+  // node for kUrlA to use later validation.
+  const std::string& locator_for_a = locators_2[0];
+  ExpectLcpElementLocatorsPrediction(FROM_HERE, kUrlC,
+                                     /*expected_locator_count=*/0);
+
+  NavigateAndWaitForLcpElement(FROM_HERE, kUrlB);
+  // The locators should contain [lcp_element_for_a, lcp_element_for_b].
+  std::vector<std::string> locators_3 =
+      ExpectLcpElementLocatorsPrediction(FROM_HERE, kUrlA,
+                                         /*expected_locator_count=*/2);
+  std::vector<std::string> locators_4 =
+      ExpectLcpElementLocatorsPrediction(FROM_HERE, kUrlB,
+                                         /*expected_locator_count=*/2);
+  EXPECT_EQ(locators_3, locators_4);
+  ExpectLcpElementLocatorsPrediction(FROM_HERE, kUrlC,
+                                     /*expected_locator_count=*/0);
+
+  NavigateAndWaitForLcpElement(FROM_HERE, kUrlB);
+  std::vector<std::string> locators_5 =
+      ExpectLcpElementLocatorsPrediction(FROM_HERE, kUrlA,
+                                         /*expected_locator_count=*/2);
+  std::vector<std::string> locators_6 =
+      ExpectLcpElementLocatorsPrediction(FROM_HERE, kUrlB,
+                                         /*expected_locator_count=*/2);
+  // The locators should contain [lcp_element_for_b, lcp_element_for_a].
+  // lcp_element_for_b must come first because we navigated to kUrlB twice.
+  EXPECT_EQ(locators_5, locators_6);
+  ExpectLcpElementLocatorsPrediction(FROM_HERE, kUrlC,
+                                     /*expected_locator_count=*/0);
+  EXPECT_EQ(locator_for_a, locators_6[1]);
 }
 
 enum class NetworkIsolationKeyMode {
@@ -2061,7 +2176,7 @@ IN_PROC_BROWSER_TEST_P(
               Optional(network::CorsErrorStatus(
                   network::mojom::CorsError::kInsecurePrivateNetwork,
                   network::mojom::IPAddressSpace::kUnknown,
-                  network::mojom::IPAddressSpace::kLoopback)));
+                  network::mojom::IPAddressSpace::kLocal)));
 }
 
 // This fixture is for disabling prefetching via test suite instantiation to
@@ -2197,7 +2312,7 @@ class MultiPageBrowserTest : public InProcessBrowserTest {
   content::WebContents* GetWebContents() { return web_contents_; }
 
   net::test_server::EmbeddedTestServerHandle test_server_handle_;
-  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
+  raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> web_contents_;
 };
 
 IN_PROC_BROWSER_TEST_F(MultiPageBrowserTest, LoadingPredictor) {

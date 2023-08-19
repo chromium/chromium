@@ -1068,11 +1068,14 @@ ScopedJavaLocalRef<jobject> BookmarkBridge::CreateJavaBookmark(
     read = reading_list_manager_->GetReadStatus(node);
   }
 
+  // TODO(crbug.com/1467559): Folders need to use most recent child's time for
+  // date_last_used.
   return Java_BookmarkBridge_createBookmarkItem(
       env, node->id(), type, ConvertUTF16ToJavaString(env, GetTitle(node)),
       url::GURLAndroid::FromNativeGURL(env, url), node->is_folder(), parent_id,
       GetBookmarkType(parent), IsEditable(node), IsManaged(node),
-      node->date_added().ToJavaTime(), read);
+      node->date_added().ToJavaTime(), read,
+      node->date_last_used().ToJavaTime());
 }
 
 void BookmarkBridge::ExtractBookmarkNodeInformation(

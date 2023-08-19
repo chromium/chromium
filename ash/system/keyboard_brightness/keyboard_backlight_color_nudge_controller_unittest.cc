@@ -8,7 +8,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/account_id/account_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,8 +24,7 @@ const AccountId account_id_1 = AccountId::FromUserEmailGaiaId(kUser1, kUser1);
 class KeyboardBacklightColorNudgeControllerTest : public AshTestBase {
  public:
   KeyboardBacklightColorNudgeControllerTest()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        scoped_feature_list_(features::kRgbKeyboard) {}
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   KeyboardBacklightColorNudgeControllerTest(
       const KeyboardBacklightColorNudgeControllerTest&) = delete;
@@ -47,9 +45,6 @@ class KeyboardBacklightColorNudgeControllerTest : public AshTestBase {
   }
 
   KeyboardBacklightColorNudgeController controller_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(KeyboardBacklightColorNudgeControllerTest, ShowEducationNudge) {

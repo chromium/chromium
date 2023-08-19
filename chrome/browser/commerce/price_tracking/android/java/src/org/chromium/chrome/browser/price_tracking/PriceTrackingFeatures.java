@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.price_tracking;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.FeatureList;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -75,9 +76,9 @@ public class PriceTrackingFeatures {
                 Profile.getLastUsedRegularProfile());
     }
 
-    @VisibleForTesting
     public static void setIsSignedInAndSyncEnabledForTesting(Boolean isSignedInAndSyncEnabled) {
         sIsSignedInAndSyncEnabledForTesting = isSignedInAndSyncEnabled;
+        ResettersForTesting.register(() -> sIsSignedInAndSyncEnabledForTesting = null);
     }
 
     /**
@@ -127,8 +128,8 @@ public class PriceTrackingFeatures {
         return isPriceTrackingEligible();
     }
 
-    @VisibleForTesting
     public static void setPriceTrackingEnabledForTesting(Boolean enabled) {
         sPriceTrackingEnabledForTesting = enabled;
+        ResettersForTesting.register(() -> sPriceTrackingEnabledForTesting = null);
     }
 }

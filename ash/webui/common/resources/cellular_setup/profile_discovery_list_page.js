@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@ import './profile_discovery_list_item.js';
 
 import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ESimProfileRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
+import {ESimProfileProperties} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 
 import {getTemplate} from './profile_discovery_list_page.html.js';
 
@@ -26,18 +26,18 @@ Polymer({
 
   properties: {
     /**
-     * @type {Array<!ESimProfileRemote>}
+     * @type {Array<!ESimProfileProperties>}
      * @private
      */
-    pendingProfiles: {
+    pendingProfileProperties: {
       type: Array,
     },
 
     /**
-     * @type {?ESimProfileRemote}
+     * @type {?ESimProfileProperties}
      * @private
      */
-    selectedProfile: {
+    selectedProfileProperties: {
       type: Object,
       notify: true,
     },
@@ -52,10 +52,10 @@ Polymer({
   },
 
   /**
-   * @param {ESimProfileRemote} profile
+   * @param {ESimProfileProperties} profileProperties
    * @private
    */
-  isProfileSelected_(profile) {
-    return this.selectedProfile === profile;
+  isProfilePropertiesSelected_(profileProperties) {
+    return this.selectedProfileProperties === profileProperties;
   },
 });

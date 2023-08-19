@@ -19,12 +19,14 @@ SelectToSpeakContextMenuTest = class extends SelectToSpeakE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
-    await importModule('EventGenerator', '/common/event_generator.js');
-    await importModule(
-        'selectToSpeak', '/select_to_speak/select_to_speak_main.js');
-    await importModule(
-        'SelectToSpeakConstants',
-        '/select_to_speak/select_to_speak_constants.js');
+
+    await Promise.all([
+      importModule('EventGenerator', '/common/event_generator.js'),
+      importModule('selectToSpeak', '/select_to_speak/select_to_speak_main.js'),
+      importModule(
+          'SelectToSpeakConstants',
+          '/select_to_speak/select_to_speak_constants.js'),
+    ]);
     selectToSpeak.prefsManager_.enhancedVoicesDialogShown_ = true;
   }
 };
@@ -42,8 +44,11 @@ AX_TEST_F(
       const menuName = chrome.i18n.getMessage(
           'select_to_speak_listen_context_menu_option_text');
       const listener = (change) => {
-        if (change.type === 'nodeCreated' && change.target.name === menuName) {
-          chrome.automation.removeTreeChangeObserver(listener);
+        // On Lacros, the context menu might be changed before we can click on
+        // it, whereas on Ash we can usually click on it first. Easiest to
+        // look for just node changed rather than created.
+        if (change.type === chrome.automation.TreeChangeType.NODE_CHANGED &&
+            change.target.name === menuName) {
           change.target.doDefault();
         }
       };
@@ -52,6 +57,7 @@ AX_TEST_F(
         assertEquals(this.mockTts.pendingUtterances().length, 1);
         this.assertEqualsCollapseWhitespace(utterance, 'This is some text');
         this.mockTts.finishPendingUtterance();
+        chrome.automation.removeTreeChangeObserver(listener);
       })]);
       chrome.automation.addTreeChangeObserver('allTreeChanges', listener);
       textNode.showContextMenu();

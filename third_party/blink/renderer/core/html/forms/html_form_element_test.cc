@@ -20,7 +20,7 @@ class HTMLFormElementTest : public PageTestBase {
 
 void HTMLFormElementTest::SetUp() {
   PageTestBase::SetUp();
-  GetDocument().SetMimeType("text/html");
+  GetDocument().SetMimeType(AtomicString("text/html"));
 }
 
 TEST_F(HTMLFormElementTest, UniqueRendererFormId) {
@@ -50,8 +50,8 @@ TEST_F(HTMLFormElementTest, ListedElementsNestedForms) {
   HTMLFormElement* form2 = MakeGarbageCollected<HTMLFormElement>(GetDocument());
   form1->AppendChild(form2);
 
-  HTMLInputElement* input = MakeGarbageCollected<HTMLInputElement>(
-      GetDocument(), CreateElementFlags::ByCreateElement());
+  HTMLInputElement* input =
+      MakeGarbageCollected<HTMLInputElement>(GetDocument());
   form2->AppendChild(input);
 
   ListedElement::List form1elements = form1->ListedElements();
@@ -67,8 +67,8 @@ TEST_F(HTMLFormElementTest, ListedElementsDetachedForm) {
   HTMLFormElement* form = MakeGarbageCollected<HTMLFormElement>(GetDocument());
   body->AppendChild(form);
 
-  HTMLInputElement* input = MakeGarbageCollected<HTMLInputElement>(
-      GetDocument(), CreateElementFlags::ByCreateElement());
+  HTMLInputElement* input =
+      MakeGarbageCollected<HTMLInputElement>(GetDocument());
   form->AppendChild(input);
 
   ListedElement::List listed_elements = form->ListedElements();
@@ -86,11 +86,11 @@ TEST_F(HTMLFormElementTest, ListedElementsDetachedForm) {
 // <body>
 //   <form id=form1>
 //     <div id=form1div>
-//       <template shadowroot=open>
+//       <template shadowrootmode=open>
 //         <form id=form2>
 //           <form id=form3>
 //             <div id=form3div>
-//               <template shadowroot=open>
+//               <template shadowrootmode=open>
 //
 // An <input> element is appended at the bottom and moved up one node at a time
 // in this tree, and each step of the way, ListedElements is checked on all
@@ -119,8 +119,8 @@ TEST_F(HTMLFormElementTest, ListedElementsIncludeShadowTrees) {
   ShadowRoot& form3root =
       form3div->AttachShadowRootInternal(ShadowRootType::kOpen);
 
-  HTMLInputElement* input = MakeGarbageCollected<HTMLInputElement>(
-      GetDocument(), CreateElementFlags::ByCreateElement());
+  HTMLInputElement* input =
+      MakeGarbageCollected<HTMLInputElement>(GetDocument());
 
   form3root.AppendChild(input);
   EXPECT_EQ(form1->ListedElements(), ListedElement::List{});
@@ -260,7 +260,7 @@ TEST_F(HTMLFormElementTest, ListedElementsIncludeShadowTrees) {
 //  <form id=form1>
 //    <input id=input1>
 //    <div id=div1>
-//      <template shadowroot=open>
+//      <template shadowrootmode=open>
 //        <input id=input2>
 //      </template>
 //    </div>
@@ -271,8 +271,8 @@ TEST_F(HTMLFormElementTest, ListedElementsAfterIncludeShadowTrees) {
   HTMLFormElement* form1 = MakeGarbageCollected<HTMLFormElement>(GetDocument());
   body->AppendChild(form1);
 
-  HTMLInputElement* input1 = MakeGarbageCollected<HTMLInputElement>(
-      GetDocument(), CreateElementFlags::ByCreateElement());
+  HTMLInputElement* input1 =
+      MakeGarbageCollected<HTMLInputElement>(GetDocument());
   form1->AppendChild(input1);
 
   HTMLDivElement* form1div =
@@ -281,8 +281,8 @@ TEST_F(HTMLFormElementTest, ListedElementsAfterIncludeShadowTrees) {
   ShadowRoot& form1root =
       form1div->AttachShadowRootInternal(ShadowRootType::kOpen);
 
-  HTMLInputElement* input2 = MakeGarbageCollected<HTMLInputElement>(
-      GetDocument(), CreateElementFlags::ByCreateElement());
+  HTMLInputElement* input2 =
+      MakeGarbageCollected<HTMLInputElement>(GetDocument());
   form1root.AppendChild(input2);
 
   EXPECT_EQ(form1->ListedElements(), ListedElement::List{input1});
@@ -299,7 +299,7 @@ TEST_F(HTMLFormElementTest, ListedElementsIncludeShadowTreesFormAttribute) {
   body->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
     <form id=form1>
       <div id=shadowhost>
-        <template shadowroot=open>
+        <template shadowrootmode=open>
           <input id=input2>
           <form id=form2>
             <input id=input3>
@@ -313,8 +313,10 @@ TEST_F(HTMLFormElementTest, ListedElementsIncludeShadowTreesFormAttribute) {
 
   auto* form1 = To<HTMLFormElement>(GetElementById("form1"));
   auto* input1 = ListedElement::From(*GetElementById("input1"));
-  auto* input2 = ListedElement::From(
-      *GetElementById("shadowhost")->GetShadowRoot()->getElementById("input2"));
+  auto* input2 =
+      ListedElement::From(*GetElementById("shadowhost")
+                               ->GetShadowRoot()
+                               ->getElementById(AtomicString("input2")));
 
   EXPECT_THAT(form1->ListedElements(), ::testing::ElementsAre(input1));
   EXPECT_THAT(form1->ListedElements(/*include_shadow_trees=*/true),

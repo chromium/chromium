@@ -6,11 +6,13 @@
 <translation id="1352919863522755794">O Gerenciador de senhas do Google não conseguiu verificar suas senhas. Confira sua conexão de Internet.</translation>
 <translation id="1462727070346936664">Faça login para aproveitar o Chrome ao máximo.</translation>
 <translation id="1479202195792305274">O Chrome pode verificar suas senhas quando você faz login com sua Conta do Google.</translation>
+<translation id="1491435845014430217">Ative a opção "Bloquear guias anônimas ao fechar o Chrome".</translation>
 <translation id="1493827051843127077">Defina o Chrome como padrão para sincronizar guias, senhas e informações de pagamento em todos os seus dispositivos</translation>
 <translation id="1504372625950710826">Não foi possível verificar se há atualizações. Verifique sua conexão de Internet.</translation>
 <translation id="1511320244449497906">Sua conta está conectada e seus dados estão sendo sincronizados com uma conta gerenciada por <ph name="DOMAIN" />, onde o administrador pode definir políticas do usuário específicas para a conta que podem mudar o comportamento do Chrome.</translation>
 <translation id="1554731936187952550">Você tem a segurança reforçada do Chrome contra sites perigosos</translation>
 <translation id="1682483655351012182">Sincronizar seus dados do Chrome</translation>
+<translation id="1733654336159102143">Bloqueie o modo de navegação anônima ao sair do Chrome ou mudar para outro app.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1843217788865538014">Use o Chrome automaticamente ao tocar em links de mensagens, documentos e outros apps.</translation>
 <translation id="1917964099031477364">A conta e os dados não salvos serão removidos do Chrome e de outros apps do Google neste dispositivo.</translation>
@@ -25,7 +27,7 @@
 <translation id="2427791862912929107">O Chrome tem recursos que ajudam a gerenciar seus dados de Internet e a velocidade de carregamento de páginas da Web.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="2444854139071078915">Para acessar com facilidade suas senhas salvas em outros apps, use o preenchimento automático no Chrome</translation>
-<translation id="2561231791489583059">Use o Chrome como navegador padrão para se proteger contra sites perigosos e garantir a segurança das suas senhas</translation>
+<translation id="2561231791489583059">Use o Chrome como navegador padrão para ter mais proteção contra sites perigosos e garantir a segurança das suas senhas.</translation>
 <translation id="2574249610672786438">Para ver suas guias em qualquer lugar onde você usar o Chrome, faça login em todos os seus dispositivos</translation>
 <translation id="2576431527583832481">O Google Chrome ficou ainda melhor! Uma nova versão está disponível.</translation>
 <translation id="257708665678654955">Quer que na próxima vez o Google Chrome ofereça a tradução de páginas em <ph name="LANGUAGE_NAME" /> deste site?</translation>
@@ -37,6 +39,7 @@
 <translation id="2767464022270041271">Nenhuma senha salva. O Gerenciador de senhas do Google pode verificar suas senhas quando você as salva.</translation>
 <translation id="2840432500933227975">Abra as configurações do Chrome no iOS, toque em "App de navegação padrão" e selecione o Chrome.</translation>
 <translation id="2869959624320573933">Faça login no Chrome</translation>
+<translation id="2876628302275096482">Saiba mais sobre <ph name="BEGIN_LINK" />como o Chrome mantém a privacidade dos seus dados<ph name="END_LINK" /></translation>
 <translation id="2957447865124070833">Selecione o <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>
 <translation id="3030414234702425231">Como você está saindo de uma conta gerenciada por <ph name="SIGNOUT_MANAGED_DOMAIN" />, os dados do Chrome serão excluídos deste dispositivo, mas permanecerão na sua Conta do Google.</translation>
 <translation id="3167189358072330585">Sua conta não funciona no Google Chrome. Entre em contato com o administrador do domínio ou use uma Conta do Google normal para fazer login.</translation>
@@ -48,8 +51,8 @@
 <translation id="3503014945441706099">Use também o recurso Navegação segura com maior proteção neste perfil do Chrome</translation>
 <translation id="3522659714780527202">Para ver suas guias em qualquer lugar onde você usar o Chrome, ative a sincronização</translation>
 <translation id="3533694711092285624">Nenhuma senha salva. O Chrome poderá verificar suas senhas quando elas forem salvas.</translation>
+<translation id="3594076341410558780">Ocultar "Aproveite o Chrome ao máximo"</translation>
 <translation id="3655656110921623717">Isso significa que o Chrome vai solicitar sempre o site para dispositivo móvel.</translation>
-<translation id="3706101708757577809">Agora você pode usar o Chrome sempre que toca em links em mensagens, documentos e outros apps.</translation>
 <translation id="3720541637541300822">Bloquear guias anônimas ao fechar o Chrome</translation>
 <translation id="3827545470516145620">Você está usando a proteção padrão neste dispositivo</translation>
 <translation id="384394811301901750">O Google Chrome não pode usar a câmera agora</translation>
@@ -57,6 +60,7 @@
 <translation id="3984746313391923992">Sua organização exige que a conta permaneça desconectada do Chrome.</translation>
 <translation id="3988789688219830639">O Google Chrome não têm acesso às suas fotos ou vídeos. Permita o acesso em "Configurações do iOS" &gt; "Privacidade" &gt; "Fotos".</translation>
 <translation id="4064699917955374540">Confirme sua identidade para usar e salvar dados do Chrome na sua Conta do Google.</translation>
+<translation id="4093042601582616698">Definir o Google Chrome como o navegador padrão?</translation>
 <translation id="417201473131094001">Indisponível no Chrome Canary</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> estava usando o Chrome e deixou favoritos, senhas e outras configurações neste dispositivo.</translation>
 <translation id="424864128008805179">Sair do Google Chrome?</translation>
@@ -69,15 +73,19 @@
 <translation id="4819268619367838612">Para ajudar a melhorar o app, o Chrome envia dados de uso e de falhas ao Google. <ph name="BEGIN_LINK" />Gerenciar<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Indisponível no Chrome Beta</translation>
 <translation id="4840404732697892756">O Gerenciador de senhas do Google pode verificar suas senhas quando você faz login com sua Conta do Google.</translation>
+<translation id="4903674399067644695">Este card mostra sugestões para você aproveitar o Chrome ao máximo.</translation>
 <translation id="5030102366287574140">O Chrome pode ajudar a proteger você de violações de dados, sites perigosos e muito mais.</translation>
 <translation id="5108659628347594808">Melhorar o Chrome</translation>
 <translation id="5119391094379141756">Selecione o Chrome</translation>
 <translation id="5162467219239570114">O Chrome está desatualizado. Se nenhuma atualização está disponível na <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, é possível que seu dispositivo não seja mais compatível com novas versões do Chrome.</translation>
 <translation id="5389212809648216794">O Google Chrome não pode usar a câmera porque ela está sendo usada por outro app</translation>
 <translation id="5395376160638294582">Garanta que você sempre possa usar os dados do Chrome na sua Conta do Google</translation>
+<translation id="5439191312780166229">Avisa você sobre sites perigosos, mesmo aqueles que o Google não conhecia, analisando mais dados de sites do que a proteção padrão. Você pode ignorar os avisos do Chrome.</translation>
 <translation id="5460571915754665838">4. Selecione o Chrome</translation>
 <translation id="5492504007368565877">O Gerenciador de senhas do Google não pode verificar suas senhas.</translation>
+<translation id="5527026824954593399">Toque em "Abrir com o Google Maps no Chrome".</translation>
 <translation id="5552137475244467770">O Chrome verifica periodicamente se suas senhas estão em listas que foram publicadas on-line. Quando isso é feito, as senhas e os nomes de usuário são criptografados para que não possam ser lidos por ninguém, nem o Google.</translation>
+<translation id="5554520618550346933">Quando você usa uma senha, o Chrome avisa se ela foi publicada on-line. Quando isso é feito, as senhas e os nomes de usuário são criptografados para que não possam ser lidos por ninguém, nem mesmo o Google.</translation>
 <translation id="5639704535586432836">Abra Ajustes &gt; Privacidade &gt; Câmera &gt; Google Chrome e ative a câmera.</translation>
 <translation id="5642200033778930880">O Google Chrome não pode usar a câmera no modo Visualização dividida</translation>
 <translation id="5661521615548540542">O Gerenciador de senhas do Google não conseguiu verificar todas as senhas. Tente de novo mais tarde.</translation>
@@ -112,10 +120,12 @@
 <translation id="7261678641327190792">Não é possível verificar suas senhas com o Chrome.</translation>
 <translation id="7272930098487145294">Para salvar imagens, toque em "Configurações" e permita que o Chrome as adicione às suas fotos</translation>
 <translation id="7275945473750112644">Sua conta é gerenciada por <ph name="HOSTED_DOMAIN" />. Por isso, seus dados do Chrome serão apagados deste dispositivo</translation>
+<translation id="7394108421562933108">Maps no Chrome</translation>
 <translation id="7400722733683201933">Sobre o Google Chrome</translation>
 <translation id="7501046334262221972">Para definir o Chrome como o navegador padrão, abra as configurações. Toque em "App do navegador padrão" e selecione o Chrome.</translation>
 <translation id="756809126120519699">Dados do Chrome apagados</translation>
 <translation id="7662994914830945754">Para ver suas guias em qualquer lugar onde você usar o Chrome, faça login e ative a sincronização</translation>
+<translation id="7669869107155339016">Acesse as configurações do Chrome.</translation>
 <translation id="7693590760643069321">Agora você pode usar o Chrome sempre que toca em links em mensagens, documentos e outros apps.</translation>
 <translation id="7698568245838009292">Solicitação do Chrome para acessar a câmera</translation>
 <translation id="7754633291442704733">A organização <ph name="DOMAIN" /> vai ter acesso aos dados, favoritos, histórico, senhas e outras configurações do Chrome que você armazenar nessa conta. Quando você sair, seus dados vão ser apagados deste dispositivo.  No entanto, os dados continuarão armazenados na sua Conta do Google gerenciada e vão ficar disponíveis para sua organização. A organização também pode definir políticas do usuário específicas para a conta, e elas podem mudar o comportamento do Chrome.</translation>
@@ -137,10 +147,11 @@
   3. Selecione o Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8603022514504485810">O Gerenciador de senhas do Google não conseguiu verificar todas as senhas. Tente de novo amanhã ou <ph name="BEGIN_LINK" />verifique-as na sua Conta do Google<ph name="END_LINK" />.</translation>
-<translation id="8736550665979974340">Proteja-se com o Google Chrome</translation>
+<translation id="8736550665979974340">Mais proteção com o Google Chrome</translation>
 <translation id="8765470054473112089">Quando você digita na barra de endereço ou na caixa de pesquisa, o Chrome envia o conteúdo digitado ao mecanismo de pesquisa padrão para melhorar as sugestões. Essa opção fica desativada na navegação anônima.</translation>
 <translation id="8772179140489533211">Mostra solicitações para fazer login no Chrome.</translation>
 <translation id="8788269841521769222">Você não terá que se lembrar dessa senha. Ela vai ficar salva na conta <ph name="EMAIL" /> do Gerenciador de senhas do Google</translation>
+<translation id="8808828119384186784">Configurações do Chrome</translation>
 <translation id="8857676124663337448">O Gerenciador de senhas do Google não conseguiu verificar todas as senhas. Tente de novo amanhã.</translation>
 <translation id="8897749957032330183">As senhas são salvas no Gerenciador de senhas do Google neste dispositivo.</translation>
 <translation id="8969290730818637510">Quando ativada, essa configuração:

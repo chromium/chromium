@@ -36,10 +36,6 @@
 #import "ios/chrome/browser/sync/session_sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace segmentation_platform {
 namespace {
 
@@ -132,8 +128,12 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
 
   params->history_service = ios::HistoryServiceFactory::GetForBrowserState(
       chrome_browser_state, ServiceAccessType::IMPLICIT_ACCESS);
+  base::TaskPriority priority = base::TaskPriority::BEST_EFFORT;
+  if (base::FeatureList::IsEnabled(features::kSegmentationPlatformUserVisibleTaskRunner)) {
+    priority = base::TaskPriority::USER_VISIBLE;
+  }
   params->task_runner = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+      {base::MayBlock(), priority});
   params->storage_dir =
       profile_path.Append(kSegmentationPlatformStorageDirName);
   params->db_provider = protodb_provider;

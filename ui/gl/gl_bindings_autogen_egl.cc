@@ -28,6 +28,9 @@ void DriverEGL::InitializeStaticBindings() {
   DCHECK(this_bytes[0] == 0);
   DCHECK(memcmp(this_bytes, this_bytes + 1, sizeof(*this) - 1) == 0);
 
+  fn.eglAcquireExternalContextANGLEFn =
+      reinterpret_cast<eglAcquireExternalContextANGLEProc>(
+          GetGLProcAddress("eglAcquireExternalContextANGLE"));
   fn.eglBindAPIFn =
       reinterpret_cast<eglBindAPIProc>(GetGLProcAddress("eglBindAPI"));
   fn.eglBindTexImageFn = reinterpret_cast<eglBindTexImageProc>(
@@ -199,6 +202,9 @@ void DriverEGL::InitializeStaticBindings() {
   fn.eglReacquireHighPowerGPUANGLEFn =
       reinterpret_cast<eglReacquireHighPowerGPUANGLEProc>(
           GetGLProcAddress("eglReacquireHighPowerGPUANGLE"));
+  fn.eglReleaseExternalContextANGLEFn =
+      reinterpret_cast<eglReleaseExternalContextANGLEProc>(
+          GetGLProcAddress("eglReleaseExternalContextANGLE"));
   fn.eglReleaseHighPowerGPUANGLEFn =
       reinterpret_cast<eglReleaseHighPowerGPUANGLEProc>(
           GetGLProcAddress("eglReleaseHighPowerGPUANGLE"));
@@ -409,6 +415,11 @@ void DisplayExtensionsEGL::InitializeExtensionSettings(EGLDisplay display) {
 
 void DriverEGL::ClearBindings() {
   memset(this, 0, sizeof(*this));
+}
+
+void EGLApiBase::eglAcquireExternalContextANGLEFn(EGLDisplay dpy,
+                                                  EGLSurface readAndDraw) {
+  driver_->fn.eglAcquireExternalContextANGLEFn(dpy, readAndDraw);
 }
 
 EGLBoolean EGLApiBase::eglBindAPIFn(EGLenum api) {
@@ -885,6 +896,10 @@ void EGLApiBase::eglReacquireHighPowerGPUANGLEFn(EGLDisplay dpy,
   driver_->fn.eglReacquireHighPowerGPUANGLEFn(dpy, ctx);
 }
 
+void EGLApiBase::eglReleaseExternalContextANGLEFn(EGLDisplay dpy) {
+  driver_->fn.eglReleaseExternalContextANGLEFn(dpy);
+}
+
 void EGLApiBase::eglReleaseHighPowerGPUANGLEFn(EGLDisplay dpy, EGLContext ctx) {
   driver_->fn.eglReleaseHighPowerGPUANGLEFn(dpy, ctx);
 }
@@ -996,6 +1011,13 @@ EGLint EGLApiBase::eglWaitSyncKHRFn(EGLDisplay dpy,
 
 void EGLApiBase::eglWaitUntilWorkScheduledANGLEFn(EGLDisplay dpy) {
   driver_->fn.eglWaitUntilWorkScheduledANGLEFn(dpy);
+}
+
+void TraceEGLApi::eglAcquireExternalContextANGLEFn(EGLDisplay dpy,
+                                                   EGLSurface readAndDraw) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu",
+                                "TraceEGLAPI::eglAcquireExternalContextANGLE");
+  egl_api_->eglAcquireExternalContextANGLEFn(dpy, readAndDraw);
 }
 
 EGLBoolean TraceEGLApi::eglBindAPIFn(EGLenum api) {
@@ -1566,6 +1588,12 @@ void TraceEGLApi::eglReacquireHighPowerGPUANGLEFn(EGLDisplay dpy,
   egl_api_->eglReacquireHighPowerGPUANGLEFn(dpy, ctx);
 }
 
+void TraceEGLApi::eglReleaseExternalContextANGLEFn(EGLDisplay dpy) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu",
+                                "TraceEGLAPI::eglReleaseExternalContextANGLE");
+  egl_api_->eglReleaseExternalContextANGLEFn(dpy);
+}
+
 void TraceEGLApi::eglReleaseHighPowerGPUANGLEFn(EGLDisplay dpy,
                                                 EGLContext ctx) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu",
@@ -1707,6 +1735,13 @@ void TraceEGLApi::eglWaitUntilWorkScheduledANGLEFn(EGLDisplay dpy) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu",
                                 "TraceEGLAPI::eglWaitUntilWorkScheduledANGLE");
   egl_api_->eglWaitUntilWorkScheduledANGLEFn(dpy);
+}
+
+void LogEGLApi::eglAcquireExternalContextANGLEFn(EGLDisplay dpy,
+                                                 EGLSurface readAndDraw) {
+  GL_SERVICE_LOG("eglAcquireExternalContextANGLE"
+                 << "(" << dpy << ", " << readAndDraw << ")");
+  egl_api_->eglAcquireExternalContextANGLEFn(dpy, readAndDraw);
 }
 
 EGLBoolean LogEGLApi::eglBindAPIFn(EGLenum api) {
@@ -2569,6 +2604,12 @@ void LogEGLApi::eglReacquireHighPowerGPUANGLEFn(EGLDisplay dpy,
   GL_SERVICE_LOG("eglReacquireHighPowerGPUANGLE"
                  << "(" << dpy << ", " << ctx << ")");
   egl_api_->eglReacquireHighPowerGPUANGLEFn(dpy, ctx);
+}
+
+void LogEGLApi::eglReleaseExternalContextANGLEFn(EGLDisplay dpy) {
+  GL_SERVICE_LOG("eglReleaseExternalContextANGLE"
+                 << "(" << dpy << ")");
+  egl_api_->eglReleaseExternalContextANGLEFn(dpy);
 }
 
 void LogEGLApi::eglReleaseHighPowerGPUANGLEFn(EGLDisplay dpy, EGLContext ctx) {

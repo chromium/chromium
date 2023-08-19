@@ -6,9 +6,6 @@ package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
-
 import android.os.ConditionVariable;
 
 import java.nio.ByteBuffer;
@@ -25,7 +22,7 @@ import java.util.concurrent.ThreadFactory;
  * Allows to cancel, block stream or throw an exception from an arbitrary step.
  */
 public class TestBidirectionalStreamCallback extends BidirectionalStream.Callback {
-    public UrlResponseInfo mResponseInfo;
+    private UrlResponseInfo mResponseInfo;
     public CronetException mError;
 
     public ResponseStep mResponseStep = ResponseStep.NOTHING;
@@ -199,7 +196,7 @@ public class TestBidirectionalStreamCallback extends BidirectionalStream.Callbac
     @Override
     public void onStreamReady(BidirectionalStream stream) {
         checkOnValidThread();
-        assertFalse(stream.isDone());
+        assertThat(stream.isDone()).isFalse();
         assertThat(mResponseStep).isEqualTo(ResponseStep.NOTHING);
         assertThat(mError).isNull();
         mResponseStep = ResponseStep.ON_STREAM_READY;
@@ -212,7 +209,7 @@ public class TestBidirectionalStreamCallback extends BidirectionalStream.Callbac
     @Override
     public void onResponseHeadersReceived(BidirectionalStream stream, UrlResponseInfo info) {
         checkOnValidThread();
-        assertFalse(stream.isDone());
+        assertThat(stream.isDone()).isFalse();
         assertThat(mResponseStep)
                 .isAnyOf(ResponseStep.NOTHING, ResponseStep.ON_STREAM_READY,
                         ResponseStep.ON_WRITE_COMPLETED);
@@ -230,7 +227,7 @@ public class TestBidirectionalStreamCallback extends BidirectionalStream.Callbac
     public void onReadCompleted(BidirectionalStream stream, UrlResponseInfo info,
             ByteBuffer byteBuffer, boolean endOfStream) {
         checkOnValidThread();
-        assertFalse(stream.isDone());
+        assertThat(stream.isDone()).isFalse();
         assertThat(mResponseStep)
                 .isAnyOf(ResponseStep.ON_RESPONSE_STARTED, ResponseStep.ON_READ_COMPLETED,
                         ResponseStep.ON_WRITE_COMPLETED, ResponseStep.ON_TRAILERS);
@@ -263,7 +260,7 @@ public class TestBidirectionalStreamCallback extends BidirectionalStream.Callbac
     public void onWriteCompleted(BidirectionalStream stream, UrlResponseInfo info,
             ByteBuffer buffer, boolean endOfStream) {
         checkOnValidThread();
-        assertFalse(stream.isDone());
+        assertThat(stream.isDone()).isFalse();
         assertThat(mError).isNull();
         mResponseStep = ResponseStep.ON_WRITE_COMPLETED;
         mResponseInfo = info;
@@ -281,7 +278,7 @@ public class TestBidirectionalStreamCallback extends BidirectionalStream.Callbac
     public void onResponseTrailersReceived(BidirectionalStream stream, UrlResponseInfo info,
             UrlResponseInfo.HeaderBlock trailers) {
         checkOnValidThread();
-        assertFalse(stream.isDone());
+        assertThat(stream.isDone()).isFalse();
         assertThat(mError).isNull();
         mResponseStep = ResponseStep.ON_TRAILERS;
         mResponseInfo = info;
@@ -294,12 +291,12 @@ public class TestBidirectionalStreamCallback extends BidirectionalStream.Callbac
     @Override
     public void onSucceeded(BidirectionalStream stream, UrlResponseInfo info) {
         checkOnValidThread();
-        assertTrue(stream.isDone());
+        assertThat(stream.isDone()).isTrue();
         assertThat(mResponseStep)
                 .isAnyOf(ResponseStep.ON_RESPONSE_STARTED, ResponseStep.ON_READ_COMPLETED,
                         ResponseStep.ON_WRITE_COMPLETED, ResponseStep.ON_TRAILERS);
-        assertFalse(mOnErrorCalled);
-        assertFalse(mOnCanceledCalled);
+        assertThat(mOnErrorCalled).isFalse();
+        assertThat(mOnCanceledCalled).isFalse();
         assertThat(mError).isNull();
         assertThat(mWriteBuffers).isEmpty();
         assertThat(mWriteBuffersToBeAcked).isEmpty();
@@ -314,12 +311,12 @@ public class TestBidirectionalStreamCallback extends BidirectionalStream.Callbac
     @Override
     public void onFailed(BidirectionalStream stream, UrlResponseInfo info, CronetException error) {
         checkOnValidThread();
-        assertTrue(stream.isDone());
+        assertThat(stream.isDone()).isTrue();
         // Shouldn't happen after success.
         assertThat(mResponseStep).isNotEqualTo(ResponseStep.ON_SUCCEEDED);
         // Should happen at most once for a single stream.
-        assertFalse(mOnErrorCalled);
-        assertFalse(mOnCanceledCalled);
+        assertThat(mOnErrorCalled).isFalse();
+        assertThat(mOnCanceledCalled).isFalse();
         assertThat(mError).isNull();
         mResponseStep = ResponseStep.ON_FAILED;
         mResponseInfo = info;
@@ -334,10 +331,10 @@ public class TestBidirectionalStreamCallback extends BidirectionalStream.Callbac
     @Override
     public void onCanceled(BidirectionalStream stream, UrlResponseInfo info) {
         checkOnValidThread();
-        assertTrue(stream.isDone());
+        assertThat(stream.isDone()).isTrue();
         // Should happen at most once for a single stream.
-        assertFalse(mOnCanceledCalled);
-        assertFalse(mOnErrorCalled);
+        assertThat(mOnCanceledCalled).isFalse();
+        assertThat(mOnErrorCalled).isFalse();
         assertThat(mError).isNull();
         mResponseStep = ResponseStep.ON_CANCELED;
         mResponseInfo = info;
@@ -384,6 +381,26 @@ public class TestBidirectionalStreamCallback extends BidirectionalStream.Callbac
      */
     public int numPendingWrites() {
         return mWriteBuffers.size();
+    }
+
+    /**
+     * Asserts that there is no callback error before trying to access responseInfo. Only use this
+     * when you expect {@code mError} to be null.
+     * @return {@link UrlResponseInfo}
+     */
+    public UrlResponseInfo getResponseInfoWithChecks() {
+        assertThat(mError).isNull();
+        assertThat(mOnErrorCalled).isFalse();
+        assertThat(mResponseInfo).isNotNull();
+        return mResponseInfo;
+    }
+
+    /**
+     * Simply returns {@code mResponseInfo} with no nullability or error checks.
+     * @return {@link UrlResponseInfo}
+     */
+    public UrlResponseInfo getResponseInfo() {
+        return mResponseInfo;
     }
 
     protected void openDone() {

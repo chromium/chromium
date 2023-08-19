@@ -143,7 +143,7 @@ CommandBuffer commands all start with a header containing two fields: an 11-bit
 command identifier and a 21-bit size. The header is followed by zero or more
 data fields.
 
-![](./resources/cmdbuf_command_structure.svg)
+![Command Buffer Structure](resources/cmdbuf_command_structure.png)
 
 The structure allows for 11 bits of unique commands, each with customizable data
 payloads. This is the mechanism used to implement the [common

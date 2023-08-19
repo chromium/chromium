@@ -11,12 +11,12 @@ Running: attachShadow1
 top
   127.0.0.1:8000
     devtools
-      resources
-        inspected-page.html
-        sourcemap-script.js
       bindings/resources
         sourcemap-typescript.ts
         sourcemap-sass.scss
+      resources
+        inspected-page.html
+        sourcemap-script.js
   (no domain)
     sourcemap-style.css
 
@@ -24,12 +24,12 @@ Running: attachShadow2
 top
   127.0.0.1:8000
     devtools
-      resources
-        inspected-page.html
-        sourcemap-script.js
       bindings/resources
         sourcemap-typescript.ts
         sourcemap-sass.scss
+      resources
+        inspected-page.html
+        sourcemap-script.js
   (no domain)
     sourcemap-style.css
 
@@ -37,12 +37,12 @@ Running: detachShadow1
 top
   127.0.0.1:8000
     devtools
-      resources
-        inspected-page.html
-        sourcemap-script.js
       bindings/resources
         sourcemap-typescript.ts
         sourcemap-sass.scss
+      resources
+        inspected-page.html
+        sourcemap-script.js
   (no domain)
     sourcemap-style.css
 
@@ -50,9 +50,9 @@ Running: detachShadow2
 top
   127.0.0.1:8000
     devtools
+      bindings/resources
+        sourcemap-typescript.ts
       resources
         inspected-page.html
         sourcemap-script.js
-      bindings/resources
-        sourcemap-typescript.ts
 

@@ -136,6 +136,12 @@ class FlagsState {
                          const std::string& value,
                          FlagsStorage* flags_storage);
 
+  // Sets |value| as the parameter for the feature given by |internal_name|.
+  // |value| contains an arbitrary string.
+  void SetStringFlag(const std::string& internal_name,
+                     const std::string& value,
+                     FlagsStorage* flags_storage);
+
   // This method removes command line switches that were set by flags state.
   // |switch_list| is an input and an output.
   void RemoveFlagsSwitches(base::CommandLine::SwitchMap* switch_list);

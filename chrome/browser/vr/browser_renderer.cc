@@ -14,8 +14,6 @@
 #include "chrome/browser/vr/input_delegate_for_testing.h"
 #include "chrome/browser/vr/input_event.h"
 #include "chrome/browser/vr/model/controller_model.h"
-#include "chrome/browser/vr/model/reticle_model.h"
-#include "chrome/browser/vr/platform_ui_input_delegate.h"
 #include "chrome/browser/vr/render_info.h"
 #include "chrome/browser/vr/scheduler_delegate.h"
 #include "chrome/browser/vr/ui_interface.h"
@@ -58,7 +56,6 @@ void BrowserRenderer::Draw(FrameType frame_type,
   const auto& render_info =
       graphics_delegate_->GetRenderInfo(frame_type, head_pose);
   UpdateUi(render_info, current_time, frame_type);
-  ui_->OnProjMatrixChanged(render_info.left_eye_model.proj_matrix);
 
   graphics_delegate_->InitializeBuffers();
   if (frame_type == kWebXrFrame) {

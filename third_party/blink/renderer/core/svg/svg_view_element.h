@@ -47,7 +47,7 @@ class SVGViewElement final : public SVGElement,
 
   SVGAnimatedPropertyBase* PropertyFromAttribute(
       const QualifiedName& attribute_name) const override;
-  void SynchronizeSVGAttribute(const QualifiedName& name) const override;
+  void SynchronizeAllSVGAttributes() const override;
 };
 
 }  // namespace blink

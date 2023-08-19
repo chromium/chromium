@@ -56,15 +56,11 @@ template("system_webview_apk_or_module_tmpl") {
   _android_manifest = "$target_gen_dir/$target_name/AndroidManifest.xml"
   _android_manifest_target_name = "${target_name}__android_manifest"
   jinja_template(_android_manifest_target_name) {
-    if (!defined(_android_sdk_release)) {
-      _android_sdk_release = android_sdk_release
-    }
     input = "//android_webview/nonembedded/java/AndroidManifest.xml"
     output = _android_manifest
     _force_32_bit = _include_32_bit_webview && _include_64_bit_webview &&
                     (!_is_trichrome || !_is_64_bit_browser)
     variables = [
-      "android_sdk_release=$_android_sdk_release",
       "force_32_bit=$_force_32_bit",
       "manifest_package=$_manifest_package",
     ]
@@ -162,9 +158,6 @@ template("system_webview_apk_or_module_tmpl") {
     if (!_omit_dex) {
       product_config_java_packages =
           [ invoker.webview_product_config_java_package ]
-      if (allow_jni_multiplexing) {
-        enable_jni_multiplexing = true
-      }
     }
 
     if (webview_includes_weblayer) {
@@ -218,7 +211,7 @@ template("system_webview_apk_or_module_tmpl") {
       # architecture.
       if (android_64bit_target_cpu) {
         if (_is_64_bit_browser) {
-          native_lib_placeholders = [ "libdummy.so" ]
+          native_lib_placeholders = [ "libplaceholder.so" ]
           if (_include_32_bit_webview) {
             secondary_abi_shared_libraries = [ "//android_webview:monochrome_64($android_secondary_abi_toolchain)" ]
             _include_secondary_support = true
@@ -228,7 +221,7 @@ template("system_webview_apk_or_module_tmpl") {
             shared_libraries = [ "//android_webview:monochrome" ]
             _include_primary_support = true
           }
-          secondary_native_lib_placeholders = [ "libdummy.so" ]
+          secondary_native_lib_placeholders = [ "libplaceholder.so" ]
           static_library_provider_use_secondary_abi = true
         }
 
@@ -241,7 +234,7 @@ template("system_webview_apk_or_module_tmpl") {
           }
         }
       } else {
-        native_lib_placeholders = [ "libdummy.so" ]
+        native_lib_placeholders = [ "libplaceholder.so" ]
       }
     }
     if (defined(shared_libraries)) {
@@ -262,8 +255,7 @@ template("system_webview_apk_or_module_tmpl") {
       foreach(_lib, _jni_registrations) {
         _label =
             get_label_info(_lib, "label_no_toolchain") + "__jni_registration"
-        _toolchain = get_label_info(_lib, "toolchain")
-        srcjar_deps += [ "$_label($_toolchain)" ]
+        srcjar_deps += [ "$_label($default_toolchain)" ]
       }
     }
 
@@ -350,6 +342,10 @@ template("system_webview_apk_or_module_tmpl") {
       # parallel by adding dependencies between them (adds around 10-20
       # seconds on my machine).
       strip_unused_resources = is_official_build
+
+      # An aapt2 config file to exempt some webview resources from resource
+      # optimizations.
+      resources_config_paths = [ "//android_webview/aapt2.config" ]
     }
 
     if (!_is_bundle_module) {

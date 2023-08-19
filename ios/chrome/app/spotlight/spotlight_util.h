@@ -23,6 +23,7 @@ enum Domain {
   DOMAIN_TOPSITES = 2,
   DOMAIN_ACTIONS = 3,
   DOMAIN_READING_LIST = 4,
+  DOMAIN_OPEN_TABS = 5,
   DOMAIN_COUNT
 };
 
@@ -51,6 +52,9 @@ NSString* StringFromSpotlightDomain(Domain domain);
 
 // Converts the Spotlight domain string to spotlight::Domain enum.
 Domain SpotlightDomainFromString(NSString* domain);
+
+// Return the source label for an item from the spotlight::Domain
+NSString* SpotlightItemSourceLabelFromDomain(Domain domain);
 
 // Returns whether Spotlight is available on the device. Must be tested before
 // calling other methods of this class.

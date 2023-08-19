@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -22,7 +23,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/components/dbus/kerberos/kerberos_client.h"
@@ -110,9 +110,12 @@ bool Succeeded(kerberos::ErrorType error) {
 
 bool ShouldRetry(kerberos::ErrorType error) {
   // The error types that should trigger a managed accounts addition retry.
+  // ERROR_UNKNOWN_KRB5_ERROR will cover unknown temporary issues preventing the
+  // device from adding a ticket, such as "resource temporarily unavailable".
   return error == kerberos::ERROR_NETWORK_PROBLEM ||
          error == kerberos::ERROR_CONTACTING_KDC_FAILED ||
-         error == kerberos::ERROR_IN_PROGRESS;
+         error == kerberos::ERROR_IN_PROGRESS ||
+         error == kerberos::ERROR_UNKNOWN_KRB5_ERROR;
 }
 
 }  // namespace

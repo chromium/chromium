@@ -14,10 +14,6 @@
 #import "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
 #import "services/network/public/cpp/resource_request_body.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace optimization_guide {
 
 namespace {

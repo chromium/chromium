@@ -18,6 +18,10 @@
     margin: auto;
   }
 
+  :host-context(body.jelly-enabled) #container {
+    font-family: var(--cros-font-family-google-sans);
+  }
+
   iron-pages {
     height: 100%;
     overflow: var(--iron-pages-overflow, visible);
@@ -59,12 +63,10 @@
     </start-setup-page>
   </iron-pages>
   <div class="flex"></div>
-  <button-bar forward-button-hidden="[[!forwardButtonTextId]]"
-      backward-button-hidden="[[!backwardButtonTextId]]"
-      cancel-button-hidden="[[!cancelButtonTextId]]"
-      should-show-shadow="[[isScrolledToBottom_]]">
-    <slot name="backward-button" slot="backward-button"></slot>
-    <slot name="cancel-button" slot="cancel-button"></slot>
-    <slot name="forward-button" slot="forward-button"></slot>
+  <button-bar forward-button-text-id="[[forwardButtonTextId]]"
+      backward-button-text-id="[[backwardButtonTextId]]"
+      cancel-button-text-id="[[cancelButtonTextId]]"
+      should-show-shadow="[[isScrolledToBottom_]]"
+      forward-button-disabled="[[forwardButtonDisabled]]">
   </button-bar>
 </div>

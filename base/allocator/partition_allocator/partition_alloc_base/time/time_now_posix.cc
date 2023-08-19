@@ -14,10 +14,10 @@
 #endif
 #include <unistd.h>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/check.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/notreached.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/numerics/safe_math.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/time/time_override.h"
-#include "base/allocator/partition_allocator/partition_alloc_check.h"
-#include "base/allocator/partition_allocator/partition_alloc_notreached.h"
 
 // Ensure the Fuchsia and Mac builds do not include this module. Instead,
 // non-POSIX implementation is used for sampling the system clocks.
@@ -53,7 +53,7 @@ int64_t ConvertTimespecToMicros(const struct timespec& ts) {
     BUILDFLAG(IS_BSD) || BUILDFLAG(IS_ANDROID)
 int64_t ClockNow(clockid_t clk_id) {
   struct timespec ts;
-  PA_CHECK(clock_gettime(clk_id, &ts) == 0);
+  PA_BASE_CHECK(clock_gettime(clk_id, &ts) == 0);
   return ConvertTimespecToMicros(ts);
 }
 #else  // _POSIX_MONOTONIC_CLOCK
@@ -68,7 +68,7 @@ namespace subtle {
 Time TimeNowIgnoringOverride() {
   struct timeval tv;
   struct timezone tz = {0, 0};  // UTC
-  PA_CHECK(gettimeofday(&tv, &tz) == 0);
+  PA_BASE_CHECK(gettimeofday(&tv, &tz) == 0);
   // Combine seconds and microseconds in a 64-bit field containing microseconds
   // since the epoch.  That's enough for nearly 600 centuries.  Adjust from
   // Unix (1970) to Windows (1601) epoch.

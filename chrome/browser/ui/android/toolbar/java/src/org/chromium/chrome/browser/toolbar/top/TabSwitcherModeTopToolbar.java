@@ -31,14 +31,14 @@ import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.ToolbarAlphaInOverviewObserver;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
-import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.widget.OptimizedFrameLayout;
 
 import java.util.function.BooleanSupplier;
@@ -210,9 +210,8 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
         // causes races in the Android accessibility focus framework.
         skipAnimation |=
                 (inTabSwitcherMode && ChromeFeatureList.sTabGroupsContinuationAndroid.isEnabled()
-                        && ChromeFeatureList.sTabGroupsAndroid.isEnabled()
                         && DeviceClassManager.GTS_ACCESSIBILITY_SUPPORT.getValue()
-                        && ChromeAccessibilityUtil.get().isTouchExplorationEnabled());
+                        && AccessibilityState.isTouchExplorationEnabled());
 
         mVisiblityAnimator.start();
         if (skipAnimation) {

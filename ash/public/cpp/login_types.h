@@ -13,6 +13,7 @@
 #include "chromeos/ash/components/proximity_auth/public/mojom/auth_type.mojom-forward.h"
 #include "chromeos/components/security_token_pin/constants.h"
 #include "components/account_id/account_id.h"
+#include "components/user_manager/multi_user/multi_user_sign_in_policy.h"
 
 namespace ash {
 
@@ -88,6 +89,15 @@ enum class OobeDialogState {
 
   // Showing Gaia Info screen.
   GAIA_INFO = 21,
+
+  // CHOOBE and Optional Screens.
+  CHOOBE = 22,
+
+  // CHILD SETUP step for user creation screen.
+  SETUP_CHILD = 23,
+
+  // ENROLL TIAGE step for user creation screen.
+  ENROLL_TRIAGE = 24,
 };
 
 // Modes of the managed device, which is used to update the visibility of
@@ -99,32 +109,6 @@ enum class ManagementDeviceMode {
   kKioskSku = 3,
   kOther = 4,
   kMaxValue = kOther,
-};
-
-// Supported multi-profile user behavior values.
-// TODO(estade): change all the enums to use kCamelCase.
-enum class MultiProfileUserBehavior {
-  UNRESTRICTED = 0,
-  PRIMARY_ONLY = 1,
-  NOT_ALLOWED = 2,
-  OWNER_PRIMARY_ONLY = 3,
-};
-
-// Easy unlock icon states.
-enum class EasyUnlockIconState {
-  // No icon shown.
-  NONE,
-  // Phone could not be found.
-  LOCKED,
-  // Phone found, but it is not unlocked.
-  LOCKED_TO_BE_ACTIVATED,
-  // Phone found, but it is too far away.
-  LOCKED_WITH_PROXIMITY_HINT,
-  // Phone found and unlocked. The user can click to dismiss the login/lock
-  // screen.
-  UNLOCKED,
-  // Scanning for phone.
-  SPINNER,
 };
 
 // The status of fingerprint availability.
@@ -146,33 +130,6 @@ enum class FingerprintState {
   // It has been too long since the device was last used.
   DISABLED_FROM_TIMEOUT,
   kMaxValue = DISABLED_FROM_TIMEOUT,
-};
-
-// Information about the custom icon in the user pod.
-struct ASH_PUBLIC_EXPORT EasyUnlockIconInfo {
-  EasyUnlockIconInfo();
-  EasyUnlockIconInfo(const EasyUnlockIconInfo& other);
-  EasyUnlockIconInfo(EasyUnlockIconInfo&& other);
-  ~EasyUnlockIconInfo();
-
-  EasyUnlockIconInfo& operator=(const EasyUnlockIconInfo& other);
-  EasyUnlockIconInfo& operator=(EasyUnlockIconInfo&& other);
-
-  // Icon that should be displayed.
-  EasyUnlockIconState icon_state = EasyUnlockIconState::NONE;
-  // Tooltip that is associated with the icon. This is shown automatically if
-  // |autoshow_tooltip| is true. The user can always see the tooltip if they
-  // hover over the icon. The tooltip should be used for the accessibility label
-  // if it is present.
-  std::u16string tooltip;
-  // If true, the tooltip should be displayed (even if the user is not currently
-  // hovering over the icon, ie, this makes |tooltip| act like a little like a
-  // notification).
-  bool autoshow_tooltip = false;
-  // Accessibility label. Only used if |tooltip| is empty.
-  // TODO(jdufault): Always populate and use |aria_label|, even if |tooltip| is
-  // non-empty.
-  std::u16string aria_label;
 };
 
 // Enterprise information about a managed device.
@@ -306,12 +263,12 @@ struct ASH_PUBLIC_EXPORT LoginUserInfo {
   // LoginScreenModel::SetSmartLockState) which update the current state.
   SmartLockState smart_lock_state = SmartLockState::kDisabled;
 
-  // True if multi-profiles sign in is allowed for this user.
-  bool is_multiprofile_allowed = false;
+  // True if multi-user-sign-in is allowed for this user.
+  bool is_multi_user_sign_in_allowed = false;
 
-  // Enforced policy for multi-profiles sign in.
-  MultiProfileUserBehavior multiprofile_policy =
-      MultiProfileUserBehavior::UNRESTRICTED;
+  // Enforced policy for multi-user-sign-in.
+  user_manager::MultiUserSignInPolicy multi_user_sign_in_policy =
+      user_manager::MultiUserSignInPolicy::kUnrestricted;
 
   // True if this user can be removed.
   bool can_remove = false;

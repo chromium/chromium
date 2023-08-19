@@ -12,10 +12,6 @@
 #import "ios/chrome/common/material_timing.h"
 #import "ui/gfx/geometry/cubic_bezier.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 CGFloat GetFinalFullscreenProgressForAnimation(FullscreenAnimatorStyle style) {
   return style == FullscreenAnimatorStyle::ENTER_FULLSCREEN ? 0.0 : 1.0;
 }

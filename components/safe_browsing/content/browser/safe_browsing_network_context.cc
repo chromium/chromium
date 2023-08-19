@@ -22,10 +22,6 @@
 #include "services/network/network_context.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/remove_stale_data.h"
-#endif
-
 namespace safe_browsing {
 
 class SafeBrowsingNetworkContext::SharedURLLoaderFactory
@@ -138,18 +134,6 @@ class SafeBrowsingNetworkContext::SharedURLLoaderFactory
     network_context_params->file_paths->cookie_database_name = base::FilePath(
         base::FilePath::StringType(kSafeBrowsingBaseFilename) + kCookiesFile);
     network_context_params->enable_encrypted_cookies = false;
-
-#if BUILDFLAG(IS_ANDROID)
-    // On Android the `data_directory` was used by some wrong builds instead of
-    // `unsandboxed_data_path`. Cleaning it up. See crbug.com/1331809.
-    // The `cookie_manager` is set by WebView, where the mistaken migration did
-    // not happen.
-    DCHECK(!trigger_migration_);
-    if (!network_context_params->cookie_manager) {
-      base::android::RemoveStaleDataDirectory(
-          network_context_params->file_paths->data_directory.path());
-    }
-#endif  // BUILDFLAG(IS_ANDROID)
 
     return network_context_params;
   }

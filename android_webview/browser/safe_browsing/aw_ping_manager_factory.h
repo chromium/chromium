@@ -12,6 +12,7 @@
 namespace safe_browsing {
 
 // Factory for creating the KeyedService PingManager for Android WebView.
+// Lifetime: Singleton
 class AwPingManagerFactory : public BrowserContextKeyedServiceFactory {
  public:
   static AwPingManagerFactory* GetInstance();

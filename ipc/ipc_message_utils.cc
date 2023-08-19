@@ -7,6 +7,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <type_traits>
+
 #include "base/files/file_path.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -23,6 +25,7 @@
 #include "ipc/ipc_message_attachment.h"
 #include "ipc/ipc_message_attachment_set.h"
 #include "ipc/ipc_mojo_param_traits.h"
+#include "third_party/abseil-cpp/absl/strings/ascii.h"
 
 #if BUILDFLAG(IS_APPLE)
 #include "ipc/mach_port_mac.h"
@@ -65,11 +68,12 @@ void LogBytes(const std::vector<CharType>& data, std::string* out) {
   // On POSIX, we log to stdout, which we assume can display ASCII.
   static const size_t kMaxBytesToLog = 100;
   for (size_t i = 0; i < std::min(data.size(), kMaxBytesToLog); ++i) {
-    if (isprint(data[i]))
+    if (absl::ascii_isprint(static_cast<unsigned char>(data[i]))) {
       out->push_back(data[i]);
-    else
+    } else {
       out->append(
           base::StringPrintf("[%02X]", static_cast<unsigned char>(data[i])));
+    }
   }
   if (data.size() > kMaxBytesToLog) {
     out->append(base::StringPrintf(
@@ -77,6 +81,35 @@ void LogBytes(const std::vector<CharType>& data, std::string* out) {
         static_cast<unsigned>(data.size() - kMaxBytesToLog)));
   }
 #endif
+}
+
+template <typename CharType>
+void WriteCharVector(base::Pickle* m, const std::vector<CharType>& p) {
+  static_assert(sizeof(CharType) == 1);
+  static_assert(std::is_integral_v<CharType>);
+  if (p.empty()) {
+    m->WriteData(nullptr, 0);
+  } else {
+    const char* data = reinterpret_cast<const char*>(p.data());
+    m->WriteData(data, p.size());
+  }
+}
+
+template <typename CharType>
+bool ReadCharVector(const base::Pickle* m,
+                    base::PickleIterator* iter,
+                    std::vector<CharType>* r) {
+  static_assert(sizeof(CharType) == 1);
+  static_assert(std::is_integral_v<CharType>);
+  const char* data;
+  size_t data_size = 0;
+  if (!iter->ReadData(&data, &data_size)) {
+    return false;
+  }
+  const CharType* begin = reinterpret_cast<const CharType*>(data);
+  const CharType* end = begin + data_size;
+  r->assign(begin, end);
+  return true;
 }
 
 void WriteValue(const base::Value& value, int recursion, base::Pickle* pickle);
@@ -431,50 +464,28 @@ void ParamTraits<std::wstring>::Log(const param_type& p, std::string* l) {
 
 void ParamTraits<std::vector<char>>::Write(base::Pickle* m,
                                            const param_type& p) {
-  if (p.empty()) {
-    m->WriteData(NULL, 0);
-  } else {
-    m->WriteData(&p.front(), p.size());
-  }
+  WriteCharVector(m, p);
 }
 
 bool ParamTraits<std::vector<char>>::Read(const base::Pickle* m,
                                           base::PickleIterator* iter,
                                           param_type* r) {
-  const char *data;
-  size_t data_size = 0;
-  if (!iter->ReadData(&data, &data_size))
-    return false;
-  r->resize(data_size);
-  if (data_size)
-    memcpy(&r->front(), data, data_size);
-  return true;
+  return ReadCharVector(m, iter, r);
 }
 
-void ParamTraits<std::vector<char> >::Log(const param_type& p, std::string* l) {
+void ParamTraits<std::vector<char>>::Log(const param_type& p, std::string* l) {
   LogBytes(p, l);
 }
 
 void ParamTraits<std::vector<unsigned char>>::Write(base::Pickle* m,
                                                     const param_type& p) {
-  if (p.empty()) {
-    m->WriteData(NULL, 0);
-  } else {
-    m->WriteData(reinterpret_cast<const char*>(&p.front()), p.size());
-  }
+  WriteCharVector(m, p);
 }
 
 bool ParamTraits<std::vector<unsigned char>>::Read(const base::Pickle* m,
                                                    base::PickleIterator* iter,
                                                    param_type* r) {
-  const char *data;
-  size_t data_size = 0;
-  if (!iter->ReadData(&data, &data_size))
-    return false;
-  r->resize(data_size);
-  if (data_size)
-    memcpy(&r->front(), data, data_size);
-  return true;
+  return ReadCharVector(m, iter, r);
 }
 
 void ParamTraits<std::vector<unsigned char> >::Log(const param_type& p,
@@ -945,7 +956,7 @@ void ParamTraits<base::subtle::PlatformSharedMemoryRegion>::Write(
   zx::vmo vmo = const_cast<param_type&>(p).PassPlatformHandle();
   WriteParam(m, vmo);
 #elif BUILDFLAG(IS_APPLE)
-  base::mac::ScopedMachSendRight h =
+  base::apple::ScopedMachSendRight h =
       const_cast<param_type&>(p).PassPlatformHandle();
   MachPortMac mach_port_mac(h.get());
   WriteParam(m, mach_port_mac);
@@ -1003,8 +1014,8 @@ bool ParamTraits<base::subtle::PlatformSharedMemoryRegion>::Read(
   if (!ReadParam(m, iter, &mach_port_mac))
     return false;
   *r = base::subtle::PlatformSharedMemoryRegion::Take(
-      base::mac::ScopedMachSendRight(mach_port_mac.get_mach_port()), mode, size,
-      guid);
+      base::apple::ScopedMachSendRight(mach_port_mac.get_mach_port()), mode,
+      size, guid);
 #elif BUILDFLAG(IS_POSIX)
   scoped_refptr<base::Pickle::Attachment> attachment;
   if (!m->ReadAttachment(iter, &attachment))

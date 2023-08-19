@@ -247,11 +247,28 @@ TEST(PasswordListSorterTest, PasskeyVsPasswordSortKey) {
 
   PasskeyCredential passkey_credential(
       PasskeyCredential::Source::kAndroidPhone,
-      PasskeyCredential::RpId("test.com"), PasskeyCredential::CredentialId(),
+      PasskeyCredential::RpId("test.com"),
+      PasskeyCredential::CredentialId({1, 2, 3, 4}),
       PasskeyCredential::UserId(), PasskeyCredential::Username("lora"));
   CredentialUIEntry passkey(std::move(passkey_credential));
 
   EXPECT_NE(CreateSortKey(password), CreateSortKey(passkey));
+}
+
+// Tests that two passkeys that are equal in everything but the display name
+// have different sort keys.
+TEST(PasswordListSorterTest, PasskeyDifferentSortKeyForDifferentDisplayName) {
+  PasskeyCredential passkey_credential(
+      PasskeyCredential::Source::kAndroidPhone,
+      PasskeyCredential::RpId("test.com"),
+      PasskeyCredential::CredentialId({1, 2, 3, 4}),
+      PasskeyCredential::UserId(), PasskeyCredential::Username("lora"),
+      PasskeyCredential::DisplayName("Display Name 1"));
+  CredentialUIEntry passkey1(std::move(passkey_credential));
+  CredentialUIEntry passkey2 = passkey1;
+  passkey2.user_display_name = u"Display Name 2";
+
+  EXPECT_NE(CreateSortKey(passkey1), CreateSortKey(passkey2));
 }
 
 }  // namespace password_manager

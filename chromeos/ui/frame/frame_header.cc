@@ -22,6 +22,7 @@
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/scoped_canvas.h"
+#include "ui/views/background.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/native_widget_aura.h"
 #include "ui/views/widget/widget.h"
@@ -266,7 +267,8 @@ void FrameHeader::SetPaintAsActive(bool paint_as_active) {
     back_button_->SetPaintAsActive(paint_as_active);
   if (center_button_)
     center_button_->SetPaintAsActive(paint_as_active);
-  UpdateCaptionButtonColors();
+
+  UpdateFrameColors();
 }
 
 void FrameHeader::OnShowStateChanged(ui::WindowShowState show_state) {
@@ -278,6 +280,15 @@ void FrameHeader::OnShowStateChanged(ui::WindowShowState show_state) {
 
 void FrameHeader::OnFloatStateChanged() {
   LayoutHeaderInternal();
+}
+
+void FrameHeader::SetHeaderCornerRadius(int radius) {
+  if (radius == corner_radius_) {
+    return;
+  }
+
+  corner_radius_ = radius;
+  view_->SchedulePaint();
 }
 
 void FrameHeader::SetLeftHeaderView(views::View* left_header_view) {
@@ -346,13 +357,31 @@ gfx::Rect FrameHeader::GetPaintedBounds() const {
   return gfx::Rect(view_->width(), painted_height_);
 }
 
-void FrameHeader::UpdateCaptionButtonColors() {
+void FrameHeader::UpdateCaptionButtonColors(
+    absl::optional<ui::ColorId> icon_color_id) {
   const SkColor frame_color = GetCurrentFrameColor();
-  caption_button_container_->SetBackgroundColor(frame_color);
-  if (back_button_)
+  if (caption_button_container_->window_controls_overlay_enabled()) {
+    caption_button_container_->SetBackground(
+        views::CreateSolidBackground(frame_color));
+  }
+
+  if (icon_color_id.has_value()) {
+    caption_button_container_->SetButtonIconColor(*icon_color_id);
+    if (back_button_) {
+      back_button_->SetIconColorId(*icon_color_id);
+    }
+    if (center_button_) {
+      center_button_->SetIconColorId(*icon_color_id);
+    }
+    return;
+  }
+  caption_button_container_->SetButtonBackgroundColor(frame_color);
+  if (back_button_) {
     back_button_->SetBackgroundColor(frame_color);
-  if (center_button_)
+  }
+  if (center_button_) {
     center_button_->SetBackgroundColor(frame_color);
+  }
 }
 
 void FrameHeader::PaintTitleBar(gfx::Canvas* canvas) {

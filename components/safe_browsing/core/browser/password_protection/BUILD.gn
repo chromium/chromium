@@ -20,6 +20,7 @@ source_set("password_protection") {
     "//components/autofill/core/browser",
     "//components/history/core/browser",
     "//components/password_manager/core/browser",
+    "//components/safe_browsing/core/browser",
     "//components/safe_browsing/core/browser:referrer_chain_provider",
     "//components/safe_browsing/core/browser:safe_browsing_metrics_collector",
     "//components/safe_browsing/core/browser:token_fetcher",

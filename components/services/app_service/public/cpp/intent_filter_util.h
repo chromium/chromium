@@ -20,7 +20,9 @@ namespace apps_util {
 
 // TODO(crbug.com/1092784): Update/add all related unit tests to test with
 // action view.
-apps::IntentFilterPtr MakeIntentFilterForUrlScope(const GURL& url);
+apps::IntentFilterPtr MakeIntentFilterForUrlScope(
+    const GURL& url,
+    bool omit_port_for_testing = false);
 
 // Check if the two intent filters have overlap. i.e. they can handle same
 // intent with same match level.
@@ -42,6 +44,11 @@ bool IsSupportedLinkForApp(const std::string& app_id,
 // if the filter does not match a prefix (e.g. glob), 0 is returned.
 size_t IntentFilterUrlMatchLength(const apps::IntentFilterPtr& intent_filter,
                                   const GURL& url);
+
+// Returns all of the links that this intent filter would accept, to be used
+// in listing all of the supported links for a given app.
+std::set<std::string> GetSupportedLinksForAppManagement(
+    const apps::IntentFilterPtr& intent_filter);
 
 }  // namespace apps_util
 

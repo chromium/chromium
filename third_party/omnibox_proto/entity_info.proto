@@ -41,9 +41,6 @@ message EntityInfo {
   // List of possible actions for this entity.
   repeated ActionInfo action_suggestions = 12;
 
-  // Distance to the point of interest.
-  optional uint32 distance_km = 13;
-
   // List of categories this entity belongs to.
   repeated CategoryInfo.Category category = 14;
 
@@ -59,20 +56,11 @@ message ActionInfo {
     REVIEWS = 20;
   }
 
-  // The text to display on the Action button.
-  optional string displayed_text = 1;
-
-  // The icon used to decorate the Action button.
-  optional string icon_thumbnail_url = 2;
-
   // The URI to open when the action is invoked.
   optional string action_uri = 3;
 
   // Action type for logging.
   optional metrics.ActionType logs_action_type = 4;
-
-  // When present, specifies the package to be used to execute the Action.
-  optional string package_id = 5;
 
   // Action type.
   optional ActionType action_type = 8;

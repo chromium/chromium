@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("table_view") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "chrome_table_view_consumer.h",
     "chrome_table_view_controller.h",
@@ -30,7 +29,6 @@ source_set("table_view") {
 }
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "table_view_constants.h",
     "table_view_constants.mm",
@@ -40,7 +38,6 @@ source_set("constants") {
 }
 
 source_set("styler") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "chrome_table_view_styler.h",
     "chrome_table_view_styler.mm",
@@ -53,7 +50,6 @@ source_set("styler") {
 }
 
 source_set("views") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "chrome_empty_table_view_background.h",
     "table_view_empty_view.h",
@@ -73,7 +69,6 @@ source_set("views") {
 }
 
 source_set("test_support") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "chrome_table_view_controller_test.h",
@@ -90,7 +85,6 @@ source_set("test_support") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "chrome_table_view_controller_unittest.mm" ]
   deps = [
@@ -102,7 +96,6 @@ source_set("unit_tests") {
 }
 
 source_set("utils") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "table_view_utils.h",
     "table_view_utils.mm",

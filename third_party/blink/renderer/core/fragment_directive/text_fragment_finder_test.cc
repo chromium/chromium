@@ -77,7 +77,7 @@ TEST_F(TextFragmentFinderTest, DOMMutation) {
 
   {
     EXPECT_CALL(client, NoMatchFound()).Times(1);
-    Node* input = GetDocument().getElementById("input");
+    Node* input = GetDocument().getElementById(AtomicString("input"));
     input->remove();
     GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 

@@ -26,7 +26,6 @@
 <translation id="2060505056492490888">'<ph name="DOT" />' ត្រូវបានប្រើនៅក្នុងទីតាំងខុសនៅក្នុង '<ph name="INVALIDDOMAIN" />'។</translation>
 <translation id="2148716181193084225">ថ្ងៃនេះ</translation>
 <translation id="2226276347425096477">សូមធ្វើឲ្យអត្ថបទនេះខ្លីទៅ <ph name="MAX_CHARACTERS" /> តួអក្សរ ឫតិចជាងនេះ (ឥឡូវនេះអ្នកកំពុងប្រើ <ph name="CURRENT_LENGTH" /> តួអក្សរ)។</translation>
-<translation id="2246498165605549352">ឯកសារ​មូលដ្ឋាន</translation>
 <translation id="2247351761944213033">សប្តាហ៍ <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">បទទី <ph name="NUMBER" /></translation>
 <translation id="2393030564806080191">តម្លៃពណ៌​គោលដប់ប្រាំមួយ</translation>
@@ -89,6 +88,7 @@
 <translation id="5425179576310518467">កាលបរិច្ឆេទ​បច្ចុប្បន្ន​</translation>
 <translation id="5466621249238537318">សូមជ្រើសរើសឯកសារមួយ ឬច្រើន។</translation>
 <translation id="5468998798572797635">ចាកចេញពីអេក្រង់ពេញ</translation>
+<translation id="5514612371225420585">ឯកសារលើឧបករណ៍របស់អ្នក</translation>
 <translation id="5516235301412634559">0.75</translation>
 <translation id="5537725057119320332">ខាស</translation>
 <translation id="5546461542133609677">បើកសម្លេង</translation>
@@ -113,6 +113,7 @@
 <translation id="6398862346408813489">បង្ហាញបន្ទះជ្រើសរើសខែ</translation>
 <translation id="6404546809543547843">ឧបករណ៍រំកិលរយៈពេលសម្លេង</translation>
 <translation id="6443871981718447451">បង្ហាញម៉ឺនុយចំណង​ជើងបន្ថែម</translation>
+<translation id="6484738902856791350">ប្រើ​ទម្រង់ស្អាត</translation>
 <translation id="6550675742724504774">ជម្រើស</translation>
 <translation id="6572309429103589720">ខុស​វេយ្យាករណ៍</translation>
 <translation id="658823671542763450">ចូលពេញអេក្រង់</translation>

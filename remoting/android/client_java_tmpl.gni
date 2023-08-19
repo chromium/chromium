@@ -98,9 +98,10 @@ template("remoting_android_client_java_tmpl") {
 
     resources_package = "org.chromium.chromoting"
 
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
-
-    srcjar_deps = [ "//remoting/client/jni:jni_enums" ]
+    srcjar_deps = [
+      "//remoting/android:jni_headers",
+      "//remoting/client/jni:jni_enums",
+    ]
 
     if (defined(invoker.play_services_package)) {
       deps += [

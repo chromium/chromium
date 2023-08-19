@@ -36,6 +36,9 @@ class CORE_EXPORT MediaFeatureOverrides {
   absl::optional<bool> GetPrefersReducedData() const {
     return prefers_reduced_data_;
   }
+  absl::optional<bool> GetPrefersReducedTransparency() const {
+    return prefers_reduced_transparency_;
+  }
   absl::optional<ForcedColors> GetForcedColors() const {
     return forced_colors_;
   }
@@ -46,6 +49,7 @@ class CORE_EXPORT MediaFeatureOverrides {
   absl::optional<mojom::blink::PreferredContrast> preferred_contrast_;
   absl::optional<bool> prefers_reduced_motion_;
   absl::optional<bool> prefers_reduced_data_;
+  absl::optional<bool> prefers_reduced_transparency_;
   absl::optional<ForcedColors> forced_colors_;
 };
 

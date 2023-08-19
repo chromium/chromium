@@ -21,7 +21,6 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/action_label.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/gfx/geometry/point_f.h"
-#include "ui/gfx/geometry/rect_f.h"
 
 namespace arc::input_overlay {
 
@@ -46,11 +45,11 @@ absl::optional<std::pair<ui::DomCode, int>> ParseKeyboardKey(
     const base::Value::Dict& value,
     const base::StringPiece key_name);
 
-// Return true if the |input_element| is bound.
+// Return true if the `input_element` is bound.
 bool IsInputBound(const InputElement& input_element);
-// Return true if the |input_element| is bound to keyboard key.
+// Return true if the `input_element` is bound to keyboard key.
 bool IsKeyboardBound(const InputElement& input_element);
-// Return true if the |input_element| is bound to mouse.
+// Return true if the `input_element` is bound to mouse.
 bool IsMouseBound(const InputElement& input_element);
 
 // This is the base touch action which converts other events to touch
@@ -63,9 +62,11 @@ class Action {
 
   virtual bool ParseFromJson(const base::Value::Dict& value);
   // Used to create an action from UI.
-  virtual bool InitFromEditor();
-  bool ParseFromProto(const ActionProto& proto);
-  void OverwriteFromProto(const ActionProto& proto);
+  virtual bool InitByAddingNewAction();
+  virtual void InitByChangingActionType(Action* action);
+
+  bool ParseUserAddedActionFromProto(const ActionProto& proto);
+  void OverwriteDefaultActionFromProto(const ActionProto& proto);
   // 1. Return true & non-empty touch_events:
   //    Call SendEventFinally to send simulated touch event.
   // 2. Return true & empty touch_events:
@@ -82,36 +83,35 @@ class Action {
   virtual std::unique_ptr<ActionView> CreateView(
       DisplayOverlayController* display_overlay_controller) = 0;
   // This is called if other actions take the input binding from this action.
-  // |input_element| should overlap the current displayed binding. If it is
+  // `input_element` should overlap the current displayed binding. If it is
   // partially overlapped, then we only unbind the overlapped input.
   virtual void UnbindInput(const InputElement& input_element) = 0;
-  virtual ActionType GetType() = 0;
+  virtual ActionType GetType() const = 0;
 
   // This is called for editing the actions before change is saved. Or for
   // loading the customized data to override the default input mapping.
   void PrepareToBindInput(std::unique_ptr<InputElement> input_element);
-  // Save |pending_input_| as |current_input_|.
+  // Save `pending_input_` as `current_input_`.
   void BindPending();
-  // Cancel |pending_input_| and |pending_position_|.
+  // Cancel `pending_input_` and `pending_position_`.
   void CancelPendingBind();
   void ResetPendingBind();
 
   void PrepareToBindPosition(const gfx::Point& new_touch_center);
-  void PrepareToBindPosition(std::unique_ptr<Position> position);
 
   // Restore the input binding back to the original binding.
   void RestoreToDefault();
   // Return currently displayed input binding.
   const InputElement& GetCurrentDisplayedInput();
-  // Check if there is any overlap between |input_element| and current
+  // Check if there is any overlap between `input_element` and current
   // displayed binding.
   bool IsOverlapped(const InputElement& input_element);
-  // Make sure |original_positions_| is not empty before calling this.
+  // Make sure `original_positions_` is not empty before calling this.
   const Position& GetCurrentDisplayedPosition();
 
   // Return the proto object if the action is customized.
   virtual std::unique_ptr<ActionProto> ConvertToProtoIfCustomized() const;
-  // Update |touch_down_positions_| after reposition, rotation change or window
+  // Update `touch_down_positions_` after reposition, rotation change or window
   // bounds change.
   void UpdateTouchDownPositions();
 
@@ -122,6 +122,14 @@ class Action {
   int GetUIRadius();
 
   bool IsDefaultAction() const;
+
+  // For default action, bind `current_input_` to nothing to indicate the
+  // default action is deleted. For non-default action, the instance is removed
+  // from list.
+  void RemoveDefaultAction();
+  // For default action, it is marked as deleted. For user action, the class
+  // instance is deleted.
+  bool IsDeleted();
 
   InputElement* current_input() const { return current_input_.get(); }
   InputElement* original_input() const { return original_input_.get(); }
@@ -142,6 +150,10 @@ class Action {
   const std::vector<gfx::PointF>& touch_down_positions() const {
     return touch_down_positions_;
   }
+  absl::optional<ActionType> original_type() { return original_type_; }
+  void set_original_type(ActionType type) {
+    original_type_ = absl::make_optional<ActionType>(type);
+  }
   bool require_mouse_locked() const { return require_mouse_locked_; }
   TouchInjector* touch_injector() const { return touch_injector_; }
   int current_position_idx() const { return current_position_idx_; }
@@ -150,16 +162,17 @@ class Action {
   bool support_modifier_key() const { return support_modifier_key_; }
   ActionView* action_view() const { return action_view_; }
   void set_action_view(ActionView* action_view) { action_view_ = action_view; }
-
-  bool deleted() const { return deleted_; }
-  void set_deleted(bool deleted) { deleted_ = deleted; }
+  void set_name_label_index(int name_label_index) {
+    name_label_index_ = name_label_index;
+  }
+  int name_label_index() { return name_label_index_; }
 
  protected:
-  // |touch_injector| must be non-NULL and own this Action.
+  // `touch_injector` must be non-NULL and own this Action.
   explicit Action(TouchInjector* touch_injector);
 
-  // Create a touch pressed/moved/released event with |time_stamp| and save it
-  // in |touch_events|.
+  // Create a touch pressed/moved/released event with `time_stamp` and save it
+  // in `touch_events`.
   bool CreateTouchPressedEvent(const base::TimeTicks& time_stamp,
                                std::list<ui::TouchEvent>& touch_events);
   void CreateTouchMovedEvent(const base::TimeTicks& time_stamp,
@@ -179,24 +192,31 @@ class Action {
   // Current input binding.
   std::unique_ptr<InputElement> current_input_;
   // Pending input binding. It is used during the editing before it is saved.
+  // TODO(b/253646354): This will be removed when removing Beta flag.
   std::unique_ptr<InputElement> pending_input_;
 
   // Unique ID for each action.
   int id_ = 0;
+  // Used for the default action.
+  absl::optional<ActionType> original_type_;
   // name_ is basically for debugging and not visible to users.
   std::string name_;
+  // `name_label_index` is the index of the user-defined label for the action.
+  // An negative index means that the action label name is unassigned.
+  int name_label_index_ = -1;
   // Position take turns for each key press if there are more than
   // one positions. This is for original default positions.
   std::vector<Position> original_positions_;
-  // The first element of |current_positions_| is different from
-  // |original_positions_| if the position is customized.
+  // The first element of `current_positions_` is different from
+  // `original_positions_` if the position is customized.
   std::vector<Position> current_positions_;
   // Only support the reposition of the first touch position if there are more
   // than one touch position.
+  // TODO(b/253646354): This will be removed when removing Beta flag.
   std::unique_ptr<Position> pending_position_;
   // Root locations of touch point.
   std::vector<gfx::PointF> touch_down_positions_;
-  // If |require_mouse_locked_| == true, the action takes effect when the mouse
+  // If `require_mouse_locked_` == true, the action takes effect when the mouse
   // is locked. Once the mouse is unlocked, the active actions which need mouse
   // lock will be released.
   bool require_mouse_locked_ = false;
@@ -214,23 +234,20 @@ class Action {
   absl::optional<float> radius_;
   // By default, it doesn't support modifier key.
   bool support_modifier_key_ = false;
-  raw_ptr<ActionView> action_view_ = nullptr;
+  raw_ptr<ActionView, DanglingUntriaged> action_view_ = nullptr;
 
  private:
+  friend class TouchInjectorTest;
+
   void OnTouchReleased();
   void OnTouchCancelled();
-  // Create a touch event of |type| with |time_stamp| and save it
-  // in |touch_events|.
+  // Create a touch event of `type` with `time_stamp` and save it
+  // in `touch_events`.
   void CreateTouchEvent(ui::EventType type,
                         const base::TimeTicks& time_stamp,
                         std::list<ui::TouchEvent>& touch_events);
 
-  // Mainly for default action to mark if it is deleted.
-  bool deleted_ = false;
-
-  // Corresponds to |kArcInputOverlayBeta| flag to turn on/off the editor
-  // feature of adding or removing actions.
-  bool beta_;
+  void PrepareToBindPositionForTesting(std::unique_ptr<Position> position);
 };
 
 }  // namespace arc::input_overlay

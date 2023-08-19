@@ -7,6 +7,8 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
+#include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_metrics.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -53,8 +55,9 @@ void QuickAnswersStateAsh::OnFirstSessionStarted() {
 void QuickAnswersStateAsh::RegisterPrefChanges(PrefService* pref_service) {
   pref_change_registrar_.reset();
 
-  if (!pref_service)
+  if (!pref_service) {
     return;
+  }
 
   // Register preference changes.
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
@@ -162,6 +165,23 @@ void QuickAnswersStateAsh::UpdateSettingsEnabled() {
   auto* prefs = pref_change_registrar_->prefs();
 
   auto settings_enabled = prefs->GetBoolean(kQuickAnswersEnabled);
+
+  // Quick answers should be disabled for kiosk session.
+  if (chromeos::IsKioskSession() && settings_enabled) {
+    settings_enabled = false;
+    prefs->SetBoolean(kQuickAnswersEnabled, false);
+    prefs->SetInteger(kQuickAnswersConsentStatus, ConsentStatus::kRejected);
+  }
+
+  // If the feature is enforced off by the administrator policy, set the
+  // consented status to rejected. This must be put before the same value return
+  // below as the default value is `false` and we cannot observe
+  // unmanaged-disabled to managed-disabled change.
+  if (!settings_enabled &&
+      prefs->IsManagedPreference(quick_answers::prefs::kQuickAnswersEnabled)) {
+    prefs->SetInteger(kQuickAnswersConsentStatus, ConsentStatus::kRejected);
+  }
+
   if (settings_enabled_ == settings_enabled) {
     return;
   }
@@ -173,15 +193,9 @@ void QuickAnswersStateAsh::UpdateSettingsEnabled() {
     prefs->SetInteger(kQuickAnswersConsentStatus, ConsentStatus::kAccepted);
   }
 
-  // If the feature is enforced off by the administrator policy, set the
-  // consented status to rejected.
-  if (!settings_enabled_ &&
-      prefs->IsManagedPreference(quick_answers::prefs::kQuickAnswersEnabled)) {
-    prefs->SetInteger(kQuickAnswersConsentStatus, ConsentStatus::kRejected);
-  }
-
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnSettingsEnabled(settings_enabled_);
+  }
 }
 
 void QuickAnswersStateAsh::UpdateConsentStatus() {
@@ -190,8 +204,9 @@ void QuickAnswersStateAsh::UpdateConsentStatus() {
 
   consent_status_ = consent_status;
 
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnConsentStatusUpdated(consent_status_);
+  }
 }
 
 void QuickAnswersStateAsh::UpdateDefinitionEnabled() {
@@ -219,8 +234,9 @@ void QuickAnswersStateAsh::OnApplicationLocaleReady() {
   auto locale = pref_change_registrar_->prefs()->GetString(
       language::prefs::kApplicationLocale);
 
-  if (locale.empty())
+  if (locale.empty()) {
     return;
+  }
 
   // We should not directly use the pref locale, resolve the generic locale name
   // to one of the locally defined ones first.
@@ -248,8 +264,9 @@ void QuickAnswersStateAsh::UpdatePreferredLanguages() {
 
   preferred_languages_ = preferred_languages;
 
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnPreferredLanguagesChanged(preferred_languages);
+  }
 }
 
 void QuickAnswersStateAsh::UpdateSpokenFeedbackEnabled() {

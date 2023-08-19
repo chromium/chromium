@@ -33,8 +33,11 @@
 
 using ::testing::_;
 using ::testing::InSequence;
+using ::testing::Return;
 
 namespace blink {
+
+using mojom::blink::MediaStreamRequestResult;
 
 namespace {
 
@@ -115,12 +118,12 @@ class MediaStreamVideoCapturerSourceTest : public testing::Test {
       bool is_screencast,
       double min_frame_rate) {
     bool enabled = true;
-    // CreateVideoTrack will trigger OnConstraintsApplied.
+    // CreateVideoTrack will trigger StartDone.
     return MediaStreamVideoTrack::CreateVideoTrack(
         video_capturer_source_, adapter_settings, noise_reduction,
         is_screencast, min_frame_rate, absl::nullopt, absl::nullopt,
         absl::nullopt, false,
-        WTF::BindOnce(&MediaStreamVideoCapturerSourceTest::OnConstraintsApplied,
+        WTF::BindOnce(&MediaStreamVideoCapturerSourceTest::StartDone,
                       base::Unretained(this)),
         enabled);
   }
@@ -147,14 +150,17 @@ class MediaStreamVideoCapturerSourceTest : public testing::Test {
       const base::UnguessableToken& session_id) {
     auto delegate = std::make_unique<MockVideoCapturerSource>();
     delegate_ = delegate.get();
-    EXPECT_CALL(*delegate_, MockStartCapture(_, _, _));
+    EXPECT_CALL(*delegate_, MockStartCapture(_, _, _))
+        .WillOnce(Return(RunState::kRunning));
     return delegate;
   }
 
  protected:
-  void OnConstraintsApplied(WebPlatformMediaStreamSource* source,
-                            mojom::blink::MediaStreamRequestResult result,
-                            const WebString& result_name) {}
+  void StartDone(WebPlatformMediaStreamSource* source,
+                 MediaStreamRequestResult result,
+                 const WebString& result_name) {
+    start_result_ = result;
+  }
 
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
 
@@ -166,6 +172,7 @@ class MediaStreamVideoCapturerSourceTest : public testing::Test {
   String stream_source_id_;
   bool source_stopped_;
   bool stop_capture_flag_ = false;
+  MediaStreamRequestResult start_result_;
 };
 
 TEST_F(MediaStreamVideoCapturerSourceTest, StartAndStop) {
@@ -180,7 +187,7 @@ TEST_F(MediaStreamVideoCapturerSourceTest, StartAndStop) {
 
   // A bogus notification of running from the delegate when the source has
   // already started should not change the state.
-  delegate_->SetRunning(true);
+  delegate_->SetRunning(RunState::kRunning);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(MediaStreamSource::kReadyStateLive,
             stream_source_->GetReadyState());
@@ -189,7 +196,7 @@ TEST_F(MediaStreamVideoCapturerSourceTest, StartAndStop) {
 
   // If the delegate stops, the source should stop.
   EXPECT_CALL(mock_delegate(), MockStopCapture());
-  delegate_->SetRunning(false);
+  delegate_->SetRunning(RunState::kStopped);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(MediaStreamSource::kReadyStateEnded,
             stream_source_->GetReadyState());
@@ -205,7 +212,8 @@ TEST_F(MediaStreamVideoCapturerSourceTest, CaptureTimeAndMetadataPlumbing) {
   InSequence s;
   EXPECT_CALL(mock_delegate(), MockStartCapture(_, _, _))
       .WillOnce(testing::DoAll(testing::SaveArg<1>(&deliver_frame_cb),
-                               testing::SaveArg<2>(&running_cb)));
+                               testing::SaveArg<2>(&running_cb),
+                               Return(RunState::kRunning)));
   EXPECT_CALL(mock_delegate(), RequestRefreshFrame());
   EXPECT_CALL(mock_delegate(), MockStopCapture());
   WebMediaStreamTrack track =
@@ -237,7 +245,8 @@ TEST_F(MediaStreamVideoCapturerSourceTest, CaptureTimeAndMetadataPlumbing) {
 
 TEST_F(MediaStreamVideoCapturerSourceTest, Restart) {
   InSequence s;
-  EXPECT_CALL(mock_delegate(), MockStartCapture(_, _, _));
+  EXPECT_CALL(mock_delegate(), MockStartCapture(_, _, _))
+      .WillOnce(Return(RunState::kRunning));
   WebMediaStreamTrack track =
       StartSource(VideoTrackAdapterSettings(), absl::nullopt, false, 0.0);
   base::RunLoop().RunUntilIdle();
@@ -277,7 +286,8 @@ TEST_F(MediaStreamVideoCapturerSourceTest, Restart) {
   EXPECT_FALSE(video_capturer_source_->IsRunning());
 
   // Restart the source. With the mock delegate, any video format will do.
-  EXPECT_CALL(mock_delegate(), MockStartCapture(_, _, _));
+  EXPECT_CALL(mock_delegate(), MockStartCapture(_, _, _))
+      .WillOnce(Return(RunState::kRunning));
   EXPECT_FALSE(video_capturer_source_->IsRunning());
   video_capturer_source_->Restart(
       media::VideoCaptureFormat(),
@@ -306,7 +316,7 @@ TEST_F(MediaStreamVideoCapturerSourceTest, Restart) {
   // An delegate stop should stop the source and change the track state to
   // "ended".
   EXPECT_CALL(mock_delegate(), MockStopCapture());
-  delegate_->SetRunning(false);
+  delegate_->SetRunning(RunState::kStopped);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(MediaStreamSource::kReadyStateEnded,
             stream_source_->GetReadyState());
@@ -318,13 +328,15 @@ TEST_F(MediaStreamVideoCapturerSourceTest, Restart) {
 
 TEST_F(MediaStreamVideoCapturerSourceTest, StartStopAndNotify) {
   InSequence s;
-  EXPECT_CALL(mock_delegate(), MockStartCapture(_, _, _));
+  EXPECT_CALL(mock_delegate(), MockStartCapture(_, _, _))
+      .WillOnce(Return(RunState::kRunning));
   WebMediaStreamTrack web_track =
       StartSource(VideoTrackAdapterSettings(), absl::nullopt, false, 0.0);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(MediaStreamSource::kReadyStateLive,
             stream_source_->GetReadyState());
   EXPECT_FALSE(source_stopped_);
+  EXPECT_EQ(start_result_, MediaStreamRequestResult::OK);
 
   stop_capture_flag_ = false;
   EXPECT_CALL(mock_delegate(), MockStopCapture())
@@ -349,17 +361,19 @@ TEST_F(MediaStreamVideoCapturerSourceTest, StartStopAndNotify) {
 
 TEST_F(MediaStreamVideoCapturerSourceTest, ChangeSource) {
   InSequence s;
-  EXPECT_CALL(mock_delegate(), MockStartCapture(_, _, _));
+  EXPECT_CALL(mock_delegate(), MockStartCapture(_, _, _))
+      .WillOnce(Return(RunState::kRunning));
   WebMediaStreamTrack track =
       StartSource(VideoTrackAdapterSettings(), absl::nullopt, false, 0.0);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(MediaStreamSource::kReadyStateLive,
             stream_source_->GetReadyState());
   EXPECT_FALSE(source_stopped_);
+  EXPECT_EQ(start_result_, MediaStreamRequestResult::OK);
 
   // A bogus notification of running from the delegate when the source has
   // already started should not change the state.
-  delegate_->SetRunning(true);
+  delegate_->SetRunning(RunState::kRunning);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(MediaStreamSource::kReadyStateLive,
             stream_source_->GetReadyState());
@@ -378,13 +392,35 @@ TEST_F(MediaStreamVideoCapturerSourceTest, ChangeSource) {
 
   // If the delegate stops, the source should stop.
   EXPECT_CALL(mock_delegate(), MockStopCapture());
-  delegate_->SetRunning(false);
+  delegate_->SetRunning(RunState::kStopped);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(MediaStreamSource::kReadyStateEnded,
             stream_source_->GetReadyState());
   // Verify that WebPlatformMediaStreamSource::SourceStoppedCallback has
   // been triggered.
   EXPECT_TRUE(source_stopped_);
+}
+
+TEST_F(MediaStreamVideoCapturerSourceTest, FailStartSystemPermission) {
+  InSequence s;
+  EXPECT_CALL(mock_delegate(), MockStartCapture(_, _, _))
+      .WillOnce(Return(RunState::kSystemPermissionsError));
+  WebMediaStreamTrack track =
+      StartSource(VideoTrackAdapterSettings(), absl::nullopt, false, 0.0);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(source_stopped_);
+  EXPECT_EQ(start_result_, MediaStreamRequestResult::SYSTEM_PERMISSION_DENIED);
+}
+
+TEST_F(MediaStreamVideoCapturerSourceTest, FailStartCamInUse) {
+  InSequence s;
+  EXPECT_CALL(mock_delegate(), MockStartCapture(_, _, _))
+      .WillOnce(Return(RunState::kCameraBusyError));
+  WebMediaStreamTrack track =
+      StartSource(VideoTrackAdapterSettings(), absl::nullopt, false, 0.0);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(source_stopped_);
+  EXPECT_EQ(start_result_, MediaStreamRequestResult::DEVICE_IN_USE);
 }
 
 }  // namespace blink

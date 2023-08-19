@@ -8,10 +8,8 @@
 
 #include "base/base64.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/os_crypt/sync/os_crypt.h"
 #include "components/sync/base/passphrase_enums.h"
@@ -29,55 +27,6 @@ enum class TrustedVaultFetchKeysAttemptForUMA {
   kFirstAttempt,
   kSecondAttempt,
   kMaxValue = kSecondAttempt
-};
-
-// Used for the case where a null client is passed to SyncServiceCrypto.
-class EmptyTrustedVaultClient : public TrustedVaultClient {
- public:
-  EmptyTrustedVaultClient() = default;
-  ~EmptyTrustedVaultClient() override = default;
-
-  // TrustedVaultClient implementation.
-  void AddObserver(Observer* observer) override {}
-
-  void RemoveObserver(Observer* observer) override {}
-
-  void FetchKeys(
-      const CoreAccountInfo& account_info,
-      base::OnceCallback<void(const std::vector<std::vector<uint8_t>>&)> cb)
-      override {
-    std::move(cb).Run({});
-  }
-
-  void StoreKeys(const std::string& gaia_id,
-                 const std::vector<std::vector<uint8_t>>& keys,
-                 int last_key_version) override {
-    // Never invoked by SyncServiceCrypto.
-    NOTREACHED();
-  }
-
-  void MarkLocalKeysAsStale(const CoreAccountInfo& account_info,
-                            base::OnceCallback<void(bool)> cb) override {
-    std::move(cb).Run(false);
-  }
-
-  void GetIsRecoverabilityDegraded(const CoreAccountInfo& account_info,
-                                   base::OnceCallback<void(bool)> cb) override {
-    std::move(cb).Run(false);
-  }
-
-  void AddTrustedRecoveryMethod(const std::string& gaia_id,
-                                const std::vector<uint8_t>& public_key,
-                                int method_type_hint,
-                                base::OnceClosure cb) override {
-    // Never invoked by SyncServiceCrypto.
-    NOTREACHED();
-  }
-
-  void ClearLocalDataForAccount(const CoreAccountInfo& account_info) override {
-    // Never invoked by SyncServiceCrypto.
-    NOTREACHED();
-  }
 };
 
 // A SyncEncryptionHandler::Observer implementation that simply posts all calls
@@ -154,15 +103,6 @@ class SyncEncryptionObserverProxy : public SyncEncryptionHandler::Observer {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 
-TrustedVaultClient* ResoveNullClient(TrustedVaultClient* client) {
-  if (client) {
-    return client;
-  }
-
-  static base::NoDestructor<EmptyTrustedVaultClient> empty_client;
-  return empty_client.get();
-}
-
 // Checks if |nigori| can be used to decrypt the given pending keys. Returns
 // true if decryption was successful. Returns false otherwise. Must be called
 // with non-empty pending keys cache.
@@ -233,22 +173,24 @@ SyncServiceCrypto::State::State()
 
 SyncServiceCrypto::State::~State() = default;
 
-SyncServiceCrypto::SyncServiceCrypto(Delegate* delegate,
-                                     TrustedVaultClient* trusted_vault_client)
-    : delegate_(delegate),
-      trusted_vault_client_(ResoveNullClient(trusted_vault_client)) {
+SyncServiceCrypto::SyncServiceCrypto(
+    Delegate* delegate,
+    trusted_vault::TrustedVaultClient* trusted_vault_client)
+    : delegate_(delegate), trusted_vault_client_(trusted_vault_client) {
   DCHECK(delegate_);
   DCHECK(trusted_vault_client_);
 
   trusted_vault_client_->AddObserver(this);
 }
 
-SyncServiceCrypto::~SyncServiceCrypto() {
-  trusted_vault_client_->RemoveObserver(this);
-}
+SyncServiceCrypto::~SyncServiceCrypto() = default;
 
 void SyncServiceCrypto::Reset() {
   state_ = State();
+}
+
+void SyncServiceCrypto::StopObservingTrustedVaultClient() {
+  trusted_vault_client_->RemoveObserver(this);
 }
 
 base::Time SyncServiceCrypto::GetExplicitPassphraseTime() const {
@@ -273,11 +215,6 @@ bool SyncServiceCrypto::IsPassphraseRequired() const {
 
   NOTREACHED();
   return false;
-}
-
-bool SyncServiceCrypto::IsUsingExplicitPassphrase() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return IsExplicitPassphrase(state_.cached_passphrase_type);
 }
 
 bool SyncServiceCrypto::IsTrustedVaultKeyRequired() const {
@@ -317,6 +254,9 @@ void SyncServiceCrypto::SetEncryptionPassphrase(const std::string& passphrase) {
     case RequiredUserAction::kTrustedVaultKeyRequired:
     case RequiredUserAction::kTrustedVaultKeyRequiredButFetching:
       // Cryptographer has pending keys.
+      // TODO(crbug.com/1434786): this is currently reachable on iOS due to
+      // discrepancy in UI code. Fix iOS implementation and avoid using more
+      // strict checks here until this is done.
       NOTREACHED()
           << "Can not set explicit passphrase when decryption is needed.";
       return;
@@ -326,7 +266,8 @@ void SyncServiceCrypto::SetEncryptionPassphrase(const std::string& passphrase) {
 
   // SetEncryptionPassphrase() should never be called if we are currently
   // encrypted with an explicit passphrase.
-  DCHECK(!IsExplicitPassphrase(state_.cached_passphrase_type));
+  DCHECK(!IsExplicitPassphrase(
+      GetPassphraseType().value_or(PassphraseType::kKeystorePassphrase)));
 
   const auto key_derivation_params =
       KeyDerivationParams::CreateForScrypt(Nigori::GenerateScryptSalt());
@@ -353,7 +294,7 @@ bool SyncServiceCrypto::SetDecryptionPassphrase(const std::string& passphrase) {
 
   // For types other than CUSTOM_PASSPHRASE, we should be using the old PBKDF2
   // key derivation method.
-  if (state_.cached_passphrase_type != PassphraseType::kCustomPassphrase) {
+  if (GetPassphraseType() != PassphraseType::kCustomPassphrase) {
     DCHECK_EQ(state_.passphrase_key_derivation_params.method(),
               KeyDerivationMethod::PBKDF2_HMAC_SHA1_1003);
   }
@@ -412,9 +353,9 @@ bool SyncServiceCrypto::IsTrustedVaultKeyRequiredStateKnown() const {
   return false;
 }
 
-PassphraseType SyncServiceCrypto::GetPassphraseType() const {
+absl::optional<PassphraseType> SyncServiceCrypto::GetPassphraseType() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return state_.cached_passphrase_type;
+  return delegate_->GetPassphraseType();
 }
 
 void SyncServiceCrypto::SetSyncEngine(const CoreAccountInfo& account_info,
@@ -428,8 +369,7 @@ void SyncServiceCrypto::SetSyncEngine(const CoreAccountInfo& account_info,
       // It was already established during initialization that there's nothing
       // to do, which is possible for some passphrase types, but not others
       // (including |kTrustedVaultPassphrase|.
-      DCHECK_NE(state_.cached_passphrase_type,
-                PassphraseType::kTrustedVaultPassphrase);
+      DCHECK(GetPassphraseType() != PassphraseType::kTrustedVaultPassphrase);
       break;
     case RequiredUserAction::kUnknownDuringInitialization:
       // Since there was no state changes during engine initialization, now the
@@ -611,8 +551,10 @@ void SyncServiceCrypto::OnPassphraseTypeChanged(PassphraseType type,
 
   DVLOG(1) << "Passphrase type changed to " << PassphraseTypeToString(type);
 
-  state_.cached_passphrase_type = type;
   state_.cached_explicit_passphrase_time = passphrase_time;
+
+  // TODO(crbug.com/1466401): Also pass along the passphrase time?
+  delegate_->SetPassphraseType(type);
 
   // Clear recoverability degraded state in case a custom passphrase was set.
   // Note that the opposite transition (into degraded recoverability) isn't
@@ -799,8 +741,7 @@ void SyncServiceCrypto::UpdateRequiredUserActionAndNotify(
 void SyncServiceCrypto::RefreshIsRecoverabilityDegraded() {
   DCHECK(state_.engine);
 
-  if (state_.cached_passphrase_type !=
-      PassphraseType::kTrustedVaultPassphrase) {
+  if (GetPassphraseType() != PassphraseType::kTrustedVaultPassphrase) {
     return;
   }
 
@@ -825,8 +766,7 @@ void SyncServiceCrypto::RefreshIsRecoverabilityDegraded() {
 void SyncServiceCrypto::GetIsRecoverabilityDegradedCompleted(
     bool is_recoverability_degraded) {
   // The passphrase type could have changed.
-  if (state_.cached_passphrase_type !=
-      PassphraseType::kTrustedVaultPassphrase) {
+  if (GetPassphraseType() != PassphraseType::kTrustedVaultPassphrase) {
     DCHECK_NE(state_.required_user_action,
               RequiredUserAction::kTrustedVaultRecoverabilityDegraded);
     return;

@@ -97,9 +97,25 @@ static inline ValidPropertyFilter DetermineValidPropertyFilter(
   return ValidPropertyFilter::kNoFilter;
 }
 
+static bool SelectorListHasLinkOrVisited(const CSSSelector* selector_list) {
+  for (const CSSSelector* complex = selector_list; complex;
+       complex = CSSSelectorList::Next(*complex)) {
+    if (complex->HasLinkOrVisited()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+static bool StyleScopeHasLinkOrVisited(const StyleScope* style_scope) {
+  return style_scope && (SelectorListHasLinkOrVisited(style_scope->From()) ||
+                         SelectorListHasLinkOrVisited(style_scope->To()));
+}
+
 static unsigned DetermineLinkMatchType(const AddRuleFlags add_rule_flags,
-                                       const CSSSelector& selector) {
-  if (selector.HasLinkOrVisited()) {
+                                       const CSSSelector& selector,
+                                       const StyleScope* style_scope) {
+  if (selector.HasLinkOrVisited() || StyleScopeHasLinkOrVisited(style_scope)) {
     return (add_rule_flags & kRuleIsVisitedDependent)
                ? CSSSelector::kMatchVisited
                : CSSSelector::kMatchLink;
@@ -110,13 +126,14 @@ static unsigned DetermineLinkMatchType(const AddRuleFlags add_rule_flags,
 RuleData::RuleData(StyleRule* rule,
                    unsigned selector_index,
                    unsigned position,
-                   unsigned extra_specificity,
+                   const StyleScope* style_scope,
                    AddRuleFlags add_rule_flags)
     : rule_(rule),
       selector_index_(selector_index),
       position_(position),
-      specificity_(Selector().Specificity() + extra_specificity),
-      link_match_type_(DetermineLinkMatchType(add_rule_flags, Selector())),
+      specificity_(Selector().Specificity()),
+      link_match_type_(
+          DetermineLinkMatchType(add_rule_flags, Selector(), style_scope)),
       valid_property_filter_(
           static_cast<std::underlying_type_t<ValidPropertyFilter>>(
               DetermineValidPropertyFilter(add_rule_flags, Selector()))),
@@ -124,7 +141,9 @@ RuleData::RuleData(StyleRule* rule,
           false),  // Will be computed in ComputeEntirelyCoveredByBucketing().
       is_easy_(false),  // Ditto.
       is_starting_style_((add_rule_flags & kRuleIsStartingStyle) != 0),
-      descendant_selector_identifier_hashes_() {}
+      descendant_selector_identifier_hashes_() {
+  ComputeBloomFilterHashes(style_scope);
+}
 
 void RuleData::ComputeEntirelyCoveredByBucketing() {
   is_easy_ = EasySelectorChecker::IsEasy(&Selector());
@@ -149,12 +168,9 @@ void RuleData::ResetEntirelyCoveredByBucketing() {
   is_entirely_covered_by_bucketing_ = false;
 }
 
-void RuleData::ComputeBloomFilterHashes() {
-#if DCHECK_IS_ON()
-  marker_ = 0;
-#endif
+void RuleData::ComputeBloomFilterHashes(const StyleScope* style_scope) {
   SelectorFilter::CollectIdentifierHashes(
-      Selector(), descendant_selector_identifier_hashes_,
+      Selector(), style_scope, descendant_selector_identifier_hashes_,
       kMaximumIdentifierCount);
 }
 
@@ -176,7 +192,7 @@ void RuleSet::AddToRuleSet(const AtomicString& key,
 void RuleSet::AddToRuleSet(HeapVector<RuleData>& rules,
                            const RuleData& rule_data) {
   rules.push_back(rule_data);
-  rules.back().ComputeBloomFilterHashes();
+  rules.back().ComputeEntirelyCoveredByBucketing();
   need_compaction_ = true;
 }
 
@@ -228,6 +244,8 @@ static void ExtractSelectorValues(const CSSSelector* selector,
           break;
         case CSSSelector::kPseudoWebKitCustomElement:
         case CSSSelector::kPseudoBlinkInternalElement:
+        case CSSSelector::kPseudoDetailsContent:
+        case CSSSelector::kPseudoDetailsSummary:
           custom_pseudo_element_name = selector->Value();
           break;
         case CSSSelector::kPseudoPart:
@@ -493,6 +511,13 @@ void RuleSet::FindBestRuleSetAndAdd(CSSSelector& component,
     return;
   }
 
+  // The selector parser prepends a :true pseudo-class with
+  // relation=kScopeActivation to any compound that contains :scope
+  // or the parent pseudo-class (&).
+  if (component.Relation() == CSSSelector::kScopeActivation) {
+    may_have_scope_in_universal_bucket_ = true;
+  }
+
   // If we didn't find a specialized map to stick it in, file under universal
   // rules.
   AddToRuleSet(universal_rules_, rule_data);
@@ -513,8 +538,7 @@ void RuleSet::AddRule(StyleRule* rule,
   if (rule_count_ >= (1 << RuleData::kPositionBits)) {
     return;
   }
-  const int extra_specificity = style_scope ? style_scope->Specificity() : 0;
-  RuleData rule_data(rule, selector_index, rule_count_, extra_specificity,
+  RuleData rule_data(rule, selector_index, rule_count_, style_scope,
                      add_rule_flags);
   ++rule_count_;
   if (features_.CollectFeaturesFromSelector(rule_data.Selector(),
@@ -536,7 +560,7 @@ void RuleSet::AddRule(StyleRule* rule,
     rule_data.ResetEntirelyCoveredByBucketing();
 
     RuleData visited_dependent(rule, rule_data.SelectorIndex(),
-                               rule_data.GetPosition(), extra_specificity,
+                               rule_data.GetPosition(), style_scope,
                                add_rule_flags | kRuleIsVisitedDependent);
     // Since the selector now is in two buckets, we use BucketCoverage::kIgnore
     // to prevent CSSSelector::is_covered_by_bucketing_ from being set.
@@ -620,6 +644,11 @@ void RuleSet::AddPositionFallbackRule(StyleRulePositionFallback* rule) {
   position_fallback_rules_.push_back(rule);
 }
 
+void RuleSet::AddViewTransitionsRule(StyleRuleViewTransitions* rule) {
+  need_compaction_ = true;
+  view_transitions_rules_.push_back(rule);
+}
+
 void RuleSet::AddChildRules(const HeapVector<Member<StyleRuleBase>>& rules,
                             const MediaQueryEvaluator& medium,
                             AddRuleFlags add_rule_flags,
@@ -662,6 +691,11 @@ void RuleSet::AddChildRules(const HeapVector<Member<StyleRuleBase>>& rules,
                    DynamicTo<StyleRuleCounterStyle>(rule)) {
       counter_style_rule->SetCascadeLayer(cascade_layer);
       AddCounterStyleRule(counter_style_rule);
+    } else if (auto* view_transitions_rule =
+                   DynamicTo<StyleRuleViewTransitions>(rule)) {
+      // TODO(https://crbug.com/1463966): Handle cascade layers for
+      // @view-transitions.
+      AddViewTransitionsRule(view_transitions_rule);
     } else if (auto* position_fallback_rule =
                    DynamicTo<StyleRulePositionFallback>(rule)) {
       position_fallback_rule->SetCascadeLayer(cascade_layer);
@@ -887,8 +921,8 @@ void RuleMap::Add(const AtomicString& key, const RuleData& rule_data) {
   if (RuntimeEnabledFeatures::CSSEasySelectorsEnabled()) {
     rule_data_copy.ComputeEntirelyCoveredByBucketing();
   }
-  rule_data_copy.SetBucketInformation(rules.bucket_number,
-                                      /*order_in_bucket=*/rules.length++);
+  bucket_data_.push_back(BucketData{.bucket_number = rules.bucket_number,
+                                    .order_in_bucket = rules.length++});
   backing.push_back(std::move(rule_data_copy));
 }
 
@@ -897,6 +931,7 @@ void RuleMap::Compact() {
     return;
   }
   if (backing.empty()) {
+    DCHECK(bucket_data_.empty());
     // Nothing to do.
     compacted = true;
     return;
@@ -910,8 +945,8 @@ void RuleMap::Compact() {
   // First, we make an array that contains the number of elements in each
   // bucket, indexed by the bucket number.
   std::unique_ptr<unsigned[]> counts(new unsigned[num_buckets]());
-  for (const RuleData& rule_data : backing) {
-    ++counts[rule_data.GetBucketNumber()];
+  for (const BucketData& bucket_data : bucket_data_) {
+    ++counts[bucket_data.bucket_number];
   }
 
   // Do the prefix sum. After this, counts[i] is the desired start index
@@ -935,33 +970,35 @@ void RuleMap::Compact() {
   // because we put it there earlier), skip to the next array slot.
   // These will happen exactly n times each, giving us our O(n) runtime.
   for (wtf_size_t i = 0; i < backing.size();) {
-    const RuleData& rule_data = backing[i];
+    const BucketData& bucket_data = bucket_data_[i];
     wtf_size_t correct_pos =
-        counts[rule_data.GetBucketNumber()] + rule_data.GetOrderInBucket();
+        counts[bucket_data.bucket_number] + bucket_data.order_in_bucket;
     if (i == correct_pos) {
       ++i;
     } else {
       using std::swap;
       swap(backing[i], backing[correct_pos]);
+      swap(bucket_data_[i], bucket_data_[correct_pos]);
     }
   }
 
-  // Now that we don't need the grouping information anymore, we can compute
-  // the Bloom filter hashes that want to stay in the same memory area.
-  for (RuleData& rule_data : backing) {
-    rule_data.ComputeBloomFilterHashes();
-  }
+  // We're done with the bucket data, so we can release the memory.
+  // If we need the bucket data again, it will be reconstructed by
+  // RuleMap::Uncompact.
+  bucket_data_.clear();
 
   compacted = true;
 }
 
 void RuleMap::Uncompact() {
+  bucket_data_.resize(backing.size());
+
   num_buckets = 0;
   for (auto& [key, value] : buckets) {
     unsigned i = 0;
-    for (RuleData& rule_data : GetRulesFromExtent(value)) {
-      rule_data.SetBucketInformation(/*bucket_number=*/num_buckets,
-                                     /*order_in_bucket=*/i++);
+    for (BucketData& bucket_data : GetBucketDataFromExtent(value)) {
+      bucket_data =
+          BucketData{.bucket_number = num_buckets, .order_in_bucket = i++};
     }
     value.bucket_number = num_buckets++;
     value.length = i;
@@ -988,8 +1025,8 @@ void RuleMap::Merge(const RuleMap& other, int offset) {
       for (const RuleData& rule_data : other.GetRulesFromExtent(extent)) {
         backing.push_back(rule_data);
         backing.back().AdjustPosition(offset);
-        backing.back().SetBucketInformation(rules.bucket_number,
-                                            /*order_in_bucket=*/rules.length++);
+        bucket_data_.push_back(BucketData{.bucket_number = rules.bucket_number,
+                                          .order_in_bucket = rules.length++});
       }
     }
   } else {
@@ -1014,12 +1051,15 @@ void RuleMap::Merge(const RuleMap& other, int offset) {
 
     // Now that we have the mapping, we can just copy over all the RuleData
     // and adjust the buckets/positions as we go.
-    for (const RuleData& rule_data : other.backing) {
-      const RuleMap::Extent& extent = extents[rule_data.GetBucketNumber()];
+    for (wtf_size_t i = 0; i < other.backing.size(); ++i) {
+      const BucketData& bucket_data = other.bucket_data_[i];
+      const RuleData& rule_data = other.backing[i];
+      const RuleMap::Extent& extent = extents[bucket_data.bucket_number];
       backing.push_back(rule_data);
       backing.back().AdjustPosition(offset);
-      backing.back().AdjustBucketPosition(extent.bucket_number,
-                                          /*offset=*/extent.length);
+      bucket_data_.push_back(BucketData{
+          .bucket_number = extent.bucket_number,
+          .order_in_bucket = bucket_data.order_in_bucket + extent.length});
     }
   }
 }
@@ -1160,6 +1200,7 @@ void RuleSet::CompactRules() {
   counter_style_rules_.shrink_to_fit();
   position_fallback_rules_.shrink_to_fit();
   layer_intervals_.shrink_to_fit();
+  view_transitions_rules_.shrink_to_fit();
 
 #if EXPENSIVE_DCHECKS_ARE_ON()
   AssertRuleListsSorted();
@@ -1271,6 +1312,7 @@ void RuleSet::Trace(Visitor* visitor) const {
   visitor->Trace(font_face_rules_);
   visitor->Trace(font_palette_values_rules_);
   visitor->Trace(font_feature_values_rules_);
+  visitor->Trace(view_transitions_rules_);
   visitor->Trace(keyframes_rules_);
   visitor->Trace(property_rules_);
   visitor->Trace(counter_style_rules_);

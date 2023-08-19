@@ -7,6 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/devtools/simple_devtools_protocol_client/simple_devtools_protocol_client.h"
 #include "components/embedder_support/user_agent_utils.h"
@@ -24,6 +25,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 
 using ::net::test_server::BasicHttpResponse;
 using ::net::test_server::HttpRequest;
@@ -66,6 +68,11 @@ namespace headless {
 
 class HeadlessBrowserNavigatorUADataTest : public HeadlessBrowserTest {
  public:
+  void SetUpInProcessBrowserTestFixture() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kClientHintsFormFactor);
+  }
+
   void SetUpOnMainThread() override {
     HeadlessBrowserTest::SetUpOnMainThread();
 
@@ -112,7 +119,7 @@ class HeadlessBrowserNavigatorUADataTest : public HeadlessBrowserTest {
   }
 
  protected:
-  raw_ptr<HeadlessWebContents, DanglingUntriaged> web_contents_;
+  raw_ptr<HeadlessWebContents, AcrossTasksDanglingUntriaged> web_contents_;
   SimpleDevToolsProtocolClient devtools_client_;
 
   // Get the version of the HeadlessChrome brand from the brand list.
@@ -147,6 +154,12 @@ class HeadlessBrowserNavigatorUADataTest : public HeadlessBrowserTest {
   static constexpr char kWow64Script[] = R"(
           navigator.userAgentData.getHighEntropyValues(['wow64'])
               .then(r => r.wow64))";
+  static constexpr char kFormFactorScript[] = R"(
+          navigator.userAgentData.getHighEntropyValues(['formFactor'])
+              .then(r => r.formFactor))";
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // UA Metadata is available via `navigator.userAgentData`.
@@ -174,6 +187,8 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserNavigatorUADataTest, DefaultValues) {
               DictHasValue("result.result.value", expected.full_version));
   EXPECT_THAT(GetUAMetadataValue(kWow64Script),
               DictHasValue("result.result.value", expected.wow64));
+  EXPECT_THAT(GetUAMetadataValue(kFormFactorScript),
+              DictHasValue("result.result.value", expected.form_factor));
 }
 
 // UA Metadata is available via `navigator.userAgentData` when overridden via
@@ -201,6 +216,9 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserNavigatorUADataTest, CDPOverride) {
               DictHasValue("result.result.value", "1.2.3"));
   EXPECT_THAT(GetUAMetadataValue(kWow64Script),
               DictHasValue("result.result.value", true));
+  // TODO(https://crbug.com/1442283): Allow overriding formFactor.
+  EXPECT_THAT(GetUAMetadataValue(kFormFactorScript),
+              DictHasValue("result.result.value", ""));
 }
 
 class HeadlessBrowserUAHeaderTest : public HeadlessBrowserTest {
@@ -393,7 +411,7 @@ class HeadlessBrowserUAHeaderTest : public HeadlessBrowserTest {
   }
 
  protected:
-  raw_ptr<HeadlessWebContents, DanglingUntriaged> web_contents_;
+  raw_ptr<HeadlessWebContents, AcrossTasksDanglingUntriaged> web_contents_;
   SimpleDevToolsProtocolClient devtools_client_;
   // HandleRequest will capture headers with this path in `got_headers_`.
   std::string capture_headers_for_path_;

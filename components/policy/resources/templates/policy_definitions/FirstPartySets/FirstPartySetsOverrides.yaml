@@ -3,36 +3,38 @@ default: {}
 desc: |-
   This policy provides a way to override the list of sets the browser uses for First-Party Sets features.
 
-        Each set in the browser's list of First-Party Sets must meet the requirements of a First-Party Set.
-        A First-Party Set must contain a primary site and one or more member sites.
-        A set can also contain a list of service sites that it owns, as well as a map from a site to all of its ccTLD variants.
-        See https: //github.com/WICG/first-party-sets for more information on First-Party Sets are used by <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
+  Each set in the browser's list of First-Party Sets must meet the requirements of a First-Party Set.
+  A First-Party Set must contain a primary site and one or more member sites.
+  A set can also contain a list of service sites that it owns, as well as a map from a site to all of its ccTLD variants.
+  See https: //github.com/WICG/first-party-sets for more information on First-Party Sets are used by <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
 
-        All sites in a First-Party Set must be a registrable domain served over HTTPS. Each site in a First-Party Set must also be unique,
-        meaning a site cannot be listed more than once in a First-Party Set.
+  All sites in a First-Party Set must be a registrable domain served over HTTPS. Each site in a First-Party Set must also be unique,
+  meaning a site cannot be listed more than once in a First-Party Set.
 
-        When this policy is given an empty dictionary, the browser uses the public list of First-Party Sets.
+  When this policy is given an empty dictionary, the browser uses the public list of First-Party Sets.
 
-        For all sites in a First-Party Set from the <ph name="REPLACEMENTS">replacements</ph> list, if a site is also present
-        on a First-Party Set in the browser's list, then that site will be removed from the browser's First-Party Set.
-        After this, the policy's First-Party Set will be added to the browser's list of First-Party Sets.
+  For all sites in a First-Party Set from the <ph name="REPLACEMENTS">replacements</ph> list, if a site is also present
+  on a First-Party Set in the browser's list, then that site will be removed from the browser's First-Party Set.
+  After this, the policy's First-Party Set will be added to the browser's list of First-Party Sets.
 
-        For all sites in a First-Party Set from the <ph name="ADDITIONS">additions</ph> list, if a site is also present
-        on a First-Party Set in the browser's list, then the browser's First-Party Set will be updated so that the
-        new First-Party Set can be added to the browser's list. After the browser's list has been updated,
-        the policy's First-Party Set will be added to the browser's list of First-Party Sets.
+  For all sites in a First-Party Set from the <ph name="ADDITIONS">additions</ph> list, if a site is also present
+  on a First-Party Set in the browser's list, then the browser's First-Party Set will be updated so that the
+  new First-Party Set can be added to the browser's list. After the browser's list has been updated,
+  the policy's First-Party Set will be added to the browser's list of First-Party Sets.
 
-        The browser's list of First-Party Sets requires that for all sites in its list, no site is in
-        more than one set. This is also required for both the <ph name="REPLACEMENTS">replacements</ph> list
-        and the <ph name="ADDITIONS">additions</ph> list. Similarly, a site cannot be in both the
-        <ph name="REPLACEMENTS">replacements</ph> list and the <ph name="ADDITIONS">additions</ph> list.
+  The browser's list of First-Party Sets requires that for all sites in its list, no site is in
+  more than one set. This is also required for both the <ph name="REPLACEMENTS">replacements</ph> list
+  and the <ph name="ADDITIONS">additions</ph> list. Similarly, a site cannot be in both the
+  <ph name="REPLACEMENTS">replacements</ph> list and the <ph name="ADDITIONS">additions</ph> list.
 
-        Wildcards (*) are not supported as a policy value, nor within any First-Party Set in these lists.
+  Wildcards (*) are not supported as a policy value, nor within any First-Party Set in these lists.
 
-        All sets provided by to policy must be valid First-Party Sets, if they aren't then an
-        appropriate error will be outputted.
+  All sets provided by to policy must be valid First-Party Sets, if they aren't then an
+  appropriate error will be outputted.
 
-        This policy is available only on Windows instances that are joined to a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain or Windows 10 Pro or Enterprise instances that are enrolled for device management, and macOS instances that are managed via MDM or joined to a domain via MCX.
+  On <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>, this policy is only available on instances that are joined to a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain, joined to <ph name="MS_AAD_NAME">Microsoft® Azure® Active Directory®</ph> or enrolled in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME">Chrome Browser Cloud Management</ph>.
+
+  On <ph name="MAC_OS_NAME">macOS</ph>, this policy is only available on instances that are managed via MDM, joined to a domain via MCX or enrolled in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME">Chrome Browser Cloud Management</ph>.
 example_value:
   additions:
   - associatedSites:

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
+#include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_discovery_factory.h"
 #include "device/fido/fido_transport_protocol.h"
@@ -17,10 +18,13 @@
 #include "device/fido/virtual_fido_device.h"
 #include "device/fido/virtual_fido_device_discovery.h"
 
-namespace device {
-namespace test {
+namespace device::test {
 
 // A |FidoDiscoveryFactory| that always returns |VirtualFidoDevice|s.
+//
+// If the transport is set to `hybrid` and a client obtains a phone contact
+// callback from |get_cable_contact_callback|, authenticators will only be
+// created only after the callback is executed.
 class VirtualFidoDeviceFactory : public device::FidoDiscoveryFactory {
  public:
   VirtualFidoDeviceFactory();
@@ -45,13 +49,28 @@ class VirtualFidoDeviceFactory : public device::FidoDiscoveryFactory {
   VirtualFidoDevice::State* mutable_state();
   scoped_refptr<VirtualFidoDeviceDiscovery::Trace> trace();
 
+  // set_discover_win_webauthn_api_authenticator controls whether the
+  // WebWebAuthnApi authenticator will be discovered. Create a
+  // `WinWebAuthnApi::ScopedOverride` before settings to true.
+  void set_discover_win_webauthn_api_authenticator(bool on);
+
+#if BUILDFLAG(IS_WIN)
+  std::unique_ptr<device::FidoDiscoveryBase>
+  MaybeCreateWinWebAuthnApiDiscovery() override;
+#endif
+
  protected:
   // device::FidoDiscoveryFactory:
   std::vector<std::unique_ptr<FidoDiscoveryBase>> Create(
       FidoTransportProtocol transport) override;
   bool IsTestOverride() override;
+  base::RepeatingCallback<void(std::unique_ptr<cablev2::Pairing>)>
+  get_cable_contact_callback() override;
 
  private:
+  std::unique_ptr<
+      FidoDeviceDiscovery::EventStream<std::unique_ptr<cablev2::Pairing>>>
+      contact_device_stream_;
   ProtocolVersion supported_protocol_ = ProtocolVersion::kU2f;
   FidoTransportProtocol transport_ =
       FidoTransportProtocol::kUsbHumanInterfaceDevice;
@@ -59,9 +78,11 @@ class VirtualFidoDeviceFactory : public device::FidoDiscoveryFactory {
   scoped_refptr<VirtualFidoDevice::State> state_ = new VirtualFidoDevice::State;
   scoped_refptr<VirtualFidoDeviceDiscovery::Trace> trace_ =
       new VirtualFidoDeviceDiscovery::Trace;
+  bool discover_win_webauthn_api_authenticator_ = false;
+
+  base::WeakPtrFactory<VirtualFidoDeviceFactory> weak_ptr_factory_{this};
 };
 
-}  // namespace test
-}  // namespace device
+}  // namespace device::test
 
 #endif  // DEVICE_FIDO_VIRTUAL_FIDO_DEVICE_FACTORY_H_

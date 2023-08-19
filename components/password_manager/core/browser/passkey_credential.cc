@@ -7,12 +7,19 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/flat_set.h"
-#include "base/containers/span.h"
+#include "build/build_config.h"
 #include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#include "base/containers/span.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
+#include "components/webauthn/core/browser/passkey_model_utils.h"
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 namespace password_manager {
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 namespace {
 
@@ -25,18 +32,12 @@ std::vector<uint8_t> ProtobufBytesToVector(const std::string& bytes) {
 // static
 std::vector<PasskeyCredential> PasskeyCredential::FromCredentialSpecifics(
     base::span<const sync_pb::WebauthnCredentialSpecifics> passkeys) {
-  base::flat_set<std::string> shadowed_credential_ids;
-  for (const sync_pb::WebauthnCredentialSpecifics& passkey : passkeys) {
-    for (const std::string& id : passkey.newly_shadowed_credential_ids()) {
-      shadowed_credential_ids.emplace(id);
-    }
-  }
-  std::vector<password_manager::PasskeyCredential> credentials;
-  for (const sync_pb::WebauthnCredentialSpecifics& passkey : passkeys) {
-    if (shadowed_credential_ids.contains(passkey.credential_id())) {
-      continue;
-    }
-    credentials.emplace_back(
+  std::vector<sync_pb::WebauthnCredentialSpecifics> filtered =
+      webauthn::passkey_model_utils::FilterShadowedCredentials(passkeys);
+  std::vector<password_manager::PasskeyCredential> ret;
+  ret.reserve(filtered.size());
+  for (const sync_pb::WebauthnCredentialSpecifics& passkey : filtered) {
+    ret.emplace_back(
         password_manager::PasskeyCredential::Source::kAndroidPhone,
         RpId(passkey.rp_id()),
         CredentialId(ProtobufBytesToVector(passkey.credential_id())),
@@ -46,8 +47,10 @@ std::vector<PasskeyCredential> PasskeyCredential::FromCredentialSpecifics(
                         ? passkey.user_display_name()
                         : ""));
   }
-  return credentials;
+  return ret;
 }
+
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 PasskeyCredential::PasskeyCredential(Source source,
                                      RpId rp_id,
@@ -71,17 +74,29 @@ PasskeyCredential& PasskeyCredential::operator=(const PasskeyCredential&) =
 PasskeyCredential::PasskeyCredential(PasskeyCredential&&) = default;
 PasskeyCredential& PasskeyCredential::operator=(PasskeyCredential&&) = default;
 
-int PasskeyCredential::GetAuthenticatorLabel() const {
+std::u16string PasskeyCredential::GetAuthenticatorLabel() const {
+  if (authenticator_label_) {
+    return *authenticator_label_;
+  }
+  int id;
   switch (source_) {
     case Source::kWindowsHello:
-      return IDS_PASSWORD_MANAGER_USE_WINDOWS_HELLO;
+      id = IDS_PASSWORD_MANAGER_PASSKEY_FROM_WINDOWS_HELLO;
+      break;
     case Source::kTouchId:
-      return IDS_PASSWORD_MANAGER_USE_TOUCH_ID;
+      id = IDS_PASSWORD_MANAGER_PASSKEY_FROM_CHROME_PROFILE;
+      break;
+    case Source::kICloudKeychain:
+      id = IDS_PASSWORD_MANAGER_PASSKEY_FROM_ICLOUD_KEYCHAIN;
+      break;
     case Source::kAndroidPhone:
-      return IDS_PASSWORD_MANAGER_USE_SCREEN_LOCK;
+      id = IDS_PASSWORD_MANAGER_USE_SCREEN_LOCK;
+      break;
     case Source::kOther:
-      return IDS_PASSWORD_MANAGER_USE_GENERIC_DEVICE;
+      id = IDS_PASSWORD_MANAGER_USE_GENERIC_DEVICE;
+      break;
   }
+  return l10n_util::GetStringUTF16(id);
 }
 
 bool operator==(const PasskeyCredential& lhs,

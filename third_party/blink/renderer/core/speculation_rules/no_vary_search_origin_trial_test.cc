@@ -44,7 +44,7 @@ HTMLScriptElement* InsertSpeculationRules(Document& document,
                                           const String& speculation_script) {
   HTMLScriptElement* script =
       MakeGarbageCollected<HTMLScriptElement>(document, CreateElementFlags());
-  script->setAttribute(html_names::kTypeAttr, "SpEcUlAtIoNrUlEs");
+  script->setAttribute(html_names::kTypeAttr, AtomicString("SpEcUlAtIoNrUlEs"));
   script->setText(speculation_script);
   document.head()->appendChild(script);
   return script;

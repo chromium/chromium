@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/macros/concat.h"
+
 namespace apps {
 
 #define SET_OPTIONAL_VALUE(VALUE) \
@@ -76,9 +78,6 @@ namespace apps {
 
 // Macros for enum
 
-#define CONCAT_(l, r) l##r
-#define CONCAT(l, r) CONCAT_(l, r)
-
 #define ARC_COUNT_(_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, \
                    _14, _15, _16, N, ...)                                      \
   N
@@ -120,9 +119,9 @@ namespace apps {
   DOARG1(FUNC, CLASSNAME, ELEM1) DOARG15(FUNC, CLASSNAME, __VA_ARGS__)
 
 #define FOREACH_(FUNC, CLASSNAME, ...) \
-  CONCAT(DOARG, ARG_COUNT(__VA_ARGS__))(FUNC, CLASSNAME, __VA_ARGS__)
+  BASE_CONCAT(DOARG, ARG_COUNT(__VA_ARGS__))(FUNC, CLASSNAME, __VA_ARGS__)
 
-#define GET_ELEM(N, ...) CONCAT(GET_ELEM, N)(__VA_ARGS__)
+#define GET_ELEM(N, ...) BASE_CONCAT(GET_ELEM, N)(__VA_ARGS__)
 #define GET_ELEM1(_1, ...) _1
 #define GET_ELEM2(_1, _2, ...) _2
 #define GET_ELEM3(_1, _2, _3, ...) _3

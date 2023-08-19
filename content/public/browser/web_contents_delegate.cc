@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/notreached.h"
@@ -161,7 +162,6 @@ bool WebContentsDelegate::IsFullscreenForTabOrPending(
 
 FullscreenState WebContentsDelegate::GetFullscreenState(
     const WebContents* web_contents) const {
-  NOTIMPLEMENTED_LOG_ONCE();
   FullscreenState state;
   state.target_mode =
       const_cast<WebContentsDelegate*>(this)->IsFullscreenForTabOrPending(
@@ -199,14 +199,14 @@ void WebContentsDelegate::RequestKeyboardLock(WebContents* web_contents,
   web_contents->GotResponseToKeyboardLockRequest(false);
 }
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE)
 std::unique_ptr<ColorChooser> WebContentsDelegate::OpenColorChooser(
     WebContents* web_contents,
     SkColor color,
     const std::vector<blink::mojom::ColorSuggestionPtr>& suggestions) {
   return nullptr;
 }
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
+#endif
 
 std::unique_ptr<EyeDropper> WebContentsDelegate::OpenEyeDropper(
     RenderFrameHost* frame,
@@ -279,12 +279,12 @@ WebContentsDelegate::~WebContentsDelegate() {
 }
 
 void WebContentsDelegate::Attach(WebContents* web_contents) {
-  DCHECK(attached_contents_.find(web_contents) == attached_contents_.end());
+  DCHECK(!base::Contains(attached_contents_, web_contents));
   attached_contents_.insert(web_contents);
 }
 
 void WebContentsDelegate::Detach(WebContents* web_contents) {
-  DCHECK(attached_contents_.find(web_contents) != attached_contents_.end());
+  DCHECK(base::Contains(attached_contents_, web_contents));
   attached_contents_.erase(web_contents);
 }
 

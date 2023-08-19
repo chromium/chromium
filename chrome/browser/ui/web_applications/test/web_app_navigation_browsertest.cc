@@ -23,6 +23,7 @@
 #include "chrome/browser/web_applications/test/app_registry_cache_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -246,7 +247,7 @@ void WebAppNavigationBrowserTest::TearDownOnMainThread() {
     AppReadinessWaiter app_readiness_waiter(
         profile(), app_id, apps::Readiness::kUninstalledByUser);
     base::RunLoop run_loop;
-    provider->install_finalizer().UninstallWebApp(
+    provider->scheduler().UninstallWebApp(
         app_id, webapps::WebappUninstallSource::kAppsPage,
         base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
           EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);

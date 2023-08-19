@@ -466,8 +466,7 @@ TEST_F(ContextProviderImplTest, CanCreateContextWithServiceDirectory) {
   const auto& child = GetInstanceDecl(instance_name);
   const auto& create_child_args = GetInstanceArgs(instance_name);
 
-  ASSERT_THAT(child, UrlIs("fuchsia-pkg://fuchsia.com/web_engine#meta/"
-                           "web_instance_with_svc_directory.cm"));
+  ASSERT_THAT(child, UrlIs("#meta/web_instance_with_svc_directory.cm"));
   ASSERT_THAT(
       create_child_args,
       HasDynamicDirectoryOffer("svc", fuchsia::io::Operations::CONNECT |
@@ -543,8 +542,7 @@ TEST_F(ContextProviderImplTest, CreateHeadlessDrmWithoutVulkan) {
   const auto& child = GetInstanceDecl(instance_name);
   const auto& create_child_args = GetInstanceArgs(instance_name);
 
-  ASSERT_THAT(child, UrlIs("fuchsia-pkg://fuchsia.com/web_engine#meta/"
-                           "web_instance_with_svc_directory.cm"));
+  ASSERT_THAT(child, UrlIs("#meta/web_instance_with_svc_directory.cm"));
   ASSERT_THAT(create_child_args,
               HasDynamicDirectoryOffer("cdm_data", fuchsia::io::RW_STAR_DIR));
   ASSERT_THAT(
@@ -622,8 +620,7 @@ TEST_F(ContextProviderImplTest, WithProfileDir) {
   const auto& create_child_args = GetInstanceArgs(instance_name);
   const base::CommandLine command = GetInstanceCommandLine(instance_name);
 
-  ASSERT_THAT(child, UrlIs("fuchsia-pkg://fuchsia.com/web_engine#meta/"
-                           "web_instance_with_svc_directory.cm"));
+  ASSERT_THAT(child, UrlIs("#meta/web_instance_with_svc_directory.cm"));
   ASSERT_THAT(create_child_args,
               HasDynamicDirectoryOffer("data", fuchsia::io::RW_STAR_DIR));
   EXPECT_FALSE(command.HasSwitch(switches::kIncognito));

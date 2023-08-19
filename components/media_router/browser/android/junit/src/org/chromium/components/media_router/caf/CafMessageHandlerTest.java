@@ -62,8 +62,6 @@ import java.util.Map;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class CafMessageHandlerTest {
-    private static final String TAG = "MediaRouter";
-
     private static final String SESSION_ID = "SESSION_ID";
     private static final String INVALID_SESSION_ID = "INVALID_SESSION_ID";
     private static final String CLIENT_ID1 = "client-id-1";

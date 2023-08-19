@@ -39,6 +39,7 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
 #include "mojo/public/cpp/system/message_pipe.h"
@@ -79,6 +80,7 @@
 #include "remoting/host/ipc_desktop_environment.h"
 #include "remoting/host/ipc_host_event_logger.h"
 #include "remoting/host/me2me_desktop_environment.h"
+#include "remoting/host/mojom/chromoting_host_services.mojom.h"
 #include "remoting/host/mojom/desktop_session.mojom.h"
 #include "remoting/host/mojom/remoting_host.mojom.h"
 #include "remoting/host/pairing_registry_delegate.h"
@@ -119,8 +121,6 @@
 #endif  // BUILDFLAG(IS_POSIX)
 
 #if BUILDFLAG(IS_APPLE)
-#include "base/mac/mac_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "remoting/host/audio_capturer_mac.h"
 #include "remoting/host/desktop_capturer_checker.h"
 #include "remoting/host/mac/permission_utils.h"
@@ -390,6 +390,9 @@ class HostProcess : public ConfigWatcher::Delegate,
   void InitializePairingRegistry(
       ::mojo::PlatformHandle privileged_handle,
       ::mojo::PlatformHandle unprivileged_handle) override;
+  void BindChromotingHostServices(
+      mojo::PendingReceiver<mojom::ChromotingHostServices> receiver,
+      int peer_pid) override;
 #endif
 
   std::unique_ptr<ChromotingHostContext> context_;
@@ -556,9 +559,7 @@ bool HostProcess::InitWithCommandLine(const base::CommandLine* cmd_line) {
     // heuristic that might not be 100% reliable, but it is critically
     // important to add the host bundle to the list of apps under
     // Security & Privacy -> Screen Recording.
-    if (base::mac::IsAtLeastOS10_15()) {
-      DesktopCapturerChecker().TriggerSingleCapture();
-    }
+    DesktopCapturerChecker().TriggerSingleCapture();
     checking_permission_state_ = true;
     permission_granted_ = mac::CanRecordScreen();
     return false;
@@ -1110,6 +1111,26 @@ void HostProcess::InitializePairingRegistry(
   // initialized.
   CreateAuthenticatorFactory();
 }
+
+void HostProcess::BindChromotingHostServices(
+    mojo::PendingReceiver<mojom::ChromotingHostServices> receiver,
+    int peer_pid) {
+  if (context_->ui_task_runner()->BelongsToCurrentThread()) {
+    context_->network_task_runner()->PostTask(
+        FROM_HERE, base::BindOnce(&HostProcess::BindChromotingHostServices,
+                                  this, std::move(receiver), peer_pid));
+    return;
+  }
+  // This IPC is handled on the UI thread and bounced over to the network thread
+  // so being called on any other thread is unexpected.
+  DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
+  if (!host_) {
+    LOG(ERROR) << "Binding rejected. Host has not started.";
+    return;
+  }
+  host_->BindChromotingHostServices(std::move(receiver), peer_pid);
+}
+
 #endif  // BUILDFLAG(IS_WIN)
 
 // Applies the host config, returning true if successful.
@@ -1843,19 +1864,13 @@ void HostProcess::StartHost() {
       HostEventLogger::Create(host_->status_monitor(), kApplicationName);
 #endif  // !defined(REMOTING_MULTI_PROCESS)
 
-#if BUILDFLAG(IS_APPLE)
-  // Don't run the permission-checks as root (i.e. at the login screen), as they
-  // are not actionable there.
-  // Also, the permission-checks are not needed on MacOS 10.15+, as they are
-  // always handled by the new permission-wizard (the old shell script is
-  // never used on 10.15+).
-  if (getuid() != 0U && base::mac::IsAtMostOS10_14()) {
-    mac::PromptUserToChangeTrustStateIfNeeded(context_->ui_task_runner());
-  }
-#endif  // BUILDFLAG(IS_APPLE)
-
   host_->Start(host_owner_);
+
+#if BUILDFLAG(IS_LINUX)
+  // For Windows, ChromotingHostServices connections are handled by the daemon
+  // process, then the message pipe is forwarded to the network process.
   host_->StartChromotingHostServices();
+#endif
 
   CreateAuthenticatorFactory();
 

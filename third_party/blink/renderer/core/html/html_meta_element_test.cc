@@ -47,18 +47,18 @@ class HTMLMetaElementTest : public PageTestBase,
   }
 
  protected:
-  HTMLMetaElement* CreateColorSchemeMeta(const AtomicString& content) {
+  HTMLMetaElement* CreateColorSchemeMeta(const char* content) {
     auto* meta = MakeGarbageCollected<HTMLMetaElement>(GetDocument(),
                                                        CreateElementFlags());
-    meta->setAttribute(html_names::kNameAttr, "color-scheme");
-    meta->setAttribute(html_names::kContentAttr, content);
+    meta->setAttribute(html_names::kNameAttr, AtomicString("color-scheme"));
+    meta->setAttribute(html_names::kContentAttr, AtomicString(content));
     return meta;
   }
 
-  void SetColorScheme(const AtomicString& content) {
+  void SetColorScheme(const char* content) {
     auto* meta = To<HTMLMetaElement>(GetDocument().head()->firstChild());
     ASSERT_TRUE(meta);
-    meta->setAttribute(html_names::kContentAttr, content);
+    meta->setAttribute(html_names::kContentAttr, AtomicString(content));
   }
 
   void ExpectPageColorSchemes(ColorSchemeFlags expected) const {
@@ -114,7 +114,7 @@ TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_Remove) {
 
   ExpectPageColorSchemes(static_cast<ColorSchemeFlags>(ColorSchemeFlag::kDark));
 
-  GetDocument().getElementById("first-meta")->remove();
+  GetDocument().getElementById(AtomicString("first-meta"))->remove();
 
   ExpectPageColorSchemes(
       static_cast<ColorSchemeFlags>(ColorSchemeFlag::kLight));
@@ -153,8 +153,9 @@ TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_SetAttribute) {
 
   ExpectPageColorSchemes(static_cast<ColorSchemeFlags>(ColorSchemeFlag::kDark));
 
-  GetDocument().getElementById("meta")->setAttribute(html_names::kContentAttr,
-                                                     "light");
+  GetDocument()
+      .getElementById(AtomicString("meta"))
+      ->setAttribute(html_names::kContentAttr, AtomicString("light"));
 
   ExpectPageColorSchemes(
       static_cast<ColorSchemeFlags>(ColorSchemeFlag::kLight));
@@ -167,8 +168,9 @@ TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_RemoveContentAttribute) {
 
   ExpectPageColorSchemes(static_cast<ColorSchemeFlags>(ColorSchemeFlag::kDark));
 
-  GetDocument().getElementById("meta")->removeAttribute(
-      html_names::kContentAttr);
+  GetDocument()
+      .getElementById(AtomicString("meta"))
+      ->removeAttribute(html_names::kContentAttr);
 
   ExpectPageColorSchemes(
       static_cast<ColorSchemeFlags>(ColorSchemeFlag::kNormal));
@@ -181,7 +183,9 @@ TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_RemoveNameAttribute) {
 
   ExpectPageColorSchemes(static_cast<ColorSchemeFlags>(ColorSchemeFlag::kDark));
 
-  GetDocument().getElementById("meta")->removeAttribute(html_names::kNameAttr);
+  GetDocument()
+      .getElementById(AtomicString("meta"))
+      ->removeAttribute(html_names::kNameAttr);
 
   ExpectPageColorSchemes(
       static_cast<ColorSchemeFlags>(ColorSchemeFlag::kNormal));

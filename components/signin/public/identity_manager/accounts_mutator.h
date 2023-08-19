@@ -6,9 +6,11 @@
 #define COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_ACCOUNTS_MUTATOR_H_
 
 #include <string>
+#include <vector>
 
 #include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_metrics.h"
 
 namespace signin_metrics {
 enum class SourceForRefreshTokenOperation;
@@ -33,12 +35,20 @@ class AccountsMutator {
 
   // Updates the information of the account associated with |gaia_id|, first
   // adding that account to the system if it is not known.
+  // Passing `signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN` preserves the
+  // current access point if it's already set.
   virtual CoreAccountId AddOrUpdateAccount(
       const std::string& gaia_id,
       const std::string& email,
       const std::string& refresh_token,
       bool is_under_advanced_protection,
-      signin_metrics::SourceForRefreshTokenOperation source) = 0;
+      signin_metrics::AccessPoint access_point,
+      signin_metrics::SourceForRefreshTokenOperation source
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+      ,
+      const std::vector<uint8_t>& wrapped_binding_key = std::vector<uint8_t>()
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+          ) = 0;
 
   // Updates the information about account identified by |account_id|.
   // If kUnknown is passed, the attribute is not updated.

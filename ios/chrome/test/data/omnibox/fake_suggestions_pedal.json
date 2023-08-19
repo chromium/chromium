@@ -422,8 +422,6 @@
       ],
       [
         "",
-        "",
-        "",
       ],
       [],
       {
@@ -450,6 +448,64 @@
           "QUERY",
           "QUERY",
           "QUERY",
+        ],
+        "google:verbatimrelevance": 1300
+      }
+  ],
+  [
+      "abc",
+      [
+        "abcdef"
+      ],
+      [
+        "",
+      ],
+      [],
+      {
+        "google:clientdata": {
+          "bpc": false,
+          "tlw": false
+        },
+        "google:suggestdetail": [
+          {}
+        ],
+        "google:suggestrelevance": [
+          1253,
+        ],
+        "google:suggestsubtypes": [
+          []
+        ],
+        "google:suggesttype": [
+          "QUERY"
+        ],
+        "google:verbatimrelevance": 1300
+      }
+  ],
+  [
+      "abcdef ",
+      [
+        "abcdefghi",
+      ],
+      [
+        ""
+      ],
+      [],
+      {
+        "google:clientdata": {
+          "bpc": false,
+          "tlw": false
+        },
+        "google:suggestdetail": [
+          {}
+        ],
+        "google:suggestrelevance": [
+          1253
+        ],
+        "google:suggestsubtypes": [
+          []
+        ],
+        "google:suggesttype": [
+          "QUERY"
         ],
         "google:verbatimrelevance": 1300
       }

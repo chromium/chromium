@@ -20,7 +20,7 @@
  *  trigger some action on their side by using 'on-close=myMethod'.
  */
 
-import '//resources/polymer/v3_0/paper-styles/color.js';
+import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
 import '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
 import '../buttons/oobe_text_button.js';

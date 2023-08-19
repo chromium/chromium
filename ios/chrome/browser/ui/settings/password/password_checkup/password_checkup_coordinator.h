@@ -10,6 +10,9 @@
 
 @protocol ApplicationCommands;
 @class PasswordCheckupCoordinator;
+namespace password_manager {
+enum class WarningType;
+}
 @class ReauthenticationModule;
 
 // Delegate for PasswordCheckupCoordinator.
@@ -38,6 +41,10 @@
 @property(nonatomic, weak) id<PasswordCheckupCoordinatorDelegate> delegate;
 
 @property(nonatomic, weak) id<ApplicationCommands> dispatcher;
+
+// Show the Password Issues page for `warningType`.
+- (void)showPasswordIssuesWithWarningType:
+    (password_manager::WarningType)warningType;
 
 @end
 

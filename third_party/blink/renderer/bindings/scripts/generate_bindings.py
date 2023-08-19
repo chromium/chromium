@@ -75,6 +75,7 @@ def parse_options(valid_tasks):
 
 def main():
     dispatch_table = {
+        'async_iterator': bind_gen.generate_async_iterators,
         'callback_function': bind_gen.generate_callback_functions,
         'callback_interface': bind_gen.generate_callback_interfaces,
         'dictionary': bind_gen.generate_dictionaries,

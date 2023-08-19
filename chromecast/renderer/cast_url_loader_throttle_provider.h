@@ -10,8 +10,8 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
-#include "base/threading/thread_checker.h"
 #include "third_party/blink/public/platform/url_loader_throttle_provider.h"
 
 namespace chromecast {
@@ -41,7 +41,7 @@ class CastURLLoaderThrottleProvider : public blink::URLLoaderThrottleProvider {
   blink::URLLoaderThrottleProviderType type_;
   CastActivityUrlFilterManager* const cast_activity_url_filter_manager_;
 
-  THREAD_CHECKER(thread_checker_);
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace chromecast

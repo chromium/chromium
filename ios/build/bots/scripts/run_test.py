@@ -10,7 +10,7 @@ import re
 import unittest
 
 import run
-from test_runner import HostIsDownError, SimulatorNotFoundError
+from test_runner import HostIsDownError, MIGServerDiedError, SimulatorNotFoundError
 import test_runner_test
 
 
@@ -539,7 +539,8 @@ class RunnerInstallXcodeTest(test_runner_test.TestCase):
     mock_construct_runtime_cache_folder.assert_called_once_with(
         'test/runtime-ios-', '14.4')
     mock_install_runtime_dmg.assert_called_with('mac_toolchain',
-                                                'test/runtime-ios-14.4', '14.4')
+                                                'test/runtime-ios-14.4', '14.4',
+                                                'testXcodeVersion')
     self.assertFalse(mock_move_runtime.called)
     mock_delete_simulator_runtime_and_wait.assert_called_with('14.4')
 
@@ -578,7 +579,8 @@ class RunnerInstallXcodeTest(test_runner_test.TestCase):
     mock_construct_runtime_cache_folder.assert_called_once_with(
         'test/runtime-ios-', '14.4')
     mock_install_runtime_dmg.assert_called_with('mac_toolchain',
-                                                'test/runtime-ios-14.4', '14.4')
+                                                'test/runtime-ios-14.4', '14.4',
+                                                'testXcodeVersion')
     self.assertFalse(mock_move_runtime.called)
     self.assertFalse(mock_delete_simulator_runtime_and_wait.called)
 
@@ -686,7 +688,41 @@ class RunnerInstallXcodeTest(test_runner_test.TestCase):
     self.assertEqual(1, mock_construct_runtime_cache_folder.call_count)
     self.assertEqual(0, mock_move_runtime.call_count)
     self.assertFalse(self.runner.should_move_xcode_runtime_to_cache)
+    self.assertFalse(self.runner.should_delete_xcode_cache)
     mock_remove_runtimes.assert_called_with('test/xcode/path')
+
+  @mock.patch('test_runner.defaults_delete')
+  @mock.patch('json.dump')
+  @mock.patch('xcode_util.select', autospec=True)
+  @mock.patch('os.path.exists', autospec=True, return_value=True)
+  @mock.patch('xcodebuild_runner.SimulatorParallelTestRunner')
+  @mock.patch('xcode_util.construct_runtime_cache_folder', autospec=True)
+  @mock.patch('xcode_util.install', autospec=True, return_value=False)
+  @mock.patch('xcode_util.move_runtime', autospec=True)
+  @mock.patch('shutil.rmtree', autospec=True)
+  @mock.patch('mac_util.is_macos_13_or_higher', autospec=True)
+  def test_error_mig_server_died(self, mock_macos_13_or_higher,
+                                 mock_shutil_rmtree, mock_move_runtime,
+                                 mock_install,
+                                 mock_construct_runtime_cache_folder, mock_tr,
+                                 _1, _2, _3, _4):
+    mock_macos_13_or_higher.return_value = False
+    mock_construct_runtime_cache_folder.side_effect = lambda a, b: a + b
+    mock_tr.side_effect = MIGServerDiedError
+
+    with mock.patch('run.open', mock.mock_open()):
+      self.runner.run(None)
+
+    mock_install.assert_called_with(
+        'mac_toolchain',
+        'testXcodeVersion',
+        'test/xcode/path',
+        runtime_cache_folder='test/runtime-ios-14.4',
+        ios_version='14.4')
+    self.assertEqual(2, mock_construct_runtime_cache_folder.call_count)
+    self.assertEqual(1, mock_move_runtime.call_count)
+    self.assertTrue(self.runner.should_delete_xcode_cache)
+    mock_shutil_rmtree.assert_called_with('test/xcode/path')
 
   @mock.patch('test_runner.defaults_delete')
   @mock.patch('json.dump')

@@ -8,7 +8,7 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/test/repeating_test_future.h"
+#include "base/test/test_future.h"
 #include "chromeos/dbus/missive/missive_client.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
@@ -50,7 +50,7 @@ void MissiveClientTestObserver::OnRecordEnqueued(
     return;
   }
 
-  enqueued_records_.AddValue(priority, record);
+  enqueued_records_.SetValue(priority, record);
 }
 
 std::tuple<::reporting::Priority, ::reporting::Record>
@@ -59,7 +59,7 @@ MissiveClientTestObserver::GetNextEnqueuedRecord() {
 }
 
 bool MissiveClientTestObserver::HasNewEnqueuedRecords() {
-  return !enqueued_records_.IsEmpty();
+  return enqueued_records_.IsReady();
 }
 
 }  // namespace chromeos

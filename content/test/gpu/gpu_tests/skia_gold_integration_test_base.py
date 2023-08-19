@@ -17,7 +17,7 @@ from gpu_tests import common_browser_args as cba
 from gpu_tests import common_typing as ct
 from gpu_tests import gpu_helper
 from gpu_tests import gpu_integration_test
-from gpu_tests import pixel_test_pages
+from gpu_tests import skia_gold_matching_algorithms as algo
 
 from skia_gold_common import skia_gold_properties as sgp
 from skia_gold_common import skia_gold_session as sgs
@@ -51,6 +51,40 @@ class _ImageParameters():
     self.display_server: Optional[str] = None
 
 
+class SkiaGoldTestCase():
+  """Base class for any Gold-enabled test case definition.
+
+  Only information used within SkiaGoldIntegrationTestBase should be stored
+  here. Additional information should be stored in the appropriate subclass.
+  """
+  def __init__(
+      self,
+      name: str,
+      gpu_process_disabled: bool = False,
+      grace_period_end: Optional[date] = None,
+      matching_algorithm: Optional[algo.SkiaGoldMatchingAlgorithm] = None):
+    """
+    Args:
+      name: A string containing the name of the test.
+      gpu_process_disabled: Whether the test runs with the GPU process disabled.
+      grace_period_end: An optional datetime.date, before which Gold comparison
+          failures will be ignored. This allows a newly added test to be
+          exempted for a (hopefully) short period after being added. This is so
+          that any slightly different different but valid images that get
+          produced by the CI builders can be triaged without turning the
+          builders red.
+      matching_algorithm: A
+          skia_gold_matching_algoriths.SkiaGoldMatchingAlgorithm that specifies
+          which matching algorithm Skia Gold should use for the test. Defaults
+          to exact matching.
+    """
+    self.name = name
+    self.gpu_process_disabled = gpu_process_disabled
+    self.grace_period_end = grace_period_end
+    self.matching_algorithm = (matching_algorithm
+                               or algo.ExactMatchingAlgorithm())
+
+
 class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
   """Base class for all tests that upload results to Skia Gold."""
   _error_image_cloud_storage_bucket = 'chromium-browser-gpu-tests'
@@ -58,11 +92,14 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
   # This information is class-scoped, so that it can be shared across
   # invocations of tests; but it's zapped every time the browser is
   # restarted with different command line arguments.
-  _image_parameters = None
+  _image_parameters: Optional[_ImageParameters] = None
 
-  _skia_gold_temp_dir = None
-  _skia_gold_session_manager = None
-  _skia_gold_properties = None
+  _skia_gold_temp_dir: Optional[str] = None
+  _skia_gold_session_manager: Optional[sgsm.SkiaGoldSessionManager] = None
+  _skia_gold_properties: Optional[sgp.SkiaGoldProperties] = None
+
+  # Loaded from disk at a later point.
+  _dom_automation_controller_script: Optional[str] = None
 
   @classmethod
   def SetUpProcess(cls) -> None:
@@ -72,8 +109,21 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
         options.dont_restore_color_profile_after_test)
     cls.CustomizeBrowserArgs([])
     cls.StartBrowser()
-    cls.SetStaticServerDirs(TEST_DATA_DIRS)
+    cls.SetStaticServerDirs(cls._GetStaticServerDirs())
     cls._skia_gold_temp_dir = tempfile.mkdtemp()
+
+  @classmethod
+  def _GetStaticServerDirs(cls) -> List[str]:
+    return TEST_DATA_DIRS
+
+  @classmethod
+  def _SetClassVariablesFromOptions(cls, options: ct.ParsedCmdArgs) -> None:
+    super()._SetClassVariablesFromOptions(options)
+    if not cls._dom_automation_controller_script:
+      with open(
+          os.path.join(gpu_path_util.GPU_TEST_HARNESS_JAVASCRIPT_DIR,
+                       'dom_automation_controller.js')) as f:
+        cls._dom_automation_controller_script = f.read()
 
   @classmethod
   def GetSkiaGoldProperties(cls) -> sgp.SkiaGoldProperties:
@@ -209,14 +259,13 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     cls._image_parameters = None
 
   @classmethod
-  def GetImageParameters(cls, page: pixel_test_pages.PixelTestPage
-                         ) -> _ImageParameters:
+  def GetImageParameters(cls, test_case: SkiaGoldTestCase) -> _ImageParameters:
     if not cls._image_parameters:
-      cls._ComputeGpuInfo(page)
+      cls._ComputeGpuInfo(test_case)
     return cls._image_parameters
 
   @classmethod
-  def _ComputeGpuInfo(cls, page: pixel_test_pages.PixelTestPage) -> None:
+  def _ComputeGpuInfo(cls, test_case: SkiaGoldTestCase) -> None:
     if cls._image_parameters:
       return
     browser = cls.browser
@@ -234,7 +283,7 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     elif device.vendor_string and device.device_string:
       params.vendor_string = device.vendor_string
       params.device_string = device.device_string
-    elif page.gpu_process_disabled:
+    elif test_case.gpu_process_disabled:
       # Match the vendor and device IDs that the browser advertises
       # when the software renderer is active.
       params.vendor_id = 65535
@@ -291,14 +340,19 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     image_name = re.sub(r'(\.|/|-)', '_', image_name)
     return image_name
 
-  def GetGoldJsonKeys(self,
-                      page: pixel_test_pages.PixelTestPage) -> Dict[str, str]:
-    """Get all the JSON metadata that will be passed to golctl."""
-    img_params = self.GetImageParameters(page)
+  def GetGoldJsonKeys(self, test_case: SkiaGoldTestCase) -> Dict[str, str]:
+    """Get all the JSON metadata that will be passed to goldctl."""
+    img_params = self.GetImageParameters(test_case)
     # The frequently changing last part of the ANGLE driver version (revision of
     # some sort?) messes a bit with inexact matching since each revision will
     # be treated as a separate trace, so strip it off.
     _StripAngleRevisionFromDriver(img_params)
+    # When running under the validating decoder, the device string is reported
+    # as the actual device, while under the passthrough decoder it is an ANGLE
+    # string that contains the device and some additional information. This
+    # difference can be annoying when trying to set up forwarding rules for the
+    # public Gold instance, so only use the actual device.
+    _ConvertAngleDeviceStringToActualDevice(img_params)
     # All values need to be strings, otherwise goldctl fails.
     gpu_keys = {
         'vendor_id':
@@ -334,13 +388,26 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     # Include a pair that will cause Gold to ignore any untriaged images, which
     # will prevent it from automatically commenting on unrelated CLs that happen
     # to produce a new image.
-    if _GracePeriodActive(page):
+    if _GracePeriodActive(test_case):
+      # This is put in the regular keys dict instead of the optional one because
+      # ignore rules do not apply to optional keys.
       gpu_keys['ignore'] = '1'
     return gpu_keys
 
+  # pylint: disable=no-self-use
+  def GetGoldOptionalKeys(self) -> Dict[str, str]:
+    """Get all the optional JSON metadata that will be passed to goldctl.
+
+    This optional data is unrelated to the configurations that images are
+    produced on, e.g. a comment that will be surfaced in Gold's UI.
+    """
+    return {}
+
+  # pylint: enable=no-self-use
+
   def _UploadTestResultToSkiaGold(self, image_name: str,
                                   screenshot: ct.Screenshot,
-                                  page: pixel_test_pages.PixelTestPage) -> None:
+                                  test_case: SkiaGoldTestCase) -> None:
     """Compares the given image using Skia Gold and uploads the result.
 
     No uploading is done if the test is being run in local run mode. Compares
@@ -350,26 +417,28 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     Args:
       image_name: the name of the image being checked.
       screenshot: the image being checked as a Telemetry Bitmap.
-      page: the GPU PixelTestPage object for the test.
+      test_case: the GPU SkiaGoldTestCase object for the test.
     """
     # Write screenshot to PNG file on local disk.
     png_temp_file = tempfile.NamedTemporaryFile(
         suffix='.png', dir=self._skia_gold_temp_dir).name
     image_util.WritePngFile(screenshot, png_temp_file)
 
-    gpu_keys = self.GetGoldJsonKeys(page)
+    gpu_keys = self.GetGoldJsonKeys(test_case)
     gold_session = self.GetSkiaGoldSessionManager().GetSkiaGoldSession(
         gpu_keys, corpus=SKIA_GOLD_CORPUS)
     gold_properties = self.GetSkiaGoldProperties()
     use_luci = not (gold_properties.local_pixel_tests
                     or gold_properties.no_luci_auth)
+    optional_keys = self.GetGoldOptionalKeys()
 
     status, error = gold_session.RunComparison(
         name=image_name,
         png_file=png_temp_file,
-        inexact_matching_args=page.matching_algorithm.GetCmdline(),
+        inexact_matching_args=test_case.matching_algorithm.GetCmdline(),
         use_luci=use_luci,
-        service_account=gold_properties.service_account)
+        service_account=gold_properties.service_account,
+        optional_keys=optional_keys)
     if not status:
       return
 
@@ -410,18 +479,17 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
       logging.error(
           'Given unhandled SkiaGoldSession StatusCode %s with error %s', status,
           error)
-    if self._ShouldReportGoldFailure(page):
+    if self._ShouldReportGoldFailure(test_case):
       raise Exception(
           'goldctl command returned non-zero exit code, see above for details. '
           'This probably just means that the test produced an image that has '
           'not been triaged as positive.')
 
-  def _ShouldReportGoldFailure(self,
-                               page: pixel_test_pages.PixelTestPage) -> bool:
+  def _ShouldReportGoldFailure(self, test_case: SkiaGoldTestCase) -> bool:
     """Determines if a Gold failure should actually be surfaced.
 
     Args:
-      page: The GPU PixelTestPage object for the test.
+      test_case: The GPU SkiaGoldTestCase object for the test.
 
     Returns:
       True if the failure should be surfaced, i.e. the test should fail,
@@ -433,7 +501,7 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
       return False
     # Don't surface if the test was recently added and we're still within its
     # grace period.
-    if _GracePeriodActive(page):
+    if _GracePeriodActive(test_case):
       return False
     return True
 
@@ -460,17 +528,18 @@ def _ToNonEmptyStrOrNone(val: Optional[str]) -> str:
   return 'None' if val == '' else str(val)
 
 
-def _GracePeriodActive(page: pixel_test_pages.PixelTestPage) -> bool:
+def _GracePeriodActive(test_case: SkiaGoldTestCase) -> bool:
   """Returns whether a grace period is currently active for a test.
 
   Args:
-    page: The GPU PixelTestPage object for the test in question.
+    test_case: The GPU SkiaGoldTestCase object for the test in question.
 
   Returns:
-    True if a grace period is defined for |page| and has not yet expired.
+    True if a grace period is defined for |test_case| and has not yet expired.
     Otherwise, False.
   """
-  return page.grace_period_end and date.today() <= page.grace_period_end
+  return (test_case.grace_period_end
+          and date.today() <= test_case.grace_period_end)
 
 
 def _StripAngleRevisionFromDriver(img_params: _ImageParameters) -> None:
@@ -494,6 +563,22 @@ def _StripAngleRevisionFromDriver(img_params: _ImageParameters) -> None:
       break
     kept_parts.append(part)
   img_params.driver_version = '.'.join(kept_parts)
+
+
+def _ConvertAngleDeviceStringToActualDevice(
+    img_params: _ImageParameters) -> None:
+  """Converts an ANGLE device string to only have the actual device.
+
+  E.g. ANGLE(Qualcomm, Adreno (TM) 640, OpenGL ES ...) -> Adreno (TM) 640
+
+  Modifies the string in place. No-ops if the driver string is not ANGLE.
+
+  Args:
+    img_params: An _ImageParameters instance to modify.
+  """
+  device_id = gpu_helper.GetANGLEGpuDeviceId(img_params.device_string)
+  if device_id:
+    img_params.device_string = device_id
 
 
 def _GetCombinedHardwareIdentifier(img_params: _ImageParameters) -> str:

@@ -61,6 +61,8 @@ fuchsia_media_sessions2::PlayerCapabilityFlags ActionToCapabilityFlag(
                   // slide.
     case MediaSessionAction::kNextSlide:
       return {};  // PlayerControl does not support going to next slide.
+    case MediaSessionAction::kEnterAutoPictureInPicture:
+      return {};  // PlayerControl does not support picture-in-picture.
   }
 }
 

@@ -7,8 +7,9 @@
 
 #import <Foundation/Foundation.h>
 
-#include "ui/base/page_transition_types.h"
-#include "url/gurl.h"
+#import "base/observer_list_types.h"
+#import "ui/base/page_transition_types.h"
+#import "url/gurl.h"
 
 // Objective-C equivalent of the UrlLoadingObserverBridge class.
 @protocol URLLoadingObserver <NSObject>
@@ -66,9 +67,10 @@
 @end
 
 // Observer used to update listeners of change of state in url loading.
-class UrlLoadingObserverBridge {
+class UrlLoadingObserverBridge : public base::CheckedObserver {
  public:
   UrlLoadingObserverBridge(id<URLLoadingObserver> owner);
+  ~UrlLoadingObserverBridge() override;
 
   void TabWillLoadUrl(const GURL& url, ui::PageTransition transition_type);
   void TabFailedToLoadUrl(const GURL& url, ui::PageTransition transition_type);

@@ -35,7 +35,7 @@ EncryptionModuleInterface::EncryptionModuleInterface(
 EncryptionModuleInterface::~EncryptionModuleInterface() = default;
 
 void EncryptionModuleInterface::EncryptRecord(
-    base::StringPiece record,
+    std::string_view record,
     base::OnceCallback<void(StatusOr<EncryptedRecord>)> cb) const {
   if (!is_enabled()) {
     // Encryptor disabled.
@@ -59,7 +59,7 @@ void EncryptionModuleInterface::EncryptRecord(
 }
 
 void EncryptionModuleInterface::UpdateAsymmetricKey(
-    base::StringPiece new_public_key,
+    std::string_view new_public_key,
     PublicKeyId new_public_key_id,
     base::OnceCallback<void(Status)> response_cb) {
   UpdateAsymmetricKeyImpl(

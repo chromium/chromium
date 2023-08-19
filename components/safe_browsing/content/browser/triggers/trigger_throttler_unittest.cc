@@ -243,7 +243,7 @@ class TriggerThrottlerTestFinch : public ::testing::Test {
   std::string GetQuotaParamValueForTrigger(const TriggerType trigger_type,
                                            int quota) {
     if (trigger_type == TriggerType::AD_SAMPLE)
-      return base::StringPrintf("%d,%d", trigger_type, quota);
+      return base::StringPrintf("%d,%d", static_cast<int>(trigger_type), quota);
     else
       return base::StringPrintf("%d", quota);
   }

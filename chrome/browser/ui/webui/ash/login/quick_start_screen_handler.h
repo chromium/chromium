@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_QUICK_START_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_QUICK_START_SCREEN_HANDLER_H_
 
+#include <optional>
+
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/ash/login/oobe_quick_start/verification_shapes.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 
@@ -25,11 +26,12 @@ class QuickStartView : public base::SupportsWeakPtr<QuickStartView> {
   virtual ~QuickStartView() = default;
 
   virtual void Show() = 0;
-  virtual void SetShapes(const quick_start::ShapeList& shape_list) = 0;
+  virtual void SetPIN(const std::string pin) = 0;
   virtual void SetQRCode(base::Value::List blob) = 0;
   virtual void SetDiscoverableName(const std::string& discoverable_name) = 0;
   virtual void ShowConnectingToWifi() = 0;
-  virtual void ShowConnectedToWifi(std::string ssid, std::string password) = 0;
+  virtual void ShowConnectedToWifi(std::string ssid,
+                                   absl::optional<std::string> password) = 0;
   virtual void ShowTransferringGaiaCredentials() = 0;
   virtual void ShowFidoAssertionReceived(std::string email) = 0;
 };
@@ -49,11 +51,12 @@ class QuickStartScreenHandler : public QuickStartView,
 
   // QuickStartView:
   void Show() override;
-  void SetShapes(const quick_start::ShapeList& shape_list) override;
+  void SetPIN(const std::string pin) override;
   void SetQRCode(base::Value::List blob) override;
   void SetDiscoverableName(const std::string& discoverable_name) override;
   void ShowConnectingToWifi() override;
-  void ShowConnectedToWifi(std::string ssid, std::string password) override;
+  void ShowConnectedToWifi(std::string ssid,
+                           absl::optional<std::string> password) override;
   void ShowTransferringGaiaCredentials() override;
   void ShowFidoAssertionReceived(std::string email) override;
 

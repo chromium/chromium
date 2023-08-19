@@ -47,8 +47,7 @@ const char* StringFindInsensitiveASCII(base::StringPiece input,
 // expected parts that are allowed to be omitted (e.g. "https://").
 bool IsValidPrefix(base::StringPiece prefix) {
   static re2::LazyRE2 re = {"(https?|file):(//)?"};
-  re2::StringPiece converted_prefix(prefix.data(), prefix.size());
-  return (prefix.empty() || re2::RE2::FullMatch(converted_prefix, *re));
+  return prefix.empty() || re2::RE2::FullMatch(prefix, *re);
 }
 
 // Checks whether |patterns| contains a pattern that matches |url|, and returns

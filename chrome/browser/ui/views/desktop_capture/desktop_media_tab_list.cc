@@ -9,6 +9,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/media/webrtc/desktop_media_list_layout_config.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/views/desktop_capture/desktop_media_picker_views.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -17,8 +18,10 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/favicon_size.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -27,6 +30,7 @@
 #include "ui/views/controls/table/table_view_observer.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/view.h"
 
 using content::BrowserThread;
@@ -183,6 +187,21 @@ void TabListViewObserver::OnKeyDown(ui::KeyboardCode virtual_keycode) {
     controller_->AcceptSource();
 }
 
+std::unique_ptr<views::ScrollView> CreateScrollViewWithTable(
+    std::unique_ptr<views::TableView> table) {
+  if (base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign) &&
+      features::IsChromeRefresh2023()) {
+    auto scroll_view = std::make_unique<views::ScrollView>(
+        views::ScrollView::ScrollWithLayers::kEnabled);
+    scroll_view->SetViewportRoundedCornerRadius(gfx::RoundedCornersF(8));
+    scroll_view->SetContents(std::move(table));
+    scroll_view->SetBorder(nullptr);
+    return scroll_view;
+  } else {
+    return views::TableView::CreateScrollViewWithTable(std::move(table));
+  }
+}
+
 }  // namespace
 
 DesktopMediaTabList::DesktopMediaTabList(DesktopMediaListController* controller,
@@ -209,18 +228,18 @@ DesktopMediaTabList::DesktopMediaTabList(DesktopMediaListController* controller,
   view_observer_ = std::make_unique<TabListViewObserver>(
       controller_, selection_changed_callback);
 
-  auto list = std::make_unique<views::TableView>(
+  auto table = std::make_unique<views::TableView>(
       model_.get(), std::vector<ui::TableColumn>(1), views::ICON_AND_TEXT,
       true);
-  list->set_observer(view_observer_.get());
-  list->GetViewAccessibility().OverrideName(accessible_name);
-  list_ = list.get();
+  table->set_observer(view_observer_.get());
+  table->GetViewAccessibility().OverrideName(accessible_name);
+  table_ = table.get();
 
-  AddChildView(BuildUI(std::move(list)));
+  AddChildView(BuildUI(std::move(table)));
 }
 
 std::unique_ptr<views::View> DesktopMediaTabList::BuildUI(
-    std::unique_ptr<views::TableView> list) {
+    std::unique_ptr<views::TableView> table) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto preview_wrapper = std::make_unique<views::View>();
   preview_wrapper->SetPreferredSize(desktopcapture::kPreviewSize);
@@ -257,15 +276,22 @@ std::unique_ptr<views::View> DesktopMediaTabList::BuildUI(
 
   std::unique_ptr<views::View> full_panel = std::make_unique<views::View>();
 
-  View* scroll_view = full_panel->AddChildView(
-      views::TableView::CreateScrollViewWithTable(std::move(list)));
-  scroll_view->SetPreferredSize(gfx::Size(kListWidth, 0));
+  scroll_view_ =
+      full_panel->AddChildView(CreateScrollViewWithTable(std::move(table)));
+  scroll_view_->SetPreferredSize(gfx::Size(kListWidth, 0));
   full_panel->AddChildView(std::move(preview_sidebar));
 
-  full_panel->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal,
-      gfx::Insets::TLBR(15, 0, 0, 0),
-      /*between_child_spacing=*/12, true));
+  const gfx::Insets kFullPannelInset =
+      base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign)
+          ? gfx::Insets(16)
+          : gfx::Insets::TLBR(15, 0, 0, 0);
+  const int kChildSpacing =
+      base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign) ? 16 : 12;
+  views::BoxLayout* layout =
+      full_panel->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal, kFullPannelInset,
+          kChildSpacing, true));
+  layout->SetFlexForView(scroll_view_, 1);
 
   auto container = std::make_unique<View>();
   container->SetUseDefaultFillLayout(true);
@@ -275,13 +301,17 @@ std::unique_ptr<views::View> DesktopMediaTabList::BuildUI(
 
 DesktopMediaTabList::~DesktopMediaTabList() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  list_->SetModel(nullptr);
+  table_->SetModel(nullptr);
 }
 
 gfx::Size DesktopMediaTabList::CalculatePreferredSize() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // The picker should have a fixed height of 10 rows.
-  return gfx::Size(0, list_->GetRowHeight() * 10);
+  // If the DisplayMediaPickerRedesign flag is active, height should be 9 rows
+  // to allow space for the audio-toggle controller, otherwise default to 10
+  // rows.
+  const int preferred_item_count =
+      base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign) ? 9 : 10;
+  return gfx::Size(0, table_->GetRowHeight() * preferred_item_count);
 }
 
 int DesktopMediaTabList::GetHeightForWidth(int width) const {
@@ -298,21 +328,39 @@ void DesktopMediaTabList::OnThemeChanged() {
   DesktopMediaListController::ListView::OnThemeChanged();
 
   const ui::ColorProvider* const color_provider = GetColorProvider();
-  list_->SetBorder(views::CreateSolidBorder(
-      /*thickness=*/1,
-      color_provider->GetColor(kColorDesktopMediaTabListBorder)));
-  const SkColor background_color =
-      color_provider->GetColor(kColorDesktopMediaTabListPreviewBackground);
-  preview_wrapper_->SetBackground(
-      views::CreateSolidBackground(background_color));
-  empty_preview_label_->SetBackground(
-      views::CreateSolidBackground(background_color));
-  empty_preview_label_->SetBackgroundColor(background_color);
+  if (features::IsChromeRefresh2023()) {
+    table_->SetBorder(nullptr);
+  } else {
+    table_->SetBorder(views::CreateSolidBorder(
+        /*thickness=*/1,
+        color_provider->GetColor(kColorDesktopMediaTabListBorder)));
+  }
+
+  if (base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign) &&
+      features::IsChromeRefresh2023()) {
+    scroll_view_->SetBackground(views::CreateRoundedRectBackground(
+        GetColorProvider()->GetColor(ui::kColorSysSurface4), 8));
+    const SkColor background_color =
+        color_provider->GetColor(ui::kColorSysTonalContainer);
+    preview_wrapper_->SetBackground(
+        views::CreateRoundedRectBackground(background_color, 8));
+    empty_preview_label_->SetBackground(
+        views::CreateRoundedRectBackground(background_color, 8));
+    empty_preview_label_->SetBackgroundColor(background_color);
+  } else {
+    const SkColor background_color =
+        color_provider->GetColor(kColorDesktopMediaTabListPreviewBackground);
+    preview_wrapper_->SetBackground(
+        views::CreateSolidBackground(background_color));
+    empty_preview_label_->SetBackground(
+        views::CreateSolidBackground(background_color));
+    empty_preview_label_->SetBackgroundColor(background_color);
+  }
 }
 
 absl::optional<content::DesktopMediaID> DesktopMediaTabList::GetSelection() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  absl::optional<size_t> row = list_->GetFirstSelectedRow();
+  absl::optional<size_t> row = table_->GetFirstSelectedRow();
   if (!row.has_value())
     return absl::nullopt;
   return controller_->GetSource(row.value()).id;
@@ -327,7 +375,7 @@ DesktopMediaTabList::GetSourceListListener() {
 void DesktopMediaTabList::ClearSelection() {
   // Changing the selection in the list will ensure that all appropriate change
   // events are fired.
-  list_->Select(absl::nullopt);
+  table_->Select(absl::nullopt);
 }
 
 void DesktopMediaTabList::ClearPreview() {
@@ -341,7 +389,7 @@ void DesktopMediaTabList::ClearPreview() {
 void DesktopMediaTabList::OnSelectionChanged() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  absl::optional<size_t> row = list_->GetFirstSelectedRow();
+  absl::optional<size_t> row = table_->GetFirstSelectedRow();
   if (!row.has_value()) {
     ClearPreview();
     controller_->SetPreviewedSource(absl::nullopt);
@@ -377,7 +425,7 @@ void DesktopMediaTabList::ClearPreviewImageIfUnchanged(
 
 void DesktopMediaTabList::OnPreviewUpdated(size_t index) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (index != list_->GetFirstSelectedRow()) {
+  if (index != table_->GetFirstSelectedRow()) {
     return;
   }
 

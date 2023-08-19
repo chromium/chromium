@@ -12,7 +12,6 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
-#include "components/permissions/permission_result.h"
 #include "components/permissions/permissions_client.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_result.h"
@@ -371,24 +370,6 @@ blink::mojom::PermissionStatus PermissionUtil::ContentSettingToPermissionStatus(
 
   NOTREACHED();
   return blink::mojom::PermissionStatus::DENIED;
-}
-
-content::PermissionResult PermissionUtil::ToContentPermissionResult(
-    PermissionResult result) {
-  content::PermissionStatusSource source =
-      (content::PermissionStatusSource)result.source;
-  blink::mojom::PermissionStatus status =
-      ContentSettingToPermissionStatus(result.content_setting);
-
-  return content::PermissionResult(status, source);
-}
-
-PermissionResult PermissionUtil::ToPermissionResult(
-    content::PermissionResult result) {
-  PermissionStatusSource source = (PermissionStatusSource)result.source;
-  ContentSetting setting = PermissionStatusToContentSetting(result.status);
-
-  return PermissionResult(setting, source);
 }
 
 bool PermissionUtil::IsPermissionBlockedInPartition(

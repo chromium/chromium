@@ -1,4 +1,5 @@
 include_rules = [
+    "+base/apple/scoped_cftyperef.h",
     "+base/check.h",
     "+base/check_op.h",
     "+base/containers/flat_set.h",
@@ -7,7 +8,6 @@ include_rules = [
     "+base/files/file.h",
     "+base/location.h",
     "+base/logging.h",
-    "+base/mac/scoped_cftyperef.h",
     "+base/memory/memory_pressure_listener.h",
     "+base/memory/ref_counted.h",
     "+base/memory/scoped_refptr.h",
@@ -97,3 +97,14 @@ include_rules = [
     "+third_party/blink/renderer/core",
     "+third_party/blink/renderer/platform",
 ]
+
+specific_include_rules = {
+    # Allow WebPrivatePtr to hold actual typed handles (refcounted, GCed roots)
+    # to objects. WebPrivatePtr ensures that no implementation details leak.
+    "web_private_ptr.h" : [
+        "+base/memory/scoped_refptr.h",
+        "+third_party/blink/renderer/platform/heap/cross_thread_persistent.h",
+        "+third_party/blink/renderer/platform/heap/persistent.h",
+        "+third_party/blink/renderer/platform/wtf/type_traits.h",
+    ]
+}

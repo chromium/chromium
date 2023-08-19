@@ -35,8 +35,10 @@
 <translation id="1280820357415527819">A pesquisar redes móveis…</translation>
 <translation id="1293556467332435079">Ficheiros</translation>
 <translation id="1297922636971898492">De momento, o Google Drive não está disponível. O carregamento será reiniciado automaticamente assim que o Google Drive voltar a estar disponível.</translation>
+<translation id="1306130176943817227">Não é possível eliminar. O item está a ser usado.</translation>
 <translation id="1307931752636661898">Não é possível ver os ficheiros Linux.</translation>
 <translation id="1313405956111467313">Configuração automática do proxy</translation>
+<translation id="134645005685694099">O seu dispositivo não tem espaço de armazenamento suficiente para manter a sincronização de ficheiros ativada. Os novos ficheiros vão deixar de ser sincronizados automaticamente.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">O ficheiro ou o diretório não pode ser utilizado.</translation>
 <translation id="1363028406613469049">Faixa</translation>
@@ -113,7 +115,6 @@
 <translation id="1920798810075583923">Melancia</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> formatado.</translation>
 <translation id="1931134289871235022">Eslovaco</translation>
-<translation id="1933345018156373194">Falha ao mover, erro inesperado: <ph name="ERROR_MESSAGE" />.</translation>
 <translation id="1936717151811561466">Finlandês</translation>
 <translation id="1942765061641586207">Resolução da imagem</translation>
 <translation id="1972984168337863910">Expandir painéis de comentários dos ficheiros</translation>
@@ -130,7 +131,7 @@
 <translation id="2084108471225856927">Definições do dispositivo</translation>
 <translation id="2084809735218147718">Pessoa a agradecer</translation>
 <translation id="2088690981887365033">Rede VPN</translation>
-<translation id="2089751716171649322">Aceda facilmente aos seus ficheiros do Google Drive quando estiver offline</translation>
+<translation id="209653272837065803">Não existe espaço de armazenamento suficiente para continuar a sincronizar ficheiros</translation>
 <translation id="2111134541987263231">Ative <ph name="BEGIN_BOLD" />Permitir na Navegação anónima<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> itens vão ser apagados e não vai ser possível restaurá-los.</translation>
 <translation id="2122305276694332719">A ligação automática a uma rede oculta permite que terceiros vejam o seu dispositivo e algumas definições da rede, pelo que não é recomendada.</translation>
@@ -147,9 +148,11 @@
 <translation id="2198315389084035571">Chinês Simplificado</translation>
 <translation id="22085916256174561">Coreano</translation>
 <translation id="2208919847696382164">Instalar com o Linux</translation>
-<translation id="2225536596944493418">Tem a certeza de que pretende eliminar <ph name="NUMBER_OF_ITEMS" /> itens?</translation>
+<translation id="2215692307449050019">A bateria está fraca. A sincronização de ficheiros é retomada quando tiver ligação à alimentação.</translation>
+<translation id="2225536596944493418">Tem a certeza de que quer eliminar <ph name="NUMBER_OF_ITEMS" /> itens?</translation>
 <translation id="2230062665678605299">Não é possível criar a pasta "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2239068707900391003">Pessoa com um café</translation>
+<translation id="2247561763838186830">A sua sessão foi terminada</translation>
 <translation id="2251368349685848079">Restaurar do lixo</translation>
 <translation id="2278133026967558505">Acesso aos ficheiro por todos os Websites e URLs</translation>
 <translation id="2282155092769082568">URL de configuração automática:</translation>
@@ -163,7 +166,7 @@
 <translation id="2312704192806647271">{COUNT,plural, =1{Não é possível localizar uma extensão com o ID <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Contacte o seu administrador.}other{Não é possível localizar as extensões com os IDs <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Contacte o seu administrador.}}</translation>
 <translation id="2325650632570794183">Este tipo de ficheiro não é suportado. Visite a Chrome Web Store para encontrar uma aplicação que abra este tipo de ficheiro.</translation>
 <translation id="2326539130272988168">Búlgaro</translation>
-<translation id="2337715497728194187">Partilhar com a Bruschetta</translation>
+<translation id="233822363739146957">Não existe espaço de armazenamento suficiente para sincronizar todos os seus ficheiros</translation>
 <translation id="23721837607121582">Transferir perfil móvel, rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Mudar para a vista de lista</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> pastas partilhadas com o Linux</translation>
@@ -181,6 +184,7 @@
 <translation id="2464089476039395325">Proxy de HTTP</translation>
 <translation id="2467267713099745100">Rede <ph name="NETWORK_TYPE" />, desativada</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
+<translation id="2468470447085858632">Aceda aos seus ficheiros do Google Drive offline com a sincronização de ficheiros</translation>
 <translation id="2470939964922472929">Foi introduzido um PIN incorreto demasiadas vezes. Para configurar um novo PIN, introduza a chave de desbloqueio pessoal de 8 dígitos (PUK) fornecida pelo seu operador.</translation>
 <translation id="2500392669976258912">Fonética guzerate</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -192,7 +196,6 @@
 <translation id="2544853746127077729">Certificado de autenticação rejeitado pela rede</translation>
 <translation id="255937426064304553">EUA internacional</translation>
 <translation id="2563185590376525700">Sapo</translation>
-<translation id="2574327434504608656">1 pasta partilhada com a Bruschetta</translation>
 <translation id="2578394532502990878">Fonética de tâmil</translation>
 <translation id="2579959351793446050">Oriá</translation>
 <translation id="2587195714949534472">A preparar a sincronização de <ph name="FILE_NAME" />…</translation>
@@ -216,6 +219,7 @@
 <translation id="2782104745158847185">Ocorreu um erro ao instalar a aplicação para Linux.</translation>
 <translation id="2802583107108007218">Saiba mais acerca destas restrições</translation>
 <translation id="2803375539583399270">Introduzir PIN</translation>
+<translation id="2819519502129272135">Sincronização de ficheiros desativada</translation>
 <translation id="2820957248982571256">A analisar...</translation>
 <translation id="2830077785865012357">Chinês zhuyin</translation>
 <translation id="2843806747483486897">Alterar predefinição...</translation>
@@ -290,8 +294,7 @@
 <translation id="338691029516748599">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" />%, gerida pelo administrador, ligar</translation>
 <translation id="3408072735282270043">Ativar, <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">Alemão (Alemanha) com teclado Neo 2</translation>
-<translation id="3414856743105198592">A formatação do suporte de dados amovível apagará todos os dados. Pretende continuar?</translation>
-<translation id="3435143625481187092">Dê autorização à Bruschetta para aceder aos ficheiros na pasta <ph name="FOLDER_NAME" /></translation>
+<translation id="3414856743105198592">A formatação do suporte de dados amovível apagará todos os dados. Quer continuar?</translation>
 <translation id="3437801641691368414">Hora de criação</translation>
 <translation id="343907260260897561">Máquina fotográfica instantânea</translation>
 <translation id="3455931012307786678">Estónio</translation>
@@ -299,7 +302,6 @@
 <translation id="3479552764303398839">Agora não</translation>
 <translation id="3486821258960016770">Mongol</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> erros.</translation>
-<translation id="3501954296166022751">Os seus ficheiros do Google Drive estão disponíveis offline</translation>
 <translation id="3509680540198371098">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" />%, detalhes</translation>
 <translation id="3511705761158917664">A preparar a sincronização de <ph name="NUMBER_OF_ITEMS" /> itens…</translation>
 <translation id="3522708245912499433">Português</translation>
@@ -356,8 +358,10 @@
 <translation id="3906232975181435906">A instalar o perfil móvel, rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Colar</translation>
+<translation id="3950820424414687140">Iniciar sessão</translation>
 <translation id="3952872973865944257">Fonética de telugu</translation>
 <translation id="3958548648197196644">Quivi</translation>
+<translation id="397105322502079400">A calcular...</translation>
 <translation id="3971140002794351170">Transferir perfil móvel, rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Inglês (RU)</translation>
 <translation id="3975895378829046965">Fonética de bengali</translation>
@@ -368,6 +372,7 @@
 <translation id="4040753847560036377">PUK incorreto</translation>
 <translation id="4057991113334098539">A activar...</translation>
 <translation id="4092890906744441904">Irlandês</translation>
+<translation id="4124731372776320263">A sincronizar 1 ficheiro do Drive</translation>
 <translation id="4124935795427217608">Unicórnio</translation>
 <translation id="4131235941541910880">Mova os itens de que não precisa para o lixo</translation>
 <translation id="4134804435730168042">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Ativar após a configuração do dispositivo</translation>
@@ -377,7 +382,6 @@
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> movido.</translation>
 <translation id="4176286497474237543">Esvaziar lixo agora</translation>
 <translation id="4179621117429069925">Este item está no lixo</translation>
-<translation id="4181839429935094755"><ph name="NUMBER_OF_ITEMS" /> pastas partilhadas com a Bruschetta</translation>
 <translation id="4186579485882418952">Ativar modo offline</translation>
 <translation id="4193154014135846272">Documento do Google</translation>
 <translation id="4197674956721858839">Comprimir seleção</translation>
@@ -417,6 +421,7 @@
 <translation id="4432921877815220091">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Ativar após a configuração do dispositivo, Gerida pelo administrador</translation>
 <translation id="4439427728133035643">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" />%, ligar</translation>
 <translation id="4442424173763614572">A procura de DNS falhou</translation>
+<translation id="4445896958353114391">A sincronizar ficheiros</translation>
 <translation id="4462159676511157176">Servidores de nome personalizado</translation>
 <translation id="4465725236958772856">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, gerida pelo administrador, ligar</translation>
 <translation id="4470564870223067757">Hangul 2 Set</translation>
@@ -438,11 +443,11 @@
 <translation id="4599600860674643278">O filtro foi reposto.</translation>
 <translation id="4603392156942865207">A copiar <ph name="FILE_NAME" /> para <ph name="FOLDER_NAME" />…</translation>
 <translation id="4631887759990505102">Artista</translation>
+<translation id="4635373743001040938">O espaço de armazenamento era extremamente reduzido. A sincronização de ficheiros foi desativada.</translation>
 <translation id="4642769377300286600">A instalar o perfil móvel, rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Checo com teclado Qwerty</translation>
 <translation id="4656777537938206294">Disponibilize ficheiros offline</translation>
 <translation id="4658782175094886150">Pessoa na neve</translation>
-<translation id="466782788172479199">Dê autorização à Bruschetta para aceder aos ficheiros no seu Google Drive. As alterações vão ser sincronizadas com os seus outros dispositivos.</translation>
 <translation id="4669606053856530811">Os membros de "<ph name="SOURCE_NAME" />" irão perder o acesso, exceto se estes itens forem partilhados com eles.</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">Sueco</translation>
@@ -491,16 +496,16 @@
 <translation id="4961158930123534723">1 pasta partilhada com o Parallels Desktop.</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> restaurado</translation>
 <translation id="4969785127455456148">Álbum</translation>
+<translation id="4972330214479971536">Não foi possível concluir a configuração da sincronização de ficheiros</translation>
 <translation id="4973523518332075481">Utilize um nome com, no máximo, <ph name="MAX_LENGTH" /> carateres</translation>
-<translation id="4973970068702235170">Falha ao comprimir; erro inesperado: <ph name="ERROR_MESSAGE" />.</translation>
 <translation id="4984616446166309645">Japonês</translation>
 <translation id="4987699874727873250">Inglês (Índia)</translation>
-<translation id="4988205478593450158">Tem a certeza de que pretende eliminar "<ph name="FILE_NAME" />"?</translation>
+<translation id="4988205478593450158">Tem a certeza de que quer eliminar "<ph name="FILE_NAME" />"?</translation>
 <translation id="498902553138568924">Borboleta vermelha</translation>
 <translation id="4992066212339426712">Reativar o som</translation>
 <translation id="5010406651457630570">Computadores</translation>
 <translation id="5011233892417813670">Chromebook</translation>
-<translation id="5024856940085636730">Uma operação está a demorar mais do que o previsto. Pretende interrompê-la?</translation>
+<translation id="5024856940085636730">Uma operação está a demorar mais do que o previsto. Quer interrompê-la?</translation>
 <translation id="5036159836254554629">Gerir a partilha do Parallels Desktop</translation>
 <translation id="5038625366300922036">Veja mais…</translation>
 <translation id="5044852990838351217">Arménio</translation>
@@ -514,6 +519,7 @@
 <translation id="5102922915594634436">Gerir pastas sincronizadas</translation>
 <translation id="5109254780565519649">Ocorreu um erro. Alguns itens podem não ter sido restaurados.</translation>
 <translation id="5110329002213341433">Inglês (Canadá)</translation>
+<translation id="5119780910075847424">Sincronização pausada</translation>
 <translation id="5123433949759960244">Bola de basquetebol</translation>
 <translation id="5129662217315786329">Polaco</translation>
 <translation id="5144820558584035333">Hangul 3 Set (390)</translation>
@@ -532,6 +538,7 @@
 <translation id="5218183485292899140">Francês suíço</translation>
 <translation id="5234764350956374838">Ignorar</translation>
 <translation id="5253070652067921974">Criado por</translation>
+<translation id="5254207638927440400">Não é possível mover o ficheiro. O ficheiro está a ser usado.</translation>
 <translation id="5257456363153333584">Libélula</translation>
 <translation id="5262311848634918433"><ph name="MARKUP_1" />Aceda a ficheiros a partir de qualquer local, mesmo offline.<ph name="MARKUP_2" />
     Os ficheiros no Google Drive estão atualizados e disponíveis a partir de qualquer dispositivo.<ph name="MARKUP_3" />
@@ -552,7 +559,6 @@
 <translation id="5323213332664049067">Latino-americano</translation>
 <translation id="5330145655348521461">Estes ficheiros foram abertos num ambiente de trabalho diferente. Mova para <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) para ver.</translation>
 <translation id="5330512191124428349">Obter informações</translation>
-<translation id="5344246330454251646">Gerir partilha da Bruschetta</translation>
 <translation id="535792325654997756">Pessoa com gatos</translation>
 <translation id="5358764674931277">Velocidade de fotogramas</translation>
 <translation id="5363339716524495120">O idioma de entrada é o chinês</translation>
@@ -564,6 +570,7 @@
 <translation id="5422221874247253874">Ponto de acesso</translation>
 <translation id="5428105026674456456">Espanhol</translation>
 <translation id="5438282218546237410">Não existem resultados para <ph name="SEARCH_TERM" />.</translation>
+<translation id="5447680084201416734">Sem armazenamento suficiente</translation>
 <translation id="5449551289610225147">Palavra-passe inválida</translation>
 <translation id="5459064203055649751">Já existe um ficheiro com o nome "<ph name="FILENAME" />". Quer substituí-lo pelo que está a mover?</translation>
 <translation id="5463231940765244860">Introduzir</translation>
@@ -574,7 +581,6 @@
 <translation id="5494920125229734069">Selecionar tudo</translation>
 <translation id="5500122897333236901">Islandês</translation>
 <translation id="5508696409934741614">Pontos</translation>
-<translation id="5519161320735100193">Definições do Google Drive</translation>
 <translation id="5522908512596376669">A lista de ficheiros foi alterada para a vista de lista.</translation>
 <translation id="5524517123096967210">Não foi possível ler o ficheiro.</translation>
 <translation id="5533102081734025921">Imagem <ph name="IMAGE_TYPE" /></translation>
@@ -602,6 +608,7 @@
 <translation id="5720028165859493293"><ph name="FILE_NAME" /> movido para o lixo</translation>
 <translation id="5724172041621205163">Tailandês com teclado pattachote</translation>
 <translation id="57383366388012121">Último mês</translation>
+<translation id="575175778971367197">De momento, não é possível sincronizar este ficheiro</translation>
 <translation id="5756666464756035725">QWERTY húngaro</translation>
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> itens selecionados</translation>
 <translation id="5763377084591234761">Alemão (Suíça)</translation>
@@ -627,7 +634,6 @@
 <translation id="5896749729057314184">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Desativada, Intensidade do sinal: <ph name="SIGNAL_STRENGTH" />%, Detalhes</translation>
 <translation id="5911887972742538906">Ocorreu um erro durante a instalação da sua aplicação para Linux.</translation>
 <translation id="5912396950572065471">Formato</translation>
-<translation id="5913638992615760742">Falha na operação de cópia, erro inesperado: <ph name="ERROR_MESSAGE" />.</translation>
 <translation id="5918480239180455431">Novas funcionalidades de pesquisa disponíveis</translation>
 <translation id="5926082595146149752">Neerlandês (Países Baixos) com o teclado de PC americano internacional</translation>
 <translation id="5932901536148835538">Chromebit</translation>
@@ -635,7 +641,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> itens</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">Opções de ordenação</translation>
-<translation id="6007237601604674381">Falha ao mover. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Rede Ethernet</translation>
 <translation id="60357267506638014">Checo QWERTY</translation>
 <translation id="603895874132768835">Não poderá utilizar esta rede até que configure um novo PIN</translation>
@@ -660,7 +665,7 @@
 <translation id="6187719147498869044">Húngaro</translation>
 <translation id="6198252989419008588">Alterar PIN</translation>
 <translation id="6199801702437275229">A aguardar informações de espaço...</translation>
-<translation id="6205710420833115353">Algumas operações estão a demorar mais tempo do que o previsto. Pretende interrompê-las?</translation>
+<translation id="6205710420833115353">Algumas operações estão a demorar mais tempo do que o previsto. Quer interrompê-las?</translation>
 <translation id="6220423280121890987">Punjabi</translation>
 <translation id="6224240818060029162">Dinamarquês</translation>
 <translation id="6224253798271602650">Formate <ph name="DRIVE_NAME" /></translation>
@@ -691,6 +696,7 @@
 <translation id="6423031066725912715">Vietnamita com teclado TCVN</translation>
 <translation id="6430271654280079150">Tem mais 1 tentativa.</translation>
 <translation id="643243556292470964">Os ficheiros eliminados são agora movidos para o lixo</translation>
+<translation id="6438480100790416671">A verificar o espaço de armazenamento…</translation>
 <translation id="6485131920355264772">Falha ao obter informações de espaço</translation>
 <translation id="6495925982925244349">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Intensidade do sinal <ph name="SIGNAL_STRENGTH" />%, Gerida pelo administrador, Detalhes</translation>
 <translation id="649877868557234318">A extrair <ph name="FILE_NAME" /> para <ph name="FOLDER_NAME" /></translation>
@@ -703,6 +709,7 @@
 <translation id="6558280019477628686">Ocorreu um erro. É possível que alguns itens não tenham sido eliminados.</translation>
 <translation id="656398493051028875">A eliminar "<ph name="FILENAME" />"...</translation>
 <translation id="6581162200855843583">Link do Google Drive</translation>
+<translation id="6588648400954570689">Definições de sincronização de ficheiros</translation>
 <translation id="6594855146910089723">Esta pasta é partilhada com o Linux e o Parallels Desktop.</translation>
 <translation id="6607272825297743757">Informações do ficheiro</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> pastas partilhadas com o Parallels Desktop.</translation>
@@ -717,7 +724,6 @@
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="6732801395666424405">Certificados não carregados</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [ <ph name="ISSUED_TO" /> ]</translation>
-<translation id="6740270213273127264">Partilhe a pasta com a Bruschetta</translation>
 <translation id="6750737795876287924">Diretório atual</translation>
 <translation id="6751256176799620176">1 pasta selecionada</translation>
 <translation id="6755827872271341378">Dispositivo com ChromeOS Flex</translation>
@@ -794,6 +800,7 @@
 <translation id="7256405249507348194">Erro não reconhecido: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Serviços disponíveis</translation>
 <translation id="7291818353625820805">Quer que as teclas se repitam? Desative os acentos nas Definições do teclado</translation>
+<translation id="729236380049459563">A sincronização de ficheiros está ativada</translation>
 <translation id="7292816689782057017">A política do administrador restringe a capacidade de guardar em algumas localizações.</translation>
 <translation id="7294063083760278948">Transliteração de telugu</translation>
 <translation id="7295662345261934369">Partilhar com outros</translation>
@@ -801,6 +808,7 @@
 <translation id="7309413087278791451">Alemão (Bélgica)</translation>
 <translation id="7339898014177206373">Nova janela</translation>
 <translation id="7343393116438664539">Telex vietnamita</translation>
+<translation id="7347346221088620549">Ficheiro encriptado</translation>
 <translation id="7357762654218998920">Este tipo de ficheiro não é suportado. <ph name="BEGIN_LINK_HELP" />Saiba mais<ph name="END_LINK_HELP" /> sobre como abrir ficheiros no ChromeOS.</translation>
 <translation id="7359359531237882347">A copiar <ph name="NUMBER_OF_ITEMS" /> itens…</translation>
 <translation id="7375951387215729722">Lista de ficheiros ordenada por <ph name="COLUMN_NAME" /> por ordem descendente.</translation>
@@ -827,6 +835,7 @@
 <translation id="7547811415869834682">Holandês</translation>
 <translation id="7551643184018910560">Fixar na prateleira</translation>
 <translation id="7553492409867692754">Conceda autorização às apps Linux para aceder a ficheiros na pasta <ph name="FOLDER_NAME" />.</translation>
+<translation id="7555339735447658365">Está atualmente offline. A sincronização de ficheiros é retomada quando tiver ligação à Internet</translation>
 <translation id="7589661784326793847">Aguarde um momento</translation>
 <translation id="7592775719802218421">A disponibilizar o ficheiro <ph name="FILE_NAME" /> offline…</translation>
 <translation id="7600126690270271294">Sérvio</translation>
@@ -845,6 +854,7 @@
 <translation id="76959938259365003">Falha ao esvaziar o lixo.</translation>
 <translation id="770015031906360009">Grego</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> copiado.</translation>
+<translation id="7707941139430559579">Não é possível mover o ficheiro. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="7708271999969613024">Para usar esta rede, tem de introduzir a chave de desbloqueio pessoal (PUK) de 8 dígitos disponibilizada pelo operador.</translation>
 <translation id="7711920809702896782">Informações da imagem</translation>
 <translation id="7724603315864178912">Cortar</translation>
@@ -890,10 +900,10 @@
 <translation id="7972920761225148017">Francês (Suíça)</translation>
 <translation id="7973962044839454485">Falha na autenticação PPP devido a um nome de utilizador ou palavra-passe incorretos</translation>
 <translation id="7980421588063892270">Inglês (EUA) com teclado Colemak</translation>
-<translation id="7985008041109611710">A sincronizar <ph name="NUMBER_OF_FILES_SYNCING" /> ficheiros</translation>
 <translation id="8000066093800657092">Sem rede</translation>
 <translation id="8008366997883261463">Jack Russell Terrier</translation>
 <translation id="8028993641010258682">Tamanho</translation>
+<translation id="8034974485549318493">Na configuração inicial, tem de estabelecer ligação à Internet para sincronizar os ficheiros.</translation>
 <translation id="803771048473350947">Ficheiro</translation>
 <translation id="8038111231936746805">(predefinição)</translation>
 <translation id="8042602468072383151">Áudio <ph name="AUDIO_TYPE" /></translation>
@@ -904,6 +914,7 @@
 <translation id="8087576439476816834">Transferir, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Partilhado comigo</translation>
 <translation id="8116072619078571545">Água gelada</translation>
+<translation id="8124093710070495550">Problema de sincronização</translation>
 <translation id="8128733386027980860">Inglês (EUA) com teclado Dvorak</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" foi partilhado consigo. Não o pode eliminar porque não lhe pertence.</translation>
 <translation id="8138705869659070104">Ativar após conf. dispositivo</translation>
@@ -913,9 +924,11 @@
 <translation id="8154842056504218462">Selecionou todas as entradas.</translation>
 <translation id="8157684860301034423">Falha ao obter informações da aplicação.</translation>
 <translation id="8175731104491895765">Francês (Bélgica)</translation>
+<translation id="8175799081768705361">A sincronizar <ph name="NUMBER_OF_FILES_SYNCING" /> ficheiros do Drive</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Modelo do dispositivo</translation>
 <translation id="8223479393428528563">Para guardar estes ficheiros para utilização offline, ligue-se novamente à Internet, clique com o botão direito do rato nos ficheiros e selecione a opção <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
+<translation id="8241139360630443550">Veja o armazenamento</translation>
 <translation id="8249296373107784235">Abortar</translation>
 <translation id="8250690786522693009">Latin</translation>
 <translation id="8250920743982581267">Docs</translation>
@@ -946,6 +959,7 @@
 <translation id="8404498045299006085">Manter tudo</translation>
 <translation id="8408068190360279472">Rede <ph name="NETWORK_TYPE" />, a ligar…</translation>
 <translation id="8425213833346101688">Alterar</translation>
+<translation id="8428213095426709021">Definições</translation>
 <translation id="8431909052837336408">Alterar o PIN do cartão SIM</translation>
 <translation id="8437209419043462667">EUA</translation>
 <translation id="8452135315243592079">Cartão SIM em falta</translation>
@@ -982,6 +996,7 @@
 <translation id="8609695766746872526">Islandês</translation>
 <translation id="863903787380594467">PIN incorreto. Tem mais <ph name="RETRIES" /> tentativas.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – Porta</translation>
+<translation id="8656407365183407932">Os seus ficheiros offline tiveram de ser removidos</translation>
 <translation id="8656768832129462377">Não verificar</translation>
 <translation id="8688591111840995413">Palavra-passe incorreta</translation>
 <translation id="8698464937041809063">Desenho do Google</translation>
@@ -1012,10 +1027,12 @@
 <translation id="8919081441417203123">Dinamarquês</translation>
 <translation id="8949925099261528566">Ligação estabelecida, sem Internet</translation>
 <translation id="8965697826696209160">Não existe espaço suficiente.</translation>
+<translation id="8970887620466824814">Ocorreu um erro.</translation>
 <translation id="8971742885766657349">A sincronizar - <ph name="PERCENT" />%</translation>
 <translation id="8997962250644902079">Pinyin chinês (tradicional)</translation>
 <translation id="8998871447376656508">Não existe espaço livre suficiente no Google Drive para concluir o carregamento.</translation>
 <translation id="9003940392834790328">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" />%, gerida pelo administrador, detalhes</translation>
+<translation id="9007990314804111233">Inicie sessão na sua conta Microsoft</translation>
 <translation id="9017798300203431059">Fonético russo</translation>
 <translation id="9034924485347205037">Ficheiros Linux</translation>
 <translation id="9035012421917565900">Não é possível mover os itens novamente para "<ph name="DESTINATION_NAME" />", pelo que não pode anular esta ação.</translation>
@@ -1027,7 +1044,7 @@
 <translation id="9086302186042011942">A sincronizar</translation>
 <translation id="9099674669267916096">Contagem de páginas</translation>
 <translation id="9100610230175265781">Frase de acesso obrigatória</translation>
-<translation id="9110990317705400362">Estamos constantemente a procurar formas de tornar a navegação mais segura. Anteriormente, qualquer Website poderia pedir-lhe para adicionar uma extensão ao navegador. Nas versões mais recentes do Google Chrome, tem de definir explicitamente no Chrome que pretende instalar estas extensões adicionando-as através da página Extensões. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="9110990317705400362">Estamos constantemente a procurar formas de tornar a navegação mais segura. Anteriormente, qualquer Website poderia pedir-lhe para adicionar uma extensão ao navegador. Nas versões mais recentes do Google Chrome, tem de definir explicitamente no Chrome que quer instalar estas extensões adicionando-as através da página Extensões. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Desbloquear</translation>
 <translation id="9116909380156770361">A transferência do ficheiro para <ph name="RESTRICTED_COMPONENTS" /></translation>
 <translation id="912419004897138677">Codec</translation>
@@ -1046,7 +1063,6 @@
 <translation id="9213073329713032541">A instalação foi iniciada com êxito.</translation>
 <translation id="9219103736887031265">Imagens</translation>
 <translation id="9219908252191632183">Paisagem lunar</translation>
-<translation id="937795003075802289">A sincronizar 1 ficheiro</translation>
 <translation id="938470336146445890">Instale um certificado de utilizador.</translation>
 <translation id="939736085109172342">Nova pasta</translation>
 <translation id="943972244133411984">Modificado por</translation>
@@ -1056,7 +1072,7 @@
 <translation id="965477715979482472">Inglês (África do Sul)</translation>
 <translation id="976666271385981812">A mover <ph name="NUMBER_OF_ITEMS" /> itens para o lixo</translation>
 <translation id="981121421437150478">Offline</translation>
-<translation id="988685240266037636">Já existe um ficheiro com o nome "<ph name="FILE_NAME" />". Pretende substituí-lo?</translation>
+<translation id="988685240266037636">Já existe um ficheiro com o nome "<ph name="FILE_NAME" />". Quer substituí-lo?</translation>
 <translation id="992401651319295351">Tem mais <ph name="RETRIES" /> tentativas. Não poderá utilizar esta rede até que configure um novo PIN.</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> MB</translation>
 </translationbundle>

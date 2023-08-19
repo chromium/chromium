@@ -5,6 +5,7 @@
 #include "ash/system/video_conference/bubble/return_to_app_panel.h"
 
 #include <memory>
+#include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
@@ -14,6 +15,7 @@
 #include "ash/system/video_conference/bubble/bubble_view_ids.h"
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "ash/system/video_conference/video_conference_tray.h"
+#include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -81,9 +83,10 @@ class ReturnToAppPanelTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kVideoConference);
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kCameraEffectsSupportedByHardware);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kVideoConference,
+         features::kCameraEffectsSupportedByHardware},
+        {});
 
     // Instantiates a fake controller (the real one is created in
     // ChromeBrowserMainExtraPartsAsh::PreProfileInit() which is not called in
@@ -151,10 +154,10 @@ class ReturnToAppPanelTest : public AshTestBase {
 };
 
 TEST_F(ReturnToAppPanelTest, NoApp) {
-  controller()->ClearMediaApps();
+  MediaApps apps;
 
   // The view should not be visible when there's no app.
-  auto return_to_app_panel = std::make_unique<ReturnToAppPanel>();
+  auto return_to_app_panel = std::make_unique<ReturnToAppPanel>(apps);
   EXPECT_FALSE(return_to_app_panel->GetVisible());
 }
 
@@ -164,15 +167,14 @@ TEST_F(ReturnToAppPanelTest, OneApp) {
   bool is_capturing_screen = false;
   auto* title = u"Meet";
 
-  controller()->ClearMediaApps();
-  controller()->AddMediaApp(crosapi::mojom::VideoConferenceMediaAppInfo::New(
-      /*id=*/base::UnguessableToken::Create(),
-      /*last_activity_time=*/base::Time::Now(), is_capturing_camera,
-      is_capturing_microphone, is_capturing_screen, title,
-      /*url=*/GURL(kMeetTestUrl)));
+  MediaApps apps;
+  apps.emplace_back(CreateFakeMediaApp(
+      /*is_capturing_camera=*/true, /*is_capturing_microphone=*/false,
+      /*is_capturing_screen=*/false, title,
+      /*url=*/kMeetTestUrl));
 
   // There should be one child representing the only one running media app.
-  auto panel = std::make_unique<ReturnToAppPanel>();
+  auto panel = std::make_unique<ReturnToAppPanel>(apps);
   auto* return_to_app_container = GetReturnToAppContainer(panel.get());
 
   EXPECT_EQ(1u, return_to_app_container->children().size());
@@ -188,19 +190,19 @@ TEST_F(ReturnToAppPanelTest, OneApp) {
 TEST_F(ReturnToAppPanelTest, MultipleApps) {
   auto* title = u"Meet";
 
-  controller()->ClearMediaApps();
-  controller()->AddMediaApp(CreateFakeMediaApp(
+  MediaApps apps;
+  apps.emplace_back(CreateFakeMediaApp(
       /*is_capturing_camera=*/true, /*is_capturing_microphone=*/false,
       /*is_capturing_screen=*/false, title,
       /*url=*/kMeetTestUrl));
-  controller()->AddMediaApp(CreateFakeMediaApp(
+  apps.emplace_back(CreateFakeMediaApp(
       /*is_capturing_camera=*/false, /*is_capturing_microphone=*/true,
       /*is_capturing_screen=*/true, /*title=*/u"",
       /*url=*/kMeetTestUrl));
 
   // There should be three children, one representing the summary row and two
   // for two running media apps.
-  auto panel = std::make_unique<ReturnToAppPanel>();
+  auto panel = std::make_unique<ReturnToAppPanel>(apps);
   auto* return_to_app_container = GetReturnToAppContainer(panel.get());
   EXPECT_EQ(3u, return_to_app_container->children().size());
 
@@ -233,17 +235,17 @@ TEST_F(ReturnToAppPanelTest, MultipleApps) {
 }
 
 TEST_F(ReturnToAppPanelTest, ExpandCollapse) {
-  controller()->ClearMediaApps();
-  controller()->AddMediaApp(CreateFakeMediaApp(
+  MediaApps apps;
+  apps.emplace_back(CreateFakeMediaApp(
       /*is_capturing_camera=*/true, /*is_capturing_microphone=*/false,
       /*is_capturing_screen=*/false, /*title=*/u"Meet",
       /*url=*/kMeetTestUrl));
-  controller()->AddMediaApp(CreateFakeMediaApp(
+  apps.emplace_back(CreateFakeMediaApp(
       /*is_capturing_camera=*/false, /*is_capturing_microphone=*/true,
       /*is_capturing_screen=*/true, /*title=*/u"Zoom",
       /*url=*/""));
 
-  auto panel = std::make_unique<ReturnToAppPanel>();
+  auto panel = std::make_unique<ReturnToAppPanel>(apps);
   auto* return_to_app_container = GetReturnToAppContainer(panel.get());
   auto* summary_row = static_cast<ReturnToAppButton*>(
       return_to_app_container->children().front());
@@ -289,40 +291,40 @@ TEST_F(ReturnToAppPanelTest, ExpandCollapse) {
 TEST_F(ReturnToAppPanelTest, MaxCapturingCount) {
   // Test the panel's `max_capturing_count_` to make sure the buttons are
   // aligned correctly.
-  controller()->ClearMediaApps();
-  controller()->AddMediaApp(CreateFakeMediaApp(
+  MediaApps apps;
+  apps.emplace_back(CreateFakeMediaApp(
       /*is_capturing_camera=*/true, /*is_capturing_microphone=*/false,
       /*is_capturing_screen=*/false, /*title=*/u"Meet",
       /*url=*/kMeetTestUrl));
-  controller()->AddMediaApp(CreateFakeMediaApp(
+  apps.emplace_back(CreateFakeMediaApp(
       /*is_capturing_camera=*/false, /*is_capturing_microphone=*/false,
       /*is_capturing_screen=*/true, /*title=*/u"Zoom",
       /*url=*/""));
-  auto return_to_app_panel = std::make_unique<ReturnToAppPanel>();
+  auto return_to_app_panel = std::make_unique<ReturnToAppPanel>(apps);
   EXPECT_EQ(1, return_to_app_panel->max_capturing_count());
 
-  controller()->ClearMediaApps();
-  controller()->AddMediaApp(CreateFakeMediaApp(
+  apps.clear();
+  apps.emplace_back(CreateFakeMediaApp(
       /*is_capturing_camera=*/true, /*is_capturing_microphone=*/false,
       /*is_capturing_screen=*/false, /*title=*/u"Meet",
       /*url=*/kMeetTestUrl));
-  controller()->AddMediaApp(CreateFakeMediaApp(
+  apps.emplace_back(CreateFakeMediaApp(
       /*is_capturing_camera=*/false, /*is_capturing_microphone=*/true,
       /*is_capturing_screen=*/true, /*title=*/u"Zoom",
       /*url=*/""));
-  return_to_app_panel = std::make_unique<ReturnToAppPanel>();
+  return_to_app_panel = std::make_unique<ReturnToAppPanel>(apps);
   EXPECT_EQ(2, return_to_app_panel->max_capturing_count());
 
-  controller()->ClearMediaApps();
-  controller()->AddMediaApp(CreateFakeMediaApp(
+  apps.clear();
+  apps.emplace_back(CreateFakeMediaApp(
       /*is_capturing_camera=*/true, /*is_capturing_microphone=*/false,
       /*is_capturing_screen=*/false, /*title=*/u"Meet",
       /*url=*/kMeetTestUrl));
-  controller()->AddMediaApp(CreateFakeMediaApp(
+  apps.emplace_back(CreateFakeMediaApp(
       /*is_capturing_camera=*/true, /*is_capturing_microphone=*/true,
       /*is_capturing_screen=*/true, /*title=*/u"Zoom",
       /*url=*/""));
-  return_to_app_panel = std::make_unique<ReturnToAppPanel>();
+  return_to_app_panel = std::make_unique<ReturnToAppPanel>(apps);
   EXPECT_EQ(3, return_to_app_panel->max_capturing_count());
 }
 
@@ -640,13 +642,8 @@ TEST_F(ReturnToAppPanelTest, ReturnToAppButtonAccessibleName) {
                 l10n_util::GetStringFUTF16Int(
                     IDS_ASH_VIDEO_CONFERENCE_RETURN_TO_APP_SUMMARY_TEXT, 2),
             summary_row->GetAccessibleName());
-  EXPECT_EQ(expected_camera_text +
-                l10n_util::GetStringFUTF16(
-                    VIDEO_CONFERENCE_RETURN_TO_APP_ACCESSIBLE_NAME, u"Meet"),
-            first_app_row->GetAccessibleName());
-  EXPECT_EQ(expected_microphone_text + expected_screen_share_text +
-                l10n_util::GetStringFUTF16(
-                    VIDEO_CONFERENCE_RETURN_TO_APP_ACCESSIBLE_NAME, u"Zoom"),
+  EXPECT_EQ(expected_camera_text + u"Meet", first_app_row->GetAccessibleName());
+  EXPECT_EQ(expected_microphone_text + expected_screen_share_text + u"Zoom",
             second_app_row->GetAccessibleName());
 }
 

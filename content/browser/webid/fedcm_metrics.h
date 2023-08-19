@@ -131,6 +131,14 @@ class CONTENT_EXPORT FedCmMetrics {
   // dialog was shown to when the user closed the dialog.
   void RecordCancelOnDialogTime(base::TimeDelta duration);
 
+  // Records the duration from when an accounts dialog is shown to when it is
+  // destroyed.
+  void RecordAccountsDialogShownDuration(base::TimeDelta duration);
+
+  // Records the duration from when a mismatch dialog is shown to when it is
+  // destroyed or user triggers IDP sign-in pop-up window.
+  void RecordMismatchDialogShownDuration(base::TimeDelta duration);
+
   // Records the reason that closed accounts dialog without selecting any
   // accounts. Unlike RecordCancelOnDialogTime() this metric is recorded in
   // cases that the acccounts dialog was closed without an explicit user action.
@@ -185,6 +193,20 @@ class CONTENT_EXPORT FedCmMetrics {
       absl::optional<base::TimeDelta> time_from_embargo,
       bool requires_user_mediation);
 
+  // Records a sample when an accounts dialog is shown.
+  void RecordAccountsDialogShown();
+
+  // Records a sample when a mismatch dialog is shown.
+  void RecordMismatchDialogShown();
+
+  // Records a sample when an accounts request is sent.
+  void RecordAccountsRequestSent();
+
+  // Records the number of times navigator.credentials.get() is called in a
+  // document. Requests made when FedCM is disabled, when there is a pending
+  // FedCM request or for the purpose of MDocs or multi-IDP are not counted.
+  void RecordNumRequestsPerDocument(const int num_requests);
+
  private:
   // The page's SourceId. Used to log the UKM event Blink.FedCm.
   ukm::SourceId page_source_id_;
@@ -224,6 +246,9 @@ void RecordApprovedClientsSize(int size);
 // SignIn status is set to SignedOut due to no accounts received.
 void RecordIdpSignOutNetError(int response_code);
 
+// Records why there's no valid account in the response.
+void RecordAccountsResponseInvalidReason(
+    IdpNetworkRequestManager::AccountsResponseInvalidReason reason);
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_WEBID_FEDCM_METRICS_H_

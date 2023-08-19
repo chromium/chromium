@@ -6,6 +6,7 @@ module safe_browsing.mojom;
 
 
 import "components/safe_browsing/core/common/safe_browsing_url_checker.mojom";
+import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/read_only_file.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "services/network/public/mojom/http_request_headers.mojom";
@@ -41,10 +42,7 @@ interface SafeBrowsing {
   //
   // |proceed| indicates whether it is okay to proceed with loading the URL.
   // |showed_interstitial| indicates whether the SafeBrowsing interstitial page
-  // has been shown to the user. |did_perform_url_real_time_check| indicates if
-  // URL real time check (including allowlist and cache checks) was performed.
-  // |did_check_url_real_time_allowlist| indicates whether the URL real-time
-  // allowlist check was bypassed or not.
+  // has been shown to the user.
   CreateCheckerAndCheck(
       int32 render_frame_id,
       pending_receiver<SafeBrowsingUrlChecker> receiver,
@@ -57,9 +55,7 @@ interface SafeBrowsing {
       bool originated_from_service_worker)
           => (pending_receiver<UrlCheckNotifier>? slow_check_notifier,
               bool proceed,
-              bool showed_interstitial,
-              bool did_perform_url_real_time_check,
-              bool did_check_url_real_time_allowlist);
+              bool showed_interstitial);
 
   // Bind an additional pipe to this instance of the SafeBrowsing interface.
   Clone(pending_receiver<SafeBrowsing> receiver);
@@ -142,6 +138,20 @@ interface PhishingDetector {
 // Interface for setting a phishing model. This is scoped to an entire
 // RenderProcess.
 interface PhishingModelSetter {
+  // A classification model for client-side phishing detection in addition to
+  // the image embedding model. This call sends the model and the image
+  // embedding model from browser process to the renderer process. The image
+  // embedding model is converted from a TfLite file to a string in the browser
+  // process to be used to create an ImageEmbedder in the renderer process. This
+  // function call should only be called for Enhanced Safe Browsing enabled
+  // users who will allow the ImageEmbedding output as part of the CSD-Phishing
+  // ping to be sent to CSPP for better model training. All else is the same as
+  // the SetPhishingFlatBufferModel function.
+  SetImageEmbeddingAndPhishingFlatBufferModel(
+                              mojo_base.mojom.ReadOnlySharedMemoryRegion region,
+                              mojo_base.mojom.ReadOnlyFile? tflite_model,
+                              mojo_base.mojom.ReadOnlyFile?
+                              image_embedding_model_);
   // A classification model for client-side phishing detection.
   // The string is an encoded safe_browsing::ClientSideModel protocol buffer, or
   // empty to disable client-side phishing detection for this renderer. The
@@ -170,4 +180,34 @@ interface PhishingModelSetter {
 interface PhishingModelSetterTestObserver {
   // Called whenever the phishing model has changed.
   PhishingModelUpdated();
+};
+
+// Enum representing possible outcomes of the renderer-side image embedding
+// process. These values are persisted to logs. Entries should not be renumbered
+// and numeric values should never be reused.
+enum PhishingImageEmbeddingResult {
+  // The feature collection succeeded.
+  kSuccess,
+  // The image embedder either did not exist, or was not ready.
+  kImageEmbedderNotReady,
+  // Another image embedding was requesting, cancelling this one.
+  kCancelled,
+  // last recorded transition was a forward/back in history. Since the
+  // image embedder previously ran on this URL, it did not run again.
+  kForwardBackTransition,
+  // the image embedder process failed
+  kFailed,
+};
+
+[EnableIf=full_safe_browsing]
+// Interface for starting image embedding. This is scoped to a
+// particular RenderFrame.
+interface PhishingImageEmbedderDetector {
+  // Tells the renderer to begin image embedding. This should only happen if the
+  // user is subscribed to ESB, and the verdict is phishy or LLAMA force trigger
+  // the CSPP ping. The return objects are Image Embedding process result and a
+  // ImageFeatureEmbedding object declared in csd.proto
+  StartImageEmbedding(url.mojom.Url url)
+    => (PhishingImageEmbeddingResult result,
+        mojo_base.mojom.ByteString image_embedding_request_proto);
 };

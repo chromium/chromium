@@ -115,9 +115,15 @@ enum FirstRunStage {
   kTangibleSyncScreenCompletionWithSync = 16,
   // Sync screen is closed without sync.
   kTangibleSyncScreenCompletionWithoutSync = 17,
+  // History Sync screen is shown.
+  kHistorySyncScreenStart = 18,
+  // History Sync screen is closed with history sync enabled.
+  kHistorySyncScreenCompletionWithSync = 19,
+  // History Sync screen is closed without history sync enabled.
+  kHistorySyncScreenCompletionWithoutSync = 20,
   // Max value of the first run experience stages.
   // kMaxValue should share the value of the highest enumerator.
-  kMaxValue = kTangibleSyncScreenCompletionWithoutSync,
+  kMaxValue = kHistorySyncScreenCompletionWithoutSync,
 };
 
 }  // namespace first_run

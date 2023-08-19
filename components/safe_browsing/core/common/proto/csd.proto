@@ -131,6 +131,14 @@ message ChromeUserPopulation {
   optional bool is_signed_in = 18;
 }
 
+message ImageFeatureEmbedding {
+  // Tracking embedding-model's version from iteration to iteration
+  optional int32 embedding_model_version = 1;
+
+  // Raw tensor output of the embedding layer.
+  repeated float embedding_value = 2;
+}
+
 message ClientPhishingRequest {
   // URL that the client visited.  The CGI parameters are stripped by the
   // client.
@@ -242,7 +250,10 @@ message ClientPhishingRequest {
   // where the scoring from protego requested this request.
   optional ClientSideDetectionType client_side_detection_type = 28;
 
-  // next available tag number: 29.
+  // Image embedding from model output tensor
+  optional ImageFeatureEmbedding image_feature_embedding = 29;
+
+  // next available tag number: 30.
 }
 
 message ClientPhishingResponse {
@@ -979,6 +990,9 @@ message ClientDownloadRequest {
     // TailoredVerdict is ignored.
     // Version 1: Client supports CT warnings and suspicious archives. Supported
     // in M107. See go/tailored-download-v1.
+    // Note: Version 1 can have inconsistent behavior because it uses
+    // indeterminate UI strings (can be changed by a client-side feature flag).
+    // Version 2: Client-side UI string/icon updates. Supported in M117.
     optional int32 version = 1;
   }
   optional TailoredInfo tailored_info = 86;
@@ -1471,7 +1485,7 @@ message DownloadMetadata {
 // A Detailed Safebrowsing Report from clients. Chrome safebrowsing reports are
 // only sent by Chrome users who have opted into extended Safe Browsing.
 // This proto is replacing ClientMalwareReportRequest.
-// Next tag: 30
+// Next tag: 32
 message ClientSafeBrowsingReportRequest {
   // Note: A lot of the "optional" fields would make sense to be
   // "required" instead.  However, having them as optional allows the
@@ -1498,6 +1512,7 @@ message ClientSafeBrowsingReportRequest {
     BLOCKED_AD_POPUP = 20;
     // TODO(crbug.com/1410253): Deprecate this once the experiment is complete.
     HASH_PREFIX_REAL_TIME_EXPERIMENT = 21;
+    PHISHY_SITE_INTERACTIONS = 22;
   }
 
   message HTTPHeader {
@@ -1604,6 +1619,10 @@ message ClientSafeBrowsingReportRequest {
     FLYWHEEL = 4 [deprecated = true];
     // Safe Browsing real time API.
     REAL_TIME = 5;
+    // The Safe Browsing API v5 protocol hit in real time (non-Android).
+    PVER5_NATIVE_REAL_TIME = 6;
+    // The Android Safe Browsing API hit in real time.
+    ANDROID_SAFEBROWSING_REAL_TIME = 7;
   }
 
   // The information propagated from the client about various environment
@@ -1807,6 +1826,79 @@ message ClientSafeBrowsingReportRequest {
   // Only populated for interstitial reports (URL_PHISHING, URL_MALWARE,
   // URL_UNWANTED and BILLING).
   optional UrlRequestDestination url_request_destination = 29;
+
+  // Information about user interactions with an interstitial.
+  message InterstitialInteraction {
+    // Type of interaction with security interstitial.
+    enum SecurityInterstitialInteraction {
+      UNSPECIFIED = 0;
+      // Decisions
+      CMD_DONT_PROCEED = 1;
+      CMD_PROCEED = 2;
+      // Ways for user to get more information
+      CMD_SHOW_MORE_SECTION = 3;
+      CMD_OPEN_HELP_CENTER = 4;
+      CMD_OPEN_DIAGNOSTIC = 5;
+      // Primary button actions
+      CMD_RELOAD = 6;
+      CMD_OPEN_DATE_SETTINGS = 7;
+      CMD_OPEN_LOGIN = 8;
+      // Safe Browsing Extended Reporting
+      CMD_DO_REPORT = 9;
+      CMD_DONT_REPORT = 10;
+      CMD_OPEN_REPORTING_PRIVACY = 11;
+      CMD_OPEN_WHITEPAPER = 12;
+      // Report a phishing error
+      CMD_REPORT_PHISHING_ERROR = 13;
+      // Open enhanced protection settings.
+      CMD_OPEN_ENHANCED_PROTECTION_SETTINGS = 14;
+      // Leave interstitial without making explicit UI decision.
+      CMD_CLOSE_INTERSTITIAL_WITHOUT_UI = 15;
+    }
+
+    // Type of security interstitial interaction that occurred.
+    optional SecurityInterstitialInteraction security_interstitial_interaction =
+        1;
+
+    // Number of interstitial interaction occurrences.
+    optional int32 occurrence_count = 2;
+
+    // Timestamp of first interstitial interaction occurrence.
+    optional int64 first_interaction_timestamp_msec = 3;
+
+    // Timestamp of last interstitial interaction occurrence.
+    optional int64 last_interaction_timestamp_msec = 4;
+  }
+
+  // List of user interactions that the user performs with the interstitial.
+  repeated InterstitialInteraction interstitial_interactions = 30;
+
+  // Information about user interactions with a phishy site.
+  message PhishySiteInteraction {
+    // Type of interaction with phishy site.
+    enum PhishySiteInteractionType {
+      UNSPECIFIED = 0;
+      // User interactions.
+      PHISHY_CLICK_EVENT = 1;
+      PHISHY_KEY_EVENT = 2;
+      PHISHY_PASTE_EVENT = 3;
+    }
+
+    // Type of security interstitial interaction that occurred.
+    optional PhishySiteInteractionType phishy_site_interaction_type = 1;
+
+    // Number of phishy site interaction occurrences.
+    optional int32 occurrence_count = 2;
+
+    // Timestamp of first phishy site interaction occurrence.
+    optional int64 first_interaction_timestamp_msec = 3;
+
+    // Timestamp of last phishy site interaction occurrence.
+    optional int64 last_interaction_timestamp_msec = 4;
+  }
+
+  // List of user interactions that the user performs with a phishy site.
+  repeated PhishySiteInteraction phishy_site_interactions = 31;
 }
 
 // An HTML Element on the page (eg: iframe, div, script, etc).
@@ -2144,6 +2236,31 @@ message ExtensionTelemetryReportRequest {
     }
 
     optional DeclarativeNetRequestInfo declarative_net_request_info = 6;
+
+    // chrome.tabs API signal information.
+    message TabsApiInfo {
+      enum ApiMethod {
+        // Convenient default value, should not be used in real signal payload.
+        API_METHOD_UNSPECIFIED = 0;
+        CREATE = 1;
+        UPDATE = 2;
+        REMOVE = 3;
+      }
+      message CallDetails {
+        // The API method invoked.
+        optional ApiMethod method = 1;
+        // The URL to navigate the tab to.
+        optional string new_url = 2;
+        // The currently committed URL for the tab. This field is not applicable
+        // when method = CREATE.
+        optional string current_url = 3;
+        // Number of times this call was made.
+        optional uint32 count = 4;
+      }
+      repeated CallDetails call_details = 1;
+    }
+
+    optional TabsApiInfo tabs_api_info = 7;
   }
 
   // Single report structure consists of all the signals observed for a
@@ -2181,4 +2298,20 @@ message ExtensionTelemetryReportResponse {
     repeated ExtensionParameters extension_parameters = 4;
   }
   optional Configuration configuration = 1;
+
+  // Verdict returned by the telemetry server for any unsafe off-store
+  // extensions installed.
+  message OffstoreExtensionVerdict {
+    enum OffstoreExtensionVerdictType {
+      UNSPECIFIED = 0;
+      NONE = 1;  // Used to unblocklisted an extension.
+      MALWARE = 2;
+    }
+
+    optional string extension_id = 1;
+    optional OffstoreExtensionVerdictType verdict_type = 2;
+  }
+
+  // Verdicts for unsafe off-store extensions.
+  repeated OffstoreExtensionVerdict offstore_extension_verdicts = 2;
 }

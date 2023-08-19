@@ -52,8 +52,8 @@ const test::UIPath kCellularPermissionBack = {"oobe-update",
 const test::UIPath kLowBatteryWarningMessage = {"oobe-update",
                                                 "battery-warning"};
 const test::UIPath kErrorMessage = {"error-message"};
-const test::UIPath kBetterUpdateCheckingForUpdatesDialog = {
-    "oobe-update", "checking-for-updates-dialog"};
+const test::UIPath kBetterUpdateCheckingForUpdatesDialog = {"oobe-update",
+                                                            "checking-update"};
 const test::UIPath kUpdateInProgressDialog = {"oobe-update",
                                               "update-in-progress-dialog"};
 const test::UIPath kRestartingDialog = {"oobe-update", "restarting-dialog"};
@@ -653,8 +653,7 @@ IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestTemporaryPortalNetwork) {
   histogram_tester_.ExpectTotalCount(kTimeFinalize, 0);
 }
 
-// TODO(https://crbug.com/1449334): Flaky on Chrome OS.
-IN_PROC_BROWSER_TEST_P(UpdateScreenTest, DISABLED_TestTwoOfflineNetworks) {
+IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestTwoOfflineNetworks) {
   // Change ethernet state to portal.
   network_portal_detector_.SimulateDefaultNetworkState(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL);

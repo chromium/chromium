@@ -6,19 +6,17 @@
 #define NET_CERT_PKI_OCSP_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "net/base/net_export.h"
 #include "net/cert/ocsp_revocation_status.h"
 #include "net/cert/ocsp_verify_result.h"
-#include "net/cert/pki/parse_certificate.h"
 #include "net/cert/pki/signature_algorithm.h"
 #include "net/der/input.h"
 #include "net/der/parse_values.h"
 #include "net/der/parser.h"
-#include "net/der/tag.h"
-
-class GURL;
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -313,9 +311,10 @@ NET_EXPORT bool CreateOCSPRequest(const ParsedCertificate* cert,
                                   std::vector<uint8_t>* request_der);
 
 // Creates a URL to issue a GET request for OCSP information for |cert|.
-NET_EXPORT GURL CreateOCSPGetURL(const ParsedCertificate* cert,
-                                 const ParsedCertificate* issuer,
-                                 std::string_view ocsp_responder_url);
+NET_EXPORT absl::optional<std::string> CreateOCSPGetURL(
+    const ParsedCertificate* cert,
+    const ParsedCertificate* issuer,
+    std::string_view ocsp_responder_url);
 
 }  // namespace net
 

@@ -14,12 +14,10 @@ namespace policy {
 
 namespace dlp {
 
-// Retrieves the aura::Window for the visible focused/topmost
-// browser. Returns nullptr if no browser window is currently visible.
+// Retrieves the aura::Window for the last active browser.
 aura::Window* GetActiveAuraWindow();
 
-// Retrieves the aura::WindowTreeHost for the visible focused/topmost
-// browser. Returns nullptr if no browser window is currently visible.
+// Retrieves the aura::WindowTreeHost for the last active browser.
 aura::WindowTreeHost* GetActiveWindowTreeHost();
 
 }  // namespace dlp

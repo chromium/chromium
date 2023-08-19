@@ -62,6 +62,7 @@ component("ui_data_pack") {
   public_deps = [
     "//base",
     "//build:chromeos_buildflags",
+    "//third_party/abseil-cpp:absl",
   ]
 
   deps = [
@@ -315,14 +316,14 @@ component("base") {
       "cocoa/command_dispatcher.mm",
       "cocoa/constrained_window/constrained_window_animation.h",
       "cocoa/constrained_window/constrained_window_animation.mm",
+      "cocoa/cursor_accessibility_scale_factor_observer.h",
+      "cocoa/cursor_accessibility_scale_factor_observer.mm",
       "cocoa/cursor_utils.h",
       "cocoa/cursor_utils.mm",
       "cocoa/defaults_utils.h",
       "cocoa/defaults_utils.mm",
       "cocoa/find_pasteboard.h",
       "cocoa/find_pasteboard.mm",
-      "cocoa/flipped_view.h",
-      "cocoa/flipped_view.mm",
       "cocoa/menu_controller.h",
       "cocoa/menu_controller.mm",
       "cocoa/nsmenu_additions.h",
@@ -355,8 +356,6 @@ component("base") {
       "dragdrop/os_exchange_data_provider_mac.mm",
       "interaction/element_tracker_mac.h",
       "interaction/element_tracker_mac.mm",
-      "l10n/l10n_util_mac.h",
-      "l10n/l10n_util_mac.mm",
       "resource/resource_bundle_mac.mm",
     ]
   }
@@ -367,6 +366,8 @@ component("base") {
       "cocoa/quartz_util.mm",
       "cocoa/remote_layer_api.h",
       "cocoa/remote_layer_api.mm",
+      "l10n/l10n_util_mac.h",
+      "l10n/l10n_util_mac.mm",
     ]
   }
 
@@ -379,9 +380,7 @@ component("base") {
       "device_form_factor_ios.mm",
       "resource/resource_bundle_ios.mm",
     ]
-  }
-
-  if (!is_ios) {
+  } else {
     sources += [
       "user_activity/user_activity_detector.cc",
       "user_activity/user_activity_detector.h",
@@ -503,6 +502,7 @@ component("base") {
     "//base:base_static",
     "//base:i18n",
     "//base/third_party/dynamic_annotations",
+    "//build:branding_buildflags",
     "//build:chromeos_buildflags",
     "//net",
     "//third_party/brotli:dec",
@@ -538,8 +538,6 @@ component("base") {
 
   if (is_ios) {
     sources += [
-      "l10n/l10n_util_mac.h",
-      "l10n/l10n_util_mac.mm",
       "l10n/l10n_util_mac_bridge.h",
       "l10n/l10n_util_mac_bridge.mm",
     ]
@@ -566,10 +564,7 @@ component("base") {
 
   if (is_mac) {
     public_deps += [ "//ui/base/cursor" ]
-    deps += [
-      "//base:base_arc",
-      "//ui/resources:ui_resources_grd",
-    ]
+    deps += [ "//ui/resources:ui_resources_grd" ]
   }
 
   if (toolkit_views) {
@@ -624,11 +619,12 @@ component("base") {
     frameworks = [
       "Accelerate.framework",
       "AppKit.framework",
-      "QuartzCore.framework",
       "AudioUnit.framework",
+      "AVFAudio.framework",
       "Carbon.framework",
       "CoreVideo.framework",
       "Foundation.framework",
+      "QuartzCore.framework",
     ]
   }
 
@@ -664,7 +660,6 @@ component("base") {
 
 if (is_ios) {
   source_set("l10n_util_ios") {
-    configs += [ "//build/config/compiler:enable_arc" ]
     sources = [
       "l10n/l10n_util_ios.h",
       "l10n/l10n_util_ios.mm",
@@ -781,6 +776,7 @@ static_library("test_support") {
     "interaction/interactive_test.h",
     "interaction/interactive_test_internal.cc",
     "interaction/interactive_test_internal.h",
+    "interaction/state_observer.h",
     "resource/mock_resource_bundle_delegate.cc",
     "resource/mock_resource_bundle_delegate.h",
     "test/idle_test_utils.cc",
@@ -806,6 +802,7 @@ static_library("test_support") {
       "test/scoped_preferred_scroller_style_mac.h",
       "test/scoped_preferred_scroller_style_mac.mm",
       "test/ui_controls_mac.mm",
+      "test/view_tree_validator.h",
       "test/view_tree_validator.mm",
       "test/windowed_nsnotification_observer.h",
       "test/windowed_nsnotification_observer.mm",
@@ -829,7 +826,6 @@ static_library("test_support") {
       "test/test_dialog_model_host.h",
       "test/ui_controls.cc",
       "test/ui_controls.h",
-      "test/view_tree_validator.h",
     ]
   } else {
     sources += [
@@ -1005,7 +1001,6 @@ test("ui_base_unittests") {
     "interaction/interactive_test_unittest.cc",
     "l10n/l10n_util_unittest.cc",
     "l10n/time_format_unittest.cc",
-    "layout_unittest.cc",
     "models/image_model_unittest.cc",
     "models/simple_combobox_model_unittest.cc",
     "models/simple_menu_model_unittest.cc",
@@ -1027,7 +1022,7 @@ test("ui_base_unittests") {
     "resource/data_pack_literal.h",
     "resource/data_pack_unittest.cc",
     "resource/resource_bundle_unittest.cc",
-    "resource/scale_factor_unittest.cc",
+    "resource/resource_scale_factor_unittest.cc",
     "scoped_visibility_tracker_unittest.cc",
     "template_expressions_unittest.cc",
     "test/page_transition_types_unittest.cc",
@@ -1177,6 +1172,7 @@ test("ui_base_unittests") {
         "ime/ash/typing_session_manager_unittest.cc",
       ]
       deps += [
+        "//ash/constants",
         "//build:branding_buildflags",
         "//ui/base/ime/ash",
         "//ui/base/ime/ash:typing_session_manager",

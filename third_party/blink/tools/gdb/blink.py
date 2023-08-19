@@ -70,7 +70,7 @@ def ustring_to_string(ptr, length=None):
     char_vals = [int((ptr + i).dereference()) for i in range(length)]
     string = struct.pack('H' * length, *char_vals).decode(
         'utf-16', 'replace').encode('utf-8')
-    return string + error_message
+    return string + error_message.encode('utf-8')
 
 
 def lstring_to_string(ptr, length=None):
@@ -174,13 +174,13 @@ class blinkLayoutUnitPrinter:
 
 
 class blinkLayoutSizePrinter:
-    "Print a blink::LayoutSize"
+    "Print a blink::DeprecatedLayoutSize"
 
     def __init__(self, val):
         self.val = val
 
     def to_string(self):
-        return 'LayoutSize(%s, %s)' % (
+        return 'DeprecatedLayoutSize(%s, %s)' % (
             blinkLayoutUnitPrinter(self.val['width_']).to_string(),
             blinkLayoutUnitPrinter(self.val['height_']).to_string())
 
@@ -458,7 +458,7 @@ def add_pretty_printers():
         (re.compile("^blink::KURL$"), blinkKURLPrinter),
         (re.compile("^blink::LayoutUnit$"), blinkLayoutUnitPrinter),
         (re.compile("^blink::LayoutPoint$"), blinkLayoutPointPrinter),
-        (re.compile("^blink::LayoutSize$"), blinkLayoutSizePrinter),
+        (re.compile("^blink::DeprecatedLayoutSize$"), blinkLayoutSizePrinter),
         (re.compile("^blink::QualifiedName$"), blinkQualifiedNamePrinter),
         (re.compile("^blink::PixelsAndPercent$"),
          BlinkPixelsAndPercentPrinter),

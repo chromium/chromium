@@ -150,7 +150,7 @@ class HighEfficiencyInteractiveTest : public InteractiveBrowserTest {
           base::BindLambdaForTesting([](performance_manager::Graph* graph) {
             auto* metrics_decorator = graph->GetRegisteredObjectAs<
                 performance_manager::ProcessMetricsDecorator>();
-            metrics_decorator->RefreshMetricsForTesting();
+            metrics_decorator->RequestImmediateMetrics();
           }));
 
       run_loop.Run();
@@ -171,6 +171,10 @@ class HighEfficiencyInteractiveTest : public InteractiveBrowserTest {
 
   GURL GetURL(base::StringPiece path) {
     return embedded_test_server()->GetURL("example.com", path);
+  }
+
+  GURL GetURL(base::StringPiece hostname, base::StringPiece path) {
+    return embedded_test_server()->GetURL(hostname, path);
   }
 
  private:
@@ -359,7 +363,7 @@ class HighEfficiencyChipInteractiveTest : public HighEfficiencyInteractiveTest {
       size_t non_discard_tab_index,
       const ui::ElementIdentifier& contents_id) {
     MultiStep result;
-    for (int i = 0; i < HighEfficiencyChipView::kChipAnimationCount; i++) {
+    for (int i = 0; i < HighEfficiencyChipTabHelper::kChipAnimationCount; i++) {
       MultiStep temp = std::move(result);
       result = Steps(std::move(temp),
                      SelectTab(kTabStripElementId, non_discard_tab_index),
@@ -501,11 +505,10 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyChipInteractiveTest,
       PressButton(kHighEfficiencyChipElementId),
       WaitForShow(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId),
       NameView(kDialogCloseButton, base::BindLambdaForTesting([&]() {
-                 return static_cast<views::View*>(
-                     GetPageActionIconView()
-                         ->GetBubble()
-                         ->GetBubbleFrameView()
-                         ->GetCloseButtonForTesting());
+                 return static_cast<views::View*>(GetPageActionIconView()
+                                                      ->GetBubble()
+                                                      ->GetBubbleFrameView()
+                                                      ->close_button());
                })),
       PressButton(kDialogCloseButton),
       EnsureNotPresent(
@@ -582,10 +585,11 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyChipInteractiveTest,
 }
 
 // High Efficiency Dialog bubble should add the site it is currently on
-// to the exclusion list if the cancel button of the dialog bubble is clicked.
-// Opening the dialog button again will cause the cancel button to be disabled.
+// to the exceptions list if the cancel button of the dialog bubble is clicked.
+// Opening the dialog button again will cause the cancel button to give users
+// the option to go to settings instead.
 IN_PROC_BROWSER_TEST_F(HighEfficiencyChipInteractiveTest,
-                       ModifyExclusionListOnCancelButtonClick) {
+                       ModifyExceptionsListOnCancelButtonClick) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
@@ -599,31 +603,38 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyChipInteractiveTest,
           l10n_util::GetStringUTF16(
               IDS_HIGH_EFFICIENCY_DIALOG_BUTTON_ADD_TO_EXCLUSION_LIST)),
       // Clicking the dialog's cancel button should add the site to the
-      // exclusion list
+      // exception list
       PressButton(HighEfficiencyBubbleView::kHighEfficiencyDialogCancelButton),
       WaitForHide(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId),
       Do(base::BindLambdaForTesting([=]() {
         PrefService* const pref_service = browser()->profile()->GetPrefs();
-        const base::Value::List& discard_exclusion = pref_service->GetList(
+        const base::Value::List& discard_exception = pref_service->GetList(
             performance_manager::user_tuning::prefs::kTabDiscardingExceptions);
-        EXPECT_EQ(1u, discard_exclusion.size());
+        EXPECT_EQ(1u, discard_exception.size());
         std::string current_site_host = browser()
                                             ->tab_strip_model()
                                             ->GetActiveWebContents()
                                             ->GetURL()
                                             .host();
-        std::string added_exception = discard_exclusion.front().GetString();
+        std::string added_exception = discard_exception.front().GetString();
         EXPECT_EQ(current_site_host, added_exception);
       })),
       FlushEvents(),
-      // Dialog's cancel button should now be disabled since the site was added
-      // to the list
+      // Dialog's cancel button should now allow users to navigate to the
+      // performance settings page
       PressButton(kHighEfficiencyChipElementId),
       WaitForShow(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId),
       CheckViewProperty(
           HighEfficiencyBubbleView::kHighEfficiencyDialogCancelButton,
-          &views::Button::GetState,
-          views::Button::ButtonState::STATE_DISABLED));
+          &views::LabelButton::GetText,
+          l10n_util::GetStringUTF16(IDS_HIGH_EFFICIENCY_DIALOG_BODY_LINK_TEXT)),
+      PressButton(HighEfficiencyBubbleView::kHighEfficiencyDialogCancelButton),
+      WaitForHide(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId),
+      Check(base::BindLambdaForTesting(
+          [&]() { return browser()->tab_strip_model()->GetTabCount() == 3; })),
+      InstrumentTab(kPerformanceSettingsTab, 2),
+      WaitForWebContentsReady(kPerformanceSettingsTab,
+                              GURL(chrome::kChromeUIPerformanceSettingsURL)));
 }
 
 // High Efficiency Dialog bubble's cancel button's state should be preserved
@@ -632,42 +643,46 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyChipInteractiveTest,
                        CancelButtonStatePreseveredWhenSwitchingTabs) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
-      NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
-      AddInstrumentedTab(kSecondTabContents, GetURL("/title1.html")),
+      NavigateWebContents(kFirstTabContents, GetURL("a.test", "/title1.html")),
+      AddInstrumentedTab(kSecondTabContents, GetURL("b.test", "/title1.html")),
       DiscardAndSelectTab(0, kFirstTabContents), TryDiscardTab(1),
       PressButton(kHighEfficiencyChipElementId),
       WaitForShow(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId),
-      // Add site to the exclusion list
+      // Add site to the exceptions list
       PressButton(HighEfficiencyBubbleView::kHighEfficiencyDialogCancelButton),
       WaitForHide(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId),
       FlushEvents(),
-      // Check that the cancel button is now disabled
+      // Check that the cancel button can go to settings page
       PressButton(kHighEfficiencyChipElementId),
       WaitForShow(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId),
       CheckViewProperty(
           HighEfficiencyBubbleView::kHighEfficiencyDialogCancelButton,
-          &views::Button::GetState, views::Button::ButtonState::STATE_DISABLED),
+          &views::LabelButton::GetText,
+          l10n_util::GetStringUTF16(IDS_HIGH_EFFICIENCY_DIALOG_BODY_LINK_TEXT)),
       PressButton(kHighEfficiencyChipElementId),
       WaitForHide(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId),
-      // Second tab's cancel button should be normal since the cancel button
-      // wasn't clicked for this tab
+      // Second tab's cancel button should allow users to exclude the site
+      // since this tab's site wasn't excluded yet
       SelectTab(kTabStripElementId, 1),
       PressButton(kHighEfficiencyChipElementId),
       WaitForShow(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId),
       CheckViewProperty(
           HighEfficiencyBubbleView::kHighEfficiencyDialogCancelButton,
-          &views::Button::GetState, views::Button::ButtonState::STATE_NORMAL),
+          &views::LabelButton::GetText,
+          l10n_util::GetStringUTF16(
+              IDS_HIGH_EFFICIENCY_DIALOG_BUTTON_ADD_TO_EXCLUSION_LIST)),
       PressButton(kHighEfficiencyChipElementId),
       WaitForHide(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId),
-      // Ensure that the first tab's cancel button stays disabled even after we
-      // navigated to another tab
+      // Ensure that the first tab's cancel button continues to allow users
+      // to navigate to the settings page even after we selected another tab
       SelectTab(kTabStripElementId, 0),
       PressButton(kHighEfficiencyChipElementId),
       WaitForShow(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId),
       CheckViewProperty(
           HighEfficiencyBubbleView::kHighEfficiencyDialogCancelButton,
-          &views::Button::GetState,
-          views::Button::ButtonState::STATE_DISABLED));
+          &views::LabelButton::GetText,
+          l10n_util::GetStringUTF16(
+              IDS_HIGH_EFFICIENCY_DIALOG_BODY_LINK_TEXT)));
 }
 
 struct FaviconScreenShotTestConfig {
@@ -720,16 +735,7 @@ IN_PROC_BROWSER_TEST_P(HighEfficiencyFaviconTreatmentTest,
       NameView(kFirstTabFavicon, base::BindLambdaForTesting([&]() {
                  return views::AsViewClass<views::View>(GetTabIcon(0));
                })),
-      Check(base::BindLambdaForTesting([&]() {
-        return GetTabIcon(0)
-            ->GetTabDiscardAnimationForTesting()
-            ->is_animating();
-      })),
-      Do(base::BindLambdaForTesting([&]() {
-        // Force animation to end as it may not have finished progressing
-        // before taking a screenshot
-        GetTabIcon(0)->GetTabDiscardAnimationForTesting()->End();
-      })),
+      WaitForEvent(kFirstTabFavicon, kDiscardAnimationFinishes), FlushEvents(),
       Screenshot(kFirstTabFavicon, GetParam().screenshot_name,
                  GetParam().cl_number));
 }
@@ -737,10 +743,10 @@ IN_PROC_BROWSER_TEST_P(HighEfficiencyFaviconTreatmentTest,
 std::vector<FaviconScreenShotTestConfig> HighEfficiencyTestConfig() {
   return {{performance_manager::features::DiscardTabTreatmentOptions::
                kFadeFullsizedFavicon,
-           "FadeFullSizedFaviconOnDiscard", "4492205"},
+           "FadeFullSizedFaviconOnDiscard", "4786929"},
           {performance_manager::features::DiscardTabTreatmentOptions::
                kFadeSmallFaviconWithRing,
-           "FadeSmallFaviconOnDiscard", "4492205"}};
+           "FadeSmallFaviconOnDiscard", "4786929"}};
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

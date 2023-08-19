@@ -17,6 +17,7 @@ import static org.chromium.chrome.test.util.browser.suggestions.mostvisited.Fake
 
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
+import android.os.Build.VERSION_CODES;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,6 +45,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -173,7 +175,7 @@ public class MostVisitedTilesLayoutTest {
     @MediumTest
     @Feature({"NewTabPage", "RenderTest"})
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    @DisableFeatures({ChromeFeatureList.QUERY_TILES})
+    @DisableFeatures(ChromeFeatureList.QUERY_TILES)
     public void testTilesLayoutAppearance(boolean nightModeEnabled) throws Exception {
         NewTabPage ntp = setUpFakeDataToShowOnNtp(FAKE_MOST_VISITED_URLS.length);
         mRenderTestRule.render(getTilesLayout(ntp),
@@ -183,7 +185,10 @@ public class MostVisitedTilesLayoutTest {
     @Test
     @MediumTest
     @Feature({"NewTabPage", "RenderTest"})
-    public void testModernTilesLayoutAppearance_Full() throws IOException, InterruptedException {
+    @DisableIf.Build(message = "Both variants are flaky on Nougat emulator, see crbug.com/1450693",
+            supported_abis_includes = "x86", sdk_is_less_than = VERSION_CODES.O)
+    public void
+    testModernTilesLayoutAppearance_Full() throws IOException, InterruptedException {
         View tilesLayout = renderTiles(makeSuggestions(FAKE_MOST_VISITED_URLS.length));
 
         Activity activity = mActivityTestRule.getActivity();
@@ -212,7 +217,10 @@ public class MostVisitedTilesLayoutTest {
     @Test
     @MediumTest
     @Feature({"NewTabPage", "RenderTest"})
-    public void testModernTilesLayoutAppearance_Two() throws IOException, InterruptedException {
+    @DisableIf.Build(message = "Both variants are flaky on Nougat emulator, see crbug.com/1450693",
+            supported_abis_includes = "x86", sdk_is_less_than = VERSION_CODES.O)
+    public void
+    testModernTilesLayoutAppearance_Two() throws IOException, InterruptedException {
         View tilesLayout = renderTiles(makeSuggestions(2));
 
         Activity activity = mActivityTestRule.getActivity();

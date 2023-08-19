@@ -269,6 +269,13 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFTextStore
   // Sends OnLayoutChange() via |text_store_acp_sink_|.
   void SendOnLayoutChange();
 
+  // Sends a Url change notification via |text_store_acp_sink_| if the current
+  // version of TSF supports empty text stores.
+  bool MaybeSendOnUrlChanged();
+
+  // Sets the flag to indicate TSF support for empty text stores.
+  void SetUseEmptyTextStore(bool isEnabled);
+
  private:
   friend class TSFTextStoreTest;
   friend class TSFTextStoreTestCallback;
@@ -328,6 +335,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFTextStore
   // composed text.
   void GetStyle(const TF_DISPLAYATTRIBUTE& attribute, ImeTextSpan* span);
 
+  // Indicates if it is a dummy/empty text store without any text capability.
+  bool is_empty_text_store_ = false;
+
   // The reference count of this instance.
   volatile LONG ref_count_ = 0;
 
@@ -344,8 +354,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFTextStore
   raw_ptr<TextInputClient> text_input_client_ = nullptr;
 
   // ImeKeyEventDispatcher instance which is used dispatch key events.
-  raw_ptr<ImeKeyEventDispatcher, DanglingUntriaged> ime_key_event_dispatcher_ =
-      nullptr;
+  raw_ptr<ImeKeyEventDispatcher, AcrossTasksDanglingUntriaged>
+      ime_key_event_dispatcher_ = nullptr;
 
   //  |string_buffer_document_| contains all string in current active view.
   //  |string_pending_insertion_| contains only string in current edit session.

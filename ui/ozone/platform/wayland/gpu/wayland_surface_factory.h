@@ -12,6 +12,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
+#include "ui/ozone/public/drm_modifiers_filter.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
 
 namespace ui {
@@ -59,6 +60,9 @@ class WaylandSurfaceFactory : public SurfaceFactoryOzone {
       gfx::NativePixmapHandle handle) override;
   absl::optional<gfx::BufferFormat> GetPreferredFormatForSolidColor()
       const override;
+  bool SupportsDrmModifiersFilter() const override;
+  void SetDrmModifiersFilter(
+      std::unique_ptr<DrmModifiersFilter> filter) override;
 
   bool SupportsNativePixmaps() const;
 
@@ -66,8 +70,9 @@ class WaylandSurfaceFactory : public SurfaceFactoryOzone {
       const override;
 
  private:
-  const raw_ptr<WaylandConnection, DanglingUntriaged> connection_;
-  const raw_ptr<WaylandBufferManagerGpu, DanglingUntriaged> buffer_manager_;
+  const raw_ptr<WaylandConnection, AcrossTasksDanglingUntriaged> connection_;
+  const raw_ptr<WaylandBufferManagerGpu, AcrossTasksDanglingUntriaged>
+      buffer_manager_;
   std::unique_ptr<GLOzone> egl_implementation_;
 };
 

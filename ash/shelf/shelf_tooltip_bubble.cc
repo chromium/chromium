@@ -6,10 +6,13 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/style_util.h"
 #include "ash/wm/collision_detection/collision_detection_utils.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/window.h"
 #include "ui/color/color_id.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/corewm/tooltip_view_aura.h"
 #include "ui/views/layout/fill_layout.h"
 
 namespace ash {
@@ -28,24 +31,34 @@ constexpr int kTooltipLeftRightMargin = 8;
 
 }  // namespace
 
-ShelfTooltipBubble::ShelfTooltipBubble(views::View* anchor,
-                                       ShelfAlignment alignment,
-                                       const std::u16string& text)
-    : ShelfBubble(anchor, alignment) {
-  set_margins(
-      gfx::Insets::VH(kTooltipTopBottomMargin, kTooltipLeftRightMargin));
+ShelfTooltipBubble::ShelfTooltipBubble(
+    views::View* anchor,
+    ShelfAlignment alignment,
+    const std::u16string& text,
+    absl::optional<views::BubbleBorder::Arrow> arrow_position)
+    : ShelfBubble(anchor, alignment, /*for_tooltip=*/true, arrow_position) {
   set_close_on_deactivate(false);
   SetCanActivate(false);
   set_accept_events(false);
   set_shadow(views::BubbleBorder::NO_SHADOW);
   SetLayoutManager(std::make_unique<views::FillLayout>());
-  auto label = std::make_unique<views::Label>(text);
-  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
-  // Initialize color ids
-  label->SetEnabledColorId(kColorAshShelfTooltipForegroundColor);
-  label->SetBackgroundColorId(kColorAshShelfTooltipBackgroundColor);
-  AddChildView(std::move(label));
+  if (chromeos::features::IsJellyrollEnabled()) {
+    set_margins(gfx::Insets(0));
+    auto* tooltip_view = AddChildView(StyleUtil::CreateAshStyleTooltipView());
+    tooltip_view->SetText(text);
+  } else {
+    set_margins(
+        gfx::Insets::VH(kTooltipTopBottomMargin, kTooltipLeftRightMargin));
+    auto label = std::make_unique<views::Label>(text);
+    label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+
+    // Initialize color ids
+    label->SetEnabledColorId(kColorAshShelfTooltipForegroundColor);
+    label->SetBackgroundColorId(kColorAshShelfTooltipBackgroundColor);
+    AddChildView(std::move(label));
+  }
+
   CreateBubble();
 
   CollisionDetectionUtils::IgnoreWindowForCollisionDetection(
@@ -54,6 +67,10 @@ ShelfTooltipBubble::ShelfTooltipBubble(views::View* anchor,
 
 void ShelfTooltipBubble::OnThemeChanged() {
   ShelfBubble::OnThemeChanged();
+
+  if (chromeos::features::IsJellyrollEnabled()) {
+    return;
+  }
 
   const auto* color_provider = GetColorProvider();
 
@@ -66,6 +83,11 @@ void ShelfTooltipBubble::OnThemeChanged() {
 
 gfx::Size ShelfTooltipBubble::CalculatePreferredSize() const {
   const gfx::Size size = BubbleDialogDelegateView::CalculatePreferredSize();
+
+  if (chromeos::features::IsJellyrollEnabled()) {
+    return size;
+  }
+
   const int kTooltipMinHeight = kTooltipHeight - 2 * kTooltipTopBottomMargin;
   return gfx::Size(std::min(size.width(), kTooltipMaxWidth),
                    std::max(size.height(), kTooltipMinHeight));

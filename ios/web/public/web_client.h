@@ -16,7 +16,7 @@
 #include "ios/web/common/user_agent.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/base/layout.h"
+#include "ui/base/resource/resource_scale_factor.h"
 
 namespace base {
 class RefCountedMemory;
@@ -28,6 +28,7 @@ class GURL;
 @protocol UITraitEnvironment;
 @class NSString;
 @class NSData;
+@class UIView;
 
 namespace net {
 class SSLInfo;
@@ -161,6 +162,9 @@ class WebClient {
   // Instructs the embedder to return a container that is attached to a window.
   virtual UIView* GetWindowedContainer();
 
+  // Enables the web-exposed Fullscreen API.
+  virtual bool EnableFullscreenAPI() const;
+
   // Enables the logic to handle long press context menu with UIContextMenu.
   virtual bool EnableLongPressUIContextMenu() const;
 
@@ -194,16 +198,6 @@ class WebClient {
   virtual bool IsPointingToSameDocument(const GURL& url1,
                                         const GURL& url2) const;
 
-  // Provides a searchable object for the given `web_state` instance.
-  virtual id<CRWFindSession> CreateFindSessionForWebState(
-      web::WebState* web_state) const API_AVAILABLE(ios(16));
-
-  // Starts a text search in `web_state`.
-  virtual void StartTextSearchInWebState(web::WebState* web_state);
-
-  // Stops the ongoing text search in `web_state`.
-  virtual void StopTextSearchInWebState(web::WebState* web_state);
-
   // Returns true if mixed content on HTTPS documents should be upgraded if
   // possible.
   virtual bool IsMixedContentAutoupgradeEnabled(
@@ -212,6 +206,11 @@ class WebClient {
   // Returns true if browser lockdown mode is enabled. Default return value is
   // false.
   virtual bool IsBrowserLockdownModeEnabled(web::BrowserState* browser_state);
+
+  // Sets OS lockdown mode preference value. By default, no preference value is
+  // set.
+  virtual void SetOSLockdownModeEnabled(web::BrowserState* browser_state,
+                                        bool enabled);
 };
 
 }  // namespace web

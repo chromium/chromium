@@ -15,6 +15,7 @@
 #include "absl/hash/internal/low_level_hash.h"
 
 #include "absl/base/internal/unaligned_access.h"
+#include "absl/base/prefetch.h"
 #include "absl/numeric/int128.h"
 
 namespace absl {
@@ -29,6 +30,8 @@ static uint64_t Mix(uint64_t v0, uint64_t v1) {
 
 uint64_t LowLevelHash(const void* data, size_t len, uint64_t seed,
                       const uint64_t salt[5]) {
+  // Prefetch the cacheline that data resides in.
+  PrefetchToLocalCache(data);
   const uint8_t* ptr = static_cast<const uint8_t*>(data);
   uint64_t starting_length = static_cast<uint64_t>(len);
   uint64_t current_state = seed ^ salt[0];
@@ -40,6 +43,9 @@ uint64_t LowLevelHash(const void* data, size_t len, uint64_t seed,
     uint64_t duplicated_state = current_state;
 
     do {
+      // Always prefetch the next cacheline.
+      PrefetchToLocalCache(ptr + ABSL_CACHELINE_SIZE);
+
       uint64_t a = absl::base_internal::UnalignedLoad64(ptr);
       uint64_t b = absl::base_internal::UnalignedLoad64(ptr + 8);
       uint64_t c = absl::base_internal::UnalignedLoad64(ptr + 16);

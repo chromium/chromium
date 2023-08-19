@@ -11,30 +11,36 @@ module chrome.mojom;
 import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/read_only_file.mojom";
 
+// SafeArchiveAnalyzer provides methods for extracting information about the
+// files contained in untrusted archives. It is intended to run in a utility
+// process, so that callers in the browser process can safely get this
+// information.
 interface SafeArchiveAnalyzer {
-  // Build flag FULL_SAFE_BROWSING: Analyze the |zip_file| for malicious
-  // download protection, given a |temporary_file| used to extract files
-  // from the |zip_file| archive.
+  // Build flag FULL_SAFE_BROWSING: Analyze the `zip_file` for malicious
+  // download protection, given a `temporary_file` used to extract files
+  // from the `zip_file` archive. Uses `password` to decrypt encrypted entries
+  // in the archive, if provided.
   AnalyzeZipFile(mojo_base.mojom.ReadOnlyFile zip_file,
+                 string? password,
                  pending_remote<TemporaryFileGetter> temp_file_getter)
       => (SafeArchiveAnalyzerResults results);
 
-  // Build flag FULL_SAFE_BROWSING, on OS_MAC: Analyze the |dmg_file|
+  // Build flag FULL_SAFE_BROWSING, on OS_MAC: Analyze the `dmg_file`
   // for malicious download protection.
   AnalyzeDmgFile(mojo_base.mojom.ReadOnlyFile dmg_file,
                  pending_remote<TemporaryFileGetter> temp_file_getter)
       => (SafeArchiveAnalyzerResults results);
 
-  // Build flag FULL_SAFE_BROWSING: Analyze the |rar_file| for malicious
-  // download protection. Uses the |temporary_file| to extract files from the
-  // |rar_file| archive.
+  // Build flag FULL_SAFE_BROWSING: Analyze the `rar_file` for malicious
+  // download protection. Uses the `temporary_file` to extract files from the
+  // `rar_file` archive.
   AnalyzeRarFile(mojo_base.mojom.ReadOnlyFile rar_file,
                  pending_remote<TemporaryFileGetter> temp_file_getter)
       => (SafeArchiveAnalyzerResults results);
 
-  // Build flag FULL_SAFE_BROWSING: Analyze the |seven_zip_file| for malicious
-  // download protection. Uses |temporary_file| and |temporary_file2| to extract
-  // files from the |seven_zip_file| archive. This needs two temporary files due
+  // Build flag FULL_SAFE_BROWSING: Analyze the `seven_zip_file` for malicious
+  // download protection. Uses `temporary_file` and `temporary_file2` to extract
+  // files from the `seven_zip_file` archive. This needs two temporary files due
   // to the internal structure of 7z archives. Archives are groups of "folders"
   // (still a group of files, but not a directory in the extracted contents)
   // which share decompressor state. For performance, each folder is extracted

@@ -44,8 +44,6 @@ import org.chromium.url.ShadowGURL;
 @Config(manifest = Config.NONE, shadows = {ShadowGURL.class})
 @LooperMode(LooperMode.Mode.LEGACY)
 public class InstalledWebappGeolocationBridgeTest {
-    private static final String EXTRA_CALLBACK = "extraCallback";
-
     private static final long NATIVE_POINTER = 12;
 
     private GURL mScope;

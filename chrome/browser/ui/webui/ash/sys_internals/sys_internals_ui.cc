@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/metrics/user_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/sys_internals/sys_internals_message_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -70,6 +71,7 @@ SysInternalsUI::SysInternalsUI(content::WebUI* web_ui)
 
   html_source->AddResourcePath("test_loader_util.js",
                                IDR_WEBUI_JS_TEST_LOADER_UTIL_JS);
+  base::RecordAction(base::UserMetricsAction("Open_Sys_Internals"));
 }
 
 SysInternalsUI::~SysInternalsUI() {}

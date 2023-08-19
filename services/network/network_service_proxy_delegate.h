@@ -12,6 +12,8 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/proxy_delegate.h"
+#include "services/network/ip_protection_auth_token_cache.h"
+#include "services/network/network_service_proxy_allow_list.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
 namespace net {
@@ -32,8 +34,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
       mojom::CustomProxyConfigPtr initial_config,
       mojo::PendingReceiver<mojom::CustomProxyConfigClient>
           config_client_receiver,
-      mojo::PendingRemote<mojom::CustomProxyConnectionObserver>
-          observer_remote);
+      mojo::PendingRemote<mojom::CustomProxyConnectionObserver> observer_remote,
+      NetworkServiceProxyAllowList* network_service_proxy_allow_list);
 
   NetworkServiceProxyDelegate(const NetworkServiceProxyDelegate&) = delete;
   NetworkServiceProxyDelegate& operator=(const NetworkServiceProxyDelegate&) =
@@ -46,8 +48,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
     proxy_resolution_service_ = proxy_resolution_service;
   }
 
+  void SetIpProtectionAuthTokenCache(
+      std::unique_ptr<IpProtectionAuthTokenCache> auth_token_cache) {
+    auth_token_cache_ = std::move(auth_token_cache);
+  }
+
   // net::ProxyDelegate implementation:
   void OnResolveProxy(const GURL& url,
+                      const GURL& top_frame_url,
                       const std::string& method,
                       const net::ProxyRetryInfoMap& proxy_retry_info,
                       net::ProxyInfo* result) override;
@@ -58,7 +66,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
       const net::ProxyServer& proxy_server,
       const net::HttpResponseHeaders& response_headers) override;
 
+  IpProtectionAuthTokenCache* GetAuthTokenCacheForTesting() {
+    return auth_token_cache_.get();
+  }
+
  private:
+  // Checks if this CustomProxyConfig is supporting IP Protection.
+  bool IsForIpProtection();
+
   // Checks whether |proxy_server| is present in the current proxy config.
   bool IsInProxyConfig(const net::ProxyServer& proxy_server) const;
 
@@ -90,9 +105,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
   mojom::CustomProxyConfigPtr proxy_config_;
   mojo::Receiver<mojom::CustomProxyConfigClient> receiver_;
   mojo::Remote<mojom::CustomProxyConnectionObserver> observer_;
+  raw_ptr<NetworkServiceProxyAllowList> network_service_proxy_allow_list_;
 
   raw_ptr<net::ProxyResolutionService, DanglingUntriaged>
       proxy_resolution_service_ = nullptr;
+
+  std::unique_ptr<IpProtectionAuthTokenCache> auth_token_cache_;
 };
 
 }  // namespace network

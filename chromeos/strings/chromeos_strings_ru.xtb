@@ -9,17 +9,19 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (потоки: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> ГГц)</translation>
 <translation id="1047773237499189053">Доступна новая функция. Чтобы получить подробную информацию, нажмите на стрелку вверх.</translation>
 <translation id="1059913517121127803">Не удалось начать сканирование.</translation>
+<translation id="1062823486781306604"><ph name="NAME" /> (<ph name="INDEX" /> из <ph name="COUNT" />).</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">обнаружен брандмауэр</translation>
 <translation id="1075811647922107217">Размер страницы</translation>
 <translation id="1082009148392559545">Скачивание заставки</translation>
 <translation id="1094693127011229778">IP-адрес недоступен.</translation>
-<translation id="1113892970288677790">Выберите произведения искусства и красивые фото</translation>
+<translation id="1118572504348554005">Чтобы устранять ошибки, о которых сообщают пользователи, мы можем передавать нашим партнерам отзывы, оставленные с помощью этой формы. Не указывайте в ней пароли и другую конфиденциальную информацию.</translation>
 <translation id="1119447706177454957">Внутренняя ошибка</translation>
 <translation id="1124772482545689468">Пользователь</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Открыто окно со сведениями о доступных обновлениях (<ph name="NUM_UPDATES" />) встроенного ПО для внешних устройств.</translation>
 <translation id="1145516343487477149">Находите нужные справочные статьи и ответы на частые вопросы об устройствах Chromebook.</translation>
+<translation id="1164939766849482256">Заставка с рассветом, переходящим в закат</translation>
 <translation id="1167755866710282443">Откройте меню, чтобы настроить клавиши. Перетащите меню, чтобы изменить его расположение.</translation>
 <translation id="1175697296044146566">Этим устройством <ph name="DEVICE_TYPE" /> управляет <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Средний (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -58,6 +60,7 @@
 <translation id="1423591390236870726">Клавиша <ph name="KEY_NAME" /> не нажата</translation>
 <translation id="1435763214710588005">Каждый месяц объем переданных данных автоматически обнуляется в указанный день</translation>
 <translation id="1442433966118452622">Источник изображения</translation>
+<translation id="1449035143498573192">Открыть в Google Поиске</translation>
 <translation id="1451536289672181509">Это клавиатура.</translation>
 <translation id="1459693405370120464">Погода</translation>
 <translation id="1468664791493211953">Предложения</translation>
@@ -166,6 +169,7 @@
 <translation id="2161656808144014275">Текст</translation>
 <translation id="2163937499206714165">Включить тёмную тему</translation>
 <translation id="2180197493692062006">Произошла ошибка. Попробуйте открыть приложение заново.</translation>
+<translation id="2189104374785738357">Изменение данных точки доступа</translation>
 <translation id="2209788852729124853">Сбросить счетчики трафика</translation>
 <translation id="2212733584906323460">Разрешение имен</translation>
 <translation id="2217935453350629363">Текущая частота</translation>
@@ -178,10 +182,12 @@
 <translation id="225692081236532131">Статус активации</translation>
 <translation id="2271469253353559191">Расписание тёмной темы</translation>
 <translation id="2276999893457278469">Самый популярный справочный контент</translation>
+<translation id="2279051792571591988">Восстановить настройки по умолчанию</translation>
 <translation id="2287186687001756809">Изображений нет. Добавить фотографии можно на сайте <ph name="LINK" />.</translation>
 <translation id="2307344026739914387">Использовать текущую пару ключей</translation>
 <translation id="2320295602967756579">Использовать светлую тему</translation>
 <translation id="2323506179655536734">ПРОПУЩЕНО</translation>
+<translation id="2324354238778375592">Плавающий режим</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Включите Bluetooth, чтобы найти устройства</translation>
 <translation id="2346474577291266260">Отличный (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -201,7 +207,6 @@
 <translation id="2491955442992294626">Пока активно другое окно, проверка клавиатуры не выполняется</translation>
 <translation id="2493126929778606526">Ваши лучшие фото, отобранные автоматически</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
-<translation id="2498950423397131220">Плавающая</translation>
 <translation id="2505327257735685095">Обновить обои</translation>
 <translation id="2512979179176933762">показать окна</translation>
 <translation id="2513396635448525189">Изображение на экране входа</translation>
@@ -219,6 +224,7 @@
 <translation id="2620436844016719705">Система</translation>
 <translation id="2638662041295312666">Изображение на странице входа</translation>
 <translation id="2640549051766135490">Выбран альбом "<ph name="TITLE" />" с описанием "<ph name="DESC" />"</translation>
+<translation id="2652403576514495859">включить или отключить голосовой ввод</translation>
 <translation id="267442004702508783">обновить</translation>
 <translation id="268270014981824665">клавиатура затемнить</translation>
 <translation id="2712812801627182647">Ключ аутентификации TLS</translation>
@@ -238,6 +244,7 @@
 <translation id="2873483161362553159">Навигация в браузере</translation>
 <translation id="2874939134665556319">Предыдущий трек</translation>
 <translation id="2878387241690264070">Батарея разрядилась на <ph name="RATE" /> за <ph name="NUM_SECONDS" /> сек.</translation>
+<translation id="2880569433548999039">Динамическая заставка с облаками</translation>
 <translation id="2926057806159140518">Введите имя пользователя и пароль или отсканируйте QR-код.</translation>
 <translation id="2940811910881150316">Не удается протестировать устройство. Откройте его крышку.</translation>
 <translation id="3008341117444806826">ОБНОВИТЬ</translation>
@@ -260,6 +267,7 @@
 <translation id="315738237743207937">Обнаружена страница входа</translation>
 <translation id="3160172848211257835">Отправить <ph name="BEGIN_LINK1" />сведения о системе и приложениях<ph name="END_LINK1" />, а также <ph name="BEGIN_LINK2" />статистику<ph name="END_LINK2" /></translation>
 <translation id="3170673040743561620">Положите документ в сканер.</translation>
+<translation id="3174321110679064523">Обои с рассветом, переходящим в закат</translation>
 <translation id="3188257591659621405">Мои файлы</translation>
 <translation id="319101249942218879">Аватар изменен</translation>
 <translation id="3192947282887913208">Аудиофайлы</translation>
@@ -286,6 +294,8 @@
 <translation id="3360306038446926262">Окна</translation>
 <translation id="3368922792935385530">Подключено</translation>
 <translation id="3369013195428705271">Очистить историю печати? Текущие задания печати не будут удалены.</translation>
+<translation id="3373141842870501561">Динамические обои с Землей</translation>
+<translation id="337375748120863155">Информация, связанная с выделенным текстом. Чтобы перейти к настройкам, нажимайте клавиши со стрелками влево и вправо.</translation>
 <translation id="3404249063913988450">Включить заставку</translation>
 <translation id="3413935475507503304">Чтобы выполнить обновление, нажмите "Далее".</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -318,22 +328,25 @@
 <translation id="3604713164406837697">Изменить обои</translation>
 <translation id="360565022852130722">Безопасность сети Wi-Fi обеспечивается недостаточно надежным протоколом WEP 802.1x.</translation>
 <translation id="3606583719724308068">Длительная задержка у HTTPS-сайтов.</translation>
+<translation id="3607216139080387279">Показывать заставку</translation>
 <translation id="361575905210396100">Благодарим за отзыв!</translation>
 <translation id="3632579075709132555">Включение экрана конфиденциальности</translation>
-<translation id="3639846061339007994">сверху</translation>
 <translation id="3651050199673793219">Выбрать единицу измерения температуры</translation>
-<translation id="3663574643422533538">Выбрать эксклюзивное видео для <ph name="PRODUCT_NAME" /></translation>
+<translation id="3668449597372804501">Динамические обои с облаками</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />: тестирование</translation>
 <translation id="370665806235115550">Загрузка...</translation>
 <translation id="3708186454126126312">Ранее подключенные устройства</translation>
+<translation id="3715651196924935218">Выйти из плавающего режима</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (отзывов: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Нет соединения</translation>
 <translation id="3749289110408117711">Название файла</translation>
+<translation id="3766934827878963937">в течение 1 ч.</translation>
 <translation id="3771294271822695279">Видеофайлы</translation>
 <translation id="3784455785234192852">Заблокировать</translation>
 <translation id="380097101658023925">настройки RGB</translation>
 <translation id="38114475217616659">Очистить всю историю</translation>
 <translation id="3820172043799983114">Неверный PIN-код.</translation>
+<translation id="382043424867370667">Обои с закатом</translation>
 <translation id="3824259034819781947">Прикрепить файлы</translation>
 <translation id="3838338534323494292">Новый пароль</translation>
 <translation id="3845880861638660475">Чтобы закрыть диалоговое окно, нажмите <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" />.</translation>
@@ -359,6 +372,7 @@
 <translation id="397105322502079400">Вычисление…</translation>
 <translation id="39823212440917567">Задания печати, хранящиеся дольше <ph name="NUMBER_OF_DAYS" /> дн., будут удалены</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" />: установлено актуальное ПО</translation>
+<translation id="3998976413398910035">Управление принтерами</translation>
 <translation id="4003384961948020559">Сбой: выходной лоток заполнен</translation>
 <translation id="4021031199988160623">Чтобы начать тестирование, перейдите в режим ноутбука</translation>
 <translation id="4034824040120875894">Принтер</translation>
@@ -380,6 +394,7 @@
 <translation id="4147897805161313378">Google Фото</translation>
 <translation id="4150201353443180367">Экран</translation>
 <translation id="4155551848414053977">Убедитесь, что сканер работает и доступен для подключения напрямую или по сети.</translation>
+<translation id="4159238217853743776">Частичное увеличение</translation>
 <translation id="4159784952369912983">Фиолетовый</translation>
 <translation id="4170180284036919717">Сделать снимок</translation>
 <translation id="4170700058716978431">ОШИБКА</translation>
@@ -400,7 +415,6 @@
 <translation id="4289849978083912975">Слайд-шоу</translation>
 <translation id="4297501883039923494">Печать прервана: неизвестная ошибка</translation>
 <translation id="4300073214558989">Изображений: <ph name="IMAGE_COUNT" /></translation>
-<translation id="4311195029067684288">Максимальное увеличение</translation>
 <translation id="4333390807948134856">Клавиша <ph name="KEY_NAME" /> нажата</translation>
 <translation id="435692326371619097">Управление настройками точки доступа. С помощью точек доступа устанавливается подключение между мобильной сетью и интернетом. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="437294888293595148">Сбросить все сочетания клавиш</translation>
@@ -419,6 +433,7 @@
 <translation id="445059817448385655">Старый пароль</translation>
 <translation id="4453205916657964690">Маска подсети</translation>
 <translation id="4454245904991689773">Место сохранения</translation>
+<translation id="4469288414739283461">Динамическая заставка с Землей</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Не удалось выполнить проверку ping сетевого шлюза, не заданного по умолчанию.</translation>
 <translation id="4500966230243561393">Цвет интерфейса</translation>
@@ -450,7 +465,6 @@
 <translation id="469379815867856270">Уровень сигнала</translation>
 <translation id="4731797938093519117">Родительский доступ</translation>
 <translation id="473775607612524610">Обновить</translation>
-<translation id="4744944742468440486">Информация на основе выделенного текста</translation>
 <translation id="4771607256327216405">клавиатура сделать ярче</translation>
 <translation id="4773299976671772492">Остановлено</translation>
 <translation id="4782311465517282004">Получайте определения слов, перевод или значение в других единицах измерения: достаточно нажать на текст правой кнопкой мыши или коснуться его и удерживать.</translation>
@@ -490,7 +504,7 @@
 <translation id="4930320165497208503">Чтобы задать или изменить параметры подключения, перейдите в <ph name="BEGIN_LINK" />настройки<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Дата</translation>
 <translation id="4950314376641394653">Встроенное ПО для устройства "<ph name="DEVICE_NAME" />" было обновлено до версии <ph name="VERSION" />.</translation>
-<translation id="4971925105143343452">Частичное увеличение</translation>
+<translation id="4969079779290789265">Разделить</translation>
 <translation id="4972592110715526173">сменить режим</translation>
 <translation id="498186245079027698">Проверьте сканер и повторите попытку. Убедитесь, что на диске достаточно свободного места для хранения отсканированных файлов.</translation>
 <translation id="4985509611418653372">Проверить</translation>
@@ -510,6 +524,7 @@
 <translation id="5088172560898466307">Имя хоста сервера</translation>
 <translation id="5089810972385038852">Штат</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5137451382116112100">Полноэкранный режим</translation>
 <translation id="5142961317498132443">Аутентификация</translation>
 <translation id="5154917547274118687">Память</translation>
 <translation id="5160857336552977725">Войдите в аккаунт на устройстве <ph name="DEVICE_TYPE" /></translation>
@@ -522,16 +537,20 @@
 <translation id="5222676887888702881">Выйти</translation>
 <translation id="522307662484862935">Не указывать адрес электронной почты</translation>
 <translation id="5227902338748591677">Расписание тёмной темы</translation>
+<translation id="5229344016299762883">Выйти из полноэкранного режима</translation>
 <translation id="5234764350956374838">Закрыть</translation>
 <translation id="5252456968953390977">Роуминг</translation>
 <translation id="5257811368506016604">Включить режим светлых цветов</translation>
 <translation id="5264277876637023664">Запустить проверку ЦП</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="527501763019887383">Точка доступа отключена.</translation>
 <translation id="5275828089655680674">Запустить заново</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5286263799730375393">цвет подсветки</translation>
+<translation id="5292579816060236070">Обои с рассветом</translation>
 <translation id="5294769550414936029">версия <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Переместить окно на рабочий стол</translation>
+<translation id="5303837385540978511">Эксклюзивные обои для <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Идентификационные данные</translation>
 <translation id="5317780077021120954">Сохранить</translation>
@@ -562,7 +581,6 @@
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Автоматически включать тёмную тему на закате</translation>
-<translation id="5571714952674387371">Просмотр и редактирование данных</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Сканировать повторно</translation>
 <translation id="5583640892426849032">Клавиша возврата (Backspace)</translation>
@@ -571,6 +589,8 @@
 <translation id="5620281292257375798">Конфиденциально</translation>
 <translation id="5649768706273821470">Прослушать</translation>
 <translation id="5655283760733841251">Увеличение яркости клавиатуры</translation>
+<translation id="5655296450510165335">Регистрация устройства</translation>
+<translation id="5655776422854483175">Заданий печати нет</translation>
 <translation id="5659593005791499971">Эл. почта</translation>
 <translation id="5662240986744577912">включить или отключить экран конфиденциальности</translation>
 <translation id="5669267381087807207">Активация</translation>
@@ -590,6 +610,7 @@
 <translation id="5832805196449965646">Добавить пользователя</translation>
 <translation id="583281660410589416">Неизвестно</translation>
 <translation id="5843706793424741864">По шкале Фаренгейта</translation>
+<translation id="584953448295717128">Точка доступа определена автоматически.</translation>
 <translation id="5849570051105887917">Код провайдера</translation>
 <translation id="5859603669299126575">Художественная галерея</translation>
 <translation id="5860033963881614850">ВЫКЛ</translation>
@@ -624,6 +645,7 @@
 <translation id="6061772781719867950">невыполненные HTTPS-запросы</translation>
 <translation id="6073292342939316679">уменьшить яркость клавиатуры</translation>
 <translation id="6075872808778243331">Время ожидания HTTP (Android)</translation>
+<translation id="6078323886959318429">Добавить ярлык</translation>
 <translation id="6104112872696127344">Сканирование отменено.</translation>
 <translation id="6106186594183574873">Для завершения введите старый пароль.</translation>
 <translation id="6108689792487843350">Шлюз недоступен.</translation>
@@ -642,7 +664,6 @@
 <translation id="6191293864534840972">Некорректно указаны серверы доменных имен.</translation>
 <translation id="6205145102504628069">Облака</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
-<translation id="6223066887782788441">Выйти из полноэкранного режима</translation>
 <translation id="6223752125779001553">Нет доступных сканеров.</translation>
 <translation id="6232017090690406397">Батарея</translation>
 <translation id="6235460611964961764">Выполнять сброс показателя вручную</translation>
@@ -651,10 +672,11 @@
 <translation id="6278428485366576908">Тема</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Включить тёмную тему</translation>
-<translation id="6285899124799306373">открыть панель запуска</translation>
+<translation id="628726841779494414">Чтобы изменить параметры принтеров, перейдите в настройки</translation>
 <translation id="629550705077076970">затемнение подсветки клавиатуры</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />: тестирование отменено.</translation>
 <translation id="631063167932043783">Приложение "Возможности"</translation>
+<translation id="6318437367327684789">всегда</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" />: обновление встроенного ПО</translation>
 <translation id="6321407676395378991">Включить заставку</translation>
 <translation id="6325525973963619867">Ошибка</translation>
@@ -681,6 +703,7 @@
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Повторно сканировать страницу?}=1{Повторно сканировать страницу {PAGE_NUMBER}?}one{Повторно сканировать страницу {PAGE_NUMBER}?}few{Повторно сканировать страницу {PAGE_NUMBER}?}many{Повторно сканировать страницу {PAGE_NUMBER}?}other{Повторно сканировать страницу {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">Одноразовый код</translation>
 <translation id="6480327114083866287">Под управлением <ph name="MANAGER" /></translation>
+<translation id="6488559935020624631">Эксклюзивная заставка для <ph name="PRODUCT_NAME" /></translation>
 <translation id="649050271426829538">Печать прервана: застряла бумага</translation>
 <translation id="6494974875566443634">Персонализация</translation>
 <translation id="6500818810472529210">Посмотрите результат в Google Поиске.</translation>
@@ -697,6 +720,7 @@
 <translation id="6566314079205407217">Сканировать несколько страниц</translation>
 <translation id="6574762126505704998">Заполнить</translation>
 <translation id="6575134580692778371">Не настроено</translation>
+<translation id="6576005492601044801">слева</translation>
 <translation id="6579509898032828423">Использовать это фото</translation>
 <translation id="6596816719288285829">IP-адрес</translation>
 <translation id="6599673642868607614">Благодарим за отзыв. Он поможет нам улучшить Chromebook и будет рассмотрен нашей командой. Мы получаем множество обращений, поэтому не сможем вам ответить.</translation>
@@ -752,7 +776,6 @@
 <translation id="7103252855940681301">Устройство <ph name="INDEX" /> из <ph name="COUNT" /> под названием "<ph name="NAME" />".</translation>
 <translation id="7108668606237948702">Войти</translation>
 <translation id="7130438335435247835">Точка доступа</translation>
-<translation id="7131634559772719176">Подтверждение набора настроек</translation>
 <translation id="7134436342991564651">{0,plural, =1{Сервер доменных имен}one{Серверы доменных имен}few{Серверы доменных имен}many{Серверы доменных имен}other{Серверы доменных имен}}</translation>
 <translation id="7135814714616751706">Быстрые клавиши для поиска</translation>
 <translation id="7143207342074048698">Подключение</translation>
@@ -778,10 +801,10 @@
 <translation id="7297226631177386107">Не удается подключиться к HTTPS-сайтам через брандмауэр.</translation>
 <translation id="7297726121602187087">Темно-зеленый</translation>
 <translation id="7302860742311162920">ICCID</translation>
-<translation id="7305236594389852547">включить или отключить голосовой ввод</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Задавайте вопросы на справочном форуме Chromebook.</translation>
 <translation id="7311368985037279727">цвет клавиатуры</translation>
+<translation id="7317831949569936035">Регистрация в учебном заведении</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Чтобы посмотреть результат в Google Поиске, нажмите "Поиск + Пробел".</translation>
 <translation id="7343649194310845056">Сетевые устройства</translation>
@@ -793,16 +816,17 @@
 <translation id="7397270852490618635">Выключить светлую тему</translation>
 <translation id="741244894080940828">перевести в другие ед. измерения</translation>
 <translation id="7415801143053185905">очень большое время ожидания HTTP</translation>
+<translation id="7425178841057519191">{NUM_ROOL_APPS,plural,offset:2 =1{Приложение "<ph name="APP_NAME_1" />" автоматически запускается каждый раз, когда вы входите в систему. Такие настройки установил администратор.}=2{Приложения "<ph name="APP_NAME_1" />" и "<ph name="APP_NAME_2" />" автоматически запускаются каждый раз, когда вы входите в систему. Такие настройки установил администратор.}=3{Приложения "<ph name="APP_NAME_1" />, "<ph name="APP_NAME_2" />" и "<ph name="APP_NAME_3" />" автоматически запускаются каждый раз, когда вы входите в систему. Такие настройки установил администратор.}one{"<ph name="APP_NAME_1" />", "<ph name="APP_NAME_2" />" и ещё # приложение автоматически запускаются каждый раз, когда вы входите в систему. Такие настройки установил администратор.}few{"<ph name="APP_NAME_1" />", "<ph name="APP_NAME_2" />" и ещё # приложения автоматически запускаются каждый раз, когда вы входите в систему. Такие настройки установил администратор.}many{"<ph name="APP_NAME_1" />", "<ph name="APP_NAME_2" />" и ещё # приложений автоматически запускаются каждый раз, когда вы входите в систему. Такие настройки установил администратор.}other{"<ph name="APP_NAME_1" />", "<ph name="APP_NAME_2" />" и ещё # приложения автоматически запускаются каждый раз, когда вы входите в систему. Такие настройки установил администратор.}}</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7458970041932198923">Чтобы просматривать и настраивать аватары, подключитесь к сети и обновите страницу.</translation>
 <translation id="7469648432129124067">Обнаружен сетевой портал.</translation>
 <translation id="7481312909269577407">Вперед</translation>
 <translation id="7487067081878637334">Технологии</translation>
 <translation id="7490813197707563893">MAC-адрес</translation>
-<translation id="7491478667760509108">Выйти из плавающего режима</translation>
 <translation id="7497215489070763236">Серверный сертификат ЦС</translation>
 <translation id="7501957181231305652">или</translation>
 <translation id="7502658306369382406">Адрес IPv6</translation>
+<translation id="7513770521371759388">снизу</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7528507600602050979">Справочный контент недоступен</translation>
 <translation id="7535791657097741517">Включить светлую тему</translation>
@@ -819,7 +843,6 @@
 <translation id="763165478673169849">Время последнего сброса</translation>
 <translation id="7633068090678117093">Фоновое изображение</translation>
 <translation id="7648838807254605802">большое время ожидания HTTPS</translation>
-<translation id="765159867434478292">Разделить</translation>
 <translation id="7656388927906093505">Это мышь.</translation>
 <translation id="7658239707568436148">Отмена</translation>
 <translation id="7665800271478495366">Изменить аватар</translation>
@@ -850,7 +873,6 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Тип провайдера</translation>
 <translation id="7882501334836096755">Открытый ключ</translation>
-<translation id="78957024357676568">влево</translation>
 <translation id="7915220255123750251">Управление настройками точки доступа. С помощью точек доступа устанавливается подключение между мобильной сетью и интернетом.</translation>
 <translation id="7936303884198020182">Не найдены серверы доменных имен.</translation>
 <translation id="7942349550061667556">Красный</translation>
@@ -859,6 +881,7 @@
 <translation id="7953669802889559161">Способы ввода</translation>
 <translation id="7955587717700691983">Клавиатура Bluetooth</translation>
 <translation id="7960831585769876809">Температура</translation>
+<translation id="7971535376154084247">Общие настройки</translation>
 <translation id="7977800524392185497">Чтобы подключиться к сети <ph name="NETWORK_NAME" />, перейдите в настройки.</translation>
 <translation id="7978412674231730200">Закрытый ключ</translation>
 <translation id="7994702968232966508">Метод EAP</translation>
@@ -868,7 +891,7 @@
 <translation id="80398733265834479">Включить автоматический цветовой режим</translation>
 <translation id="8041089156583427627">Отправить отзыв</translation>
 <translation id="8045012663542226664">Микрофон</translation>
-<translation id="8050091914317269817">При выборе этих обоев включается автоматическая тёмная тема и подбор цвета обоев.</translation>
+<translation id="8067126283828232460">Точка доступа подключена.</translation>
 <translation id="8075838845814659848">Уровень заряда</translation>
 <translation id="8076492880354921740">Вкладки</translation>
 <translation id="8082366717211101304">Не удается выполнить DNS-преобразование в приложениях для Android.</translation>
@@ -878,7 +901,6 @@
 <translation id="8104083085214006426">Вы используете открытую небезопасную сеть.</translation>
 <translation id="811820734797650957">Запрос ping к шлюзу (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
-<translation id="8131740175452115882">Подтвердить</translation>
 <translation id="8132480444149501833">Запросить счетчики трафика</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Выбрать вариант "<ph name="TOPIC_SOURCE" />" (<ph name="TOPIC_SOURCE_DESC" />)</translation>
@@ -887,7 +909,6 @@
 <translation id="8183974620058026102">Attach</translation>
 <translation id="8206859287963243715">Сотовый</translation>
 <translation id="8208861521865154048">Преимущества</translation>
-<translation id="8210733748736414123">снизу</translation>
 <translation id="8226628635270268143">Выберите любимые фото и альбомы</translation>
 <translation id="8227119283605456246">Прикрепить файл</translation>
 <translation id="8230672074305416752">Не удалось выполнить проверку ping сетевого шлюза, заданного по умолчанию.</translation>
@@ -901,7 +922,6 @@
 <translation id="8312330582793120272">воспроизвести медиаконтент</translation>
 <translation id="8318753676953949627">Нет изображений</translation>
 <translation id="8329018942023753850">приложение "Калькулятор"</translation>
-<translation id="8335869473001018124">открыть поиск</translation>
 <translation id="8336739000755212683">Изменить фото профиля на устройстве</translation>
 <translation id="8347227221149377169">Задания печати</translation>
 <translation id="8351855506390808906">Точка касания для привязки клавиш</translation>
@@ -922,6 +942,7 @@
 <translation id="8461329675984532579">Название провайдера</translation>
 <translation id="8475690821716466388">Безопасность сети Wi-Fi обеспечивается недостаточно надежным протоколом WEP PSK</translation>
 <translation id="8476242415522716722">подсветка клавиатуры</translation>
+<translation id="8476942730579767658">Окна и рабочие столы</translation>
 <translation id="8477551185774834963">Задержка на сервере доменных имен незначительно превышает допустимое значение.</translation>
 <translation id="8483248364096924578">IP-адрес</translation>
 <translation id="8491311378305535241">Не удается подключиться к HTTPS-сайтам из приложений для Android через брандмауэр.</translation>
@@ -942,6 +963,7 @@
 <translation id="8655295600908251630">Канал</translation>
 <translation id="8655828773034788261">URL с общим доступом:</translation>
 <translation id="8660881923941176839">фунта</translation>
+<translation id="8670574982334489519">справа</translation>
 <translation id="8675354002693747642">Общий ключ</translation>
 <translation id="8677859815076891398">Альбомов нет. Создайте альбом в <ph name="LINK_BEGIN" />Google Фото<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Этой функцией можно управлять нажатием стрелки влево или вправо.</translation>
@@ -964,6 +986,7 @@
 <translation id="8820817407110198400">Закладки</translation>
 <translation id="8834539327799336565">Текущие подключения</translation>
 <translation id="8845001906332463065">Справка</translation>
+<translation id="8851859208664803097">Печать прервана: принтер недоступен</translation>
 <translation id="8855781559874488009">Не удается подключиться к HTTP-сайтам через брандмауэр.</translation>
 <translation id="885701979325669005">Хранилище</translation>
 <translation id="885704831271383379">уменьшить яркость клавиатуры</translation>
@@ -986,12 +1009,13 @@
 <translation id="8936793075252196307">IP-адрес клиента</translation>
 <translation id="8944651180182756621">Цвет панели запуска</translation>
 <translation id="894617464444543719">Это телефон.</translation>
-<translation id="8957423540740801332">вправо</translation>
+<translation id="8950424402482976779">сверху</translation>
 <translation id="8968751544471797276">Скорость зарядки</translation>
 <translation id="8970109610781093811">Выполнить ещё раз</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Сканировать}=1{Сканировать {NUMBER_OF_PAGES} страницу}one{Сканировать {NUMBER_OF_PAGES} страницу}few{Сканировать {NUMBER_OF_PAGES} страницы}many{Сканировать {NUMBER_OF_PAGES} страниц}other{Сканировать {NUMBER_OF_PAGES} страницы}}</translation>
 <translation id="8997710128084572139">Устройство заряжено на <ph name="BATTERY_PERCENTAGE" /> %.</translation>
+<translation id="8998156756248178381">{NUM_ROOL_APPS,plural, =1{Приложение "<ph name="APP_NAME_1" />" открылось автоматически}one{# приложение открылось автоматически}few{# приложения открылись автоматически}many{# приложений открылись автоматически}other{# приложения открылись автоматически}}</translation>
 <translation id="8998289560386111590">Недоступно на вашем устройстве</translation>
 <translation id="9003704114456258138">Частота</translation>
 <translation id="9024331582947483881">полноэкранный режим</translation>
@@ -1001,6 +1025,7 @@
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">DNS-преобразование происходит с высокой задержкой.</translation>
+<translation id="9065203028668620118">Изменить</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Использовать это видео</translation>
@@ -1013,8 +1038,11 @@
 <translation id="9111102763498581341">Разблокировать</translation>
 <translation id="9122602430962285795">Чтобы снова подключиться к сети, перейдите в настройки.</translation>
 <translation id="9126720536733509015">Сохранить несколько страниц в один PDF-файл</translation>
+<translation id="9133104754938025929">Для экономии заряда батареи заставка работает только во время зарядки.</translation>
+<translation id="9133772297793293778">Нажмите модификаторы 1–4 и одну любую клавишу на клавиатуре. Чтобы выйти из режима редактирования, нажмите Alt + Esc.</translation>
 <translation id="9137526406337347448">Сервисы Google</translation>
 <translation id="9138630967333032450">Левая клавиша Shift</translation>
+<translation id="9143347780818904997">в течение <ph name="MINUTES" /> мин.</translation>
 <translation id="9149391708638971077">Запустить проверку памяти</translation>
 <translation id="9161276708550942948">пробел</translation>
 <translation id="9173638680043580060">Осталось меньше минуты…</translation>

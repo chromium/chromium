@@ -8,6 +8,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -66,8 +67,11 @@ import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -83,8 +87,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 // clang-format off
-@Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
-@Features.DisableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+@DisableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
 public class TabGridDialogMediatorUnitTest {
     // clang-format on
 
@@ -96,7 +99,6 @@ public class TabGridDialogMediatorUnitTest {
     private static final String TAB3_TITLE = "Tab3";
     private static final String DIALOG_TITLE1 = "1 tab";
     private static final String DIALOG_TITLE2 = "2 tabs";
-    private static final String REMOVE_BUTTON_STRING = "Remove";
     private static final String CUSTOMIZED_DIALOG_TITLE = "Cool Tabs";
     private static final int TAB1_ID = 456;
     private static final int TAB2_ID = 789;
@@ -209,7 +211,7 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void setupTabGroupsContinuation_flagEnabled() {
         assertThat(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                            ContextUtils.getApplicationContext()),
@@ -224,7 +226,7 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
-    public void setupTabSelectionEditorV2() {
+    public void setupTabSelectionEditor() {
         assertThat(mMediator.getKeyboardVisibilityListenerForTesting(), equalTo(null));
         assertThat(mModel.get(TabGridPanelProperties.TITLE_TEXT_WATCHER), equalTo(null));
         assertThat(mModel.get(TabGridPanelProperties.TITLE_TEXT_ON_FOCUS_LISTENER), equalTo(null));
@@ -269,9 +271,20 @@ public class TabGridDialogMediatorUnitTest {
 
         View.OnClickListener listener = mModel.get(TabGridPanelProperties.ADD_CLICK_LISTENER);
         listener.onClick(mView);
+        if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
+            verify(mDialogController).resetWithListOfTabs(null);
+        }
 
         assertThat(mModel.get(TabGridPanelProperties.ANIMATION_SOURCE_VIEW), equalTo(null));
-        verify(mDialogController).resetWithListOfTabs(null);
+        assertFalse(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE));
+
+        // Simulate the animation finishing.
+        mModel.get(TabGridPanelProperties.VISIBILITY_LISTENER).finishedHidingDialogView();
+        if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
+            verify(mDialogController, times(2)).resetWithListOfTabs(null);
+        } else {
+            verify(mDialogController).resetWithListOfTabs(null);
+        }
         verify(mTabCreator)
                 .createNewTab(
                         isA(LoadUrlParams.class), eq(TabLaunchType.FROM_TAB_GROUP_UI), eq(mTab1));
@@ -297,6 +310,10 @@ public class TabGridDialogMediatorUnitTest {
         View.OnClickListener listener = mModel.get(TabGridPanelProperties.COLLAPSE_CLICK_LISTENER);
         listener.onClick(mView);
 
+        assertFalse(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE));
+
+        // Simulate the animation finishing.
+        mModel.get(TabGridPanelProperties.VISIBILITY_LISTENER).finishedHidingDialogView();
         verify(mDialogController).resetWithListOfTabs(null);
     }
 
@@ -310,11 +327,15 @@ public class TabGridDialogMediatorUnitTest {
         Runnable scrimClickRunnable = mModel.get(TabGridPanelProperties.SCRIMVIEW_CLICK_RUNNABLE);
         scrimClickRunnable.run();
 
+        assertFalse(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE));
+
+        // Simulate the animation finishing.
+        mModel.get(TabGridPanelProperties.VISIBILITY_LISTENER).finishedHidingDialogView();
         verify(mDialogController).resetWithListOfTabs(null);
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void onTitleTextChange_WithoutFocus() {
         TextWatcher textWatcher = mModel.get(TabGridPanelProperties.TITLE_TEXT_WATCHER);
         // Mock tab1 is the current tab for the dialog.
@@ -332,7 +353,7 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void onTitleTextChange_WithFocus() {
         TextWatcher textWatcher = mModel.get(TabGridPanelProperties.TITLE_TEXT_WATCHER);
         // Mock tab1 is the current tab for the dialog.
@@ -352,7 +373,7 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void onTitleTextFocusChange() {
         View.OnFocusChangeListener listener =
                 mModel.get(TabGridPanelProperties.TITLE_TEXT_ON_FOCUS_LISTENER);
@@ -364,7 +385,7 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void onKeyBoardVisibilityChanged_updateTextAndKeyboard() {
         KeyboardVisibilityDelegate.KeyboardVisibilityListener listener =
                 mMediator.getKeyboardVisibilityListenerForTesting();
@@ -383,7 +404,7 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void onKeyBoardVisibilityChanged_StoreGroupTitle() {
         KeyboardVisibilityDelegate.KeyboardVisibilityListener keyboardVisibilityListener =
                 mMediator.getKeyboardVisibilityListenerForTesting();
@@ -412,7 +433,7 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void onKeyBoardVisibilityChanged_NoFocus_NotStoreGroupTitle() {
         KeyboardVisibilityDelegate.KeyboardVisibilityListener keyboardVisibilityListener =
                 mMediator.getKeyboardVisibilityListenerForTesting();
@@ -447,6 +468,11 @@ public class TabGridDialogMediatorUnitTest {
                 newTab, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND, false);
 
         assertThat(mModel.get(TabGridPanelProperties.ANIMATION_SOURCE_VIEW), equalTo(null));
+        assertFalse(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE));
+
+        // Simulate the animation finishing.
+        mModel.get(TabGridPanelProperties.VISIBILITY_LISTENER).finishedHidingDialogView();
+
         verify(mDialogController).resetWithListOfTabs(null);
     }
 
@@ -503,6 +529,10 @@ public class TabGridDialogMediatorUnitTest {
         mTabModelObserverCaptor.getValue().willCloseTab(mTab1, false, true);
 
         assertThat(mModel.get(TabGridPanelProperties.ANIMATION_SOURCE_VIEW), equalTo(null));
+        assertFalse(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE));
+
+        // Simulate the animation finishing.
+        mModel.get(TabGridPanelProperties.VISIBILITY_LISTENER).finishedHidingDialogView();
         verify(mDialogController).resetWithListOfTabs(null);
         verify(mTabSwitcherResetHandler, never())
                 .resetWithTabList(mTabGroupModelFilter, false, false);
@@ -751,6 +781,11 @@ public class TabGridDialogMediatorUnitTest {
                 mTab1, TabSelectionType.FROM_USER, Tab.INVALID_TAB_ID);
 
         assertThat(mModel.get(TabGridPanelProperties.ANIMATION_SOURCE_VIEW), equalTo(null));
+        assertFalse(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE));
+
+        // Simulate the animation finishing.
+        mModel.get(TabGridPanelProperties.VISIBILITY_LISTENER).finishedHidingDialogView();
+
         verify(mDialogController).resetWithListOfTabs(null);
     }
 
@@ -764,23 +799,12 @@ public class TabGridDialogMediatorUnitTest {
 
         // Animation source view should not be specified.
         assertThat(mModel.get(TabGridPanelProperties.ANIMATION_SOURCE_VIEW), equalTo(null));
+        assertFalse(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE));
+
+        // Simulate the animation finishing.
+        mModel.get(TabGridPanelProperties.VISIBILITY_LISTENER).finishedHidingDialogView();
+
         verify(mDialogController).resetWithListOfTabs(eq(null));
-    }
-
-    @Test
-    public void hideDialog_WithVisibilityListener_BasicAnimation() {
-        // Mock that the animation source view is null, and the dialog is showing.
-        mModel.set(TabGridPanelProperties.ANIMATION_SOURCE_VIEW, null);
-        mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, true);
-        // Set visibility listener.
-        mModel.set(TabGridPanelProperties.VISIBILITY_LISTENER, mMediator);
-
-        mMediator.hideDialog(false);
-
-        // Animation source view should not be specified.
-        assertThat(mModel.get(TabGridPanelProperties.ANIMATION_SOURCE_VIEW), equalTo(null));
-        assertThat(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE), equalTo(false));
-        verifyNoMoreInteractions(mDialogController);
     }
 
     @Test
@@ -793,23 +817,12 @@ public class TabGridDialogMediatorUnitTest {
 
         // Animation source view should not be specified.
         assertThat(mModel.get(TabGridPanelProperties.ANIMATION_SOURCE_VIEW), equalTo(null));
+        assertFalse(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE));
+
+        // Simulate the animation finishing.
+        mModel.get(TabGridPanelProperties.VISIBILITY_LISTENER).finishedHidingDialogView();
+
         verify(mDialogController).resetWithListOfTabs(eq(null));
-    }
-
-    @Test
-    public void hideDialog_WithVisibilityListener_ClearsViewAnimation() {
-        // Mock that the animation source view exists, and the dialog is showing.
-        mModel.set(TabGridPanelProperties.ANIMATION_SOURCE_VIEW, mView);
-        mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, true);
-        // Set visibility listener.
-        mModel.set(TabGridPanelProperties.VISIBILITY_LISTENER, mMediator);
-
-        mMediator.hideDialog(false);
-
-        // Animation source view should not be specified.
-        assertThat(mModel.get(TabGridPanelProperties.ANIMATION_SOURCE_VIEW), equalTo(null));
-        assertThat(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE), equalTo(false));
-        verifyNoMoreInteractions(mDialogController);
     }
 
     @Test
@@ -823,11 +836,15 @@ public class TabGridDialogMediatorUnitTest {
 
         // Animation source view should be specified.
         assertThat(mModel.get(TabGridPanelProperties.ANIMATION_SOURCE_VIEW), equalTo(mView));
+        assertFalse(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE));
+
+        // Simulate the animation finishing.
+        mModel.get(TabGridPanelProperties.VISIBILITY_LISTENER).finishedHidingDialogView();
         verify(mDialogController).resetWithListOfTabs(eq(null));
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void hideDialog_StoreModifiedGroupTitle() {
         mMediator.setCurrentTabIdForTesting(TAB1_ID);
         mModel.set(TabGridPanelProperties.HEADER_TITLE, TAB1_TITLE);
@@ -854,7 +871,7 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void hideDialog_ModifiedGroupTitleEmpty() {
         mMediator.setCurrentTabIdForTesting(TAB1_ID);
         mModel.set(TabGridPanelProperties.HEADER_TITLE, TAB1_TITLE);
@@ -882,7 +899,7 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void hideDialog_NoModifiedGroupTitle() {
         mMediator.setCurrentTabIdForTesting(TAB1_ID);
         mModel.set(TabGridPanelProperties.HEADER_TITLE, TAB1_TITLE);
@@ -899,7 +916,7 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void hideDialog_ClosingLastTab_SkipStoreGroupTitle() {
         mMediator.setCurrentTabIdForTesting(TAB1_ID);
         mModel.set(TabGridPanelProperties.HEADER_TITLE, TAB1_TITLE);
@@ -925,7 +942,7 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void hideDialog_SingleTab_SkipStoreGroupTitle() {
         mMediator.setCurrentTabIdForTesting(TAB1_ID);
         mModel.set(TabGridPanelProperties.HEADER_TITLE, TAB1_TITLE);
@@ -951,7 +968,7 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void hideDialog_withTabGroupContinuation() {
         mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, true);
 
@@ -966,7 +983,10 @@ public class TabGridDialogMediatorUnitTest {
 
         mMediator.onReset(null);
 
-        assertThat(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE), equalTo(false));
+        assertFalse(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE));
+
+        // Simulate the animation finishing.
+        mModel.get(TabGridPanelProperties.VISIBILITY_LISTENER).finishedHidingDialogView();
         verify(mDialogController).postHiding();
     }
 
@@ -1135,7 +1155,7 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
     public void testDialogToolbarMenu_SelectionModeV2() {
         Callback<Integer> callback = mMediator.getToolbarMenuCallbackForTesting();
         // Mock that currently the title text is focused and the keyboard is showing. The current

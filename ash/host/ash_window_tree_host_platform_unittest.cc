@@ -105,6 +105,9 @@ class TestInputController : public ui::InputController {
                         GetTouchEventLogReply reply) override {
     std::move(reply).Run(std::vector<base::FilePath>());
   }
+  void DescribeForLog(DescribeForLogReply reply) const override {
+    std::move(reply).Run(std::string());
+  }
   void PlayVibrationEffect(int id,
                            uint8_t amplitude,
                            uint16_t duration_millis) override {}

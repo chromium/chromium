@@ -267,13 +267,15 @@ class HistoryService : public KeyedService,
                                          const std::u16string& search_terms,
                                          VisitID visit_id);
 
-  // Updates the history database with additional page metadata.
-  void AddPageMetadataForVisit(const std::string& alternative_title,
-                               VisitID visit_id);
+  // Updates the history database with additional page metadata. Virtual for
+  // testing.
+  virtual void AddPageMetadataForVisit(const std::string& alternative_title,
+                                       VisitID visit_id);
 
   // Updates the history database by setting the `has_url_keyed_image` bit for
-  // the visit.
-  void SetHasUrlKeyedImageForVisit(bool has_url_keyed_image, VisitID visit_id);
+  // the visit. Virtual for testing.
+  virtual void SetHasUrlKeyedImageForVisit(bool has_url_keyed_image,
+                                           VisitID visit_id);
 
   // Querying ------------------------------------------------------------------
 
@@ -397,6 +399,17 @@ class HistoryService : public KeyedService,
                           DomainMetricBitmaskType metric_type_bitmask,
                           DomainDiversityCallback callback,
                           base::CancelableTaskTracker* tracker);
+
+  // Returns, via a callback, unique domains (eLTD+1) visited within the time
+  // range [`begin_time`, `end_time`) for local and synced visits sorted in
+  // reverse-chronological order.
+  using GetUniqueDomainsVisitedCallback =
+      base::OnceCallback<void(DomainsVisitedResult)>;
+
+  virtual void GetUniqueDomainsVisited(const base::Time begin_time,
+                                       const base::Time end_time,
+                                       GetUniqueDomainsVisitedCallback callback,
+                                       base::CancelableTaskTracker* tracker);
 
   using GetLastVisitCallback = base::OnceCallback<void(HistoryLastVisitResult)>;
 
@@ -581,12 +594,13 @@ class HistoryService : public KeyedService,
   // `options`. Uses the same de-duplication and visibility logic as
   // `HistoryService::QueryHistory()`.
   //
-  // If `limited_by_max_count` is non-nullptr, it will be set to true if the
-  // number of results was limited by `options.max_count`.
+  // If `compute_redirect_chain_start_properties` is true, the opener and
+  // referring visit IDs for the start of the redirect chain will be computed.
   using GetAnnotatedVisitsCallback =
       base::OnceCallback<void(std::vector<AnnotatedVisit>)>;
   base::CancelableTaskTracker::TaskId GetAnnotatedVisits(
       const QueryOptions& options,
+      bool compute_redirect_chain_start_properties,
       GetAnnotatedVisitsCallback callback,
       base::CancelableTaskTracker* tracker) const;
 
@@ -624,8 +638,9 @@ class HistoryService : public KeyedService,
       base::OnceClosure callback,
       base::CancelableTaskTracker* tracker);
 
-  // Sets scores of cluster visits to 0 to hide them from the webUI. Virtual for
-  // testing.
+  // Sets scores of cluster visits to 0 to hide them from the webUI. Use
+  // `UpdateVisitsInteractionState` instead to preserve the visits' scores.
+  //  Virtual for testing.
   virtual base::CancelableTaskTracker::TaskId HideVisits(
       const std::vector<VisitID>& visit_ids,
       base::OnceClosure callback,
@@ -635,6 +650,13 @@ class HistoryService : public KeyedService,
   // ID as `new_cluster_visit`.
   virtual base::CancelableTaskTracker::TaskId UpdateClusterVisit(
       const history::ClusterVisit& new_cluster_visit,
+      base::OnceClosure callback,
+      base::CancelableTaskTracker* tracker);
+
+  // Updates the interaction state of cluster visits.
+  virtual base::CancelableTaskTracker::TaskId UpdateVisitsInteractionState(
+      const std::vector<VisitID>& visit_ids,
+      const ClusterVisit::InteractionState interaction_state,
       base::OnceClosure callback,
       base::CancelableTaskTracker* tracker);
 
@@ -828,7 +850,11 @@ class HistoryService : public KeyedService,
   // Notify all HistoryServiceObservers registered that there's a `new_visit`
   // for `url_row`. This happens when the user visited the URL on this machine,
   // or if Sync has brought over a remote visit onto this device.
-  void NotifyURLVisited(const URLRow& url_row, const VisitRow& new_visit);
+  // The `local_navigation_id` will contain the unique navigation id from
+  // `content::NavigationHandle` and will be populated only during local visits.
+  void NotifyURLVisited(const URLRow& url_row,
+                        const VisitRow& new_visit,
+                        absl::optional<int64_t> local_navigation_id);
 
   // Notify all HistoryServiceObservers registered that URLs have been added or
   // modified. `changed_urls` contains the list of affects URLs.

@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
+#include "base/rust_buildflags.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "extensions/common/constants.h"
@@ -52,6 +53,75 @@ TEST(ExtensionL10nUtil, ValidateLocalesWithBadLocale) {
       testing::HasSubstr(base::UTF16ToUTF8(messages_file.LossyDisplayName())));
 }
 
+TEST(ExtensionL10nUtil, ValidateLocalesWithErroneousLocalizations) {
+  base::ScopedTempDir temp;
+  ASSERT_TRUE(temp.CreateUniqueTempDir());
+
+  base::FilePath src_path = temp.GetPath().Append(kLocaleFolder);
+  ASSERT_TRUE(base::CreateDirectory(src_path));
+
+  // Add valid default localization file.
+  base::FilePath en_locale = src_path.AppendASCII("en");
+  ASSERT_TRUE(base::CreateDirectory(en_locale));
+  base::FilePath en_messages_file = en_locale.Append(kMessagesFilename);
+  const std::string en_data = R"({ "name": { "message": "default" } })";
+  ASSERT_TRUE(base::WriteFile(en_messages_file, en_data));
+
+  // Add additional valid localization file.
+  base::FilePath sr_locale = src_path.AppendASCII("sr");
+  ASSERT_TRUE(base::CreateDirectory(sr_locale));
+  base::FilePath sr_messages_file = sr_locale.Append(kMessagesFilename);
+  const std::string sr_data = R"({ "name": { "message": "valid" } })";
+  ASSERT_TRUE(base::WriteFile(sr_messages_file, sr_data));
+
+  // Add additional localization file with undefined variable.
+  base::FilePath de_locale = src_path.AppendASCII("de");
+  ASSERT_TRUE(base::CreateDirectory(de_locale));
+  base::FilePath de_messages_file = de_locale.Append(kMessagesFilename);
+  const std::string de_data = R"({ "name": { "message": "with $VAR$" } })";
+  ASSERT_TRUE(base::WriteFile(de_messages_file, de_data));
+
+  // Add additional localization file with syntax error.
+  base::FilePath es_locale = src_path.AppendASCII("es");
+  ASSERT_TRUE(base::CreateDirectory(es_locale));
+  base::FilePath es_messages_file = es_locale.Append(kMessagesFilename);
+  const std::string es_data = R"({ "name": { "message": } })";
+  ASSERT_TRUE(base::WriteFile(es_messages_file, es_data));
+
+  // Add additional localization file with missing property.
+  base::FilePath fr_locale = src_path.AppendASCII("fr");
+  ASSERT_TRUE(base::CreateDirectory(fr_locale));
+  base::FilePath fr_messages_file = fr_locale.Append(kMessagesFilename);
+  const std::string fr_data = R"({ "name": { } })";
+  ASSERT_TRUE(base::WriteFile(fr_messages_file, fr_data));
+
+  const auto manifest = base::Value::Dict().Set(keys::kDefaultLocale, "en");
+  std::string error;
+  EXPECT_FALSE(extension_l10n_util::ValidateExtensionLocales(temp.GetPath(),
+                                                             manifest, &error));
+  EXPECT_EQ(std::string::npos,
+            error.find(base::UTF16ToUTF8(sr_messages_file.LossyDisplayName())));
+  EXPECT_THAT(error, testing::HasSubstr(ErrorUtils::FormatErrorMessage(
+                         errors::kLocalesInvalidLocale,
+                         base::UTF16ToUTF8(de_messages_file.LossyDisplayName()),
+                         "Variable $VAR$ used but not defined.")));
+#if BUILDFLAG(BUILD_RUST_JSON_READER)
+  EXPECT_THAT(error, testing::HasSubstr(ErrorUtils::FormatErrorMessage(
+                         errors::kLocalesInvalidLocale,
+                         base::UTF16ToUTF8(es_messages_file.LossyDisplayName()),
+                         "expected value at line 1 column 24")));
+#else   // BUILDFLAG(BUILD_RUST_JSON_READER)
+  EXPECT_THAT(error, testing::HasSubstr(ErrorUtils::FormatErrorMessage(
+                         errors::kLocalesInvalidLocale,
+                         base::UTF16ToUTF8(es_messages_file.LossyDisplayName()),
+                         "Line: 1, column: 24, Unexpected token.")));
+#endif  // BUILDFLAG(BUILD_RUST_JSON_READER)
+  EXPECT_THAT(error, testing::HasSubstr(ErrorUtils::FormatErrorMessage(
+                         errors::kLocalesInvalidLocale,
+                         base::UTF16ToUTF8(fr_messages_file.LossyDisplayName()),
+                         "There is no \"message\" element for key name.")));
+}
+
 TEST(ExtensionL10nUtil, GetValidLocalesEmptyLocaleFolder) {
   base::ScopedTempDir temp;
   ASSERT_TRUE(temp.CreateUniqueTempDir());
@@ -92,10 +162,11 @@ TEST(ExtensionL10nUtil, GetValidLocalesWithUnsupportedLocale) {
   // Supported locale.
   base::FilePath locale_1 = src_path.AppendASCII("sr");
   ASSERT_TRUE(base::CreateDirectory(locale_1));
-  std::string data("whatever");
-  ASSERT_TRUE(base::WriteFile(locale_1.Append(kMessagesFilename), data));
+  ASSERT_TRUE(base::WriteFile(locale_1.Append(kMessagesFilename), ""));
   // Unsupported locale.
-  ASSERT_TRUE(base::CreateDirectory(src_path.AppendASCII("xxx_yyy")));
+  base::FilePath locale_2 = src_path.AppendASCII("xxx_yyy");
+  ASSERT_TRUE(base::CreateDirectory(locale_2));
+  ASSERT_TRUE(base::WriteFile(locale_2.Append(kMessagesFilename), ""));
 
   std::string error;
   std::set<std::string> locales;
@@ -203,11 +274,19 @@ TEST(ExtensionL10nUtil, LoadMessageCatalogsBadJSONFormat) {
   std::string error;
   EXPECT_FALSE(extension_l10n_util::LoadMessageCatalogs(
       src_path, "en_US", GzippedMessagesPermission::kDisallow, &error));
+#if BUILDFLAG(BUILD_RUST_JSON_READER)
+  EXPECT_NE(std::string::npos,
+            error.find(ErrorUtils::FormatErrorMessage(
+                errors::kLocalesInvalidLocale,
+                base::UTF16ToUTF8(messages_file.LossyDisplayName()),
+                "EOF while parsing a value at line 1 column 9")));
+#else   // BUILDFLAG(BUILD_RUST_JSON_READER)
   EXPECT_NE(std::string::npos,
             error.find(ErrorUtils::FormatErrorMessage(
                 errors::kLocalesInvalidLocale,
                 base::UTF16ToUTF8(messages_file.LossyDisplayName()),
                 "Line: 1, column: 10,")));
+#endif  // BUILDFLAG(BUILD_RUST_JSON_READER)
 }
 
 TEST(ExtensionL10nUtil, LoadMessageCatalogsDuplicateKeys) {
@@ -218,18 +297,13 @@ TEST(ExtensionL10nUtil, LoadMessageCatalogsDuplicateKeys) {
   base::FilePath src_path = temp.GetPath().Append(kLocaleFolder);
   ASSERT_TRUE(base::CreateDirectory(src_path));
 
-  base::FilePath locale_1 = src_path.AppendASCII("en");
-  ASSERT_TRUE(base::CreateDirectory(locale_1));
+  base::FilePath locale = src_path.AppendASCII("en");
+  ASSERT_TRUE(base::CreateDirectory(locale));
 
   std::string data =
       "{ \"name\": { \"message\": \"something\" }, "
       "\"name\": { \"message\": \"something else\" } }";
-  ASSERT_TRUE(base::WriteFile(locale_1.Append(kMessagesFilename), data));
-
-  base::FilePath locale_2 = src_path.AppendASCII("sr");
-  ASSERT_TRUE(base::CreateDirectory(locale_2));
-
-  ASSERT_TRUE(base::WriteFile(locale_2.Append(kMessagesFilename), data));
+  ASSERT_TRUE(base::WriteFile(locale.Append(kMessagesFilename), data));
 
   std::string error;
   // JSON parser hides duplicates. We are going to get only one key/value
@@ -239,6 +313,28 @@ TEST(ExtensionL10nUtil, LoadMessageCatalogsDuplicateKeys) {
           src_path, "en", GzippedMessagesPermission::kDisallow, &error));
   EXPECT_TRUE(message_bundle.get());
   EXPECT_TRUE(error.empty());
+}
+
+TEST(ExtensionL10nUtil, LoadMessageCatalogsWithUndefinedVariable) {
+  extension_l10n_util::ScopedLocaleForTest scoped_locale("sr");
+  base::ScopedTempDir temp;
+  ASSERT_TRUE(temp.CreateUniqueTempDir());
+
+  base::FilePath src_path = temp.GetPath().Append(kLocaleFolder);
+  ASSERT_TRUE(base::CreateDirectory(src_path));
+
+  base::FilePath locale = src_path.AppendASCII("sr");
+  ASSERT_TRUE(base::CreateDirectory(locale));
+
+  std::string data = R"({ "name": { "message": "with $VAR$" } })";
+  base::FilePath messages_file = locale.Append(kMessagesFilename);
+  ASSERT_TRUE(base::WriteFile(messages_file, data));
+
+  std::string error;
+  EXPECT_FALSE(extension_l10n_util::LoadMessageCatalogs(
+      src_path, "sr", GzippedMessagesPermission::kDisallow, &error));
+  EXPECT_THAT(error,
+              testing::HasSubstr("Variable $VAR$ used but not defined."));
 }
 
 TEST(ExtensionL10nUtil, LoadMessageCatalogsCompressed) {

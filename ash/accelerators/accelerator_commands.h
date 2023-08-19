@@ -75,8 +75,6 @@ ASH_EXPORT void GroupOrUngroupWindowsInSnapGroup();
 
 ASH_EXPORT bool CanMinimizeSnapGroupWindows();
 
-ASH_EXPORT void MinimizeWindowsInSnapGroup();
-
 ASH_EXPORT bool CanMinimizeTopWindowOnBack();
 
 ASH_EXPORT bool CanPerformMagnifierZoom();
@@ -91,7 +89,7 @@ ASH_EXPORT bool CanSwapPrimaryDisplay();
 
 ASH_EXPORT bool CanToggleCalendar();
 
-ASH_EXPORT bool CanToggleDictation();
+ASH_EXPORT bool CanEnableOrToggleDictation();
 
 ASH_EXPORT bool CanToggleFloatingWindow();
 
@@ -317,8 +315,9 @@ ASH_EXPORT void ToggleCapsLock();
 // Toggles the clipboard history.
 ASH_EXPORT void ToggleClipboardHistory(bool is_plain_text_paste);
 
-// Turns the dictation on or off.
-ASH_EXPORT void ToggleDictation();
+// Enables Dictation if the feature is currently disabled. Toggles (either
+// starts or stops) Dictation if the feature is currently enabled.
+ASH_EXPORT void EnableOrToggleDictation();
 
 // Turns the docked magnifier on or off.
 ASH_EXPORT void ToggleDockedMagnifier();
@@ -356,6 +355,10 @@ ASH_EXPORT void ToggleMessageCenterBubble();
 // the first unminimized window. Returns true if a window was minimized or
 // restored.
 ASH_EXPORT bool ToggleMinimized();
+
+// Minimizes the topmost unminimized snap groups. If there is no such snap
+// group, restores the most recently used minimized snap group.
+ASH_EXPORT void ToggleSnapGroupsMinimize();
 
 // Turns the mirror mode on or off.
 ASH_EXPORT void ToggleMirrorMode();

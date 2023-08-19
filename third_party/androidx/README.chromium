@@ -4,8 +4,8 @@ URL: https://androidx.dev
 Version: 1
 License: Refer to additional_readme_paths.json
 License Android Compatible: yes
-License File: NOT_SHIPPED
 Security Critical: yes
+Shipped: no
 
 Description:
 A gradle-specified repository for Androidx dependencies.

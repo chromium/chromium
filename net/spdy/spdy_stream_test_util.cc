@@ -26,8 +26,7 @@ void ClosingDelegate::OnEarlyHintsReceived(
     const spdy::Http2HeaderBlock& headers) {}
 
 void ClosingDelegate::OnHeadersReceived(
-    const spdy::Http2HeaderBlock& response_headers,
-    const spdy::Http2HeaderBlock* pushed_request_headers) {}
+    const spdy::Http2HeaderBlock& response_headers) {}
 
 void ClosingDelegate::OnDataReceived(std::unique_ptr<SpdyBuffer> buffer) {}
 
@@ -62,14 +61,13 @@ void StreamDelegateBase::OnHeadersSent() {
 
 void StreamDelegateBase::OnEarlyHintsReceived(
     const spdy::Http2HeaderBlock& headers) {
-  EXPECT_EQ(stream_->type() != SPDY_PUSH_STREAM, send_headers_completed_);
+  EXPECT_TRUE(send_headers_completed_);
   early_hints_.push_back(headers.Clone());
 }
 
 void StreamDelegateBase::OnHeadersReceived(
-    const spdy::Http2HeaderBlock& response_headers,
-    const spdy::Http2HeaderBlock* pushed_request_headers) {
-  EXPECT_EQ(stream_->type() != SPDY_PUSH_STREAM, send_headers_completed_);
+    const spdy::Http2HeaderBlock& response_headers) {
+  EXPECT_TRUE(send_headers_completed_);
   response_headers_ = response_headers.Clone();
 }
 
@@ -151,10 +149,8 @@ StreamDelegateSendImmediate::StreamDelegateSendImmediate(
 StreamDelegateSendImmediate::~StreamDelegateSendImmediate() = default;
 
 void StreamDelegateSendImmediate::OnHeadersReceived(
-    const spdy::Http2HeaderBlock& response_headers,
-    const spdy::Http2HeaderBlock* pushed_request_headers) {
-  StreamDelegateBase::OnHeadersReceived(response_headers,
-                                        pushed_request_headers);
+    const spdy::Http2HeaderBlock& response_headers) {
+  StreamDelegateBase::OnHeadersReceived(response_headers);
   if (data_.data()) {
     scoped_refptr<StringIOBuffer> buf =
         base::MakeRefCounted<StringIOBuffer>(std::string(data_));
@@ -183,8 +179,7 @@ StreamDelegateCloseOnHeaders::StreamDelegateCloseOnHeaders(
 StreamDelegateCloseOnHeaders::~StreamDelegateCloseOnHeaders() = default;
 
 void StreamDelegateCloseOnHeaders::OnHeadersReceived(
-    const spdy::Http2HeaderBlock& response_headers,
-    const spdy::Http2HeaderBlock* pushed_request_headers) {
+    const spdy::Http2HeaderBlock& response_headers) {
   stream()->Cancel(ERR_ABORTED);
 }
 

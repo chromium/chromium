@@ -52,11 +52,12 @@ EditingViewPortElement::CustomStyleForLayoutObject(const StyleRecalcContext&) {
   // FXIME: Move these styles to html.css.
 
   ComputedStyleBuilder style_builder =
-      GetDocument().GetStyleResolver().CreateComputedStyleBuilder();
-  style_builder.InheritFrom(OwnerShadowHost()->ComputedStyleRef());
+      GetDocument().GetStyleResolver().CreateComputedStyleBuilderInheritingFrom(
+          OwnerShadowHost()->ComputedStyleRef());
 
   style_builder.SetFlexGrow(1);
   style_builder.SetMinWidth(Length::Fixed(0));
+  style_builder.SetMinHeight(Length::Fixed(0));
   style_builder.SetDisplay(EDisplay::kBlock);
   style_builder.SetDirection(TextDirection::kLtr);
 
@@ -133,8 +134,8 @@ TextControlInnerEditorElement::CustomStyleForLayoutObject(
   DCHECK(host);
   const ComputedStyle& start_style = host->ComputedStyleRef();
   ComputedStyleBuilder style_builder =
-      GetDocument().GetStyleResolver().CreateComputedStyleBuilder();
-  style_builder.InheritFrom(start_style);
+      GetDocument().GetStyleResolver().CreateComputedStyleBuilderInheritingFrom(
+          start_style);
   // The inner block, if present, always has its direction set to LTR,
   // so we need to inherit the direction and unicode-bidi style from the
   // element.
@@ -194,7 +195,7 @@ TextControlInnerEditorElement::CustomStyleForLayoutObject(
 
   // Using StyleAdjuster::adjustComputedStyle updates unwanted style. We'd like
   // to apply only editing-related and alignment-related.
-  StyleAdjuster::AdjustStyleForEditing(style_builder);
+  StyleAdjuster::AdjustStyleForEditing(style_builder, this);
   if (!is_visible_)
     style_builder.SetOpacity(0);
 

@@ -31,6 +31,7 @@
 #include "content/public/browser/scoped_authenticator_environment_for_testing.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/web_contents_user_data.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -583,6 +584,8 @@ class WebAuthLocalClientBrowserTest : public WebAuthBrowserTestBase {
 
     std::vector<uint8_t> kTestChallenge{0, 0, 0};
     auto mojo_options = blink::mojom::PublicKeyCredentialRequestOptions::New();
+    mojo_options->extensions =
+        blink::mojom::AuthenticationExtensionsClientInputs::New();
     mojo_options->challenge = kTestChallenge;
     mojo_options->timeout = base::Seconds(30);
     mojo_options->relying_party_id = "acme.com";
@@ -1587,8 +1590,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest, WinMakeCredential) {
 
   device::FakeWinWebAuthnApi fake_api;
   fake_api.set_is_uvpaa(true);
-  auto* virtual_device_factory = InjectVirtualFidoDeviceFactory();
-  virtual_device_factory->set_win_webauthn_api(&fake_api);
+  device::WinWebAuthnApi::ScopedOverride win_webauthn_api_override(&fake_api);
 
   ASSERT_EQ(kOkMessage,
             EvalJs(shell()->web_contents(),
@@ -1600,8 +1602,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
   EXPECT_TRUE(
       NavigateToURL(shell(), GetHttpsURL("www.acme.com", "/title1.html")));
   device::FakeWinWebAuthnApi fake_api;
-  auto* virtual_device_factory = InjectVirtualFidoDeviceFactory();
-  virtual_device_factory->set_win_webauthn_api(&fake_api);
+  device::WinWebAuthnApi::ScopedOverride win_webauthn_api_override(&fake_api);
 
   // Errors documented for WebAuthNGetErrorName() in <webauthn.h>.
   const std::map<HRESULT, std::string> errors{
@@ -1639,8 +1640,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest, WinGetAssertion) {
 
   device::FakeWinWebAuthnApi fake_api;
   fake_api.InjectNonDiscoverableCredential(credential_id, "www.acme.com");
-  auto* virtual_device_factory = InjectVirtualFidoDeviceFactory();
-  virtual_device_factory->set_win_webauthn_api(&fake_api);
+  device::WinWebAuthnApi::ScopedOverride win_webauthn_api_override(&fake_api);
 
   GetParameters get_parameters;
   get_parameters.allow_credentials =
@@ -1655,8 +1655,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
   EXPECT_TRUE(
       NavigateToURL(shell(), GetHttpsURL("www.acme.com", "/title1.html")));
   device::FakeWinWebAuthnApi fake_api;
-  auto* virtual_device_factory = InjectVirtualFidoDeviceFactory();
-  virtual_device_factory->set_win_webauthn_api(&fake_api);
+  device::WinWebAuthnApi::ScopedOverride win_webauthn_api_override(&fake_api);
 
   // Errors documented for WebAuthNGetErrorName() in <webauthn.h>.
   const std::set<HRESULT> errors{
@@ -1845,6 +1844,83 @@ IN_PROC_BROWSER_TEST_F(WebAuthBrowserCtapTest,
     EXPECT_EQ(AuthenticatorStatus::NOT_ALLOWED_ERROR,
               get_callback_receiver.status());
   }
+}
+
+// Helper test class to track expected invocations of
+// `WebContentsObserver::WebAuthnAssertionRequestSucceeded()` via `std::string`
+// logs.
+class WCOCallbackLogger : public WebContentsObserver,
+                          public WebContentsUserData<WCOCallbackLogger> {
+ public:
+  WCOCallbackLogger(const WCOCallbackLogger&) = delete;
+  WCOCallbackLogger& operator=(const WCOCallbackLogger&) = delete;
+
+  const std::vector<std::string>& log() const { return log_; }
+
+  // Start WebContentsObserver overrides:
+  void WebAuthnAssertionRequestSucceeded(
+      content::RenderFrameHost* render_frame_host) override {
+    log_.push_back(render_frame_host->GetLastCommittedURL().host());
+  }
+  // End WebContentsObserver overrides.
+
+ private:
+  explicit WCOCallbackLogger(content::WebContents* web_contents)
+      : WebContentsObserver(web_contents),
+        content::WebContentsUserData<WCOCallbackLogger>(*web_contents) {}
+  // So WebContentsUserData::CreateForWebContents() can call the constructor.
+  friend class content::WebContentsUserData<WCOCallbackLogger>;
+
+  std::vector<std::string> log_;
+
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
+};
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(WCOCallbackLogger);
+
+IN_PROC_BROWSER_TEST_F(WebAuthBrowserCtapTest,
+                       SuccessfulAssertion_ConfirmWCOCallback) {
+  WCOCallbackLogger::CreateForWebContents(shell()->web_contents());
+  auto* logger = WCOCallbackLogger::FromWebContents(shell()->web_contents());
+
+  device::test::VirtualFidoDeviceFactory* virtual_device_factory =
+      InjectVirtualFidoDeviceFactory();
+  virtual_device_factory->SetSupportedProtocol(device::ProtocolVersion::kCtap2);
+  blink::mojom::PublicKeyCredentialRequestOptionsPtr
+      get_assertion_request_params = BuildBasicGetOptions();
+  ASSERT_TRUE(virtual_device_factory->mutable_state()->InjectRegistration(
+      device::fido_parsing_utils::Materialize(
+          device::test_data::kTestGetAssertionCredentialId),
+      get_assertion_request_params->relying_party_id));
+
+  TestGetCallbackReceiver get_callback_receiver;
+  authenticator()->GetAssertion(std::move(get_assertion_request_params),
+                                get_callback_receiver.callback());
+  get_callback_receiver.WaitForCallback();
+  EXPECT_EQ(AuthenticatorStatus::SUCCESS, get_callback_receiver.status());
+
+  EXPECT_THAT(logger->log(), testing::ElementsAre("www.acme.com"));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthBrowserCtapTest,
+                       UnsuccessfulAssertion_ConfirmNoWCOCallback) {
+  WCOCallbackLogger::CreateForWebContents(shell()->web_contents());
+  auto* logger = WCOCallbackLogger::FromWebContents(shell()->web_contents());
+
+  device::test::VirtualFidoDeviceFactory* virtual_device_factory =
+      InjectVirtualFidoDeviceFactory();
+  virtual_device_factory->SetSupportedProtocol(device::ProtocolVersion::kCtap2);
+  blink::mojom::PublicKeyCredentialRequestOptionsPtr
+      get_assertion_request_params = BuildBasicGetOptions();
+
+  TestGetCallbackReceiver get_callback_receiver;
+  authenticator()->GetAssertion(std::move(get_assertion_request_params),
+                                get_callback_receiver.callback());
+  get_callback_receiver.WaitForCallback();
+  EXPECT_EQ(AuthenticatorStatus::NOT_ALLOWED_ERROR,
+            get_callback_receiver.status());
+
+  EXPECT_TRUE(logger->log().empty());
 }
 
 }  // namespace

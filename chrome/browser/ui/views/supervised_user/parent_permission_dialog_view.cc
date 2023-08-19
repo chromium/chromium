@@ -252,13 +252,14 @@ struct ParentPermissionDialogView::Params {
   std::u16string message;
 
   // An optional extension whose permissions should be displayed
-  raw_ptr<const extensions::Extension, DanglingUntriaged> extension = nullptr;
+  raw_ptr<const extensions::Extension, AcrossTasksDanglingUntriaged> extension =
+      nullptr;
 
   // The user's profile
   raw_ptr<Profile> profile = nullptr;
 
   // The parent window to this window. This member may be nullptr.
-  gfx::NativeWindow window = nullptr;
+  gfx::NativeWindow window = gfx::NativeWindow();
 
   // The callback to call on completion.
   ParentPermissionDialog::DoneCallback done_callback;
@@ -281,9 +282,7 @@ ParentPermissionDialogView::ParentPermissionDialogView(
       l10n_util::GetStringUTF16(IDS_PARENT_PERMISSION_PROMPT_CANCEL_BUTTON));
 
   SetModalType(ui::MODAL_TYPE_WINDOW);
-  SetShowCloseButton(true);
-  SetCloseCallback(base::BindOnce(&ParentPermissionDialogView::OnDialogClose,
-                                  base::Unretained(this)));
+  SetShowCloseButton(false);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
@@ -373,24 +372,12 @@ void ParentPermissionDialogView::OnThemeChanged() {
       GetColorProvider()->GetColor(ui::kColorAlertHighSeverity));
 }
 
-void ParentPermissionDialogView::OnDialogClose() {
-  // If the dialog is closed without the user clicking "approve" consider this
-  // as ParentPermissionCanceled to avoid showing an error message. If the
-  // user clicked "accept", then that async process will send the result, or if
-  // that doesn't complete, eventually the destructor will send a failure
-  // result.
-  if (!is_approve_clicked_) {
-    SendResultOnce(ParentPermissionDialog::Result::kParentPermissionCanceled);
-  }
-}
-
 bool ParentPermissionDialogView::Cancel() {
   SendResultOnce(ParentPermissionDialog::Result::kParentPermissionCanceled);
   return true;
 }
 
 bool ParentPermissionDialogView::Accept() {
-  is_approve_clicked_ = true;
   // Disable the dialog temporarily while we validate the parent's credentials,
   // which can take some time because it involves a series of async network
   // requests.

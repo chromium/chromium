@@ -6,16 +6,12 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/follow/followed_web_site_state.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/ui/follow/followed_web_channel.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 @implementation FollowedWebChannelItem
 
@@ -61,7 +57,7 @@
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:tableCell withStyler:styler];
   FollowedWebChannelCell* cell =
-      base::mac::ObjCCastStrict<FollowedWebChannelCell>(tableCell);
+      base::apple::ObjCCastStrict<FollowedWebChannelCell>(tableCell);
   cell.followedWebChannel = self.followedWebChannel;
 }
 

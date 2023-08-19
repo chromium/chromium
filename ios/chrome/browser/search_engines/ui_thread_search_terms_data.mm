@@ -12,9 +12,9 @@
 #import "components/google/core/common/google_util.h"
 #import "components/omnibox/browser/omnibox_field_trial.h"
 #import "components/version_info/version_info.h"
-#import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/google/google_brand.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
 #import "ios/web/public/thread/web_thread.h"
@@ -23,10 +23,6 @@
 
 #if BUILDFLAG(ENABLE_RLZ)
 #import "components/rlz/rlz_tracker.h"  // nogncheck
-#endif
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
 #endif
 
 namespace ios {

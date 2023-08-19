@@ -1,4 +1,5 @@
 include_rules = [
+  '+components/plus_addresses',
   '+components/webauthn',
   '+third_party/libaddressinput/chromium/addressinput_util.h',
   '+third_party/libaddressinput/chromium/chrome_address_validator.h',

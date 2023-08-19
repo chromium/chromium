@@ -14,7 +14,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
+#include "content/browser/media/media_devices_util.h"
 #include "content/browser/renderer_host/media/fake_video_capture_provider.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/media/media_stream_ui_proxy.h"
@@ -49,17 +51,16 @@ namespace content {
 
 namespace {
 
-void VideoInputDevicesEnumerated(base::OnceClosure quit_closure,
-                                 const std::string& salt,
-                                 const url::Origin& security_origin,
-                                 blink::WebMediaDeviceInfoArray* out,
-                                 const MediaDeviceEnumeration& enumeration) {
+void VideoInputDevicesEnumerated(
+    base::OnceClosure quit_closure,
+    const MediaDeviceSaltAndOrigin& salt_and_origin,
+    blink::WebMediaDeviceInfoArray* out,
+    const MediaDeviceEnumeration& enumeration) {
   for (const auto& info : enumeration[static_cast<size_t>(
            blink::mojom::MediaDeviceType::MEDIA_VIDEO_INPUT)]) {
-    std::string device_id = MediaStreamManager::GetHMACForMediaDeviceID(
-        salt, security_origin, info.device_id);
-    out->push_back(
-        blink::WebMediaDeviceInfo(device_id, info.label, std::string()));
+    std::string device_id =
+        GetHMACForRawMediaDeviceID(salt_and_origin, info.device_id);
+    out->emplace_back(device_id, info.label, std::string());
   }
   std::move(quit_closure).Run();
 }
@@ -147,25 +148,32 @@ class VideoCaptureTest : public testing::Test,
       MediaDevicesManager::BoolDeviceTypes devices_to_enumerate;
       devices_to_enumerate[static_cast<size_t>(
           blink::mojom::MediaDeviceType::MEDIA_VIDEO_INPUT)] = true;
-      MediaDeviceSaltAndOrigin salt_and_origin =
-          GetMediaDeviceSaltAndOrigin(render_process_id, render_frame_id);
+      base::test::TestFuture<const MediaDeviceSaltAndOrigin&> future;
+      GetMediaDeviceSaltAndOrigin(
+          GlobalRenderFrameHostId(render_process_id, render_frame_id),
+          future.GetCallback());
+      MediaDeviceSaltAndOrigin salt_and_origin = future.Get();
       media_stream_manager_->media_devices_manager()->EnumerateDevices(
           devices_to_enumerate,
           base::BindOnce(&VideoInputDevicesEnumerated, run_loop.QuitClosure(),
-                         salt_and_origin.device_id_salt, salt_and_origin.origin,
-                         &video_devices));
+                         std::move(salt_and_origin), &video_devices));
       run_loop.Run();
     }
     ASSERT_FALSE(video_devices.empty());
 
     // Open the first device.
     {
+      base::test::TestFuture<const MediaDeviceSaltAndOrigin&> future;
+      GetMediaDeviceSaltAndOrigin(
+          GlobalRenderFrameHostId(render_process_id, render_frame_id),
+          future.GetCallback());
+      MediaDeviceSaltAndOrigin salt_and_origin = future.Get();
+
       base::RunLoop run_loop;
       media_stream_manager_->OpenDevice(
           render_process_id, render_frame_id, requester_id, page_request_id,
           video_devices[0].device_id,
-          blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
-          GetMediaDeviceSaltAndOrigin(render_process_id, render_frame_id),
+          blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, salt_and_origin,
           base::BindOnce(&VideoCaptureTest::OnDeviceOpened,
                          base::Unretained(this), run_loop.QuitClosure()),
           MediaStreamManager::DeviceStoppedCallback());

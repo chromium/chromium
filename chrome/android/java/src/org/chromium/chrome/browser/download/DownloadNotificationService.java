@@ -24,6 +24,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StrictModeContext;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
@@ -91,7 +92,7 @@ public class DownloadNotificationService {
 
     private static final int MAX_RESUMPTION_ATTEMPT_LEFT = 5;
 
-    private static DownloadNotificationService sInstanceForTests;
+    private static DownloadNotificationService sInstanceForTesting;
 
     @VisibleForTesting
     final List<ContentId> mDownloadsInProgress = new ArrayList<ContentId>();
@@ -110,12 +111,12 @@ public class DownloadNotificationService {
      * Creates DownloadNotificationService.
      */
     public static DownloadNotificationService getInstance() {
-        return sInstanceForTests == null ? LazyHolder.INSTANCE : sInstanceForTests;
+        return sInstanceForTesting == null ? LazyHolder.INSTANCE : sInstanceForTesting;
     }
 
-    @VisibleForTesting
     static void setInstanceForTests(DownloadNotificationService service) {
-        sInstanceForTests = service;
+        sInstanceForTesting = service;
+        ResettersForTesting.register(() -> sInstanceForTesting = null);
     }
 
     @VisibleForTesting

@@ -13,10 +13,6 @@
 #import "third_party/libaddressinput/src/cpp/include/libaddressinput/source.h"
 #import "third_party/libaddressinput/src/cpp/include/libaddressinput/storage.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace autofill {
 namespace {
 

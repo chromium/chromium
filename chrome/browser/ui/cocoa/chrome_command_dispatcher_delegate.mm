@@ -10,7 +10,7 @@
 #include "chrome/browser/global_keyboard_shortcuts_mac.h"
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #include "components/remote_cocoa/common/native_widget_ns_window_host.mojom.h"
-#include "content/public/browser/native_web_keyboard_event.h"
+#include "content/public/common/input/native_web_keyboard_event.h"
 #include "ui/base/accelerators/accelerator_manager.h"
 #import "ui/base/cocoa/nsmenu_additions.h"
 #include "ui/content_accelerators/accelerator_util.h"
@@ -166,7 +166,7 @@
       bool was_executed = false;
       bridge->host()->ExecuteCommand(
           result.chrome_command, WindowOpenDisposition::CURRENT_TAB,
-          false /* is_before_first_responder */, &was_executed);
+          /*is_before_first_responder=*/false, &was_executed);
       DCHECK(was_executed);
       return ui::PerformKeyEquivalentResult::kHandled;
     }

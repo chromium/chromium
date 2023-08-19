@@ -50,6 +50,7 @@ Revision: unknown
 License: Apache 2.0
 License File: https://gitlab.freedesktop.org/monado/utilities/android-jni-wrappers/-/blob/a3ca2c505a338cdffcca2bf91021ee72b010122f/LICENSES/Apache-2.0.txt
 Security Critical: yes
+Shipped: yes
 
 Description:
 Python tool to generate C++ wrappers for (mostly Android-related) JNI/Java

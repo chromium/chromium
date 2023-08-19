@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_state_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_element.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_event_target.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_html_link_element.h"
@@ -630,15 +631,21 @@ String ReplaceUnmatchedSurrogates(String string) {
   return String::Adopt(result);
 }
 
-DOMWindow* ToDOMWindow(v8::Isolate* isolate, v8::Local<v8::Value> value) {
-  return V8Window::ToWrappable(isolate, value);
+LocalDOMWindow* ToLocalDOMWindow(const ScriptState* script_state) {
+  return DynamicTo<LocalDOMWindow>(ToExecutionContext(script_state));
+}
+
+ExecutionContext* ToExecutionContext(const ScriptState* script_state) {
+  RUNTIME_CALL_TIMER_SCOPE(script_state->GetIsolate(),
+                           RuntimeCallStats::CounterId::kToExecutionContext);
+  return static_cast<const ScriptStateImpl*>(script_state)
+      ->GetExecutionContext();
 }
 
 LocalDOMWindow* ToLocalDOMWindow(v8::Local<v8::Context> context) {
   if (context.IsEmpty())
     return nullptr;
-  return To<LocalDOMWindow>(
-      ToDOMWindow(context->GetIsolate(), context->Global()));
+  return DynamicTo<LocalDOMWindow>(ToExecutionContext(context));
 }
 
 LocalDOMWindow* EnteredDOMWindow(v8::Isolate* isolate) {
@@ -659,39 +666,9 @@ LocalDOMWindow* CurrentDOMWindow(v8::Isolate* isolate) {
 }
 
 ExecutionContext* ToExecutionContext(v8::Local<v8::Context> context) {
-  // TODO(jgruber,crbug.com/v8/10460): Change this back to a DCHECK once the
-  // crash has been flushed out.
-  CHECK(!context.IsEmpty());
-
-  RUNTIME_CALL_TIMER_SCOPE(context->GetIsolate(),
-                           RuntimeCallStats::CounterId::kToExecutionContext);
-
-  v8::Local<v8::Object> global_proxy = context->Global();
-
-  // TODO(jgruber,crbug.com/v8/10460): Change these back to a DCHECK once the
-  // crash has been flushed out.
-  CHECK(!global_proxy.IsEmpty());
-  CHECK(global_proxy->IsObject());
-
-  // There are several contexts other than Window, WorkerGlobalScope or
-  // WorkletGlobalScope but entering into ToExecutionContext, namely GC context,
-  // DevTools' context (debug context), and maybe more.  They all don't have
-  // any internal field.
-  if (global_proxy->InternalFieldCount() == 0)
-    return nullptr;
-
-  ScriptWrappable::TypeDispatcher dispatcher(ToScriptWrappable(global_proxy));
-  if (auto* x = dispatcher.ToMostDerived<DOMWindow>())
-    return x->GetExecutionContext();
-  if (auto* x = dispatcher.DowncastTo<WorkerGlobalScope>())
-    return x->GetExecutionContext();
-  if (auto* x = dispatcher.DowncastTo<WorkletGlobalScope>())
-    return x->GetExecutionContext();
-  if (auto* x = dispatcher.ToMostDerived<ShadowRealmGlobalScope>())
-    return x->GetExecutionContext();
-
-  NOTREACHED();
-  return nullptr;
+  DCHECK(!context.IsEmpty());
+  ScriptState* script_state = ScriptState::MaybeFrom(context);
+  return script_state ? ToExecutionContext(script_state) : nullptr;
 }
 
 ExecutionContext* CurrentExecutionContext(v8::Isolate* isolate) {

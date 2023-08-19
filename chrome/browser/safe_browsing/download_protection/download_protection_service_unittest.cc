@@ -41,8 +41,6 @@
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
-#include "chrome/browser/enterprise/connectors/connectors_service.h"
-#include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -53,7 +51,6 @@
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service_factory.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/test_binary_upload_service.h"
 #include "chrome/browser/safe_browsing/download_protection/check_file_system_access_write_request.h"
 #include "chrome/browser/safe_browsing/download_protection/download_feedback_service.h"
@@ -80,6 +77,7 @@
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -121,6 +119,16 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/zlib/google/zip.h"
 #include "url/gurl.h"
+
+// TODO(b/283093731): Replace the platforms below with a condition for cloud
+// content scanning.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
+#include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 using base::RunLoop;
 using content::BrowserThread;
@@ -394,9 +402,15 @@ class DownloadProtectionServiceTestBase
             profile(),
             base::BindRepeating(&BuildSafeBrowsingPrivateEventRouter));
 
+// TODO(b/283093731): Replace the platforms below with a condition for cloud
+// content scanning.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
     enterprise_connectors::RealtimeReportingClientFactory::GetInstance()
         ->SetTestingFactory(profile(),
                             base::BindRepeating(&BuildRealtimeReportingClient));
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
     client_ = std::make_unique<policy::MockCloudPolicyClient>();
 
     SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
@@ -2626,6 +2640,7 @@ TEST_F(DownloadProtectionServiceTest, ShowDetailsForDownloadHasContext) {
 TEST_F(DownloadProtectionServiceTest, GetAndSetDownloadProtectionData) {
   NiceMockDownloadItem item;
   EXPECT_TRUE(DownloadProtectionService::GetDownloadPingToken(&item).empty());
+  EXPECT_FALSE(DownloadProtectionService::HasDownloadProtectionVerdict(&item));
   std::string token = "download_ping_token";
   ClientDownloadResponse::Verdict verdict = ClientDownloadResponse::DANGEROUS;
   ClientDownloadResponse::TailoredVerdict tailored_verdict;
@@ -2634,6 +2649,7 @@ TEST_F(DownloadProtectionServiceTest, GetAndSetDownloadProtectionData) {
   DownloadProtectionService::SetDownloadProtectionData(&item, token, verdict,
                                                        tailored_verdict);
   EXPECT_EQ(token, DownloadProtectionService::GetDownloadPingToken(&item));
+  EXPECT_TRUE(DownloadProtectionService::HasDownloadProtectionVerdict(&item));
   EXPECT_EQ(verdict,
             DownloadProtectionService::GetDownloadProtectionVerdict(&item));
   EXPECT_EQ(
@@ -2645,6 +2661,7 @@ TEST_F(DownloadProtectionServiceTest, GetAndSetDownloadProtectionData) {
       &item, std::string(), ClientDownloadResponse::SAFE,
       ClientDownloadResponse::TailoredVerdict());
   EXPECT_TRUE(DownloadProtectionService::GetDownloadPingToken(&item).empty());
+  EXPECT_TRUE(DownloadProtectionService::HasDownloadProtectionVerdict(&item));
   EXPECT_EQ(ClientDownloadResponse::SAFE,
             DownloadProtectionService::GetDownloadProtectionVerdict(&item));
   EXPECT_EQ(
@@ -2807,6 +2824,9 @@ TEST_F(DownloadProtectionServiceTest, PPAPIDownloadRequest_Timeout) {
           });
   PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_OK, net::OK);
   download_service_->download_request_timeout_ms_ = 0;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kStrictDownloadTimeout, {{kStrictDownloadTimeoutMilliseconds.name, "0"}});
   RunLoop run_loop;
   download_service_->CheckPPAPIDownloadRequest(
       GURL("http://example.com/foo"), /*initiating_frame*/ nullptr,
@@ -2944,13 +2964,18 @@ TEST_F(DownloadProtectionServiceTest,
   validate_report_contents(/* show_download_in_folder */ true);
 }
 
+// TODO(b/283093731): Replace the platforms below with a condition for cloud
+// content scanning.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
 TEST_F(DownloadProtectionServiceTest,
        VerifyBypassReportSentImmediatelyIfVerdictDangerous) {
   enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
       profile())
       ->SetBrowserCloudPolicyClientForTesting(client_.get());
 
-  safe_browsing::SetOnSecurityEventReporting(profile()->GetPrefs(), true);
+  enterprise_connectors::test::SetOnSecurityEventReporting(
+      profile()->GetPrefs(), true);
 
   NiceMockDownloadItem item;
   PrepareBasicDownloadItem(&item,
@@ -2962,7 +2987,7 @@ TEST_F(DownloadProtectionServiceTest,
   // This test sets the mimetype to the empty string, so pass a valid set
   // pointer, but only put the empty string in it.
   std::set<std::string> expected_mimetypes{""};
-  EventReportValidator validator(client_.get());
+  enterprise_connectors::test::EventReportValidator validator(client_.get());
   validator.ExpectDangerousDownloadEvent(
       "",                     // URL, not set in this test
       "a.exe",                // Simple filename without the directory
@@ -2997,7 +3022,8 @@ TEST_F(DownloadProtectionServiceTest,
       profile())
       ->SetBrowserCloudPolicyClientForTesting(client_.get());
 
-  safe_browsing::SetOnSecurityEventReporting(profile()->GetPrefs(), true);
+  enterprise_connectors::test::SetOnSecurityEventReporting(
+      profile()->GetPrefs(), true);
 
   NiceMockDownloadItem item;
   PrepareBasicDownloadItem(&item,
@@ -3029,7 +3055,7 @@ TEST_F(DownloadProtectionServiceTest,
           Return(download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING));
 
   std::set<std::string> expected_mimetypes{"fake/mimetype"};
-  EventReportValidator validator(client_.get());
+  enterprise_connectors::test::EventReportValidator validator(client_.get());
   validator.ExpectSensitiveDataEvent(
       "",          // URL, not set in this test
       "",          // source, not used for file downloads.
@@ -3056,7 +3082,8 @@ TEST_F(DownloadProtectionServiceTest,
       profile())
       ->SetBrowserCloudPolicyClientForTesting(client_.get());
 
-  safe_browsing::SetOnSecurityEventReporting(profile()->GetPrefs(), true);
+  enterprise_connectors::test::SetOnSecurityEventReporting(
+      profile()->GetPrefs(), true);
 
   NiceMockDownloadItem item;
   PrepareBasicDownloadItem(&item,
@@ -3082,7 +3109,7 @@ TEST_F(DownloadProtectionServiceTest,
   // This test sets the mimetype to the empty string, so pass a valid set
   // pointer, but only put the empty string in it.
   std::set<std::string> expected_mimetypes{""};
-  EventReportValidator validator(client_.get());
+  enterprise_connectors::test::EventReportValidator validator(client_.get());
   validator.ExpectDangerousDownloadEvent(
       "",                     // URL, not set in this test
       "a.exe",                // Simple filename without the directory
@@ -3108,7 +3135,8 @@ TEST_F(DownloadProtectionServiceTest,
       profile())
       ->SetBrowserCloudPolicyClientForTesting(client_.get());
 
-  safe_browsing::SetOnSecurityEventReporting(profile()->GetPrefs(), true);
+  enterprise_connectors::test::SetOnSecurityEventReporting(
+      profile()->GetPrefs(), true);
 
   NiceMockDownloadItem item;
   PrepareBasicDownloadItem(&item,
@@ -3143,7 +3171,7 @@ TEST_F(DownloadProtectionServiceTest,
           Return(download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING));
 
   std::set<std::string> expected_mimetypes{"fake/mimetype"};
-  EventReportValidator validator(client_.get());
+  enterprise_connectors::test::EventReportValidator validator(client_.get());
   validator.ExpectSensitiveDataEvent(
       "",          // URL, not set in this test
       "",          // source, not used for file downloads.
@@ -3170,7 +3198,8 @@ TEST_F(DownloadProtectionServiceTest,
       profile())
       ->SetBrowserCloudPolicyClientForTesting(client_.get());
 
-  safe_browsing::SetOnSecurityEventReporting(profile()->GetPrefs(), true);
+  enterprise_connectors::test::SetOnSecurityEventReporting(
+      profile()->GetPrefs(), true);
 
   NiceMockDownloadItem item;
   PrepareBasicDownloadItem(&item,
@@ -3205,7 +3234,7 @@ TEST_F(DownloadProtectionServiceTest,
           Return(download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK));
 
   std::set<std::string> expected_mimetypes{"fake/mimetype"};
-  EventReportValidator validator(client_.get());
+  enterprise_connectors::test::EventReportValidator validator(client_.get());
   validator.ExpectSensitiveDataEvent(
       "",          // URL, not set in this test
       "",          // source, not used for file downloads.
@@ -3225,6 +3254,9 @@ TEST_F(DownloadProtectionServiceTest,
   download_service_->ReportDelayedBypassEvent(
       &item, download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK);
 }
+
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(DownloadProtectionServiceTest, VerifyDangerousDownloadOpenedAPICall) {
   NiceMockDownloadItem item;
@@ -3494,6 +3526,10 @@ TEST_F(DownloadProtectionServiceTest, DoesNotSendPingForCancelledDownloads) {
   EXPECT_FALSE(HasClientDownloadRequest());
 }
 
+// TODO(b/283093731): Replace the platforms below with a condition for cloud
+// content scanning.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
 TEST_F(DeepScanningDownloadTest, PasswordProtectedArchivesBlockedByPreference) {
   base::FilePath test_zip;
   EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_zip));
@@ -3518,8 +3554,8 @@ TEST_F(DeepScanningDownloadTest, PasswordProtectedArchivesBlockedByPreference) {
       enterprise_connectors::ContentAnalysisResponse());
 
   {
-    SetAnalysisConnector(profile()->GetPrefs(),
-                         enterprise_connectors::FILE_DOWNLOADED, R"(
+    enterprise_connectors::test::SetAnalysisConnector(
+        profile()->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED, R"(
                          {
                            "service_provider": "google",
                            "enable": [
@@ -3548,8 +3584,8 @@ TEST_F(DeepScanningDownloadTest, PasswordProtectedArchivesBlockedByPreference) {
   }
 
   {
-    SetAnalysisConnector(profile()->GetPrefs(),
-                         enterprise_connectors::FILE_DOWNLOADED, R"(
+    enterprise_connectors::test::SetAnalysisConnector(
+        profile()->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED, R"(
                          {
                            "service_provider": "google",
                            "enable": [
@@ -3605,8 +3641,8 @@ TEST_F(DeepScanningDownloadTest, LargeFileBlockedByPreference) {
       enterprise_connectors::ContentAnalysisResponse());
 
   {
-    SetAnalysisConnector(profile()->GetPrefs(),
-                         enterprise_connectors::FILE_DOWNLOADED, R"(
+    enterprise_connectors::test::SetAnalysisConnector(
+        profile()->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED, R"(
                          {
                            "service_provider": "google",
                            "enable": [
@@ -3628,8 +3664,8 @@ TEST_F(DeepScanningDownloadTest, LargeFileBlockedByPreference) {
   }
 
   {
-    SetAnalysisConnector(profile()->GetPrefs(),
-                         enterprise_connectors::FILE_DOWNLOADED, R"(
+    enterprise_connectors::test::SetAnalysisConnector(
+        profile()->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED, R"(
                          {
                            "service_provider": "google",
                            "enable": [
@@ -3689,8 +3725,8 @@ TEST_F(DeepScanningDownloadTest, UnsupportedFiletypeBlockedByPreference) {
       .Times(2);
 
   {
-    SetAnalysisConnector(profile()->GetPrefs(),
-                         enterprise_connectors::FILE_DOWNLOADED, R"(
+    enterprise_connectors::test::SetAnalysisConnector(
+        profile()->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED, R"(
                          {
                            "service_provider": "google",
                            "enable": [
@@ -3712,8 +3748,8 @@ TEST_F(DeepScanningDownloadTest, UnsupportedFiletypeBlockedByPreference) {
   }
 
   {
-    SetAnalysisConnector(profile()->GetPrefs(),
-                         enterprise_connectors::FILE_DOWNLOADED, R"(
+    enterprise_connectors::test::SetAnalysisConnector(
+        profile()->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED, R"(
                          {
                            "service_provider": "google",
                            "enable": [
@@ -3735,6 +3771,8 @@ TEST_F(DeepScanningDownloadTest, UnsupportedFiletypeBlockedByPreference) {
     ClearClientDownloadRequest();
   }
 }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(DownloadProtectionServiceTest, FileSystemAccessWriteRequest_NotABinary) {
   auto item = PrepareBasicFileSystemAccessWriteItem(
@@ -4528,6 +4566,10 @@ TEST_F(DownloadProtectionServiceTest,
   testing_profile_manager_.DeleteTestingProfile("profile 2");
 }
 
+// TODO(b/283093731): Replace the platforms below with a condition for cloud
+// content scanning.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
 TEST_F(DeepScanningDownloadTest, PolicyEnabled) {
   NiceMockDownloadItem item;
   PrepareBasicDownloadItem(&item, {"http://www.evil.com/a.exe"},  // url_chain
@@ -4546,9 +4588,9 @@ TEST_F(DeepScanningDownloadTest, PolicyEnabled) {
               ExtractImageFeatures(
                   tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _));
 
-  SetAnalysisConnector(profile()->GetPrefs(),
-                       enterprise_connectors::FILE_DOWNLOADED,
-                       R"({
+  enterprise_connectors::test::SetAnalysisConnector(
+      profile()->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED,
+      R"({
                             "service_provider": "google",
                             "enable": [
                               {
@@ -4600,8 +4642,8 @@ TEST_F(DeepScanningDownloadTest, PolicyDisabled) {
               ExtractImageFeatures(
                   tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _));
 
-  ClearAnalysisConnector(profile()->GetPrefs(),
-                         enterprise_connectors::FILE_DOWNLOADED);
+  enterprise_connectors::test::ClearAnalysisConnector(
+      profile()->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED);
 
   TestBinaryUploadService* test_upload_service =
       static_cast<TestBinaryUploadService*>(
@@ -4653,8 +4695,8 @@ TEST_F(DeepScanningDownloadTest, SafeVerdictPrecedence) {
                 ExtractImageFeatures(
                     tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _));
 
-    SetAnalysisConnector(profile()->GetPrefs(),
-                         enterprise_connectors::FILE_DOWNLOADED, R"(
+    enterprise_connectors::test::SetAnalysisConnector(
+        profile()->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED, R"(
                          {
                            "service_provider": "google",
                            "enable": [
@@ -4692,6 +4734,8 @@ TEST_F(DeepScanningDownloadTest, SafeVerdictPrecedence) {
     test_upload_service->ClearWasCalled();
   }
 }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(DownloadProtectionServiceTest, AdvancedProtectionRequestScan) {
   PrepareResponse(ClientDownloadResponse::UNCOMMON, net::HTTP_OK, net::OK,
@@ -4875,6 +4919,10 @@ class EnterpriseCsdDownloadTest : public DownloadProtectionServiceTestBase {
   EnterpriseCsdDownloadTest() = default;
 };
 
+// TODO(b/283093731): Replace the platforms below with a condition for cloud
+// content scanning.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
 TEST_F(EnterpriseCsdDownloadTest, SkipsConsumerCsdWhenEnabled) {
   NiceMockDownloadItem item;
   PrepareBasicDownloadItem(&item, {"http://www.evil.com/a.exe"},  // url_chain
@@ -4883,8 +4931,8 @@ TEST_F(EnterpriseCsdDownloadTest, SkipsConsumerCsdWhenEnabled) {
                            FILE_PATH_LITERAL("a.exe"));           // final_path
   content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
 
-  SetAnalysisConnector(profile()->GetPrefs(),
-                       enterprise_connectors::FILE_DOWNLOADED, R"(
+  enterprise_connectors::test::SetAnalysisConnector(
+      profile()->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED, R"(
                          {
                            "service_provider": "google",
                            "enable": [
@@ -4921,9 +4969,9 @@ TEST_F(EnterpriseCsdDownloadTest, PopulatesCsdFieldWhenEnabled) {
                            FILE_PATH_LITERAL("a.exe"));           // final_path
   content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
 
-  SetAnalysisConnector(profile()->GetPrefs(),
-                       enterprise_connectors::FILE_DOWNLOADED,
-                       R"({
+  enterprise_connectors::test::SetAnalysisConnector(
+      profile()->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED,
+      R"({
                            "service_provider": "google",
                            "enable": [
                              {"url_list": ["*"], "tags": ["malware"]}
@@ -4969,9 +5017,9 @@ TEST_F(EnterpriseCsdDownloadTest, StillDoesMetadataCheckForLargeFile) {
               ExtractImageFeatures(
                   tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _));
 
-  SetAnalysisConnector(profile()->GetPrefs(),
-                       enterprise_connectors::FILE_DOWNLOADED,
-                       R"({
+  enterprise_connectors::test::SetAnalysisConnector(
+      profile()->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED,
+      R"({
                            "service_provider": "google",
                            "enable": [
                              {"url_list": ["*"], "tags": ["malware"]}
@@ -4998,5 +5046,7 @@ TEST_F(EnterpriseCsdDownloadTest, StillDoesMetadataCheckForLargeFile) {
   EXPECT_TRUE(test_upload_service->was_called());
   EXPECT_TRUE(IsResult(DownloadCheckResult::SAFE));
 }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace safe_browsing

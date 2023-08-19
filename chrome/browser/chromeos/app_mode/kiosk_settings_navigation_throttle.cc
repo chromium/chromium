@@ -23,7 +23,7 @@ KioskSettingsNavigationThrottle::SettingsPage kSettingsPages[] = {
     {"chrome-extension://gjjabgpgjpampikjhjpfhneeoapjbjaf/", true},
     {"chrome-extension://dakbfdmgjiabojdgbiljlhgjbokobjpg/", true}};
 
-// This list is used in tests to replace default |kSettingsPages| items.
+// This list is used in tests to replace default `kSettingsPages` items.
 std::vector<KioskSettingsNavigationThrottle::SettingsPage>*
     g_test_settings_pages = nullptr;
 

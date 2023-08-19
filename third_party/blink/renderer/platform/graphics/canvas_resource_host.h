@@ -36,16 +36,10 @@ class PLATFORM_EXPORT CanvasResourceHost {
   cc::PaintFlags::FilterQuality FilterQuality() const {
     return filter_quality_;
   }
-  void SetHDRConfiguration(
-      gfx::HDRMode hdr_mode,
-      const absl::optional<gfx::HDRMetadata>& hdr_metadata) {
-    hdr_mode_ = hdr_mode;
+  void SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata) {
     hdr_metadata_ = hdr_metadata;
   }
-  gfx::HDRMode GetHDRMode() const { return hdr_mode_; }
-  const absl::optional<gfx::HDRMetadata>& GetHDRMetadata() const {
-    return hdr_metadata_;
-  }
+  const gfx::HDRMetadata& GetHDRMetadata() const { return hdr_metadata_; }
 
   virtual bool LowLatencyEnabled() const { return false; }
 
@@ -65,8 +59,7 @@ class PLATFORM_EXPORT CanvasResourceHost {
   std::unique_ptr<CanvasResourceProvider> resource_provider_;
   cc::PaintFlags::FilterQuality filter_quality_ =
       cc::PaintFlags::FilterQuality::kLow;
-  gfx::HDRMode hdr_mode_ = gfx::HDRMode::kDefault;
-  absl::optional<gfx::HDRMetadata> hdr_metadata_;
+  gfx::HDRMetadata hdr_metadata_;
 };
 
 }  // namespace blink

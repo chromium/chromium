@@ -247,8 +247,8 @@ class DelegatedInkPointRendererGpu<InkTrailDevice,
     TRACE_EVENT_WITH_FLOW1(
         "delegated_ink_trails",
         "DelegatedInkPointRendererGpu::SetDelegatedInkTrailStartPoint",
-        TRACE_ID_GLOBAL(metadata_->trace_id()), TRACE_EVENT_FLAG_FLOW_IN,
-        "metadata", metadata_->ToString());
+        TRACE_ID_GLOBAL(metadata->trace_id()), TRACE_EVENT_FLAG_FLOW_IN,
+        "metadata", metadata->ToString());
 
     DCHECK(ink_visual_);
     DCHECK(delegated_ink_trail_);

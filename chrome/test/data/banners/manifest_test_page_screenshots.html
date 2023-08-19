@@ -1,0 +1,16 @@
+<html>
+  <head>
+    <title>Web app banner test page</title>
+    <script src="main.js"></script>
+    <script>
+      // If a "manifest=/path/to/manifest.json" query argument is provided to
+      // the URL accessing this page, that path is injected as the manifest tag.
+      // Otherwise, "manifest.json" is used as the manifest tag.
+      addManifestLinkTag('/banners/manifest_with_screenshots.json');
+    </script>
+  </head>
+  <body onload="initializeWithWorker('service_worker.js')">
+    Service worker returns a response object if it's offline, so the page
+    supports the offline environment.
+  </body>
+</html>

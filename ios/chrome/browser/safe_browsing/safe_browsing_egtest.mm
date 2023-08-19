@@ -7,6 +7,7 @@
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "components/bookmarks/common/storage_type.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/strings/grit/components_strings.h"
@@ -25,10 +26,6 @@
 #import "net/test/embedded_test_server/http_request.h"
 #import "net/test/embedded_test_server/http_response.h"
 #import "ui/base/l10n/l10n_util.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using chrome_test_util::BackButton;
 using chrome_test_util::ForwardButton;
@@ -847,9 +844,10 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 // loaded using a bookmark, a warning is shown.
 - (void)testRealTimeWarningForBookmark {
   NSString* phishingTitle = @"Real-time phishing";
-  [BookmarkEarlGrey addBookmarkWithTitle:phishingTitle
-                                     URL:base::SysUTF8ToNSString(
-                                             _realTimePhishingURL.spec())];
+  [BookmarkEarlGrey
+      addBookmarkWithTitle:phishingTitle
+                       URL:base::SysUTF8ToNSString(_realTimePhishingURL.spec())
+                 inStorage:bookmarks::StorageType::kLocalOrSyncable];
   // Opt-in to real-time checks.
   [ChromeEarlGrey setURLKeyedAnonymizedDataCollectionEnabled:YES];
 

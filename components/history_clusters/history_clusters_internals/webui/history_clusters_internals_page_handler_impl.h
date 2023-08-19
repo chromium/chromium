@@ -35,23 +35,8 @@ class HistoryClustersInternalsPageHandlerImpl
 
  private:
   // history_clusters::mojom::PageHandler:
-  void GetVisitsJson(GetVisitsJsonCallback callback) override;
   void GetContextClustersJson(GetContextClustersJsonCallback callback) override;
   void PrintKeywordBagStateToLogMessages() override;
-
-  // Gets annotated visits from HistoryService.
-  void GetAnnotatedVisits(
-      history_clusters::QueryClustersContinuationParams continuation_params,
-      std::vector<history::AnnotatedVisit> previously_retrieved_visits,
-      GetVisitsJsonCallback callback);
-
-  // Callback invoked when HistoryService returns annotated visits.
-  void OnGotAnnotatedVisits(
-      std::vector<history::AnnotatedVisit> previously_retrieved_visits,
-      GetVisitsJsonCallback callback,
-      std::vector<int64_t> old_clusters,
-      std::vector<history::AnnotatedVisit> annotated_visits,
-      history_clusters::QueryClustersContinuationParams continuation_params);
 
   // Gets most recent context clusters from HistoryService.
   void GetContextClusters(

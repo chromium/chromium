@@ -195,7 +195,7 @@ class AppInfoDialogViewsTest : public BrowserWithTestWindowTest,
   }
 
   raw_ptr<views::Widget> widget_ = nullptr;
-  raw_ptr<AppInfoDialog, DanglingUntriaged> dialog_ =
+  raw_ptr<AppInfoDialog, AcrossTasksDanglingUntriaged> dialog_ =
       nullptr;  // Owned by |widget_|'s views hierarchy.
   scoped_refptr<const extensions::Extension> extension_;
   scoped_refptr<const extensions::Extension> chrome_app_;

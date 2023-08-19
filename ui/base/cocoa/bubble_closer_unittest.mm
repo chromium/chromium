@@ -23,12 +23,12 @@ class BubbleCloserTest : public CocoaTest {
 
   void SetUp() override {
     CocoaTest::SetUp();
-    bubble_window_.reset([[NSWindow alloc]
-        initWithContentRect:NSMakeRect(100, 100, 320, 200)
-                  styleMask:NSWindowStyleMaskBorderless
-                    backing:NSBackingStoreBuffered
-                      defer:NO]);
-    [bubble_window_ setReleasedWhenClosed:NO];  // Owned by scoped_nsobject.
+    bubble_window_ =
+        [[NSWindow alloc] initWithContentRect:NSMakeRect(100, 100, 320, 200)
+                                    styleMask:NSWindowStyleMaskBorderless
+                                      backing:NSBackingStoreBuffered
+                                        defer:NO];
+    bubble_window_.releasedWhenClosed = NO;
     [bubble_window_ makeKeyAndOrderFront:nil];
     bubble_closer_ = std::make_unique<BubbleCloser>(
         bubble_window_,
@@ -38,7 +38,7 @@ class BubbleCloserTest : public CocoaTest {
   void TearDown() override {
     [bubble_window_ close];
     bubble_closer_ = nullptr;
-    bubble_window_.reset();
+    bubble_window_ = nil;
     CocoaTest::TearDown();
   }
 
@@ -61,7 +61,7 @@ class BubbleCloserTest : public CocoaTest {
   bool IsCloserReset() const { return !bubble_closer_; }
 
  private:
-  base::scoped_nsobject<NSWindow> bubble_window_;
+  NSWindow* __strong bubble_window_;
   std::unique_ptr<BubbleCloser> bubble_closer_;
   int click_outside_count_ = 0;
 };
@@ -94,26 +94,25 @@ TEST_F(BubbleCloserTest, ClickInsideAndOut) {
 
 // Test that right-clicking the window to display a context menu works.
 TEST_F(BubbleCloserTest, RightClickOutsideClosesWithContextMenu) {
-  base::scoped_nsobject<NSMenu> context_menu(
-      [[NSMenu alloc] initWithTitle:@""]);
+  NSMenu* context_menu = [[NSMenu alloc] initWithTitle:@""];
   [context_menu addItemWithTitle:@"ContextMenuTest"
                           action:nil
                    keyEquivalent:@""];
 
   // Set the menu as the contextual menu of contentView of test_window().
-  [[test_window() contentView] setMenu:context_menu];
+  [test_window().contentView setMenu:context_menu];
 
-  base::scoped_nsobject<MenuTestObserver> menu_observer(
-      [[MenuTestObserver alloc] initWithMenu:context_menu]);
-  [menu_observer setCloseAfterOpening:YES];
-  [menu_observer setOpenCallback:^(MenuTestObserver* observer) {
+  MenuTestObserver* menu_observer =
+      [[MenuTestObserver alloc] initWithMenu:context_menu];
+  menu_observer.closeAfterOpening = YES;
+  menu_observer.openCallback = ^(MenuTestObserver* observer) {
     // Verify click is seen when contextual menu is open.
-    EXPECT_TRUE([observer isOpen]);
+    EXPECT_TRUE(observer.isOpen);
     EXPECT_EQ(1, click_outside_count());
-  }];
+  };
 
-  EXPECT_FALSE([menu_observer isOpen]);
-  EXPECT_FALSE([menu_observer didOpen]);
+  EXPECT_FALSE(menu_observer.isOpen);
+  EXPECT_FALSE(menu_observer.didOpen);
 
   EXPECT_EQ(0, click_outside_count());
 
@@ -124,8 +123,8 @@ TEST_F(BubbleCloserTest, RightClickOutsideClosesWithContextMenu) {
   // When we got here, menu has already run its RunLoop.
   EXPECT_EQ(1, click_outside_count());
 
-  EXPECT_FALSE([menu_observer isOpen]);
-  EXPECT_TRUE([menu_observer didOpen]);
+  EXPECT_FALSE(menu_observer.isOpen);
+  EXPECT_TRUE(menu_observer.didOpen);
 }
 
 }  // namespace ui

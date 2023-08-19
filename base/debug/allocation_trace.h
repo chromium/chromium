@@ -152,6 +152,23 @@ ALWAYS_INLINE void OperationRecord::StoreStackTrace() {
 #endif
 }
 
+struct BASE_EXPORT AllocationTraceRecorderStatistics {
+#if BUILDFLAG(ENABLE_ALLOCATION_TRACE_RECORDER_FULL_REPORTING)
+  AllocationTraceRecorderStatistics(size_t total_number_of_allocations,
+                                    size_t total_number_of_collisions);
+#else
+  AllocationTraceRecorderStatistics(size_t total_number_of_allocations);
+#endif
+
+  // The total number of allocations that have been recorded.
+  size_t total_number_of_allocations;
+#if BUILDFLAG(ENABLE_ALLOCATION_TRACE_RECORDER_FULL_REPORTING)
+  // The total number of collisions that have been encountered. A collision
+  // happens when two threads concurrently try to record using the same slot.
+  size_t total_number_of_collisions;
+#endif
+};
+
 // The recorder which holds entries for past memory operations.
 //
 // The memory image of the recorder will be copied into the crash-handler.
@@ -217,6 +234,8 @@ struct BASE_EXPORT AllocationTraceRecorder {
     return kMaximumNumberOfMemoryOperationTraces;
   }
 
+  AllocationTraceRecorderStatistics GetRecorderStatistics() const;
+
  private:
   ALWAYS_INLINE size_t GetNextIndex();
 
@@ -229,6 +248,9 @@ struct BASE_EXPORT AllocationTraceRecorder {
   // might be greater than |kMaximumNumberOfMemoryOperationTraces| since we
   // overwrite oldest items.
   std::atomic<size_t> total_number_of_records_ = 0;
+#if BUILDFLAG(ENABLE_ALLOCATION_TRACE_RECORDER_FULL_REPORTING)
+  std::atomic<size_t> total_number_of_collisions_ = 0;
+#endif
 };
 
 ALWAYS_INLINE constexpr size_t AllocationTraceRecorder::WrapIdxIfNeeded(

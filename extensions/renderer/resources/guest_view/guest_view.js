@@ -5,7 +5,9 @@
 // This module implements a wrapper for a guestview that manages its
 // creation, attaching, and destruction.
 
+var $Document = require('safeMethods').SafeMethods.$Document;
 var $HTMLIFrameElement = require('safeMethods').SafeMethods.$HTMLIFrameElement;
+var $Node = require('safeMethods').SafeMethods.$Node;
 var CreateEvent = require('guestViewEvents').CreateEvent;
 var GuestViewInternal = getInternalApi('guestViewInternal');
 var GuestViewInternalNatives = requireNative('guest_view_internal');
@@ -32,6 +34,21 @@ var getIframeContentWindow = function(viewInstanceId) {
     return $HTMLIFrameElement.contentWindow.get(internalIframeElement);
 
   return null;
+};
+
+// Returns the window object associated with the given view's element.
+var getOwnerWindow = function(viewInstanceId) {
+  var view = GuestViewInternalNatives.GetViewFromID(viewInstanceId);
+  if (!view) {
+    return null;
+  }
+
+  var ownerDocument = $Node.ownerDocument.get(view.element);
+  if (!ownerDocument) {
+    return null;
+  }
+
+  return $Document.defaultView.get(ownerDocument);
 };
 
 // Contains and hides the internal implementation details of |GuestView|,
@@ -228,7 +245,8 @@ GuestViewImpl.prototype.attachImpl = function(
 };
 
 // Internal implementation of create().
-GuestViewImpl.prototype.createImpl = function(createParams, callback) {
+GuestViewImpl.prototype.createImpl = function(
+    viewInstanceId, createParams, callback) {
   // Check the current state.
   if (!this.checkState('create')) {
     this.handleCallback(callback);
@@ -238,8 +256,8 @@ GuestViewImpl.prototype.createImpl = function(createParams, callback) {
   // Callback wrapper function to store the guestInstanceId from the
   // createGuest() callback, handle potential creation failure, and advance the
   // queue.
-  var callbackWrapper = function(callback, guestInfo) {
-    this.id = guestInfo.id;
+  var callbackWrapper = function(callback, instanceId) {
+    this.id = instanceId;
 
     // Check if creation failed.
     if (this.id === 0) {
@@ -251,15 +269,16 @@ GuestViewImpl.prototype.createImpl = function(createParams, callback) {
     this.handleCallback(callback);
   };
 
-  this.sendCreateRequest(
-      createParams, $Function.bind(callbackWrapper, this, callback));
+  // Determine the window which owns the guest view element, so we can inform
+  // the browser of the prospective owner of the guest.
+  var ownerWindow = getOwnerWindow(viewInstanceId);
+  var ownerRoutingId = GuestViewInternalNatives.GetRoutingId(ownerWindow);
+
+  GuestViewInternal.createGuest(
+      this.viewType, ownerRoutingId, createParams,
+      $Function.bind(callbackWrapper, this, callback));
 
   this.state = GuestViewImpl.GuestState.GUEST_STATE_CREATED;
-};
-
-GuestViewImpl.prototype.sendCreateRequest = function(
-    createParams, boundCallback) {
-  GuestViewInternal.createGuest(this.viewType, createParams, boundCallback);
 };
 
 // Internal implementation of destroy().
@@ -274,6 +293,13 @@ GuestViewImpl.prototype.destroyImpl = function(callback) {
     // destroy() does nothing in this case.
     this.handleCallback(callback);
     return;
+  }
+
+  if (this.state == GuestViewImpl.GuestState.GUEST_STATE_CREATED) {
+    // If we destroy a guest before attaching it, inform the browser so it can
+    // clear its associated state. This is only needed for unattached guests,
+    // since after attachment, the browser knows when to clear the state.
+    GuestViewInternal.destroyUnattachedGuest(this.id);
   }
 
   // Reset the state of the destroyed guest;
@@ -322,10 +348,13 @@ GuestView.prototype.attach = function(
 };
 
 // Creates the guestview.
-GuestView.prototype.create = function(createParams, callback) {
+GuestView.prototype.create = function(viewInstanceId, createParams, callback) {
   var internal = this.internal;
-  $Array.push(internal.actionQueue, $Function.bind(internal.createImpl,
-      internal, createParams, callback));
+  $Array.push(
+      internal.actionQueue,
+      $Function.bind(
+          internal.createImpl, internal, viewInstanceId, createParams,
+          callback));
   internal.performNextAction();
 };
 

@@ -39,12 +39,10 @@ CameraVideoFrameRenderer::CameraVideoFrameRenderer(
     const media::VideoCaptureFormat& capture_format,
     bool should_flip_frames_horizontally)
     : host_window_(/*delegate=*/nullptr),
-      video_frame_handler_(/*delegate=*/this,
-                           GetContextFactory(),
+      video_frame_handler_(GetContextFactory(),
                            std::move(camera_video_source),
                            capture_format),
-      context_provider_(GetContextFactory()->SharedMainThreadContextProvider()),
-      raster_context_provider_(
+      context_provider_(
           GetContextFactory()->SharedMainThreadRasterContextProvider()),
       should_flip_frames_horizontally_(should_flip_frames_horizontally) {
   host_window_.set_owned_by_parent(false);
@@ -69,15 +67,15 @@ void CameraVideoFrameRenderer::Initialize() {
   layer_tree_frame_sink_->BindToClient(this);
 
   const int max_texture_size =
-      raster_context_provider_->ContextCapabilities().max_texture_size;
+      context_provider_->ContextCapabilities().max_texture_size;
   video_resource_updater_ = std::make_unique<media::VideoResourceUpdater>(
-      context_provider_.get(), raster_context_provider_.get(),
-      layer_tree_frame_sink_.get(), &client_resource_provider_,
+      context_provider_.get(), layer_tree_frame_sink_.get(),
+      &client_resource_provider_,
       /*use_stream_video_draw_quad=*/false,
       /*use_gpu_memory_buffer_resources=*/false,
       /*use_r16_texture=*/false, max_texture_size);
 
-  video_frame_handler_.StartHandlingFrames();
+  video_frame_handler_.StartHandlingFrames(/*delegate=*/this);
 }
 
 void CameraVideoFrameRenderer::OnCameraVideoFrame(
@@ -288,7 +286,7 @@ viz::CompositorFrame CameraVideoFrameRenderer::CreateCompositorFrame(
 
   std::vector<viz::TransferableResource> resource_list;
   client_resource_provider_.PrepareSendToParent(resource_ids, &resource_list,
-                                                raster_context_provider_.get());
+                                                context_provider_.get());
   compositor_frame.resource_list = std::move(resource_list);
 
   return compositor_frame;

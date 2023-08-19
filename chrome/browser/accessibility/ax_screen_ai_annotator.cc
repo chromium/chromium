@@ -58,11 +58,14 @@ AXScreenAIAnnotator::AXScreenAIAnnotator(
 AXScreenAIAnnotator::~AXScreenAIAnnotator() = default;
 
 void AXScreenAIAnnotator::StateChanged(ScreenAIInstallState::State state) {
-  if (state != ScreenAIInstallState::State::kReady)
+  if (state != ScreenAIInstallState::State::kReady &&
+      state != ScreenAIInstallState::State::kDownloaded) {
     return;
+  }
 
-  DCHECK(!screen_ai_service_client_.is_bound());
-  BindToScreenAIService(browser_context_);
+  if (!screen_ai_service_client_.is_bound()) {
+    BindToScreenAIService(browser_context_);
+  }
 }
 
 void AXScreenAIAnnotator::BindToScreenAIService(
@@ -73,15 +76,16 @@ void AXScreenAIAnnotator::BindToScreenAIService(
   ScreenAIServiceRouter* service_router =
       ScreenAIServiceRouterFactory::GetForBrowserContext(browser_context);
 
-  service_router->BindScreenAIAnnotator(std::move(screen_ai_receiver));
+  // Client interface should be ready to receive annotation results before a
+  // request is sent to the service, therefore it should be created first.
   service_router->BindScreenAIAnnotatorClient(
       screen_ai_service_client_.BindNewPipeAndPassRemote());
+  service_router->BindScreenAIAnnotator(std::move(screen_ai_receiver));
 }
 
-void AXScreenAIAnnotator::AnnotateScreenshot(Browser* browser) {
+void AXScreenAIAnnotator::AnnotateScreenshot(
+    content::WebContents* web_contents) {
   // Request screenshot from content area of the main frame.
-  content::WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
   if (!web_contents)
     return;
   gfx::NativeView native_view = web_contents->GetContentNativeView();
@@ -114,7 +118,6 @@ void AXScreenAIAnnotator::OnScreenshotReceived(
     const ui::AXTreeID& ax_tree_id,
     const base::TimeTicks& start_time,
     gfx::Image snapshot) {
-  DCHECK(screen_ai_annotator_.is_bound());
   base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time;
   if (snapshot.IsEmpty()) {
     VLOG(1) << "AxScreenAIAnnotator could not grab snapshot.";
@@ -125,8 +128,35 @@ void AXScreenAIAnnotator::OnScreenshotReceived(
 
   base::UmaHistogramTimes(
       "Accessibility.ScreenAI.AnnotateScreenshotTime.Success", elapsed_time);
+
+  // If screenshot is ready before service is initialized, the service call is
+  // delayed for 3 seconds.
+  // TODO(crbug.com/1443349): This solution is only for prototyping and should
+  // be updated so that the requests are queued before initialization
+  // completes.
+  if (!screen_ai_annotator_.is_bound() ||
+      !screen_ai_service_client_.is_bound()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&AXScreenAIAnnotator::ExtractSemanticLayout,
+                       weak_ptr_factory_.GetWeakPtr(), ax_tree_id,
+                       snapshot.AsBitmap()),
+        base::Seconds(3));
+  } else {
+    ExtractSemanticLayout(ax_tree_id, snapshot.AsBitmap());
+  }
+}
+
+void AXScreenAIAnnotator::ExtractSemanticLayout(const ui::AXTreeID& ax_tree_id,
+                                                const SkBitmap bitmap) {
+  if (!screen_ai_annotator_.is_bound() ||
+      !screen_ai_service_client_.is_bound()) {
+    VLOG(0) << "Service is not ready yet.";
+    return;
+  }
+
   screen_ai_annotator_->ExtractSemanticLayout(
-      snapshot.AsBitmap(), ax_tree_id,
+      bitmap, ax_tree_id,
       base::BindOnce(&AXScreenAIAnnotator::OnSemanticLayoutExtractionPerformed,
                      weak_ptr_factory_.GetWeakPtr(), ax_tree_id));
 }

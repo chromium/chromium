@@ -3,4 +3,5 @@ URL: https://crates.io/crates/semver
 Description: Parser and evaluator for Cargo's flavor of Semantic Versioning
 Version: 1.0.4
 Security Critical: no
+Shipped: no
 License: Apache 2.0

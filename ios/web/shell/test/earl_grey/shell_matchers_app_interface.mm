@@ -9,10 +9,6 @@
 #import "ios/web/shell/test/app/web_shell_test_util.h"
 #import "ios/web/shell/view_controller.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation ShellMatchersAppInterface
 
 + (id<GREYMatcher>)webView {

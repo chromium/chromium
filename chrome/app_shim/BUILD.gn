@@ -22,7 +22,7 @@ source_set("app_shim") {
   ]
 
   deps = [
-    "//base/allocator:early_zone_registration_mac",
+    "//base/allocator:early_zone_registration_apple",
     "//build:chromeos_buildflags",
     "//chrome:strings",
     "//chrome/app:command_ids",
@@ -30,6 +30,7 @@ source_set("app_shim") {
     "//chrome/browser/ui",
     "//chrome/common",
     "//chrome/common:mojo_bindings",
+    "//chrome/services/mac_notifications",
     "//components/crash/core/app",
     "//components/remote_cocoa/app_shim",
     "//content/public/browser",
@@ -39,8 +40,6 @@ source_set("app_shim") {
     "//ui/accelerated_widget_mac",
     "//ui/base",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 tweak_info_plist("tweak_app_mode_loader_plist") {
@@ -91,13 +90,11 @@ executable("app_mode_loader") {
 
   deps = [
     "//base",
-    "//base/allocator:early_zone_registration_mac",
+    "//base/allocator:early_zone_registration_apple",
     "//chrome/common:app_mode_app_support",
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   frameworks = [
     "AppKit.framework",

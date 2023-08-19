@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/incident_reporting/incident_reporting_service.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
@@ -22,6 +23,22 @@
 #include "services/preferences/public/mojom/tracked_preference_validation_delegate.mojom.h"
 
 namespace safe_browsing {
+namespace {
+
+const char* MigrateResultToString(HashPrefixMap::MigrateResult result) {
+  switch (result) {
+    case HashPrefixMap::MigrateResult::kUnknown:
+      return "Unknown";
+    case HashPrefixMap::MigrateResult::kSuccess:
+      return "Success";
+    case HashPrefixMap::MigrateResult::kFailure:
+      return "Failure";
+    case HashPrefixMap::MigrateResult::kNotNeeded:
+      return "NotNeeded";
+  }
+}
+
+}  // namespace
 
 // static
 std::unique_ptr<ServicesDelegate> ServicesDelegate::Create(
@@ -134,7 +151,8 @@ ServicesDelegateDesktop::CreateDatabaseManager() {
       content::GetUIThreadTaskRunner({}), content::GetIOThreadTaskRunner({}),
       base::BindRepeating(
           &ServicesDelegateDesktop::GetEstimatedExtendedReportingLevel,
-          base::Unretained(this)));
+          base::Unretained(this)),
+      base::BindOnce(&UpdateSyntheticFieldTrial));
 }
 
 DownloadProtectionService*
@@ -159,6 +177,14 @@ void ServicesDelegateDesktop::StopOnSBThread(bool shutdown) {
 
 void ServicesDelegateDesktop::OnProfileWillBeDestroyed(Profile* profile) {
   download_service_->RemovePendingDownloadRequests(profile);
+}
+
+// static
+void ServicesDelegateDesktop::UpdateSyntheticFieldTrial(
+    HashPrefixMap::MigrateResult result) {
+  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+      "SafeBrowsingMigrateResult", MigrateResultToString(result),
+      variations::SyntheticTrialAnnotationMode::kCurrentLog);
 }
 
 }  // namespace safe_browsing

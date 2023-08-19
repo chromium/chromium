@@ -170,6 +170,9 @@ struct SecurePaymentConfirmationRequest {
   // The relying party ID that must match the relying party of a credential.
   string rp_id;
 
+  // Webauthn extensions to be set on the credential request.
+  blink.mojom.AuthenticationExtensionsClientInputs? extensions;
+
   // Whether or not to render an 'opt out' experience on the browser-hosted UX,
   // which allows the user to indicate to the RP that they wish to remove any
   // RP-stored information.
@@ -275,7 +278,9 @@ interface PaymentRequest {
   // into PaymentRequest.show(), so Chrome should disregard the initial payment
   // details and show a spinner until the promise resolves with the correct
   // payment details. The payment details will be updated with UpdateWith().
-  Show(bool wait_for_updated_details);
+  // |had_user_activation|: Whether a user activation was consumed with this
+  // Show() call.
+  Show(bool wait_for_updated_details, bool had_user_activation);
 
   // Updates the payment details in response to (1) new shipping address or
   // shipping option, or (2) the resolution of show()'s PaymentDetailsUpdate

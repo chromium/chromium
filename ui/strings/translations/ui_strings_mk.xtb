@@ -105,7 +105,6 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{Пред 1 месец}one{Пред # месец}other{Пред # месеци}}</translation>
 <translation id="4289300219472526559">Започни со говорење</translation>
 <translation id="4289540628985791613">Преглед</translation>
-<translation id="4306392492252714209">Отстранете од привремената меморија.</translation>
 <translation id="4491109536499578614">Слика</translation>
 <translation id="4565377596337484307">Скриј ја лозинката</translation>
 <translation id="4588090240171750605">Лизгај надесно</translation>
@@ -148,6 +147,7 @@
 <translation id="6142413573757616983"><ph name="QUANTITY" /> B/s</translation>
 <translation id="6237461503717005873">Избрано е <ph name="ROW_NAME" />.</translation>
 <translation id="6264365405983206840">Избери ги &amp;сите</translation>
+<translation id="6346952829206698721">Залепи од привремената меморија</translation>
 <translation id="6364916375976753737">Лизгај налево</translation>
 <translation id="6394627529324717982">Запирка</translation>
 <translation id="6397363302884558537">Запри со говор</translation>
@@ -174,6 +174,7 @@
 <translation id="7170202025028120564">Поставките за екран на апликацијата ќе се применат при следното рестартирање.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{Преостана 1 мин.}one{Преостана # мин.}other{Преостанаа # мин.}}</translation>
+<translation id="7363164521834647158">Испрати одговор</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{Пред 1 мин.}one{Пред # мин.}other{Пред # мин.}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{Преостана 1 минута}one{Преостана # минута}other{Преостанаа # минути}}</translation>

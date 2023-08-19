@@ -11,6 +11,8 @@ namespace power_bookmarks {
 // Controls the power bookmarks backend.
 BASE_DECLARE_FEATURE(kPowerBookmarkBackend);
 
+BASE_DECLARE_FEATURE(kSimplifiedBookmarkSaveFlow);
+
 }  // namespace power_bookmarks
 
 #endif  // COMPONENTS_POWER_BOOKMARKS_CORE_POWER_BOOKMARK_FEATURES_H_

@@ -27,6 +27,7 @@
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "base/debug/alias.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/strings/string_util.h"
@@ -90,6 +91,10 @@ void LoginScreenController::RegisterProfilePrefs(PrefRegistrySimple* registry,
 
 bool LoginScreenController::IsAuthenticating() const {
   return authentication_stage_ != AuthenticationStage::kIdle;
+}
+
+bool LoginScreenController::IsAuthenticationCallbackExecuting() const {
+  return authentication_stage_ == AuthenticationStage::kUserCallback;
 }
 
 void LoginScreenController::AuthenticateUserWithPasswordOrPin(
@@ -197,40 +202,11 @@ void LoginScreenController::OnFocusPod(const AccountId& account_id) {
   client_->OnFocusPod(account_id);
 }
 
-void LoginScreenController::OnNoPodFocused() {
-  GetModel()->NotifyFocusPod(EmptyAccountId());
-  if (!client_) {
-    return;
-  }
-  client_->OnNoPodFocused();
-}
-
-void LoginScreenController::LoadWallpaper(const AccountId& account_id) {
-  if (!client_) {
-    return;
-  }
-  client_->LoadWallpaper(account_id);
-}
-
-void LoginScreenController::SignOutUser() {
-  if (!client_) {
-    return;
-  }
-  client_->SignOutUser();
-}
-
 void LoginScreenController::CancelAddUser() {
   if (!client_) {
     return;
   }
   client_->CancelAddUser();
-}
-
-void LoginScreenController::LoginAsGuest() {
-  if (!client_) {
-    return;
-  }
-  client_->LoginAsGuest();
 }
 
 void LoginScreenController::ShowGuestTosScreen() {
@@ -343,7 +319,11 @@ void LoginScreenController::FocusLoginShelf(bool reverse) {
     }
   } else {
     // No elements to focus on the shelf.
-    NOTREACHED();
+    //
+    // TODO(b/261774910): This is reachable apparently.
+    // Reaching this and not doing anything probably means that no view element
+    // is focused, but this is preferable to crashing via NOTREACHED().
+    base::debug::DumpWithoutCrashing();
   }
 }
 
@@ -521,7 +501,12 @@ void LoginScreenController::OnSystemTrayBubbleShown() {
 }
 
 void LoginScreenController::OnLockScreenDestroyed() {
-  DCHECK_EQ(authentication_stage_, AuthenticationStage::kIdle);
+  // TODO(b/280250064): Make sure allowing this condition won't break
+  // LoginScreenController logic.
+  if (authentication_stage_ != AuthenticationStage::kIdle) {
+    LOG(WARNING) << "Lock screen is destroyed while the authentication stage: "
+                 << authentication_stage_;
+  }
 
   // Still handle it to avoid crashes during Login/Lock/Unlock flows.
   authentication_stage_ = AuthenticationStage::kIdle;
@@ -533,6 +518,18 @@ void LoginScreenController::NotifyLoginScreenShown() {
     return;
   }
   client_->OnLoginScreenShown();
+}
+
+std::ostream& operator<<(std::ostream& ostream,
+                         LoginScreenController::AuthenticationStage stage) {
+  switch (stage) {
+    case LoginScreenController::AuthenticationStage::kIdle:
+      return ostream << "kIdle";
+    case LoginScreenController::AuthenticationStage::kDoAuthenticate:
+      return ostream << "kDoAuthenticate";
+    case LoginScreenController::AuthenticationStage::kUserCallback:
+      return ostream << "kUserCallback";
+  }
 }
 
 }  // namespace ash

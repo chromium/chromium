@@ -6,12 +6,10 @@ import 'chrome://os-settings/os_settings.js';
 import 'chrome://os-settings/lazy_load.js';
 
 import {SettingsHotspotSubpageElement} from 'chrome://os-settings/lazy_load.js';
-import {Router, routes, settingMojom, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {CrButtonElement, CrToggleElement, Router, routes, settingMojom, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {setHotspotConfigForTesting} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.js';
 import {CrosHotspotConfigObserverInterface, CrosHotspotConfigObserverRemote, HotspotAllowStatus, HotspotConfig, HotspotControlResult, HotspotInfo, HotspotState, SetHotspotConfigResult} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.mojom-webui.js';
 import {FakeHotspotConfig} from 'chrome://resources/ash/common/hotspot/fake_hotspot_config.js';
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -190,12 +188,26 @@ suite('<settings-hotspot-subpage>', () => {
     // Toggle should be disabled.
     assertTrue(enableToggle.disabled);
 
+    hotspotConfig.setFakeHotspotState(HotspotState.kEnabling);
+    await flushAsync();
+    assertEquals(
+        hotspotSubpage.i18n('hotspotSummaryStateTurningOn'),
+        hotspotOnOffLabel.textContent!.trim());
+    assertTrue(enableToggle.checked);
+
     hotspotConfig.setFakeHotspotState(HotspotState.kEnabled);
     await flushAsync();
     assertEquals(
         hotspotSubpage.i18n('hotspotSummaryStateOn'),
         hotspotOnOffLabel.textContent!.trim());
     assertTrue(enableToggle.checked);
+
+    hotspotConfig.setFakeHotspotState(HotspotState.kDisabling);
+    await flushAsync();
+    assertEquals(
+        hotspotSubpage.i18n('hotspotSummaryStateTurningOff'),
+        hotspotOnOffLabel.textContent!.trim());
+    assertFalse(enableToggle.checked);
 
     hotspotConfig.setFakeHotspotState(HotspotState.kDisabled);
     await flushAsync();

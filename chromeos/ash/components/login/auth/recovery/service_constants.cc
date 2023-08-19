@@ -34,8 +34,8 @@ const char kHsmPublicKey[] =
 
 // Hard-coded ledger info, including the public key, name and key
 // hash. It mirrors the value from the server.
-constexpr char kDevLedgerName[] = "ChromeOSLedgerOwnerPrototype";
-constexpr char kLedgerName[] = "ChromeOSLedgerOwnerPrototype";
+constexpr char kDevLedgerName[] = "recoverylog.chromebook.com";
+constexpr char kLedgerName[] = "recoverylog.chromebook.com";
 
 constexpr uint32_t kDevLedgerPublicKeyHash = 0x960a3b30;
 constexpr uint32_t kLedgerPublicKeyHash = 0x5a30b187;
@@ -61,6 +61,11 @@ bool IsUsingTestEnvironment() {
 }
 
 GURL GetRecoveryServiceBaseURL() {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kCryptohomeRecoveryServiceBaseUrl)) {
+    return GURL(base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+        switches::kCryptohomeRecoveryServiceBaseUrl));
+  }
   if (IsUsingTestEnvironment()) {
     return GURL(kTestingRecoveryServiceUrl);
   }

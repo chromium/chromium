@@ -4,11 +4,6 @@
 
 load("//lib/targets.star", "targets")
 
-targets.compile_target(
-    name = "All_syzygy",
-    label = "//:All_syzygy",
-)
-
 targets.console_test_launcher(
     name = "absl_hardening_tests",
     label = "//third_party/abseil-cpp:absl_hardening_tests",
@@ -430,6 +425,14 @@ targets.generated_script(
     ],
 )
 
+targets.generated_script(
+    name = "chrome_disabled_tast_tests",
+    label = "//chromeos:chrome_disabled_tast_tests",
+    args = [
+        "--logs-dir=${ISOLATED_OUTDIR}",
+    ],
+)
+
 targets.console_test_launcher(
     name = "chrome_elf_unittests",
     label = "//chrome/chrome_elf:chrome_elf_unittests",
@@ -438,11 +441,6 @@ targets.console_test_launcher(
 targets.generated_script(
     name = "chrome_java_test_pagecontroller_junit_tests",
     label = "//chrome/test/android:chrome_java_test_pagecontroller_junit_tests",
-)
-
-targets.console_test_launcher(
-    name = "chrome_java_test_pagecontroller_tests",
-    label = "//chrome/test/android:chrome_java_test_pagecontroller_tests",
 )
 
 targets.console_test_launcher(
@@ -530,11 +528,6 @@ targets.generated_script(
     label = "//chrome/test:chrome_sizes",
 )
 
-targets.console_test_launcher(
-    name = "chrome_webapk_integration_tests",
-    label = "//chrome/test/android:chrome_webapk_integration_tests",
-)
-
 targets.compile_target(
     name = "chromedriver",
     label = "//chrome/test/chromedriver:chromedriver_server",
@@ -557,35 +550,28 @@ targets.script(
     ],
 )
 
-targets.generated_script(
-    name = "chrome_variations_tast_tests",
-    label = "//chromeos:chrome_variations_tast_tests",
-    args = [
-        "--logs-dir=${ISOLATED_OUTDIR}",
-    ],
-)
-
 targets.compile_target(
     name = "chromedriver_webview_shell_apk",
     label = "//chrome/test/chromedriver/test/webview_shell:chromedriver_webview_shell_apk",
+)
+
+targets.windowed_test_launcher(
+    name = "chromeos_integration_tests",
+    label = "//chrome/test:chromeos_integration_tests",
 )
 
 targets.generated_script(
     name = "webdriver_wpt_tests",
     label = "//:webdriver_wpt_tests",
     args = [
-        "../../chrome/test/chromedriver/test/run_webdriver_tests.py",
-        "-v",
-        "--chromedriver=chromedriver",
-        "--log-path=${ISOLATED_OUTDIR}/chromedriver.log",
-        "--output-dir=${ISOLATED_OUTDIR}",
-        "--test-path=../../third_party/blink/web_tests/external/wpt/webdriver/tests/",
+        "--results-directory",
+        "${ISOLATED_OUTDIR}",
     ],
 )
 
 targets.generated_script(
-    name = "wpt_tests_isolate",
-    label = "//:wpt_tests_isolate",
+    name = "chrome_wpt",
+    label = "//:chrome_wpt",
     args = [
         "--results-directory",
         "${ISOLATED_OUTDIR}",
@@ -593,8 +579,8 @@ targets.generated_script(
 )
 
 targets.generated_script(
-    name = "wpt_tests_isolate_content_shell",
-    label = "//:wpt_tests_isolate_content_shell",
+    name = "content_shell_wpt",
+    label = "//:content_shell_wpt",
     args = [
         "--results-directory",
         "${ISOLATED_OUTDIR}",
@@ -602,8 +588,8 @@ targets.generated_script(
 )
 
 targets.generated_script(
-    name = "wpt_tests_ios",
-    label = "//ios/chrome/test/wpt:wpt_tests_ios",
+    name = "chrome_ios_wpt",
+    label = "//ios/chrome/test/wpt:chrome_ios_wpt",
     args = [
         "--results-directory",
         "${ISOLATED_OUTDIR}",
@@ -640,14 +626,9 @@ targets.generated_script(
     label = "//chrome/test:variations_smoke_tests",
 )
 
-targets.script(
+targets.generated_script(
     name = "variations_desktop_smoke_tests",
     label = "//chrome/test/variations:variations_desktop_smoke_tests",
-    script = "//testing/scripts/run_isolated_script_test.py",
-    args = [
-        "--xvfb",
-        "../../chrome/test/variations/run_variations_tests.py",
-    ],
 )
 
 targets.script(
@@ -1120,6 +1101,11 @@ targets.console_test_launcher(
     label = "//headless:headless_unittests",
 )
 
+targets.compile_target(
+    name = "image_processor_perf_test",
+    label = "//media/gpu/chromeos:image_processor_perf_test",
+)
+
 targets.console_test_launcher(
     name = "install_static_unittests",
     label = "//chrome/install_static:install_static_unittests",
@@ -1427,6 +1413,11 @@ targets.script(
         "../../chrome/test/mini_installer/run_mini_installer_tests.py",
         "--output-dir=${ISOLATED_OUTDIR}",
     ],
+)
+
+targets.console_test_launcher(
+    name = "minidump_uploader_test",
+    label = "//components/minidump_uploader:minidump_uploader_test",
 )
 
 targets.generated_script(
@@ -1755,6 +1746,11 @@ targets.console_test_launcher(
     label = "//chrome/browser/metrics/perf:profile_provider_unittest",
 )
 
+targets.console_test_launcher(
+    name = "pthreadpool_unittests",
+    label = "//third_party/pthreadpool:pthreadpool_unittests",
+)
+
 targets.compile_target(
     name = "push_apps_to_background_apk",
     label = "//tools/android/push_apps_to_background:push_apps_to_background_apk",
@@ -1770,7 +1766,7 @@ targets.compile_target(
     label = "//remoting/host:host",
 )
 
-targets.console_test_launcher(
+targets.windowed_test_launcher(
     name = "remoting_unittests",
     label = "//remoting:remoting_unittests",
 )
@@ -2057,13 +2053,6 @@ targets.console_test_launcher(
     label = "//build/rust/tests/test_serde_json_lenient:test_serde_json_lenient",
 )
 
-# TODO(crbug.com/1080749): Re-add this once the test is fixed and re-enabled.
-# targets.script(
-#     name = "test_buildbucket_api_gpu_use_cases",
-#     label = "//content/test:test_buildbucket_api_gpu_use_cases",
-#     script = "//testing/scripts/test_buildbucket_api_gpu_use_cases.py",
-# )
-
 targets.script(
     name = "testing_pytype",
     label = "//testing:testing_pytype",
@@ -2198,6 +2187,16 @@ targets.console_test_launcher(
     label = "//chrome/test:usage_time_limit_unittests",
 )
 
+targets.compile_target(
+    name = "v4l2_stateless_decoder",
+    label = "//media/gpu/v4l2:v4l2_stateless_decoder",
+)
+
+targets.compile_target(
+    name = "v4l2_unittest",
+    label = "//media/gpu/v4l2:v4l2_unittest",
+)
+
 targets.console_test_launcher(
     name = "vaapi_unittest",
     label = "//media/gpu/vaapi:vaapi_unittest",
@@ -2206,6 +2205,26 @@ targets.console_test_launcher(
 targets.console_test_launcher(
     name = "fake_libva_driver_unittest",
     label = "//media/gpu/vaapi/test/fake_libva_driver:fake_libva_driver_unittest",
+)
+
+targets.compile_target(
+    name = "video_decode_accelerator_tests",
+    label = "//media/gpu/test:video_decode_accelerator_tests",
+)
+
+targets.compile_target(
+    name = "video_decode_accelerator_perf_tests",
+    label = "//media/gpu/test:video_decode_accelerator_perf_tests",
+)
+
+targets.compile_target(
+    name = "video_encode_accelerator_tests",
+    label = "//media/gpu/test:video_encode_accelerator_tests",
+)
+
+targets.compile_target(
+    name = "video_encode_accelerator_perf_tests",
+    label = "//media/gpu/test:video_encode_accelerator_perf_tests",
 )
 
 targets.windowed_test_launcher(
@@ -2333,11 +2352,6 @@ targets.generated_script(
     ],
 )
 
-targets.windowed_test_launcher(
-    name = "weblayer_browsertests",
-    label = "//weblayer/test:weblayer_browsertests",
-)
-
 targets.script(
     name = "webview_cts_tests",
     label = "//android_webview/test:webview_cts_tests",
@@ -2403,16 +2417,6 @@ targets.script(
 )
 
 targets.console_test_launcher(
-    name = "webengine_support_instrumentation_test_apk",
-    label = "//weblayer/browser/android/javatests:webengine_support_instrumentation_test_apk",
-)
-
-targets.junit_test(
-    name = "weblayer_junit_tests",
-    label = "//weblayer/browser/java:weblayer_junit_tests",
-)
-
-targets.console_test_launcher(
     name = "webview_instrumentation_test_apk",
     label = "//android_webview/test:webview_instrumentation_test_apk",
 )
@@ -2447,6 +2451,7 @@ targets.windowed_test_launcher(
         "--enable-gpu",
         "--test-launcher-bot-mode",
         "--test-launcher-jobs=1",
+        "--test-launcher-retry-limit=0",
         "--enable-pixel-output-in-tests",
     ],
 )

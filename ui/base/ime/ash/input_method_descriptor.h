@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -18,14 +19,16 @@ namespace input_method {
 class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodDescriptor {
  public:
   InputMethodDescriptor();
-  InputMethodDescriptor(const std::string& id,
-                        const std::string& name,
-                        const std::string& indicator,
-                        const std::string& keyboard_layout,
-                        const std::vector<std::string>& language_codes,
-                        bool is_login_keyboard,
-                        const GURL& options_page_url,
-                        const GURL& input_view_url);
+  InputMethodDescriptor(
+      const std::string& id,
+      const std::string& name,
+      const std::string& indicator,
+      const std::string& keyboard_layout,
+      const std::vector<std::string>& language_codes,
+      bool is_login_keyboard,
+      const GURL& options_page_url,
+      const GURL& input_view_url,
+      const absl::optional<std::string>& handwriting_language);
   InputMethodDescriptor(const InputMethodDescriptor& other);
   ~InputMethodDescriptor();
 
@@ -40,6 +43,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodDescriptor {
   const GURL& input_view_url() const { return input_view_url_; }
   const std::string& keyboard_layout() const { return keyboard_layout_; }
   bool is_login_keyboard() const { return is_login_keyboard_; }
+  const absl::optional<std::string>& handwriting_language() const {
+    return handwriting_language_;
+  }
 
   std::u16string GetIndicator() const;
 
@@ -75,6 +81,11 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodDescriptor {
   // "chrome-extension://ceaajjmckiakobniehbjpdcidfpohlin/my_input_view.html".
   // This field is valid only for input method extension.
   GURL input_view_url_;
+
+  // An ID that identifies a handwriting model language ID for this input
+  // method, like "en" or "ja".
+  // This field is valid only for 1P Google ChromeOS input methods.
+  absl::optional<std::string> handwriting_language_;
 };
 
 using InputMethodDescriptors = std::vector<InputMethodDescriptor>;

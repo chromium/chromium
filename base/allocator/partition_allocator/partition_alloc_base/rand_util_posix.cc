@@ -8,19 +8,18 @@
 #include <fcntl.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <sys/syscall.h>
 #include <unistd.h>
 #include <sstream>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/check.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/files/file_util.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/no_destructor.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/posix/eintr_wrapper.h"
-#include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "build/build_config.h"
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#include "third_party/lss/linux_syscall_support.h"
-#elif BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC)
 // TODO(crbug.com/995996): Waiting for this header to appear in the iOS SDK.
 // (See below.)
 #include <sys/random.h>
@@ -42,7 +41,7 @@ static constexpr int kOpenFlags = O_RDONLY | O_CLOEXEC;
 class URandomFd {
  public:
   URandomFd() : fd_(PA_HANDLE_EINTR(open("/dev/urandom", kOpenFlags))) {
-    PA_CHECK(fd_ >= 0) << "Cannot open /dev/urandom";
+    PA_BASE_CHECK(fd_ >= 0) << "Cannot open /dev/urandom";
   }
 
   ~URandomFd() { close(fd_); }
@@ -69,10 +68,15 @@ namespace partition_alloc::internal::base {
 // it or some form of it.
 void RandBytes(void* output, size_t output_length) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  // We have to call `getrandom` via Linux Syscall Support, rather than through
-  // the libc wrapper, because we might not have an up-to-date libc (e.g. on
-  // some bots).
-  const ssize_t r = PA_HANDLE_EINTR(sys_getrandom(output, output_length, 0));
+  // Use `syscall(__NR_getrandom...` to avoid a dependency on
+  // `third_party/linux_syscall_support.h`.
+  //
+  // Here in PartitionAlloc, we don't need to look before we leap
+  // because we know that both Linux and CrOS only support kernels
+  // that do have this syscall defined. This diverges from upstream
+  // `//base` behavior both here and below.
+  const ssize_t r =
+      PA_HANDLE_EINTR(syscall(__NR_getrandom, output, output_length, 0));
 
   // Return success only on total success. In case errno == ENOSYS (or any other
   // error), we'll fall through to reading from urandom below.
@@ -87,16 +91,30 @@ void RandBytes(void* output, size_t output_length) {
     return;
   }
 #endif
-
-  // If the OS-specific mechanisms didn't work, fall through to reading from
-  // urandom.
+  // If getrandom(2) above returned with an error and the /dev/urandom fallback
+  // took place on Linux/ChromeOS bots, they would fail with a CHECK in
+  // nacl_helper. The latter assumes that the number of open file descriptors
+  // must be constant. The nacl_helper knows about the FD from
+  // //base/rand_utils, but is not aware of the urandom_fd from this file (see
+  // CheckForExpectedNumberOfOpenFds).
   //
-  // TODO(crbug.com/995996): When we no longer need to support old Linux
-  // kernels, we can get rid of this /dev/urandom branch altogether.
+  // *  On `linux_chromium_asan_rel_ng` in
+  //    `ContentBrowserTest.RendererCrashCallStack`:
+  //    ```
+  //    [FATAL:rand_util_posix.cc(45)] Check failed: fd_ >= 0. Cannot open
+  //    /dev/urandom
+  //    ```
+  // *  On `linux-lacros-rel` in
+  //    `NaClBrowserTestGLibc.CrashInCallback`:
+  //    ```
+  //    2023-07-03T11:31:13.115755Z FATAL nacl_helper:
+  //    [nacl_sandbox_linux.cc(178)] Check failed: expected_num_fds ==
+  //    sandbox::ProcUtil::CountOpenFds(proc_fd_.get()) (6 vs. 7)
+  //    ```
   const int urandom_fd = GetUrandomFD();
   const bool success =
       ReadFromFD(urandom_fd, static_cast<char*>(output), output_length);
-  PA_CHECK(success);
+  PA_BASE_CHECK(success);
 }
 
 }  // namespace partition_alloc::internal::base

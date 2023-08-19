@@ -11,9 +11,9 @@
 #import <set>
 #import <utility>
 
+#import "base/apple/scoped_cftyperef.h"
 #import "base/check_op.h"
 #import "base/functional/bind.h"
-#import "base/mac/scoped_cftyperef.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -37,137 +37,23 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/store_kit/store_kit_coordinator.h"
+#import "ios/chrome/browser/store_kit/store_kit_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/download/activities/open_downloads_folder_activity.h"
 #import "ios/chrome/browser/ui/download/download_manager_mediator.h"
 #import "ios/chrome/browser/ui/download/download_manager_view_controller.h"
+#import "ios/chrome/browser/ui/download/unopened_downloads_tracker.h"
 #import "ios/chrome/browser/ui/presenters/contained_presenter.h"
 #import "ios/chrome/browser/ui/presenters/contained_presenter_delegate.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/download/download_task.h"
+#import "ios/web/public/web_client.h"
 #import "net/base/net_errors.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
-namespace {
-// Tracks download tasks which were not opened by the user yet. Reports various
-// metrics in DownloadTaskObserver callbacks.
-class UnopenedDownloadsTracker : public web::DownloadTaskObserver,
-                                 public WebStateListObserver {
- public:
-  // Starts tracking this download task.
-  void Add(web::DownloadTask* task) {
-    task->AddObserver(this);
-    observed_tasks_.insert(task);
-  }
-  // Stops tracking this download task.
-  void Remove(web::DownloadTask* task) {
-    task->RemoveObserver(this);
-    observed_tasks_.erase(task);
-  }
-  // DownloadTaskObserver overrides:
-  void OnDownloadUpdated(web::DownloadTask* task) override {
-    if (task->IsDone()) {
-      base::UmaHistogramEnumeration("Download.IOSDownloadFileResult",
-                                    task->GetErrorCode()
-                                        ? DownloadFileResult::Failure
-                                        : DownloadFileResult::Completed,
-                                    DownloadFileResult::Count);
-      if (task->GetErrorCode()) {
-        base::UmaHistogramSparse("Download.IOSDownloadedFileNetError",
-                                 -task->GetErrorCode());
-      } else {
-        bool GoogleDriveIsInstalled = IsGoogleDriveAppInstalled();
-        if (GoogleDriveIsInstalled)
-          base::UmaHistogramEnumeration(
-              "Download.IOSDownloadFileUIGoogleDrive",
-              DownloadFileUIGoogleDrive::GoogleDriveAlreadyInstalled,
-              DownloadFileUIGoogleDrive::Count);
-        else
-          base::UmaHistogramEnumeration(
-              "Download.IOSDownloadFileUIGoogleDrive",
-              DownloadFileUIGoogleDrive::GoogleDriveNotInstalled,
-              DownloadFileUIGoogleDrive::Count);
-      }
-
-      bool backgrounded = task->HasPerformedBackgroundDownload();
-      DownloadFileInBackground histogram_value =
-          task->GetErrorCode()
-              ? (backgrounded
-                     ? DownloadFileInBackground::FailedWithBackgrounding
-                     : DownloadFileInBackground::FailedWithoutBackgrounding)
-              : (backgrounded
-                     ? DownloadFileInBackground::SucceededWithBackgrounding
-                     : DownloadFileInBackground::SucceededWithoutBackgrounding);
-      base::UmaHistogramEnumeration("Download.IOSDownloadFileInBackground",
-                                    histogram_value,
-                                    DownloadFileInBackground::Count);
-    }
-  }
-  void OnDownloadDestroyed(web::DownloadTask* task) override {
-    // This download task was never open by the user.
-    task->RemoveObserver(this);
-    observed_tasks_.erase(task);
-
-    DownloadAborted(task);
-  }
-
-  // Logs histograms. Called when DownloadTask or this object was destroyed.
-  void DownloadAborted(web::DownloadTask* task) {
-    if (task->GetState() == web::DownloadTask::State::kInProgress) {
-      base::UmaHistogramEnumeration("Download.IOSDownloadFileResult",
-                                    DownloadFileResult::Other,
-                                    DownloadFileResult::Count);
-
-      if (did_close_web_state_without_user_action) {
-        // web state can be closed without user action only during the app
-        // shutdown.
-        base::UmaHistogramEnumeration(
-            "Download.IOSDownloadFileInBackground",
-            DownloadFileInBackground::CanceledAfterAppQuit,
-            DownloadFileInBackground::Count);
-      }
-    }
-
-    if (task->IsDone() && task->GetErrorCode() == net::OK) {
-      base::UmaHistogramEnumeration(
-          "Download.IOSDownloadedFileAction",
-          DownloadedFileAction::NoActionOrOpenedViaExtension,
-          DownloadedFileAction::Count);
-    }
-  }
-  // WebStateListObserver overrides:
-  void WillCloseWebStateAt(WebStateList* web_state_list,
-                           web::WebState* web_state,
-                           int index,
-                           bool user_action) override {
-    if (!user_action) {
-      did_close_web_state_without_user_action = true;
-    }
-  }
-
-  ~UnopenedDownloadsTracker() override {
-    for (web::DownloadTask* task : observed_tasks_) {
-      task->RemoveObserver(this);
-      DownloadAborted(task);
-    }
-  }
-
- private:
-  // True if a web state was closed without user action.
-  bool did_close_web_state_without_user_action = false;
-  // Keeps track of observed tasks to remove observer when
-  // UnopenedDownloadsTracker is destructed.
-  std::set<web::DownloadTask*> observed_tasks_;
-};
-}  // namespace
-
-@interface DownloadManagerCoordinator () <
-    ContainedPresenterDelegate,
-    DownloadManagerViewControllerDelegate> {
+@interface DownloadManagerCoordinator () <ContainedPresenterDelegate,
+                                          DownloadManagerViewControllerDelegate,
+                                          StoreKitCoordinatorDelegate> {
   // View controller for presenting Download Manager UI.
   DownloadManagerViewController* _viewController;
   // View controller for presenting "Open In.." dialog.
@@ -189,6 +75,12 @@ class UnopenedDownloadsTracker : public web::DownloadTaskObserver,
 - (void)start {
   DCHECK(self.presenter);
   DCHECK(self.browser);
+
+  NSNotificationCenter* defaultCenter = [NSNotificationCenter defaultCenter];
+  [defaultCenter addObserver:self
+                    selector:@selector(applicationDidEnterBackground:)
+                        name:UIApplicationDidEnterBackgroundNotification
+                      object:nil];
 
   _viewController = [[DownloadManagerViewController alloc] init];
   _viewController.delegate = self;
@@ -220,8 +112,7 @@ class UnopenedDownloadsTracker : public web::DownloadTaskObserver,
   if (self.browser)
     (self.browser->GetWebStateList())->RemoveObserver(&_unopenedDownloads);
 
-  [_storeKitCoordinator stop];
-  _storeKitCoordinator = nil;
+  [self stopStoreKitCoordinator];
 
   [[InstallationNotifier sharedInstance] unregisterForNotifications:self];
   _stopped = YES;
@@ -248,7 +139,7 @@ class UnopenedDownloadsTracker : public web::DownloadTaskObserver,
   BOOL replacingExistingDownload = _downloadTask ? YES : NO;
   _downloadTask = download;
 
-  if (web::features::IsFullscreenAPIEnabled()) {
+  if (web::GetWebClient()->EnableFullscreenAPI()) {
     // Exit fullscreen since download UI will be behind fullscreen mode.
     web::WebState* webState = download->GetWebState();
     webState->CloseMediaPresentations();
@@ -282,7 +173,7 @@ class UnopenedDownloadsTracker : public web::DownloadTaskObserver,
       }));
 
   web::WebState* webState = download->GetWebState();
-  if (web::features::IsFullscreenAPIEnabled()) {
+  if (web::GetWebClient()->EnableFullscreenAPI()) {
     // Close fullscreen mode in the event that a download is attempting to
     // replace a pending download request.
     webState->CloseMediaPresentations();
@@ -405,6 +296,12 @@ class UnopenedDownloadsTracker : public web::DownloadTaskObserver,
 
 #pragma mark - Private
 
+- (void)stopStoreKitCoordinator {
+  [_storeKitCoordinator stop];
+  _storeKitCoordinator.delegate = nil;
+  _storeKitCoordinator = nil;
+}
+
 // Cancels the download task and stops the coordinator.
 - (void)cancelDownload {
   // `stop` nulls-our _downloadTask and `Cancel` destroys the task. Call `stop`
@@ -440,6 +337,7 @@ class UnopenedDownloadsTracker : public web::DownloadTaskObserver,
     _storeKitCoordinator = [[StoreKitCoordinator alloc]
         initWithBaseViewController:self.baseViewController
                            browser:self.browser];
+    _storeKitCoordinator.delegate = self;
     _storeKitCoordinator.iTunesProductParameters = @{
       SKStoreProductParameterITunesItemIdentifier :
           kGoogleDriveITunesItemIdentifier
@@ -452,6 +350,21 @@ class UnopenedDownloadsTracker : public web::DownloadTaskObserver,
       registerForInstallationNotifications:self
                               withSelector:@selector(didInstallGoogleDriveApp)
                                  forScheme:kGoogleDriveAppURLScheme];
+}
+
+#pragma mark - Notification callback
+
+- (void)applicationDidEnterBackground:(NSNotification*)note {
+  [_openInController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:nil];
+}
+
+#pragma mark - StoreKitCoordinatorDelegate
+
+- (void)storeKitCoordinatorWantsToStop:(StoreKitCoordinator*)coordinator {
+  CHECK_EQ(coordinator, _storeKitCoordinator);
+  [self stopStoreKitCoordinator];
 }
 
 @end

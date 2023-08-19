@@ -5,10 +5,11 @@
 #ifndef IOS_CHROME_APP_SPOTLIGHT_ACTIONS_SPOTLIGHT_MANAGER_H_
 #define IOS_CHROME_APP_SPOTLIGHT_ACTIONS_SPOTLIGHT_MANAGER_H_
 
-#import "ios/chrome/app/spotlight/base_spotlight_manager.h"
+#import <Foundation/Foundation.h>
 
 @class AppStartupParameters;
 @class SpotlightInterface;
+@class SearchableItemFactory;
 
 namespace spotlight {
 
@@ -29,14 +30,30 @@ BOOL SetStartupParametersForSpotlightAction(
 
 // Allows Chrome to add links to actions to the systemwide Spotlight search
 // index.
-@interface ActionsSpotlightManager : BaseSpotlightManager
+@interface ActionsSpotlightManager : NSObject
 
 // Creates an ActionsSpotlightManager.
 + (ActionsSpotlightManager*)actionsSpotlightManager;
 
+- (instancetype)
+    initWithSpotlightInterface:(SpotlightInterface*)spotlightInterface
+         searchableItemFactory:(SearchableItemFactory*)searchableItemFactory;
+
+- (instancetype)init NS_UNAVAILABLE;
+
+/// Facade interface for the spotlight API.
+@property(nonatomic, readonly) SpotlightInterface* spotlightInterface;
+
+/// A searchable item factory to create searchable items.
+@property(nonatomic, readonly) SearchableItemFactory* searchableItemFactory;
+
 // Updates the index with the Spotlight actions if the EnableSpotlightActions
 // experimental flag is set. Otherwise the index is only cleared.
-- (void)indexActions;
+- (void)indexActionsWithIsGoogleDefaultSearchEngine:
+    (BOOL)isGoogleDefaultSearchEngine;
+
+// Called before the instance is deallocated.
+- (void)shutdown NS_REQUIRES_SUPER;
 
 @end
 

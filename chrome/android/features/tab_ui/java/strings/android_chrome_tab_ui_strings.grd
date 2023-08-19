@@ -374,6 +374,11 @@
           View all
       </message>
 
+      <!-- Single Tab module strings -->
+      <message name="IDS_SINGLE_TAB_MODULE_TITLE" desc="Title of the single Tab module on the magic space of the start surface or NTP home surface.">
+          Your last tab
+      </message>
+
       <!-- Tab Suggestion strings -->
       <message name="IDS_TAB_SUGGESTION_REVIEW_BUTTON" desc="This text button shows next to the message 'X of your tabs haven't been used lately. Close them?', or 'X tabs seem related. Group them?'. When a user clicks this 'Review' text button, they will enter a selection mode where they can see the suggested tabs to close or to group, see the rest of their open tabs, and choose what tabs to close or to group.">
           Review
@@ -536,13 +541,18 @@
         Close all tabs?
       </message>
       <message name="IDS_CLOSE_ALL_TABS_DIALOG_MESSAGE" desc="When users click the menu item 'Close all tabs' in tab switcher, a dialog will pop up and this text is the message of the dialog.">
-        You can find your closed tabs in Recent tabs under the Chrome main menu
+        You can find your closed tabs in Recent tabs under the Chrome main menu.
+      </message>
+      <message name="IDS_CLOSE_ALL_TABS_DIALOG_MESSAGE_WITH_INCOGNITO_TABS" desc="When users click the menu item 'Close all tabs' in tab switcher, a dialog will pop up and this text is the message of the dialog. If there are any Incognito tabs opened this message would warn users that those Incognito tabs would be lost.">
+      {INCOGNITO_TABS_COUNT, plural,
+        =1 {You can find your closed tabs in Recent tabs under the Chrome main menu. Your Incognito tab won't be available.}
+        other {You can find your closed tabs in Recent tabs under the Chrome main menu. Your # Incognito tabs won't be available.}}
       </message>
       <message name="IDS_CLOSE_ALL_TABS_DIALOG_TITLE_INCOGNITO" desc="When users click the menu item 'Close all tabs' in Incognito tab switcher, a dialog will pop up and this text is the title of the dialog.">
         Close all Incognito tabs?
       </message>
       <message name="IDS_CLOSE_ALL_TABS_DIALOG_MESSAGE_INCOGNITO" desc="When users click the menu item 'Close all tabs' in Incognito tab switcher, a dialog will pop up and this text is the message of the dialog.">
-        Your activity in these Incognito tabs will be cleared from this device
+        Your activity in these Incognito tabs will be removed from this device
       </message>
     </messages>
   </release>

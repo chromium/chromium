@@ -11,9 +11,11 @@
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/script_result_queue.h"
 #include "extensions/browser/service_worker_task_queue.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/mojom/manifest.mojom.h"
+#include "extensions/test/extension_background_page_waiter.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
@@ -350,6 +352,121 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRegistrationApiTest,
     open_new_tab(about_blank);
     ASSERT_TRUE(listener.WaitUntilSatisfied());
   }
+}
+
+// Tests that modifying local files for an unpacked extension does not result
+// in the service worker being seen as "updated" (which would result in a
+// "waiting" service worker, violating expectations in the extensions system).
+// https://crbug.com/1271154.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerRegistrationApiTest,
+                       ModifyingLocalFilesForUnpackedExtensions) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  const double kUpdateDelayInMilliseconds =
+      content::ServiceWorkerContext::GetUpdateDelay().InMillisecondsF();
+  // Assert that whatever our update delay is, it's less than 5 seconds. If it
+  // were more, the test would risk timing out. If we ever need to exceed this
+  // in practice, we could introduce a test setter for a different amount of
+  // time.
+  ASSERT_GE(5000, kUpdateDelayInMilliseconds);
+
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Test",
+           "manifest_version": 3,
+           "version": "0.1",
+           "background": {"service_worker": "background.js"},
+           "permissions": ["storage"]
+         })";
+  static constexpr char kBackgroundTemplate[] =
+      R"(chrome.storage.local.onChanged.addListener((changes) => {
+           // Send a notification of the storage changing back to C++ after
+           // a delay long enough for the update check on the worker to trigger.
+           // This notification includes the "version" of the background script
+           // and the value of the storage bit.
+           setTimeout(() => {
+             chrome.test.sendScriptResult(
+                 `storage changed version %d: count ${changes.count.newValue}`);
+            }, %f + 100);
+         });)";
+  // The following is a page that, when visited, sets a new (incrementing)
+  // value in the extension's storage. This should trigger the listener in the
+  // background service worker.
+  static constexpr char kPageHtml[] =
+      R"(<html><script src="page.js"></script></html>)";
+  static constexpr char kPageJs[] =
+      R"((async () => {
+           let {count} = await chrome.storage.local.get({count: 0});
+           ++count;
+           await chrome.storage.local.set({count});
+         })();)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(
+      FILE_PATH_LITERAL("background.js"),
+      base::StringPrintf(kBackgroundTemplate, 1, kUpdateDelayInMilliseconds));
+  test_dir.WriteFile(FILE_PATH_LITERAL("page.html"), kPageHtml);
+  test_dir.WriteFile(FILE_PATH_LITERAL("page.js"), kPageJs);
+
+  // Load the test extension. It's important it be unpacked, since packed
+  // extensions would normally be subject to content verification.
+  const Extension* extension = LoadExtension(
+      test_dir.UnpackedPath(), {.wait_for_registration_stored = true});
+  ASSERT_TRUE(extension);
+
+  EXPECT_EQ(extension->path(), test_dir.UnpackedPath());
+  EXPECT_EQ(mojom::ManifestLocation::kUnpacked, extension->location());
+
+  const GURL page_url = extension->GetResourceURL("page.html");
+  auto open_tab_and_get_result = [this, page_url]() {
+    ScriptResultQueue result_queue;
+    // Open the page in a new tab. We use a new tab here since any tabs open to
+    // an extension page will be closed later in the test when the extension
+    // reloads, and we need to make sure there's at least one tab left in the
+    // browser.
+    EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+        browser(), page_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+    return result_queue.GetNextResult();
+  };
+
+  // Visit the page. The service worker listener should fire the first time.
+  EXPECT_EQ("storage changed version 1: count 1", open_tab_and_get_result());
+
+  // Stop the service worker.
+  browsertest_util::StopServiceWorkerForExtensionGlobalScope(profile(),
+                                                             extension->id());
+  // Verify any pending tasks from stopping fully finish.
+  base::RunLoop().RunUntilIdle();
+
+  // Rewrite the extension service worker and update the "version" flag in the
+  // background service worker.
+  test_dir.WriteFile(
+      FILE_PATH_LITERAL("background.js"),
+      base::StringPrintf(kBackgroundTemplate, 2, kUpdateDelayInMilliseconds));
+
+  // Visit the page again. This should reawaken the extension service worker.
+  EXPECT_EQ("storage changed version 1: count 2", open_tab_and_get_result());
+
+  // Run any pending tasks. This ensures that the update check, if one were
+  // going to happen, does.
+  content::RunAllTasksUntilIdle();
+
+  // Visit a third time. As above, the old version of the worker should be
+  // running.
+  EXPECT_EQ("storage changed version 1: count 3", open_tab_and_get_result());
+
+  // Reload the extension from disk.
+  ExtensionId extension_id = extension->id();
+  ReloadExtension(extension->id());
+  extension = extension_registry()->enabled_extensions().GetByID(extension_id);
+  ASSERT_TRUE(extension);
+  ExtensionBackgroundPageWaiter(profile(), *extension)
+      .WaitForBackgroundInitialized();
+
+  // Visit the page a fourth time. Now, the new service worker file should
+  // be used, since the extension was reloaded from disk.
+  EXPECT_EQ("storage changed version 2: count 4", open_tab_and_get_result());
 }
 
 }  // namespace extensions

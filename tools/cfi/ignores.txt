@@ -1,6 +1,20 @@
 # This file defines which warnings should be ignored while running clang's
 # control flow integrity sanitizer, as run by the cfi_flags build target.
 
+# ***If you think you need to add an entry here, read this comment first.***
+#
+# Generally prefer to add an attribute to whichever function needs it, instead
+# of adding entries to this file. This can be done in the Chromium codebase
+# using the NO_SANITIZE macro, e.g.
+#
+# NO_SANITIZE("cfi-unrelated-cast")
+#
+# or outside of Chromium using the no_sanitize attribute directly (potentially
+# with guards against non-Clang compilers; see the definition of NO_SANITIZE in
+# Chromium), e.g.
+#
+# __attribute__((no_sanitize("cfi-unrelated-cast")))
+
 [cfi-unrelated-cast|cfi-derived-cast]
 
 # e.g. RolloverProtectedTickClock
@@ -241,6 +255,10 @@ fun:*PendingPhantomCallback*Invoke*
 fun:*GlobalHandles*PostGarbageCollectionProcessing*
 
 fun:*InvokeAccessorGetterCallback*
+
+# XNNPACK casts incorrect function signature to pthreadpool task type.
+src:*third_party/pthreadpool/src/src/fastpath.c
+src:*third_party/pthreadpool/src/src/portable-api.c
 
 ######### Uncategorized
 

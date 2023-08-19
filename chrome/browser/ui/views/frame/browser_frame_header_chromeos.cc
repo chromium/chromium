@@ -5,17 +5,19 @@
 #include "chrome/browser/ui/views/frame/browser_frame_header_chromeos.h"
 
 #include "base/check.h"
-#include "chrome/app/vector_icons/vector_icons.h"
-#include "chromeos/ui/base/chromeos_ui_constants.h"
+#include "chrome/browser/ui/views/frame/browser_non_client_frame_view_chromeos.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/base/window_properties.h"
-#include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/frame_utils.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "ui/base/ui_base_features.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -23,10 +25,13 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/views/view.h"
-#include "ui/views/widget/native_widget_aura.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/caption_button_layout_constants.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 
@@ -111,12 +116,6 @@ void PaintFrameImagesInRoundRect(gfx::Canvas* canvas,
                    bounds, image_inset_x, image_inset_y);
 }
 
-int GetCornerRadius(chromeos::WindowStateType state_type) {
-  return chromeos::IsNormalWindowStateType(state_type)
-             ? chromeos::kTopCornerRadiusWhenRestored
-             : 0;
-}
-
 }  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -177,16 +176,35 @@ SkColor BrowserFrameHeaderChromeOS::GetCurrentFrameColor() const {
 
 void BrowserFrameHeaderChromeOS::UpdateFrameColors() {
   SetPaintAsActive(target_widget()->ShouldPaintAsActive());
-  UpdateCaptionButtonColors();
+  absl::optional<ui::ColorId> button_colors;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (features::IsChromeRefresh2023()) {
+    auto* browser_non_client_frame_view =
+        static_cast<BrowserNonClientFrameViewChromeOS*>(view());
+
+    web_app::AppBrowserController* app_browser_controller =
+        browser_non_client_frame_view->browser_view()
+            ->browser()
+            ->app_controller();
+
+    // Please note, `app_browser_controller` may be null for non-PWA windows.
+    if (!app_browser_controller ||
+        (app_browser_controller->system_app() &&
+         app_browser_controller->system_app()->UseSystemThemeColor())) {
+      button_colors = mode() == MODE_ACTIVE
+                          ? ui::kColorSysPrimary
+                          : ui::kColorFrameCaptionButtonUnfocused;
+    }
+  }
+#endif
+  UpdateCaptionButtonColors(button_colors);
   view()->SchedulePaint();
 }
 
 SkPath BrowserFrameHeaderChromeOS::GetWindowMaskForFrameHeader(
     const gfx::Size& size) {
-  chromeos::WindowStateType state_type =
-      target_widget()->GetNativeWindow()->GetProperty(
-          chromeos::kWindowStateTypeKey);
-  return GetFrameHeaderPath(gfx::Rect(size), GetCornerRadius(state_type));
+  return GetFrameHeaderPath(gfx::Rect(size), header_corner_radius());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -200,13 +218,9 @@ void BrowserFrameHeaderChromeOS::PaintFrameImages(gfx::Canvas* canvas) {
   gfx::ImageSkia frame_overlay_image =
       appearance_provider_->GetFrameHeaderOverlayImage(active);
 
-  chromeos::WindowStateType state_type =
-      target_widget()->GetNativeWindow()->GetProperty(
-          chromeos::kWindowStateTypeKey);
-
   PaintFrameImagesInRoundRect(canvas, frame_image, frame_overlay_image,
                               appearance_provider_->GetFrameHeaderColor(active),
                               GetPaintedBounds(), GetThemeBackgroundXInset(),
                               appearance_provider_->GetFrameHeaderImageYInset(),
-                              GetCornerRadius(state_type));
+                              header_corner_radius());
 }

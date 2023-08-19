@@ -83,6 +83,7 @@ class AmbientBadgeManager : public InstallableAmbientBadgeClient {
 
   void MaybeShow(const GURL& validated_url,
                  const std::u16string& app_name,
+                 const std::string& app_identifier,
                  std::unique_ptr<AddToHomescreenParams> a2hs_params,
                  base::OnceClosure show_banner_callback);
 
@@ -139,6 +140,8 @@ class AmbientBadgeManager : public InstallableAmbientBadgeClient {
 
   GURL validated_url_;
   std::u16string app_name_;
+  std::string app_identifier_;
+
   // Contains app parameters such as its type and the install source used.
   std::unique_ptr<AddToHomescreenParams> a2hs_params_;
 

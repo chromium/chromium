@@ -6,18 +6,30 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/apple/foundation_util.h"
 #import "ios/web/shell/view_controller.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace web {
 namespace shell_test_util {
 
+UIWindow* GetAnyKeyWindow() {
+  for (UIScene* scene in UIApplication.sharedApplication.connectedScenes) {
+    UIWindowScene* windowScene =
+        base::apple::ObjCCastStrict<UIWindowScene>(scene);
+    // Find a key window if it exists.
+    for (UIWindow* window in windowScene.windows) {
+      if (window.isKeyWindow) {
+        return window;
+      }
+    }
+  }
+
+  return nil;
+}
+
 web::WebState* GetCurrentWebState() {
-  ViewController* view_controller = static_cast<ViewController*>([[
-      [[UIApplication sharedApplication] delegate] window] rootViewController]);
+  ViewController* view_controller =
+      static_cast<ViewController*>([GetAnyKeyWindow() rootViewController]);
   return view_controller.webState;
 }
 

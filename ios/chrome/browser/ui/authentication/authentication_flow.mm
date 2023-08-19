@@ -11,6 +11,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/reading_list/features/reading_list_switches.h"
+#import "components/sync/base/features.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/policy/cloud/user_policy_switch.h"
@@ -31,10 +32,6 @@
 #import "ios/public/provider/chrome/browser/signin/signin_error_api.h"
 #import "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using signin_ui::CompletionCallback;
 
 namespace {
@@ -50,7 +47,6 @@ enum AuthenticationState {
   CLEAR_DATA,
   SIGN_IN,
   COMMIT_SYNC,
-  ENABLE_BOOKMARK_READING_LIST_ACCOUNT_STORAGE,
   REGISTER_FOR_USER_POLICY,
   FETCH_USER_POLICY,
   COMPLETE_WITH_SUCCESS,
@@ -167,21 +163,33 @@ enum AuthenticationState {
   if (!_performer) {
     _performer = [[AuthenticationFlowPerformer alloc] initWithDelegate:self];
   }
-  [self continueSignin];
+  // Make sure -[AuthenticationFlow startSignInWithCompletion:] doesn't call
+  // the completion block synchronously.
+  // Related to http://crbug.com/1246480.
+  __weak __typeof(self) weakSelf = self;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [weakSelf continueSignin];
+  });
 }
 
-- (void)cancelAndDismissAnimated:(BOOL)animated {
-  if (_state == DONE)
+- (void)interruptWithAction:(SigninCoordinatorInterrupt)action {
+  if (_state == DONE) {
     return;
+  }
+  __weak __typeof(self) weakSelf = self;
+  [_performer interruptWithAction:action
+                       completion:^() {
+                         [weakSelf performerInterrupted];
+                       }];
+}
 
-  [_performer cancelAndDismissAnimated:animated];
+- (void)performerInterrupted {
   if (_state != DONE) {
     // The performer might not have been able to continue the flow if it was
     // waiting for a callback (e.g. waiting for AccountReconcilor). In this
     // case, we force the flow to finish synchronously.
     [self cancelFlow];
   }
-
   DCHECK_EQ(DONE, _state);
 }
 
@@ -204,7 +212,6 @@ enum AuthenticationState {
     case CLEAR_DATA:
     case SIGN_IN:
     case COMMIT_SYNC:
-    case ENABLE_BOOKMARK_READING_LIST_ACCOUNT_STORAGE:
     case REGISTER_FOR_USER_POLICY:
     case FETCH_USER_POLICY:
       return COMPLETE_WITH_FAILURE;
@@ -234,7 +241,7 @@ enum AuthenticationState {
       // If the user enabled Sync, expect the data clearing strategy to be set.
       switch (self.postSignInAction) {
         case PostSignInAction::kNone:
-        case PostSignInAction::kEnableBookmarkReadingListAccountStorage:
+        case PostSignInAction::kShowSnackbar:
           // `localDataClearingStrategy` is not required.
           break;
         case PostSignInAction::kCommitSync:
@@ -267,16 +274,22 @@ enum AuthenticationState {
       switch (self.postSignInAction) {
         case PostSignInAction::kCommitSync:
           return COMMIT_SYNC;
-        case PostSignInAction::kEnableBookmarkReadingListAccountStorage:
-          return ENABLE_BOOKMARK_READING_LIST_ACCOUNT_STORAGE;
+        case PostSignInAction::kShowSnackbar:
+          _shouldShowSigninSnackbar = YES;
+          [[fallthrough]];
         case PostSignInAction::kNone:
-          return COMPLETE_WITH_SUCCESS;
+          if (policy::IsAnyUserPolicyFeatureEnabled() &&
+              _shouldFetchUserPolicy) {
+            return REGISTER_FOR_USER_POLICY;
+          } else {
+            return COMPLETE_WITH_SUCCESS;
+          }
       }
     case COMMIT_SYNC:
-      if (policy::IsUserPolicyEnabled() && _shouldFetchUserPolicy)
+      if (policy::IsUserPolicyEnabledForSigninOrSyncConsentLevel() &&
+          _shouldFetchUserPolicy) {
         return REGISTER_FOR_USER_POLICY;
-      return COMPLETE_WITH_SUCCESS;
-    case ENABLE_BOOKMARK_READING_LIST_ACCOUNT_STORAGE:
+      }
       return COMPLETE_WITH_SUCCESS;
     case REGISTER_FOR_USER_POLICY:
       if (!_dmToken.length || !_clientID.length) {
@@ -356,10 +369,6 @@ enum AuthenticationState {
       [self continueSignin];
       return;
 
-    case ENABLE_BOOKMARK_READING_LIST_ACCOUNT_STORAGE:
-      [self optInBookmarkReadingListAccountStorage];
-      return;
-
     case REGISTER_FOR_USER_POLICY:
       [_performer registerUserPolicy:browserState
                          forIdentity:_identityToSignIn];
@@ -408,7 +417,7 @@ enum AuthenticationState {
     case PostSignInAction::kCommitSync:
       [self checkMergeCaseForUnsupervisedAccounts];
       break;
-    case PostSignInAction::kEnableBookmarkReadingListAccountStorage:
+    case PostSignInAction::kShowSnackbar:
     case PostSignInAction::kNone:
       [self continueSignin];
       break;
@@ -483,19 +492,18 @@ enum AuthenticationState {
     bool isManagedAccount = _identityToSignInHostedDomain.length > 0;
     signin_metrics::RecordSigninAccountType(signin::ConsentLevel::kSignin,
                                             isManagedAccount);
+    // TODO(crbug.com/1462858): Turn sync on was deprecated. Remove this branch
+    // after phase 2 on iOS is launched. See ConsentLevel::kSync documentation
+    // for details.
     if (self.postSignInAction == PostSignInAction::kCommitSync) {
       signin_metrics::RecordSigninAccountType(signin::ConsentLevel::kSync,
                                               isManagedAccount);
     }
   }
   if (_signInCompletion) {
-    // Make sure the completion callback is always called after
-    // -[AuthenticationFlow startSignInWithCompletion:] returns.
     CompletionCallback signInCompletion = _signInCompletion;
     _signInCompletion = nil;
-    dispatch_async(dispatch_get_main_queue(), ^{
-      signInCompletion(success);
-    });
+    signInCompletion(success);
   }
   if (_shouldShowSigninSnackbar) {
     [_performer showSnackbarWithSignInIdentity:_identityToSignIn
@@ -532,29 +540,6 @@ enum AuthenticationState {
                        }
                        viewController:_presentingViewController
                               browser:_browser];
-}
-
-// Opts in the bookmark and reading list account storage and continues the
-// sign-in flow.
-- (void)optInBookmarkReadingListAccountStorage {
-  bool bookmarksAccountStorageEnabled =
-      base::FeatureList::IsEnabled(bookmarks::kEnableBookmarksAccountStorage);
-  bool dualReadingListModelEnabled = base::FeatureList::IsEnabled(
-      reading_list::switches::kReadingListEnableDualReadingListModel);
-  bool readingListTransportUponSignInEnabled = base::FeatureList::IsEnabled(
-      reading_list::switches::kReadingListEnableSyncTransportModeUponSignIn);
-  CHECK(bookmarksAccountStorageEnabled ||
-        (dualReadingListModelEnabled && readingListTransportUponSignInEnabled))
-      << "bookmarksAccountStorageEnabled: " << bookmarksAccountStorageEnabled
-      << ", dualReadingListModelEnabled: " << dualReadingListModelEnabled
-      << ", readingListTransportUponSignInEnabled: "
-      << readingListTransportUponSignInEnabled;
-  syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState([self originalBrowserState]);
-  syncer::SyncUserSettings* syncUserSettings = syncService->GetUserSettings();
-  syncUserSettings->SetBookmarksAndReadingListAccountStorageOptIn(true);
-  _shouldShowSigninSnackbar = YES;
-  [self continueSignin];
 }
 
 #pragma mark AuthenticationFlowPerformerDelegate

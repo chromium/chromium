@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_USER_BYPASS_USER_BYPASS_WEB_CONTENTS_OBSERVER_H_
 #define CHROME_BROWSER_USER_BYPASS_USER_BYPASS_WEB_CONTENTS_OBSERVER_H_
 
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -29,7 +29,7 @@ class UserBypassWebContentsObserver
 
   // Helps access the cookie settings object during tests.
   content_settings::CookieSettings* GetCookieSettingsForTesting() {
-    return cookie_settings_;
+    return cookie_settings_.get();
   }
 
  private:
@@ -45,7 +45,7 @@ class UserBypassWebContentsObserver
       content::NavigationHandle* navigation_handle) override;
   // End of content::WebContentObserver overrides.
 
-  raw_ptr<content_settings::CookieSettings> cookie_settings_;
+  scoped_refptr<content_settings::CookieSettings> cookie_settings_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

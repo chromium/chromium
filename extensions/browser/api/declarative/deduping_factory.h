@@ -9,12 +9,12 @@
 
 #include <list>
 #include <string>
-#include <unordered_map>
-#include <unordered_set>
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/ref_counted.h"
 
 namespace extensions {
@@ -82,9 +82,9 @@ class DedupingFactory {
   // Cache of previous prototypes in most-recently-used order. Most recently
   // used objects are at the end.
   typedef std::list<scoped_refptr<const BaseClassT> > PrototypeList;
-  typedef std::unordered_map<InstanceType, PrototypeList> ExistingPrototypes;
-  typedef std::unordered_map<InstanceType, FactoryMethod> FactoryMethods;
-  typedef std::unordered_set<InstanceType> ParameterizedTypes;
+  typedef base::flat_map<InstanceType, PrototypeList> ExistingPrototypes;
+  typedef base::flat_map<InstanceType, FactoryMethod> FactoryMethods;
+  typedef base::flat_set<InstanceType> ParameterizedTypes;
 
   const size_t max_number_prototypes_;
   ExistingPrototypes prototypes_;

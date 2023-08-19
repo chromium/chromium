@@ -172,13 +172,13 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeData {
   // Method is called on dropping on the Chromium drop target. Since creating
   // the temp files involves file I/O, the method is asynchronous and the caller
   // must provide a callback function that receives a vector of pairs of temp
-  // file paths and display names. Method immediately returns false if there are
-  // no virtual files in the data object, in which case the callback will never
-  // be invoked.
+  // file paths and display names. The method will invoke the callback with an
+  // empty vector if there are no virtual files in the data object.
+  //
   // TODO(https://crbug.com/951574): Implement virtual file extraction to
   // dynamically stream data to the renderer when File's bytes are actually
   // requested
-  bool GetVirtualFilesAsTempFiles(
+  void GetVirtualFilesAsTempFiles(
       base::OnceCallback<void(const std::vector</*temp path*/ std::pair<
                                   base::FilePath,
                                   /*display name*/ base::FilePath>>&)> callback)

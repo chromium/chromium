@@ -4,10 +4,20 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<style include="oobe-dialog-host-styles">
+<style include="oobe-dialog-host-styles cros-color-overrides">
   #password-note {
     color: var(--cros-color-secondary);
-    font-size: 12px;
+    font-size: var(--oobe-enable-debugging-font-size);
+  }
+
+  :host-context(.jelly-enabled)
+    cr-input#password,
+    cr-input#passwordRepeat {
+      --cr-input-background-color: var(--cros-sys-input_field_on_shaded);
+  }
+
+  :host-context(.jelly-enabled) #password-note {
+    color: var(--oobe-subheader-text-color);
   }
 </style>
 <oobe-adaptive-dialog id="removeProtectionDialog" role="dialog"
@@ -112,8 +122,9 @@ found in the LICENSE file.
     [[i18nDynamic(locale, 'enableDebuggingErrorMessage')]]
   </div>
   <div slot="content" class="flex layout vertical center center-justified">
-    <img src="images/error.svg"
-        class="oobe-illustration" aria-hidden="true">
+    <iron-icon id="iconArea" icon="oobe-illos:error-illo"
+        class="illustration-jelly">
+    </iron-icon>
   </div>
   <div slot="bottom-buttons">
     <oobe-text-button id="errorOkButton" inverse class="focus-on-show"

@@ -34,18 +34,21 @@ inline constexpr char kSyncInitialSyncFeatureSetupComplete[] =
 inline constexpr char kSyncKeepEverythingSynced[] =
     "sync.keep_everything_synced";
 
+#if BUILDFLAG(IS_IOS)
 // Boolean specifying whether the user has opted in account storage for
 // bookmarks and reading list or not. This pref and the following preferences
 // (kSyncBookmarks, kSyncReadingList) should be both true to enable bookmarks
 // and reading lists for signed-in, non-syncing users only.
 inline constexpr char kBookmarksAndReadingListAccountStorageOptIn[] =
     "sync.bookmarks_and_reading_list_account_storage_opt_in";
+#endif  // BUILDFLAG(IS_IOS)
+
+// Dict specifying the selected types per account for signed-in, non-syncing
+// users only.
+inline constexpr char kSelectedTypesPerAccount[] =
+    "sync.selected_types_per_account";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// Boolean pref that records whether OS sync preferences were migrated due to
-// SyncSettingsCategorization rollout.
-// TODO(crbug.com/1249845): Remove after 2023-06 (see also crbug.com/1255724).
-inline constexpr char kOsSyncPrefsMigrated[] = "sync.os_sync_prefs_migrated";
 
 // Boolean specifying whether to automatically sync all Chrome OS specific data
 // types (including future ones). This includes types like printers, OS-only
@@ -56,6 +59,7 @@ inline constexpr char kSyncAllOsTypes[] = "sync.all_os_types";
 // OS user selectable types.
 inline constexpr char kSyncOsApps[] = "sync.os_apps";
 inline constexpr char kSyncOsPreferences[] = "sync.os_preferences";
+inline constexpr char kSyncWifiConfigurations[] = "sync.wifi_configurations";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -65,18 +69,19 @@ inline constexpr char kSyncAppsEnabledByOs[] = "sync.apps_enabled_by_os";
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // Booleans specifying whether the user has selected to sync the following
-// user selectable types.
+// user selectable types. Which are also used as keys within
+// "sync.selected_types_per_account".
 inline constexpr char kSyncApps[] = "sync.apps";
 inline constexpr char kSyncAutofill[] = "sync.autofill";
 inline constexpr char kSyncBookmarks[] = "sync.bookmarks";
 inline constexpr char kSyncExtensions[] = "sync.extensions";
 inline constexpr char kSyncPasswords[] = "sync.passwords";
+inline constexpr char kSyncPayments[] = "sync.payments";
 inline constexpr char kSyncPreferences[] = "sync.preferences";
 inline constexpr char kSyncReadingList[] = "sync.reading_list";
 inline constexpr char kSyncTabs[] = "sync.tabs";
 inline constexpr char kSyncThemes[] = "sync.themes";
 inline constexpr char kSyncTypedUrls[] = "sync.typed_urls";
-inline constexpr char kSyncWifiConfigurations[] = "sync.wifi_configurations";
 inline constexpr char kSyncSavedTabGroups[] = "sync.saved_tab_groups";
 
 // Boolean used by enterprise configuration management in order to lock down
@@ -90,6 +95,13 @@ inline constexpr char kSyncManaged[] = "sync.managed";
 // disabled by the user in sync settings, or when sync was reset from the
 // dashboard.
 inline constexpr char kSyncRequested[] = "sync.requested";
+
+// The type of encryption passphrase used. Determined and set the first time the
+// engine is successfully initialized.
+// Note that the actual values correspond to the proto version of
+// PassphraseType, see ProtoPassphraseInt32ToEnum() etc.
+inline constexpr char kSyncCachedPassphraseType[] =
+    "sync.cached_passphrase_type";
 
 // A string that can be used to restore sync encryption infrastructure on
 // startup so that the user doesn't need to provide credentials on each start.

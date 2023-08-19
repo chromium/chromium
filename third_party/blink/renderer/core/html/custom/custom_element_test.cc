@@ -41,12 +41,12 @@ static void TestIsPotentialCustomElementNameChar(UChar32 c, bool expected) {
   AtomicString str;
   if (c <= 0xFF) {
     str8[2] = c;
-    str = str8;
+    str = AtomicString(str8);
   } else {
     size_t i = 2;
     U16_APPEND_UNSAFE(str16, i, c);
     str16[i] = 0;
-    str = str16;
+    str = AtomicString(str16);
   }
   TestIsPotentialCustomElementName(str, expected);
 }
@@ -56,24 +56,24 @@ TEST(CustomElementTest, TestIsValidNamePotentialCustomElementName) {
     bool expected;
     AtomicString str;
   } tests[] = {
-      {false, ""},
-      {false, "a"},
-      {false, "A"},
+      {false, g_empty_atom},
+      {false, AtomicString("a")},
+      {false, AtomicString("A")},
 
-      {false, "A-"},
-      {false, "0-"},
+      {false, AtomicString("A-")},
+      {false, AtomicString("0-")},
 
-      {true, "a-"},
-      {true, "a-a"},
-      {true, "aa-"},
-      {true, "aa-a"},
-      {true, reinterpret_cast<const UChar*>(
-                 u"aa-\x6F22\x5B57")},  // Two CJK Unified Ideographs
-      {true, reinterpret_cast<const UChar*>(
-                 u"aa-\xD840\xDC0B")},  // Surrogate pair U+2000B
+      {true, AtomicString("a-")},
+      {true, AtomicString("a-a")},
+      {true, AtomicString("aa-")},
+      {true, AtomicString("aa-a")},
+      {true, AtomicString(reinterpret_cast<const UChar*>(
+                 u"aa-\x6F22\x5B57"))},  // Two CJK Unified Ideographs
+      {true, AtomicString(reinterpret_cast<const UChar*>(
+                 u"aa-\xD840\xDC0B"))},  // Surrogate pair U+2000B
 
-      {false, "a-A"},
-      {false, "a-Z"},
+      {false, AtomicString("a-A")},
+      {false, AtomicString("a-Z")},
   };
   for (auto test : tests)
     TestIsPotentialCustomElementName(test.str, test.expected);
@@ -137,23 +137,26 @@ TEST(CustomElementTest, TestIsValidNamePotentialCustomElementNameCharFalse) {
 }
 
 TEST(CustomElementTest, TestIsValidNameHyphenContainingElementNames) {
-  EXPECT_TRUE(CustomElement::IsValidName("valid-name"));
+  EXPECT_TRUE(CustomElement::IsValidName(AtomicString("valid-name")));
 
-  EXPECT_FALSE(CustomElement::IsValidName("annotation-xml"));
-  EXPECT_FALSE(CustomElement::IsValidName("color-profile"));
-  EXPECT_FALSE(CustomElement::IsValidName("font-face"));
-  EXPECT_FALSE(CustomElement::IsValidName("font-face-src"));
-  EXPECT_FALSE(CustomElement::IsValidName("font-face-uri"));
-  EXPECT_FALSE(CustomElement::IsValidName("font-face-format"));
-  EXPECT_FALSE(CustomElement::IsValidName("font-face-name"));
-  EXPECT_FALSE(CustomElement::IsValidName("missing-glyph"));
+  EXPECT_FALSE(CustomElement::IsValidName(AtomicString("annotation-xml")));
+  EXPECT_FALSE(CustomElement::IsValidName(AtomicString("color-profile")));
+  EXPECT_FALSE(CustomElement::IsValidName(AtomicString("font-face")));
+  EXPECT_FALSE(CustomElement::IsValidName(AtomicString("font-face-src")));
+  EXPECT_FALSE(CustomElement::IsValidName(AtomicString("font-face-uri")));
+  EXPECT_FALSE(CustomElement::IsValidName(AtomicString("font-face-format")));
+  EXPECT_FALSE(CustomElement::IsValidName(AtomicString("font-face-name")));
+  EXPECT_FALSE(CustomElement::IsValidName(AtomicString("missing-glyph")));
 }
 
 TEST(CustomElementTest, TestIsValidNameEmbedderNames) {
-  CustomElement::AddEmbedderCustomElementName("embeddercustomelement");
+  CustomElement::AddEmbedderCustomElementName(
+      AtomicString("embeddercustomelement"));
 
-  EXPECT_FALSE(CustomElement::IsValidName("embeddercustomelement", false));
-  EXPECT_TRUE(CustomElement::IsValidName("embeddercustomelement", true));
+  EXPECT_FALSE(
+      CustomElement::IsValidName(AtomicString("embeddercustomelement"), false));
+  EXPECT_TRUE(
+      CustomElement::IsValidName(AtomicString("embeddercustomelement"), true));
 }
 
 TEST(CustomElementTest, StateByParser) {
@@ -174,7 +177,7 @@ TEST(CustomElementTest, StateByParser) {
       {"v0", CustomElementState::kUncustomized},
   };
   for (const auto& data : parser_data) {
-    Element* element = document.getElementById(data.id);
+    Element* element = document.getElementById(AtomicString(data.id));
     EXPECT_EQ(data.state, element->GetCustomElementState()) << data.id;
   }
 }
@@ -192,15 +195,17 @@ TEST(CustomElementTest, StateByCreateElement) {
   auto page_holder = std::make_unique<DummyPageHolder>();
   Document& document = page_holder->GetDocument();
   for (const auto& data : create_element_data) {
-    Element* element = document.CreateElementForBinding(data.name);
+    Element* element =
+        document.CreateElementForBinding(AtomicString(data.name));
     EXPECT_EQ(data.state, element->GetCustomElementState()) << data.name;
 
-    element = document.createElementNS(html_names::xhtmlNamespaceURI, data.name,
-                                       ASSERT_NO_EXCEPTION);
+    element =
+        document.createElementNS(html_names::xhtmlNamespaceURI,
+                                 AtomicString(data.name), ASSERT_NO_EXCEPTION);
     EXPECT_EQ(data.state, element->GetCustomElementState()) << data.name;
 
-    element = document.createElementNS(svg_names::kNamespaceURI, data.name,
-                                       ASSERT_NO_EXCEPTION);
+    element = document.createElementNS(
+        svg_names::kNamespaceURI, AtomicString(data.name), ASSERT_NO_EXCEPTION);
     EXPECT_EQ(CustomElementState::kUncustomized,
               element->GetCustomElementState())
         << data.name;
@@ -218,19 +223,20 @@ TEST(CustomElementTest,
   {
     CEReactionsScope reactions;
     TestCustomElementDefinitionBuilder builder;
-    registry->DefineInternal(script_state, "a-a", builder,
+    registry->DefineInternal(script_state, AtomicString("a-a"), builder,
                              ElementDefinitionOptions::Create(),
                              should_not_throw);
   }
-  CustomElementDefinition* definition =
-      registry->DefinitionFor(CustomElementDescriptor("a-a", "a-a"));
+  CustomElementDefinition* definition = registry->DefinitionFor(
+      CustomElementDescriptor(AtomicString("a-a"), AtomicString("a-a")));
   EXPECT_NE(nullptr, definition) << "a-a should be registered";
 
   // create an element with an uppercase tag name
   Document& document = scope.GetDocument();
   EXPECT_TRUE(IsA<HTMLDocument>(document))
       << "this test requires a HTML document";
-  Element* element = document.CreateElementForBinding("A-A", should_not_throw);
+  Element* element =
+      document.CreateElementForBinding(AtomicString("A-A"), should_not_throw);
   EXPECT_EQ(definition, element->GetCustomElementDefinition());
 }
 

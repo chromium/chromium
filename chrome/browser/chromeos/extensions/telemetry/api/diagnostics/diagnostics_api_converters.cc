@@ -8,7 +8,7 @@
 #include "chrome/common/chromeos/extensions/api/diagnostics.h"
 #include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
 
-namespace chromeos::converters {
+namespace chromeos::converters::diagnostics {
 
 namespace {
 
@@ -90,7 +90,28 @@ bool ConvertMojoRoutine(crosapi::DiagnosticsRoutineEnum in,
     case crosapi::DiagnosticsRoutineEnum::kEmmcLifetime:
       *out = cx_diag::RoutineType::kEmmcLifetime;
       return true;
-    default:
+    case crosapi::DiagnosticsRoutineEnum::kBluetoothPower:
+      *out = cx_diag::RoutineType::kBluetoothPower;
+      return true;
+    case crosapi::DiagnosticsRoutineEnum::kUfsLifetime:
+      *out = cx_diag::RoutineType::kUfsLifetime;
+      return true;
+    case crosapi::DiagnosticsRoutineEnum::kPowerButton:
+      *out = cx_diag::RoutineType::kPowerButton;
+      return true;
+    case crosapi::DiagnosticsRoutineEnum::kAudioDriver:
+      *out = cx_diag::RoutineType::kAudioDriver;
+      return true;
+    case crosapi::DiagnosticsRoutineEnum::kBluetoothDiscovery:
+      *out = cx_diag::RoutineType::kBluetoothDiscovery;
+      return true;
+    case crosapi::DiagnosticsRoutineEnum::kBluetoothScanning:
+      *out = cx_diag::RoutineType::kBluetoothScanning;
+      return true;
+    case crosapi::DiagnosticsRoutineEnum::kBluetoothPairing:
+      *out = cx_diag::RoutineType::kBluetoothPairing;
+      return true;
+    case crosapi::DiagnosticsRoutineEnum::kUnknown:
       return false;
   }
 }
@@ -141,10 +162,7 @@ crosapi::DiagnosticsRoutineCommandEnum ConvertRoutineCommand(
     case cx_diag::RoutineCommandType::kNone:
       break;
   }
-
-  NOTREACHED() << "Unknown command type: " << ToString(commandType);
-  return static_cast<crosapi::DiagnosticsRoutineCommandEnum>(
-      static_cast<int>(crosapi::DiagnosticsRoutineCommandEnum::kMaxValue) + 1);
+  NOTREACHED_NORETURN();
 }
 
 crosapi::DiagnosticsAcPowerStatusEnum ConvertAcPowerStatusRoutineType(
@@ -157,11 +175,7 @@ crosapi::DiagnosticsAcPowerStatusEnum ConvertAcPowerStatusRoutineType(
     case cx_diag::AcPowerStatus::kNone:
       break;
   }
-
-  NOTREACHED() << "Unknown ac power status routine type: "
-               << ToString(routineType);
-  return static_cast<crosapi::DiagnosticsAcPowerStatusEnum>(
-      static_cast<int>(crosapi::DiagnosticsAcPowerStatusEnum::kMaxValue) + 1);
+  NOTREACHED_NORETURN();
 }
 
 cx_diag::UserMessageType ConvertRoutineUserMessage(
@@ -173,6 +187,8 @@ cx_diag::UserMessageType ConvertRoutineUserMessage(
       return cx_diag::UserMessageType::kUnplugAcPower;
     case crosapi::DiagnosticsRoutineUserMessageEnum::kPlugInACPower:
       return cx_diag::UserMessageType::kPlugInAcPower;
+    case crosapi::DiagnosticsRoutineUserMessageEnum::kPressPowerButton:
+      return cx_diag::UserMessageType::kPressPowerButton;
   }
 }
 
@@ -186,11 +202,7 @@ crosapi::DiagnosticsDiskReadRoutineTypeEnum ConvertDiskReadRoutineType(
     case cx_diag::DiskReadRoutineType::kNone:
       break;
   }
-
-  NOTREACHED() << "Unknown disk read routine type: " << ToString(routineType);
-  return static_cast<crosapi::DiagnosticsDiskReadRoutineTypeEnum>(
-      static_cast<int>(crosapi::DiagnosticsDiskReadRoutineTypeEnum::kMaxValue) +
-      1);
+  NOTREACHED_NORETURN();
 }
 
 crosapi::DiagnosticsNvmeSelfTestTypeEnum ConvertNvmeSelfTestRoutineType(
@@ -205,4 +217,4 @@ crosapi::DiagnosticsNvmeSelfTestTypeEnum ConvertNvmeSelfTestRoutineType(
   }
 }
 
-}  // namespace chromeos::converters
+}  // namespace chromeos::converters::diagnostics

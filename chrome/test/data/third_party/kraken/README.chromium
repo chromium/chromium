@@ -3,7 +3,9 @@ Short Name: kraken
 URL: http://krakenbenchmark.mozilla.org
 Version: 1.1
 License: various
+License File: LICENSE
 Security Critical: no
+Shipped: no
 
 Description:
 A JavaScript performance benchmark, developed and released by Mozilla.

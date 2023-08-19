@@ -74,6 +74,7 @@ class AmbientAshTestBase : public AshTestBase {
   // case, the ambient screen must be closed, and the new settings will take
   // effect with the next call to ShowAmbientScreen().
   void SetAmbientUiSettings(const AmbientUiSettings& settings);
+  AmbientUiSettings GetCurrentUiSettings();
 
   // Convenient form of the above that only sets |AmbientUiSettings::theme| and
   // leaves the rest of the settings unset.
@@ -84,6 +85,7 @@ class AmbientAshTestBase : public AshTestBase {
 
   // Creates ambient screen in its own widget.
   void SetAmbientShownAndWaitForWidgets();
+  void SetAmbientPreviewAndWaitForWidgets();
 
   // Hides ambient screen. Can only be called after |ShowAmbientScreen| has been
   // called.
@@ -170,6 +172,9 @@ class AmbientAshTestBase : public AshTestBase {
   void FastForwardByBackgroundLockScreenTimeout(
       float factor = kDefaultFastForwardFactor);
 
+  // Advance the task environment timer to screen saver duration in minutes.
+  void FastForwardByDurationInMinutes(int minutes);
+
   void SetPowerStateCharging();
   void SetPowerStateDischarging();
   void SetPowerStateFull();
@@ -255,6 +260,10 @@ class AmbientAshTestBase : public AshTestBase {
   int GetScreenSaverDuration();
 
  private:
+  // Waits for the ambient UI to start rendering (i.e. a widget is created and
+  // the ambient UI is visible to the user). A fatal error occurs if the
+  // `timeout` elapses before the UI starts rendering.
+  void WaitForWidgets(base::TimeDelta timeout);
   void SpinWaitForAmbientViewAvailable(
       const base::RepeatingClosure& quit_closure);
 

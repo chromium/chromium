@@ -133,12 +133,25 @@ void RecordItemAction(const std::vector<const HoldingSpaceItem*>& items,
   const std::string action_string = ToString(action);
 
   for (const HoldingSpaceItem* item : items) {
+    // Record "HoldingSpace.Item.Action.All".
     base::UmaHistogramEnumeration("HoldingSpace.Item.Action.All", action);
-    base::UmaHistogramEnumeration("HoldingSpace.Item.Action." + action_string,
-                                  item->type());
-    base::UmaHistogramExactLinear(
-        "HoldingSpace.Item.Action." + action_string + ".Extension",
-        FilePathToExtension(item->file_path()), kExtensionsSize);
+
+    // Record "HoldingSpace.Item.Action.{action}".
+    base::UmaHistogramEnumeration(
+        base::StrCat({"HoldingSpace.Item.Action.", action_string}),
+        item->type());
+
+    // Record "HoldingSpace.Item.Action.{action}.Extension".
+    base::UmaHistogramExactLinear(base::StrCat({"HoldingSpace.Item.Action.",
+                                                action_string, ".Extension"}),
+                                  FilePathToExtension(item->file_path()),
+                                  kExtensionsSize);
+
+    // Record "HoldingSpace.Item.Action.{action}.FileSystemType".
+    base::UmaHistogramEnumeration(
+        base::StrCat(
+            {"HoldingSpace.Item.Action.", action_string, ".FileSystemType"}),
+        item->file().file_system_type);
   }
 }
 

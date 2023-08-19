@@ -53,7 +53,6 @@
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
-#include <fuchsia/ui/scenic/cpp/fidl.h>
 #include <lib/sys/cpp/component_context.h>
 #include <sys/socket.h>
 #include <unistd.h>
@@ -106,25 +105,6 @@ void ConnectStdioSocket(const std::string& host_and_port) {
   PCHECK(result == STDOUT_FILENO) << "Failed to dup socket to stdout";
 
   PCHECK(close(fd) == 0);
-}
-
-// Checks the supported ozone platform with Scenic if no arg is specified
-// already.
-void MaybeSetOzonePlatformArg(base::CommandLine& command_line) {
-  if (command_line.HasSwitch(switches::kOzonePlatform)) {
-    return;
-  }
-
-  fuchsia::ui::scenic::ScenicSyncPtr scenic;
-  zx_status_t status =
-      base::ComponentContextForProcess()->svc()->Connect(scenic.NewRequest());
-  ZX_CHECK(status == ZX_OK, status) << "Couldn't connect to Scenic.";
-
-  bool scenic_uses_flatland = false;
-  status = scenic->UsesFlatland(&scenic_uses_flatland);
-  ZX_CHECK(status == ZX_OK, status) << "UsesFlatland()";
-  command_line.AppendSwitchNative(switches::kOzonePlatform,
-                                  scenic_uses_flatland ? "flatland" : "scenic");
 }
 
 #endif  // BUILDFLAG(IS_FUCHSIA)
@@ -240,11 +220,6 @@ void WebTestBrowserMainRunner::Initialize() {
     command_line.AppendSwitch(switches::kEnableBlinkTestFeatures);
   }
 
-  if (!command_line.HasSwitch(switches::kEnableThreadedCompositing)) {
-    command_line.AppendSwitch(switches::kDisableThreadedCompositing);
-    command_line.AppendSwitch(cc::switches::kDisableThreadedAnimation);
-  }
-
   // With display compositor pixel dumps, we ensure that we complete all
   // stages of compositing before draw. We also can't have checker imaging,
   // since it's incompatible with single threaded compositor and display
@@ -270,9 +245,9 @@ void WebTestBrowserMainRunner::Initialize() {
   // These must be kept in sync with
   // //third_party/blink/web_tests/external/wpt/config.json.
   command_line.AppendSwitchASCII(network::switches::kIpAddressSpaceOverrides,
-                                 "127.0.0.1:8082=local,"
+                                 "127.0.0.1:8082=private,"
                                  "127.0.0.1:8093=public,"
-                                 "127.0.0.1:8446=local,"
+                                 "127.0.0.1:8446=private,"
                                  "127.0.0.1:8447=public");
 
   // We want to know determanistically from command line flags if the Gpu
@@ -315,10 +290,6 @@ void WebTestBrowserMainRunner::Initialize() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
   content::WebTestBrowserPlatformInitialize();
-#endif
-
-#if BUILDFLAG(IS_FUCHSIA)
-  MaybeSetOzonePlatformArg(command_line);
 #endif
 
   RenderWidgetHostImpl::DisableResizeAckCheckForTesting();

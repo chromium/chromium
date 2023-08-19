@@ -39,7 +39,7 @@ class WindowPreviewViewTestApi {
   WindowMirrorView* GetMirrorViewForWidget(views::Widget* widget);
 
  private:
-  raw_ptr<WindowPreviewView, ExperimentalAsh> preview_view_;
+  raw_ptr<WindowPreviewView, DanglingUntriaged | ExperimentalAsh> preview_view_;
 };
 
 }  // namespace ash

@@ -9,7 +9,7 @@
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"
@@ -78,8 +78,8 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, SeparateProxyPoliciesMerging) {
   VerifyProxyPrefs(g_browser_process->local_state(), std::string(),
                    std::string(), absl::nullopt, std::string(),
                    ProxyPrefs::MODE_SYSTEM);
-  VerifyProxyPrefs(browser()->profile()->GetPrefs(), std::string(),
-                   std::string(), absl::nullopt, std::string(),
+  VerifyProxyPrefs(chrome_test_utils::GetProfile(this)->GetPrefs(),
+                   std::string(), std::string(), absl::nullopt, std::string(),
                    ProxyPrefs::MODE_SYSTEM);
 }
 

@@ -11,6 +11,15 @@ namespace translate {
 // (Matches what the CLD -Compact Language Detection- library reports.)
 extern const char* const kUnknownLanguageCode;
 
+// The maximum number of characters allowed for a text selection in Partial
+// Translate. Longer selections will be truncated down to the first valid word
+// break respecting the threshold.
+extern const int kDesktopPartialTranslateTextSelectionMaxCharacters;
+// The number of milliseconds to wait before showing the Partial Translate
+// bubble, even if no response has been received. In this case, a waiting view
+// is shown.
+extern const int kDesktopPartialTranslateBubbleShowDelayMs;
+
 // Enum for the Translate.CompactInfobar.Event UMA histogram.
 // Note: This enum is used to back an UMA histogram, and should be treated as
 // append-only.

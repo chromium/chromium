@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/arm.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/libgav1/options.gni")
 
 config("public_libgav1_config") {
@@ -76,5 +77,24 @@ if (use_libgav1_parser) {
       "//third_party/libgav1/src/src/yuv_buffer.cc",
       "//third_party/libgav1/src/src/yuv_buffer.h",
     ]
+  }
+
+  fuzzer_test("libgav1_obu_parser_fuzzer") {
+    sources = [
+      "//third_party/libgav1/src/examples/file_reader.cc",
+      "//third_party/libgav1/src/examples/file_reader.h",
+      "//third_party/libgav1/src/examples/file_reader_constants.cc",
+      "//third_party/libgav1/src/examples/file_reader_constants.h",
+      "//third_party/libgav1/src/examples/file_reader_factory.cc",
+      "//third_party/libgav1/src/examples/file_reader_factory.h",
+      "//third_party/libgav1/src/examples/file_reader_interface.h",
+      "//third_party/libgav1/src/examples/ivf_parser.cc",
+      "//third_party/libgav1/src/examples/ivf_parser.h",
+      "//third_party/libgav1/src/examples/logging.h",
+      "//third_party/libgav1/src/tests/fuzzer/obu_parser_fuzzer.cc",
+    ]
+    deps = [ ":libgav1_parser" ]
+    defines = [ "LIBGAV1_EXAMPLES_ENABLE_LOGGING=0" ]
+    additional_configs = [ ":private_libgav1_config" ]
   }
 }

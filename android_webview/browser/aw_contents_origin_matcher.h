@@ -24,6 +24,8 @@ namespace android_webview {
 
 // Wrapper for a |js_incection::OriginMatcher| that allows locked updates
 // to the match rules.
+//
+// Lifetime: WebView
 class AwContentsOriginMatcher
     : public base::RefCountedThreadSafe<AwContentsOriginMatcher> {
  public:

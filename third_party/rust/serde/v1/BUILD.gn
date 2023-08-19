@@ -2,6 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# @generated from third_party/rust/BUILD.gn.hbs by tools/crates/gnrt.
+# Do not edit!
+
 import("//build/rust/cargo_crate.gni")
 
 cargo_crate("lib") {
@@ -9,10 +12,36 @@ cargo_crate("lib") {
   epoch = "1"
   crate_type = "rlib"
   crate_root = "crate/src/lib.rs"
+  sources = [
+    "//third_party/rust/serde/v1/crate/build.rs",
+    "//third_party/rust/serde/v1/crate/src/de/format.rs",
+    "//third_party/rust/serde/v1/crate/src/de/ignored_any.rs",
+    "//third_party/rust/serde/v1/crate/src/de/impls.rs",
+    "//third_party/rust/serde/v1/crate/src/de/mod.rs",
+    "//third_party/rust/serde/v1/crate/src/de/seed.rs",
+    "//third_party/rust/serde/v1/crate/src/de/utf8.rs",
+    "//third_party/rust/serde/v1/crate/src/de/value.rs",
+    "//third_party/rust/serde/v1/crate/src/integer128.rs",
+    "//third_party/rust/serde/v1/crate/src/lib.rs",
+    "//third_party/rust/serde/v1/crate/src/macros.rs",
+    "//third_party/rust/serde/v1/crate/src/private/de.rs",
+    "//third_party/rust/serde/v1/crate/src/private/doc.rs",
+    "//third_party/rust/serde/v1/crate/src/private/mod.rs",
+    "//third_party/rust/serde/v1/crate/src/private/ser.rs",
+    "//third_party/rust/serde/v1/crate/src/private/size_hint.rs",
+    "//third_party/rust/serde/v1/crate/src/ser/fmt.rs",
+    "//third_party/rust/serde/v1/crate/src/ser/impls.rs",
+    "//third_party/rust/serde/v1/crate/src/ser/impossible.rs",
+    "//third_party/rust/serde/v1/crate/src/ser/mod.rs",
+    "//third_party/rust/serde/v1/crate/src/std_error.rs",
+  ]
+  inputs = [
+    "//third_party/rust/serde/v1/crate/README.md",
+    "//third_party/rust/serde/v1/crate/crates-io.md",
+  ]
 
   # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
-  sources = [ "crate/src/lib.rs" ]
   edition = "2015"
   cargo_pkg_version = "1.0.147"
   cargo_pkg_authors = "Erick Tryzelaar <erick.tryzelaar@gmail.com>, David Tolnay <dtolnay@gmail.com>"

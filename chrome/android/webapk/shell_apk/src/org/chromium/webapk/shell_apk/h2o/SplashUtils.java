@@ -40,7 +40,9 @@ public class SplashUtils {
     public static View createSplashView(Context context) {
         Resources resources = context.getResources();
         Bitmap icon = WebApkUtils.decodeBitmapFromDrawable(resources, R.drawable.splash_icon);
-        int backgroundColor = WebApkUtils.getColor(resources, R.color.background_color_non_empty);
+        int backgroundColor = WebApkUtils.inDarkMode(context)
+                ? WebApkUtils.getColor(resources, R.color.dark_background_color_non_empty)
+                : WebApkUtils.getColor(resources, R.color.background_color_non_empty);
 
         FrameLayout layout = new FrameLayout(context);
         SplashLayout.createLayout(context, layout, icon, WebApkUtils.isSplashIconAdaptive(context),

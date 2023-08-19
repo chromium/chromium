@@ -31,6 +31,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chromeos/ui/base/display_util.h"
+#include "components/device_event_log/device_event_log.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/display.h"
 #include "ui/display/display_features.h"
@@ -740,9 +741,9 @@ gfx::Insets DisplayManager::GetOverscanInsets(int64_t display_id) const {
 
 void DisplayManager::OnNativeDisplaysChanged(
     const DisplayInfoList& updated_displays) {
+  DISPLAY_LOG(EVENT) << "Displays updated, count:" << updated_displays.size()
+                     << " active:" << active_display_list_.size();
   if (updated_displays.empty()) {
-    VLOG(1) << __func__
-            << "(0): # of current displays=" << active_display_list_.size();
     // If the device is booted without display, or chrome is started
     // without --ash-host-window-bounds on linux desktop, use the
     // default display.
@@ -750,10 +751,12 @@ void DisplayManager::OnNativeDisplaysChanged(
       DisplayInfoList init_displays;
       init_displays.push_back(
           ManagedDisplayInfo::CreateFromSpec(std::string()));
+      init_displays[0].set_detected(false);
       MaybeInitInternalDisplay(&init_displays[0]);
       OnNativeDisplaysChanged(init_displays);
     } else {
-      // Otherwise don't update the displays when all displays are disconnected.
+      // Otherwise just update the displays' detected state when all displays
+      // are disconnected.
       // This happens when:
       // - the device is idle and powerd requested to turn off all displays.
       // - the device is suspended. (kernel turns off all displays)
@@ -763,15 +766,23 @@ void DisplayManager::OnNativeDisplaysChanged(
       //   disconnected.
       // The display will be updated when one of displays is turned on, and the
       // display list will be updated correctly.
+
+      for (auto& display : active_display_list_) {
+        if (display.detected()) {
+          ManagedDisplayInfo info = GetDisplayInfo(display.id());
+          info.set_detected(false);
+          display.set_detected(false);
+          InsertAndUpdateDisplayInfo(info);
+          NotifyMetricsChanged(display,
+                               DisplayObserver::DISPLAY_METRIC_DETECTED);
+        }
+      }
     }
     return;
   }
-  VLOG_IF(1, updated_displays.size() == 1)
-      << __func__ << "(1):" << updated_displays[0].ToString();
-  VLOG_IF(1, updated_displays.size() > 1)
-      << __func__ << "(" << updated_displays.size()
-      << ") [0]=" << updated_displays[0].ToString()
-      << ", [1]=" << updated_displays[1].ToString();
+  for (const auto& display : updated_displays) {
+    DISPLAY_LOG(EVENT) << display.ToString();
+  }
 
   first_display_id_ = updated_displays[0].id();
   std::map<gfx::Point, int64_t> origins;
@@ -999,6 +1010,9 @@ void DisplayManager::UpdateDisplaysWith(
               new_display_info.vsync_rate_min()) {
         metrics |= DisplayObserver::DISPLAY_METRIC_VRR;
       }
+      if (current_display_info.detected() != new_display_info.detected()) {
+        metrics |= DisplayObserver::DISPLAY_METRIC_DETECTED;
+      }
 
       if (metrics != DisplayObserver::DISPLAY_METRIC_NONE) {
         display_changes.insert(
@@ -1059,6 +1073,13 @@ void DisplayManager::UpdateDisplaysWith(
     }
   }
 
+  if (new_displays != active_display_list_) {
+    DISPLAY_LOG(EVENT) << "Displays updated, count:" << new_displays.size();
+    for (const auto& display : new_displays) {
+      DISPLAY_LOG(EVENT) << display.ToString();
+    }
+  }
+
   active_display_list_ = new_displays;
   active_only_display_list_ = active_display_list_;
 
@@ -1097,12 +1118,16 @@ void DisplayManager::UpdateDisplaysWith(
   for (auto iter = display_changes.begin(); iter != display_changes.end();
        ++iter) {
     uint32_t metrics = iter->second;
-    const Display& updated_display = active_display_list_[iter->first];
+    Display& updated_display = active_display_list_[iter->first];
 
     if (notify_primary_change &&
         updated_display.id() == screen_->GetPrimaryDisplay().id()) {
       metrics |= DisplayObserver::DISPLAY_METRIC_PRIMARY;
       notify_primary_change = false;
+    }
+    if (!updated_display.detected()) {
+      updated_display.set_detected(true);
+      metrics |= DisplayObserver::DISPLAY_METRIC_DETECTED;
     }
     NotifyMetricsChanged(updated_display, metrics);
   }
@@ -1184,7 +1209,7 @@ const Display& DisplayManager::GetFakePrimaryDisplay() {
     // https://crbug.com/1057501
     gfx::DisplayColorSpaces display_color_spaces(
         gfx::ColorSpace::CreateSRGB(), DisplaySnapshot::PrimaryFormat());
-    fake_display->set_color_spaces(display_color_spaces);
+    fake_display->SetColorSpaces(display_color_spaces);
   }
   return *fake_display;
 }
@@ -1323,7 +1348,8 @@ const Display DisplayManager::GetMirroringDisplayById(
     int64_t display_id) const {
   auto iter = base::ranges::find(software_mirroring_display_list_, display_id,
                                  &Display::id);
-  return iter == software_mirroring_display_list_.end() ? Display() : *iter;
+  return iter == software_mirroring_display_list_.end() ? GetInvalidDisplay()
+                                                        : *iter;
 }
 
 std::string DisplayManager::GetDisplayNameForId(int64_t id) const {
@@ -2088,11 +2114,10 @@ Display DisplayManager::CreateDisplayFromDisplayInfoById(int64_t id) {
   new_display.set_panel_rotation(display_info.GetLogicalActiveRotation());
   new_display.set_touch_support(display_info.touch_support());
   new_display.set_maximum_cursor_size(display_info.maximum_cursor_size());
-  new_display.set_color_spaces(display_info.display_color_spaces());
+  new_display.SetColorSpaces(display_info.display_color_spaces());
   new_display.set_display_frequency(display_info.refresh_rate());
   new_display.set_label(display_info.name());
-  new_display.SetDRMFormatsAndModifiers(
-      display_info.GetDRMFormatsAndModifiers());
+  new_display.set_detected(display_info.detected());
 
   constexpr uint32_t kNormalBitDepthNumBitsPerChannel = 8u;
   if (display_info.bits_per_channel() > kNormalBitDepthNumBitsPerChannel) {

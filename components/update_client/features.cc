@@ -8,11 +8,5 @@
 #include "build/build_config.h"
 
 namespace update_client::features {
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kPuffinPatches,
-             "PuffinPatches",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#else
 BASE_FEATURE(kPuffinPatches, "PuffinPatches", base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
 }

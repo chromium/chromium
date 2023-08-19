@@ -15,9 +15,12 @@ static_library("backend") {
     "version_updater.h",
   ]
 
+  public_deps = [ "//components/web_package:web_package" ]
+
   deps = [
     "//ash",
     "//ash/public/cpp:cpp",
+    "//ash/webui/shimless_rma/3p_diagnostics",
     "//ash/webui/shimless_rma/mojom",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/rmad",

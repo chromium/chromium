@@ -50,6 +50,7 @@ class SyncFileSystemBackend : public storage::FileSystemBackend {
       storage::FileSystemType type,
       base::File::Error* error_code) override;
   std::unique_ptr<storage::FileSystemOperation> CreateFileSystemOperation(
+      storage::OperationType type,
       const storage::FileSystemURL& url,
       storage::FileSystemContext* context,
       base::File::Error* error_code) const override;
@@ -95,7 +96,7 @@ class SyncFileSystemBackend : public storage::FileSystemBackend {
 
   // |profile_| will initially be valid but may be destroyed before |this|, so
   // it should be checked before being accessed.
-  raw_ptr<Profile, DanglingUntriaged> profile_;
+  raw_ptr<Profile, AcrossTasksDanglingUntriaged> profile_;
 
   // A flag to skip the initialization sequence of SyncFileSystemService for
   // testing.

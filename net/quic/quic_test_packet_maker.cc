@@ -1046,13 +1046,6 @@ std::string QuicTestPacketMaker::QpackEncodeHeaders(
   const std::string headers_frame_header =
       quic::HttpEncoder::SerializeHeadersFrameHeader(encoded_headers.size());
 
-  // Possible add a PUSH stream type.
-  if (!quic::QuicUtils::IsBidirectionalStreamId(stream_id, version_) &&
-      stream_offsets_[stream_id] == 0) {
-    // Push stream type header
-    data += "\x01";
-  }
-
   // Add the HEADERS frame header.
   data += headers_frame_header;
   // Add the HEADERS frame payload.
@@ -1407,8 +1400,7 @@ std::string QuicTestPacketMaker::GenerateHttp3PriorityData(
   quic::PriorityUpdateFrame priority_update;
   quic::HttpStreamPriority priority{
       spdy_priority, quic::HttpStreamPriority::kDefaultIncremental};
-  if (client_priority_uses_incremental_ &&
-      base::FeatureList::IsEnabled(features::kPriorityIncremental)) {
+  if (client_priority_uses_incremental_) {
     priority.incremental = kDefaultPriorityIncremental;
   }
 

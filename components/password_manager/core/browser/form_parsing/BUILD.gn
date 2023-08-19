@@ -6,8 +6,8 @@ import("//build/config/sanitizers/sanitizers.gni")
 
 static_library("form_parsing") {
   sources = [
-    "form_parser.cc",
-    "form_parser.h",
+    "form_data_parser.cc",
+    "form_data_parser.h",
     "password_field_prediction.cc",
     "password_field_prediction.h",
   ]
@@ -20,6 +20,7 @@ static_library("form_parsing") {
   deps = [
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
+    "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/common",
     "//components/password_manager/core/common:features",
   ]
@@ -28,7 +29,7 @@ static_library("form_parsing") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "form_parser_unittest.cc",
+    "form_data_parser_unittest.cc",
     "password_field_prediction_unittest.cc",
   ]
 
@@ -38,6 +39,7 @@ source_set("unit_tests") {
     "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",
     "//components/autofill/core/common",
+    "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/common",
     "//components/password_manager/core/common:features",
     "//testing/gmock",

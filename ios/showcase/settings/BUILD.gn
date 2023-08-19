@@ -12,5 +12,4 @@ source_set("settings") {
     "//ios/showcase/common",
   ]
   frameworks = [ "UIKit.framework" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

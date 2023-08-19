@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("mailto_handler_api") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "mailto_handler_api.h" ]
   deps = [ "//ios/chrome/browser/mailto_handler" ]
 }

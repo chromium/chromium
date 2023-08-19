@@ -10,6 +10,7 @@ import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_to
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../../hats_browser_proxy.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl} from '../../metrics_browser_proxy.js';
 
 import {getTemplate} from './privacy_sandbox_ad_measurement_subpage.html.js';
@@ -47,6 +48,13 @@ export class SettingsPrivacySandboxAdMeasurementSubpageElement extends
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
+
+  override ready() {
+    super.ready();
+
+    HatsBrowserProxyImpl.getInstance().trustSafetyInteractionOccurred(
+        TrustSafetyInteraction.OPENED_AD_MEASUREMENT_SUBPAGE);
+  }
 
   private onToggleChange_(e: Event) {
     const target = e.target as SettingsToggleButtonElement;

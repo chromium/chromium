@@ -40,6 +40,12 @@
       <structure type="lottie" name="IDR_PHONE_HUB_ERROR_STATE_IMAGE" file="unscaled_resources/phone_hub_error_state_image.json" compress="gzip" />
       <structure type="lottie" name="IDR_HOLDING_SPACE_RECENT_FILES_PLACEHOLDER_IMAGE" file="unscaled_resources/holding_space_recent_files_placeholder_image.json" compress="gzip" />
       <structure type="lottie" name="IDR_ARC_COMPAT_MODE_SPLASH_SCREEN_IMAGE" file="unscaled_resources/arc_compat_mode_splash_screen_image.json" compress="gzip" />
+      <structure type="lottie" name="IDR_APP_LIST_SORT_NUDGE_IMAGE" file="unscaled_resources/launcher_sort_nudge_image.json" compress="gzip" />
+      <structure type="lottie" name="IDR_APP_LIST_CONTINUE_SECTION_NOTICE_IMAGE" file="unscaled_resources/launcher_continue_section_notice_image.json" compress="gzip" />
+      <!-- Welcome Tour-->
+      <structure type="lottie" name="IDR_WELCOME_TOUR_DIALOG_IMAGE" file="unscaled_resources/welcome_tour_dialog_image.json" compress="gzip" />
+      <!-- VC Nudge -->
+      <structure type="lottie" name="IDR_SPEAK_ON_MUTE_OPT_IN_NUDGE_IMAGE" file="unscaled_resources/speak_on_mute_opt_in_nudge_image.json" compress="gzip" />
     </structures>
   </release>
 </grit>

@@ -99,14 +99,15 @@ void OverlayStrategySingleOnTop::Propose(
     std::vector<gfx::Rect>* content_bounds) {
   auto* render_pass = render_pass_list->back().get();
   QuadList* quad_list = &render_pass->quad_list;
+
+  const OverlayCandidateFactory::OverlayContext context = {
+      .supports_rounded_display_masks = true, .supports_mask_filter = false};
+
   // Build a list of candidates with the associated quad.
   OverlayCandidateFactory candidate_factory = OverlayCandidateFactory(
       render_pass, resource_provider, surface_damage_rect_list,
       &output_color_matrix, GetPrimaryPlaneDisplayRect(primary_plane),
-      &render_pass_filters,
-      /*is_delegated_context=*/false, /*supports_clip_rect=*/false,
-      /*supports_arbitrary_transform=*/false,
-      /*supports_rounded_display_masks=*/true);
+      &render_pass_filters, context);
 
   std::vector<OverlayProposedCandidate> candidates_with_masks;
 
@@ -130,10 +131,6 @@ void OverlayStrategySingleOnTop::Propose(
         OverlayCandidate::CandidateStatus::kSuccess) {
       // Quads with display masks should always be valid overlay candidates.
       DCHECK(!HasRoundedDisplayMasks(*quad_it));
-      continue;
-    }
-
-    if (candidate.has_mask_filter) {
       continue;
     }
 

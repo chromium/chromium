@@ -5,7 +5,7 @@
 #ifndef UI_COLOR_UI_COLOR_MIXER_H_
 #define UI_COLOR_UI_COLOR_MIXER_H_
 
-#include "ui/color/color_provider_manager.h"
+#include "ui/color/color_provider_key.h"
 
 namespace ui {
 
@@ -13,8 +13,7 @@ class ColorProvider;
 
 // Adds a color mixer to |provider| that combine the above color sets with
 // recipes as necessary to produce all colors needed by ui/.
-void AddUiColorMixer(ColorProvider* provider,
-                     const ColorProviderManager::Key& key);
+void AddUiColorMixer(ColorProvider* provider, const ColorProviderKey& key);
 
 }  // namespace ui
 

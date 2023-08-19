@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.customtabs.features.branding;
 
-import android.content.Context;
 import android.os.SystemClock;
 
 import androidx.annotation.MainThread;
@@ -48,20 +47,18 @@ class BrandingChecker extends AsyncTask<Integer> {
         void put(String packageName, long brandingLaunchTime);
     }
 
-    private final Context mContext;
     private final String mPackageName;
     private final long mBrandingCadence;
-    private final BrandingLaunchTimeStorage mStorage;
     @BrandingDecision
     private final Callback<Integer> mBrandingCheckCallback;
     @BrandingDecision
     private final int mDefaultBrandingDecision;
 
     private @Nullable Boolean mIsPackageValid;
+    private BrandingLaunchTimeStorage mStorage;
 
     /**
      * Create a BrandingChecker used to fetch BrandingDecision.
-     * @param context Application Context used to get package information.
      * @param packageName Package name of Embedded app.
      * @param storage Storage option that used to retrieve branding information.
      * @param brandingCheckCallback Callback that will executed when branding check is complete.
@@ -69,10 +66,9 @@ class BrandingChecker extends AsyncTask<Integer> {
      *                        clients with branding info.
      * @param defaultBrandingDecision Default branding decision when task is canceled.
      */
-    BrandingChecker(Context context, String packageName, BrandingLaunchTimeStorage storage,
+    BrandingChecker(String packageName, BrandingLaunchTimeStorage storage,
             @NonNull @BrandingDecision Callback<Integer> brandingCheckCallback,
             long brandingCadence, @BrandingDecision int defaultBrandingDecision) {
-        mContext = context;
         mPackageName = packageName;
         mStorage = storage;
         mBrandingCheckCallback = brandingCheckCallback;
@@ -141,5 +137,8 @@ class BrandingChecker extends AsyncTask<Integer> {
                 brandingDecision, BrandingDecision.NUM_ENTRIES);
         RecordHistogram.recordBooleanHistogram(
                 "CustomTabs.Branding.BrandingCheckCanceled", isCancelled());
+
+        // Remove the storage from reference.
+        mStorage = null;
     }
 }

@@ -1226,10 +1226,10 @@ xsltScanLiteral(xsltParserContextPtr ctxt) {
     if (CUR == '"') {
         NEXT;
 	cur = q = CUR_PTR;
-	val = xmlStringCurrentChar(NULL, cur, &len);
+	val = xsltGetUTF8CharZ(cur, &len);
 	while ((xmlIsCharQ(val)) && (val != '"')) {
 	    cur += len;
-	    val = xmlStringCurrentChar(NULL, cur, &len);
+	    val = xsltGetUTF8CharZ(cur, &len);
 	}
 	if (!xmlIsCharQ(val)) {
 	    ctxt->error = 1;
@@ -1242,10 +1242,10 @@ xsltScanLiteral(xsltParserContextPtr ctxt) {
     } else if (CUR == '\'') {
         NEXT;
 	cur = q = CUR_PTR;
-	val = xmlStringCurrentChar(NULL, cur, &len);
+	val = xsltGetUTF8CharZ(cur, &len);
 	while ((xmlIsCharQ(val)) && (val != '\'')) {
 	    cur += len;
-	    val = xmlStringCurrentChar(NULL, cur, &len);
+	    val = xsltGetUTF8CharZ(cur, &len);
 	}
 	if (!xmlIsCharQ(val)) {
 	    ctxt->error = 1;
@@ -1280,7 +1280,7 @@ xsltScanNCName(xsltParserContextPtr ctxt) {
     SKIP_BLANKS;
 
     cur = q = CUR_PTR;
-    val = xmlStringCurrentChar(NULL, cur, &len);
+    val = xsltGetUTF8CharZ(cur, &len);
     if (!xmlIsBaseCharQ(val) && !xmlIsIdeographicQ(val) && (val != '_'))
 	return(NULL);
 
@@ -1291,7 +1291,7 @@ xsltScanNCName(xsltParserContextPtr ctxt) {
 	   xmlIsCombiningQ(val) ||
 	   xmlIsExtenderQ(val)) {
 	cur += len;
-	val = xmlStringCurrentChar(NULL, cur, &len);
+	val = xsltGetUTF8CharZ(cur, &len);
     }
     ret = xmlStrndup(q, cur - q);
     CUR_PTR = cur;

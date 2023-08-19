@@ -6,9 +6,10 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/ios/block_types.h"
-#import "base/mac/foundation_util.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/metrics/user_action_tester.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -25,10 +26,6 @@
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 // Test cases for the TwoScreensSigninCoordinator.
 class TwoScreensSigninCoordinatorTest : public PlatformTest {
@@ -60,6 +57,8 @@ class TwoScreensSigninCoordinatorTest : public PlatformTest {
                                        PROMO_ACTION_NO_SIGNIN_PROMO];
   }
 
+  ~TwoScreensSigninCoordinatorTest() override { [coordinator_ stop]; }
+
   // Returns the presentedViewController.
   UIViewController* PresentedViewController() {
     return window_.rootViewController.presentedViewController;
@@ -68,7 +67,7 @@ class TwoScreensSigninCoordinatorTest : public PlatformTest {
   // Returns the presented navigation controller's topViewController.
   UIViewController* TopViewController() {
     UIViewController* presented = PresentedViewController();
-    return base::mac::ObjCCast<UINavigationController>(presented)
+    return base::apple::ObjCCast<UINavigationController>(presented)
         .topViewController;
   }
 
@@ -104,6 +103,7 @@ class TwoScreensSigninCoordinatorTest : public PlatformTest {
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   TwoScreensSigninCoordinator* coordinator_;
+  base::UserActionTester user_actions_;
   UIWindow* window_;
 };
 
@@ -138,15 +138,15 @@ TEST_F(TwoScreensSigninCoordinatorTest, PresentScreens) {
   // Shut it down.
   __block BOOL interrupt_completion_done = NO;
   [coordinator_
-      interruptWithAction:SigninCoordinatorInterruptActionDismissWithAnimation
+      interruptWithAction:SigninCoordinatorInterrupt::DismissWithAnimation
                completion:^{
                  interrupt_completion_done = YES;
                }];
   auto completion_condition = ^{
     return completion_block_done && interrupt_completion_done;
   };
-  base::test::ios::WaitUntilCondition(completion_condition, true,
-                                      base::Seconds(1));
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::Seconds(1), true, completion_condition));
   EXPECT_EQ(signin_result, SigninCoordinatorResultInterrupted);
   EXPECT_EQ(signin_completion_info.identity, nil);
   EXPECT_EQ(signin_completion_info.signinCompletionAction,
@@ -199,11 +199,47 @@ TEST_F(TwoScreensSigninCoordinatorTest, CanceledByUser) {
   auto completion_condition = ^{
     return completion_block_done;
   };
-  base::test::ios::WaitUntilCondition(completion_condition, true,
-                                      base::Seconds(1));
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::Seconds(1), true, completion_condition));
   EXPECT_EQ(signin_result, SigninCoordinatorResultCanceledByUser);
   EXPECT_EQ(signin_completion_info.identity, nil);
   EXPECT_EQ(signin_completion_info.signinCompletionAction,
             SigninCompletionActionNone);
+  [coordinator_ stop];
+}
+
+// Tests that the user can swipe to dismiss and that a user action is recorded.
+TEST_F(TwoScreensSigninCoordinatorTest, SwipeToDismiss) {
+  __block SigninCoordinatorResult signin_result;
+  __block SigninCompletionInfo* signin_completion_info;
+  __block BOOL completion_block_done = NO;
+  coordinator_.signinCompletion =
+      ^(SigninCoordinatorResult signinResult,
+        SigninCompletionInfo* signinCompletionInfo) {
+        signin_result = signinResult;
+        signin_completion_info = signinCompletionInfo;
+        completion_block_done = YES;
+      };
+
+  [coordinator_ start];
+
+  // Simulate a swipe-to-dismiss.
+  EXPECT_EQ(0, user_actions_.GetActionCount("Signin_TwoScreens_SwipeDismiss"));
+  UIPresentationController* presentationController =
+      PresentedViewController().presentationController;
+  [presentationController.delegate
+      presentationControllerDidDismiss:presentationController];
+
+  auto completion_condition = ^{
+    return completion_block_done;
+  };
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::Seconds(1), true, completion_condition));
+  EXPECT_EQ(signin_result, SigninCoordinatorResultInterrupted);
+  EXPECT_EQ(signin_completion_info.identity, nil);
+  EXPECT_EQ(signin_completion_info.signinCompletionAction,
+            SigninCompletionActionNone);
+  EXPECT_EQ(1, user_actions_.GetActionCount("Signin_TwoScreens_SwipeDismiss"));
+
   [coordinator_ stop];
 }

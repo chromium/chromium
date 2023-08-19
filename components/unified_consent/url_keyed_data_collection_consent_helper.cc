@@ -51,7 +51,8 @@ class SyncBasedUrlKeyedDataCollectionConsentHelper
  public:
   SyncBasedUrlKeyedDataCollectionConsentHelper(
       syncer::SyncService* sync_service,
-      std::set<syncer::ModelType> sync_data_types);
+      std::set<syncer::ModelType> sync_data_types,
+      bool require_sync_feature_enabled);
 
   SyncBasedUrlKeyedDataCollectionConsentHelper(
       const SyncBasedUrlKeyedDataCollectionConsentHelper&) = delete;
@@ -70,6 +71,7 @@ class SyncBasedUrlKeyedDataCollectionConsentHelper
  private:
   void UpdateSyncDataTypeStates();
 
+  const bool require_sync_feature_enabled_;
   raw_ptr<syncer::SyncService> sync_service_;
   std::map<syncer::ModelType, syncer::UploadState> sync_data_type_states_;
 };
@@ -101,8 +103,10 @@ void PrefBasedUrlKeyedDataCollectionConsentHelper::OnPrefChanged() {
 SyncBasedUrlKeyedDataCollectionConsentHelper::
     SyncBasedUrlKeyedDataCollectionConsentHelper(
         syncer::SyncService* sync_service,
-        std::set<syncer::ModelType> sync_data_types)
-    : sync_service_(sync_service) {
+        std::set<syncer::ModelType> sync_data_types,
+        bool require_sync_feature_enabled)
+    : require_sync_feature_enabled_(require_sync_feature_enabled),
+      sync_service_(sync_service) {
   DCHECK(!sync_data_types.empty());
 
   for (const auto& sync_data_type : sync_data_types) {
@@ -122,6 +126,13 @@ SyncBasedUrlKeyedDataCollectionConsentHelper::
 
 UrlKeyedDataCollectionConsentHelper::State
 SyncBasedUrlKeyedDataCollectionConsentHelper::GetConsentState() {
+  // TODO(crbug.com/1462552): Find a replacement once IsSyncFeatureEnabled()
+  // starts always returning false.
+  if (require_sync_feature_enabled_ &&
+      (!sync_service_ || !sync_service_->IsSyncFeatureEnabled())) {
+    return State::kDisabled;
+  }
+
   // Any sync type that's NOT_ACTIVE makes the whole consent kDisabled.
   for (const auto& sync_data_type_states : sync_data_type_states_) {
     if (sync_data_type_states.second == syncer::UploadState::NOT_ACTIVE) {
@@ -186,8 +197,10 @@ std::unique_ptr<UrlKeyedDataCollectionConsentHelper>
 UrlKeyedDataCollectionConsentHelper::NewPersonalizedDataCollectionConsentHelper(
     syncer::SyncService* sync_service) {
   return std::make_unique<SyncBasedUrlKeyedDataCollectionConsentHelper>(
-      sync_service, std::set<syncer::ModelType>(
-                        {syncer::ModelType::HISTORY_DELETE_DIRECTIVES}));
+      sync_service,
+      std::set<syncer::ModelType>(
+          {syncer::ModelType::HISTORY_DELETE_DIRECTIVES}),
+      /*require_sync_feature_enabled=*/false);
 }
 
 // static
@@ -196,8 +209,8 @@ UrlKeyedDataCollectionConsentHelper::
     NewPersonalizedBookmarksDataCollectionConsentHelper(
         syncer::SyncService* sync_service) {
   return std::make_unique<SyncBasedUrlKeyedDataCollectionConsentHelper>(
-      sync_service,
-      std::set<syncer::ModelType>({syncer::ModelType::BOOKMARKS}));
+      sync_service, std::set<syncer::ModelType>({syncer::ModelType::BOOKMARKS}),
+      /*require_sync_feature_enabled=*/true);
 }
 
 bool UrlKeyedDataCollectionConsentHelper::IsEnabled() {

@@ -1,0 +1,8 @@
+Tests that Page.lifecycleEvent is issued order correctly for nested iframes.
+Frame 1: DOMContentLoaded
+Frame 2: DOMContentLoaded
+Frame 3: DOMContentLoaded
+Frame 3: load
+Frame 2: load
+Frame 1: load
+

@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <cctype>
 #include <tuple>
 
 #include "base/functional/bind.h"
@@ -23,9 +22,9 @@
 #include "content/common/frame.mojom.h"
 #include "content/common/renderer.mojom.h"
 #include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/input/native_web_keyboard_event.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/public/test/content_test_suite_base.h"
 #include "content/public/test/fake_render_widget_host.h"
@@ -43,6 +42,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
+#include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
@@ -75,7 +75,7 @@
 #include "v8/include/v8.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "base/mac/scoped_nsautorelease_pool.h"
+#include "base/apple/scoped_nsautorelease_pool.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -147,7 +147,7 @@ class FailingURLLoaderFactory : public network::SharedURLLoaderFactory {
 // Converts |ascii_character| into |key_code| and returns true on success.
 // Handles only the characters needed by tests.
 bool GetWindowsKeyCode(char ascii_character, int* key_code) {
-  if (isalnum(ascii_character)) {
+  if (absl::ascii_isalnum(static_cast<unsigned char>(ascii_character))) {
     *key_code = base::ToUpperASCII(ascii_character);
     return true;
   }
@@ -164,6 +164,9 @@ bool GetWindowsKeyCode(char ascii_character, int* key_code) {
       return true;
     case ui::VKEY_BACK:
       *key_code = ui::VKEY_BACK;
+      return true;
+    case ui::VKEY_END:
+      *key_code = ui::VKEY_END;
       return true;
     default:
       return false;
@@ -387,7 +390,7 @@ void RenderViewTest::SetUp() {
 #endif
 
 #if BUILDFLAG(IS_MAC)
-  autorelease_pool_ = std::make_unique<base::mac::ScopedNSAutoreleasePool>();
+  autorelease_pool_ = std::make_unique<base::apple::ScopedNSAutoreleasePool>();
 #endif
   command_line_ =
       std::make_unique<base::CommandLine>(base::CommandLine::NO_PROGRAM);
@@ -725,8 +728,8 @@ void RenderViewTest::Resize(gfx::Size new_size, bool is_fullscreen_granted) {
 void RenderViewTest::SimulateUserTypingASCIICharacter(char ascii_character,
                                                       bool flush_message_loop) {
   int modifiers = blink::WebInputEvent::kNoModifiers;
-  if (isupper(ascii_character) || ascii_character == '@' ||
-      ascii_character == '_') {
+  if (absl::ascii_isupper(static_cast<unsigned char>(ascii_character)) ||
+      ascii_character == '@' || ascii_character == '_') {
     modifiers = blink::WebKeyboardEvent::kShiftKey;
   }
 
@@ -756,6 +759,7 @@ void RenderViewTest::SimulateUserInputChangeForElement(
   ASSERT_TRUE(base::IsStringASCII(new_value));
   while (!input->Focused())
     input->GetDocument().GetFrame()->View()->AdvanceFocus(false);
+  SimulateUserTypingASCIICharacter(ui::VKEY_END, false);
 
   size_t previous_length = input->Value().length();
   for (size_t i = 0; i < previous_length; ++i)

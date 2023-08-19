@@ -6,18 +6,14 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("smart_card") {
   sources = [
+    "smart_card_cancel_algorithm.cc",
+    "smart_card_cancel_algorithm.h",
     "smart_card_connection.cc",
     "smart_card_connection.h",
     "smart_card_context.cc",
     "smart_card_context.h",
     "smart_card_error.cc",
     "smart_card_error.h",
-    "smart_card_reader.cc",
-    "smart_card_reader.h",
-    "smart_card_reader_presence_event.cc",
-    "smart_card_reader_presence_event.h",
-    "smart_card_reader_presence_observer.cc",
-    "smart_card_reader_presence_observer.h",
     "smart_card_resource_manager.cc",
     "smart_card_resource_manager.h",
     "smart_card_util.cc",

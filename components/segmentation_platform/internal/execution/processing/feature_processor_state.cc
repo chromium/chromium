@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
+#include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/config.h"
 
 namespace segmentation_platform::processing {
@@ -92,6 +93,8 @@ void FeatureProcessorState::OnFinishProcessing() {
   if (!error_) {
     input = MergeTensors(std::move(input_tensor_));
     output = MergeTensors(std::move(output_tensor_));
+    stats::RecordFeatureProcessingError(
+        segment_id_, stats::FeatureProcessingError::kSuccess);
   }
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback_), error_, std::move(input),
@@ -109,7 +112,7 @@ std::vector<float> FeatureProcessorState::MergeTensors(
     SetError(stats::FeatureProcessingError::kResultTensorError);
   } else {
     for (size_t i = 0; i < tensor.size(); ++i) {
-      for (auto& value : tensor.at(i)) {
+      for (const ProcessedValue& value : tensor.at(i)) {
         if (value.type == ProcessedValue::Type::FLOAT) {
           result.push_back(value.float_val);
         } else {

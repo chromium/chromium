@@ -263,9 +263,8 @@ void GifEncoder::EncodeVideo(scoped_refptr<media::VideoFrame> frame) {
   last_frame_time_ = frame_time;
 }
 
-void GifEncoder::EncodeAudio(std::unique_ptr<media::AudioBus> audio_bus,
-                             base::TimeTicks capture_time) {
-  NOTREACHED();
+EncodeAudioCallback GifEncoder::GetEncodeAudioCallback() {
+  NOTREACHED_NORETURN();
 }
 
 void GifEncoder::FlushAndFinalize(base::OnceClosure on_done) {

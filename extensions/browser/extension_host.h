@@ -21,6 +21,7 @@
 #include "extensions/browser/deferred_start_render_host.h"
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/common/stack_frame.h"
 
@@ -39,6 +40,8 @@ class Extension;
 class ExtensionHostDelegate;
 class ExtensionHostObserver;
 class ExtensionHostQueue;
+
+enum class EventDispatchSource;
 
 // This class is the browser component of an extension component's page.
 // It handles setting up the renderer process, if needed, with special
@@ -68,7 +71,7 @@ class ExtensionHost : public DeferredStartRenderHost,
   // This may be null if the extension has been or is being unloaded.
   const Extension* extension() const { return extension_; }
 
-  const std::string& extension_id() const { return extension_id_; }
+  const ExtensionId& extension_id() const { return extension_id_; }
   content::WebContents* host_contents() const { return host_contents_.get(); }
   content::RenderFrameHost* main_frame_host() const { return main_frame_host_; }
   content::RenderProcessHost* render_process_host() const;
@@ -110,7 +113,10 @@ class ExtensionHost : public DeferredStartRenderHost,
 
   // Called when an event is dispatched to the event page associated with this
   // ExtensionHost.
-  void OnBackgroundEventDispatched(const std::string& event_name, int event_id);
+  void OnBackgroundEventDispatched(const std::string& event_name,
+                                   base::TimeTicks dispatch_start_time,
+                                   int event_id,
+                                   EventDispatchSource dispatch_source);
 
   // Called by the ProcessManager when a network request is started by the
   // extension corresponding to this ExtensionHost.
@@ -178,6 +184,18 @@ class ExtensionHost : public DeferredStartRenderHost,
   virtual bool IsBackgroundPage() const;
 
  private:
+  struct UnackedEventData {
+    // The event to dispatch.
+    std::string event_name;
+
+    // When the event router received the event to be dispatched to the
+    // extension. Used in UMA histograms.
+    base::TimeTicks dispatch_start_time;
+
+    // The event dispatching processing flow that was followed for this event.
+    EventDispatchSource dispatch_source;
+  };
+
   // DeferredStartRenderHost:
   void CreateRendererNow() override;
 
@@ -199,7 +217,7 @@ class ExtensionHost : public DeferredStartRenderHost,
   raw_ptr<const Extension> extension_;
 
   // Id of extension that we're hosting in this view.
-  const std::string extension_id_;
+  const ExtensionId extension_id_;
 
   // The browser context that this host is tied to.
   raw_ptr<content::BrowserContext> browser_context_;
@@ -234,8 +252,8 @@ class ExtensionHost : public DeferredStartRenderHost,
   GURL initial_url_;
 
   // Messages sent out to the renderer that have not been acknowledged yet.
-  // Maps event ID to event name.
-  std::unordered_map<int, std::string> unacked_messages_;
+  // Maps event ID to unacknowledged event information.
+  std::map<int, UnackedEventData> unacked_messages_;
 
   // The type of view being hosted.
   mojom::ViewType extension_host_type_;

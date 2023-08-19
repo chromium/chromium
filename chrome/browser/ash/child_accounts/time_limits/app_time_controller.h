@@ -64,7 +64,8 @@ class AppTimeController : public SystemClockClient::Observer,
     AppActivityRegistry* app_registry();
 
    private:
-    const raw_ptr<AppTimeController, ExperimentalAsh> controller_;
+    const raw_ptr<AppTimeController, DanglingUntriaged | ExperimentalAsh>
+        controller_;
   };
 
   // Registers preferences

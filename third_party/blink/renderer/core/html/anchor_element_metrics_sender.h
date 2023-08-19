@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_ANCHOR_ELEMENT_METRICS_SENDER_H_
 
 #include "third_party/blink/public/mojom/loader/navigation_predictor.mojom-blink.h"
+#include "third_party/blink/public/mojom/preloading/anchor_element_interaction_host.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
@@ -76,6 +77,12 @@ class CORE_EXPORT AnchorElementMetricsSender final
   // is an HTTP(S) link.
   void MaybeReportClickedMetricsOnClick(
       const HTMLAnchorElement& anchor_element);
+
+  // Report the on-hover event and anchor element pointer data to the browser
+  // process.
+  void MaybeReportAnchorElementPointerDataOnHoverTimerFired(
+      uint32_t anchor_id,
+      mojom::blink::AnchorElementPointerDataPtr mouse_data);
 
   // Adds an anchor element to |anchor_elements_|.
   void AddAnchorElement(HTMLAnchorElement& element);

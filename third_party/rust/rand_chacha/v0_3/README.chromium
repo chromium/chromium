@@ -4,5 +4,6 @@ Description: ChaCha random number generator
 
 Version: 0.3.1
 Security Critical: yes
+Shipped: yes
 License: Apache 2.0
 Revision: 98a0339f99ecfe0467b2829c329bd8b7525a1c21

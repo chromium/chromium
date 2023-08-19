@@ -58,6 +58,7 @@ class LayoutEmbeddedObject final : public LayoutEmbeddedContent {
                      const PhysicalOffset& paint_offset) const final;
 
   void UpdateLayout() final;
+  void UpdateAfterLayout() final;
 
   bool IsOfType(LayoutObjectType type) const override {
     NOT_DESTROYED();

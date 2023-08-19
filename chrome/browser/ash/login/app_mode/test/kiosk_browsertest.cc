@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
+#include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
@@ -116,7 +117,11 @@ IN_PROC_BROWSER_TEST_F(KioskBaseTest, KioskEnableAfter2ndSigninScreen) {
 
   // Navigate to gaia info screen.
   OobeScreenWaiter(UserCreationView::kScreenId).Wait();
+  test::OobeJS().TapOnPath({"user-creation", "selfButton"});
   test::OobeJS().TapOnPath({"user-creation", "nextButton"});
+
+  ash::test::WaitForConsumerUpdateScreen();
+  ash::test::ExitConsumerUpdateScreenNoUpdate();
 
   if (features::IsOobeGaiaInfoScreenEnabled()) {
     // Navigate to gaia sign in screen.
@@ -177,9 +182,9 @@ IN_PROC_BROWSER_TEST_F(KioskBaseTest, DISABLED_SpokenFeedback) {
   AccessibilityManager::Get()->EnableSpokenFeedback(true);
   StartAppLaunchFromLoginScreen(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
-  WaitForAppLaunchWithOptions(false /* check launch data */,
-                              false /* terminate app */,
-                              true /* keep app open */);
+  WaitForAppLaunchWithOptions(/*check launch data=*/false,
+                              /*terminate app=*/false,
+                              /*keep app open=*/true);
   sm.ExpectSpeech("ChromeVox spoken feedback is ready");
   sm.Call([]() {
     // Navigate to the next object (should move to the heading and speak
@@ -237,7 +242,7 @@ class KioskAutoLaunchViewsTest : public OobeBaseTest,
     std::vector<policy::DeviceLocalAccount> accounts;
     accounts.emplace_back(policy::DeviceLocalAccount::TYPE_KIOSK_APP,
                           policy::DeviceLocalAccount::EphemeralMode::kUnset,
-                          kTestEnterpriseAccountId, kTestEnterpriseKioskApp,
+                          kTestEnterpriseAccountId, kTestEnterpriseKioskAppId,
                           "");
     policy::SetDeviceLocalAccounts(owner_settings_service_.get(), accounts);
     scoped_testing_cros_settings_.device_settings()->SetString(

@@ -9,9 +9,9 @@
 #include <memory>
 #include <utility>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
@@ -61,7 +61,7 @@ class TestHarness : public PolicyProviderTestHarness {
   static PolicyProviderTestHarness* Create();
 
  private:
-  raw_ptr<MockPreferences> prefs_;
+  raw_ptr<MockPreferences, AcrossTasksDanglingUntriaged> prefs_;
 };
 
 TestHarness::TestHarness()
@@ -161,7 +161,7 @@ class PolicyLoaderMacTest : public PolicyTestBase {
     PolicyTestBase::TearDown();
   }
 
-  raw_ptr<MockPreferences> prefs_;
+  raw_ptr<MockPreferences, AcrossTasksDanglingUntriaged> prefs_;
   std::unique_ptr<AsyncPolicyProvider> provider_;
 };
 

@@ -21,13 +21,14 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 
 TranslateIconView::TranslateIconView(
     CommandUpdater* command_updater,
     IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
     PageActionIconView::Delegate* page_action_icon_delegate)
     : PageActionIconView(command_updater,
-                         IDC_TRANSLATE_PAGE,
+                         IDC_SHOW_TRANSLATE,
                          icon_label_bubble_delegate,
                          page_action_icon_delegate,
                          "Translate") {
@@ -86,8 +87,11 @@ void TranslateIconView::UpdateImpl() {
       ->GetActiveTranslateMetricsLogger()
       ->LogOmniboxIconChange(enabled);
 
-  // Enable Translate page command or disable icon.
-  enabled &= SetCommandEnabled(enabled);
+  if (!features::IsChromeRefresh2023()) {
+    // Enable Translate page command or disable icon.
+    enabled &= SetCommandEnabled(enabled);
+  }
+
   SetVisible(enabled);
   if (!enabled && TranslateBubbleController::FromWebContents(GetWebContents()))
     TranslateBubbleController::FromWebContents(GetWebContents())->CloseBubble();

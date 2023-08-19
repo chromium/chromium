@@ -615,6 +615,9 @@ DevToolsSession* DevToolsSession::AttachChildSession(
   if (!agent_host->AttachInternal(std::move(session)))
     return nullptr;
   child_sessions_[session_id] = session_ptr;
+  for (auto& observer : child_observers_) {
+    observer.SessionAttached(*session_ptr);
+  }
   return session_ptr;
 }
 
@@ -624,6 +627,17 @@ void DevToolsSession::DetachChildSession(const std::string& session_id) {
 
 bool DevToolsSession::HasChildSession(const std::string& session_id) {
   return child_sessions_.find(session_id) != child_sessions_.end();
+}
+
+void DevToolsSession::AddObserver(ChildObserver* obs) {
+  child_observers_.AddObserver(obs);
+  for (auto& entry : child_sessions_) {
+    obs->SessionAttached(*entry.second);
+  }
+}
+
+void DevToolsSession::RemoveObserver(ChildObserver* obs) {
+  child_observers_.RemoveObserver(obs);
 }
 
 }  // namespace content

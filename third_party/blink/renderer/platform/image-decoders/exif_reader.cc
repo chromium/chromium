@@ -37,29 +37,60 @@
 
 #include "third_party/blink/renderer/platform/image-decoders/exif_reader.h"
 
+#include "base/notreached.h"
+
 namespace blink {
 
 namespace {
 
 constexpr unsigned kExifHeaderSize = 8;
 
+ImageOrientationEnum ImageOrientationFromEXIFValue(unsigned exif_value) {
+  switch (exif_value) {
+    case 1:
+      return ImageOrientationEnum::kOriginTopLeft;
+    case 2:
+      return ImageOrientationEnum::kOriginTopRight;
+    case 3:
+      return ImageOrientationEnum::kOriginBottomRight;
+    case 4:
+      return ImageOrientationEnum::kOriginBottomLeft;
+    case 5:
+      return ImageOrientationEnum::kOriginLeftTop;
+    case 6:
+      return ImageOrientationEnum::kOriginRightTop;
+    case 7:
+      return ImageOrientationEnum::kOriginRightBottom;
+    case 8:
+      return ImageOrientationEnum::kOriginLeftBottom;
+    default:
+      // Values direct from images may be invalid, in which case we use the
+      // default.
+      return ImageOrientationEnum::kDefault;
+  }
+  NOTREACHED_NORETURN();
+}
+
 unsigned ReadUint16(const uint8_t* data, bool is_big_endian) {
-  if (is_big_endian)
+  if (is_big_endian) {
     return (data[0] << 8) | data[1];
+  }
   return (data[1] << 8) | data[0];
 }
 
 unsigned ReadUint32(const uint8_t* data, bool is_big_endian) {
-  if (is_big_endian)
+  if (is_big_endian) {
     return (data[0] << 24) | (data[1] << 16) | (data[2] << 8) | data[3];
+  }
   return (data[3] << 24) | (data[2] << 16) | (data[1] << 8) | data[0];
 }
 
 float ReadUnsignedRational(const uint8_t* data, bool is_big_endian) {
   unsigned nom = ReadUint32(data, is_big_endian);
   unsigned denom = ReadUint32(data + 4, is_big_endian);
-  if (!denom)
+  if (!denom) {
     return 0;
+  }
   return float(nom) / float(denom);
 }
 
@@ -71,16 +102,20 @@ bool ReadExifHeader(base::span<const uint8_t> data, bool& is_big_endian) {
   //
   // Header in summary:
   // <byte-order tag> (2 bytes), <magic> (2 bytes), <0th IFD offset> (4 bytes)
-  if (data.size() < kExifHeaderSize)
+  if (data.size() < kExifHeaderSize) {
     return false;
+  }
   const uint8_t byte_order = data[0];
-  if (byte_order != data[1])
+  if (byte_order != data[1]) {
     return false;
-  if (byte_order != 'I' && byte_order != 'M')
+  }
+  if (byte_order != 'I' && byte_order != 'M') {
     return false;
+  }
   is_big_endian = byte_order == 'M';
-  if (ReadUint16(data.data() + 2, is_big_endian) != 42)
+  if (ReadUint16(data.data() + 2, is_big_endian) != 42) {
     return false;
+  }
   return true;
 }
 
@@ -104,8 +139,9 @@ void ReadExifDirectory(const uint8_t* dir_start,
     kExifOffsetTag = 0x8769
   };
 
-  if (data_end - dir_start < 2)
+  if (data_end - dir_start < 2) {
     return;
+  }
 
   const unsigned max_offset =
       base::checked_cast<unsigned>(data_end - data_start);
@@ -130,25 +166,28 @@ void ReadExifDirectory(const uint8_t* dir_start,
     // for rational values.
     if (type == kUnsignedRationalType) {
       unsigned offset = ReadUint32(value_ptr, is_big_endian);
-      if (offset > max_offset)
+      if (offset > max_offset) {
         continue;
+      }
       value_ptr = data_start + offset;
       // Make sure offset points to a valid location.
-      if (value_ptr > data_end - 16)
+      if (value_ptr > data_end - 16) {
         continue;
+      }
     }
 
     switch (tag) {
       case ExifTags::kOrientationTag:
         if (type == kUnsignedShortType && count == 1) {
-          metadata.orientation = ImageOrientation::FromEXIFValue(
+          metadata.orientation = ImageOrientationFromEXIFValue(
               ReadUint16(value_ptr, is_big_endian));
         }
         break;
 
       case ExifTags::kResolutionUnitTag:
-        if (type == kUnsignedShortType && count == 1)
+        if (type == kUnsignedShortType && count == 1) {
           metadata.resolution_unit = ReadUint16(value_ptr, is_big_endian);
+        }
         break;
 
       case ExifTags::kResolutionXTag:
@@ -166,8 +205,9 @@ void ReadExifDirectory(const uint8_t* dir_start,
         break;
 
       case ExifTags::kPixelXDimensionTag:
-        if (count != 1)
+        if (count != 1) {
           break;
+        }
         switch (type) {
           case kUnsignedShortType:
             metadata.size.set_width(ReadUint16(value_ptr, is_big_endian));
@@ -179,8 +219,9 @@ void ReadExifDirectory(const uint8_t* dir_start,
         break;
 
       case ExifTags::kPixelYDimensionTag:
-        if (count != 1)
+        if (count != 1) {
           break;
+        }
         switch (type) {
           case kUnsignedShortType:
             metadata.size.set_height(ReadUint16(value_ptr, is_big_endian));
@@ -194,8 +235,9 @@ void ReadExifDirectory(const uint8_t* dir_start,
       case ExifTags::kExifOffsetTag:
         if (type == kUnsignedLongType && count == 1 && is_root) {
           unsigned offset = ReadUint32(value_ptr, is_big_endian);
-          if (offset > max_offset)
+          if (offset > max_offset) {
             break;
+          }
           const uint8_t* subdir = data_start + offset;
           ReadExifDirectory(subdir, data_start, data_end, is_big_endian,
                             metadata, false);
@@ -209,11 +251,13 @@ void ReadExifDirectory(const uint8_t* dir_start,
 
 bool ReadExif(base::span<const uint8_t> data, DecodedImageMetaData& metadata) {
   bool is_big_endian;
-  if (!ReadExifHeader(data, is_big_endian))
+  if (!ReadExifHeader(data, is_big_endian)) {
     return false;
+  }
   const unsigned ifd_offset = ReadUint32(data.data() + 4, is_big_endian);
-  if (ifd_offset < kExifHeaderSize || ifd_offset >= data.size())
+  if (ifd_offset < kExifHeaderSize || ifd_offset >= data.size()) {
     return false;
+  }
 
   const uint8_t* data_end = data.data() + data.size();
   const uint8_t* data_start = data.data();

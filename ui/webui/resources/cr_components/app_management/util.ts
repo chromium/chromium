@@ -103,6 +103,18 @@ export function getSubAppsOfSelectedApp(state: AppManagementPageState): App[] {
 }
 
 /**
+ * Returns the selected app's parent app or null.
+ */
+export function getParentApp(state: AppManagementPageState): App|null {
+  const selectedAppId = state.selectedAppId;
+  if (selectedAppId) {
+    const parentAppId = state.subAppToParentAppId[selectedAppId];
+    return parentAppId ? state.apps[parentAppId] : null;
+  }
+  return null;
+}
+
+/**
  * A comparator function to sort strings alphabetically.
  */
 export function alphabeticalSort(a: string, b: string) {
@@ -161,4 +173,24 @@ export function recordAppManagementUserAction(
   const enumLength = Object.keys(AppManagementUserAction).length;
   BrowserProxy.getInstance().recordEnumerationValue(
       histogram, userAction, enumLength);
+}
+
+/**
+ * @param arg An argument to check for existence.
+ * @throws If |arg| is undefined or null.
+ */
+export function assertExists<T>(
+    arg: T, message: string = `Expected ${arg} to be defined.`):
+    asserts arg is NonNullable<T> {
+  assert(arg !== undefined && arg !== null, message);
+}
+
+/**
+ * @param arg A argument to check for existence.
+ * @return |arg| with the type narrowed as non-nullable.
+ * @throws If |arg| is undefined or null.
+ */
+export function castExists<T>(arg: T, message?: string): NonNullable<T> {
+  assertExists(arg, message);
+  return arg;
 }

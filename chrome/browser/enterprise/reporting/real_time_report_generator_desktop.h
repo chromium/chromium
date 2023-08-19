@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ENTERPRISE_REPORTING_REAL_TIME_REPORT_GENERATOR_DESKTOP_H_
 
 #include "chrome/browser/enterprise/reporting/extension_request/extension_request_report_generator.h"
+#include "chrome/browser/enterprise/reporting/legacy_tech/legacy_tech_report_generator.h"
 #include "components/enterprise/browser/reporting/real_time_report_generator.h"
 
 namespace enterprise_reporting {
@@ -22,11 +23,12 @@ class RealTimeReportGeneratorDesktop
 
   // RealTimeReportGenerator::Delegate
   std::vector<std::unique_ptr<google::protobuf::MessageLite>> Generate(
-      RealTimeReportGenerator::ReportType type,
+      RealTimeReportType type,
       const RealTimeReportGenerator::Data& data) override;
 
  private:
   ExtensionRequestReportGenerator extension_request_report_generator_;
+  LegacyTechReportGenerator legacy_tech_report_generator_;
 };
 
 }  // namespace enterprise_reporting

@@ -37,6 +37,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom.h"
+#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 
 namespace content {
@@ -458,6 +459,14 @@ bool TestWebContents::IsBackForwardCacheSupported() {
   return back_forward_cache_supported_;
 }
 
+const absl::optional<blink::mojom::PictureInPictureWindowOptions>&
+TestWebContents::GetPictureInPictureOptions() const {
+  if (picture_in_picture_options_.has_value()) {
+    return picture_in_picture_options_;
+  }
+  return WebContentsImpl::GetPictureInPictureOptions();
+}
+
 int TestWebContents::AddPrerender(const GURL& url) {
   DCHECK(!base::FeatureList::IsEnabled(
       blink::features::kPrerender2MemoryControls));
@@ -466,6 +475,7 @@ int TestWebContents::AddPrerender(const GURL& url) {
   return GetPrerenderHostRegistry()->CreateAndStartHost(PrerenderAttributes(
       url, PrerenderTriggerType::kSpeculationRule,
       /*embedder_histogram_suffix=*/"", Referrer(),
+      blink::mojom::SpeculationEagerness::kEager,
       rfhi->GetLastCommittedOrigin(), rfhi->GetProcess()->GetID(), GetWeakPtr(),
       rfhi->GetFrameToken(), rfhi->GetFrameTreeNodeId(),
       rfhi->GetPageUkmSourceId(), ui::PAGE_TRANSITION_LINK,
@@ -550,6 +560,19 @@ void TestWebContents::ActivatePrerenderedPageFromAddressBar(const GURL& url) {
 
 base::TimeTicks TestWebContents::GetTabSwitchStartTime() {
   return tab_switch_start_time_;
+}
+
+void TestWebContents::SetPictureInPictureOptions(
+    absl::optional<blink::mojom::PictureInPictureWindowOptions> options) {
+  picture_in_picture_options_ = options;
+}
+
+void TestWebContents::SetOverscrollNavigationEnabled(bool enabled) {
+  overscroll_enabled_ = enabled;
+}
+
+bool TestWebContents::GetOverscrollNavigationEnabled() {
+  return overscroll_enabled_;
 }
 
 }  // namespace content

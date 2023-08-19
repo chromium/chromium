@@ -1,14 +1,15 @@
+include_rules = [
+  "+ios/chrome/browser/sessions",
+]
+
 specific_include_rules = {
   # TODO(crbug.com/1294160): Remove these dependencies.
   "^snapshot_cache.mm": [
-    "+ios/chrome/browser/ui/util/uikit_ui_util.h",
+    "+ios/chrome/browser/shared/ui/util/uikit_ui_util.h",
+    "+ios/chrome/browser/tabs/features.h",
   ],
   "^snapshot_generator.mm": [
-    "+ios/chrome/browser/ui/util/uikit_ui_util.h",
+    "+ios/chrome/browser/shared/ui/util/uikit_ui_util.h",
   ],
-  "^snapshot_tab_helper.mm": [
-    "+ios/chrome/browser/ui/util/ui_util.h",
-  ],
-
 }
 

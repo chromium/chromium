@@ -12,7 +12,7 @@
 
 #include <memory>
 
-#include "base/allocator/early_zone_registration_mac.h"
+#include "base/allocator/early_zone_registration_apple.h"
 
 #if defined(HELPER_EXECUTABLE)
 #include "sandbox/mac/seatbelt_exec.h"  // nogncheck

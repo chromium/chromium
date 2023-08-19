@@ -21,6 +21,26 @@ extern NSString* const kPasswordCheckupHeaderImageRed;
 // Name of the yellow header image shown in the password checkup homepage.
 extern NSString* const kPasswordCheckupHeaderImageYellow;
 
+// Accessibility identifier for the header image view shown in the password
+// checkup homepage.
+extern NSString* const kPasswordCheckupHeaderImageViewId;
+
+// Accessibility identifier for the UITableView in the password checkup
+// homepage.
+extern NSString* const kPasswordCheckupTableViewId;
+
+// Accessibility identifier for the compromised passwords item in the password
+// checkup homepage.
+extern NSString* const kPasswordCheckupCompromisedPasswordsItemId;
+
+// Accessibility identifier for the reused passwords item in the password
+// checkup homepage.
+extern NSString* const kPasswordCheckupReusedPasswordsItemId;
+
+// Accessibility identifier for the weak passwords item in the password checkup
+// homepage.
+extern NSString* const kPasswordCheckupWeakPasswordsItemId;
+
 // URL to the help center article about changing unsafe passwords.
 extern const char kPasswordManagerHelpCenterChangeUnsafePasswordsURL[];
 

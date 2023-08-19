@@ -101,8 +101,8 @@ class ClipRectsContext {
 // rect in the space of some ancestor PaintLayer (specified by rootLayer on
 // ClipRectsContext).
 // The only differences are that:
-//   * The unclipped rect at the start is LayoutRect::infiniteIntRect,
-// rather than the local overflow bounds of the PaintLayer.
+//   * The unclipped rect at the start is InfiniteIntRect(), rather than the
+// local overflow bounds of the PaintLayer.
 //   * CSS clip, the extent of visualOverflowRect(), and SVG root viewport
 // clipping is applied.
 // Thus, for example if there are no clips then the background rect will be

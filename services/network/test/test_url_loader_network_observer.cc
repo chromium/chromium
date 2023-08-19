@@ -18,6 +18,10 @@ TestURLLoaderNetworkObserver::Bind() {
   return remote;
 }
 
+void TestURLLoaderNetworkObserver::FlushReceivers() {
+  receivers_.FlushForTesting();
+}
+
 void TestURLLoaderNetworkObserver::OnSSLCertificateError(
     const GURL& url,
     int net_error,
@@ -42,6 +46,15 @@ void TestURLLoaderNetworkObserver::OnAuthRequired(
     const scoped_refptr<net::HttpResponseHeaders>& head_headers,
     mojo::PendingRemote<mojom::AuthChallengeResponder>
         auth_challenge_responder) {}
+
+void TestURLLoaderNetworkObserver::OnPrivateNetworkAccessPermissionRequired(
+    const GURL& url,
+    const net::IPAddress& ip_address,
+    const std::string& private_network_device_id,
+    const std::string& private_network_device_name,
+    OnPrivateNetworkAccessPermissionRequiredCallback callback) {
+  std::move(callback).Run(false);
+}
 
 void TestURLLoaderNetworkObserver::OnClearSiteData(
     const GURL& url,

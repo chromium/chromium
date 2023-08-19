@@ -14,7 +14,7 @@
 
 #include "util/mach/child_port_handshake.h"
 
-#include "base/mac/scoped_mach_port.h"
+#include "base/apple/scoped_mach_port.h"
 #include "gtest/gtest.h"
 #include "test/multiprocess.h"
 #include "util/mach/child_port_types.h"
@@ -99,8 +99,8 @@ class ChildPortHandshakeTest : public Multiprocess {
       return;
     }
 
-    base::mac::ScopedMachReceiveRight receive_right;
-    base::mac::ScopedMachSendRight send_right;
+    base::apple::ScopedMachReceiveRight receive_right;
+    base::apple::ScopedMachSendRight send_right;
     if (test_type_ == TestType::kClientChecksIn_ReceiveRight) {
       receive_right.reset(child_port_handshake_.RunServer(
           ChildPortHandshake::PortRightType::kReceiveRight));
@@ -152,7 +152,7 @@ class ChildPortHandshakeTest : public Multiprocess {
       }
 
       case TestType::kClientChecksIn_SendOnceRight: {
-        base::mac::ScopedMachReceiveRight receive_right(
+        base::apple::ScopedMachReceiveRight receive_right(
             NewMachPort(MACH_PORT_RIGHT_RECEIVE));
         ASSERT_TRUE(child_port_handshake_.RunClient(
             receive_right.get(), MACH_MSG_TYPE_MAKE_SEND_ONCE));
@@ -372,7 +372,7 @@ TEST(ChildPortHandshake, NoClient) {
   // is similar to kClientDoesNotCheckIn, but because there’s no client at all,
   // the server is guaranteed to see that its pipe partner is gone.
   ChildPortHandshake child_port_handshake;
-  base::mac::ScopedMachSendRight child_port(child_port_handshake.RunServer(
+  base::apple::ScopedMachSendRight child_port(child_port_handshake.RunServer(
       ChildPortHandshake::PortRightType::kSendRight));
   EXPECT_FALSE(child_port.is_valid());
 }

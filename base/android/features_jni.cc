@@ -27,5 +27,16 @@ jboolean JNI_Features_GetFieldTrialParamByFeatureAsBoolean(
                                                  jdefault_value);
 }
 
+ScopedJavaLocalRef<jstring> JNI_Features_GetFieldTrialParamByFeatureAsString(
+    JNIEnv* env,
+    jlong native_feature_pointer,
+    const JavaParamRef<jstring>& jparam_name) {
+  const base::Feature& feature =
+      *reinterpret_cast<base::Feature*>(native_feature_pointer);
+  const std::string& param_name = ConvertJavaStringToUTF8(env, jparam_name);
+  return base::android::ConvertUTF8ToJavaString(
+      env, base::GetFieldTrialParamValueByFeature(feature, param_name));
+}
+
 }  // namespace android
 }  // namespace base

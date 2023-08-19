@@ -1841,14 +1841,14 @@ class BlocklistedExtensionSyncServiceTest : public ExtensionServiceSyncTest {
 
   const Extension* extension() { return extension_.get(); }
 
-  std::string& extension_id() { return extension_id_; }
+  extensions::ExtensionId& extension_id() { return extension_id_; }
 
   extensions::TestBlocklist& test_blocklist() { return test_blocklist_; }
 
  private:
   raw_ptr<syncer::FakeSyncChangeProcessor> processor_raw_;
   scoped_refptr<const Extension> extension_;
-  std::string extension_id_;
+  extensions::ExtensionId extension_id_;
   extensions::TestBlocklist test_blocklist_;
 };
 

@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-FAIL Animation.animate must enqueue an attributeChanged reaction when it adds the observed style attribute assert_array_equals: lengths differ, expected array ["attributeChanged"] length 1, got [] length 0
-FAIL Animation.animate must enqueue an attributeChanged reaction when it mutates the observed style attribute assert_array_equals: lengths differ, expected array ["constructed", "connected", "attributeChanged"] length 3, got ["constructed", "connected"] length 2
-PASS Animation.animate must not enqueue an attributeChanged reaction when it mutates the style attribute but the style attribute is not observed
-Harness: the test ran to completion.
-

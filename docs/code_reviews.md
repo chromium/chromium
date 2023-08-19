@@ -26,6 +26,9 @@ or waste time with redundant reviews.
 Please also read [Respectful Changes](cl_respect.md) and
 [Respectful Code Reviews](cr_respect.md).
 
+There are also a [collection of tips](cl_tips.md) for productive reviews, though
+these are advisory and not policy.
+
 #### Expectations for all reviewers
 
   * Aim to provide some kind of actionable response within 24 hours of receipt
@@ -229,10 +232,10 @@ either another committer to LGTM the CL or, for clean reverts, a `Bot-Commit:
 ## Mechanical changes
 
 ### Global Approvals
-For one-off CLs, API owners of `base`, `build`, `content`, `third_party/blink`
-and `url` can `Owners-Override +1` a change to their APIs to avoid waiting for
-rubberstamp +1s from affected directories' owners. This should only be used for
-mechanical updates to the affected directories.
+For one-off CLs, API owners of `base`, `build`, `content`,
+`third_party/blink/public` and `url` can `Owners-Override +1` a change to their
+APIs to avoid waiting for rubberstamp +1s from affected directories' owners.
+This should only be used for mechanical updates to the affected directories.
 
 If you are making one-off CLs that touch many directories and cannot be
 handled by the global approvers, you can ask one of Chrome ATLs.

@@ -58,4 +58,13 @@ TEST_F(NGSVGTextLayoutAlgorithmTest, HugeScaleCrash) {
   // Pass if no crashes.
 }
 
+// crbug.com/1470433
+TEST_F(NGSVGTextLayoutAlgorithmTest, ControlCharCrash) {
+  SetBodyInnerHTML(R"HTML(
+<style>text { white-space: pre; }</style>
+<svg xmlns="http://www.w3.org/2000/svg"><text>a&#xC;d</text>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  // Pass if no crashes.
+}
+
 }  // namespace blink

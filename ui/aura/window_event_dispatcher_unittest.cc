@@ -512,9 +512,8 @@ TEST_F(WindowEventDispatcherTest, ScrollEventDispatch) {
 }
 
 TEST_F(WindowEventDispatcherTest, PreDispatchKeyEventToIme) {
-  ui::MockInputMethod mock_ime(nullptr);
   TestImeKeyEventDispatcher dispatcher;
-  mock_ime.SetImeKeyEventDispatcher(&dispatcher);
+  ui::MockInputMethod mock_ime(&dispatcher);
   host()->SetSharedInputMethod(&mock_ime);
 
   ConsumeKeyHandler handler;
@@ -536,6 +535,8 @@ TEST_F(WindowEventDispatcherTest, PreDispatchKeyEventToIme) {
   DispatchEventUsingWindowDispatcher(&key_release);
   EXPECT_EQ(1, handler.num_key_events());
   EXPECT_EQ(1, dispatcher.dispatched_event_count());
+
+  host()->SetSharedInputMethod(nullptr);
 }
 
 namespace {
@@ -1510,7 +1511,7 @@ class DeletingWindowDelegate : public test::TestWindowDelegate {
     got_event_ = true;
   }
 
-  raw_ptr<Window, DanglingUntriaged> window_;
+  raw_ptr<Window, AcrossTasksDanglingUntriaged> window_;
   bool delete_during_handle_;
   bool got_event_;
 };
@@ -1838,7 +1839,7 @@ class OnMouseExitDeletingEventFilter : public EventFilterRecorder {
 
   // Closure that is run prior to |object_to_delete_| being deleted.
   base::OnceClosure delete_closure_;
-  raw_ptr<T, DanglingUntriaged> object_to_delete_;
+  raw_ptr<T, AcrossTasksDanglingUntriaged> object_to_delete_;
 };
 
 // Tests that RootWindow drops mouse-moved event that is supposed to be sent to
@@ -2073,7 +2074,7 @@ class DeleteHostFromHeldMouseEventDelegate : public test::TestWindowDelegate {
   void OnWindowDestroyed(Window* window) override { got_destroy_ = true; }
 
  private:
-  raw_ptr<WindowTreeHost, DanglingUntriaged> host_;
+  raw_ptr<WindowTreeHost, AcrossTasksDanglingUntriaged> host_;
   bool got_mouse_event_;
   bool got_destroy_;
 };
@@ -2991,7 +2992,7 @@ class AsyncWindowDelegate : public test::TestWindowDelegate {
   }
 
   raw_ptr<WindowEventDispatcher> dispatcher_;
-  raw_ptr<Window, DanglingUntriaged> window_;
+  raw_ptr<Window, AcrossTasksDanglingUntriaged> window_;
 };
 
 // Tests that gesture events dispatched through the asynchronous flow have
@@ -3250,7 +3251,7 @@ TEST_F(WindowEventDispatcherTest, TargetIsDestroyedByHeldEvent) {
     }
 
    private:
-    raw_ptr<aura::Window, DanglingUntriaged> focused_;
+    raw_ptr<aura::Window, AcrossTasksDanglingUntriaged> focused_;
   };
   Handler mouse_handler(focused);
   mouse_target->AddPostTargetHandler(&mouse_handler);

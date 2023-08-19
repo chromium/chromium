@@ -5,7 +5,6 @@
 import("//build/config/ios/swift_source_set.gni")
 
 source_set("inactive_tabs") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "inactive_tabs_coordinator.h",
     "inactive_tabs_coordinator.mm",
@@ -41,17 +40,20 @@ source_set("inactive_tabs") {
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/tab_switcher",
     "//ios/chrome/browser/ui/tab_switcher:tab_utils",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_toolbars_configuration_provider",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/util",
+    "//ios/web/common:features",
     "//ios/web/public",
     "//ui/gfx",
+    "//ui/strings",
   ]
 }
 
 source_set("inactive_tabs_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "inactive_tabs_view_controller.h",
     "inactive_tabs_view_controller.mm",
@@ -67,7 +69,6 @@ source_set("inactive_tabs_ui") {
 }
 
 source_set("inactive_tabs_constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "inactive_tabs_constants.h",
     "inactive_tabs_constants.mm",
@@ -75,7 +76,6 @@ source_set("inactive_tabs_constants") {
 }
 
 source_set("inactive_tabs_button") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "inactive_tabs_button_mediator.h",
     "inactive_tabs_button_mediator.mm",
@@ -93,7 +93,6 @@ source_set("inactive_tabs_button") {
 }
 
 source_set("inactive_tabs_button_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "inactive_tabs_info_consumer.h",
     "inactive_tabs_preamble_header.h",
@@ -129,10 +128,7 @@ swift_source_set("inactive_tabs_button_ui_swift") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "inactive_tabs_egtest.mm" ]
   deps = [
@@ -141,7 +137,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/tabs/inactive_tabs:features",
     "//ios/chrome/browser/ui/reading_list:eg_test_support+eg2",
-    "//ios/chrome/browser/ui/settings/tabs/inactive_tabs:inactive_tabs_constants",
+    "//ios/chrome/browser/ui/settings/tabs:tabs_constants",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_ui_constants",
     "//ios/chrome/browser/ui/tab_switcher/test:utils",
     "//ios/chrome/common/ui/confirmation_alert:constants",

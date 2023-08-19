@@ -23,6 +23,9 @@
     Exposed=Window
 ] interface DocumentFragment : Node {
   [CallWith=Document] constructor();
+
+  // The (experimental) DOM Parts API.
+  [RuntimeEnabled=DOMPartsAPI] DocumentPartRoot getPartRoot();
 };
 
 DocumentFragment includes ParentNode;

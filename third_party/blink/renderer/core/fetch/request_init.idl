@@ -21,10 +21,10 @@ dictionary RequestInit {
     RequestRedirect redirect;
     DOMString integrity;
     boolean keepalive;
-    [RuntimeEnabled=PriorityHints] FetchPriority priority;
+    FetchPriority priority;
     [RuntimeEnabled=TopicsAPI, Exposed=Window] boolean browsingTopics;
-    [RuntimeEnabled=FledgeBiddingAndAuctionServer, Exposed=Window] boolean adAuctionHeaders;
-    [RuntimeEnabled=SharedStorageAPI, Exposed=Window] boolean sharedStorageWritable;
+    [RuntimeEnabled=AdInterestGroupAPI, Exposed=Window] boolean adAuctionHeaders;
+    [RuntimeEnabled=SharedStorageAPIM118, Exposed=Window] boolean sharedStorageWritable;
     AbortSignal? signal;
     [RuntimeEnabled=FetchUploadStreaming] RequestDuplex duplex;
     [RuntimeEnabled=PrivateNetworkAccessPermissionPrompt] IPAddressSpace targetAddressSpace;

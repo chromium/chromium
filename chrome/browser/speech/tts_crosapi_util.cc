@@ -175,7 +175,7 @@ std::unique_ptr<content::TtsUtterance> CreateUtteranceFromMojo(
 bool ShouldEnableLacrosTtsSupport() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   bool lacros_tts_support_enabled =
-      crosapi::browser_util::IsLacrosPrimaryBrowser() &&
+      crosapi::browser_util::IsLacrosEnabled() &&
       !base::FeatureList::IsEnabled(ash::features::kDisableLacrosTtsSupport);
   return lacros_tts_support_enabled;
 #else  // IS_CHROMEOS_LACROS

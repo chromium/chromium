@@ -17,7 +17,7 @@
 <translation id="1586324912145647027">Aceda ao espaço de trabalho de 1 a 8</translation>
 <translation id="1652741121070700329">Ir para o início da palavra anterior</translation>
 <translation id="1679841710523778799">Aumentar o brilho</translation>
-<translation id="168356808214100546">Prima sem soltar <ph name="ALT" /> e, em seguida, toque em <ph name="TAB" /> até alcançar a janela que pretende abrir. Em seguida, solte.</translation>
+<translation id="168356808214100546">Prima sem soltar <ph name="ALT" /> e, em seguida, toque em <ph name="TAB" /> até alcançar a janela que quer abrir. Em seguida, solte.</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">Adicionar www. e .com à informação introduzida na barra de endereço e, em seguida, abrir a página</translation>
 <translation id="1768987374400973299">Crie uma gravação/captura de ecrã</translation>
@@ -57,7 +57,7 @@
 <translation id="2830827904629746450">Ancorar uma janela à direita</translation>
 <translation id="2840766858109427815">Avançar para a página seguinte</translation>
 <translation id="2872353916818027657">Trocar monitor principal</translation>
-<translation id="2914313326123580426">Mostrar ou ocultar o painel Ferramentas do programador</translation>
+<translation id="2914313326123580426">Mostrar ou ocultar o painel Ferramentas para programadores</translation>
 <translation id="292495055542441795">Ativar/desativar ecrã inteiro</translation>
 <translation id="3020183492814296499">Atalhos</translation>
 <translation id="3084301071537457911">Realçar o item seguinte na prateleira</translation>
@@ -91,7 +91,7 @@
 <translation id="4026843240379844265">Mova a janela ativa entre ecrãs.</translation>
 <translation id="4035482366624727273">Selecionar tudo na página</translation>
 <translation id="4060703249685950734">Reabrir o último separador ou a última janela que fechou</translation>
-<translation id="4090342722461256974">Prima sem soltar <ph name="ALT" /><ph name="SEPARATOR" /><ph name="SHIFT" /> e, em seguida, toque em <ph name="TAB" /> até alcançar a janela que pretende abrir. Em seguida, solte.</translation>
+<translation id="4090342722461256974">Prima sem soltar <ph name="ALT" /><ph name="SEPARATOR" /><ph name="SHIFT" /> e, em seguida, toque em <ph name="TAB" /> até alcançar a janela que quer abrir. Em seguida, solte.</translation>
 <translation id="4092538597492297615">Copiar o conteúdo selecionado para a área de transferência</translation>
 <translation id="4101772068965291327">Abrir página inicial</translation>
 <translation id="4123108089450197101">Guardar o link como um marcador</translation>
@@ -130,7 +130,7 @@
 <translation id="5757111373163288447">Abrir o link no separador</translation>
 <translation id="5757474750054631686">Diminuir o brilho do teclado (apenas para teclados retroiluminados)</translation>
 <translation id="587531134027443617">Eliminar a palavra anterior</translation>
-<translation id="5899919361772749550">Mostrar ou ocultar a consola das Ferramentas do programador</translation>
+<translation id="5899919361772749550">Mostrar ou ocultar a consola das Ferramentas para programadores</translation>
 <translation id="5919628958418675842">Ative ou desative o ecrã de privacidade.</translation>
 <translation id="5921745308587794300">Rodar janela</translation>
 <translation id="5926306472221400972">Tire uma captura de ecrã inteiro</translation>
@@ -189,7 +189,7 @@
 <translation id="8147954207400281792"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="K" /> ou <ph name="E" /></translation>
 <translation id="8234414138295101081">Rodar o ecrã 90 graus</translation>
 <translation id="8241665785394195545">parêntese reto direito</translation>
-<translation id="8264941229485248811">Mostrar ou ocultar o inspetor das Ferramentas do programador</translation>
+<translation id="8264941229485248811">Mostrar ou ocultar o inspetor das Ferramentas para programadores</translation>
 <translation id="836869401750819675">Abrir a página Transferências</translation>
 <translation id="8388247778047144397">Arraste o link para uma área em branco na Faixa de separadores.</translation>
 <translation id="8389638407792712197">Abrir nova janela</translation>

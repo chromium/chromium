@@ -89,7 +89,7 @@ class RenderFrameHostPermissionsPolicyTest
     result[0].feature = feature;
     for (auto const& origin : origins) {
       result[0].allowed_origins.emplace_back(
-          blink::OriginWithPossibleWildcards::FromOrigin(
+          *blink::OriginWithPossibleWildcards::FromOrigin(
               url::Origin::Create(GURL(origin))));
     }
     return result;

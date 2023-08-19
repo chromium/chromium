@@ -4,16 +4,21 @@
 
 #include "third_party/blink/renderer/platform/widget/compositing/layer_tree_settings.h"
 
+#include <algorithm>
+#include <tuple>
+
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "cc/base/features.h"
 #include "cc/base/switches.h"
 #include "cc/tiles/image_decode_cache_utils.h"
+#include "cc/trees/layer_tree_settings.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/switches.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
@@ -80,6 +85,22 @@ bool IsSmallScreen(const gfx::Size& size) {
   return area < kSmallScreenPixelThreshold;
 }
 #endif
+
+std::pair<int, int> GetTilingInterestAreaSizes() {
+  int interest_area_size_in_pixels =
+      ::features::kInterestAreaSizeInPixels.Get();
+  if (interest_area_size_in_pixels ==
+      ::features::kInterestAreaSizeInPixels.default_value) {
+    return {
+        ::features::kDefaultInterestAreaSizeInPixels,
+        cc::LayerTreeSettings::kDefaultSkewportExtrapolationLimitInScrenPixels};
+  }
+  // Keep the same ratio we have by default.
+  static_assert(
+      cc::LayerTreeSettings::kDefaultSkewportExtrapolationLimitInScrenPixels ==
+      2 * ::features::kDefaultInterestAreaSizeInPixels / 3);
+  return {interest_area_size_in_pixels, (2 * interest_area_size_in_pixels) / 3};
+}
 
 }  // namespace
 
@@ -164,6 +185,15 @@ cc::ManagedMemoryPolicy GetGpuMemoryPolicy(
   }
   actual.priority_cutoff_when_visible =
       gpu::MemoryAllocation::CUTOFF_ALLOW_EVERYTHING;
+
+  static size_t previous_value = [](size_t bytes_limit) {
+    base::UmaHistogramMemoryKB("Blink.Compositor.MemoryLimitKb",
+                               static_cast<int>(bytes_limit / 1024));
+
+    return bytes_limit;
+  }(actual.bytes_limit_when_visible);
+  DCHECK_EQ(actual.bytes_limit_when_visible, previous_value);
+
 #else
   // Ignore what the system said and give all clients the same maximum
   // allocation on desktop platforms.
@@ -498,7 +528,7 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
     if (!cmd.HasSwitch(switches::kDisableRGBA4444Textures) &&
         base::SysInfo::AmountOfPhysicalMemoryMB() <= 512 &&
         !::features::IsUsingVulkan()) {
-      settings.use_rgba_4444 = viz::RGBA_4444;
+      settings.use_rgba_4444 = true;
 
       // If we are going to unpremultiply and dither these tiles, we need to
       // allocate an additional RGBA_8888 intermediate for each tile
@@ -557,6 +587,9 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
   settings.enable_variable_refresh_rate =
       ::features::IsVariableRefreshRateEnabled();
 
+  std::tie(settings.tiling_interest_area_padding,
+           settings.skewport_extrapolation_limit_in_screen_pixels) =
+      GetTilingInterestAreaSizes();
   return settings;
 }
 

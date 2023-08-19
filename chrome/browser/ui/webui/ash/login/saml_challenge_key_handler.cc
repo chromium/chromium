@@ -149,7 +149,7 @@ void SamlChallengeKeyHandler::BuildChallengeResponse() {
   tpm_key_challenger_ =
       std::make_unique<attestation::TpmChallengeKeyWithTimeout>();
   tpm_key_challenger_->BuildResponse(
-      GetTpmResponseTimeout(), attestation::KEY_DEVICE, profile_,
+      GetTpmResponseTimeout(), ::attestation::ENTERPRISE_MACHINE, profile_,
       base::BindOnce(&SamlChallengeKeyHandler::ReturnResult,
                      weak_factory_.GetWeakPtr()),
       decoded_challenge_, /*register_key=*/false,

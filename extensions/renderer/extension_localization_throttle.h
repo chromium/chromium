@@ -39,8 +39,10 @@ class ExtensionLocalizationThrottle : public blink::URLLoaderThrottle {
 
  private:
   ExtensionLocalizationThrottle();
+  void DeferredCancelWithError(int error_code);
 
   bool force_error_for_test_ = false;
+  base::WeakPtrFactory<ExtensionLocalizationThrottle> weak_factory_{this};
 };
 
 }  // namespace extensions

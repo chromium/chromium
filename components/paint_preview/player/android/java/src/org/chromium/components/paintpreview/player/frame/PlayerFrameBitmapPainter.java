@@ -7,7 +7,6 @@ package org.chromium.components.paintpreview.player.frame;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
-import android.os.Handler;
 import android.util.Size;
 
 import androidx.annotation.NonNull;
@@ -27,7 +26,6 @@ class PlayerFrameBitmapPainter {
     private Rect mDrawBitmapDst = new Rect();
     private Runnable mInvalidateCallback;
     private Runnable mFirstPaintListener;
-    private Handler mHandler = new Handler();
     private boolean mDestroyed;
 
     PlayerFrameBitmapPainter(@NonNull Runnable invalidateCallback,
@@ -80,8 +78,8 @@ class PlayerFrameBitmapPainter {
             for (int col = colStart; col < colEnd; col++) {
                 Bitmap tileBitmap = mBitmapMatrix[row][col];
 
-                // Request is ongoing.
-                if (tileBitmap == null) continue;
+                // Request is ongoing or mid-replacement.
+                if (tileBitmap == null || tileBitmap.isRecycled()) continue;
 
                 // Calculate the portion of this tileBitmap that is visible in mViewPort.
                 int bitmapLeft = Math.max(mViewPort.left - (col * mTileSize.getWidth()), 0);

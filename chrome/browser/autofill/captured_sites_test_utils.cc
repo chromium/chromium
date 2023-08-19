@@ -865,9 +865,21 @@ bool ProfileDataController::AddAutofillProfileInfo(
 TestRecipeReplayer::TestRecipeReplayer(
     Browser* browser,
     TestRecipeReplayChromeFeatureActionExecutor* feature_action_executor)
-    : browser_(browser), feature_action_executor_(feature_action_executor) {}
+    : browser_(browser), feature_action_executor_(feature_action_executor) {
+  CleanupSiteData();
+  // Bypass permission dialogs.
+  permissions::PermissionRequestManager::FromWebContents(GetWebContents())
+      ->set_auto_response_for_test(
+          permissions::PermissionRequestManager::ACCEPT_ALL);
+}
 
-TestRecipeReplayer::~TestRecipeReplayer() {}
+TestRecipeReplayer::~TestRecipeReplayer() {
+  // If there are still cookies at the time the browser test shuts down,
+  // Chrome's SQL lite persistent cookie store will crash.
+  CleanupSiteData();
+  EXPECT_TRUE(web_page_replay_server_wrapper()->Stop())
+      << "Cannot stop the local Web Page Replay server.";
+}
 
 bool TestRecipeReplayer::ReplayTest(
     const base::FilePath& capture_file_path,
@@ -944,25 +956,6 @@ void TestRecipeReplayer::SetUpCommandLine(base::CommandLine* command_line) {
       network::switches::kIgnoreCertificateErrorsSPKIList,
       kWebPageReplayCertSPKI);
   command_line->AppendSwitch(switches::kStartMaximized);
-}
-
-void TestRecipeReplayer::Setup() {
-  CleanupSiteData();
-  web_page_replay_server_wrapper_ =
-      std::make_unique<WebPageReplayServerWrapper>(true);
-
-  // Bypass permission dialogs.
-  permissions::PermissionRequestManager::FromWebContents(GetWebContents())
-      ->set_auto_response_for_test(
-          permissions::PermissionRequestManager::ACCEPT_ALL);
-}
-
-void TestRecipeReplayer::Cleanup() {
-  // If there are still cookies at the time the browser test shuts down,
-  // Chrome's SQL lite persistent cookie store will crash.
-  CleanupSiteData();
-  EXPECT_TRUE(web_page_replay_server_wrapper()->Stop())
-      << "Cannot stop the local Web Page Replay server.";
 }
 
 TestRecipeReplayChromeFeatureActionExecutor*

@@ -6,14 +6,18 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/feature_usage/feature_usage_metrics.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/network/cellular_esim_profile.h"
+#include "chromeos/ash/components/network/cellular_esim_profile_handler_impl.h"
 #include "chromeos/ash/components/network/cellular_inhibitor.h"
 #include "chromeos/ash/components/network/mock_managed_network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_connection_handler.h"
@@ -22,6 +26,7 @@
 #include "chromeos/ash/components/network/network_ui_data.h"
 #include "chromeos/ash/components/network/test_cellular_esim_profile_handler.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
+#include "components/prefs/testing_pref_service.h"
 #include "dbus/object_path.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -201,8 +206,8 @@ class CellularMetricsLoggerTest : public testing::Test {
   }
 
   void SetCellularSimLock(const std::string lock_type) {
-    base::Value::Dict sim_lock_status;
-    sim_lock_status.Set(shill::kSIMLockTypeProperty, lock_type);
+    auto sim_lock_status =
+        base::Value::Dict().Set(shill::kSIMLockTypeProperty, lock_type);
     network_config_helper_->network_state_helper()
         .device_test()
         ->SetDeviceProperty(
@@ -281,6 +286,72 @@ class CellularMetricsLoggerTest : public testing::Test {
   std::unique_ptr<MockManagedNetworkConfigurationHandler>
       mock_managed_network_configuration_manager_;
 };
+
+TEST_F(CellularMetricsLoggerTest, NoEuiccCachedProfiles_DBusMigrationDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(ash::features::kSmdsDbusMigration);
+
+  // Chrome caches eSIM profile information from Hermes so that this information
+  // is available even when Hermes is not. Simulate the situation where Chrome
+  // has eSIM information cached in prefs and Hermes being unavailable and
+  // confirm that ESimFeatureUsageMetrics still behaves as expected. This is a
+  // regression test for b/291812699.
+  const CellularESimProfile esim_profile(
+      CellularESimProfile::State::kActive, dbus::ObjectPath("profile_path"),
+      std::string("eid"), std::string("iccid"), std::u16string(u"name"),
+      std::u16string(u"nickname"), std::u16string(u"service_provider"),
+      std::string("activation_code"));
+  base::Value::List esim_profiles;
+  esim_profiles.Append(esim_profile.ToDictionaryValue());
+
+  TestingPrefServiceSimple device_prefs;
+  CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(
+      device_prefs.registry());
+  device_prefs.Set(prefs::kESimProfiles, base::Value(std::move(esim_profiles)));
+
+  ClearEuicc();
+
+  SetUpMetricsLogger();
+
+  histogram_tester_->ExpectTotalCount(kESimFeatureUsageMetric, 1);
+  histogram_tester_->ExpectBucketCount(
+      kESimFeatureUsageMetric,
+      static_cast<int>(feature_usage::FeatureUsageMetrics::Event::kEligible),
+      1);
+}
+
+TEST_F(CellularMetricsLoggerTest, NoEuiccCachedProfiles_DBusMigrationEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(ash::features::kSmdsDbusMigration);
+
+  // Chrome caches eSIM profile information from Hermes so that this information
+  // is available even when Hermes is not. Simulate the situation where Chrome
+  // has eSIM information cached in prefs and Hermes being unavailable and
+  // confirm that ESimFeatureUsageMetrics still behaves as expected. This is a
+  // regression test for b/291812699.
+  const CellularESimProfile esim_profile(
+      CellularESimProfile::State::kActive, dbus::ObjectPath("profile_path"),
+      std::string("eid"), std::string("iccid"), std::u16string(u"name"),
+      std::u16string(u"nickname"), std::u16string(u"service_provider"),
+      std::string("activation_code"));
+  auto esim_profiles =
+      base::Value::List().Append(esim_profile.ToDictionaryValue());
+
+  TestingPrefServiceSimple device_prefs;
+  CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(
+      device_prefs.registry());
+  device_prefs.Set(prefs::kESimProfiles, base::Value(std::move(esim_profiles)));
+
+  ClearEuicc();
+
+  SetUpMetricsLogger();
+
+  histogram_tester_->ExpectTotalCount(kESimFeatureUsageMetric, 1);
+  histogram_tester_->ExpectBucketCount(
+      kESimFeatureUsageMetric,
+      static_cast<int>(feature_usage::FeatureUsageMetrics::Event::kEligible),
+      1);
+}
 
 TEST_F(CellularMetricsLoggerTest, ActiveProfileExists) {
   AddESimProfile(hermes::profile::State::kActive, kTestESimCellularServicePath);

@@ -1,6 +1,15 @@
 <style include="shortcut-customization-shared">
-  :host-context(body.jelly-enabled) #addIcon {
-    --iron-icon-fill-color: var(--cros-sys-on_primary_container);
+  :host-context(body.jelly-enabled) #addIcon,
+  :host-context(body.jelly-enabled) #restoreDefault {
+    background: var(--cros-sys-primary_container);
+    color: var(--cros-sys-on_primary_container);
+    font: var(--cros-button-2-font);
+  }
+
+  :host-context(body.jelly-enabled) #doneButton {
+    background: var(--cros-sys-primary);
+    color: var(--cros-sys-on_primary);
+    font: var(--cros-button-2-font);
   }
 
   #acceleratorViewList {
@@ -9,12 +18,11 @@
   }
 
   #addIcon {
-    --iron-icon-fill-color: #1A73E8;
     padding-top: 11px;
   }
 
   #addAcceleratorContainer {
-    padding-top: 12px;
+    padding-top: 16px;
   }
 
   #pendingAccelerator {
@@ -22,23 +30,39 @@
   }
 
   [slot='button-container'] {
-    --cr-dialog-button-container-padding-bottom: 20px;
-    --cr-dialog-button-container-padding-end: 24px;
-    --cr-dialog-button-container-padding-start: 24px;
-    --cr-dialog-button-container-padding-top: 20px;
+    --cr-dialog-button-container-padding-bottom: 28px;
+    --cr-dialog-button-container-padding-horizontal: 32px;
     display: flex;
     justify-content: space-between;
+    padding-top: 32px;
+  }
+
+  cr-button {
+    /*
+     * Specifying a large single value for border-radius ensures perfectly
+     * circular rounded corners.
+     */
+    border-radius: 999px;
   }
 
   [slot='body'] {
-    height: 216px;
+    background-color: var(--cros-sys-app_base_shaded);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-left: 32px;
+    margin-right: 32px;
+    padding: 8px;
   }
 
   #dialogTitle {
-    --cr-dialog-title-slot-padding-bottom: 24px;
-    --cr-dialog-title-slot-padding-end: 24px;
-    --cr-dialog-title-slot-padding-start: 24px;
-    --cr-dialog-title-slot-padding-top: 24px;
+    --cr-dialog-title-slot-padding-bottom: 32px;
+    --cr-dialog-title-slot-padding-end: 32px;
+    --cr-dialog-title-slot-padding-start: 32px;
+    --cr-dialog-title-slot-padding-top: 32px;
+    color: var(--cros-text-color-primary);
+    font: var(--cros-display-7-font);
   }
 
   [slot='button-container'] {
@@ -53,7 +77,8 @@
   </div>
   <div slot="body">
     <div id="acceleratorViewList">
-      <template id="viewList" is="dom-repeat" items="[[getFilteredAccelerators(acceleratorInfos)]]">
+      <template id="viewList" is="dom-repeat"
+          items="[[getSortedFilteredAccelerators(acceleratorInfos)]]">
         <accelerator-edit-view class="acceleratorItem"
             accelerator-info=[[item]]
             action=[[action]]
@@ -62,7 +87,8 @@
       </template>
     </div>
     <template id="newAccelerator" is="dom-if"
-        if="[[!showAddButton(pendingNewAcceleratorState)]]" restamp>
+        if="[[showNewAccelerator(pendingNewAcceleratorState, acceleratorInfos)]]"
+        restamp>
       <accelerator-edit-view id="pendingAccelerator"
           view-state="{{pendingNewAcceleratorState}}"
           action=[[action]]
@@ -70,19 +96,23 @@
       </accelerator-edit-view>
     </template>
     <div id="addAcceleratorContainer"
-        hidden="[[!showAddButton(pendingNewAcceleratorState)]]">
+        hidden="[[!showAddButton(pendingNewAcceleratorState, acceleratorInfos,
+          isAcceleratorCapturing, observableDefaultAcceleratorsWithConflict.*)]]">
       <cr-button id="addAcceleratorButton" on-click="onAddAcceleratorClicked">
         <iron-icon id="addIcon" icon="shortcut-customization:add">
         </iron-icon>
         [[i18n('addShortcut')]]
       </cr-button>
     </div>
-
+    <div id="maxAcceleratorsReached"
+        hidden="[[acceleratorLimitNotReached(acceleratorInfos)]]">
+      [[i18n('maxAcceleratorsReachedHint')]]
+    </div>
   </div>
   <div slot="button-container">
     <div>
       <cr-button id="restoreDefault" on-click="onRestoreDefaultButtonClicked"
-          hidden$="[[isAcceleratorCapturing]]">
+          hidden="[[shouldHideRestoreButton]]">
         [[i18n('restoreDefaults')]]
       </cr-button>
     </div>

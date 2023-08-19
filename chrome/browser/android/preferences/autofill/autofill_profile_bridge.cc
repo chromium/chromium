@@ -4,17 +4,17 @@
 
 #include "chrome/browser/android/preferences/autofill/autofill_profile_bridge.h"
 
-#include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/android/chrome_jni_headers/AutofillProfileBridge_jni.h"
+#include "chrome/browser/autofill/android/jni_headers/AutofillProfileBridge_jni.h"
 #include "chrome/browser/browser_process.h"
 #include "components/autofill/core/browser/autofill_address_util.h"
+#include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
-#include "content/public/browser/web_contents.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_field.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_metadata.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_ui.h"
@@ -35,7 +35,6 @@ using ::i18n::addressinput::AddressUiComponent;
 using ::i18n::addressinput::BuildComponents;
 using ::i18n::addressinput::COUNTRY;
 using ::i18n::addressinput::GetRegionCodes;
-using ::i18n::addressinput::IsFieldRequired;
 using ::i18n::addressinput::Localization;
 using ::i18n::addressinput::RECIPIENT;
 
@@ -78,12 +77,13 @@ static void JNI_AutofillProfileBridge_GetRequiredFields(
   std::string country_code = ConvertJavaStringToUTF8(env, j_country_code);
   std::vector<int> required;
 
-  // Should iterate over all fields in:
+  // Iterating over fields in AddressField to ensure that only fields from
+  // libaddressinput can be required. Should iterate over all fields in:
   // third_party/libaddressinput/src/cpp/include/libaddressinput/address_field.h
   for (int i = COUNTRY; i <= RECIPIENT; ++i) {
     AddressField field = static_cast<AddressField>(i);
     if (IsFieldRequired(field, country_code)) {
-      required.push_back(field);
+      required.push_back(i18n::TypeForField(field));
     }
   }
 
@@ -119,7 +119,7 @@ JNI_AutofillProfileBridge_GetAddressUiComponents(
 
   std::string country_code = ConvertJavaStringToUTF8(env, j_country_code);
   AutofillCountry country(country_code);
-  std::vector<ExtendedAddressUiComponent> ui_components =
+  std::vector<AutofillAddressUIComponent> ui_components =
       ConvertAddressUiComponents(
           BuildComponents(country_code, localization, language_code,
                           &best_language_tag),
@@ -133,12 +133,12 @@ JNI_AutofillProfileBridge_GetAddressUiComponents(
     component_ids.push_back(ui_component.field);
     component_labels.push_back(ui_component.name);
     component_length.push_back(ui_component.length_hint ==
-                               AddressUiComponent::HINT_LONG);
+                               autofill::AutofillAddressUIComponent::HINT_LONG);
 
     switch (validation_type) {
       case AddressValidationType::kPaymentRequest:
         component_required.push_back(
-            IsFieldRequired(ui_component.field, country_code));
+            i18n::IsFieldRequired(ui_component.field, country_code));
         break;
       case AddressValidationType::kAccount:
         component_required.push_back(
@@ -156,16 +156,6 @@ JNI_AutofillProfileBridge_GetAddressUiComponents(
       env, ToJavaIntArray(env, component_length), j_length_list);
 
   return ConvertUTF8ToJavaString(env, best_language_tag);
-}
-
-void ShowAutofillProfileSettings(content::WebContents* web_contents) {
-  Java_AutofillProfileBridge_showAutofillProfileSettings(
-      base::android::AttachCurrentThread(), web_contents->GetJavaWebContents());
-}
-
-void ShowAutofillCreditCardSettings(content::WebContents* web_contents) {
-  Java_AutofillProfileBridge_showAutofillCreditCardSettings(
-      base::android::AttachCurrentThread(), web_contents->GetJavaWebContents());
 }
 
 }  // namespace autofill

@@ -66,10 +66,6 @@ class WallpaperControllerClientImpl
 
   // ash::WallpaperControllerClient:
   void OpenWallpaperPicker() override;
-  void SetDefaultWallpaper(
-      const AccountId& account_id,
-      bool show_wallpaper,
-      ash::WallpaperController::SetWallpaperCallback callback) override;
   void FetchDailyRefreshWallpaper(
       const std::string& collection_id,
       DailyWallpaperUrlFetchedCallback callback) override;
@@ -99,15 +95,6 @@ class WallpaperControllerClientImpl
   void OnUserProfileLoaded(const AccountId& account_id) override;
 
   // Wrappers around the ash::WallpaperController interface.
-  void SetOnlineWallpaper(
-      const ash::OnlineWallpaperParams& params,
-      ash::WallpaperController::SetWallpaperCallback callback);
-  void SetGooglePhotosWallpaper(
-      const ash::GooglePhotosWallpaperParams& params,
-      ash::WallpaperController::SetWallpaperCallback callback);
-  void SetCustomizedDefaultWallpaperPaths(
-      const base::FilePath& customized_default_small_path,
-      const base::FilePath& customized_default_large_path);
   void SetPolicyWallpaper(const AccountId& account_id,
                           std::unique_ptr<std::string> data);
   bool SetThirdPartyWallpaper(const AccountId& account_id,
@@ -115,17 +102,9 @@ class WallpaperControllerClientImpl
                               ash::WallpaperLayout layout,
                               const gfx::ImageSkia& image);
   void ShowUserWallpaper(const AccountId& account_id);
-  void ShowSigninWallpaper();
-  void ShowOverrideWallpaper(const base::FilePath& image_path,
-                             bool always_on_top);
-  void RemoveOverrideWallpaper();
   void RemoveUserWallpaper(const AccountId& account_id,
                            base::OnceClosure on_removed);
   void RemovePolicyWallpaper(const AccountId& account_id);
-  void AddObserver(ash::WallpaperControllerObserver* observer);
-  void RemoveObserver(ash::WallpaperControllerObserver* observer);
-  gfx::ImageSkia GetWallpaperImage();
-  absl::optional<ash::WallpaperInfo> GetActiveUserWallpaperInfo();
   // Record Ash.Wallpaper.Source metric when a new wallpaper is set,
   // either by built-in Wallpaper app or a third party extension/app.
   void RecordWallpaperSourceUMA(const ash::WallpaperType type);

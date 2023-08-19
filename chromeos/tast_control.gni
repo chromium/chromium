@@ -16,9 +16,23 @@
 # build, this is the wrong file to edit. You need to mark those tests as
 # "informational" in their source .go files.
 
-# To disable a specific test in chrome_all_tast_tests, add it the following
-# list and cite a bug.
+# To disable a specific test in chrome_all_tast_tests, add the name of the test
+# to the following list and cite a bug.
+#
+# To disable the test only on a specific board, add an at-mark ( @ ) and the
+# board name at the end of the entry (eg. "login.Chrome@kevin" disables
+# "login.Chrome" test only on "kevin" device). An asterisk is not supported in
+# the board name.
+#
+# As a last resort, you can use an asterisk ( * ) in an entry -- matches every
+# substring (eg. "crostini.*" disables the all tests that names are starting
+# with "crostini.").
+# WARNING: This may cause unexpected disablement and is strongly discouraged.
+# You should specify the tests one-by-one in most cases, instead of this.
 tast_disabled_tests_from_chrome_all = [
+  # crbug.com/1468551
+  "dlp.DataLeakPreventionRulesListClipboardOmni.ash",
+
   # crbug.com/1364499
   "documentscanapi.Scan",
 
@@ -31,6 +45,11 @@ tast_disabled_tests_from_chrome_all = [
 
   # https://crbug.com/1430723
   "graphics.FPS.lacros",
+
+  # https://crbug.com/1379756
+  "inputs.VirtualKeyboardGlideTyping.clamshell_a11y_floating",
+  "inputs.VirtualKeyboardGlideTyping.tablet_floating",
+  "inputs.VirtualKeyboardHandwriting.floating",
 
   # b/251833060
   "peripherals.LaunchAppFromGuestSession.diagnostics",
@@ -205,9 +224,6 @@ tast_disabled_tests_from_chrome_all = [
   # https://crbug.com/1341076
   "launcher.BubbleLaunchApp.disable_launcher_app_sort",
 
-  # https://crbug.com/1346149
-  "apps.Sharesheet",
-
   # b/241122961
   "policy.BlockThirdPartyCookies",
 
@@ -248,6 +264,9 @@ tast_disabled_tests_from_chrome_all = [
   "crostini.SecureCopyPaste.paste_wayland_bullseye_stable",
   "crostini.RestartIcon.buster_stable",
   "crostini.RestartIcon.bullseye_stable",
+
+  # https://crbug.com/1455410
+  "crostini.RestartApp.bullseye_clamshell_stable",
 
   # https://crbug.com/1368586
   "u2fd.WebauthnUsingPassword.tpm1",
@@ -292,9 +311,6 @@ tast_disabled_tests_from_chrome_all = [
   # https://crbug.com/1392911
   "login.RestrictSignin",
 
-  # http://b/261363192
-  "crostini.*@kevin",
-
   # https://crbug.com/1401605
   "hwsec.CrossVersionLogin.small",
   "hwsec.CrossVersionLogin.tpm_dynamic_small",
@@ -321,24 +337,19 @@ tast_disabled_tests_from_chrome_all = [
   "crostini.AppVscode.bullseye_clamshell_stable",
   "crostini.AppVscode.clamshell_stable",
 
-  # https://crbug.com/1427905
-  "inputs.VirtualKeyboardHandwriting.floating",
-  "inputs.VirtualKeyboardTypingUserMode.incognito",
+  # b/287525851
+  "arc.AudioValidity.playback",
+  "arc.AudioValidity.record",
+  "arc.BuildProperties",
 
-  # b/279351324: Until crrev.com/c/4475024 upreved.
-  "a11y.LiveCaption.lacros",
+  # https://crbug.com/1455848
+  "arc.CheckAndroidVersion",
+  "arc.ContainerMount",
+  "arc.Downloads",
+  "network.ConfigBaseline.login",
 
-  # b/281983222
-  "inputs.InputMethodShelfInputs",
-
-  # http://b/284464120 until CHROMEOS_LKGM >= 15477.0.0. Due to QsRevamp.
-  # Tests are already fixed in ToT ChromeOS.
-  "audio.CheckingAudioFormats",
-  "audio.UIInput.gain",
-  "audio.UIInput.mute",
-  "inputs.InputMethodShelfInputs.lacros",
-  "inputs.VirtualKeyboardSpeech",
-  "lacros.AudioRecord",
+  # https://b/294977915
+  "bruschetta.*@eve",
 
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
@@ -371,21 +382,17 @@ tast_disabled_tests_from_lacros_all = [
   # https://crbug.com/1376638
   "lacros.AudioRecord",
 
-  # https://crbug.com/1422603
-  "tast.inputs.PhysicalKeyboardAutocorrect.*@jacuzzi",
-  "tast.inputs.PhysicalKeyboardShapeBasedChineseTyping.*@jacuzzi",
-  "tast.inputs.VirtualKeyboardTypingOmnibox.*@jacuzzi",
-  "tast.inputs.PhysicalKeyboardZhuyinTyping.*@jacuzzi",
-  "tast.inputs.VirtualKeyboardDeadKeys.*@jacuzzi",
-  "tast.inputs.PhysicalKeyboardShapeBasedChineseTyping.array_lacros",
-  "tast.inputs.VirtualKeyboardSpeech.lacros",
-
-  # https://crbug.com/1431937
-  "tast.lacros.ShelfLaunch.primary",
-
   # https://crbug.com/1440735
   "mlservice.WebHandwritingRecognition.lacros",
 
   # https://crbug.com/1446233
   "tast.arc.IntentForward.lacros_vm",
+
+  # https://b/294268366
+  "ui.ForceRegion.lacros",
+
+  # https://crbug.com/1470305
+  "inputs.VirtualKeyboardTypingOmnibox.a11y_lacros",
+
+  # THIS IS THE LACROS LIST, SCROLL UP FOR CHROME/CHROMEOS.
 ]

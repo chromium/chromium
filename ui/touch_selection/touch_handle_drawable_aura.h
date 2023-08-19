@@ -6,6 +6,10 @@
 #define UI_TOUCH_SELECTION_TOUCH_HANDLE_DRAWABLE_AURA_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
+#include "ui/base/models/image_model.h"
+#include "ui/compositor/layer_delegate.h"
+#include "ui/native_theme/native_theme_observer.h"
 #include "ui/touch_selection/touch_handle.h"
 #include "ui/touch_selection/touch_handle_orientation.h"
 #include "ui/touch_selection/ui_touch_selection_export.h"
@@ -14,14 +18,12 @@ namespace aura {
 class Window;
 }
 
-namespace aura_extra {
-class ImageWindowDelegate;
-}
-
 namespace ui {
 
 class UI_TOUCH_SELECTION_EXPORT TouchHandleDrawableAura
-    : public TouchHandleDrawable {
+    : public TouchHandleDrawable,
+      public ui::LayerDelegate,
+      public ui::NativeThemeObserver {
  public:
   explicit TouchHandleDrawableAura(aura::Window* parent);
 
@@ -31,7 +33,8 @@ class UI_TOUCH_SELECTION_EXPORT TouchHandleDrawableAura
   ~TouchHandleDrawableAura() override;
 
  private:
-  void UpdateBounds();
+  // Updates the bounds of the window containing the handle image.
+  void UpdateWindowBounds();
 
   bool IsVisible() const;
 
@@ -45,21 +48,36 @@ class UI_TOUCH_SELECTION_EXPORT TouchHandleDrawableAura
   gfx::RectF GetVisibleBounds() const override;
   float GetDrawableHorizontalPaddingRatio() const override;
 
+  // ui::LayerDelegate:
+  void OnPaintLayer(const ui::PaintContext& context) override;
+  void OnDeviceScaleFactorChanged(float old_device_scale_factor,
+                                  float new_device_scale_factor) override {}
+
+  // ui::NativeThemeObserver:
+  void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
+
+  // The window for drawing the handle image. This doesn't include invisible
+  // padding which is applied around the handle image.
   std::unique_ptr<aura::Window> window_;
-  // `window_delegate_` self destroys when`OnWindowDestroyed()` is invoked
-  // during the destruction of `window_`. It must be declared last and cleared
-  // first to avoid holding a ptr to freed memory.
-  raw_ptr<aura_extra::ImageWindowDelegate> window_delegate_;
+
   bool enabled_;
+
+  // Used to set the opacity of the handle drawable. The actual handle opacity
+  // is further scaled by a max opacity value (since the handle can be slightly
+  // transparent by default).
   float alpha_;
   ui::TouchHandleOrientation orientation_;
 
-  // Origin position of the handle set via SetOrigin, in coordinate space of
-  // selection controller client (i.e. handle's parent).
-  gfx::PointF origin_position_;
+  // The origin of the targetable area of the touch handle, in coordinates of
+  // the handle window's parent. When drawing the handle image, an additional
+  // offset should be applied to this origin to account for invisible padding.
+  gfx::PointF targetable_origin_;
 
-  // Window bounds relative to the focal position.
-  gfx::RectF relative_bounds_;
+  // The handle image to draw.
+  ui::ImageModel handle_image_;
+
+  base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
+      theme_observation_{this};
 };
 
 }  // namespace ui

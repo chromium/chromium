@@ -80,6 +80,9 @@ class ArcNotificationManager
   void SetDoNotDisturbStatusOnAndroid(bool enabled);
   void CancelPress(const std::string& key);
   void SetNotificationConfiguration();
+  void SendNotificationButtonClickedOnChrome(const std::string& key,
+                                             const int button_index,
+                                             const std::string& input);
 
   // Methods called from |visibility_manager_|:
   void OnMessageCenterVisibilityChanged(

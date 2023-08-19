@@ -5,7 +5,6 @@
 #include "chrome/updater/test/server.h"
 
 #include <algorithm>
-#include <cctype>
 #include <iterator>
 #include <list>
 #include <memory>
@@ -17,6 +16,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "chrome/updater/test/http_request.h"
 #include "chrome/updater/test/integration_test_commands.h"
 #include "chrome/updater/test/integration_tests_impl.h"
@@ -59,7 +59,8 @@ ScopedServer::ScopedServer(
   EXPECT_TRUE((test_server_handle_ = test_server_->StartAndReturnHandle()));
 
   integration_test_commands_->EnterTestMode(update_url(), crash_upload_url(),
-                                            device_management_url());
+                                            device_management_url(),
+                                            base::Minutes(5));
 }
 
 ScopedServer::~ScopedServer() {
@@ -101,6 +102,9 @@ std::unique_ptr<net::test_server::HttpResponse> ScopedServer::HandleRequest(
     return response;
   }
   response->set_code(net::HTTP_OK);
+  if (base::StartsWith(request.relative_url, device_management_path())) {
+    response->set_content_type("application/x-protobuf");
+  }
   response->set_content(response_bodies_.front());
   request_matcher_groups_.pop_front();
   response_bodies_.pop_front();

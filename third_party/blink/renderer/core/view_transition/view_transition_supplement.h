@@ -69,6 +69,10 @@ class CORE_EXPORT ViewTransitionSupplement
   // has changed.
   void OnMetaTagChanged(const AtomicString& content_value);
 
+  // TODO(https://crbug.com/1422251): Expand this to receive a the full set of
+  // @view-transition options.
+  void OnViewTransitionsStyleUpdated(bool cross_document_enabled);
+
   // Notifies that the `body` element has been parsed and will be added to the
   // Document.
   void WillInsertBody();
@@ -83,12 +87,14 @@ class CORE_EXPORT ViewTransitionSupplement
   void StartTransition(Document& document,
                        ViewTransitionState transition_state);
 
+  void SetCrossDocumentOptIn(mojom::blink::ViewTransitionSameOriginOptIn);
+
   Member<ViewTransition> transition_;
 
   VectorOf<std::unique_ptr<ViewTransitionRequest>> pending_requests_;
 
-  mojom::ViewTransitionSameOriginOptIn same_origin_opt_in_ =
-      mojom::ViewTransitionSameOriginOptIn::kDisabled;
+  mojom::blink::ViewTransitionSameOriginOptIn cross_document_opt_in_ =
+      mojom::blink::ViewTransitionSameOriginOptIn::kDisabled;
 };
 
 }  // namespace blink

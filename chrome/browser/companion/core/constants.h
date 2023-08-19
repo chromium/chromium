@@ -20,6 +20,11 @@ const char kExpsPromoShownCountPref[] = "Companion.Promo.Exps.Shown.Count";
 const char kExpsOptInStatusGrantedPref[] =
     "Companion.Exps.OptIn.Status.Granted";
 
+// Pref name used for tracking whether the user has ever successfully navigated
+// to exps registration success page.
+const char kHasNavigatedToExpsSuccessPage[] =
+    "Companion.HasNavigatedToExpsSuccessPage";
+
 }  // namespace companion
 
 #endif  // CHROME_BROWSER_COMPANION_CORE_CONSTANTS_H_

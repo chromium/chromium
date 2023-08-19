@@ -7,17 +7,17 @@ package org.chromium.chrome.browser.metrics;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.LargeTest;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.page_load_metrics.PageLoadMetrics;
+import org.chromium.chrome.browser.page_load_metrics.PageLoadMetricsTest;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -30,9 +30,6 @@ import org.chromium.net.test.EmbeddedTestServer;
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 public class ChromiumAndroidLinkerMetricsTest {
-    private static final String TAG = "ChromiumAndroidLinkerMetricsTest";
-
-    private static final String BROWSER_HISTOGRAM = "ChromiumAndroidLinker.BrowserLoadTime2";
     private static final String PAGE_PREFIX = "/chrome/test/data/android/google.html";
 
     @Rule
@@ -55,11 +52,6 @@ public class ChromiumAndroidLinkerMetricsTest {
                 ApplicationProvider.getApplicationContext());
     }
 
-    @After
-    public void tearDown() {
-        mTestServer.stopAndDestroyServer();
-    }
-
     /**
      * Test that *some* library load times are reported.
      */
@@ -75,7 +67,6 @@ public class ChromiumAndroidLinkerMetricsTest {
 
         Assert.assertTrue("First Contentful Paint must be reported",
                 metricsObserver.waitForFirstContentfulPaintEvent());
-        Assert.assertEquals(1, RecordHistogram.getHistogramTotalCountForTesting(BROWSER_HISTOGRAM));
         // Not testing the histogram from non-main process because the values can be stale.
 
         mActivityTestRule.loadUrl(getNextLoadUrl());

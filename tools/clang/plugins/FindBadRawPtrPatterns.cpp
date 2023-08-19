@@ -7,6 +7,7 @@
 #include "RawPtrHelpers.h"
 #include "RawPtrManualPathsToIgnore.h"
 #include "StackAllocatedChecker.h"
+#include "TypePredicateUtil.h"
 #include "Util.h"
 #include "clang/AST/AST.h"
 #include "clang/AST/ASTConsumer.h"
@@ -109,17 +110,17 @@ class BadCastMatcher : public MatchFinder::MatchCallback {
                                       error_bad_cast_signature_)
         << src_name << dst_name;
 
-    std::shared_ptr<CastingSafety> type_note;
+    std::shared_ptr<MatchResult> type_note;
     if (src_type != nullptr) {
       compiler_.getDiagnostics().Report(cast_expr->getEndLoc(),
                                         note_bad_cast_signature_explanation_)
           << src_name;
-      type_note = casting_unsafe_predicate_.GetCastingSafety(src_type);
+      type_note = casting_unsafe_predicate_.GetMatchResult(src_type);
     } else {
       compiler_.getDiagnostics().Report(cast_expr->getEndLoc(),
                                         note_bad_cast_signature_explanation_)
           << dst_name;
-      type_note = casting_unsafe_predicate_.GetCastingSafety(dst_type);
+      type_note = casting_unsafe_predicate_.GetMatchResult(dst_type);
     }
 
     while (type_note) {
@@ -285,7 +286,7 @@ void FindBadRawPtrPatterns(Options options,
   StackAllocatedPredicate stack_allocated_predicate;
   RawPtrAndRefExclusionsOptions exclusion_options{
       &exclude_fields, &exclude_lines, options.check_raw_ptr_to_stack_allocated,
-      &stack_allocated_predicate};
+      &stack_allocated_predicate, options.raw_ptr_fix_crbug_1449812};
 
   RawPtrFieldMatcher field_matcher(compiler, exclusion_options);
   if (options.check_raw_ptr_fields) {

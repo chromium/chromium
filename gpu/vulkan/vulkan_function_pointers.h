@@ -94,6 +94,8 @@ struct COMPONENT_EXPORT(VULKAN) VulkanFunctionPointers {
 
     Fn get() const { return fn_; }
 
+    void OverrideForTesting(Fn fn) { fn_ = fn; }
+
    private:
     friend VulkanFunctionPointers;
 
@@ -124,6 +126,8 @@ struct COMPONENT_EXPORT(VULKAN) VulkanFunctionPointers {
       vkEnumerateDeviceLayerProperties;
   VulkanFunction<PFN_vkEnumeratePhysicalDevices> vkEnumeratePhysicalDevices;
   VulkanFunction<PFN_vkGetDeviceProcAddr> vkGetDeviceProcAddr;
+  VulkanFunction<PFN_vkGetPhysicalDeviceExternalSemaphoreProperties>
+      vkGetPhysicalDeviceExternalSemaphoreProperties;
   VulkanFunction<PFN_vkGetPhysicalDeviceFeatures2> vkGetPhysicalDeviceFeatures2;
   VulkanFunction<PFN_vkGetPhysicalDeviceFormatProperties>
       vkGetPhysicalDeviceFormatProperties;
@@ -394,6 +398,14 @@ vkEnumeratePhysicalDevices(VkInstance instance,
 ALWAYS_INLINE PFN_vkVoidFunction vkGetDeviceProcAddr(VkDevice device,
                                                      const char* pName) {
   return gpu::GetVulkanFunctionPointers()->vkGetDeviceProcAddr(device, pName);
+}
+ALWAYS_INLINE void vkGetPhysicalDeviceExternalSemaphoreProperties(
+    VkPhysicalDevice physicalDevice,
+    const VkPhysicalDeviceExternalSemaphoreInfo* pExternalSemaphoreInfo,
+    VkExternalSemaphoreProperties* pExternalSemaphoreProperties) {
+  return gpu::GetVulkanFunctionPointers()
+      ->vkGetPhysicalDeviceExternalSemaphoreProperties(
+          physicalDevice, pExternalSemaphoreInfo, pExternalSemaphoreProperties);
 }
 ALWAYS_INLINE void vkGetPhysicalDeviceFeatures2(
     VkPhysicalDevice physicalDevice,
@@ -990,16 +1002,22 @@ ALWAYS_INLINE VkResult vkQueueSubmit(VkQueue queue,
                                      uint32_t submitCount,
                                      const VkSubmitInfo* pSubmits,
                                      VkFence fence) {
-  base::AutoLockMaybe auto_lock(
-      gpu::GetVulkanFunctionPointers()->per_queue_lock_map[queue].get());
-
+  base::Lock* lock = nullptr;
+  auto it = gpu::GetVulkanFunctionPointers()->per_queue_lock_map.find(queue);
+  if (it != gpu::GetVulkanFunctionPointers()->per_queue_lock_map.end()) {
+    lock = it->second.get();
+  }
+  base::AutoLockMaybe auto_lock(lock);
   return gpu::GetVulkanFunctionPointers()->vkQueueSubmit(queue, submitCount,
                                                          pSubmits, fence);
 }
 ALWAYS_INLINE VkResult vkQueueWaitIdle(VkQueue queue) {
-  base::AutoLockMaybe auto_lock(
-      gpu::GetVulkanFunctionPointers()->per_queue_lock_map[queue].get());
-
+  base::Lock* lock = nullptr;
+  auto it = gpu::GetVulkanFunctionPointers()->per_queue_lock_map.find(queue);
+  if (it != gpu::GetVulkanFunctionPointers()->per_queue_lock_map.end()) {
+    lock = it->second.get();
+  }
+  base::AutoLockMaybe auto_lock(lock);
   return gpu::GetVulkanFunctionPointers()->vkQueueWaitIdle(queue);
 }
 ALWAYS_INLINE VkResult vkResetCommandBuffer(VkCommandBuffer commandBuffer,
@@ -1207,9 +1225,12 @@ ALWAYS_INLINE VkResult vkGetSwapchainImagesKHR(VkDevice device,
 }
 ALWAYS_INLINE VkResult vkQueuePresentKHR(VkQueue queue,
                                          const VkPresentInfoKHR* pPresentInfo) {
-  base::AutoLockMaybe auto_lock(
-      gpu::GetVulkanFunctionPointers()->per_queue_lock_map[queue].get());
-
+  base::Lock* lock = nullptr;
+  auto it = gpu::GetVulkanFunctionPointers()->per_queue_lock_map.find(queue);
+  if (it != gpu::GetVulkanFunctionPointers()->per_queue_lock_map.end()) {
+    lock = it->second.get();
+  }
+  base::AutoLockMaybe auto_lock(lock);
   return gpu::GetVulkanFunctionPointers()->vkQueuePresentKHR(queue,
                                                              pPresentInfo);
 }

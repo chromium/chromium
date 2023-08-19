@@ -30,7 +30,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiUnitTestUtils;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -88,13 +87,7 @@ public class PseudoTabUnitTest {
 
     @After
     public void tearDown() {
-        TabAttributeCache.clearAllForTesting();
         PseudoTab.clearForTesting();
-
-        // This is necessary to get the cache behavior correct.
-        Runtime runtime = Runtime.getRuntime();
-        runtime.runFinalization();
-        runtime.gc();
     }
 
     @Test
@@ -345,39 +338,7 @@ public class PseudoTabUnitTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
     @EnableFeatures({ChromeFeatureList.INSTANT_START})
-    public void getRelatedTabs_noProvider_groupDisabled_single() {
-        doReturn(false).when(mTabModelSelector).isTabStateInitialized();
-
-        PseudoTab tab1 = PseudoTab.fromTabId(TAB1_ID);
-        List<PseudoTab> related = PseudoTab.getRelatedTabs(
-                ContextUtils.getApplicationContext(), tab1, mTabModelSelector);
-        Assert.assertEquals(1, related.size());
-        Assert.assertEquals(TAB1_ID, related.get(0).getId());
-    }
-
-    @Test
-    @DisableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
-    @EnableFeatures({ChromeFeatureList.INSTANT_START})
-    public void getRelatedTabs_noProvider_groupDisabled_group() {
-        doReturn(false).when(mTabModelSelector).isTabStateInitialized();
-
-        TabAttributeCache.setRootIdForTesting(TAB1_ID, TAB1_ID);
-        TabAttributeCache.setRootIdForTesting(TAB2_ID, TAB1_ID);
-        PseudoTab tab1 = PseudoTab.fromTabId(TAB1_ID);
-        Assert.assertEquals(TAB1_ID, tab1.getRootId());
-        PseudoTab tab2 = PseudoTab.fromTabId(TAB2_ID);
-        Assert.assertEquals(TAB1_ID, tab2.getRootId());
-
-        List<PseudoTab> related = PseudoTab.getRelatedTabs(
-                ContextUtils.getApplicationContext(), tab1, mTabModelSelector);
-        Assert.assertEquals(1, related.size());
-        Assert.assertEquals(TAB1_ID, related.get(0).getId());
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID, ChromeFeatureList.INSTANT_START})
     public void getRelatedTabs_noProvider_single() {
         doReturn(false).when(mTabModelSelector).isTabStateInitialized();
 
@@ -389,7 +350,7 @@ public class PseudoTabUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID, ChromeFeatureList.INSTANT_START})
+    @EnableFeatures({ChromeFeatureList.INSTANT_START})
     public void getRelatedTabs_noProvider_group() {
         doReturn(false).when(mTabModelSelector).isTabStateInitialized();
 
@@ -406,7 +367,7 @@ public class PseudoTabUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID, ChromeFeatureList.INSTANT_START})
+    @EnableFeatures({ChromeFeatureList.INSTANT_START})
     public void getRelatedTabs_noProvider_badGroup() {
         doReturn(false).when(mTabModelSelector).isTabStateInitialized();
 

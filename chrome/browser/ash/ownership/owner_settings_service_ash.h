@@ -35,13 +35,6 @@ class OwnerKeyUtil;
 
 namespace ash {
 
-enum class FeatureFlagsMigrationStatus {
-  kNoFeatureFlags,
-  kAlreadyMigrated,
-  kMigrationPerformed,
-  kMaxValue = kMigrationPerformed,
-};
-
 class OwnerKeyLoader;
 
 // The class is a profile-keyed service which holds public/private key pair

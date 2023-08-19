@@ -15,15 +15,15 @@ namespace autofill {
 
 // A form group that stores IBAN information.
 // Note: Only local IBAN is supported for now.
-class IBAN : public AutofillDataModel {
+class Iban : public AutofillDataModel {
  public:
-  explicit IBAN(const std::string& guid);
+  explicit Iban(const std::string& guid);
 
-  IBAN();
-  IBAN(const IBAN&);
-  ~IBAN() override;
+  Iban();
+  Iban(const Iban&);
+  ~Iban() override;
 
-  IBAN& operator=(const IBAN& iban);
+  Iban& operator=(const Iban& iban);
 
   // Returns true if IBAN value is valid. This method is case-insensitive.
   // The validation follows the below steps:
@@ -66,12 +66,12 @@ class IBAN : public AutofillDataModel {
   // contents of the fields.
   // GUIDs, origins, and server id are not compared, only the values of
   // the IBANs themselves.
-  int Compare(const IBAN& iban) const;
+  int Compare(const Iban& iban) const;
 
   // Equality operators compare GUIDs, origins, |value_|,
   // |nickname_| and the |server_id_|.
-  bool operator==(const IBAN& iban) const;
-  bool operator!=(const IBAN& iban) const;
+  bool operator==(const Iban& iban) const;
+  bool operator!=(const Iban& iban) const;
 
   // Returns the ID assigned by the server. |server_id_| is empty if it's a
   // local IBAN.

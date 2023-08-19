@@ -15,6 +15,7 @@
 #import "components/omnibox/browser/omnibox_edit_model.h"
 #import "components/omnibox/browser/omnibox_view.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
+#import "components/prefs/pref_service.h"
 #import "components/profile_metrics/browser_profile_type.h"
 #import "components/search_engines/util.h"
 #import "components/strings/grit/components_strings.h"
@@ -29,7 +30,7 @@
 #import "ios/chrome/browser/ntp/new_tab_page_util.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
-#import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
+#import "ios/chrome/browser/shared/coordinator/default_browser_promo/default_browser_promo_scene_agent_utils.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -61,7 +62,7 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_focus_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_ios.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_coordinator.h"
-#import "ios/chrome/browser/ui/omnibox/web_omnibox_edit_model_delegate_impl.h"
+#import "ios/chrome/browser/ui/omnibox/web_location_bar_impl.h"
 #import "ios/chrome/browser/url_loading/image_search_param_generator.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
@@ -76,9 +77,9 @@
 #import "ui/base/device_form_factor.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+BASE_FEATURE(kEnableFocusOmniboxWorkaround,
+             "EnableFocusOmniboxWorkaround",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 const size_t kMaxURLDisplayChars = 32 * 1024;
@@ -91,7 +92,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
                                       OmniboxControllerDelegate,
                                       URLDragDataSource> {
   // API endpoint for omnibox.
-  std::unique_ptr<WebOmniboxEditModelDelegateImpl> _editModelDelegate;
+  std::unique_ptr<WebLocationBarImpl> _locationBar;
   // Observer that updates `viewController` for fullscreen events.
   std::unique_ptr<FullscreenUIUpdater> _omniboxFullscreenUIUpdater;
   // Observer that updates BadgeViewController for fullscreen events.
@@ -163,6 +164,9 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
   BOOL isIncognito = self.browserState->IsOffTheRecord();
 
+  PrefService* prefs =
+      ChromeBrowserState::FromBrowserState(self.browser->GetBrowserState())
+          ->GetPrefs();
   self.viewController = [[LocationBarViewController alloc] init];
   self.viewController.incognito = isIncognito;
   self.viewController.delegate = self;
@@ -176,10 +180,10 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
       ios::provider::IsVoiceSearchEnabled();
   self.viewController.layoutGuideCenter =
       LayoutGuideCenterForBrowser(self.browser);
+  self.viewController.prefService = prefs;
 
-  _editModelDelegate =
-      std::make_unique<WebOmniboxEditModelDelegateImpl>(self, self.delegate);
-  _editModelDelegate->SetURLLoader(self);
+  _locationBar = std::make_unique<WebLocationBarImpl>(self, self.delegate);
+  _locationBar->SetURLLoader(self);
   _locationBarModelDelegate.reset(new LocationBarModelDelegateIOS(
       self.browser->GetWebStateList(), self.browserState));
   _locationBarModel = std::make_unique<LocationBarModelImpl>(
@@ -188,7 +192,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   self.omniboxCoordinator =
       [[OmniboxCoordinator alloc] initWithBaseViewController:nil
                                                      browser:self.browser];
-  self.omniboxCoordinator.editModelDelegate = _editModelDelegate.get();
+  self.omniboxCoordinator.locationBar = _locationBar.get();
   self.omniboxCoordinator.presenterDelegate = self.popupPresenterDelegate;
   [self.omniboxCoordinator start];
 
@@ -260,12 +264,17 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   [self.omniboxCoordinator stop];
   [self.badgeMediator disconnect];
   self.badgeMediator = nil;
-  _editModelDelegate.reset();
+  _locationBar.reset();
 
   self.viewController = nil;
   [self.mediator disconnect];
+  self.mediator.templateURLService = nil;
+  self.mediator.consumer = nil;
   self.mediator = nil;
   [self.steadyViewMediator disconnect];
+  self.steadyViewMediator.webStateList = nullptr;
+  self.steadyViewMediator.webContentAreaOverlayPresenter = nil;
+  self.steadyViewMediator.consumer = nil;
   self.steadyViewMediator = nil;
 
   _locationBarModel = nullptr;
@@ -300,6 +309,11 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   return self.omniboxCoordinator.scribbleInput;
 }
 
+// Returns the toolbar omnibox consumer.
+- (id<ToolbarOmniboxConsumer>)toolbarOmniboxConsumer {
+  return self.omniboxCoordinator.toolbarOmniboxConsumer;
+}
+
 #pragma mark - LoadQueryCommands
 
 - (void)loadQuery:(NSString*)query immediately:(BOOL)immediately {
@@ -310,7 +324,12 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   if (immediately) {
     [self loadURLForQuery:sanitizedQuery];
   } else {
-    [self.omniboxCoordinator focusOmnibox];
+    // TODO(crbug.com/1463766): Clean up the kill switch and else branch.
+    if (base::FeatureList::IsEnabled(kEnableFocusOmniboxWorkaround)) {
+      [self focusOmnibox];
+    } else {
+      [self.omniboxCoordinator focusOmnibox];
+    }
     [self.omniboxCoordinator
         insertTextToOmnibox:base::SysUTF16ToNSString(sanitizedQuery)];
   }
@@ -424,8 +443,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
   SceneState* sceneState =
       SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
-  [[NonModalDefaultBrowserPromoSchedulerSceneAgent agentFromScene:sceneState]
-      logUserPastedInOmnibox];
+  NotifyDefaultBrowserPromoUserPastedInOmnibox(sceneState);
   LogToFETUserPastedURLIntoOmnibox(
       feature_engagement::TrackerFactory::GetForBrowserState(
           self.browser->GetBrowserState()));

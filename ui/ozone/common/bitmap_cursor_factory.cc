@@ -101,8 +101,7 @@ scoped_refptr<PlatformCursor> BitmapCursorFactory::GetDefaultCursor(
       // Lacros uses server-side cursors for most types. These cursors don't
       // need to load bitmap images on the client.
       // Similarly, the hidden cursor doesn't use any bitmap.
-      default_cursors_[type] =
-          base::MakeRefCounted<BitmapCursor>(type, cursor_scale_factor_);
+      default_cursors_[type] = base::MakeRefCounted<BitmapCursor>(type);
     } else {
       return nullptr;
     }
@@ -114,24 +113,20 @@ scoped_refptr<PlatformCursor> BitmapCursorFactory::GetDefaultCursor(
 scoped_refptr<PlatformCursor> BitmapCursorFactory::CreateImageCursor(
     mojom::CursorType type,
     const SkBitmap& bitmap,
-    const gfx::Point& hotspot) {
-  return base::MakeRefCounted<BitmapCursor>(type, bitmap, hotspot,
-                                            cursor_scale_factor_);
+    const gfx::Point& hotspot,
+    float scale) {
+  return base::MakeRefCounted<BitmapCursor>(type, bitmap, hotspot, scale);
 }
 
 scoped_refptr<PlatformCursor> BitmapCursorFactory::CreateAnimatedCursor(
     mojom::CursorType type,
     const std::vector<SkBitmap>& bitmaps,
     const gfx::Point& hotspot,
+    float scale,
     base::TimeDelta frame_delay) {
   DCHECK_LT(0U, bitmaps.size());
   return base::MakeRefCounted<BitmapCursor>(type, bitmaps, hotspot, frame_delay,
-                                            cursor_scale_factor_);
-}
-
-void BitmapCursorFactory::SetDeviceScaleFactor(float scale) {
-  DCHECK_GT(scale, 0.f);
-  cursor_scale_factor_ = scale;
+                                            scale);
 }
 
 }  // namespace ui

@@ -3,9 +3,10 @@ Short Name: dataflow-errorprone
 URL: https://checkerframework.org
 Version: 3.15.0
 License: GPL v2 with the classpath exception
-License File: NOT_SHIPPED
+License File: LICENSE
 CPEPrefix: unknown
 Security Critical: no
+Shipped: no
 
 Description:
 dataflow-errorprone is a dataflow framework based on the javac compiler. It differs from the org.checkerframework:dataflow artifact in two ways. First, the packages in this artifact have been renamed to org.checkerframework.errorprone.*. Second, unlike the dataflow artifact, this artifact contains the dependencies it requires.

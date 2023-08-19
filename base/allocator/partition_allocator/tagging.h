@@ -56,8 +56,8 @@ void ChangeMemoryTaggingModeForAllThreadsPerProcess(TagViolationReportingMode);
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 TagViolationReportingMode GetMemoryTaggingModeForCurrentThread();
 
-// These forward-defined functions do not really exist in tagging.cc, they're resolved
-// by the dynamic linker to MTE-capable versions on the right hardware.
+// These forward-defined functions do not really exist in tagging.cc, they're
+// resolved by the dynamic linker to MTE-capable versions on the right hardware.
 #if PA_CONFIG(HAS_MEMORY_TAGGING)
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 void* TagMemoryRangeIncrementInternal(void* ptr, size_t size);
@@ -70,38 +70,31 @@ void* RemaskPointerInternal(void* ptr);
 // Increments the tag of the memory range ptr. Useful for provable revocations
 // (e.g. free). Returns the pointer with the new tag. Ensures that the entire
 // range is set to the same tag.
-// TODO(bartekn): Remove the T* variant.
-// TODO(bartekn): Consider removing the return value.
-template <typename T>
-PA_ALWAYS_INLINE T* TagMemoryRangeIncrement(T* ptr, size_t size) {
+PA_ALWAYS_INLINE void* TagMemoryRangeIncrement(void* ptr, size_t size) {
 #if PA_CONFIG(HAS_MEMORY_TAGGING)
-  return reinterpret_cast<T*>(TagMemoryRangeIncrementInternal(ptr, size));
+  return TagMemoryRangeIncrementInternal(ptr, size);
 #else
   return ptr;
 #endif
 }
-PA_ALWAYS_INLINE void* TagMemoryRangeIncrement(uintptr_t ptr, size_t size) {
-  return TagMemoryRangeIncrement(reinterpret_cast<void*>(ptr), size);
+
+PA_ALWAYS_INLINE void* TagMemoryRangeIncrement(uintptr_t address, size_t size) {
+  return TagMemoryRangeIncrement(reinterpret_cast<void*>(address), size);
 }
 
 // Randomly changes the tag of the ptr memory range. Useful for initial random
 // initialization. Returns the pointer with the new tag. Ensures that the entire
 // range is set to the same tag.
-// TODO(bartekn): Remove the T* variant.
-template <typename T>
-PA_ALWAYS_INLINE T* TagMemoryRangeRandomly(T* ptr,
-                                           size_t size,
-                                           uint64_t mask = 0u) {
+PA_ALWAYS_INLINE void* TagMemoryRangeRandomly(uintptr_t address,
+                                              size_t size,
+                                              uint64_t mask = 0u) {
+  void* ptr = reinterpret_cast<void*>(address);
 #if PA_CONFIG(HAS_MEMORY_TAGGING)
-  return reinterpret_cast<T*>(TagMemoryRangeRandomlyInternal(ptr, size, mask));
+  return reinterpret_cast<void*>(
+      TagMemoryRangeRandomlyInternal(ptr, size, mask));
 #else
   return ptr;
 #endif
-}
-PA_ALWAYS_INLINE void* TagMemoryRangeRandomly(uintptr_t ptr,
-                                              size_t size,
-                                              uint64_t mask = 0u) {
-  return TagMemoryRangeRandomly(reinterpret_cast<void*>(ptr), size, mask);
 }
 
 // Gets a version of ptr that's safe to dereference.

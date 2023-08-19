@@ -4,11 +4,11 @@
 
 #include "base/test/launcher/unit_test_launcher.h"
 
+#include "base/apple/foundation_util.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
 #include "base/test/allow_check_is_test_for_testing.h"
 #include "base/test/gtest_util.h"
 #include "base/test/test_support_ios.h"
@@ -57,14 +57,14 @@ int LaunchUnitTestsSerially(int argc,
         only_write_tests
             ? (command_line->GetSwitchValuePath(
                   switches::kTestLauncherListTests))
-            : mac::GetUserDocumentPath().Append("compiled_tests.json");
+            : apple::GetUserDocumentPath().Append("compiled_tests.json");
     int write_result = WriteCompiledInTestsToFileAndLog(list_path);
     if (only_write_tests) {
       return write_result;
     }
   } else if (command_line->HasSwitch(
                  switches::kTestLauncherPrintWritablePath)) {
-    fprintf(stdout, "%s", mac::GetUserLibraryPath().value().c_str());
+    fprintf(stdout, "%s", apple::GetUserLibraryPath().value().c_str());
     fflush(stdout);
     return 0;
   }

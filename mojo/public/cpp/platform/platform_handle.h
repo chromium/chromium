@@ -16,7 +16,7 @@
 #elif BUILDFLAG(IS_FUCHSIA)
 #include <lib/zx/handle.h>
 #elif BUILDFLAG(IS_APPLE)
-#include "base/mac/scoped_mach_port.h"
+#include "base/apple/scoped_mach_port.h"
 #endif
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
@@ -62,8 +62,8 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) PlatformHandle {
 #elif BUILDFLAG(IS_FUCHSIA)
   explicit PlatformHandle(zx::handle handle);
 #elif BUILDFLAG(IS_APPLE)
-  explicit PlatformHandle(base::mac::ScopedMachSendRight mach_port);
-  explicit PlatformHandle(base::mac::ScopedMachReceiveRight mach_port);
+  explicit PlatformHandle(base::apple::ScopedMachSendRight mach_port);
+  explicit PlatformHandle(base::apple::ScopedMachReceiveRight mach_port);
 #endif
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
@@ -140,10 +140,10 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) PlatformHandle {
 
   bool is_valid_mach_send() const { return mach_send_.is_valid(); }
   bool is_mach_send() const { return type_ == Type::kMachSend; }
-  const base::mac::ScopedMachSendRight& GetMachSendRight() const {
+  const base::apple::ScopedMachSendRight& GetMachSendRight() const {
     return mach_send_;
   }
-  base::mac::ScopedMachSendRight TakeMachSendRight() {
+  base::apple::ScopedMachSendRight TakeMachSendRight() {
     if (type_ == Type::kMachSend)
       type_ = Type::kNone;
     return std::move(mach_send_);
@@ -154,10 +154,10 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) PlatformHandle {
 
   bool is_valid_mach_receive() const { return mach_receive_.is_valid(); }
   bool is_mach_receive() const { return type_ == Type::kMachReceive; }
-  const base::mac::ScopedMachReceiveRight& GetMachReceiveRight() const {
+  const base::apple::ScopedMachReceiveRight& GetMachReceiveRight() const {
     return mach_receive_;
   }
-  base::mac::ScopedMachReceiveRight TakeMachReceiveRight() {
+  base::apple::ScopedMachReceiveRight TakeMachReceiveRight() {
     if (type_ == Type::kMachReceive)
       type_ = Type::kNone;
     return std::move(mach_receive_);
@@ -223,8 +223,8 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) PlatformHandle {
 #elif BUILDFLAG(IS_FUCHSIA)
   zx::handle handle_;
 #elif BUILDFLAG(IS_APPLE)
-  base::mac::ScopedMachSendRight mach_send_;
-  base::mac::ScopedMachReceiveRight mach_receive_;
+  base::apple::ScopedMachSendRight mach_send_;
+  base::apple::ScopedMachReceiveRight mach_receive_;
 #endif
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)

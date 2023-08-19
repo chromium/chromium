@@ -11,6 +11,7 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/flat_set.h"
 #include "base/containers/lru_cache.h"
 #include "base/functional/bind.h"
 #include "base/memory/memory_pressure_monitor.h"
@@ -82,8 +83,8 @@ class NET_EXPORT SSLClientSessionCache {
   // offering 0-RTT data on retries. See https://crbug.com/1066623.
   void ClearEarlyData(const Key& cache_key);
 
-  // Removes all entries associated with |server|.
-  void FlushForServer(const HostPortPair& server);
+  // Removes all entries associated with items in |servers|.
+  void FlushForServers(const base::flat_set<HostPortPair>& servers);
 
   // Removes all entries from the cache.
   void Flush();

@@ -14,7 +14,7 @@ found in the LICENSE file.
 </variants>
 
 <histogram name="GameMode.Result.{GameTypes}" enum="GameModeResult"
-    expires_after="2023-09-01">
+    expires_after="2024-09-01">
   <owner>lqu@google.com</owner>
   <owner>src/chrome/browser/ash/game_mode/OWNERS</owner>
   <summary>
@@ -28,7 +28,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="GameMode.TimeInGameMode.{GameTypes}" units="ms"
-    expires_after="2023-09-10">
+    expires_after="2024-09-10">
   <owner>matvore@google.com</owner>
   <owner>src/chrome/browser/ash/game_mode/OWNERS</owner>
   <summary>

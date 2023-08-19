@@ -8,11 +8,12 @@
 #include "third_party/skia/include/core/SkFontMgr.h"
 
 #include "build/build_config.h"
+#include "third_party/blink/public/common/buildflags.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
-// Decides which Skia Fontmanager to use for instantiating a web font. In the
+// Decides which Skia backend to use for instantiating a web font. In the
 // regular case, this would be default font manager used for the platform.
 // However, for variable fonts, color bitmap font formats and CFF2 fonts we want
 // to use FreeType on Windows and Mac.
@@ -22,15 +23,18 @@ class WebFontTypefaceFactory {
  public:
   static bool CreateTypeface(const sk_sp<SkData>, sk_sp<SkTypeface>&);
 
-  // TODO(drott): This should be going away in favor of a new API on SkTypeface:
-  // https://bugs.chromium.org/p/skia/issues/detail?id=7121
-  static sk_sp<SkFontMgr> FontManagerForVariations();
-  static sk_sp<SkFontMgr> FontManagerForSbix();
-  static sk_sp<SkFontMgr> FreeTypeFontManager();
-  static sk_sp<SkFontMgr> FontManagerForColrCpal();
-  static sk_sp<SkFontMgr> FontManagerForColrV0Variations();
-
  private:
+  static sk_sp<SkTypeface> MakeTypefaceDefaultFontMgr(sk_sp<SkData>);
+  static sk_sp<SkTypeface> MakeTypefaceFreeType(sk_sp<SkData>);
+#if BUILDFLAG(USE_FONTATIONS_BACKEND)
+  static sk_sp<SkTypeface> MakeTypefaceFontations(sk_sp<SkData>);
+#endif
+
+  static sk_sp<SkTypeface> MakeVariationsTypeface(sk_sp<SkData>);
+  static sk_sp<SkTypeface> MakeSbixTypeface(sk_sp<SkData>);
+  static sk_sp<SkTypeface> MakeColrV0Typeface(sk_sp<SkData>);
+  static sk_sp<SkTypeface> MakeColrV0VariationsTypeface(sk_sp<SkData>);
+
   // These values are written to logs.  New enum values can be added, but
   // existing enums must never be renumbered or deleted and reused.
   enum class InstantiationResult {
@@ -44,8 +48,6 @@ class WebFontTypefaceFactory {
     kSuccessColrV1Font = 7,
     kMaxValue = kSuccessColrV1Font
   };
-
-  static sk_sp<SkFontMgr> DefaultFontManager();
 
   static void ReportInstantiationResult(InstantiationResult);
 };

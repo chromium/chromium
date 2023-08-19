@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/ash/fileapi/external_file_url_util.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -112,6 +113,21 @@ void OpenHostedDriveFsFile(const base::FilePath& file_path,
   OpenNewTab(hosted_url);
 }
 
+// Open an encrypted file by redirecting the user to Google Drive.
+void OpenEncryptedDriveFsFile(const base::FilePath& file_path,
+                              drive::FileError error,
+                              drivefs::mojom::FileMetadataPtr metadata) {
+  if (error != drive::FILE_ERROR_OK) {
+    return;
+  }
+  GURL hosted_url(metadata->alternate_url);
+  if (!hosted_url.is_valid()) {
+    return;
+  }
+
+  OpenNewTab(hosted_url);
+}
+
 }  // namespace
 
 bool OpenFileWithBrowser(Profile* profile,
@@ -121,6 +137,22 @@ bool OpenFileWithBrowser(Profile* profile,
   DCHECK(profile);
 
   const base::FilePath file_path = file_system_url.path();
+
+  if (action_id == "open-encrypted") {
+    drive::DriveIntegrationService* integration_service =
+        drive::DriveIntegrationServiceFactory::FindForProfile(profile);
+    base::FilePath path;
+    if (integration_service && integration_service->IsMounted() &&
+        integration_service->GetDriveFsInterface() &&
+        integration_service->GetRelativeDrivePath(file_path, &path)) {
+      integration_service->GetDriveFsInterface()->GetMetadata(
+          path, base::BindOnce(&OpenEncryptedDriveFsFile, file_path));
+      return true;
+    }
+    LOG(WARNING) << "Failed to open file: " << file_path.value()
+                 << ": no connection to integration service";
+    return false;
+  }
 
   // For things supported natively by the browser, we should open it in a tab.
   if (IsViewableInBrowser(file_path) || action_id == "view-pdf" ||
@@ -172,24 +204,35 @@ bool OpenNewTabForHostedOfficeFile(const GURL& url) {
   if (!url_with_query_param.is_valid()) {
     UMA_HISTOGRAM_ENUMERATION(
         file_tasks::kDriveErrorMetricName,
-        file_tasks::OfficeDriveErrors::INVALID_ALTERNATE_URL);
+        file_tasks::OfficeDriveOpenErrors::kInvalidAlternateUrl);
+    UMA_HISTOGRAM_ENUMERATION(
+        ash::cloud_upload::kGoogleDriveTaskResultMetricName,
+        ash::cloud_upload::OfficeTaskResult::kFailedToOpen);
     LOG(ERROR) << "Invalid URL";
     return false;
   }
   if (url_with_query_param.host() == "drive.google.com") {
     UMA_HISTOGRAM_ENUMERATION(
         file_tasks::kDriveErrorMetricName,
-        file_tasks::OfficeDriveErrors::DRIVE_ALTERNATE_URL);
+        file_tasks::OfficeDriveOpenErrors::kDriveAlternateUrl);
+    UMA_HISTOGRAM_ENUMERATION(
+        ash::cloud_upload::kGoogleDriveTaskResultMetricName,
+        ash::cloud_upload::OfficeTaskResult::kFailedToOpen);
     LOG(ERROR) << "URL was from drive.google.com";
     return false;
   }
   if (url_with_query_param.host() != "docs.google.com") {
     UMA_HISTOGRAM_ENUMERATION(
         file_tasks::kDriveErrorMetricName,
-        file_tasks::OfficeDriveErrors::UNEXPECTED_ALTERNATE_URL);
+        file_tasks::OfficeDriveOpenErrors::kUnexpectedAlternateUrl);
+    UMA_HISTOGRAM_ENUMERATION(
+        ash::cloud_upload::kGoogleDriveTaskResultMetricName,
+        ash::cloud_upload::OfficeTaskResult::kFailedToOpen);
     LOG(ERROR) << "URL was not from docs.google.com";
     return false;
   }
+  UMA_HISTOGRAM_ENUMERATION(file_tasks::kDriveErrorMetricName,
+                            file_tasks::OfficeDriveOpenErrors::kSuccess);
 
   return OpenNewTab(url_with_query_param);
 }

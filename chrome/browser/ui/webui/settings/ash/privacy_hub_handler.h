@@ -8,8 +8,10 @@
 #include <string>
 
 #include "ash/public/cpp/privacy_hub_delegate.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "content/public/browser/web_ui_message_handler.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::settings {
 
@@ -26,22 +28,30 @@ class PrivacyHubHandler : public content::WebUIMessageHandler,
   // PrivacyHubDelegate
   void MicrophoneHardwareToggleChanged(bool muted) override;
 
+  void SetPrivacyPageOpenedTimeStampForTesting(base::TimeTicks time_stamp);
+
  protected:
   // content::WebUIMessageHandler
   void RegisterMessages() override;
 
   void NotifyJS(const std::string& event_name, const base::Value& value);
 
-  void HandleInitialMicrophoneSwitchState(const base::Value::List& args);
-
   void HandlePrivacyPageOpened(const base::Value::List& args);
 
   void HandlePrivacyPageClosed(const base::Value::List& args);
 
+  void HandleInitialMicrophoneSwitchState(const base::Value::List& args);
+
+  void HandleInitialCameraLedFallbackState(const base::Value::List& args);
+
  private:
+  // return the callback_id
+  const base::ValueView ValidateArgs(const base::Value::List& args);
+
   void TriggerHatsIfPageWasOpened();
 
-  bool privacy_page_was_opened_ = false;
+  absl::optional<base::TimeTicks> privacy_page_opened_timestamp_;
+  base::WeakPtrFactory<PrivacyHubHandler> weak_factory_{this};
 };
 
 }  // namespace ash::settings

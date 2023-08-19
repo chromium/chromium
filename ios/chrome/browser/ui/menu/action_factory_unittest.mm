@@ -23,10 +23,6 @@
 #import "ui/base/test/ios/ui_image_test_utils.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 MenuScenarioHistogram kTestMenuScenario = MenuScenarioHistogram::kHistoryEntry;
 }  // namespace
@@ -255,7 +251,8 @@ TEST_F(ActionFactoryTest, MoveFolderAction) {
   ActionFactory* factory =
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
-  UIImage* expectedImage = [UIImage imageNamed:@"move_folder"];
+  UIImage* expectedImage = MakeSymbolMulticolor(
+      CustomSymbolWithPointSize(kMoveFolderSymbol, kSymbolActionPointSize));
 
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_BOOKMARK_CONTEXT_MENU_MOVE);
@@ -264,7 +261,7 @@ TEST_F(ActionFactoryTest, MoveFolderAction) {
   }];
 
   EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
-  EXPECT_EQ(expectedImage, action.image);
+  EXPECT_NSEQ(expectedImage, action.image);
 }
 
 // Tests that the Mark As Read action has the right title and image.

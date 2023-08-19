@@ -43,6 +43,11 @@ class MandatoryReauthBubbleController {
 
   // The type of bubble currently displayed to the user.
   virtual MandatoryReauthBubbleType GetBubbleType() const = 0;
+
+#if BUILDFLAG(IS_ANDROID)
+  virtual base::android::ScopedJavaLocalRef<jobject>
+  GetJavaControllerBridge() = 0;
+#endif
 };
 
 }  // namespace autofill

@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_device_picker_bubble_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/send_tab_to_self/features.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -110,7 +111,9 @@ void SendTabToSelfIconView::OnExecuting(
     PageActionIconView::ExecuteSource execute_source) {}
 
 const gfx::VectorIcon& SendTabToSelfIconView::GetVectorIcon() const {
-  return kDevicesIcon;
+  return OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
+             ? kDevicesChromeRefreshIcon
+             : kDevicesIcon;
 }
 
 SendTabToSelfBubbleController* SendTabToSelfIconView::GetController() const {

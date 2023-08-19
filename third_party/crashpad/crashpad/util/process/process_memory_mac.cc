@@ -19,8 +19,8 @@
 
 #include <algorithm>
 
+#include "base/apple/mach_logging.h"
 #include "base/logging.h"
-#include "base/mac/mach_logging.h"
 #include "base/strings/stringprintf.h"
 #include "util/stdlib/strnlen.h"
 

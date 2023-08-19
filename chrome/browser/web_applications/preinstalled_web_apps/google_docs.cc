@@ -6,12 +6,21 @@
 
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_app_definition_utils.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/grit/preinstalled_web_apps_resources.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/startup/browser_params_proxy.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace web_app {
 
@@ -97,6 +106,16 @@ constexpr Translation kNameTranslations[] = {
 };
 // clang-format on
 
+#if BUILDFLAG(IS_CHROMEOS)
+bool IsDriveFsBulkPinningEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return chromeos::BrowserParamsProxy::Get()->IsDriveFsBulkPinningEnabled();
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+  return ash::features::IsDriveFsBulkPinningEnabled();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 }  // namespace
 
 ExternalInstallOptions GetConfigForGoogleDocs() {
@@ -108,6 +127,19 @@ ExternalInstallOptions GetConfigForGoogleDocs() {
 
   options.user_type_allowlist = {"unmanaged", "managed", "child"};
   options.uninstall_and_replace.push_back("aohghmighlieiainnegkcijnfilokake");
+  options.expected_app_id = kGoogleDocsAppId;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  if (IsDriveFsBulkPinningEnabled()) {
+    VLOG(1) << "DriveFsBulkPinning enabled, registering service worker";
+    options.load_and_await_service_worker_registration = true;
+    options.only_use_app_info_factory = false;
+    options.service_worker_registration_url = GURL("https://docs.google.com");
+    options.service_worker_registration_timeout = base::Minutes(10);
+    return options;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   options.load_and_await_service_worker_registration = false;
   options.only_use_app_info_factory = true;
   options.app_info_factory = base::BindRepeating([]() {
@@ -122,7 +154,6 @@ ExternalInstallOptions GetConfigForGoogleDocs() {
         LoadBundledIcons({IDR_PREINSTALLED_WEB_APPS_GOOGLE_DOCS_ICON_192_PNG});
     return info;
   });
-  options.expected_app_id = kGoogleDocsAppId;
 
   return options;
 }

@@ -18,8 +18,7 @@ namespace updater {
 class AppUpdate : public App {
  private:
   ~AppUpdate() override = default;
-  void Initialize() override;
-  void Uninitialize() override;
+  [[nodiscard]] int Initialize() override;
   void FirstTaskRun() override;
 
   void SetupDone(int result);
@@ -28,12 +27,11 @@ class AppUpdate : public App {
   std::unique_ptr<ScopedLock> setup_lock_;
 };
 
-void AppUpdate::Initialize() {
+int AppUpdate::Initialize() {
   setup_lock_ =
       ScopedLock::Create(kSetupMutex, updater_scope(), kWaitForSetupLock);
+  return kErrorOk;
 }
-
-void AppUpdate::Uninitialize() {}
 
 void AppUpdate::FirstTaskRun() {
   if (WrongUser(updater_scope())) {

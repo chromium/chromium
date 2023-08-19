@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_menu_view_controller.h"
 
+#include <algorithm>
+
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/user_metrics.h"
@@ -277,6 +279,26 @@ ExtensionsMenuMainPageView::MessageSectionState GetMessageSectionState(
                                kUserCustomizedAccess;
 }
 
+void LogSiteAccessUpdate(PermissionsManager::UserSiteAccess site_access) {
+  switch (site_access) {
+    case PermissionsManager::UserSiteAccess::kOnClick:
+      base::RecordAction(
+          base::UserMetricsAction("Extensions.Menu.OnClickSelected"));
+      break;
+    case PermissionsManager::UserSiteAccess::kOnSite:
+      base::RecordAction(
+          base::UserMetricsAction("Extensions.Menu.OnSiteSelected"));
+      break;
+    case PermissionsManager::UserSiteAccess::kOnAllSites:
+      base::RecordAction(
+          base::UserMetricsAction("Extensions.Menu.OnAllSitesSelected"));
+      break;
+    default:
+      NOTREACHED() << "Unknown site access";
+      break;
+  }
+}
+
 }  // namespace
 
 ExtensionsMenuViewController::ExtensionsMenuViewController(
@@ -309,7 +331,7 @@ void ExtensionsMenuViewController::OpenMainPage() {
 }
 
 void ExtensionsMenuViewController::OpenSitePermissionsPage(
-    extensions::ExtensionId extension_id) {
+    const extensions::ExtensionId& extension_id) {
   CHECK(CanUserCustomizeExtensionSiteAccess(
       *GetExtension(browser_, extension_id), *browser_->profile(),
       *toolbar_model_, *GetActiveWebContents()));
@@ -321,6 +343,9 @@ void ExtensionsMenuViewController::OpenSitePermissionsPage(
                             GetActiveWebContents());
 
   SwitchToPage(std::move(site_permissions_page));
+
+  base::RecordAction(
+      base::UserMetricsAction("Extensions.Menu.SitePermissionsPageOpened"));
 }
 
 void ExtensionsMenuViewController::CloseBubble() {
@@ -329,8 +354,10 @@ void ExtensionsMenuViewController::CloseBubble() {
 }
 
 void ExtensionsMenuViewController::OnSiteAccessSelected(
-    extensions::ExtensionId extension_id,
+    const extensions::ExtensionId& extension_id,
     PermissionsManager::UserSiteAccess site_access) {
+  LogSiteAccessUpdate(site_access);
+
   SitePermissionsHelper permissions(browser_->profile());
   permissions.UpdateSiteAccess(*GetExtension(browser_, extension_id),
                                GetActiveWebContents(), site_access);
@@ -349,50 +376,78 @@ void ExtensionsMenuViewController::OnSiteSettingsToggleButtonPressed(
       ->SetReloadRequired(site_setting);
   PermissionsManager::Get(browser_->profile())
       ->UpdateUserSiteSetting(origin, site_setting);
+
+  if (is_on) {
+    base::RecordAction(
+        base::UserMetricsAction("Extensions.Menu.AllowByExtensionSelected"));
+  } else {
+    base::RecordAction(
+        base::UserMetricsAction("Extensions.Menu.ExtensionsBlockedSelected"));
+  }
 }
 
 void ExtensionsMenuViewController::OnExtensionToggleSelected(
-    extensions::ExtensionId extension_id,
+    const extensions::ExtensionId& extension_id,
     bool is_on) {
   const extensions::Extension* extension = GetExtension(browser_, extension_id);
   content::WebContents* web_contents = GetActiveWebContents();
   CHECK(CanUserCustomizeExtensionSiteAccess(*extension, *browser_->profile(),
                                             *toolbar_model_, *web_contents));
-
-  // Toggling the button off removes site access.
   SitePermissionsHelper permissions_helper(browser_->profile());
-  if (!is_on) {
-    // TODO(crbug.com/1433399): Clear tab permissions for extension.
-    permissions_helper.UpdateSiteAccess(
-        *extension, web_contents, PermissionsManager::UserSiteAccess::kOnClick);
-    return;
-  }
-
-  // Toggling the button on grants site access. Note that extension should
-  // currently have "on click" access.
   auto* permissions_manager = PermissionsManager::Get(browser_->profile());
-  DCHECK_EQ(permissions_manager->GetUserSiteAccess(
-                *GetExtension(browser_, extension_id),
-                GetActiveWebContents()->GetLastCommittedURL()),
-            PermissionsManager::UserSiteAccess::kOnClick);
+  auto current_site_access = permissions_manager->GetUserSiteAccess(
+      *GetExtension(browser_, extension_id),
+      GetActiveWebContents()->GetLastCommittedURL());
 
-  // If user can select "on site" access (that means the extension requested
-  // access to that site), then we update site access to "on site".
-  if (permissions_manager->CanUserSelectSiteAccess(
-          *extension, web_contents->GetLastCommittedURL(),
-          PermissionsManager::UserSiteAccess::kOnSite)) {
+  // Update site access to "on site" when extension is toggled on and extension
+  // requested access to that site (which is true if the user can select "on
+  // site" access).
+  if (is_on && permissions_manager->CanUserSelectSiteAccess(
+                   *extension, web_contents->GetLastCommittedURL(),
+                   PermissionsManager::UserSiteAccess::kOnSite)) {
+    DCHECK_EQ(current_site_access,
+              PermissionsManager::UserSiteAccess::kOnClick);
     permissions_helper.UpdateSiteAccess(
         *extension, web_contents, PermissionsManager::UserSiteAccess::kOnSite);
     return;
   }
 
-  // Otherwise just grant one-time tab permissions.
-  extensions::ExtensionActionRunner* action_runner =
-      extensions::ExtensionActionRunner::GetForWebContents(web_contents);
-  if (!action_runner) {
+  // Grant one-time access when extension is toggled on and the extension can't
+  // be set to always on for the given site (e.g. extensions with activeTab).
+  if (is_on) {
+    DCHECK(!permissions_manager->CanUserSelectSiteAccess(
+        *extension, web_contents->GetLastCommittedURL(),
+        PermissionsManager::UserSiteAccess::kOnSite));
+    extensions::ExtensionActionRunner* action_runner =
+        extensions::ExtensionActionRunner::GetForWebContents(web_contents);
+    if (!action_runner) {
+      return;
+    }
+    action_runner->GrantTabPermissions({extension});
     return;
   }
-  action_runner->GrantTabPermissions({extension});
+
+  // Clear tab permissions when extension is toggled off and the site access is
+  // "on click". This happens when the extension was granted tab permissions
+  // without changing its site access.
+  if (current_site_access == PermissionsManager::UserSiteAccess::kOnClick) {
+    extensions::TabHelper::FromWebContents(web_contents)
+        ->active_tab_permission_granter()
+        ->ClearActiveExtensionAndNotify(extension_id);
+
+    auto* action_runner =
+        extensions::ExtensionActionRunner::GetForWebContents(web_contents);
+    if (!action_runner) {
+      return;
+    }
+    action_runner->ShowReloadPageBubble({extension_id});
+    return;
+  }
+
+  // Update site access to "on click" when extension is toggled off.
+  DCHECK_NE(current_site_access, PermissionsManager::UserSiteAccess::kOnClick);
+  permissions_helper.UpdateSiteAccess(
+      *extension, web_contents, PermissionsManager::UserSiteAccess::kOnClick);
 }
 
 void ExtensionsMenuViewController::OnReloadPageButtonClicked() {
@@ -426,11 +481,43 @@ void ExtensionsMenuViewController::OnDismissExtensionClicked(
   if (tab_helper) {
     tab_helper->DismissExtensionRequests(extension_id);
   }
+
+  base::RecordAction(base::UserMetricsAction(
+      "Extensions.Toolbar.ExtensionRequestDismissedFromMenu"));
+}
+
+void ExtensionsMenuViewController::OnShowRequestsTogglePressed(
+    const extensions::ExtensionId& extension_id,
+    bool is_on) {
+  extensions::SitePermissionsHelper(browser_->profile())
+      .SetShowAccessRequestsInToolbar(extension_id, is_on);
+
+  if (is_on) {
+    base::RecordAction(base::UserMetricsAction(
+        "Extensions.Menu.ShowRequestsInToolbarPressed"));
+  } else {
+    base::RecordAction(base::UserMetricsAction(
+        "Extensions.Menu.HideRequestsInToolbarPressed"));
+  }
 }
 
 void ExtensionsMenuViewController::TabChangedAt(content::WebContents* contents,
                                                 int index,
                                                 TabChangeType change_type) {
+  bool should_update_page = false;
+  switch (change_type) {
+    case TabChangeType::kAll:
+      should_update_page = true;
+      break;
+    case TabChangeType::kLoadingOnly:
+      should_update_page = false;
+      break;
+  }
+
+  if (!should_update_page || GetActiveWebContents() != contents) {
+    return;
+  }
+
   UpdatePage(contents);
 }
 
@@ -438,12 +525,14 @@ void ExtensionsMenuViewController::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
-  content::WebContents* web_contents = tab_strip_model->GetActiveWebContents();
+  CHECK_EQ(tab_strip_model, browser_->tab_strip_model());
+  content::WebContents* web_contents = GetActiveWebContents();
+
   if (!selection.active_tab_changed() || !web_contents) {
     return;
   }
 
-  UpdatePage(GetActiveWebContents());
+  UpdatePage(web_contents);
 }
 
 void ExtensionsMenuViewController::UpdatePage(
@@ -492,7 +581,21 @@ void ExtensionsMenuViewController::UpdateMainPage(
   ExtensionsMenuMainPageView::MessageSectionState message_section_state =
       GetMessageSectionState(*browser_->profile(), *toolbar_model_,
                              *web_contents);
-  main_page->UpdateMessageSection(message_section_state);
+  bool has_enterprise_extensions = false;
+  // Only kUserBlockedAccess state cares whether there are any extensions
+  // installed by enterprise.
+  if (message_section_state ==
+      ExtensionsMenuMainPageView::MessageSectionState::kUserBlockedAccess) {
+    has_enterprise_extensions = std::any_of(
+        toolbar_model_->action_ids().begin(),
+        toolbar_model_->action_ids().end(),
+        [this](const ToolbarActionsModel::ActionId extension_id) {
+          auto* extension = GetExtension(browser_, extension_id);
+          return HasEnterpriseForcedAccess(*extension, *browser_->profile());
+        });
+  }
+  main_page->UpdateMessageSection(message_section_state,
+                                  has_enterprise_extensions);
 
   if (message_section_state ==
       ExtensionsMenuMainPageView::MessageSectionState::kUserCustomizedAccess) {

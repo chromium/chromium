@@ -120,8 +120,10 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, FileAccessIsSavedToPrefs) {
   ASSERT_TRUE(
       base::CreateTemporaryFileInDir(temp_directory.GetPath(), &temp_file));
 
-  FileSystemChooseEntryFunction::SkipPickerAndAlwaysSelectPathForTest picker(
-      temp_file);
+  const FileSystemChooseEntryFunction::TestOptions test_options{
+      .path_to_be_picked = &temp_file};
+  auto reset_options =
+      FileSystemChooseEntryFunction::SetOptionsForTesting(test_options);
   FileSystemChooseEntryFunction::RegisterTempExternalFileSystemForTest(
       "temp", temp_directory.GetPath());
 
@@ -158,8 +160,10 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, MAYBE_FileAccessIsRestored) {
   ASSERT_TRUE(
       base::CreateTemporaryFileInDir(temp_directory.GetPath(), &temp_file));
 
-  FileSystemChooseEntryFunction::SkipPickerAndAlwaysSelectPathForTest picker(
-      temp_file);
+  const FileSystemChooseEntryFunction::TestOptions test_options{
+      .path_to_be_picked = &temp_file};
+  auto reset_options =
+      FileSystemChooseEntryFunction::SetOptionsForTesting(test_options);
   FileSystemChooseEntryFunction::RegisterTempExternalFileSystemForTest(
       "temp", temp_directory.GetPath());
 

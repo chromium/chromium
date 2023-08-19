@@ -27,6 +27,12 @@ bar = { version = "3", features = [ "spaceships" ] }
 
 To generate `BUILD.gn` files for all third-party crates, and find missing
 transitive dependencies to download, use the `gnrt` tool:
+
+1. Change directory to the root `src/` dir of Chromium.
+1. Run `vpython3 ./tools/crates/run_gnrt.py gen` to build and run gnrt with the `gen` action.
+
+Or, to directly build gnrt:
+
 1. Change directory to the root `src/` dir of Chromium.
 1. Build `gnrt` to run on host machine: `cargo build --release --manifest-path tools/crates/gnrt/Cargo.toml --target-dir out/gnrt`.
 1. Run `gnrt` with the `gen` action: `out/gnrt/release/gnrt gen`.
@@ -99,29 +105,23 @@ The directory structure for a crate "foo" version 3.4.2 is:
 
 # Generating `BUILD.gn` files for stdlib crates
 
+### Simple way:
+
+Run `tools/rust/gnrt_stdlib.py`.
+
+### Longer way
+
+This requires Rust to be installed and available in your system, typically
+through [https://rustup.rs](https://rustup.rs).
+
 To generate `BUILD.gn` files for the crates with the `gnrt` tool:
 1. Change directory to the root `src/` dir of Chromium.
 1. Build `gnrt` to run on host machine: `cargo build --release --manifest-path
    tools/crates/gnrt/Cargo.toml --target-dir out/gnrt`.
-1. Run `gnrt` with the `gen` action: `out/gnrt/release/gnrt gen --for-std`.
+1. Ensure you have a checkout of the Rust source tree in `third_party/rust-src`
+   which can be done with `tools/rust/build_rust.py --sync-for-gnrt`.
+1. Run `gnrt` with the `gen` action:
+   `out/gnrt/release/gnrt gen --for-std third_party/rust-src`.
 
 This will generate the `//build/rust/std/rules/BUILD.gn` file, with the changes
 visible in `git status` and can be added with `git add`.
-
-## Generating `BUILD.gn` files for stdlib crates when rolling Rust
-
-The above instructions generate GN rules from the installed Rust toolchain in
-//third_party/rust-toolchain. If you don't have an installed toolchain yet (or
-it's the wrong revision), you can generate from another Rust source root, such
-as in `//third_party/rust_src/src` by adding a value to the `--for-std`
-argument:
-1. Checkout the git revision you want to generate from in
-   `//third_party/rust_src/src`. This can be done with
-   `tools/clang/scripts/upload_revision.py  --no-git --skip-clang
-   --rust-git-hash DESIRED_GIT_HASH`.
-1. Update dependencies for the stdlib with `tools/rust/build_rust.py
-   --update-deps`.
-1. Build `gnrt` to run on host machine: `cargo build --release --manifest-path
-   tools/crates/gnrt/Cargo.toml --target-dir out/gnrt`.
-1. Run `gnrt` with the `gen` action: `out/gnrt/release/gnrt gen
-   --for-std=third_party/rust_src/src`.

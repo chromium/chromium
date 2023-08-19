@@ -82,12 +82,8 @@ if (is_chrome_branded) {
   IPolicyStatusValueSystemGUID = "4DC034A8-4BFC-4D43-9250-914163356BB0"
 
   IProcessLauncherGUID = "128C2DA6-2BC0-44C0-B3F6-4EC22E647964"
-  IProcessLauncherUserGUID = "2DE381FF-DCDF-48B0-8B6D-D097C4550DFA"
-  IProcessLauncherSystemGUID = "F4FE76BC-62B9-49FC-972F-C81FC3A926DB"
 
   IProcessLauncher2GUID = "D106AB5F-A70E-400E-A21B-96208C1D8DBB"
-  IProcessLauncher2UserGUID = "7875E22C-FA3E-4653-AFC7-28373E1BB022"
-  IProcessLauncher2SystemGUID = "6430040A-5EBD-4E63-A56F-C71D5990F827"
 
   if (is_mac) {
     legacy_google_update_appid = keystone_bundle_identifier
@@ -171,12 +167,8 @@ if (is_chrome_branded) {
   IPolicyStatusValueSystemGUID = "CFF9AE0F-C5C5-4D53-8394-7602758A52BA"
 
   IProcessLauncherGUID = "EED70106-3604-4385-866E-6D540E99CA1A"
-  IProcessLauncherUserGUID = "EDA23D68-7CA2-484E-A453-E453177D8055"
-  IProcessLauncherSystemGUID = "437174A3-B9A5-4835-B896-7DE8C1FE2638"
 
   IProcessLauncher2GUID = "BAEE6326-C925-4FA4-AFE9-5FA69902B021"
-  IProcessLauncher2UserGUID = "E1C75AA3-7EBA-4999-A3E9-41B0E2765BD1"
-  IProcessLauncher2SystemGUID = "E1C53EEF-2BAB-4420-BDD7-256B91C49D0C"
 
   if (is_mac) {
     legacy_google_update_appid = keystone_bundle_identifier

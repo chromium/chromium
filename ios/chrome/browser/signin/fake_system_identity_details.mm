@@ -5,17 +5,17 @@
 #import "ios/chrome/browser/signin/fake_system_identity_details.h"
 
 #import "base/check.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+#import "components/signin/public/identity_manager/account_capabilities.h"
 
 @implementation FakeSystemIdentityDetails {
-  FakeSystemIdentityCapabilitiesMap _capabilities;
+  AccountCapabilities _nativeCapabilities;
+  std::unique_ptr<AccountCapabilitiesTestMutator> _capabilitiesMutator;
 }
 
 - (instancetype)initWithIdentity:(id<SystemIdentity>)identity {
   if ((self = [super init])) {
+    _capabilitiesMutator =
+        std::make_unique<AccountCapabilitiesTestMutator>(&_nativeCapabilities);
     _identity = identity;
     DCHECK(_identity);
   }
@@ -25,11 +25,11 @@
 #pragma mark - Properties
 
 - (const FakeSystemIdentityCapabilitiesMap&)capabilities {
-  return _capabilities;
+  return _nativeCapabilities.ConvertToAccountCapabilitiesIOS();
 }
 
-- (void)setCapabilities:(const FakeSystemIdentityCapabilitiesMap&)capabilities {
-  _capabilities = capabilities;
+- (AccountCapabilitiesTestMutator*)capabilitiesMutator {
+  return _capabilitiesMutator.get();
 }
 
 @end

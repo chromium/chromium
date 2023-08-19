@@ -6,9 +6,9 @@ package org.chromium.chrome.browser.tracing.settings;
 
 import android.os.Bundle;
 
-import androidx.annotation.VisibleForTesting;
 import androidx.preference.PreferenceFragmentCompat;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -43,9 +43,9 @@ public class DeveloperSettings extends PreferenceFragmentCompat {
                 ChromePreferenceKeys.SETTINGS_DEVELOPER_ENABLED, true);
     }
 
-    @VisibleForTesting
     public static void setIsEnabledForTests(Boolean isEnabled) {
         sIsEnabledForTests = isEnabled;
+        ResettersForTesting.register(() -> sIsEnabledForTests = null);
     }
 
     @Override

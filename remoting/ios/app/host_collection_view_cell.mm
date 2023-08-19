@@ -14,10 +14,6 @@
 #import "remoting/ios/domain/host_info.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 static const CGFloat kLinePadding = 2.f;
 static const CGFloat kHostCardIconInset = 10.f;
 static const CGFloat kHostCardPadding = 4.f;

@@ -54,8 +54,7 @@ AutofillBubbleHandlerImpl::AutofillBubbleHandlerImpl(
     : browser_(browser), toolbar_button_provider_(toolbar_button_provider) {
   if (browser->profile()) {
     personal_data_manager_observation_.Observe(
-        PersonalDataManagerFactory::GetForProfile(
-            browser->profile()->GetOriginalProfile()));
+        PersonalDataManagerFactory::GetForProfile(browser->profile()));
   }
   if (toolbar_button_provider_->GetAvatarToolbarButton()) {
     avatar_toolbar_button_observation_.Observe(
@@ -81,6 +80,7 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveCreditCardBubble(
   SaveCardBubbleViews* bubble = nullptr;
   switch (bubble_type) {
     case BubbleType::LOCAL_SAVE:
+    case BubbleType::LOCAL_CVC_SAVE:
     case BubbleType::UPLOAD_SAVE:
       bubble =
           new SaveCardOfferBubbleViews(anchor_view, web_contents, controller);

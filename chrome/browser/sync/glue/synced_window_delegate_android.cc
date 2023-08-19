@@ -36,10 +36,6 @@ int SyncedWindowDelegateAndroid::GetTabCount() const {
   return tab_model_->GetTabCount();
 }
 
-int SyncedWindowDelegateAndroid::GetActiveIndex() const {
-  return tab_model_->GetActiveIndex();
-}
-
 bool SyncedWindowDelegateAndroid::IsTypeNormal() const {
   return is_tabbed_activity_;
 }

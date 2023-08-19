@@ -26,7 +26,6 @@
 <translation id="2060505056492490888">تم استخدام "<ph name="DOT" />" في موضع خاطئ في "<ph name="INVALIDDOMAIN" />".</translation>
 <translation id="2148716181193084225">اليوم</translation>
 <translation id="2226276347425096477">يُرجى اختصار هذا النص حتى يصل إلى <ph name="MAX_CHARACTERS" /> من الحروف أو أقل (أنت الآن تستخدم <ph name="CURRENT_LENGTH" /> من الحروف).</translation>
-<translation id="2246498165605549352">ملف محلي</translation>
 <translation id="2247351761944213033">الأسبوع <ph name="WEEKNUMBER" />، <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">المقطع الصوتي <ph name="NUMBER" /></translation>
 <translation id="2393030564806080191">قيمة اللون السداسية العشرية</translation>
@@ -90,6 +89,7 @@
 <translation id="5425179576310518467">التاريخ الحالي</translation>
 <translation id="5466621249238537318">يُرجى اختيار ملف واحد أو أكثر.</translation>
 <translation id="5468998798572797635">إنهاء وضع ملء الشاشة</translation>
+<translation id="5514612371225420585">الملف على جهازك</translation>
 <translation id="5516235301412634559">0.75</translation>
 <translation id="5537725057119320332">بث</translation>
 <translation id="5546461542133609677">إعادة الصوت</translation>
@@ -98,7 +98,7 @@
 <translation id="57838592816432529">كتم الصوت</translation>
 <translation id="5786442179789148008">إظهار قائمة سرعات التشغيل</translation>
 <translation id="5787939484346677755">موسّع، خيارات إكمال تلقائي متوفّرة.</translation>
-<translation id="5860033963881614850">غير مفعّل</translation>
+<translation id="5860033963881614850">غير مفعّلة</translation>
 <translation id="588258955323874662">ملء الشاشة</translation>
 <translation id="5888666972993069672">يتم الإرسال الآن إلى <ph name="DEVICE_FRIENDLY_NAME" /></translation>
 <translation id="5916664084637901428">مفعّل</translation>
@@ -114,6 +114,7 @@
 <translation id="6398862346408813489">عرض لوحة تحديد الشهر</translation>
 <translation id="6404546809543547843">شريط تمرير وقت الصوت</translation>
 <translation id="6443871981718447451">عرض قائمة مقاطع الترجمة والشرح</translation>
+<translation id="6484738902856791350">عرض النص بتنسيق محسّن</translation>
 <translation id="6550675742724504774">خيارات</translation>
 <translation id="6572309429103589720">قواعد لغوية غير صالحة</translation>
 <translation id="658823671542763450">تشغيل وضع ملء الشاشة</translation>

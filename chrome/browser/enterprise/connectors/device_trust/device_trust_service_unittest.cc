@@ -110,11 +110,19 @@ class DeviceTrustServiceTest
   }
 
   void EnableServicePolicy() {
+    prefs_.SetManagedPref(kBrowserContextAwareAccessSignalsAllowlistPref,
+                          base::Value(GetOrigins()));
+    prefs_.SetManagedPref(kUserContextAwareAccessSignalsAllowlistPref,
+                          base::Value(GetOrigins()));
     prefs_.SetManagedPref(kContextAwareAccessSignalsAllowlistPref,
                           base::Value(GetOrigins()));
   }
 
   void DisableServicePolicy() {
+    prefs_.SetManagedPref(kBrowserContextAwareAccessSignalsAllowlistPref,
+                          base::Value(base::Value::List()));
+    prefs_.SetManagedPref(kUserContextAwareAccessSignalsAllowlistPref,
+                          base::Value(base::Value::List()));
     prefs_.SetManagedPref(kContextAwareAccessSignalsAllowlistPref,
                           base::Value(base::Value::List()));
   }
@@ -161,7 +169,7 @@ class DeviceTrustServiceTest
     EXPECT_FALSE(dt_response.attestation_result);
   }
 
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
   TestingPrefServiceSimple prefs_;
   std::unique_ptr<DeviceTrustConnectorService> connector_;

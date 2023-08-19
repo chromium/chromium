@@ -38,6 +38,7 @@ namespace mojom {
 using ::chromeos::settings::mojom::kAssistantSubpagePath;
 using ::chromeos::settings::mojom::kSearchAndAssistantSectionPath;
 using ::chromeos::settings::mojom::kSearchSubpagePath;
+using ::chromeos::settings::mojom::kSystemPreferencesSectionPath;
 using ::chromeos::settings::mojom::Section;
 using ::chromeos::settings::mojom::Setting;
 using ::chromeos::settings::mojom::Subpage;
@@ -49,7 +50,8 @@ bool ShouldShowQuickAnswersSettings() {
   return QuickAnswersState::Get() && QuickAnswersState::Get()->is_eligible();
 }
 
-const std::vector<SearchConcept>& GetSearchPageSearchConcepts() {
+const std::vector<SearchConcept>& GetSearchPageSearchConcepts(
+    const char* section_path) {
   if (ShouldShowQuickAnswersSettings()) {
     static const base::NoDestructor<std::vector<SearchConcept>> tags({
         {IDS_OS_SETTINGS_TAG_PREFERRED_SEARCH_ENGINE,
@@ -60,17 +62,17 @@ const std::vector<SearchConcept>& GetSearchPageSearchConcepts() {
          {.setting = mojom::Setting::kPreferredSearchEngine}},
     });
     return *tags;
-  } else {
-    static const base::NoDestructor<std::vector<SearchConcept>> tags({
-        {IDS_OS_SETTINGS_TAG_PREFERRED_SEARCH_ENGINE,
-         mojom::kSearchAndAssistantSectionPath,
-         mojom::SearchResultIcon::kMagnifyingGlass,
-         mojom::SearchResultDefaultRank::kMedium,
-         mojom::SearchResultType::kSetting,
-         {.setting = mojom::Setting::kPreferredSearchEngine}},
-    });
-    return *tags;
   }
+
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_PREFERRED_SEARCH_ENGINE,
+       section_path,
+       mojom::SearchResultIcon::kMagnifyingGlass,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kPreferredSearchEngine}},
+  });
+  return *tags;
 }
 
 const std::vector<SearchConcept>& GetQuickAnswersSearchConcepts() {
@@ -268,7 +270,9 @@ SearchSection::SearchSection(Profile* profile,
                              SearchTagRegistry* search_tag_registry)
     : OsSettingsSection(profile, search_tag_registry) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
-  updater.AddSearchTags(GetSearchPageSearchConcepts());
+
+  updater.AddSearchTags(
+      GetSearchPageSearchConcepts(/*section_path=*/GetSectionPath()));
 
   AssistantState* assistant_state = AssistantState::Get();
   if (IsAssistantAllowed() && assistant_state) {
@@ -291,16 +295,23 @@ SearchSection::~SearchSection() {
 }
 
 void SearchSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
-  static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"osSearchEngineLabel", IDS_OS_SETTINGS_SEARCH_ENGINE_LABEL},
+  const bool kIsRevampEnabled =
+      ash::features::IsOsSettingsRevampWayfindingEnabled();
+
+  webui::LocalizedString kLocalizedStrings[] = {
+      {"osSearchEngineLabel", kIsRevampEnabled
+                                  ? IDS_OS_SETTINGS_REVAMP_SEARCH_ENGINE_LABEL
+                                  : IDS_OS_SETTINGS_SEARCH_ENGINE_LABEL},
       {"searchSubpageTitle", IDS_SETTINGS_SEARCH_SUBPAGE_TITLE},
       {"searchGoogleAssistant", IDS_SETTINGS_SEARCH_GOOGLE_ASSISTANT},
       {"searchGoogleAssistantEnabled",
-       IDS_SETTINGS_SEARCH_GOOGLE_ASSISTANT_ENABLED},
+       kIsRevampEnabled ? IDS_OS_SETTINGS_SEARCH_GOOGLE_ASSISTANT_ON
+                        : IDS_SETTINGS_SEARCH_GOOGLE_ASSISTANT_ENABLED},
       {"searchGoogleAssistantDisabled",
-       IDS_SETTINGS_SEARCH_GOOGLE_ASSISTANT_DISABLED},
-      {"searchGoogleAssistantOn", IDS_SETTINGS_SEARCH_GOOGLE_ASSISTANT_ON},
-      {"searchGoogleAssistantOff", IDS_SETTINGS_SEARCH_GOOGLE_ASSISTANT_OFF},
+       kIsRevampEnabled ? IDS_OS_SETTINGS_SEARCH_GOOGLE_ASSISTANT_OFF
+                        : IDS_SETTINGS_SEARCH_GOOGLE_ASSISTANT_DISABLED},
+      {"searchGoogleAssistantOn", IDS_OS_SETTINGS_SEARCH_GOOGLE_ASSISTANT_ON},
+      {"searchGoogleAssistantOff", IDS_OS_SETTINGS_SEARCH_GOOGLE_ASSISTANT_OFF},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -332,15 +343,19 @@ int SearchSection::GetSectionNameMessageId() const {
 }
 
 mojom::Section SearchSection::GetSection() const {
-  return mojom::Section::kSearchAndAssistant;
+  return ash::features::IsOsSettingsRevampWayfindingEnabled()
+             ? mojom::Section::kSystemPreferences
+             : mojom::Section::kSearchAndAssistant;
 }
 
 mojom::SearchResultIcon SearchSection::GetSectionIcon() const {
   return mojom::SearchResultIcon::kMagnifyingGlass;
 }
 
-std::string SearchSection::GetSectionPath() const {
-  return mojom::kSearchAndAssistantSectionPath;
+const char* SearchSection::GetSectionPath() const {
+  return ash::features::IsOsSettingsRevampWayfindingEnabled()
+             ? mojom::kSystemPreferencesSectionPath
+             : mojom::kSearchAndAssistantSectionPath;
 }
 
 bool SearchSection::LogMetric(mojom::Setting setting,

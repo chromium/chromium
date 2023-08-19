@@ -33,7 +33,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ScopedNSViewIdMapping {
   ~ScopedNSViewIdMapping();
 
  private:
-  NSView* const ns_view_;
+  NSView* const __strong ns_view_;
   const uint64_t ns_view_id_;
 };
 

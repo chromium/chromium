@@ -156,11 +156,11 @@ Response EmulationHandler::SetGeolocationOverride(Maybe<double> latitude,
 
   auto* geolocation_context = GetWebContents()->GetGeolocationContext();
   device::mojom::GeopositionResultPtr override_result;
-  if (latitude.isJust() && longitude.isJust() && accuracy.isJust()) {
+  if (latitude.has_value() && longitude.has_value() && accuracy.has_value()) {
     auto position = device::mojom::Geoposition::New();
-    position->latitude = latitude.fromJust();
-    position->longitude = longitude.fromJust();
-    position->accuracy = accuracy.fromJust();
+    position->latitude = latitude.value();
+    position->longitude = longitude.value();
+    position->accuracy = accuracy.value();
     position->timestamp = base::Time::Now();
     if (!device::ValidateGeoposition(*position)) {
       return Response::ServerError("Invalid geolocation");
@@ -196,7 +196,7 @@ Response EmulationHandler::SetEmitTouchEventsForMouse(
     return Response::ServerError(kCommandIsOnlyAvailableAtTopTarget);
 
   touch_emulation_enabled_ = enabled;
-  touch_emulation_configuration_ = configuration.fromMaybe("");
+  touch_emulation_configuration_ = configuration.value_or("");
   UpdateTouchEventEmulationState();
   return Response::Success();
 }
@@ -239,17 +239,17 @@ Response EmulationHandler::SetDeviceMetricsOverride(
   if (host_->GetParentOrOuterDocument())
     return Response::ServerError(kCommandIsOnlyAvailableAtTopTarget);
 
-  if (screen_width.fromMaybe(0) < 0 || screen_height.fromMaybe(0) < 0 ||
-      screen_width.fromMaybe(0) > max_size ||
-      screen_height.fromMaybe(0) > max_size) {
+  if (screen_width.value_or(0) < 0 || screen_height.value_or(0) < 0 ||
+      screen_width.value_or(0) > max_size ||
+      screen_height.value_or(0) > max_size) {
     return Response::InvalidParams(
         "Screen width and height values must be positive, not greater than " +
         base::NumberToString(max_size));
   }
 
-  if (position_x.fromMaybe(0) < 0 || position_y.fromMaybe(0) < 0 ||
-      position_x.fromMaybe(0) > screen_width.fromMaybe(0) ||
-      position_y.fromMaybe(0) > screen_height.fromMaybe(0)) {
+  if (position_x.value_or(0) < 0 || position_y.value_or(0) < 0 ||
+      position_x.value_or(0) > screen_width.value_or(0) ||
+      position_y.value_or(0) > screen_height.value_or(0)) {
     return Response::InvalidParams("View position should be on the screen");
   }
 
@@ -262,7 +262,7 @@ Response EmulationHandler::SetDeviceMetricsOverride(
   if (device_scale_factor < 0)
     return Response::InvalidParams("deviceScaleFactor must be non-negative");
 
-  if (scale.fromMaybe(1) <= 0 || scale.fromMaybe(1) > max_scale) {
+  if (scale.value_or(1) <= 0 || scale.value_or(1) > max_scale) {
     return Response::InvalidParams("scale must be positive, not greater than " +
                                    base::NumberToString(max_scale));
   }
@@ -270,13 +270,12 @@ Response EmulationHandler::SetDeviceMetricsOverride(
   display::mojom::ScreenOrientation orientationType =
       display::mojom::ScreenOrientation::kUndefined;
   int orientationAngle = 0;
-  if (screen_orientation.isJust()) {
-    Emulation::ScreenOrientation* orientation = screen_orientation.fromJust();
-    orientationType =
-        WebScreenOrientationTypeFromString(orientation->GetType());
+  if (screen_orientation.has_value()) {
+    Emulation::ScreenOrientation& orientation = screen_orientation.value();
+    orientationType = WebScreenOrientationTypeFromString(orientation.GetType());
     if (orientationType == display::mojom::ScreenOrientation::kUndefined)
       return Response::InvalidParams("Invalid screen orientation type value");
-    orientationAngle = orientation->GetAngle();
+    orientationAngle = orientation.GetAngle();
     if (orientationAngle < 0 || orientationAngle >= max_orientation_angle) {
       return Response::InvalidParams(
           "Screen orientation angle must be non-negative, less than " +
@@ -285,20 +284,20 @@ Response EmulationHandler::SetDeviceMetricsOverride(
   }
 
   absl::optional<content::DisplayFeature> display_feature = absl::nullopt;
-  if (displayFeature.isJust()) {
-    protocol::Emulation::DisplayFeature* emu_display_feature =
-        displayFeature.fromJust();
+  if (displayFeature.has_value()) {
+    protocol::Emulation::DisplayFeature& emu_display_feature =
+        displayFeature.value();
     absl::optional<content::DisplayFeature::Orientation> disp_orientation =
         DisplayFeatureOrientationTypeFromString(
-            emu_display_feature->GetOrientation());
+            emu_display_feature.GetOrientation());
     if (!disp_orientation) {
       return Response::InvalidParams(
           "Invalid display feature orientation type");
     }
     content::DisplayFeature::ParamErrorEnum error;
     display_feature = content::DisplayFeature::Create(
-        *disp_orientation, emu_display_feature->GetOffset(),
-        emu_display_feature->GetMaskLength(), width, height, &error);
+        *disp_orientation, emu_display_feature.GetOffset(),
+        emu_display_feature.GetMaskLength(), width, height, &error);
 
     if (!display_feature) {
       switch (error) {
@@ -323,14 +322,14 @@ Response EmulationHandler::SetDeviceMetricsOverride(
   params.screen_type = mobile ? blink::mojom::EmulatedScreenType::kMobile
                               : blink::mojom::EmulatedScreenType::kDesktop;
   params.screen_size =
-      gfx::Size(screen_width.fromMaybe(0), screen_height.fromMaybe(0));
-  if (position_x.isJust() && position_y.isJust()) {
+      gfx::Size(screen_width.value_or(0), screen_height.value_or(0));
+  if (position_x.has_value() && position_y.has_value()) {
     params.view_position =
-        gfx::Point(position_x.fromMaybe(0), position_y.fromMaybe(0));
+        gfx::Point(position_x.value_or(0), position_y.value_or(0));
   }
   params.device_scale_factor = device_scale_factor;
   params.view_size = gfx::Size(width, height);
-  params.scale = scale.fromMaybe(1);
+  params.scale = scale.value_or(1);
   params.screen_orientation_type = orientationType;
   params.screen_orientation_angle = orientationAngle;
 
@@ -339,26 +338,23 @@ Response EmulationHandler::SetDeviceMetricsOverride(
         display_feature->ComputeWindowSegments(params.view_size);
   }
 
-  if (viewport.isJust()) {
-    params.viewport_offset.SetPoint(viewport.fromJust()->GetX(),
-                                    viewport.fromJust()->GetY());
+  if (viewport.has_value()) {
+    params.viewport_offset.SetPoint(viewport->GetX(), viewport->GetY());
 
     double dpfactor =
         device_scale_factor
             ? device_scale_factor /
                   host_->GetRenderWidgetHost()->GetDeviceScaleFactor()
             : 1;
-    params.viewport_scale = viewport.fromJust()->GetScale() * dpfactor;
+    params.viewport_scale = viewport->GetScale() * dpfactor;
 
     // Resize the RenderWidgetHostView to the size of the overridden viewport.
-    width = base::ClampRound(viewport.fromJust()->GetWidth() *
-                             params.viewport_scale);
-    height = base::ClampRound(viewport.fromJust()->GetHeight() *
-                              params.viewport_scale);
+    width = base::ClampRound(viewport->GetWidth() * params.viewport_scale);
+    height = base::ClampRound(viewport->GetHeight() * params.viewport_scale);
   }
 
   bool size_changed = false;
-  if (!dont_set_visible_size.fromMaybe(false) && width > 0 && height > 0) {
+  if (!dont_set_visible_size.value_or(false) && width > 0 && height > 0) {
     if (GetWebContents()) {
       size_changed =
           GetWebContents()->SetDeviceEmulationSize(gfx::Size(width, height));
@@ -424,7 +420,7 @@ Response EmulationHandler::SetUserAgentOverride(
     Maybe<Emulation::UserAgentMetadata> ua_metadata_override) {
   if (!user_agent.empty() && !net::HttpUtil::IsValidHeaderValue(user_agent))
     return Response::InvalidParams("Invalid characters found in userAgent");
-  std::string accept_lang = accept_language.fromMaybe(std::string());
+  std::string accept_lang = accept_language.value_or(std::string());
   if (!accept_lang.empty() && !net::HttpUtil::IsValidHeaderValue(accept_lang)) {
     return Response::InvalidParams(
         "Invalid characters found in acceptLanguage");
@@ -434,22 +430,22 @@ Response EmulationHandler::SetUserAgentOverride(
   accept_language_ = accept_lang;
 
   user_agent_metadata_ = absl::nullopt;
-  if (!ua_metadata_override.isJust())
+  if (!ua_metadata_override.has_value()) {
     return Response::FallThrough();
+  }
 
   if (user_agent.empty()) {
     return Response::InvalidParams(
         "Empty userAgent invalid with userAgentMetadata provided");
   }
 
-  std::unique_ptr<Emulation::UserAgentMetadata> ua_metadata =
-      ua_metadata_override.takeJust();
+  Emulation::UserAgentMetadata& ua_metadata = ua_metadata_override.value();
   blink::UserAgentMetadata new_ua_metadata;
   blink::UserAgentMetadata default_ua_metadata =
       GetContentClient()->browser()->GetUserAgentMetadata();
 
-  if (ua_metadata->HasBrands()) {
-    for (const auto& bv : *ua_metadata->GetBrands(nullptr)) {
+  if (ua_metadata.HasBrands()) {
+    for (const auto& bv : *ua_metadata.GetBrands(nullptr)) {
       blink::UserAgentBrandVersion out_bv;
       if (!ValidateClientHintString(bv->GetBrand()))
         return Response::InvalidParams("Invalid brand string");
@@ -466,8 +462,8 @@ Response EmulationHandler::SetUserAgentOverride(
         std::move(default_ua_metadata.brand_version_list);
   }
 
-  if (ua_metadata->HasFullVersionList()) {
-    for (const auto& bv : *ua_metadata->GetFullVersionList(nullptr)) {
+  if (ua_metadata.HasFullVersionList()) {
+    for (const auto& bv : *ua_metadata.GetFullVersionList(nullptr)) {
       blink::UserAgentBrandVersion out_bv;
       if (!ValidateClientHintString(bv->GetBrand()))
         return Response::InvalidParams("Invalid brand string");
@@ -484,8 +480,8 @@ Response EmulationHandler::SetUserAgentOverride(
         std::move(default_ua_metadata.brand_full_version_list);
   }
 
-  if (ua_metadata->HasFullVersion()) {
-    String full_version = ua_metadata->GetFullVersion("");
+  if (ua_metadata.HasFullVersion()) {
+    String full_version = ua_metadata.GetFullVersion("");
     if (!ValidateClientHintString(full_version))
       return Response::InvalidParams("Invalid full version string");
     new_ua_metadata.full_version = full_version;
@@ -493,34 +489,38 @@ Response EmulationHandler::SetUserAgentOverride(
     new_ua_metadata.full_version = std::move(default_ua_metadata.full_version);
   }
 
-  if (!ValidateClientHintString(ua_metadata->GetPlatform()))
+  if (!ValidateClientHintString(ua_metadata.GetPlatform())) {
     return Response::InvalidParams("Invalid platform string");
-  new_ua_metadata.platform = ua_metadata->GetPlatform();
+  }
+  new_ua_metadata.platform = ua_metadata.GetPlatform();
 
-  if (!ValidateClientHintString(ua_metadata->GetPlatformVersion()))
+  if (!ValidateClientHintString(ua_metadata.GetPlatformVersion())) {
     return Response::InvalidParams("Invalid platform version string");
-  new_ua_metadata.platform_version = ua_metadata->GetPlatformVersion();
+  }
+  new_ua_metadata.platform_version = ua_metadata.GetPlatformVersion();
 
-  if (!ValidateClientHintString(ua_metadata->GetArchitecture()))
+  if (!ValidateClientHintString(ua_metadata.GetArchitecture())) {
     return Response::InvalidParams("Invalid architecture string");
-  new_ua_metadata.architecture = ua_metadata->GetArchitecture();
+  }
+  new_ua_metadata.architecture = ua_metadata.GetArchitecture();
 
-  if (!ValidateClientHintString(ua_metadata->GetModel()))
+  if (!ValidateClientHintString(ua_metadata.GetModel())) {
     return Response::InvalidParams("Invalid model string");
+  }
 
-  new_ua_metadata.model = ua_metadata->GetModel();
-  new_ua_metadata.mobile = ua_metadata->GetMobile();
+  new_ua_metadata.model = ua_metadata.GetModel();
+  new_ua_metadata.mobile = ua_metadata.GetMobile();
 
-  if (ua_metadata->HasBitness()) {
-    String bitness = ua_metadata->GetBitness("");
+  if (ua_metadata.HasBitness()) {
+    String bitness = ua_metadata.GetBitness("");
     if (!ValidateClientHintString(bitness))
       return Response::InvalidParams("Invalid bitness string");
     new_ua_metadata.bitness = std::move(bitness);
   } else {
     new_ua_metadata.bitness = std::move(default_ua_metadata.bitness);
   }
-  if (ua_metadata->HasWow64()) {
-    new_ua_metadata.wow64 = ua_metadata->GetWow64(false);
+  if (ua_metadata.HasWow64()) {
+    new_ua_metadata.wow64 = ua_metadata.GetWow64(false);
   } else {
     new_ua_metadata.wow64 = default_ua_metadata.wow64;
   }
@@ -553,8 +553,8 @@ Response EmulationHandler::SetEmulatedMedia(
 
   prefers_color_scheme_ = "";
   prefers_reduced_motion_ = "";
-  if (features.isJust()) {
-    for (auto const& mediaFeature : *features.fromJust()) {
+  if (features.has_value()) {
+    for (auto const& mediaFeature : features.value()) {
       auto const& name = mediaFeature->GetName();
       auto const& value = mediaFeature->GetValue();
       if (name == "prefers-color-scheme") {

@@ -28,15 +28,6 @@ class ScopedDevicePolicyUpdate;
 namespace enterprise_connectors::test {
 
 struct ManagementContext {
-  ManagementContext();
-  ManagementContext(ManagementContext&&);
-  ManagementContext& operator=(ManagementContext&&);
-
-  ManagementContext(const ManagementContext&) = delete;
-  ManagementContext& operator=(const ManagementContext&) = delete;
-
-  ~ManagementContext();
-
   bool is_cloud_user_managed = false;
   bool is_cloud_machine_managed = false;
   bool affiliated = false;
@@ -60,6 +51,9 @@ class ManagementContextMixin : public InProcessBrowserTestMixin {
       InProcessBrowserTestMixinHost* host,
       InProcessBrowserTest* test_base,
       ManagementContext management_context);
+
+  // Start managing the current cloud user.
+  virtual void ManageCloudUser();
 
   // Will set the given `policy_entries` for the managed Cloud user. This
   // function will overwrite conflicting entries, but will not remove old policy
@@ -89,9 +83,7 @@ class ManagementContextMixin : public InProcessBrowserTestMixin {
   // InProcessBrowserTestMixin:
   void SetUpInProcessBrowserTestFixture() override;
 
-  void ManageCloudUser();
-
-  virtual void ManageCloudMachine() = 0;
+  virtual void ManageCloudMachine();
 
   // Returns a PolicyData object with some base value which can be used by
   // platform-specific mixin definitions to manage the current user.

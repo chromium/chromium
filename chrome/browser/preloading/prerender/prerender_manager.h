@@ -87,6 +87,15 @@ class PrerenderManager : public content::WebContentsObserver,
   void StopPrerenderBookmark(
       base::WeakPtr<content::PrerenderHandle> prerender_handle);
 
+  // The entry of new tab page prerender.
+  // Calling this method will return WeakPtr of the started prerender, and lead
+  // to the cancellation of the previous prerender if the given url is different
+  // from the on-going one. If the url given is already on-going, this function
+  // will return the weak pointer to the on-going prerender handle.
+  base::WeakPtr<content::PrerenderHandle> StartPrerenderNewTabPage(
+      const GURL& prerendering_url,
+      content::PreloadingPredictor predictor);
+
   // The entry of direct url input prerender.
   // Calling this method will return WeakPtr of the started prerender, and lead
   // to the cancellation of the previous prerender if the given url is different
@@ -148,6 +157,8 @@ class PrerenderManager : public content::WebContentsObserver,
   std::unique_ptr<SearchPrerenderTask> search_prerender_task_;
 
   std::unique_ptr<content::PrerenderHandle> bookmark_prerender_handle_;
+
+  std::unique_ptr<content::PrerenderHandle> new_tab_page_prerender_handle_;
 
   std::unique_ptr<content::PrerenderHandle> direct_url_input_prerender_handle_;
 

@@ -698,17 +698,24 @@ export class RemoteCallFilesApp extends RemoteCall {
 
     const caller = getCaller();
     return repeatUntil(async () => {
-      let element =
+      const element =
           await this.callRemoteTestUtil('getActiveElement', appId, []);
       if (element && element.attributes['id'] === elementId) {
         return true;
       }
       // Try to check the shadow root.
-      element =
-          await this.callRemoteTestUtil('deepGetActiveElement', appId, []);
-      if (element && element.attributes['id'] === elementId) {
+      const activeElements =
+          await this.callRemoteTestUtil('deepGetActivePath', appId, []);
+      const matches =
+          activeElements.filter(el => el.attributes['id'] === elementId);
+      if (matches.length === 1) {
         return true;
       }
+      if (matches.length > 1) {
+        console.error(`Found ${
+            matches.length} active elements with the same id: ${elementId}`);
+      }
+
       return pending(
           caller,
           'Waiting for active element with id: "' + elementId +
@@ -1030,6 +1037,18 @@ export class RemoteCallFilesApp extends RemoteCall {
   }
 
   /**
+   * Whether the Jellybean UI is enabled.
+   * @param {string} appId app window ID
+   * @returns {Promise<boolean>}
+   */
+  async isCrosComponents(appId) {
+    return await sendTestMessage({
+             appId,
+             name: 'isCrosComponents',
+           }) === 'true';
+  }
+
+  /**
    * Wait for the nudge with the given text to be visible.
    *
    * @param {string} appId app window ID.
@@ -1158,5 +1177,57 @@ export class RemoteCallFilesApp extends RemoteCall {
     console.log(freeSpace);
     await sendTestMessage(
         {name: 'setSpacedFreeSpace', freeSpace: String(freeSpace)});
+  }
+
+  /**
+   * Waits for the specified element appearing in the DOM. `query_jelly` or
+   * `query_old` are used depending on the state of the migration to
+   * cros_components.
+   * @param  {string} appId App window Id.
+   * @param {string|!Array<string>} query_jelly Used when cros_components are
+   *     used. See `waitForElement` for details.
+   * @param {string|!Array<string>} query_old Used when cros_components are not
+   *     used. See `waitForElement` for details.
+   * @returns {Promise<ElementObject>} Promise to be fulfilled when the
+   *     element appears.
+   */
+  waitForElementJelly(appId, query_jelly, query_old) {
+    return this.isCrosComponents(appId).then(
+        isJellybean =>
+            this.waitForElement(appId, isJellybean ? query_jelly : query_old));
+  }
+
+  /**
+   * Shorthand for clicking the appropriate element, depending the state of the
+   * Jellybean experiment.
+   * @param {string} appId App window Id.
+   * @param {string|!Array<string>} query_jelly The query when using
+   *     cros_components. See `waitAndClickElement` for details.
+   * @param {string|!Array<string>} query_old The query when not using
+   *     cros_components. See `waitAndClickElement` for details.
+   * @param {KeyModifiers=} opt_keyModifiers Object
+   * @return {Promise} Promise to be fulfilled with the clicked element.
+   */
+  async waitAndClickElementJelly(
+      appId, query_jelly, query_old, opt_keyModifiers) {
+    const isJellybean = await this.isCrosComponents(appId);
+    return await this.waitAndClickElement(
+        appId, isJellybean ? query_jelly : query_old, opt_keyModifiers);
+  }
+
+  /**
+   * Sets the pooled storage quota on Drive volume.
+   * @param {number} usedUserBytes
+   * @param {number} totalUserBytes
+   * @param {boolean} organizationLimitExceeded
+   */
+  async setPooledStorageQuotaUsage(
+      usedUserBytes, totalUserBytes, organizationLimitExceeded) {
+    return sendTestMessage({
+      name: 'setPooledStorageQuotaUsage',
+      usedUserBytes,
+      totalUserBytes,
+      organizationLimitExceeded,
+    });
   }
 }

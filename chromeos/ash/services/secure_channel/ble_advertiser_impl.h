@@ -14,8 +14,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/services/secure_channel/ble_advertiser.h"
-#include "chromeos/ash/services/secure_channel/ble_constants.h"
 #include "chromeos/ash/services/secure_channel/device_id_pair.h"
+#include "chromeos/ash/services/secure_channel/public/cpp/shared/ble_constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {

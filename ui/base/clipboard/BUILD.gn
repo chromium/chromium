@@ -34,7 +34,6 @@ component("clipboard_types") {
 
   if (is_apple) {
     sources += [ "clipboard_constants_mac.mm" ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_win) {
@@ -119,10 +118,6 @@ component("clipboard") {
       "clipboard_non_backed.cc",
       "clipboard_non_backed.h",
     ]
-  }
-
-  if (is_apple) {
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_mac) {
@@ -240,10 +235,6 @@ source_set("clipboard_test") {
   sources = []
   output_name = "ui_base_clipboard_test"
 
-  if (is_apple) {
-    configs += [ "//build/config/compiler:enable_arc" ]
-  }
-
   if (is_ios) {
     if (use_blink) {
       # On other OSs, clipboard platform unit tests are run as part of
@@ -267,6 +258,7 @@ source_set("clipboard_test") {
       "clipboard_util_mac_unittest.mm",
       "url_file_parser_unittest.cc",
     ]
+    frameworks = [ "PDFKit.framework" ]
   }
 
   if (is_win) {

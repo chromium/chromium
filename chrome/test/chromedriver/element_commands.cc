@@ -529,6 +529,9 @@ Status ExecuteSendKeysToElement(Session* session,
     key_list = &key_list_local;
   } else {
     key_list = params.FindList("value");
+    if (key_list == nullptr) {
+      return Status(kInvalidArgument, "'value' must be a list");
+    }
   }
 
   bool is_input = false;

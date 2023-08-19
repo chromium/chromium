@@ -56,6 +56,7 @@ component("crypto") {
     "unexportable_key.h",
     "unexportable_key_metrics.cc",
     "unexportable_key_metrics.h",
+    "unexportable_key_software_unsecure.cc",
   ]
 
   deps = [
@@ -101,8 +102,6 @@ component("crypto") {
       "CoreFoundation.framework",
       "Security.framework",
     ]
-
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_mac) {

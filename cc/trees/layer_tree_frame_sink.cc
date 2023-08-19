@@ -7,11 +7,13 @@
 #include <stdint.h>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "gpu/GLES2/gl2extchromium.h"
@@ -43,7 +45,7 @@ class LayerTreeFrameSink::ContextLostForwarder
 };
 
 LayerTreeFrameSink::LayerTreeFrameSink(
-    scoped_refptr<viz::ContextProvider> context_provider,
+    scoped_refptr<viz::RasterContextProvider> context_provider,
     scoped_refptr<RasterContextProviderWrapper> worker_context_provider_wrapper,
     scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
@@ -111,7 +113,6 @@ bool LayerTreeFrameSink::BindToClient(LayerTreeFrameSinkClient* client) {
 }
 
 void LayerTreeFrameSink::DetachFromClient() {
-  DCHECK(client_);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   client_ = nullptr;
@@ -124,8 +125,9 @@ void LayerTreeFrameSink::DetachFromClient() {
     context_provider_->RemoveObserver(this);
     context_provider_ = nullptr;
   }
-
-  if (auto* worker_context_provider_ptr = worker_context_provider()) {
+  if (worker_context_lost_forwarder_) {
+    auto* worker_context_provider_ptr = worker_context_provider();
+    CHECK(worker_context_provider_ptr);
     viz::RasterContextProvider::ScopedRasterContextLock lock(
         worker_context_provider_ptr);
     worker_context_provider_ptr->RemoveObserver(
@@ -139,6 +141,13 @@ void LayerTreeFrameSink::OnContextLost() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   TRACE_EVENT0("cc", "LayerTreeFrameSink::OnContextLost");
   client_->DidLoseLayerTreeFrameSink();
+}
+
+gpu::ClientSharedImageInterface* LayerTreeFrameSink::shared_image_interface()
+    const {
+  return base::FeatureList::IsEnabled(features::kSharedBitmapToSharedImage)
+             ? shared_image_interface_.get()
+             : nullptr;
 }
 
 }  // namespace cc

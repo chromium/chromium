@@ -91,7 +91,6 @@ class MockProximityAuthPrefManager : public ProximityAuthProfilePrefManager {
   MockProximityAuthPrefManager& operator=(const MockProximityAuthPrefManager&) =
       delete;
 
-  ~MockProximityAuthPrefManager() override {}
   MOCK_CONST_METHOD0(GetLastPasswordEntryTimestampMs, int64_t());
 };
 
@@ -123,7 +122,8 @@ class TestableProximityAuthSystem : public ProximityAuthSystem {
     return life_cycle;
   }
 
-  raw_ptr<FakeRemoteDeviceLifeCycle, ExperimentalAsh> life_cycle_;
+  raw_ptr<FakeRemoteDeviceLifeCycle, DanglingUntriaged | ExperimentalAsh>
+      life_cycle_;
 };
 
 }  // namespace

@@ -18,6 +18,7 @@
 #include "ash/system/time/calendar_up_next_view_background_painter.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/tray/tray_constants.h"
+#include "base/i18n/rtl.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -159,7 +160,7 @@ bool SameEvents(const std::list<google_apis::calendar::CalendarEvent>& a,
   return base::ranges::equal(a, b, [](const auto& a, const auto& b) {
     return a.id() == b.id() &&
            a.start_time().date_time() == b.start_time().date_time() &&
-           a.end_time().date_time() == b.start_time().date_time();
+           a.end_time().date_time() == b.end_time().date_time();
   });
 }
 
@@ -312,6 +313,7 @@ void CalendarUpNextView::UpdateEvents(
             /*event=*/event, /*ui_params=*/
             UIParams{/*round_top_corners=*/true,
                      /*round_bottom_corners=*/true,
+                     /*is_up_next_event_list_item=*/true,
                      /*show_event_list_dot=*/false,
                      /*fixed_width=*/kLabelFullWidth},
             /*event_list_item_index=*/
@@ -343,6 +345,7 @@ void CalendarUpNextView::UpdateEvents(
             /*event=*/*it,
             /*ui_params=*/
             UIParams{/*round_top_corners=*/true, /*round_bottom_corners=*/true,
+                     /*is_up_next_event_list_item=*/true,
                      /*show_event_list_dot=*/false,
                      /*fixed_width=*/kLabelCappedWidth},
             /*event_list_item_index=*/
@@ -371,8 +374,12 @@ void CalendarUpNextView::OnScrollLeftButtonPressed(const ui::Event& event) {
   // visible.
   if (first_visible_child->GetVisibleBounds().width() !=
       first_visible_child->GetContentsBounds().width()) {
-    const auto offset = first_visible_child->GetBoundsInScreen().x() -
-                        scroll_view_->GetBoundsInScreen().x();
+    const auto offset =
+        base::i18n::IsRTL()
+            ? scroll_view_->GetBoundsInScreen().right() -
+                  first_visible_child->GetBoundsInScreen().right()
+            : first_visible_child->GetBoundsInScreen().x() -
+                  scroll_view_->GetBoundsInScreen().x();
     ScrollViewByOffset(offset);
 
     return;
@@ -382,8 +389,11 @@ void CalendarUpNextView::OnScrollLeftButtonPressed(const ui::Event& event) {
   const int previous_child_index = first_visible_child_index - 1;
   const int index = std::max(0, previous_child_index);
   views::View* previous_child = event_views[index];
-  const auto offset = previous_child->GetBoundsInScreen().x() -
-                      scroll_view_->GetBoundsInScreen().x();
+  const auto offset = base::i18n::IsRTL()
+                          ? scroll_view_->GetBoundsInScreen().right() -
+                                previous_child->GetBoundsInScreen().right()
+                          : previous_child->GetBoundsInScreen().x() -
+                                scroll_view_->GetBoundsInScreen().x();
   ScrollViewByOffset(offset);
 }
 

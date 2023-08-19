@@ -165,7 +165,8 @@ class NearbyShareClientFactoryImpl : public NearbyShareClientFactory {
   std::unique_ptr<NearbyShareClient> CreateInstance() override;
 
  private:
-  raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_;
+  raw_ptr<signin::IdentityManager, DanglingUntriaged | ExperimentalAsh>
+      identity_manager_;
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   raw_ptr<NearbyShareHttpNotifier, ExperimentalAsh> notifier_;
 };

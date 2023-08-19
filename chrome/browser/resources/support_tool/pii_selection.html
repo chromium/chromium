@@ -40,12 +40,7 @@ found in the LICENSE file.
   }
 
   cr-expand-button {
-    background-color: var(--cr-card-background-color);
     height: var(--cr-expand-button-icon-size, 20px);
-  }
-
-  cr-checkbox {
-    background-color: var(--cr-card-background-color);
   }
 
   .pii-item-collapse {
@@ -68,30 +63,28 @@ found in the LICENSE file.
 </style>
 
 <h1 tabindex="0">
-  Step 3 of 4: Review personally identifiable information
+  $i18n{reviewPiiPageTitle}
 </h1>
 <div id="pii-warning-text" class="support-tool-title" tabindex="0">
-  Diagnostic data collection is complete. Some of your personal information is
-  included in this data.
+  $i18n{piiWarningText}
 </div>
 <div id="radio-group">
   <cr-radio-group selected="[[selectedRadioButton_]]"
       on-selected-changed="onSelectedRadioButtonChanged_">
     <cr-radio-button name="[[piiRadioButtonsEnum_.INCLUDE_ALL]]" tabindex="0">
-      Include all personal information
+      $i18n{includeAllPiiRadioButton}
     </cr-radio-button>
     <cr-radio-button name="[[piiRadioButtonsEnum_.INCLUDE_NONE]]" tabindex="0">
-      Automatically remove most personal information
+      $i18n{removePiiRadioButton}
     </cr-radio-button>
     <iron-collapse id="privacy-disclaimer"
         opened$="[[showDisclaimer_(selectedRadioButton_)]]">
       <div tabindex="0">
-        Some personal information may still be included in the data. Make sure
-        to review the exported files.
+        $i18n{piiRemovalDisclaimer}
       </div>
     </iron-collapse>
     <cr-radio-button name="[[piiRadioButtonsEnum_.INCLUDE_SOME]]" tabindex="0">
-      Manually select personal information you want to include
+      $i18n{manuallySelectPiiRadioButton}
     </cr-radio-button>
   </cr-radio-group>
 </div>
@@ -116,9 +109,11 @@ found in the LICENSE file.
   </div>
 </iron-collapse>
 <div class="navigation-buttons">
-  <cr-button id="cancelButton" on-click="onCancelClick_">Cancel</cr-button>
+  <cr-button id="cancelButton" on-click="onCancelClick_">
+    $i18n{cancelButtonText}
+  </cr-button>
   <cr-button id="exportButton" class="action-button"
       on-click="onExportClick_">
-    Export
+      $i18n{exportButtonText}
   </cr-button>
 </div>

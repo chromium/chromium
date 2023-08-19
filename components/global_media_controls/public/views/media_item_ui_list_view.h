@@ -45,6 +45,8 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIListView
   // Removes the given item from the list.
   void HideItem(const std::string& id);
 
+  MediaItemUIView* GetItem(const std::string& id);
+
   bool empty() { return items_.empty(); }
 
   base::WeakPtr<MediaItemUIListView> GetWeakPtr();

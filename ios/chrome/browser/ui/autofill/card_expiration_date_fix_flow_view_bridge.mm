@@ -5,7 +5,7 @@
 #import <memory>
 #import <string>
 
-#import "base/mac/foundation_util.h"
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
 #import "components/strings/grit/components_strings.h"
@@ -18,10 +18,6 @@
 #import "ios/chrome/browser/ui/autofill/expiration_date_picker.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ui/base/l10n/l10n_util.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 CGFloat const kMainSection = 0;
 CGFloat const kNumberOfRowsInMainSection = 1;

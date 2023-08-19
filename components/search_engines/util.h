@@ -147,6 +147,18 @@ void ApplyActionsFromCurrentData(
     TemplateURL* default_search_provider,
     std::set<std::string>* removed_keyword_guids);
 
+// Returns the GUID of the default search provider.
+// Migrates `kSyncedDefaultSearchProviderGUID` to `kDefaultSearchProviderGUID`
+// if the latter is empty and the search engine choice feature is enabled.
+// Gets the value of the corresponding preference based on the search engine
+// choice feature flag.
+const std::string& GetDefaultSearchProviderPrefValue(PrefService& prefs);
+
+// Sets the corresponding default search provider preference based on the search
+// engine choice feature flag.
+void SetDefaultSearchProviderPrefValue(PrefService& prefs,
+                                       const std::string& value);
+
 // Processes the results of KeywordWebDataService::GetKeywords, combining it
 // with prepopulated search providers to result in:
 //  * a set of template_urls (search providers). The caller owns the

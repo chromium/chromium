@@ -33,8 +33,8 @@ namespace {
 // recursively to find any cells or table headers, and append
 // them to |cells|.
 //
-// We recursively check generic containers like <div> and any
-// nodes that are ignored, but we don't search any other roles
+// We recursively skip generic containers like <div> and any
+// nodes that are ignored, but we don't skp any other roles
 // in-between a table row and its cells.
 void FindCellsInRow(AXNode* node, std::vector<AXNode*>* cell_nodes) {
   for (auto iter = node->UnignoredChildrenBegin();
@@ -182,7 +182,7 @@ AXTableInfo* AXTableInfo::Create(AXTree* tree, AXNode* table_node) {
   DCHECK_EQ(node, tree->root());
 #endif
 
-  if (!IsTableLike(table_node->GetRole())) {
+  if (!IsTableLike(table_node->GetRole()) || table_node->IsIgnored()) {
     return nullptr;
   }
 
@@ -707,6 +707,24 @@ void AXTableInfo::ClearExtraMacNodes() {
         tree_, /* root_changed= */ false,
         {{table_node_, AXTreeObserver::ChangeType::NODE_CHANGED}});
   }
+}
+
+// The first cell in a row is important because it stores the ARIA row index.
+// We recursively check generic containers like <div> and any
+// nodes that are ignored, but we don't search any other roles
+// in-between a table row and its cells.
+const AXNode* AXTableInfo::GetFirstCellInRow(const AXNode* row) const {
+  const AXNode* child = row;
+  while (true) {
+    child = child->GetUnignoredChildAtIndex(0);
+    if (!child) {
+      return nullptr;
+    }
+    if (child->GetRole() != ax::mojom::Role::kGenericContainer) {
+      break;
+    }
+  }
+  return IsCellOrTableHeader(child->GetRole()) ? child : nullptr;
 }
 
 std::string AXTableInfo::ToString() const {

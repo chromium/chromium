@@ -21,6 +21,7 @@
 #include "base/trace_event/memory_usage_estimator.h"
 #include "build/build_config.h"
 #include "components/history/core/browser/url_database.h"
+#include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/url_index_private_data.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
@@ -290,9 +291,15 @@ size_t OmniboxFieldTrial::GetProviderMaxMatches(
     AutocompleteProvider::Type provider) {
   size_t default_max_matches_per_provider = 3;
 
-  std::string param_value = base::GetFieldTrialParamValueByFeature(
-      omnibox::kUIExperimentMaxAutocompleteMatches,
-      OmniboxFieldTrial::kUIMaxAutocompleteMatchesByProviderParam);
+  std::string param_value;
+  if (OmniboxFieldTrial::IsMlUrlScoringEnabled()) {
+    param_value =
+        OmniboxFieldTrial::GetMLConfig().ml_url_scoring_max_matches_by_provider;
+  } else {
+    param_value = base::GetFieldTrialParamValueByFeature(
+        omnibox::kUIExperimentMaxAutocompleteMatches,
+        OmniboxFieldTrial::kUIMaxAutocompleteMatchesByProviderParam);
+  }
 
   // If the experiment param specifies a max results for |provider|, return the
   // specified limit.
@@ -542,19 +549,8 @@ bool OmniboxFieldTrial::HUPSearchDatabase() {
   return value.empty() || (value == "true");
 }
 
-int OmniboxFieldTrial::KeywordScoreForSufficientlyCompleteMatch() {
-  std::string value_str = base::GetFieldTrialParamValue(
-      kBundledExperimentFieldTrialName,
-      kKeywordScoreForSufficientlyCompleteMatchRule);
-  if (value_str.empty()) {
-    return -1;
-  }
-  // This is a best-effort conversion; we trust the hand-crafted parameters
-  // downloaded from the server to be perfect.  There's no need for handle
-  // errors smartly.
-  int value;
-  base::StringToInt(value_str, &value);
-  return value;
+bool OmniboxFieldTrial::IsActionsUISimplificationEnabled() {
+  return base::FeatureList::IsEnabled(omnibox::kOmniboxActionsUISimplification);
 }
 
 bool OmniboxFieldTrial::IsFuzzyUrlSuggestionsEnabled() {
@@ -661,15 +657,11 @@ std::string OmniboxFieldTrial::OnDeviceHeadModelLocaleConstraint(
   return constraint;
 }
 
-bool OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() {
-  return base::FeatureList::IsEnabled(omnibox::kSiteSearchStarterPack);
-}
-
 // Omnibox UI simplification - Uniform Suggestion Row Heights
 const base::FeatureParam<bool> OmniboxFieldTrial::kSquareSuggestIconAnswers(
     &omnibox::kSquareSuggestIcons,
     "OmniboxSquareSuggestIconAnswers",
-    false);
+    true);
 const base::FeatureParam<bool> OmniboxFieldTrial::kSquareSuggestIconIcons(
     &omnibox::kSquareSuggestIcons,
     "OmniboxSquareSuggestIconIcons",
@@ -691,20 +683,27 @@ bool OmniboxFieldTrial::IsUniformRowHeightEnabled() {
 const base::FeatureParam<int> OmniboxFieldTrial::kRichSuggestionVerticalMargin(
     &omnibox::kUniformRowHeight,
     "OmniboxRichSuggestionVerticalMargin",
-    4);
+    6);
 
 bool OmniboxFieldTrial::IsChromeRefreshIconsEnabled() {
-  static bool enabled =
-      features::GetChromeRefresh2023Level() ==
-          features::ChromeRefresh2023Level::kLevel2 ||
-      base::FeatureList::IsEnabled(omnibox::kOmniboxCR23SteadyStateIcons);
+  static bool enabled = omnibox::IsOmniboxCr23CustomizeGuardedFeatureEnabled(
+      omnibox::kOmniboxCR23SteadyStateIcons);
   return enabled;
 }
 
 bool OmniboxFieldTrial::IsChromeRefreshSuggestIconsEnabled() {
-  return features::GetChromeRefresh2023Level() ==
-             features::ChromeRefresh2023Level::kLevel2 ||
-         base::FeatureList::IsEnabled(omnibox::kExpandedStateSuggestIcons);
+  return omnibox::IsOmniboxCr23CustomizeGuardedFeatureEnabled(
+      omnibox::kExpandedStateSuggestIcons);
+}
+
+bool OmniboxFieldTrial::IsChromeRefreshActionChipIconsEnabled() {
+  return omnibox::IsOmniboxCr23CustomizeGuardedFeatureEnabled(
+      omnibox::kCr2023ActionChipsIcons);
+}
+
+bool OmniboxFieldTrial::IsChromeRefreshSuggestHoverFillShapeEnabled() {
+  return omnibox::IsOmniboxCr23CustomizeGuardedFeatureEnabled(
+      omnibox::kSuggestionHoverFillShape);
 }
 
 bool OmniboxFieldTrial::IsGM3TextStyleEnabled() {
@@ -747,6 +746,11 @@ bool OmniboxFieldTrial::IsCr23LayoutEnabled() {
   return enabled;
 }
 
+bool OmniboxFieldTrial::IsChromeRefreshSteadyStateBackgroundColorEnabled() {
+  return omnibox::IsOmniboxCr23CustomizeGuardedFeatureEnabled(
+      omnibox::kOmniboxSteadyStateBackgroundColor);
+}
+
 const char OmniboxFieldTrial::kBundledExperimentFieldTrialName[] =
     "OmniboxBundledExperimentV1";
 const char OmniboxFieldTrial::kDisableProvidersRule[] = "DisableProviders";
@@ -769,11 +773,6 @@ const char OmniboxFieldTrial::kHQPNumTitleWordsRule[] = "HQPNumTitleWords";
 const char OmniboxFieldTrial::kHQPAlsoDoHUPLikeScoringRule[] =
     "HQPAlsoDoHUPLikeScoring";
 const char OmniboxFieldTrial::kHUPSearchDatabaseRule[] = "HUPSearchDatabase";
-const char OmniboxFieldTrial::kKeywordRequiresRegistryRule[] =
-    "KeywordRequiresRegistry";
-const char OmniboxFieldTrial::kKeywordScoreForSufficientlyCompleteMatchRule[] =
-    "KeywordScoreForSufficientlyCompleteMatch";
-
 const char OmniboxFieldTrial::kHUPNewScoringTypedCountRelevanceCapParam[] =
     "TypedCountRelevanceCap";
 const char OmniboxFieldTrial::kHUPNewScoringTypedCountHalfLifeTimeParam[] =
@@ -834,7 +833,7 @@ const base::FeatureParam<bool>
 const base::FeatureParam<int> kAutocompleteStabilityUpdateResultDebounceDelay(
     &omnibox::kUpdateResultDebounce,
     "AutocompleteStabilityUpdateResultDebounceDelay",
-    0);
+    200);
 
 // Local history zero-prefix (aka zero-suggest) and prefix suggestions:
 
@@ -873,20 +872,6 @@ bool IsZeroSuggestPrefetchingEnabledInContext(
       return false;
   }
 }
-
-// Shortcut boost
-const base::FeatureParam<int> kShortcutBoostSearchScore(
-    &omnibox::kShortcutBoost,
-    "ShortcutBoostSearchScore",
-    0);
-const base::FeatureParam<int> kShortcutBoostUrlScore(&omnibox::kShortcutBoost,
-                                                     "ShortcutBoostUrlScore",
-                                                     0);
-
-const base::FeatureParam<bool> kShortcutBoostCounterfactual(
-    &omnibox::kShortcutBoost,
-    "ShortcutBoostCounterfactual",
-    false);
 
 // Rich autocompletion.
 
@@ -963,11 +948,6 @@ const base::FeatureParam<bool>
         "RichAutocompletionAutocompletePreferUrlsOverPrefixes",
         false);
 
-const base::FeatureParam<int> kSiteSearchStarterPackRelevanceScore(
-    &omnibox::kSiteSearchStarterPack,
-    "SiteSearchStarterPackRelevanceScore",
-    1350);
-
 const base::FeatureParam<bool> kDomainSuggestionsCounterfactual(
     &omnibox::kDomainSuggestions,
     "DomainSuggestionsCounterfactual",
@@ -1043,9 +1023,9 @@ const base::FeatureParam<bool> kMlUrlScoringCounterfactual(
 
 // If true, increases the number of candidates the URL autocomplete providers
 // pass to the controller beyond `provider_max_matches`.
-const base::FeatureParam<bool> kMlUrlScoringIncreaseNumCandidates(
+const base::FeatureParam<bool> kMlUrlScoringUnlimitedNumCandidates(
     &omnibox::kMlUrlScoring,
-    "MlUrlScoringIncreaseNumCandidates",
+    "MlUrlScoringUnlimitedNumCandidates",
     false);
 
 // If true, the ML model only re-scores and re-ranks the final set of matches
@@ -1066,10 +1046,15 @@ const base::FeatureParam<bool> kMlUrlScoringPreserveDefault(
     "MlUrlScoringPreserveDefault",
     false);
 
-// If true, the ML model scores a batch of urls.
-const base::FeatureParam<bool> kMlBatchUrlScoring(&omnibox::kMlUrlScoring,
-                                                  "MlBatchUrlScoring",
-                                                  true);
+const base::FeatureParam<std::string> kMlUrlScoringMaxMatchesByProvider(
+    &omnibox::kMlUrlScoring,
+    "MlUrlScoringMaxMatchesByProvider",
+    "");
+
+// If true, synchronously runs the ML model for a batch of urls.
+const base::FeatureParam<bool> kMlSyncBatchUrlScoring(&omnibox::kMlUrlScoring,
+                                                      "MlSyncBatchUrlScoring",
+                                                      false);
 
 MLConfig::MLConfig() {
   log_url_scoring_signals =
@@ -1078,18 +1063,24 @@ MLConfig::MLConfig() {
       kEnableScoringSignalsAnnotatorsForLogging.Get() ||
       kEnableScoringSignalsAnnotatorsForMlScoring.Get();
   ml_url_scoring = base::FeatureList::IsEnabled(omnibox::kMlUrlScoring);
-  ml_batch_url_scoring = kMlBatchUrlScoring.Get();
+  ml_sync_batch_url_scoring = kMlSyncBatchUrlScoring.Get();
   ml_url_scoring_counterfactual = kMlUrlScoringCounterfactual.Get();
-  ml_url_scoring_increase_num_candidates =
-      kMlUrlScoringIncreaseNumCandidates.Get();
+  ml_url_scoring_unlimited_num_candidates =
+      kMlUrlScoringUnlimitedNumCandidates.Get();
   ml_url_scoring_preserve_default = kMlUrlScoringPreserveDefault.Get();
   ml_url_scoring_rerank_final_matches_only =
       kMlUrlscoringRerankFinalMatchesOnly.Get();
+  ml_url_scoring_max_matches_by_provider =
+      kMlUrlScoringMaxMatchesByProvider.Get();
   url_scoring_model = base::FeatureList::IsEnabled(omnibox::kUrlScoringModel);
 }
 
+MLConfig::MLConfig(const MLConfig&) = default;
+
 ScopedMLConfigForTesting::ScopedMLConfigForTesting()
-    : original_config_(std::make_unique<MLConfig>(GetMLConfig())) {}
+    : original_config_(std::make_unique<MLConfig>(GetMLConfig())) {
+  GetMLConfigInternal() = {};
+}
 
 ScopedMLConfigForTesting::~ScopedMLConfigForTesting() {
   GetMLConfigInternal() = *original_config_;
@@ -1121,15 +1112,19 @@ bool IsMlUrlScoringEnabled() {
   return false;
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 }
-bool IsMlBatchUrlScoringEnabled() {
-  return IsMlUrlScoringEnabled() && GetMLConfig().ml_batch_url_scoring;
+bool IsMlSyncBatchUrlScoringEnabled() {
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  return IsMlUrlScoringEnabled() && GetMLConfig().ml_sync_batch_url_scoring;
+#else
+  return false;
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 }
 bool IsMlUrlScoringCounterfactual() {
   return IsMlUrlScoringEnabled() && GetMLConfig().ml_url_scoring_counterfactual;
 }
-bool IsMlUrlScoringIncreaseNumCandidatesEnabled() {
+bool IsMlUrlScoringUnlimitedNumCandidatesEnabled() {
   return IsMlUrlScoringEnabled() &&
-         GetMLConfig().ml_url_scoring_increase_num_candidates;
+         GetMLConfig().ml_url_scoring_unlimited_num_candidates;
 }
 bool IsUrlScoringModelEnabled() {
   return GetMLConfig().url_scoring_model;
@@ -1150,20 +1145,6 @@ const base::FeatureParam<bool> kRealboxSecondaryZeroSuggestCounterfactual(
     false);
 
 // <- Two-column realbox
-// ---------------------------------------------------------
-// Inspire Me ->
-
-const base::FeatureParam<int> kInspireMeAdditionalRelatedQueries(
-    &omnibox::kInspireMe,
-    "AdditionalRelatedQueries",
-    0);
-
-const base::FeatureParam<int> kInspireMeAdditionalTrendingQueries(
-    &omnibox::kInspireMe,
-    "AdditionalTrendingQueries",
-    0);
-
-// <- Inspire Me
 // ---------------------------------------------------------
 // Android UI Revamp ->
 const base::FeatureParam<bool> kOmniboxModernizeVisualUpdateMergeClipboardOnNTP(

@@ -45,14 +45,8 @@ class ASH_EXPORT AppListToastView : public views::View {
 
     std::unique_ptr<AppListToastView> Build();
 
-    // Methods for setting vector icons for the toast.
-    // Vector icons would change appearance with theming by default.
-    // Nevertheless there might be a case when different icons need to be used
-    // with dark/light mode (i.e. non-monochromatic icons) and a single icon is
-    // not enough. For this case, use SetThemingIcons().
-    Builder& SetIcon(const gfx::VectorIcon* icon);
-    Builder& SetThemingIcons(const gfx::VectorIcon* dark_icon,
-                             const gfx::VectorIcon* light_icon);
+    // Method for setting image model for the toast.
+    Builder& SetIcon(const ui::ImageModel& icon);
     Builder& SetIconSize(int icon_size);
     Builder& SetIconBackground(bool has_icon_background);
 
@@ -69,9 +63,7 @@ class ASH_EXPORT AppListToastView : public views::View {
     std::u16string title_;
     absl::optional<std::u16string> subtitle_;
     absl::optional<std::u16string> button_text_;
-    raw_ptr<const gfx::VectorIcon, ExperimentalAsh> icon_ = nullptr;
-    raw_ptr<const gfx::VectorIcon, ExperimentalAsh> dark_icon_ = nullptr;
-    raw_ptr<const gfx::VectorIcon, ExperimentalAsh> light_icon_ = nullptr;
+    absl::optional<ui::ImageModel> icon_;
     absl::optional<int> icon_size_;
     views::Button::PressedCallback button_callback_;
     views::Button::PressedCallback close_button_callback_;
@@ -92,15 +84,12 @@ class ASH_EXPORT AppListToastView : public views::View {
   gfx::Size GetMaximumSize() const override;
   gfx::Size GetMinimumSize() const override;
   gfx::Size CalculatePreferredSize() const override;
-  void OnThemeChanged() override;
 
   void SetButton(std::u16string button_text,
                  views::Button::PressedCallback button_callback);
   void SetCloseButton(views::Button::PressedCallback close_button_callback);
 
-  void SetIcon(const gfx::VectorIcon* icon);
-  void SetThemingIcons(const gfx::VectorIcon* dark_icon,
-                       const gfx::VectorIcon* light_icon);
+  void SetIcon(const ui::ImageModel& icon);
   void SetIconSize(int icon_size);
   void SetTitle(const std::u16string title);
   void SetSubtitle(const std::u16string subtitle);
@@ -151,12 +140,8 @@ class ASH_EXPORT AppListToastView : public views::View {
   // Get the available space for `title_label_` width.
   int GetExpandedTitleLabelWidth();
 
-  // Vector icons to use with dark/light mode.
-  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> dark_icon_ = nullptr;
-  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> light_icon_ = nullptr;
-
-  // Vector icon to use if there are not dark or light mode specific icons.
-  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> default_icon_ = nullptr;
+  // The icon for the toast.
+  absl::optional<ui::ImageModel> default_icon_;
 
   absl::optional<int> icon_size_;
 

@@ -1620,7 +1620,6 @@
       "load_accessibility:shopping:amazon",
       "long_running:tools:gmail-background",
       "long_running:tools:gmail-foreground",
-      "multitab:misc:typical24",
       "play:media:google_play_music",
       "play:media:soundcloud"
     ],
@@ -1757,7 +1756,6 @@
       "load_accessibility:shopping:amazon",
       "long_running:tools:gmail-background",
       "long_running:tools:gmail-foreground",
-      "multitab:misc:typical24",
       "play:media:google_play_music",
       "play:media:soundcloud"
     ],
@@ -1837,13 +1835,6 @@
       "load:chrome:blank"
     ],
     "name": "system_health.webview_startup"
-  },
-  {
-    "repeat": 1,
-    "stories": [
-      "multitab:misc:typical24"
-    ],
-    "name": "tab_switching.typical_25"
   },
   {
     "repeat": 1,

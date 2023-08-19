@@ -45,8 +45,7 @@ public class CustomTabBrowserControlsVisibilityDelegate extends BrowserControlsV
         updateVisibilityConstraints();
     }
 
-    @BrowserControlsState
-    private int calculateVisibilityConstraints() {
+    private @BrowserControlsState int calculateVisibilityConstraints() {
         @BrowserControlsState
         int defaultConstraints = getDefaultVisibilityDelegate().get();
         if (defaultConstraints == BrowserControlsState.HIDDEN

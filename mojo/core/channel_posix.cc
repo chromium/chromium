@@ -149,8 +149,6 @@ void ChannelPosix::Write(MessagePtr message) {
   if (ShouldRecordSubsampledHistograms()) {
     UMA_HISTOGRAM_COUNTS_100000("Mojo.Channel.WriteMessageSize",
                                 message->data_num_bytes());
-    UMA_HISTOGRAM_COUNTS_100("Mojo.Channel.WriteMessageHandles",
-                             message->NumHandlesForTransit());
     LogHistogramForIPCMetrics(MessageType::kSent);
   }
 
@@ -512,8 +510,6 @@ bool ChannelPosix::WriteOutgoingMessagesWithWritev() {
     iov[num_iovs_set].iov_len = it->data_num_bytes();
     num_iovs_set++;
   }
-
-  UMA_HISTOGRAM_COUNTS_1000("Mojo.Channel.WritevBatchedMessages", num_iovs_set);
 
   size_t iov_offset = 0;
   while (iov_offset < num_iovs_set) {

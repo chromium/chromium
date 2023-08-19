@@ -17,6 +17,22 @@ SharedImageBackingFactory::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+std::unique_ptr<SharedImageBacking>
+SharedImageBackingFactory::CreateSharedImage(const Mailbox& mailbox,
+                                             viz::SharedImageFormat format,
+                                             SurfaceHandle surface_handle,
+                                             const gfx::Size& size,
+                                             const gfx::ColorSpace& color_space,
+                                             GrSurfaceOrigin surface_origin,
+                                             SkAlphaType alpha_type,
+                                             uint32_t usage,
+                                             std::string debug_label,
+                                             bool is_thread_safe,
+                                             gfx::BufferUsage buffer_usage) {
+  NOTREACHED();
+  return nullptr;
+}
+
 bool SharedImageBackingFactory::CanCreateSharedImage(
     uint32_t usage,
     viz::SharedImageFormat format,

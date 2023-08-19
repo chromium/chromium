@@ -13,6 +13,8 @@ static_library("common") {
     "password_manager_pref_names.cc",
     "password_manager_pref_names.h",
     "password_manager_ui.h",
+    "password_manager_util.cc",
+    "password_manager_util.h",
   ]
 
   if (is_ios) {
@@ -24,6 +26,7 @@ static_library("common") {
 
   deps = [
     "//base",
+    "//components/autofill/core/common",
     "//sql",
     "//url",
   ]
@@ -54,18 +57,24 @@ source_set("features") {
   ]
 }
 
-if (is_ios) {
-  source_set("unit_tests") {
-    testonly = true
-    sources = [ "passwords_directory_util_ios_unittest.cc" ]
+source_set("unit_tests") {
+  testonly = true
 
-    deps = [
-      ":common",
+  sources = [ "password_manager_util_unittest.cc" ]
+
+  deps = [
+    ":common",
+    "//components/autofill/core/common",
+    "//testing/gtest",
+  ]
+
+  if (is_ios) {
+    sources += [ "passwords_directory_util_ios_unittest.cc" ]
+
+    deps += [
       "//base",
       "//base/test:test_support",
-      "//components/autofill/core/common",
       "//sql",
-      "//testing/gtest",
       "//url",
     ]
   }

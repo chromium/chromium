@@ -4,7 +4,7 @@
     innerContent = innerContent ?? '<span><!--This is the leaf node--></span>';
     lightDomDuplicates = lightDomDuplicates ?? 1;
     PerfTestRunner.assert_true(!useShadowDom || lightDomDuplicates === 1,'Only light dom content can use duplicates');
-    let openTag = useShadowDom ? '<template shadowroot=open>' : `<${lightDomElementName} shadowroot=open>`;
+    let openTag = useShadowDom ? '<template shadowrootmode=open>' : `<${lightDomElementName} shadowroot=open>`;
     let closeTag = useShadowDom ? '</template>' : `</${lightDomElementName}>`;
     let hiddenLightDomContent = useShadowDom ? '<span>Some non-slotted light dom content</span>' : '<!--   Some hidden light-dom content here   -->';
     let extraCopies = '';

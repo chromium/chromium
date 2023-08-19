@@ -281,8 +281,7 @@ class MultiCaptureTest
         HostContentSettingsMapFactory::GetForProfile(profile());
     for (const std::string& url : AllowedOrigins()) {
       content_settings->SetContentSettingDefaultScope(
-          GURL(url), GURL(url),
-          ContentSettingsType::GET_DISPLAY_MEDIA_SET_SELECT_ALL_SCREENS,
+          GURL(url), GURL(url), ContentSettingsType::ALL_SCREEN_CAPTURE,
           ContentSetting::CONTENT_SETTING_ALLOW);
     }
   }

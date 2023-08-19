@@ -334,8 +334,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(HandlePingPong, MessagePipeTest, h) {
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
 }
 
-// This test is flaky: http://crbug.com/585784
-TEST_F(MessagePipeTest, DISABLED_DataPipeConsumerHandlePingPong) {
+TEST_F(MessagePipeTest, DataPipeConsumerHandlePingPong) {
   MojoHandle p, c[kPingPongHandlesPerIteration];
   for (size_t i = 0; i < kPingPongHandlesPerIteration; ++i) {
     EXPECT_EQ(MOJO_RESULT_OK, MojoCreateDataPipe(nullptr, &p, &c[i]));
@@ -353,8 +352,7 @@ TEST_F(MessagePipeTest, DISABLED_DataPipeConsumerHandlePingPong) {
     MojoClose(c[i]);
 }
 
-// This test is flaky: http://crbug.com/585784
-TEST_F(MessagePipeTest, DISABLED_DataPipeProducerHandlePingPong) {
+TEST_F(MessagePipeTest, DataPipeProducerHandlePingPong) {
   MojoHandle p[kPingPongHandlesPerIteration], c;
   for (size_t i = 0; i < kPingPongHandlesPerIteration; ++i) {
     EXPECT_EQ(MOJO_RESULT_OK, MojoCreateDataPipe(nullptr, &p[i], &c));

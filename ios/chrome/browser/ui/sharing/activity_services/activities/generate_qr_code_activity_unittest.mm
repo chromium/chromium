@@ -11,10 +11,6 @@
 #import "third_party/ocmock/gtest_support.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Test fixture for covering the GenerateQrCodeActivity class.
 class GenerateQrCodeActivityTest : public PlatformTest {
  protected:

@@ -119,12 +119,48 @@ def _CheckNoIsIOSBuildFlagsInChrome(input_api, output_api):
       'IS_IOS is not used in chrome/ but found in:\n', ios_buildflags)]
 
 
+def _CheckBreakingInstallerVersionBumpNeeded(input_api, output_api):
+  files = []
+  breaking_version_installer_updated = False
+
+  def _FilterFile(affected_file):
+    return input_api.FilterSourceFile(
+        affected_file,
+        files_to_check=input_api.DEFAULT_FILES_TO_CHECK + (r'.*\.release',))
+  for f in input_api.AffectedSourceFiles(_FilterFile):
+    # Normalize the local path to Linux-style path separators so that the path
+    # comparisons work on Windows as well.
+    local_path = f.LocalPath().replace('\\', '/')
+    breaking_version_installer_updated |= (local_path ==
+    'chrome/installer/setup/last_breaking_installer_version.cc')
+    if (local_path == 'chrome/installer/mini_installer/chrome.release' or
+        local_path.startswith('chrome/test/mini_installer')):
+      files.append(local_path)
+
+  if files and not breaking_version_installer_updated:
+    return [output_api.PresubmitPromptWarning('''
+Update chrome/installer/setup/last_breaking_installer_version.cc if the changes
+found in the following files might break make downgrades not possible beyond
+this browser's version.''', items=files)]
+
+  if not files and breaking_version_installer_updated:
+    return [output_api.PresubmitPromptWarning('''
+No installer breaking changes detected but
+chrome/installer/setup/last_breaking_installer_version.cc was updated. Please
+update chrome/installer/PRESUBMIT.py if more files need to be watched for
+breaking installer changes.''')]
+
+  return []
+
+
 def _CommonChecks(input_api, output_api):
   """Checks common to both upload and commit."""
   results = []
   results.extend(_CheckNoContentUnitTestsInChrome(input_api, output_api))
   results.extend(_CheckNoIsAppleBuildFlagsInChrome(input_api, output_api))
   results.extend(_CheckNoIsIOSBuildFlagsInChrome(input_api, output_api))
+  results.extend(_CheckBreakingInstallerVersionBumpNeeded(input_api,
+                 output_api))
   return results
 
 

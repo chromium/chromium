@@ -40,7 +40,7 @@ class HelpBubbleWebUI : public HelpBubble {
   // HelpBubble:
   void CloseBubbleImpl() override;
 
-  const raw_ptr<HelpBubbleHandlerBase, DanglingUntriaged> handler_;
+  const raw_ptr<HelpBubbleHandlerBase, AcrossTasksDanglingUntriaged> handler_;
   const ui::ElementIdentifier anchor_id_;
 };
 

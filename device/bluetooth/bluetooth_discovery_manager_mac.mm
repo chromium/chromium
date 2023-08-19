@@ -4,14 +4,11 @@
 
 #include "device/bluetooth/bluetooth_discovery_manager_mac.h"
 
-#include "base/memory/raw_ptr.h"
-
-#import <IOBluetooth/objc/IOBluetoothDevice.h>
-#import <IOBluetooth/objc/IOBluetoothDeviceInquiry.h>
+#import <IOBluetooth/IOBluetooth.h>
 
 #include "base/check_op.h"
 #include "base/logging.h"
-#include "base/mac/scoped_nsobject.h"
+#include "base/memory/raw_ptr.h"
 
 namespace device {
 
@@ -40,8 +37,6 @@ class BluetoothDiscoveryManagerMacClassic
  public:
   explicit BluetoothDiscoveryManagerMacClassic(Observer* observer)
       : BluetoothDiscoveryManagerMac(observer),
-        should_do_discovery_(false),
-        inquiry_running_(false),
         inquiry_delegate_(
             [[BluetoothDeviceInquiryDelegate alloc] initWithManager:this]),
         inquiry_([[IOBluetoothDeviceInquiry alloc]
@@ -52,7 +47,12 @@ class BluetoothDiscoveryManagerMacClassic
   BluetoothDiscoveryManagerMacClassic& operator=(
       const BluetoothDiscoveryManagerMacClassic&) = delete;
 
-  ~BluetoothDiscoveryManagerMacClassic() override {}
+  ~BluetoothDiscoveryManagerMacClassic() override {
+    // IOBluetoothDeviceInquiry's delegate property is configured as "assign"
+    // rather than "weak". If it is not manually reset then our delegate could be
+    // accessed after we drop our strong reference and the object is freed.
+    inquiry_.delegate = nil;
+  }
 
   // BluetoothDiscoveryManagerMac override.
   bool IsDiscovering() const override { return should_do_discovery_; }
@@ -178,14 +178,14 @@ class BluetoothDiscoveryManagerMacClassic
 
  private:
   // The requested discovery state.
-  bool should_do_discovery_;
+  bool should_do_discovery_ = false;
 
   // The current inquiry state.
-  bool inquiry_running_;
+  bool inquiry_running_ = false;
 
   // Objective-C objects for running and tracking device inquiry.
-  base::scoped_nsobject<BluetoothDeviceInquiryDelegate> inquiry_delegate_;
-  base::scoped_nsobject<IOBluetoothDeviceInquiry> inquiry_;
+  BluetoothDeviceInquiryDelegate* __strong inquiry_delegate_;
+  IOBluetoothDeviceInquiry* __strong inquiry_;
 };
 
 BluetoothDiscoveryManagerMac::BluetoothDiscoveryManagerMac(
@@ -193,8 +193,7 @@ BluetoothDiscoveryManagerMac::BluetoothDiscoveryManagerMac(
   DCHECK(observer);
 }
 
-BluetoothDiscoveryManagerMac::~BluetoothDiscoveryManagerMac() {
-}
+BluetoothDiscoveryManagerMac::~BluetoothDiscoveryManagerMac() = default;
 
 // static
 BluetoothDiscoveryManagerMac* BluetoothDiscoveryManagerMac::CreateClassic(

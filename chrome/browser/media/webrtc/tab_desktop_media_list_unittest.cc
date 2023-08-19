@@ -83,8 +83,6 @@ gfx::Image CreateGrayscaleImage(gfx::Size size, uint8_t greyscale_value) {
   return gfx::Image::CreateFrom1xBitmap(result);
 }
 
-}  // namespace
-
 class MockObserver : public DesktopMediaListObserver {
  public:
   MOCK_METHOD1(OnSourceAdded, void(int index));
@@ -151,6 +149,8 @@ class TestAppWindow : public content::WebContentsObserver {
  private:
   raw_ptr<extensions::AppWindow> window_;
 };
+
+}  // namespace
 
 class TabDesktopMediaListTest : public testing::Test,
                                 public testing::WithParamInterface<bool> {

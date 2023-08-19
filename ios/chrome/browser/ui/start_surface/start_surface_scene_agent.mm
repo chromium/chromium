@@ -27,10 +27,6 @@
 #import "ios/web/public/web_state.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // Name of histogram to record the number of excess NTP tabs that are removed.
 const char kExcessNTPTabsRemoved[] = "IOS.NTP.ExcessRemovedTabCount";
@@ -138,7 +134,7 @@ const char kExcessNTPTabsRemoved[] = "IOS.NTP.ExcessRemovedTabCount";
   }
 
   // If there is no active tab, a NTP will be added, and since there is no
-  // recent tab, there is no need to mark `modifytVisibleNTPForStartSurface`.
+  // recent tab.
   // Keep showing the last active NTP tab no matter whether the Start Surface is
   // enabled or not by design.
   // Note that activeWebState could only be nullptr when the Tab grid is active

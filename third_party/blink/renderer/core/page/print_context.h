@@ -21,6 +21,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_PRINT_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_PRINT_CONTEXT_H_
 
+#include "third_party/blink/public/web/web_print_page_description.h"
+#include "third_party/blink/public/web/web_print_params.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -29,10 +31,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/rect.h"
-
-namespace gfx {
-class SizeF;
-}
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
@@ -43,29 +42,21 @@ class Node;
 
 class CORE_EXPORT PrintContext : public GarbageCollected<PrintContext> {
  public:
-  // By shrinking to a width of 75%, we will render the correct physical
-  // dimensions in paged media (i.e. cm, pt,). The shrinkage used
-  // to be 80% to match other browsers - they have since moved on.
-  // Wide pages will be scaled down more than this.
-  // This value is the percentage inverted.
-  static constexpr float kPrintingMinimumShrinkFactor = 1.33333333f;
-
-  PrintContext(LocalFrame*, bool use_printing_layout);
+  explicit PrintContext(LocalFrame*);
   virtual ~PrintContext();
 
   LocalFrame* GetFrame() const { return frame_; }
 
-  // These are only valid after page rects are computed.
-  wtf_size_t PageCount() const { return page_rects_.size(); }
-  const gfx::Rect& PageRect(wtf_size_t page_number) const {
-    return page_rects_[page_number];
-  }
-  const Vector<gfx::Rect>& PageRects() const { return page_rects_; }
+  // These are only valid when inside print mode.
+  wtf_size_t PageCount() const { return page_count_; }
+  gfx::Rect PageRect(wtf_size_t page_number) const;
 
-  // Enter print mode, updating layout for new page size.
+  // Enter print mode, updating layout for paginated layout. WebPrintParams
+  // provides a default page size and margins, but this may be overridden by
+  // at-page rules for any given page.
   // This function can be called multiple times to apply new print options
   // without going back to screen mode.
-  virtual void BeginPrintMode(float width, float height = 0);
+  virtual void BeginPrintMode(const WebPrintParams&);
 
   // Return to screen mode.
   virtual void EndPrintMode();
@@ -78,7 +69,6 @@ class CORE_EXPORT PrintContext : public GarbageCollected<PrintContext> {
   static String PageProperty(LocalFrame*,
                              const char* property_name,
                              uint32_t page_number);
-  static bool IsPageBoxVisible(LocalFrame*, uint32_t page_number);
   static String PageSizeAndMarginsInPixels(LocalFrame*,
                                            uint32_t page_number,
                                            int width,
@@ -100,20 +90,18 @@ class CORE_EXPORT PrintContext : public GarbageCollected<PrintContext> {
   bool IsFrameValid() const;
 
   Member<LocalFrame> frame_;
-  Vector<gfx::Rect> page_rects_;
+  wtf_size_t page_count_ = 0;
+
+  // True when printing layout needs to be applied.
+  bool use_printing_layout_ = true;
 
  private:
-  void ComputePageRects(const gfx::SizeF& print_size);
-  void ComputePageRectsWithPageSizeInternal(
-      const gfx::SizeF& page_size_in_pixels);
+  void ComputePageCount();
   void CollectLinkedDestinations(Node*);
 
   // Used to prevent misuses of BeginPrintMode() and EndPrintMode() (e.g., call
   // EndPrintMode() without BeginPrintMode()).
   bool is_printing_;
-
-  // True when printing layout needs to be applied.
-  bool use_printing_layout_;
 
   HeapHashMap<String, Member<Node>> linked_destinations_;
   bool linked_destinations_valid_;

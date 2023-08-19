@@ -12,6 +12,7 @@
 #import "base/timer/timer.h"
 #import "base/values.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/app/startup/app_launch_metrics.h"
 #import "ios/chrome/browser/push_notification/push_notification_client_manager.h"
 #import "ios/chrome/browser/push_notification/push_notification_configuration.h"
 #import "ios/chrome/browser/push_notification/push_notification_delegate.h"
@@ -22,10 +23,6 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // The time range's expected min and max values for custom histograms.
 constexpr base::TimeDelta kTimeRangeIncomingNotificationHistogramMin =
@@ -34,6 +31,19 @@ constexpr base::TimeDelta kTimeRangeIncomingNotificationHistogramMax =
     base::Seconds(30);
 // Number of buckets for the time range histograms.
 constexpr int kTimeRangeHistogramBucketCount = 30;
+
+// The histogram used to record a push notification's current lifecycle state on
+// the device.
+const char kLifecycleEventsHistogram[] = "IOS.PushNotification.LifecyleEvents";
+
+// This enum is used to represent a point along the push notification's
+// lifecycle.
+enum class PushNotificationLifecycleEvent {
+  kNotificationReception,
+  kNotificationForegroundPresentation,
+  kNotificationInteraction,
+  kMaxValue = kNotificationInteraction
+};
 
 // This function creates a dictionary that maps signed-in user's GAIA IDs to a
 // map of each user's preferences for each push notification enabled feature.
@@ -87,6 +97,8 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
 - (void)userNotificationCenter:(UNUserNotificationCenter*)center
     didReceiveNotificationResponse:(UNNotificationResponse*)response
              withCompletionHandler:(void (^)(void))completionHandler {
+  [self recordLifeCycleEvent:PushNotificationLifecycleEvent::
+                                 kNotificationInteraction];
   // This method is invoked by iOS to process the user's response to a delivered
   // notification.
   auto* clientManager = GetApplicationContext()
@@ -97,6 +109,8 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
   if (completionHandler) {
     completionHandler();
   }
+  base::UmaHistogramEnumeration(kAppLaunchSource,
+                                AppLaunchSource::NOTIFICATION);
 }
 
 - (void)userNotificationCenter:(UNUserNotificationCenter*)center
@@ -104,6 +118,8 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
          withCompletionHandler:
              (void (^)(UNNotificationPresentationOptions options))
                  completionHandler {
+  [self recordLifeCycleEvent:PushNotificationLifecycleEvent::
+                                 kNotificationForegroundPresentation];
   // This method is invoked by iOS to process a notification that arrived while
   // the app was running in the foreground.
   auto* clientManager = GetApplicationContext()
@@ -116,12 +132,17 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
   if (completionHandler) {
     completionHandler(UNNotificationPresentationOptionBanner);
   }
+  base::UmaHistogramEnumeration(kAppLaunchSource,
+                                AppLaunchSource::NOTIFICATION);
 }
 
 #pragma mark - PushNotificationDelegate
 
 - (UIBackgroundFetchResult)applicationWillProcessIncomingRemoteNotification:
     (NSDictionary*)userInfo {
+  [self recordLifeCycleEvent:PushNotificationLifecycleEvent::
+                                 kNotificationReception];
+
   double incomingNotificationTime = base::Time::Now().ToDoubleT();
   auto* clientManager = GetApplicationContext()
                             ->GetPushNotificationService()
@@ -131,7 +152,7 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
       clientManager->HandleNotificationReception(userInfo);
 
   double processingTime =
-      incomingNotificationTime - base::Time::Now().ToDoubleT();
+      base::Time::Now().ToDoubleT() - incomingNotificationTime;
   UmaHistogramCustomTimes(
       "IOS.PushNotification.IncomingNotificationProcessingTime",
       base::Milliseconds(processingTime),
@@ -193,6 +214,11 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
           ->GetPushNotificationClientManager();
   DCHECK(clientManager);
   clientManager->OnSceneActiveForegroundBrowserReady();
+}
+
+#pragma mark - Private
+- (void)recordLifeCycleEvent:(PushNotificationLifecycleEvent)event {
+  base::UmaHistogramEnumeration(kLifecycleEventsHistogram, event);
 }
 
 @end

@@ -117,14 +117,20 @@ class FixedArray {
       (N == kFixedArrayUseDefault ? kInlineBytesDefault / sizeof(value_type)
                                   : static_cast<size_type>(N));
 
-  FixedArray(
-      const FixedArray& other,
-      const allocator_type& a = allocator_type()) noexcept(NoexceptCopyable())
+  FixedArray(const FixedArray& other) noexcept(NoexceptCopyable())
+      : FixedArray(other,
+                   AllocatorTraits::select_on_container_copy_construction(
+                       other.storage_.alloc())) {}
+
+  FixedArray(const FixedArray& other,
+             const allocator_type& a) noexcept(NoexceptCopyable())
       : FixedArray(other.begin(), other.end(), a) {}
 
-  FixedArray(
-      FixedArray&& other,
-      const allocator_type& a = allocator_type()) noexcept(NoexceptMovable())
+  FixedArray(FixedArray&& other) noexcept(NoexceptMovable())
+      : FixedArray(std::move(other), other.storage_.alloc()) {}
+
+  FixedArray(FixedArray&& other,
+             const allocator_type& a) noexcept(NoexceptMovable())
       : FixedArray(std::make_move_iterator(other.begin()),
                    std::make_move_iterator(other.end()), a) {}
 
@@ -480,6 +486,9 @@ class FixedArray {
     StorageElement* begin() const { return data_; }
     StorageElement* end() const { return begin() + size(); }
     allocator_type& alloc() { return size_alloc_.template get<1>(); }
+    const allocator_type& alloc() const {
+      return size_alloc_.template get<1>();
+    }
 
    private:
     static bool UsingInlinedStorage(size_type n) {

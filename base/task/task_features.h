@@ -40,7 +40,11 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kDelayFirstWorkerWake);
 // Under this feature, a non-zero leeway is added to delayed tasks. Along with
 // DelayPolicy, this affects the time at which a delayed task runs.
 BASE_EXPORT BASE_DECLARE_FEATURE(kAddTaskLeewayFeature);
+#if BUILDFLAG(IS_WIN)
+constexpr TimeDelta kDefaultLeeway = Milliseconds(16);
+#else
 constexpr TimeDelta kDefaultLeeway = Milliseconds(8);
+#endif  // #if !BUILDFLAG(IS_WIN)
 extern const BASE_EXPORT base::FeatureParam<TimeDelta> kTaskLeewayParam;
 
 // Under this feature, wake ups are aligned at a 8ms boundary when allowed per

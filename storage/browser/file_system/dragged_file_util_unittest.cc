@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
@@ -248,7 +249,7 @@ class DraggedFileUtilTest : public testing::Test {
           continue;
         }
         base::FilePath relative = GetRelativeVirtualPath(root2, url2);
-        EXPECT_TRUE(file_set1.find(relative) != file_set1.end());
+        EXPECT_TRUE(base::Contains(file_set1, relative));
         VerifyFilesHaveSameContent(url1, url2);
       }
     }
@@ -271,7 +272,7 @@ class DraggedFileUtilTest : public testing::Test {
 
       // We create the test case files under one of the kRootPaths
       // to simulate a drop with multiple directories.
-      if (toplevel_root_map_.find(toplevel) == toplevel_root_map_.end()) {
+      if (!base::Contains(toplevel_root_map_, toplevel)) {
         base::FilePath root = root_path().Append(
             kRootPaths[(root_path_index++) % std::size(kRootPaths)]);
         toplevel_root_map_[toplevel] = root;

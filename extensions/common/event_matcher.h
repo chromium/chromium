@@ -30,25 +30,31 @@ class EventMatcher {
   // into consideration any URL criteria.
   bool MatchNonURLCriteria(const mojom::EventFilteringInfo& event_info) const;
 
+  // Retrieves the number of specified URL filters.
   int GetURLFilterCount() const;
+
+  // Retrieves the URL filter at the index `i`.
   const base::Value::Dict* GetURLFilter(int i);
 
-  int GetWindowTypeCount() const;
-  bool GetWindowType(int i, std::string* window_type_out) const;
-
-  std::string GetServiceTypeFilter() const;
-
+  // Returns true if there are any specified URL filters.
   bool HasURLFilters() const;
 
-  bool HasWindowTypes() const;
-
-  int GetInstanceID() const;
-
-  int GetRoutingID() const;
-
   base::Value::Dict* value() const { return filter_.get(); }
+  int routing_id() const { return routing_id_; }
 
  private:
+  // Returns the number of specified window types in the filter.
+  int GetWindowTypeCount() const;
+  // Populates `window_type_out` with the window type at index `i`,
+  // return true if successful.
+  bool GetWindowType(int i, std::string* window_type_out) const;
+  // Returns the filter for service type, if one exists. Otherwise, returns
+  // an empty string.
+  std::string GetServiceTypeFilter() const;
+  // Returns the specified instance ID in the filter, or 0 if none was
+  // specified.
+  int GetInstanceID() const;
+
   // Contains a dictionary that corresponds to a single event filter, eg:
   //
   // {url: [{hostSuffix: 'google.com'}]}

@@ -7,8 +7,8 @@
 #include "base/containers/contains.h"
 #include "base/rand_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/ash/components/nearby/presence/conversions/proto_conversions.h"
 #include "chromeos/ash/components/nearby/presence/credentials/prefs.h"
-#include "chromeos/ash/components/nearby/presence/credentials/proto_conversions.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -93,6 +93,8 @@ std::string LocalDeviceDataProviderImpl::GetDeviceId() {
 }
 
 std::string LocalDeviceDataProviderImpl::GetDeviceName() const {
+  // TODO(b/283987579): When NP Settings page is implemented, check for any
+  // changes to the user set device name.
   std::u16string device_type = ui::GetChromeOSDeviceName();
 
   const CoreAccountInfo account_info =
@@ -126,7 +128,7 @@ std::string LocalDeviceDataProviderImpl::GetDeviceName() const {
 
   // `mac_address` is empty for Nearby Presence MVP on ChromeOS since
   // broadcasting is not supported.
-  return BuildMetadata(
+  return proto::BuildMetadata(
       /*device_type=*/::nearby::internal::DeviceType::DEVICE_TYPE_CHROMEOS,
       /*account_name=*/GetAccountName(),
       /*device_name=*/GetDeviceName(),
@@ -150,17 +152,25 @@ void LocalDeviceDataProviderImpl::SaveUserRegistrationInfo(
   pref_service_->SetString(prefs::kNearbyPresenceProfileUrlPrefName, image_url);
 }
 
-bool LocalDeviceDataProviderImpl::IsUserRegistrationInfoSaved() {
+bool LocalDeviceDataProviderImpl::IsRegistrationCompleteAndUserInfoSaved() {
   // The user name pref and image url are set during first time registration
   // flow with the server. If they are not set, that means that the first time
   // registration flow (and therefore Nearby Presence initialization) has not
   // occurred. These fields are both set in the same step via
-  // |SaveUserRegistrationInfo|.
+  // |SaveUserRegistrationInfo|. Additionally, check for the full
+  // registration flow to be completed.
   std::string user_name =
       pref_service_->GetString(prefs::kNearbyPresenceUserNamePrefName);
   std::string image_url =
       pref_service_->GetString(prefs::kNearbyPresenceProfileUrlPrefName);
-  return (!user_name.empty() && !image_url.empty());
+  bool registration_complete = pref_service_->GetBoolean(
+      prefs::kNearbyPresenceFirstTimeRegistrationComplete);
+  return (!user_name.empty() && !image_url.empty()) && registration_complete;
+}
+
+void LocalDeviceDataProviderImpl::SetRegistrationComplete(bool completed) {
+  pref_service_->SetBoolean(prefs::kNearbyPresenceFirstTimeRegistrationComplete,
+                            completed);
 }
 
 }  // namespace ash::nearby::presence

@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.ContentFeatureMap;
 
 /**
  * Util class for site settings UI.
@@ -68,7 +69,7 @@ public class SiteSettingsUtil {
         for (@ContentSettingsType int setting : CHOOSER_PERMISSIONS) {
             for (@ContentSettingsType int type : types) {
                 if (type == ContentSettingsType.BLUETOOTH_CHOOSER_DATA
-                        && !ContentFeatureList.isEnabled(
+                        && !ContentFeatureMap.isEnabled(
                                 ContentFeatureList.WEB_BLUETOOTH_NEW_PERMISSIONS_BACKEND)) {
                     continue;
                 }
@@ -84,7 +85,7 @@ public class SiteSettingsUtil {
      * @return whether the flag for the improved UI for "All sites" and "Site settings" is enabled.
      */
     public static boolean isSiteDataImprovementEnabled() {
-        return SiteSettingsFeatureList.isEnabled(SiteSettingsFeatureList.SITE_DATA_IMPROVEMENTS);
+        return SiteSettingsFeatureMap.isEnabled(SiteSettingsFeatureList.SITE_DATA_IMPROVEMENTS);
     }
 
     /**

@@ -9,11 +9,13 @@
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/logging_chrome.h"
 #include "chrome/common/webui_url_constants.h"
@@ -114,6 +116,16 @@ class DeprecatedAppsDialogViewBrowserTest
     if (test_dialog_view_)
       return true;
     return false;
+  }
+
+  base::StringPiece ClickDeprecatedDialogLinkString() {
+    if (base::FeatureList::IsEnabled(features::kDesktopPWAsAppHomePage)) {
+      return "document.querySelector('body > "
+             "deprecated-apps-link').shadowRoot.querySelector('#deprecated-"
+             "apps-link').click()";
+    } else {
+      return "document.getElementById('deprecated-apps-link').click()";
+    }
   }
 
   void WaitForDialogToBeDestroyed() {
@@ -267,9 +279,7 @@ IN_PROC_BROWSER_TEST_P(DeprecatedAppsDialogViewBrowserTest,
       ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIAppsURL)));
   auto waiter = views::NamedWidgetShownWaiter(
       views::test::AnyWidgetTestPasskey{}, "DeprecatedAppsDialogView");
-  web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-      u"document.getElementById('deprecated-apps-link').click()",
-      base::NullCallback());
+  content::EvalJs(web_contents, ClickDeprecatedDialogLinkString());
   EXPECT_NE(waiter.WaitIfNeededAndGet(), nullptr);
 }
 

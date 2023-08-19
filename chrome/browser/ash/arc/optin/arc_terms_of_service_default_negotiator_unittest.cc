@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "ash/components/arc/arc_prefs.h"
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/functional/bind.h"
 #include "base/hash/sha1.h"
 #include "base/run_loop.h"
@@ -367,9 +369,27 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, Accept) {
   profile()->GetTestingPrefService()->SetManagedPref(
       prefs::kArcBackupRestoreEnabled, std::make_unique<base::Value>(false));
   EXPECT_FALSE(fake_arc_support()->backup_and_restore_mode());
+  if (base::FeatureList::IsEnabled(ash::features::kCrosPrivacyHub)) {
+    profile()->GetTestingPrefService()->SetBoolean(
+        ash::prefs::kUserGeolocationAllowed, false);
+  }
   profile()->GetTestingPrefService()->SetManagedPref(
       prefs::kArcLocationServiceEnabled, std::make_unique<base::Value>(false));
   EXPECT_FALSE(fake_arc_support()->location_service_mode());
+
+  if (base::FeatureList::IsEnabled(ash::features::kCrosPrivacyHub)) {
+    // Toggle kArcLocationServiceEnabled to trigger the computation again as we
+    // are listening on it. Now even with kArcLocationServiceEnabled false, we
+    // should still get true as we will now honor kUserGeolocationAllowed.
+    profile()->GetTestingPrefService()->SetBoolean(
+        ash::prefs::kUserGeolocationAllowed, true);
+    profile()->GetTestingPrefService()->SetManagedPref(
+        prefs::kArcLocationServiceEnabled, std::make_unique<base::Value>(true));
+    profile()->GetTestingPrefService()->SetManagedPref(
+        prefs::kArcLocationServiceEnabled,
+        std::make_unique<base::Value>(false));
+    EXPECT_TRUE(fake_arc_support()->location_service_mode());
+  }
 
   // The managed preference values are removed, and the corresponding checkboxes
   // are checked again.
@@ -378,6 +398,8 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, Accept) {
   EXPECT_TRUE(fake_arc_support()->backup_and_restore_mode());
   profile()->GetTestingPrefService()->RemoveManagedPref(
       prefs::kArcLocationServiceEnabled);
+  // When CrosPrivacyHub is enabled this is true as we set
+  // kUserGeolocationAllowed to be true.
   EXPECT_TRUE(fake_arc_support()->location_service_mode());
 
   // Make sure preference values are not yet updated.
@@ -400,6 +422,48 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, Accept) {
       profile()->GetPrefs()->GetBoolean(prefs::kArcBackupRestoreEnabled));
   EXPECT_TRUE(
       profile()->GetPrefs()->GetBoolean(prefs::kArcLocationServiceEnabled));
+}
+
+TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, AcceptWithLocationDisabled) {
+  if (base::FeatureList::IsEnabled(ash::features::kCrosPrivacyHub)) {
+    profile()->GetTestingPrefService()->SetBoolean(
+        prefs::kArcInitialLocationSettingSyncRequired, true);
+    profile()->GetTestingPrefService()->SetBoolean(
+        ash::prefs::kUserGeolocationAllowed, true);
+  }
+
+  // Show Terms of service page.
+  Status status = Status::PENDING;
+  negotiator()->StartNegotiation(UpdateStatusCallback(&status));
+
+  // TERMS page should be shown.
+  EXPECT_EQ(status, Status::PENDING);
+  EXPECT_EQ(fake_arc_support()->ui_page(), ArcSupportHost::UIPage::TERMS);
+
+  // Emulate showing of a ToS page with a hard-coded ToS.
+  fake_arc_support()->set_tos_content(kFakeToSContent);
+  fake_arc_support()->set_tos_shown(true);
+
+  fake_arc_support()->set_location_service_mode(false);
+
+  // Click the "AGREE" button so that the callback should be invoked
+  // with |agreed| = true.
+  fake_arc_support()->ClickAgreeButton();
+
+  // Wait until async calls are all completed, which is triggered by ownership
+  // status being loaded.
+  LoadOwnershipStatus();
+  EXPECT_EQ(status, Status::ACCEPTED);
+
+  // Make sure preference values are now updated.
+  EXPECT_FALSE(
+      profile()->GetPrefs()->GetBoolean(prefs::kArcLocationServiceEnabled));
+  if (base::FeatureList::IsEnabled(ash::features::kCrosPrivacyHub)) {
+    EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(
+        prefs::kArcInitialLocationSettingSyncRequired));
+    EXPECT_FALSE(
+        profile()->GetPrefs()->GetBoolean(ash::prefs::kUserGeolocationAllowed));
+  }
 }
 
 TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, AcceptWithUnchecked) {
@@ -503,7 +567,7 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, AcceptMetricsNoOwner) {
   LoadOwnershipStatus();
   EXPECT_EQ(status, Status::ACCEPTED);
   EXPECT_EQ(ash::DeviceSettingsService::Get()->GetOwnershipStatus(),
-            OwnershipStatus::OWNERSHIP_NONE);
+            OwnershipStatus::kOwnershipNone);
   EXPECT_EQ(expected_metrics_state,
             ash::StatsReportingController::Get()->IsEnabled());
 }
@@ -526,7 +590,7 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorForNonOwnerTest,
   // is probably setup.
   LoadOwnershipStatus();
   EXPECT_EQ(ash::DeviceSettingsService::Get()->GetOwnershipStatus(),
-            OwnershipStatus::OWNERSHIP_TAKEN);
+            OwnershipStatus::kOwnershipTaken);
   EXPECT_TRUE(ash::StatsReportingController::Get()->IsEnabled());
   EXPECT_FALSE(user_manager::UserManager::Get()->IsCurrentUserOwner());
 

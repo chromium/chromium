@@ -10,7 +10,7 @@ namespace features {
 
 BASE_FEATURE(kSlimCompositor,
              "SlimCompositor",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsSlimCompositorEnabled() {
   return base::FeatureList::IsEnabled(kSlimCompositor);

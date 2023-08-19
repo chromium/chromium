@@ -10,10 +10,14 @@
 #include "base/component_export.h"
 #include "base/strings/string_piece_forward.h"
 #include "net/http/structured_headers.h"
-
-class GURL;
+#include "url/gurl.h"
 
 namespace attribution_reporting {
+
+struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) OsRegistrationItem {
+  GURL url;
+  bool debug_reporting = false;
+};
 
 // Parses an Attribution-Reporting-OS-Source or
 // Attribution-Reporting-Register-OS-Trigger header.
@@ -26,11 +30,11 @@ namespace attribution_reporting {
 //
 // "https://x.test/abc", "https://y.test/123"
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-std::vector<GURL> ParseOsSourceOrTriggerHeader(base::StringPiece);
+std::vector<OsRegistrationItem> ParseOsSourceOrTriggerHeader(base::StringPiece);
 
 // Same as the above, but using an already-parsed structured-header list.
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-std::vector<GURL> ParseOsSourceOrTriggerHeader(
+std::vector<OsRegistrationItem> ParseOsSourceOrTriggerHeader(
     const net::structured_headers::List&);
 
 }  // namespace attribution_reporting

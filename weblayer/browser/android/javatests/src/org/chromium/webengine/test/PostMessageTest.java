@@ -15,6 +15,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.EmbeddedTestServerRule;
@@ -146,6 +147,7 @@ public class PostMessageTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1457935")
     public void postMessageTargetOriginIsRespected() throws Exception {
         runOnUiThreadBlocking(() -> mTab.postMessage("hello", mTestServerRule.getOrigin()));
         Assert.assertEquals("postMessage: 1", waitForTitleChange());

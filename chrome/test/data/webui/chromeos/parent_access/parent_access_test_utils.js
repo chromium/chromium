@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ExtensionApprovalsParams, ExtensionPermissions, ParentAccessParams, ParentAccessParams_FlowType, WebApprovalsParams} from 'chrome://parent-access/parent_access_ui.mojom-webui.js';
+import {ExtensionApprovalsParams, ExtensionPermission, ParentAccessParams, ParentAccessParams_FlowType, WebApprovalsParams} from 'chrome://parent-access/parent_access_ui.mojom-webui.js';
 
 function strToMojoString16(str) {
   return {data: str.split('').map(ch => ch.charCodeAt(0))};
@@ -38,14 +38,14 @@ export function buildExtensionApprovalsParamsWithPermissions(
   extensionApprovalsParams.iconPngBytes = [];
   extensionApprovalsParams.childDisplayName = strToMojoString16('Child Name');
 
-  const permissions = new ExtensionPermissions();
-  permissions.permissions = [strToMojoString16('permission')];
+  const permission = new ExtensionPermission();
+  permission.permission = strToMojoString16('permission');
   if (hasDetails) {
-    permissions.details = [strToMojoString16('details')];
+    permission.details = strToMojoString16('details');
   } else {
-    permissions.details = [];
+    permission.details = strToMojoString16('');
   }
-  extensionApprovalsParams.permissions = permissions;
+  extensionApprovalsParams.permissions = [permission];
 
   parentAccessParams.flowTypeParams = {extensionApprovalsParams};
   return parentAccessParams;
@@ -65,11 +65,7 @@ export function buildExtensionApprovalsParamsWithoutPermissions(
   extensionApprovalsParams.extensionName = strToMojoString16('Extension name');
   extensionApprovalsParams.iconPngBytes = [];
   extensionApprovalsParams.childDisplayName = strToMojoString16('Child Name');
-
-  const permissions = new ExtensionPermissions();
-  permissions.permissions = [];
-  permissions.details = [];
-  extensionApprovalsParams.permissions = permissions;
+  extensionApprovalsParams.permissions = [];
 
   parentAccessParams.flowTypeParams = {extensionApprovalsParams};
   return parentAccessParams;

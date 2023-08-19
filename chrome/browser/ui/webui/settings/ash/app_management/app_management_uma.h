@@ -28,7 +28,8 @@ enum class AppManagementEntryPoint {
   kNotificationPluginVm = 12,
   kAppManagementMainViewBorealis = 13,
   kPageInfoView = 14,
-  kMaxValue = kPageInfoView,
+  kPrivacyIndicatorsNotificationSettings = 15,
+  kMaxValue = kPrivacyIndicatorsNotificationSettings,
 };
 
 }  // namespace settings

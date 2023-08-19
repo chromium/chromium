@@ -7,8 +7,9 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
-#include "chrome/browser/apps/app_service/app_icon/app_icon_util.h"
+#include "chrome/browser/apps/app_service/app_icon/icon_effects.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/profiles/profile.h"
@@ -38,14 +39,6 @@ using apps::IconEffects;
 
 namespace web_app {
 
-namespace {
-
-bool ShouldObserveMediaRequests() {
-  return true;
-}
-
-}  // namespace
-
 WebApps::WebApps(apps::AppServiceProxy* proxy)
     : apps::AppPublisher(proxy),
       profile_(proxy->profile()),
@@ -53,10 +46,7 @@ WebApps::WebApps(apps::AppServiceProxy* proxy)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       instance_registry_(&proxy->InstanceRegistry()),
 #endif
-      publisher_helper_(profile_,
-                        provider_,
-                        this,
-                        ShouldObserveMediaRequests()) {
+      publisher_helper_(profile_, provider_, this) {
   Initialize();
 }
 
@@ -256,10 +246,10 @@ void WebApps::PublishWebApps(std::vector<apps::AppPtr> apps) {
                               /*should_notify_initialized=*/false);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  const WebApp* web_app = GetWebApp(ash::kChromeUITrustedProjectorSwaAppId);
+  const WebApp* web_app = GetWebApp(ash::kChromeUIUntrustedProjectorSwaAppId);
   if (web_app) {
     proxy()->SetSupportedLinksPreference(
-        ash::kChromeUITrustedProjectorSwaAppId);
+        ash::kChromeUIUntrustedProjectorSwaAppId);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
@@ -270,7 +260,7 @@ void WebApps::PublishWebApp(apps::AppPtr app) {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  bool is_projector = app->app_id == ash::kChromeUITrustedProjectorSwaAppId;
+  bool is_projector = app->app_id == ash::kChromeUIUntrustedProjectorSwaAppId;
 #endif
 
   apps::AppPublisher::Publish(std::move(app));
@@ -282,7 +272,7 @@ void WebApps::PublishWebApp(apps::AppPtr app) {
     // after the intent filter has been registered, we need this call for the
     // OOBE case.
     proxy()->SetSupportedLinksPreference(
-        ash::kChromeUITrustedProjectorSwaAppId);
+        ash::kChromeUIUntrustedProjectorSwaAppId);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
@@ -306,6 +296,7 @@ std::vector<apps::AppPtr> WebApps::CreateWebApps() {
 }
 
 void WebApps::InitWebApps() {
+  TRACE_EVENT0("ui", "WebApps::InitWebApps");
   is_ready_ = true;
 
   RegisterPublisher(app_type());

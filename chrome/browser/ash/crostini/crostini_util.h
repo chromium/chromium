@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/ash/crostini/crostini_simple_types.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
@@ -18,8 +17,6 @@
 #include "chrome/browser/ash/guest_os/public/types.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_service.pb.h"
 #include "components/services/app_service/public/cpp/intent.h"
-#include "storage/browser/file_system/file_system_url.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace aura {
@@ -76,8 +73,6 @@ bool ShouldAllowContainerUpgrade(Profile* profile);
 // the configuration specified by CrostiniAnsiblePlaybook user policy.
 bool ShouldConfigureDefaultContainer(Profile* profile);
 
-using LaunchArg = absl::variant<storage::FileSystemURL, std::string>;
-
 // Launch a Crostini App with a given set of files, given as absolute paths in
 // the container. For apps which can only be launched with a single file,
 // launch multiple instances.
@@ -85,7 +80,7 @@ void LaunchCrostiniApp(
     Profile* profile,
     const std::string& app_id,
     int64_t display_id,
-    const std::vector<LaunchArg>& args = {},
+    const std::vector<guest_os::LaunchArg>& args = {},
     guest_os::launcher::SuccessCallback callback = base::DoNothing());
 
 void LaunchCrostiniAppWithIntent(
@@ -93,7 +88,7 @@ void LaunchCrostiniAppWithIntent(
     const std::string& app_id,
     int64_t display_id,
     apps::IntentPtr intent,
-    const std::vector<LaunchArg>& args = {},
+    const std::vector<guest_os::LaunchArg>& args = {},
     guest_os::launcher::SuccessCallback callback = base::DoNothing());
 
 // Determine features to enable in the container on app/terminal launches.
@@ -140,9 +135,6 @@ void SetContainerBadgeColor(Profile* profile,
 
 bool IsContainerVersionExpired(Profile* profile,
                                const guest_os::GuestId& container_id);
-
-bool ShouldWarnAboutExpiredVersion(Profile* profile,
-                                   const guest_os::GuestId& container_id);
 
 const guest_os::GuestId& DefaultContainerId();
 

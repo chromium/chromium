@@ -14,7 +14,7 @@ import '//resources/cr_elements/cr_shared_vars.css.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
-import {mojoString16ToString} from '//resources/ash/common/mojo_utils.js';
+import {mojoString16ToString} from '//resources/js/mojo_type_util.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {HelpContent, HelpContentList, HelpContentType, SearchResult} from './feedback_types.js';

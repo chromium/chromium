@@ -160,7 +160,8 @@ class VpnDetailedViewTest : public AshTestBase,
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<FakeDetailedViewDelegate> delegate_;
-  raw_ptr<VpnDetailedView, ExperimentalAsh> vpn_detailed_view_ = nullptr;
+  raw_ptr<VpnDetailedView, DanglingUntriaged | ExperimentalAsh>
+      vpn_detailed_view_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(QsRevamp, VpnDetailedViewTest, testing::Bool());

@@ -20,6 +20,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
@@ -172,6 +173,9 @@ AuthenticatorRequestSheetView::CreateContentsBelowIllustration() {
     title_label->SetMultiLine(true);
     title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     title_label->SetAllowCharacterBreak(true);
+    if (features::IsChromeRefresh2023()) {
+      title_label->SetTextStyle(views::style::STYLE_HEADLINE_4);
+    }
     label_container->AddChildView(title_label.release());
   }
 

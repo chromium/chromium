@@ -8,7 +8,7 @@
 #include "base/android/jni_string.h"
 #include "content/browser/android/content_startup_flags.h"
 #include "content/browser/browser_main_loop.h"
-#include "content/public/android/content_jni_headers/BrowserStartupControllerImpl_jni.h"
+#include "content/public/android/content_main_dex_jni/BrowserStartupControllerImpl_jni.h"
 
 using base::android::JavaParamRef;
 

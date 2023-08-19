@@ -25,13 +25,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) FakeImeKeyboard : public ImeKeyboard {
 
   bool SetCurrentKeyboardLayoutByName(const std::string& layout_name) override;
   bool SetAutoRepeatRate(const AutoRepeatRate& rate) override;
-  bool SetAutoRepeatEnabled(bool enabled) override;
+  void SetAutoRepeatEnabled(bool enabled) override;
   bool GetAutoRepeatEnabled() override;
-  bool ReapplyCurrentKeyboardLayout() override;
-  void ReapplyCurrentModifierLockStatus() override;
-  void DisableNumLock() override;
-  bool IsISOLevel5ShiftAvailable() const override;
-  bool IsAltGrAvailable() const override;
 
   int set_current_keyboard_layout_by_name_count_;
   AutoRepeatRate last_auto_repeat_rate_;

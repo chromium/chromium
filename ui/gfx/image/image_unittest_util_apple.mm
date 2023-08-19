@@ -6,18 +6,14 @@
 
 #import <CoreGraphics/CoreGraphics.h>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/bit_cast.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_MAC)
 #import <AppKit/AppKit.h>
 #elif BUILDFLAG(IS_IOS)
 #import <UIKit/UIKit.h>
-#endif
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
 #endif
 
 namespace gfx::test {

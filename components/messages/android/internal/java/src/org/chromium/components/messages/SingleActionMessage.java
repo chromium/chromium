@@ -39,6 +39,7 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
     private final PropertyModel mModel;
     private final DismissCallback mDismissHandler;
     private final Supplier<Long> mAutodismissDurationMs;
+    private final Supplier<Integer> mTopOffsetSupplier;
     private final Supplier<Integer> mMaxTranslationSupplier;
     private final SwipeAnimationHandler mSwipeAnimationHandler;
     private boolean mMessageDismissed;
@@ -47,24 +48,27 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
     private long mMessageShownTime;
 
     /**
+
      * @param container The container holding messages.
      * @param model The PropertyModel with {@link MessageBannerProperties#ALL_KEYS}.
      * @param dismissHandler The {@link DismissCallback} able to dismiss a message by given property
-     *         model.
-     * @param autodismissDurationMs A {@link MessageAutodismissDurationProvider} providing
-     *         autodismiss duration for message banner. The actual duration can be extended by
-     *         clients.
-     * @param maxTranslationSupplier A {@link Supplier} that supplies the maximum translation Y
-     * @param swipeAnimationHandler The Handler that will be used by the message banner to
-     *         delegate starting custom swiping animations to the {@link WindowAndroid}.
+     * model.
+     * @param maxTranslationSupplier A {@link Supplier} that supplies the maximum translation Y.
+     * @param topOffsetSupplier A {@link Supplier} that supplies the message's top offset.
+     * @param autodismissDurationProvider A {@link MessageAutodismissDurationProvider} providing
+     * autodismiss duration for message banner. The actual duration can be extended by clients.
+     * @param swipeAnimationHandler The Handler that will be used by the message banner to delegate
+     * starting custom swiping animations to the {@link WindowAndroid}.
      */
     public SingleActionMessage(MessageContainer container, PropertyModel model,
             DismissCallback dismissHandler, Supplier<Integer> maxTranslationSupplier,
+            Supplier<Integer> topOffsetSupplier,
             MessageAutodismissDurationProvider autodismissDurationProvider,
             SwipeAnimationHandler swipeAnimationHandler) {
         mModel = model;
         mContainer = container;
         mDismissHandler = dismissHandler;
+        mTopOffsetSupplier = topOffsetSupplier;
         mMaxTranslationSupplier = maxTranslationSupplier;
         mSwipeAnimationHandler = swipeAnimationHandler;
 
@@ -95,10 +99,9 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
             mView = (MessageBannerView) LayoutInflater.from(mContainer.getContext())
                             .inflate(R.layout.message_banner_view, mContainer, false);
             mMessageBanner = new MessageBannerCoordinator(mView, mModel, mMaxTranslationSupplier,
-                    mContainer.getResources(),
-                    // clang-format off
-                    () -> { mDismissHandler.invoke(mModel, DismissReason.GESTURE); },
-                    // clang-format on
+                    mTopOffsetSupplier, mContainer.getResources(),
+                    ()
+                            -> { mDismissHandler.invoke(mModel, DismissReason.GESTURE); },
                     mSwipeAnimationHandler, mAutodismissDurationMs,
                     () -> { mDismissHandler.invoke(mModel, DismissReason.TIMER); });
         }
@@ -204,22 +207,18 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
         return mAutodismissDurationMs.get();
     }
 
-    @VisibleForTesting
     void setMessageBannerForTesting(MessageBannerCoordinator messageBanner) {
         mMessageBanner = messageBanner;
     }
 
-    @VisibleForTesting
     void setViewForTesting(MessageBannerView view) {
         mView = view;
     }
 
-    @VisibleForTesting
     boolean getMessageDismissedForTesting() {
         return mMessageDismissed;
     }
 
-    @VisibleForTesting
     PropertyModel getModelForTesting() {
         return mModel;
     }

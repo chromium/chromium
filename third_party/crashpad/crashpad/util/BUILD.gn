@@ -19,7 +19,7 @@ if (crashpad_is_in_chromium) {
   import("//build/config/sanitizers/sanitizers.gni")
 }
 
-if (crashpad_is_mac || crashpad_is_ios) {
+if (crashpad_is_apple) {
   if (crashpad_is_in_chromium || crashpad_is_in_fuchsia) {
     import("//build/config/sysroot.gni")
   } else {
@@ -205,7 +205,6 @@ crashpad_static_library("util") {
     "misc/address_sanitizer.h",
     "misc/address_types.h",
     "misc/arraysize.h",
-    "misc/as_underlying_type.h",
     "misc/capture_context.h",
     "misc/clock.h",
     "misc/elf_note_types.h",
@@ -325,7 +324,7 @@ crashpad_static_library("util") {
     }
   }
 
-  if (crashpad_is_mac || crashpad_is_ios) {
+  if (crashpad_is_apple) {
     sources += [
       "mac/xattr.cc",
       "mac/xattr.h",
@@ -409,10 +408,10 @@ crashpad_static_library("util") {
       "ios/raw_logging.h",
       "ios/scoped_background_task.h",
       "ios/scoped_background_task.mm",
-      "ios/scoped_vm_read.cc",
-      "ios/scoped_vm_read.h",
       "ios/scoped_vm_map.cc",
       "ios/scoped_vm_map.h",
+      "ios/scoped_vm_read.cc",
+      "ios/scoped_vm_read.h",
     ]
   }
 
@@ -563,11 +562,12 @@ crashpad_static_library("util") {
       "fuchsia/scoped_task_suspend.cc",
       "fuchsia/scoped_task_suspend.h",
       "fuchsia/traits.h",
-      "misc/capture_context_fuchsia.S",
       "misc/paths_fuchsia.cc",
       "process/process_memory_fuchsia.cc",
       "process/process_memory_fuchsia.h",
     ]
+
+    sources -= [ "misc/capture_context.h" ]
   }
 
   public_configs = [ "..:crashpad_config" ]
@@ -593,13 +593,12 @@ crashpad_static_library("util") {
 
   configs = [ "../build:flock_always_supported_defines" ]
 
-  if (crashpad_is_mac || crashpad_is_ios) {
+  if (crashpad_is_apple) {
     include_dirs += [ "$root_gen_dir" ]
-    deps += [ ":mig_output" ]
-  }
-
-  if (crashpad_is_ios) {
-    deps += [ "../build:ios_enable_arc" ]
+    deps += [
+      ":mig_output",
+      "../build:apple_enable_arc",
+    ]
   }
 
   if (crashpad_is_mac && !crashpad_is_in_fuchsia) {
@@ -659,6 +658,10 @@ crashpad_static_library("net") {
     ":util",
     "$mini_chromium_source_parent:base",
   ]
+
+  if (crashpad_is_apple) {
+    deps += [ "../build:apple_enable_arc" ]
+  }
 
   if (crashpad_is_mac && !crashpad_is_in_fuchsia) {
     sources += [ "net/http_transport_mac.mm" ]
@@ -812,7 +815,7 @@ source_set("util_test") {
     sources += [ "posix/scoped_mmap_test.cc" ]
   }
 
-  if (crashpad_is_mac || crashpad_is_ios) {
+  if (crashpad_is_apple) {
     sources += [
       "mac/xattr_test.cc",
       "mach/composite_mach_message_server_test.cc",
@@ -848,8 +851,8 @@ source_set("util_test") {
     sources += [
       "ios/ios_intermediate_dump_reader_test.cc",
       "ios/ios_intermediate_dump_writer_test.cc",
-      "ios/scoped_vm_read_test.cc",
       "ios/scoped_vm_map_test.cc",
+      "ios/scoped_vm_read_test.cc",
     ]
 
     sources -= [
@@ -874,7 +877,10 @@ source_set("util_test") {
   }
 
   if (crashpad_is_fuchsia) {
-    sources += [ "misc/capture_context_test_util_fuchsia.cc" ]
+    sources -= [
+      "misc/capture_context_test.cc",
+      "misc/capture_context_test_util.h",
+    ]
   }
 
   if (crashpad_is_win) {
@@ -925,6 +931,10 @@ source_set("util_test") {
     if (crashpad_use_boringssl_for_http_transport_socket) {
       defines = [ "CRASHPAD_USE_BORINGSSL" ]
     }
+  }
+
+  if (crashpad_is_apple) {
+    deps += [ "../build:apple_enable_arc" ]
   }
 
   if (crashpad_is_mac) {

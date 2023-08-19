@@ -23,6 +23,9 @@ import './live_caption_section.js';
 
 import {CaptionsBrowserProxyImpl} from '/shared/settings/a11y_page/captions_browser_proxy.js';
 // </if>
+// <if expr="is_macosx">
+import {MacSystemSettingsBrowserProxyImpl} from '/shared/settings/mac_system_settings_browser_proxy.js';
+// </if>
 // clang-format on
 import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
@@ -40,7 +43,6 @@ import {getTemplate} from './a11y_page.html.js';
 import {LanguageHelper, LanguagesModel} from '../languages_page/languages_types.js';
 // </if>
 // clang-format on
-
 
 const SettingsA11yPageElementBase =
     WebUiListenerMixin(BaseMixin(PolymerElement));
@@ -154,6 +156,21 @@ class SettingsA11yPageElement extends SettingsA11yPageElementBase {
           return opensExternally;
         },
       },
+
+      /**
+       * Whether to show the overscroll history navigation setting.
+       */
+      showOverscrollHistoryNavigationToggle_: {
+        type: Boolean,
+        value: function() {
+          let showOverscroll = false;
+          // <if expr="is_win or is_linux or is_macosx">
+          showOverscroll = loadTimeData.getBoolean(
+              'overscrollHistoryNavigationSettingEnabled');
+          // </if>
+          return showOverscroll;
+        },
+      },
     };
   }
 
@@ -168,6 +185,7 @@ class SettingsA11yPageElement extends SettingsA11yPageElementBase {
   private showAccessibilityLabelsSetting_: boolean;
   private showPdfOcrToggle_: boolean;
   private captionSettingsOpensExternally_: boolean;
+  private showOverscrollHistoryNavigationToggle_: boolean;
 
 
   override ready() {
@@ -212,8 +230,6 @@ class SettingsA11yPageElement extends SettingsA11yPageElementBase {
   private onPdfOcrChange_(event: Event) {
     const pdfOcrOn = (event.target as SettingsToggleButtonElement).checked;
     if (pdfOcrOn) {
-      // TODO(crbug.com/1393069): Downloads a pdf ocr model if not yet
-      // downloaded.
       console.error(
           'Need to check a pdf ocr model and download it if necessary');
     }
@@ -248,6 +264,13 @@ class SettingsA11yPageElement extends SettingsA11yPageElementBase {
       Router.getInstance().navigateTo(routes.CAPTIONS);
     }
   }
+
+  // <if expr="is_macosx">
+  private onMacTrackpadGesturesLinkClick_() {
+    MacSystemSettingsBrowserProxyImpl.getInstance()
+        .openTrackpadGesturesSettings();
+  }
+  // </if>
 }
 
 customElements.define(SettingsA11yPageElement.is, SettingsA11yPageElement);

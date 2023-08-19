@@ -46,9 +46,10 @@ class PLATFORM_EXPORT FastSharedBufferReader final {
   DISALLOW_NEW();
 
  public:
-  FastSharedBufferReader(scoped_refptr<SegmentReader> data);
+  explicit FastSharedBufferReader(scoped_refptr<SegmentReader> data);
   FastSharedBufferReader(const FastSharedBufferReader&) = delete;
   FastSharedBufferReader& operator=(const FastSharedBufferReader&) = delete;
+  ~FastSharedBufferReader();
 
   void SetData(scoped_refptr<SegmentReader>);
 

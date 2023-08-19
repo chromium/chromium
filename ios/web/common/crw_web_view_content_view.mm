@@ -11,10 +11,6 @@
 #import "base/check.h"
 #import "base/notreached.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 // Background color RGB values for the content view which is displayed when the

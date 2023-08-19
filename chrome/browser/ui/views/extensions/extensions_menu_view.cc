@@ -27,12 +27,10 @@
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
-#include "ui/color/color_provider.h"
-#include "ui/gfx/color_utils.h"
-#include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/animation/ink_drop_host.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
@@ -168,18 +166,26 @@ void ExtensionsMenuView::Populate() {
       EXTENSIONS_SETTINGS_ID, l10n_util::GetStringUTF16(IDS_MANAGE_EXTENSIONS),
       base::BindRepeating(&chrome::ShowExtensions, browser_, std::string()));
 
+  ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
+  views::LayoutProvider* layout_provider = views::LayoutProvider::Get();
+
+  const gfx::Insets dialog_insets =
+      layout_provider->GetInsetsMetric(views::InsetsMetric::INSETS_DIALOG);
   // TODO(emiliapaz): Note that `DISTANCE_EXTENSIONS_MENU_ICON_SPACING` relies
   // on CreateBubbleMenuItem() using the same inset as
   // `DISTANCE_EXTENSIONS_MENU_BUTTON_MARGIN`.
-  ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
   const int icon_spacing =
       provider->GetDistanceMetric(DISTANCE_EXTENSIONS_MENU_ICON_SPACING);
-  footer->SetBorder(views::CreateEmptyBorder(
-      footer->GetInsets() + gfx::Insets::TLBR(0, icon_spacing, 0, 0)));
+
+  footer->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
+      footer->GetInsets().top(), dialog_insets.left() + icon_spacing)));
   footer->SetImageLabelSpacing(footer->GetImageLabelSpacing() + icon_spacing);
   footer->SetImageModel(views::Button::STATE_NORMAL,
                         ui::ImageModel::FromVectorIcon(
-                            vector_icons::kSettingsIcon, ui::kColorIcon,
+                            features::IsChromeRefresh2023()
+                                ? vector_icons::kSettingsChromeRefreshIcon
+                                : vector_icons::kSettingsIcon,
+                            ui::kColorIcon,
                             provider->GetDistanceMetric(
                                 DISTANCE_EXTENSIONS_MENU_BUTTON_ICON_SIZE)));
 
@@ -198,9 +204,17 @@ void ExtensionsMenuView::Populate() {
 
 std::unique_ptr<views::View>
 ExtensionsMenuView::CreateExtensionButtonsContainer() {
+  views::LayoutProvider* layout_provider = views::LayoutProvider::Get();
+  const gfx::Insets dialog_insets =
+      layout_provider->GetInsetsMetric(views::InsetsMetric::INSETS_DIALOG);
+
   auto extension_buttons = std::make_unique<views::View>();
   extension_buttons->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
+  // Horizontal dialog margins are added inside the scroll view contents to have
+  // the scroll bar by the dialog border.
+  extension_buttons->SetBorder(
+      views::CreateEmptyBorder(gfx::Insets::VH(0, dialog_insets.left())));
 
   auto create_section =
       [&extension_buttons](Section* section) {
@@ -208,10 +222,6 @@ ExtensionsMenuView::CreateExtensionButtonsContainer() {
         section->container = container.get();
         container->SetLayoutManager(std::make_unique<views::BoxLayout>(
             views::BoxLayout::Orientation::kVertical));
-
-        const int horizontal_spacing =
-            ChromeLayoutProvider::Get()->GetDistanceMetric(
-                views::DISTANCE_BUTTON_HORIZONTAL_PADDING);
 
         // Add an emphasized short header explaining the section.
         auto header = std::make_unique<views::Label>(
@@ -222,7 +232,7 @@ ExtensionsMenuView::CreateExtensionButtonsContainer() {
         header->SetBorder(views::CreateEmptyBorder(
             gfx::Insets::TLBR(ChromeLayoutProvider::Get()->GetDistanceMetric(
                                   DISTANCE_CONTROL_LIST_VERTICAL),
-                              horizontal_spacing, 0, horizontal_spacing)));
+                              0, 0, 0)));
         container->AddChildView(std::move(header));
 
         // Add longer text that explains the section in more detail.
@@ -232,8 +242,6 @@ ExtensionsMenuView::CreateExtensionButtonsContainer() {
             views::style::STYLE_PRIMARY);
         description->SetMultiLine(true);
         description->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-        description->SetBorder(views::CreateEmptyBorder(
-            gfx::Insets::TLBR(0, horizontal_spacing, 0, horizontal_spacing)));
         container->AddChildView(std::move(description));
 
         // Add a (currently empty) section for the menu items of the section.
@@ -306,7 +314,7 @@ void ExtensionsMenuView::CreateAndInsertNewItem(
   // be added to the view hierarchy, which takes ownership.
   auto* item = new ExtensionMenuItemView(
       browser_, std::move(controller),
-      extensions_container_->CanShowActionsInToolbar());
+      ToolbarActionsModel::CanShowActionsInToolbar(*browser_));
   extensions_menu_items_.insert(item);
   InsertMenuItem(item);
   // Sanity check that the item was added.

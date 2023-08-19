@@ -44,7 +44,7 @@
 #include "third_party/blink/renderer/core/css/style_color.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_sides.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
-#include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_outline_type.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
@@ -319,7 +319,10 @@ class ComputedStyle : public ComputedStyleBase,
  private:
   // TODO(sashab): Move these private members to the bottom of ComputedStyle.
   ALWAYS_INLINE ComputedStyle();
-  ALWAYS_INLINE ComputedStyle(const ComputedStyle&);
+  ALWAYS_INLINE ComputedStyle(const ComputedStyle& initial_style);
+  ALWAYS_INLINE ComputedStyle(const ComputedStyle& initial_style,
+                              const ComputedStyle& parent_style,
+                              ComputedStyleAccessFlags& access);
 
  public:
   using PassKey = base::PassKey<ComputedStyle>;
@@ -343,7 +346,11 @@ class ComputedStyle : public ComputedStyleBase,
     }
   }
 
-  ALWAYS_INLINE ComputedStyle(PassKey, const ComputedStyle&);
+  ALWAYS_INLINE ComputedStyle(PassKey, const ComputedStyle& initial_style);
+  ALWAYS_INLINE ComputedStyle(PassKey,
+                              const ComputedStyle& initial_style,
+                              const ComputedStyle& parent_style,
+                              ComputedStyleAccessFlags& access);
   ALWAYS_INLINE explicit ComputedStyle(PassKey);
 
   // Create the per-document/context singleton that is used for shallow-copying
@@ -511,11 +518,6 @@ class ComputedStyle : public ComputedStyleBase,
   // anchor-name
   bool AnchorNameDataEquivalent(const ComputedStyle& o) const {
     return base::ValuesEquivalent(AnchorName(), o.AnchorName());
-  }
-
-  // anchor-scroll
-  bool AnchorScrollDataEquivalent(const ComputedStyle& o) const {
-    return base::ValuesEquivalent(AnchorScroll(), o.AnchorScroll());
   }
 
   const FilterOperations& BackdropFilter() const {
@@ -733,11 +735,16 @@ class ComputedStyle : public ComputedStyleBase,
     return ScrollbarGutter() & kScrollbarGutterBothEdges;
   }
 
-  // ignore non-standard ::-webkit-scrollbar when standard properties are in use
+  bool UsesStandardScrollbarStyle() const {
+    return ScrollbarWidth() != EScrollbarWidth::kAuto ||
+           ScrollbarColor().has_value();
+  }
+
+  // Ignore non-standard ::-webkit-scrollbar when standard properties are in
+  // use.
   bool HasCustomScrollbarStyle() const {
     return HasPseudoElementStyle(kPseudoIdScrollbar) &&
-           ScrollbarWidth() == EScrollbarWidth::kAuto &&
-           ScrollbarColor() == absl::nullopt;
+           !UsesStandardScrollbarStyle();
   }
 
   // shape-outside (aka -webkit-shape-outside)
@@ -898,7 +905,6 @@ class ComputedStyle : public ComputedStyleBase,
   const AtomicString& Locale() const {
     return LayoutLocale::LocaleString(GetFontDescription().Locale());
   }
-  AtomicString LocaleForLineBreakIterator() const;
 
   // letter-spacing
   float LetterSpacing() const { return GetFontDescription().LetterSpacing(); }
@@ -918,9 +924,6 @@ class ComputedStyle : public ComputedStyleBase,
     return MarkerStartResource() || MarkerMidResource() || MarkerEndResource();
   }
 
-  // paint-order helper
-  EPaintOrderType PaintOrderType(unsigned index) const;
-
   // stroke helpers
   bool HasStroke() const { return !StrokePaint().IsNone(); }
   bool HasVisibleStroke() const {
@@ -936,6 +939,11 @@ class ComputedStyle : public ComputedStyleBase,
   // accent-color
   // An empty optional means the accent-color is 'auto'
   absl::optional<blink::Color> AccentColorResolved() const;
+
+  // scrollbar-color
+  // An empty optional means the scrollbar-color is 'auto'
+  absl::optional<blink::Color> ScrollbarThumbColorResolved() const;
+  absl::optional<blink::Color> ScrollbarTrackColorResolved() const;
 
   // Comparison operators
   // FIXME: Replace callers of operator== wth a named method instead, e.g.
@@ -1197,6 +1205,12 @@ class ComputedStyle : public ComputedStyleBase,
   const Length& UsedBottom() const {
     return AdjustLengthForAnchorQueries(Bottom(), Length::Auto());
   }
+  bool HasAutoAnchorPositioning() const {
+    return UsedLeft().HasAutoAnchorPositioning() ||
+           UsedRight().HasAutoAnchorPositioning() ||
+           UsedTop().HasAutoAnchorPositioning() ||
+           UsedBottom().HasAutoAnchorPositioning();
+  }
 
   // Width/height utility functions.
   const Length& UsedWidth() const {
@@ -1247,12 +1261,6 @@ class ComputedStyle : public ComputedStyleBase,
   const Length& MarginAfter() const { return MarginAfterUsing(*this); }
   const Length& MarginStart() const { return MarginStartUsing(*this); }
   const Length& MarginEnd() const { return MarginEndUsing(*this); }
-  const Length& MarginOver() const {
-    return PhysicalMarginToLogical(*this).Over();
-  }
-  const Length& MarginUnder() const {
-    return PhysicalMarginToLogical(*this).Under();
-  }
   const Length& MarginStartUsing(const ComputedStyle& other) const {
     return PhysicalMarginToLogical(other).Start();
   }
@@ -1283,12 +1291,6 @@ class ComputedStyle : public ComputedStyleBase,
     return PhysicalPaddingToLogical().Start();
   }
   const Length& PaddingEnd() const { return PhysicalPaddingToLogical().End(); }
-  const Length& PaddingOver() const {
-    return PhysicalPaddingToLogical().Over();
-  }
-  const Length& PaddingUnder() const {
-    return PhysicalPaddingToLogical().Under();
-  }
   bool PaddingEqual(const ComputedStyle& other) const {
     return PaddingTop() == other.PaddingTop() &&
            PaddingLeft() == other.PaddingLeft() &&
@@ -1363,12 +1365,6 @@ class ComputedStyle : public ComputedStyleBase,
   }
   LayoutUnit BorderStartWidth() const {
     return PhysicalBorderWidthToLogical().Start();
-  }
-  LayoutUnit BorderOverWidth() const {
-    return PhysicalBorderWidthToLogical().Over();
-  }
-  LayoutUnit BorderUnderWidth() const {
-    return PhysicalBorderWidthToLogical().Under();
   }
 
   EBorderStyle BorderAfterStyle() const {
@@ -1650,12 +1646,6 @@ class ComputedStyle : public ComputedStyleBase,
   const Length& LogicalInlineEnd() const {
     return PhysicalBoundsToLogical().InlineEnd();
   }
-  const Length& LogicalLeft() const {
-    return PhysicalBoundsToLogical().LineLeft();
-  }
-  const Length& LogicalRight() const {
-    return PhysicalBoundsToLogical().LineRight();
-  }
   const Length& LogicalTop() const {
     return PhysicalBoundsToLogical().Before();
   }
@@ -1768,8 +1758,14 @@ class ComputedStyle : public ComputedStyleBase,
     return IsInlineOrBlockSizeContainer() && StyleType() == kPseudoIdNone;
   }
 
+  bool IsContainerForStickyContainerQueries() const {
+    return IsStickyContainer() && StyleType() == kPseudoIdNone;
+  }
+
   bool DependsOnContainerQueries() const {
-    return DependsOnSizeContainerQueries() || DependsOnStyleContainerQueries();
+    return DependsOnSizeContainerQueries() ||
+           DependsOnStyleContainerQueries() ||
+           DependsOnStickyContainerQueries();
   }
 
   static bool IsContentVisibilityVisible(
@@ -1855,15 +1851,15 @@ class ComputedStyle : public ComputedStyleBase,
   }
   EResize UnresolvedResize() const { return Resize(); }
 
-  EResize Resize(const ComputedStyle& cb_style) const {
+  EResize UsedResize() const {
     EResize value = Resize();
     switch (value) {
       case EResize::kBlock:
-        return cb_style.IsHorizontalWritingMode() ? EResize::kVertical
-                                                  : EResize::kHorizontal;
+        return IsHorizontalWritingMode() ? EResize::kVertical
+                                         : EResize::kHorizontal;
       case EResize::kInline:
-        return cb_style.IsHorizontalWritingMode() ? EResize::kHorizontal
-                                                  : EResize::kVertical;
+        return IsHorizontalWritingMode() ? EResize::kHorizontal
+                                         : EResize::kVertical;
       default:
         return value;
     }
@@ -2149,14 +2145,14 @@ class ComputedStyle : public ComputedStyleBase,
   };
   void ApplyTransform(gfx::Transform&,
                       const LayoutBox* box,
-                      PhysicalSize border_box_data_size,
+                      const PhysicalRect& reference_box,
                       ApplyTransformOperations,
                       ApplyTransformOrigin,
                       ApplyMotionPath,
                       ApplyIndependentTransformProperties) const;
   void ApplyTransform(gfx::Transform&,
                       const LayoutBox* box,
-                      const gfx::RectF& bounding_box,
+                      const gfx::RectF& reference_box,
                       ApplyTransformOperations,
                       ApplyTransformOrigin,
                       ApplyMotionPath,
@@ -2553,6 +2549,9 @@ class ComputedStyle : public ComputedStyleBase,
   bool IsSizeContainer() const {
     return (ContainerType() & kContainerTypeSize) == kContainerTypeSize;
   }
+  bool IsStickyContainer() const {
+    return ContainerType() & kContainerTypeSticky;
+  }
 
   static bool IsDisplayBlockContainer(EDisplay display) {
     return display == EDisplay::kBlock || display == EDisplay::kListItem ||
@@ -2882,7 +2881,16 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   // Access to UserModify().
   friend class MatchedPropertiesCache;
 
+  // Creates a new ComputedStyle based on the given initial style.
   CORE_EXPORT explicit ComputedStyleBuilder(const ComputedStyle& style);
+
+  // Creates a new ComputedStyle based on the given initial style,
+  // but with all inheritable properties from the given parent style.
+  CORE_EXPORT ComputedStyleBuilder(
+      const ComputedStyle& initial_style,
+      const ComputedStyle& parent_style,
+      IsAtShadowBoundary is_at_shadow_boundary = kNotAtShadowBoundary);
+
   ComputedStyleBuilder(const ComputedStyleBuilder& builder) = delete;
   ComputedStyleBuilder(ComputedStyleBuilder&&) = default;
   ComputedStyleBuilder& operator=(const ComputedStyleBuilder&) = delete;
@@ -2892,37 +2900,6 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
 
   // NOTE: Prefer `TakeStyle()` if possible.
   CORE_EXPORT scoped_refptr<const ComputedStyle> CloneStyle() const;
-
-  CORE_EXPORT void InheritFrom(
-      const ComputedStyle& inherit_parent,
-      IsAtShadowBoundary is_at_shadow_boundary = kNotAtShadowBoundary) {
-    EUserModify current_user_modify = UserModify();
-    EUserSelect current_user_select = UserSelect();
-    ComputedStyleBuilderBase::InheritFrom(inherit_parent,
-                                          is_at_shadow_boundary);
-
-    // Even if surrounding content is user-editable, shadow DOM should act as a
-    // single unit, and not necessarily be editable
-    if (is_at_shadow_boundary == kAtShadowBoundary) {
-      SetUserModify(current_user_modify);
-    }
-
-    // TODO(crbug.com/1410068): Once `user-select` isn't inherited, we should
-    // get rid of following if-statement.
-    if (inherit_parent.UserSelect() == EUserSelect::kContain) {
-      SetUserSelect(current_user_select);
-    }
-
-    SetBaseTextDecorationData(inherit_parent.AppliedTextDecorationData());
-  }
-
-  void CopyNonInheritedFromCached(const ComputedStyle& other) {
-#if DCHECK_IS_ON()
-    ComputedStyleBuilder builder(other);
-    DCHECK(MatchedPropertiesCache::IsStyleCacheable(builder));
-#endif
-    ComputedStyleBuilderBase::CopyNonInheritedFromCached(other);
-  }
 
   // Copies the values of any independent inherited properties from the parent
   // that are not explicitly set in this style.
@@ -3570,6 +3547,17 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   void SetHasDynamicViewportUnits() {
     SetViewportUnitFlags(ViewportUnitFlags() |
                          static_cast<unsigned>(ViewportUnitFlag::kDynamic));
+  }
+
+  // ContainIntrinsicSize
+  void SetContainIntrinsicSizeAuto() {
+    StyleIntrinsicLength width = ContainIntrinsicWidth();
+    width.SetHasAuto();
+    SetContainIntrinsicWidth(width);
+
+    StyleIntrinsicLength height = ContainIntrinsicHeight();
+    height.SetHasAuto();
+    SetContainIntrinsicHeight(height);
   }
 
  private:

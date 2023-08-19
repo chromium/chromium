@@ -26,7 +26,6 @@
 <translation id="2060505056492490888">'<ph name="INVALIDDOMAIN" />'లో '<ph name="DOT" />' తప్పు స్థానంలో ఉపయోగించబడింది.</translation>
 <translation id="2148716181193084225">ఈ రోజు</translation>
 <translation id="2226276347425096477">దయచేసి ఈ వచనాన్ని <ph name="MAX_CHARACTERS" /> అక్షరాలకు లేదా అంతకంటే తక్కువకు తగ్గించండి (మీరు ప్రస్తుతం <ph name="CURRENT_LENGTH" /> అక్షరాలను ఉపయోగిస్తున్నారు).</translation>
-<translation id="2246498165605549352">స్థానిక ఫైల్</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />వ వారం, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ట్రాక్ <ph name="NUMBER" /></translation>
 <translation id="2393030564806080191">హెక్సాడెసిమల్ రంగు విలువ</translation>
@@ -89,6 +88,7 @@
 <translation id="5425179576310518467">ప్రస్తుత తేదీ</translation>
 <translation id="5466621249238537318">దయచేసి ఒకటి లేదా మరిన్ని ఫైళ్ళను ఎంచుకోండి.</translation>
 <translation id="5468998798572797635">ఫుల్-స్క్రీన్‌ నుండి నిష్క్రమించండి</translation>
+<translation id="5514612371225420585">మీ పరికరంలోని ఫైల్</translation>
 <translation id="5516235301412634559">0.75</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5546461542133609677">అన్‌మ్యూట్ చేయి</translation>
@@ -113,6 +113,7 @@
 <translation id="6398862346408813489">నెల ఎంపిక ప్యానెల్‌ను చూపుతుంది</translation>
 <translation id="6404546809543547843">ఆడియో సమయ స్క్రబ్బర్</translation>
 <translation id="6443871981718447451">ఉపశీర్షికల మెనూని చూపు</translation>
+<translation id="6484738902856791350">ప్రెట్టీ ప్రింట్</translation>
 <translation id="6550675742724504774">ఎంపికలు</translation>
 <translation id="6572309429103589720">చెల్లని వ్యాకరణం</translation>
 <translation id="658823671542763450">పూర్తి స్క్రీన్‌లోకి ప్రవేశించు</translation>

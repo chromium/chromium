@@ -38,9 +38,7 @@ using ::guest_view::GuestViewManager;
 using ::guest_view::TestGuestViewManager;
 using ::pdf_extension_test_util::GetOnlyMimeHandlerView;
 
-PDFExtensionTestBase::PDFExtensionTestBase() {
-  GuestViewManager::set_factory_for_testing(&factory_);
-}
+PDFExtensionTestBase::PDFExtensionTestBase() = default;
 
 void PDFExtensionTestBase::SetUpCommandLine(
     base::CommandLine* /*command_line*/) {
@@ -164,19 +162,8 @@ TestGuestViewManager* PDFExtensionTestBase::GetGuestViewManager(
   if (!profile) {
     profile = browser()->profile();
   }
-  // TODO(wjmaclean): Re-implement FromBrowserContext in the
-  // TestGuestViewManager class to avoid all callers needing this cast.
-  auto* manager = static_cast<TestGuestViewManager*>(
-      TestGuestViewManager::FromBrowserContext(profile));
-  // Test code may access the TestGuestViewManager before it would be created
-  // during creation of the first guest.
-  if (!manager) {
-    manager =
-        static_cast<TestGuestViewManager*>(GuestViewManager::CreateWithDelegate(
-            profile, ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate(
-                         profile)));
-  }
-  return manager;
+  return factory_.GetOrCreateTestGuestViewManager(
+      profile, ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate());
 }
 
 content::RenderFrameHost* PDFExtensionTestBase::GetPluginFrame(

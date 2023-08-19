@@ -161,7 +161,6 @@
   }
 
   .header {
-    background: white;
     display: flex;
     flex-direction: column;
     padding-bottom: var(--lock-screen-reauth-dialog-content-padding);
@@ -173,7 +172,7 @@
   }
 
   .title {
-    color: var(--cr-primary-text-color);
+    color: var(--cros-text-color-primary);
     font-size: 28px;
     font-weight: 400;
     margin: 0;
@@ -182,7 +181,7 @@
   }
 
   .subtitle {
-    color: var(--cr-secondary-text-color);
+    color: var(--cros-text-color-secondary);
     font-size: 13px;
     font-weight: 400;
     line-height: var(--lock-screen-reauth-dialog-text-line-height);
@@ -270,9 +269,9 @@
       </div>
     </div>
     <div class="illustration-container">
-      <img class="illustration"
-          srcset="chrome://lock-reauth/images/1x/verify-account.svg 1x,
-                  chrome://lock-reauth/images/2x/verify-account.svg 2x">
+      <iron-icon icon="oobe-illos:encryption-migration-illo"
+          class="illustration">
+      </iron-icon>
     </div>
   </div>
   <div class="flex layout horizontal button-container">
@@ -302,7 +301,8 @@
       </div>
     </div>
     <div class="illustration-container">
-      <img src="chrome://lock-reauth/images/error.svg" class="illustration">
+      <iron-icon icon="oobe-illos:error-illo" class="illustration">
+      </iron-icon>
     </div>
   </div>
   <div class="flex layout horizontal button-container">
@@ -346,6 +346,15 @@
         text-key="samlChangeProviderButton"
         on-click="onChangeSigninProviderClicked_">
     </oobe-text-button>
+  </div>
+  <div class="flex layout horizontal button-container"
+      hidden="[[isDefaultSsoProvider]]">
+    <div class="action-buttons">
+      <gaia-action-buttons authenticator="[[authenticator_]]"
+          rounded-button="True"
+          on-set-focus-to-webview="setFocusToWebview_">
+      </gaia-action-buttons>
+    </div>
   </div>
 </div>
 

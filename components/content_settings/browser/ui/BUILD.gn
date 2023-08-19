@@ -6,6 +6,8 @@ source_set("ui") {
   sources = [
     "cookie_controls_controller.cc",
     "cookie_controls_controller.h",
+    "cookie_controls_util.cc",
+    "cookie_controls_util.h",
     "cookie_controls_view.h",
   ]
 
@@ -15,7 +17,24 @@ source_set("ui") {
     "//components/content_settings/browser",
     "//components/content_settings/core/browser",
     "//components/prefs",
+    "//components/site_engagement/content",
+    "//components/strings",
+    "//components/vector_icons",
     "//content/public/browser",
     "//content/public/common",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//ui/base",
+    "//ui/gfx",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "cookie_controls_util_unittest.cc" ]
+  deps = [
+    ":ui",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
   ]
 }

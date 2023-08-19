@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/logging.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/crosapi/mojom/login_state.mojom-test-utils.h"
@@ -32,11 +33,11 @@ IN_PROC_BROWSER_TEST_F(LoginStateLacrosBrowserTest, GetSessionState) {
 
   auto* lacros_service = chromeos::LacrosService::Get();
 
-  crosapi::mojom::GetSessionStateResultPtr result;
-  crosapi::mojom::LoginStateAsyncWaiter async_waiter(
-      lacros_service->GetRemote<crosapi::mojom::LoginState>().get());
-  async_waiter.GetSessionState(&result);
+  base::test::TestFuture<crosapi::mojom::GetSessionStateResultPtr> future;
+  lacros_service->GetRemote<crosapi::mojom::LoginState>()->GetSessionState(
+      future.GetCallback());
 
+  auto result = future.Take();
   ASSERT_FALSE(result->is_error_message());
   EXPECT_EQ(result->get_session_state(),
             crosapi::mojom::SessionState::kInSession);

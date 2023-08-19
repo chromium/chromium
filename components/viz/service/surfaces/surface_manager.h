@@ -108,7 +108,9 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
   // in response to a BeginFrame, or a CopyOutputRequest is issued.
   //
   // |ack.sequence_number| is only valid if called in response to a BeginFrame.
-  bool SurfaceModified(const SurfaceId& surface_id, const BeginFrameAck& ack);
+  bool SurfaceModified(const SurfaceId& surface_id,
+                       const BeginFrameAck& ack,
+                       bool is_handling_interaction);
 
   // Called when a surface has an active frame for the first time.
   void FirstSurfaceActivation(const SurfaceInfo& surface_info);
@@ -209,7 +211,7 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
   void AggregatedFrameSinksChanged();
 
   using CommitPredicate =
-      base::RepeatingCallback<bool(const SurfaceId&, const BeginFrameId&)>;
+      base::FunctionRef<bool(const SurfaceId&, const BeginFrameId&)>;
   // Commits all surfaces in range and their referenced surfaces. For each
   // surface processed calls `predicate` for each uncommitted frame from oldest
   // to newest. If predicate returns true, surface is committed. If not the

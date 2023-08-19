@@ -8,6 +8,7 @@
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_helper.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_sink_button.h"
@@ -32,7 +33,7 @@ std::unique_ptr<views::ImageView> CreateConnectedIconView(
   auto icon_view = std::make_unique<views::ImageView>();
   icon_view->SetImage(ui::ImageModel::FromVectorIcon(
       *media_router::CastDialogSinkButton::GetVectorIcon(sink),
-      ui::kColorAccent, media_router::kPrimaryIconSize));
+      kColorMediaRouterIconActive, media_router::kPrimaryIconSize));
   icon_view->SetBorder(
       views::CreateEmptyBorder(media_router::kPrimaryIconBorder));
   return icon_view;
@@ -175,6 +176,7 @@ std::unique_ptr<views::View> CastDialogSinkView::CreateButtonsView(
                                       ? IDS_MEDIA_ROUTER_SINK_VIEW_RESUME
                                       : IDS_MEDIA_ROUTER_SINK_VIEW_PAUSE));
     freeze_button->SetStyle(ui::ButtonStyle::kText);
+    freeze_button->SetAccessibleName(GetFreezeButtonAccessibleName());
     freeze_button_ = button_container->AddChildView(std::move(freeze_button));
   }
 
@@ -184,6 +186,7 @@ std::unique_ptr<views::View> CastDialogSinkView::CreateButtonsView(
       stop_pressed_callback,
       l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_SINK_VIEW_STOP));
   stop_button->SetStyle(ui::ButtonStyle::kText);
+  stop_button->SetAccessibleName(GetStopButtonAccessibleName());
   stop_button_ = button_container->AddChildView(std::move(stop_button));
 
   return button_container;
@@ -209,6 +212,59 @@ void CastDialogSinkView::SetEnabledState(bool enabled) {
   if (freeze_button_) {
     freeze_button_->SetEnabled(enabled);
   }
+}
+
+std::u16string CastDialogSinkView::GetFreezeButtonAccessibleName() const {
+  // If there is no route for the sink or the route may not be frozen, no freeze
+  // button should be displayed.
+  if (!sink_.route || !sink_.freeze_info.can_freeze) {
+    NOTREACHED();
+    return std::u16string();
+  }
+
+  const MediaSource& source = sink_.route->media_source();
+  int accessible_name = 0;
+  if (sink_.freeze_info.is_frozen) {
+    if (source.IsTabMirroringSource()) {
+      accessible_name = IDS_MEDIA_ROUTER_SINK_VIEW_RESUME_TAB_ACCESSIBLE_NAME;
+    } else if (source.IsDesktopMirroringSource()) {
+      accessible_name =
+          IDS_MEDIA_ROUTER_SINK_VIEW_RESUME_SCREEN_ACCESSIBLE_NAME;
+    } else {
+      accessible_name =
+          IDS_MEDIA_ROUTER_SINK_VIEW_RESUME_GENERIC_ACCESSIBLE_NAME;
+    }
+  } else {
+    if (source.IsTabMirroringSource()) {
+      accessible_name = IDS_MEDIA_ROUTER_SINK_VIEW_PAUSE_TAB_ACCESSIBLE_NAME;
+    } else if (source.IsDesktopMirroringSource()) {
+      accessible_name = IDS_MEDIA_ROUTER_SINK_VIEW_PAUSE_SCREEN_ACCESSIBLE_NAME;
+    } else {
+      accessible_name =
+          IDS_MEDIA_ROUTER_SINK_VIEW_PAUSE_GENERIC_ACCESSIBLE_NAME;
+    }
+  }
+
+  return l10n_util::GetStringFUTF16(accessible_name, sink_.friendly_name);
+}
+
+std::u16string CastDialogSinkView::GetStopButtonAccessibleName() const {
+  if (!sink_.route) {
+    NOTREACHED();
+    return std::u16string();
+  }
+
+  const MediaSource& source = sink_.route->media_source();
+  int accessible_name = 0;
+  if (source.IsTabMirroringSource()) {
+    accessible_name = IDS_MEDIA_ROUTER_SINK_VIEW_STOP_TAB_ACCESSIBLE_NAME;
+  } else if (source.IsDesktopMirroringSource()) {
+    accessible_name = IDS_MEDIA_ROUTER_SINK_VIEW_STOP_SCREEN_ACCESSIBLE_NAME;
+  } else {
+    accessible_name = IDS_MEDIA_ROUTER_SINK_VIEW_STOP_GENERIC_ACCESSIBLE_NAME;
+  }
+
+  return l10n_util::GetStringFUTF16(accessible_name, sink_.friendly_name);
 }
 
 CastDialogSinkView::~CastDialogSinkView() = default;

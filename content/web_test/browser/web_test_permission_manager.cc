@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include <base/containers/contains.h>
 #include "base/barrier_callback.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -21,6 +22,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/web_test/browser/web_test_content_browser_client.h"
+#include "net/base/schemeful_site.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
@@ -132,10 +134,10 @@ void WebTestPermissionManager::RequestPermission(
     return;
   }
 
-  std::move(callback).Run(
-      GetPermissionStatus(permission, requesting_origin,
-                          PermissionUtil::GetLastCommittedOriginAsURL(
-                              render_frame_host->GetMainFrame())));
+  std::move(callback).Run(GetPermissionStatusForRequestPermission(
+      permission, requesting_origin,
+      PermissionUtil::GetLastCommittedOriginAsURL(
+          render_frame_host->GetMainFrame())));
 }
 
 void WebTestPermissionManager::RequestPermissions(
@@ -157,8 +159,8 @@ void WebTestPermissionManager::RequestPermissions(
   const GURL& embedding_origin = PermissionUtil::GetLastCommittedOriginAsURL(
       render_frame_host->GetMainFrame());
   for (const auto& permission : permissions) {
-    result.push_back(
-        GetPermissionStatus(permission, requesting_origin, embedding_origin));
+    result.push_back(GetPermissionStatusForRequestPermission(
+        permission, requesting_origin, embedding_origin));
   }
 
   std::move(callback).Run(result);
@@ -171,11 +173,12 @@ void WebTestPermissionManager::ResetPermission(blink::PermissionType permission,
 
   base::AutoLock lock(permissions_lock_);
 
-  auto it = permissions_.find(
-      PermissionDescription(permission, requesting_origin, embedding_origin));
-  if (it == permissions_.end())
+  const auto key =
+      PermissionDescription(permission, requesting_origin, embedding_origin);
+  if (!base::Contains(permissions_, key)) {
     return;
-  permissions_.erase(it);
+  }
+  permissions_.erase(key);
 }
 
 void WebTestPermissionManager::RequestPermissionsFromCurrentDocument(
@@ -198,11 +201,33 @@ void WebTestPermissionManager::RequestPermissionsFromCurrentDocument(
   const GURL& embedding_origin = PermissionUtil::GetLastCommittedOriginAsURL(
       render_frame_host->GetMainFrame());
   for (const auto& permission : permissions) {
-    result.push_back(
-        GetPermissionStatus(permission, requesting_origin, embedding_origin));
+    result.push_back(GetPermissionStatusForRequestPermission(
+        permission, requesting_origin, embedding_origin));
   }
 
   std::move(callback).Run(result);
+}
+
+blink::mojom::PermissionStatus
+WebTestPermissionManager::GetPermissionStatusForRequestPermission(
+    blink::PermissionType permission,
+    const GURL& requesting_origin,
+    const GURL& embedding_origin) {
+  DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI) ||
+         BrowserThread::CurrentlyOn(BrowserThread::IO));
+
+  // The same-site auto-grant mechanism for STORAGE_ACCESS_GRANT currently only
+  // works when requesting permissions.
+  // TODO(crbug.com/1471209): maybe it should also work when querying
+  // permissions.
+  if (permission == blink::PermissionType::STORAGE_ACCESS_GRANT &&
+      (requesting_origin == embedding_origin ||
+       net::SchemefulSite(requesting_origin) ==
+           net::SchemefulSite(embedding_origin))) {
+    return blink::mojom::PermissionStatus::GRANTED;
+  }
+
+  return GetPermissionStatus(permission, requesting_origin, embedding_origin);
 }
 
 blink::mojom::PermissionStatus WebTestPermissionManager::GetPermissionStatus(
@@ -248,9 +273,10 @@ blink::mojom::PermissionStatus WebTestPermissionManager::GetPermissionStatus(
 PermissionResult
 WebTestPermissionManager::GetPermissionResultForOriginWithoutContext(
     blink::PermissionType permission,
-    const url::Origin& origin) {
-  blink::mojom::PermissionStatus status =
-      GetPermissionStatus(permission, origin.GetURL(), origin.GetURL());
+    const url::Origin& requesting_origin,
+    const url::Origin& embedding_origin) {
+  blink::mojom::PermissionStatus status = GetPermissionStatus(
+      permission, requesting_origin.GetURL(), embedding_origin.GetURL());
 
   return PermissionResult(status, content::PermissionStatusSource::UNSPECIFIED);
 }

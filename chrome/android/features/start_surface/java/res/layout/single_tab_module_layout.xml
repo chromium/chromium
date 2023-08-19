@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.features.tasks.SingleTabView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/single_tab_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/single_tab_module_padding_top"
+    android:layout_marginStart="@dimen/single_tab_module_lateral_margin"
+    android:layout_marginEnd="@dimen/single_tab_module_lateral_margin"
+    android:paddingStart="@dimen/single_tab_module_padding_bottom"
+    android:paddingEnd="@dimen/single_tab_module_padding_bottom"
+    android:paddingTop="@dimen/single_tab_module_padding_top"
+    android:paddingBottom="@dimen/single_tab_module_padding_bottom"
+    android:background="@drawable/home_surface_ui_background"
+    android:foreground="@drawable/single_tab_card_ripple"
+    android:orientation="vertical">
+
+   <TextView
+       android:id="@+id/tab_switcher_title_description"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:gravity="start"
+       android:singleLine="true"
+       android:text="@string/single_tab_module_title"
+       android:layout_marginBottom="@dimen/single_tab_module_padding_top"
+       android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Secondary" />
+
+  <RelativeLayout
+      android:id="@+id/tab_view"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:id="@+id/tab_images"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/single_tab_thumbnail_background">
+
+      <org.chromium.chrome.browser.tasks.tab_management.TabGridThumbnailView
+          android:id="@+id/tab_thumbnail"
+          android:layout_width="@dimen/single_tab_module_tab_thumbnail_size"
+          android:layout_height="@dimen/single_tab_module_tab_thumbnail_size"
+          android:layout_alignParentStart="true"
+          android:layout_marginStart="@dimen/single_tab_thumbnail_margin"
+          android:layout_marginEnd="@dimen/single_tab_thumbnail_margin"
+          android:layout_marginTop="@dimen/single_tab_thumbnail_margin"
+          android:layout_marginBottom="@dimen/single_tab_thumbnail_margin"
+          android:adjustViewBounds="false"
+          android:gravity="center_horizontal"
+          android:importantForAccessibility="no"
+          android:scaleType="fitCenter"
+          app:cornerRadiusBottomEnd="@dimen/single_tab_thumbnail_radius"
+          app:cornerRadiusBottomStart="@dimen/single_tab_thumbnail_radius"
+          app:cornerRadiusTopEnd="@dimen/single_tab_thumbnail_radius"
+          app:cornerRadiusTopStart="@dimen/single_tab_thumbnail_radius" />
+
+      <ImageView
+          android:id="@+id/tab_favicon_view"
+          android:layout_width="24dp"
+          android:layout_height="24dp"
+          android:layout_marginBottom="8dp"
+          android:layout_marginEnd="8dp"
+          android:layout_alignBottom="@id/tab_thumbnail"
+          android:layout_alignEnd="@id/tab_thumbnail"
+          android:paddingStart="@dimen/favicon_padding"
+          android:paddingEnd="@dimen/favicon_padding"
+          android:paddingTop="@dimen/favicon_padding"
+          android:paddingBottom="@dimen/favicon_padding"
+          android:background="@drawable/favicon_background"
+          android:elevation="4dp"
+          android:importantForAccessibility="no" />
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/tab_title_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="@dimen/single_tab_module_lateral_margin"
+        android:layout_toEndOf="@+id/tab_images"
+        android:ellipsize="end"
+        android:gravity="center_vertical"
+        android:maxLines="3"
+        android:textAppearance="@style/TextAppearance.Headline2Thick.Secondary" />
+
+    <TextView
+        android:id="@+id/tab_url_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="2dp"
+        android:layout_marginStart="@dimen/single_tab_module_lateral_margin"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom"
+        android:layout_below="@+id/tab_title_view"
+        android:layout_toEndOf="@+id/tab_images"
+        android:gravity="start"
+        android:singleLine="true"
+        android:textAppearance="@style/TextAppearance.TextSmall" />
+  </RelativeLayout>
+
+</org.chromium.chrome.features.tasks.SingleTabView>

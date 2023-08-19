@@ -478,10 +478,7 @@ HRESULT FakeWinWebAuthnApi::GetPlatformCredentialList(
   if (result_override_ != S_OK) {
     return result_override_;
   }
-  returned_credential_lists_.emplace_back(
-      std::make_unique<CredentialInfoList>());
-  CredentialInfoList& credential_list =
-      *returned_credential_lists_.back().get();
+  auto credential_list = std::make_unique<CredentialInfoList>();
   for (const auto& registration : registrations_) {
     if (!registration.second.is_resident) {
       continue;
@@ -493,50 +490,52 @@ HRESULT FakeWinWebAuthnApi::GetPlatformCredentialList(
       }
     }
 
-    credential_list.credentials.emplace_back(
-        std::make_unique<CredentialInfo>());
-    auto& credential = *credential_list.credentials.back().get();
-    credential.credential_id = registration.first;
-    credential.rp_id = base::UTF8ToUTF16(registration.second.rp->id);
-    credential.rp_name =
+    auto credential = std::make_unique<CredentialInfo>();
+    credential->credential_id = registration.first;
+    credential->rp_id = base::UTF8ToUTF16(registration.second.rp->id);
+    credential->rp_name =
         base::UTF8ToUTF16(registration.second.rp->name.value_or(""));
-    credential.user_id = registration.second.user->id;
-    credential.user_name =
+    credential->user_id = registration.second.user->id;
+    credential->user_name =
         base::UTF8ToUTF16(registration.second.user->name.value_or(""));
-    credential.user_display_name =
+    credential->user_display_name =
         base::UTF8ToUTF16(registration.second.user->display_name.value_or(""));
-    credential.rp = {
+    credential->rp = {
         .dwVersion = WEBAUTHN_RP_ENTITY_INFORMATION_CURRENT_VERSION,
-        .pwszId = base::as_wcstr(credential.rp_id),
-        .pwszName = base::as_wcstr(credential.rp_name),
+        .pwszId = base::as_wcstr(credential->rp_id),
+        .pwszName = base::as_wcstr(credential->rp_name),
     };
-    credential.user = {
+    credential->user = {
         .dwVersion = WEBAUTHN_USER_ENTITY_INFORMATION_CURRENT_VERSION,
-        .cbId = static_cast<DWORD>(credential.user_id.size()),
-        .pbId = credential.user_id.data(),
-        .pwszName = base::as_wcstr(credential.user_name),
-        .pwszDisplayName = base::as_wcstr(credential.user_display_name),
+        .cbId = static_cast<DWORD>(credential->user_id.size()),
+        .pbId = credential->user_id.data(),
+        .pwszName = base::as_wcstr(credential->user_name),
+        .pwszDisplayName = base::as_wcstr(credential->user_display_name),
     };
-    credential.details = {
+    credential->details = {
         .dwVersion = WEBAUTHN_CREDENTIAL_DETAILS_VERSION_1,
-        .cbCredentialID = static_cast<DWORD>(credential.credential_id.size()),
-        .pbCredentialID = credential.credential_id.data(),
-        .pRpInformation = &credential.rp,
-        .pUserInformation = &credential.user,
+        .cbCredentialID = static_cast<DWORD>(credential->credential_id.size()),
+        .pbCredentialID = credential->credential_id.data(),
+        .pRpInformation = &credential->rp,
+        .pUserInformation = &credential->user,
         .bRemovable = true,
     };
+    credential_list->win_credentials.push_back(&credential->details);
+    credential_list->credentials.push_back(std::move(credential));
   }
 
-  for (auto& credential : credential_list.credentials) {
-    credential_list.win_credentials.push_back(&credential->details);
+  if (credential_list->credentials.empty()) {
+    return NTE_NOT_FOUND;
   }
-  credential_list.credential_details_list = {
+
+  credential_list->credential_details_list = {
       .cCredentialDetails =
-          static_cast<DWORD>(credential_list.win_credentials.size()),
-      .ppCredentialDetails = credential_list.win_credentials.data(),
+          static_cast<DWORD>(credential_list->win_credentials.size()),
+      .ppCredentialDetails = credential_list->win_credentials.data(),
   };
-  *credentials = &credential_list.credential_details_list;
-  return credential_list.credentials.empty() ? NTE_NOT_FOUND : S_OK;
+  returned_credential_lists_.push_back(std::move(credential_list));
+  *credentials = &returned_credential_lists_.back()->credential_details_list;
+  return S_OK;
 }
 
 HRESULT FakeWinWebAuthnApi::DeletePlatformCredential(

@@ -10,8 +10,12 @@ source_set("browser") {
     "browser_list.h",
     "browser_list_factory.h",
     "browser_list_factory.mm",
+    "browser_list_impl.h",
+    "browser_list_impl.mm",
     "browser_list_observer.h",
     "browser_list_observer.mm",
+    "browser_list_observer_bridge.h",
+    "browser_list_observer_bridge.mm",
     "browser_observer.h",
     "browser_observer_bridge.h",
     "browser_observer_bridge.mm",
@@ -26,12 +30,14 @@ source_set("browser") {
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/web_state_list",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "all_web_state_list_observation_registrar_unittest.mm" ]
+  sources = [
+    "all_web_state_list_observation_registrar_unittest.mm",
+    "browser_list_impl_unittest.mm",
+  ]
   deps = [
     ":browser",
     "//base/test:test_support",
@@ -42,5 +48,4 @@ source_set("unit_tests") {
     "//ios/web/public/test/fakes",
     "//testing/gtest",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

@@ -170,7 +170,8 @@ class RulesRegistryService : public BrowserContextKeyedAPI,
 
   // Weak pointer into rule_registries_ to make it easier to handle content rule
   // conditions.
-  raw_ptr<ContentRulesRegistry, DanglingUntriaged> content_rules_registry_;
+  raw_ptr<ContentRulesRegistry, AcrossTasksDanglingUntriaged>
+      content_rules_registry_;
 
   // Listen to extension load, unloaded notification.
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>

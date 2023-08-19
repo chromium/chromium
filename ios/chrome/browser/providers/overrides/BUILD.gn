@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("chromium_overrides") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "chromium_overrides.cc" ]
   deps = [ "//ios/public/provider/chrome/browser/overrides:overrides_api" ]
 }

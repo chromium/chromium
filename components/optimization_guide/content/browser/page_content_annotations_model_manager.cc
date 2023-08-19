@@ -89,6 +89,22 @@ void PageContentAnnotationsModelManager::SetUpPageVisibilityModel(
       absl::nullopt);
 }
 
+void PageContentAnnotationsModelManager::SetUpTextEmbeddingModel(
+    OptimizationGuideModelProvider* optimization_guide_model_provider) {
+  if (!features::TextEmbeddingBatchAnnotationsEnabled()) {
+    return;
+  }
+
+  if (text_embedding_model_handler_) {
+    return;
+  }
+
+  text_embedding_model_handler_ = std::make_unique<TextEmbeddingModelHandler>(
+      optimization_guide_model_provider,
+      base::ThreadPool::CreateSequencedTaskRunner(GetTaskTraits()),
+      absl::nullopt);
+}
+
 void PageContentAnnotationsModelManager::GetMetadataForEntityId(
     const std::string& entity_id,
     EntityMetadataRetrievedCallback callback) {
@@ -126,6 +142,17 @@ void PageContentAnnotationsModelManager::RequestAndNotifyWhenModelAvailable(
     return;
   }
 
+  if (type == AnnotationType::kTextEmbedding) {
+    // No-op if the executor is already setup.
+    SetUpTextEmbeddingModel(optimization_guide_model_provider_);
+
+    if (text_embedding_model_handler_) {
+      text_embedding_model_handler_->AddOnModelUpdatedCallback(
+          base::BindOnce(std::move(callback), true));
+      return;
+    }
+  }
+
   std::move(callback).Run(false);
 }
 
@@ -138,6 +165,9 @@ PageContentAnnotationsModelManager::GetModelInfoForType(
   }
   if (type == AnnotationType::kPageEntities && page_entities_model_handler_) {
     return page_entities_model_handler_->GetModelInfo();
+  }
+  if (type == AnnotationType::kTextEmbedding && text_embedding_model_handler_) {
+    return text_embedding_model_handler_->GetModelInfo();
   }
   return absl::nullopt;
 }
@@ -219,6 +249,24 @@ void PageContentAnnotationsModelManager::MaybeStartNextAnnotationJob() {
       return;
     }
     page_entities_model_handler_->ExecuteJob(
+        std::move(on_job_complete_callback), std::move(job));
+    return;
+  }
+
+  if (job->type() != AnnotationType::kTextEmbedding &&
+      text_embedding_model_handler_) {
+    text_embedding_model_handler_->UnloadModel();
+  }
+
+  if (job->type() == AnnotationType::kTextEmbedding) {
+    if (!text_embedding_model_handler_) {
+      job->FillWithNullOutputs();
+      job->OnComplete();
+      job.reset();
+      std::move(on_job_complete_callback).Run();
+      return;
+    }
+    text_embedding_model_handler_->ExecuteJob(
         std::move(on_job_complete_callback), std::move(job));
     return;
   }

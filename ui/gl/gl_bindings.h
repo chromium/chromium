@@ -170,9 +170,6 @@ using Window = XID;
 /* GL_CHROMIUM_get_error_query */
 #define GL_GET_ERROR_QUERY_CHROMIUM                      0x6003
 
-/* GL_CHROMIUM_command_buffer_latency_query */
-#define GL_LATENCY_QUERY_CHROMIUM                        0x6007
-
 /* GL_CHROMIUM_program_completion_query */
 #define GL_PROGRAM_COMPLETION_QUERY_CHROMIUM 0x6009
 
@@ -534,7 +531,7 @@ struct GL_EXPORT DriverGL {
 struct GL_EXPORT CurrentGL {
   raw_ptr<GLApi, DanglingUntriaged> Api = nullptr;
   raw_ptr<DriverGL, DanglingUntriaged> Driver = nullptr;
-  raw_ptr<const GLVersionInfo, DanglingUntriaged> Version = nullptr;
+  raw_ptr<const GLVersionInfo, AcrossTasksDanglingUntriaged> Version = nullptr;
 };
 
 #if defined(USE_EGL)

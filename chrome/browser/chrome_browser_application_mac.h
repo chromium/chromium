@@ -11,7 +11,7 @@
 #include <stddef.h>
 
 #import "base/mac/scoped_sending_event.h"
-#import "base/message_loop/message_pump_mac.h"
+#import "base/message_loop/message_pump_apple.h"
 
 @interface BrowserCrApplication
     : NSApplication <CrAppProtocol, CrAppControlProtocol>

@@ -59,7 +59,7 @@ class UkmObserver : public ukm::UkmRecorderObserver {
  private:
   // UkmDataManagerImpl destroys this observer before the UKM service is
   // destroyed.
-  raw_ptr<ukm::UkmRecorderImpl, DanglingUntriaged> const ukm_recorder_;
+  raw_ptr<ukm::UkmRecorderImpl, LeakedDanglingUntriaged> const ukm_recorder_;
 
   // Currently observed config.
   std::unique_ptr<UkmConfig> config_;

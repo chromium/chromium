@@ -11,7 +11,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/vr/elements/ui_element_name.h"
 #include "chrome/browser/vr/target_property.h"
-#include "chrome/browser/vr/test/mock_content_input_delegate.h"
 #include "chrome/browser/vr/test/mock_ui_browser_interface.h"
 #include "chrome/browser/vr/ui.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,7 +18,6 @@
 
 namespace vr {
 
-class UiElement;
 class UiScene;
 struct Model;
 
@@ -31,24 +29,6 @@ class UiTest : public testing::Test {
   void SetUp() override;
 
  protected:
-  enum InWebVr : bool {
-    kNotInWebVr = false,
-    kInWebVr = true,
-  };
-
-  enum WebVrAutopresented : bool {
-    kNotAutopresented = false,
-    kAutopresented = true,
-  };
-
-  void CreateScene(const UiInitialState& state);
-  void CreateScene(InWebVr in_web_vr);
-
- protected:
-  void CreateSceneInternal(const UiInitialState& state);
-
-  void SetIncognito(bool incognito);
-
   // Check whether a named element is visible. In this test, visibilility is the
   // target visibily, not the current (possibly animating) visibility. This
   // makes it easier to test the visibility of elements in response to state
@@ -64,23 +44,6 @@ class UiTest : public testing::Test {
   void VerifyOnlyElementsVisible(const std::string& trace_context,
                                  const std::set<UiElementName>& names) const;
 
-  // Count the number of elements in the named element's subtree.
-  int NumVisibleInTree(UiElementName name) const;
-
-  // Return false if not all elements in the set match the specified |animating|
-  // state for the specified |properties|. Other elements are ignored.
-  bool VerifyIsAnimating(const std::set<UiElementName>& names,
-                         const std::vector<TargetProperty>& properties,
-                         bool animating) const;
-
-  // Return false if not all elements in the set match the specified requires
-  // layout state. Other elements are ignored.
-  bool VerifyRequiresLayout(const std::set<UiElementName>& names,
-                            bool requires_layout) const;
-
-  // Check if element is using correct opacity in Render recursively.
-  void CheckRendererOpacityRecursive(UiElement* element);
-
   // Advances current_time_ by delta. This is done by running the next frame,
   // then jumping time ahead to the final time. Generally, the UI should not
   // require all intermediate frames to be called. Tests that require this
@@ -91,13 +54,11 @@ class UiTest : public testing::Test {
   // Advances time by one frame (16 ms) and calls 'OnBeginFrame()'
   bool AdvanceFrame();
 
-  void GetBackgroundColor(SkColor* background_color) const;
-
   std::unique_ptr<Ui> ui_instance_;
-  raw_ptr<UiInterface> ui_ = nullptr;
+  raw_ptr<UiInterface, DanglingUntriaged> ui_ = nullptr;
   std::unique_ptr<MockUiBrowserInterface> browser_;
-  raw_ptr<Model> model_ = nullptr;
-  raw_ptr<UiScene> scene_ = nullptr;
+  raw_ptr<Model, DanglingUntriaged> model_ = nullptr;
+  raw_ptr<UiScene, DanglingUntriaged> scene_ = nullptr;
 
  private:
   bool RunFor(base::TimeDelta delta);

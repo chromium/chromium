@@ -1,0 +1,180 @@
+<style>
+  /* Shared styles for both table and card views */
+  .error {
+    border: solid 1px red;
+  }
+
+  button {
+    font-size: 125%;
+    font-weight: bolder;
+    border: 1px solid rgba(0, 0, 0, .06);
+  }
+
+  select:focus {
+    outline: none;
+  }
+
+  /* Table view for wide screen */
+  @media only screen and (min-width: 711px) {
+    :host {
+      display: table-row;
+    }
+
+    div {
+      display: table-cell;
+      border: none;
+      padding: 1px;
+    }
+
+    [role="cell"] > * {
+      width: 100%;
+      box-sizing: border-box;
+      background: none;
+    }
+
+    [role="cell"] > *:not(select) {
+      padding: 7px;
+    }
+
+    [role="cell"] > *:not(.error) {
+      border: none;
+    }
+
+    [role="cell"] > select {
+      padding: 0px;
+    }
+
+    .name-cell {
+      border-right: 1px solid rgba(0, 0, 0, .06);
+    }
+    label {
+      display: none;
+    }
+  }
+
+  /* Card view for narrow screen / mobile */
+  @media only screen and (max-width: 710px) {
+    :host {
+      display: block;
+      border: 1px solid black;
+      margin-bottom: 5px;
+    }
+
+    div {
+      display: flex;
+      border: none;
+      padding: 1px;
+    }
+
+    select, input {
+      padding: 5px;
+      margin-top: 5px;
+      margin-right: 5px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: flex;
+      width: 75%;
+    }
+
+    button {
+      padding: 5px;
+      margin: 5px;
+      display: flex;
+    }
+
+    input {
+      box-sizing: border-box;
+    }
+
+    label {
+      margin-left: 5px;
+      float: left;
+      width: 20%;
+      display: block;
+      overflow: hidden;
+      align-self: center;
+    }
+  }
+</style>
+<div role="cell" class="name-cell">
+  <label>$i18n{testTableName}</label>
+  <input class='name' list="policy-name-list" autocomplete="off"
+    placeholder="$i18n{testNameSelect}">
+  </input>
+  <datalist id="policy-name-list">
+</datalist>
+</div>
+<div role="cell">
+  <label>$i18n{testTableValue}</label>
+  <input type="text" class="value">
+</div>
+<div role="cell">
+  <label>$i18n{testTablePreset}</label>
+  <select class="preset">
+    <option id="custom">$i18n{testTablePresetCustom}</option>
+    <option id="cbcm">CBCM</option>
+    <option id="localMachine">$i18n{testTablePresetLocalMachine}</option>
+    <option id="cloudAccount">$i18n{testTablePresetCloudAccount}</option>
+  </select>
+</div>
+<div role="cell">
+  <label>$i18n{testTableSource}</label>
+  <select class="source">
+    <option title="POLICY_SOURCE_ENTERPRISE_DEFAULT"
+        id="sourceEnterpriseDefault">
+      $i18n{sourceEnterpriseDefault}
+    </option>
+    <option title="POLICY_SOURCE_COMMAND_LINE" id="sourceCommandLine">
+      $i18n{sourceCommandLine}
+    </option>
+    <option title="POLICY_SOURCE_CLOUD" id="sourceCloud">
+      $i18n{sourceCloud}
+    </option>
+    <if expr="is_chromeos">
+    <option title="POLICY_SOURCE_ACTIVE_DIRECTORY" id="sourceActiveDirectory">
+      $i18n{sourceActiveDirectory}
+    </option>
+    </if>
+    <option title="POLICY_SOURCE_PLATFORM" id="sourcePlatform">
+      $i18n{sourcePlatform}
+    </option>
+    <option title="POLICY_SOURCE_MERGED" id="sourceMerged">
+      $i18n{sourceMerged}
+    </option>
+    <if expr="is_chromeos">
+    <option title="POLICY_SOURCE_CLOUD_FROM_ASH" id="sourceCloudFromAsh">
+      $i18n{sourceCloudFromAsh}
+    </option>
+    <option
+        title="POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE"
+          id="sourceRestrictedManagedGuestSessionOverride">
+      $i18n{sourceRestrictedManagedGuestSessionOverride}
+    </option>
+    </if>
+  </select>
+</div>
+<div role="cell">
+  <label>$i18n{testTableScope}</label>
+  <select class="scope">
+    <option title="POLICY_SCOPE_USER" id="scopeUser">
+      $i18n{scopeUser}
+    </option>
+    <option title="POLICY_SCOPE_DEVICE" id="scopeDevice">
+      $i18n{scopeDevice}
+    </option>
+  </select>
+</div>
+<div role="cell">
+  <label>$i18n{testTableLevel}</label>
+  <select class="level">
+    <option title="POLICY_LEVEL_MANDATORY" id="levelMandatory">
+      $i18n{levelMandatory}
+    </option>
+    <option title="POLICY_LEVEL_RECOMMENDED" id="levelRecommended">
+      $i18n{levelRecommended}
+    </option>
+  </select>
+</div>
+<div role="cell">
+  <button class="remove-btn">–</button>
+</div>

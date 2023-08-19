@@ -17,16 +17,22 @@ source_set("mac") {
   visibility = [ "//media/gpu" ]
 
   sources = [
-    "gl_image_io_surface.h",
-    "gl_image_io_surface.mm",
+    "video_toolbox_decode_metadata.cc",
+    "video_toolbox_decode_metadata.h",
     "video_toolbox_decompression_interface.cc",
     "video_toolbox_decompression_interface.h",
+    "video_toolbox_decompression_session.cc",
+    "video_toolbox_decompression_session.h",
     "video_toolbox_frame_converter.cc",
     "video_toolbox_frame_converter.h",
     "video_toolbox_h264_accelerator.cc",
     "video_toolbox_h264_accelerator.h",
+    "video_toolbox_output_queue.cc",
+    "video_toolbox_output_queue.h",
     "video_toolbox_video_decoder.cc",
     "video_toolbox_video_decoder.h",
+    "video_toolbox_vp9_accelerator.cc",
+    "video_toolbox_vp9_accelerator.h",
     "vp9_super_frame_bitstream_filter.cc",
     "vp9_super_frame_bitstream_filter.h",
     "vt_config_util.h",
@@ -48,7 +54,7 @@ source_set("mac") {
   deps = [
     "//base",
     "//components/crash/core/common:crash_key",
-    "//components/viz/common:resource_format",
+    "//components/viz/common:shared_image_format",
     "//gpu/command_buffer/service",
     "//gpu/command_buffer/service:gles2",
     "//gpu/ipc/service",
@@ -66,8 +72,10 @@ source_set("unit_tests") {
     "CoreMedia.framework",
   ]
   deps = [
+    "//base/test:test_support",
     "//media:test_support",
     "//media/gpu:test_support",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 
@@ -76,6 +84,10 @@ source_set("unit_tests") {
   }
 
   sources = [
+    "video_toolbox_decompression_interface_unittest.cc",
+    "video_toolbox_h264_accelerator_unittest.cc",
+    "video_toolbox_output_queue_unittest.cc",
+    "video_toolbox_vp9_accelerator_unittest.cc",
     "vp9_super_frame_bitstream_filter_unittest.cc",
     "vt_config_util_unittest.cc",
   ]

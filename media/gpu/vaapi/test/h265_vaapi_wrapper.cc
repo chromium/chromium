@@ -525,7 +525,7 @@ bool H265VaapiWrapper::SubmitBuffer(VABufferType va_buffer_type,
     return false;
   }
 
-  LOG(INFO) << "Submitting Buffer:(size=" << size << ")";
+  DVLOG(3) << "Submitting Buffer:(size=" << size << ")";
   VABufferID buffer_id;
   {
     const VAStatus va_res =
@@ -555,8 +555,8 @@ void H265VaapiWrapper::DestroyPendingBuffers() {
 
 bool H265VaapiWrapper::ExecuteAndDestroyPendingBuffers(
     VASurfaceID va_surface_id) {
-  LOG(INFO) << "Pending VA bufs to commit: " << pending_buffers_.size();
-  LOG(INFO) << "Target VA surface " << va_surface_id;
+  DVLOG(3) << "Pending VA bufs to commit: " << pending_buffers_.size();
+  DVLOG(3) << "Target VA surface " << va_surface_id;
 
   // Get ready to execute for given surface.
   VAStatus va_res =

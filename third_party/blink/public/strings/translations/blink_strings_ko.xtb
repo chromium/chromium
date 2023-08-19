@@ -26,7 +26,6 @@
 <translation id="2060505056492490888">'<ph name="INVALIDDOMAIN" />'에서 '<ph name="DOT" />'의 위치가 잘못되었습니다.</translation>
 <translation id="2148716181193084225">오늘</translation>
 <translation id="2226276347425096477">이 텍스트를 <ph name="MAX_CHARACTERS" />자 이하로 줄이세요(현재 <ph name="CURRENT_LENGTH" />자 사용 중).</translation>
-<translation id="2246498165605549352">로컬 파일</translation>
 <translation id="2247351761944213033"><ph name="YEAR" />, <ph name="WEEKNUMBER" />번째 주</translation>
 <translation id="2277199496770840904"><ph name="NUMBER" />번 트랙</translation>
 <translation id="2393030564806080191">16진수 색상 값</translation>
@@ -89,6 +88,7 @@
 <translation id="5425179576310518467">현재 날짜</translation>
 <translation id="5466621249238537318">파일을 한 개 이상 선택하세요.</translation>
 <translation id="5468998798572797635">전체화면 닫기</translation>
+<translation id="5514612371225420585">기기의 파일</translation>
 <translation id="5516235301412634559">0.75</translation>
 <translation id="5537725057119320332">전송</translation>
 <translation id="5546461542133609677">음소거 해제</translation>
@@ -113,6 +113,7 @@
 <translation id="6398862346408813489">월 선택 패널 표시</translation>
 <translation id="6404546809543547843">오디오 시간 스크러버</translation>
 <translation id="6443871981718447451">자막 메뉴 표시</translation>
+<translation id="6484738902856791350">pretty print 적용</translation>
 <translation id="6550675742724504774">옵션</translation>
 <translation id="6572309429103589720">문법이 잘못되었습니다.</translation>
 <translation id="658823671542763450">전체화면 열기</translation>

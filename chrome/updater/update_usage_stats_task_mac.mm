@@ -8,20 +8,16 @@
 #include <string>
 #include <vector>
 
+#include "base/apple/foundation_util.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/mac/foundation_util.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/mac_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/crashpad/crashpad/client/crash_report_database.h"
 #include "third_party/crashpad/crashpad/client/settings.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace updater {
 
@@ -67,7 +63,7 @@ bool OtherAppUsageStatsAllowed(const std::vector<std::string>& app_ids,
   // In the system case, iterate all users. If any user has opted-in to usage
   // stats, the system updater may transmit usage stats.
   base::FilePath user_dir;
-  if (!base::mac::GetLocalDirectory(NSUserDirectory, &user_dir)) {
+  if (!base::apple::GetLocalDirectory(NSUserDirectory, &user_dir)) {
     return false;
   }
   base::FileEnumerator files(user_dir, false,

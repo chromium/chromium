@@ -176,7 +176,6 @@ void DeriveCommandLine(const GURL& start_url,
     blink::switches::kDisablePartialRaster,
     blink::switches::kDisablePreferCompositingToLCDText,
     blink::switches::kDisableRGBA4444Textures,
-    blink::switches::kDisableThreadedScrolling,
     blink::switches::kDisableZeroCopy,
     blink::switches::kEnableLowResTiling,
     blink::switches::kEnablePreferCompositingToLCDText,
@@ -222,6 +221,7 @@ void DeriveCommandLine(const GURL& start_url,
     switches::kEnableArc,
     switches::kEnterpriseDisableArc,
     switches::kEnterpriseEnableForcedReEnrollment,
+    switches::kForceTabletPowerButton,
     switches::kFormFactor,
     switches::kHasChromeOSKeyboard,
     switches::kLacrosChromeAdditionalArgs,
@@ -230,14 +230,14 @@ void DeriveCommandLine(const GURL& start_url,
     crosapi::browser_util::kLacrosStabilitySwitch,
     switches::kLoginProfile,
     switches::kNaturalScrollDefault,
+    switches::kOobeForceTabletFirstRun,
     switches::kRlzPingDelay,
     chromeos::switches::kSystemInDevMode,
     switches::kTouchscreenUsableWhileScreenOff,
     policy::switches::kDeviceManagementUrl,
     wm::switches::kWindowAnimationsDisabled,
   };
-  command_line->CopySwitchesFrom(base_command_line, kForwardSwitches,
-                                 std::size(kForwardSwitches));
+  command_line->CopySwitchesFrom(base_command_line, kForwardSwitches);
 
   if (start_url.is_valid())
     command_line->AppendArg(start_url.spec());
@@ -254,8 +254,6 @@ void DeriveFeatures(base::CommandLine* out_command_line) {
   auto kForwardFeatures = {
     &features::kAutoNightLight,
     &features::kLacrosOnly,
-    &features::kLacrosPrimary,
-    &features::kLacrosSupport,
     &::features::kPluginVm,
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
     &media::kPlatformHEVCDecoderSupport,

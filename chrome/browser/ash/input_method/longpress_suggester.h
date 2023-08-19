@@ -31,7 +31,7 @@ class LongpressSuggester : public Suggester {
   std::vector<ime::AssistiveSuggestion> GetSuggestions() override;
 
  protected:
-  const raw_ptr<SuggestionHandlerInterface, ExperimentalAsh>
+  const raw_ptr<SuggestionHandlerInterface, DanglingUntriaged | ExperimentalAsh>
       suggestion_handler_;
   absl::optional<int> focused_context_id_;
 };

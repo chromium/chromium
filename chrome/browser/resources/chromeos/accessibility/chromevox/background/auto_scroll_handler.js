@@ -27,7 +27,8 @@ const AutomationNode = chrome.automation.AutomationNode;
 const EventType = chrome.automation.EventType;
 
 /**
- * Handler of auto scrolling. Most logics are for supporting ARC++.
+ * Handles scrolling, based either on a user command or an event firing.
+ * Most of the logic is to support ARC++.
  */
 export class AutoScrollHandler {
   constructor() {

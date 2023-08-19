@@ -21,7 +21,7 @@ class BluetoothLowEnergyPeripheralManagerBridge {
       BluetoothLowEnergyAdapterApple* adapter)
       : advertisement_manager_(advertisement_manager), adapter_(adapter) {}
 
-  ~BluetoothLowEnergyPeripheralManagerBridge() {}
+  ~BluetoothLowEnergyPeripheralManagerBridge() = default;
 
   void UpdatedState() {
     advertisement_manager_->OnPeripheralManagerStateChanged();

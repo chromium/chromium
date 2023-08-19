@@ -991,7 +991,7 @@ class AnalysisServiceSourceDestinationSettingsTest
   bool is_cloud_ = true;
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
-  raw_ptr<TestingProfile> profile_;
+  raw_ptr<TestingProfile, DanglingUntriaged> profile_;
   std::unique_ptr<SourceDestinationTestingHelper>
       source_destination_testing_helper_;
 };

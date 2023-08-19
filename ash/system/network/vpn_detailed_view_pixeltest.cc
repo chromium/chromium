@@ -117,7 +117,8 @@ class VpnDetailedViewPixelTest : public AshTestBase {
   }
 
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<VpnDetailedView, ExperimentalAsh> vpn_detailed_view_ = nullptr;
+  raw_ptr<VpnDetailedView, DanglingUntriaged | ExperimentalAsh>
+      vpn_detailed_view_ = nullptr;
 };
 
 TEST_F(VpnDetailedViewPixelTest, OnlyBuiltInVpn) {
@@ -126,7 +127,7 @@ TEST_F(VpnDetailedViewPixelTest, OnlyBuiltInVpn) {
   // Compare pixels.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_view",
-      /*revision_number=*/2, vpn_detailed_view_));
+      /*revision_number=*/4, vpn_detailed_view_));
 }
 
 TEST_F(VpnDetailedViewPixelTest, MultipleVpns) {
@@ -135,7 +136,7 @@ TEST_F(VpnDetailedViewPixelTest, MultipleVpns) {
   // Compare pixels.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_view",
-      /*revision_number=*/2, vpn_detailed_view_));
+      /*revision_number=*/4, vpn_detailed_view_));
 }
 
 }  // namespace ash

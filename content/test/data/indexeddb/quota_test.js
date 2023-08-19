@@ -43,7 +43,11 @@ function initQuotaEnforcing() {
   debug("Chunk size: " + displaySize(len));
   debug("Expecting at most " + maxExpectedWrites + " writes, but we could " +
         "have more if snappy is used or LevelDB is about to compact.");
-  data = Array(1+len).join("X");
+  // The data needs to be randomized to avoid compression.
+  data = '';
+  for (let i = 0; i < 1 + len / 8; i++) {
+    data += Math.random().toString(36).slice(2, 10);
+  }
   dataLength = data.length;
   dataAdded = 0;
   successfulWrites = 0;

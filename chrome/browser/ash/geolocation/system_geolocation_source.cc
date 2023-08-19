@@ -7,12 +7,12 @@
 #include <utility>
 
 #include "ash/constants/ash_pref_names.h"
-#include "ash/public/cpp/sensor_disabled_notification_delegate.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/system/privacy_hub/geolocation_privacy_switch_controller.h"
+#include "ash/system/privacy_hub/sensor_disabled_notification_delegate.h"
 #include "base/check.h"
 #include "base/functional/callback_helpers.h"
+#include "chrome/browser/ash/privacy_hub/privacy_hub_util.h"
 #include "chrome/grit/chromium_strings.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -50,18 +50,16 @@ void SystemGeolocationSource::RegisterPermissionUpdateCallback(
   }
 }
 
-void SystemGeolocationSource::AppAttemptsToUseGeolocation() {
-  if (auto* controller = GeolocationPrivacySwitchController::Get()) {
-    controller->OnAppStartsUsingGeolocation(
-        l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_NAME));
-  }
+void SystemGeolocationSource::TrackGeolocationAttempted() {
+  // Use the default name for the browser.
+  ash::privacy_hub_util::TrackGeolocationAttempted(
+      l10n_util::GetStringUTF8(IDS_SHORT_PRODUCT_NAME));
 }
 
-void SystemGeolocationSource::AppCeasesToUseGeolocation() {
-  if (auto* controller = GeolocationPrivacySwitchController::Get()) {
-    controller->OnAppStopsUsingGeolocation(
-        l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_NAME));
-  }
+void SystemGeolocationSource::TrackGeolocationRelinquished() {
+  // Use the default name for the browser.
+  ash::privacy_hub_util::TrackGeolocationRelinquished(
+      l10n_util::GetStringUTF8(IDS_SHORT_PRODUCT_NAME));
 }
 
 void SystemGeolocationSource::OnActiveUserPrefServiceChanged(
@@ -85,11 +83,17 @@ void SystemGeolocationSource::OnPrefChanged(const std::string& pref_name) {
   device::LocationSystemPermissionStatus status =
       device::LocationSystemPermissionStatus::kNotDetermined;
 
-  PrefService* pref_service = pref_change_registrar_->prefs();
-  if (pref_service) {
-    status = pref_service->GetBoolean(prefs::kUserGeolocationAllowed)
-                 ? device::LocationSystemPermissionStatus::kAllowed
-                 : device::LocationSystemPermissionStatus::kDenied;
+  if (ash::features::IsCrosPrivacyHubV1Enabled()) {
+    PrefService* pref_service = pref_change_registrar_->prefs();
+    if (pref_service) {
+      status = pref_service->GetBoolean(prefs::kUserGeolocationAllowed)
+                   ? device::LocationSystemPermissionStatus::kAllowed
+                   : device::LocationSystemPermissionStatus::kDenied;
+    }
+  } else {
+    // If the global switch feature is not enabled, we allow explicitly to be
+    // backward compatible.
+    status = device::LocationSystemPermissionStatus::kAllowed;
   }
   permission_update_callback_.Run(status);
 }

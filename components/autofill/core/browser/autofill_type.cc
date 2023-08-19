@@ -4,8 +4,15 @@
 
 #include "components/autofill/core/browser/autofill_type.h"
 
+#include <string>
+#include <vector>
+
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
+#include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/proto/api_v1.pb.h"
+#include "components/autofill/core/browser/proto/password_requirements.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 
@@ -63,7 +70,14 @@ FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type) {
     case ADDRESS_HOME_FLOOR:
     case ADDRESS_HOME_LANDMARK:
     case ADDRESS_HOME_BETWEEN_STREETS:
+    case ADDRESS_HOME_BETWEEN_STREETS_1:
+    case ADDRESS_HOME_BETWEEN_STREETS_2:
     case ADDRESS_HOME_ADMIN_LEVEL2:
+    case ADDRESS_HOME_STREET_LOCATION:
+    case ADDRESS_HOME_OVERFLOW:
+    case ADDRESS_HOME_OVERFLOW_AND_LANDMARK:
+    case ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK:
+    case DELIVERY_INSTRUCTIONS:
       return FieldTypeGroup::kAddressHome;
 
     case CREDIT_CARD_NAME_FULL:
@@ -77,6 +91,7 @@ FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type) {
     case CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR:
     case CREDIT_CARD_TYPE:
     case CREDIT_CARD_VERIFICATION_CODE:
+    case CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
       return FieldTypeGroup::kCreditCard;
 
     case IBAN_VALUE:
@@ -95,6 +110,7 @@ FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type) {
     case NOT_PASSWORD:
     case SINGLE_USERNAME:
     case NOT_USERNAME:
+    case SINGLE_USERNAME_FORGOT_PASSWORD:
       return FieldTypeGroup::kPasswordField;
 
     case NO_SERVER_DATA:
@@ -104,7 +120,6 @@ FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type) {
     case MERCHANT_EMAIL_SIGNUP:
     case MERCHANT_PROMO_CODE:
     case UPI_VPA:
-    case CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
       return FieldTypeGroup::kNoGroup;
 
     case MAX_VALID_FIELD_TYPE:
@@ -219,6 +234,34 @@ FieldTypeGroup GroupTypeOfHtmlFieldType(HtmlFieldType field_type,
   }
   NOTREACHED();
   return FieldTypeGroup::kNoGroup;
+}
+
+AutofillType::ServerPrediction::ServerPrediction() = default;
+
+AutofillType::ServerPrediction::ServerPrediction(const AutofillField& field) {
+  may_use_prefilled_placeholder = field.may_use_prefilled_placeholder();
+  password_requirements = field.password_requirements();
+  server_predictions = field.server_predictions();
+}
+
+AutofillType::ServerPrediction::ServerPrediction(const ServerPrediction&) =
+    default;
+
+AutofillType::ServerPrediction& AutofillType::ServerPrediction::operator=(
+    const ServerPrediction&) = default;
+
+AutofillType::ServerPrediction::ServerPrediction(ServerPrediction&&) = default;
+
+AutofillType::ServerPrediction& AutofillType::ServerPrediction::operator=(
+    ServerPrediction&&) = default;
+
+AutofillType::ServerPrediction::~ServerPrediction() = default;
+
+ServerFieldType AutofillType::ServerPrediction::server_type() const {
+  return server_predictions.empty()
+             ? NO_SERVER_DATA
+             : ToSafeServerFieldType(server_predictions[0].type(),
+                                     NO_SERVER_DATA);
 }
 
 AutofillType::AutofillType(ServerFieldType field_type)

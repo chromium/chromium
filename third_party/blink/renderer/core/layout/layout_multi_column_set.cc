@@ -289,7 +289,7 @@ LayoutUnit LayoutMultiColumnSet::LogicalBottomInFlowThread() const {
   return LastFragmentainerGroup().LogicalBottomInFlowThread();
 }
 
-LayoutSize LayoutMultiColumnSet::FlowThreadTranslationAtOffset(
+PhysicalOffset LayoutMultiColumnSet::FlowThreadTranslationAtOffset(
     LayoutUnit block_offset,
     PageBoundaryRule rule,
     CoordinateSpaceConversion mode) const {
@@ -298,20 +298,20 @@ LayoutSize LayoutMultiColumnSet::FlowThreadTranslationAtOffset(
       .FlowThreadTranslationAtOffset(block_offset, rule, mode);
 }
 
+// `visual_point` is in the flipped block-flow coordinate system.
 LayoutPoint LayoutMultiColumnSet::VisualPointToFlowThreadPoint(
     const LayoutPoint& visual_point) const {
   NOT_DESTROYED();
   const MultiColumnFragmentainerGroup& row =
       FragmentainerGroupAtVisualPoint(visual_point);
-  return row.VisualPointToFlowThreadPoint(visual_point -
-                                          row.OffsetFromColumnSet());
-}
-
-LayoutUnit LayoutMultiColumnSet::PageLogicalTopForOffset(
-    LayoutUnit offset) const {
-  NOT_DESTROYED();
-  return FragmentainerGroupAtFlowThreadOffset(offset, kAssociateWithLatterPage)
-      .ColumnLogicalTopForOffset(offset);
+  LogicalOffset logical_point =
+      IsHorizontalWritingMode()
+          ? LogicalOffset(visual_point.X(), visual_point.Y())
+          : LogicalOffset(visual_point.Y(), visual_point.X());
+  LogicalOffset logical_result = row.VisualPointToFlowThreadPoint(
+      logical_point - row.OffsetFromColumnSet());
+  LayoutPoint result(logical_result.inline_offset, logical_result.block_offset);
+  return IsHorizontalWritingMode() ? result : result.TransposedPoint();
 }
 
 void LayoutMultiColumnSet::ResetColumnHeight() {
@@ -363,36 +363,6 @@ void LayoutMultiColumnSet::UpdateLayout() {
   NOTREACHED_NORETURN();
 }
 
-MinMaxSizes LayoutMultiColumnSet::ComputeIntrinsicLogicalWidths() const {
-  NOT_DESTROYED();
-  return MinMaxSizes();
-}
-
-void LayoutMultiColumnSet::ComputeLogicalHeight(
-    LayoutUnit,
-    LayoutUnit logical_top,
-    LogicalExtentComputedValues& computed_values) const {
-  NOT_DESTROYED();
-  NOTREACHED_NORETURN();
-}
-
-PositionWithAffinity LayoutMultiColumnSet::PositionForPoint(
-    const PhysicalOffset& point) const {
-  NOT_DESTROYED();
-  DCHECK_GE(GetDocument().Lifecycle().GetState(),
-            DocumentLifecycle::kPrePaintClean);
-  LayoutPoint flipped_point = FlipForWritingMode(point);
-  // Convert the visual point to a flow thread point.
-  const MultiColumnFragmentainerGroup& row =
-      FragmentainerGroupAtVisualPoint(flipped_point);
-  LayoutPoint flow_thread_point = row.VisualPointToFlowThreadPoint(
-      flipped_point + row.OffsetFromColumnSet(),
-      MultiColumnFragmentainerGroup::kSnapToColumn);
-  // Then drill into the flow thread, where we'll find the actual content.
-  return FlowThread()->PositionForPoint(
-      FlowThread()->FlipForWritingMode(flow_thread_point));
-}
-
 LayoutUnit LayoutMultiColumnSet::ColumnGap() const {
   NOT_DESTROYED();
   LayoutBlockFlow* parent_block = MultiColumnBlockFlow();
@@ -413,54 +383,14 @@ unsigned LayoutMultiColumnSet::ActualColumnCount() const {
   return FirstFragmentainerGroup().ActualColumnCount();
 }
 
-void LayoutMultiColumnSet::PaintObject(
-    const PaintInfo& paint_info,
-    const PhysicalOffset& paint_offset) const {
-  NOT_DESTROYED();
-  NOTREACHED_NORETURN();
-}
-
-LayoutRect LayoutMultiColumnSet::FragmentsBoundingBox(
-    const LayoutRect& bounding_box_in_flow_thread) const {
+PhysicalRect LayoutMultiColumnSet::FragmentsBoundingBox(
+    const PhysicalRect& bounding_box_in_flow_thread) const {
   NOT_DESTROYED();
   UpdateGeometryIfNeeded();
-  LayoutRect result;
+  PhysicalRect result;
   for (const auto& group : fragmentainer_groups_)
     result.Unite(group.FragmentsBoundingBox(bounding_box_in_flow_thread));
   return result;
-}
-
-void LayoutMultiColumnSet::ComputeVisualOverflow() {
-  NOT_DESTROYED();
-  LayoutRect previous_visual_overflow_rect = VisualOverflowRectAllowingUnset();
-  ClearVisualOverflow();
-  AddVisualOverflowFromChildren();
-  AddVisualEffectOverflow();
-
-  if (VisualOverflowRect() != previous_visual_overflow_rect) {
-    InvalidateIntersectionObserverCachedRects();
-    SetShouldCheckForPaintInvalidation();
-    GetFrameView()->SetIntersectionObservationState(LocalFrameView::kDesired);
-  }
-}
-
-void LayoutMultiColumnSet::AddVisualOverflowFromChildren() {
-  NOT_DESTROYED();
-  if (ChildLayoutBlockedByDisplayLock())
-    return;
-
-  // It's useless to calculate overflow if we haven't determined the page
-  // logical height yet.
-  if (!IsPageLogicalHeightKnown())
-    return;
-  UpdateGeometryIfNeeded();
-  LayoutRect overflow_rect;
-  for (const auto& group : fragmentainer_groups_) {
-    LayoutRect rect = group.CalculateOverflow();
-    rect.Move(group.OffsetFromColumnSet());
-    overflow_rect.Unite(rect);
-  }
-  AddContentsVisualOverflow(overflow_rect);
 }
 
 void LayoutMultiColumnSet::InsertedIntoTree() {
@@ -475,13 +405,13 @@ void LayoutMultiColumnSet::WillBeRemovedFromTree() {
   DetachFromFlowThread();
 }
 
-LayoutPoint LayoutMultiColumnSet::Location() const {
+LayoutPoint LayoutMultiColumnSet::LocationInternal() const {
   NOT_DESTROYED();
   UpdateGeometryIfNeeded();
   return frame_location_;
 }
 
-LayoutSize LayoutMultiColumnSet::Size() const {
+PhysicalSize LayoutMultiColumnSet::Size() const {
   NOT_DESTROYED();
   UpdateGeometryIfNeeded();
   return frame_size_;
@@ -545,8 +475,7 @@ void LayoutMultiColumnSet::UpdateGeometry() {
           // pending_column_set at this point). Say hello to the column set that
           // shouldn't exist, so that it gets some initialization.
           SetIsIgnoredByNG();
-          frame_size_ =
-              ToPhysicalSize(logical_size, writing_mode).ToLayoutSize();
+          frame_size_ = ToPhysicalSize(logical_size, writing_mode);
           return;
         }
         if (previous_placeholder &&
@@ -563,7 +492,7 @@ void LayoutMultiColumnSet::UpdateGeometry() {
   }
   if (!iter.IsValid()) {
     SetIsIgnoredByNG();
-    frame_size_ = ToPhysicalSize(logical_size, writing_mode).ToLayoutSize();
+    frame_size_ = ToPhysicalSize(logical_size, writing_mode);
     return;
   }
   // Found the first column box after previous_placeholder.
@@ -623,7 +552,7 @@ void LayoutMultiColumnSet::UpdateGeometry() {
     }
     AppendNewFragmentainerGroup();
   }
-  frame_size_ = ToPhysicalSize(logical_size, writing_mode).ToLayoutSize();
+  frame_size_ = ToPhysicalSize(logical_size, writing_mode);
 }
 
 void LayoutMultiColumnSet::AttachToFlowThread() {
@@ -645,18 +574,9 @@ void LayoutMultiColumnSet::DetachFromFlowThread() {
   }
 }
 
-LayoutRect LayoutMultiColumnSet::FlowThreadPortionRect() const {
-  NOT_DESTROYED();
-  LayoutRect portion_rect(LayoutUnit(), LogicalTopInFlowThread(),
-                          PageLogicalWidth(), LogicalHeightInFlowThread());
-  if (!IsHorizontalWritingMode())
-    return portion_rect.TransposedRect();
-  return portion_rect;
-}
-
 bool LayoutMultiColumnSet::ComputeColumnRuleBounds(
-    const LayoutPoint& paint_offset,
-    Vector<LayoutRect>& column_rule_bounds) const {
+    const PhysicalOffset& paint_offset,
+    Vector<PhysicalRect>& column_rule_bounds) const {
   NOT_DESTROYED();
   // Reference: https://www.w3.org/TR/css3-multicol/#column-gaps-and-rules
   const ComputedStyle& block_style = MultiColumnBlockFlow()->StyleRef();
@@ -695,20 +615,20 @@ bool LayoutMultiColumnSet::ComputeColumnRuleBounds(
     if (i < col_count - 1) {
       LayoutUnit rule_left, rule_right, rule_top, rule_bottom;
       if (IsHorizontalWritingMode()) {
-        rule_left = paint_offset.X() + rule_logical_left - rule_thickness / 2 +
+        rule_left = paint_offset.left + rule_logical_left - rule_thickness / 2 +
                     rule_add;
         rule_right = rule_left + rule_thickness;
-        rule_top = paint_offset.Y() + BorderTop() + PaddingTop();
+        rule_top = paint_offset.top + BorderTop() + PaddingTop();
         rule_bottom = rule_top + ContentHeight();
       } else {
-        rule_left = paint_offset.X() + BorderLeft() + PaddingLeft();
+        rule_left = paint_offset.left + BorderLeft() + PaddingLeft();
         rule_right = rule_left + ContentWidth();
-        rule_top = paint_offset.Y() + rule_logical_left - rule_thickness / 2 +
+        rule_top = paint_offset.top + rule_logical_left - rule_thickness / 2 +
                    rule_add;
         rule_bottom = rule_top + rule_thickness;
       }
 
-      column_rule_bounds.push_back(LayoutRect(
+      column_rule_bounds.push_back(PhysicalRect(
           rule_left, rule_top, rule_right - rule_left, rule_bottom - rule_top));
     }
 
@@ -723,10 +643,9 @@ PhysicalRect LayoutMultiColumnSet::LocalVisualRectIgnoringVisibility() const {
       LayoutBlockFlow::LocalVisualRectIgnoringVisibility();
 
   // Now add in column rule bounds, if present.
-  Vector<LayoutRect> column_rule_bounds;
-  if (ComputeColumnRuleBounds(LayoutPoint(), column_rule_bounds)) {
-    block_flow_bounds.Unite(
-        PhysicalRectToBeNoop(UnionRect(column_rule_bounds)));
+  Vector<PhysicalRect> column_rule_bounds;
+  if (ComputeColumnRuleBounds(PhysicalOffset(), column_rule_bounds)) {
+    block_flow_bounds.Unite(UnionRect(column_rule_bounds));
   }
 
   return block_flow_bounds;

@@ -15,7 +15,6 @@
 #include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/message_loop/timer_slack.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
 #include "base/task/sequence_manager/task_time_observer.h"
 #include "base/task/sequenced_task_runner.h"
@@ -28,10 +27,6 @@ class MessagePump;
 class TaskObserver;
 
 namespace sequence_manager {
-namespace internal {
-class TestTaskQueue;
-}  // namespace internal
-
 class TimeDomain;
 
 // SequenceManager manages TaskQueues which have different properties
@@ -272,10 +267,6 @@ class BASE_EXPORT SequenceManager {
   // logic at the cost of a potentially worse latency. 1 by default.
   virtual void SetWorkBatchSize(int work_batch_size) = 0;
 
-  // Requests desired timer precision from the OS.
-  // Has no effect on some platforms.
-  virtual void SetTimerSlack(TimerSlack timer_slack) = 0;
-
   // Enables crash keys that can be set in the scope of a task which help
   // to identify the culprit if upcoming work results in a crash.
   // Key names must be thread-specific to avoid races and corrupted crash dumps.
@@ -286,11 +277,10 @@ class BASE_EXPORT SequenceManager {
 
   virtual TaskQueue::QueuePriority GetPriorityCount() const = 0;
 
-  // Creates a vanilla TaskQueue rather than a user type derived from it. This
-  // should be used if you don't wish to sub class TaskQueue.
-  // Must be called on the main thread.
-  virtual scoped_refptr<TaskQueue> CreateTaskQueue(
-      const TaskQueue::Spec& spec) = 0;
+  // Creates a `TaskQueue` and returns a `TaskQueue::Handle`for it. The queue is
+  // owned by the handle and shut down when the handle is destroyed. Must be
+  // called on the main thread.
+  virtual TaskQueue::Handle CreateTaskQueue(const TaskQueue::Spec& spec) = 0;
 
   // Returns true iff this SequenceManager has no immediate work to do. I.e.
   // there are no pending non-delayed tasks or delayed tasks that are due to
@@ -320,8 +310,6 @@ class BASE_EXPORT SequenceManager {
   virtual void RemoveTaskObserver(TaskObserver* task_observer) = 0;
 
  protected:
-  friend class internal::TestTaskQueue;  // For CreateTaskQueueImpl().
-
   virtual std::unique_ptr<internal::TaskQueueImpl> CreateTaskQueueImpl(
       const TaskQueue::Spec& spec) = 0;
 };

@@ -18,6 +18,7 @@ import android.widget.DatePicker;
 import android.widget.ListView;
 import android.widget.TimePicker;
 
+import org.chromium.base.Log;
 import org.chromium.content.R;
 import org.chromium.content.browser.picker.DateTimePickerDialog.OnDateTimeSetListener;
 import org.chromium.content.browser.picker.MultiFieldTimePickerDialog.OnMultiFieldTimeSetListener;
@@ -34,6 +35,7 @@ import java.util.concurrent.TimeUnit;
  * Opens the appropriate date/time picker dialog for the given dialog type.
  */
 public class InputDialogContainer {
+    private static final String TAG = "InputDialogContainer";
 
     /**
      * Delegate that implements the picker's actions.
@@ -197,7 +199,7 @@ public class InputDialogContainer {
             int year, int month, int monthDay,
             int hourOfDay, int minute, int second, int millis, int week,
             double min, double max, double step) {
-        if (isDialogShowing()) mDialog.dismiss();
+        dismissDialog();
 
         int stepTime = (int) step;
 
@@ -275,7 +277,12 @@ public class InputDialogContainer {
     }
 
     public void dismissDialog() {
-        if (isDialogShowing()) mDialog.dismiss();
+        if (!isDialogShowing()) return;
+        try {
+            mDialog.dismiss();
+        } catch (IllegalArgumentException e) {
+            Log.w(TAG, "Ignoring exception from dialog.dismiss", e);
+        }
     }
 
     private class DateListener implements OnDateSetListener {

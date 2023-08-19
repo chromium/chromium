@@ -8,11 +8,10 @@
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "ash/public/cpp/wallpaper/online_wallpaper_variant.h"
 #include "ash/webui/personalization_app/proto/backdrop_wallpaper.pb.h"
-#include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AccountId;
 
@@ -27,12 +26,6 @@ class ASH_PUBLIC_EXPORT WallpaperControllerClient {
  public:
   // Opens the wallpaper picker window.
   virtual void OpenWallpaperPicker() = 0;
-
-  // Sets the default wallpaper and removes the file for the previous wallpaper.
-  virtual void SetDefaultWallpaper(
-      const AccountId& account_id,
-      bool show_wallpaper,
-      base::OnceCallback<void(bool success)> callback) = 0;
 
   // Downloads and sets a new random wallpaper from the collection of the
   // specified collection_id.

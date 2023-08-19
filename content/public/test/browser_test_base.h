@@ -235,6 +235,11 @@ class BrowserTestBase : public ::testing::Test {
   // Performs a bunch of setup, and then runs the browser test body.
   void ProxyRunTestOnMainThreadLoop();
 
+  // Sets `initialized_network_process_` to false and calls
+  // InitializeNetworkProcess(). Used when restarting the network service
+  // process.
+  void ForceInitializeNetworkProcess();
+
   // When using the network process, update the host resolver rules that were
   // added in SetUpOnMainThread.
   void InitializeNetworkProcess();
@@ -305,7 +310,8 @@ class BrowserTestBase : public ::testing::Test {
 
   bool allow_network_access_to_host_resolutions_ = false;
 
-  raw_ptr<BrowserMainParts, DanglingUntriaged> browser_main_parts_ = nullptr;
+  raw_ptr<BrowserMainParts, AcrossTasksDanglingUntriaged> browser_main_parts_ =
+      nullptr;
 
 #if BUILDFLAG(IS_POSIX)
   bool handle_sigterm_;

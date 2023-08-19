@@ -43,12 +43,13 @@ export function sanitizeInnerHtml(rawString, opts) {
   assert(window.trustedTypes);
   if (sanitizedPolicy === null) {
     // Initialize |sanitizedPolicy| lazily.
-    sanitizedPolicy = window.trustedTypes.createPolicy('sanitize-inner-html', {
-      createHTML: (string, ...opts) =>
-          sanitizeInnerHtmlInternal(string, opts[0]),
-      createScript: (message) => assertNotReached(message),
-      createScriptURL: (message) => assertNotReached(message),
-    });
+    sanitizedPolicy =
+        window.trustedTypes.createPolicy('ash-deprecated-sanitize-inner-html', {
+          createHTML: (string, ...opts) =>
+              sanitizeInnerHtmlInternal(string, opts[0]),
+          createScript: (message) => assertNotReached(message),
+          createScriptURL: (message) => assertNotReached(message),
+        });
   }
   return sanitizedPolicy.createHTML(rawString, opts);
 }
@@ -125,8 +126,8 @@ export const parseHtmlSubset = (function() {
    * @type {!Set<string>}
    * @const
    */
-  const allowedTags =
-      new Set(['A', 'B', 'BR', 'DIV', 'KBD', 'P', 'PRE', 'SPAN', 'STRONG']);
+  const allowedTags = new Set(
+      ['A', 'B', 'BR', 'DIV', 'EM', 'KBD', 'P', 'PRE', 'SPAN', 'STRONG']);
 
   /**
    * Allow-list of optional tag names in parseHtmlSubset.
@@ -206,7 +207,8 @@ export const parseHtmlSubset = (function() {
     if (window.trustedTypes) {
       if (!unsanitizedPolicy) {
         unsanitizedPolicy = trustedTypes.createPolicy(
-            'parse-html-subset', {createHTML: untrustedHTML => untrustedHTML});
+            'ash-deprecated-parse-html-subset',
+            {createHTML: untrustedHTML => untrustedHTML});
       }
       s = unsanitizedPolicy.createHTML(s);
     }

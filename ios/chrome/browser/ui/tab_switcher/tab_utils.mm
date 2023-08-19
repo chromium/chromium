@@ -6,6 +6,7 @@
 
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -18,27 +19,12 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/web/public/web_state.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using base::RecordAction;
 using base::UserMetricsAction;
 using PinnedState = WebStateSearchCriteria::PinnedState;
 
 int GetWebStateIndex(WebStateList* web_state_list,
                      WebStateSearchCriteria criteria) {
-  for (int i = 0; i < web_state_list->count(); i++) {
-    web::WebState* web_state = web_state_list->GetWebStateAt(i);
-    if ([criteria.identifier
-            isEqualToString:web_state->GetStableIdentifier()]) {
-      return i;
-    }
-  }
-  return WebStateList::kInvalidIndex;
-}
-
-int GetTabIndex(WebStateList* web_state_list, WebStateSearchCriteria criteria) {
   int start = 0;
   int end = web_state_list->count();
   switch (criteria.pinned_state) {
@@ -98,7 +84,7 @@ NSString* GetActiveWebStateIdentifier(WebStateList* web_state_list,
 
 web::WebState* GetWebState(WebStateList* web_state_list,
                            WebStateSearchCriteria criteria) {
-  int index = GetTabIndex(web_state_list, criteria);
+  int index = GetWebStateIndex(web_state_list, criteria);
   if (index == WebStateList::kInvalidIndex) {
     return nullptr;
   }
@@ -129,12 +115,14 @@ int SetWebStatePinnedState(WebStateList* web_state_list,
 
   const PinnedState pinned_state =
       pin_state ? PinnedState::kNonPinned : PinnedState::kPinned;
-  int index = GetTabIndex(web_state_list,
-                          WebStateSearchCriteria{.identifier = identifier,
-                                                 .pinned_state = pinned_state});
+  int index = GetWebStateIndex(
+      web_state_list, WebStateSearchCriteria{.identifier = identifier,
+                                             .pinned_state = pinned_state});
   if (index == WebStateList::kInvalidIndex) {
     return WebStateList::kInvalidIndex;
   }
+
+  LogPinnedTabsUsedForDefaultBrowserPromo();
 
   return web_state_list->SetWebStatePinnedAt(index, pin_state);
 }

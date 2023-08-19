@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
-#import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
@@ -13,10 +13,6 @@
 
 #import "testing/gtest_mac.h"
 #import "ui/base/l10n/l10n_util.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 // Add selectors to be tested in the helpers.
 @interface TableViewItem (ItemAddition)
@@ -39,8 +35,7 @@ void ChromeTableViewControllerTest::TearDown() {
 void ChromeTableViewControllerTest::CreateController() {
   DCHECK(!controller_);
   controller_ = InstantiateController();
-  // Force the model to be loaded.
-  [controller_ loadModel];
+
   // Force the tableView to be built.
   EXPECT_TRUE([controller_ view]);
 }
@@ -164,6 +159,14 @@ void ChromeTableViewControllerTest::CheckURLCellTitleAndDetailText(
   EXPECT_NSEQ(expected_detail_text, [cell detailText]);
 }
 
+void ChromeTableViewControllerTest::CheckURLCellTitle(NSString* expected_title,
+                                                      int section,
+                                                      int item) {
+  id cell = GetTableViewItem(section, item);
+  ASSERT_TRUE([cell respondsToSelector:@selector(title)]);
+  EXPECT_NSEQ(expected_title, [cell title]);
+}
+
 void ChromeTableViewControllerTest::CheckDetailItemTextWithIds(
     int expected_text_id,
     int expected_detail_text_id,
@@ -203,7 +206,7 @@ void ChromeTableViewControllerTest::CheckInfoButtonCellStatusAndText(
     NSString* expected_title,
     int section,
     int item) {
-  id info_button_item = base::mac::ObjCCastStrict<TableViewInfoButtonItem>(
+  id info_button_item = base::apple::ObjCCastStrict<TableViewInfoButtonItem>(
       GetTableViewItem(section, item));
   EXPECT_TRUE([info_button_item respondsToSelector:@selector(text)]);
   EXPECT_NSEQ(expected_title, [info_button_item text]);

@@ -53,7 +53,7 @@
   <message name="IDS_VERSION_UI_COMMAND_LINE" desc="label for the command line on the about:version page">
     Command Line
   </message>
-  <if expr="chromeos_ash">
+  <if expr="is_chromeos">
     <message name="IDS_VERSION_UI_BUILD_DATE" desc="label for build date on the about:version page">
       Build Date
     </message>

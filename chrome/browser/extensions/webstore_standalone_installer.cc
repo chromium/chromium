@@ -217,8 +217,12 @@ void WebstoreStandaloneInstaller::OnInstallPromptDone(
   }
 
   auto installer = base::MakeRefCounted<WebstoreInstaller>(
-      profile_, this, GetWebContents(), id_, std::move(approval),
-      install_source_);
+      profile_,
+      base::BindOnce(&WebstoreStandaloneInstaller::OnExtensionInstallSuccess,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&WebstoreStandaloneInstaller::OnExtensionInstallFailure,
+                     weak_ptr_factory_.GetWeakPtr()),
+      GetWebContents(), id_, std::move(approval), install_source_);
   installer->Start();
 }
 

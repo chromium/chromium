@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -92,6 +93,7 @@ class TestURLLoaderFactory : public mojom::URLLoaderFactory {
                              // URL passed in to
                              // SimulateResponseForPendingRequest
     kMostRecentMatch = 0x2,  // Start with the most recent requests.
+    kWaitForRequest = 0x4,   // Wait for a matching request, if none is present.
   };
 
   // Flags used with |AddResponse| to control how it produces a response.
@@ -161,6 +163,8 @@ class TestURLLoaderFactory : public mojom::URLLoaderFactory {
   //   starts with |url| (instead of being equal to |url|).
   // - if kMostRecentMatch is set, the most recent (instead of oldest) pending
   //   request matching is used.
+  // - if kWaitForRequest is set, and no matching request is pending, a nested
+  //   run loop will be run until that request arrives.
   bool SimulateResponseForPendingRequest(
       const GURL& url,
       const network::URLLoaderCompletionStatus& completion_status,
@@ -222,6 +226,9 @@ class TestURLLoaderFactory : public mojom::URLLoaderFactory {
   bool CreateLoaderAndStartInternal(const GURL& url,
                                     mojom::URLLoaderClient* client);
 
+  absl::optional<network::TestURLLoaderFactory::PendingRequest>
+  FindPendingRequest(const GURL& url, ResponseMatchFlags flags);
+
   static void SimulateResponse(mojom::URLLoaderClient* client,
                                Redirects redirects,
                                mojom::URLResponseHeadPtr head,
@@ -244,6 +251,9 @@ class TestURLLoaderFactory : public mojom::URLLoaderFactory {
   std::map<GURL, Response> responses_;
 
   std::vector<PendingRequest> pending_requests_;
+
+  // If set, this is called when a new pending request arrives.
+  base::OnceClosure on_new_pending_request_;
 
   scoped_refptr<network::WeakWrapperSharedURLLoaderFactory> weak_wrapper_;
 

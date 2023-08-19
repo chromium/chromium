@@ -29,6 +29,7 @@
 #import <utility>
 #import <vector>
 
+#import "base/apple/foundation_util.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
 #import "base/strings/string_piece.h"
@@ -36,10 +37,7 @@
 #import "ios/chrome/tools/strings/grit_header_parsing.h"
 #import "ui/base/resource/data_pack.h"
 #import "ui/base/resource/resource_handle.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+#import "ui/base/resource/resource_scale_factor.h"
 
 namespace {
 
@@ -74,18 +72,20 @@ std::unique_ptr<ui::DataPack> LoadResourceDataPack(
 // Return nil if none is found.
 NSString* GetStringFromDataPack(const ui::DataPack& data_pack,
                                 uint16_t resource_id) {
-  base::StringPiece data;
-  if (!data_pack.GetStringPiece(resource_id, &data))
+  absl::optional<base::StringPiece> data =
+      data_pack.GetStringPiece(resource_id);
+  if (!data.has_value()) {
     return nil;
+  }
 
   // Data pack encodes strings as either UTF8 or UTF16.
   if (data_pack.GetTextEncodingType() == ui::DataPack::UTF8) {
-    return [[NSString alloc] initWithBytes:data.data()
-                                    length:data.length()
+    return [[NSString alloc] initWithBytes:data->data()
+                                    length:data->length()
                                   encoding:NSUTF8StringEncoding];
   } else if (data_pack.GetTextEncodingType() == ui::DataPack::UTF16) {
-    return [[NSString alloc] initWithBytes:data.data()
-                                    length:data.length()
+    return [[NSString alloc] initWithBytes:data->data()
+                                    length:data->length()
                                   encoding:NSUTF16LittleEndianStringEncoding];
   }
   return nil;
@@ -144,8 +144,8 @@ NSDictionary* LoadResourcesListFromHeaders(NSArray* header_list,
 
   std::vector<base::FilePath> headers;
   for (NSString* header in header_list) {
-    headers.push_back(base::FilePath(base::SysNSStringToUTF8(
-        [root_header_dir stringByAppendingPathComponent:header])));
+    headers.push_back(base::apple::NSStringToFilePath(
+        [root_header_dir stringByAppendingPathComponent:header]));
   }
 
   absl::optional<ResourceMap> resource_map =

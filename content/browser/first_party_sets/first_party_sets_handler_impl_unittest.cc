@@ -13,6 +13,7 @@
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -54,16 +55,16 @@ namespace {
 using ParseErrorType = FirstPartySetsHandler::ParseErrorType;
 using ParseWarningType = FirstPartySetsHandler::ParseWarningType;
 
-const char* kAdditionsField = "additions";
-const char* kPrimaryField = "primary";
-const char* kCctldsField = "ccTLDs";
+constexpr char kAdditionsField[] = "additions";
+constexpr char kPrimaryField[] = "primary";
+constexpr char kCctldsField[] = "ccTLDs";
 
-const char* kFirstPartySetsClearSiteDataOutcomeHistogram =
+constexpr char kFirstPartySetsClearSiteDataOutcomeHistogram[] =
     "FirstPartySets.Initialization.ClearSiteDataOutcome";
 
-const char* kDelayedQueriesCountHistogram =
+constexpr char kDelayedQueriesCountHistogram[] =
     "Cookie.FirstPartySets.Browser.DelayedQueriesCount";
-const char* kMostDelayedQueryDeltaHistogram =
+constexpr char kMostDelayedQueryDeltaHistogram[] =
     "Cookie.FirstPartySets.Browser.MostDelayedQueryDelta";
 
 }  // namespace
@@ -143,14 +144,12 @@ TEST(FirstPartySetsHandlerImpl, ValidateEnterprisePolicy_InvalidPolicy) {
               }
             )")
                           .value();
-  // Validation fails with an error.
-  auto [success, warnings] =
-      FirstPartySetsHandler::ValidateEnterprisePolicy(input.GetDict());
-  ASSERT_FALSE(success.has_value());
-  // An appropriate ParseError is returned.
-  EXPECT_EQ(success.error(), FirstPartySetsHandler::ParseError(
-                                 ParseErrorType::kNonDisjointSets,
-                                 {kAdditionsField, 0, kPrimaryField}));
+  // Validation fails with an error and an appropriate ParseError is returned.
+  EXPECT_THAT(
+      FirstPartySetsHandler::ValidateEnterprisePolicy(input.GetDict()).first,
+      base::test::ErrorIs(FirstPartySetsHandler::ParseError(
+          ParseErrorType::kNonDisjointSets,
+          {kAdditionsField, 0, kPrimaryField})));
 }
 
 class FirstPartySetsHandlerImplTest : public ::testing::Test {
@@ -669,7 +668,6 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
 
   base::test::TestFuture<net::FirstPartySetMetadata> future;
   handler().ComputeFirstPartySetMetadata(example, &associated,
-                                         /*party_context=*/{},
                                          net::FirstPartySetsContextConfig(),
                                          future.GetCallback());
   EXPECT_TRUE(future.IsReady());
@@ -682,9 +680,9 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
   base::test::TestFuture<net::FirstPartySetMetadata> future;
   net::SchemefulSite example(GURL("https://example.test"));
   net::SchemefulSite associated(GURL("https://associatedsite.test"));
-  handler().ComputeFirstPartySetMetadata(
-      example, &associated, /*party_context=*/{},
-      net::FirstPartySetsContextConfig(), future.GetCallback());
+  handler().ComputeFirstPartySetMetadata(example, &associated,
+                                         net::FirstPartySetsContextConfig(),
+                                         future.GetCallback());
   EXPECT_FALSE(future.IsReady());
 
   handler().Init(scoped_dir_.GetPath(), LocalSetDeclaration());

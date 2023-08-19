@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/signin/account_consistency_browser_agent.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 #import "ios/chrome/browser/lens/lens_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -120,7 +116,7 @@ TEST_F(AccountConsistencyBrowserAgentTest, OnAddAccountWithoutPresentedView) {
       baseViewController:base_view_controller_mock_]);
   agent_->OnAddAccount();
   EXPECT_NE(received_command, nil);
-  EXPECT_EQ(received_command.operation, AuthenticationOperationAddAccount);
+  EXPECT_EQ(received_command.operation, AuthenticationOperation::kAddAccount);
   EXPECT_EQ(received_command.identity, nil);
   EXPECT_EQ(
       received_command.accessPoint,

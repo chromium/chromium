@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='composited-layer' class='final-drop-shadow'",
+      "name": "LayoutNGBlockFlow (positioned) DIV id='composited-layer' class='initial-drop-shadow'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#008000",

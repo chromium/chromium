@@ -28,15 +28,14 @@
 #include "third_party/blink/renderer/core/paint/ng/ng_inline_paint_context.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_text_decoration_painter.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_text_painter.h"
+#include "third_party/blink/renderer/core/paint/object_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/selection_bounds_recorder.h"
-#include "third_party/blink/renderer/core/paint/text_painter.h"
 #include "third_party/blink/renderer/core/paint/text_painter_base.h"
 #include "third_party/blink/renderer/core/style/applied_text_decoration.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
-#include "third_party/blink/renderer/core/svg/svg_length_context.h"
 #include "third_party/blink/renderer/platform/fonts/character_range.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
@@ -220,7 +219,7 @@ void NGTextFragmentPainter::PaintSymbol(const LayoutObject* layout_object,
   Color color(layout_object->ResolveColor(GetCSSPropertyColor()));
   if (BoxModelObjectPainter::ShouldForceWhiteBackgroundForPrintEconomy(
           layout_object->GetDocument(), style)) {
-    color = TextPainter::TextColorForWhiteBackground(color);
+    color = TextPainterBase::TextColorForWhiteBackground(color);
   }
   // Apply the color to the list marker text.
   context.SetFillColor(color);
@@ -281,6 +280,13 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   if (UNLIKELY(text_combine))
     LayoutNGTextCombine::AssertStyleIsValid(style);
 #endif
+
+  ObjectPainter object_painter(*layout_object);
+  if (object_painter.ShouldRecordSpecialHitTestData(paint_info)) {
+    object_painter.RecordHitTestData(paint_info,
+                                     ToPixelSnappedRect(physical_box),
+                                     *text_item.GetDisplayItemClient());
+  }
 
   // Determine whether or not we’ll need a writing-mode rotation, but don’t
   // actually rotate until we reach the steps that need it.
@@ -376,22 +382,6 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   }
 
   if (UNLIKELY(text_item.IsSymbolMarker())) {
-    if (!RuntimeEnabledFeatures::CSSDisplayMultipleValuesEnabled() &&
-        !IsA<LayoutCounter>(layout_object)) {
-      // The NGInlineItem of marker might be Split(). To avoid calling
-      // PaintSymbol multiple times, only call it the first time. For an
-      // outside marker, this is when StartOffset is 0. But for an inside
-      // marker, the first StartOffset can be greater due to leading bidi
-      // control characters like U+202A/U+202B, U+202D/U+202E, U+2066/U+2067
-      // or U+2068.
-      DCHECK_LT(fragment_paint_info.from, fragment_paint_info.text.length());
-      for (unsigned i = 0; i < fragment_paint_info.from; ++i) {
-        if (!Character::IsBidiControl(
-                fragment_paint_info.text.CodepointAt(i))) {
-          return;
-        }
-      }
-    }
     PaintSymbol(layout_object, style, physical_box.size, paint_info,
                 physical_box.offset);
     return;

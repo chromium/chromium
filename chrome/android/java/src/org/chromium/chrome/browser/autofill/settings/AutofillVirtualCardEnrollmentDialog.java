@@ -117,13 +117,13 @@ public class AutofillVirtualCardEnrollmentDialog {
                 mContext.getString(
                         R.string.autofill_virtual_card_enrollment_dialog_card_container_title),
                 mVirtualCardEnrollmentFields.getCardArtUrl(),
-                mVirtualCardEnrollmentFields.getNetworkIconId(),
-                AutofillUiUtils.getVirtualCardEnrollmentDialogIconWidthId(),
-                AutofillUiUtils.getVirtualCardEnrollmentDialogIconHeightId(),
+                mVirtualCardEnrollmentFields.getNetworkIconId(), AutofillUiUtils.CardIconSize.LARGE,
                 R.dimen.virtual_card_enrollment_dialog_card_container_issuer_icon_margin_end,
                 /* cardNameAndNumberTextAppearance= */ R.style.TextAppearance_TextLarge_Primary,
                 /* cardLabelTextAppearance= */ R.style.TextAppearance_TextMedium_Secondary,
-                /* showCustomIcon= */ true);
+                /* showCustomIcon= */
+                AutofillUiUtils.shouldShowCustomIcon(
+                        mVirtualCardEnrollmentFields.getCardArtUrl(), /* isVirtualCard= */ true));
 
         return customView;
     }

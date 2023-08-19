@@ -81,7 +81,7 @@ class TranslationResultLoaderTest : public testing::Test {
   void TearDown() override { loader_.reset(); }
 
  protected:
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TranslationResultLoader> loader_;
   std::unique_ptr<MockResultLoaderDelegate> mock_delegate_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
@@ -150,13 +150,15 @@ TEST_F(TranslationResultLoaderTest, NetworkError) {
 TEST_F(TranslationResultLoaderTest, EmptyResponse) {
   test_url_loader_factory_.AddResponse(CreateTranslationRequest().spec(),
                                        std::string());
-  EXPECT_CALL(*mock_delegate_, OnQuickAnswerReceived(testing::Eq(nullptr)));
+  base::RunLoop run_loop;
+  EXPECT_CALL(*mock_delegate_, OnQuickAnswerReceived(testing::Eq(nullptr)))
+      .WillOnce([&]() { run_loop.Quit(); });
   EXPECT_CALL(*mock_delegate_, OnNetworkError()).Times(0);
 
   fake_quick_answers_state_.SetConsentStatus(
       quick_answers::prefs::ConsentStatus::kAccepted);
   loader_->Fetch(PreprocessRequest(kTestTranslationIntent));
-  base::RunLoop().RunUntilIdle();
+  run_loop.Run();
 }
 
 }  // namespace quick_answers

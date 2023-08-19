@@ -197,6 +197,7 @@ def GetClangCommandLineForNinjaOutput(out_dir, build_target):
   """
   p = subprocess.Popen(
       ['ninja', '-v', '-C', out_dir, '-t', 'commands', build_target],
+      encoding='unicode_escape',
       stdout=subprocess.PIPE,
       universal_newlines=True)
   stdout, stderr = p.communicate()
@@ -385,7 +386,7 @@ def GetClangOptionsFromDBForFilename(chrome_root, filename):
       # ycm_core returns a StringVector we need to convert it.
       flags = [] + additional_flags
       for flag in compilation_info.compiler_flags_:
-        flags.append(ProcessIndividualFlag(flag, compilation_database_folder))
+        flags.append(ProcessIndividualFlag(flag, None, compilation_database_folder))
       return flags
   return None
 

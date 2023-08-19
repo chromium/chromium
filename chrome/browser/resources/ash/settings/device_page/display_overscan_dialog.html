@@ -1,0 +1,97 @@
+<style include="settings-shared iron-flex iron-flex-alignment">
+ .subtitle {
+   color: var(--cros-text-color-secondary);
+   margin-top: 10px;
+ }
+
+ .instructions {
+   color: var(--cros-text-color-secondary);
+   margin-top: 4px;
+ }
+
+ .details {
+   margin: 40px;
+ }
+
+ .label {
+   margin-top: 15px;
+ }
+
+ iron-icon {
+   --iron-icon-fill-color: var(--cros-icon-color-primary);
+   --iron-icon-height: 18px;
+   --iron-icon-width: 18px;
+   background: var(--cros-bg-color-dropped-elevation-2);
+   border-radius: 2px;
+   margin: 5px;
+   padding: 4px;
+ }
+
+ #move {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+ }
+
+ #move > div {
+   color: var(--cros-text-color-secondary);
+   flex: 0 0 auto;
+ }
+
+ #move > div:not(:first-child) {
+  margin-inline-start: 8px;
+ }
+
+ #move > div:not(:last-child) {
+  margin-inline-end: 8px;
+ }
+
+ #move > div.shift {
+   background: var(--cros-bg-color-dropped-elevation-2);
+   border-radius: 2px;
+   color: var(--cros-text-color-primary);
+   font-size: 100%;
+   padding: 7px 8px;
+ }
+</style>
+<cr-dialog id="dialog" on-close="close"
+    close-text="$i18n{close}">
+  <div slot="title">$i18n{displayOverscanPageTitle}</div>
+  <div slot="body">
+    <div class="subtitle" >$i18n{displayOverscanSubtitle}</div>
+    <div class="instructions" hidden="[[isRevampWayfindingEnabled_]]">
+      $i18n{displayOverscanInstructions}
+    </div>
+    <div class="details layout horizontal around-justified self-stretch">
+      <div class="layout vertical center">
+        <div class="layout horizontal">
+          <iron-icon icon="cr:expand-less"></iron-icon>
+        </div>
+        <div class="layout horizontal">
+          <iron-icon icon="os-settings:chevron-left"></iron-icon>
+          <iron-icon icon="cr:expand-more"></iron-icon>
+          <iron-icon icon="cr:chevron-right"></iron-icon>
+        </div>
+        <div class="label" >$i18n{displayOverscanResize}</div>
+      </div>
+      <div class="layout vertical center">
+        <div class="layout vertical center-justified flex">
+          <div id="move" class="layout horizontal">
+            <!-- TODO(stevenjb): Localize 'shift' for other keyboards -->
+            <!-- crbug.com/614827 -->
+            <div>(</div><div>+</div><div class="shift">shift</div><div>)</div>
+          </div>
+        </div>
+        <div class="label">$i18n{displayOverscanPosition}</div>
+      </div>
+    </div>
+  </div>
+  <div slot="button-container">
+    <cr-button id="reset" class="cancel-button" on-click="onResetClick_">
+      $i18n{displayOverscanReset}
+    </cr-button>
+    <cr-button class="action-button" on-click="onSaveClick_">
+      $i18n{ok}
+    </cr-button>
+  </div>
+</cr-dialog>

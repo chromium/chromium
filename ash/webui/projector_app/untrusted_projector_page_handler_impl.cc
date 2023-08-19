@@ -14,6 +14,7 @@
 #include "ash/webui/projector_app/projector_app_client.h"
 #include "ash/webui/projector_app/projector_oauth_token_fetcher.h"
 #include "ash/webui/projector_app/projector_xhr_sender.h"
+#include "ash/webui/projector_app/public/mojom/projector_types.mojom-forward.h"
 #include "ash/webui/projector_app/public/mojom/projector_types.mojom.h"
 #include "base/files/safe_base_name.h"
 #include "components/prefs/pref_service.h"
@@ -249,19 +250,16 @@ UntrustedProjectorPageHandlerImpl::GetWeakPtr() {
 
 void UntrustedProjectorPageHandlerImpl::OnXhrRequestCompleted(
     SendXhrCallback callback,
-    const std::string& response_body,
-    projector::mojom::XhrResponseCode response_code) {
+    projector::mojom::XhrResponsePtr xhr_responose) {
   // If the request made is an unsupported url, then
   // crash the renderer.
-  if (response_code == projector::mojom::XhrResponseCode::kUnsupportedURL) {
+  if (xhr_responose->response_code ==
+      projector::mojom::XhrResponseCode::kUnsupportedURL) {
     receiver_.ReportBadMessage("Unsupported url requested.");
     return;
   }
 
-  auto response = projector::mojom::XhrResponse::New();
-  response->response = response_body;
-  response->response_code = response_code;
-  std::move(callback).Run(std::move(response));
+  std::move(callback).Run(std::move(xhr_responose));
 }
 
 }  // namespace ash

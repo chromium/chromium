@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL HTTP basic authentication should work with WebSockets Failed to construct 'WebSocket': An insecure WebSocket connection may not be initiated from a page loaded over HTTPS.
-Harness: the test ran to completion.
-

@@ -213,4 +213,13 @@ bool DrmThreadProxy::WaitUntilDrmThreadStarted() {
   return drm_thread_.WaitUntilThreadStarted();
 }
 
+void DrmThreadProxy::SetDrmModifiersFilter(
+    std::unique_ptr<DrmModifiersFilter> filter) {
+  DCHECK(drm_thread_.task_runner());
+  base::OnceClosure task =
+      base::BindOnce(&DrmThread::SetDrmModifiersFilter,
+                     base::Unretained(&drm_thread_), std::move(filter));
+  drm_thread_.task_runner()->PostTask(FROM_HERE, std::move(task));
+}
+
 }  // namespace ui

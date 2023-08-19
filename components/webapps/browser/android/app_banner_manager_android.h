@@ -123,8 +123,8 @@ class AppBannerManagerAndroid : public AppBannerManager {
   void PerformInstallableWebAppCheck() override;
   void ResetCurrentPageData() override;
   void ShowBannerUi(WebappInstallSource install_source) override;
-  base::WeakPtr<AppBannerManager> GetWeakPtr() override;
-  void InvalidateWeakPtrs() override;
+  base::WeakPtr<AppBannerManager> GetWeakPtrForThisNavigation() override;
+  void InvalidateWeakPtrsForThisNavigation() override;
   bool IsSupportedNonWebAppPlatform(
       const std::u16string& platform) const override;
   bool IsRelatedNonWebAppInstalled(
@@ -136,7 +136,11 @@ class AppBannerManagerAndroid : public AppBannerManager {
   void SaveInstallationDismissedForMl(const GURL& manifest_id) override;
   void SaveInstallationIgnoredForMl(const GURL& manifest_id) override;
   void SaveInstallationAcceptedForMl(const GURL& manifest_id) override;
+  void OnMlInstallPrediction(base::PassKey<MLInstallabilityPromoter>,
+                             std::string result_label) override;
   bool IsMlPromotionBlockedByHistoryGuardrail(const GURL& manifest_id) override;
+  segmentation_platform::SegmentationPlatformService*
+  GetSegmentationPlatformService() override;
 
   void CheckEngagementForAmbientBadge();
 

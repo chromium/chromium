@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_APP_SETTINGS_WEB_APP_SETTINGS_NAVIGATION_THROTTLE_H_
 #define CHROME_BROWSER_UI_WEBUI_APP_SETTINGS_WEB_APP_SETTINGS_NAVIGATION_THROTTLE_H_
 
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "content/public/browser/navigation_throttle.h"
 
 namespace content {
@@ -29,6 +31,11 @@ class WebAppSettingsNavigationThrottle : public content::NavigationThrottle {
   // content::NavigationThrottle:
   ThrottleCheckResult WillStartRequest() override;
   const char* GetNameForLogging() override;
+
+ private:
+  void ContinueCheckForApp(const web_app::AppId& app_id);
+
+  base::WeakPtrFactory<WebAppSettingsNavigationThrottle> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_APP_SETTINGS_WEB_APP_SETTINGS_NAVIGATION_THROTTLE_H_

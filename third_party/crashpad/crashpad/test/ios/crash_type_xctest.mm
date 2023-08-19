@@ -24,10 +24,6 @@
 #include "util/mach/exception_types.h"
 #include "util/mach/mach_extensions.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface CPTestTestCase : XCTestCase {
   XCUIApplication* app_;
   CPTestSharedObject* rootObject_;

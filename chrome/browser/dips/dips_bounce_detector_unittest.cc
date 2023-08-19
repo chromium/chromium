@@ -16,11 +16,11 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
-#include "chrome/browser/dips/dips_features.h"
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_test_utils.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/public/common/content_features.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -80,7 +80,7 @@ class TestBounceDetectorDelegate : public DIPSBounceDetectorDelegate {
 
   void HandleRedirectChain(std::vector<DIPSRedirectInfoPtr> redirects,
                            DIPSRedirectChainInfoPtr chain) override {
-    chain->cookie_mode = DIPSCookieMode::kStandard;
+    chain->cookie_mode = DIPSCookieMode::kBlock3PC;
     size_t redirect_index = chain->length - redirects.size();
     for (auto& redirect : redirects) {
       redirect->has_interaction = GetSiteHasInteraction(redirect->url);
@@ -264,16 +264,19 @@ class DIPSBounceDetectorTest : public ::testing::Test {
   }
 
   void ActivatePage() { detector_.OnUserActivation(); }
+  void TriggerWebAuthnAssertionRequestSucceeded() {
+    detector_.WebAuthnAssertionRequestSucceeded();
+  }
 
   void AdvanceDIPSTime(base::TimeDelta delta) {
     task_environment_.AdvanceClock(delta);
     task_environment_.RunUntilIdle();
   }
 
-  // Advances the mocked clock by `dips::kClientBounceDetectionTimeout` to
-  // trigger the closure of the pending redirect chain.
+  // Advances the mocked clock by `features::kDIPSClientBounceDetectionTimeout`
+  // to trigger the closure of the pending redirect chain.
   void EndPendingRedirectChain() {
-    AdvanceDIPSTime(dips::kClientBounceDetectionTimeout.Get());
+    AdvanceDIPSTime(features::kDIPSClientBounceDetectionTimeout.Get());
   }
 
   const std::string& URLForNavigationSourceId(ukm::SourceId source_id) {
@@ -337,13 +340,15 @@ TEST_F(DIPSBounceDetectorTest,
       .RedirectTo("http://c.test")
       .RedirectTo("http://d.test")
       .Finish(true);
-  AdvanceDIPSTime(dips::kClientBounceDetectionTimeout.Get() - base::Seconds(1));
+  AdvanceDIPSTime(features::kDIPSClientBounceDetectionTimeout.Get() -
+                  base::Seconds(1));
   auto mocked_bounce_time_2 = GetCurrentTime();
   StartNavigation("http://e.test", kNoUserGesture)
       .RedirectTo("http://f.test")
       .RedirectTo("http://g.test")
       .Finish(true);
-  AdvanceDIPSTime(dips::kClientBounceDetectionTimeout.Get() - base::Seconds(1));
+  AdvanceDIPSTime(features::kDIPSClientBounceDetectionTimeout.Get() -
+                  base::Seconds(1));
   auto mocked_bounce_time_3 = GetCurrentTime();
   StartNavigation("http://h.test", kWithUserGesture)
       .RedirectTo("http://i.test")
@@ -386,13 +391,13 @@ TEST_F(DIPSBounceDetectorTest,
 TEST_F(DIPSBounceDetectorTest,
        DetectStatefulRedirects_After_ClientBounceDetectionTimeout) {
   NavigateTo("http://a.test", kWithUserGesture);
-  AdvanceDIPSTime(dips::kClientBounceDetectionTimeout.Get());
+  AdvanceDIPSTime(features::kDIPSClientBounceDetectionTimeout.Get());
   auto mocked_bounce_time_1 = GetCurrentTime();
   StartNavigation("http://b.test", kWithUserGesture)
       .RedirectTo("http://c.test")
       .RedirectTo("http://d.test")
       .Finish(true);
-  AdvanceDIPSTime(dips::kClientBounceDetectionTimeout.Get());
+  AdvanceDIPSTime(features::kDIPSClientBounceDetectionTimeout.Get());
   auto mocked_bounce_time_2 = GetCurrentTime();
   StartNavigation("http://e.test", kNoUserGesture)
       .RedirectTo("http://f.test")
@@ -523,7 +528,8 @@ TEST_F(DIPSBounceDetectorTest, DetectStatefulRedirect_Server_LateNotification) {
 TEST_F(DIPSBounceDetectorTest, DetectStatefulRedirect_Client) {
   NavigateTo("http://a.test", kWithUserGesture);
   NavigateTo("http://b.test", kWithUserGesture);
-  AdvanceDIPSTime(dips::kClientBounceDetectionTimeout.Get() - base::Seconds(1));
+  AdvanceDIPSTime(features::kDIPSClientBounceDetectionTimeout.Get() -
+                  base::Seconds(1));
   NavigateTo("http://c.test", kNoUserGesture);
 
   auto mocked_bounce_time = GetCurrentTime();
@@ -542,7 +548,8 @@ TEST_F(DIPSBounceDetectorTest, DetectStatefulRedirect_Client_OnStartUp) {
   NavigateTo("http://a.test", kWithUserGesture);
   AccessClientCookie(CookieOperation::kRead);
   AccessClientCookie(CookieOperation::kChange);
-  AdvanceDIPSTime(dips::kClientBounceDetectionTimeout.Get() - base::Seconds(1));
+  AdvanceDIPSTime(features::kDIPSClientBounceDetectionTimeout.Get() -
+                  base::Seconds(1));
   NavigateTo("http://b.test", kNoUserGesture);
 
   auto mocked_bounce_time = GetCurrentTime();
@@ -909,6 +916,57 @@ TEST_F(DIPSBounceDetectorTest, InteractionRecording_NotThrottled_AfterRefresh) {
                                  /*event=*/DIPSRecordedEvent::kInteraction)));
 }
 
+TEST_F(DIPSBounceDetectorTest, successfulWebAuthnAssertionRecording_Throttled) {
+  base::Time first_time = GetCurrentTime();
+  NavigateTo("http://a.test", kNoUserGesture);
+  TriggerWebAuthnAssertionRequestSucceeded();
+
+  AdvanceDIPSTime(DIPSBounceDetector::kTimestampUpdateInterval / 2);
+  TriggerWebAuthnAssertionRequestSucceeded();
+
+  AdvanceDIPSTime(DIPSBounceDetector::kTimestampUpdateInterval / 2);
+  base::Time last_time = GetCurrentTime();
+  TriggerWebAuthnAssertionRequestSucceeded();
+
+  // Verify only the first and last web authn assertions were recorded. The
+  // second assertion happened less than |kTimestampUpdateInterval| after the
+  // first, so it should be ignored.
+  EXPECT_THAT(GetRecordedEvents(), testing::SizeIs(2));
+  EXPECT_THAT(
+      GetRecordedEvents(),
+      testing::UnorderedElementsAre(
+          MakeEventTuple("http://a.test", first_time,
+                         /*event=*/DIPSRecordedEvent::kWebAuthnAssertion),
+          MakeEventTuple("http://a.test", last_time,
+                         /*event=*/DIPSRecordedEvent::kWebAuthnAssertion)));
+}
+
+TEST_F(DIPSBounceDetectorTest,
+       successfulWebAuthnAssertionRecording_NotThrottled_AfterRefresh) {
+  base::Time first_time = GetCurrentTime();
+  NavigateTo("http://a.test", kNoUserGesture);
+  TriggerWebAuthnAssertionRequestSucceeded();
+
+  AdvanceDIPSTime(DIPSBounceDetector::kTimestampUpdateInterval / 4);
+  NavigateTo("http://a.test", kWithUserGesture);
+
+  AdvanceDIPSTime(DIPSBounceDetector::kTimestampUpdateInterval / 4);
+  base::Time last_time = GetCurrentTime();
+  TriggerWebAuthnAssertionRequestSucceeded();
+
+  // Verify the first and last web authn assertions were both recorded. Despite
+  // the last assertion happening less than |kTimestampUpdateInterval| after the
+  // first, it happened after the page was refreshed, so it should be recorded.
+  EXPECT_THAT(GetRecordedEvents(), testing::SizeIs(2));
+  EXPECT_THAT(
+      GetRecordedEvents(),
+      testing::UnorderedElementsAre(
+          MakeEventTuple("http://a.test", first_time,
+                         /*event=*/DIPSRecordedEvent::kWebAuthnAssertion),
+          MakeEventTuple("http://a.test", last_time,
+                         /*event=*/DIPSRecordedEvent::kWebAuthnAssertion)));
+}
+
 TEST_F(DIPSBounceDetectorTest, StorageRecording_Throttled) {
   base::Time first_time = GetCurrentTime();
 
@@ -970,6 +1028,7 @@ TEST_F(DIPSBounceDetectorTest, StorageRecording_NotThrottled_AfterRefresh) {
 
 const std::vector<std::string>& GetAllRedirectMetrics() {
   static const std::vector<std::string> kAllRedirectMetrics = {
+      // clang-format off
       "ClientBounceDelay",
       "CookieAccessType",
       "HasStickyActivation",
@@ -980,6 +1039,8 @@ const std::vector<std::string>& GetAllRedirectMetrics() {
       "RedirectChainLength",
       "RedirectType",
       "SiteEngagementLevel",
+      "WebAuthnAssertionRequestSucceeded",
+      // clang-format on
   };
   return kAllRedirectMetrics;
 }
@@ -1000,19 +1061,19 @@ TEST_F(DIPSBounceDetectorTest, Histograms_UMA) {
   EndPendingRedirectChain();
 
   base::HistogramTester::CountsMap expected_counts;
-  expected_counts["Privacy.DIPS.BounceCategoryClient.Standard"] = 1;
-  expected_counts["Privacy.DIPS.BounceCategoryServer.Standard"] = 1;
+  expected_counts["Privacy.DIPS.BounceCategoryClient.Block3PC"] = 1;
+  expected_counts["Privacy.DIPS.BounceCategoryServer.Block3PC"] = 1;
   EXPECT_THAT(histograms.GetTotalCountsForPrefix("Privacy.DIPS.BounceCategory"),
               testing::ContainerEq(expected_counts));
   // Verify the proper values were recorded. b.test has user engagement and read
   // cookies, while c.test has no user engagement and wrote cookies.
   EXPECT_THAT(
-      histograms.GetAllSamples("Privacy.DIPS.BounceCategoryClient.Standard"),
+      histograms.GetAllSamples("Privacy.DIPS.BounceCategoryClient.Block3PC"),
       testing::ElementsAre(
           // b.test
           Bucket((int)RedirectCategory::kReadCookies_HasEngagement, 1)));
   EXPECT_THAT(
-      histograms.GetAllSamples("Privacy.DIPS.BounceCategoryServer.Standard"),
+      histograms.GetAllSamples("Privacy.DIPS.BounceCategoryServer.Block3PC"),
       testing::ElementsAre(
           // c.test
           Bucket((int)RedirectCategory::kWriteCookies_NoEngagement, 1)));
@@ -1034,6 +1095,7 @@ TEST_F(DIPSBounceDetectorTest, Histograms_UKM) {
   NavigateTo("http://b.test", kWithUserGesture);
   AdvanceDIPSTime(base::Seconds(2));
   AccessClientCookie(CookieOperation::kRead);
+  TriggerWebAuthnAssertionRequestSucceeded();
   StartNavigation("http://c.test", kNoUserGesture)
       .AccessCookie(CookieOperation::kChange)
       .RedirectTo("http://d.test")
@@ -1057,7 +1119,8 @@ TEST_F(DIPSBounceDetectorTest, Histograms_UKM) {
                   Pair("RedirectAndInitialSiteSame", false),
                   Pair("RedirectChainIndex", 0), Pair("RedirectChainLength", 2),
                   Pair("RedirectType", (int)DIPSRedirectType::kClient),
-                  Pair("SiteEngagementLevel", 0)));
+                  Pair("SiteEngagementLevel", 0),
+                  Pair("WebAuthnAssertionRequestSucceeded", true)));
 
   EXPECT_THAT(URLForRedirectSourceId(&ukm_recorder, ukm_entries[1].source_id),
               Eq("c.test/"));
@@ -1071,7 +1134,8 @@ TEST_F(DIPSBounceDetectorTest, Histograms_UKM) {
                   Pair("RedirectAndInitialSiteSame", false),
                   Pair("RedirectChainIndex", 1), Pair("RedirectChainLength", 2),
                   Pair("RedirectType", (int)DIPSRedirectType::kServer),
-                  Pair("SiteEngagementLevel", 1)));
+                  Pair("SiteEngagementLevel", 1),
+                  Pair("WebAuthnAssertionRequestSucceeded", false)));
 }
 
 using ChainPair =
@@ -1108,7 +1172,8 @@ DIPSRedirectInfoPtr MakeClientRedirect(
       /*source_id=*/ukm::SourceId(),
       /*time=*/base::Time::Now(),
       /*client_bounce_delay=*/base::Seconds(1),
-      /*has_sticky[[_activation=*/false);
+      /*has_sticky_activation=*/false,
+      /*web_authn_assertion_request_succeeded*/ false);
 }
 
 MATCHER_P(HasUrl, url, "") {

@@ -29,6 +29,7 @@
 #include "components/browsing_data/content/cookie_helper.h"
 #include "components/browsing_data/content/local_storage_helper.h"
 #include "components/cdm/browser/media_drm_storage_impl.h"
+#include "components/content_settings/browser/ui/cookie_controls_util.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -44,9 +45,13 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/cookies/cookie_util.h"
+#include "net/extras/shared_dictionary/shared_dictionary_isolation_key.h"
+#include "net/extras/shared_dictionary/shared_dictionary_usage_info.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
@@ -65,6 +70,7 @@ using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 using content::BrowserContext;
 using content::BrowserThread;
+using content_settings::CookieControlsUtil;
 
 namespace {
 
@@ -136,12 +142,12 @@ void GetOrigins(JNIEnv* env,
   BrowserContext* browser_context = unwrap(jbrowser_context_handle);
   HostContentSettingsMap* content_settings_map =
       GetHostContentSettingsMap(browser_context);
-  ContentSettingsForOneType all_settings;
-  ContentSettingsForOneType embargo_settings;
 
-  content_settings_map->GetSettingsForOneType(content_type, &all_settings);
-  content_settings_map->GetSettingsForOneType(
-      ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA, &embargo_settings);
+  ContentSettingsForOneType all_settings =
+      content_settings_map->GetSettingsForOneType(content_type);
+  ContentSettingsForOneType embargo_settings =
+      content_settings_map->GetSettingsForOneType(
+          ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA);
   ContentSetting default_content_setting =
       content_settings_map->GetDefaultContentSetting(content_type, nullptr);
 
@@ -217,14 +223,14 @@ ContentSetting GetPermissionSettingForOrigin(
     BrowserContext* browser_context = unwrap(jbrowser_context_handle);
     content::PermissionController* permission_controller =
         browser_context->GetPermissionController();
-    blink::mojom::PermissionStatus status =
-        permission_controller->GetPermissionStatusForOriginWithoutContext(
+    content::PermissionResult result =
+        permission_controller->GetPermissionResultForOriginWithoutContext(
             permissions::PermissionUtil::ContentSettingTypeToPermissionType(
                 content_type),
             url::Origin::Create(requesting_origin),
             url::Origin::Create(embedding_origin));
     return permissions::PermissionUtil::PermissionStatusToContentSetting(
-        status);
+        result.status);
   } else {
     // If `content_type` is not permission, then we can directly read its value
     // from `HostContentSettingsMap`.
@@ -612,6 +618,25 @@ void OnLocalStorageModelInfoLoaded(
   base::android::RunObjectCallbackAndroid(java_callback, map);
 }
 
+void OnSharedDictionaryInfoLoaded(
+    BrowserContext* browser_context,
+    const ScopedJavaGlobalRef<jobject>& java_callback,
+    const std::vector<net::SharedDictionaryUsageInfo>& shared_dictionary_info) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+
+  ScopedJavaLocalRef<jobject> list =
+      Java_WebsitePreferenceBridge_createSharedDictionaryInfoList(env);
+  for (const auto& info : shared_dictionary_info) {
+    ScopedJavaLocalRef<jstring> java_origin = ConvertUTF8ToJavaString(
+        env, info.isolation_key.frame_origin().Serialize());
+    ScopedJavaLocalRef<jstring> java_top_frame_site = ConvertUTF8ToJavaString(
+        env, info.isolation_key.top_frame_site().Serialize());
+    Java_WebsitePreferenceBridge_insertSharedDictionaryInfoIntoList(
+        env, list, java_origin, java_top_frame_site, info.total_size_bytes);
+  }
+  base::android::RunObjectCallbackAndroid(java_callback, list);
+}
+
 }  // anonymous namespace
 
 // TODO(jknotten): These methods should not be static. Instead we should
@@ -661,6 +686,18 @@ static void JNI_WebsitePreferenceBridge_FetchStorageInfo(
       &OnStorageInfoReady, ScopedJavaGlobalRef<jobject>(java_callback)));
 }
 
+static void JNI_WebsitePreferenceBridge_FetchSharedDictionaryInfo(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jbrowser_context_handle,
+    const JavaParamRef<jobject>& java_callback) {
+  BrowserContext* browser_context = unwrap(jbrowser_context_handle);
+  browser_context->GetDefaultStoragePartition()
+      ->GetNetworkContext()
+      ->GetSharedDictionaryUsageInfo(
+          base::BindOnce(&OnSharedDictionaryInfoLoaded, browser_context,
+                         ScopedJavaGlobalRef<jobject>(java_callback)));
+}
+
 static void JNI_WebsitePreferenceBridge_ClearLocalStorageData(
     JNIEnv* env,
     const JavaParamRef<jobject>& jbrowser_context_handle,
@@ -671,6 +708,29 @@ static void JNI_WebsitePreferenceBridge_ClearLocalStorageData(
       url::Origin::Create(GURL(ConvertJavaStringToUTF8(env, jorigin))),
       base::BindOnce(&OnLocalStorageCleared,
                      ScopedJavaGlobalRef<jobject>(java_callback)));
+}
+
+static void JNI_WebsitePreferenceBridge_ClearSharedDictionary(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jbrowser_context_handle,
+    const JavaParamRef<jstring>& jorigin,
+    const JavaParamRef<jstring>& jtop_level_site,
+    const JavaParamRef<jobject>& java_callback) {
+  BrowserContext* browser_context = unwrap(jbrowser_context_handle);
+  browser_context->GetDefaultStoragePartition()
+      ->GetNetworkContext()
+      ->ClearSharedDictionaryCacheForIsolationKey(
+          net::SharedDictionaryIsolationKey(
+              url::Origin::Create(GURL(ConvertJavaStringToUTF8(env, jorigin))),
+              net::SchemefulSite(
+                  GURL(ConvertJavaStringToUTF8(env, jtop_level_site)))),
+          base::BindOnce(
+              [](const ScopedJavaGlobalRef<jobject>& java_callback) {
+                DCHECK_CURRENTLY_ON(BrowserThread::UI);
+                Java_StorageInfoClearedCallback_onStorageInfoCleared(
+                    base::android::AttachCurrentThread(), java_callback);
+              },
+              ScopedJavaGlobalRef<jobject>(java_callback)));
 }
 
 static void JNI_WebsitePreferenceBridge_ClearStorageData(
@@ -902,24 +962,46 @@ static int JNI_WebsitePreferenceBridge_GetContentSetting(
           static_cast<ContentSettingsType>(content_settings_type));
 }
 
+static jboolean JNI_WebsitePreferenceBridge_IsContentSettingGlobal(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jbrowser_context_handle,
+    int content_settings_type,
+    const JavaParamRef<jobject>& jprimary_url,
+    const JavaParamRef<jobject>& jsecondary_url) {
+  content_settings::SettingInfo setting_info;
+  GetHostContentSettingsMap(jbrowser_context_handle)
+      ->GetContentSetting(
+          *url::GURLAndroid::ToNativeGURL(env, jprimary_url),
+          *url::GURLAndroid::ToNativeGURL(env, jsecondary_url),
+          static_cast<ContentSettingsType>(content_settings_type),
+          &setting_info);
+  return setting_info.primary_pattern == ContentSettingsPattern::Wildcard() &&
+         setting_info.secondary_pattern == ContentSettingsPattern::Wildcard();
+}
+
 static void JNI_WebsitePreferenceBridge_GetContentSettingsExceptions(
     JNIEnv* env,
     const JavaParamRef<jobject>& jbrowser_context_handle,
     int content_settings_type,
     const JavaParamRef<jobject>& list) {
   BrowserContext* browser_context = unwrap(jbrowser_context_handle);
-  ContentSettingsForOneType entries;
-  GetHostContentSettingsMap(browser_context)
-      ->GetSettingsForOneType(
-          static_cast<ContentSettingsType>(content_settings_type), &entries);
   std::vector<std::string> seen_origins;
-  for (const ContentSettingPatternSource& entry : entries) {
+  for (const ContentSettingPatternSource& entry :
+       GetHostContentSettingsMap(browser_context)
+           ->GetSettingsForOneType(
+               static_cast<ContentSettingsType>(content_settings_type))) {
     std::string origin = entry.primary_pattern.ToString();
     seen_origins.push_back(origin);
+    auto hasExpiration = !entry.metadata.expiration().is_null();
+    auto expirationInDays = hasExpiration
+                                ? CookieControlsUtil::GetDaysToExpiration(
+                                      entry.metadata.expiration())
+                                : -1;
     Java_WebsitePreferenceBridge_addContentSettingExceptionToList(
         env, list, content_settings_type, ConvertUTF8ToJavaString(env, origin),
         ConvertUTF8ToJavaString(env, entry.secondary_pattern.ToString()),
         entry.GetContentSetting(), ConvertUTF8ToJavaString(env, entry.source),
+        hasExpiration, expirationInDays,
         /*is_embargoed=*/false);
   }
 
@@ -939,7 +1021,8 @@ static void JNI_WebsitePreferenceBridge_GetContentSettingsExceptions(
         env, list, content_settings_type,
         ConvertUTF8ToJavaString(env, embargoed_origin_pattern), jembedder,
         CONTENT_SETTING_BLOCK, /*source=*/ScopedJavaLocalRef<jstring>(),
-        /*is_embargoed=*/true);
+        /*isTemporary=*/false,
+        /*expiration=*/0, /*is_embargoed=*/true);
   }
 }
 

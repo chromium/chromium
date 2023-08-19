@@ -14,13 +14,6 @@ import os
 import re
 import sys
 
-sys.path.insert(
-    0,
-    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir,
-                 os.pardir, 'third_party', 'six', 'src'))
-
-import six
-
 import writer_configuration
 import policy_template_generator
 
@@ -130,9 +123,7 @@ def _ParseVersionFile(version_path):
 
 
 def _JsonToUtf8Encoding(data, ignore_dicts=False):
-  if six.PY2 and isinstance(data, unicode):
-    return data.encode('utf-8')
-  elif isinstance(data, list):
+  if isinstance(data, list):
     return [_JsonToUtf8Encoding(item, False) for item in data]
   elif isinstance(data, dict):
     return {

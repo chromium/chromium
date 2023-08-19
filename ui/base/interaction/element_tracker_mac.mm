@@ -188,8 +188,8 @@ ElementTrackerMac::ElementTrackerMac() = default;
 ElementTrackerMac::~ElementTrackerMac() = default;
 
 NSMenu* ElementTrackerMac::GetRootMenu(NSMenu* menu) const {
-  while ([menu supermenu]) {
-    menu = [menu supermenu];
+  while (menu.supermenu) {
+    menu = menu.supermenu;
   }
   return menu;
 }

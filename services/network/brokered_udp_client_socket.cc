@@ -52,21 +52,44 @@ BrokeredUdpClientSocket::~BrokeredUdpClientSocket() {
 }
 
 int BrokeredUdpClientSocket::Connect(const net::IPEndPoint& address) {
-  NOTREACHED();
-  return net::OK;
+#if BUILDFLAG(IS_WIN)
+  if (!broker_helper_.ShouldBroker(address.address())) {
+    return ConnectInternal(address, CONNECT,
+                           net::handles::kInvalidNetworkHandle);
+  }
+#endif
+  // Brokered sockets can only support asynchronous connections so this does not
+  // need to be implemented. However, this path can still be hit if the sandbox
+  // is enabled and a caller attempts to call a synchronous Connect. Callers are
+  // expected to handle Connect failures themselves so we just return
+  // ERR_NOT_IMPLEMENTED.
+  return net::ERR_NOT_IMPLEMENTED;
 }
 
 int BrokeredUdpClientSocket::ConnectUsingNetwork(
     net::handles::NetworkHandle network,
     const net::IPEndPoint& address) {
-  NOTREACHED();
-  return net::OK;
+#if BUILDFLAG(IS_WIN)
+  if (!broker_helper_.ShouldBroker(address.address())) {
+    return ConnectInternal(address, CONNECT_USING_NETWORK, network);
+  }
+#endif
+  // Similar to Connect(), callers are expected to handles failures themselves
+  // if they call this method, so return ERR_NOT_IMPLEMENTED.
+  return net::ERR_NOT_IMPLEMENTED;
 }
 
 int BrokeredUdpClientSocket::ConnectUsingDefaultNetwork(
     const net::IPEndPoint& address) {
-  NOTREACHED();
-  return net::OK;
+#if BUILDFLAG(IS_WIN)
+  if (!broker_helper_.ShouldBroker(address.address())) {
+    return ConnectInternal(address, CONNECT_USING_DEFAULT_NETWORK,
+                           net::handles::kInvalidNetworkHandle);
+  }
+#endif
+  // Similar to Connect(), callers are expected to handles failures themselves
+  // if they call this method, so return ERR_NOT_IMPLEMENTED.
+  return net::ERR_NOT_IMPLEMENTED;
 }
 
 int BrokeredUdpClientSocket::ConnectAsync(
@@ -123,6 +146,44 @@ int BrokeredUdpClientSocket::ConnectAsyncInternal(
           brokered_weak_ptr_factory_.GetWeakPtr(), /*should_broker=*/true,
           address, which_connect, network, std::move(callback)));
   return net::ERR_IO_PENDING;
+}
+
+int BrokeredUdpClientSocket::ConnectInternal(
+    const net::IPEndPoint& address,
+    WhichConnect which_connect,
+    net::handles::NetworkHandle network) {
+  socket_ = std::make_unique<net::UDPClientSocket>(bind_type_, net_log_source_,
+                                                   network_);
+
+  // These options must be set before opening a socket or adopting an opened
+  // socket.
+  if (use_non_blocking_io_) {
+    socket_->UseNonBlockingIO();
+  }
+  if (recv_optimization_) {
+    socket_->EnableRecvOptimization();
+  }
+
+  int set_multicast_rv = socket_->SetMulticastInterface(interface_index_);
+  if (set_multicast_rv != net::OK) {
+    return set_multicast_rv;
+  }
+  socket_->ApplySocketTag(tag_);
+  socket_->SetMsgConfirm(set_msg_confirm_);
+
+  int connect_rv = net::OK;
+  switch (which_connect) {
+    case CONNECT:
+      connect_rv = socket_->Connect(address);
+      break;
+    case CONNECT_USING_NETWORK:
+      connect_rv = socket_->ConnectUsingNetwork(network, address);
+      break;
+    case CONNECT_USING_DEFAULT_NETWORK:
+      connect_rv = socket_->ConnectUsingDefaultNetwork(address);
+      break;
+  }
+  return connect_rv;
 }
 
 int BrokeredUdpClientSocket::DidCompleteCreate(

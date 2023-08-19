@@ -20,16 +20,11 @@
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 OffTheRecordChromeBrowserStateImpl::OffTheRecordChromeBrowserStateImpl(
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,
     ChromeBrowserState* original_chrome_browser_state,
     const base::FilePath& otr_path)
-    : ChromeBrowserState(std::move(io_task_runner)),
-      otr_state_path_(otr_path),
+    : ChromeBrowserState(otr_path, std::move(io_task_runner)),
       original_chrome_browser_state_(original_chrome_browser_state),
       start_time_(base::Time::Now()),
       prefs_(CreateIncognitoBrowserStatePrefs(
@@ -99,10 +94,6 @@ OffTheRecordChromeBrowserStateImpl::GetSyncablePrefs() {
 
 bool OffTheRecordChromeBrowserStateImpl::IsOffTheRecord() const {
   return true;
-}
-
-base::FilePath OffTheRecordChromeBrowserStateImpl::GetStatePath() const {
-  return otr_state_path_;
 }
 
 PrefProxyConfigTracker*

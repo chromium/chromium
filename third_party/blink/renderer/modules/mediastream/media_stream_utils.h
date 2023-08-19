@@ -7,6 +7,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -14,16 +15,13 @@ namespace blink {
 
 class ExecutionContext;
 class LocalFrame;
-class MediaStreamComponent;
 class MediaStreamSource;
 class MediaStreamTrack;
 
-class MediaStreamUtils {
+class MODULES_EXPORT MediaStreamUtils {
   STATIC_ONLY(MediaStreamUtils);
 
  public:
-  static void DidCreateMediaStreamTrack(MediaStreamComponent*);
-
   static MediaStreamTrack* CreateLocalAudioTrack(ExecutionContext*,
                                                  MediaStreamSource*);
 

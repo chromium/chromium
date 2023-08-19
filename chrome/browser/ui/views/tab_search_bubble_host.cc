@@ -19,6 +19,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/widget/widget.h"
@@ -118,13 +119,18 @@ bool TabSearchBubbleHost::ShowTabSearchBubble(
     gfx::Rect bounds = button_->GetWidget()->GetWorkAreaBoundsInScreen();
     int offset = GetLayoutConstant(TABSTRIP_REGION_VIEW_CONTROL_PADDING);
 
-    int x = base::i18n::IsRTL() ? bounds.x() + offset : bounds.right() - offset;
+    int x = ShouldTabSearchRenderBeforeTabStrip() ? bounds.x() + offset
+                                                  : bounds.right() - offset;
 
     anchor.emplace(gfx::Rect(x, bounds.y() + offset, 0, 0));
   }
 
   bubble_created_time_ = base::TimeTicks::Now();
-  webui_bubble_manager_.ShowBubble(anchor, kTabSearchBubbleElementId);
+  webui_bubble_manager_.ShowBubble(anchor,
+                                   ShouldTabSearchRenderBeforeTabStrip()
+                                       ? views::BubbleBorder::TOP_LEFT
+                                       : views::BubbleBorder::TOP_RIGHT,
+                                   kTabSearchBubbleElementId);
 
   auto* tracker =
       feature_engagement::TrackerFactory::GetForBrowserContext(profile_);
@@ -157,7 +163,30 @@ void TabSearchBubbleHost::ButtonPressed(const ui::Event& event) {
     // Tab Search bubble.
     base::UmaHistogramEnumeration("Tabs.TabSearch.OpenAction",
                                   GetActionForEvent(event));
+
+    webui_bubble_manager_.GetBubbleWidget()
+        ->GetCompositor()
+        ->RequestSuccessfulPresentationTimeForNextFrame(base::BindOnce(
+            [](base::TimeTicks button_pressed_time,
+               base::TimeTicks presentation_timestamp) {
+              base::UmaHistogramMediumTimes(
+                  "Tabs.TabSearch."
+                  "ButtonPressedToNextFramePresented",
+                  presentation_timestamp - button_pressed_time);
+            },
+            base::TimeTicks::Now()));
     return;
   }
   CloseTabSearchBubble();
+}
+
+bool TabSearchBubbleHost::ShouldTabSearchRenderBeforeTabStrip() {
+// Mac should have tabsearch on the right side. Windows >= Win10 has the
+// Tab Search button as a FrameCaptionButton, but it still needs to be on the
+// left if it exists.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+  return features::IsChromeRefresh2023();
+#else
+  return false;
+#endif
 }

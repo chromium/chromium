@@ -21,6 +21,8 @@
 namespace password_manager::metrics_util {
 
 using IsUsernameChanged = base::StrongAlias<class IsUsernameChangedTag, bool>;
+using IsDisplayNameChanged =
+    base::StrongAlias<class IsDisplayNameChangedTag, bool>;
 using IsPasswordChanged = base::StrongAlias<class IsPasswordChangedTag, bool>;
 using IsPasswordNoteChanged =
     base::StrongAlias<class IsPasswordNoteChangedTag, bool>;
@@ -45,6 +47,7 @@ enum UIDisplayDisposition {
   MANUAL_BIOMETRIC_AUTHENTICATION_FOR_FILLING = 13,
   AUTOMATIC_BIOMETRIC_AUTHENTICATION_FOR_FILLING = 14,
   AUTOMATIC_BIOMETRIC_AUTHENTICATION_CONFIRMATION = 15,
+  AUTOMATIC_SHARED_PASSWORDS_NOTIFICATION = 16,
   NUM_DISPLAY_DISPOSITIONS,
 };
 
@@ -307,19 +310,6 @@ enum class IsSyncPasswordHashSaved {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-// Metrics: "PasswordManager.CertificateErrorsWhileSeeingForms"
-enum class CertificateError {
-  NONE = 0,
-  OTHER = 1,
-  AUTHORITY_INVALID = 2,
-  DATE_INVALID = 3,
-  COMMON_NAME_INVALID = 4,
-  WEAK_SIGNATURE_ALGORITHM = 5,
-  COUNT
-};
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
 // Metric: "PasswordManager.ReusedPasswordType".
 enum class PasswordType {
   // Passwords saved by password manager.
@@ -413,6 +403,15 @@ enum class GenerationDialogChoice {
   // The user rejected the generated password.
   kRejected = 1,
   kMaxValue = kRejected
+};
+
+enum class SignInState {
+  // The user is signed out.
+  kSignedOut = 0,
+  // The user is signed in but has not enabled Sync.
+  kSignedInSyncDisabled = 1,
+  // The user has enabled Sync.
+  kSyncing = 2,
 };
 
 // Represents the state of the user wrt. sign-in and account-scoped storage.
@@ -604,7 +603,11 @@ enum class PasswordViewPageInteractions {
   kCredentialRequestedByUrl = 11,
   // The copy display name button in settings passkey view page is clicked.
   kPasskeyDisplayNameCopyButtonClicked = 12,
-  kMaxValue = kPasskeyDisplayNameCopyButtonClicked,
+  // The delete button in a passkey view page is clicked.
+  kPasskeyDeleteButtonClicked = 13,
+  // The edit button in a passkey view page is clicked.
+  kPasskeyEditButtonClicked = 14,
+  kMaxValue = kPasskeyEditButtonClicked,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -645,6 +648,23 @@ enum class PasswordManagementBubbleInteractions {
   kMaxValue = kNoteFullyCopied,
 };
 
+// Represents different causes for showing the password migration warning.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Always keep this enum in sync with the
+// corresponding PasswordMigrationWarningTriggers in enums.xml.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.pwd_migration
+enum class PasswordMigrationWarningTriggers {
+  kChromeStartup = 0,
+  kPasswordSaveUpdateMessage = 1,
+  kPasswordSettings = 2,
+  kTouchToFill = 3,
+  kKeyboardAcessorySheet = 4,
+  kKeyboardAcessoryBar = 5,
+  kAllPasswords = 6,
+  kMaxValue = kAllPasswords,
+};
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class PasswordManagerShortcutMetric {
@@ -655,6 +675,33 @@ enum class PasswordManagerShortcutMetric {
   // User switched profile in the standalone password manager app.
   kProfileSwitched = 2,
   kMaxValue = kProfileSwitched,
+};
+
+// Presumed password form type. Calculated using heuristics after form parsing.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Needs to stay in sync with PasswordFormType2 in enums.xml.
+enum class SubmittedFormType {
+  kUndefined = 0,
+  kLogin = 1,
+  kSignup = 2,
+  kChangePassword = 3,
+  kResetPassword = 4,
+  kSingleUsername = 5,
+  kMaxValue = kSingleUsername,
+};
+
+// Represents different user interactions related to shared password
+// notification bubble. These values are persisted to logs. Entries should not
+// be renumbered and numeric values should never be reused. Always keep this
+// enum in sync with the corresponding
+// PasswordManager.SharedPasswordsNotificationInteractions in enums.xml.
+enum class SharedPasswordsNotificationBubbleInteractions {
+  kNotificationDisplayed = 0,
+  kGotItButtonClicked = 1,
+  kManagePasswordsButtonClicked = 2,
+  kCloseButtonClicked = 3,
+  kMaxValue = kCloseButtonClicked,
 };
 
 std::string GetPasswordAccountStorageUsageLevelHistogramSuffix(
@@ -712,10 +759,6 @@ void LogSaveUIDismissalReason(
     autofill::mojom::SubmissionIndicatorEvent submission_event,
     absl::optional<PasswordAccountStorageUserState> user_state);
 
-// Log the |reason| a user dismissed the save password prompt after previously
-// having unblocklisted the origin while on the page.
-void LogSaveUIDismissalReasonAfterUnblocklisting(UIDismissalReason reason);
-
 // Log the |reason| a user dismissed the update password bubble. If the
 // submission is detected on a cleared change password form, dismissal reason is
 // also recorded in a histogram specific for this type of submission.
@@ -731,7 +774,7 @@ void LogMoveUIDismissalReason(UIDismissalReason reason,
 void LogUIDisplayDisposition(UIDisplayDisposition disposition);
 
 // When a credential was filled, log whether it came from an Android app.
-void LogFilledCredentialIsFromAndroidApp(bool from_android);
+void LogFilledPasswordFromAndroidApp(bool from_android);
 
 // Log what's preventing passwords from syncing.
 void LogPasswordSyncState(PasswordSyncState state);
@@ -828,11 +871,8 @@ void LogIsSyncPasswordHashSaved(IsSyncPasswordHashSaved state,
 // privacy of individual data points, we will log with 10% noise.
 void LogIsPasswordProtected(bool is_password_protected);
 
-// Log the number of Gaia password hashes saved. Currently only called on
-// profile start up.
 void LogProtectedPasswordHashCounts(size_t gaia_hash_count,
-                                    bool does_primary_account_exists,
-                                    bool is_signed_in);
+                                    SignInState sign_in_state);
 
 // Log the user interaction events when creating a new credential from settings.
 void LogUserInteractionsWhenAddingCredentialFromSettings(
@@ -847,6 +887,10 @@ void LogPasswordNoteActionInSettings(PasswordNoteAction action);
 void LogUserInteractionsInPasswordManagementBubble(
     PasswordManagementBubbleInteractions
         password_management_bubble_interaction);
+
+// Log the user interaction events in the shared passwords notification bubble.
+void LogUserInteractionsInSharedPasswordsNotificationBubble(
+    SharedPasswordsNotificationBubbleInteractions interaction);
 
 // Wraps |callback| into another callback that measures the elapsed time between
 // construction and actual execution of the callback. Records the result to

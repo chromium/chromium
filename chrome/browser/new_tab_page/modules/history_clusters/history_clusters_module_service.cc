@@ -25,12 +25,6 @@
 
 namespace {
 
-constexpr int kMinRequiredRelatedSearches = 3;
-
-// The minimum number of visits to render a layout is 2 URL visits plus a SRP
-// visit.
-constexpr int kMinRequiredVisits = 3;
-
 // This enum must match the numbering for NTPHistoryClustersIneligibleReason in
 // enums.xml. Do not reorder or remove items, and update kMaxValue when new
 // items are added.
@@ -44,67 +38,6 @@ enum NTPHistoryClustersIneligibleReason {
   kInsufficientRelatedSearches = 6,
   kMaxValue = kInsufficientRelatedSearches,
 };
-
-base::flat_set<std::string> GetCategories(const char* feature_param) {
-  std::string categories_string = base::GetFieldTrialParamValueByFeature(
-      ntp_features::kNtpHistoryClustersModuleCategories, feature_param);
-  if (categories_string.empty()) {
-    return {};
-  }
-
-  auto categories = base::SplitString(categories_string, ",",
-                                      base::WhitespaceHandling::TRIM_WHITESPACE,
-                                      base::SplitResult::SPLIT_WANT_NONEMPTY);
-
-  return categories.empty() ? base::flat_set<std::string>()
-                            : base::flat_set<std::string>(categories.begin(),
-                                                          categories.end());
-}
-
-int GetMinVisitsToShow() {
-  static int min_visits = base::GetFieldTrialParamByFeatureAsInt(
-      ntp_features::kNtpHistoryClustersModuleMinimumVisitsRequired,
-      ntp_features::kNtpHistoryClustersModuleMinimumVisitsRequiredParam,
-      kMinRequiredVisits);
-  if (min_visits < 0) {
-    return kMinRequiredVisits;
-  }
-  return min_visits;
-}
-
-int GetMinImagesToShow() {
-  static int min_images_to_show = base::GetFieldTrialParamByFeatureAsInt(
-      ntp_features::kNtpHistoryClustersModuleMinimumImagesRequired,
-      ntp_features::kNtpHistoryClustersModuleMinimumImagesRequiredParam, 1);
-  return min_images_to_show;
-}
-
-size_t GetMaxClusters() {
-  // Even though only one cluster will be shown on the NTP at a time for now,
-  // set this to greater than that in case the filtering logic does not match
-  // up.
-  static int max_clusters = base::GetFieldTrialParamByFeatureAsInt(
-      ntp_features::kNtpHistoryClustersModuleMaxClusters,
-      ntp_features::kNtpHistoryClustersModuleMaxClustersParam, 5);
-  if (max_clusters < 0) {
-    return 5;
-  }
-  return static_cast<size_t>(max_clusters);
-}
-
-history_clusters::QueryClustersFilterParams GetFilterParamsFromFeatureFlags() {
-  history_clusters::QueryClustersFilterParams filter_params;
-  filter_params.min_visits = GetMinVisitsToShow();
-  filter_params.min_visits_with_images = GetMinImagesToShow();
-  filter_params.categories_allowlist = GetCategories(
-      ntp_features::kNtpHistoryClustersModuleCategoriesAllowlistParam);
-  filter_params.categories_blocklist = GetCategories(
-      ntp_features::kNtpHistoryClustersModuleCategoriesBlocklistParam);
-  filter_params.is_search_initiated = true;
-  filter_params.has_related_searches = true;
-  filter_params.is_shown_on_prominent_ui_surfaces = true;
-  return filter_params;
-}
 
 base::Time GetBeginTime() {
   static int hours_to_look_back = base::GetFieldTrialParamByFeatureAsInt(
@@ -124,8 +57,7 @@ HistoryClustersModuleService::HistoryClustersModuleService(
     CartService* cart_service,
     TemplateURLService* template_url_service,
     OptimizationGuideKeyedService* optimization_guide_keyed_service)
-    : filter_params_(GetFilterParamsFromFeatureFlags()),
-      max_clusters_to_return_(GetMaxClusters()),
+    : max_clusters_to_return_(GetMaxClusters()),
       category_boostlist_(GetCategories(
           ntp_features::kNtpHistoryClustersModuleCategoriesBoostlistParam)),
       should_fetch_clusters_until_exhausted_(base::FeatureList::IsEnabled(
@@ -142,7 +74,10 @@ HistoryClustersModuleService::HistoryClustersModuleService(
 }
 HistoryClustersModuleService::~HistoryClustersModuleService() = default;
 
-void HistoryClustersModuleService::GetClusters(GetClustersCallback callback) {
+void HistoryClustersModuleService::GetClusters(
+    const history_clusters::QueryClustersFilterParams filter_params,
+    size_t min_required_related_searches,
+    GetClustersCallback callback) {
   if (!history_clusters_service_->IsJourneysEnabledAndVisible()) {
     std::move(callback).Run({}, {});
     return;
@@ -153,14 +88,18 @@ void HistoryClustersModuleService::GetClusters(GetClustersCallback callback) {
     return;
   }
 
-  GetClusters(GetBeginTime(),
-              history_clusters::QueryClustersContinuationParams(),
+  GetClusters(GetBeginTime(), std::move(filter_params),
+              min_required_related_searches,
+              history_clusters::QueryClustersContinuationParams(), {},
               std::move(callback));
 }
 
 void HistoryClustersModuleService::GetClusters(
     base::Time begin_time,
+    const history_clusters::QueryClustersFilterParams filter_params,
+    size_t min_required_related_searches,
     history_clusters::QueryClustersContinuationParams continuation_params,
+    std::vector<history::Cluster> continuation_clusters,
     GetClustersCallback callback) {
   // TODO(crbug/1442619): Encapsulate work done by this method in a task that
   // gets returned to the caller.
@@ -168,11 +107,13 @@ void HistoryClustersModuleService::GetClusters(
   size_t task_id = task_id_++;
   std::unique_ptr<history_clusters::HistoryClustersServiceTask>
       query_clusters_task = history_clusters_service_->QueryClusters(
-          history_clusters::ClusteringRequestSource::kNewTabPage,
-          filter_params_, begin_time, continuation_params,
+          history_clusters::ClusteringRequestSource::kNewTabPage, filter_params,
+          begin_time, continuation_params,
           /*recluster=*/false,
           base::BindOnce(&HistoryClustersModuleService::OnGetFilteredClusters,
                          weak_ptr_factory_.GetWeakPtr(), task_id, begin_time,
+                         filter_params, min_required_related_searches,
+                         std::move(continuation_clusters),
                          std::move(callback)));
   in_progress_query_clusters_tasks_.insert_or_assign(
       task_id, std::move(query_clusters_task));
@@ -181,14 +122,28 @@ void HistoryClustersModuleService::GetClusters(
 void HistoryClustersModuleService::OnGetFilteredClusters(
     size_t pending_task_id,
     base::Time begin_time,
+    history_clusters::QueryClustersFilterParams filter_params,
+    size_t min_required_related_searches,
+    std::vector<history::Cluster> continuation_clusters,
     GetClustersCallback callback,
     std::vector<history::Cluster> clusters,
     history_clusters::QueryClustersContinuationParams continuation_params) {
-  base::UmaHistogramBoolean(
-      "NewTabPage.HistoryClusters.ExhaustedEligibleClusters",
-      continuation_params.exhausted_all_visits);
-
   in_progress_query_clusters_tasks_.erase(pending_task_id);
+
+  if (!continuation_clusters.empty()) {
+    clusters.insert(clusters.begin(), continuation_clusters.begin(),
+                    continuation_clusters.end());
+  }
+
+  bool should_fetch_more_clusters = should_fetch_clusters_until_exhausted_ &&
+                                    !continuation_params.exhausted_all_visits;
+  if (should_fetch_more_clusters) {
+    GetClusters(begin_time, std::move(filter_params),
+                min_required_related_searches, continuation_params,
+                std::move(clusters), std::move(callback));
+
+    return;
+  }
 
   // Within each cluster, sort visits.
   for (auto& cluster : clusters) {
@@ -240,6 +195,11 @@ void HistoryClustersModuleService::OnGetFilteredClusters(
                  history::ClusterVisit::InteractionState::kDone;
     });
 
+    if (cluster.visits.size() < static_cast<size_t>(filter_params.min_visits)) {
+      ineligible_reason = kInsufficientVisits;
+      return true;
+    }
+
     int visits_with_images = std::accumulate(
         cluster.visits.begin(), cluster.visits.end(), 0,
         [](const auto& i, const auto& v) {
@@ -247,20 +207,14 @@ void HistoryClustersModuleService::OnGetFilteredClusters(
                              .has_url_keyed_image &&
                          v.annotated_visit.visit_row.is_known_to_sync);
         });
-
-    if (cluster.visits.size() < kMinRequiredVisits) {
-      ineligible_reason = kInsufficientVisits;
-      return true;
-    }
-
-    if (visits_with_images < GetMinImagesToShow()) {
+    if (visits_with_images < filter_params.min_visits_with_images) {
       ineligible_reason = kInsufficientImages;
       return true;
     }
 
     // Cull clusters that do not have the minimum required number of related
     // searches to be eligible for display.
-    if (cluster.related_searches.size() < kMinRequiredRelatedSearches) {
+    if (cluster.related_searches.size() < min_required_related_searches) {
       ineligible_reason = kInsufficientRelatedSearches;
       return true;
     }
@@ -268,31 +222,16 @@ void HistoryClustersModuleService::OnGetFilteredClusters(
     return false;
   });
 
-  bool should_fetch_more_clusters = should_fetch_clusters_until_exhausted_ &&
-                                    clusters.empty() &&
-                                    !continuation_params.exhausted_all_visits;
-  if (!should_fetch_more_clusters) {
-    // Only record metrics if we are ready to rank clusters or have no more
-    // clusters to query for.
-    base::UmaHistogramEnumeration("NewTabPage.HistoryClusters.IneligibleReason",
-                                  ineligible_reason);
-    base::UmaHistogramBoolean("NewTabPage.HistoryClusters.HasClusterToShow",
-                              !clusters.empty());
-    base::UmaHistogramCounts100(
-        "NewTabPage.HistoryClusters.NumClusterCandidates", clusters.size());
-  }
+  // Only record metrics if we are ready to rank clusters.
+  base::UmaHistogramEnumeration("NewTabPage.HistoryClusters.IneligibleReason",
+                                ineligible_reason);
+  base::UmaHistogramBoolean("NewTabPage.HistoryClusters.HasClusterToShow",
+                            !clusters.empty());
+  base::UmaHistogramCounts100("NewTabPage.HistoryClusters.NumClusterCandidates",
+                              clusters.size());
 
   if (clusters.empty()) {
-    if (should_fetch_more_clusters) {
-      // If no clusters to show and visits have not been exhausted, fetch for
-      // more clusters.
-      // TODO(crbug/1442074): This logic should probably change to just keep
-      // iterating until its over for the next phase of this project.
-      GetClusters(begin_time, continuation_params, std::move(callback));
-    } else {
-      std::move(callback).Run(/*clusters=*/{}, /*ranking_signals=*/{});
-    }
-
+    std::move(callback).Run(/*clusters=*/{}, /*ranking_signals=*/{});
     return;
   }
 

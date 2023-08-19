@@ -4,7 +4,8 @@
 
 from __future__ import print_function
 
-from typing import Optional
+import contextlib
+from typing import Generator, Optional
 
 from pathos import pools
 
@@ -22,3 +23,14 @@ def GetProcessPool(nodes: Optional[int] = None) -> pools.ProcessPool:
     A pathos.pools.ProcessPool instance.
   """
   return pools.ProcessPool(nodes=nodes)
+
+
+@contextlib.contextmanager
+def GetProcessPoolContext(
+    nodes: Optional[int] = None) -> Generator[pools.ProcessPool, None, None]:
+  try:
+    pool = GetProcessPool(nodes)
+    yield pool
+  finally:
+    pool.close()
+    pool.join()

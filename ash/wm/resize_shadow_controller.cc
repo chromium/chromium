@@ -10,6 +10,7 @@
 #include "ash/shell.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/resize_shadow.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/client/aura_constants.h"
 
 namespace ash {
@@ -143,8 +144,17 @@ void ResizeShadowController::RecreateShadowIfNeeded(aura::Window* window) {
     return;
 
   ResizeShadow::InitParams params;
-  if (type == ResizeShadowType::kLock)
+  if (type == ResizeShadowType::kLock) {
     params = kLockParams;
+  }
+
+  // Configure window and shadow corner radius when rounded window corners is
+  // enabled.
+  if (chromeos::features::IsRoundedWindowsEnabled()) {
+    params.thickness = 6;
+    params.window_corner_radius = chromeos::features::RoundedWindowsRadius();
+    params.shadow_corner_radius = 16;
+  }
 
   auto new_shadow = std::make_unique<ResizeShadow>(window, params, type);
 

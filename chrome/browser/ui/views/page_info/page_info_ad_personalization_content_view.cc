@@ -41,7 +41,9 @@ PageInfoAdPersonalizationContentView::PageInfoAdPersonalizationContentView(
       views::BoxLayout::Orientation::kVertical, button_insets,
       vertical_distance));
 
-  AddChildView(PageInfoViewFactory::CreateSeparator());
+  AddChildView(PageInfoViewFactory::CreateSeparator(
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          DISTANCE_HORIZONTAL_SEPARATOR_PADDING_PAGE_INFO_VIEW)));
   const auto manage_button_id =
       base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)
           ? IDS_PAGE_INFO_AD_PRIVACY_SUBPAGE_MANAGE_BUTTON

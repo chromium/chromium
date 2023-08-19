@@ -1,7 +1,7 @@
 {
   metadata: {
     namespace: "media_feature_names",
-    export: "",
+    export: "CORE_EXPORT",
   },
 
   data: [
@@ -61,6 +61,7 @@
     "prefers-contrast",
     "prefers-reduced-motion",
     "prefers-reduced-data",
+    "prefers-reduced-transparency",
     "resolution",
     "-webkit-transform-3d",
     "scan",
@@ -71,5 +72,6 @@
     "horizontal-viewport-segments",
     "vertical-viewport-segments",
     "stuck",
+    "inverted-colors",
   ],
 }

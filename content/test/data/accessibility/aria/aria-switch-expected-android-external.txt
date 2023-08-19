@@ -2,4 +2,4 @@ WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chr
 ++ToggleButton text:"Switch1" stateDescription:"Off" checkable clickable actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="switch", roleDescription="switch"]
 ++ToggleButton text:"Switch2" stateDescription:"Off" checkable clickable actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="switch", roleDescription="switch"]
 ++ToggleButton text:"Switch3" stateDescription:"On" checkable checked clickable actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="switch", roleDescription="switch"]
-++ToggleButton text:"Switch4" stateDescription:"On" checkable checked clickable actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="switch", roleDescription="switch"]
+++ToggleButton text:"Switch4" stateDescription:"Off" checkable clickable actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="switch", roleDescription="switch"]

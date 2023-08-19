@@ -4,6 +4,7 @@
 
 #import "ios/web_view/internal/cwv_download_task_internal.h"
 
+#import "base/apple/foundation_util.h"
 #include "base/functional/bind.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -14,10 +15,6 @@
 #include "ios/web_view/internal/cwv_web_view_internal.h"
 #include "net/base/mac/url_conversions.h"
 #include "net/base/net_errors.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 int64_t const CWVDownloadSizeUnknown = -1;
 
@@ -58,8 +55,7 @@ class DownloadTaskObserverBridge : public web::DownloadTaskObserver {
 @synthesize delegate = _delegate;
 
 - (NSString*)suggestedFileName {
-  return base::SysUTF8ToNSString(
-      _internalTask->GenerateFileName().AsUTF8Unsafe());
+  return base::apple::FilePathToNSString(_internalTask->GenerateFileName());
 }
 
 - (NSString*)MIMEType {
@@ -100,7 +96,7 @@ class DownloadTaskObserverBridge : public web::DownloadTaskObserver {
 }
 
 - (void)startDownloadToLocalFileAtPath:(NSString*)path {
-  _internalTask->Start(base::FilePath(base::SysNSStringToUTF8(path)));
+  _internalTask->Start(base::apple::NSStringToFilePath(path));
 }
 
 - (void)cancel {

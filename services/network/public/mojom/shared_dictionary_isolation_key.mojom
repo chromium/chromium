@@ -1,0 +1,16 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+import "services/network/public/mojom/schemeful_site.mojom";
+import "url/mojom/origin.mojom";
+
+// Mapped to `net::SharedDictionaryIsolationKey`.
+// Note: Opaque origins are not allowed for either `frame_origin` or
+// `top_frame_site`.
+struct SharedDictionaryIsolationKey {
+  url.mojom.Origin frame_origin;
+  SchemefulSite top_frame_site;
+};

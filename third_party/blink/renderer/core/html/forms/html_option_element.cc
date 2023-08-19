@@ -39,7 +39,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_data_list_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
-#include "third_party/blink/renderer/core/html/forms/html_select_menu_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_list_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -127,7 +127,7 @@ bool HTMLOptionElement::SupportsFocus() const {
   HTMLSelectElement* select = OwnerSelectElement();
   if (select && select->UsesMenuList())
     return false;
-  if (is_descendant_of_select_menu_)
+  if (is_descendant_of_select_list_)
     return !IsDisabledFormControl();
   return HTMLElement::SupportsFocus();
 }
@@ -144,15 +144,15 @@ String HTMLOptionElement::DisplayLabel() const {
   Document& document = GetDocument();
   String text;
 
-  // WinIE does not use the label attribute, so as a quirk, we ignore it.
   String label_attr = String(FastGetAttribute(html_names::kLabelAttr))
     .StripWhiteSpace(IsHTMLSpace<UChar>).SimplifyWhiteSpace(IsHTMLSpace<UChar>);
   String inner_text = CollectOptionInnerText()
     .StripWhiteSpace(IsHTMLSpace<UChar>).SimplifyWhiteSpace(IsHTMLSpace<UChar>);
-  if (!document.InQuirksMode()) {
-    text = label_attr;
-  } else if (!label_attr.empty() && label_attr != inner_text) {
+  if (document.InQuirksMode() && !label_attr.empty() && label_attr != inner_text) {
     UseCounter::Count(GetDocument(), WebFeature::kOptionLabelInQuirksMode);
+  }
+  if (RuntimeEnabledFeatures::OptionElementAlwaysUseLabelEnabled() || !document.InQuirksMode()) {
+    text = label_attr;
   }
 
   // FIXME: The following treats an element with the label attribute set to
@@ -221,10 +221,10 @@ void HTMLOptionElement::ParseAttribute(
   if (name == html_names::kValueAttr) {
     if (HTMLDataListElement* data_list = OwnerDataListElement()) {
       data_list->OptionElementChildrenChanged();
-    } else if (UNLIKELY(is_descendant_of_select_menu_)) {
-      if (HTMLSelectMenuElement* select_menu =
-              HTMLSelectMenuElement::OwnerSelectMenu(this)) {
-        select_menu->OptionElementValueChanged(*this);
+    } else if (UNLIKELY(is_descendant_of_select_list_)) {
+      if (HTMLSelectListElement* select_list =
+              HTMLSelectListElement::OwnerSelectList(this)) {
+        select_list->OptionElementValueChanged(*this);
       }
     }
   } else if (name == html_names::kDisabledAttr) {
@@ -271,9 +271,9 @@ void HTMLOptionElement::SetSelected(bool selected) {
 
   if (HTMLSelectElement* select = OwnerSelectElement()) {
     select->OptionSelectionStateChanged(this, selected);
-  } else if (HTMLSelectMenuElement* select_menu =
-                 HTMLSelectMenuElement::OwnerSelectMenu(this)) {
-    select_menu->OptionSelectionStateChanged(this, selected);
+  } else if (HTMLSelectListElement* select_list =
+                 HTMLSelectListElement::OwnerSelectList(this)) {
+    select_list->OptionSelectionStateChanged(this, selected);
   }
 }
 
@@ -353,9 +353,9 @@ void HTMLOptionElement::DidChangeTextContent() {
     data_list->OptionElementChildrenChanged();
   } else if (HTMLSelectElement* select = OwnerSelectElement()) {
     select->OptionElementChildrenChanged(*this);
-  } else if (HTMLSelectMenuElement* select_menu =
-                 HTMLSelectMenuElement::OwnerSelectMenu(this)) {
-    select_menu->OptionElementChildrenChanged(*this);
+  } else if (HTMLSelectListElement* select_list =
+                 HTMLSelectListElement::OwnerSelectList(this)) {
+    select_list->OptionElementChildrenChanged(*this);
   }
   UpdateLabel();
 }
@@ -439,25 +439,25 @@ void HTMLOptionElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
 }
 
 void HTMLOptionElement::UpdateLabel() {
-  // For <selectmenu> the label should not replace descendants for the visual
+  // For <selectlist> the label should not replace descendants for the visual
   // in order to allow to render arbitrary content.
-  if (is_descendant_of_select_menu_)
+  if (is_descendant_of_select_list_)
     return;
 
   if (ShadowRoot* root = UserAgentShadowRoot())
     root->setTextContent(DisplayLabel());
 }
 
-void HTMLOptionElement::OptionInsertedIntoSelectMenuElement() {
-  DCHECK(RuntimeEnabledFeatures::HTMLSelectMenuElementEnabled());
+void HTMLOptionElement::OptionInsertedIntoSelectListElement() {
+  DCHECK(RuntimeEnabledFeatures::HTMLSelectListElementEnabled());
 
-  if (is_descendant_of_select_menu_)
+  if (is_descendant_of_select_list_)
     return;
 
   ShadowRoot* root = UserAgentShadowRoot();
   DCHECK(root);
 
-  is_descendant_of_select_menu_ = true;
+  is_descendant_of_select_list_ = true;
   // TODO(crbug.com/1196022) Refine the content that an option can render.
   // Enable the option element to render arbitrary content.
   root->RemoveChildren();
@@ -466,16 +466,16 @@ void HTMLOptionElement::OptionInsertedIntoSelectMenuElement() {
   root->AppendChild(default_slot);
 }
 
-void HTMLOptionElement::OptionRemovedFromSelectMenuElement() {
-  DCHECK(RuntimeEnabledFeatures::HTMLSelectMenuElementEnabled());
+void HTMLOptionElement::OptionRemovedFromSelectListElement() {
+  DCHECK(RuntimeEnabledFeatures::HTMLSelectListElementEnabled());
 
-  if (!is_descendant_of_select_menu_)
+  if (!is_descendant_of_select_list_)
     return;
 
   ShadowRoot* root = UserAgentShadowRoot();
   DCHECK(root);
 
-  is_descendant_of_select_menu_ = false;
+  is_descendant_of_select_list_ = false;
   root->RemoveChildren();
   UpdateLabel();
 }

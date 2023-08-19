@@ -37,8 +37,8 @@ enum VideoCodecProfile {
   // Keep the values in this enum unique, as they imply format (h.264 vs. VP8,
   // for example), and keep the values for a particular format grouped
   // together for clarity.
-  // Next version: 2
-  // Next value: 37
+  // Next version: 3
+  // Next value: 52
   [Default] kVideoCodecProfileUnknown = -1,
   kH264ProfileMin = 0,
   kH264ProfileBaseline = kH264ProfileMin,
@@ -91,6 +91,23 @@ enum VideoCodecProfile {
   [MinVersion=1] kHEVCProfileScalableRext = 35,
   [MinVersion=1] kHEVCProfileHighThroughputScreenExtended = 36,
   [MinVersion=1] kHEVCProfileExtMax = kHEVCProfileHighThroughputScreenExtended,
+  [MinVersion=2] kVVCProfileMin = 37,
+  [MinVersion=2] kVVCProfileMain10 = kVVCProfileMin,
+  [MinVersion=2] kVVCProfileMain12 = 38,
+  [MinVersion=2] kVVCProfileMain12Intra = 39,
+  [MinVersion=2] kVVCProfileMultilayerMain10 = 40,
+  [MinVersion=2] kVVCProfileMain10444 = 41,
+  [MinVersion=2] kVVCProfileMain12444 = 42,
+  [MinVersion=2] kVVCProfileMain16444 = 43,
+  [MinVersion=2] kVVCProfileMain12444Intra = 44,
+  [MinVersion=2] kVVCProfileMain16444Intra = 45,
+  [MinVersion=2] kVVCProfileMultilayerMain10444 = 46,
+  [MinVersion=2] kVVCProfileMain10Still = 47,
+  [MinVersion=2] kVVCProfileMain12Still = 48,
+  [MinVersion=2] kVVCProfileMain10444Still = 49,
+  [MinVersion=2] kVVCProfileMain12444Still = 50,
+  [MinVersion=2] kVVCProfileMain16444Still = 51,
+  [MinVersion=2] kVVCProileMax = kVVCProfileMain16444Still,
 };
 
 // Based on |media.mojom.SubsampleEntry|.
@@ -211,9 +228,19 @@ struct Status {
   StatusData? internal@0;
 };
 
+// Based on |media.mojom.DecoderBufferSideData|.
+// Next min field ID: 3
+[Stable]
+struct DecoderBufferSideData {
+  array<uint32> spatial_layers@0;
+  array<uint8> alpha_data@1;
+  uint64 secure_handle@2;
+};
+
 // Based on |media.mojom.DecoderBuffer| but does not depend on
 // |media.mojom.DecryptConfig|.
-// Next min field ID: 9
+// Next min field ID: 10
+// Next version: 2
 [Stable]
 struct DecoderBuffer {
   mojo_base.mojom.TimeDelta timestamp@0;
@@ -225,12 +252,15 @@ struct DecoderBuffer {
 
   bool is_key_frame@4;
 
-  array<uint8> side_data@5;
+  // TODO(b/269383891): Deprecate |raw_side_data| in M120.
+  array<uint8> raw_side_data@5;
 
   DecryptConfig? decrypt_config@6;
 
   mojo_base.mojom.TimeDelta front_discard@7;
   mojo_base.mojom.TimeDelta back_discard@8;
+
+  [MinVersion=1] DecoderBufferSideData? side_data@9;
 };
 
 // Maps to |media.mojom.VideoDecoderType|.

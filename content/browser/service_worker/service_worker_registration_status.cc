@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/debug/crash_logging.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_error_type.mojom.h"
@@ -81,6 +82,10 @@ void GetServiceWorkerErrorTypeForRegistration(
       // have a corresponding blink error code yet.
       break;  // Fall through to NOTREACHED().
   }
+  SCOPED_CRASH_KEY_NUMBER("GetSWErrTypeForReg", "status",
+                          static_cast<uint32_t>(status));
+  SCOPED_CRASH_KEY_STRING256("GetSWErrTypeForReg", "status_str",
+                             blink::ServiceWorkerStatusToString(status));
   NOTREACHED() << "Got unexpected error code: " << static_cast<uint32_t>(status)
                << " " << blink::ServiceWorkerStatusToString(status);
 }

@@ -8,13 +8,20 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/mock_component_extension_ime_manager_delegate.h"
 
 namespace ash {
 namespace input_method {
+
 namespace {
+
+using ::testing::Eq;
+using ::testing::Optional;
+using ::testing::Property;
 
 class ComponentExtensionIMEManagerTest : public testing::Test {
  public:
@@ -125,7 +132,8 @@ class ComponentExtensionIMEManagerTest : public testing::Test {
   }
 
  protected:
-  raw_ptr<MockComponentExtensionIMEManagerDelegate, ExperimentalAsh>
+  raw_ptr<MockComponentExtensionIMEManagerDelegate,
+          DanglingUntriaged | ExperimentalAsh>
       mock_delegate_;
   std::unique_ptr<ComponentExtensionIMEManager> component_ext_mgr_;
   std::vector<ComponentExtensionIME> ime_list_;
@@ -185,6 +193,54 @@ TEST_F(ComponentExtensionIMEManagerTest, GetAllIMEAsInputMethodDescriptor) {
       EXPECT_TRUE(d.id().find("vkd_") != std::string::npos);
     }
   }
+}
+
+TEST_F(ComponentExtensionIMEManagerTest,
+       GetAllIMEAsInputMethodDescriptorHandwriting) {
+  ime_list_.clear();
+
+  {
+    ComponentExtensionIME ext;
+    ext.id = "ext_id_xxxxxxxxxxxxxxxxxxxxxxxxx";
+    {
+      ComponentExtensionEngine engine;
+      engine.engine_id = "nonempty_handwriting";
+      engine.handwriting_language = "en";
+      ext.engines.push_back(std::move(engine));
+    }
+
+    {
+      ComponentExtensionEngine engine;
+      engine.engine_id = "empty_handwriting";
+      engine.handwriting_language = "";
+      ext.engines.push_back(std::move(engine));
+    }
+
+    {
+      ComponentExtensionEngine engine;
+      engine.engine_id = "missing_handwriting";
+      ext.engines.push_back(std::move(engine));
+    }
+
+    ime_list_.push_back(std::move(ext));
+  }
+
+  auto delegate = std::make_unique<MockComponentExtensionIMEManagerDelegate>();
+  mock_delegate_ = delegate.get();
+  mock_delegate_->set_ime_list(ime_list_);
+  component_ext_mgr_ =
+      std::make_unique<ComponentExtensionIMEManager>(std::move(delegate));
+
+  InputMethodDescriptors descriptors =
+      component_ext_mgr_->GetAllIMEAsInputMethodDescriptor();
+
+  EXPECT_THAT(descriptors,
+              ElementsAre(Property(&InputMethodDescriptor::handwriting_language,
+                                   Optional(Eq("en"))),
+                          Property(&InputMethodDescriptor::handwriting_language,
+                                   Optional(Eq(""))),
+                          Property(&InputMethodDescriptor::handwriting_language,
+                                   absl::nullopt)));
 }
 
 }  // namespace

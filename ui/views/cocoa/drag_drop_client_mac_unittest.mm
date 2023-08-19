@@ -2,17 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-
-#import "base/task/single_thread_task_runner.h"
-#include "base/task/single_thread_task_runner.h"
 #import "ui/views/cocoa/drag_drop_client_mac.h"
 
 #import <Cocoa/Cocoa.h>
 
+#import "base/apple/scoped_objc_class_swizzler.h"
 #include "base/functional/bind.h"
-#import "base/mac/scoped_objc_class_swizzler.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #import "ui/base/clipboard/clipboard_util_mac.h"
 #import "ui/base/dragdrop/drag_drop_types.h"
@@ -40,9 +38,7 @@
 // Mocks the NSDraggingInfo sent to the DragDropClientMac's DragUpdate() and
 // Drop() methods. Out of the required methods of the protocol, only
 // draggingLocation and draggingPasteboard are used.
-@interface MockDraggingInfo : NSObject<NSDraggingInfo> {
-  NSPasteboard* _pasteboard;
-}
+@interface MockDraggingInfo : NSObject <NSDraggingInfo>
 
 @property BOOL animatesToDestination;
 @property NSInteger numberOfValidItemsForDrop;
@@ -51,7 +47,9 @@
 
 @end
 
-@implementation MockDraggingInfo
+@implementation MockDraggingInfo {
+  NSPasteboard* _pasteboard;
+}
 
 @synthesize animatesToDestination;
 @synthesize numberOfValidItemsForDrop;
@@ -121,7 +119,6 @@ enumerateDraggingItemsWithOptions:(NSDraggingItemEnumerationOptions)enumOpts
 
 namespace views::test {
 
-using ::base::ASCIIToUTF16;
 using ::ui::mojom::DragOperation;
 
 // View object that will receive and process dropped data from the test.
@@ -165,7 +162,11 @@ class DragDropView : public View {
 
 class DragDropClientMacTest : public WidgetTest {
  public:
-  DragDropClientMacTest() : widget_(new Widget) {}
+  DragDropClientMacTest()
+      : widget_(new Widget),
+        bridge_(nullptr),
+        ns_window_host_(nullptr),
+        target_(nullptr) {}
 
   DragDropClientMacTest(const DragDropClientMacTest&) = delete;
   DragDropClientMacTest& operator=(const DragDropClientMacTest&) = delete;
@@ -176,16 +177,15 @@ class DragDropClientMacTest : public WidgetTest {
 
   NSDragOperation DragUpdate(NSPasteboard* pasteboard) {
     DragDropClientMac* client = drag_drop_client();
-    dragging_info_.reset(
-        [[MockDraggingInfo alloc] initWithPasteboard:pasteboard]);
-    return client->DragUpdate(dragging_info_.get());
+    dragging_info_ = [[MockDraggingInfo alloc] initWithPasteboard:pasteboard];
+    return client->DragUpdate(dragging_info_);
   }
 
   NSDragOperation Drop() {
     DragDropClientMac* client = drag_drop_client();
-    DCHECK(dragging_info_.get());
-    NSDragOperation operation = client->Drop(dragging_info_.get());
-    dragging_info_.reset();
+    DCHECK(dragging_info_);
+    NSDragOperation operation = client->Drop(dragging_info_);
+    dragging_info_ = nil;
     return operation;
   }
 
@@ -221,11 +221,13 @@ class DragDropClientMacTest : public WidgetTest {
   }
 
  protected:
-  raw_ptr<Widget> widget_ = nullptr;
-  raw_ptr<remote_cocoa::NativeWidgetNSWindowBridge> bridge_ = nullptr;
-  raw_ptr<NativeWidgetMacNSWindowHost> ns_window_host_ = nullptr;
-  raw_ptr<DragDropView> target_ = nullptr;
-  base::scoped_nsobject<MockDraggingInfo> dragging_info_;
+  raw_ptr<Widget, DanglingUntriaged> widget_ = nullptr;
+  raw_ptr<remote_cocoa::NativeWidgetNSWindowBridge, DanglingUntriaged> bridge_ =
+      nullptr;
+  raw_ptr<NativeWidgetMacNSWindowHost, DanglingUntriaged> ns_window_host_ =
+      nullptr;
+  raw_ptr<DragDropView, DanglingUntriaged> target_ = nullptr;
+  MockDraggingInfo* __strong dragging_info_;
 };
 
 // Tests if the drag and drop target receives the dropped data.
@@ -264,7 +266,7 @@ TEST_F(DragDropClientMacTest, ReleaseCapture) {
 
   // There's no way to cleanly stop NSDraggingSession inside unit tests, so just
   // don't start it at all.
-  base::mac::ScopedObjCClassSwizzler swizzle(
+  base::apple::ScopedObjCClassSwizzler swizzle(
       [NSView class], @selector(beginDraggingSessionWithItems:event:source:),
       @selector(cr_beginDraggingSessionWithItems:event:source:));
 
@@ -334,7 +336,7 @@ class DragDropCloseView : public DragDropView {
 
  private:
   void PerformDrop(const ui::DropTargetEvent& event,
-                   ui::mojom::DragOperation& output_drag_op,
+                   DragOperation& output_drag_op,
                    std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
     GetWidget()->CloseNow();
     output_drag_op = DragOperation::kMove;

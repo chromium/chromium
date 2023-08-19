@@ -83,9 +83,11 @@ class LocationIconView : public IconLabelBubbleView {
   int GetMinimumLabelTextWidth() const;
 
   // Updates the icon's ink drop mode, focusable behavior, text and security
-  // status. |suppress_animations| indicates whether this update should suppress
+  // status. `suppress_animations` indicates whether this update should suppress
   // the text change animation (e.g. when swapping tabs).
-  void Update(bool suppress_animations);
+  // `force_hide_background` hides the background color. This is useful in
+  // situations like where the popup is shown.
+  void Update(bool suppress_animations, bool force_hide_background = false);
 
   // Returns text to be placed in the view.
   // - For secure/insecure pages, returns text describing the URL's security

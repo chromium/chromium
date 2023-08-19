@@ -8,6 +8,7 @@
 ; Media Patent License 1.0 was not distributed with this source code in the
 ; PATENTS file, you can obtain it at www.aomedia.org/license/patent.
 ;
+AOM_ARCH_AARCH64 equ 0
 AOM_ARCH_ARM equ 0
 AOM_ARCH_PPC equ 0
 AOM_ARCH_X86 equ 0
@@ -75,6 +76,8 @@ HAVE_AVX2 equ 0
 HAVE_FEXCEPT equ 1
 HAVE_MMX equ 0
 HAVE_NEON equ 0
+HAVE_NEON_DOTPROD equ 0
+HAVE_NEON_I8MM equ 0
 HAVE_PTHREAD_H equ 1
 HAVE_SSE equ 0
 HAVE_SSE2 equ 0
@@ -82,6 +85,7 @@ HAVE_SSE3 equ 0
 HAVE_SSE4_1 equ 0
 HAVE_SSE4_2 equ 0
 HAVE_SSSE3 equ 0
+HAVE_SVE equ 0
 HAVE_UNISTD_H equ 1
 HAVE_VSX equ 0
 HAVE_WXWIDGETS equ 0

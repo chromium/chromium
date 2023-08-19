@@ -21,11 +21,11 @@ MediaTrack::~MediaTrack() = default;
 
 const char* TrackTypeToStr(MediaTrack::Type type) {
   switch (type) {
-    case MediaTrack::Audio:
+    case MediaTrack::Type::kAudio:
       return "audio";
-    case MediaTrack::Text:
+    case MediaTrack::Type::kText:
       return "text";
-    case MediaTrack::Video:
+    case MediaTrack::Type::kVideo:
       return "video";
   }
   NOTREACHED_NORETURN();

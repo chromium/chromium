@@ -1,0 +1,115 @@
+diff --git a/third_party/sentencepiece/src/src/common.h b/third_party/sentencepiece/src/src/common.h
+index f38625ea60e0f..4cdc28d127ff7 100644
+--- a/third_party/sentencepiece/src/src/common.h
++++ b/third_party/sentencepiece/src/src/common.h
+@@ -52,12 +52,6 @@ typedef uint64_t uint64;
+ 
+ static constexpr uint32 kUnicodeError = 0xFFFD;
+ 
+-#if defined(OS_WIN) && defined(UNICODE) && defined(_UNICODE)
+-#define WPATH(path) (::sentencepiece::win32::Utf8ToWide(path).c_str())
+-#else
+-#define WPATH(path) (path)
+-#endif
+-
+ template <typename T, size_t N>
+ char (&ArraySizeHelper(T (&array)[N]))[N];
+ 
+@@ -79,11 +73,6 @@ char (&ArraySizeHelper(const T (&array)[N]))[N];
+ #endif
+ 
+ namespace sentencepiece {
+-#ifdef OS_WIN
+-namespace win32 {
+-std::wstring Utf8ToWide(const absl::string_view input);
+-}  // namespace win32
+-#endif
+ 
+ #ifdef IS_BIG_ENDIAN
+ namespace util {
+diff --git a/third_party/sentencepiece/src/src/filesystem.cc b/third_party/sentencepiece/src/src/filesystem.cc
+index 36deb3fdfa750..6f294df0b2c52 100644
+--- a/third_party/sentencepiece/src/src/filesystem.cc
++++ b/third_party/sentencepiece/src/src/filesystem.cc
+@@ -19,9 +19,9 @@
+ #include "util.h"
+ 
+ #if defined(OS_WIN) && defined(UNICODE) && defined(_UNICODE)
+-#define WPATH(path) (::sentencepiece::win32::Utf8ToWide(path).c_str())
++#define WPATH(path) (::sentencepiece::util::Utf8ToWide(path).c_str())
+ #else
+-#define WPATH(path) (path)
++#define WPATH(path) (path.data())
+ #endif
+ 
+ namespace sentencepiece {
+@@ -32,7 +32,7 @@ class PosixReadableFile : public ReadableFile {
+   PosixReadableFile(absl::string_view filename, bool is_binary = false)
+       : is_(filename.empty()
+                 ? &std::cin
+-                : new std::ifstream(WPATH(filename.data()),
++                : new std::ifstream(WPATH(filename),
+                                     is_binary ? std::ios::binary | std::ios::in
+                                               : std::ios::in)) {
+     if (!*is_)
+@@ -70,7 +70,7 @@ class PosixWritableFile : public WritableFile {
+   PosixWritableFile(absl::string_view filename, bool is_binary = false)
+       : os_(filename.empty()
+                 ? &std::cout
+-                : new std::ofstream(WPATH(filename.data()),
++                : new std::ofstream(WPATH(filename),
+                                     is_binary ? std::ios::binary | std::ios::out
+                                               : std::ios::out)) {
+     if (!*os_)
+diff --git a/third_party/sentencepiece/src/src/util.cc b/third_party/sentencepiece/src/src/util.cc
+index a6d28b2cac263..322406cbc2782 100644
+--- a/third_party/sentencepiece/src/src/util.cc
++++ b/third_party/sentencepiece/src/src/util.cc
+@@ -252,28 +252,20 @@ std::vector<std::string> StrSplitAsCSV(absl::string_view text) {
+ 
+   return result;
+ }
+-}  // namespace util
+ 
+ #ifdef OS_WIN
+-namespace win32 {
+ std::wstring Utf8ToWide(absl::string_view input) {
+   int output_length = ::MultiByteToWideChar(
+       CP_UTF8, 0, input.data(), static_cast<int>(input.size()), nullptr, 0);
+-  output_length = output_length <= 0 ? 0 : output_length - 1;
+   if (output_length == 0) {
+     return L"";
+   }
+-  std::unique_ptr<wchar_t[]> input_wide(new wchar_t[output_length + 1]);
+-  std::fill(input_wide.get(), input_wide.get() + output_length + 1, L'\0');
++  std::wstring output(output_length, 0);
+   const int result = ::MultiByteToWideChar(CP_UTF8, 0, input.data(),
+                                            static_cast<int>(input.size()),
+-                                           input_wide.get(), output_length + 1);
+-  std::wstring output;
+-  if (result > 0) {
+-    output.assign(input_wide.get());
+-  }
+-  return output;
++                                           output.data(), output.size());
++  return result == output_length ? output : L"";
+ }
+-}  // namespace win32
+ #endif
++}  // namespace util
+ }  // namespace sentencepiece
+diff --git a/third_party/sentencepiece/src/src/util.h b/third_party/sentencepiece/src/src/util.h
+index 1451306618b95..656ed77f81539 100644
+--- a/third_party/sentencepiece/src/src/util.h
++++ b/third_party/sentencepiece/src/src/util.h
+@@ -340,6 +340,10 @@ std::string StrError(int errnum);
+ 
+ std::vector<std::string> StrSplitAsCSV(absl::string_view text);
+ 
++#ifdef OS_WIN
++std::wstring Utf8ToWide(const absl::string_view input);
++#endif
++
+ inline Status OkStatus() {
+   return Status();
+ }

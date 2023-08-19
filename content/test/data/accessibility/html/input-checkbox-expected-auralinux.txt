@@ -2,6 +2,6 @@
 ++[section]
 ++++[check box] name='Checkbox0' checkable:true
 ++++[check box] name='Checkbox1' checked checkable:true
-++++[check box] name='Checkbox2' checked checkable:true
-++++[check box] name='Checkbox3' checked checkable:true xml-roles:checkbox
+++++[check box] name='Checkbox2' checkable:true
+++++[check box] name='Checkbox3' checkable:true xml-roles:checkbox
 ++++[check box] name='Checkbox4' indeterminate checkable:true

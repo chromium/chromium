@@ -181,8 +181,7 @@ public class DownloadForegroundServiceManager {
 
     /** Helper code to process download update queue. */
 
-    @Nullable
-    private DownloadUpdate findInterestingDownloadUpdate() {
+    private @Nullable DownloadUpdate findInterestingDownloadUpdate() {
         Iterator<Map.Entry<Integer, DownloadUpdate>> entries =
                 mDownloadUpdateQueue.entrySet().iterator();
         while (entries.hasNext()) {
@@ -365,7 +364,8 @@ public class DownloadForegroundServiceManager {
     /**
      * @return Whether startForeground() is allowed to be called.
      */
-    private boolean canStartForeground() {
+    @VisibleForTesting
+    protected boolean canStartForeground() {
         if (VERSION.SDK_INT < VERSION_CODES.S) return true;
         // If foreground service is started, startForeground() must be called.
         return ApplicationStatus.hasVisibleActivities()

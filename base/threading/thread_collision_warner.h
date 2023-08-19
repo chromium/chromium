@@ -8,6 +8,7 @@
 #include "base/atomicops.h"
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
+#include "base/macros/uniquify.h"
 #include "base/memory/raw_ptr.h"
 
 // A helper class alongside macros to be used to verify assumptions about thread
@@ -98,28 +99,22 @@
 
 #if !defined(NDEBUG)
 
-#define DFAKE_UNIQUE_VARIABLE_CONCAT(a, b) a##b
-// CONCAT1 provides extra level of indirection so that __LINE__ macro expands.
-#define DFAKE_UNIQUE_VARIABLE_CONCAT1(a, b) DFAKE_UNIQUE_VARIABLE_CONCAT(a, b)
-#define DFAKE_UNIQUE_VARIABLE_NAME(a) DFAKE_UNIQUE_VARIABLE_CONCAT1(a, __LINE__)
-
 // Defines a class member that acts like a mutex. It is used only as a
 // verification tool.
 #define DFAKE_MUTEX(obj) \
      mutable base::ThreadCollisionWarner obj
 // Asserts the call is never called simultaneously in two threads. Used at
 // member function scope.
-#define DFAKE_SCOPED_LOCK(obj)                                         \
-  base::ThreadCollisionWarner::ScopedCheck DFAKE_UNIQUE_VARIABLE_NAME( \
-      s_check_)(&obj)
+#define DFAKE_SCOPED_LOCK(obj) \
+  base::ThreadCollisionWarner::ScopedCheck BASE_UNIQUIFY(s_check_)(&obj)
 // Asserts the call is never called simultaneously in two threads. Used at
 // member function scope. Same as DFAKE_SCOPED_LOCK but allows recursive locks.
-#define DFAKE_SCOPED_RECURSIVE_LOCK(obj)            \
-  base::ThreadCollisionWarner::ScopedRecursiveCheck \
-      DFAKE_UNIQUE_VARIABLE_NAME(sr_check)(&obj)
+#define DFAKE_SCOPED_RECURSIVE_LOCK(obj)                                     \
+  base::ThreadCollisionWarner::ScopedRecursiveCheck BASE_UNIQUIFY(sr_check)( \
+      &obj)
 // Asserts the code is always executed in the same thread.
 #define DFAKE_SCOPED_LOCK_THREAD_LOCKED(obj) \
-  base::ThreadCollisionWarner::Check DFAKE_UNIQUE_VARIABLE_NAME(check_)(&obj)
+  base::ThreadCollisionWarner::Check BASE_UNIQUIFY(check_)(&obj)
 
 #else
 

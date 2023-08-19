@@ -12,7 +12,6 @@
 
 #include <memory>
 
-#include "components/viz/common/resources/resource_format.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing_factory.h"
 #include "gpu/gpu_gles2_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -47,14 +46,8 @@ class GPU_GLES2_EXPORT D3DImageBackingFactory
   // Returns true if DXGI swap chain shared images for overlays are supported.
   static bool IsSwapChainSupported();
 
-  // Clears |d3d11_texture| to |color| on the immediate context.
-  static bool ClearTextureToColor(ID3D11Device* d3d11_device,
-                                  ID3D11Texture2D* d3d11_texture,
-                                  const SkColor4f& color);
-
   // Clears the current back buffer to |color| on the immediate context.
-  static bool ClearBackBufferToColor(ID3D11Device* d3d11_device,
-                                     IDXGISwapChain1* swap_chain,
+  static bool ClearBackBufferToColor(IDXGISwapChain1* swap_chain,
                                      const SkColor4f& color);
 
   struct GPU_GLES2_EXPORT SwapChainBackings {

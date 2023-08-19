@@ -7,7 +7,7 @@
 #include "base/functional/callback.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/lacros/account_manager/account_manager_util.h"
-#include "chrome/browser/ui/profile_picker.h"
+#include "chrome/browser/ui/profiles/profile_picker.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "google_apis/gaia/core_account_id.h"
 

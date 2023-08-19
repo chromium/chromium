@@ -8,8 +8,6 @@ source_set("feature_flags") {
     "start_surface_features.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//base",
     "//ui/base",
@@ -20,6 +18,8 @@ source_set("start_surface") {
   sources = [
     "start_surface_recent_tab_browser_agent.h",
     "start_surface_recent_tab_browser_agent.mm",
+    "start_surface_recent_tab_observer.h",
+    "start_surface_recent_tab_observer.mm",
     "start_surface_recent_tab_removal_observer_bridge.h",
     "start_surface_recent_tab_removal_observer_bridge.mm",
     "start_surface_scene_agent.h",
@@ -27,8 +27,6 @@ source_set("start_surface") {
     "start_surface_util.h",
     "start_surface_util.mm",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
     ":feature_flags",
@@ -52,7 +50,6 @@ source_set("start_surface") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
 
   sources = [ "start_surface_scene_agent_unittest.mm" ]
@@ -82,10 +79,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
 
   sources = [ "start_surface_egtest.mm" ]

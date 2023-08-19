@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/ash/date_time_section.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -17,7 +18,6 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/settings/system_settings_provider.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
-#include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -100,7 +100,10 @@ DateTimeSection::DateTimeSection(Profile* profile,
 DateTimeSection::~DateTimeSection() = default;
 
 void DateTimeSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
-  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+  const bool kIsRevampEnabled =
+      ash::features::IsOsSettingsRevampWayfindingEnabled();
+
+  webui::LocalizedString kLocalizedStrings[] = {
       {"dateTimePageTitle", IDS_SETTINGS_DATE_TIME},
       {"timeZone", IDS_SETTINGS_TIME_ZONE},
       {"selectTimeZoneResolveMethod",
@@ -115,7 +118,9 @@ void DateTimeSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"setTimeZoneAutomaticallyOff",
        IDS_SETTINGS_TIME_ZONE_DETECTION_CHOOSE_FROM_LIST},
       {"setTimeZoneAutomaticallyIpOnlyDefault",
-       IDS_SETTINGS_TIME_ZONE_DETECTION_MODE_IP_ONLY_DEFAULT},
+       kIsRevampEnabled
+           ? IDS_OS_SETTINGS_REVAMP_TIME_ZONE_DETECTION_MODE_IP_ONLY_DEFAULT
+           : IDS_SETTINGS_TIME_ZONE_DETECTION_MODE_IP_ONLY_DEFAULT},
       {"setTimeZoneAutomaticallyWithWiFiAccessPointsData",
        IDS_SETTINGS_TIME_ZONE_DETECTION_MODE_SEND_WIFI_AP},
       {"setTimeZoneAutomaticallyWithAllLocationInfo",
@@ -148,9 +153,6 @@ void DateTimeSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddString(
       "timeZoneID",
       system::TimezoneSettings::GetInstance()->GetCurrentTimezoneID());
-
-  bool is_child = user_manager::UserManager::Get()->GetActiveUser()->IsChild();
-  html_source->AddBoolean("isChild", is_child);
 }
 
 void DateTimeSection::AddHandlers(content::WebUI* web_ui) {
@@ -169,7 +171,7 @@ mojom::SearchResultIcon DateTimeSection::GetSectionIcon() const {
   return mojom::SearchResultIcon::kClock;
 }
 
-std::string DateTimeSection::GetSectionPath() const {
+const char* DateTimeSection::GetSectionPath() const {
   return mojom::kDateAndTimeSectionPath;
 }
 

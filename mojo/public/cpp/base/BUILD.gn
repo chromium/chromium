@@ -112,6 +112,8 @@ component("shared_typemap_traits") {
     "token_mojom_traits.h",
     "unguessable_token_mojom_traits.cc",
     "unguessable_token_mojom_traits.h",
+    "uuid_mojom_traits.cc",
+    "uuid_mojom_traits.h",
     "values_mojom_traits.cc",
     "values_mojom_traits.h",
     "version_mojom_traits.cc",
@@ -150,6 +152,7 @@ source_set("tests") {
     "time_unittest.cc",
     "token_unittest.cc",
     "unguessable_token_unittest.cc",
+    "uuid_unittest.cc",
     "values_unittest.cc",
     "version_unittest.cc",
   ]

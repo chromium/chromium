@@ -49,6 +49,10 @@ namespace ui::mojom {
 enum class VirtualKeyboardMode;
 }  // namespace ui::mojom
 
+namespace network::mojom {
+class SharedDictionaryAccessDetails;
+}  // namespace network::mojom
+
 namespace content {
 
 class NavigationEntry;
@@ -102,9 +106,6 @@ struct TrustTokenAccessDetails;
 //
 // Usually, observers should only care about the current RenderViewHost as
 // returned by GetRenderViewHost().
-//
-// TODO(creis): Hide the fact that there are several RenderViewHosts
-// from the WebContentsObserver API. http://crbug.com/173325
 class CONTENT_EXPORT WebContentsObserver {
  public:
   WebContentsObserver(const WebContentsObserver&) = delete;
@@ -484,6 +485,13 @@ class CONTENT_EXPORT WebContentsObserver {
   virtual void OnTrustTokensAccessed(NavigationHandle* navigation_handle,
                                      const TrustTokenAccessDetails& details) {}
 
+  virtual void OnSharedDictionaryAccessed(
+      RenderFrameHost* render_frame_host,
+      const network::mojom::SharedDictionaryAccessDetails& details) {}
+  virtual void OnSharedDictionaryAccessed(
+      NavigationHandle* navigation_handle,
+      const network::mojom::SharedDictionaryAccessDetails& details) {}
+
   // This method is invoked when a new non-pending navigation entry is created.
   // This corresponds to one NavigationController entry being created
   // (in the case of new navigations) or renavigated to (for back/forward
@@ -577,6 +585,11 @@ class CONTENT_EXPORT WebContentsObserver {
   // details.
   virtual void FrameReceivedUserActivation(RenderFrameHost* render_frame_host) {
   }
+
+  // Called when the given `render_frame_host` successfully completes a Web
+  // Authentication API assertion request.
+  virtual void WebAuthnAssertionRequestSucceeded(
+      RenderFrameHost* render_frame_host) {}
 
   // Invoked when the display state of the frame changes.
   virtual void FrameDisplayStateChanged(RenderFrameHost* render_frame_host,

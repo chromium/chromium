@@ -25,6 +25,7 @@
         align-items: center;
         display: flex;
         flex-shrink: 0;
+        gap: var(--cr-radio-button-label-spacing, 20px);
         outline: none;
       }
 
@@ -69,19 +70,22 @@
       :host-context([chrome-refresh-2023]):host([disabled]) {
         opacity: 1;
         --cr-radio-button-checked-color: var(--color-radio-foreground-disabled,
-            rgba(var(--cr-fallback-color-on-surface-rgb), .12));
+            var(--cr-fallback-color-disabled-background));
         --cr-radio-button-unchecked-color:
             var(--color-radio-foreground-disabled,
-                rgba(var(--cr-fallback-color-on-surface-rgb), .12));
+                var(--cr-fallback-color-disabled-background));
       }
 
       :host(:not([disabled])) {
         cursor: pointer;
       }
 
+      :host(.label-first) {
+        flex-direction: row-reverse;
+      }
+
       #labelWrapper {
         flex: 1;
-        margin-inline-start: var(--cr-radio-button-label-spacing, 20px);
       }
 
       :host-context([chrome-refresh-2023]):host([disabled]) #labelWrapper {

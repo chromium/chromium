@@ -54,7 +54,8 @@ PassphraseRequiredChecker::PassphraseRequiredChecker(
 
 bool PassphraseRequiredChecker::IsExitConditionSatisfied(std::ostream* os) {
   *os << "Checking whether passhrase is required";
-  return service()->GetUserSettings()->IsPassphraseRequired();
+  return service()->IsEngineInitialized() &&
+         service()->GetUserSettings()->IsPassphraseRequired();
 }
 
 PassphraseAcceptedChecker::PassphraseAcceptedChecker(
@@ -63,18 +64,32 @@ PassphraseAcceptedChecker::PassphraseAcceptedChecker(
 
 bool PassphraseAcceptedChecker::IsExitConditionSatisfied(std::ostream* os) {
   *os << "Checking whether passhrase is accepted";
-  switch (service()->GetUserSettings()->GetPassphraseType()) {
+  switch (service()->GetUserSettings()->GetPassphraseType().value_or(
+      syncer::PassphraseType::kKeystorePassphrase)) {
     case syncer::PassphraseType::kKeystorePassphrase:
     case syncer::PassphraseType::kTrustedVaultPassphrase:
       return false;
-    // With kImplicitPassphrase user needs to enter the passphrase even despite
-    // it's not treat as explicit passphrase.
+    // With kImplicitPassphrase the user needs to enter the passphrase even
+    // though it's not treated as an explicit passphrase.
     case syncer::PassphraseType::kImplicitPassphrase:
     case syncer::PassphraseType::kFrozenImplicitPassphrase:
     case syncer::PassphraseType::kCustomPassphrase:
       break;
   }
-  return !service()->GetUserSettings()->IsPassphraseRequired();
+  return service()->IsEngineInitialized() &&
+         !service()->GetUserSettings()->IsPassphraseRequired();
+}
+
+PassphraseTypeChecker::PassphraseTypeChecker(
+    syncer::SyncServiceImpl* service,
+    syncer::PassphraseType expected_passphrase_type)
+    : SingleClientStatusChangeChecker(service),
+      expected_passphrase_type_(expected_passphrase_type) {}
+
+bool PassphraseTypeChecker::IsExitConditionSatisfied(std::ostream* os) {
+  *os << "Checking expected passhrase type";
+  return service()->GetUserSettings()->GetPassphraseType() ==
+         expected_passphrase_type_;
 }
 
 TrustedVaultKeyRequiredStateChecker::TrustedVaultKeyRequiredStateChecker(

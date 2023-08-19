@@ -4,9 +4,6 @@
 
 source_set("browsing_data") {
   sources = [
-    "browsing_data_remover.h",
-    "browsing_data_remover.mm",
-    "browsing_data_remover_observer.h",
     "browsing_data_removing_util.mm",
     "system_cookie_store_util.mm",
   ]
@@ -18,14 +15,14 @@ source_set("browsing_data") {
     "//ios/web/common:uikit",
     "//ios/web/net/cookies",
     "//ios/web/public",
+    "//ios/web/public/browsing_data",
     "//ios/web/web_state/ui:wk_web_view_configuration_provider",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
+  frameworks = [ "WebKit.framework" ]
 }
 
 source_set("browsing_data_unittests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   deps = [
     ":browsing_data",
@@ -35,6 +32,7 @@ source_set("browsing_data_unittests") {
     "//ios/web/common",
     "//ios/web/common:uikit",
     "//ios/web/net/cookies",
+    "//ios/web/public/browsing_data",
     "//ios/web/public/test",
     "//ios/web/public/test:test_fixture",
     "//ios/web/public/test/fakes",
@@ -42,7 +40,7 @@ source_set("browsing_data_unittests") {
   ]
 
   sources = [
-    "browsing_data_remover_unittest.mm",
+    "browsing_data_removing_util_unittest.mm",
     "system_cookie_store_util_unittest.mm",
   ]
 }

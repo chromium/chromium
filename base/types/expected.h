@@ -9,6 +9,8 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/strings/strcat.h"
+#include "base/strings/to_string.h"
 #include "base/types/expected_internal.h"  // IWYU pragma: export
 #include "third_party/abseil-cpp/absl/utility/utility.h"
 
@@ -55,6 +57,21 @@
 //   } else {
 //     // process `parsed.error()`
 //   }
+//
+// For even less boilerplate, see expected_macros.h.
+//
+// Note that there are various transformation member functions. To avoid having
+// to puzzle through the standard-ese on their documentation, here's a quick
+// reference table, assuming a source `expected<T, E> ex;` and types U and G
+// convertible from T and E, respectively:
+//
+//                        Return type     Val when ex = t  Val when ex = e
+//                        -----------     ---------------  ---------------
+// ex.value_or(t2)        T               t                t2
+// ex.and_then(f)         expected<U, E>  f(t)             unexpected(e)
+// ex.transform(f)        expected<U, E>  expected(f(t))   unexpected(e)
+// ex.or_else(f)          expected<T, G>  expected(t)      f(e)
+// ex.transform_error(f)  expected<T, G>  expected(t)      unexpected(f(e))
 //
 // References:
 // * https://wg21.link/P0323
@@ -627,6 +644,16 @@ class [[nodiscard]] expected<T, E, /* is_void_v<T> = */ false> final {
     return internal::TransformError(std::move(*this), std::forward<F>(f));
   }
 
+  // Deviation from the Standard: stringification support.
+  //
+  // If we move to `std::expected` someday, we would need to either forego nice
+  // formatted output or move to `std::format` or similar, which can have
+  // customized output for STL types.
+  std::string ToString() const {
+    return has_value() ? StrCat({"Expected(", base::ToString(value()), ")"})
+                       : StrCat({"Unexpected(", base::ToString(error()), ")"});
+  }
+
  private:
   using Impl = internal::ExpectedImpl<T, E>;
   static constexpr auto kValTag = Impl::kValTag;
@@ -921,6 +948,16 @@ class [[nodiscard]] expected<T, E, /* is_void_v<T> = */ true> final {
   template <typename F>
   constexpr auto transform_error(F&& f) const&& noexcept {
     return internal::TransformError(std::move(*this), std::forward<F>(f));
+  }
+
+  // Deviation from the Standard: stringification support.
+  //
+  // If we move to `std::expected` someday, we would need to either forego nice
+  // formatted output or move to `std::format` or similar, which can have
+  // customized output for STL types.
+  std::string ToString() const {
+    return has_value() ? "Expected()"
+                       : StrCat({"Unexpected(", base::ToString(error()), ")"});
   }
 
  private:

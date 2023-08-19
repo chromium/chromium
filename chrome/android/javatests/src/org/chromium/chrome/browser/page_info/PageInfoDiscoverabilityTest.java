@@ -53,6 +53,7 @@ import org.chromium.components.location.LocationUtils;
 import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.device.geolocation.LocationProviderOverrider;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -118,6 +119,9 @@ public class PageInfoDiscoverabilityTest {
             parameters.add(new ParameterSet()
                                    .name("RequestType.kMicStream")
                                    .value(ContentSettingsType.MEDIASTREAM_MIC, true));
+            parameters.add(new ParameterSet()
+                                   .name("RequestType.kMidi")
+                                   .value(ContentSettingsType.MIDI, false));
             parameters.add(new ParameterSet()
                                    .name("RequestType.kMidiSysex")
                                    .value(ContentSettingsType.MIDI_SYSEX, true));
@@ -287,7 +291,7 @@ public class PageInfoDiscoverabilityTest {
     public void testPermissionRequestTypes(
             @ContentSettingsType int contentSettingsType, boolean isInSiteSettings) {
         if (contentSettingsType == ContentSettingsType.BLUETOOTH_CHOOSER_DATA) {
-            isInSiteSettings = ContentFeatureList.isEnabled(
+            isInSiteSettings = ContentFeatureMap.isEnabled(
                     ContentFeatureList.WEB_BLUETOOTH_NEW_PERMISSIONS_BACKEND);
         }
         Assert.assertEquals(ContentSettingsType.DEFAULT, mMediator.getLastPermission());

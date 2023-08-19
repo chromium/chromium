@@ -329,8 +329,10 @@ class HistoryClustersServiceTestBase : public testing::Test {
                     bool expect_clustering_backend_call = true) {
     std::vector<history::Cluster> clusters;
     base::RunLoop loop;
+    QueryClustersFilterParams filter_params;
+    filter_params.include_synced_visits = GetConfig().include_synced_visits;
     const auto task = history_clusters_service_->QueryClusters(
-        ClusteringRequestSource::kJourneysPage, QueryClustersFilterParams(),
+        ClusteringRequestSource::kJourneysPage, filter_params,
         /*begin_time=*/base::Time(), continuation_params, /*recluster=*/false,
         base::BindLambdaForTesting(
             [&](std::vector<history::Cluster> clusters_temp,

@@ -158,6 +158,7 @@ class CORE_EXPORT CSSStyleSheet final : public StyleSheet,
 
   void AddedAdoptedToTreeScope(TreeScope& tree_scope);
   void RemovedAdoptedFromTreeScope(TreeScope& tree_scope);
+  bool IsAdoptedByTreeScope(TreeScope& tree_scope);
 
   // Associated document for constructed stylesheet. Always non-null for
   // constructed stylesheets, always null otherwise.

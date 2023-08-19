@@ -8,8 +8,8 @@
 
 #include "base/android/jni_string.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/android/chrome_jni_headers/BitmapDownloadRequest_jni.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/share/android/jni_headers/BitmapDownloadRequest_jni.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/download_request_utils.h"
 #include "third_party/skia/include/core/SkBitmap.h"

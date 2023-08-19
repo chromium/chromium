@@ -8,6 +8,7 @@ import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
 import java.util.List;
@@ -33,6 +34,16 @@ public interface AccountSelectionComponent {
          * was selected.
          */
         void onDismissed(@IdentityRequestDialogDismissReason int dismissReason);
+
+        /**
+         * Called when the user clicks on the button to sign in to the IDP.
+         */
+        void onSignInToIdp();
+
+        /**
+         * Called on the opener when a modal dialog that it opened has been closed.
+         */
+        void onModalDialogClosed();
     }
 
     /**
@@ -53,6 +64,21 @@ public interface AccountSelectionComponent {
             ClientIdMetadata clientMetadata, boolean isAutoReauthn, String rpContext);
 
     /**
+     * Displays a dialog telling the user that they can sign in to an IDP for the purpose of
+     * federated login when the IDP sign-in status is signin but no accounts are received from the
+     * fetch.
+     *
+     * @param topFrameForDisplay is the formatted RP top frame URL to display in the FedCM prompt.
+     * @param iframeForDisplay is the formatted RP iframe URL to display in the FedCM prompt.
+     * @param idpForDisplay is the formatted IDP URL to display in the FedCM prompt.
+     * @param idpMetadata is the metadata of the IDP.
+     * @param rpContext is a {@link String} representing the desired text to be used in the title of
+     *         the FedCM prompt: "signin", "continue", etc.
+     */
+    void showFailureDialog(String topFrameForDisplay, String iframeForDisplay, String idpForDisplay,
+            IdentityProviderMetadata idpMetadata, String rpContext);
+
+    /**
      * Closes the outstanding bottom sheet.
      */
     void close();
@@ -65,4 +91,20 @@ public interface AccountSelectionComponent {
      * Gets the sheet's subtitle, if any, or null..
      */
     String getSubtitle();
+
+    /**
+     * Shows a modal dialog with the given url. Returns the WebContents of the new dialog.
+     * @param url The URL to be loaded in the dialog.
+     */
+    WebContents showModalDialog(GURL url);
+
+    /**
+     * Closes a modal dialog, if one is opened.
+     */
+    void closeModalDialog();
+
+    /**
+     * Gets notified about the modal dialog that it opened being closed.
+     */
+    void onModalDialogClosed();
 }

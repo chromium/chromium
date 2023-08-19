@@ -96,8 +96,8 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
   bool IsBidiEnabled() const { return Data().is_bidi_enabled_; }
   TextDirection BaseDirection() const { return Data().BaseDirection(); }
 
+  bool HasFloats() const { return Data().HasFloats(); }
   bool HasInitialLetterBox() const { return Data().has_initial_letter_box_; }
-
   bool HasRuby() const { return Data().has_ruby_; }
 
   bool IsBlockLevel() { return EnsureData().is_block_level_; }
@@ -174,6 +174,10 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
       const String* previous_text,
       const HeapVector<NGInlineItem>* previous_items) const;
   void AssociateItemsWithInlines(NGInlineNodeData*) const;
+  bool IsNGShapeCacheAllowed(const String&,
+                             const Font*,
+                             const HeapVector<NGInlineItem>&,
+                             ShapeResultSpacing<String>&) const;
 
   NGInlineNodeData* MutableData() const {
     return To<LayoutBlockFlow>(box_.Get())->GetNGInlineNodeData();

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "incognito_interstitial_constants.h",
     "incognito_interstitial_constants.mm",
@@ -11,7 +10,6 @@ source_set("constants") {
 }
 
 source_set("incognito_interstitial_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "incognito_interstitial_view_controller.h",
     "incognito_interstitial_view_controller.mm",
@@ -35,7 +33,6 @@ source_set("incognito_interstitial_ui") {
 }
 
 source_set("incognito_interstitial") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "incognito_interstitial_coordinator.h",
     "incognito_interstitial_coordinator.mm",
@@ -60,10 +57,7 @@ source_set("incognito_interstitial") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "incognito_interstitial_egtest.mm" ]
   deps = [

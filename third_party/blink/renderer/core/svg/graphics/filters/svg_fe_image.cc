@@ -26,7 +26,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/paint/svg_object_painter.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
-#include "third_party/blink/renderer/core/svg/svg_length_context.h"
+#include "third_party/blink/renderer/core/svg/svg_length_functions.h"
 #include "third_party/blink/renderer/core/svg/svg_preserve_aspect_ratio.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
@@ -80,7 +80,7 @@ static AffineTransform MakeMapBetweenRects(const gfx::RectF& source,
 }
 
 static absl::optional<AffineTransform> ComputeViewportAdjustmentTransform(
-    const SVGElement* element,
+    const LayoutObject& layout_object,
     const gfx::RectF& target_rect) {
   // If we're referencing an element with percentage units, eg. <rect
   // with="30%"> those values were resolved against the viewport.  Build up a
@@ -88,7 +88,8 @@ static absl::optional<AffineTransform> ComputeViewportAdjustmentTransform(
   // subregion.
   // TODO(crbug/260709): This fixes relative lengths but breaks non-relative
   // ones.
-  gfx::SizeF viewport_size = SVGLengthContext(element).ResolveViewport();
+  const gfx::SizeF viewport_size =
+      SVGViewportResolver(layout_object).ResolveViewport();
   if (viewport_size.IsEmpty()) {
     return absl::nullopt;
   }
@@ -102,7 +103,7 @@ gfx::RectF FEImage::MapInputs(const gfx::RectF&) const {
     gfx::RectF src_rect = GetLayoutObjectRepaintRect(*layout_object);
     if (element_->HasRelativeLengths()) {
       auto viewport_transform =
-          ComputeViewportAdjustmentTransform(element_, dest_rect);
+          ComputeViewportAdjustmentTransform(*layout_object, dest_rect);
       if (viewport_transform)
         src_rect = viewport_transform->MapRect(src_rect);
     } else {
@@ -163,7 +164,7 @@ sk_sp<PaintFilter> FEImage::CreateImageFilterForLayoutObject(
   AffineTransform transform;
   if (element_->HasRelativeLengths()) {
     auto viewport_transform =
-        ComputeViewportAdjustmentTransform(element_, dst_rect);
+        ComputeViewportAdjustmentTransform(layout_object, dst_rect);
     if (viewport_transform) {
       src_rect = viewport_transform->MapRect(src_rect);
       transform = *viewport_transform;

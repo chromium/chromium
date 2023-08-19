@@ -26,14 +26,14 @@ found in the LICENSE file.
     <color name="locationbar_status_preview_color_light">@android:color/white</color>
     <color name="locationbar_status_preview_color_incognito">@color/modern_blue_300</color>
 
-    <color name="locationbar_status_separator_color_dark">@color/baseline_neutral_variant_500</color>
+    <color name="locationbar_status_separator_color_dark">@color/baseline_neutral_variant_50</color>
     <color name="locationbar_status_separator_color_light">@color/white_alpha_60</color>
-    <color name="locationbar_status_separator_color_incognito">@color/baseline_neutral_variant_400</color>
+    <color name="locationbar_status_separator_color_incognito">@color/baseline_neutral_variant_60</color>
 
     <color name="omnibox_focused_fading_background_color">@color/black_alpha_65</color>
     <color name="omnibox_focused_fading_background_color_light">@color/white_alpha_65</color>
 
-    <color name="branded_url_text_on_dark_bg">@color/baseline_neutral_0</color>
+    <color name="branded_url_text_on_dark_bg">@color/baseline_neutral_100</color>
     <color name="branded_url_text_on_light_bg">@color/default_text_color_dark</color>
     <color name="branded_url_text_variant_on_dark_bg">@color/white_alpha_50</color>
     <color name="branded_url_text_variant_on_light_bg">@color/default_text_color_secondary_dark</color>

@@ -279,7 +279,8 @@ class MultiProfileSupportTest : public ChromeAshTestBase {
   aura::Window::Windows windows_;
 
   // Owned by |user_manager_enabler_|.
-  raw_ptr<FakeChromeUserManager, ExperimentalAsh> fake_user_manager_ = nullptr;
+  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      fake_user_manager_ = nullptr;
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
 

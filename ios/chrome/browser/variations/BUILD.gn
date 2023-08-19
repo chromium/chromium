@@ -5,7 +5,6 @@
 import("//components/variations/service/generate_ui_string_overrider.gni")
 
 source_set("variations") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "ios_chrome_variations_service_client.h",
     "ios_chrome_variations_service_client.mm",
@@ -23,7 +22,6 @@ source_set("variations") {
 }
 
 source_set("fetcher") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "ios_chrome_variations_seed_fetcher+testing.h",
     "ios_chrome_variations_seed_fetcher.h",
@@ -43,8 +41,8 @@ source_set("fetcher") {
 }
 
 source_set("store") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "ios_chrome_variations_seed_store+testing.h",
     "ios_chrome_variations_seed_store.h",
     "ios_chrome_variations_seed_store.mm",
   ]
@@ -55,10 +53,10 @@ source_set("store") {
 }
 
 source_set("store_private") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   visibility = [
     ":fetcher",
     ":store",
+    ":unit_tests",
   ]
   sources = [ "ios_chrome_variations_seed_store+fetcher.h" ]
 }
@@ -92,10 +90,7 @@ generate_ui_string_overrider("ios_chrome_ui_string_overrider_factory") {
 }
 
 source_set("eg_app_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "variations_app_interface.h",
@@ -114,10 +109,7 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("eg_test_support+eg2") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "variations_app_interface.h",
@@ -130,10 +122,7 @@ source_set("eg_test_support+eg2") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
     "variations_safe_mode_egtest.mm",
@@ -143,8 +132,8 @@ source_set("eg2_tests") {
     ":eg_test_support+eg2",
     "//base",
     "//base/test:test_support",
-    "//components/metrics:metrics",
-    "//components/prefs:prefs",
+    "//components/metrics",
+    "//components/prefs",
     "//components/variations:test_support",
     "//components/variations:variations",
     "//components/variations/service:service",
@@ -155,19 +144,30 @@ source_set("eg2_tests") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [ "ios_chrome_variations_seed_fetcher_unittest.mm" ]
+  sources = [
+    "ios_chrome_variations_seed_fetcher_unittest.mm",
+    "ios_chrome_variations_seed_store_unittest.mm",
+  ]
   deps = [
     ":constants",
     ":fetcher",
     ":store",
+    ":store_private",
+    ":variations",
     "//base",
     "//base/test:test_support",
     "//build:branding_buildflags",
+    "//components/metrics",
+    "//components/metrics:test_support",
     "//components/variations",
+    "//components/variations:test_support",
+    "//components/variations/service",
     "//components/version_info:version_info",
+    "//ios/chrome/browser/flags:client_side",
+    "//ios/chrome/test:test_support",
     "//net",
+    "//services/network:test_support",
     "//testing/gtest",
     "//third_party/ocmock",
   ]

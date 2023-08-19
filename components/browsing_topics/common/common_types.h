@@ -17,6 +17,16 @@ using HashedHost = base::StrongAlias<class HashedHostTag, int64_t>;
 using HashedDomain = base::StrongAlias<class HashedHostTag, int64_t>;
 using Topic = base::StrongAlias<class TopicTag, int>;
 
+// Explicitly typed config version.
+enum ConfigVersion {
+  kDefault = 1,
+
+  kMaxValue = kDefault,
+};
+
+// Returns the current configuration version.
+COMPONENT_EXPORT(BROWSING_TOPICS_COMMON) ConfigVersion CurrentConfigVersion();
+
 // Represents the source of the caller.
 enum class ApiCallerSource {
   // The API usage is from document.browsingTopics().

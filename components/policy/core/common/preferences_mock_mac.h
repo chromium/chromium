@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_POLICY_CORE_COMMON_PREFERENCES_MOCK_MAC_H_
 #define COMPONENTS_POLICY_CORE_COMMON_PREFERENCES_MOCK_MAC_H_
 
-#include "base/mac/scoped_cftyperef.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "components/policy/core/common/preferences_mac.h"
 #include "components/policy/policy_export.h"
 

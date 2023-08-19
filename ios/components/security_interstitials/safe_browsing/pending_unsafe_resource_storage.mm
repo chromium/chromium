@@ -8,10 +8,6 @@
 #import "base/memory/ptr_util.h"
 #import "ios/components/security_interstitials/safe_browsing/unsafe_resource_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using safe_browsing::SBThreatType;
 using security_interstitials::UnsafeResource;
 

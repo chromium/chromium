@@ -3,8 +3,9 @@ Short Name: Ed25519
 URL: http://ed25519.cr.yp.to/software.html
 Version: 0
 License: Public Domain
-License File: NOT_SHIPPED
+License File: LICENSE
 Security Critical: no
+Shipped: no
 
 Description:
 This package is used by the command-line utilities in tools/origin_trials to

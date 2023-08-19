@@ -5,20 +5,14 @@
 #include "ash/wm/desks/desk_textfield.h"
 
 #include "ash/shell.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/style_util.h"
-#include "ash/wm/overview/overview_constants.h"
-#include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/text_elider.h"
 #include "ui/views/background.h"
-#include "ui/views/controls/focus_ring.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -64,9 +58,8 @@ gfx::Size DeskTextfield::CalculatePreferredSize() const {
 
 bool DeskTextfield::SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) {
   // The default behavior of the tab key is that it moves the focus to the next
-  // available view.
-  // We want that to be handled by OverviewHighlightController as part of moving
-  // the highlight forward or backward when tab or shift+tab are pressed.
+  // available view. This is done in either in `OverviewSession::OnKeyEvent()`
+  // or `DeskBarController::OnKeyEvent()`.
   return event.key_code() == ui::VKEY_TAB;
 }
 
@@ -92,7 +85,9 @@ void DeskTextfield::OnBlur() {
   GetRenderText()->SetElideBehavior(gfx::ELIDE_TAIL);
   SystemTextfield::OnBlur();
   // Give user indication for the quick activatable view.
-  SetShowBackground(true);
+  if (!use_default_focus_manager_) {
+    SetShowBackground(true);
+  }
   // Avoid having the focus restored to the same DeskNameView when the desk bar
   // widget is refocused. Use a post task to avoid calling
   // `FocusManager::SetStoredFocusView()` while `FocusManager::ClearFocus()` is

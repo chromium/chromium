@@ -51,6 +51,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.signin.DeviceLockActivityLauncher;
 import org.chromium.chrome.modules.image_editor.ImageEditorModuleProvider;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.favicon.LargeIconBridge;
@@ -70,7 +72,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowShareSheetCoordinator.class, ShadowShareHelper.class,
                 ShadowAndroidShareSheetController.class, ShadowBuildCompatForU.class})
-@Features.EnableFeatures(ChromeFeatureList.SHARE_SHEET_MIGRATION_ANDROID)
+@EnableFeatures(ChromeFeatureList.SHARE_SHEET_MIGRATION_ANDROID)
 public class ShareDelegateImplUnitTest {
     @Rule
     public TestRule mFeatureProcessor = new Features.JUnitProcessor();
@@ -116,8 +118,6 @@ public class ShareDelegateImplUnitTest {
 
     @After
     public void tearDown() {
-        AppHooks.setInstanceForTesting(null);
-        TrackerFactory.setTrackerForTests(null);
         ShadowBuildCompatForU.sIsAtLeastU = false;
         ShadowShareSheetCoordinator.reset();
         ShadowShareHelper.reset();
@@ -125,7 +125,7 @@ public class ShareDelegateImplUnitTest {
     }
 
     @Test
-    @Features.DisableFeatures(ChromeFeatureList.SHARE_SHEET_MIGRATION_ANDROID)
+    @DisableFeatures(ChromeFeatureList.SHARE_SHEET_MIGRATION_ANDROID)
     public void shareWithSharingHub() {
         Assert.assertTrue("ShareHub not enabled.", mShareDelegate.isSharingHubEnabled());
 
@@ -144,7 +144,7 @@ public class ShareDelegateImplUnitTest {
     }
 
     @Test
-    @Features.DisableFeatures(ChromeFeatureList.SHARE_SHEET_MIGRATION_ANDROID)
+    @DisableFeatures(ChromeFeatureList.SHARE_SHEET_MIGRATION_ANDROID)
     public void shareLastUsedComponent() {
         Assert.assertTrue("ShareHub not enabled.", mShareDelegate.isSharingHubEnabled());
 
@@ -382,7 +382,7 @@ public class ShareDelegateImplUnitTest {
     // Work around shadow to assume runtime is at least U.
     // TODO(https://crbug.com/1420388): Switch to @Config(sdk=34) this once API 34 exists.
     @Implements(BuildCompat.class)
-    static class ShadowBuildCompatForU {
+    public static class ShadowBuildCompatForU {
         static boolean sIsAtLeastU;
         @Implementation
         protected static boolean isAtLeastU() {

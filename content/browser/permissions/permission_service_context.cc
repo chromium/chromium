@@ -46,7 +46,7 @@ DOCUMENT_USER_DATA_KEY_IMPL(
 class PermissionServiceContext::PermissionSubscription {
  public:
   PermissionSubscription(
-      blink::mojom::PermissionStatus last_known_status,
+      PermissionStatus last_known_status,
       PermissionServiceContext* context,
       mojo::PendingRemote<blink::mojom::PermissionObserver> observer)
       : last_known_status_(last_known_status),
@@ -74,7 +74,7 @@ class PermissionServiceContext::PermissionSubscription {
 
   void StoreStatusAtBFCacheEntry() {
     status_at_bf_cache_entry_ =
-        absl::make_optional<blink::mojom::PermissionStatus>(last_known_status_);
+        absl::make_optional<PermissionStatus>(last_known_status_);
   }
 
   void NotifyPermissionStatusChangedIfNeeded() {
@@ -85,7 +85,7 @@ class PermissionServiceContext::PermissionSubscription {
     status_at_bf_cache_entry_.reset();
   }
 
-  void OnPermissionStatusChanged(blink::mojom::PermissionStatus status) {
+  void OnPermissionStatusChanged(PermissionStatus status) {
     if (!observer_.is_connected()) {
       return;
     }
@@ -107,8 +107,7 @@ class PermissionServiceContext::PermissionSubscription {
   }
 
  private:
-  blink::mojom::PermissionStatus last_known_status_ =
-      blink::mojom::PermissionStatus::LAST;
+  PermissionStatus last_known_status_ = PermissionStatus::LAST;
   const raw_ptr<PermissionServiceContext> context_;
   mojo::Remote<blink::mojom::PermissionObserver> observer_;
   PermissionController::SubscriptionId id_;
@@ -117,7 +116,7 @@ class PermissionServiceContext::PermissionSubscription {
   // RenderFrameHost enters  BFCache, and will be cleared when the
   // RenderFrameHost is restored from BFCache. Non-empty value indicates that
   // the RenderFrameHost is in BFCache.
-  absl::optional<blink::mojom::PermissionStatus> status_at_bf_cache_entry_;
+  absl::optional<PermissionStatus> status_at_bf_cache_entry_;
   base::WeakPtrFactory<PermissionSubscription> weak_ptr_factory_{this};
 };
 
@@ -174,8 +173,8 @@ void PermissionServiceContext::CreateServiceForWorker(
 void PermissionServiceContext::CreateSubscription(
     blink::PermissionType permission_type,
     const url::Origin& origin,
-    blink::mojom::PermissionStatus current_status,
-    blink::mojom::PermissionStatus last_known_status,
+    PermissionStatus current_status,
+    PermissionStatus last_known_status,
     mojo::PendingRemote<blink::mojom::PermissionObserver> observer) {
   BrowserContext* browser_context = GetBrowserContext();
   if (!browser_context) {

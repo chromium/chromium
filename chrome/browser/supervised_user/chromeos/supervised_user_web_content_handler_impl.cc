@@ -7,23 +7,20 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/supervised_user/chromeos/chromeos_utils.h"
 #include "chrome/browser/supervised_user/chromeos/supervised_user_favicon_request_handler.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/grit/generated_resources.h"
+#include "chromeos/crosapi/mojom/parent_access.mojom.h"
 #include "components/favicon/core/large_icon_service.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/supervised_user/core/common/features.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/image/image_skia.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/parent_access_ash.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_service.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace {
 
@@ -39,6 +36,9 @@ ChromeOSResultToLocalApprovalResult(
       return supervised_user::WebContentHandler::LocalApprovalResult::kCanceled;
     case crosapi::mojom::ParentAccessResult::Tag::kError:
       return supervised_user::WebContentHandler::LocalApprovalResult::kError;
+    case crosapi::mojom::ParentAccessResult::Tag::kDisabled:
+      // Disabled is not a possible result for Local Web Approvals.
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -62,6 +62,22 @@ void HandleChromeOSErrorResult(
       NOTREACHED();
       return;
   }
+}
+
+// Returns whether website approvals are supported on the current ChromeOS
+// platform.
+bool IsWebsiteApprovalSupported() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  chromeos::LacrosService* service = chromeos::LacrosService::Get();
+  CHECK(service);
+  const int version =
+      service->GetInterfaceVersion<crosapi::mojom::ParentAccess>();
+  if (version < int{crosapi::mojom::ParentAccess::MethodMinVersions::
+                        kGetWebsiteParentApprovalMinVersion}) {
+    return false;
+  }
+#endif
+  return true;
 }
 
 }  // namespace
@@ -97,17 +113,19 @@ void SupervisedUserWebContentHandlerImpl::RequestLocalApproval(
     const GURL& url,
     const std::u16string& child_display_name,
     ApprovalRequestInitiatedCallback callback) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   CHECK(web_contents_);
   supervised_user::SupervisedUserSettingsService* settings_service =
       SupervisedUserSettingsServiceFactory::GetForKey(
           Profile::FromBrowserContext(web_contents_->GetBrowserContext())
               ->GetProfileKey());
 
-  crosapi::mojom::ParentAccess* parent_access =
-      crosapi::CrosapiManager::Get()->crosapi_ash()->parent_access_ash();
-  CHECK(parent_access);
+  // Website approval is supported in Lacros from the version 0 and ash does not
+  // have version skew.
+  CHECK(IsWebsiteApprovalSupported());
 
+  crosapi::mojom::ParentAccess* parent_access =
+      supervised_user::GetParentAccessApi();
+  CHECK(parent_access);
   parent_access->GetWebsiteParentApproval(
       url.GetWithEmptyPath(), child_display_name,
       favicon_handler_->GetFaviconOrFallback(),
@@ -116,19 +134,6 @@ void SupervisedUserWebContentHandlerImpl::RequestLocalApproval(
           weak_ptr_factory_.GetWeakPtr(), std::ref(*settings_service), url,
           base::TimeTicks::Now()));
   std::move(callback).Run(true);
-#else   // Local Web approvals not yet supported on Lacros.
-  NOTREACHED_NORETURN();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-}
-
-void SupervisedUserWebContentHandlerImpl::ShowFeedback(GURL url,
-                                                       std::u16string reason) {
-  std::string message = l10n_util::GetStringFUTF8(
-      IDS_BLOCK_INTERSTITIAL_DEFAULT_FEEDBACK_TEXT, reason);
-  chrome::ShowFeedbackPage(
-      url, &profile_.get(), chrome::kFeedbackSourceSupervisedUserInterstitial,
-      message, std::string() /* description_placeholder_text */,
-      std::string() /* category_tag */, std::string() /* extra_diagnostics */);
 }
 
 void SupervisedUserWebContentHandlerImpl::OnLocalApprovalRequestCompleted(

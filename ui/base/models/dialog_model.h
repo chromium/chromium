@@ -11,9 +11,11 @@
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/dialog_model_field.h"
 #include "ui/base/models/dialog_model_host.h"
@@ -85,6 +87,19 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelDelegate {
 // widget->Show();
 class COMPONENT_EXPORT(UI_BASE) DialogModel final {
  public:
+  // A variant for button callbacks that allows different behavior to be
+  // specified when a button is pressed.
+  using ButtonCallbackVariant = absl::variant<
+      // This is the default -- no callback action is taken when the button is
+      // pressed and the dialog is closed.
+      decltype(base::DoNothing()),
+      // Called exactly once when the button is pressed. The dialog will be
+      // closed after the callback is run.
+      base::OnceClosure,
+      // Returns whether the dialog should be closed. This will be called each
+      // time the button is pressed.
+      base::RepeatingCallback<bool()>>;
+
   // Builder for DialogModel. Used for properties that are either only or
   // commonly const after construction.
   class COMPONENT_EXPORT(UI_BASE) Builder final {
@@ -206,10 +221,10 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
     // buttons for accepting/cancelling. Also "ok" should be "accept" to be in
     // sync with other APIs?
     Builder& AddOkButton(
-        base::OnceClosure callback,
+        ButtonCallbackVariant callback,
         const DialogModelButton::Params& params = DialogModelButton::Params());
     Builder& AddCancelButton(
-        base::OnceClosure callback,
+        ButtonCallbackVariant callback,
         const DialogModelButton::Params& params = DialogModelButton::Params());
 
     // Use of the extra button in new dialogs are discouraged. If this is deemed
@@ -294,6 +309,12 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
     Builder& SetInitiallyFocusedField(ElementIdentifier id);
 
    private:
+    Builder& AddButtonInternal(
+        ButtonCallbackVariant callback,
+        const DialogModelButton::Params& params,
+        absl::optional<ui::DialogModelButton>& model_button,
+        ButtonCallbackVariant& model_callback);
+
     std::unique_ptr<DialogModel> model_;
   };
 
@@ -364,14 +385,20 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
   DialogModelCheckbox* GetCheckboxByUniqueId(ElementIdentifier id);
   DialogModelCombobox* GetComboboxByUniqueId(ElementIdentifier id);
   DialogModelTextfield* GetTextfieldByUniqueId(ElementIdentifier id);
+  DialogModelButton* GetButtonByUniqueId(ElementIdentifier id);
 
   // Methods with base::PassKey<DialogModelHost> are only intended to be called
-  // by the DialogModelHost implementation.
-  void OnDialogAcceptAction(base::PassKey<DialogModelHost>);
-  void OnDialogCancelAction(base::PassKey<DialogModelHost>);
+  // by the DialogModelHost implementation. The returned boolean is used to
+  // indicate whether the dialog should close as a result of the action.
+  bool OnDialogAcceptAction(base::PassKey<DialogModelHost>);
+  bool OnDialogCancelAction(base::PassKey<DialogModelHost>);
   void OnDialogCloseAction(base::PassKey<DialogModelHost>);
 
   void OnDialogDestroying(base::PassKey<DialogModelHost>);
+
+  void SetVisible(ElementIdentifier id, bool visible);
+
+  void SetButtonLabel(DialogModelButton* button, const std::u16string& label);
 
   // Called when added to a DialogModelHost.
   void set_host(base::PassKey<DialogModelHost>, DialogModelHost* host) {
@@ -467,6 +494,11 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
 
   void AddField(std::unique_ptr<DialogModelField> field);
 
+  // Runs the appropriate variant of the provided ButtonCallbackVariant and
+  // returns whether the dialog should close as a result.
+  static bool RunDialogModelButtonCallback(
+      ButtonCallbackVariant& callback_variant);
+
   std::unique_ptr<DialogModelDelegate> delegate_;
   raw_ptr<DialogModelHost> host_ = nullptr;
 
@@ -494,8 +526,8 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
   absl::optional<DialogModelButton> extra_button_;
   absl::optional<DialogModelLabel::TextReplacement> extra_link_;
 
-  base::OnceClosure accept_action_callback_;
-  base::OnceClosure cancel_action_callback_;
+  ButtonCallbackVariant accept_action_callback_;
+  ButtonCallbackVariant cancel_action_callback_;
   base::OnceClosure close_action_callback_;
 
   base::OnceClosure dialog_destroying_callback_;

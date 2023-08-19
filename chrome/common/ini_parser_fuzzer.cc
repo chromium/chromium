@@ -9,7 +9,7 @@
 // Uses already existing DictionaryValueINIParser
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   DictionaryValueINIParser target = DictionaryValueINIParser();
-  const std::string& input = reinterpret_cast<const std::string&>(data);
+  std::string input(reinterpret_cast<const char*>(data), size);
   target.Parse(input);
   return 0;
 }

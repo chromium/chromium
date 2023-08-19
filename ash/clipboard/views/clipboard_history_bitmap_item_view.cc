@@ -5,26 +5,29 @@
 #include "ash/clipboard/views/clipboard_history_bitmap_item_view.h"
 
 #include "ash/clipboard/clipboard_history_item.h"
-#include "ash/clipboard/views/clipboard_history_delete_button.h"
 #include "ash/clipboard/views/clipboard_history_view_constants.h"
+#include "ash/style/ash_color_id.h"
 #include "base/callback_list.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "third_party/skia/include/core/SkBitmap.h"
+#include "chromeos/constants/chromeos_features.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
-#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view_class_properties.h"
 
@@ -78,6 +81,7 @@ class FadeImageView : public views::ImageView,
     // Fade the old image out, then swap in the new image.
     CHECK_EQ(FadeAnimationState::kNoFadeAnimation, animation_state_);
     SetPaintToLayer();
+    layer()->SetFillsBoundsOpaquely(false);
     animation_state_ = FadeAnimationState::kFadeOut;
 
     ui::ScopedLayerAnimationSettings settings(layer()->GetAnimator());
@@ -154,23 +158,31 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
  public:
   METADATA_HEADER(BitmapContentsView);
   explicit BitmapContentsView(ClipboardHistoryBitmapItemView* container)
-      : ContentsView(container), container_(container) {
-    SetLayoutManager(std::make_unique<views::FillLayout>());
+      : container_(container) {
+    views::Builder<views::View>(this)
+        .SetLayoutManager(std::make_unique<views::FillLayout>())
+        .AddChild(
+            views::Builder<views::ImageView>(BuildImageView())
+                .CopyAddressTo(&image_view_)
+                .SetPreferredSize(gfx::Size(
+                    INT_MAX, ClipboardHistoryViews::kImageViewPreferredHeight)))
+        .BuildChildren();
 
-    auto image_view = BuildImageView();
-    image_view->SetPreferredSize(
-        gfx::Size(INT_MAX, ClipboardHistoryViews::kImageViewPreferredHeight));
-    image_view_ = AddChildView(std::move(image_view));
-
-    // `border_container_view_` should be above `image_view_`.
-    border_container_view_ = AddChildView(std::make_unique<views::View>());
-
-    border_container_view_->SetBorder(views::CreateThemedRoundedRectBorder(
-        ClipboardHistoryViews::kImageBorderThickness,
-        ClipboardHistoryViews::kImageRoundedCornerRadius,
-        kColorAshHairlineBorderColor));
-
-    InstallDeleteButton();
+    if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
+      // Distinguish the image from rest of the menu with a colored background.
+      SetBackground(views::CreateThemedRoundedRectBackground(
+          cros_tokens::kCrosSysSeparator,
+          ClipboardHistoryViews::kImageBackgroundCornerRadius));
+    } else {
+      // Distinguish the image from rest of the menu with a border.
+      views::Builder<views::View>(this)
+          .AddChild(views::Builder<views::View>().SetBorder(
+              views::CreateThemedRoundedRectBorder(
+                  ClipboardHistoryViews::kImageBorderThickness,
+                  ClipboardHistoryViews::kImageBorderCornerRadius,
+                  kColorAshHairlineBorderColor)))
+          .BuildChildren();
+    }
   }
   BitmapContentsView(const BitmapContentsView& rhs) = delete;
   BitmapContentsView& operator=(const BitmapContentsView& rhs) = delete;
@@ -178,40 +190,60 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
 
  private:
   // ContentsView:
-  ClipboardHistoryDeleteButton* CreateDeleteButton() override {
-    auto delete_button_container = std::make_unique<views::View>();
-    auto* layout_manager = delete_button_container->SetLayoutManager(
-        std::make_unique<views::BoxLayout>(
-            views::BoxLayout::Orientation::kHorizontal));
-    layout_manager->set_main_axis_alignment(
-        views::BoxLayout::MainAxisAlignment::kEnd);
-    layout_manager->set_cross_axis_alignment(
-        views::BoxLayout::CrossAxisAlignment::kStart);
+  SkPath GetClipPath() override {
+    const SkRect contents_bounds = gfx::RectToSkRect(GetContentsBounds());
+    if (!chromeos::features::IsClipboardHistoryRefreshEnabled() ||
+        !is_delete_button_visible()) {
+      // Create rounded corners around the contents area. Because the menu's
+      // container does not cut the children's layers outside of the container's
+      // bounds, we use a clip path rather than creating a layer and masking it.
+      // Otherwise, it would be possible to see contents that overflowed past
+      // the menu item's bounds.
+      const SkScalar radius = SkIntToScalar(
+          chromeos::features::IsClipboardHistoryRefreshEnabled()
+              ? ClipboardHistoryViews::kImageBackgroundCornerRadius
+              : ClipboardHistoryViews::kImageBorderCornerRadius);
+      return SkPath::RRect(contents_bounds, radius, radius);
+    }
 
-    auto delete_button =
-        std::make_unique<ClipboardHistoryDeleteButton>(container_);
-    delete_button->SetProperty(
-        views::kMarginsKey,
-        ClipboardHistoryViews::kBitmapItemDeleteButtonMargins);
-    ClipboardHistoryDeleteButton* delete_button_ptr =
-        delete_button_container->AddChildView(std::move(delete_button));
-    AddChildView(std::move(delete_button_container));
+    const auto width = contents_bounds.width();
+    const auto height = contents_bounds.height();
+    const auto radius = ClipboardHistoryViews::kImageBackgroundCornerRadius;
 
-    return delete_button_ptr;
+    const auto top_left = SkPoint::Make(0.f, 0.f);
+    const auto bottom_left = SkPoint::Make(0.f, height);
+    const auto bottom_right = SkPoint::Make(width, height);
+
+    const auto horizontal_offset = SkPoint::Make(radius, 0.f);
+    const auto vertical_offset = SkPoint::Make(0.f, radius);
+
+    return SkPathBuilder()
+        // Start just before the curve of the top-left corner.
+        .moveTo(radius, 0.f)
+        // Draw the top-left rounded corner.
+        .arcTo(top_left, top_left + vertical_offset, radius)
+        // Draw the bottom-left rounded corner and the vertical line connecting
+        // it to the top-left corner.
+        .arcTo(bottom_left, bottom_left + horizontal_offset, radius)
+        // Draw the bottom-right rounded corner and the horizontal line
+        // connecting it to the bottom-left corner.
+        .arcTo(bottom_right, bottom_right - vertical_offset, radius)
+        // Draw a vertical line to the start of the top-right corner's cutout.
+        .lineTo(width, ClipboardHistoryViews::kCornerCutoutHeight)
+        // Draw the top-right corner's cutout.
+        .rCubicTo(0.f, -8.f, -6.7f, -10.f, -10.f, -10.f)
+        .rLineTo(-4.f, 0.f)
+        .rCubicTo(-7.7f, 0.f, -14.f, -6.3f, -14.f, -14.f)
+        .rLineTo(0.f, -4.f)
+        .rCubicTo(0.f, -3.3f, -2.f, -10.f, -10.f, -10.f)
+        // Draw a horizontal line back to the starting point.
+        .lineTo(radius, 0.f)
+        .close()
+        .detach();
   }
 
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override {
-    // Create rounded corners around the contents area through the clip path
-    // instead of layer clip. Because we have to avoid using any layer here.
-    // Note that the menu's container does not cut the children's layers outside
-    // of the container's bounds. As a result, if menu items have their own
-    // layers, the part beyond the container's bounds is still visible when the
-    // context menu is in overflow.
-    const SkRect local_bounds = gfx::RectToSkRect(GetContentsBounds());
-    const SkScalar radius =
-        SkIntToScalar(ClipboardHistoryViews::kImageRoundedCornerRadius);
-    SetClipPath(SkPath::RRect(local_bounds, radius, radius));
-
+    SetClipPath(GetClipPath());
     UpdateImageViewSize();
   }
 
@@ -229,6 +261,17 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
   }
 
   void UpdateImageViewSize() {
+    if (chromeos::features::IsClipboardHistoryRefreshEnabled() &&
+        image_view_->GetImageModel() ==
+            clipboard_history_util::GetHtmlPreviewPlaceholder()) {
+      // The bitmap item placeholder icon's size does not depend on the
+      // available space.
+      image_view_->SetImageSize(
+          gfx::Size(ClipboardHistoryViews::kBitmapItemPlaceholderIconSize,
+                    ClipboardHistoryViews::kBitmapItemPlaceholderIconSize));
+      return;
+    }
+
     const gfx::Size image_size = image_view_->GetImage().size();
     gfx::Rect contents_bounds = GetContentsBounds();
 
@@ -264,9 +307,6 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
 
   const raw_ptr<ClipboardHistoryBitmapItemView, ExperimentalAsh> container_;
   raw_ptr<views::ImageView, ExperimentalAsh> image_view_ = nullptr;
-
-  // Helps to place a border above `image_view_`.
-  raw_ptr<views::View, ExperimentalAsh> border_container_view_ = nullptr;
 };
 
 BEGIN_METADATA(ClipboardHistoryBitmapItemView, BitmapContentsView, ContentsView)

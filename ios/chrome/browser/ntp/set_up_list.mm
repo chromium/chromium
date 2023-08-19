@@ -7,6 +7,9 @@
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_service.h"
+#import "components/sync/base/user_selectable_type.h"
+#import "components/sync/service/sync_service.h"
+#import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/ntp/set_up_list_delegate.h"
 #import "ios/chrome/browser/ntp/set_up_list_item.h"
@@ -14,10 +17,7 @@
 #import "ios/chrome/browser/ntp/set_up_list_metrics.h"
 #import "ios/chrome/browser/ntp/set_up_list_prefs.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+#import "ios/chrome/browser/sync/enterprise_utils.h"
 
 using set_up_list_prefs::SetUpListItemState;
 
@@ -75,6 +75,20 @@ void AddItemIfNotNil(NSMutableArray* array, id item) {
     [array addObject:item];
   }
 }
+
+// Returns true if signin is allowed / enabled.
+bool IsSigninEnabled(AuthenticationService* auth_service) {
+  switch (auth_service->GetServiceStatus()) {
+    case AuthenticationService::ServiceStatus::SigninForcedByPolicy:
+    case AuthenticationService::ServiceStatus::SigninAllowed:
+      return true;
+    case AuthenticationService::ServiceStatus::SigninDisabledByUser:
+    case AuthenticationService::ServiceStatus::SigninDisabledByPolicy:
+    case AuthenticationService::ServiceStatus::SigninDisabledByInternal:
+      return false;
+  }
+}
+
 }  // namespace
 
 @interface SetUpList () <PrefObserverDelegate>
@@ -91,14 +105,20 @@ void AddItemIfNotNil(NSMutableArray* array, id item) {
 
 + (instancetype)buildFromPrefs:(PrefService*)prefs
                     localState:(PrefService*)localState
+                   syncService:(syncer::SyncService*)syncService
          authenticationService:(AuthenticationService*)authService {
   if (set_up_list_prefs::IsSetUpListDisabled(localState)) {
     return nil;
   }
   NSMutableArray<SetUpListItem*>* items =
       [[NSMutableArray<SetUpListItem*> alloc] init];
-  AddItemIfNotNil(items, BuildItem(SetUpListItemType::kSignInSync, prefs,
-                                   localState, authService));
+  if (IsSigninEnabled(authService) &&
+      !syncService->HasDisableReason(
+          syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY) &&
+      !HasManagedSyncDataType(syncService)) {
+    AddItemIfNotNil(items, BuildItem(SetUpListItemType::kSignInSync, prefs,
+                                     localState, authService));
+  }
   AddItemIfNotNil(items, BuildItem(SetUpListItemType::kDefaultBrowser, prefs,
                                    localState, authService));
   AddItemIfNotNil(items, BuildItem(SetUpListItemType::kAutofill, prefs,
@@ -140,6 +160,25 @@ void AddItemIfNotNil(NSMutableArray* array, id item) {
     }
   }
   return YES;
+}
+
+- (NSArray<SetUpListItem*>*)allItems {
+  NSMutableArray* itemTypes = [[NSMutableArray alloc]
+      initWithObjects:@(int(SetUpListItemType::kSignInSync)),
+                      @(int(SetUpListItemType::kDefaultBrowser)),
+                      @(int(SetUpListItemType::kAutofill)), nil];
+  for (SetUpListItem* item in _items) {
+    [itemTypes removeObject:@(int(item.type))];
+  }
+
+  NSMutableArray* completeItems = [_items mutableCopy];
+  for (NSNumber* typeNum in itemTypes) {
+    [completeItems
+        addObject:[[SetUpListItem alloc]
+                      initWithType:(SetUpListItemType)[typeNum intValue]
+                          complete:YES]];
+  }
+  return completeItems;
 }
 
 #pragma mark - PrefObserverDelegate

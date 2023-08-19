@@ -13,8 +13,7 @@ namespace device {
 
 BluetoothChannelMac::BluetoothChannelMac() : socket_(nullptr) {}
 
-BluetoothChannelMac::~BluetoothChannelMac() {
-}
+BluetoothChannelMac::~BluetoothChannelMac() = default;
 
 void BluetoothChannelMac::SetSocket(BluetoothSocketMac* socket) {
   DCHECK(!socket_);

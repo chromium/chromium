@@ -111,6 +111,49 @@ void SaveCallback1(const std::string src_path,
                      std::move(callback)));
 }
 
+using FlushFsWriterCallback = base::OnceCallback<void(
+    std::unique_ptr<storage::FileStreamWriter> fs_writer,
+    int64_t write_offset,
+    int posix_error_code)>;
+
+// Calls fs_writer->Flush(), running the callback afterwards, if needs_flushing
+// is true. If false, it just runs the callback immediately.
+//
+// The fs_writer and write_offset are passed through to the callback.
+void FlushFsWriterIfNecessary(
+    std::unique_ptr<storage::FileStreamWriter> fs_writer,
+    int64_t write_offset,
+    bool needs_flushing,
+    FlushFsWriterCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+  if (!fs_writer || !needs_flushing) {
+    std::move(callback).Run(std::move(fs_writer), write_offset, 0);
+    return;
+  }
+
+  // Save the pointer before we std::move fs_writer into a base::OnceCallback.
+  // The std::move keeps the underlying storage::FileStreamWriter alive while
+  // any network I/O is pending. Without the std::move, the underlying
+  // storage::FileStreamWriter would get destroyed at the end of this function.
+  storage::FileStreamWriter* fs_writer_ptr = fs_writer.get();
+
+  auto pair = base::SplitOnceCallback(base::BindOnce(
+      [](std::unique_ptr<storage::FileStreamWriter> fs_writer,
+         int64_t write_offset, FlushFsWriterCallback callback, int result) {
+        int posix_error_code = (result < 0) ? NetErrorToErrno(result) : 0;
+        std::move(callback).Run(std::move(fs_writer), write_offset,
+                                posix_error_code);
+      },
+      std::move(fs_writer), write_offset, std::move(callback)));
+
+  int result = fs_writer_ptr->Flush(storage::FlushMode::kEndOfFile,
+                                    std::move(pair.first));
+  if (result != net::ERR_IO_PENDING) {  // The flush was synchronous.
+    std::move(pair.second).Run(result);
+  }
+}
+
 }  // namespace
 
 ReadWriter::ReadWriter(const storage::FileSystemURL& fs_url,
@@ -136,19 +179,55 @@ void ReadWriter::Close(scoped_refptr<storage::FileSystemContext> fs_context,
                        Close2Callback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
-  bool trivial = closed_ || !use_temp_file_;
+  if (closed_) {
+    Close2ResponseProto response_proto;
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), response_proto));
+    return;
+  }
   closed_ = true;
-  if (trivial) {
+
+  FlushFsWriterIfNecessary(
+      std::move(fs_writer_), std::exchange(write_offset_, -1),
+      std::exchange(fs_writer_needs_flushing_, false),
+      base::BindOnce(&ReadWriter::OnFlushBeforeActualClose,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(fs_context),
+                     std::move(callback)));
+}
+
+// static
+void ReadWriter::OnFlushBeforeActualClose(
+    base::WeakPtr<ReadWriter> weak_ptr,
+    scoped_refptr<storage::FileSystemContext> fs_context,
+    Close2Callback callback,
+    std::unique_ptr<storage::FileStreamWriter> fs_writer,
+    int64_t write_offset,
+    int flush_posix_error_code) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+  ReadWriter* self = weak_ptr.get();
+  if (!self) {
+    flush_posix_error_code = EBUSY;
+  }
+  if (flush_posix_error_code) {
+    Close2ResponseProto response_proto;
+    response_proto.set_posix_error_code(flush_posix_error_code);
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), response_proto));
+    return;
+  }
+
+  if (!self->use_temp_file_) {
     Close2ResponseProto response_proto;
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), response_proto));
     return;
   }
 
-  close2_fs_context_ = std::move(fs_context);
-  close2_callback_ = std::move(callback);
-  if (!is_loaning_temp_file_scoped_fd_) {
-    Save();
+  self->close2_fs_context_ = std::move(fs_context);
+  self->close2_callback_ = std::move(callback);
+  if (!self->is_loaning_temp_file_scoped_fd_) {
+    self->Save();
   }
 }
 
@@ -187,8 +266,10 @@ void ReadWriter::Read(scoped_refptr<storage::FileSystemContext> fs_context,
                       Read2Callback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   DCHECK(!is_in_flight_);
+  is_in_flight_ = true;
 
   if (closed_) {
+    is_in_flight_ = false;
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(&RunRead2CallbackFailure, std::move(callback),
                                   base::File::Error::FILE_ERROR_FAILED));
@@ -204,6 +285,7 @@ void ReadWriter::Read(scoped_refptr<storage::FileSystemContext> fs_context,
     fs_reader = fs_context->CreateFileStreamReader(fs_url_, offset, INT64_MAX,
                                                    base::Time());
     if (!fs_reader) {
+      is_in_flight_ = false;
       content::GetUIThreadTaskRunner({})->PostTask(
           FROM_HERE,
           base::BindOnce(&RunRead2CallbackFailure, std::move(callback),
@@ -223,7 +305,6 @@ void ReadWriter::Read(scoped_refptr<storage::FileSystemContext> fs_context,
   // storage::FileStreamReader would get destroyed at the end of this function.
   auto* saved_fs_reader = fs_reader.get();
 
-  is_in_flight_ = true;
   auto pair = base::SplitOnceCallback(base::BindOnce(
       &ReadWriter::OnRead, weak_ptr_factory_.GetWeakPtr(), std::move(callback),
       fs_context, std::move(fs_reader), buffer, offset));
@@ -278,8 +359,10 @@ void ReadWriter::Write(scoped_refptr<storage::FileSystemContext> fs_context,
                        Write2Callback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   DCHECK(!is_in_flight_);
+  is_in_flight_ = true;
 
   if (closed_ || (write_posix_error_code_ != 0)) {
+    is_in_flight_ = false;
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&RunWrite2CallbackFailure, std::move(callback),
@@ -301,6 +384,7 @@ void ReadWriter::Write(scoped_refptr<storage::FileSystemContext> fs_context,
                             O_CLOEXEC | O_EXCL | O_TMPFILE | O_RDWR, 0600));
       if (!temp_file_.is_valid()) {
         PLOG(WARNING) << "could not create O_TMPFILE file";
+        is_in_flight_ = false;
         content::GetUIThreadTaskRunner({})->PostTask(
             FROM_HERE, base::BindOnce(&RunWrite2CallbackFailure,
                                       std::move(callback), ENOSPC));
@@ -324,36 +408,33 @@ void ReadWriter::Write(scoped_refptr<storage::FileSystemContext> fs_context,
   }
 
   // See if we can re-use the previous storage::FileStreamWriter.
-  std::unique_ptr<storage::FileStreamWriter> fs_writer;
+  //
+  // If so, go on to CallWriteDirect immediately. Otherwise, go on to
+  // FlushFsWriterIfNecessary, OnFlushBeforeCallWriteDirect and then
+  // CallWriteDirect.
   if (fs_writer_ && (write_offset_ == offset)) {
-    fs_writer = std::move(fs_writer_);
-    write_offset_ = -1;
-  } else {
-    fs_writer = fs_context->CreateFileStreamWriter(fs_url_, offset);
-    if (!fs_writer) {
-      content::GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE, base::BindOnce(&RunWrite2CallbackFailure,
-                                    std::move(callback), EINVAL));
-      return;
-    }
+    CallWriteDirect(std::move(callback), std::move(fs_context),
+                    std::move(fs_writer_), std::move(buffer),
+                    std::exchange(write_offset_, -1), length);
+    return;
   }
 
-  // Save the pointer before we std::move fs_writer into a base::OnceCallback.
-  // The std::move keeps the underlying storage::FileStreamWriter alive while
-  // any network I/O is pending. Without the std::move, the underlying
-  // storage::FileStreamWriter would get destroyed at the end of this function.
-  auto* saved_fs_writer = fs_writer.get();
-
-  is_in_flight_ = true;
-  auto pair = base::SplitOnceCallback(base::BindOnce(
-      &ReadWriter::OnWriteDirect, weak_ptr_factory_.GetWeakPtr(),
-      std::move(callback), fs_context, std::move(fs_writer), buffer, offset));
-
-  int result =
-      saved_fs_writer->Write(buffer.get(), length, std::move(pair.first));
-  if (result != net::ERR_IO_PENDING) {  // The write was synchronous.
-    std::move(pair.second).Run(result);
-  }
+  // We will need a new storage::FileStreamWriter, so destroy the previous one
+  // saved to fs_writer_, if it is non-null. However, we might need to Flush it
+  // before destroying it.
+  //
+  // Calling FlushFsWriterIfNecessary, with std::move(fs_writer_) and with
+  // OnFlushBeforeCallWriteDirect, will Flush (if needed) and destroy that
+  // FileStreamWriter (positioned at write_offset_), if it is non-null.
+  //
+  // Afterwards, OnFlushBeforeCallWriteDirect creates a new FileStreamWriter
+  // (positioned at offset) and passes that on to CallWriteDirect.
+  FlushFsWriterIfNecessary(
+      std::move(fs_writer_), std::exchange(write_offset_, -1),
+      std::exchange(fs_writer_needs_flushing_, false),
+      base::BindOnce(&ReadWriter::OnFlushBeforeCallWriteDirect,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(fs_context), std::move(buffer), offset, length));
 }
 
 // static
@@ -368,6 +449,9 @@ void ReadWriter::OnTempFileInitialized(
 
   ReadWriter* self = weak_ptr.get();
   if (!result.has_value() || !self) {
+    if (self) {
+      self->is_in_flight_ = false;
+    }
     Write2ResponseProto response_proto;
     response_proto.set_posix_error_code(result.error_or(EBUSY));
     content::GetUIThreadTaskRunner({})->PostTask(
@@ -398,7 +482,6 @@ void ReadWriter::CallWriteTempFile(base::WeakPtr<ReadWriter> weak_ptr,
     return;
   }
 
-  self->is_in_flight_ = true;
   self->is_loaning_temp_file_scoped_fd_ = true;
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
@@ -443,6 +526,73 @@ void ReadWriter::OnWriteTempFile(base::WeakPtr<ReadWriter> weak_ptr,
 }
 
 // static
+void ReadWriter::OnFlushBeforeCallWriteDirect(
+    base::WeakPtr<ReadWriter> weak_ptr,
+    Write2Callback callback,
+    scoped_refptr<storage::FileSystemContext> fs_context,  // See § above.
+    scoped_refptr<net::IOBuffer> buffer,
+    int64_t offset,
+    int length,
+    std::unique_ptr<storage::FileStreamWriter> fs_writer,
+    int64_t write_offset,
+    int flush_posix_error_code) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+  ReadWriter* self = weak_ptr.get();
+  if (!self) {
+    flush_posix_error_code = EBUSY;
+  }
+  if (flush_posix_error_code) {
+    if (self) {
+      self->is_in_flight_ = false;
+    }
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&RunWrite2CallbackFailure,
+                                  std::move(callback), flush_posix_error_code));
+    return;
+  }
+
+  fs_writer = fs_context->CreateFileStreamWriter(self->fs_url_, offset);
+  if (!fs_writer) {
+    self->is_in_flight_ = false;
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&RunWrite2CallbackFailure, std::move(callback), EINVAL));
+    return;
+  }
+
+  self->CallWriteDirect(std::move(callback), std::move(fs_context),
+                        std::move(fs_writer), std::move(buffer), offset,
+                        length);
+}
+
+void ReadWriter::CallWriteDirect(
+    Write2Callback callback,
+    scoped_refptr<storage::FileSystemContext> fs_context,  // See § above.
+    std::unique_ptr<storage::FileStreamWriter> fs_writer,
+    scoped_refptr<net::IOBuffer> buffer,
+    int64_t offset,
+    int length) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+  // Save the pointer before we std::move fs_writer into a base::OnceCallback.
+  // The std::move keeps the underlying storage::FileStreamWriter alive while
+  // any network I/O is pending. Without the std::move, the underlying
+  // storage::FileStreamWriter would get destroyed at the end of this function.
+  auto* saved_fs_writer = fs_writer.get();
+
+  auto pair = base::SplitOnceCallback(base::BindOnce(
+      &ReadWriter::OnWriteDirect, weak_ptr_factory_.GetWeakPtr(),
+      std::move(callback), fs_context, std::move(fs_writer), buffer, offset));
+
+  int result =
+      saved_fs_writer->Write(buffer.get(), length, std::move(pair.first));
+  if (result != net::ERR_IO_PENDING) {  // The write was synchronous.
+    std::move(pair.second).Run(result);
+  }
+}
+
+// static
 void ReadWriter::OnWriteDirect(
     base::WeakPtr<ReadWriter> weak_ptr,
     Write2Callback callback,
@@ -468,6 +618,10 @@ void ReadWriter::OnWriteDirect(
   if (length >= 0) {
     self->fs_writer_ = std::move(fs_writer);
     self->write_offset_ = offset + length;
+    self->fs_writer_needs_flushing_ =
+        self->fs_writer_needs_flushing_ ||
+        (self->fs_url_.mount_option().flush_policy() ==
+         storage::FlushPolicy::FLUSH_ON_COMPLETION);
   } else {
     self->fs_writer_.reset();
     self->write_offset_ = -1;

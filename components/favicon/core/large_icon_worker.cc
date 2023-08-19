@@ -12,7 +12,7 @@
 #include "base/no_destructor.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
-#include "components/favicon/core/large_favicon_provider.h"
+#include "components/favicon/core/favicon_service.h"
 #include "components/favicon_base/fallback_icon_style.h"
 #include "skia/ext/image_operations.h"
 #include "ui/gfx/codec/png_codec.h"
@@ -87,7 +87,7 @@ void ProcessIconOnBackgroundThread(
   *fallback_icon_style = favicon_base::FallbackIconStyle();
   int fallback_icon_size = 0;
   if (db_result.is_valid()) {
-    favicon_base::SetDominantColorAsBackground(db_result.bitmap_data,
+    favicon_base::SetDominantColorAsBackground(*db_result.bitmap_data,
                                                fallback_icon_style);
     // The size must be positive, we cap to 128 to avoid the sparse histogram
     // to explode (having too many different values, server-side). Size 128
@@ -137,7 +137,7 @@ void LargeIconWorker::OnIconLookupComplete(
 
 // static
 base::CancelableTaskTracker::TaskId LargeIconWorker::GetLargeIconRawBitmap(
-    LargeFaviconProvider* provider,
+    FaviconService* favicon_service,
     const GURL& page_url,
     int min_source_size_in_pixel,
     int desired_size_in_pixel,
@@ -164,7 +164,7 @@ base::CancelableTaskTracker::TaskId LargeIconWorker::GetLargeIconRawBitmap(
   //   GetLargestRawFaviconForPageURL. Add the logic required to select the
   //   best possible large icon. Also add logic to fetch-on-demand when the
   //   URL of a large icon is known but its bitmap is not available.
-  return provider->GetLargestRawFaviconForPageURL(
+  return favicon_service->GetLargestRawFaviconForPageURL(
       page_url, *large_icon_types, max_size_in_pixel,
       base::BindOnce(&LargeIconWorker::OnIconLookupComplete, worker), tracker);
 }

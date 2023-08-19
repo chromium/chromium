@@ -38,7 +38,8 @@ class DebugdNotificationHandlerTest : public AshTestBase {
  protected:
   std::unique_ptr<DebugDaemonClient> debug_daemon_client_;
   std::unique_ptr<DebugdNotificationHandler> handler_;
-  raw_ptr<message_center::MessageCenter, ExperimentalAsh> message_center_;
+  raw_ptr<message_center::MessageCenter, DanglingUntriaged | ExperimentalAsh>
+      message_center_;
 };
 
 TEST_F(DebugdNotificationHandlerTest,

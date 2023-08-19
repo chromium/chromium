@@ -46,12 +46,27 @@ class CreditCardField : public FormField {
   };
   // Returns formatting instructions for an CC expiration date <input> field
   // based on properties of the field (maximum length, label, placeholder, ...).
-  // The `assumed_field_type` specifies the number of digits to use for a field
+  //
+  // The `forced_field_type` is always used over detected patterns (like "MM /
+  // YY" or "MM/YYYY") in a label or placeholder if possible. There are two main
+  // usecases for this: 1) server overrides should be given precedence over
+  // local heuristics. 2) During the final filling moment, we try to stick to
+  // the overall type for filling and only diverge if the type does not fit into
+  // the field. If the `forced_field_type` is `NO_SERVER_DATA`, it gets ignored.
+  //
+  // The `server_hint` is used if `DetermineExpirationDateFormat` does not
+  // detect any pattern on the website. This is for classical crowdsourcing,
+  // which sometimes makes errors. If the `server_hint` is `NO_SERVER_DATA`, it
+  // gets ignored.
+  //
+  // The `fallback_type` specifies the number of digits to use for a field
   // if there are no hints on what's best. It must be either
   // CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR or CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR.
   static ExpirationDateFormat DetermineExpirationDateFormat(
       const AutofillField& field,
-      ServerFieldType assumed_field_type);
+      ServerFieldType fallback_type,
+      ServerFieldType server_hint,
+      ServerFieldType forced_field_type);
 
  protected:
   void AddClassifications(FieldCandidatesMap& field_candidates) const override;
@@ -103,9 +118,7 @@ class CreditCardField : public FormField {
 
   raw_ptr<LogManager> log_manager_;  // Optional.
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION AutofillField* cardholder_;  // Optional.
+  raw_ptr<AutofillField> cardholder_;  // Optional.
 
   // Occasionally pages have separate fields for the cardholder's first and
   // last names; for such pages |cardholder_| holds the first name field and
@@ -114,29 +127,19 @@ class CreditCardField : public FormField {
   // because the text patterns for matching a cardholder name are different
   // than for ordinary names, and because cardholder names never have titles,
   // middle names or suffixes.)
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION AutofillField* cardholder_last_;
+  raw_ptr<AutofillField> cardholder_last_;
 
   raw_ptr<AutofillField> type_;          // Optional.
   std::vector<AutofillField*> numbers_;  // Required.
 
   // The 3-digit card verification number; we don't currently fill this.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION AutofillField* verification_;
+  raw_ptr<AutofillField> verification_;
 
   // Either |expiration_date_| or both |expiration_month_| and
   // |expiration_year_| are required.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION AutofillField* expiration_month_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION AutofillField* expiration_year_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION AutofillField* expiration_date_;
+  raw_ptr<AutofillField> expiration_month_;
+  raw_ptr<AutofillField> expiration_year_;
+  raw_ptr<AutofillField> expiration_date_;
 
   // For combined expiration field having year as 2-digits we store here
   // |CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR|; otherwise we store

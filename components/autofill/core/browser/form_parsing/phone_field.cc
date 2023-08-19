@@ -53,6 +53,8 @@ std::u16string GetAreaRegex() {
 
 }  // namespace
 
+PhoneField::~PhoneField() = default;
+
 // Phone field grammars - first matched grammar will be parsed. Suffix and
 // extension are parsed separately unless they are necessary parts of the match.
 // The following notation is used to describe the patterns:
@@ -136,7 +138,7 @@ const std::vector<PhoneField::PhoneGrammar>& PhoneField::GetPhoneGrammars() {
 // static
 bool PhoneField::LikelyAugmentedPhoneCountryCode(
     AutofillScanner* scanner,
-    AutofillField** matched_field) {
+    raw_ptr<AutofillField>* matched_field) {
   AutofillField* field = scanner->Cursor();
 
   // Return false if the field is not a selection box.
@@ -436,7 +438,7 @@ std::string PhoneField::GetJSONFieldType(RegexType phonetype_id) {
 // static
 bool PhoneField::ParsePhoneField(AutofillScanner* scanner,
                                  base::StringPiece16 regex,
-                                 AutofillField** field,
+                                 raw_ptr<AutofillField>* field,
                                  const RegExLogging& logging,
                                  const bool is_country_code_field,
                                  const std::string& json_field_type,

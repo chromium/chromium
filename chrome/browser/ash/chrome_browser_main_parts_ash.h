@@ -62,10 +62,10 @@ class AccessibilityEventRewriterDelegateImpl;
 class ApnMigrator;
 class ArcKioskAppManager;
 class AudioSurveyHandler;
-class AuthParts;
 class BluetoothPrefStateObserver;
 class BulkPrintersCalculatorFactory;
 class CameraGeneralSurveyHandler;
+class ChromeAuthParts;
 class CrosUsbDetector;
 class DebugdNotificationHandler;
 class DemoModeResourcesRemover;
@@ -78,8 +78,7 @@ class IdleActionWarningObserver;
 class LoginScreenExtensionsStorageCleaner;
 class LowDiskNotification;
 class AuthEventsRecorder;
-class MultiCaptureLoginNotification;
-class MultiCaptureNotification;
+class MultiCaptureNotifications;
 class NetworkChangeManagerClient;
 class NetworkPrefStateObserver;
 class NetworkThrottlingObserver;
@@ -93,6 +92,7 @@ class ShutdownPolicyForwarder;
 class SigninProfileHandler;
 class SystemTokenCertDBInitializer;
 class VideoConferenceAppServiceClient;
+class VideoConferenceAshFeatureClient;
 class WebKioskAppManager;
 class KioskAppManager;
 
@@ -106,6 +106,10 @@ class DeviceActivityController;
 
 namespace internal {
 class DBusServices;
+}
+
+namespace input_method {
+class EditorMediator;
 }
 
 namespace mojo_service_manager {
@@ -219,9 +223,7 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<ArcKioskAppManager> arc_kiosk_app_manager_;
   std::unique_ptr<WebKioskAppManager> web_kiosk_app_manager_;
   std::unique_ptr<KioskAppManager> kiosk_app_manager_;
-  std::unique_ptr<MultiCaptureNotification> multi_capture_notification_;
-  std::unique_ptr<MultiCaptureLoginNotification>
-      multi_capture_login_notification_;
+  std::unique_ptr<MultiCaptureNotifications> multi_capture_notifications_;
 
   std::unique_ptr<ShortcutMappingPrefService> shortcut_mapping_pref_service_;
   std::unique_ptr<ChromeKeyboardControllerClient>
@@ -237,6 +239,7 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
       lacros_data_backward_migration_mode_policy_observer_;
 
   std::unique_ptr<VideoConferenceAppServiceClient> vc_app_service_client_;
+  std::unique_ptr<VideoConferenceAshFeatureClient> vc_ash_feature_client_;
 
   std::unique_ptr<power::SmartChargingManager> smart_charging_manager_;
 
@@ -305,12 +308,14 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<traffic_counters::TrafficCountersHandler>
       traffic_counters_handler_;
   std::unique_ptr<ash::AuthEventsRecorder> auth_events_recorder_;
-  std::unique_ptr<ash::AuthParts> auth_parts_;
+  std::unique_ptr<ash::ChromeAuthParts> auth_parts_;
 
   std::unique_ptr<video_conference::VideoConferenceManagerClientImpl>
       video_conference_manager_client_;
 
   std::unique_ptr<MisconfiguredUserCleaner> misconfigured_user_cleaner_;
+
+  std::unique_ptr<input_method::EditorMediator> editor_mediator_;
 
   base::WeakPtrFactory<ChromeBrowserMainPartsAsh> weak_ptr_factory_{this};
 };

@@ -71,7 +71,7 @@ class AppInfoDialog : public views::View,
   raw_ptr<views::View> dialog_footer_ = nullptr;
   raw_ptr<views::View> arc_app_info_links_ = nullptr;
 
-  raw_ptr<Profile, DanglingUntriaged> profile_;
+  raw_ptr<Profile, AcrossTasksDanglingUntriaged> profile_;
   std::string app_id_;
   raw_ptr<extensions::ExtensionRegistry> extension_registry_ = nullptr;
 };

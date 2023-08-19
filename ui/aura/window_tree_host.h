@@ -448,7 +448,7 @@ class AURA_EXPORT WindowTreeHost : public ui::ImeKeyEventDispatcher,
   // valid during its deletion. (Window's dtor notifies observers that may
   // attempt to reach back up to access this object which will be valid until
   // the end of the dtor).
-  raw_ptr<Window, DanglingUntriaged> window_;  // Owning.
+  raw_ptr<Window, AcrossTasksDanglingUntriaged> window_;  // Owning.
 
   // Keeps track of the occlusion state of the host, and used to send
   // notifications to observers when it changes.

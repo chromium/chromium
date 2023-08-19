@@ -55,8 +55,6 @@ const char kConfigRuleTypeMonitorHistogram[] =
 namespace content {
 
 BackgroundTracingRule::BackgroundTracingRule() = default;
-BackgroundTracingRule::BackgroundTracingRule(base::TimeDelta trigger_delay)
-    : trigger_delay_(trigger_delay) {}
 
 BackgroundTracingRule::~BackgroundTracingRule() {
   DCHECK(!installed());
@@ -74,11 +72,12 @@ void BackgroundTracingRule::Uninstall() {
     return;
   }
   installed_ = false;
+  timer_.Stop();
   trigger_callback_.Reset();
   DoUninstall();
 }
 
-bool BackgroundTracingRule::OnRuleTriggered() const {
+bool BackgroundTracingRule::OnRuleTriggered() {
   if (!installed()) {
     return false;
   }
@@ -86,7 +85,14 @@ bool BackgroundTracingRule::OnRuleTriggered() const {
   if (trigger_chance_ < 1.0 && base::RandDouble() > trigger_chance_) {
     return false;
   }
-  return trigger_callback_.Run(this);
+  if (!delay_.is_zero()) {
+    timer_.Start(FROM_HERE, delay_,
+                 base::BindOnce(base::IgnoreResult(trigger_callback_),
+                                base::Unretained(this)));
+    return true;
+  } else {
+    return trigger_callback_.Run(this);
+  }
 }
 
 base::TimeDelta BackgroundTracingRule::GetTraceDelay() const {
@@ -119,6 +125,22 @@ base::Value::Dict BackgroundTracingRule::ToDict() const {
   return dict;
 }
 
+perfetto::protos::gen::TriggerRule BackgroundTracingRule::ToProtoForTesting()
+    const {
+  perfetto::protos::gen::TriggerRule config;
+  if (trigger_chance_ < 1.0) {
+    config.set_trigger_chance(trigger_chance_);
+  }
+
+  if (!delay_.is_zero()) {
+    config.set_delay_ms(delay_.InMilliseconds());
+  }
+
+  config.set_name(rule_id_);
+
+  return config;
+}
+
 void BackgroundTracingRule::GenerateMetadataProto(
     BackgroundTracingRule::MetadataProto* out) const {
   uint32_t name_hash = variations::HashName(rule_id());
@@ -142,6 +164,21 @@ void BackgroundTracingRule::Setup(const base::Value::Dict& dict) {
   }
 }
 
+void BackgroundTracingRule::Setup(
+    const perfetto::protos::gen::TriggerRule& config) {
+  if (config.has_trigger_chance()) {
+    trigger_chance_ = config.trigger_chance();
+  }
+  if (config.has_delay_ms()) {
+    delay_ = base::Milliseconds(config.delay_ms());
+  }
+  if (config.has_name()) {
+    rule_id_ = config.name();
+  } else {
+    rule_id_ = GetDefaultRuleId();
+  }
+}
+
 namespace {
 
 class NamedTriggerRule : public BackgroundTracingRule {
@@ -156,6 +193,15 @@ class NamedTriggerRule : public BackgroundTracingRule {
             dict.FindString(kConfigRuleTriggerNameKey)) {
       return base::WrapUnique<BackgroundTracingRule>(
           new NamedTriggerRule(*trigger_name));
+    }
+    return nullptr;
+  }
+
+  static std::unique_ptr<BackgroundTracingRule> Create(
+      const perfetto::protos::gen::TriggerRule& config) {
+    if (config.has_manual_trigger_name()) {
+      return base::WrapUnique<BackgroundTracingRule>(
+          new NamedTriggerRule(config.manual_trigger_name()));
     }
     return nullptr;
   }
@@ -176,6 +222,13 @@ class NamedTriggerRule : public BackgroundTracingRule {
     dict.Set(kConfigRuleKey, kConfigRuleTypeMonitorNamed);
     dict.Set(kConfigRuleTriggerNameKey, named_event_.c_str());
     return dict;
+  }
+
+  perfetto::protos::gen::TriggerRule ToProtoForTesting() const override {
+    perfetto::protos::gen::TriggerRule config =
+        BackgroundTracingRule::ToProtoForTesting();
+    config.set_manual_trigger_name(named_event_);
+    return config;
   }
 
   void GenerateMetadataProto(
@@ -248,6 +301,27 @@ class HistogramRule : public BackgroundTracingRule,
 
     return rule;
   }
+  static std::unique_ptr<BackgroundTracingRule> Create(
+      const perfetto::protos::gen::TriggerRule& config) {
+    DCHECK(config.has_histogram());
+
+    if (!config.histogram().has_histogram_name() ||
+        !config.histogram().has_min_value()) {
+      return nullptr;
+    }
+    int histogram_lower_value = config.histogram().min_value();
+    int histogram_upper_value = std::numeric_limits<int>::max();
+    if (config.histogram().has_max_value()) {
+      histogram_upper_value = config.histogram().max_value();
+    }
+    if (histogram_lower_value > histogram_upper_value) {
+      return nullptr;
+    }
+
+    return base::WrapUnique(
+        new HistogramRule(config.histogram().histogram_name(),
+                          histogram_lower_value, histogram_upper_value));
+  }
 
   ~HistogramRule() override = default;
 
@@ -280,6 +354,16 @@ class HistogramRule : public BackgroundTracingRule,
     return dict;
   }
 
+  perfetto::protos::gen::TriggerRule ToProtoForTesting() const override {
+    perfetto::protos::gen::TriggerRule config =
+        BackgroundTracingRule::ToProtoForTesting();
+    auto* histogram = config.mutable_histogram();
+    histogram->set_histogram_name(histogram_name_);
+    histogram->set_min_value(histogram_lower_value_);
+    histogram->set_max_value(histogram_upper_value_);
+    return config;
+  }
+
   void GenerateMetadataProto(
       BackgroundTracingRule::MetadataProto* out) const override {
     DCHECK(out);
@@ -294,12 +378,14 @@ class HistogramRule : public BackgroundTracingRule,
 
   // BackgroundTracingManagerImpl::AgentObserver implementation
   void OnAgentAdded(tracing::mojom::BackgroundTracingAgent* agent) override {
-    agent->SetUMACallback(histogram_name_, histogram_lower_value_,
+    agent->SetUMACallback(tracing::mojom::BackgroundTracingRule::New(rule_id()),
+                          histogram_name_, histogram_lower_value_,
                           histogram_upper_value_);
   }
 
   void OnAgentRemoved(tracing::mojom::BackgroundTracingAgent* agent) override {
-    agent->ClearUMACallback(histogram_name_);
+    agent->ClearUMACallback(
+        tracing::mojom::BackgroundTracingRule::New(rule_id()));
   }
 
   void OnHistogramChangedCallback(base::Histogram::Sample reference_lower_value,
@@ -344,6 +430,133 @@ class HistogramRule : public BackgroundTracingRule,
       histogram_sample_callback_;
 };
 
+class TimerRule : public BackgroundTracingRule {
+ private:
+  explicit TimerRule() = default;
+
+ public:
+  static std::unique_ptr<BackgroundTracingRule> Create(
+      const perfetto::protos::gen::TriggerRule& config) {
+    return base::WrapUnique<TimerRule>(new TimerRule());
+  }
+
+  void DoInstall() override { OnRuleTriggered(); }
+  void DoUninstall() override {}
+
+  void GenerateMetadataProto(
+      BackgroundTracingRule::MetadataProto* out) const override {
+    DCHECK(out);
+    BackgroundTracingRule::GenerateMetadataProto(out);
+    out->set_trigger_type(MetadataProto::TRIGGER_UNSPECIFIED);
+  }
+
+ protected:
+  std::string GetDefaultRuleId() const override {
+    return "org.chromium.background_tracing.timer";
+  }
+};
+
+class RepeatingIntervalRule : public BackgroundTracingRule {
+ private:
+  RepeatingIntervalRule(base::TimeDelta period, bool randomized)
+      : period_(period),
+        randomized_(randomized),
+        interval_phase_(base::TimeTicks::Now()) {}
+
+ public:
+  static std::unique_ptr<BackgroundTracingRule> Create(
+      const perfetto::protos::gen::TriggerRule& config) {
+    DCHECK(config.has_repeating_interval());
+
+    const auto& interval = config.repeating_interval();
+    if (!interval.has_period_ms()) {
+      return nullptr;
+    }
+    return base::WrapUnique<RepeatingIntervalRule>(new RepeatingIntervalRule(
+        base::Milliseconds(interval.period_ms()), interval.randomized()));
+  }
+
+  void DoInstall() override { ScheduleNextTick(); }
+  void DoUninstall() override { timer_.Stop(); }
+
+  perfetto::protos::gen::TriggerRule ToProtoForTesting() const override {
+    perfetto::protos::gen::TriggerRule config =
+        BackgroundTracingRule::ToProtoForTesting();
+    auto* histogram = config.mutable_repeating_interval();
+    histogram->set_period_ms(period_.InMilliseconds());
+    histogram->set_randomized(randomized_);
+    return config;
+  }
+
+  void GenerateMetadataProto(
+      BackgroundTracingRule::MetadataProto* out) const override {
+    DCHECK(out);
+    BackgroundTracingRule::GenerateMetadataProto(out);
+    out->set_trigger_type(MetadataProto::TRIGGER_UNSPECIFIED);
+  }
+
+ protected:
+  std::string GetDefaultRuleId() const override {
+    return "org.chromium.background_tracing.repeating_interval";
+  }
+
+ private:
+  base::TimeTicks GetFireTimeForInterval(base::TimeTicks interval_start) const {
+    if (randomized_) {
+      return interval_start +
+             base::Microseconds(base::RandInt(0, period_.InMicroseconds() - 1));
+    }
+    return interval_start;
+  }
+  base::TimeTicks GetNextIntervalStart(base::TimeTicks now) const {
+    base::TimeTicks next_interval_start =
+        now.SnappedToNextTick(interval_phase_, period_);
+    if (next_interval_start == now) {
+      return next_interval_start + period_;
+    }
+    return next_interval_start;
+  }
+  void UpdateNextFireTime(base::TimeTicks now) {
+    base::TimeTicks next_interval_start = GetNextIntervalStart(now);
+    base::TimeTicks prev_interval_start = next_interval_start - period_;
+    // If the previously scheduled fire time is in a past interval, the current
+    // interval can still fire. Compute a new fire time for the current
+    // interval and keep it if it hasn't passed, otherwise move on to the next
+    // interval.
+    if (randomized_ && (scheduled_fire_time_ < prev_interval_start)) {
+      scheduled_fire_time_ = GetFireTimeForInterval(prev_interval_start);
+      if (scheduled_fire_time_ >= now) {
+        return;
+      }
+    }
+    scheduled_fire_time_ = GetFireTimeForInterval(next_interval_start);
+  }
+
+  void ScheduleNextTick() {
+    base::TimeTicks now = base::TimeTicks::Now();
+    // Update the next fire time only if it's in the past.
+    if (scheduled_fire_time_ <= now) {
+      UpdateNextFireTime(now);
+    }
+
+    timer_.Start(
+        FROM_HERE, scheduled_fire_time_,
+        base::BindOnce(&RepeatingIntervalRule::OnTick, base::Unretained(this)),
+        base::subtle::DelayPolicy::kFlexibleNoSooner);
+  }
+
+  void OnTick() {
+    OnRuleTriggered();
+    ScheduleNextTick();
+  }
+
+  const base::TimeDelta period_;
+  const bool randomized_;
+  const base::TimeTicks interval_phase_;
+  base::TimeTicks scheduled_fire_time_;
+  base::DeadlineTimer timer_;
+};
+
 }  // namespace
 
 std::unique_ptr<BackgroundTracingRule>
@@ -361,6 +574,24 @@ BackgroundTracingRule::CreateRuleFromDict(const base::Value::Dict& dict) {
   if (tracing_rule)
     tracing_rule->Setup(dict);
 
+  return tracing_rule;
+}
+
+std::unique_ptr<BackgroundTracingRule> BackgroundTracingRule::Create(
+    const perfetto::protos::gen::TriggerRule& config) {
+  std::unique_ptr<BackgroundTracingRule> tracing_rule;
+  if (config.has_manual_trigger_name()) {
+    tracing_rule = NamedTriggerRule::Create(config);
+  } else if (config.has_histogram()) {
+    tracing_rule = HistogramRule::Create(config);
+  } else if (config.has_repeating_interval()) {
+    tracing_rule = RepeatingIntervalRule::Create(config);
+  } else {
+    tracing_rule = TimerRule::Create(config);
+  }
+  if (tracing_rule) {
+    tracing_rule->Setup(config);
+  }
   return tracing_rule;
 }
 

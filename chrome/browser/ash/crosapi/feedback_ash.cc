@@ -28,6 +28,8 @@ chrome::FeedbackSource FromMojo(mojom::LacrosFeedbackSource source) {
       return chrome::kFeedbackSourceQuickAnswers;
     case mojom::LacrosFeedbackSource::kDeprecatedLacrosWindowLayoutMenu:
       return chrome::kFeedbackSourceWindowLayoutMenu;
+    case mojom::LacrosFeedbackSource::kFeedbackSourceCookieControls:
+      return chrome::kFeedbackSourceCookieControls;
     case mojom::LacrosFeedbackSource::kUnknown:
       return chrome::kFeedbackSourceUnknownLacrosSource;
   }

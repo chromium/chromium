@@ -143,4 +143,26 @@ TEST_F(WMDesksPrivateEventsUnitTest, DispatchEventOnDeskSwitched) {
   EXPECT_EQ(desk_2.AsLowercaseString(), iter->second->event_args[1]);
 }
 
+TEST_F(WMDesksPrivateEventsUnitTest, DispatchEventOnDeskRemovalUndone) {
+  WMDesksPrivateEventsAPI::Get(profile());
+  // Add event listener.
+  const ExtensionId listener_id = crx_file::id_util::GenerateId("listener");
+  EventRouter* event_router = EventRouter::Get(profile());
+
+  TestEventRouterObserver test_observer(event_router);
+  auto* event_name = api::wm_desks_private::OnDeskAdded::kEventName;
+  event_router->AddEventListener(event_name, render_process_host(),
+                                 listener_id);
+
+  // Trigger desk added event
+  auto desk_1(base::Uuid::GenerateRandomV4());
+  WMDesksPrivateEventsAPI::Get(profile())->desks_event_router()->OnDeskAdded(
+      desk_1, true);
+
+  const auto& event_map = test_observer.events();
+  auto iter = event_map.find(event_name);
+  ASSERT_FALSE(iter == event_map.end());
+  ASSERT_EQ(1u, iter->second->event_args.size());
+  EXPECT_EQ(desk_1.AsLowercaseString(), iter->second->event_args[0]);
+}
 }  // namespace extensions

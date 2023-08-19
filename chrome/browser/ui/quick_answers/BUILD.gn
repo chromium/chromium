@@ -62,6 +62,7 @@ source_set("quick_answers") {
     ]
     deps += [
       "//ash",
+      "//chromeos/components/kiosk:kiosk",
       "//components/language/core/browser:browser",
     ]
   }
@@ -73,6 +74,7 @@ source_set("quick_answers") {
     ]
     deps += [
       "//chrome/browser/ui",
+      "//chromeos/components/kiosk:kiosk",
       "//chromeos/lacros:lacros",
     ]
   }

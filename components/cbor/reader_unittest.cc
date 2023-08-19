@@ -865,6 +865,83 @@ TEST(CBORReaderTest, TestReadSimpleValue) {
   }
 }
 
+TEST(CBORReaderTest, TestReadFloatingPointNumbers) {
+  static const struct {
+    const double value;
+    const std::vector<uint8_t> cbor_data;
+  } kFloatingPointTestCases[] = {
+      // 16 bit floating point values.
+      {0.5, {0xf9, 0x38, 0x00}},
+      {3.140625, {0xf9, 0x42, 0x48}},
+      {0.0, {0xf9, 0x00, 0x00}},
+      {-0.0, {0xf9, 0x80, 0x00}},
+      {std::numeric_limits<double>::infinity(), {0xf9, 0x7c, 0x00}},
+      {-std::numeric_limits<double>::infinity(), {0xf9, 0xfc, 0x00}},
+      {std::scalbn(1023.0, -24), {0xf9, 0x03, 0xFF}},
+      {65504, {0xf9, 0x7b, 0xff}},
+      // 32 bit floating point value.
+      {3.1415927410125732, {0xfa, 0x40, 0x49, 0x0f, 0xdb}},
+      {2049.0, {0xfa, 0x45, 0x00, 0x10, 0x00}},
+      // 64 bit floating point value.
+      {3.141592653589793,
+       {0xfb, 0x40, 0x09, 0x21, 0xfb, 0x54, 0x44, 0x2d, 0x18}},
+      {268435455.0, {0xfb, 0x41, 0xaf, 0xff, 0xff, 0xfe, 0x00, 0x00, 0x00}},
+  };
+
+  for (const auto& test_case : kFloatingPointTestCases) {
+    SCOPED_TRACE(testing::Message() << "testing float: " << test_case.value);
+
+    Reader::Config config;
+    size_t num_bytes_consumed;
+    Reader::DecoderError error_code;
+    config.allow_floating_point = true;
+
+    absl::optional<Value> cbor = Reader::Read(test_case.cbor_data, config);
+    ASSERT_TRUE(cbor.has_value());
+    ASSERT_EQ(cbor.value().type(), Value::Type::FLOAT_VALUE);
+    EXPECT_EQ(cbor.value().GetDouble(), test_case.value);
+
+    config.error_code_out = &error_code;
+    auto cbor_data_with_extra_byte = WithExtraneousData(test_case.cbor_data);
+
+    cbor = Reader::Read(cbor_data_with_extra_byte, config);
+    EXPECT_FALSE(cbor.has_value());
+    EXPECT_EQ(error_code, Reader::DecoderError::EXTRANEOUS_DATA);
+
+    config.num_bytes_consumed = &num_bytes_consumed;
+    cbor = Reader::Read(cbor_data_with_extra_byte, config);
+    ASSERT_TRUE(cbor.has_value());
+    ASSERT_EQ(cbor.value().type(), Value::Type::FLOAT_VALUE);
+    EXPECT_EQ(cbor.value().GetDouble(), test_case.value);
+    EXPECT_EQ(error_code, Reader::DecoderError::CBOR_NO_ERROR);
+    EXPECT_EQ(num_bytes_consumed, test_case.cbor_data.size());
+  }
+}
+
+TEST(CBORReaderTest, TestReadNonMinimalFloatingPointNumbers) {
+  static const std::vector<uint8_t> test_case_inputs[] = {
+      {0xfa, 0x00, 0x00, 0x00, 0x00},  // 0 as 32 bit float.
+      {0xfa, 0x7f, 0x80, 0x00, 0x00},  // infinity as 32 bit float.
+      {0xfa, 0xff, 0x80, 0x00, 0x00},  // -infinity as 32 bit float.
+      {0xfa, 0x7f, 0xC0, 0x00, 0x00},  // -NaN as 32 bit float.
+      {0xfa, 0xff, 0xc0, 0x00, 0x00},  // -NaN as 32 bit float.
+      // 3.1415927410125732 as 64 bit double (fits in 32 bits).
+      {0xfb, 0x40, 0x09, 0x21, 0xfb, 0x60, 0x00, 0x00, 0x00},
+  };
+  for (const auto& input : test_case_inputs) {
+    SCOPED_TRACE(testing::Message() << "Testing non-minimal floating point : "
+                                    << testing::PrintToString(input));
+    Reader::Config config;
+    Reader::DecoderError error_code;
+    config.error_code_out = &error_code;
+    config.allow_floating_point = true;
+
+    absl::optional<Value> cbor = Reader::Read(input, config);
+    EXPECT_FALSE(cbor.has_value());
+    EXPECT_EQ(error_code, Reader::DecoderError::NON_MINIMAL_CBOR_ENCODING);
+  }
+}
+
 TEST(CBORReaderTest, TestReadUnsupportedFloatingPointNumbers) {
   static const std::vector<uint8_t> floating_point_cbors[] = {
       // 16 bit floating point value.

@@ -7,7 +7,6 @@
 
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/mac/scoped_block.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
@@ -28,7 +27,7 @@ class Range;
 namespace content {
 class RenderWidgetHost;
 
-// This class helps with the Mac OS X dictionary popup. For the design overview,
+// This class helps with the macOS dictionary popup. For the design overview,
 // look at this document:
 //   http://dev.chromium.org/developers/design-documents/system-dictionary-pop-up-architecture
 //

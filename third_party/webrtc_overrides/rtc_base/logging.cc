@@ -26,7 +26,7 @@
 #include "third_party/webrtc_overrides/rtc_base/logging.h"
 
 #if defined(WEBRTC_MAC)
-#include "base/mac/mac_logging.h"
+#include "base/apple/osstatus_logging.h"
 #endif
 
 // Disable logging when fuzzing, for performance reasons.

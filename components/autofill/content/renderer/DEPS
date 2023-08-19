@@ -3,6 +3,7 @@ include_rules = [
   "+content/public/renderer",
   "+components/password_manager/core/common/password_manager_constants.h",
   "+components/password_manager/core/common/password_manager_features.h",
+  "+components/password_manager/core/common/password_manager_util.h",
   "+components/safe_browsing/buildflags.h",
   "+third_party/re2",
   # Allow inclusion of WebKit API files.

@@ -74,13 +74,13 @@ BluetoothRemoteGattCharacteristicMac::BluetoothRemoteGattCharacteristicMac(
     : is_discovery_complete_(false),
       discovery_pending_count_(0),
       gatt_service_(gatt_service),
-      cb_characteristic_(cb_characteristic, base::scoped_policy::RETAIN),
+      cb_characteristic_(cb_characteristic),
       weak_ptr_factory_(this) {
   uuid_ = BluetoothLowEnergyAdapterApple::BluetoothUUIDWithCBUUID(
       [cb_characteristic_ UUID]);
   identifier_ = base::SysNSStringToUTF8(
       [NSString stringWithFormat:@"%s-%p", uuid_.canonical_value().c_str(),
-                                 cb_characteristic_.get()]);
+                                 cb_characteristic_]);
 }
 
 BluetoothRemoteGattCharacteristicMac::~BluetoothRemoteGattCharacteristicMac() {
@@ -171,8 +171,8 @@ void BluetoothRemoteGattCharacteristicMac::WriteRemoteCharacteristic(
   DVLOG(1) << *this << ": Write characteristic.";
   write_characteristic_value_callbacks_ =
       std::make_pair(std::move(callback), std::move(error_callback));
-  base::scoped_nsobject<NSData> nsdata_value(
-      [[NSData alloc] initWithBytes:value.data() length:value.size()]);
+  NSData* nsdata_value = [[NSData alloc] initWithBytes:value.data()
+                                                length:value.size()];
 
   CBCharacteristicWriteType cb_write_type;
   switch (write_type) {
@@ -218,8 +218,8 @@ void BluetoothRemoteGattCharacteristicMac::DeprecatedWriteRemoteCharacteristic(
   DVLOG(1) << *this << ": Write characteristic.";
   write_characteristic_value_callbacks_ =
       std::make_pair(std::move(callback), std::move(error_callback));
-  base::scoped_nsobject<NSData> nsdata_value(
-      [[NSData alloc] initWithBytes:value.data() length:value.size()]);
+  NSData* nsdata_value = [[NSData alloc] initWithBytes:value.data()
+                                                length:value.size()];
   CBCharacteristicWriteType write_type = GetCBWriteType();
   [GetCBPeripheral() writeValue:nsdata_value
               forCharacteristic:cb_characteristic_

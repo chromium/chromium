@@ -143,13 +143,9 @@ KeyedService* ProfileInvalidationProviderFactory::BuildServiceInstanceFor(
     identity_provider = std::make_unique<ProfileIdentityProvider>(
         IdentityManagerFactory::GetForProfile(profile));
   }
-  auto service =
-      CreateInvalidationServiceForSenderId(profile, identity_provider.get(),
-                                           /* sender_id = */ "");
   auto custom_sender_id_factory = base::BindRepeating(
       &CreateInvalidationServiceForSenderId, profile, identity_provider.get());
-  return new ProfileInvalidationProvider(std::move(service),
-                                         std::move(identity_provider),
+  return new ProfileInvalidationProvider(std::move(identity_provider),
                                          std::move(custom_sender_id_factory));
 }
 

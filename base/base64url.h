@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/containers/span.h"
 #include "base/strings/string_piece.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -22,11 +23,16 @@ enum class Base64UrlEncodePolicy {
   OMIT_PADDING
 };
 
-// Encodes the |input| string in base64url, defined in RFC 4648:
+// Encodes the |input| binary data in base64url, defined in RFC 4648:
 // https://tools.ietf.org/html/rfc4648#section-5
 //
 // The |policy| defines whether padding should be included or omitted from the
 // encoded |*output|. |input| and |*output| may reference the same storage.
+BASE_EXPORT void Base64UrlEncode(span<const uint8_t> input,
+                                 Base64UrlEncodePolicy policy,
+                                 std::string* output);
+
+// Same as the previous function, but accepts an input string.
 BASE_EXPORT void Base64UrlEncode(StringPiece input,
                                  Base64UrlEncodePolicy policy,
                                  std::string* output);

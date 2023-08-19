@@ -81,7 +81,6 @@ class PaintControllerTestBase : public testing::Test {
     paint_controller.UpdateCurrentPaintChunkProperties(
         root_paint_chunk_id_, *root_paint_property_client_,
         DefaultPaintChunkProperties());
-    paint_controller.RecordDebugInfo(*root_paint_property_client_);
   }
   const PaintChunk::Id DefaultRootChunkId() const {
     return root_paint_chunk_id_;

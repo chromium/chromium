@@ -75,7 +75,8 @@ TEST(PolicyContainerPoliciesTest, CloneIsEqual) {
       /*is_web_secure_context=*/true, std::move(csps), coop, coep,
       sandbox_flags,
       /*is_credentialless=*/true,
-      /*can_navigate_top_without_user_gesture=*/true);
+      /*can_navigate_top_without_user_gesture=*/true,
+      /*allow_cross_origin_isolation=*/false);
 
   EXPECT_THAT(policies.Clone(), Eq(ByRef(policies)));
 }

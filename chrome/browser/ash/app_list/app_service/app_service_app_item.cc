@@ -113,11 +113,23 @@ AppServiceAppItem::AppServiceAppItem(
       SetPosition(CalculateDefaultPositionIfApplicable());
     }
 
-    // Crostini apps start in the crostini folder.
+    // Crostini and Bruschetta apps start in their respective folders.
     if (app_type_ == apps::AppType::kCrostini) {
       DCHECK(folder_id().empty());
       SetChromeFolderId(ash::kCrostiniFolderId);
+    } else if (app_type_ == apps::AppType::kBruschetta) {
+      DCHECK(folder_id().empty());
+      SetChromeFolderId(ash::kBruschettaFolderId);
     }
+  }
+
+  if (!app_update.PublisherId().empty() &&
+      (app_update.AppType() == apps::AppType::kArc ||
+       app_update.AppType() == apps::AppType::kWeb)) {
+    std::string package_id =
+        apps::PackageId(app_update.AppType(), app_update.PublisherId())
+            .ToString();
+    SetPromisePackageId(package_id);
   }
 
   const bool is_new_install = !sync_item && IsNewInstall(app_update);

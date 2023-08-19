@@ -146,6 +146,16 @@ bool VulkanFunctionPointers::BindInstanceFunctionPointers(
     return false;
   }
 
+  vkGetPhysicalDeviceExternalSemaphoreProperties =
+      reinterpret_cast<PFN_vkGetPhysicalDeviceExternalSemaphoreProperties>(
+          vkGetInstanceProcAddr(
+              vk_instance, "vkGetPhysicalDeviceExternalSemaphoreProperties"));
+  if (!vkGetPhysicalDeviceExternalSemaphoreProperties) {
+    DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
+                  << "vkGetPhysicalDeviceExternalSemaphoreProperties";
+    return false;
+  }
+
   vkGetPhysicalDeviceFeatures2 =
       reinterpret_cast<PFN_vkGetPhysicalDeviceFeatures2>(
           vkGetInstanceProcAddr(vk_instance, "vkGetPhysicalDeviceFeatures2"));
@@ -1187,6 +1197,7 @@ void VulkanFunctionPointers::ResetForTesting() {
   vkEnumerateDeviceLayerProperties = nullptr;
   vkEnumeratePhysicalDevices = nullptr;
   vkGetDeviceProcAddr = nullptr;
+  vkGetPhysicalDeviceExternalSemaphoreProperties = nullptr;
   vkGetPhysicalDeviceFeatures2 = nullptr;
   vkGetPhysicalDeviceFormatProperties = nullptr;
   vkGetPhysicalDeviceFormatProperties2 = nullptr;

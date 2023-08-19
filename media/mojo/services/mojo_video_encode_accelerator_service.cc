@@ -138,13 +138,13 @@ void MojoVideoEncodeAcceleratorService::Initialize(
 
 void MojoVideoEncodeAcceleratorService::Encode(
     const scoped_refptr<VideoFrame>& frame,
-    bool force_keyframe,
+    const media::VideoEncoder::EncodeOptions& options,
     EncodeCallback callback) {
   DVLOG(2) << __func__ << " tstamp=" << frame->timestamp();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT2("media", "MojoVideoEncodeAcceleratorService::Encode",
-               "timestamp", frame->timestamp().InMilliseconds(), "keyframe",
-               force_keyframe);
+               "timestamp", frame->timestamp().InMicroseconds(), "keyframe",
+               options.key_frame);
   if (!encoder_) {
     DLOG(ERROR) << __func__ << " Failed to encode, the encoder is invalid";
     std::move(callback).Run();
@@ -162,13 +162,13 @@ void MojoVideoEncodeAcceleratorService::Encode(
   }
 
   if (MediaTraceIsEnabled()) {
-    timestamps_.Put(frame->timestamp().InMilliseconds(),
+    timestamps_.Put(frame->timestamp().InMicroseconds(),
                     base::TimeTicks::Now());
   }
 
   frame->AddDestructionObserver(
       base::BindPostTaskToCurrentDefault(std::move(callback)));
-  encoder_->Encode(frame, force_keyframe);
+  encoder_->Encode(frame, options);
 }
 
 void MojoVideoEncodeAcceleratorService::UseOutputBitstreamBuffer(
@@ -305,18 +305,19 @@ void MojoVideoEncodeAcceleratorService::BitstreamBufferReady(
            << ", payload_size=" << metadata.payload_size_bytes
            << "B,  key_frame=" << metadata.key_frame;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TRACE_EVENT1("media",
+  TRACE_EVENT2("media",
                "MojoVideoEncodeAcceleratorService::BitstreamBufferReady",
+               "timestamp", metadata.timestamp.InMicroseconds(),
                "bitstream_buffer_id", bitstream_buffer_id);
   if (MediaTraceIsEnabled() && metadata.end_of_picture()) {
-    int64_t timestamp = metadata.timestamp.InMilliseconds();
+    int64_t timestamp = metadata.timestamp.InMicroseconds();
     const auto timestamp_it = timestamps_.Peek(timestamp);
     if (timestamp_it != timestamps_.end()) {
       TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-          "media", "MojoVEAServicee::EncodingFrameDuration", timestamp,
+          "media", "MojoVEAService::EncodingFrameDuration", timestamp,
           timestamp_it->second);
       TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP1(
-          "media", "MojoVEAServicee::EncodingFrameDuration", timestamp,
+          "media", "MojoVEAService::EncodingFrameDuration", timestamp,
           base::TimeTicks::Now(), "timestamp", timestamp);
     }
   }

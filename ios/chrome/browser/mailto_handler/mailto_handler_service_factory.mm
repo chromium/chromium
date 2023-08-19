@@ -6,17 +6,12 @@
 
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "ios/chrome/browser/mailto_handler/mailto_handler_configuration.h"
+#import "ios/chrome/browser/mailto_handler/mailto_handler_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/sync/sync_service_factory.h"
-#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/public/provider/chrome/browser/mailto_handler/mailto_handler_api.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 // static
 MailtoHandlerService* MailtoHandlerServiceFactory::GetForBrowserState(
@@ -36,8 +31,6 @@ MailtoHandlerServiceFactory::MailtoHandlerServiceFactory()
           "MailtoHandlerService",
           BrowserStateDependencyManager::GetInstance()) {
   DependsOn(AuthenticationServiceFactory::GetInstance());
-  DependsOn(SyncServiceFactory::GetInstance());
-  DependsOn(SyncSetupServiceFactory::GetInstance());
 }
 
 MailtoHandlerServiceFactory::~MailtoHandlerServiceFactory() = default;
@@ -52,10 +45,6 @@ MailtoHandlerServiceFactory::BuildServiceInstanceFor(
       ChromeBrowserState::FromBrowserState(context);
   configuration.authService =
       AuthenticationServiceFactory::GetForBrowserState(browser_state);
-  configuration.syncService =
-      SyncServiceFactory::GetForBrowserState(browser_state);
-  configuration.syncSetupService =
-      SyncSetupServiceFactory::GetForBrowserState(browser_state);
 
   ApplicationContext* application_context = GetApplicationContext();
   configuration.localState = application_context->GetLocalState();

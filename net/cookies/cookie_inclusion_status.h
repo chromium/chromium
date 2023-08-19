@@ -28,8 +28,6 @@ namespace net {
 class NET_EXPORT CookieInclusionStatus {
  public:
   // Types of reasons why a cookie might be excluded.
-  // If adding a ExclusionReason, please also update the GetDebugString()
-  // method.
   enum ExclusionReason {
     EXCLUDE_UNKNOWN_ERROR = 0,
 
@@ -59,53 +57,56 @@ class NET_EXPORT CookieInclusionStatus {
     EXCLUDE_SAMESITE_NONE_INSECURE = 8,
     // Caller did not allow access to the cookie.
     EXCLUDE_USER_PREFERENCES = 9,
-    // The cookie specified SameParty, but was used in a cross-party context.
-    EXCLUDE_SAMEPARTY_CROSS_PARTY_CONTEXT = 10,
 
     // Statuses only applied when creating/setting cookies:
 
     // Cookie was malformed and could not be stored, due to problem(s) while
     // parsing.
     // TODO(crbug.com/1228815): Use more specific reasons for parsing errors.
-    EXCLUDE_FAILURE_TO_STORE = 11,
+    EXCLUDE_FAILURE_TO_STORE = 10,
     // Attempted to set a cookie from a scheme that does not support cookies.
-    EXCLUDE_NONCOOKIEABLE_SCHEME = 12,
+    EXCLUDE_NONCOOKIEABLE_SCHEME = 11,
     // Cookie would have overwritten a Secure cookie, and was not allowed to do
     // so. (See "Leave Secure Cookies Alone":
     // https://tools.ietf.org/html/draft-west-leave-secure-cookies-alone-05 )
-    EXCLUDE_OVERWRITE_SECURE = 13,
+    EXCLUDE_OVERWRITE_SECURE = 12,
     // Cookie would have overwritten an HttpOnly cookie, and was not allowed to
     // do so.
-    EXCLUDE_OVERWRITE_HTTP_ONLY = 14,
+    EXCLUDE_OVERWRITE_HTTP_ONLY = 13,
     // Cookie was set with an invalid Domain attribute.
-    EXCLUDE_INVALID_DOMAIN = 15,
+    EXCLUDE_INVALID_DOMAIN = 14,
     // Cookie was set with an invalid __Host- or __Secure- prefix.
-    EXCLUDE_INVALID_PREFIX = 16,
-    // Cookie was set with an invalid SameParty attribute in combination with
-    // other attributes. (SameParty is invalid if Secure is not present, or if
-    // SameSite=Strict is present.)
-    EXCLUDE_INVALID_SAMEPARTY = 17,
+    EXCLUDE_INVALID_PREFIX = 15,
     /// Cookie was set with an invalid Partitioned attribute, which is only
     // valid if the cookie has a __Host- prefix and does not have the SameParty
     // attribute.
-    EXCLUDE_INVALID_PARTITIONED = 18,
+    EXCLUDE_INVALID_PARTITIONED = 16,
     // Cookie exceeded the name/value pair size limit.
-    EXCLUDE_NAME_VALUE_PAIR_EXCEEDS_MAX_SIZE = 19,
+    EXCLUDE_NAME_VALUE_PAIR_EXCEEDS_MAX_SIZE = 17,
     // Cookie exceeded the attribute size limit. Note that this exclusion value
     // won't be used by code that parses cookie lines since RFC6265bis
     // indicates that large attributes should be ignored instead of causing the
     // whole cookie to be rejected. There will be a corresponding WarningReason
     // to notify users that an attribute value was ignored in that case.
-    EXCLUDE_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE = 20,
+    EXCLUDE_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE = 18,
     // Cookie was set with a Domain attribute containing non ASCII characters.
-    EXCLUDE_DOMAIN_NON_ASCII = 21,
+    EXCLUDE_DOMAIN_NON_ASCII = 19,
     // Special case for when a cookie is blocked by third-party cookie blocking
     // but the two sites are in the same First-Party Set.
-    EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET = 22,
+    EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET = 20,
     // Cookie's source_port did not match the port of the request.
-    EXCLUDE_PORT_MISMATCH = 23,
+    EXCLUDE_PORT_MISMATCH = 21,
     // Cookie's source_scheme did not match the scheme of the request.
-    EXCLUDE_SCHEME_MISMATCH = 24,
+    EXCLUDE_SCHEME_MISMATCH = 22,
+    // Cookie is a domain cookie and has the same name as an origin cookie on
+    // this origin.
+    EXCLUDE_SHADOWING_DOMAIN = 23,
+    // Cookie contains ASCII control characters (including the tab character,
+    // when it appears in the middle of the cookie name, value, an attribute
+    // name, or an attribute value).
+    EXCLUDE_DISALLOWED_CHARACTER = 24,
+    // Cookie is blocked for third-party cookie phaseout.
+    EXCLUDE_THIRD_PARTY_PHASEOUT = 25,
 
     // This should be kept last.
     NUM_EXCLUSION_REASONS
@@ -120,7 +121,7 @@ class NET_EXPORT CookieInclusionStatus {
 
   // Reason to warn about a cookie. Any information contained in
   // WarningReason of an included cookie may be passed to an untrusted
-  // renderer. If you add one, please update GetDebugString().
+  // renderer.
   enum WarningReason {
     // Of the following 3 SameSite warnings, there will be, at most, a single
     // active one.
@@ -188,24 +189,6 @@ class NET_EXPORT CookieInclusionStatus {
     // TODO(chlily): Add metrics for how often and where this occurs.
     WARN_SECURE_ACCESS_GRANTED_NON_CRYPTOGRAPHIC = 8,
 
-    // The cookie was treated as SameParty. This is different from looking at
-    // whether the cookie has the SameParty attribute, since we may choose to
-    // ignore that attribute for one reason or another. E.g., we ignore the
-    // SameParty attribute if the site is not a member of a nontrivial
-    // First-Party Set.
-    WARN_TREATED_AS_SAMEPARTY = 9,
-
-    // The cookie was excluded solely for SameParty reasons (i.e. it was in
-    // cross-party context), but would have been included by SameSite. (This can
-    // only occur in cross-party, cross-site contexts, for cookies that are
-    // 'SameParty; SameSite=None'.)
-    WARN_SAMEPARTY_EXCLUSION_OVERRULED_SAMESITE = 10,
-
-    // The cookie was included due to SameParty, even though it would have been
-    // excluded by SameSite. (This can only occur in same-party, cross-site
-    // contexts, for cookies that are 'SameParty; SameSite=Lax'.)
-    WARN_SAMEPARTY_INCLUSION_OVERRULED_SAMESITE = 11,
-
     // The cookie would have been included prior to the spec change considering
     // redirects in the SameSite context calculation
     // (https://github.com/httpwg/http-extensions/pull/1348)
@@ -216,25 +199,32 @@ class NET_EXPORT CookieInclusionStatus {
     // was actually used for the inclusion decision). This is not applied if
     // the context was downgraded but the cookie would have been
     // included/excluded in both cases.
-    WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION = 12,
+    WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION = 9,
 
     // The cookie exceeded the attribute size limit. RFC6265bis indicates that
     // large attributes should be ignored instead of causing the whole cookie
     // to be rejected. This is applied by the code that parses cookie lines and
     // notifies the user that an attribute value was ignored.
-    WARN_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE = 13,
+    WARN_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE = 10,
 
     // The cookie was set with a Domain attribute containing non ASCII
     // characters.
-    WARN_DOMAIN_NON_ASCII = 14,
+    WARN_DOMAIN_NON_ASCII = 11,
     // The cookie's source_port did not match the port of the request.
-    WARN_PORT_MISMATCH = 15,
+    WARN_PORT_MISMATCH = 12,
     // The cookie's source_scheme did not match the scheme of the request.
-    WARN_SCHEME_MISMATCH = 16,
+    WARN_SCHEME_MISMATCH = 13,
     // The cookie's creation url is non-cryptographic but it specified the
     // "Secure" attribute. A trustworthy url may be setting this cookie, but we
     // can't confirm/deny that at the time of creation.
-    WARN_TENTATIVELY_ALLOWING_SECURE_SOURCE_SCHEME = 17,
+    WARN_TENTATIVELY_ALLOWING_SECURE_SOURCE_SCHEME = 14,
+    // Cookie is a domain cookie and has the same name as an origin cookie on
+    // this origin. This cookie would be blocked if shadowing protection was
+    // enabled.
+    WARN_SHADOWING_DOMAIN = 15,
+
+    // This cookie will be blocked for third-party cookie phaseout.
+    WARN_THIRD_PARTY_PHASEOUT = 16,
 
     // This should be kept last.
     NUM_WARNING_REASONS
@@ -391,6 +381,11 @@ class NET_EXPORT CookieInclusionStatus {
   // which takes the entire ancestor chain into account). See
   // https://crbug.com/1366868.
   bool ExcludedByUserPreferences() const;
+
+  void ResetForTesting() {
+    exclusion_reasons_.reset();
+    warning_reasons_.reset();
+  }
 
  private:
   // Returns the `exclusion_reasons_` with the given `reasons` unset.

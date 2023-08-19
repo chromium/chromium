@@ -214,8 +214,7 @@ def main():
       help='Specify the root directory of the downloaded images. Optional')
   parser.add_argument(
       '--allow-override',
-      default=True,
-      type=bool,
+      action='store_true',
       help='Whether sdk_override.txt can be used for fetching the image, if '
       'it exists.')
   args = parser.parse_args()
@@ -228,7 +227,6 @@ def main():
 
   # Check whether there's Fuchsia support for this platform.
   get_host_os()
-
   image_info = GetImageLocationInfo(args.default_bucket, args.allow_override)
 
   bucket = image_info['bucket']

@@ -138,6 +138,12 @@ TEST(CBORValuesTest, ConstructSimpleValue) {
   EXPECT_EQ(Value::SimpleValue::UNDEFINED, undefined_value.GetSimpleValue());
 }
 
+TEST(CBORValuesTest, ConstructFloat) {
+  Value float_value(3.1415927);
+  ASSERT_EQ(Value::Type::FLOAT_VALUE, float_value.type());
+  EXPECT_EQ(3.1415927, float_value.GetDouble());
+}
+
 TEST(CBORValuesTest, ConstructSimpleBooleanValue) {
   Value true_value(true);
   ASSERT_EQ(Value::Type::SIMPLE_VALUE, true_value.type());
@@ -253,6 +259,19 @@ TEST(CBORValuesTest, CopySimpleValue) {
   EXPECT_EQ(value.GetSimpleValue(), blank.GetSimpleValue());
 }
 
+TEST(CBORValuesTest, CopyFloat) {
+  Value value(2.2);
+  Value copied_value(value.Clone());
+  ASSERT_EQ(value.type(), copied_value.type());
+  EXPECT_EQ(value.GetDouble(), copied_value.GetDouble());
+
+  Value blank;
+
+  blank = value.Clone();
+  ASSERT_EQ(value.type(), blank.type());
+  EXPECT_EQ(value.GetDouble(), blank.GetDouble());
+}
+
 // Test move constructors and move-assignment
 TEST(CBORValuesTest, MoveUnsigned) {
   Value value(74);
@@ -358,6 +377,19 @@ TEST(CBORValuesTest, MoveSimpleValue) {
   blank = Value(Value::SimpleValue::UNDEFINED);
   EXPECT_EQ(Value::Type::SIMPLE_VALUE, blank.type());
   EXPECT_EQ(Value::SimpleValue::UNDEFINED, blank.GetSimpleValue());
+}
+
+TEST(CBORValuesTest, MoveFloat) {
+  Value value(2.2);
+  Value moved_value(std::move(value));
+  EXPECT_EQ(Value::Type::FLOAT_VALUE, moved_value.type());
+  EXPECT_EQ(2.2, moved_value.GetDouble());
+
+  Value blank;
+
+  blank = Value(65.4);
+  EXPECT_EQ(Value::Type::FLOAT_VALUE, blank.type());
+  EXPECT_EQ(65.4, blank.GetDouble());
 }
 
 TEST(CBORValuesTest, SelfSwap) {

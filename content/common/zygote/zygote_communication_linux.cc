@@ -259,8 +259,7 @@ void ZygoteCommunication::Init(
       sandbox::policy::switches::kDisableSeccompFilterSandbox,
       sandbox::policy::switches::kNoSandbox,
   };
-  cmd_line.CopySwitchesFrom(browser_command_line, kForwardSwitches,
-                            std::size(kForwardSwitches));
+  cmd_line.CopySwitchesFrom(browser_command_line, kForwardSwitches);
 
   pid_ = std::move(launcher).Run(&cmd_line, &control_fd_);
 

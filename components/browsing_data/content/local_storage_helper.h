@@ -54,7 +54,7 @@ class LocalStorageHelper : public base::RefCounted<LocalStorageHelper> {
   friend class base::RefCounted<LocalStorageHelper>;
   virtual ~LocalStorageHelper();
 
-  raw_ptr<content::DOMStorageContext, DanglingUntriaged>
+  raw_ptr<content::DOMStorageContext, AcrossTasksDanglingUntriaged>
       dom_storage_context_;  // Owned by the context
 };
 

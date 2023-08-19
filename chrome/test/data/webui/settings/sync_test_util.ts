@@ -5,73 +5,91 @@
 // clang-format off
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {Route, Router, SettingsRoutes, StoredAccount, SyncStatus} from 'chrome://settings/settings.js';
+import {Route, Router, SettingsRoutes, StoredAccount, SyncPrefs, SyncStatus} from 'chrome://settings/settings.js';
 // clang-format on
-
-interface SyncAllPrefs {
-  appsRegistered: boolean;
-  appsSynced: boolean;
-  autofillRegistered: boolean;
-  autofillSynced: boolean;
-  bookmarksRegistered: boolean;
-  bookmarksSynced: boolean;
-  encryptAllData: boolean;
-  customPassphraseAllowed: boolean;
-  extensionsRegistered: boolean;
-  extensionsSynced: boolean;
-  passphraseRequired: boolean;
-  passwordsRegistered: boolean;
-  passwordsSynced: boolean;
-  paymentsIntegrationEnabled: boolean;
-  preferencesRegistered: boolean;
-  preferencesSynced: boolean;
-  readingListRegistered: boolean;
-  readingListSynced: boolean;
-  savedTabGroupsRegistered: boolean;
-  savedTabGroupsSynced: boolean;
-  syncAllDataTypes: boolean;
-  tabsRegistered: boolean;
-  tabsSynced: boolean;
-  themesRegistered: boolean;
-  themesSynced: boolean;
-  typedUrlsRegistered: boolean;
-  typedUrlsSynced: boolean;
-  explicitPassphraseTime?: string;
-}
 
 /**
  * Returns sync prefs with everything synced and no passphrase required.
  */
-export function getSyncAllPrefs(): SyncAllPrefs {
+export function getSyncAllPrefs(): SyncPrefs {
   return {
+    appsManaged: false,
     appsRegistered: true,
     appsSynced: true,
+    autofillManaged: false,
     autofillRegistered: true,
     autofillSynced: true,
+    bookmarksManaged: false,
     bookmarksRegistered: true,
     bookmarksSynced: true,
     encryptAllData: false,
     customPassphraseAllowed: true,
+    extensionsManaged: false,
     extensionsRegistered: true,
     extensionsSynced: true,
     passphraseRequired: false,
+    passwordsManaged: false,
     passwordsRegistered: true,
     passwordsSynced: true,
-    paymentsIntegrationEnabled: true,
+    paymentsManaged: false,
+    paymentsRegistered: true,
+    paymentsSynced: true,
+    preferencesManaged: false,
     preferencesRegistered: true,
     preferencesSynced: true,
+    readingListManaged: false,
     readingListRegistered: true,
     readingListSynced: true,
+    savedTabGroupsManaged: false,
     savedTabGroupsRegistered: true,
     savedTabGroupsSynced: true,
     syncAllDataTypes: true,
+    tabsManaged: false,
     tabsRegistered: true,
     tabsSynced: true,
+    trustedVaultKeysRequired: false,
+    themesManaged: false,
     themesRegistered: true,
     themesSynced: true,
+    typedUrlsManaged: false,
     typedUrlsRegistered: true,
     typedUrlsSynced: true,
+    wifiConfigurationsManaged: false,
+    wifiConfigurationsRegistered: true,
+    wifiConfigurationsSynced: true,
   };
+}
+
+export function getSyncAllPrefsManaged(): SyncPrefs {
+  // Make all sync types in the SyncPrefs object disabled by policy.
+  return Object.assign(getSyncAllPrefs(), {
+    appsManaged: true,
+    appsSynced: false,
+    autofillManaged: true,
+    autofillSynced: false,
+    bookmarksManaged: true,
+    bookmarksSynced: false,
+    extensionsManaged: true,
+    extensionsSynced: false,
+    passwordsManaged: true,
+    passwordsSynced: false,
+    paymentsManaged: true,
+    paymentsSynced: false,
+    preferencesManaged: true,
+    preferencesSynced: false,
+    readingListManaged: true,
+    readingListSynced: false,
+    savedTabGroupsManaged: true,
+    savedTabGroupsSynced: false,
+    tabsManaged: true,
+    tabsSynced: false,
+    themesManaged: true,
+    themesSynced: false,
+    typedUrlsManaged: true,
+    typedUrlsSynced: false,
+    wifiConfigurationsManaged: true,
+    wifiConfigurationsSynced: false,
+  });
 }
 
 export interface SyncRoutes {

@@ -78,7 +78,6 @@ void PaintLayerStackingNode::DirtyZOrderLists() {
       layer->SetNeedsReorderOverlayOverflowControls(false);
   }
   layer_to_overlay_overflow_controls_painting_after_.clear();
-  overlay_overflow_controls_reordered_list_.clear();
 
   z_order_lists_dirty_ = true;
 }
@@ -179,6 +178,72 @@ struct PaintLayerStackingNode::HighestLayers {
   }
 };
 
+static LayoutObject* ChildOfFlexboxOrGridParentOrGrandparent(
+    const PaintLayer* layer) {
+  LayoutObject* parent = layer->GetLayoutObject().Parent();
+  if (!parent) {
+    return nullptr;
+  }
+  if (parent->IsLayoutNGFlexibleBox() || parent->IsLayoutNGGrid()) {
+    return &layer->GetLayoutObject();
+  }
+
+  LayoutObject* grandparent = parent->Parent();
+  if (!grandparent) {
+    return nullptr;
+  }
+  if (grandparent->IsLayoutNGFlexibleBox() || grandparent->IsLayoutNGGrid()) {
+    return parent;
+  }
+  return nullptr;
+}
+
+static bool OrderLessThan(const PaintLayer* first, const PaintLayer* second) {
+  // TODO(chrishtr): make this work for arbitrary ancestors, not just parent
+  // and grandparent.
+  LayoutObject* first_ancestor = ChildOfFlexboxOrGridParentOrGrandparent(first);
+  LayoutObject* second_ancestor =
+      ChildOfFlexboxOrGridParentOrGrandparent(second);
+  if (!first_ancestor || !second_ancestor) {
+    return false;
+  }
+
+  auto& first_style = first_ancestor->StyleRef();
+  auto& second_style = second_ancestor->StyleRef();
+  int first_order = 0;
+  int second_order = 0;
+  // Out of flow flexbox direct children paint as if order was 0:
+  // https://drafts.csswg.org/css-display-4/#order-modified-document-order
+  if (first_ancestor != first->GetLayoutObject() ||
+      !first_ancestor->IsOutOfFlowPositioned()) {
+    first_order = first_style.Order();
+  }
+  if (second_ancestor != second->GetLayoutObject() ||
+      !second_ancestor->IsOutOfFlowPositioned()) {
+    second_order = second_style.Order();
+  }
+  return first_order < second_order;
+}
+
+// Returns the children of |paint_layer|, sorted by the order CSS property
+// if they are the child of a flexbox. See:
+// https://www.w3.org/TR/css-flexbox-1/#painting
+static void GetOrderSortedChildren(
+    PaintLayer* paint_layer,
+    PaintLayerStackingNode::PaintLayers& sorted_children) {
+  for (PaintLayer* child = paint_layer->FirstChild(); child;
+       child = child->NextSibling()) {
+    sorted_children.push_back(child);
+  }
+
+  if (!RuntimeEnabledFeatures::PaintFlexGridSortedByOrderEnabled()) {
+    return;
+  }
+
+  std::stable_sort(sorted_children.begin(), sorted_children.end(),
+                   OrderLessThan);
+}
+
 void PaintLayerStackingNode::RebuildZOrderLists() {
 #if DCHECK_IS_ON()
   DCHECK(layer_->LayerListMutationAllowed());
@@ -186,9 +251,11 @@ void PaintLayerStackingNode::RebuildZOrderLists() {
   DCHECK(z_order_lists_dirty_);
 
   layer_->SetNeedsReorderOverlayOverflowControls(false);
-  for (PaintLayer* child = layer_->FirstChild(); child;
-       child = child->NextSibling())
+  PaintLayers order_sorted_children;
+  GetOrderSortedChildren(layer_, order_sorted_children);
+  for (auto& child : order_sorted_children) {
     CollectLayers(*child, nullptr);
+  }
 
   // Sort the two lists.
   std::stable_sort(pos_z_order_list_.begin(), pos_z_order_list_.end(),
@@ -248,8 +315,9 @@ void PaintLayerStackingNode::CollectLayers(PaintLayer& paint_layer,
   if (has_overlay_overflow_controls || highest_layers)
     subtree_highest_layers.emplace();
 
-  for (PaintLayer* child = paint_layer.FirstChild(); child;
-       child = child->NextSibling()) {
+  PaintLayers order_sorted_children;
+  GetOrderSortedChildren(&paint_layer, order_sorted_children);
+  for (auto& child : order_sorted_children) {
     CollectLayers(*child, base::OptionalToPtr(subtree_highest_layers));
   }
 
@@ -272,7 +340,6 @@ void PaintLayerStackingNode::CollectLayers(PaintLayer& paint_layer,
           .insert(layer_to_paint_overlay_overflow_controls_after,
                   MakeGarbageCollected<PaintLayers>())
           .stored_value->value->push_back(paint_layer);
-      overlay_overflow_controls_reordered_list_.push_back(paint_layer);
     }
     paint_layer.SetNeedsReorderOverlayOverflowControls(
         !!layer_to_paint_overlay_overflow_controls_after);
@@ -287,10 +354,12 @@ bool PaintLayerStackingNode::StyleDidChange(PaintLayer& paint_layer,
   bool was_stacking_context = false;
   bool was_stacked = false;
   int old_z_index = 0;
+  int old_order = 0;
   if (old_style) {
     was_stacking_context =
         paint_layer.GetLayoutObject().IsStackingContext(*old_style);
     old_z_index = old_style->EffectiveZIndex();
+    old_order = old_style->Order();
     was_stacked = paint_layer.GetLayoutObject().IsStacked(*old_style);
   }
 
@@ -301,8 +370,10 @@ bool PaintLayerStackingNode::StyleDidChange(PaintLayer& paint_layer,
   bool should_be_stacked = paint_layer.GetLayoutObject().IsStacked();
   if (should_be_stacking_context == was_stacking_context &&
       was_stacked == should_be_stacked &&
-      old_z_index == new_style.EffectiveZIndex())
+      old_z_index == new_style.EffectiveZIndex() &&
+      old_order == new_style.Order()) {
     return false;
+  }
 
   paint_layer.DirtyStackingContextZOrderLists();
 
@@ -321,7 +392,6 @@ void PaintLayerStackingNode::Trace(Visitor* visitor) const {
   visitor->Trace(pos_z_order_list_);
   visitor->Trace(neg_z_order_list_);
   visitor->Trace(layer_to_overlay_overflow_controls_painting_after_);
-  visitor->Trace(overlay_overflow_controls_reordered_list_);
 }
 
 }  // namespace blink

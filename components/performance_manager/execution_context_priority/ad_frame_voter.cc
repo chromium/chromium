@@ -34,7 +34,7 @@ void AdFrameVoter::SetVotingChannel(VotingChannel voting_channel) {
   voting_channel_ = std::move(voting_channel);
 }
 
-void AdFrameVoter::OnFrameNodeAdded(const FrameNode* frame_node) {
+void AdFrameVoter::OnFrameNodeInitializing(const FrameNode* frame_node) {
   if (!frame_node->IsAdFrame())
     return;
 
@@ -42,7 +42,7 @@ void AdFrameVoter::OnFrameNodeAdded(const FrameNode* frame_node) {
   voting_channel_.SubmitVote(GetExecutionContext(frame_node), vote);
 }
 
-void AdFrameVoter::OnBeforeFrameNodeRemoved(const FrameNode* frame_node) {
+void AdFrameVoter::OnFrameNodeTearingDown(const FrameNode* frame_node) {
   if (!frame_node->IsAdFrame())
     return;
 

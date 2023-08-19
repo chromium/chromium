@@ -57,12 +57,21 @@ public class ChromeImageViewPreference extends Preference {
     private ImageView mButton;
     /** The View for this preference. */
     private View mView;
+    /** The ints to set the ImageView padding. */
+    private int mImageViewLeftPadding;
+    private int mImageViewTopPadding;
+    private int mImageViewBottomPadding;
+    private int mImageViewRightPadding;
+    /** Whether the ImageView has any custom padding set. False by default. */
+    private boolean mImageViewCustomPadding;
 
     /**
      * Constructor for use in Java.
      */
     public ChromeImageViewPreference(Context context) {
         this(context, null);
+        // Set custom padding to false until user calls setImagePadding().
+        mImageViewCustomPadding = false;
     }
 
     /**
@@ -130,6 +139,17 @@ public class ChromeImageViewPreference extends Preference {
     }
 
     /**
+     * Sets the the padding of the ImageView.
+     */
+    public void setImagePadding(int left, int top, int right, int bottom) {
+        mImageViewLeftPadding = left;
+        mImageViewTopPadding = top;
+        mImageViewRightPadding = right;
+        mImageViewBottomPadding = bottom;
+        mImageViewCustomPadding = true;
+    }
+
+    /**
      * Sets the Color resource ID which will be used to set the color of the view.
      * @param colorRes
      */
@@ -150,6 +170,14 @@ public class ChromeImageViewPreference extends Preference {
     }
 
     /**
+     * Enables/Disables whether the preference (row) view is clickable or not. Currently used for
+     * Zoom site setting.
+     */
+    public void setViewClickable(boolean enabled) {
+        mView.setClickable(enabled);
+    }
+
+    /**
      * If a {@link ManagedPreferenceDelegate} has been set, check if this preference is managed.
      * @return True if the preference is managed.
      */
@@ -166,7 +194,10 @@ public class ChromeImageViewPreference extends Preference {
         Drawable buttonImg = SettingsUtils.getTintedIcon(getContext(), mImageRes, mColorRes);
         mButton.setImageDrawable(buttonImg);
         mButton.setEnabled(mImageViewEnabled);
-
+        if (mImageViewCustomPadding) {
+            mButton.setPadding(mImageViewLeftPadding, mImageViewTopPadding, mImageViewRightPadding,
+                    mImageViewBottomPadding);
+        }
         if (mImageViewEnabled) mButton.setOnClickListener(mListener);
 
         if (mContentDescriptionRes != 0) {

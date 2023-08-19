@@ -116,6 +116,8 @@ void BadClockUI::HandleCommand(SecurityInterstitialCommand command) {
     case CMD_OPEN_DIAGNOSTIC:
     case CMD_OPEN_LOGIN:
     case CMD_REPORT_PHISHING_ERROR:
+    case CMD_CLOSE_INTERSTITIAL_WITHOUT_UI:
+    case CMD_REQUEST_SITE_ACCESS_PERMISSION:
       // Not supported by the bad clock error page.
       NOTREACHED() << "Unsupported command: " << command;
       break;

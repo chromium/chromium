@@ -142,7 +142,7 @@ class CONTENT_EXPORT BrowserMessageFilter
   // classes. Internal keeps a reference to this class, which is why there's a
   // weak pointer back. This class could outlive Internal based on what the
   // child class does in its OnDestruct method.
-  raw_ptr<Internal, DanglingUntriaged> internal_ = nullptr;
+  raw_ptr<Internal, AcrossTasksDanglingUntriaged> internal_ = nullptr;
 
   raw_ptr<IPC::Sender> sender_ = nullptr;
   base::Process peer_process_;

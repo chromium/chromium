@@ -38,19 +38,19 @@
 #include <limits>
 #include <type_traits>
 
-#if (defined(__cpp_lib_int_pow2) && __cpp_lib_int_pow2 >= 202002L) || \
-    (defined(__cpp_lib_bitops) && __cpp_lib_bitops >= 201907L)
+#include "absl/base/config.h"
+
+#if ABSL_INTERNAL_CPLUSPLUS_LANG >= 202002L
 #include <bit>
 #endif
 
 #include "absl/base/attributes.h"
-#include "absl/base/config.h"
 #include "absl/numeric/internal/bits.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
-
 #if !(defined(__cpp_lib_bitops) && __cpp_lib_bitops >= 201907L)
+
 // rotating
 template <class T>
 ABSL_MUST_USE_RESULT constexpr

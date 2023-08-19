@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/metrics/ios_profile_session_durations_service_factory.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 #import <memory>
 
 #import "base/no_destructor.h"

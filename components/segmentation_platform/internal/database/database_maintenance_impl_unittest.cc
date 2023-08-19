@@ -21,7 +21,6 @@
 #include "components/segmentation_platform/internal/database/mock_signal_storage_config.h"
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
 #include "components/segmentation_platform/internal/database/test_segment_info_database.h"
-#include "components/segmentation_platform/internal/execution/default_model_manager.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/proto/aggregation.pb.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
@@ -62,45 +61,6 @@ struct SignalData {
 
 }  // namespace
 
-// Noop version. For database calls, just passes the calls to the DB.
-// TODO(shaktisahu): Move this class to its own file.
-class TestDefaultModelManager : public DefaultModelManager {
- public:
-  TestDefaultModelManager()
-      : DefaultModelManager(nullptr, base::flat_set<SegmentId>()) {}
-  ~TestDefaultModelManager() override = default;
-
-  void GetAllSegmentInfoFromDefaultModel(
-      const base::flat_set<SegmentId>& segment_ids,
-      MultipleSegmentInfoCallback callback) override {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  DefaultModelManager::SegmentInfoList()));
-  }
-
-  void GetAllSegmentInfoFromBothModels(
-      const base::flat_set<SegmentId>& segment_ids,
-      SegmentInfoDatabase* segment_database,
-      MultipleSegmentInfoCallback callback) override {
-    segment_database->GetSegmentInfoForSegments(
-        segment_ids,
-        base::BindOnce(
-            [](DefaultModelManager::MultipleSegmentInfoCallback callback,
-               std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> db_list) {
-              DefaultModelManager::SegmentInfoList list;
-              for (auto& pair : *db_list) {
-                list.push_back(std::make_unique<
-                               DefaultModelManager::SegmentInfoWrapper>());
-                list.back()->segment_source =
-                    DefaultModelManager::SegmentSource::DATABASE;
-                list.back()->segment_info.Swap(&pair.second);
-              }
-              std::move(callback).Run(std::move(list));
-            },
-            std::move(callback)));
-  }
-};
-
 std::set<DatabaseMaintenanceImpl::SignalIdentifier> GetSignalIds(
     std::vector<SignalData> signal_datas) {
   std::set<DatabaseMaintenanceImpl::SignalIdentifier> signal_ids;
@@ -132,11 +92,9 @@ class DatabaseMaintenanceImplTest : public testing::Test {
     base::flat_set<SegmentId> segment_ids = {
         SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
         SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE};
-    default_model_manager_ = std::make_unique<TestDefaultModelManager>();
     database_maintenance_ = std::make_unique<DatabaseMaintenanceImpl>(
         segment_ids, &clock_, segment_info_database_.get(),
-        signal_database_.get(), signal_storage_config_.get(),
-        default_model_manager_.get(), &prefs_);
+        signal_database_.get(), signal_storage_config_.get(), &prefs_);
     clock_.SetNow(base::Time::Now());
   }
 
@@ -235,7 +193,6 @@ class DatabaseMaintenanceImplTest : public testing::Test {
   std::unique_ptr<test::TestSegmentInfoDatabase> segment_info_database_;
   std::unique_ptr<MockSignalDatabase> signal_database_;
   std::unique_ptr<MockSignalStorageConfig> signal_storage_config_;
-  std::unique_ptr<TestDefaultModelManager> default_model_manager_;
 
   std::unique_ptr<DatabaseMaintenanceImpl> database_maintenance_;
   TestingPrefServiceSimple prefs_;

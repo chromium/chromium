@@ -169,8 +169,9 @@ class CastMediaControllerTest : public testing::Test {
     mojo::PendingRemote<mojom::MediaStatusObserver> mojo_status_observer;
     status_observer_ = std::make_unique<NiceMock<MockMediaStatusObserver>>(
         mojo_status_observer.InitWithNewPipeAndPassReceiver());
-    controller_ = std::make_unique<CastMediaController>(
-        &activity_, mojo_controller_.BindNewPipeAndPassReceiver(),
+    controller_ = std::make_unique<CastMediaController>(&activity_);
+    controller_->AddMediaController(
+        mojo_controller_.BindNewPipeAndPassReceiver(),
         std::move(mojo_status_observer));
   }
 

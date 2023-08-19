@@ -66,15 +66,13 @@ std::unique_ptr<ImageProcessor> ImageProcessor::Create(
     const PortConfig& input_config,
     const PortConfig& output_config,
     OutputMode output_mode,
-    VideoRotation relative_rotation,
     ErrorCB error_cb,
     scoped_refptr<base::SequencedTaskRunner> client_task_runner) {
   auto wrapped_error_cb = base::BindRepeating(
       base::IgnoreResult(&base::SequencedTaskRunner::PostTask),
       client_task_runner, FROM_HERE, std::move(error_cb));
-  std::unique_ptr<ImageProcessorBackend> backend =
-      create_backend_cb.Run(input_config, output_config, output_mode,
-                            relative_rotation, std::move(wrapped_error_cb));
+  std::unique_ptr<ImageProcessorBackend> backend = create_backend_cb.Run(
+      input_config, output_config, output_mode, std::move(wrapped_error_cb));
   if (!backend)
     return nullptr;
 
@@ -119,9 +117,20 @@ bool ImageProcessor::Process(scoped_refptr<VideoFrame> input_frame,
   DCHECK(input_frame);
   DCHECK(output_frame);
 
-  if (!CheckVideoFrameFormat(input_config(), *input_frame) ||
-      !CheckVideoFrameFormat(output_config(), *output_frame))
+  if (!CheckVideoFrameFormat(input_config(), *input_frame)) {
+    LOG(ERROR) << "Unexpected input VideoFrame format "
+               << input_frame->AsHumanReadableString()
+               << ", expected a compatible one with "
+               << input_config().ToString();
     return false;
+  }
+  if (!CheckVideoFrameFormat(output_config(), *output_frame)) {
+    LOG(ERROR) << "Unexpected output VideoFrame format "
+               << output_frame->AsHumanReadableString()
+               << ", expected a compatible one with "
+               << output_config().ToString();
+    return false;
+  }
 
   int cb_index = StoreCallback(std::move(cb));
   auto ready_cb = base::BindOnce(&ImageProcessor::OnProcessDoneThunk,

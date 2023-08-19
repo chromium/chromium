@@ -6,6 +6,7 @@ Revision: M-preview
 License: BSD
 License File: src/LICENSE
 Security Critical: no
+Shipped: yes
 
 Description:
 Android protobuf library contains the nano version of the Java protobuf library,

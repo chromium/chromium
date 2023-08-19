@@ -95,9 +95,6 @@ class CC_EXPORT CompositorFrameReportingController {
   void SetThreadAffectsSmoothness(
       FrameInfo::SmoothEffectDrivingThread thread_type,
       bool affects_smoothness);
-  bool is_main_thread_driving_smoothness() const {
-    return is_main_thread_driving_smoothness_;
-  }
 
   void set_tick_clock(const base::TickClock* tick_clock) {
     DCHECK(tick_clock);
@@ -163,6 +160,12 @@ class CC_EXPORT CompositorFrameReportingController {
   // instances should still be created for these frames. The following
   // functions accomplish this.
   void ProcessSkippedFramesIfNecessary(const viz::BeginFrameArgs& args);
+  void MaybePassEventMetricsFromDroppedFrames(
+      CompositorFrameReporter& reporter,
+      uint32_t frame_token,
+      bool next_reporter_from_same_frame);
+  void StoreEventMetricsFromDroppedFrames(CompositorFrameReporter& reporter,
+                                          uint32_t frame_token);
   void CreateReportersForDroppedFrames(
       const viz::BeginFrameArgs& old_args,
       const viz::BeginFrameArgs& new_args) const;
@@ -235,9 +238,12 @@ class CC_EXPORT CompositorFrameReportingController {
 
   // When a frame with events metrics fails to be presented, its events metrics
   // will be added to this map. The first following presented frame will get
-  // these metrics and report them.
-  std::map<viz::BeginFrameId, EventMetrics::List>
-      events_metrics_from_dropped_frames_;
+  // these metrics and report them. The key of map is submission frame token.
+  // Frame token is chosen over BeginFrameId as key due to the fact that frames
+  // can drop while a long running main still eventually presents, in which
+  // cases its more appropriate to check against frame_token instead of
+  // BeginFrameId.
+  std::map<uint32_t, EventMetricsSet> events_metrics_from_dropped_frames_;
 
   // Tracking the swap times in a queue to measure delta of multiple swaps in
   // each vsync.

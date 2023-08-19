@@ -16,10 +16,6 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface StatusItemController : NSObject {
   raw_ptr<StatusIconMac> _statusIcon;  // weak
 }

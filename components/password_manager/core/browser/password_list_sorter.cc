@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -26,7 +27,6 @@ constexpr char kSortKeyPartsSeparator = ' ';
 constexpr char kSortKeyNoFederationSymbol = '-';
 
 // Symbols to differentiate between passwords and passkeys.
-constexpr char kSortKeyPasskeySymbol = 'k';
 constexpr char kSortKeyPasswordSymbol = 'w';
 
 }  // namespace
@@ -91,8 +91,13 @@ std::string CreateSortKey(const CredentialUIEntry& credential) {
 
   // Separate passwords from passkeys.
   key += kSortKeyPartsSeparator;
-  key += credential.is_passkey ? kSortKeyPasskeySymbol : kSortKeyPasswordSymbol;
-
+  if (credential.passkey_credential_id.empty()) {
+    key += kSortKeyPasswordSymbol;
+  } else {
+    key += base::UTF16ToUTF8(credential.user_display_name) +
+           kSortKeyPartsSeparator +
+           base::HexEncode(credential.passkey_credential_id);
+  }
   return key;
 }
 

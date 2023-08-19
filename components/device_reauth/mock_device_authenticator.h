@@ -17,9 +17,7 @@ class MockDeviceAuthenticator : public DeviceAuthenticator {
   MockDeviceAuthenticator();
 
   MOCK_METHOD(bool, CanAuthenticateWithBiometrics, (), (override));
-#if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(bool, CanAuthenticateWithBiometricOrScreenLock, (), (override));
-#endif
   MOCK_METHOD(void,
               Authenticate,
               (DeviceAuthRequester, AuthenticateCallback, bool),

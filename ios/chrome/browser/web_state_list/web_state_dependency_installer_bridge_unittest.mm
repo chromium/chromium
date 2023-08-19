@@ -13,10 +13,6 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Test object for tracking calls through the DpendencyInstalling protocol.
 @interface TestInstaller : NSObject <DependencyInstalling>
 
@@ -41,7 +37,6 @@ class WebStateDependencyInstallerBridgeTest : public PlatformTest,
       : web_state_list_(this), installer_([[TestInstaller alloc] init]) {}
   // WebStateListDelegate.
   void WillAddWebState(web::WebState* web_state) override {}
-  void WebStateDetached(web::WebState* web_state) override {}
 
  protected:
   WebStateList web_state_list_;

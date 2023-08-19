@@ -69,6 +69,7 @@ class CloudUploadPageHandler : public mojom::PageHandler {
       GetOfficeMoveConfirmationShownForDriveCallback callback) override;
   void GetOfficeMoveConfirmationShownForOneDrive(
       GetOfficeMoveConfirmationShownForOneDriveCallback callback) override;
+  void RecordCancel(mojom::MetricsRecordedSetupPage page) override;
 
  private:
   raw_ptr<Profile, ExperimentalAsh> profile_;

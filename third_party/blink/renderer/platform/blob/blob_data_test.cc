@@ -16,9 +16,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom-blink.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
+#include "third_party/blink/public/mojom/blob/file_backed_blob_factory.mojom-blink.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/renderer/platform/blob/blob_bytes_provider.h"
 #include "third_party/blink/renderer/platform/blob/testing/fake_blob_registry.h"
+#include "third_party/blink/renderer/platform/blob/testing/fake_file_backed_blob_factory.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/uuid.h"
@@ -32,6 +34,7 @@ using mojom::blink::DataElementBlob;
 using mojom::blink::DataElementBytes;
 using mojom::blink::DataElementFile;
 using mojom::blink::DataElementPtr;
+using mojom::blink::FileBackedBlobFactory;
 
 namespace {
 
@@ -263,11 +266,41 @@ TEST_F(BlobDataHandleTest, CreateFromUUID) {
   EXPECT_EQ(kUuid, mock_blob_registry_.owned_receivers[0].uuid);
 }
 
+TEST_F(BlobDataHandleTest, CreateFromFile) {
+  String kPath = "path";
+  uint64_t kOffset = 0;
+  uint64_t kSize = 1234;
+  base::Time kModificationTime = base::Time();
+  String kType = "content/type";
+
+  FakeFileBackedBlobFactory file_factory;
+  mojo::Remote<FileBackedBlobFactory> file_factory_remote;
+  mojo::Receiver<FileBackedBlobFactory> file_factory_receiver(
+      &file_factory, file_factory_remote.BindNewPipeAndPassReceiver());
+
+  scoped_refptr<BlobDataHandle> handle =
+      BlobDataHandle::CreateForFile(file_factory_remote.get(), kPath, kOffset,
+                                    kSize, kModificationTime, kType);
+
+  EXPECT_EQ(kType, handle->GetType());
+  EXPECT_EQ(kSize, handle->size());
+  EXPECT_FALSE(handle->IsSingleUnknownSizeFile());
+
+  file_factory_remote.FlushForTesting();
+  EXPECT_EQ(1u, file_factory.registrations.size());
+  const auto& reg = file_factory.registrations[0];
+  EXPECT_EQ(handle->Uuid(), reg.uuid);
+  EXPECT_EQ(kType, reg.content_type);
+  EXPECT_EQ(WebStringToFilePath(kPath), reg.file->path);
+  EXPECT_EQ(kSize, reg.file->length);
+  EXPECT_EQ(kOffset, reg.file->offset);
+  EXPECT_EQ(kModificationTime, reg.file->expected_modification_time);
+}
+
 TEST_F(BlobDataHandleTest, CreateFromEmptyElements) {
   auto data = std::make_unique<BlobData>();
   data->AppendBytes(small_test_data_.data(), 0);
   data->AppendBlob(empty_blob_, 0, 0);
-  data->AppendFile("path", 0, 0, base::Time::UnixEpoch());
 
   TestCreateBlob(std::move(data), {});
 }
@@ -338,15 +371,6 @@ TEST_F(BlobDataHandleTest, CreateFromMergedSmallAndLargeBytes) {
       ExpectedElement::LargeBytes(std::move(expected_data)));
 
   TestCreateBlob(std::move(data), std::move(expected_elements));
-}
-
-TEST_F(BlobDataHandleTest, CreateFromFileWithUnknownSize) {
-  Vector<ExpectedElement> expected_elements;
-  expected_elements.push_back(
-      ExpectedElement::File("path", 0, uint64_t(-1), base::Time()));
-
-  TestCreateBlob(BlobData::CreateForFileWithUnknownSize("path"),
-                 std::move(expected_elements));
 }
 
 TEST_F(BlobDataHandleTest, CreateFromBlob) {

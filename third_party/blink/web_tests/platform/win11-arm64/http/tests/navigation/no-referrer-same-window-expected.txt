@@ -1,0 +1,6 @@
+The Referrer displayed below should be empty.
+
+Referrer:
+Warning: Undefined array key "HTTP_REFERER" in C:\b\s\w\ir\third_party\blink\web_tests\http\tests\navigation\resources\no-referrer-same-window-helper.php on line 9
+
+FAIL

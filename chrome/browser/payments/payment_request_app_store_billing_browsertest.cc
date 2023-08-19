@@ -78,7 +78,10 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestTwaBillingTest,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   expected_error = expected_error + " Unable to invoke Android apps.";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  expected_error =
+      expected_error + " Cannot connect to the OS from Lacros browser.";
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // We expect the standard NotSupportedError inside a TWA because Play Billing
   // isn't supported yet.

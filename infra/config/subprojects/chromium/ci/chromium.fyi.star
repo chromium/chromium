@@ -20,11 +20,13 @@ ci.defaults.set(
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.DEFAULT,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
+    shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
 )
 
 consoles.console_view(
     name = "chromium.fyi",
     branch_selector = [
+        branches.selector.CROS_LTS_BRANCHES,
         branches.selector.IOS_BRANCHES,
         branches.selector.LINUX_BRANCHES,
     ],
@@ -60,19 +62,36 @@ consoles.console_view(
     },
 )
 
+def fyi_reclient_comparison_builder(*, name, **kwargs):
+    kwargs.setdefault("executable", "recipe:reclient_reclient_comparison")
+    kwargs["reclient_bootstrap_env"] = kwargs.get("reclient_bootstrap_env", {})
+    kwargs["reclient_bootstrap_env"].update({
+        "RBE_ip_reset_min_delay": "-1s",
+        "RBE_experimental_goma_deps_cache": "true",
+        "RBE_deps_cache_mode": "reproxy",
+        "RBE_fast_log_collection": "true",
+    })
+    return ci.builder(name = name, **kwargs)
+
 def fyi_ios_builder(*, name, **kwargs):
     kwargs.setdefault("cores", None)
     if kwargs.get("builderless", False):
         kwargs.setdefault("os", os.MAC_DEFAULT)
     kwargs.setdefault("reclient_scandeps_server", True)
-    kwargs.setdefault("xcode", xcode.x14main)
+    kwargs.setdefault("xcode", xcode.x15main)
     return ci.builder(name = name, **kwargs)
 
-def fyi_mac_builder(*, name, **kwargs):
+def mac_builder_defaults(**kwargs):
     kwargs.setdefault("cores", 4)
     kwargs.setdefault("os", os.MAC_DEFAULT)
     kwargs.setdefault("reclient_scandeps_server", True)
-    return ci.builder(name = name, **kwargs)
+    return kwargs
+
+def fyi_mac_builder(*, name, **kwargs):
+    return ci.builder(name = name, **mac_builder_defaults(**kwargs))
+
+def fyi_mac_reclient_comparison_builder(*, name, **kwargs):
+    return fyi_reclient_comparison_builder(name = name, **mac_builder_defaults(**kwargs))
 
 ci.builder(
     name = "Linux Viz",
@@ -113,33 +132,6 @@ ci.builder(
         category = "site_isolation",
     ),
     notifies = ["Site Isolation Android"],
-)
-
-ci.builder(
-    name = "VR Linux",
-    branch_selector = branches.selector.LINUX_BRANCHES,
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-        ),
-        build_gs_bucket = "chromium-fyi-archive",
-    ),
-    os = os.LINUX_DEFAULT,
-    console_view_entry = consoles.console_view_entry(
-        category = "linux",
-    ),
-    cq_mirrors_console_view = "mirrors",
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -437,7 +429,6 @@ ci.thin_tester(
             target_bits = 64,
         ),
     ),
-    cores = None,
     console_view_entry = consoles.console_view_entry(
         category = "mac",
     ),
@@ -509,7 +500,7 @@ ci.builder(
         build_gs_bucket = "chromium-android-archive",
     ),
     builderless = False,
-    os = os.LINUX_BIONIC,
+    os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "android",
     ),
@@ -994,13 +985,12 @@ ci.builder(
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
 
-ci.builder(
+fyi_reclient_comparison_builder(
     name = "Comparison Android (reclient)",
     description_html = """\
 This builder measures Android build performance with reclient prod vs test.<br/>\
 The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/ci/Deterministic%20Android%20(dbg)">Deterministic Android (dbg)</a>.\
 """,
-    executable = "recipe:reclient_reclient_comparison",
     cores = 16,
     os = os.LINUX_DEFAULT,
     # Target luci-chromium-ci-bionic-us-central1-b-ssd-16-*.
@@ -1010,22 +1000,17 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
         short_name = "cmp",
     ),
     execution_timeout = 15 * time.hour,
-    reclient_bootstrap_env = {
-        "RBE_ip_reset_min_delay": "-1s",
-        "RBE_experimental_goma_deps_cache": "true",
-        "RBE_deps_cache_mode": "reproxy",
-    },
     reclient_cache_silo = "Comparison Android - cache siloed",
     reclient_instance = reclient.instance.TEST_TRUSTED,
+    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
 )
 
-ci.builder(
+fyi_reclient_comparison_builder(
     name = "Comparison Android (reclient) (reproxy cache)",
     description_html = """\
 This builder measures Android build performance with reclient prod vs test using reproxy's deps cache.<br/>\
 The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/ci/Comparison%20Android%20(reclient)">Comparison Android (reclient)</a>.\
 """,
-    executable = "recipe:reclient_reclient_comparison",
     cores = 16,
     os = os.LINUX_DEFAULT,
     # Target luci-chromium-ci-bionic-us-central1-b-ssd-16-*.
@@ -1035,36 +1020,26 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
         short_name = "cmp",
     ),
     execution_timeout = 15 * time.hour,
-    reclient_bootstrap_env = {
-        "RBE_ip_reset_min_delay": "-1s",
-        "RBE_experimental_goma_deps_cache": "true",
-        "RBE_deps_cache_mode": "reproxy",
-    },
     reclient_cache_silo = "Comparison Android (reproxy cache) - cache siloed",
     reclient_instance = reclient.instance.TEST_TRUSTED,
+    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
 )
 
-ci.builder(
+fyi_reclient_comparison_builder(
     name = "Comparison Linux (reclient)",
-    executable = "recipe:reclient_reclient_comparison",
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "linux",
         short_name = "cmp",
     ),
     execution_timeout = 6 * time.hour,
-    reclient_bootstrap_env = {
-        "RBE_ip_reset_min_delay": "-1s",
-        "RBE_experimental_goma_deps_cache": "true",
-        "RBE_deps_cache_mode": "reproxy",
-    },
     reclient_cache_silo = "Comparison Linux - cache siloed",
     reclient_instance = reclient.instance.TEST_TRUSTED,
+    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
 )
 
-fyi_mac_builder(
+fyi_mac_reclient_comparison_builder(
     name = "Comparison Mac (reclient)",
-    executable = "recipe:reclient_reclient_comparison",
     builderless = True,
     cores = None,
     console_view_entry = consoles.console_view_entry(
@@ -1073,18 +1048,15 @@ fyi_mac_builder(
     ),
     execution_timeout = 10 * time.hour,
     reclient_bootstrap_env = {
-        "RBE_ip_reset_min_delay": "-1s",
         "GLOG_vmodule": "bridge*=2",
-        "RBE_experimental_goma_deps_cache": "true",
-        "RBE_deps_cache_mode": "reproxy",
     },
     reclient_cache_silo = "Comparison Mac - cache siloed",
     reclient_instance = reclient.instance.TEST_TRUSTED,
+    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
 )
 
-fyi_mac_builder(
+fyi_mac_reclient_comparison_builder(
     name = "Comparison Mac arm64 (reclient)",
-    executable = "recipe:reclient_reclient_comparison",
     builderless = True,
     cores = None,
     console_view_entry = consoles.console_view_entry(
@@ -1093,18 +1065,15 @@ fyi_mac_builder(
     ),
     execution_timeout = 10 * time.hour,
     reclient_bootstrap_env = {
-        "RBE_ip_reset_min_delay": "-1s",
         "GLOG_vmodule": "bridge*=2",
-        "RBE_experimental_goma_deps_cache": "true",
-        "RBE_deps_cache_mode": "reproxy",
     },
     reclient_cache_silo = "Comparison Mac - cache siloed",
     reclient_instance = reclient.instance.TEST_TRUSTED,
+    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
 )
 
-fyi_mac_builder(
+fyi_mac_reclient_comparison_builder(
     name = "Comparison Mac arm64 on arm64 (reclient)",
-    executable = "recipe:reclient_reclient_comparison",
     builderless = True,
     cores = None,
     cpu = cpu.ARM64,
@@ -1114,18 +1083,15 @@ fyi_mac_builder(
     ),
     execution_timeout = 10 * time.hour,
     reclient_bootstrap_env = {
-        "RBE_ip_reset_min_delay": "-1s",
         "GLOG_vmodule": "bridge*=2",
-        "RBE_experimental_goma_deps_cache": "true",
-        "RBE_deps_cache_mode": "reproxy",
     },
     reclient_cache_silo = "Comparison Mac - cache siloed",
     reclient_instance = reclient.instance.TEST_TRUSTED,
+    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
 )
 
-ci.builder(
+fyi_reclient_comparison_builder(
     name = "Comparison Windows (8 cores) (reclient)",
-    executable = "recipe:reclient_reclient_comparison",
     builderless = True,
     cores = 8,
     os = os.WINDOWS_DEFAULT,
@@ -1134,19 +1100,14 @@ ci.builder(
         category = "win",
         short_name = "re",
     ),
-    reclient_bootstrap_env = {
-        "RBE_ip_reset_min_delay": "-1s",
-        "RBE_experimental_goma_deps_cache": "true",
-        "RBE_deps_cache_mode": "reproxy",
-    },
     reclient_cache_silo = "Comparison Windows 8 cores - cache siloed",
     reclient_instance = reclient.instance.TEST_TRUSTED,
     reclient_jobs = 80,
+    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
 )
 
-ci.builder(
+fyi_reclient_comparison_builder(
     name = "Comparison Windows (reclient)",
-    executable = "recipe:reclient_reclient_comparison",
     builderless = True,
     cores = 32,
     os = os.WINDOWS_DEFAULT,
@@ -1156,18 +1117,13 @@ ci.builder(
         short_name = "re",
     ),
     execution_timeout = 6 * time.hour,
-    reclient_bootstrap_env = {
-        "RBE_ip_reset_min_delay": "-1s",
-        "RBE_experimental_goma_deps_cache": "true",
-        "RBE_deps_cache_mode": "reproxy",
-    },
     reclient_cache_silo = "Comparison Windows - cache siloed",
     reclient_instance = reclient.instance.TEST_TRUSTED,
+    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
 )
 
-ci.builder(
+fyi_reclient_comparison_builder(
     name = "Comparison Simple Chrome (reclient)",
-    executable = "recipe:reclient_reclient_comparison",
     builderless = True,
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -1175,18 +1131,13 @@ ci.builder(
         short_name = "cmp",
     ),
     execution_timeout = 10 * time.hour,
-    reclient_bootstrap_env = {
-        "RBE_ip_reset_min_delay": "-1s",
-        "RBE_experimental_goma_deps_cache": "true",
-        "RBE_deps_cache_mode": "reproxy",
-    },
     reclient_cache_silo = "Comparison Simple Chrome - cache siloed",
     reclient_instance = reclient.instance.TEST_TRUSTED,
+    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
 )
 
-fyi_mac_builder(
+fyi_mac_reclient_comparison_builder(
     name = "Comparison ios (reclient)",
-    executable = "recipe:reclient_reclient_comparison",
     builderless = True,
     cores = None,
     console_view_entry = consoles.console_view_entry(
@@ -1194,23 +1145,18 @@ fyi_mac_builder(
         short_name = "cmp",
     ),
     execution_timeout = 10 * time.hour,
-    reclient_bootstrap_env = {
-        "RBE_ip_reset_min_delay": "-1s",
-        "RBE_experimental_goma_deps_cache": "true",
-        "RBE_deps_cache_mode": "reproxy",
-    },
     reclient_cache_silo = "Comparison ios - cache siloed",
     reclient_instance = reclient.instance.TEST_TRUSTED,
-    xcode = xcode.x14main,
+    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
+    xcode = xcode.x15main,
 )
 
-ci.builder(
+fyi_reclient_comparison_builder(
     name = "Comparison Android (reclient)(CQ)",
     description_html = """\
 This builder measures Android build performance with reclient prod vs test in cq configuration.<br/>\
 The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/android-pie-arm64-rel-compilator">android-pie-arm64-rel-compilator</a>.\
 """,
-    executable = "recipe:reclient_reclient_comparison",
     cores = 32,
     os = os.LINUX_DEFAULT,
     ssd = True,
@@ -1219,23 +1165,18 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
         short_name = "cmp",
     ),
     execution_timeout = 15 * time.hour,
-    reclient_bootstrap_env = {
-        "RBE_ip_reset_min_delay": "-1s",
-        "RBE_experimental_goma_deps_cache": "true",
-        "RBE_deps_cache_mode": "reproxy",
-    },
     reclient_cache_silo = "Comparison Android CQ - cache siloed",
     reclient_instance = reclient.instance.TEST_UNTRUSTED,
     reclient_jobs = 300,
+    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
 )
 
-ci.builder(
+fyi_reclient_comparison_builder(
     name = "Comparison Linux (reclient)(CQ)",
     description_html = """\
 This builder measures Linux build performance with reclient prod vs test in cq configuration.<br/>\
 The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/linux-rel-compilator">linux-rel-compilator</a>.\
 """,
-    executable = "recipe:reclient_reclient_comparison",
     cores = 16,
     os = os.LINUX_DEFAULT,
     ssd = True,
@@ -1244,23 +1185,18 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
         short_name = "cmp",
     ),
     execution_timeout = 6 * time.hour,
-    reclient_bootstrap_env = {
-        "RBE_ip_reset_min_delay": "-1s",
-        "RBE_experimental_goma_deps_cache": "true",
-        "RBE_deps_cache_mode": "reproxy",
-    },
     reclient_cache_silo = "Comparison Linux CQ - cache siloed",
     reclient_instance = reclient.instance.TEST_UNTRUSTED,
     reclient_jobs = 150,
+    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
 )
 
-fyi_mac_builder(
+fyi_mac_reclient_comparison_builder(
     name = "Comparison Mac (reclient)(CQ)",
     description_html = """\
 This builder measures Mac build performance with reclient prod vs test in cq configuration.<br/>\
 The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/mac-rel-compilator">mac-rel-compilator</a>.\
 """,
-    executable = "recipe:reclient_reclient_comparison",
     builderless = True,
     cores = None,
     ssd = True,
@@ -1271,22 +1207,19 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     execution_timeout = 10 * time.hour,
     reclient_bootstrap_env = {
         "GLOG_vmodule": "bridge*=2",
-        "RBE_ip_reset_min_delay": "-1s",
-        "RBE_experimental_goma_deps_cache": "true",
-        "RBE_deps_cache_mode": "reproxy",
     },
     reclient_cache_silo = "Comparison Mac CQ - cache siloed",
     reclient_instance = reclient.instance.TEST_UNTRUSTED,
     reclient_jobs = 150,
+    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
 )
 
-ci.builder(
+fyi_reclient_comparison_builder(
     name = "Comparison Windows (reclient)(CQ)",
     description_html = """\
 This builder measures Windows build performance with reclient prod vs test in cq configuration.<br/>\
 The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/win10_chromium_x64_rel_ng-compilator">win10_chromium_x64_rel_ng-compilator</a>.\
 """,
-    executable = "recipe:reclient_reclient_comparison",
     builderless = True,
     cores = 32,
     os = os.WINDOWS_DEFAULT,
@@ -1297,23 +1230,18 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     ),
     execution_timeout = 6 * time.hour,
     goma_enable_ats = False,
-    reclient_bootstrap_env = {
-        "RBE_ip_reset_min_delay": "-1s",
-        "RBE_experimental_goma_deps_cache": "true",
-        "RBE_deps_cache_mode": "reproxy",
-    },
     reclient_cache_silo = "Comparison Windows CQ - cache siloed",
     reclient_instance = reclient.instance.TEST_UNTRUSTED,
     reclient_jobs = 300,
+    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
 )
 
-ci.builder(
+fyi_reclient_comparison_builder(
     name = "Comparison Simple Chrome (reclient)(CQ)",
     description_html = """\
 This builder measures Simple Chrome build performance with reclient prod vs test in cq configuration.<br/>\
 The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/linux-chromeos-rel-compilator">linux-chromeos-rel-compilator</a>.\
 """,
-    executable = "recipe:reclient_reclient_comparison",
     builderless = True,
     cores = 32,
     os = os.LINUX_DEFAULT,
@@ -1323,23 +1251,18 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
         short_name = "cmp",
     ),
     execution_timeout = 10 * time.hour,
-    reclient_bootstrap_env = {
-        "RBE_ip_reset_min_delay": "-1s",
-        "RBE_experimental_goma_deps_cache": "true",
-        "RBE_deps_cache_mode": "reproxy",
-    },
     reclient_cache_silo = "Comparison Simple Chrome CQ - cache siloed",
     reclient_instance = reclient.instance.TEST_UNTRUSTED,
     reclient_jobs = 300,
+    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
 )
 
-fyi_mac_builder(
+fyi_mac_reclient_comparison_builder(
     name = "Comparison ios (reclient)(CQ)",
     description_html = """\
 This builder measures iOS build performance with reclient prod vs test in cq configuration.<br/>\
 The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/ios-simulator">ios-simulator</a>.\
 """,
-    executable = "recipe:reclient_reclient_comparison",
     builderless = True,
     cores = None,
     ssd = True,
@@ -1348,35 +1271,34 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
         short_name = "cmp",
     ),
     execution_timeout = 10 * time.hour,
-    reclient_bootstrap_env = {
-        "RBE_ip_reset_min_delay": "-1s",
-        "RBE_experimental_goma_deps_cache": "true",
-        "RBE_deps_cache_mode": "reproxy",
-    },
     reclient_cache_silo = "Comparison ios CQ - cache siloed",
     reclient_instance = reclient.instance.TEST_UNTRUSTED,
     reclient_jobs = 150,
-    xcode = xcode.x14main,
+    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
+    xcode = xcode.x15main,
 )
 
 # Build Perf builders use CQ reclient instance and high reclient jobs/cores and
 # SSD to represent CQ build performance.
 
-def build_perf_builder(**kwargs):
+def build_perf_builder(description_html, **kwargs):
     kwargs.setdefault("executable", "recipe:chrome_build/build_perf")
     kwargs.setdefault("reclient_instance", reclient.instance.DEFAULT_UNTRUSTED)
     kwargs.setdefault("reclient_jobs", reclient.jobs.HIGH_JOBS_FOR_CQ)
     kwargs.setdefault("use_clang_coverage", True)
+    kwargs.setdefault("siso_configs", [])
+
     return ci.builder(
         service_account = "chromium-build-perf-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
         # rely on the builder dimension for the bot selection.
         builderless = False,
         cores = None,
-        siso_config = "remote_all",
+        siso_enabled = True,
         siso_enable_cloud_profiler = True,
         siso_enable_cloud_trace = True,
         siso_project = siso.project.DEFAULT_UNTRUSTED,
         notifies = ["chrome-build-perf"],
+        description_html = description_html + "<br>Build stats is show in http://shortn/_gaAdI3x6o6.",
         **kwargs
     )
 
@@ -1391,7 +1313,6 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
             config = "chromium",
             apply_configs = [
                 "android",
-                "chromium_no_telemetry_dependencies",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -1426,8 +1347,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
             config = "chromium",
             apply_configs = [
                 "android",
-                "checkout_siso",
-                "chromium_no_telemetry_dependencies",
+                "siso_latest",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -1448,6 +1368,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         category = "buildperf",
         short_name = "andss",
     ),
+    siso_configs = ["remote_all"],
 )
 
 build_perf_builder(
@@ -1461,8 +1382,7 @@ This builder measures build performance for Android developer builds, by simulat
             config = "chromium",
             apply_configs = [
                 "android",
-                "checkout_siso",
-                "chromium_no_telemetry_dependencies",
+                "siso_latest",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -1485,6 +1405,7 @@ This builder measures build performance for Android developer builds, by simulat
     ),
     reclient_instance = reclient.instance.DEVELOPER,
     reclient_jobs = 5120,
+    shadow_reclient_instance = None,
     use_clang_coverage = None,
 )
 
@@ -1497,9 +1418,6 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
-            apply_configs = [
-                "chromium_no_telemetry_dependencies",
-            ],
         ),
         chromium_config = builder_config.chromium_config(
             config = "chromium",
@@ -1526,8 +1444,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
-                "checkout_siso",
-                "chromium_no_telemetry_dependencies",
+                "siso_latest",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -1542,6 +1459,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         category = "buildperf",
         short_name = "lnxss",
     ),
+    siso_configs = ["remote_all"],
 )
 
 build_perf_builder(
@@ -1554,8 +1472,7 @@ This builder measures build performance for Linux developer builds, by simulatin
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
-                "checkout_siso",
-                "chromium_no_telemetry_dependencies",
+                "siso_latest",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -1572,6 +1489,7 @@ This builder measures build performance for Linux developer builds, by simulatin
     ),
     reclient_instance = reclient.instance.DEVELOPER,
     reclient_jobs = 5120,
+    shadow_reclient_instance = None,
     use_clang_coverage = None,
 )
 
@@ -1584,9 +1502,6 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
-            apply_configs = [
-                "chromium_no_telemetry_dependencies",
-            ],
         ),
         chromium_config = builder_config.chromium_config(
             config = "chromium",
@@ -1613,8 +1528,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
-                "checkout_siso",
-                "chromium_no_telemetry_dependencies",
+                "siso_latest",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -1629,6 +1543,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         category = "buildperf",
         short_name = "winss",
     ),
+    siso_configs = ["remote_all"],
 )
 
 build_perf_builder(
@@ -1641,8 +1556,7 @@ This builder measures build performance for Windows developer builds, by simulat
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
-                "checkout_siso",
-                "chromium_no_telemetry_dependencies",
+                "siso_latest",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -1659,7 +1573,67 @@ This builder measures build performance for Windows developer builds, by simulat
     ),
     reclient_instance = reclient.instance.DEVELOPER,
     reclient_jobs = 1000,
+    shadow_reclient_instance = None,
     use_clang_coverage = None,
+)
+
+build_perf_builder(
+    name = "linux-chromeos-build-perf",
+    description_html = """\
+This builder measures ChromeOS build performance with and without remote caches.<br/>\
+The build configs and the bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/linux-chromeos-rel-compilator">linux-chromeos-rel-compilator</a>.\
+""",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "chromeos",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+        ),
+    ),
+    os = os.LINUX_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        category = "buildperf",
+        short_name = "cros",
+    ),
+    # Use the same config with linux-chromeos-rel CQ builder here.
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
+)
+
+build_perf_builder(
+    name = "linux-chromeos-build-perf-siso",
+    description_html = """\
+This builder measures ChromeOS build performance with Siso.<br/>\
+The build configs and the bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/linux-chromeos-rel-compilator">linux-chromeos-rel-compilator</a>.\
+""",
+    executable = "recipe:chrome_build/build_perf_siso",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "chromeos",
+                "siso_latest",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+        ),
+    ),
+    os = os.LINUX_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        category = "buildperf",
+        short_name = "crosss",
+    ),
+    siso_configs = ["remote_all"],
 )
 
 ci.builder(
@@ -1718,6 +1692,7 @@ ci.builder(
     reclient_rewrapper_env = {
         "RBE_compare": "true",
     },
+    shadow_reclient_instance = None,
 )
 
 ci.builder(
@@ -1747,6 +1722,7 @@ ci.builder(
     ),
     reclient_instance = reclient.instance.TEST_TRUSTED,
     reclient_jobs = None,
+    shadow_reclient_instance = None,
 )
 
 ci.builder(
@@ -1777,6 +1753,7 @@ ci.builder(
     reclient_rewrapper_env = {
         "RBE_compare": "true",
     },
+    shadow_reclient_instance = None,
 )
 
 fyi_mac_builder(
@@ -1812,6 +1789,7 @@ fyi_mac_builder(
     reclient_rewrapper_env = {
         "RBE_compare": "true",
     },
+    shadow_reclient_instance = None,
 )
 
 fyi_mac_builder(
@@ -2127,7 +2105,8 @@ fyi_ios_builder(
                 "mb",
                 "mac_toolchain",
             ],
-            build_config = builder_config.build_config.DEBUG,
+            # Release for now due to binary size being too large (crbug.com/1464415)
+            build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
             target_platform = builder_config.target_platform.IOS,
         ),
@@ -2242,7 +2221,7 @@ fyi_ios_builder(
 )
 
 fyi_ios_builder(
-    name = "ios15-beta-simulator",
+    name = "ios17-beta-simulator",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(config = "ios"),
         chromium_config = builder_config.chromium_config(
@@ -2260,14 +2239,14 @@ fyi_ios_builder(
     os = os.MAC_13,
     console_view_entry = [
         consoles.console_view_entry(
-            category = "iOS|iOS15",
-            short_name = "ios15",
+            category = "iOS|iOS17",
+            short_name = "ios17",
         ),
     ],
 )
 
 fyi_ios_builder(
-    name = "ios15-sdk-simulator",
+    name = "ios17-sdk-simulator",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(config = "ios"),
         chromium_config = builder_config.chromium_config(
@@ -2286,10 +2265,11 @@ fyi_ios_builder(
     cpu = cpu.ARM64,
     console_view_entry = [
         consoles.console_view_entry(
-            category = "iOS|iOS15",
-            short_name = "sdk15",
+            category = "iOS|iOS17",
+            short_name = "sdk17",
         ),
     ],
+    xcode = xcode.x15betabots,
 )
 
 fyi_ios_builder(
@@ -2345,7 +2325,7 @@ fyi_ios_builder(
             short_name = "dev",
         ),
     ],
-    xcode = xcode.x14betabots,
+    xcode = xcode.x15betabots,
 )
 
 fyi_ios_builder(
@@ -2374,7 +2354,7 @@ fyi_ios_builder(
         category = "iOS|iOS16",
         short_name = "sdk16",
     ),
-    xcode = xcode.x14betabots,
+    xcode = xcode.x15betabots,
 )
 
 fyi_mac_builder(
@@ -2424,6 +2404,13 @@ fyi_mac_builder(
 
 ci.builder(
     name = "Win 10 Fast Ring",
+    description_html = (
+        "This builder is intended to run builds & tests on pre-release " +
+        "versions of Windows. However, flashing such images on the bots " +
+        "is not supported at this time.<br/>So this builder remains paused " +
+        "until a solution can be determined. For more info, see " +
+        "<a href=\"http://shortn/_B7cJcHq55P\">http://shortn/_B7cJcHq55P</a>."
+    ),
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(config = "chromium"),
         chromium_config = builder_config.chromium_config(
@@ -2488,6 +2475,7 @@ ci.builder(
     experimental = True,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.DEFAULT,
+    shadow_reclient_instance = None,
 )
 
 ci.builder(
@@ -2574,7 +2562,7 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
-    os = os.LINUX_BIONIC,
+    os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "cr23",
         short_name = "lnx",

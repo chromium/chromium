@@ -9,8 +9,10 @@
 
 #include "ash/style/style_util.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/touch_point.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/ui_utils.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "chrome/grit/generated_resources.h"
@@ -291,6 +293,16 @@ ActionLabel::~ActionLabel() = default;
 void ActionLabel::SetTextActionLabel(const std::u16string& text) {
   label()->SetText(text);
   SetAccessibleName(CalculateAccessibleName());
+
+  if (!IsBeta()) {
+    return;
+  }
+
+  if (text == kUnknownBind) {
+    SetToEditUnbindInput();
+  } else {
+    SetToEditDefault();
+  }
 }
 
 void ActionLabel::SetImageActionLabel(MouseAction mouse_action) {
@@ -311,10 +323,15 @@ void ActionLabel::SetDisplayMode(DisplayMode mode) {
       break;
     case DisplayMode::kEdit:
       SetToEditMode();
-      SetFocusBehavior(FocusBehavior::ALWAYS);
-      static_cast<ActionView*>(parent())->ShowInfoMsg(
-          l10n_util::GetStringUTF8(IDS_INPUT_OVERLAY_EDIT_INSTRUCTIONS_ALPHAV2),
-          this);
+      if (IsBeta()) {
+        SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
+      } else {
+        SetFocusBehavior(FocusBehavior::ALWAYS);
+        static_cast<ActionView*>(parent())->ShowInfoMsg(
+            l10n_util::GetStringUTF8(
+                IDS_INPUT_OVERLAY_EDIT_INSTRUCTIONS_ALPHAV2),
+            this);
+      }
       break;
     case DisplayMode::kEditedSuccess:
       SetToEditFocus();

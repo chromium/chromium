@@ -64,11 +64,4 @@ void InvokeWebPushCallback(
     SendWebPushMessageResult result,
     absl::optional<std::string> message_id = absl::nullopt);
 
-// Logs the size of message payload to UMA. This should be called right before a
-// web push message is sent.
-void LogSendWebPushMessagePayloadSize(int size);
-
-// Logs the network error or status code after a web push message is sent.
-void LogSendWebPushMessageStatusCode(int status_code);
-
 #endif  // CHROME_BROWSER_SHARING_WEB_PUSH_WEB_PUSH_COMMON_H_

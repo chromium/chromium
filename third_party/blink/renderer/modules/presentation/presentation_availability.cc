@@ -55,8 +55,7 @@ ExecutionContext* PresentationAvailability::GetExecutionContext() const {
 void PresentationAvailability::AddedEventListener(
     const AtomicString& event_type,
     RegisteredEventListener& registered_listener) {
-  EventTargetWithInlineData::AddedEventListener(event_type,
-                                                registered_listener);
+  EventTarget::AddedEventListener(event_type, registered_listener);
   if (event_type == event_type_names::kChange) {
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kPresentationAvailabilityChangeEventListener);
@@ -122,7 +121,7 @@ bool PresentationAvailability::value() const {
 }
 
 void PresentationAvailability::Trace(Visitor* visitor) const {
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   PageVisibilityObserver::Trace(visitor);
   ExecutionContextLifecycleStateObserver::Trace(visitor);
 }

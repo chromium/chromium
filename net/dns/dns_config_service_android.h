@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "net/android/network_library.h"
 #include "net/base/net_export.h"
+#include "net/base/network_change_notifier.h"
 #include "net/dns/dns_config_service.h"
 
 namespace net {
@@ -21,7 +22,9 @@ namespace internal {
 // not thread-safe and methods may perform blocking I/O so methods must be
 // called on a sequence that allows blocking (i.e. base::MayBlock). It may be
 // constructed on a different sequence than which it's later called on.
-class NET_EXPORT_PRIVATE DnsConfigServiceAndroid : public DnsConfigService {
+class NET_EXPORT_PRIVATE DnsConfigServiceAndroid
+    : public DnsConfigService,
+      public NetworkChangeNotifier::NetworkChangeObserver {
  public:
   static constexpr base::TimeDelta kConfigChangeDelay = base::Milliseconds(50);
 
@@ -44,10 +47,12 @@ class NET_EXPORT_PRIVATE DnsConfigServiceAndroid : public DnsConfigService {
   bool StartWatching() override;
 
  private:
-  class Watcher;
   class ConfigReader;
 
-  std::unique_ptr<Watcher> watcher_;
+  // NetworkChangeNotifier::NetworkChangeObserver:
+  void OnNetworkChanged(NetworkChangeNotifier::ConnectionType type) override;
+
+  bool is_watching_network_change_ = false;
   std::unique_ptr<ConfigReader> config_reader_;
   android::DnsServerGetter dns_server_getter_;
 };

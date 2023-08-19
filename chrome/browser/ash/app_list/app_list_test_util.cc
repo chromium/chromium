@@ -116,7 +116,9 @@ syncer::SyncData CreateAppRemoteData(
     const std::string& parent_id,
     const std::string& item_ordinal,
     const std::string& item_pin_ordinal,
-    sync_pb::AppListSpecifics_AppListItemType item_type) {
+    sync_pb::AppListSpecifics_AppListItemType item_type,
+    absl::optional<bool> is_user_pinned,
+    const std::string& promise_package_id) {
   sync_pb::EntitySpecifics specifics;
   sync_pb::AppListSpecifics* app_list = specifics.mutable_app_list();
   if (id != kUnset)
@@ -130,6 +132,12 @@ syncer::SyncData CreateAppRemoteData(
     app_list->set_item_ordinal(item_ordinal);
   if (item_pin_ordinal != kUnset)
     app_list->set_item_pin_ordinal(item_pin_ordinal);
+  if (is_user_pinned.has_value()) {
+    app_list->set_is_user_pinned(*is_user_pinned);
+  }
+  if (promise_package_id != kUnset) {
+    app_list->set_promise_package_id(promise_package_id);
+  }
 
   return syncer::SyncData::CreateRemoteData(
       specifics, syncer::ClientTagHash::FromHashed("unused"));

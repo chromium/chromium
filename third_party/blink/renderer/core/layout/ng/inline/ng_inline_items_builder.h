@@ -195,6 +195,7 @@ class NGInlineItemsBuilderTemplate {
 
   const bool is_text_combine_;
   bool has_bidi_controls_ = false;
+  bool has_floats_ = false;
   bool has_initial_letter_box_ = false;
   bool has_ruby_ = false;
   bool is_block_level_ = true;
@@ -223,6 +224,9 @@ class NGInlineItemsBuilderTemplate {
   bool AppendTextChunks(const String& string, LayoutText& layout_text);
   void ExitAndEnterSvgTextChunk(LayoutText& layout_text);
   void EnterSvgTextChunk(const ComputedStyle* style);
+
+  void DidAppendTextReusing(const NGInlineItem& item);
+  void DidAppendForcedBreak();
 
   void RemoveTrailingCollapsibleSpaceIfExists();
   void RemoveTrailingCollapsibleSpace(NGInlineItem*);

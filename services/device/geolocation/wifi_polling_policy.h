@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/time/time.h"
+#include "services/device/public/mojom/geolocation_internals.mojom.h"
 
 namespace device {
 
@@ -52,6 +53,10 @@ class WifiPollingPolicy {
   // duration for a new interval starting at the current time.
   virtual int NoWifiInterval() = 0;
 
+  // Use FillDiagnostics to fill diagnostic info for WifiPollingPolicy.
+  virtual void FillDiagnostics(
+      mojom::WifiPollingPolicyDiagnostics& diagnostics) = 0;
+
  protected:
   WifiPollingPolicy() = default;
 };
@@ -86,6 +91,18 @@ class GenericWifiPollingPolicy : public WifiPollingPolicy {
   int NoWifiInterval() override {
     int interval = ComputeInterval(NO_WIFI_INTERVAL);
     return interval <= 0 ? NO_WIFI_INTERVAL : interval;
+  }
+  void FillDiagnostics(
+      mojom::WifiPollingPolicyDiagnostics& diagnostics) override {
+    diagnostics.interval_start = interval_start_;
+    diagnostics.interval_duration = base::Milliseconds(interval_duration_);
+    diagnostics.polling_interval = base::Milliseconds(polling_interval_);
+    diagnostics.default_interval = base::Milliseconds(DEFAULT_INTERVAL);
+    diagnostics.no_change_interval = base::Milliseconds(NO_CHANGE_INTERVAL);
+    diagnostics.two_no_change_interval =
+        base::Milliseconds(TWO_NO_CHANGE_INTERVAL);
+    diagnostics.no_wifi_interval = base::Milliseconds(NO_WIFI_INTERVAL);
+    return;
   }
 
  private:

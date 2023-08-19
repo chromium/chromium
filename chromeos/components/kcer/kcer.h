@@ -85,6 +85,7 @@ enum class COMPONENT_EXPORT(KCER) Token {
   // Keys and certificates storage that belongs to the entire
   // device (some users might still not have access to it).
   kDevice,
+  kMaxValue = kDevice,
 };
 
 // Additional info related to a token.
@@ -275,6 +276,9 @@ class COMPONENT_EXPORT(KCER) Kcer {
   // the key pair will not be hardware protected (by the TPM). Software keys are
   // usually faster, but less secure. Returns a public key on success, an error
   // otherwise.
+  // TODO(miersh): Software keys are currently only implemented in Ash because
+  // they are only used there. When Kcer-without-NSS is implemented, they should
+  // work everywhere.
   virtual void GenerateRsaKey(Token token,
                               uint32_t modulus_length_bits,
                               bool hardware_backed,
@@ -293,6 +297,9 @@ class COMPONENT_EXPORT(KCER) Kcer {
   // key doesn't end up on several different tokens at the same time (otherwise
   // Kcer is allowed to perform any future operations, such as RemoveKey, with
   // only one of the keys). Returns a public key on success, an error otherwise.
+  // WARNING: With the current implementation the key can be used with most
+  // other methods, but it won't appear in the ListKeys() results.
+  // TODO(miersh): Make ListKeys() return imported keys.
   virtual void ImportKey(Token token,
                          Pkcs8PrivateKeyInfoDer pkcs8_private_key_info_der,
                          ImportKeyCallback callback) = 0;
@@ -396,6 +403,11 @@ class COMPONENT_EXPORT(KCER) Kcer {
 
   // Sets the `nickname` on the `key`. (Not to be confused with the nickname of
   // the certificate.) Returns an error on failure.
+  // The nickname on the key is partially independent from the certificates'
+  // nicknames and is stored as CKA_LABEL in PKCS#11 attributes of the key
+  // object. When a new certificate is imported, its nickname might be copied
+  // into the key's nickname (TODO(miersh): this part should be changed in the
+  // future), but generally speaking they are not kept in sync.
   virtual void SetKeyNickname(PrivateKeyHandle key,
                               std::string nickname,
                               StatusCallback callback) = 0;

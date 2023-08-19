@@ -26,19 +26,6 @@ std::string GetSiteDebugString(const absl::optional<SchemefulSite>& site) {
 }  // namespace
 
 NetworkIsolationKey::NetworkIsolationKey(
-    SerializationPasskey,
-    SchemefulSite top_frame_site,
-    SchemefulSite frame_site,
-    bool is_cross_site,
-    absl::optional<base::UnguessableToken> nonce)
-    : top_frame_site_(std::move(top_frame_site)),
-      frame_site_(std::move(frame_site)),
-      is_cross_site_(is_cross_site),
-      nonce_(std::move(nonce)) {
-  CHECK_EQ(GetMode(), Mode::kCrossSiteFlagEnabled);
-}
-
-NetworkIsolationKey::NetworkIsolationKey(
     const SchemefulSite& top_frame_site,
     const SchemefulSite& frame_site,
     const absl::optional<base::UnguessableToken>& nonce)
@@ -80,6 +67,7 @@ NetworkIsolationKey& NetworkIsolationKey::operator=(
 NetworkIsolationKey& NetworkIsolationKey::operator=(
     NetworkIsolationKey&& network_isolation_key) = default;
 
+// TODO(awillia): Rename to `CreateTransientForTesting()`.
 NetworkIsolationKey NetworkIsolationKey::CreateTransient() {
   SchemefulSite site_with_opaque_origin;
   return NetworkIsolationKey(site_with_opaque_origin, site_with_opaque_origin);
@@ -103,6 +91,13 @@ absl::optional<std::string> NetworkIsolationKey::ToCacheKeyString() const {
     case Mode::kFrameSiteEnabled:
       variable_key_piece = frame_site_->Serialize();
       break;
+    case Mode::kFrameSiteWithSharedOpaqueEnabled:
+      if (frame_site_->opaque()) {
+        variable_key_piece = "_opaque";
+        break;
+      }
+      variable_key_piece = frame_site_->Serialize();
+      break;
     case Mode::kCrossSiteFlagEnabled:
       variable_key_piece = (*is_cross_site_ ? "_1" : "_0");
       break;
@@ -116,6 +111,13 @@ std::string NetworkIsolationKey::ToDebugString() const {
   std::string return_string = GetSiteDebugString(top_frame_site_);
   switch (GetMode()) {
     case Mode::kFrameSiteEnabled:
+      return_string += " " + GetSiteDebugString(frame_site_);
+      break;
+    case Mode::kFrameSiteWithSharedOpaqueEnabled:
+      if (frame_site_ && frame_site_->opaque()) {
+        return_string += " opaque-origin";
+        break;
+      }
       return_string += " " + GetSiteDebugString(frame_site_);
       break;
     case Mode::kCrossSiteFlagEnabled:
@@ -152,21 +154,16 @@ bool NetworkIsolationKey::IsTransient() const {
 NetworkIsolationKey::Mode NetworkIsolationKey::GetMode() {
   if (base::FeatureList::IsEnabled(
           net::features::kEnableCrossSiteFlagNetworkIsolationKey)) {
+    DCHECK(!base::FeatureList::IsEnabled(
+        net::features::kEnableFrameSiteSharedOpaqueNetworkIsolationKey));
     return Mode::kCrossSiteFlagEnabled;
+  } else if (base::FeatureList::IsEnabled(
+                 net::features::
+                     kEnableFrameSiteSharedOpaqueNetworkIsolationKey)) {
+    return Mode::kFrameSiteWithSharedOpaqueEnabled;
   } else {
     return Mode::kFrameSiteEnabled;
   }
-}
-
-const absl::optional<SchemefulSite>& NetworkIsolationKey::GetFrameSite() const {
-  // Frame site will be empty if double-keying is enabled.
-  CHECK(GetMode() == Mode::kFrameSiteEnabled);
-  return frame_site_;
-}
-
-absl::optional<bool> NetworkIsolationKey::GetIsCrossSite() const {
-  CHECK(GetMode() == Mode::kCrossSiteFlagEnabled);
-  return is_cross_site_;
 }
 
 bool NetworkIsolationKey::IsEmpty() const {
@@ -177,6 +174,8 @@ bool NetworkIsolationKey::IsOpaque() const {
   if (top_frame_site_->opaque()) {
     return true;
   }
+  // For Mode::kCrossSiteFlagEnabled and Mode::kFrameSiteWithSharedOpaqueEnabled
+  // we don't want to treat NIKs for opaque origin frames as opaque.
   if (GetMode() == Mode::kFrameSiteEnabled && frame_site_->opaque()) {
     return true;
   }

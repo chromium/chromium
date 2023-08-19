@@ -1,0 +1,36 @@
+<style include="settings-shared"></style>
+<os-settings-animated-pages id="pages" section="[[section_]]">
+  <div route-path="default">
+    <settings-card header-text="$i18n{printingPageTitle}">
+      <cr-link-row id="cupsPrintersRow" label="$i18n{cupsPrintersTitle}"
+          on-click="onTapCupsPrinters_"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+      <cr-link-row class="hr" id="printManagement"
+          on-click="onOpenPrintManagement_"
+          label="$i18n{printJobsTitle}"
+          sub-label="$i18n{printJobsSublabel}"
+          external
+          deep-link-focus-id$="[[Setting.kPrintJobs]]">
+      </cr-link-row>
+      <cr-link-row class="hr" id="scanningApp"
+          on-click="onOpenScanningApp_"
+          label="$i18n{scanAppTitle}"
+          sub-label="$i18n{scanAppSublabel}"
+          external
+          deep-link-focus-id$="[[Setting.kScanningApp]]">
+      </cr-link-row>
+    </settings-card>
+  </div>
+
+  <template is="dom-if" route-path="/cupsPrinters">
+    <os-settings-subpage
+        page-title="$i18n{cupsPrintersTitle}"
+        search-label="$i18n{searchLabel}"
+        search-term="{{searchTerm}}">
+      <settings-cups-printers search-term="{{searchTerm}}"
+          prefs="[[prefs]]">
+      </settings-cups-printers>
+    </os-settings-subpage>
+  </template>
+</os-settings-animated-pages>

@@ -7,9 +7,11 @@
 #import <AppKit/AppKit.h>
 #include <stdint.h>
 
+#include <algorithm>
+
+#include "base/apple/scoped_cftyperef.h"
 #include "base/check.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/notreached.h"
 #include "skia/ext/skia_utils_mac.h"
 #include "ui/base/cursor/cursor.h"
@@ -81,10 +83,10 @@ using CrCoreCursorType = int64_t;
 
 + (id)cursorWithType:(CrCoreCursorType)type {
   NSCursor* cursor = [[CrCoreCursor alloc] initWithType:type];
-  if ([cursor image])
-    return [cursor autorelease];
+  if (cursor.image) {
+    return cursor;
+  }
 
-  [cursor release];
   return nil;
 }
 
@@ -107,9 +109,8 @@ NSCursor* LoadCursor(int resource_id, int hotspot_x, int hotspot_y) {
   const gfx::Image& cursor_image =
       ui::ResourceBundle::GetSharedInstance().GetNativeImageNamed(resource_id);
   DCHECK(!cursor_image.IsEmpty());
-  return [[[NSCursor alloc] initWithImage:cursor_image.ToNSImage()
-                                  hotSpot:NSMakePoint(hotspot_x, hotspot_y)]
-      autorelease];
+  return [[NSCursor alloc] initWithImage:cursor_image.ToNSImage()
+                                 hotSpot:NSMakePoint(hotspot_x, hotspot_y)];
 }
 
 // Gets a specified cursor from CoreCursor, falling back to loading it from the
@@ -147,10 +148,7 @@ NSCursor* CreateCustomCursor(const ui::Cursor& cursor) {
   [cursor_image setSize:dip_size];
   [[[cursor_image representations] objectAtIndex:0] setSize:dip_size];
 
-  NSCursor* nscursor = [[NSCursor alloc] initWithImage:cursor_image
-                                               hotSpot:dip_hotspot];
-
-  return [nscursor autorelease];
+  return [[NSCursor alloc] initWithImage:cursor_image hotSpot:dip_hotspot];
 }
 
 }  // namespace
@@ -273,6 +271,18 @@ NSCursor* GetNativeCursor(const ui::Cursor& cursor) {
   }
   NOTREACHED();
   return nil;
+}
+
+float GetCursorAccessibilityScaleFactor(bool force_update) {
+  static absl::optional<float> scale;
+  if (!scale.has_value() || force_update) {
+    NSUserDefaults* defaults =
+        [[NSUserDefaults alloc] initWithSuiteName:@"com.apple.universalaccess"];
+    // This may be 0 in tests, but the expected production range is [1.0, 4.0].
+    scale =
+        std::clamp([defaults floatForKey:@"mouseDriverCursorSize"], 1.f, 4.f);
+  }
+  return scale.value();
 }
 
 }  // namespace ui

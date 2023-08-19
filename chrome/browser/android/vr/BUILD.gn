@@ -60,7 +60,7 @@ static_library("vr_android") {
     ":ui_factory",
     "//base",
     "//cc",
-    "//chrome/android/features/vr:base_jni_headers",
+    "//chrome/android:chrome_jni_headers",
     "//chrome/android/features/vr:split_jni_headers",
     "//chrome/browser:browser_process",
     "//chrome/browser/profiles:profile",

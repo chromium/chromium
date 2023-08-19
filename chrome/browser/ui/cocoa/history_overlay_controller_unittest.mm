@@ -12,7 +12,7 @@ class HistoryOverlayControllerTest : public CocoaTest {
     CocoaTest::SetUp();
 
     // The overlay controller shows the panel as a subview of the given view.
-    test_view_.reset([[NSView alloc] initWithFrame:NSMakeRect(10, 10, 10, 10)]);
+    test_view_ = [[NSView alloc] initWithFrame:NSMakeRect(10, 10, 10, 10)];
 
     // We add it to the test_window for authenticity.
     [[test_window() contentView] addSubview:test_view_];
@@ -23,15 +23,15 @@ class HistoryOverlayControllerTest : public CocoaTest {
   }
 
  private:
-  base::scoped_nsobject<NSView> test_view_;
+  NSView* __strong test_view_;
 };
 
 // Tests that the overlay view gets added and removed at the appropriate times.
 TEST_F(HistoryOverlayControllerTest, DismissClearsAnimationsAndRemovesView) {
   EXPECT_EQ(0u, [[test_view() subviews] count]);
 
-  base::scoped_nsobject<HistoryOverlayController> controller(
-      [[HistoryOverlayController alloc] initForMode:kHistoryOverlayModeBack]);
+  HistoryOverlayController* controller =
+      [[HistoryOverlayController alloc] initForMode:kHistoryOverlayModeBack];
   [controller showPanelForView:test_view()];
   EXPECT_EQ(1u, [[test_view() subviews] count]);
 

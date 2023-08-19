@@ -129,7 +129,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
       query: params.query,
       types: params.types,
       maxResults: params.maxResults,
-      timestamp: params.timestamp || 0,
+      modifiedTimestamp: params.modifiedTimestamp || 0,
       category: params.category || chrome.fileManagerPrivate.FileCategory.ALL
     };
     if (params.rootDir) {
@@ -312,25 +312,6 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
         entry, callback) {
     var url = getEntryURL(entry);
     fileManagerPrivateInternal.installLinuxPackage(url, callback);
-  });
-
-  apiFunctions.setHandleRequest('getDriveThumbnail', function(
-        entry, cropToSquare, callback) {
-    var url = getEntryURL(entry);
-    fileManagerPrivateInternal.getDriveThumbnail(url, cropToSquare, callback);
-  });
-
-  apiFunctions.setHandleRequest('getPdfThumbnail', function(
-        entry, width, height, callback) {
-    var url = getEntryURL(entry);
-    fileManagerPrivateInternal.getPdfThumbnail(url, width, height, callback);
-  });
-
-  apiFunctions.setHandleRequest('getArcDocumentsProviderThumbnail', function(
-        entry, widthHint, heightHint, callback) {
-    var url = getEntryURL(entry);
-    fileManagerPrivateInternal.getArcDocumentsProviderThumbnail(
-        url, widthHint, heightHint, callback);
   });
 
   apiFunctions.setCustomCallback('searchFiles',

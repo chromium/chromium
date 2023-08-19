@@ -4,14 +4,14 @@
 
 package org.chromium.chrome.browser.password_manager.settings;
 
+import android.app.Activity;
 import android.content.Context;
-
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.IntStringCallback;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 /**
@@ -53,7 +53,6 @@ public final class PasswordUIView implements PasswordManagerHandler {
     }
 
     @Override
-    @VisibleForTesting
     public void insertPasswordEntryForTesting(String origin, String username, String password) {
         PasswordUIViewJni.get().insertPasswordEntryForTesting(
                 mNativePasswordUIViewAndroid, origin, username, password);
@@ -110,6 +109,14 @@ public final class PasswordUIView implements PasswordManagerHandler {
                 context, settingsLauncher, index, PasswordUIView.this);
     }
 
+    @Override
+    public void showMigrationWarning(
+            Activity activity, BottomSheetController bottomSheetController) {
+        if (mNativePasswordUIViewAndroid == 0) return;
+        PasswordUIViewJni.get().showMigrationWarning(
+                mNativePasswordUIViewAndroid, activity, bottomSheetController);
+    }
+
     /**
      * Returns the URL for the website for managing one's passwords without the need to use Chrome
      * with the user's profile signed in.
@@ -131,6 +138,12 @@ public final class PasswordUIView implements PasswordManagerHandler {
 
     public static boolean hasAccountForLeakCheckRequest() {
         return PasswordUIViewJni.get().hasAccountForLeakCheckRequest();
+    }
+
+    @Override
+    public boolean isWaitingForPasswordStore() {
+        return PasswordUIViewJni.get().isWaitingForPasswordStore(
+                mNativePasswordUIViewAndroid, PasswordUIView.this);
     }
 
     /**
@@ -160,6 +173,7 @@ public final class PasswordUIView implements PasswordManagerHandler {
         String getAccountDashboardURL();
         String getTrustedVaultLearnMoreURL();
         boolean hasAccountForLeakCheckRequest();
+        boolean isWaitingForPasswordStore(long nativePasswordUIViewAndroid, PasswordUIView caller);
         void destroy(long nativePasswordUIViewAndroid, PasswordUIView caller);
         void handleSerializePasswords(long nativePasswordUIViewAndroid, PasswordUIView caller,
                 String targetPath, IntStringCallback successCallback,
@@ -168,5 +182,7 @@ public final class PasswordUIView implements PasswordManagerHandler {
                 SettingsLauncher launcher, int index, PasswordUIView caller);
         void handleShowBlockedCredentialView(long nativePasswordUIViewAndroid, Context context,
                 SettingsLauncher launcher, int index, PasswordUIView caller);
+        void showMigrationWarning(long nativePasswordUIViewAndroid, Activity activity,
+                BottomSheetController bottomSheetController);
     }
 }

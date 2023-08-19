@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -21,7 +22,33 @@ namespace gfx {
 struct VectorIcon;
 }
 
+namespace ui {
+class ColorProvider;
+}
+
 namespace ash {
+
+struct BatteryColorTemplate {
+  bool operator==(const BatteryColorTemplate& other) const {
+    bool foreground_colors_match = foreground_color == other.foreground_color;
+    bool badge_colors_match = badge_color == other.badge_color;
+
+    return foreground_colors_match && badge_colors_match;
+  }
+
+  bool operator!=(const BatteryColorTemplate& other) const {
+    return !(*this == other);
+  }
+
+  SkColor foreground_color;
+  absl::optional<SkColor> badge_color;
+};
+
+struct BatteryColors {
+  SkColor foreground_color;
+  SkColor badge_color;
+  SkColor alert_color;
+};
 
 // PowerStatus is a singleton that receives updates about the system's
 // power status from chromeos::PowerManagerClient and makes the information
@@ -65,29 +92,40 @@ class ASH_EXPORT PowerStatus : public chromeos::PowerManagerClient::Observer {
   // updating onscreen icons (GetBatteryImage() creates a new image on each
   // call).
   struct BatteryImageInfo {
-    BatteryImageInfo()
+    explicit BatteryImageInfo(
+        const SkColor fg_color,
+        const absl::optional<SkColor> badge_color = absl::nullopt)
         : icon_badge(nullptr),
           badge_outline(nullptr),
           alert_if_low(false),
-          charge_percent(-1) {}
+          charge_percent(-1),
+          battery_color_preferences({fg_color, badge_color}) {}
 
+    static BatteryColors ResolveColors(const BatteryImageInfo& info,
+                                       const ui::ColorProvider* color_provider);
     // Returns true if |this| and |o| are similar enough in terms of the image
     // they'd generate.
     bool ApproximatelyEqual(const BatteryImageInfo& o) const;
 
     // The badge (lightning bolt, exclamation mark, etc) that should be drawn
     // on top of the battery icon.
-    const gfx::VectorIcon* icon_badge;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #union
+    RAW_PTR_EXCLUSION const gfx::VectorIcon* icon_badge;
 
     // The outline for the badge, need to draw this to satisfy contrast
     // requirements.
-    const gfx::VectorIcon* badge_outline;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #union
+    RAW_PTR_EXCLUSION const gfx::VectorIcon* badge_outline;
 
     // When true and |charge_percent| is very low, special colors will be used
     // to alert the user.
     bool alert_if_low;
 
     double charge_percent;
+
+    BatteryColorTemplate battery_color_preferences;
   };
 
   // Maximum battery time-to-full or time-to-empty that should be displayed
@@ -114,6 +152,10 @@ class ASH_EXPORT PowerStatus : public chromeos::PowerManagerClient::Observer {
 
   // Gets the global instance. Initialize must be called first.
   static PowerStatus* Get();
+
+  power_manager::PowerSupplyProperties_ExternalPower external_power() const {
+    return proto_.external_power();
+  }
 
   // Adds or removes an observer.
   void AddObserver(Observer* observer);
@@ -187,21 +229,18 @@ class ASH_EXPORT PowerStatus : public chromeos::PowerManagerClient::Observer {
   // power source is selected.
   std::string GetCurrentPowerSourceID() const;
 
-  // Returns information about the image that would be returned by
-  // GetBatteryImage(). This can be cached and compared against future objects
-  // returned by this method to avoid creating new images unnecessarily.
-  BatteryImageInfo GetBatteryImageInfo() const;
-
-  // A helper function called by GetBatteryImageInfo(). Populates the fields of
-  // |info|.
-  void CalculateBatteryImageInfo(BatteryImageInfo* info) const;
+  // Creates a new BatteryImageInfo struct, and populates the struct with
+  // information related to the current Battery Status (i.e. the colors
+  // used to draw the battery icon, the charge percent of the battery, etc).
+  BatteryImageInfo GenerateBatteryImageInfo(
+      const SkColor foreground_color,
+      const absl::optional<SkColor> badge_color = absl::nullopt) const;
 
   // Creates a new image that should be shown for the battery's current state.
   static gfx::ImageSkia GetBatteryImage(
       const BatteryImageInfo& info,
       int height,
-      SkColor fg_color,
-      absl::optional<SkColor> badge_color = absl::nullopt);
+      const ui::ColorProvider* color_provider);
 
   // Returns a string describing the current state for accessibility.
   std::u16string GetAccessibleNameString(bool full_description) const;
@@ -237,6 +276,10 @@ class ASH_EXPORT PowerStatus : public chromeos::PowerManagerClient::Observer {
   void PowerChanged(const power_manager::PowerSupplyProperties& proto) override;
   void BatterySaverModeStateChanged(
       const power_manager::BatterySaverModeState& state) override;
+
+  // A helper function called by GetBatteryImageInfo(). Populates the fields of
+  // |info|.
+  void CalculateBatteryImageInfo(BatteryImageInfo* info) const;
 
   // Callback used to query battery saver state from PowerManagerClient on
   // startup.

@@ -5,7 +5,7 @@
 #include "chrome/browser/enterprise/reporting/real_time_report_generator_desktop.h"
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "components/enterprise/browser/reporting/report_type.h"
+#include "components/enterprise/browser/reporting/real_time_report_type.h"
 #include "components/enterprise/common/proto/extensions_workflow_events.pb.h"
 
 namespace enterprise_reporting {
@@ -15,13 +15,18 @@ RealTimeReportGeneratorDesktop::~RealTimeReportGeneratorDesktop() = default;
 
 std::vector<std::unique_ptr<google::protobuf::MessageLite>>
 RealTimeReportGeneratorDesktop::Generate(
-    RealTimeReportGenerator::ReportType type,
+    RealTimeReportType type,
     const RealTimeReportGenerator::Data& data) {
   std::vector<std::unique_ptr<google::protobuf::MessageLite>> reports;
   switch (type) {
-    case RealTimeReportGenerator::ReportType::kExtensionRequest:
-      for (auto& report : extension_request_report_generator_.Generate(data))
+    case RealTimeReportType::kExtensionRequest:
+      for (auto& report : extension_request_report_generator_.Generate(data)) {
         reports.push_back(std::move(report));
+      }
+      break;
+    case RealTimeReportType::kLegacyTech:
+      reports.push_back(legacy_tech_report_generator_.Generate(data));
+      break;
   }
   return reports;
 }

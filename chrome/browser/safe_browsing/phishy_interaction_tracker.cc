@@ -54,6 +54,14 @@ void RecordFinishedInteractionUMAData(int click_count,
 
 }  // namespace
 
+PhishyPageInteractionDetails::PhishyPageInteractionDetails(
+    int occurrence_count,
+    int64_t first_timestamp,
+    int64_t last_timestamp)
+    : occurrence_count(occurrence_count),
+      first_timestamp(first_timestamp),
+      last_timestamp(last_timestamp) {}
+
 PhishyInteractionTracker::PhishyInteractionTracker(
     content::WebContents* web_contents)
     : web_contents_(web_contents), inactivity_delay_(base::Minutes(5)) {
@@ -76,6 +84,9 @@ void PhishyInteractionTracker::HandlePageChanged() {
   }
   ResetLoggingHelpers();
   inactivity_timer_.Stop();
+  current_url_ = web_contents_->GetLastCommittedURL().GetWithEmptyPath();
+  current_page_url_ =
+      web_contents_->GetController().GetLastCommittedEntry()->GetURL();
   is_phishy_ = IsSitePhishy();
   if (is_phishy_) {
     RecordUserStartsPhishyInteraction();
@@ -84,7 +95,8 @@ void PhishyInteractionTracker::HandlePageChanged() {
 
 void PhishyInteractionTracker::HandlePasteEvent() {
   if (is_phishy_) {
-    HandlePhishyInteraction(PhishyPageInteraction::PHISHY_PASTE_EVENT);
+    HandlePhishyInteraction(ClientSafeBrowsingReportRequest::
+                                PhishySiteInteraction::PHISHY_PASTE_EVENT);
   }
 }
 
@@ -94,7 +106,8 @@ void PhishyInteractionTracker::HandleInputEvent(
     return;
   }
   if (event.GetType() == blink::WebInputEvent::Type::kMouseDown) {
-    HandlePhishyInteraction(PhishyPageInteraction::PHISHY_CLICK_EVENT);
+    HandlePhishyInteraction(ClientSafeBrowsingReportRequest::
+                                PhishySiteInteraction::PHISHY_CLICK_EVENT);
     return;
   }
 #if BUILDFLAG(IS_ANDROID)
@@ -102,7 +115,8 @@ void PhishyInteractionTracker::HandleInputEvent(
   // number bar on Android keyboard. If text is typed in through other parts of
   // Android keyboard, ImeTextCommittedEvent is triggered instead.
   if (event.GetType() == blink::WebInputEvent::Type::kKeyDown) {
-    HandlePhishyInteraction(PhishyPageInteraction::PHISHY_KEY_EVENT);
+    HandlePhishyInteraction(ClientSafeBrowsingReportRequest::
+                                PhishySiteInteraction::PHISHY_KEY_EVENT);
   }
 #else   // !BUILDFLAG(IS_ANDROID)
   if (event.GetType() == blink::WebInputEvent::Type::kChar) {
@@ -111,9 +125,11 @@ void PhishyInteractionTracker::HandleInputEvent(
     // Key & 0x1f corresponds to the value of the key when either the control or
     // command key is pressed. This detects CTRL+V, COMMAND+V, and CTRL+SHIFT+V.
     if (key_event.windows_key_code == (ui::VKEY_V & 0x1f)) {
-      HandlePhishyInteraction(PhishyPageInteraction::PHISHY_PASTE_EVENT);
+      HandlePhishyInteraction(ClientSafeBrowsingReportRequest::
+                                  PhishySiteInteraction::PHISHY_PASTE_EVENT);
     } else {
-      HandlePhishyInteraction(PhishyPageInteraction::PHISHY_KEY_EVENT);
+      HandlePhishyInteraction(ClientSafeBrowsingReportRequest::
+                                  PhishySiteInteraction::PHISHY_KEY_EVENT);
     }
   }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -122,9 +138,8 @@ void PhishyInteractionTracker::HandleInputEvent(
 void PhishyInteractionTracker::ResetLoggingHelpers() {
   is_phishy_ = false;
   is_data_logged_ = false;
-  new_page_interaction_counts_[PhishyPageInteraction::PHISHY_CLICK_EVENT] = 0;
-  new_page_interaction_counts_[PhishyPageInteraction::PHISHY_KEY_EVENT] = 0;
-  new_page_interaction_counts_[PhishyPageInteraction::PHISHY_PASTE_EVENT] = 0;
+
+  phishy_page_interaction_data_.clear();
 }
 
 bool PhishyInteractionTracker::IsSitePhishy() {
@@ -134,7 +149,7 @@ bool PhishyInteractionTracker::IsSitePhishy() {
           : g_browser_process->safe_browsing_service()->ui_manager().get();
   safe_browsing::SBThreatType current_threat_type;
   if (!ui_manager_->IsUrlAllowlistedOrPendingForWebContents(
-          web_contents_->GetLastCommittedURL().GetWithEmptyPath(),
+          current_url_,
           /*is_subresource=*/false,
           web_contents_->GetController().GetLastCommittedEntry(), web_contents_,
           /*allowlist_only=*/true, &current_threat_type)) {
@@ -142,31 +157,48 @@ bool PhishyInteractionTracker::IsSitePhishy() {
   }
   return current_threat_type == safe_browsing::SB_THREAT_TYPE_URL_PHISHING ||
          current_threat_type ==
-             safe_browsing::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING;
+             safe_browsing::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING ||
+         current_threat_type == safe_browsing::SB_THREAT_TYPE_SUSPICIOUS_SITE;
 }
 
 void PhishyInteractionTracker::HandlePhishyInteraction(
-    const PhishyPageInteraction& interaction) {
+    const ClientSafeBrowsingReportRequest::PhishySiteInteraction::
+        PhishySiteInteractionType& interaction) {
+  int new_occurrence_count = 1;
+  int64_t new_first_timestamp = base::Time::Now().ToJavaTime();
+  int64_t new_last_timestamp = base::Time::Now().ToJavaTime();
   last_interaction_ts_ = base::Time::Now();
   // Log if first occurrence of the interaction.
-  if (new_page_interaction_counts_[interaction] == 0) {
+  if (!phishy_page_interaction_data_.contains(interaction)) {
     RecordFirstInteractionOccurrence(interaction);
+  } else {
+    new_occurrence_count +=
+        phishy_page_interaction_data_.at(interaction).occurrence_count;
+    new_first_timestamp =
+        phishy_page_interaction_data_.at(interaction).first_timestamp;
   }
-  new_page_interaction_counts_[interaction] += 1;
+  phishy_page_interaction_data_.insert_or_assign(
+      interaction,
+      PhishyPageInteractionDetails(new_occurrence_count, new_first_timestamp,
+                                   new_last_timestamp));
   inactivity_timer_.Start(FROM_HERE, inactivity_delay_, this,
                           &PhishyInteractionTracker::MaybeLogIfUserInactive);
 }
 
 void PhishyInteractionTracker::RecordFirstInteractionOccurrence(
-    PhishyPageInteraction interaction) {
+    ClientSafeBrowsingReportRequest::PhishySiteInteraction::
+        PhishySiteInteractionType interaction) {
   switch (interaction) {
-    case PhishyPageInteraction::PHISHY_CLICK_EVENT:
+    case ClientSafeBrowsingReportRequest::PhishySiteInteraction::
+        PHISHY_CLICK_EVENT:
       RecordFirstClickEvent();
       break;
-    case PhishyPageInteraction::PHISHY_KEY_EVENT:
+    case ClientSafeBrowsingReportRequest::PhishySiteInteraction::
+        PHISHY_KEY_EVENT:
       RecordFirstKeyEvent();
       break;
-    case PhishyPageInteraction::PHISHY_PASTE_EVENT:
+    case ClientSafeBrowsingReportRequest::PhishySiteInteraction::
+        PHISHY_PASTE_EVENT:
       RecordFirstPasteEvent();
       break;
     default:
@@ -182,9 +214,36 @@ void PhishyInteractionTracker::MaybeLogIfUserInactive() {
 
 void PhishyInteractionTracker::LogPageData() {
   RecordFinishedInteractionUMAData(
-      new_page_interaction_counts_[PhishyPageInteraction::PHISHY_CLICK_EVENT],
-      new_page_interaction_counts_[PhishyPageInteraction::PHISHY_KEY_EVENT],
-      new_page_interaction_counts_[PhishyPageInteraction::PHISHY_PASTE_EVENT]);
+      phishy_page_interaction_data_.contains(
+          ClientSafeBrowsingReportRequest::PhishySiteInteraction::
+              PHISHY_CLICK_EVENT)
+          ? phishy_page_interaction_data_
+                .at(ClientSafeBrowsingReportRequest::PhishySiteInteraction::
+                        PHISHY_CLICK_EVENT)
+                .occurrence_count
+          : 0,
+      phishy_page_interaction_data_.contains(
+          ClientSafeBrowsingReportRequest::PhishySiteInteraction::
+              PHISHY_KEY_EVENT)
+          ? phishy_page_interaction_data_
+                .at(ClientSafeBrowsingReportRequest::PhishySiteInteraction::
+                        PHISHY_KEY_EVENT)
+                .occurrence_count
+          : 0,
+      phishy_page_interaction_data_.contains(
+          ClientSafeBrowsingReportRequest::PhishySiteInteraction::
+              PHISHY_PASTE_EVENT)
+          ? phishy_page_interaction_data_
+                .at(ClientSafeBrowsingReportRequest::PhishySiteInteraction::
+                        PHISHY_PASTE_EVENT)
+                .occurrence_count
+          : 0);
+  // Send PHISHY_SITE_INTERACTIONS report for relevant OSes.
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+  g_browser_process->safe_browsing_service()->SendPhishyInteractionsReport(
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext()),
+      current_url_, current_page_url_, phishy_page_interaction_data_);
+#endif
   is_data_logged_ = true;
 }
 

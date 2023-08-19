@@ -60,13 +60,10 @@
 #include "net/socket/socket_performance_watcher.h"
 #include "net/socket/socket_performance_watcher_factory.h"
 #include "net/socket/udp_client_socket.h"
-#include "net/ssl/cert_compression.h"
-#include "net/ssl/ssl_key_logger.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/null_decrypter.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/proof_verifier.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_client_session_cache.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_random.h"
-#include "net/third_party/quiche/src/quiche/quic/core/http/quic_client_promised_info.h"
 #include "net/third_party/quiche/src/quiche/quic/core/http/quic_client_push_promise_index.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_clock.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_connection.h"
@@ -217,6 +214,12 @@ class QuicStreamFactory::QuicCryptoClientConfigOwner {
         FROM_HERE,
         base::BindRepeating(&QuicCryptoClientConfigOwner::OnMemoryPressure,
                             base::Unretained(this)));
+    if (quic_stream_factory_->ssl_config_service_->GetSSLContextConfig()
+            .PostQuantumKeyAgreementEnabled()) {
+      config_.set_preferred_groups({SSL_GROUP_X25519_KYBER768_DRAFT00,
+                                    SSL_GROUP_X25519, SSL_GROUP_SECP256R1,
+                                    SSL_GROUP_SECP384R1});
+    }
   }
 
   QuicCryptoClientConfigOwner(const QuicCryptoClientConfigOwner&) = delete;
@@ -233,7 +236,7 @@ class QuicStreamFactory::QuicCryptoClientConfigOwner {
 
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
-    quic::SessionCache* session_cache = config_.mutable_session_cache();
+    quic::SessionCache* session_cache = config_.session_cache();
     if (!session_cache) {
       return;
     }
@@ -367,7 +370,8 @@ class QuicStreamFactory::Job {
     // Callers do not need to wait for OnQuicSessionCreationComplete if the
     // kAsyncQuicSession flag is not set because session creation will be fully
     // synchronous, so no need to call ExpectQuicSessionCreation.
-    if (base::FeatureList::IsEnabled(net::features::kAsyncQuicSession)) {
+    if (base::FeatureList::IsEnabled(net::features::kAsyncQuicSession) &&
+        !session_creation_finished_) {
       request->ExpectQuicSessionCreation();
     }
   }
@@ -508,6 +512,7 @@ class QuicStreamFactory::Job {
   const bool retry_on_alternate_network_before_handshake_;
   const NetLogWithSource net_log_;
   bool host_resolution_finished_ = false;
+  bool session_creation_finished_ = false;
   bool connection_retried_ = false;
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:
   // #addr-of
@@ -784,6 +789,7 @@ int QuicStreamFactory::Job::DoCreateSession() {
   return rv;
 }
 int QuicStreamFactory::Job::DoCreateSessionComplete(int rv) {
+  session_creation_finished_ = true;
   if (rv != OK) {
     return rv;
   }
@@ -1203,18 +1209,6 @@ int QuicStreamFactory::Create(const QuicSessionKey& session_key,
   DCHECK(HostPortPair(session_key.server_id().host(),
                       session_key.server_id().port())
              .Equals(HostPortPair::FromURL(url)));
-
-  // Search sessions for a matching promised stream.
-  for (auto session : active_sessions_) {
-    quic::QuicClientPromisedInfo* promised =
-        session.second->GetPromised(url, session_key);
-    if (!promised)
-      continue;
-    DCHECK_EQ(promised->session(), session.second);
-    request->SetSession(session.second->CreateHandle(std::move(destination)));
-    ++num_push_streams_created_;
-    return OK;
-  }
 
   // Use active session for |session_key| if such exists.
   auto active_session = active_sessions_.find(session_key);
@@ -1686,14 +1680,14 @@ void QuicStreamFactory::OnNetworkMadeDefault(handles::NetworkHandle network) {
     set_is_quic_known_to_work_on_current_network(false);
 }
 
-void QuicStreamFactory::OnCertDBChanged() {
+void QuicStreamFactory::OnTrustStoreChanged() {
   // We should flush the sessions if we removed trust from a
   // cert, because a previously trusted server may have become
   // untrusted.
   //
   // We should not flush the sessions if we added trust to a cert.
   //
-  // Since the OnCertDBChanged method doesn't tell us what
+  // Since the OnTrustStoreChanged method doesn't tell us what
   // kind of change it is, we have to flush the socket
   // pools to be safe.
   MarkAllActiveSessionsGoingAway(kCertDBChanged);
@@ -2035,9 +2029,9 @@ bool QuicStreamFactory::CreateSessionHelper(
       yield_after_packets_, yield_after_duration_, cert_verify_flags, config,
       std::move(crypto_config_handle), dns_resolution_start_time,
       dns_resolution_end_time,
-      std::make_unique<quic::QuicClientPushPromiseIndex>(), push_delegate_,
-      tick_clock_, task_runner_, std::move(socket_performance_watcher),
-      endpoint_result, net_log.net_log());
+      std::make_unique<quic::QuicClientPushPromiseIndex>(), tick_clock_,
+      task_runner_, std::move(socket_performance_watcher), endpoint_result,
+      net_log.net_log());
 
   all_sessions_[*session] = key;  // owning pointer
   writer->set_delegate(*session);
@@ -2364,18 +2358,13 @@ QuicStreamFactory::CreateCryptoConfigHandle(
           std::make_unique<quic::QuicClientSessionCache>(), this);
 
   quic::QuicCryptoClientConfig* crypto_config = crypto_config_owner->config();
-  crypto_config->set_user_agent_id(params_.user_agent_id);
   crypto_config->AddCanonicalSuffix(".c.youtube.com");
   crypto_config->AddCanonicalSuffix(".ggpht.com");
   crypto_config->AddCanonicalSuffix(".googlevideo.com");
   crypto_config->AddCanonicalSuffix(".googleusercontent.com");
   crypto_config->AddCanonicalSuffix(".gvt1.com");
-  if (SSLKeyLoggerManager::IsActive()) {
-    SSL_CTX_set_keylog_callback(crypto_config->ssl_ctx(),
-                                SSLKeyLoggerManager::KeyLogCallback);
-  }
 
-  ConfigureCertificateCompression(crypto_config->ssl_ctx());
+  ConfigureQuicCryptoClientConfig(*crypto_config);
 
   if (!prefer_aes_gcm_recorded_) {
     bool prefer_aes_gcm =

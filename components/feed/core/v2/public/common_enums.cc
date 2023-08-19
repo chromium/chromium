@@ -142,6 +142,8 @@ std::ostream& operator<<(std::ostream& out, FeedUserActionType value) {
       return out << "kTappedFeedSignInPromoUIContinue";
     case FeedUserActionType::kTappedFeedSignInPromoUICancel:
       return out << "kTappedFeedSignInPromoUICancel";
+    case FeedUserActionType::kNonSwipeManualRefresh:
+      return out << "kNonSwipeManualRefresh";
   }
 }
 

@@ -108,10 +108,9 @@ std::string GetCookiesDirect(WebContentsImpl* tab, const GURL& url) {
 
 class CookieBrowserTest : public ContentBrowserTest {
  protected:
-  void SetUp() override {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
-    ContentBrowserTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
@@ -282,7 +281,97 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, SameSiteCookies) {
   EXPECT_EQ("none=1", GetCookieFromJS(b_iframe));
 }
 
-IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CookieTruncatingChar) {
+class TruncatedCookieBrowserTestP : public CookieBrowserTest,
+                                    public testing::WithParamInterface<bool> {
+ public:
+  TruncatedCookieBrowserTestP() {
+    truncated_cookies_blocked_ = GetParam();
+
+    if (TruncatedCookiesBlocked()) {
+      feature_list_.InitAndEnableFeature(net::features::kBlockTruncatedCookies);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          net::features::kBlockTruncatedCookies);
+    }
+  }
+
+  bool TruncatedCookiesBlocked() { return truncated_cookies_blocked_; }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  bool truncated_cookies_blocked_;
+};
+
+INSTANTIATE_TEST_SUITE_P(TruncatedCookieBrowserTests,
+                         TruncatedCookieBrowserTestP,
+                         testing::Values(true, false));
+
+IN_PROC_BROWSER_TEST_P(TruncatedCookieBrowserTestP,
+                       CookieTruncatingCharFromJavascript) {
+  using std::string_literals::operator""s;
+
+  base::HistogramTester histogram;
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/empty.html")));
+
+  WebContentsImpl* tab = static_cast<WebContentsImpl*>(shell()->web_contents());
+  RenderFrameHost* frame = tab->GetPrimaryMainFrame();
+
+  // Test scenarios where a control char may appear at start, middle and end of
+  // a cookie line. Control char array with NULL (\x0), CR (\xD), and LF (xA).
+  const std::string kTestChars[] = {"\\x00", "\\x0D", "\\x0A"};
+
+  for (const std::string& ctl_string : kTestChars) {
+    // Control char at the start of the string.
+    // Note that when truncation of this cookie string occurs, no histogram
+    // entries get recorded because the code bails out early on the resulting
+    // empty cookie string.
+    std::string cookie_string = ctl_string + "foo1=bar"s;
+    SetCookieFromJS(frame, cookie_string);
+
+    // Control char in the middle of the string.
+    cookie_string = "foo2=bar;"s + ctl_string + "httponly"s;
+    SetCookieFromJS(frame, cookie_string);
+
+    cookie_string = "foo3=ba"s + ctl_string + "r; httponly"s;
+    SetCookieFromJS(frame, cookie_string);
+
+    // Control char at the end of the string.
+    cookie_string = "foo4=bar;" + ctl_string;
+    SetCookieFromJS(frame, cookie_string);
+  }
+
+  int expected_histogram_hit_count;
+  if (TruncatedCookiesBlocked()) {
+    EXPECT_EQ("", GetCookieFromJS(frame));
+    expected_histogram_hit_count = 0;
+  } else {
+    // Note: the last three test cases above are detectable as truncations
+    // (since the first case results in a failure that occurs before the
+    // histogram is recorded), so check for that below.
+    EXPECT_EQ("foo2=bar; foo3=ba; foo4=bar", GetCookieFromJS(frame));
+    expected_histogram_hit_count = 3;
+  }
+
+  FetchHistogramsFromChildProcesses();
+  histogram.ExpectBucketCount(
+      "Cookie.TruncatingCharacterInCookieString",
+      net::TruncatingCharacterInCookieStringType::kTruncatingCharNull,
+      expected_histogram_hit_count);
+  histogram.ExpectBucketCount(
+      "Cookie.TruncatingCharacterInCookieString",
+      net::TruncatingCharacterInCookieStringType::kTruncatingCharNewline,
+      expected_histogram_hit_count);
+  histogram.ExpectBucketCount(
+      "Cookie.TruncatingCharacterInCookieString",
+      net::TruncatingCharacterInCookieStringType::kTruncatingCharLineFeed,
+      expected_histogram_hit_count);
+}
+
+IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CookieTruncatingCharFromHeaders) {
   using std::string_literals::operator""s;
 
   std::string cookie_string;
@@ -312,6 +401,9 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CookieTruncatingChar) {
 
     // ctrl char at middle of string
     cookie_string = "foo=bar;"s + ctl_string + "httponly"s;
+    EXPECT_TRUE(NavigateToURL(shell(), http_url));
+
+    cookie_string = "foo=ba"s + ctl_string + "r; httponly"s;
     EXPECT_TRUE(NavigateToURL(shell(), http_url));
 
     // ctrl char at end of string
@@ -361,10 +453,11 @@ class RestrictedCookieManagerInterceptor
                         const net::SiteForCookies& site_for_cookies,
                         const url::Origin& top_frame_origin,
                         bool has_storage_access,
+                        bool get_version_shared_memory,
                         GetCookiesStringCallback callback) override {
     GetForwardingInterface()->GetCookiesString(
         URLToUse(url), site_for_cookies, top_frame_origin, has_storage_access,
-        std::move(callback));
+        get_version_shared_memory, std::move(callback));
   }
 
  private:

@@ -7,8 +7,8 @@
 #include <CoreFoundation/CoreFoundation.h>
 #include <string>
 
+#include "base/apple/foundation_util.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/proxy_server.h"
@@ -26,7 +26,7 @@ ProxyServer ProxyDictionaryToProxyServer(ProxyServer::Scheme scheme,
   }
 
   CFStringRef host_ref =
-      base::mac::GetValueFromDictionary<CFStringRef>(dict, host_key);
+      base::apple::GetValueFromDictionary<CFStringRef>(dict, host_key);
   if (!host_ref) {
     LOG(WARNING) << "Could not find expected key "
                  << base::SysCFStringRefToUTF8(host_key)
@@ -36,7 +36,7 @@ ProxyServer ProxyDictionaryToProxyServer(ProxyServer::Scheme scheme,
   std::string host = base::SysCFStringRefToUTF8(host_ref);
 
   CFNumberRef port_ref =
-      base::mac::GetValueFromDictionary<CFNumberRef>(dict, port_key);
+      base::apple::GetValueFromDictionary<CFNumberRef>(dict, port_key);
   int port;
   if (port_ref) {
     CFNumberGetValue(port_ref, kCFNumberIntType, &port);

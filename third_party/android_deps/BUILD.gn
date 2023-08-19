@@ -314,6 +314,9 @@ java_prebuilt("com_google_guava_listenablefuture_java") {
   output_name = "com_google_guava_listenablefuture"
   supports_android = true
   enable_bytecode_checks = false
+
+  # This dep should be used when ListenableFuture is needed.
+  preferred_dep = true
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1351,7 +1354,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("com_squareup_wire_wire_runtime_jvm_java") {
     jar_path =
-        "libs/com_squareup_wire_wire_runtime_jvm/wire-runtime-jvm-4.5.1.jar"
+        "libs/com_squareup_wire_wire_runtime_jvm/wire-runtime-jvm-4.7.0.jar"
     output_name = "com_squareup_wire_wire_runtime_jvm"
     supports_android = true
     enable_bytecode_checks = false
@@ -1543,7 +1546,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_mockito_mockito_android_java") {
-    jar_path = "libs/org_mockito_mockito_android/mockito-android-5.3.1.jar"
+    jar_path = "libs/org_mockito_mockito_android/mockito-android-5.4.0.jar"
     output_name = "org_mockito_mockito_android"
     supports_android = true
     enable_bytecode_checks = false
@@ -1559,7 +1562,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_mockito_mockito_core_java") {
-    jar_path = "libs/org_mockito_mockito_core/mockito-core-5.3.1.jar"
+    jar_path = "libs/org_mockito_mockito_core/mockito-core-5.4.0.jar"
     output_name = "org_mockito_mockito_core"
     supports_android = true
     enable_bytecode_checks = false
@@ -1580,7 +1583,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_mockito_mockito_subclass_java") {
-    jar_path = "libs/org_mockito_mockito_subclass/mockito-subclass-5.3.1.jar"
+    jar_path = "libs/org_mockito_mockito_subclass/mockito-subclass-5.4.0.jar"
     output_name = "org_mockito_mockito_subclass"
     supports_android = true
     enable_bytecode_checks = false
@@ -2309,7 +2312,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("com_squareup_okio_okio_jvm_java") {
-    jar_path = "libs/com_squareup_okio_okio_jvm/okio-jvm-3.0.0.jar"
+    jar_path = "libs/com_squareup_okio_okio_jvm/okio-jvm-3.3.0.jar"
     output_name = "com_squareup_okio_okio_jvm"
     supports_android = true
     enable_bytecode_checks = false
@@ -2371,7 +2374,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("net_bytebuddy_byte_buddy_java") {
-    jar_path = "libs/net_bytebuddy_byte_buddy/byte-buddy-1.14.4.jar"
+    jar_path = "libs/net_bytebuddy_byte_buddy/byte-buddy-1.14.5.jar"
     output_name = "net_bytebuddy_byte_buddy"
     supports_android = true
     enable_bytecode_checks = false
@@ -2387,7 +2390,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("net_bytebuddy_byte_buddy_agent_java") {
-    jar_path = "libs/net_bytebuddy_byte_buddy_agent/byte-buddy-agent-1.14.4.jar"
+    jar_path = "libs/net_bytebuddy_byte_buddy_agent/byte-buddy-agent-1.14.5.jar"
     output_name = "net_bytebuddy_byte_buddy_agent"
     supports_android = true
     enable_bytecode_checks = false

@@ -9,8 +9,6 @@ source_set("coordinators") {
     "infobar_modal_overlay_coordinator.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     ":mediators",
     "//base",
@@ -29,8 +27,6 @@ source_set("mediators") {
     "infobar_modal_overlay_mediator.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//base",
     "//components/infobars/core",
@@ -48,8 +44,6 @@ source_set("unit_tests") {
     "infobar_modal_overlay_coordinator_unittest.mm",
     "infobar_modal_overlay_mediator_unittest.mm",
   ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
     ":coordinators",

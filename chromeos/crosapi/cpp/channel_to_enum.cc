@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chromeos/crosapi/cpp/channel_to_enum.h"
+#include "crosapi_constants.h"
 
 namespace crosapi {
 
@@ -15,6 +16,8 @@ version_info::Channel ChannelToEnum(base::StringPiece channel) {
     return version_info::Channel::DEV;
   } else if (channel == kReleaseChannelCanary) {
     return version_info::Channel::CANARY;
+  } else if (channel == kReleaseChannelLtc || channel == kReleaseChannelLts) {
+    return version_info::Channel::STABLE;
   } else {
     return version_info::Channel::UNKNOWN;
   }

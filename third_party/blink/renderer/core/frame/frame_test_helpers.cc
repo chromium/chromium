@@ -1117,7 +1117,8 @@ void TestWidgetInputHandlerHost::ImeCancelComposition() {}
 
 void TestWidgetInputHandlerHost::ImeCompositionRangeChanged(
     const gfx::Range& range,
-    const WTF::Vector<gfx::Rect>& bounds) {}
+    const absl::optional<WTF::Vector<gfx::Rect>>& character_bounds,
+    const absl::optional<WTF::Vector<gfx::Rect>>& line_bounds) {}
 
 void TestWidgetInputHandlerHost::SetMouseCapture(bool capture) {}
 

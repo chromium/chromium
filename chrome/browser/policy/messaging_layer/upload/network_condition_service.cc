@@ -79,7 +79,7 @@ void NetworkConditionService::NetworkConditionServiceImpl::
 
 void NetworkConditionService::NetworkConditionServiceImpl::
     RegisterRTTAndThroughputEstimatesObserver() {
-  DCHECK(g_browser_process != nullptr);
+  CHECK(g_browser_process);
   auto* network_quality_tracker = g_browser_process->network_quality_tracker();
   // Simulate the notification once before getting on the official list of
   // observers.

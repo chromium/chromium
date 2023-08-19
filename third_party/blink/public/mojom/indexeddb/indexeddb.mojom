@@ -33,10 +33,6 @@ const int32 kIDBWrapThreshold = 65536;
 // returned per IDBDatabaseGetAllResultSink::Receive call.
 const int32 kIDBGetAllChunkSize = 1000;
 
-// The maximum input array length of BatchGetAll.
-// Use 10000 for now as a reasonable threshold.
-const uint32 kIDBBatchGetAllMaxInputSize = 10000;
-
 enum IDBCursorDirection {
   Next,
   NextNoDuplicate,
@@ -228,30 +224,22 @@ struct IDBReturnValue {
   IDBKeyPath key_path;
 };
 
-// The IDBCallbacks interface is used to return results for individual requests.
-// Some requests may return multiple results before completion, such as
-// UpgradeNeeded before SuccessDatabase.
-//
-// TODO(https://crbug.com/627484): Many of these could be replaced with
-// replies associated with particular messages.
-interface IDBCallbacks {
+// The IDBFactoryClient interface is used to return results for requests to open or
+// delete databases.
+interface IDBFactoryClient {
+  // These may be called during either Open or DeleteDatabase operations.
   Error(IDBException code, mojo_base.mojom.String16 message);
-
-  // Factory::Open / DeleteDatabase
   Blocked(int64 existing_version);
 
-  // Factory::Open
+  // Called during Open operations.
   UpgradeNeeded(pending_associated_remote<IDBDatabase> pending_database,
                 int64 old_version, IDBDataLoss data_loss,
                 string data_loss_message, IDBDatabaseMetadata db_metadata);
+  OpenSuccess(pending_associated_remote<IDBDatabase>? pending_database,
+              IDBDatabaseMetadata metadata);
 
-  // Factory::Open
-  SuccessDatabase(pending_associated_remote<IDBDatabase>? pending_database,
-                  IDBDatabaseMetadata metadata);
-
-  // Database::Count
-  // Factory::DeleteDatabase
-  SuccessInteger(int64 value);
+  // Called after a successful DeleteDatabase operation.
+  DeleteSuccess(int64 old_version);
 };
 
 // The IDBDatabaseCallbacks interface is used to notification of events out of
@@ -282,7 +270,7 @@ union IDBCursorResult {
   IDBCursorValue values;
 };
 
-// Advance(), CursorContinue(), and Prefetch() can call its return callback in
+// Advance(), Continue(), and Prefetch() can call its return callback in
 // one of 3 ways:
 // * with |error| set and |value| unset, if an error occurs
 // * with |error| unset and |value| set, under normal operation
@@ -290,9 +278,9 @@ union IDBCursorResult {
 //   of the source being iterated is reached
 interface IDBCursor {
   Advance(uint32 count) => (IDBCursorResult result);
-  CursorContinue(IDBKey key, IDBKey primary_key) => (IDBCursorResult result);
+  Continue(IDBKey key, IDBKey primary_key) => (IDBCursorResult result);
   Prefetch(int32 count) => (IDBCursorResult result);
-  PrefetchReset(int32 used_prefetches, int32 unused_prefetches);
+  PrefetchReset(int32 used_prefetches);
 };
 
 union IDBTransactionPutResult {
@@ -338,12 +326,6 @@ interface IDBDatabaseGetAllResultSink {
   OnError(IDBError error);
 };
 
-// The result of BatchGetAll is a two dimensional array.
-union IDBDatabaseBatchGetAllResult {
-  IDBError error_result;
-  array<array<IDBReturnValue>> values;
-};
-
 struct IDBDatabaseOpenCursorValue {
   pending_associated_remote<IDBCursor> cursor;
   IDBKey key;
@@ -371,14 +353,6 @@ interface IDBDatabase {
                     IDBTransactionDurability durability);
   Close();
   VersionChangeIgnored();
-  // Batch several `GetAll`s together
-  // `max_count` is the maximum count of returned values of each key_range
-  BatchGetAll(int64 transaction_id,
-              int64 object_store_id,
-              int64 index_id,
-              array<IDBKeyRange> key_ranges,
-              uint32 max_count)
-    => (IDBDatabaseBatchGetAllResult result);
   Get(int64 transaction_id,
       int64 object_store_id,
       int64 index_id,
@@ -407,21 +381,19 @@ interface IDBDatabase {
              bool key_only,
              IDBTaskType task_type)
     => (IDBDatabaseOpenCursorResult result);
+  // Correlates to IDBObjectStore::count(). On success, the return value will be
+  // the number of records that match the given query.
   Count(int64 transaction_id,
         int64 object_store_id,
         int64 index_id,
-        IDBKeyRange key_range,
-        pending_associated_remote<IDBCallbacks> pending_callbacks);
+        IDBKeyRange key_range) => (bool success, uint32 count);
   // Correlates to IDBObjectStore::delete() and also used by devtools.
   DeleteRange(int64 transaction_id,
               int64 object_store_id,
               IDBKeyRange key_range) => (bool success);
-  // Gets the current number of an IndexedDB ObjectStore's key generator. It
-  // is implemented in the browser (more priviledged) and handles requests in
-  // the renderer process: WebIDBDatabaseImpl::GetKeyGeneratorCurrentNumber()
-  GetKeyGeneratorCurrentNumber(int64 transaction_id,
-                               int64 object_store_id,
-                               pending_associated_remote<IDBCallbacks> pending_callbacks);
+  // Gets the current number of an IndexedDB ObjectStore's key generator.
+  GetKeyGeneratorCurrentNumber(int64 transaction_id, int64 object_store_id)
+      => (int64 result, IDBError? error);
   // Correlates to IDBObjectStore::clear()
   Clear(int64 transaction_id,
         int64 object_store_id) => (bool success);
@@ -456,9 +428,9 @@ interface IDBFactory {
   // |version_change_transaction_receiver| will have version change
   // transaction operations posted to it. |transaction_id| corresponds
   // to the transaction number for this connection's context.
-  // Posts request events and results to |pending_callbacks| and database-level
+  // Posts request events and results to |client| and database-level
   // events and results to |database_callbacks|.
-  Open(pending_associated_remote<IDBCallbacks> pending_callbacks,
+  Open(pending_associated_remote<IDBFactoryClient> client,
        pending_associated_remote<IDBDatabaseCallbacks> database_callbacks,
        mojo_base.mojom.String16 name,
        int64 version,
@@ -468,6 +440,6 @@ interface IDBFactory {
   // Deletes a database |name| in the frame's origin. If |force_close|
   // is true, any existing connections to that database will be closed
   // immediately.
-  DeleteDatabase(pending_associated_remote<IDBCallbacks> pending_callbacks,
+  DeleteDatabase(pending_associated_remote<IDBFactoryClient> client,
                  mojo_base.mojom.String16 name, bool force_close);
 };

@@ -1,0 +1,191 @@
+<style include="settings-shared input-device-settings-shared">
+  #header {
+    display: flex;
+    height: 24px;
+    margin-top: 12px;
+  }
+
+  .subsection {
+    margin-bottom: 0;
+    margin-top: 8px;
+  }
+
+  #description {
+    color: var(--cr-secondary-text-color);
+    font: var(--cros-button-2-font);
+    margin-inline-start: 20px;
+  }
+
+  .subsection-header {
+    color: var(--cr-secondary-text-color);
+    font: var(--cros-body-2-font);
+    height: 24px;
+    margin: 12px 0;
+    padding-inline-start: 0;
+  }
+
+  #modifierKeysHeader {
+    margin-bottom: 0;
+  }
+</style>
+<div id="header">
+  <div id="description">[[computeKeyboardKeysDescription(keyboard.*)]]</div>
+</div>
+<div class="subsection">
+  <template is="dom-if" if="[[!isAltClickAndSixPackCustomizationEnabled]]">
+    <keyboard-remap-modifier-key-row
+        default-remappings="[[defaultRemappings]]"
+        key="[[modifierKey.kMeta]]" id="metaKey"
+        meta-key="[[keyboard.metaKey]]"
+        aria-label="$i18n{perDeviceKeyboardKeySearch}"
+        pref="{{fakeMetaPref}}"
+        remove-top-border>
+    </keyboard-remap-modifier-key-row>
+    <keyboard-remap-modifier-key-row
+        default-remappings="[[defaultRemappings]]"
+        key="[[modifierKey.kControl]]" id="ctrlKey"
+        meta-key="[[keyboard.metaKey]]"
+        aria-label="$i18n{perDeviceKeyboardKeyCtrl}"
+        pref="{{fakeCtrlPref}}">
+    </keyboard-remap-modifier-key-row>
+    <keyboard-remap-modifier-key-row
+        default-remappings="[[defaultRemappings]]"
+        key="[[modifierKey.kAlt]]" id="altKey"
+        meta-key="[[keyboard.metaKey]]"
+        aria-label="$i18n{perDeviceKeyboardKeyAlt}"
+        pref="{{fakeAltPref}}">
+    </keyboard-remap-modifier-key-row>
+    <keyboard-remap-modifier-key-row
+        default-remappings="[[defaultRemappings]]"
+        key="[[modifierKey.kEscape]]" id="escapeKey"
+        meta-key="[[keyboard.metaKey]]"
+        aria-label="$i18n{perDeviceKeyboardKeyEscape}"
+        pref="{{fakeEscPref}}">
+    </keyboard-remap-modifier-key-row>
+    <keyboard-remap-modifier-key-row
+        default-remappings="[[defaultRemappings]]"
+        key="[[modifierKey.kBackspace]]" id="backspaceKey"
+        meta-key="[[keyboard.metaKey]]"
+        aria-label="$i18n{perDeviceKeyboardKeyBackspace}"
+        pref="{{fakeBackspacePref}}">
+    </keyboard-remap-modifier-key-row>
+    <template is="dom-if" if="[[hasAssistantKey]]" restamp>
+      <keyboard-remap-modifier-key-row
+          default-remappings="[[defaultRemappings]]"
+          key="[[modifierKey.kAssistant]]" id="assistantKey"
+          meta-key="[[keyboard.metaKey]]"
+          aria-label="$i18n{perDeviceKeyboardKeyAssistant}"
+          pref="{{fakeAssistantPref}}">
+      </keyboard-remap-modifier-key-row>
+    </template>
+    <template is="dom-if" if="[[hasCapsLockKey]]" restamp>
+      <keyboard-remap-modifier-key-row
+          default-remappings="[[defaultRemappings]]"
+          key="[[modifierKey.kCapsLock]]" id="capsLockKey"
+          meta-key="[[keyboard.metaKey]]"
+          aria-label="$i18n{perDeviceKeyboardKeyCapsLock}"
+          pref="{{fakeCapsLockPref}}">
+      </keyboard-remap-modifier-key-row>
+    </template>
+  </template>
+  <template is="dom-if" if="[[isAltClickAndSixPackCustomizationEnabled]]">
+    <h2 class="subsection-header" id="modifierKeysHeader">
+      $i18n{modifierKeysLabel}
+    </h2>
+    <div class="subsection">
+      <keyboard-remap-modifier-key-row
+          default-remappings="[[defaultRemappings]]"
+          key="[[modifierKey.kMeta]]" id="metaKey"
+          meta-key="[[keyboard.metaKey]]"
+          aria-label="$i18n{perDeviceKeyboardKeySearch}"
+          pref="{{fakeMetaPref}}"
+          remove-top-border>
+      </keyboard-remap-modifier-key-row>
+      <keyboard-remap-modifier-key-row
+          default-remappings="[[defaultRemappings]]"
+          key="[[modifierKey.kControl]]" id="ctrlKey"
+          meta-key="[[keyboard.metaKey]]"
+          aria-label="$i18n{perDeviceKeyboardKeyCtrl}"
+          pref="{{fakeCtrlPref}}">
+      </keyboard-remap-modifier-key-row>
+      <keyboard-remap-modifier-key-row
+          default-remappings="[[defaultRemappings]]"
+          key="[[modifierKey.kAlt]]" id="altKey"
+          meta-key="[[keyboard.metaKey]]"
+          aria-label="$i18n{perDeviceKeyboardKeyAlt}"
+          pref="{{fakeAltPref}}">
+      </keyboard-remap-modifier-key-row>
+      <keyboard-remap-modifier-key-row
+          default-remappings="[[defaultRemappings]]"
+          key="[[modifierKey.kEscape]]" id="escapeKey"
+          meta-key="[[keyboard.metaKey]]"
+          aria-label="$i18n{perDeviceKeyboardKeyEscape}"
+          pref="{{fakeEscPref}}">
+      </keyboard-remap-modifier-key-row>
+      <keyboard-remap-modifier-key-row
+          default-remappings="[[defaultRemappings]]"
+          key="[[modifierKey.kBackspace]]" id="backspaceKey"
+          meta-key="[[keyboard.metaKey]]"
+          aria-label="$i18n{perDeviceKeyboardKeyBackspace}"
+          pref="{{fakeBackspacePref}}">
+      </keyboard-remap-modifier-key-row>
+      <template is="dom-if" if="[[hasAssistantKey]]" restamp>
+        <keyboard-remap-modifier-key-row
+            default-remappings="[[defaultRemappings]]"
+            key="[[modifierKey.kAssistant]]" id="assistantKey"
+            meta-key="[[keyboard.metaKey]]"
+            aria-label="$i18n{perDeviceKeyboardKeyAssistant}"
+            pref="{{fakeAssistantPref}}">
+        </keyboard-remap-modifier-key-row>
+      </template>
+      <template is="dom-if" if="[[hasCapsLockKey]]" restamp>
+        <keyboard-remap-modifier-key-row
+            default-remappings="[[defaultRemappings]]"
+            key="[[modifierKey.kCapsLock]]" id="capsLockKey"
+            meta-key="[[keyboard.metaKey]]"
+            aria-label="$i18n{perDeviceKeyboardKeyCapsLock}"
+            pref="{{fakeCapsLockPref}}">
+        </keyboard-remap-modifier-key-row>
+      </template>
+    </div>
+    <h2 class="subsection-header" id="otherKeysHeader">
+      $i18n{otherKeysLabel}
+    </h2>
+    <div class="subsection">
+  <keyboard-six-pack-key-row
+      modifier="[[keyboard.sixPackKeyRemappings.del]]"
+      key="del"
+      pref="{{deletePref}}"
+      aria-label="$i18n{sixPackKeyLabelDelete}">
+  </keyboard-six-pack-key-row>
+  <keyboard-six-pack-key-row
+      modifier="[[keyboard.sixPackKeyRemappings.pageDown]]"
+      key="pageDown"
+      pref="{{pageDownPref}}"
+      aria-label="$i18n{sixPackKeyLabelPageDown}">
+  </keyboard-six-pack-key-row>
+  <keyboard-six-pack-key-row
+      modifier="[[keyboard.sixPackKeyRemappings.pageUp]]"
+      key="pageUp"
+      pref="{{pageUpPref}}"
+      aria-label="$i18n{sixPackKeyLabelPageUp}">
+  </keyboard-six-pack-key-row>
+  <keyboard-six-pack-key-row
+      modifier="[[keyboard.sixPackKeyRemappings.end]]"
+      key="end"
+      pref="{{endPref}}"
+      aria-label="$i18n{sixPackKeyLabelEnd}">
+  </keyboard-six-pack-key-row>
+  <keyboard-six-pack-key-row
+      modifier="[[keyboard.sixPackKeyRemappings.home]]"
+      key="home"
+      pref="{{homePref}}"
+      aria-label="$i18n{sixPackKeyLabelHome}">
+  </keyboard-six-pack-key-row>
+  <keyboard-six-pack-key-row
+      modifier="[[keyboard.sixPackKeyRemappings.insert]]"
+      key="insert"
+      pref="{{insertPref}}"
+      aria-label="$i18n{sixPackKeyLabelInsert}">
+  </keyboard-six-pack-key-row>
+</div>

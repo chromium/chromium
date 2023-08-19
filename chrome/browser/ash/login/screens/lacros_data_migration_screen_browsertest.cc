@@ -46,8 +46,7 @@ const test::UIPath kGotoFilesButton = {kLacrosDataMigrationId,
 class FakeMigrator : public BrowserDataMigrator {
  public:
   // BrowserDataMigrator overrides.
-  void Migrate(crosapi::browser_util::MigrationMode mode,
-               MigrateCallback callback) override {
+  void Migrate(MigrateCallback callback) override {
     callback_ = std::move(callback);
   }
   void Cancel() override { cancel_called_ = true; }
@@ -120,7 +119,7 @@ class LacrosDataMigrationScreenTest : public OobeBaseTest {
 
  private:
   // This is owned by `LacrosDataMigrationScreen`.
-  raw_ptr<FakeMigrator, ExperimentalAsh> fake_migrator_;
+  raw_ptr<FakeMigrator, DanglingUntriaged | ExperimentalAsh> fake_migrator_;
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED};
   LoginManagerMixin login_mixin_{&mixin_host_};

@@ -126,27 +126,22 @@ public class CafMessageHandler {
         }
     }
 
-    @VisibleForTesting
     static String[] getMediaMessageTypesForTest() {
         return MEDIA_MESSAGE_TYPES;
     }
 
-    @VisibleForTesting
     static Map<String, String> getMediaOverloadedMessageTypesForTest() {
         return sMediaOverloadedMessageTypes;
     }
 
-    @VisibleForTesting
     SparseArray<RequestRecord> getRequestsForTest() {
         return mRequests;
     }
 
-    @VisibleForTesting
     Queue<RequestRecord> getVolumeRequestsForTest() {
         return mVolumeRequests;
     }
 
-    @VisibleForTesting
     Map<String, Queue<Integer>> getStopRequestsForTest() {
         return mStopRequests;
     }

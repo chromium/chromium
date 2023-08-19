@@ -86,6 +86,9 @@ class CAPTURE_EXPORT StreamBufferManager final {
   // it has free buffers. For input stream, it is always available.
   bool HasFreeBuffers(const std::set<StreamType>& stream_types);
 
+  // Gets the number of free buffers for the stream specified by |stream_type|.
+  size_t GetFreeBufferCount(StreamType stream_type);
+
   // Checks if the target stream types have been configured or not.
   bool HasStreamsConfigured(std::initializer_list<StreamType> stream_types);
 
@@ -98,12 +101,9 @@ class CAPTURE_EXPORT StreamBufferManager final {
 
   cros::mojom::Camera3StreamPtr GetStreamConfiguration(StreamType stream_type);
 
-  // Requests buffer for specific stream type. If the |buffer_id| is provided,
-  // it will use |buffer_id| as buffer id rather than using id from free
-  // buffers.
+  // Requests buffer for specific stream type.
   absl::optional<BufferInfo> RequestBufferForCaptureRequest(
-      StreamType stream_type,
-      absl::optional<uint64_t> buffer_ipc_id);
+      StreamType stream_type);
 
   // Releases buffer by marking it as free buffer.
   void ReleaseBufferFromCaptureResult(StreamType stream_type,
@@ -111,7 +111,7 @@ class CAPTURE_EXPORT StreamBufferManager final {
 
   gfx::Size GetBufferDimension(StreamType stream_type);
 
-  bool IsReprocessSupported();
+  bool IsPortraitModeSupported();
 
   bool IsRecordingSupported();
 

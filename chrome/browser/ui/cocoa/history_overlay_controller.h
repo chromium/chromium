@@ -7,8 +7,6 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "base/mac/scoped_nsobject.h"
-
 @class HistoryOverlayView;
 
 enum HistoryOverlayMode {
@@ -19,14 +17,7 @@ enum HistoryOverlayMode {
 // The HistoryOverlayController manages a view that is inserted atop the web
 // contents to provide visual feedback when the user is performing history
 // navigation gestures.
-@interface HistoryOverlayController : NSViewController {
- @private
-  HistoryOverlayMode _mode;
-  // Strongly typed reference of self.view.
-  base::scoped_nsobject<HistoryOverlayView> _contentView;
-  // The view above which self.view is inserted as a subview.
-  base::scoped_nsobject<NSView> _parent;
-}
+@interface HistoryOverlayController : NSViewController
 
 // Designated initializer.
 - (instancetype)initForMode:(HistoryOverlayMode)mode;

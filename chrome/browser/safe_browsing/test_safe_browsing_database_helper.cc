@@ -21,6 +21,7 @@
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/db/v4_test_util.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
+#include "content/public/test/test_utils.h"
 
 namespace {
 
@@ -64,8 +65,8 @@ class InsertingDatabaseFactory : public safe_browsing::TestV4DatabaseFactory {
         const base::FilePath store_path =
             base_store_path.InsertBeforeExtensionASCII(base::StringPrintf(
                 " (%d)", base::GetUniquePathNumber(base_store_path)));
-        (*store_map)[id] =
-            store_factory_->CreateV4Store(db_task_runner, store_path);
+        store_map->insert(
+            {id, store_factory_->CreateV4Store(db_task_runner, store_path)});
       }
     }
 
@@ -143,6 +144,9 @@ void TestSafeBrowsingDatabaseHelper::LocallyMarkPrefixAsBad(
     const safe_browsing::ListIdentifier& list_id) {
   safe_browsing::FullHashStr full_hash =
       safe_browsing::V4ProtocolManagerUtil::GetFullHash(url);
+  while (!v4_db_factory_->IsReady()) {
+    content::RunAllTasksUntilIdle();
+  }
   v4_db_factory_->MarkPrefixAsBad(list_id, full_hash);
 }
 

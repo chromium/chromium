@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("tos") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "tos_coordinator.h",
     "tos_coordinator.mm",
@@ -27,7 +26,6 @@ source_set("tos") {
 }
 
 source_set("tos_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "tos_view_controller.h",
     "tos_view_controller.mm",
@@ -45,7 +43,6 @@ source_set("tos_ui") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "tos_unittest.mm" ]
   deps = [

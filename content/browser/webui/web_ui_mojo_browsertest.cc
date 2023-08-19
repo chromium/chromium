@@ -105,6 +105,32 @@ class WebUITsMojoTestCacheImpl : public mojom::WebUITsMojoTestCache {
     std::move(callback).Run(std::move(items));
   }
 
+  void Echo(absl::optional<bool> optional_bool,
+            absl::optional<uint8_t> optional_uint8,
+            absl::optional<mojom::TestEnum> optional_enum,
+            mojom::OptionalNumericsStructPtr optional_numerics,
+            EchoCallback callback) override {
+    std::move(callback).Run(
+        optional_bool.has_value() ? absl::make_optional(!optional_bool.value())
+                                  : absl::nullopt,
+        optional_uint8.has_value()
+            ? absl::make_optional(~optional_uint8.value())
+            : absl::nullopt,
+        optional_enum.has_value() ? absl::make_optional(mojom::TestEnum::kTwo)
+                                  : absl::nullopt,
+        mojom::OptionalNumericsStruct::New(
+            optional_numerics->optional_bool.has_value()
+                ? absl::make_optional(!optional_numerics->optional_bool.value())
+                : absl::nullopt,
+            optional_numerics->optional_uint8.has_value()
+                ? absl::make_optional(
+                      ~optional_numerics->optional_uint8.value())
+                : absl::nullopt,
+            optional_numerics->optional_enum.has_value()
+                ? absl::make_optional(mojom::TestEnum::kTwo)
+                : absl::nullopt));
+  }
+
  private:
   mojo::Receiver<mojom::WebUITsMojoTestCache> receiver_;
   std::map<GURL, std::string> cache_;

@@ -390,7 +390,7 @@ TEST_F(WebPluginContainerTest, Copy) {
       ->GetDocument()
       .Unwrap<Document>()
       ->body()
-      ->getElementById("translated-plugin")
+      ->getElementById(AtomicString("translated-plugin"))
       ->Focus();
   EXPECT_TRUE(web_view->MainFrame()->ToWebLocalFrame()->ExecuteCommand("Copy"));
 
@@ -416,7 +416,7 @@ TEST_F(WebPluginContainerTest, CopyWithoutPermission) {
       ->GetDocument()
       .Unwrap<Document>()
       ->body()
-      ->getElementById("translated-plugin")
+      ->getElementById(AtomicString("translated-plugin"))
       ->Focus();
   EXPECT_TRUE(web_view->MainFrame()->ToWebLocalFrame()->ExecuteCommand("Copy"));
 

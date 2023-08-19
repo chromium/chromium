@@ -33,11 +33,7 @@ static_assert(sizeof(VizDebuggerInternal) == sizeof(VizDebugger),
               "This test code exposes the internals of |VizDebugger| via an "
               "upcast; thus they must be the same size.");
 
-enum class VizDebugCommandType {
-  kDbgDrawRectCommand,
-  kDbgDrawTextCommand,
-  kDbgLogCommand
-};
+enum class VizDebugCommandType { kDbgDrawRectCommand, kDbgLogCommand };
 
 // Data structure to hold pre-determined commands for unit test.
 struct DbgTestConfig {
@@ -61,12 +57,10 @@ class ReaderTestThread : public base::PlatformThread::Delegate {
   // Index variables to keep track of which debug command calls are being
   // checked in each called debug command cache.
   int rect_command_idx = 0;
-  int text_command_idx = 0;
   int log_command_idx = 0;
 
   // Identification pairs consisting of debug command ID and type of command.
   std::vector<DbgCommandIdentifier> draw_rect_command_history;
-  std::vector<DbgCommandIdentifier> draw_text_command_history;
   std::vector<DbgCommandIdentifier> log_command_history;
 
   // Initialize debug commands before threads run.
@@ -93,19 +87,13 @@ class ReaderTestThread : public base::PlatformThread::Delegate {
       // The x-position represents the thread ID and the
       // y-position represents the debug command ID per thread.
       // gfx::Rect(int x, int y, int width, int height)
-      const gfx::Rect testRect = gfx::Rect(thread_id_, i, 12, 34);
+      const gfx::RectF testRect = gfx::RectF(thread_id_, i, 12, 34);
       if (thread_test_config_.dbg_commands[0][i] ==
           VizDebugCommandType::kDbgDrawRectCommand) {
-        DBG_DRAW_RECT("multithread rect", testRect);
+        DBG_DRAW_RECTANGLE_OPT_BUFF_UV_TEXT(
+            "multithread rect", DBG_OPT_BLACK, testRect.OffsetFromOrigin(),
+            testRect.size(), nullptr, DBG_DEFAULT_UV, "text");
         draw_rect_command_history.push_back({static_cast<int>(thread_id_), i});
-      } else if (thread_test_config_.dbg_commands[0][i] ==
-                 VizDebugCommandType::kDbgDrawTextCommand) {
-        DBG_DRAW_TEXT("multithread anno", testRect.origin(), "text");
-        draw_text_command_history.push_back({static_cast<int>(thread_id_), i});
-        // The log string/message is used as a unique identifier for
-        // each log command called for cross-checking later.
-        // The format for unique identifier is as such:
-        // [THREAD ID]:[COMMAND ID].
       } else {  // kDbgLogCommand case
         DBG_LOG("multithread log", "%d:%d", thread_id_, i);
         log_command_history.push_back({static_cast<int>(thread_id_), i});
@@ -173,11 +161,9 @@ TEST_F(VizDebuggerMultithreadTest, kReadersTest) {
   DbgTestConfig test_config;
 
   static const unsigned kNumDrawRectCommandsPerFrame = 64;
-  static const unsigned kNumDrawTextCommandsPerFrame = 64;
   static const unsigned kNumLogCommandsPerFrame = 64;
-  uint32_t kNumCommandsPerFrame = kNumDrawRectCommandsPerFrame +
-                                  kNumDrawTextCommandsPerFrame +
-                                  kNumLogCommandsPerFrame;
+  uint32_t kNumCommandsPerFrame =
+      kNumDrawRectCommandsPerFrame + kNumLogCommandsPerFrame;
 
   // pre-process test commands vector
   test_config.dbg_commands.resize(1);
@@ -187,10 +173,7 @@ TEST_F(VizDebuggerMultithreadTest, kReadersTest) {
     test_config.dbg_commands[0].push_back(
         VizDebugCommandType::kDbgDrawRectCommand);
   }
-  for (uint32_t i = 0; i < kNumDrawTextCommandsPerFrame; ++i) {
-    test_config.dbg_commands[0].push_back(
-        VizDebugCommandType::kDbgDrawTextCommand);
-  }
+
   for (uint32_t i = 0; i < kNumLogCommandsPerFrame; ++i) {
     test_config.dbg_commands[0].push_back(VizDebugCommandType::kDbgLogCommand);
   }
@@ -214,15 +197,11 @@ TEST_F(VizDebuggerMultithreadTest, kReadersTest) {
 
   std::vector<VizDebuggerInternal::DrawCall> rect_calls_result =
       GetInternal()->GetDrawRectCalls();
-  std::vector<VizDebuggerInternal::DrawTextCall> text_calls_result =
-      GetInternal()->GetDrawTextCalls();
   std::vector<VizDebuggerInternal::LogCall> logs_result =
       GetInternal()->GetLogs();
 
   size_t const kNumDrawCallSubmission = static_cast<size_t>(std::min(
       GetInternal()->GetRectCallsTailIdx(), GetInternal()->GetRectCallsSize()));
-  size_t const kNumTextCallSubmission = static_cast<size_t>(std::min(
-      GetInternal()->GetTextCallsTailIdx(), GetInternal()->GetTextCallsSize()));
   size_t const kNumLogSubmission = static_cast<size_t>(
       std::min(GetInternal()->GetLogsTailIdx(), GetInternal()->GetLogsSize()));
 
@@ -248,32 +227,6 @@ TEST_F(VizDebuggerMultithreadTest, kReadersTest) {
               cur_thread_command_identifier.dbg_command_id) {
         valid_command_found = true;
         ++thread.rect_command_idx;
-        break;
-      }
-    }
-    EXPECT_TRUE(valid_command_found);
-  }
-
-  // Final cross-checking for draw text calls.
-  for (size_t i = 0; i < kNumTextCallSubmission; ++i) {
-    valid_command_found = false;
-    for (auto&& thread : threads) {
-      // If debug calls from a thread is exhausted, skip this thread.
-      if (static_cast<uint32_t>(thread.text_command_idx) >=
-          thread.draw_text_command_history.size()) {
-        continue;
-      }
-      DbgCommandIdentifier cur_thread_command_identifier =
-          thread.draw_text_command_history[thread.text_command_idx];
-
-      // Check if debug command ID matches. Refer to ReaderTestThread's
-      // ThreadMain() function to see how command ID's are formatted.
-      if (text_calls_result[i].pos.x() ==
-              cur_thread_command_identifier.dbg_command_thread_id &&
-          text_calls_result[i].pos.y() ==
-              cur_thread_command_identifier.dbg_command_id) {
-        valid_command_found = true;
-        ++thread.text_command_idx;
         break;
       }
     }
@@ -330,7 +283,6 @@ TEST_F(VizDebuggerMultithreadTest, kReadersOneWriterCommandsSequenceTest) {
   static const unsigned kNumWriterTries = 20;
   // Number of DBG calls per frame for each type
   static const unsigned kNumDrawRectCommandsPerFrame = 64;
-  static const unsigned kNumDrawTextCommandsPerFrame = 64;
   static const unsigned kNumLogCommandsPerFrame = 64;
   // Amount of spin delay for each type of thread
   static const unsigned kWriterSpinAmount = 900;
@@ -347,9 +299,8 @@ TEST_F(VizDebuggerMultithreadTest, kReadersOneWriterCommandsSequenceTest) {
 
   DbgTestConfig test_config;
 
-  uint32_t kNumCommandsPerFrame = kNumDrawRectCommandsPerFrame +
-                                  kNumDrawTextCommandsPerFrame +
-                                  kNumLogCommandsPerFrame;
+  uint32_t kNumCommandsPerFrame =
+      kNumDrawRectCommandsPerFrame + kNumLogCommandsPerFrame;
 
   // Pre-process test commands vector.
   test_config.dbg_commands.resize(1);
@@ -360,10 +311,7 @@ TEST_F(VizDebuggerMultithreadTest, kReadersOneWriterCommandsSequenceTest) {
     test_config.dbg_commands[0].push_back(
         VizDebugCommandType::kDbgDrawRectCommand);
   }
-  for (uint32_t i = 0; i < kNumDrawTextCommandsPerFrame; ++i) {
-    test_config.dbg_commands[0].push_back(
-        VizDebugCommandType::kDbgDrawTextCommand);
-  }
+
   for (uint32_t i = 0; i < kNumLogCommandsPerFrame; ++i) {
     test_config.dbg_commands[0].push_back(VizDebugCommandType::kDbgLogCommand);
   }
@@ -391,15 +339,14 @@ TEST_F(VizDebuggerMultithreadTest, kReadersOneWriterCommandsSequenceTest) {
   // added to the debug calls cache.
   GetFrameData(false);
   int expected_submission_count = kNumCommandsPerFrame * kNumReaderThreads;
-  int calls_cache_total_size = draw_rect_calls_cache_.size() +
-                               draw_text_calls_cache_.size() +
-                               log_calls_cache_.size();
+  int calls_cache_total_size =
+      draw_calls_cache_.size() + log_calls_cache_.size();
   EXPECT_EQ(calls_cache_total_size, expected_submission_count);
 
   bool valid_command_found;
 
   // Final cross-checking for draw rect calls.
-  for (auto&& rect_call : draw_rect_calls_cache_) {
+  for (auto&& rect_call : draw_calls_cache_) {
     valid_command_found = false;
     for (auto&& thread : reader_threads) {
       // If debug calls from a thread is exhausted, skip this thread.
@@ -417,31 +364,6 @@ TEST_F(VizDebuggerMultithreadTest, kReadersOneWriterCommandsSequenceTest) {
           rect_call.pos.y() == cur_thread_command_identifier.dbg_command_id) {
         valid_command_found = true;
         ++thread.rect_command_idx;
-        break;
-      }
-    }
-    EXPECT_TRUE(valid_command_found);
-  }
-
-  // Final cross-checking for draw text calls.
-  for (auto&& text_call : draw_text_calls_cache_) {
-    valid_command_found = false;
-    for (auto&& thread : reader_threads) {
-      // If debug calls from a thread is exhausted, skip this thread.
-      if (static_cast<uint32_t>(thread.text_command_idx) >=
-          thread.draw_text_command_history.size()) {
-        continue;
-      }
-      DbgCommandIdentifier cur_thread_command_identifier =
-          thread.draw_text_command_history[thread.text_command_idx];
-
-      // Check if debug command ID matches. Refer to ReaderTestThread's
-      // ThreadMain() function to see how command ID's are formatted.
-      if (text_call.pos.x() ==
-              cur_thread_command_identifier.dbg_command_thread_id &&
-          text_call.pos.y() == cur_thread_command_identifier.dbg_command_id) {
-        valid_command_found = true;
-        ++thread.text_command_idx;
         break;
       }
     }

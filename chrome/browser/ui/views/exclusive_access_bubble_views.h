@@ -39,6 +39,7 @@ class ExclusiveAccessBubbleViews : public ExclusiveAccessBubble,
       ExclusiveAccessBubbleViewsContext* context,
       const GURL& url,
       ExclusiveAccessBubbleType bubble_type,
+      bool notify_download,
       ExclusiveAccessBubbleHideCallback bubble_first_hide_callback);
 
   ExclusiveAccessBubbleViews(const ExclusiveAccessBubbleViews&) = delete;
@@ -73,6 +74,8 @@ class ExclusiveAccessBubbleViews : public ExclusiveAccessBubble,
 
   gfx::SlideAnimation* animation_for_test() { return animation_.get(); }
 
+  bool IsVisibleForTesting() const { return IsVisible(); }
+
  private:
   // Starts or stops polling the mouse location based on |popup_| and
   // |bubble_type_|.
@@ -84,7 +87,7 @@ class ExclusiveAccessBubbleViews : public ExclusiveAccessBubble,
   void UpdateViewContent(ExclusiveAccessBubbleType bubble_type);
 
   // Returns whether the popup is visible.
-  bool IsVisible();
+  bool IsVisible() const;
 
   // Returns the root view containing |browser_view_|.
   views::View* GetBrowserRootView() const;

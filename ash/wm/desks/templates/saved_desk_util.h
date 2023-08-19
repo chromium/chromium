@@ -5,6 +5,8 @@
 #ifndef ASH_WM_DESKS_TEMPLATES_SAVED_DESK_UTIL_H_
 #define ASH_WM_DESKS_TEMPLATES_SAVED_DESK_UTIL_H_
 
+#include <string>
+
 #include "ash/ash_export.h"
 
 class PrefRegistrySimple;
@@ -17,9 +19,9 @@ namespace ash {
 
 class SavedDeskDialogController;
 class SavedDeskPresenter;
+class DeskTemplate;
 
 namespace saved_desk_util {
-
 // Registers the per-profile preferences for whether desks templates are
 // enabled.
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -34,8 +36,25 @@ ASH_EXPORT SavedDeskDialogController* GetSavedDeskDialogController();
 // Will return null if overview mode is not active.
 ASH_EXPORT SavedDeskPresenter* GetSavedDeskPresenter();
 
-// Returns true if `window` was launched from an admin template.
-bool IsAdminTemplateWindow(aura::Window* window);
+// Returns the app ID of the window, if present. Returns an empty string
+// otherwise.
+ASH_EXPORT std::string GetAppId(aura::Window* window);
+
+// Returns true if `window` was launched from an admin template and should be on
+// top relative to other desk templates windows.
+bool IsWindowOnTopForTemplate(aura::Window* window);
+
+// This function updates the activation indices of all the windows in a
+// template so that windows launched from it will stack in the order they are
+// defined, while also stacking on top of any existing windows.
+ASH_EXPORT void UpdateTemplateActivationIndices(DeskTemplate& saved_desk);
+
+// This function updates the activation indices of all the windows in a
+// template so that windows launched from it will stack in the order that they
+// were stacked upon saving as a template, while also stacking on top of any
+// existing windows.
+ASH_EXPORT void UpdateTemplateActivationIndicesRelativeOrder(
+    DeskTemplate& saved_desk);
 
 }  // namespace saved_desk_util
 }  // namespace ash

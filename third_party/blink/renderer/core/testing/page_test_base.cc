@@ -126,6 +126,10 @@ void PageTestBase::SetUp() {
 
   // Use desktop page scale limits by default.
   GetPage().SetDefaultPageScaleLimits(1, 4);
+
+  // We do a lot of one-offs in unit tests, so update this so that every
+  // single test doesn't have to.
+  GetStyleEngine().UpdateViewportSize();
 }
 
 void PageTestBase::SetUp(gfx::Size size) {
@@ -142,6 +146,10 @@ void PageTestBase::SetUp(gfx::Size size) {
 
   // Use desktop page scale limits by default.
   GetPage().SetDefaultPageScaleLimits(1, 4);
+
+  // We do a lot of one-offs in unit tests, so update this so that every
+  // single test doesn't have to.
+  GetStyleEngine().UpdateViewportSize();
 }
 
 void PageTestBase::SetupPageWithClients(
@@ -165,6 +173,10 @@ void PageTestBase::SetupPageWithClients(
 
   // Use desktop page scale limits by default.
   GetPage().SetDefaultPageScaleLimits(1, 4);
+
+  // We do a lot of one-offs in unit tests, so update this so that every
+  // single test doesn't have to.
+  GetStyleEngine().UpdateViewportSize();
 }
 
 void PageTestBase::TearDown() {
@@ -192,7 +204,8 @@ void PageTestBase::LoadAhem() {
 }
 
 void PageTestBase::LoadAhem(LocalFrame& frame) {
-  LoadFontFromFile(frame, test::CoreTestDataPath("Ahem.ttf"), "Ahem");
+  LoadFontFromFile(frame, test::CoreTestDataPath("Ahem.ttf"),
+                   AtomicString("Ahem"));
 }
 
 void PageTestBase::LoadFontFromFile(LocalFrame& frame,
@@ -220,7 +233,7 @@ void PageTestBase::LoadNoto(LocalFrame& frame) {
   LoadFontFromFile(frame,
                    blink::test::PlatformTestDataPath(
                        "third_party/Noto/NotoNaskhArabic-regular.woff2"),
-                   "NotoArabic");
+                   AtomicString("NotoArabic"));
 }
 
 // Both sets the inner html and runs the document lifecycle.
@@ -287,7 +300,7 @@ StyleEngine& PageTestBase::GetStyleEngine() {
 }
 
 Element* PageTestBase::GetElementById(const char* id) const {
-  return GetDocument().getElementById(id);
+  return GetDocument().getElementById(AtomicString(id));
 }
 
 AnimationClock& PageTestBase::GetAnimationClock() {

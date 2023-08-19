@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("cookie_util") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "cookie_util.h",
     "cookie_util.mm",
@@ -19,7 +18,6 @@ source_set("cookie_util") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [ "cookie_util_unittest.mm" ]
   deps = [

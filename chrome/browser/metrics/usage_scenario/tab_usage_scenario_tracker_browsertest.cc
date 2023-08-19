@@ -199,8 +199,10 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, BasicNavigations) {
                                 ->GetActiveWebContents()
                                 ->GetPrimaryMainFrame()
                                 ->GetPageUkmSourceId();
-  EXPECT_TRUE(browser()->tab_strip_model()->CloseWebContentsAt(
-      0, TabCloseTypes::CLOSE_USER_GESTURE));
+  int previous_tab_count = browser()->tab_strip_model()->count();
+  browser()->tab_strip_model()->CloseWebContentsAt(
+      0, TabCloseTypes::CLOSE_USER_GESTURE);
+  EXPECT_EQ(previous_tab_count - 1, browser()->tab_strip_model()->count());
   tick_clock_.Advance(kInterval);
   interval_data = data_store_.ResetIntervalData();
   EXPECT_EQ(2U, interval_data.max_tab_count);
@@ -452,8 +454,10 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest,
   tick_clock_.Advance(kInterval * 2);
   auto expected_source_id =
       contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
-  EXPECT_TRUE(browser()->tab_strip_model()->CloseWebContentsAt(
-      1, TabCloseTypes::CLOSE_USER_GESTURE));
+  int previous_tab_count = browser()->tab_strip_model()->count();
+  browser()->tab_strip_model()->CloseWebContentsAt(
+      1, TabCloseTypes::CLOSE_USER_GESTURE);
+  EXPECT_EQ(previous_tab_count - 1, browser()->tab_strip_model()->count());
 
   auto interval_data = data_store_.ResetIntervalData();
   EXPECT_EQ(2U, interval_data.max_tab_count);
@@ -554,8 +558,13 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
   Browser* browser2 = BrowserList::GetInstance()->get(1);
 
-  EXPECT_TRUE(browser2->tab_strip_model()->CloseWebContentsAt(
-      0, TabCloseTypes::CLOSE_USER_GESTURE));
+  int previous_browser1_tab_count = browser()->tab_strip_model()->count();
+  int previous_browser2_tab_count = browser2->tab_strip_model()->count();
+  browser2->tab_strip_model()->CloseWebContentsAt(
+      0, TabCloseTypes::CLOSE_USER_GESTURE);
+  EXPECT_EQ(previous_browser1_tab_count, browser()->tab_strip_model()->count());
+  EXPECT_EQ(previous_browser2_tab_count - 1,
+            browser2->tab_strip_model()->count());
 
   tick_clock_.Advance(kInterval);
   auto interval_data = data_store_.ResetIntervalData();

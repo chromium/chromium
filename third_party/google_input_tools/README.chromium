@@ -6,6 +6,7 @@ Revision: @4801be41532a02b42f30e0e57bd54914132ea7cd
 License: Apache 2.0
 License File: LICENSE
 Security Critical: yes
+Shipped: yes
 
 Description:
 This directory contains source for the google-input-tools project, which

@@ -5,10 +5,11 @@
 #ifndef MEDIA_MUXERS_BOX_BYTE_STREAM_H_
 #define MEDIA_MUXERS_BOX_BYTE_STREAM_H_
 
-#include <queue>
 #include <vector>
 
 #include "base/big_endian.h"
+#include "base/containers/queue.h"
+#include "base/containers/stack.h"
 #include "media/base/media_export.h"
 #include "media/formats/mp4/fourccs.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -67,6 +68,11 @@ class MEDIA_EXPORT BoxByteStream {
   // Validates whether there is a open box or not.
   bool has_open_boxes() const { return !size_offsets_.empty(); }
 
+  // Returns size of the top level box size until this point.
+  // The function is used for `mfro` box where its last property
+  // is a total size of the top `mfra' box.
+  size_t size() const { return position_; }
+
   // TODO(crbug.com/1072056): Investigate if this is a reasonable starting size.
   static constexpr int kDefaultBufferLimit = 4096;
 
@@ -78,7 +84,8 @@ class MEDIA_EXPORT BoxByteStream {
   void GrowWriter();
 
   std::vector<size_t> size_offsets_;
-  std::queue<size_t> data_offsets_by_track_;
+  base::queue<size_t> data_offsets_by_track_;
+  base::stack<size_t> parent_box_size_offsets_;
 
   size_t position_ = 0;
   std::vector<uint8_t> buffer_;

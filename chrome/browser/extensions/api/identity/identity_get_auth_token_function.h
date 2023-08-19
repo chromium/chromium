@@ -42,15 +42,8 @@ struct AccessTokenInfo;
 namespace extensions {
 class IdentityGetAuthTokenError;
 
-BASE_DECLARE_FEATURE(kGetAuthTokenCheckInteractivity);
-
 // Exposed for testing
-constexpr base::TimeDelta kDefaultGetAuthTokenInactivityThreshold =
-    base::Minutes(10);
-extern const char kGetAuthTokenActivityStatusHistogramBaseName[];
-extern const char kGetAuthTokenIdleTimeHistogramBaseName[];
-extern const char kGetAuthTokenHistogramConsentSuffix[];
-extern const char kGetAuthTokenHistogramSigninSuffix[];
+constexpr base::TimeDelta kGetAuthTokenInactivityTime = base::Minutes(10);
 
 // identity.getAuthToken fetches an OAuth 2 function for the
 // caller. The request has three sub-flows: non-interactive,
@@ -78,9 +71,6 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
   // Interactive requests showing UIs (like a signin tab or a consent window)
   // may be rejected to avoid creating unwanted or out-of-context user
   // interruption.
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  // Exposed for testing.
   enum class InteractivityStatus {
     // Interactivity was not requested.
     kNotRequested = 0,
@@ -95,11 +85,6 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
     // Interactivity was requested. There is no user gesture but it is allowed
     // because the user was recently active.
     kAllowedWithActivity = 4,
-    // Interactivity was requested, and it is allowed because the idle checks
-    // are disabled.
-    kAllowedNoIdleCheck = 5,
-
-    kMaxValue = kAllowedNoIdleCheck,
   };
 
   DECLARE_EXTENSION_FUNCTION("identity.getAuthToken",
@@ -260,9 +245,6 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
 
   // Returns true if extensions are restricted to the primary account.
   bool IsPrimaryAccountOnly() const;
-
-  // Records metrics related to user activity.
-  void RecordInteractivityMetrics(InteractionType interaction_type);
 
   // Computes the interactivity status for consent and sign-in based on the
   // "interactive" parameter, the idle state and whether signin is allowed.

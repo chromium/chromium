@@ -14,6 +14,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/gpu_gles2_export.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/include/core/SkYUVAInfo.h"
 
 namespace gpu {
 
@@ -77,6 +78,14 @@ class GPU_GLES2_EXPORT CopySharedImageHelper {
       SkImageInfo dst_info,
       void* pixel_address,
       std::unique_ptr<SkiaImageRepresentation> source_shared_image);
+  base::expected<void, GLError> WritePixelsYUV(
+      GLuint src_width,
+      GLuint src_height,
+      std::array<SkPixmap, SkYUVAInfo::kMaxPlanes> pixmaps,
+      std::vector<GrBackendSemaphore> end_semaphores,
+      std::unique_ptr<SkiaImageRepresentation> dest_shared_image,
+      std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess>
+          dest_scoped_access);
 
  private:
   raw_ptr<SharedImageRepresentationFactory> representation_factory_ = nullptr;

@@ -17,11 +17,11 @@ std::ostream& operator<<(std::ostream& os, const FieldRendererId& field) {
 }
 
 std::ostream& operator<<(std::ostream& os, const FormGlobalId& form) {
-  return os << form.frame_token.ToString() << '_' << form.renderer_id;
+  return os << form.frame_token.ToString() << "_" << form.renderer_id;
 }
 
 std::ostream& operator<<(std::ostream& os, const FieldGlobalId& field) {
-  return os << field.frame_token.ToString() << '_' << field.renderer_id;
+  return os << field.frame_token.ToString() << "_" << field.renderer_id;
 }
 
 LogBuffer& operator<<(LogBuffer& buffer, const FormRendererId& form) {
@@ -33,11 +33,11 @@ LogBuffer& operator<<(LogBuffer& buffer, const FieldRendererId& field) {
 }
 
 LogBuffer& operator<<(LogBuffer& buffer, const FormGlobalId& form) {
-  return buffer << form.frame_token.ToString() << '_' << form.renderer_id;
+  return buffer << form.frame_token.ToString() << "_" << form.renderer_id;
 }
 
 LogBuffer& operator<<(LogBuffer& buffer, const FieldGlobalId& field) {
-  return buffer << field.frame_token.ToString() << '_' << field.renderer_id;
+  return buffer << field.frame_token.ToString() << "_" << field.renderer_id;
 }
 
 }  // namespace autofill

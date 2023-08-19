@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <CoreGraphics/CoreGraphics.h>
 #import <XCTest/XCTest.h>
 
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/testing/system_alert_handler.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using base::test::ios::kWaitForPageLoadTimeout;
 using base::test::ios::kWaitForUIElementTimeout;
@@ -31,7 +28,12 @@ using base::test::ios::kWaitForUIElementTimeout;
 - (void)testNetworkConnection {
   XCUIApplication* app = [[XCUIApplication alloc] init];
 
-  [app.buttons[ntp_home::FakeOmniboxAccessibilityID()].firstMatch tap];
+  struct CGVector offset;
+  offset.dx = 0.5;
+  offset.dy = 0.5;
+
+  [[app.buttons[ntp_home::FakeOmniboxAccessibilityID()].firstMatch
+      coordinateWithNormalizedOffset:offset] tap];
 
   XCTAssert(
       [app.keyboards.firstMatch

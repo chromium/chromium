@@ -66,7 +66,8 @@ class DanglingMouseMoveHandlerOnViewDestroyingChecker
     : public views::ViewObserver {
  public:
   explicit DanglingMouseMoveHandlerOnViewDestroyingChecker(
-      const raw_ptr<views::View, DanglingUntriaged>& mouse_move_handler)
+      const raw_ptr<views::View, AcrossTasksDanglingUntriaged>&
+          mouse_move_handler)
       : mouse_move_handler_(mouse_move_handler) {
     scoped_observation.Observe(mouse_move_handler_);
   }
@@ -86,7 +87,7 @@ class DanglingMouseMoveHandlerOnViewDestroyingChecker
   // into a `raw_ref<raw_ptr<>>`. The current `raw_ptr&` setup is
   // intentional and used to observe the pointer without counting as a
   // live reference to the underlying memory.
-  RAW_PTR_EXCLUSION const raw_ptr<views::View, DanglingUntriaged>&
+  RAW_PTR_EXCLUSION const raw_ptr<views::View, AcrossTasksDanglingUntriaged>&
       mouse_move_handler_;
 };
 

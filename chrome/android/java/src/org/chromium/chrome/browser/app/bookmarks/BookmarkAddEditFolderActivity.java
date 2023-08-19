@@ -163,7 +163,7 @@ public class BookmarkAddEditFolderActivity
             final EditText editText = mFolderTitle.getEditText();
             editText.setText(bookmarkItem.getTitle());
             editText.setSelection(editText.getText().length());
-            mParentTextView.setEnabled(BookmarkUtils.isMovable(bookmarkItem));
+            mParentTextView.setEnabled(BookmarkUtils.isMovable(mModel, bookmarkItem));
         }
 
         mParentTextView.setText(mModel.getBookmarkTitle(mParentId));

@@ -127,8 +127,7 @@ public class BrowserStateBrowserControlsVisibilityDelegate
         mTokenHolder.releaseToken(token);
     }
 
-    @BrowserControlsState
-    private int calculateVisibilityConstraints() {
+    private @BrowserControlsState int calculateVisibilityConstraints() {
         if (mPersistentFullscreenMode.get()) {
             return BrowserControlsState.HIDDEN;
         } else if (mTokenHolder.hasTokens() && !sDisableOverridesForTesting) {

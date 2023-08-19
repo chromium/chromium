@@ -1238,6 +1238,7 @@ std::vector<std::unique_ptr<TemplateURLData>> GetPrepopulationSetFromCountryID(
 
     // Countries using the "United Kingdom" engine set.
     UNHANDLED_COUNTRY(B, M)  // Bermuda
+    UNHANDLED_COUNTRY(C, Q)  // Sark
     UNHANDLED_COUNTRY(F, K)  // Falkland Islands
     UNHANDLED_COUNTRY(G, G)  // Guernsey
     UNHANDLED_COUNTRY(G, I)  // Gibraltar

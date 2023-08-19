@@ -8,12 +8,14 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/crosapi/fake_browser_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -29,9 +31,11 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/multi_user/multi_user_sign_in_policy.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -117,6 +121,9 @@ class SessionControllerClientImplTest : public testing::Test {
     user_manager_ = new TestChromeUserManager;
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         base::WrapUnique(user_manager_.get()));
+    controller_ = std::make_unique<ash::MultiProfileUserController>(
+        TestingBrowserProcess::GetGlobal()->local_state(), user_manager_);
+    user_manager_->set_multi_profile_user_controller(controller_.get());
     // Initialize AssistantBrowserDelegate singleton.
     assistant_delegate_ = std::make_unique<AssistantBrowserDelegateImpl>();
 
@@ -130,6 +137,8 @@ class SessionControllerClientImplTest : public testing::Test {
 
   void TearDown() override {
     assistant_delegate_.reset();
+    user_manager_->set_multi_profile_user_controller(nullptr);
+    controller_.reset();
     user_manager_enabler_.reset();
     user_manager_ = nullptr;
     profile_manager_.reset();
@@ -204,7 +213,10 @@ class SessionControllerClientImplTest : public testing::Test {
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 
   // Owned by |user_manager_enabler_|.
-  raw_ptr<TestChromeUserManager, ExperimentalAsh> user_manager_ = nullptr;
+  raw_ptr<TestChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      user_manager_ = nullptr;
+
+  std::unique_ptr<ash::MultiProfileUserController> controller_;
 
   std::unique_ptr<ash::ScopedCrosSettingsTestHelper> cros_settings_test_helper_;
 };
@@ -276,17 +288,19 @@ TEST_F(SessionControllerClientImplTest, MultiProfileDisallowedByUserPolicy) {
   EXPECT_EQ(ash::AddUserSessionPolicy::ALLOWED,
             SessionControllerClientImpl::GetAddUserSessionPolicy());
 
-  browser_manager_->StartRunning();
-  EXPECT_EQ(ash::AddUserSessionPolicy::ERROR_LACROS_RUNNING,
-            SessionControllerClientImpl::GetAddUserSessionPolicy());
-
-  browser_manager_->StopRunning();
-  EXPECT_EQ(ash::AddUserSessionPolicy::ALLOWED,
-            SessionControllerClientImpl::GetAddUserSessionPolicy());
+  {
+    // It should be disabled if Lacros is enabled.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(ash::standalone_browser::GetFeatureRefs(),
+                                  {});
+    EXPECT_EQ(ash::AddUserSessionPolicy::ERROR_LACROS_ENABLED,
+              SessionControllerClientImpl::GetAddUserSessionPolicy());
+  }
 
   user_profile->GetPrefs()->SetString(
-      prefs::kMultiProfileUserBehavior,
-      ash::MultiProfileUserController::kBehaviorNotAllowed);
+      user_manager::kMultiProfileUserBehaviorPref,
+      user_manager::MultiUserSignInPolicyToPrefValue(
+          user_manager::MultiUserSignInPolicy::kNotAllowed));
   EXPECT_EQ(ash::AddUserSessionPolicy::ERROR_NOT_ALLOWED_PRIMARY_USER,
             SessionControllerClientImpl::GetAddUserSessionPolicy());
 }
@@ -413,8 +427,9 @@ TEST_F(SessionControllerClientImplTest,
       AccountId::FromUserEmailGaiaId(kUser, kUserGaiaId));
   user_manager()->LoginUser(account_id);
   user_profile->GetPrefs()->SetString(
-      prefs::kMultiProfileUserBehavior,
-      ash::MultiProfileUserController::kBehaviorNotAllowed);
+      user_manager::kMultiProfileUserBehaviorPref,
+      user_manager::MultiUserSignInPolicyToPrefValue(
+          user_manager::MultiUserSignInPolicy::kNotAllowed));
   user_manager()->AddUser(
       AccountId::FromUserEmailGaiaId("bb@b.b", "4444444444"));
   EXPECT_EQ(ash::AddUserSessionPolicy::ERROR_NOT_ALLOWED_PRIMARY_USER,

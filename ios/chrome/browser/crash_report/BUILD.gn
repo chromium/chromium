@@ -24,22 +24,20 @@ source_set("crash_report") {
     "main_thread_freeze_detector.mm",
   ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-
   deps = [
     "//base",
     "//build:branding_buildflags",
     "//components/breadcrumbs/core",
-    "//components/breadcrumbs/core:feature_flags",
+    "//components/breadcrumbs/core:status",
     "//components/crash/core/app",
     "//components/crash/core/browser",
     "//components/crash/core/common",
     "//components/previous_session_info",
     "//components/upload_list",
     "//ios/chrome/app:tests_hook",
-    "//ios/chrome/browser/paths",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/common",
     "//ios/chrome/common/app_group",
     "//ios/chrome/common/crash_report",
@@ -49,7 +47,6 @@ source_set("crash_report") {
 }
 
 source_set("crash_report_internal") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "crash_report_helper.h",
     "crash_report_helper.mm",
@@ -69,10 +66,10 @@ source_set("crash_report_internal") {
     "//ios/chrome/app/theme",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/infobars:public",
-    "//ios/chrome/browser/paths",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
@@ -83,7 +80,6 @@ source_set("crash_report_internal") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "crash_helper_unittest.mm",

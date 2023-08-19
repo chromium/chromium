@@ -21,6 +21,8 @@ struct BeginFrameArgs {
   uint64 sequence_number;
   uint64 frames_throttled_since_last;
   int64 trace_id;
+  mojo_base.mojom.TimeTicks dispatch_time;
+  mojo_base.mojom.TimeTicks client_arrival_time;
   BeginFrameArgsType type;
   bool on_critical_path;
   bool animate_only;

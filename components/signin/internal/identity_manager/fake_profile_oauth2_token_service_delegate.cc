@@ -5,11 +5,13 @@
 #include "components/signin/internal/identity_manager/fake_profile_oauth2_token_service_delegate.h"
 
 #include <memory>
+#include <vector>
 
 #include "base/containers/cxx20_erase.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "google_apis/gaia/gaia_access_token_fetcher.h"
 #include "google_apis/gaia/gaia_constants.h"
 
@@ -77,7 +79,12 @@ void FakeProfileOAuth2TokenServiceDelegate::LoadCredentials(
 
 void FakeProfileOAuth2TokenServiceDelegate::UpdateCredentials(
     const CoreAccountId& account_id,
-    const std::string& refresh_token) {
+    const std::string& refresh_token
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+    ,
+    const std::vector<uint8_t>& wrapped_binding_key
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+) {
   IssueRefreshTokenForUser(account_id, refresh_token);
 }
 

@@ -34,7 +34,7 @@ export class AsyncWriter {
   }
 
   /**
-   * Writes the blob asynchronously.
+   * Writes the |blob| asynchronously.
    *
    * @return Resolved when the data is written.
    */
@@ -74,7 +74,7 @@ export class AsyncWriter {
   }
 
   /**
-   * Combines multiple writers into one writer such that the blob would be
+   * Combines multiple |writers| into one writer such that the blob would be
    * written to each of them.
    *
    * @return The combined writer.

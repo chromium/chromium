@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:orientation="vertical">
+
+    <ImageView
+        android:layout_width="32dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="8dp"
+        android:importantForAccessibility="no"
+        app:srcCompat="@drawable/drag_handlebar" />
+
+    <ImageView
+        android:layout_width="@dimen/mandatory_reauth_opt_in_bottom_sheet_icon_width"
+        android:layout_height="@dimen/mandatory_reauth_opt_in_bottom_sheet_icon_height"
+        android:layout_marginTop="24dp"
+        android:layout_gravity="center_horizontal"
+        android:importantForAccessibility="no"
+        app:srcCompat="@drawable/mandatory_reauth_opt_in" />
+
+    <org.chromium.ui.widget.TextViewWithLeading
+        android:id="@+id/mandatory_reauth_opt_in_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginHorizontal="@dimen/mandatory_reauth_opt_in_bottom_sheet_horizontal_margin"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center_horizontal"
+        android:text="@string/autofill_mandatory_reauth_opt_in_title"
+        android:textAppearance="@style/TextAppearance.Headline.Primary"
+        app:leading="@dimen/headline_size_leading" />
+
+    <org.chromium.ui.widget.TextViewWithLeading
+        android:id="@+id/mandatory_reauth_opt_in_explanation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:layout_marginHorizontal="@dimen/mandatory_reauth_opt_in_bottom_sheet_horizontal_margin"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center_horizontal"
+        android:text="@string/autofill_mandatory_reauth_opt_in_explanation"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+        app:leading="@dimen/text_size_medium_leading" />
+
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/mandatory_reauth_opt_in_accept_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:layout_marginHorizontal="@dimen/mandatory_reauth_opt_in_bottom_sheet_horizontal_margin"
+        style="@style/FilledButton.Flat"
+        android:text="@string/autofill_mandatory_reauth_opt_in_accept"/>
+
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/mandatory_reauth_opt_in_cancel_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="9dp"
+        android:layout_marginHorizontal="@dimen/mandatory_reauth_opt_in_bottom_sheet_horizontal_margin"
+        style="@style/TextButton"
+        android:text="@string/autofill_mandatory_reauth_opt_in_no_thanks"/>
+</LinearLayout>

@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "ios/chrome/browser/signin/system_identity_manager.h"
 #include "ios/chrome/browser/signin/system_identity_manager_observer.h"
 
@@ -49,11 +50,9 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
   // Simulates `identity` removed from another application.
   void ForgetIdentityFromOtherApplication(id<SystemIdentity> identity);
 
-  // Adds a `capabilities` for `identity`. Requires the identity to have been
-  // added to the available identites first.
-  void SetCapabilities(
-      id<SystemIdentity> identity,
-      const std::map<std::string, CapabilityResult>& capabilities);
+  // Returns a test object that enables changes to capability state.
+  AccountCapabilitiesTestMutator* GetCapabilitiesMutator(
+      id<SystemIdentity> identity);
 
   // Simulates reloading the identities from the keychain.
   void FireSystemIdentityReloaded();

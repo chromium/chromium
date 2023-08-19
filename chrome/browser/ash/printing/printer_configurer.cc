@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -16,13 +17,12 @@
 #include "base/hash/md5.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/ash/printing/ppd_provider_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/dbus/common/dbus_library_error.h"
@@ -38,9 +38,6 @@ namespace {
 
 using ::chromeos::PpdProvider;
 using ::chromeos::Printer;
-
-// PrinterConfigurer override for testing.
-PrinterConfigurer* g_printer_configurer_for_test = nullptr;
 
 PrinterSetupResult PrinterSetupResultFromDbusResultCode(const Printer& printer,
                                                         int result_code) {
@@ -109,20 +106,23 @@ PrinterSetupResult PrinterSetupResultFromDbusErrorCode(
 // debugd.  This class must be used on the UI thread.
 class PrinterConfigurerImpl : public PrinterConfigurer {
  public:
-  explicit PrinterConfigurerImpl(Profile* profile)
-      : ppd_provider_(CreatePpdProvider(profile)) {}
+  explicit PrinterConfigurerImpl(scoped_refptr<PpdProvider> ppd_provider)
+      : ppd_provider_(ppd_provider) {
+    DCHECK(ppd_provider_);
+  }
 
   PrinterConfigurerImpl(const PrinterConfigurerImpl&) = delete;
   PrinterConfigurerImpl& operator=(const PrinterConfigurerImpl&) = delete;
 
   ~PrinterConfigurerImpl() override {}
 
-  void SetUpPrinter(const Printer& printer,
-                    PrinterSetupCallback callback) override {
+  void SetUpPrinterInCups(const Printer& printer,
+                          PrinterSetupCallback callback) override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     DCHECK(!printer.id().empty());
     DCHECK(printer.HasUri());
-    PRINTER_LOG(USER) << printer.make_and_model() << " Printer setup requested";
+    PRINTER_LOG(USER) << printer.make_and_model()
+                      << " Printer setup requested as " << printer.id();
 
     if (!printer.IsIppEverywhere()) {
       PRINTER_LOG(DEBUG) << printer.make_and_model() << " Lookup PPD";
@@ -135,7 +135,8 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
     }
 
     PRINTER_LOG(DEBUG) << printer.make_and_model()
-                       << " Attempting autoconf setup";
+                       << " Attempting driverless setup at "
+                       << printer.uri().GetNormalized();
     DebugDaemonClient::Get()->CupsAddAutoConfiguredPrinter(
         printer.id(), printer.uri().GetNormalized(true /*always_print_port*/),
         base::BindOnce(&PrinterConfigurerImpl::OnAddedPrinter,
@@ -163,7 +164,9 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
   void AddPrinter(const Printer& printer,
                   const std::string& ppd_contents,
                   PrinterSetupCallback cb) {
-    PRINTER_LOG(EVENT) << printer.make_and_model() << " Manual printer setup";
+    PRINTER_LOG(EVENT) << printer.make_and_model()
+                       << " Attempting setup with PPD at "
+                       << printer.uri().GetNormalized();
     DebugDaemonClient::Get()->CupsAddManuallyConfiguredPrinter(
         printer.id(), printer.uri().GetNormalized(true /*always_print_port*/),
         ppd_contents,
@@ -226,21 +229,9 @@ void PrinterConfigurer::RecordUsbPrinterSetupSource(
 }
 
 // static
-std::unique_ptr<PrinterConfigurer> PrinterConfigurer::Create(Profile* profile) {
-  if (g_printer_configurer_for_test) {
-    auto printer_configurer =
-        base::WrapUnique<PrinterConfigurer>(g_printer_configurer_for_test);
-    g_printer_configurer_for_test = nullptr;
-    return printer_configurer;
-  }
-  return std::make_unique<PrinterConfigurerImpl>(profile);
-}
-
-// static
-void PrinterConfigurer::SetPrinterConfigurerForTesting(
-    std::unique_ptr<PrinterConfigurer> printer_configurer) {
-  DCHECK(!g_printer_configurer_for_test);
-  g_printer_configurer_for_test = printer_configurer.release();
+std::unique_ptr<PrinterConfigurer> PrinterConfigurer::Create(
+    scoped_refptr<PpdProvider> ppd_provider) {
+  return std::make_unique<PrinterConfigurerImpl>(ppd_provider);
 }
 
 // static
@@ -303,9 +294,8 @@ std::string ResultCodeToMessage(const PrinterSetupResult result) {
     // Printer requires manual setup.
     case PrinterSetupResult::kManualSetupRequired:
       return "Printer requires manual setup.";
-    // This is not supposed to happen.
-    case PrinterSetupResult::kMaxValue:
-      return "The error code is invalid.";
+    case PrinterSetupResult::kPrinterRemoved:
+      return "Printer was removed during the setup.";
   }
 }
 

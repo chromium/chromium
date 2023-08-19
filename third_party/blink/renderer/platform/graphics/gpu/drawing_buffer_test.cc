@@ -137,7 +137,7 @@ TEST_F(DrawingBufferTestMultisample, verifyMultisampleResolve) {
   EXPECT_TRUE(drawing_buffer_->ExplicitResolveOfMultisampleData());
 
   // Resolve the multisample buffer
-  drawing_buffer_->ResolveAndBindForReadAndDraw();
+  EXPECT_TRUE(drawing_buffer_->ResolveAndBindForReadAndDraw());
 
   // After resolve, acknowledge new content
   EXPECT_TRUE(drawing_buffer_->MarkContentsChanged());

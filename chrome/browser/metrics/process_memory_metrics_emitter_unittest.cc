@@ -208,6 +208,9 @@ void PopulateRendererMetrics(GlobalMemoryDumpPtr& global_dump,
                          metrics_mb_or_count["PartitionAlloc"] * 1024 * 1024);
   SetAllocatorDumpMetric(pmd, "blink_gc", "effective_size",
                          metrics_mb_or_count["BlinkGC"] * 1024 * 1024);
+  SetAllocatorDumpMetric(
+      pmd, "blink_gc", "allocated_objects_size",
+      metrics_mb_or_count["BlinkGC.AllocatedObjects"] * 1024 * 1024);
   SetAllocatorDumpMetric(pmd, "v8", "effective_size",
                          metrics_mb_or_count["V8"] * 1024 * 1024);
   SetAllocatorDumpMetric(
@@ -333,6 +336,8 @@ void PopulateRendererMetrics(GlobalMemoryDumpPtr& global_dump,
 
 constexpr int kTestRendererPrivateMemoryFootprint = 130;
 constexpr int kTestRendererMalloc = 120;
+constexpr int kTestRendererBlinkGC = 150;
+constexpr int kTestRendererBlinkGCFragmentation = 10;
 constexpr int kTestRendererSharedMemoryFootprint = 135;
 constexpr int kNativeLibraryResidentMemoryFootprint = 27560;
 constexpr int kNativeLibraryResidentNotOrderedCodeFootprint = 12345;
@@ -348,7 +353,8 @@ MetricMap GetExpectedRendererMetrics() {
         {"Resident", kTestRendererResidentSet}, {"Malloc", kTestRendererMalloc},
         {"PrivateMemoryFootprint", kTestRendererPrivateMemoryFootprint},
         {"SharedMemoryFootprint", kTestRendererSharedMemoryFootprint},
-        {"PartitionAlloc", 140}, {"BlinkGC", 150}, {"V8", 160},
+        {"PartitionAlloc", 140}, {"BlinkGC", 150},
+        {"BlinkGC.AllocatedObjects", 140}, {"V8", 160},
         {"V8.AllocatedObjects", 70}, {"V8.Main", 100},
         {"V8.Main.AllocatedObjects", 30}, {"V8.Main.Heap", 98},
         {"V8.Main.GlobalHandles", 3},
@@ -930,6 +936,8 @@ TEST_F(ProcessMemoryMetricsEmitterTest, RendererAndTotalHistogramsAreRecorded) {
   histograms.ExpectTotalCount("Memory.Total.PrivateMemoryFootprint", 0);
   histograms.ExpectTotalCount("Memory.Total.RendererPrivateMemoryFootprint", 0);
   histograms.ExpectTotalCount("Memory.Total.RendererMalloc", 0);
+  histograms.ExpectTotalCount("Memory.Total.RendererBlinkGC", 0);
+  histograms.ExpectTotalCount("Memory.Total.RendererBlinkGC.Fragmentation", 0);
   histograms.ExpectTotalCount("Memory.Total.SharedMemoryFootprint", 0);
   histograms.ExpectTotalCount("Memory.Total.ResidentSet", 0);
   histograms.ExpectTotalCount(
@@ -978,6 +986,10 @@ TEST_F(ProcessMemoryMetricsEmitterTest, RendererAndTotalHistogramsAreRecorded) {
                                 2 * kTestRendererPrivateMemoryFootprint, 1);
   histograms.ExpectUniqueSample("Memory.Total.RendererMalloc",
                                 2 * kTestRendererMalloc, 1);
+  histograms.ExpectUniqueSample("Memory.Total.RendererBlinkGC",
+                                2 * kTestRendererBlinkGC, 1);
+  histograms.ExpectUniqueSample("Memory.Total.RendererBlinkGC.Fragmentation",
+                                2 * kTestRendererBlinkGCFragmentation, 1);
   histograms.ExpectUniqueSample("Memory.Total.SharedMemoryFootprint",
                                 2 * kTestRendererSharedMemoryFootprint, 1);
   histograms.ExpectUniqueSample("Memory.Total.ResidentSet",

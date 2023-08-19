@@ -11,7 +11,6 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/extensions/install_gate.h"
 #include "chrome/browser/extensions/install_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -26,9 +25,7 @@ namespace extensions {
 // The class is owned by ExtensionService, but is mostly independent. Tasks to
 // garbage collect extensions and isolated storage are posted once the
 // ExtensionSystem signals ready.
-class ExtensionGarbageCollector : public KeyedService,
-                                  public InstallObserver,
-                                  public InstallGate {
+class ExtensionGarbageCollector : public KeyedService, public InstallObserver {
  public:
   explicit ExtensionGarbageCollector(content::BrowserContext* context);
 
@@ -48,14 +45,12 @@ class ExtensionGarbageCollector : public KeyedService,
 
   // InstallObserver:
   void OnBeginCrxInstall(content::BrowserContext* context,
+                         const CrxInstaller& installer,
                          const std::string& extension_id) override;
   void OnFinishCrxInstall(content::BrowserContext* context,
+                          const CrxInstaller& installer,
                           const std::string& extension_id,
                           bool success) override;
-
-  // InstallGate:
-  Action ShouldDelay(const Extension* extension,
-                     bool install_immediately) override;
 
  protected:
   // Cleans up the extension install directory. It can end up with garbage in it
@@ -66,15 +61,6 @@ class ExtensionGarbageCollector : public KeyedService,
   // The "Temp" directory that is used during extension installation will get
   // removed iff there are no pending installations.
   virtual void GarbageCollectExtensions();
-
-  // Garbage collects apps/extensions isolated storage if it is uninstalled.
-  // There is an exception for ephemeral apps because they can outlive their
-  // cache lifetimes.
-  void GarbageCollectIsolatedStorageIfNeeded();
-
-  // Restart any extension installs which were delayed for isolated storage
-  // garbage collection.
-  void OnGarbageCollectIsolatedStorageFinished();
 
   static void GarbageCollectExtensionsOnFileThread(
       const base::FilePath& install_directory,
@@ -87,12 +73,6 @@ class ExtensionGarbageCollector : public KeyedService,
   // The number of currently ongoing CRX installations. This is used to prevent
   // garbage collection from running while a CRX is being installed.
   int crx_installs_in_progress_;
-
-  // Set to true to delay all new extension installations. Acts as a lock to
-  // allow background processing of garbage collection of on-disk state without
-  // needing to worry about race conditions caused by extension installation and
-  // reinstallation.
-  bool installs_delayed_for_gc_ = false;
 
   // Generate weak pointers for safely posting to the file thread for garbage
   // collection.

@@ -1,0 +1,27 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/webui/resources/tools/build_webui.gni")
+
+build_webui("build") {
+  grd_prefix = "webui_examples_browser"
+
+  static_files = [
+    "index.css",
+    "index.html",
+  ]
+
+  non_web_component_files = [ "index.ts" ]
+
+  mojo_files = [
+    "$root_gen_dir/ui/webui/examples/browser/ui/web/browser.mojom-webui.ts",
+  ]
+
+  mojo_files_deps =
+      [ "//ui/webui/examples:browser_mojo_bindings_ts__generator" ]
+
+  ts_deps = [ "//ui/webui/resources/mojo:build_ts" ]
+
+  grit_output_dir = "$target_gen_dir"
+}

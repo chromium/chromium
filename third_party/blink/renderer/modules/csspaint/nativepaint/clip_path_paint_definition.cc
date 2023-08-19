@@ -12,12 +12,14 @@
 #include "third_party/blink/renderer/core/css/basic_shape_functions.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
+#include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/cssom/paint_worklet_deferred_image.h"
 #include "third_party/blink/renderer/core/css/cssom/paint_worklet_input.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/shape_clip_path_operation.h"
 #include "ui/gfx/geometry/size_f.h"
 
@@ -148,7 +150,13 @@ scoped_refptr<BasicShape> GetAnimatedShapeFromKeyframe(
         const_cast<Element*>(element), property_name, *value);
     StyleResolverState state(element->GetDocument(),
                              *const_cast<Element*>(element));
-    basic_shape = BasicShapeForValue(state, *computed_value);
+
+    // TODO(pdr): Support <geometry-box> (alone, or with a shape).
+    if (const auto* list = DynamicTo<CSSValueList>(computed_value)) {
+      if (list->First().IsBasicShapeValue() || list->First().IsPathValue()) {
+        basic_shape = BasicShapeForValue(state, list->First());
+      }
+    }
   } else {
     DCHECK(frame->IsTransitionPropertySpecificKeyframe());
     const TransitionKeyframe::PropertySpecificKeyframe* keyframe =
@@ -218,7 +226,8 @@ scoped_refptr<ShapeClipPathOperation> InterpolateShapes(
     result_shape = CreateBasicShape(to_shape_type, *to.interpolable_value,
                                     *to.non_interpolable_value);
   }
-  return ShapeClipPathOperation::Create(result_shape);
+  // TODO(pdr): Handle geometry box.
+  return ShapeClipPathOperation::Create(result_shape, GeometryBox::kBorderBox);
 }
 
 double GetLocalProgress(double global_progress,
@@ -430,8 +439,10 @@ gfx::RectF ClipPathPaintDefinition::ClipAreaRect(
 
   for (unsigned i = 0; i < frames->size(); i++) {
     scoped_refptr<BasicShape> cur_shape = animated_shapes[i];
+
+    // TODO(pdr): Handle geometry box.
     scoped_refptr<ShapeClipPathOperation> scpo =
-        ShapeClipPathOperation::Create(cur_shape);
+        ShapeClipPathOperation::Create(cur_shape, GeometryBox::kBorderBox);
     Path path = scpo->GetPath(reference_box, zoom);
     clip_area.Union(path.BoundingRect());
 

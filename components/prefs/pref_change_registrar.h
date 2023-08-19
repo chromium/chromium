@@ -74,7 +74,7 @@ class COMPONENTS_PREFS_EXPORT PrefChangeRegistrar final : public PrefObserver {
   using ObserverMap = std::map<std::string, NamedChangeCallback>;
 
   ObserverMap observers_;
-  raw_ptr<PrefService, DanglingUntriaged> service_;
+  raw_ptr<PrefService, AcrossTasksDanglingUntriaged> service_;
 };
 
 #endif  // COMPONENTS_PREFS_PREF_CHANGE_REGISTRAR_H_

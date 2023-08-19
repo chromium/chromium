@@ -18,6 +18,7 @@
 #include <string>
 
 #include "gtest/gtest.h"
+#include "absl/strings/str_cat.h"
 
 namespace {
 
@@ -87,6 +88,9 @@ constexpr std::ios::fmtflags kBase = std::ios::showbase;
 constexpr std::ios::fmtflags kPos = std::ios::showpos;
 
 void CheckUint128Case(const Uint128TestCase& test_case) {
+  if (test_case.flags == kDec && test_case.width == 0) {
+    EXPECT_EQ(absl::StrCat(test_case.value), test_case.expected);
+  }
   std::ostringstream os;
   os.flags(test_case.flags);
   os.width(test_case.width);
@@ -155,6 +159,9 @@ struct Int128TestCase {
 };
 
 void CheckInt128Case(const Int128TestCase& test_case) {
+  if (test_case.flags == kDec && test_case.width == 0) {
+    EXPECT_EQ(absl::StrCat(test_case.value), test_case.expected);
+  }
   std::ostringstream os;
   os.flags(test_case.flags);
   os.width(test_case.width);

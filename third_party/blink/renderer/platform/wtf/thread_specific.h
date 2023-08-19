@@ -133,7 +133,7 @@ inline ThreadSpecific<T>::operator T*() {
     }
 
     Set(*ptr);
-    new (NotNullTag::kNotNull, *ptr) T;
+    ::new (NotNullTag::kNotNull, *ptr) T;
   }
   return *ptr;
 }

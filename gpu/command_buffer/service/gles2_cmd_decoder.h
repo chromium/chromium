@@ -30,10 +30,6 @@ namespace gl {
 class GLSurface;
 }
 
-namespace gfx {
-class Size;
-}
-
 namespace gpu {
 
 class DecoderClient;
@@ -163,9 +159,6 @@ class GPU_GLES2_EXPORT GLES2Decoder : public CommonDecoder,
                                                 bool preserve,
                                                 bool needs_depth,
                                                 bool needs_stencil) = 0;
-
-  // Resize an offscreen frame buffer.
-  virtual bool ResizeOffscreenFramebuffer(const gfx::Size& size) = 0;
 
   // Gets the GLES2 Util which holds info.
   virtual GLES2Util* GetGLES2Util() = 0;

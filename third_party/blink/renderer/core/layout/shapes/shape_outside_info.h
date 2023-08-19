@@ -33,9 +33,9 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/shapes/shape.h"
 #include "third_party/blink/renderer/core/style/shape_value.h"
-#include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -45,64 +45,14 @@ namespace blink {
 class LayoutBox;
 struct PhysicalRect;
 
-class ShapeOutsideDeltas final {
-  DISALLOW_NEW();
-
- public:
-  ShapeOutsideDeltas() : line_overlaps_shape_(false), is_valid_(false) {}
-
-  ShapeOutsideDeltas(LayoutUnit left_margin_box_delta,
-                     LayoutUnit right_margin_box_delta,
-                     bool line_overlaps_shape,
-                     LayoutUnit border_box_line_top,
-                     LayoutUnit line_height)
-      : left_margin_box_delta_(left_margin_box_delta),
-        right_margin_box_delta_(right_margin_box_delta),
-        border_box_line_top_(border_box_line_top),
-        line_height_(line_height),
-        line_overlaps_shape_(line_overlaps_shape),
-        is_valid_(true) {}
-
-  bool IsForLine(LayoutUnit border_box_line_top, LayoutUnit line_height) {
-    return is_valid_ && border_box_line_top_ == border_box_line_top &&
-           line_height_ == line_height;
-  }
-
-  bool IsValid() { return is_valid_; }
-  LayoutUnit LeftMarginBoxDelta() {
-    DCHECK(is_valid_);
-    return left_margin_box_delta_;
-  }
-  LayoutUnit RightMarginBoxDelta() {
-    DCHECK(is_valid_);
-    return right_margin_box_delta_;
-  }
-  bool LineOverlapsShape() {
-    DCHECK(is_valid_);
-    return line_overlaps_shape_;
-  }
-
- private:
-  LayoutUnit left_margin_box_delta_;
-  LayoutUnit right_margin_box_delta_;
-  LayoutUnit border_box_line_top_;
-  LayoutUnit line_height_;
-  bool line_overlaps_shape_ : 1;
-  bool is_valid_ : 1;
-};
-
 class ShapeOutsideInfo final : public GarbageCollected<ShapeOutsideInfo> {
  public:
   explicit ShapeOutsideInfo(const LayoutBox& layout_box)
       : layout_box_(&layout_box), is_computing_shape_(false) {}
 
-  void SetReferenceBoxLogicalSize(LayoutSize);
+  void SetReferenceBoxLogicalSize(LogicalSize new_reference_box_logical_size,
+                                  LogicalSize margin_size);
   void SetPercentageResolutionInlineSize(LayoutUnit);
-
-  LayoutUnit ShapeLogicalBottom() const {
-    return ComputedShape().ShapeMarginLogicalBoundingBox().MaxY() +
-           LogicalTopOffset();
-  }
 
   static ShapeOutsideInfo& EnsureInfo(const LayoutBox& key) {
     InfoMap& info_map = ShapeOutsideInfo::GetInfoMap();
@@ -147,9 +97,8 @@ class ShapeOutsideInfo final : public GarbageCollected<ShapeOutsideInfo> {
 
   const Member<const LayoutBox> layout_box_;
   mutable std::unique_ptr<Shape> shape_;
-  LayoutSize reference_box_logical_size_;
+  LogicalSize reference_box_logical_size_;
   LayoutUnit percentage_resolution_inline_size_;
-  ShapeOutsideDeltas shape_outside_deltas_;
   mutable bool is_computing_shape_;
 };
 

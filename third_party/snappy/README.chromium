@@ -6,6 +6,7 @@ CPEPrefix: cpe:/a:google:snappy:1.1.10
 License: New BSD
 License File: src/COPYING
 Security Critical: yes
+Shipped: yes
 
 Description:
 Compression library used by LevelDB.

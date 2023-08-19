@@ -14,8 +14,9 @@ example_value: 30
 features:
   dynamic_refresh: true
   per_profile: true
+supported_on:
+- chrome.*:116-
 future_on:
-- chrome.*
 - android
 owners:
 - nicolaso@chromium.org

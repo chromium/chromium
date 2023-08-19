@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("mailto_handler") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "mailto_handler_configuration.h",
     "mailto_handler_configuration.mm",
@@ -11,10 +10,10 @@ source_set("mailto_handler") {
     "mailto_handler_service.mm",
   ]
   deps = [
-    "//base",
     "//components/keyed_service/core",
     "//ios/public/provider/chrome/browser/signin:signin_sso_api",
   ]
+  public_deps = [ "//base" ]
   frameworks = [ "UIKit.framework" ]
 }
 
@@ -23,7 +22,6 @@ source_set("mailto_handler") {
 # provides an implementation). Using separate targets prevents circular
 # dependencies.
 source_set("mailto_handler_factory") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "mailto_handler_service_factory.h",
     "mailto_handler_service_factory.mm",
@@ -35,7 +33,6 @@ source_set("mailto_handler_factory") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/signin",
-    "//ios/chrome/browser/sync",
     "//ios/public/provider/chrome/browser/mailto_handler:mailto_handler_api",
   ]
 }

@@ -4,6 +4,10 @@
 
 package org.chromium.components.browser_ui.widget.listmenu;
 
+import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.view.View;
+
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
@@ -24,15 +28,25 @@ public class ListMenuItemProperties {
     public static final WritableObjectPropertyKey<String> CONTENT_DESCRIPTION =
             new WritableObjectPropertyKey<>();
     public static final WritableIntPropertyKey START_ICON_ID = new WritableIntPropertyKey();
+    public static final WritableObjectPropertyKey<Drawable> START_ICON_DRAWABLE =
+            new WritableObjectPropertyKey<>();
     public static final WritableIntPropertyKey END_ICON_ID = new WritableIntPropertyKey();
+    public static final WritableIntPropertyKey GROUP_ID = new WritableIntPropertyKey();
     public static final WritableIntPropertyKey MENU_ITEM_ID = new WritableIntPropertyKey();
+    public static final WritableObjectPropertyKey<View.OnClickListener> CLICK_LISTENER =
+            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<Intent> INTENT =
+            new WritableObjectPropertyKey<>();
     public static final WritableBooleanPropertyKey ENABLED = new WritableBooleanPropertyKey();
     public static final WritableIntPropertyKey TINT_COLOR_ID = new WritableIntPropertyKey();
     public static final ReadableIntPropertyKey TEXT_APPEARANCE_ID = new ReadableIntPropertyKey();
     public static final ReadableBooleanPropertyKey IS_TEXT_ELLIPSIZED_AT_END =
             new ReadableBooleanPropertyKey();
+    public static final ReadableBooleanPropertyKey KEEP_START_ICON_SPACING_WHEN_HIDDEN =
+            new ReadableBooleanPropertyKey();
 
     public static final PropertyKey[] ALL_KEYS = {TITLE_ID, TITLE, CONTENT_DESCRIPTION,
-            START_ICON_ID, END_ICON_ID, MENU_ITEM_ID, ENABLED, TINT_COLOR_ID, TEXT_APPEARANCE_ID,
-            IS_TEXT_ELLIPSIZED_AT_END};
+            START_ICON_ID, START_ICON_DRAWABLE, END_ICON_ID, GROUP_ID, MENU_ITEM_ID, CLICK_LISTENER,
+            INTENT, ENABLED, TINT_COLOR_ID, TEXT_APPEARANCE_ID, IS_TEXT_ELLIPSIZED_AT_END,
+            KEEP_START_ICON_SPACING_WHEN_HIDDEN};
 }

@@ -187,6 +187,12 @@
         "enum": ["aboveAccessibilityBubbles", "belowAccessibilityBubbles"]
       },
       {
+        "id": "AssistiveTechnologyType",
+        "type": "string",
+        "description": "The assistive technology type of this extension.",
+        "enum": ["chromeVox", "selectToSpeak", "switchAccess", "autoClick", "magnifier", "dictation"]
+      },
+      {
         "id": "FocusRingInfo",
         "type": "object",
         "properties": {
@@ -234,7 +240,7 @@
       {
         "id": "AccessibilityFeature",
         "type": "string",
-        "enum": [ "googleTtsLanguagePacks", "dictationContextChecking", "chromevoxTabsDeprecation", "chromevoxSettingsMigration"],
+        "enum": [ "googleTtsLanguagePacks", "dictationContextChecking", "chromevoxSettingsMigration"],
         "description": "Subset of accessibility features."
       },
       {
@@ -467,6 +473,11 @@
             "type": "array",
             "items": { "$ref": "FocusRingInfo" },
             "description": "Array of focus rings to draw."
+          },
+          {
+            "name": "atType",
+            "$ref": "AssistiveTechnologyType",
+            "description": "Associates these focus rings with this feature type."
           }
         ]
       },
@@ -784,6 +795,12 @@
             "name": "description",
             "type": "string",
             "description": "The description to show within the confirmation dialog."
+          },
+          {
+            "name": "cancelName",
+            "type": "string",
+            "description": "The human-readable name of the cancel button.",
+            "optional": true
           }
         ],
         "returns_async": {
@@ -914,6 +931,12 @@
         "name": "onTwoFingerTouchStop",
         "type": "function",
         "description": "Fired when the user is no longer holding down two fingers (including releasing one, holding down three, or moving them).",
+        "parameters": []
+      },
+      {
+        "name": "onSelectToSpeakContextMenuClicked",
+        "type": "function",
+        "description": "Fired when the Select to Speak context menu is clicked from outside the context of the Select to Speak extension.",
         "parameters": []
       },
       {

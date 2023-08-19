@@ -18,6 +18,8 @@ import android.widget.TextView;
  * Represents the view inside the page info popup.
  */
 public class PageInfoView extends FrameLayout implements OnClickListener {
+    private static final int COOKIES_ROW_POSITION = 1;
+
     private LinearLayout mRowWrapper;
     private PageInfoRowView mConnectionRow;
     private PageInfoRowView mPermissionsRow;
@@ -25,19 +27,24 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
     private Button mForgetSiteButton;
     private TextView mHttpsImageCompressionMessage;
     private Button mOpenOnlineButton;
-    private Runnable mOnUiClosingCallback;
 
     /**  Parameters to configure the view of the page info popup. */
     public static class Params {
         public boolean openOnlineButtonShown = true;
         public boolean httpsImageCompressionMessageShown;
         public Runnable openOnlineButtonClickCallback;
-        public Runnable onUiClosingCallback;
     }
 
     public PageInfoView(Context context, Params params) {
         super(context);
         LayoutInflater.from(context).inflate(R.layout.page_info, this, true);
+        // Elevate the "Cookies and site data" item when User Bypass is enabled.
+        if (PageInfoFeatures.USER_BYPASS_UI.isEnabled()) {
+            LinearLayout rowWrapper = (LinearLayout) findViewById(R.id.page_info_row_wrapper);
+            PageInfoRowView cookiesRow = (PageInfoRowView) findViewById(R.id.page_info_cookies_row);
+            rowWrapper.removeView(cookiesRow);
+            rowWrapper.addView(cookiesRow, COOKIES_ROW_POSITION);
+        }
         init(params);
     }
 
@@ -66,7 +73,6 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
 
     private void initCookies(Params params) {
         mCookiesRow = findViewById(R.id.page_info_cookies_row);
-        mOnUiClosingCallback = params.onUiClosingCallback;
     }
 
     private void initForgetSiteButton() {
@@ -119,7 +125,6 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        mOnUiClosingCallback.run();
     }
 
     // OnClickListener interface.

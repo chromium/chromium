@@ -44,6 +44,7 @@ public class WebappIntentDataProvider extends BrowserServicesIntentDataProvider 
     private final @ActivityType int mActivityType;
     private final Intent mIntent;
     private final ColorProviderImpl mColorProvider;
+    private final ColorProviderImpl mDarkColorProvider;
 
     /**
      * Returns the toolbar color to use if a custom color is not specified by the webapp.
@@ -52,11 +53,20 @@ public class WebappIntentDataProvider extends BrowserServicesIntentDataProvider 
         return Color.WHITE;
     }
 
+    /**
+     * Returns the toolbar color to use if a custom dark color is not specified by the webapp.
+     */
+    public static int getDefaultDarkToolbarColor() {
+        return Color.BLACK;
+    }
+
     WebappIntentDataProvider(@NonNull Intent intent, int toolbarColor,
-            boolean hasCustomToolbarColor, @Nullable ShareData shareData,
-            @NonNull WebappExtras webappExtras, @Nullable WebApkExtras webApkExtras) {
+            boolean hasCustomToolbarColor, int darkToolbarColor, boolean hasCustomDarkToolbarColor,
+            @Nullable ShareData shareData, @NonNull WebappExtras webappExtras,
+            @Nullable WebApkExtras webApkExtras) {
         mIntent = intent;
         mColorProvider = new ColorProviderImpl(toolbarColor, hasCustomToolbarColor);
+        mDarkColorProvider = new ColorProviderImpl(darkToolbarColor, hasCustomDarkToolbarColor);
         final Context context = new ContextThemeWrapper(
                 ContextUtils.getApplicationContext(), ActivityUtils.getThemeId());
         mCloseButtonIcon = TintedDrawable.constructTintedDrawable(context, R.drawable.btn_close);
@@ -75,14 +85,12 @@ public class WebappIntentDataProvider extends BrowserServicesIntentDataProvider 
     }
 
     @Override
-    @Nullable
-    public Intent getIntent() {
+    public @Nullable Intent getIntent() {
         return mIntent;
     }
 
     @Override
-    @Nullable
-    public String getClientPackageName() {
+    public @Nullable String getClientPackageName() {
         if (mWebApkExtras != null) {
             return mWebApkExtras.webApkPackageName;
         }
@@ -90,15 +98,18 @@ public class WebappIntentDataProvider extends BrowserServicesIntentDataProvider 
     }
 
     @Override
-    @Nullable
-    public String getUrlToLoad() {
+    public @Nullable String getUrlToLoad() {
         return mWebappExtras.url;
     }
 
     @Override
-    @NonNull
-    public ColorProvider getColorProvider() {
+    public @NonNull ColorProvider getColorProvider() {
         return mColorProvider;
+    }
+
+    @Override
+    public @NonNull ColorProvider getDarkColorProvider() {
+        return mDarkColorProvider;
     }
 
     @Override
@@ -117,8 +128,7 @@ public class WebappIntentDataProvider extends BrowserServicesIntentDataProvider 
     }
 
     @Override
-    @CustomTabsUiType
-    public int getUiType() {
+    public @CustomTabsUiType int getUiType() {
         return CustomTabsUiType.MINIMAL_UI_WEBAPP;
     }
 
@@ -138,20 +148,17 @@ public class WebappIntentDataProvider extends BrowserServicesIntentDataProvider 
     }
 
     @Override
-    @Nullable
-    public ShareData getShareData() {
+    public @Nullable ShareData getShareData() {
         return mShareData;
     }
 
     @Override
-    @Nullable
-    public WebappExtras getWebappExtras() {
+    public @Nullable WebappExtras getWebappExtras() {
         return mWebappExtras;
     }
 
     @Override
-    @Nullable
-    public WebApkExtras getWebApkExtras() {
+    public @Nullable WebApkExtras getWebApkExtras() {
         return mWebApkExtras;
     }
 
@@ -180,14 +187,12 @@ public class WebappIntentDataProvider extends BrowserServicesIntentDataProvider 
         }
 
         @Override
-        @Nullable
-        public Integer getNavigationBarColor() {
+        public @Nullable Integer getNavigationBarColor() {
             return null;
         }
 
         @Override
-        @Nullable
-        public Integer getNavigationBarDividerColor() {
+        public @Nullable Integer getNavigationBarDividerColor() {
             return null;
         }
 

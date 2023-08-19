@@ -4,10 +4,12 @@
 
 import {MetadataItem} from '../foreground/js/metadata/metadata_item.js';
 
+import {FilesAppEntry} from './files_app_entry_interfaces.js';
+
 export class MetadataModelInterface {
   /**
    * Obtains metadata for entries.
-   * @param {!Array<!Entry>} entries Entries.
+   * @param {!Array<!Entry|!FilesAppEntry>} entries Entries.
    * @param {!Array<string>} names Metadata property names to be obtained.
    * @return {!Promise<!Array<!MetadataItem>>}
    */
@@ -31,14 +33,14 @@ export class MetadataModelInterface {
 
   /**
    * Invalidates metadata for updated entries.
-   * @param {!Array<!Entry>} entries
+   * @param {!Array<!Entry|!FilesAppEntry>} entries
    */
   notifyEntriesChanged(entries) {}
 
   /**
    * Updates the metadata of the given entries with the provided values for each
    * specified metadata name.
-   * @param {!Array<!Entry>} entries FileURLs to have their metadata updated
+   * @param {!Array<!string>} entries FileURLs to have their metadata updated
    * @param {!Array<string>} names Metadata property names to be updated.
    * @param {!Array<!Array<string|number|boolean>>} values
    */

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -14,7 +14,9 @@ import {XfSelect} from './xf_select.js';
  * Creates new <xf-search-options> element for each test.
  */
 export function setUp(): void {
-  document.body.innerHTML = '<xf-select></xf-select>';
+  document.body.innerHTML = getTrustedHTML`
+  <xf-select></xf-select>
+`;
 }
 
 /**

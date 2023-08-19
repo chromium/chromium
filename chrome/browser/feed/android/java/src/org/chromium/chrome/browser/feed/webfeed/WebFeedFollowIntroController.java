@@ -363,21 +363,17 @@ public class WebFeedFollowIntroController {
                 Base64.encodeToString(webFeedId, Base64.DEFAULT));
     }
 
-    @VisibleForTesting
     boolean getIntroShownForTesting() {
         return mIntroShownForTesting;
     }
-    @VisibleForTesting
     void clearIntroShownForTesting() {
         mIntroShownForTesting = false;
     }
 
-    @VisibleForTesting
     EmptyTabObserver getEmptyTabObserverForTesting() {
         return mTabObserver;
     }
 
-    @VisibleForTesting
     void setClockForTesting(Clock clock) {
         mClock = clock;
     }

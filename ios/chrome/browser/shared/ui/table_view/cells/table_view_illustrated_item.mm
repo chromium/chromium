@@ -4,16 +4,12 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_illustrated_item.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
-#import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 // The insets of the View content and additional margin for some of its items.
@@ -47,7 +43,7 @@ const CGFloat kButtonCornerRadius = 8.0;
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:tableCell withStyler:styler];
   TableViewIllustratedCell* cell =
-      base::mac::ObjCCastStrict<TableViewIllustratedCell>(tableCell);
+      base::apple::ObjCCastStrict<TableViewIllustratedCell>(tableCell);
   if ([self.accessibilityIdentifier length]) {
     cell.accessibilityIdentifier = self.accessibilityIdentifier;
   }
@@ -68,7 +64,18 @@ const CGFloat kButtonCornerRadius = 8.0;
     cell.subtitleLabel.hidden = YES;
   }
   if ([self.buttonText length]) {
-    [cell.button setTitle:self.buttonText forState:UIControlStateNormal];
+    if (IsUIButtonConfigurationEnabled()) {
+      UIButtonConfiguration* buttonConfiguration = cell.button.configuration;
+      UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+      NSDictionary* attributes = @{NSFontAttributeName : font};
+      NSMutableAttributedString* attributedString =
+          [[NSMutableAttributedString alloc] initWithString:self.buttonText
+                                                 attributes:attributes];
+      buttonConfiguration.attributedTitle = attributedString;
+      cell.button.configuration = buttonConfiguration;
+    } else {
+      [cell.button setTitle:self.buttonText forState:UIControlStateNormal];
+    }
   } else {
     cell.button.hidden = YES;
   }
@@ -114,27 +121,22 @@ const CGFloat kButtonCornerRadius = 8.0;
     _subtitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
 
     _button = [[UIButton alloc] init];
-    _button.backgroundColor = [UIColor colorNamed:kBlueColor];
-    [_button.titleLabel
-        setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]];
     _button.layer.cornerRadius = kButtonCornerRadius;
     _button.translatesAutoresizingMaskIntoConstraints = NO;
 
-    // TODO(crbug.com/1418068): Simplify after minimum version required is >=
-    // iOS 15.
-    if (base::ios::IsRunningOnIOS15OrLater() &&
-        IsUIButtonConfigurationEnabled()) {
-      if (@available(iOS 15, *)) {
-        UIButtonConfiguration* buttonConfiguration =
-            [UIButtonConfiguration plainButtonConfiguration];
-        buttonConfiguration.contentInsets =
-            NSDirectionalEdgeInsetsMake(kButtonTitleVerticalContentInset,
-                                        kButtonTitleHorizontalContentInset,
-                                        kButtonTitleVerticalContentInset,
-                                        kButtonTitleHorizontalContentInset);
-        _button.configuration = buttonConfiguration;
-      }
+    if (IsUIButtonConfigurationEnabled()) {
+      UIButtonConfiguration* buttonConfiguration =
+          [UIButtonConfiguration plainButtonConfiguration];
+      buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+          kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset,
+          kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset);
+      buttonConfiguration.background.backgroundColor =
+          [UIColor colorNamed:kBlueColor];
+      _button.configuration = buttonConfiguration;
     } else {
+      _button.backgroundColor = [UIColor colorNamed:kBlueColor];
+      [_button.titleLabel
+          setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]];
       UIEdgeInsets contentInsets = UIEdgeInsetsMake(
           kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset,
           kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset);

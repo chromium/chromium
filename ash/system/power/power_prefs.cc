@@ -127,24 +127,52 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 
-double GetAdaptiveChargingMinProbability() {
+void UpdateAdaptiveChargingConfigsFromFinch(
+    chromeos::PowerPolicyController::PrefValues* values) {
+  // Default values of the settings.
+  constexpr double kDefaultAdaptiveChargingMinProbability = 0.35;
+  constexpr int kDefaultAdaptiveChargingHoldPercent = 80;
+  constexpr double kDefaultAdaptiveChargingMaxDelayPercentile = 0.3;
+  constexpr int kDefaultAdaptiveChargingMinDaysHistory = 14;
+  constexpr double kDefaultAdaptiveChargingMinFullOnAcRatio = 0.5;
+
   // An AdaptiveCharging decision is considered to be reliable if the inference
   // score is higher than this number.
-  constexpr double kDefaultAdaptiveChargingMinProbability = 0.35;
+  values->adaptive_charging_min_probability =
+      base::GetFieldTrialParamByFeatureAsDouble(
+          ash::features::kAdaptiveCharging, "adaptive_charging_min_probability",
+          kDefaultAdaptiveChargingMinProbability);
 
-  return base::GetFieldTrialParamByFeatureAsDouble(
-      ash::features::kAdaptiveCharging, "adaptive_charging_min_probability",
-      kDefaultAdaptiveChargingMinProbability);
-}
-
-int GetAdaptiveChargingHoldPercent() {
   // The AdaptiveCharging will delay the charging when the battery level is at
   // or higher than this number until AdaptiveCharging is over.
-  constexpr int kDefaultAdaptiveChargingHoldPercent = 80;
+  values->adaptive_charging_hold_percent =
+      base::GetFieldTrialParamByFeatureAsInt(
+          ash::features::kAdaptiveCharging, "adaptive_charging_hold_percent",
+          kDefaultAdaptiveChargingHoldPercent);
 
-  return base::GetFieldTrialParamByFeatureAsInt(
-      ash::features::kAdaptiveCharging, "adaptive_charging_hold_percent",
-      kDefaultAdaptiveChargingHoldPercent);
+  // The max delay that AdaptiveCharging applies to hold the charging is capped
+  // by this percentile of the device's charge history durations.
+  values->adaptive_charging_max_delay_percentile =
+      base::GetFieldTrialParamByFeatureAsInt(
+          ash::features::kAdaptiveCharging,
+          "adaptive_charging_max_delay_percentile",
+          kDefaultAdaptiveChargingMaxDelayPercentile);
+
+  // If charging history doesn't contain at least this amount of days,
+  // AdaptiveCharging is disabled.
+  values->adaptive_charging_min_days_history =
+      base::GetFieldTrialParamByFeatureAsInt(
+          ash::features::kAdaptiveCharging,
+          "adaptive_charging_min_days_history",
+          kDefaultAdaptiveChargingMinDaysHistory);
+
+  // If charging history doesn't have full_on_ac_ratio >= this min value,
+  // AdaptiveCharging is disabled.
+  values->adaptive_charging_min_full_on_ac_ratio =
+      base::GetFieldTrialParamByFeatureAsDouble(
+          ash::features::kAdaptiveCharging,
+          "adaptive_charging_min_full_on_ac_ratio",
+          kDefaultAdaptiveChargingMinFullOnAcRatio);
 }
 
 }  // namespace
@@ -441,10 +469,15 @@ void PowerPrefs::UpdatePowerPolicyFromPrefs() {
     values.adaptive_charging_enabled =
         prefs->GetBoolean(prefs::kPowerAdaptiveChargingEnabled);
     if (values.adaptive_charging_enabled) {
-      values.adaptive_charging_min_probability =
-          GetAdaptiveChargingMinProbability();
-      values.adaptive_charging_hold_percent = GetAdaptiveChargingHoldPercent();
+      UpdateAdaptiveChargingConfigsFromFinch(&values);
     }
+  }
+
+  if (base::FeatureList::IsEnabled(features::kSuspendToDisk)) {
+    values.hibernate_delay_sec =
+        features::kHibernateAfterTimeHours.Get() * 3600;
+  } else {
+    values.hibernate_delay_sec = 0;
   }
 
   power_policy_controller_->ApplyPrefs(values);

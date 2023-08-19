@@ -56,7 +56,8 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
 
  private:
   // Implements PasswordStoreBackend interface.
-  void InitBackend(RemoteChangesReceived remote_form_changes_received,
+  void InitBackend(AffiliatedMatchHelper* affiliated_match_helper,
+                   RemoteChangesReceived remote_form_changes_received,
                    base::RepeatingClosure sync_enabled_or_disabled_cb,
                    base::OnceCallback<void(bool)> completion) override;
   void Shutdown(base::OnceClosure shutdown_completed) override;
@@ -68,6 +69,8 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
       LoginsOrErrorReply callback,
       bool include_psl,
       const std::vector<PasswordFormDigest>& forms) override;
+  void GetGroupedMatchingLoginsAsync(const PasswordFormDigest& form_digest,
+                                     LoginsOrErrorReply callback) override;
   void AddLoginAsync(const PasswordForm& form,
                      PasswordChangesOrErrorReply callback) override;
   void UpdateLoginAsync(const PasswordForm& form,
@@ -88,7 +91,6 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
       base::OnceClosure completion) override;
   SmartBubbleStatsStore* GetSmartBubbleStatsStore() override;
-  FieldInfoStore* GetFieldInfoStore() override;
   std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
   CreateSyncControllerDelegate() override;
   void ClearAllLocalPasswords() override;
@@ -114,6 +116,7 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
   const IsAccountStore is_account_store_{false};
   const UpdateAlwaysSucceeds update_always_succeeds_{false};
 
+  raw_ptr<AffiliatedMatchHelper> match_helper_;
   PasswordMap stored_passwords_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };

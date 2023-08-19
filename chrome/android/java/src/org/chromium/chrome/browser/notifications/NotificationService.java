@@ -16,8 +16,7 @@ import org.chromium.chrome.browser.base.SplitCompatIntentService;
 public class NotificationService extends SplitCompatIntentService {
     private static final String TAG = NotificationService.class.getSimpleName();
 
-    @IdentifierNameString
-    private static String sImplClassName =
+    private static @IdentifierNameString String sImplClassName =
             "org.chromium.chrome.browser.notifications.NotificationServiceImpl";
 
     public NotificationService() {

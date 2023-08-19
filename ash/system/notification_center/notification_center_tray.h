@@ -72,6 +72,7 @@ class ASH_EXPORT NotificationCenterTray : public TrayBackgroundView,
   void HandleLocaleChange() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void ClickedOutsideBubble() override;
+  void UpdateTrayItemColor(bool is_active) override;
   void CloseBubble() override;
   void ShowBubble() override;
   void UpdateAfterLoginStatusChange() override;

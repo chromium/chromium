@@ -4,14 +4,64 @@
 
 module blink.mojom;
 
-import "third_party/blink/public/mojom/url_pattern.mojom";
+import "services/network/public/mojom/fetch_api.mojom";
+import "third_party/blink/public/mojom/safe_url_pattern.mojom";
+
+// Enum to represent the ServiceWorker running status.
+// The purpose of having the condition is avoid using ServiceWorker
+// if the service worker is not ready to run the fetch handler right away.
+// `kNotRunning` includes `EmbeddedWorkerStatus`'s `kStarting` and `kStopping`
+// in addition to `kStopped`.
+enum ServiceWorkerRouterRunningStatusEnum {
+  // ServiceWorker can run the fetch handler without waiting for starting
+  // it up.
+  kRunning = 0,
+  // Not ready to run the fetch handler right away.
+  kNotRunning = 1,
+};
+
+// This represents a running status condition to match.
+// See:
+// https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api/blob/main/final-form.md
+struct ServiceWorkerRouterRunningStatusCondition {
+  ServiceWorkerRouterRunningStatusEnum status;
+};
+
+// This represents a request condition to match.
+// See:
+// https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api/blob/main/final-form.md
+struct ServiceWorkerRouterRequestCondition {
+  // The request method.
+  // See: https://fetch.spec.whatwg.org/#concept-request-method
+  string? method;
+
+  // RequestMode
+  // See: https://fetch.spec.whatwg.org/#concept-request-mode
+  // If it is not set, ServiceWorkerRouterEvaluator won't use it as condition.
+  // TODO(http://crbug.com/657632): implement this with optional enum.
+  // Since the code is used on Android, we need Java variant, which currently
+  // does not support an optional enum.
+  bool has_mode = false;
+  network.mojom.RequestMode mode;
+
+  // RequestDestination
+  // See: https://fetch.spec.whatwg.org/#concept-request-destination
+  // If it is not set, ServiceWorkerRouterEvaluator won't use it as condition.
+  // TODO(http://crbug.com/657632): implement this with optional enum.
+  // Since the code is used on Android, we need Java variant, which currently
+  // does not support an optional enum.
+  bool has_destination = false;
+  network.mojom.RequestDestination destination;
+};
 
 // This represents a condition of the router rule.
 // https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api
 // TODO(crbug.com/1371756): implement other conditions in the full picture.
 union ServiceWorkerRouterCondition {
   // URLPattern to be used for matching.
-  UrlPattern url_pattern;
+  SafeUrlPattern url_pattern;
+  ServiceWorkerRouterRequestCondition request;
+  ServiceWorkerRouterRunningStatusCondition running_status;
 };
 
 // This is used for specifying the source is network.
@@ -20,11 +70,27 @@ union ServiceWorkerRouterCondition {
 struct ServiceWorkerRouterNetworkSource {
 };
 
+// This source is used when the browser should allow a network source and
+// the fetch handler to race, allowing the first one to respond to service
+// the request.
+// https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api
+// TODO(crbug.com/1371756): implement fields in the full picture.
+struct ServiceWorkerRouterRaceSource {
+};
+
+// This is used for explicitly running the fetch event listeners.
+// https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api
+// TODO(crbug.com/1371756): implement fields in the full picture.
+struct ServiceWorkerRouterFetchEventSource {
+};
+
 // This represents a source of the router rule.
 // https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api
 // TODO(crbug.com/1371756): implement other sources in the full picture.
 union ServiceWorkerRouterSource {
   ServiceWorkerRouterNetworkSource network_source;
+  ServiceWorkerRouterRaceSource race_source;
+  ServiceWorkerRouterFetchEventSource fetch_event_source;
 };
 
 // This represents a ServiceWorker static routing API's router rule.

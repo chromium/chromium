@@ -30,7 +30,7 @@ void HistogramSignalHandler::SetRelevantHistograms(
         histogram_name,
         base::BindRepeating(&HistogramSignalHandler::OnHistogramSample,
                             weak_ptr_factory_.GetWeakPtr(), signal_type));
-    histogram_observers_[histogram_name] = std::move(histogram_observer);
+    histogram_observers_[pair] = std::move(histogram_observer);
   }
 }
 

@@ -35,6 +35,9 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelHost {
   // TODO(pbos): Break this down to API that says what was added/removed/changed
   // to not have to reset everything.
   virtual void OnFieldAdded(DialogModelField* field) = 0;
+
+  // Called when some aspect of |field| changes.
+  virtual void OnFieldChanged(DialogModelField* field) = 0;
 };
 
 }  // namespace ui

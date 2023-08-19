@@ -54,6 +54,7 @@
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/tree_scope_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom-blink.h"
 #include "third_party/blink/public/mojom/page/widget.mojom-blink.h"
 #include "third_party/blink/public/mojom/portal/portal.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/script/script_evaluation_params.mojom-blink-forward.h"
@@ -310,7 +311,6 @@ class CORE_EXPORT WebLocalFrameImpl final
   uint32_t PrintBegin(const WebPrintParams&,
                       const WebNode& constrain_to_node) override;
   bool WillPrintSoon() override;
-  float GetPrintPageShrink(uint32_t page) override;
   void PrintPage(uint32_t page_to_print, cc::PaintCanvas*) override;
   void PrintEnd() override;
   void DispatchAfterPrintEvent() override;
@@ -331,13 +331,13 @@ class CORE_EXPORT WebLocalFrameImpl final
   const absl::optional<blink::FrameAdEvidence>& AdEvidence() override;
   bool IsFrameCreatedByAdScript() override;
   gfx::Size SpoolSizeInPixelsForTesting(
-      const gfx::Size& page_size_in_pixels,
+      const WebPrintParams&,
       const WebVector<uint32_t>& pages) override;
-  gfx::Size SpoolSizeInPixelsForTesting(const gfx::Size& page_size_in_pixels,
+  gfx::Size SpoolSizeInPixelsForTesting(const WebPrintParams&,
                                         uint32_t page_count) override;
   void PrintPagesForTesting(
       cc::PaintCanvas*,
-      const gfx::Size& page_size_in_pixels,
+      const WebPrintParams&,
       const gfx::Size& spool_size_in_pixels,
       const WebVector<uint32_t>* pages = nullptr) override;
   gfx::Rect GetSelectionBoundsRectForTesting() const override;
@@ -357,7 +357,7 @@ class CORE_EXPORT WebLocalFrameImpl final
   void SetTargetToCurrentHistoryItem(const WebString& target) override;
   void UpdateCurrentHistoryItem() override;
   PageState CurrentHistoryItemToPageState() override;
-  const WebHistoryItem& GetCurrentHistoryItem() const override;
+  WebHistoryItem GetCurrentHistoryItem() const override;
   void SetLocalStorageArea(
       CrossVariantMojoRemote<mojom::StorageAreaInterfaceBase>
           local_storage_area) override;
@@ -402,6 +402,9 @@ class CORE_EXPORT WebLocalFrameImpl final
 
   const mojom::blink::BackForwardCacheNotRestoredReasonsPtr&
   GetNotRestoredReasons();
+
+  void SetLCPPHint(
+      const mojom::LCPCriticalPathPredictorNavigationTimeHintPtr&) override;
 
   void InitializeCoreFrame(
       Page&,
@@ -698,7 +701,7 @@ class CORE_EXPORT WebLocalFrameImpl final
   // scrolled and focused editable node.
   bool has_scrolled_focused_editable_node_into_rect_ = false;
 
-  WebHistoryItem current_history_item_;
+  Member<HistoryItem> current_history_item_;
 
   // All the registered observers.
   base::ObserverList<WebLocalFrameObserver, true> observers_;

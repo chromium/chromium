@@ -42,6 +42,10 @@ struct ASH_PUBLIC_EXPORT ShelfItem {
   // App status.
   AppStatus app_status = AppStatus::kReady;
 
+  // Applicable only for promise app items. Indicates the percentage progress of
+  // an app installation.
+  float progress = -1;
+
   // Whether the item is associated with a window in the currently active desk.
   // This value is valid only when |features::kPerDeskShelf| is enabled.
   // Otherwise it won't be updated and will always be true.
@@ -60,6 +64,10 @@ struct ASH_PUBLIC_EXPORT ShelfItem {
 
   // Whether the item has a notification.
   bool has_notification = false;
+
+  // Whether the item represents a promise app (an app that is pending or
+  // currently undergoing installation).
+  bool is_promise_app = false;
 };
 
 typedef std::vector<ShelfItem> ShelfItems;

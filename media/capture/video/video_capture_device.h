@@ -35,6 +35,11 @@
 #include "media/capture/video_capture_types.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <mfobjects.h>
+#include <wrl/client.h>
+#endif
+
 namespace base {
 class Location;
 }  // namespace base
@@ -65,11 +70,26 @@ struct CAPTURE_EXPORT CapturedExternalVideoBuffer {
   CapturedExternalVideoBuffer(gfx::GpuMemoryBufferHandle handle,
                               VideoCaptureFormat format,
                               gfx::ColorSpace color_space);
-  CapturedExternalVideoBuffer(CapturedExternalVideoBuffer&& other);
-  ~CapturedExternalVideoBuffer();
 
+#if BUILDFLAG(IS_WIN)
+  CapturedExternalVideoBuffer(Microsoft::WRL::ComPtr<IMFMediaBuffer> imf_buffer,
+                              gfx::GpuMemoryBufferHandle handle,
+                              VideoCaptureFormat format,
+                              gfx::ColorSpace color_space);
+#endif
+
+  CapturedExternalVideoBuffer(CapturedExternalVideoBuffer&& other);
   CapturedExternalVideoBuffer& operator=(CapturedExternalVideoBuffer&& other);
 
+  CapturedExternalVideoBuffer(const CapturedExternalVideoBuffer&) = delete;
+  CapturedExternalVideoBuffer& operator=(const CapturedExternalVideoBuffer&) =
+      delete;
+
+  ~CapturedExternalVideoBuffer();
+
+#if BUILDFLAG(IS_WIN)
+  Microsoft::WRL::ComPtr<IMFMediaBuffer> imf_buffer;
+#endif
   gfx::GpuMemoryBufferHandle handle;
   VideoCaptureFormat format;
   gfx::ColorSpace color_space;

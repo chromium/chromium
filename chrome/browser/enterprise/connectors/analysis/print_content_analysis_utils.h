@@ -17,21 +17,75 @@ class WebContents;
 
 namespace enterprise_connectors {
 
-// This function takes something to print (`data`) and scans it if the policy is
-// enabled on a managed browser. It also passes on print metadata (e.g.
-// `printer_name`) to content scans and `hides_preview` for the local ones. On
-// receiving the verdict after the scan this function calls `on_verdict` with
-// true or false. In the non enterprise case where no scan is required, this
-// function directly calls `on_verdict` with true. This function can return
-// asynchronously.
-void PrintIfAllowedByPolicy(scoped_refptr<base::RefCountedMemory> data,
+// Represents context for the kind of print workflow that needs to check if
+// scanning should happen. This is used in conjunction with the
+// `kEnableCloudScanAfterPreview` and `kEnableLocalScanAfterPreview` to control
+// the timing at which scanning occurs.
+//
+//                 +-------------#3-------------+
+//                 |                            V
+//        +---------+        +--------+    +----------+        +-------+
+// --#1-> | Preview | --#2-> | System | -> | Print    | --#4-> | Print |
+//        | dialog  |        | dialog |    | document | --#5-> | job   |
+//        +---------+        +--------+    +----------+        +-------+
+//                               ^
+// --#0--------------------------+
+enum class PrintScanningContext {
+  // Represents the moment the user presses ctrl-p/shift-ctrl-p or an equivalent
+  // action before any preview/system dialog is shown.
+  kBeforeSystemDialog = 0,
+  kBeforePreview = 1,
+
+  // Represents the moment the user has clicked "Print using system dialog",
+  // before said dialog is shown and before the print job starts.
+  kSystemPrintAfterPreview = 2,
+
+  // Represents the moment the user has clicked "Print", before the print job
+  // starts.
+  kNormalPrintAfterPreview = 3,
+
+  // Represents the code paths after the user has picked all printing settings
+  // from either the print preview dialog or system dialog, right as the
+  // document is about to be printed with a real print job. Also indicates what
+  // kind of workflow was used to get those print settings.
+  kSystemPrintBeforePrintDocument = 4,
+  kNormalPrintBeforePrintDocument = 5,
+
+#if BUILDFLAG(IS_MAC)
+  // Represents the code paths after the user has clicked "Open PDF in Preview"
+  // from the print preview dialog on Mac.
+  kOpenPdfInPreview = 6,
+
+  kMaxValue = kOpenPdfInPreview,
+#else
+  kMaxValue = kNormalPrintBeforePrintDocument,
+#endif  // BUILDFLAG(IS_MAC)
+
+};
+
+// These functions take something to print (`data`) and scans it if the policy
+// is enabled on a managed browser. It also passes on print metadata (e.g.
+// `printer_name` or `scanning_data`) to content scans and `hides_preview`
+// for the local ones. On receiving the verdict after the scan these functions
+// calls `on_verdict` with true or false. In the non enterprise case where no
+// scan is required, these functions directly calls `on_verdict` with true.
+// These functions can return asynchronously.
+void PrintIfAllowedByPolicy(scoped_refptr<base::RefCountedMemory> print_data,
                             content::WebContents* initiator,
                             std::string printer_name,
+                            PrintScanningContext context,
                             base::OnceCallback<void(bool)> on_verdict,
                             base::OnceClosure hide_preview);
+void PrintIfAllowedByPolicy(scoped_refptr<base::RefCountedMemory> print_data,
+                            content::WebContents* initiator,
+                            ContentAnalysisDelegate::Data scanning_data,
+                            base::OnceCallback<void(bool)> on_verdict);
 
-absl::optional<enterprise_connectors::ContentAnalysisDelegate::Data>
-GetBeforePrintPreviewAnalysisData(content::WebContents* web_contents);
+// Returns a `ContentAnalysisDelegate::Data` object with information about how
+// content scanning should proceed, or nullopt if it shouldn't.
+absl::optional<ContentAnalysisDelegate::Data> GetPrintAnalysisData(
+    content::WebContents* web_contents,
+    PrintScanningContext context);
 
 }  // namespace enterprise_connectors
 

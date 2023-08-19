@@ -433,18 +433,15 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         mHostName = hostName;
     }
 
-    @VisibleForTesting
     ItemGroup getFirstGroupForTests() {
         return getGroupAt(0).first;
     }
 
-    @VisibleForTesting
     ItemGroup getLastGroupForTests() {
         final int itemCount = getItemCount();
         return itemCount > 0 ? getGroupAt(itemCount - 1).first : null;
     }
 
-    @VisibleForTesting
     void setClearBrowsingDataButtonVisibilityForTest(boolean isVisible) {
         if (mClearBrowsingDataButtonVisible == isVisible) return;
         mClearBrowsingDataButtonVisible = isVisible;
@@ -452,19 +449,16 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         setHeaders();
     }
 
-    @VisibleForTesting
     public ArrayList<HistoryItemView> getItemViewsForTests() {
         return mItemViews;
     }
 
-    @VisibleForTesting
     void generateHeaderItemsForTest() {
         mPrivacyDisclaimerHeaderItem = new HeaderItem(0, null);
         mClearBrowsingDataButtonHeaderItem = new HeaderItem(1, null);
         mClearBrowsingDataButtonVisible = true;
     }
 
-    @VisibleForTesting
     void generateFooterItemsForTest(MoreProgressButton mockButton) {
         mMoreProgressButton = mockButton;
         mMoreProgressButtonFooterItem = new FooterItem(-1, null);
@@ -480,12 +474,10 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         return mClearBrowsingDataButtonVisible;
     }
 
-    @VisibleForTesting
     void setScrollToLoadDisabledForTest(boolean isDisabled) {
         mDisableScrollToLoadForTest = isDisabled;
     }
 
-    @VisibleForTesting
     MoreProgressButton getMoreProgressButtonForTest() {
         return mMoreProgressButton;
     }

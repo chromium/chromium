@@ -76,16 +76,6 @@ class ArcAppInstallEventLogCollector : public InstallEventLogCollectorBase,
   void SuspendDone(base::TimeDelta sleep_duration) override;
 
   // arc::ArcPolicyBridge::Observer:
-  void OnCloudDpsRequested(base::Time time,
-                           const std::set<std::string>& package_names) override;
-  void OnCloudDpsSucceeded(base::Time time,
-                           const std::set<std::string>& package_names) override;
-  void OnCloudDpsFailed(base::Time time,
-                        const std::string& package_name,
-                        arc::mojom::InstallErrorReason reason) override;
-  void OnReportForceInstallMainLoopFailed(
-      base::Time time,
-      const std::set<std::string>& package_names) override;
   void OnPlayStoreLocalPolicySet(
       base::Time time,
       const std::set<std::string>& package_names) override;

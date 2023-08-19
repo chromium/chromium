@@ -45,6 +45,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/uninstall_reason.h"
+#include "extensions/common/api/types.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/feature_switch.h"
@@ -323,9 +324,9 @@ class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
         base::Time::Now(),
         true,    // is_enabled.
         false);  // is_incognito_enabled.
-    extension_prefs_value_map->SetExtensionPref(id, proxy_config::prefs::kProxy,
-                                                kExtensionPrefsScopeRegular,
-                                                base::Value(id));
+    extension_prefs_value_map->SetExtensionPref(
+        id, proxy_config::prefs::kProxy,
+        extensions::api::types::ChromeSettingScope::kRegular, base::Value(id));
 
     if (ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(id))
       return testing::AssertionSuccess();

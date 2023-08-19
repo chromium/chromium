@@ -308,14 +308,13 @@ void CSSPreloadScanner::EmitRule(const SegmentedString& source) {
   if (EqualIgnoringASCIICase(rule_, "import")) {
     if (CanPreloadImportRule()) {
       String url = ParseCSSStringOrURL(rule_value_.ToString());
-      TextPosition position =
-          TextPosition(source.CurrentLine(), source.CurrentColumn());
       auto request = PreloadRequest::CreateIfNeeded(
-          fetch_initiator_type_names::kCSS, position, url,
-          *predicted_base_element_url_, ResourceType::kCSSStyleSheet,
-          referrer_policy_, ResourceFetcher::kImageNotImageSet,
-          exclusion_info_);
+          fetch_initiator_type_names::kCSS, url, *predicted_base_element_url_,
+          ResourceType::kCSSStyleSheet, referrer_policy_,
+          ResourceFetcher::kImageNotImageSet, exclusion_info_);
       if (request) {
+        request->SetInitiatorPosition(
+            TextPosition(source.CurrentLine(), source.CurrentColumn()));
         RenderBlockingBehavior behavior =
             !media_matches_
                 ? RenderBlockingBehavior::kNonBlocking

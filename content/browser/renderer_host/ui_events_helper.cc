@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include "content/common/input/web_touch_event_traits.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/blink/blink_event_util.h"
@@ -91,14 +92,31 @@ bool MakeUITouchEventsFromWebTouchEvents(
   return true;
 }
 
-bool InputEventResultStateIsSetNonBlocking(
+bool InputEventResultStateIsSetBlocking(
     blink::mojom::InputEventResultState ack_state) {
-  switch (ack_state) {
-    case blink::mojom::InputEventResultState::kSetNonBlocking:
-    case blink::mojom::InputEventResultState::kSetNonBlockingDueToFling:
-      return true;
-    default:
-      return false;
+  static bool fix_input_queueing_bug = base::FeatureList::IsEnabled(
+      blink::features::kFixGestureScrollQueuingBug);
+  // The bug here is this function returning an inverted result
+  // The finch experiment |kFixGestureScrollQueuingBug| releases a fix
+  // for this bug that flips this inversion.
+  if (!fix_input_queueing_bug) {
+    switch (ack_state) {
+      case blink::mojom::InputEventResultState::kSetNonBlocking:
+      case blink::mojom::InputEventResultState::kSetNonBlockingDueToFling:
+        return true;
+      default:
+        return false;
+    }
+  } else {
+    // Default input events are marked as kNotConsumed and should not
+    // be marked as blocking.
+    switch (ack_state) {
+      case blink::mojom::InputEventResultState::kNotConsumedBlocking:
+      case blink::mojom::InputEventResultState::kConsumed:
+        return true;
+      default:
+        return false;
+    }
   }
 }
 

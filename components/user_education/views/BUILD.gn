@@ -14,6 +14,8 @@ source_set("views") {
     "help_bubble_view.h",
     "new_badge_label.cc",
     "new_badge_label.h",
+    "toggle_tracked_element_attention_utils.cc",
+    "toggle_tracked_element_attention_utils.h",
   ]
 
   if (is_mac) {
@@ -21,7 +23,6 @@ source_set("views") {
       "help_bubble_factory_mac.h",
       "help_bubble_factory_mac.mm",
     ]
-    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   public_deps = [ "//components/user_education/common" ]

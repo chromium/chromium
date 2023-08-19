@@ -2,78 +2,104 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import './diagnose_info_view.js';
+
 import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
 
-let watchButton: HTMLElement;
-let watchTable: HTMLElement;
+import {DiagnoseInfoViewElement} from './diagnose_info_view.js';
+import {GeolocationDiagnostics, GeolocationInternalsObserverInterface, GeolocationInternalsObserverReceiver, GeolocationInternalsRemote} from './geolocation_internals.mojom-webui.js';
+import {LocationInternalsHandler} from './location_internals.mojom-webui.js';
+
+export const WATCH_BUTTON_ID = 'watch-btn';
+export const LOG_BUTTON_ID = 'log-btn';
+export const REFRESH_STATUS_ID = 'refresh-status';
+export const REFRESH_STATUS_SUCCESS = 'Last updated ';
+export const REFRESH_STATUS_UNINITIALIZED =
+    `Geolocation API is not initialized. Click "Start Watching Position" to
+     begin.`;
+export const REFRESH_FINISH_EVENT = 'refresh-finish-event';
+export const DIAGNOSE_INFO_VIEW_ID = 'diagnose-info-view';
+
 let watchId: number = -1;
+let geolocationInternals: GeolocationInternalsRemote|undefined;
+let geolocationInternalsObserver: GeolocationInternalsObserverReceiver|
+    undefined;
+const diagnoseInfoView =
+    getRequiredElement<DiagnoseInfoViewElement>(DIAGNOSE_INFO_VIEW_ID);
+
+class GeolocationInternalsObserver implements
+    GeolocationInternalsObserverInterface {
+  onDiagnosticsChanged(diagnostics: GeolocationDiagnostics) {
+    handleDiagnosticsChanged(diagnostics);
+  }
+}
+
+// Initialize buttons callback
+function initializeButtons() {
+  const watchButton = getRequiredElement<HTMLElement>(WATCH_BUTTON_ID);
+  watchButton.addEventListener('click', watchPosition);
+  const saveButton = getRequiredElement<HTMLElement>(LOG_BUTTON_ID);
+  saveButton.addEventListener('click', saveDiagnostics);
+}
+
+// Initialize Mojo pipe
+export function initializeMojo() {
+  geolocationInternals = new GeolocationInternalsRemote();
+  LocationInternalsHandler.getRemote().bindInternalsInterface(
+      geolocationInternals.$.bindNewPipeAndPassReceiver());
+
+  geolocationInternalsObserver = new GeolocationInternalsObserverReceiver(
+      new GeolocationInternalsObserver());
+  geolocationInternals!
+      .addInternalsObserver(
+          geolocationInternalsObserver.$.bindNewPipeAndPassRemote())
+      .then(data => {
+        handleDiagnosticsChanged(data.diagnostics);
+      });
+}
+
+function watchPosition() {
+  const watchButton = getRequiredElement<HTMLElement>(WATCH_BUTTON_ID);
+  if (watchId === -1) {
+    watchId = navigator.geolocation.watchPosition(
+        diagnoseInfoView.watchPositionSuccess,
+        diagnoseInfoView.watchPositionError, {
+          enableHighAccuracy: true,
+          timeout: 5000,
+          maximumAge: 0,
+        });
+    watchButton.textContent = 'Stop Watching Position';
+  } else {
+    navigator.geolocation.clearWatch(watchId);
+    watchId = -1;
+    watchButton.textContent = 'Start Watching Position';
+  }
+}
+
+function handleDiagnosticsChanged(diagnostics: GeolocationDiagnostics|null) {
+  const refreshStatus = getRequiredElement(REFRESH_STATUS_ID);
+  if (diagnostics) {
+    refreshStatus.textContent =
+        REFRESH_STATUS_SUCCESS + new Date().toLocaleString();
+    diagnoseInfoView.updateDiagnosticsTables(diagnostics);
+  } else {
+    refreshStatus.textContent = REFRESH_STATUS_UNINITIALIZED;
+  }
+  window.dispatchEvent(new CustomEvent(REFRESH_FINISH_EVENT));
+}
+
+function saveDiagnostics() {
+  const tables = diagnoseInfoView.outputTables();
+  const content = JSON.stringify(tables, null, 2);
+  const blob = new Blob([content], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `location_internals_${new Date().toISOString()}.json`;
+  a.click();
+}
 
 document.addEventListener('DOMContentLoaded', () => {
-  watchButton = getRequiredElement<HTMLElement>('watch-btn');
-  watchTable = getRequiredElement<HTMLElement>('watch-position');
-  watchButton.addEventListener('click', () => {
-    if (watchId === -1) {
-      watchId = navigator.geolocation.watchPosition(logSuccess, logError, {
-        enableHighAccuracy: true,
-        timeout: 5000,
-        maximumAge: 0,
-      });
-      watchButton.textContent = 'Stop Watching Position';
-    } else {
-      navigator.geolocation.clearWatch(watchId);
-      watchId = -1;
-      watchButton.textContent = 'Start Watching Position';
-    }
-  });
+  initializeButtons();
+  initializeMojo();
 });
-
-function logSuccess(position: GeolocationPosition) {
-  assert(watchTable);
-  const timeCell = getRequiredElement<HTMLElement>('watch-position-timestamp');
-  const positionCell =
-      getRequiredElement<HTMLElement>('watch-position-position');
-
-  timeCell.textContent = new Date(position.timestamp).toLocaleString();
-  positionCell.textContent =
-      `${position.coords.latitude} ° , ${position.coords.longitude} ° `;
-
-  if (position.coords.accuracy) {
-    const accuracyCell =
-        getRequiredElement<HTMLElement>('watch-position-accuracy');
-    accuracyCell.textContent = position.coords.accuracy.toString();
-  }
-
-  if (position.coords.altitude) {
-    const altitudeCell =
-        getRequiredElement<HTMLElement>('watch-position-altitude');
-    altitudeCell.textContent = position.coords.altitude.toString();
-  }
-
-  if (position.coords.altitudeAccuracy) {
-    const altitudeAccuracyCell =
-        getRequiredElement<HTMLElement>('watch-position-altitude-accuracy');
-    altitudeAccuracyCell.textContent =
-        position.coords.altitudeAccuracy.toString();
-  }
-
-  if (position.coords.heading) {
-    const headingCell =
-        getRequiredElement<HTMLElement>('watch-position-heading');
-    headingCell.textContent = position.coords.heading.toString();
-  }
-
-  if (position.coords.speed) {
-    const speedCell = getRequiredElement<HTMLElement>('watch-position-speed');
-    speedCell.textContent = position.coords.speed.toString();
-  }
-}
-
-function logError(error: GeolocationPositionError) {
-  assert(watchTable);
-  const timeCell = getRequiredElement<HTMLElement>('watch-position-timestamp');
-  const positionCell =
-      getRequiredElement<HTMLElement>('watch-position-position');
-  timeCell.textContent = new Date().toLocaleString();
-  positionCell.textContent = `${error.message}, code: ${error.code}`;
-}

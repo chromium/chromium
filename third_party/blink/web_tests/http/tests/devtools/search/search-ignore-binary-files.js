@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as Workspace from 'devtools/models/workspace/workspace.js';
+
 (async function() {
   TestRunner.addResult(`Verify that search doesn't search in binary resources.\n`);
   await TestRunner.loadLegacyModule('sources');
@@ -19,7 +21,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
 
   function doSearch(next) {
     var scope = new Sources.SourcesSearchScope();
-    var searchConfig = new Search.SearchConfig('sources.search-in-files', 'AAAAAAA', true, false);
+    var searchConfig = new Workspace.SearchConfig.SearchConfig('sources.search-in-files', 'AAAAAAA', true, false);
     SourcesTestRunner.runSearchAndDumpResults(scope, searchConfig, TestRunner.completeTest.bind(TestRunner));
   }
 })();

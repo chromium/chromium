@@ -71,7 +71,7 @@ public class DeviceLockCoordinatorTest {
     @SmallTest
     public void testDeviceLockCoordinator_simpleTest() {
         DeviceLockCoordinator deviceLockCoordinator =
-                new DeviceLockCoordinator(true, mMockDelegate, null, null, mActivity, null);
+                new DeviceLockCoordinator(mMockDelegate, null, null, mActivity, null);
         assertNotEquals(deviceLockCoordinator, null);
         verify(mMockDelegate, times(1)).setView(any());
 

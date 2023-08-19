@@ -17,6 +17,12 @@ class BrowsingTopicsSiteDataManagerImpl;
 std::vector<browsing_topics::ApiUsageContext> GetBrowsingTopicsApiUsage(
     BrowsingTopicsSiteDataManager* topics_site_data_manager);
 
+// Synchronously get unhashed context domains from hashed context domains.
+std::map<browsing_topics::HashedDomain, std::string>
+GetContextDomainsFromHashedContextDomains(
+    content::BrowsingTopicsSiteDataManager* topics_site_data_manager,
+    std::set<browsing_topics::HashedDomain> hashed_context_domains);
+
 // A tester class that allows mocking a query failure (e.g. database error).
 class TesterBrowsingTopicsSiteDataManager
     : public BrowsingTopicsSiteDataManager {
@@ -45,8 +51,8 @@ class TesterBrowsingTopicsSiteDataManager
   // Use the default handling from `BrowsingTopicsSiteDataManagerImpl`.
   void OnBrowsingTopicsApiUsed(
       const browsing_topics::HashedHost& hashed_top_host,
-      const base::flat_set<browsing_topics::HashedDomain>&
-          hashed_context_domains,
+      const browsing_topics::HashedDomain& hashed_context_domain,
+      const std::string& context_domain,
       base::Time time) override;
 
   void SetQueryFailureOverride() { query_failure_override_ = true; }
@@ -58,6 +64,11 @@ class TesterBrowsingTopicsSiteDataManager
       base::Time begin_time,
       base::Time end_time,
       GetBrowsingTopicsApiUsageCallback callback) override;
+
+  // Use the default handling from `BrowsingTopicsSiteDataManagerImpl`.
+  void GetContextDomainsFromHashedContextDomains(
+      const std::set<browsing_topics::HashedDomain>& hashed_context_domains,
+      GetContextDomainsFromHashedContextDomainsCallback callback) override;
 
  private:
   std::unique_ptr<BrowsingTopicsSiteDataManagerImpl> manager_impl_;

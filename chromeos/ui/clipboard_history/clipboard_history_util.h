@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_UI_CLIPBOARD_HISTORY_CLIPBOARD_HISTORY_UTIL_H_
 #define CHROMEOS_UI_CLIPBOARD_HISTORY_CLIPBOARD_HISTORY_UTIL_H_
 
+#include <string>
 #include <vector>
 
 #include "base/component_export.h"
@@ -20,6 +21,10 @@ class ImageModel;
 }  // namespace ui
 
 namespace chromeos::clipboard_history {
+
+// Returns whether the specified `text` represents a valid URL.
+COMPONENT_EXPORT(CHROMEOS_UI_CLIPBOARD_HISTORY)
+bool IsUrl(const std::u16string& text);
 
 // Sets the function implementation that queries for the clipboard history item
 // descriptors. CrOS Ash and CrOS Lacros have different implementations.
@@ -46,7 +51,7 @@ COMPONENT_EXPORT(CHROMEOS_UI_CLIPBOARD_HISTORY)
 void PasteClipboardItemById(
     const base::UnguessableToken& id,
     int event_flags,
-    crosapi::mojom::ClipboardHistoryControllerShowSource show_source);
+    crosapi::mojom::ClipboardHistoryControllerShowSource paste_source);
 
 // Returns the icon that represents the `descriptor`.
 COMPONENT_EXPORT(CHROMEOS_UI_CLIPBOARD_HISTORY)

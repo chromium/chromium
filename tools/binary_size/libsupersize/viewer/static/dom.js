@@ -21,6 +21,7 @@ const STATE_KEY = {
   EXCLUDE: 'exclude',
   TYPE: 'type',
   FLAG_FILTER: 'flag_filter',
+  FOCUS: 'focus',
 };
 
 /** Utilities for working with the DOM */
@@ -59,6 +60,32 @@ const dom = {
     if (className)
       element.className = className;
     return element;
+  },
+  /**
+   * Schedule a one-time |task| call on next animation frame when |node| is
+   * added to the DOM, or if |node| is already in the DOM.
+   * @param {!Node} node
+   * @param {!function(): *} task
+   */
+  onNodeAdded(node, task) {
+    if (document.contains(node)) {
+      requestAnimationFrame(task);
+      return;
+    }
+    let found = false;
+    const observer = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        for (const node of mutation.addedNodes) {
+          if (node.contains(node)) {
+            observer.disconnect();
+            found = true;
+            requestAnimationFrame(task);
+            return;
+          }
+        }
+      }
+    });
+    observer.observe(document, {subtree: true, childList: true});
   },
 };
 

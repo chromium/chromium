@@ -27,6 +27,7 @@
 #include "ui/accessibility/platform/ax_platform_node_base.h"
 #include "ui/accessibility/platform/ax_platform_text_boundary.h"
 #include "ui/accessibility/platform/ichromeaccessible.h"
+#include "ui/accessibility/platform/sequence_affine_com_object_root_win.h"
 #include "ui/gfx/range/range.h"
 
 // This nonstandard GUID is taken directly from the Mozilla sources
@@ -326,6 +327,11 @@ enum {
     return E_INVALIDARG;                  \
   *arg = {};
 
+// A helper for tracing calls for functions implementing accessibility COM
+// interfaces.
+#define WIN_ACCESSIBILITY_API_TRACE_EVENT(function) \
+  TRACE_EVENT("accessibility", function, perfetto::Flow::FromPointer(this))
+
 namespace base {
 namespace win {
 class VariantVector;
@@ -372,10 +378,9 @@ class COMPONENT_EXPORT(AX_PLATFORM)
   ~WinAccessibilityAPIUsageScopedUIAEventsNotifier();
 };
 
-// TODO(nektar): Remove multithread superclass since we don't support it.
 class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
     uuid("26f5641a-246d-457b-a96d-07f3fae6acf2")) AXPlatformNodeWin
-    : public CComObjectRootEx<CComMultiThreadModel>,
+    : public SequenceAffineComObjectRoot,
       public IDispatchImpl<IAccessible2_4,
                            &IID_IAccessible2_4,
                            &LIBID_IAccessible2Lib>,
@@ -463,6 +468,19 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
   // AXPlatformNodeBase overrides.
   void Destroy() override;
   bool IsPlatformCheckable() const override;
+
+  // CComObjectRootEx (non-virtual) overrides.
+  ULONG InternalAddRef();
+  ULONG InternalRelease();
+
+  // Invoked when the instance's refcount rises above 1. This generally means
+  // that a reference to an interface pointer is being handed out to an
+  // accessibility consumer.
+  virtual void OnReferenced();
+
+  // Invoked when the instance's refcount drops to 1. This generally means that
+  // an accessibility consumer has released its last reference to the instance.
+  virtual void OnDereferenced();
 
   //
   // IAccessible methods.
@@ -1220,8 +1238,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
   // Relationships between this node and other nodes.
   std::vector<Microsoft::WRL::ComPtr<AXPlatformRelationWin>> relations_;
 
-  AXLegacyHypertext old_hypertext_;
-
   // These protected methods are still used by BrowserAccessibilityComWin. At
   // some point post conversion, we can probably move these to be private
   // methods.
@@ -1233,9 +1249,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
   // Also, in IA2, text that includes embedded objects is called hypertext.
   // Returns true if the current object is an IA2 hyperlink.
   bool IsHyperlink();
-  void ComputeHypertextRemovedAndInserted(size_t* start,
-                                          size_t* old_len,
-                                          size_t* new_len);
 
   // If offset is a member of IA2TextSpecialOffsets this function updates the
   // value of offset and returns, otherwise offset remains unchanged.

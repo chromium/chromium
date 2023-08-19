@@ -8,10 +8,6 @@
 #import "base/memory/ref_counted.h"
 #import "testing/platform_test.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // This test verifies assumptions about the murky world of interaction between
 // C++ objects and blocks. Just to make sure.
 

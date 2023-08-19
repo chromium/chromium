@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+  <!--  Set button background to 32 dp diameter for tab strip redesign buttons-->
+  <size
+      android:width="32dp"
+      android:height="32dp" />
+  <solid android:color="@color/modern_white" />
+</shape>

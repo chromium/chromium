@@ -100,6 +100,8 @@ component("views_examples_lib") {
     "toggle_button_example.h",
     "tree_view_example.cc",
     "tree_view_example.h",
+    "typography_example.cc",
+    "typography_example.h",
     "vector_example.cc",
     "vector_example.h",
     "views_examples_export.h",

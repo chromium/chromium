@@ -4,6 +4,7 @@
 
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/renderer_host/legacy_render_widget_host_win.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
@@ -14,7 +15,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
-#include "ui/accessibility/accessibility_switches.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/aura/client/aura_constants.h"
@@ -34,6 +35,9 @@ class AccessibilityTreeLinkageWinBrowserTest
       public ::testing::WithParamInterface<AccessibilityLinkageTestParams> {
  public:
   AccessibilityTreeLinkageWinBrowserTest() {
+    if (GetParam().is_uia_enabled) {
+      scoped_feature_list_.InitAndEnableFeature(::features::kUiaProvider);
+    }
     dummy_ax_platform_node_ = ui::AXPlatformNode::Create(&dummy_ax_node_);
   }
 
@@ -48,9 +52,6 @@ class AccessibilityTreeLinkageWinBrowserTest
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    if (GetParam().is_uia_enabled)
-      base::CommandLine::ForCurrentProcess()->AppendSwitch(
-          ::switches::kEnableExperimentalUIAutomation);
     if (GetParam().is_legacy_window_disabled)
       base::CommandLine::ForCurrentProcess()->AppendSwitch(
           ::switches::kDisableLegacyIntermediateWindow);
@@ -66,6 +67,9 @@ class AccessibilityTreeLinkageWinBrowserTest
   LegacyRenderWidgetHostHWND* GetLegacyRenderWidgetHostHWND() {
     return GetView()->legacy_render_widget_host_HWND_;
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 
  protected:
   ui::AXPlatformNodeDelegate dummy_ax_node_;

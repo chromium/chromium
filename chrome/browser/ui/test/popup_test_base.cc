@@ -75,14 +75,22 @@ void PopupTestBase::SetUpCommandLine(base::CommandLine* command_line) {
 }
 
 // static
-Browser* PopupTestBase::OpenPopup(Browser* browser, const std::string& script) {
-  return OpenPopup(browser->tab_strip_model()->GetActiveWebContents(), script);
+Browser* PopupTestBase::OpenPopup(Browser* browser,
+                                  const std::string& script,
+                                  bool user_gesture) {
+  return OpenPopup(browser->tab_strip_model()->GetActiveWebContents(), script,
+                   user_gesture);
 }
 
 // static
 Browser* PopupTestBase::OpenPopup(const content::ToRenderFrameHost& adapter,
-                                  const std::string& script) {
-  content::ExecuteScriptAsync(adapter, script);
+                                  const std::string& script,
+                                  bool user_gesture) {
+  if (user_gesture) {
+    content::ExecuteScriptAsync(adapter, script);
+  } else {
+    content::ExecuteScriptAsyncWithoutUserGesture(adapter, script);
+  }
   Browser* popup = ui_test_utils::WaitForBrowserToOpen();
   content::WebContents* popup_contents =
       popup->tab_strip_model()->GetActiveWebContents();
@@ -114,7 +122,6 @@ void PopupTestBase::SetUpWindowManagement(Browser* browser) {
       permissions::PermissionRequestManager::FromWebContents(web_contents);
   permission_request_manager->set_auto_response_for_test(
       permissions::PermissionRequestManager::ACCEPT_ALL);
-  // TODO(crbug.com/1450391): Resolve flaky permission failures.
   content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
   ASSERT_TRUE(content::WaitForLoadStop(web_contents));
   ASSERT_TRUE(content::WaitForRenderFrameReady(rfh));
@@ -124,24 +131,7 @@ void PopupTestBase::SetUpWindowManagement(Browser* browser) {
                    R"JS(getScreenDetails().then(s => {
                           window.screenDetails = s;
                           return s.screens.length; }))JS"),
-            0)
-      << " GetVisibleURL: "
-      << web_contents->GetVisibleURL().possibly_invalid_spec()
-      << " GetLastCommittedURL: "
-      << rfh->GetLastCommittedURL().possibly_invalid_spec()
-      << " GetLastCommittedOrigin: "
-      << rfh->GetLastCommittedOrigin().GetDebugString()
-      << " IsInPrimaryMainFrame: " << rfh->IsInPrimaryMainFrame()
-      << " GetLifecycleState: "
-      << static_cast<std::underlying_type<
-             content::RenderFrameHost::LifecycleState>::type>(
-             rfh->GetLifecycleState())
-      << " IsActive: " << rfh->IsActive()
-      << " IsDOMContentLoaded: " << rfh->IsDOMContentLoaded()
-      << " IsFeatureEnabled: "
-      << rfh->IsFeatureEnabled(
-             blink::mojom::PermissionsPolicyFeature::kWindowManagement);
-
+            0);
   // Do not auto-accept any other permission requests.
   permission_request_manager->set_auto_response_for_test(
       permissions::PermissionRequestManager::NONE);
@@ -169,4 +159,19 @@ void PopupTestBase::WaitForHTMLFullscreen(content::WebContents* web_contents) {
           }
         })))JS")
                   .error.empty());
+}
+
+// static
+void PopupTestBase::WaitForUserActivationExpiry(Browser* browser) {
+  const std::string await_activation_expiry_script = R"(
+    (async () => {
+      while (navigator.userActivation.isActive)
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      return navigator.userActivation.isActive;
+    })();
+  )";
+  auto* tab = browser->tab_strip_model()->GetActiveWebContents();
+  EXPECT_EQ(false, EvalJs(tab, await_activation_expiry_script,
+                          content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_FALSE(tab->HasRecentInteraction());
 }

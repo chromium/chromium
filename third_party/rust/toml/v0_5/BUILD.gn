@@ -2,6 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# @generated from third_party/rust/BUILD.gn.hbs by tools/crates/gnrt.
+# Do not edit!
+
 import("//build/rust/cargo_crate.gni")
 
 cargo_crate("lib") {
@@ -13,10 +16,25 @@ cargo_crate("lib") {
   # third_party.toml to use it from first-party code.
   visibility = [ "//third_party/rust/*" ]
   crate_root = "crate/src/lib.rs"
+  sources = [
+    "//third_party/rust/toml/v0_5/crate/examples/decode.rs",
+    "//third_party/rust/toml/v0_5/crate/examples/enum_external.rs",
+    "//third_party/rust/toml/v0_5/crate/examples/toml2json.rs",
+    "//third_party/rust/toml/v0_5/crate/src/datetime.rs",
+    "//third_party/rust/toml/v0_5/crate/src/de.rs",
+    "//third_party/rust/toml/v0_5/crate/src/lib.rs",
+    "//third_party/rust/toml/v0_5/crate/src/macros.rs",
+    "//third_party/rust/toml/v0_5/crate/src/map.rs",
+    "//third_party/rust/toml/v0_5/crate/src/ser.rs",
+    "//third_party/rust/toml/v0_5/crate/src/spanned.rs",
+    "//third_party/rust/toml/v0_5/crate/src/tokens.rs",
+    "//third_party/rust/toml/v0_5/crate/src/value.rs",
+    "//third_party/rust/toml/v0_5/crate/tests/enum_external_deserialize.rs",
+  ]
+  inputs = [ "//third_party/rust/toml/v0_5/crate/README.md" ]
 
   # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
-  sources = [ "crate/src/lib.rs" ]
   edition = "2018"
   cargo_pkg_version = "0.5.9"
   cargo_pkg_authors = "Alex Crichton <alex@alexcrichton.com>"

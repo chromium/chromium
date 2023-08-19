@@ -6,6 +6,8 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/files/file.h"
+#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/task/current_thread.h"
@@ -25,7 +27,7 @@
 #include "ui/events/platform/platform_event_source.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "base/mac/foundation_util.h"
+#include "base/apple/foundation_util.h"
 #endif
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
@@ -50,7 +52,7 @@ ContentBrowserTest::ContentBrowserTest() {
   // uses this same function to change the ContentBrowserClient.
   ContentClient::SetCanChangeContentBrowserClientForTesting(false);
 #if BUILDFLAG(IS_MAC)
-  base::mac::SetOverrideAmIBundled(true);
+  base::apple::SetOverrideAmIBundled(true);
 
   // See comment in InProcessBrowserTest::InProcessBrowserTest().
   base::FilePath content_shell_path;
@@ -58,7 +60,12 @@ ContentBrowserTest::ContentBrowserTest() {
   content_shell_path = content_shell_path.DirName();
   content_shell_path = content_shell_path.Append(
       FILE_PATH_LITERAL("Content Shell.app/Contents/MacOS/Content Shell"));
-  CHECK(base::PathService::Override(base::FILE_EXE, content_shell_path));
+  CHECK(base::CreateDirectory(content_shell_path.DirName()));
+  CHECK(base::File(content_shell_path,
+                   base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_WRITE)
+            .IsValid());
+  file_exe_override_.emplace(base::FILE_EXE, content_shell_path,
+                             /*is_absolute=*/false, /*create=*/false);
 #endif
   CreateTestServer(GetTestDataFilePath());
 
@@ -135,7 +142,7 @@ void ContentBrowserTest::PreRunTestOnMainThread() {
   // deallocation via an autorelease pool (such as browser window closure and
   // browser shutdown). To avoid this, the following pool is recycled after each
   // time code is directly executed.
-  pool_ = new base::mac::ScopedNSAutoreleasePool;
+  pool_ = new base::apple::ScopedNSAutoreleasePool;
 #endif
 
   // Pump startup related events.

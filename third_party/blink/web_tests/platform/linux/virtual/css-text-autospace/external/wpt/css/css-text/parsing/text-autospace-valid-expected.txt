@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+PASS e.style['text-autospace'] = "normal" should set the property value
+PASS e.style['text-autospace'] = "no-autospace" should set the property value
+FAIL e.style['text-autospace'] = "auto" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['text-autospace'] = "ideograph-alpha" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['text-autospace'] = "ideograph-numeric" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['text-autospace'] = "ideograph-alpha ideograph-numeric" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['text-autospace'] = "punctuation" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['text-autospace'] = "punctuation normal" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['text-autospace'] = "punctuation ideograph-alpha" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['text-autospace'] = "punctuation ideograph-alpha ideograph-numeric" should set the property value assert_not_equals: property should be set got disallowed value ""
+Harness: the test ran to completion.
+

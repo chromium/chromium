@@ -72,7 +72,7 @@ class HttpsOnlyModeEnforcelist {
   void RecordMetrics(bool is_nondefault_storage);
 
   raw_ptr<HostContentSettingsMap> host_content_settings_map_;
-  raw_ptr<base::Clock, DanglingUntriaged> clock_;
+  raw_ptr<base::Clock> clock_;
 
   // Tracks sites that are not allowed to load over HTTP, for non-default
   // storage partitions. Enforced hosts are exact hostname matches -- subdomains

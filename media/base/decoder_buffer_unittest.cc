@@ -47,19 +47,6 @@ TEST(DecoderBufferTest, CopyFrom) {
   EXPECT_EQ(0, memcmp(buffer2->data(), kData, kDataSize));
   EXPECT_FALSE(buffer2->end_of_stream());
   EXPECT_FALSE(buffer2->is_key_frame());
-
-  scoped_refptr<DecoderBuffer> buffer3(DecoderBuffer::CopyFrom(
-      reinterpret_cast<const uint8_t*>(&kData), kDataSize,
-      reinterpret_cast<const uint8_t*>(&kData), kDataSize));
-  ASSERT_TRUE(buffer3.get());
-  EXPECT_NE(kData, buffer3->data());
-  EXPECT_EQ(buffer3->data_size(), kDataSize);
-  EXPECT_EQ(0, memcmp(buffer3->data(), kData, kDataSize));
-  EXPECT_NE(kData, buffer3->side_data());
-  EXPECT_EQ(buffer3->side_data_size(), kDataSize);
-  EXPECT_EQ(0, memcmp(buffer3->side_data(), kData, kDataSize));
-  EXPECT_FALSE(buffer3->end_of_stream());
-  EXPECT_FALSE(buffer3->is_key_frame());
 }
 
 TEST(DecoderBufferTest, FromArray) {
@@ -238,6 +225,26 @@ TEST(DecoderBufferTest, IsKeyFrame) {
 
   buffer->set_is_key_frame(true);
   EXPECT_TRUE(buffer->is_key_frame());
+}
+
+TEST(DecoderBufferTest, SideData) {
+  scoped_refptr<DecoderBuffer> buffer(new DecoderBuffer(0));
+  EXPECT_FALSE(buffer->has_side_data());
+
+  constexpr uint64_t kSecureHandle = 42;
+  const std::vector<uint32_t> kSpatialLayers = {1, 2, 3};
+  const std::vector<uint8_t> kAlphaData = {9, 8, 7};
+
+  buffer->WritableSideData().secure_handle = kSecureHandle;
+  buffer->WritableSideData().spatial_layers = kSpatialLayers;
+  buffer->WritableSideData().alpha_data = kAlphaData;
+  EXPECT_TRUE(buffer->has_side_data());
+  EXPECT_EQ(buffer->side_data()->secure_handle, kSecureHandle);
+  EXPECT_EQ(buffer->side_data()->spatial_layers, kSpatialLayers);
+  EXPECT_EQ(buffer->side_data()->alpha_data, kAlphaData);
+
+  buffer->set_side_data(absl::nullopt);
+  EXPECT_FALSE(buffer->has_side_data());
 }
 
 }  // namespace media

@@ -41,7 +41,8 @@ class ForwardingModelTypeControllerDelegate
   void ClearMetadataWhileStopped() override;
 
  private:
-  const raw_ptr<ModelTypeControllerDelegate, DanglingUntriaged> other_;
+  const raw_ptr<ModelTypeControllerDelegate, AcrossTasksDanglingUntriaged>
+      other_;
 };
 
 }  // namespace syncer

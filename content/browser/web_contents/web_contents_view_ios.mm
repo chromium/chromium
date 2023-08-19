@@ -10,12 +10,13 @@
 #include <string>
 #include <utility>
 
-#include "base/mac/scoped_nsobject.h"
 #include "content/browser/renderer_host/popup_menu_helper_ios.h"
 #include "content/browser/renderer_host/render_widget_host_view_ios.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_view_delegate.h"
 #include "ui/base/cocoa/animation_utils.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace content {
 
@@ -33,11 +34,11 @@ void WebContentsViewIOS::InstallCreateHookForTests(
   g_create_render_widget_host_view = create_render_widget_host_view;
 }
 
-// This class holds a scoped_nsobject so we don't leak that in the header
-// of the WebContentsViewIOS.
+// This class holds strongly so we don't leak that in the header of the
+// WebContentsViewIOS.
 class WebContentsUIViewHolder {
  public:
-  base::scoped_nsobject<UIView> view_;
+  UIScrollView* __strong view_;
 };
 
 std::unique_ptr<WebContentsView> CreateWebContentsView(
@@ -55,7 +56,8 @@ WebContentsViewIOS::WebContentsViewIOS(
     std::unique_ptr<WebContentsViewDelegate> delegate)
     : web_contents_(web_contents), delegate_(std::move(delegate)) {
   ui_view_ = std::make_unique<WebContentsUIViewHolder>();
-  ui_view_->view_ = base::scoped_nsobject<UIView>([[UIView alloc] init]);
+  ui_view_->view_ = [[UIScrollView alloc] init];
+  [ui_view_->view_ setScrollEnabled:NO];
   [ui_view_->view_ setAutoresizingMask:UIViewAutoresizingFlexibleWidth |
                                        UIViewAutoresizingFlexibleHeight];
 }
@@ -63,13 +65,13 @@ WebContentsViewIOS::WebContentsViewIOS(
 WebContentsViewIOS::~WebContentsViewIOS() {}
 
 gfx::NativeView WebContentsViewIOS::GetNativeView() const {
-  return ui_view_->view_.get();
+  return gfx::NativeView(ui_view_->view_);
 }
 
 gfx::NativeView WebContentsViewIOS::GetContentNativeView() const {
   RenderWidgetHostView* rwhv = web_contents_->GetRenderWidgetHostView();
   if (!rwhv) {
-    return nullptr;
+    return gfx::NativeView();
   }
   return rwhv->GetNativeView();
 }
@@ -77,9 +79,9 @@ gfx::NativeView WebContentsViewIOS::GetContentNativeView() const {
 gfx::NativeWindow WebContentsViewIOS::GetTopLevelNativeWindow() const {
   gfx::NativeView view = GetContentNativeView();
   if (!view) {
-    return nullptr;
+    return gfx::NativeWindow();
   }
-  return gfx::NativeWindow([view window]);
+  return gfx::NativeWindow(view.Get().window);
 }
 
 gfx::Rect WebContentsViewIOS::GetContainerBounds() const {
@@ -213,7 +215,7 @@ void WebContentsViewIOS::RenderViewHostChanged(RenderViewHost* old_host,
     auto* rwhv = old_host->GetWidget()->GetView();
     if (rwhv && rwhv->GetNativeView()) {
       static_cast<RenderWidgetHostViewIOS*>(rwhv)->UpdateNativeViewTree(
-          nullptr);
+          gfx::NativeView());
     }
   }
 
@@ -222,8 +224,47 @@ void WebContentsViewIOS::RenderViewHostChanged(RenderViewHost* old_host,
     static_cast<RenderWidgetHostViewIOS*>(rwhv)->UpdateNativeViewTree(
         GetNativeView());
   }
+  web_contents_->UpdateBrowserControlsState(cc::BrowserControlsState::kBoth,
+                                            cc::BrowserControlsState::kHidden,
+                                            false);
 }
 
 void WebContentsViewIOS::SetOverscrollControllerEnabled(bool enabled) {}
+
+int WebContentsViewIOS::GetTopControlsHeight() const {
+  auto* delegate = web_contents_->GetDelegate();
+  return delegate ? delegate->GetTopControlsHeight() : 0;
+}
+
+int WebContentsViewIOS::GetTopControlsMinHeight() const {
+  auto* delegate = web_contents_->GetDelegate();
+  return delegate ? delegate->GetTopControlsMinHeight() : 0;
+}
+
+int WebContentsViewIOS::GetBottomControlsHeight() const {
+  auto* delegate = web_contents_->GetDelegate();
+  return delegate ? delegate->GetBottomControlsHeight() : 0;
+}
+
+int WebContentsViewIOS::GetBottomControlsMinHeight() const {
+  auto* delegate = web_contents_->GetDelegate();
+  return delegate ? delegate->GetBottomControlsMinHeight() : 0;
+}
+
+bool WebContentsViewIOS::ShouldAnimateBrowserControlsHeightChanges() const {
+  auto* delegate = web_contents_->GetDelegate();
+  return delegate && delegate->ShouldAnimateBrowserControlsHeightChanges();
+}
+
+bool WebContentsViewIOS::DoBrowserControlsShrinkRendererSize() const {
+  auto* delegate = web_contents_->GetDelegate();
+  return delegate &&
+         delegate->DoBrowserControlsShrinkRendererSize(web_contents_);
+}
+
+bool WebContentsViewIOS::OnlyExpandTopControlsAtPageTop() const {
+  auto* delegate = web_contents_->GetDelegate();
+  return delegate && delegate->OnlyExpandTopControlsAtPageTop();
+}
 
 }  // namespace content

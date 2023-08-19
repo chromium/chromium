@@ -15,6 +15,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_utils.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
@@ -60,6 +61,20 @@ void ManagedDeviceTrayItemView::HandleLocaleChange() {
   UpdateTooltipText();
 }
 
+void ManagedDeviceTrayItemView::UpdateLabelOrImageViewColor(bool active) {
+  if (!chromeos::features::IsJellyEnabled()) {
+    return;
+  }
+  TrayItemView::UpdateLabelOrImageViewColor(active);
+
+  auto* icon = GetIcon();
+  if (icon) {
+    image_view()->SetImage(ui::ImageModel::FromVectorIcon(
+        *icon, active ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                      : cros_tokens::kCrosSysOnSurface));
+  }
+}
+
 void ManagedDeviceTrayItemView::Update() {
   SessionControllerImpl* session = Shell::Get()->session_controller();
   if (!session->IsUserPublicAccount() && !session->IsUserChild()) {
@@ -72,17 +87,27 @@ void ManagedDeviceTrayItemView::Update() {
   SetVisible(true);
 }
 
-void ManagedDeviceTrayItemView::UpdateIcon() {
+const gfx::VectorIcon* ManagedDeviceTrayItemView::GetIcon() {
   const gfx::VectorIcon* icon = nullptr;
   SessionControllerImpl* session = Shell::Get()->session_controller();
-  if (session->IsUserPublicAccount())
+  if (session->IsUserPublicAccount()) {
     icon = &kSystemTrayManagedIcon;
-  else if (session->IsUserChild())
+  } else if (session->IsUserChild()) {
     icon = &kSystemTraySupervisedUserIcon;
+  }
+  return icon;
+}
+
+void ManagedDeviceTrayItemView::UpdateIcon() {
+  auto* icon = GetIcon();
 
   if (icon) {
-    image_view()->SetImage(
-        ui::ImageModel::FromVectorIcon(*icon, kColorAshIconColorPrimary));
+    if (!chromeos::features::IsJellyEnabled()) {
+      image_view()->SetImage(
+          ui::ImageModel::FromVectorIcon(*icon, kColorAshIconColorPrimary));
+      return;
+    }
+    UpdateLabelOrImageViewColor(is_active());
   }
 }
 

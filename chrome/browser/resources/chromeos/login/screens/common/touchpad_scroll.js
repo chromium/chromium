@@ -5,6 +5,7 @@
  * @fileoverview Polymer element for touchpad scroll screen.
  */
 
+import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
 import '//resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import '../../components/buttons/oobe_next_button.js';
 import '../../components/buttons/oobe_text_button.js';
@@ -131,7 +132,7 @@ class TouchpadScrollScreen extends TouchpadScrollScreenElementBase {
   }
 
   getOobeUIInitialState() {
-    return OOBE_UI_STATE.ONBOARDING;
+    return OOBE_UI_STATE.CHOOBE;
   }
 
   onCheckChanged_(newValue, oldValue) {
@@ -147,6 +148,11 @@ class TouchpadScrollScreen extends TouchpadScrollScreenElementBase {
 
   onReturnClicked_() {
     this.userActed(UserAction.RETURN);
+  }
+
+  getAriaLabelToggleButtons_(locale, title, subtitle) {
+    return this.i18nDynamic(locale, title) + '. ' +
+        this.i18nDynamic(locale, subtitle);
   }
 }
 

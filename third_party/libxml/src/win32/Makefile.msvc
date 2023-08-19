@@ -24,7 +24,6 @@ XML_BASENAME = lib$(XML_NAME)
 XML_SO = $(XML_BASENAME).dll
 XML_RES = $(XML_BASENAME).res
 XML_IMP = $(XML_BASENAME).lib
-XML_DEF = $(XML_BASENAME).def
 XML_A = $(XML_BASENAME)_a.lib
 XML_A_DLL = $(XML_BASENAME)_a_dll.lib
 
@@ -365,21 +364,14 @@ $(XML_OBJS_A) : $(XML_INTDIR_A)
 # Compiles static for dll libxml source. Uses the implicit rule for commands.
 $(XML_OBJS_A_DLL) : $(XML_INTDIR_A_DLL) 
 
-# Creates the export definition file (DEF) for libxml.
-$(XML_INTDIR)\$(XML_DEF) : $(XML_INTDIR) $(XML_DEF).src
-	$(CPP) $(CPPFLAGS) $(XML_DEF).src > $(XML_INTDIR)\$(XML_DEF)
 $(XML_INTDIR)\$(XML_RES) : $(XML_INTDIR) libxml2.rc
 	rc -Fo $(XML_INTDIR)\$(XML_RES) libxml2.rc
 
 # Creates the libxml shared object.
-$(BINDIR)\$(XML_SO) : $(BINDIR) $(XML_OBJS) $(XML_INTDIR)\$(XML_DEF) $(XML_INTDIR)\$(XML_RES)
+$(BINDIR)\$(XML_SO) : $(BINDIR) $(XML_OBJS) $(XML_INTDIR)\$(XML_RES)
 	$(LD) $(LDFLAGS) /DLL \
 		/IMPLIB:$(BINDIR)\$(XML_IMP) /OUT:$(BINDIR)\$(XML_SO) $(XML_OBJS) $(XML_INTDIR)\$(XML_RES) $(LIBS)
 	@$(_VC_MANIFEST_EMBED_DLL)
-
-#$(BINDIR)\$(XML_SO) : $(BINDIR) $(XML_OBJS) $(XML_INTDIR)\$(XML_DEF)
-#	$(LD) $(LDFLAGS) /DLL /DEF:$(XML_INTDIR)\$(XML_DEF) \
-#		/IMPLIB:$(BINDIR)\$(XML_IMP) /OUT:$(BINDIR)\$(XML_SO) $(XML_OBJS) $(LIBS)
 
 # Creates the libxml archive.
 $(BINDIR)\$(XML_A) : $(BINDIR) $(XML_OBJS_A)

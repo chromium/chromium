@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("activity_services") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "activity_service_coordinator.h",
     "activity_service_coordinator.mm",
@@ -53,7 +52,6 @@ source_set("activity_services") {
 }
 
 source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "activity_service_mediator_unittest.mm",
@@ -98,10 +96,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
+  configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
 
   sources = [ "activity_service_controller_egtest.mm" ]

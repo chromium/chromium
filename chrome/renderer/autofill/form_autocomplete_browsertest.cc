@@ -104,8 +104,7 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
       const FormData& form,
       const FormFieldData& field,
       const gfx::RectF& bounding_box,
-      AutoselectFirstSuggestion autoselect_first_field,
-      FormElementWasClicked form_element_was_clicked) override {}
+      AutofillSuggestionTriggerSource trigger_source) override {}
 
   void HidePopup() override {}
 
@@ -125,7 +124,8 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
 
   void DidEndTextFieldEditing() override {}
 
-  void SelectFieldOptionsDidChange(const autofill::FormData& form) override {}
+  void SelectOrSelectListFieldOptionsDidChange(
+      const autofill::FormData& form) override {}
 
   // Records whether FocusNoLongerOnForm() get called.
   bool did_unfocus_form_{false};
@@ -216,14 +216,14 @@ FormData CreateAutofillFormData(blink::WebLocalFrame* main_frame) {
       FieldRendererId(fname_element.UniqueRendererFormControlId());
   data.fields.push_back(field_data);
 
-  field_data.name = u"lname";
-  field_data.value = u"Smith";
-  field_data.is_autofilled = true;
   if (!lname_element.IsNull()) {
+    field_data.name = u"lname";
+    field_data.value = u"Smith";
+    field_data.is_autofilled = true;
     field_data.unique_renderer_id =
         FieldRendererId(lname_element.UniqueRendererFormControlId());
+    data.fields.push_back(field_data);
   }
-  data.fields.push_back(field_data);
 
   return data;
 }
@@ -243,7 +243,7 @@ void SimulateFillForm(const FormData& form_data,
       fname_element.To<WebInputElement>());
 
   autofill_agent->FillOrPreviewForm(form_data,
-                                    mojom::RendererFormDataAction::kFill);
+                                    mojom::AutofillActionPersistence::kFill);
 }
 
 // Simulates receiving a message from the browser to fill a form.
@@ -306,7 +306,8 @@ void SimulateFillFormWithNonFillableFields(
   autofill_agent->FormControlElementClicked(
       fname_element.To<WebInputElement>());
 
-  autofill_agent->FillOrPreviewForm(data, mojom::RendererFormDataAction::kFill);
+  autofill_agent->FillOrPreviewForm(data,
+                                    mojom::AutofillActionPersistence::kFill);
 }
 
 }  // end namespace

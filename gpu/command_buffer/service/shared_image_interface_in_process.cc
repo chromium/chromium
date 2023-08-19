@@ -277,11 +277,6 @@ void SharedImageInterfaceInProcess::CreateSharedImageWithDataOnGpuThread(
   if (!MakeContextCurrent())
     return;
 
-  // Creating a si with data can result in raster work. This will be a textureop
-  // that requires a program. See crbug.com/1442725.
-  absl::optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
-  context_state_->UseShaderCache(cache_use, gpu::kDisplayCompositorClientId);
-
   DCHECK(shared_image_factory_);
   if (!shared_image_factory_->CreateSharedImage(
           mailbox, format, size, color_space, surface_origin, alpha_type, usage,
@@ -302,6 +297,10 @@ Mailbox SharedImageInterfaceInProcess::CreateSharedImage(
     base::StringPiece debug_label,
     gfx::GpuMemoryBufferHandle buffer_handle) {
   DCHECK(gpu::IsValidClientUsage(usage));
+
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
+  CHECK(!format.PrefersExternalSampler());
+#endif
 
   auto mailbox = Mailbox::GenerateForSharedImage();
   {

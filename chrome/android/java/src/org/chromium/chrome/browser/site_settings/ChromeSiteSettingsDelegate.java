@@ -40,6 +40,7 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.url.GURL;
@@ -98,6 +99,11 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     }
 
     @Override
+    public void resetZoomLevel(String host) {
+        // TODO(crbug.com/1459631): Add delete logic here.
+    }
+
+    @Override
     public void getFaviconImageForURL(GURL faviconUrl, Callback<Drawable> callback) {
         if (mLargeIconBridge == null) {
             mLargeIconBridge = new LargeIconBridge(mProfile);
@@ -118,15 +124,17 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
                 return ChromeFeatureList.isEnabled(
                         ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING);
             case SiteSettingsCategory.Type.BLUETOOTH:
-                return ContentFeatureList.isEnabled(
+                return ContentFeatureMap.isEnabled(
                         ContentFeatureList.WEB_BLUETOOTH_NEW_PERMISSIONS_BACKEND);
             case SiteSettingsCategory.Type.BLUETOOTH_SCANNING:
                 return CommandLine.getInstance().hasSwitch(
                         ContentSwitches.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES);
             case SiteSettingsCategory.Type.FEDERATED_IDENTITY_API:
-                return ContentFeatureList.isEnabled(ContentFeatures.FED_CM);
+                return ContentFeatureMap.isEnabled(ContentFeatures.FED_CM);
             case SiteSettingsCategory.Type.NFC:
-                return ContentFeatureList.isEnabled(ContentFeatureList.WEB_NFC);
+                return ContentFeatureMap.isEnabled(ContentFeatureList.WEB_NFC);
+            case SiteSettingsCategory.Type.ZOOM:
+                return ContentFeatureMap.isEnabled(ContentFeatureList.SMART_ZOOM);
             default:
                 return true;
         }
@@ -153,6 +161,11 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     }
 
     @Override
+    public boolean isUserBypassUIEnabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.USER_BYPASS_UI);
+    }
+
+    @Override
     public String getChannelIdForOrigin(String origin) {
         return SiteChannelsManager.getInstance().getChannelIdForOrigin(origin);
     }
@@ -163,8 +176,8 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     }
 
     @Override
-    @Nullable
-    public String getDelegateAppNameForOrigin(Origin origin, @ContentSettingsType int type) {
+    public @Nullable String getDelegateAppNameForOrigin(
+            Origin origin, @ContentSettingsType int type) {
         if (type == ContentSettingsType.NOTIFICATIONS) {
             return InstalledWebappPermissionManager.get().getDelegateAppName(origin);
         }
@@ -173,8 +186,8 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     }
 
     @Override
-    @Nullable
-    public String getDelegatePackageNameForOrigin(Origin origin, @ContentSettingsType int type) {
+    public @Nullable String getDelegatePackageNameForOrigin(
+            Origin origin, @ContentSettingsType int type) {
         if (type == ContentSettingsType.NOTIFICATIONS) {
             return InstalledWebappPermissionManager.get().getDelegatePackageName(origin);
         }

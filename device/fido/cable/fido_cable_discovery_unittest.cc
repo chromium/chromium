@@ -27,6 +27,15 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/test/scoped_feature_list.h"
+#include "device/bluetooth/floss/floss_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/startup/browser_init_params.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Sequence;
@@ -200,7 +209,7 @@ class CableMockAdapter : public MockBluetoothAdapter {
                     CreateAdvertisementCallback,
                     AdvertisementErrorCallback));
 
-  void AddNewTestBluetoothDevice(
+  BluetoothDevice* CreateNewTestBluetoothDevice(
       base::span<const uint8_t, kCableEphemeralIdSize> authenticator_eid) {
     auto mock_device = CreateTestBluetoothDevice();
 
@@ -218,8 +227,14 @@ class CableMockAdapter : public MockBluetoothAdapter {
     auto* mock_device_ptr = mock_device.get();
     AddMockDevice(std::move(mock_device));
 
+    return mock_device_ptr;
+  }
+
+  void AddNewTestBluetoothDevice(
+      base::span<const uint8_t, kCableEphemeralIdSize> authenticator_eid) {
+    auto* device = CreateNewTestBluetoothDevice(authenticator_eid);
     for (auto& observer : GetObservers())
-      observer.DeviceAdded(this, mock_device_ptr);
+      observer.DeviceAdded(this, device);
   }
 
   void AddNewTestAppleBluetoothDevice(
@@ -290,6 +305,23 @@ class CableMockAdapter : public MockBluetoothAdapter {
               }
             }));
   }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  void ExpectLEScan(base::span<const uint8_t, kCableEphemeralIdSize> eid) {
+    EXPECT_CALL(*this, StartLowEnergyScanSession(_, _))
+        .WillOnce(
+            [this, eid](std::unique_ptr<BluetoothLowEnergyScanFilter> filter,
+                        base::WeakPtr<BluetoothLowEnergyScanSession::Delegate>
+                            delegate) {
+              EXPECT_TRUE(filter);
+              delegate->OnSessionStarted(/*scan_session=*/nullptr,
+                                         /*error_code=*/absl::nullopt);
+              auto* device = CreateNewTestBluetoothDevice(eid);
+              delegate->OnDeviceFound(/*scan_session=*/nullptr, device);
+              return nullptr;
+            });
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
  protected:
   ~CableMockAdapter() override = default;
@@ -650,5 +682,39 @@ TEST_F(FidoCableDiscoveryTest, TestResumeDiscoveryAfterPoweredOn) {
   mock_adapter->NotifyAdapterPoweredChanged(true);
   task_environment_.FastForwardUntilNoTasksRemain();
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Tests regular successful discovery flow for Cable device on Floss.
+TEST_F(FidoCableDiscoveryTest, TestDiscoveryFindsNewDeviceFloss) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(floss::features::kFlossEnabled);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  crosapi::mojom::BrowserInitParamsPtr init_params =
+      chromeos::BrowserInitParams::GetForTests()->Clone();
+  init_params->is_floss_available = true;
+  init_params->use_floss_bluetooth = true;
+  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  auto cable_discovery = CreateDiscovery();
+  NiceMock<MockFidoDiscoveryObserver> mock_observer;
+  EXPECT_CALL(mock_observer,
+              DiscoveryStarted(cable_discovery.get(), true,
+                               std::vector<FidoAuthenticator*>()));
+  EXPECT_CALL(mock_observer, AuthenticatorAdded(_, _));
+  cable_discovery->set_observer(&mock_observer);
+
+  auto mock_adapter = CableMockAdapter::MakePoweredOn();
+  mock_adapter->ExpectLEScan(kAuthenticatorEid);
+  mock_adapter->ExpectRegisterAdvertisementWithResponse(
+      true /* simulate_success */, kClientEid, kUuidFormattedClientEid);
+
+  BluetoothAdapterFactory::SetAdapterForTesting(mock_adapter);
+  cable_discovery->Start();
+  task_environment_.FastForwardUntilNoTasksRemain();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace device

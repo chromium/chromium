@@ -7,26 +7,23 @@
 #import <memory>
 #import <utility>
 
+#import "base/check.h"
 #import "base/feature_list.h"
 #import "base/functional/callback_helpers.h"
 #import "base/no_destructor.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/password_manager/core/browser/affiliation/affiliations_prefetcher.h"
+#import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/browser/login_database.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/password_manager/core/browser/password_store_built_in_backend.h"
 #import "components/password_manager/core/browser/password_store_factory_util.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/passwords/credentials_cleaner_runner_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_affiliations_prefetcher_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using password_manager::AffiliatedMatchHelper;
 using password_manager::AffiliationService;
@@ -36,10 +33,9 @@ scoped_refptr<password_manager::PasswordStoreInterface>
 IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
     ChromeBrowserState* browser_state,
     ServiceAccessType access_type) {
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kEnablePasswordsAccountStorage)) {
-    return nullptr;
-  }
+  CHECK(base::FeatureList::IsEnabled(
+      password_manager::features::kEnablePasswordsAccountStorage));
+
   // `browser_state` gets always redirected to a non-Incognito one below, so
   // Incognito & IMPLICIT_ACCESS means that incognito browsing session would
   // result in traces in the normal BrowserState without the user knowing it.
@@ -71,7 +67,7 @@ IOSChromeAccountPasswordStoreFactory::~IOSChromeAccountPasswordStoreFactory() =
 scoped_refptr<RefcountedKeyedService>
 IOSChromeAccountPasswordStoreFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  DCHECK(base::FeatureList::IsEnabled(
+  CHECK(base::FeatureList::IsEnabled(
       password_manager::features::kEnablePasswordsAccountStorage));
 
   ChromeBrowserState* browser_state =
@@ -83,7 +79,8 @@ IOSChromeAccountPasswordStoreFactory::BuildServiceInstanceFor(
 
   auto password_store = base::MakeRefCounted<password_manager::PasswordStore>(
       std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
-          std::move(login_db)));
+          std::move(login_db),
+          syncer::WipeModelUponSyncDisabledBehavior::kAlways));
 
   AffiliationService* affiliation_service =
       IOSChromeAffiliationServiceFactory::GetForBrowserState(context);

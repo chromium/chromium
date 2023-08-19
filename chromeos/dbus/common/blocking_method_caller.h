@@ -9,14 +9,14 @@
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
-#include "base/synchronization/waitable_event.h"
+#include "base/types/expected.h"
 #include "dbus/message.h"
 
 namespace dbus {
 
 class Bus;
+class Error;
 class ObjectProxy;
-class ScopedDBusError;
 
 }  // namespace dbus
 
@@ -35,19 +35,12 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_COMMON) BlockingMethodCaller {
   virtual ~BlockingMethodCaller();
 
   // Calls the method and blocks until it returns.
-  std::unique_ptr<dbus::Response> CallMethodAndBlock(
-      dbus::MethodCall* method_call);
-
-  // Calls the method and blocks until it returns. Populates the |error| and
-  // returns null in case of an error.
-  std::unique_ptr<dbus::Response> CallMethodAndBlockWithError(
-      dbus::MethodCall* method_call,
-      dbus::ScopedDBusError* error_out);
+  base::expected<std::unique_ptr<dbus::Response>, dbus::Error>
+  CallMethodAndBlock(dbus::MethodCall* method_call);
 
  private:
   raw_ptr<dbus::Bus> bus_;
   raw_ptr<dbus::ObjectProxy> proxy_;
-  base::WaitableEvent on_blocking_method_call_;
 };
 
 }  // namespace chromeos

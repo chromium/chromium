@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_tab_helper.h"
 
+#import "base/containers/contains.h"
 #import "base/ios/ns_error_util.h"
 #import "base/strings/stringprintf.h"
 #import "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
@@ -21,10 +22,6 @@
 #import "ios/web/public/security/ssl_status.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using LoggingBlock = void (^)(const std::string& event);
 
@@ -72,7 +69,7 @@ BreadcrumbManagerTabHelper::~BreadcrumbManagerTabHelper() = default;
 
 void BreadcrumbManagerTabHelper::PlatformLogEvent(const std::string& event) {
   const bool is_scroll_event =
-      event.find(breadcrumbs::kBreadcrumbScroll) != std::string::npos;
+      base::Contains(event, breadcrumbs::kBreadcrumbScroll);
   if (!is_scroll_event) {
     // `sequentially_scrolled_` is incremented for each scroll event and reset
     // here when non-scrolling event is logged. The user can scroll multiple

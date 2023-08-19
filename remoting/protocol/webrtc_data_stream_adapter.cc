@@ -19,7 +19,7 @@
 
 namespace remoting::protocol {
 
-// On ChromeOS `channel_` is actually a sctp data channel which ends up
+// On ChromeOS `channel_` is actually an sctp data channel which ends up
 // posting all accessors to a different task, and wait for the response
 // (See `MethodCall::Marshal` inside third_party/webrtc/pc/proxy.h).
 class ScopedAllowSyncPrimitivesForWebRtcDataStreamAdapter
@@ -38,7 +38,9 @@ WebrtcDataStreamAdapter::~WebrtcDataStreamAdapter() {
     channel_->Close();
 
     // Destroy |channel_| asynchronously as it may be on stack.
-    // TODO(dcheng): This could probably be ReleaseSoon.
+    // TODO(dcheng): This could probably be ReleaseSoon() however that method
+    // expects a scoped_refptr from //base whereas |channel_| is an
+    // rtc::scoped_refptr.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce([](rtc::scoped_refptr<webrtc::DataChannelInterface>) {},
@@ -51,6 +53,11 @@ void WebrtcDataStreamAdapter::Start(EventHandler* event_handler) {
   DCHECK(event_handler);
 
   event_handler_ = event_handler;
+
+  if (pending_open_callback_) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(pending_open_callback_));
+  }
 }
 
 void WebrtcDataStreamAdapter::Send(google::protobuf::MessageLite* message,
@@ -99,14 +106,23 @@ void WebrtcDataStreamAdapter::OnStateChange() {
     case webrtc::DataChannelInterface::kOpen:
       DCHECK(state_ == State::CONNECTING);
       state_ = State::OPEN;
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(&WebrtcDataStreamAdapter::InvokeOpenEvent,
-                                    weak_ptr_factory_.GetWeakPtr()));
+      pending_open_callback_ =
+          base::BindOnce(&WebrtcDataStreamAdapter::InvokeOpenEvent,
+                         weak_ptr_factory_.GetWeakPtr());
+      // There appears to be a race condition between when Start() is called and
+      // the InvokeOpenEvent() callback is run so we post the InvokeOpenEvent()
+      // callback if an event_handler_ has been registered, otherwise we'll wait
+      // until Start() has been called. See crbug.com/1454494 for more info.
+      if (event_handler_) {
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, std::move(pending_open_callback_));
+      }
       break;
 
     case webrtc::DataChannelInterface::kClosing:
       if (state_ != State::CLOSED) {
         state_ = State::CLOSED;
+        pending_open_callback_.Reset();
         base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE,
             base::BindOnce(&WebrtcDataStreamAdapter::InvokeClosedEvent,

@@ -92,11 +92,20 @@ struct InstallConstants {
   // The prefix for the browser's ProgID. This prefix may be no more than 11
   // characters long; see ShellUtil::GetBrowserProgId and
   // https://msdn.microsoft.com/library/windows/desktop/dd542719.aspx.
-  const wchar_t* prog_id_prefix;
+  const wchar_t* browser_prog_id_prefix;
 
   // A human-readable description of the browser, used when registering with
   // Windows.
-  const wchar_t* prog_id_description;
+  const wchar_t* browser_prog_id_description;
+
+  // The prefix for the browser pdf viewer's ProgID.  This prefix may be no more
+  // than 11 characters long; see ShellUtil::GetBrowserProgId and
+  // https://msdn.microsoft.com/library/windows/desktop/dd542719.aspx.
+  const wchar_t* pdf_prog_id_prefix;
+
+  // A human-readable description of the pdf viewer, used when registering with
+  // Windows.
+  const wchar_t* pdf_prog_id_description;
 
   // The GUID to be used when registering this install mode for Active Setup.
   // Active Setup is used to perform certain operations in a user's context for

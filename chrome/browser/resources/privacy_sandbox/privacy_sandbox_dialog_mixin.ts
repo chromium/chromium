@@ -83,6 +83,12 @@ export const PrivacySandboxDialogMixin = dedupingMixin(
               PrivacySandboxPromptAction.NOTICE_MORE_BUTTON_CLICKED);
         }
 
+        onRestrictedNoticeMoreClicked() {
+          this.onMoreClicked_();
+          this.promptActionOccurred(
+              PrivacySandboxPromptAction.RESTRICTED_NOTICE_MORE_BUTTON_CLICKED);
+        }
+
         promptActionOccurred(action: PrivacySandboxPromptAction) {
           PrivacySandboxDialogBrowserProxy.getInstance().promptActionOccurred(
               action);

@@ -7,10 +7,6 @@
 #import "base/files/file.h"
 #import "base/files/file_path.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 CWTStderrLogger* CWTStderrLogger::GetInstance() {
   return base::Singleton<CWTStderrLogger>::get();
 }

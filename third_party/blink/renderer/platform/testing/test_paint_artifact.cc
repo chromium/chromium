@@ -117,8 +117,9 @@ TestPaintArtifact& TestPaintArtifact::ScrollHitTest(
     DisplayItemClient& client,
     const gfx::Rect& rect,
     const TransformPaintPropertyNode* scroll_translation) {
-  auto& hit_test_data =
-      paint_artifact_->PaintChunks().back().EnsureHitTestData();
+  auto& chunk = paint_artifact_->PaintChunks().back();
+  chunk.hit_test_opaqueness = cc::HitTestOpaqueness::kOpaque;
+  auto& hit_test_data = chunk.EnsureHitTestData();
   hit_test_data.scroll_hit_test_rect = rect;
   hit_test_data.scroll_translation = scroll_translation;
   return *this;

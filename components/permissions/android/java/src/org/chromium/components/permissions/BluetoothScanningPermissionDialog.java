@@ -270,7 +270,6 @@ public class BluetoothScanningPermissionDialog {
     /**
      * Returns the dialog associated with this class. For use with tests only.
      */
-    @VisibleForTesting
     public Dialog getDialogForTesting() {
         return mDialog;
     }
@@ -278,12 +277,11 @@ public class BluetoothScanningPermissionDialog {
     /**
      * Returns the ItemAdapter associated with this class. For use with tests only.
      */
-    @VisibleForTesting
     public DeviceItemAdapter getItemAdapterForTesting() {
         return mItemAdapter;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
     public interface Natives {
         void onDialogFinished(long nativeBluetoothScanningPromptAndroid, int eventType);

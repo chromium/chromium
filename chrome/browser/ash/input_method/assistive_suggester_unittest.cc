@@ -13,9 +13,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/repeating_test_future.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/input_method/assistive_suggester_client_filter.h"
 #include "chrome/browser/ash/input_method/assistive_suggester_switch.h"
 #include "chrome/browser/ash/input_method/fake_suggestion_handler.h"
@@ -23,12 +24,16 @@
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
+#include "components/account_id/account_id.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
@@ -428,10 +433,23 @@ TEST_F(AssistiveSuggesterTest, RecordsMultiWordTextInputAsDisabledByUser) {
 
 TEST_F(AssistiveSuggesterTest, RecordsMultiWordTextInputAsEnabledByLacros) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAssistMultiWord,
-                            features::kLacrosSupport},
-      /*disabled_features=*/{});
+  std::vector<base::test::FeatureRef> enabled =
+      ash::standalone_browser::GetFeatureRefs();
+  enabled.push_back(features::kAssistMultiWord);
+  feature_list.InitWithFeatures(enabled, {});
+
+  // Set up a user, necessary for Lacros.
+  auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
+  auto* primary_user =
+      fake_user_manager->AddUser(AccountId::FromUserEmail("test@test"));
+  fake_user_manager->UserLoggedIn(primary_user->GetAccountId(),
+                                  primary_user->username_hash(),
+                                  /*browser_restart=*/false,
+                                  /*is_child=*/false);
+  auto scoped_user_manager = std::make_unique<user_manager::ScopedUserManager>(
+      std::move(fake_user_manager));
+  ASSERT_TRUE(crosapi::browser_util::IsLacrosEnabled());
+
   // TODO(b/242472734): Allow enabled suggestions passed without replace.
   assistive_suggester_ = std::make_unique<AssistiveSuggester>(
       suggestion_handler_.get(), profile_.get(),
@@ -1399,7 +1417,7 @@ class AssistiveSuggesterControlVLongpressTest : public AshTestBase {
     Shell::Get()
         ->clipboard_history_controller()
         ->set_confirmed_operation_callback_for_test(
-            operation_confirmed_future_.GetCallback());
+            operation_confirmed_future_.GetRepeatingCallback());
 
     // Write content to the clipboard so that the clipboard history menu can
     // appear.
@@ -1440,7 +1458,7 @@ class AssistiveSuggesterControlVLongpressTest : public AshTestBase {
   TestingProfile profile_;
   FakeSuggestionHandler suggestion_handler_;
   AssistiveSuggester assistive_suggester_;
-  base::test::RepeatingTestFuture<bool> operation_confirmed_future_;
+  base::test::TestFuture<bool> operation_confirmed_future_;
   std::unique_ptr<views::Widget> textfield_widget_;
   raw_ptr<views::Textfield> textfield_;
   base::HistogramTester histogram_tester_;

@@ -494,7 +494,7 @@ fuzzer_test("command_buffer_lpm_fuzzer") {
     "//base/test:test_support",
     "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
-    "//components/viz/common:resource_format",
+    "//components/viz/common:shared_image_format",
     "//components/viz/test:test_support",  # TODO: huge; is there something more
                                            # targeted?
     "//content/public/common:static_switches",

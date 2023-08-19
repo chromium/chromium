@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/autofill_uitest_util.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
@@ -49,15 +48,10 @@ namespace autofill {
 
 class IbanBubbleViewFullFormBrowserTest
     : public SyncTest,
-      public IBANSaveManager::ObserverForTest,
+      public IbanSaveManager::ObserverForTest,
       public IbanBubbleControllerImpl::ObserverForTest {
  protected:
-  IbanBubbleViewFullFormBrowserTest() : SyncTest(SINGLE_CLIENT) {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{autofill::features::kAutofillFillIbanFields,
-                              autofill::features::kAutofillParseIBANFields},
-        /*disabled_features=*/{});
-  }
+  IbanBubbleViewFullFormBrowserTest() : SyncTest(SINGLE_CLIENT) {}
 
  public:
   IbanBubbleViewFullFormBrowserTest(const IbanBubbleViewFullFormBrowserTest&) =
@@ -116,7 +110,7 @@ class IbanBubbleViewFullFormBrowserTest
     // Set up this class as the ObserverForTest implementation.
     iban_save_manager_ = autofill_manager()
                              ->client()
-                             ->GetFormDataImporter()
+                             .GetFormDataImporter()
                              ->iban_save_manager_for_testing();
     iban_save_manager_->SetEventObserverForTesting(this);
     AddEventObserverToController();
@@ -134,21 +128,21 @@ class IbanBubbleViewFullFormBrowserTest
     return autofill_manager_injector_[GetActiveWebContents()];
   }
 
-  // IBANSaveManager::ObserverForTest:
+  // IbanSaveManager::ObserverForTest:
   void OnOfferLocalSave() override {
     if (event_waiter_) {
       event_waiter_->OnEvent(DialogEvent::OFFERED_LOCAL_SAVE);
     }
   }
 
-  // IBANSaveManager::ObserverForTest:
+  // IbanSaveManager::ObserverForTest:
   void OnAcceptSaveIbanComplete() override {
     if (event_waiter_) {
       event_waiter_->OnEvent(DialogEvent::ACCEPT_SAVE_IBAN_COMPLETE);
     }
   }
 
-  // IBANSaveManager::ObserverForTest:
+  // IbanSaveManager::ObserverForTest:
   void OnDeclineSaveIbanComplete() override {
     if (event_waiter_) {
       event_waiter_->OnEvent(DialogEvent::DECLINE_SAVE_IBAN_COMPLETE);
@@ -242,8 +236,7 @@ class IbanBubbleViewFullFormBrowserTest
     SaveIbanBubbleView* save_iban_bubble_views = GetSaveIbanBubbleView();
     CHECK(save_iban_bubble_views);
     ClickOnDialogViewAndWaitForWidgetDestruction(
-        save_iban_bubble_views->GetBubbleFrameView()
-            ->GetCloseButtonForTesting());
+        save_iban_bubble_views->GetBubbleFrameView()->close_button());
     CHECK(!GetSaveIbanBubbleView());
   }
 
@@ -360,7 +353,7 @@ class IbanBubbleViewFullFormBrowserTest
     return event_waiter_->Wait();
   }
 
-  raw_ptr<IBANSaveManager> iban_save_manager_ = nullptr;
+  raw_ptr<IbanSaveManager> iban_save_manager_ = nullptr;
 
  private:
   LocationBarBubbleDelegateView* GetIbanBubbleDelegateView() {
@@ -391,7 +384,6 @@ class IbanBubbleViewFullFormBrowserTest
     return iban_bubble_controller->GetPaymentBubbleView();
   }
 
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<autofill::EventWaiter<DialogEvent>> event_waiter_;
   TestAutofillManagerInjector<TestAutofillManager> autofill_manager_injector_;
 };
@@ -411,8 +403,8 @@ IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
 
   EXPECT_FALSE(GetSaveIbanBubbleView());
   EXPECT_EQ(
-      1, iban_save_manager_->GetIBANSaveStrikeDatabaseForTesting()->GetStrikes(
-             IBANSaveManager::GetPartialIbanHashString(
+      1, iban_save_manager_->GetIbanSaveStrikeDatabaseForTesting()->GetStrikes(
+             IbanSaveManager::GetPartialIbanHashString(
                  kIbanValueWithoutWhitespaces)));
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveIbanPromptOffer.Local.FirstShow",
@@ -420,6 +412,32 @@ IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveIbanPromptResult.Local.FirstShow",
       autofill_metrics::SaveIbanBubbleResult::kCancelled, 1);
+}
+
+// Tests the local save bubble. Ensures that clicking the [X] button
+// successfully causes the bubble to go away, and causes a strike to be added.
+IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
+                       Local_ClickingXIconClosesBubble) {
+  base::HistogramTester histogram_tester;
+  FillForm(kIbanValue);
+  SubmitFormAndWaitForIbanLocalSaveBubble();
+
+  // Clicking [X] should close the bubble.
+  ResetEventWaiterForSequence({DialogEvent::DECLINE_SAVE_IBAN_COMPLETE});
+  ClickOnCloseButton();
+  ASSERT_TRUE(WaitForObservedEvent());
+
+  EXPECT_FALSE(GetSaveIbanBubbleView());
+  EXPECT_EQ(
+      1, iban_save_manager_->GetIbanSaveStrikeDatabaseForTesting()->GetStrikes(
+             IbanSaveManager::GetPartialIbanHashString(
+                 kIbanValueWithoutWhitespaces)));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveIbanPromptOffer.Local.FirstShow",
+      autofill_metrics::SaveIbanPromptOffer::kShown, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveIbanPromptResult.Local.FirstShow",
+      autofill_metrics::SaveIbanBubbleResult::kClosed, 1);
 }
 
 // Tests overall StrikeDatabase interaction with the local save bubble. Runs an
@@ -430,7 +448,7 @@ IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
                        StrikeDatabase_Local_FullFlowTest) {
   base::HistogramTester histogram_tester;
   // Show and ignore the bubble enough times in order to accrue maximum strikes.
-  for (int i = 0; i < iban_save_manager_->GetIBANSaveStrikeDatabaseForTesting()
+  for (int i = 0; i < iban_save_manager_->GetIbanSaveStrikeDatabaseForTesting()
                           ->GetMaxStrikesLimit();
        ++i) {
     FillForm(kIbanValue);
@@ -441,10 +459,10 @@ IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
     ASSERT_TRUE(WaitForObservedEvent());
   }
   EXPECT_EQ(
-      iban_save_manager_->GetIBANSaveStrikeDatabaseForTesting()->GetStrikes(
-          IBANSaveManager::GetPartialIbanHashString(
+      iban_save_manager_->GetIbanSaveStrikeDatabaseForTesting()->GetStrikes(
+          IbanSaveManager::GetPartialIbanHashString(
               kIbanValueWithoutWhitespaces)),
-      iban_save_manager_->GetIBANSaveStrikeDatabaseForTesting()
+      iban_save_manager_->GetIbanSaveStrikeDatabaseForTesting()
           ->GetMaxStrikesLimit());
   // Submit the form a fourth time. Since the IBAN now has maximum strikes,
   // the bubble should not be shown.
@@ -455,8 +473,8 @@ IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
   ASSERT_TRUE(WaitForObservedEvent());
 
   EXPECT_TRUE(
-      iban_save_manager_->GetIBANSaveStrikeDatabaseForTesting()
-          ->ShouldBlockFeature(IBANSaveManager::GetPartialIbanHashString(
+      iban_save_manager_->GetIbanSaveStrikeDatabaseForTesting()
+          ->ShouldBlockFeature(IbanSaveManager::GetPartialIbanHashString(
               kIbanValueWithoutWhitespaces)));
 
   EXPECT_TRUE(GetSaveIbanIconView()->GetVisible());

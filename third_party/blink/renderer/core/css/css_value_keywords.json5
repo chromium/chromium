@@ -161,6 +161,7 @@
     "cap-height",
     "ch-width",
     "ic-width",
+    // from-font
 
     //
     // font-family (<generic-family> in CSS 2.1)
@@ -194,8 +195,6 @@
     // font-palette animation
     //
     "palette-mix",
-    "palette-add",
-    "palette-scale",
 
     //
     // *-color
@@ -759,6 +758,12 @@
     "fit-content",
 
     //
+    // text-autospace
+    //
+    // normal
+    "no-autospace",
+
+    //
     // text-overflow
     //
     "clip",
@@ -794,6 +799,7 @@
     //
     "break-all",
     "keep-all",
+    "auto-phrase",
 
     //
     // word-wrap
@@ -826,8 +832,6 @@
     // CSSParserFastPaths::IsValidKeywordPropertyAndValue.
     "checkbox",
     "radio",
-    "push-button",
-    "square-button",
     "button",
     "listbox",
     "-internal-media-control",
@@ -835,7 +839,6 @@
     "menulist-button",
     "meter",
     "progress-bar",
-    "slider-horizontal",
     "slider-vertical",
     "searchfield",
     "textfield",
@@ -846,6 +849,9 @@
     "media-sliderthumb",
     "media-volume-slider",
     "media-volume-sliderthumb",
+    "push-button",
+    "square-button",
+    "slider-horizontal",
     "sliderthumb-horizontal",
     "sliderthumb-vertical",
     "searchfield-cancel-button",
@@ -1462,11 +1468,6 @@
     // normal
     // always
 
-    // scroll-timeline-attachment
-    // view-timeline-attachment
-    "defer",
-    "ancestor",
-
     // containment
     // paint
     "style",
@@ -1543,6 +1544,7 @@
 
     // (prefers-reduced-motion:) media feature
     // (prefers-reduced-data:) media feature
+    // (prefers-reduced-transparency:) media feature
     "reduce",
 
     // (forced-colors:) media feature
@@ -1614,6 +1616,7 @@
     // ([video]-dynamic-range) media feature
     "standard",
     "high",
+    "constrained-high",
 
     // Layered @import rule
     "layer",
@@ -1649,6 +1652,8 @@
 
     // anchor positioning
     "anchor",
+    // auto,
+    "auto-same",
     // top,
     // left,
     // right,
@@ -1666,9 +1671,12 @@
     "self-block",
     "self-inline",
 
-    // anchor-scroll
+    // anchor-default
     "implicit",
     // none,
+
+    // position-fallback-bounds
+    // normal,
 
     // animation-[end-]delay
     // contain
@@ -1681,5 +1689,16 @@
     // scroll()
     "root",
     "nearest",
+
+    // transition-behavior
+    "allow-discrete",
+
+    // (inverted-colors:) media feature
+    "inverted",
+    // none
+
+    // navigation-trigger
+    "cross-document-same-origin",
+    // none
   ],
 }

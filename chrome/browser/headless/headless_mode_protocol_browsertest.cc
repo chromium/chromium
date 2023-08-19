@@ -12,6 +12,7 @@
 #include "base/path_service.h"
 #include "build/build_config.h"
 #include "chrome/browser/headless/test/headless_browser_test_utils.h"
+#include "components/headless/select_file_dialog/headless_select_file_dialog.h"
 #include "content/public/common/content_switches.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/network_switches.h"
@@ -47,6 +48,13 @@ void HeadlessModeProtocolBrowserTest::SetUpCommandLine(
 
 base::Value::Dict HeadlessModeProtocolBrowserTest::GetPageUrlExtraParams() {
   return base::Value::Dict();
+}
+
+void HeadlessModeProtocolBrowserTest::RunTestScript(
+    base::StringPiece script_name) {
+  test_folder_ = "/protocol/";
+  script_name_ = script_name;
+  RunTest();
 }
 
 void HeadlessModeProtocolBrowserTest::RunDevTooledTest() {
@@ -209,11 +217,57 @@ HEADLESS_MODE_PROTOCOL_TEST(DISABLED_FocusBlurNotifications,
 HEADLESS_MODE_PROTOCOL_TEST(MAYBE_InputClipboardOps,
                             "input/input-clipboard-ops.js")
 
+class HeadlessModeInputSelectFileDialogTest
+    : public HeadlessModeProtocolBrowserTest {
+ public:
+  HeadlessModeInputSelectFileDialogTest() = default;
+
+  void SetUpOnMainThread() override {
+    HeadlessSelectFileDialogFactory::SetSelectFileDialogOnceCallbackForTests(
+        base::BindOnce(
+            &HeadlessModeInputSelectFileDialogTest::OnSelectFileDialogCallback,
+            base::Unretained(this)));
+
+    HeadlessModeProtocolBrowserTest::SetUpOnMainThread();
+  }
+
+  void FinishAsyncTest() override {
+    EXPECT_TRUE(select_file_dialog_has_run_);
+
+    HeadlessModeProtocolBrowserTest::FinishAsyncTest();
+  }
+
+ private:
+  void OnSelectFileDialogCallback(ui::SelectFileDialog::Type type) {
+    select_file_dialog_has_run_ = true;
+  }
+
+  bool select_file_dialog_has_run_ = false;
+};
+
+// TODO(crbug.com/1459246): flaky on Mac builders.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_InputSelectFileDialog DISABLED_InputSelectFileDialog
+#else
+#define MAYBE_InputSelectFileDialog InputSelectFileDialog
+#endif
+HEADLESS_MODE_PROTOCOL_TEST_F(HeadlessModeInputSelectFileDialogTest,
+                              MAYBE_InputSelectFileDialog,
+                              "input/input-select-file-dialog.js")
+
 // https://crbug.com/1411976
-HEADLESS_MODE_PROTOCOL_TEST(DISABLED_ScreencastBasics,
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ScreencastBasics DISABLED_ScreencastBasics
+#else
+#define MAYBE_ScreencastBasics ScreencastBasics
+#endif
+HEADLESS_MODE_PROTOCOL_TEST(MAYBE_ScreencastBasics,
                             "sanity/screencast-basics.js")
 
 HEADLESS_MODE_PROTOCOL_TEST(LargeBrowserWindowSize,
                             "sanity/large-browser-window-size.js")
+
+HEADLESS_MODE_PROTOCOL_TEST(PrintToPdfTinyPage,
+                            "sanity/print-to-pdf-tiny-page.js")
 
 }  // namespace headless

@@ -6,10 +6,26 @@
 #define CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_HIGH_EFFICIENCY_CHIP_TAB_HELPER_H_
 
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+
+namespace high_efficiency {
+enum class ChipState {
+  // Chip is not shown for this tab.
+  HIDDEN,
+  // Chip is rendered in a collapsed state with not text.
+  COLLAPSED,
+  // Chip expands to educate about the memory saver feature.
+  EXPANDED_EDUCATION,
+  // Chip expands to highlight large savings from a previously discarded tab.
+  EXPANDED_WITH_SAVINGS,
+  // Previously expanded chip is collapsed due to tab switching.
+  COLLAPSED_FROM_EXPANDED,
+};
+}  // namespace high_efficiency
 
 // When a page in the background has been discarded due to high efficiency mode,
 // and the user returns to that tab, a page action chip should be shown to the
@@ -26,45 +42,41 @@ class HighEfficiencyChipTabHelper
 
   ~HighEfficiencyChipTabHelper() override;
 
-  // Returns whether the chip associated with a discarded tab should be shown.
-  bool ShouldChipBeVisible() const;
+  static constexpr int kChipAnimationCount = 3;
 
-  // Returns whether the chip associated with a discarded tab should animate in.
-  bool ShouldIconAnimate() const;
-
-  // Indicates that the chip has been animated for the current discard.
-  void SetWasAnimated();
-
-  // Returns whether the tab associated with this helper has been navigated
-  // away from and to another tab.
-  bool HasChipBeenHidden();
-
-  // Returns the memory savings (in bytes) of the previously discarded tab.
-  uint64_t GetMemorySavingsInBytes() const;
-
-  // Indicates that the site the tab this helper is currently on has been
-  // added to the exclusion list through the dialog bubble.
-  void SetSiteWasAddedToExclusionList();
-
-  bool GetWasSiteAddedToExclusionList() const;
+  high_efficiency::ChipState chip_state() const { return chip_state_; }
 
   // content::WebContentsObserver
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
 
+  // Returns whether the tab associated with this helper has been navigated
+  // away from and to another tab.
+  bool ShouldChipAnimate();
+
  private:
   friend class content::WebContentsUserData<HighEfficiencyChipTabHelper>;
   explicit HighEfficiencyChipTabHelper(content::WebContents* contents);
 
-  bool IsProactiveDiscard() const;
+  // Checks whether a promotional expanded chip should be shown to highlight
+  // memory savings and, if so, update prefs to reflect that it is shown.
+  bool ComputeShouldHighlightMemorySavings();
 
-  bool was_discarded_ = false;
-  bool was_animated_ = false;
-  bool was_chip_hidden_ = false;
-  bool is_site_supported_ = false;
-  bool was_site_added_to_exclusion_list_ = false;
-  absl::optional<mojom::LifecycleUnitDiscardReason> discard_reason_;
+  // Checks whether an educational expanded chip should be shown about the
+  // feature and, if so, update prefs to reflect that it is shown.
+  bool ComputeShouldEducateAboutMemorySavings();
+
+  // Computes and updates the `chip_state_` based on information about the
+  // recent navigation.
+  void ComputeChipState(content::NavigationHandle* navigation_handle);
+
+  high_efficiency::ChipState chip_state_ = high_efficiency::ChipState::HIDDEN;
+  // Represents whether the current chip state has been properly rendered. This
+  // gets reset when a tab gets hidden so the chip can be redrawn.
+  bool was_rendered_ = false;
+  raw_ptr<PrefService> pref_service_;
+
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 

@@ -3,15 +3,18 @@
 # found in the LICENSE file.
 
 import collections
+import dataclasses
 import functools
 import itertools
 import posixpath
+import typing
 
 from blinkbuild.name_style_converter import NameStyleConverter
 
+from .async_iterator import AsyncIterator
+from .attribute import Attribute
 from .callback_function import CallbackFunction
 from .callback_interface import CallbackInterface
-from .composition_parts import DebugInfo
 from .composition_parts import Identifier
 from .constructor import Constructor
 from .constructor import ConstructorGroup
@@ -22,10 +25,10 @@ from .enumeration import Enumeration
 from .exposure import ExposureMutable
 from .extended_attribute import ExtendedAttribute
 from .extended_attribute import ExtendedAttributesMutable
+from .idl_type import IdlType
 from .idl_type import IdlTypeFactory
 from .interface import Interface
 from .interface import LegacyWindowAlias
-from .interface import SyncIterator
 from .ir_map import IRMap
 from .make_copy import make_copy
 from .namespace import Namespace
@@ -33,6 +36,7 @@ from .observable_array import ObservableArray
 from .operation import Operation
 from .operation import OperationGroup
 from .reference import RefByIdFactory
+from .sync_iterator import SyncIterator
 from .typedef import Typedef
 from .union import Union
 from .user_defined_type import StubUserDefinedType
@@ -88,6 +92,12 @@ class IdlCompiler(object):
         assert not self._did_run
         self._did_run = True
 
+        # Create AsyncIterator.IRs and SyncIterator.IRs, which are not
+        # registered by _IRBuilder, prior to processing extended attributes,
+        # etc.
+        self._create_async_iterator_irs()
+        self._create_sync_iterator_irs()
+
         # Merge partial definitions.
         self._record_defined_in_partial_and_mixin()
         self._propagate_extattrs_per_idl_fragment()
@@ -106,8 +116,6 @@ class IdlCompiler(object):
         self._supplement_missing_html_constructor_operation()
 
         self._copy_legacy_factory_function_extattrs()
-
-        self._create_sync_iterators()
 
         # Make groups of overloaded functions including inherited ones.
         self._group_overloaded_functions()
@@ -138,6 +146,111 @@ class IdlCompiler(object):
         # purpose, etc.
         return ir  # Skip copying as an optimization.
 
+    def _create_async_iterator_irs(self):
+        old_irs = self._ir_map.irs_of_kind(IRMap.IR.Kind.INTERFACE)
+
+        self._ir_map.move_to_new_phase()
+
+        for old_ir in old_irs:
+            new_ir = self._maybe_make_copy(old_ir)
+            self._ir_map.add(new_ir)
+
+            if new_ir.async_iterable is None:
+                continue
+
+            assert new_ir.async_iterator is None
+            iterable = new_ir.async_iterable
+            component = new_ir.components[0]
+            operations = []
+            # 'next' and 'return' properties are defined at:
+            # https://webidl.spec.whatwg.org/#es-asynchronous-iterator-prototype-object
+            operations.append(
+                Operation.IR(
+                    identifier=Identifier('next'),
+                    arguments=[],
+                    # The return type is a promise type resolving to an
+                    # iterator result.
+                    # https://webidl.spec.whatwg.org/#iterator-result
+                    return_type=self._idl_type_factory.promise_type(
+                        result_type=self._idl_type_factory.simple_type(
+                            'object')),
+                    extended_attributes=ExtendedAttributesMutable([
+                        ExtendedAttribute(key="CallWith",
+                                          values="ScriptState"),
+                        ExtendedAttribute(key="RaisesException"),
+                    ]),
+                    component=component))
+            # TODO(yukishiino): Define the 'return' property if and only if
+            # an asynchronous iterator return algorithm is defined for the
+            # interface.
+
+            iterator_ir = AsyncIterator.IR(
+                interface=self._ref_to_idl_def_factory.create(
+                    new_ir.identifier),
+                component=component,
+                key_type=iterable.key_type,
+                value_type=iterable.value_type,
+                operations=operations)
+            iterator_ir.code_generator_info.set_for_testing(
+                new_ir.code_generator_info.for_testing)
+            iterator_ir.debug_info.add_locations(
+                iterable.debug_info.all_locations)
+
+            self._ir_map.register(iterator_ir)
+
+            new_ir.async_iterator = self._ref_to_idl_def_factory.create(
+                iterator_ir.identifier)
+
+    def _create_sync_iterator_irs(self):
+        old_irs = self._ir_map.irs_of_kind(IRMap.IR.Kind.INTERFACE)
+
+        self._ir_map.move_to_new_phase()
+
+        for old_ir in old_irs:
+            new_ir = self._maybe_make_copy(old_ir)
+            self._ir_map.add(new_ir)
+
+            if not ((new_ir.iterable and new_ir.iterable.key_type)
+                    or new_ir.maplike or new_ir.setlike):
+                continue
+
+            assert new_ir.sync_iterator is None
+            iterable = (new_ir.iterable or new_ir.maplike or new_ir.setlike)
+            component = new_ir.components[0]
+            operations = []
+            # 'next' property is defined at:
+            # https://webidl.spec.whatwg.org/#es-iterator-prototype-object
+            operations.append(
+                Operation.IR(
+                    identifier=Identifier('next'),
+                    arguments=[],
+                    # The return value is an iterator result.
+                    # https://webidl.spec.whatwg.org/#iterator-result
+                    return_type=self._idl_type_factory.simple_type('object'),
+                    extended_attributes=ExtendedAttributesMutable([
+                        ExtendedAttribute(key="CallWith",
+                                          values="ScriptState"),
+                        ExtendedAttribute(key="RaisesException"),
+                    ]),
+                    component=component))
+
+            iterator_ir = SyncIterator.IR(
+                interface=self._ref_to_idl_def_factory.create(
+                    new_ir.identifier),
+                component=component,
+                key_type=iterable.key_type,
+                value_type=iterable.value_type,
+                operations=operations)
+            iterator_ir.code_generator_info.set_for_testing(
+                new_ir.code_generator_info.for_testing)
+            iterator_ir.debug_info.add_locations(
+                iterable.debug_info.all_locations)
+
+            self._ir_map.register(iterator_ir)
+
+            new_ir.sync_iterator = self._ref_to_idl_def_factory.create(
+                iterator_ir.identifier)
+
     def _record_defined_in_partial_and_mixin(self):
         old_irs = self._ir_map.irs_of_kinds(
             IRMap.IR.Kind.DICTIONARY, IRMap.IR.Kind.INTERFACE,
@@ -152,16 +265,10 @@ class IdlCompiler(object):
             new_ir = self._maybe_make_copy(old_ir)
             self._ir_map.add(new_ir)
             is_partial = False
-            is_mixin = False
-            if 'LegacyTreatAsPartialInterface' in new_ir.extended_attributes:
+            if hasattr(new_ir, 'is_partial') and new_ir.is_partial:
                 is_partial = True
-            elif hasattr(new_ir, 'is_partial') and new_ir.is_partial:
-                is_partial = True
-            elif hasattr(new_ir, 'is_mixin') and new_ir.is_mixin:
-                is_mixin = True
             for member in new_ir.iter_all_members():
                 member.code_generator_info.set_defined_in_partial(is_partial)
-                member.code_generator_info.set_defined_in_mixin(is_mixin)
 
     def _propagate_extattrs_per_idl_fragment(self):
         def propagate_extattr(extattr_key_and_attr_name,
@@ -208,9 +315,6 @@ class IdlCompiler(object):
                 apply_to(member)
 
         def process_interface_like(ir):
-            ir = self._maybe_make_copy(ir)
-            self._ir_map.add(ir)
-
             propagate = functools.partial(propagate_extattr, ir=ir)
             propagate(('ImplementedAs', 'set_receiver_implemented_as'),
                       bag='code_generator_info',
@@ -238,16 +342,20 @@ class IdlCompiler(object):
                       default_value=True)
 
         old_irs = self._ir_map.irs_of_kinds(
-            IRMap.IR.Kind.CALLBACK_INTERFACE, IRMap.IR.Kind.DICTIONARY,
-            IRMap.IR.Kind.INTERFACE, IRMap.IR.Kind.INTERFACE_MIXIN,
-            IRMap.IR.Kind.NAMESPACE, IRMap.IR.Kind.PARTIAL_DICTIONARY,
-            IRMap.IR.Kind.PARTIAL_INTERFACE,
+            IRMap.IR.Kind.ASYNC_ITERATOR, IRMap.IR.Kind.CALLBACK_INTERFACE,
+            IRMap.IR.Kind.DICTIONARY, IRMap.IR.Kind.INTERFACE,
+            IRMap.IR.Kind.INTERFACE_MIXIN, IRMap.IR.Kind.NAMESPACE,
+            IRMap.IR.Kind.PARTIAL_DICTIONARY, IRMap.IR.Kind.PARTIAL_INTERFACE,
             IRMap.IR.Kind.PARTIAL_INTERFACE_MIXIN,
-            IRMap.IR.Kind.PARTIAL_NAMESPACE)
+            IRMap.IR.Kind.PARTIAL_NAMESPACE, IRMap.IR.Kind.SYNC_ITERATOR)
 
         self._ir_map.move_to_new_phase()
 
-        list(map(process_interface_like, old_irs))
+        for old_ir in old_irs:
+            new_ir = self._maybe_make_copy(old_ir)
+            self._ir_map.add(new_ir)
+
+            process_interface_like(new_ir)
 
     def _determine_blink_headers(self):
         irs = self._ir_map.irs_of_kinds(
@@ -262,8 +370,7 @@ class IdlCompiler(object):
             new_ir = self._maybe_make_copy(old_ir)
             self._ir_map.add(new_ir)
 
-            if (new_ir.is_mixin and 'LegacyTreatAsPartialInterface' not in
-                    new_ir.extended_attributes):
+            if new_ir.is_mixin and not new_ir.is_partial:
                 continue
 
             basepath, _ = posixpath.splitext(
@@ -378,9 +485,12 @@ class IdlCompiler(object):
                 new_ir_headers = new_ir.code_generator_info.blink_headers
                 to_be_merged_headers = (
                     to_be_merged.code_generator_info.blink_headers)
-                if (new_ir_headers is not None
-                        and to_be_merged_headers is not None):
-                    new_ir_headers.extend(to_be_merged_headers)
+                if to_be_merged_headers is not None:
+                    if new_ir_headers is None:
+                        new_ir.code_generator_info.set_blink_headers(
+                            to_be_merged_headers)
+                    else:
+                        new_ir_headers.extend(to_be_merged_headers)
 
     def _process_interface_inheritances(self):
         def create_inheritance_chain(obj, table):
@@ -490,48 +600,12 @@ class IdlCompiler(object):
                 copy_extattrs(new_ir.extended_attributes,
                               legacy_factory_function_ir)
 
-    def _create_sync_iterators(self):
-        old_irs = self._ir_map.irs_of_kind(IRMap.IR.Kind.INTERFACE)
-
-        self._ir_map.move_to_new_phase()
-
-        for old_ir in old_irs:
-            new_ir = self._maybe_make_copy(old_ir)
-            self._ir_map.add(new_ir)
-
-            if not ((new_ir.iterable and new_ir.iterable.key_type)
-                    or new_ir.maplike or new_ir.setlike):
-                continue
-
-            assert not new_ir.sync_iterator
-            sync_iterable = (new_ir.iterable or new_ir.maplike
-                             or new_ir.setlike)
-            component = new_ir.components[0]
-            debug_info = DebugInfo()
-            debug_info.add_locations(sync_iterable.debug_info.all_locations)
-            # 'next' property is defined at:
-            # https://webidl.spec.whatwg.org/#es-iterator-prototype-object
-            next_op = Operation.IR(
-                identifier=Identifier('next'),
-                arguments=[],
-                return_type=self._idl_type_factory.simple_type('object'),
-                extended_attributes=ExtendedAttributesMutable([
-                    ExtendedAttribute(key="CallWith", values="ScriptState"),
-                    ExtendedAttribute(key="RaisesException"),
-                ]),
-                component=component)
-            new_ir.sync_iterator = SyncIterator.IR(
-                interface_ir=new_ir,
-                component=component,
-                debug_info=debug_info,
-                key_type=sync_iterable.key_type,
-                value_type=sync_iterable.value_type,
-                operations=[next_op])
-
     def _group_overloaded_functions(self):
-        old_irs = self._ir_map.irs_of_kinds(IRMap.IR.Kind.CALLBACK_INTERFACE,
+        old_irs = self._ir_map.irs_of_kinds(IRMap.IR.Kind.ASYNC_ITERATOR,
+                                            IRMap.IR.Kind.CALLBACK_INTERFACE,
                                             IRMap.IR.Kind.INTERFACE,
-                                            IRMap.IR.Kind.NAMESPACE)
+                                            IRMap.IR.Kind.NAMESPACE,
+                                            IRMap.IR.Kind.SYNC_ITERATOR)
 
         self._ir_map.move_to_new_phase()
 
@@ -561,13 +635,8 @@ class IdlCompiler(object):
             if not isinstance(new_ir, Interface.IR):
                 continue
 
-            for item in (new_ir.iterable, new_ir.maplike, new_ir.setlike):
-                if item:
-                    assert not item.operation_groups
-                    item.operation_groups = make_groups(
-                        OperationGroup.IR, item.operations)
-
-            for item in (new_ir.sync_iterator, ):
+            for item in (new_ir.async_iterable, new_ir.iterable,
+                         new_ir.maplike, new_ir.setlike):
                 if item:
                     assert not item.operation_groups
                     item.operation_groups = make_groups(
@@ -579,8 +648,10 @@ class IdlCompiler(object):
                   'NotEnumerable', 'PerWorldBindings', 'SecureContext',
                   'Unscopable')
 
-        old_irs = self._ir_map.irs_of_kinds(IRMap.IR.Kind.INTERFACE,
-                                            IRMap.IR.Kind.NAMESPACE)
+        old_irs = self._ir_map.irs_of_kinds(IRMap.IR.Kind.ASYNC_ITERATOR,
+                                            IRMap.IR.Kind.INTERFACE,
+                                            IRMap.IR.Kind.NAMESPACE,
+                                            IRMap.IR.Kind.SYNC_ITERATOR)
 
         self._ir_map.move_to_new_phase()
 
@@ -624,9 +695,11 @@ class IdlCompiler(object):
                         ExtendedAttribute(key='NoAllocDirectCall'))
 
     def _calculate_group_exposure(self):
-        old_irs = self._ir_map.irs_of_kinds(IRMap.IR.Kind.CALLBACK_INTERFACE,
+        old_irs = self._ir_map.irs_of_kinds(IRMap.IR.Kind.ASYNC_ITERATOR,
+                                            IRMap.IR.Kind.CALLBACK_INTERFACE,
                                             IRMap.IR.Kind.INTERFACE,
-                                            IRMap.IR.Kind.NAMESPACE)
+                                            IRMap.IR.Kind.NAMESPACE,
+                                            IRMap.IR.Kind.SYNC_ITERATOR)
 
         self._ir_map.move_to_new_phase()
 
@@ -641,7 +714,7 @@ class IdlCompiler(object):
                 # [Exposed]
                 if any(not exposure.global_names_and_features
                        for exposure in exposures):
-                    pass  # Unconditionally exposed by default.
+                    pass  # Unconditionally exposed.
                 else:
                     for exposure in exposures:
                         for entry in exposure.global_names_and_features:
@@ -652,7 +725,7 @@ class IdlCompiler(object):
                 # [RuntimeEnabled]
                 if any(not exposure.runtime_enabled_features
                        for exposure in exposures):
-                    pass  # Unconditionally exposed by default.
+                    pass  # Unconditionally exposed.
                 else:
                     for exposure in exposures:
                         for name in exposure.runtime_enabled_features:
@@ -661,7 +734,7 @@ class IdlCompiler(object):
                 # [ContextEnabled]
                 if any(not exposure.context_enabled_features
                        for exposure in exposures):
-                    pass  # Unconditionally exposed by default.
+                    pass  # Unconditionally exposed.
                 else:
                     for exposure in exposures:
                         for name in exposure.context_enabled_features:
@@ -811,6 +884,14 @@ class IdlCompiler(object):
         for ir in self._ir_map.irs_of_kind(IRMap.IR.Kind.ENUMERATION):
             self._db.register(DatabaseBody.Kind.ENUMERATION, Enumeration(ir))
 
+        for ir in self._ir_map.irs_of_kind(IRMap.IR.Kind.ASYNC_ITERATOR):
+            self._db.register(DatabaseBody.Kind.ASYNC_ITERATOR,
+                              AsyncIterator(ir))
+
+        for ir in self._ir_map.irs_of_kind(IRMap.IR.Kind.SYNC_ITERATOR):
+            self._db.register(DatabaseBody.Kind.SYNC_ITERATOR,
+                              SyncIterator(ir))
+
         for ir in self._ir_map.irs_of_kind(IRMap.IR.Kind.TYPEDEF):
             self._db.register(DatabaseBody.Kind.TYPEDEF, Typedef(ir))
 
@@ -890,14 +971,13 @@ class IdlCompiler(object):
         # We go through all attributes that are ObservableArrayTypes, group the
         # indistinguishable ones together and later assign one ObservableArray
         # to all items in the group.
-
-        # This can become a dataclasses.dataclass once we can start using
-        # Python 3 language features in this file.
+        @dataclasses.dataclass
         class ObservableArrayTypeInfo(object):
-            def __init__(self):
-                self.attributes = []
-                self.for_testing = True
-                self.idl_types = []
+            attributes: typing.List[Attribute] = dataclasses.field(
+                default_factory=list)
+            for_testing: bool = True
+            idl_types: typing.List[IdlType] = dataclasses.field(
+                default_factory=list)
 
         grouped_type_info = collections.defaultdict(ObservableArrayTypeInfo)
 

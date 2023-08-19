@@ -33,7 +33,8 @@ struct CORE_EXPORT PhysicalRect {
   // TODO(wangxianzhu): This is temporary for convenience of constructing
   // PhysicalRect with LayoutBox::Size(), before we convert LayoutBox::Size() to
   // PhysicalSize.
-  constexpr PhysicalRect(const PhysicalOffset& offset, const LayoutSize& size)
+  constexpr PhysicalRect(const PhysicalOffset& offset,
+                         const DeprecatedLayoutSize& size)
       : offset(offset), size(size) {}
   constexpr PhysicalRect(LayoutUnit left,
                          LayoutUnit top,
@@ -212,15 +213,6 @@ struct CORE_EXPORT PhysicalRect {
 
   explicit PhysicalRect(const gfx::Rect& r)
       : offset(r.origin()), size(r.size()) {}
-
-  // Returns a big enough rect that can contain all reasonable rendered results.
-  // The rect can be used as a "non-clipping" clip rect. The rect can be
-  // modified to clip at one or more sides, e.g.
-  //   gfx::Rect r = LayoutRect::InfiniteRect();
-  //   r.set_width(clip_right - r.x());
-  static constexpr gfx::Rect InfiniteIntRect() {
-    return LayoutRect::InfiniteIntRect();
-  }
 
   void Scale(float s) {
     offset.Scale(s);

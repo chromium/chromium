@@ -17,14 +17,9 @@
 
 namespace {
 
-#if BUILDFLAG(IS_FUCHSIA)
 // Generated files are re-homed to the package root.
 const base::FilePath kTestDataPath = base::FilePath(
     FILE_PATH_LITERAL("chrome/test/data/media/engagement/preload"));
-#else
-const base::FilePath kTestDataPath = base::FilePath(
-    FILE_PATH_LITERAL("gen/chrome/test/data/media/engagement/preload"));
-#endif
 
 // This sample data is auto generated at build time.
 const base::FilePath kSampleDataPath = kTestDataPath.AppendASCII("test.pb");

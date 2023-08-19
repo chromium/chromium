@@ -54,7 +54,7 @@ void ScreenDetails::ContextDestroyed() {
 
 void ScreenDetails::Trace(Visitor* visitor) const {
   visitor->Trace(screens_);
-  EventTargetWithInlineData::Trace(visitor);
+  EventTarget::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
@@ -82,7 +82,6 @@ void ScreenDetails::UpdateScreenInfosImpl(LocalDOMWindow* window,
                        &display::ScreenInfo::display_id)) {
       ++i;
     } else {
-      WillRemoveScreen(*screens_[i]);
       screens_.EraseAt(i);
       added_or_removed = true;
       // Recheck this index.
@@ -93,9 +92,8 @@ void ScreenDetails::UpdateScreenInfosImpl(LocalDOMWindow* window,
   for (const auto& info : new_infos.screen_infos) {
     if (!base::Contains(screens_, info.display_id,
                         &ScreenDetailed::DisplayId)) {
-      screens_.push_back(MakeGarbageCollected<ScreenDetailed>(
-          window, info.display_id, info.is_internal,
-          GetNewLabelIdx(info.is_internal)));
+      screens_.push_back(
+          MakeGarbageCollected<ScreenDetailed>(window, info.display_id));
       added_or_removed = true;
     }
   }
@@ -168,27 +166,6 @@ void ScreenDetails::UpdateScreenInfosImpl(LocalDOMWindow* window,
   // of data have changed, as at a higher level the old data has already been
   // rewritten with the new.
   prev_screen_infos_ = new_infos;
-}
-
-uint32_t ScreenDetails::GetNewLabelIdx(bool is_internal) {
-  auto& set = is_internal ? internal_label_ids_ : external_label_ids_;
-
-  uint32_t label_idx = 1;
-
-  // This is O(n^2) but number of displays is very small.
-  while (true) {
-    if (!set.Contains(label_idx)) {
-      set.insert(label_idx);
-      return label_idx;
-    }
-    label_idx++;
-  }
-}
-
-void ScreenDetails::WillRemoveScreen(const ScreenDetailed& screen) {
-  auto& set =
-      screen.label_is_internal() ? internal_label_ids_ : external_label_ids_;
-  set.erase(screen.label_idx());
 }
 
 }  // namespace blink

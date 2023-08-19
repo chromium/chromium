@@ -28,9 +28,19 @@ class SupervisedUserSettingsService;
 // SupervisedUserSettingsService passed in at construction.
 class SupervisedUserPrefStore : public PrefStore {
  public:
+  // Construct a pref store that needs to be manually initialized with Init().
+  // Used on iOS since the iOS SupervisedUserSettingsService depends on the
+  // creation of the pref service and of this pref store.
+  SupervisedUserPrefStore();
+
+  // Construct the pref store on platforms with the settings service available.
   explicit SupervisedUserPrefStore(
       supervised_user::SupervisedUserSettingsService*
           supervised_user_settings_service);
+
+  // Subscribe to the settings service.
+  void Init(supervised_user::SupervisedUserSettingsService*
+                supervised_user_settings_service);
 
   // PrefStore overrides:
   bool GetValue(base::StringPiece key,
@@ -40,11 +50,10 @@ class SupervisedUserPrefStore : public PrefStore {
   void RemoveObserver(PrefStore::Observer* observer) override;
   bool HasObservers() const override;
   bool IsInitializationComplete() const override;
+  void OnNewSettingsAvailable(const base::Value::Dict& settings);
 
  private:
   ~SupervisedUserPrefStore() override;
-
-  void OnNewSettingsAvailable(const base::Value::Dict& settings);
 
   void OnSettingsServiceShutdown();
 

@@ -66,8 +66,8 @@ are not held off include:
 
 Views in android are expected to be created and used on its single **view**
 thread, unless otherwise noted in the API. For WebView, this is enforced for
-apps targeting JB MR2 or above. The code lives in the
-[WebView](https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/java/android/webkit/WebView.java).
+apps targeting JB MR2 or above. The code lives in
+[WebView.java](https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/core/java/android/webkit/WebView.java).
 Note this is an orthogonal concern to the single **UI** thread described above,
 as this check still allows different WebViews to be used on different **view**
 threads.

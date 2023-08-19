@@ -18,6 +18,8 @@
 #include "build/build_config.h"
 #include "media/base/android/media_codec_util.h"
 #include "media/base/bitstream_buffer.h"
+#include "media/base/media_switches.h"
+#include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/android/mediacodec_stubs.h"
 #include "media/gpu/android/video_accelerator_util.h"
@@ -50,15 +52,82 @@ struct AMediaFormatDeleter {
   }
 };
 
+bool GetAndroidColorValues(const gfx::ColorSpace& cs,
+                           int* standard,
+                           int* transfer,
+                           int* range) {
+  switch (cs.GetTransferID()) {
+    case gfx::ColorSpace::TransferID::LINEAR:
+    case gfx::ColorSpace::TransferID::LINEAR_HDR:
+      *transfer = 1;  // MediaFormat.COLOR_TRANSFER_LINEAR
+      break;
+    case gfx::ColorSpace::TransferID::PQ:
+      *transfer = 6;  // MediaFormat.COLOR_TRANSFER_ST2084
+      break;
+    case gfx::ColorSpace::TransferID::HLG:
+      *transfer = 7;  // MediaFormat.COLOR_TRANSFER_HLG
+      break;
+    case gfx::ColorSpace::TransferID::BT709:
+    case gfx::ColorSpace::TransferID::SMPTE170M:
+    case gfx::ColorSpace::TransferID::BT2020_10:
+    case gfx::ColorSpace::TransferID::BT2020_12:
+    case gfx::ColorSpace::TransferID::SRGB:
+    case gfx::ColorSpace::TransferID::SRGB_HDR:
+      *transfer = 3;  // MediaFormat.COLOR_TRANSFER_SDR_VIDEO
+      break;
+    default:
+      return false;
+  }
+
+  if (cs.GetPrimaryID() == gfx::ColorSpace::PrimaryID::BT709 &&
+      cs.GetMatrixID() == gfx::ColorSpace::MatrixID::BT709) {
+    *standard = 1;  // MediaFormat.COLOR_STANDARD_BT709
+  } else if (cs.GetPrimaryID() == gfx::ColorSpace::PrimaryID::BT470BG &&
+             (cs.GetMatrixID() == gfx::ColorSpace::MatrixID::BT470BG ||
+              cs.GetMatrixID() == gfx::ColorSpace::MatrixID::SMPTE170M)) {
+    *standard = 2;  // MediaFormat.COLOR_STANDARD_BT601_PAL
+  } else if (cs.GetPrimaryID() == gfx::ColorSpace::PrimaryID::SMPTE170M &&
+             (cs.GetMatrixID() == gfx::ColorSpace::MatrixID::BT470BG ||
+              cs.GetMatrixID() == gfx::ColorSpace::MatrixID::SMPTE170M)) {
+    *standard = 4;  // MediaFormat.COLOR_STANDARD_BT601_NTSC
+  } else if (cs.GetPrimaryID() == gfx::ColorSpace::PrimaryID::BT2020 &&
+             cs.GetMatrixID() == gfx::ColorSpace::MatrixID::BT2020_NCL) {
+    *standard = 6;  // MediaFormat.COLOR_STANDARD_BT2020
+  } else {
+    return false;
+  }
+
+  *range = cs.GetRangeID() == gfx::ColorSpace::RangeID::FULL
+               ? 1   // MediaFormat.COLOR_RANGE_FULL
+               : 2;  // MediaFormat.COLOR_RANGE_LIMITED
+  return true;
+}
+
+bool SetFormatColorSpace(AMediaFormat* format, const gfx::ColorSpace& cs) {
+  DCHECK(cs.IsValid());
+  int standard, transfer, range;
+  if (!GetAndroidColorValues(cs, &standard, &transfer, &range)) {
+    DLOG(ERROR) << "Failed to convert color space to Android color space: "
+                << cs.ToString();
+    return false;
+  }
+
+  AMediaFormat_setInt32(format, AMEDIAFORMAT_KEY_COLOR_STANDARD, standard);
+  AMediaFormat_setInt32(format, AMEDIAFORMAT_KEY_COLOR_TRANSFER, transfer);
+  AMediaFormat_setInt32(format, AMEDIAFORMAT_KEY_COLOR_RANGE, range);
+  return true;
+}
+
 using MediaFormatPtr = std::unique_ptr<AMediaFormat, AMediaFormatDeleter>;
 
 MediaFormatPtr CreateVideoFormat(const std::string& mime,
-                                 const VideoEncodeAccelerator::Config& config,
+                                 int iframe_interval,
                                  int framerate,
+                                 bool require_low_delay,
+                                 const gfx::Size& frame_size,
+                                 const Bitrate& bitrate,
+                                 absl::optional<gfx::ColorSpace> cs,
                                  PixelFormat format) {
-  const int iframe_interval = config.gop_length.value_or(kDefaultGOPLength);
-  const gfx::Size& frame_size = config.input_visible_size;
-  const Bitrate& bitrate = config.bitrate;
   MediaFormatPtr result(AMediaFormat_new());
   AMediaFormat_setString(result.get(), AMEDIAFORMAT_KEY_MIME, mime.c_str());
   AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_WIDTH,
@@ -70,7 +139,7 @@ MediaFormatPtr CreateVideoFormat(const std::string& mime,
   AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_I_FRAME_INTERVAL,
                         iframe_interval);
   AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_COLOR_FORMAT, format);
-  if (config.require_low_delay) {
+  if (require_low_delay) {
     AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_LATENCY, 1);
     // MediaCodec supports two priorities: 0 - realtime, 1 - best effort
     AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_PRIORITY, 0);
@@ -93,6 +162,11 @@ MediaFormatPtr CreateVideoFormat(const std::string& mime,
 
   AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_BIT_RATE,
                         base::saturated_cast<int32_t>(bitrate.target_bps()));
+
+  if (cs && cs->IsValid()) {
+    SetFormatColorSpace(result.get(), *cs);
+  }
+
   return result;
 }
 
@@ -207,7 +281,26 @@ NdkVideoEncodeAccelerator::GetSupportedProfiles() {
     return profiles;
 
   for (auto& info : GetEncoderInfoCache()) {
-    profiles.push_back(info.profile);
+    const auto codec = VideoCodecProfileToVideoCodec(info.profile.profile);
+    switch (codec) {
+      case VideoCodec::kHEVC:
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+        if (base::FeatureList::IsEnabled(kPlatformHEVCEncoderSupport) &&
+            // Currently only 8bit NV12 and I420 encoding is supported, so limit
+            // this to main profile only just like other platforms.
+            info.profile.profile == VideoCodecProfile::HEVCPROFILE_MAIN &&
+            // Some devices may report to have a software HEVC encoder,
+            // however based on tests, they are not always working well,
+            // so limit the support to HW only for now.
+            !info.profile.is_software_codec) {
+          profiles.push_back(info.profile);
+        }
+#endif
+        break;
+      default:
+        profiles.push_back(info.profile);
+        break;
+    }
   }
   return profiles;
 }
@@ -244,84 +337,8 @@ bool NdkVideoEncodeAccelerator::Initialize(
     return false;
   }
 
-  auto name = FindMediaCodecFor(config_);
-  if (!name) {
-    MEDIA_LOG(ERROR, log_) << "No suitable MedicCodec found for: "
-                           << config_.AsHumanReadableString();
-    return false;
-  }
-
-  auto mime = MediaCodecUtil::CodecToAndroidMimeType(codec);
   effective_framerate_ = config.initial_framerate.value_or(kDefaultFramerate);
-  auto media_format = CreateVideoFormat(mime, config, effective_framerate_,
-                                        COLOR_FORMAT_YUV420_SEMIPLANAR);
-
-  // We do the following in a loop since we may need to recreate the MediaCodec
-  // if it doesn't unaligned resolutions.
-  auto configured_size = config_.input_visible_size;
-  do {
-    media_codec_.reset(AMediaCodec_createCodecByName(name->c_str()));
-    if (!media_codec_) {
-      MEDIA_LOG(ERROR, log_)
-          << "Can't create media codec (" << name.value()
-          << ") for config: " << config_.AsHumanReadableString();
-      return false;
-    }
-    media_status_t status =
-        AMediaCodec_configure(media_codec_.get(), media_format.get(), nullptr,
-                              nullptr, AMEDIACODEC_CONFIGURE_FLAG_ENCODE);
-    if (status != AMEDIA_OK) {
-      MEDIA_LOG(ERROR, log_) << "Can't configure media codec. Error " << status;
-      return false;
-    }
-
-    if (!SetInputBufferLayout(configured_size)) {
-      MEDIA_LOG(ERROR, log_) << "Can't get input buffer layout from MediaCodec";
-      return false;
-    }
-
-    if (aligned_size_.value_or(configured_size) != configured_size) {
-      // Give the client a chance to handle realignment itself.
-      VideoEncoderInfo encoder_info;
-      encoder_info.requested_resolution_alignment = 16;
-      encoder_info.apply_alignment_to_all_simulcast_layers = true;
-      task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(
-              &VideoEncodeAccelerator::Client::NotifyEncoderInfoChange,
-              client_ptr_factory_->GetWeakPtr(), encoder_info));
-
-      // We must recreate the MediaCodec now since setParameters() doesn't work
-      // consistently across devices and versions of Android.
-      AMediaCodec_stop(media_codec_.get());
-      media_codec_.reset();
-
-      AMediaFormat_setInt32(media_format.get(), AMEDIAFORMAT_KEY_WIDTH,
-                            aligned_size_->width());
-      AMediaFormat_setInt32(media_format.get(), AMEDIAFORMAT_KEY_HEIGHT,
-                            aligned_size_->height());
-      configured_size = *aligned_size_;
-    }
-  } while (!media_codec_);
-
-  // Set MediaCodec callbacks and switch it to async mode
-  AMediaCodecOnAsyncNotifyCallback callbacks{
-      &NdkVideoEncodeAccelerator::OnAsyncInputAvailable,
-      &NdkVideoEncodeAccelerator::OnAsyncOutputAvailable,
-      &NdkVideoEncodeAccelerator::OnAsyncFormatChanged,
-      &NdkVideoEncodeAccelerator::OnAsyncError,
-  };
-  media_status_t status =
-      AMediaCodec_setAsyncNotifyCallback(media_codec_.get(), callbacks, this);
-  if (status != AMEDIA_OK) {
-    MEDIA_LOG(ERROR, log_) << "Can't set media codec callback. Error "
-                           << status;
-    return false;
-  }
-
-  status = AMediaCodec_start(media_codec_.get());
-  if (status != AMEDIA_OK) {
-    MEDIA_LOG(ERROR, log_) << "Can't start media codec. Error " << status;
+  if (!ResetMediaCodec()) {
     return false;
   }
 
@@ -338,8 +355,6 @@ bool NdkVideoEncodeAccelerator::Initialize(
                      client_ptr_factory_->GetWeakPtr(), 1,
                      config.input_visible_size, output_buffer_capacity));
 
-  MEDIA_LOG(INFO, log_) << "Created MediaCodec (" << name.value()
-                        << ") for config: " << config_.AsHumanReadableString();
   return true;
 }
 
@@ -400,6 +415,19 @@ void NdkVideoEncodeAccelerator::Destroy() {
     media_codec_.reset();
   }
   delete this;
+}
+
+bool NdkVideoEncodeAccelerator::IsFlushSupported() {
+  // While MediaCodec supports marking an input buffer as end-of-stream, the
+  // documentation indicates that returning to a normal state is only supported
+  // for decoders:
+  //
+  // https://developer.android.com/reference/android/media/MediaCodec#states
+  //
+  // Since we haven't yet encountered any encoders which won't eventually return
+  // outputs given enough time and recreating codecs is expensive, we opt to not
+  // implement flush and have VEA clients instead wait for all outputs to flush.
+  return false;
 }
 
 bool NdkVideoEncodeAccelerator::SetInputBufferLayout(
@@ -485,6 +513,33 @@ void NdkVideoEncodeAccelerator::FeedInput() {
   if (media_codec_input_buffers_.empty() || pending_frames_.empty())
     return;
 
+  if (pending_color_space_) {
+    return;
+  }
+
+  size_t buffer_idx = media_codec_input_buffers_.front();
+  media_codec_input_buffers_.pop_front();
+
+  const auto frame_cs = pending_frames_.front().frame->ColorSpace();
+  if (!encoder_color_space_ || *encoder_color_space_ != frame_cs) {
+    if (!have_encoded_frames_) {
+      encoder_color_space_ = frame_cs;
+      SetEncoderColorSpace();
+    } else {
+      // Flush codec and wait for outputs to recreate the codec.
+      pending_color_space_ = frame_cs;
+      media_status_t status = AMediaCodec_queueInputBuffer(
+          media_codec_.get(), buffer_idx, /*offset=*/0, 0, 0,
+          AMEDIACODEC_BUFFER_FLAG_END_OF_STREAM);
+      if (status != AMEDIA_OK) {
+        NotifyMediaCodecError(EncoderStatus::Codes::kEncoderHardwareDriverError,
+                              status, "Failed to queueInputBuffer");
+      }
+      return;
+    }
+  }
+
+  have_encoded_frames_ = true;
   scoped_refptr<VideoFrame> frame = std::move(pending_frames_.front().frame);
   bool key_frame = pending_frames_.front().options.key_frame;
   pending_frames_.pop_front();
@@ -502,9 +557,6 @@ void NdkVideoEncodeAccelerator::FeedInput() {
       return;
     }
   }
-
-  size_t buffer_idx = media_codec_input_buffers_.front();
-  media_codec_input_buffers_.pop_front();
 
   size_t capacity = 0;
   uint8_t* buffer_ptr =
@@ -726,8 +778,22 @@ void NdkVideoEncodeAccelerator::DrainOutput() {
   const size_t mc_buffer_size = static_cast<size_t>(mc_buffer_info.size);
   media_codec_output_buffers_.pop_front();
 
-  if ((mc_buffer_info.flags & AMEDIACODEC_BUFFER_FLAG_END_OF_STREAM) != 0)
+  if ((mc_buffer_info.flags & AMEDIACODEC_BUFFER_FLAG_END_OF_STREAM) != 0) {
+    if (pending_color_space_) {
+      DCHECK_EQ(mc_buffer_size, 0u);
+      encoder_color_space_ = pending_color_space_;
+      pending_color_space_.reset();
+      if (!ResetMediaCodec()) {
+        NotifyErrorStatus(
+            {EncoderStatus::Codes::kEncoderFailedEncode,
+             "Failed to recreate media codec for color space change."});
+      }
+
+      // Encoding will continue when MediaCodec signals OnInputAvailable().
+    }
     return;
+  }
+
   const bool key_frame = (mc_buffer_info.flags & BUFFER_FLAG_KEY_FRAME) != 0;
 
   BitstreamBuffer bitstream_buffer =
@@ -785,8 +851,12 @@ void NdkVideoEncodeAccelerator::DrainOutput() {
       base::Microseconds(mc_buffer_info.presentationTimeUs));
   auto metadata = BitstreamBufferMetadata(mc_buffer_size + config_size,
                                           key_frame, timestamp);
-  if (aligned_size_)
+  if (aligned_size_) {
     metadata.encoded_size = aligned_size_;
+  }
+  if (encoder_color_space_) {
+    metadata.encoded_color_space = *encoder_color_space_;
+  }
 
   task_runner_->PostTask(
       FROM_HERE,
@@ -795,6 +865,130 @@ void NdkVideoEncodeAccelerator::DrainOutput() {
                      metadata));
   AMediaCodec_releaseOutputBuffer(media_codec_.get(),
                                   output_buffer.buffer_index, false);
+}
+
+bool NdkVideoEncodeAccelerator::ResetMediaCodec() {
+  DCHECK(!pending_color_space_);
+
+  media_codec_input_buffers_.clear();
+  media_codec_output_buffers_.clear();
+  callback_weak_factory_.InvalidateWeakPtrs();
+  callback_weak_ptr_ = callback_weak_factory_.GetWeakPtr();
+  have_encoded_frames_ = false;
+
+  if (media_codec_) {
+    AMediaCodec_stop(media_codec_.get());
+    media_codec_.reset();
+  }
+
+  auto name = FindMediaCodecFor(config_);
+  if (!name) {
+    MEDIA_LOG(ERROR, log_) << "No suitable MedicCodec found for: "
+                           << config_.AsHumanReadableString();
+    return false;
+  }
+
+  auto mime = MediaCodecUtil::CodecToAndroidMimeType(
+      VideoCodecProfileToVideoCodec(config_.output_profile));
+  auto configured_size = aligned_size_.value_or(config_.input_visible_size);
+  auto media_format = CreateVideoFormat(
+      mime, config_.gop_length.value_or(kDefaultGOPLength),
+      effective_framerate_, config_.require_low_delay, configured_size,
+      effective_bitrate_, encoder_color_space_, COLOR_FORMAT_YUV420_SEMIPLANAR);
+
+  // We do the following in a loop since we may need to recreate the MediaCodec
+  // if it doesn't unaligned resolutions.
+  do {
+    media_codec_.reset(AMediaCodec_createCodecByName(name->c_str()));
+    if (!media_codec_) {
+      MEDIA_LOG(ERROR, log_)
+          << "Can't create media codec (" << name.value()
+          << ") for config: " << config_.AsHumanReadableString();
+      return false;
+    }
+    media_status_t status =
+        AMediaCodec_configure(media_codec_.get(), media_format.get(), nullptr,
+                              nullptr, AMEDIACODEC_CONFIGURE_FLAG_ENCODE);
+    if (status != AMEDIA_OK) {
+      MEDIA_LOG(ERROR, log_) << "Can't configure media codec. Error " << status;
+      return false;
+    }
+
+    if (!SetInputBufferLayout(configured_size)) {
+      MEDIA_LOG(ERROR, log_) << "Can't get input buffer layout from MediaCodec";
+      return false;
+    }
+
+    if (aligned_size_.value_or(configured_size) != configured_size) {
+      // Give the client a chance to handle realignment itself.
+      VideoEncoderInfo encoder_info;
+      encoder_info.requested_resolution_alignment = 16;
+      encoder_info.apply_alignment_to_all_simulcast_layers = true;
+      task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              &VideoEncodeAccelerator::Client::NotifyEncoderInfoChange,
+              client_ptr_factory_->GetWeakPtr(), encoder_info));
+
+      // We must recreate the MediaCodec now since setParameters() doesn't work
+      // consistently across devices and versions of Android.
+      AMediaCodec_stop(media_codec_.get());
+      media_codec_.reset();
+
+      AMediaFormat_setInt32(media_format.get(), AMEDIAFORMAT_KEY_WIDTH,
+                            aligned_size_->width());
+      AMediaFormat_setInt32(media_format.get(), AMEDIAFORMAT_KEY_HEIGHT,
+                            aligned_size_->height());
+      configured_size = *aligned_size_;
+    }
+  } while (!media_codec_);
+
+  // Set MediaCodec callbacks and switch it to async mode
+  AMediaCodecOnAsyncNotifyCallback callbacks{
+      &NdkVideoEncodeAccelerator::OnAsyncInputAvailable,
+      &NdkVideoEncodeAccelerator::OnAsyncOutputAvailable,
+      &NdkVideoEncodeAccelerator::OnAsyncFormatChanged,
+      &NdkVideoEncodeAccelerator::OnAsyncError,
+  };
+  media_status_t status =
+      AMediaCodec_setAsyncNotifyCallback(media_codec_.get(), callbacks, this);
+  if (status != AMEDIA_OK) {
+    MEDIA_LOG(ERROR, log_) << "Can't set media codec callback. Error "
+                           << status;
+    return false;
+  }
+
+  status = AMediaCodec_start(media_codec_.get());
+  if (status != AMEDIA_OK) {
+    MEDIA_LOG(ERROR, log_) << "Can't start media codec. Error " << status;
+    return false;
+  }
+
+  MEDIA_LOG(INFO, log_) << "Created MediaCodec (" << name.value()
+                        << ") for config: " << config_.AsHumanReadableString();
+
+  return true;
+}
+
+void NdkVideoEncodeAccelerator::SetEncoderColorSpace() {
+  DCHECK(!have_encoded_frames_);
+  DCHECK(encoder_color_space_);
+  if (!encoder_color_space_->IsValid()) {
+    return;
+  }
+
+  MediaFormatPtr format(AMediaFormat_new());
+  if (!SetFormatColorSpace(format.get(), *encoder_color_space_)) {
+    return;
+  }
+
+  auto status = AMediaCodec_setParameters(media_codec_.get(), format.get());
+  if (status != AMEDIA_OK) {
+    DLOG(ERROR) << "Failed to set color space parameters: " << status;
+    return;
+  }
+
+  DVLOG(1) << "Set color space to: " << encoder_color_space_->ToString();
 }
 
 }  // namespace media

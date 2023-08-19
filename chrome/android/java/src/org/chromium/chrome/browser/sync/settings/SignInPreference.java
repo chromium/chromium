@@ -13,7 +13,6 @@ import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
@@ -21,8 +20,7 @@ import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
-import org.chromium.chrome.browser.sync.SyncService;
-import org.chromium.chrome.browser.sync.SyncService.SyncStateChangedListener;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.AccountManagerFacade;
@@ -31,6 +29,7 @@ import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.ViewUtils;
 
@@ -41,7 +40,7 @@ import org.chromium.ui.base.ViewUtils;
  */
 public class SignInPreference
         extends Preference implements SignInStateObserver, ProfileDataCache.Observer,
-                                      SyncStateChangedListener, AccountsChangeObserver {
+                                      SyncService.SyncStateChangedListener, AccountsChangeObserver {
     private final PrefService mPrefService;
     private boolean mWasGenericSigninPromoDisplayed;
     private boolean mViewEnabled;
@@ -70,12 +69,11 @@ public class SignInPreference
     public void onAttached() {
         super.onAttached();
 
+        Profile profile = Profile.getLastUsedRegularProfile();
         mAccountManagerFacade.addObserver(this);
-        IdentityServicesProvider.get()
-                .getSigninManager(Profile.getLastUsedRegularProfile())
-                .addSignInStateObserver(this);
+        IdentityServicesProvider.get().getSigninManager(profile).addSignInStateObserver(this);
         mProfileDataCache.addObserver(this);
-        SyncService syncService = SyncService.get();
+        SyncService syncService = SyncServiceFactory.getForProfile(profile);
         if (syncService != null) {
             syncService.addSyncStateChangedListener(this);
         }
@@ -87,12 +85,11 @@ public class SignInPreference
     public void onDetached() {
         super.onDetached();
 
+        Profile profile = Profile.getLastUsedRegularProfile();
         mAccountManagerFacade.removeObserver(this);
-        IdentityServicesProvider.get()
-                .getSigninManager(Profile.getLastUsedRegularProfile())
-                .removeSignInStateObserver(this);
+        IdentityServicesProvider.get().getSigninManager(profile).removeSignInStateObserver(this);
         mProfileDataCache.removeObserver(this);
-        SyncService syncService = SyncService.get();
+        SyncService syncService = SyncServiceFactory.getForProfile(profile);
         if (syncService != null) {
             syncService.removeSyncStateChangedListener(this);
         }
@@ -174,9 +171,7 @@ public class SignInPreference
 
     private void setupSignedIn(String accountName) {
         DisplayableProfileData profileData = mProfileDataCache.getProfileDataOrDefault(accountName);
-        final boolean canShowEmailAddress = profileData.hasDisplayableEmailAddress()
-                || !ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.HIDE_NON_DISPLAYABLE_ACCOUNT_EMAIL);
+        final boolean canShowEmailAddress = profileData.hasDisplayableEmailAddress();
         setSummary(canShowEmailAddress ? accountName : "");
         setTitle(SyncSettingsUtils.getDisplayableFullNameOrEmailWithPreference(
                 profileData, getContext(), SyncSettingsUtils.TitlePreference.FULL_NAME));
@@ -224,7 +219,7 @@ public class SignInPreference
 
     // AccountsChangeObserver implementation.
     @Override
-    public void onAccountsChanged() {
+    public void onCoreAccountInfosChanged() {
         update();
     }
 }

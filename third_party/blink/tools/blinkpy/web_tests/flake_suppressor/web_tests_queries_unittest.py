@@ -1,4 +1,3 @@
-#!/usr/bin/env vpython3
 # Copyright 2022 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -42,7 +41,7 @@ class WebTestQueriesUnittest(unittest.TestCase):
                 # Try results.
                 query_result = [
                     {
-                        'typ_tags': ['linux', 'trusty'],
+                        'typ_tags': ['linux'],
                         'test_name': 'foo/bar/linux',
                         'result_count': '25',
                     },
@@ -91,7 +90,3 @@ class WebTestQueriesUnittest(unittest.TestCase):
         }
         self.assertEqual(result_counts, expected_result_counts)
         self.assertEqual(self._subprocess_mock.call_count, 2)
-
-
-if __name__ == '__main__':
-    unittest.main(verbosity=2)

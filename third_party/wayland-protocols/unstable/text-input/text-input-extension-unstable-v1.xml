@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zcr_text_input_extension_v1" version="11">
+  <interface name="zcr_text_input_extension_v1" version="13">
     <description summary="extends text_input to support richer operations">
       Allows a text_input to sends more variation of operations to support
       richer features, such as set_preedit_region.
@@ -57,7 +57,7 @@
 
   </interface>
 
-  <interface name="zcr_extended_text_input_v1" version="11">
+  <interface name="zcr_extended_text_input_v1" version="13">
     <description summary="extension of text_input protocol">
       The zcr_extended_text_input_v1 interface extends the text_input interface
       to support more rich operations on text_input.
@@ -406,6 +406,36 @@
         Has no effect if there's no preedit text.
       </description>
       <arg name="selection_behavior" type="uint" enum="confirm_preedit_selection_behavior" />
+    </event>
+
+    <!-- Version 12 -->
+
+    <request name="set_large_surrounding_text" since="12">
+      <description summary="sets the large surrounding text">
+        Almost as same as text_input::set_surrounding_text. However, this takes handle
+        instead of string in order to avoid the limit of the size.
+
+        |size| is the size of surrounding text in Utf-8, i.e. bytes to be read from fd.
+      </description>
+      <arg name="text" type="fd"/>
+      <arg name="size" type="uint"/>
+      <arg name="cursor" type="uint"/>
+      <arg name="anchor" type="uint"/>
+    </request>
+
+    <!-- Version 13 -->
+
+    <event name="insert_image" since="13">
+      <description summary="Inserts image">
+        This inserts a given image into current editing field. The value of src
+        should be a valid http(s) URL pointing to some image.
+
+        Note: this only works for richly-editable editing field in web apps.
+        Internally it sends a PasteFromImage editing command to blink engine.
+        If the current editing field is not richly-editable, this event will be
+        ignored.
+      </description>
+      <arg name="src" type="string" />
     </event>
 
   </interface>

@@ -27,9 +27,11 @@
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
+#include "components/version_info/channel.h"
 #include "extensions/common/api/app_runtime.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/features/feature_channel.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -431,12 +433,20 @@ TEST_F(IntentUtilsTest, CreateIntentFiltersForExtension_FileHandlers) {
             R"(filesystem:chrome://file-manager/.*\..*)");
 }
 
-TEST_F(IntentUtilsTest, CreateIntentFiltersForExtension_WebFileHandlers) {
-  // Extension feature flag.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      extensions_features::kExtensionWebFileHandlers);
+class IntentUtilsForExtensionsTest : public IntentUtilsTest {
+ public:
+  IntentUtilsForExtensionsTest() : channel_(version_info::Channel::BETA) {
+    feature_list_.InitAndEnableFeature(
+        extensions_features::kExtensionWebFileHandlers);
+  }
 
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  extensions::ScopedCurrentChannel channel_;
+};
+
+TEST_F(IntentUtilsForExtensionsTest,
+       CreateIntentFiltersForExtension_WebFileHandlers) {
   // Create extension that provides file_handlers.
   extensions::ExtensionBuilder extension_builder("Test");
   static const char kManifest[] = R"(
@@ -519,6 +529,59 @@ TEST_F(IntentUtilsTest, ConvertArcIntentFilter_AddsMissingPath) {
   ASSERT_EQ(*app_service_filter1, *app_service_filter2);
 }
 
+// Converting an Arc Intent filter with invalid path.
+TEST_F(IntentUtilsTest, ConvertArcIntentFilter_InvalidPath) {
+  const char* kPackageName = "com.foo.bar";
+  const char* kHost = "www.google.com";
+  const char* kPath = "/";
+  const char* kScheme = "https";
+
+  // If all paths are invalid, return nullptr.
+  std::vector<arc::IntentFilter::AuthorityEntry> authorities1;
+  authorities1.emplace_back(kHost, 0);
+  std::vector<arc::IntentFilter::PatternMatcher> patterns1;
+  int invalid_pattern_type =
+      static_cast<int>(arc::mojom::PatternType::kMaxValue) + 1;
+  patterns1.emplace_back(
+      kPath, static_cast<arc::mojom::PatternType>(invalid_pattern_type));
+
+  arc::IntentFilter filter_with_only_invalid_path(
+      kPackageName, {arc::kIntentActionView}, std::move(authorities1),
+      std::move(patterns1), {kScheme}, {});
+
+  apps::IntentFilterPtr app_service_filter1 =
+      apps_util::CreateIntentFilterForArc(filter_with_only_invalid_path);
+
+  ASSERT_FALSE(app_service_filter1);
+
+  // If at least one path is valid, return intent filter with the valid path.
+  std::vector<arc::IntentFilter::AuthorityEntry> authorities2;
+  authorities2.emplace_back(kHost, 0);
+  std::vector<arc::IntentFilter::PatternMatcher> patterns2;
+  patterns2.emplace_back(
+      kPath, static_cast<arc::mojom::PatternType>(invalid_pattern_type));
+  patterns2.emplace_back(kPath, arc::mojom::PatternType::PATTERN_PREFIX);
+  arc::IntentFilter filter_with_some_valid_path(
+      kPackageName, {arc::kIntentActionView}, std::move(authorities2),
+      std::move(patterns2), {kScheme}, {});
+
+  apps::IntentFilterPtr app_service_filter2 =
+      apps_util::CreateIntentFilterForArc(filter_with_some_valid_path);
+
+  std::vector<arc::IntentFilter::AuthorityEntry> authorities3;
+  authorities3.emplace_back(kHost, 0);
+  std::vector<arc::IntentFilter::PatternMatcher> patterns3;
+  patterns3.emplace_back(kPath, arc::mojom::PatternType::PATTERN_PREFIX);
+  arc::IntentFilter filter_with_valid_path(
+      kPackageName, {arc::kIntentActionView}, std::move(authorities3),
+      std::move(patterns3), {kScheme}, {});
+
+  apps::IntentFilterPtr app_service_filter3 =
+      apps_util::CreateIntentFilterForArc(filter_with_valid_path);
+
+  ASSERT_EQ(*app_service_filter2, *app_service_filter3);
+}
+
 TEST_F(IntentUtilsTest, ConvertArcIntentFilter_ConvertsSimpleGlobToPrefix) {
   const char* kPackageName = "com.foo.bar";
   const char* kHost = "www.google.com";
@@ -583,7 +646,7 @@ TEST_F(IntentUtilsTest, ConvertArcIntentFilter_DeduplicatesHosts) {
       apps_util::CreateIntentFilterForArc(arc_filter);
 
   for (auto& condition : app_service_filter->conditions) {
-    if (condition->condition_type == apps::ConditionType::kHost) {
+    if (condition->condition_type == apps::ConditionType::kAuthority) {
       ASSERT_EQ(2u, condition->condition_values.size());
       ASSERT_EQ(kHost1, condition->condition_values[0]->value);
       ASSERT_EQ(kHost2, condition->condition_values[1]->value);
@@ -612,7 +675,7 @@ TEST_F(IntentUtilsTest, ConvertArcIntentFilter_WildcardHostPatternMatchType) {
       apps_util::CreateIntentFilterForArc(arc_filter);
 
   for (auto& condition : app_service_filter->conditions) {
-    if (condition->condition_type == apps::ConditionType::kHost) {
+    if (condition->condition_type == apps::ConditionType::kAuthority) {
       ASSERT_EQ(condition->condition_values.size(), 2U);
 
       // Check wildcard host
@@ -779,7 +842,7 @@ class IntentUtilsFileTest : public ::testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
+  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh> profile_;
 };
 
 class IntentUtilsFileSystemSchemeTest

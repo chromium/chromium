@@ -17,6 +17,36 @@ export const Page = {
   GRAPHICS: 'Graphics',
   GAME: 'Game',
   PERIPHERALS: 'Peripherals',
+  PERFORMANCE: 'Performance',
+  APPS: 'Apps',
+  CHROMEOS: 'ChromeOS',
+};
+
+/**
+ * The name for the details pages in the Highlights app.
+ * @enum {string}
+ */
+export const DetailsPage = {
+  ADOBE: 'Adobe',
+  BATTERY: 'Battery',
+  COMPARISON: 'Comparison',
+  DISPLAY_ENTERTAINMENT: 'DisplayEntertainment',
+  DISPLAY_PERFORMANCE: 'DisplayPerformance',
+  ENTERTAINMENT_APPS: 'EntertainmentApps',
+  GOOGLE_APPS: 'GoogleApps',
+  LUMAFUSION: 'LumaFusion',
+  MESSAGING: 'Messaging',
+  MOBILE_GAMING: 'MobileGaming',
+  MS_365_APPS: 'MS365Apps',
+  MS_OFFICE: 'MSOffice',
+  NEARBY_SHARE: 'NearbyShare',
+  OFFLINE_MODE: 'OfflineMode',
+  PC_CONSOLE_GAMING: 'PCConsoleGaming',
+  PHOTOS: 'Photos',
+  PROCESSOR: 'Processor',
+  STORAGE: 'Storage',
+  SWITCHING: 'Switching',
+  VIDEO_CALL: 'VideoCall',
 };
 
 /**
@@ -43,11 +73,19 @@ const FirstInteractionActionMap = new Map([
   [Page.GRAPHICS, 7],
   [Page.GAME, 8],
   [Page.PERIPHERALS, 9],
-  ['MAX_VALUE', 10],
+  [Page.PERFORMANCE, 10],
+  [Page.APPS, 11],
+  [Page.CHROMEOS, 12],
+  ['MAX_VALUE', 13],
 ]);
 
 /**
  * Provides interfaces for emitting metrics from demo mode apps to UMA.
+ *
+ * Note: DemoMode.Highlights.* metrics and actions are recorded via
+ * runtime-downloaded content that is not checked into Chromium. Please do not
+ * delete this code, even if it looks like there's no production references in
+ * Chromium, without first consulting the Demo Mode team.
  */
 class DemoMetricsService {
   constructor() {
@@ -58,6 +96,18 @@ class DemoMetricsService {
   recordAttractLoopBreak() {
     chrome.metricsPrivateIndividualApis.recordUserAction(
         'DemoMode_AttractLoop_Break');
+  }
+
+  /**
+   * Record the timestamp (i.e. milliseconds from the beginning of the Attract
+   * Loop video) at which the user broke the Attract Loop.
+   * @param timestampInMilliseconds
+   */
+  recordAttractLoopBreakTimestamp(timestampInMilliseconds) {
+    chrome.metricsPrivateIndividualApis.recordMediumTime(
+        'DemoMode.AttractLoop.Timestamp',
+        timestampInMilliseconds,
+    );
   }
 
   /**
@@ -113,6 +163,27 @@ class DemoMetricsService {
         'DemoMode.Highlights.PageStayDuration.' + page + 'Page',
         durationInMilliseconds);
   }
+
+  /**
+   * Record the details page clicked by the current user
+   * @param {DetailsPage} detailsPage
+   */
+  recordDetailsPageClicked(detailsPage) {
+    chrome.metricsPrivateIndividualApis.recordUserAction(
+        'DemoMode_Highlights_DetailsPage_Clicked_' + detailsPage + 'Button');
+  }
+
+  /**
+   * Record the duration of the user staying on a details page
+   * @param {DetailsPage} detailsPage
+   */
+  recordDetailsPageViewDuration(detailsPage, durationInMilliseconds) {
+    chrome.metricsPrivateIndividualApis.recordMediumTime(
+        'DemoMode.Highlights.DetailsPageStayDuration.' + detailsPage + 'Page',
+        durationInMilliseconds);
+  }
 }
+
+
 
 export const metricsService = new DemoMetricsService();

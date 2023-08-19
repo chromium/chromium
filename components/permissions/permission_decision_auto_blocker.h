@@ -15,7 +15,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/permissions/permission_result.h"
+#include "content/public/browser/permission_result.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -24,6 +24,10 @@ class GURL;
 namespace settings {
 FORWARD_DECLARE_TEST(SiteSettingsHandlerTest, GetAllSites);
 FORWARD_DECLARE_TEST(SiteSettingsHandlerTest, GetRecentSitePermissions);
+FORWARD_DECLARE_TEST(SiteSettingsHandlerTest,
+                     StorageAccessExceptions_Description_Embargoed);
+FORWARD_DECLARE_TEST(SiteSettingsHandlerTest,
+                     StorageAccessExceptions_Description_EmbargoedTwoProfiles);
 }  // namespace settings
 
 namespace site_settings {
@@ -67,7 +71,7 @@ class PermissionDecisionAutoBlocker : public KeyedService {
   // Prefer to use PermissionManager::GetPermissionStatus when possible. This
   // method is only exposed to facilitate permission checks from threads other
   // than the UI thread. See https://crbug.com/658020.
-  static absl::optional<PermissionResult> GetEmbargoResult(
+  static absl::optional<content::PermissionResult> GetEmbargoResult(
       HostContentSettingsMap* settings_map,
       const GURL& request_origin,
       ContentSettingsType permission,
@@ -81,7 +85,7 @@ class PermissionDecisionAutoBlocker : public KeyedService {
 
   // Checks the status of the content setting to determine if |request_origin|
   // is under embargo for |permission|. This checks all types of embargo.
-  absl::optional<PermissionResult> GetEmbargoResult(
+  absl::optional<content::PermissionResult> GetEmbargoResult(
       const GURL& request_origin,
       ContentSettingsType permission);
 
@@ -159,6 +163,11 @@ class PermissionDecisionAutoBlocker : public KeyedService {
   FRIEND_TEST_ALL_PREFIXES(settings::SiteSettingsHandlerTest, GetAllSites);
   FRIEND_TEST_ALL_PREFIXES(settings::SiteSettingsHandlerTest,
                            GetRecentSitePermissions);
+  FRIEND_TEST_ALL_PREFIXES(settings::SiteSettingsHandlerTest,
+                           StorageAccessExceptions_Description_Embargoed);
+  FRIEND_TEST_ALL_PREFIXES(
+      settings::SiteSettingsHandlerTest,
+      StorageAccessExceptions_Description_EmbargoedTwoProfiles);
 
   void PlaceUnderEmbargo(const GURL& request_origin,
                          ContentSettingsType permission,

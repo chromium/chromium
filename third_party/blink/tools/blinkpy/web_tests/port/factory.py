@@ -210,16 +210,17 @@ def add_configuration_options_group(parser: argparse.ArgumentParser,
                        const='Release',
                        dest='configuration',
                        help='Set the configuration to Release')
-    group.add_argument('--no-xvfb',
-                       action='store_false',
-                       dest='use_xvfb',
-                       help='Do not run tests with Xvfb')
     group.add_argument('--no-manifest-update',
                        dest='manifest_update',
                        action='store_false',
                        help=('Do not update the web-platform-tests '
                              'MANIFEST.json unless it does not exist.'))
-    if not rwt:
+    if rwt:
+        group.add_argument('--no-xvfb',
+                           action='store_false',
+                           dest='use_xvfb',
+                           help='Do not run tests with Xvfb')
+    else:
         group.add_argument(
             '-p',
             '--product',
@@ -227,18 +228,21 @@ def add_configuration_options_group(parser: argparse.ArgumentParser,
             choices=(product_choices or []),
             metavar='PRODUCT',
             help='Product (browser or browser component) to test.')
-        group.add_argument('--no-headless',
-                           action='store_false',
-                           dest='headless',
-                           help='Do not run the browser in headless mode.')
+        group.add_argument(
+            '--no-headless',
+            action='store_false',
+            dest='headless',
+            help=('Do not run the browser headlessly; pause after each test '
+                  'until the window is closed. On Linux, do not start Xvfb.'))
         group.add_argument('--webdriver-binary',
                            type=str,
                            help='Alternate path of the webdriver binary.')
         group.add_argument(
             '--use-upstream-wpt',
             action='store_true',
-            help=('Use tests and tools from upstream WPT GitHub repo. '
-                  'Used to create wpt reports for uploading to wpt.fyi.'))
+            help=
+            ('CI only parameter. Use tests and tools from upstream WPT GitHub repo. '
+             'Used to create wpt reports for uploading to wpt.fyi.'))
 
 
 def add_results_options_group(parser: argparse.ArgumentParser,
@@ -281,6 +285,15 @@ def add_results_options_group(parser: argparse.ArgumentParser,
         help="Don't launch a browser with results after the tests are done")
     results_group.add_argument('--results-directory',
                                help='Location of test results')
+    results_group.add_argument('--smoke',
+                               action='store_true',
+                               default=None,
+                               help='Run just the SmokeTests')
+    results_group.add_argument('--no-smoke',
+                               dest='smoke',
+                               action='store_false',
+                               default=None,
+                               help='Do not run just the SmokeTests')
     if rwt:
         results_group.add_argument(
             '--additional-expectations',
@@ -330,15 +343,6 @@ def add_results_options_group(parser: argparse.ArgumentParser,
              '--additional-driver-flag is specified, reset the flag-specific '
              'baselines. If --copy-baselines is specified, the copied '
              'baselines will be reset.'))
-        results_group.add_argument('--smoke',
-                                   action='store_true',
-                                   default=None,
-                                   help='Run just the SmokeTests')
-        results_group.add_argument('--no-smoke',
-                                   dest='smoke',
-                                   action='store_false',
-                                   default=None,
-                                   help='Do not run just the SmokeTests')
     else:
         results_group.add_argument(
             '--reset-results',
@@ -358,6 +362,7 @@ def add_testing_options_group(parser: argparse.ArgumentParser,
     testing_group.add_argument('--child-processes',
                                '--jobs',
                                '-j',
+                               type=int,
                                help='Number of drivers to run in parallel.')
     testing_group.add_argument(
         '--enable-leak-detection',
@@ -631,6 +636,15 @@ def add_testing_options_group(parser: argparse.ArgumentParser,
                   'testharness test failures will be shown, even if the '
                   'failures are expected in *-expected.txt.'))
     else:
+        testing_group.add_argument(
+            '--test-types',
+            nargs='*',
+            choices=[
+                'testharness', 'reftest', 'wdspec', 'crashtest',
+                'print-reftest', 'manual'
+            ],
+            default=['testharness', 'reftest', 'crashtest', 'print-reftest'],
+            help='Test types to run')
         testing_group.add_argument('--no-wpt-internal',
                                    action='store_false',
                                    dest='run_wpt_internal',
@@ -662,6 +676,11 @@ def add_android_options_group(parser: argparse.ArgumentParser):
         help=
         ('Specify path under src/out/ of the WebView provider APK to install. '
          'The default value is apks/SystemWebView.apk.'))
+    group.add_argument('--additional-apk',
+                       type=os.path.abspath,
+                       action='append',
+                       default=[],
+                       help='Path to additional APKs to install')
     group.add_argument('--no-install',
                        action='store_true',
                        help=('Do not install packages to devices. '

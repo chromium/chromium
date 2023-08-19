@@ -93,11 +93,10 @@ std::vector<std::string> GetNetworkPaths(
 // Creates a list of cellular SIM slots with a single primary slot whose eid is
 // |eid|.
 base::Value GenerateSimSlotInfosWithEid(const std::string& eid) {
-  base::Value::List sim_slot_infos;
-  base::Value::Dict slot_info_item;
-  slot_info_item.Set(shill::kSIMSlotInfoEID, eid);
-  slot_info_item.Set(shill::kSIMSlotInfoPrimary, true);
-  sim_slot_infos.Append(std::move(slot_info_item));
+  auto sim_slot_infos =
+      base::Value::List().Append(base::Value::Dict()
+                                     .Set(shill::kSIMSlotInfoEID, eid)
+                                     .Set(shill::kSIMSlotInfoPrimary, true));
   return base::Value(std::move(sim_slot_infos));
 }
 
@@ -322,7 +321,7 @@ class TestTetherSortDelegate : public NetworkStateHandler::TetherSortDelegate {
                     static_cast<const NetworkState*>(second.get());
 
                 // Sort by reverse-alphabetical order of GUIDs.
-                return first_network->guid() >= second_network->guid();
+                return first_network->guid() > second_network->guid();
               });
   }
 };
@@ -470,10 +469,17 @@ class NetworkStateHandlerTest : public testing::Test {
   std::unique_ptr<NetworkStateHandler> network_state_handler_;
   std::unique_ptr<TestObserver> test_observer_;
   FakeStubCellularNetworksProvider fake_stub_cellular_networks_provider_;
-  raw_ptr<ShillDeviceClient::TestInterface, ExperimentalAsh> device_test_;
-  raw_ptr<ShillManagerClient::TestInterface, ExperimentalAsh> manager_test_;
-  raw_ptr<ShillProfileClient::TestInterface, ExperimentalAsh> profile_test_;
-  raw_ptr<ShillServiceClient::TestInterface, ExperimentalAsh> service_test_;
+  raw_ptr<ShillDeviceClient::TestInterface, DanglingUntriaged | ExperimentalAsh>
+      device_test_;
+  raw_ptr<ShillManagerClient::TestInterface,
+          DanglingUntriaged | ExperimentalAsh>
+      manager_test_;
+  raw_ptr<ShillProfileClient::TestInterface,
+          DanglingUntriaged | ExperimentalAsh>
+      profile_test_;
+  raw_ptr<ShillServiceClient::TestInterface,
+          DanglingUntriaged | ExperimentalAsh>
+      service_test_;
 };
 
 TEST_F(NetworkStateHandlerTest, NetworkStateHandlerStub) {
@@ -2511,9 +2517,9 @@ TEST_F(NetworkStateHandlerTest, BlockedWifiByPolicyBlocked) {
   // Emulate 'wifi1' being a managed network.
   std::unique_ptr<NetworkUIData> ui_data =
       NetworkUIData::CreateFromONC(::onc::ONCSource::ONC_SOURCE_USER_POLICY);
-  base::Value::Dict properties;
-  properties.Set(shill::kProfileProperty, kProfilePath);
-  properties.Set(shill::kUIDataProperty, ui_data->GetAsJson());
+  auto properties = base::Value::Dict()
+                        .Set(shill::kProfileProperty, kProfilePath)
+                        .Set(shill::kUIDataProperty, ui_data->GetAsJson());
   SetProperties(wifi1, properties);
 
   EXPECT_FALSE(network_state_handler_->OnlyManagedWifiNetworksAllowed());
@@ -2545,9 +2551,9 @@ TEST_F(NetworkStateHandlerTest, BlockedWifiByPolicyOnlyManaged) {
   // Emulate 'wifi1' being a managed network.
   std::unique_ptr<NetworkUIData> ui_data =
       NetworkUIData::CreateFromONC(::onc::ONCSource::ONC_SOURCE_USER_POLICY);
-  base::Value::Dict properties;
-  properties.Set(shill::kProfileProperty, kProfilePath);
-  properties.Set(shill::kUIDataProperty, ui_data->GetAsJson());
+  auto properties = base::Value::Dict()
+                        .Set(shill::kProfileProperty, kProfilePath)
+                        .Set(shill::kUIDataProperty, ui_data->GetAsJson());
   SetProperties(wifi1, properties);
 
   EXPECT_TRUE(network_state_handler_->OnlyManagedWifiNetworksAllowed());
@@ -2583,9 +2589,9 @@ TEST_F(NetworkStateHandlerTest, BlockedCellularByPolicyOnlyManaged) {
   // Emulate 'cellular1' being a managed network.
   std::unique_ptr<NetworkUIData> ui_data =
       NetworkUIData::CreateFromONC(::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY);
-  base::Value::Dict properties;
-  properties.Set(shill::kProfileProperty, kProfilePath);
-  properties.Set(shill::kUIDataProperty, ui_data->GetAsJson());
+  auto properties = base::Value::Dict()
+                        .Set(shill::kProfileProperty, kProfilePath)
+                        .Set(shill::kUIDataProperty, ui_data->GetAsJson());
   SetProperties(cellular1, properties);
 
   EXPECT_TRUE(cellular1->IsManagedByPolicy());
@@ -2624,9 +2630,9 @@ TEST_F(NetworkStateHandlerTest,
   // Emulate 'cellular1' being a managed network.
   std::unique_ptr<NetworkUIData> ui_data =
       NetworkUIData::CreateFromONC(::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY);
-  base::Value::Dict properties;
-  properties.Set(shill::kProfileProperty, kProfilePath);
-  properties.Set(shill::kUIDataProperty, ui_data->GetAsJson());
+  auto properties = base::Value::Dict()
+                        .Set(shill::kProfileProperty, kProfilePath)
+                        .Set(shill::kUIDataProperty, ui_data->GetAsJson());
   SetProperties(cellular1, properties);
 
   EXPECT_TRUE(cellular1->IsManagedByPolicy());
@@ -2657,9 +2663,9 @@ TEST_F(NetworkStateHandlerTest, BlockedWifiByPolicyOnlyManagedIfAvailable) {
   // Emulate 'wifi1' being a managed network.
   std::unique_ptr<NetworkUIData> ui_data =
       NetworkUIData::CreateFromONC(::onc::ONCSource::ONC_SOURCE_USER_POLICY);
-  base::Value::Dict properties;
-  properties.Set(shill::kProfileProperty, kProfilePath);
-  properties.Set(shill::kUIDataProperty, ui_data->GetAsJson());
+  auto properties = base::Value::Dict()
+                        .Set(shill::kProfileProperty, kProfilePath)
+                        .Set(shill::kUIDataProperty, ui_data->GetAsJson());
   SetProperties(wifi1, properties);
   network_state_handler_->UpdateManagedWifiNetworkAvailable();
 
@@ -2801,19 +2807,19 @@ TEST_F(NetworkStateHandlerTest, GetNetworkListAfterUpdateManagedList) {
 
 TEST_F(NetworkStateHandlerTest, RequestTrafficCounters) {
   // Set up the traffic counters.
-  base::Value::List traffic_counters;
+  auto chrome_dict = base::Value::Dict()
+                         .Set("source", shill::kTrafficCounterSourceChrome)
+                         .Set("rx_bytes", 12)
+                         .Set("tx_bytes", 32);
 
-  base::Value::Dict chrome_dict;
-  chrome_dict.Set("source", shill::kTrafficCounterSourceChrome);
-  chrome_dict.Set("rx_bytes", 12);
-  chrome_dict.Set("tx_bytes", 32);
-  traffic_counters.Append(std::move(chrome_dict));
+  auto user_dict = base::Value::Dict()
+                       .Set("source", shill::kTrafficCounterSourceUser)
+                       .Set("rx_bytes", 90)
+                       .Set("tx_bytes", 87);
 
-  base::Value::Dict user_dict;
-  user_dict.Set("source", shill::kTrafficCounterSourceUser);
-  user_dict.Set("rx_bytes", 90);
-  user_dict.Set("tx_bytes", 87);
-  traffic_counters.Append(std::move(user_dict));
+  auto traffic_counters = base::Value::List()
+                              .Append(std::move(chrome_dict))
+                              .Append(std::move(user_dict));
 
   service_test_->SetFakeTrafficCounters(traffic_counters.Clone());
 

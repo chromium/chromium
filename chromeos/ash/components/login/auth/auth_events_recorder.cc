@@ -16,6 +16,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/trace_event/trace_event.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
@@ -245,6 +246,21 @@ std::string GetAuthenticationOutcomeName(AuthenticationOutcome exit_type) {
   return "";
 }
 
+std::string GetUserVaultTypeName(
+    AuthEventsRecorder::UserVaultType user_vault_type) {
+  using UserVaultType = AuthEventsRecorder::UserVaultType;
+  switch (user_vault_type) {
+    case UserVaultType::kPersistent:
+      return "persistent";
+    case UserVaultType::kEphemeral:
+      return "ephemeral";
+    case UserVaultType::kGuest:
+      return "guest";
+  }
+  NOTREACHED();
+  return "";
+}
+
 std::string GetCrashKeyStringWithStatus(const std::string& event_name,
                                         bool success) {
   return event_name + (success ? "_success" : "_failure");
@@ -383,7 +399,39 @@ void AuthEventsRecorder::OnLockContentsViewUpdate() {
   AddAuthEvent("update_lock_screen_view");
 }
 
+void AuthEventsRecorder::OnPasswordChange() {
+  AddAuthEvent("password_change");
+}
+
+void AuthEventsRecorder::OnGaiaScreen() {
+  AddAuthEvent("gaia");
+}
+
+void AuthEventsRecorder::OnUserVaultPrepared(UserVaultType user_vault_type,
+                                             bool success) {
+  const std::string crash_key_prefix =
+      GetUserVaultTypeName(user_vault_type) + "_vault_prepare";
+  AddAuthEvent(GetCrashKeyStringWithStatus(crash_key_prefix, success));
+}
+
+std::string AuthEventsRecorder::GetAuthEventsLog() {
+  // Preallocate the space needed for all the events combined.
+  const size_t events_string_length =
+      std::accumulate(events_.begin(), events_.end(), 0,
+                      [](const size_t sum, const std::string& event) {
+                        return sum + event.length() + 1;
+                      });
+  std::stringstream result_string;
+  for (std::string_view event : events_) {
+    result_string << event;
+    result_string << kAuthEventSeparator;
+  }
+  DCHECK_EQ(result_string.str().length(), events_string_length);
+  return result_string.str();
+}
+
 void AuthEventsRecorder::OnSessionStateChanged() {
+  TRACE_EVENT0("login", "AuthEventsRecorder::OnSessionStateChanged");
   session_manager::SessionState session_state =
       session_manager::SessionManager::Get()->session_state();
   static crash_reporter::CrashKeyString<kMaxSessionStateCrashKeyLength> key(
@@ -432,23 +480,7 @@ void AuthEventsRecorder::UpdateAuthEventsCrashKey() {
     return;
   }
 
-  // Preallocate the space needed for all the events combined.
-  const size_t events_string_length =
-      std::accumulate(events_.begin(), events_.end(), 0,
-                      [](const size_t sum, const std::string& event) {
-                        return sum + event.length() + 1;
-                      });
-  std::string crash_key_string;
-  crash_key_string.reserve(events_string_length);
-
-  // Put new events at the front, so that we keep the most recent & relevant
-  // ones.
-  for (const std::string& event : events_) {
-    crash_key_string += event;
-    crash_key_string += kAuthEventSeparator;
-  }
-  DCHECK_EQ(crash_key_string.length(), events_string_length);
-
+  std::string crash_key_string = GetAuthEventsLog();
   if (crash_key_string.length() > kMaxAuthEventsCrashKeyLength) {
     crash_key_string = crash_key_string.substr(crash_key_string.length() -
                                                kMaxAuthEventsCrashKeyLength);

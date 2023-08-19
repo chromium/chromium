@@ -25,11 +25,4 @@ SyntheticSmoothDragGestureParams::GetGestureType() const {
   return SMOOTH_DRAG_GESTURE;
 }
 
-const SyntheticSmoothDragGestureParams* SyntheticSmoothDragGestureParams::Cast(
-    const SyntheticGestureParams* gesture_params) {
-  DCHECK(gesture_params);
-  DCHECK_EQ(SMOOTH_DRAG_GESTURE, gesture_params->GetGestureType());
-  return static_cast<const SyntheticSmoothDragGestureParams*>(gesture_params);
-}
-
 }  // namespace content

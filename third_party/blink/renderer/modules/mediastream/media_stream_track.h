@@ -45,7 +45,7 @@ String ContentHintToString(
 String ReadyStateToString(const MediaStreamSource::ReadyState& ready_state);
 
 class MODULES_EXPORT MediaStreamTrack
-    : public EventTargetWithInlineData,
+    : public EventTarget,
       public ActiveScriptWrappable<MediaStreamTrack> {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -101,6 +101,7 @@ class MODULES_EXPORT MediaStreamTrack
   virtual MediaTrackCapabilities* getCapabilities() const = 0;
   virtual MediaTrackConstraints* getConstraints() const = 0;
   virtual MediaTrackSettings* getSettings() const = 0;
+  virtual ScriptPromise getFrameStats(ScriptState*) const = 0;
   virtual CaptureHandle* getCaptureHandle() const = 0;
   virtual ScriptPromise applyConstraints(ScriptState*,
                                          const MediaTrackConstraints*) = 0;
@@ -150,9 +151,7 @@ class MODULES_EXPORT MediaStreamTrack
 
   virtual void AddObserver(Observer*) = 0;
 
-  void Trace(Visitor* visitor) const override {
-    EventTargetWithInlineData::Trace(visitor);
-  }
+  void Trace(Visitor* visitor) const override { EventTarget::Trace(visitor); }
 
  private:
   // Friend in order to allow setting a new impl for FromTransferredState.

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'chrome://new-tab-page/strings.m.js';
-import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://resources/cr_components/customize_themes/theme_icon.js';
 import 'chrome://resources/cr_components/customize_themes/customize_themes.js';
 

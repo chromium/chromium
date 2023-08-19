@@ -6,12 +6,12 @@
 
 typedef [EnforceRange] unsigned long GPUTextureUsageFlags;
 [
-    Exposed(Window WebGPU, DedicatedWorker WebGPU),
+    Exposed=(Window, DedicatedWorker),
     SecureContext
 ] namespace GPUTextureUsage {
-    const unsigned long COPY_SRC = 1;
-    const unsigned long COPY_DST = 2;
-    const unsigned long TEXTURE_BINDING = 4;
-    const unsigned long STORAGE_BINDING = 8;
-    const unsigned long RENDER_ATTACHMENT = 16;
+    const GPUFlagsConstant COPY_SRC = 1;
+    const GPUFlagsConstant COPY_DST = 2;
+    const GPUFlagsConstant TEXTURE_BINDING = 4;
+    const GPUFlagsConstant STORAGE_BINDING = 8;
+    const GPUFlagsConstant RENDER_ATTACHMENT = 16;
 };

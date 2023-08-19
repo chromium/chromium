@@ -158,7 +158,7 @@ class CC_EXPORT PropertyTree {
   base::flat_map<ElementId, int> element_id_to_node_index_;
 };
 
-struct AnchorScrollContainersData;
+struct AnchorPositionScrollersData;
 struct StickyPositionNodeData;
 
 class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
@@ -251,9 +251,9 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
   }
   StickyPositionNodeData& EnsureStickyPositionData(int node_id);
 
-  const AnchorScrollContainersData* GetAnchorScrollContainersData(
+  const AnchorPositionScrollersData* GetAnchorPositionScrollersData(
       int node_id) const;
-  AnchorScrollContainersData& EnsureAnchorScrollContainersData(int node_id);
+  AnchorPositionScrollersData& EnsureAnchorPositionScrollersData(int node_id);
 
   // Computes the combined transform between |source_id| and |dest_id|. These
   // two nodes must be on the same ancestor chain.
@@ -275,7 +275,7 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
 
   StickyPositionNodeData* MutableStickyPositionData(int node_id);
   gfx::Vector2dF StickyPositionOffset(TransformNode* node);
-  gfx::Vector2dF AnchorScrollOffset(TransformNode* node);
+  gfx::Vector2dF AnchorPositionScrollOffset(TransformNode* node);
   void UpdateLocalTransform(TransformNode* node,
                             const ViewportPropertyIds* viewport_property_ids);
   void UpdateScreenSpaceTransform(TransformNode* node,
@@ -297,16 +297,16 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
   std::vector<int> nodes_affected_by_outer_viewport_bounds_delta_;
   std::vector<TransformCachedNodeData> cached_data_;
   std::vector<StickyPositionNodeData> sticky_position_data_;
-  std::vector<AnchorScrollContainersData> anchor_scroll_containers_data_;
+  std::vector<AnchorPositionScrollersData> anchor_position_scrollers_data_;
 };
 
-struct CC_EXPORT AnchorScrollContainersData {
-  AnchorScrollContainersData();
-  ~AnchorScrollContainersData();
-  AnchorScrollContainersData(const AnchorScrollContainersData&);
+struct CC_EXPORT AnchorPositionScrollersData {
+  AnchorPositionScrollersData();
+  ~AnchorPositionScrollersData();
+  AnchorPositionScrollersData(const AnchorPositionScrollersData&);
 
-  bool operator==(const AnchorScrollContainersData&) const;
-  bool operator!=(const AnchorScrollContainersData&) const;
+  bool operator==(const AnchorPositionScrollersData&) const;
+  bool operator!=(const AnchorPositionScrollersData&) const;
 
   std::vector<ElementId> scroll_container_ids;
   gfx::Vector2d accumulated_scroll_origin;
@@ -589,11 +589,6 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
       const absl::optional<TargetSnapAreaElementIds>& snap_target_ids);
   void NotifyDidChangeScrollbarsHidden(ElementId scroll_element_id,
                                        bool hidden) const;
-
-  // A composited scroll node is a scroll node that has an associated composited
-  // layer, otherwise the scroll node corresponds to a scroller that requires
-  // repainting.
-  bool IsComposited(const ScrollNode& node) const;
 
   // Returns true iff the node is composited and does not have any non-transient
   // main-thread scrolling reasons (see main_thread_scrolling_reason.h).

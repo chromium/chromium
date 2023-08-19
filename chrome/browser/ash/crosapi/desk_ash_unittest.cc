@@ -38,7 +38,7 @@ class TestDeskEventObserver : public crosapi::mojom::DeskEventObserver {
     event_future_.AddValue(new_desk_id);
     event_future_.AddValue(previous_desk_id);
   }
-  void OnDeskAdded(const base::Uuid& new_desk_id) override {
+  void OnDeskAdded(const base::Uuid& new_desk_id, bool from_undo) override {
     event_future_.AddValue(new_desk_id);
   }
   void OnDeskRemoved(const base::Uuid& removed_desk_id) override {
@@ -131,6 +131,17 @@ TEST_F(DeskAshTest, NotifyDeskSwitchedTest) {
 
   EXPECT_EQ(desk_event_observer().WaitAndGet(), new_id);
   EXPECT_EQ(desk_event_observer().WaitAndGet(), old_id);
+}
+
+TEST_F(DeskAshTest, NotifyDeskRemovalUndoneTest) {
+  desk_ash_remote_->AddDeskEventObserver(desk_event_observer().GetRemote());
+  // Flush pipe so that registration shows up.
+  desk_ash_remote_.FlushForTesting();
+  desk_event_observer().GetReceiver().FlushForTesting();
+  auto desk_id(base::Uuid::GenerateRandomV4());
+  desk_ash_->NotifyDeskAdded(desk_id, true);
+
+  EXPECT_EQ(desk_event_observer().WaitAndGet(), desk_id);
 }
 
 }  // namespace crosapi

@@ -143,13 +143,11 @@ std::unique_ptr<UiResource> CreateUiResource(
     usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
   }
 
-  gpu::GpuMemoryBufferManager* gmb_manager =
-      aura::Env::GetInstance()->context_factory()->GetGpuMemoryBufferManager();
-
-  resource->mailbox =
-      sii->CreateSharedImage(gpu_memory_buffer, gmb_manager, gfx::ColorSpace(),
-                             kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-                             usage, "FastInkHostUIResource");
+  CHECK(format.is_single_plane());
+  resource->mailbox = sii->CreateSharedImage(
+      format, gpu_memory_buffer->GetSize(), gfx::ColorSpace(),
+      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
+      "FastInkHostUIResource", gpu_memory_buffer->CloneHandle());
   resource->sync_token = sii->GenVerifiedSyncToken();
   resource->damaged = true;
   resource->is_overlay_candidate = is_overlay_candidate;

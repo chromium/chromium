@@ -25,11 +25,11 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.omnibox.suggestions.FaviconFetcher;
-import org.chromium.chrome.browser.omnibox.suggestions.FaviconFetcher.FaviconFetchCompleteListener;
-import org.chromium.chrome.browser.omnibox.suggestions.FaviconFetcher.FaviconType;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
@@ -48,9 +48,9 @@ import org.chromium.url.ShadowGURL;
 public class BaseSuggestionProcessorUnitTest {
     private class TestBaseSuggestionProcessor extends BaseSuggestionViewProcessor {
         private final Context mContext;
-        public TestBaseSuggestionProcessor(
-                Context context, SuggestionHost suggestionHost, FaviconFetcher faviconFetcher) {
-            super(context, suggestionHost, faviconFetcher);
+        public TestBaseSuggestionProcessor(Context context, SuggestionHost suggestionHost,
+                OmniboxImageSupplier imageSupplier) {
+            super(context, suggestionHost, imageSupplier);
             mContext = context;
         }
 
@@ -72,8 +72,6 @@ public class BaseSuggestionProcessorUnitTest {
         @Override
         public void populateModel(AutocompleteMatch suggestion, PropertyModel model, int position) {
             super.populateModel(suggestion, model, position);
-            setSuggestionDrawableState(model,
-                    SuggestionDrawableState.Builder.forBitmap(mContext, mDefaultBitmap).build());
             fetchSuggestionFavicon(model, suggestion.getUrl());
         }
     }
@@ -83,9 +81,8 @@ public class BaseSuggestionProcessorUnitTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private @Mock SuggestionHost mSuggestionHost;
-    private @Mock FaviconFetcher mFaviconFetcher;
+    private @Mock OmniboxImageSupplier mImageSupplier;
     private @Mock Bitmap mBitmap;
-    private @Mock Bitmap mDefaultBitmap;
 
     private TestBaseSuggestionProcessor mProcessor;
     private AutocompleteMatch mSuggestion;
@@ -94,14 +91,14 @@ public class BaseSuggestionProcessorUnitTest {
     @Before
     public void setUp() {
         mProcessor = new TestBaseSuggestionProcessor(
-                ContextUtils.getApplicationContext(), mSuggestionHost, mFaviconFetcher);
+                ContextUtils.getApplicationContext(), mSuggestionHost, mImageSupplier);
     }
 
     /**
      * Create Suggestion for test.
      */
-    private void createSuggestion(int type, GURL url) {
-        mSuggestion = AutocompleteMatchBuilder.searchWithType(type).setUrl(url).build();
+    private void createSuggestion(int type, boolean isSearch, GURL url) {
+        mSuggestion = new AutocompleteMatchBuilder(type).setIsSearch(isSearch).setUrl(url).build();
         mModel = mProcessor.createModel();
         mProcessor.populateModel(mSuggestion, mModel, 0);
     }
@@ -109,16 +106,14 @@ public class BaseSuggestionProcessorUnitTest {
     @Test
     @SmallTest
     public void suggestionFavicons_showFaviconWhenAvailable() {
-        final ArgumentCaptor<FaviconFetchCompleteListener> callback =
-                ArgumentCaptor.forClass(FaviconFetchCompleteListener.class);
-        createSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, TEST_URL);
-        SuggestionDrawableState icon1 = mModel.get(BaseSuggestionViewProperties.ICON);
+        final ArgumentCaptor<Callback<Bitmap>> callback = ArgumentCaptor.forClass(Callback.class);
+        createSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, false, TEST_URL);
+        OmniboxDrawableState icon1 = mModel.get(BaseSuggestionViewProperties.ICON);
         Assert.assertNotNull(icon1);
 
-        verify(mFaviconFetcher)
-                .fetchFaviconWithBackoff(eq(TEST_URL), eq(false), callback.capture());
-        callback.getValue().onFaviconFetchComplete(mBitmap, FaviconType.REGULAR);
-        SuggestionDrawableState icon2 = mModel.get(BaseSuggestionViewProperties.ICON);
+        verify(mImageSupplier).fetchFavicon(eq(TEST_URL), callback.capture());
+        callback.getValue().onResult(mBitmap);
+        OmniboxDrawableState icon2 = mModel.get(BaseSuggestionViewProperties.ICON);
         Assert.assertNotNull(icon2);
 
         Assert.assertNotEquals(icon1, icon2);
@@ -128,16 +123,14 @@ public class BaseSuggestionProcessorUnitTest {
     @Test
     @SmallTest
     public void suggestionFavicons_doNotReplaceFallbackIconWhenNoFaviconIsAvailable() {
-        final ArgumentCaptor<FaviconFetchCompleteListener> callback =
-                ArgumentCaptor.forClass(FaviconFetchCompleteListener.class);
-        createSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, TEST_URL);
-        SuggestionDrawableState icon1 = mModel.get(BaseSuggestionViewProperties.ICON);
+        final ArgumentCaptor<Callback<Bitmap>> callback = ArgumentCaptor.forClass(Callback.class);
+        createSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, false, TEST_URL);
+        OmniboxDrawableState icon1 = mModel.get(BaseSuggestionViewProperties.ICON);
         Assert.assertNotNull(icon1);
 
-        verify(mFaviconFetcher)
-                .fetchFaviconWithBackoff(eq(TEST_URL), eq(false), callback.capture());
-        callback.getValue().onFaviconFetchComplete(null, FaviconType.NONE);
-        SuggestionDrawableState icon2 = mModel.get(BaseSuggestionViewProperties.ICON);
+        verify(mImageSupplier).fetchFavicon(eq(TEST_URL), callback.capture());
+        callback.getValue().onResult(null);
+        OmniboxDrawableState icon2 = mModel.get(BaseSuggestionViewProperties.ICON);
         Assert.assertNotNull(icon2);
 
         Assert.assertEquals(icon1, icon2);

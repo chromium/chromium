@@ -12,12 +12,13 @@
 namespace cocoa_l10n_util {
 
 NSString* TooltipForURLAndTitle(NSString* url, NSString* title) {
-  if ([title length] == 0)
+  if (title.length == 0) {
     return url;
-  else if ([url length] == 0 || [url isEqualToString:title])
+  } else if (url.length == 0 || [url isEqualToString:title]) {
     return title;
-  else
+  } else {
     return [NSString stringWithFormat:@"%@\n%@", title, url];
+  }
 }
 
 void ApplyForcedRTL() {

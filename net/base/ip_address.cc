@@ -4,11 +4,13 @@
 
 #include "net/base/ip_address.h"
 
+#include <stddef.h>
+
 #include <algorithm>
+#include <array>
 #include <climits>
 
 #include "base/check_op.h"
-#include "base/containers/stack_container.h"
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
 #include "base/logging.h"
@@ -175,6 +177,17 @@ bool IPAddressBytes::operator!=(const IPAddressBytes& other) const {
   return !(*this == other);
 }
 
+void IPAddressBytes::Append(const uint8_t* first, const uint8_t* last) {
+  CHECK_LE(first, last);
+  const ptrdiff_t bytes_to_append = last - first;
+  CHECK_LE(bytes_to_append, 16);
+  // Now we know `bytes_to_append` is between 0 and 16 and `size_` is between 0
+  // and 255 so their sum must fit inside a ptrdiff_t type.
+  CHECK_LE(ptrdiff_t{size_} + bytes_to_append, 16);
+  std::copy(first, last, bytes_.data() + size_);
+  size_ += bytes_to_append;
+}
+
 size_t IPAddressBytes::EstimateMemoryUsage() const {
   return base::trace_event::EstimateMemoryUsage(bytes_);
 }
@@ -209,10 +222,8 @@ IPAddress::IPAddress(const uint8_t* address, size_t address_len)
     : ip_address_(address, address_len) {}
 
 IPAddress::IPAddress(uint8_t b0, uint8_t b1, uint8_t b2, uint8_t b3) {
-  ip_address_.push_back(b0);
-  ip_address_.push_back(b1);
-  ip_address_.push_back(b2);
-  ip_address_.push_back(b3);
+  const uint8_t bytes[] = {b0, b1, b2, b3};
+  ip_address_.Assign(bytes, std::size(bytes));
 }
 
 IPAddress::IPAddress(uint8_t b0,
@@ -231,22 +242,9 @@ IPAddress::IPAddress(uint8_t b0,
                      uint8_t b13,
                      uint8_t b14,
                      uint8_t b15) {
-  ip_address_.push_back(b0);
-  ip_address_.push_back(b1);
-  ip_address_.push_back(b2);
-  ip_address_.push_back(b3);
-  ip_address_.push_back(b4);
-  ip_address_.push_back(b5);
-  ip_address_.push_back(b6);
-  ip_address_.push_back(b7);
-  ip_address_.push_back(b8);
-  ip_address_.push_back(b9);
-  ip_address_.push_back(b10);
-  ip_address_.push_back(b11);
-  ip_address_.push_back(b12);
-  ip_address_.push_back(b13);
-  ip_address_.push_back(b14);
-  ip_address_.push_back(b15);
+  const uint8_t bytes[] = {b0, b1, b2,  b3,  b4,  b5,  b6,  b7,
+                           b8, b9, b10, b11, b12, b13, b14, b15};
+  ip_address_.Assign(bytes, std::size(bytes));
 }
 
 IPAddress::~IPAddress() = default;
@@ -422,21 +420,19 @@ IPAddress ConvertIPv4ToIPv4MappedIPv6(const IPAddress& address) {
   CHECK(address.IsIPv4());
   // IPv4-mapped addresses are formed by:
   // <80 bits of zeros>  + <16 bits of ones> + <32-bit IPv4 address>.
-  base::StackVector<uint8_t, 16> bytes;
-  bytes->insert(bytes->end(), std::begin(kIPv4MappedPrefix),
-                std::end(kIPv4MappedPrefix));
-  bytes->insert(bytes->end(), address.bytes().begin(), address.bytes().end());
-  return IPAddress(bytes->data(), bytes->size());
+  IPAddressBytes bytes;
+  bytes.Append(std::begin(kIPv4MappedPrefix), std::end(kIPv4MappedPrefix));
+  bytes.Append(address.bytes().begin(), address.bytes().end());
+  return IPAddress(bytes);
 }
 
 IPAddress ConvertIPv4MappedIPv6ToIPv4(const IPAddress& address) {
   DCHECK(address.IsIPv4MappedIPv6());
 
-  base::StackVector<uint8_t, 16> bytes;
-  bytes->insert(bytes->end(),
-                address.bytes().begin() + std::size(kIPv4MappedPrefix),
-                address.bytes().end());
-  return IPAddress(bytes->data(), bytes->size());
+  IPAddressBytes bytes;
+  bytes.Append(address.bytes().begin() + std::size(kIPv4MappedPrefix),
+               address.bytes().end());
+  return IPAddress(bytes);
 }
 
 bool IPAddressMatchesPrefix(const IPAddress& ip_address,
@@ -525,10 +521,10 @@ size_t CommonPrefixLength(const IPAddress& a1, const IPAddress& a2) {
 }
 
 size_t MaskPrefixLength(const IPAddress& mask) {
-  base::StackVector<uint8_t, 16> all_ones;
-  all_ones->resize(mask.size(), 0xFF);
-  return CommonPrefixLength(mask,
-                            IPAddress(all_ones->data(), all_ones->size()));
+  IPAddressBytes all_ones;
+  all_ones.Resize(mask.size());
+  std::fill(all_ones.begin(), all_ones.end(), 0xFF);
+  return CommonPrefixLength(mask, IPAddress(all_ones));
 }
 
 Dns64PrefixLength ExtractPref64FromIpv4onlyArpaAAAA(const IPAddress& address) {
@@ -605,71 +601,60 @@ IPAddress ConvertIPv4ToIPv4EmbeddedIPv6(const IPAddress& ipv4_address,
   DCHECK(ipv4_address.IsIPv4());
   DCHECK(ipv6_address.IsIPv6());
 
-  base::StackVector<uint8_t, 16> bytes;
+  IPAddressBytes bytes;
 
-  uint8_t zero_bits[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+  constexpr uint8_t kZeroBits[8] = {0x00, 0x00, 0x00, 0x00,
+                                    0x00, 0x00, 0x00, 0x00};
 
   switch (prefix_length) {
     case Dns64PrefixLength::k96bit:
-      bytes->insert(bytes->end(), ipv6_address.bytes().begin(),
-                    ipv6_address.bytes().begin() + 12u);
-      bytes->insert(bytes->end(), ipv4_address.bytes().begin(),
-                    ipv4_address.bytes().end());
-      return IPAddress(bytes->data(), bytes->size());
+      bytes.Append(ipv6_address.bytes().begin(),
+                   ipv6_address.bytes().begin() + 12u);
+      bytes.Append(ipv4_address.bytes().begin(), ipv4_address.bytes().end());
+      return IPAddress(bytes);
     case Dns64PrefixLength::k64bit:
-      bytes->insert(bytes->end(), ipv6_address.bytes().begin(),
-                    ipv6_address.bytes().begin() + 8u);
-      bytes->insert(bytes->end(), std::begin(zero_bits),
-                    std::begin(zero_bits) + 1u);
-      bytes->insert(bytes->end(), ipv4_address.bytes().begin(),
-                    ipv4_address.bytes().end());
-      bytes->insert(bytes->end(), std::begin(zero_bits),
-                    std::begin(zero_bits) + 3u);
-      return IPAddress(bytes->data(), bytes->size());
+      bytes.Append(ipv6_address.bytes().begin(),
+                   ipv6_address.bytes().begin() + 8u);
+      bytes.Append(std::begin(kZeroBits), std::begin(kZeroBits) + 1u);
+      bytes.Append(ipv4_address.bytes().begin(), ipv4_address.bytes().end());
+      bytes.Append(std::begin(kZeroBits), std::begin(kZeroBits) + 3u);
+      return IPAddress(bytes);
     case Dns64PrefixLength::k56bit:
-      bytes->insert(bytes->end(), ipv6_address.bytes().begin(),
-                    ipv6_address.bytes().begin() + 7u);
-      bytes->insert(bytes->end(), ipv4_address.bytes().begin(),
-                    ipv4_address.bytes().begin() + 1u);
-      bytes->insert(bytes->end(), std::begin(zero_bits),
-                    std::begin(zero_bits) + 1u);
-      bytes->insert(bytes->end(), ipv4_address.bytes().begin() + 1u,
-                    ipv4_address.bytes().end());
-      bytes->insert(bytes->end(), std::begin(zero_bits),
-                    std::begin(zero_bits) + 4u);
-      return IPAddress(bytes->data(), bytes->size());
+      bytes.Append(ipv6_address.bytes().begin(),
+                   ipv6_address.bytes().begin() + 7u);
+      bytes.Append(ipv4_address.bytes().begin(),
+                   ipv4_address.bytes().begin() + 1u);
+      bytes.Append(std::begin(kZeroBits), std::begin(kZeroBits) + 1u);
+      bytes.Append(ipv4_address.bytes().begin() + 1u,
+                   ipv4_address.bytes().end());
+      bytes.Append(std::begin(kZeroBits), std::begin(kZeroBits) + 4u);
+      return IPAddress(bytes);
     case Dns64PrefixLength::k48bit:
-      bytes->insert(bytes->end(), ipv6_address.bytes().begin(),
-                    ipv6_address.bytes().begin() + 6u);
-      bytes->insert(bytes->end(), ipv4_address.bytes().begin(),
-                    ipv4_address.bytes().begin() + 2u);
-      bytes->insert(bytes->end(), std::begin(zero_bits),
-                    std::begin(zero_bits) + 1u);
-      bytes->insert(bytes->end(), ipv4_address.bytes().begin() + 2u,
-                    ipv4_address.bytes().end());
-      bytes->insert(bytes->end(), std::begin(zero_bits),
-                    std::begin(zero_bits) + 5u);
-      return IPAddress(bytes->data(), bytes->size());
+      bytes.Append(ipv6_address.bytes().begin(),
+                   ipv6_address.bytes().begin() + 6u);
+      bytes.Append(ipv4_address.bytes().begin(),
+                   ipv4_address.bytes().begin() + 2u);
+      bytes.Append(std::begin(kZeroBits), std::begin(kZeroBits) + 1u);
+      bytes.Append(ipv4_address.bytes().begin() + 2u,
+                   ipv4_address.bytes().end());
+      bytes.Append(std::begin(kZeroBits), std::begin(kZeroBits) + 5u);
+      return IPAddress(bytes);
     case Dns64PrefixLength::k40bit:
-      bytes->insert(bytes->end(), ipv6_address.bytes().begin(),
-                    ipv6_address.bytes().begin() + 5u);
-      bytes->insert(bytes->end(), ipv4_address.bytes().begin(),
-                    ipv4_address.bytes().begin() + 3u);
-      bytes->insert(bytes->end(), std::begin(zero_bits),
-                    std::begin(zero_bits) + 1u);
-      bytes->insert(bytes->end(), ipv4_address.bytes().begin() + 3u,
-                    ipv4_address.bytes().end());
-      bytes->insert(bytes->end(), std::begin(zero_bits),
-                    std::begin(zero_bits) + 6u);
-      return IPAddress(bytes->data(), bytes->size());
+      bytes.Append(ipv6_address.bytes().begin(),
+                   ipv6_address.bytes().begin() + 5u);
+      bytes.Append(ipv4_address.bytes().begin(),
+                   ipv4_address.bytes().begin() + 3u);
+      bytes.Append(std::begin(kZeroBits), std::begin(kZeroBits) + 1u);
+      bytes.Append(ipv4_address.bytes().begin() + 3u,
+                   ipv4_address.bytes().end());
+      bytes.Append(std::begin(kZeroBits), std::begin(kZeroBits) + 6u);
+      return IPAddress(bytes);
     case Dns64PrefixLength::k32bit:
-      bytes->insert(bytes->end(), ipv6_address.bytes().begin(),
-                    ipv6_address.bytes().begin() + 4u);
-      bytes->insert(bytes->end(), ipv4_address.bytes().begin(),
-                    ipv4_address.bytes().end());
-      bytes->insert(bytes->end(), std::begin(zero_bits),
-                    std::begin(zero_bits) + 8u);
-      return IPAddress(bytes->data(), bytes->size());
+      bytes.Append(ipv6_address.bytes().begin(),
+                   ipv6_address.bytes().begin() + 4u);
+      bytes.Append(ipv4_address.bytes().begin(), ipv4_address.bytes().end());
+      bytes.Append(std::begin(kZeroBits), std::begin(kZeroBits) + 8u);
+      return IPAddress(bytes);
     case Dns64PrefixLength::kInvalid:
       return ipv4_address;
   }

@@ -14,6 +14,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/hid/hid.mojom.h"
+#include "third_party/blink/public/mojom/usb/web_usb_service.mojom.h"
 
 namespace content {
 
@@ -77,6 +78,10 @@ class EmbeddedWorkerInstanceTestHarness : public testing::Test {
       const GURL& origin,
       mojo::PendingReceiver<blink::mojom::HidService> receiver);
 #endif
+
+  void BindUsbServiceToWorker(
+      const GURL& origin,
+      mojo::PendingReceiver<blink::mojom::WebUsbService> receiver);
 
  protected:
   // The template constructor has to be in the header but it delegates to this

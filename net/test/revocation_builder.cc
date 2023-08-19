@@ -10,8 +10,8 @@
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "net/cert/asn1_util.h"
+#include "net/cert/time_conversions.h"
 #include "net/cert/x509_util.h"
-#include "net/der/encode_values.h"
 #include "net/der/input.h"
 #include "net/test/cert_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -47,8 +47,9 @@ bool CBBAddBytes(CBB* cbb, const uint8_t (&data)[N]) {
 // The argument ordering follows the boringssl CBB_* api style.
 bool CBBAddGeneralizedTime(CBB* cbb, const base::Time& time) {
   der::GeneralizedTime generalized_time;
-  if (!der::EncodeTimeAsGeneralizedTime(time, &generalized_time))
+  if (!EncodeTimeAsGeneralizedTime(time, &generalized_time)) {
     return false;
+  }
   CBB time_cbb;
   uint8_t out[der::kGeneralizedTimeLength];
   if (!der::EncodeGeneralizedTime(generalized_time, out) ||

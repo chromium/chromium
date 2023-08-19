@@ -76,7 +76,6 @@ TEST_F(BluetoothSerialDeviceEnumeratorTest, ConstructDestruct) {
   device::BluetoothAdapterFactory::Get()->SetAdapterForTesting(mock_adapter);
 
   BluetoothSerialDeviceEnumerator enumerator(adapter_runner());
-  EXPECT_FALSE(enumerator.GetAdapter());
   // Prevent memory leak warning.
   enumerator.SynchronouslyResetHelperForTesting();
 }
@@ -95,13 +94,11 @@ TEST_F(BluetoothSerialDeviceEnumeratorTest, ConstructWaitForAdapter) {
   device::BluetoothAdapterFactory::Get()->SetAdapterForTesting(mock_adapter);
 
   BluetoothSerialDeviceEnumerator enumerator(adapter_runner());
-  EXPECT_FALSE(enumerator.GetAdapter());
 
   {
     base::RunLoop run_loop;
     enumerator.OnGotAdapterForTesting(run_loop.QuitClosure());
     run_loop.Run();
-    EXPECT_TRUE(enumerator.GetAdapter());
   }
 
   // Prevent memory leak warning.
@@ -171,7 +168,6 @@ TEST_F(BluetoothSerialDeviceEnumeratorTest, CreateWithDevice) {
     base::RunLoop run_loop;
     enumerator.OnGotAdapterForTesting(run_loop.QuitClosure());
     run_loop.Run();
-    EXPECT_TRUE(enumerator.GetAdapter());
   }
 
   // Second add - which will be skipped.

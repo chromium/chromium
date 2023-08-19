@@ -57,7 +57,7 @@ bool ContainsPhone(uint32_t groups);
 // phone number FieldTypeGroups are associated with the given |form|'s storable
 // types or |types|, respectively.
 uint32_t DetermineGroups(const FormStructure& form);
-uint32_t DetermineGroups(const std::vector<ServerFieldType>& types);
+uint32_t DetermineGroups(const ServerFieldTypeSet& types);
 
 // Returns true if a form has address fields or has least two supported
 // non-address fields.

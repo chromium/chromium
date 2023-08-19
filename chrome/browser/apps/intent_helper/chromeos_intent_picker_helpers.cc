@@ -58,7 +58,7 @@ void OnIntentPickerClosedChromeOs(
         Profile::FromBrowserContext(web_contents->GetBrowserContext());
     auto* proxy = AppServiceProxyFactory::GetForProfile(profile);
     DCHECK(proxy);
-    proxy->AddPreferredApp(launch_name, url);
+    proxy->SetSupportedLinksPreference(launch_name);
     apps::IntentHandlingMetrics::RecordLinkCapturingEvent(
         entry_type,
         apps::IntentHandlingMetrics::LinkCapturingEvent::kSettingsChanged);

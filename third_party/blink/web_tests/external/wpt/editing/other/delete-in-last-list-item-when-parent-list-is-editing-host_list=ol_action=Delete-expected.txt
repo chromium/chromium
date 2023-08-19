@@ -1,10 +1,10 @@
 This is a testharness.js-based test.
-FAIL Delete in "<ol contenteditable><li>{}</li></ol>" promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
-FAIL Delete in "<ol contenteditable><li><ul><li>{}</li></ul></li></ol>" promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
-FAIL Delete in "<ol contenteditable><li><ol><li>{}</li></ol></li></ol>" promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
-FAIL Delete in "<ol contenteditable><ul><li>{}</li></ul></ol>" promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
-FAIL Delete in "<ol contenteditable><ol><li>{}</li></ol></ol>" promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
-FAIL Delete in "<ol contenteditable><dl><dt>{}</dt></dl></ol>" promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
-FAIL Delete in "<ol contenteditable><dl><dd>{}</dd></dl></ol>" promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
+PASS Delete in "<ol contenteditable><li>{}</li></ol>"
+FAIL Delete in "<ol contenteditable><li><ul><li>{}</li></ul></li></ol>" assert_in_array: value "<li><ul><li></li></ul></li>" not in array ["<li></li>", "<li><br></li>"]
+FAIL Delete in "<ol contenteditable><li><ol><li>{}</li></ol></li></ol>" assert_in_array: value "<li><ol><li></li></ol></li>" not in array ["<li></li>", "<li><br></li>"]
+FAIL Delete in "<ol contenteditable><ul><li>{}</li></ul></ol>" assert_in_array: value "<ul><li></li></ul>" not in array ["<li></li>", "<li><br></li>"]
+FAIL Delete in "<ol contenteditable><ol><li>{}</li></ol></ol>" assert_in_array: value "<ol><li></li></ol>" not in array ["<li></li>", "<li><br></li>"]
+FAIL Delete in "<ol contenteditable><dl><dt>{}</dt></dl></ol>" assert_in_array: value "<dl><dt></dt></dl>" not in array ["<li></li>", "<li><br></li>"]
+FAIL Delete in "<ol contenteditable><dl><dd>{}</dd></dl></ol>" assert_in_array: value "<dl><dd></dd></dl>" not in array ["<li></li>", "<li><br></li>"]
 Harness: the test ran to completion.
 

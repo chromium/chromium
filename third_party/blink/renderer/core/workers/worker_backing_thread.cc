@@ -33,12 +33,27 @@ base::Lock& IsolatesLock() {
 }
 
 HashSet<v8::Isolate*>& Isolates() EXCLUSIVE_LOCKS_REQUIRED(IsolatesLock()) {
-  static HashSet<v8::Isolate*>& isolates = *new HashSet<v8::Isolate*>();
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(HashSet<v8::Isolate*>, isolates, ());
   return isolates;
+}
+
+HashSet<v8::Isolate*>& ForegroundedIsolates()
+    EXCLUSIVE_LOCKS_REQUIRED(IsolatesLock()) {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(HashSet<v8::Isolate*>, foregrounded_isolates,
+                                  ());
+  return foregrounded_isolates;
+}
+
+bool& IsolateCurrentlyInBackground() EXCLUSIVE_LOCKS_REQUIRED(IsolatesLock()) {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(bool, isolate_currently_in_background, ());
+  return isolate_currently_in_background;
 }
 
 void AddWorkerIsolate(v8::Isolate* isolate) {
   base::AutoLock locker(IsolatesLock());
+  if (IsolateCurrentlyInBackground()) {
+    isolate->IsolateInBackgroundNotification();
+  }
   Isolates().insert(isolate);
 }
 
@@ -47,12 +62,32 @@ void RemoveWorkerIsolate(v8::Isolate* isolate) {
   Isolates().erase(isolate);
 }
 
+void AddForegroundedWorkerIsolate(v8::Isolate* isolate) {
+  base::AutoLock locker(IsolatesLock());
+  ForegroundedIsolates().insert(isolate);
+}
+
+void RemoveForegroundedWorkerIsolate(v8::Isolate* isolate) {
+  base::AutoLock locker(IsolatesLock());
+  ForegroundedIsolates().erase(isolate);
+}
+
 }  // namespace
 
 // Wrapper functions defined in third_party/blink/public/web/blink.h
 void MemoryPressureNotificationToWorkerThreadIsolates(
     v8::MemoryPressureLevel level) {
   WorkerBackingThread::MemoryPressureNotificationToWorkerThreadIsolates(level);
+}
+
+void IsolateInBackgroundNotification() {
+  MainThreadIsolate()->IsolateInBackgroundNotification();
+  WorkerBackingThread::IsolateInBackgroundNotificationToWorkerThreadIsolates();
+}
+
+void IsolateInForegroundNotification() {
+  MainThreadIsolate()->IsolateInForegroundNotification();
+  WorkerBackingThread::IsolateInForegroundNotificationToWorkerThreadIsolates();
 }
 
 WorkerBackingThread::WorkerBackingThread(const ThreadCreationParams& params)
@@ -68,7 +103,7 @@ void WorkerBackingThread::InitializeOnBackingThread(
   DCHECK(!isolate_);
   ThreadScheduler* scheduler = BackingThread().Scheduler();
   isolate_ = V8PerIsolateData::Initialize(
-      scheduler->V8TaskRunner(),
+      scheduler->V8TaskRunner(), scheduler->V8LowPriorityTaskRunner(),
       V8PerIsolateData::V8ContextSnapshotMode::kDontUseSnapshot, nullptr,
       nullptr);
   scheduler->SetV8Isolate(isolate_);
@@ -83,15 +118,6 @@ void WorkerBackingThread::InitializeOnBackingThread(
 
   V8PerIsolateData::From(isolate_)->SetThreadDebugger(
       std::make_unique<WorkerThreadDebugger>(isolate_));
-
-  if (!base::FeatureList::IsEnabled(
-          features::kV8OptimizeWorkersForPerformance)) {
-    // Optimize for memory usage instead of latency for the worker isolate.
-    // Service Workers that have the fetch event handler run with the Isolate
-    // in foreground notification regardless of this configuration.
-    // See ServiceWorkerGlobalScope::SetFetchHandlerExistence().
-    isolate_->IsolateInBackgroundNotification();
-  }
 
   if (startup_data.heap_limit_mode ==
       WorkerBackingThreadStartupData::HeapLimitMode::kIncreasedForDebugging) {
@@ -110,9 +136,15 @@ void WorkerBackingThread::ShutdownOnBackingThread() {
   V8PerIsolateData::WillBeDestroyed(isolate_);
   backing_thread_->ShutdownOnThread();
 
+  RemoveForegroundedWorkerIsolate(isolate_);
   RemoveWorkerIsolate(isolate_);
   V8PerIsolateData::Destroy(isolate_);
   isolate_ = nullptr;
+}
+
+void WorkerBackingThread::SetForegrounded() {
+  AddForegroundedWorkerIsolate(isolate_);
+  isolate_->IsolateInForegroundNotification();
 }
 
 // static
@@ -121,6 +153,30 @@ void WorkerBackingThread::MemoryPressureNotificationToWorkerThreadIsolates(
   base::AutoLock locker(IsolatesLock());
   for (v8::Isolate* isolate : Isolates())
     isolate->MemoryPressureNotification(level);
+}
+
+// static
+void WorkerBackingThread::
+    IsolateInBackgroundNotificationToWorkerThreadIsolates() {
+  base::AutoLock locker(IsolatesLock());
+  IsolateCurrentlyInBackground() = true;
+  for (v8::Isolate* isolate : Isolates()) {
+    if (!ForegroundedIsolates().Contains(isolate)) {
+      isolate->IsolateInBackgroundNotification();
+    }
+  }
+}
+
+// static
+void WorkerBackingThread::
+    IsolateInForegroundNotificationToWorkerThreadIsolates() {
+  base::AutoLock locker(IsolatesLock());
+  IsolateCurrentlyInBackground() = false;
+  for (v8::Isolate* isolate : Isolates()) {
+    if (!ForegroundedIsolates().Contains(isolate)) {
+      isolate->IsolateInForegroundNotification();
+    }
+  }
 }
 
 }  // namespace blink

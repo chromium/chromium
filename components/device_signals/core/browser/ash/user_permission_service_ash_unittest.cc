@@ -98,7 +98,8 @@ class UserPermissionServiceAshTest : public testing::Test {
 
   TestManagementService management_service_;
   absl::optional<ScopedManagementServiceOverrideForTesting> scoped_override_;
-  raw_ptr<testing::StrictMock<MockUserDelegate>> mock_user_delegate_;
+  raw_ptr<testing::StrictMock<MockUserDelegate>, DanglingUntriaged>
+      mock_user_delegate_;
   TestingPrefServiceSimple test_prefs_;
   base::test::ScopedFeatureList feature_list_;
 

@@ -30,6 +30,7 @@
 #include "components/reporting/storage/storage_module_interface.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 namespace {
@@ -47,6 +48,7 @@ void AddRecordToStorage(scoped_refptr<StorageModuleInterface> storage,
                         std::string dm_token,
                         Destination destination,
                         int64_t reserved_space,
+                        absl::optional<SourceInfo> source_info,
                         ReportQueue::RecordProducer record_producer,
                         StorageModuleInterface::EnqueueCallback callback) {
   // Generate record data.
@@ -81,6 +83,11 @@ void AddRecordToStorage(scoped_refptr<StorageModuleInterface> storage,
   // |record| with no DM token is assumed to be associated with device DM token
   if (!dm_token.empty()) {
     *record.mutable_dm_token() = std::move(dm_token);
+  }
+
+  // Augment source info if available.
+  if (source_info.has_value()) {
+    *record.mutable_source_info() = std::move(source_info.value());
   }
 
   // Calculate timestamp in microseconds - to match Spanner expectations.
@@ -177,7 +184,8 @@ void ReportQueueImpl::AddProducedRecord(RecordProducer record_producer,
       base::BindOnce(&AddRecordToStorage, storage_, priority,
                      config_->is_event_allowed_cb(), config_->dm_token(),
                      config_->destination(), config_->reserved_space(),
-                     std::move(record_producer), std::move(callback)));
+                     config_->source_info(), std::move(record_producer),
+                     std::move(callback)));
 }
 
 void ReportQueueImpl::Flush(Priority priority, FlushCallback callback) {
@@ -308,7 +316,7 @@ void SpeculativeReportQueueImpl::MaybeEnqueueRecordProducer(
 
 void SpeculativeReportQueueImpl::EnqueuePendingRecordProducers() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(actual_report_queue_.has_value());
+  CHECK(actual_report_queue_.has_value());
   if (pending_record_producers_.empty()) {
     return;
   }

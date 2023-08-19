@@ -325,7 +325,7 @@ cast_source_set("browser") {
       "android/cast_web_service_android.cc",
     ]
     deps += [
-      ":jni_headers",
+      "//chromecast/browser/android:jni_headers",
       "//components/embedder_support/android:view",
     ]
   } else {
@@ -631,15 +631,6 @@ cast_source_set("unittests") {
 }
 
 if (is_android) {
-  generate_jni("jni_headers") {
-    sources = [
-      "android/apk/src/org/chromium/chromecast/shell/CastAccessibilityHelper.java",
-      "android/apk/src/org/chromium/chromecast/shell/CastContentWindowAndroid.java",
-      "android/apk/src/org/chromium/chromecast/shell/CastCrashHandler.java",
-      "android/apk/src/org/chromium/chromecast/shell/CastMetricsHelper.java",
-    ]
-  }
-
   java_cpp_enum("java_enums") {
     sources = [ "visibility_types.h" ]
   }

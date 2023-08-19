@@ -12,9 +12,9 @@
 #if BUILDFLAG(IS_APPLE)
 #include <mach/thread_policy.h>
 
-#include "base/mac/mach_logging.h"
-#include "base/mac/scoped_mach_port.h"
-#include "base/mac/scoped_nsautorelease_pool.h"
+#include "base/apple/mach_logging.h"
+#include "base/apple/scoped_mach_port.h"
+#include "base/apple/scoped_nsautorelease_pool.h"
 #include "base/threading/threading_features.h"
 #endif
 
@@ -34,7 +34,7 @@ void MessagePumpDefault::Run(Delegate* delegate) {
 
   for (;;) {
 #if BUILDFLAG(IS_APPLE)
-    mac::ScopedNSAutoreleasePool autorelease_pool;
+    apple::ScopedNSAutoreleasePool autorelease_pool;
 #endif
 
     Delegate::NextWorkInfo next_work_info = delegate->DoWork();

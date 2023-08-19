@@ -19,7 +19,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/overloaded.h"
 #include "base/json/json_reader.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
@@ -30,8 +30,12 @@
 #include "base/task/updateable_sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/attribution_reporting/parsing_utils.h"
+#include "components/attribution_reporting/source_registration.h"
+#include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/aggregation_service/aggregation_service_features.h"
 #include "content/browser/aggregation_service/aggregation_service_impl.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
@@ -49,6 +53,7 @@
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/create_report_result.h"
 #include "content/browser/attribution_reporting/send_result.h"
+#include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/global_routing_id.h"
@@ -103,7 +108,7 @@ struct AttributionReportJsonConverter {
               report_body.Remove("aggregation_service_payloads");
 
               // The aggregation coordinator may be platform specific.
-              report_body.Remove("aggregation_coordinator_identifier");
+              report_body.Remove("aggregation_coordinator_origin");
 
               base::Value::List list;
               for (const auto& contribution : aggregatable_data.contributions) {
@@ -249,10 +254,10 @@ class AttributionEventHandler : public AttributionObserver {
                           FakeCookieChecker* fake_cookie_checker,
                           AttributionReportJsonConverter json_converter)
       : manager_(std::move(manager)),
-        fake_cookie_checker_(fake_cookie_checker),
+        fake_cookie_checker_(
+            raw_ref<FakeCookieChecker>::from_ptr(fake_cookie_checker)),
         json_converter_(json_converter) {
     DCHECK(manager_);
-    DCHECK(fake_cookie_checker_);
 
     manager_->AddObserver(this);
   }
@@ -261,17 +266,44 @@ class AttributionEventHandler : public AttributionObserver {
 
   void Handle(AttributionSimulationEvent event) {
     fake_cookie_checker_->set_debug_cookie_set(event.debug_permission);
-    absl::visit(base::Overloaded{
-                    [&](StorableSource source) {
-                      manager_->HandleSource(std::move(source),
-                                             GlobalRenderFrameHostId());
-                    },
-                    [&](AttributionTrigger trigger) {
-                      manager_->HandleTrigger(std::move(trigger),
-                                              GlobalRenderFrameHostId());
-                    },
-                },
-                std::move(event.event));
+
+    base::Value::Dict* dict = event.registration.GetIfDict();
+    if (!dict) {
+      AddUnparsableRegistration(event);
+      return;
+    }
+
+    if (event.source_type.has_value()) {
+      auto registration =
+          attribution_reporting::SourceRegistration::Parse(std::move(*dict));
+      if (!registration.has_value()) {
+        AddUnparsableRegistration(event);
+        return;
+      }
+
+      manager_->HandleSource(
+          StorableSource(std::move(event.reporting_origin),
+                         std::move(*registration),
+                         std::move(event.context_origin), *event.source_type,
+                         /*is_within_fenced_frame=*/false),
+          GlobalRenderFrameHostId());
+      return;
+    }
+
+    auto registration =
+        attribution_reporting::TriggerRegistration::Parse(std::move(*dict));
+    if (!registration.has_value()) {
+      AddUnparsableRegistration(event);
+      return;
+    }
+
+    manager_->HandleTrigger(
+        AttributionTrigger(std::move(event.reporting_origin),
+                           std::move(*registration),
+                           std::move(event.context_origin),
+                           /*verifications=*/{},
+                           /*is_within_fenced_frame=*/false),
+        GlobalRenderFrameHostId());
   }
 
   base::Value::Dict TakeOutput() {
@@ -300,6 +332,10 @@ class AttributionEventHandler : public AttributionObserver {
     if (!verbose_debug_reports_.empty()) {
       output.Set(kVerboseDebugReportsKey,
                  std::exchange(verbose_debug_reports_, {}));
+    }
+
+    if (!unparsable_.empty()) {
+      output.Set(kUnparsableRegistrationsKey, std::exchange(unparsable_, {}));
     }
 
     return output;
@@ -352,8 +388,15 @@ class AttributionEventHandler : public AttributionObserver {
     }
   }
 
+  void AddUnparsableRegistration(const AttributionSimulationEvent& event) {
+    base::Value::Dict dict;
+    dict.Set("time", json_converter_.FormatTime(event.time));
+    dict.Set("type", event.source_type.has_value() ? "source" : "trigger");
+    unparsable_.Append(std::move(dict));
+  }
+
   const std::unique_ptr<AttributionManagerImpl> manager_;
-  const raw_ptr<FakeCookieChecker> fake_cookie_checker_;
+  const raw_ref<FakeCookieChecker> fake_cookie_checker_;
 
   const AttributionReportJsonConverter json_converter_;
 
@@ -364,6 +407,7 @@ class AttributionEventHandler : public AttributionObserver {
   base::Value::List aggregatable_reports_;
   base::Value::List debug_aggregatable_reports_;
   base::Value::List verbose_debug_reports_;
+  base::Value::List unparsable_;
 };
 
 }  // namespace
@@ -377,22 +421,20 @@ base::expected<base::Value::Dict, std::string> RunAttributionInteropSimulation(
   TestBrowserContext browser_context;
   const base::Time time_origin = base::Time::Now();
 
-  auto events = ParseAttributionInteropInput(std::move(input), time_origin);
-  if (!events.has_value()) {
-    return base::unexpected(events.error());
-  }
+  ASSIGN_OR_RETURN(AttributionSimulationEvents events,
+                   ParseAttributionInteropInput(std::move(input), time_origin));
 
-  if (events->empty()) {
+  if (events.empty()) {
     return base::Value::Dict();
   }
 
-  DCHECK(base::ranges::is_sorted(*events));
+  DCHECK(base::ranges::is_sorted(events));
   DCHECK(base::ranges::adjacent_find(
-             *events, /*pred=*/{},
-             [](const auto& event) { return event.time; }) == events->end());
+             events, /*pred=*/{},
+             [](const auto& event) { return event.time; }) == events.end());
 
-  const base::Time min_event_time = events->front().time;
-  const base::Time max_event_time = events->back().time;
+  const base::Time min_event_time = events.front().time;
+  const base::Time max_event_time = events.back().time;
 
   task_environment.FastForwardBy(min_event_time - time_origin);
 
@@ -427,7 +469,7 @@ base::expected<base::Value::Dict, std::string> RunAttributionInteropSimulation(
                        /*fetch_time=*/base::Time::Now(),
                        /*expiry_time=*/base::Time::Max()));
 
-  for (auto& event : *events) {
+  for (auto& event : events) {
     base::Time event_time = event.time;
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,

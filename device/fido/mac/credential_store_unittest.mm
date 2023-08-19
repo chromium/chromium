@@ -5,8 +5,7 @@
 #include <Foundation/Foundation.h>
 #include <Security/Security.h>
 
-#include "base/mac/foundation_util.h"
-#include "base/test/metrics/histogram_tester.h"
+#include "base/apple/foundation_util.h"
 #include "device/fido/mac/authenticator_config.h"
 #include "device/fido/mac/credential_store.h"
 #include "device/fido/mac/fake_keychain.h"
@@ -14,10 +13,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace device::fido::mac {
 namespace {
@@ -162,7 +157,6 @@ TEST_F(CredentialStoreTest, FindResidentCredentials) {
 }
 
 TEST_F(CredentialStoreTest, UpdateCredentialRecorded) {
-  base::HistogramTester histogram_tester;
   auto credential = store_.CreateCredential(
       kRpId, kUser, TouchIdCredentialStore::kNonDiscoverable);
   ASSERT_TRUE(credential);
@@ -172,10 +166,6 @@ TEST_F(CredentialStoreTest, UpdateCredentialRecorded) {
   EXPECT_EQ(found->size(), 0u);
   ASSERT_TRUE(
       store_.UpdateCredential(credential->first.credential_id, "new-username"));
-  histogram_tester.ExpectUniqueSample(
-      "WebAuthentication.TouchIdCredentialStore.UpdateCredential",
-      TouchIdCredentialStoreUpdateCredentialStatus::kUpdateCredentialSuccess,
-      1);
 }
 
 }  // namespace

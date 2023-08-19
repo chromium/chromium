@@ -9,6 +9,8 @@ component("cbor") {
     "constants.h",
     "diagnostic_writer.cc",
     "diagnostic_writer.h",
+    "float_conversions.cc",
+    "float_conversions.h",
     "reader.cc",
     "reader.h",
     "values.cc",

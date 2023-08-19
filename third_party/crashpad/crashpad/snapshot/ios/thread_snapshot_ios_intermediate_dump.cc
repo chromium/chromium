@@ -14,7 +14,7 @@
 
 #include "snapshot/ios/thread_snapshot_ios_intermediate_dump.h"
 
-#include "base/mac/mach_logging.h"
+#include "base/apple/mach_logging.h"
 #include "snapshot/ios/intermediate_dump_reader_util.h"
 #include "snapshot/mac/cpu_context_mac.h"
 #include "util/ios/ios_intermediate_dump_data.h"

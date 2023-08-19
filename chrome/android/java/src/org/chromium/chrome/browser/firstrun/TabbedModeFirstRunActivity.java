@@ -15,6 +15,7 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.AnyRes;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.chrome.R;
 
 /**
@@ -123,7 +124,14 @@ public class TabbedModeFirstRunActivity extends FirstRunActivity {
                 int heightSize = MeasureSpec.getSize(heightMeasureSpec);
                 if (tvh.type != TypedValue.TYPE_NULL) {
                     assert tvh.type == TypedValue.TYPE_FRACTION;
-                    int height = (int) tvh.getFraction(metrics.heightPixels, metrics.heightPixels);
+
+                    // Calculate height from the View's measureSpec to account for larger status
+                    // bar and back toolbar on automotive devices.
+                    int referenceHeight = BuildInfo.getInstance().isAutomotive
+                            ? heightSize
+                            : metrics.heightPixels;
+
+                    int height = (int) tvh.getFraction(referenceHeight, referenceHeight);
                     heightSize = Math.min(height, heightSize);
                 }
                 heightMeasureSpec = MeasureSpec.makeMeasureSpec(heightSize, MeasureSpec.EXACTLY);

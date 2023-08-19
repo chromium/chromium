@@ -129,16 +129,17 @@ void InstallOnBlockingTaskRunner(
     scoped_refptr<CrxInstaller> installer,
     CrxInstaller::ProgressCallback progress_callback,
     InstallOnBlockingTaskRunnerCompleteCallback callback) {
-  CHECK(base::DirectoryExists(unpack_path));
+  VLOG_IF(1, !base::DirectoryExists(unpack_path))
+      << unpack_path << " does not exist";
 
-  // Acquire the ownership of the |unpack_path|.
   base::ScopedTempDir unpack_path_owner;
   std::ignore = unpack_path_owner.Set(unpack_path);
 
   if (!base::WriteFile(
           unpack_path.Append(FILE_PATH_LITERAL("manifest.fingerprint")),
           fingerprint)) {
-    const CrxInstaller::Result result(InstallError::FINGERPRINT_WRITE_FAILED);
+    const CrxInstaller::Result result(InstallError::FINGERPRINT_WRITE_FAILED,
+                                      logging::GetLastSystemErrorCode());
     main_task_runner->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), ErrorCategory::kInstall,
@@ -601,15 +602,14 @@ void Component::NotifyObservers(UpdateClient::Observer::Events event) const {
 
 base::TimeDelta Component::GetUpdateDuration() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (update_begin_.is_null())
+  if (update_begin_.is_null()) {
     return base::TimeDelta();
-
+  }
   const base::TimeDelta update_cost(base::TimeTicks::Now() - update_begin_);
-  CHECK_GE(update_cost, base::TimeDelta());
-  const base::TimeDelta max_update_delay =
-      update_context_->config->UpdateDelay();
-  return std::min(update_cost, max_update_delay);
+  if (update_cost.is_negative()) {
+    return base::TimeDelta();
+  }
+  return std::min(update_cost, update_context_->config->UpdateDelay());
 }
 
 base::Value::Dict Component::MakeEventUpdateComplete() const {

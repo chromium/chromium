@@ -6,10 +6,6 @@
 
 #import "base/check.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 AllWebStateObservationForwarder::AllWebStateObservationForwarder(
     WebStateList* web_state_list,
     web::WebStateObserver* observer)
@@ -26,26 +22,41 @@ AllWebStateObservationForwarder::AllWebStateObservationForwarder(
 
 AllWebStateObservationForwarder::~AllWebStateObservationForwarder() {}
 
-void AllWebStateObservationForwarder::WebStateInsertedAt(
-    WebStateList* web_state_list,
-    web::WebState* web_state,
-    int index,
-    bool activating) {
-  web_state_observations_.AddObservation(web_state);
-}
+#pragma mark - WebStateListObserver
 
-void AllWebStateObservationForwarder::WebStateReplacedAt(
+void AllWebStateObservationForwarder::WebStateListDidChange(
     WebStateList* web_state_list,
-    web::WebState* old_web_state,
-    web::WebState* new_web_state,
-    int index) {
-  web_state_observations_.RemoveObservation(old_web_state);
-  web_state_observations_.AddObservation(new_web_state);
-}
-
-void AllWebStateObservationForwarder::WebStateDetachedAt(
-    WebStateList* web_state_list,
-    web::WebState* web_state,
-    int index) {
-  web_state_observations_.RemoveObservation(web_state);
+    const WebStateListChange& change,
+    const WebStateListStatus& status) {
+  switch (change.type()) {
+    case WebStateListChange::Type::kStatusOnly:
+      // Do nothing when a WebState is selected and its status is updated.
+      break;
+    case WebStateListChange::Type::kDetach: {
+      const WebStateListChangeDetach& detach_change =
+          change.As<WebStateListChangeDetach>();
+      web_state_observations_.RemoveObservation(
+          detach_change.detached_web_state());
+      break;
+    }
+    case WebStateListChange::Type::kMove:
+      // Do nothing when a WebState is moved.
+      break;
+    case WebStateListChange::Type::kReplace: {
+      const WebStateListChangeReplace& replace_change =
+          change.As<WebStateListChangeReplace>();
+      web_state_observations_.RemoveObservation(
+          replace_change.replaced_web_state());
+      web_state_observations_.AddObservation(
+          replace_change.inserted_web_state());
+      break;
+    }
+    case WebStateListChange::Type::kInsert: {
+      const WebStateListChangeInsert& insert_change =
+          change.As<WebStateListChangeInsert>();
+      web_state_observations_.AddObservation(
+          insert_change.inserted_web_state());
+      break;
+    }
+  }
 }

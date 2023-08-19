@@ -82,7 +82,11 @@ void StartupPagesHandler::OnModelChanged() {
   for (size_t i = 0; i < page_count; ++i) {
     base::Value::Dict entry;
     entry.Set("title", startup_custom_pages_table_model_.GetText(i, 0));
-    entry.Set("url", urls[i].spec());
+    std::string spec;
+    if (urls[i].is_valid()) {
+      spec = urls[i].spec();
+    }
+    entry.Set("url", std::move(spec));
     entry.Set("tooltip", startup_custom_pages_table_model_.GetTooltip(i));
     entry.Set("modelIndex", base::checked_cast<int>(i));
     startup_pages.Append(std::move(entry));

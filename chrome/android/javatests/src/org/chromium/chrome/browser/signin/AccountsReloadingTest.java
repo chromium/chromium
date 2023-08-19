@@ -20,13 +20,14 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.sync.SyncService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.Arrays;
@@ -118,7 +119,7 @@ public class AccountsReloadingTest {
         CriteriaHelper.pollUiThread(() -> mObserver.mCallCount == 0);
         Assert.assertEquals(Collections.emptySet(), mObserver.mAccountsUpdated);
         final SyncService syncService =
-                TestThreadUtils.runOnUiThreadBlockingNoException(SyncService::get);
+                TestThreadUtils.runOnUiThreadBlockingNoException(SyncServiceFactory::get);
 
         SigninTestUtil.signinAndEnableSync(account1, syncService);
 

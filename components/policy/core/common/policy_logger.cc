@@ -161,23 +161,29 @@ void PolicyLogger::LogHelper::StreamLog() const {
 base::Value::Dict PolicyLogger::Log::GetAsDict() const {
   base::Value::Dict log_dict;
   log_dict.Set("message", base::EscapeForHTML(message_));
-  log_dict.Set("log_severity", GetLogSeverity(log_severity_));
-  log_dict.Set("log_source", GetLogSourceValue(log_source_));
+  log_dict.Set("logSeverity", GetLogSeverity(log_severity_));
+  log_dict.Set("logSource", GetLogSourceValue(log_source_));
   log_dict.Set("location", GetLineURL(location_));
   log_dict.Set("timestamp", base::TimeFormatHTTP(timestamp_));
   return log_dict;
 }
 
 PolicyLogger::PolicyLogger() = default;
-
-PolicyLogger::~PolicyLogger() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(logs_list_sequence_checker_);
-}
+PolicyLogger::~PolicyLogger() = default;
 
 void PolicyLogger::AddLog(PolicyLogger::Log&& new_log) {
   if (IsPolicyLoggingEnabled()) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(logs_list_sequence_checker_);
-    logs_.emplace_back(std::move(new_log));
+    {
+      base::AutoLock lock(lock_);
+
+      // The logs deque size should not exceed `kMaxLogsSize`. Remove the first
+      // log if the size is reached before adding the new log.
+      if (logs_.size() == kMaxLogsSize) {
+        logs_.pop_front();
+      }
+
+      logs_.emplace_back(std::move(new_log));
+    }
 
     if (!is_log_deletion_scheduled_ && is_log_deletion_enabled_) {
       ScheduleOldLogsDeletion();
@@ -186,11 +192,12 @@ void PolicyLogger::AddLog(PolicyLogger::Log&& new_log) {
 }
 
 void PolicyLogger::DeleteOldLogs() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(logs_list_sequence_checker_);
   // Delete older logs with lifetime `kTimeToLive` mins, set the flag and
   // reschedule the task.
+  base::AutoLock lock(lock_);
   logs_.erase(std::remove_if(logs_.begin(), logs_.end(), IsLogExpired),
               logs_.end());
+
   if (logs_.size() > 0) {
     ScheduleOldLogsDeletion();
     return;
@@ -206,9 +213,9 @@ void PolicyLogger::ScheduleOldLogsDeletion() {
   is_log_deletion_scheduled_ = true;
 }
 
-base::Value::List PolicyLogger::GetAsList() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(logs_list_sequence_checker_);
+base::Value::List PolicyLogger::GetAsList() {
   base::Value::List all_logs_list;
+  base::AutoLock lock(lock_);
   for (const Log& log : logs_) {
     all_logs_list.Append(log.GetAsDict());
   }
@@ -221,7 +228,14 @@ bool PolicyLogger::IsPolicyLoggingEnabled() const {
 #elif BUILDFLAG(IS_IOS)
   return base::FeatureList::IsEnabled(policy::features::kPolicyLogsPageIOS);
 #else
-  return false;
+  // Check that FeatureList is available as a protection against early startup
+  // crashes. Some policy providers are initialized very early even before
+  // base::FeatureList is available, but when policies are finally applied, the
+  // feature stack is fully initialized. The instance check ensures that the
+  // final decision is delayed until all features are initialized, without any
+  // other downstream effect.
+  return base::FeatureList::GetInstance() &&
+         base::FeatureList::IsEnabled(policy::features::kPolicyLogsPageDesktop);
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
@@ -229,13 +243,13 @@ void PolicyLogger::EnableLogDeletion() {
   is_log_deletion_enabled_ = true;
 }
 
-size_t PolicyLogger::GetPolicyLogsSizeForTesting() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(logs_list_sequence_checker_);
+size_t PolicyLogger::GetPolicyLogsSizeForTesting() {
+  base::AutoLock lock(lock_);
   return logs_.size();
 }
 
 void PolicyLogger::ResetLoggerAfterTest() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(logs_list_sequence_checker_);
+  base::AutoLock lock(lock_);
   logs_.erase(logs_.begin(), logs_.end());
   is_log_deletion_scheduled_ = false;
   is_log_deletion_enabled_ = false;

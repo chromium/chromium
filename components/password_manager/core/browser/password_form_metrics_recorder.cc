@@ -225,11 +225,11 @@ PasswordFormMetricsRecorder::~PasswordFormMetricsRecorder() {
     ukm_entry_builder_.SetSubmission_Observed(0 /*false*/);
   }
 
-  if (submitted_form_type_ != SubmittedFormType::kUnspecified) {
-    UMA_HISTOGRAM_ENUMERATION("PasswordManager.SubmittedFormType",
-                              submitted_form_type_, SubmittedFormType::kCount);
-    ukm_entry_builder_.SetSubmission_SubmittedFormType(
-        static_cast<int64_t>(submitted_form_type_));
+  if (submit_result_ != SubmitResult::kNotSubmitted && submitted_form_type_) {
+    base::UmaHistogramEnumeration("PasswordManager.SubmittedFormType2",
+                                  submitted_form_type_.value());
+    ukm_entry_builder_.SetSubmission_SubmittedFormType2(
+        static_cast<int64_t>(submitted_form_type_.value()));
   }
 
   ukm_entry_builder_.SetUpdating_Prompt_Shown(update_prompt_shown_);
@@ -433,7 +433,7 @@ void PasswordFormMetricsRecorder::SetPasswordGenerationPopupShown(
 }
 
 void PasswordFormMetricsRecorder::SetSubmittedFormType(
-    SubmittedFormType form_type) {
+    metrics_util::SubmittedFormType form_type) {
   submitted_form_type_ = form_type;
 }
 
@@ -666,6 +666,7 @@ void PasswordFormMetricsRecorder::RecordPasswordBubbleShown(
     case metrics_util::AUTOMATIC_BIOMETRIC_AUTHENTICATION_FOR_FILLING:
     case metrics_util::MANUAL_BIOMETRIC_AUTHENTICATION_FOR_FILLING:
     case metrics_util::AUTOMATIC_BIOMETRIC_AUTHENTICATION_CONFIRMATION:
+    case metrics_util::AUTOMATIC_SHARED_PASSWORDS_NOTIFICATION:
       // Do nothing.
       return;
 

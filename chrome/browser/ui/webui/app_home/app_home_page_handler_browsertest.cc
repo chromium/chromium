@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/app_home/app_home_page_handler.h"
 
+#include <utility>
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
@@ -11,9 +12,12 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/create_application_shortcut_view_test_support.h"
+#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/ui/webui/app_home/app_home.mojom.h"
 #include "chrome/browser/ui/webui/app_home/mock_app_home_page.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -141,8 +145,9 @@ class TestAppHomePageHandler : public AppHomePageHandler {
   base::OnceClosure run_on_os_login_mode_changed_handle_;
 };
 
-std::unique_ptr<WebAppInstallInfo> BuildWebAppInfo(std::string test_app_name) {
-  auto app_info = std::make_unique<WebAppInstallInfo>();
+std::unique_ptr<web_app::WebAppInstallInfo> BuildWebAppInfo(
+    std::string test_app_name) {
+  auto app_info = std::make_unique<web_app::WebAppInstallInfo>();
   app_info->start_url = GURL(kTestAppUrl);
   app_info->scope = GURL(kTestAppUrl);
   app_info->title = base::UTF8ToUTF16(base::StringPiece(test_app_name));
@@ -163,8 +168,16 @@ class AppHomePageHandlerTest : public InProcessBrowserTest {
   ~AppHomePageHandlerTest() override = default;
 
   void SetUpOnMainThread() override {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    override_registration_ =
+        web_app::OsIntegrationTestOverrideImpl::OverrideForTesting();
     web_app::test::WaitUntilWebAppProviderAndSubsystemsReady(
         web_app::WebAppProvider::GetForTest(profile()));
+  }
+
+  void TearDownOnMainThread() override {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    override_registration_.reset();
   }
 
  protected:
@@ -251,15 +264,9 @@ class AppHomePageHandlerTest : public InProcessBrowserTest {
 
   content::TestWebUI test_web_ui_;
   testing::StrictMock<MockAppHomePage> page_;
-#if BUILDFLAG(IS_WIN)
-  // This prevents SetRunOnOsLoginMode from leaving shortcuts in the Windows
-  // startup directory that cause Chrome to get launched when Windows starts on
-  // a bot. It needs to be in the class so that the override lasts until the
-  // test object is destroyed, because tasks can keep running after the test
-  // method finishes.
-  // See https://crbug.com/1239809
-  base::ScopedPathOverride override_user_startup_{base::DIR_USER_STARTUP};
-#endif  // BUILDFLAG(IS_WIN)
+
+  std::unique_ptr<web_app::OsIntegrationTestOverrideImpl::BlockingRegistration>
+      override_registration_;
 };
 
 MATCHER_P(MatchAppName, expected_app_name, "") {
@@ -426,13 +433,26 @@ IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, CreateWebAppShortcut) {
   page_handler->CreateAppShortcut(installed_app_id, loop.QuitClosure());
   loop.Run();
 #else
-  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       "CreateChromeApplicationShortcutView");
+  CreateChromeApplicationShortcutViewWaiter waiter;
   page_handler->CreateAppShortcut(installed_app_id, base::DoNothing());
   FlushShortcutTasks();
-  views::Widget* widget = waiter.WaitIfNeededAndGet();
-  ASSERT_TRUE(widget != nullptr);
-  views::test::AcceptDialog(widget);
+  std::move(waiter).WaitForAndAccept();
+  FlushShortcutTasks();
+#endif
+  EXPECT_CALL(page_, RemoveApp(MatchAppId(installed_app_id)))
+      .Times(testing::AtLeast(1));
+  UninstallTestWebApp(installed_app_id);
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+  // If SubManagersExecuteEnabled is false, the shortcuts should have been
+  // cleaned up when the web app is uninstalled by
+  // OsIntegrationManager::UninstallOsHooks.
+  // TODO(http://b/289136332) Remove this when the dialog correctly integrates
+  // with the WebAppProvider's sub-manager system.
+  if (web_app::AreSubManagersExecuteEnabled()) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    override_registration_->test_override->SimulateDeleteShortcutsByUser(
+        profile(), installed_app_id, kTestAppName);
+  }
 #endif
 }
 
@@ -451,13 +471,16 @@ IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, CreateExtensionAppShortcut) {
   page_handler->CreateAppShortcut(extension->id(), loop.QuitClosure());
   loop.Run();
 #else
-  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       "CreateChromeApplicationShortcutView");
+  CreateChromeApplicationShortcutViewWaiter waiter;
   page_handler->CreateAppShortcut(extension->id(), base::DoNothing());
   FlushShortcutTasks();
-  views::Widget* widget = waiter.WaitIfNeededAndGet();
-  ASSERT_TRUE(widget != nullptr);
-  views::test::AcceptDialog(widget);
+  std::move(waiter).WaitForAndAccept();
+#endif
+  EXPECT_CALL(page_, RemoveApp(MatchAppId(extension->id())))
+      .Times(testing::AtLeast(1));
+  UninstallTestExtensionApp(extension.get());
+#if !BUILDFLAG(IS_MAC)
+  FlushShortcutTasks();
 #endif
 }
 

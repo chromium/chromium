@@ -7,6 +7,7 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_capture_start_focus_behavior.h"
+#include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -16,7 +17,7 @@ namespace blink {
 
 class ExceptionState;
 
-class MODULES_EXPORT CaptureController final : public ScriptWrappable,
+class MODULES_EXPORT CaptureController final : public EventTarget,
                                                public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -35,6 +36,13 @@ class MODULES_EXPORT CaptureController final : public ScriptWrappable,
   // When getDisplayMedia() is resolved, `video_track_` and `descriptor_id_` are
   // set.
   void SetVideoTrack(MediaStreamTrack* video_track, std::string descriptor_id);
+
+  // EventTarget
+  const AtomicString& InterfaceName() const override;
+  ExecutionContext* GetExecutionContext() const override;
+
+  // https://screen-share.github.io/mouse-events/#capture-controller-extensions
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(capturedmousechange, kCapturedmousechange)
 
   // Close the window of opportunity to make the focus decision.
   // Further calls to setFocusBehavior() will raise an exception.

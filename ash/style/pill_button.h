@@ -14,12 +14,16 @@
 
 namespace ash {
 
+class BlurredBackgroundShield;
+
 // A label button with a rounded rectangle background. It can have an icon
 // inside as well, and its text and background colors will be different based on
 // the type of the button.
 class ASH_EXPORT PillButton : public views::LabelButton {
  public:
   METADATA_HEADER(PillButton);
+
+  using ColorVariant = absl::variant<SkColor, ui::ColorId>;
 
   static constexpr int kPillButtonHorizontalSpacing = 16;
   static constexpr int kPaddingReductionForIcon = 4;
@@ -174,11 +178,12 @@ class ASH_EXPORT PillButton : public views::LabelButton {
   ~PillButton() override;
 
   // views::LabelButton:
-  void AddedToWidget() override;
   gfx::Size CalculatePreferredSize() const override;
   int GetHeightForWidth(int width) const override;
   gfx::Insets GetInsets() const override;
   void UpdateBackgroundColor() override;
+  views::PropertyEffects UpdateStyleToIndicateDefaultStatus() override;
+  std::u16string GetTooltipText(const gfx::Point& p) const override;
 
   // Sets the button's background color, text's color or icon's color. Note, do
   // this only when the button wants to have different colors from the default
@@ -189,11 +194,19 @@ class ASH_EXPORT PillButton : public views::LabelButton {
   void SetButtonTextColorId(ui::ColorId text_color_id);
   void SetIconColor(const SkColor icon_color);
   void SetIconColorId(ui::ColorId icon_color_id);
+  // TODO(b/290639214): This method is deprecating. Try not to change button
+  // type afterward. If a new button type is needed, please create a new
+  // instance.
   void SetPillButtonType(Type type);
 
   // Sets the button's label to use the default label font, which is smaller
   // and less heavily weighted.
   void SetUseDefaultLabelFont();
+
+  // Sets if the button should enable the background blur. Once the button
+  // enables the background blur, it will use `BlurredBackgroundShield` as the
+  // background which is performance consuming so only use it as needed.
+  void SetEnableBackgroundBlur(bool enable);
 
  private:
   // Initializes the button layout, focus ring and background according to the
@@ -218,12 +231,12 @@ class ASH_EXPORT PillButton : public views::LabelButton {
   int padding_reduction_for_icon_;
 
   // Custom colors and color IDs.
-  absl::optional<SkColor> background_color_;
-  absl::optional<ui::ColorId> background_color_id_;
-  absl::optional<SkColor> text_color_;
-  absl::optional<ui::ColorId> text_color_id_;
-  absl::optional<SkColor> icon_color_;
-  absl::optional<ui::ColorId> icon_color_id_;
+  ColorVariant background_color_ = gfx::kPlaceholderColor;
+  ColorVariant text_color_ = gfx::kPlaceholderColor;
+  ColorVariant icon_color_ = gfx::kPlaceholderColor;
+
+  bool enable_background_blur_ = false;
+  std::unique_ptr<BlurredBackgroundShield> blurred_background_;
 
   // Called to update background color when the button is enabled/disabled.
   base::CallbackListSubscription enabled_changed_subscription_;
@@ -237,6 +250,7 @@ VIEW_BUILDER_PROPERTY(ui::ColorId, ButtonTextColorId)
 VIEW_BUILDER_PROPERTY(const SkColor, IconColor)
 VIEW_BUILDER_PROPERTY(ui::ColorId, IconColorId)
 VIEW_BUILDER_PROPERTY(PillButton::Type, PillButtonType)
+VIEW_BUILDER_PROPERTY(bool, EnableBackgroundBlur)
 END_VIEW_BUILDER
 
 }  // namespace ash

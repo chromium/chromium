@@ -14,7 +14,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/display/fake/fake_display_snapshot.h"
+#include "ui/display/manager/test/fake_display_snapshot.h"
 
 using chromeos::cdm::mojom::OutputProtection;
 using testing::_;
@@ -133,7 +133,8 @@ class OutputProtectionImplTest : public testing::Test {
   }
 
   mojo::Remote<OutputProtection> output_protection_mojo_;
-  raw_ptr<MockDisplaySystemDelegate> delegate_;  // Not owned.
+  raw_ptr<MockDisplaySystemDelegate, AcrossTasksDanglingUntriaged>
+      delegate_;  // Not owned.
   std::unique_ptr<display::DisplaySnapshot> displays_[std::size(kDisplayIds)];
   std::vector<display::DisplaySnapshot*> cached_displays_;
 

@@ -25,7 +25,6 @@
 
 #include "third_party/blink/renderer/modules/indexeddb/idb_key_path.h"
 
-#include "third_party/blink/public/common/indexeddb/web_idb_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_stringsequence.h"
 #include "third_party/blink/renderer/platform/wtf/dtoa.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"

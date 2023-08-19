@@ -11,9 +11,33 @@
 // view.
 extern NSString* const kSafeBrowsingEnhancedProtectionTableViewId;
 
+// The accessibility identifier of the Safe Browsing Enhanced Protection table
+// view first header.
+extern NSString* const kSafeBrowsingEnhancedProtectionTableViewFirstHeaderId;
+
+// The accessibility identifier of the Safe Browsing Enhanced Protection table
+// view second header.
+extern NSString* const kSafeBrowsingEnhancedProtectionTableViewSecondHeaderId;
+
+// The accessibility identifier of the Safe Browsing Enhanced Protection table
+// view footer.
+extern NSString* const kSafeBrowsingEnhancedProtectionTableViewFooterId;
+
 // The accessibility identifier of the Safe Browsing Standard Protection table
 // view.
 extern NSString* const kSafeBrowsingStandardProtectionTableViewId;
+
+// The accessibility identifier of the Safe Browsing Enhanced Protection account
+// cell.
+extern NSString* const kSafeBrowsingEnhancedProtectionAccountCellId;
+
+// The accessibility identifier of the Safe Browsing Enhanced Protection data
+// cell.
+extern NSString* const kSafeBrowsingEnhancedProtectionDataCellId;
+
+// The accessibility identifier of the Safe Browsing Enhanced Protection
+// download cell.
+extern NSString* const kSafeBrowsingEnhancedProtectionDownloadCellId;
 
 // The accessibility identifier of the Safe Browsing Enhanced Protection shield
 // cell.
@@ -31,9 +55,17 @@ extern NSString* const kSafeBrowsingEnhancedProtectionGlobeCellId;
 // cell.
 extern NSString* const kSafeBrowsingEnhancedProtectionKeyCellId;
 
+// The accessibility identifier of the Safe Browsing Enhanced Protection link
+// cell.
+extern NSString* const kSafeBrowsingEnhancedProtectionLinkCellId;
+
 // The accessibility identifier of the Safe Browsing Enhanced Protection metric
 // cell.
 extern NSString* const kSafeBrowsingEnhancedProtectionMetricCellId;
+
+// The accessibility identifier of the Safe Browsing Enhanced Protection
+// performance cell.
+extern NSString* const kSafeBrowsingEnhancedProtectionPerformanceCellId;
 
 // The accessibility identifier of the Safe Browsing Standard Protection shield
 // cell.

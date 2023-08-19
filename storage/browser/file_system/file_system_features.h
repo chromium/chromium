@@ -16,9 +16,6 @@ BASE_DECLARE_FEATURE(kEnablePersistentFilesystemInIncognito);
 COMPONENT_EXPORT(STORAGE_BROWSER)
 BASE_DECLARE_FEATURE(kIncognitoFileSystemContextForTesting);
 
-COMPONENT_EXPORT(STORAGE_BROWSER)
-BASE_DECLARE_FEATURE(kFileSystemURLComparatorsTreatOpaqueOriginAsNoOrigin);
-
 }  // namespace storage::features
 
 #endif  // STORAGE_BROWSER_FILE_SYSTEM_FILE_SYSTEM_FEATURES_H_

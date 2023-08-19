@@ -6,6 +6,7 @@ import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/closure_compiler/js_unit_tests.gni")
 import("//ui/file_manager/base/gn/js_test_type_check.gni")
 import("//ui/webui/resources/tools/optimize_webui.gni")
+import("//ui/webui/webui_features.gni")
 
 js_type_check("closure_compile_jsmodules") {
   closure_flags = default_closure_args + [
@@ -119,13 +120,10 @@ js_library("image_request_task") {
     ":load_image_request",
     ":piex_loader",
     "//ash/webui/common/resources:assert",
-    "//ui/file_manager/file_manager/common/js:file_type",
   ]
   externs_list = [
-    "$externs_path/file_manager_private.js",
-    "$externs_path/file_system_provider.js",
+    "$externs_path/image_loader_private.js",
     "$externs_path/chrome_extensions.js",
-    "$externs_path/chrome.js",
   ]
 }
 
@@ -183,20 +181,17 @@ group("js_modules") {
   ]
 }
 
-preprocess_folder =
-    rebase_path("$target_gen_dir/../preprocessed/image_loader", root_build_dir)
-
-files_app_path =
-    rebase_path("$root_gen_dir/ui/file_manager/preprocessed/file_manager",
-                root_build_dir)
+tsc_folder = rebase_path("$target_gen_dir/../tsc/image_loader", root_build_dir)
+files_app_path = rebase_path("$root_gen_dir/ui/file_manager/tsc/file_manager",
+                             root_build_dir)
 image_loader_path =
-    rebase_path("$root_gen_dir/ui/file_manager/preprocessed/image_loader",
+    rebase_path("$root_gen_dir/ui/file_manager/tsc/image_loader",
                 root_build_dir)
 
 optimize_webui("build") {
   host = "image_loader"
 
-  input = preprocess_folder
+  input = tsc_folder
   js_module_in_files = [ "background.js" ]
 
   external_paths = [
@@ -210,4 +205,9 @@ optimize_webui("build") {
     "//ui/file_manager:preprocess_static",
     "//ui/file_manager:preprocess_static_image_loader",
   ]
+  if (enable_webui_inline_sourcemaps) {
+    deps += [ "//ui/file_manager:merge_source_maps" ]
+  } else {
+    deps += [ "//ui/file_manager:build_ts" ]
+  }
 }

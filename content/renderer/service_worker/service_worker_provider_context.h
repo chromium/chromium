@@ -192,6 +192,8 @@ class CONTENT_EXPORT ServiceWorkerProviderContext
       const override;
   blink::mojom::ServiceWorkerFetchHandlerType GetFetchHandlerType()
       const override;
+  blink::mojom::ServiceWorkerFetchHandlerBypassOption
+  GetFetchHandlerBypassOption() const override;
   const blink::WebString client_id() const override;
 
  private:
@@ -290,6 +292,10 @@ class CONTENT_EXPORT ServiceWorkerProviderContext
           blink::mojom::ServiceWorkerFetchHandlerBypassOption::kDefault;
 
   absl::optional<std::string> sha256_script_checksum_;
+
+  absl::optional<blink::ServiceWorkerRouterRules> router_rules_;
+
+  blink::EmbeddedWorkerStatus initial_running_status_;
 
   // Tracks feature usage for UseCounter.
   std::set<blink::mojom::WebFeature> used_features_;

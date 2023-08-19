@@ -44,6 +44,7 @@
 #include "chrome/browser/extensions/menu_manager.h"
 #include "chrome/browser/extensions/updater/chrome_update_client_config.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
+#include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
@@ -197,17 +198,15 @@ bool ChromeExtensionsBrowserClient::AreExtensionsDisabled(
          profile->GetPrefs()->GetBoolean(prefs::kDisableExtensions);
 }
 
-bool ChromeExtensionsBrowserClient::IsValidContext(
-    content::BrowserContext* context) {
+bool ChromeExtensionsBrowserClient::IsValidContext(void* context) {
   DCHECK(context);
   if (!g_browser_process) {
     LOG(ERROR) << "Unexpected null g_browser_process";
     NOTREACHED();
     return false;
   }
-  Profile* profile = static_cast<Profile*>(context);
   return g_browser_process->profile_manager() &&
-         g_browser_process->profile_manager()->IsValidProfile(profile);
+         g_browser_process->profile_manager()->IsValidProfile(context);
 }
 
 bool ChromeExtensionsBrowserClient::IsSameContext(
@@ -236,17 +235,26 @@ content::BrowserContext* ChromeExtensionsBrowserClient::GetOriginalContext(
 }
 
 content::BrowserContext*
-ChromeExtensionsBrowserClient::GetRedirectedContextInIncognito(
+ChromeExtensionsBrowserClient::GetContextRedirectedToOriginal(
     content::BrowserContext* context,
-    bool force_guest_profile,
-    bool force_system_profile) {
+    bool force_guest_profile) {
   ProfileSelections::Builder builder;
   builder.WithRegular(ProfileSelection::kRedirectedToOriginal);
   if (force_guest_profile) {
     builder.WithGuest(ProfileSelection::kRedirectedToOriginal);
   }
-  if (force_system_profile) {
-    builder.WithSystem(ProfileSelection::kRedirectedToOriginal);
+
+  const ProfileSelections selections = builder.Build();
+  return selections.ApplyProfileSelection(Profile::FromBrowserContext(context));
+}
+
+content::BrowserContext* ChromeExtensionsBrowserClient::GetContextOwnInstance(
+    content::BrowserContext* context,
+    bool force_guest_profile) {
+  ProfileSelections::Builder builder;
+  builder.WithRegular(ProfileSelection::kOwnInstance);
+  if (force_guest_profile) {
+    builder.WithGuest(ProfileSelection::kOwnInstance);
   }
 
   const ProfileSelections selections = builder.Build();
@@ -254,37 +262,22 @@ ChromeExtensionsBrowserClient::GetRedirectedContextInIncognito(
 }
 
 content::BrowserContext*
-ChromeExtensionsBrowserClient::GetContextForRegularAndIncognito(
+ChromeExtensionsBrowserClient::GetContextForOriginalOnly(
     content::BrowserContext* context,
-    bool force_guest_profile,
-    bool force_system_profile) {
-  ProfileSelections::Builder builder;
-  builder.WithRegular(ProfileSelection::kOwnInstance);
-  if (force_guest_profile) {
-    builder.WithGuest(ProfileSelection::kOwnInstance);
-  }
-  if (force_system_profile) {
-    builder.WithSystem(ProfileSelection::kOwnInstance);
-  }
-
-  const ProfileSelections selections = builder.Build();
-  return selections.ApplyProfileSelection(Profile::FromBrowserContext(context));
-}
-
-content::BrowserContext* ChromeExtensionsBrowserClient::GetRegularProfile(
-    content::BrowserContext* context,
-    bool force_guest_profile,
-    bool force_system_profile) {
+    bool force_guest_profile) {
   ProfileSelections::Builder builder;
   if (force_guest_profile) {
     builder.WithGuest(ProfileSelection::kOriginalOnly);
   }
-  if (force_system_profile) {
-    builder.WithSystem(ProfileSelection::kOriginalOnly);
-  }
 
   ProfileSelections selections = builder.Build();
   return selections.ApplyProfileSelection(Profile::FromBrowserContext(context));
+}
+
+bool ChromeExtensionsBrowserClient::AreExtensionsDisabledForContext(
+    content::BrowserContext* context) {
+  return ChromeContentBrowserClientExtensionsPart::
+      AreExtensionsDisabledForProfile(Profile::FromBrowserContext(context));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -454,7 +447,7 @@ bool ChromeExtensionsBrowserClient::IsAppModeForcedForApp(
 }
 
 bool ChromeExtensionsBrowserClient::IsLoggedInAsPublicAccount() {
-  return profiles::IsPublicSession();
+  return profiles::IsManagedGuestSession();
 }
 
 ExtensionSystemProvider*
@@ -969,6 +962,13 @@ void ChromeExtensionsBrowserClient::GetWebViewStoragePartitionConfig(
 void ChromeExtensionsBrowserClient::CreatePasswordReuseDetectionManager(
     content::WebContents* web_contents) const {
   ChromePasswordReuseDetectionManagerClient::CreateForWebContents(web_contents);
+}
+
+media_device_salt::MediaDeviceSaltService*
+ChromeExtensionsBrowserClient::GetMediaDeviceSaltService(
+    content::BrowserContext* context) {
+  return MediaDeviceSaltServiceFactory::GetInstance()->GetForBrowserContext(
+      context);
 }
 
 }  // namespace extensions

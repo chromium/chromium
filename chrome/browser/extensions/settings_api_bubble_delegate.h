@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/extension_message_bubble_controller.h"
 #include "chrome/common/extensions/manifest_handlers/settings_overrides_handler.h"
+#include "extensions/common/extension_id.h"
 
 namespace extensions {
 
@@ -66,7 +67,7 @@ class SettingsApiBubbleDelegate
   SettingsApiOverrideType type_;
 
   // The ID of the extension we are showing the bubble for.
-  std::string extension_id_;
+  ExtensionId extension_id_;
 
   raw_ptr<Profile> profile_;
 };

@@ -7,19 +7,21 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/memory/ptr_util.h"
 #include "base/task/thread_pool.h"
 
 namespace ash {
-FaceMLPageHandler::FaceMLPageHandler(FaceMLAppUI* face_ml_app_ui)
-    : face_ml_app_ui_(*face_ml_app_ui) {}
-FaceMLPageHandler::~FaceMLPageHandler() = default;
 
-void FaceMLPageHandler::BindInterface(
+// static
+FaceMLPageHandler::FaceMLPageHandler(
+    FaceMLAppUI* face_ml_app_ui,
     mojo::PendingReceiver<mojom::face_ml_app::PageHandler> pending_receiver,
-    mojo::PendingRemote<mojom::face_ml_app::Page> pending_page) {
-  receiver_.Bind(std::move(pending_receiver));
-  page_.Bind(std::move(pending_page));
-}
+    mojo::PendingRemote<mojom::face_ml_app::Page> pending_page)
+    : receiver_(this, std::move(pending_receiver)),
+      page_(std::move(pending_page)),
+      face_ml_app_ui_(raw_ref<FaceMLAppUI>::from_ptr(face_ml_app_ui)) {}
+
+FaceMLPageHandler::~FaceMLPageHandler() = default;
 
 void FaceMLPageHandler::GetCurrentUserInformation(
     GetCurrentUserInformationCallback callback) {
@@ -27,4 +29,5 @@ void FaceMLPageHandler::GetCurrentUserInformation(
       face_ml_app_ui_->GetUserProvider()->GetCurrentUserInformation();
   std::move(callback).Run(user_info.Clone());
 }
+
 }  // namespace ash

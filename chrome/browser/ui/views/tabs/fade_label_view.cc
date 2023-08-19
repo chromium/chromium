@@ -8,10 +8,8 @@
 #include "ui/gfx/canvas.h"
 
 namespace {
-template <typename T>
-std::unique_ptr<T> CreateLabel(int context) {
-  return std::make_unique<T>(std::u16string(), context,
-                             views::style::STYLE_PRIMARY);
+std::unique_ptr<FadeLabel> CreateFadeLabel(int context, int text_style) {
+  return std::make_unique<FadeLabel>(std::u16string(), context, text_style);
 }
 }  // namespace
 
@@ -61,10 +59,10 @@ std::u16string FadeLabel::TruncateFilenameToTwoLines(
 // FadeLabelView:
 // ----------------------------------------------------------
 
-FadeLabelView::FadeLabelView(int context, int num_lines)
+FadeLabelView::FadeLabelView(int num_lines, int context, int text_style)
     : FadeView<FadeLabel, FadeLabel, FadeLabelViewData>(
-          CreateLabel<FadeLabel>(context),
-          CreateLabel<FadeLabel>(context)) {
+          CreateFadeLabel(context, text_style),
+          CreateFadeLabel(context, text_style)) {
   if (num_lines > 1) {
     primary_view_->SetMultiLine(true);
     fade_out_view_->SetMultiLine(true);
@@ -77,4 +75,9 @@ FadeLabelView::FadeLabelView(int context, int num_lines)
 
 std::u16string FadeLabelView::GetText() {
   return primary_view_->GetText();
+}
+
+void FadeLabelView::SetEnabledColorId(ui::ColorId color) {
+  primary_view_->SetEnabledColorId(color);
+  fade_out_view_->SetEnabledColorId(color);
 }

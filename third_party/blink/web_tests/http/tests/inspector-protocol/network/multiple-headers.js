@@ -10,12 +10,13 @@
   session.evaluate(`fetch("${url}?fetch=1").then(r => r.text())`);
   const [fetchResponse, fetchResponseExtraInfo] = await Promise.all([
     dp.Network.onceResponseReceived(),
-    dp.Network.onceResponseReceivedExtraInfo()]);
+    dp.Network.onceResponseReceivedExtraInfo(),
+    dp.Network.onceLoadingFinished()
+  ]);
   testRunner.log(`Pragma header of fetch of ${fetchResponse.params.response.url}:`);
   testRunner.log(`Network.responseReceived: ${fetchResponse.params.response.headers['Access-Control-Pragma']}`);
   testRunner.log(`Network.responseReceivedExtraInfo: ${fetchResponseExtraInfo.params.headers['Access-Control-Pragma']}`);
   testRunner.log('');
-  await dp.Network.onceLoadingFinished();
 
   session.evaluate(`
     var f = document.createElement('frame');

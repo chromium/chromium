@@ -131,13 +131,6 @@ class CORE_EXPORT FindTaskController final
   // that have the same identifier as this.
   int current_find_identifier_ = kInvalidFindIdentifier;
 
-  // The start time of the current find-in-page request.
-  base::TimeTicks current_request_start_time_;
-  // The combined duration of all the tasks done for the current request.
-  base::TimeDelta total_task_duration_for_current_request_;
-  // The number of find-in-page tasks the current request has made.
-  int task_count_for_current_request_;
-
   // Keeps track of the last string this frame searched for. This is used for
   // short-circuiting searches in the following scenarios: When a frame has
   // been searched and returned 0 results, we don't need to search that frame

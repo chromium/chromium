@@ -3,6 +3,11 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/inspector/thread_debugger_common_impl.h"
+#include "third_party/blink/renderer/core/dom/attr.h"
+#include "third_party/blink/renderer/core/dom/attribute.h"
+#include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/dom/node_list.h"
+#include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
 
 #include <memory>
@@ -29,8 +34,10 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_trusted_script_url.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_window.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/inspector/inspector_dom_debugger_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/inspector/v8_inspector_string.h"
@@ -162,6 +169,7 @@ void ThreadDebuggerCommonImpl::beginUserGesture() {
 namespace {
 static const char kType[] = "type";
 static const char kValue[] = "value";
+enum ShadowTreeSerialization { kNone, kOpen, kAll };
 
 v8::Local<v8::String> TypeStringKey(v8::Isolate* isolate_) {
   return V8String(isolate_, kType);
@@ -170,9 +178,11 @@ v8::Local<v8::String> ValueStringKey(v8::Isolate* isolate_) {
   return V8String(isolate_, kValue);
 }
 
-v8::Local<v8::Object> SerializeNodeToV8Object(Node* node,
-                                              v8::Isolate* isolate_,
-                                              int max_depth) {
+v8::Local<v8::Object> SerializeNodeToV8Object(
+    Node* node,
+    v8::Isolate* isolate,
+    int max_node_depth,
+    ShadowTreeSerialization include_shadow_tree) {
   static const char kAttributes[] = "attributes";
   static const char kBackendNodeId[] = "backendNodeId";
   static const char kChildren[] = "children";
@@ -182,99 +192,208 @@ v8::Local<v8::Object> SerializeNodeToV8Object(Node* node,
   static const char kNode[] = "node";
   static const char kNodeType[] = "nodeType";
   static const char kNodeValue[] = "nodeValue";
+  static const char kShadowRoot[] = "shadowRoot";
+  static const char kShadowRootMode[] = "mode";
+  static const char kShadowRootOpen[] = "open";
+  static const char kShadowRootClosed[] = "closed";
 
   Vector<v8::Local<v8::Name>> serialized_value_keys;
   Vector<v8::Local<v8::Value>> serialized_value_values;
-  serialized_value_keys.push_back(V8String(isolate_, kNodeType));
+  serialized_value_keys.push_back(V8String(isolate, kNodeType));
   serialized_value_values.push_back(
-      v8::Number::New(isolate_, node->getNodeType()));
+      v8::Number::New(isolate, node->getNodeType()));
 
   if (!node->nodeValue().IsNull()) {
-    serialized_value_keys.push_back(V8String(isolate_, kNodeValue));
-    serialized_value_values.push_back(V8String(isolate_, node->nodeValue()));
+    serialized_value_keys.push_back(V8String(isolate, kNodeValue));
+    serialized_value_values.push_back(V8String(isolate, node->nodeValue()));
   }
 
+  serialized_value_keys.push_back(V8String(isolate, kChildNodeCount));
+  serialized_value_values.push_back(
+      v8::Number::New(isolate, node->CountChildren()));
+
   DOMNodeId backend_node_id = DOMNodeIds::IdForNode(node);
-  serialized_value_keys.push_back(V8String(isolate_, kBackendNodeId));
-  serialized_value_values.push_back(v8::Number::New(isolate_, backend_node_id));
+  serialized_value_keys.push_back(V8String(isolate, kBackendNodeId));
+  serialized_value_values.push_back(v8::Number::New(isolate, backend_node_id));
+
+  if (node->IsAttributeNode()) {
+    Attr* attribute = To<Attr>(node);
+
+    serialized_value_keys.push_back(V8String(isolate, kLocalName));
+    serialized_value_values.push_back(
+        V8String(isolate, attribute->localName()));
+
+    serialized_value_keys.push_back(V8String(isolate, kNamespaceURI));
+    serialized_value_values.push_back(
+        V8String(isolate, attribute->namespaceURI()));
+  }
 
   if (node->IsElementNode()) {
     Element* element = To<Element>(node);
 
-    serialized_value_keys.push_back(V8String(isolate_, kLocalName));
-    serialized_value_values.push_back(V8String(isolate_, element->localName()));
+    if (ShadowRoot* shadow_root = node->GetShadowRoot()) {
+      // Do not decrease `max_node_depth` for shadow root. Shadow root should be
+      // serialized fully, while it's children will be serialized respecting
+      // max_node_depth and include_shadow_tree.
+      v8::Local<v8::Object> serialized_shadow = SerializeNodeToV8Object(
+          shadow_root, isolate, max_node_depth, include_shadow_tree);
 
-    serialized_value_keys.push_back(V8String(isolate_, kNamespaceURI));
-    serialized_value_values.push_back(
-        V8String(isolate_, element->namespaceURI()));
+      serialized_value_keys.push_back(V8String(isolate, kShadowRoot));
+      serialized_value_values.push_back(serialized_shadow);
+    } else {
+      serialized_value_keys.push_back(V8String(isolate, kShadowRoot));
+      serialized_value_values.push_back(v8::Null(isolate));
+    }
 
-    serialized_value_keys.push_back(V8String(isolate_, kChildNodeCount));
+    serialized_value_keys.push_back(V8String(isolate, kLocalName));
+    serialized_value_values.push_back(V8String(isolate, element->localName()));
+
+    serialized_value_keys.push_back(V8String(isolate, kNamespaceURI));
     serialized_value_values.push_back(
-        v8::Number::New(isolate_, node->CountChildren()));
+        V8String(isolate, element->namespaceURI()));
 
     Vector<v8::Local<v8::Name>> node_attributes_keys;
     Vector<v8::Local<v8::Value>> node_attributes_values;
 
     for (const Attribute& attribute : element->Attributes()) {
       node_attributes_keys.push_back(
-          V8String(isolate_, attribute.GetName().ToString()));
-      node_attributes_values.push_back(V8String(isolate_, attribute.Value()));
+          V8String(isolate, attribute.GetName().ToString()));
+      node_attributes_values.push_back(V8String(isolate, attribute.Value()));
     }
 
     DCHECK(node_attributes_values.size() == node_attributes_keys.size());
     v8::Local<v8::Object> node_attributes = v8::Object::New(
-        isolate_, v8::Null(isolate_), node_attributes_keys.data(),
+        isolate, v8::Null(isolate), node_attributes_keys.data(),
         node_attributes_values.data(), node_attributes_keys.size());
 
-    serialized_value_keys.push_back(V8String(isolate_, kAttributes));
+    serialized_value_keys.push_back(V8String(isolate, kAttributes));
     serialized_value_values.push_back(node_attributes);
   }
 
-  if (max_depth > 0) {
+  bool include_children = max_node_depth > 0;
+  if (node->IsShadowRoot()) {
+    ShadowRoot* shadow_root = To<ShadowRoot>(node);
+
+    // Include children of shadow root only if `max_depth` is not reached and
+    // one of the following is true:
+    // 1. `include_shadow_tree` set to `all` regardless of the shadow type.
+    // 2. `include_shadow_tree` set to `open` and the shadow type is `open`.
+    if (include_shadow_tree == kNone) {
+      include_children = false;
+    } else if (include_shadow_tree == kOpen &&
+               shadow_root->GetType() != ShadowRootType::kOpen) {
+      include_children = false;
+    }
+
+    serialized_value_keys.push_back(V8String(isolate, kShadowRootMode));
+    serialized_value_values.push_back(
+        V8String(isolate, shadow_root->GetType() == ShadowRootType::kOpen
+                              ? kShadowRootOpen
+                              : kShadowRootClosed));
+  }
+
+  if (include_children) {
     NodeList* child_nodes = node->childNodes();
 
     v8::Local<v8::Array> children =
-        v8::Array::New(isolate_, child_nodes->length());
+        v8::Array::New(isolate, child_nodes->length());
 
     for (unsigned int i = 0; i < child_nodes->length(); i++) {
       Node* child_node = child_nodes->item(i);
-      v8::Local<v8::Object> serialized_child_node =
-          SerializeNodeToV8Object(child_node, isolate_, max_depth - 1);
+      v8::Local<v8::Object> serialized_child_node = SerializeNodeToV8Object(
+          child_node, isolate, max_node_depth - 1, include_shadow_tree);
 
       children
-          ->CreateDataProperty(isolate_->GetCurrentContext(), i,
+          ->CreateDataProperty(isolate->GetCurrentContext(), i,
                                serialized_child_node)
           .Check();
     }
-    serialized_value_keys.push_back(V8String(isolate_, kChildren));
+    serialized_value_keys.push_back(V8String(isolate, kChildren));
     serialized_value_values.push_back(children);
   }
 
   DCHECK(serialized_value_values.size() == serialized_value_keys.size());
 
   v8::Local<v8::Object> serialized_value = v8::Object::New(
-      isolate_, v8::Null(isolate_), serialized_value_keys.data(),
+      isolate, v8::Null(isolate), serialized_value_keys.data(),
       serialized_value_values.data(), serialized_value_keys.size());
 
   Vector<v8::Local<v8::Name>> result_keys;
   Vector<v8::Local<v8::Value>> result_values;
 
-  result_keys.push_back(TypeStringKey(isolate_));
-  result_values.push_back(V8String(isolate_, kNode));
+  result_keys.push_back(TypeStringKey(isolate));
+  result_values.push_back(V8String(isolate, kNode));
 
-  result_keys.push_back(ValueStringKey(isolate_));
+  result_keys.push_back(ValueStringKey(isolate));
   result_values.push_back(serialized_value);
 
-  return v8::Object::New(isolate_, v8::Null(isolate_), result_keys.data(),
+  return v8::Object::New(isolate, v8::Null(isolate), result_keys.data(),
                          result_values.data(), result_keys.size());
 }
 
-std::unique_ptr<v8_inspector::WebDriverValue> SerializeNodeToWebDriverValue(
+std::unique_ptr<v8_inspector::DeepSerializedValue> DeepSerializeHtmlCollection(
+    HTMLCollection* html_collection,
+    v8::Isolate* isolate_,
+    int max_depth,
+    int max_node_depth,
+    ShadowTreeSerialization include_shadow_tree) {
+  static const char kHtmlCollection[] = "htmlcollection";
+  if (max_depth > 0) {
+    v8::Local<v8::Array> children =
+        v8::Array::New(isolate_, html_collection->length());
+
+    for (unsigned int i = 0; i < html_collection->length(); i++) {
+      Node* child_node = html_collection->item(i);
+      v8::Local<v8::Object> serialized_child_node = SerializeNodeToV8Object(
+          child_node, isolate_, max_node_depth, include_shadow_tree);
+      children
+          ->CreateDataProperty(isolate_->GetCurrentContext(), i,
+                               serialized_child_node)
+          .Check();
+    }
+    return std::make_unique<v8_inspector::DeepSerializedValue>(
+        ToV8InspectorStringBuffer(kHtmlCollection), children);
+  }
+
+  return std::make_unique<v8_inspector::DeepSerializedValue>(
+      ToV8InspectorStringBuffer(kHtmlCollection));
+}
+
+std::unique_ptr<v8_inspector::DeepSerializedValue> DeepSerializeNodeList(
+    NodeList* node_list,
+    v8::Isolate* isolate_,
+    int max_depth,
+    int max_node_depth,
+    ShadowTreeSerialization include_shadow_tree) {
+  static const char kNodeList[] = "nodelist";
+  if (max_depth > 0) {
+    v8::Local<v8::Array> children =
+        v8::Array::New(isolate_, node_list->length());
+
+    for (unsigned int i = 0; i < node_list->length(); i++) {
+      Node* child_node = node_list->item(i);
+      v8::Local<v8::Object> serialized_child_node = SerializeNodeToV8Object(
+          child_node, isolate_, max_node_depth, include_shadow_tree);
+      children
+          ->CreateDataProperty(isolate_->GetCurrentContext(), i,
+                               serialized_child_node)
+          .Check();
+    }
+    return std::make_unique<v8_inspector::DeepSerializedValue>(
+        ToV8InspectorStringBuffer(kNodeList), children);
+  }
+
+  return std::make_unique<v8_inspector::DeepSerializedValue>(
+      ToV8InspectorStringBuffer(kNodeList));
+}
+
+std::unique_ptr<v8_inspector::DeepSerializedValue> DeepSerializeNode(
     Node* node,
     v8::Isolate* isolate_,
-    int max_depth) {
-  v8::Local<v8::Object> node_v8_object =
-      SerializeNodeToV8Object(node, isolate_, max_depth);
+    int max_node_depth,
+    ShadowTreeSerialization include_shadow_tree) {
+  v8::Local<v8::Object> node_v8_object = SerializeNodeToV8Object(
+      node, isolate_, max_node_depth, include_shadow_tree);
 
   v8::Local<v8::Value> value_v8_object =
       node_v8_object
@@ -293,28 +412,151 @@ std::unique_ptr<v8_inspector::WebDriverValue> SerializeNodeToWebDriverValue(
   std::unique_ptr<v8_inspector::StringBuffer> type_string_buffer =
       ToV8InspectorStringBuffer(type_string_view);
 
-  return std::make_unique<v8_inspector::WebDriverValue>(
+  return std::make_unique<v8_inspector::DeepSerializedValue>(
       std::move(type_string_buffer), value_v8_object);
 }
+
+std::unique_ptr<v8_inspector::DeepSerializedValue> DeepSerializeWindow(
+    DOMWindow* window,
+    v8::Isolate* isolate) {
+  static const char kContextParameterName[] = "context";
+
+  Vector<v8::Local<v8::Name>> keys;
+  Vector<v8::Local<v8::Value>> values;
+
+  keys.push_back(V8String(isolate, kContextParameterName));
+  values.push_back(
+      V8String(isolate, IdentifiersFactory::IdFromToken(
+                            window->GetFrame()->GetDevToolsFrameToken())));
+
+  return std::make_unique<v8_inspector::DeepSerializedValue>(
+      ToV8InspectorStringBuffer("window"),
+      v8::Object::New(isolate, v8::Null(isolate), keys.data(), values.data(),
+                      keys.size()));
+}
+
 }  // namespace
 
-std::unique_ptr<v8_inspector::WebDriverValue>
-ThreadDebuggerCommonImpl::serializeToWebDriverValue(
-    v8::Local<v8::Value> v8_value,
-    int max_depth) {
-  // Serialize according to https://w3c.github.io/webdriver-bidi.
-  if (Node* node = V8Node::ToWrappable(isolate_, v8_value)) {
-    return SerializeNodeToWebDriverValue(node, isolate_, max_depth);
+// If `additional_parameters` cannot be parsed, return `false` and provide
+// `error_message`.
+bool ReadAdditionalSerializationParameters(
+    v8::Local<v8::Object> additional_parameters,
+    int& max_node_depth,
+    ShadowTreeSerialization& include_shadow_tree,
+    v8::Local<v8::Context> context,
+    std::unique_ptr<v8_inspector::StringBuffer>* error_message) {
+  static const char kMaxNodeDepthParameterName[] = "maxNodeDepth";
+  static const char kIncludeShadowTreeParameterName[] = "includeShadowTree";
+  static const char kIncludeShadowTreeValueNone[] = "none";
+  static const char kIncludeShadowTreeValueOpen[] = "open";
+  static const char kIncludeShadowTreeValueAll[] = "all";
+
+  // Set default values.
+  max_node_depth = 0;
+  include_shadow_tree = ShadowTreeSerialization::kNone;
+
+  if (additional_parameters.IsEmpty()) {
+    return true;
   }
 
-  if (V8Window::HasInstance(isolate_, v8_value)) {
-    return std::make_unique<v8_inspector::WebDriverValue>(
-        ToV8InspectorStringBuffer("window"));
+  v8::MaybeLocal<v8::Value> include_shadow_tree_parameter =
+      additional_parameters->Get(
+          context,
+          V8String(context->GetIsolate(), kIncludeShadowTreeParameterName));
+  if (!include_shadow_tree_parameter.IsEmpty()) {
+    v8::Local<v8::Value> include_shadow_tree_value =
+        include_shadow_tree_parameter.ToLocalChecked();
+    if (!include_shadow_tree_value->IsUndefined()) {
+      if (!include_shadow_tree_value->IsString()) {
+        *error_message = ToV8InspectorStringBuffer(
+            String("Parameter " + String(kIncludeShadowTreeParameterName) +
+                   " should be of type string."));
+        return false;
+      }
+      String include_shadow_tree_string =
+          ToCoreString(include_shadow_tree_value.As<v8::String>());
+
+      if (include_shadow_tree_string == kIncludeShadowTreeValueNone) {
+        include_shadow_tree = ShadowTreeSerialization::kNone;
+      } else if (include_shadow_tree_string == kIncludeShadowTreeValueOpen) {
+        include_shadow_tree = ShadowTreeSerialization::kOpen;
+      } else if (include_shadow_tree_string == kIncludeShadowTreeValueAll) {
+        include_shadow_tree = ShadowTreeSerialization::kAll;
+      } else {
+        *error_message = ToV8InspectorStringBuffer(
+            String("Unknown value " + String(kIncludeShadowTreeParameterName) +
+                   ":" + include_shadow_tree_string));
+        return false;
+      }
+    }
+  }
+
+  v8::MaybeLocal<v8::Value> max_node_depth_parameter =
+      additional_parameters->Get(
+          context, V8String(context->GetIsolate(), kMaxNodeDepthParameterName));
+  if (!max_node_depth_parameter.IsEmpty()) {
+    v8::Local<v8::Value> max_node_depth_value =
+        max_node_depth_parameter.ToLocalChecked();
+    if (!max_node_depth_value->IsUndefined()) {
+      if (!max_node_depth_value->IsInt32()) {
+        *error_message = ToV8InspectorStringBuffer(
+            String("Parameter " + String(kMaxNodeDepthParameterName) +
+                   " should be of type int."));
+        return false;
+      }
+      max_node_depth = max_node_depth_value.As<v8::Int32>()->Value();
+    }
+  }
+  return true;
+}
+
+std::unique_ptr<v8_inspector::DeepSerializationResult>
+ThreadDebuggerCommonImpl::deepSerialize(
+    v8::Local<v8::Value> v8_value,
+    int max_depth,
+    v8::Local<v8::Object> additional_parameters) {
+  int max_node_depth;
+  ShadowTreeSerialization include_shadow_tree;
+
+  std::unique_ptr<v8_inspector::StringBuffer> error_message;
+  bool success = ReadAdditionalSerializationParameters(
+      additional_parameters, max_node_depth, include_shadow_tree,
+      isolate_->GetCurrentContext(), &error_message);
+  if (!success) {
+    return std::make_unique<v8_inspector::DeepSerializationResult>(
+        std::move(error_message));
+  }
+
+  // Serialize according to https://w3c.github.io/webdriver-bidi.
+  if (Node* node = V8Node::ToWrappable(isolate_, v8_value)) {
+    return std::make_unique<v8_inspector::DeepSerializationResult>(
+        DeepSerializeNode(node, isolate_, max_node_depth, include_shadow_tree));
+  }
+
+  // Serialize as a regular array
+  if (HTMLCollection* html_collection =
+          V8HTMLCollection::ToWrappable(isolate_, v8_value)) {
+    return std::make_unique<v8_inspector::DeepSerializationResult>(
+        DeepSerializeHtmlCollection(html_collection, isolate_, max_depth,
+                                    max_node_depth, include_shadow_tree));
+  }
+
+  // Serialize as a regular array
+  if (NodeList* node_list = V8NodeList::ToWrappable(isolate_, v8_value)) {
+    return std::make_unique<v8_inspector::DeepSerializationResult>(
+        DeepSerializeNodeList(node_list, isolate_, max_depth, max_node_depth,
+                              include_shadow_tree));
+  }
+
+  if (DOMWindow* window = V8Window::ToWrappable(isolate_, v8_value)) {
+    return std::make_unique<v8_inspector::DeepSerializationResult>(
+        DeepSerializeWindow(window, isolate_));
   }
 
   if (V8DOMWrapper::IsWrapper(isolate_, v8_value)) {
-    return std::make_unique<v8_inspector::WebDriverValue>(
-        ToV8InspectorStringBuffer("platformobject"));
+    return std::make_unique<v8_inspector::DeepSerializationResult>(
+        std::make_unique<v8_inspector::DeepSerializedValue>(
+            ToV8InspectorStringBuffer("platformobject")));
   }
 
   return nullptr;
@@ -412,7 +654,7 @@ bool ThreadDebuggerCommonImpl::isInspectableHeapObject(
   if (object->InternalFieldCount() < kV8DefaultWrapperInternalFieldCount)
     return true;
   v8::Local<v8::Value> wrapper =
-      object->GetInternalField(kV8DOMWrapperObjectIndex);
+      object->GetInternalField(kV8DOMWrapperObjectIndex).As<v8::Value>();
   // Skip wrapper boilerplates which are like regular wrappers but don't have
   // native object.
   if (!wrapper.IsEmpty() && wrapper->IsUndefined())
@@ -595,11 +837,7 @@ static EventTarget* FirstArgumentAsEventTarget(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
   if (info.Length() < 1)
     return nullptr;
-  if (EventTarget* target =
-          V8EventTarget::ToWrappable(info.GetIsolate(), info[0])) {
-    return target;
-  }
-  return ToDOMWindow(info.GetIsolate(), info[0]);
+  return V8EventTarget::ToWrappable(info.GetIsolate(), info[0]);
 }
 
 void ThreadDebuggerCommonImpl::SetMonitorEventsCallback(
@@ -729,7 +967,9 @@ void ThreadDebuggerCommonImpl::consoleTime(
   // TODO(dgozman): we can save on a copy here if trace macro would take a
   // pointer with length.
   TRACE_EVENT_COPY_NESTABLE_ASYNC_BEGIN0(
-      "blink.console", ToCoreString(title).Utf8().c_str(), this);
+      "blink.console", ToCoreString(title).Utf8().c_str(),
+      TRACE_ID_WITH_SCOPE(ToCoreString(title).Utf8().c_str(),
+                          TRACE_ID_LOCAL(this)));
 }
 
 void ThreadDebuggerCommonImpl::consoleTimeEnd(
@@ -737,7 +977,9 @@ void ThreadDebuggerCommonImpl::consoleTimeEnd(
   // TODO(dgozman): we can save on a copy here if trace macro would take a
   // pointer with length.
   TRACE_EVENT_COPY_NESTABLE_ASYNC_END0(
-      "blink.console", ToCoreString(title).Utf8().c_str(), this);
+      "blink.console", ToCoreString(title).Utf8().c_str(),
+      TRACE_ID_WITH_SCOPE(ToCoreString(title).Utf8().c_str(),
+                          TRACE_ID_LOCAL(this)));
 }
 
 void ThreadDebuggerCommonImpl::consoleTimeStamp(

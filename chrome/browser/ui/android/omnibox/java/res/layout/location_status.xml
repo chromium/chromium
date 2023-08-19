@@ -14,7 +14,6 @@ found in the LICENSE file.
         android:id="@+id/location_bar_status"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:paddingEnd="@dimen/location_bar_icon_end_padding"
         android:focusable="true"
         android:screenReaderFocusable="true">
 

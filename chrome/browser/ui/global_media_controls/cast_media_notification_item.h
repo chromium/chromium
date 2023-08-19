@@ -130,9 +130,7 @@ class CastMediaNotificationItem
 
   void UpdateView();
   void ImageChanged(const SkBitmap& bitmap);
-  void RecordMetadataMetrics() const;
 
-  bool recorded_metadata_metrics_ = false;
   // The notification is shown when active.
   bool is_active_ = true;
 

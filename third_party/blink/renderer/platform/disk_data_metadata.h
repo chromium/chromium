@@ -8,9 +8,15 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
+
+#include "third_party/blink/renderer/platform/platform_export.h"
+
 namespace blink {
 
-class DiskDataMetadata {
+class DiskDataAllocator;
+
+class PLATFORM_EXPORT DiskDataMetadata {
  public:
   int64_t start_offset() const { return start_offset_; }
   size_t size() const { return size_; }
@@ -26,6 +32,21 @@ class DiskDataMetadata {
   size_t size_;
 
   friend class DiskDataAllocator;
+};
+
+class PLATFORM_EXPORT ReservedChunk {
+ public:
+  ReservedChunk(DiskDataAllocator* allocator,
+                std::unique_ptr<DiskDataMetadata> metadata);
+  ReservedChunk(const ReservedChunk&) = delete;
+  ReservedChunk& operator=(const ReservedChunk&) = delete;
+  ~ReservedChunk();
+
+  std::unique_ptr<DiskDataMetadata> Take();
+
+ private:
+  DiskDataAllocator* allocator_;
+  std::unique_ptr<DiskDataMetadata> metadata_;
 };
 
 }  // namespace blink

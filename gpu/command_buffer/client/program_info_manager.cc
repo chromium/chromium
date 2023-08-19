@@ -612,8 +612,9 @@ ProgramInfoManager::ProgramInfoManager() = default;
 ProgramInfoManager::~ProgramInfoManager() = default;
 
 ProgramInfoManager::Program* ProgramInfoManager::GetProgramInfo(
-    GLES2Implementation* gl, GLuint program, ProgramInfoType type) {
-  lock_.AssertAcquired();
+    GLES2Implementation* gl,
+    GLuint program,
+    ProgramInfoType type) {
   ProgramInfoMap::iterator it = program_infos_.find(program);
   if (it == program_infos_.end()) {
     return nullptr;

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/settings_manage_profile_handler.h"
 
+#include <cstdint>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -23,7 +24,7 @@
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/signin/profile_colors_util.h"
+#include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -153,10 +154,8 @@ void ManageProfileHandler::HandleSetProfileIconToGaiaAvatar(
     // Only log if they changed to the GAIA photo.
     // Selection of GAIA photo as avatar is logged as part of the function
     // below.
-    ProfileMetrics::LogProfileSwitchGaia(ProfileMetrics::GAIA_OPT_IN);
+    ProfileMetrics::LogProfileAvatarSelection(SIZE_MAX);
   }
-
-  ProfileMetrics::LogProfileUpdate(profile_->GetPath());
 }
 
 void ManageProfileHandler::HandleSetProfileIconToDefaultAvatar(
@@ -178,8 +177,6 @@ void ManageProfileHandler::HandleSetProfileName(const base::Value::List& args) {
   base::TrimWhitespace(new_profile_name, base::TRIM_ALL, &new_profile_name);
   CHECK(!new_profile_name.empty());
   profiles::UpdateProfileName(profile_, new_profile_name);
-
-  ProfileMetrics::LogProfileUpdate(profile_->GetPath());
 }
 
 void ManageProfileHandler::HandleRequestProfileShortcutStatus(

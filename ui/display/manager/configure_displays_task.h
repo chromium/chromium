@@ -10,7 +10,6 @@
 #include <queue>
 #include <vector>
 
-#include "base/containers/queue.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -68,16 +67,21 @@ using RequestAndStatusList = std::pair<const DisplayConfigureRequest*, bool>;
 class DISPLAY_MANAGER_EXPORT ConfigureDisplaysTask
     : public NativeDisplayObserver {
  public:
+  // Note: the enum values below match those of the ConfigureDisplaysTaskStatus
+  // histogram enum and should never change, or else it will make historical
+  // data of the affected metrics difficult to process.
   enum Status {
     // At least one of the displays failed to apply any mode it supports.
-    ERROR,
+    ERROR = 0,
 
     // The requested configuration was applied.
-    SUCCESS,
+    SUCCESS = 1,
 
     // At least one of the displays failed to apply the requested
     // configuration, but it managed to fall back to another mode.
-    PARTIAL_SUCCESS,
+    PARTIAL_SUCCESS = 2,
+
+    kMaxValue = PARTIAL_SUCCESS
   };
 
   using ResponseCallback = base::OnceCallback<void(Status)>;

@@ -8,7 +8,6 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/browser/ping_manager.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_thread.h"
 #include "weblayer/browser/browser_context_impl.h"
 #include "weblayer/browser/browser_process.h"
@@ -58,10 +57,8 @@ KeyedService* WebLayerPingManagerFactory::BuildServiceInstanceFor(
       safe_browsing::WebUIInfoSingleton::GetInstance(),
       content::GetUIThreadTaskRunner({}),
       base::BindRepeating(&GetUserPopulationForBrowserContext, context),
-      base::FeatureList::IsEnabled(
-          safe_browsing::kAddPageLoadTokenToClientSafeBrowsingReport)
-          ? base::BindRepeating(&GetPageLoadTokenForURL, context)
-          : base::NullCallback());
+      base::BindRepeating(&GetPageLoadTokenForURL, context),
+      /*hats_delegate=*/nullptr);
 }
 
 bool WebLayerPingManagerFactory::ShouldFetchAccessTokenForReport(

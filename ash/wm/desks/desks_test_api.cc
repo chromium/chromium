@@ -10,7 +10,6 @@
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_action_context_menu.h"
 #include "ash/wm/desks/desk_bar_controller.h"
-#include "ash/wm/desks/desk_bar_view.h"
 #include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_preview_view.h"
@@ -21,6 +20,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_test_util.h"
+#include "ui/compositor/layer.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/menu/menu_runner.h"
 
@@ -73,7 +73,11 @@ const DeskMiniView* DesksTestApi::GetDeskBarDragView(
 DeskActionContextMenu* DesksTestApi::GetContextMenuForDesk(
     DeskBarViewBase::Type type,
     int index) {
-  return GetDeskBarView(type)->mini_views()[index]->context_menu_.get();
+  DeskMiniView* mini_view = GetDeskBarView(type)->mini_views()[index];
+
+  // The context menu is not created until it is opened, so open it first.
+  mini_view->OpenContextMenu(ui::MENU_SOURCE_MOUSE);
+  return mini_view->context_menu_.get();
 }
 
 // static
@@ -118,6 +122,14 @@ ui::LayerTreeOwner* DesksTestApi::GetMirroredContentsLayerTreeForRootAndDesk(
 }
 
 // static
+bool DesksTestApi::IsDeskShortcutViewVisible(DeskMiniView* mini_view) {
+  // If the mini_view is in the overview desk bar desk_shortcut_view_ will be
+  // nullptr.
+  return mini_view->desk_shortcut_view_ &&
+         mini_view->desk_shortcut_view_->GetVisible();
+}
+
+// static
 bool DesksTestApi::DesksControllerHasDesk(Desk* desk) {
   return DesksController::Get()->HasDesk(desk);
 }
@@ -156,6 +168,13 @@ void DesksTestApi::ResetDeskVisitedMetrics(Desk* desk) {
   const int current_date = desks_restore_util::GetDaysFromLocalEpoch();
   desk->first_day_visited_ = current_date;
   desk->last_day_visited_ = current_date;
+}
+
+// static
+void DesksTestApi::WaitForDeskBarUiUpdate(DeskBarViewBase* desk_bar_view) {
+  base::RunLoop run_loop;
+  desk_bar_view->on_update_ui_closure_for_testing_ = run_loop.QuitClosure();
+  run_loop.Run();
 }
 
 }  // namespace ash

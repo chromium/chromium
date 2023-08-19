@@ -153,7 +153,7 @@ export class SettingsAutofillSectionElement extends
    */
   private onAddAddressClick_(e: Event) {
     e.preventDefault();
-    this.activeAddress = {};
+    this.activeAddress = {fields: []};
     this.showAddressDialog_ = true;
   }
 
@@ -223,9 +223,28 @@ export class SettingsAutofillSectionElement extends
   private isCloudOffVisible_(
       address: chrome.autofillPrivate.AddressEntry,
       accountInfo?: chrome.autofillPrivate.AccountInfo): boolean {
-    return address.metadata?.source !==
-        chrome.autofillPrivate.AddressSource.ACCOUNT &&
-        !!accountInfo && !accountInfo?.isSyncEnabledForAutofillProfiles;
+    if (address.metadata?.source ===
+        chrome.autofillPrivate.AddressSource.ACCOUNT) {
+      return false;
+    }
+
+    if (!accountInfo) {
+      return false;
+    }
+
+    if (accountInfo.isSyncEnabledForAutofillProfiles) {
+      return false;
+    }
+
+    if (!loadTimeData.getBoolean('autofillAccountProfileStorage') ||
+        !loadTimeData.getBoolean(
+            'syncEnableContactInfoDataTypeInTransportMode')) {
+      return false;
+    }
+
+    // Local profile of a logged-in user with disabled address sync and
+    // enabled feature.
+    return true;
   }
 
   /**

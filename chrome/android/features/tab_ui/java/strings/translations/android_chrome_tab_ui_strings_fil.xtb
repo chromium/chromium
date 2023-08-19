@@ -3,8 +3,6 @@
 <translationbundle lang="fil">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> sa iyong mga tab ang hindi nagamit nitong nakaraan. Isara ang mga ito?</translation>
 <translation id="125153950246128346">I-tap para tumingin ng iba pang tab</translation>
-<translation id="1403228085774130835">Makikita mo ang iyong mga isinarang tab sa Mga kamakailang tab sa ilalim ng pangunahing menu ng Chrome</translation>
-<translation id="1455506303394048917">Maki-clear ang iyong aktibidad sa mga tab na Incognito na ito sa device na ito</translation>
 <translation id="1499635324672558517">Isara ang lahat ng tab na Incognito?</translation>
 <translation id="1657719826150349398">Ilipat ang tab sa ibaba</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}one{<ph name="TABS_COUNT_MANY" /> tab}other{<ph name="TABS_COUNT_MANY" /> na tab}}</translation>
@@ -47,6 +45,7 @@
 <translation id="5073204694187207510">Itago ang fullscreen grid</translation>
 <translation id="5076161749301278626">Tingnan ang mga review ng store?</translation>
 <translation id="5082793167783849073">Mabilis na paghambing-hambingin ang mga page sa pamamagitan ng paggawa ng pangkat. Para magsimula, pindutin nang matagal ang isang link.</translation>
+<translation id="5339733443032484186">Ang iyong huling tab</translation>
 <translation id="5490235265819901748">Na-expand ang grupo ng tab</translation>
 <translation id="5494920125229734069">Piliin ang lahat</translation>
 <translation id="5556417849629758491">Tingnan ang impormasyon ng store, available ang opsyon malapit sa itaas ng screen</translation>
@@ -62,10 +61,12 @@
 <translation id="6228793724645064692">(rating ng store)</translation>
 <translation id="6333260925957816943">Impormasyon tungkol sa store na ito</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{I-ungroup ang <ph name="TABS_COUNT_ONE" /> napiling tab}one{I-ungroup ang <ph name="TABS_COUNT_MANY" /> napiling tab}other{I-ungroup ang <ph name="TABS_COUNT_MANY" /> na napiling tab}}</translation>
+<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Makikita mo ang iyong mga isinarang tab sa Mga kamakailang tab sa ilalim ng pangunahing menu ng Chrome. Hindi magiging available ang iyong tab na Incognito.}one{Makikita mo ang iyong mga isinarang tab sa Mga kamakailang tab sa ilalim ng pangunahing menu ng Chrome. Hindi magiging available ang iyong # tab na Incognito.}other{Makikita mo ang iyong mga isinarang tab sa Mga kamakailang tab sa ilalim ng pangunahing menu ng Chrome. Hindi magiging available ang iyong # na tab na Incognito.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}one{<ph name="TABS_COUNT_MANY" /> tab}other{<ph name="TABS_COUNT_MANY" /> na tab}}</translation>
 <translation id="6549021453810473782">Tingnan ang impormasyon ng store</translation>
 <translation id="6562820390860419811">Ilipat ang tab sa kaliwa</translation>
 <translation id="6615455863669487791">Ipakita sa akin</translation>
+<translation id="661742612106409204">Makikita mo ang iyong mga isinarang tab sa Mga kamakailang tab sa ilalim ng pangunahing menu ng Chrome.</translation>
 <translation id="6840760312327750441">Sa mga tab ng grupo, pindutin nang matagal ang isang tab. Pagkatapos, i-drag ito sa isa pang tab.</translation>
 <translation id="6856809498882026482">Itago ang multi-select mode</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{I-share ang tab}one{I-share ang mga tab}other{I-share ang mga tab}}</translation>
@@ -89,6 +90,7 @@
 <translation id="8398929769197326728">Bagong Folder - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">I-expand ang grupo ng tab na may <ph name="NUMBER_OF_TABS" /> (na) tab.</translation>
 <translation id="8714939927607906138">Mas mababang presyo</translation>
+<translation id="8730999928494395583">Maaalis sa device na ito ang iyong aktibidad sa mga tab na Incognito na ito</translation>
 <translation id="8820741577754260431">Tingnan ang mga pagbaba ng presyo sa iyong mga tab</translation>
 <translation id="9090098097337832354">Isinara ang impormasyon tungkol sa store na ito</translation>
 <translation id="9150694013019234766">Magpalipat-lipat sa mga tab sa iyong grupo ng tab malapit sa ibaba ng screen</translation>

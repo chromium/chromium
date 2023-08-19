@@ -12,10 +12,6 @@
 #import "ios/chrome/browser/push_notification/push_notification_client_id.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @implementation NotificationsSettingsObserver {
   // Pref observer to track changes to prefs.
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;

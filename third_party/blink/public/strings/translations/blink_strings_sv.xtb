@@ -26,7 +26,6 @@
 <translation id="2060505056492490888"><ph name="DOT" /> används på fel plats i <ph name="INVALIDDOMAIN" />.</translation>
 <translation id="2148716181193084225">Idag</translation>
 <translation id="2226276347425096477">Förkorta texten till <ph name="MAX_CHARACTERS" /> tecken eller mindre (nu är texten <ph name="CURRENT_LENGTH" /> tecken).</translation>
-<translation id="2246498165605549352">Lokal fil</translation>
 <translation id="2247351761944213033">Vecka <ph name="WEEKNUMBER" /> <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Spår <ph name="NUMBER" /></translation>
 <translation id="2393030564806080191">Hexadecimalt färgvärde</translation>
@@ -89,6 +88,7 @@
 <translation id="5425179576310518467">aktuellt datum</translation>
 <translation id="5466621249238537318">Välj en eller flera filer.</translation>
 <translation id="5468998798572797635">avsluta helskärmsläge</translation>
+<translation id="5514612371225420585">Fil på enheten</translation>
 <translation id="5516235301412634559">0,75</translation>
 <translation id="5537725057119320332">Casta</translation>
 <translation id="5546461542133609677">slå på ljudet</translation>
@@ -113,6 +113,7 @@
 <translation id="6398862346408813489">Visa panelen för val av månad</translation>
 <translation id="6404546809543547843">tidsreglage för ljud</translation>
 <translation id="6443871981718447451">visa textningsmenyn</translation>
+<translation id="6484738902856791350">Skriv ut indenterad kod</translation>
 <translation id="6550675742724504774">Alternativ</translation>
 <translation id="6572309429103589720">Grammatikfel</translation>
 <translation id="658823671542763450">visa i helskärm</translation>

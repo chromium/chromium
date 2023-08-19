@@ -712,11 +712,13 @@ component("quiche") {
     "src/quiche/spdy/core/spdy_simple_arena.cc",
     "src/quiche/spdy/core/spdy_simple_arena.h",
     "src/quiche/spdy/core/zero_copy_output_buffer.h",
+    "src/quiche/web_transport/complete_buffer_visitor.cc",
+    "src/quiche/web_transport/complete_buffer_visitor.h",
     "src/quiche/web_transport/web_transport.h",
   ]
 
   configs += [ ":quiche_internal_config" ]
-  public_configs = [ ":quiche_config" ]
+  all_dependent_configs = [ ":quiche_config" ]
 
   deps = [
     "//net:uri_template",
@@ -837,6 +839,7 @@ if (build_epoll_based_tools) {
       "src/quiche/quic/tools/quic_name_lookup.h",
       "src/quiche/quic/tools/quic_server.cc",
       "src/quiche/quic/tools/quic_server.h",
+      "src/quiche/quic/tools/web_transport_test_server.cc",
     ]
 
     configs += [ ":quiche_internal_config" ]
@@ -1225,6 +1228,8 @@ static_library("quiche_tool_support") {
     "src/quiche/quic/core/tls_chlo_extractor.cc",
     "src/quiche/quic/core/tls_chlo_extractor.h",
     "src/quiche/quic/platform/api/quic_default_proof_providers.h",
+    "src/quiche/quic/tools/devious_baton.cc",
+    "src/quiche/quic/tools/devious_baton.h",
     "src/quiche/quic/tools/fake_proof_verifier.h",
     "src/quiche/quic/tools/quic_backend_response.cc",
     "src/quiche/quic/tools/quic_backend_response.h",
@@ -1404,6 +1409,7 @@ source_set("quiche_tests") {
   sources = [
     "src/quiche/binary_http/binary_http_message_test.cc",
     "src/quiche/blind_sign_auth/anonymous_tokens/cpp/client/anonymous_tokens_rsa_bssa_client_test.cc",
+    "src/quiche/blind_sign_auth/anonymous_tokens/cpp/crypto/anonymous_tokens_pb_openssl_converters_test.cc",
     "src/quiche/blind_sign_auth/anonymous_tokens/cpp/crypto/at_crypto_utils_test.cc",
     "src/quiche/blind_sign_auth/anonymous_tokens/cpp/crypto/rsa_blind_signer_test.cc",
     "src/quiche/blind_sign_auth/anonymous_tokens/cpp/crypto/rsa_blinder_test.cc",
@@ -1772,12 +1778,15 @@ component("blind_sign_auth") {
   visibility = [
     ":blind_sign_auth_test_support",
     ":quiche_tests",
-    "//chrome/browser:browser"
+    "//chrome/browser:browser",
+    "//chrome/test:*",
   ]
 
   sources = [
     "src/quiche/blind_sign_auth/anonymous_tokens/cpp/client/anonymous_tokens_rsa_bssa_client.cc",
     "src/quiche/blind_sign_auth/anonymous_tokens/cpp/client/anonymous_tokens_rsa_bssa_client.h",
+    "src/quiche/blind_sign_auth/anonymous_tokens/cpp/crypto/anonymous_tokens_pb_openssl_converters.cc",
+    "src/quiche/blind_sign_auth/anonymous_tokens/cpp/crypto/anonymous_tokens_pb_openssl_converters.h",
     "src/quiche/blind_sign_auth/anonymous_tokens/cpp/crypto/blind_signer.h",
     "src/quiche/blind_sign_auth/anonymous_tokens/cpp/crypto/blinder.h",
     "src/quiche/blind_sign_auth/anonymous_tokens/cpp/crypto/constants.h",
@@ -1853,6 +1862,8 @@ static_library("blind_sign_auth_test_support") {
   visibility = [ ":quiche_tests" ]
   testonly = true
   sources = [
+    "src/quiche/blind_sign_auth/anonymous_tokens/cpp/testing/proto_utils.cc",
+    "src/quiche/blind_sign_auth/anonymous_tokens/cpp/testing/proto_utils.h",
     "src/quiche/blind_sign_auth/anonymous_tokens/cpp/testing/utils.cc",
     "src/quiche/blind_sign_auth/anonymous_tokens/cpp/testing/utils.h",
     "src/quiche/blind_sign_auth/test_tools/mock_blind_sign_auth_interface.h",

@@ -4,10 +4,11 @@
 
 #import "ui/base/cocoa/menu_controller.h"
 
+#include "base/apple/bridging.h"
+#include "base/apple/foundation_util.h"
 #include "base/apple/owned_objc.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
-#include "base/mac/foundation_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -26,12 +27,12 @@ namespace {
 // Called when an empty submenu is created. This inserts a menu item labeled
 // "(empty)" into the submenu. Matches Windows behavior.
 NSMenu* MakeEmptySubmenu() {
-  base::scoped_nsobject<NSMenu> submenu([[NSMenu alloc] initWithTitle:@""]);
+  NSMenu* submenu = [[NSMenu alloc] initWithTitle:@""];
   NSString* empty_menu_title =
       l10n_util::GetNSString(IDS_APP_MENU_EMPTY_SUBMENU);
-  [submenu addItemWithTitle:empty_menu_title action:NULL keyEquivalent:@""];
-  [[submenu itemAtIndex:0] setEnabled:NO];
-  return submenu.autorelease();
+  [submenu addItemWithTitle:empty_menu_title action:nullptr keyEquivalent:@""];
+  [submenu itemAtIndex:0].enabled = NO;
+  return submenu;
 }
 
 // Called when adding a submenu to the menu and checks if the submenu, via its
@@ -61,12 +62,11 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
 }
 
 + (instancetype)weakPtrForModel:(ui::MenuModel*)model {
-  return
-      [[[WeakPtrToMenuModelAsNSObject alloc] initWithModel:model] autorelease];
+  return [[WeakPtrToMenuModelAsNSObject alloc] initWithModel:model];
 }
 
 + (ui::MenuModel*)getFrom:(id)instance {
-  return [base::mac::ObjCCastStrict<WeakPtrToMenuModelAsNSObject>(instance)
+  return [base::apple::ObjCCastStrict<WeakPtrToMenuModelAsNSObject>(instance)
       menuModel];
 }
 
@@ -114,10 +114,10 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
 
 @implementation MenuControllerCocoa {
   base::WeakPtr<ui::MenuModel> _model;
-  base::scoped_nsobject<NSMenu> _menu;
+  NSMenu* __strong _menu;
   BOOL _useWithPopUpButtonCell;  // If YES, 0th item is blank
   BOOL _isMenuOpen;
-  id<MenuControllerCocoaDelegate> _delegate;
+  id<MenuControllerCocoaDelegate> __weak _delegate;
 }
 
 @synthesize useWithPopUpButtonCell = _useWithPopUpButtonCell;
@@ -159,14 +159,12 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
 }
 
 - (void)dealloc {
-  [_menu setDelegate:nil];
+  _menu.delegate = nil;
 
   // Close the menu if it is still open. This could happen if a tab gets closed
   // while its context menu is still open.
   [self cancel];
   _model = nullptr;
-
-  [super dealloc];
 }
 
 - (void)setDelegate:(id<MenuControllerCocoaDelegate>)delegate {
@@ -184,7 +182,7 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
 
 - (NSMenu*)menuFromModel:(ui::MenuModel*)model
        withColorProvider:(const ui::ColorProvider*)colorProvider {
-  NSMenu* menu = [[[NSMenu alloc] initWithTitle:@""] autorelease];
+  NSMenu* menu = [[NSMenu alloc] initWithTitle:@""];
 
   const size_t count = model->GetItemCount();
   for (size_t index = 0; index < count; ++index) {
@@ -214,15 +212,14 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
   NSString* label = model->MayHaveMnemonicsAt(index)
                         ? l10n_util::FixUpWindowsStyleLabel(rawLabel)
                         : base::SysUTF16ToNSString(rawLabel);
-  base::scoped_nsobject<NSMenuItem> item([[NSMenuItem alloc]
-      initWithTitle:label
-             action:@selector(itemSelected:)
-      keyEquivalent:@""]);
+  NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:label
+                                                action:@selector(itemSelected:)
+                                         keyEquivalent:@""];
 
   // If the menu item has an icon, set it.
   ui::ImageModel icon = model->GetIconAt(index);
   if (icon.IsImage())
-    [item setImage:icon.GetImage().ToNSImage()];
+    item.image = icon.GetImage().ToNSImage();
 
   ui::MenuModel::ItemType type = model->GetTypeAt(index);
   const NSInteger modelIndex = base::checked_cast<NSInteger>(index);
@@ -235,13 +232,13 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
                                 withColorProvider:colorProvider]
                           : MakeEmptySubmenu();
 
-    [item setTarget:nil];
-    [item setAction:nil];
-    [item setSubmenu:submenu];
+    item.target = nil;
+    item.action = nil;
+    item.submenu = submenu;
     // [item setSubmenu] updates target and action which means clicking on a
     // submenu entry will not call [self validateUserInterfaceItem].
-    DCHECK_EQ([item action], @selector(submenuAction:));
-    DCHECK_EQ([item target], submenu);
+    DCHECK_EQ(item.action, @selector(submenuAction:));
+    DCHECK_EQ(item.target, submenu);
     // Set the enabled state here as submenu entries do not call into
     // validateUserInterfaceItem. See crbug.com/981294 and crbug.com/991472.
     [item setEnabled:model->IsEnabledAt(index)];
@@ -251,10 +248,10 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
     // the model so hierarchical menus check the correct index in the correct
     // model. Setting the target to |self| allows this class to participate
     // in validation of the menu items.
-    [item setTag:modelIndex];
-    [item setTarget:self];
-    [item setRepresentedObject:[WeakPtrToMenuModelAsNSObject
-                                   weakPtrForModel:model]];
+    item.tag = modelIndex;
+    item.target = self;
+    item.representedObject =
+        [WeakPtrToMenuModelAsNSObject weakPtrForModel:model];
     // On the Mac, context menus never have accelerators. Menus constructed
     // for context use have useWithPopUpButtonCell_ set to NO.
     if (_useWithPopUpButtonCell) {
@@ -262,8 +259,8 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
       if (model->GetAcceleratorAt(index, &accelerator)) {
         KeyEquivalentAndModifierMask* equivalent =
             GetKeyEquivalentAndModifierMaskFromAccelerator(accelerator);
-        [item setKeyEquivalent:equivalent.keyEquivalent];
-        [item setKeyEquivalentModifierMask:equivalent.modifierMask];
+        item.keyEquivalent = equivalent.keyEquivalent;
+        item.keyEquivalentModifierMask = equivalent.modifierMask;
       }
     }
   }
@@ -279,52 +276,54 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
 }
 
 - (BOOL)validateUserInterfaceItem:(id<NSValidatedUserInterfaceItem>)item {
-  SEL action = [item action];
+  NSMenuItem* menuItem = base::apple::ObjCCastStrict<NSMenuItem>(item);
+
+  SEL action = menuItem.action;
   if (action != @selector(itemSelected:))
     return NO;
 
   ui::MenuModel* model =
-      [WeakPtrToMenuModelAsNSObject getFrom:[(id)item representedObject]];
+      [WeakPtrToMenuModelAsNSObject getFrom:menuItem.representedObject];
   if (!model)
     return NO;
 
-  const size_t modelIndex = base::checked_cast<size_t>([item tag]);
+  const size_t modelIndex = base::checked_cast<size_t>(menuItem.tag);
   BOOL checked = model->IsItemCheckedAt(modelIndex);
-  DCHECK([(id)item isKindOfClass:[NSMenuItem class]]);
-  [(id)item
-      setState:(checked ? NSControlStateValueOn : NSControlStateValueOff)];
-  [(id)item setHidden:(!model->IsVisibleAt(modelIndex))];
+  menuItem.state = checked ? NSControlStateValueOn : NSControlStateValueOff;
+  menuItem.hidden = !model->IsVisibleAt(modelIndex);
   if (model->IsItemDynamicAt(modelIndex)) {
     // Update the label and the icon.
     NSString* label =
         l10n_util::FixUpWindowsStyleLabel(model->GetLabelAt(modelIndex));
-    [(id)item setTitle:label];
+    menuItem.title = label;
 
     ui::ImageModel icon = model->GetIconAt(modelIndex);
-    [(id)item setImage:icon.IsImage() ? icon.GetImage().ToNSImage() : nil];
+    menuItem.image = icon.IsImage() ? icon.GetImage().ToNSImage() : nil;
   }
   const gfx::FontList* font_list = model->GetLabelFontListAt(modelIndex);
   if (font_list) {
     CTFontRef font = font_list->GetPrimaryFont().GetCTFont();
     NSDictionary* attributes =
-        @{NSFontAttributeName : base::mac::CFToNSCast(font)};
-    base::scoped_nsobject<NSAttributedString> title([[NSAttributedString alloc]
-        initWithString:[(id)item title]
-            attributes:attributes]);
-    [(id)item setAttributedTitle:title.get()];
+        @{NSFontAttributeName : base::apple::CFToNSPtrCast(font)};
+    NSAttributedString* title =
+        [[NSAttributedString alloc] initWithString:menuItem.title
+                                        attributes:attributes];
+    menuItem.attributedTitle = title;
   }
   return model->IsEnabledAt(modelIndex);
 }
 
 - (void)itemSelected:(id)sender {
+  NSMenuItem* menuItem = base::apple::ObjCCastStrict<NSMenuItem>(sender);
+
   ui::MenuModel* model =
-      [WeakPtrToMenuModelAsNSObject getFrom:[sender representedObject]];
+      [WeakPtrToMenuModelAsNSObject getFrom:menuItem.representedObject];
   DCHECK(model);
-  const size_t modelIndex = base::checked_cast<size_t>([sender tag]);
+  const size_t modelIndex = base::checked_cast<size_t>(menuItem.tag);
   const ui::ElementIdentifier identifier =
       model->GetElementIdentifierAt(modelIndex);
   if (identifier) {
-    ui::ElementTrackerMac::GetInstance()->NotifyMenuItemActivated([sender menu],
+    ui::ElementTrackerMac::GetInstance()->NotifyMenuItemActivated(menuItem.menu,
                                                                   identifier);
   }
   model->ActivatedAt(
@@ -337,9 +336,8 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
   if (_menu || !_model)
     return;
 
-  _menu.reset([[self menuFromModel:_model.get()
-                 withColorProvider:colorProvider] retain]);
-  [_menu setDelegate:self];
+  _menu = [self menuFromModel:_model.get() withColorProvider:colorProvider];
+  _menu.delegate = self;
 
   // TODO(dfried): Ideally we'd do this after each submenu is created.
   // However, the way we currently hook menu events only supports the root
@@ -353,15 +351,16 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
   // complicate creation logic, and since the tags are model indexes, they
   // are unaffected by the extra item.
   if (_useWithPopUpButtonCell) {
-    base::scoped_nsobject<NSMenuItem> blankItem(
-        [[NSMenuItem alloc] initWithTitle:@"" action:nil keyEquivalent:@""]);
+    NSMenuItem* blankItem = [[NSMenuItem alloc] initWithTitle:@""
+                                                       action:nil
+                                                keyEquivalent:@""];
     [_menu insertItem:blankItem atIndex:0];
   }
 }
 
 - (NSMenu*)menu {
   [self maybeBuildWithColorProvider:nullptr];
-  return _menu.get();
+  return _menu;
 }
 
 - (BOOL)isMenuOpen {

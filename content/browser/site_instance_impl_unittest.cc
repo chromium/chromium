@@ -32,6 +32,7 @@
 #include "content/browser/webui/web_ui_controller_factory_registry.h"
 #include "content/public/browser/browser_or_resource_context.h"
 #include "content/public/browser/site_isolation_policy.h"
+#include "content/public/browser/web_exposed_isolation_level.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_client.h"
@@ -66,15 +67,16 @@ bool DoesURLRequireDedicatedProcess(const IsolationContext& isolation_context,
 
 SiteInfo CreateSimpleSiteInfo(const GURL& process_lock_url,
                               bool requires_origin_keyed_process) {
-  return SiteInfo(
-      GURL("https://www.foo.com"), process_lock_url,
-      requires_origin_keyed_process,
-      /*requires_origin_keyed_process_by_default=*/false,
-      /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
-      CreateStoragePartitionConfigForTesting(),
-      WebExposedIsolationInfo::CreateNonIsolated(), /*is_guest=*/false,
-      /*does_site_request_dedicated_process_for_coop=*/false,
-      /*is_jit_disabled=*/false, /*is_pdf=*/false, /*is_fenced=*/false);
+  GURL site_url("https://www.foo.com");
+  return SiteInfo(site_url, process_lock_url, requires_origin_keyed_process,
+                  /*requires_origin_keyed_process_by_default=*/false,
+                  /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
+                  CreateStoragePartitionConfigForTesting(),
+                  WebExposedIsolationInfo::CreateNonIsolated(),
+                  WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
+                  /*does_site_request_dedicated_process_for_coop=*/false,
+                  /*is_jit_disabled=*/false, /*is_pdf=*/false,
+                  /*is_fenced=*/false);
 }
 
 }  // namespace
@@ -297,7 +299,8 @@ TEST_F(SiteInstanceTest, SiteInfoAsContainerKey) {
       /*requires_origin_keyed_process_by_default=*/false,
       /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
       CreateStoragePartitionConfigForTesting(),
-      WebExposedIsolationInfo::CreateNonIsolated(), /*is_guest=*/false,
+      WebExposedIsolationInfo::CreateNonIsolated(),
+      WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
       /*does_site_request_dedicated_process_for_coop=*/true,
       /*is_jit_disabled=*/false, /*is_pdf=*/false, /*is_fenced=*/false);
   EXPECT_TRUE(
@@ -313,7 +316,8 @@ TEST_F(SiteInstanceTest, SiteInfoAsContainerKey) {
                /*requires_origin_keyed_process_by_default=*/false,
                /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
                CreateStoragePartitionConfigForTesting(),
-               WebExposedIsolationInfo::CreateNonIsolated(), /*is_guest=*/false,
+               WebExposedIsolationInfo::CreateNonIsolated(),
+               WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
                /*does_site_request_dedicated_process_for_coop=*/false,
                /*is_jit_disabled=*/true, /*is_pdf=*/false, /*is_fenced=*/false);
   EXPECT_FALSE(site_info_1.IsSamePrincipalWith(site_info_1_with_jit_disabled));
@@ -327,7 +331,8 @@ TEST_F(SiteInstanceTest, SiteInfoAsContainerKey) {
                /*requires_origin_keyed_process_by_default=*/false,
                /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
                CreateStoragePartitionConfigForTesting(),
-               WebExposedIsolationInfo::CreateNonIsolated(), /*is_guest=*/false,
+               WebExposedIsolationInfo::CreateNonIsolated(),
+               WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
                /*does_site_request_dedicated_process_for_coop=*/false,
                /*is_jit_disabled=*/false, /*is_pdf=*/true, /*is_fenced=*/false);
   EXPECT_FALSE(site_info_1.IsSamePrincipalWith(site_info_1_with_pdf));
@@ -339,7 +344,8 @@ TEST_F(SiteInstanceTest, SiteInfoAsContainerKey) {
                /*requires_origin_keyed_process_by_default=*/false,
                /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
                CreateStoragePartitionConfigForTesting(),
-               WebExposedIsolationInfo::CreateNonIsolated(), /*is_guest=*/false,
+               WebExposedIsolationInfo::CreateNonIsolated(),
+               WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
                /*does_site_request_dedicated_process_for_coop=*/false,
                /*is_jit_disabled=*/false, /*is_pdf=*/false, /*is_fenced=*/true);
   EXPECT_FALSE(site_info_1.IsSamePrincipalWith(site_info_1_with_is_fenced));
@@ -753,10 +759,11 @@ TEST_F(SiteInstanceTest, GetSiteForURL) {
   EXPECT_EQ(GURL("http://google.com"), site_url);
 
   // Error page URLs.
-  auto error_site_info = SiteInfo::CreateForErrorPage(
-      CreateStoragePartitionConfigForTesting(),
-      /*is_guest=*/false, /*is_fenced=*/false,
-      WebExposedIsolationInfo::CreateNonIsolated());
+  auto error_site_info =
+      SiteInfo::CreateForErrorPage(CreateStoragePartitionConfigForTesting(),
+                                   /*is_guest=*/false, /*is_fenced=*/false,
+                                   WebExposedIsolationInfo::CreateNonIsolated(),
+                                   WebExposedIsolationLevel::kNotIsolated);
   test_url = GURL(kUnreachableWebDataURL);
   site_url = GetSiteForURL(test_url);
   EXPECT_EQ(error_site_info.site_url(), site_url);
@@ -799,7 +806,8 @@ TEST_F(SiteInstanceTest, ProcessLockDoesNotUseEffectiveURL) {
       /*requires_origin_keyed_process_by_default=*/false,
       /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
       CreateStoragePartitionConfigForTesting(),
-      WebExposedIsolationInfo::CreateNonIsolated(), /*is_guest=*/false,
+      WebExposedIsolationInfo::CreateNonIsolated(),
+      WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
       /*does_site_request_dedicated_process_for_coop=*/false,
       /*is_jit_disabled=*/false, /*is_pdf=*/false, /*is_fenced=*/false);
 
@@ -1594,7 +1602,8 @@ TEST_F(SiteInstanceTest, OriginalURL) {
       /*requires_origin_keyed_process_by_default=*/false,
       /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
       CreateStoragePartitionConfigForTesting(),
-      WebExposedIsolationInfo::CreateNonIsolated(), /*is_guest=*/false,
+      WebExposedIsolationInfo::CreateNonIsolated(),
+      WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
       /*does_site_request_dedicated_process_for_coop=*/false,
       /*is_jit_disabled=*/false, /*is_pdf=*/false, /*is_fenced=*/false);
 
@@ -1639,14 +1648,89 @@ TEST_F(SiteInstanceTest, OriginalURL) {
 
 namespace {
 
+SiteInfo SiteInfoFromUrlAndIsolationInfo(const GURL& url,
+                                         const WebExposedIsolationInfo& weii) {
+  WebExposedIsolationLevel weil = SiteInfo::ComputeWebExposedIsolationLevel(
+      weii, UrlInfo(UrlInfoInit(url)));
+  return SiteInfo(
+      /*site_url=*/url,
+      /*process_lock_url=*/url,
+      /*requires_origin_keyed_process=*/false,
+      /*requires_origin_keyed_process_by_default=*/false,
+      /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
+      CreateStoragePartitionConfigForTesting(), weii, weil,
+      /*is_guest=*/false,
+      /*does_site_request_dedicated_process_for_coop=*/false,
+      /*is_jit_disabled=*/false, /*is_pdf=*/false, /*is_fenced=*/false);
+}
+
+}  // namespace
+
+TEST_F(SiteInstanceTest, WebExposedIsolationLevel) {
+  GURL url("https://example.com/");
+  auto origin = url::Origin::Create(url);
+  GURL other_url("https://example2.com/");
+
+  // SiteInfos in a non-isolated BrowsingInstance shouldn't be isolated.
+  SiteInfo non_isolated = SiteInfoFromUrlAndIsolationInfo(
+      url, WebExposedIsolationInfo::CreateNonIsolated());
+  EXPECT_FALSE(non_isolated.web_exposed_isolation_info().is_isolated());
+  EXPECT_EQ(WebExposedIsolationLevel::kNotIsolated,
+            non_isolated.web_exposed_isolation_level());
+
+  // SiteInfos in an isolated BrowsingInstance should be isolated.
+  SiteInfo isolated_same_origin = SiteInfoFromUrlAndIsolationInfo(
+      url, WebExposedIsolationInfo::CreateIsolated(origin));
+  EXPECT_TRUE(isolated_same_origin.web_exposed_isolation_info().is_isolated());
+  EXPECT_FALSE(isolated_same_origin.web_exposed_isolation_info()
+                   .is_isolated_application());
+  EXPECT_EQ(WebExposedIsolationLevel::kMaybeIsolated,
+            isolated_same_origin.web_exposed_isolation_level());
+
+  // Cross-origin SiteInfos in an isolated BrowsingInstance should be isolated.
+  SiteInfo isolated_cross_origin = SiteInfoFromUrlAndIsolationInfo(
+      other_url, WebExposedIsolationInfo::CreateIsolated(origin));
+  EXPECT_TRUE(isolated_cross_origin.web_exposed_isolation_info().is_isolated());
+  EXPECT_FALSE(isolated_cross_origin.web_exposed_isolation_info()
+                   .is_isolated_application());
+  EXPECT_EQ(WebExposedIsolationLevel::kMaybeIsolated,
+            isolated_cross_origin.web_exposed_isolation_level());
+
+  // Same-origin SiteInfos in an isolated application BrowsingInstance should
+  // have the "isolated application" isolation level.
+  SiteInfo isolated_app_same_origin = SiteInfoFromUrlAndIsolationInfo(
+      url, WebExposedIsolationInfo::CreateIsolatedApplication(origin));
+  EXPECT_TRUE(
+      isolated_app_same_origin.web_exposed_isolation_info().is_isolated());
+  EXPECT_TRUE(isolated_app_same_origin.web_exposed_isolation_info()
+                  .is_isolated_application());
+  EXPECT_EQ(WebExposedIsolationLevel::kMaybeIsolatedApplication,
+            isolated_app_same_origin.web_exposed_isolation_level());
+
+  // Cross-origin SiteInfos in an isolated application BrowsingInstance should
+  // only have the "isolated" isolation level.
+  SiteInfo isolated_app_cross_origin = SiteInfoFromUrlAndIsolationInfo(
+      other_url, WebExposedIsolationInfo::CreateIsolatedApplication(origin));
+  EXPECT_TRUE(
+      isolated_app_cross_origin.web_exposed_isolation_info().is_isolated());
+  EXPECT_TRUE(isolated_app_cross_origin.web_exposed_isolation_info()
+                  .is_isolated_application());
+  EXPECT_EQ(WebExposedIsolationLevel::kMaybeIsolated,
+            isolated_app_cross_origin.web_exposed_isolation_level());
+}
+
+namespace {
+
 ProcessLock ProcessLockFromString(const std::string& url) {
   return ProcessLock::FromSiteInfo(SiteInfo(
-      GURL(url), GURL(url),
+      /*site_url=*/GURL(url),
+      /*process_lock_url=*/GURL(url),
       /*requires_origin_keyed_process=*/false,
       /*requires_origin_keyed_process_by_default=*/false,
       /*is_sandboxed=*/false, UrlInfo::kInvalidUniqueSandboxId,
       CreateStoragePartitionConfigForTesting(),
-      WebExposedIsolationInfo::CreateNonIsolated(), /*is_guest=*/false,
+      WebExposedIsolationInfo::CreateNonIsolated(),
+      WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
       /*does_site_request_dedicated_process_for_coop=*/false,
       /*is_jit_disabled=*/false, /*is_pdf=*/false, /*is_fenced=*/false));
 }
@@ -1946,10 +2030,11 @@ TEST_F(SiteInstanceTest, ErrorPage) {
 
   // Verify that error SiteInfos are marked by is_error_page() set to true and
   // are not cross origin isolated.
-  const auto error_site_info = SiteInfo::CreateForErrorPage(
-      CreateStoragePartitionConfigForTesting(),
-      /*is_guest=*/false, /*is_fenced=*/false,
-      WebExposedIsolationInfo::CreateNonIsolated());
+  const auto error_site_info =
+      SiteInfo::CreateForErrorPage(CreateStoragePartitionConfigForTesting(),
+                                   /*is_guest=*/false, /*is_fenced=*/false,
+                                   WebExposedIsolationInfo::CreateNonIsolated(),
+                                   WebExposedIsolationLevel::kNotIsolated);
   EXPECT_TRUE(error_site_info.is_error_page());
   EXPECT_FALSE(error_site_info.web_exposed_isolation_info().is_isolated());
   EXPECT_FALSE(error_site_info.is_guest());

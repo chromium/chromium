@@ -11,6 +11,7 @@
  * chrome/browser/resources/settings/site_settings_page/site_settings_page_util
  * for translations.
  */
+
 export enum ContentSettingsTypes {
   ADS = 'ads',
   ANTI_ABUSE = 'anti-abuse',

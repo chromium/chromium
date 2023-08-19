@@ -10,10 +10,6 @@
 #import "ios/web_view/internal/utils/nsobject_description_utils.h"
 #include "ui/base/resource/resource_bundle.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface CWVCreditCard ()
 
 // Gets |value| for |type| from |_internalCard|.

@@ -266,6 +266,12 @@ class NET_EXPORT CookieMonster : public CookieStore {
                            CookiePortReadDiffersFromSetHistogram);
   FRIEND_TEST_ALL_PREFIXES(CookieMonsterTest, IsCookieSentToSamePortThatSetIt);
 
+  // For FilterCookiesWithOptions domain shadowing.
+  FRIEND_TEST_ALL_PREFIXES(CookieMonsterTest,
+                           FilterCookiesWithOptionsExcludeShadowingDomains);
+  FRIEND_TEST_ALL_PREFIXES(CookieMonsterTest,
+                           FilterCookiesWithOptionsWarnShadowingDomains);
+
   // Internal reasons for deletion, used to populate informative histograms
   // and to provide a public cause for onCookieChange notifications.
   //
@@ -722,7 +728,11 @@ class NET_EXPORT CookieMonster : public CookieStore {
   // Number of partitioned cookies whose partition key has a nonce.
   size_t num_nonced_partitioned_cookies_ = 0u;
 
-  bool same_party_attribute_enabled_ = false;
+  // Number of bytes used by the partitioned cookie jar.
+  size_t num_partitioned_cookies_bytes_ = 0u;
+  // Number of bytes used by partitioned cookies whose partition key has a
+  // nonce.
+  size_t num_nonced_partitioned_cookie_bytes_ = 0u;
 
   CookieMonsterChangeDispatcher change_dispatcher_;
 

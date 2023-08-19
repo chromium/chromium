@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.display_cutout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -36,7 +35,6 @@ public class ActivityDisplayCutoutModeSupplier extends UnownedUserDataSupplier<I
     }
 
     /** Sets an instance for testing. */
-    @VisibleForTesting
     public static void setInstanceForTesting(Integer mode) {
         if (sInstanceForTesting == null) {
             sInstanceForTesting = new ObservableSupplierImpl<>();

@@ -66,6 +66,6 @@ following steps to support it by the popup UI:
     example, you can call `PopupCellView::SetOnAcceptedCallback(base::RepeatingClosure)` to set the behavior
     for accepting a cell.
 * Add a switch case to [`PopupRowView::Create`](https://source.chromium.org/search?q=PopupRowView::Create) to
-  pass the new strategy when the `Suggestion`'s `frontend_id` has the relevant `PopupItemId`.
+  pass the new strategy when the `Suggestion` has the relevant `PopupItemId`.
 * Add tests to `popup_row_strategy_unittest.cc` to test the accessibility and selection behavior of the cells and
   to `popup_view_views_browsertest.cc` to add pixel tests.

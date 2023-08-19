@@ -6,7 +6,7 @@
 #define ASH_SYSTEM_PRIVACY_HUB_PRIVACY_HUB_METRICS_H_
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/sensor_disabled_notification_delegate.h"
+#include "ash/system/privacy_hub/sensor_disabled_notification_delegate.h"
 
 namespace ash::privacy_hub_metrics {
 using Sensor = SensorDisabledNotificationDelegate::Sensor;
@@ -14,7 +14,7 @@ using Sensor = SensorDisabledNotificationDelegate::Sensor;
 // These values are persisted to logs and should not be renumbered or re-used.
 // Keep in sync with PrivacyHubNavigationOrigin in
 // tools/metrics/histograms/enums.xml and
-// c/b/resources/settings/chromeos/os_privacy_page/privacy_hub_subpage.js.
+// c/b/resources/ash/settings/os_privacy_page/privacy_hub_subpage.js.
 enum class PrivacyHubNavigationOrigin {
   kSystemSettings = 0,
   kNotification = 1,

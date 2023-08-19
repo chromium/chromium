@@ -21,6 +21,7 @@ dependencies {
     compile 'androidx.lifecycle:lifecycle-common-java8:{{androidx_dependency_version}}'
     compile 'androidx.lifecycle:lifecycle-livedata:{{androidx_dependency_version}}'
     compile 'androidx.lifecycle:lifecycle-livedata-core:{{androidx_dependency_version}}'
+    compile 'androidx.lifecycle:lifecycle-service:{{androidx_dependency_version}}'
     compile 'androidx.lifecycle:lifecycle-viewmodel:{{androidx_dependency_version}}'
     compile 'androidx.lifecycle:lifecycle-viewmodel-savedstate:{{androidx_dependency_version}}'
 
@@ -29,6 +30,8 @@ dependencies {
     compile 'androidx.annotation:annotation-jvm:{{androidx_dependency_version}}'
     compile 'androidx.appcompat:appcompat:{{androidx_dependency_version}}'
     compile 'androidx.appcompat:appcompat-resources:{{androidx_dependency_version}}'
+    compile 'androidx.appsearch:appsearch:{{androidx_dependency_version}}'
+    compile 'androidx.appsearch:appsearch-platform-storage:{{androidx_dependency_version}}'
     compile 'androidx.asynclayoutinflater:asynclayoutinflater:{{androidx_dependency_version}}'
     compile 'androidx.asynclayoutinflater:asynclayoutinflater-appcompat:{{androidx_dependency_version}}'
     compile 'androidx.biometric:biometric:{{androidx_dependency_version}}'
@@ -84,7 +87,16 @@ dependencies {
     compile 'androidx.legacy:legacy-support-core-utils:1.0.0'
     compile 'androidx.documentfile:documentfile:{{androidx_dependency_version}}'
     compile 'androidx.print:print:{{androidx_dependency_version}}'
-    compile 'androidx.credentials:credentials:{{androidx_dependency_version}}'
+
+    String media3Version = '1.0.2'
+    compile "androidx.media3:media3-common:${media3Version}"
+    compile "androidx.media3:media3-database:${media3Version}"
+    compile "androidx.media3:media3-datasource:${media3Version}"
+    compile "androidx.media3:media3-decoder:${media3Version}"
+    compile "androidx.media3:media3-exoplayer:${media3Version}"
+    compile "androidx.media3:media3-extractor:${media3Version}"
+    compile "androidx.media3:media3-session:${media3Version}"
+    compile "androidx.media3:media3-ui:${media3Version}"
 
     compile 'androidx.multidex:multidex:2.0.0'
     compile 'androidx.webkit:webkit:{{androidx_dependency_version}}'

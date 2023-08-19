@@ -10,6 +10,7 @@
 
 #include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
+#include "build/buildflag.h"
 #include "mojo/public/cpp/base/big_buffer_mojom_traits.h"
 #include "mojo/public/cpp/base/file_mojom_traits.h"
 #include "mojo/public/cpp/base/file_path_mojom_traits.h"
@@ -125,6 +126,16 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
     return std::move(
         const_cast<network::ResourceRequest::TrustedParams&>(trusted_params)
             .accept_ch_frame_observer);
+  }
+  static mojo::PendingRemote<network::mojom::SharedDictionaryAccessObserver>
+  shared_dictionary_observer(
+      const network::ResourceRequest::TrustedParams& trusted_params) {
+    if (!trusted_params.shared_dictionary_observer) {
+      return mojo::NullRemote();
+    }
+    return std::move(
+        const_cast<network::ResourceRequest::TrustedParams&>(trusted_params)
+            .shared_dictionary_observer);
   }
 
   static bool Read(network::mojom::TrustedUrlRequestParamsDataView data,
@@ -322,6 +333,9 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static bool is_fetch_like_api(const network::ResourceRequest& request) {
     return request.is_fetch_like_api;
   }
+  static bool is_fetch_later_api(const network::ResourceRequest& request) {
+    return request.is_fetch_later_api;
+  }
   static bool is_favicon(const network::ResourceRequest& request) {
     return request.is_favicon;
   }
@@ -377,10 +391,21 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
       const network::ResourceRequest& request) {
     return request.attribution_reporting_runtime_features;
   }
+  static const absl::optional<base::UnguessableToken>&
+  attribution_reporting_src_token(const network::ResourceRequest& request) {
+    return request.attribution_reporting_src_token;
+  }
   static bool shared_dictionary_writer_enabled(
       const network::ResourceRequest& request) {
     return request.shared_dictionary_writer_enabled;
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  static const std::string& created_location(
+      const network::ResourceRequest& request) {
+    return request.created_location;
+  }
+#endif
 
   static bool Read(network::mojom::URLRequestDataView data,
                    network::ResourceRequest* out);

@@ -39,7 +39,7 @@ public class PriceTrackingUtils {
     }
 
     @NativeMethods
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
         void setPriceTrackingStateForBookmark(Profile profile, long bookmarkId, boolean enabled,
                 Callback<Boolean> callback, boolean bookmarkCreatedForPriceTracking);

@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_LOCAL_FRAME_MOJO_HANDLER_H_
 
 #include "build/build_config.h"
-#include "components/power_scheduler/power_mode_voter.h"
 #include "services/device/public/mojom/device_posture_provider.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
@@ -49,7 +48,7 @@ class LocalFrameMojoHandler
       public mojom::blink::LocalMainFrame,
       public mojom::blink::HighPriorityLocalFrame,
       public mojom::blink::FullscreenVideoElementHandler,
-      public device::mojom::blink::DevicePostureProviderClient {
+      public device::mojom::blink::DevicePostureClient {
  public:
   explicit LocalFrameMojoHandler(blink::LocalFrame& frame);
   void Trace(Visitor* visitor) const;
@@ -237,7 +236,8 @@ class LocalFrameMojoHandler
   void InstallCoopAccessMonitor(
       const FrameToken& accessed_window,
       network::mojom::blink::CrossOriginOpenerPolicyReporterParamsPtr
-          coop_reporter_params) final;
+          coop_reporter_params,
+      bool is_in_same_virtual_coop_related_group) final;
   void OnPortalActivated(
       const PortalToken& portal_token,
       mojo::PendingAssociatedRemote<mojom::blink::Portal> portal,
@@ -260,7 +260,7 @@ class LocalFrameMojoHandler
   // mojom::FullscreenVideoElementHandler implementation:
   void RequestFullscreenVideoElement() final;
 
-  // DevicePostureServiceClient implementation:
+  // DevicePostureClient implementation:
   void OnPostureChanged(device::mojom::blink::DevicePostureType posture) final;
 
   Member<blink::LocalFrame> frame_;
@@ -300,15 +300,12 @@ class LocalFrameMojoHandler
       fullscreen_video_receiver_{this, nullptr};
 
   // LocalFrameMojoHandler can be reused by multiple ExecutionContext.
-  HeapMojoReceiver<device::mojom::blink::DevicePostureProviderClient,
+  HeapMojoReceiver<device::mojom::blink::DevicePostureClient,
                    LocalFrameMojoHandler>
       device_posture_receiver_{this, nullptr};
 
   device::mojom::blink::DevicePostureType current_device_posture_ =
       device::mojom::blink::DevicePostureType::kContinuous;
-
-  std::unique_ptr<power_scheduler::PowerModeVoter>
-      script_execution_power_mode_voter_;
 };
 
 class ActiveURLMessageFilter : public mojo::MessageFilter {

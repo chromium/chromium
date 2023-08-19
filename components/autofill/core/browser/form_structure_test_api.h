@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/containers/contains.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/string_piece.h"
 #include "components/autofill/core/browser/form_structure.h"
 
@@ -41,9 +41,7 @@ class FormStructureTestApi {
   }
 
   explicit FormStructureTestApi(FormStructure* form_structure)
-      : form_structure_(form_structure) {
-    DCHECK(form_structure_);
-  }
+      : form_structure_(*form_structure) {}
 
   [[nodiscard]] bool ShouldBeParsed(ShouldBeParsedParams params = {},
                                     LogManager* log_manager = nullptr) {
@@ -76,13 +74,14 @@ class FormStructureTestApi {
                   /*server_types=*/overall_types);
   }
 
-  const std::vector<std::unique_ptr<AutofillField>>& fields() {
-    return form_structure_->fields_;
-  }
-
   mojom::SubmissionIndicatorEvent get_submission_event() const {
     return form_structure_->submission_event_;
   }
+
+  // Returns a vote type if a field contains a vote relating USERNAME correction
+  // (CREDENTIALS_REUSED, USERNAME_OVERWRITTEN, USERNAME_EDITED). If none,
+  // returns NO_INFORMATION.
+  AutofillUploadContents::Field::VoteType get_username_vote_type();
 
   void IdentifySections(bool ignore_autocomplete) {
     form_structure_->IdentifySections(ignore_autocomplete);
@@ -98,8 +97,16 @@ class FormStructureTestApi {
   }
 
  private:
-  raw_ptr<FormStructure> form_structure_;
+  const raw_ref<FormStructure> form_structure_;
 };
+
+inline FormStructureTestApi test_api(FormStructure* form_structure) {
+  return FormStructureTestApi(form_structure);
+}
+
+inline FormStructureTestApi test_api(FormStructure& form_structure) {
+  return FormStructureTestApi(&form_structure);
+}
 
 }  // namespace autofill
 

@@ -60,8 +60,6 @@ using TestMakeCredentialRequestCallback = test::StatusAndValuesCallbackReceiver<
 
 }  // namespace
 
-constexpr char kRequestTransportHistogram[] =
-    "WebAuthentication.MakeCredentialRequestTransport";
 constexpr char kResponseTransportHistogram[] =
     "WebAuthentication.MakeCredentialResponseTransport";
 
@@ -146,9 +144,10 @@ class FidoMakeCredentialHandlerTest : public ::testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<test::FakeFidoDiscoveryFactory> fake_discovery_factory_ =
       std::make_unique<test::FakeFidoDiscoveryFactory>();
-  raw_ptr<test::FakeFidoDiscovery, DanglingUntriaged> discovery_;
-  raw_ptr<test::FakeFidoDiscovery, DanglingUntriaged> nfc_discovery_;
-  raw_ptr<test::FakeFidoDiscovery, DanglingUntriaged> platform_discovery_;
+  raw_ptr<test::FakeFidoDiscovery, AcrossTasksDanglingUntriaged> discovery_;
+  raw_ptr<test::FakeFidoDiscovery, AcrossTasksDanglingUntriaged> nfc_discovery_;
+  raw_ptr<test::FakeFidoDiscovery, AcrossTasksDanglingUntriaged>
+      platform_discovery_;
   scoped_refptr<::testing::NiceMock<MockBluetoothAdapter>> mock_adapter_;
   std::unique_ptr<MockFidoDevice> pending_mock_platform_device_;
   TestMakeCredentialRequestCallback cb_;
@@ -860,12 +859,6 @@ TEST_F(FidoMakeCredentialHandlerTest, ReportTransportMetric) {
 
   callback().WaitForCallback();
   EXPECT_EQ(MakeCredentialStatus::kSuccess, callback().status());
-  histograms.ExpectBucketCount(kRequestTransportHistogram,
-                               FidoTransportProtocol::kUsbHumanInterfaceDevice,
-                               1);
-  histograms.ExpectBucketCount(kRequestTransportHistogram,
-                               FidoTransportProtocol::kNearFieldCommunication,
-                               1);
   histograms.ExpectUniqueSample(kResponseTransportHistogram,
                                 FidoTransportProtocol::kUsbHumanInterfaceDevice,
                                 1);
@@ -873,15 +866,15 @@ TEST_F(FidoMakeCredentialHandlerTest, ReportTransportMetric) {
 
 #if BUILDFLAG(IS_WIN)
 TEST_F(FidoMakeCredentialHandlerTest, ReportTransportMetricWin) {
-  FakeWinWebAuthnApi win_api_;
-  win_api_.set_version(WEBAUTHN_API_VERSION_3);
-  win_api_.set_transport(WEBAUTHN_CTAP_TRANSPORT_BLE);
+  FakeWinWebAuthnApi win_api;
+  win_api.set_version(WEBAUTHN_API_VERSION_3);
+  win_api.set_transport(WEBAUTHN_CTAP_TRANSPORT_BLE);
+  WinWebAuthnApi::ScopedOverride win_webauthn_api_override(&win_api);
   base::HistogramTester histograms;
-  fake_discovery_factory_->set_win_webauthn_api(&win_api_);
+  fake_discovery_factory_->set_discover_win_webauthn_api_authenticator(true);
   auto request_handler = CreateMakeCredentialHandler();
   callback().WaitForCallback();
   EXPECT_EQ(MakeCredentialStatus::kSuccess, callback().status());
-  histograms.ExpectTotalCount(kRequestTransportHistogram, 0);
   histograms.ExpectUniqueSample(kResponseTransportHistogram,
                                 FidoTransportProtocol::kBluetoothLowEnergy, 1);
 }

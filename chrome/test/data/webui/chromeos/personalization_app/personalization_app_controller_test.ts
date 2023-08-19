@@ -639,6 +639,10 @@ suite('Personalization app controller', () => {
                 name: 'set_updated_daily_refreshed_image',
               },
               {
+                name: 'set_attribution',
+                attribution: personalizationStore.data.wallpaper.attribution,
+              },
+              {
                 name: 'set_selected_image',
                 image: personalizationStore.data.wallpaper.currentSelected,
               },
@@ -788,6 +792,10 @@ suite('observes pendingState during wallpaper selection', () => {
                 success: false,
               },
               {
+                name: 'set_attribution',
+                attribution: personalizationStore.data.wallpaper.attribution,
+              },
+              {
                 name: 'set_selected_image',
                 image: personalizationStore.data.wallpaper.currentSelected,
               },
@@ -806,6 +814,10 @@ suite('observes pendingState during wallpaper selection', () => {
                 'wallpaper.pendingSelected': wallpaperProvider.localImages[0],
               },
               // End selecting image, pendingState is cleared.
+              {
+                'wallpaper.pendingSelected': null,
+              },
+              // Set attribution
               {
                 'wallpaper.pendingSelected': null,
               },
@@ -917,8 +929,11 @@ suite('does not respond to re-selecting the current wallpaper', () => {
     // Complete the pending selection as would happen in production code.
     const pendingSelected = personalizationStore.data.wallpaper.pendingSelected;
     assertEquals(pendingSelected, image);
-    personalizationStore.data.wallpaper.currentSelected = {
+    personalizationStore.data.wallpaper.attribution = {
       attribution: [],
+      key: getImageKey(image)!,
+    };
+    personalizationStore.data.wallpaper.currentSelected = {
       descriptionContent: '',
       descriptionTitle: '',
       key: getImageKey(image)!,
@@ -1166,12 +1181,15 @@ suite('daily refresh loading', () => {
 
       wallpaperProvider.resetResolver('getGooglePhotosDailyRefreshAlbumId');
       wallpaperProvider.wallpaperObserverRemote!.onWallpaperChanged({
-        attribution: [],
         descriptionContent: '',
         descriptionTitle: '',
         key: getImageKey(mockPhotos[0]!)!,
         layout: WallpaperLayout.kCenterCropped,
         type: WallpaperType.kDailyGooglePhotos,
+      });
+      wallpaperProvider.wallpaperObserverRemote!.onAttributionChanged({
+        attribution: [],
+        key: getImageKey(mockPhotos[0]!)!,
       });
       // Wait for observer to handle the above event.
       await wallpaperProvider.whenCalled('getGooglePhotosDailyRefreshAlbumId');
@@ -1189,9 +1207,11 @@ suite('daily refresh loading', () => {
       assertFalse(
           personalizationStore.data.wallpaper.loading.refreshWallpaper,
           'daily refresh not loading');
-
-      personalizationStore.data.wallpaper.currentSelected = {
+      personalizationStore.data.wallpaper.attribution = {
         attribution: [],
+        key: mockPhotos[0]!.dedupKey!,
+      };
+      personalizationStore.data.wallpaper.currentSelected = {
         descriptionContent: '',
         descriptionTitle: '',
         key: mockPhotos[0]!.dedupKey!,
@@ -1255,12 +1275,15 @@ suite('daily refresh loading', () => {
 
       wallpaperProvider.resetResolver('getDailyRefreshCollectionId');
       wallpaperProvider.wallpaperObserverRemote!.onWallpaperChanged({
-        attribution: [],
         descriptionContent: '',
         descriptionTitle: '',
         key: getImageKey(wallpaperProvider.images![0]!)!,
         layout: WallpaperLayout.kCenterCropped,
         type: WallpaperType.kDailyGooglePhotos,
+      });
+      wallpaperProvider.wallpaperObserverRemote!.onAttributionChanged({
+        attribution: [],
+        key: getImageKey(wallpaperProvider.images![0]!)!,
       });
       // Wait for observer to handle the above event.
       await wallpaperProvider.whenCalled('getDailyRefreshCollectionId');
@@ -1275,8 +1298,11 @@ suite('daily refresh loading', () => {
       wallpaperProvider.albumId = '';
       wallpaperProvider.collectionId = wallpaperProvider.collections![0]!.id;
 
-      personalizationStore.data.wallpaper.currentSelected = {
+      personalizationStore.data.wallpaper.attribution = {
         attribution: [],
+        key: getImageKey(wallpaperProvider.images![0]!)!,
+      };
+      personalizationStore.data.wallpaper.currentSelected = {
         layout: WallpaperLayout.kCenter,
         type: WallpaperType.kOnline,
         key: getImageKey(wallpaperProvider.images![0]!)!,

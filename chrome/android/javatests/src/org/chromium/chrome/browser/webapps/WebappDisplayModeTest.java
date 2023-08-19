@@ -28,7 +28,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.webapps.WebappTestPage;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
@@ -76,7 +76,7 @@ public class WebappDisplayModeTest {
     @MediumTest
     @Feature({"Webapps"})
     // TODO(crbug.com/1380463): Re-enable once test can be ran locally.
-    @Features.DisableFeatures({ContentFeatures.SURFACE_SYNC_FULLSCREEN_KILLSWITCH})
+    @DisableFeatures({ContentFeatures.SURFACE_SYNC_FULLSCREEN_KILLSWITCH})
     public void testFullScreenInFullscreen() {
         WebappActivity activity = startActivity(DisplayMode.FULLSCREEN, "fullscreen_on_click");
 

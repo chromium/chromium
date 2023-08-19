@@ -172,10 +172,10 @@ void CastWindowManagerBindings::OnTouchInputSupportSet(
     bool display_controls) {
   DVLOG(2) << __FUNCTION__;
   v8::Isolate* isolate = blink::MainThreadIsolate();
-  v8::MicrotasksScope microtasks_scope(
-      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = original_context.Get(isolate);
+  v8::MicrotasksScope microtasks_scope(
+      context, v8::MicrotasksScope::kDoNotRunMicrotasks);
   v8::Context::Scope context_scope(context);
 
   if (resolve_promise) {

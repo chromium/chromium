@@ -10,11 +10,11 @@
 #include <utility>
 #include <vector>
 
+#include "base/apple/foundation_util.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -39,10 +39,6 @@
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_getter.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace net {
 class HttpProtocolHandlerCore;
@@ -282,7 +278,7 @@ void HttpProtocolHandlerCore::HandleStreamEvent(NSStream* stream,
       // TODO(crbug.com/738025): Dynamically change the size of the read buffer
       // to improve the read (POST) performance, see AllocateReadBuffer(), &
       // avoid unnecessary data copy.
-      length = [base::mac::ObjCCastStrict<NSInputStream>(stream)
+      length = [base::apple::ObjCCastStrict<NSInputStream>(stream)
                read:reinterpret_cast<unsigned char*>(read_buffer_.get())
           maxLength:read_buffer_size_];
       if (length > 0) {
@@ -929,10 +925,9 @@ int HttpProtocolHandlerCore::OnRead(char* buffer, int buffer_length) {
     g_metrics_delegate->OnStartNetRequest(_task);
   }
 
-  // The closure passed to PostTask must to retain the _protocolProxy
-  // scoped_nsobject. A call to ensureProtocolHandlerProxyCreated before passing
-  // _protocolProxy ensure that _protocolProxy is instanciated before passing
-  // it.
+  // The closure passed to PostTask must retain the _protocolProxy. A call to
+  // ensureProtocolHandlerProxyCreated before passing _protocolProxy ensure that
+  // _protocolProxy is instantiated before passing it.
   [self ensureProtocolHandlerProxyCreated];
   DCHECK(_protocolProxy);
   g_protocol_handler_delegate->GetDefaultURLRequestContext()

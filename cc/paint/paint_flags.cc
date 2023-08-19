@@ -12,6 +12,7 @@
 #include "cc/paint/paint_op.h"
 #include "cc/paint/paint_op_buffer.h"
 #include "cc/paint/paint_shader.h"
+#include "third_party/skia/include/core/SkColorFilter.h"
 #include "third_party/skia/include/core/SkPathUtils.h"
 
 namespace {
@@ -138,7 +139,7 @@ SkPaint PaintFlags::ToSkPaint() const {
     paint.setShader(shader_->GetSkShader(getFilterQuality()));
   paint.setMaskFilter(mask_filter_);
   if (color_filter_) {
-    paint.setColorFilter(color_filter_->GetSkColorFilter());
+    paint.setColorFilter(color_filter_->sk_color_filter_);
   }
   if (image_filter_)
     paint.setImageFilter(image_filter_->cached_sk_filter_);

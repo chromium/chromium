@@ -161,17 +161,14 @@ public class ScrimCoordinator {
         mMediator.destroy();
     }
 
-    @VisibleForTesting
     public void disableAnimationForTesting(boolean disable) {
         mMediator.disableAnimationForTesting(disable);
     }
 
-    @VisibleForTesting
     public ScrimView getViewForTesting() {
         return mView;
     }
 
-    @VisibleForTesting
     ScrimMediator getMediatorForTesting() {
         return mMediator;
     }

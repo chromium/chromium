@@ -12,7 +12,6 @@ import android.widget.TextView;
 import androidx.annotation.MainThread;
 
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
@@ -161,8 +160,7 @@ public class ConfirmImportSyncDataDialogCoordinator {
             String newAccountName, boolean isCurrentAccountManaged) {
         TextView prompt = mConfirmImportSyncDataView.findViewById(R.id.sync_import_data_prompt);
 
-        if (!mCheckIfDisplayableEmailAddress.test(currentAccountName)
-                && ChromeFeatureList.sHideNonDisplayableAccountEmail.isEnabled()) {
+        if (!mCheckIfDisplayableEmailAddress.test(currentAccountName)) {
             final String defaultAccountName =
                     context.getString(R.string.default_google_account_username);
             prompt.setText(context.getString(R.string.sync_import_data_prompt, defaultAccountName));

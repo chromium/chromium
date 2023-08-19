@@ -8,7 +8,7 @@
 #import "base/strings/string_number_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/find_in_page/features.h"
+#import "ios/chrome/browser/find_in_page/util.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_constants.h"
 #import "ios/chrome/browser/ui/find_bar/java_script_find_in_page_controller_app_interface.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
@@ -21,10 +21,6 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util_mac.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -77,16 +73,15 @@ std::unique_ptr<net::test_server::HttpResponse> FindInPageTestPageHttpResponse(
 
 #pragma mark - XCTest.
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  config.features_disabled.push_back(kNativeFindInPage);
-  return config;
-}
-
 // After setup, a page with `kFindInPageResponse` is displayed and Find In Page
 // bar is opened.
 - (void)setUp {
   [super setUp];
+
+  // Disabled for iOS 16.1.1+.
+  if (base::ios::IsRunningOnOrLater(16, 1, 1)) {
+    return;
+  }
 
   // Clear saved search term.
   [JavaScriptFindInPageControllerAppInterface clearSearchTerm];
@@ -103,6 +98,12 @@ std::unique_ptr<net::test_server::HttpResponse> FindInPageTestPageHttpResponse(
 }
 
 - (void)tearDown {
+  // Disabled for iOS 16.1.1+.
+  if (base::ios::IsRunningOnOrLater(16, 1, 1)) {
+    [super tearDown];
+    return;
+  }
+
   // Close find in page view.
   [self closeFindInPage];
 
@@ -114,6 +115,10 @@ std::unique_ptr<net::test_server::HttpResponse> FindInPageTestPageHttpResponse(
 // Tests that find in page allows iteration between search results and displays
 // correct number of results.
 - (void)testFindInPage {
+  // Disabled for iOS 16.1.1+.
+  if (base::ios::IsRunningOnOrLater(16, 1, 1)) {
+    return;
+  }
   // Type "find".
   [self typeFindInPageText:@"find"];
   // Should be highlighting result 1 of 2.
@@ -131,6 +136,10 @@ std::unique_ptr<net::test_server::HttpResponse> FindInPageTestPageHttpResponse(
 // the search term is persisted between FIP runs, but in incognito search term
 // is not retained and not autofilled.
 - (void)testFindInPageRetainsSearchTerm {
+  // Disabled for iOS 16.1.1+.
+  if (base::ios::IsRunningOnOrLater(16, 1, 1)) {
+    return;
+  }
   // Type "find".
   [self typeFindInPageText:@"find"];
   [self assertResultStringIsResult:1 outOfTotal:2];
@@ -172,6 +181,10 @@ std::unique_ptr<net::test_server::HttpResponse> FindInPageTestPageHttpResponse(
 
 // Tests accessibility of the Find in Page screen.
 - (void)testAccessibilityOnFindInPage {
+  // Disabled for iOS 16.1.1+.
+  if (base::ios::IsRunningOnOrLater(16, 1, 1)) {
+    return;
+  }
   if (@available(iOS 16, *)) {
     [self typeFindInPageText:@"find"];
   } else {

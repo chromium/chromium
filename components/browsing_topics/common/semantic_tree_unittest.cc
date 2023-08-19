@@ -36,6 +36,13 @@ TEST_F(SemanticTreeUnittest, GetRandomTopic_InvalidTaxonomyVersion) {
   EXPECT_CHECK_DEATH(semantic_tree_.GetRandomTopic(10, 400));
 }
 
+TEST_F(SemanticTreeUnittest, GetRandomTopic_NotInitialTaxonomy) {
+  Topic topic = semantic_tree_.GetRandomTopic(2, 3);
+  // Because topics 2,3,5-8,10,11 are deleted, topic 12 is the 4th topic in
+  // taxonomy 2.
+  EXPECT_EQ(topic, Topic(12));
+}
+
 TEST_F(SemanticTreeUnittest, IsTaxonomySupported_ValidTaxonomyVersion) {
   EXPECT_TRUE(semantic_tree_.IsTaxonomySupported(1));
 }
@@ -70,9 +77,9 @@ TEST_F(SemanticTreeUnittest, GetDescendantTopicsMultipleChildren) {
 
 TEST_F(SemanticTreeUnittest, GetDescendantTopicsMultipleLevelsOfDescendants) {
   std::vector<Topic> topics = semantic_tree_.GetDescendantTopics(Topic(255));
-  std::vector<Topic> expected_descendants = {
-      Topic(256), Topic(257), Topic(258), Topic(259), Topic(260), Topic(261),
-  };
+  std::vector<Topic> expected_descendants = {Topic(256), Topic(257), Topic(258),
+                                             Topic(259), Topic(260), Topic(261),
+                                             Topic(563)};
   EXPECT_EQ(topics, expected_descendants);
 }
 
@@ -96,7 +103,22 @@ TEST_F(SemanticTreeUnittest, GetAncestorTopicsOneAncestor) {
 TEST_F(SemanticTreeUnittest, GetAncestorTopicsMultipleAncestors) {
   std::vector<Topic> topics = semantic_tree_.GetAncestorTopics(Topic(36));
   EXPECT_FALSE(topics.empty());
-  std::vector<Topic> expected_ancestors = {Topic(33), Topic(23), Topic(1)};
+  std::vector<Topic> expected_ancestors = {Topic(1), Topic(23), Topic(33)};
+  EXPECT_EQ(topics, expected_ancestors);
+}
+
+TEST_F(SemanticTreeUnittest, GetAncestorTopicsMultipleParents) {
+  std::vector<Topic> topics = semantic_tree_.GetAncestorTopics(Topic(277));
+  EXPECT_FALSE(topics.empty());
+  std::vector<Topic> expected_ancestors = {Topic(226), Topic(227), Topic(275)};
+  EXPECT_EQ(topics, expected_ancestors);
+}
+
+TEST_F(SemanticTreeUnittest, GetAncestorTopicsMaximumTopic) {
+  std::vector<Topic> topics =
+      semantic_tree_.GetAncestorTopics(Topic(SemanticTree::kNumTopics));
+  EXPECT_FALSE(topics.empty());
+  std::vector<Topic> expected_ancestors = {Topic(332), Topic(626)};
   EXPECT_EQ(topics, expected_ancestors);
 }
 
@@ -107,10 +129,25 @@ TEST_F(SemanticTreeUnittest, GetLatestLocalizedNameMessageIdValidTopic) {
             IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_100);
 }
 
+TEST_F(SemanticTreeUnittest, GetLatestLocalizedNameMessageIdAddedTopic) {
+  absl::optional<int> message_id =
+      semantic_tree_.GetLatestLocalizedNameMessageId(Topic(363));
+  EXPECT_EQ(message_id.value(),
+            IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_363);
+}
+
+TEST_F(SemanticTreeUnittest, GetLatestLocalizedNameMessageIdMaximumTopic) {
+  absl::optional<int> message_id =
+      semantic_tree_.GetLatestLocalizedNameMessageId(
+          Topic(SemanticTree::kNumTopics));
+  EXPECT_EQ(message_id.value(),
+            IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_629);
+}
+
 TEST_F(SemanticTreeUnittest, GetLatestLocalizedNameMessageIdInvalidTaxonomy) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      blink::features::kBrowsingTopics, {{"taxonomy_version", "0"}});
+      blink::features::kBrowsingTopicsParameters, {{"taxonomy_version", "0"}});
   absl::optional<int> message_id =
       semantic_tree_.GetLatestLocalizedNameMessageId(Topic(100));
   EXPECT_FALSE(message_id.has_value());

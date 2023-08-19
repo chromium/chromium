@@ -61,7 +61,10 @@ class ASH_EXPORT TrayDetailedView : public views::View,
   views::BoxLayout* box_layout() { return box_layout_; }
 
   // Creates the row containing the back button and title. Optionally omits the
-  // back button if `create_back_button` is false.
+  // back button and left aligns the label contained in the CENTER view if
+  // `create_back_button` is false.
+  // TODO(b/285280977): Remove `create_back_button` when CalendarView is out of
+  // TrayDetailedView.
   void CreateTitleRow(int string_id, bool create_back_button = true);
 
   // Creates a scrollable list. The list has a border at the bottom if there is
@@ -132,8 +135,12 @@ class ASH_EXPORT TrayDetailedView : public views::View,
   virtual void HandleViewClicked(views::View* view);
 
   // Returns the TriView used for the title row. A label with `string_id` is
-  // added to the CENTER view.
-  std::unique_ptr<TriView> CreateTitleTriView(int string_id);
+  // added to the CENTER view. Left aligns the label contained in the CENTER
+  // view and reduces padding if `create_back_button` is false.
+  // TODO(b/285280977): Remove `create_back_button` when CalendarView is out of
+  // TrayDetailedView.
+  std::unique_ptr<TriView> CreateTitleTriView(int string_id,
+                                              bool create_back_button);
 
   // Returns the separator used between the title row and the contents.
   std::unique_ptr<views::Separator> CreateTitleSeparator();
@@ -144,17 +151,22 @@ class ASH_EXPORT TrayDetailedView : public views::View,
   // Transition to main view from detailed view.
   void TransitionToMainView();
 
-  const raw_ptr<DetailedViewDelegate, ExperimentalAsh> delegate_;
-  raw_ptr<views::BoxLayout, ExperimentalAsh> box_layout_ = nullptr;
-  raw_ptr<views::ScrollView, ExperimentalAsh> scroller_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> scroll_content_ = nullptr;
+  const raw_ptr<DetailedViewDelegate, DanglingUntriaged | ExperimentalAsh>
+      delegate_;
+  raw_ptr<views::BoxLayout, DanglingUntriaged | ExperimentalAsh> box_layout_ =
+      nullptr;
+  raw_ptr<views::ScrollView, DanglingUntriaged | ExperimentalAsh> scroller_ =
+      nullptr;
+  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> scroll_content_ =
+      nullptr;
   raw_ptr<views::ProgressBar, ExperimentalAsh> progress_bar_ = nullptr;
 
   // The container view for the top-most title row. Owned by views hierarchy.
-  raw_ptr<TriView, ExperimentalAsh> tri_view_ = nullptr;
+  raw_ptr<TriView, DanglingUntriaged | ExperimentalAsh> tri_view_ = nullptr;
 
   // The back button that appears in the title row. Owned by views hierarchy.
-  raw_ptr<views::Button, ExperimentalAsh> back_button_ = nullptr;
+  raw_ptr<views::Button, DanglingUntriaged | ExperimentalAsh> back_button_ =
+      nullptr;
 
   // Gets modified to false in the constructor of the view if it doesn't have a
   // separator.

@@ -34,13 +34,13 @@ class OfferNotificationBubbleViewsBrowserTest
 IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
                        InvalidOfferData) {
   auto offer_data = CreateCardLinkedOfferDataWithDomains(
-      {GURL("https://www.example.com/"), GURL("https://www.test.com/")});
+      {GetUrl("www.example.com", "/"), GetUrl("www.test.com", "/")});
   offer_data->SetEligibleInstrumentIdForTesting({});
   personal_data()->AddOfferDataForTest(std::move(offer_data));
   personal_data()->NotifyPersonalDataObserver();
 
   // Neither icon nor bubble should be visible.
-  NavigateTo("https://www.example.com/first/");
+  NavigateToAndWaitForForm(GetUrl("www.example.com", "/first"));
   EXPECT_FALSE(IsIconVisible());
   EXPECT_FALSE(GetOfferNotificationBubbleViews());
 }
@@ -51,12 +51,12 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
 IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
                        DISABLED_PromoCodeOffer) {
   auto offer_data = CreateGPayPromoCodeOfferDataWithDomains(
-      {GURL("https://www.example.com/"), GURL("https://www.test.com/")});
+      {GetUrl("www.example.com", "/"), GetUrl("www.test.com", "/")});
   personal_data()->AddOfferDataForTest(std::move(offer_data));
   personal_data()->NotifyPersonalDataObserver();
 
   ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-  NavigateToAndWaitForForm("https://www.example.com/first/");
+  NavigateToAndWaitForForm(GetUrl("www.example.com", "/first"));
   ASSERT_TRUE(WaitForObservedEvent());
 
   EXPECT_TRUE(IsIconVisible());
@@ -66,12 +66,12 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
 // TODO(crbug.com/1256480): Disabled due to flakiness.
 IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
                        DISABLED_PromoCodeOffer_FromCouponService) {
-  auto offer_data = CreateFreeListingCouponDataWithDomains(
-      {GURL("https://www.example.com/")});
+  auto offer_data =
+      CreateFreeListingCouponDataWithDomains({GetUrl("www.example.com", "/")});
   SetUpFreeListingCouponOfferDataForCouponService(std::move(offer_data));
 
   ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-  NavigateToAndWaitForForm("https://www.example.com/first/");
+  NavigateToAndWaitForForm(GetUrl("www.example.com", "/first"));
   ASSERT_TRUE(WaitForObservedEvent());
 
   EXPECT_TRUE(IsIconVisible());
@@ -80,13 +80,13 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
                        PromoCodeOffer_FromCouponService_WithinTimeGap) {
-  const GURL orgin("https://www.example.com/");
+  const GURL orgin = GetUrl("www.example.com", "/");
   SetUpFreeListingCouponOfferDataForCouponService(
       CreateFreeListingCouponDataWithDomains({orgin}));
   UpdateFreeListingCouponDisplayTime(
       CreateFreeListingCouponDataWithDomains({orgin}));
 
-  NavigateTo("https://www.example.com/first/");
+  NavigateToAndWaitForForm(GetUrl("www.example.com", "/first"));
 
   EXPECT_TRUE(IsIconVisible());
   EXPECT_FALSE(GetOfferNotificationBubbleViews());
@@ -98,20 +98,20 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
 // opened another tab on the same website.
 IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
                        DISABLED_BubbleNotShowingOnDuplicateTab) {
-  SetUpCardLinkedOfferDataWithDomains({GURL("https://www.example.com/")});
+  SetUpCardLinkedOfferDataWithDomains({GetUrl("www.example.com", "/")});
 
   TestAutofillClock test_clock;
   test_clock.SetNow(base::Time::Now());
-  NavigateToAndWaitForForm("https://www.example.com/first/");
+  NavigateToAndWaitForForm(GetUrl("www.example.com", "/first"));
   test_clock.Advance(kAutofillBubbleSurviveNavigationTime - base::Seconds(1));
-  NavigateToAndWaitForForm("https://www.example.com/second/");
+  NavigateToAndWaitForForm(GetUrl("www.example.com", "/second"));
   // Ensure the bubble is still there if
   // kOfferNotificationBubbleSurviveNavigationTime hasn't been reached yet.
   EXPECT_TRUE(IsIconVisible());
   EXPECT_TRUE(GetOfferNotificationBubbleViews());
 
   test_clock.Advance(base::Seconds(2));
-  NavigateToAndWaitForForm("https://www.example.com/second/");
+  NavigateToAndWaitForForm(GetUrl("www.example.com", "/second"));
   // As kAutofillBubbleSurviveNavigationTime has been reached, the bubble should
   // no longer be showing.
   EXPECT_TRUE(IsIconVisible());
@@ -121,18 +121,18 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
 // TODO(crbug.com/1256480): Disabled due to flakiness.
 IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
                        DISABLED_PromoCodeOffer_DeleteCoupon) {
-  auto offer_data = CreateFreeListingCouponDataWithDomains(
-      {GURL("https://www.example.com/")});
+  auto offer_data =
+      CreateFreeListingCouponDataWithDomains({GetUrl("www.example.com", "/")});
   SetUpFreeListingCouponOfferDataForCouponService(std::move(offer_data));
 
   ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-  NavigateToAndWaitForForm("https://www.example.com/first/");
+  NavigateToAndWaitForForm(GetUrl("www.example.com", "/first"));
   ASSERT_TRUE(WaitForObservedEvent());
 
   EXPECT_TRUE(IsIconVisible());
   EXPECT_TRUE(GetOfferNotificationBubbleViews());
 
-  DeleteFreeListingCouponForUrl(GURL("https://www.example.com/"));
+  DeleteFreeListingCouponForUrl(GetUrl("www.example.com", "/"));
 
   EXPECT_FALSE(IsIconVisible());
   EXPECT_FALSE(GetOfferNotificationBubbleViews());
@@ -156,13 +156,13 @@ class OfferNotificationBubbleViewsBrowserTestWithoutPromoCodes
 // offer if the feature flag is disabled.
 IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTestWithoutPromoCodes,
                        NoPromoCodeOffer) {
-  auto offer_data = CreateGPayPromoCodeOfferDataWithDomains(
-      {GURL("https://www.example.com/"), GURL("https://www.test.com/")});
+  auto offer_data =
+      CreateGPayPromoCodeOfferDataWithDomains({GetUrl("www.example.com", "/")});
   personal_data()->AddOfferDataForTest(std::move(offer_data));
   personal_data()->NotifyPersonalDataObserver();
 
   // Neither icon nor bubble should be visible.
-  NavigateTo("https://www.example.com/first/");
+  NavigateToAndWaitForForm(GetUrl("www.example.com", "/first"));
   EXPECT_FALSE(IsIconVisible());
   EXPECT_FALSE(GetOfferNotificationBubbleViews());
 }

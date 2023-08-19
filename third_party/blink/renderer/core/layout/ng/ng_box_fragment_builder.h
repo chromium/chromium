@@ -184,6 +184,13 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
     return To<NGBlockNode>(node_);
   }
 
+  // Be sure to use the layout result that's relevant for propagation and block
+  // fragmentation considerations. This will normally just be the layout result
+  // that's passed to the function, but if this is a line box with a block
+  // inside (aka. block-in-inline), it will return the layout result for the
+  // block instead.
+  const NGLayoutResult& LayoutResultForPropagation(const NGLayoutResult&) const;
+
   // Add a break token for a child that doesn't yet have any fragments, because
   // its first fragment is to be produced in the next fragmentainer. This will
   // add a break token for the child, but no fragment. Break appeal should
@@ -205,8 +212,12 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
   void AddResult(
       const NGLayoutResult&,
       const LogicalOffset,
+      absl::optional<const NGBoxStrut> margins,
       absl::optional<LogicalOffset> relative_offset = absl::nullopt,
       const NGInlineContainer<LogicalOffset>* inline_container = nullptr);
+  // AddResult() with the default margin computation.
+  void AddResult(const NGLayoutResult& child_layout_result,
+                 const LogicalOffset offset);
 
   // Add a child fragment and propagate info from it. Called by AddResult().
   // Other callers should call AddResult() instead of this when possible, since
@@ -222,10 +233,6 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
   // Manually add a break token to the builder. Note that we're assuming that
   // this break token is for content in the same flow as this parent.
   void AddBreakToken(const NGBreakToken*, bool is_in_parallel_flow = false);
-
-  void AddOutOfFlowLegacyCandidate(NGBlockNode,
-                                   const NGLogicalStaticPosition&,
-                                   const LayoutInline* inline_container);
 
   // Before layout we'll determine whether we can tell for sure that the node
   // (or what's left of it to lay out, in case we've already broken) will fit in
@@ -476,7 +483,6 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
 
   void SetIsFieldsetContainer() { is_fieldset_container_ = true; }
   void SetIsTableNGPart() { is_table_ng_part_ = true; }
-  void SetIsLegacyLayoutRoot() { is_legacy_layout_root_ = true; }
 
   void SetIsInlineFormattingContext(bool is_inline_formatting_context) {
     is_inline_formatting_context_ = is_inline_formatting_context;
@@ -654,11 +660,6 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
     return child_break_tokens_.back().Get();
   }
 
-  void InsertLegacyPositionedObject(const NGBlockNode& positioned) const {
-    positioned.InsertIntoLegacyPositionedObjectsOf(
-        To<LayoutBlock>(layout_object_));
-  }
-
   // Propagate the break-before/break-after of the child (if applicable).
   void PropagateChildBreakValues(const NGLayoutResult& child_layout_result);
 
@@ -761,6 +762,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
   friend class NGBlockBreakToken;
   friend class NGPhysicalBoxFragment;
   friend class NGLayoutResult;
+  friend class PhysicalFragmentRareData;
 };
 
 }  // namespace blink

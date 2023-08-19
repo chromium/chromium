@@ -961,8 +961,9 @@ bool TextAutosizer::SuperclusterHasEnoughTextToAutosize(
     return supercluster->has_enough_text_to_autosize_ == kHasEnoughText;
 
   for (const auto& root : *supercluster->roots_) {
-    if (skip_layouted_nodes && !root->NormalChildNeedsLayout())
+    if (skip_layouted_nodes && !root->ChildNeedsFullLayout()) {
       continue;
+    }
     if (ClusterWouldHaveEnoughTextToAutosize(root, width_provider)) {
       supercluster->has_enough_text_to_autosize_ = kHasEnoughText;
       return true;

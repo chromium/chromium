@@ -14,7 +14,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace views {
-class BoxLayoutView;
+class FlexLayoutView;
 class TableLayoutView;
 class Label;
 }  // namespace views
@@ -45,14 +45,22 @@ class ASH_EXPORT SearchResultImageListView : public SearchResultContainerView {
   // Returns all search result image views children of this view.
   std::vector<SearchResultImageView*> GetSearchResultImageViews();
 
+  // Returns the preferred width of the image search result according to the
+  // layout.
+  void ConfigureLayoutForAvailableWidth(int width);
+
+  // A callback that is called when the `metadata` is loaded. This updates the
+  // `image_info_container_` if needed.
+  void OnImageMetadataLoaded(ash::FileMetadata metadata);
+
   const views::TableLayoutView* image_info_container_for_test() const {
     return image_info_container_.get();
   }
+  const std::vector<views::Label*>& metadata_content_labels_for_test() const {
+    return metadata_content_labels_;
+  }
 
  private:
-  // Overridden from views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
   // Overridden from SearchResultContainerView:
   void OnSelectedResultChanged() override;
   int DoUpdate() override;
@@ -67,9 +75,16 @@ class ASH_EXPORT SearchResultImageListView : public SearchResultContainerView {
 
   // Owned by views hierarchy.
   raw_ptr<views::Label> title_label_ = nullptr;
-  raw_ptr<views::BoxLayoutView> image_view_container_ = nullptr;
+  raw_ptr<views::FlexLayoutView> image_view_container_ = nullptr;
   raw_ptr<views::TableLayoutView> image_info_container_ = nullptr;
   std::vector<SearchResultImageView*> image_views_;
+
+  // Labels that show the file metadata in `image_info_container_`. There should
+  // always be 4 labels, which in the order of {file size, date modified, mime
+  // type, file path}.
+  std::vector<views::Label*> metadata_content_labels_;
+
+  base::WeakPtrFactory<SearchResultImageListView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

@@ -19,13 +19,14 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/fast_checkout/data/FastCheckoutAutofillProfile.java",
     "java/src/org/chromium/chrome/browser/ui/fast_checkout/data/FastCheckoutCreditCard.java",
   ]
+  srcjar_deps = [ ":jni_headers" ]
   resources_package = "org.chromium.chrome.browser.ui.fast_checkout"
 }
 
 generate_jni("jni_headers") {
   sources = [
-    "internal/java/src/org/chromium/chrome/browser/ui/fast_checkout/FastCheckoutBridge.java",
     "java/src/org/chromium/chrome/browser/ui/fast_checkout/data/FastCheckoutAutofillProfile.java",
     "java/src/org/chromium/chrome/browser/ui/fast_checkout/data/FastCheckoutCreditCard.java",
   ]
+  public_deps = [ "//chrome/browser/ui/android/fast_checkout/internal:jni" ]
 }

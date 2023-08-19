@@ -28,6 +28,7 @@ class WebFramesManager {
     // Receivers can keep references to `web_frame` only until
     // `WebFrameBecameUnavailable` at which point the pointer will become
     // invalid.
+    // TODO(crbug.com/1465518): This should pass a WeakPtr instead.
     virtual void WebFrameBecameAvailable(WebFramesManager* web_frames_manager,
                                          WebFrame* web_frame) {}
 
@@ -47,6 +48,8 @@ class WebFramesManager {
   // Adds and removes observers of WebFrame availability.
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
+
+  // TODO(crbug.com/1465518): Transition the below functions to return WeakPtrs.
 
   // Returns a list of all the web frames associated with WebState.
   // NOTE: Due to the asynchronous nature of renderer, this list may be

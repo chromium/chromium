@@ -7,13 +7,14 @@
 #import "base/check.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/send_tab_to_self/entry_point_display_reason.h"
+#import "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #import "ios/chrome/browser/find_in_page/abstract_find_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
-#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
 #import "ios/chrome/browser/ui/sharing/activity_services/data/chrome_activity_item_thumbnail_generator.h"
 #import "ios/chrome/browser/ui/sharing/activity_services/data/share_to_data.h"
@@ -23,18 +24,16 @@
 #import "third_party/abseil-cpp/absl/types/optional.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace activity_services {
+
+// TODO(crbug.com/1468530): Adopt consistent casing in these functions.
 
 ShareToData* ShareToDataForWebState(web::WebState* web_state,
                                     const GURL& share_url) {
-  DCHECK(web_state);
+  CHECK(web_state);
 
   BOOL is_original_title = NO;
-  DCHECK(web_state->GetNavigationManager());
+  CHECK(web_state->GetNavigationManager());
   web::NavigationItem* last_committed_item =
       web_state->GetNavigationManager()->GetLastCommittedItem();
   if (last_committed_item) {
@@ -45,8 +44,10 @@ ShareToData* ShareToDataForWebState(web::WebState* web_state,
       // If the original page title exists, it is expected to match the Tab's
       // title. If this ever changes, then a decision has to be made on which
       // one should be used for sharing.
-      DCHECK([tab_util::GetTabTitle(web_state)
-          isEqualToString:base::SysUTF16ToNSString(original_title)]);
+      CHECK([tab_util::GetTabTitle(web_state)
+          isEqualToString:base::SysUTF16ToNSString(original_title)])
+          << "Original title is'" << original_title << "' and tab's title is '"
+          << web_state->GetTitle() << "'";
       is_original_title = YES;
     }
   }
@@ -79,17 +80,15 @@ ShareToData* ShareToDataForWebState(web::WebState* web_state,
       ChromeBrowserState::FromBrowserState(web_state->GetBrowserState());
   ChromeAccountManagerService* accountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(browser_state);
-  // Divergence between iOS and other platforms: today the sign-in promo UI only
-  // supports the case where there are already accounts on the device.
+  send_tab_to_self::SendTabToSelfSyncService* send_tab_to_self_service =
+      SendTabToSelfSyncServiceFactory::GetForBrowserState(browser_state);
+  // When there are no device-level accounts, it's only possible to show the
+  // promo UI if IsConsistencyNewAccountInterfaceEnabled() is true.
   BOOL can_send_tab_to_self =
-      !browser_state->IsOffTheRecord() && accountManagerService &&
-      accountManagerService->HasIdentities() &&
-      send_tab_to_self::GetEntryPointDisplayReason(
-          finalURLToShare,
-          SyncServiceFactory::GetForBrowserState(browser_state),
-          SendTabToSelfSyncServiceFactory::GetForBrowserState(browser_state),
-          browser_state->GetPrefs())
-          .has_value();
+      (accountManagerService->HasIdentities() ||
+       IsConsistencyNewAccountInterfaceEnabled()) &&
+      send_tab_to_self_service &&
+      send_tab_to_self_service->GetEntryPointDisplayReason(finalURLToShare);
 
   return [[ShareToData alloc] initWithShareURL:finalURLToShare
                                     visibleURL:web_state->GetVisibleURL()

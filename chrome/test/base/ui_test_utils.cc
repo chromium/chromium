@@ -51,6 +51,7 @@
 #include "components/javascript_dialogs/app_modal_dialog_queue.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_controller_emitter.h"
+#include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/prefs/pref_service.h"
@@ -447,7 +448,7 @@ void WaitForAutocompleteDone(Browser* browser) {
   auto* controller = browser->window()
                          ->GetLocationBar()
                          ->GetOmniboxView()
-                         ->model()
+                         ->controller()
                          ->autocomplete_controller();
   while (!controller->done())
     AutocompleteChangeObserver(browser->profile()).Wait();
@@ -675,6 +676,49 @@ void BrowserChangeObserver::OnBrowserRemoved(Browser* browser) {
     browser_ = browser;
     run_loop_.Quit();
   }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// CheckWaiter:
+
+CheckWaiter::CheckWaiter(base::RepeatingCallback<bool()> callback,
+                         bool expected,
+                         const base::TimeDelta& timeout)
+    : callback_(callback),
+      expected_(expected),
+      timeout_(base::TimeTicks::Now() + timeout) {}
+
+CheckWaiter::~CheckWaiter() = default;
+
+void CheckWaiter::Wait() {
+  if (Check()) {
+    return;
+  }
+
+  base::RunLoop run_loop;
+  quit_ = run_loop.QuitClosure();
+  run_loop.Run();
+}
+
+bool CheckWaiter::Check() {
+  if (callback_.Run() != expected_ && base::TimeTicks::Now() < timeout_) {
+    // Check again after a short timeout. Important: Don't use an immediate
+    // task to check again, because the pump would be allowed to run it
+    // immediately without processing system events (system events are
+    // required for the state to change).
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(base::IgnoreResult(&CheckWaiter::Check),
+                       base::Unretained(this)),
+        TestTimeouts::tiny_timeout());
+    return false;
+  }
+
+  // Quit the run_loop to end the wait.
+  if (!quit_.is_null()) {
+    std::move(quit_).Run();
+  }
+  return true;
 }
 
 }  // namespace ui_test_utils

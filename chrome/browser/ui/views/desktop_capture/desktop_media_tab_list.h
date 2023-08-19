@@ -55,7 +55,7 @@ class DesktopMediaTabList : public DesktopMediaListController::ListView {
   void OnPreviewUpdated(size_t index);
 
  private:
-  std::unique_ptr<views::View> BuildUI(std::unique_ptr<views::TableView> list);
+  std::unique_ptr<views::View> BuildUI(std::unique_ptr<views::TableView> table);
   void OnSelectionChanged();
   void ClearPreview();
   void ClearPreviewImageIfUnchanged(size_t previous_preview_set_count);
@@ -69,11 +69,12 @@ class DesktopMediaTabList : public DesktopMediaListController::ListView {
 
   // These members are owned in the tree of views under this ListView's children
   // so it's safe to store raw pointers to them.
-  raw_ptr<views::TableView> list_;
+  raw_ptr<views::TableView> table_;
   raw_ptr<views::View> preview_wrapper_;
   raw_ptr<views::ImageView> preview_;
   raw_ptr<views::Label> empty_preview_label_;
   raw_ptr<views::Label> preview_label_;
+  raw_ptr<views::ScrollView> scroll_view_;
 
   // Counts the number of times preview_ has been set to an image.
   size_t preview_set_count_ = 0;

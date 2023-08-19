@@ -145,7 +145,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GCM.RegistrationRequestStatus"
-    enum="GCMRegistrationRequestStatus" expires_after="2023-10-22">
+    enum="GCMRegistrationRequestStatus" expires_after="2023-12-24">
   <owner>peter@chromium.org</owner>
   <summary>
     Status code of the outcome of a GCM registration request. The Unknown error
@@ -155,35 +155,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GCM.SendWebPushMessagePayloadSize" units="units"
-    expires_after="M98">
-  <owner>knollr@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Size of web push messages payload. Recorded right before the message is
-    sent.
-  </summary>
-</histogram>
-
 <histogram name="GCM.SendWebPushMessageResult" enum="SendWebPushMessageResult"
-    expires_after="2023-11-12">
+    expires_after="2024-01-14">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     Result of sending web push messages. Recorded when the message has either
     been sent, or has been dropped because an error happened.
-  </summary>
-</histogram>
-
-<histogram name="GCM.SendWebPushMessageStatusCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="M98">
-  <owner>knollr@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Result code from sending web push messages. Logs net::Error if it's not
-    net::OK. Logs net::OK if response header is not present. Otherwise, logs
-    HTTP status code returned. Recorded when received response after message has
-    been sent.
   </summary>
 </histogram>
 

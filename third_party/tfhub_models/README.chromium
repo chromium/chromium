@@ -1,0 +1,49 @@
+Name: Tensorflow Hub Models
+Short Name: tfhub_models
+URL: https://tfhub.dev/
+Date: 2023/08/02
+License: Apache 2.0
+License File: LICENSE
+Version: 2023/08/02
+Security Critical: No
+Shipped: no
+CPEPrefix: unknown
+
+Description:
+This directory contains models downloaded from https://tfhub.dev/ under its
+Apache license. These models are not built into Chromium and are only used as
+testdata.
+
+Uploading New Models:
+  1. Put all the models you want uploaded (including existing models to keep) in
+  the existing //third_party/tfhub_models/models directory.
+
+  2. `cd` to //third_party/tfhub_models.
+
+  3. Run the following commands:
+  ```
+  tar -czf models.tar.gz models/*
+  sha1sum models.tar.gz | awk '{print $1}' > models.tar.gz.sha1
+  ```
+
+  4. Upload the tarball to the cloud storage bucket:
+  ```
+  upload_to_google_storage.py --bucket chromium-tfhub-models models.tar.gz
+  ```
+
+  5. Overwrite chromium's sha1 models.tar.gz.sha1 file with the new one.
+
+Models:
+  Please keep this list and BUILD.gn up to date when new files are added to the
+  Cloud Storage Bucket.
+
+  * lite-model_universal-sentence-encoder-qa-ondevice_1.tflite - A TFLite
+  Support compatible embedding model trained on Q&A text, pulled from
+  https://tfhub.dev/google/lite-model/universal-sentence-encoder-qa-ondevice/1.
+  Requires sentencepiece tokenization to be built into Chrome, which is not
+  currently supported. See also https://crrev.com/c/4722355.
+
+  * rehead_embedding_from_mobilebert.tflite - A TFLite Support compatible
+  embedding model which was adapted from this BERT model,
+  https://tfhub.dev/tensorflow/lite-model/mobilebert/1/metadata/1. The base
+  model was re-headed to expose the embedding layer.

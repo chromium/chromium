@@ -109,6 +109,13 @@ class CORE_EXPORT InterpolationType {
                      const NonInterpolableValue*,
                      InterpolationEnvironment&) const = 0;
 
+  // If this returns true, then transition-behavior:allow-discrete must be set
+  // in order to use this InterpolationType. Discrete properties generally don't
+  // have an InterpolationType set because there is nothing to interpolate, but
+  // some of them do in order to flip at the beginning or end of the animation
+  // instead of in the middle.
+  virtual bool IsDiscrete() const { return false; }
+
   // Implement reference equality checking via pointer equality checking as
   // these are singletons.
   bool operator==(const InterpolationType& other) const {

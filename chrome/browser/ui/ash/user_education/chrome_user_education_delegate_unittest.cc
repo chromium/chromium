@@ -9,18 +9,24 @@
 #include <string>
 #include <utility>
 
+#include "ash/ash_element_identifiers.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/test/ash_test_helper.h"
 #include "ash/user_education/user_education_class_properties.h"
-#include "ash/user_education/user_education_constants.h"
 #include "ash/user_education/user_education_types.h"
 #include "ash/user_education/user_education_util.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/one_shot_event.h"
+#include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
+#include "base/test/run_until.h"
+#include "chrome/browser/ash/app_list/app_list_syncable_service.h"
+#include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ui/user_education/user_education_service.h"
-#include "chrome/browser/ui/user_education/user_education_service_factory.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
@@ -33,10 +39,12 @@
 #include "components/user_education/common/tutorial_service.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_test_util.h"
+#include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view.h"
@@ -45,8 +53,26 @@
 
 namespace {
 
+// Aliases.
+using ::testing::Invoke;
+using ::testing::NiceMock;
+
 // Element identifiers.
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kElementId);
+
+// Mocks -----------------------------------------------------------------------
+
+class MockAppListSyncableService : public app_list::AppListSyncableService {
+ public:
+  explicit MockAppListSyncableService(Profile* profile)
+      : app_list::AppListSyncableService(profile) {}
+
+  // app_list::AppListSyncableService:
+  MOCK_METHOD(void,
+              OnFirstSync,
+              (base::OnceCallback<void(bool was_first_sync_ever)> callback),
+              (override));
+};
 
 }  // namespace
 
@@ -93,11 +119,13 @@ class ChromeUserEducationDelegateTest : public BrowserWithTestWindowTest {
     client->SwitchActiveUser(kUserAccountId);
 
     // Create profile.
-    return profile_manager()->CreateTestingProfile(kUserEmail);
+    return profile_manager()->CreateTestingProfile(kUserEmail,
+                                                   GetTestingFactories());
   }
 
   // User management.
-  const raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_;
+  const raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+      user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
 
   // The delegate instance under test.
@@ -164,7 +192,7 @@ TEST_F(ChromeUserEducationDelegateTest, RegisterTutorial) {
 
   // Initially there should be no tutorial registered.
   user_education::TutorialRegistry& tutorial_registry =
-      UserEducationServiceFactory::GetForProfile(profile())
+      UserEducationServiceFactory::GetForBrowserContext(profile())
           ->tutorial_registry();
   EXPECT_FALSE(tutorial_registry.IsTutorialRegistered(tutorial_id_str));
 
@@ -176,8 +204,9 @@ TEST_F(ChromeUserEducationDelegateTest, RegisterTutorial) {
   EXPECT_TRUE(tutorial_registry.IsTutorialRegistered(tutorial_id_str));
 }
 
-// Verifies `StartTutorial()` starts a tutorial with the browser service.
-TEST_F(ChromeUserEducationDelegateTest, StartTutorial) {
+// Verifies `StartTutorial()` starts a tutorial with the browser service, and
+// `AbortTutorial()` will abort the tutorial.
+TEST_F(ChromeUserEducationDelegateTest, StartAndAbortTutorial) {
   // Create a test element.
   const ui::ElementContext element_context(1);
   ui::test::TestElement test_element(kElementId, element_context);
@@ -185,9 +214,8 @@ TEST_F(ChromeUserEducationDelegateTest, StartTutorial) {
   // Create a tutorial description.
   user_education::TutorialDescription tutorial_description;
   tutorial_description.steps.emplace_back(
-      /*title_text_id_=*/0, /*body_text_id_=*/IDS_OK,
-      ui::InteractionSequence::StepType::kShown, kElementId,
-      /*element_name=*/std::string(), user_education::HelpBubbleArrow::kNone);
+      user_education::TutorialDescription::BubbleStep(kElementId)
+          .SetBubbleBodyText(IDS_OK));
 
   // Register the tutorial.
   delegate()->RegisterTutorial(account_id(), ash::TutorialId::kTest,
@@ -195,8 +223,55 @@ TEST_F(ChromeUserEducationDelegateTest, StartTutorial) {
 
   // Verify the tutorial is not running.
   user_education::TutorialService& tutorial_service =
-      UserEducationServiceFactory::GetForProfile(profile())->tutorial_service();
-  EXPECT_FALSE(tutorial_service.IsRunningTutorial());
+      UserEducationServiceFactory::GetForBrowserContext(profile())
+          ->tutorial_service();
+  EXPECT_FALSE(delegate()->IsRunningTutorial(account_id()));
+
+  // Attempt to start the tutorial.
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, aborted_callback);
+  delegate()->StartTutorial(
+      account_id(), ash::TutorialId::kTest, element_context,
+      /*completed_callback=*/base::BindLambdaForTesting([]() { FAIL(); }),
+      aborted_callback.Get());
+
+  // Confirm the tutorial is running.
+  EXPECT_TRUE(tutorial_service.IsRunningTutorial());
+
+  // Verify the running tutorial's ID.
+  EXPECT_TRUE(
+      delegate()->IsRunningTutorial(account_id(), ash::TutorialId::kTest));
+
+  // Abort the tutorial and expect the callback to be called.
+  EXPECT_CALL_IN_SCOPE(aborted_callback, Run,
+                       delegate()->AbortTutorial(account_id()));
+  EXPECT_FALSE(delegate()->IsRunningTutorial(account_id()));
+}
+
+// Verifies that `AbortTutorial()` will only abort the tutorial associated with
+// the given id, when it is given.
+TEST_F(ChromeUserEducationDelegateTest, AbortSpecificTutorial) {
+  const auto kTestTutorialIdString =
+      ash::user_education_util::ToString(ash::TutorialId::kTest);
+
+  // Create a test element.
+  const ui::ElementContext element_context(1);
+  ui::test::TestElement test_element(kElementId, element_context);
+
+  // Create a tutorial description.
+  user_education::TutorialDescription tutorial_description;
+  tutorial_description.steps.emplace_back(
+      user_education::TutorialDescription::BubbleStep(kElementId)
+          .SetBubbleBodyText(IDS_OK));
+
+  // Register the tutorial.
+  delegate()->RegisterTutorial(account_id(), ash::TutorialId::kTest,
+                               std::move(tutorial_description));
+
+  // Verify the tutorial is not running.
+  user_education::TutorialService& tutorial_service =
+      UserEducationServiceFactory::GetForBrowserContext(profile())
+          ->tutorial_service();
+  EXPECT_FALSE(tutorial_service.IsRunningTutorial(kTestTutorialIdString));
 
   // Attempt to start the tutorial.
   delegate()->StartTutorial(account_id(), ash::TutorialId::kTest,
@@ -205,5 +280,92 @@ TEST_F(ChromeUserEducationDelegateTest, StartTutorial) {
                             /*aborted_callback=*/base::DoNothing());
 
   // Confirm the tutorial is running.
-  EXPECT_TRUE(tutorial_service.IsRunningTutorial());
+  EXPECT_TRUE(tutorial_service.IsRunningTutorial(kTestTutorialIdString));
+
+  // Abort the tutorial with the incorrect id, and expect the tutorial to still
+  // be running.
+  delegate()->AbortTutorial(account_id(),
+                            ash::TutorialId::kCaptureModeTourPrototype1);
+  EXPECT_TRUE(tutorial_service.IsRunningTutorial(kTestTutorialIdString));
+
+  // Abort the tutorial with the correct id, and expect no tutorial to be
+  // running.
+  delegate()->AbortTutorial(account_id(), ash::TutorialId::kTest);
+  EXPECT_FALSE(tutorial_service.IsRunningTutorial());
+}
+
+// ChromeUserEducationDelegateNewUserTest --------------------------------------
+
+// Base class for tests of the `ChromeUserEducationDelegate` concerned with
+// new users, parameterized by whether the first app list sync in the session
+// was the first sync ever across all ChromeOS devices and sessions for the
+// given user.
+class ChromeUserEducationDelegateNewUserTest
+    : public ChromeUserEducationDelegateTest,
+      public ::testing::WithParamInterface</*was_first_sync_ever=*/bool> {
+ public:
+  // Returns the event to signal when the first app list sync in the session has
+  // been completed.
+  base::OneShotEvent& on_first_sync() { return on_first_sync_; }
+
+  // Returns whether the first app list sync in the session was the first sync
+  // ever across all ChromeOS devices and sessions for the given user, based on
+  // test parameterization.
+  bool was_first_sync_ever() const { return GetParam(); }
+
+ private:
+  // ChromeUserEducationDelegateTest:
+  TestingProfile::TestingFactories GetTestingFactories() override {
+    return {{app_list::AppListSyncableServiceFactory::GetInstance(),
+             base::BindLambdaForTesting([&](content::BrowserContext* context)
+                                            -> std::unique_ptr<KeyedService> {
+               auto app_list_syncable_service =
+                   std::make_unique<NiceMock<MockAppListSyncableService>>(
+                       Profile::FromBrowserContext(context));
+
+               // Mock `app_list::AppListSyncableService::OnFirstSync()` so that
+               // it runs callbacks to inform them if the first app list sync in
+               // the session was the first sync ever across all ChromeOS
+               // devices and sessions for the given user, based on test
+               // parameterization. Callbacks should only run once signaled that
+               // the first app list sync in the session has been completed.
+               ON_CALL(*app_list_syncable_service, OnFirstSync)
+                   .WillByDefault(Invoke(
+                       [&](base::OnceCallback<void(bool was_first_sync_ever)>
+                               callback) {
+                         on_first_sync_.Post(
+                             FROM_HERE, base::BindOnce(std::move(callback),
+                                                       was_first_sync_ever()));
+                       }));
+
+               return app_list_syncable_service;
+             })}};
+  }
+
+  // The event to signal when the first app list sync in the session has been
+  // completed.
+  base::OneShotEvent on_first_sync_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ChromeUserEducationDelegateNewUserTest,
+                         /*was_first_sync_ever=*/::testing::Bool());
+
+// Tests -----------------------------------------------------------------------
+
+// Verifies that `IsNewUser()` is working as intended.
+TEST_P(ChromeUserEducationDelegateNewUserTest, IsNewUser) {
+  // Until the first app list sync in the session has been completed, it is
+  // not known whether a given user can be considered new.
+  EXPECT_EQ(delegate()->IsNewUser(account_id()), absl::nullopt);
+
+  // Signal that the first app list sync in the session has been completed.
+  on_first_sync().Signal();
+
+  // Once the first app list sync in the session has been completed, a task will
+  // be posted to the `delegate()` which will cache whether the given user can
+  // be considered new.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return delegate()->IsNewUser(account_id()) == was_first_sync_ever();
+  }));
 }

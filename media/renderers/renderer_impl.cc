@@ -446,6 +446,14 @@ void RendererImpl::InitializeVideoRenderer() {
 
   if (!video_stream) {
     video_renderer_.reset();
+
+    // Something has disabled all audio and video streams, so fail
+    // initialization.
+    if (!audio_renderer_) {
+      FinishInitialization(PIPELINE_ERROR_COULD_NOT_RENDER);
+      return;
+    }
+
     task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&RendererImpl::OnVideoRendererInitializeDone,
                                   weak_this_, PIPELINE_OK));

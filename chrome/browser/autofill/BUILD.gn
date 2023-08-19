@@ -149,6 +149,7 @@ static_library("test_support") {
       "//chrome/browser",
       "//chrome/browser/autofill",
     ]
+    public_deps += [ "test:test_support" ]
   }
 }
 

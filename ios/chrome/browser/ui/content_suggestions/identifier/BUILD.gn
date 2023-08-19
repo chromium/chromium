@@ -10,7 +10,6 @@ source_set("identifier") {
     "content_suggestions_section_information.mm",
   ]
   deps = [ "//base" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("unit_tests") {
@@ -20,5 +19,4 @@ source_set("unit_tests") {
     ":identifier",
     "//testing/gtest",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

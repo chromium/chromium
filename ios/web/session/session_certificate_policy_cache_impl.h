@@ -5,18 +5,17 @@
 #ifndef IOS_WEB_SESSION_SESSION_CERTIFICATE_POLICY_CACHE_IMPL_H_
 #define IOS_WEB_SESSION_SESSION_CERTIFICATE_POLICY_CACHE_IMPL_H_
 
-#import <Foundation/Foundation.h>
-
 #include "ios/web/public/session/session_certificate_policy_cache.h"
 #include "ios/web/session/session_certificate.h"
-
-@class CRWSessionCertificateStorage;
 
 namespace net {
 class X509Certificate;
 }
 
 namespace web {
+namespace proto {
+class CertificatesCacheStorage;
+}  // namespace proto
 
 // Concrete implementation of SessionCertificatePolicyCache.
 class SessionCertificatePolicyCacheImpl final
@@ -25,16 +24,20 @@ class SessionCertificatePolicyCacheImpl final
   explicit SessionCertificatePolicyCacheImpl(BrowserState* browser_state);
   ~SessionCertificatePolicyCacheImpl() final;
 
+  // Creates a SessionCertificatePolicyCacheImpl from serialized representation.
+  SessionCertificatePolicyCacheImpl(
+      BrowserState* browser_state,
+      const proto::CertificatesCacheStorage& storage);
+
+  // Serializes the SessionCertificatePolicyCacheImpl into `storage`.
+  void SerializeToProto(proto::CertificatesCacheStorage& storage) const;
+
   // SessionCertificatePolicyCache:
   void UpdateCertificatePolicyCache() const final;
   void RegisterAllowedCertificate(
       const scoped_refptr<net::X509Certificate>& certificate,
       const std::string& host,
       net::CertStatus status) final;
-
-  // Allows for batch updating the allowed certificate storages.
-  void SetAllowedCerts(NSSet<CRWSessionCertificateStorage*>* allowed_certs);
-  NSSet<CRWSessionCertificateStorage*>* GetAllowedCerts() const;
 
  private:
   // Represents the allowed certificates.

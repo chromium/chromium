@@ -51,7 +51,6 @@ class RootWindowLayoutManager;
 class Shelf;
 class ShelfLayoutManager;
 class SplitViewController;
-class StackingController;
 class StatusAreaWidget;
 class SystemModalContainerLayoutManager;
 class SystemWallpaperController;
@@ -59,6 +58,7 @@ class TouchExplorationManager;
 class TouchHudDebug;
 class TouchHudProjection;
 class WallpaperWidgetController;
+class WindowParentingController;
 class WorkAreaInsets;
 
 namespace curtain {
@@ -305,7 +305,7 @@ class ASH_EXPORT RootWindowController {
   std::unique_ptr<AppMenuModelAdapter> root_window_menu_model_adapter_;
   std::unique_ptr<ui::SimpleMenuModel> sort_apps_submenu_;
 
-  std::unique_ptr<StackingController> stacking_controller_;
+  std::unique_ptr<WindowParentingController> window_parenting_controller_;
 
   std::unique_ptr<SplitViewController> split_view_controller_;
 
@@ -322,8 +322,10 @@ class ASH_EXPORT RootWindowController {
 
   // Heads-up displays for touch events. These HUDs are not owned by the root
   // window controller and manage their own lifetimes.
-  raw_ptr<TouchHudDebug, ExperimentalAsh> touch_hud_debug_ = nullptr;
-  raw_ptr<TouchHudProjection, ExperimentalAsh> touch_hud_projection_ = nullptr;
+  raw_ptr<TouchHudDebug, DanglingUntriaged | ExperimentalAsh> touch_hud_debug_ =
+      nullptr;
+  raw_ptr<TouchHudProjection, DanglingUntriaged | ExperimentalAsh>
+      touch_hud_projection_ = nullptr;
 
   std::unique_ptr<::wm::ScopedCaptureClient> capture_client_;
 

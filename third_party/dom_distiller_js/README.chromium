@@ -2,7 +2,9 @@ Name: dom-distiller-js
 URL: https://github.com/chromium/dom-distiller
 Version: 36c7178512
 License: BSD
+License File: LICENSE
 Security Critical: yes
+Shipped: yes
 
 Description:
 Dom Distiller is a java library that extracts article content from a web page.

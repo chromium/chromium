@@ -34,10 +34,6 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 using password_manager::MockPasswordFormManagerForUI;
 using password_manager::PasswordFormManager;
 using password_manager::PasswordFormManagerForUI;
@@ -123,11 +119,6 @@ TEST_F(IOSChromePasswordManagerClientTest, PasswordManagerEnabledPolicyTest) {
 // `CredentialProviderPromoCommands`.
 TEST_F(IOSChromePasswordManagerClientTest,
        NotifySuccessfulLoginWithExistingPasswordTest) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      kCredentialProviderExtensionPromo,
-      {{"enable_promo_on_login_with_autofill", "true"}});
-
   // Create a dispatcher for the client, register the command handler for
   // `CredentialProviderPromoCommands`
   id credential_provider_promo_commands_handler_mock =

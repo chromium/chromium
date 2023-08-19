@@ -170,53 +170,20 @@ public class UmaUtils {
         RecordHistogram.recordEnumeratedHistogram("Android.BackgroundRestrictions.StandbyBucket",
                 standbyBucketUma, StandbyBucketStatus.COUNT);
 
-        String histogramNameSplitByUserRestriction = isBackgroundRestricted
-                ? "Android.BackgroundRestrictions.StandbyBucket.WithUserRestriction"
-                : "Android.BackgroundRestrictions.StandbyBucket.WithoutUserRestriction";
-        RecordHistogram.recordEnumeratedHistogram(
-                histogramNameSplitByUserRestriction, standbyBucketUma, StandbyBucketStatus.COUNT);
+        if (isBackgroundRestricted) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Android.BackgroundRestrictions.StandbyBucket.WithUserRestriction",
+                    standbyBucketUma, StandbyBucketStatus.COUNT);
+        }
     }
 
     /** Record minidump uploading time split by background restriction status. */
     public static void recordMinidumpUploadingTime(long taskDurationMs) {
         RecordHistogram.recordCustomTimesHistogram("Stability.Android.MinidumpUploadingTime",
                 taskDurationMs, 1, DateUtils.DAY_IN_MILLIS, 50);
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return;
-        RecordHistogram.recordCustomTimesHistogram(
-                "Stability.Android.MinidumpUploadingTime." + getHistogramPatternForStandbyStatus(),
-                taskDurationMs, 1, DateUtils.DAY_IN_MILLIS, 50);
     }
 
-    private static String getHistogramPatternForStandbyStatus() {
-        int standbyBucket = getStandbyBucket(ContextUtils.getApplicationContext());
-        switch (standbyBucket) {
-            case StandbyBucketStatus.ACTIVE:
-                return "Active";
-            case StandbyBucketStatus.WORKING_SET:
-                return "WorkingSet";
-            case StandbyBucketStatus.FREQUENT:
-                return "Frequent";
-            case StandbyBucketStatus.RARE:
-                return "Rare";
-            case StandbyBucketStatus.RESTRICTED:
-                return "Restricted";
-            case StandbyBucketStatus.UNSUPPORTED:
-                return "Unsupported";
-            case StandbyBucketStatus.EXEMPTED:
-                return "Exempted";
-            case StandbyBucketStatus.NEVER:
-                return "Never";
-            case StandbyBucketStatus.OTHER:
-                return "Other";
-            default:
-                assert false : "Unexpected standby bucket " + standbyBucket;
-                return "Unknown";
-        }
-    }
-
-    @StandbyBucketStatus
-    private static int getStandbyBucket(Context context) {
+    private static @StandbyBucketStatus int getStandbyBucket(Context context) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return StandbyBucketStatus.UNSUPPORTED;
 
         UsageStatsManager usageStatsManager =

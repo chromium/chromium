@@ -93,6 +93,10 @@ class TestDeviceEventDispatcherEvdev : public DeviceEventDispatcherEvdev {
     event_factory_evdev_->DispatchTouchpadDevicesUpdated(devices,
                                                          has_haptic_touchpad);
   }
+  void DispatchGraphicsTabletDevicesUpdated(
+      const std::vector<InputDevice>& devices) override {
+    event_factory_evdev_->DispatchGraphicsTabletDevicesUpdated(devices);
+  }
   void DispatchUncategorizedDevicesUpdated(
       const std::vector<InputDevice>& devices) override {
     event_factory_evdev_->DispatchUncategorizedDevicesUpdated(devices);

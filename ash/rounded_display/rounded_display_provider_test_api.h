@@ -36,7 +36,7 @@ class ASH_EXPORT RoundedDisplayProviderTestApi {
   std::vector<RoundedDisplayGutter*> GetGutters() const;
 
  private:
-  raw_ptr<RoundedDisplayProvider> provider_;
+  raw_ptr<RoundedDisplayProvider, DanglingUntriaged> provider_;
 };
 
 }  // namespace ash

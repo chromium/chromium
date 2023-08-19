@@ -47,8 +47,7 @@ InertEffect::InertEffect(KeyframeEffectModelBase* model,
       at_scroll_timeline_boundary_(proxy.AtScrollTimelineBoundary()) {}
 
 void InertEffect::Sample(HeapVector<Member<Interpolation>>& result) const {
-  UpdateInheritedTime(inherited_time_, at_scroll_timeline_boundary_,
-                      /* is_idle */ false, playback_rate_,
+  UpdateInheritedTime(inherited_time_, /* is_idle */ false, playback_rate_,
                       kTimingUpdateOnDemand);
   if (!IsInEffect()) {
     result.clear();

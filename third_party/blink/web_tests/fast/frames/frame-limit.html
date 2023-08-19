@@ -1,10 +1,12 @@
 <script>
+	var n = 125;
+
 	function addFrames() {
 	  var parent = document.createElement('iframe');
 	  parent.id = 'theframe';
 	  document.body.appendChild(parent);
 	
-	  for (i = 0; i < 150; i++) {
+	  for (i = 0; i < n; i++) {
 	    var frame = document.createElement("iframe");
 	    frame.setAttribute("src", "data:text/plain," + i);
 	    frame.style.display = 'none';
@@ -16,18 +18,18 @@
 		if (window.testRunner)
 			testRunner.dumpAsText();
 			
-		// Add 150 frames. 
+		// Add n frames. 
 		addFrames();
 
 		// Remove the parent frame
 		var parent = document.getElementById('theframe');
 		parent.parentNode.removeChild(parent);
 
-		// Add 150 frames again.
+		// Add n frames again.
 		addFrames();
 		var parent = document.getElementById('theframe');
 
-		if (parent.contentWindow.frames.length != 150)
+		if (parent.contentWindow.frames.length != n)
 			return;
 			
 		document.getElementById('result').innerHTML = 'SUCCESS';

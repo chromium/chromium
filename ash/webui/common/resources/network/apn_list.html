@@ -87,7 +87,7 @@
   </div>
 </template>
 
-<iron-list items="[[getApns_(managedCellularProperties)]]"
+<iron-list items="[[apns_]]"
     on-show-apn-detail-dialog="onShowApnDetailDialog_">
   <template>
     <apn-list-item
@@ -95,7 +95,9 @@
         is-connected="[[isApnConnected_(index, managedCellularProperties)]]"
         should-disallow-disabling-removing="[[shouldDisallowDisablingRemoving_(item)]]"
         should-disallow-enabling="[[shouldDisallowEnabling_(item)]]"
-        guid="[[guid]]">
+        guid="[[guid]]"
+        item-index="[[index]]"
+        list-size="[[apns_.length]]">
     </apn-list-item>
   </template>
 </iron-list>

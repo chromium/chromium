@@ -11,7 +11,7 @@ Second, today the Web Platform is a much more powerful platform that it was when
 
 ## Overview of a SWA
 A SWA is simply a Web Application, but it has access to more APIs and is distributed differently. The intent is to provide an extended platform of Web Apps to make them suitable for sensitive and internal applications.
-We have a sample system web application to test out new platform features as well as to demonstrate how to build a basic SWA. For reference see: [the code](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ash/web_applications/sample_system_web_app_info.h) and [the initial checkin](https://chromium-review.googlesource.com/c/chromium/src/+/1956978)
+We have a sample system web application to test out new platform features as well as to demonstrate how to build a basic SWA. For reference see: [the code](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ash/system_web_apps/apps/sample_system_web_app_info.h) and [the initial checkin](https://chromium-review.googlesource.com/c/chromium/src/+/1956978)
 
 ## Distribution
 System Web Apps are distributed with the OS image. For most apps, icons, js and html are all packaged with GRIT. C++ code is compiled into the OS. This means that there is no versioning mismatch possible between ChromeOS and an SWA, or from the C++ part of an SWA to the web part. This distribution also implies that releases and bug fixes are tied to the ChromeOS release schedule.

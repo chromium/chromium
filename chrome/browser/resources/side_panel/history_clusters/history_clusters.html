@@ -7,6 +7,7 @@
   <meta name="color-scheme" content="light dark">
   <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
   <link rel="stylesheet" href="chrome://resources/css/md_colors.css">
+  <link rel="stylesheet" href="chrome://theme/colors.css?sets=ui,chrome">
   <style>
     html,
     body {
@@ -19,6 +20,10 @@
     body {
       background: white;
       overflow: hidden;
+    }
+
+    html[chrome-refresh-2023] body {
+      background: var(--color-side-panel-content-background);
     }
 
     @media (prefers-color-scheme: dark) {

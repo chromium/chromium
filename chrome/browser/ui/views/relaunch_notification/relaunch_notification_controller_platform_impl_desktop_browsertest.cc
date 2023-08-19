@@ -24,7 +24,7 @@ IN_PROC_BROWSER_TEST_F(
   // Allow UI tasks to run so that the browser becomes fully active/inactive.
   base::RunLoop().RunUntilIdle();
   RelaunchNotificationControllerPlatformImpl impl;
-  base::Time deadline = base::Time::FromDeltaSinceWindowsEpoch(base::Hours(1));
+  base::Time deadline = base::Time::Now() + base::Hours(1);
 
   impl.NotifyRelaunchRecommended(deadline, false);
   views::test::WidgetDestroyedWaiter first_destroyed_waiter(

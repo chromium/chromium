@@ -13,6 +13,11 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/metrics/power/power_metrics.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
+#include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
+#include "chrome/browser/performance_manager/test_support/fake_frame_throttling_delegate.h"
+#include "chrome/browser/performance_manager/test_support/fake_high_efficiency_mode_delegate.h"
+#include "components/performance_manager/public/user_tuning/prefs.h"
+#include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -99,6 +104,8 @@ class TestUsageScenarioDataStoreImpl : public UsageScenarioDataStoreImpl {
   IntervalData fake_data_;
 };
 
+}  // namespace
+
 class BatteryDischargeReporterTest : public testing::Test {
  public:
   BatteryDischargeReporterTest() = default;
@@ -107,6 +114,22 @@ class BatteryDischargeReporterTest : public testing::Test {
   BatteryDischargeReporterTest& operator=(
       const BatteryDischargeReporterTest& rhs) = delete;
   ~BatteryDischargeReporterTest() override = default;
+
+  void SetUp() override {
+    performance_manager::user_tuning::prefs::RegisterLocalStatePrefs(
+        testing_local_state_.registry());
+
+    battery_state_sampler_ = std::make_unique<base::BatteryStateSampler>(
+        std::make_unique<NoopSamplingEventSource>(),
+        std::make_unique<NoopBatteryLevelProvider>());
+
+    test_battery_saver_mode_manager_ = base::WrapUnique(
+        new performance_manager::user_tuning::BatterySaverModeManager(
+            &testing_local_state_,
+            std::make_unique<performance_manager::FakeFrameThrottlingDelegate>(
+                &throttling_enabled_)));
+    test_battery_saver_mode_manager_->Start();
+  }
 
   // Tests that the right BatteryDischargeMode histogram sample is emitted given
   // the battery states before and after an interval.
@@ -118,11 +141,8 @@ class BatteryDischargeReporterTest : public testing::Test {
       BatteryDischargeMode expected_mode) {
     TestUsageScenarioDataStoreImpl usage_scenario_data_store;
 
-    base::BatteryStateSampler battery_state_sampler(
-        std::make_unique<NoopSamplingEventSource>(),
-        std::make_unique<NoopBatteryLevelProvider>());
     BatteryDischargeReporter battery_discharge_reporter(
-        &battery_state_sampler, &usage_scenario_data_store);
+        battery_state_sampler_.get(), &usage_scenario_data_store);
 
     battery_discharge_reporter.OnBatteryStateSampled(previous_battery_state);
     task_environment_.FastForwardBy(base::Minutes(1));
@@ -142,18 +162,20 @@ class BatteryDischargeReporterTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   base::HistogramTester histogram_tester_;
+
+  std::unique_ptr<base::BatteryStateSampler> battery_state_sampler_;
+
+  TestingPrefServiceSimple testing_local_state_;
+  bool throttling_enabled_ = false;
+  std::unique_ptr<performance_manager::user_tuning::BatterySaverModeManager>
+      test_battery_saver_mode_manager_;
 };
 
-}  // namespace
-
-TEST_F(BatteryDischargeReporterTest, Simple) {
+TEST_F(BatteryDischargeReporterTest, Simple_BatterySaverInactive) {
   TestUsageScenarioDataStoreImpl usage_scenario_data_store;
 
-  base::BatteryStateSampler battery_state_sampler(
-      std::make_unique<NoopSamplingEventSource>(),
-      std::make_unique<NoopBatteryLevelProvider>());
   BatteryDischargeReporter battery_discharge_reporter(
-      &battery_state_sampler, &usage_scenario_data_store);
+      battery_state_sampler_.get(), &usage_scenario_data_store);
 
   battery_discharge_reporter.OnBatteryStateSampled(
       MakeBatteryState(kHalfBatteryChargeLevel));
@@ -166,12 +188,69 @@ TEST_F(BatteryDischargeReporterTest, Simple) {
   // 10 mWh discharge when capacity is 10000 mWh is 10 hundredth of a percent.
   const int64_t kExpectedDischargeRateRelative = 10;
 
-  const std::vector<const char*> suffixes(
-      {"", ".Initial", ".ZeroWindow", ".ZeroWindow.Initial"});
   ExpectHistogramSamples(
-      &histogram_tester_, suffixes,
+      &histogram_tester_,
+      {"", ".Initial", ".ZeroWindow", ".ZeroWindow.Initial"},
       {{kBatteryDischargeModeHistogramName,
         static_cast<int64_t>(BatteryDischargeMode::kDischarging)}});
+  const std::vector<const char*> suffixes({
+      "",
+      ".Initial",
+      ".ZeroWindow",
+      ".ZeroWindow.Initial",
+      ".BatterySaverDisabled",
+      ".Initial.BatterySaverDisabled",
+      ".ZeroWindow.BatterySaverDisabled",
+      ".ZeroWindow.Initial.BatterySaverDisabled",
+  });
+  ExpectHistogramSamples(
+      &histogram_tester_, suffixes,
+      {{kBatteryDischargeRateMilliwattsHistogramName, kExpectedDischargeRate}});
+  ExpectHistogramSamples(&histogram_tester_, suffixes,
+                         {{kBatteryDischargeRateRelativeHistogramName,
+                           kExpectedDischargeRateRelative}});
+  histogram_tester_.ExpectTotalCount(
+      kBatteryDischargeModeTenMinutesHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(
+      kBatteryDischargeRateMilliwattsTenMinutesHistogramName, 0);
+}
+
+TEST_F(BatteryDischargeReporterTest, Simple_BatterySaverActive) {
+  testing_local_state_.SetInteger(
+      performance_manager::user_tuning::prefs::kBatterySaverModeState,
+      static_cast<int>(performance_manager::user_tuning::prefs::
+                           BatterySaverModeState::kEnabled));
+  TestUsageScenarioDataStoreImpl usage_scenario_data_store;
+
+  BatteryDischargeReporter battery_discharge_reporter(
+      battery_state_sampler_.get(), &usage_scenario_data_store);
+
+  battery_discharge_reporter.OnBatteryStateSampled(
+      MakeBatteryState(kHalfBatteryChargeLevel));
+  task_environment_.FastForwardBy(base::Minutes(1));
+  battery_discharge_reporter.OnBatteryStateSampled(
+      MakeBatteryState(kHalfBatteryChargeLevel - 10));
+
+  // 10 mWh discharge over 1 minute equals 600 mW.
+  const int64_t kExpectedDischargeRate = 600;
+  // 10 mWh discharge when capacity is 10000 mWh is 10 hundredth of a percent.
+  const int64_t kExpectedDischargeRateRelative = 10;
+
+  ExpectHistogramSamples(
+      &histogram_tester_,
+      {"", ".Initial", ".ZeroWindow", ".ZeroWindow.Initial"},
+      {{kBatteryDischargeModeHistogramName,
+        static_cast<int64_t>(BatteryDischargeMode::kDischarging)}});
+  const std::vector<const char*> suffixes({
+      "",
+      ".Initial",
+      ".ZeroWindow",
+      ".ZeroWindow.Initial",
+      ".BatterySaverEnabled",
+      ".Initial.BatterySaverEnabled",
+      ".ZeroWindow.BatterySaverEnabled",
+      ".ZeroWindow.Initial.BatterySaverEnabled",
+  });
   ExpectHistogramSamples(
       &histogram_tester_, suffixes,
       {{kBatteryDischargeRateMilliwattsHistogramName, kExpectedDischargeRate}});
@@ -187,11 +266,8 @@ TEST_F(BatteryDischargeReporterTest, Simple) {
 TEST_F(BatteryDischargeReporterTest, BatteryDischargeCaptureIsTooLate) {
   TestUsageScenarioDataStoreImpl usage_scenario_data_store;
 
-  base::BatteryStateSampler battery_state_sampler(
-      std::make_unique<NoopSamplingEventSource>(),
-      std::make_unique<NoopBatteryLevelProvider>());
   BatteryDischargeReporter battery_discharge_reporter(
-      &battery_state_sampler, &usage_scenario_data_store);
+      battery_state_sampler_.get(), &usage_scenario_data_store);
 
   battery_discharge_reporter.OnBatteryStateSampled(MakeBatteryState(5000));
 
@@ -213,11 +289,8 @@ TEST_F(BatteryDischargeReporterTest, BatteryDischargeCaptureIsTooLate) {
 TEST_F(BatteryDischargeReporterTest, BatteryDischargeCaptureIsLate) {
   TestUsageScenarioDataStoreImpl usage_scenario_data_store;
 
-  base::BatteryStateSampler battery_state_sampler(
-      std::make_unique<NoopSamplingEventSource>(),
-      std::make_unique<NoopBatteryLevelProvider>());
   BatteryDischargeReporter battery_discharge_reporter(
-      &battery_state_sampler, &usage_scenario_data_store);
+      battery_state_sampler_.get(), &usage_scenario_data_store);
 
   battery_discharge_reporter.OnBatteryStateSampled(
       MakeBatteryState(kHalfBatteryChargeLevel));
@@ -240,11 +313,8 @@ TEST_F(BatteryDischargeReporterTest, BatteryDischargeCaptureIsLate) {
 TEST_F(BatteryDischargeReporterTest, BatteryDischargeCaptureIsTooEarly) {
   TestUsageScenarioDataStoreImpl usage_scenario_data_store;
 
-  base::BatteryStateSampler battery_state_sampler(
-      std::make_unique<NoopSamplingEventSource>(),
-      std::make_unique<NoopBatteryLevelProvider>());
   BatteryDischargeReporter battery_discharge_reporter(
-      &battery_state_sampler, &usage_scenario_data_store);
+      battery_state_sampler_.get(), &usage_scenario_data_store);
 
   battery_discharge_reporter.OnBatteryStateSampled(
       MakeBatteryState(kHalfBatteryChargeLevel));
@@ -267,11 +337,8 @@ TEST_F(BatteryDischargeReporterTest, BatteryDischargeCaptureIsTooEarly) {
 TEST_F(BatteryDischargeReporterTest, BatteryDischargeCaptureIsEarly) {
   TestUsageScenarioDataStoreImpl usage_scenario_data_store;
 
-  base::BatteryStateSampler battery_state_sampler(
-      std::make_unique<NoopSamplingEventSource>(),
-      std::make_unique<NoopBatteryLevelProvider>());
   BatteryDischargeReporter battery_discharge_reporter(
-      &battery_state_sampler, &usage_scenario_data_store);
+      battery_state_sampler_.get(), &usage_scenario_data_store);
 
   battery_discharge_reporter.OnBatteryStateSampled(
       MakeBatteryState(kHalfBatteryChargeLevel));
@@ -294,11 +361,8 @@ TEST_F(BatteryDischargeReporterTest, BatteryDischargeCaptureIsEarly) {
 TEST_F(BatteryDischargeReporterTest, FullChargedCapacityIncreased) {
   TestUsageScenarioDataStoreImpl usage_scenario_data_store;
 
-  base::BatteryStateSampler battery_state_sampler(
-      std::make_unique<NoopSamplingEventSource>(),
-      std::make_unique<NoopBatteryLevelProvider>());
   BatteryDischargeReporter battery_discharge_reporter(
-      &battery_state_sampler, &usage_scenario_data_store);
+      battery_state_sampler_.get(), &usage_scenario_data_store);
 
   battery_discharge_reporter.OnBatteryStateSampled(
       base::BatteryLevelProvider::BatteryState{
@@ -476,11 +540,8 @@ TEST_F(BatteryDischargeReporterTest, BatteryLevelIncreased) {
 TEST_F(BatteryDischargeReporterTest, BatteryDischargeGranularity) {
   TestUsageScenarioDataStoreImpl usage_scenario_data_store;
 
-  base::BatteryStateSampler battery_state_sampler(
-      std::make_unique<NoopSamplingEventSource>(),
-      std::make_unique<NoopBatteryLevelProvider>());
   BatteryDischargeReporter battery_discharge_reporter(
-      &battery_state_sampler, &usage_scenario_data_store);
+      battery_state_sampler_.get(), &usage_scenario_data_store);
 
   const int64_t kGranularityMilliwattHours = 10;
   // Since the full charged capacity is 1000, a granularity of 10 is equal to
@@ -510,11 +571,8 @@ TEST_F(BatteryDischargeReporterTest, BatteryDischargeGranularity) {
 TEST_F(BatteryDischargeReporterTest, TenMinutesInterval) {
   TestUsageScenarioDataStoreImpl usage_scenario_data_store;
 
-  base::BatteryStateSampler battery_state_sampler(
-      std::make_unique<NoopSamplingEventSource>(),
-      std::make_unique<NoopBatteryLevelProvider>());
   BatteryDischargeReporter battery_discharge_reporter(
-      &battery_state_sampler, &usage_scenario_data_store);
+      battery_state_sampler_.get(), &usage_scenario_data_store);
 
   {
     base::HistogramTester tester;

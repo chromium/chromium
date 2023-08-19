@@ -13,5 +13,9 @@ BASE_FEATURE(kMixedContentAutoupgrade,
              "AutoupgradeMixedContentWebKit",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kHttpsUpgrades,
+             "HttpsUpgrades",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace security_interstitials

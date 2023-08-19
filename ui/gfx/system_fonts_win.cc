@@ -178,7 +178,7 @@ class SystemFonts {
     // we don't have to).
     FontAdjustment font_adjustment;
     if (adjust_font_callback_) {
-      adjust_font_callback_(&font_adjustment);
+      adjust_font_callback_(font_adjustment);
     }
 
     // Factor out system DPI scale that Windows will include in reported font

@@ -11,14 +11,6 @@ namespace blink {
 LayoutNGGrid::LayoutNGGrid(Element* element)
     : LayoutNGMixin<LayoutBlock>(element) {}
 
-void LayoutNGGrid::UpdateBlockLayout() {
-  if (IsOutOfFlowPositioned()) {
-    UpdateOutOfFlowBlockLayout();
-    return;
-  }
-  UpdateInFlowBlockLayout();
-}
-
 void LayoutNGGrid::AddChild(LayoutObject* new_child,
                             LayoutObject* before_child) {
   NOT_DESTROYED();
@@ -43,11 +35,11 @@ namespace {
 bool ExplicitGridDidResize(const ComputedStyle& new_style,
                            const ComputedStyle& old_style) {
   const auto& old_ng_columns_track_list =
-      old_style.GridTemplateColumns().TrackList();
+      old_style.GridTemplateColumns().track_list;
   const auto& new_ng_columns_track_list =
-      new_style.GridTemplateColumns().TrackList();
-  const auto& old_ng_rows_track_list = old_style.GridTemplateRows().TrackList();
-  const auto& new_ng_rows_track_list = new_style.GridTemplateRows().TrackList();
+      new_style.GridTemplateColumns().track_list;
+  const auto& old_ng_rows_track_list = old_style.GridTemplateRows().track_list;
+  const auto& new_ng_rows_track_list = new_style.GridTemplateRows().track_list;
 
   return old_ng_columns_track_list.TrackCountWithoutAutoRepeat() !=
              new_ng_columns_track_list.TrackCountWithoutAutoRepeat() ||
@@ -85,13 +77,13 @@ void LayoutNGGrid::StyleDidChange(StyleDifference diff,
 
   const auto& new_style = StyleRef();
   const auto& new_grid_columns_track_list =
-      new_style.GridTemplateColumns().TrackList();
+      new_style.GridTemplateColumns().track_list;
   const auto& new_grid_rows_track_list =
-      new_style.GridTemplateRows().TrackList();
+      new_style.GridTemplateRows().track_list;
 
   if (new_grid_columns_track_list !=
-          old_style->GridTemplateColumns().TrackList() ||
-      new_grid_rows_track_list != old_style->GridTemplateRows().TrackList() ||
+          old_style->GridTemplateColumns().track_list ||
+      new_grid_rows_track_list != old_style->GridTemplateRows().track_list ||
       new_style.GridAutoColumns() != old_style->GridAutoColumns() ||
       new_style.GridAutoRows() != old_style->GridAutoRows() ||
       new_style.GetGridAutoFlow() != old_style->GetGridAutoFlow()) {

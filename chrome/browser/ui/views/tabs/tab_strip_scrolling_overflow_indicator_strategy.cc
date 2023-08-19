@@ -208,7 +208,7 @@ void FadeOverflowIndicatorStrategy::Init() {
           views::OverflowIndicatorAlignment::kRight);
   right_overflow_indicator_ = right_overflow_indicator.get();
 
-  const int min_tab_width = TabStyleViews::Create()->GetMinimumInactiveWidth();
+  const int min_tab_width = TabStyle::Get()->GetMinimumInactiveWidth();
 
   left_overflow_indicator_->SetShadowBlurWidth(std::min(64, min_tab_width * 2));
   right_overflow_indicator_->SetShadowBlurWidth(

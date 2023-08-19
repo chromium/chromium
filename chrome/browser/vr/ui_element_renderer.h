@@ -9,14 +9,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/vr/elements/controller.h"
-#include "chrome/browser/vr/elements/environment/background.h"
 #include "chrome/browser/vr/elements/environment/grid.h"
-#include "chrome/browser/vr/elements/environment/stars.h"
-#include "chrome/browser/vr/elements/laser.h"
-#include "chrome/browser/vr/elements/reticle.h"
-#include "chrome/browser/vr/elements/shadow.h"
-#include "chrome/browser/vr/gl_texture_location.h"
 #include "chrome/browser/vr/macros.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -33,7 +26,6 @@ class Transform;
 namespace vr {
 
 class BaseRenderer;
-class ExternalTexturedQuadRenderer;
 class RadialGradientQuadRenderer;
 class TextureCopyRenderer;
 class TexturedQuadRenderer;
@@ -59,7 +51,6 @@ class UiElementRenderer {
   VIRTUAL_FOR_MOCKS void DrawTexturedQuad(
       int texture_data_handle,
       int overlay_texture_data_handle,
-      GlTextureLocation texture_location,
       const gfx::Transform& model_view_proj_matrix,
       const gfx::RectF& clip_rect,
       float opacity,
@@ -80,46 +71,10 @@ class UiElementRenderer {
       int gridline_count,
       float opacity);
 
-  VIRTUAL_FOR_MOCKS void DrawController(
-      float opacity,
-      const gfx::Transform& model_view_proj_matrix);
-
-  VIRTUAL_FOR_MOCKS void DrawLaser(
-      float opacity,
-      const gfx::Transform& model_view_proj_matrix);
-
-  VIRTUAL_FOR_MOCKS void DrawReticle(
-      float opacity,
-      const gfx::Transform& model_view_proj_matrix);
-
   VIRTUAL_FOR_MOCKS void DrawTextureCopy(int texture_data_handle,
                                          const float (&uv_transform)[16],
                                          float xborder,
                                          float yborder);
-
-  VIRTUAL_FOR_MOCKS void DrawShadow(
-      const gfx::Transform& model_view_proj_matrix,
-      const gfx::SizeF& element_size,
-      float x_padding,
-      float y_padding,
-      float y_offset,
-      SkColor color,
-      float opacity,
-      float corner_radius);
-
-  VIRTUAL_FOR_MOCKS void DrawStars(
-      float t,
-      const gfx::Transform& model_view_proj_matrix);
-
-  VIRTUAL_FOR_MOCKS void DrawBackground(
-      const gfx::Transform& model_view_proj_matrix,
-      int texture_data_handle,
-      int normal_gradient_texture_data_handle,
-      int incognito_gradient_texture_data_handle,
-      int fullscreen_gradient_texture_data_handle,
-      float normal_factor,
-      float incognito_factor,
-      float fullscreen_factor);
 
   void Flush();
 
@@ -132,19 +87,11 @@ class UiElementRenderer {
 
   raw_ptr<BaseRenderer> last_renderer_ = nullptr;
 
-  std::unique_ptr<ExternalTexturedQuadRenderer>
-      external_textured_quad_renderer_;
   std::unique_ptr<TransparentQuadRenderer> transparent_quad_renderer_;
   std::unique_ptr<TexturedQuadRenderer> textured_quad_renderer_;
   std::unique_ptr<RadialGradientQuadRenderer> radial_gradient_quad_renderer_;
   std::unique_ptr<TextureCopyRenderer> texture_copy_renderer_;
-  std::unique_ptr<Reticle::Renderer> reticle_renderer_;
-  std::unique_ptr<Laser::Renderer> laser_renderer_;
-  std::unique_ptr<Controller::Renderer> controller_renderer_;
   std::unique_ptr<Grid::Renderer> gradient_grid_renderer_;
-  std::unique_ptr<Shadow::Renderer> shadow_renderer_;
-  std::unique_ptr<Stars::Renderer> stars_renderer_;
-  std::unique_ptr<Background::Renderer> background_renderer_;
 };
 
 }  // namespace vr

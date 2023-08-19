@@ -3,4 +3,5 @@ URL: https://crates.io/crates/codespan-reporting
 Description: Beautiful diagnostic reporting for text-based programming languages
 Version: 0.11.1
 Security Critical: no
+Shipped: yes
 License: Apache 2.0

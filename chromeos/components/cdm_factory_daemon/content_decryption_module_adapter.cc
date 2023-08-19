@@ -507,8 +507,7 @@ void ContentDecryptionModuleAdapter::OnDecrypt(
   decrypted->set_timestamp(encrypted->timestamp());
   decrypted->set_duration(encrypted->duration());
   decrypted->set_is_key_frame(encrypted->is_key_frame());
-  decrypted->CopySideDataFrom(encrypted->side_data(),
-                              encrypted->side_data_size());
+  decrypted->set_side_data(encrypted->side_data());
 
   if (decrypt_config_out)
     decrypted->set_decrypt_config(std::move(decrypt_config_out));

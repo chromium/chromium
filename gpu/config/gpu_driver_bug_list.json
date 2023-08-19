@@ -1164,17 +1164,6 @@
       ]
     },
     {
-      "id": 152,
-      "cr_bugs": [581777],
-      "description": "copyTexImage2D fails when reading from IOSurface on multiple GPU types.",
-      "os": {
-        "type": "macosx"
-      },
-      "features": [
-        "use_intermediary_for_copy_texture_image"
-      ]
-    },
-    {
       "id": 153,
       "cr_bugs": [594016],
       "description": "Vivante GC1000 with EXT_multisampled_render_to_texture fails glReadPixels",
@@ -2171,10 +2160,11 @@
     {
       "id": 245,
       "description": "Switching framebuffers without a flush can lead to crashes on Intel 9th Generation GPU Macs.",
-      "cr_bugs": [783979],
+      "cr_bugs": [783979, 1472087],
       "os": {
         "type": "macosx"
       },
+      "gl_renderer": "ANGLE.*OpenGL.*",
       "intel_gpu_series": [
         "skylake",
         "kabylake",
@@ -3143,49 +3133,6 @@
       ]
     },
     {
-      "id": 336,
-      "cr_bugs": [625785],
-      "description": "DXVA video decoder crashes on some AMD GPUs.",
-      "os": {
-        "type": "win"
-      },
-      "vendor_id": "0x1002",
-      "device_id": ["0x15d8", "0x15dd"],
-      "exceptions": [
-        {
-          "vendor_id": "0x1002",
-          "driver_version": {
-            "op": "between",
-            "value": "26.20.11030.2",
-            "value2": "26.20.11999.99999"
-          }
-        },
-        {
-          "driver_version": {
-            "op": "between",
-            "value": "26.20.12020.15",
-            "value2": "26.20.12999.99999"
-          }
-        },
-        {
-          "driver_version": {
-            "op": "between",
-            "value": "26.20.13001.27002",
-            "value2": "26.20.13999.99999"
-          }
-        },
-        {
-          "driver_version": {
-            "op": ">=",
-            "value": "26.20.14001.7001"
-          }
-        }
-      ],
-      "features": [
-        "disable_dxva_video_decoder"
-      ]
-    },
-    {
       "id": 337,
       "description": "Disable hardware MFT H.264 encoder on older NVIDIA drivers",
       "cr_bugs": [1058583, 1263058],
@@ -3643,18 +3590,6 @@
       ]
     },
     {
-      "id": 374,
-      "cr_bugs": [1087422],
-      "description": "VP9 resilient mode causes corruptions with AMD VCN HW decoders, using DXVA",
-      "os": {
-        "type": "win"
-      },
-      "vendor_id": "0x1002",
-      "features": [
-        "disallow_vp9_resilient_dxva_decoding"
-      ]
-    },
-    {
       "id": 376,
       "cr_bugs": [1219028],
       "description": "Don't use Media Foundation hardware security on Turing-architecture NVIDIA GPUs.",
@@ -3790,7 +3725,7 @@
     },
     {
       "id": 387,
-      "description": "DXVAVideoDecodeAccelerator doesn't support a set of legacy AMD Gpus",
+      "description": "Windows hardware decoding doesn't support a set of legacy AMD GPUs",
       "cr_bugs": [822644, 1187900],
       "os": {
         "type": "win"
@@ -3841,7 +3776,7 @@
     },
     {
       "id": 388,
-      "description": "DXVAVideoDecodeAccelerator doesn't support a set of legacy Intel Gpus",
+      "description": "Windows hardware decoding doesn't support a set of legacy Intel GPUs",
       "cr_bugs": [822644, 1187900],
       "os": {
         "type": "win"
@@ -4233,7 +4168,102 @@
       "features": [
         "force_dcomp_triple_buffer_video_swap_chain"
       ]
+    },
+    {
+      "id": 414,
+      "cr_bugs": [
+        1318380
+      ],
+      "description": "Only enable video processor auto HDR on NVIDIA GPUs with 545+ driver",
+      "os": {
+        "type": "win"
+      },
+      "exceptions": [
+        {
+          "vendor_id": "0x10de",
+          "os": {
+            "type": "win"
+          },
+          "driver_version": {
+            "schema": "nvidia_driver",
+            "op": ">",
+            "value": "545.00"
+          }
+        }
+      ],
+      "features": [
+        "disable_vp_auto_hdr"
+      ]
+    },
+    {
+      "id": 415,
+      "cr_bugs": [1464136],
+      "description": "Disable VP9 and H.264 video acceleration on Elkhart Lake Intel devices",
+      "os": {
+        "type": "chromeos"
+      },
+      "intel_gpu_series": [
+        "elkhartlake"
+      ],
+      "features": [
+        "disable_accelerated_h264_decode",
+        "disable_accelerated_h264_encode",
+        "disable_accelerated_vp9_decode",
+        "disable_accelerated_vp9_encode",
+        "disable_accelerated_vp9_profile2_decode"
+      ]
+    },
+    {
+      "id": 416,
+      "cr_bugs": [1465960],
+      "description": "Disable video acceleration on Jasper Lake Intel ChromeOS devices",
+      "os": {
+        "type": "chromeos"
+      },
+      "intel_gpu_series": [
+        "jasperlake"
+      ],
+      "features": [
+        "disable_accelerated_h264_decode",
+        "disable_accelerated_h264_encode",
+        "disable_accelerated_vp8_decode",
+        "disable_accelerated_vp9_decode",
+        "disable_accelerated_vp9_encode",
+        "disable_accelerated_vp9_profile2_decode"
+      ]
+    },
+    {
+      "id": 417,
+      "description": "Limit D3D11VideoDecoder to 11.0 due to failures on QC chipsets.",
+      "comment": [
+        "On QC chipsets calling ID3D11VideoContext1::SubmitDecoderBuffer1 with ",
+        "non-protected content can result in an E_INVALIDARG result and playback ",
+        "failure. Force the use of 11.0 to create an ID3D11VideoContext instead."
+      ],
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x5143",
+      "features": [
+        "limit_d3d11_video_decoder_to_11_0"
+      ]
+    },
+    {
+      "id": 418,
+      "description": "Uploading data or rendering to R8 EGL images generates driver errors.",
+      "cr_bugs": [1455752],
+      "os": {
+        "type": "android",
+        "version": {
+          "op": "<=",
+          "value": "9.0"
+        }
+      },
+      "gl_vendor": "ARM.*",
+      "gl_type": "gles",
+      "features": [
+        "r8_egl_images_broken"
+      ]
     }
-
   ]
 }

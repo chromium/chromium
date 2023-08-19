@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/device_trust_constants.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/common/key_types.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/mac/mock_secure_enclave_client.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/mock_key_network_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/mock_key_persistence_delegate.h"
@@ -101,9 +102,12 @@ class MacKeyRotationCommandTest : public testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   std::unique_ptr<MacKeyRotationCommand> rotation_command_;
-  raw_ptr<MockSecureEnclaveClient> mock_secure_enclave_client_ = nullptr;
-  raw_ptr<MockKeyNetworkDelegate> mock_network_delegate_ = nullptr;
-  raw_ptr<MockKeyPersistenceDelegate> mock_persistence_delegate_ = nullptr;
+  raw_ptr<MockSecureEnclaveClient, DanglingUntriaged>
+      mock_secure_enclave_client_ = nullptr;
+  raw_ptr<MockKeyNetworkDelegate, DanglingUntriaged> mock_network_delegate_ =
+      nullptr;
+  raw_ptr<MockKeyPersistenceDelegate, DanglingUntriaged>
+      mock_persistence_delegate_ = nullptr;
   test::ScopedKeyPersistenceDelegateFactory scoped_factory_;
   KeyRotationCommand::Params params_;
 };
@@ -120,7 +124,8 @@ TEST_F(MacKeyRotationCommandTest, RotateFailure_SecureEnclaveUnsupported) {
 
 // Tests a failed key rotation due to failure creating a new signing key pair.
 TEST_F(MacKeyRotationCommandTest, RotateFailure_CreateKeyFailure) {
-  EXPECT_CALL(*mock_persistence_delegate_, LoadKeyPair());
+  EXPECT_CALL(*mock_persistence_delegate_,
+              LoadKeyPair(KeyStorageType::kPermanent));
   EXPECT_CALL(*mock_secure_enclave_client_, VerifySecureEnclaveSupported())
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_persistence_delegate_, CheckRotationPermissions())
@@ -135,7 +140,8 @@ TEST_F(MacKeyRotationCommandTest, RotateFailure_CreateKeyFailure) {
 
 // Tests a failed key rotation due to a store key failure.
 TEST_F(MacKeyRotationCommandTest, RotateFailure_StoreKeyFailure) {
-  EXPECT_CALL(*mock_persistence_delegate_, LoadKeyPair());
+  EXPECT_CALL(*mock_persistence_delegate_,
+              LoadKeyPair(KeyStorageType::kPermanent));
   EXPECT_CALL(*mock_secure_enclave_client_, VerifySecureEnclaveSupported())
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_persistence_delegate_, CheckRotationPermissions())
@@ -155,7 +161,8 @@ TEST_F(MacKeyRotationCommandTest, RotateFailure_KeyConflict) {
   InSequence s;
   EXPECT_CALL(*mock_secure_enclave_client_, VerifySecureEnclaveSupported())
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_persistence_delegate_, LoadKeyPair());
+  EXPECT_CALL(*mock_persistence_delegate_,
+              LoadKeyPair(KeyStorageType::kPermanent));
   EXPECT_CALL(*mock_persistence_delegate_, CheckRotationPermissions())
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_persistence_delegate_, CreateKeyPair());
@@ -183,7 +190,8 @@ TEST_F(MacKeyRotationCommandTest, RotateFailure_UploadKeyFailure) {
   InSequence s;
   EXPECT_CALL(*mock_secure_enclave_client_, VerifySecureEnclaveSupported())
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_persistence_delegate_, LoadKeyPair());
+  EXPECT_CALL(*mock_persistence_delegate_,
+              LoadKeyPair(KeyStorageType::kPermanent));
   EXPECT_CALL(*mock_persistence_delegate_, CheckRotationPermissions())
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_persistence_delegate_, CreateKeyPair());
@@ -207,7 +215,8 @@ TEST_F(MacKeyRotationCommandTest, RotateFailure_UploadKeyFailure) {
 
 // Tests when the browser has invalid permissions.
 TEST_F(MacKeyRotationCommandTest, Rotate_InvalidPermissions) {
-  EXPECT_CALL(*mock_persistence_delegate_, LoadKeyPair());
+  EXPECT_CALL(*mock_persistence_delegate_,
+              LoadKeyPair(KeyStorageType::kPermanent));
   EXPECT_CALL(*mock_secure_enclave_client_, VerifySecureEnclaveSupported())
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_persistence_delegate_, CheckRotationPermissions())
@@ -221,7 +230,8 @@ TEST_F(MacKeyRotationCommandTest, Rotate_InvalidPermissions) {
 
 // Tests when the key rotation is successful.
 TEST_F(MacKeyRotationCommandTest, Rotate_Success) {
-  EXPECT_CALL(*mock_persistence_delegate_, LoadKeyPair());
+  EXPECT_CALL(*mock_persistence_delegate_,
+              LoadKeyPair(KeyStorageType::kPermanent));
   EXPECT_CALL(*mock_secure_enclave_client_, VerifySecureEnclaveSupported())
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_persistence_delegate_, CheckRotationPermissions())
@@ -250,7 +260,8 @@ TEST_F(MacKeyRotationCommandTest, Rotate_Success) {
 // Tests what happens when the key rotation succeeds beyond the timeout limit
 // before the command object is destroyed.
 TEST_F(MacKeyRotationCommandTest, Rotate_Timeout_ReturnBeforeDestruction) {
-  EXPECT_CALL(*mock_persistence_delegate_, LoadKeyPair());
+  EXPECT_CALL(*mock_persistence_delegate_,
+              LoadKeyPair(KeyStorageType::kPermanent));
   EXPECT_CALL(*mock_secure_enclave_client_, VerifySecureEnclaveSupported())
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_persistence_delegate_, CheckRotationPermissions())
@@ -287,7 +298,8 @@ TEST_F(MacKeyRotationCommandTest, Rotate_Timeout_ReturnBeforeDestruction) {
 // Tests what happens when the key rotation succeeds beyond the timeout limit
 // after the command object is destroyed.
 TEST_F(MacKeyRotationCommandTest, Rotate_Timeout_ReturnAfterDestruction) {
-  EXPECT_CALL(*mock_persistence_delegate_, LoadKeyPair());
+  EXPECT_CALL(*mock_persistence_delegate_,
+              LoadKeyPair(KeyStorageType::kPermanent));
   EXPECT_CALL(*mock_secure_enclave_client_, VerifySecureEnclaveSupported())
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_persistence_delegate_, CheckRotationPermissions())

@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+PASS Same-site popup with empty coop
+PASS Same-site popup with coop unsafe-none
+PASS Same-site popup with coop same-origin
+PASS Same-site popup with coop same-origin-allow-popups
+PASS Same-site popup with coop restrict-properties
+Harness: the test ran to completion.
+

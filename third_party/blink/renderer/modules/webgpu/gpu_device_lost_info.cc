@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/webgpu/gpu_device_lost_info.h"
-#include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
+
+#include "base/notreached.h"
 
 namespace blink {
 
@@ -25,8 +26,8 @@ GPUDeviceLostInfo::GPUDeviceLostInfo(const WGPUDeviceLostReason reason,
   message_ = message;
 }
 
-const ScriptValue GPUDeviceLostInfo::reason(ScriptState* script_state) const {
-  return ScriptValue::From(script_state, reason_);
+const String& GPUDeviceLostInfo::reason() const {
+  return reason_;
 }
 
 const String& GPUDeviceLostInfo::message() const {

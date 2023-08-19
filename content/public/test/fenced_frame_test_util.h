@@ -7,6 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/test/scoped_feature_list.h"
+#include "content/public/browser/web_contents.h"
 #include "net/base/net_errors.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom.h"
@@ -66,11 +67,24 @@ class FencedFrameTestHelper {
       net::Error expected_error_code = net::OK,
       bool wait_for_load = true);
 
+  // Helper function for event reporting tests that sends out a request. This is
+  // used to see if this request or the actual event reached the server first.
+  // If this reaches the server first, we know that the event was not sent.
+  void SendBasicRequest(WebContents* web_contents,
+                        GURL url,
+                        absl::optional<std::string> content = absl::nullopt);
+
   // Returns the last created fenced frame. This can be used by embedders who
   // must create fenced frames from script but need to get the fence frame's
   // inner root RenderFrameHost.
   // This method will return nullptr if no fenced frames were created.
   static RenderFrameHost* GetMostRecentlyAddedFencedFrame(RenderFrameHost* rfh);
+
+  // Returns a vector of all child fenced frames given a parent `rfh`. This can
+  // be used by embedders who must create multiple fenced frames from script but
+  // need to get their inner root RenderFrameHosts.
+  static std::vector<RenderFrameHost*> GetChildFencedFrameHosts(
+      RenderFrameHost* rfh);
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

@@ -67,9 +67,10 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
 
   void EnterTestMode(const GURL& update_url,
                      const GURL& crash_upload_url,
-                     const GURL& device_management_url) const override {
+                     const GURL& device_management_url,
+                     const base::TimeDelta& idle_timeout) const override {
     updater::test::EnterTestMode(update_url, crash_upload_url,
-                                 device_management_url);
+                                 device_management_url, idle_timeout);
   }
 
   void ExitTestMode() const override {
@@ -82,6 +83,10 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
 
   void SetGroupPolicies(const base::Value::Dict& values) const override {
     updater::test::SetGroupPolicies(values);
+  }
+
+  void SetMachineManaged(bool is_managed_device) const override {
+    updater::test::SetMachineManaged(is_managed_device);
   }
 
   void ExpectUninstallPing(ScopedServer* test_server) const override {
@@ -108,6 +113,18 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::ExpectUpdateSequence(updater_scope_, test_server, app_id,
                                         install_data_index, priority,
                                         from_version, to_version);
+  }
+
+  void ExpectUpdateSequenceBadHash(
+      ScopedServer* test_server,
+      const std::string& app_id,
+      const std::string& install_data_index,
+      UpdateService::Priority priority,
+      const base::Version& from_version,
+      const base::Version& to_version) const override {
+    updater::test::ExpectUpdateSequenceBadHash(
+        updater_scope_, test_server, app_id, install_data_index, priority,
+        from_version, to_version);
   }
 
   void ExpectInstallSequence(ScopedServer* test_server,
@@ -197,6 +214,10 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::RunWakeActive(updater_scope_, exit_code);
   }
 
+  void RunServer(int exit_code, bool internal) const override {
+    updater::test::RunServer(updater_scope_, exit_code, internal);
+  }
+
   void CheckForUpdate(const std::string& app_id) const override {
     updater::test::CheckForUpdate(updater_scope_, app_id);
   }
@@ -208,6 +229,11 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
 
   void UpdateAll() const override { updater::test::UpdateAll(updater_scope_); }
 
+  void GetAppStates(
+      const base::Value::Dict& expected_app_states) const override {
+    updater::test::GetAppStates(updater_scope_, expected_app_states);
+  }
+
   void DeleteUpdaterDirectory() const override {
     updater::test::DeleteUpdaterDirectory(updater_scope_);
   }
@@ -216,8 +242,9 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::DeleteFile(updater_scope_, path);
   }
 
-  void InstallApp(const std::string& app_id) const override {
-    updater::test::InstallApp(updater_scope_, app_id);
+  void InstallApp(const std::string& app_id,
+                  const base::Version& version) const override {
+    updater::test::InstallApp(updater_scope_, app_id, version);
   }
 
   bool WaitForUpdaterExit() const override {
@@ -328,6 +355,12 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
                          bool is_silent_install) override {
     updater::test::RunOfflineInstall(updater_scope_, is_legacy_install,
                                      is_silent_install);
+  }
+
+  void RunOfflineInstallOsNotSupported(bool is_legacy_install,
+                                       bool is_silent_install) override {
+    updater::test::RunOfflineInstallOsNotSupported(
+        updater_scope_, is_legacy_install, is_silent_install);
   }
 
   void DMDeregisterDevice() override {

@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/debug/crash_logging.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/escape.h"
@@ -23,6 +24,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/isolation_info.h"
+#include "net/base/load_flags.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/http/http_request_headers.h"
@@ -53,6 +55,7 @@ AuctionURLLoaderFactoryProxy::AuctionURLLoaderFactoryProxy(
     GetUrlLoaderFactoryCallback get_frame_url_loader_factory,
     GetUrlLoaderFactoryCallback get_trusted_url_loader_factory,
     PreconnectSocketCallback preconnect_socket_callback,
+    bool force_reload,
     const url::Origin& top_frame_origin,
     const url::Origin& frame_origin,
     absl::optional<int> renderer_process_id,
@@ -69,6 +72,7 @@ AuctionURLLoaderFactoryProxy::AuctionURLLoaderFactoryProxy(
       frame_origin_(frame_origin),
       renderer_process_id_(renderer_process_id),
       is_for_seller_(is_for_seller),
+      force_reload_(force_reload),
       client_security_state_(std::move(client_security_state)),
       isolation_info_(is_for_seller ? net::IsolationInfo::CreateTransient()
                                     : CreateBidderIsolationInfo(
@@ -134,6 +138,20 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
   }
 
   if (!is_request_allowed) {
+    // Debugging for https://crbug.com/1448458
+    SCOPED_CRASH_KEY_STRING32("fledge", "req-accept", accept_header);
+    SCOPED_CRASH_KEY_STRING256("fledge", "req-url",
+                               url_request.url.possibly_invalid_spec());
+    SCOPED_CRASH_KEY_STRING256("fledge", "expect-script-url",
+                               script_url_.possibly_invalid_spec());
+    SCOPED_CRASH_KEY_STRING256(
+        "fledge", "expect-wasm-url",
+        wasm_url_.value_or(GURL()).possibly_invalid_spec());
+    SCOPED_CRASH_KEY_STRING256(
+        "fledge", "expect-trusted",
+        trusted_signals_base_url_.value_or(GURL()).possibly_invalid_spec());
+    SCOPED_CRASH_KEY_STRING256("fledge", "expect-top-frame",
+                               top_frame_origin_.host());
     receiver_.ReportBadMessage("Unexpected request");
     return;
   }
@@ -153,6 +171,10 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
   new_request.credentials_mode = network::mojom::CredentialsMode::kOmit;
   new_request.request_initiator = frame_origin_;
   new_request.enable_load_timing = url_request.enable_load_timing;
+
+  if (force_reload_) {
+    new_request.load_flags = net::LOAD_BYPASS_CACHE;
+  }
 
   if (!maybe_subresource_info) {
     // CORS is not needed.

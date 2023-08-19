@@ -20,27 +20,6 @@ from grit.format import gzip_string
 
 class FormatGzipStringUnittest(unittest.TestCase):
 
-  def testGzipStringRsyncable(self):
-    # Can only test the rsyncable version on platforms which support rsyncable,
-    # which at the moment is Linux.
-    if sys.platform == 'linux2':
-      header_begin = (b'\x1f\x8b')  # gzip first two bytes
-      input = (b'TEST STRING STARTING NOW'
-               b'continuing'
-               b'<even more>'
-               b'<finished NOW>')
-
-      compressed = gzip_string.GzipStringRsyncable(input)
-      self.assertTrue(header_begin == compressed[:2])
-
-      compressed_file = io.BytesIO()
-      compressed_file.write(compressed)
-      compressed_file.seek(0)
-
-      with gzip.GzipFile(mode='rb', fileobj=compressed_file) as f:
-        output = f.read()
-      self.assertTrue(output == input)
-
   def testGzipString(self):
     header_begin = b'\x1f\x8b'  # gzip first two bytes
     input = (b'TEST STRING STARTING NOW'

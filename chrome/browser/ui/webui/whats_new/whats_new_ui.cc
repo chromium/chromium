@@ -92,6 +92,7 @@ void WhatsNewUI::CreateBrowserCommandHandler(
       browser_command::mojom::Command::kOpenPerformanceSettings,
       browser_command::mojom::Command::kOpenNTPAndStartCustomizeChromeTutorial,
       browser_command::mojom::Command::kOpenPasswordManager,
+      browser_command::mojom::Command::kStartPasswordManagerTutorial,
   };
   command_handler_ = std::make_unique<BrowserCommandHandler>(
       std::move(pending_handler), profile_, supported_commands);

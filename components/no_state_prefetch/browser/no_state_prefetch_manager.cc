@@ -36,10 +36,10 @@
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_field_trial.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_history.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager_delegate.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_utils.h"
 #include "components/no_state_prefetch/browser/prerender_histograms.h"
-#include "components/no_state_prefetch/browser/prerender_history.h"
 #include "components/no_state_prefetch/common/no_state_prefetch_final_status.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
@@ -81,7 +81,7 @@ constexpr base::TimeDelta kPeriodicCleanupInterval = base::Milliseconds(1000);
 // WebContents for deletion.
 constexpr base::TimeDelta kDeleteWithExtremePrejudice = base::Seconds(3);
 
-// Length of prerender history, for display in chrome://net-internals
+// Length of NoStatePrefetch history, for display in chrome://net-internals.
 constexpr int kHistoryLength = 100;
 
 // Helper methods to set PrelodingAttempt fields.
@@ -167,7 +167,8 @@ NoStatePrefetchManager::NoStatePrefetchManager(
       delegate_(std::move(delegate)),
       no_state_prefetch_contents_factory_(
           NoStatePrefetchContents::CreateFactory()),
-      prerender_history_(std::make_unique<PrerenderHistory>(kHistoryLength)),
+      prefetch_history_(
+          std::make_unique<NoStatePrefetchHistory>(kHistoryLength)),
       histograms_(std::make_unique<PrerenderHistograms>()),
       tick_clock_(base::DefaultTickClock::GetInstance()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -413,7 +414,7 @@ base::Value::Dict NoStatePrefetchManager::CopyAsDict() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   base::Value::Dict dict_value;
-  dict_value.Set("history", prerender_history_->CopyEntriesAsValue());
+  dict_value.Set("history", prefetch_history_->CopyEntriesAsValue());
   dict_value.Set("active", GetActivePrerenders());
   dict_value.Set("enabled", delegate_->IsNetworkPredictionPreferenceEnabled());
   dict_value.Set("disabled_note", delegate_->GetReasonForDisablingPrediction());
@@ -429,7 +430,7 @@ void NoStatePrefetchManager::ClearData(int clear_flags) {
     DestroyAllContents(FINAL_STATUS_CACHE_OR_HISTORY_CLEARED);
   // This has to be second, since destroying prerenders can add to the history.
   if (clear_flags & CLEAR_PRERENDER_HISTORY)
-    prerender_history_->Clear();
+    prefetch_history_->Clear();
 }
 
 void NoStatePrefetchManager::RecordFinalStatus(Origin origin,
@@ -998,10 +999,10 @@ void NoStatePrefetchManager::ScheduleDeleteOldWebContents(
 }
 
 void NoStatePrefetchManager::AddToHistory(NoStatePrefetchContents* contents) {
-  PrerenderHistory::Entry entry(contents->prerender_url(),
-                                contents->final_status(), contents->origin(),
-                                base::Time::Now());
-  prerender_history_->AddEntry(entry);
+  NoStatePrefetchHistory::Entry entry(contents->prerender_url(),
+                                      contents->final_status(),
+                                      contents->origin(), base::Time::Now());
+  prefetch_history_->AddEntry(entry);
 }
 
 base::Value::List NoStatePrefetchManager::GetActivePrerenders() const {
@@ -1019,8 +1020,9 @@ void NoStatePrefetchManager::SkipNoStatePrefetchContentsAndMaybePreconnect(
     const GURL& url,
     Origin origin,
     FinalStatus final_status) const {
-  PrerenderHistory::Entry entry(url, final_status, origin, base::Time::Now());
-  prerender_history_->AddEntry(entry);
+  NoStatePrefetchHistory::Entry entry(url, final_status, origin,
+                                      base::Time::Now());
+  prefetch_history_->AddEntry(entry);
   histograms_->RecordFinalStatus(origin, final_status);
 
   if (origin == ORIGIN_ISOLATED_PRERENDER ||

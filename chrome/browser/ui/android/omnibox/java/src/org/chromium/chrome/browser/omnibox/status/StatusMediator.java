@@ -34,28 +34,34 @@ import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.site_settings.ContentSettingsResources;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsUtil;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.content_settings.CookieControlsBreakageConfidenceLevel;
+import org.chromium.components.content_settings.CookieControlsBridge;
+import org.chromium.components.content_settings.CookieControlsObserver;
 import org.chromium.components.page_info.PageInfoController;
-import org.chromium.components.page_info.PageInfoDiscoverabilityMetrics;
-import org.chromium.components.page_info.PageInfoDiscoverabilityMetrics.DiscoverabilityAction;
 import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
+import org.chromium.content_public.browser.BrowserContextHandle;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
  * Contains the controller logic of the Status component.
  */
-public class StatusMediator implements PermissionDialogController.Observer,
-                                       TemplateUrlServiceObserver,
-                                       MerchantTrustSignalsCoordinator.OmniboxIconController {
+public class StatusMediator
+        implements PermissionDialogController.Observer, TemplateUrlServiceObserver,
+                   MerchantTrustSignalsCoordinator.OmniboxIconController, CookieControlsObserver {
     private static final int PERMISSION_ICON_DEFAULT_DISPLAY_TIMEOUT_MS = 8500;
     public static final String PERMISSION_ICON_TIMEOUT_MS_PARAM = "PermissionIconTimeoutMs";
+
+    static final String COOKIE_CONTROLS_ICON = "COOKIE_CONTROLS_ICON";
 
     private final PropertyModel mModel;
     private final SearchEngineLogoUtils mSearchEngineLogoUtils;
@@ -79,7 +85,7 @@ public class StatusMediator implements PermissionDialogController.Observer,
 
     private @BrandedColorScheme int mBrandedColorScheme = BrandedColorScheme.APP_DEFAULT;
     private @DrawableRes int mSecurityIconRes;
-    private @DrawableRes int mSecurityIconTintRes;
+    private @ColorRes int mSecurityIconTintRes;
     private @StringRes int mSecurityIconDescriptionRes;
     private @ColorRes int mNavigationIconTintRes;
 
@@ -92,11 +98,8 @@ public class StatusMediator implements PermissionDialogController.Observer,
     private final PermissionDialogController mPermissionDialogController;
     private final Handler mPermissionTaskHandler = new Handler();
     private final Handler mStoreIconHandler = new Handler();
-    @ContentSettingsType
-    private int mLastPermission = ContentSettingsType.DEFAULT;
+    private @ContentSettingsType int mLastPermission = ContentSettingsType.DEFAULT;
     private final PageInfoIPHController mPageInfoIPHController;
-    private final PageInfoDiscoverabilityMetrics mDiscoverabilityMetrics =
-            new PageInfoDiscoverabilityMetrics();
     private final WindowAndroid mWindowAndroid;
 
     private boolean mUrlBarTextIsSearch = true;
@@ -106,6 +109,9 @@ public class StatusMediator implements PermissionDialogController.Observer,
     private float mUrlFocusPercent;
 
     private int mPermissionIconDisplayTimeoutMs = PERMISSION_ICON_DEFAULT_DISPLAY_TIMEOUT_MS;
+
+    private CookieControlsBridge mCookieControlsBridge;
+    private boolean mShouldAnimateCookieControlsIcon;
 
     /**
      * @param model The {@link PropertyModel} for this mediator.
@@ -174,13 +180,10 @@ public class StatusMediator implements PermissionDialogController.Observer,
         if (mTemplateUrlServiceSupplier.hasValue()) {
             mTemplateUrlServiceSupplier.get().removeObserver(this);
         }
-    }
-
-    /**
-     * Override the LocationBarDataProvider for this class for testing purposes.
-     */
-    void setLocationBarDataProviderForTesting(LocationBarDataProvider locationBarDataProvider) {
-        mLocationBarDataProvider = locationBarDataProvider;
+        if (mCookieControlsBridge != null) {
+            mCookieControlsBridge.destroy();
+            mCookieControlsBridge = null;
+        }
     }
 
     /**
@@ -314,7 +317,7 @@ public class StatusMediator implements PermissionDialogController.Observer,
         setShowIconsWhenUrlFocused(shouldShowLogo);
         if (!shouldShowLogo) return;
 
-        if (mProfileSupplier.get() != null && isNTPOrStartSurfaceVisible()) {
+        if (mProfileSupplier.hasValue() && isNTPOrStartSurfaceVisible()) {
             setStatusIconShown(shouldShowLogo && (mUrlHasFocus || mUrlFocusPercent > 0));
         } else {
             setStatusIconShown(true);
@@ -343,7 +346,7 @@ public class StatusMediator implements PermissionDialogController.Observer,
         updateStatusVisibility();
 
         // Only fade the animation on the new tab page or start surface.
-        if (mProfileSupplier.get() != null && isNTPOrStartSurfaceVisible()) {
+        if (mProfileSupplier.hasValue() && isNTPOrStartSurfaceVisible()) {
             setStatusIconAlpha(percent);
         } else {
             setStatusIconAlpha(1f);
@@ -437,6 +440,22 @@ public class StatusMediator implements PermissionDialogController.Observer,
     @VisibleForTesting
     boolean isSecurityViewShown() {
         return mIsSecurityViewShown;
+    }
+
+    /**
+     * Get a CookieControlsBridge instance for testing purposes.
+     */
+    @VisibleForTesting
+    CookieControlsBridge getCookieControlsBridge() {
+        return mCookieControlsBridge;
+    }
+
+    /**
+     * Set a CookieControlsBridge instance for testing purposes.
+     */
+    @VisibleForTesting
+    void setCookieControlsBridge(CookieControlsBridge cookieControlsBridge) {
+        mCookieControlsBridge = cookieControlsBridge;
     }
 
     /**
@@ -542,7 +561,7 @@ public class StatusMediator implements PermissionDialogController.Observer,
         }
 
         return (mUrlHasFocus || mUrlFocusPercent > 0) && isNTPOrStartSurfaceVisible()
-                && mProfileSupplier.get() != null;
+                && mProfileSupplier.hasValue();
     }
 
     /**
@@ -557,8 +576,9 @@ public class StatusMediator implements PermissionDialogController.Observer,
                     ThemeUtils.getThemedToolbarIconTintRes(mBrandedColorScheme)));
         }
 
-        return mSearchEngineLogoUtils.getSearchEngineLogo(mResources, mBrandedColorScheme,
-                mProfileSupplier.get(), mTemplateUrlServiceSupplier.get());
+        Profile profile = mProfileSupplier.hasValue() ? mProfileSupplier.get() : null;
+        return mSearchEngineLogoUtils.getSearchEngineLogo(
+                mResources, mBrandedColorScheme, profile, mTemplateUrlServiceSupplier.get());
     }
 
     /** Return the resource id for the accessibility description or 0 if none apply. */
@@ -637,9 +657,40 @@ public class StatusMediator implements PermissionDialogController.Observer,
         mModel.set(StatusProperties.STATUS_ICON_RESOURCE, permissionIconResource);
         Runnable finishIconAnimation = () -> updateLocationBarIcon(IconTransitionType.ROTATE);
         mPermissionTaskHandler.postDelayed(finishIconAnimation, mPermissionIconDisplayTimeoutMs);
+    }
 
-        mDiscoverabilityMetrics.recordDiscoverabilityAction(
-                DiscoverabilityAction.PERMISSION_ICON_SHOWN);
+    // CookieControlsObserver interface
+    @Override
+    public void onBreakageConfidenceLevelChanged(int level) {
+        mShouldAnimateCookieControlsIcon = level == CookieControlsBreakageConfidenceLevel.HIGH;
+    }
+
+    private void animateCookieControlsIcon() {
+        resetCustomIconsStatus();
+
+        boolean isIncognito = mLocationBarDataProvider.isIncognito();
+        Drawable eyeCrossedIcon = SettingsUtils.getTintedIcon(mContext, R.drawable.ic_eye_crossed,
+                isIncognito ? R.color.default_icon_color_blue_light
+                            : R.color.default_icon_color_accent1_tint_list);
+
+        PermissionIconResource permissionIconResource =
+                new PermissionIconResource(eyeCrossedIcon, isIncognito, COOKIE_CONTROLS_ICON);
+        permissionIconResource.setTransitionType(IconTransitionType.ROTATE);
+        permissionIconResource.setAnimationFinishedCallback(() -> {
+            mPageInfoIPHController.showCookieControlsIPH(
+                    getIPHTimeout(), R.string.cookie_controls_iph_message);
+            if (mCookieControlsBridge != null) {
+                mCookieControlsBridge.onEntryPointAnimated();
+            }
+        });
+
+        // Set the timer to switch the icon back afterwards.
+        mPermissionTaskHandler.removeCallbacksAndMessages(null);
+        mModel.set(StatusProperties.STATUS_ICON_RESOURCE, permissionIconResource);
+        mPermissionTaskHandler.postDelayed(
+                ()
+                        -> updateLocationBarIcon(IconTransitionType.ROTATE),
+                mPermissionIconDisplayTimeoutMs);
     }
 
     private void startIPH() {
@@ -657,7 +708,8 @@ public class StatusMediator implements PermissionDialogController.Observer,
     @Override
     public void showStoreIcon(WindowAndroid window, String url, Drawable drawable,
             @StringRes int stringId, boolean canShowIph) {
-        if ((window != mWindowAndroid) || (!url.equals(mLocationBarDataProvider.getCurrentUrl()))
+        if ((window != mWindowAndroid)
+                || (!url.equals(mLocationBarDataProvider.getCurrentGurl().getSpec()))
                 || (mLocationBarDataProvider.isIncognito())) {
             return;
         }
@@ -676,7 +728,6 @@ public class StatusMediator implements PermissionDialogController.Observer,
             updateLocationBarIcon(IconTransitionType.ROTATE);
         }, mPermissionIconDisplayTimeoutMs);
         mIsStoreIconShowing = true;
-        mDiscoverabilityMetrics.recordDiscoverabilityAction(DiscoverabilityAction.STORE_ICON_SHOWN);
     }
 
     // Reset all customized icons' status to avoid different icons' conflicts.
@@ -698,13 +749,6 @@ public class StatusMediator implements PermissionDialogController.Observer,
 
     /** Notifies that the page info was opened. */
     void onPageInfoOpened() {
-        if (mLastPermission != ContentSettingsType.DEFAULT) {
-            mDiscoverabilityMetrics.recordDiscoverabilityAction(
-                    DiscoverabilityAction.PAGE_INFO_OPENED);
-        } else if (mIsStoreIconShowing) {
-            mDiscoverabilityMetrics.recordDiscoverabilityAction(
-                    DiscoverabilityAction.PAGE_INFO_OPENED_FROM_STORE_ICON);
-        }
         resetCustomIconsStatus();
         updateLocationBarIcon(IconTransitionType.CROSSFADE);
     }
@@ -734,5 +778,35 @@ public class StatusMediator implements PermissionDialogController.Observer,
     @Override
     public void onTemplateURLServiceChanged() {
         updateLocationBarIcon(IconTransitionType.CROSSFADE);
+    }
+
+    void setTranslationX(float translationX) {
+        mModel.set(StatusProperties.TRANSLATION_X, translationX);
+    }
+
+    public void onUrlChanged() {
+        var currentTab = mLocationBarDataProvider.getTab();
+        if (mProfileSupplier.hasValue() && currentTab != null) {
+            WebContents webContents = currentTab.getWebContents();
+            Profile profile = mProfileSupplier.get();
+
+            if (webContents != null && profile != null) {
+                BrowserContextHandle originalBrowserContext =
+                        profile.isOffTheRecord() ? profile.getOriginalProfile() : null;
+                if (mCookieControlsBridge != null) {
+                    mCookieControlsBridge.updateWebContents(webContents, originalBrowserContext);
+                } else {
+                    mCookieControlsBridge =
+                            new CookieControlsBridge(this, webContents, originalBrowserContext);
+                }
+            }
+        }
+    }
+
+    public void onPageLoadStopped() {
+        if (mShouldAnimateCookieControlsIcon) {
+            animateCookieControlsIcon();
+            mShouldAnimateCookieControlsIcon = false;
+        }
     }
 }
